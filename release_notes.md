@@ -15,6 +15,7 @@ PREESM Changelog
   * this includes TCP communication lib;
   * also includes semaphore and barrier implementation for MacOSX;
 * Minor fixes in UI;
+* Remove EMF dedicated repo (see https://github.com/eclipse/xtext/issues/1233#issuecomment-421904619);
 
 ### Bug fix
 

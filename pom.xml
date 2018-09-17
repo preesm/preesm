@@ -105,7 +105,6 @@
     <sonar.exclusions>**/tests/**, **/test-fragments/**, **/releng/**</sonar.exclusions>
 
     <!-- XCore related properties  -->
-    <eclipsemf-repo>https://oss.sonatype.org/content/repositories/orgeclipseemf-1059/</eclipsemf-repo>
     <maven.compiler.fork>true</maven.compiler.fork>
     <emf-version>2.15.0</emf-version>
     <emf-common-version>2.15.0</emf-common-version>
@@ -146,18 +145,8 @@
       <layout>p2</layout>
       <url>${preesm.p2.repo}</url>
     </repository>
-	<repository>
-		<id>emf-eclipse-maven</id>
-		<url>${eclipsemf-repo}</url>
-	</repository>
   </repositories>
 
-  <pluginRepositories>
-	<pluginRepository>
-		<id>emf-eclipse-maven-plugins</id>
-		<url>${eclipsemf-repo}</url>
-	</pluginRepository>
-  </pluginRepositories>
   <build>
     <pluginManagement>
       <plugins>
