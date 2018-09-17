@@ -173,7 +173,7 @@ class PiGraph extends AbstractActor, Graph {
 		vertices.add(parameter)
 	}
 	op unique boolean addDelay(Delay delay) {
-		vertices.add(delay)
+		vertices.add(delay) 
 		vertices.add(delay.getActor())
 	}
 	op unique boolean addFifo(Fifo fifo) {
@@ -211,10 +211,6 @@ class PiGraph extends AbstractActor, Graph {
 		vertices.remove(delay)
 	}
 	
-	op unique boolean removeFifo(Fifo fifo) {
-		edges.remove(fifo)
-	}
-
 	op unique boolean removeFifo(Fifo fifo) {
 		edges.remove(fifo)
 	}
@@ -336,6 +332,24 @@ class RoundBufferActor extends ExecutableActor {
 abstract class NonExecutableActor extends AbstractActor {
 }
 
+class InitActor extends NonExecutableActor {
+	PersistenceLevel level
+	String endReference = ""
+	op DataOutputPort getDataOutputPort() {
+		// Init actors only have one output port
+		return dataOutputPorts.get(0)
+	}
+}
+
+class EndActor extends NonExecutableActor {
+	PersistenceLevel level
+	String endReference = ""
+	op DataInputPort getDataInputPort() {
+		// End actors only have one input port
+		return dataInputPorts.get(0)
+	}
+}
+
 class DelayActor extends NonExecutableActor, RefinementContainer {
 	refers Delay linkedDelay opposite actor
 
@@ -345,17 +359,23 @@ class DelayActor extends NonExecutableActor, RefinementContainer {
 	}
 	// Delay actors have a unique input port and a unique output port
 	op DataInputPort getDataInputPort() {
+		if (dataInputPorts.empty) {
+			return null
+		}
 		return dataInputPorts.get(0)
 	}
 	op DataOutputPort getDataOutputPort() {
+		if (dataOutputPorts.empty) {
+			return null
+		}
 		return dataOutputPorts.get(0)
 	}
 	// Return the actor that set / get the delay
 	op AbstractActor getSetterActor() {
-		return Optional.ofNullable(dataInputPort.incomingFifo).map[sourcePort.containingActor].orElse(null)
+		return Optional.ofNullable(Optional.ofNullable(dataInputPort).map[incomingFifo].orElse(null)).map[sourcePort.containingActor].orElse(null)
 	}
 	op AbstractActor getGetterActor() {
-		return Optional.ofNullable(dataOutputPort.outgoingFifo).map[targetPort.containingActor].orElse(null)
+		return Optional.ofNullable(Optional.ofNullable(dataOutputPort).map[outgoingFifo].orElse(null)).map[targetPort.containingActor].orElse(null)
 	}
 	op ConfigInputPort lookupConfigInputPortConnectedWithParameter(Parameter p) {
 		return linkedDelay.lookupConfigInputPortConnectedWithParameter(p)
