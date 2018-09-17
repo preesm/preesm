@@ -49,9 +49,11 @@ import org.ietr.preesm.experiment.model.pimm.DataInputPort;
 import org.ietr.preesm.experiment.model.pimm.DataOutputPort;
 import org.ietr.preesm.experiment.model.pimm.Delay;
 import org.ietr.preesm.experiment.model.pimm.DelayActor;
+import org.ietr.preesm.experiment.model.pimm.EndActor;
 import org.ietr.preesm.experiment.model.pimm.Expression;
 import org.ietr.preesm.experiment.model.pimm.Fifo;
 import org.ietr.preesm.experiment.model.pimm.ForkActor;
+import org.ietr.preesm.experiment.model.pimm.InitActor;
 import org.ietr.preesm.experiment.model.pimm.InterfaceActor;
 import org.ietr.preesm.experiment.model.pimm.JoinActor;
 import org.ietr.preesm.experiment.model.pimm.PiGraph;
@@ -166,20 +168,21 @@ public class PiMMSRVerticesLinker {
    */
   public Boolean execute(final Map<AbstractVertex, Long> brv, final ArrayList<AbstractVertex> vertexSourceSet,
       final ArrayList<AbstractVertex> vertexSinkSet) throws PiMMHelperException {
-    // These connections are already dealt with
-    if ((this.source instanceof DelayActor) || (this.sink instanceof DelayActor)) {
-      return true;
-    }
+    // // These connections are already dealt with
+    // if ((this.source instanceof DelayActor) || (this.sink instanceof DelayActor)) {
+    // return true;
+    // }
 
     // Initialize delay init / end IDs
     this.delayInitID = "";
     this.delayEndID = "";
 
     // List of source vertices
-    final ArrayList<PiMMSRVerticesLinker.SourceConnection> sourceSet = getSourceSet(vertexSourceSet, vertexSinkSet);
+    final ArrayList<
+        PiMMSRVerticesLinker.SourceConnection> sourceSet = getSourceSet(vertexSourceSet, vertexSinkSet, brv);
 
     // List of sink vertices
-    final ArrayList<PiMMSRVerticesLinker.SinkConnection> sinkSet = getSinkSet(vertexSinkSet, vertexSourceSet);
+    final ArrayList<PiMMSRVerticesLinker.SinkConnection> sinkSet = getSinkSet(vertexSinkSet, vertexSourceSet, brv);
 
     // Connect all the source to the sinks
     connectEdges(sourceSet, sinkSet);
@@ -418,7 +421,7 @@ public class PiMMSRVerticesLinker {
    * @return
    */
   private DataOutputPort getCurrentSourcePort(final SourceConnection src, long rate, AbstractActor sourceVertex) {
-    DataOutputPort currentSourcePort = (DataOutputPort) sourceVertex.lookupPort(this.sourcePort.getName());
+    DataOutputPort currentSourcePort = (DataOutputPort) sourceVertex.lookupPort(src.getSourceLabel());
     if (currentSourcePort == null) {
       currentSourcePort = PiMMUserFactory.instance.createDataOutputPort();
       currentSourcePort.setName(src.getSourceLabel());
@@ -440,7 +443,7 @@ public class PiMMSRVerticesLinker {
    * @return
    */
   private DataInputPort getCurrentSinkPort(final SinkConnection snk, long rate, final AbstractActor sinkVertex) {
-    DataInputPort currentSinkPort = (DataInputPort) sinkVertex.lookupPort(this.sinkPort.getName());
+    DataInputPort currentSinkPort = (DataInputPort) sinkVertex.lookupPort(snk.getTargetLabel());
     if (currentSinkPort == null) {
       currentSinkPort = PiMMUserFactory.instance.createDataInputPort();
       currentSinkPort.setName(snk.getTargetLabel());
@@ -518,20 +521,78 @@ public class PiMMSRVerticesLinker {
    *           the exception
    */
   private ArrayList<PiMMSRVerticesLinker.SourceConnection> getSourceSet(final ArrayList<AbstractVertex> vertexSourceSet,
-      final ArrayList<AbstractVertex> vertexSinkSet) throws PiMMHelperException {
+      final ArrayList<AbstractVertex> vertexSinkSet, final Map<AbstractVertex, Long> brv) throws PiMMHelperException {
     // Initialize empty source set
     final ArrayList<PiMMSRVerticesLinker.SourceConnection> sourceSet = new ArrayList<>();
 
     // Deals delays
     if (this.delays != 0) {
-      // 0. Create the delay actor
-      final DelayActor init = PiMMUserFactory.instance.createDelayActor();
-      this.delayInitID = vertexSinkSet.get(0).getName() + "_init_" + this.sinkPort.getName();
-      init.setName(delayInitID);
-      // 2. Add the init actor to the graph
-      vertexSinkSet.get(0).getContainingPiGraph().addActor(init);
-      // 3. Add an entry in the sourceSet
-      sourceSet.add(new SourceConnection(init, this.delays, this.sinkPort.getName()));
+      // 0. Check if Delay has setter
+      final Delay delay = this.fifo.getDelay();
+      // 1. Get the DelayActor
+      final DelayActor delayActor = delay.getActor();
+      // 1.1 Now get the DelayActor associated to the setter of the delay
+      final DelayActor setterDelayActor = (DelayActor) this.fifo.getContainingPiGraph()
+          .lookupVertex(delayActor.getName() + "_setter");
+      if (setterDelayActor == null) {
+        throw new PiMMHelperException("Setter actor [" + delayActor.getName() + "_setter] not found.");
+      }
+      final Long brvSetter = brv.get(setterDelayActor);
+
+      Fifo incomingFifo = setterDelayActor.getDataInputPort().getIncomingFifo();
+      final AbstractActor setterActor = incomingFifo.getSourcePort().getContainingActor();
+      if (setterActor instanceof InitActor) {
+        sourceSet.add(new SourceConnection(setterActor, this.delays, this.sinkPort.getName()));
+        this.delayInitID = vertexSinkSet.get(0).getName() + "_init_" + this.sinkPort.getName();
+        setterActor.setName(this.delayInitID);
+        ((InitActor) setterActor).setLevel(delay.getLevel());
+      } else {
+        final String setterName = setterActor.getName();
+        final Expression setterRateExpression = incomingFifo.getSourcePort().getPortRateExpression();
+        final long setterRate = Long.parseLong(setterRateExpression.getExpressionString());
+        for (int i = 0; i < brvSetter; ++i) {
+          final InitActor init = PiMMUserFactory.instance.createInitActor();
+          final String name = setterName + "_init_" + Integer.toString(i);
+          init.setName(name);
+          init.getDataOutputPort().setName(this.sinkPort.getName());
+          vertexSinkSet.get(0).getContainingPiGraph().addActor(init);
+          sourceSet.add(new SourceConnection(init, setterRate, this.sinkPort.getName()));
+        }
+      }
+
+      // 1. Create the delay actor
+      // if (delay.hasSetterActor()) {
+      // // 1.1 If setter, creates as many init as there are setters
+      // final AbstractActor setter = delay.getSetterActor();
+      // final String setterName = setter.getName();
+      // final DelayActor delayActor = delay.getActor();
+      // final DataInputPort delaySetterPort = delayActor.getDataInputPort();
+      // final Fifo setterFifo = delaySetterPort.getIncomingFifo();
+      // final DataOutputPort setterPort = setterFifo.getSourcePort();
+      // final Expression setterRateExpression = setterPort.getPortRateExpression();
+      // final long setterRate = Long.parseLong(setterRateExpression.getExpressionString());
+      //
+      // long setterRV = 1;
+      // if (!(setter instanceof InterfaceActor)) {
+      // setterRV = brv.get(setter);
+      // }
+      // for (int i = 0; i < setterRV; ++i) {
+      // final DelayActor init = PiMMUserFactory.instance.createDelayActor();
+      // this.delayInitID = setterName + "_init_" + Integer.toString(i);
+      // init.setName(this.delayInitID);
+      // vertexSinkSet.get(0).getContainingPiGraph().addActor(init);
+      // sourceSet.add(new SourceConnection(init, setterRate, this.sinkPort.getName()));
+      // }
+      // } else {
+      // // 1.1 If there
+      // final DelayActor init = PiMMUserFactory.instance.createDelayActor();
+      // this.delayInitID = vertexSinkSet.get(0).getName() + "_init_" + this.sinkPort.getName();
+      // init.setName(this.delayInitID);
+      // // 2. Add the init actor to the graph
+      // vertexSinkSet.get(0).getContainingPiGraph().addActor(init);
+      // // 3. Add an entry in the sourceSet
+      // sourceSet.add(new SourceConnection(init, this.delays, this.sinkPort.getName()));
+      // }
     }
 
     if (this.source instanceof InterfaceActor) {
@@ -562,7 +623,7 @@ public class PiMMSRVerticesLinker {
    *           the exception
    */
   private ArrayList<PiMMSRVerticesLinker.SinkConnection> getSinkSet(final ArrayList<AbstractVertex> vertexSinkSet,
-      final ArrayList<AbstractVertex> vertexSourceSet) throws PiMMHelperException {
+      final ArrayList<AbstractVertex> vertexSourceSet, final Map<AbstractVertex, Long> brv) throws PiMMHelperException {
     // Initialize empty source set
     final ArrayList<PiMMSRVerticesLinker.SinkConnection> sinkSet = new ArrayList<>();
 
@@ -579,19 +640,80 @@ public class PiMMSRVerticesLinker {
 
     // Deals delays
     if (this.delays != 0) {
-      // 0. Create the delay actor
-      final DelayActor end = PiMMUserFactory.instance.createDelayActor();
-      end.setName(vertexSinkSet.get(vertexSinkSet.size() - 1).getName() + "_end_" + this.sourcePort.getName());
-      // 1. We set the persistence info and delayInitID for END_REFERENCE using the unused port
-      // farresti: YEAH, I KNOW. This is ugly as fuck but well, it works..
-      final DataOutputPort dop = PiMMUserFactory.instance.createDataOutputPort();
-      dop.setName(this.delayInitID);
-      dop.getPortRateExpression().setExpressionString(this.fifo.getDelay().getLevel().getLiteral());
-      end.getDataOutputPorts().add(dop);
-      // 2. Add the end actor to the graph
-      vertexSinkSet.get(0).getContainingPiGraph().addActor(end);
-      // 3. Add an entry in the sinkSet
-      sinkSet.add(new SinkConnection(end, this.delays, this.sourcePort.getName()));
+      // // 0. Check if Delay has setter
+      // final Delay delay = this.fifo.getDelay();
+      // if (delay.hasGetterActor()) {
+      // // 1.1 If getter, creates as many end as there are getters with the same rate
+      // final AbstractActor getter = delay.getGetterActor();
+      // final String getterName = getter.getName();
+      // final DelayActor delayActor = delay.getActor();
+      // final DataOutputPort delayGetterPort = delayActor.getDataOutputPort();
+      // final Fifo getterFifo = delayGetterPort.getOutgoingFifo();
+      // final DataInputPort getterPort = getterFifo.getTargetPort();
+      // final Expression getterRateExpression = getterPort.getPortRateExpression();
+      // final long getterRate = Long.parseLong(getterRateExpression.getExpressionString());
+      //
+      // long getterRV = 1;
+      // if (!(getter instanceof InterfaceActor)) {
+      // getterRV = brv.get(getter);
+      // }
+      // for (int i = 0; i < getterRV; ++i) {
+      // final DelayActor end = PiMMUserFactory.instance.createDelayActor();
+      // final String name = getterName + "_end_" + Integer.toString(i);
+      // end.setName(name);
+      // vertexSinkSet.get(0).getContainingPiGraph().addActor(end);
+      // sinkSet.add(new SinkConnection(end, getterRate, this.sourcePort.getName()));
+      // }
+      // } else {
+      // // 0. Create the delay actor
+      // final DelayActor end = PiMMUserFactory.instance.createDelayActor();
+      // end.setName(vertexSinkSet.get(vertexSinkSet.size() - 1).getName() + "_end_" + this.sourcePort.getName());
+      // // 1. We set the persistence info and delayInitID for END_REFERENCE using the unused port
+      // // farresti: YEAH, I KNOW. This is ugly as fuck but well, it works..
+      // final DataOutputPort dop = PiMMUserFactory.instance.createDataOutputPort();
+      // dop.setName(this.delayInitID);
+      // dop.getPortRateExpression().setExpressionString(this.fifo.getDelay().getLevel().getLiteral());
+      // end.getDataOutputPorts().add(dop);
+      // // 2. Add the end actor to the graph
+      // vertexSinkSet.get(0).getContainingPiGraph().addActor(end);
+      // // 3. Add an entry in the sinkSet
+      // sinkSet.add(new SinkConnection(end, this.delays, this.sourcePort.getName()));
+      // }
+
+      // 0. Check if Delay has setter
+      final Delay delay = this.fifo.getDelay();
+      // 1. Get the DelayActor
+      final DelayActor delayActor = delay.getActor();
+      // 1.1 Now get the DelayActor associated to the setter of the delay
+      final DelayActor getterDelayActor = (DelayActor) this.fifo.getContainingPiGraph()
+          .lookupVertex(delayActor.getName() + "_getter");
+      if (getterDelayActor == null) {
+        throw new PiMMHelperException("Getter actor [" + delayActor.getName() + "_setter] not found.");
+      }
+      final Long brvGetter = brv.get(getterDelayActor);
+
+      Fifo outgoingFifo = getterDelayActor.getDataOutputPort().getOutgoingFifo();
+      final AbstractActor getterActor = outgoingFifo.getTargetPort().getContainingActor();
+      if (getterActor instanceof EndActor) {
+        sinkSet.add(new SinkConnection(getterActor, this.delays, this.sourcePort.getName()));
+        getterActor
+            .setName(vertexSinkSet.get(vertexSinkSet.size() - 1).getName() + "_end_" + this.sourcePort.getName());
+        // Set endReference and PersistenceLevel
+        ((EndActor) getterActor).setLevel(delay.getLevel());
+        ((EndActor) getterActor).setEndReference(this.delayInitID);
+      } else {
+        final String getterName = getterActor.getName();
+        final Expression getterRateExpression = outgoingFifo.getTargetPort().getPortRateExpression();
+        final long getterRate = Long.parseLong(getterRateExpression.getExpressionString());
+        for (int i = 0; i < brvGetter; ++i) {
+          final EndActor end = PiMMUserFactory.instance.createEndActor();
+          final String name = getterName + "_end_" + Integer.toString(i);
+          end.setName(name);
+          end.getDataInputPort().setName(this.sourcePort.getName());
+          vertexSinkSet.get(0).getContainingPiGraph().addActor(end);
+          sinkSet.add(new SinkConnection(end, getterRate, this.sourcePort.getName()));
+        }
+      }
     }
 
     return sinkSet;

@@ -49,9 +49,11 @@ import org.ietr.preesm.experiment.model.pimm.Delay;
 import org.ietr.preesm.experiment.model.pimm.DelayActor;
 import org.ietr.preesm.experiment.model.pimm.DelayLinkedExpression;
 import org.ietr.preesm.experiment.model.pimm.Dependency;
+import org.ietr.preesm.experiment.model.pimm.EndActor;
 import org.ietr.preesm.experiment.model.pimm.Expression;
 import org.ietr.preesm.experiment.model.pimm.Fifo;
 import org.ietr.preesm.experiment.model.pimm.ISetter;
+import org.ietr.preesm.experiment.model.pimm.InitActor;
 import org.ietr.preesm.experiment.model.pimm.Parameter;
 import org.ietr.preesm.experiment.model.pimm.PersistenceLevel;
 import org.ietr.preesm.experiment.model.pimm.PiGraph;
@@ -208,6 +210,22 @@ public final class PiMMUserFactory extends PiMMFactoryImpl {
   public PiGraph createPiGraph() {
     final PiGraph res = super.createPiGraph();
     res.eAdapters().add(new GraphInterfaceObserver());
+    return res;
+  }
+
+  @Override
+  public InitActor createInitActor() {
+    final InitActor res = super.createInitActor();
+    final DataOutputPort port = PiMMUserFactory.instance.createDataOutputPort();
+    res.getDataOutputPorts().add(port);
+    return res;
+  }
+
+  @Override
+  public EndActor createEndActor() {
+    final EndActor res = super.createEndActor();
+    final DataInputPort port = PiMMUserFactory.instance.createDataInputPort();
+    res.getDataInputPorts().add(port);
     return res;
   }
 
