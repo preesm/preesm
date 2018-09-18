@@ -9,17 +9,12 @@
 	============================================================================
 */
 
-#include <stdio.h>
-#include <string.h>
-#include <stdlib.h>
-#include <math.h>
-#include <time.h>
 #include "dump.h"
 
 static FILE *ptfile;
 static int *bckupNbExec;
 
-void dumpTime(int id,long* dumpBuffer){
+void dumpTime(int id,uint64_t* dumpBuffer){
     dumpBuffer[id] = clock();
 }
 
@@ -47,7 +42,7 @@ void initNbExec(int* nbExec, int nbDump){
     fflush(ptfile);
 }
 
-void writeTime(long* dumpBuffer, int nbDump, int* nbExec){
+void writeTime(uint64_t* dumpBuffer, int nbDump, int* nbExec){
     static int stable = 0;
     int i ;
     int changed = 0;
