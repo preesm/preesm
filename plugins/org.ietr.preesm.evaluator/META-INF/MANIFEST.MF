@@ -3,7 +3,7 @@ Bundle-ManifestVersion: 2
 Bundle-Name: Evaluator plug-in
 Automatic-Module-Name: org.ietr.preesm.evaluator
 Bundle-SymbolicName: org.ietr.preesm.evaluator;singleton:=true
-Bundle-Version: 2.15.0
+Bundle-Version: 2.15.0.qualifier
 Bundle-Activator: org.ietr.preesm.evaluator.Activator
 Require-Bundle: org.eclipse.core.runtime,
  org.apache.commons.lang3;bundle-version="3.5.0",
