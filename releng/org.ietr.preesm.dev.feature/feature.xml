@@ -581,7 +581,7 @@ Version 1.0 dated 2006-09-05.]]>
 
       <!-- M2E extension -->
       <discovery label="M2E Tycho" url="http://repo1.maven.org/maven2/.m2e/connectors/m2eclipse-tycho/0.9.0/N/LATEST/"/>
-      <discovery label="M2E Code Quality Connectors" url="https://preesm.github.io/m2e-code-quality/site/latest/"/>
+      <discovery label="M2E Code Quality Connectors" url="https://m2e-code-quality.github.io/m2e-code-quality-p2-site/"/>
       <discovery label="M2E Settings Connectors" url="https://preesm.github.io/m2e-settings/site/"/>
       <!-- Checkstyle main repos -->
       <discovery label="Checkstyle" url="https://dl.bintray.com/eclipse-cs/eclipse-cs/8.10.0/"/>

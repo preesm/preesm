@@ -8,6 +8,7 @@ PREESM Changelog
 
 ### Changes
 * Fix Spider codegen: properly return 0 when initializing archi;
+*  Update M2E Code Quality repo;
 
 ### Bug fix
 
