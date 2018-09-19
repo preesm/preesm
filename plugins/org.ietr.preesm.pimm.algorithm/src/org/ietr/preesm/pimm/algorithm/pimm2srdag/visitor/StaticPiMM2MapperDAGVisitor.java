@@ -317,6 +317,10 @@ public class StaticPiMM2MapperDAGVisitor extends PiMMSwitch<Boolean> {
 
   @Override
   public Boolean caseFifo(final Fifo fifo) {
+    if (fifo.getSourcePort() == null) {
+      throw new UnsupportedOperationException(
+          fifo.getTargetPort().getName() + " from " + fifo.getTargetPort().getContainingActor().getName());
+    }
     final AbstractActor sourceActor = fifo.getSourcePort().getContainingActor();
     final AbstractActor targetActor = fifo.getTargetPort().getContainingActor();
     final String sourceName = sourceActor.getName();
