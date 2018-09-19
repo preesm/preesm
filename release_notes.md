@@ -7,6 +7,7 @@ PREESM Changelog
 ### New Feature
 
 ### Changes
+* Fix Spider codegen: properly return 0 when initializing archi;
 
 ### Bug fix
 

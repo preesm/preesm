@@ -385,7 +385,7 @@ public class SpiderCodegen {
 
   /**
    * Generate Papify configs for each actors
-   * 
+   *
    * @param pg
    *          The main graph
    * @param scenario
@@ -444,7 +444,7 @@ public class SpiderCodegen {
 
   /**
    * Generate the static initialization functions
-   * 
+   *
    * @param corePapifyConfigGroups
    *          Group of papify
    * @param actor
@@ -522,7 +522,7 @@ public class SpiderCodegen {
 
   /**
    * Generate Papify configs for each actors
-   * 
+   *
    * @param pg
    *          The main graph
    * @param scenario
@@ -536,6 +536,7 @@ public class SpiderCodegen {
 
     append("#include <spider.h>\n");
     append("#include <stdlib.h>\n");
+    append("#include <stdio.h>\n");
     append("#include \"" + pg.getName() + ".h\"\n\n");
 
     append("static int nPEPerType[N_PE_TYPE] = { \n");
@@ -550,6 +551,7 @@ public class SpiderCodegen {
     append("\t// Setting the number of PE per PEType\n");
     append("\tconfig->pesPerPeType = (int *) malloc(N_PE_TYPE * sizeof(int));\n");
     append("\tif (!config->pesPerPeType) {\n");
+    append("\t\tfprintf(stderr, \"Could not init pesPerPeType \\n\");\n");
     append("\t\treturn -1;\n");
     append("\t}\n");
     for (final String coreType : this.coreTypesIds.keySet()) {
@@ -559,14 +561,16 @@ public class SpiderCodegen {
     }
     append("\t// Setting the core affinity for each PE\n");
     append("\tconfig->coreAffinities = (int **) malloc(N_PE_TYPE * sizeof(int*));\n");
-    append("\tif (!config->pesPerPeType) {\n");
+    append("\tif (!config->coreAffinities) {\n");
     append("\t\tfree_archi_infos(config);\n");
+    append("\t\tfprintf(stderr, \"Could not init coreAffinities\\n\");\n");
     append("\t\treturn -1;\n");
     append("\t}\n");
     append("\tfor (int i = 0; i < N_PE_TYPE; ++i) {\n");
     append("\t\tconfig->coreAffinities[i] = (int *) malloc(nPEPerType[i] * sizeof(int));\n");
     append("\t\tif (!config->coreAffinities[i]) {\n");
     append("\t\t\tfree_archi_infos(config);\n");
+    append("\t\t\tfprintf(stderr, \"Could not coreAffinities # %d \\n\",i);\n");
     append("\t\t\treturn -1;\n");
     append("\t\t}\n");
     append("\t}\n");
@@ -581,6 +585,7 @@ public class SpiderCodegen {
         coreIndex++;
       }
     }
+    append("\treturn 0;\n");
     append("}\n");
     append("\n");
 
