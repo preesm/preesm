@@ -1,6 +1,25 @@
 PREESM Changelog
 ================
 
+## Release version 2.15.0
+*2018.09.19*
+
+### New Feature
+
+### Changes
+* Add helper method PiGraph.removeFifo(Fifo);
+* Have the main operator thread execute in main thread;
+  * for default C code generation;
+  * for tcp codegen;
+* Codegen now embeds communication, fifo, and dump C and header files
+  * this includes TCP communication lib;
+  * also includes semaphore and barrier implementation for MacOSX;
+* Minor fixes in UI;
+* Remove EMF dedicated repo (see https://github.com/eclipse/xtext/issues/1233#issuecomment-421904619);
+
+### Bug fix
+
+
 ## Release version 2.14.2
 *2018.09.10*
 
@@ -23,9 +42,13 @@ PREESM Changelog
 * Move XCore maven config to parent pom;
 * Refactor scheduler;
 * Move Codegen model and convert it from ECore to XCore;
+* Spider codegen now support heteregeneous hardware.
 
 ### Bug fix
 * fix issue #69;
+* fix issue #71;
+* fixing timing issue in spider codegen. It is temporary as it only copy the behavior of PREESM (see issue 73);
+* fix issue #76; Spider Codegen now correctly assign parameters to method prototype.
 
 ## Release version 2.14.0
 *2018.09.03*

@@ -50,6 +50,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
+import org.eclipse.emf.common.util.EList;
+import org.ietr.dftools.architecture.slam.ComponentInstance;
+import org.ietr.dftools.architecture.slam.Design;
+import org.ietr.dftools.architecture.slam.component.Component;
 import org.ietr.dftools.workflow.tools.WorkflowLogger;
 import org.ietr.preesm.core.scenario.ConstraintGroup;
 import org.ietr.preesm.core.scenario.PreesmScenario;
@@ -79,6 +83,9 @@ public class SpiderCodegen {
   /** The scenario. */
   private final PreesmScenario scenario;
 
+  /** The architecture */
+  final Design architecture;
+
   /** The cpp string. */
   StringBuilder cppString = new StringBuilder();
 
@@ -95,7 +102,9 @@ public class SpiderCodegen {
 
   /** The core types ids. */
   /* Map core types to core type indexes */
-  private Map<String, Integer> coreTypesIds;
+  private Map<String, Integer>                  coreTypesIds;
+  private Map<String, Integer>                  coresPerCoreType;
+  private Map<String, EList<ComponentInstance>> coresFromCoreType;
 
   /** The core ids. */
   private Map<String, Integer> coreIds;
@@ -124,8 +133,9 @@ public class SpiderCodegen {
    * @param scenario
    *          the scenario
    */
-  public SpiderCodegen(final PreesmScenario scenario) {
+  public SpiderCodegen(final PreesmScenario scenario, final Design architecture) {
     this.scenario = scenario;
+    this.architecture = architecture;
   }
 
   /**
@@ -144,9 +154,21 @@ public class SpiderCodegen {
     this.functionMap = this.preprocessor.getFunctionMap();
 
     this.coreTypesIds = new LinkedHashMap<>();
+    this.coresPerCoreType = new LinkedHashMap<>();
+    this.coresFromCoreType = new LinkedHashMap<>();
     int coreTypeId = 0;
     for (final String coreType : this.scenario.getOperatorDefinitionIds()) {
       this.coreTypesIds.put(coreType, coreTypeId++);
+      // Link the number of cores associated to each core type
+      final EList<Component> components = this.architecture.getComponentHolder().getComponents();
+      for (final Component c : components) {
+        final String name = c.getVlnv().getName();
+        if (name.equals(coreType)) {
+          final EList<ComponentInstance> instances = c.getInstances();
+          this.coresPerCoreType.put(coreType, instances.size());
+          this.coresFromCoreType.put(coreType, instances);
+        }
+      }
     }
 
     this.coreIds = new LinkedHashMap<>();
@@ -169,7 +191,7 @@ public class SpiderCodegen {
     this.timings = new LinkedHashMap<>();
     for (final Timing t : this.scenario.getTimingManager().getTimings()) {
       final String actorName = t.getVertexId();
-      final AbstractActor aa = actorsByNames.get(actorName);
+      final AbstractActor aa = lookupTimingRec(pg, actorName);// (AbstractActor) pg.lookupVertex(actorName);
       if (aa != null) {
         if (!this.timings.containsKey(aa)) {
           this.timings.put(aa, new LinkedHashMap<String, String>());
@@ -205,6 +227,19 @@ public class SpiderCodegen {
     }
   }
 
+  final AbstractActor lookupTimingRec(final PiGraph graph, final String vertexName) {
+    AbstractActor actor = (AbstractActor) graph.lookupVertex(vertexName);
+    if (actor == null) {
+      for (final PiGraph g : graph.getChildrenGraphs()) {
+        actor = lookupTimingRec(g, vertexName);
+        if (actor != null) {
+          break;
+        }
+      }
+    }
+    return actor;
+  }
+
   /**
    * Generate header code.
    *
@@ -225,6 +260,16 @@ public class SpiderCodegen {
     /* Declare Include Files */
     append("#include <spider.h>\n\n");
 
+    append("#define N_PE_TYPE " + Integer.toString(this.coreTypesIds.keySet().size()) + "\n");
+    for (final String coreType : this.coreTypesIds.keySet()) {
+      append("#define N_" + SpiderNameGenerator.getCoreTypeName(coreType) + " "
+          + Integer.toString(this.coresPerCoreType.get(coreType)) + "\n");
+    }
+
+    append("int init_archi_infos(PlatformConfig *config);\n");
+    append("void free_archi_infos(PlatformConfig *config);\n");
+    append("\n");
+
     /* Declare the addGraph method */
     append("#define N_FCT_" + pg.getName().toUpperCase() + " " + this.functionMap.size() + "\n");
     append("extern lrtFct " + pg.getName() + "_fcts[N_FCT_" + pg.getName().toUpperCase() + "];\n");
@@ -233,7 +278,7 @@ public class SpiderCodegen {
     /* Declare Fcts */
     append("void init_" + pg.getName() + "(");
     final List<Parameter> l = new LinkedList<>();
-    l.addAll(pg.getAllParameters());
+    l.addAll(pg.getParameters());
     Collections.sort(l, (p1, p2) -> p1.getName().compareTo(p2.getName()));
     final StringBuilder parameters_proto = new StringBuilder();
     for (final Parameter p : l) {
@@ -288,7 +333,8 @@ public class SpiderCodegen {
   }
 
   public String generateMainCode(final PiGraph pg, final boolean usingPapify) {
-    return SpiderMainFilePrinter.print(pg, this.coreIds.size(), usingPapify);
+    final SpiderMainFilePrinter spiderMainFilePrinter = new SpiderMainFilePrinter();
+    return spiderMainFilePrinter.print(pg, this.coreIds.size(), usingPapify);
   }
 
   /**
@@ -475,6 +521,90 @@ public class SpiderCodegen {
   }
 
   /**
+   * Generate Papify configs for each actors
+   * 
+   * @param pg
+   *          The main graph
+   * @param scenario
+   *          Preesm scenario
+   * @return the string
+   */
+  public String generateArchiCode(final PiGraph pg, final PreesmScenario scenario) {
+    this.cppString.setLength(0);
+    // Generate the header (license, includes and constants)
+    append(getLicense());
+
+    append("#include <spider.h>\n");
+    append("#include <stdlib.h>\n");
+    append("#include \"" + pg.getName() + ".h\"\n\n");
+
+    append("static int nPEPerType[N_PE_TYPE] = { \n");
+    for (final String coreType : this.coreTypesIds.keySet()) {
+      append("\tN_" + SpiderNameGenerator.getCoreTypeName(coreType) + ", \n");
+    }
+    append("};\n\n");
+
+    append("int init_archi_infos(PlatformConfig *config) {\n");
+    append("\t// Setting the number of PE types\n");
+    append("\tconfig->nPeType = N_PE_TYPE;\n");
+    append("\t// Setting the number of PE per PEType\n");
+    append("\tconfig->pesPerPeType = (int *) malloc(N_PE_TYPE * sizeof(int));\n");
+    append("\tif (!config->pesPerPeType) {\n");
+    append("\t\treturn -1;\n");
+    append("\t}\n");
+    for (final String coreType : this.coreTypesIds.keySet()) {
+      final String coreTypeName = SpiderNameGenerator.getCoreTypeName(coreType);
+      append("\t// " + coreTypeName + "\n");
+      append("\tconfig->pesPerPeType[" + coreTypeName + "]" + " = N_" + coreTypeName + ";\n");
+    }
+    append("\t// Setting the core affinity for each PE\n");
+    append("\tconfig->coreAffinities = (int **) malloc(N_PE_TYPE * sizeof(int*));\n");
+    append("\tif (!config->pesPerPeType) {\n");
+    append("\t\tfree_archi_infos(config);\n");
+    append("\t\treturn -1;\n");
+    append("\t}\n");
+    append("\tfor (int i = 0; i < N_PE_TYPE; ++i) {\n");
+    append("\t\tconfig->coreAffinities[i] = (int *) malloc(nPEPerType[i] * sizeof(int));\n");
+    append("\t\tif (!config->coreAffinities[i]) {\n");
+    append("\t\t\tfree_archi_infos(config);\n");
+    append("\t\t\treturn -1;\n");
+    append("\t\t}\n");
+    append("\t}\n");
+    for (final String coreType : this.coreTypesIds.keySet()) {
+      int coreIndex = 0;
+      final String coreTypeName = SpiderNameGenerator.getCoreTypeName(coreType);
+      append("\t// " + coreTypeName + "\n");
+      for (final ComponentInstance c : this.coresFromCoreType.get(coreType)) {
+        final String coreName = SpiderNameGenerator.getCoreName(c.getInstanceName());
+        append("\tconfig->coreAffinities[" + coreTypeName + "][" + Integer.toString(coreIndex) + "] = " + coreName
+            + ";\n");
+        coreIndex++;
+      }
+    }
+    append("}\n");
+    append("\n");
+
+    append("void free_archi_infos(PlatformConfig *config) {\n");
+    append("\tif(config->pesPerPeType) {\n");
+    append("\t\tfree(config->pesPerPeType);\n");
+    append("\t\tconfig->pesPerPeType = NULL;\n");
+    append("\t}\n");
+    append("\tif(config->coreAffinities) {\n");
+    append("\t\tfor (int i = 0; i < N_PE_TYPE; ++i) {\n");
+    append("\t\t\tif (config->coreAffinities[i]) {\n");
+    append("\t\t\t\tfree(config->coreAffinities[i]);\n");
+    append("\t\t\t}\n");
+    append("\t\t}\n");
+    append("\t\tfree(config->coreAffinities);\n");
+    append("\t\tconfig->coreAffinities = NULL;\n");
+    append("\t}\n");
+    append("}\n");
+    append("\n");
+    // Returns the final C++ code
+    return this.cppString.toString();
+  }
+
+  /**
    * Main method, launching the generation for the whole PiGraph pg, including license, includes, constants and top
    * method generation.
    *
@@ -549,7 +679,7 @@ public class SpiderCodegen {
 
     final StringBuilder params = new StringBuilder();
     final List<Parameter> l = new LinkedList<>();
-    l.addAll(pg.getAllParameters());
+    l.addAll(pg.getParameters());
     Collections.sort(l, (p1, p2) -> p1.getName().compareTo(p2.getName()));
     final StringBuilder parameters_proto = new StringBuilder();
     for (final Parameter p : l) {

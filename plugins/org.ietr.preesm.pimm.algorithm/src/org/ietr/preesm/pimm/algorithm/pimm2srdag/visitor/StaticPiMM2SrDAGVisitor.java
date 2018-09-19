@@ -87,6 +87,7 @@ import org.ietr.preesm.experiment.model.pimm.PiGraph;
 import org.ietr.preesm.experiment.model.pimm.PiSDFRefinement;
 import org.ietr.preesm.experiment.model.pimm.Port;
 import org.ietr.preesm.experiment.model.pimm.Refinement;
+import org.ietr.preesm.experiment.model.pimm.RoundBufferActor;
 import org.ietr.preesm.experiment.model.pimm.util.PiMMSwitch;
 import org.ietr.preesm.mapper.model.MapperDAG;
 import org.ietr.preesm.mapper.model.MapperDAGVertex;
@@ -207,6 +208,24 @@ public class StaticPiMM2SrDAGVisitor extends PiMMSwitch<Boolean> {
     final Refinement piRefinement = actor.getRefinement();
     doSwitch(piRefinement);
     vertex.setRefinement(this.currentRefinement);
+    // Handle input parameters as instance arguments
+    setArguments(actor, vertex);
+    // Add the vertex to the DAG
+    this.result.addVertex(vertex);
+    // Update the map of PiMM actor to DAG Vertices
+    this.pimmVertex2DAGVertex.get(actor).add(vertex);
+    return true;
+  }
+
+  @Override
+  public Boolean caseRoundBufferActor(RoundBufferActor actor) {
+    final MapperDAGVertex vertex = (MapperDAGVertex) this.vertexFactory
+        .createVertex(DAGBroadcastVertex.DAG_BROADCAST_VERTEX);
+    // Set default properties from the PiMM actor
+    setDAGVertexPropertiesFromPiMM(actor, vertex);
+
+    // Set the special type of the Broadcast
+    vertex.getPropertyBean().setValue(DAGBroadcastVertex.SPECIAL_TYPE, DAGBroadcastVertex.SPECIAL_TYPE_ROUNDBUFFER);
     // Handle input parameters as instance arguments
     setArguments(actor, vertex);
     // Add the vertex to the DAG

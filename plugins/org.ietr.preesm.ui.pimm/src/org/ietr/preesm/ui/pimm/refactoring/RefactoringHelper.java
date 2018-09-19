@@ -44,15 +44,17 @@ import java.util.regex.Pattern;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.ltk.core.refactoring.TextFileChange;
-import org.eclipse.text.edits.MalformedTreeException;
 import org.eclipse.text.edits.MultiTextEdit;
 import org.eclipse.text.edits.ReplaceEdit;
 
-// TODO: Auto-generated Javadoc
 /**
  * The Class RefactoringHelper.
  */
 public class RefactoringHelper {
+
+  private RefactoringHelper() {
+    // forbid instantiation
+  }
 
   /**
    * Creates the change.
@@ -69,14 +71,12 @@ public class RefactoringHelper {
    *         otherwise.
    * @throws CoreException
    *           the core exception
-   * @throws MalformedTreeException
-   *           the malformed tree exception
    */
   protected static TextFileChange createChange(final String regex, final int replacedGroup,
-      final String replacementString, final IFile file) throws CoreException, MalformedTreeException {
+      final String replacementString, final IFile file) throws CoreException {
 
     // Read file content
-    final StringBuffer buffer = new StringBuffer();
+    final StringBuilder buffer = new StringBuilder();
     final BufferedReader reader = new BufferedReader(new InputStreamReader(file.getContents()));
     int nbCharRead;
     final char[] cbuf = new char[1024];
@@ -86,7 +86,7 @@ public class RefactoringHelper {
       }
       reader.close();
     } catch (final IOException e) {
-      e.printStackTrace();
+      throw new RuntimeException(e);
     }
 
     final TextFileChange change = new TextFileChange(file.getName(), file);

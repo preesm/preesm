@@ -67,6 +67,9 @@ import org.ietr.preesm.codegen.model.codegen.SubBuffer
 import org.ietr.preesm.codegen.model.codegen.Variable
 import org.ietr.preesm.codegen.xtend.printer.DefaultPrinter
 import org.ietr.preesm.codegen.xtend.task.CodegenException
+import org.ietr.preesm.utils.files.URLResolver
+import org.ietr.preesm.codegen.xtend.CodegenPlugin
+import java.io.IOException
 
 /**
  * This printer is currently used to print C code only for GPP processors
@@ -111,13 +114,7 @@ class CPrinter extends DefaultPrinter {
 			 */
 
 			#define _GNU_SOURCE
-			#include <pthread.h>
-
-			// PE specific includes
-			#include "../include/«block.coreType».h"
-
-			// application dependent includes
-			#include "preesm.h"
+			#include "preesm_gen.h"
 
 	'''
 
@@ -369,6 +366,28 @@ class CPrinter extends DefaultPrinter {
 		}
 	}
 
+	override generateStandardLibFiles() {
+		val result = super.generateStandardLibFiles();
+		val String stdFilesFolder = "/stdfiles/c/"
+		val String[] files = #[
+						"communication.c",
+						"communication.h",
+						"dump.c",
+						"dump.h",
+						"fifo.c",
+						"fifo.h",
+						"mac_barrier.c",
+						"mac_barrier.h",
+						"preesm_gen.h"
+					];
+		files.forEach[it | try {
+			result.put(it, URLResolver.readURLInPluginList(stdFilesFolder + it, CodegenPlugin.BUNDLE_ID))
+		} catch (IOException exc) {
+			throw new CodegenException("Could not generated content for " + it, exc)
+		}]
+		return result
+	}
+
 	override createSecondaryFiles(List<Block> printerBlocks, Collection<Block> allBlocks) {
 		val result = super.createSecondaryFiles(printerBlocks, allBlocks);
 		if (generateMainFile()) {
@@ -392,13 +411,18 @@ class CPrinter extends DefaultPrinter {
 		#include <unistd.h>
 		#endif
 
+		#ifdef __APPLE__
+		#include "TargetConditionals.h"
+		#endif
+
 		#include <pthread.h>
 		#include <stdio.h>
 
 		#define _PREESM_NBTHREADS_ «printerBlocks.size»
+		#define _PREESM_MAIN_THREAD_ «mainOperatorId»
 
 		// application dependent includes
-		#include "preesm.h"
+		#include "preesm_gen.h"
 
 		// Declare computation thread functions
 		«FOR coreBlock : printerBlocks»
@@ -410,14 +434,6 @@ class CPrinter extends DefaultPrinter {
 
 
 		unsigned int launch(unsigned int core_id, pthread_t * thread, void *(*start_routine) (void *)) {
-			// check CPU id is valid
-			// init cpuset struct
-			cpu_set_t cpuset;
-			CPU_ZERO(&cpuset);
-			CPU_SET(core_id, &cpuset);
-			// init pthread attributes with affinity
-			pthread_attr_t attr;
-			pthread_attr_init(&attr);
 
 		#ifdef _WIN32
 			SYSTEM_INFO sysinfo;
@@ -426,11 +442,27 @@ class CPrinter extends DefaultPrinter {
 		#else
 			unsigned int numCPU = sysconf(_SC_NPROCESSORS_ONLN);
 		#endif
+
+			// init pthread attributes
+			pthread_attr_t attr;
+			pthread_attr_init(&attr);
+
+			// check CPU id is valid
 			if (core_id >= numCPU) {
 				// leave attribute uninitialized
 				printf("** Warning: thread %d will not be set with specific core affinity \n   due to the lack of available dedicated cores.\n",core_id);
 			} else {
+		#ifdef __APPLE__
+				// NOT SUPPORTED
+		#else
+				// init cpuset struct
+				cpu_set_t cpuset;
+				CPU_ZERO(&cpuset);
+				CPU_SET(core_id, &cpuset);
+
+				// set pthread affinity
 				pthread_attr_setaffinity_np(&attr, sizeof(cpuset), &cpuset);
+		#endif
 			}
 
 			// create thread
@@ -462,15 +494,22 @@ class CPrinter extends DefaultPrinter {
 
 			// Creating threads
 			for (int i = 0; i < _PREESM_NBTHREADS_; i++) {
-				if(launch(i,&coreThreads[i],coreThreadComputations[i])) {
-					printf("Error: could not launch thread %d\n",i);
-					return 1;
+				if (i != _PREESM_MAIN_THREAD_) {
+					if(launch(i,&coreThreads[i],coreThreadComputations[i])) {
+						printf("Error: could not launch thread %d\n",i);
+						return 1;
+					}
 				}
 			}
 
+			// run main operator code in this thread
+			coreThreadComputations[_PREESM_MAIN_THREAD_](NULL);
+
 			// Waiting for thread terminations
 			for (int i = 0; i < _PREESM_NBTHREADS_; i++) {
-				pthread_join(coreThreads[i], NULL);
+				if (i != _PREESM_MAIN_THREAD_) {
+					pthread_join(coreThreads[i], NULL);
+				}
 			}
 			#ifdef _PREESM_MONITOR_INIT
 			event_destroy();

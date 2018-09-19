@@ -39,14 +39,14 @@
  * @date $PREESM_DATE
  */
 
-#[[#]]#include "socketcom.h"
-#[[#]]#include <pthread.h>
+#[[#]]#include "preesm_gen_tcp.h"
 
 #[[#]]#include <execinfo.h>
 #[[#]]#include <signal.h>
 
 #[[#]]#define PREESM_COM_PORT 25400
 #[[#]]#define _PREESM_NBTHREADS_ $PREESM_NBTHREADS
+#[[#]]#define _PREESM_MAIN_THREAD_ $PREESM_MAIN_THREAD
 
 ProcessingElement registry[_PREESM_NBTHREADS_];
 
@@ -67,7 +67,6 @@ void handler(int sig) {
 }
 
 // kept for compatibility
-pthread_barrier_t iter_barrier;
 int stopThreads;
 
 void actualThreadComputations(int processingElementID) {
@@ -103,7 +102,11 @@ void initMainPEConfig(ProcessingElement registry[_PREESM_NBTHREADS_]) {
     fseek (f, 0, SEEK_SET);
     buffer = malloc (length);
     if (buffer) {
-      fread (buffer, 1, length, f);
+      int res = fread (buffer, 1, length, f);
+      if (res <= 0) {
+        printf("Could not read config file");
+        return;
+      }
     }
     fclose (f);
     char *r = buffer;
@@ -144,14 +147,20 @@ int main(int argc, char** argv) {
     pthread_t threads[_PREESM_NBTHREADS_];
     int threadArguments[_PREESM_NBTHREADS_];
     for (int i = 0; i < _PREESM_NBTHREADS_; i++) {
-      threadArguments[i] = i;
+      if (i != _PREESM_MAIN_THREAD_) {
+        threadArguments[i] = i;
 #[[#]]#ifdef _PREESM_TCP_DEBUG_
-  printf("[TCP-DEBUG] Launching %d\n", i);
+        printf("[TCP-DEBUG] Launching %d\n", i);
 #[[#]]#endif
-      pthread_create(&threads[i], NULL, threadComputations, &(threadArguments[i]));
+        pthread_create(&threads[i], NULL, threadComputations, &(threadArguments[i]));
+      }
     }
+    threadArguments[_PREESM_MAIN_THREAD_] = _PREESM_MAIN_THREAD_;
+    threadComputations(&(threadArguments[_PREESM_MAIN_THREAD_]));
     for (int i = 0; i < _PREESM_NBTHREADS_; i++) {
-      pthread_join(threads[i], NULL);
+      if (i != _PREESM_MAIN_THREAD_) {
+        pthread_join(threads[i], NULL);
+      }
     }
   }
   return 0;

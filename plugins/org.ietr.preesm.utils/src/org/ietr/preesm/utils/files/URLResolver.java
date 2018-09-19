@@ -59,8 +59,21 @@ import org.osgi.framework.Bundle;
  */
 public final class URLResolver {
 
+  public static final String readURLInPluginList(final String strUrl, final List<String> plugins) throws IOException {
+    final URL url = URLResolver.findFirstInPluginList(strUrl, plugins);
+    return URLResolver.readURL(url);
+  }
+
+  public static final String readURLInPluginList(final String location, final String... plugins) throws IOException {
+    return URLResolver.readURLInPluginList(location, Arrays.asList(plugins));
+  }
+
+  public static final String readURL(final String strUrl) throws IOException {
+    return URLResolver.readURLInPluginList(strUrl);
+  }
+
   /**
-   *
+   * Reads the content of the given URL and return it as a String.
    */
   public static final String readURL(final URL url) throws IOException {
     if (url == null) {
@@ -96,7 +109,7 @@ public final class URLResolver {
    * <li>Look for the resource in the projects of the workspace; if bundleList is not empty, search only within the
    * projects whose name is in the list bundleList;</li>
    * <li>Look for the resource in the Eclipse instance loaded plug-ins classpath; if bundleList is not empty, search
-   * only within the plug-ins whose name is in the list if bundleList is not bundleList;</li>
+   * only within the plug-ins whose name is in the list;</li>
    * <li>Try to initialize a remote URL;</li>
    * <li>Lookup for the resource in the file system.</li>
    * </ul>

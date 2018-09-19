@@ -40,7 +40,6 @@ import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IFolder;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
-import org.eclipse.core.runtime.OperationCanceledException;
 import org.eclipse.ltk.core.refactoring.Change;
 import org.eclipse.ltk.core.refactoring.CompositeChange;
 import org.eclipse.ltk.core.refactoring.RefactoringStatus;
@@ -49,7 +48,6 @@ import org.eclipse.ltk.core.refactoring.participants.CheckConditionsContext;
 import org.eclipse.ltk.core.refactoring.participants.CopyArguments;
 import org.eclipse.ltk.core.refactoring.participants.CopyParticipant;
 
-// TODO: Auto-generated Javadoc
 /**
  * The Class CopyDiagram.
  */
@@ -96,8 +94,7 @@ public class CopyDiagram extends CopyParticipant {
    * IProgressMonitor, org.eclipse.ltk.core.refactoring.participants.CheckConditionsContext)
    */
   @Override
-  public RefactoringStatus checkConditions(final IProgressMonitor pm, final CheckConditionsContext context)
-      throws OperationCanceledException {
+  public RefactoringStatus checkConditions(final IProgressMonitor pm, final CheckConditionsContext context) {
     // Nothing to do here
     return null;
   }
@@ -109,13 +106,13 @@ public class CopyDiagram extends CopyParticipant {
    * IProgressMonitor)
    */
   @Override
-  public Change createChange(final IProgressMonitor pm) throws CoreException, OperationCanceledException {
+  public Change createChange(final IProgressMonitor pm) throws CoreException {
     // Make arguments accessible to CompositeChange method.
     final CopyArguments currentArgs = getArguments();
 
     // Create a composite change that will automatically adapt itself
     // to the new name of the copied file.
-    final CompositeChange comp = new CompositeChange(getName()) {
+    return new CompositeChange(getName()) {
 
       final CopyArguments copyArgs = currentArgs;
 
@@ -154,7 +151,6 @@ public class CopyDiagram extends CopyParticipant {
       }
     };
 
-    return comp;
   }
 
 }

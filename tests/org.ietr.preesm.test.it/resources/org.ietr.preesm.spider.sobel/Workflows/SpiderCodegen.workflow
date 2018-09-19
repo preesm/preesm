@@ -9,4 +9,6 @@
         targetport="scenario" to="SpiderCodegen"/>
     <dftools:dataTransfer from="scenario" sourceport="PiMM"
         targetport="PiMM" to="SpiderCodegen"/>
+    <dftools:dataTransfer from="scenario" sourceport="architecture"
+        targetport="architecture" to="SpiderCodegen"/>
 </dftools:workflow>

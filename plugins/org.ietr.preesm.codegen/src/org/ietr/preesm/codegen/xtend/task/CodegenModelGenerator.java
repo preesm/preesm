@@ -44,9 +44,9 @@ import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
 import java.util.AbstractMap;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.LinkedHashMap;
-import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -544,7 +544,8 @@ public class CodegenModelGenerator {
    * @throws CodegenException
    *           If a vertex has an unknown {@link DAGVertex#getKind() Kind}.
    */
-  public Set<Block> generate() {
+  public List<Block> generate() {
+    final List<Block> resultList;
     // -1- Add all hosted MemoryObject back in te MemEx
     // 0 - Create the Buffers of the MemEx
 
@@ -653,13 +654,18 @@ public class CodegenModelGenerator {
 
       // Need this because non-final argument cannot be used within lambda expressions.
       final AtomicInteger id = new AtomicInteger(0);
-      this.coreBlocks.values().stream().sorted(c).forEach(cb -> cb.setCoreID(id.getAndIncrement()));
+
+      resultList = new ArrayList<>(this.coreBlocks.size());
+      this.coreBlocks.values().stream().sorted(c).forEach(cb -> {
+        cb.setCoreID(id.getAndIncrement());
+        resultList.add(cb);
+      });
     }
 
     // 3 - Put the buffer definition in their right place
     generateBufferDefinitions();
 
-    return new LinkedHashSet<>(this.coreBlocks.values());
+    return Collections.unmodifiableList(resultList);
   }
 
   private void p(final String s) {
