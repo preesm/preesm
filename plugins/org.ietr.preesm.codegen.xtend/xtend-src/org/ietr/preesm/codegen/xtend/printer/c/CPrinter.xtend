@@ -75,6 +75,7 @@ import org.ietr.preesm.codegen.xtend.CodegenPlugin
 import org.ietr.preesm.codegen.xtend.printer.DefaultPrinter
 import org.ietr.preesm.codegen.xtend.printer.net.c.TcpCPrinter
 import org.ietr.preesm.codegen.xtend.task.CodegenException
+import org.ietr.preesm.experiment.model.pimm.util.CHeaderUsedLocator
 import org.ietr.preesm.utils.files.URLResolver
 
 /**
@@ -386,9 +387,8 @@ class CPrinter extends DefaultPrinter {
 
 	    // 2- init context
 	    val VelocityContext context = new VelocityContext();
-	    val StringBuilder sb = new StringBuilder()
-	    sb.append("#include \"preesm.h\"\n")
-	    context.put("USER_INCLUDES", sb.toString);
+	    val findAllCHeaderFileNamesUsed = CHeaderUsedLocator.findAllCHeaderFileNamesUsed(getEngine.algo.referencePiMMGraph)
+	    context.put("USER_INCLUDES", findAllCHeaderFileNamesUsed.map["#include \""+ it +"\""].join("\n"));
 
 	    // 3- init template reader
 	    val String templateLocalURL = "templates/c/preesm_gen.h";
