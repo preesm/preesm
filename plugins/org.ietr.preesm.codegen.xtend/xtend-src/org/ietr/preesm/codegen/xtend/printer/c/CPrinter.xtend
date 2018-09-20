@@ -113,7 +113,6 @@ class CPrinter extends DefaultPrinter {
 			 * Code generated for processing element «block.name» (ID=«block.coreID»).
 			 */
 
-			#define _GNU_SOURCE
 			#include "preesm_gen.h"
 
 	'''

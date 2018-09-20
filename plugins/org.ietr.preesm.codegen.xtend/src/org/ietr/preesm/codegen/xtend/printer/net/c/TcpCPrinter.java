@@ -88,10 +88,14 @@ public class TcpCPrinter extends CPrinter {
   }
 
   @Override
+  public CharSequence printCoreBlockHeader(CoreBlock callBlock) {
+    return "\n" + "#include \"preesm_gen_tcp.h\"\n" + "\n";
+  }
+
+  @Override
   public CharSequence printCoreInitBlockHeader(CallBlock callBlock) {
     final int coreID = ((CoreBlock) callBlock.eContainer()).getCoreID();
     StringBuilder ff = new StringBuilder();
-    ff.append("#include \"tcp_communication.h\"\n");
     ff.append("void *computationThread_Core");
     ff.append(coreID);
     ff.append("(void *arg) {\n");
@@ -191,7 +195,7 @@ public class TcpCPrinter extends CPrinter {
     context.put("PREESM_THREAD_FUNCTIONS", "&" + String.join(",&", threadFunctionNames));
 
     // 3- init template reader
-    final String templateLocalURL = "templates/tcp/main.c";
+    final String templateLocalURL = "templates/tcpc/main.c";
     final URL mainTemplate = URLResolver.findFirstInPluginList(templateLocalURL, CodegenPlugin.BUNDLE_ID);
     InputStreamReader reader = null;
     try {
