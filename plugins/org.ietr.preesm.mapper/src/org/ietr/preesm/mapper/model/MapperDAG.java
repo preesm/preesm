@@ -73,7 +73,7 @@ public class MapperDAG extends DirectedAcyclicGraph {
   private static final long serialVersionUID = -6757893466692519433L;
 
   /** Corresponding SDF graph. */
-  private PiGraph piSDFGraph;
+  private final PiGraph piSDFGraph;
 
   /** The cost of the implementation. */
   private static final String SCHEDULE_COST = "SCHEDULE_COST";
@@ -153,16 +153,6 @@ public class MapperDAG extends DirectedAcyclicGraph {
    */
   public PiGraph getReferencePiMMGraph() {
     return this.piSDFGraph;
-  }
-
-  /**
-   * Sets the reference PiMM graph.
-   *
-   * @param pimmGraph
-   *          the new reference PiMM graph
-   */
-  public void setReferencePiMMGraph(final PiGraph pimmGraph) {
-    this.piSDFGraph = pimmGraph;
   }
 
   /**
