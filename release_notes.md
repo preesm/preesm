@@ -8,7 +8,8 @@ PREESM Changelog
 
 ### Changes
 * Fix Spider codegen: properly return 0 when initializing archi;
-*  Update M2E Code Quality repo;
+* Update M2E Code Quality repo;
+* Codegen now automatically fills its include list given actors refinements;
 
 ### Bug fix
 
