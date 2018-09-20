@@ -115,8 +115,9 @@ public class SdfToDagConverter {
     }
     final SDFGraph sdf = sdfIn.clone();
     SdfToDagConverter.setDataSizeForSDF(sdf, scenario);
+
     // Generates a dag
-    final MapperDAG dag = new MapperDAG(new MapperEdgeFactory(), sdf);
+    final MapperDAG dag = new MapperDAG(new MapperEdgeFactory(), null);
 
     // Creates a visitor parameterized with the DAG
     final DAGTransformation<MapperDAG> visitor = new DAGTransformation<>(dag, MapperVertexFactory.getInstance());

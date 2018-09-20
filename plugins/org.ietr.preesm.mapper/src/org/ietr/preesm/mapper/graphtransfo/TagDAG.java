@@ -108,7 +108,6 @@ public class TagDAG {
     final PropertyBean bean = dag.getPropertyBean();
     bean.setValue(ImplementationPropertyNames.Graph_AbcReferenceType, simu.getType());
     bean.setValue(ImplementationPropertyNames.Graph_EdgeSchedReferenceType, edgeSchedType);
-    bean.setValue(ImplementationPropertyNames.Graph_SdfReferenceGraph, dag.getReferenceSdfGraph());
 
     addSendReceive(dag, architecture, scenario);
     addProperties(dag, simu);

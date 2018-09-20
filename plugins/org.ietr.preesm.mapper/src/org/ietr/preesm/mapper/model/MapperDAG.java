@@ -50,7 +50,6 @@ import org.ietr.dftools.algorithm.model.dag.DAGVertex;
 import org.ietr.dftools.algorithm.model.dag.DirectedAcyclicGraph;
 import org.ietr.dftools.algorithm.model.dag.EdgeAggregate;
 import org.ietr.dftools.algorithm.model.sdf.SDFAbstractVertex;
-import org.ietr.dftools.algorithm.model.sdf.SDFGraph;
 import org.ietr.preesm.experiment.model.pimm.PiGraph;
 import org.ietr.preesm.mapper.model.property.DAGMappings;
 import org.ietr.preesm.mapper.model.property.DAGTimings;
@@ -74,9 +73,6 @@ public class MapperDAG extends DirectedAcyclicGraph {
   private static final long serialVersionUID = -6757893466692519433L;
 
   /** Corresponding SDF graph. */
-  private SDFGraph sdfGraph;
-
-  /** Corresponding SDF graph. */
   private PiGraph piSDFGraph;
 
   /** The cost of the implementation. */
@@ -90,9 +86,11 @@ public class MapperDAG extends DirectedAcyclicGraph {
     AbstractGraph.public_properties.add(MapperDAG.CLUSTERED_VERTEX);
   }
 
-  private MapperDAG(final MapperEdgeFactory factory, final SDFGraph graph, final PiGraph piGraph) {
+  /**
+   *
+   */
+  public MapperDAG(final MapperEdgeFactory factory, final PiGraph piGraph) {
     super(factory);
-    this.sdfGraph = graph;
     this.piSDFGraph = piGraph;
     setScheduleCost(0L);
 
@@ -102,31 +100,7 @@ public class MapperDAG extends DirectedAcyclicGraph {
   }
 
   public MapperDAG(final MapperEdgeFactory factory) {
-    this(factory, null, null);
-  }
-
-  /**
-   * Creactor of a DAG from a edge factory and a converted graph.
-   *
-   * @param factory
-   *          the factory
-   * @param graph
-   *          the graph
-   */
-  public MapperDAG(final MapperEdgeFactory factory, final SDFGraph graph) {
-    this(factory, graph, null);
-  }
-
-  /**
-   * Creactor of a DAG from a edge factory and a PiMM graph.
-   *
-   * @param factory
-   *          the factory
-   * @param graph
-   *          the graph
-   */
-  public MapperDAG(final MapperEdgeFactory factory, final PiGraph graph) {
-    this(factory, null, graph);
+    this(factory, null);
   }
 
   /**
@@ -173,25 +147,6 @@ public class MapperDAG extends DirectedAcyclicGraph {
   }
 
   /**
-   * Gets the reference sdf graph.
-   *
-   * @return the reference sdf graph
-   */
-  public SDFGraph getReferenceSdfGraph() {
-    return this.sdfGraph;
-  }
-
-  /**
-   * Sets the reference sdf graph.
-   *
-   * @param sdfGraph
-   *          the new reference sdf graph
-   */
-  public void setReferenceSdfGraph(final SDFGraph sdfGraph) {
-    this.sdfGraph = sdfGraph;
-  }
-
-  /**
    * Gets the reference PiMM graph.
    *
    * @return the reference PiMM graph
@@ -219,7 +174,7 @@ public class MapperDAG extends DirectedAcyclicGraph {
   public MapperDAG clone() {
 
     // create clone
-    final MapperDAG newDAG = new MapperDAG(new MapperEdgeFactory(), getReferenceSdfGraph());
+    final MapperDAG newDAG = new MapperDAG(new MapperEdgeFactory(), getReferencePiMMGraph());
     newDAG.setScheduleCost(getScheduleCost());
 
     // add vertex
