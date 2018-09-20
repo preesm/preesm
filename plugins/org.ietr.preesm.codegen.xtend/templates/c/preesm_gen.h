@@ -83,6 +83,8 @@
 #[[#]]#include "dump.h"
 #[[#]]#include "fifo.h"
 
+#[[#]]#include "preem.h"
+
 $USER_INCLUDES
 
 #[[#]]#endif
