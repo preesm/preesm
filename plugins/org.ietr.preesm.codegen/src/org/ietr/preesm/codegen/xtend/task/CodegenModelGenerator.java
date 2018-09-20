@@ -132,6 +132,7 @@ import org.ietr.preesm.core.types.ImplementationPropertyNames;
 import org.ietr.preesm.core.types.VertexType;
 import org.ietr.preesm.experiment.model.pimm.PersistenceLevel;
 import org.ietr.preesm.mapper.ScheduledDAGIterator;
+import org.ietr.preesm.mapper.model.MapperDAG;
 import org.ietr.preesm.memory.allocation.AbstractMemoryAllocatorTask;
 import org.ietr.preesm.memory.allocation.MemoryAllocator;
 import org.ietr.preesm.memory.exclusiongraph.MemoryExclusionGraph;
@@ -174,7 +175,7 @@ public class CodegenModelGenerator {
    * {@link DirectedAcyclicGraph DAG} used to generate code. This {@link DirectedAcyclicGraph DAG} must be the result of
    * mapping/scheduling process.
    */
-  private final DirectedAcyclicGraph algo;
+  private final MapperDAG algo;
 
   /**
    * {@link Map} of {@link String} and {@link MemoryExclusionGraph MEG} used to generate code. These
@@ -269,8 +270,8 @@ public class CodegenModelGenerator {
    * @throws CodegenException
    *           When one of the previous verification fails.
    */
-  public CodegenModelGenerator(final Design archi, final DirectedAcyclicGraph algo,
-      final Map<String, MemoryExclusionGraph> megs, final PreesmScenario scenario, final Workflow workflow) {
+  public CodegenModelGenerator(final Design archi, final MapperDAG algo, final Map<String, MemoryExclusionGraph> megs,
+      final PreesmScenario scenario, final Workflow workflow) {
     this.archi = archi;
     this.algo = algo;
     this.megs = megs;
@@ -295,7 +296,7 @@ public class CodegenModelGenerator {
     return this.archi;
   }
 
-  public final DirectedAcyclicGraph getAlgo() {
+  public final MapperDAG getAlgo() {
     return this.algo;
   }
 

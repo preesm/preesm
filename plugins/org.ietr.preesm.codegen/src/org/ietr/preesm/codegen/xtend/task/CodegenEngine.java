@@ -69,7 +69,6 @@ import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.emf.ecore.resource.ResourceSet;
 import org.eclipse.emf.ecore.resource.impl.ResourceSetImpl;
 import org.eclipse.emf.ecore.xmi.impl.XMIResourceFactoryImpl;
-import org.ietr.dftools.algorithm.model.dag.DirectedAcyclicGraph;
 import org.ietr.dftools.architecture.slam.Design;
 import org.ietr.dftools.workflow.WorkflowException;
 import org.ietr.dftools.workflow.tools.WorkflowLogger;
@@ -77,6 +76,7 @@ import org.ietr.preesm.codegen.model.codegen.Block;
 import org.ietr.preesm.codegen.model.codegen.CoreBlock;
 import org.ietr.preesm.codegen.printer.CodegenAbstractPrinter;
 import org.ietr.preesm.core.scenario.PreesmScenario;
+import org.ietr.preesm.mapper.model.MapperDAG;
 import org.ietr.preesm.memory.exclusiongraph.MemoryExclusionGraph;
 
 /**
@@ -116,7 +116,7 @@ public class CodegenEngine {
     return this.generator.getArchi();
   }
 
-  public final DirectedAcyclicGraph getAlgo() {
+  public final MapperDAG getAlgo() {
     return this.generator.getAlgo();
   }
 
