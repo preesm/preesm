@@ -183,10 +183,10 @@ public class PiMMSRVerticesLinker {
     this.delayEndID = "";
 
     // List of source vertices
-    final List<PiMMSRVerticesLinker.SourceConnection> sourceSet = getSourceSet(vertexSourceSet, vertexSinkSet, brv);
+    final List<SourceConnection> sourceSet = getSourceSet(vertexSourceSet, vertexSinkSet, brv);
 
     // List of sink vertices
-    final List<PiMMSRVerticesLinker.SinkConnection> sinkSet = getSinkSet(vertexSinkSet, vertexSourceSet, brv);
+    final List<SinkConnection> sinkSet = getSinkSet(vertexSinkSet, vertexSourceSet, brv);
 
     // Connect all the source to the sinks
     connectEdges(sourceSet, sinkSet);
@@ -197,12 +197,11 @@ public class PiMMSRVerticesLinker {
    * Connect the sources to the sinks
    *
    * @param sourceSet
-   *          set of dag sources
+   *          set of SR-DAG sources
    * @param sinkSet
-   *          set of dag sinks
+   *          set of SR-DAG sinks
    */
-  private void connectEdges(final List<PiMMSRVerticesLinker.SourceConnection> sourceSet,
-      final List<PiMMSRVerticesLinker.SinkConnection> sinkSet) {
+  private void connectEdges(final List<SourceConnection> sourceSet, final List<SinkConnection> sinkSet) {
     while (!sinkSet.isEmpty()) {
       if (connectSources2Sink(sourceSet, sinkSet)) {
         sinkSet.remove(0);
@@ -220,20 +219,12 @@ public class PiMMSRVerticesLinker {
    * Connect sources to current sink
    *
    * @param sourceSet
-   *          set of dag sources
+   *          set of SR-DAG sources
    * @param sink
    *          current sink to connect to
    * @return true if it didn't explode, false else
    */
-  private boolean connectSources2Sink(final List<PiMMSRVerticesLinker.SourceConnection> sourceSet,
-      final List<PiMMSRVerticesLinker.SinkConnection> sinkSet) {
-    // Check if source is a BroadcastActor
-    final boolean isSourceBroadcastActor = (sourceSet.get(0).getSource() instanceof BroadcastActor);
-    // If source is a BroadcastActor, it should be dealt with connectSinks2Source
-    if (isSourceBroadcastActor) {
-      return false;
-    }
-
+  private boolean connectSources2Sink(final List<SourceConnection> sourceSet, final List<SinkConnection> sinkSet) {
     final SinkConnection currentSink = sinkSet.get(0);
     long cons = currentSink.getConsumption();
     long prod = sourceSet.get(0).getProduction();
@@ -246,11 +237,9 @@ public class PiMMSRVerticesLinker {
     final boolean implode = (cons > prod);
     // Check if sink is already a JoinActor
     final boolean isSinkJoinActor = (sinkVertex instanceof JoinActor);
-    // Check if sink is already a RoundBufferActor
-    final boolean isSinkRoundBufferActor = (sinkVertex instanceof RoundBufferActor);
 
     // Do we really need to implode ?
-    if (implode && !isSinkJoinActor && !isSinkRoundBufferActor) {
+    if (implode && !isSinkJoinActor) {
       // Creates the implode vertex and connect it to current sink
       final JoinActor joinActor = doImplosion(currentSink, sinkVertex, graph);
       // The JoinActor becomes the new sink
@@ -259,7 +248,7 @@ public class PiMMSRVerticesLinker {
 
     // Now, let's connect everything we can
     // Array of SourceConnection to remove
-    final ArrayList<PiMMSRVerticesLinker.SourceConnection> toRemove = new ArrayList<>();
+    final List<SourceConnection> toRemove = new ArrayList<>();
     // Connect the edges
     for (final SourceConnection src : sourceSet) {
       prod = src.getProduction();
@@ -270,27 +259,9 @@ public class PiMMSRVerticesLinker {
       // 0. Get the current source vertex
       final AbstractActor sourceVertex = (AbstractActor) src.getSource();
 
-      // 1. Retrieve the source port and if needed, creates it
-      final DataOutputPort currentSourcePort = getCurrentSourcePort(src, prod, sourceVertex);
+      // 1. Connect the source to the sink vertex
+      connect(src, currentSink, prod, sourceVertex, sinkVertex);
 
-      // 2. Retrieve the sink port and if needed, creates it
-      final DataInputPort currentSinkPort = getCurrentSinkPort(currentSink, prod, sinkVertex);
-
-      // 3. Creates the Fifo and connect the ports
-      createFifo(graph, currentSourcePort, currentSinkPort);
-
-      // 4. If the sink is JoinActor / RoundBufferActor
-      final boolean isJoinOrRoundBuffer = implode || isSinkJoinActor || isSinkRoundBufferActor;
-      if (isJoinOrRoundBuffer) {
-        // Update name and sink port modifier
-        currentSinkPort.setName(currentSinkPort.getName() + "_" + Long.toString(cons));
-        currentSinkPort.setAnnotation(PortMemoryAnnotation.READ_ONLY);
-      }
-      // 4.2 Check if the sink is ForkActor / BroadcastActor
-      final boolean isForkOrBroadcast = sinkVertex instanceof ForkActor || sinkVertex instanceof BroadcastActor;
-      if (isForkOrBroadcast) {
-        currentSinkPort.setAnnotation(PortMemoryAnnotation.READ_ONLY);
-      }
       // 5. Update the remaining consumption
       cons = cons - prod;
     }
@@ -301,6 +272,162 @@ public class PiMMSRVerticesLinker {
     // Removing the sink for the set condition
     final boolean shouldRemoveSink = (prod > cons) && (cons != 0);
     return !shouldRemoveSink;
+  }
+
+  /**
+   * Connect sinks to current source
+   *
+   * @param sinkSet
+   *          set of SR-DAG sinks
+   * @param sink
+   *          current source to connect from
+   * @return true if it didn't implode, false else
+   */
+  private boolean connectSinks2Source(final List<SinkConnection> sinkSet, final List<SourceConnection> sourceSet) {
+    final SourceConnection currentSource = sourceSet.get(0);
+    long cons = sinkSet.get(0).getConsumption();
+    long prod = currentSource.getProduction();
+
+    // Get current sink vertex
+    AbstractActor sourceVertex = (AbstractActor) currentSource.getSource();
+    final PiGraph graph = sourceVertex.getContainingPiGraph();
+
+    // Check explode condition
+    final boolean explode = (prod > cons);
+    // Check if source is already a ForkActor
+    final boolean isSourceForkActor = (sourceVertex instanceof ForkActor);
+
+    // If we need to explode
+    if (explode && !isSourceForkActor) {
+      // Creates the explode vertex and connect it to current source
+      final ForkActor forkActor = doExplosion(currentSource, sourceVertex, graph);
+      // The ForkActor becomes the new source
+      sourceVertex = forkActor;
+    }
+
+    // Now, let's connect everything we can
+    // Array of SinkConnection to remove
+    final List<SinkConnection> toRemove = new ArrayList<>();
+    // Connect the edges
+    for (final SinkConnection snk : sinkSet) {
+      cons = snk.getConsumption();
+      if ((prod == 0) || (cons > prod)) {
+        break;
+      }
+      toRemove.add(snk);
+      // 0. Get the current sink vertex
+      final AbstractActor sinkVertex = (AbstractActor) snk.getSink();
+
+      // 1. Connect the source to the sink vertex
+      connect(currentSource, snk, cons, sourceVertex, sinkVertex);
+
+      // 2. Update the remaining production
+      prod = prod - cons;
+    }
+    // Remove all sources that got connected
+    toRemove.forEach(sinkSet::remove);
+    // Reset the current top sink
+    sourceSet.set(0, new SourceConnection(sourceVertex, prod, currentSource.getSourceLabel()));
+    // Removing the source for the set condition
+    final boolean shouldRemoveSource = (cons > prod) && (prod != 0);
+    return !shouldRemoveSource;
+  }
+
+  /**
+   * Create a FIFO between the sourceVertex and the sinkVertex using the connection info and with the given rate
+   * 
+   * @param source
+   *          SourceConnection information
+   * @param sink
+   *          SinkConnection information
+   * @param rate
+   *          The rate to set on the FIFO
+   * @param sourceVertex
+   *          The source vertex
+   * @param sinkVertex
+   *          The sink vertex
+   */
+  private void connect(final SourceConnection source, final SinkConnection sink, final long rate,
+      final AbstractActor sourceVertex, final AbstractActor sinkVertex) {
+    // 1. Retrieve the source port and if needed, creates it
+    final DataOutputPort currentSourcePort = getCurrentSourcePort(source, rate, sourceVertex);
+
+    // 2. Retrieve the sink port and if needed, creates it
+    final DataInputPort currentSinkPort = getCurrentSinkPort(sink, rate, sinkVertex);
+
+    // 3. Creates the FIFO and connect the ports
+    createFifo(sourceVertex.getContainingPiGraph(), currentSourcePort, currentSinkPort);
+  }
+
+  /**
+   * Return the current source port, creates it if it does not exists
+   * 
+   * @param src
+   *          current source connection
+   * @param rate
+   *          rate to set on the port
+   * @param sourceVertex
+   *          source vertex
+   * @return
+   */
+  private DataOutputPort getCurrentSourcePort(final SourceConnection src, long rate, AbstractActor sourceVertex) {
+    DataOutputPort currentSourcePort = (DataOutputPort) sourceVertex.lookupPort(src.getSourceLabel());
+    if (currentSourcePort == null) {
+      currentSourcePort = PiMMUserFactory.instance.createDataOutputPort();
+      currentSourcePort.setName(src.getSourceLabel());
+      currentSourcePort.getPortRateExpression().setExpressionString(Long.toString(rate));
+      sourceVertex.getDataOutputPorts().add(currentSourcePort);
+    }
+    // Check if the source is JoinActor / RoundBufferActor
+    final boolean isSourceJoinOrRoundBuffer = sourceVertex instanceof JoinActor
+        || sourceVertex instanceof RoundBufferActor;
+    if (isSourceJoinOrRoundBuffer) {
+      currentSourcePort.setAnnotation(PortMemoryAnnotation.WRITE_ONLY);
+    }
+    // Check if the source is ForkActor / BroadcastActor
+    final boolean isSourceForkOrBroadcast = sourceVertex instanceof ForkActor || sourceVertex instanceof BroadcastActor;
+    if (isSourceForkOrBroadcast) {
+      // Update name and source port modifier
+      final int index = sourceVertex.getDataOutputPorts().indexOf(currentSourcePort);
+      currentSourcePort.setName(currentSourcePort.getName() + "_" + Integer.toString(index));
+      currentSourcePort.setAnnotation(PortMemoryAnnotation.WRITE_ONLY);
+    }
+    return currentSourcePort;
+  }
+
+  /**
+   * Return the current sink port, creates it if it does not exists
+   * 
+   * @param snk
+   *          current sink connection
+   * @param rate
+   *          rate to set on the port
+   * @param sinkVertex
+   *          sink vertex
+   * @return
+   */
+  private DataInputPort getCurrentSinkPort(final SinkConnection snk, long rate, final AbstractActor sinkVertex) {
+    DataInputPort currentSinkPort = (DataInputPort) sinkVertex.lookupPort(snk.getTargetLabel());
+    if (currentSinkPort == null) {
+      currentSinkPort = PiMMUserFactory.instance.createDataInputPort();
+      currentSinkPort.setName(snk.getTargetLabel());
+      currentSinkPort.getPortRateExpression().setExpressionString(Long.toString(rate));
+      sinkVertex.getDataInputPorts().add(currentSinkPort);
+    }
+    // Check if the sink is ForkActor / BroadcastActor
+    final boolean isSinkForkOrBroadcast = sinkVertex instanceof ForkActor || sinkVertex instanceof BroadcastActor;
+    if (isSinkForkOrBroadcast) {
+      currentSinkPort.setAnnotation(PortMemoryAnnotation.READ_ONLY);
+    }
+    // Check if the sink is JoinActor / RoundBufferActor
+    final boolean isSinkJoinOrRoundBuffer = sinkVertex instanceof JoinActor || sinkVertex instanceof RoundBufferActor;
+    if (isSinkJoinOrRoundBuffer) {
+      // Update name and sink port modifier
+      final int index = sinkVertex.getDataInputPorts().indexOf(currentSinkPort);
+      currentSinkPort.setName(currentSinkPort.getName() + "_" + Integer.toString(index));
+      currentSinkPort.setAnnotation(PortMemoryAnnotation.READ_ONLY);
+    }
+    return currentSinkPort;
   }
 
   /**
@@ -328,139 +455,14 @@ public class PiMMSRVerticesLinker {
     joinActor.getDataOutputPorts().add(outputPort);
 
     // Create the FIFO to connect the Join to the Sink
-    final DataInputPort targetPort = (DataInputPort) sinkVertex.lookupPort(currentSink.getTargetLabel());
+    final DataInputPort targetPort = getCurrentSinkPort(currentSink, currentSink.getConsumption(), sinkVertex);
+
     createFifo(graph, outputPort, targetPort);
 
     // Add the join actor to the graph
     graph.addActor(joinActor);
 
     return joinActor;
-  }
-
-  /**
-   * Connect sinks to current source
-   *
-   * @param sinkSet
-   *          set of dag sinks
-   * @param sink
-   *          current source to connect from
-   * @return true if it didn't implode, false else
-   */
-  private boolean connectSinks2Source(final List<PiMMSRVerticesLinker.SinkConnection> sinkSet,
-      final List<PiMMSRVerticesLinker.SourceConnection> sourceSet) {
-    // Check if source is a RoundBufferActor
-    final boolean isSourceRoundBufferActor = (sinkSet.get(0).getSink() instanceof RoundBufferActor);
-    // If source is a RoundBufferActor, it should be dealt with connectSources2Sink
-    if (isSourceRoundBufferActor) {
-      return false;
-    }
-
-    final SourceConnection currentSource = sourceSet.get(0);
-    long cons = sinkSet.get(0).getConsumption();
-    long prod = currentSource.getProduction();
-
-    // Get current sink vertex
-    AbstractActor sourceVertex = (AbstractActor) currentSource.getSource();
-    final PiGraph graph = sourceVertex.getContainingPiGraph();
-
-    // Check explode condition
-    final boolean explode = (prod > cons);
-    // Check if source is already a ForkActor
-    final boolean isSourceForkActor = (sourceVertex instanceof ForkActor);
-    // Check if source is already a BroadcastActor
-    final boolean isSourceBroadcastActor = (sourceVertex instanceof BroadcastActor);
-
-    // If we need to explode
-    if (explode && !isSourceForkActor && !isSourceBroadcastActor) {
-      // Creates the explode vertex and connect it to current source
-      final ForkActor forkActor = doExplosion(currentSource, sourceVertex, graph);
-      // The ForkActor becomes the new source
-      sourceVertex = forkActor;
-    }
-
-    // Now, let's connect everything we can
-    // Array of SinkConnection to remove
-    final ArrayList<PiMMSRVerticesLinker.SinkConnection> toRemove = new ArrayList<>();
-    // Connect the edges
-    for (final SinkConnection snk : sinkSet) {
-      cons = snk.getConsumption();
-      if ((prod == 0) || (cons > prod)) {
-        break;
-      }
-      toRemove.add(snk);
-      // 0. Get the current sink vertex
-      final AbstractActor sinkVertex = (AbstractActor) snk.getSink();
-
-      // 1. Retrieve the source port and if needed, creates it
-      final DataOutputPort currentSourcePort = getCurrentSourcePort(currentSource, cons, sourceVertex);
-
-      // 2. Retrieve the sink port and if needed, creates it
-      final DataInputPort currentSinkPort = getCurrentSinkPort(snk, cons, sinkVertex);
-
-      // 3. Creates the FIFO and connect the ports
-      createFifo(graph, currentSourcePort, currentSinkPort);
-
-      // 4. If the source is a Fork (new) or a Broadcast
-      final boolean isForkOrBroadcast = explode || isSourceForkActor || isSourceBroadcastActor;
-      if (isForkOrBroadcast) {
-        // Update name and source port modifier
-        currentSourcePort.setName(currentSourcePort.getName() + "_" + Long.toString(prod));
-        currentSourcePort.setAnnotation(PortMemoryAnnotation.WRITE_ONLY);
-      }
-      // 5. Update the remaining production
-      prod = prod - cons;
-    }
-    // Remove all sources that got connected
-    toRemove.forEach(sinkSet::remove);
-    // Reset the current top sink
-    sourceSet.set(0, new SourceConnection(sourceVertex, prod, currentSource.getSourceLabel()));
-    // Removing the source for the set condition
-    final boolean shouldRemoveSource = (cons > prod) && (prod != 0);
-    return !shouldRemoveSource;
-  }
-
-  /**
-   * Return the current source port, creates it if it does not exists
-   * 
-   * @param src
-   *          current source connection
-   * @param rate
-   *          rate to set on the port
-   * @param sourceVertex
-   *          source vertex
-   * @return
-   */
-  private DataOutputPort getCurrentSourcePort(final SourceConnection src, long rate, AbstractActor sourceVertex) {
-    DataOutputPort currentSourcePort = (DataOutputPort) sourceVertex.lookupPort(src.getSourceLabel());
-    if (currentSourcePort == null) {
-      currentSourcePort = PiMMUserFactory.instance.createDataOutputPort();
-      currentSourcePort.setName(src.getSourceLabel());
-      currentSourcePort.getPortRateExpression().setExpressionString(Long.toString(rate));
-      sourceVertex.getDataOutputPorts().add(currentSourcePort);
-    }
-    return currentSourcePort;
-  }
-
-  /**
-   * Return the current sink port, creates it if it does not exists
-   * 
-   * @param snk
-   *          current sink connection
-   * @param rate
-   *          rate to set on the port
-   * @param sinkVertex
-   *          sink vertex
-   * @return
-   */
-  private DataInputPort getCurrentSinkPort(final SinkConnection snk, long rate, final AbstractActor sinkVertex) {
-    DataInputPort currentSinkPort = (DataInputPort) sinkVertex.lookupPort(snk.getTargetLabel());
-    if (currentSinkPort == null) {
-      currentSinkPort = PiMMUserFactory.instance.createDataInputPort();
-      currentSinkPort.setName(snk.getTargetLabel());
-      currentSinkPort.getPortRateExpression().setExpressionString(Long.toString(rate));
-      sinkVertex.getDataInputPorts().add(currentSinkPort);
-    }
-    return currentSinkPort;
   }
 
   /**
@@ -489,7 +491,8 @@ public class PiMMSRVerticesLinker {
     forkActor.getDataInputPorts().add(targetPort);
 
     // Create the FIFO to connect the Join to the Sink
-    final DataOutputPort currentSourcePort = (DataOutputPort) sourceVertex.lookupPort(currentSource.getSourceLabel());
+    final DataOutputPort currentSourcePort = getCurrentSourcePort(currentSource, currentSource.getProduction(),
+        sourceVertex);
 
     createFifo(graph, currentSourcePort, targetPort);
 
@@ -500,15 +503,14 @@ public class PiMMSRVerticesLinker {
   }
 
   /**
-   * Creates a Fifo and connects it to the source / target ports. Finally, the Fifo is added to the graph
+   * Creates a FIFO and connects it to the source / target ports. Finally, the FIFO is added to the graph
    * 
    * @param graph
-   *          the graph in which the fifo must be added
+   *          the graph in which the FIFO must be added
    * @param sourcePort
    *          the source port
    * @param targetPort
    *          the target port
-   * @return the created fifo
    */
   private void createFifo(final PiGraph graph, final DataOutputPort sourcePort, final DataInputPort targetPort) {
     final Fifo newFifo = PiMMUserFactory.instance.createFifo();
@@ -530,10 +532,10 @@ public class PiMMSRVerticesLinker {
    * @throws PiMMHelperException
    *           the exception
    */
-  private List<PiMMSRVerticesLinker.SourceConnection> getSourceSet(final List<AbstractVertex> vertexSourceSet,
+  private List<SourceConnection> getSourceSet(final List<AbstractVertex> vertexSourceSet,
       final List<AbstractVertex> vertexSinkSet, final Map<AbstractVertex, Long> brv) throws PiMMHelperException {
     // Initialize empty source set
-    final List<PiMMSRVerticesLinker.SourceConnection> sourceSet = new ArrayList<>();
+    final List<SourceConnection> sourceSet = new ArrayList<>();
 
     // Deals delays
     if (this.delays != 0) {
@@ -575,9 +577,10 @@ public class PiMMSRVerticesLinker {
       }
     }
 
-    final AbstractVertex realSource = vertexSourceSet.get(0);
-    if (realSource instanceof BroadcastActor) {
-      final long sinkRV = vertexSinkSet.size();
+    final AbstractActor realSource = (AbstractActor) vertexSourceSet.get(0);
+    if (realSource instanceof BroadcastActor && vertexSourceSet.size() == 1) {
+      // Case of a Broadcast added afterward for an interface or single Broadcast
+      long sinkRV = vertexSinkSet.size();
       sourceSet
           .add(new SourceConnection(vertexSourceSet.get(0), this.sinkConsumption * sinkRV, this.sourcePort.getName()));
     } else if (realSource instanceof AbstractActor) {
@@ -602,14 +605,15 @@ public class PiMMSRVerticesLinker {
    * @throws PiMMHelperException
    *           the exception
    */
-  private List<PiMMSRVerticesLinker.SinkConnection> getSinkSet(final List<AbstractVertex> vertexSinkSet,
+  private List<SinkConnection> getSinkSet(final List<AbstractVertex> vertexSinkSet,
       final List<AbstractVertex> vertexSourceSet, final Map<AbstractVertex, Long> brv) throws PiMMHelperException {
     // Initialize empty source set
-    final List<PiMMSRVerticesLinker.SinkConnection> sinkSet = new ArrayList<>();
+    final List<SinkConnection> sinkSet = new ArrayList<>();
 
     final AbstractVertex realSink = vertexSinkSet.get(0);
 
-    if (realSink instanceof RoundBufferActor) {
+    if (realSink instanceof RoundBufferActor && vertexSinkSet.size() == 1) {
+      // Case of a Roundbuffer added afterward for an interface or single Roundbuffer
       final long sourceRV = vertexSourceSet.size();
       sinkSet.add(new SinkConnection(vertexSinkSet.get(0), this.sourceProduction * sourceRV, this.sinkPort.getName()));
     } else if (realSink instanceof AbstractActor) {
