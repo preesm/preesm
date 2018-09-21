@@ -276,10 +276,10 @@ class CPrinter extends DefaultPrinter {
 		 while(totalSize-inputIdx < output.size){
 		 	inputIdx = inputIdx - call.inputBuffers.get(i).size
 		 	lastInputs.add(0,call.inputBuffers.get(i))
-		 	i=i-1
 			if (i < 0) {
 				throw new CodegenException("Invalid RoundBuffer sizes: output size is greater than cumulative input size.")
 			}
+		 	i=i-1
 		 }
 		 inputIdx = inputIdx %  output.size
 		 lastInputs
