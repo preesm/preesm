@@ -40,7 +40,6 @@
  */
 package org.ietr.preesm.pimm.algorithm.pimm2srdag.visitor;
 
-import java.util.Map;
 import org.ietr.dftools.algorithm.model.AbstractEdge;
 import org.ietr.dftools.algorithm.model.IRefinement;
 import org.ietr.dftools.algorithm.model.dag.DAGEdge;
@@ -56,6 +55,7 @@ import org.ietr.dftools.algorithm.model.parameters.Argument;
 import org.ietr.dftools.algorithm.model.sdf.SDFEdge;
 import org.ietr.dftools.algorithm.model.sdf.SDFVertex;
 import org.ietr.dftools.algorithm.model.sdf.types.SDFStringEdgePropertyType;
+import org.ietr.dftools.workflow.WorkflowException;
 import org.ietr.dftools.workflow.tools.WorkflowLogger;
 import org.ietr.preesm.codegen.idl.ActorPrototypes;
 import org.ietr.preesm.codegen.idl.Prototype;
@@ -63,7 +63,6 @@ import org.ietr.preesm.codegen.model.CodeGenArgument;
 import org.ietr.preesm.codegen.model.CodeGenParameter;
 import org.ietr.preesm.core.scenario.PreesmScenario;
 import org.ietr.preesm.experiment.model.pimm.AbstractActor;
-import org.ietr.preesm.experiment.model.pimm.AbstractVertex;
 import org.ietr.preesm.experiment.model.pimm.Actor;
 import org.ietr.preesm.experiment.model.pimm.BroadcastActor;
 import org.ietr.preesm.experiment.model.pimm.CHeaderRefinement;
@@ -96,6 +95,7 @@ import org.ietr.preesm.experiment.model.pimm.RoundBufferActor;
 import org.ietr.preesm.experiment.model.pimm.util.PiMMSwitch;
 import org.ietr.preesm.mapper.model.MapperDAG;
 import org.ietr.preesm.mapper.model.MapperDAGVertex;
+import org.ietr.preesm.mapper.model.MapperEdgeFactory;
 import org.ietr.preesm.mapper.model.MapperVertexFactory;
 
 /**
@@ -103,9 +103,6 @@ import org.ietr.preesm.mapper.model.MapperVertexFactory;
  *
  */
 public class StaticPiMM2MapperDAGVisitor extends PiMMSwitch<Boolean> {
-  /** Property name for property TARGET_VERTEX. */
-  public static final String PARENT_DAG_VERTEX = "parent_dag_vertex";
-
   /** The result. */
   // SRDAG graph created from the outer graph
   private final MapperDAG result;
@@ -119,24 +116,18 @@ public class StaticPiMM2MapperDAGVisitor extends PiMMSwitch<Boolean> {
   /** The scenario. */
   private final PreesmScenario scenario;
 
-  /** Current Graph name */
-  String graphName;
-
-  /** Current actor name */
-  String currentActorName;
-
   /**
-   * Instantiates a new abstract pi MM 2 SR-DAG visitor.
-   *
-   * @param dag
-   *          the dag
+   * Instantiates a new StaticPiMM2MapperDAGVisitor
+   * 
+   * @param piGraph
+   *          The Single-Rate Acyclic PiGraph to convert to MapperDAG
+   * @param scenario
+   *          The scenario
    */
-  public StaticPiMM2MapperDAGVisitor(final MapperDAG dag, final Map<AbstractVertex, Long> brv,
-      final PreesmScenario scenario) {
-    this.result = dag;
+  public StaticPiMM2MapperDAGVisitor(final PiGraph piGraph, final PreesmScenario scenario) {
+    this.result = new MapperDAG(new MapperEdgeFactory(), piGraph);
     this.vertexFactory = MapperVertexFactory.getInstance();
     this.scenario = scenario;
-    this.graphName = "";
   }
 
   /**
@@ -148,7 +139,7 @@ public class StaticPiMM2MapperDAGVisitor extends PiMMSwitch<Boolean> {
    */
   private void setDAGVertexPropertiesFromPiMM(final AbstractActor actor, final DAGVertex vertex) {
     // Handle vertex's name
-    vertex.setName(this.currentActorName);
+    vertex.setName(actor.getName());
     // Handle vertex's path inside the graph hierarchy
     vertex.setInfo(actor.getVertexPath());
     // Handle ID
@@ -210,26 +201,19 @@ public class StaticPiMM2MapperDAGVisitor extends PiMMSwitch<Boolean> {
     return true;
   }
 
+  /*
+   * (non-Javadoc)
+   *
+   * @see
+   * org.ietr.preesm.experiment.model.pimm.util.PiMMVisitor#visitBroadcastActor(org.ietr.preesm.experiment.model.pimm.
+   * BroadcastActor)
+   */
   @Override
   public Boolean caseBroadcastActor(final BroadcastActor actor) {
     final MapperDAGVertex vertex = (MapperDAGVertex) this.vertexFactory
         .createVertex(DAGBroadcastVertex.DAG_BROADCAST_VERTEX);
     // Set default properties from the PiMM actor
     setDAGVertexPropertiesFromPiMM(actor, vertex);
-    // Check the good use of the broadcast
-    // final DataInputPort dataInputPort = actor.getDataInputPorts().get(0);
-    // final Expression portRateExpression = dataInputPort.getPortRateExpression();
-    // final long cons = Long.parseLong(portRateExpression.getExpressionString());
-    // for (final DataOutputPort out : actor.getDataOutputPorts()) {
-    // final Expression outPortRateExpression = out.getPortRateExpression();
-    // final long prod = Long.parseLong(outPortRateExpression.getExpressionString());
-    // if (prod != cons) {
-    // final String msg = "Warning: Broadcast [" + actor.getVertexPath()
-    // + "] have different production/consumption: prod(" + Long.toString(prod) + ") != cons("
-    // + Long.toString(cons) + ")";
-    // WorkflowLogger.getLogger().warning(msg);
-    // }
-    // }
     // Set the special type of the Broadcast
     vertex.getPropertyBean().setValue(DAGBroadcastVertex.SPECIAL_TYPE, DAGBroadcastVertex.SPECIAL_TYPE_BROADCAST);
     // Handle input parameters as instance arguments
@@ -239,6 +223,13 @@ public class StaticPiMM2MapperDAGVisitor extends PiMMSwitch<Boolean> {
     return true;
   }
 
+  /*
+   * (non-Javadoc)
+   *
+   * @see
+   * org.ietr.preesm.experiment.model.pimm.util.PiMMVisitor#visitRoundBufferActor(org.ietr.preesm.experiment.model.pimm.
+   * RoundBufferActor)
+   */
   @Override
   public Boolean caseRoundBufferActor(final RoundBufferActor actor) {
     final MapperDAGVertex vertex = (MapperDAGVertex) this.vertexFactory
@@ -254,6 +245,12 @@ public class StaticPiMM2MapperDAGVisitor extends PiMMSwitch<Boolean> {
     return true;
   }
 
+  /*
+   * (non-Javadoc)
+   *
+   * @see org.ietr.preesm.experiment.model.pimm.util.PiMMVisitor#visitJoinActor(org.ietr.preesm.experiment.model.pimm.
+   * JoinActor)
+   */
   @Override
   public Boolean caseJoinActor(final JoinActor actor) {
     final MapperDAGVertex vertex = (MapperDAGVertex) this.vertexFactory.createVertex(DAGJoinVertex.DAG_JOIN_VERTEX);
@@ -263,7 +260,7 @@ public class StaticPiMM2MapperDAGVisitor extends PiMMSwitch<Boolean> {
     if (actor.getDataOutputPorts().size() > 1) {
       final String message = "Join actors should have only one output. Bad use on [" + actor.getVertexPath() + "]";
       WorkflowLogger.getLogger().severe(message);
-      throw new RuntimeException(message);
+      throw new WorkflowException(message);
     }
     // Handle input parameters as instance arguments
     setArguments(actor, vertex);
@@ -272,6 +269,12 @@ public class StaticPiMM2MapperDAGVisitor extends PiMMSwitch<Boolean> {
     return true;
   }
 
+  /*
+   * (non-Javadoc)
+   *
+   * @see org.ietr.preesm.experiment.model.pimm.util.PiMMVisitor#visitForkActor(org.ietr.preesm.experiment.model.pimm.
+   * ForkActor)
+   */
   @Override
   public Boolean caseForkActor(final ForkActor actor) {
     final MapperDAGVertex vertex = (MapperDAGVertex) this.vertexFactory.createVertex(DAGForkVertex.DAG_FORK_VERTEX);
@@ -281,10 +284,76 @@ public class StaticPiMM2MapperDAGVisitor extends PiMMSwitch<Boolean> {
     if (actor.getDataInputPorts().size() > 1) {
       final String message = "Fork actors should have only one input. Bad use on [" + actor.getVertexPath() + "]";
       WorkflowLogger.getLogger().severe(message);
-      throw new RuntimeException(message);
+      throw new WorkflowException(message);
     }
     // Handle input parameters as instance arguments
     setArguments(actor, vertex);
+    // Add the vertex to the DAG
+    this.result.addVertex(vertex);
+    return true;
+  }
+
+  /*
+   * (non-Javadoc)
+   *
+   * @see org.ietr.preesm.experiment.model.pimm.util.PiMMVisitor#visitDelayActor(org.ietr.preesm.experiment.model.pimm.
+   * DelayActor)
+   */
+  @Override
+  public Boolean caseDelayActor(final DelayActor actor) {
+    throw new UnsupportedOperationException();
+  }
+
+  /*
+   * (non-Javadoc)
+   *
+   * @see org.ietr.preesm.experiment.model.pimm.util.PiMMVisitor#visitInitActor(org.ietr.preesm.experiment.model.pimm.
+   * InitActor)
+   */
+  @Override
+  public Boolean caseInitActor(final InitActor actor) {
+    final DAGVertex vertex = vertexFactory.createVertex(DAGInitVertex.DAG_INIT_VERTEX);
+    final DataOutputPort dataOutputPort = actor.getDataOutputPorts().get(0);
+    final String expressionString = dataOutputPort.getPortRateExpression().getExpressionString();
+
+    // Set the number of delay
+    vertex.getPropertyBean().setValue(DAGInitVertex.INIT_SIZE, Long.parseLong(expressionString));
+    vertex.setId(actor.getName());
+    vertex.setName(actor.getName());
+    vertex.setInfo(actor.getName());
+    vertex.setNbRepeat(new DAGDefaultVertexPropertyType(1));
+
+    // Set the PERSISTENCE_LEVEL property
+    vertex.setPropertyValue(DAGInitVertex.PERSISTENCE_LEVEL, actor.getLevel());
+
+    // Add the vertex to the DAG
+    this.result.addVertex(vertex);
+    return true;
+  }
+
+  /*
+   * (non-Javadoc)
+   *
+   * @see org.ietr.preesm.experiment.model.pimm.util.PiMMVisitor#visitEndActor(org.ietr.preesm.experiment.model.pimm.
+   * EndActor)
+   */
+  @Override
+  public Boolean caseEndActor(final EndActor actor) {
+    final DAGVertex vertex = vertexFactory.createVertex(DAGEndVertex.DAG_END_VERTEX);
+
+    vertex.setId(actor.getName());
+    vertex.setName(actor.getName());
+    vertex.setInfo(actor.getName());
+    vertex.setNbRepeat(new DAGDefaultVertexPropertyType(1));
+
+    final String delayInitID = actor.getEndReference();
+    // Handle the END_REFERENCE property
+    final DAGVertex initVertex = this.result.getVertex(delayInitID);
+    if (initVertex != null) {
+      initVertex.getPropertyBean().setValue(DAGInitVertex.END_REFERENCE, vertex.getName());
+      vertex.getPropertyBean().setValue(DAGInitVertex.END_REFERENCE, delayInitID);
+    }
+
     // Add the vertex to the DAG
     this.result.addVertex(vertex);
     return true;
@@ -296,7 +365,7 @@ public class StaticPiMM2MapperDAGVisitor extends PiMMSwitch<Boolean> {
    * @param actor
    *          the PiMM Actor
    * @param vertex
-   *          the DAG vertex
+   *          the MapperDAG vertex
    */
   private void setArguments(final AbstractActor actor, final MapperDAGVertex vertex) {
     for (final ConfigInputPort p : actor.getConfigInputPorts()) {
@@ -312,7 +381,7 @@ public class StaticPiMM2MapperDAGVisitor extends PiMMSwitch<Boolean> {
 
   @Override
   public Boolean casePiSDFRefinement(final PiSDFRefinement refinement) {
-    throw new UnsupportedOperationException();
+    throw new UnsupportedOperationException("Flat single-rate can not have PiSDFRefinement for a vertex.");
   }
 
   @Override
@@ -364,90 +433,6 @@ public class StaticPiMM2MapperDAGVisitor extends PiMMSwitch<Boolean> {
     edge.getAggregate().add(newEdge);
     edge.setWeight(new DAGDefaultEdgePropertyType(weight * dataSize));
 
-    return true;
-  }
-
-  @Override
-  public Boolean caseDelayActor(final DelayActor actor) {
-    // // 0. Check if it is an init or an end actor
-    // final boolean isInit = actor.getDataInputPorts() == null || actor.getDataInputPorts().isEmpty();
-    // final DAGVertex vertex;
-    // if (isInit) {
-    // // Create the init vertex
-    // vertex = vertexFactory.createVertex(DAGInitVertex.DAG_INIT_VERTEX);
-    // final DataOutputPort dataOutputPort = actor.getDataOutputPorts().get(0);
-    // final String expressionString = dataOutputPort.getPortRateExpression().getExpressionString();
-    // // Set the number of delay
-    // vertex.getPropertyBean().setValue(DAGInitVertex.INIT_SIZE, Long.parseLong(expressionString));
-    // } else {
-    // // Create the end vertex
-    // vertex = vertexFactory.createVertex(DAGEndVertex.DAG_END_VERTEX);
-    // }
-    //
-    // vertex.setId(actor.getName());
-    // vertex.setName(actor.getName());
-    // vertex.setInfo(actor.getName());
-    // vertex.setNbRepeat(new DAGDefaultVertexPropertyType(1));
-    //
-    // if (!isInit) {
-    // final String delayInitID = actor.getDataOutputPort().getName();
-    // // Handle the END_REFERENCE property
-    // final DAGVertex initVertex = this.result.getVertex(delayInitID);
-    // if (initVertex != null) {
-    // initVertex.getPropertyBean().setValue(DAGInitVertex.END_REFERENCE, vertex.getName());
-    // vertex.getPropertyBean().setValue(DAGInitVertex.END_REFERENCE, initVertex.getName());
-    // // Set the PERSISTENCE_LEVEL property
-    // final String delayPersistenceLevel = actor.getDataOutputPort().getPortRateExpression().getExpressionString();
-    // initVertex.setPropertyValue(DAGInitVertex.PERSISTENCE_LEVEL, PersistenceLevel.getByName(delayPersistenceLevel));
-    // }
-    // }
-    //
-    // // Add the vertex to the DAG
-    // this.result.addVertex(vertex);
-    // return true;
-    throw new UnsupportedOperationException();
-  }
-
-  @Override
-  public Boolean caseInitActor(final InitActor actor) {
-    final DAGVertex vertex = vertexFactory.createVertex(DAGInitVertex.DAG_INIT_VERTEX);
-    final DataOutputPort dataOutputPort = actor.getDataOutputPorts().get(0);
-    final String expressionString = dataOutputPort.getPortRateExpression().getExpressionString();
-
-    // Set the number of delay
-    vertex.getPropertyBean().setValue(DAGInitVertex.INIT_SIZE, Long.parseLong(expressionString));
-    vertex.setId(actor.getName());
-    vertex.setName(actor.getName());
-    vertex.setInfo(actor.getName());
-    vertex.setNbRepeat(new DAGDefaultVertexPropertyType(1));
-
-    // Set the PERSISTENCE_LEVEL property
-    vertex.setPropertyValue(DAGInitVertex.PERSISTENCE_LEVEL, actor.getLevel());
-
-    // Add the vertex to the DAG
-    this.result.addVertex(vertex);
-    return true;
-  }
-
-  @Override
-  public Boolean caseEndActor(final EndActor actor) {
-    final DAGVertex vertex = vertexFactory.createVertex(DAGEndVertex.DAG_END_VERTEX);
-
-    vertex.setId(actor.getName());
-    vertex.setName(actor.getName());
-    vertex.setInfo(actor.getName());
-    vertex.setNbRepeat(new DAGDefaultVertexPropertyType(1));
-
-    final String delayInitID = actor.getEndReference();
-    // Handle the END_REFERENCE property
-    final DAGVertex initVertex = this.result.getVertex(delayInitID);
-    if (initVertex != null) {
-      initVertex.getPropertyBean().setValue(DAGInitVertex.END_REFERENCE, vertex.getName());
-      vertex.getPropertyBean().setValue(DAGInitVertex.END_REFERENCE, delayInitID);
-    }
-
-    // Add the vertex to the DAG
-    this.result.addVertex(vertex);
     return true;
   }
 
@@ -633,15 +618,11 @@ public class StaticPiMM2MapperDAGVisitor extends PiMMSwitch<Boolean> {
 
     // Convert vertices
     for (final AbstractActor actor : graph.getActors()) {
-      this.currentActorName = actor.getName();
       doSwitch(actor);
     }
 
     // Convert FIFOs
-    for (final Fifo fifo : graph.getFifosWithDelay()) {
-      doSwitch(fifo);
-    }
-    for (final Fifo fifo : graph.getFifosWithoutDelay()) {
+    for (final Fifo fifo : graph.getFifos()) {
       doSwitch(fifo);
     }
     return true;

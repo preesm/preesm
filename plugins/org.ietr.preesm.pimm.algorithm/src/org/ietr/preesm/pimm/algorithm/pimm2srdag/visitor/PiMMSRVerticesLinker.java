@@ -235,11 +235,8 @@ public class PiMMSRVerticesLinker {
 
     // Check implode condition
     final boolean implode = (cons > prod);
-    // Check if sink is already a JoinActor
-    final boolean isSinkJoinActor = (sinkVertex instanceof JoinActor);
 
-    // Do we really need to implode ?
-    if (implode && !isSinkJoinActor) {
+    if (implode) {
       // Creates the implode vertex and connect it to current sink
       final JoinActor joinActor = doImplosion(currentSink, sinkVertex, graph);
       // The JoinActor becomes the new sink
@@ -294,11 +291,8 @@ public class PiMMSRVerticesLinker {
 
     // Check explode condition
     final boolean explode = (prod > cons);
-    // Check if source is already a ForkActor
-    final boolean isSourceForkActor = (sourceVertex instanceof ForkActor);
 
-    // If we need to explode
-    if (explode && !isSourceForkActor) {
+    if (explode) {
       // Creates the explode vertex and connect it to current source
       final ForkActor forkActor = doExplosion(currentSource, sourceVertex, graph);
       // The ForkActor becomes the new source
@@ -350,10 +344,10 @@ public class PiMMSRVerticesLinker {
   private void connect(final SourceConnection source, final SinkConnection sink, final long rate,
       final AbstractActor sourceVertex, final AbstractActor sinkVertex) {
     // 1. Retrieve the source port and if needed, creates it
-    final DataOutputPort currentSourcePort = getCurrentSourcePort(source, rate, sourceVertex);
+    final DataOutputPort currentSourcePort = getOrCreateSourcePort(source, rate, sourceVertex);
 
     // 2. Retrieve the sink port and if needed, creates it
-    final DataInputPort currentSinkPort = getCurrentSinkPort(sink, rate, sinkVertex);
+    final DataInputPort currentSinkPort = getOrCreateSinkPort(sink, rate, sinkVertex);
 
     // 3. Creates the FIFO and connect the ports
     createFifo(sourceVertex.getContainingPiGraph(), currentSourcePort, currentSinkPort);
@@ -363,14 +357,14 @@ public class PiMMSRVerticesLinker {
    * Return the current source port, creates it if it does not exists
    * 
    * @param src
-   *          current source connection
+   *          The source connection
    * @param rate
    *          rate to set on the port
    * @param sourceVertex
    *          source vertex
-   * @return
+   * @return the data source port
    */
-  private DataOutputPort getCurrentSourcePort(final SourceConnection src, long rate, AbstractActor sourceVertex) {
+  private DataOutputPort getOrCreateSourcePort(final SourceConnection src, long rate, AbstractActor sourceVertex) {
     DataOutputPort currentSourcePort = (DataOutputPort) sourceVertex.lookupPort(src.getSourceLabel());
     if (currentSourcePort == null) {
       currentSourcePort = PiMMUserFactory.instance.createDataOutputPort();
@@ -396,17 +390,17 @@ public class PiMMSRVerticesLinker {
   }
 
   /**
-   * Return the current sink port, creates it if it does not exists
+   * Return the sink port corresponding to the label, creates it if it does not exists
    * 
    * @param snk
-   *          current sink connection
+   *          The sink connection
    * @param rate
    *          rate to set on the port
    * @param sinkVertex
    *          sink vertex
-   * @return
+   * @return The sink data port
    */
-  private DataInputPort getCurrentSinkPort(final SinkConnection snk, long rate, final AbstractActor sinkVertex) {
+  private DataInputPort getOrCreateSinkPort(final SinkConnection snk, long rate, final AbstractActor sinkVertex) {
     DataInputPort currentSinkPort = (DataInputPort) sinkVertex.lookupPort(snk.getTargetLabel());
     if (currentSinkPort == null) {
       currentSinkPort = PiMMUserFactory.instance.createDataInputPort();
@@ -455,7 +449,7 @@ public class PiMMSRVerticesLinker {
     joinActor.getDataOutputPorts().add(outputPort);
 
     // Create the FIFO to connect the Join to the Sink
-    final DataInputPort targetPort = getCurrentSinkPort(currentSink, currentSink.getConsumption(), sinkVertex);
+    final DataInputPort targetPort = getOrCreateSinkPort(currentSink, currentSink.getConsumption(), sinkVertex);
 
     createFifo(graph, outputPort, targetPort);
 
@@ -491,7 +485,7 @@ public class PiMMSRVerticesLinker {
     forkActor.getDataInputPorts().add(targetPort);
 
     // Create the FIFO to connect the Join to the Sink
-    final DataOutputPort currentSourcePort = getCurrentSourcePort(currentSource, currentSource.getProduction(),
+    final DataOutputPort currentSourcePort = getOrCreateSourcePort(currentSource, currentSource.getProduction(),
         sourceVertex);
 
     createFifo(graph, currentSourcePort, targetPort);
