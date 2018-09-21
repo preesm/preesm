@@ -263,29 +263,67 @@
             <port annotation="NONE" expr="4" kind="output" name="out_0"/>
             <port annotation="NONE" expr="4" kind="output" name="out_2"/>
         </node>
+        <node expr="hidden_weights_size + hidden_size" getter=""
+            id="delay_AdamHidden_second_order_moments_out__AdamHidden_second_order_moments"
+            kind="delay" level="permanent" setter="">
+            <port annotation="NONE"
+                expr="hidden_weights_size + hidden_size" kind="input" name="set"/>
+            <port annotation="NONE"
+                expr="hidden_weights_size + hidden_size" kind="output" name="get"/>
+        </node>
+        <node expr="hidden_weights_size + hidden_size" getter=""
+            id="delay_AdamHidden_first_order_moments_out__AdamHidden_first_order_moments"
+            kind="delay" level="permanent" setter="">
+            <port annotation="NONE"
+                expr="hidden_weights_size + hidden_size" kind="input" name="set"/>
+            <port annotation="NONE"
+                expr="hidden_weights_size + hidden_size" kind="output" name="get"/>
+        </node>
+        <node expr="output_weights_size + output_size" getter=""
+            id="delay_AdamOutput_first_order_moments_out__AdamOutput_first_order_moments"
+            kind="delay" level="permanent" setter="">
+            <port annotation="NONE"
+                expr="output_weights_size + output_size" kind="input" name="set"/>
+            <port annotation="NONE"
+                expr="output_weights_size + output_size" kind="output" name="get"/>
+        </node>
+        <node expr="output_weights_size + output_size" getter=""
+            id="delay_AdamOutput_second_order_moments_out__AdamOutput_second_order_moments"
+            kind="delay" level="permanent" setter="">
+            <port annotation="NONE"
+                expr="output_weights_size + output_size" kind="input" name="set"/>
+            <port annotation="NONE"
+                expr="output_weights_size + output_size" kind="output" name="get"/>
+        </node>
+        <node expr="4" getter=""
+            id="delay_BroadcastBetas_out_2__adamBetas_betas_in"
+            kind="delay" level="permanent" setter="">
+            <port annotation="NONE" expr="4" kind="input" name="set"/>
+            <port annotation="NONE" expr="4" kind="output" name="get"/>
+        </node>
         <edge expr="hidden_weights_size + hidden_size" kind="fifo"
             source="AdamHidden" sourceport="second_order_moments_out"
             target="AdamHidden" targetport="second_order_moments" type="double">
-            <data key="delay"/>
+            <data key="delay">delay_AdamHidden_second_order_moments_out__AdamHidden_second_order_moments</data>
         </edge>
         <edge expr="hidden_weights_size + hidden_size" kind="fifo"
             source="AdamHidden" sourceport="first_order_moments_out"
             target="AdamHidden" targetport="first_order_moments" type="double">
-            <data key="delay"/>
+            <data key="delay">delay_AdamHidden_first_order_moments_out__AdamHidden_first_order_moments</data>
         </edge>
         <edge expr="output_weights_size + output_size" kind="fifo"
             source="AdamOutput" sourceport="first_order_moments_out"
             target="AdamOutput" targetport="first_order_moments" type="double">
-            <data key="delay"/>
+            <data key="delay">delay_AdamOutput_first_order_moments_out__AdamOutput_first_order_moments</data>
         </edge>
         <edge expr="output_weights_size + output_size" kind="fifo"
             source="AdamOutput" sourceport="second_order_moments_out"
             target="AdamOutput" targetport="second_order_moments" type="double">
-            <data key="delay"/>
+            <data key="delay">delay_AdamOutput_second_order_moments_out__AdamOutput_second_order_moments</data>
         </edge>
         <edge expr="4" kind="fifo" source="BroadcastBetas"
             sourceport="out_2" target="adamBetas" targetport="betas_in" type="double">
-            <data key="delay"/>
+            <data key="delay">delay_BroadcastBetas_out_2__adamBetas_betas_in</data>
         </edge>
         <edge kind="fifo" source="JoinWeights" sourceport="out"
             target="weights_out" targetport="weights_out" type="float"/>

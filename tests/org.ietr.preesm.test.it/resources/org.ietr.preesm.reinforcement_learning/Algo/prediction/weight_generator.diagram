@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="ASCII"?>
-<pi:Diagram xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:al="http://eclipse.org/graphiti/mm/algorithms" xmlns:pi="http://eclipse.org/graphiti/mm/pictograms" visible="true" gridUnit="10" diagramTypeId="PiMM" name="weight_generator" snapToGrid="true" pictogramLinks="//@children.0/@link //@children.0/@children.0/@link //@children.0/@anchors.0/@link //@children.1/@anchors.0/@link //@children.1/@children.0/@link //@children.1/@link //@children.2/@anchors.0/@link //@children.2/@children.0/@link //@children.2/@link //@children.3/@link //@children.3/@children.0/@link //@children.3/@anchors.0/@link //@children.3/@anchors.1/@link //@children.3/@anchors.2/@link //@children.3/@anchors.3/@link //@children.3/@anchors.4/@link //@children.4/@anchors.0/@link //@children.4/@children.0/@link //@children.4/@link //@children.4/@anchors.1/@link //@children.5/@anchors.0/@link //@children.5/@children.0/@link //@children.5/@link //@children.5/@anchors.1/@link //@children.6/@link //@children.6/@children.0/@link //@children.6/@anchors.0/@link //@children.6/@anchors.1/@link //@children.6/@anchors.2/@link //@children.6/@anchors.3/@link //@children.6/@anchors.4/@link //@children.7/@link //@children.7/@children.0/@link //@children.7/@anchors.0/@link //@children.7/@anchors.1/@link //@children.7/@anchors.2/@link //@children.7/@anchors.3/@link //@children.8/@link //@children.8/@children.0/@link //@children.8/@anchors.0/@link //@children.8/@anchors.1/@link //@children.8/@anchors.2/@link //@children.8/@anchors.3/@link //@connections.0/@link //@connections.1/@link //@connections.2/@link //@connections.3/@link //@children.9/@link //@children.9/@anchors.0/@link //@connections.4/@link //@connections.5/@link //@children.10/@link //@children.10/@anchors.0/@link //@connections.6/@link //@connections.7/@link //@connections.8/@link //@connections.9/@link //@connections.10/@link //@connections.11/@link //@connections.12/@link //@connections.13/@link //@connections.14/@link //@connections.15/@link //@connections.16/@link //@connections.17/@link" version="0.14.0">
+<pi:Diagram xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:al="http://eclipse.org/graphiti/mm/algorithms" xmlns:pi="http://eclipse.org/graphiti/mm/pictograms" visible="true" gridUnit="10" diagramTypeId="PiMM" name="weight_generator" snapToGrid="true" pictogramLinks="//@children.0/@link //@children.0/@children.0/@link //@children.0/@anchors.0/@link //@children.1/@anchors.0/@link //@children.1/@children.0/@link //@children.1/@link //@children.2/@anchors.0/@link //@children.2/@children.0/@link //@children.2/@link //@children.3/@link //@children.3/@children.0/@link //@children.3/@anchors.0/@link //@children.3/@anchors.1/@link //@children.3/@anchors.2/@link //@children.3/@anchors.3/@link //@children.3/@anchors.4/@link //@children.4/@anchors.0/@link //@children.4/@children.0/@link //@children.4/@link //@children.4/@anchors.1/@link //@children.5/@anchors.0/@link //@children.5/@children.0/@link //@children.5/@link //@children.5/@anchors.1/@link //@children.6/@link //@children.6/@children.0/@link //@children.6/@anchors.0/@link //@children.6/@anchors.1/@link //@children.6/@anchors.2/@link //@children.6/@anchors.3/@link //@children.6/@anchors.4/@link //@children.7/@link //@children.7/@children.0/@link //@children.7/@anchors.0/@link //@children.7/@anchors.1/@link //@children.7/@anchors.2/@link //@children.7/@anchors.3/@link //@children.8/@link //@children.8/@children.0/@link //@children.8/@anchors.0/@link //@children.8/@anchors.1/@link //@children.8/@anchors.2/@link //@children.8/@anchors.3/@link //@connections.0/@link //@connections.1/@link //@connections.2/@link //@connections.3/@link //@children.9/@link //@children.9/@anchors.0/@link //@connections.4/@link //@connections.5/@link //@children.10/@link //@children.10/@anchors.0/@link //@connections.6/@link //@connections.7/@link //@connections.8/@link //@connections.9/@link //@connections.10/@link //@connections.11/@link //@connections.12/@link //@connections.13/@link //@connections.14/@link //@connections.15/@link //@connections.16/@link //@connections.17/@link" version="0.15.0">
   <properties key="editor_version" value="3"/>
   <graphicsAlgorithm xsi:type="al:Rectangle" background="//@colors.1" foreground="//@colors.0" lineWidth="1" transparency="0.0" width="1000" height="1000"/>
   <link>
@@ -14,24 +14,24 @@
       <points y="26"/>
     </graphicsAlgorithm>
     <link>
-      <businessObjects href="weight_generator.pi#//@parameters.0"/>
+      <businessObjects href="weight_generator.pi#//@vertices.0"/>
     </link>
     <anchors xsi:type="pi:ChopboxAnchor" outgoingConnections="//@connections.6 //@connections.9 //@connections.12 //@connections.15" incomingConnections="//@connections.10 //@connections.11" referencedGraphicsAlgorithm="//@children.0/@graphicsAlgorithm">
       <link>
-        <businessObjects href="weight_generator.pi#//@parameters.0"/>
+        <businessObjects href="weight_generator.pi#//@vertices.0"/>
       </link>
     </anchors>
     <children visible="true">
       <graphicsAlgorithm xsi:type="al:Text" foreground="//@colors.4" lineWidth="1" filled="false" transparency="0.0" width="33" height="20" y="22" font="//@fonts.0" horizontalAlignment="ALIGNMENT_CENTER" value="size"/>
       <link>
-        <businessObjects href="weight_generator.pi#//@parameters.0"/>
+        <businessObjects href="weight_generator.pi#//@vertices.0"/>
       </link>
     </children>
   </children>
   <children xsi:type="pi:ContainerShape" visible="true" active="true">
     <graphicsAlgorithm xsi:type="al:Rectangle" lineWidth="1" filled="false" lineVisible="false" transparency="0.0" width="51" height="31" x="154" y="76"/>
     <link>
-      <businessObjects href="weight_generator.pi#//@parameters.1"/>
+      <businessObjects href="weight_generator.pi#//@vertices.1"/>
     </link>
     <anchors xsi:type="pi:BoxRelativeAnchor" visible="true" active="true" outgoingConnections="//@connections.7 //@connections.8 //@connections.11 //@connections.13 //@connections.14" referencedGraphicsAlgorithm="//@children.1/@graphicsAlgorithm" relativeWidth="0.5" relativeHeight="1.0">
       <graphicsAlgorithm xsi:type="al:Polygon" background="//@colors.2" foreground="//@colors.3" lineWidth="2" filled="true" transparency="0.0" width="16" height="16" x="-8" y="-16">
@@ -40,20 +40,20 @@
         <points y="16"/>
       </graphicsAlgorithm>
       <link>
-        <businessObjects href="weight_generator.pi#//@parameters.1"/>
+        <businessObjects href="weight_generator.pi#//@vertices.1"/>
       </link>
     </anchors>
     <children visible="true">
       <graphicsAlgorithm xsi:type="al:Text" foreground="//@colors.4" lineWidth="1" filled="false" transparency="0.0" width="51" height="20" font="//@fonts.0" horizontalAlignment="ALIGNMENT_CENTER" verticalAlignment="ALIGNMENT_TOP" value="layer_size"/>
       <link>
-        <businessObjects href="weight_generator.pi#//@parameters.1"/>
+        <businessObjects href="weight_generator.pi#//@vertices.1"/>
       </link>
     </children>
   </children>
   <children xsi:type="pi:ContainerShape" visible="true" active="true">
     <graphicsAlgorithm xsi:type="al:Rectangle" lineWidth="1" filled="false" lineVisible="false" transparency="0.0" width="54" height="31" x="50" y="76"/>
     <link>
-      <businessObjects href="weight_generator.pi#//@parameters.2"/>
+      <businessObjects href="weight_generator.pi#//@vertices.2"/>
     </link>
     <anchors xsi:type="pi:BoxRelativeAnchor" visible="true" active="true" outgoingConnections="//@connections.10" referencedGraphicsAlgorithm="//@children.2/@graphicsAlgorithm" relativeWidth="0.5" relativeHeight="1.0">
       <graphicsAlgorithm xsi:type="al:Polygon" background="//@colors.2" foreground="//@colors.3" lineWidth="2" filled="true" transparency="0.0" width="16" height="16" x="-8" y="-16">
@@ -62,24 +62,24 @@
         <points y="16"/>
       </graphicsAlgorithm>
       <link>
-        <businessObjects href="weight_generator.pi#//@parameters.2"/>
+        <businessObjects href="weight_generator.pi#//@vertices.2"/>
       </link>
     </anchors>
     <children visible="true">
       <graphicsAlgorithm xsi:type="al:Text" foreground="//@colors.4" lineWidth="1" filled="false" transparency="0.0" width="54" height="20" font="//@fonts.0" horizontalAlignment="ALIGNMENT_CENTER" verticalAlignment="ALIGNMENT_TOP" value="input_size"/>
       <link>
-        <businessObjects href="weight_generator.pi#//@parameters.2"/>
+        <businessObjects href="weight_generator.pi#//@vertices.2"/>
       </link>
     </children>
   </children>
   <children xsi:type="pi:ContainerShape" visible="true" active="true">
     <graphicsAlgorithm xsi:type="al:RoundedRectangle" background="//@colors.6" foreground="//@colors.5" lineWidth="2" transparency="0.0" width="148" height="68" x="251" y="368" cornerHeight="5" cornerWidth="5"/>
     <link>
-      <businessObjects href="weight_generator.pi#//@actors.0"/>
+      <businessObjects href="weight_generator.pi#//@vertices.3"/>
     </link>
     <anchors xsi:type="pi:ChopboxAnchor">
       <link>
-        <businessObjects href="weight_generator.pi#//@actors.0"/>
+        <businessObjects href="weight_generator.pi#//@vertices.3"/>
       </link>
     </anchors>
     <anchors xsi:type="pi:BoxRelativeAnchor" visible="true" active="true" incomingConnections="//@connections.6" referencedGraphicsAlgorithm="//@children.3/@graphicsAlgorithm" relativeHeight="0.29411764705882354">
@@ -92,7 +92,7 @@
         </graphicsAlgorithmChildren>
       </graphicsAlgorithm>
       <link>
-        <businessObjects href="weight_generator.pi#//@actors.0/@configInputPorts.0"/>
+        <businessObjects href="weight_generator.pi#//@vertices.3/@configInputPorts.0"/>
       </link>
     </anchors>
     <anchors xsi:type="pi:BoxRelativeAnchor" visible="true" active="true" incomingConnections="//@connections.4" referencedGraphicsAlgorithm="//@children.3/@graphicsAlgorithm" relativeHeight="0.5147058823529411">
@@ -101,7 +101,7 @@
         <graphicsAlgorithmChildren xsi:type="al:Rectangle" background="//@colors.7" foreground="//@colors.5" lineWidth="1" lineStyle="UNSPECIFIED" width="8" height="8" y="2"/>
       </graphicsAlgorithm>
       <link>
-        <businessObjects href="weight_generator.pi#//@actors.0/@dataInputPorts.0"/>
+        <businessObjects href="weight_generator.pi#//@vertices.3/@dataInputPorts.0"/>
       </link>
     </anchors>
     <anchors xsi:type="pi:BoxRelativeAnchor" visible="true" active="true" outgoingConnections="//@connections.0" referencedGraphicsAlgorithm="//@children.3/@graphicsAlgorithm" relativeWidth="1.0" relativeHeight="0.5147058823529411">
@@ -110,7 +110,7 @@
         <graphicsAlgorithmChildren xsi:type="al:Rectangle" background="//@colors.8" foreground="//@colors.5" lineWidth="1" lineStyle="UNSPECIFIED" width="8" height="8" x="65" y="2"/>
       </graphicsAlgorithm>
       <link>
-        <businessObjects href="weight_generator.pi#//@actors.0/@dataOutputPorts.0"/>
+        <businessObjects href="weight_generator.pi#//@vertices.3/@dataOutputPorts.0"/>
       </link>
     </anchors>
     <anchors xsi:type="pi:BoxRelativeAnchor" visible="true" active="true" outgoingConnections="//@connections.17" referencedGraphicsAlgorithm="//@children.3/@graphicsAlgorithm" relativeWidth="1.0" relativeHeight="0.7352941176470589">
@@ -119,70 +119,70 @@
         <graphicsAlgorithmChildren xsi:type="al:Rectangle" background="//@colors.8" foreground="//@colors.5" lineWidth="1" lineStyle="UNSPECIFIED" width="8" height="8" x="65" y="2"/>
       </graphicsAlgorithm>
       <link>
-        <businessObjects href="weight_generator.pi#//@actors.0/@dataOutputPorts.1"/>
+        <businessObjects href="weight_generator.pi#//@vertices.3/@dataOutputPorts.1"/>
       </link>
     </anchors>
     <children visible="true">
       <graphicsAlgorithm xsi:type="al:Text" foreground="//@colors.4" lineWidth="1" filled="false" transparency="0.0" width="148" height="20" font="//@fonts.0" horizontalAlignment="ALIGNMENT_CENTER" value="BroadcastWeightsGen"/>
       <link>
-        <businessObjects href="weight_generator.pi#//@actors.0"/>
+        <businessObjects href="weight_generator.pi#//@vertices.3"/>
       </link>
     </children>
   </children>
   <children xsi:type="pi:ContainerShape" visible="true" active="true">
     <graphicsAlgorithm xsi:type="al:Rectangle" lineWidth="1" filled="false" lineVisible="false" transparency="0.0" width="84" height="20" x="499" y="320"/>
     <link>
-      <businessObjects href="weight_generator.pi#//@actors.1"/>
+      <businessObjects href="weight_generator.pi#//@vertices.4"/>
     </link>
     <anchors xsi:type="pi:BoxRelativeAnchor" visible="true" active="true" incomingConnections="//@connections.0 //@connections.9" referencedGraphicsAlgorithm="//@children.4/@graphicsAlgorithm" relativeHeight="0.1">
       <graphicsAlgorithm xsi:type="al:RoundedRectangle" background="//@colors.8" foreground="//@colors.5" lineWidth="2" transparency="0.0" width="16" height="16" cornerHeight="5" cornerWidth="5"/>
       <link>
-        <businessObjects href="weight_generator.pi#//@actors.1/@dataInputPorts.0"/>
+        <businessObjects href="weight_generator.pi#//@vertices.4/@dataInputPorts.0"/>
       </link>
     </anchors>
     <anchors xsi:type="pi:ChopboxAnchor">
       <link>
-        <businessObjects href="weight_generator.pi#//@actors.1"/>
+        <businessObjects href="weight_generator.pi#//@vertices.4"/>
       </link>
     </anchors>
     <children visible="true">
       <graphicsAlgorithm xsi:type="al:Text" foreground="//@colors.4" lineWidth="1" filled="false" transparency="0.0" width="65" height="20" x="19" font="//@fonts.0" horizontalAlignment="ALIGNMENT_RIGHT" value="weights_out"/>
       <link>
-        <businessObjects href="weight_generator.pi#//@actors.1"/>
+        <businessObjects href="weight_generator.pi#//@vertices.4"/>
       </link>
     </children>
   </children>
   <children xsi:type="pi:ContainerShape" visible="true" active="true">
     <graphicsAlgorithm xsi:type="al:Rectangle" lineWidth="1" filled="false" lineVisible="false" transparency="0.0" width="65" height="20" x="499" y="250"/>
     <link>
-      <businessObjects href="weight_generator.pi#//@actors.2"/>
+      <businessObjects href="weight_generator.pi#//@vertices.5"/>
     </link>
     <anchors xsi:type="pi:BoxRelativeAnchor" visible="true" active="true" incomingConnections="//@connections.1 //@connections.8" referencedGraphicsAlgorithm="//@children.5/@graphicsAlgorithm" relativeHeight="0.1">
       <graphicsAlgorithm xsi:type="al:RoundedRectangle" background="//@colors.8" foreground="//@colors.5" lineWidth="2" transparency="0.0" width="16" height="16" cornerHeight="5" cornerWidth="5"/>
       <link>
-        <businessObjects href="weight_generator.pi#//@actors.2/@dataInputPorts.0"/>
+        <businessObjects href="weight_generator.pi#//@vertices.5/@dataInputPorts.0"/>
       </link>
     </anchors>
     <anchors xsi:type="pi:ChopboxAnchor">
       <link>
-        <businessObjects href="weight_generator.pi#//@actors.2"/>
+        <businessObjects href="weight_generator.pi#//@vertices.5"/>
       </link>
     </anchors>
     <children visible="true">
       <graphicsAlgorithm xsi:type="al:Text" foreground="//@colors.4" lineWidth="1" filled="false" transparency="0.0" width="46" height="20" x="19" font="//@fonts.0" horizontalAlignment="ALIGNMENT_RIGHT" value="bias_out"/>
       <link>
-        <businessObjects href="weight_generator.pi#//@actors.2"/>
+        <businessObjects href="weight_generator.pi#//@vertices.5"/>
       </link>
     </children>
   </children>
   <children xsi:type="pi:ContainerShape" visible="true" active="true">
     <graphicsAlgorithm xsi:type="al:RoundedRectangle" background="//@colors.6" foreground="//@colors.5" lineWidth="2" transparency="0.0" width="128" height="68" x="251" y="250" cornerHeight="5" cornerWidth="5"/>
     <link>
-      <businessObjects href="weight_generator.pi#//@actors.3"/>
+      <businessObjects href="weight_generator.pi#//@vertices.6"/>
     </link>
     <anchors xsi:type="pi:ChopboxAnchor">
       <link>
-        <businessObjects href="weight_generator.pi#//@actors.3"/>
+        <businessObjects href="weight_generator.pi#//@vertices.6"/>
       </link>
     </anchors>
     <anchors xsi:type="pi:BoxRelativeAnchor" visible="true" active="true" incomingConnections="//@connections.7" referencedGraphicsAlgorithm="//@children.6/@graphicsAlgorithm" relativeHeight="0.29411764705882354">
@@ -195,7 +195,7 @@
         </graphicsAlgorithmChildren>
       </graphicsAlgorithm>
       <link>
-        <businessObjects href="weight_generator.pi#//@actors.3/@configInputPorts.0"/>
+        <businessObjects href="weight_generator.pi#//@vertices.6/@configInputPorts.0"/>
       </link>
     </anchors>
     <anchors xsi:type="pi:BoxRelativeAnchor" visible="true" active="true" incomingConnections="//@connections.2" referencedGraphicsAlgorithm="//@children.6/@graphicsAlgorithm" relativeHeight="0.5147058823529411">
@@ -204,7 +204,7 @@
         <graphicsAlgorithmChildren xsi:type="al:Rectangle" background="//@colors.7" foreground="//@colors.5" lineWidth="1" lineStyle="UNSPECIFIED" width="8" height="8" y="2"/>
       </graphicsAlgorithm>
       <link>
-        <businessObjects href="weight_generator.pi#//@actors.3/@dataInputPorts.0"/>
+        <businessObjects href="weight_generator.pi#//@vertices.6/@dataInputPorts.0"/>
       </link>
     </anchors>
     <anchors xsi:type="pi:BoxRelativeAnchor" visible="true" active="true" outgoingConnections="//@connections.1" referencedGraphicsAlgorithm="//@children.6/@graphicsAlgorithm" relativeWidth="1.0" relativeHeight="0.5147058823529411">
@@ -213,7 +213,7 @@
         <graphicsAlgorithmChildren xsi:type="al:Rectangle" background="//@colors.8" foreground="//@colors.5" lineWidth="1" lineStyle="UNSPECIFIED" width="8" height="8" x="48" y="2"/>
       </graphicsAlgorithm>
       <link>
-        <businessObjects href="weight_generator.pi#//@actors.3/@dataOutputPorts.0"/>
+        <businessObjects href="weight_generator.pi#//@vertices.6/@dataOutputPorts.0"/>
       </link>
     </anchors>
     <anchors xsi:type="pi:BoxRelativeAnchor" visible="true" active="true" outgoingConnections="//@connections.16" referencedGraphicsAlgorithm="//@children.6/@graphicsAlgorithm" relativeWidth="1.0" relativeHeight="0.7352941176470589">
@@ -222,24 +222,24 @@
         <graphicsAlgorithmChildren xsi:type="al:Rectangle" background="//@colors.8" foreground="//@colors.5" lineWidth="1" lineStyle="UNSPECIFIED" width="8" height="8" x="48" y="2"/>
       </graphicsAlgorithm>
       <link>
-        <businessObjects href="weight_generator.pi#//@actors.3/@dataOutputPorts.1"/>
+        <businessObjects href="weight_generator.pi#//@vertices.6/@dataOutputPorts.1"/>
       </link>
     </anchors>
     <children visible="true">
       <graphicsAlgorithm xsi:type="al:Text" foreground="//@colors.4" lineWidth="1" filled="false" transparency="0.0" width="128" height="20" font="//@fonts.0" horizontalAlignment="ALIGNMENT_CENTER" value="BroadcastBiasGen"/>
       <link>
-        <businessObjects href="weight_generator.pi#//@actors.3"/>
+        <businessObjects href="weight_generator.pi#//@vertices.6"/>
       </link>
     </children>
   </children>
   <children xsi:type="pi:ContainerShape" visible="true" active="true">
     <graphicsAlgorithm xsi:type="al:RoundedRectangle" background="//@colors.9" foreground="//@colors.5" lineWidth="2" transparency="0.0" width="101" height="53" x="50" y="353" cornerHeight="5" cornerWidth="5"/>
     <link>
-      <businessObjects href="weight_generator.pi#//@actors.4"/>
+      <businessObjects href="weight_generator.pi#//@vertices.7"/>
     </link>
     <anchors xsi:type="pi:ChopboxAnchor">
       <link>
-        <businessObjects href="weight_generator.pi#//@actors.4"/>
+        <businessObjects href="weight_generator.pi#//@vertices.7"/>
       </link>
     </anchors>
     <anchors xsi:type="pi:BoxRelativeAnchor" visible="true" active="true" incomingConnections="//@connections.12" referencedGraphicsAlgorithm="//@children.7/@graphicsAlgorithm" relativeHeight="0.37735849056603776">
@@ -252,7 +252,7 @@
         </graphicsAlgorithmChildren>
       </graphicsAlgorithm>
       <link>
-        <businessObjects href="weight_generator.pi#//@actors.4/@configInputPorts.0"/>
+        <businessObjects href="weight_generator.pi#//@vertices.7/@configInputPorts.0"/>
       </link>
     </anchors>
     <anchors xsi:type="pi:BoxRelativeAnchor" visible="true" active="true" incomingConnections="//@connections.5" referencedGraphicsAlgorithm="//@children.7/@graphicsAlgorithm" relativeHeight="0.660377358490566">
@@ -261,7 +261,7 @@
         <graphicsAlgorithmChildren xsi:type="al:Rectangle" background="//@colors.7" foreground="//@colors.5" lineWidth="1" lineStyle="UNSPECIFIED" width="8" height="8" y="2"/>
       </graphicsAlgorithm>
       <link>
-        <businessObjects href="weight_generator.pi#//@actors.4/@dataInputPorts.0"/>
+        <businessObjects href="weight_generator.pi#//@vertices.7/@dataInputPorts.0"/>
       </link>
     </anchors>
     <anchors xsi:type="pi:BoxRelativeAnchor" visible="true" active="true" outgoingConnections="//@connections.4" referencedGraphicsAlgorithm="//@children.7/@graphicsAlgorithm" relativeWidth="1.0" relativeHeight="0.660377358490566">
@@ -270,24 +270,24 @@
         <graphicsAlgorithmChildren xsi:type="al:Rectangle" background="//@colors.8" foreground="//@colors.5" lineWidth="1" lineStyle="UNSPECIFIED" width="8" height="8" x="17" y="2"/>
       </graphicsAlgorithm>
       <link>
-        <businessObjects href="weight_generator.pi#//@actors.4/@dataOutputPorts.0"/>
+        <businessObjects href="weight_generator.pi#//@vertices.7/@dataOutputPorts.0"/>
       </link>
     </anchors>
     <children visible="true">
       <graphicsAlgorithm xsi:type="al:Text" foreground="//@colors.4" lineWidth="1" filled="false" transparency="0.0" width="101" height="20" font="//@fonts.0" horizontalAlignment="ALIGNMENT_CENTER" value="WeightsCopy"/>
       <link>
-        <businessObjects href="weight_generator.pi#//@actors.4"/>
+        <businessObjects href="weight_generator.pi#//@vertices.7"/>
       </link>
     </children>
   </children>
   <children xsi:type="pi:ContainerShape" visible="true" active="true">
     <graphicsAlgorithm xsi:type="al:RoundedRectangle" background="//@colors.9" foreground="//@colors.5" lineWidth="2" transparency="0.0" width="81" height="53" x="50" y="250" cornerHeight="5" cornerWidth="5"/>
     <link>
-      <businessObjects href="weight_generator.pi#//@actors.5"/>
+      <businessObjects href="weight_generator.pi#//@vertices.8"/>
     </link>
     <anchors xsi:type="pi:ChopboxAnchor">
       <link>
-        <businessObjects href="weight_generator.pi#//@actors.5"/>
+        <businessObjects href="weight_generator.pi#//@vertices.8"/>
       </link>
     </anchors>
     <anchors xsi:type="pi:BoxRelativeAnchor" visible="true" active="true" incomingConnections="//@connections.13" referencedGraphicsAlgorithm="//@children.8/@graphicsAlgorithm" relativeHeight="0.37735849056603776">
@@ -300,7 +300,7 @@
         </graphicsAlgorithmChildren>
       </graphicsAlgorithm>
       <link>
-        <businessObjects href="weight_generator.pi#//@actors.5/@configInputPorts.0"/>
+        <businessObjects href="weight_generator.pi#//@vertices.8/@configInputPorts.0"/>
       </link>
     </anchors>
     <anchors xsi:type="pi:BoxRelativeAnchor" visible="true" active="true" incomingConnections="//@connections.3" referencedGraphicsAlgorithm="//@children.8/@graphicsAlgorithm" relativeHeight="0.660377358490566">
@@ -309,7 +309,7 @@
         <graphicsAlgorithmChildren xsi:type="al:Rectangle" background="//@colors.7" foreground="//@colors.5" lineWidth="1" lineStyle="UNSPECIFIED" width="8" height="8" y="2"/>
       </graphicsAlgorithm>
       <link>
-        <businessObjects href="weight_generator.pi#//@actors.5/@dataInputPorts.0"/>
+        <businessObjects href="weight_generator.pi#//@vertices.8/@dataInputPorts.0"/>
       </link>
     </anchors>
     <anchors xsi:type="pi:BoxRelativeAnchor" visible="true" active="true" outgoingConnections="//@connections.2" referencedGraphicsAlgorithm="//@children.8/@graphicsAlgorithm" relativeWidth="1.0" relativeHeight="0.660377358490566">
@@ -318,42 +318,42 @@
         <graphicsAlgorithmChildren xsi:type="al:Rectangle" background="//@colors.8" foreground="//@colors.5" lineWidth="1" lineStyle="UNSPECIFIED" width="8" height="8" x="17" y="2"/>
       </graphicsAlgorithm>
       <link>
-        <businessObjects href="weight_generator.pi#//@actors.5/@dataOutputPorts.0"/>
+        <businessObjects href="weight_generator.pi#//@vertices.8/@dataOutputPorts.0"/>
       </link>
     </anchors>
     <children visible="true">
       <graphicsAlgorithm xsi:type="al:Text" foreground="//@colors.4" lineWidth="1" filled="false" transparency="0.0" width="81" height="20" font="//@fonts.0" horizontalAlignment="ALIGNMENT_CENTER" value="BiasCopy"/>
       <link>
-        <businessObjects href="weight_generator.pi#//@actors.5"/>
+        <businessObjects href="weight_generator.pi#//@vertices.8"/>
       </link>
     </children>
   </children>
   <children xsi:type="pi:ContainerShape" visible="true" active="true">
     <graphicsAlgorithm xsi:type="al:Ellipse" background="//@colors.5" foreground="//@colors.5" lineWidth="1" lineVisible="false" transparency="0.0" width="16" height="16" x="193" y="317"/>
     <link>
-      <businessObjects href="weight_generator.pi#//@fifos.3/@delay"/>
+      <businessObjects href="weight_generator.pi#//@vertices.9"/>
     </link>
     <anchors xsi:type="pi:ChopboxAnchor" outgoingConnections="//@connections.3" incomingConnections="//@connections.14 //@connections.16" referencedGraphicsAlgorithm="//@children.9/@graphicsAlgorithm">
       <link>
-        <businessObjects href="weight_generator.pi#//@fifos.3/@delay"/>
+        <businessObjects href="weight_generator.pi#//@vertices.9"/>
       </link>
     </anchors>
   </children>
   <children xsi:type="pi:ContainerShape" visible="true" active="true">
     <graphicsAlgorithm xsi:type="al:Ellipse" background="//@colors.5" foreground="//@colors.5" lineWidth="1" lineVisible="false" transparency="0.0" width="16" height="16" x="193" y="435"/>
     <link>
-      <businessObjects href="weight_generator.pi#//@fifos.5/@delay"/>
+      <businessObjects href="weight_generator.pi#//@vertices.11"/>
     </link>
     <anchors xsi:type="pi:ChopboxAnchor" outgoingConnections="//@connections.5" incomingConnections="//@connections.15 //@connections.17" referencedGraphicsAlgorithm="//@children.10/@graphicsAlgorithm">
       <link>
-        <businessObjects href="weight_generator.pi#//@fifos.5/@delay"/>
+        <businessObjects href="weight_generator.pi#//@vertices.11"/>
       </link>
     </anchors>
   </children>
   <connections xsi:type="pi:FreeFormConnection" visible="true" active="true" start="//@children.3/@anchors.3" end="//@children.4/@anchors.0">
     <graphicsAlgorithm xsi:type="al:Polyline" foreground="//@colors.5" lineWidth="2" filled="false" transparency="0.0"/>
     <link>
-      <businessObjects href="weight_generator.pi#//@fifos.0"/>
+      <businessObjects href="weight_generator.pi#//@edges.0"/>
     </link>
     <connectionDecorators visible="true" locationRelative="true" location="1.0">
       <graphicsAlgorithm xsi:type="al:Polygon" background="//@colors.5" foreground="//@colors.5" lineWidth="2" lineStyle="UNSPECIFIED">
@@ -368,7 +368,7 @@
   <connections xsi:type="pi:FreeFormConnection" visible="true" active="true" start="//@children.6/@anchors.3" end="//@children.5/@anchors.0">
     <graphicsAlgorithm xsi:type="al:Polyline" foreground="//@colors.5" lineWidth="2" filled="false" transparency="0.0"/>
     <link>
-      <businessObjects href="weight_generator.pi#//@fifos.1"/>
+      <businessObjects href="weight_generator.pi#//@edges.1"/>
     </link>
     <connectionDecorators visible="true" locationRelative="true" location="1.0">
       <graphicsAlgorithm xsi:type="al:Polygon" background="//@colors.5" foreground="//@colors.5" lineWidth="2" lineStyle="UNSPECIFIED">
@@ -383,7 +383,7 @@
   <connections xsi:type="pi:FreeFormConnection" visible="true" active="true" start="//@children.8/@anchors.3" end="//@children.6/@anchors.2">
     <graphicsAlgorithm xsi:type="al:Polyline" foreground="//@colors.5" lineWidth="2" filled="false" transparency="0.0"/>
     <link>
-      <businessObjects href="weight_generator.pi#//@fifos.2"/>
+      <businessObjects href="weight_generator.pi#//@edges.2"/>
     </link>
     <connectionDecorators visible="true" locationRelative="true" location="1.0">
       <graphicsAlgorithm xsi:type="al:Polygon" background="//@colors.5" foreground="//@colors.5" lineWidth="2" lineStyle="UNSPECIFIED">
@@ -398,7 +398,7 @@
   <connections xsi:type="pi:FreeFormConnection" visible="true" active="true" start="//@children.9/@anchors.0" end="//@children.8/@anchors.2">
     <graphicsAlgorithm xsi:type="al:Polyline" foreground="//@colors.5" lineWidth="2" filled="false" transparency="0.0"/>
     <link>
-      <businessObjects href="weight_generator.pi#//@fifos.3"/>
+      <businessObjects href="weight_generator.pi#//@edges.3"/>
     </link>
     <connectionDecorators visible="true" locationRelative="true" location="1.0">
       <graphicsAlgorithm xsi:type="al:Polygon" background="//@colors.5" foreground="//@colors.5" lineWidth="2" lineStyle="UNSPECIFIED">
@@ -413,7 +413,7 @@
   <connections xsi:type="pi:FreeFormConnection" visible="true" active="true" start="//@children.7/@anchors.3" end="//@children.3/@anchors.2">
     <graphicsAlgorithm xsi:type="al:Polyline" foreground="//@colors.5" lineWidth="2" filled="false" transparency="0.0"/>
     <link>
-      <businessObjects href="weight_generator.pi#//@fifos.4"/>
+      <businessObjects href="weight_generator.pi#//@edges.4"/>
     </link>
     <connectionDecorators visible="true" locationRelative="true" location="1.0">
       <graphicsAlgorithm xsi:type="al:Polygon" background="//@colors.5" foreground="//@colors.5" lineWidth="2" lineStyle="UNSPECIFIED">
@@ -428,7 +428,7 @@
   <connections xsi:type="pi:FreeFormConnection" visible="true" active="true" start="//@children.10/@anchors.0" end="//@children.7/@anchors.2">
     <graphicsAlgorithm xsi:type="al:Polyline" foreground="//@colors.5" lineWidth="2" filled="false" transparency="0.0"/>
     <link>
-      <businessObjects href="weight_generator.pi#//@fifos.5"/>
+      <businessObjects href="weight_generator.pi#//@edges.5"/>
     </link>
     <connectionDecorators visible="true" locationRelative="true" location="1.0">
       <graphicsAlgorithm xsi:type="al:Polygon" background="//@colors.5" foreground="//@colors.5" lineWidth="2" lineStyle="UNSPECIFIED">
@@ -443,7 +443,7 @@
   <connections xsi:type="pi:FreeFormConnection" visible="true" active="true" start="//@children.0/@anchors.0" end="//@children.3/@anchors.1">
     <graphicsAlgorithm xsi:type="al:Polyline" foreground="//@colors.3" lineWidth="2" lineStyle="DASH" filled="false" transparency="0.0"/>
     <link>
-      <businessObjects href="weight_generator.pi#//@dependencies.0"/>
+      <businessObjects href="weight_generator.pi#//@edges.6"/>
     </link>
     <connectionDecorators visible="true" locationRelative="true" location="1.0">
       <graphicsAlgorithm xsi:type="al:Polyline" foreground="//@colors.3" lineWidth="2" lineStyle="UNSPECIFIED">
@@ -459,7 +459,7 @@
   <connections xsi:type="pi:FreeFormConnection" visible="true" active="true" start="//@children.1/@anchors.0" end="//@children.6/@anchors.1">
     <graphicsAlgorithm xsi:type="al:Polyline" foreground="//@colors.3" lineWidth="2" lineStyle="DASH" filled="false" transparency="0.0"/>
     <link>
-      <businessObjects href="weight_generator.pi#//@dependencies.1"/>
+      <businessObjects href="weight_generator.pi#//@edges.7"/>
     </link>
     <connectionDecorators visible="true" locationRelative="true" location="1.0">
       <graphicsAlgorithm xsi:type="al:Polyline" foreground="//@colors.3" lineWidth="2" lineStyle="UNSPECIFIED">
@@ -475,7 +475,7 @@
   <connections xsi:type="pi:FreeFormConnection" visible="true" active="true" start="//@children.1/@anchors.0" end="//@children.5/@anchors.0">
     <graphicsAlgorithm xsi:type="al:Polyline" foreground="//@colors.3" lineWidth="2" lineStyle="DASH" filled="false" transparency="0.0"/>
     <link>
-      <businessObjects href="weight_generator.pi#//@dependencies.2"/>
+      <businessObjects href="weight_generator.pi#//@edges.8"/>
     </link>
     <connectionDecorators visible="true" locationRelative="true" location="1.0">
       <graphicsAlgorithm xsi:type="al:Polyline" foreground="//@colors.3" lineWidth="2" lineStyle="UNSPECIFIED">
@@ -490,7 +490,7 @@
   <connections xsi:type="pi:FreeFormConnection" visible="true" active="true" start="//@children.0/@anchors.0" end="//@children.4/@anchors.0">
     <graphicsAlgorithm xsi:type="al:Polyline" foreground="//@colors.3" lineWidth="2" lineStyle="DASH" filled="false" transparency="0.0"/>
     <link>
-      <businessObjects href="weight_generator.pi#//@dependencies.3"/>
+      <businessObjects href="weight_generator.pi#//@edges.9"/>
     </link>
     <connectionDecorators visible="true" locationRelative="true" location="1.0">
       <graphicsAlgorithm xsi:type="al:Polyline" foreground="//@colors.3" lineWidth="2" lineStyle="UNSPECIFIED">
@@ -506,7 +506,7 @@
   <connections xsi:type="pi:FreeFormConnection" visible="true" active="true" start="//@children.2/@anchors.0" end="//@children.0/@anchors.0">
     <graphicsAlgorithm xsi:type="al:Polyline" foreground="//@colors.3" lineWidth="2" lineStyle="DASH" filled="false" transparency="0.0"/>
     <link>
-      <businessObjects href="weight_generator.pi#//@dependencies.4"/>
+      <businessObjects href="weight_generator.pi#//@edges.10"/>
     </link>
     <connectionDecorators visible="true" locationRelative="true" location="1.0">
       <graphicsAlgorithm xsi:type="al:Polyline" foreground="//@colors.3" lineWidth="2" lineStyle="UNSPECIFIED">
@@ -520,7 +520,7 @@
   <connections xsi:type="pi:FreeFormConnection" visible="true" active="true" start="//@children.1/@anchors.0" end="//@children.0/@anchors.0">
     <graphicsAlgorithm xsi:type="al:Polyline" foreground="//@colors.3" lineWidth="2" lineStyle="DASH" filled="false" transparency="0.0"/>
     <link>
-      <businessObjects href="weight_generator.pi#//@dependencies.5"/>
+      <businessObjects href="weight_generator.pi#//@edges.11"/>
     </link>
     <connectionDecorators visible="true" locationRelative="true" location="1.0">
       <graphicsAlgorithm xsi:type="al:Polyline" foreground="//@colors.3" lineWidth="2" lineStyle="UNSPECIFIED">
@@ -534,7 +534,7 @@
   <connections xsi:type="pi:FreeFormConnection" visible="true" active="true" start="//@children.0/@anchors.0" end="//@children.7/@anchors.1">
     <graphicsAlgorithm xsi:type="al:Polyline" foreground="//@colors.3" lineWidth="2" lineStyle="DASH" filled="false" transparency="0.0"/>
     <link>
-      <businessObjects href="weight_generator.pi#//@dependencies.6"/>
+      <businessObjects href="weight_generator.pi#//@edges.12"/>
     </link>
     <connectionDecorators visible="true" locationRelative="true" location="1.0">
       <graphicsAlgorithm xsi:type="al:Polyline" foreground="//@colors.3" lineWidth="2" lineStyle="UNSPECIFIED">
@@ -550,7 +550,7 @@
   <connections xsi:type="pi:FreeFormConnection" visible="true" active="true" start="//@children.1/@anchors.0" end="//@children.8/@anchors.1">
     <graphicsAlgorithm xsi:type="al:Polyline" foreground="//@colors.3" lineWidth="2" lineStyle="DASH" filled="false" transparency="0.0"/>
     <link>
-      <businessObjects href="weight_generator.pi#//@dependencies.7"/>
+      <businessObjects href="weight_generator.pi#//@edges.13"/>
     </link>
     <connectionDecorators visible="true" locationRelative="true" location="1.0">
       <graphicsAlgorithm xsi:type="al:Polyline" foreground="//@colors.3" lineWidth="2" lineStyle="UNSPECIFIED">
@@ -566,7 +566,7 @@
   <connections xsi:type="pi:FreeFormConnection" visible="true" active="true" start="//@children.1/@anchors.0" end="//@children.9/@anchors.0">
     <graphicsAlgorithm xsi:type="al:Polyline" foreground="//@colors.3" lineWidth="2" lineStyle="DASH" filled="false" transparency="0.0"/>
     <link>
-      <businessObjects href="weight_generator.pi#//@dependencies.8"/>
+      <businessObjects href="weight_generator.pi#//@edges.14"/>
     </link>
     <connectionDecorators visible="true" locationRelative="true" location="1.0">
       <graphicsAlgorithm xsi:type="al:Polyline" foreground="//@colors.3" lineWidth="2" lineStyle="UNSPECIFIED">
@@ -582,7 +582,7 @@
   <connections xsi:type="pi:FreeFormConnection" visible="true" active="true" start="//@children.0/@anchors.0" end="//@children.10/@anchors.0">
     <graphicsAlgorithm xsi:type="al:Polyline" foreground="//@colors.3" lineWidth="2" lineStyle="DASH" filled="false" transparency="0.0"/>
     <link>
-      <businessObjects href="weight_generator.pi#//@dependencies.9"/>
+      <businessObjects href="weight_generator.pi#//@edges.15"/>
     </link>
     <connectionDecorators visible="true" locationRelative="true" location="1.0">
       <graphicsAlgorithm xsi:type="al:Polyline" foreground="//@colors.3" lineWidth="2" lineStyle="UNSPECIFIED">
@@ -598,7 +598,7 @@
   <connections xsi:type="pi:FreeFormConnection" visible="true" active="true" start="//@children.6/@anchors.4" end="//@children.9/@anchors.0">
     <graphicsAlgorithm xsi:type="al:Polyline" foreground="//@colors.5" lineWidth="2" filled="false" transparency="0.0"/>
     <link>
-      <businessObjects href="weight_generator.pi#//@fifos.3"/>
+      <businessObjects href="weight_generator.pi#//@edges.3"/>
     </link>
     <bendpoints x="399" y="305"/>
     <bendpoints x="419" y="325"/>
@@ -607,7 +607,7 @@
   <connections xsi:type="pi:FreeFormConnection" visible="true" active="true" start="//@children.3/@anchors.4" end="//@children.10/@anchors.0">
     <graphicsAlgorithm xsi:type="al:Polyline" foreground="//@colors.5" lineWidth="2" filled="false" transparency="0.0"/>
     <link>
-      <businessObjects href="weight_generator.pi#//@fifos.5"/>
+      <businessObjects href="weight_generator.pi#//@edges.5"/>
     </link>
     <bendpoints x="419" y="423"/>
     <bendpoints x="419" y="443"/>
