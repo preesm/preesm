@@ -235,7 +235,6 @@ public class StaticPiMM2SrDAGLauncher extends PiMMSwitch<Boolean> {
     timer.stop();
     final String msgOptimsGraphs = "Graph optimizations: " + timer + "s.";
     WorkflowLogger.getLogger().log(Level.INFO, msgOptimsGraphs);
-    // saveGraph(acyclicSRPiMM);
 
     final StaticPiMM2MapperDAGVisitor visitor = new StaticPiMM2MapperDAGVisitor(acyclicSRPiMM, this.scenario);
     // Convert the PiMM vertices to DAG vertices
@@ -262,8 +261,10 @@ public class StaticPiMM2SrDAGLauncher extends PiMMSwitch<Boolean> {
     for (final AbstractActor actor : graph.getActors()) {
       if (actor instanceof ForkActor) {
         retValue |= removeFork(graph, actor);
+        retValue |= removeSingleSpecial(graph, actor);
       } else if (actor instanceof JoinActor) {
         retValue |= removeJoin(graph, actor);
+        retValue |= removeSingleSpecial(graph, actor);
       }
     }
     return retValue;
@@ -281,42 +282,10 @@ public class StaticPiMM2SrDAGLauncher extends PiMMSwitch<Boolean> {
     for (final AbstractActor actor : graph.getActors()) {
       if (actor instanceof BroadcastActor) {
         removeFork(graph, actor);
-        if (actor.getDataInputPorts().size() == 1 && actor.getDataOutputPorts().size() == 1) {
-          // We remove broadcasts that have only one input / output and with same rates
-          final DataInputPort dataInputPort = actor.getDataInputPorts().get(0);
-          final Expression inputRateExpression = dataInputPort.getPortRateExpression();
-          final long inputRate = Long.parseLong(inputRateExpression.getExpressionString());
-          final DataOutputPort dataOutputPort = actor.getDataOutputPorts().get(0);
-          final Expression outputRateExpression = dataOutputPort.getPortRateExpression();
-          final long outputRate = Long.parseLong(outputRateExpression.getExpressionString());
-          if (inputRate == outputRate) {
-            // We can remove the one of the FIFO and the actor
-            final Fifo outgoingFifo = dataOutputPort.getOutgoingFifo();
-            final Fifo incomingFifo = dataInputPort.getIncomingFifo();
-            outgoingFifo.setSourcePort(incomingFifo.getSourcePort());
-            graph.removeFifo(incomingFifo);
-            graph.removeActor(actor);
-          }
-        }
+        removeSingleSpecial(graph, actor);
       } else if (actor instanceof RoundBufferActor) {
         removeJoin(graph, actor);
-        if (actor.getDataInputPorts().size() == 1 && actor.getDataOutputPorts().size() == 1) {
-          // We remove broadcasts that have only one input / output and with same rates
-          final DataInputPort dataInputPort = actor.getDataInputPorts().get(0);
-          final Expression inputRateExpression = dataInputPort.getPortRateExpression();
-          final long inputRate = Long.parseLong(inputRateExpression.getExpressionString());
-          final DataOutputPort dataOutputPort = actor.getDataOutputPorts().get(0);
-          final Expression outputRateExpression = dataOutputPort.getPortRateExpression();
-          final long outputRate = Long.parseLong(outputRateExpression.getExpressionString());
-          if (inputRate == outputRate) {
-            // We can remove the one of the FIFO and the actor
-            final Fifo outgoingFifo = dataOutputPort.getOutgoingFifo();
-            final Fifo incomingFifo = dataInputPort.getIncomingFifo();
-            outgoingFifo.setSourcePort(incomingFifo.getSourcePort());
-            graph.removeFifo(incomingFifo);
-            graph.removeActor(actor);
-          }
-        }
+        removeSingleSpecial(graph, actor);
       }
     }
   }
@@ -395,6 +364,38 @@ public class StaticPiMM2SrDAGLauncher extends PiMMSwitch<Boolean> {
     toRemove.forEach(actor.getDataOutputPorts()::remove);
     toReplace.forEach((k, v) -> actor.getDataOutputPorts().addAll(k, v));
     return !toReplace.isEmpty();
+  }
+
+  /**
+   * Remove a special actor with only one input / output with same rates.
+   * 
+   * @param graph
+   *          The graph in which the actor is.
+   * @param actor
+   *          The actor to analyze
+   * @return true if the actor was removed, false else
+   */
+  private boolean removeSingleSpecial(final PiGraph graph, final AbstractActor actor) {
+    if (actor.getDataInputPorts().size() == 1 && actor.getDataOutputPorts().size() == 1) {
+      // 0. Get input rate
+      final DataInputPort dataInputPort = actor.getDataInputPorts().get(0);
+      final Expression inputRateExpression = dataInputPort.getPortRateExpression();
+      final long inputRate = Long.parseLong(inputRateExpression.getExpressionString());
+      // 1. Get output rate
+      final DataOutputPort dataOutputPort = actor.getDataOutputPorts().get(0);
+      final Expression outputRateExpression = dataOutputPort.getPortRateExpression();
+      final long outputRate = Long.parseLong(outputRateExpression.getExpressionString());
+      if (inputRate == outputRate) {
+        // 2. We can remove one of the FIFO and the actor
+        final Fifo outgoingFifo = dataOutputPort.getOutgoingFifo();
+        final Fifo incomingFifo = dataInputPort.getIncomingFifo();
+        outgoingFifo.setSourcePort(incomingFifo.getSourcePort());
+        graph.removeFifo(incomingFifo);
+        graph.removeActor(actor);
+        return true;
+      }
+    }
+    return false;
   }
 
   /**

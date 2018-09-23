@@ -145,6 +145,12 @@ public class StaticPiMM2ASrPiMMVisitor extends PiMMSwitch<Boolean> {
     this.brv = brv;
     this.scenario = scenario;
     this.graphName = "";
+    this.graphPrefix = "";
+
+    // Do the split of the delay actors for the top-level here
+    for (final Fifo f : graph.getFifosWithDelay()) {
+      splitDelayActors(f);
+    }
   }
 
   /**
@@ -731,15 +737,6 @@ public class StaticPiMM2ASrPiMMVisitor extends PiMMSwitch<Boolean> {
 
   @Override
   public Boolean casePiGraph(final PiGraph graph) {
-    // Set the prefix graph name
-    this.graphPrefix = this.graphName.isEmpty() ? "" : this.graphName + "_";
-
-    // Top graph
-    if (graph.getContainingPiGraph() == null) {
-      for (final Fifo f : graph.getFifosWithDelay()) {
-        splitDelayActors(f);
-      }
-    }
     // If there are no actors in the graph we leave
     if (graph.getActors().isEmpty()) {
       throw new UnsupportedOperationException(
@@ -763,12 +760,12 @@ public class StaticPiMM2ASrPiMMVisitor extends PiMMSwitch<Boolean> {
     // Restore the graph name
     this.graphName = backupGraphName;
 
-    // Perform the Multi-Rate to Single-Rate transformation based on the FIFOs
-    originalGraphName = graph.getName();
+    this.originalGraphName = graph.getName();
 
     // Set the prefix graph name
     this.graphPrefix = this.graphName.isEmpty() ? "" : this.graphName + "_";
 
+    // Perform the Multi-Rate to Single-Rate transformation based on the FIFOs
     // We first deal with the FIFOs with delays, so we can replace Init / End actors by the proper Setter / Getter
     for (final Fifo f : graph.getFifosWithDelay()) {
       doSwitch(f);
@@ -779,6 +776,25 @@ public class StaticPiMM2ASrPiMMVisitor extends PiMMSwitch<Boolean> {
     return true;
   }
 
+  /**
+   * Split each delay actors in two delay actors: a setter and a getter.
+   * 
+   * <pre>
+   * 
+   * 1. If a delay has no setter / getter actors, then init / end actors are added to replace them.
+   * 
+   * 2. The setter actor is connected to a new delay actor and the same goes for the getter actor.
+   * 
+   * </pre>
+   * 
+   * The idea is to be able to first treat delay FIFOs normally and then come and replace the init / end actors added
+   * during the single rate linking by the proper setter / getter ones.
+   * 
+   * This pre-processing allows to keep the single-rate linking phase as generic as possible.
+   * 
+   * @param fifo
+   *          The current fifo
+   */
   private void splitDelayActors(final Fifo fifo) {
     final DelayActor delayActor = fifo.getDelay().getActor();
     final String delayExpression = fifo.getDelay().getExpression().getExpressionString();
