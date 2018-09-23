@@ -146,11 +146,6 @@ public class StaticPiMM2ASrPiMMVisitor extends PiMMSwitch<Boolean> {
     this.scenario = scenario;
     this.graphName = "";
     this.graphPrefix = "";
-
-    // Do the split of the delay actors for the top-level here
-    for (final Fifo f : graph.getFifosWithDelay()) {
-      splitDelayActors(f);
-    }
   }
 
   /**
@@ -315,6 +310,16 @@ public class StaticPiMM2ASrPiMMVisitor extends PiMMSwitch<Boolean> {
   public Boolean caseBroadcastActor(final BroadcastActor actor) {
     // Copy the BroadCast actor
     final BroadcastActor copyActor = (BroadcastActor) copier.copy(actor);
+
+    // Set the properties
+    setPropertiesToCopyActor(actor, copyActor);
+    return true;
+  }
+
+  @Override
+  public Boolean caseRoundBufferActor(final RoundBufferActor actor) {
+    // Copy the RoundBuffer actor
+    final RoundBufferActor copyActor = (RoundBufferActor) copier.copy(actor);
 
     // Set the properties
     setPropertiesToCopyActor(actor, copyActor);
@@ -737,11 +742,21 @@ public class StaticPiMM2ASrPiMMVisitor extends PiMMSwitch<Boolean> {
 
   @Override
   public Boolean casePiGraph(final PiGraph graph) {
+    // Set the prefix graph name
+    this.graphPrefix = this.graphName.isEmpty() ? "" : this.graphName + "_";
+
     // If there are no actors in the graph we leave
     if (graph.getActors().isEmpty()) {
       throw new UnsupportedOperationException(
           "Can not convert an empty graph. Check the refinement for [" + graph.getVertexPath() + "].");
     }
+    if (graph.getContainingPiGraph() == null) {
+      // Do the split of the delay actors for the top-level here
+      for (final Fifo f : graph.getFifosWithDelay()) {
+        splitDelayActors(f);
+      }
+    }
+
     // Save the current graph name
     final String backupGraphName = this.graphName;
 
@@ -752,7 +767,9 @@ public class StaticPiMM2ASrPiMMVisitor extends PiMMSwitch<Boolean> {
         splitDelayActors(f);
       }
       final Long brvGraph = this.brv.get(g);
+      final String currentPrefix = this.graphPrefix;
       for (long i = 0; i < brvGraph; ++i) {
+        this.graphPrefix = currentPrefix;
         this.graphName = buildName(this.graphPrefix, g.getName(), i);
         doSwitch(g);
       }
