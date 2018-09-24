@@ -39,6 +39,7 @@ package org.ietr.preesm.ui.scenario.editor;
 
 import java.util.LinkedHashSet;
 import java.util.Set;
+import org.apache.commons.io.FilenameUtils;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
@@ -208,15 +209,16 @@ public class OverviewPage extends FormPage {
 
       colorRedIfFileAbsent(text);
 
+      final String path = FilenameUtils.separatorsToUnix(text.getText());
       if (type.equals(Messages.getString("Overview.algorithmFile"))) {
-        OverviewPage.this.scenario.setAlgorithmURL(text.getText());
+        OverviewPage.this.scenario.setAlgorithmURL(path);
         try {
           OverviewPage.this.scenario.update(true, false);
         } catch (InvalidModelException | CoreException ex) {
           ex.printStackTrace();
         }
       } else if (type.equals(Messages.getString("Overview.architectureFile"))) {
-        OverviewPage.this.scenario.setArchitectureURL(text.getText());
+        OverviewPage.this.scenario.setArchitectureURL(path);
         try {
           OverviewPage.this.scenario.update(false, true);
         } catch (InvalidModelException | CoreException ex) {
