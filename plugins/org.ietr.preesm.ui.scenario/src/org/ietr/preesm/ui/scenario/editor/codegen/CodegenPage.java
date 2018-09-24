@@ -38,6 +38,7 @@ package org.ietr.preesm.ui.scenario.editor.codegen;
 
 import java.util.LinkedHashSet;
 import java.util.Set;
+import org.apache.commons.io.FilenameUtils;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.layout.GridData;
@@ -198,8 +199,8 @@ public class CodegenPage extends FormPage {
     text.addModifyListener(e -> {
       final Text text1 = (Text) e.getSource();
       colorRedIfFileAbsent(text1);
-      CodegenPage.this.scenario.getCodegenManager().setCodegenDirectory(text1.getText());
-
+      final String path = FilenameUtils.separatorsToUnix(text1.getText());
+      CodegenPage.this.scenario.getCodegenManager().setCodegenDirectory(path);
       firePropertyChange(IEditorPart.PROP_DIRTY);
 
     });
