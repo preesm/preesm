@@ -10,7 +10,7 @@ PREESM Changelog
 * Fix Spider codegen: properly return 0 when initializing archi;
 * Update M2E Code Quality repo;
 * Codegen now automatically fills its include list given actors refinements;
-* PiMM2SRDAG transformation now should work on all graphs.
+* Fix PiMM2SRDAG transformation (was giving wrong results / failing on specific cases);
 
 ### Bug fix
 * Fix path format in scenario editor (issue #81);
