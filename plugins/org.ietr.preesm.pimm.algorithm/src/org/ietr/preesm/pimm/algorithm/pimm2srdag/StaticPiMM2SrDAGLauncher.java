@@ -35,28 +35,15 @@
  */
 package org.ietr.preesm.pimm.algorithm.pimm2srdag;
 
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
 import org.apache.commons.lang3.time.StopWatch;
-import org.eclipse.core.resources.IFile;
-import org.eclipse.core.resources.ResourcesPlugin;
-import org.eclipse.core.runtime.CoreException;
-import org.eclipse.core.runtime.IPath;
-import org.eclipse.core.runtime.Path;
-import org.eclipse.emf.common.util.URI;
-import org.eclipse.emf.ecore.resource.Resource;
-import org.eclipse.emf.ecore.resource.ResourceSet;
-import org.eclipse.emf.ecore.resource.impl.ResourceSetImpl;
 import org.ietr.dftools.algorithm.model.dag.DAGEdge;
 import org.ietr.dftools.algorithm.model.dag.DAGVertex;
 import org.ietr.dftools.algorithm.model.dag.types.DAGDefaultEdgePropertyType;
-import org.ietr.dftools.workflow.WorkflowException;
 import org.ietr.dftools.workflow.tools.WorkflowLogger;
 import org.ietr.preesm.core.scenario.PreesmScenario;
 import org.ietr.preesm.experiment.model.pimm.AbstractActor;
@@ -71,7 +58,6 @@ import org.ietr.preesm.experiment.model.pimm.JoinActor;
 import org.ietr.preesm.experiment.model.pimm.Parameter;
 import org.ietr.preesm.experiment.model.pimm.PiGraph;
 import org.ietr.preesm.experiment.model.pimm.RoundBufferActor;
-import org.ietr.preesm.experiment.model.pimm.serialize.PiWriter;
 import org.ietr.preesm.experiment.model.pimm.util.PiMMSwitch;
 import org.ietr.preesm.mapper.model.MapperDAG;
 import org.ietr.preesm.pimm.algorithm.helper.LCMBasedBRV;
@@ -81,8 +67,6 @@ import org.ietr.preesm.pimm.algorithm.helper.PiMMHelperException;
 import org.ietr.preesm.pimm.algorithm.helper.TopologyBasedBRV;
 import org.ietr.preesm.pimm.algorithm.pimm2srdag.visitor.StaticPiMM2ASrPiMMVisitor;
 import org.ietr.preesm.pimm.algorithm.pimm2srdag.visitor.StaticPiMM2MapperDAGVisitor;
-import org.ietr.preesm.utils.files.ContainersManager;
-import org.ietr.preesm.utils.paths.PathTools;
 
 /**
  * The Class StaticPiMM2SDFLauncher.
@@ -166,47 +150,6 @@ public class StaticPiMM2SrDAGLauncher extends PiMMSwitch<Boolean> {
     return result;
   }
 
-  private void saveGraph(final PiGraph graph) {
-    final String url = scenario.getAlgorithmURL();
-    final ResourceSet resourceSet = new ResourceSetImpl();
-
-    final URI uriGraph = URI.createPlatformResourceURI(url, true);
-    if ((uriGraph.fileExtension() == null) || !uriGraph.fileExtension().contentEquals("pi")) {
-      throw new WorkflowException("unhandled file exception: " + uriGraph.fileExtension());
-    }
-    Resource ressource;
-    ressource = resourceSet.getResource(uriGraph, true);
-
-    // Creates the output file now
-    final String sXmlPath = PathTools.getAbsolutePath("Algo/generated/", "delays") + "/Algo/generated";
-    IPath xmlPath = new Path(sXmlPath);
-    // Get a complete valid path with all folders existing
-    try {
-      if (xmlPath.getFileExtension() != null) {
-        ContainersManager.createMissingFolders(xmlPath.removeFileExtension().removeLastSegments(1));
-      } else {
-        ContainersManager.createMissingFolders(xmlPath);
-        xmlPath = xmlPath.append(graph.getName() + ".pi");
-      }
-    } catch (CoreException | IllegalArgumentException e) {
-      throw new WorkflowException("Path " + sXmlPath + " is not a valid path for export.\n" + e.getMessage());
-    }
-
-    OutputStream outStream;
-    try {
-      // Write the Graph to the OutputStream using the Pi format
-      final URI uri = URI.createPlatformResourceURI(xmlPath.toString(), true);
-      // Get the project
-      final String platformString = uri.toPlatformString(true);
-      final IFile documentFile = ResourcesPlugin.getWorkspace().getRoot().getFile(new Path(platformString));
-      outStream = new FileOutputStream(documentFile.getLocation().toOSString());
-
-      new PiWriter(uri).write(graph, outStream);
-    } catch (FileNotFoundException e) {
-      throw new WorkflowException("Could not open outputstream file " + xmlPath.toString());
-    }
-  }
-
   /**
    * Convert the PiSDF graph to SRDAG
    * 
@@ -230,8 +173,8 @@ public class StaticPiMM2SrDAGLauncher extends PiMMSwitch<Boolean> {
     boolean keepGoing = true;
     while (keepGoing) {
       keepGoing = optimizeForkandJoin(acyclicSRPiMM);
+      keepGoing |= optimizeBRandRB(acyclicSRPiMM);
     }
-    optimizeBRandRB(acyclicSRPiMM);
     timer.stop();
     final String msgOptimsGraphs = "Graph optimizations: " + timer + "s.";
     WorkflowLogger.getLogger().log(Level.INFO, msgOptimsGraphs);
@@ -278,16 +221,18 @@ public class StaticPiMM2SrDAGLauncher extends PiMMSwitch<Boolean> {
    * @param graph
    *          The graph to optimize
    */
-  private void optimizeBRandRB(final PiGraph graph) {
+  private boolean optimizeBRandRB(final PiGraph graph) {
+    boolean retValue = false;
     for (final AbstractActor actor : graph.getActors()) {
       if (actor instanceof BroadcastActor) {
-        removeFork(graph, actor);
-        removeSingleSpecial(graph, actor);
+        retValue |= removeFork(graph, actor);
+        retValue |= removeSingleSpecial(graph, actor);
       } else if (actor instanceof RoundBufferActor) {
-        removeJoin(graph, actor);
-        removeSingleSpecial(graph, actor);
+        retValue |= removeJoin(graph, actor);
+        retValue |= removeSingleSpecial(graph, actor);
       }
     }
+    return retValue;
   }
 
   /**
