@@ -157,10 +157,12 @@ public class StaticPiMM2ASrPiMMVisitor extends PiMMSwitch<Boolean> {
    *          The vertex name
    * @param index
    *          Instance of the vertex in the single-rate graph
+   * @param vertexRV
+   *          Repetition vector of the actor
    * @return The proper built name
    */
-  private String buildName(final String prefixe, final String vertexName, final long index) {
-    return index > 0 ? prefixe + vertexName + "_" + Long.toString(index) : prefixe + vertexName;
+  private String buildName(final String prefixe, final String vertexName, final long index, final long vertexRV) {
+    return vertexRV > 1 ? prefixe + vertexName + "_" + Long.toString(index) : prefixe + vertexName;
   }
 
   /**
@@ -715,9 +717,6 @@ public class StaticPiMM2ASrPiMMVisitor extends PiMMSwitch<Boolean> {
       return;
     }
 
-    // Populate the DAG with the appropriate number of instances of the actor
-    final Long actorNBRepeat = this.brv.get(actor);
-
     // Creates the entry for the current PiMM Actor
     this.actor2SRActors.put(this.graphName + actor.getName(), new ArrayList<>());
 
@@ -732,10 +731,17 @@ public class StaticPiMM2ASrPiMMVisitor extends PiMMSwitch<Boolean> {
       }
     }
 
+    // Populate the DAG with the appropriate number of instances of the actor
+    final Long actorRV = this.brv.get(actor);
+
     // Populate the graph with the number of instance of the current actor
-    for (long i = 0; i < actorNBRepeat; ++i) {
+    for (long i = 0; i < actorRV; ++i) {
       // Setting the correct name
-      this.currentActorName = buildName(this.graphPrefix, actor.getName(), i);
+      // We fix the RV to be always > 1 for actors, this way we can not have a problem of naming as such
+      // actor_#i, whose name is actor and we're at instance #i and a secondary actor named actor_x_#i with x an integer
+      // In some cases it could happen that actor_x has a BRV of 1 resulting in a name of "actor_x" and
+      // actor has a BRV value >= to x resulting of two actors named the same
+      this.currentActorName = buildName(this.graphPrefix, actor.getName(), i, 2);
       caseAbstractActor((AbstractActor) actor);
     }
   }
@@ -766,11 +772,11 @@ public class StaticPiMM2ASrPiMMVisitor extends PiMMSwitch<Boolean> {
       for (final Fifo f : g.getFifosWithDelay()) {
         splitDelayActors(f);
       }
-      final Long brvGraph = this.brv.get(g);
+      final Long graphRV = this.brv.get(g);
       final String currentPrefix = this.graphPrefix;
-      for (long i = 0; i < brvGraph; ++i) {
+      for (long i = 0; i < graphRV; ++i) {
         this.graphPrefix = currentPrefix;
-        this.graphName = buildName(this.graphPrefix, g.getName(), i);
+        this.graphName = buildName(this.graphPrefix, g.getName(), i, graphRV);
         doSwitch(g);
       }
     }
