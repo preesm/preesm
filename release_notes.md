@@ -12,6 +12,7 @@ PREESM Changelog
 * Codegen now automatically fills its include list given actors refinements;
 
 ### Bug fix
+* Fix path format in scenario editor (issue #81);
 
 
 ## Release version 2.15.0
