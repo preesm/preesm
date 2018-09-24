@@ -411,7 +411,7 @@ public class StaticPiMM2ASrPiMMVisitor extends PiMMSwitch<Boolean> {
   /**
    * 
    * @param fifo
-   *          the fifo
+   *          the FIFO
    * @param sourcePort
    *          the sourcePort
    * @param targetPort
@@ -438,17 +438,9 @@ public class StaticPiMM2ASrPiMMVisitor extends PiMMSwitch<Boolean> {
       final List<AbstractVertex> sourceSet = this.outPort2SRActors.remove(key);
       // Now we change the "sourcePort" of the FIFO to match the one of the sourceSet
       final AbstractActor firstOfSet = (AbstractActor) sourceSet.get(0);
-      for (final DataOutputInterface doi : ((PiGraph) sourceActor).getDataOutputInterfaces()) {
-        if (doi.getName().equals(sourcePort.getName())) {
-          final DataInputPort dataInputPort = doi.getDataInputPorts().get(0);
-          final Fifo incomingFifo = dataInputPort.getIncomingFifo();
-          final DataOutputPort correspondingSourcePort = incomingFifo.getSourcePort();
-          final Port lookupPort = firstOfSet.lookupPort(correspondingSourcePort.getName());
-          if (lookupPort != null) {
-            fifo.setSourcePort((DataOutputPort) lookupPort);
-          }
-          break;
-        }
+      final DataOutputPort foundPort = lookForSourcePort((PiGraph) sourceActor, firstOfSet, sourcePort.getName());
+      if (foundPort != null) {
+        fifo.setSourcePort(foundPort);
       }
       return sourceSet;
     } else {
@@ -458,6 +450,32 @@ public class StaticPiMM2ASrPiMMVisitor extends PiMMSwitch<Boolean> {
       }
       return this.actor2SRActors.get(keyActor);
     }
+  }
+
+  /**
+   * Search recursively in hierarchy for the matching source port in the real source actor connected to an interface
+   * 
+   * @param graph
+   *          Current graph containing the interface actor of name "sourceName"
+   * @param source
+   *          Actor for which we want to find the source port
+   * @param sourceName
+   *          Name of the current interface actor
+   * @return The DataOutputPort found, null else
+   */
+  private DataOutputPort lookForSourcePort(final PiGraph graph, final AbstractActor source, final String sourceName) {
+    for (final DataOutputInterface doi : graph.getDataOutputInterfaces()) {
+      if (doi.getName().equals(sourceName)) {
+        final Fifo inFifo = doi.getDataPort().getFifo();
+        final DataOutputPort sourcePort = inFifo.getSourcePort();
+        final AbstractActor containingActor = sourcePort.getContainingActor();
+        if (containingActor instanceof PiGraph) {
+          return lookForSourcePort((PiGraph) containingActor, source, sourcePort.getName());
+        }
+        return (DataOutputPort) source.lookupPort(sourcePort.getName());
+      }
+    }
+    return null;
   }
 
   /**
@@ -553,17 +571,9 @@ public class StaticPiMM2ASrPiMMVisitor extends PiMMSwitch<Boolean> {
       final List<AbstractVertex> sinkSet = this.inPort2SRActors.remove(key);
       // Now we change the "sinkPort" of the FIFO to match the one of the sinkSet if needed
       final AbstractActor firstOfSet = (AbstractActor) sinkSet.get(0);
-      for (final DataInputInterface dii : ((PiGraph) sinkActor).getDataInputInterfaces()) {
-        if (dii.getName().equals(targetPort.getName())) {
-          final DataOutputPort dataOutputPort = dii.getDataOutputPorts().get(0);
-          final Fifo outgoingFifo = dataOutputPort.getOutgoingFifo();
-          final DataInputPort correspondingTargetPort = outgoingFifo.getTargetPort();
-          final Port lookupPort = firstOfSet.lookupPort(correspondingTargetPort.getName());
-          if (lookupPort != null) {
-            fifo.setTargetPort((DataInputPort) lookupPort);
-          }
-          break;
-        }
+      final DataInputPort foundPort = lookForTargetPort((PiGraph) sinkActor, firstOfSet, targetPort.getName());
+      if (foundPort != null) {
+        fifo.setTargetPort(foundPort);
       }
       return sinkSet;
     } else {
@@ -573,6 +583,32 @@ public class StaticPiMM2ASrPiMMVisitor extends PiMMSwitch<Boolean> {
       }
       return this.actor2SRActors.get(keyActor);
     }
+  }
+
+  /**
+   * Search recursively in hierarchy for the matching source port in the real source actor connected to an interface
+   * 
+   * @param graph
+   *          Current graph containing the interface actor of name "targetName"
+   * @param target
+   *          Actor for which we want to find the target port
+   * @param targetName
+   *          Name of the current interface actor
+   * @return The DataInputPort found, null else
+   */
+  private DataInputPort lookForTargetPort(final PiGraph graph, final AbstractActor target, final String targetName) {
+    for (final DataInputInterface dii : graph.getDataInputInterfaces()) {
+      if (dii.getName().equals(targetName)) {
+        final Fifo outFifo = dii.getDataPort().getFifo();
+        final DataInputPort targetPort = outFifo.getTargetPort();
+        final AbstractActor containingActor = targetPort.getContainingActor();
+        if (containingActor instanceof PiGraph) {
+          return lookForTargetPort((PiGraph) containingActor, target, targetPort.getName());
+        }
+        return (DataInputPort) target.lookupPort(targetPort.getName());
+      }
+    }
+    return null;
   }
 
   /**

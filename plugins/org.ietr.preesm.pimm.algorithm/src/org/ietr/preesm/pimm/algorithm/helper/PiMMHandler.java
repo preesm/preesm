@@ -485,7 +485,7 @@ public class PiMMHandler {
     final String type = containingFifo.getType();
     final String delayExpression = delay.getSizeExpression().getExpressionString();
     // 1. First we remove the level of persistence associated with the delay
-    delay.setLevel(PersistenceLevel.NONE);
+    delay.setLevel(PersistenceLevel.LOCAL);
 
     // 2. We create the interfaces that we need to communicate with the upper level
     // Add the DataInputInterface to the graph
@@ -545,11 +545,12 @@ public class PiMMHandler {
 
     // 5. Finally we add a delay to this FIFO as well
     final Delay delayPersistence = PiMMUserFactory.instance.createDelay();
+    final String name = graph.getName() + "_" + setterIn.getName() + "__" + getterOut.getName();
+    delayPersistence.setName(name);
     delayPersistence.setLevel(PersistenceLevel.NONE);
     delayPersistence.getSizeExpression().setExpressionString(delayExpression);
     final DelayActor newDelayActor = delayPersistence.getActor();
-    newDelayActor.setName(graph.getName() + "_" + setterIn.getName() + "__" + getterOut.getName());
-    // TODO set the name of the port of the delayActor with the original names
+    newDelayActor.setName(name);
     newDelayActor.getDataInputPort().setName(originalDelayActor.getDataInputPort().getName());
     newDelayActor.getDataOutputPort().setName(originalDelayActor.getDataOutputPort().getName());
 
