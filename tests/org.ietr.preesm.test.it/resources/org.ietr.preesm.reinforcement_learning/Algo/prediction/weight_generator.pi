@@ -38,6 +38,27 @@
             <port annotation="NONE" expr="size" kind="input" name="in"/>
             <port annotation="NONE" expr="size" kind="output" name="out"/>
         </node>
+        <node expr="layer_size" getter=""
+            id="delay_BroadcastBiasGen_bias_out1__BiasCopy_in"
+            kind="delay" level="permanent" setter="">
+            <port annotation="NONE" expr="layer_size" kind="input" name="set"/>
+            <port annotation="NONE" expr="layer_size" kind="output" name="get"/>
+        </node>
+        <node expr="size" getter=""
+            id="delay_BroadcastWeightsGen_weights_out1__WeightsCopy_in"
+            kind="delay" level="permanent" setter="">
+            <port annotation="NONE" expr="size" kind="input" name="set"/>
+            <port annotation="NONE" expr="size" kind="output" name="get"/>
+        </node>
+        <edge expr="layer_size" kind="fifo" source="BroadcastBiasGen"
+            sourceport="bias_out1" target="BiasCopy" targetport="in" type="float">
+            <data key="delay">delay_BroadcastBiasGen_bias_out1__BiasCopy_in</data>
+        </edge>
+        <edge expr="size" kind="fifo" source="BroadcastWeightsGen"
+            sourceport="weights_out1" target="WeightsCopy"
+            targetport="in" type="float">
+            <data key="delay">delay_BroadcastWeightsGen_weights_out1__WeightsCopy_in</data>
+        </edge>
         <edge kind="fifo" source="BroadcastWeightsGen"
             sourceport="weights_out0" target="weights_out"
             targetport="weights_out" type="float"/>
@@ -46,17 +67,8 @@
             targetport="bias_out" type="float"/>
         <edge kind="fifo" source="BiasCopy" sourceport="out"
             target="BroadcastBiasGen" targetport="bias_in" type="float"/>
-        <edge expr="layer_size" kind="fifo" source="BroadcastBiasGen"
-            sourceport="bias_out1" target="BiasCopy" targetport="in" type="float">
-            <data key="delay"/>
-        </edge>
         <edge kind="fifo" source="WeightsCopy" sourceport="out"
             target="BroadcastWeightsGen" targetport="weights_in" type="float"/>
-        <edge expr="size" kind="fifo" source="BroadcastWeightsGen"
-            sourceport="weights_out1" target="WeightsCopy"
-            targetport="in" type="float">
-            <data key="delay"/>
-        </edge>
         <edge kind="dependency" source="size"
             target="BroadcastWeightsGen" targetport="size"/>
         <edge kind="dependency" source="layer_size"

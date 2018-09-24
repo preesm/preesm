@@ -409,56 +409,60 @@ public class PiMMHandler {
    *           the PiMMHandlerException exception
    */
   public void removePersistence() throws PiMMHelperException {
-    // 1. We deal with hierarchical stuff
-    recursiveRemovePersistence(graph);
-    // 2. For the top graph, we convert every locally persistent delays to permanent ones.
     for (final Fifo fifo : this.graph.getFifosWithDelay()) {
       final Delay delay = fifo.getDelay();
+      // 0. Rename all the data ports of delay actors
+      delay.getActor().getDataInputPort().setName(fifo.getTargetPort().getName());
+      delay.getActor().getDataOutputPort().setName(fifo.getSourcePort().getName());
+      // 1. For the top graph, we convert every locally persistent delays to permanent ones.
       if (delay.getLevel().equals(PersistenceLevel.LOCAL)) {
         delay.setLevel(PersistenceLevel.PERMANENT);
       }
     }
+    // 2. We deal with hierarchical stuff
+    for (final PiGraph g : graph.getChildrenGraphs()) {
+      recursiveRemovePersistence(g);
+    }
   }
 
   private void recursiveRemovePersistence(final PiGraph graph) throws PiMMHelperException {
-    final boolean isTop = graph.getContainingPiGraph() == null;
-    if (!isTop) {
-      // We assume that if the user want to make a delay persist across multiple levels,
-      // he did it explicitly.
-      for (final Fifo fifo : graph.getFifosWithDelay()) {
-        final Delay delay = fifo.getDelay();
-        String delayShortID = delay.getShortId();
-        if (delay.getLevel().equals(PersistenceLevel.LOCAL)) {
-          if (delay.hasGetterActor() || delay.hasSetterActor()) {
-            throw new PiMMHelperException(
-                "Delay with local persistence can not be connected to a setter nor a getter actor.");
-          }
-          delay.setName(delayShortID);
-          replaceLocalDelay(graph, delay);
-        } else if (delay.getLevel().equals(PersistenceLevel.PERMANENT)) {
-          if (delay.hasGetterActor() || delay.hasSetterActor()) {
-            throw new PiMMHelperException(
-                "Delay with global persistence can not be connected to a setter nor a getter actor.");
-          }
-          // In the case of a permanent delay we have to make it go up to the top.
-          PiGraph currentGraph = graph;
-          Delay currentDelay = delay;
-          do {
-            currentDelay.setName(delayShortID);
-            final Delay newDelay = replaceLocalDelay(currentGraph, currentDelay);
-            newDelay.setLevel(PersistenceLevel.PERMANENT);
-            // Update current graph and delay
-            delayShortID = currentGraph.getName() + "_" + delayShortID;
-            currentGraph = currentGraph.getContainingPiGraph();
-            currentDelay = newDelay;
-          } while (currentGraph.getContainingPiGraph() != null);
-        } else {
-          if (((delay.hasSetterActor()) && !(delay.hasGetterActor()))
-              || ((delay.hasGetterActor()) && (!delay.hasSetterActor()))) {
-            throw new PiMMHelperException(
-                "Asymetric configuration for delay setter / getter actor is not yet supported.\n"
-                    + "Please Contact PREESM developers.");
-          }
+    // We assume that if the user want to make a delay persist across multiple levels,
+    // he did it explicitly.
+    for (final Fifo fifo : graph.getFifosWithDelay()) {
+      final Delay delay = fifo.getDelay();
+      String delayShortID = delay.getShortId();
+      delay.getActor().getDataInputPort().setName(fifo.getTargetPort().getName());
+      delay.getActor().getDataOutputPort().setName(fifo.getSourcePort().getName());
+      if (delay.getLevel().equals(PersistenceLevel.LOCAL)) {
+        if (delay.hasGetterActor() || delay.hasSetterActor()) {
+          throw new PiMMHelperException(
+              "Delay with local persistence can not be connected to a setter nor a getter actor.");
+        }
+        delay.setName(delayShortID);
+        replaceLocalDelay(graph, delay);
+      } else if (delay.getLevel().equals(PersistenceLevel.PERMANENT)) {
+        if (delay.hasGetterActor() || delay.hasSetterActor()) {
+          throw new PiMMHelperException(
+              "Delay with global persistence can not be connected to a setter nor a getter actor.");
+        }
+        // In the case of a permanent delay we have to make it go up to the top.
+        PiGraph currentGraph = graph;
+        Delay currentDelay = delay;
+        do {
+          currentDelay.setName(delayShortID);
+          final Delay newDelay = replaceLocalDelay(currentGraph, currentDelay);
+          newDelay.setLevel(PersistenceLevel.PERMANENT);
+          // Update current graph and delay
+          delayShortID = currentGraph.getName() + "_" + delayShortID;
+          currentGraph = currentGraph.getContainingPiGraph();
+          currentDelay = newDelay;
+        } while (currentGraph.getContainingPiGraph() != null);
+      } else {
+        if (((delay.hasSetterActor()) && !(delay.hasGetterActor()))
+            || ((delay.hasGetterActor()) && (!delay.hasSetterActor()))) {
+          throw new PiMMHelperException(
+              "Asymetric configuration for delay setter / getter actor is not yet supported.\n"
+                  + "Please Contact PREESM developers.");
         }
       }
     }
@@ -477,25 +481,27 @@ public class PiMMHandler {
    * @return newly created delay in the upper graph
    */
   private Delay replaceLocalDelay(final PiGraph graph, final Delay delay) {
-    final String type = delay.getContainingFifo().getType();
+    final Fifo containingFifo = delay.getContainingFifo();
+    final String type = containingFifo.getType();
     final String delayExpression = delay.getSizeExpression().getExpressionString();
     // 1. First we remove the level of persistence associated with the delay
-    delay.setLevel(PersistenceLevel.NONE);
+    delay.setLevel(PersistenceLevel.LOCAL);
 
     // 2. We create the interfaces that we need to communicate with the upper level
     // Add the DataInputInterface to the graph
     final DataInputInterface setterIn = PiMMUserFactory.instance.createDataInputInterface();
     // We remove the "delay_" mention at the beginning
     // TODO: fix this with much shorter name !
-    final String delayShortID = delay.getName();
-    final String setterName = "in_" + delayShortID;
+    final DataInputPort targetPort = containingFifo.getTargetPort();
+    final String setterName = "in_" + targetPort.getContainingActor().getName() + "_" + targetPort.getName();
     setterIn.setName(setterName);
     setterIn.getDataPort().setName(setterName);
     setterIn.getDataPort().setAnnotation(PortMemoryAnnotation.READ_ONLY);
     setterIn.getDataPort().getExpression().setExpressionString(delayExpression);
     // Add the DataOutputInterface to the graph
     final DataOutputInterface getterOut = PiMMUserFactory.instance.createDataOutputInterface();
-    final String getterName = "out_" + delayShortID;
+    final DataOutputPort sourcePort = containingFifo.getSourcePort();
+    final String getterName = "out_" + sourcePort.getContainingActor().getName() + "_" + sourcePort.getName();
     getterOut.setName(getterName);
     getterOut.getDataPort().setName(getterName);
     getterOut.getDataPort().setAnnotation(PortMemoryAnnotation.WRITE_ONLY);
@@ -509,12 +515,13 @@ public class PiMMHandler {
     fifoSetter.setType(type);
     // Connect the setter interface to the delay
     fifoSetter.setSourcePort((DataOutputPort) setterIn.getDataPort());
-    fifoSetter.setTargetPort(delay.getActor().getDataInputPort());
+    final DelayActor originalDelayActor = delay.getActor();
+    fifoSetter.setTargetPort(originalDelayActor.getDataInputPort());
     // Add the getter FIFO
     final Fifo fifoGetter = PiMMUserFactory.instance.createFifo();
     fifoGetter.setType(type);
     // Connect the delay interface to the getter
-    fifoGetter.setSourcePort(delay.getActor().getDataOutputPort());
+    fifoGetter.setSourcePort(originalDelayActor.getDataOutputPort());
     fifoGetter.setTargetPort((DataInputPort) getterOut.getDataPort());
     graph.addFifo(fifoSetter);
     graph.addFifo(fifoGetter);
@@ -538,8 +545,15 @@ public class PiMMHandler {
 
     // 5. Finally we add a delay to this FIFO as well
     final Delay delayPersistence = PiMMUserFactory.instance.createDelay();
+    final String name = graph.getName() + "_" + setterIn.getName() + "__" + getterOut.getName();
+    delayPersistence.setName(name);
     delayPersistence.setLevel(PersistenceLevel.NONE);
     delayPersistence.getSizeExpression().setExpressionString(delayExpression);
+    final DelayActor newDelayActor = delayPersistence.getActor();
+    newDelayActor.setName(name);
+    newDelayActor.getDataInputPort().setName(originalDelayActor.getDataInputPort().getName());
+    newDelayActor.getDataOutputPort().setName(originalDelayActor.getDataOutputPort().getName());
+
     fifoPersistence.setDelay(delayPersistence);
     graph.getContainingPiGraph().addDelay(delayPersistence);
 

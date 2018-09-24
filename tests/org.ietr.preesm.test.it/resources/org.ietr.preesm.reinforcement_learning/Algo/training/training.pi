@@ -291,50 +291,115 @@
             </loop>
             <port annotation="NONE" expr="2" kind="output" name="limits"/>
         </node>
+        <node expr="state_angular_size" getter=""
+            id="delay_broadcastState_state_out1__Environment_state_angular_in"
+            kind="delay" level="permanent" setter="">
+            <port annotation="NONE" expr="state_angular_size"
+                kind="input" name="set"/>
+            <port annotation="NONE" expr="state_angular_size"
+                kind="output" name="get"/>
+        </node>
+        <node expr="state_space_size" getter=""
+            id="delay_BroadcastStateFeature_state_out2__Critic_MLP_input"
+            kind="delay" level="permanent" setter="">
+            <port annotation="NONE" expr="state_space_size" kind="input" name="set"/>
+            <port annotation="NONE" expr="state_space_size"
+                kind="output" name="get"/>
+        </node>
+        <node expr="state_space_size" getter=""
+            id="delay_BroadcastStateFeature_state_out1__Actor_MLP_input"
+            kind="delay" level="permanent" setter="">
+            <port annotation="NONE" expr="state_space_size" kind="input" name="set"/>
+            <port annotation="NONE" expr="state_space_size"
+                kind="output" name="get"/>
+        </node>
+        <node expr="state_space_size" getter=""
+            id="delay_BroadcastStateFeature_state_out3__Update_Critic_inputs"
+            kind="delay" level="permanent" setter="">
+            <port annotation="NONE" expr="state_space_size" kind="input" name="set"/>
+            <port annotation="NONE" expr="state_space_size"
+                kind="output" name="get"/>
+        </node>
+        <node expr="critic_weights_size" getter=""
+            id="delay_Update_Critic_weights_out__BroadcastWeightsCritic_input"
+            kind="delay" level="permanent" setter="">
+            <port annotation="NONE" expr="critic_weights_size"
+                kind="input" name="set"/>
+            <port annotation="NONE" expr="critic_weights_size"
+                kind="output" name="get"/>
+        </node>
+        <node expr="critic_bias_size" getter=""
+            id="delay_Update_Critic_bias_out__BroadcastBiasCritic_input"
+            kind="delay" level="permanent" setter="">
+            <port annotation="NONE" expr="critic_bias_size" kind="input" name="set"/>
+            <port annotation="NONE" expr="critic_bias_size"
+                kind="output" name="get"/>
+        </node>
+        <node expr="state_space_size" getter=""
+            id="delay_BroadcastStateFeature_state_out4__Update_Actor_inputs"
+            kind="delay" level="permanent" setter="">
+            <port annotation="NONE" expr="state_space_size" kind="input" name="set"/>
+            <port annotation="NONE" expr="state_space_size"
+                kind="output" name="get"/>
+        </node>
+        <node expr="actor_weights_size" getter=""
+            id="delay_Update_Actor_weights_out__BroadcastWeightsActor_input"
+            kind="delay" level="permanent" setter="">
+            <port annotation="NONE" expr="actor_weights_size"
+                kind="input" name="set"/>
+            <port annotation="NONE" expr="actor_weights_size"
+                kind="output" name="get"/>
+        </node>
+        <node expr="actor_bias_size" getter=""
+            id="delay_Update_Actor_bias_out__BroadcastBiasActor_input"
+            kind="delay" level="permanent" setter="">
+            <port annotation="NONE" expr="actor_bias_size" kind="input" name="set"/>
+            <port annotation="NONE" expr="actor_bias_size" kind="output" name="get"/>
+        </node>
         <edge expr="state_angular_size" kind="fifo"
             source="broadcastState" sourceport="state_out1"
             target="Environment" targetport="state_angular_in" type="float">
-            <data key="delay"/>
+            <data key="delay">delay_broadcastState_state_out1__Environment_state_angular_in</data>
         </edge>
         <edge expr="state_space_size" kind="fifo"
             source="BroadcastStateFeature" sourceport="state_out2"
             target="Critic_MLP" targetport="input" type="float">
-            <data key="delay"/>
+            <data key="delay">delay_BroadcastStateFeature_state_out2__Critic_MLP_input</data>
         </edge>
         <edge expr="state_space_size" kind="fifo"
             source="BroadcastStateFeature" sourceport="state_out1"
             target="Actor_MLP" targetport="input" type="float">
-            <data key="delay"/>
+            <data key="delay">delay_BroadcastStateFeature_state_out1__Actor_MLP_input</data>
         </edge>
         <edge expr="state_space_size" kind="fifo"
             source="BroadcastStateFeature" sourceport="state_out3"
             target="Update_Critic" targetport="inputs" type="float">
-            <data key="delay"/>
+            <data key="delay">delay_BroadcastStateFeature_state_out3__Update_Critic_inputs</data>
         </edge>
         <edge expr="critic_weights_size" kind="fifo"
             source="Update_Critic" sourceport="weights_out"
             target="BroadcastWeightsCritic" targetport="input" type="float">
-            <data key="delay"/>
+            <data key="delay">delay_Update_Critic_weights_out__BroadcastWeightsCritic_input</data>
         </edge>
         <edge expr="critic_bias_size" kind="fifo" source="Update_Critic"
             sourceport="bias_out" target="BroadcastBiasCritic"
             targetport="input" type="float">
-            <data key="delay"/>
+            <data key="delay">delay_Update_Critic_bias_out__BroadcastBiasCritic_input</data>
         </edge>
         <edge expr="state_space_size" kind="fifo"
             source="BroadcastStateFeature" sourceport="state_out4"
             target="Update_Actor" targetport="inputs" type="float">
-            <data key="delay"/>
+            <data key="delay">delay_BroadcastStateFeature_state_out4__Update_Actor_inputs</data>
         </edge>
         <edge expr="actor_weights_size" kind="fifo"
             source="Update_Actor" sourceport="weights_out"
             target="BroadcastWeightsActor" targetport="input" type="float">
-            <data key="delay"/>
+            <data key="delay">delay_Update_Actor_weights_out__BroadcastWeightsActor_input</data>
         </edge>
         <edge expr="actor_bias_size" kind="fifo" source="Update_Actor"
             sourceport="bias_out" target="BroadcastBiasActor"
             targetport="input" type="float">
-            <data key="delay"/>
+            <data key="delay">delay_Update_Actor_bias_out__BroadcastBiasActor_input</data>
         </edge>
         <edge kind="fifo" source="broadcastState"
             sourceport="state_out0" target="renderEnv"

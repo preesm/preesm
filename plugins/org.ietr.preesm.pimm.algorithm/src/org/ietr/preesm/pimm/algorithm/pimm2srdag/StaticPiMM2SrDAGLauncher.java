@@ -37,6 +37,7 @@ package org.ietr.preesm.pimm.algorithm.pimm2srdag;
 
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
 import org.apache.commons.lang3.time.StopWatch;
@@ -45,18 +46,27 @@ import org.ietr.dftools.algorithm.model.dag.DAGVertex;
 import org.ietr.dftools.algorithm.model.dag.types.DAGDefaultEdgePropertyType;
 import org.ietr.dftools.workflow.tools.WorkflowLogger;
 import org.ietr.preesm.core.scenario.PreesmScenario;
+import org.ietr.preesm.experiment.model.pimm.AbstractActor;
 import org.ietr.preesm.experiment.model.pimm.AbstractVertex;
+import org.ietr.preesm.experiment.model.pimm.BroadcastActor;
+import org.ietr.preesm.experiment.model.pimm.DataInputPort;
+import org.ietr.preesm.experiment.model.pimm.DataOutputPort;
+import org.ietr.preesm.experiment.model.pimm.Expression;
+import org.ietr.preesm.experiment.model.pimm.Fifo;
+import org.ietr.preesm.experiment.model.pimm.ForkActor;
+import org.ietr.preesm.experiment.model.pimm.JoinActor;
 import org.ietr.preesm.experiment.model.pimm.Parameter;
 import org.ietr.preesm.experiment.model.pimm.PiGraph;
+import org.ietr.preesm.experiment.model.pimm.RoundBufferActor;
 import org.ietr.preesm.experiment.model.pimm.util.PiMMSwitch;
 import org.ietr.preesm.mapper.model.MapperDAG;
-import org.ietr.preesm.mapper.model.MapperEdgeFactory;
 import org.ietr.preesm.pimm.algorithm.helper.LCMBasedBRV;
 import org.ietr.preesm.pimm.algorithm.helper.PiBRV;
 import org.ietr.preesm.pimm.algorithm.helper.PiMMHandler;
 import org.ietr.preesm.pimm.algorithm.helper.PiMMHelperException;
 import org.ietr.preesm.pimm.algorithm.helper.TopologyBasedBRV;
-import org.ietr.preesm.pimm.algorithm.pimm2srdag.visitor.StaticPiMM2SrDAGVisitor;
+import org.ietr.preesm.pimm.algorithm.pimm2srdag.visitor.StaticPiMM2ASrPiMMVisitor;
+import org.ietr.preesm.pimm.algorithm.pimm2srdag.visitor.StaticPiMM2MapperDAGVisitor;
 
 /**
  * The Class StaticPiMM2SDFLauncher.
@@ -110,7 +120,12 @@ public class StaticPiMM2SrDAGLauncher extends PiMMSwitch<Boolean> {
       String msg = "Parameters and rates evaluations: " + timer + "s.";
       WorkflowLogger.getLogger().log(Level.INFO, msg);
       // 2. We perform the delay transformation step that deals with persistence
+      timer.reset();
+      timer.start();
       this.piHandler.removePersistence();
+      timer.stop();
+      String msg2 = "Persistence removal: " + timer + "s.";
+      WorkflowLogger.getLogger().log(Level.INFO, msg2);
     } catch (PiMMHelperException e) {
       throw new StaticPiMM2SrDAGException(e.getMessage());
     }
@@ -130,8 +145,8 @@ public class StaticPiMM2SrDAGLauncher extends PiMMSwitch<Boolean> {
     // also in ScriptRunner.xtend, there is a part where the aggregate list is flatten, check that also
     aggregateEdges(result);
     timer.stop();
-    final String msg2 = "Edge aggregation performed in " + timer + "s.";
-    WorkflowLogger.getLogger().log(Level.INFO, msg2);
+    final String msg = "Edge aggregation: " + timer + "s.";
+    WorkflowLogger.getLogger().log(Level.INFO, msg);
     return result;
   }
 
@@ -141,20 +156,191 @@ public class StaticPiMM2SrDAGLauncher extends PiMMSwitch<Boolean> {
    * @return the resulting SR DAG
    */
   private MapperDAG convert2SRDAG() {
-    StaticPiMM2SrDAGVisitor visitor;
-    visitor = new StaticPiMM2SrDAGVisitor(new MapperDAG(new MapperEdgeFactory(), this.graph), this.graphBRV,
-        this.scenario);
     final StopWatch timer = new StopWatch();
+    final StaticPiMM2ASrPiMMVisitor visitorPiMM2ASRPiMM = new StaticPiMM2ASrPiMMVisitor(this.graph, this.graphBRV,
+        this.scenario);
     timer.start();
-    // Do the actual transformation of PiMM to Single Rate DAG
-    visitor.doSwitch(this.graph);
+    // Transform Multi-Rate PiMM to Acyclic Single-Rate PiMM
+    visitorPiMM2ASRPiMM.doSwitch(this.graph);
     timer.stop();
-    final String msg = "Dag transformation performed in " + timer + "s.";
-    WorkflowLogger.getLogger().log(Level.INFO, msg);
+    final String msgPiMM2ASRPiMM = "Acyclic Single-Rate transformation: " + timer + "s.";
+    WorkflowLogger.getLogger().log(Level.INFO, msgPiMM2ASRPiMM);
+    // Do some optimization on the graph
+    timer.reset();
+    timer.start();
+    final PiGraph acyclicSRPiMM = visitorPiMM2ASRPiMM.getResult();
+    // Now let's optimize some shit
+    boolean keepGoing = true;
+    while (keepGoing) {
+      keepGoing = optimizeForkandJoin(acyclicSRPiMM);
+      keepGoing |= optimizeBRandRB(acyclicSRPiMM);
+    }
+    timer.stop();
+    final String msgOptimsGraphs = "Graph optimizations: " + timer + "s.";
+    WorkflowLogger.getLogger().log(Level.INFO, msgOptimsGraphs);
+
+    final StaticPiMM2MapperDAGVisitor visitor = new StaticPiMM2MapperDAGVisitor(acyclicSRPiMM, this.scenario);
+    // Convert the PiMM vertices to DAG vertices
+    timer.reset();
+    timer.start();
+    visitor.doSwitch(acyclicSRPiMM);
+    timer.stop();
+    final String msgPiMM2DAG = "Dag conversion: " + timer + "s.";
+    WorkflowLogger.getLogger().log(Level.INFO, msgPiMM2DAG);
     timer.reset();
     // Get the result
-    final MapperDAG result = visitor.getResult();
-    return result;
+    return visitor.getResult();
+  }
+
+  /**
+   * Optimize Fork / Fork and Join / Join connections
+   * 
+   * @param graph
+   *          The graph to optimize
+   * @return true if at least one connections was optimized
+   */
+  private boolean optimizeForkandJoin(final PiGraph graph) {
+    boolean retValue = false;
+    for (final AbstractActor actor : graph.getActors()) {
+      if (actor instanceof ForkActor) {
+        retValue |= removeFork(graph, actor);
+        retValue |= removeSingleSpecial(graph, actor);
+      } else if (actor instanceof JoinActor) {
+        retValue |= removeJoin(graph, actor);
+        retValue |= removeSingleSpecial(graph, actor);
+      }
+    }
+    return retValue;
+  }
+
+  /**
+   * Optimize Broadcast / Fork and Join / Roundbuffer connections
+   * 
+   * Remove Broadcast / Roundbuffer with unique input / output same input / output rates
+   * 
+   * @param graph
+   *          The graph to optimize
+   */
+  private boolean optimizeBRandRB(final PiGraph graph) {
+    boolean retValue = false;
+    for (final AbstractActor actor : graph.getActors()) {
+      if (actor instanceof BroadcastActor) {
+        retValue |= removeFork(graph, actor);
+        retValue |= removeSingleSpecial(graph, actor);
+      } else if (actor instanceof RoundBufferActor) {
+        retValue |= removeJoin(graph, actor);
+        retValue |= removeSingleSpecial(graph, actor);
+      }
+    }
+    return retValue;
+  }
+
+  /**
+   * Remove the Join -> Roundbuffer / Join connections
+   * 
+   * <pre>
+   * in_0 -> | J | -> in | RB | 
+   * in_1 -> |   |  
+   * 
+   * becomes  in_0 -> | RB | 
+   *          in_1 -> |    |
+   * </pre>
+   * 
+   * @param graph
+   *          the graph
+   * @param actor
+   *          the roundbuffer or join actor to evaluate
+   */
+  private boolean removeJoin(final PiGraph graph, final AbstractActor actor) {
+    int offset = 0;
+    final List<DataInputPort> toRemove = new ArrayList<>();
+    final Map<Integer, List<DataInputPort>> toReplace = new LinkedHashMap<>();
+    for (final DataInputPort dip : actor.getDataInputPorts()) {
+      final Fifo incomingFifo = dip.getIncomingFifo();
+      final DataOutputPort targetPort = incomingFifo.getSourcePort();
+      final AbstractActor sourceActor = targetPort.getContainingActor();
+      if (sourceActor instanceof JoinActor) {
+        final int index = actor.getDataInputPorts().indexOf(dip);
+        toReplace.put(index + offset, sourceActor.getDataInputPorts());
+        offset += sourceActor.getDataInputPorts().size() - 1;
+        graph.removeActor(sourceActor);
+        graph.removeFifo(incomingFifo);
+        toRemove.add(dip);
+      }
+    }
+    toRemove.forEach(actor.getDataInputPorts()::remove);
+    toReplace.forEach((k, v) -> actor.getDataInputPorts().addAll(k, v));
+    return !toReplace.isEmpty();
+  }
+
+  /**
+   * Remove the Broadcast or Fork -> Fork connections
+   * 
+   * <pre>
+   *               | F | -> out_0 
+   * | BR | -> out |   | -> out_1
+   * 
+   * becomes  | BR | -> out_0
+   *          |    | -> out_1
+   * </pre>
+   * 
+   * @param graph
+   *          the graph
+   * @param actor
+   *          the broadcast or fork actor to evaluate
+   */
+  private boolean removeFork(final PiGraph graph, final AbstractActor actor) {
+    int offset = 0;
+    final List<DataOutputPort> toRemove = new ArrayList<>();
+    final Map<Integer, List<DataOutputPort>> toReplace = new LinkedHashMap<>();
+    for (final DataOutputPort dop : actor.getDataOutputPorts()) {
+      final Fifo outgoingFifo = dop.getOutgoingFifo();
+      final DataInputPort targetPort = outgoingFifo.getTargetPort();
+      final AbstractActor targetActor = targetPort.getContainingActor();
+      if (targetActor instanceof ForkActor) {
+        final int index = actor.getDataOutputPorts().indexOf(dop);
+        toReplace.put(index + offset, targetActor.getDataOutputPorts());
+        offset += targetActor.getDataOutputPorts().size() - 1;
+        graph.removeActor(targetActor);
+        graph.removeFifo(outgoingFifo);
+        toRemove.add(dop);
+      }
+    }
+    toRemove.forEach(actor.getDataOutputPorts()::remove);
+    toReplace.forEach((k, v) -> actor.getDataOutputPorts().addAll(k, v));
+    return !toReplace.isEmpty();
+  }
+
+  /**
+   * Remove a special actor with only one input / output with same rates.
+   * 
+   * @param graph
+   *          The graph in which the actor is.
+   * @param actor
+   *          The actor to analyze
+   * @return true if the actor was removed, false else
+   */
+  private boolean removeSingleSpecial(final PiGraph graph, final AbstractActor actor) {
+    if (actor.getDataInputPorts().size() == 1 && actor.getDataOutputPorts().size() == 1) {
+      // 0. Get input rate
+      final DataInputPort dataInputPort = actor.getDataInputPorts().get(0);
+      final Expression inputRateExpression = dataInputPort.getPortRateExpression();
+      final long inputRate = Long.parseLong(inputRateExpression.getExpressionString());
+      // 1. Get output rate
+      final DataOutputPort dataOutputPort = actor.getDataOutputPorts().get(0);
+      final Expression outputRateExpression = dataOutputPort.getPortRateExpression();
+      final long outputRate = Long.parseLong(outputRateExpression.getExpressionString());
+      if (inputRate == outputRate) {
+        // 2. We can remove one of the FIFO and the actor
+        final Fifo outgoingFifo = dataOutputPort.getOutgoingFifo();
+        final Fifo incomingFifo = dataInputPort.getIncomingFifo();
+        outgoingFifo.setSourcePort(incomingFifo.getSourcePort());
+        graph.removeFifo(incomingFifo);
+        graph.removeActor(actor);
+        return true;
+      }
+    }
+    return false;
   }
 
   /**

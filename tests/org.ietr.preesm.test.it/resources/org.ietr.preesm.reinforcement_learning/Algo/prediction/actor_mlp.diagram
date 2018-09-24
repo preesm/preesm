@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="ASCII"?>
-<pi:Diagram xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:al="http://eclipse.org/graphiti/mm/algorithms" xmlns:pi="http://eclipse.org/graphiti/mm/pictograms" visible="true" gridUnit="10" diagramTypeId="PiMM" name="actor_mlp" snapToGrid="true" pictogramLinks="//@children.0/@anchors.0/@link //@children.0/@children.0/@link //@children.0/@link //@children.1/@link //@children.1/@children.0/@link //@children.1/@anchors.0/@link //@children.2/@anchors.0/@link //@children.2/@children.0/@link //@children.2/@link //@children.3/@anchors.0/@link //@children.3/@children.0/@link //@children.3/@link //@children.3/@anchors.1/@link //@children.4/@anchors.0/@link //@children.4/@children.0/@link //@children.4/@link //@children.4/@anchors.1/@link //@children.5/@link //@children.5/@children.0/@link //@children.5/@anchors.0/@link //@children.5/@anchors.1/@link //@children.5/@anchors.2/@link //@children.5/@anchors.3/@link //@children.5/@anchors.4/@link //@children.5/@anchors.5/@link //@connections.0/@link //@connections.1/@link //@connections.2/@link //@connections.3/@link //@connections.4/@link //@connections.5/@link //@connections.6/@link" version="0.14.0">
+<pi:Diagram xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:al="http://eclipse.org/graphiti/mm/algorithms" xmlns:pi="http://eclipse.org/graphiti/mm/pictograms" visible="true" gridUnit="10" diagramTypeId="PiMM" name="actor_mlp" snapToGrid="true" pictogramLinks="//@children.0/@anchors.0/@link //@children.0/@children.0/@link //@children.0/@link //@children.1/@link //@children.1/@children.0/@link //@children.1/@anchors.0/@link //@children.2/@anchors.0/@link //@children.2/@children.0/@link //@children.2/@link //@children.3/@anchors.0/@link //@children.3/@children.0/@link //@children.3/@link //@children.3/@anchors.1/@link //@children.4/@anchors.0/@link //@children.4/@children.0/@link //@children.4/@link //@children.4/@anchors.1/@link //@children.5/@link //@children.5/@children.0/@link //@children.5/@anchors.0/@link //@children.5/@anchors.1/@link //@children.5/@anchors.2/@link //@children.5/@anchors.3/@link //@children.5/@anchors.4/@link //@children.5/@anchors.5/@link //@connections.0/@link //@connections.1/@link //@connections.2/@link //@connections.3/@link //@connections.4/@link //@connections.5/@link //@connections.6/@link" version="0.15.0">
   <properties key="editor_version" value="3"/>
   <graphicsAlgorithm xsi:type="al:Rectangle" background="//@colors.1" foreground="//@colors.0" lineWidth="1" transparency="0.0" width="1000" height="1000"/>
   <link>
@@ -8,7 +8,7 @@
   <children xsi:type="pi:ContainerShape" visible="true" active="true">
     <graphicsAlgorithm xsi:type="al:Rectangle" lineWidth="1" filled="false" lineVisible="false" transparency="0.0" width="89" height="31" x="195" y="76"/>
     <link>
-      <businessObjects href="actor_mlp.pi#//@parameters.0"/>
+      <businessObjects href="actor_mlp.pi#//@vertices.0"/>
     </link>
     <anchors xsi:type="pi:BoxRelativeAnchor" visible="true" active="true" outgoingConnections="//@connections.2 //@connections.4" referencedGraphicsAlgorithm="//@children.0/@graphicsAlgorithm" relativeWidth="0.5" relativeHeight="1.0">
       <graphicsAlgorithm xsi:type="al:Polygon" background="//@colors.3" foreground="//@colors.2" lineWidth="2" filled="true" transparency="0.0" width="16" height="16" x="-8" y="-16">
@@ -17,13 +17,13 @@
         <points y="16"/>
       </graphicsAlgorithm>
       <link>
-        <businessObjects href="actor_mlp.pi#//@parameters.0"/>
+        <businessObjects href="actor_mlp.pi#//@vertices.0"/>
       </link>
     </anchors>
     <children visible="true">
       <graphicsAlgorithm xsi:type="al:Text" foreground="//@colors.4" lineWidth="1" filled="false" transparency="0.0" width="89" height="20" font="//@fonts.0" horizontalAlignment="ALIGNMENT_CENTER" verticalAlignment="ALIGNMENT_TOP" value="state_space_size"/>
       <link>
-        <businessObjects href="actor_mlp.pi#//@parameters.0"/>
+        <businessObjects href="actor_mlp.pi#//@vertices.0"/>
       </link>
     </children>
   </children>
@@ -36,24 +36,24 @@
       <points y="26"/>
     </graphicsAlgorithm>
     <link>
-      <businessObjects href="actor_mlp.pi#//@parameters.1"/>
+      <businessObjects href="actor_mlp.pi#//@vertices.1"/>
     </link>
     <anchors xsi:type="pi:ChopboxAnchor" outgoingConnections="//@connections.6">
       <link>
-        <businessObjects href="actor_mlp.pi#//@parameters.1"/>
+        <businessObjects href="actor_mlp.pi#//@vertices.1"/>
       </link>
     </anchors>
     <children visible="true">
       <graphicsAlgorithm xsi:type="al:Text" foreground="//@colors.4" lineWidth="1" filled="false" transparency="0.0" width="101" height="20" y="22" font="//@fonts.0" horizontalAlignment="ALIGNMENT_CENTER" value="Hidden_layer_size"/>
       <link>
-        <businessObjects href="actor_mlp.pi#//@parameters.1"/>
+        <businessObjects href="actor_mlp.pi#//@vertices.1"/>
       </link>
     </children>
   </children>
   <children xsi:type="pi:ContainerShape" visible="true" active="true">
     <graphicsAlgorithm xsi:type="al:Rectangle" lineWidth="1" filled="false" lineVisible="false" transparency="0.0" width="96" height="31" x="334" y="76"/>
     <link>
-      <businessObjects href="actor_mlp.pi#//@parameters.2"/>
+      <businessObjects href="actor_mlp.pi#//@vertices.2"/>
     </link>
     <anchors xsi:type="pi:BoxRelativeAnchor" visible="true" active="true" outgoingConnections="//@connections.3 //@connections.5" referencedGraphicsAlgorithm="//@children.2/@graphicsAlgorithm" relativeWidth="0.5" relativeHeight="1.0">
       <graphicsAlgorithm xsi:type="al:Polygon" background="//@colors.3" foreground="//@colors.2" lineWidth="2" filled="true" transparency="0.0" width="16" height="16" x="-8" y="-16">
@@ -62,70 +62,70 @@
         <points y="16"/>
       </graphicsAlgorithm>
       <link>
-        <businessObjects href="actor_mlp.pi#//@parameters.2"/>
+        <businessObjects href="actor_mlp.pi#//@vertices.2"/>
       </link>
     </anchors>
     <children visible="true">
       <graphicsAlgorithm xsi:type="al:Text" foreground="//@colors.4" lineWidth="1" filled="false" transparency="0.0" width="96" height="20" font="//@fonts.0" horizontalAlignment="ALIGNMENT_CENTER" verticalAlignment="ALIGNMENT_TOP" value="action_space_size"/>
       <link>
-        <businessObjects href="actor_mlp.pi#//@parameters.2"/>
+        <businessObjects href="actor_mlp.pi#//@vertices.2"/>
       </link>
     </children>
   </children>
   <children xsi:type="pi:ContainerShape" visible="true" active="true">
     <graphicsAlgorithm xsi:type="al:Rectangle" lineWidth="1" filled="false" lineVisible="false" transparency="0.0" width="45" height="20" x="50" y="250"/>
     <link>
-      <businessObjects href="actor_mlp.pi#//@actors.0"/>
+      <businessObjects href="actor_mlp.pi#//@vertices.3"/>
     </link>
     <anchors xsi:type="pi:BoxRelativeAnchor" visible="true" active="true" outgoingConnections="//@connections.0" incomingConnections="//@connections.2" referencedGraphicsAlgorithm="//@children.3/@graphicsAlgorithm" relativeWidth="1.0" relativeHeight="0.1">
       <graphicsAlgorithm xsi:type="al:RoundedRectangle" background="//@colors.6" foreground="//@colors.5" lineWidth="2" transparency="0.0" width="16" height="16" x="-16" cornerHeight="5" cornerWidth="5"/>
       <link>
-        <businessObjects href="actor_mlp.pi#//@actors.0/@dataOutputPorts.0"/>
+        <businessObjects href="actor_mlp.pi#//@vertices.3/@dataOutputPorts.0"/>
       </link>
     </anchors>
     <anchors xsi:type="pi:ChopboxAnchor">
       <link>
-        <businessObjects href="actor_mlp.pi#//@actors.0"/>
+        <businessObjects href="actor_mlp.pi#//@vertices.3"/>
       </link>
     </anchors>
     <children visible="true">
       <graphicsAlgorithm xsi:type="al:Text" foreground="//@colors.4" lineWidth="1" filled="false" transparency="0.0" width="26" height="20" font="//@fonts.0" horizontalAlignment="ALIGNMENT_RIGHT" value="state"/>
       <link>
-        <businessObjects href="actor_mlp.pi#//@actors.0"/>
+        <businessObjects href="actor_mlp.pi#//@vertices.3"/>
       </link>
     </children>
   </children>
   <children xsi:type="pi:ContainerShape" visible="true" active="true">
     <graphicsAlgorithm xsi:type="al:Rectangle" lineWidth="1" filled="false" lineVisible="false" transparency="0.0" width="52" height="20" x="412" y="250"/>
     <link>
-      <businessObjects href="actor_mlp.pi#//@actors.1"/>
+      <businessObjects href="actor_mlp.pi#//@vertices.4"/>
     </link>
     <anchors xsi:type="pi:BoxRelativeAnchor" visible="true" active="true" incomingConnections="//@connections.1 //@connections.3" referencedGraphicsAlgorithm="//@children.4/@graphicsAlgorithm" relativeHeight="0.1">
       <graphicsAlgorithm xsi:type="al:RoundedRectangle" background="//@colors.7" foreground="//@colors.5" lineWidth="2" transparency="0.0" width="16" height="16" cornerHeight="5" cornerWidth="5"/>
       <link>
-        <businessObjects href="actor_mlp.pi#//@actors.1/@dataInputPorts.0"/>
+        <businessObjects href="actor_mlp.pi#//@vertices.4/@dataInputPorts.0"/>
       </link>
     </anchors>
     <anchors xsi:type="pi:ChopboxAnchor">
       <link>
-        <businessObjects href="actor_mlp.pi#//@actors.1"/>
+        <businessObjects href="actor_mlp.pi#//@vertices.4"/>
       </link>
     </anchors>
     <children visible="true">
       <graphicsAlgorithm xsi:type="al:Text" foreground="//@colors.4" lineWidth="1" filled="false" transparency="0.0" width="33" height="20" x="19" font="//@fonts.0" horizontalAlignment="ALIGNMENT_RIGHT" value="action"/>
       <link>
-        <businessObjects href="actor_mlp.pi#//@actors.1"/>
+        <businessObjects href="actor_mlp.pi#//@vertices.4"/>
       </link>
     </children>
   </children>
   <children xsi:type="pi:ContainerShape" visible="true" active="true">
     <graphicsAlgorithm xsi:type="al:RoundedRectangle" background="//@colors.1" foreground="//@colors.9" lineWidth="2" transparency="0.0" width="117" height="83" x="195" y="250" cornerHeight="5" cornerWidth="5"/>
     <link>
-      <businessObjects href="actor_mlp.pi#//@actors.2"/>
+      <businessObjects href="actor_mlp.pi#//@vertices.5"/>
     </link>
     <anchors xsi:type="pi:ChopboxAnchor">
       <link>
-        <businessObjects href="actor_mlp.pi#//@actors.2"/>
+        <businessObjects href="actor_mlp.pi#//@vertices.5"/>
       </link>
     </anchors>
     <anchors xsi:type="pi:BoxRelativeAnchor" visible="true" active="true" incomingConnections="//@connections.4" referencedGraphicsAlgorithm="//@children.5/@graphicsAlgorithm" relativeHeight="0.24096385542168675">
@@ -138,7 +138,7 @@
         </graphicsAlgorithmChildren>
       </graphicsAlgorithm>
       <link>
-        <businessObjects href="actor_mlp.pi#//@actors.2/@configInputPorts.0"/>
+        <businessObjects href="actor_mlp.pi#//@vertices.5/@configInputPorts.0"/>
       </link>
     </anchors>
     <anchors xsi:type="pi:BoxRelativeAnchor" visible="true" active="true" incomingConnections="//@connections.5" referencedGraphicsAlgorithm="//@children.5/@graphicsAlgorithm" relativeHeight="0.42168674698795183">
@@ -151,7 +151,7 @@
         </graphicsAlgorithmChildren>
       </graphicsAlgorithm>
       <link>
-        <businessObjects href="actor_mlp.pi#//@actors.2/@configInputPorts.1"/>
+        <businessObjects href="actor_mlp.pi#//@vertices.5/@configInputPorts.1"/>
       </link>
     </anchors>
     <anchors xsi:type="pi:BoxRelativeAnchor" visible="true" active="true" incomingConnections="//@connections.6" referencedGraphicsAlgorithm="//@children.5/@graphicsAlgorithm" relativeHeight="0.6024096385542169">
@@ -164,7 +164,7 @@
         </graphicsAlgorithmChildren>
       </graphicsAlgorithm>
       <link>
-        <businessObjects href="actor_mlp.pi#//@actors.2/@configInputPorts.2"/>
+        <businessObjects href="actor_mlp.pi#//@vertices.5/@configInputPorts.2"/>
       </link>
     </anchors>
     <anchors xsi:type="pi:BoxRelativeAnchor" visible="true" active="true" incomingConnections="//@connections.0" referencedGraphicsAlgorithm="//@children.5/@graphicsAlgorithm" relativeHeight="0.7831325301204819">
@@ -173,7 +173,7 @@
         <graphicsAlgorithmChildren xsi:type="al:Rectangle" background="//@colors.6" foreground="//@colors.5" lineWidth="1" lineStyle="UNSPECIFIED" width="8" height="8" y="2"/>
       </graphicsAlgorithm>
       <link>
-        <businessObjects href="actor_mlp.pi#//@actors.2/@dataInputPorts.0"/>
+        <businessObjects href="actor_mlp.pi#//@vertices.5/@dataInputPorts.0"/>
       </link>
     </anchors>
     <anchors xsi:type="pi:BoxRelativeAnchor" visible="true" active="true" outgoingConnections="//@connections.1" referencedGraphicsAlgorithm="//@children.5/@graphicsAlgorithm" relativeWidth="1.0" relativeHeight="0.7831325301204819">
@@ -182,20 +182,20 @@
         <graphicsAlgorithmChildren xsi:type="al:Rectangle" background="//@colors.7" foreground="//@colors.5" lineWidth="1" lineStyle="UNSPECIFIED" width="8" height="8" x="32" y="2"/>
       </graphicsAlgorithm>
       <link>
-        <businessObjects href="actor_mlp.pi#//@actors.2/@dataOutputPorts.0"/>
+        <businessObjects href="actor_mlp.pi#//@vertices.5/@dataOutputPorts.0"/>
       </link>
     </anchors>
     <children visible="true">
       <graphicsAlgorithm xsi:type="al:Text" foreground="//@colors.4" lineWidth="1" filled="false" transparency="0.0" width="117" height="20" font="//@fonts.1" horizontalAlignment="ALIGNMENT_CENTER" value="action_predictor"/>
       <link>
-        <businessObjects href="actor_mlp.pi#//@actors.2"/>
+        <businessObjects href="actor_mlp.pi#//@vertices.5"/>
       </link>
     </children>
   </children>
   <connections xsi:type="pi:FreeFormConnection" visible="true" active="true" start="//@children.3/@anchors.0" end="//@children.5/@anchors.4">
     <graphicsAlgorithm xsi:type="al:Polyline" foreground="//@colors.5" lineWidth="2" filled="false" transparency="0.0"/>
     <link>
-      <businessObjects href="actor_mlp.pi#//@fifos.0"/>
+      <businessObjects href="actor_mlp.pi#//@edges.0"/>
     </link>
     <connectionDecorators visible="true" locationRelative="true" location="1.0">
       <graphicsAlgorithm xsi:type="al:Polygon" background="//@colors.5" foreground="//@colors.5" lineWidth="2" lineStyle="UNSPECIFIED">
@@ -210,7 +210,7 @@
   <connections xsi:type="pi:FreeFormConnection" visible="true" active="true" start="//@children.5/@anchors.5" end="//@children.4/@anchors.0">
     <graphicsAlgorithm xsi:type="al:Polyline" foreground="//@colors.5" lineWidth="2" filled="false" transparency="0.0"/>
     <link>
-      <businessObjects href="actor_mlp.pi#//@fifos.1"/>
+      <businessObjects href="actor_mlp.pi#//@edges.1"/>
     </link>
     <connectionDecorators visible="true" locationRelative="true" location="1.0">
       <graphicsAlgorithm xsi:type="al:Polygon" background="//@colors.5" foreground="//@colors.5" lineWidth="2" lineStyle="UNSPECIFIED">
@@ -225,7 +225,7 @@
   <connections xsi:type="pi:FreeFormConnection" visible="true" active="true" start="//@children.0/@anchors.0" end="//@children.3/@anchors.0">
     <graphicsAlgorithm xsi:type="al:Polyline" foreground="//@colors.2" lineWidth="2" lineStyle="DASH" filled="false" transparency="0.0"/>
     <link>
-      <businessObjects href="actor_mlp.pi#//@dependencies.0"/>
+      <businessObjects href="actor_mlp.pi#//@edges.2"/>
     </link>
     <connectionDecorators visible="true" locationRelative="true" location="1.0">
       <graphicsAlgorithm xsi:type="al:Polyline" foreground="//@colors.2" lineWidth="2" lineStyle="UNSPECIFIED">
@@ -240,7 +240,7 @@
   <connections xsi:type="pi:FreeFormConnection" visible="true" active="true" start="//@children.2/@anchors.0" end="//@children.4/@anchors.0">
     <graphicsAlgorithm xsi:type="al:Polyline" foreground="//@colors.2" lineWidth="2" lineStyle="DASH" filled="false" transparency="0.0"/>
     <link>
-      <businessObjects href="actor_mlp.pi#//@dependencies.1"/>
+      <businessObjects href="actor_mlp.pi#//@edges.3"/>
     </link>
     <connectionDecorators visible="true" locationRelative="true" location="1.0">
       <graphicsAlgorithm xsi:type="al:Polyline" foreground="//@colors.2" lineWidth="2" lineStyle="UNSPECIFIED">
@@ -255,7 +255,7 @@
   <connections xsi:type="pi:FreeFormConnection" visible="true" active="true" start="//@children.0/@anchors.0" end="//@children.5/@anchors.1">
     <graphicsAlgorithm xsi:type="al:Polyline" foreground="//@colors.2" lineWidth="2" lineStyle="DASH" filled="false" transparency="0.0"/>
     <link>
-      <businessObjects href="actor_mlp.pi#//@dependencies.2"/>
+      <businessObjects href="actor_mlp.pi#//@edges.4"/>
     </link>
     <connectionDecorators visible="true" locationRelative="true" location="1.0">
       <graphicsAlgorithm xsi:type="al:Polyline" foreground="//@colors.2" lineWidth="2" lineStyle="UNSPECIFIED">
@@ -271,7 +271,7 @@
   <connections xsi:type="pi:FreeFormConnection" visible="true" active="true" start="//@children.2/@anchors.0" end="//@children.5/@anchors.2">
     <graphicsAlgorithm xsi:type="al:Polyline" foreground="//@colors.2" lineWidth="2" lineStyle="DASH" filled="false" transparency="0.0"/>
     <link>
-      <businessObjects href="actor_mlp.pi#//@dependencies.3"/>
+      <businessObjects href="actor_mlp.pi#//@edges.5"/>
     </link>
     <connectionDecorators visible="true" locationRelative="true" location="1.0">
       <graphicsAlgorithm xsi:type="al:Polyline" foreground="//@colors.2" lineWidth="2" lineStyle="UNSPECIFIED">
@@ -287,7 +287,7 @@
   <connections xsi:type="pi:FreeFormConnection" visible="true" active="true" start="//@children.1/@anchors.0" end="//@children.5/@anchors.3">
     <graphicsAlgorithm xsi:type="al:Polyline" foreground="//@colors.2" lineWidth="2" lineStyle="DASH" filled="false" transparency="0.0"/>
     <link>
-      <businessObjects href="actor_mlp.pi#//@dependencies.4"/>
+      <businessObjects href="actor_mlp.pi#//@edges.6"/>
     </link>
     <connectionDecorators visible="true" locationRelative="true" location="1.0">
       <graphicsAlgorithm xsi:type="al:Polyline" foreground="//@colors.2" lineWidth="2" lineStyle="UNSPECIFIED">
