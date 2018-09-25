@@ -142,7 +142,7 @@ public class ScenarioEditor extends SharedHeaderFormEditor implements IPropertyL
     final PiParametersPage paramPage = new PiParametersPage(this.scenario, this, "Parameters", "Parameters");
     paramPage.addPropertyListener(this);
 
-    final IFormPage papifyPage = new PapifyPage(this.scenario, this, "Papify", "Papify");
+    final IFormPage papifyPage = new PapifyPage(this.scenario, this, "PAPIFY", "PAPIFY");
     papifyPage.addPropertyListener(this);
 
     try {
