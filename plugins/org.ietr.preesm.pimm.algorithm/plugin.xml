@@ -153,6 +153,31 @@
             </output>
          </outputs>
       </task>
+      <task
+            id="org.ietr.preesm.pimm.algorithm.pimm2flat.StaticPiMM2FlatPiMMTask"
+            name="Static PiMM to Flat PiMM transformation"
+            type="org.ietr.preesm.pimm.algorithm.pimm2flat.StaticPiMM2FlatPiMMTask">
+         <inputs>
+            <input
+                  id="PiMM"
+                  object="org.ietr.preesm.experiment.model.pimm.PiGraph">
+            </input>
+            <input
+                  id="scenario"
+                  object="org.ietr.preesm.core.scenario.PreesmScenario">
+            </input>
+            <input
+                  id="architecture"
+                  object="org.ietr.dftools.architecture.slam.Design">
+            </input>
+         </inputs>
+         <outputs>
+            <output
+                  id="PiMM"
+                  object="org.ietr.preesm.experiment.model.pimm.PiGraph">
+            </output>
+         </outputs>
+      </task>
    </extension>
 
 </plugin>
