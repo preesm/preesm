@@ -40,6 +40,7 @@ package org.ietr.preesm.pimm.algorithm.pimm2srdag.visitor;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import org.ietr.dftools.workflow.WorkflowException;
 import org.ietr.preesm.core.scenario.PreesmScenario;
 import org.ietr.preesm.experiment.model.factory.PiMMUserFactory;
 import org.ietr.preesm.experiment.model.pimm.AbstractActor;
@@ -79,21 +80,16 @@ public class PiMMSRVerticesLinker {
   private final long delays;
 
   // Source properties
-  private final AbstractActor  source;
   private final DataOutputPort sourcePort;
   private final long           sourceProduction;
 
   // Sink properties
-  private final AbstractActor sink;
   private final DataInputPort sinkPort;
   private final long          sinkConsumption;
 
   // The FIFO
-  private final Fifo fifo;
-
-  // Delay init / end id
-  String delayInitID;
-  String delayEndID;
+  private final Fifo   fifo;
+  private final String fifoType;
 
   // Prefix name of the current graph
   final String graphPrefixe;
@@ -118,9 +114,9 @@ public class PiMMSRVerticesLinker {
     final Expression portRateExpression = targetPort.getPortRateExpression();
     final long targetRate = Long.parseLong(portRateExpression.getExpressionString());
     if (nDelays < 0) {
-      throw new RuntimeException("Invalid number of delay on fifo[" + fifo.getId() + "]: " + Long.toString(nDelays));
+      throw new WorkflowException("Invalid number of delay on fifo[" + fifo.getId() + "]: " + Long.toString(nDelays));
     } else if (nDelays < targetRate) {
-      throw new RuntimeException("Insuffisiant number of delay on fifo[" + fifo.getId() + "]: number of delays: "
+      throw new WorkflowException("Insuffisiant number of delay on fifo[" + fifo.getId() + "]: number of delays: "
           + Long.toString(nDelays) + ", consumption: " + Long.toString(targetRate));
     }
     return nDelays;
@@ -139,21 +135,38 @@ public class PiMMSRVerticesLinker {
   public PiMMSRVerticesLinker(final Fifo fifo, final PiGraph dag, final PreesmScenario scenario,
       final String graphPrefixe) {
     this.fifo = fifo;
+    this.fifoType = fifo.getType();
     this.delays = PiMMSRVerticesLinker.getNDelays(fifo);
     this.graphPrefixe = graphPrefixe;
 
     // Setting Source properties
-    this.source = fifo.getSourcePort().getContainingActor();
     this.sourcePort = fifo.getSourcePort();
     final Expression sourceExpression = this.sourcePort.getPortRateExpression();
     this.sourceProduction = Long.parseLong(sourceExpression.getExpressionString());
 
     // Setting Sink properties
-    this.sink = fifo.getTargetPort().getContainingActor();
     this.sinkPort = fifo.getTargetPort();
     final Expression sinkExpression = this.sinkPort.getPortRateExpression();
     this.sinkConsumption = Long.parseLong(sinkExpression.getExpressionString());
 
+  }
+
+  /**
+   * 
+   */
+  public PiMMSRVerticesLinker() {
+    this.fifo = null;
+    this.fifoType = "";
+    this.delays = 0;
+    this.graphPrefixe = "";
+
+    // Setting Source properties
+    this.sourcePort = null;
+    this.sourceProduction = -1;
+
+    // Setting Sink properties
+    this.sinkPort = null;
+    this.sinkConsumption = -1;
   }
 
   /**
@@ -172,16 +185,40 @@ public class PiMMSRVerticesLinker {
    */
   public Boolean execute(final Map<AbstractVertex, Long> brv, final List<AbstractVertex> vertexSourceSet,
       final List<AbstractVertex> vertexSinkSet) throws PiMMHelperException {
-
-    // Initialize delay init / end IDs
-    this.delayInitID = "";
-    this.delayEndID = "";
-
     // List of source vertices
     final List<SourceConnection> sourceSet = getSourceSet(vertexSourceSet, vertexSinkSet, brv);
 
     // List of sink vertices
     final List<SinkConnection> sinkSet = getSinkSet(vertexSinkSet, vertexSourceSet, brv);
+
+    // Connect all the source to the sinks
+    connectEdges(sourceSet, sinkSet);
+    return true;
+  }
+
+  /**
+   * 
+   * @param vertexSourceSet
+   *          vertex source set
+   * @param vertexSinkSet
+   *          vertex sink set
+   *
+   *
+   * @return true if no error, false else
+   * @throws PiMMHelperException
+   *           the execption
+   */
+  public Boolean execute(final Map<DataOutputPort, AbstractVertex> vertexSourceSet,
+      final Map<DataInputPort, AbstractVertex> vertexSinkSet) throws PiMMHelperException {
+    // List of source vertices
+    final List<SourceConnection> sourceSet = new ArrayList<>();
+    vertexSourceSet.forEach((k, v) -> sourceSet
+        .add(new SourceConnection(v, Long.parseLong(k.getPortRateExpression().getExpressionString()), k.getName())));
+
+    // List of sink vertices
+    final List<SinkConnection> sinkSet = new ArrayList<>();
+    vertexSinkSet.forEach((k, v) -> sinkSet
+        .add(new SinkConnection(v, Long.parseLong(k.getPortRateExpression().getExpressionString()), k.getName())));
 
     // Connect all the source to the sinks
     connectEdges(sourceSet, sinkSet);
@@ -233,7 +270,7 @@ public class PiMMSRVerticesLinker {
 
     if (implode) {
       // Creates the implode vertex and connect it to current sink
-      final JoinActor joinActor = doImplosion(currentSink, sinkVertex, graph);
+      final JoinActor joinActor = doImplosion(currentSink, sourceSet.get(0), sinkVertex, graph);
       // The JoinActor becomes the new sink
       sinkVertex = joinActor;
     }
@@ -289,7 +326,7 @@ public class PiMMSRVerticesLinker {
 
     if (explode) {
       // Creates the explode vertex and connect it to current source
-      final ForkActor forkActor = doExplosion(currentSource, sourceVertex, graph);
+      final ForkActor forkActor = doExplosion(currentSource, sinkSet.get(0), sourceVertex, graph);
       // The ForkActor becomes the new source
       sourceVertex = forkActor;
     }
@@ -430,22 +467,24 @@ public class PiMMSRVerticesLinker {
    *          The graph to which the sink belong
    * @return The newly created join vertex
    */
-  private JoinActor doImplosion(final SinkConnection currentSink, final AbstractActor sinkVertex, final PiGraph graph) {
-    final String implodeName = PiMMSRVerticesLinker.JOIN_VERTEX + sinkVertex.getName() + "_" + this.sinkPort.getName();
+  private JoinActor doImplosion(final SinkConnection currentSink, final SourceConnection source,
+      final AbstractActor sinkVertex, final PiGraph graph) {
+    final String implodeName = this.graphPrefixe + PiMMSRVerticesLinker.JOIN_VERTEX + sinkVertex.getName() + "_"
+        + currentSink.getTargetLabel();
     final JoinActor joinActor = PiMMUserFactory.instance.createJoinActor();
     // Set name property
     joinActor.setName(implodeName);
     // Add a DataOutputPort
-    final DataOutputPort outputPort = PiMMUserFactory.instance.createDataOutputPort();
-    outputPort.setName(this.sourcePort.getName() + "_implode");
-    outputPort.getPortRateExpression().setExpressionString(Long.toString(currentSink.getConsumption()));
-    outputPort.setAnnotation(PortMemoryAnnotation.WRITE_ONLY);
-    joinActor.getDataOutputPorts().add(outputPort);
+    final DataOutputPort joinOutputPort = PiMMUserFactory.instance.createDataOutputPort();
+    joinOutputPort.setName(source.getSourceLabel() + "_implode");
+    joinOutputPort.getPortRateExpression().setExpressionString(Long.toString(currentSink.getConsumption()));
+    joinOutputPort.setAnnotation(PortMemoryAnnotation.WRITE_ONLY);
+    joinActor.getDataOutputPorts().add(joinOutputPort);
 
     // Create the FIFO to connect the Join to the Sink
     final DataInputPort targetPort = getOrCreateSinkPort(currentSink, currentSink.getConsumption(), sinkVertex);
 
-    createFifo(graph, outputPort, targetPort);
+    createFifo(graph, joinOutputPort, targetPort);
 
     // Add the join actor to the graph
     graph.addActor(joinActor);
@@ -464,25 +503,25 @@ public class PiMMSRVerticesLinker {
    *          The graph to which the sink belong
    * @return The newly created join vertex
    */
-  private ForkActor doExplosion(final SourceConnection currentSource, final AbstractActor sourceVertex,
-      final PiGraph graph) {
-    final String explodeName = PiMMSRVerticesLinker.FORK_VERTEX + sourceVertex.getName() + "_"
-        + this.sourcePort.getName();
+  private ForkActor doExplosion(final SourceConnection currentSource, final SinkConnection sink,
+      final AbstractActor sourceVertex, final PiGraph graph) {
+    final String explodeName = this.graphPrefixe + PiMMSRVerticesLinker.FORK_VERTEX + sourceVertex.getName() + "_"
+        + currentSource.getSourceLabel();
     final ForkActor forkActor = PiMMUserFactory.instance.createForkActor();
     // Set name property
     forkActor.setName(explodeName);
-    // Add a DataOutputPort
-    final DataInputPort targetPort = PiMMUserFactory.instance.createDataInputPort();
-    targetPort.setName(this.sinkPort.getName() + "_explode");
-    targetPort.getPortRateExpression().setExpressionString(Long.toString(currentSource.getProduction()));
-    targetPort.setAnnotation(PortMemoryAnnotation.READ_ONLY);
-    forkActor.getDataInputPorts().add(targetPort);
+    // Add a DataInputPort
+    final DataInputPort forkInputPort = PiMMUserFactory.instance.createDataInputPort();
+    forkInputPort.setName(sink.getTargetLabel() + "_explode");
+    forkInputPort.getPortRateExpression().setExpressionString(Long.toString(currentSource.getProduction()));
+    forkInputPort.setAnnotation(PortMemoryAnnotation.READ_ONLY);
+    forkActor.getDataInputPorts().add(forkInputPort);
 
     // Create the FIFO to connect the Join to the Sink
     final DataOutputPort currentSourcePort = getOrCreateSourcePort(currentSource, currentSource.getProduction(),
         sourceVertex);
 
-    createFifo(graph, currentSourcePort, targetPort);
+    createFifo(graph, currentSourcePort, forkInputPort);
 
     // Add the join actor to the graph
     graph.addActor(forkActor);
@@ -502,9 +541,24 @@ public class PiMMSRVerticesLinker {
    */
   private void createFifo(final PiGraph graph, final DataOutputPort sourcePort, final DataInputPort targetPort) {
     final Fifo newFifo = PiMMUserFactory.instance.createFifo();
+    if (!this.fifoType.isEmpty()) {
+      newFifo.setType(this.fifoType);
+    } else {
+      // Try to check if one of the port already has a FIFO to get the type
+      // Otherwise we infer "char" type by default
+      final String type;
+      if (sourcePort.getFifo() != null) {
+        type = sourcePort.getFifo().getType();
+      } else if (targetPort.getFifo() != null) {
+        type = targetPort.getFifo().getType();
+      } else {
+        type = "char";
+      }
+      newFifo.setType(type);
+    }
     newFifo.setSourcePort(sourcePort);
     newFifo.setTargetPort(targetPort);
-    newFifo.setType(this.fifo.getType());
+
     // Add the fifo to the graph
     graph.addFifo(newFifo);
   }
