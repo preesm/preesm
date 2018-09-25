@@ -25,6 +25,7 @@ PREESM Changelog
 * Update M2E Code Quality repo;
 * Codegen now automatically fills its include list given actors refinements;
 * Fix PiMM2SRDAG transformation (was giving wrong results / failing on specific cases);
+* Adding new task to flatten a given PiMM graph.
 
 ### Bug fix
 * Fix path format in scenario editor (issue #81);
