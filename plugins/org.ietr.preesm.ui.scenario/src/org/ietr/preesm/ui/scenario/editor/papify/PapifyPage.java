@@ -149,14 +149,13 @@ public class PapifyPage extends FormPage implements IPropertyListener {
       }
       if ((this.papiEvents != null) && !this.papiEvents.getComponents().isEmpty()) {
         updateTables();
-        firePropertyChange(IEditorPart.PROP_DIRTY);
       } else {
         this.scenario.setPapifyConfigManager(new PapifyConfigManager());
       }
+      managedForm.refresh();
+      managedForm.reflow(true);
     }
 
-    managedForm.refresh();
-    managedForm.reflow(true);
   }
 
   /**
