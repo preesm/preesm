@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="ASCII"?>
-<pi:Diagram xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:al="http://eclipse.org/graphiti/mm/algorithms" xmlns:pi="http://eclipse.org/graphiti/mm/pictograms" visible="true" gridUnit="10" diagramTypeId="PiMM" name="network_train" snapToGrid="true" pictogramLinks="//@children.0/@anchors.0/@link //@children.0/@children.0/@link //@children.0/@link //@children.1/@anchors.0/@link //@children.1/@children.0/@link //@children.1/@link //@children.2/@anchors.0/@link //@children.2/@children.0/@link //@children.2/@link //@children.3/@link //@children.3/@children.0/@link //@children.3/@anchors.0/@link //@children.4/@link //@children.4/@children.0/@link //@children.4/@anchors.0/@link //@children.5/@link //@children.5/@children.0/@link //@children.5/@anchors.0/@link //@children.6/@link //@children.6/@children.0/@link //@children.6/@anchors.0/@link //@children.7/@anchors.0/@link //@children.7/@children.0/@link //@children.7/@link //@children.7/@anchors.1/@link //@children.8/@anchors.0/@link //@children.8/@children.0/@link //@children.8/@link //@children.8/@anchors.1/@link //@children.9/@anchors.0/@link //@children.9/@children.0/@link //@children.9/@link //@children.9/@anchors.1/@link //@children.10/@anchors.0/@link //@children.10/@children.0/@link //@children.10/@link //@children.10/@anchors.1/@link //@children.11/@anchors.0/@link //@children.11/@children.0/@link //@children.11/@link //@children.11/@anchors.1/@link //@children.12/@anchors.0/@link //@children.12/@children.0/@link //@children.12/@link //@children.12/@anchors.1/@link //@children.13/@link //@children.13/@children.0/@link //@children.13/@anchors.0/@link //@children.13/@anchors.1/@link //@children.13/@anchors.2/@link //@children.13/@anchors.3/@link //@children.13/@anchors.4/@link //@children.13/@anchors.5/@link //@children.13/@anchors.6/@link //@children.14/@link //@children.14/@children.0/@link //@children.14/@anchors.0/@link //@children.14/@anchors.1/@link //@children.14/@anchors.2/@link //@children.14/@anchors.3/@link //@children.14/@anchors.4/@link //@children.14/@anchors.5/@link //@children.14/@anchors.6/@link //@children.15/@link //@children.15/@children.0/@link //@children.15/@anchors.0/@link //@children.15/@anchors.1/@link //@children.15/@anchors.2/@link //@children.15/@anchors.3/@link //@children.15/@anchors.4/@link //@children.15/@anchors.5/@link //@children.15/@anchors.6/@link //@children.15/@anchors.7/@link //@children.15/@anchors.8/@link //@children.15/@anchors.9/@link //@children.15/@anchors.10/@link //@children.15/@anchors.11/@link //@children.15/@anchors.12/@link //@children.15/@anchors.13/@link //@children.15/@anchors.14/@link //@children.15/@anchors.15/@link //@children.16/@link //@children.16/@children.0/@link //@children.16/@anchors.0/@link //@children.16/@anchors.1/@link //@children.16/@anchors.2/@link //@children.16/@anchors.3/@link //@children.16/@anchors.4/@link //@children.16/@anchors.5/@link //@children.16/@anchors.6/@link //@children.16/@anchors.7/@link //@children.16/@anchors.8/@link //@children.16/@anchors.9/@link //@children.16/@anchors.10/@link //@children.16/@anchors.11/@link //@children.16/@anchors.12/@link //@children.16/@anchors.13/@link //@children.16/@anchors.14/@link //@children.16/@anchors.15/@link //@children.17/@link //@children.17/@children.0/@link //@children.17/@anchors.0/@link //@children.17/@anchors.1/@link //@children.17/@anchors.2/@link //@children.17/@anchors.3/@link //@children.17/@anchors.4/@link //@children.17/@anchors.5/@link //@children.17/@anchors.6/@link //@children.18/@link //@children.18/@children.0/@link //@children.18/@anchors.0/@link //@children.18/@anchors.1/@link //@children.18/@anchors.2/@link //@children.18/@anchors.3/@link //@children.18/@anchors.4/@link //@children.18/@anchors.5/@link //@children.18/@anchors.6/@link //@children.19/@link //@children.19/@children.0/@link //@children.19/@anchors.0/@link //@children.19/@anchors.1/@link //@children.19/@anchors.2/@link //@children.19/@anchors.3/@link //@children.19/@anchors.4/@link //@children.19/@anchors.5/@link //@children.19/@anchors.6/@link //@children.19/@anchors.7/@link //@children.19/@anchors.8/@link //@children.19/@anchors.9/@link //@children.19/@anchors.10/@link //@children.20/@link //@children.20/@children.0/@link //@children.20/@anchors.0/@link //@children.20/@anchors.1/@link //@children.20/@anchors.2/@link //@children.20/@anchors.3/@link //@children.20/@anchors.4/@link //@children.20/@anchors.5/@link //@children.20/@anchors.6/@link //@children.20/@anchors.7/@link //@children.20/@anchors.8/@link //@children.20/@anchors.9/@link //@children.20/@anchors.10/@link //@children.21/@link //@children.21/@children.0/@link //@children.21/@anchors.0/@link //@children.21/@anchors.1/@link //@children.21/@anchors.2/@link //@children.21/@anchors.3/@link //@children.21/@anchors.4/@link //@children.21/@anchors.5/@link //@children.21/@anchors.6/@link //@children.21/@anchors.7/@link //@children.21/@anchors.8/@link //@children.21/@anchors.9/@link //@children.22/@link //@children.22/@children.0/@link //@children.22/@anchors.0/@link //@children.22/@anchors.1/@link //@children.22/@anchors.2/@link //@children.22/@anchors.3/@link //@children.22/@anchors.4/@link //@children.23/@link //@children.23/@children.0/@link //@children.23/@anchors.0/@link //@children.23/@anchors.1/@link //@children.23/@anchors.2/@link //@children.23/@anchors.3/@link //@children.23/@anchors.4/@link //@children.24/@link //@children.24/@children.0/@link //@children.24/@anchors.0/@link //@children.24/@anchors.1/@link //@children.24/@anchors.2/@link //@children.24/@anchors.3/@link //@children.24/@anchors.4/@link //@children.25/@link //@children.25/@children.0/@link //@children.25/@anchors.0/@link //@children.25/@anchors.1/@link //@children.25/@anchors.2/@link //@children.25/@anchors.3/@link //@children.25/@anchors.4/@link //@children.25/@anchors.5/@link //@children.25/@anchors.6/@link //@children.26/@link //@children.26/@children.0/@link //@children.26/@anchors.0/@link //@children.26/@anchors.1/@link //@children.26/@anchors.2/@link //@children.26/@anchors.3/@link //@children.26/@anchors.4/@link //@children.27/@link //@children.27/@children.0/@link //@children.27/@anchors.0/@link //@children.27/@anchors.1/@link //@children.27/@anchors.2/@link //@children.27/@anchors.3/@link //@children.27/@anchors.4/@link //@children.27/@anchors.5/@link //@children.28/@link //@children.28/@children.0/@link //@children.28/@anchors.0/@link //@children.28/@anchors.1/@link //@children.28/@anchors.2/@link //@children.28/@anchors.3/@link //@children.28/@anchors.4/@link //@children.28/@anchors.5/@link //@children.29/@link //@children.29/@children.0/@link //@children.29/@anchors.0/@link //@children.29/@anchors.1/@link //@children.29/@anchors.2/@link //@children.29/@anchors.3/@link //@children.29/@anchors.4/@link //@children.30/@anchors.0/@link //@children.30/@children.0/@link //@children.30/@link //@children.30/@anchors.1/@link //@children.31/@anchors.0/@link //@children.31/@children.0/@link //@children.31/@link //@children.31/@anchors.1/@link //@children.32/@link //@children.32/@children.0/@link //@children.32/@anchors.0/@link //@children.32/@anchors.1/@link //@children.32/@anchors.2/@link //@children.32/@anchors.3/@link //@children.33/@link //@children.33/@children.0/@link //@children.33/@anchors.0/@link //@children.33/@anchors.1/@link //@children.34/@link //@children.34/@children.0/@link //@children.34/@anchors.0/@link //@children.34/@anchors.1/@link //@children.34/@anchors.2/@link //@children.34/@anchors.3/@link //@children.35/@link //@children.35/@children.0/@link //@children.35/@anchors.0/@link //@children.35/@anchors.1/@link //@children.35/@anchors.2/@link //@children.35/@anchors.3/@link //@children.36/@link //@children.36/@children.0/@link //@children.36/@anchors.0/@link //@children.36/@anchors.1/@link //@children.36/@anchors.2/@link //@children.36/@anchors.3/@link //@children.36/@anchors.4/@link //@connections.0/@link //@children.37/@link //@children.37/@anchors.0/@link //@connections.1/@link //@children.38/@link //@children.38/@anchors.0/@link //@connections.2/@link //@children.39/@link //@children.39/@anchors.0/@link //@connections.3/@link //@children.40/@link //@children.40/@anchors.0/@link //@connections.4/@link //@children.41/@link //@children.41/@anchors.0/@link //@connections.5/@link //@connections.6/@link //@connections.7/@link //@connections.8/@link //@connections.9/@link //@connections.10/@link //@connections.11/@link //@connections.12/@link //@connections.13/@link //@connections.14/@link //@connections.15/@link //@connections.16/@link //@connections.17/@link //@connections.18/@link //@connections.19/@link //@connections.20/@link //@connections.21/@link //@connections.22/@link //@connections.23/@link //@connections.24/@link //@connections.25/@link //@connections.26/@link //@connections.27/@link //@connections.28/@link //@connections.29/@link //@connections.30/@link //@connections.31/@link //@connections.32/@link //@connections.33/@link //@connections.34/@link //@connections.35/@link //@connections.36/@link //@connections.37/@link //@connections.38/@link //@connections.39/@link //@connections.40/@link //@connections.41/@link //@connections.42/@link //@connections.43/@link //@connections.44/@link //@connections.45/@link //@connections.46/@link //@connections.47/@link //@connections.48/@link //@connections.49/@link //@connections.50/@link //@connections.51/@link //@connections.52/@link //@connections.53/@link //@connections.54/@link //@connections.55/@link //@connections.56/@link //@connections.57/@link //@connections.58/@link //@connections.59/@link //@connections.60/@link //@connections.61/@link //@connections.62/@link //@connections.63/@link //@connections.64/@link //@connections.65/@link //@connections.66/@link //@connections.67/@link //@connections.68/@link //@connections.69/@link //@connections.70/@link //@connections.71/@link //@connections.72/@link //@connections.73/@link //@connections.74/@link //@connections.75/@link //@connections.76/@link //@connections.77/@link //@connections.78/@link //@connections.79/@link //@connections.80/@link //@connections.81/@link //@connections.82/@link //@connections.83/@link //@connections.84/@link //@connections.85/@link //@connections.86/@link //@connections.87/@link //@connections.88/@link //@connections.89/@link //@connections.90/@link //@connections.91/@link //@connections.92/@link //@connections.93/@link //@connections.94/@link //@connections.95/@link //@connections.96/@link //@connections.97/@link //@connections.98/@link //@connections.99/@link //@connections.100/@link //@connections.101/@link //@connections.102/@link //@connections.103/@link //@connections.104/@link //@connections.105/@link //@connections.106/@link //@connections.107/@link //@connections.108/@link //@connections.109/@link //@connections.110/@link //@connections.111/@link //@connections.112/@link //@connections.113/@link //@connections.114/@link" version="0.15.0">
+<pi:Diagram xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:al="http://eclipse.org/graphiti/mm/algorithms" xmlns:pi="http://eclipse.org/graphiti/mm/pictograms" visible="true" gridUnit="10" diagramTypeId="PiMM" name="network_train" snapToGrid="true" pictogramLinks="//@children.0/@anchors.0/@link //@children.0/@children.0/@link //@children.0/@link //@children.1/@anchors.0/@link //@children.1/@children.0/@link //@children.1/@link //@children.2/@anchors.0/@link //@children.2/@children.0/@link //@children.2/@link //@children.3/@link //@children.3/@children.0/@link //@children.3/@anchors.0/@link //@children.4/@link //@children.4/@children.0/@link //@children.4/@anchors.0/@link //@children.5/@link //@children.5/@children.0/@link //@children.5/@anchors.0/@link //@children.6/@link //@children.6/@children.0/@link //@children.6/@anchors.0/@link //@children.7/@anchors.0/@link //@children.7/@children.0/@link //@children.7/@link //@children.7/@anchors.1/@link //@children.8/@anchors.0/@link //@children.8/@children.0/@link //@children.8/@link //@children.8/@anchors.1/@link //@children.9/@anchors.0/@link //@children.9/@children.0/@link //@children.9/@link //@children.9/@anchors.1/@link //@children.10/@anchors.0/@link //@children.10/@children.0/@link //@children.10/@link //@children.10/@anchors.1/@link //@children.11/@anchors.0/@link //@children.11/@children.0/@link //@children.11/@link //@children.11/@anchors.1/@link //@children.12/@anchors.0/@link //@children.12/@children.0/@link //@children.12/@link //@children.12/@anchors.1/@link //@children.13/@link //@children.13/@children.0/@link //@children.13/@anchors.0/@link //@children.13/@anchors.1/@link //@children.13/@anchors.2/@link //@children.13/@anchors.3/@link //@children.13/@anchors.4/@link //@children.13/@anchors.6/@link //@children.13/@anchors.5/@link //@children.14/@link //@children.14/@children.0/@link //@children.14/@anchors.0/@link //@children.14/@anchors.1/@link //@children.14/@anchors.2/@link //@children.14/@anchors.3/@link //@children.14/@anchors.4/@link //@children.14/@anchors.5/@link //@children.14/@anchors.6/@link //@children.15/@link //@children.15/@children.0/@link //@children.15/@anchors.0/@link //@children.15/@anchors.1/@link //@children.15/@anchors.2/@link //@children.15/@anchors.3/@link //@children.15/@anchors.4/@link //@children.15/@anchors.5/@link //@children.15/@anchors.6/@link //@children.15/@anchors.7/@link //@children.15/@anchors.8/@link //@children.15/@anchors.9/@link //@children.15/@anchors.10/@link //@children.15/@anchors.11/@link //@children.15/@anchors.12/@link //@children.15/@anchors.13/@link //@children.15/@anchors.14/@link //@children.15/@anchors.15/@link //@children.16/@link //@children.16/@children.0/@link //@children.16/@anchors.0/@link //@children.16/@anchors.1/@link //@children.16/@anchors.2/@link //@children.16/@anchors.3/@link //@children.16/@anchors.4/@link //@children.16/@anchors.5/@link //@children.16/@anchors.6/@link //@children.16/@anchors.7/@link //@children.16/@anchors.8/@link //@children.16/@anchors.9/@link //@children.16/@anchors.10/@link //@children.16/@anchors.11/@link //@children.16/@anchors.12/@link //@children.16/@anchors.13/@link //@children.16/@anchors.14/@link //@children.16/@anchors.15/@link //@children.17/@link //@children.17/@children.0/@link //@children.17/@anchors.0/@link //@children.17/@anchors.1/@link //@children.17/@anchors.2/@link //@children.17/@anchors.3/@link //@children.17/@anchors.4/@link //@children.17/@anchors.5/@link //@children.17/@anchors.6/@link //@children.18/@link //@children.18/@children.0/@link //@children.18/@anchors.0/@link //@children.18/@anchors.1/@link //@children.18/@anchors.2/@link //@children.18/@anchors.3/@link //@children.18/@anchors.4/@link //@children.18/@anchors.5/@link //@children.18/@anchors.6/@link //@children.19/@link //@children.19/@children.0/@link //@children.19/@anchors.0/@link //@children.19/@anchors.1/@link //@children.19/@anchors.2/@link //@children.19/@anchors.3/@link //@children.19/@anchors.4/@link //@children.19/@anchors.5/@link //@children.19/@anchors.6/@link //@children.19/@anchors.7/@link //@children.19/@anchors.8/@link //@children.19/@anchors.9/@link //@children.19/@anchors.10/@link //@children.20/@link //@children.20/@children.0/@link //@children.20/@anchors.0/@link //@children.20/@anchors.1/@link //@children.20/@anchors.2/@link //@children.20/@anchors.3/@link //@children.20/@anchors.4/@link //@children.20/@anchors.5/@link //@children.20/@anchors.6/@link //@children.20/@anchors.7/@link //@children.20/@anchors.8/@link //@children.20/@anchors.10/@link //@children.20/@anchors.9/@link //@children.21/@link //@children.21/@children.0/@link //@children.21/@anchors.0/@link //@children.21/@anchors.1/@link //@children.21/@anchors.2/@link //@children.21/@anchors.3/@link //@children.21/@anchors.4/@link //@children.21/@anchors.5/@link //@children.21/@anchors.6/@link //@children.21/@anchors.7/@link //@children.21/@anchors.8/@link //@children.21/@anchors.9/@link //@children.22/@link //@children.22/@children.0/@link //@children.22/@anchors.0/@link //@children.22/@anchors.1/@link //@children.22/@anchors.2/@link //@children.22/@anchors.3/@link //@children.22/@anchors.4/@link //@children.23/@link //@children.23/@children.0/@link //@children.23/@anchors.0/@link //@children.23/@anchors.1/@link //@children.23/@anchors.2/@link //@children.23/@anchors.3/@link //@children.23/@anchors.4/@link //@children.24/@link //@children.24/@children.0/@link //@children.24/@anchors.0/@link //@children.24/@anchors.1/@link //@children.24/@anchors.2/@link //@children.24/@anchors.3/@link //@children.24/@anchors.4/@link //@children.25/@link //@children.25/@children.0/@link //@children.25/@anchors.0/@link //@children.25/@anchors.1/@link //@children.25/@anchors.2/@link //@children.25/@anchors.3/@link //@children.25/@anchors.4/@link //@children.25/@anchors.5/@link //@children.25/@anchors.6/@link //@children.26/@link //@children.26/@children.0/@link //@children.26/@anchors.0/@link //@children.26/@anchors.1/@link //@children.26/@anchors.2/@link //@children.26/@anchors.3/@link //@children.26/@anchors.4/@link //@children.27/@link //@children.27/@children.0/@link //@children.27/@anchors.0/@link //@children.27/@anchors.1/@link //@children.27/@anchors.2/@link //@children.27/@anchors.3/@link //@children.27/@anchors.4/@link //@children.27/@anchors.5/@link //@children.28/@link //@children.28/@children.0/@link //@children.28/@anchors.0/@link //@children.28/@anchors.1/@link //@children.28/@anchors.2/@link //@children.28/@anchors.3/@link //@children.28/@anchors.4/@link //@children.28/@anchors.5/@link //@children.29/@link //@children.29/@children.0/@link //@children.29/@anchors.0/@link //@children.29/@anchors.1/@link //@children.29/@anchors.2/@link //@children.29/@anchors.3/@link //@children.29/@anchors.4/@link //@children.30/@anchors.0/@link //@children.30/@children.0/@link //@children.30/@link //@children.30/@anchors.1/@link //@children.31/@anchors.0/@link //@children.31/@children.0/@link //@children.31/@link //@children.31/@anchors.1/@link //@children.32/@link //@children.32/@children.0/@link //@children.32/@anchors.0/@link //@children.32/@anchors.1/@link //@children.32/@anchors.2/@link //@children.32/@anchors.3/@link //@children.33/@link //@children.33/@children.0/@link //@children.33/@anchors.0/@link //@children.33/@anchors.1/@link //@children.34/@link //@children.34/@children.0/@link //@children.34/@anchors.0/@link //@children.34/@anchors.1/@link //@children.34/@anchors.2/@link //@children.34/@anchors.3/@link //@children.35/@link //@children.35/@children.0/@link //@children.35/@anchors.0/@link //@children.35/@anchors.1/@link //@children.35/@anchors.2/@link //@children.35/@anchors.3/@link //@children.36/@link //@children.36/@children.0/@link //@children.36/@anchors.0/@link //@children.36/@anchors.1/@link //@children.36/@anchors.2/@link //@children.36/@anchors.3/@link //@children.36/@anchors.4/@link //@connections.0/@link //@children.37/@link //@children.37/@anchors.0/@link //@connections.1/@link //@children.38/@link //@children.38/@anchors.0/@link //@connections.2/@link //@children.39/@link //@children.39/@anchors.0/@link //@connections.3/@link //@children.40/@link //@children.40/@anchors.0/@link //@connections.4/@link //@children.41/@link //@children.41/@anchors.0/@link //@connections.5/@link //@connections.6/@link //@connections.7/@link //@connections.8/@link //@connections.9/@link //@connections.10/@link //@connections.11/@link //@connections.12/@link //@connections.13/@link //@connections.14/@link //@connections.15/@link //@connections.16/@link //@connections.17/@link //@connections.18/@link //@connections.19/@link //@connections.20/@link //@connections.21/@link //@connections.22/@link //@connections.23/@link //@connections.24/@link //@connections.25/@link //@connections.26/@link //@connections.27/@link //@connections.28/@link //@connections.29/@link //@connections.30/@link //@connections.31/@link //@connections.32/@link //@connections.33/@link //@connections.34/@link //@connections.35/@link //@connections.36/@link //@connections.37/@link //@connections.38/@link //@connections.39/@link //@connections.40/@link //@connections.41/@link //@connections.42/@link //@connections.43/@link //@connections.44/@link //@connections.45/@link //@connections.46/@link //@connections.47/@link //@connections.48/@link //@connections.49/@link //@connections.50/@link //@connections.51/@link //@connections.52/@link //@connections.53/@link //@connections.54/@link //@connections.55/@link //@connections.56/@link //@connections.57/@link //@connections.58/@link //@connections.59/@link //@connections.60/@link //@connections.61/@link //@connections.62/@link //@connections.63/@link //@connections.64/@link //@connections.65/@link //@connections.66/@link //@connections.67/@link //@connections.68/@link //@connections.69/@link //@connections.70/@link //@connections.71/@link //@connections.72/@link //@connections.73/@link //@connections.74/@link //@connections.75/@link //@connections.76/@link //@connections.77/@link //@connections.78/@link //@connections.79/@link //@connections.80/@link //@connections.81/@link //@connections.82/@link //@connections.83/@link //@connections.84/@link //@connections.85/@link //@connections.86/@link //@connections.87/@link //@connections.88/@link //@connections.89/@link //@connections.90/@link //@connections.91/@link //@connections.92/@link //@connections.93/@link //@connections.94/@link //@connections.95/@link //@connections.96/@link //@connections.97/@link //@connections.98/@link //@connections.99/@link //@connections.100/@link //@connections.101/@link //@connections.102/@link //@connections.103/@link //@connections.104/@link //@connections.105/@link //@connections.106/@link //@connections.107/@link //@connections.108/@link //@connections.109/@link //@connections.110/@link //@connections.111/@link //@connections.112/@link //@connections.113/@link //@connections.114/@link" version="0.15.0">
   <properties key="editor_version" value="3"/>
   <graphicsAlgorithm xsi:type="al:Rectangle" background="//@colors.1" foreground="//@colors.0" lineWidth="1" transparency="0.0" width="1000" height="1000"/>
   <link>
@@ -10,7 +10,7 @@
     <link>
       <businessObjects href="network_train.pi#//@vertices.0"/>
     </link>
-    <anchors xsi:type="pi:BoxRelativeAnchor" visible="true" active="true" outgoingConnections="//@connections.57 //@connections.61 //@connections.69 //@connections.77 //@connections.93 //@connections.97 //@connections.102 //@connections.104" referencedGraphicsAlgorithm="//@children.0/@graphicsAlgorithm" relativeWidth="0.5" relativeHeight="1.0">
+    <anchors xsi:type="pi:BoxRelativeAnchor" visible="true" active="true" outgoingConnections="//@connections.55 //@connections.59 //@connections.67 //@connections.75 //@connections.91 //@connections.95 //@connections.100" referencedGraphicsAlgorithm="//@children.0/@graphicsAlgorithm" relativeWidth="0.5" relativeHeight="1.0">
       <graphicsAlgorithm xsi:type="al:Polygon" background="//@colors.3" foreground="//@colors.2" lineWidth="2" filled="true" transparency="0.0" width="16" height="16" x="-8" y="-16">
         <points x="8"/>
         <points x="16" y="16"/>
@@ -32,7 +32,7 @@
     <link>
       <businessObjects href="network_train.pi#//@vertices.1"/>
     </link>
-    <anchors xsi:type="pi:BoxRelativeAnchor" visible="true" active="true" outgoingConnections="//@connections.54 //@connections.55 //@connections.65 //@connections.68 //@connections.73 //@connections.74 //@connections.76 //@connections.83 //@connections.84 //@connections.87 //@connections.94 //@connections.95 //@connections.98 //@connections.105 //@connections.106" referencedGraphicsAlgorithm="//@children.1/@graphicsAlgorithm" relativeWidth="0.5" relativeHeight="1.0">
+    <anchors xsi:type="pi:BoxRelativeAnchor" visible="true" active="true" outgoingConnections="//@connections.52 //@connections.53 //@connections.63 //@connections.66 //@connections.71 //@connections.72 //@connections.74 //@connections.81 //@connections.82 //@connections.85 //@connections.92 //@connections.93 //@connections.96 //@connections.102 //@connections.103" referencedGraphicsAlgorithm="//@children.1/@graphicsAlgorithm" relativeWidth="0.5" relativeHeight="1.0">
       <graphicsAlgorithm xsi:type="al:Polygon" background="//@colors.3" foreground="//@colors.2" lineWidth="2" filled="true" transparency="0.0" width="16" height="16" x="-8" y="-16">
         <points x="8"/>
         <points x="16" y="16"/>
@@ -54,7 +54,7 @@
     <link>
       <businessObjects href="network_train.pi#//@vertices.2"/>
     </link>
-    <anchors xsi:type="pi:BoxRelativeAnchor" visible="true" active="true" outgoingConnections="//@connections.56 //@connections.58 //@connections.66 //@connections.72 //@connections.75 //@connections.82 //@connections.89 //@connections.90 //@connections.92 //@connections.96 //@connections.99 //@connections.107 //@connections.108 //@connections.109" referencedGraphicsAlgorithm="//@children.2/@graphicsAlgorithm" relativeWidth="0.5" relativeHeight="1.0">
+    <anchors xsi:type="pi:BoxRelativeAnchor" visible="true" active="true" outgoingConnections="//@connections.54 //@connections.56 //@connections.64 //@connections.70 //@connections.73 //@connections.80 //@connections.87 //@connections.88 //@connections.90 //@connections.94 //@connections.97 //@connections.104 //@connections.105 //@connections.106" referencedGraphicsAlgorithm="//@children.2/@graphicsAlgorithm" relativeWidth="0.5" relativeHeight="1.0">
       <graphicsAlgorithm xsi:type="al:Polygon" background="//@colors.3" foreground="//@colors.2" lineWidth="2" filled="true" transparency="0.0" width="16" height="16" x="-8" y="-16">
         <points x="8"/>
         <points x="16" y="16"/>
@@ -82,7 +82,7 @@
     <link>
       <businessObjects href="network_train.pi#//@vertices.3"/>
     </link>
-    <anchors xsi:type="pi:ChopboxAnchor" outgoingConnections="//@connections.59 //@connections.63 //@connections.64 //@connections.80 //@connections.100" incomingConnections="//@connections.55 //@connections.57 //@connections.58" referencedGraphicsAlgorithm="//@children.3/@graphicsAlgorithm">
+    <anchors xsi:type="pi:ChopboxAnchor" outgoingConnections="//@connections.57 //@connections.61 //@connections.62 //@connections.78 //@connections.98" incomingConnections="//@connections.53 //@connections.55 //@connections.56" referencedGraphicsAlgorithm="//@children.3/@graphicsAlgorithm">
       <link>
         <businessObjects href="network_train.pi#//@vertices.3"/>
       </link>
@@ -105,7 +105,7 @@
     <link>
       <businessObjects href="network_train.pi#//@vertices.4"/>
     </link>
-    <anchors xsi:type="pi:ChopboxAnchor" outgoingConnections="//@connections.60 //@connections.62 //@connections.67 //@connections.81 //@connections.101" incomingConnections="//@connections.54 //@connections.56" referencedGraphicsAlgorithm="//@children.4/@graphicsAlgorithm">
+    <anchors xsi:type="pi:ChopboxAnchor" outgoingConnections="//@connections.58 //@connections.60 //@connections.65 //@connections.79 //@connections.99" incomingConnections="//@connections.52 //@connections.54" referencedGraphicsAlgorithm="//@children.4/@graphicsAlgorithm">
       <link>
         <businessObjects href="network_train.pi#//@vertices.4"/>
       </link>
@@ -128,7 +128,7 @@
     <link>
       <businessObjects href="network_train.pi#//@vertices.5"/>
     </link>
-    <anchors xsi:type="pi:ChopboxAnchor" outgoingConnections="//@connections.70 //@connections.78 //@connections.85 //@connections.86" incomingConnections="//@connections.68 //@connections.69" referencedGraphicsAlgorithm="//@children.5/@graphicsAlgorithm">
+    <anchors xsi:type="pi:ChopboxAnchor" outgoingConnections="//@connections.68 //@connections.76 //@connections.83 //@connections.84 //@connections.109" incomingConnections="//@connections.66 //@connections.67" referencedGraphicsAlgorithm="//@children.5/@graphicsAlgorithm">
       <link>
         <businessObjects href="network_train.pi#//@vertices.5"/>
       </link>
@@ -151,7 +151,7 @@
     <link>
       <businessObjects href="network_train.pi#//@vertices.6"/>
     </link>
-    <anchors xsi:type="pi:ChopboxAnchor" outgoingConnections="//@connections.71 //@connections.79 //@connections.88 //@connections.91 //@connections.103" incomingConnections="//@connections.72 //@connections.73" referencedGraphicsAlgorithm="//@children.6/@graphicsAlgorithm">
+    <anchors xsi:type="pi:ChopboxAnchor" outgoingConnections="//@connections.69 //@connections.77 //@connections.86 //@connections.89 //@connections.101" incomingConnections="//@connections.70 //@connections.71" referencedGraphicsAlgorithm="//@children.6/@graphicsAlgorithm">
       <link>
         <businessObjects href="network_train.pi#//@vertices.6"/>
       </link>
@@ -168,7 +168,7 @@
     <link>
       <businessObjects href="network_train.pi#//@vertices.7"/>
     </link>
-    <anchors xsi:type="pi:BoxRelativeAnchor" visible="true" active="true" outgoingConnections="//@connections.16" incomingConnections="//@connections.59" referencedGraphicsAlgorithm="//@children.7/@graphicsAlgorithm" relativeWidth="1.0" relativeHeight="0.1">
+    <anchors xsi:type="pi:BoxRelativeAnchor" visible="true" active="true" outgoingConnections="//@connections.16" incomingConnections="//@connections.57" referencedGraphicsAlgorithm="//@children.7/@graphicsAlgorithm" relativeWidth="1.0" relativeHeight="0.1">
       <graphicsAlgorithm xsi:type="al:RoundedRectangle" background="//@colors.6" foreground="//@colors.5" lineWidth="2" transparency="0.0" width="16" height="16" x="-16" cornerHeight="5" cornerWidth="5"/>
       <link>
         <businessObjects href="network_train.pi#//@vertices.7/@dataOutputPorts.0"/>
@@ -191,7 +191,7 @@
     <link>
       <businessObjects href="network_train.pi#//@vertices.8"/>
     </link>
-    <anchors xsi:type="pi:BoxRelativeAnchor" visible="true" active="true" outgoingConnections="//@connections.18" incomingConnections="//@connections.60" referencedGraphicsAlgorithm="//@children.8/@graphicsAlgorithm" relativeWidth="1.0" relativeHeight="0.1">
+    <anchors xsi:type="pi:BoxRelativeAnchor" visible="true" active="true" outgoingConnections="//@connections.18" incomingConnections="//@connections.58" referencedGraphicsAlgorithm="//@children.8/@graphicsAlgorithm" relativeWidth="1.0" relativeHeight="0.1">
       <graphicsAlgorithm xsi:type="al:RoundedRectangle" background="//@colors.6" foreground="//@colors.5" lineWidth="2" transparency="0.0" width="16" height="16" x="-16" cornerHeight="5" cornerWidth="5"/>
       <link>
         <businessObjects href="network_train.pi#//@vertices.8/@dataOutputPorts.0"/>
@@ -237,7 +237,7 @@
     <link>
       <businessObjects href="network_train.pi#//@vertices.10"/>
     </link>
-    <anchors xsi:type="pi:BoxRelativeAnchor" visible="true" active="true" outgoingConnections="//@connections.31" incomingConnections="//@connections.61" referencedGraphicsAlgorithm="//@children.10/@graphicsAlgorithm" relativeWidth="1.0" relativeHeight="0.1">
+    <anchors xsi:type="pi:BoxRelativeAnchor" visible="true" active="true" outgoingConnections="//@connections.31" incomingConnections="//@connections.59" referencedGraphicsAlgorithm="//@children.10/@graphicsAlgorithm" relativeWidth="1.0" relativeHeight="0.1">
       <graphicsAlgorithm xsi:type="al:RoundedRectangle" background="//@colors.6" foreground="//@colors.5" lineWidth="2" transparency="0.0" width="16" height="16" x="-16" cornerHeight="5" cornerWidth="5"/>
       <link>
         <businessObjects href="network_train.pi#//@vertices.10/@dataOutputPorts.0"/>
@@ -260,7 +260,7 @@
     <link>
       <businessObjects href="network_train.pi#//@vertices.11"/>
     </link>
-    <anchors xsi:type="pi:BoxRelativeAnchor" visible="true" active="true" incomingConnections="//@connections.5 //@connections.63" referencedGraphicsAlgorithm="//@children.11/@graphicsAlgorithm" relativeHeight="0.1">
+    <anchors xsi:type="pi:BoxRelativeAnchor" visible="true" active="true" incomingConnections="//@connections.5 //@connections.61" referencedGraphicsAlgorithm="//@children.11/@graphicsAlgorithm" relativeHeight="0.1">
       <graphicsAlgorithm xsi:type="al:RoundedRectangle" background="//@colors.7" foreground="//@colors.5" lineWidth="2" transparency="0.0" width="16" height="16" cornerHeight="5" cornerWidth="5"/>
       <link>
         <businessObjects href="network_train.pi#//@vertices.11/@dataInputPorts.0"/>
@@ -283,7 +283,7 @@
     <link>
       <businessObjects href="network_train.pi#//@vertices.12"/>
     </link>
-    <anchors xsi:type="pi:BoxRelativeAnchor" visible="true" active="true" incomingConnections="//@connections.6 //@connections.62" referencedGraphicsAlgorithm="//@children.12/@graphicsAlgorithm" relativeHeight="0.1">
+    <anchors xsi:type="pi:BoxRelativeAnchor" visible="true" active="true" incomingConnections="//@connections.6 //@connections.60" referencedGraphicsAlgorithm="//@children.12/@graphicsAlgorithm" relativeHeight="0.1">
       <graphicsAlgorithm xsi:type="al:RoundedRectangle" background="//@colors.7" foreground="//@colors.5" lineWidth="2" transparency="0.0" width="16" height="16" cornerHeight="5" cornerWidth="5"/>
       <link>
         <businessObjects href="network_train.pi#//@vertices.12/@dataInputPorts.0"/>
@@ -311,7 +311,7 @@
         <businessObjects href="network_train.pi#//@vertices.13"/>
       </link>
     </anchors>
-    <anchors xsi:type="pi:BoxRelativeAnchor" visible="true" active="true" incomingConnections="//@connections.70" referencedGraphicsAlgorithm="//@children.13/@graphicsAlgorithm" relativeHeight="0.20408163265306123">
+    <anchors xsi:type="pi:BoxRelativeAnchor" visible="true" active="true" incomingConnections="//@connections.68" referencedGraphicsAlgorithm="//@children.13/@graphicsAlgorithm" relativeHeight="0.20408163265306123">
       <graphicsAlgorithm xsi:type="al:Rectangle" lineWidth="1" filled="false" lineVisible="false" transparency="0.0" width="66" height="13">
         <graphicsAlgorithmChildren xsi:type="al:Text" foreground="//@colors.4" lineWidth="1" filled="false" transparency="0.0" width="58" height="13" x="8" font="//@fonts.1" horizontalAlignment="ALIGNMENT_RIGHT" value="hidden_size"/>
         <graphicsAlgorithmChildren xsi:type="al:Polygon" background="//@colors.3" foreground="//@colors.5" lineWidth="0" filled="true" transparency="0.0" y="1">
@@ -324,7 +324,7 @@
         <businessObjects href="network_train.pi#//@vertices.13/@configInputPorts.0"/>
       </link>
     </anchors>
-    <anchors xsi:type="pi:BoxRelativeAnchor" visible="true" active="true" incomingConnections="//@connections.71" referencedGraphicsAlgorithm="//@children.13/@graphicsAlgorithm" relativeHeight="0.35714285714285715">
+    <anchors xsi:type="pi:BoxRelativeAnchor" visible="true" active="true" incomingConnections="//@connections.69" referencedGraphicsAlgorithm="//@children.13/@graphicsAlgorithm" relativeHeight="0.35714285714285715">
       <graphicsAlgorithm xsi:type="al:Rectangle" lineWidth="1" filled="false" lineVisible="false" transparency="0.0" width="64" height="13">
         <graphicsAlgorithmChildren xsi:type="al:Text" foreground="//@colors.4" lineWidth="1" filled="false" transparency="0.0" width="56" height="13" x="8" font="//@fonts.1" horizontalAlignment="ALIGNMENT_RIGHT" value="output_size"/>
         <graphicsAlgorithmChildren xsi:type="al:Polygon" background="//@colors.3" foreground="//@colors.5" lineWidth="0" filled="true" transparency="0.0" y="1">
@@ -337,7 +337,7 @@
         <businessObjects href="network_train.pi#//@vertices.13/@configInputPorts.1"/>
       </link>
     </anchors>
-    <anchors xsi:type="pi:BoxRelativeAnchor" visible="true" active="true" incomingConnections="//@connections.64" referencedGraphicsAlgorithm="//@children.13/@graphicsAlgorithm" relativeHeight="0.5102040816326531">
+    <anchors xsi:type="pi:BoxRelativeAnchor" visible="true" active="true" incomingConnections="//@connections.62" referencedGraphicsAlgorithm="//@children.13/@graphicsAlgorithm" relativeHeight="0.5102040816326531">
       <graphicsAlgorithm xsi:type="al:Rectangle" lineWidth="1" filled="false" lineVisible="false" transparency="0.0" width="70" height="13">
         <graphicsAlgorithmChildren xsi:type="al:Text" foreground="//@colors.4" lineWidth="1" filled="false" transparency="0.0" width="62" height="13" x="8" font="//@fonts.1" horizontalAlignment="ALIGNMENT_RIGHT" value="weights_size"/>
         <graphicsAlgorithmChildren xsi:type="al:Polygon" background="//@colors.3" foreground="//@colors.5" lineWidth="0" filled="true" transparency="0.0" y="1">
@@ -359,18 +359,18 @@
         <businessObjects href="network_train.pi#//@vertices.13/@dataInputPorts.0"/>
       </link>
     </anchors>
-    <anchors xsi:type="pi:BoxRelativeAnchor" visible="true" active="true" outgoingConnections="//@connections.34" referencedGraphicsAlgorithm="//@children.13/@graphicsAlgorithm" relativeWidth="1.0" relativeHeight="0.6632653061224489">
+    <anchors xsi:type="pi:BoxRelativeAnchor" visible="true" active="true" outgoingConnections="//@connections.21" referencedGraphicsAlgorithm="//@children.13/@graphicsAlgorithm" relativeWidth="1.0" relativeHeight="0.6632653061224489">
       <graphicsAlgorithm xsi:type="al:Rectangle" lineWidth="1" filled="false" lineVisible="false" transparency="0.0" width="37" height="13" x="-37">
-        <graphicsAlgorithmChildren xsi:type="al:Text" foreground="//@colors.4" lineWidth="1" filled="false" transparency="0.0" width="29" height="13" font="//@fonts.1" value="out_1"/>
+        <graphicsAlgorithmChildren xsi:type="al:Text" foreground="//@colors.4" lineWidth="1" filled="false" transparency="0.0" width="29" height="13" font="//@fonts.1" value="out_0"/>
         <graphicsAlgorithmChildren xsi:type="al:Rectangle" background="//@colors.7" foreground="//@colors.5" lineWidth="1" lineStyle="UNSPECIFIED" width="8" height="8" x="29" y="2"/>
       </graphicsAlgorithm>
       <link>
         <businessObjects href="network_train.pi#//@vertices.13/@dataOutputPorts.0"/>
       </link>
     </anchors>
-    <anchors xsi:type="pi:BoxRelativeAnchor" visible="true" active="true" outgoingConnections="//@connections.21" referencedGraphicsAlgorithm="//@children.13/@graphicsAlgorithm" relativeWidth="1.0" relativeHeight="0.8163265306122449">
+    <anchors xsi:type="pi:BoxRelativeAnchor" visible="true" active="true" outgoingConnections="//@connections.34" referencedGraphicsAlgorithm="//@children.13/@graphicsAlgorithm" relativeWidth="1.0" relativeHeight="0.8163265306122449">
       <graphicsAlgorithm xsi:type="al:Rectangle" lineWidth="1" filled="false" lineVisible="false" transparency="0.0" width="37" height="13" x="-37">
-        <graphicsAlgorithmChildren xsi:type="al:Text" foreground="//@colors.4" lineWidth="1" filled="false" transparency="0.0" width="29" height="13" font="//@fonts.1" value="out_0"/>
+        <graphicsAlgorithmChildren xsi:type="al:Text" foreground="//@colors.4" lineWidth="1" filled="false" transparency="0.0" width="29" height="13" font="//@fonts.1" value="out_1"/>
         <graphicsAlgorithmChildren xsi:type="al:Rectangle" background="//@colors.7" foreground="//@colors.5" lineWidth="1" lineStyle="UNSPECIFIED" width="8" height="8" x="29" y="2"/>
       </graphicsAlgorithm>
       <link>
@@ -394,7 +394,7 @@
         <businessObjects href="network_train.pi#//@vertices.14"/>
       </link>
     </anchors>
-    <anchors xsi:type="pi:BoxRelativeAnchor" visible="true" active="true" incomingConnections="//@connections.65" referencedGraphicsAlgorithm="//@children.14/@graphicsAlgorithm" relativeHeight="0.20408163265306123">
+    <anchors xsi:type="pi:BoxRelativeAnchor" visible="true" active="true" incomingConnections="//@connections.63" referencedGraphicsAlgorithm="//@children.14/@graphicsAlgorithm" relativeHeight="0.20408163265306123">
       <graphicsAlgorithm xsi:type="al:Rectangle" lineWidth="1" filled="false" lineVisible="false" transparency="0.0" width="66" height="13">
         <graphicsAlgorithmChildren xsi:type="al:Text" foreground="//@colors.4" lineWidth="1" filled="false" transparency="0.0" width="58" height="13" x="8" font="//@fonts.1" horizontalAlignment="ALIGNMENT_RIGHT" value="hidden_size"/>
         <graphicsAlgorithmChildren xsi:type="al:Polygon" background="//@colors.3" foreground="//@colors.5" lineWidth="0" filled="true" transparency="0.0" y="1">
@@ -407,7 +407,7 @@
         <businessObjects href="network_train.pi#//@vertices.14/@configInputPorts.0"/>
       </link>
     </anchors>
-    <anchors xsi:type="pi:BoxRelativeAnchor" visible="true" active="true" incomingConnections="//@connections.66" referencedGraphicsAlgorithm="//@children.14/@graphicsAlgorithm" relativeHeight="0.35714285714285715">
+    <anchors xsi:type="pi:BoxRelativeAnchor" visible="true" active="true" incomingConnections="//@connections.64" referencedGraphicsAlgorithm="//@children.14/@graphicsAlgorithm" relativeHeight="0.35714285714285715">
       <graphicsAlgorithm xsi:type="al:Rectangle" lineWidth="1" filled="false" lineVisible="false" transparency="0.0" width="64" height="13">
         <graphicsAlgorithmChildren xsi:type="al:Text" foreground="//@colors.4" lineWidth="1" filled="false" transparency="0.0" width="56" height="13" x="8" font="//@fonts.1" horizontalAlignment="ALIGNMENT_RIGHT" value="output_size"/>
         <graphicsAlgorithmChildren xsi:type="al:Polygon" background="//@colors.3" foreground="//@colors.5" lineWidth="0" filled="true" transparency="0.0" y="1">
@@ -420,7 +420,7 @@
         <businessObjects href="network_train.pi#//@vertices.14/@configInputPorts.1"/>
       </link>
     </anchors>
-    <anchors xsi:type="pi:BoxRelativeAnchor" visible="true" active="true" incomingConnections="//@connections.67" referencedGraphicsAlgorithm="//@children.14/@graphicsAlgorithm" relativeHeight="0.5102040816326531">
+    <anchors xsi:type="pi:BoxRelativeAnchor" visible="true" active="true" incomingConnections="//@connections.65" referencedGraphicsAlgorithm="//@children.14/@graphicsAlgorithm" relativeHeight="0.5102040816326531">
       <graphicsAlgorithm xsi:type="al:Rectangle" lineWidth="1" filled="false" lineVisible="false" transparency="0.0" width="53" height="13">
         <graphicsAlgorithmChildren xsi:type="al:Text" foreground="//@colors.4" lineWidth="1" filled="false" transparency="0.0" width="45" height="13" x="8" font="//@fonts.1" horizontalAlignment="ALIGNMENT_RIGHT" value="bias_size"/>
         <graphicsAlgorithmChildren xsi:type="al:Polygon" background="//@colors.3" foreground="//@colors.5" lineWidth="0" filled="true" transparency="0.0" y="1">
@@ -477,7 +477,7 @@
         <businessObjects href="network_train.pi#//@vertices.15"/>
       </link>
     </anchors>
-    <anchors xsi:type="pi:BoxRelativeAnchor" visible="true" active="true" incomingConnections="//@connections.75" referencedGraphicsAlgorithm="//@children.15/@graphicsAlgorithm" relativeHeight="0.10638297872340426">
+    <anchors xsi:type="pi:BoxRelativeAnchor" visible="true" active="true" incomingConnections="//@connections.73" referencedGraphicsAlgorithm="//@children.15/@graphicsAlgorithm" relativeHeight="0.10638297872340426">
       <graphicsAlgorithm xsi:type="al:Rectangle" lineWidth="1" filled="false" lineVisible="false" transparency="0.0" width="57" height="13">
         <graphicsAlgorithmChildren xsi:type="al:Text" foreground="//@colors.4" lineWidth="1" filled="false" transparency="0.0" width="49" height="13" x="8" font="//@fonts.1" horizontalAlignment="ALIGNMENT_RIGHT" value="layer_size"/>
         <graphicsAlgorithmChildren xsi:type="al:Polygon" background="//@colors.3" foreground="//@colors.5" lineWidth="0" filled="true" transparency="0.0" y="1">
@@ -490,7 +490,7 @@
         <businessObjects href="network_train.pi#//@vertices.15/@configInputPorts.0"/>
       </link>
     </anchors>
-    <anchors xsi:type="pi:BoxRelativeAnchor" visible="true" active="true" incomingConnections="//@connections.74" referencedGraphicsAlgorithm="//@children.15/@graphicsAlgorithm" relativeHeight="0.18617021276595744">
+    <anchors xsi:type="pi:BoxRelativeAnchor" visible="true" active="true" incomingConnections="//@connections.72" referencedGraphicsAlgorithm="//@children.15/@graphicsAlgorithm" relativeHeight="0.18617021276595744">
       <graphicsAlgorithm xsi:type="al:Rectangle" lineWidth="1" filled="false" lineVisible="false" transparency="0.0" width="57" height="13">
         <graphicsAlgorithmChildren xsi:type="al:Text" foreground="//@colors.4" lineWidth="1" filled="false" transparency="0.0" width="49" height="13" x="8" font="//@fonts.1" horizontalAlignment="ALIGNMENT_RIGHT" value="input_size"/>
         <graphicsAlgorithmChildren xsi:type="al:Polygon" background="//@colors.3" foreground="//@colors.5" lineWidth="0" filled="true" transparency="0.0" y="1">
@@ -503,7 +503,7 @@
         <businessObjects href="network_train.pi#//@vertices.15/@configInputPorts.1"/>
       </link>
     </anchors>
-    <anchors xsi:type="pi:BoxRelativeAnchor" visible="true" active="true" incomingConnections="//@connections.39" referencedGraphicsAlgorithm="//@children.15/@graphicsAlgorithm" relativeHeight="0.26595744680851063">
+    <anchors xsi:type="pi:BoxRelativeAnchor" visible="true" active="true" incomingConnections="//@connections.37" referencedGraphicsAlgorithm="//@children.15/@graphicsAlgorithm" relativeHeight="0.26595744680851063">
       <graphicsAlgorithm xsi:type="al:Rectangle" lineWidth="1" filled="false" lineVisible="false" transparency="0.0" width="54" height="13">
         <graphicsAlgorithmChildren xsi:type="al:Text" foreground="//@colors.4" lineWidth="1" filled="false" transparency="0.0" width="46" height="13" x="8" font="//@fonts.1" horizontalAlignment="ALIGNMENT_RIGHT" value="gradients"/>
         <graphicsAlgorithmChildren xsi:type="al:Rectangle" background="//@colors.6" foreground="//@colors.5" lineWidth="1" lineStyle="UNSPECIFIED" width="8" height="8" y="2"/>
@@ -512,7 +512,7 @@
         <businessObjects href="network_train.pi#//@vertices.15/@dataInputPorts.0"/>
       </link>
     </anchors>
-    <anchors xsi:type="pi:BoxRelativeAnchor" visible="true" active="true" incomingConnections="//@connections.48" referencedGraphicsAlgorithm="//@children.15/@graphicsAlgorithm" relativeHeight="0.34574468085106386">
+    <anchors xsi:type="pi:BoxRelativeAnchor" visible="true" active="true" incomingConnections="//@connections.46" referencedGraphicsAlgorithm="//@children.15/@graphicsAlgorithm" relativeHeight="0.34574468085106386">
       <graphicsAlgorithm xsi:type="al:Rectangle" lineWidth="1" filled="false" lineVisible="false" transparency="0.0" width="43" height="13">
         <graphicsAlgorithmChildren xsi:type="al:Text" foreground="//@colors.4" lineWidth="1" filled="false" transparency="0.0" width="35" height="13" x="8" font="//@fonts.1" horizontalAlignment="ALIGNMENT_RIGHT" value="epsilon"/>
         <graphicsAlgorithmChildren xsi:type="al:Rectangle" background="//@colors.6" foreground="//@colors.5" lineWidth="1" lineStyle="UNSPECIFIED" width="8" height="8" y="2"/>
@@ -530,7 +530,7 @@
         <businessObjects href="network_train.pi#//@vertices.15/@dataInputPorts.2"/>
       </link>
     </anchors>
-    <anchors xsi:type="pi:BoxRelativeAnchor" visible="true" active="true" incomingConnections="//@connections.53" referencedGraphicsAlgorithm="//@children.15/@graphicsAlgorithm" relativeHeight="0.5053191489361702">
+    <anchors xsi:type="pi:BoxRelativeAnchor" visible="true" active="true" incomingConnections="//@connections.51" referencedGraphicsAlgorithm="//@children.15/@graphicsAlgorithm" relativeHeight="0.5053191489361702">
       <graphicsAlgorithm xsi:type="al:Rectangle" lineWidth="1" filled="false" lineVisible="false" transparency="0.0" width="36" height="13">
         <graphicsAlgorithmChildren xsi:type="al:Text" foreground="//@colors.4" lineWidth="1" filled="false" transparency="0.0" width="28" height="13" x="8" font="//@fonts.1" horizontalAlignment="ALIGNMENT_RIGHT" value="betas"/>
         <graphicsAlgorithmChildren xsi:type="al:Rectangle" background="//@colors.6" foreground="//@colors.5" lineWidth="1" lineStyle="UNSPECIFIED" width="8" height="8" y="2"/>
@@ -548,7 +548,7 @@
         <businessObjects href="network_train.pi#//@vertices.15/@dataInputPorts.4"/>
       </link>
     </anchors>
-    <anchors xsi:type="pi:BoxRelativeAnchor" visible="true" active="true" incomingConnections="//@connections.45" referencedGraphicsAlgorithm="//@children.15/@graphicsAlgorithm" relativeHeight="0.6648936170212766">
+    <anchors xsi:type="pi:BoxRelativeAnchor" visible="true" active="true" incomingConnections="//@connections.43" referencedGraphicsAlgorithm="//@children.15/@graphicsAlgorithm" relativeHeight="0.6648936170212766">
       <graphicsAlgorithm xsi:type="al:Rectangle" lineWidth="1" filled="false" lineVisible="false" transparency="0.0" width="73" height="13">
         <graphicsAlgorithmChildren xsi:type="al:Text" foreground="//@colors.4" lineWidth="1" filled="false" transparency="0.0" width="65" height="13" x="8" font="//@fonts.1" horizontalAlignment="ALIGNMENT_RIGHT" value="learning_rate"/>
         <graphicsAlgorithmChildren xsi:type="al:Rectangle" background="//@colors.6" foreground="//@colors.5" lineWidth="1" lineStyle="UNSPECIFIED" width="8" height="8" y="2"/>
@@ -637,7 +637,7 @@
         <businessObjects href="network_train.pi#//@vertices.16"/>
       </link>
     </anchors>
-    <anchors xsi:type="pi:BoxRelativeAnchor" visible="true" active="true" incomingConnections="//@connections.76" referencedGraphicsAlgorithm="//@children.16/@graphicsAlgorithm" relativeHeight="0.10638297872340426">
+    <anchors xsi:type="pi:BoxRelativeAnchor" visible="true" active="true" incomingConnections="//@connections.74" referencedGraphicsAlgorithm="//@children.16/@graphicsAlgorithm" relativeHeight="0.10638297872340426">
       <graphicsAlgorithm xsi:type="al:Rectangle" lineWidth="1" filled="false" lineVisible="false" transparency="0.0" width="57" height="13">
         <graphicsAlgorithmChildren xsi:type="al:Text" foreground="//@colors.4" lineWidth="1" filled="false" transparency="0.0" width="49" height="13" x="8" font="//@fonts.1" horizontalAlignment="ALIGNMENT_RIGHT" value="layer_size"/>
         <graphicsAlgorithmChildren xsi:type="al:Polygon" background="//@colors.3" foreground="//@colors.5" lineWidth="0" filled="true" transparency="0.0" y="1">
@@ -650,7 +650,7 @@
         <businessObjects href="network_train.pi#//@vertices.16/@configInputPorts.0"/>
       </link>
     </anchors>
-    <anchors xsi:type="pi:BoxRelativeAnchor" visible="true" active="true" incomingConnections="//@connections.77" referencedGraphicsAlgorithm="//@children.16/@graphicsAlgorithm" relativeHeight="0.18617021276595744">
+    <anchors xsi:type="pi:BoxRelativeAnchor" visible="true" active="true" incomingConnections="//@connections.75" referencedGraphicsAlgorithm="//@children.16/@graphicsAlgorithm" relativeHeight="0.18617021276595744">
       <graphicsAlgorithm xsi:type="al:Rectangle" lineWidth="1" filled="false" lineVisible="false" transparency="0.0" width="57" height="13">
         <graphicsAlgorithmChildren xsi:type="al:Text" foreground="//@colors.4" lineWidth="1" filled="false" transparency="0.0" width="49" height="13" x="8" font="//@fonts.1" horizontalAlignment="ALIGNMENT_RIGHT" value="input_size"/>
         <graphicsAlgorithmChildren xsi:type="al:Polygon" background="//@colors.3" foreground="//@colors.5" lineWidth="0" filled="true" transparency="0.0" y="1">
@@ -663,7 +663,7 @@
         <businessObjects href="network_train.pi#//@vertices.16/@configInputPorts.1"/>
       </link>
     </anchors>
-    <anchors xsi:type="pi:BoxRelativeAnchor" visible="true" active="true" incomingConnections="//@connections.37" referencedGraphicsAlgorithm="//@children.16/@graphicsAlgorithm" relativeHeight="0.26595744680851063">
+    <anchors xsi:type="pi:BoxRelativeAnchor" visible="true" active="true" incomingConnections="//@connections.35" referencedGraphicsAlgorithm="//@children.16/@graphicsAlgorithm" relativeHeight="0.26595744680851063">
       <graphicsAlgorithm xsi:type="al:Rectangle" lineWidth="1" filled="false" lineVisible="false" transparency="0.0" width="54" height="13">
         <graphicsAlgorithmChildren xsi:type="al:Text" foreground="//@colors.4" lineWidth="1" filled="false" transparency="0.0" width="46" height="13" x="8" font="//@fonts.1" horizontalAlignment="ALIGNMENT_RIGHT" value="gradients"/>
         <graphicsAlgorithmChildren xsi:type="al:Rectangle" background="//@colors.6" foreground="//@colors.5" lineWidth="1" lineStyle="UNSPECIFIED" width="8" height="8" y="2"/>
@@ -672,7 +672,7 @@
         <businessObjects href="network_train.pi#//@vertices.16/@dataInputPorts.0"/>
       </link>
     </anchors>
-    <anchors xsi:type="pi:BoxRelativeAnchor" visible="true" active="true" incomingConnections="//@connections.49" referencedGraphicsAlgorithm="//@children.16/@graphicsAlgorithm" relativeHeight="0.34574468085106386">
+    <anchors xsi:type="pi:BoxRelativeAnchor" visible="true" active="true" incomingConnections="//@connections.47" referencedGraphicsAlgorithm="//@children.16/@graphicsAlgorithm" relativeHeight="0.34574468085106386">
       <graphicsAlgorithm xsi:type="al:Rectangle" lineWidth="1" filled="false" lineVisible="false" transparency="0.0" width="43" height="13">
         <graphicsAlgorithmChildren xsi:type="al:Text" foreground="//@colors.4" lineWidth="1" filled="false" transparency="0.0" width="35" height="13" x="8" font="//@fonts.1" horizontalAlignment="ALIGNMENT_RIGHT" value="epsilon"/>
         <graphicsAlgorithmChildren xsi:type="al:Rectangle" background="//@colors.6" foreground="//@colors.5" lineWidth="1" lineStyle="UNSPECIFIED" width="8" height="8" y="2"/>
@@ -681,7 +681,7 @@
         <businessObjects href="network_train.pi#//@vertices.16/@dataInputPorts.1"/>
       </link>
     </anchors>
-    <anchors xsi:type="pi:BoxRelativeAnchor" visible="true" active="true" incomingConnections="//@connections.52" referencedGraphicsAlgorithm="//@children.16/@graphicsAlgorithm" relativeHeight="0.425531914893617">
+    <anchors xsi:type="pi:BoxRelativeAnchor" visible="true" active="true" incomingConnections="//@connections.50" referencedGraphicsAlgorithm="//@children.16/@graphicsAlgorithm" relativeHeight="0.425531914893617">
       <graphicsAlgorithm xsi:type="al:Rectangle" lineWidth="1" filled="false" lineVisible="false" transparency="0.0" width="36" height="13">
         <graphicsAlgorithmChildren xsi:type="al:Text" foreground="//@colors.4" lineWidth="1" filled="false" transparency="0.0" width="28" height="13" x="8" font="//@fonts.1" horizontalAlignment="ALIGNMENT_RIGHT" value="betas"/>
         <graphicsAlgorithmChildren xsi:type="al:Rectangle" background="//@colors.6" foreground="//@colors.5" lineWidth="1" lineStyle="UNSPECIFIED" width="8" height="8" y="2"/>
@@ -699,7 +699,7 @@
         <businessObjects href="network_train.pi#//@vertices.16/@dataInputPorts.3"/>
       </link>
     </anchors>
-    <anchors xsi:type="pi:BoxRelativeAnchor" visible="true" active="true" incomingConnections="//@connections.46" referencedGraphicsAlgorithm="//@children.16/@graphicsAlgorithm" relativeHeight="0.5851063829787234">
+    <anchors xsi:type="pi:BoxRelativeAnchor" visible="true" active="true" incomingConnections="//@connections.44" referencedGraphicsAlgorithm="//@children.16/@graphicsAlgorithm" relativeHeight="0.5851063829787234">
       <graphicsAlgorithm xsi:type="al:Rectangle" lineWidth="1" filled="false" lineVisible="false" transparency="0.0" width="73" height="13">
         <graphicsAlgorithmChildren xsi:type="al:Text" foreground="//@colors.4" lineWidth="1" filled="false" transparency="0.0" width="65" height="13" x="8" font="//@fonts.1" horizontalAlignment="ALIGNMENT_RIGHT" value="learning_rate"/>
         <graphicsAlgorithmChildren xsi:type="al:Rectangle" background="//@colors.6" foreground="//@colors.5" lineWidth="1" lineStyle="UNSPECIFIED" width="8" height="8" y="2"/>
@@ -797,7 +797,7 @@
         <businessObjects href="network_train.pi#//@vertices.17"/>
       </link>
     </anchors>
-    <anchors xsi:type="pi:BoxRelativeAnchor" visible="true" active="true" incomingConnections="//@connections.80" referencedGraphicsAlgorithm="//@children.17/@graphicsAlgorithm" relativeHeight="0.20408163265306123">
+    <anchors xsi:type="pi:BoxRelativeAnchor" visible="true" active="true" incomingConnections="//@connections.78" referencedGraphicsAlgorithm="//@children.17/@graphicsAlgorithm" relativeHeight="0.20408163265306123">
       <graphicsAlgorithm xsi:type="al:Rectangle" lineWidth="1" filled="false" lineVisible="false" transparency="0.0" width="70" height="13">
         <graphicsAlgorithmChildren xsi:type="al:Text" foreground="//@colors.4" lineWidth="1" filled="false" transparency="0.0" width="62" height="13" x="8" font="//@fonts.1" horizontalAlignment="ALIGNMENT_RIGHT" value="weights_size"/>
         <graphicsAlgorithmChildren xsi:type="al:Polygon" background="//@colors.3" foreground="//@colors.5" lineWidth="0" filled="true" transparency="0.0" y="1">
@@ -810,7 +810,7 @@
         <businessObjects href="network_train.pi#//@vertices.17/@configInputPorts.0"/>
       </link>
     </anchors>
-    <anchors xsi:type="pi:BoxRelativeAnchor" visible="true" active="true" incomingConnections="//@connections.78" referencedGraphicsAlgorithm="//@children.17/@graphicsAlgorithm" relativeHeight="0.35714285714285715">
+    <anchors xsi:type="pi:BoxRelativeAnchor" visible="true" active="true" incomingConnections="//@connections.76" referencedGraphicsAlgorithm="//@children.17/@graphicsAlgorithm" relativeHeight="0.35714285714285715">
       <graphicsAlgorithm xsi:type="al:Rectangle" lineWidth="1" filled="false" lineVisible="false" transparency="0.0" width="66" height="13">
         <graphicsAlgorithmChildren xsi:type="al:Text" foreground="//@colors.4" lineWidth="1" filled="false" transparency="0.0" width="58" height="13" x="8" font="//@fonts.1" horizontalAlignment="ALIGNMENT_RIGHT" value="hidden_size"/>
         <graphicsAlgorithmChildren xsi:type="al:Polygon" background="//@colors.3" foreground="//@colors.5" lineWidth="0" filled="true" transparency="0.0" y="1">
@@ -823,7 +823,7 @@
         <businessObjects href="network_train.pi#//@vertices.17/@configInputPorts.1"/>
       </link>
     </anchors>
-    <anchors xsi:type="pi:BoxRelativeAnchor" visible="true" active="true" incomingConnections="//@connections.79" referencedGraphicsAlgorithm="//@children.17/@graphicsAlgorithm" relativeHeight="0.5102040816326531">
+    <anchors xsi:type="pi:BoxRelativeAnchor" visible="true" active="true" incomingConnections="//@connections.77" referencedGraphicsAlgorithm="//@children.17/@graphicsAlgorithm" relativeHeight="0.5102040816326531">
       <graphicsAlgorithm xsi:type="al:Rectangle" lineWidth="1" filled="false" lineVisible="false" transparency="0.0" width="64" height="13">
         <graphicsAlgorithmChildren xsi:type="al:Text" foreground="//@colors.4" lineWidth="1" filled="false" transparency="0.0" width="56" height="13" x="8" font="//@fonts.1" horizontalAlignment="ALIGNMENT_RIGHT" value="output_size"/>
         <graphicsAlgorithmChildren xsi:type="al:Polygon" background="//@colors.3" foreground="//@colors.5" lineWidth="0" filled="true" transparency="0.0" y="1">
@@ -880,7 +880,7 @@
         <businessObjects href="network_train.pi#//@vertices.18"/>
       </link>
     </anchors>
-    <anchors xsi:type="pi:BoxRelativeAnchor" visible="true" active="true" incomingConnections="//@connections.81" referencedGraphicsAlgorithm="//@children.18/@graphicsAlgorithm" relativeHeight="0.20408163265306123">
+    <anchors xsi:type="pi:BoxRelativeAnchor" visible="true" active="true" incomingConnections="//@connections.79" referencedGraphicsAlgorithm="//@children.18/@graphicsAlgorithm" relativeHeight="0.20408163265306123">
       <graphicsAlgorithm xsi:type="al:Rectangle" lineWidth="1" filled="false" lineVisible="false" transparency="0.0" width="53" height="13">
         <graphicsAlgorithmChildren xsi:type="al:Text" foreground="//@colors.4" lineWidth="1" filled="false" transparency="0.0" width="45" height="13" x="8" font="//@fonts.1" horizontalAlignment="ALIGNMENT_RIGHT" value="bias_size"/>
         <graphicsAlgorithmChildren xsi:type="al:Polygon" background="//@colors.3" foreground="//@colors.5" lineWidth="0" filled="true" transparency="0.0" y="1">
@@ -893,7 +893,7 @@
         <businessObjects href="network_train.pi#//@vertices.18/@configInputPorts.0"/>
       </link>
     </anchors>
-    <anchors xsi:type="pi:BoxRelativeAnchor" visible="true" active="true" incomingConnections="//@connections.83" referencedGraphicsAlgorithm="//@children.18/@graphicsAlgorithm" relativeHeight="0.35714285714285715">
+    <anchors xsi:type="pi:BoxRelativeAnchor" visible="true" active="true" incomingConnections="//@connections.81" referencedGraphicsAlgorithm="//@children.18/@graphicsAlgorithm" relativeHeight="0.35714285714285715">
       <graphicsAlgorithm xsi:type="al:Rectangle" lineWidth="1" filled="false" lineVisible="false" transparency="0.0" width="66" height="13">
         <graphicsAlgorithmChildren xsi:type="al:Text" foreground="//@colors.4" lineWidth="1" filled="false" transparency="0.0" width="58" height="13" x="8" font="//@fonts.1" horizontalAlignment="ALIGNMENT_RIGHT" value="hidden_size"/>
         <graphicsAlgorithmChildren xsi:type="al:Polygon" background="//@colors.3" foreground="//@colors.5" lineWidth="0" filled="true" transparency="0.0" y="1">
@@ -906,7 +906,7 @@
         <businessObjects href="network_train.pi#//@vertices.18/@configInputPorts.1"/>
       </link>
     </anchors>
-    <anchors xsi:type="pi:BoxRelativeAnchor" visible="true" active="true" incomingConnections="//@connections.82" referencedGraphicsAlgorithm="//@children.18/@graphicsAlgorithm" relativeHeight="0.5102040816326531">
+    <anchors xsi:type="pi:BoxRelativeAnchor" visible="true" active="true" incomingConnections="//@connections.80" referencedGraphicsAlgorithm="//@children.18/@graphicsAlgorithm" relativeHeight="0.5102040816326531">
       <graphicsAlgorithm xsi:type="al:Rectangle" lineWidth="1" filled="false" lineVisible="false" transparency="0.0" width="64" height="13">
         <graphicsAlgorithmChildren xsi:type="al:Text" foreground="//@colors.4" lineWidth="1" filled="false" transparency="0.0" width="56" height="13" x="8" font="//@fonts.1" horizontalAlignment="ALIGNMENT_RIGHT" value="output_size"/>
         <graphicsAlgorithmChildren xsi:type="al:Polygon" background="//@colors.3" foreground="//@colors.5" lineWidth="0" filled="true" transparency="0.0" y="1">
@@ -963,7 +963,7 @@
         <businessObjects href="network_train.pi#//@vertices.19"/>
       </link>
     </anchors>
-    <anchors xsi:type="pi:BoxRelativeAnchor" visible="true" active="true" incomingConnections="//@connections.92" referencedGraphicsAlgorithm="//@children.19/@graphicsAlgorithm" relativeHeight="0.15625">
+    <anchors xsi:type="pi:BoxRelativeAnchor" visible="true" active="true" incomingConnections="//@connections.90" referencedGraphicsAlgorithm="//@children.19/@graphicsAlgorithm" relativeHeight="0.15625">
       <graphicsAlgorithm xsi:type="al:Rectangle" lineWidth="1" filled="false" lineVisible="false" transparency="0.0" width="64" height="13">
         <graphicsAlgorithmChildren xsi:type="al:Text" foreground="//@colors.4" lineWidth="1" filled="false" transparency="0.0" width="56" height="13" x="8" font="//@fonts.1" horizontalAlignment="ALIGNMENT_RIGHT" value="output_size"/>
         <graphicsAlgorithmChildren xsi:type="al:Polygon" background="//@colors.3" foreground="//@colors.5" lineWidth="0" filled="true" transparency="0.0" y="1">
@@ -976,7 +976,7 @@
         <businessObjects href="network_train.pi#//@vertices.19/@configInputPorts.0"/>
       </link>
     </anchors>
-    <anchors xsi:type="pi:BoxRelativeAnchor" visible="true" active="true" incomingConnections="//@connections.94" referencedGraphicsAlgorithm="//@children.19/@graphicsAlgorithm" relativeHeight="0.2734375">
+    <anchors xsi:type="pi:BoxRelativeAnchor" visible="true" active="true" incomingConnections="//@connections.92" referencedGraphicsAlgorithm="//@children.19/@graphicsAlgorithm" relativeHeight="0.2734375">
       <graphicsAlgorithm xsi:type="al:Rectangle" lineWidth="1" filled="false" lineVisible="false" transparency="0.0" width="66" height="13">
         <graphicsAlgorithmChildren xsi:type="al:Text" foreground="//@colors.4" lineWidth="1" filled="false" transparency="0.0" width="58" height="13" x="8" font="//@fonts.1" horizontalAlignment="ALIGNMENT_RIGHT" value="hidden_size"/>
         <graphicsAlgorithmChildren xsi:type="al:Polygon" background="//@colors.3" foreground="//@colors.5" lineWidth="0" filled="true" transparency="0.0" y="1">
@@ -989,7 +989,7 @@
         <businessObjects href="network_train.pi#//@vertices.19/@configInputPorts.1"/>
       </link>
     </anchors>
-    <anchors xsi:type="pi:BoxRelativeAnchor" visible="true" active="true" incomingConnections="//@connections.93" referencedGraphicsAlgorithm="//@children.19/@graphicsAlgorithm" relativeHeight="0.390625">
+    <anchors xsi:type="pi:BoxRelativeAnchor" visible="true" active="true" incomingConnections="//@connections.91" referencedGraphicsAlgorithm="//@children.19/@graphicsAlgorithm" relativeHeight="0.390625">
       <graphicsAlgorithm xsi:type="al:Rectangle" lineWidth="1" filled="false" lineVisible="false" transparency="0.0" width="57" height="13">
         <graphicsAlgorithmChildren xsi:type="al:Text" foreground="//@colors.4" lineWidth="1" filled="false" transparency="0.0" width="49" height="13" x="8" font="//@fonts.1" horizontalAlignment="ALIGNMENT_RIGHT" value="input_size"/>
         <graphicsAlgorithmChildren xsi:type="al:Polygon" background="//@colors.3" foreground="//@colors.5" lineWidth="0" filled="true" transparency="0.0" y="1">
@@ -1082,7 +1082,7 @@
         <businessObjects href="network_train.pi#//@vertices.20"/>
       </link>
     </anchors>
-    <anchors xsi:type="pi:BoxRelativeAnchor" visible="true" active="true" incomingConnections="//@connections.95" referencedGraphicsAlgorithm="//@children.20/@graphicsAlgorithm" relativeHeight="0.13986013986013987">
+    <anchors xsi:type="pi:BoxRelativeAnchor" visible="true" active="true" incomingConnections="//@connections.93" referencedGraphicsAlgorithm="//@children.20/@graphicsAlgorithm" relativeHeight="0.13986013986013987">
       <graphicsAlgorithm xsi:type="al:Rectangle" lineWidth="1" filled="false" lineVisible="false" transparency="0.0" width="57" height="13">
         <graphicsAlgorithmChildren xsi:type="al:Text" foreground="//@colors.4" lineWidth="1" filled="false" transparency="0.0" width="49" height="13" x="8" font="//@fonts.1" horizontalAlignment="ALIGNMENT_RIGHT" value="layer_size"/>
         <graphicsAlgorithmChildren xsi:type="al:Polygon" background="//@colors.3" foreground="//@colors.5" lineWidth="0" filled="true" transparency="0.0" y="1">
@@ -1095,7 +1095,7 @@
         <businessObjects href="network_train.pi#//@vertices.20/@configInputPorts.0"/>
       </link>
     </anchors>
-    <anchors xsi:type="pi:BoxRelativeAnchor" visible="true" active="true" incomingConnections="//@connections.96" referencedGraphicsAlgorithm="//@children.20/@graphicsAlgorithm" relativeHeight="0.24475524475524477">
+    <anchors xsi:type="pi:BoxRelativeAnchor" visible="true" active="true" incomingConnections="//@connections.94" referencedGraphicsAlgorithm="//@children.20/@graphicsAlgorithm" relativeHeight="0.24475524475524477">
       <graphicsAlgorithm xsi:type="al:Rectangle" lineWidth="1" filled="false" lineVisible="false" transparency="0.0" width="83" height="13">
         <graphicsAlgorithmChildren xsi:type="al:Text" foreground="//@colors.4" lineWidth="1" filled="false" transparency="0.0" width="75" height="13" x="8" font="//@fonts.1" horizontalAlignment="ALIGNMENT_RIGHT" value="next_layer_size"/>
         <graphicsAlgorithmChildren xsi:type="al:Polygon" background="//@colors.3" foreground="//@colors.5" lineWidth="0" filled="true" transparency="0.0" y="1">
@@ -1108,7 +1108,7 @@
         <businessObjects href="network_train.pi#//@vertices.20/@configInputPorts.1"/>
       </link>
     </anchors>
-    <anchors xsi:type="pi:BoxRelativeAnchor" visible="true" active="true" incomingConnections="//@connections.97" referencedGraphicsAlgorithm="//@children.20/@graphicsAlgorithm" relativeHeight="0.34965034965034963">
+    <anchors xsi:type="pi:BoxRelativeAnchor" visible="true" active="true" incomingConnections="//@connections.95" referencedGraphicsAlgorithm="//@children.20/@graphicsAlgorithm" relativeHeight="0.34965034965034963">
       <graphicsAlgorithm xsi:type="al:Rectangle" lineWidth="1" filled="false" lineVisible="false" transparency="0.0" width="57" height="13">
         <graphicsAlgorithmChildren xsi:type="al:Text" foreground="//@colors.4" lineWidth="1" filled="false" transparency="0.0" width="49" height="13" x="8" font="//@fonts.1" horizontalAlignment="ALIGNMENT_RIGHT" value="input_size"/>
         <graphicsAlgorithmChildren xsi:type="al:Polygon" background="//@colors.3" foreground="//@colors.5" lineWidth="0" filled="true" transparency="0.0" y="1">
@@ -1121,7 +1121,7 @@
         <businessObjects href="network_train.pi#//@vertices.20/@configInputPorts.2"/>
       </link>
     </anchors>
-    <anchors xsi:type="pi:BoxRelativeAnchor" visible="true" active="true" incomingConnections="//@connections.42" referencedGraphicsAlgorithm="//@children.20/@graphicsAlgorithm" relativeHeight="0.45454545454545453">
+    <anchors xsi:type="pi:BoxRelativeAnchor" visible="true" active="true" incomingConnections="//@connections.40" referencedGraphicsAlgorithm="//@children.20/@graphicsAlgorithm" relativeHeight="0.45454545454545453">
       <graphicsAlgorithm xsi:type="al:Rectangle" lineWidth="1" filled="false" lineVisible="false" transparency="0.0" width="94" height="13">
         <graphicsAlgorithmChildren xsi:type="al:Text" foreground="//@colors.4" lineWidth="1" filled="false" transparency="0.0" width="86" height="13" x="8" font="//@fonts.1" horizontalAlignment="ALIGNMENT_RIGHT" value="next_layer_errors"/>
         <graphicsAlgorithmChildren xsi:type="al:Rectangle" background="//@colors.6" foreground="//@colors.5" lineWidth="1" lineStyle="UNSPECIFIED" width="8" height="8" y="2"/>
@@ -1166,19 +1166,19 @@
         <businessObjects href="network_train.pi#//@vertices.20/@dataInputPorts.4"/>
       </link>
     </anchors>
-    <anchors xsi:type="pi:BoxRelativeAnchor" visible="true" active="true" outgoingConnections="//@connections.35" referencedGraphicsAlgorithm="//@children.20/@graphicsAlgorithm" relativeWidth="1.0" relativeHeight="0.45454545454545453">
-      <graphicsAlgorithm xsi:type="al:Rectangle" lineWidth="1" filled="false" lineVisible="false" transparency="0.0" width="91" height="13" x="-91">
-        <graphicsAlgorithmChildren xsi:type="al:Text" foreground="//@colors.4" lineWidth="1" filled="false" transparency="0.0" width="83" height="13" font="//@fonts.1" value="weights_gradient"/>
-        <graphicsAlgorithmChildren xsi:type="al:Rectangle" background="//@colors.7" foreground="//@colors.5" lineWidth="1" lineStyle="UNSPECIFIED" width="8" height="8" x="83" y="2"/>
+    <anchors xsi:type="pi:BoxRelativeAnchor" visible="true" active="true" outgoingConnections="//@connections.108" referencedGraphicsAlgorithm="//@children.20/@graphicsAlgorithm" relativeWidth="1.0" relativeHeight="0.45454545454545453">
+      <graphicsAlgorithm xsi:type="al:Rectangle" lineWidth="1" filled="false" lineVisible="false" transparency="0.0" width="74" height="13" x="-74">
+        <graphicsAlgorithmChildren xsi:type="al:Text" foreground="//@colors.4" lineWidth="1" filled="false" transparency="0.0" width="66" height="13" font="//@fonts.1" value="bias_gradient"/>
+        <graphicsAlgorithmChildren xsi:type="al:Rectangle" background="//@colors.7" foreground="//@colors.5" lineWidth="1" lineStyle="UNSPECIFIED" width="8" height="8" x="66" y="2"/>
       </graphicsAlgorithm>
       <link>
         <businessObjects href="network_train.pi#//@vertices.20/@dataOutputPorts.0"/>
       </link>
     </anchors>
-    <anchors xsi:type="pi:BoxRelativeAnchor" visible="true" active="true" outgoingConnections="//@connections.36" referencedGraphicsAlgorithm="//@children.20/@graphicsAlgorithm" relativeWidth="1.0" relativeHeight="0.5594405594405595">
-      <graphicsAlgorithm xsi:type="al:Rectangle" lineWidth="1" filled="false" lineVisible="false" transparency="0.0" width="74" height="13" x="-74">
-        <graphicsAlgorithmChildren xsi:type="al:Text" foreground="//@colors.4" lineWidth="1" filled="false" transparency="0.0" width="66" height="13" font="//@fonts.1" value="bias_gradient"/>
-        <graphicsAlgorithmChildren xsi:type="al:Rectangle" background="//@colors.7" foreground="//@colors.5" lineWidth="1" lineStyle="UNSPECIFIED" width="8" height="8" x="66" y="2"/>
+    <anchors xsi:type="pi:BoxRelativeAnchor" visible="true" active="true" outgoingConnections="//@connections.107" referencedGraphicsAlgorithm="//@children.20/@graphicsAlgorithm" relativeWidth="1.0" relativeHeight="0.5594405594405595">
+      <graphicsAlgorithm xsi:type="al:Rectangle" lineWidth="1" filled="false" lineVisible="false" transparency="0.0" width="91" height="13" x="-91">
+        <graphicsAlgorithmChildren xsi:type="al:Text" foreground="//@colors.4" lineWidth="1" filled="false" transparency="0.0" width="83" height="13" font="//@fonts.1" value="weights_gradient"/>
+        <graphicsAlgorithmChildren xsi:type="al:Rectangle" background="//@colors.7" foreground="//@colors.5" lineWidth="1" lineStyle="UNSPECIFIED" width="8" height="8" x="83" y="2"/>
       </graphicsAlgorithm>
       <link>
         <businessObjects href="network_train.pi#//@vertices.20/@dataOutputPorts.1"/>
@@ -1201,7 +1201,7 @@
         <businessObjects href="network_train.pi#//@vertices.21"/>
       </link>
     </anchors>
-    <anchors xsi:type="pi:BoxRelativeAnchor" visible="true" active="true" incomingConnections="//@connections.99" referencedGraphicsAlgorithm="//@children.21/@graphicsAlgorithm" relativeHeight="0.15625">
+    <anchors xsi:type="pi:BoxRelativeAnchor" visible="true" active="true" incomingConnections="//@connections.97" referencedGraphicsAlgorithm="//@children.21/@graphicsAlgorithm" relativeHeight="0.15625">
       <graphicsAlgorithm xsi:type="al:Rectangle" lineWidth="1" filled="false" lineVisible="false" transparency="0.0" width="64" height="13">
         <graphicsAlgorithmChildren xsi:type="al:Text" foreground="//@colors.4" lineWidth="1" filled="false" transparency="0.0" width="56" height="13" x="8" font="//@fonts.1" horizontalAlignment="ALIGNMENT_RIGHT" value="output_size"/>
         <graphicsAlgorithmChildren xsi:type="al:Polygon" background="//@colors.3" foreground="//@colors.5" lineWidth="0" filled="true" transparency="0.0" y="1">
@@ -1214,7 +1214,7 @@
         <businessObjects href="network_train.pi#//@vertices.21/@configInputPorts.0"/>
       </link>
     </anchors>
-    <anchors xsi:type="pi:BoxRelativeAnchor" visible="true" active="true" incomingConnections="//@connections.98" referencedGraphicsAlgorithm="//@children.21/@graphicsAlgorithm" relativeHeight="0.2734375">
+    <anchors xsi:type="pi:BoxRelativeAnchor" visible="true" active="true" incomingConnections="//@connections.96" referencedGraphicsAlgorithm="//@children.21/@graphicsAlgorithm" relativeHeight="0.2734375">
       <graphicsAlgorithm xsi:type="al:Rectangle" lineWidth="1" filled="false" lineVisible="false" transparency="0.0" width="57" height="13">
         <graphicsAlgorithmChildren xsi:type="al:Text" foreground="//@colors.4" lineWidth="1" filled="false" transparency="0.0" width="49" height="13" x="8" font="//@fonts.1" horizontalAlignment="ALIGNMENT_RIGHT" value="input_size"/>
         <graphicsAlgorithmChildren xsi:type="al:Polygon" background="//@colors.3" foreground="//@colors.5" lineWidth="0" filled="true" transparency="0.0" y="1">
@@ -1254,7 +1254,7 @@
         <businessObjects href="network_train.pi#//@vertices.21/@dataInputPorts.2"/>
       </link>
     </anchors>
-    <anchors xsi:type="pi:BoxRelativeAnchor" visible="true" active="true" incomingConnections="//@connections.43" referencedGraphicsAlgorithm="//@children.21/@graphicsAlgorithm" relativeHeight="0.7421875">
+    <anchors xsi:type="pi:BoxRelativeAnchor" visible="true" active="true" incomingConnections="//@connections.41" referencedGraphicsAlgorithm="//@children.21/@graphicsAlgorithm" relativeHeight="0.7421875">
       <graphicsAlgorithm xsi:type="al:Rectangle" lineWidth="1" filled="false" lineVisible="false" transparency="0.0" width="38" height="13">
         <graphicsAlgorithmChildren xsi:type="al:Text" foreground="//@colors.4" lineWidth="1" filled="false" transparency="0.0" width="30" height="13" x="8" font="//@fonts.1" horizontalAlignment="ALIGNMENT_RIGHT" value="target"/>
         <graphicsAlgorithmChildren xsi:type="al:Rectangle" background="//@colors.6" foreground="//@colors.5" lineWidth="1" lineStyle="UNSPECIFIED" width="8" height="8" y="2"/>
@@ -1272,7 +1272,7 @@
         <businessObjects href="network_train.pi#//@vertices.21/@dataInputPorts.4"/>
       </link>
     </anchors>
-    <anchors xsi:type="pi:BoxRelativeAnchor" visible="true" active="true" outgoingConnections="//@connections.40" referencedGraphicsAlgorithm="//@children.21/@graphicsAlgorithm" relativeWidth="1.0" relativeHeight="0.390625">
+    <anchors xsi:type="pi:BoxRelativeAnchor" visible="true" active="true" outgoingConnections="//@connections.38" referencedGraphicsAlgorithm="//@children.21/@graphicsAlgorithm" relativeWidth="1.0" relativeHeight="0.390625">
       <graphicsAlgorithm xsi:type="al:Rectangle" lineWidth="1" filled="false" lineVisible="false" transparency="0.0" width="74" height="13" x="-74">
         <graphicsAlgorithmChildren xsi:type="al:Text" foreground="//@colors.4" lineWidth="1" filled="false" transparency="0.0" width="66" height="13" font="//@fonts.1" value="bias_gradient"/>
         <graphicsAlgorithmChildren xsi:type="al:Rectangle" background="//@colors.7" foreground="//@colors.5" lineWidth="1" lineStyle="UNSPECIFIED" width="8" height="8" x="66" y="2"/>
@@ -1281,7 +1281,7 @@
         <businessObjects href="network_train.pi#//@vertices.21/@dataOutputPorts.0"/>
       </link>
     </anchors>
-    <anchors xsi:type="pi:BoxRelativeAnchor" visible="true" active="true" outgoingConnections="//@connections.38" referencedGraphicsAlgorithm="//@children.21/@graphicsAlgorithm" relativeWidth="1.0" relativeHeight="0.5078125">
+    <anchors xsi:type="pi:BoxRelativeAnchor" visible="true" active="true" outgoingConnections="//@connections.36" referencedGraphicsAlgorithm="//@children.21/@graphicsAlgorithm" relativeWidth="1.0" relativeHeight="0.5078125">
       <graphicsAlgorithm xsi:type="al:Rectangle" lineWidth="1" filled="false" lineVisible="false" transparency="0.0" width="91" height="13" x="-91">
         <graphicsAlgorithmChildren xsi:type="al:Text" foreground="//@colors.4" lineWidth="1" filled="false" transparency="0.0" width="83" height="13" font="//@fonts.1" value="weights_gradient"/>
         <graphicsAlgorithmChildren xsi:type="al:Rectangle" background="//@colors.7" foreground="//@colors.5" lineWidth="1" lineStyle="UNSPECIFIED" width="8" height="8" x="83" y="2"/>
@@ -1307,7 +1307,7 @@
         <businessObjects href="network_train.pi#//@vertices.22"/>
       </link>
     </anchors>
-    <anchors xsi:type="pi:BoxRelativeAnchor" visible="true" active="true" incomingConnections="//@connections.100" referencedGraphicsAlgorithm="//@children.22/@graphicsAlgorithm" relativeHeight="0.29411764705882354">
+    <anchors xsi:type="pi:BoxRelativeAnchor" visible="true" active="true" incomingConnections="//@connections.98" referencedGraphicsAlgorithm="//@children.22/@graphicsAlgorithm" relativeHeight="0.29411764705882354">
       <graphicsAlgorithm xsi:type="al:Rectangle" lineWidth="1" filled="false" lineVisible="false" transparency="0.0" width="28" height="13">
         <graphicsAlgorithmChildren xsi:type="al:Text" foreground="//@colors.4" lineWidth="1" filled="false" transparency="0.0" width="20" height="13" x="8" font="//@fonts.1" horizontalAlignment="ALIGNMENT_RIGHT" value="size"/>
         <graphicsAlgorithmChildren xsi:type="al:Polygon" background="//@colors.3" foreground="//@colors.5" lineWidth="0" filled="true" transparency="0.0" y="1">
@@ -1364,7 +1364,7 @@
         <businessObjects href="network_train.pi#//@vertices.23"/>
       </link>
     </anchors>
-    <anchors xsi:type="pi:BoxRelativeAnchor" visible="true" active="true" incomingConnections="//@connections.101" referencedGraphicsAlgorithm="//@children.23/@graphicsAlgorithm" relativeHeight="0.29411764705882354">
+    <anchors xsi:type="pi:BoxRelativeAnchor" visible="true" active="true" incomingConnections="//@connections.99" referencedGraphicsAlgorithm="//@children.23/@graphicsAlgorithm" relativeHeight="0.29411764705882354">
       <graphicsAlgorithm xsi:type="al:Rectangle" lineWidth="1" filled="false" lineVisible="false" transparency="0.0" width="28" height="13">
         <graphicsAlgorithmChildren xsi:type="al:Text" foreground="//@colors.4" lineWidth="1" filled="false" transparency="0.0" width="20" height="13" x="8" font="//@fonts.1" horizontalAlignment="ALIGNMENT_RIGHT" value="size"/>
         <graphicsAlgorithmChildren xsi:type="al:Polygon" background="//@colors.3" foreground="//@colors.5" lineWidth="0" filled="true" transparency="0.0" y="1">
@@ -1421,7 +1421,7 @@
         <businessObjects href="network_train.pi#//@vertices.24"/>
       </link>
     </anchors>
-    <anchors xsi:type="pi:BoxRelativeAnchor" visible="true" active="true" incomingConnections="//@connections.102" referencedGraphicsAlgorithm="//@children.24/@graphicsAlgorithm" relativeHeight="0.29411764705882354">
+    <anchors xsi:type="pi:BoxRelativeAnchor" visible="true" active="true" incomingConnections="//@connections.100" referencedGraphicsAlgorithm="//@children.24/@graphicsAlgorithm" relativeHeight="0.29411764705882354">
       <graphicsAlgorithm xsi:type="al:Rectangle" lineWidth="1" filled="false" lineVisible="false" transparency="0.0" width="28" height="13">
         <graphicsAlgorithmChildren xsi:type="al:Text" foreground="//@colors.4" lineWidth="1" filled="false" transparency="0.0" width="20" height="13" x="8" font="//@fonts.1" horizontalAlignment="ALIGNMENT_RIGHT" value="size"/>
         <graphicsAlgorithmChildren xsi:type="al:Polygon" background="//@colors.3" foreground="//@colors.5" lineWidth="0" filled="true" transparency="0.0" y="1">
@@ -1496,7 +1496,7 @@
         <businessObjects href="network_train.pi#//@vertices.25/@dataOutputPorts.0"/>
       </link>
     </anchors>
-    <anchors xsi:type="pi:BoxRelativeAnchor" visible="true" active="true" outgoingConnections="//@connections.50" referencedGraphicsAlgorithm="//@children.25/@graphicsAlgorithm" relativeWidth="1.0" relativeHeight="0.35714285714285715">
+    <anchors xsi:type="pi:BoxRelativeAnchor" visible="true" active="true" outgoingConnections="//@connections.48" referencedGraphicsAlgorithm="//@children.25/@graphicsAlgorithm" relativeWidth="1.0" relativeHeight="0.35714285714285715">
       <graphicsAlgorithm xsi:type="al:Rectangle" lineWidth="1" filled="false" lineVisible="false" transparency="0.0" width="37" height="13" x="-37">
         <graphicsAlgorithmChildren xsi:type="al:Text" foreground="//@colors.4" lineWidth="1" filled="false" transparency="0.0" width="29" height="13" font="//@fonts.1" value="out_4"/>
         <graphicsAlgorithmChildren xsi:type="al:Rectangle" background="//@colors.7" foreground="//@colors.5" lineWidth="1" lineStyle="UNSPECIFIED" width="8" height="8" x="29" y="2"/>
@@ -1549,7 +1549,7 @@
         <businessObjects href="network_train.pi#//@vertices.26"/>
       </link>
     </anchors>
-    <anchors xsi:type="pi:BoxRelativeAnchor" visible="true" active="true" incomingConnections="//@connections.103" referencedGraphicsAlgorithm="//@children.26/@graphicsAlgorithm" relativeHeight="0.29411764705882354">
+    <anchors xsi:type="pi:BoxRelativeAnchor" visible="true" active="true" incomingConnections="//@connections.101" referencedGraphicsAlgorithm="//@children.26/@graphicsAlgorithm" relativeHeight="0.29411764705882354">
       <graphicsAlgorithm xsi:type="al:Rectangle" lineWidth="1" filled="false" lineVisible="false" transparency="0.0" width="28" height="13">
         <graphicsAlgorithmChildren xsi:type="al:Text" foreground="//@colors.4" lineWidth="1" filled="false" transparency="0.0" width="20" height="13" x="8" font="//@fonts.1" horizontalAlignment="ALIGNMENT_RIGHT" value="size"/>
         <graphicsAlgorithmChildren xsi:type="al:Polygon" background="//@colors.3" foreground="//@colors.5" lineWidth="0" filled="true" transparency="0.0" y="1">
@@ -1606,9 +1606,9 @@
         <businessObjects href="network_train.pi#//@vertices.27"/>
       </link>
     </anchors>
-    <anchors xsi:type="pi:BoxRelativeAnchor" visible="true" active="true" incomingConnections="//@connections.104" referencedGraphicsAlgorithm="//@children.27/@graphicsAlgorithm" relativeHeight="0.24096385542168675">
-      <graphicsAlgorithm xsi:type="al:Rectangle" lineWidth="1" filled="false" lineVisible="false" transparency="0.0" width="57" height="13">
-        <graphicsAlgorithmChildren xsi:type="al:Text" foreground="//@colors.4" lineWidth="1" filled="false" transparency="0.0" width="49" height="13" x="8" font="//@fonts.1" horizontalAlignment="ALIGNMENT_RIGHT" value="input_size"/>
+    <anchors xsi:type="pi:BoxRelativeAnchor" visible="true" active="true" incomingConnections="//@connections.109" referencedGraphicsAlgorithm="//@children.27/@graphicsAlgorithm" relativeHeight="0.24096385542168675">
+      <graphicsAlgorithm xsi:type="al:Rectangle" lineWidth="1" filled="false" lineVisible="false" transparency="0.0" width="70" height="13">
+        <graphicsAlgorithmChildren xsi:type="al:Text" foreground="//@colors.4" lineWidth="1" filled="false" transparency="0.0" width="62" height="13" x="8" font="//@fonts.1" horizontalAlignment="ALIGNMENT_RIGHT" value="weights_size"/>
         <graphicsAlgorithmChildren xsi:type="al:Polygon" background="//@colors.3" foreground="//@colors.5" lineWidth="0" filled="true" transparency="0.0" y="1">
           <points/>
           <points x="8" y="5"/>
@@ -1619,9 +1619,9 @@
         <businessObjects href="network_train.pi#//@vertices.27/@configInputPorts.0"/>
       </link>
     </anchors>
-    <anchors xsi:type="pi:BoxRelativeAnchor" visible="true" active="true" incomingConnections="//@connections.105" referencedGraphicsAlgorithm="//@children.27/@graphicsAlgorithm" relativeHeight="0.42168674698795183">
-      <graphicsAlgorithm xsi:type="al:Rectangle" lineWidth="1" filled="false" lineVisible="false" transparency="0.0" width="57" height="13">
-        <graphicsAlgorithmChildren xsi:type="al:Text" foreground="//@colors.4" lineWidth="1" filled="false" transparency="0.0" width="49" height="13" x="8" font="//@fonts.1" horizontalAlignment="ALIGNMENT_RIGHT" value="layer_size"/>
+    <anchors xsi:type="pi:BoxRelativeAnchor" visible="true" active="true" incomingConnections="//@connections.102" referencedGraphicsAlgorithm="//@children.27/@graphicsAlgorithm" relativeHeight="0.42168674698795183">
+      <graphicsAlgorithm xsi:type="al:Rectangle" lineWidth="1" filled="false" lineVisible="false" transparency="0.0" width="53" height="13">
+        <graphicsAlgorithmChildren xsi:type="al:Text" foreground="//@colors.4" lineWidth="1" filled="false" transparency="0.0" width="45" height="13" x="8" font="//@fonts.1" horizontalAlignment="ALIGNMENT_RIGHT" value="bias_size"/>
         <graphicsAlgorithmChildren xsi:type="al:Polygon" background="//@colors.3" foreground="//@colors.5" lineWidth="0" filled="true" transparency="0.0" y="1">
           <points/>
           <points x="8" y="5"/>
@@ -1632,7 +1632,7 @@
         <businessObjects href="network_train.pi#//@vertices.27/@configInputPorts.1"/>
       </link>
     </anchors>
-    <anchors xsi:type="pi:BoxRelativeAnchor" visible="true" active="true" incomingConnections="//@connections.35" referencedGraphicsAlgorithm="//@children.27/@graphicsAlgorithm" relativeHeight="0.6024096385542169">
+    <anchors xsi:type="pi:BoxRelativeAnchor" visible="true" active="true" incomingConnections="//@connections.108" referencedGraphicsAlgorithm="//@children.27/@graphicsAlgorithm" relativeHeight="0.6024096385542169">
       <graphicsAlgorithm xsi:type="al:Rectangle" lineWidth="1" filled="false" lineVisible="false" transparency="0.0" width="30" height="13">
         <graphicsAlgorithmChildren xsi:type="al:Text" foreground="//@colors.4" lineWidth="1" filled="false" transparency="0.0" width="22" height="13" x="8" font="//@fonts.1" horizontalAlignment="ALIGNMENT_RIGHT" value="in_0"/>
         <graphicsAlgorithmChildren xsi:type="al:Rectangle" background="//@colors.6" foreground="//@colors.5" lineWidth="1" lineStyle="UNSPECIFIED" width="8" height="8" y="2"/>
@@ -1641,7 +1641,7 @@
         <businessObjects href="network_train.pi#//@vertices.27/@dataInputPorts.0"/>
       </link>
     </anchors>
-    <anchors xsi:type="pi:BoxRelativeAnchor" visible="true" active="true" incomingConnections="//@connections.36" referencedGraphicsAlgorithm="//@children.27/@graphicsAlgorithm" relativeHeight="0.7831325301204819">
+    <anchors xsi:type="pi:BoxRelativeAnchor" visible="true" active="true" incomingConnections="//@connections.107" referencedGraphicsAlgorithm="//@children.27/@graphicsAlgorithm" relativeHeight="0.7831325301204819">
       <graphicsAlgorithm xsi:type="al:Rectangle" lineWidth="1" filled="false" lineVisible="false" transparency="0.0" width="30" height="13">
         <graphicsAlgorithmChildren xsi:type="al:Text" foreground="//@colors.4" lineWidth="1" filled="false" transparency="0.0" width="22" height="13" x="8" font="//@fonts.1" horizontalAlignment="ALIGNMENT_RIGHT" value="in_1"/>
         <graphicsAlgorithmChildren xsi:type="al:Rectangle" background="//@colors.6" foreground="//@colors.5" lineWidth="1" lineStyle="UNSPECIFIED" width="8" height="8" y="2"/>
@@ -1650,7 +1650,7 @@
         <businessObjects href="network_train.pi#//@vertices.27/@dataInputPorts.1"/>
       </link>
     </anchors>
-    <anchors xsi:type="pi:BoxRelativeAnchor" visible="true" active="true" outgoingConnections="//@connections.37" referencedGraphicsAlgorithm="//@children.27/@graphicsAlgorithm" relativeWidth="1.0" relativeHeight="0.6024096385542169">
+    <anchors xsi:type="pi:BoxRelativeAnchor" visible="true" active="true" outgoingConnections="//@connections.35" referencedGraphicsAlgorithm="//@children.27/@graphicsAlgorithm" relativeWidth="1.0" relativeHeight="0.6024096385542169">
       <graphicsAlgorithm xsi:type="al:Rectangle" lineWidth="1" filled="false" lineVisible="false" transparency="0.0" width="25" height="13" x="-25">
         <graphicsAlgorithmChildren xsi:type="al:Text" foreground="//@colors.4" lineWidth="1" filled="false" transparency="0.0" width="17" height="13" font="//@fonts.1" value="out"/>
         <graphicsAlgorithmChildren xsi:type="al:Rectangle" background="//@colors.7" foreground="//@colors.5" lineWidth="1" lineStyle="UNSPECIFIED" width="8" height="8" x="17" y="2"/>
@@ -1676,7 +1676,7 @@
         <businessObjects href="network_train.pi#//@vertices.28"/>
       </link>
     </anchors>
-    <anchors xsi:type="pi:BoxRelativeAnchor" visible="true" active="true" incomingConnections="//@connections.106" referencedGraphicsAlgorithm="//@children.28/@graphicsAlgorithm" relativeHeight="0.24096385542168675">
+    <anchors xsi:type="pi:BoxRelativeAnchor" visible="true" active="true" incomingConnections="//@connections.103" referencedGraphicsAlgorithm="//@children.28/@graphicsAlgorithm" relativeHeight="0.24096385542168675">
       <graphicsAlgorithm xsi:type="al:Rectangle" lineWidth="1" filled="false" lineVisible="false" transparency="0.0" width="57" height="13">
         <graphicsAlgorithmChildren xsi:type="al:Text" foreground="//@colors.4" lineWidth="1" filled="false" transparency="0.0" width="49" height="13" x="8" font="//@fonts.1" horizontalAlignment="ALIGNMENT_RIGHT" value="input_size"/>
         <graphicsAlgorithmChildren xsi:type="al:Polygon" background="//@colors.3" foreground="//@colors.5" lineWidth="0" filled="true" transparency="0.0" y="1">
@@ -1689,7 +1689,7 @@
         <businessObjects href="network_train.pi#//@vertices.28/@configInputPorts.0"/>
       </link>
     </anchors>
-    <anchors xsi:type="pi:BoxRelativeAnchor" visible="true" active="true" incomingConnections="//@connections.107" referencedGraphicsAlgorithm="//@children.28/@graphicsAlgorithm" relativeHeight="0.42168674698795183">
+    <anchors xsi:type="pi:BoxRelativeAnchor" visible="true" active="true" incomingConnections="//@connections.104" referencedGraphicsAlgorithm="//@children.28/@graphicsAlgorithm" relativeHeight="0.42168674698795183">
       <graphicsAlgorithm xsi:type="al:Rectangle" lineWidth="1" filled="false" lineVisible="false" transparency="0.0" width="57" height="13">
         <graphicsAlgorithmChildren xsi:type="al:Text" foreground="//@colors.4" lineWidth="1" filled="false" transparency="0.0" width="49" height="13" x="8" font="//@fonts.1" horizontalAlignment="ALIGNMENT_RIGHT" value="layer_size"/>
         <graphicsAlgorithmChildren xsi:type="al:Polygon" background="//@colors.3" foreground="//@colors.5" lineWidth="0" filled="true" transparency="0.0" y="1">
@@ -1702,7 +1702,7 @@
         <businessObjects href="network_train.pi#//@vertices.28/@configInputPorts.1"/>
       </link>
     </anchors>
-    <anchors xsi:type="pi:BoxRelativeAnchor" visible="true" active="true" incomingConnections="//@connections.41" referencedGraphicsAlgorithm="//@children.28/@graphicsAlgorithm" relativeHeight="0.6024096385542169">
+    <anchors xsi:type="pi:BoxRelativeAnchor" visible="true" active="true" incomingConnections="//@connections.39" referencedGraphicsAlgorithm="//@children.28/@graphicsAlgorithm" relativeHeight="0.6024096385542169">
       <graphicsAlgorithm xsi:type="al:Rectangle" lineWidth="1" filled="false" lineVisible="false" transparency="0.0" width="30" height="13">
         <graphicsAlgorithmChildren xsi:type="al:Text" foreground="//@colors.4" lineWidth="1" filled="false" transparency="0.0" width="22" height="13" x="8" font="//@fonts.1" horizontalAlignment="ALIGNMENT_RIGHT" value="in_1"/>
         <graphicsAlgorithmChildren xsi:type="al:Rectangle" background="//@colors.6" foreground="//@colors.5" lineWidth="1" lineStyle="UNSPECIFIED" width="8" height="8" y="2"/>
@@ -1711,7 +1711,7 @@
         <businessObjects href="network_train.pi#//@vertices.28/@dataInputPorts.0"/>
       </link>
     </anchors>
-    <anchors xsi:type="pi:BoxRelativeAnchor" visible="true" active="true" incomingConnections="//@connections.38" referencedGraphicsAlgorithm="//@children.28/@graphicsAlgorithm" relativeHeight="0.7831325301204819">
+    <anchors xsi:type="pi:BoxRelativeAnchor" visible="true" active="true" incomingConnections="//@connections.36" referencedGraphicsAlgorithm="//@children.28/@graphicsAlgorithm" relativeHeight="0.7831325301204819">
       <graphicsAlgorithm xsi:type="al:Rectangle" lineWidth="1" filled="false" lineVisible="false" transparency="0.0" width="30" height="13">
         <graphicsAlgorithmChildren xsi:type="al:Text" foreground="//@colors.4" lineWidth="1" filled="false" transparency="0.0" width="22" height="13" x="8" font="//@fonts.1" horizontalAlignment="ALIGNMENT_RIGHT" value="in_0"/>
         <graphicsAlgorithmChildren xsi:type="al:Rectangle" background="//@colors.6" foreground="//@colors.5" lineWidth="1" lineStyle="UNSPECIFIED" width="8" height="8" y="2"/>
@@ -1720,7 +1720,7 @@
         <businessObjects href="network_train.pi#//@vertices.28/@dataInputPorts.1"/>
       </link>
     </anchors>
-    <anchors xsi:type="pi:BoxRelativeAnchor" visible="true" active="true" outgoingConnections="//@connections.39" referencedGraphicsAlgorithm="//@children.28/@graphicsAlgorithm" relativeWidth="1.0" relativeHeight="0.6024096385542169">
+    <anchors xsi:type="pi:BoxRelativeAnchor" visible="true" active="true" outgoingConnections="//@connections.37" referencedGraphicsAlgorithm="//@children.28/@graphicsAlgorithm" relativeWidth="1.0" relativeHeight="0.6024096385542169">
       <graphicsAlgorithm xsi:type="al:Rectangle" lineWidth="1" filled="false" lineVisible="false" transparency="0.0" width="25" height="13" x="-25">
         <graphicsAlgorithmChildren xsi:type="al:Text" foreground="//@colors.4" lineWidth="1" filled="false" transparency="0.0" width="17" height="13" font="//@fonts.1" value="out"/>
         <graphicsAlgorithmChildren xsi:type="al:Rectangle" background="//@colors.7" foreground="//@colors.5" lineWidth="1" lineStyle="UNSPECIFIED" width="8" height="8" x="17" y="2"/>
@@ -1746,7 +1746,7 @@
         <businessObjects href="network_train.pi#//@vertices.29"/>
       </link>
     </anchors>
-    <anchors xsi:type="pi:BoxRelativeAnchor" visible="true" active="true" incomingConnections="//@connections.108" referencedGraphicsAlgorithm="//@children.29/@graphicsAlgorithm" relativeHeight="0.29411764705882354">
+    <anchors xsi:type="pi:BoxRelativeAnchor" visible="true" active="true" incomingConnections="//@connections.105" referencedGraphicsAlgorithm="//@children.29/@graphicsAlgorithm" relativeHeight="0.29411764705882354">
       <graphicsAlgorithm xsi:type="al:Rectangle" lineWidth="1" filled="false" lineVisible="false" transparency="0.0" width="28" height="13">
         <graphicsAlgorithmChildren xsi:type="al:Text" foreground="//@colors.4" lineWidth="1" filled="false" transparency="0.0" width="20" height="13" x="8" font="//@fonts.1" horizontalAlignment="ALIGNMENT_RIGHT" value="size"/>
         <graphicsAlgorithmChildren xsi:type="al:Polygon" background="//@colors.3" foreground="//@colors.5" lineWidth="0" filled="true" transparency="0.0" y="1">
@@ -1759,7 +1759,7 @@
         <businessObjects href="network_train.pi#//@vertices.29/@configInputPorts.0"/>
       </link>
     </anchors>
-    <anchors xsi:type="pi:BoxRelativeAnchor" visible="true" active="true" incomingConnections="//@connections.40" referencedGraphicsAlgorithm="//@children.29/@graphicsAlgorithm" relativeHeight="0.5147058823529411">
+    <anchors xsi:type="pi:BoxRelativeAnchor" visible="true" active="true" incomingConnections="//@connections.38" referencedGraphicsAlgorithm="//@children.29/@graphicsAlgorithm" relativeHeight="0.5147058823529411">
       <graphicsAlgorithm xsi:type="al:Rectangle" lineWidth="1" filled="false" lineVisible="false" transparency="0.0" width="18" height="13">
         <graphicsAlgorithmChildren xsi:type="al:Text" foreground="//@colors.4" lineWidth="1" filled="false" transparency="0.0" width="10" height="13" x="8" font="//@fonts.1" horizontalAlignment="ALIGNMENT_RIGHT" value="in"/>
         <graphicsAlgorithmChildren xsi:type="al:Rectangle" background="//@colors.6" foreground="//@colors.5" lineWidth="1" lineStyle="UNSPECIFIED" width="8" height="8" y="2"/>
@@ -1768,7 +1768,7 @@
         <businessObjects href="network_train.pi#//@vertices.29/@dataInputPorts.0"/>
       </link>
     </anchors>
-    <anchors xsi:type="pi:BoxRelativeAnchor" visible="true" active="true" outgoingConnections="//@connections.41" referencedGraphicsAlgorithm="//@children.29/@graphicsAlgorithm" relativeWidth="1.0" relativeHeight="0.5147058823529411">
+    <anchors xsi:type="pi:BoxRelativeAnchor" visible="true" active="true" outgoingConnections="//@connections.39" referencedGraphicsAlgorithm="//@children.29/@graphicsAlgorithm" relativeWidth="1.0" relativeHeight="0.5147058823529411">
       <graphicsAlgorithm xsi:type="al:Rectangle" lineWidth="1" filled="false" lineVisible="false" transparency="0.0" width="37" height="13" x="-37">
         <graphicsAlgorithmChildren xsi:type="al:Text" foreground="//@colors.4" lineWidth="1" filled="false" transparency="0.0" width="29" height="13" font="//@fonts.1" value="out_1"/>
         <graphicsAlgorithmChildren xsi:type="al:Rectangle" background="//@colors.7" foreground="//@colors.5" lineWidth="1" lineStyle="UNSPECIFIED" width="8" height="8" x="29" y="2"/>
@@ -1777,7 +1777,7 @@
         <businessObjects href="network_train.pi#//@vertices.29/@dataOutputPorts.0"/>
       </link>
     </anchors>
-    <anchors xsi:type="pi:BoxRelativeAnchor" visible="true" active="true" outgoingConnections="//@connections.42" referencedGraphicsAlgorithm="//@children.29/@graphicsAlgorithm" relativeWidth="1.0" relativeHeight="0.7352941176470589">
+    <anchors xsi:type="pi:BoxRelativeAnchor" visible="true" active="true" outgoingConnections="//@connections.40" referencedGraphicsAlgorithm="//@children.29/@graphicsAlgorithm" relativeWidth="1.0" relativeHeight="0.7352941176470589">
       <graphicsAlgorithm xsi:type="al:Rectangle" lineWidth="1" filled="false" lineVisible="false" transparency="0.0" width="37" height="13" x="-37">
         <graphicsAlgorithmChildren xsi:type="al:Text" foreground="//@colors.4" lineWidth="1" filled="false" transparency="0.0" width="29" height="13" font="//@fonts.1" value="out_0"/>
         <graphicsAlgorithmChildren xsi:type="al:Rectangle" background="//@colors.7" foreground="//@colors.5" lineWidth="1" lineStyle="UNSPECIFIED" width="8" height="8" x="29" y="2"/>
@@ -1798,7 +1798,7 @@
     <link>
       <businessObjects href="network_train.pi#//@vertices.30"/>
     </link>
-    <anchors xsi:type="pi:BoxRelativeAnchor" visible="true" active="true" outgoingConnections="//@connections.43" incomingConnections="//@connections.109" referencedGraphicsAlgorithm="//@children.30/@graphicsAlgorithm" relativeWidth="1.0" relativeHeight="0.1">
+    <anchors xsi:type="pi:BoxRelativeAnchor" visible="true" active="true" outgoingConnections="//@connections.41" incomingConnections="//@connections.106" referencedGraphicsAlgorithm="//@children.30/@graphicsAlgorithm" relativeWidth="1.0" relativeHeight="0.1">
       <graphicsAlgorithm xsi:type="al:RoundedRectangle" background="//@colors.6" foreground="//@colors.5" lineWidth="2" transparency="0.0" width="16" height="16" x="-16" cornerHeight="5" cornerWidth="5"/>
       <link>
         <businessObjects href="network_train.pi#//@vertices.30/@dataOutputPorts.0"/>
@@ -1821,7 +1821,7 @@
     <link>
       <businessObjects href="network_train.pi#//@vertices.31"/>
     </link>
-    <anchors xsi:type="pi:BoxRelativeAnchor" visible="true" active="true" outgoingConnections="//@connections.44" referencedGraphicsAlgorithm="//@children.31/@graphicsAlgorithm" relativeWidth="1.0" relativeHeight="0.1">
+    <anchors xsi:type="pi:BoxRelativeAnchor" visible="true" active="true" outgoingConnections="//@connections.42" referencedGraphicsAlgorithm="//@children.31/@graphicsAlgorithm" relativeWidth="1.0" relativeHeight="0.1">
       <graphicsAlgorithm xsi:type="al:RoundedRectangle" background="//@colors.6" foreground="//@colors.5" lineWidth="2" transparency="0.0" width="16" height="16" x="-16" cornerHeight="5" cornerWidth="5"/>
       <link>
         <businessObjects href="network_train.pi#//@vertices.31/@dataOutputPorts.0"/>
@@ -1849,7 +1849,7 @@
         <businessObjects href="network_train.pi#//@vertices.32"/>
       </link>
     </anchors>
-    <anchors xsi:type="pi:BoxRelativeAnchor" visible="true" active="true" incomingConnections="//@connections.44" referencedGraphicsAlgorithm="//@children.32/@graphicsAlgorithm" relativeHeight="0.37735849056603776">
+    <anchors xsi:type="pi:BoxRelativeAnchor" visible="true" active="true" incomingConnections="//@connections.42" referencedGraphicsAlgorithm="//@children.32/@graphicsAlgorithm" relativeHeight="0.37735849056603776">
       <graphicsAlgorithm xsi:type="al:Rectangle" lineWidth="1" filled="false" lineVisible="false" transparency="0.0" width="18" height="13">
         <graphicsAlgorithmChildren xsi:type="al:Text" foreground="//@colors.4" lineWidth="1" filled="false" transparency="0.0" width="10" height="13" x="8" font="//@fonts.1" horizontalAlignment="ALIGNMENT_RIGHT" value="in"/>
         <graphicsAlgorithmChildren xsi:type="al:Rectangle" background="//@colors.6" foreground="//@colors.5" lineWidth="1" lineStyle="UNSPECIFIED" width="8" height="8" y="2"/>
@@ -1858,7 +1858,7 @@
         <businessObjects href="network_train.pi#//@vertices.32/@dataInputPorts.0"/>
       </link>
     </anchors>
-    <anchors xsi:type="pi:BoxRelativeAnchor" visible="true" active="true" outgoingConnections="//@connections.46" referencedGraphicsAlgorithm="//@children.32/@graphicsAlgorithm" relativeWidth="1.0" relativeHeight="0.37735849056603776">
+    <anchors xsi:type="pi:BoxRelativeAnchor" visible="true" active="true" outgoingConnections="//@connections.44" referencedGraphicsAlgorithm="//@children.32/@graphicsAlgorithm" relativeWidth="1.0" relativeHeight="0.37735849056603776">
       <graphicsAlgorithm xsi:type="al:Rectangle" lineWidth="1" filled="false" lineVisible="false" transparency="0.0" width="37" height="13" x="-37">
         <graphicsAlgorithmChildren xsi:type="al:Text" foreground="//@colors.4" lineWidth="1" filled="false" transparency="0.0" width="29" height="13" font="//@fonts.1" value="out_1"/>
         <graphicsAlgorithmChildren xsi:type="al:Rectangle" background="//@colors.7" foreground="//@colors.5" lineWidth="1" lineStyle="UNSPECIFIED" width="8" height="8" x="29" y="2"/>
@@ -1867,7 +1867,7 @@
         <businessObjects href="network_train.pi#//@vertices.32/@dataOutputPorts.0"/>
       </link>
     </anchors>
-    <anchors xsi:type="pi:BoxRelativeAnchor" visible="true" active="true" outgoingConnections="//@connections.45" referencedGraphicsAlgorithm="//@children.32/@graphicsAlgorithm" relativeWidth="1.0" relativeHeight="0.660377358490566">
+    <anchors xsi:type="pi:BoxRelativeAnchor" visible="true" active="true" outgoingConnections="//@connections.43" referencedGraphicsAlgorithm="//@children.32/@graphicsAlgorithm" relativeWidth="1.0" relativeHeight="0.660377358490566">
       <graphicsAlgorithm xsi:type="al:Rectangle" lineWidth="1" filled="false" lineVisible="false" transparency="0.0" width="37" height="13" x="-37">
         <graphicsAlgorithmChildren xsi:type="al:Text" foreground="//@colors.4" lineWidth="1" filled="false" transparency="0.0" width="29" height="13" font="//@fonts.1" value="out_0"/>
         <graphicsAlgorithmChildren xsi:type="al:Rectangle" background="//@colors.7" foreground="//@colors.5" lineWidth="1" lineStyle="UNSPECIFIED" width="8" height="8" x="29" y="2"/>
@@ -1893,7 +1893,7 @@
         <businessObjects href="network_train.pi#//@vertices.33"/>
       </link>
     </anchors>
-    <anchors xsi:type="pi:BoxRelativeAnchor" visible="true" active="true" outgoingConnections="//@connections.47" referencedGraphicsAlgorithm="//@children.33/@graphicsAlgorithm" relativeWidth="1.0" relativeHeight="0.5263157894736842">
+    <anchors xsi:type="pi:BoxRelativeAnchor" visible="true" active="true" outgoingConnections="//@connections.45" referencedGraphicsAlgorithm="//@children.33/@graphicsAlgorithm" relativeWidth="1.0" relativeHeight="0.5263157894736842">
       <graphicsAlgorithm xsi:type="al:Rectangle" lineWidth="1" filled="false" lineVisible="false" transparency="0.0" width="43" height="13" x="-43">
         <graphicsAlgorithmChildren xsi:type="al:Text" foreground="//@colors.4" lineWidth="1" filled="false" transparency="0.0" width="35" height="13" font="//@fonts.1" value="epsilon"/>
         <graphicsAlgorithmChildren xsi:type="al:Rectangle" background="//@colors.7" foreground="//@colors.5" lineWidth="1" lineStyle="UNSPECIFIED" width="8" height="8" x="35" y="2"/>
@@ -1919,7 +1919,7 @@
         <businessObjects href="network_train.pi#//@vertices.34"/>
       </link>
     </anchors>
-    <anchors xsi:type="pi:BoxRelativeAnchor" visible="true" active="true" incomingConnections="//@connections.47" referencedGraphicsAlgorithm="//@children.34/@graphicsAlgorithm" relativeHeight="0.37735849056603776">
+    <anchors xsi:type="pi:BoxRelativeAnchor" visible="true" active="true" incomingConnections="//@connections.45" referencedGraphicsAlgorithm="//@children.34/@graphicsAlgorithm" relativeHeight="0.37735849056603776">
       <graphicsAlgorithm xsi:type="al:Rectangle" lineWidth="1" filled="false" lineVisible="false" transparency="0.0" width="18" height="13">
         <graphicsAlgorithmChildren xsi:type="al:Text" foreground="//@colors.4" lineWidth="1" filled="false" transparency="0.0" width="10" height="13" x="8" font="//@fonts.1" horizontalAlignment="ALIGNMENT_RIGHT" value="in"/>
         <graphicsAlgorithmChildren xsi:type="al:Rectangle" background="//@colors.6" foreground="//@colors.5" lineWidth="1" lineStyle="UNSPECIFIED" width="8" height="8" y="2"/>
@@ -1928,7 +1928,7 @@
         <businessObjects href="network_train.pi#//@vertices.34/@dataInputPorts.0"/>
       </link>
     </anchors>
-    <anchors xsi:type="pi:BoxRelativeAnchor" visible="true" active="true" outgoingConnections="//@connections.48" referencedGraphicsAlgorithm="//@children.34/@graphicsAlgorithm" relativeWidth="1.0" relativeHeight="0.37735849056603776">
+    <anchors xsi:type="pi:BoxRelativeAnchor" visible="true" active="true" outgoingConnections="//@connections.46" referencedGraphicsAlgorithm="//@children.34/@graphicsAlgorithm" relativeWidth="1.0" relativeHeight="0.37735849056603776">
       <graphicsAlgorithm xsi:type="al:Rectangle" lineWidth="1" filled="false" lineVisible="false" transparency="0.0" width="37" height="13" x="-37">
         <graphicsAlgorithmChildren xsi:type="al:Text" foreground="//@colors.4" lineWidth="1" filled="false" transparency="0.0" width="29" height="13" font="//@fonts.1" value="out_1"/>
         <graphicsAlgorithmChildren xsi:type="al:Rectangle" background="//@colors.7" foreground="//@colors.5" lineWidth="1" lineStyle="UNSPECIFIED" width="8" height="8" x="29" y="2"/>
@@ -1937,7 +1937,7 @@
         <businessObjects href="network_train.pi#//@vertices.34/@dataOutputPorts.0"/>
       </link>
     </anchors>
-    <anchors xsi:type="pi:BoxRelativeAnchor" visible="true" active="true" outgoingConnections="//@connections.49" referencedGraphicsAlgorithm="//@children.34/@graphicsAlgorithm" relativeWidth="1.0" relativeHeight="0.660377358490566">
+    <anchors xsi:type="pi:BoxRelativeAnchor" visible="true" active="true" outgoingConnections="//@connections.47" referencedGraphicsAlgorithm="//@children.34/@graphicsAlgorithm" relativeWidth="1.0" relativeHeight="0.660377358490566">
       <graphicsAlgorithm xsi:type="al:Rectangle" lineWidth="1" filled="false" lineVisible="false" transparency="0.0" width="37" height="13" x="-37">
         <graphicsAlgorithmChildren xsi:type="al:Text" foreground="//@colors.4" lineWidth="1" filled="false" transparency="0.0" width="29" height="13" font="//@fonts.1" value="out_0"/>
         <graphicsAlgorithmChildren xsi:type="al:Rectangle" background="//@colors.7" foreground="//@colors.5" lineWidth="1" lineStyle="UNSPECIFIED" width="8" height="8" x="29" y="2"/>
@@ -1972,7 +1972,7 @@
         <businessObjects href="network_train.pi#//@vertices.35/@dataInputPorts.0"/>
       </link>
     </anchors>
-    <anchors xsi:type="pi:BoxRelativeAnchor" visible="true" active="true" incomingConnections="//@connections.50" referencedGraphicsAlgorithm="//@children.35/@graphicsAlgorithm" relativeHeight="0.660377358490566">
+    <anchors xsi:type="pi:BoxRelativeAnchor" visible="true" active="true" incomingConnections="//@connections.48" referencedGraphicsAlgorithm="//@children.35/@graphicsAlgorithm" relativeHeight="0.660377358490566">
       <graphicsAlgorithm xsi:type="al:Rectangle" lineWidth="1" filled="false" lineVisible="false" transparency="0.0" width="31" height="13">
         <graphicsAlgorithmChildren xsi:type="al:Text" foreground="//@colors.4" lineWidth="1" filled="false" transparency="0.0" width="23" height="13" x="8" font="//@fonts.1" horizontalAlignment="ALIGNMENT_RIGHT" value="valid"/>
         <graphicsAlgorithmChildren xsi:type="al:Rectangle" background="//@colors.6" foreground="//@colors.5" lineWidth="1" lineStyle="UNSPECIFIED" width="8" height="8" y="2"/>
@@ -1981,7 +1981,7 @@
         <businessObjects href="network_train.pi#//@vertices.35/@dataInputPorts.1"/>
       </link>
     </anchors>
-    <anchors xsi:type="pi:BoxRelativeAnchor" visible="true" active="true" outgoingConnections="//@connections.51" referencedGraphicsAlgorithm="//@children.35/@graphicsAlgorithm" relativeWidth="1.0" relativeHeight="0.37735849056603776">
+    <anchors xsi:type="pi:BoxRelativeAnchor" visible="true" active="true" outgoingConnections="//@connections.49" referencedGraphicsAlgorithm="//@children.35/@graphicsAlgorithm" relativeWidth="1.0" relativeHeight="0.37735849056603776">
       <graphicsAlgorithm xsi:type="al:Rectangle" lineWidth="1" filled="false" lineVisible="false" transparency="0.0" width="57" height="13" x="-57">
         <graphicsAlgorithmChildren xsi:type="al:Text" foreground="//@colors.4" lineWidth="1" filled="false" transparency="0.0" width="49" height="13" font="//@fonts.1" value="betas_out"/>
         <graphicsAlgorithmChildren xsi:type="al:Rectangle" background="//@colors.7" foreground="//@colors.5" lineWidth="1" lineStyle="UNSPECIFIED" width="8" height="8" x="49" y="2"/>
@@ -2007,7 +2007,7 @@
         <businessObjects href="network_train.pi#//@vertices.36"/>
       </link>
     </anchors>
-    <anchors xsi:type="pi:BoxRelativeAnchor" visible="true" active="true" incomingConnections="//@connections.51" referencedGraphicsAlgorithm="//@children.36/@graphicsAlgorithm" relativeHeight="0.29411764705882354">
+    <anchors xsi:type="pi:BoxRelativeAnchor" visible="true" active="true" incomingConnections="//@connections.49" referencedGraphicsAlgorithm="//@children.36/@graphicsAlgorithm" relativeHeight="0.29411764705882354">
       <graphicsAlgorithm xsi:type="al:Rectangle" lineWidth="1" filled="false" lineVisible="false" transparency="0.0" width="18" height="13">
         <graphicsAlgorithmChildren xsi:type="al:Text" foreground="//@colors.4" lineWidth="1" filled="false" transparency="0.0" width="10" height="13" x="8" font="//@fonts.1" horizontalAlignment="ALIGNMENT_RIGHT" value="in"/>
         <graphicsAlgorithmChildren xsi:type="al:Rectangle" background="//@colors.6" foreground="//@colors.5" lineWidth="1" lineStyle="UNSPECIFIED" width="8" height="8" y="2"/>
@@ -2016,7 +2016,7 @@
         <businessObjects href="network_train.pi#//@vertices.36/@dataInputPorts.0"/>
       </link>
     </anchors>
-    <anchors xsi:type="pi:BoxRelativeAnchor" visible="true" active="true" outgoingConnections="//@connections.52" referencedGraphicsAlgorithm="//@children.36/@graphicsAlgorithm" relativeWidth="1.0" relativeHeight="0.29411764705882354">
+    <anchors xsi:type="pi:BoxRelativeAnchor" visible="true" active="true" outgoingConnections="//@connections.50" referencedGraphicsAlgorithm="//@children.36/@graphicsAlgorithm" relativeWidth="1.0" relativeHeight="0.29411764705882354">
       <graphicsAlgorithm xsi:type="al:Rectangle" lineWidth="1" filled="false" lineVisible="false" transparency="0.0" width="37" height="13" x="-37">
         <graphicsAlgorithmChildren xsi:type="al:Text" foreground="//@colors.4" lineWidth="1" filled="false" transparency="0.0" width="29" height="13" font="//@fonts.1" value="out_1"/>
         <graphicsAlgorithmChildren xsi:type="al:Rectangle" background="//@colors.7" foreground="//@colors.5" lineWidth="1" lineStyle="UNSPECIFIED" width="8" height="8" x="29" y="2"/>
@@ -2025,7 +2025,7 @@
         <businessObjects href="network_train.pi#//@vertices.36/@dataOutputPorts.0"/>
       </link>
     </anchors>
-    <anchors xsi:type="pi:BoxRelativeAnchor" visible="true" active="true" outgoingConnections="//@connections.53" referencedGraphicsAlgorithm="//@children.36/@graphicsAlgorithm" relativeWidth="1.0" relativeHeight="0.5147058823529411">
+    <anchors xsi:type="pi:BoxRelativeAnchor" visible="true" active="true" outgoingConnections="//@connections.51" referencedGraphicsAlgorithm="//@children.36/@graphicsAlgorithm" relativeWidth="1.0" relativeHeight="0.5147058823529411">
       <graphicsAlgorithm xsi:type="al:Rectangle" lineWidth="1" filled="false" lineVisible="false" transparency="0.0" width="37" height="13" x="-37">
         <graphicsAlgorithmChildren xsi:type="al:Text" foreground="//@colors.4" lineWidth="1" filled="false" transparency="0.0" width="29" height="13" font="//@fonts.1" value="out_0"/>
         <graphicsAlgorithmChildren xsi:type="al:Rectangle" background="//@colors.7" foreground="//@colors.5" lineWidth="1" lineStyle="UNSPECIFIED" width="8" height="8" x="29" y="2"/>
@@ -2055,7 +2055,7 @@
     <link>
       <businessObjects href="network_train.pi#//@vertices.37"/>
     </link>
-    <anchors xsi:type="pi:ChopboxAnchor" outgoingConnections="//@connections.0" incomingConnections="//@connections.86 //@connections.87 //@connections.110" referencedGraphicsAlgorithm="//@children.37/@graphicsAlgorithm">
+    <anchors xsi:type="pi:ChopboxAnchor" outgoingConnections="//@connections.0" incomingConnections="//@connections.84 //@connections.85 //@connections.110" referencedGraphicsAlgorithm="//@children.37/@graphicsAlgorithm">
       <link>
         <businessObjects href="network_train.pi#//@vertices.37"/>
       </link>
@@ -2066,7 +2066,7 @@
     <link>
       <businessObjects href="network_train.pi#//@vertices.39"/>
     </link>
-    <anchors xsi:type="pi:ChopboxAnchor" outgoingConnections="//@connections.1" incomingConnections="//@connections.84 //@connections.85 //@connections.111" referencedGraphicsAlgorithm="//@children.38/@graphicsAlgorithm">
+    <anchors xsi:type="pi:ChopboxAnchor" outgoingConnections="//@connections.1" incomingConnections="//@connections.82 //@connections.83 //@connections.111" referencedGraphicsAlgorithm="//@children.38/@graphicsAlgorithm">
       <link>
         <businessObjects href="network_train.pi#//@vertices.39"/>
       </link>
@@ -2077,7 +2077,7 @@
     <link>
       <businessObjects href="network_train.pi#//@vertices.41"/>
     </link>
-    <anchors xsi:type="pi:ChopboxAnchor" outgoingConnections="//@connections.2" incomingConnections="//@connections.90 //@connections.91 //@connections.112" referencedGraphicsAlgorithm="//@children.39/@graphicsAlgorithm">
+    <anchors xsi:type="pi:ChopboxAnchor" outgoingConnections="//@connections.2" incomingConnections="//@connections.88 //@connections.89 //@connections.112" referencedGraphicsAlgorithm="//@children.39/@graphicsAlgorithm">
       <link>
         <businessObjects href="network_train.pi#//@vertices.41"/>
       </link>
@@ -2088,7 +2088,7 @@
     <link>
       <businessObjects href="network_train.pi#//@vertices.43"/>
     </link>
-    <anchors xsi:type="pi:ChopboxAnchor" outgoingConnections="//@connections.3" incomingConnections="//@connections.88 //@connections.89 //@connections.113" referencedGraphicsAlgorithm="//@children.40/@graphicsAlgorithm">
+    <anchors xsi:type="pi:ChopboxAnchor" outgoingConnections="//@connections.3" incomingConnections="//@connections.86 //@connections.87 //@connections.113" referencedGraphicsAlgorithm="//@children.40/@graphicsAlgorithm">
       <link>
         <businessObjects href="network_train.pi#//@vertices.43"/>
       </link>
@@ -2428,7 +2428,7 @@
     <bendpoints x="365" y="393"/>
     <bendpoints x="473" y="601"/>
   </connections>
-  <connections xsi:type="pi:FreeFormConnection" visible="true" active="true" start="//@children.13/@anchors.6" end="//@children.16/@anchors.8">
+  <connections xsi:type="pi:FreeFormConnection" visible="true" active="true" start="//@children.13/@anchors.5" end="//@children.16/@anchors.8">
     <graphicsAlgorithm xsi:type="al:Polyline" foreground="//@colors.5" lineWidth="2" filled="false" transparency="0.0"/>
     <link>
       <businessObjects href="network_train.pi#//@edges.21"/>
@@ -2440,11 +2440,11 @@
         <points x="-10" y="-5"/>
       </graphicsAlgorithm>
     </connectionDecorators>
-    <bendpoints x="628" y="867"/>
-    <bendpoints x="922" y="867"/>
-    <bendpoints x="1180" y="867"/>
-    <bendpoints x="1480" y="867"/>
-    <bendpoints x="1861" y="867"/>
+    <bendpoints x="628" y="853"/>
+    <bendpoints x="922" y="853"/>
+    <bendpoints x="1180" y="853"/>
+    <bendpoints x="1480" y="853"/>
+    <bendpoints x="1861" y="853"/>
     <bendpoints x="1921" y="380"/>
   </connections>
   <connections xsi:type="pi:FreeFormConnection" visible="true" active="true" start="//@children.14/@anchors.5" end="//@children.16/@anchors.6">
@@ -2657,7 +2657,7 @@
     <bendpoints x="1480" y="586"/>
     <bendpoints x="1540" y="365"/>
   </connections>
-  <connections xsi:type="pi:FreeFormConnection" visible="true" active="true" start="//@children.13/@anchors.5" end="//@children.26/@anchors.2">
+  <connections xsi:type="pi:FreeFormConnection" visible="true" active="true" start="//@children.13/@anchors.6" end="//@children.26/@anchors.2">
     <graphicsAlgorithm xsi:type="al:Polyline" foreground="//@colors.5" lineWidth="2" filled="false" transparency="0.0"/>
     <link>
       <businessObjects href="network_train.pi#//@edges.34"/>
@@ -2669,43 +2669,13 @@
         <points x="-10" y="-5"/>
       </graphicsAlgorithm>
     </connectionDecorators>
-    <bendpoints x="628" y="852"/>
+    <bendpoints x="628" y="868"/>
     <bendpoints x="713" y="586"/>
-  </connections>
-  <connections xsi:type="pi:FreeFormConnection" visible="true" active="true" start="//@children.20/@anchors.9" end="//@children.27/@anchors.3">
-    <graphicsAlgorithm xsi:type="al:Polyline" foreground="//@colors.5" lineWidth="2" filled="false" transparency="0.0"/>
-    <link>
-      <businessObjects href="network_train.pi#//@edges.35"/>
-    </link>
-    <connectionDecorators visible="true" locationRelative="true" location="1.0">
-      <graphicsAlgorithm xsi:type="al:Polygon" background="//@colors.5" foreground="//@colors.5" lineWidth="2" lineStyle="UNSPECIFIED">
-        <points x="-10" y="5"/>
-        <points/>
-        <points x="-10" y="-5"/>
-      </graphicsAlgorithm>
-    </connectionDecorators>
-    <bendpoints x="1480" y="453"/>
-    <bendpoints x="1540" y="543"/>
-  </connections>
-  <connections xsi:type="pi:FreeFormConnection" visible="true" active="true" start="//@children.20/@anchors.10" end="//@children.27/@anchors.4">
-    <graphicsAlgorithm xsi:type="al:Polyline" foreground="//@colors.5" lineWidth="2" filled="false" transparency="0.0"/>
-    <link>
-      <businessObjects href="network_train.pi#//@edges.36"/>
-    </link>
-    <connectionDecorators visible="true" locationRelative="true" location="1.0">
-      <graphicsAlgorithm xsi:type="al:Polygon" background="//@colors.5" foreground="//@colors.5" lineWidth="2" lineStyle="UNSPECIFIED">
-        <points x="-10" y="5"/>
-        <points/>
-        <points x="-10" y="-5"/>
-      </graphicsAlgorithm>
-    </connectionDecorators>
-    <bendpoints x="1480" y="468"/>
-    <bendpoints x="1540" y="558"/>
   </connections>
   <connections xsi:type="pi:FreeFormConnection" visible="true" active="true" start="//@children.27/@anchors.5" end="//@children.16/@anchors.3">
     <graphicsAlgorithm xsi:type="al:Polyline" foreground="//@colors.5" lineWidth="2" filled="false" transparency="0.0"/>
     <link>
-      <businessObjects href="network_train.pi#//@edges.37"/>
+      <businessObjects href="network_train.pi#//@edges.35"/>
     </link>
     <connectionDecorators visible="true" locationRelative="true" location="1.0">
       <graphicsAlgorithm xsi:type="al:Polygon" background="//@colors.5" foreground="//@colors.5" lineWidth="2" lineStyle="UNSPECIFIED">
@@ -2720,7 +2690,7 @@
   <connections xsi:type="pi:FreeFormConnection" visible="true" active="true" start="//@children.21/@anchors.9" end="//@children.28/@anchors.4">
     <graphicsAlgorithm xsi:type="al:Polyline" foreground="//@colors.5" lineWidth="2" filled="false" transparency="0.0"/>
     <link>
-      <businessObjects href="network_train.pi#//@edges.38"/>
+      <businessObjects href="network_train.pi#//@edges.36"/>
     </link>
     <connectionDecorators visible="true" locationRelative="true" location="1.0">
       <graphicsAlgorithm xsi:type="al:Polygon" background="//@colors.5" foreground="//@colors.5" lineWidth="2" lineStyle="UNSPECIFIED">
@@ -2737,7 +2707,7 @@
   <connections xsi:type="pi:FreeFormConnection" visible="true" active="true" start="//@children.28/@anchors.5" end="//@children.15/@anchors.3">
     <graphicsAlgorithm xsi:type="al:Polyline" foreground="//@colors.5" lineWidth="2" filled="false" transparency="0.0"/>
     <link>
-      <businessObjects href="network_train.pi#//@edges.39"/>
+      <businessObjects href="network_train.pi#//@edges.37"/>
     </link>
     <connectionDecorators visible="true" locationRelative="true" location="1.0">
       <graphicsAlgorithm xsi:type="al:Polygon" background="//@colors.5" foreground="//@colors.5" lineWidth="2" lineStyle="UNSPECIFIED">
@@ -2752,7 +2722,7 @@
   <connections xsi:type="pi:FreeFormConnection" visible="true" active="true" start="//@children.21/@anchors.8" end="//@children.29/@anchors.2">
     <graphicsAlgorithm xsi:type="al:Polyline" foreground="//@colors.5" lineWidth="2" filled="false" transparency="0.0"/>
     <link>
-      <businessObjects href="network_train.pi#//@edges.40"/>
+      <businessObjects href="network_train.pi#//@edges.38"/>
     </link>
     <connectionDecorators visible="true" locationRelative="true" location="1.0">
       <graphicsAlgorithm xsi:type="al:Polygon" background="//@colors.5" foreground="//@colors.5" lineWidth="2" lineStyle="UNSPECIFIED">
@@ -2767,7 +2737,7 @@
   <connections xsi:type="pi:FreeFormConnection" visible="true" active="true" start="//@children.29/@anchors.3" end="//@children.28/@anchors.3">
     <graphicsAlgorithm xsi:type="al:Polyline" foreground="//@colors.5" lineWidth="2" filled="false" transparency="0.0"/>
     <link>
-      <businessObjects href="network_train.pi#//@edges.41"/>
+      <businessObjects href="network_train.pi#//@edges.39"/>
     </link>
     <connectionDecorators visible="true" locationRelative="true" location="1.0">
       <graphicsAlgorithm xsi:type="al:Polygon" background="//@colors.5" foreground="//@colors.5" lineWidth="2" lineStyle="UNSPECIFIED">
@@ -2782,7 +2752,7 @@
   <connections xsi:type="pi:FreeFormConnection" visible="true" active="true" start="//@children.29/@anchors.4" end="//@children.20/@anchors.4">
     <graphicsAlgorithm xsi:type="al:Polyline" foreground="//@colors.5" lineWidth="2" filled="false" transparency="0.0"/>
     <link>
-      <businessObjects href="network_train.pi#//@edges.42"/>
+      <businessObjects href="network_train.pi#//@edges.40"/>
     </link>
     <connectionDecorators visible="true" locationRelative="true" location="1.0">
       <graphicsAlgorithm xsi:type="al:Polygon" background="//@colors.5" foreground="//@colors.5" lineWidth="2" lineStyle="UNSPECIFIED">
@@ -2797,7 +2767,7 @@
   <connections xsi:type="pi:FreeFormConnection" visible="true" active="true" start="//@children.30/@anchors.0" end="//@children.21/@anchors.6">
     <graphicsAlgorithm xsi:type="al:Polyline" foreground="//@colors.5" lineWidth="2" filled="false" transparency="0.0"/>
     <link>
-      <businessObjects href="network_train.pi#//@edges.43"/>
+      <businessObjects href="network_train.pi#//@edges.41"/>
     </link>
     <connectionDecorators visible="true" locationRelative="true" location="1.0">
       <graphicsAlgorithm xsi:type="al:Polygon" background="//@colors.5" foreground="//@colors.5" lineWidth="2" lineStyle="UNSPECIFIED">
@@ -2816,7 +2786,7 @@
   <connections xsi:type="pi:FreeFormConnection" visible="true" active="true" start="//@children.31/@anchors.0" end="//@children.32/@anchors.1">
     <graphicsAlgorithm xsi:type="al:Polyline" foreground="//@colors.5" lineWidth="2" filled="false" transparency="0.0"/>
     <link>
-      <businessObjects href="network_train.pi#//@edges.44"/>
+      <businessObjects href="network_train.pi#//@edges.42"/>
     </link>
     <connectionDecorators visible="true" locationRelative="true" location="1.0">
       <graphicsAlgorithm xsi:type="al:Polygon" background="//@colors.5" foreground="//@colors.5" lineWidth="2" lineStyle="UNSPECIFIED">
@@ -2831,7 +2801,7 @@
   <connections xsi:type="pi:FreeFormConnection" visible="true" active="true" start="//@children.32/@anchors.3" end="//@children.15/@anchors.8">
     <graphicsAlgorithm xsi:type="al:Polyline" foreground="//@colors.5" lineWidth="2" filled="false" transparency="0.0"/>
     <link>
-      <businessObjects href="network_train.pi#//@edges.45"/>
+      <businessObjects href="network_train.pi#//@edges.43"/>
     </link>
     <connectionDecorators visible="true" locationRelative="true" location="1.0">
       <graphicsAlgorithm xsi:type="al:Polygon" background="//@colors.5" foreground="//@colors.5" lineWidth="2" lineStyle="UNSPECIFIED">
@@ -2851,7 +2821,7 @@
   <connections xsi:type="pi:FreeFormConnection" visible="true" active="true" start="//@children.32/@anchors.2" end="//@children.16/@anchors.7">
     <graphicsAlgorithm xsi:type="al:Polyline" foreground="//@colors.5" lineWidth="2" filled="false" transparency="0.0"/>
     <link>
-      <businessObjects href="network_train.pi#//@edges.46"/>
+      <businessObjects href="network_train.pi#//@edges.44"/>
     </link>
     <connectionDecorators visible="true" locationRelative="true" location="1.0">
       <graphicsAlgorithm xsi:type="al:Polygon" background="//@colors.5" foreground="//@colors.5" lineWidth="2" lineStyle="UNSPECIFIED">
@@ -2872,7 +2842,7 @@
   <connections xsi:type="pi:FreeFormConnection" visible="true" active="true" start="//@children.33/@anchors.1" end="//@children.34/@anchors.1">
     <graphicsAlgorithm xsi:type="al:Polyline" foreground="//@colors.5" lineWidth="2" filled="false" transparency="0.0"/>
     <link>
-      <businessObjects href="network_train.pi#//@edges.47"/>
+      <businessObjects href="network_train.pi#//@edges.45"/>
     </link>
     <connectionDecorators visible="true" locationRelative="true" location="1.0">
       <graphicsAlgorithm xsi:type="al:Polygon" background="//@colors.5" foreground="//@colors.5" lineWidth="2" lineStyle="UNSPECIFIED">
@@ -2887,7 +2857,7 @@
   <connections xsi:type="pi:FreeFormConnection" visible="true" active="true" start="//@children.34/@anchors.2" end="//@children.15/@anchors.4">
     <graphicsAlgorithm xsi:type="al:Polyline" foreground="//@colors.5" lineWidth="2" filled="false" transparency="0.0"/>
     <link>
-      <businessObjects href="network_train.pi#//@edges.48"/>
+      <businessObjects href="network_train.pi#//@edges.46"/>
     </link>
     <connectionDecorators visible="true" locationRelative="true" location="1.0">
       <graphicsAlgorithm xsi:type="al:Polygon" background="//@colors.5" foreground="//@colors.5" lineWidth="2" lineStyle="UNSPECIFIED">
@@ -2907,7 +2877,7 @@
   <connections xsi:type="pi:FreeFormConnection" visible="true" active="true" start="//@children.34/@anchors.3" end="//@children.16/@anchors.4">
     <graphicsAlgorithm xsi:type="al:Polyline" foreground="//@colors.5" lineWidth="2" filled="false" transparency="0.0"/>
     <link>
-      <businessObjects href="network_train.pi#//@edges.49"/>
+      <businessObjects href="network_train.pi#//@edges.47"/>
     </link>
     <connectionDecorators visible="true" locationRelative="true" location="1.0">
       <graphicsAlgorithm xsi:type="al:Polygon" background="//@colors.5" foreground="//@colors.5" lineWidth="2" lineStyle="UNSPECIFIED">
@@ -2929,7 +2899,7 @@
   <connections xsi:type="pi:FreeFormConnection" visible="true" active="true" start="//@children.25/@anchors.3" end="//@children.35/@anchors.2">
     <graphicsAlgorithm xsi:type="al:Polyline" foreground="//@colors.5" lineWidth="2" filled="false" transparency="0.0"/>
     <link>
-      <businessObjects href="network_train.pi#//@edges.50"/>
+      <businessObjects href="network_train.pi#//@edges.48"/>
     </link>
     <connectionDecorators visible="true" locationRelative="true" location="1.0">
       <graphicsAlgorithm xsi:type="al:Polygon" background="//@colors.5" foreground="//@colors.5" lineWidth="2" lineStyle="UNSPECIFIED">
@@ -2944,7 +2914,7 @@
   <connections xsi:type="pi:FreeFormConnection" visible="true" active="true" start="//@children.35/@anchors.3" end="//@children.36/@anchors.1">
     <graphicsAlgorithm xsi:type="al:Polyline" foreground="//@colors.5" lineWidth="2" filled="false" transparency="0.0"/>
     <link>
-      <businessObjects href="network_train.pi#//@edges.51"/>
+      <businessObjects href="network_train.pi#//@edges.49"/>
     </link>
     <connectionDecorators visible="true" locationRelative="true" location="1.0">
       <graphicsAlgorithm xsi:type="al:Polygon" background="//@colors.5" foreground="//@colors.5" lineWidth="2" lineStyle="UNSPECIFIED">
@@ -2959,7 +2929,7 @@
   <connections xsi:type="pi:FreeFormConnection" visible="true" active="true" start="//@children.36/@anchors.2" end="//@children.16/@anchors.5">
     <graphicsAlgorithm xsi:type="al:Polyline" foreground="//@colors.5" lineWidth="2" filled="false" transparency="0.0"/>
     <link>
-      <businessObjects href="network_train.pi#//@edges.52"/>
+      <businessObjects href="network_train.pi#//@edges.50"/>
     </link>
     <connectionDecorators visible="true" locationRelative="true" location="1.0">
       <graphicsAlgorithm xsi:type="al:Polygon" background="//@colors.5" foreground="//@colors.5" lineWidth="2" lineStyle="UNSPECIFIED">
@@ -2979,7 +2949,7 @@
   <connections xsi:type="pi:FreeFormConnection" visible="true" active="true" start="//@children.36/@anchors.3" end="//@children.15/@anchors.6">
     <graphicsAlgorithm xsi:type="al:Polyline" foreground="//@colors.5" lineWidth="2" filled="false" transparency="0.0"/>
     <link>
-      <businessObjects href="network_train.pi#//@edges.53"/>
+      <businessObjects href="network_train.pi#//@edges.51"/>
     </link>
     <connectionDecorators visible="true" locationRelative="true" location="1.0">
       <graphicsAlgorithm xsi:type="al:Polygon" background="//@colors.5" foreground="//@colors.5" lineWidth="2" lineStyle="UNSPECIFIED">
@@ -2997,7 +2967,7 @@
   <connections xsi:type="pi:FreeFormConnection" visible="true" active="true" start="//@children.1/@anchors.0" end="//@children.4/@anchors.0">
     <graphicsAlgorithm xsi:type="al:Polyline" foreground="//@colors.2" lineWidth="2" lineStyle="DASH" filled="false" transparency="0.0"/>
     <link>
-      <businessObjects href="network_train.pi#//@edges.54"/>
+      <businessObjects href="network_train.pi#//@edges.52"/>
     </link>
     <connectionDecorators visible="true" locationRelative="true" location="1.0">
       <graphicsAlgorithm xsi:type="al:Polyline" foreground="//@colors.2" lineWidth="2" lineStyle="UNSPECIFIED">
@@ -3011,7 +2981,7 @@
   <connections xsi:type="pi:FreeFormConnection" visible="true" active="true" start="//@children.1/@anchors.0" end="//@children.3/@anchors.0">
     <graphicsAlgorithm xsi:type="al:Polyline" foreground="//@colors.2" lineWidth="2" lineStyle="DASH" filled="false" transparency="0.0"/>
     <link>
-      <businessObjects href="network_train.pi#//@edges.55"/>
+      <businessObjects href="network_train.pi#//@edges.53"/>
     </link>
     <connectionDecorators visible="true" locationRelative="true" location="1.0">
       <graphicsAlgorithm xsi:type="al:Polyline" foreground="//@colors.2" lineWidth="2" lineStyle="UNSPECIFIED">
@@ -3025,7 +2995,7 @@
   <connections xsi:type="pi:FreeFormConnection" visible="true" active="true" start="//@children.2/@anchors.0" end="//@children.4/@anchors.0">
     <graphicsAlgorithm xsi:type="al:Polyline" foreground="//@colors.2" lineWidth="2" lineStyle="DASH" filled="false" transparency="0.0"/>
     <link>
-      <businessObjects href="network_train.pi#//@edges.56"/>
+      <businessObjects href="network_train.pi#//@edges.54"/>
     </link>
     <connectionDecorators visible="true" locationRelative="true" location="1.0">
       <graphicsAlgorithm xsi:type="al:Polyline" foreground="//@colors.2" lineWidth="2" lineStyle="UNSPECIFIED">
@@ -3039,7 +3009,7 @@
   <connections xsi:type="pi:FreeFormConnection" visible="true" active="true" start="//@children.0/@anchors.0" end="//@children.3/@anchors.0">
     <graphicsAlgorithm xsi:type="al:Polyline" foreground="//@colors.2" lineWidth="2" lineStyle="DASH" filled="false" transparency="0.0"/>
     <link>
-      <businessObjects href="network_train.pi#//@edges.57"/>
+      <businessObjects href="network_train.pi#//@edges.55"/>
     </link>
     <connectionDecorators visible="true" locationRelative="true" location="1.0">
       <graphicsAlgorithm xsi:type="al:Polyline" foreground="//@colors.2" lineWidth="2" lineStyle="UNSPECIFIED">
@@ -3053,7 +3023,7 @@
   <connections xsi:type="pi:FreeFormConnection" visible="true" active="true" start="//@children.2/@anchors.0" end="//@children.3/@anchors.0">
     <graphicsAlgorithm xsi:type="al:Polyline" foreground="//@colors.2" lineWidth="2" lineStyle="DASH" filled="false" transparency="0.0"/>
     <link>
-      <businessObjects href="network_train.pi#//@edges.58"/>
+      <businessObjects href="network_train.pi#//@edges.56"/>
     </link>
     <connectionDecorators visible="true" locationRelative="true" location="1.0">
       <graphicsAlgorithm xsi:type="al:Polyline" foreground="//@colors.2" lineWidth="2" lineStyle="UNSPECIFIED">
@@ -3067,7 +3037,7 @@
   <connections xsi:type="pi:FreeFormConnection" visible="true" active="true" start="//@children.3/@anchors.0" end="//@children.7/@anchors.0">
     <graphicsAlgorithm xsi:type="al:Polyline" foreground="//@colors.2" lineWidth="2" lineStyle="DASH" filled="false" transparency="0.0"/>
     <link>
-      <businessObjects href="network_train.pi#//@edges.59"/>
+      <businessObjects href="network_train.pi#//@edges.57"/>
     </link>
     <connectionDecorators visible="true" locationRelative="true" location="1.0">
       <graphicsAlgorithm xsi:type="al:Polyline" foreground="//@colors.2" lineWidth="2" lineStyle="UNSPECIFIED">
@@ -3083,7 +3053,7 @@
   <connections xsi:type="pi:FreeFormConnection" visible="true" active="true" start="//@children.4/@anchors.0" end="//@children.8/@anchors.0">
     <graphicsAlgorithm xsi:type="al:Polyline" foreground="//@colors.2" lineWidth="2" lineStyle="DASH" filled="false" transparency="0.0"/>
     <link>
-      <businessObjects href="network_train.pi#//@edges.60"/>
+      <businessObjects href="network_train.pi#//@edges.58"/>
     </link>
     <connectionDecorators visible="true" locationRelative="true" location="1.0">
       <graphicsAlgorithm xsi:type="al:Polyline" foreground="//@colors.2" lineWidth="2" lineStyle="UNSPECIFIED">
@@ -3098,7 +3068,7 @@
   <connections xsi:type="pi:FreeFormConnection" visible="true" active="true" start="//@children.0/@anchors.0" end="//@children.10/@anchors.0">
     <graphicsAlgorithm xsi:type="al:Polyline" foreground="//@colors.2" lineWidth="2" lineStyle="DASH" filled="false" transparency="0.0"/>
     <link>
-      <businessObjects href="network_train.pi#//@edges.61"/>
+      <businessObjects href="network_train.pi#//@edges.59"/>
     </link>
     <connectionDecorators visible="true" locationRelative="true" location="1.0">
       <graphicsAlgorithm xsi:type="al:Polyline" foreground="//@colors.2" lineWidth="2" lineStyle="UNSPECIFIED">
@@ -3114,7 +3084,7 @@
   <connections xsi:type="pi:FreeFormConnection" visible="true" active="true" start="//@children.4/@anchors.0" end="//@children.12/@anchors.0">
     <graphicsAlgorithm xsi:type="al:Polyline" foreground="//@colors.2" lineWidth="2" lineStyle="DASH" filled="false" transparency="0.0"/>
     <link>
-      <businessObjects href="network_train.pi#//@edges.62"/>
+      <businessObjects href="network_train.pi#//@edges.60"/>
     </link>
     <connectionDecorators visible="true" locationRelative="true" location="1.0">
       <graphicsAlgorithm xsi:type="al:Polyline" foreground="//@colors.2" lineWidth="2" lineStyle="UNSPECIFIED">
@@ -3130,7 +3100,7 @@
   <connections xsi:type="pi:FreeFormConnection" visible="true" active="true" start="//@children.3/@anchors.0" end="//@children.11/@anchors.0">
     <graphicsAlgorithm xsi:type="al:Polyline" foreground="//@colors.2" lineWidth="2" lineStyle="DASH" filled="false" transparency="0.0"/>
     <link>
-      <businessObjects href="network_train.pi#//@edges.63"/>
+      <businessObjects href="network_train.pi#//@edges.61"/>
     </link>
     <connectionDecorators visible="true" locationRelative="true" location="1.0">
       <graphicsAlgorithm xsi:type="al:Polyline" foreground="//@colors.2" lineWidth="2" lineStyle="UNSPECIFIED">
@@ -3145,7 +3115,7 @@
   <connections xsi:type="pi:FreeFormConnection" visible="true" active="true" start="//@children.3/@anchors.0" end="//@children.13/@anchors.3">
     <graphicsAlgorithm xsi:type="al:Polyline" foreground="//@colors.2" lineWidth="2" lineStyle="DASH" filled="false" transparency="0.0"/>
     <link>
-      <businessObjects href="network_train.pi#//@edges.64"/>
+      <businessObjects href="network_train.pi#//@edges.62"/>
     </link>
     <connectionDecorators visible="true" locationRelative="true" location="1.0">
       <graphicsAlgorithm xsi:type="al:Polyline" foreground="//@colors.2" lineWidth="2" lineStyle="UNSPECIFIED">
@@ -3161,7 +3131,7 @@
   <connections xsi:type="pi:FreeFormConnection" visible="true" active="true" start="//@children.1/@anchors.0" end="//@children.14/@anchors.1">
     <graphicsAlgorithm xsi:type="al:Polyline" foreground="//@colors.2" lineWidth="2" lineStyle="DASH" filled="false" transparency="0.0"/>
     <link>
-      <businessObjects href="network_train.pi#//@edges.65"/>
+      <businessObjects href="network_train.pi#//@edges.63"/>
     </link>
     <connectionDecorators visible="true" locationRelative="true" location="1.0">
       <graphicsAlgorithm xsi:type="al:Polyline" foreground="//@colors.2" lineWidth="2" lineStyle="UNSPECIFIED">
@@ -3177,7 +3147,7 @@
   <connections xsi:type="pi:FreeFormConnection" visible="true" active="true" start="//@children.2/@anchors.0" end="//@children.14/@anchors.2">
     <graphicsAlgorithm xsi:type="al:Polyline" foreground="//@colors.2" lineWidth="2" lineStyle="DASH" filled="false" transparency="0.0"/>
     <link>
-      <businessObjects href="network_train.pi#//@edges.66"/>
+      <businessObjects href="network_train.pi#//@edges.64"/>
     </link>
     <connectionDecorators visible="true" locationRelative="true" location="1.0">
       <graphicsAlgorithm xsi:type="al:Polyline" foreground="//@colors.2" lineWidth="2" lineStyle="UNSPECIFIED">
@@ -3193,7 +3163,7 @@
   <connections xsi:type="pi:FreeFormConnection" visible="true" active="true" start="//@children.4/@anchors.0" end="//@children.14/@anchors.3">
     <graphicsAlgorithm xsi:type="al:Polyline" foreground="//@colors.2" lineWidth="2" lineStyle="DASH" filled="false" transparency="0.0"/>
     <link>
-      <businessObjects href="network_train.pi#//@edges.67"/>
+      <businessObjects href="network_train.pi#//@edges.65"/>
     </link>
     <connectionDecorators visible="true" locationRelative="true" location="1.0">
       <graphicsAlgorithm xsi:type="al:Polyline" foreground="//@colors.2" lineWidth="2" lineStyle="UNSPECIFIED">
@@ -3209,7 +3179,7 @@
   <connections xsi:type="pi:FreeFormConnection" visible="true" active="true" start="//@children.1/@anchors.0" end="//@children.5/@anchors.0">
     <graphicsAlgorithm xsi:type="al:Polyline" foreground="//@colors.2" lineWidth="2" lineStyle="DASH" filled="false" transparency="0.0"/>
     <link>
-      <businessObjects href="network_train.pi#//@edges.68"/>
+      <businessObjects href="network_train.pi#//@edges.66"/>
     </link>
     <connectionDecorators visible="true" locationRelative="true" location="1.0">
       <graphicsAlgorithm xsi:type="al:Polyline" foreground="//@colors.2" lineWidth="2" lineStyle="UNSPECIFIED">
@@ -3223,7 +3193,7 @@
   <connections xsi:type="pi:FreeFormConnection" visible="true" active="true" start="//@children.0/@anchors.0" end="//@children.5/@anchors.0">
     <graphicsAlgorithm xsi:type="al:Polyline" foreground="//@colors.2" lineWidth="2" lineStyle="DASH" filled="false" transparency="0.0"/>
     <link>
-      <businessObjects href="network_train.pi#//@edges.69"/>
+      <businessObjects href="network_train.pi#//@edges.67"/>
     </link>
     <connectionDecorators visible="true" locationRelative="true" location="1.0">
       <graphicsAlgorithm xsi:type="al:Polyline" foreground="//@colors.2" lineWidth="2" lineStyle="UNSPECIFIED">
@@ -3237,7 +3207,7 @@
   <connections xsi:type="pi:FreeFormConnection" visible="true" active="true" start="//@children.5/@anchors.0" end="//@children.13/@anchors.1">
     <graphicsAlgorithm xsi:type="al:Polyline" foreground="//@colors.2" lineWidth="2" lineStyle="DASH" filled="false" transparency="0.0"/>
     <link>
-      <businessObjects href="network_train.pi#//@edges.70"/>
+      <businessObjects href="network_train.pi#//@edges.68"/>
     </link>
     <connectionDecorators visible="true" locationRelative="true" location="1.0">
       <graphicsAlgorithm xsi:type="al:Polyline" foreground="//@colors.2" lineWidth="2" lineStyle="UNSPECIFIED">
@@ -3253,7 +3223,7 @@
   <connections xsi:type="pi:FreeFormConnection" visible="true" active="true" start="//@children.6/@anchors.0" end="//@children.13/@anchors.2">
     <graphicsAlgorithm xsi:type="al:Polyline" foreground="//@colors.2" lineWidth="2" lineStyle="DASH" filled="false" transparency="0.0"/>
     <link>
-      <businessObjects href="network_train.pi#//@edges.71"/>
+      <businessObjects href="network_train.pi#//@edges.69"/>
     </link>
     <connectionDecorators visible="true" locationRelative="true" location="1.0">
       <graphicsAlgorithm xsi:type="al:Polyline" foreground="//@colors.2" lineWidth="2" lineStyle="UNSPECIFIED">
@@ -3269,7 +3239,7 @@
   <connections xsi:type="pi:FreeFormConnection" visible="true" active="true" start="//@children.2/@anchors.0" end="//@children.6/@anchors.0">
     <graphicsAlgorithm xsi:type="al:Polyline" foreground="//@colors.2" lineWidth="2" lineStyle="DASH" filled="false" transparency="0.0"/>
     <link>
-      <businessObjects href="network_train.pi#//@edges.72"/>
+      <businessObjects href="network_train.pi#//@edges.70"/>
     </link>
     <connectionDecorators visible="true" locationRelative="true" location="1.0">
       <graphicsAlgorithm xsi:type="al:Polyline" foreground="//@colors.2" lineWidth="2" lineStyle="UNSPECIFIED">
@@ -3283,7 +3253,7 @@
   <connections xsi:type="pi:FreeFormConnection" visible="true" active="true" start="//@children.1/@anchors.0" end="//@children.6/@anchors.0">
     <graphicsAlgorithm xsi:type="al:Polyline" foreground="//@colors.2" lineWidth="2" lineStyle="DASH" filled="false" transparency="0.0"/>
     <link>
-      <businessObjects href="network_train.pi#//@edges.73"/>
+      <businessObjects href="network_train.pi#//@edges.71"/>
     </link>
     <connectionDecorators visible="true" locationRelative="true" location="1.0">
       <graphicsAlgorithm xsi:type="al:Polyline" foreground="//@colors.2" lineWidth="2" lineStyle="UNSPECIFIED">
@@ -3297,7 +3267,7 @@
   <connections xsi:type="pi:FreeFormConnection" visible="true" active="true" start="//@children.1/@anchors.0" end="//@children.15/@anchors.2">
     <graphicsAlgorithm xsi:type="al:Polyline" foreground="//@colors.2" lineWidth="2" lineStyle="DASH" filled="false" transparency="0.0"/>
     <link>
-      <businessObjects href="network_train.pi#//@edges.74"/>
+      <businessObjects href="network_train.pi#//@edges.72"/>
     </link>
     <connectionDecorators visible="true" locationRelative="true" location="1.0">
       <graphicsAlgorithm xsi:type="al:Polyline" foreground="//@colors.2" lineWidth="2" lineStyle="UNSPECIFIED">
@@ -3313,7 +3283,7 @@
   <connections xsi:type="pi:FreeFormConnection" visible="true" active="true" start="//@children.2/@anchors.0" end="//@children.15/@anchors.1">
     <graphicsAlgorithm xsi:type="al:Polyline" foreground="//@colors.2" lineWidth="2" lineStyle="DASH" filled="false" transparency="0.0"/>
     <link>
-      <businessObjects href="network_train.pi#//@edges.75"/>
+      <businessObjects href="network_train.pi#//@edges.73"/>
     </link>
     <connectionDecorators visible="true" locationRelative="true" location="1.0">
       <graphicsAlgorithm xsi:type="al:Polyline" foreground="//@colors.2" lineWidth="2" lineStyle="UNSPECIFIED">
@@ -3329,7 +3299,7 @@
   <connections xsi:type="pi:FreeFormConnection" visible="true" active="true" start="//@children.1/@anchors.0" end="//@children.16/@anchors.1">
     <graphicsAlgorithm xsi:type="al:Polyline" foreground="//@colors.2" lineWidth="2" lineStyle="DASH" filled="false" transparency="0.0"/>
     <link>
-      <businessObjects href="network_train.pi#//@edges.76"/>
+      <businessObjects href="network_train.pi#//@edges.74"/>
     </link>
     <connectionDecorators visible="true" locationRelative="true" location="1.0">
       <graphicsAlgorithm xsi:type="al:Polyline" foreground="//@colors.2" lineWidth="2" lineStyle="UNSPECIFIED">
@@ -3345,7 +3315,7 @@
   <connections xsi:type="pi:FreeFormConnection" visible="true" active="true" start="//@children.0/@anchors.0" end="//@children.16/@anchors.2">
     <graphicsAlgorithm xsi:type="al:Polyline" foreground="//@colors.2" lineWidth="2" lineStyle="DASH" filled="false" transparency="0.0"/>
     <link>
-      <businessObjects href="network_train.pi#//@edges.77"/>
+      <businessObjects href="network_train.pi#//@edges.75"/>
     </link>
     <connectionDecorators visible="true" locationRelative="true" location="1.0">
       <graphicsAlgorithm xsi:type="al:Polyline" foreground="//@colors.2" lineWidth="2" lineStyle="UNSPECIFIED">
@@ -3361,7 +3331,7 @@
   <connections xsi:type="pi:FreeFormConnection" visible="true" active="true" start="//@children.5/@anchors.0" end="//@children.17/@anchors.2">
     <graphicsAlgorithm xsi:type="al:Polyline" foreground="//@colors.2" lineWidth="2" lineStyle="DASH" filled="false" transparency="0.0"/>
     <link>
-      <businessObjects href="network_train.pi#//@edges.78"/>
+      <businessObjects href="network_train.pi#//@edges.76"/>
     </link>
     <connectionDecorators visible="true" locationRelative="true" location="1.0">
       <graphicsAlgorithm xsi:type="al:Polyline" foreground="//@colors.2" lineWidth="2" lineStyle="UNSPECIFIED">
@@ -3377,7 +3347,7 @@
   <connections xsi:type="pi:FreeFormConnection" visible="true" active="true" start="//@children.6/@anchors.0" end="//@children.17/@anchors.3">
     <graphicsAlgorithm xsi:type="al:Polyline" foreground="//@colors.2" lineWidth="2" lineStyle="DASH" filled="false" transparency="0.0"/>
     <link>
-      <businessObjects href="network_train.pi#//@edges.79"/>
+      <businessObjects href="network_train.pi#//@edges.77"/>
     </link>
     <connectionDecorators visible="true" locationRelative="true" location="1.0">
       <graphicsAlgorithm xsi:type="al:Polyline" foreground="//@colors.2" lineWidth="2" lineStyle="UNSPECIFIED">
@@ -3393,7 +3363,7 @@
   <connections xsi:type="pi:FreeFormConnection" visible="true" active="true" start="//@children.3/@anchors.0" end="//@children.17/@anchors.1">
     <graphicsAlgorithm xsi:type="al:Polyline" foreground="//@colors.2" lineWidth="2" lineStyle="DASH" filled="false" transparency="0.0"/>
     <link>
-      <businessObjects href="network_train.pi#//@edges.80"/>
+      <businessObjects href="network_train.pi#//@edges.78"/>
     </link>
     <connectionDecorators visible="true" locationRelative="true" location="1.0">
       <graphicsAlgorithm xsi:type="al:Polyline" foreground="//@colors.2" lineWidth="2" lineStyle="UNSPECIFIED">
@@ -3409,7 +3379,7 @@
   <connections xsi:type="pi:FreeFormConnection" visible="true" active="true" start="//@children.4/@anchors.0" end="//@children.18/@anchors.1">
     <graphicsAlgorithm xsi:type="al:Polyline" foreground="//@colors.2" lineWidth="2" lineStyle="DASH" filled="false" transparency="0.0"/>
     <link>
-      <businessObjects href="network_train.pi#//@edges.81"/>
+      <businessObjects href="network_train.pi#//@edges.79"/>
     </link>
     <connectionDecorators visible="true" locationRelative="true" location="1.0">
       <graphicsAlgorithm xsi:type="al:Polyline" foreground="//@colors.2" lineWidth="2" lineStyle="UNSPECIFIED">
@@ -3425,7 +3395,7 @@
   <connections xsi:type="pi:FreeFormConnection" visible="true" active="true" start="//@children.2/@anchors.0" end="//@children.18/@anchors.3">
     <graphicsAlgorithm xsi:type="al:Polyline" foreground="//@colors.2" lineWidth="2" lineStyle="DASH" filled="false" transparency="0.0"/>
     <link>
-      <businessObjects href="network_train.pi#//@edges.82"/>
+      <businessObjects href="network_train.pi#//@edges.80"/>
     </link>
     <connectionDecorators visible="true" locationRelative="true" location="1.0">
       <graphicsAlgorithm xsi:type="al:Polyline" foreground="//@colors.2" lineWidth="2" lineStyle="UNSPECIFIED">
@@ -3441,7 +3411,7 @@
   <connections xsi:type="pi:FreeFormConnection" visible="true" active="true" start="//@children.1/@anchors.0" end="//@children.18/@anchors.2">
     <graphicsAlgorithm xsi:type="al:Polyline" foreground="//@colors.2" lineWidth="2" lineStyle="DASH" filled="false" transparency="0.0"/>
     <link>
-      <businessObjects href="network_train.pi#//@edges.83"/>
+      <businessObjects href="network_train.pi#//@edges.81"/>
     </link>
     <connectionDecorators visible="true" locationRelative="true" location="1.0">
       <graphicsAlgorithm xsi:type="al:Polyline" foreground="//@colors.2" lineWidth="2" lineStyle="UNSPECIFIED">
@@ -3457,7 +3427,7 @@
   <connections xsi:type="pi:FreeFormConnection" visible="true" active="true" start="//@children.1/@anchors.0" end="//@children.38/@anchors.0">
     <graphicsAlgorithm xsi:type="al:Polyline" foreground="//@colors.2" lineWidth="2" lineStyle="DASH" filled="false" transparency="0.0"/>
     <link>
-      <businessObjects href="network_train.pi#//@edges.84"/>
+      <businessObjects href="network_train.pi#//@edges.82"/>
     </link>
     <connectionDecorators visible="true" locationRelative="true" location="1.0">
       <graphicsAlgorithm xsi:type="al:Polyline" foreground="//@colors.2" lineWidth="2" lineStyle="UNSPECIFIED">
@@ -3473,7 +3443,7 @@
   <connections xsi:type="pi:FreeFormConnection" visible="true" active="true" start="//@children.5/@anchors.0" end="//@children.38/@anchors.0">
     <graphicsAlgorithm xsi:type="al:Polyline" foreground="//@colors.2" lineWidth="2" lineStyle="DASH" filled="false" transparency="0.0"/>
     <link>
-      <businessObjects href="network_train.pi#//@edges.85"/>
+      <businessObjects href="network_train.pi#//@edges.83"/>
     </link>
     <connectionDecorators visible="true" locationRelative="true" location="1.0">
       <graphicsAlgorithm xsi:type="al:Polyline" foreground="//@colors.2" lineWidth="2" lineStyle="UNSPECIFIED">
@@ -3489,7 +3459,7 @@
   <connections xsi:type="pi:FreeFormConnection" visible="true" active="true" start="//@children.5/@anchors.0" end="//@children.37/@anchors.0">
     <graphicsAlgorithm xsi:type="al:Polyline" foreground="//@colors.2" lineWidth="2" lineStyle="DASH" filled="false" transparency="0.0"/>
     <link>
-      <businessObjects href="network_train.pi#//@edges.86"/>
+      <businessObjects href="network_train.pi#//@edges.84"/>
     </link>
     <connectionDecorators visible="true" locationRelative="true" location="1.0">
       <graphicsAlgorithm xsi:type="al:Polyline" foreground="//@colors.2" lineWidth="2" lineStyle="UNSPECIFIED">
@@ -3505,7 +3475,7 @@
   <connections xsi:type="pi:FreeFormConnection" visible="true" active="true" start="//@children.1/@anchors.0" end="//@children.37/@anchors.0">
     <graphicsAlgorithm xsi:type="al:Polyline" foreground="//@colors.2" lineWidth="2" lineStyle="DASH" filled="false" transparency="0.0"/>
     <link>
-      <businessObjects href="network_train.pi#//@edges.87"/>
+      <businessObjects href="network_train.pi#//@edges.85"/>
     </link>
     <connectionDecorators visible="true" locationRelative="true" location="1.0">
       <graphicsAlgorithm xsi:type="al:Polyline" foreground="//@colors.2" lineWidth="2" lineStyle="UNSPECIFIED">
@@ -3521,7 +3491,7 @@
   <connections xsi:type="pi:FreeFormConnection" visible="true" active="true" start="//@children.6/@anchors.0" end="//@children.40/@anchors.0">
     <graphicsAlgorithm xsi:type="al:Polyline" foreground="//@colors.2" lineWidth="2" lineStyle="DASH" filled="false" transparency="0.0"/>
     <link>
-      <businessObjects href="network_train.pi#//@edges.88"/>
+      <businessObjects href="network_train.pi#//@edges.86"/>
     </link>
     <connectionDecorators visible="true" locationRelative="true" location="1.0">
       <graphicsAlgorithm xsi:type="al:Polyline" foreground="//@colors.2" lineWidth="2" lineStyle="UNSPECIFIED">
@@ -3537,7 +3507,7 @@
   <connections xsi:type="pi:FreeFormConnection" visible="true" active="true" start="//@children.2/@anchors.0" end="//@children.40/@anchors.0">
     <graphicsAlgorithm xsi:type="al:Polyline" foreground="//@colors.2" lineWidth="2" lineStyle="DASH" filled="false" transparency="0.0"/>
     <link>
-      <businessObjects href="network_train.pi#//@edges.89"/>
+      <businessObjects href="network_train.pi#//@edges.87"/>
     </link>
     <connectionDecorators visible="true" locationRelative="true" location="1.0">
       <graphicsAlgorithm xsi:type="al:Polyline" foreground="//@colors.2" lineWidth="2" lineStyle="UNSPECIFIED">
@@ -3553,7 +3523,7 @@
   <connections xsi:type="pi:FreeFormConnection" visible="true" active="true" start="//@children.2/@anchors.0" end="//@children.39/@anchors.0">
     <graphicsAlgorithm xsi:type="al:Polyline" foreground="//@colors.2" lineWidth="2" lineStyle="DASH" filled="false" transparency="0.0"/>
     <link>
-      <businessObjects href="network_train.pi#//@edges.90"/>
+      <businessObjects href="network_train.pi#//@edges.88"/>
     </link>
     <connectionDecorators visible="true" locationRelative="true" location="1.0">
       <graphicsAlgorithm xsi:type="al:Polyline" foreground="//@colors.2" lineWidth="2" lineStyle="UNSPECIFIED">
@@ -3569,7 +3539,7 @@
   <connections xsi:type="pi:FreeFormConnection" visible="true" active="true" start="//@children.6/@anchors.0" end="//@children.39/@anchors.0">
     <graphicsAlgorithm xsi:type="al:Polyline" foreground="//@colors.2" lineWidth="2" lineStyle="DASH" filled="false" transparency="0.0"/>
     <link>
-      <businessObjects href="network_train.pi#//@edges.91"/>
+      <businessObjects href="network_train.pi#//@edges.89"/>
     </link>
     <connectionDecorators visible="true" locationRelative="true" location="1.0">
       <graphicsAlgorithm xsi:type="al:Polyline" foreground="//@colors.2" lineWidth="2" lineStyle="UNSPECIFIED">
@@ -3585,7 +3555,7 @@
   <connections xsi:type="pi:FreeFormConnection" visible="true" active="true" start="//@children.2/@anchors.0" end="//@children.19/@anchors.1">
     <graphicsAlgorithm xsi:type="al:Polyline" foreground="//@colors.2" lineWidth="2" lineStyle="DASH" filled="false" transparency="0.0"/>
     <link>
-      <businessObjects href="network_train.pi#//@edges.92"/>
+      <businessObjects href="network_train.pi#//@edges.90"/>
     </link>
     <connectionDecorators visible="true" locationRelative="true" location="1.0">
       <graphicsAlgorithm xsi:type="al:Polyline" foreground="//@colors.2" lineWidth="2" lineStyle="UNSPECIFIED">
@@ -3601,7 +3571,7 @@
   <connections xsi:type="pi:FreeFormConnection" visible="true" active="true" start="//@children.0/@anchors.0" end="//@children.19/@anchors.3">
     <graphicsAlgorithm xsi:type="al:Polyline" foreground="//@colors.2" lineWidth="2" lineStyle="DASH" filled="false" transparency="0.0"/>
     <link>
-      <businessObjects href="network_train.pi#//@edges.93"/>
+      <businessObjects href="network_train.pi#//@edges.91"/>
     </link>
     <connectionDecorators visible="true" locationRelative="true" location="1.0">
       <graphicsAlgorithm xsi:type="al:Polyline" foreground="//@colors.2" lineWidth="2" lineStyle="UNSPECIFIED">
@@ -3617,7 +3587,7 @@
   <connections xsi:type="pi:FreeFormConnection" visible="true" active="true" start="//@children.1/@anchors.0" end="//@children.19/@anchors.2">
     <graphicsAlgorithm xsi:type="al:Polyline" foreground="//@colors.2" lineWidth="2" lineStyle="DASH" filled="false" transparency="0.0"/>
     <link>
-      <businessObjects href="network_train.pi#//@edges.94"/>
+      <businessObjects href="network_train.pi#//@edges.92"/>
     </link>
     <connectionDecorators visible="true" locationRelative="true" location="1.0">
       <graphicsAlgorithm xsi:type="al:Polyline" foreground="//@colors.2" lineWidth="2" lineStyle="UNSPECIFIED">
@@ -3633,7 +3603,7 @@
   <connections xsi:type="pi:FreeFormConnection" visible="true" active="true" start="//@children.1/@anchors.0" end="//@children.20/@anchors.1">
     <graphicsAlgorithm xsi:type="al:Polyline" foreground="//@colors.2" lineWidth="2" lineStyle="DASH" filled="false" transparency="0.0"/>
     <link>
-      <businessObjects href="network_train.pi#//@edges.95"/>
+      <businessObjects href="network_train.pi#//@edges.93"/>
     </link>
     <connectionDecorators visible="true" locationRelative="true" location="1.0">
       <graphicsAlgorithm xsi:type="al:Polyline" foreground="//@colors.2" lineWidth="2" lineStyle="UNSPECIFIED">
@@ -3649,7 +3619,7 @@
   <connections xsi:type="pi:FreeFormConnection" visible="true" active="true" start="//@children.2/@anchors.0" end="//@children.20/@anchors.2">
     <graphicsAlgorithm xsi:type="al:Polyline" foreground="//@colors.2" lineWidth="2" lineStyle="DASH" filled="false" transparency="0.0"/>
     <link>
-      <businessObjects href="network_train.pi#//@edges.96"/>
+      <businessObjects href="network_train.pi#//@edges.94"/>
     </link>
     <connectionDecorators visible="true" locationRelative="true" location="1.0">
       <graphicsAlgorithm xsi:type="al:Polyline" foreground="//@colors.2" lineWidth="2" lineStyle="UNSPECIFIED">
@@ -3665,7 +3635,7 @@
   <connections xsi:type="pi:FreeFormConnection" visible="true" active="true" start="//@children.0/@anchors.0" end="//@children.20/@anchors.3">
     <graphicsAlgorithm xsi:type="al:Polyline" foreground="//@colors.2" lineWidth="2" lineStyle="DASH" filled="false" transparency="0.0"/>
     <link>
-      <businessObjects href="network_train.pi#//@edges.97"/>
+      <businessObjects href="network_train.pi#//@edges.95"/>
     </link>
     <connectionDecorators visible="true" locationRelative="true" location="1.0">
       <graphicsAlgorithm xsi:type="al:Polyline" foreground="//@colors.2" lineWidth="2" lineStyle="UNSPECIFIED">
@@ -3681,7 +3651,7 @@
   <connections xsi:type="pi:FreeFormConnection" visible="true" active="true" start="//@children.1/@anchors.0" end="//@children.21/@anchors.2">
     <graphicsAlgorithm xsi:type="al:Polyline" foreground="//@colors.2" lineWidth="2" lineStyle="DASH" filled="false" transparency="0.0"/>
     <link>
-      <businessObjects href="network_train.pi#//@edges.98"/>
+      <businessObjects href="network_train.pi#//@edges.96"/>
     </link>
     <connectionDecorators visible="true" locationRelative="true" location="1.0">
       <graphicsAlgorithm xsi:type="al:Polyline" foreground="//@colors.2" lineWidth="2" lineStyle="UNSPECIFIED">
@@ -3697,7 +3667,7 @@
   <connections xsi:type="pi:FreeFormConnection" visible="true" active="true" start="//@children.2/@anchors.0" end="//@children.21/@anchors.1">
     <graphicsAlgorithm xsi:type="al:Polyline" foreground="//@colors.2" lineWidth="2" lineStyle="DASH" filled="false" transparency="0.0"/>
     <link>
-      <businessObjects href="network_train.pi#//@edges.99"/>
+      <businessObjects href="network_train.pi#//@edges.97"/>
     </link>
     <connectionDecorators visible="true" locationRelative="true" location="1.0">
       <graphicsAlgorithm xsi:type="al:Polyline" foreground="//@colors.2" lineWidth="2" lineStyle="UNSPECIFIED">
@@ -3713,7 +3683,7 @@
   <connections xsi:type="pi:FreeFormConnection" visible="true" active="true" start="//@children.3/@anchors.0" end="//@children.22/@anchors.1">
     <graphicsAlgorithm xsi:type="al:Polyline" foreground="//@colors.2" lineWidth="2" lineStyle="DASH" filled="false" transparency="0.0"/>
     <link>
-      <businessObjects href="network_train.pi#//@edges.100"/>
+      <businessObjects href="network_train.pi#//@edges.98"/>
     </link>
     <connectionDecorators visible="true" locationRelative="true" location="1.0">
       <graphicsAlgorithm xsi:type="al:Polyline" foreground="//@colors.2" lineWidth="2" lineStyle="UNSPECIFIED">
@@ -3729,7 +3699,7 @@
   <connections xsi:type="pi:FreeFormConnection" visible="true" active="true" start="//@children.4/@anchors.0" end="//@children.23/@anchors.1">
     <graphicsAlgorithm xsi:type="al:Polyline" foreground="//@colors.2" lineWidth="2" lineStyle="DASH" filled="false" transparency="0.0"/>
     <link>
-      <businessObjects href="network_train.pi#//@edges.101"/>
+      <businessObjects href="network_train.pi#//@edges.99"/>
     </link>
     <connectionDecorators visible="true" locationRelative="true" location="1.0">
       <graphicsAlgorithm xsi:type="al:Polyline" foreground="//@colors.2" lineWidth="2" lineStyle="UNSPECIFIED">
@@ -3745,7 +3715,7 @@
   <connections xsi:type="pi:FreeFormConnection" visible="true" active="true" start="//@children.0/@anchors.0" end="//@children.24/@anchors.1">
     <graphicsAlgorithm xsi:type="al:Polyline" foreground="//@colors.2" lineWidth="2" lineStyle="DASH" filled="false" transparency="0.0"/>
     <link>
-      <businessObjects href="network_train.pi#//@edges.102"/>
+      <businessObjects href="network_train.pi#//@edges.100"/>
     </link>
     <connectionDecorators visible="true" locationRelative="true" location="1.0">
       <graphicsAlgorithm xsi:type="al:Polyline" foreground="//@colors.2" lineWidth="2" lineStyle="UNSPECIFIED">
@@ -3761,7 +3731,7 @@
   <connections xsi:type="pi:FreeFormConnection" visible="true" active="true" start="//@children.6/@anchors.0" end="//@children.26/@anchors.1">
     <graphicsAlgorithm xsi:type="al:Polyline" foreground="//@colors.2" lineWidth="2" lineStyle="DASH" filled="false" transparency="0.0"/>
     <link>
-      <businessObjects href="network_train.pi#//@edges.103"/>
+      <businessObjects href="network_train.pi#//@edges.101"/>
     </link>
     <connectionDecorators visible="true" locationRelative="true" location="1.0">
       <graphicsAlgorithm xsi:type="al:Polyline" foreground="//@colors.2" lineWidth="2" lineStyle="UNSPECIFIED">
@@ -3774,26 +3744,10 @@
     <bendpoints x="689" y="200"/>
     <bendpoints x="689" y="571"/>
   </connections>
-  <connections xsi:type="pi:FreeFormConnection" visible="true" active="true" start="//@children.0/@anchors.0" end="//@children.27/@anchors.1">
-    <graphicsAlgorithm xsi:type="al:Polyline" foreground="//@colors.2" lineWidth="2" lineStyle="DASH" filled="false" transparency="0.0"/>
-    <link>
-      <businessObjects href="network_train.pi#//@edges.104"/>
-    </link>
-    <connectionDecorators visible="true" locationRelative="true" location="1.0">
-      <graphicsAlgorithm xsi:type="al:Polyline" foreground="//@colors.2" lineWidth="2" lineStyle="UNSPECIFIED">
-        <points x="-10" y="5"/>
-        <points/>
-        <points x="-10" y="-5"/>
-      </graphicsAlgorithm>
-    </connectionDecorators>
-    <bendpoints x="492" y="168"/>
-    <bendpoints x="1532" y="168"/>
-    <bendpoints x="1532" y="513"/>
-  </connections>
   <connections xsi:type="pi:FreeFormConnection" visible="true" active="true" start="//@children.1/@anchors.0" end="//@children.27/@anchors.2">
     <graphicsAlgorithm xsi:type="al:Polyline" foreground="//@colors.2" lineWidth="2" lineStyle="DASH" filled="false" transparency="0.0"/>
     <link>
-      <businessObjects href="network_train.pi#//@edges.105"/>
+      <businessObjects href="network_train.pi#//@edges.102"/>
     </link>
     <connectionDecorators visible="true" locationRelative="true" location="1.0">
       <graphicsAlgorithm xsi:type="al:Polyline" foreground="//@colors.2" lineWidth="2" lineStyle="UNSPECIFIED">
@@ -3809,7 +3763,7 @@
   <connections xsi:type="pi:FreeFormConnection" visible="true" active="true" start="//@children.1/@anchors.0" end="//@children.28/@anchors.1">
     <graphicsAlgorithm xsi:type="al:Polyline" foreground="//@colors.2" lineWidth="2" lineStyle="DASH" filled="false" transparency="0.0"/>
     <link>
-      <businessObjects href="network_train.pi#//@edges.106"/>
+      <businessObjects href="network_train.pi#//@edges.103"/>
     </link>
     <connectionDecorators visible="true" locationRelative="true" location="1.0">
       <graphicsAlgorithm xsi:type="al:Polyline" foreground="//@colors.2" lineWidth="2" lineStyle="UNSPECIFIED">
@@ -3825,7 +3779,7 @@
   <connections xsi:type="pi:FreeFormConnection" visible="true" active="true" start="//@children.2/@anchors.0" end="//@children.28/@anchors.2">
     <graphicsAlgorithm xsi:type="al:Polyline" foreground="//@colors.2" lineWidth="2" lineStyle="DASH" filled="false" transparency="0.0"/>
     <link>
-      <businessObjects href="network_train.pi#//@edges.107"/>
+      <businessObjects href="network_train.pi#//@edges.104"/>
     </link>
     <connectionDecorators visible="true" locationRelative="true" location="1.0">
       <graphicsAlgorithm xsi:type="al:Polyline" foreground="//@colors.2" lineWidth="2" lineStyle="UNSPECIFIED">
@@ -3841,7 +3795,7 @@
   <connections xsi:type="pi:FreeFormConnection" visible="true" active="true" start="//@children.2/@anchors.0" end="//@children.29/@anchors.1">
     <graphicsAlgorithm xsi:type="al:Polyline" foreground="//@colors.2" lineWidth="2" lineStyle="DASH" filled="false" transparency="0.0"/>
     <link>
-      <businessObjects href="network_train.pi#//@edges.108"/>
+      <businessObjects href="network_train.pi#//@edges.105"/>
     </link>
     <connectionDecorators visible="true" locationRelative="true" location="1.0">
       <graphicsAlgorithm xsi:type="al:Polyline" foreground="//@colors.2" lineWidth="2" lineStyle="UNSPECIFIED">
@@ -3857,7 +3811,7 @@
   <connections xsi:type="pi:FreeFormConnection" visible="true" active="true" start="//@children.2/@anchors.0" end="//@children.30/@anchors.0">
     <graphicsAlgorithm xsi:type="al:Polyline" foreground="//@colors.2" lineWidth="2" lineStyle="DASH" filled="false" transparency="0.0"/>
     <link>
-      <businessObjects href="network_train.pi#//@edges.109"/>
+      <businessObjects href="network_train.pi#//@edges.106"/>
     </link>
     <connectionDecorators visible="true" locationRelative="true" location="1.0">
       <graphicsAlgorithm xsi:type="al:Polyline" foreground="//@colors.2" lineWidth="2" lineStyle="UNSPECIFIED">
@@ -3869,6 +3823,52 @@
     <bendpoints x="600" y="176"/>
     <bendpoints x="38" y="176"/>
     <bendpoints x="38" y="440"/>
+  </connections>
+  <connections xsi:type="pi:FreeFormConnection" visible="true" active="true" start="//@children.20/@anchors.10" end="//@children.27/@anchors.4">
+    <graphicsAlgorithm xsi:type="al:Polyline" foreground="//@colors.5" lineWidth="2" filled="false" transparency="0.0"/>
+    <link>
+      <businessObjects href="network_train.pi#//@edges.107"/>
+    </link>
+    <connectionDecorators visible="true" locationRelative="true" location="1.0">
+      <graphicsAlgorithm xsi:type="al:Polygon" background="//@colors.5" foreground="//@colors.5" lineWidth="2" lineStyle="UNSPECIFIED">
+        <points x="-10" y="5"/>
+        <points/>
+        <points x="-10" y="-5"/>
+      </graphicsAlgorithm>
+    </connectionDecorators>
+    <bendpoints x="1480" y="468"/>
+    <bendpoints x="1540" y="558"/>
+  </connections>
+  <connections xsi:type="pi:FreeFormConnection" visible="true" active="true" start="//@children.20/@anchors.9" end="//@children.27/@anchors.3">
+    <graphicsAlgorithm xsi:type="al:Polyline" foreground="//@colors.5" lineWidth="2" filled="false" transparency="0.0"/>
+    <link>
+      <businessObjects href="network_train.pi#//@edges.108"/>
+    </link>
+    <connectionDecorators visible="true" locationRelative="true" location="1.0">
+      <graphicsAlgorithm xsi:type="al:Polygon" background="//@colors.5" foreground="//@colors.5" lineWidth="2" lineStyle="UNSPECIFIED">
+        <points x="-10" y="5"/>
+        <points/>
+        <points x="-10" y="-5"/>
+      </graphicsAlgorithm>
+    </connectionDecorators>
+    <bendpoints x="1480" y="453"/>
+    <bendpoints x="1540" y="543"/>
+  </connections>
+  <connections xsi:type="pi:FreeFormConnection" visible="true" active="true" start="//@children.5/@anchors.0" end="//@children.27/@anchors.1">
+    <graphicsAlgorithm xsi:type="al:Polyline" foreground="//@colors.2" lineWidth="2" lineStyle="DASH" filled="false" transparency="0.0"/>
+    <link>
+      <businessObjects href="network_train.pi#//@edges.109"/>
+    </link>
+    <connectionDecorators visible="true" locationRelative="true" location="1.0">
+      <graphicsAlgorithm xsi:type="al:Polyline" foreground="//@colors.2" lineWidth="2" lineStyle="UNSPECIFIED">
+        <points x="-10" y="5"/>
+        <points/>
+        <points x="-10" y="-5"/>
+      </graphicsAlgorithm>
+    </connectionDecorators>
+    <bendpoints x="852" y="192"/>
+    <bendpoints x="1520" y="192"/>
+    <bendpoints x="1520" y="513"/>
   </connections>
   <connections xsi:type="pi:FreeFormConnection" visible="true" active="true" start="//@children.16/@anchors.14" end="//@children.37/@anchors.0">
     <graphicsAlgorithm xsi:type="al:Polyline" foreground="//@colors.5" lineWidth="2" filled="false" transparency="0.0"/>

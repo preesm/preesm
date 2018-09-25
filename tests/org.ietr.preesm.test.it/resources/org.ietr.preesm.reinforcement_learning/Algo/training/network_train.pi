@@ -40,8 +40,8 @@
             <port kind="cfg_input" name="output_size"/>
             <port kind="cfg_input" name="weights_size"/>
             <port annotation="NONE" expr="weights_size" kind="input" name="in"/>
-            <port annotation="NONE" expr="output_size" kind="output" name="out_1"/>
             <port annotation="NONE" expr="hidden_size" kind="output" name="out_0"/>
+            <port annotation="NONE" expr="output_size" kind="output" name="out_1"/>
         </node>
         <node id="ForkBias" kind="fork">
             <port kind="cfg_input" name="hidden_size"/>
@@ -148,9 +148,9 @@
             <port annotation="NONE" expr="layer_size * next_layer_size"
                 kind="input" name="next_layer_weights"/>
             <port annotation="NONE" expr="1" kind="input" name="valid"/>
+            <port annotation="NONE" expr="layer_size" kind="output" name="bias_gradient"/>
             <port annotation="NONE" expr="input_size * layer_size"
                 kind="output" name="weights_gradient"/>
-            <port annotation="NONE" expr="layer_size" kind="output" name="bias_gradient"/>
         </node>
         <node id="GradientsOutput" kind="actor">
             <data key="graph_desc">Algo/training/output_gradients.pi</data>
@@ -198,13 +198,11 @@
             <port annotation="NONE" expr="size" kind="output" name="out_0"/>
         </node>
         <node id="JoinGradients_hidden" kind="join">
-            <port kind="cfg_input" name="input_size"/>
-            <port kind="cfg_input" name="layer_size"/>
-            <port annotation="NONE" expr="input_size * layer_size"
-                kind="input" name="in_0"/>
-            <port annotation="NONE" expr="layer_size" kind="input" name="in_1"/>
-            <port annotation="NONE"
-                expr="input_size * layer_size + layer_size"
+            <port kind="cfg_input" name="weights_size"/>
+            <port kind="cfg_input" name="bias_size"/>
+            <port annotation="NONE" expr="bias_size" kind="input" name="in_0"/>
+            <port annotation="NONE" expr="weights_size" kind="input" name="in_1"/>
+            <port annotation="NONE" expr="bias_size + weights_size"
                 kind="output" name="out"/>
         </node>
         <node id="JoinGradients_output" kind="join">
@@ -386,12 +384,6 @@
             sourceport="out_1" target="AdamOutput" targetport="weights" type="float"/>
         <edge kind="fifo" source="ForkWeights" sourceport="out_1"
             target="BroadcastWeights_output" targetport="in" type="float"/>
-        <edge kind="fifo" source="GradientsHidden"
-            sourceport="weights_gradient" target="JoinGradients_hidden"
-            targetport="in_0" type="float"/>
-        <edge kind="fifo" source="GradientsHidden"
-            sourceport="bias_gradient" target="JoinGradients_hidden"
-            targetport="in_1" type="float"/>
         <edge kind="fifo" source="JoinGradients_hidden" sourceport="out"
             target="AdamHidden" targetport="gradients" type="float"/>
         <edge kind="fifo" source="GradientsOutput"
@@ -433,6 +425,12 @@
             target="AdamHidden" targetport="betas" type="double"/>
         <edge kind="fifo" source="BroadcastBetas" sourceport="out_0"
             target="AdamOutput" targetport="betas" type="double"/>
+        <edge kind="fifo" source="GradientsHidden"
+            sourceport="weights_gradient" target="JoinGradients_hidden"
+            targetport="in_1" type="float"/>
+        <edge kind="fifo" source="GradientsHidden"
+            sourceport="bias_gradient" target="JoinGradients_hidden"
+            targetport="in_0" type="float"/>
         <edge kind="dependency" source="hidden_size" target="bias_size"/>
         <edge kind="dependency" source="hidden_size" target="weights_size"/>
         <edge kind="dependency" source="output_size" target="bias_size"/>
@@ -498,10 +496,8 @@
             target="BroadcastInput" targetport="size"/>
         <edge kind="dependency" source="output_weights_size"
             target="BroadcastWeights_output" targetport="size"/>
-        <edge kind="dependency" source="input_size"
-            target="JoinGradients_hidden" targetport="input_size"/>
         <edge kind="dependency" source="hidden_size"
-            target="JoinGradients_hidden" targetport="layer_size"/>
+            target="JoinGradients_hidden" targetport="bias_size"/>
         <edge kind="dependency" source="hidden_size"
             target="JoinGradients_output" targetport="input_size"/>
         <edge kind="dependency" source="output_size"
@@ -509,5 +505,7 @@
         <edge kind="dependency" source="output_size"
             target="BroadcastErrors_output" targetport="size"/>
         <edge kind="dependency" source="output_size" target="targets"/>
+        <edge kind="dependency" source="hidden_weights_size"
+            target="JoinGradients_hidden" targetport="weights_size"/>
     </graph>
 </graphml>
