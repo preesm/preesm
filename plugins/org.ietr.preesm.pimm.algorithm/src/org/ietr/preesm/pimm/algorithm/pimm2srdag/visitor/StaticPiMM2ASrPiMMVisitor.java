@@ -193,7 +193,7 @@ public class StaticPiMM2ASrPiMMVisitor extends PiMMSwitch<Boolean> {
     this.result.addActor(copyActor);
 
     // Add the actor to the FIFO source/sink sets
-    this.actor2SRActors.get(this.graphName + actor.getName()).add(copyActor);
+    this.actor2SRActors.get(this.graphPrefix + actor.getName()).add(copyActor);
 
     // Add the scenario constraints
     final ConstraintGroupManager constraintGroupManager = this.scenario.getConstraintGroupManager();
@@ -259,9 +259,9 @@ public class StaticPiMM2ASrPiMMVisitor extends PiMMSwitch<Boolean> {
   public Boolean caseDelayActor(final DelayActor actor) {
     final boolean isSetter = this.currentFifo.getTargetPort().getContainingActor() instanceof DelayActor;
     if (isSetter) {
-      this.actor2SRActors.put(this.graphName + actor.getName(), generateSetterList(actor));
+      this.actor2SRActors.put(this.graphPrefix + actor.getName(), generateSetterList(actor));
     } else {
-      this.actor2SRActors.put(this.graphName + actor.getName(), generateGetterList(actor));
+      this.actor2SRActors.put(this.graphPrefix + actor.getName(), generateGetterList(actor));
     }
     return true;
   }
@@ -444,7 +444,7 @@ public class StaticPiMM2ASrPiMMVisitor extends PiMMSwitch<Boolean> {
       }
       return sourceSet;
     } else {
-      final String keyActor = this.graphName + sourceActor.getName();
+      final String keyActor = this.graphPrefix + sourceActor.getName();
       if (!this.actor2SRActors.containsKey(keyActor)) {
         populateSingleRatePiMMActor(sourceActor);
       }
@@ -487,14 +487,14 @@ public class StaticPiMM2ASrPiMMVisitor extends PiMMSwitch<Boolean> {
    *          source actor
    * @param sinkActor
    *          sink actor
-   * @return a list containing a BroadcastActor if needed, null else
+   * @return a list containing a BroadcastActor if needed, empty list else
    */
   private List<AbstractVertex> handleDataInputInterface(final DataInputPort targetPort, final AbstractActor sourceActor,
       final AbstractActor sinkActor) {
     final DataInputPort correspondingPort = (DataInputPort) ((DataInputInterface) sourceActor).getGraphPort();
 
     // 2.1 Create the entry in the map
-    final String keyPort = originalGraphName + "_" + correspondingPort.getName();
+    final String keyPort = this.originalGraphName + "_" + correspondingPort.getName();
     if (!inPort2SRActors.containsKey(keyPort)) {
       inPort2SRActors.put(keyPort, new ArrayList<>());
     }
@@ -515,7 +515,7 @@ public class StaticPiMM2ASrPiMMVisitor extends PiMMSwitch<Boolean> {
         final String subKeyPort = sinkActor.getName() + "_" + targetPort.getName();
         sinkSet = inPort2SRActors.remove(subKeyPort);
       } else {
-        final String keyActor = this.graphName + sinkActor.getName();
+        final String keyActor = this.graphPrefix + sinkActor.getName();
         if (!this.actor2SRActors.containsKey(keyActor)) {
           populateSingleRatePiMMActor(sinkActor);
         }
@@ -544,7 +544,7 @@ public class StaticPiMM2ASrPiMMVisitor extends PiMMSwitch<Boolean> {
   /**
    * 
    * @param fifo
-   *          the fifo
+   *          the FIFO
    * @param sourcePort
    *          the sourcePort
    * @param targetPort
@@ -553,7 +553,7 @@ public class StaticPiMM2ASrPiMMVisitor extends PiMMSwitch<Boolean> {
    *          the source actor
    * @param sinkActor
    *          the sink actor
-   * @return list of sink actor to be linked, null else
+   * @return list of sink actor to be linked, empty list else
    */
   private List<AbstractVertex> getSinkSetForSRLinker(final Fifo fifo, final DataOutputPort sourcePort,
       final DataInputPort targetPort, final AbstractActor sourceActor, final AbstractActor sinkActor,
@@ -577,7 +577,7 @@ public class StaticPiMM2ASrPiMMVisitor extends PiMMSwitch<Boolean> {
       }
       return sinkSet;
     } else {
-      final String keyActor = this.graphName + sinkActor.getName();
+      final String keyActor = this.graphPrefix + sinkActor.getName();
       if (!this.actor2SRActors.containsKey(keyActor)) {
         populateSingleRatePiMMActor(sinkActor);
       }
@@ -620,14 +620,14 @@ public class StaticPiMM2ASrPiMMVisitor extends PiMMSwitch<Boolean> {
    *          source actor
    * @param sinkActor
    *          sink actor
-   * @return a list containing a RoundBufferActor if needed, null else
+   * @return a list containing a RoundBufferActor if needed, empty list else
    */
   private List<AbstractVertex> handleDataOutputInterface(final DataOutputPort sourcePort,
       final AbstractActor sourceActor, final AbstractActor sinkActor, final List<AbstractVertex> sourceSet) {
     final DataOutputPort correspondingPort = (DataOutputPort) ((DataOutputInterface) sinkActor).getGraphPort();
 
     // 2.1 Create the entry in the map if needed
-    final String keyPort = originalGraphName + "_" + correspondingPort.getName();
+    final String keyPort = this.originalGraphName + "_" + correspondingPort.getName();
     if (!this.outPort2SRActors.containsKey(keyPort)) {
       this.outPort2SRActors.put(keyPort, new ArrayList<>());
     }
@@ -648,7 +648,7 @@ public class StaticPiMM2ASrPiMMVisitor extends PiMMSwitch<Boolean> {
       return Collections.emptyList();
     } else {
       // 2.4 If sourceActor is any other type of actor we map it to the interface
-      final String keyActor = this.graphName + sourceActor.getName();
+      final String keyActor = this.graphPrefix + sourceActor.getName();
       if (!this.actor2SRActors.containsKey(keyActor)) {
         populateSingleRatePiMMActor(sourceActor);
       }
@@ -748,13 +748,13 @@ public class StaticPiMM2ASrPiMMVisitor extends PiMMSwitch<Boolean> {
       return;
     }
 
-    // Ignore DataInterfaces also
+    // Ignore DataInterfaces
     if (actor instanceof InterfaceActor) {
       return;
     }
 
     // Creates the entry for the current PiMM Actor
-    this.actor2SRActors.put(this.graphName + actor.getName(), new ArrayList<>());
+    this.actor2SRActors.put(this.graphPrefix + actor.getName(), new ArrayList<>());
 
     // Initialize the operator IDs list
     this.currentOperatorIDs = new ArrayList<>();
@@ -777,61 +777,52 @@ public class StaticPiMM2ASrPiMMVisitor extends PiMMSwitch<Boolean> {
       // actor_#i, whose name is actor and we're at instance #i and a secondary actor named actor_x_#i with x an integer
       // In some cases it could happen that actor_x has a BRV of 1 resulting in a name of "actor_x" and
       // actor has a BRV value >= to x resulting of two actors named the same
-      this.currentActorName = buildName(this.graphPrefix, actor.getName(), i, 2);
+      this.currentActorName = this.graphPrefix + actor.getName() + "_" + Long.toString(i);
       caseAbstractActor((AbstractActor) actor);
     }
   }
 
   @Override
   public Boolean casePiGraph(final PiGraph graph) {
-    // Set the prefix graph name
-    this.graphPrefix = this.graphName.isEmpty() ? "" : this.graphName + "_";
-
     // If there are no actors in the graph we leave
     if (graph.getActors().isEmpty()) {
       throw new UnsupportedOperationException(
           "Can not convert an empty graph. Check the refinement for [" + graph.getVertexPath() + "].");
     }
-    if (graph.getContainingPiGraph() == null) {
-      // Do the split of the delay actors for the top-level here
-      for (final Fifo f : graph.getFifosWithDelay()) {
-        splitDelayActors(f);
-      }
-    }
-
-    // Save the current graph name
-    final String backupGraphName = this.graphName;
-
-    // Go check hierarchical graphs
-    for (final PiGraph g : graph.getChildrenGraphs()) {
-      // We need to split all delay actors before going in every iteration
-      for (final Fifo f : g.getFifosWithDelay()) {
-        splitDelayActors(f);
-      }
-      final Long graphRV = this.brv.get(g);
-      final String currentPrefix = this.graphPrefix;
-      for (long i = 0; i < graphRV; ++i) {
-        this.graphPrefix = currentPrefix;
-        this.graphName = buildName(this.graphPrefix, g.getName(), i, graphRV);
-        doSwitch(g);
-      }
-    }
-    // Restore the graph name
-    this.graphName = backupGraphName;
-
-    this.originalGraphName = graph.getName();
+    // Set the current graph name
+    this.graphName = graph.getContainingPiGraph() == null ? "" : graph.getName();
+    this.graphName = this.graphPrefix + this.graphName;
 
     // Set the prefix graph name
     this.graphPrefix = this.graphName.isEmpty() ? "" : this.graphName + "_";
 
-    // Perform the Multi-Rate to Single-Rate transformation based on the FIFOs
-    // We first deal with the FIFOs with delays, so we can replace Init / End actors by the proper Setter / Getter
+    // We need to split all delay actors before going in every iteration
     for (final Fifo f : graph.getFifosWithDelay()) {
-      doSwitch(f);
+      splitDelayActors(f);
     }
-    for (final Fifo f : graph.getFifosWithoutDelay()) {
-      doSwitch(f);
+    final Long graphRV = this.brv.get(graph) == null ? 1 : this.brv.get(graph);
+    final String currentPrefix = this.graphPrefix;
+    for (long i = 0; i < graphRV; ++i) {
+      if (!currentPrefix.isEmpty()) {
+        this.graphPrefix = currentPrefix + Long.toString(i) + "_";
+      }
+      final String backupPrefix = this.graphPrefix;
+      final String backupName = this.graphName;
+      for (final PiGraph g : graph.getChildrenGraphs()) {
+        doSwitch(g);
+        this.graphPrefix = backupPrefix;
+        this.graphName = backupName;
+        this.actor2SRActors.clear();
+      }
+      this.originalGraphName = graph.getName();
+      for (final Fifo f : graph.getFifosWithDelay()) {
+        doSwitch(f);
+      }
+      for (final Fifo f : graph.getFifosWithoutDelay()) {
+        doSwitch(f);
+      }
     }
+
     return true;
   }
 
@@ -852,7 +843,7 @@ public class StaticPiMM2ASrPiMMVisitor extends PiMMSwitch<Boolean> {
    * This pre-processing allows to keep the single-rate linking phase as generic as possible.
    * 
    * @param fifo
-   *          The current fifo
+   *          The current FIFO
    */
   private void splitDelayActors(final Fifo fifo) {
     final DelayActor delayActor = fifo.getDelay().getActor();
@@ -914,8 +905,7 @@ public class StaticPiMM2ASrPiMMVisitor extends PiMMSwitch<Boolean> {
     init.getDataOutputPort().setName(targetPort.getName());
     init.getDataOutputPort().getPortRateExpression().setExpressionString(delayExpression);
     // Set the proper init name
-    final String initName = this.graphPrefix + targetPort.getContainingActor().getName() + "_init_"
-        + targetPort.getName();
+    final String initName = targetPort.getContainingActor().getName() + "_init_" + targetPort.getName();
     init.setName(initName);
     // Set the persistence level of the delay
     init.setLevel(fifo.getDelay().getLevel());
@@ -936,8 +926,7 @@ public class StaticPiMM2ASrPiMMVisitor extends PiMMSwitch<Boolean> {
     end.getDataInputPort().setName(sourcePort.getName());
     end.getDataInputPort().getPortRateExpression().setExpressionString(delayExpression);
     // Set the proper end name
-    final String endName = this.graphPrefix + sourcePort.getContainingActor().getName() + "_end_"
-        + sourcePort.getName();
+    final String endName = sourcePort.getContainingActor().getName() + "_end_" + sourcePort.getName();
     end.setName(endName);
     // Set the persistence level of the delay
     end.setLevel(fifo.getDelay().getLevel());

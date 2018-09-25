@@ -173,10 +173,6 @@ public class PiMMSRVerticesLinker {
    */
   public Boolean execute(final Map<AbstractVertex, Long> brv, final List<AbstractVertex> vertexSourceSet,
       final List<AbstractVertex> vertexSinkSet) throws PiMMHelperException {
-    // These connections are already dealt with
-    // if ((this.source instanceof DelayActor) || (this.sink instanceof DelayActor)) {
-    // return true;
-    // }
 
     // Initialize delay init / end IDs
     this.delayInitID = "";
@@ -436,8 +432,7 @@ public class PiMMSRVerticesLinker {
    * @return The newly created join vertex
    */
   private JoinActor doImplosion(final SinkConnection currentSink, final AbstractActor sinkVertex, final PiGraph graph) {
-    final String implodeName = this.graphPrefixe + PiMMSRVerticesLinker.JOIN_VERTEX + sinkVertex.getName() + "_"
-        + this.sinkPort.getName();
+    final String implodeName = PiMMSRVerticesLinker.JOIN_VERTEX + sinkVertex.getName() + "_" + this.sinkPort.getName();
     final JoinActor joinActor = PiMMUserFactory.instance.createJoinActor();
     // Set name property
     joinActor.setName(implodeName);
@@ -472,7 +467,7 @@ public class PiMMSRVerticesLinker {
    */
   private ForkActor doExplosion(final SourceConnection currentSource, final AbstractActor sourceVertex,
       final PiGraph graph) {
-    final String explodeName = this.graphPrefixe + PiMMSRVerticesLinker.FORK_VERTEX + sourceVertex.getName() + "_"
+    final String explodeName = PiMMSRVerticesLinker.FORK_VERTEX + sourceVertex.getName() + "_"
         + this.sourcePort.getName();
     final ForkActor forkActor = PiMMUserFactory.instance.createForkActor();
     // Set name property
@@ -544,7 +539,7 @@ public class PiMMSRVerticesLinker {
       if (setterDelayActor == null) {
         throw new PiMMHelperException("Setter actor [" + delayActor.getName() + "_setter] not found.");
       }
-      final Long brvSetter = brv.get(setterDelayActor);
+      final Long setterRV = brv.get(setterDelayActor);
 
       Fifo incomingFifo = setterDelayActor.getDataInputPort().getIncomingFifo();
       final AbstractActor setterActor = incomingFifo.getSourcePort().getContainingActor();
@@ -560,7 +555,7 @@ public class PiMMSRVerticesLinker {
         resultGraph.addActor(init);
         sourceSet.add(new SourceConnection(init, setterRate, this.sinkPort.getName()));
       } else {
-        for (int i = 0; i < brvSetter; ++i) {
+        for (int i = 0; i < setterRV; ++i) {
           final InitActor init = PiMMUserFactory.instance.createInitActor();
           final String name = setterName + "_init_" + Integer.toString(i);
           init.setName(name);
