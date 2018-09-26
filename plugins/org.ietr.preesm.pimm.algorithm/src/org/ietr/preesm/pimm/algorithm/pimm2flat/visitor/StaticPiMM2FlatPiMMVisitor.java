@@ -496,7 +496,7 @@ public class StaticPiMM2FlatPiMMVisitor extends PiMMSwitch<Boolean> {
     // Add the input port and the output port
     final DataInputPort in = PiMMUserFactory.instance.createDataInputPort();
     in.setName(actor.getName());
-    final Long graphRV = this.brv.get(graph);
+    final Long graphRV = getHierarchichalRV(graph);
     final long inRate = Long.parseLong(interfaceRateExpression.getExpressionString()) * graphRV;
     in.getPortRateExpression().setExpressionString(Long.toString(inRate));
     in.setAnnotation(PortMemoryAnnotation.READ_ONLY);
@@ -535,7 +535,7 @@ public class StaticPiMM2FlatPiMMVisitor extends PiMMSwitch<Boolean> {
     // Add the input port and the output port
     final DataOutputPort out = PiMMUserFactory.instance.createDataOutputPort();
     out.setName(actor.getName());
-    final Long graphRV = this.brv.get(graph);
+    final Long graphRV = getHierarchichalRV(graph);
     final long outRate = Long.parseLong(interfaceRateExpression.getExpressionString()) * graphRV;
     out.getPortRateExpression().setExpressionString(Long.toString(outRate));
     out.setAnnotation(PortMemoryAnnotation.WRITE_ONLY);
@@ -577,6 +577,7 @@ public class StaticPiMM2FlatPiMMVisitor extends PiMMSwitch<Boolean> {
     this.graphName = this.graphPrefix + this.graphName;
 
     // Set the prefix graph name
+    final String currentPrefix = this.graphPrefix;
     this.graphPrefix = this.graphName.isEmpty() ? "" : this.graphName + "_";
 
     // Check if the graph can be flattened
@@ -598,6 +599,7 @@ public class StaticPiMM2FlatPiMMVisitor extends PiMMSwitch<Boolean> {
     } else {
       flatteningTransformation(graph);
     }
+    this.graphPrefix = currentPrefix;
     return true;
   }
 
@@ -613,7 +615,8 @@ public class StaticPiMM2FlatPiMMVisitor extends PiMMSwitch<Boolean> {
 
   private void quasiSRTransformation(final PiGraph graph) {
     final String backupPrefix = this.graphPrefix;
-    final Long graphRV = this.brv.get(graph) == null ? 1 : this.brv.get(graph);
+    // We need to get the repetition vector of the graph
+    Long graphRV = getHierarchichalRV(graph);
     for (long i = 0; i < graphRV; ++i) {
       if (!backupPrefix.isEmpty()) {
         this.graphPrefix = backupPrefix + Long.toString(i) + "_";
@@ -629,6 +632,21 @@ public class StaticPiMM2FlatPiMMVisitor extends PiMMSwitch<Boolean> {
       joinOutputInterface(doi, graph);
     }
     this.graphPrefix = backupPrefix;
+  }
+
+  private Long getHierarchichalRV(final PiGraph graph) {
+    // We need to get the repetition vector of the graph
+    final Long graphRV = this.brv.get(graph) == null ? 1 : this.brv.get(graph);
+    // We also need to get the total repetition vector of the hierarchy to correctly flatten the hierarchy
+    Long graphHierarchicallRV = (long) (1);
+    PiGraph containingGraph = graph.getContainingPiGraph();
+    while (containingGraph != null) {
+      final Long currentGraphRV = this.brv.get(containingGraph) == null ? 1 : this.brv.get(containingGraph);
+      graphHierarchicallRV = graphHierarchicallRV * currentGraphRV;
+      containingGraph = containingGraph.getContainingPiGraph();
+    }
+    // We update the value of the graphRV accordingly
+    return graphRV * graphHierarchicallRV;
   }
 
 }
