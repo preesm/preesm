@@ -38,13 +38,11 @@
 package org.ietr.preesm.ui.scenario.editor.papify;
 
 import java.util.LinkedHashSet;
-import java.util.List;
 import java.util.Set;
 import org.eclipse.jface.viewers.CheckStateChangedEvent;
 import org.eclipse.jface.viewers.CheckboxTableViewer;
 import org.eclipse.jface.viewers.CheckboxTreeViewer;
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.custom.BusyIndicator;
 import org.eclipse.swt.events.FocusEvent;
 import org.eclipse.swt.events.FocusListener;
 import org.eclipse.swt.events.PaintEvent;
@@ -52,7 +50,6 @@ import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Composite;
-import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.IPropertyListener;
 import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.ietr.dftools.algorithm.importer.InvalidModelException;
@@ -61,7 +58,7 @@ import org.ietr.dftools.algorithm.model.sdf.SDFGraph;
 import org.ietr.preesm.core.scenario.PreesmScenario;
 import org.ietr.preesm.core.scenario.papi.PapiComponent;
 import org.ietr.preesm.core.scenario.papi.PapiEvent;
-import org.ietr.preesm.core.scenario.papi.PapifyConfig;
+import org.ietr.preesm.core.scenario.papi.PapiEventInfo;
 import org.ietr.preesm.core.scenario.serialize.ScenarioParser;
 import org.ietr.preesm.experiment.model.pimm.AbstractActor;
 import org.ietr.preesm.experiment.model.pimm.DataInputInterface;
@@ -93,11 +90,13 @@ public class PapifyCheckStateListener implements ISDFCheckStateListener {
 
   /** Tables used to set the checked status. */
   private CheckboxTableViewer componentTableViewer = null;
+  private CheckboxTreeViewer  componentTreeViewer  = null;
   private CheckboxTableViewer eventTableViewer     = null;
 
   /** Content provider used to get the elements currently displayed. */
-  private PapifyComponentListContentProvider componentContentProvider = null;
-  private PapifyEventListContentProvider     eventContentProvider     = null;
+  private PapifyComponentListContentProvider2DMatrix componentContentProvider2DMatrix = null;
+  private PapifyComponentListContentProvider         componentContentProvider         = null;
+  private PapifyEventListContentProvider             eventContentProvider             = null;
 
   /** Constraints page used as a property listener to change the dirty state. */
   private IPropertyListener propertyListener = null;
@@ -141,6 +140,23 @@ public class PapifyCheckStateListener implements ISDFCheckStateListener {
    * @param propertyListener
    *          the property listener
    */
+  public void setComponentTreeViewer(final CheckboxTreeViewer tableViewer,
+      final PapifyComponentListContentProvider2DMatrix contentProvider, final IPropertyListener propertyListener) {
+    this.componentTreeViewer = tableViewer;
+    this.componentContentProvider2DMatrix = contentProvider;
+    this.propertyListener = propertyListener;
+  }
+
+  /**
+   * Sets the different necessary attributes.
+   *
+   * @param tableViewer
+   *          the tree viewer
+   * @param contentProvider
+   *          the content provider
+   * @param propertyListener
+   *          the property listener
+   */
   public void setEventTableViewer(final CheckboxTableViewer tableViewer,
       final PapifyEventListContentProvider contentProvider, final IPropertyListener propertyListener) {
     this.eventTableViewer = tableViewer;
@@ -154,25 +170,17 @@ public class PapifyCheckStateListener implements ISDFCheckStateListener {
    * @param event
    *          the event
    */
-  @Override
-  public void checkStateChanged(final CheckStateChangedEvent event) {
-    final Object element = event.getElement();
-    final boolean isChecked = event.getChecked();
-
-    BusyIndicator.showWhile(this.container.getDisplay(), () -> {
-      if (element instanceof PapiComponent) {
-        final PapiComponent comp1 = (PapiComponent) element;
-        fireOnCheck(comp1, isChecked);
-        updateComponentCheck();
-      } else if (element instanceof PapiEvent) {
-        final PapiEvent event1 = (PapiEvent) element;
-        fireOnCheck(event1, isChecked);
-        updateEventCheck();
-
-      }
-    });
-    this.propertyListener.propertyChanged(this, IEditorPart.PROP_DIRTY);
-  }
+  /*
+   * @Override public void checkStateChanged(final CheckStateChangedEvent event) { final Object element =
+   * event.getElement(); final boolean isChecked = event.getChecked();
+   * 
+   * BusyIndicator.showWhile(this.container.getDisplay(), () -> { if (element instanceof PapiComponent) { final
+   * PapiComponent comp1 = (PapiComponent) element; fireOnCheck(comp1, isChecked); updateComponentCheck(); } else if
+   * (element instanceof PapiEvent) { final PapiEvent event1 = (PapiEvent) element; fireOnCheck(event1, isChecked);
+   * updateEventCheck();
+   * 
+   * } }); this.propertyListener.propertyChanged(this, IEditorPart.PROP_DIRTY); }
+   */
 
   /**
    * Adds or remove a component depending on the isChecked status.
@@ -202,10 +210,15 @@ public class PapifyCheckStateListener implements ISDFCheckStateListener {
    */
   private void fireOnCheck(final PapiEvent event, final boolean isChecked) {
     if (this.currentOpId != null) {
-      if (isChecked) {
-        this.scenario.getPapifyConfigManager().addEvent(this.currentOpId, event);
-      } else {
-        this.scenario.getPapifyConfigManager().removeEvent(this.currentOpId, event);
+      PapiEventInfo PAPIData = this.scenario.getPapifyConfigManager().getPapifyData();
+      for (PapiComponent componentAux : PAPIData.getComponents()) {
+        if (componentAux.containsEvent(event)) {
+          if (isChecked) {
+            this.scenario.getPapifyConfigManager().addEvent(this.currentOpId, componentAux.getId(), event);
+          } else {
+            this.scenario.getPapifyConfigManager().removeEvent(this.currentOpId, componentAux.getId(), event);
+          }
+        }
       }
     }
   }
@@ -227,57 +240,41 @@ public class PapifyCheckStateListener implements ISDFCheckStateListener {
    * @param e
    *          the e
    */
-  @Override
-  public void widgetSelected(final SelectionEvent e) {
-    if (e.getSource() instanceof Combo) {
-      final Combo combo = ((Combo) e.getSource());
-      final String item = combo.getItem(combo.getSelectionIndex());
-
-      this.currentOpId = item.replace('/', '_');
-      updateComponentCheck();
-      updateEventCheck();
-    }
-
-  }
+  /*
+   * @Override public void widgetSelected(final SelectionEvent e) { if (e.getSource() instanceof Combo) { final Combo
+   * combo = ((Combo) e.getSource()); final String item = combo.getItem(combo.getSelectionIndex());
+   * 
+   * this.currentOpId = item.replace('/', '_'); updateComponentCheck(); updateEventCheck(); }
+   * 
+   * }
+   */
 
   /**
-   * Update the check status of both the tables.
+   * Update the check status of table component.
    */
-  public void updateComponentCheck() {
-    if (this.scenario != null) {
-      final List<PapiComponent> papiComponents = this.componentContentProvider.getComponents();
-      final Set<PapiComponent> pcgSet = new LinkedHashSet<>();
-
-      if ((this.currentOpId != null) && (papiComponents != null)) {
-        final PapifyConfig pcgSetRead = this.scenario.getPapifyConfigManager()
-            .getCorePapifyConfigGroups(this.currentOpId);
-        if ((pcgSetRead != null) && (pcgSetRead.getPAPIComponent() != null)) {
-          pcgSet.add(pcgSetRead.getPAPIComponent());
-        }
-        this.componentTableViewer.setCheckedElements(pcgSet.toArray());
-      }
-    }
-  }
+  /*
+   * public void updateComponentCheck() { if (this.scenario != null) { final List<String> papiComponents =
+   * this.componentContentProvider2DMatrix.getComponents(); final Set<String> pcgSet = new LinkedHashSet<>();
+   * 
+   * if ((this.currentOpId != null) && (papiComponents != null)) { final PapifyConfigPE pcgSetRead =
+   * this.scenario.getPapifyConfigManager() .getCorePapifyConfigGroupPE(this.currentOpId); if ((pcgSetRead != null) &&
+   * (pcgSetRead.getPAPIComponents() != null)) { pcgSet.add(pcgSetRead.getPAPIComponent()); }
+   * this.componentTableViewer.setCheckedElements(pcgSet.toArray()); } } }
+   */
 
   /**
    * Update the check status of event table.
    */
-  public void updateEventCheck() {
-    if (this.scenario != null) {
-      final List<PapiEvent> papiEvents = this.eventContentProvider.getEvents();
-      Set<PapiEvent> pegSetfinal = new LinkedHashSet<>();
-
-      if ((this.currentOpId != null) && (papiEvents != null)) {
-        final PapifyConfig pegSetRead = this.scenario.getPapifyConfigManager()
-            .getCorePapifyConfigGroups(this.currentOpId);
-        if ((pegSetRead != null) && !pegSetRead.getPAPIEvents().isEmpty()) {
-          pegSetfinal = pegSetRead.getPAPIEvents();
-        }
-
-        this.eventTableViewer.setCheckedElements(pegSetfinal.toArray());
-      }
-    }
-  }
+  /*
+   * public void updateEventCheck() { if (this.scenario != null) { final List<PapiEvent> papiEvents =
+   * this.eventContentProvider.getEvents(); Set<PapiEvent> pegSetfinal = new LinkedHashSet<>();
+   * 
+   * if ((this.currentOpId != null) && (papiEvents != null)) { final PapifyConfigActor pegSetRead =
+   * this.scenario.getPapifyConfigManager() .getCorePapifyConfigGroups(this.currentOpId); if ((pegSetRead != null) &&
+   * !pegSetRead.getPAPIEvents().isEmpty()) { pegSetfinal = pegSetRead.getPAPIEvents(); }
+   * 
+   * this.eventTableViewer.setCheckedElements(pegSetfinal.toArray()); } } }
+   */
 
   /**
    * Adds a combo box for the core selection.
@@ -354,12 +351,11 @@ public class PapifyCheckStateListener implements ISDFCheckStateListener {
    *
    * @see org.eclipse.swt.events.PaintListener#paintControl(org.eclipse.swt.events.PaintEvent)
    */
-  @Override
-  public void paintControl(final PaintEvent e) {
-    updateComponentCheck();
-    updateEventCheck();
-
-  }
+  /*
+   * @Override public void paintControl(final PaintEvent e) { updateComponentCheck(); updateEventCheck();
+   * 
+   * }
+   */
 
   public void setTableViewer(final CheckboxTableViewer tableviewer,
       final PreesmAlgorithmTreeContentProvider contentProvider2, final IPropertyListener listener) {
@@ -370,6 +366,24 @@ public class PapifyCheckStateListener implements ISDFCheckStateListener {
   @Override
   public void setTreeViewer(final CheckboxTreeViewer treeViewer,
       final PreesmAlgorithmTreeContentProvider contentProvider, final IPropertyListener propertyListener) {
+    // TODO Auto-generated method stub
+
+  }
+
+  @Override
+  public void widgetSelected(SelectionEvent e) {
+    // TODO Auto-generated method stub
+
+  }
+
+  @Override
+  public void checkStateChanged(CheckStateChangedEvent event) {
+    // TODO Auto-generated method stub
+
+  }
+
+  @Override
+  public void paintControl(PaintEvent e) {
     // TODO Auto-generated method stub
 
   }

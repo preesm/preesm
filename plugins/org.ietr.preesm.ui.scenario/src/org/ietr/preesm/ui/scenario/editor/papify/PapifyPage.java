@@ -46,6 +46,9 @@ import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.jface.viewers.CheckboxTableViewer;
+import org.eclipse.jface.viewers.CheckboxTreeViewer;
+import org.eclipse.jface.viewers.ColumnLabelProvider;
+import org.eclipse.jface.viewers.TreeViewerColumn;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.ControlAdapter;
 import org.eclipse.swt.events.ControlEvent;
@@ -63,6 +66,7 @@ import org.eclipse.swt.widgets.ScrollBar;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
 import org.eclipse.swt.widgets.Text;
+import org.eclipse.swt.widgets.TreeColumn;
 import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.IPropertyListener;
 import org.eclipse.ui.forms.IManagedForm;
@@ -99,6 +103,7 @@ public class PapifyPage extends FormPage implements IPropertyListener {
   /** The table viewer. */
 
   // DM added this
+  CheckboxTreeViewer  treeViewer           = null;
   CheckboxTableViewer componentTableViewer = null;
   CheckboxTableViewer eventTableViewer     = null;
   PapiEventInfo       papiEvents           = null;
@@ -140,7 +145,10 @@ public class PapifyPage extends FormPage implements IPropertyListener {
         Messages.getString("Papify.fileEdit"), this.scenario.getPapifyConfigManager().getXmlFileURL(),
         Messages.getString("Papify.fileBrowseTitle"), "xml");
 
-    createPapifySection(managedForm, Messages.getString("Papify.title"), Messages.getString("Papify.description"));
+    createPapifyPESection(managedForm, Messages.getString("Papify.titlePESection"),
+        Messages.getString("Papify.descriptionPE"));
+    createPapifyActorSection(managedForm, Messages.getString("Papify.titleActorSection"),
+        Messages.getString("Papify.descriptionActor"));
 
     if (!this.scenario.getPapifyConfigManager().getXmlFileURL().equals("")) {
       final String xmlFullPath = getFullXmlPath(this.scenario.getPapifyConfigManager().getXmlFileURL());
@@ -151,6 +159,7 @@ public class PapifyPage extends FormPage implements IPropertyListener {
         updateTables();
       } else {
         this.scenario.setPapifyConfigManager(new PapifyConfigManager());
+        this.scenario.getPapifyConfigManager().addPapifyData(this.papiEvents);
       }
       managedForm.refresh();
       managedForm.reflow(true);
@@ -225,7 +234,7 @@ public class PapifyPage extends FormPage implements IPropertyListener {
   }
 
   /**
-   * Creates the section editing Papify.
+   * Creates the section editing PAPIFY PE <--> PAPI_component(s) association.
    *
    * @param managedForm
    *          the managed form
@@ -234,12 +243,37 @@ public class PapifyPage extends FormPage implements IPropertyListener {
    * @param desc
    *          the desc
    */
-  private void createPapifySection(final IManagedForm managedForm, final String title, final String desc) {
+  private void createPapifyPESection(final IManagedForm managedForm, final String title, final String desc) {
 
     // Creates the section
     managedForm.getForm().setLayout(new FillLayout());
-    final Composite container = createSection(managedForm, title, desc, 1,
-        new GridData(GridData.FILL_HORIZONTAL | GridData.FILL_VERTICAL));
+    final Composite container = createSection(managedForm, title, desc, 1, new GridData(GridData.FILL_HORIZONTAL));
+
+    this.checkStateListener = new PapifyCheckStateListener(container, this.scenario);
+    container.addPaintListener(this.checkStateListener);
+
+    final FormToolkit toolkit = managedForm.getToolkit();
+
+    addComponentCheckBoxTreeViewer(container, toolkit);
+
+  }
+
+  /**
+   * Creates the section editing PAPIFY Actor <--> EventSet(s) association.
+   *
+   * @param managedForm
+   *          the managed form
+   * @param title
+   *          the title
+   * @param desc
+   *          the desc
+   */
+  private void createPapifyActorSection(final IManagedForm managedForm, final String title, final String desc) {
+
+    // Creates the section
+    managedForm.getForm().setLayout(new FillLayout());
+    final GridData gridData = new GridData(GridData.FILL_HORIZONTAL);
+    final Composite container = createSection(managedForm, title, desc, 1, gridData);
 
     this.checkStateListener = new PapifyCheckStateListener(container, this.scenario);
     container.addPaintListener(this.checkStateListener);
@@ -248,7 +282,6 @@ public class PapifyPage extends FormPage implements IPropertyListener {
 
     this.checkStateListener.addComboBoxSelector(container, toolkit);
 
-    addComponentSelectionTable(container, toolkit);
     addEventSelectionTable(container, toolkit);
 
   }
@@ -291,8 +324,8 @@ public class PapifyPage extends FormPage implements IPropertyListener {
       final String initValue, final String browseTitle, final String fileExtension) {
 
     final GridData gridData = new GridData(GridData.FILL_HORIZONTAL);
-    gridData.heightHint = 140;
-    final Composite client = createSection(mform, title, desc, 2, gridData);
+    gridData.heightHint = 180;
+    final Composite client = createSection(mform, title, desc, 1, gridData);
     final FormToolkit toolkit = mform.getToolkit();
 
     final GridData gd = new GridData();
@@ -369,9 +402,10 @@ public class PapifyPage extends FormPage implements IPropertyListener {
     if (!text.getText().equals(this.scenario.getPapifyConfigManager().getXmlFileURL())
         && (this.papiEvents.getComponents() != null)) {
       this.scenario.setPapifyConfigManager(new PapifyConfigManager());
+      this.scenario.getPapifyConfigManager().addPapifyData(this.papiEvents);
       this.scenario.getPapifyConfigManager().setExcelFileURL(text.getText());
-      this.componentTableViewer.setInput(this.papiEvents);
-      this.componentTableViewer.refresh();
+      this.treeViewer.setInput(this.papiEvents);
+      this.treeViewer.refresh();
       this.eventTableViewer.setInput(this.papiEvents);
       this.eventTableViewer.refresh();
     }
@@ -420,92 +454,76 @@ public class PapifyPage extends FormPage implements IPropertyListener {
    */
   private void updateTables() {
 
-    this.componentTableViewer.setInput(this.papiEvents);
-    this.componentTableViewer.refresh();
+    this.treeViewer.setInput(this.papiEvents);
+    this.treeViewer.refresh();
     this.eventTableViewer.setInput(this.papiEvents);
     this.eventTableViewer.refresh();
 
   }
 
   /**
-   * Adds a table to edit component association.
+   * Adds a checkBoxTreeViewer to edit component association.
    *
    * @param parent
    *          the parent
    * @param toolkit
    *          the toolkit
    */
-  private void addComponentSelectionTable(final Composite parent, final FormToolkit toolkit) {
+  private void addComponentCheckBoxTreeViewer(final Composite parent, final FormToolkit toolkit) {
 
     final Composite tablecps = toolkit.createComposite(parent);
     tablecps.setVisible(true);
 
-    this.componentTableViewer = CheckboxTableViewer.newCheckList(tablecps,
-        SWT.BORDER | SWT.H_SCROLL | SWT.V_SCROLL | SWT.SINGLE | SWT.FULL_SELECTION);
+    // Creating the tree view
+    this.treeViewer = new CheckboxTreeViewer(toolkit.createTree(parent, SWT.CHECK)) {
 
-    final Table table = this.componentTableViewer.getTable();
-    table.setLayout(new GridLayout());
-    table.setLayoutData(new GridData(GridData.FILL_BOTH));
-    table.setHeaderVisible(true);
-    table.setLinesVisible(true);
+    };
 
-    final PapifyComponentListContentProvider contentProvider = new PapifyComponentListContentProvider();
-    this.componentTableViewer.setContentProvider(contentProvider);
+    final PapifyComponentListContentProvider2DMatrix contentProvider = new PapifyComponentListContentProvider2DMatrix();
+    final PapifyComponentLabelProvider2DMatrix labelProvider = new PapifyComponentLabelProvider2DMatrix(this.scenario,
+        treeViewer, this);
 
-    this.checkStateListener.setComponentTableViewer(this.componentTableViewer, contentProvider, this);
+    treeViewer.setContentProvider(contentProvider);
+    treeViewer.setLabelProvider(labelProvider);
+    treeViewer.addCheckStateListener(this.checkStateListener);
 
-    final PapifyComponentLabelProvider labelProvider = new PapifyComponentLabelProvider(this.scenario,
-        this.componentTableViewer, this);
-    this.componentTableViewer.setLabelProvider(labelProvider);
+    this.checkStateListener.setComponentTreeViewer(treeViewer, contentProvider, this);
 
-    this.componentTableViewer.addCheckStateListener(this.checkStateListener);
+    treeViewer.setUseHashlookup(true);
 
-    // Create columns
-    final String[] componentSelectionColumnNames = { "PAPI components", "Component type" };
+    treeViewer.getTree().setLinesVisible(true);
+    treeViewer.getTree().setHeaderVisible(true);
 
-    final List<TableColumn> columns = new ArrayList<>();
-    for (int i = 0; i < componentSelectionColumnNames.length; i++) {
-      final TableColumn column = new TableColumn(table, SWT.NONE, i);
-      column.setText(componentSelectionColumnNames[i]);
-      columns.add(column);
+    final TreeViewerColumn actorViewerColumn = new TreeViewerColumn(treeViewer, SWT.CENTER | SWT.CHECK);
+    final TreeColumn actorColumn = actorViewerColumn.getColumn();
+    actorColumn.setText("PE Name");
+    actorColumn.setWidth(200);
+    actorViewerColumn.setLabelProvider(new ColumnLabelProvider());
+
+    int columnIndex = 1;
+    for (final String columnLabel : this.scenario.getOperatorIds()) {
+
+      final TreeViewerColumn viewerColumn = new TreeViewerColumn(treeViewer, SWT.CENTER | SWT.CHECK);
+      final TreeColumn column = viewerColumn.getColumn();
+
+      column.setText(columnLabel);
+      column.setMoveable(true);
+      column.setWidth(150);
+
+      viewerColumn.setLabelProvider(new PapifyComponentListContentProvider2DMatrixCLP(columnLabel));
+      viewerColumn.setEditingSupport(new PapifyComponentListContentProvider2DMatrixES(treeViewer, columnLabel));
+      columnIndex++;
     }
 
-    final Table tref = table;
-    final Composite comp = tablecps;
-    final List<TableColumn> fColumns = columns;
-
-    // Setting the column width
-    tablecps.addControlListener(new ControlAdapter() {
-      @Override
-      public void controlResized(final ControlEvent e) {
-        final Rectangle area = comp.getClientArea();
-        final Point size = tref.computeSize(SWT.DEFAULT, SWT.DEFAULT);
-        final ScrollBar vBar = tref.getVerticalBar();
-        int width = area.width - tref.computeTrim(0, 0, 0, 0).width - 2;
-        if (size.y > (area.height + tref.getHeaderHeight())) {
-          final Point vBarSize = vBar.getSize();
-          width -= vBarSize.x;
-        }
-        final Point oldSize = tref.getSize();
-        if (oldSize.x > area.width) {
-          for (final TableColumn col : fColumns) {
-            col.setWidth((width / 5) - 1);
-          }
-          tref.setSize(area.width, area.height);
-        } else {
-          tref.setSize(area.width, area.height);
-          for (final TableColumn col : fColumns) {
-            col.setWidth((width / 5) - 1);
-          }
-        }
-      }
-    });
-
-    this.componentTableViewer.setInput(this.papiEvents);
+    treeViewer.setInput(this.papiEvents);
     final GridData gd = new GridData(GridData.FILL_HORIZONTAL | GridData.VERTICAL_ALIGN_BEGINNING);
-    gd.heightHint = 100;
-    gd.widthHint = 400;
-    tablecps.setLayoutData(gd);
+    gd.heightHint = 140;
+    treeViewer.getTree().setLayoutData(gd);
+
+    toolkit.paintBordersFor(parent);
+
+    // Tree is refreshed in case of algorithm modifications
+    parent.addPaintListener(checkStateListener);
   }
 
   /**

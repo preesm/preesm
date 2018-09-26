@@ -145,6 +145,9 @@ public class ScenarioEditor extends SharedHeaderFormEditor implements IPropertyL
     final IFormPage papifyPage = new PapifyPage(this.scenario, this, "PAPIFY", "PAPIFY");
     papifyPage.addPropertyListener(this);
 
+    final IFormPage testPage = new TestTreeView2DPage(this.scenario, this, "testtreeview2d", "Tree View");
+    testPage.addPropertyListener(this);
+
     try {
       addPage(overviewPage);
       addPage(constraintsPage);
@@ -155,6 +158,7 @@ public class ScenarioEditor extends SharedHeaderFormEditor implements IPropertyL
       addPage(variablesPage);
       addPage(paramPage);
       addPage(papifyPage);
+      addPage(testPage);
     } catch (final PartInitException e) {
       ErrorWithExceptionDialog.errorDialogWithStackTrace("Could not open scenario", e);
       close(false);
