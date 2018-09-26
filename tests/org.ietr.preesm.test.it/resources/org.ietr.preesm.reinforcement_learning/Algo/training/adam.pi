@@ -147,24 +147,24 @@
             <port kind="cfg_input" name="size_weights"/>
             <port annotation="NONE" expr="size_bias + size_weights"
                 kind="input" name="in"/>
-            <port annotation="NONE" expr="size_bias" kind="output" name="out_1"/>
-            <port annotation="NONE" expr="size_weights" kind="output" name="out_0"/>
+            <port annotation="NONE" expr="size_bias" kind="output" name="out_0"/>
+            <port annotation="NONE" expr="size_weights" kind="output" name="out_1"/>
         </node>
         <node id="ForkSecondOrder" kind="fork">
             <port kind="cfg_input" name="size_bias"/>
             <port kind="cfg_input" name="size_weights"/>
             <port annotation="NONE" expr="size_bias + size_weights"
                 kind="input" name="in"/>
-            <port annotation="NONE" expr="size_bias" kind="output" name="out_1"/>
-            <port annotation="NONE" expr="size_weights" kind="output" name="out_0"/>
+            <port annotation="NONE" expr="size_bias" kind="output" name="out_0"/>
+            <port annotation="NONE" expr="size_weights" kind="output" name="out_1"/>
         </node>
         <node id="ForkFirstOrder" kind="fork">
             <port kind="cfg_input" name="size_bias"/>
             <port kind="cfg_input" name="size_weights"/>
             <port annotation="NONE" expr="size_bias + size_weights"
                 kind="input" name="in"/>
-            <port annotation="NONE" expr="size_bias" kind="output" name="out_1"/>
-            <port annotation="NONE" expr="size_weights" kind="output" name="out_0"/>
+            <port annotation="NONE" expr="size_bias" kind="output" name="out_0"/>
+            <port annotation="NONE" expr="size_weights" kind="output" name="out_1"/>
         </node>
         <node id="JoinFirstOrder" kind="join">
             <port kind="cfg_input" name="size_bias"/>
@@ -218,25 +218,25 @@
             target="BroadcastBetas" targetport="in" type="double"/>
         <edge kind="fifo" source="bias" sourceport="bias"
             target="optimizeBias" targetport="param_in" type="float"/>
-        <edge kind="fifo" source="ForkGradients" sourceport="out_0"
-            target="optimizeWeights" targetport="gradients" type="float"/>
         <edge kind="fifo" source="ForkGradients" sourceport="out_1"
+            target="optimizeWeights" targetport="gradients" type="float"/>
+        <edge kind="fifo" source="ForkGradients" sourceport="out_0"
             target="optimizeBias" targetport="gradients" type="float"/>
         <edge kind="fifo" source="gradients" sourceport="gradients"
             target="ForkGradients" targetport="in" type="float"/>
         <edge kind="fifo" source="first_order_moments"
             sourceport="first_order_moments" target="ForkFirstOrder"
             targetport="in" type="double"/>
-        <edge kind="fifo" source="ForkFirstOrder" sourceport="out_1"
-            target="optimizeBias" targetport="fo_moment_in" type="double"/>
         <edge kind="fifo" source="ForkFirstOrder" sourceport="out_0"
+            target="optimizeBias" targetport="fo_moment_in" type="double"/>
+        <edge kind="fifo" source="ForkFirstOrder" sourceport="out_1"
             target="optimizeWeights" targetport="fo_moment_in" type="double"/>
         <edge kind="fifo" source="second_order_moments"
             sourceport="second_order_moments" target="ForkSecondOrder"
             targetport="in" type="double"/>
-        <edge kind="fifo" source="ForkSecondOrder" sourceport="out_1"
-            target="optimizeBias" targetport="so_moment_in" type="double"/>
         <edge kind="fifo" source="ForkSecondOrder" sourceport="out_0"
+            target="optimizeBias" targetport="so_moment_in" type="double"/>
+        <edge kind="fifo" source="ForkSecondOrder" sourceport="out_1"
             target="optimizeWeights" targetport="so_moment_in" type="double"/>
         <edge kind="fifo" source="JoinFirstOrder" sourceport="out"
             target="first_order_moments_out"

@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<scenario>
+    <files>
+        <algorithm url="/org.ietr.preesm.model_tests/Algo/Test_Flat/delay_setter_getter.pi"/>
+        <architecture url="/org.ietr.preesm.model_tests/Archi/1CoreX86.slam"/>
+        <codegenDirectory url="/org.ietr.preesm.model_tests/Code/generated"/>
+    </files>
+    <constraints excelUrl="">
+        <constraintGroup>
+            <operator name="Core0"/>
+            <task name="delay_setter_getter/Read"/>
+            <task name="delay_setter_getter/loop"/>
+            <task name="delay_setter_getter/Write"/>
+            <task name="delay_setter_getter/setter"/>
+            <task name="delay_setter_getter/getter"/>
+            <task name="delay_setter_getter"/>
+        </constraintGroup>
+    </constraints>
+    <relativeconstraints excelUrl=""/>
+    <timings excelUrl=""/>
+    <simuParams>
+        <mainCore>Core0</mainCore>
+        <mainComNode>shared_mem</mainComNode>
+        <averageDataSize>1000</averageDataSize>
+        <dataTypes>
+            <dataType name="char" size="1"/>
+        </dataTypes>
+        <specialVertexOperators>
+            <specialVertexOperator path="Core0"/>
+        </specialVertexOperators>
+        <numberOfTopExecutions>1</numberOfTopExecutions>
+    </simuParams>
+    <variables excelUrl=""/>
+    <parameterValues/>
+    <papifyConfigs xmlUrl=""/>
+</scenario>

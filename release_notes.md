@@ -8,6 +8,8 @@ PREESM Changelog
 
 ### Changes
 * Refactoring;
+* Adding graph optimizations for PiMM graphs as seperate process from PiMM2SRDAG.
+* Adding tests for graph transformations.
 
 ### Bug fix
 
