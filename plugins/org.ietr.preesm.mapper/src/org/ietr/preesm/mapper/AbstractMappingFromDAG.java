@@ -156,9 +156,9 @@ public abstract class AbstractMappingFromDAG extends AbstractTaskImplementation 
     return outputs;
   }
 
-  protected abstract LatencyAbc schedule(final Map<String, Object> outputs, Map<String, String> parameters,
-      InitialLists initial, PreesmScenario scenario, AbcParameters abcParams, MapperDAG dag, Design architecture,
-      AbstractTaskSched taskSched);
+  protected abstract LatencyAbc schedule(final Map<String, Object> outputs, final Map<String, String> parameters,
+      final InitialLists initial, final PreesmScenario scenario, final AbcParameters abcParams, final MapperDAG dag,
+      final Design architecture, final AbstractTaskSched taskSched);
 
   /**
    * Generic mapping message.

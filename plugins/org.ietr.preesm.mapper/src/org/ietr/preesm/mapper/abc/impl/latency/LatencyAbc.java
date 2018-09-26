@@ -417,7 +417,7 @@ public abstract class LatencyAbc {
   }
 
   /**
-   * Maps the vertex aith a group on the operator. If updaterank is true, finds a new place for the vertex in the
+   * Maps the vertex with a group on the operator. If updaterank is true, finds a new place for the vertex in the
    * schedule. Otherwise, use the vertex rank to know where to schedule it.
    *
    * @param dagvertex
