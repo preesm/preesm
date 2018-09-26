@@ -1,5 +1,6 @@
 package org.ietr.preesm.mapper;
 
+import java.io.IOException;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -13,6 +14,7 @@ import org.ietr.preesm.mapper.algo.list.InitialLists;
 import org.ietr.preesm.mapper.model.MapperDAG;
 import org.ietr.preesm.mapper.model.MapperDAGVertex;
 import org.ietr.preesm.mapper.params.AbcParameters;
+import org.ietr.preesm.utils.files.URLResolver;
 
 /**
  *
@@ -34,6 +36,14 @@ public class ExternalMappingFromDAG extends AbstractMappingFromDAG {
   protected LatencyAbc schedule(final Map<String, Object> outputs, final Map<String, String> parameters,
       final InitialLists initial, final PreesmScenario scenario, final AbcParameters abcParams, final MapperDAG dag,
       final Design architecture, final AbstractTaskSched taskSched) {
+
+    final String jsonScheduleFilePath = parameters.get(SCHEDULE_FILE);
+    try {
+      final String readURL = URLResolver.readURL(jsonScheduleFilePath);
+    } catch (IOException e) {
+      final String message = "Could not read schedule file [" + jsonScheduleFilePath + "]";
+      throw new PreesmMapperException(message, e);
+    }
 
     final LatencyAbc abc = LatencyAbc.getInstance(abcParams, dag, architecture, scenario);
     final String mainOperatorName = scenario.getSimulationManager().getMainOperatorName();
