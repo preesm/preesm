@@ -497,18 +497,6 @@ public class MemoryExclusionGraph extends SimpleGraph<MemoryExclusionVertex, Def
       // in the same order.. so overwrite are possible : inout needed here
       // !
 
-      // String vertKind = vertexDAG.getPropertyBean().getValue("kind")
-      // .toString();
-      // if (vertKind.equals("dag_broadcast_vertex") // includes
-      // roundbuffers
-      // || vertKind.equals("dag_fork_vertex")
-      // || vertKind.equals("dag_join_vertex")) {
-      // // Add the incoming edges to the predecessor list so that there
-      // // is no exclusion between input and output for these buffers
-      // predecessors.get(vertexID).addAll(incoming.get(vertexID));
-      // incoming.get(vertexID).clear();
-      // }
-
       // Implicit Else if: broadcast/fork/join/roundBuffer have no working
       // mem
       // 2. Working Memory specific Processing
