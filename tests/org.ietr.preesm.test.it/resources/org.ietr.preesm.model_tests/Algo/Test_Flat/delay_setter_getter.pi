@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<graphml xmlns="http://graphml.graphdrawing.org/xmlns">
+    <key attr.name="parameters" for="graph" id="parameters"/>
+    <key attr.name="variables" for="graph" id="variables"/>
+    <key attr.name="arguments" for="node" id="arguments"/>
+    <key attr.name="name" attr.type="string" for="graph"/>
+    <key attr.name="graph_desc" attr.type="string" for="node"/>
+    <key attr.name="delay" attr.type="string" for="edge"/>
+    <graph edgedefault="directed">
+        <data key="name">delay_setter_getter</data>
+        <node id="Read" kind="actor">
+            <data key="graph_desc">Code/include/protos.h</data>
+            <loop name="read">
+                <param direction="OUT" isConfig="false" name="out" type="char "/>
+            </loop>
+            <port annotation="NONE" expr="3" kind="output" name="out"/>
+        </node>
+        <node id="loop" kind="actor">
+            <data key="graph_desc">Code/include/protos.h</data>
+            <loop name="compute">
+                <param direction="IN" isConfig="false" name="in" type="char "/>
+                <param direction="IN" isConfig="false" name="feedIn" type="char "/>
+                <param direction="OUT" isConfig="false" name="out" type="char "/>
+                <param direction="OUT" isConfig="false" name="feedOut" type="char "/>
+            </loop>
+            <port annotation="NONE" expr="1" kind="input" name="in"/>
+            <port annotation="NONE" expr="1" kind="input" name="feedIn"/>
+            <port annotation="NONE" expr="1" kind="output" name="out"/>
+            <port annotation="NONE" expr="1" kind="output" name="feedOut"/>
+        </node>
+        <node id="Write" kind="actor">
+            <data key="graph_desc">Code/include/protos.h</data>
+            <loop name="write">
+                <param direction="IN" isConfig="false" name="in" type="char "/>
+            </loop>
+            <port annotation="NONE" expr="3" kind="input" name="in"/>
+        </node>
+        <node id="setter" kind="actor">
+            <data key="graph_desc">Code/include/protos.h</data>
+            <loop name="read">
+                <param direction="OUT" isConfig="false" name="out" type="char "/>
+            </loop>
+            <port annotation="NONE" expr="1" kind="output" name="out"/>
+        </node>
+        <node id="getter" kind="actor">
+            <data key="graph_desc">Code/include/protos.h</data>
+            <loop name="write">
+                <param direction="IN" isConfig="false" name="in" type="char "/>
+            </loop>
+            <port annotation="NONE" expr="1" kind="input" name="in"/>
+        </node>
+        <node expr="2" getter="getter"
+            id="delay_loop_feedOut__loop_feedIn" kind="delay"
+            level="none" setter="setter">
+            <port annotation="NONE" expr="2" kind="input" name="set"/>
+            <port annotation="NONE" expr="2" kind="output" name="get"/>
+        </node>
+        <edge expr="2" kind="fifo" source="loop" sourceport="feedOut"
+            target="loop" targetport="feedIn" type="char">
+            <data key="delay">delay_loop_feedOut__loop_feedIn</data>
+        </edge>
+        <edge kind="fifo" source="Read" sourceport="out" target="loop"
+            targetport="in" type="char"/>
+        <edge kind="fifo" source="loop" sourceport="out" target="Write"
+            targetport="in" type="char"/>
+        <edge kind="fifo" source="setter" sourceport="out"
+            target="delay_loop_feedOut__loop_feedIn" targetport="set" type="char"/>
+        <edge kind="fifo" source="delay_loop_feedOut__loop_feedIn"
+            sourceport="get" target="getter" targetport="in" type="char"/>
+    </graph>
+</graphml>

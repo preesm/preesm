@@ -532,7 +532,7 @@ public class StaticPiMM2ASrPiMMVisitor extends PiMMSwitch<Boolean> {
    */
   private BroadcastActor addBroadCastIn(final AbstractActor sourceActor) {
     final BroadcastActor interfaceBR = PiMMUserFactory.instance.createBroadcastActor();
-    interfaceBR.setName("BR_" + this.graphName + "_" + sourceActor.getName());
+    interfaceBR.setName("BR_" + this.graphPrefix + "_" + sourceActor.getName());
     // Add the BroadcastActor to the graph
     this.result.addActor(interfaceBR);
     return interfaceBR;
@@ -663,7 +663,7 @@ public class StaticPiMM2ASrPiMMVisitor extends PiMMSwitch<Boolean> {
    */
   private RoundBufferActor addRoundBufferOut(final AbstractActor sinkActor) {
     final RoundBufferActor interfaceRB = PiMMUserFactory.instance.createRoundBufferActor();
-    interfaceRB.setName("RB_" + this.graphName + "_" + sinkActor.getName());
+    interfaceRB.setName("RB_" + this.graphPrefix + "_" + sinkActor.getName());
     // Add the RoundBufferActor to the graph
     this.result.addActor(interfaceRB);
     return interfaceRB;
