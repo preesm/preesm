@@ -46,8 +46,12 @@ import java.util.Set;
  */
 public class PapifyConfigManager {
 
-  /** List of all PapifyConfig groups. */
-  private final Set<PapifyConfig> papifyConfigGroups;
+  private PapiEventInfo PAPIData = null;
+
+  /** List of all PapifyConfig groups for Actors. */
+  private final Set<PapifyConfigActor> papifyConfigGroupsActors;
+  /** List of all PapifyConfig groups for PEs. */
+  private final Set<PapifyConfigPE>    papifyConfigGroupsPEs;
 
   /** Path to a file containing constraints. */
   private String xmlFileURL = "";
@@ -56,18 +60,50 @@ public class PapifyConfigManager {
    * Instantiates a new PapifyConfig manager.
    */
   public PapifyConfigManager() {
-    this.papifyConfigGroups = new LinkedHashSet<>();
+    this.papifyConfigGroupsActors = new LinkedHashSet<>();
+    this.papifyConfigGroupsPEs = new LinkedHashSet<>();
   }
 
   /**
-   * Adds the PapifyConfig group.
+   * Adds PAPI data.
+   *
+   * @param data
+   *          the data
+   */
+  public void addPapifyData(final PapiEventInfo data) {
+
+    this.PAPIData = data;
+  }
+
+  /**
+   * Get PAPI data.
+   *
+   */
+  public PapiEventInfo getPapifyData() {
+
+    return this.PAPIData;
+  }
+
+  /**
+   * Adds a PapifyConfigActor group.
    *
    * @param pg
    *          the pg
    */
-  public void addPapifyConfigGroup(final PapifyConfig pg) {
+  public void addPapifyConfigActorGroup(final PapifyConfigActor pg) {
 
-    this.papifyConfigGroups.add(pg);
+    this.papifyConfigGroupsActors.add(pg);
+  }
+
+  /**
+   * Adds a PapifyConfigPE group.
+   *
+   * @param pg
+   *          the pg
+   */
+  public void addPapifyConfigPEGroup(final PapifyConfigPE pg) {
+
+    this.papifyConfigGroupsPEs.add(pg);
   }
 
   /**
@@ -80,13 +116,13 @@ public class PapifyConfigManager {
    */
   public void addComponent(final String opId, final PapiComponent component) {
 
-    final PapifyConfig pgSet = getCorePapifyConfigGroups(opId);
+    final PapifyConfigPE pgSet = getCorePapifyConfigGroupPE(opId);
 
     if (pgSet == null) {
-      final PapifyConfig pg = new PapifyConfig();
+      final PapifyConfigPE pg = new PapifyConfigPE();
       pg.addCoreId(opId);
       pg.addPAPIComponent(component);
-      this.papifyConfigGroups.add(pg);
+      this.papifyConfigGroupsPEs.add(pg);
     } else {
       pgSet.addPAPIComponent(component);
     }
@@ -102,7 +138,7 @@ public class PapifyConfigManager {
    *          the PAPI component
    */
   public void removeComponent(final String opId, final PapiComponent component) {
-    final PapifyConfig pgSet = getCorePapifyConfigGroups(opId);
+    final PapifyConfigPE pgSet = getCorePapifyConfigGroupPE(opId);
 
     if (pgSet != null) {
       pgSet.removePAPIComponent(component);
@@ -117,58 +153,68 @@ public class PapifyConfigManager {
    * @param event
    *          the PAPI event
    */
-  public void addEvent(final String opId, final PapiEvent event) {
+  public void addEvent(final String opId, final String component, final PapiEvent event) {
 
-    final PapifyConfig pgSet = getCorePapifyConfigGroups(opId);
+    final PapifyConfigActor pgSet = getCorePapifyConfigGroupActor(opId);
 
     if (pgSet == null) {
-      final PapifyConfig pg = new PapifyConfig();
-      pg.addCoreId(opId);
-      pg.addPAPIEvent(event);
-      this.papifyConfigGroups.add(pg);
+      final PapifyConfigActor pg = new PapifyConfigActor();
+      pg.addActorId(opId);
+      pg.addPAPIEvent(component, event);
+      this.papifyConfigGroupsActors.add(pg);
     } else {
-      pgSet.addPAPIEvent(event);
+      pgSet.addPAPIEvent(component, event);
     }
   }
 
   /**
-   * Removes an event from the PapifyConfig for the core.
+   * Removes an event from the PapifyConfig for the actor.
    *
    * @param opId
    *          the op id
    * @param event
    *          the PAPI event
    */
-  public void removeEvent(final String opId, final PapiEvent event) {
-    final PapifyConfig pgSet = getCorePapifyConfigGroups(opId);
+  public void removeEvent(final String opId, final String component, final PapiEvent event) {
+    final PapifyConfigActor pgSet = getCorePapifyConfigGroupActor(opId);
 
     if (pgSet != null) {
-      pgSet.removePAPIEvent(event);
+      pgSet.removePAPIEvent(component, event);
     }
   }
 
   /**
-   * Gets the PapifyConfig groups.
+   * Gets the PapifyConfigActors groups.
    *
-   * @return the PapifyConfig groups
+   * @return the PapifyConfigActors groups
    */
-  public Set<PapifyConfig> getPapifyConfigGroups() {
+  public Set<PapifyConfigActor> getPapifyConfigGroupsActors() {
 
-    return new LinkedHashSet<>(this.papifyConfigGroups);
+    return this.papifyConfigGroupsActors;
   }
 
   /**
-   * Gets the component PapifyConfig groups.
+   * Gets the PapifyConfigPE groups.
    *
-   * @param component
-   *          the PAPI component
-   * @return the component PapifyConfig groups
+   * @return the PapifyConfigPE groups
    */
-  public PapifyConfig getComponentPapifyConfigGroups(final PapiComponent component) {
-    PapifyConfig papifyConfigGroup = null;
+  public Set<PapifyConfigPE> getPapifyConfigGroupsPEs() {
 
-    for (final PapifyConfig pg : this.papifyConfigGroups) {
-      if (pg.isPAPIComponent(component)) {
+    return this.getPapifyConfigGroupsPEs();
+  }
+
+  /**
+   * Gets the op PapifyConfigActor group.
+   *
+   * @param opId
+   *          the op id
+   * @return the op PapifyConfigActor groups
+   */
+  public PapifyConfigActor getCorePapifyConfigGroupActor(final String opId) {
+    PapifyConfigActor papifyConfigGroup = null;
+
+    for (final PapifyConfigActor pg : this.papifyConfigGroupsActors) {
+      if (pg.isActorId(opId)) {
         papifyConfigGroup = pg;
       }
     }
@@ -177,16 +223,16 @@ public class PapifyConfigManager {
   }
 
   /**
-   * Gets the op PapifyConfig group.
+   * Gets the op PapifyConfigPE group.
    *
    * @param opId
    *          the op id
-   * @return the op PapifyConfig groups
+   * @return the op PapifyConfigActor groups
    */
-  public PapifyConfig getCorePapifyConfigGroups(final String opId) {
-    PapifyConfig papifyConfigGroup = null;
+  public PapifyConfigPE getCorePapifyConfigGroupPE(final String opId) {
+    PapifyConfigPE papifyConfigGroup = null;
 
-    for (final PapifyConfig pg : this.papifyConfigGroups) {
+    for (final PapifyConfigPE pg : this.papifyConfigGroupsPEs) {
       if (pg.isCoreId(opId)) {
         papifyConfigGroup = pg;
       }
@@ -198,9 +244,17 @@ public class PapifyConfigManager {
   /**
    * Removes the all.
    */
-  public void removeAll() {
+  public void removeAllCores() {
 
-    this.papifyConfigGroups.clear();
+    this.papifyConfigGroupsActors.clear();
+  }
+
+  /**
+   * Removes the all.
+   */
+  public void removeAllPEs() {
+
+    this.papifyConfigGroupsPEs.clear();
   }
 
   /**
@@ -231,7 +285,10 @@ public class PapifyConfigManager {
   public String toString() {
     String s = "";
 
-    for (final PapifyConfig pg : this.papifyConfigGroups) {
+    for (final PapifyConfigActor pg : this.papifyConfigGroupsActors) {
+      s += pg.toString();
+    }
+    for (final PapifyConfigPE pg : this.papifyConfigGroupsPEs) {
       s += pg.toString();
     }
 
@@ -242,6 +299,7 @@ public class PapifyConfigManager {
    * Update.
    */
   public void update() {
-    removeAll();
+    removeAllCores();
+    removeAllPEs();
   }
 }

@@ -60,6 +60,10 @@ public class PapiEventSet {
     this.events = events;
   }
 
+  public void addEvent(final PapiEvent event) {
+    this.events.add(event);
+  }
+
   private List<PapiEvent> events;
 
   /**

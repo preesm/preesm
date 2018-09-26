@@ -34,6 +34,7 @@
  */
 package org.ietr.preesm.core.scenario.papi;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -60,6 +61,30 @@ public class PapiEventInfo {
 
   public List<PapiComponent> getComponents() {
     return this.components;
+  }
+
+  /**
+   *
+   */
+  public List<String> getComponentNames() {
+
+    boolean checkingEvents = false;
+    boolean componentAdded = false;
+    List<String> componentList = new ArrayList<>();
+
+    for (final PapiComponent compAux : this.components) {
+      for (final PapiEventSet eventSetAux : compAux.getEventSets()) {
+        checkingEvents = eventSetAux.getEvents().isEmpty();
+        if (!checkingEvents) {
+          componentAdded = true;
+        }
+      }
+      if (componentAdded) {
+        componentAdded = false;
+        componentList.add(compAux.getId());
+      }
+    }
+    return componentList;
   }
 
   @Override
