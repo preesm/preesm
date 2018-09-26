@@ -97,6 +97,7 @@ import org.ietr.preesm.experiment.model.pimm.InterfaceActor;
 import org.ietr.preesm.experiment.model.pimm.JoinActor;
 import org.ietr.preesm.experiment.model.pimm.Parameter;
 import org.ietr.preesm.experiment.model.pimm.PiGraph;
+import org.ietr.preesm.experiment.model.pimm.PiMMPackage;
 import org.ietr.preesm.experiment.model.pimm.PiSDFRefinement;
 import org.ietr.preesm.experiment.model.pimm.Port;
 import org.ietr.preesm.experiment.model.pimm.Refinement;
@@ -751,6 +752,7 @@ public class StaticPiMM2SDFVisitor extends PiMMSwitch<Boolean> {
     // If result == null, then pg is the first PiGraph we encounter
     if (this.result == null) {
       this.result = new SDFGraph();
+      this.result.getPropertyBean().setValue(PiGraph.class.getCanonicalName(), pg);
       this.result.setName(pg.getName());
 
       // Save the original Path to the pigraph in the property bean (used

@@ -44,7 +44,7 @@
 	<parent>
 		<groupId>org.ietr.preesm</groupId>
 		<artifactId>org.ietr.preesm.test-fragments</artifactId>
-		<version>2.15.0</version>
+		<version>2.15.1</version>
 		<relativePath>..</relativePath>
 	</parent>
 

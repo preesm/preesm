@@ -33,7 +33,6 @@
  * knowledge of the CeCILL license and that you accept its terms.
  */
 
-
 #ifndef _PREESM_GEN_TCP_H
 #define _PREESM_GEN_TCP_H
 

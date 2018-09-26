@@ -32,53 +32,43 @@
  * The fact that you are presently reading this means that you have had
  * knowledge of the CeCILL license and that you accept its terms.
  */
+package org.ietr.preesm.experiment.model.pimm.util;
 
-#ifndef _PREESM_SOCKETCOM_H_
-#define _PREESM_SOCKETCOM_H_
+import java.io.File;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.Collectors;
+import org.eclipse.core.runtime.IPath;
+import org.ietr.preesm.experiment.model.pimm.CHeaderRefinement;
+import org.ietr.preesm.experiment.model.pimm.PiGraph;
 
-#define _GNU_SOURCE
+/**
+ *
+ * @author anmorvan
+ *
+ */
+public class CHeaderUsedLocator {
 
-#include <stdio.h>
-#include <stdlib.h>
-#include <unistd.h>
-#include <string.h>
+  private CHeaderUsedLocator() {
+    // forbid instantiation
+  }
 
-#include <sys/ioctl.h>
-#include <sys/poll.h>
+  /**
+   */
+  public static final List<IPath> findAllCHeadersUsed(final PiGraph graph) {
+    final List<IPath> result = new ArrayList<>();
+    graph.eAllContents().forEachRemaining(element -> {
+      if (element instanceof CHeaderRefinement) {
+        final IPath filePath = ((CHeaderRefinement) element).getFilePath();
+        if (!(result.contains(filePath))) {
+          result.add(filePath);
+        }
+      }
+    });
+    return result;
+  }
 
-#include <netdb.h>
-#include <sys/socket.h>
-#include <arpa/inet.h>
-#include <netinet/tcp.h>
-
-// during opening sequence, wait time between each client to server connection fail: 50 ms
-#define _PREESM_WAIT_SERVER_START_US (50*1000)
-
-// set TCP socket buffers to 2MB
-#define _PREESM_SOCKET_BUFFER_SIZE (2*1024*1024)
-
-// Error codes
-#define _PREESM_ERROR_ACK 1
-#define _PREESM_ERROR_RESOLVE_HOST 2
-#define _PREESM_ERROR_CREATE_SOCKET 3
-#define _PREESM_ERROR_BINDING 4
-#define _PREESM_ERROR_POLLING 5
-
-typedef struct processingElement_t {
-  int id;
-  char host[255];
-  int port;
-} ProcessingElement;
-
-void preesm_send_start(int from, int to, int * socketRegistry, char* buffer, int size, const char* bufferName);
-void preesm_send_end(int from, int to, int * socketRegistry, char* buffer, int size, const char* bufferName);
-
-void preesm_receive_start(int from, int to, int * socketRegistry, char* buffer, int size, const char* bufferName);
-void preesm_receive_end(int from, int to, int * socketRegistry, char* buffer, int size, const char* bufferName);
-
-void preesm_open(int* socketFileDescriptors, int processingElementID, int numberOfProcessingElements, ProcessingElement registry[numberOfProcessingElements]);
-void preesm_close(int * socketRegistry, int processingElementID, int numberOfProcessingElements);
-
-void preesm_barrier(int * socketRegistry, int processingElementID, int numberOfProcessingElements);
-
-#endif
+  public static final List<String> findAllCHeaderFileNamesUsed(final PiGraph graph) {
+    return findAllCHeadersUsed(graph).stream().map(IPath::toFile).map(File::getName).collect(Collectors.toList());
+  }
+}

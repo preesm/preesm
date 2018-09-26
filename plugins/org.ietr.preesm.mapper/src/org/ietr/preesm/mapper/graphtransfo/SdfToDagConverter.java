@@ -66,6 +66,7 @@ import org.ietr.preesm.core.scenario.ConstraintGroup;
 import org.ietr.preesm.core.scenario.PreesmScenario;
 import org.ietr.preesm.core.scenario.RelativeConstraintManager;
 import org.ietr.preesm.core.scenario.Timing;
+import org.ietr.preesm.experiment.model.pimm.PiGraph;
 import org.ietr.preesm.mapper.PreesmMapperException;
 import org.ietr.preesm.mapper.abc.SpecialVertexManager;
 import org.ietr.preesm.mapper.model.MapperDAG;
@@ -115,8 +116,11 @@ public class SdfToDagConverter {
     }
     final SDFGraph sdf = sdfIn.clone();
     SdfToDagConverter.setDataSizeForSDF(sdf, scenario);
+
+    final PiGraph pisdGraph = (PiGraph) sdf.getPropertyBean().getValue(PiGraph.class.getCanonicalName());
+
     // Generates a dag
-    final MapperDAG dag = new MapperDAG(new MapperEdgeFactory(), sdf);
+    final MapperDAG dag = new MapperDAG(new MapperEdgeFactory(), pisdGraph);
 
     // Creates a visitor parameterized with the DAG
     final DAGTransformation<MapperDAG> visitor = new DAGTransformation<>(dag, MapperVertexFactory.getInstance());

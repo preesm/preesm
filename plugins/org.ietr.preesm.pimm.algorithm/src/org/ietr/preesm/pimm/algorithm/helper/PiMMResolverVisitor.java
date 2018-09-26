@@ -40,6 +40,7 @@ package org.ietr.preesm.pimm.algorithm.helper;
 
 import java.util.LinkedHashMap;
 import java.util.logging.Level;
+import org.ietr.dftools.workflow.WorkflowException;
 import org.ietr.dftools.workflow.tools.WorkflowLogger;
 import org.ietr.preesm.experiment.model.expression.ExpressionEvaluator;
 import org.ietr.preesm.experiment.model.factory.PiMMUserFactory;
@@ -141,7 +142,7 @@ public class PiMMResolverVisitor extends PiMMSwitch<Boolean> {
       try {
         PiMMResolverVisitor.resolveExpression(dp.getPortRateExpression(), jepParser);
       } catch (final ParseException eparse) {
-        throw new RuntimeException("Failed to parse rate for [" + dp.getId() + "] port: " + eparse.getMessage());
+        throw new WorkflowException("Failed to parse rate for [" + dp.getId() + "] port: " + eparse.getMessage());
       }
     }
 
@@ -151,7 +152,7 @@ public class PiMMResolverVisitor extends PiMMSwitch<Boolean> {
         try {
           PiMMResolverVisitor.resolveExpression(d.getSizeExpression(), jepParser);
         } catch (final ParseException eparse) {
-          throw new RuntimeException(
+          throw new WorkflowException(
               "Failed to parse expression for delay [" + d.getName() + "]: " + eparse.getMessage());
         }
       }
@@ -191,7 +192,7 @@ public class PiMMResolverVisitor extends PiMMSwitch<Boolean> {
   @Override
   public Boolean caseParameter(final Parameter p) {
     if (!p.isLocallyStatic()) {
-      throw new RuntimeException(
+      throw new WorkflowException(
           "Parameter " + p.getName() + " is depends on a configuration actor. It is thus impossible to use the"
               + " Static PiMM 2 SDF transformation. Try instead the Dynamic PiMM 2 SDF"
               + " transformation (id: org.ietr.preesm.experiment.pimm2sdf.PiMM2SDFTask)");

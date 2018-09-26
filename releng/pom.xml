@@ -45,7 +45,7 @@
   <parent>
     <groupId>org.ietr.preesm</groupId>
     <artifactId>org.ietr.preesm.parent</artifactId>
-    <version>2.15.0</version>
+    <version>2.15.1</version>
     <relativePath>..</relativePath>
   </parent>
 
@@ -85,7 +85,7 @@
         <repository>
           <id>Checkstyle M2E extension</id>
           <layout>p2</layout>
-          <url>https://preesm.github.io/m2e-code-quality/site/latest/</url>
+          <url>https://m2e-code-quality.github.io/m2e-code-quality-p2-site/</url>
         </repository>
         <repository>
           <id>Settings M2E extension</id>

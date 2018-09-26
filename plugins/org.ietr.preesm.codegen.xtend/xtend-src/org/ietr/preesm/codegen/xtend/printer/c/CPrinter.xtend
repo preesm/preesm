@@ -4,6 +4,7 @@
  * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017 - 2018)
  * Clément Guy <clement.guy@insa-rennes.fr> (2015)
  * Daniel Madroñal <daniel.madronal@upm.es> (2018)
+ * Florian Arrestier <florian.arrestier@insa-rennes.fr> (2018)
  * Julien Hascoet <jhascoet@kalray.eu> (2016)
  * Karol Desnos <karol.desnos@insa-rennes.fr> (2013 - 2018)
  * Maxime Pelcat <maxime.pelcat@insa-rennes.fr> (2013 - 2016)
@@ -39,10 +40,16 @@
  */
 package org.ietr.preesm.codegen.xtend.printer.c
 
+import java.io.IOException
+import java.io.InputStreamReader
+import java.io.StringWriter
+import java.net.URL
 import java.util.ArrayList
 import java.util.Collection
 import java.util.Date
 import java.util.List
+import org.apache.velocity.VelocityContext
+import org.apache.velocity.app.VelocityEngine
 import org.ietr.preesm.codegen.model.codegen.Block
 import org.ietr.preesm.codegen.model.codegen.Buffer
 import org.ietr.preesm.codegen.model.codegen.BufferIterator
@@ -65,11 +72,12 @@ import org.ietr.preesm.codegen.model.codegen.SharedMemoryCommunication
 import org.ietr.preesm.codegen.model.codegen.SpecialCall
 import org.ietr.preesm.codegen.model.codegen.SubBuffer
 import org.ietr.preesm.codegen.model.codegen.Variable
-import org.ietr.preesm.codegen.xtend.printer.DefaultPrinter
-import org.ietr.preesm.codegen.xtend.task.CodegenException
-import org.ietr.preesm.utils.files.URLResolver
 import org.ietr.preesm.codegen.xtend.CodegenPlugin
-import java.io.IOException
+import org.ietr.preesm.codegen.xtend.printer.DefaultPrinter
+import org.ietr.preesm.codegen.xtend.printer.net.c.TcpCPrinter
+import org.ietr.preesm.codegen.xtend.task.CodegenException
+import org.ietr.preesm.experiment.model.pimm.util.CHeaderUsedLocator
+import org.ietr.preesm.utils.files.URLResolver
 
 /**
  * This printer is currently used to print C code only for GPP processors
@@ -113,7 +121,6 @@ class CPrinter extends DefaultPrinter {
 			 * Code generated for processing element «block.name» (ID=«block.coreID»).
 			 */
 
-			#define _GNU_SOURCE
 			#include "preesm_gen.h"
 
 	'''
@@ -270,10 +277,10 @@ class CPrinter extends DefaultPrinter {
 		 while(totalSize-inputIdx < output.size){
 		 	inputIdx = inputIdx - call.inputBuffers.get(i).size
 		 	lastInputs.add(0,call.inputBuffers.get(i))
-		 	i=i-1
 			if (i < 0) {
 				throw new CodegenException("Invalid RoundBuffer sizes: output size is greater than cumulative input size.")
 			}
+		 	i=i-1
 		 }
 		 inputIdx = inputIdx %  output.size
 		 lastInputs
@@ -366,6 +373,45 @@ class CPrinter extends DefaultPrinter {
 		}
 	}
 
+	def CharSequence generatePreesmHeader() {
+	    // 0- without the following class loader initialization, I get the following exception when running as Eclipse
+	    // plugin:
+	    // org.apache.velocity.exception.VelocityException: The specified class for ResourceManager
+	    // (org.apache.velocity.runtime.resource.ResourceManagerImpl) does not implement
+	    // org.apache.velocity.runtime.resource.ResourceManager; Velocity is not initialized correctly.
+	    val ClassLoader oldContextClassLoader = Thread.currentThread().getContextClassLoader();
+	    Thread.currentThread().setContextClassLoader(TcpCPrinter.classLoader);
+
+	    // 1- init engine
+	    val VelocityEngine engine = new VelocityEngine();
+	    engine.init();
+
+	    // 2- init context
+	    val VelocityContext context = new VelocityContext();
+	    val findAllCHeaderFileNamesUsed = CHeaderUsedLocator.findAllCHeaderFileNamesUsed(getEngine.algo.referencePiMMGraph)
+	    context.put("USER_INCLUDES", findAllCHeaderFileNamesUsed.map["#include \""+ it +"\""].join("\n"));
+
+	    // 3- init template reader
+	    val String templateLocalURL = "templates/c/preesm_gen.h";
+	    val URL mainTemplate = URLResolver.findFirstInPluginList(templateLocalURL, CodegenPlugin.BUNDLE_ID);
+	    var InputStreamReader reader = null;
+	    try {
+	      reader = new InputStreamReader(mainTemplate.openStream());
+	    } catch (IOException e) {
+	      throw new CodegenException("Could not locate main template [" + templateLocalURL + "].", e);
+	    }
+
+	    // 4- init output writer
+	    val StringWriter writer = new StringWriter();
+
+	    engine.evaluate(context, writer, "org.apache.velocity", reader);
+
+	    // 99- set back default class loader
+	    Thread.currentThread().setContextClassLoader(oldContextClassLoader);
+
+	    return writer.getBuffer().toString();
+	}
+
 	override generateStandardLibFiles() {
 		val result = super.generateStandardLibFiles();
 		val String stdFilesFolder = "/stdfiles/c/"
@@ -377,14 +423,14 @@ class CPrinter extends DefaultPrinter {
 						"fifo.c",
 						"fifo.h",
 						"mac_barrier.c",
-						"mac_barrier.h",
-						"preesm_gen.h"
+						"mac_barrier.h"
 					];
 		files.forEach[it | try {
 			result.put(it, URLResolver.readURLInPluginList(stdFilesFolder + it, CodegenPlugin.BUNDLE_ID))
 		} catch (IOException exc) {
 			throw new CodegenException("Could not generated content for " + it, exc)
 		}]
+		result.put("preesm_gen.h",generatePreesmHeader())
 		return result
 	}
 

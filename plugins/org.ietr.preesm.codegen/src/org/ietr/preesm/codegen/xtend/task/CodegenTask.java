@@ -50,10 +50,12 @@ import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.Platform;
 import org.ietr.dftools.algorithm.model.dag.DirectedAcyclicGraph;
 import org.ietr.dftools.architecture.slam.Design;
+import org.ietr.dftools.workflow.WorkflowException;
 import org.ietr.dftools.workflow.elements.Workflow;
 import org.ietr.dftools.workflow.implement.AbstractTaskImplementation;
 import org.ietr.preesm.codegen.model.codegen.Block;
 import org.ietr.preesm.core.scenario.PreesmScenario;
+import org.ietr.preesm.mapper.model.MapperDAG;
 import org.ietr.preesm.memory.exclusiongraph.MemoryExclusionGraph;
 
 /**
@@ -82,7 +84,11 @@ public class CodegenTask extends AbstractTaskImplementation {
     final Design archi = (Design) inputs.get("architecture");
     @SuppressWarnings("unchecked")
     final Map<String, MemoryExclusionGraph> megs = (Map<String, MemoryExclusionGraph>) inputs.get("MEGs");
-    final DirectedAcyclicGraph algo = (DirectedAcyclicGraph) inputs.get("DAG");
+    final DirectedAcyclicGraph algoDAG = (DirectedAcyclicGraph) inputs.get("DAG");
+    if (!(algoDAG instanceof MapperDAG)) {
+      throw new WorkflowException("The input DAG has not been scheduled");
+    }
+    final MapperDAG algo = (MapperDAG) algoDAG;
 
     // Generate intermediate model
     final CodegenModelGenerator generator = new CodegenModelGenerator(archi, algo, megs, scenario, workflow);

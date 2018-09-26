@@ -3,7 +3,7 @@ Bundle-ManifestVersion: 2
 Bundle-Name: RCP Utils
 Automatic-Module-Name: org.ietr.preesm.rcp.utils
 Bundle-SymbolicName: org.ietr.preesm.rcp.utils;singleton:=true
-Bundle-Version: 2.15.0
+Bundle-Version: 2.15.1
 Bundle-Vendor: IETR/INSA Rennes
 Require-Bundle: org.ietr.preesm.ui
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8

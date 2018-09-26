@@ -3,7 +3,7 @@ Bundle-ManifestVersion: 2
 Bundle-Name: PREESM Command Line Interface
 Automatic-Module-Name: org.ietr.preesm.cli
 Bundle-SymbolicName: org.ietr.preesm.cli;singleton:=true
-Bundle-Version: 2.15.0
+Bundle-Version: 2.15.1
 Require-Bundle: org.apache.commons.cli;bundle-version="1.2.0",
  org.apache.commons.lang;bundle-version="2.6.0",
  org.ietr.preesm.ui,

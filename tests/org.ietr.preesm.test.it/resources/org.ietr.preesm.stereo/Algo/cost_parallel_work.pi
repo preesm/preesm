@@ -236,6 +236,38 @@
             <port annotation="NONE" expr="size" kind="output" name="out1"/>
             <port annotation="NONE" expr="1" kind="output" name="back"/>
         </node>
+        <node expr="size" getter=""
+            id="delay_Broadcast5_out1__disparitySelect_currentResult"
+            kind="delay" level="permanent" setter="">
+            <port annotation="NONE" expr="size" kind="input" name="set"/>
+            <port annotation="NONE" expr="size" kind="output" name="get"/>
+        </node>
+        <node expr="size+1" getter=""
+            id="delay_disparitySelect_backBestCost__disparitySelect_bestCostFeed"
+            kind="delay" level="permanent" setter="">
+            <port annotation="NONE" expr="size+1" kind="input" name="set"/>
+            <port annotation="NONE" expr="size+1" kind="output" name="get"/>
+        </node>
+        <node expr="8" getter=""
+            id="delay_Broadcast5_back__CostConstruction_back"
+            kind="delay" level="permanent" setter="">
+            <port annotation="NONE" expr="8" kind="input" name="set"/>
+            <port annotation="NONE" expr="8" kind="output" name="get"/>
+        </node>
+        <edge expr="size" kind="fifo" source="Broadcast5"
+            sourceport="out1" target="disparitySelect"
+            targetport="currentResult" type="uchar">
+            <data key="delay">delay_Broadcast5_out1__disparitySelect_currentResult</data>
+        </edge>
+        <edge expr="size+1" kind="fifo" source="disparitySelect"
+            sourceport="backBestCost" target="disparitySelect"
+            targetport="bestCostFeed" type="float">
+            <data key="delay">delay_disparitySelect_backBestCost__disparitySelect_bestCostFeed</data>
+        </edge>
+        <edge expr="8" kind="fifo" source="Broadcast5" sourceport="back"
+            target="CostConstruction" targetport="back" type="uchar">
+            <data key="delay">delay_Broadcast5_back__CostConstruction_back</data>
+        </edge>
         <edge kind="fifo" source="OffsetGen" sourceport="offsets"
             target="Broadcast0" targetport="in" type="int"/>
         <edge kind="fifo" source="Broadcast0" sourceport="out1"
@@ -282,20 +314,6 @@
             target="Broadcast5" targetport="in" type="uchar"/>
         <edge kind="fifo" source="Broadcast5" sourceport="out0"
             target="rawDisparity" targetport="rawDisparity" type="uchar"/>
-        <edge expr="size" kind="fifo" source="Broadcast5"
-            sourceport="out1" target="disparitySelect"
-            targetport="currentResult" type="uchar">
-            <data key="delay"/>
-        </edge>
-        <edge expr="size+1" kind="fifo" source="disparitySelect"
-            sourceport="backBestCost" target="disparitySelect"
-            targetport="bestCostFeed" type="float">
-            <data key="delay"/>
-        </edge>
-        <edge expr="8" kind="fifo" source="Broadcast5" sourceport="back"
-            target="CostConstruction" targetport="back" type="uchar">
-            <data key="delay"/>
-        </edge>
         <edge kind="dependency" source="nbIterations" target="OffsetGen" targetport="nbIterations"/>
         <edge kind="dependency" source="nbIterations"
             target="Broadcast0" targetport="nbIterations"/>
