@@ -19,29 +19,29 @@ import java.util.Map;
 public class ProcessingUnit {
 
   @JsonProperty("UName")
-  private String              uName;
+  private String                    uName;
   @JsonProperty("cores")
-  private Integer             cores;
+  private Integer                   cores;
   @JsonIgnore
-  private Map<String, Object> additionalProperties = new HashMap<String, Object>();
+  private final Map<String, Object> additionalProperties = new HashMap<>();
 
   @JsonProperty("UName")
   public String getUName() {
-    return uName;
+    return this.uName;
   }
 
   @JsonProperty("UName")
-  public void setUName(String uName) {
+  public void setUName(final String uName) {
     this.uName = uName;
   }
 
   @JsonProperty("cores")
   public Integer getCores() {
-    return cores;
+    return this.cores;
   }
 
   @JsonProperty("cores")
-  public void setCores(Integer cores) {
+  public void setCores(final Integer cores) {
     this.cores = cores;
   }
 
@@ -51,7 +51,7 @@ public class ProcessingUnit {
   }
 
   @JsonAnySetter
-  public void setAdditionalProperty(String name, Object value) {
+  public void setAdditionalProperty(final String name, final Object value) {
     this.additionalProperties.put(name, value);
   }
 

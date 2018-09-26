@@ -20,113 +20,113 @@ import java.util.Map;
 public class ScheduleEntry {
 
   @JsonProperty("taskName")
-  private String              taskName;
+  private String                    taskName;
   @JsonProperty("singleRateInstanceNumber")
-  private Integer             singleRateInstanceNumber;
+  private Integer                   singleRateInstanceNumber;
   @JsonProperty("start")
-  private Integer             start;
+  private Integer                   start;
   @JsonProperty("startN")
-  private Integer             startN;
+  private Integer                   startN;
   @JsonProperty("end")
-  private Integer             end;
+  private Integer                   end;
   @JsonProperty("endN")
-  private Integer             endN;
+  private Integer                   endN;
   @JsonProperty("core")
-  private Integer             core;
+  private Integer                   core;
   @JsonProperty("processingUnitName")
-  private String              processingUnitName;
+  private String                    processingUnitName;
   @JsonProperty("graphIteration")
-  private Integer             graphIteration;
+  private Integer                   graphIteration;
   @JsonIgnore
-  private Map<String, Object> additionalProperties = new HashMap<String, Object>();
+  private final Map<String, Object> additionalProperties = new HashMap<>();
 
   @JsonProperty("taskName")
   public String getTaskName() {
-    return taskName;
+    return this.taskName;
   }
 
   @JsonProperty("taskName")
-  public void setTaskName(String taskName) {
+  public void setTaskName(final String taskName) {
     this.taskName = taskName;
   }
 
   @JsonProperty("singleRateInstanceNumber")
   public Integer getSingleRateInstanceNumber() {
-    return singleRateInstanceNumber;
+    return this.singleRateInstanceNumber;
   }
 
   @JsonProperty("singleRateInstanceNumber")
-  public void setSingleRateInstanceNumber(Integer singleRateInstanceNumber) {
+  public void setSingleRateInstanceNumber(final Integer singleRateInstanceNumber) {
     this.singleRateInstanceNumber = singleRateInstanceNumber;
   }
 
   @JsonProperty("start")
   public Integer getStart() {
-    return start;
+    return this.start;
   }
 
   @JsonProperty("start")
-  public void setStart(Integer start) {
+  public void setStart(final Integer start) {
     this.start = start;
   }
 
   @JsonProperty("startN")
   public Integer getStartN() {
-    return startN;
+    return this.startN;
   }
 
   @JsonProperty("startN")
-  public void setStartN(Integer startN) {
+  public void setStartN(final Integer startN) {
     this.startN = startN;
   }
 
   @JsonProperty("end")
   public Integer getEnd() {
-    return end;
+    return this.end;
   }
 
   @JsonProperty("end")
-  public void setEnd(Integer end) {
+  public void setEnd(final Integer end) {
     this.end = end;
   }
 
   @JsonProperty("endN")
   public Integer getEndN() {
-    return endN;
+    return this.endN;
   }
 
   @JsonProperty("endN")
-  public void setEndN(Integer endN) {
+  public void setEndN(final Integer endN) {
     this.endN = endN;
   }
 
   @JsonProperty("core")
   public Integer getCore() {
-    return core;
+    return this.core;
   }
 
   @JsonProperty("core")
-  public void setCore(Integer core) {
+  public void setCore(final Integer core) {
     this.core = core;
   }
 
   @JsonProperty("processingUnitName")
   public String getProcessingUnitName() {
-    return processingUnitName;
+    return this.processingUnitName;
   }
 
   @JsonProperty("processingUnitName")
-  public void setProcessingUnitName(String processingUnitName) {
+  public void setProcessingUnitName(final String processingUnitName) {
     this.processingUnitName = processingUnitName;
   }
 
   @JsonProperty("graphIteration")
   public Integer getGraphIteration() {
-    return graphIteration;
+    return this.graphIteration;
   }
 
   @JsonProperty("graphIteration")
-  public void setGraphIteration(Integer graphIteration) {
+  public void setGraphIteration(final Integer graphIteration) {
     this.graphIteration = graphIteration;
   }
 
@@ -136,7 +136,7 @@ public class ScheduleEntry {
   }
 
   @JsonAnySetter
-  public void setAdditionalProperty(String name, Object value) {
+  public void setAdditionalProperty(final String name, final Object value) {
     this.additionalProperties.put(name, value);
   }
 

@@ -21,149 +21,149 @@ import java.util.Map;
 public class Schedule {
 
   @JsonProperty("scheduleEntries")
-  private List<ScheduleEntry>  scheduleEntries      = null;
+  private List<ScheduleEntry>       scheduleEntries      = null;
   @JsonProperty("preScheduleEntries")
-  private List<Object>         preScheduleEntries   = null;
+  private List<Object>              preScheduleEntries   = null;
   @JsonProperty("bufferEntities")
-  private List<BufferEntity>   bufferEntities       = null;
+  private List<BufferEntity>        bufferEntities       = null;
   @JsonProperty("taskEntities")
-  private List<TaskEntity>     taskEntities         = null;
+  private List<TaskEntity>          taskEntities         = null;
   @JsonProperty("processingUnits")
-  private List<ProcessingUnit> processingUnits      = null;
+  private List<ProcessingUnit>      processingUnits      = null;
   @JsonProperty("period")
-  private Integer              period;
+  private Integer                   period;
   @JsonProperty("intervals")
-  private Integer              intervals;
+  private Integer                   intervals;
   @JsonProperty("step")
-  private Integer              step;
+  private Integer                   step;
   @JsonProperty("applicationName")
-  private String               applicationName;
+  private String                    applicationName;
   @JsonProperty("runID")
-  private String               runID;
+  private String                    runID;
   @JsonProperty("architecture")
-  private Architecture         architecture;
+  private Architecture              architecture;
   @JsonProperty("delay")
-  private Double               delay;
+  private Double                    delay;
   @JsonIgnore
-  private Map<String, Object>  additionalProperties = new HashMap<String, Object>();
+  private final Map<String, Object> additionalProperties = new HashMap<>();
 
   @JsonProperty("scheduleEntries")
   public List<ScheduleEntry> getScheduleEntries() {
-    return scheduleEntries;
+    return this.scheduleEntries;
   }
 
   @JsonProperty("scheduleEntries")
-  public void setScheduleEntries(List<ScheduleEntry> scheduleEntries) {
+  public void setScheduleEntries(final List<ScheduleEntry> scheduleEntries) {
     this.scheduleEntries = scheduleEntries;
   }
 
   @JsonProperty("preScheduleEntries")
   public List<Object> getPreScheduleEntries() {
-    return preScheduleEntries;
+    return this.preScheduleEntries;
   }
 
   @JsonProperty("preScheduleEntries")
-  public void setPreScheduleEntries(List<Object> preScheduleEntries) {
+  public void setPreScheduleEntries(final List<Object> preScheduleEntries) {
     this.preScheduleEntries = preScheduleEntries;
   }
 
   @JsonProperty("bufferEntities")
   public List<BufferEntity> getBufferEntities() {
-    return bufferEntities;
+    return this.bufferEntities;
   }
 
   @JsonProperty("bufferEntities")
-  public void setBufferEntities(List<BufferEntity> bufferEntities) {
+  public void setBufferEntities(final List<BufferEntity> bufferEntities) {
     this.bufferEntities = bufferEntities;
   }
 
   @JsonProperty("taskEntities")
   public List<TaskEntity> getTaskEntities() {
-    return taskEntities;
+    return this.taskEntities;
   }
 
   @JsonProperty("taskEntities")
-  public void setTaskEntities(List<TaskEntity> taskEntities) {
+  public void setTaskEntities(final List<TaskEntity> taskEntities) {
     this.taskEntities = taskEntities;
   }
 
   @JsonProperty("processingUnits")
   public List<ProcessingUnit> getProcessingUnits() {
-    return processingUnits;
+    return this.processingUnits;
   }
 
   @JsonProperty("processingUnits")
-  public void setProcessingUnits(List<ProcessingUnit> processingUnits) {
+  public void setProcessingUnits(final List<ProcessingUnit> processingUnits) {
     this.processingUnits = processingUnits;
   }
 
   @JsonProperty("period")
   public Integer getPeriod() {
-    return period;
+    return this.period;
   }
 
   @JsonProperty("period")
-  public void setPeriod(Integer period) {
+  public void setPeriod(final Integer period) {
     this.period = period;
   }
 
   @JsonProperty("intervals")
   public Integer getIntervals() {
-    return intervals;
+    return this.intervals;
   }
 
   @JsonProperty("intervals")
-  public void setIntervals(Integer intervals) {
+  public void setIntervals(final Integer intervals) {
     this.intervals = intervals;
   }
 
   @JsonProperty("step")
   public Integer getStep() {
-    return step;
+    return this.step;
   }
 
   @JsonProperty("step")
-  public void setStep(Integer step) {
+  public void setStep(final Integer step) {
     this.step = step;
   }
 
   @JsonProperty("applicationName")
   public String getApplicationName() {
-    return applicationName;
+    return this.applicationName;
   }
 
   @JsonProperty("applicationName")
-  public void setApplicationName(String applicationName) {
+  public void setApplicationName(final String applicationName) {
     this.applicationName = applicationName;
   }
 
   @JsonProperty("runID")
   public String getRunID() {
-    return runID;
+    return this.runID;
   }
 
   @JsonProperty("runID")
-  public void setRunID(String runID) {
+  public void setRunID(final String runID) {
     this.runID = runID;
   }
 
   @JsonProperty("architecture")
   public Architecture getArchitecture() {
-    return architecture;
+    return this.architecture;
   }
 
   @JsonProperty("architecture")
-  public void setArchitecture(Architecture architecture) {
+  public void setArchitecture(final Architecture architecture) {
     this.architecture = architecture;
   }
 
   @JsonProperty("delay")
   public Double getDelay() {
-    return delay;
+    return this.delay;
   }
 
   @JsonProperty("delay")
-  public void setDelay(Double delay) {
+  public void setDelay(final Double delay) {
     this.delay = delay;
   }
 
@@ -173,7 +173,7 @@ public class Schedule {
   }
 
   @JsonAnySetter
-  public void setAdditionalProperty(String name, Object value) {
+  public void setAdditionalProperty(final String name, final Object value) {
     this.additionalProperties.put(name, value);
   }
 

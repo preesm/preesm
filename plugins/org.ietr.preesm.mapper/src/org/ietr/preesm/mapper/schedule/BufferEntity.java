@@ -19,53 +19,53 @@ import java.util.Map;
 public class BufferEntity {
 
   @JsonProperty("producer")
-  private String              producer;
+  private String                    producer;
   @JsonProperty("consumer")
-  private String              consumer;
+  private String                    consumer;
   @JsonProperty("initValue")
-  private Double              initValue;
+  private Double                    initValue;
   @JsonProperty("initValueN")
-  private Double              initValueN;
+  private Double                    initValueN;
   @JsonIgnore
-  private Map<String, Object> additionalProperties = new HashMap<String, Object>();
+  private final Map<String, Object> additionalProperties = new HashMap<>();
 
   @JsonProperty("producer")
   public String getProducer() {
-    return producer;
+    return this.producer;
   }
 
   @JsonProperty("producer")
-  public void setProducer(String producer) {
+  public void setProducer(final String producer) {
     this.producer = producer;
   }
 
   @JsonProperty("consumer")
   public String getConsumer() {
-    return consumer;
+    return this.consumer;
   }
 
   @JsonProperty("consumer")
-  public void setConsumer(String consumer) {
+  public void setConsumer(final String consumer) {
     this.consumer = consumer;
   }
 
   @JsonProperty("initValue")
   public Double getInitValue() {
-    return initValue;
+    return this.initValue;
   }
 
   @JsonProperty("initValue")
-  public void setInitValue(Double initValue) {
+  public void setInitValue(final Double initValue) {
     this.initValue = initValue;
   }
 
   @JsonProperty("initValueN")
   public Double getInitValueN() {
-    return initValueN;
+    return this.initValueN;
   }
 
   @JsonProperty("initValueN")
-  public void setInitValueN(Double initValueN) {
+  public void setInitValueN(final Double initValueN) {
     this.initValueN = initValueN;
   }
 
@@ -75,7 +75,7 @@ public class BufferEntity {
   }
 
   @JsonAnySetter
-  public void setAdditionalProperty(String name, Object value) {
+  public void setAdditionalProperty(final String name, final Object value) {
     this.additionalProperties.put(name, value);
   }
 

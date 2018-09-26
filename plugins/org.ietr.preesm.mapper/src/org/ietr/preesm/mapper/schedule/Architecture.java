@@ -19,29 +19,29 @@ import java.util.Map;
 public class Architecture {
 
   @JsonProperty("UName")
-  private String              uName;
+  private String                    uName;
   @JsonProperty("version")
-  private String              version;
+  private String                    version;
   @JsonIgnore
-  private Map<String, Object> additionalProperties = new HashMap<String, Object>();
+  private final Map<String, Object> additionalProperties = new HashMap<>();
 
   @JsonProperty("UName")
   public String getUName() {
-    return uName;
+    return this.uName;
   }
 
   @JsonProperty("UName")
-  public void setUName(String uName) {
+  public void setUName(final String uName) {
     this.uName = uName;
   }
 
   @JsonProperty("version")
   public String getVersion() {
-    return version;
+    return this.version;
   }
 
   @JsonProperty("version")
-  public void setVersion(String version) {
+  public void setVersion(final String version) {
     this.version = version;
   }
 
@@ -51,7 +51,7 @@ public class Architecture {
   }
 
   @JsonAnySetter
-  public void setAdditionalProperty(String name, Object value) {
+  public void setAdditionalProperty(final String name, final Object value) {
     this.additionalProperties.put(name, value);
   }
 

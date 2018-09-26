@@ -30,8 +30,8 @@ public class ScheduleUtils {
    *
    */
   public static final Schedule parseJsonFile(final File inputJsonFile) throws IOException {
-    final String fileContent = read(inputJsonFile);
-    return parseJsonString(fileContent);
+    final String fileContent = ScheduleUtils.read(inputJsonFile);
+    return ScheduleUtils.parseJsonString(fileContent);
   }
 
   /**

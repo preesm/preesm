@@ -19,41 +19,41 @@ import java.util.Map;
 public class TaskEntity {
 
   @JsonProperty("task")
-  private String              task;
+  private String                    task;
   @JsonProperty("delay")
-  private Double              delay;
+  private Double                    delay;
   @JsonProperty("repeat")
-  private Integer             repeat;
+  private Integer                   repeat;
   @JsonIgnore
-  private Map<String, Object> additionalProperties = new HashMap<String, Object>();
+  private final Map<String, Object> additionalProperties = new HashMap<>();
 
   @JsonProperty("task")
   public String getTask() {
-    return task;
+    return this.task;
   }
 
   @JsonProperty("task")
-  public void setTask(String task) {
+  public void setTask(final String task) {
     this.task = task;
   }
 
   @JsonProperty("delay")
   public Double getDelay() {
-    return delay;
+    return this.delay;
   }
 
   @JsonProperty("delay")
-  public void setDelay(Double delay) {
+  public void setDelay(final Double delay) {
     this.delay = delay;
   }
 
   @JsonProperty("repeat")
   public Integer getRepeat() {
-    return repeat;
+    return this.repeat;
   }
 
   @JsonProperty("repeat")
-  public void setRepeat(Integer repeat) {
+  public void setRepeat(final Integer repeat) {
     this.repeat = repeat;
   }
 
@@ -63,7 +63,7 @@ public class TaskEntity {
   }
 
   @JsonAnySetter
-  public void setAdditionalProperty(String name, Object value) {
+  public void setAdditionalProperty(final String name, final Object value) {
     this.additionalProperties.put(name, value);
   }
 
