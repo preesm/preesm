@@ -23,6 +23,7 @@ PREESM Changelog
 * Codegen now automatically fills its include list given actors refinements;
 * Fix PiMM2SRDAG transformation (was giving wrong results / failing on specific cases);
 * Adding graph optimizations for PiMM graphs as seperate process from PiMM2SRDAG.
+* Adding tests for graph transformations.
 
 ### Bug fix
 * Fix path format in scenario editor (issue #81);
