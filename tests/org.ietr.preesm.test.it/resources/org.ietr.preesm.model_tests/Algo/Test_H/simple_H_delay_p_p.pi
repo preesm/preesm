@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<graphml xmlns="http://graphml.graphdrawing.org/xmlns">
+    <key attr.name="parameters" for="graph" id="parameters"/>
+    <key attr.name="variables" for="graph" id="variables"/>
+    <key attr.name="arguments" for="node" id="arguments"/>
+    <key attr.name="name" attr.type="string" for="graph"/>
+    <key attr.name="graph_desc" attr.type="string" for="node"/>
+    <graph edgedefault="directed">
+        <data key="name">simple_H_delay_p_p</data>
+        <node id="Write" kind="actor">
+            <data key="graph_desc">Code/include/protos.h</data>
+            <loop name="write">
+                <param direction="IN" isConfig="false" name="in" type="char "/>
+            </loop>
+            <port annotation="NONE" expr="4" kind="input" name="in"/>
+        </node>
+        <node id="Read" kind="actor">
+            <data key="graph_desc">Code/include/protos.h</data>
+            <loop name="read">
+                <param direction="OUT" isConfig="false" name="out" type="char "/>
+            </loop>
+            <port annotation="NONE" expr="4" kind="output" name="out"/>
+        </node>
+        <node id="h_one_level" kind="actor">
+            <data key="graph_desc">Algo/Test_H/subgraphs/one_level_delay_p_p.pi</data>
+            <port annotation="NONE" expr="2" kind="input" name="interface_in"/>
+            <port annotation="NONE" expr="2" kind="output" name="interface_out"/>
+        </node>
+        <edge kind="fifo" source="Read" sourceport="out"
+            target="h_one_level" targetport="interface_in" type="char"/>
+        <edge kind="fifo" source="h_one_level"
+            sourceport="interface_out" target="Write" targetport="in" type="char"/>
+    </graph>
+</graphml>

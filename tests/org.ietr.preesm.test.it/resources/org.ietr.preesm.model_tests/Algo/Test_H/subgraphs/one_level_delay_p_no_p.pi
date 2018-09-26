@@ -7,8 +7,27 @@
     <key attr.name="graph_desc" attr.type="string" for="node"/>
     <key attr.name="delay" attr.type="string" for="edge"/>
     <graph edgedefault="directed">
-        <data key="name">one_level_delay_p_no_p</data>
+        <data key="name">one_level_p_no_p</data>
         <node id="loop" kind="actor">
+            <data key="graph_desc">Code/include/protos.h</data>
+            <loop name="compute">
+                <param direction="IN" isConfig="false" name="in" type="char "/>
+                <param direction="IN" isConfig="false" name="feedIn" type="char "/>
+                <param direction="OUT" isConfig="false" name="out" type="char "/>
+                <param direction="OUT" isConfig="false" name="feedOut" type="char "/>
+            </loop>
+            <port annotation="NONE" expr="1" kind="input" name="in"/>
+            <port annotation="NONE" expr="1" kind="input" name="feedIn"/>
+            <port annotation="NONE" expr="2" kind="output" name="out"/>
+            <port annotation="NONE" expr="1" kind="output" name="feedOut"/>
+        </node>
+        <node id="interface_in" kind="src">
+            <port annotation="NONE" expr="2" kind="output" name="interface_in"/>
+        </node>
+        <node id="interface_out" kind="snk">
+            <port annotation="NONE" expr="2" kind="input" name="interface_out"/>
+        </node>
+        <node id="loop2" kind="actor">
             <data key="graph_desc">Code/include/protos.h</data>
             <loop name="compute">
                 <param direction="IN" isConfig="false" name="in" type="char "/>
@@ -21,14 +40,13 @@
             <port annotation="NONE" expr="1" kind="output" name="out"/>
             <port annotation="NONE" expr="1" kind="output" name="feedOut"/>
         </node>
-        <node id="interface_in" kind="src">
-            <port annotation="NONE" expr="2" kind="output" name="interface_in"/>
-        </node>
-        <node id="interface_out" kind="snk">
-            <port annotation="NONE" expr="2" kind="input" name="interface_out"/>
-        </node>
         <node expr="3" getter="" id="delay_loop_feedOut__loop_feedIn"
             kind="delay" level="permanent" setter="">
+            <port annotation="NONE" expr="3" kind="input" name="set"/>
+            <port annotation="NONE" expr="3" kind="output" name="get"/>
+        </node>
+        <node expr="3" getter="" id="delay_loop2_feedOut__loop2_feedIn"
+            kind="delay" level="none" setter="">
             <port annotation="NONE" expr="3" kind="input" name="set"/>
             <port annotation="NONE" expr="3" kind="output" name="get"/>
         </node>
@@ -36,9 +54,15 @@
             target="loop" targetport="feedIn" type="char">
             <data key="delay">delay_loop_feedOut__loop_feedIn</data>
         </edge>
+        <edge expr="3" kind="fifo" source="loop2" sourceport="feedOut"
+            target="loop2" targetport="feedIn" type="char">
+            <data key="delay">delay_loop2_feedOut__loop2_feedIn</data>
+        </edge>
         <edge kind="fifo" source="interface_in"
             sourceport="interface_in" target="loop" targetport="in" type="char"/>
-        <edge kind="fifo" source="loop" sourceport="out"
+        <edge kind="fifo" source="loop2" sourceport="out"
             target="interface_out" targetport="interface_out" type="char"/>
+        <edge kind="fifo" source="loop" sourceport="out" target="loop2"
+            targetport="in" type="char"/>
     </graph>
 </graphml>

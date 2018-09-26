@@ -67,7 +67,8 @@ public class ModelTransfoTest {
   public void testHierarchy() throws IOException, CoreException {
     final String projectName = "org.ietr.preesm.model_tests";
     final String[] scenarios = new String[] { "Tests_H/simple_H.scenario", "Tests_H/simple_H_delay_p.scenario",
-        "Tests_H/simple_H_delay_no_p.scenario" };
+        "Tests_H/simple_H_delay_no_p.scenario", "Tests_H/simple_H_delay_p_no_p.scenario",
+        "Tests_H/simple_H_delay_p_p.scenario" };
     final String[] workflows = new String[] { "StaticPiMM2SRDAGCodegen.workflow" };
 
     for (final String workflow : workflows) {
@@ -84,7 +85,8 @@ public class ModelTransfoTest {
   public void testNestedHierarchy() throws IOException, CoreException {
     final String projectName = "org.ietr.preesm.model_tests";
     final String[] scenarios = new String[] { "Tests_H/nested_H_simple.scenario", "Tests_H/nested_H_BR.scenario",
-        "Tests_H/nested_H_RB.scenario", "Tests_H/nested_H_delay_p.scenario", "Tests_H/nested_H_delay_no_p.scenario" };
+        "Tests_H/nested_H_RB.scenario", "Tests_H/nested_H_delay_p.scenario", "Tests_H/nested_H_delay_no_p.scenario",
+        "Tests_H/nested_H_delay_p_no_p.scenario", "Tests_H/nested_H_delay_p_p.scenario" };
     final String[] workflows = new String[] { "StaticPiMM2SRDAGCodegen.workflow" };
 
     for (final String workflow : workflows) {
