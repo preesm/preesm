@@ -367,7 +367,7 @@ public class StaticPiMM2FlatPiMMVisitor extends PiMMSwitch<Boolean> {
       sourceName = fifo.getSourcePort().getName();
     }
 
-    final DataOutputPort sourcePort = (DataOutputPort) newSource.lookupPort(sourceName);
+    final DataOutputPort sourcePort = findOutputPort(newSource, sourceName);
     final String targetName;
     // Special case for interface
     if (target instanceof InterfaceActor) {
@@ -375,7 +375,7 @@ public class StaticPiMM2FlatPiMMVisitor extends PiMMSwitch<Boolean> {
     } else {
       targetName = fifo.getTargetPort().getName();
     }
-    final DataInputPort targetPort = (DataInputPort) newTarget.lookupPort(targetName);
+    final DataInputPort targetPort = findInputPort(newTarget, targetName);
     newFifo.setSourcePort(sourcePort);
     newFifo.setTargetPort(targetPort);
     // Set other properties
@@ -389,6 +389,24 @@ public class StaticPiMM2FlatPiMMVisitor extends PiMMSwitch<Boolean> {
     // Add the FIFO to the result
     this.result.addFifo(newFifo);
     return true;
+  }
+
+  private DataOutputPort findOutputPort(final AbstractActor actor, final String portName) {
+    for (final DataOutputPort dop : actor.getDataOutputPorts()) {
+      if (dop.getName().equals(portName)) {
+        return dop;
+      }
+    }
+    return null;
+  }
+
+  private DataInputPort findInputPort(final AbstractActor actor, final String portName) {
+    for (final DataInputPort dip : actor.getDataInputPorts()) {
+      if (dip.getName().equals(portName)) {
+        return dip;
+      }
+    }
+    return null;
   }
 
   private Delay copyDelay(final Delay delay) {
