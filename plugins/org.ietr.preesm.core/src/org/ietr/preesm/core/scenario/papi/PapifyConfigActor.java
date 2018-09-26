@@ -96,6 +96,32 @@ public class PapifyConfigActor {
   }
 
   /**
+   * Adding an eventSet
+   *
+   * @param events
+   *          the PAPI events
+   */
+  public void addPAPIEventSet(final String component, final Set<PapiEvent> events) {
+    Set<PapiEvent> eventSetAux = null;
+    if (component != null && !component.equals("") && !events.isEmpty()) {
+      eventSetAux = this.actorEventMap.get(component);
+      if (eventSetAux != null) {
+        for (final PapiEvent eventAux : events) {
+          if (!eventSetAux.contains(eventAux)) {
+            eventSetAux.add(eventAux);
+          }
+        }
+      } else {
+        eventSetAux = new LinkedHashSet<>();
+        for (final PapiEvent eventAux : events) {
+          eventSetAux.add(eventAux);
+        }
+        this.actorEventMap.put(component, eventSetAux);
+      }
+    }
+  }
+
+  /**
    * Removes the actorId.
    *
    * @param actorId

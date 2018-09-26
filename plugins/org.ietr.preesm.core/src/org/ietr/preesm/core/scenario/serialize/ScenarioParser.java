@@ -82,7 +82,8 @@ import org.ietr.preesm.core.scenario.papi.PapiEvent;
 import org.ietr.preesm.core.scenario.papi.PapiEventModifier;
 import org.ietr.preesm.core.scenario.papi.PapiEventSet;
 import org.ietr.preesm.core.scenario.papi.PapiEventSetType;
-import org.ietr.preesm.core.scenario.papi.PapifyConfig;
+import org.ietr.preesm.core.scenario.papi.PapifyConfigActor;
+import org.ietr.preesm.core.scenario.papi.PapifyConfigPE;
 import org.ietr.preesm.core.types.DataType;
 import org.ietr.preesm.core.types.VertexType;
 import org.ietr.preesm.experiment.model.pimm.AbstractActor;
@@ -774,9 +775,12 @@ public class ScenarioParser {
       if (node instanceof Element) {
         final Element elt = (Element) node;
         final String type = elt.getTagName();
-        if (type.equals("papifyConfig")) {
-          final PapifyConfig pg = getPapifyConfig(elt);
-          this.scenario.getPapifyConfigManager().addPapifyConfigGroup(pg);
+        if (type.equals("papifyConfigActor")) {
+          final PapifyConfigActor pg = getPapifyConfigActor(elt);
+          this.scenario.getPapifyConfigManager().addPapifyConfigActorGroup(pg);
+        } else if (type.equals("papifyConfigPE")) {
+          final PapifyConfigPE pg = getPapifyConfigPE(elt);
+          this.scenario.getPapifyConfigManager().addPapifyConfigPEGroup(pg);
         }
       }
 
@@ -785,15 +789,15 @@ public class ScenarioParser {
   }
 
   /**
-   * Retrieves a papifyConfig.
+   * Retrieves a papifyConfigActor.
    *
    * @param papifyConfigElt
    *          the papifyConfig group elt
    * @return the papifyConfig
    */
-  private PapifyConfig getPapifyConfig(final Element papifyConfigElt) {
+  private PapifyConfigActor getPapifyConfigActor(final Element papifyConfigElt) {
 
-    final PapifyConfig pc = new PapifyConfig();
+    final PapifyConfigActor pc = new PapifyConfigActor();
     Node node = papifyConfigElt.getFirstChild();
 
     while (node != null) {
@@ -802,17 +806,16 @@ public class ScenarioParser {
         final String type = elt.getTagName();
 
         switch (type) {
-          case "coreId":
-            final String coreId = elt.getAttribute("coreId");
-            pc.addCoreId(coreId);
+          case "actorId":
+            final String actorId = elt.getAttribute("actorId");
+            pc.addActorId(actorId);
             break;
-          case "PapiComponent":
-            final PapiComponent component = getPapifyComponent(elt);
-            pc.addPAPIComponent(component);
-            break;
-          case "event":
-            final PapiEvent event = getPapifyEvent(elt);
-            pc.addPAPIEvent(event);
+          case "EventSet":
+            final String component = elt.getAttribute("component");
+            final Set<PapiEvent> eventSet = new LinkedHashSet<>();
+            final List<PapiEvent> eventList = getPapifyEvents(elt);
+            eventSet.addAll(eventList);
+            pc.addPAPIEventSet(component, eventSet);
             break;
           default:
         }
@@ -820,6 +823,68 @@ public class ScenarioParser {
       node = node.getNextSibling();
     }
     return pc;
+  }
+
+  /**
+   * Retrieves a papifyConfigPE.
+   *
+   * @param papifyConfigElt
+   *          the papifyConfig group elt
+   * @return the papifyConfig
+   */
+  private PapifyConfigPE getPapifyConfigPE(final Element papifyConfigElt) {
+
+    final PapifyConfigPE pc = new PapifyConfigPE();
+    Node node = papifyConfigElt.getFirstChild();
+
+    while (node != null) {
+      if (node instanceof Element) {
+        final Element elt = (Element) node;
+        final String type = elt.getTagName();
+
+        switch (type) {
+          case "actorId":
+            final String coreId = elt.getAttribute("coreId");
+            pc.addCoreId(coreId);
+            break;
+          case "PAPIComponents":
+            final String component = elt.getAttribute("PAPIComponents");
+            final Set<PapiComponent> components = getPAPIComponents(elt);
+            pc.addPAPIComponents(components);
+            break;
+          default:
+        }
+      }
+      node = node.getNextSibling();
+    }
+    return pc;
+  }
+
+  /**
+   * Retrieves all the PAPI components.
+   *
+   * @param componentsElt
+   *          the PAPI components elt
+   */
+  private Set<PapiComponent> getPAPIComponents(final Element componentsElt) {
+
+    Set<PapiComponent> components = new LinkedHashSet<>();
+    Node node = componentsElt.getFirstChild();
+
+    while (node != null) {
+
+      if (node instanceof Element) {
+        final Element elt = (Element) node;
+        final String type = elt.getTagName();
+        if (type.equals("PAPIComponent")) {
+          final PapiComponent cg = getPapifyComponent(elt);
+          components.add(cg);
+        }
+      }
+
+      node = node.getNextSibling();
+    }
+    return components;
   }
 
   /**

@@ -89,6 +89,19 @@ public class PapifyConfigPE {
   }
 
   /**
+   * Adds the PAPI components.
+   *
+   * @param components
+   *          the PAPI components
+   */
+  public void addPAPIComponents(final Set<PapiComponent> components) {
+    for (final PapiComponent component : components) {
+      this.PAPIComponents.add(component);
+      this.PAPIComponentIDs.add(component.getId());
+    }
+  }
+
+  /**
    * Removes the coreId.
    *
    * @param coreId
