@@ -3,12 +3,12 @@ package org.ietr.preesm.mapper;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.logging.Level;
-import org.ietr.dftools.algorithm.iterators.TopologicalDAGIterator;
 import org.ietr.dftools.algorithm.model.dag.DAGEdge;
 import org.ietr.dftools.algorithm.model.dag.DAGVertex;
 import org.ietr.dftools.algorithm.model.dag.edag.DAGForkVertex;
@@ -16,6 +16,7 @@ import org.ietr.dftools.algorithm.model.dag.edag.DAGJoinVertex;
 import org.ietr.dftools.architecture.slam.ComponentInstance;
 import org.ietr.dftools.architecture.slam.Design;
 import org.ietr.dftools.architecture.slam.attributes.VLNV;
+import org.ietr.dftools.architecture.slam.component.Operator;
 import org.ietr.dftools.workflow.tools.WorkflowLogger;
 import org.ietr.preesm.core.architecture.util.DesignTools.ComponentInstanceComparator;
 import org.ietr.preesm.core.scenario.PreesmScenario;
@@ -69,25 +70,52 @@ public class ExternalMappingFromDAG extends AbstractMappingFromDAG {
     // 4- prepare map to have relation from vertex to its schedule entry
     final Map<DAGVertex, ScheduleEntry> entries = initEntryMap(dag, schedule);
 
-    final LatencyAbc abc = LatencyAbc.getInstance(abcParams, dag, architecture, scenario);
-    final TopologicalDAGIterator topologicalDAGIterator = new TopologicalDAGIterator(dag);
-    while (topologicalDAGIterator.hasNext()) {
-      final MapperDAGVertex vertex = (MapperDAGVertex) topologicalDAGIterator.next();
-      final ScheduleEntry scheduleEntry = entries.get(vertex);
-      if (scheduleEntry != null) {
-        mapScheduledVertex(abc, componentInstances, vertex, scheduleEntry);
-      } else {
-        mapNonScheduledVertex(abc, componentInstances, entries, vertex);
+    // 5.1 - build unordered lists of vertices per core ID
+    final List<List<DAGVertex>> orderedVertices = new ArrayList<>();
+    for (int i = 0; i < componentInstances.size(); i++) {
+      final ComponentInstance componentInstance = componentInstances.get(i);
+      if (componentInstance.getComponent() instanceof Operator) {
+        orderedVertices.add(new ArrayList<>());
       }
     }
+    for (ScheduleEntry e : schedule.getScheduleEntries()) {
+      final Integer coreID = e.getCore();
+      final String srActorName = e.getTaskName() + "_" + e.getSingleRateInstanceNumber();
+      if (coreID == null) {
+        final String message = "Schedule does not specify core ID for actor " + srActorName;
+        throw new PreesmMapperException(message);
+      }
+      final List<DAGVertex> list = orderedVertices.get(coreID);
+      list.add(dag.getVertex(srActorName));
+    }
+    // 5.2 - insert missing nodes in the lists (for instance implode/explode nodes if schedule has been done on flatten
+    // graph)
+    for (DAGVertex vtx : dag.vertexSet()) {
+      if (!entries.containsKey(vtx)) {
+        DAGVertex associateVtx = vtx;
+        do {
+          associateVtx = getAssociateVertex(associateVtx);
+        } while (!entries.containsKey(associateVtx));
+        orderedVertices.get(entries.get(associateVtx).getCore().intValue()).add(vtx);
+      }
+    }
+
+    final LatencyAbc abc = LatencyAbc.getInstance(abcParams, dag, architecture, scenario);
+    // 6- sort vertex lists following start dates from the schedule entries and apply schedule
+    for (int i = 0; i < orderedVertices.size(); i++) {
+      final ComponentInstance componentInstance = componentInstances.get(i);
+      final List<DAGVertex> list = orderedVertices.get(i);
+      list.sort(new ScheduleComparator(entries));
+      for (DAGVertex v : list) {
+        mapVertex(abc, componentInstance, v);
+      }
+    }
+
     return abc;
   }
 
-  private void mapScheduledVertex(final LatencyAbc abc, final List<ComponentInstance> componentInstances,
-      final MapperDAGVertex vertex, final ScheduleEntry scheduleEntry) {
-    final Integer core = scheduleEntry.getCore();
-    final ComponentInstance componentInstance = componentInstances.get(core);
-
+  private void mapVertex(final LatencyAbc abc, ComponentInstance componentInstance, final DAGVertex v) {
+    MapperDAGVertex vertex = (MapperDAGVertex) v;
     if (abc.isMapable(vertex, componentInstance, false)) {
       abc.map(vertex, componentInstance, true, false);
     } else {
@@ -97,47 +125,30 @@ public class ExternalMappingFromDAG extends AbstractMappingFromDAG {
     }
   }
 
-  private void mapNonScheduledVertex(final LatencyAbc abc, final List<ComponentInstance> componentInstances,
-      final Map<DAGVertex, ScheduleEntry> entries, final MapperDAGVertex vertex) {
-    final String nodeKind = vertex.getPropertyStringValue(PiIdentifiers.NODE_KIND);
+  private static final DAGVertex getAssociateVertex(final DAGVertex vtx) {
+    final String nodeKind = vtx.getPropertyStringValue(PiIdentifiers.NODE_KIND);
+    final DAGVertex associateVtx;
     switch (nodeKind) {
       case DAGForkVertex.DAG_FORK_VERTEX:
-        // insert right after the source of the fork, on the same node
-        final Set<DAGEdge> incomingEdges = vertex.incomingEdges();
+        final Set<DAGEdge> incomingEdges = vtx.incomingEdges();
         if (incomingEdges.size() != 1) {
           throw new PreesmMapperException("Fork node should have only one incomming edge");
         }
-        final DAGEdge edge = incomingEdges.iterator().next();
-        final DAGVertex source = edge.getSource();
-        final ScheduleEntry sourceScheduleEntry = entries.get(source);
-        if (sourceScheduleEntry == null) {
-          final String message = "This video explains why the schedule entry should not be null : "
-              + "https://www.youtube.com/watch?v=dQw4w9WgXcQ";
-          throw new PreesmMapperException(message);
-        }
-        final ComponentInstance sourceComponentInstance = componentInstances.get(sourceScheduleEntry.getCore());
-        abc.map(vertex, sourceComponentInstance, true, false);
+        final DAGEdge inEdge = incomingEdges.iterator().next();
+        associateVtx = inEdge.getSource();
         break;
       case DAGJoinVertex.DAG_JOIN_VERTEX:
-        // insert right before the target of the join, on the same node
-        final Set<DAGEdge> outgoingEdges = vertex.outgoingEdges();
+        final Set<DAGEdge> outgoingEdges = vtx.outgoingEdges();
         if (outgoingEdges.size() != 1) {
           throw new PreesmMapperException("Join node should have only one outgoing edge");
         }
         final DAGEdge outEdge = outgoingEdges.iterator().next();
-        final DAGVertex target = outEdge.getTarget();
-        final ScheduleEntry targetScheduleEntry = entries.get(target);
-        if (targetScheduleEntry == null) {
-          final String message = "This video explains why the schedule entry should not be null : "
-              + "https://www.youtube.com/watch?v=dQw4w9WgXcQ";
-          throw new PreesmMapperException(message);
-        }
-        final ComponentInstance targetComponentInstance = componentInstances.get(targetScheduleEntry.getCore());
-        abc.map(vertex, targetComponentInstance, true, false);
+        associateVtx = outEdge.getTarget();
         break;
       default:
-        throw new PreesmMapperException("Unsupported node kind " + nodeKind);
+        throw new PreesmMapperException("");
     }
+    return associateVtx;
   }
 
   private Map<DAGVertex, ScheduleEntry> initEntryMap(final MapperDAG dag, final Schedule schedule) {
@@ -213,6 +224,67 @@ public class ExternalMappingFromDAG extends AbstractMappingFromDAG {
       final String message = "Could not read schedule file [" + jsonScheduleProjectRelativeFilePath + "]";
       throw new PreesmMapperException(message, e);
     }
+  }
+
+  /**
+   *
+   * @author anmorvan
+   *
+   */
+  class ScheduleComparator implements Comparator<DAGVertex> {
+
+    private final Map<DAGVertex, ScheduleEntry> entries;
+
+    public ScheduleComparator(Map<DAGVertex, ScheduleEntry> entries) {
+      this.entries = entries;
+    }
+
+    @Override
+    public int compare(final DAGVertex o1, final DAGVertex o2) {
+      if (o1 == o2) {
+        return 0;
+      }
+      final DAGVertex lhs;
+      final DAGVertex rhs;
+      int modifier = 0;
+      if (!entries.containsKey(o1)) {
+        lhs = getAssociateVertex(o1);
+        final String kind = o1.getPropertyStringValue(PiIdentifiers.NODE_KIND);
+        switch (kind) {
+          case DAGJoinVertex.DAG_JOIN_VERTEX:
+            modifier = -1;
+            break;
+          case DAGForkVertex.DAG_FORK_VERTEX:
+            modifier = +1;
+            break;
+          default:
+        }
+      } else {
+        lhs = o1;
+      }
+      if (!entries.containsKey(o2)) {
+        rhs = getAssociateVertex(o2);
+        final String kind = o2.getPropertyStringValue(PiIdentifiers.NODE_KIND);
+        switch (kind) {
+          case DAGJoinVertex.DAG_JOIN_VERTEX:
+            modifier = +1;
+            break;
+          case DAGForkVertex.DAG_FORK_VERTEX:
+            modifier = -1;
+            break;
+          default:
+        }
+      } else {
+        rhs = o2;
+      }
+      if (rhs != lhs) {
+        modifier = 0;
+      }
+      final ScheduleEntry scheduleEntry1 = entries.get(lhs);
+      final ScheduleEntry scheduleEntry2 = entries.get(rhs);
+      return scheduleEntry1.getStart() - scheduleEntry2.getStart() + modifier;
+    }
+
   }
 
 }
