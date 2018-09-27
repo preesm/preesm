@@ -626,7 +626,10 @@ public class StaticPiMM2FlatPiMMVisitor extends PiMMSwitch<Boolean> {
       this.currentActorName = this.graphPrefix + actor.getName();
       doSwitch(actor);
     }
-    for (final Fifo f : graph.getFifos()) {
+    for (final Fifo f : graph.getFifosWithDelay()) {
+      doSwitch(f);
+    }
+    for (final Fifo f : graph.getFifosWithoutDelay()) {
       doSwitch(f);
     }
   }

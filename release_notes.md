@@ -10,6 +10,7 @@ PREESM Changelog
 * Refactoring;
 * Adding graph optimizations for PiMM graphs as seperate process from PiMM2SRDAG.
 * Adding tests for graph transformations.
+* Adding new task to flatten a given PiMM graph.
 * Move travis dist to xenial;
 
 ### Bug fix
@@ -25,7 +26,6 @@ PREESM Changelog
 * Update M2E Code Quality repo;
 * Codegen now automatically fills its include list given actors refinements;
 * Fix PiMM2SRDAG transformation (was giving wrong results / failing on specific cases);
-* Adding new task to flatten a given PiMM graph.
 
 ### Bug fix
 * Fix path format in scenario editor (issue #81);
