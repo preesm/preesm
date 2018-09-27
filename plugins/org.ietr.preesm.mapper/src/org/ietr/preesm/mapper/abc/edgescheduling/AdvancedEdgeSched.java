@@ -41,7 +41,6 @@ import org.ietr.preesm.mapper.abc.order.OrderManager;
 import org.ietr.preesm.mapper.model.MapperDAGVertex;
 import org.ietr.preesm.mapper.model.special.TransferVertex;
 
-// TODO: Auto-generated Javadoc
 /**
  * A complex edge scheduler used for tests. Do not use it for the moment.
  *
@@ -74,7 +73,6 @@ public class AdvancedEdgeSched extends AbstractEdgeSched {
   public void schedule(final TransferVertex vertex, final MapperDAGVertex source, final MapperDAGVertex target) {
 
     final ComponentInstance component = vertex.getEffectiveComponent();
-    // intervalFinder.displayCurrentSchedule(vertex, source);
     final Interval earliestInterval = this.intervalFinder.findEarliestNonNullInterval(component, source, target);
 
     if (earliestInterval.getDuration() >= 0) {

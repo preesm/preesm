@@ -42,7 +42,6 @@ import org.ietr.preesm.mapper.abc.order.OrderManager;
 import org.ietr.preesm.mapper.model.MapperDAGVertex;
 import org.ietr.preesm.mapper.model.special.TransferVertex;
 
-// TODO: Auto-generated Javadoc
 /**
  * An advanced edge scheduler. It looks for the largest free interval in scheduling and schedules the new communication
  * in this slot.
@@ -76,7 +75,6 @@ public class SwitcherEdgeSched extends AbstractEdgeSched {
   public void schedule(final TransferVertex vertex, final MapperDAGVertex source, final MapperDAGVertex target) {
 
     final ComponentInstance component = vertex.getEffectiveComponent();
-    // intervalFinder.displayCurrentSchedule(vertex, source);
     final Interval largestInterval = this.intervalFinder.findLargestFreeInterval(component, source, target);
 
     if (largestInterval.getDuration() > 0) {

@@ -61,6 +61,7 @@ import org.ietr.preesm.core.scenario.PreesmScenario;
 import org.ietr.preesm.mapper.PreesmMapperException;
 import org.ietr.preesm.mapper.abc.edgescheduling.IEdgeSched;
 import org.ietr.preesm.mapper.abc.order.OrderManager;
+import org.ietr.preesm.mapper.abc.order.Schedule;
 import org.ietr.preesm.mapper.abc.route.calcul.RouteCalculator;
 import org.ietr.preesm.mapper.abc.route.impl.DmaComRouterImplementer;
 import org.ietr.preesm.mapper.abc.route.impl.MessageComRouterImplementer;
@@ -215,17 +216,22 @@ public class CommunicationRouter {
     final TransactionManager localTransactionManager = new TransactionManager();
 
     // Get edges in scheduling order of their producers
-    final Iterator<MapperDAGVertex> dagIterator = this.orderManager.getTotalOrder().getList().iterator();
-    final List<DAGEdge> edgesInPrecedenceOrder = new ArrayList<>(implementation.edgeSet().size());
+    final Schedule totalOrder = this.orderManager.getTotalOrder();
+    final List<MapperDAGVertex> list = totalOrder.getList();
+    final Iterator<MapperDAGVertex> dagIterator = list.iterator();
+    final List<DAGEdge> edgesInPrecedenceOrder = new ArrayList<>();
 
     while (dagIterator.hasNext()) {
       final DAGVertex vertex = dagIterator.next();
       edgesInPrecedenceOrder.addAll(vertex.outgoingEdges());
     }
 
-    if (edgesInPrecedenceOrder.size() != this.implementation.edgeSet().size()) {
+    final int dagEdgeCount = this.implementation.edgeSet().size();
+    final int outEdgesCount = edgesInPrecedenceOrder.size();
+    if (outEdgesCount != dagEdgeCount) {
       // If this happens, this means that not all edges are covered by the previous while loop.
-      throw new PreesmMapperException("Some DAG edges are not covered", null);
+      throw new PreesmMapperException("Some DAG edges are not covered. Input DAG has " + dagEdgeCount
+          + " edges whereas there are " + outEdgesCount + " edges connected to vertices.");
     }
 
     // We iterate the edges and process the ones with different allocations

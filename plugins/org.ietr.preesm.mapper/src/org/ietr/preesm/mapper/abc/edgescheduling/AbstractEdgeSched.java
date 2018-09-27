@@ -40,7 +40,6 @@ package org.ietr.preesm.mapper.abc.edgescheduling;
 
 import org.ietr.preesm.mapper.abc.order.OrderManager;
 
-// TODO: Auto-generated Javadoc
 /**
  * Methods common to every edge schedulers.
  *
@@ -73,7 +72,7 @@ public abstract class AbstractEdgeSched implements IEdgeSched {
    */
   public static IEdgeSched getInstance(final EdgeSchedType edgeSchedType, final OrderManager orderManager) {
 
-    AbstractEdgeSched edgeSched = null;
+    final IEdgeSched edgeSched;
 
     if (edgeSchedType == EdgeSchedType.Simple) {
       edgeSched = new SimpleEdgeSched(orderManager);

@@ -410,6 +410,35 @@
             </output>
          </outputs>
       </task>
+      <task
+            id="org.ietr.preesm.plugin.mapper.external"
+            name="FAST algorithm (DAG)"
+            type="org.ietr.preesm.mapper.ExternalMappingFromDAG">
+         <inputs>
+            <input
+                  id="architecture"
+                  object="org.ietr.dftools.architecture.slam.Design">
+            </input>
+            <input
+                  id="scenario"
+                  object="org.ietr.preesm.core.scenario.PreesmScenario">
+            </input>
+            <input
+                  id="DAG"
+                  object="org.ietr.dftools.algorithm.model.dag.DirectedAcyclicGraph">
+            </input>
+         </inputs>
+         <outputs>
+            <output
+                  id="DAG"
+                  object="org.ietr.dftools.algorithm.model.dag.DirectedAcyclicGraph">
+            </output>
+            <output
+                  id="ABC"
+                  object="org.ietr.preesm.mapper.abc.impl.latency.LatencyAbc">
+            </output>
+         </outputs>
+      </task>
    </extension>
 
 </plugin>

@@ -5,6 +5,7 @@ PREESM Changelog
 *XXXX.XX.XX*
 
 ### New Feature
+* Add workflow task to manually input a schedule in the flow;
 
 ### Changes
 * Refactoring;

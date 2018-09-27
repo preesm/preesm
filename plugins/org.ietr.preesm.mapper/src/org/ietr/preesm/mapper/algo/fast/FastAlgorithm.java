@@ -396,10 +396,6 @@ public class FastAlgorithm extends Observable {
         operatorfcp = (ComponentInstance) operatorList.toArray()[randomIndex];
       } while (operatorfcp.getInstanceName().equals(currentOp.getInstanceName()) && (operatorList.size() > 1));
 
-      // step 15
-      List<MapperDAGVertex> toRemapList = cpnDominantList;
-      toRemapList = toRemapList.subList(toRemapList.indexOf(fcpvertex), toRemapList.size());
-
       simulator.resetDAG();
 
       // Reschedule the whole dag

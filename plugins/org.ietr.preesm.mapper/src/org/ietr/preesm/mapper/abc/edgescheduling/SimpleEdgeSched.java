@@ -40,7 +40,6 @@ import org.ietr.preesm.mapper.abc.order.OrderManager;
 import org.ietr.preesm.mapper.model.MapperDAGVertex;
 import org.ietr.preesm.mapper.model.special.TransferVertex;
 
-// TODO: Auto-generated Javadoc
 /**
  * An edge scheduler that simply adds the transfer as soon as possible after the sender.
  *
