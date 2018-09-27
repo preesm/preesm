@@ -91,9 +91,9 @@ public class ExternalMappingFromDAG extends AbstractMappingFromDAG {
     if (abc.isMapable(vertex, componentInstance, false)) {
       abc.map(vertex, componentInstance, true, false);
     } else {
-      final ComponentInstance compatibleComponent = componentInstances.stream()
-          .filter(c -> abc.isMapable(vertex, c, false)).findFirst().orElseThrow(() -> new RuntimeException(""));
-      abc.map(vertex, compatibleComponent, true, false);
+      final String message = "The schedule is invalid: vertex [" + vertex.getName()
+          + "] cannot be mapped on component [" + componentInstance.getInstanceName() + "].";
+      throw new PreesmMapperException(message);
     }
   }
 
