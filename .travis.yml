@@ -3,11 +3,12 @@
 #######################
 language: java
 sudo: false
+dist: xenial
 jdk:
   - openjdk8
 os:
   - linux
-dist: trusty
+
 
 install: true
 

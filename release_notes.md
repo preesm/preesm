@@ -10,6 +10,7 @@ PREESM Changelog
 * Refactoring;
 * Adding graph optimizations for PiMM graphs as seperate process from PiMM2SRDAG.
 * Adding tests for graph transformations.
+* Move travis dist to xenial;
 
 ### Bug fix
 
