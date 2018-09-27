@@ -40,31 +40,14 @@
  */
 package org.ietr.preesm.algorithm.exportXml;
 
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.OutputStream;
 import java.util.LinkedHashMap;
 import java.util.Map;
-import org.eclipse.core.resources.IFile;
-import org.eclipse.core.resources.ResourcesPlugin;
-import org.eclipse.core.runtime.CoreException;
-import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
-import org.eclipse.core.runtime.Path;
-import org.eclipse.emf.common.util.URI;
-import org.eclipse.emf.ecore.resource.Resource;
-import org.eclipse.emf.ecore.resource.ResourceSet;
-import org.eclipse.emf.ecore.resource.impl.ResourceSetImpl;
 import org.ietr.dftools.workflow.WorkflowException;
 import org.ietr.dftools.workflow.elements.Workflow;
 import org.ietr.dftools.workflow.implement.AbstractTaskImplementation;
 import org.ietr.dftools.workflow.implement.AbstractWorkflowNodeImplementation;
-import org.ietr.preesm.core.scenario.PreesmScenario;
 import org.ietr.preesm.experiment.model.pimm.PiGraph;
-import org.ietr.preesm.experiment.model.pimm.serialize.PiWriter;
-import org.ietr.preesm.utils.files.ContainersManager;
-import org.ietr.preesm.utils.files.WorkspaceUtils;
-import org.ietr.preesm.utils.paths.PathTools;
 
 /**
  * The Class SDFExporter.
@@ -81,51 +64,51 @@ public class PiSDFExporter extends AbstractTaskImplementation {
   public Map<String, Object> execute(final Map<String, Object> inputs, final Map<String, String> parameters,
       final IProgressMonitor monitor, final String nodeName, final Workflow workflow) throws WorkflowException {
 
-    final PreesmScenario scenario = (PreesmScenario) inputs.get(AbstractWorkflowNodeImplementation.KEY_SCENARIO);
+    final PiGraph graph = (PiGraph) inputs.get(AbstractWorkflowNodeImplementation.KEY_PI_GRAPH);
 
     // Parse the graph
-    final String url = scenario.getAlgorithmURL();
-    final ResourceSet resourceSet = new ResourceSetImpl();
-
-    final URI uriGraph = URI.createPlatformResourceURI(url, true);
-    if ((uriGraph.fileExtension() == null) || !uriGraph.fileExtension().contentEquals("pi")) {
-      throw new WorkflowException("unhandled file exception: " + uriGraph.fileExtension());
-    }
-    Resource ressource;
-    ressource = resourceSet.getResource(uriGraph, true);
-    final PiGraph graph = (PiGraph) (ressource.getContents().get(0));
-
-    // Creates the output file now
-    final String sXmlPath = PathTools.getAbsolutePath(parameters.get("path"), workflow.getProjectName())
-        + "/Algo/generated";
-    IPath xmlPath = new Path(sXmlPath);
-    // Get a complete valid path with all folders existing
-    try {
-      if (xmlPath.getFileExtension() != null) {
-        ContainersManager.createMissingFolders(xmlPath.removeFileExtension().removeLastSegments(1));
-      } else {
-        ContainersManager.createMissingFolders(xmlPath);
-        xmlPath = xmlPath.append(graph.getName() + ".xml");
-      }
-    } catch (CoreException | IllegalArgumentException e) {
-      throw new WorkflowException("Path " + sXmlPath + " is not a valid path for export.\n" + e.getMessage());
-    }
-
-    OutputStream outStream;
-    try {
-      // Write the Graph to the OutputStream using the Pi format
-      final URI uri = URI.createPlatformResourceURI(xmlPath.toString(), true);
-      // Get the project
-      final String platformString = uri.toPlatformString(true);
-      final IFile documentFile = ResourcesPlugin.getWorkspace().getRoot().getFile(new Path(platformString));
-      outStream = new FileOutputStream(documentFile.getLocation().toOSString());
-
-      new PiWriter(uri).write(graph, outStream);
-    } catch (FileNotFoundException e) {
-      throw new WorkflowException("Could not open outputstream file " + xmlPath.toString());
-    }
-
-    WorkspaceUtils.updateWorkspace();
+    // final String url = scenario.getAlgorithmURL();
+    // final ResourceSet resourceSet = new ResourceSetImpl();
+    //
+    // final URI uriGraph = URI.createPlatformResourceURI(url, true);
+    // if ((uriGraph.fileExtension() == null) || !uriGraph.fileExtension().contentEquals("pi")) {
+    // throw new WorkflowException("unhandled file exception: " + uriGraph.fileExtension());
+    // }
+    // Resource ressource;
+    // ressource = resourceSet.getResource(uriGraph, true);
+    // final PiGraph graph = (PiGraph) (ressource.getContents().get(0));
+    //
+    // // Creates the output file now
+    // final String sXmlPath = PathTools.getAbsolutePath(parameters.get("path"), workflow.getProjectName())
+    // + "/Algo/generated";
+    // IPath xmlPath = new Path(sXmlPath);
+    // // Get a complete valid path with all folders existing
+    // try {
+    // if (xmlPath.getFileExtension() != null) {
+    // ContainersManager.createMissingFolders(xmlPath.removeFileExtension().removeLastSegments(1));
+    // } else {
+    // ContainersManager.createMissingFolders(xmlPath);
+    // xmlPath = xmlPath.append(graph.getName() + ".xml");
+    // }
+    // } catch (CoreException | IllegalArgumentException e) {
+    // throw new WorkflowException("Path " + sXmlPath + " is not a valid path for export.\n" + e.getMessage());
+    // }
+    //
+    // OutputStream outStream;
+    // try {
+    // // Write the Graph to the OutputStream using the Pi format
+    // final URI uri = URI.createPlatformResourceURI(xmlPath.toString(), true);
+    // // Get the project
+    // final String platformString = uri.toPlatformString(true);
+    // final IFile documentFile = ResourcesPlugin.getWorkspace().getRoot().getFile(new Path(platformString));
+    // outStream = new FileOutputStream(documentFile.getLocation().toOSString());
+    //
+    // new PiWriter(uri).write(graph, outStream);
+    // } catch (FileNotFoundException e) {
+    // throw new WorkflowException("Could not open outputstream file " + xmlPath.toString());
+    // }
+    //
+    // WorkspaceUtils.updateWorkspace();
 
     return new LinkedHashMap<>();
   }
