@@ -44,15 +44,13 @@ import org.junit.Test;
 /**
  *
  */
-public class ModelTransfoTest {
+public class PiMMFlattenerTest {
 
   @Test
-  public void testFlat() throws IOException, CoreException {
-    final String projectName = "org.ietr.preesm.model_tests";
-    final String[] scenarios = new String[] { "Tests_Flat/simple.scenario", "Tests_Flat/delay_simple.scenario",
-        "Tests_Flat/delay_setter_getter.scenario" };
-    final String[] workflows = new String[] { "StaticPiMM2SRDAGCodegen.workflow",
-        "StaticPiMMFlattenerCodegen.workflow" };
+  public void testRL() throws IOException, CoreException {
+    final String projectName = "org.ietr.preesm.reinforcement_learning";
+    final String[] scenarios = new String[] { "1corePrediction.scenario", "1coreTraining.scenario" };
+    final String[] workflows = new String[] { "StaticPiMMFlattenerCodegen.workflow" };
 
     for (final String workflow : workflows) {
       for (final String scenario : scenarios) {
@@ -65,49 +63,33 @@ public class ModelTransfoTest {
   }
 
   @Test
-  public void testHierarchy() throws IOException, CoreException {
-    final String projectName = "org.ietr.preesm.model_tests";
-    final String[] scenarios = new String[] { "Tests_H/simple_H.scenario", "Tests_H/simple_H_delay_p.scenario",
-        "Tests_H/simple_H_delay_no_p.scenario", "Tests_H/simple_H_delay_p_no_p.scenario",
-        "Tests_H/simple_H_delay_p_p.scenario" };
-    final String[] workflows = new String[] { "StaticPiMM2SRDAGCodegen.workflow",
-        "StaticPiMMFlattenerCodegen.workflow" };
+  public void testStereo() throws IOException, CoreException {
+    final String projectName = "org.ietr.preesm.stereo";
+    final String[] scenarios = new String[] { "1core.scenario" };
+    final String[] workflows = new String[] { "StaticPiMMFlattenerCodegen.workflow" };
 
     for (final String workflow : workflows) {
       for (final String scenario : scenarios) {
         final String workflowFilePathStr = "/Workflows/" + workflow;
         final String scenarioFilePathStr = "/Scenarios/" + scenario;
         final boolean success = WorkflowRunner.runWorkFlow(projectName, workflowFilePathStr, scenarioFilePathStr);
-        if (scenario.equals("Tests_H/simple_H_delay_p_no_p.scenario")
-            && workflow.equals("StaticPiMMFlattenerCodegen.workflow")) {
-          Assert.assertFalse("Workflow [" + workflow + "] with scenario [" + scenario + "] caused failure", success);
-        } else {
-          Assert.assertTrue("Workflow [" + workflow + "] with scenario [" + scenario + "] caused failure", success);
-        }
+        Assert.assertTrue("Workflow [" + workflow + "] with scenario [" + scenario + "] caused failure", success);
       }
     }
   }
 
   @Test
-  public void testNestedHierarchy() throws IOException, CoreException {
-    final String projectName = "org.ietr.preesm.model_tests";
-    final String[] scenarios = new String[] { "Tests_H/nested_H_simple.scenario", "Tests_H/nested_H_BR.scenario",
-        "Tests_H/nested_H_RB.scenario", "Tests_H/nested_H_delay_p.scenario", "Tests_H/nested_H_delay_no_p.scenario",
-        "Tests_H/nested_H_delay_p_no_p.scenario", "Tests_H/nested_H_delay_p_p.scenario" };
-    final String[] workflows = new String[] { "StaticPiMM2SRDAGCodegen.workflow",
-        "StaticPiMMFlattenerCodegen.workflow" };
+  public void testSobel() throws IOException, CoreException {
+    final String projectName = "org.ietr.preesm.sobel";
+    final String[] scenarios = new String[] { "1core.scenario" };
+    final String[] workflows = new String[] { "StaticPiMMFlattenerCodegen.workflow" };
 
     for (final String workflow : workflows) {
       for (final String scenario : scenarios) {
         final String workflowFilePathStr = "/Workflows/" + workflow;
         final String scenarioFilePathStr = "/Scenarios/" + scenario;
         final boolean success = WorkflowRunner.runWorkFlow(projectName, workflowFilePathStr, scenarioFilePathStr);
-        if (scenario.equals("Tests_H/nested_H_delay_p_no_p.scenario")
-            && workflow.equals("StaticPiMMFlattenerCodegen.workflow")) {
-          Assert.assertFalse("Workflow [" + workflow + "] with scenario [" + scenario + "] caused failure", success);
-        } else {
-          Assert.assertTrue("Workflow [" + workflow + "] with scenario [" + scenario + "] caused failure", success);
-        }
+        Assert.assertTrue("Workflow [" + workflow + "] with scenario [" + scenario + "] caused failure", success);
       }
     }
   }

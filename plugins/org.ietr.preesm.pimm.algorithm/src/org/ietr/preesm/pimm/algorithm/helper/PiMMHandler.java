@@ -449,11 +449,9 @@ public class PiMMHandler {
         PiGraph currentGraph = graph;
         Delay currentDelay = delay;
         do {
-          currentDelay.setName(delayShortID);
           final Delay newDelay = replaceLocalDelay(currentGraph, currentDelay);
           newDelay.setLevel(PersistenceLevel.PERMANENT);
           // Update current graph and delay
-          delayShortID = currentGraph.getName() + "_" + delayShortID;
           currentGraph = currentGraph.getContainingPiGraph();
           currentDelay = newDelay;
         } while (currentGraph.getContainingPiGraph() != null);
