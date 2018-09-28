@@ -80,8 +80,8 @@ public class PiSDFExporter extends AbstractTaskImplementation {
     final PiGraph graph = (PiGraph) inputs.get(AbstractWorkflowNodeImplementation.KEY_PI_GRAPH);
 
     // Creates the output file now
-    final String sXmlPath = PathTools.getAbsolutePath(parameters.get("path"), workflow.getProjectName())
-        + "/Algo/generated";
+    final String relative = parameters.get("path");
+    final String sXmlPath = PathTools.getAbsolutePath(relative, workflow.getProjectName());
     IPath xmlPath = new Path(sXmlPath);
     // Get a complete valid path with all folders existing
     try {
@@ -89,7 +89,7 @@ public class PiSDFExporter extends AbstractTaskImplementation {
         ContainersManager.createMissingFolders(xmlPath.removeFileExtension().removeLastSegments(1));
       } else {
         ContainersManager.createMissingFolders(xmlPath);
-        xmlPath = xmlPath.append(graph.getName() + ".xml");
+        xmlPath = xmlPath.append(graph.getName() + ".pi");
       }
     } catch (CoreException | IllegalArgumentException e) {
       throw new WorkflowException("Path " + sXmlPath + " is not a valid path for export.\n" + e.getMessage());
