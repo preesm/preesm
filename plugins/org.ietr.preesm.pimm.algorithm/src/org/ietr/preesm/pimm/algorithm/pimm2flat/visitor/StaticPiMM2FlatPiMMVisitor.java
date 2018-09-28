@@ -124,7 +124,7 @@ public class StaticPiMM2FlatPiMMVisitor extends PiMMSwitch<Boolean> {
    *          the Basic Repetition Vector Map
    * @param scenario
    *          the scenario
-   * 
+   *
    */
   public StaticPiMM2FlatPiMMVisitor(final PiGraph graph, final Map<AbstractVertex, Long> brv,
       final PreesmScenario scenario) {
@@ -138,7 +138,7 @@ public class StaticPiMM2FlatPiMMVisitor extends PiMMSwitch<Boolean> {
 
   /**
    * Build proper name for instance [index] of a given vertex.
-   * 
+   *
    * @param prefixe
    *          Prefix to apply to the vertex name
    * @param vertexName
@@ -153,7 +153,7 @@ public class StaticPiMM2FlatPiMMVisitor extends PiMMSwitch<Boolean> {
 
   /**
    * Set basic properties from a PiMM actor to the copied actor
-   * 
+   *
    * @param actor
    *          original PiMM actor
    * @param copyActor
