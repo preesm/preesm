@@ -39,6 +39,7 @@ package org.ietr.preesm.pimm.algorithm.pimm2sdf.visitor;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
+import org.eclipse.emf.ecore.resource.Resource;
 import org.ietr.dftools.algorithm.model.AbstractGraph;
 import org.ietr.dftools.algorithm.model.CodeRefinement;
 import org.ietr.dftools.algorithm.model.IRefinement;
@@ -97,7 +98,6 @@ import org.ietr.preesm.experiment.model.pimm.InterfaceActor;
 import org.ietr.preesm.experiment.model.pimm.JoinActor;
 import org.ietr.preesm.experiment.model.pimm.Parameter;
 import org.ietr.preesm.experiment.model.pimm.PiGraph;
-import org.ietr.preesm.experiment.model.pimm.PiMMPackage;
 import org.ietr.preesm.experiment.model.pimm.PiSDFRefinement;
 import org.ietr.preesm.experiment.model.pimm.Port;
 import org.ietr.preesm.experiment.model.pimm.Refinement;
@@ -757,7 +757,10 @@ public class StaticPiMM2SDFVisitor extends PiMMSwitch<Boolean> {
 
       // Save the original Path to the pigraph in the property bean (used
       // by memory scripts)
-      this.result.setPropertyValue(AbstractGraph.PATH, pg.eResource().getURI().toPlatformString(false));
+      final Resource eResource = pg.eResource();
+      if (eResource != null) {
+        this.result.setPropertyValue(AbstractGraph.PATH, eResource.getURI().toPlatformString(false));
+      }
 
       // Set the values into the parameters of pg when possible
       for (final Parameter p : pg.getParameters()) {
