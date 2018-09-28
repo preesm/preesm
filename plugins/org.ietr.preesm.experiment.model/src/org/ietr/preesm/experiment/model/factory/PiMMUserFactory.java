@@ -37,6 +37,7 @@ package org.ietr.preesm.experiment.model.factory;
 
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.util.EcoreUtil;
+import org.ietr.preesm.experiment.model.pimm.Actor;
 import org.ietr.preesm.experiment.model.pimm.ConfigInputInterface;
 import org.ietr.preesm.experiment.model.pimm.ConfigInputPort;
 import org.ietr.preesm.experiment.model.pimm.ConfigOutputInterface;
@@ -210,6 +211,14 @@ public final class PiMMUserFactory extends PiMMFactoryImpl {
   public PiGraph createPiGraph() {
     final PiGraph res = super.createPiGraph();
     res.eAdapters().add(new GraphInterfaceObserver());
+    return res;
+  }
+
+  @Override
+  public Actor createActor() {
+    final Actor res = super.createActor();
+    final Expression exp = createExpression();
+    res.setExpression(exp);
     return res;
   }
 

@@ -54,6 +54,8 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.CLabel;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
+import org.eclipse.swt.graphics.Color;
+import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.layout.FormAttachment;
 import org.eclipse.swt.layout.FormData;
 import org.eclipse.swt.widgets.Button;
@@ -62,9 +64,13 @@ import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.views.properties.tabbed.ITabbedPropertyConstants;
 import org.eclipse.ui.views.properties.tabbed.TabbedPropertySheetPage;
 import org.eclipse.ui.views.properties.tabbed.TabbedPropertySheetWidgetFactory;
+import org.ietr.preesm.experiment.model.expression.ExpressionEvaluationException;
+import org.ietr.preesm.experiment.model.expression.ExpressionEvaluator;
 import org.ietr.preesm.experiment.model.pimm.Actor;
 import org.ietr.preesm.experiment.model.pimm.CHeaderRefinement;
 import org.ietr.preesm.experiment.model.pimm.ExecutableActor;
+import org.ietr.preesm.experiment.model.pimm.Expression;
+import org.ietr.preesm.experiment.model.pimm.PeriodicElement;
 import org.ietr.preesm.experiment.model.pimm.Refinement;
 import org.ietr.preesm.experiment.model.pimm.util.PrototypeFormatter;
 import org.ietr.preesm.ui.pimm.features.ClearActorMemoryScriptFeature;
@@ -123,6 +129,18 @@ public class ActorPropertiesSection extends GFPropertySection implements ITabbed
   /** The but memory script open. */
   private Button butMemoryScriptOpen;
 
+  /** The lbl for the actor period. */
+  private CLabel lblPeriod;
+
+  /** The txt for the actor period. */
+  private Text txtPeriod;
+
+  /** The lbl value. */
+  private CLabel lblPeriodValue;
+
+  /** The lbl value obj. */
+  private CLabel lblPeriodValueObj;
+
   /** The first column width. */
   private final int FIRST_COLUMN_WIDTH = 100;
 
@@ -157,6 +175,26 @@ public class ActorPropertiesSection extends GFPropertySection implements ITabbed
     data.right = new FormAttachment(this.txtNameObj, -ITabbedPropertyConstants.HSPACE);
     this.lblName.setLayoutData(data);
 
+    /*** Name box listener ***/
+    this.txtNameObj.addModifyListener(e -> {
+      final PictogramElement pe = getSelectedPictogramElement();
+      if (pe != null) {
+        final EObject bo = Graphiti.getLinkService().getBusinessObjectForLinkedPictogramElement(pe);
+        if (bo == null) {
+          return;
+        }
+
+        if (bo instanceof ExecutableActor) {
+          final ExecutableActor actor = (ExecutableActor) bo;
+          if (ActorPropertiesSection.this.txtNameObj.getText().compareTo(actor.getName()) != 0) {
+            setNewName(actor, ActorPropertiesSection.this.txtNameObj.getText());
+            getDiagramTypeProvider().getFeatureProvider().updateIfPossible(new UpdateContext(pe));
+            getDiagramTypeProvider().getFeatureProvider().layoutIfPossible(new LayoutContext(pe));
+          }
+        } // end Actor
+      }
+    });
+
     /**
      * Refinement
      */
@@ -166,6 +204,58 @@ public class ActorPropertiesSection extends GFPropertySection implements ITabbed
      * Memory script
      */
     createMemoryScriptControl(factory, this.composite);
+
+    /**** Period ****/
+    this.txtPeriod = factory.createText(this.composite, "0");
+    data = new FormData();
+    data.left = new FormAttachment(0, this.FIRST_COLUMN_WIDTH);
+    data.right = new FormAttachment(50, 0);
+    data.top = new FormAttachment(lblMemoryScript);
+    this.txtPeriod.setLayoutData(data);
+    this.txtPeriod.setEnabled(true);
+    this.txtPeriod.setToolTipText("Enter an expression if periodic, or 0 if aperiodic.");
+
+    this.lblPeriod = factory.createCLabel(this.composite, "Period expression:");
+    data = new FormData();
+    data.left = new FormAttachment(0, 0);
+    data.right = new FormAttachment(this.txtPeriod, -ITabbedPropertyConstants.HSPACE);
+    data.top = new FormAttachment(lblMemoryScript);
+    this.lblPeriod.setLayoutData(data);
+
+    /*** Period box listener ***/
+    this.txtPeriod.addModifyListener(e -> {
+      final PictogramElement pe = getSelectedPictogramElement();
+      if (pe != null) {
+        final EObject bo = Graphiti.getLinkService().getBusinessObjectForLinkedPictogramElement(pe);
+        if (bo == null) {
+          return;
+        }
+
+        if (bo instanceof PeriodicElement) {
+          final PeriodicElement periodEl = (PeriodicElement) bo;
+          Expression periodicExp = periodEl.getExpression();
+          String strPeriod = ActorPropertiesSection.this.txtPeriod.getText();
+          if (strPeriod.compareTo(periodicExp.getExpressionString()) != 0) {
+            setNewPeriod(periodicExp, strPeriod);
+          }
+        } // end PeriodicElement
+      }
+    });
+
+    this.lblPeriodValue = factory.createCLabel(this.composite, "0");
+    data = new FormData();
+    data.left = new FormAttachment(0, this.FIRST_COLUMN_WIDTH);
+    data.right = new FormAttachment(50, 0);
+    data.top = new FormAttachment(lblPeriod);
+    this.lblPeriodValue.setLayoutData(data);
+
+    this.lblPeriodValueObj = factory.createCLabel(this.composite, "Period value:");
+    data = new FormData();
+    data.left = new FormAttachment(0, 0);
+    data.right = new FormAttachment(this.lblPeriodValue, -ITabbedPropertyConstants.HSPACE);
+    data.top = new FormAttachment(lblPeriod);
+    this.lblPeriodValueObj.setLayoutData(data);
+
   }
 
   /**
@@ -321,26 +411,6 @@ public class ActorPropertiesSection extends GFPropertySection implements ITabbed
 
     });
 
-    /*** Name box listener ***/
-
-    this.txtNameObj.addModifyListener(e -> {
-      final PictogramElement pe = getSelectedPictogramElement();
-      if (pe != null) {
-        final EObject bo = Graphiti.getLinkService().getBusinessObjectForLinkedPictogramElement(pe);
-        if (bo == null) {
-          return;
-        }
-
-        if (bo instanceof ExecutableActor) {
-          final ExecutableActor actor = (ExecutableActor) bo;
-          if (ActorPropertiesSection.this.txtNameObj.getText().compareTo(actor.getName()) != 0) {
-            setNewName(actor, ActorPropertiesSection.this.txtNameObj.getText());
-            getDiagramTypeProvider().getFeatureProvider().updateIfPossible(new UpdateContext(pe));
-            getDiagramTypeProvider().getFeatureProvider().layoutIfPossible(new LayoutContext(pe));
-          }
-        } // end Actor
-      }
-    });
   }
 
   /**
@@ -506,6 +576,25 @@ public class ActorPropertiesSection extends GFPropertySection implements ITabbed
     });
   }
 
+  /**
+   * Safely set a new name to the {@link Actor}.
+   *
+   * @param periodicEl
+   *          {@link Actor} to set
+   * @param value
+   *          String value
+   */
+  private void setNewPeriod(final Expression periodicExp, final String value) {
+    final TransactionalEditingDomain editingDomain = getDiagramTypeProvider().getDiagramBehavior().getEditingDomain();
+    editingDomain.getCommandStack().execute(new RecordingCommand(editingDomain) {
+
+      @Override
+      protected void doExecute() {
+        periodicExp.setExpressionString(value);
+      }
+    });
+  }
+
   /*
    * (non-Javadoc)
    *
@@ -530,6 +619,44 @@ public class ActorPropertiesSection extends GFPropertySection implements ITabbed
           this.txtNameObj.setText(exexcutableActor.getName());
         }
         this.txtNameObj.setEnabled(true);
+
+        if (bo instanceof PeriodicElement) {
+          final Point selelection = this.txtPeriod.getSelection();
+          this.txtPeriod.setEnabled(false);
+
+          final PeriodicElement periodEl = (PeriodicElement) bo;
+          Expression periodicExp = periodEl.getExpression();
+          String newStrExp = ActorPropertiesSection.this.txtPeriod.getText();
+          if (newStrExp.compareTo(periodicExp.getExpressionString()) != 0) {
+            if (newStrExp.isEmpty()) {
+              newStrExp = "0";
+            }
+            setNewPeriod(periodicExp, newStrExp);
+          }
+          final boolean expressionHasFocus = this.txtPeriod.isFocusControl();
+          try {
+            // try out evaluating the expression
+            final long evaluate = ExpressionEvaluator.evaluate(periodicExp);
+            // if evaluation went well, just write the result
+            if (evaluate < 0) {
+              throw new IllegalArgumentException(
+                  "The period must be positive if any, or 0 if aperiodic. Negative numbers not allowed.");
+            }
+            this.lblPeriodValueObj.setText(Long.toString(evaluate));
+            this.txtPeriod.setBackground(new Color(null, 255, 255, 255));
+          } catch (final ExpressionEvaluationException | IllegalArgumentException e) {
+            // otherwise print error message and put red background
+            this.lblPeriodValueObj.setText("Error : " + e.getMessage());
+            this.txtPeriod.setBackground(new Color(null, 240, 150, 150));
+          }
+
+          if (expressionHasFocus) {
+            this.txtPeriod.setFocus();
+            this.txtPeriod.setSelection(selelection);
+          }
+
+          this.txtPeriod.setEnabled(true);
+        } // end PeriodicElement
 
         if (bo instanceof Actor) {
           final Actor actor = (Actor) bo;
