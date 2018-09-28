@@ -236,7 +236,7 @@
          <inputs>
             <input
                   id="PiMM"
-                  object="oorg.ietr.preesm.experiment.model.pimm.PiGraph">
+                  object="org.ietr.preesm.experiment.model.pimm.PiGraph">
             </input>
          </inputs>
       </task>
