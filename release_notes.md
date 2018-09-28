@@ -13,6 +13,7 @@ PREESM Changelog
 * Adding tests for graph transformations.
 * Adding new task to flatten a given PiMM graph.
 * Move travis dist to xenial;
+* Fix PiSDF Exporter to read a PiMM instead of a scenario;
 
 ### Bug fix
 
