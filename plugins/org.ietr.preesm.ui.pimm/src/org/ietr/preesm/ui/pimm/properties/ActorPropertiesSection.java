@@ -236,7 +236,7 @@ public class ActorPropertiesSection extends GFPropertySection implements ITabbed
           Expression periodicExp = periodEl.getExpression();
           String strPeriod = ActorPropertiesSection.this.txtPeriod.getText();
           if (strPeriod.compareTo(periodicExp.getExpressionString()) != 0) {
-            setNewPeriod(periodicExp, strPeriod);
+            setNewPeriod(periodEl, strPeriod);
           }
         } // end PeriodicElement
       }
@@ -584,13 +584,13 @@ public class ActorPropertiesSection extends GFPropertySection implements ITabbed
    * @param value
    *          String value
    */
-  private void setNewPeriod(final Expression periodicExp, final String value) {
+  private void setNewPeriod(final PeriodicElement periodicElt, final String value) {
     final TransactionalEditingDomain editingDomain = getDiagramTypeProvider().getDiagramBehavior().getEditingDomain();
     editingDomain.getCommandStack().execute(new RecordingCommand(editingDomain) {
 
       @Override
       protected void doExecute() {
-        periodicExp.setExpressionString(value);
+        periodicElt.getExpression().setExpressionString(value);
       }
     });
   }
@@ -631,7 +631,7 @@ public class ActorPropertiesSection extends GFPropertySection implements ITabbed
             if (newStrExp.isEmpty()) {
               newStrExp = "0";
             }
-            setNewPeriod(periodicExp, newStrExp);
+            setNewPeriod(periodEl, newStrExp);
           }
           final boolean expressionHasFocus = this.txtPeriod.isFocusControl();
           try {

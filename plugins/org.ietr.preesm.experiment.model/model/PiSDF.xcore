@@ -314,11 +314,14 @@ class Actor extends ExecutableActor, RefinementContainer, PeriodicElement {
 		} else {
 			throw new UnsupportedOperationException("Cannot get the subgraph of a non hierarchical actor.")
 		}
-	}	
+	}
 }
 
 
-abstract class PeriodicElement extends ExpressionHolder {
+interface PeriodicElement extends ExpressionHolder {
+	op Expression getPeriod() {
+		return expression;
+	}
 }
 
 class BroadcastActor extends ExecutableActor {

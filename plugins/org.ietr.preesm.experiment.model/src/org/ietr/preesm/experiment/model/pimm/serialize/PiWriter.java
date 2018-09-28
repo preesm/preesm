@@ -326,6 +326,7 @@ public class PiWriter {
     // TODO change this method when several kinds will exist
     // Set the kind of the Actor
     vertexElt.setAttribute(PiIdentifiers.NODE_KIND, PiIdentifiers.ACTOR);
+    vertexElt.setAttribute(PiIdentifiers.ACTOR_PERIOD, actor.getPeriod().getExpressionString());
     final Refinement refinement = actor.getRefinement();
     if (refinement != null) {
       writeRefinement(vertexElt, refinement);
@@ -355,6 +356,13 @@ public class PiWriter {
    *          The text content of the data element
    */
   protected void writeDataElt(final Element parentElt, final String keyName, final String textContent) {
+    addKey(null, keyName, parentElt.getTagName(), "string", null);
+    final Element nameElt = appendChild(parentElt, PiIdentifiers.DATA);
+    nameElt.setAttribute(PiIdentifiers.DATA_KEY, keyName);
+    nameElt.setTextContent(textContent);
+  }
+
+  protected void writePeriod(final Element parentElt, final String keyName, final String textContent) {
     addKey(null, keyName, parentElt.getTagName(), "string", null);
     final Element nameElt = appendChild(parentElt, PiIdentifiers.DATA);
     nameElt.setAttribute(PiIdentifiers.DATA_KEY, keyName);
