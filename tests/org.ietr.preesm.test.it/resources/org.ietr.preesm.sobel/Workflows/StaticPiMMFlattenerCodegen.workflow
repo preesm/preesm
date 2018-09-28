@@ -83,8 +83,6 @@
         targetport="scenario" to="PiMM2FlatPiMM"/>
     <dftools:dataTransfer from="scenario" sourceport="PiMM"
         targetport="PiMM" to="PiMM2FlatPiMM"/>
-    <dftools:dataTransfer from="scenario" sourceport="architecture"
-        targetport="architecture" to="PiMM2FlatPiMM"/>
     <dftools:dataTransfer from="PiMM2FlatPiMM" sourceport="PiMM"
         targetport="PiMM" to="PiMM2SrDaGTask"/>
     <dftools:dataTransfer from="scenario" sourceport="scenario"

@@ -71,6 +71,23 @@
    <extension
          point="org.ietr.dftools.workflow.tasks">
       <task
+            id="org.ietr.preesm.mapper.getpimm"
+            name="GetPiMM"
+            type="org.ietr.preesm.mapper.GetPiMMFromDAGTask">
+         <inputs>
+            <input
+                  id="DAG"
+                  object="org.ietr.dftools.algorithm.model.dag.DirectedAcyclicGraph">
+            </input>
+         </inputs>
+         <outputs>
+            <output
+                  id="PiMM"
+                  object="org.ietr.preesm.experiment.model.pimm.PiGraph">
+            </output>
+         </outputs>
+      </task>
+      <task
             id="org.ietr.preesm.plugin.mapper.exporter.ImplExportTransform"
             name="Implementation Exporter"
             type="org.ietr.preesm.mapper.exporter.ImplExportTransform">

@@ -122,7 +122,7 @@ public class StaticPiMMFlatPiMMLauncher extends PiMMSwitch<Boolean> {
 
   /**
    * Convert the PiSDF graph to flat PiSDF graph
-   * 
+   *
    * @return the resulting flatten graph
    */
   private PiGraph convert2FlatPiMM() {
@@ -140,7 +140,7 @@ public class StaticPiMMFlatPiMMLauncher extends PiMMSwitch<Boolean> {
 
   /**
    * Computes the BRV of a PiSDF graph using either LCM method or Topology Matrix.
-   * 
+   *
    * @throws StaticPiMMFlatPiMMException
    *           the StaticPiMM2SrDAGException exception
    */

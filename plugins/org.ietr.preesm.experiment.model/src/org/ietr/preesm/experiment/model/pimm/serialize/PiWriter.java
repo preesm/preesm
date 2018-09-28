@@ -39,7 +39,6 @@
  */
 package org.ietr.preesm.experiment.model.pimm.serialize;
 
-import java.io.IOException;
 import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
@@ -261,12 +260,6 @@ public class PiWriter {
     // Produce the output file
     DomUtil.writeDocument(outputStream, this.domDocument);
 
-    // Close the output stream
-    try {
-      outputStream.close();
-    } catch (final IOException e) {
-      e.printStackTrace();
-    }
   }
 
   /**

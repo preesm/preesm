@@ -166,10 +166,6 @@
                   id="scenario"
                   object="org.ietr.preesm.core.scenario.PreesmScenario">
             </input>
-            <input
-                  id="architecture"
-                  object="org.ietr.dftools.architecture.slam.Design">
-            </input>
          </inputs>
          <outputs>
             <output
