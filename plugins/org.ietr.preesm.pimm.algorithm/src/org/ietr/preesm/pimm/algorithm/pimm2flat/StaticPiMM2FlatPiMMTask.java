@@ -44,7 +44,6 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.ietr.dftools.algorithm.model.visitors.VisitorOutput;
-import org.ietr.dftools.architecture.slam.Design;
 import org.ietr.dftools.workflow.WorkflowException;
 import org.ietr.dftools.workflow.elements.Workflow;
 import org.ietr.dftools.workflow.implement.AbstractTaskImplementation;
@@ -77,8 +76,7 @@ public class StaticPiMM2FlatPiMMTask extends AbstractTaskImplementation {
    */
   @Override
   public Map<String, Object> execute(final Map<String, Object> inputs, final Map<String, String> parameters,
-      final IProgressMonitor monitor, final String nodeName, final Workflow workflow) throws WorkflowException {
-    final Design architecture = (Design) inputs.get(AbstractWorkflowNodeImplementation.KEY_ARCHITECTURE);
+      final IProgressMonitor monitor, final String nodeName, final Workflow workflow) {
     final PreesmScenario scenario = (PreesmScenario) inputs.get(AbstractWorkflowNodeImplementation.KEY_SCENARIO);
     final PiGraph graph = (PiGraph) inputs.get(AbstractWorkflowNodeImplementation.KEY_PI_GRAPH);
 
@@ -108,7 +106,6 @@ public class StaticPiMM2FlatPiMMTask extends AbstractTaskImplementation {
    */
   @Override
   public Map<String, String> getDefaultParameters() {
-    // TODO Auto-generated method stub
     final LinkedHashMap<String, String> res = new LinkedHashMap<>();
     res.put(CONSISTENCY_METHOD, LCM_METHOD);
     return res;
@@ -121,7 +118,6 @@ public class StaticPiMM2FlatPiMMTask extends AbstractTaskImplementation {
    */
   @Override
   public String monitorMessage() {
-    // TODO Auto-generated method stub
     return "Transforming PiGraph to flattened PiGraph.";
   }
 
