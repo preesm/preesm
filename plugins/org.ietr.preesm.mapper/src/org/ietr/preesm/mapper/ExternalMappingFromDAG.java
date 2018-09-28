@@ -282,7 +282,7 @@ public class ExternalMappingFromDAG extends AbstractMappingFromDAG {
       }
       final ScheduleEntry scheduleEntry1 = entries.get(lhs);
       final ScheduleEntry scheduleEntry2 = entries.get(rhs);
-      return scheduleEntry1.getStart() - scheduleEntry2.getStart() + modifier;
+      return scheduleEntry1.getTopologicalStart() - scheduleEntry2.getTopologicalStart() + modifier;
     }
 
   }

@@ -37,6 +37,10 @@ public class ScheduleEntry {
   private String                    processingUnitName;
   @JsonProperty("graphIteration")
   private Integer                   graphIteration;
+  @JsonProperty("topologicalStart")
+  private Integer                   topologicalStart;
+  @JsonProperty("topologicalEnd")
+  private Integer                   topologicalEnd;
   @JsonIgnore
   private final Map<String, Object> additionalProperties = new HashMap<>();
 
@@ -138,6 +142,22 @@ public class ScheduleEntry {
   @JsonAnySetter
   public void setAdditionalProperty(final String name, final Object value) {
     this.additionalProperties.put(name, value);
+  }
+
+  public Integer getTopologicalEnd() {
+    return topologicalEnd;
+  }
+
+  public void setTopologicalEnd(Integer topologicalEnd) {
+    this.topologicalEnd = topologicalEnd;
+  }
+
+  public Integer getTopologicalStart() {
+    return topologicalStart;
+  }
+
+  public void setTopologicalStart(Integer topologicalStart) {
+    this.topologicalStart = topologicalStart;
   }
 
 }
