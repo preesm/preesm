@@ -59,15 +59,6 @@ import org.ietr.preesm.pimm.algorithm.pimm2flat.StaticPiMMFlatPiMMLauncher.Stati
  */
 public class StaticPiMM2FlatPiMMTask extends AbstractTaskImplementation {
 
-  /** The Constant TOPOLOGY_METHOD. */
-  public static final String TOPOLOGY_METHOD = "Topology";
-
-  /** The Constant LCM_METHOD. */
-  public static final String LCM_METHOD = "LCM";
-
-  /** The Constant CONSISTENCY_METHOD. */
-  public static final String CONSISTENCY_METHOD = "Consistency_Method";
-
   /*
    * (non-Javadoc)
    *
@@ -99,16 +90,9 @@ public class StaticPiMM2FlatPiMMTask extends AbstractTaskImplementation {
     return output;
   }
 
-  /*
-   * (non-Javadoc)
-   *
-   * @see org.ietr.dftools.workflow.implement.AbstractTaskImplementation#getDefaultParameters()
-   */
   @Override
   public Map<String, String> getDefaultParameters() {
-    final LinkedHashMap<String, String> res = new LinkedHashMap<>();
-    res.put(CONSISTENCY_METHOD, LCM_METHOD);
-    return res;
+    return new LinkedHashMap<>();
   }
 
   /*
