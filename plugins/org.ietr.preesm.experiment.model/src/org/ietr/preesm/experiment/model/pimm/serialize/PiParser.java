@@ -244,7 +244,8 @@ public class PiParser {
     if (attribute != null && !attribute.isEmpty()) {
       actor.getPeriod().setExpressionString(attribute);
     } else {
-      actor.getPeriod().setExpressionString("1337");
+      // 0 or negative values means the actor is aperiodic
+      actor.getPeriod().setExpressionString("0");
     }
 
     // Add the actor to the parsed graph
