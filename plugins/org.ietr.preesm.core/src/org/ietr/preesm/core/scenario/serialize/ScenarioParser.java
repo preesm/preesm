@@ -803,21 +803,26 @@ public class ScenarioParser {
     while (node != null) {
       if (node instanceof Element) {
         final Element elt = (Element) node;
-        final String type = elt.getTagName();
 
-        switch (type) {
-          case "actorId":
-            final String actorId = elt.getAttribute("actorId");
-            pc.addActorId(actorId);
-            break;
-          case "EventSet":
-            final String component = elt.getAttribute("component");
-            final Set<PapiEvent> eventSet = new LinkedHashSet<>();
-            final List<PapiEvent> eventList = getPapifyEvents(elt);
-            eventSet.addAll(eventList);
-            pc.addPAPIEventSet(component, eventSet);
-            break;
-          default:
+        final String actorId = elt.getAttribute("actorId");
+        pc.addActorId(actorId);
+
+        Node nodeEvents = node.getFirstChild();
+
+        while (nodeEvents != null) {
+
+          if (nodeEvents instanceof Element) {
+            final Element eltEvents = (Element) nodeEvents;
+            final String typeEvents = eltEvents.getTagName();
+            if (typeEvents.equals("EventSet")) {
+              final String component = elt.getAttribute("component");
+              final Set<PapiEvent> eventSet = new LinkedHashSet<>();
+              final List<PapiEvent> eventList = getPapifyEvents(elt);
+              eventSet.addAll(eventList);
+              pc.addPAPIEventSet(component, eventSet);
+            }
+          }
+          nodeEvents = nodeEvents.getNextSibling();
         }
       }
       node = node.getNextSibling();
@@ -840,20 +845,10 @@ public class ScenarioParser {
     while (node != null) {
       if (node instanceof Element) {
         final Element elt = (Element) node;
-        final String type = elt.getTagName();
-
-        switch (type) {
-          case "actorId":
-            final String coreId = elt.getAttribute("coreId");
-            pc.addCoreId(coreId);
-            break;
-          case "PAPIComponents":
-            final String component = elt.getAttribute("PAPIComponents");
-            final Set<PapiComponent> components = getPAPIComponents(elt);
-            pc.addPAPIComponents(components);
-            break;
-          default:
-        }
+        final String coreId = elt.getAttribute("coreId");
+        pc.addCoreId(coreId);
+        final Set<PapiComponent> components = getPAPIComponents(elt);
+        pc.addPAPIComponents(components);
       }
       node = node.getNextSibling();
     }

@@ -157,7 +157,7 @@ public class PapifyConfigActor {
    *
    * @return the actor id
    */
-  public String actorId() {
+  public String getActorId() {
     return (this.actorId);
   }
 
@@ -210,7 +210,7 @@ public class PapifyConfigActor {
   @Override
   public String toString() {
     String s = "<Printing core> \n";
-    s += this.actorId.toString();
+    s += this.actorId;
     s += "\n<Printing components and Events> \n";
     s += this.actorEventMap.toString();
     s += "<end printing>\n";
