@@ -39,7 +39,9 @@
 package org.ietr.preesm.pimm.algorithm.helper;
 
 import java.util.LinkedHashMap;
+import java.util.Map;
 import java.util.logging.Level;
+import org.eclipse.emf.common.util.EList;
 import org.ietr.dftools.workflow.WorkflowException;
 import org.ietr.dftools.workflow.tools.WorkflowLogger;
 import org.ietr.preesm.experiment.model.expression.ExpressionEvaluator;
@@ -57,7 +59,6 @@ import org.ietr.preesm.experiment.model.pimm.ISetter;
 import org.ietr.preesm.experiment.model.pimm.InterfaceActor;
 import org.ietr.preesm.experiment.model.pimm.Parameter;
 import org.ietr.preesm.experiment.model.pimm.PiGraph;
-import org.ietr.preesm.experiment.model.pimm.Port;
 import org.ietr.preesm.experiment.model.pimm.util.PiMMSwitch;
 import org.nfunk.jep.JEP;
 import org.nfunk.jep.Node;
@@ -72,9 +73,9 @@ public class PiMMResolverVisitor extends PiMMSwitch<Boolean> {
   /*
    * Map used to rapidly check if a parameter value has allready been resolved
    */
-  final LinkedHashMap<Parameter, Long> parameterValues;
+  final Map<Parameter, Long> parameterValues;
 
-  public PiMMResolverVisitor(final LinkedHashMap<Parameter, Long> parameterValues) {
+  public PiMMResolverVisitor(final Map<Parameter, Long> parameterValues) {
     this.parameterValues = parameterValues;
   }
 
@@ -85,8 +86,7 @@ public class PiMMResolverVisitor extends PiMMSwitch<Boolean> {
    * @param graph
    *          the PiGraph in which we want to set the values of parameters
    */
-  private static void computeDerivedParameterValues(final PiGraph graph,
-      final LinkedHashMap<Parameter, Long> parameterValues) {
+  private static void computeDerivedParameterValues(final PiGraph graph, final Map<Parameter, Long> parameterValues) {
     // If there is no value or list of values for one Parameter, the value
     // of the parameter is derived (i.e., computed from other parameters
     // values), we can evaluate it (after the values of other parameters
@@ -241,8 +241,10 @@ public class PiMMResolverVisitor extends PiMMSwitch<Boolean> {
     final LinkedHashMap<String, Long> portValues = new LinkedHashMap<>();
     // We have to fetch the corresponding parameter port for normal actors
     for (final Parameter p : actor.getInputParameters()) {
-      final Port lookupPort = actor.lookupConfigInputPortConnectedWithParameter(p);
-      portValues.put(lookupPort.getName(), this.parameterValues.get(p));
+      final EList<ConfigInputPort> ports = actor.lookupConfigInputPortsConnectedWithParameter(p);
+      for (ConfigInputPort port : ports) {
+        portValues.put(port.getName(), this.parameterValues.get(p));
+      }
     }
     PiMMResolverVisitor.parseJEP(actor, portValues);
     return true;
@@ -298,8 +300,10 @@ public class PiMMResolverVisitor extends PiMMSwitch<Boolean> {
     // We have to fetch the corresponding parameter port for normal actors
     // Port of a parameter may have a dependency to higher level parameter
     for (final Parameter p : graph.getInputParameters()) {
-      final Port lookupPort = graph.lookupConfigInputPortConnectedWithParameter(p);
-      portValues.put(lookupPort.getName(), this.parameterValues.get(p));
+      final EList<ConfigInputPort> ports = graph.lookupConfigInputPortsConnectedWithParameter(p);
+      for (ConfigInputPort port : ports) {
+        portValues.put(port.getName(), this.parameterValues.get(p));
+      }
     }
     PiMMResolverVisitor.parseJEP(graph, portValues);
 

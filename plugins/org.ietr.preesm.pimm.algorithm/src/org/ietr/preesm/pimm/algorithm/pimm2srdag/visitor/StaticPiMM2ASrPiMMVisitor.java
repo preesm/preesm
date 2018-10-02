@@ -44,6 +44,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import org.eclipse.emf.common.util.EList;
 import org.eclipse.emf.ecore.util.EcoreUtil;
 import org.ietr.dftools.workflow.WorkflowException;
 import org.ietr.preesm.core.scenario.ConstraintGroup;
@@ -134,7 +135,7 @@ public class StaticPiMM2ASrPiMMVisitor extends PiMMSwitch<Boolean> {
    *          the Basic Repetition Vector Map
    * @param scenario
    *          the scenario
-   * 
+   *
    */
   public StaticPiMM2ASrPiMMVisitor(final PiGraph graph, final Map<AbstractVertex, Long> brv,
       final PreesmScenario scenario) {
@@ -147,25 +148,8 @@ public class StaticPiMM2ASrPiMMVisitor extends PiMMSwitch<Boolean> {
   }
 
   /**
-   * Build proper name for instance [index] of a given vertex.
-   * 
-   * @param prefixe
-   *          Prefix to apply to the vertex name
-   * @param vertexName
-   *          The vertex name
-   * @param index
-   *          Instance of the vertex in the single-rate graph
-   * @param vertexRV
-   *          Repetition vector of the actor
-   * @return The proper built name
-   */
-  private String buildName(final String prefixe, final String vertexName, final long index, final long vertexRV) {
-    return vertexRV > 1 ? prefixe + vertexName + "_" + Long.toString(index) : prefixe + vertexName;
-  }
-
-  /**
    * Set basic properties from a PiMM actor to the copied actor
-   * 
+   *
    * @param actor
    *          original PiMM actor
    * @param copyActor
@@ -177,13 +161,17 @@ public class StaticPiMM2ASrPiMMVisitor extends PiMMSwitch<Boolean> {
 
     // // Copy parameters
     for (final Parameter p : actor.getInputParameters()) {
-      final ConfigInputPort originalCIP = actor.lookupConfigInputPortConnectedWithParameter(p);
-      final ConfigInputPort cip = (ConfigInputPort) copyActor.lookupPort(originalCIP.getName());
-      if (cip != null) {
-        final Parameter copy = (Parameter) copier.copy(p);
-        final Dependency dep = PiMMUserFactory.instance.createDependency();
-        dep.setSetter(copy);
-        cip.setIncomingDependency(dep);
+
+      final EList<
+          ConfigInputPort> correspondingConfigInputPorts = actor.lookupConfigInputPortsConnectedWithParameter(p);
+      for (ConfigInputPort originalCIP : correspondingConfigInputPorts) {
+        final ConfigInputPort cip = (ConfigInputPort) copyActor.lookupPort(originalCIP.getName());
+        if (cip != null) {
+          final Parameter copy = (Parameter) copier.copy(p);
+          final Dependency dep = PiMMUserFactory.instance.createDependency();
+          dep.setSetter(copy);
+          cip.setIncomingDependency(dep);
+        }
       }
     }
 
@@ -407,7 +395,7 @@ public class StaticPiMM2ASrPiMMVisitor extends PiMMSwitch<Boolean> {
   }
 
   /**
-   * 
+   *
    * @param fifo
    *          the FIFO
    * @param sourcePort
@@ -452,7 +440,7 @@ public class StaticPiMM2ASrPiMMVisitor extends PiMMSwitch<Boolean> {
 
   /**
    * Search recursively in hierarchy for the matching source port in the real source actor connected to an interface
-   * 
+   *
    * @param graph
    *          Current graph containing the interface actor of name "sourceName"
    * @param source
@@ -478,7 +466,7 @@ public class StaticPiMM2ASrPiMMVisitor extends PiMMSwitch<Boolean> {
 
   /**
    * Handles a DataInputInterface replacement
-   * 
+   *
    * @param targetPort
    *          the target port
    * @param sourceActor
@@ -526,7 +514,7 @@ public class StaticPiMM2ASrPiMMVisitor extends PiMMSwitch<Boolean> {
 
   /**
    * Add a BroadcastActor in the place of a DataInputInterface
-   * 
+   *
    * @param sourceActor
    *          the source interface
    * @return the BroadcastActor
@@ -540,7 +528,7 @@ public class StaticPiMM2ASrPiMMVisitor extends PiMMSwitch<Boolean> {
   }
 
   /**
-   * 
+   *
    * @param fifo
    *          the FIFO
    * @param sourcePort
@@ -585,7 +573,7 @@ public class StaticPiMM2ASrPiMMVisitor extends PiMMSwitch<Boolean> {
 
   /**
    * Search recursively in hierarchy for the matching source port in the real source actor connected to an interface
-   * 
+   *
    * @param graph
    *          Current graph containing the interface actor of name "targetName"
    * @param target
@@ -611,7 +599,7 @@ public class StaticPiMM2ASrPiMMVisitor extends PiMMSwitch<Boolean> {
 
   /**
    * Handles a DataOutputInterface replacement
-   * 
+   *
    * @param targetPort
    *          the target port
    * @param sourceActor
@@ -657,7 +645,7 @@ public class StaticPiMM2ASrPiMMVisitor extends PiMMSwitch<Boolean> {
 
   /**
    * Add a RoundBufferActor in the place of a DataOutputInterface
-   * 
+   *
    * @param sinkActor
    *          the sink interface
    * @return the RoundBufferActor
@@ -826,20 +814,20 @@ public class StaticPiMM2ASrPiMMVisitor extends PiMMSwitch<Boolean> {
 
   /**
    * Split each delay actors in two delay actors: a setter and a getter.
-   * 
+   *
    * <pre>
-   * 
+   *
    * 1. If a delay has no setter / getter actors, then init / end actors are added to replace them.
-   * 
+   *
    * 2. The setter actor is connected to a new delay actor and the same goes for the getter actor.
-   * 
+   *
    * </pre>
-   * 
+   *
    * The idea is to be able to first treat delay FIFOs normally and then come and replace the init / end actors added
    * during the single rate linking by the proper setter / getter ones.
-   * 
+   *
    * This pre-processing allows to keep the single-rate linking phase as generic as possible.
-   * 
+   *
    * @param fifo
    *          The current FIFO
    */

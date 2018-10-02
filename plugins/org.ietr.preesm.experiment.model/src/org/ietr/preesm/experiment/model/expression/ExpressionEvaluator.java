@@ -37,6 +37,7 @@
 package org.ietr.preesm.experiment.model.expression;
 
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 import org.eclipse.emf.common.util.EList;
 import org.ietr.preesm.experiment.model.expression.functions.CeilFunction;
@@ -90,7 +91,8 @@ public class ExpressionEvaluator {
     try {
       result = ExpressionEvaluator.parse(expression, jep);
     } catch (final ParseException e) {
-      throw new ExpressionEvaluationException("Could not evaluate " + expression, e);
+      String msg = "Could not evaluate " + expression + ":\n" + e.getMessage();
+      throw new ExpressionEvaluationException(msg, e);
     }
     return result;
   }
@@ -142,9 +144,11 @@ public class ExpressionEvaluator {
         if (containingActor instanceof InterfaceActor || containingActor instanceof DelayActor) {
           result.put(param.getName(), value);
         } else {
-          final ConfigInputPort configInputPort = containingActor.lookupConfigInputPortConnectedWithParameter(param);
-          final String name = configInputPort.getName();
-          result.put(name, value);
+          final List<ConfigInputPort> inputPorts = containingActor.lookupConfigInputPortsConnectedWithParameter(param);
+          for (ConfigInputPort cip : inputPorts) {
+            final String name = cip.getName();
+            result.put(name, value);
+          }
         }
       } else {
         throw new ExpressionEvaluationException("Could not compute proper parameter name");

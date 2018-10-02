@@ -14,6 +14,7 @@ PREESM Changelog
 * Adding new task to flatten a given PiMM graph.
 * Move travis dist to xenial;
 * Fix PiSDF Exporter to read a PiMM instead of a scenario;
+* Fix Expression evaluator to properly handle several config input ports connected to the same parameter;
 
 ### Bug fix
 

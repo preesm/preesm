@@ -45,6 +45,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import org.eclipse.emf.common.util.EList;
 import org.eclipse.emf.ecore.util.EcoreUtil;
 import org.ietr.dftools.workflow.WorkflowException;
 import org.ietr.preesm.core.scenario.ConstraintGroup;
@@ -137,21 +138,6 @@ public class StaticPiMM2FlatPiMMVisitor extends PiMMSwitch<Boolean> {
   }
 
   /**
-   * Build proper name for instance [index] of a given vertex.
-   *
-   * @param prefixe
-   *          Prefix to apply to the vertex name
-   * @param vertexName
-   *          The vertex name
-   * @param index
-   *          Instance of the vertex in the single-rate graph
-   * @return The proper built name
-   */
-  private String buildName(final String prefixe, final String vertexName, final long index) {
-    return index > 0 ? prefixe + vertexName + "_" + Long.toString(index) : prefixe + vertexName;
-  }
-
-  /**
    * Set basic properties from a PiMM actor to the copied actor
    *
    * @param actor
@@ -165,13 +151,16 @@ public class StaticPiMM2FlatPiMMVisitor extends PiMMSwitch<Boolean> {
 
     // // Copy parameters
     for (final Parameter p : actor.getInputParameters()) {
-      final ConfigInputPort originalCIP = actor.lookupConfigInputPortConnectedWithParameter(p);
-      final ConfigInputPort cip = (ConfigInputPort) copyActor.lookupPort(originalCIP.getName());
-      if (cip != null) {
-        final Parameter copy = (Parameter) copier.copy(p);
-        final Dependency dep = PiMMUserFactory.instance.createDependency();
-        dep.setSetter(copy);
-        cip.setIncomingDependency(dep);
+
+      final EList<ConfigInputPort> ports = actor.lookupConfigInputPortsConnectedWithParameter(p);
+      for (ConfigInputPort port : ports) {
+        final ConfigInputPort cip = (ConfigInputPort) copyActor.lookupPort(port.getName());
+        if (cip != null) {
+          final Parameter copy = (Parameter) copier.copy(p);
+          final Dependency dep = PiMMUserFactory.instance.createDependency();
+          dep.setSetter(copy);
+          cip.setIncomingDependency(dep);
+        }
       }
     }
 
@@ -209,9 +198,9 @@ public class StaticPiMM2FlatPiMMVisitor extends PiMMSwitch<Boolean> {
       // Copy the actor
       final PiGraph copyActor = (PiGraph) copier.copy(actor);
       setPropertiesToCopyActor(actor, copyActor);
-      return true;
+    } else {
+      doSwitch(actor);
     }
-    doSwitch(actor);
     return true;
   }
 
