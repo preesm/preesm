@@ -45,6 +45,7 @@ import java.io.InputStreamReader
 import java.io.StringWriter
 import java.net.URL
 import java.util.ArrayList
+import java.util.Arrays
 import java.util.Collection
 import java.util.Date
 import java.util.List
@@ -415,7 +416,7 @@ class CPrinter extends DefaultPrinter {
 	override generateStandardLibFiles() {
 		val result = super.generateStandardLibFiles();
 		val String stdFilesFolder = "/stdfiles/c/"
-		val String[] files = #[
+		val files = Arrays.asList(#[
 						"communication.c",
 						"communication.h",
 						"dump.c",
@@ -424,7 +425,7 @@ class CPrinter extends DefaultPrinter {
 						"fifo.h",
 						"mac_barrier.c",
 						"mac_barrier.h"
-					];
+					]);
 		files.forEach[it | try {
 			result.put(it, URLResolver.readURLInPluginList(stdFilesFolder + it, CodegenPlugin.BUNDLE_ID))
 		} catch (IOException exc) {
