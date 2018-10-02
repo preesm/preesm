@@ -93,21 +93,6 @@
          </outputs>
       </task>
       <task
-            id="org.ietr.preesm.algorithm.exportDif.DIFExporter"
-            name="DIF Exporter"
-            type="org.ietr.preesm.algorithm.exportDif.DIFExporter">
-         <inputs>
-            <input
-                  id="SDF"
-                  object="org.ietr.dftools.algorithm.model.sdf.SDFGraph">
-            </input>
-            <input
-                  id="scenario"
-                  object="org.ietr.preesm.core.scenario.PreesmScenario">
-            </input>
-         </inputs>
-      </task>
-      <task
             id="org.ietr.preesm.algorithm.randomsdf.RandomSDF"
             name="Random SDF Generator"
             type="org.ietr.preesm.algorithm.randomsdf.RandomSDF">
@@ -213,21 +198,6 @@
                   object="org.ietr.dftools.algorithm.model.sdf.SDFGraph">
             </output>
          </outputs>
-      </task>
-      <task
-            id="org.ietr.preesm.algorithm.exportPromela.PromelaExporter"
-            name="Promela Exporter"
-            type="org.ietr.preesm.algorithm.exportPromela.PromelaExporter">
-         <inputs>
-            <input
-                  id="SDF"
-                  object="org.ietr.dftools.algorithm.model.sdf.SDFGraph">
-            </input>
-            <input
-                  id="scenario"
-                  object="org.ietr.preesm.core.scenario.PreesmScenario">
-            </input>
-         </inputs>
       </task>
       <task
             id="org.ietr.preesm.algorithm.exportXml.pimm2xml"
