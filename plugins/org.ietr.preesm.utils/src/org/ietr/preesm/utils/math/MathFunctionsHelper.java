@@ -34,7 +34,7 @@
  * The fact that you are presently reading this means that you have had
  * knowledge of the CeCILL license and that you accept its terms.
  */
-package org.ietr.preesm.throughput.tools.helpers;
+package org.ietr.preesm.utils.math;
 
 /**
  *
@@ -42,7 +42,7 @@ package org.ietr.preesm.throughput.tools.helpers;
  *
  *         Math functions helper class contains math functions that do not exists in the java.lang.Math library
  */
-public abstract class MathFunctionsHelper {
+public interface MathFunctionsHelper {
 
   /**
    * computes the Greatest Common Divisor (GCD) of two doubles

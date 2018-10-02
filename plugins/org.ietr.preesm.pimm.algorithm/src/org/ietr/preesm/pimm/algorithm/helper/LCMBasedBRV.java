@@ -52,7 +52,7 @@ import org.ietr.preesm.experiment.model.pimm.DataOutputPort;
 import org.ietr.preesm.experiment.model.pimm.Expression;
 import org.ietr.preesm.experiment.model.pimm.Fifo;
 import org.ietr.preesm.experiment.model.pimm.InterfaceActor;
-import org.ietr.preesm.throughput.tools.helpers.MathFunctionsHelper;
+import org.ietr.preesm.utils.math.MathFunctionsHelper;
 
 /**
  * This class is used to compute the basic repetition vector of a static PiSDF graph using LCM method.

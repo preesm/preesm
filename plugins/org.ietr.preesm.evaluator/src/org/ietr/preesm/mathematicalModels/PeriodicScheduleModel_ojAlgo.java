@@ -42,7 +42,7 @@ import org.ietr.dftools.algorithm.model.sdf.SDFAbstractVertex;
 import org.ietr.dftools.algorithm.model.sdf.SDFEdge;
 import org.ietr.dftools.algorithm.model.sdf.SDFGraph;
 import org.ietr.dftools.algorithm.model.sdf.SDFInterfaceVertex;
-import org.ietr.preesm.throughput.tools.helpers.MathFunctionsHelper;
+import org.ietr.preesm.utils.math.MathFunctionsHelper;
 import org.ojalgo.optimisation.Expression;
 import org.ojalgo.optimisation.ExpressionsBasedModel;
 import org.ojalgo.optimisation.Optimisation;

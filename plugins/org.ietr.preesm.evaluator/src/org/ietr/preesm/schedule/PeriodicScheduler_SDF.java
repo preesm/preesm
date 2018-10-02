@@ -45,9 +45,9 @@ import org.ietr.preesm.evaluator.Activator;
 import org.ietr.preesm.mathematicalModels.PeriodicScheduleModel_ojAlgo;
 import org.ietr.preesm.mathematicalModels.SolverMethod;
 import org.ietr.preesm.throughput.tools.helpers.GraphStructureHelper;
-import org.ietr.preesm.throughput.tools.helpers.MathFunctionsHelper;
 import org.ietr.preesm.throughput.tools.helpers.Stopwatch;
 import org.ietr.preesm.throughput.tools.transformers.SDFTransformer;
+import org.ietr.preesm.utils.math.MathFunctionsHelper;
 
 /**
  * this class computes the periodic schedule for an SDF graph. It computes the execution period W and the start date of
