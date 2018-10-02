@@ -635,10 +635,17 @@ public class ActorPropertiesSection extends GFPropertySection implements ITabbed
             try {
               // try out evaluating the expression
               final long evaluate = ExpressionEvaluator.evaluate(periodicExp);
+              if (evaluate < 0) {
+                throw new IllegalArgumentException("Period cannot be negative: either positive or 0 if aperiodic.");
+              }
               // if evaluation went well, just write the result
-              this.lblPeriodValueObj.setText(Long.toString(evaluate));
+              if (evaluate == 0) {
+                this.lblPeriodValueObj.setText("0 (aperiodic)");
+              } else {
+                this.lblPeriodValueObj.setText(Long.toString(evaluate));
+              }
               this.txtPeriod.setBackground(new Color(null, 255, 255, 255));
-            } catch (final ExpressionEvaluationException e) {
+            } catch (final ExpressionEvaluationException | IllegalArgumentException e) {
               // otherwise print error message and put red background
               this.lblPeriodValueObj.setText("Error : " + e.getMessage());
               this.txtPeriod.setBackground(new Color(null, 240, 150, 150));
