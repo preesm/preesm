@@ -719,6 +719,10 @@ public class ActorPropertiesSection extends GFPropertySection implements ITabbed
           this.butMemoryScriptClear.setVisible(true);
           this.butMemoryScriptBrowse.setVisible(true);
           this.butMemoryScriptOpen.setVisible(true);
+          this.lblPeriod.setVisible(true);
+          this.txtPeriod.setVisible(true);
+          this.lblPeriodValue.setVisible(true);
+          this.lblPeriodValueObj.setVisible(true);
         } else {
           this.lblRefinement.setVisible(false);
           this.lblRefinementObj.setVisible(false);
@@ -731,6 +735,10 @@ public class ActorPropertiesSection extends GFPropertySection implements ITabbed
           this.butMemoryScriptClear.setVisible(false);
           this.butMemoryScriptBrowse.setVisible(false);
           this.butMemoryScriptOpen.setVisible(false);
+          this.lblPeriod.setVisible(false);
+          this.txtPeriod.setVisible(false);
+          this.lblPeriodValue.setVisible(false);
+          this.lblPeriodValueObj.setVisible(false);
         }
 
       } // end ExecutableActor
