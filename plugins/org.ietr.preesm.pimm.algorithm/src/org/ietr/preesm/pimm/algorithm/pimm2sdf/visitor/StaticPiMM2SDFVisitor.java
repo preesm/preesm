@@ -144,8 +144,8 @@ public class StaticPiMM2SDFVisitor extends PiMMSwitch<Boolean> {
   /* Create An IBSDF value depending of the expression */
   protected Value createValue(final String str) {
     try {
-      final int i = Integer.parseInt(str);
-      return new ConstantValue(i);
+      final long l = Long.parseLong(str);
+      return new ConstantValue(l);
     } catch (final NumberFormatException e) {
       return new ExpressionValue(str);
     }
@@ -405,7 +405,7 @@ public class StaticPiMM2SDFVisitor extends PiMMSwitch<Boolean> {
         delay = new SDFExpressionEdgePropertyType(
             createValue(Long.toString(ExpressionEvaluator.evaluate(f.getDelay().getSizeExpression()))));
       } else {
-        delay = new SDFExpressionEdgePropertyType(new ConstantValue(0));
+        delay = new SDFExpressionEdgePropertyType(new ConstantValue(0L));
       }
       // Evaluate the expression wrt. the current values of the parameters
       final SDFExpressionEdgePropertyType cons = new SDFExpressionEdgePropertyType(

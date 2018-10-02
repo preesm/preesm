@@ -37,6 +37,7 @@
 package org.ietr.preesm.experiment.model.expression;
 
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 import org.eclipse.emf.common.util.EList;
 import org.ietr.preesm.experiment.model.expression.functions.CeilFunction;
@@ -143,14 +144,11 @@ public class ExpressionEvaluator {
         if (containingActor instanceof InterfaceActor || containingActor instanceof DelayActor) {
           result.put(param.getName(), value);
         } else {
-          final ConfigInputPort configInputPort = containingActor.lookupConfigInputPortConnectedWithParameter(param);
-          final String name = configInputPort.getName();
-          if (result.containsKey(name)) {
-            throw new ExpressionEvaluationException(
-                "Parameter name is overriden. That means several Config Input Ports "
-                    + "are connected to the same parameter.");
+          final List<ConfigInputPort> inputPorts = containingActor.lookupConfigInputPortsConnectedWithParameter(param);
+          for (ConfigInputPort cip : inputPorts) {
+            final String name = cip.getName();
+            result.put(name, value);
           }
-          result.put(name, value);
         }
       } else {
         throw new ExpressionEvaluationException("Could not compute proper parameter name");

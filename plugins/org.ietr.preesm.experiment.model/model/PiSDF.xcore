@@ -130,10 +130,10 @@ abstract class Configurable extends AbstractVertex, Parameterizable {
 	 * Lookup within all the ConfigInputPort and return the first one connected to the given
 	 * Parameter, or null if the actor is not connected to it.
 	 */
-	op ConfigInputPort lookupConfigInputPortConnectedWithParameter(Parameter parameter) {
-		return Optional.ofNullable(configInputPorts.filterNull.map[incomingDependency].filterNull.findFirst [
+	op ConfigInputPort[] lookupConfigInputPortsConnectedWithParameter(Parameter parameter) {
+		return configInputPorts.filterNull.map[incomingDependency].filterNull.filter [
 			it.setter === parameter
-		]).map[getter].orElse(null)
+		].map[getter].toEList.unmodifiableView
 	}
 	op unique Port[] getAllConfigPorts() {
 		return configInputPorts.unmodifiableView
@@ -173,7 +173,7 @@ class PiGraph extends AbstractActor, Graph {
 		vertices.add(parameter)
 	}
 	op unique boolean addDelay(Delay delay) {
-		vertices.add(delay) 
+		vertices.add(delay)
 		vertices.add(delay.getActor())
 	}
 	op unique boolean addFifo(Fifo fifo) {
@@ -210,7 +210,7 @@ class PiGraph extends AbstractActor, Graph {
 		removeActor(delay.actor)
 		vertices.remove(delay)
 	}
-	
+
 	op unique boolean removeFifo(Fifo fifo) {
 		edges.remove(fifo)
 	}
@@ -377,8 +377,8 @@ class DelayActor extends NonExecutableActor, RefinementContainer {
 	op AbstractActor getGetterActor() {
 		return Optional.ofNullable(Optional.ofNullable(dataOutputPort).map[outgoingFifo].orElse(null)).map[targetPort.containingActor].orElse(null)
 	}
-	op ConfigInputPort lookupConfigInputPortConnectedWithParameter(Parameter p) {
-		return linkedDelay.lookupConfigInputPortConnectedWithParameter(p)
+	op ConfigInputPort[] lookupConfigInputPortsConnectedWithParameter(Parameter p) {
+		return linkedDelay.lookupConfigInputPortsConnectedWithParameter(p)
 	}
 
 	// Checks that the prototype matches the template
