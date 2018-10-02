@@ -46,9 +46,9 @@ import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.ietr.dftools.algorithm.model.sdf.SDFGraph;
+import org.ietr.dftools.workflow.WorkflowException;
 import org.ietr.preesm.core.scenario.PreesmScenario;
 
-// TODO: Auto-generated Javadoc
 /**
  * The Class PromelaExporterEngine.
  *
@@ -92,7 +92,7 @@ public class PromelaExporterEngine {
       exporter.write(file);
 
     } catch (final CoreException e) {
-      e.printStackTrace();
+      throw new WorkflowException("Could not print SDF to promela", e);
     }
   }
 

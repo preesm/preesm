@@ -58,7 +58,6 @@ import org.ietr.dftools.workflow.implement.AbstractTaskImplementation;
 import org.ietr.preesm.core.scenario.PreesmScenario;
 import org.ietr.preesm.utils.paths.PathTools;
 
-// TODO: Auto-generated Javadoc
 /**
  * Workflow element taking a *Single-Rate* SDF and the scenario as inputs and writing the corresponding graph in the DIF
  * format as an output.
@@ -82,10 +81,7 @@ public class DIFExporter extends AbstractTaskImplementation {
    */
   @Override
   public Map<String, Object> execute(final Map<String, Object> inputs, final Map<String, String> parameters,
-      final IProgressMonitor monitor, final String nodeName, final Workflow workflow) throws WorkflowException {
-
-    // Rem: Logger is used to display messages in the console
-    // Logger logger = WorkflowLogger.getLogger();
+      final IProgressMonitor monitor, final String nodeName, final Workflow workflow) {
 
     // Retrieve the inputs
     final SDFGraph sdf = (SDFGraph) inputs.get("SDF");
@@ -116,12 +112,11 @@ public class DIFExporter extends AbstractTaskImplementation {
       exporter.write(file);
 
     } catch (SDF4JException | CoreException e) {
-      e.printStackTrace();
+      throw new WorkflowException("Could not export SDF to DIF", e);
     }
 
     // Output output
-    final Map<String, Object> output = new LinkedHashMap<>();
-    return output;
+    return new LinkedHashMap<>();
   }
 
   /*

@@ -50,10 +50,10 @@ import org.ietr.dftools.algorithm.model.sdf.SDFEdge;
 import org.ietr.dftools.algorithm.model.sdf.SDFGraph;
 import org.ietr.dftools.algorithm.model.visitors.IGraphVisitor;
 import org.ietr.dftools.algorithm.model.visitors.SDF4JException;
+import org.ietr.dftools.workflow.WorkflowException;
 import org.ietr.preesm.core.scenario.PreesmScenario;
 import org.ietr.preesm.core.scenario.Timing;
 
-// TODO: Auto-generated Javadoc
 /**
  * This class is a visitor for SDF graphs whose purpose is to export the visited graph into the DIF format. The visitor
  * should be used only on Single-rate SDF. Each actor of the graph can be given a parameter "nb_node" which will be used
@@ -76,6 +76,10 @@ import org.ietr.preesm.core.scenario.Timing;
  * @see this page http://www.ece.umd.edu/DSPCAD/dif/index.htm
  */
 public class DIFExporterVisitor implements IGraphVisitor<SDFGraph, SDFAbstractVertex, SDFEdge> {
+
+  private static final String NB_CORES = "nb_cores";
+
+  private static final String COMM_COST = "comm_cost";
 
   /** The scenario. */
   protected PreesmScenario scenario; // The scenario used to retrieve
@@ -125,11 +129,11 @@ public class DIFExporterVisitor implements IGraphVisitor<SDFGraph, SDFAbstractVe
 
     // Skip edges with delays
     try {
-      if (edge.getDelay().intValue() > 0) {
+      if (edge.getDelay().longValue() > 0) {
         return;
       }
     } catch (final InvalidExpressionException e) {
-      e.printStackTrace();
+      throw new WorkflowException("Could not compute delay value", e);
     }
 
     // Add the edge entry to the actorAttributes Map
@@ -146,9 +150,9 @@ public class DIFExporterVisitor implements IGraphVisitor<SDFGraph, SDFAbstractVe
     attributesMap.put("source", edge.getSource().getName());
     attributesMap.put("target", edge.getTarget().getName());
 
-    final String comm_cost = edge.getPropertyStringValue("comm_cost");
+    final String comm_cost = edge.getPropertyStringValue(COMM_COST);
     if (comm_cost != null) {
-      attributesMap.put("comm_cost", Integer.decode(comm_cost));
+      attributesMap.put(COMM_COST, Integer.decode(comm_cost));
     }
 
   }
@@ -222,20 +226,16 @@ public class DIFExporterVisitor implements IGraphVisitor<SDFGraph, SDFAbstractVe
 
     // Retrieve the number of cores associated to the actor.
     try {
-      final Argument nbCoreArg = vertex.getArgument("nb_cores");
+      final Argument nbCoreArg = vertex.getArgument(NB_CORES);
       if (nbCoreArg != null) {
-        final int nbCores = nbCoreArg.intValue();
-        attributesMap.put("nb_cores", nbCores);
+        final long nbCores = nbCoreArg.longValue();
+        attributesMap.put(NB_CORES, nbCores);
       } else {
-        attributesMap.put("nb_cores", 1);
+        attributesMap.put(NB_CORES, 1);
       }
-    } catch (final InvalidExpressionException e) {
-
+    } catch (final InvalidExpressionException | NoIntegerValueException e) {
       // If the number of core is not specified, 1 is the default
-      attributesMap.put("nb_cores", 1);
-    } catch (final NoIntegerValueException e) {
-      // If the number of core is not specified, 1 is the default
-      attributesMap.put("nb_cores", 1);
+      attributesMap.put(NB_CORES, 1);
     }
 
   }
@@ -261,10 +261,8 @@ public class DIFExporterVisitor implements IGraphVisitor<SDFGraph, SDFAbstractVe
       writeEdgeBlocks(writer);
 
       writer.write("}");
-
-      writer.close();
     } catch (final IOException e) {
-      e.printStackTrace();
+      throw new WorkflowException("Error while writing file", e);
     }
   }
 
@@ -288,7 +286,7 @@ public class DIFExporterVisitor implements IGraphVisitor<SDFGraph, SDFAbstractVe
       writer.write('\t' + "}" + "\n\n");
 
     } catch (final IOException e) {
-      e.printStackTrace();
+      throw new WorkflowException("Error while writing topology block", e);
     }
   }
 
@@ -363,13 +361,13 @@ public class DIFExporterVisitor implements IGraphVisitor<SDFGraph, SDFAbstractVe
         writer.write(";\n");
 
         // NB cores
-        writer.write("\t\tProcessorNumber = " + this.actorAttributes.get(actorName).get("nb_cores"));
+        writer.write("\t\tProcessorNumber = " + this.actorAttributes.get(actorName).get(NB_CORES));
         writer.write(";\n");
 
         writer.write("\t}\n\n");
       }
     } catch (final IOException e) {
-      e.printStackTrace();
+      throw new WorkflowException("Error while writing actor blocks", e);
     }
   }
 
@@ -389,8 +387,8 @@ public class DIFExporterVisitor implements IGraphVisitor<SDFGraph, SDFAbstractVe
           writer.write('\t' + "edge " + edgeName + " {\n");
 
           // Exec time
-          if (this.edgeAttributes.get(edgeName).get("comm_cost") != null) {
-            writer.write("\t\tExecutionTime = " + this.edgeAttributes.get(edgeName).get("comm_cost"));
+          if (this.edgeAttributes.get(edgeName).get(COMM_COST) != null) {
+            writer.write("\t\tExecutionTime = " + this.edgeAttributes.get(edgeName).get(COMM_COST));
             writer.write(";\n");
           }
 
@@ -398,7 +396,7 @@ public class DIFExporterVisitor implements IGraphVisitor<SDFGraph, SDFAbstractVe
         }
       }
     } catch (final IOException e) {
-      e.printStackTrace();
+      throw new WorkflowException("Error while writing edge blocks", e);
     }
   }
 }

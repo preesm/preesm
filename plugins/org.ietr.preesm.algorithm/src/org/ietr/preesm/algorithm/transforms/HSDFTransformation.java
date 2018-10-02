@@ -75,7 +75,7 @@ public class HSDFTransformation extends AbstractTaskImplementation {
    */
   @Override
   public Map<String, Object> execute(final Map<String, Object> inputs, final Map<String, String> parameters,
-      final IProgressMonitor monitor, final String nodeName, final Workflow workflow) throws WorkflowException {
+      final IProgressMonitor monitor, final String nodeName, final Workflow workflow) {
 
     final Map<String, Object> outputs = new LinkedHashMap<>();
     final SDFGraph algorithm = (SDFGraph) inputs.get("SDF");
@@ -99,26 +99,18 @@ public class HSDFTransformation extends AbstractTaskImplementation {
           hsdf = toHsdf.getOutput();
           logger.log(Level.FINER, "Minimize special actors");
           JoinForkCleaner.cleanJoinForkPairsFrom(hsdf);
-        } catch (final SDF4JException e) {
-          e.printStackTrace();
-          throw (new WorkflowException(e.getMessage()));
-        } catch (final InvalidExpressionException e) {
-          e.printStackTrace();
-          throw (new WorkflowException(e.getMessage()));
+        } catch (final SDF4JException | InvalidExpressionException e) {
+          throw new WorkflowException(e.getMessage(), e);
         }
         logger.log(Level.FINER, "HSDF transformation complete");
 
         logger.log(Level.INFO,
             "HSDF with " + hsdf.vertexSet().size() + " vertices and " + hsdf.edgeSet().size() + " edges.");
 
-        String explImplSuppr;
-        if ((explImplSuppr = parameters.get("ExplodeImplodeSuppr")) != null) {
-          if (explImplSuppr.equals("true")) {
-            logger.log(Level.INFO, "Removing implode/explode ");
-            ForkJoinRemover.supprImplodeExplode(hsdf);
-            // Kdesnos addition for csv stat. can be removed
-            System.out.print(hsdf.vertexSet().size() + ";" + hsdf.edgeSet().size() + ";");
-          }
+        final String explImplSuppr = parameters.get("ExplodeImplodeSuppr");
+        if (explImplSuppr != null && explImplSuppr.equals("true")) {
+          logger.log(Level.INFO, "Removing implode/explode ");
+          ForkJoinRemover.supprImplodeExplode(hsdf);
         }
 
         outputs.put("SDF", hsdf);
@@ -156,18 +148,5 @@ public class HSDFTransformation extends AbstractTaskImplementation {
   public String monitorMessage() {
     return "HSDF Transformation.";
   }
-
-  /*
-   * @Override public TaskResult transform(SDFGraph algorithm, TextParameters params) throws PreesmException { try {
-   * Logger logger = AbstractWorkflowLogger.getLogger(); logger.setLevel(Level.FINEST); logger.log(Level.FINER,
-   * "Transforming application " + algorithm.getName() + " to HSDF"); VisitorOutput.setLogger(logger); if
-   * (algorithm.validateModel(AbstractWorkflowLogger.getLogger())) {
-   * org.ietr.dftools.algorithm.model.sdf.visitors.OptimizedToHSDFVisitor toHsdf = new OptimizedToHSDFVisitor(); try {
-   * algorithm.accept(toHsdf); } catch (SDF4JException e) { e.printStackTrace(); throw (new
-   * PreesmException(e.getMessage())); } logger.log(Level.FINER, "HSDF transformation complete"); TaskResult result =
-   * new TaskResult(); result.setSDF((SDFGraph) toHsdf.getOutput()); return result; } else { throw (new
-   * PreesmException("Graph not valid, not schedulable")); } } catch (SDF4JException e) { throw (new
-   * PreesmException(e.getMessage())); } }
-   */
 
 }

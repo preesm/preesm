@@ -44,7 +44,6 @@ import java.util.ArrayList;
 import java.util.LinkedHashSet;
 import java.util.Set;
 import java.util.logging.Level;
-import java.util.logging.Logger;
 import org.ietr.dftools.algorithm.iterators.SDFIterator;
 import org.ietr.dftools.algorithm.iterators.TopologicalDAGIterator;
 import org.ietr.dftools.algorithm.model.dag.DAGEdge;
@@ -52,18 +51,17 @@ import org.ietr.dftools.algorithm.model.dag.DAGVertex;
 import org.ietr.dftools.algorithm.model.dag.DirectedAcyclicGraph;
 import org.ietr.dftools.algorithm.model.dag.edag.DAGForkVertex;
 import org.ietr.dftools.algorithm.model.dag.edag.DAGJoinVertex;
-import org.ietr.dftools.algorithm.model.parameters.InvalidExpressionException;
 import org.ietr.dftools.algorithm.model.sdf.SDFAbstractVertex;
 import org.ietr.dftools.algorithm.model.sdf.SDFEdge;
 import org.ietr.dftools.algorithm.model.sdf.SDFGraph;
 import org.ietr.dftools.algorithm.model.sdf.esdf.SDFBroadcastVertex;
 import org.ietr.dftools.algorithm.model.sdf.esdf.SDFJoinVertex;
 import org.ietr.dftools.algorithm.model.sdf.esdf.SDFRoundBufferVertex;
+import org.ietr.dftools.workflow.WorkflowException;
 import org.ietr.dftools.workflow.tools.WorkflowLogger;
 import org.ietr.preesm.core.types.ImplementationPropertyNames;
 import org.ietr.preesm.core.types.VertexType;
 
-// TODO: Auto-generated Javadoc
 /**
  * Utility class created to gather all static methods used to remove fork/join nodes from a graph.
  *
@@ -71,6 +69,10 @@ import org.ietr.preesm.core.types.VertexType;
  *
  */
 public class ForkJoinRemover {
+
+  private ForkJoinRemover() {
+    // forbid instantiation
+  }
 
   /**
    * Remove the Fork and Join vertices from a SDFGraph.
@@ -86,13 +88,8 @@ public class ForkJoinRemover {
     SDFIterator iterSDFVertices;
     try {
       iterSDFVertices = new SDFIterator(hsdf);
-    } catch (final InvalidExpressionException e) {
-      e.printStackTrace();
-      return;
     } catch (final RuntimeException e) {
-      final Logger logger = WorkflowLogger.getLogger();
-      logger.log(Level.SEVERE, "Explode/Implode vertices were not removed because:\n" + e.getMessage());
-      return;
+      throw new WorkflowException(e.getMessage(), e);
     }
 
     // Keep track of the initial number of edge to check if the right number
@@ -224,7 +221,6 @@ public class ForkJoinRemover {
           hsdf.removeVertex(vert);
         }
       } else if (vert instanceof SDFRoundBufferVertex) {
-        // WorkflowLogger.getLogger().log(Level.SEVERE, "RoundBuffer");
 
         // Check if the roundbuffer precedes an explosion
         // It seems that in this case, no "explode" vertex was added :s
@@ -265,12 +261,12 @@ public class ForkJoinRemover {
         }
       }
     }
-    // hsdf.removeAllVertices(nonTaskVertices);
     if (nonTaskVertices.size() != ((nbEdgeBefore + nbEdgeAdded) - hsdf.edgeSet().size())) {
-      WorkflowLogger.getLogger().log(Level.SEVERE, "Expecting " + nonTaskVertices.size() + " edges removed but got "
-          + ((nbEdgeBefore + nbEdgeAdded) - hsdf.edgeSet().size()) + " edges removed instead");
-      WorkflowLogger.getLogger().log(Level.SEVERE,
-          "Consider deactivating Implode/Explode suprression in HSDF workflow element parameters");
+      final String message = "Expecting " + nonTaskVertices.size() + " edges removed but got "
+          + ((nbEdgeBefore + nbEdgeAdded) - hsdf.edgeSet().size()) + " edges removed instead";
+      final String message2 = "Consider deactivating Implode/Explode suprression in HSDF workflow element parameters";
+      WorkflowLogger.getLogger().log(Level.SEVERE, message);
+      WorkflowLogger.getLogger().log(Level.SEVERE, message2);
     } else {
       WorkflowLogger.getLogger().log(Level.INFO,
           "" + nonTaskVertices.size() + " implode/explode vertices removed (and as many edges)");
@@ -346,10 +342,6 @@ public class ForkJoinRemover {
               newEdge.setSourceLabel(incomingEdge.getSourceLabel());
               newEdge.setTargetLabel(outgoingEdge.getTargetLabel());
               newEdge.setPropertyValue("explodeName", vert.getName());
-
-              // Add ExclusionObject to its implodeExplodeSet
-              // implodeExplodeSet
-              // .add(new MemoryExclusionVertex(newEdge));
             }
           }
         }

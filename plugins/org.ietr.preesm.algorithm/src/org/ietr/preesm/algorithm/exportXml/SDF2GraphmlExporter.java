@@ -45,8 +45,8 @@ import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.ietr.dftools.algorithm.exporter.GMLSDFExporter;
 import org.ietr.dftools.algorithm.model.sdf.SDFGraph;
+import org.ietr.dftools.workflow.WorkflowException;
 
-// TODO: Auto-generated Javadoc
 /**
  * The Class SDF2GraphmlExporter.
  */
@@ -62,7 +62,6 @@ public class SDF2GraphmlExporter {
    */
   public void export(final SDFGraph algorithm, IPath xmlPath) {
     final GMLSDFExporter exporter = new GMLSDFExporter();
-    // SDFGraph clone = ((SDFGraph) (algorithm)).clone();
     if ((xmlPath.getFileExtension() == null) || !xmlPath.getFileExtension().equals("graphml")) {
       xmlPath = xmlPath.addFileExtension("graphml");
     }
@@ -76,7 +75,7 @@ public class SDF2GraphmlExporter {
       }
       exporter.export(algorithm, iFile.getRawLocation().toOSString());
     } catch (final CoreException ex) {
-      ex.printStackTrace();
+      throw new WorkflowException("Could not export SDF graph", ex);
     }
   }
 }
