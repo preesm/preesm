@@ -149,9 +149,9 @@ class Sdf3Printer {
 	def String print(IInterface port, SDFEdge edge) {
 		val tokenSize = MathFunctionsHelper.gcd(edge.cons.longValue, edge.prod.longValue)
 		var rate = if (port instanceof SDFSourceInterfaceVertex)
-				edge.cons.intValue / tokenSize
+				edge.cons.longValue / tokenSize
 			else
-				edge.prod.intValue / tokenSize
+				edge.prod.longValue / tokenSize
 
 		return '''
 			<port name="«port.name»" type="«if(port instanceof SDFSourceInterfaceVertex) "in" else "out"»" rate="«rate»"/>
@@ -189,11 +189,11 @@ class Sdf3Printer {
 	 * declaration of an edge in the SDF3 format.
 	 */
 	def String print(SDFEdge edge) {
-		val tokenSize = MathFunctionsHelper.gcd(edge.cons.intValue, edge.prod.
-			intValue)
+		val tokenSize = MathFunctionsHelper.gcd(edge.cons.longValue, edge.prod.
+			longValue)
 		return '''
 			<channel name="«edge.printName»" srcActor="«edge.source»" srcPort="«edge.sourceLabel»" dstActor="«edge.target»" dstPort="«edge.
-				targetLabel»" initialTokens="«edge.delay.intValue/tokenSize»"/>
+				targetLabel»" initialTokens="«edge.delay.longValue/tokenSize»"/>
 		'''
 	}
 
@@ -227,13 +227,13 @@ class Sdf3Printer {
 		val simulationManager = scenario.simulationManager
 		var firstIsDefault = true
 
-		var nbMemCpy = 0
-		var size = 0
+		var nbMemCpy = 0L
+		var size = 0L
 
 		if (actor.class != SDFVertex) {
 			nbMemCpy = actor.interfaces.size - 1
 			size = actor.sources.fold(
-				0, [res, source|res + actor.getAssociatedEdge(source).prod.intValue])
+				0L, [res, source|res + actor.getAssociatedEdge(source).prod.longValue])
 		}
 
 		return '''
@@ -282,7 +282,7 @@ class Sdf3Printer {
 	 * properties of an edge in the SDF3 format.
 	 */
 	def String printProperties(SDFEdge edge) {
-		val tokenSize = MathFunctionsHelper.gcd(edge.cons.intValue, edge.prod.intValue)
+		val tokenSize = MathFunctionsHelper.gcd(edge.cons.longValue, edge.prod.longValue)
 
 		return '''
 			<channelProperties channel="«edge.printName»">
