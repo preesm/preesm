@@ -90,7 +90,8 @@ public class ExpressionEvaluator {
     try {
       result = ExpressionEvaluator.parse(expression, jep);
     } catch (final ParseException e) {
-      throw new ExpressionEvaluationException("Could not evaluate " + expression, e);
+      String msg = "Could not evaluate " + expression + ":\n" + e.getMessage();
+      throw new ExpressionEvaluationException(msg, e);
     }
     return result;
   }
