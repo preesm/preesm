@@ -145,6 +145,11 @@ public class ExpressionEvaluator {
         } else {
           final ConfigInputPort configInputPort = containingActor.lookupConfigInputPortConnectedWithParameter(param);
           final String name = configInputPort.getName();
+          if (result.containsKey(name)) {
+            throw new ExpressionEvaluationException(
+                "Parameter name is overriden. That means several Config Input Ports "
+                    + "are connected to the same parameter.");
+          }
           result.put(name, value);
         }
       } else {
