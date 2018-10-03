@@ -56,65 +56,65 @@ import org.ietr.dftools.algorithm.model.sdf.transformations.SpecialActorPortsInd
 import org.ietr.dftools.algorithm.model.sdf.types.SDFIntEdgePropertyType
 import org.ietr.dftools.algorithm.model.sdf.types.SDFStringEdgePropertyType
 import org.ietr.dftools.algorithm.model.visitors.SDF4JException
-import org.jgrapht.alg.CycleDetector
+import org.jgrapht.alg.cycle.CycleDetector
 import org.jgrapht.graph.AbstractGraph
 import java.util.logging.Level
 import org.jgrapht.graph.AsSubgraph
 
 /**
  * Construct DAG from a SDF Graph
- * 
+ *
  * @author Sudeep Kanur
  */
 final class SDF2DAG extends AbstractDAGConstructor implements PureDAGConstructor {
-	
+
 	/**
 	 * Hold the cloned version of original SDF graph
 	 */
 	@Accessors(PUBLIC_GETTER, PRIVATE_SETTER)
 	val AbstractGraph<SDFAbstractVertex, SDFEdge> inputGraph;
-	
+
 	/**
 	 * Holds constructed DAG
 	 */
 	@Accessors(PUBLIC_GETTER, PRIVATE_SETTER)
 	var SDFGraph outputGraph
-	
+
 	/**
 	 * True if the original graph is SDFGraph
 	 */
 	@Accessors(PUBLIC_GETTER, PRIVATE_SETTER)
 	var Boolean isInputSDFGraph
-	
+
 	/**
 	 * True if the original graph is a Subgraph
 	 */
 	@Accessors(PUBLIC_GETTER, PRIVATE_SETTER)
 	var Boolean isInputSubgraph
-	
+
 	/**
 	 * Map of all actors with instance. Does not contain implodes and explodes
 	 * This is used as intermediate variable while creating linked edges
 	 */
 	protected val Map<SDFAbstractVertex, List<SDFAbstractVertex>> actor2InstancesLocal;
-	
+
 	/**
 	 * List of all the actors that form the part of the cycles in the original SDFG
 	 */
 	@Accessors(PUBLIC_GETTER, PRIVATE_SETTER)
 	val List<SDFAbstractVertex> cycleActors
-	
+
 	/**
 	 * Protected constructor used for both SDF and subgraph of SDF. It cannot be used for anything
 	 * else. Hence the constructor is protected.
-	 * 
+	 *
 	 * @param graph SDF or Subgraph
 	 * @param logger Logger instance
 	 * @param isSDF True if the passed graph is SDF. False if passed graph is a subgraph of SDFGraph
 	 */
 	protected new(AbstractGraph<SDFAbstractVertex, SDFEdge> graph, Logger logger, Boolean isSDF) {
 		super(logger)
-		
+
 		if(isSDF) {
 			this.isInputSDFGraph = true
 			this.isInputSubgraph = false
@@ -122,16 +122,16 @@ final class SDF2DAG extends AbstractDAGConstructor implements PureDAGConstructor
 			this.isInputSDFGraph = false
 			this.isInputSubgraph = true
 		}
-		
+
 		inputGraph = graph
 		actor2InstancesLocal = newLinkedHashMap
 		cycleActors = newArrayList
-		
+
 		if(isSDF) { // Its an SDF graph
 			val sdfGraph = graph as SDFGraph
 			val cycleDetector = new CycleDetector(sdfGraph)
 			cycleActors.addAll(cycleDetector.findCycles)
-			
+
 			sdfGraph.vertexSet.forEach[vertex |
 				if(sdfGraph.incomingEdgesOf(vertex).size == 0) {
 					sourceActors.add(vertex)
@@ -140,7 +140,7 @@ final class SDF2DAG extends AbstractDAGConstructor implements PureDAGConstructor
 					sinkActors.add(vertex)
 				}
 			]
-			
+
 			sdfGraph.vertexSet.forEach[vertex |
 				val predecessorList = newArrayList
 				sdfGraph.incomingEdgesOf(vertex).forEach[edge |
@@ -152,7 +152,7 @@ final class SDF2DAG extends AbstractDAGConstructor implements PureDAGConstructor
 			val subgraph = graph as AsSubgraph<SDFAbstractVertex, SDFEdge>
 			val cycleDetector = new CycleDetector(subgraph)
 			cycleActors.addAll(cycleDetector.findCycles)
-			
+
 			subgraph.vertexSet.forEach[vertex |
 				if(subgraph.incomingEdgesOf(vertex).size == 0) {
 					sourceActors.add(vertex)
@@ -161,7 +161,7 @@ final class SDF2DAG extends AbstractDAGConstructor implements PureDAGConstructor
 					sinkActors.add(vertex)
 				}
 			]
-			
+
 			subgraph.vertexSet.forEach[vertex |
 				val predecessorList = newArrayList
 				subgraph.incomingEdgesOf(vertex).forEach[edge |
@@ -170,26 +170,26 @@ final class SDF2DAG extends AbstractDAGConstructor implements PureDAGConstructor
 				actorPredecessor.put(vertex, predecessorList)
 			]
 		}
-		
+
 		this.outputGraph = new SDFGraph()
 		createInstances()
 		linkEdges()
 		outputGraph.propertyBean.setValue("schedulable", true)
 	}
-	
+
 	/**
 	 * Constructor for a {@link SDFGraph} instance. Mainly used in the plugin
-	 * 
+	 *
 	 * @param sdf the sdf graph for which DAG is created
 	 * @param logger log messages to console
 	 */
 	new(SDFGraph sdf, Logger logger) {
 		this(sdf, logger, true)
 	}
-	
+
 	/**
 	 * Constructor for a  subgraphs instance. Mainly used in the plugin
-	 * 
+	 *
 	 * @param subgraph A {@link DirectedSubgraph<SDFAbstractVertex, SDFEdge>} instance from which
 	 * DAG is created
 	 * @param logger log messages to console
@@ -197,40 +197,40 @@ final class SDF2DAG extends AbstractDAGConstructor implements PureDAGConstructor
 	new(AsSubgraph<SDFAbstractVertex, SDFEdge> subgraph, Logger logger) {
 		this(subgraph, logger, false)
 	}
-	
+
 	/**
-	 * Constructor without logging information for SDFGraphs. Mainly used for test 
+	 * Constructor without logging information for SDFGraphs. Mainly used for test
 	 * setup
-	 * 
+	 *
 	 * @param sdf the sdf graph for which DAG is created
 	 */
 	new(SDFGraph sdf) {
 		this(sdf as AbstractGraph<SDFAbstractVertex, SDFEdge>, null, true)
 	}
-	
+
 	/**
 	 * Constructor without logging information for subgraphs of SDFGraph. Mainly used for test
 	 * setup
-	 * 
+	 *
 	 * @param subgraph The {@link DirectedSubgraph<SDFAbstractVertex, SDFEdge>} instance of SDFGraph
 	 */
 	new(AsSubgraph<SDFAbstractVertex, SDFEdge> subgraph) {
 		this(subgraph as AbstractGraph<SDFAbstractVertex, SDFEdge>, null, false)
 	}
-	
+
 	/**
 	 * Accept method for DAG operations
-	 * 
+	 *
 	 * @param A {@link DAGOperations} instance
 	 */
 	override accept(DAGOperations visitor) {
 		visitor.visit(this)
 	}
-	
+
 	/**
-	 * Create instances according to the repetition count. Also rename the 
+	 * Create instances according to the repetition count. Also rename the
 	 * instances
-	 * 
+	 *
 	 * @param isHSDF True if the input graph is HSDF
 	 */
 	 protected def void createInstances() {
@@ -238,7 +238,7 @@ final class SDF2DAG extends AbstractDAGConstructor implements PureDAGConstructor
 	 	for(actor: inputGraph.vertexSet) {
 	 		log(Level.FINE, "Actor " + actor + " has " + actor.nbRepeatAsInteger + " instances.")
 	 		val instances = newArrayList
-	 		 
+
 	 		for(var ii = 0; ii < actor.nbRepeatAsInteger; ii++) {
 	 			// Clone and set properties
 	 			val instance = actor.clone
@@ -248,7 +248,7 @@ final class SDF2DAG extends AbstractDAGConstructor implements PureDAGConstructor
 	 				instance.name = actor.name + "_" + ii;
 	 			}
 	 			instance.nbRepeat = 1
-	 			
+
 	 			// Add to maps
 	 			outputGraph.addVertex(instance)
 	 			instances.add(instance)
@@ -259,7 +259,7 @@ final class SDF2DAG extends AbstractDAGConstructor implements PureDAGConstructor
 	 		actor2Instances.put(actor, new ArrayList(instances))
 	 	}
 	 }
-	 
+
 	 /**
 	  * Link the instances created by {@link SDF2DAG#createInstances}
 	  */
@@ -269,44 +269,44 @@ final class SDF2DAG extends AbstractDAGConstructor implements PureDAGConstructor
 		val filteredEdges = inputGraph.edgeSet.filter[edge |
 			edge.delay.intValue < edge.cons.intValue * edge.target.nbRepeatAsInteger
 		]
-		
+
 		for(edge: filteredEdges) {
 			// Legacy code. Usage debatable. Check the comment below (search the usage of inputVertex)
 			// var SDFInterfaceVertex inputVertex = null
 			// var SDFInterfaceVertex outputVertex = null
-			
+
 			// Total number of tokens that must be stored in the buffer
 			val bufferSize = edge.cons.intValue * edge.target.nbRepeatAsInteger
-			
+
 			val sourceInstances = actor2InstancesLocal.get(edge.source)
 			val targetInstances = actor2InstancesLocal.get(edge.target)
 			val originalSourceInstances = new ArrayList(sourceInstances)
 			val originalTargetInstances = new ArrayList(targetInstances)
-			
+
 			var absoluteTarget = edge.delay.intValue
 			var absoluteSource = 0
 			var currentBufferSize = edge.delay.intValue
-			
+
 			val newEdges = newArrayList
 			while(currentBufferSize < bufferSize) {
-				// Index of currently processed source instance among the instances of source actor. 
+				// Index of currently processed source instance among the instances of source actor.
 				// Similarly for target actor
 				val sourceIndex = (absoluteSource/edge.prod.intValue) % sourceInstances.size
 				val targetIndex = (absoluteTarget/edge.cons.intValue) % targetInstances.size
-				
+
 				// Number of tokens already consumed and produced by currently indexed instances
 				val sourceProd = absoluteSource % edge.prod.intValue
 				val targetCons = absoluteTarget % edge.cons.intValue
-				
+
 				// Remaining tokens that needs to be handled in the next iteration
 				val restSource = edge.prod.intValue - sourceProd
 				val restTarget = edge.cons.intValue - targetCons
 				val rest = Math.min(restSource, restTarget)
-				
+
 				// The below part of the code is from ToHSDFVisitor. It should not be relevant here as
 		        // iterationDiff is never greater than 1. But I have included here for legacy reasons
 		        // and added an exception when it occurs
-		
+
 		        // This int represent the number of iteration separating the
 		        // currently indexed source and target (between which an edge is
 		        // added)
@@ -321,13 +321,13 @@ final class SDF2DAG extends AbstractDAGConstructor implements PureDAGConstructor
 		        if (iterationDiff > 0) {
 		        	throw new SDF4JException("iterationDiff is greater than 0.")
 		        }
-		        
+
 		        // For inserting explode and implode when boolean is true
 		        val explode = rest < edge.prod.intValue
 		        val implode = rest < edge.cons.intValue
-		        
-		        // Add explode instance for non-broadcast, non-roundbuffer, non-fork/join actors 
-				if(explode && !(sourceInstances.get(sourceIndex) instanceof SDFForkVertex) 
+
+		        // Add explode instance for non-broadcast, non-roundbuffer, non-fork/join actors
+				if(explode && !(sourceInstances.get(sourceIndex) instanceof SDFForkVertex)
 					&& (!(sourceInstances.get(sourceIndex) instanceof SDFBroadcastVertex) || !(sourceInstances.get(sourceIndex) instanceof SDFRoundBufferVertex))) {
 						val explodeInstance = new SDFForkVertex()
 						explodeInstance.name = "explode_" + sourceInstances.get(sourceIndex).name + "_" + edge.sourceInterface.name
@@ -351,7 +351,7 @@ final class SDF2DAG extends AbstractDAGConstructor implements PureDAGConstructor
 						// As its explode, target port modifier is read-only
 						newEdge.targetPortModifier = new SDFStringEdgePropertyType(SDFEdge.MODIFIER_READ_ONLY)
 				}
-				
+
 				// Add implode instance for non-fork/join and non-roundbuffer
 				if(implode && !(targetInstances.get(targetIndex) instanceof SDFJoinVertex) && !(targetInstances.get(targetIndex) instanceof SDFRoundBufferVertex)) {
 					val implodeInstance = new SDFJoinVertex()
@@ -376,17 +376,17 @@ final class SDF2DAG extends AbstractDAGConstructor implements PureDAGConstructor
 					// As its implode, source port modifier is write-only
 					newEdge.sourcePortModifier = new SDFStringEdgePropertyType(SDFEdge.MODIFIER_WRITE_ONLY)
 				}
-				
+
 				// Create the new edge for the output graph
 				val newEdge = outputGraph.addEdge(sourceInstances.get(sourceIndex), targetInstances.get(targetIndex))
 				newEdges.add(newEdge)
-				
+
 				// Set the source interface of the new edge
 				// If the source is a newly added fork/broadcast (or extra output added to existing fork/broadcast)
 				// We rename the output ports. Contrary to the ports of join/roundbuffer, no special processing
 				// is needed to order the edges
 				if( (sourceInstances.get(sourceIndex) == originalSourceInstances.get(sourceIndex))
-					&& (!explode && !((originalSourceInstances.get(sourceIndex) instanceof SDFBroadcastVertex) 
+					&& (!explode && !((originalSourceInstances.get(sourceIndex) instanceof SDFBroadcastVertex)
 						|| (originalSourceInstances.get(sourceIndex) instanceof SDFForkVertex)))) {
 					// if the source does not need new ports
 					if(sourceInstances.get(sourceIndex).getSink(edge.sourceInterface.name) !== null) {
@@ -403,7 +403,7 @@ final class SDF2DAG extends AbstractDAGConstructor implements PureDAGConstructor
 					// if the source is a fork (new or not) or a broadcast with a new port
 					val sourceInterface = edge.sourceInterface.clone
 					var newInterfaceName = sourceInterface.name + "_" + sourceProd
-					
+
 					// Get the current index of the port (if any) and update it
 					if(sourceInterface.name.matches(SpecialActorPortsIndexer.indexRegex)) {
 						val pattern = Pattern.compile(SpecialActorPortsIndexer.indexRegex)
@@ -413,21 +413,21 @@ final class SDF2DAG extends AbstractDAGConstructor implements PureDAGConstructor
 						val newIdx = existingIdx + sourceProd
 						newInterfaceName = sourceInterface.name.substring(0, matcher.start(SpecialActorPortsIndexer.groupXX)) + newIdx
 					}
-					
+
 					sourceInterface.name = newInterfaceName
 					newEdge.sourceInterface = sourceInterface
 					newEdge.source.addInterface(sourceInterface)
 					// Add a source port modifier
 					newEdge.sourcePortModifier = new SDFStringEdgePropertyType(SDFEdge.MODIFIER_WRITE_ONLY)
 				}
-				
+
 				// Set the target interface of the new edge
 				// If the target is a newly added join/roundbuffer we need to take extra care to
-				// make sure the incoming edges are in the right order (which might be a little 
+				// make sure the incoming edges are in the right order (which might be a little
 				// bit complex when playing with delays)
-				
+
 				// If the target is not an instance with new ports (because of an explosion)
-				if((targetInstances.get(targetIndex) == originalTargetInstances.get(targetIndex)) 
+				if((targetInstances.get(targetIndex) == originalTargetInstances.get(targetIndex))
 					&& (!implode || !((originalTargetInstances.get(targetIndex) instanceof SDFRoundBufferVertex)
 						|| (originalTargetInstances.get(targetIndex) instanceof SDFJoinVertex)))) {
 					// if the target already has appropriate interface
@@ -448,7 +448,7 @@ final class SDF2DAG extends AbstractDAGConstructor implements PureDAGConstructor
 					// if the target is join (new or not)/ roundbuffer with new ports
 					val targetInterface = edge.targetInterface.clone
 					var newInterfaceName = targetInterface.name + "_" + targetCons
-					
+
 					// Get the current index of the port (if any) and update it
 					if(targetInterface.name.matches(SpecialActorPortsIndexer.indexRegex)) {
 						val pattern = Pattern.compile(SpecialActorPortsIndexer.indexRegex)
@@ -458,20 +458,20 @@ final class SDF2DAG extends AbstractDAGConstructor implements PureDAGConstructor
 						val newIdx = existingIdx + targetCons
 						newInterfaceName = targetInterface.name.substring(0, matcher.start(SpecialActorPortsIndexer.groupXX)) + newIdx
 					}
-					
+
 					targetInterface.name = newInterfaceName
 					newEdge.targetInterface = targetInterface
 					newEdge.target.addInterface(targetInterface)
 					// Add a target port modifier
 					newEdge.targetPortModifier = new SDFStringEdgePropertyType(SDFEdge.MODIFIER_READ_ONLY)
 				}
-				
+
 				// Associate the interfaces to the new edge
 		        // TODO Not sure what it does. Adding the edge and its associated interface was done in previous if-else block
 		        // Why do it again? And setInterfaceVertexExternalLink purpose is ambiguous. Git blame shows this is a legacy code
 		        // not touched by kdesnos
 		        // I'm going to comment this part now and see if this changes anything
-		
+
 		        // if (targetInstances.get(targetIndex) instanceof SDFVertex) {
 		        // if (((SDFVertex) targetInstances.get(targetIndex)).getSource(edge.getTargetInterface().getName()) != null) {
 		        // inputVertex = ((SDFVertex) targetInstances.get(targetIndex)).getSource(edge.getTargetInterface().getName());
@@ -484,17 +484,17 @@ final class SDF2DAG extends AbstractDAGConstructor implements PureDAGConstructor
 		        // ((SDFVertex) sourceInstances.get(sourceIndex)).setInterfaceVertexExternalLink(newEdge, outputVertex);
 		        // }
 		        // }
-		        
+
 		        // Set the properties of the new edge
 		        newEdge.prod = new SDFIntEdgePropertyType(rest)
 		        newEdge.cons = new SDFIntEdgePropertyType(rest)
 		        newEdge.dataType = edge.dataType
 		        newEdge.delay = new SDFIntEdgePropertyType(0)
-		        
+
 		        absoluteTarget += rest
 		        absoluteSource += rest
 		        currentBufferSize += rest
-		        
+
 		        // Below code although in ToHSDFVisitor class, does not occur in my case
 		        if ((currentBufferSize == bufferSize) && (targetInstances.get(0) instanceof SDFInterfaceVertex)
 		            && ((absoluteSource / edge.getProd().intValue()) < sourceInstances.size())) {
@@ -502,7 +502,7 @@ final class SDF2DAG extends AbstractDAGConstructor implements PureDAGConstructor
 		          // currentBufferSize = 0;
 		        }
 			}
-			
+
 			// if the edge target was a round buffer we set the port modifiers here
 			if(edge.target instanceof SDFRoundBufferVertex) {
 				// Set all the target modifiers as unused and sort list of input
@@ -515,7 +515,7 @@ final class SDF2DAG extends AbstractDAGConstructor implements PureDAGConstructor
 				if( (portModifier !== null) && !portModifier.toString.equals(SDFEdge.MODIFIER_UNUSED)) {
 					// If the target is unused, set last edges targetModifier as read-only
 					var tokensToProduce = (edge.target.base.outgoingEdgesOf(edge.target) as Set<SDFEdge>).iterator.next.prod.intValue
-					
+
 					// Scan the edges in reverse order
 					while ((tokensToProduce > 0) && iter.hasPrevious()) {
 						val SDFEdge newEdge = iter.previous()
@@ -541,10 +541,10 @@ final class SDF2DAG extends AbstractDAGConstructor implements PureDAGConstructor
 					for(inEdge: outputGraph.incomingEdgesOf(sourceInstances.get(ii))) {
 						trueSource = inEdge.source
 					}
-					sourceInstances.set(ii, trueSource)				
+					sourceInstances.set(ii, trueSource)
 				}
 			}
-			
+
 			for(var ii = 0; ii < targetInstances.size(); ii++) {
 				if((targetInstances.get(ii) instanceof SDFJoinVertex) && !originalTargetInstances.get(ii).equals(targetInstances.get(ii))) {
 					var SDFAbstractVertex trueTarget = null
@@ -562,7 +562,7 @@ final class SDF2DAG extends AbstractDAGConstructor implements PureDAGConstructor
 				}
 			}
 		}
-		
+
 		// Remove any unconnected implode and explode actors and related interfaces
 		val removableVertices = newArrayList // Mark the vertices to be removed
 		outputGraph.vertexSet.forEach[vertex |
@@ -577,22 +577,22 @@ final class SDF2DAG extends AbstractDAGConstructor implements PureDAGConstructor
 					if(vertex instanceof SDFForkVertex) {
 						removableVertices.add(vertex)
 					}
-				}	
+				}
 			}
 		]
 		removableVertices.forEach[vertex| // Remove the actual vertex
 			outputGraph.removeVertex(vertex)
 		]
-		
+
 		// Make sure all the ports are in order
 		if(isInputSDFGraph && !SpecialActorPortsIndexer.checkIndexes(outputGraph)) {
 			throw new SDF4JException("There are still special actors with non-indexed ports. Contact PREESM developers")
 		}
-		SpecialActorPortsIndexer.sortIndexedPorts(outputGraph)	
+		SpecialActorPortsIndexer.sortIndexedPorts(outputGraph)
 	}
-	
+
 	/**
-	 * Update the relevant data-structures associated with the class. 
+	 * Update the relevant data-structures associated with the class.
 	 */
 	protected def void updateMaps(SDFAbstractVertex sourceInstance, SDFAbstractVertex exImInstance) {
 		explodeImplodeOrigInstances.put(exImInstance, sourceInstance)
