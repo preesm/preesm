@@ -250,14 +250,14 @@ public class CodegenHierarchicalModelGenerator {
             if (prototypes != null) {
               final String iteratorIndex = "iteratorIndex" + Integer.toString(forLoopIter++);
               final Prototype loopPrototype = prototypes.getLoopPrototype();
-              final int vertexRep = current.getRepeat();
+              final long vertexRep = current.getRepeat();
               // create code elements and setup them
               final FunctionCall repFunc = CodegenFactory.eINSTANCE.createFunctionCall();
               final FiniteLoopBlock forLoop = CodegenFactory.eINSTANCE.createFiniteLoopBlock();
               final IntVar var = CodegenFactory.eINSTANCE.createIntVar();
               var.setName(iteratorIndex);
               forLoop.setIter(var);
-              forLoop.setNbIter(vertexRep);
+              forLoop.setNbIter((int) vertexRep);
               operatorBlock.getLoopBlock().getCodeElts().add(forLoop);
               repFunc.setName(loopPrototype.getFunctionName());
               repFunc.setActorName(dagVertex.getName()); // Function call set to the hierarchical actor
@@ -292,10 +292,10 @@ public class CodegenHierarchicalModelGenerator {
             final String iteratorIndex = "iteratorIndex" + Integer.toString(forLoopIter++);
             final FiniteLoopBlock forLoop = CodegenFactory.eINSTANCE.createFiniteLoopBlock();
             final IntVar var = CodegenFactory.eINSTANCE.createIntVar();
-            final int vertexRep = current.getRepeat();
+            final long vertexRep = current.getRepeat();
             var.setName(iteratorIndex);
             forLoop.setIter(var);
-            forLoop.setNbIter(vertexRep);
+            forLoop.setNbIter((int) vertexRep);
             generateRepeatedSpecialCall(operatorBlock, forLoop, dagVertex, repVertexCallVar, inputRepVertexs,
                 outputRepVertexs);
             operatorBlock.getLoopBlock().getCodeElts().add(forLoop);
@@ -314,7 +314,7 @@ public class CodegenHierarchicalModelGenerator {
           final IntVar var = CodegenFactory.eINSTANCE.createIntVar();
           var.setName(iteratorIndex);
           forLoop.setIter(var);
-          forLoop.setNbIter(current.getRepeat());
+          forLoop.setNbIter((int) current.getRepeat());
           operatorBlock.getLoopBlock().getCodeElts().add(forLoop);
           if (!upperLoops.isEmpty()) {
             upperLoops.get(upperLoops.size() - 1).getCodeElts().add(forLoop);
