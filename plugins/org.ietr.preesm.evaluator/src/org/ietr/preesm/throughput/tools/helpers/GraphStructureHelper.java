@@ -38,6 +38,7 @@ package org.ietr.preesm.throughput.tools.helpers;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Hashtable;
+import java.util.Map;
 import java.util.Map.Entry;
 import org.ietr.dftools.algorithm.model.AbstractVertex;
 import org.ietr.dftools.algorithm.model.IInterface;
@@ -550,9 +551,9 @@ public abstract class GraphStructureHelper {
 
     // Step 2: execute actor as long as they are ready
     final GraphSimulationHelper simulator = new GraphSimulationHelper(subgraph);
-    Hashtable<SDFAbstractVertex, Integer> readyActors = simulator.getReadyActorsNbExecutions();
+    Map<SDFAbstractVertex, Long> readyActors = simulator.getReadyActorsNbExecutions();
     while (!readyActors.isEmpty()) {
-      for (final Entry<SDFAbstractVertex, Integer> e : readyActors.entrySet()) {
+      for (final Entry<SDFAbstractVertex, Long> e : readyActors.entrySet()) {
         simulator.execute(e.getKey(), e.getValue());
       }
       readyActors = simulator.getReadyActorsNbExecutions();
@@ -567,9 +568,9 @@ public abstract class GraphStructureHelper {
     for (final SDFAbstractVertex actor : subgraph.vertexSet()) {
       if (actor instanceof SDFSinkInterfaceVertex) {
         final SDFEdge e = h.getAssociatedEdge(h.getInterface(actor.getName()));
-        final int oldMarking = e.getDelay().intValue();
-        final int newMarking = oldMarking
-            + (h.getNbRepeatAsInteger() * (simulator.getExecutionCounter(actor) * e.getProd().intValue()));
+        final long oldMarking = e.getDelay().longValue();
+        final long newMarking = oldMarking
+            + (h.getNbRepeatAsLong() * (simulator.getExecutionCounter(actor) * e.getProd().longValue()));
         e.setDelay(new SDFIntEdgePropertyType(newMarking));
       }
     }

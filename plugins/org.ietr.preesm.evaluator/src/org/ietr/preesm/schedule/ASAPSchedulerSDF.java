@@ -36,6 +36,7 @@
 package org.ietr.preesm.schedule;
 
 import java.util.Hashtable;
+import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 import org.ietr.dftools.algorithm.model.sdf.SDFAbstractVertex;
@@ -51,10 +52,10 @@ import org.ietr.preesm.throughput.tools.helpers.Stopwatch;
  *
  */
 public class ASAPSchedulerSDF {
-  private GraphSimulationHelper                        simulator;  // simulator helper
-  private Double                                       dur1Iter;   // duration of one iteration of a graph
-  private Map<Double, Map<SDFAbstractVertex, Integer>> executions; // list of ready executions to finish
-  public boolean                                       live;
+  private GraphSimulationHelper                     simulator;  // simulator helper
+  private Double                                    dur1Iter;   // duration of one iteration of a graph
+  private Map<Double, Map<SDFAbstractVertex, Long>> executions; // list of ready executions to finish
+  public boolean                                    live;
 
   /**
    * Schedule the graph using an ASAP schedule and return the duration of the graph iteration
@@ -90,10 +91,10 @@ public class ASAPSchedulerSDF {
       }
 
       // execute the list of executions
-      final Map<SDFAbstractVertex, Integer> listTExec = this.executions.get(t);
+      final Map<SDFAbstractVertex, Long> listTExec = this.executions.get(t);
       this.executions.remove(t);
 
-      for (final Entry<SDFAbstractVertex, Integer> execution : listTExec.entrySet()) {
+      for (final Entry<SDFAbstractVertex, Long> execution : listTExec.entrySet()) {
 
         // produce n*prod data tokens
         this.simulator.produce(execution.getKey(), execution.getValue());
@@ -103,7 +104,7 @@ public class ASAPSchedulerSDF {
 
           // execute n times the target actor if it is ready
           final SDFAbstractVertex targetActor = execution.getKey().getAssociatedEdge(output).getTarget();
-          final int n = this.simulator.maxExecToCompleteAnIteration(targetActor);
+          final long n = this.simulator.maxExecToCompleteAnIteration(targetActor);
 
           if (n > 0) {
             // consume N data tokens
@@ -119,15 +120,15 @@ public class ASAPSchedulerSDF {
 
             // add the execution to the list
             if (this.executions.containsKey(finishDate)) {
-              final Map<SDFAbstractVertex, Integer> listExec = this.executions.get(finishDate);
+              final Map<SDFAbstractVertex, Long> listExec = this.executions.get(finishDate);
               if (listExec.containsKey(targetActor)) {
-                final int old = listExec.get(targetActor);
+                final long old = listExec.get(targetActor);
                 listExec.put(targetActor, (old + n));
               } else {
                 listExec.put(targetActor, n);
               }
             } else {
-              this.executions.put(finishDate, new Hashtable<SDFAbstractVertex, Integer>());
+              this.executions.put(finishDate, new LinkedHashMap<SDFAbstractVertex, Long>());
               this.executions.get(finishDate).put(targetActor, n);
             }
           }
@@ -160,7 +161,7 @@ public class ASAPSchedulerSDF {
     // loop actors
     for (final SDFAbstractVertex actor : graph.vertexSet()) {
       // get the max n
-      final int n = this.simulator.maxExecToCompleteAnIteration(actor);
+      final long n = this.simulator.maxExecToCompleteAnIteration(actor);
       // if ready
       if (n > 0) {
         // consume N data tokens
@@ -174,7 +175,7 @@ public class ASAPSchedulerSDF {
         if (this.executions.containsKey(finishDate)) {
           this.executions.get(finishDate).put(actor, n);
         } else {
-          this.executions.put(finishDate, new Hashtable<SDFAbstractVertex, Integer>());
+          this.executions.put(finishDate, new Hashtable<SDFAbstractVertex, Long>());
           this.executions.get(finishDate).put(actor, n);
         }
       }
