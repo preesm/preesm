@@ -213,12 +213,12 @@ class Range {
 	 * Ranges passed as parameter are not modified
 	 */
 	def Range intersection(Range range) {
-		var start = 0
-		var end = 0
+		var newStart = 0L
+		var newEnd = 0L
 		if (this.hasOverlap(range)) {
-			start = Math::max(this.getStart, range.getStart)
-			end = Math::min(this.getEnd, range.getEnd)
-			return new Range(start, end)
+			newStart = Math::max(this.getStart, range.getStart)
+			newEnd = Math::min(this.getEnd, range.getEnd)
+			return new Range(newStart, newEnd)
 		}
 		return null
 	}
