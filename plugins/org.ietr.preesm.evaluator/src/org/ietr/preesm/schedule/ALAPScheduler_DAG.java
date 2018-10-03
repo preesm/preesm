@@ -151,7 +151,7 @@ public class ALAPScheduler_DAG {
       boolean ready = true;
       for (final SDFInterfaceVertex output : actor.getSinks()) {
         final SDFEdge edge = actor.getAssociatedEdge(output);
-        if (edge.getDelay().intValue() == 0) {
+        if (edge.getDelay().longValue() == 0) {
           ready = false;
           break;
         } else {

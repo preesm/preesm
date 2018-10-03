@@ -76,7 +76,7 @@ public class FirstFitAllocator extends OrderedAllocator {
    * @return the resulting allocation size.
    */
   @Override
-  protected int allocateInOrder(final List<MemoryExclusionVertex> vertexList) {
+  protected long allocateInOrder(final List<MemoryExclusionVertex> vertexList) {
     // clear all previous allocation
     clear();
 

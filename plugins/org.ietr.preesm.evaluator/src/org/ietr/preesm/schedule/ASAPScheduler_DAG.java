@@ -151,7 +151,7 @@ public class ASAPScheduler_DAG {
       boolean ready = true;
       for (final SDFInterfaceVertex input : actor.getSources()) {
         final SDFEdge edge = actor.getAssociatedEdge(input);
-        if (edge.getDelay().intValue() == 0) {
+        if (edge.getDelay().longValue() == 0) {
           ready = false;
           break;
         } else {

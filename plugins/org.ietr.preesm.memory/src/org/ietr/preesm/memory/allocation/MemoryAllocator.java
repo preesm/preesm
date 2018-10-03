@@ -866,8 +866,8 @@ public abstract class MemoryAllocator {
    *
    * @return the memory Size
    */
-  public int getMemorySize() {
-    int memorySize = 0;
+  public long getMemorySize() {
+    long memorySize = 0;
 
     // Use the memExNodeAllocation if available
     if (this.memExNodeAllocation != null) {
@@ -884,8 +884,8 @@ public abstract class MemoryAllocator {
         // Look for the maximum value of (offset + edge.size) in
         // allocation map
         for (final DAGEdge edge : this.edgeAllocation.keySet()) {
-          if ((this.edgeAllocation.get(edge) + edge.getWeight().intValue()) > memorySize) {
-            memorySize = this.edgeAllocation.get(edge) + edge.getWeight().intValue();
+          if ((this.edgeAllocation.get(edge) + edge.getWeight().longValue()) > memorySize) {
+            memorySize = this.edgeAllocation.get(edge) + edge.getWeight().longValue();
           }
         }
       } catch (final InvalidExpressionException e) {

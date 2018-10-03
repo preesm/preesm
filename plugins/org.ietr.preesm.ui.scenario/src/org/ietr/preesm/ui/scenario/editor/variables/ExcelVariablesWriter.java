@@ -173,7 +173,7 @@ public class ExcelVariablesWriter extends ExcelWriter {
           if (variable == null) {
             variable = variablesGraph.getVariable(variableName);
           }
-          final int value = variable.intValue();
+          final long value = variable.longValue();
 
           // Write the value in the cell
           final WritableCell valueCell = new Number(1, varCell.getRow(), value);
