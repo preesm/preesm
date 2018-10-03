@@ -97,9 +97,9 @@ public class ALAPScheduler_DAGTest {
     graph.setName("testABC");
 
     // add actors
-    GraphStructureHelper.addActor(graph, "A", null, 1, 5., null, null);
-    GraphStructureHelper.addActor(graph, "B", null, 1, 2., null, null);
-    GraphStructureHelper.addActor(graph, "C", null, 1, 7., null, null);
+    GraphStructureHelper.addActor(graph, "A", null, 1L, 5., null, null);
+    GraphStructureHelper.addActor(graph, "B", null, 1L, 2., null, null);
+    GraphStructureHelper.addActor(graph, "C", null, 1L, 7., null, null);
 
     // add edges
     GraphStructureHelper.addEdge(graph, "A", null, "C", null, 1, 1, 0, null);

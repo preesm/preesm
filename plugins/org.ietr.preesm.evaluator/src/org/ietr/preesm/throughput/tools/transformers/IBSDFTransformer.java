@@ -131,8 +131,8 @@ public abstract class IBSDFTransformer {
    */
   private static void addExecRules(final SDFGraph srSDF) {
     // step 1: add the two special actors Start and End actors
-    GraphStructureHelper.addActor(srSDF, "start", null, 1, 0., null, null);
-    GraphStructureHelper.addActor(srSDF, "end", null, 1, 0., null, null);
+    GraphStructureHelper.addActor(srSDF, "start", null, 1L, 0., null, null);
+    GraphStructureHelper.addActor(srSDF, "end", null, 1L, 0., null, null);
 
     // add the edge back from End actor to Start actor (no need of the edge from start to end)
     GraphStructureHelper.addEdge(srSDF, "end", "to_start", "start", "from_end", 1, 1, 1, null);

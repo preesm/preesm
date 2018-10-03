@@ -40,6 +40,7 @@ import org.ietr.dftools.algorithm.model.sdf.SDFGraph;
 import org.ietr.dftools.algorithm.model.sdf.types.SDFIntEdgePropertyType;
 import org.ietr.preesm.deadlock.IBSDFConsistency;
 import org.ietr.preesm.deadlock.IBSDFLiveness;
+import org.ietr.preesm.evaluator.EvaluationException;
 import org.ietr.preesm.throughput.tools.helpers.GraphStructureHelper;
 import org.junit.Assert;
 import org.junit.Test;
@@ -73,9 +74,12 @@ public class IBSDFLivenessTest {
     }
 
     // check the liveness of the ibsdf graph
-    final boolean live = IBSDFLiveness.evaluate(ibsdf);
-    Assert.assertFalse(live);
-
+    try {
+      IBSDFLiveness.evaluate(ibsdf);
+      Assert.fail();
+    } catch (EvaluationException e) {
+      // success
+    }
   }
 
   /**

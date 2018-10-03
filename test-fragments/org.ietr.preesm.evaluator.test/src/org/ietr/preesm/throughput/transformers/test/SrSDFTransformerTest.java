@@ -115,17 +115,17 @@ public class SrSDFTransformerTest {
     graph.setName("testABC326");
 
     // add actors
-    GraphStructureHelper.addActor(graph, "A1", null, 1, 1., null, null);
-    GraphStructureHelper.addActor(graph, "A2", null, 1, 1., null, null);
-    GraphStructureHelper.addActor(graph, "A3", null, 1, 1., null, null);
-    GraphStructureHelper.addActor(graph, "B1", null, 1, 1., null, null);
-    GraphStructureHelper.addActor(graph, "B2", null, 1, 1., null, null);
-    GraphStructureHelper.addActor(graph, "C1", null, 1, 1., null, null);
-    GraphStructureHelper.addActor(graph, "C2", null, 1, 1., null, null);
-    GraphStructureHelper.addActor(graph, "C3", null, 1, 1., null, null);
-    GraphStructureHelper.addActor(graph, "C4", null, 1, 1., null, null);
-    GraphStructureHelper.addActor(graph, "C5", null, 1, 1., null, null);
-    GraphStructureHelper.addActor(graph, "C6", null, 1, 1., null, null);
+    GraphStructureHelper.addActor(graph, "A1", null, 1L, 1., null, null);
+    GraphStructureHelper.addActor(graph, "A2", null, 1L, 1., null, null);
+    GraphStructureHelper.addActor(graph, "A3", null, 1L, 1., null, null);
+    GraphStructureHelper.addActor(graph, "B1", null, 1L, 1., null, null);
+    GraphStructureHelper.addActor(graph, "B2", null, 1L, 1., null, null);
+    GraphStructureHelper.addActor(graph, "C1", null, 1L, 1., null, null);
+    GraphStructureHelper.addActor(graph, "C2", null, 1L, 1., null, null);
+    GraphStructureHelper.addActor(graph, "C3", null, 1L, 1., null, null);
+    GraphStructureHelper.addActor(graph, "C4", null, 1L, 1., null, null);
+    GraphStructureHelper.addActor(graph, "C5", null, 1L, 1., null, null);
+    GraphStructureHelper.addActor(graph, "C6", null, 1L, 1., null, null);
 
     // add edges
     GraphStructureHelper.addEdge(graph, "A1", null, "B1", null, 2, 2, 2, null);

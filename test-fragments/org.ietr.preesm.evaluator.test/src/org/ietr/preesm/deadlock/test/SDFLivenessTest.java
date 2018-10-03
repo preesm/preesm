@@ -40,6 +40,7 @@ import org.ietr.dftools.algorithm.model.sdf.SDFGraph;
 import org.ietr.dftools.algorithm.model.sdf.types.SDFIntEdgePropertyType;
 import org.ietr.preesm.deadlock.SDFConsistency;
 import org.ietr.preesm.deadlock.SDFLiveness;
+import org.ietr.preesm.evaluator.EvaluationException;
 import org.ietr.preesm.throughput.tools.helpers.GraphStructureHelper;
 import org.junit.Assert;
 import org.junit.Test;
@@ -72,9 +73,13 @@ public class SDFLivenessTest {
       e.setDelay(new SDFIntEdgePropertyType(0));
     }
     // check the liveness of the graph
-    final boolean live = SDFLiveness.evaluate(ABC);
-    // check the RV value
-    Assert.assertFalse(live);
+
+    try {
+      SDFLiveness.evaluate(ABC);
+      Assert.fail();
+    } catch (EvaluationException e) {
+      // success
+    }
   }
 
   /**

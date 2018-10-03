@@ -155,7 +155,7 @@ public abstract class GraphStructureHelper {
    * @return the created actor
    */
   public static SDFAbstractVertex addActor(final SDFGraph graph, final String actorName, final SDFGraph subgraph,
-      final Integer repititionFactor, final Double latency, final Double normalizedPortsRate,
+      final Long repititionFactor, final Double latency, final Double normalizedPortsRate,
       final SDFAbstractVertex baseActor) {
     final SDFAbstractVertex actor = new SDFVertex(graph);
     // set the name
@@ -415,8 +415,8 @@ public abstract class GraphStructureHelper {
 
     // Step 1: add the replacement subgraph into the parent graph
     for (final SDFAbstractVertex a : replacementGraph.vertexSet()) {
-      GraphStructureHelper.addActor(parentGraph, h.getName() + "_" + a.getName(), (SDFGraph) a.getGraphDescription(), 1,
-          (Double) a.getPropertyBean().getValue("duration"), null,
+      GraphStructureHelper.addActor(parentGraph, h.getName() + "_" + a.getName(), (SDFGraph) a.getGraphDescription(),
+          1L, (Double) a.getPropertyBean().getValue("duration"), null,
           (SDFAbstractVertex) a.getPropertyBean().getValue("baseActor"));
     }
     for (final SDFEdge e : replacementGraph.edgeSet()) {
@@ -787,8 +787,8 @@ public abstract class GraphStructureHelper {
   public static double getLongestPath(final SDFGraph DAG, final PreesmScenario scenario,
       ArrayList<SDFAbstractVertex> topoSortList) {
     // add a source and a target actor
-    final SDFAbstractVertex source = GraphStructureHelper.addActor(DAG, "S_LongestPath", null, 1, 0., null, null);
-    final SDFAbstractVertex target = GraphStructureHelper.addActor(DAG, "T_LongestPath", null, 1, 0., null, null);
+    final SDFAbstractVertex source = GraphStructureHelper.addActor(DAG, "S_LongestPath", null, 1L, 0., null, null);
+    final SDFAbstractVertex target = GraphStructureHelper.addActor(DAG, "T_LongestPath", null, 1L, 0., null, null);
 
     // connect the source to all input actors and the target to all output actors
     for (final SDFAbstractVertex actor : DAG.vertexSet()) {

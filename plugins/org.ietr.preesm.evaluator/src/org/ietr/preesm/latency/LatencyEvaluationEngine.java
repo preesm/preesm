@@ -37,6 +37,7 @@ package org.ietr.preesm.latency;
 
 import java.util.ArrayList;
 import java.util.Hashtable;
+import java.util.Map;
 import org.ietr.dftools.algorithm.model.sdf.SDFAbstractVertex;
 import org.ietr.dftools.algorithm.model.sdf.SDFEdge;
 import org.ietr.dftools.algorithm.model.sdf.SDFGraph;
@@ -52,25 +53,25 @@ import org.ietr.preesm.throughput.tools.transformers.SDFTransformer;
 public class LatencyEvaluationEngine {
 
   // list of replacement graphs
-  private Hashtable<String, SDFGraph> replacementSubgraphlList;
-  private PreesmScenario              _scenario;
-  public Stopwatch                    timer;
+  private Map<String, SDFGraph> replacementSubgraphlList;
+  private PreesmScenario        scenario;
+  Stopwatch                     timer;
 
   /**
    * computes the maximum latency of the IBSDF graph which is equivalent to a single core execution
    *
    * @return maxLatency
    */
-  public double getMinLatencySingleCore(final SDFGraph graph, final PreesmScenario scenario) {
+  public long getMinLatencySingleCore(final SDFGraph graph, final PreesmScenario scenario) {
     this.timer = new Stopwatch();
     this.timer.start();
 
     // sum l(a)*rv_global(a) -- not the local RV
-    double minLatencySingleCore = 0;
+    long minLatencySingleCore = 0;
 
     // loop actors of the graph
     for (final SDFAbstractVertex actor : graph.vertexSet()) {
-      double actorLatency = 0;
+      long actorLatency = 0;
 
       // define the latency of the actor
       if (actor.getGraphDescription() != null) {
@@ -81,12 +82,12 @@ public class LatencyEvaluationEngine {
         if (scenario != null) {
           actorLatency = scenario.getTimingManager().getTimingOrDefault(actor.getId(), "x86").getTime();
         } else {
-          actorLatency = (double) actor.getPropertyBean().getValue("duration");
+          actorLatency = (long) actor.getPropertyBean().getValue("duration");
         }
       }
 
       // multiply the actor latency by its repetition factor
-      minLatencySingleCore += actorLatency * actor.getNbRepeatAsInteger();
+      minLatencySingleCore += actorLatency * actor.getNbRepeatAsLong();
     }
 
     this.timer.stop();
@@ -101,17 +102,17 @@ public class LatencyEvaluationEngine {
    *
    * @return subgraph latency
    */
-  public double getSubgraphMinLatencySinlgeCore(final SDFAbstractVertex hierarchicalActor,
+  public long getSubgraphMinLatencySinlgeCore(final SDFAbstractVertex hierarchicalActor,
       final PreesmScenario scenario) {
     // sum l(a)*rv_global(a) -- not the local RV
-    double subgraphLatency = 0;
+    long subgraphLatency = 0;
 
     // get the subgraph
     final SDFGraph subgraph = (SDFGraph) hierarchicalActor.getGraphDescription();
 
     // loop actors of the subgraph
     for (final SDFAbstractVertex actor : subgraph.vertexSet()) {
-      double actorLatency = 0;
+      long actorLatency = 0;
 
       // define the latency of the actor
       if (actor.getGraphDescription() != null) {
@@ -122,12 +123,12 @@ public class LatencyEvaluationEngine {
         if (scenario != null) {
           actorLatency = scenario.getTimingManager().getTimingOrDefault(actor.getId(), "x86").getTime();
         } else {
-          actorLatency = (double) actor.getPropertyBean().getValue("duration");
+          actorLatency = (long) actor.getPropertyBean().getValue("duration");
         }
       }
 
       // multiply the actor latency by its repetition factor
-      subgraphLatency += actorLatency * actor.getNbRepeatAsInteger();
+      subgraphLatency += actorLatency * actor.getNbRepeatAsLong();
     }
 
     return subgraphLatency;
@@ -155,7 +156,7 @@ public class LatencyEvaluationEngine {
      *
      */
 
-    this._scenario = scenario;
+    this.scenario = scenario;
 
     // re-time the IBSDF graph
     if (retiming) {
@@ -274,7 +275,7 @@ public class LatencyEvaluationEngine {
         inputActors.add(actor);
 
         // create the associated actor in the replacement graph
-        GraphStructureHelper.addActor(replGraph, actor.getName(), null, actor.getNbRepeatAsInteger(), 0., null,
+        GraphStructureHelper.addActor(replGraph, actor.getName(), null, actor.getNbRepeatAsLong(), 0., null,
             (SDFAbstractVertex) actor.getPropertyBean().getValue("baseActor"));
       }
 
@@ -284,14 +285,14 @@ public class LatencyEvaluationEngine {
 
         // get actor duration
         double duration;
-        if (this._scenario != null) {
-          duration = this._scenario.getTimingManager().getTimingOrDefault(actor.getId(), "x86").getTime();
+        if (this.scenario != null) {
+          duration = this.scenario.getTimingManager().getTimingOrDefault(actor.getId(), "x86").getTime();
         } else {
           duration = (Double) actor.getPropertyBean().getValue("duration");
         }
 
         // create the associated actor in the replacement graph
-        GraphStructureHelper.addActor(replGraph, actor.getName(), null, actor.getNbRepeatAsInteger(), duration, null,
+        GraphStructureHelper.addActor(replGraph, actor.getName(), null, actor.getNbRepeatAsLong(), duration, null,
             (SDFAbstractVertex) actor.getPropertyBean().getValue("baseActor"));
       }
     }
@@ -304,7 +305,7 @@ public class LatencyEvaluationEngine {
 
     // Step 3: for each input actor compute the longest path to the output actors
     for (final SDFAbstractVertex actor : inputActors) {
-      distance = GraphStructureHelper.getLongestPathToAllTargets(actor, this._scenario, topoSortList);
+      distance = GraphStructureHelper.getLongestPathToAllTargets(actor, this.scenario, topoSortList);
       // for each output actor (if connected to the current input actor), add an actor with a duration equal
       // to the distance from the input actor and the output actor
       for (final SDFAbstractVertex output : outputActors) {

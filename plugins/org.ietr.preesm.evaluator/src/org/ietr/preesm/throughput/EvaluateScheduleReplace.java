@@ -270,7 +270,7 @@ public class EvaluateScheduleReplace {
       final SDFAbstractVertex subgraphInterface = subgraph
           .getVertex(((SDFInterfaceVertex) iInterface).getName() + "_1");
       final SDFAbstractVertex SEM_inetrface = GraphStructureHelper.addActor(subgraphExecutionModel,
-          subgraphInterface.getName(), null, subgraphInterface.getNbRepeatAsInteger(),
+          subgraphInterface.getName(), null, subgraphInterface.getNbRepeatAsLong(),
           (Double) subgraphInterface.getPropertyBean().getValue("duration"), null,
           (SDFAbstractVertex) subgraphInterface.getPropertyBean().getValue("baseActor"));
 
@@ -282,7 +282,7 @@ public class EvaluateScheduleReplace {
       if (timeLineActors.containsKey(startDate)) {
         timeActor = timeLineActors.get(startDate);
       } else {
-        timeActor = GraphStructureHelper.addActor(subgraphExecutionModel, "time" + startDate, null, 1, 0., null, null);
+        timeActor = GraphStructureHelper.addActor(subgraphExecutionModel, "time" + startDate, null, 1L, 0., null, null);
         timeLineActors.put(startDate, timeActor);
       }
 
@@ -306,7 +306,7 @@ public class EvaluateScheduleReplace {
     for (int i = 0; i < (orderedTimeLine.size() - 1); i++) {
       // add the transition actor to the subgraph execution model
       final SDFAbstractVertex TransitionActor = GraphStructureHelper.addActor(subgraphExecutionModel,
-          "time" + orderedTimeLine.get(i) + "_to_time" + orderedTimeLine.get(i + 1), null, 1,
+          "time" + orderedTimeLine.get(i) + "_to_time" + orderedTimeLine.get(i + 1), null, 1L,
           orderedTimeLine.get(i + 1) - orderedTimeLine.get(i), null, null);
 
       // add time actor i with the time actor i+1 through the transition actor
@@ -325,7 +325,7 @@ public class EvaluateScheduleReplace {
       final SDFAbstractVertex lastTimeActor = timeLineActors.get(lastTime);
 
       // create the period actor
-      final SDFAbstractVertex periodActor = GraphStructureHelper.addActor(subgraphExecutionModel, "period", null, 1,
+      final SDFAbstractVertex periodActor = GraphStructureHelper.addActor(subgraphExecutionModel, "period", null, 1L,
           K.getNumerator() - (lastTime - firstTime), null, null);
 
       // connect the period actor to the time line

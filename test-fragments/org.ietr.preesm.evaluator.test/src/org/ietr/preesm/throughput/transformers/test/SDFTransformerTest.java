@@ -207,9 +207,9 @@ public class SDFTransformerTest {
     graph.setName("testABC3");
 
     // add actors
-    GraphStructureHelper.addActor(graph, "A", null, 3, 1., null, null);
-    GraphStructureHelper.addActor(graph, "B", null, 2, 1., null, null);
-    GraphStructureHelper.addActor(graph, "C", null, 6, 1., null, null);
+    GraphStructureHelper.addActor(graph, "A", null, 3L, 1., null, null);
+    GraphStructureHelper.addActor(graph, "B", null, 2L, 1., null, null);
+    GraphStructureHelper.addActor(graph, "C", null, 6L, 1., null, null);
 
     // add edges
     GraphStructureHelper.addEdge(graph, "A", null, "B", null, 2, 3, 6, null);

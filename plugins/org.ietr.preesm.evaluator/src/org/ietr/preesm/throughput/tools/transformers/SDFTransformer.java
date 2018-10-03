@@ -68,7 +68,7 @@ public abstract class SDFTransformer {
     for (final SDFAbstractVertex a : SDF.vertexSet()) {
       for (int i = 1; i <= a.getNbRepeatAsInteger(); i++) {
         // create an instance a_i of the actor a
-        GraphStructureHelper.addActor(hsdf_graph, a.getName() + "_" + i, (SDFGraph) a.getGraphDescription(), 1,
+        GraphStructureHelper.addActor(hsdf_graph, a.getName() + "_" + i, (SDFGraph) a.getGraphDescription(), 1L,
             (Double) a.getPropertyBean().getValue("duration"), null, a);
 
       }
@@ -118,7 +118,7 @@ public abstract class SDFTransformer {
       // System.out.println("====> duplicating actor " + a.getId());
       for (int i = 1; i <= a.getNbRepeatAsInteger(); i++) {
         // create an instance a_i of the actor a
-        GraphStructureHelper.addActor(singleRate, a.getName() + "_" + i, (SDFGraph) a.getGraphDescription(), 1,
+        GraphStructureHelper.addActor(singleRate, a.getName() + "_" + i, (SDFGraph) a.getGraphDescription(), 1L,
             (Double) a.getPropertyBean().getValue("duration"), null, a);
       }
     }

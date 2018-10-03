@@ -40,6 +40,7 @@ import org.ietr.dftools.algorithm.model.sdf.SDFEdge;
 import org.ietr.dftools.algorithm.model.sdf.SDFGraph;
 import org.ietr.dftools.algorithm.model.sdf.types.SDFIntEdgePropertyType;
 import org.ietr.preesm.deadlock.IBSDFConsistency;
+import org.ietr.preesm.evaluator.EvaluationException;
 import org.ietr.preesm.throughput.tools.helpers.GraphStructureHelper;
 import org.junit.Assert;
 import org.junit.Test;
@@ -94,8 +95,12 @@ public class IBSDFConsistencyTest {
     E.getAssociatedEdge(E.getSinks().iterator().next()).setProd(new SDFIntEdgePropertyType(10));
 
     // evaluate the consistency
-    consistent = IBSDFConsistency.computeRV(ibsdf);
-    Assert.assertFalse(consistent);
+    try {
+      IBSDFConsistency.computeRV(ibsdf);
+      Assert.fail();
+    } catch (EvaluationException e) {
+      // success
+    }
 
   }
 

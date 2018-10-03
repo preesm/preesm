@@ -61,12 +61,12 @@ public class GraphStrucutureHelperTest_detail {
     // create the DAG to sort
     final SDFGraph dag = new SDFGraph();
     dag.setName("dag");
-    GraphStructureHelper.addActor(dag, "0", null, 1, 1., null, null);
-    GraphStructureHelper.addActor(dag, "1", null, 1, 1., null, null);
-    GraphStructureHelper.addActor(dag, "2", null, 1, 1., null, null);
-    GraphStructureHelper.addActor(dag, "3", null, 1, 1., null, null);
-    GraphStructureHelper.addActor(dag, "4", null, 1, 1., null, null);
-    GraphStructureHelper.addActor(dag, "5", null, 1, 1., null, null);
+    GraphStructureHelper.addActor(dag, "0", null, 1L, 1., null, null);
+    GraphStructureHelper.addActor(dag, "1", null, 1L, 1., null, null);
+    GraphStructureHelper.addActor(dag, "2", null, 1L, 1., null, null);
+    GraphStructureHelper.addActor(dag, "3", null, 1L, 1., null, null);
+    GraphStructureHelper.addActor(dag, "4", null, 1L, 1., null, null);
+    GraphStructureHelper.addActor(dag, "5", null, 1L, 1., null, null);
 
     GraphStructureHelper.addEdge(dag, "5", null, "2", null, 1, 1, 0, null);
     GraphStructureHelper.addEdge(dag, "5", null, "0", null, 1, 1, 0, null);
@@ -115,12 +115,12 @@ public class GraphStrucutureHelperTest_detail {
     // create the DAG to sort
     final SDFGraph dag = new SDFGraph();
     dag.setName("dag");
-    GraphStructureHelper.addActor(dag, "0", null, 1, 3., null, null);
-    GraphStructureHelper.addActor(dag, "1", null, 1, 6., null, null);
-    GraphStructureHelper.addActor(dag, "2", null, 1, 5., null, null);
-    GraphStructureHelper.addActor(dag, "3", null, 1, -1., null, null);
-    GraphStructureHelper.addActor(dag, "4", null, 1, -3., null, null);
-    GraphStructureHelper.addActor(dag, "5", null, 1, 1., null, null);
+    GraphStructureHelper.addActor(dag, "0", null, 1L, 3., null, null);
+    GraphStructureHelper.addActor(dag, "1", null, 1L, 6., null, null);
+    GraphStructureHelper.addActor(dag, "2", null, 1L, 5., null, null);
+    GraphStructureHelper.addActor(dag, "3", null, 1L, -1., null, null);
+    GraphStructureHelper.addActor(dag, "4", null, 1L, -3., null, null);
+    GraphStructureHelper.addActor(dag, "5", null, 1L, 1., null, null);
 
     GraphStructureHelper.addEdge(dag, "0", null, "1", null, 1, 1, 0, null);
     GraphStructureHelper.addEdge(dag, "0", null, "2", null, 1, 1, 0, null);

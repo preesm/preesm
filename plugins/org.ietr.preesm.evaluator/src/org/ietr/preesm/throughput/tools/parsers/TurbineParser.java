@@ -106,7 +106,7 @@ public abstract class TurbineParser {
         line = br.readLine().split(" ");
         // line structure: Id repetitionFactor phaseDuration
         final String _actorId = line[0];
-        final Integer _actorRF = Integer.parseInt(line[1]);
+        final Long _actorRF = Long.parseLong(line[1]);
         final double _actorDuration = Double.parseDouble(line[2]);
 
         // String newActorId = Identifier.generateActorId();
@@ -186,7 +186,7 @@ public abstract class TurbineParser {
           line = br.readLine().split(" ");
           // line structure: Id repetitionFactor phaseDuration
           final String _actorId = line[0];
-          final Integer _actorRF = Integer.parseInt(line[1]);
+          final Long _actorRF = Long.parseLong(line[1]);
           final Double _actorDuration = Double.parseDouble(line[2]);
 
           // String newActorId = Identifier.generateActorId();

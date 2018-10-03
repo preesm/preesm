@@ -64,12 +64,12 @@ public class GraphStrucutureHelperTest {
     sdf.setName("test");
 
     // Add a new actor to the SDF graph
-    GraphStructureHelper.addActor(sdf, "newActor", null, 3, 7., null, null);
+    GraphStructureHelper.addActor(sdf, "newActor", null, 3L, 7., null, null);
 
     // check the results
     Assert.assertEquals(1, sdf.vertexSet().size());
     Assert.assertNotNull(sdf.getVertex("newActor"));
-    Assert.assertEquals(3, sdf.getVertex("newActor").getNbRepeat());
+    Assert.assertEquals(3L, sdf.getVertex("newActor").getNbRepeat());
     Assert.assertEquals(7, (double) sdf.getVertex("newActor").getPropertyBean().getValue("duration"), 0);
   }
 
@@ -364,12 +364,12 @@ public class GraphStrucutureHelperTest {
     // create the DAG to sort
     final SDFGraph dag = new SDFGraph();
     dag.setName("dag");
-    GraphStructureHelper.addActor(dag, "0", null, 1, 1., null, null);
-    GraphStructureHelper.addActor(dag, "1", null, 1, 1., null, null);
-    GraphStructureHelper.addActor(dag, "2", null, 1, 1., null, null);
-    GraphStructureHelper.addActor(dag, "3", null, 1, 1., null, null);
-    GraphStructureHelper.addActor(dag, "4", null, 1, 1., null, null);
-    GraphStructureHelper.addActor(dag, "5", null, 1, 1., null, null);
+    GraphStructureHelper.addActor(dag, "0", null, 1L, 1., null, null);
+    GraphStructureHelper.addActor(dag, "1", null, 1L, 1., null, null);
+    GraphStructureHelper.addActor(dag, "2", null, 1L, 1., null, null);
+    GraphStructureHelper.addActor(dag, "3", null, 1L, 1., null, null);
+    GraphStructureHelper.addActor(dag, "4", null, 1L, 1., null, null);
+    GraphStructureHelper.addActor(dag, "5", null, 1L, 1., null, null);
 
     GraphStructureHelper.addEdge(dag, "5", null, "2", null, 1, 1, 0, null);
     GraphStructureHelper.addEdge(dag, "5", null, "0", null, 1, 1, 0, null);
