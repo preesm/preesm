@@ -642,7 +642,7 @@ public class HSDFBuildLoops {
     return memEx;
   }
 
-  private int getNaiveWorkingMemAlloc(final SDFGraph resultGraph) {
+  private long getNaiveWorkingMemAlloc(final SDFGraph resultGraph) {
     final List<SDFEdge> allocEdge = new ArrayList<>();
     // getting edges that are allocated by Karol
     final List<SDFEdge> edgeUpperGraph = new ArrayList<>();
@@ -653,7 +653,7 @@ public class HSDFBuildLoops {
       }
     }
 
-    int bufSize = 0;
+    long bufSize = 0;
     for (final SDFAbstractVertex v : resultGraph.vertexSet()) {
       final List<SDFEdge> edge = new ArrayList<>();
       edge.addAll(getInEdges(v));
@@ -682,7 +682,7 @@ public class HSDFBuildLoops {
           }
 
           final DataType d = this.dataTypes.get(e.getDataType().toString());
-          final int sizeType = d.getSize();
+          final long sizeType = d.getSize();
 
           bufSize += mem * sizeType;
           allocEdge.add(e);
@@ -731,9 +731,9 @@ public class HSDFBuildLoops {
       }
       g.getGraphDescription().getPropertyBean().setValue(MapperDAG.CLUSTERED_VERTEX, clust);
 
-      final int bufSize = getNaiveWorkingMemAlloc(resultGraph);
+      final long bufSize = getNaiveWorkingMemAlloc(resultGraph);
 
-      g.getPropertyBean().setValue("working_memory", new Integer(bufSize));
+      g.getPropertyBean().setValue("working_memory", bufSize);
       p("Internal Working Memory Graph " + g.getName() + " has allocated " + bufSize + " bytes");
     }
     return inputGraph;

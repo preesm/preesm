@@ -157,17 +157,17 @@ class ScriptRunner {
 
 	public boolean generateLog = true
 
-	static int nbBuffersBefore = 0
-	static int nbBuffersAfter = 0
-	static int sizeBefore
-	static int sizeAfter
+	static long nbBuffersBefore = 0
+	static long nbBuffersAfter = 0
+	static long sizeBefore
+	static long sizeAfter
 
 	/**
 	 * This property is used to represent the alignment of buffers in memory.
 	 * The same value, or a multiple should always be used in the memory
 	 * allocation.
 	 */
-	@Accessors val int alignment
+	@Accessors val long alignment
 
 	/**
 	 * Check the results obtained when running the {@link #run()} method.
@@ -352,11 +352,11 @@ class ScriptRunner {
 		// Retrieve the original sdf folder
 		// Identify all actors with a memory Script
 		for (dagVertex : dag.vertexSet) {
-			val sdfVertex = dagVertex.propertyBean.getValue(DAGVertex.SDF_VERTEX, SDFAbstractVertex)
+			val sdfVertex = dagVertex.propertyBean.getValue(DAGVertex.SDF_VERTEX) as SDFAbstractVertex
 			if (dagVertex.kind !== null) {
 				switch (dagVertex.kind) {
 					case DAGVertex.DAG_VERTEX: {
-						val pathString = dagVertex.propertyBean.getValue(SDFVertex.MEMORY_SCRIPT, String)
+						val pathString = dagVertex.propertyBean.getValue(SDFVertex.MEMORY_SCRIPT) as String
 						if (pathString !== null) {
 
 							// Retrieve the script path as a relative path to the
@@ -682,7 +682,7 @@ class ScriptRunner {
 		bufferGroups.add(bufferList)
 		nbBuffersBefore = nbBuffersBefore + buffers.size
 
-		var before = buffers.fold(0, [res, buf|res + buf.maxIndex - buf.minIndex])
+		var before = buffers.fold(0L, [res, buf|res + buf.maxIndex - buf.minIndex])
 		sizeBefore = sizeBefore + before
 		if (generateLog) {
 			log = log + '''## Tree of «buffers.size» buffers''' + '\n' + '''### Original buffer list:''' + '\n' +
@@ -739,7 +739,7 @@ class ScriptRunner {
 
 		} while (step < 8 && !stop)
 
-		var after = buffers.fold(0, [res, buf|res + buf.maxIndex - buf.minIndex])
+		var after = buffers.fold(0L, [res, buf|res + buf.maxIndex - buf.minIndex])
 		if (generateLog) {
 			log = log + "\n" + '''### Tree summary:''' + '\n'
 			log = log + '''- From «bufferList.size» buffers to «buffers.size» buffers.''' + "\n"
@@ -1218,7 +1218,7 @@ class ScriptRunner {
 			val size = (a.minIndex - a.maxIndex) - (b.minIndex - b.maxIndex)
 			// Alphabetical order for buffers of equal size
 			if (size != 0)
-				size
+				size as int
 			else {
 				val nameRes = a.dagVertex.name.compareTo(b.dagVertex.name)
 				if(nameRes != 0) nameRes else a.name.compareTo(b.name)
@@ -1577,9 +1577,9 @@ class ScriptRunner {
 //		val sdfVertex = dagVertex.getPropertyBean().getValue(DAGVertex.SDF_VERTEX, SDFAbstractVertex)
 
 		// Create the vertex parameter list
-		val Map<String, Integer> parameters = newLinkedHashMap
+		val Map<String, Long> parameters = newLinkedHashMap
 		val arguments = dagVertex.arguments as Map<String, Argument>
-		if(arguments !== null) arguments.entrySet.forEach[parameters.put(it.key, it.value.intValue)]
+		if(arguments !== null) arguments.entrySet.forEach[parameters.put(it.key, it.value.longValue)]
 
 		parameters.put("alignment", alignment)
 
@@ -1593,7 +1593,7 @@ class ScriptRunner {
 				it.targetPortModifier ?: "").toString.contains(SDFEdge::MODIFIER_UNUSED))
 			val dataSize = dataTypes.get(dataType.toString).size
 			// Weight is already dataSize * (Cons || prod)
-			val nbTokens = it.weight.intValue// / dataSize
+			val nbTokens = it.weight.longValue// / dataSize
 			try {
 				new Buffer(it, dagVertex, it.targetLabel, nbTokens, dataSize, isMergeable)
 			} catch (NullPointerException exc) {
@@ -1610,7 +1610,7 @@ class ScriptRunner {
 				it.targetPortModifier ?: "").toString.contains(SDFEdge::MODIFIER_UNUSED))
 			val dataSize = dataTypes.get(dataType.toString).size
 			// Weight is already dataSize * (Cons || prod)
-			val nbTokens = it.weight.intValue// / dataSize
+			val nbTokens = it.weight.longValue// / dataSize
 			try {
 				new Buffer(it, dagVertex, it.sourceLabel, nbTokens, dataSize, isMergeable)
 			} catch (NullPointerException exc) {

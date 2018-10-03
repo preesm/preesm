@@ -113,7 +113,7 @@ public class DataTypesLabelProvider implements ITableLabelProvider {
         text = type.getTypeName();
       } else if ((columnIndex == 1) && (this.scenario != null)) {
 
-        text = Integer.toString(type.getSize());
+        text = Long.toString(type.getSize());
       }
     }
 

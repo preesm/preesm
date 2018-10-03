@@ -576,7 +576,7 @@ public class SpiderCodegenVisitor extends PiMMSwitch<Boolean> {
     final DataOutputPort srcPort = f.getSourcePort();
     final DataInputPort snkPort = f.getTargetPort();
 
-    int typeSize;
+    long typeSize;
     if (this.dataTypes.containsKey(f.getType())) {
       typeSize = this.dataTypes.get(f.getType()).getSize();
     } else {

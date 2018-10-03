@@ -148,7 +148,7 @@ public class SimulationManager {
    *          the name
    * @return the data type size or default
    */
-  public int getDataTypeSizeOrDefault(final String name) {
+  public long getDataTypeSizeOrDefault(final String name) {
     if (this.dataTypes.get(name) == null) {
       return DataType.defaultDataTypeSize;
     } else {

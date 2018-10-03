@@ -153,7 +153,7 @@ public class TcpCPrinter extends CPrinter {
       default:
         throw new UnsupportedOperationException("Unsupported [" + direction + "] communication direction.");
     }
-    final int size = communication.getData().getSize();
+    final long size = communication.getData().getSize();
 
     final String dataAddress = communication.getData().getName();
 

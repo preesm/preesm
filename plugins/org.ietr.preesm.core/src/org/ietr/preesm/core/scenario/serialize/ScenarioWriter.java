@@ -373,7 +373,7 @@ public class ScenarioWriter {
     final Element dataTypeElt = this.dom.createElement("dataType");
     parent.appendChild(dataTypeElt);
     dataTypeElt.setAttribute("name", dataType.getTypeName());
-    dataTypeElt.setAttribute("size", Integer.toString(dataType.getSize()));
+    dataTypeElt.setAttribute("size", Long.toString(dataType.getSize()));
   }
 
   /**

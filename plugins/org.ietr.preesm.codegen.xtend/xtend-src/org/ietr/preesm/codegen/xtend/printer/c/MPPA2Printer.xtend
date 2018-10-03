@@ -113,7 +113,7 @@ class MPPA2Printer extends CPrinter {
 	'''
 
 	override printSubBufferDefinition(SubBuffer buffer) '''
-	«buffer.type» *const «buffer.name» = («buffer.type»*) («var offset = 0»«
+	«buffer.type» *const «buffer.name» = («buffer.type»*) («var offset = 0L»«
 	{offset = buffer.offset
 	 var b = buffer.container;
 	 while(b instanceof SubBuffer){
@@ -227,7 +227,7 @@ class MPPA2Printer extends CPrinter {
 	}
 
 	override printFork(SpecialCall call) '''
-	// Fork «call.name»«var input = call.inputBuffers.head»«var index = 0»
+	// Fork «call.name»«var input = call.inputBuffers.head»«var index = 0L»
 	{
 		«FOR output : call.outputBuffers»
 			«printMemcpy(output,0,input,index,output.size,output.type)»«{index=(output.size+index); ""}»
@@ -248,7 +248,7 @@ class MPPA2Printer extends CPrinter {
 	'''
 
 	override printJoin(SpecialCall call) '''
-	// Join «call.name»«var output = call.outputBuffers.head»«var index = 0»
+	// Join «call.name»«var output = call.outputBuffers.head»«var index = 0L»
 	{
 		«FOR input : call.inputBuffers»
 			«printMemcpy(output,index,input,0,input.size,input.type)»«{index=(input.size+index); ""}»
@@ -276,7 +276,7 @@ class MPPA2Printer extends CPrinter {
 	 *            the type of objects copied
 	 * @return a {@link CharSequence} containing the memcpy call (if any)
 	 */
-	override printMemcpy(Buffer output, int outOffset, Buffer input, int inOffset, int size, String type) {
+	override printMemcpy(Buffer output, long outOffset, Buffer input, long inOffset, long size, String type) {
 
 		// Retrieve the container buffer of the input and output as well
 		// as their offset in this buffer

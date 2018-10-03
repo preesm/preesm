@@ -39,6 +39,7 @@ package org.ietr.preesm.memory.allocation;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.List;
 import java.util.Set;
 import org.ietr.preesm.memory.bounds.OstergardSolver;
 import org.ietr.preesm.memory.exclusiongraph.MemoryExclusionGraph;
@@ -141,10 +142,10 @@ public class ImprovedCustomAllocator extends MemoryAllocator {
 
       // the cliqueWeight will store the weight of the current max element
       // of clique
-      int cliqueWeight = Collections.max(cliqueSet).getWeight();
-      final int maximumSize = 2 * cliqueWeight;
+      long cliqueWeight = Collections.max(cliqueSet).getWeight();
+      final long maximumSize = 2 * cliqueWeight;
 
-      ArrayList<MemoryExclusionVertex> nonAllocatedVertex;
+      List<MemoryExclusionVertex> nonAllocatedVertex;
       nonAllocatedVertex = new ArrayList<>(exclusionGraph.vertexSet());
       Collections.sort(nonAllocatedVertex, Collections.reverseOrder());
 
@@ -170,15 +171,13 @@ public class ImprovedCustomAllocator extends MemoryAllocator {
           while (!validOffset) {
             validOffset = true;
             for (final MemoryExclusionVertex neighbor : neighbors) {
-              Integer neighborOffset;
-              if ((neighborOffset = this.memExNodeAllocation.get(neighbor)) != null) {
-
-                if ((neighborOffset < (offset + vertex.getWeight()))
-                    && ((neighborOffset + neighbor.getWeight()) > offset)) {
-                  validOffset = false;
-                  offset += neighbor.getWeight();
-                  break;
-                }
+              long neighborOffset;
+              neighborOffset = this.memExNodeAllocation.get(neighbor);
+              if ((neighborOffset < (offset + vertex.getWeight()))
+                  && ((neighborOffset + neighbor.getWeight()) > offset)) {
+                validOffset = false;
+                offset += neighbor.getWeight();
+                break;
               }
             }
           }
@@ -197,84 +196,12 @@ public class ImprovedCustomAllocator extends MemoryAllocator {
           }
         }
       }
-      // ABORTED
-      // // Improvement Try to add neighbors of cliqueSet
-      // // neighbors are treated in decreasing weight order and added in
-      // the best-fit fashion.
-      // // However, the CWeight cannot be changed !
-      //
-      // // Sort the neighbors list in decreasing order of weight
-      // Collections.sort(treatedNeighbors,Collections.reverseOrder());
-      //
-      // // Best-fit alloc aborted
-      // for(MemoryExclusionGraphNode currentNeighbor : treatedNeighbors){
-      // // retrieve the vertices of Ci that are neighbors of the current
-      // neighbor.
-      // LinkedHashSet<MemoryExclusionGraphNode> adjacent =
-      // exclusionGraph.getAdjacentVertexOf(currentNeighbor);
-      // adjacent.retainAll(cliqueSet);
-      //
-      // // Retrieve all the exclusions. Each node has a starting address
-      // (its offset) and occupy memory up to (offset + size)
-      // // The current neighbor cannot be allocated between those
-      // addresses.
-      // ArrayList<Integer> excludeFrom = new
-      // ArrayList<Integer>(adjacent.size());
-      // ArrayList<Integer> excludeTo = new
-      // ArrayList<Integer>(adjacent.size());
-      // for(MemoryExclusionGraphNode adjacentNode : adjacent){
-      // excludeFrom.add(memExNodeAllocation.get(adjacentNode));
-      // excludeTo.add(memExNodeAllocation.get(adjacentNode)+
-      // adjacentNode.getWeight());
-      // }
-      //
-      // // merge the two lists
-      // Collections.sort(excludeFrom);
-      // Collections.sort(excludeTo);
-      // Iterator<Integer> iterFrom = excludeFrom.iterator();
-      // Iterator<Integer> iterTo = excludeFrom.iterator();
-      //
-      //
-      // int from = 0;
-      // int to = 0;
-      // int freeFrom = 0;
-      // int offset = -1;
-      // float occupation = (float)0.0; // Occupation rate of the best
-      // fitted space (<=1)
-      // int numberExcludingElements = 0;
-      //
-      // while(iterFrom.hasNext() && iterTo.hasNext()){
-      // if(from <= to){
-      // // If this is the end of a free space.
-      // if(numberExcludingElements == 0 ){
-      // // check if neighbor fits in the space left empty
-      // if(currentNeighbor.getWeight() <= (freeFrom - from)){
-      // // It fits ! But, does it BEST fits ?
-      // if(((float)currentNeighbor.getWeight()/(float)(freeFrom - from))
-      // > occupation){
-      // // It does best fit !(yet)
-      // occupation = ((float)currentNeighbor.getWeight()/(float)(freeFrom
-      // - from));
-      // offset = freeFrom;
-      // }
-      // }
-      // }
-      // numberExcludingElements++;
-      // from = iterFrom.next();
-      // }
-      //
-      // }
-      //
-      // }
 
       // (7)
-      // logger.log(Level.INFO, "10 - Remmoving vertex");
-      // logger.log(Level.INFO, "Vertex "+ cliqueSet);
       exclusionGraph.removeAllVertices(cliqueSet);
       inclusionGraph.removeAllVertices(cliqueSet);
       cliqueOffset += cliqueWeight;
     }
-    // logger.log(Level.INFO, "11 - Over");
   }
 
   /**
@@ -284,11 +211,11 @@ public class ImprovedCustomAllocator extends MemoryAllocator {
    *          the set of vertices to treat
    * @return the sum of the vertices weight
    */
-  protected int weight(final Set<MemoryExclusionVertex> set) {
-    int result = 0;
+  protected long weight(final Set<MemoryExclusionVertex> set) {
+    long result = 0;
 
     for (final MemoryExclusionVertex vertex : set) {
-      result += vertex.getWeight().intValue();
+      result += vertex.getWeight();
     }
     return result;
   }
@@ -303,7 +230,7 @@ public class ImprovedCustomAllocator extends MemoryAllocator {
   protected void orderElementList(final ArrayList<Set<MemoryExclusionVertex>> elementList) {
     // Define a comparator of list elements. The weight of an element is
     // used for comparison
-    final Comparator<Set<MemoryExclusionVertex>> comparator = (o1, o2) -> (weight(o2) - weight(o1));
+    final Comparator<Set<MemoryExclusionVertex>> comparator = (o1, o2) -> (int) (weight(o2) - weight(o1));
     Collections.sort(elementList, comparator);
   }
 
@@ -316,8 +243,8 @@ public class ImprovedCustomAllocator extends MemoryAllocator {
    *          true if the list has been ordered before
    * @return the largest weight of an element
    */
-  protected int maxElementWeight(final ArrayList<Set<MemoryExclusionVertex>> elementList, final boolean isOrdered) {
-    int result = 0;
+  protected long maxElementWeight(final ArrayList<Set<MemoryExclusionVertex>> elementList, final boolean isOrdered) {
+    long result = 0;
 
     // If the list has been ordered before, just return the weight of the
     // first element
@@ -326,7 +253,7 @@ public class ImprovedCustomAllocator extends MemoryAllocator {
     }
     // Else, search the list
     for (final Set<MemoryExclusionVertex> element : elementList) {
-      final int temp = weight(element);
+      final long temp = weight(element);
       if (temp > result) {
         result = temp;
       }

@@ -48,7 +48,6 @@ import org.ietr.preesm.memory.exclusiongraph.MemoryExclusionVertex;
 import org.jgrapht.graph.DefaultEdge;
 import org.jgrapht.graph.SimpleGraph;
 
-// TODO: Auto-generated Javadoc
 /**
  * This implementation of the MemoryAllocator mainly is based on a custom algorithm. <br>
  * The algorithm used in this implementation is based on a coloring approach of a MemoryExclusionGraph derived from the
@@ -115,7 +114,7 @@ public class CustomAllocator extends MemoryAllocator {
     final SimpleGraph<MemoryExclusionVertex, DefaultEdge> inclusionGraph = exclusionGraph.getComplementary();
 
     // (9)
-    int cliqueOffset = 0;
+    long cliqueOffset = 0;
 
     // (8)
     while (!exclusionGraph.vertexSet().isEmpty()) {
@@ -146,7 +145,7 @@ public class CustomAllocator extends MemoryAllocator {
       // true when reached...)
 
       // the cliqueWeight will store the weight of the current clique Ci
-      int cliqueWeight = 0;
+      long cliqueWeight = 0;
       while (loopAgain) {
         loopAgain = false;
 
@@ -175,7 +174,7 @@ public class CustomAllocator extends MemoryAllocator {
           // allocation of first element neighbors in following
           // elements.
           final Set<MemoryExclusionVertex> element = iterElements.next();
-          final int elementWeight = weight(element);
+          final long elementWeight = weight(element);
           // logger.log(Level.INFO, "6 - Get neighbors");
           // get all the neighbors of elements vertices
           ArrayList<MemoryExclusionVertex> neighbors;
@@ -206,7 +205,7 @@ public class CustomAllocator extends MemoryAllocator {
             // (6.1.1)
             // Compute the weight of the element if neighbor was
             // added to it
-            final int newWeight = elementWeight + neighbor.getWeight();
+            final long newWeight = elementWeight + neighbor.getWeight();
             if (newWeight < (cliqueWeight + neighbor.getWeight())) {
               // logger.log(Level.INFO, "9 - new Element Found");
               element.add(neighbor);
@@ -247,11 +246,11 @@ public class CustomAllocator extends MemoryAllocator {
    *          the set of vertices to treat
    * @return the sum of the vertices weight
    */
-  protected int weight(final Set<MemoryExclusionVertex> set) {
-    int result = 0;
+  protected long weight(final Set<MemoryExclusionVertex> set) {
+    long result = 0;
 
     for (final MemoryExclusionVertex vertex : set) {
-      result += vertex.getWeight().intValue();
+      result += vertex.getWeight();
     }
     return result;
   }
@@ -266,7 +265,7 @@ public class CustomAllocator extends MemoryAllocator {
   protected void orderElementList(final ArrayList<Set<MemoryExclusionVertex>> elementList) {
     // Define a comparator of list elements. The weight of an element is
     // used for comparison
-    final Comparator<Set<MemoryExclusionVertex>> comparator = (o1, o2) -> (weight(o2) - weight(o1));
+    final Comparator<Set<MemoryExclusionVertex>> comparator = (o1, o2) -> (int) (weight(o2) - weight(o1));
     Collections.sort(elementList, comparator);
   }
 
@@ -279,8 +278,8 @@ public class CustomAllocator extends MemoryAllocator {
    *          true if the list has been ordered before
    * @return the largest weight of an element
    */
-  protected int maxElementWeight(final ArrayList<Set<MemoryExclusionVertex>> elementList, final boolean isOrdered) {
-    int result = 0;
+  protected long maxElementWeight(final ArrayList<Set<MemoryExclusionVertex>> elementList, final boolean isOrdered) {
+    long result = 0;
 
     // If the list has been ordered before, just return the weight of the
     // first element
@@ -289,7 +288,7 @@ public class CustomAllocator extends MemoryAllocator {
     }
     // Else, search the list
     for (final Set<MemoryExclusionVertex> element : elementList) {
-      final int temp = weight(element);
+      final long temp = weight(element);
       if (temp > result) {
         result = temp;
       }

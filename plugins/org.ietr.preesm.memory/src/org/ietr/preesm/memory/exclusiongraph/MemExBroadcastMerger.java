@@ -59,7 +59,6 @@ import org.ietr.dftools.algorithm.model.sdf.esdf.SDFBroadcastVertex;
 import org.ietr.dftools.algorithm.model.sdf.types.SDFStringEdgePropertyType;
 import org.ietr.preesm.memory.script.MemoryScriptEngine;
 
-// TODO: Auto-generated Javadoc
 /**
  * The purpose of this class is to process a {@link MemoryExclusionGraph MemEx} in order to: <br>
  * - Merge the {@link MemoryExclusionVertex memory objects} corresponding to input/output edges of a
@@ -105,7 +104,7 @@ public class MemExBroadcastMerger {
    */
   public MemExBroadcastMerger(final MemoryExclusionGraph memEx) {
     this.memEx = memEx;
-    this.dag = memEx.getPropertyBean().getValue(MemoryExclusionGraph.SOURCE_DAG, DirectedAcyclicGraph.class);
+    this.dag = (DirectedAcyclicGraph) memEx.getPropertyBean().getValue(MemoryExclusionGraph.SOURCE_DAG);
     this.mergedObjects = new LinkedHashMap<>();
   }
 
@@ -192,7 +191,7 @@ public class MemExBroadcastMerger {
     for (final DAGEdge edge : outgoingEdges) {
       final MemoryExclusionVertex outMemObject = new MemoryExclusionVertex(edge);
       // Check the weight equality.
-      if (!outMemObject.getWeight().equals(inMemObject.getWeight())) {
+      if (outMemObject.getWeight() != inMemObject.getWeight()) {
         // There is a memobject with a different size. In the
         // current version
         // we do not consider this case.
@@ -273,9 +272,9 @@ public class MemExBroadcastMerger {
     final Set<DAGEdge> incomingEdges = vert.incomingEdges();
 
     // Retrieve the last memobject
-    final SDFAbstractVertex sdfVertex = vert.getPropertyBean().getValue(DAGVertex.SDF_VERTEX, SDFAbstractVertex.class);
-    final Map<Integer,
-        SDFEdge> orderedEdges = (Map<Integer, SDFEdge>) sdfVertex.getPropertyBean().getValue(DAGForkVertex.EDGES_ORDER);
+    final SDFAbstractVertex sdfVertex = (SDFAbstractVertex) vert.getPropertyBean().getValue(DAGVertex.SDF_VERTEX);
+    final Map<Long,
+        SDFEdge> orderedEdges = (Map<Long, SDFEdge>) sdfVertex.getPropertyBean().getValue(DAGForkVertex.EDGES_ORDER);
     final SDFEdge lastEdge = orderedEdges.get(Collections.max(orderedEdges.keySet()));
     final DAGEdge lastDagEdge = this.dag.getEdge(this.dag.getVertex(lastEdge.getSource().getName()),
         this.dag.getVertex(lastEdge.getTarget().getName()));
@@ -291,7 +290,7 @@ public class MemExBroadcastMerger {
     for (final DAGEdge edge : incomingEdges) {
       final MemoryExclusionVertex inMemObject = new MemoryExclusionVertex(edge);
       // Check the weight equality.
-      if (!inMemObject.getWeight().equals(outMemObject.getWeight())) {
+      if (inMemObject.getWeight() != outMemObject.getWeight()) {
         // There is a memobject with a different size. In the
         // current version
         // we do not consider this case.
@@ -418,7 +417,7 @@ public class MemExBroadcastMerger {
   @SuppressWarnings("unchecked")
   public void unmerge() {
     // Get the edgeAllocation
-    final Map<DAGEdge, Integer> edgeAllocation = (Map<DAGEdge, Integer>) this.memEx.getPropertyBean()
+    final Map<DAGEdge, Long> edgeAllocation = (Map<DAGEdge, Long>) this.memEx.getPropertyBean()
         .getValue(MemoryExclusionGraph.DAG_EDGE_ALLOCATION);
 
     // Unmerge the memory objects one by one
@@ -426,8 +425,8 @@ public class MemExBroadcastMerger {
       // Get the unmerged object and it allocation.
       MemoryExclusionVertex unmergedObject = entry.getKey();
       unmergedObject = this.memEx.getVertex(unmergedObject);
-      final Integer offset = unmergedObject.getPropertyBean().getValue(MemoryExclusionVertex.MEMORY_OFFSET_PROPERTY,
-          Integer.class);
+      final long offset = (long) unmergedObject.getPropertyBean()
+          .getValue(MemoryExclusionVertex.MEMORY_OFFSET_PROPERTY);
 
       // Scan the unmerged objects
       final Set<MemoryExclusionVertex> unmergedObjects = entry.getValue();

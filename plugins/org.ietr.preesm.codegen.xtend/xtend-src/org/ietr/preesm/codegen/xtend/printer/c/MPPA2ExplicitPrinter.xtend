@@ -77,7 +77,7 @@ class MPPA2ExplicitPrinter extends CPrinter {
 
 	protected String scratch_pad_buffer = ""
 
-	protected int local_buffer_size = 0
+	protected long local_buffer_size = 0
 
 	override printCoreBlockHeader(CoreBlock block) '''
 		/**
@@ -140,7 +140,7 @@ class MPPA2ExplicitPrinter extends CPrinter {
 	'''
 
 	override printSubBufferDefinition(SubBuffer buffer) '''
-	«buffer.type» *const «buffer.name» = («buffer.type»*) («var offset = 0»«
+	«buffer.type» *const «buffer.name» = («buffer.type»*) («var offset = 0L»«
 	{offset = buffer.offset
 	 var b = buffer.container;
 	 while(b instanceof SubBuffer){
@@ -157,7 +157,7 @@ class MPPA2ExplicitPrinter extends CPrinter {
 	{
 		«{
 		var gets = ""
-		var local_offset = 0;
+		var local_offset = 0L;
 			/* go through eventual out param first because of foot FiniteLoopBlock */
 			for(param : block2.outBuffers){
 				var b = param.container;
@@ -212,7 +212,7 @@ class MPPA2ExplicitPrinter extends CPrinter {
 		}
 		«{
 				var puts = ""
-				var local_offset = 0;
+				var local_offset = 0L;
 				for(param : block2.outBuffers){
 					var b = param.container
 					var offset = param.offset
@@ -248,7 +248,7 @@ class MPPA2ExplicitPrinter extends CPrinter {
 	override printFunctionCall(FunctionCall functionCall) '''
 	«{
 		var gets = ""
-		var local_offset = 0;
+		var local_offset = 0L;
 		if(IS_HIERARCHICAL == false){
 			gets += "{\n"
 			for(param : functionCall.parameters){
@@ -287,7 +287,7 @@ class MPPA2ExplicitPrinter extends CPrinter {
 		«functionCall.name»(«FOR param : functionCall.parameters SEPARATOR ', '»«param.doSwitch»«ENDFOR»); // «functionCall.actorName»
 	«{
 		var puts = ""
-		var local_offset = 0;
+		var local_offset = 0L;
 		if(IS_HIERARCHICAL == false){
 			for(param : functionCall.parameters){
 				if(param instanceof SubBuffer){
@@ -339,7 +339,7 @@ class MPPA2ExplicitPrinter extends CPrinter {
 	'''
 
 	override printSubBufferDeclaration(SubBuffer buffer) '''
-	«buffer.type» *const «buffer.name» = («buffer.type»*) («var offset = 0»«
+	«buffer.type» *const «buffer.name» = («buffer.type»*) («var offset = 0L»«
 	{offset = buffer.offset
 	 var b = buffer.container;
 	 while(b instanceof SubBuffer){
@@ -437,7 +437,7 @@ class MPPA2ExplicitPrinter extends CPrinter {
 	}
 
 	override printFork(SpecialCall call) '''
-	// Fork «call.name»«var input = call.inputBuffers.head»«var index = 0»
+	// Fork «call.name»«var input = call.inputBuffers.head»«var index = 0L»
 	{
 		«FOR output : call.outputBuffers»
 			«printMemcpy(output,0,input,index,output.size,output.type)»«{index=(output.size+index); ""}»
@@ -458,7 +458,7 @@ class MPPA2ExplicitPrinter extends CPrinter {
 	'''
 
 	override printJoin(SpecialCall call) '''
-	// Join «call.name»«var output = call.outputBuffers.head»«var index = 0»
+	// Join «call.name»«var output = call.outputBuffers.head»«var index = 0L»
 	{
 		«FOR input : call.inputBuffers»
 			«printMemcpy(output,index,input,0,input.size,input.type)»«{index=(input.size+index); ""}»
@@ -486,7 +486,7 @@ class MPPA2ExplicitPrinter extends CPrinter {
 	 *            the type of objects copied
 	 * @return a {@link CharSequence} containing the memcpy call (if any)
 	 */
-	override printMemcpy(Buffer output, int outOffset, Buffer input, int inOffset, int size, String type) {
+	override printMemcpy(Buffer output, long outOffset, Buffer input, long inOffset, long size, String type) {
 
 		// Retrieve the container buffer of the input and output as well
 		// as their offset in this buffer

@@ -275,7 +275,7 @@ public class MemoryExclusionGraph extends SimpleGraph<MemoryExclusionVertex, Def
         // Create the Head Memory Object
         // Get the typeSize
         MemoryExclusionVertex headMemoryNode;
-        int typeSize = 1; // (size of a token (from the scenario)
+        long typeSize = 1; // (size of a token (from the scenario)
         {
           // TODO: Support the supprImplodeExplode option
           if (dag.outgoingEdgesOf(dagInitVertex).isEmpty()) {
@@ -637,42 +637,40 @@ public class MemoryExclusionGraph extends SimpleGraph<MemoryExclusionVertex, Def
       for (final MemoryExclusionVertex hostVertex : hostVertices.keySet()) {
         // Put the host back to its original size (if it was changed,
         // i.e. if it was allocated)
-        final Integer hostSize = (Integer) hostVertex.getPropertyBean().getValue(MemoryExclusionVertex.HOST_SIZE);
-        if (hostSize != null) {
-          hostVertex.setWeight(hostSize);
-          hostVertex.getPropertyBean().removeProperty(MemoryExclusionVertex.HOST_SIZE);
+        final long hostSize = (long) hostVertex.getPropertyBean().getValue(MemoryExclusionVertex.HOST_SIZE);
+        hostVertex.setWeight(hostSize);
+        hostVertex.getPropertyBean().removeProperty(MemoryExclusionVertex.HOST_SIZE);
 
-          // Scan merged vertices
-          for (final MemoryExclusionVertex mergedVertex : hostVertices.get(hostVertex)) {
-            // If the merged vertex was in the graph (i.e. it was
-            // already allocated)
-            if (containsVertex(mergedVertex)) {
-              // Add exclusions between host and adjacent vertex
-              // of
-              // the merged vertex
-              for (final MemoryExclusionVertex adjacentVertex : getAdjacentVertexOf(mergedVertex)) {
-                this.addEdge(hostVertex, adjacentVertex);
-              }
-              // Remove it from the MEG
-              removeVertex(mergedVertex);
+        // Scan merged vertices
+        for (final MemoryExclusionVertex mergedVertex : hostVertices.get(hostVertex)) {
+          // If the merged vertex was in the graph (i.e. it was
+          // already allocated)
+          if (containsVertex(mergedVertex)) {
+            // Add exclusions between host and adjacent vertex
+            // of
+            // the merged vertex
+            for (final MemoryExclusionVertex adjacentVertex : getAdjacentVertexOf(mergedVertex)) {
+              this.addEdge(hostVertex, adjacentVertex);
+            }
+            // Remove it from the MEG
+            removeVertex(mergedVertex);
 
-              // If the merged vertex is not split
-              if (mergedVertex.getWeight() != 0) {
-                // Put it back to its real weight
-                final int emptySpace = (int) mergedVertex.getPropertyBean()
-                    .getValue(MemoryExclusionVertex.EMPTY_SPACE_BEFORE);
-                mergedVertex.setWeight(mergedVertex.getWeight() - emptySpace);
-              } else {
-                // The vertex was divided
-                // Remove all fake mobjects
-                @SuppressWarnings("unchecked")
-                final List<MemoryExclusionVertex> fakeMobjects = (List<MemoryExclusionVertex>) mergedVertex
-                    .getPropertyBean().getValue(MemoryExclusionVertex.FAKE_MOBJECT);
-                for (final MemoryExclusionVertex fakeMobj : fakeMobjects) {
-                  removeVertex(fakeMobj);
-                }
-                fakeMobjects.clear();
+            // If the merged vertex is not split
+            if (mergedVertex.getWeight() != 0) {
+              // Put it back to its real weight
+              final int emptySpace = (int) mergedVertex.getPropertyBean()
+                  .getValue(MemoryExclusionVertex.EMPTY_SPACE_BEFORE);
+              mergedVertex.setWeight(mergedVertex.getWeight() - emptySpace);
+            } else {
+              // The vertex was divided
+              // Remove all fake mobjects
+              @SuppressWarnings("unchecked")
+              final List<MemoryExclusionVertex> fakeMobjects = (List<MemoryExclusionVertex>) mergedVertex
+                  .getPropertyBean().getValue(MemoryExclusionVertex.FAKE_MOBJECT);
+              for (final MemoryExclusionVertex fakeMobj : fakeMobjects) {
+                removeVertex(fakeMobj);
               }
+              fakeMobjects.clear();
             }
           }
         }
@@ -1154,8 +1152,7 @@ public class MemoryExclusionGraph extends SimpleGraph<MemoryExclusionVertex, Def
    *           if the {@link MemoryExclusionVertex} is not derived from the given {@link DirectedAcyclicGraph DAG} or if
    *           the {@link DirectedAcyclicGraph DAG} was not scheduled.
    */
-  protected Entry<Long, Long> getLifeTime(final MemoryExclusionVertex vertex, final DirectedAcyclicGraph dag)
-      throws RuntimeException {
+  protected Entry<Long, Long> getLifeTime(final MemoryExclusionVertex vertex, final DirectedAcyclicGraph dag) {
 
     // If the MemObject corresponds to an edge, its lifetime spans from the
     // execution start of its source until the execution end of its target
@@ -1169,21 +1166,11 @@ public class MemoryExclusionGraph extends SimpleGraph<MemoryExclusionVertex, Def
             + " because its corresponding DAGEdge has no valid source and/or target");
       }
 
-      final Object birth = source.getPropertyBean().getValue("TaskStartTime", Long.class);
+      final long birth = (long) source.getPropertyBean().getValue("TaskStartTime");
 
-      final Object death = target.getPropertyBean().getValue("TaskStartTime", Long.class);
+      final long death = (long) target.getPropertyBean().getValue("TaskStartTime");
 
-      if ((death == null) || (birth == null)) {
-        throw new RuntimeException("Cannot get lifetime of a memory object " + vertex.toString()
-            + " because the source or target of its corresponding DAGEdge"
-            + " has no TaskStartTime property. Maybe the DAG was not sheduled.");
-      }
-
-      final Object duration = target.getPropertyBean().getValue(ImplementationPropertyNames.Task_duration, Long.class);
-      if (duration == null) {
-        throw new RuntimeException("Cannot get lifetime of a memory object " + vertex
-            + " because the target of its corresponding DAGEdge" + " has no duration property.");
-      }
+      final long duration = (long) target.getPropertyBean().getValue(ImplementationPropertyNames.Task_duration);
 
       return new AbstractMap.SimpleEntry<>((Long) birth, (Long) death + (Long) duration);
     }
@@ -1196,16 +1183,10 @@ public class MemoryExclusionGraph extends SimpleGraph<MemoryExclusionVertex, Def
             + " because its corresponding DAGVertex does not exist in the given DAG.");
       }
 
-      final Object birth = dagVertex.getPropertyBean().getValue("TaskStartTime", Long.class);
-      final Object duration = dagVertex.getPropertyBean().getValue(ImplementationPropertyNames.Task_duration,
-          Long.class);
+      final long birth = (long) dagVertex.getPropertyBean().getValue("TaskStartTime");
+      final long duration = (long) dagVertex.getPropertyBean().getValue(ImplementationPropertyNames.Task_duration);
 
-      if ((birth == null) || (duration == null)) {
-        throw new RuntimeException("Cannot get lifetime of working memory object " + vertex
-            + " because its DAGVertex has no TaskStartTime and/or duration property");
-      }
-
-      return new AbstractMap.SimpleEntry<>((Long) birth, (Long) birth + (Long) duration);
+      return new AbstractMap.SimpleEntry<>(birth, birth + duration);
 
     }
 
@@ -1227,24 +1208,14 @@ public class MemoryExclusionGraph extends SimpleGraph<MemoryExclusionVertex, Def
           throw new RuntimeException("Cannot get lifetime of a memory object " + vertex.toString()
               + " because its corresponding DAGVertex could not be found in the DAG");
         }
-        final Object birth = dagEndVertex.getPropertyBean().getValue("TaskStartTime", Long.class);
+        final long birth = (long) dagEndVertex.getPropertyBean().getValue("TaskStartTime");
 
-        final Object death = dagInitVertex.getPropertyBean().getValue("TaskStartTime", Long.class);
+        final long death = (long) dagInitVertex.getPropertyBean().getValue("TaskStartTime");
 
-        if ((death == null) || (birth == null)) {
-          throw new RuntimeException("Cannot get lifetime of a memory object " + vertex.toString()
-              + " because the source or target of its corresponding End/Init"
-              + " has no TaskStartTime property. Maybe the DAG was not sheduled.");
-        }
+        final long duration = (long) dagInitVertex.getPropertyBean()
+            .getValue(ImplementationPropertyNames.Task_duration);
 
-        final Object duration = dagInitVertex.getPropertyBean().getValue(ImplementationPropertyNames.Task_duration,
-            Long.class);
-        if (duration == null) {
-          throw new RuntimeException("Cannot get lifetime of a memory object " + vertex
-              + " because the Init of its corresponding Fifo" + " has no duration property.");
-        }
-
-        return new AbstractMap.SimpleEntry<>((Long) death + (Long) duration, (Long) birth);
+        return new AbstractMap.SimpleEntry<>(death + duration, birth);
       }
     }
 

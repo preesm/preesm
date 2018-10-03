@@ -464,18 +464,18 @@ public class Distributor {
         final List<Pair<MemoryExclusionVertex,
             Pair<Range, Range>>> newHostOldRange = (List<Pair<MemoryExclusionVertex, Pair<Range, Range>>>) newHostMobj
                 .getPropertyBean().getValue(MemoryExclusionVertex.REAL_TOKEN_RANGE_PROPERTY);
-        int minIndex = currentRange.getStart();
+        long minIndex = currentRange.getStart();
         if (alignment > 0) {
           // Make sure that index aligned in the buffer are in
           // fact aligned.
           // This goal is here to make sure that
           // index 0 of the new host buffer is aligned !
-          final int newHostOldStart = newHostOldRange.get(0).getValue().getValue().getStart(); // .value.value
+          final long newHostOldStart = newHostOldRange.get(0).getValue().getValue().getStart(); // .value.value
           // If the result of te modulo is not null, unaligned
           // corresponds to the number of "extra" bytes making
           // index 0 of newHost not aligned with respect to
           // currentRangeStart
-          final int unaligned = (newHostOldStart - currentRange.getStart()) % alignment;
+          final long unaligned = (newHostOldStart - currentRange.getStart()) % alignment;
           if (unaligned == 0) {
             // Index 0 of new host is already aligned
             minIndex = currentRange.getStart();

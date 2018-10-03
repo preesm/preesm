@@ -44,8 +44,8 @@ import java.util.List;
 import java.util.Set;
 import org.ietr.preesm.memory.exclusiongraph.MemoryExclusionGraph;
 import org.ietr.preesm.memory.exclusiongraph.MemoryExclusionVertex;
+import org.ietr.preesm.utils.math.MathFunctionsHelper;
 
-// TODO: Auto-generated Javadoc
 /**
  * In this class, an adapted version of the best fit allocator is implemented. As the lifetime of the memory elements is
  * not known (because of the self-timed assumption), adaptation had to be made. In particular, the order in which the
@@ -86,11 +86,11 @@ public class BestFitAllocator extends OrderedAllocator {
       final Set<MemoryExclusionVertex> neighbors = this.inputExclusionGraph.getAdjacentVertexOf(vertex);
 
       // Construct two lists that contains the exclusion ranges in memory
-      final ArrayList<Integer> excludeFrom = new ArrayList<>();
-      final ArrayList<Integer> excludeTo = new ArrayList<>();
+      final List<Long> excludeFrom = new ArrayList<>();
+      final List<Long> excludeTo = new ArrayList<>();
       for (final MemoryExclusionVertex neighbor : neighbors) {
         if (this.memExNodeAllocation.containsKey(neighbor)) {
-          final int neighborOffset = this.memExNodeAllocation.get(neighbor);
+          final long neighborOffset = this.memExNodeAllocation.get(neighbor);
           excludeFrom.add(neighborOffset);
           excludeTo.add(neighborOffset + neighbor.getWeight());
         }
@@ -98,26 +98,26 @@ public class BestFitAllocator extends OrderedAllocator {
       Collections.sort(excludeFrom);
       Collections.sort(excludeTo);
 
-      int bestFitOffset = -1;
-      int freeFrom = 0; // Where the last exclusion ended
+      long bestFitOffset = -1;
+      long freeFrom = 0; // Where the last exclusion ended
 
       // Alignment constraint
-      int align = -1;
-      final Integer typeSize = vertex.getPropertyBean().getValue(MemoryExclusionVertex.TYPE_SIZE, Integer.class);
+      long align = -1;
+      final long typeSize = (long) vertex.getPropertyBean().getValue(MemoryExclusionVertex.TYPE_SIZE);
       if (this.alignment == 0) {
         align = typeSize;
       } else if (this.alignment > 0) {
-        align = MemoryAllocator.lcm(typeSize, this.alignment);
+        align = MathFunctionsHelper.lcm(typeSize, this.alignment);
       }
 
       // Look for best fit only if there are exclusions. Else, simply
       // allocate at 0.
       if (!excludeFrom.isEmpty()) {
         // Look for free spaces between the exclusion ranges.
-        final Iterator<Integer> iterFrom = excludeFrom.iterator();
-        final Iterator<Integer> iterTo = excludeTo.iterator();
-        int from = iterFrom.next();
-        int to = iterTo.next();
+        final Iterator<Long> iterFrom = excludeFrom.iterator();
+        final Iterator<Long> iterTo = excludeTo.iterator();
+        long from = iterFrom.next();
+        long to = iterTo.next();
         // Number of from encountered minus number of to encountered. If
         // this value is 0, the space between the last "to" and the next
         // "from" is free !
@@ -135,7 +135,7 @@ public class BestFitAllocator extends OrderedAllocator {
             if (nbExcludeFrom == 0) {
               // This is the end of a free space. check if the
               // current element best fits here ?
-              final int freeSpaceSize = from - freeFrom;
+              final long freeSpaceSize = from - freeFrom;
               final double occupation = (double) vertex.getWeight() / (double) freeSpaceSize;
               // If the element fits in the space AND fits better
               // than previous best fit

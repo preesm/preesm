@@ -46,7 +46,6 @@ import org.ietr.preesm.memory.exclusiongraph.MemoryExclusionGraph;
 import org.jgrapht.graph.DefaultEdge;
 import org.jgrapht.graph.SimpleGraph;
 
-// TODO: Auto-generated Javadoc
 /**
  * This abstract class is both a tool-box for Maximum-Weight Clique Solvers and an interface.
  *
@@ -57,7 +56,7 @@ import org.jgrapht.graph.SimpleGraph;
  * @param <E>
  *          The edges class
  */
-public abstract class AbstractMaximumWeightCliqueSolver<V extends IWeightedVertex<Integer> & Comparable<V>,
+public abstract class AbstractMaximumWeightCliqueSolver<V extends IWeightedVertex<Long> & Comparable<V>,
     E extends DefaultEdge> {
   /**
    * This attribute is used by the getN function to store its results. No other method should neither access nor modify
@@ -72,12 +71,12 @@ public abstract class AbstractMaximumWeightCliqueSolver<V extends IWeightedVerte
   protected Set<V> heaviestClique;
 
   /** Store the weight of the heaviestClique. */
-  protected int max;
+  protected long max;
 
   /**
    * Store the minimum weight of the clique searched.
    */
-  protected int min;
+  protected long min;
 
   /** Store the number of vertices of the graph. */
   protected int numberVertices;
@@ -160,7 +159,7 @@ public abstract class AbstractMaximumWeightCliqueSolver<V extends IWeightedVerte
    * @param minimum
    *          the desired weight
    */
-  public void setMin(final int minimum) {
+  public void setMin(final long minimum) {
     this.min = minimum;
   }
 
@@ -176,8 +175,8 @@ public abstract class AbstractMaximumWeightCliqueSolver<V extends IWeightedVerte
    *          The set of weighted vertices
    * @return The sum of the vertices weights
    */
-  public int sumWeight(final Collection<V> vertexSet) {
-    int result = 0;
+  public long sumWeight(final Collection<V> vertexSet) {
+    long result = 0;
     for (final V vertex : vertexSet) {
       result += vertex.getWeight();
     }

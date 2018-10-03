@@ -42,13 +42,11 @@ import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.eclipse.core.runtime.IProgressMonitor;
-import org.ietr.dftools.workflow.WorkflowException;
 import org.ietr.dftools.workflow.elements.Workflow;
 import org.ietr.dftools.workflow.implement.AbstractWorkflowNodeImplementation;
 import org.ietr.dftools.workflow.tools.WorkflowLogger;
 import org.ietr.preesm.memory.exclusiongraph.MemoryExclusionGraph;
 
-// TODO: Auto-generated Javadoc
 /**
  * Workflow element that takes a MemoryExclusionGraph as input and computes its memory bounds. It outputs the unmodified
  * MemEx as well as the input and output bounds found.
@@ -66,7 +64,7 @@ public class MemoryBoundsEstimator extends AbstractMemoryBoundsEstimator {
    */
   @Override
   public Map<String, Object> execute(final Map<String, Object> inputs, final Map<String, String> parameters,
-      final IProgressMonitor monitor, final String nodeName, final Workflow workflow) throws WorkflowException {
+      final IProgressMonitor monitor, final String nodeName, final Workflow workflow) {
 
     // Rem: Logger is used to display messages in the console
     final Logger logger = WorkflowLogger.getLogger();
@@ -81,11 +79,12 @@ public class MemoryBoundsEstimator extends AbstractMemoryBoundsEstimator {
     engine.selectSolver(valueSolver);
     engine.solve();
 
-    final int minBound = engine.getMinBound();
+    final long minBound = engine.getMinBound();
 
-    final int maxBound = engine.getMaxBound();
+    final long maxBound = engine.getMaxBound();
 
-    logger.log(Level.INFO, "Bound_Max = " + maxBound + " Bound_Min = " + minBound);
+    final String message = "Bound_Max = " + maxBound + " Bound_Min = " + minBound;
+    logger.log(Level.INFO, message);
 
     // Generate output
     final Map<String, Object> output = new LinkedHashMap<>();

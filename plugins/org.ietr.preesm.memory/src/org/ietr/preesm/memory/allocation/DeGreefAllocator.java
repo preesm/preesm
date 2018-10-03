@@ -40,11 +40,12 @@ package org.ietr.preesm.memory.allocation;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Set;
 import org.ietr.preesm.memory.exclusiongraph.MemoryExclusionGraph;
 import org.ietr.preesm.memory.exclusiongraph.MemoryExclusionVertex;
+import org.ietr.preesm.utils.math.MathFunctionsHelper;
 
-// TODO: Auto-generated Javadoc
 /**
  * In this class, an adapted version of the placement algorithm presented in
  * <a href= "http://citeseerx.ist.psu.edu/viewdoc/download?doi=10.1.1.47.3832&rep=rep1&type=pdf" >this paper</a> is
@@ -85,7 +86,7 @@ public class DeGreefAllocator extends MemoryAllocator {
 
     while (!nonAllocatedVertices.isEmpty()) {
       final IntegerAndVertex currentPair = nonAllocatedVertices.remove(0);
-      final int offset = currentPair.getFirst();
+      final long offset = currentPair.getFirst();
       final MemoryExclusionVertex vertex = currentPair.getSecond();
       // The rest of the code could be simpler, as was done before
       // revision 123, but it would be slower too.
@@ -94,11 +95,11 @@ public class DeGreefAllocator extends MemoryAllocator {
       final Set<MemoryExclusionVertex> neighbors = this.inputExclusionGraph.getAdjacentVertexOf(vertex);
 
       // Construct two lists that contains the exclusion ranges in memory
-      final ArrayList<Integer> excludeFrom = new ArrayList<>();
-      final ArrayList<Integer> excludeTo = new ArrayList<>();
+      final List<Long> excludeFrom = new ArrayList<>();
+      final List<Long> excludeTo = new ArrayList<>();
       for (final MemoryExclusionVertex neighbor : neighbors) {
         if (this.memExNodeAllocation.containsKey(neighbor)) {
-          final int neighborOffset = this.memExNodeAllocation.get(neighbor);
+          final long neighborOffset = this.memExNodeAllocation.get(neighbor);
           excludeFrom.add(neighborOffset);
           excludeTo.add(neighborOffset + neighbor.getWeight());
         }
@@ -107,30 +108,30 @@ public class DeGreefAllocator extends MemoryAllocator {
       Collections.sort(excludeFrom);
       Collections.sort(excludeTo);
 
-      int newOffset = -1;
-      int freeFrom = 0; // Where the last exclusion ended
+      long newOffset = -1;
+      long freeFrom = 0; // Where the last exclusion ended
 
       // Alignment constraint
-      int align = -1;
-      final Integer typeSize = vertex.getPropertyBean().getValue(MemoryExclusionVertex.TYPE_SIZE, Integer.class);
+      long align = -1;
+      final long typeSize = (long) vertex.getPropertyBean().getValue(MemoryExclusionVertex.TYPE_SIZE);
       if (this.alignment == 0) {
         align = typeSize;
       } else if (this.alignment > 0) {
-        align = MemoryAllocator.lcm(typeSize, this.alignment);
+        align = MathFunctionsHelper.lcm(typeSize, this.alignment);
       }
 
       // Look for first fit only if there are exclusions. Else, simply
       // keep the 0 offset.
       if (!excludeFrom.isEmpty()) {
         // Look for the first free spaces between the exclusion ranges.
-        final Iterator<Integer> iterFrom = excludeFrom.iterator();
-        final Iterator<Integer> iterTo = excludeTo.iterator();
-        int from = iterFrom.next();
-        int to = iterTo.next();
+        final Iterator<Long> iterFrom = excludeFrom.iterator();
+        final Iterator<Long> iterTo = excludeTo.iterator();
+        long from = iterFrom.next();
+        long to = iterTo.next();
         // Number of from encountered minus number of to encountered. If
         // this value is 0, the space between the last "to" and the next
         // "from" is free !
-        int nbExcludeFrom = 0;
+        long nbExcludeFrom = 0;
 
         boolean lastFromTreated = false;
         boolean lastToTreated = false;
@@ -143,7 +144,7 @@ public class DeGreefAllocator extends MemoryAllocator {
             if ((nbExcludeFrom == 0) && (freeFrom >= offset)) {
               // This is the end of a free space. check if the
               // current element fits here ?
-              final int freeSpaceSize = from - freeFrom;
+              final long freeSpaceSize = from - freeFrom;
 
               // If the element fits in the space
               if (vertex.getWeight() <= freeSpaceSize) {
@@ -205,7 +206,7 @@ public class DeGreefAllocator extends MemoryAllocator {
   protected class IntegerAndVertex implements Comparable<IntegerAndVertex> {
 
     /** The first. */
-    private Integer first;
+    private long first;
 
     /** The second. */
     private MemoryExclusionVertex second;
@@ -218,7 +219,7 @@ public class DeGreefAllocator extends MemoryAllocator {
      * @param second
      *          the second
      */
-    public IntegerAndVertex(final Integer first, final MemoryExclusionVertex second) {
+    public IntegerAndVertex(final long first, final MemoryExclusionVertex second) {
       super();
       this.first = first;
       this.second = second;
@@ -231,7 +232,7 @@ public class DeGreefAllocator extends MemoryAllocator {
      */
     @Override
     public int hashCode() {
-      final int hashFirst = this.first != null ? this.first.hashCode() : 0;
+      final int hashFirst = Long.hashCode(this.first);
       final int hashSecond = this.second != null ? this.second.hashCode() : 0;
 
       return ((hashFirst + hashSecond) * hashSecond) + hashFirst;
@@ -246,10 +247,8 @@ public class DeGreefAllocator extends MemoryAllocator {
     public boolean equals(final Object other) {
       if (other instanceof IntegerAndVertex) {
         final IntegerAndVertex otherPair = (IntegerAndVertex) other;
-        return (((this.first == otherPair.first)
-            || ((this.first != null) && (otherPair.first != null) && this.first.equals(otherPair.first)))
-            && ((this.second == otherPair.second)
-                || ((this.second != null) && (otherPair.second != null) && this.second.equals(otherPair.second))));
+        return ((this.first == otherPair.first) && ((this.second == otherPair.second)
+            || ((this.second != null) && (otherPair.second != null) && this.second.equals(otherPair.second))));
       }
 
       return false;
@@ -270,7 +269,7 @@ public class DeGreefAllocator extends MemoryAllocator {
      *
      * @return the first
      */
-    public Integer getFirst() {
+    public long getFirst() {
       return this.first;
     }
 
@@ -280,7 +279,7 @@ public class DeGreefAllocator extends MemoryAllocator {
      * @param first
      *          the new first
      */
-    public void setFirst(final Integer first) {
+    public void setFirst(final long first) {
       this.first = first;
     }
 
@@ -311,8 +310,9 @@ public class DeGreefAllocator extends MemoryAllocator {
     @Override
     public int compareTo(final IntegerAndVertex o) {
       // If the offsets are different, use them as a comparison
-      if (this.first.compareTo(o.first) != 0) {
-        return this.first.compareTo(o.first);
+      final long firstDiff = this.first - o.first;
+      if (firstDiff != 0) {
+        return (int) firstDiff;
       }
 
       // Else, compare the vertices

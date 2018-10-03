@@ -118,7 +118,7 @@ public class StaticPiMM2MapperDAGVisitor extends PiMMSwitch<Boolean> {
 
   /**
    * Instantiates a new StaticPiMM2MapperDAGVisitor
-   * 
+   *
    * @param piGraph
    *          The Single-Rate Acyclic PiGraph to convert to MapperDAG
    * @param scenario
@@ -421,7 +421,7 @@ public class StaticPiMM2MapperDAGVisitor extends PiMMSwitch<Boolean> {
       newEdge.setTargetPortModifier(new SDFStringEdgePropertyType(targetModifier));
     }
     // 1.4 Set the different properties of the Edge
-    final int dataSize = this.scenario.getSimulationManager().getDataTypeSizeOrDefault(fifo.getType());
+    final long dataSize = this.scenario.getSimulationManager().getDataTypeSizeOrDefault(fifo.getType());
     newEdge.setPropertyValue(SDFEdge.DATA_TYPE, fifo.getType());
     newEdge.setPropertyValue(SDFEdge.DATA_SIZE, dataSize);
     newEdge.setWeight(new DAGDefaultEdgePropertyType(weight));

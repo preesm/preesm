@@ -119,14 +119,14 @@ class Range {
 	}
 
 	/**
-	 * {@link Range#translate(int) Translates} all {@link Range ranges} within
+	 * {@link Range#translate(long) Translates} all {@link Range ranges} within
 	 * the given {@link Collection} by the given delta.
 	 *
 	 * @param delta
-	 * 	The integer value used to {@link Range#translate(int) translate} the
+	 * 	The long value used to {@link Range#translate(long) translate} the
 	 * {@link Range ranges}.
 	 */
-	def static void translate(Iterable<Range> ranges, int delta) {
+	def static void translate(Iterable<Range> ranges, long delta) {
 		ranges.forEach[it.translate(delta)]
 	}
 
@@ -141,7 +141,7 @@ class Range {
 	 * @return this
 	 *
 	 */
-	def Range translate(int delta) {
+	def Range translate(long delta) {
 		start = getStart + delta
 		end = getEnd + delta
 
@@ -327,8 +327,8 @@ class Range {
 	/**
 	 * Return the minimum start value of the ranges
 	 */
-	def static int minStart(Iterable<Range> ranges) {
-		return ranges.fold(0,
+	def static long minStart(Iterable<Range> ranges) {
+		return ranges.fold(0L,
 			[ res, range |
 				Math::min(res, range.getStart)
 			])
@@ -337,8 +337,8 @@ class Range {
 	/**
 	 * Return the minimum start value of the ranges
 	 */
-	def static int maxEnd(Iterable<Range> ranges) {
-		return ranges.fold(0,
+	def static long maxEnd(Iterable<Range> ranges) {
+		return ranges.fold(0L,
 			[ res, range |
 				Math::max(res, range.getEnd)
 			])
@@ -360,25 +360,25 @@ class Range {
 	 * End of the range (does not belong to the range)
 	 */
 	@Accessors
-	var int end
+	var long end
 
 	/**
 	 * First element of the range (included in the range)
 	 */
 	@Accessors
-	var int start
+	var long start
 
 	new(Range original) {
 		start = original.getStart
 		end = original.getEnd
 	}
 
-	new(int start, int end) {
+	new(long start, long end) {
 		this.start = start
 		this.end = end
 	}
 
-	def int getLength() {
+	def long getLength() {
 		return getEnd - getStart
 	}
 

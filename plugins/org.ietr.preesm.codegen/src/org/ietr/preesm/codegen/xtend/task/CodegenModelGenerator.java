@@ -826,7 +826,7 @@ public class CodegenModelGenerator {
       final MemoryExclusionGraph meg = entry.getValue();
 
       // Create the Main Shared buffer
-      final Integer size = meg.getPropertyBean().getValue(MemoryExclusionGraph.ALLOCATED_MEMORY_SIZE, Integer.class);
+      final long size = (long) meg.getPropertyBean().getValue(MemoryExclusionGraph.ALLOCATED_MEMORY_SIZE);
 
       final Buffer mainBuffer = CodegenFactory.eINSTANCE.createBuffer();
       mainBuffer.setSize(size);
@@ -836,11 +836,11 @@ public class CodegenModelGenerator {
       this.mainBuffers.put(memoryBank, mainBuffer);
 
       @SuppressWarnings("unchecked")
-      final Map<DAGEdge, Integer> allocation = meg.getPropertyBean().getValue(MemoryExclusionGraph.DAG_EDGE_ALLOCATION,
-          (new LinkedHashMap<DAGEdge, Integer>()).getClass());
+      final Map<DAGEdge, Long> allocation = (Map<DAGEdge, Long>) meg.getPropertyBean()
+          .getValue(MemoryExclusionGraph.DAG_EDGE_ALLOCATION);
 
       // generate the subbuffer for each dagedge
-      for (final Entry<DAGEdge, Integer> dagAlloc : allocation.entrySet()) {
+      for (final Entry<DAGEdge, Long> dagAlloc : allocation.entrySet()) {
         final DAGEdge edge = dagAlloc.getKey();
         final DAGVertex source = edge.getSource();
         final DAGVertex target = edge.getTarget();
@@ -959,7 +959,7 @@ public class CodegenModelGenerator {
       for (final Entry<MemoryExclusionVertex, Integer> e : workingMemoryAllocation.entrySet()) {
         final SubBuffer workingMemBuffer = CodegenFactory.eINSTANCE.createSubBuffer();
         final MemoryExclusionVertex mObj = e.getKey();
-        final int weight = mObj.getWeight();
+        final long weight = mObj.getWeight();
         workingMemBuffer.reaffectContainer(mainBuffer);
         workingMemBuffer.setOffset(e.getValue());
         workingMemBuffer.setSize(weight);
@@ -1955,7 +1955,7 @@ public class CodegenModelGenerator {
           start += ((SubBuffer) b).getOffset();
           b = ((SubBuffer) b).getContainer();
         }
-        final int end = start + (output.getSize() * output.getTypeSize());
+        final long end = start + (output.getSize() * output.getTypeSize());
 
         // Save allocated range
         outputRanges.add(new Pair<>(b, new Range(start, end)));
@@ -1980,13 +1980,13 @@ public class CodegenModelGenerator {
           final DAGEdge originalDagEdge = this.algo.getEdge(originalSource, originalTarget);
           final Buffer hostBuffer = this.dagEdgeBuffers.get(originalDagEdge);
           // Get the allocated range
-          int start = realRange.getValue().getValue().getStart();
+          long start = realRange.getValue().getValue().getStart();
           Buffer b = hostBuffer;
           while (b instanceof SubBuffer) {
             start += ((SubBuffer) b).getOffset();
             b = ((SubBuffer) b).getContainer();
           }
-          final int end = start + realRange.getValue().getValue().getLength();
+          final long end = start + realRange.getValue().getValue().getLength();
           // Save allocated range
           outputRanges.add(new Pair<>(b, new Range(start, end)));
         }
@@ -2006,7 +2006,7 @@ public class CodegenModelGenerator {
           start += ((SubBuffer) b).getOffset();
           b = ((SubBuffer) b).getContainer();
         }
-        final int end = start + (input.getSize() * input.getTypeSize());
+        final long end = start + (input.getSize() * input.getTypeSize());
 
         // Find the input range that are also covered by the output
         // ranges
