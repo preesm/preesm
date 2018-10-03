@@ -37,14 +37,11 @@ package org.ietr.preesm.throughput.tools.helpers;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Hashtable;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import org.ietr.dftools.algorithm.model.AbstractVertex;
-import org.ietr.dftools.algorithm.model.IInterface;
-import org.ietr.dftools.algorithm.model.parameters.InvalidExpressionException;
 import org.ietr.dftools.algorithm.model.sdf.SDFAbstractVertex;
 import org.ietr.dftools.algorithm.model.sdf.SDFEdge;
 import org.ietr.dftools.algorithm.model.sdf.SDFGraph;
@@ -64,6 +61,7 @@ import org.ietr.preesm.throughput.tools.parsers.Identifier;
  */
 public interface GraphStructureHelper {
 
+  public static final String WEIGHT_LP_PROPERTY       = "weight_LP";
   public static final String PORT_RATE_PROPERTY       = "port_rate";
   public static final String BASE_ACTOR_PROPERTY      = "baseActor";
   public static final String NORMALIZED_RATE_PROPERTY = "normalizedRate";
@@ -418,8 +416,8 @@ public interface GraphStructureHelper {
           (SDFEdge) e.getPropertyBean().getValue("baseedge"));
 
       // copy properties
-      if (e.getPropertyBean().getValue("weight_LP") != null) {
-        edgeClone.setPropertyValue("weight_LP", (double) e.getPropertyBean().getValue("weight_LP"));
+      if (e.getPropertyBean().getValue(WEIGHT_LP_PROPERTY) != null) {
+        edgeClone.setPropertyValue(WEIGHT_LP_PROPERTY, (double) e.getPropertyBean().getValue(WEIGHT_LP_PROPERTY));
       }
     }
 
@@ -576,24 +574,23 @@ public interface GraphStructureHelper {
   /**
    * computes a topological sorting of the complete DAG
    *
-   * @param DAG
+   * @param dag
    *          graph
    * @return list of sorted actors
    */
-  public static ArrayList<SDFAbstractVertex> topologicalSorting(final SDFGraph DAG) {
+  public static List<SDFAbstractVertex> topologicalSorting(final SDFGraph dag) {
     // the sorted list (inverse order of topological sorting)
     // TODO uses stack instead
-    final ArrayList<SDFAbstractVertex> sortedActors = new ArrayList<>();
+    final List<SDFAbstractVertex> sortedActors = new ArrayList<>();
 
     // Mark all the actors as not visited
-    final Hashtable<String, Boolean> visited = new Hashtable<>();
-    for (final SDFAbstractVertex actor : DAG.vertexSet()) {
-      // System.out.println("processing actor: " + actor.getName());
+    final Map<String, Boolean> visited = new LinkedHashMap<>();
+    for (final SDFAbstractVertex actor : dag.vertexSet()) {
       visited.put(actor.getName(), false);
     }
 
     // Topological Sort starting from all actors one by on
-    for (final SDFAbstractVertex actor : DAG.vertexSet()) {
+    for (final SDFAbstractVertex actor : dag.vertexSet()) {
       if (!visited.get(actor.getName())) {
         GraphStructureHelper.recurciveTopologicalSorting(actor, visited, sortedActors);
       }
@@ -640,10 +637,10 @@ public interface GraphStructureHelper {
    *          actor to start from
    * @return list of sorted actors
    */
-  public static ArrayList<SDFAbstractVertex> partialTopologicalSorting(final SDFAbstractVertex source) {
+  public static List<SDFAbstractVertex> partialTopologicalSorting(final SDFAbstractVertex source) {
     // prepare the lists
-    final Hashtable<String, Boolean> visited = new Hashtable<>();
-    final ArrayList<SDFAbstractVertex> sortedActors = new ArrayList<>();
+    final Map<String, Boolean> visited = new LinkedHashMap<>();
+    final List<SDFAbstractVertex> sortedActors = new ArrayList<>();
 
     // do a partial topological sorting
     GraphStructureHelper.recurciveTopologicalSorting(source, visited, sortedActors);
@@ -669,7 +666,7 @@ public interface GraphStructureHelper {
     }
 
     // table of distances
-    final Hashtable<String, Double> distance = new Hashtable<>();
+    final Map<String, Double> distance = new LinkedHashMap<>();
     for (final SDFAbstractVertex actor : topoSortList) {
       distance.put(actor.getName(), Double.NEGATIVE_INFINITY);
     }
@@ -677,32 +674,31 @@ public interface GraphStructureHelper {
 
     for (int i = 0; i < topoSortList.size(); i++) {
       // get the current source actor
-      final SDFAbstractVertex current_source = topoSortList.get(i);
+      final SDFAbstractVertex currentSource = topoSortList.get(i);
 
       // define the edge weight as the duration of the current source actor
       double actorDuration;
       if (scenario != null) {
-        actorDuration = scenario.getTimingManager().getTimingOrDefault(current_source.getId(), "x86").getTime();
+        actorDuration = scenario.getTimingManager().getTimingOrDefault(currentSource.getId(), "x86").getTime();
       } else {
-        actorDuration = (double) current_source.getPropertyBean().getValue(DURATION_PROPERTY);
+        actorDuration = (double) currentSource.getPropertyBean().getValue(DURATION_PROPERTY);
       }
 
       // update the distances
-      for (final SDFInterfaceVertex output : current_source.getSinks()) {
+      for (final SDFInterfaceVertex output : currentSource.getSinks()) {
         double edgeWeight = actorDuration;
         // get the associated output edge and its weight if defined
-        final SDFEdge outputEdge = current_source.getAssociatedEdge(output);
-        if (outputEdge.getPropertyBean().getValue("weight_LP") != null) {
-          edgeWeight = (double) outputEdge.getPropertyBean().getValue("weight_LP");
+        final SDFEdge outputEdge = currentSource.getAssociatedEdge(output);
+        if (outputEdge.getPropertyBean().getValue(WEIGHT_LP_PROPERTY) != null) {
+          edgeWeight = (double) outputEdge.getPropertyBean().getValue(WEIGHT_LP_PROPERTY);
         }
 
         // get the target actor of the associated output edge
-        // SDFAbstractVertex current_target = current_source.getAssociatedEdge(output).getTarget();
-        final SDFAbstractVertex current_target = outputEdge.getTarget();
+        final SDFAbstractVertex currentTarget = outputEdge.getTarget();
 
         // update the distance of the current target
-        if (distance.get(current_target.getName()) < (distance.get(current_source.getName()) + edgeWeight)) {
-          distance.replace(current_target.getName(), distance.get(current_source.getName()) + edgeWeight);
+        if (distance.get(currentTarget.getName()) < (distance.get(currentSource.getName()) + edgeWeight)) {
+          distance.replace(currentTarget.getName(), distance.get(currentSource.getName()) + edgeWeight);
         }
       }
     }
@@ -718,7 +714,7 @@ public interface GraphStructureHelper {
    * @return value of the longest path between the source and the target
    */
   public static double getLongestPathToTarget(final SDFAbstractVertex source, final SDFAbstractVertex target,
-      final PreesmScenario scenario, ArrayList<SDFAbstractVertex> topoSortList) {
+      final PreesmScenario scenario, List<SDFAbstractVertex> topoSortList) {
 
     // get the topological sorting of the graph
     if (topoSortList == null) {
@@ -726,7 +722,7 @@ public interface GraphStructureHelper {
     }
 
     // table of distances
-    final Hashtable<String, Double> distance = new Hashtable<>();
+    final Map<String, Double> distance = new LinkedHashMap<>();
     for (final SDFAbstractVertex actor : topoSortList) {
       distance.put(actor.getName(), Double.NEGATIVE_INFINITY);
     }
@@ -734,37 +730,36 @@ public interface GraphStructureHelper {
 
     for (int i = 0; i < topoSortList.size(); i++) {
       // get the current source actor
-      final SDFAbstractVertex current_source = topoSortList.get(i);
+      final SDFAbstractVertex currentSource = topoSortList.get(i);
 
       // check if the target actor is reached
-      if (current_source.getName().equals(target.getName())) {
+      if (currentSource.getName().equals(target.getName())) {
         return distance.get(target.getName());
       } else {
 
         // define the edge weight as the duration of the current source actor
         double actorDuration;
         if (scenario != null) {
-          actorDuration = scenario.getTimingManager().getTimingOrDefault(current_source.getId(), "x86").getTime();
+          actorDuration = scenario.getTimingManager().getTimingOrDefault(currentSource.getId(), "x86").getTime();
         } else {
-          actorDuration = (double) current_source.getPropertyBean().getValue(DURATION_PROPERTY);
+          actorDuration = (double) currentSource.getPropertyBean().getValue(DURATION_PROPERTY);
         }
 
         // update the distances
-        for (final SDFInterfaceVertex output : current_source.getSinks()) {
+        for (final SDFInterfaceVertex output : currentSource.getSinks()) {
           double edgeWeight = actorDuration;
           // get the associated output edge and its weight if defined
-          final SDFEdge outputEdge = current_source.getAssociatedEdge(output);
-          if (outputEdge.getPropertyBean().getValue("weight_LP") != null) {
-            edgeWeight = (double) outputEdge.getPropertyBean().getValue("weight_LP");
+          final SDFEdge outputEdge = currentSource.getAssociatedEdge(output);
+          if (outputEdge.getPropertyBean().getValue(WEIGHT_LP_PROPERTY) != null) {
+            edgeWeight = (double) outputEdge.getPropertyBean().getValue(WEIGHT_LP_PROPERTY);
           }
 
           // get the target actor of the associated output edge
-          // SDFAbstractVertex current_target = current_source.getAssociatedEdge(output).getTarget();
-          final SDFAbstractVertex current_target = outputEdge.getTarget();
+          final SDFAbstractVertex currentTarget = outputEdge.getTarget();
 
           // update the distance of the current target
-          if (distance.get(current_target.getName()) < (distance.get(current_source.getName()) + edgeWeight)) {
-            distance.replace(current_target.getName(), distance.get(current_source.getName()) + edgeWeight);
+          if (distance.get(currentTarget.getName()) < (distance.get(currentSource.getName()) + edgeWeight)) {
+            distance.replace(currentTarget.getName(), distance.get(currentSource.getName()) + edgeWeight);
           }
         }
       }
@@ -775,33 +770,33 @@ public interface GraphStructureHelper {
   }
 
   /**
-   * @param DAG
+   * @param dag
    *          graph
    * @return value of the longest path in the graph
    */
-  public static double getLongestPath(final SDFGraph DAG, final PreesmScenario scenario,
+  public static double getLongestPath(final SDFGraph dag, final PreesmScenario scenario,
       List<SDFAbstractVertex> topoSortList) {
     // add a source and a target actor
-    final SDFAbstractVertex source = GraphStructureHelper.addActor(DAG, "S_LongestPath", null, 1L, 0, 0, null);
-    final SDFAbstractVertex target = GraphStructureHelper.addActor(DAG, "T_LongestPath", null, 1L, 0, 0, null);
+    final SDFAbstractVertex source = GraphStructureHelper.addActor(dag, "S_LongestPath", null, 1L, 0, 0, null);
+    final SDFAbstractVertex target = GraphStructureHelper.addActor(dag, "T_LongestPath", null, 1L, 0, 0, null);
 
     // connect the source to all input actors and the target to all output actors
-    for (final SDFAbstractVertex actor : DAG.vertexSet()) {
+    for (final SDFAbstractVertex actor : dag.vertexSet()) {
       // check if the actor has no input edges
       if (actor.getSources().isEmpty()) {
         // add an edge between the source and the current actor
-        GraphStructureHelper.addEdge(DAG, source.getName(), null, actor.getName(), null, 1, 1, 0, null);
+        GraphStructureHelper.addEdge(dag, source.getName(), null, actor.getName(), null, 1, 1, 0, null);
       }
       // check if the actor has no output edges
       if (actor.getSinks().isEmpty()) {
         // add an edge between the current actor and the target
-        GraphStructureHelper.addEdge(DAG, actor.getName(), null, target.getName(), null, 1, 1, 0, null);
+        GraphStructureHelper.addEdge(dag, actor.getName(), null, target.getName(), null, 1, 1, 0, null);
       }
     }
 
     // get the topological sorting of the graph
     if (topoSortList == null) {
-      topoSortList = GraphStructureHelper.topologicalSorting(DAG);
+      topoSortList = GraphStructureHelper.topologicalSorting(dag);
     } else {
       topoSortList.add(0, source);
       topoSortList.add(topoSortList.size(), target);
@@ -813,8 +808,8 @@ public interface GraphStructureHelper {
     final double lp = distance.get(target.getName());
 
     // remove the source and the target from the graph
-    DAG.removeVertex(source);
-    DAG.removeVertex(target);
+    dag.removeVertex(source);
+    dag.removeVertex(target);
 
     return lp;
   }
@@ -860,59 +855,4 @@ public interface GraphStructureHelper {
 
     return clonedIBSDF;
   }
-
-  /**
-   * Print a IBSDF subgraph
-   *
-   * @param graph
-   *          IBSDF subgraph
-   */
-  public static void printSDF(final SDFGraph graph) {
-    System.out.println("=> Liste des vertex :");
-    for (final SDFAbstractVertex actor : graph.vertexSet()) {
-      try {
-        System.out.println(actor.getKind() + "  " + actor.getName() + ", rv= "
-            + actor.getPropertyBean().getValue(SDFAbstractVertex.NB_REPEAT) + ", dur="
-            + actor.getPropertyBean().getValue(DURATION_PROPERTY));
-
-        if (actor.getGraphDescription() != null) {
-          // System.out.println("Hierarchical duration = " +
-          // scenario.getTimingManager().generateVertexTimingFromHierarchy(actor, "x86"));
-        }
-
-      } catch (final InvalidExpressionException e) {
-        e.printStackTrace();
-      }
-
-      System.out.println("\t interfaces : ");
-      for (final IInterface inter : actor.getInterfaces()) {
-        final SDFInterfaceVertex _interface = (SDFInterfaceVertex) inter;
-        System.out.println("\t\t interface port name " + _interface.getName() + " : "
-            + actor.getAssociatedEdge(_interface).toString());
-      }
-
-      System.out.println("\t inputs : ");
-      for (final SDFInterfaceVertex input : actor.getSources()) {
-        System.out
-            .println("\t\t input port name " + input.getName() + " : " + actor.getAssociatedEdge(input).toString());
-      }
-
-      System.out.println("\t outputs : ");
-      for (final SDFInterfaceVertex output : actor.getSinks()) {
-        System.out
-            .println("\t\t output port name " + output.getName() + " : " + actor.getAssociatedEdge(output).toString());
-      }
-    }
-
-    System.out.println("\n=> Liste des edges :");
-    for (final SDFEdge edge : graph.edgeSet()) {
-      System.out.println("name: " + edge.toString());
-      System.out.println("e(" + edge.getSource().getName() + "," + edge.getTarget().getName() + "), p("
-          + edge.getSourceInterface().getName() + "," + edge.getTargetInterface().getName() + "), prod="
-          + edge.getProd() + " cons= " + edge.getCons() + " M0= " + edge.getDelay());
-    }
-
-    System.out.println("---------------------------");
-  }
-
 }

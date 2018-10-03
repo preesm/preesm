@@ -55,7 +55,7 @@ public class TurbineParserTest {
     final String dirPath = "resources/";
     final String sdf_file = "SDF_test.tur";
 
-    TurbineParser.importIBSDFGraph(dirPath + sdf_file, null);
+    TurbineParser.importIBSDFGraph(dirPath + sdf_file);
 
     // check the results
     // Assert.assertEquals(36200, latency, 0);

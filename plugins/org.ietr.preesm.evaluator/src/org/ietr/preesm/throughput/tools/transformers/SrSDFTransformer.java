@@ -46,7 +46,7 @@ import org.ietr.preesm.throughput.tools.helpers.Stopwatch;
  *
  *         This class implements srSDF conversions algorithms : srSDF to HSDF graph and DAG.
  */
-public abstract class SrSDFTransformer {
+public interface SrSDFTransformer {
 
   /**
    * Converts a srSDF graph to an HSDF graph
@@ -60,11 +60,11 @@ public abstract class SrSDFTransformer {
     timer.start();
 
     // clone the srSDF
-    final SDFGraph hsdf_graph = srSDF.clone();
-    hsdf_graph.setName(srSDF.getName() + "_HSDF");
+    final SDFGraph hsdfGraph = srSDF.clone();
+    hsdfGraph.setName(srSDF.getName() + "_HSDF");
 
     // for each edge set cons=prod=1 and delay=delay/prod
-    for (final SDFEdge edge : hsdf_graph.edgeSet()) {
+    for (final SDFEdge edge : hsdfGraph.edgeSet()) {
       final long delay = edge.getDelay().longValue() / edge.getProd().longValue();
       edge.setProd(new SDFIntEdgePropertyType(1));
       edge.setCons(new SDFIntEdgePropertyType(1));
@@ -72,8 +72,7 @@ public abstract class SrSDFTransformer {
     }
 
     timer.stop();
-    System.out.println("SrSDF graph converted to HSDF graph in " + timer.toString());
-    return hsdf_graph;
+    return hsdfGraph;
   }
 
   /**
@@ -105,7 +104,6 @@ public abstract class SrSDFTransformer {
     }
 
     timer.stop();
-    System.out.println("SrSDF graph converted to DAG in " + timer.toString());
     return dag;
   }
 

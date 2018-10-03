@@ -36,6 +36,7 @@
 package org.ietr.preesm.throughput.helpers.test;
 
 import java.util.ArrayList;
+import java.util.List;
 import org.ietr.dftools.algorithm.model.sdf.SDFAbstractVertex;
 import org.ietr.dftools.algorithm.model.sdf.SDFGraph;
 import org.ietr.preesm.deadlock.IBSDFConsistency;
@@ -85,7 +86,7 @@ public class GraphStrucutureHelperTestDetail {
     // topological sorting
     final Stopwatch timer = new Stopwatch();
     timer.start();
-    final ArrayList<SDFAbstractVertex> topologicalSorting = GraphStructureHelper.topologicalSorting(dag);
+    final List<SDFAbstractVertex> topologicalSorting = GraphStructureHelper.topologicalSorting(dag);
     timer.stop();
 
     // check the results
@@ -129,7 +130,7 @@ public class GraphStrucutureHelperTestDetail {
     GraphStructureHelper.topologicalSorting(dag);
     timer.stop();
 
-    final ArrayList<SDFAbstractVertex> partialTopologicalSorting = GraphStructureHelper
+    final List<SDFAbstractVertex> partialTopologicalSorting = GraphStructureHelper
         .partialTopologicalSorting(dag.getVertex("0"));
 
     timer.start();

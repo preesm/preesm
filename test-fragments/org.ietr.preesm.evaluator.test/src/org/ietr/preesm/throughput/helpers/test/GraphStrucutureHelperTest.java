@@ -36,6 +36,7 @@
 package org.ietr.preesm.throughput.helpers.test;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 import org.ietr.dftools.algorithm.model.sdf.SDFAbstractVertex;
 import org.ietr.dftools.algorithm.model.sdf.SDFEdge;
@@ -389,7 +390,7 @@ public class GraphStrucutureHelperTest {
     // topological sorting
     final Stopwatch timer = new Stopwatch();
     timer.start();
-    final ArrayList<SDFAbstractVertex> topologicalSorting = GraphStructureHelper.topologicalSorting(dag);
+    final List<SDFAbstractVertex> topologicalSorting = GraphStructureHelper.topologicalSorting(dag);
     timer.stop();
 
     System.out.println("topological sorting computed in " + timer.toString() + ", the ordered actors: ");
@@ -404,7 +405,7 @@ public class GraphStrucutureHelperTest {
     }
 
     System.out.println("\nPartial topological sorting computed in " + timer.toString() + ", the ordered actors: ");
-    final ArrayList<SDFAbstractVertex> partialTopologicalSorting = GraphStructureHelper
+    final List<SDFAbstractVertex> partialTopologicalSorting = GraphStructureHelper
         .partialTopologicalSorting(dag.getVertex("5"));
     for (int i = 0; i < partialTopologicalSorting.size(); i++) {
       System.out.print(partialTopologicalSorting.get(i).getName() + " ");
