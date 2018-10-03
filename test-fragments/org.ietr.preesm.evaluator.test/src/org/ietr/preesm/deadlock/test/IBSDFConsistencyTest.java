@@ -74,11 +74,11 @@ public class IBSDFConsistencyTest {
     // TODO: check the consumption/production rates of interfaces
     final SDFAbstractVertex in = DEF.getVertex("a");
     SDFEdge e = in.getAssociatedEdge(in.getSinks().iterator().next());
-    Assert.assertEquals(6, e.getProd().intValue());
+    Assert.assertEquals(6L, e.getProd().longValue());
 
     final SDFAbstractVertex out = DEF.getVertex("c");
     e = out.getAssociatedEdge(out.getSources().iterator().next());
-    Assert.assertEquals(12, e.getCons().intValue());
+    Assert.assertEquals(12L, e.getCons().longValue());
   }
 
   @Test
@@ -129,11 +129,11 @@ public class IBSDFConsistencyTest {
     // create the subgraph
     final SDFGraph subgraph = new SDFGraph();
     subgraph.setName("subgraph");
-    GraphStructureHelper.addActor(subgraph, "D", null, null, null, null, null);
-    GraphStructureHelper.addActor(subgraph, "E", null, null, null, null, null);
-    GraphStructureHelper.addActor(subgraph, "F", null, null, null, null, null);
-    GraphStructureHelper.addInputInterface(subgraph, "a", null, null, null, null);
-    GraphStructureHelper.addOutputInterface(subgraph, "c", null, null, null, null);
+    GraphStructureHelper.addActor(subgraph, "D", null, 0, 0, 0, null);
+    GraphStructureHelper.addActor(subgraph, "E", null, 0, 0, 0, null);
+    GraphStructureHelper.addActor(subgraph, "F", null, 0, 0, 0, null);
+    GraphStructureHelper.addInputInterface(subgraph, "a", 0, 0, 0, null);
+    GraphStructureHelper.addOutputInterface(subgraph, "c", 0, 0, 0, null);
 
     GraphStructureHelper.addEdge(subgraph, "a", null, "E", null, 2, 1, 0, null);
     GraphStructureHelper.addEdge(subgraph, "E", null, "F", null, 2, 3, 0, null);
@@ -144,9 +144,9 @@ public class IBSDFConsistencyTest {
     // create the top graph and add the subgraph to the hierarchical actor B
     final SDFGraph topgraph = new SDFGraph();
     topgraph.setName("topgraph");
-    GraphStructureHelper.addActor(topgraph, "A", null, null, null, null, null);
-    GraphStructureHelper.addActor(topgraph, "B", subgraph, null, null, null, null);
-    GraphStructureHelper.addActor(topgraph, "C", null, null, null, null, null);
+    GraphStructureHelper.addActor(topgraph, "A", null, 0, 0, 0, null);
+    GraphStructureHelper.addActor(topgraph, "B", subgraph, 0, 0, 0, null);
+    GraphStructureHelper.addActor(topgraph, "C", null, 0, 0, 0, null);
 
     GraphStructureHelper.addEdge(topgraph, "A", null, "B", "a", 3, 2, 0, null);
     GraphStructureHelper.addEdge(topgraph, "B", "c", "C", null, 1, 1, 0, null);

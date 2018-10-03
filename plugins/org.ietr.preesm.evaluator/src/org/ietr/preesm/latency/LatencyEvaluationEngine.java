@@ -37,6 +37,7 @@ package org.ietr.preesm.latency;
 
 import java.util.ArrayList;
 import java.util.Hashtable;
+import java.util.List;
 import java.util.Map;
 import org.ietr.dftools.algorithm.model.sdf.SDFAbstractVertex;
 import org.ietr.dftools.algorithm.model.sdf.SDFEdge;
@@ -275,7 +276,7 @@ public class LatencyEvaluationEngine {
         inputActors.add(actor);
 
         // create the associated actor in the replacement graph
-        GraphStructureHelper.addActor(replGraph, actor.getName(), null, actor.getNbRepeatAsLong(), 0., null,
+        GraphStructureHelper.addActor(replGraph, actor.getName(), null, actor.getNbRepeatAsLong(), 0., 0,
             (SDFAbstractVertex) actor.getPropertyBean().getValue("baseActor"));
       }
 
@@ -292,16 +293,16 @@ public class LatencyEvaluationEngine {
         }
 
         // create the associated actor in the replacement graph
-        GraphStructureHelper.addActor(replGraph, actor.getName(), null, actor.getNbRepeatAsLong(), duration, null,
+        GraphStructureHelper.addActor(replGraph, actor.getName(), null, actor.getNbRepeatAsLong(), duration, 0,
             (SDFAbstractVertex) actor.getPropertyBean().getValue("baseActor"));
       }
     }
 
     // Step 2: sort actors
-    final ArrayList<SDFAbstractVertex> topoSortList = GraphStructureHelper.topologicalSorting(subgraph_dag);
+    final List<SDFAbstractVertex> topoSortList = GraphStructureHelper.topologicalSorting(subgraph_dag);
 
     // table of distances
-    Hashtable<String, Double> distance;
+    Map<String, Double> distance;
 
     // Step 3: for each input actor compute the longest path to the output actors
     for (final SDFAbstractVertex actor : inputActors) {
@@ -311,21 +312,6 @@ public class LatencyEvaluationEngine {
       for (final SDFAbstractVertex output : outputActors) {
         final Double output_distance = distance.get(output.getName());
         if (output_distance != Double.NEGATIVE_INFINITY) {
-          // // add a new actor representing the distance between the current input actor and the current output actor
-          // SDFAbstractVertex distanceActor = GraphStructureHelper.addActor(replGraph, actor.getName() + "_" +
-          // output.getName(), null, 1,
-          // distance.get(output.getName()),
-          // null,
-          // null);
-          // // add the duration of the new actor to the scenario
-          // // _scenario.getTimingManager().setTiming(distanceActor.getId(), "x86",
-          // distance.get(output.getName()).longValue());
-          //
-          // // ad the input and output edge
-          // GraphStructureHelper.addEdge(replGraph, actor.getName(), null, distanceActor.getName(), null, 1, 1, 0,
-          // null);
-          // GraphStructureHelper.addEdge(replGraph, distanceActor.getName(), null, output.getName(), null, 1, 1, 0,
-          // null);
 
           // add edge
           final SDFEdge e = GraphStructureHelper.addEdge(replGraph, actor.getName(), null, output.getName(), null, 1, 1,

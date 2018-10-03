@@ -405,7 +405,7 @@ public class PeriodicSchedulerSDF {
 
     // source vertex to evaluate all parts of the graph
     // add the dummy actor to the graph
-    final SDFAbstractVertex dummy = GraphStructureHelper.addActor(graph, "dummy", null, null, null, null, null);
+    final SDFAbstractVertex dummy = GraphStructureHelper.addActor(graph, "dummy", null, 0, 0, 0, null);
 
     // connect the dummy actor to all actors
     for (final SDFAbstractVertex a : graph.vertexSet()) {

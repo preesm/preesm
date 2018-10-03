@@ -99,9 +99,9 @@ public class SDFConsistencyTest {
     graph.setName("testABC326");
 
     // add actors
-    GraphStructureHelper.addActor(graph, "A", null, null, null, null, null);
-    GraphStructureHelper.addActor(graph, "B", null, null, null, null, null);
-    GraphStructureHelper.addActor(graph, "C", null, null, null, null, null);
+    GraphStructureHelper.addActor(graph, "A", null, 0, 0, 0, null);
+    GraphStructureHelper.addActor(graph, "B", null, 0, 0, 0, null);
+    GraphStructureHelper.addActor(graph, "C", null, 0, 0, 0, null);
 
     // add edges
     GraphStructureHelper.addEdge(graph, "A", null, "B", null, 2, 3, 0, null);

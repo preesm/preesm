@@ -53,10 +53,10 @@ public class PeriodicScheduleModelOjAlgoTests {
   @Test
   public void testNormalizedPeriodShouldBeComputed() {
     // generate a normalized SDF graph
-    final SDFGraph ABC = generateNormalizedSDFGraphABC3();
+    final SDFGraph abc = generateNormalizedSDFGraphABC3();
     // compute its normalized period K
     final PeriodicScheduleModelOjAlgo model = new PeriodicScheduleModelOjAlgo();
-    final double k = model.computeNormalizedPeriod(ABC).doubleValue();
+    final double k = model.computeNormalizedPeriod(abc).doubleValue();
     // check the value of K
     Assert.assertEquals(1, k, 0);
   }
@@ -81,9 +81,9 @@ public class PeriodicScheduleModelOjAlgoTests {
 
     // add actors
     GraphStructureHelper.addActor(graph, "A" /* name */, null /* subgraph */, 3L /* repetition factor */,
-        1. /* latency */, null /* normalizedRate */ , null /* base actor */);
-    GraphStructureHelper.addActor(graph, "B", null, 2L, 1., null, null);
-    GraphStructureHelper.addActor(graph, "C", null, 6L, 1., null, null);
+        1. /* latency */, 0 /* normalizedRate */ , null /* base actor */);
+    GraphStructureHelper.addActor(graph, "B", null, 2L, 1., 0, null);
+    GraphStructureHelper.addActor(graph, "C", null, 6L, 1., 0, null);
 
     // add edges
     GraphStructureHelper.addEdge(graph, "A" /* srcActor */, null /* srcPort */, "B" /* tgtActor */, null /* tgtPort */,

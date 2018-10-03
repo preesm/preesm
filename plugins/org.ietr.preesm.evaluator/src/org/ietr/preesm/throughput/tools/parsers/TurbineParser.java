@@ -114,8 +114,8 @@ public abstract class TurbineParser {
         actorsId.put(_actorId, newActorId);
 
         // add the actor to the graph
-        final SDFAbstractVertex actor = GraphStructureHelper.addActor(g, newActorId, null, _actorRF, _actorDuration,
-            null, null);
+        final SDFAbstractVertex actor = GraphStructureHelper.addActor(g, newActorId, null, _actorRF, _actorDuration, 0,
+            null);
         // System.out.println("actor : " + newActorId + " " + _actorRF + " " + _actorDuration);
         listActors.put(newActorId, actor);
       }
@@ -195,7 +195,7 @@ public abstract class TurbineParser {
 
           // add the actor to the graph
           final SDFAbstractVertex actor = GraphStructureHelper.addActor(subGraph, newActorId, null, _actorRF,
-              _actorDuration, null, null);
+              _actorDuration, 0, null);
           // System.out.println("actor : " + newActorId + " " + _actorRF + " " + _actorDuration);
           listActors.put(newActorId, actor);
         }
@@ -243,8 +243,8 @@ public abstract class TurbineParser {
           final String trgActorId = actorsId.get(source_target[1].replace(")", ""));
           final Double _prod = Double.parseDouble(line[1]);
 
-          GraphStructureHelper.addInputInterface(subGraph, inputPort, null, TurbineParser.InterfaceDuration_default,
-              null, null);
+          GraphStructureHelper.addInputInterface(subGraph, inputPort, 0L, TurbineParser.InterfaceDuration_default, 0,
+              null);
           // System.out.println("inputInterface : " + inputPort);
           GraphStructureHelper.addEdge(subGraph, inputPort, null, trgActorId, null, _prod.intValue(), _cons.intValue(),
               0, null);
@@ -274,8 +274,8 @@ public abstract class TurbineParser {
           final String srcActorId = actorsId.get(source_target[0].replace("(", ""));
           final Double _cons = Double.parseDouble(line[1]);
 
-          GraphStructureHelper.addOutputInterface(subGraph, outputPort, null, TurbineParser.InterfaceDuration_default,
-              null, null);
+          GraphStructureHelper.addOutputInterface(subGraph, outputPort, 0, TurbineParser.InterfaceDuration_default, 0,
+              null);
           // System.out.println("outputInterface : " + outputPort);
           GraphStructureHelper.addEdge(subGraph, srcActorId, null, outputPort, null, _prod.intValue(), _cons.intValue(),
               0, null);

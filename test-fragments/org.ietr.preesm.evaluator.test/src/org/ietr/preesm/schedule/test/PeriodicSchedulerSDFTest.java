@@ -124,11 +124,11 @@ public class PeriodicSchedulerSDFTest {
     graph.setName("testBenabid");
 
     // add actors
-    GraphStructureHelper.addActor(graph, "t1", null, null, 2., null, null);
-    GraphStructureHelper.addActor(graph, "t2", null, null, 2., null, null);
-    GraphStructureHelper.addActor(graph, "t3", null, null, 2., null, null);
-    GraphStructureHelper.addActor(graph, "t4", null, null, 10., null, null);
-    GraphStructureHelper.addActor(graph, "t5", null, null, 12., null, null);
+    GraphStructureHelper.addActor(graph, "t1", null, 0, 2., 0, null);
+    GraphStructureHelper.addActor(graph, "t2", null, 0, 2., 0, null);
+    GraphStructureHelper.addActor(graph, "t3", null, 0, 2., 0, null);
+    GraphStructureHelper.addActor(graph, "t4", null, 0, 10., 0, null);
+    GraphStructureHelper.addActor(graph, "t5", null, 0, 12., 0, null);
 
     // add edges
     GraphStructureHelper.addEdge(graph, "t1", null, "t3", null, 1, 2, 0, null);

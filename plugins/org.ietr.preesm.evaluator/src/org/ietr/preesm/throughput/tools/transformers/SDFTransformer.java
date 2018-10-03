@@ -69,7 +69,7 @@ public abstract class SDFTransformer {
       for (int i = 1; i <= a.getNbRepeatAsInteger(); i++) {
         // create an instance a_i of the actor a
         GraphStructureHelper.addActor(hsdf_graph, a.getName() + "_" + i, (SDFGraph) a.getGraphDescription(), 1L,
-            (Double) a.getPropertyBean().getValue("duration"), null, a);
+            (Double) a.getPropertyBean().getValue("duration"), 0, a);
 
       }
     }
@@ -119,7 +119,7 @@ public abstract class SDFTransformer {
       for (int i = 1; i <= a.getNbRepeatAsInteger(); i++) {
         // create an instance a_i of the actor a
         GraphStructureHelper.addActor(singleRate, a.getName() + "_" + i, (SDFGraph) a.getGraphDescription(), 1L,
-            (Double) a.getPropertyBean().getValue("duration"), null, a);
+            (Double) a.getPropertyBean().getValue("duration"), 0, a);
       }
     }
 

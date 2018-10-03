@@ -97,9 +97,9 @@ public class SDFLivenessTest {
     graph.setName("testABC326");
 
     // add actors
-    GraphStructureHelper.addActor(graph, "A", null, null, 1., null, null);
-    GraphStructureHelper.addActor(graph, "B", null, null, 1., null, null);
-    GraphStructureHelper.addActor(graph, "C", null, null, 1., null, null);
+    GraphStructureHelper.addActor(graph, "A", null, 0, 1., 0, null);
+    GraphStructureHelper.addActor(graph, "B", null, 0, 1., 0, null);
+    GraphStructureHelper.addActor(graph, "C", null, 0, 1., 0, null);
 
     // add edges
     GraphStructureHelper.addEdge(graph, "A", null, "B", null, 2, 3, 3, null);

@@ -36,8 +36,6 @@
 package org.ietr.preesm.throughput.helpers.test;
 
 import java.util.ArrayList;
-import java.util.Hashtable;
-import java.util.Map.Entry;
 import org.ietr.dftools.algorithm.model.sdf.SDFAbstractVertex;
 import org.ietr.dftools.algorithm.model.sdf.SDFGraph;
 import org.ietr.preesm.deadlock.IBSDFConsistency;
@@ -61,12 +59,12 @@ public class GraphStrucutureHelperTestDetail {
     // create the DAG to sort
     final SDFGraph dag = new SDFGraph();
     dag.setName("dag");
-    GraphStructureHelper.addActor(dag, "0", null, 1L, 1., null, null);
-    GraphStructureHelper.addActor(dag, "1", null, 1L, 1., null, null);
-    GraphStructureHelper.addActor(dag, "2", null, 1L, 1., null, null);
-    GraphStructureHelper.addActor(dag, "3", null, 1L, 1., null, null);
-    GraphStructureHelper.addActor(dag, "4", null, 1L, 1., null, null);
-    GraphStructureHelper.addActor(dag, "5", null, 1L, 1., null, null);
+    GraphStructureHelper.addActor(dag, "0", null, 1L, 1., 0, null);
+    GraphStructureHelper.addActor(dag, "1", null, 1L, 1., 0, null);
+    GraphStructureHelper.addActor(dag, "2", null, 1L, 1., 0, null);
+    GraphStructureHelper.addActor(dag, "3", null, 1L, 1., 0, null);
+    GraphStructureHelper.addActor(dag, "4", null, 1L, 1., 0, null);
+    GraphStructureHelper.addActor(dag, "5", null, 1L, 1., 0, null);
 
     GraphStructureHelper.addEdge(dag, "5", null, "2", null, 1, 1, 0, null);
     GraphStructureHelper.addEdge(dag, "5", null, "0", null, 1, 1, 0, null);
@@ -90,23 +88,15 @@ public class GraphStrucutureHelperTestDetail {
     final ArrayList<SDFAbstractVertex> topologicalSorting = GraphStructureHelper.topologicalSorting(dag);
     timer.stop();
 
-    System.out.println("topological sorting computed in " + timer.toString() + ", the ordered actors: ");
-
     // check the results
     Assert.assertNotNull(topologicalSorting);
     Assert.assertEquals(dag.vertexSet().size(), topologicalSorting.size());
 
     for (int i = 0; i < topologicalSorting.size(); i++) {
-      System.out.print(topologicalSorting.get(i).getName() + " ");
       Assert.assertEquals(expectedList.get(i).getName(), topologicalSorting.get(i).getName());
     }
 
-    System.out.println("\nPartial topological sorting computed in " + timer.toString() + ", the ordered actors: ");
-    final ArrayList<SDFAbstractVertex> partialTopologicalSorting = GraphStructureHelper
-        .partialTopologicalSorting(dag.getVertex("5"));
-    for (int i = 0; i < partialTopologicalSorting.size(); i++) {
-      System.out.print(partialTopologicalSorting.get(i).getName() + " ");
-    }
+    GraphStructureHelper.partialTopologicalSorting(dag.getVertex("5"));
 
   }
 
@@ -115,12 +105,12 @@ public class GraphStrucutureHelperTestDetail {
     // create the DAG to sort
     final SDFGraph dag = new SDFGraph();
     dag.setName("dag");
-    GraphStructureHelper.addActor(dag, "0", null, 1L, 3., null, null);
-    GraphStructureHelper.addActor(dag, "1", null, 1L, 6., null, null);
-    GraphStructureHelper.addActor(dag, "2", null, 1L, 5., null, null);
-    GraphStructureHelper.addActor(dag, "3", null, 1L, -1., null, null);
-    GraphStructureHelper.addActor(dag, "4", null, 1L, -3., null, null);
-    GraphStructureHelper.addActor(dag, "5", null, 1L, 1., null, null);
+    GraphStructureHelper.addActor(dag, "0", null, 1L, 3., 0, null);
+    GraphStructureHelper.addActor(dag, "1", null, 1L, 6., 0, null);
+    GraphStructureHelper.addActor(dag, "2", null, 1L, 5., 0, null);
+    GraphStructureHelper.addActor(dag, "3", null, 1L, -1., 0, null);
+    GraphStructureHelper.addActor(dag, "4", null, 1L, -3., 0, null);
+    GraphStructureHelper.addActor(dag, "5", null, 1L, 1., 0, null);
 
     GraphStructureHelper.addEdge(dag, "0", null, "1", null, 1, 1, 0, null);
     GraphStructureHelper.addEdge(dag, "0", null, "2", null, 1, 1, 0, null);
@@ -136,37 +126,19 @@ public class GraphStrucutureHelperTestDetail {
     // topological sorting
     final Stopwatch timer = new Stopwatch();
     timer.start();
-    final ArrayList<SDFAbstractVertex> topologicalSorting = GraphStructureHelper.topologicalSorting(dag);
+    GraphStructureHelper.topologicalSorting(dag);
     timer.stop();
 
-    System.out.println("topological sorting computed in " + timer.toString() + ", the ordered actors: ");
-
-    for (int i = 0; i < topologicalSorting.size(); i++) {
-      System.out.print(topologicalSorting.get(i).getName() + " ");
-    }
-
-    System.out.println("\nPartial topological sorting computed in " + timer.toString() + ", the ordered actors: ");
     final ArrayList<SDFAbstractVertex> partialTopologicalSorting = GraphStructureHelper
         .partialTopologicalSorting(dag.getVertex("0"));
-    for (int i = 0; i < partialTopologicalSorting.size(); i++) {
-      System.out.print(partialTopologicalSorting.get(i).getName() + " ");
-    }
 
     timer.start();
-    final Hashtable<String, Double> distance = GraphStructureHelper.getLongestPathToAllTargets(dag.getVertex("0"), null,
-        partialTopologicalSorting);
+    GraphStructureHelper.getLongestPathToAllTargets(dag.getVertex("0"), null, partialTopologicalSorting);
     timer.stop();
-
-    System.out.println("Longest paths computed in " + timer.toString() + ", the distance: ");
-
-    for (final Entry<String, Double> e : distance.entrySet()) {
-      System.out.println(e.getKey() + " : " + e.getValue());
-    }
 
     timer.start();
-    final double lp = GraphStructureHelper.getLongestPath(dag, null, null);
+    GraphStructureHelper.getLongestPath(dag, null, null);
     timer.stop();
-    System.out.println("Longest paths in the graph " + lp + " computed in " + timer.toString());
 
   }
 
@@ -186,10 +158,10 @@ public class GraphStrucutureHelperTestDetail {
     // create the subgraph GH
     final SDFGraph GH = new SDFGraph();
     GH.setName("subgraph");
-    GraphStructureHelper.addActor(GH, "G", null, null, 1., null, null);
-    GraphStructureHelper.addActor(GH, "H", null, null, 1., null, null);
-    GraphStructureHelper.addInputInterface(GH, "f", null, 0., null, null);
-    GraphStructureHelper.addOutputInterface(GH, "e", null, 0., null, null);
+    GraphStructureHelper.addActor(GH, "G", null, 0, 1., 0, null);
+    GraphStructureHelper.addActor(GH, "H", null, 0, 1., 0, null);
+    GraphStructureHelper.addInputInterface(GH, "f", 0, 0., 0, null);
+    GraphStructureHelper.addOutputInterface(GH, "e", 0, 0., 0, null);
 
     GraphStructureHelper.addEdge(GH, "f", null, "G", null, 1, 1, 0, null);
     GraphStructureHelper.addEdge(GH, "G", null, "F", null, 1, 1, 0, null);
@@ -198,11 +170,11 @@ public class GraphStrucutureHelperTestDetail {
     // create the subgraph DEF
     final SDFGraph DEF = new SDFGraph();
     DEF.setName("subgraph");
-    GraphStructureHelper.addActor(DEF, "D", GH, null, 1., null, null);
-    GraphStructureHelper.addActor(DEF, "E", null, null, 1., null, null);
-    GraphStructureHelper.addActor(DEF, "F", null, null, 1., null, null);
-    GraphStructureHelper.addInputInterface(DEF, "a", null, 0., null, null);
-    GraphStructureHelper.addOutputInterface(DEF, "c", null, 0., null, null);
+    GraphStructureHelper.addActor(DEF, "D", GH, 0, 1., 0, null);
+    GraphStructureHelper.addActor(DEF, "E", null, 0, 1., 0, null);
+    GraphStructureHelper.addActor(DEF, "F", null, 0, 1., 0, null);
+    GraphStructureHelper.addInputInterface(DEF, "a", 0, 0., 0, null);
+    GraphStructureHelper.addOutputInterface(DEF, "c", 0, 0., 0, null);
 
     GraphStructureHelper.addEdge(DEF, "a", null, "E", null, 2, 1, 0, null);
     GraphStructureHelper.addEdge(DEF, "E", null, "F", null, 2, 3, 0, null);
@@ -213,9 +185,9 @@ public class GraphStrucutureHelperTestDetail {
     // create the top graph and add the subgraph to the hierarchical actor B
     final SDFGraph topgraph = new SDFGraph();
     topgraph.setName("topgraph");
-    GraphStructureHelper.addActor(topgraph, "A", null, null, 1., null, null);
-    GraphStructureHelper.addActor(topgraph, "B", DEF, null, null, null, null);
-    GraphStructureHelper.addActor(topgraph, "C", null, null, 1., null, null);
+    GraphStructureHelper.addActor(topgraph, "A", null, 0, 1., 0, null);
+    GraphStructureHelper.addActor(topgraph, "B", DEF, 0, 0, 0, null);
+    GraphStructureHelper.addActor(topgraph, "C", null, 0, 1., 0, null);
 
     GraphStructureHelper.addEdge(topgraph, "A", null, "B", "a", 3, 2, 3, null);
     GraphStructureHelper.addEdge(topgraph, "B", "c", "C", null, 1, 1, 0, null);

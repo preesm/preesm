@@ -271,7 +271,7 @@ public class EvaluateScheduleReplace {
           .getVertex(((SDFInterfaceVertex) iInterface).getName() + "_1");
       final SDFAbstractVertex SEM_inetrface = GraphStructureHelper.addActor(subgraphExecutionModel,
           subgraphInterface.getName(), null, subgraphInterface.getNbRepeatAsLong(),
-          (Double) subgraphInterface.getPropertyBean().getValue("duration"), null,
+          (Double) subgraphInterface.getPropertyBean().getValue("duration"), 0,
           (SDFAbstractVertex) subgraphInterface.getPropertyBean().getValue("baseActor"));
 
       // get the execution start date of the interface
@@ -282,7 +282,7 @@ public class EvaluateScheduleReplace {
       if (timeLineActors.containsKey(startDate)) {
         timeActor = timeLineActors.get(startDate);
       } else {
-        timeActor = GraphStructureHelper.addActor(subgraphExecutionModel, "time" + startDate, null, 1L, 0., null, null);
+        timeActor = GraphStructureHelper.addActor(subgraphExecutionModel, "time" + startDate, null, 1L, 0., 0, null);
         timeLineActors.put(startDate, timeActor);
       }
 
@@ -307,7 +307,7 @@ public class EvaluateScheduleReplace {
       // add the transition actor to the subgraph execution model
       final SDFAbstractVertex TransitionActor = GraphStructureHelper.addActor(subgraphExecutionModel,
           "time" + orderedTimeLine.get(i) + "_to_time" + orderedTimeLine.get(i + 1), null, 1L,
-          orderedTimeLine.get(i + 1) - orderedTimeLine.get(i), null, null);
+          orderedTimeLine.get(i + 1) - orderedTimeLine.get(i), 0, null);
 
       // add time actor i with the time actor i+1 through the transition actor
       GraphStructureHelper.addEdge(subgraphExecutionModel, timeLineActors.get(orderedTimeLine.get(i)).getName(), null,
@@ -326,7 +326,7 @@ public class EvaluateScheduleReplace {
 
       // create the period actor
       final SDFAbstractVertex periodActor = GraphStructureHelper.addActor(subgraphExecutionModel, "period", null, 1L,
-          K.getNumerator() - (lastTime - firstTime), null, null);
+          K.getNumerator() - (lastTime - firstTime), 0, null);
 
       // connect the period actor to the time line
       GraphStructureHelper.addEdge(subgraphExecutionModel, lastTimeActor.getName(), null, periodActor.getName(), null,
