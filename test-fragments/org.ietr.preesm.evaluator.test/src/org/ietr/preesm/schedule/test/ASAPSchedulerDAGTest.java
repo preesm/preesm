@@ -36,7 +36,7 @@
 package org.ietr.preesm.schedule.test;
 
 import org.ietr.dftools.algorithm.model.sdf.SDFGraph;
-import org.ietr.preesm.schedule.ASAPScheduler_DAG;
+import org.ietr.preesm.schedule.ASAPSchedulerDAG;
 import org.ietr.preesm.throughput.tools.helpers.GraphStructureHelper;
 import org.junit.Assert;
 import org.junit.Test;
@@ -47,7 +47,7 @@ import org.junit.Test;
  * @author hderoui
  *
  */
-public class ASAPScheduler_DAGTest {
+public class ASAPSchedulerDAGTest {
 
   @Test
   public void testIterationDurationShouldBeComputed() {
@@ -55,7 +55,7 @@ public class ASAPScheduler_DAGTest {
     final SDFGraph dag = generateDAGOfGraphABC326();
 
     // schedule the DAG
-    final ASAPScheduler_DAG scheduler = new ASAPScheduler_DAG();
+    final ASAPSchedulerDAG scheduler = new ASAPSchedulerDAG();
     final double durationOf1Iteration = scheduler.schedule(dag);
 
     // check the value of the duration

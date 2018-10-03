@@ -48,7 +48,7 @@ import org.ietr.preesm.throughput.tools.helpers.Stopwatch;
  * @author hderoui
  *
  */
-public class ALAPScheduler_DAG {
+public class ALAPSchedulerDAG {
   public GraphSimulationHelper         simulator;       // simulator helper
   private Double                       maxDate;         // throughput constraint
   private ArrayList<SDFAbstractVertex> actorsToExecute; // list of actors to execute

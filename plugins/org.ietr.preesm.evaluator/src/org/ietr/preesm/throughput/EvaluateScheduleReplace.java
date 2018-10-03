@@ -45,9 +45,9 @@ import org.ietr.dftools.algorithm.model.sdf.SDFGraph;
 import org.ietr.dftools.algorithm.model.sdf.SDFInterfaceVertex;
 import org.ietr.dftools.algorithm.model.sdf.esdf.SDFSinkInterfaceVertex;
 import org.ietr.dftools.algorithm.model.sdf.esdf.SDFSourceInterfaceVertex;
-import org.ietr.preesm.schedule.ALAPScheduler_DAG;
-import org.ietr.preesm.schedule.ASAPScheduler_DAG;
-import org.ietr.preesm.schedule.PeriodicScheduler_SDF;
+import org.ietr.preesm.schedule.ALAPSchedulerDAG;
+import org.ietr.preesm.schedule.ASAPSchedulerDAG;
+import org.ietr.preesm.schedule.PeriodicSchedulerSDF;
 import org.ietr.preesm.throughput.tools.helpers.GraphStructureHelper;
 import org.ietr.preesm.throughput.tools.helpers.Stopwatch;
 import org.ietr.preesm.throughput.tools.parsers.Identifier;
@@ -120,8 +120,8 @@ public class EvaluateScheduleReplace {
     // normalize the graph
     SDFTransformer.normalize(srSDF);
     // compute its normalized period K
-    final PeriodicScheduler_SDF periodic = new PeriodicScheduler_SDF();
-    final Fraction k = periodic.computeNormalizedPeriod(srSDF, PeriodicScheduler_SDF.Method.LinearProgram_Gurobi);
+    final PeriodicSchedulerSDF periodic = new PeriodicSchedulerSDF();
+    final Fraction k = periodic.computeNormalizedPeriod(srSDF, PeriodicSchedulerSDF.Method.LINEAR_PROGRAMMING_GUROBI);
     // compute its throughput as 1/K
     final double throughput = 1 / k.doubleValue();
     this.timer.stop();
@@ -216,8 +216,8 @@ public class EvaluateScheduleReplace {
     // normalize the graph first
     SDFTransformer.normalize(graph);
     // return the fraction k=L/H computed by the periodic schedule
-    final PeriodicScheduler_SDF scheduler = new PeriodicScheduler_SDF();
-    return scheduler.computeNormalizedPeriod(graph, PeriodicScheduler_SDF.Method.LinearProgram_Gurobi);
+    final PeriodicSchedulerSDF scheduler = new PeriodicSchedulerSDF();
+    return scheduler.computeNormalizedPeriod(graph, PeriodicSchedulerSDF.Method.LINEAR_PROGRAMMING_GUROBI);
   }
 
   /**
@@ -228,14 +228,14 @@ public class EvaluateScheduleReplace {
    */
   private void schedule(final SDFGraph graph) {
     // ASAP schedule to determine the start/finish date for each actor and the latency constraint
-    final ASAPScheduler_DAG ASAP_DAG = new ASAPScheduler_DAG();
+    final ASAPSchedulerDAG ASAP_DAG = new ASAPSchedulerDAG();
     ASAP_DAG.schedule(graph);
 
     // reset the execution counter of each actor
     ASAP_DAG.simulator.resetExecutionCounter();
 
     // step 2: ALAP schedule ESR paper version
-    final ALAPScheduler_DAG ALAP = new ALAPScheduler_DAG();
+    final ALAPSchedulerDAG ALAP = new ALAPSchedulerDAG();
     ALAP.schedule(graph, ASAP_DAG.simulator, ASAP_DAG.dur1Iter);
   }
 

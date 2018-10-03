@@ -38,7 +38,7 @@ package org.ietr.preesm.schedule.test;
 import org.apache.commons.lang3.math.Fraction;
 import org.ietr.dftools.algorithm.model.sdf.SDFGraph;
 import org.ietr.preesm.deadlock.SDFConsistency;
-import org.ietr.preesm.schedule.PeriodicScheduler_SDF;
+import org.ietr.preesm.schedule.PeriodicSchedulerSDF;
 import org.ietr.preesm.throughput.tools.helpers.GraphStructureHelper;
 import org.junit.Assert;
 import org.junit.Test;
@@ -49,7 +49,7 @@ import org.junit.Test;
  * @author hderoui
  *
  */
-public class PeriodicScheduler_SDFTest {
+public class PeriodicSchedulerSDFTest {
 
   @Test
   public void testPeriodicScheduleShouldBeComputed() {
@@ -57,7 +57,7 @@ public class PeriodicScheduler_SDFTest {
     final SDFGraph sdf = generateSDFGraphABC326();
 
     // schedule the SDF graph
-    final PeriodicScheduler_SDF periodic = new PeriodicScheduler_SDF();
+    final PeriodicSchedulerSDF periodic = new PeriodicSchedulerSDF();
     final double throughput = periodic.schedule(sdf, null, true);
 
     // check the normalized rate of actors

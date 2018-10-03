@@ -36,6 +36,7 @@
 package org.ietr.preesm.schedule;
 
 import java.util.Hashtable;
+import java.util.Map;
 import java.util.Map.Entry;
 import org.ietr.dftools.algorithm.model.sdf.SDFAbstractVertex;
 import org.ietr.dftools.algorithm.model.sdf.SDFGraph;
@@ -49,11 +50,11 @@ import org.ietr.preesm.throughput.tools.helpers.Stopwatch;
  *         ASAP scheduler : Ghamarian + Lee + Hamza version
  *
  */
-public class ASAPScheduler_SDF {
-  private GraphSimulationHelper                                    simulator;  // simulator helper
-  private Double                                                   dur1Iter;   // duration of one iteration of a graph
-  private Hashtable<Double, Hashtable<SDFAbstractVertex, Integer>> executions; // list of ready executions to finish
-  public boolean                                                   live;
+public class ASAPSchedulerSDF {
+  private GraphSimulationHelper                        simulator;  // simulator helper
+  private Double                                       dur1Iter;   // duration of one iteration of a graph
+  private Map<Double, Map<SDFAbstractVertex, Integer>> executions; // list of ready executions to finish
+  public boolean                                       live;
 
   /**
    * Schedule the graph using an ASAP schedule and return the duration of the graph iteration
@@ -89,7 +90,7 @@ public class ASAPScheduler_SDF {
       }
 
       // execute the list of executions
-      final Hashtable<SDFAbstractVertex, Integer> listTExec = this.executions.get(t);
+      final Map<SDFAbstractVertex, Integer> listTExec = this.executions.get(t);
       this.executions.remove(t);
 
       for (final Entry<SDFAbstractVertex, Integer> execution : listTExec.entrySet()) {
@@ -118,7 +119,7 @@ public class ASAPScheduler_SDF {
 
             // add the execution to the list
             if (this.executions.containsKey(finishDate)) {
-              final Hashtable<SDFAbstractVertex, Integer> listExec = this.executions.get(finishDate);
+              final Map<SDFAbstractVertex, Integer> listExec = this.executions.get(finishDate);
               if (listExec.containsKey(targetActor)) {
                 final int old = listExec.get(targetActor);
                 listExec.put(targetActor, (old + n));

@@ -53,7 +53,7 @@ import org.junit.Test;
  * @author hderoui
  *
  */
-public class GraphStrucutureHelperTest_detail {
+public class GraphStrucutureHelperTestDetail {
 
   @Test
   @Ignore

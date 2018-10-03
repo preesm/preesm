@@ -41,7 +41,7 @@ import org.ietr.dftools.algorithm.model.sdf.SDFAbstractVertex;
 import org.ietr.dftools.algorithm.model.sdf.SDFEdge;
 import org.ietr.dftools.algorithm.model.sdf.SDFGraph;
 import org.ietr.preesm.evaluator.EvaluationException;
-import org.ietr.preesm.schedule.ASAPScheduler_SDF;
+import org.ietr.preesm.schedule.ASAPSchedulerSDF;
 import org.ietr.preesm.throughput.tools.helpers.Stopwatch;
 import org.ietr.preesm.throughput.tools.parsers.Identifier;
 import org.ietr.preesm.throughput.tools.transformers.SDFTransformer;
@@ -168,7 +168,7 @@ public interface SDFLiveness {
    */
   public static boolean symbolicExecution(final SDFGraph sdf) {
     // execute the graph until it finishes an iteration
-    final ASAPScheduler_SDF scheduler = new ASAPScheduler_SDF();
+    final ASAPSchedulerSDF scheduler = new ASAPSchedulerSDF();
     scheduler.schedule(sdf);
 
     // the live attribute of the scheduler will indicate if the schedule has succeeded to schedule a complete iteration

@@ -36,7 +36,7 @@
 package org.ietr.preesm.mathematicalModels.test;
 
 import org.ietr.dftools.algorithm.model.sdf.SDFGraph;
-import org.ietr.preesm.mathematicalModels.PeriodicScheduleModel_ojAlgo;
+import org.ietr.preesm.mathematicalModels.PeriodicScheduleModelOjAlgo;
 import org.ietr.preesm.throughput.tools.helpers.GraphStructureHelper;
 import org.ietr.preesm.throughput.tools.transformers.SDFTransformer;
 import org.junit.Assert;
@@ -48,14 +48,14 @@ import org.junit.Test;
  * @author hderoui
  *
  */
-public class PeriodicScheduleModel_ojAlgo_tests {
+public class PeriodicScheduleModelOjAlgoTests {
 
   @Test
   public void testNormalizedPeriodShouldBeComputed() {
     // generate a normalized SDF graph
     final SDFGraph ABC = generateNormalizedSDFGraphABC3();
     // compute its normalized period K
-    final PeriodicScheduleModel_ojAlgo model = new PeriodicScheduleModel_ojAlgo();
+    final PeriodicScheduleModelOjAlgo model = new PeriodicScheduleModelOjAlgo();
     final double k = model.computeNormalizedPeriod(ABC).doubleValue();
     // check the value of K
     Assert.assertEquals(1, k, 0);
