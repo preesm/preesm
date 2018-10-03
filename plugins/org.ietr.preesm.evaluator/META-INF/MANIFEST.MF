@@ -9,7 +9,8 @@ Require-Bundle: org.eclipse.core.runtime,
  org.apache.commons.lang3;bundle-version="3.5.0",
  org.ietr.preesm.core,
  org.ietr.preesm.algorithm,
- org.ojalgo;bundle-version="44.0.0"
+ org.ojalgo;bundle-version="44.0.0",
+ org.apache.commons.math3
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Bundle-ClassPath: .
 Export-Package: org.ietr.preesm.evaluator,

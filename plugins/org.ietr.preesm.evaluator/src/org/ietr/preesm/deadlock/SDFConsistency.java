@@ -35,9 +35,11 @@
  */
 package org.ietr.preesm.deadlock;
 
-import java.util.Hashtable;
+import java.math.BigInteger;
+import java.util.LinkedHashMap;
 import java.util.List;
-import org.apache.commons.lang3.math.Fraction;
+import java.util.Map;
+import org.apache.commons.math3.fraction.BigFraction;
 import org.ietr.dftools.algorithm.model.sdf.SDFAbstractVertex;
 import org.ietr.dftools.algorithm.model.sdf.SDFEdge;
 import org.ietr.dftools.algorithm.model.sdf.SDFGraph;
@@ -45,6 +47,7 @@ import org.ietr.dftools.algorithm.model.sdf.SDFInterfaceVertex;
 import org.ietr.dftools.algorithm.model.sdf.esdf.SDFSinkInterfaceVertex;
 import org.ietr.dftools.algorithm.model.sdf.esdf.SDFSourceInterfaceVertex;
 import org.ietr.dftools.algorithm.model.sdf.types.SDFIntEdgePropertyType;
+import org.ietr.preesm.evaluator.EvaluationException;
 import org.ietr.preesm.throughput.tools.helpers.Stopwatch;
 import org.ietr.preesm.utils.math.MathFunctionsHelper;
 
@@ -54,7 +57,11 @@ import org.ietr.preesm.utils.math.MathFunctionsHelper;
  */
 public abstract class SDFConsistency {
 
-  private static Hashtable<String, Fraction> reps;
+  private SDFConsistency() {
+    // forbid instantiation
+  }
+
+  private static final Map<String, BigFraction> reps = new LinkedHashMap<>();
 
   /**
    * Computes the Repetition Vector (RV) of the SDF graph
@@ -67,31 +74,32 @@ public abstract class SDFConsistency {
     final Stopwatch timer = new Stopwatch();
     timer.start();
 
-    SDFConsistency.reps = new Hashtable<>();
+    SDFConsistency.reps.clear();
     for (final SDFAbstractVertex actor : graph.vertexSet()) {
-      SDFConsistency.reps.put(actor.getName(), Fraction.getFraction(0));
+      SDFConsistency.reps.put(actor.getName(), BigFraction.ZERO);
     }
 
     // pick a random actor and do a DFS to compute RV
-    SDFConsistency.SetReps(graph, graph.vertexSet().iterator().next(), Fraction.getFraction(1));
+    SDFConsistency.setReps(graph, graph.vertexSet().iterator().next(), BigFraction.ONE);
 
     // compute the lcm of the denominators
-    double lcm = 1;
-    for (final Fraction f : SDFConsistency.reps.values()) {
-      lcm = MathFunctionsHelper.lcm(lcm, f.getDenominator());
+    long lcm = 1;
+    for (final BigFraction f : SDFConsistency.reps.values()) {
+      lcm = MathFunctionsHelper.lcm(lcm, f.getDenominator().longValue());
     }
     // Set actors repetition factor
     for (final SDFAbstractVertex actor : graph.vertexSet()) {
-      actor.setNbRepeat((int) ((SDFConsistency.reps.get(actor.getName()).getNumerator() * lcm)
-          / SDFConsistency.reps.get(actor.getName()).getDenominator()));
+      final String actorName = actor.getName();
+      final BigFraction actorRepetition = SDFConsistency.reps.get(actorName);
+      actor.setNbRepeat(actorRepetition.multiply(lcm).longValue());
     }
     // edge verification
     for (final SDFEdge e : graph.edgeSet()) {
-      if ((e.getSource().getNbRepeatAsInteger() * e.getProd().intValue()) != (e.getTarget().getNbRepeatAsInteger()
-          * e.getCons().intValue())) {
+      if ((e.getSource().getNbRepeatAsLong() * e.getProd().longValue()) != (e.getTarget().getNbRepeatAsLong()
+          * e.getCons().longValue())) {
         timer.stop();
-        System.err.println("Graph not consistent !! evaluated in " + timer.toString());
-        return false;
+        final String message = "Graph not consistent !! evaluated in " + timer.toString();
+        throw new EvaluationException(message);
       }
     }
 
@@ -100,48 +108,49 @@ public abstract class SDFConsistency {
       // input interface
       if (actor instanceof SDFSourceInterfaceVertex) {
         final SDFEdge e = actor.getAssociatedEdge(actor.getSinks().iterator().next());
-        final int prod = e.getProd().intValue();
-        e.setProd(new SDFIntEdgePropertyType(prod * actor.getNbRepeatAsInteger()));
-        actor.setNbRepeat(1);
+        final long prod = e.getProd().longValue();
+        e.setProd(new SDFIntEdgePropertyType(prod * actor.getNbRepeatAsLong()));
+        actor.setNbRepeat(1L);
       }
       // output interface
       if (actor instanceof SDFSinkInterfaceVertex) {
         final SDFEdge e = actor.getAssociatedEdge(actor.getSources().iterator().next());
-        final int cons = e.getCons().intValue();
-        e.setCons(new SDFIntEdgePropertyType(cons * actor.getNbRepeatAsInteger()));
-        actor.setNbRepeat(1);
+        final long cons = e.getCons().longValue();
+        e.setCons(new SDFIntEdgePropertyType(cons * actor.getNbRepeatAsLong()));
+        actor.setNbRepeat(1L);
       }
     }
 
     timer.stop();
-    System.out.println("Graph consistent !! evaluated in " + timer.toString());
     return true;
   }
 
-  private static int SetReps(final SDFGraph g, final SDFAbstractVertex a, final Fraction n) {
+  private static int setReps(final SDFGraph g, final SDFAbstractVertex a, final BigFraction n) {
     SDFConsistency.reps.put(a.getName(), n);
     // DFS forward
-    final List<SDFInterfaceVertex> Sinks = a.getSinks();
-    final List<SDFInterfaceVertex> Sources = a.getSources();
+    final List<SDFInterfaceVertex> sinks = a.getSinks();
+    final List<SDFInterfaceVertex> sources = a.getSources();
 
-    for (final SDFInterfaceVertex output : Sinks) {
+    for (final SDFInterfaceVertex output : sinks) {
       final SDFEdge e = a.getAssociatedEdge(output);
-      final Fraction fa = SDFConsistency.reps.get(e.getTarget().getName());
-      if (fa.getNumerator() == 0) {
-        final Fraction f = Fraction.getFraction(n.getNumerator() * e.getProd().intValue(),
-            n.getDenominator() * e.getCons().intValue());
-        SDFConsistency.SetReps(g, e.getTarget(), f.reduce());
+      final BigFraction fa = SDFConsistency.reps.get(e.getTarget().getName());
+      if (fa.getNumerator().equals(BigInteger.ZERO)) {
+        final long numerator = n.getNumerator().longValue() * e.getProd().longValue();
+        final long denominator = n.getDenominator().longValue() * e.getCons().longValue();
+        final BigFraction f = new BigFraction(numerator, denominator);
+        SDFConsistency.setReps(g, e.getTarget(), f.reduce());
       }
     }
 
     // DFS backward
-    for (final SDFInterfaceVertex input : Sources) {
+    for (final SDFInterfaceVertex input : sources) {
       final SDFEdge e = a.getAssociatedEdge(input);
-      final Fraction fa = SDFConsistency.reps.get(e.getSource().getName());
-      if (fa.getNumerator() == 0) {
-        final Fraction f = Fraction.getFraction(n.getNumerator() * e.getCons().intValue(),
-            n.getDenominator() * e.getProd().intValue());
-        SDFConsistency.SetReps(g, e.getSource(), f.reduce());
+      final BigFraction fa = SDFConsistency.reps.get(e.getSource().getName());
+      if (fa.getNumerator().equals(BigInteger.ZERO)) {
+        final long numerator = n.getNumerator().longValue() * e.getCons().longValue();
+        final long denominator = n.getDenominator().longValue() * e.getProd().longValue();
+        final BigFraction f = new BigFraction((int) numerator, (int) denominator);
+        SDFConsistency.setReps(g, e.getSource(), f.reduce());
       }
     }
     return 1;

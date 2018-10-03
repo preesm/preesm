@@ -662,10 +662,10 @@ public class HSDFBuildLoops {
         if ((!allocEdge.contains(e)/* already visited */) && (!edgeUpperGraph.contains(e) /* allocation by Karol */)) {
           long mem = 0;
           if (v instanceof SDFVertex) {
-            int nbRep = 0;
+            long nbRep = 0;
 
             try {
-              nbRep = Integer.parseInt(e.getTarget().getNbRepeat().toString());
+              nbRep = (long) e.getTarget().getNbRepeat();
             } catch (final NumberFormatException | InvalidExpressionException ex) {
               throw new WorkflowException("Internal Memory allocation failed for actor " + v.getName(), ex);
             }
