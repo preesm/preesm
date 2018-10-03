@@ -235,7 +235,7 @@ public abstract class TurbineParser {
           for (final SDFInterfaceVertex input : hierarchicalActor.getSources()) {
             if (hierarchicalActor.getAssociatedEdge(input).getSource().getName().equals(srcActorId)) {
               inputPort = input.getName();
-              _cons = (double) hierarchicalActor.getAssociatedEdge(input).getCons().intValue();
+              _cons = (double) hierarchicalActor.getAssociatedEdge(input).getCons().longValue();
               break;
             }
           }
@@ -245,11 +245,8 @@ public abstract class TurbineParser {
 
           GraphStructureHelper.addInputInterface(subGraph, inputPort, 0L, TurbineParser.InterfaceDuration_default, 0,
               null);
-          // System.out.println("inputInterface : " + inputPort);
           GraphStructureHelper.addEdge(subGraph, inputPort, null, trgActorId, null, _prod.intValue(), _cons.intValue(),
               0, null);
-          // System.out.println("edge : (" + inputPort + "," + trgActorId + " ) prod= " + _prod.intValue() + " cons= " +
-          // _cons.intValue());
         }
 
         // reading Output interfaces description
@@ -266,7 +263,7 @@ public abstract class TurbineParser {
           for (final SDFInterfaceVertex output : hierarchicalActor.getSinks()) {
             if (hierarchicalActor.getAssociatedEdge(output).getTarget().getName().equals(trgActorId)) {
               outputPort = output.getName();
-              _prod = (double) hierarchicalActor.getAssociatedEdge(output).getProd().intValue();
+              _prod = (double) hierarchicalActor.getAssociatedEdge(output).getProd().longValue();
               break;
             }
           }

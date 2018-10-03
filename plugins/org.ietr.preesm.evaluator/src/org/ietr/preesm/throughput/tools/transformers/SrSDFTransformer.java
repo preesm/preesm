@@ -65,7 +65,7 @@ public abstract class SrSDFTransformer {
 
     // for each edge set cons=prod=1 and delay=delay/prod
     for (final SDFEdge edge : hsdf_graph.edgeSet()) {
-      final int delay = edge.getDelay().intValue() / edge.getProd().intValue();
+      final long delay = edge.getDelay().longValue() / edge.getProd().longValue();
       edge.setProd(new SDFIntEdgePropertyType(1));
       edge.setCons(new SDFIntEdgePropertyType(1));
       edge.setDelay(new SDFIntEdgePropertyType(delay));
@@ -99,7 +99,7 @@ public abstract class SrSDFTransformer {
 
     // remove edges with delays
     for (final SDFEdge edge : edgeList) {
-      if (edge.getDelay().intValue() != 0) {
+      if (edge.getDelay().longValue() != 0) {
         dag.removeEdge(edge);
       }
     }

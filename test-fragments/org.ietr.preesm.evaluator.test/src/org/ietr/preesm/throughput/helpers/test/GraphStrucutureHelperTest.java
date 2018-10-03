@@ -90,9 +90,9 @@ public class GraphStrucutureHelperTest {
     // check the results
     Assert.assertEquals(1, sdf.edgeSet().size());
     final SDFEdge e = sdf.edgeSet().iterator().next();
-    Assert.assertEquals(3, e.getCons().intValue());
-    Assert.assertEquals(2, e.getProd().intValue());
-    Assert.assertEquals(5, e.getDelay().intValue());
+    Assert.assertEquals(3L, e.getCons().longValue());
+    Assert.assertEquals(2L, e.getProd().longValue());
+    Assert.assertEquals(5L, e.getDelay().longValue());
   }
 
   @Test

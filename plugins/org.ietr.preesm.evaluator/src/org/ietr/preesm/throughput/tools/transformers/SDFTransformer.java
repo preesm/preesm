@@ -66,7 +66,7 @@ public abstract class SDFTransformer {
 
     // create actors instances
     for (final SDFAbstractVertex a : SDF.vertexSet()) {
-      for (int i = 1; i <= a.getNbRepeatAsInteger(); i++) {
+      for (long i = 1; i <= a.getNbRepeatAsLong(); i++) {
         // create an instance a_i of the actor a
         GraphStructureHelper.addActor(hsdf_graph, a.getName() + "_" + i, (SDFGraph) a.getGraphDescription(), 1L,
             (Double) a.getPropertyBean().getValue("duration"), 0, a);
@@ -76,13 +76,13 @@ public abstract class SDFTransformer {
 
     // creates the edges
     for (final SDFEdge e : SDF.edgeSet()) {
-      for (int i = 1; i <= e.getSource().getNbRepeatAsInteger(); i++) {
-        for (int k = 1; k <= e.getProd().intValue(); k += 1) {
+      for (long i = 1; i <= e.getSource().getNbRepeatAsLong(); i++) {
+        for (long k = 1; k <= e.getProd().longValue(); k += 1) {
           // compute the target actor instance id, and delay
-          final int j = ((((e.getDelay().intValue() + ((i - 1) * e.getProd().intValue()) + k) - 1)
-              % (e.getCons().intValue() * e.getTarget().getNbRepeatAsInteger())) / e.getCons().intValue()) + 1;
-          final int d = (int) Math.floor(((e.getDelay().intValue() + ((i - 1) * e.getProd().intValue()) + k) - 1)
-              / (e.getCons().intValue() * e.getTarget().getNbRepeatAsInteger()));
+          final long j = ((((e.getDelay().longValue() + ((i - 1) * e.getProd().longValue()) + k) - 1)
+              % (e.getCons().longValue() * e.getTarget().getNbRepeatAsLong())) / e.getCons().longValue()) + 1;
+          final long d = (int) Math.floor(((e.getDelay().longValue() + ((i - 1) * e.getProd().longValue()) + k) - 1)
+              / (e.getCons().longValue() * e.getTarget().getNbRepeatAsLong()));
 
           // add the edge
           GraphStructureHelper.addEdge(hsdf_graph, e.getSource().getName() + "_" + i, null,
@@ -116,7 +116,7 @@ public abstract class SDFTransformer {
     // create actors instances
     for (final SDFAbstractVertex a : SDF.vertexSet()) {
       // System.out.println("====> duplicating actor " + a.getId());
-      for (int i = 1; i <= a.getNbRepeatAsInteger(); i++) {
+      for (int i = 1; i <= a.getNbRepeatAsLong(); i++) {
         // create an instance a_i of the actor a
         GraphStructureHelper.addActor(singleRate, a.getName() + "_" + i, (SDFGraph) a.getGraphDescription(), 1L,
             (Double) a.getPropertyBean().getValue("duration"), 0, a);
@@ -125,19 +125,19 @@ public abstract class SDFTransformer {
 
     // creates the edges
     for (final SDFEdge e : SDF.edgeSet()) {
-      for (int i = 1; i <= e.getSource().getNbRepeatAsInteger(); i++) {
-        for (int k = 1; k <= e.getProd().intValue(); k += 1) {
+      for (long i = 1; i <= e.getSource().getNbRepeatAsLong(); i++) {
+        for (long k = 1; k <= e.getProd().longValue(); k += 1) {
           // compute the target actor instance id, cons/prod rate, and delay
-          final int l = ((((e.getDelay().intValue() + ((i - 1) * e.getProd().intValue()) + k) - 1)
-              % (e.getCons().intValue() * e.getTarget().getNbRepeatAsInteger())) % e.getCons().intValue()) + 1;
-          final int j = ((((e.getDelay().intValue() + ((i - 1) * e.getProd().intValue()) + k) - 1)
-              % (e.getCons().intValue() * e.getTarget().getNbRepeatAsInteger())) / e.getCons().intValue()) + 1;
-          final int d = (int) Math.floor(((e.getDelay().intValue() + ((i - 1) * e.getProd().intValue()) + k) - 1)
-              / (e.getCons().intValue() * e.getTarget().getNbRepeatAsInteger()));
+          final long l = ((((e.getDelay().longValue() + ((i - 1) * e.getProd().longValue()) + k) - 1)
+              % (e.getCons().longValue() * e.getTarget().getNbRepeatAsLong())) % e.getCons().longValue()) + 1;
+          final long j = ((((e.getDelay().longValue() + ((i - 1) * e.getProd().longValue()) + k) - 1)
+              % (e.getCons().longValue() * e.getTarget().getNbRepeatAsLong())) / e.getCons().longValue()) + 1;
+          final long d = ((e.getDelay().longValue() + ((i - 1) * e.getProd().longValue()) + k) - 1)
+              / (e.getCons().longValue() * e.getTarget().getNbRepeatAsLong());
 
-          final int ma = e.getProd().intValue() - (k - 1);
-          final int mb = e.getCons().intValue() - (l - 1);
-          final int m = Math.min(ma, mb);
+          final long ma = e.getProd().longValue() - (k - 1);
+          final long mb = e.getCons().longValue() - (l - 1);
+          final long m = Math.min(ma, mb);
           k += (m - 1);
 
           // add the edge
@@ -149,7 +149,6 @@ public abstract class SDFTransformer {
     }
 
     timer.stop();
-    System.out.println("SDF graph converted to srSDF graph in " + timer.toString());
     return singleRate;
   }
 
@@ -205,14 +204,14 @@ public abstract class SDFTransformer {
 
     double K_RV = 1;
     for (final SDFAbstractVertex actor : SDF.vertexSet()) {
-      K_RV = MathFunctionsHelper.lcm(K_RV, actor.getNbRepeatAsInteger());
+      K_RV = MathFunctionsHelper.lcm(K_RV, actor.getNbRepeatAsLong());
     }
 
     for (final SDFEdge edge : SDF.edgeSet()) {
-      edge.getSource().setPropertyValue("normalizedRate", K_RV / edge.getSource().getNbRepeatAsInteger());
-      edge.getTarget().setPropertyValue("normalizedRate", K_RV / edge.getTarget().getNbRepeatAsInteger());
+      edge.getSource().setPropertyValue("normalizedRate", K_RV / edge.getSource().getNbRepeatAsLong());
+      edge.getTarget().setPropertyValue("normalizedRate", K_RV / edge.getTarget().getNbRepeatAsLong());
       edge.setPropertyValue("normalizationFactor",
-          K_RV / (edge.getCons().intValue() * edge.getTarget().getNbRepeatAsInteger()));
+          K_RV / (edge.getCons().longValue() * edge.getTarget().getNbRepeatAsLong()));
     }
 
     timer.stop();

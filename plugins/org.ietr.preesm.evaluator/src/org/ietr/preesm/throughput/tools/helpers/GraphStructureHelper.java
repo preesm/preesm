@@ -468,8 +468,8 @@ public interface GraphStructureHelper {
       final String newSourcePort) {
     // create the new edge
     final SDFEdge nweEdge = GraphStructureHelper.addEdge(graph, newSourceActor, newSourcePort,
-        edge.getTarget().getName(), edge.getTargetInterface().getName(), edge.getProd().intValue(),
-        edge.getCons().intValue(), edge.getDelay().intValue(),
+        edge.getTarget().getName(), edge.getTargetInterface().getName(), edge.getProd().longValue(),
+        edge.getCons().longValue(), edge.getDelay().longValue(),
         (SDFEdge) edge.getPropertyBean().getValue(BASE_EDGE_PROPERTY));
     // remove the old edge
     graph.removeEdge(edge);
@@ -492,8 +492,8 @@ public interface GraphStructureHelper {
       final String newTargetPort) {
     // create the new edge
     final SDFEdge nweEdge = GraphStructureHelper.addEdge(graph, edge.getSource().getName(),
-        edge.getSourceInterface().getName(), newTargetActor, newTargetPort, edge.getProd().intValue(),
-        edge.getCons().intValue(), edge.getDelay().intValue(),
+        edge.getSourceInterface().getName(), newTargetActor, newTargetPort, edge.getProd().longValue(),
+        edge.getCons().longValue(), edge.getDelay().longValue(),
         (SDFEdge) edge.getPropertyBean().getValue(BASE_EDGE_PROPERTY));
     // remove the old edge
     graph.removeEdge(edge);

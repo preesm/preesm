@@ -61,11 +61,11 @@ public class SrSDFTransformerTest {
 
     // verify that the consumption/production rate of all edges equal 1
     for (final SDFEdge e : hsdf.edgeSet()) {
-      final int cons = e.getCons().intValue();
-      final int prod = e.getProd().intValue();
+      final long cons = e.getCons().longValue();
+      final long prod = e.getProd().longValue();
 
-      Assert.assertEquals(1, cons);
-      Assert.assertEquals(1, prod);
+      Assert.assertEquals(1L, cons);
+      Assert.assertEquals(1L, prod);
 
     }
   }
@@ -92,8 +92,8 @@ public class SrSDFTransformerTest {
 
     // check if all the edges have zero delay
     for (final SDFEdge e : dag.edgeSet()) {
-      final int delay = e.getDelay().intValue();
-      Assert.assertEquals(0, delay);
+      final long delay = e.getDelay().longValue();
+      Assert.assertEquals(0L, delay);
 
     }
   }
