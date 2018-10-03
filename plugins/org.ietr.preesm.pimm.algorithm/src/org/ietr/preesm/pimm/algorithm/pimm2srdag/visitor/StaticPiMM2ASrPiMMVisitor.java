@@ -50,6 +50,8 @@ import org.ietr.dftools.workflow.WorkflowException;
 import org.ietr.preesm.core.scenario.ConstraintGroup;
 import org.ietr.preesm.core.scenario.ConstraintGroupManager;
 import org.ietr.preesm.core.scenario.PreesmScenario;
+import org.ietr.preesm.core.scenario.Timing;
+import org.ietr.preesm.core.scenario.TimingManager;
 import org.ietr.preesm.experiment.model.factory.PiMMUserFactory;
 import org.ietr.preesm.experiment.model.pimm.AbstractActor;
 import org.ietr.preesm.experiment.model.pimm.AbstractVertex;
@@ -108,8 +110,11 @@ public class StaticPiMM2ASrPiMMVisitor extends PiMMSwitch<Boolean> {
   /** Map of all DataOutputInterface to corresponding vertices */
   private final Map<String, List<AbstractVertex>> outPort2SRActors = new LinkedHashMap<>();
 
-  /** List of the constrants operator ID of the current actor */
-  ArrayList<String> currentOperatorIDs;
+  /** List of the constraints operator ID of the current actor */
+  List<String> currentOperatorIDs;
+
+  /** List of the timing constraints of the current actor */
+  List<Timing> currentTimings;
 
   /** PiMM Graph name */
   String originalGraphName;
@@ -184,6 +189,13 @@ public class StaticPiMM2ASrPiMMVisitor extends PiMMSwitch<Boolean> {
     // Add the scenario constraints
     final ConstraintGroupManager constraintGroupManager = this.scenario.getConstraintGroupManager();
     this.currentOperatorIDs.forEach(s -> constraintGroupManager.addConstraint(s, copyActor));
+    // Add the scenario timings
+    final TimingManager timingManager = this.scenario.getTimingManager();
+    for (final Timing t : this.currentTimings) {
+      final Timing addTiming = timingManager.addTiming(copyActor.getName(), t.getOperatorDefinitionId());
+      addTiming.setTime(t.getTime());
+      addTiming.setInputParameters(t.getInputParameters());
+    }
   }
 
   /*
@@ -749,8 +761,15 @@ public class StaticPiMM2ASrPiMMVisitor extends PiMMSwitch<Boolean> {
       final Set<String> vertexPaths = cg.getVertexPaths();
       final Set<String> operatorIds = cg.getOperatorIds();
       if (vertexPaths.contains(actor.getVertexPath())) {
-        currentOperatorIDs.add((String) operatorIds.toArray()[0]);
+        this.currentOperatorIDs.add((String) operatorIds.toArray()[0]);
       }
+    }
+
+    // Initialize Timing list
+    this.currentTimings = new ArrayList<>();
+    for (final String operatorDefinitionID : this.scenario.getOperatorDefinitionIds()) {
+      final Timing timing = this.scenario.getTimingManager().getTimingOrDefault(actor.getName(), operatorDefinitionID);
+      this.currentTimings.add(timing);
     }
 
     // Populate the DAG with the appropriate number of instances of the actor
