@@ -17,59 +17,101 @@
         <xs:element name="graph">
           <xs:complexType>
             <xs:sequence>
-              <xs:element name="data">
-                <xs:complexType>
-                  <xs:simpleContent>
-                    <xs:extension base="xs:string">
-                      <xs:attribute type="xs:string" name="key"/>
-                    </xs:extension>
-                  </xs:simpleContent>
-                </xs:complexType>
-              </xs:element>
-              <xs:element name="node" maxOccurs="unbounded" minOccurs="0">
-                <xs:complexType mixed="true">
-                  <xs:sequence>
-                    <xs:element name="data" minOccurs="0">
-                      <xs:complexType>
-                        <xs:simpleContent>
-                          <xs:extension base="xs:string">
-                            <xs:attribute type="xs:string" name="key"/>
-                          </xs:extension>
-                        </xs:simpleContent>
-                      </xs:complexType>
-                    </xs:element>
-                    <xs:element name="port" maxOccurs="unbounded" minOccurs="0">
-                      <xs:complexType>
-                        <xs:simpleContent>
-                          <xs:extension base="xs:string">
-                            <xs:attribute type="xs:string" name="annotation" use="optional"/>
-                            <xs:attribute type="xs:string" name="expr" use="optional"/>
-                            <xs:attribute type="xs:string" name="kind" use="optional"/>
-                            <xs:attribute type="xs:string" name="name" use="optional"/>
-                          </xs:extension>
-                        </xs:simpleContent>
-                      </xs:complexType>
-                    </xs:element>
-                  </xs:sequence>
-                  <xs:attribute type="xs:string" name="id" use="optional"/>
-                  <xs:attribute type="xs:string" name="kind" use="optional"/>
-                  <xs:attribute type="xs:byte" name="expr" use="optional"/>
-                </xs:complexType>
-              </xs:element>
-              <xs:element name="edge" maxOccurs="unbounded" minOccurs="0">
-                <xs:complexType>
-                  <xs:simpleContent>
-                    <xs:extension base="xs:string">
-                      <xs:attribute type="xs:string" name="kind" use="optional"/>
-                      <xs:attribute type="xs:string" name="source" use="optional"/>
-                      <xs:attribute type="xs:string" name="sourceport" use="optional"/>
-                      <xs:attribute type="xs:string" name="target" use="optional"/>
-                      <xs:attribute type="xs:string" name="targetport" use="optional"/>
-                      <xs:attribute type="xs:string" name="type" use="optional"/>
-                    </xs:extension>
-                  </xs:simpleContent>
-                </xs:complexType>
-              </xs:element>
+      		  <xs:choice minOccurs="0" maxOccurs="unbounded">
+	              <xs:element name="data" maxOccurs="unbounded" minOccurs="0">
+	                <xs:complexType>
+	                  <xs:simpleContent>
+	                    <xs:extension base="xs:string">
+	                      <xs:attribute type="xs:string" name="key"/>
+	                    </xs:extension>
+	                  </xs:simpleContent>
+	                </xs:complexType>
+	              </xs:element>
+	              <xs:element name="node" maxOccurs="unbounded" minOccurs="0">
+	                <xs:complexType mixed="true">
+	                  <xs:sequence>
+      		  			<xs:choice minOccurs="0" maxOccurs="unbounded">
+	                    <xs:element name="data" minOccurs="0">
+	                      <xs:complexType>
+	                        <xs:simpleContent>
+	                          <xs:extension base="xs:string">
+	                            <xs:attribute type="xs:string" name="key"/>
+	                          </xs:extension>
+	                        </xs:simpleContent>
+	                      </xs:complexType>
+	                    </xs:element>
+	                    <xs:element name="loop" minOccurs="0">
+	                      <xs:complexType>
+	                        <xs:sequence>
+	              				<xs:element name="param" minOccurs="0" maxOccurs="unbounded">
+			                      <xs:complexType>
+			                        <xs:simpleContent>
+			                          <xs:extension base="xs:string">
+			                            <xs:attribute type="xs:string" name="direction" use="optional"/>
+			                            <xs:attribute type="xs:string" name="isConfig" use="optional"/>
+			                            <xs:attribute type="xs:string" name="name" use="optional"/>
+			                            <xs:attribute type="xs:string" name="type" use="optional"/>
+			                          </xs:extension>
+			                        </xs:simpleContent>
+			                      </xs:complexType>
+	                    		</xs:element>
+	                        </xs:sequence>
+	                        <xs:attribute type="xs:string" name="name"/>
+	                      </xs:complexType>
+	                    </xs:element>
+	                    <xs:element name="init" minOccurs="0">
+	                      <xs:complexType>
+	                        <xs:sequence>
+	              				<xs:element name="param" minOccurs="0" maxOccurs="unbounded">
+			                      <xs:complexType>
+			                        <xs:simpleContent>
+			                          <xs:extension base="xs:string">
+			                            <xs:attribute type="xs:string" name="direction" use="optional"/>
+			                            <xs:attribute type="xs:string" name="isConfig" use="optional"/>
+			                            <xs:attribute type="xs:string" name="name" use="optional"/>
+			                            <xs:attribute type="xs:string" name="type" use="optional"/>
+			                          </xs:extension>
+			                        </xs:simpleContent>
+			                      </xs:complexType>
+	                    		</xs:element>
+	                        </xs:sequence>
+	                        <xs:attribute type="xs:string" name="name"/>
+	                      </xs:complexType>
+	                    </xs:element>
+	                    <xs:element name="port" maxOccurs="unbounded" minOccurs="0">
+	                      <xs:complexType>
+	                        <xs:simpleContent>
+	                          <xs:extension base="xs:string">
+	                            <xs:attribute type="xs:string" name="annotation" use="optional"/>
+	                            <xs:attribute type="xs:string" name="expr" use="optional"/>
+	                            <xs:attribute type="xs:string" name="kind" use="optional"/>
+	                            <xs:attribute type="xs:string" name="name" use="optional"/>
+	                          </xs:extension>
+	                        </xs:simpleContent>
+	                      </xs:complexType>
+	                    </xs:element>
+      		  			</xs:choice>
+	                  </xs:sequence>
+	                  <xs:attribute type="xs:string" name="id" use="optional"/>
+	                  <xs:attribute type="xs:string" name="kind" use="optional"/>
+	                  <xs:attribute type="xs:string" name="expr" use="optional"/>
+	                </xs:complexType>
+	              </xs:element>
+	              <xs:element name="edge" maxOccurs="unbounded" minOccurs="0">
+	                <xs:complexType>
+	                  <xs:simpleContent>
+	                    <xs:extension base="xs:string">
+	                      <xs:attribute type="xs:string" name="kind" use="optional"/>
+	                      <xs:attribute type="xs:string" name="source" use="optional"/>
+	                      <xs:attribute type="xs:string" name="sourceport" use="optional"/>
+	                      <xs:attribute type="xs:string" name="target" use="optional"/>
+	                      <xs:attribute type="xs:string" name="targetport" use="optional"/>
+	                      <xs:attribute type="xs:string" name="type" use="optional"/>
+	                    </xs:extension>
+	                  </xs:simpleContent>
+	                </xs:complexType>
+	              </xs:element>
+              </xs:choice>
             </xs:sequence>
             <xs:attribute type="xs:string" name="edgedefault"/>
           </xs:complexType>
