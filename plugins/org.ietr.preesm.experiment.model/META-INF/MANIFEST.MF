@@ -25,6 +25,7 @@ Export-Package: org.ietr.preesm.experiment.model,
  org.ietr.preesm.experiment.model.pimm.serialize,
  org.ietr.preesm.experiment.model.pimm.util
 Bundle-ActivationPolicy: lazy
-Bundle-ClassPath: .
+Bundle-ClassPath: .,
+ xsd/
 Bundle-Vendor: %providerName
 Bundle-Localization: plugin
