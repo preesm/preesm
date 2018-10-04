@@ -56,7 +56,6 @@ import org.ietr.dftools.algorithm.model.sdf.SDFEdge;
 import org.ietr.dftools.algorithm.model.sdf.SDFVertex;
 import org.ietr.dftools.algorithm.model.sdf.types.SDFStringEdgePropertyType;
 import org.ietr.dftools.workflow.WorkflowException;
-import org.ietr.dftools.workflow.tools.WorkflowLogger;
 import org.ietr.preesm.codegen.idl.ActorPrototypes;
 import org.ietr.preesm.codegen.idl.Prototype;
 import org.ietr.preesm.codegen.model.CodeGenArgument;
@@ -259,7 +258,6 @@ public class StaticPiMM2MapperDAGVisitor extends PiMMSwitch<Boolean> {
     // Check Join use
     if (actor.getDataOutputPorts().size() > 1) {
       final String message = "Join actors should have only one output. Bad use on [" + actor.getVertexPath() + "]";
-      WorkflowLogger.getLogger().severe(message);
       throw new WorkflowException(message);
     }
     // Handle input parameters as instance arguments
@@ -283,7 +281,6 @@ public class StaticPiMM2MapperDAGVisitor extends PiMMSwitch<Boolean> {
     // Check Fork use
     if (actor.getDataInputPorts().size() > 1) {
       final String message = "Fork actors should have only one input. Bad use on [" + actor.getVertexPath() + "]";
-      WorkflowLogger.getLogger().severe(message);
       throw new WorkflowException(message);
     }
     // Handle input parameters as instance arguments

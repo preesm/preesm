@@ -255,55 +255,72 @@ public class StaticPiMM2ASrPiMMVisitor extends PiMMSwitch<Boolean> {
 
   @Override
   public Boolean caseDelayActor(final DelayActor actor) {
-    final boolean isSetter = this.currentFifo.getTargetPort().getContainingActor() instanceof DelayActor;
+    final AbstractActor targetActor = this.currentFifo.getTargetPort().getContainingActor();
+    final AbstractActor sourceActor = this.currentFifo.getSourcePort().getContainingActor();
+    final boolean isSetter = targetActor == actor;
     if (isSetter) {
-      this.actor2SRActors.put(this.graphPrefix + actor.getName(), generateSetterList(actor));
+      this.actor2SRActors.put(this.graphPrefix + actor.getName(),
+          generateList(actor.getDataInputPort(), sourceActor, "_init_"));
     } else {
-      this.actor2SRActors.put(this.graphPrefix + actor.getName(), generateGetterList(actor));
+      this.actor2SRActors.put(this.graphPrefix + actor.getName(),
+          generateList(actor.getDataOutputPort(), targetActor, "_end_"));
     }
     return true;
   }
 
-  private List<AbstractVertex> generateSetterList(final DelayActor actor) {
-    final AbstractActor sourceActor = this.currentFifo.getSourcePort().getContainingActor();
-    final List<AbstractVertex> setterList = new ArrayList<>();
-    final long setterRV = sourceActor instanceof InterfaceActor ? 1 : this.brv.get(sourceActor);
-    // // First we need to find the end actors
-    for (int i = 0; i < setterRV; ++i) {
-      final String currentInitName = sourceActor.getName() + "_init_" + Integer.toString(i);
-      final InitActor currentInit = (InitActor) this.result.lookupVertex(currentInitName);
-      final DataOutputPort outputPort = currentInit.getDataOutputPort();
-      final Fifo fifo = outputPort.getOutgoingFifo();
-      final DataInputPort targetPort = fifo.getTargetPort();
-      final AbstractActor target = targetPort.getContainingActor();
-      // Update port name
-      actor.getDataInputPort().setName(targetPort.getName());
-      setterList.add(target);
-      this.result.removeActor(currentInit);
+  /**
+   * Generate the list of actor that will replace a given DelayActor at some point in the SR transformation.
+   * 
+   * <pre>
+   * 
+   * 0. Original PiMM description:
+   * 
+   *   setter * RV(setter) ---> DelayActor ---> getter * RV(getter)
+   *   
+   * 1. Current SR-Transform:
+   * 
+   *  InitActor * RV(setter) ---> actors setA
+   *  
+   *  actors setB ---> EndActor * RV(getter)
+   * 
+   * 2. Final SR-Transform:
+   * 
+   *  setter * RV(setter) ---> actors setA 
+   *  
+   *  actors setB ---> getter * RV(getter)
+   * </pre>
+   * 
+   * @param port
+   *          Data port of the DelayActor whose name is going to be replaced
+   * @param actor
+   *          Actor corresponding to either the Init or the End of the Delay linked to the DelayActor
+   * @param suffixe
+   *          Either "_init_" or "_end_" depending on whether we are dealing with Init / End of the Delay
+   * @return List of actors corresponding to the setter / getter actors of the Delay.
+   */
+  private List<AbstractVertex> generateList(final DataPort port, final AbstractActor actor, final String suffixe) {
+    final List<AbstractVertex> list = new ArrayList<>();
+    // 0. Get RV value of the Actor
+    final long actorRV = actor instanceof InterfaceActor ? 1 : this.brv.get(actor);
+    // 1. Find matched actors
+    for (long i = 0; i < actorRV; ++i) {
+      final String name = actor.getName() + suffixe + Long.toString(i);
+      final AbstractActor foundActor = (AbstractActor) this.result.lookupVertex(name);
+      final DataPort dataPort = foundActor.getAllDataPorts().get(0);
+      final Fifo fifo = dataPort.getFifo();
+      // Retrieve the opposite port of the FIFO
+      final DataPort oppositePort = dataPort instanceof DataOutputPort ? fifo.getTargetPort() : fifo.getSourcePort();
+      final AbstractActor actorToAdd = oppositePort.getContainingActor();
+      // Update the DataPort name to match the one of the corresponding port
+      final String portName = oppositePort.getName();
+      port.setName(portName);
+      // Add the actor to the list
+      list.add(actorToAdd);
+      // Remove actor and FIFO from the result graph
+      this.result.removeActor(foundActor);
       this.result.removeFifo(fifo);
     }
-    return setterList;
-  }
-
-  private List<AbstractVertex> generateGetterList(final DelayActor actor) {
-    final AbstractActor targetActor = this.currentFifo.getTargetPort().getContainingActor();
-    final List<AbstractVertex> getterList = new ArrayList<>();
-    final long getterRV = targetActor instanceof InterfaceActor ? 1 : this.brv.get(targetActor);
-    // First we need to find the end actors
-    for (int i = 0; i < getterRV; ++i) {
-      final String currentEndName = targetActor.getName() + "_end_" + Integer.toString(i);
-      final EndActor currentEnd = (EndActor) this.result.lookupVertex(currentEndName);
-      final DataInputPort inputPort = currentEnd.getDataInputPort();
-      final Fifo fifo = inputPort.getIncomingFifo();
-      final DataOutputPort sourcePort = fifo.getSourcePort();
-      final AbstractActor source = sourcePort.getContainingActor();
-      // Update port name
-      actor.getDataOutputPort().setName(sourcePort.getName());
-      getterList.add(source);
-      this.result.removeActor(currentEnd);
-      this.result.removeFifo(fifo);
-    }
-    return getterList;
+    return list;
   }
 
   @Override
