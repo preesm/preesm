@@ -862,7 +862,7 @@ public class CodegenModelGenerator {
 
           // Generate subsubbuffers. Each subsubbuffer corresponds to
           // an edge of the single rate SDF Graph
-          final Integer dagEdgeSize = generateSubBuffers(dagEdgeBuffer, edge);
+          final Long dagEdgeSize = generateSubBuffers(dagEdgeBuffer, edge);
 
           // also accessible with dagAlloc.getKey().getWeight()
           dagEdgeBuffer.setSize(dagEdgeSize);
@@ -902,7 +902,7 @@ public class CodegenModelGenerator {
           // an
           // edge
           // of the single rate SDF Graph
-          final Integer dagEdgeSize = generateSubBuffers(dagEdgeBuffer, edge);
+          final Long dagEdgeSize = generateSubBuffers(dagEdgeBuffer, edge);
 
           // We set the size to keep the information
           dagEdgeBuffer.setSize(dagEdgeSize);
@@ -917,9 +917,9 @@ public class CodegenModelGenerator {
 
       // Generate buffers for each fifo
       @SuppressWarnings("unchecked")
-      final Map<MemoryExclusionVertex, Integer> fifoAllocation = (Map<MemoryExclusionVertex, Integer>) meg
-          .getPropertyBean().getValue(MemoryExclusionGraph.DAG_FIFO_ALLOCATION);
-      for (final Entry<MemoryExclusionVertex, Integer> fifoAlloc : fifoAllocation.entrySet()) {
+      final Map<MemoryExclusionVertex, Long> fifoAllocation = (Map<MemoryExclusionVertex, Long>) meg.getPropertyBean()
+          .getValue(MemoryExclusionGraph.DAG_FIFO_ALLOCATION);
+      for (final Entry<MemoryExclusionVertex, Long> fifoAlloc : fifoAllocation.entrySet()) {
         final SubBuffer fifoBuffer = CodegenFactory.eINSTANCE.createSubBuffer();
 
         // Old Naming (too long)
@@ -953,9 +953,9 @@ public class CodegenModelGenerator {
       }
       // Generate subbuffers for each working mem.
       @SuppressWarnings("unchecked")
-      final Map<MemoryExclusionVertex, Integer> workingMemoryAllocation = (Map<MemoryExclusionVertex,
-          Integer>) (meg.getPropertyBean().getValue(MemoryExclusionGraph.WORKING_MEM_ALLOCATION));
-      for (final Entry<MemoryExclusionVertex, Integer> e : workingMemoryAllocation.entrySet()) {
+      final Map<MemoryExclusionVertex, Long> workingMemoryAllocation = (Map<MemoryExclusionVertex,
+          Long>) (meg.getPropertyBean().getValue(MemoryExclusionGraph.WORKING_MEM_ALLOCATION));
+      for (final Entry<MemoryExclusionVertex, Long> e : workingMemoryAllocation.entrySet()) {
         final SubBuffer workingMemBuffer = CodegenFactory.eINSTANCE.createSubBuffer();
         final MemoryExclusionVertex mObj = e.getKey();
         final long weight = mObj.getWeight();
@@ -1755,7 +1755,7 @@ public class CodegenModelGenerator {
    *           If a {@link DataType} used in the graph is not declared in the {@link PreesmScenario}.
    *
    */
-  protected Integer generateSubBuffers(final Buffer parentBuffer, final DAGEdge dagEdge) {
+  protected long generateSubBuffers(final Buffer parentBuffer, final DAGEdge dagEdge) {
 
     final Map<String, DataType> dataTypes = this.scenario.getSimulationManager().getDataTypes();
 
@@ -1765,10 +1765,10 @@ public class CodegenModelGenerator {
     // Retrieve the corresponding memory object from the MEG
     final MemoryExclusionVertex memObject = findMObject(dagEdge);
     @SuppressWarnings("unchecked")
-    final List<Integer> interSubbufferSpace = (List<Integer>) memObject.getPropertyBean()
+    final List<Long> interSubbufferSpace = (List<Long>) memObject.getPropertyBean()
         .getValue(MemoryExclusionVertex.INTER_BUFFER_SPACES);
 
-    int aggregateOffset = 0;
+    long aggregateOffset = 0;
     int idx = 0;
     for (final BufferProperties subBufferProperties : buffers) {
       Buffer buff = null;
@@ -2240,18 +2240,19 @@ public class CodegenModelGenerator {
           for (final MemoryExclusionVertex vertex : vertices) {
             // For non-divided vertices
             if (vertex.getWeight() != 0) {
-              final int emptySpace = (int) vertex.getPropertyBean().getValue(MemoryExclusionVertex.EMPTY_SPACE_BEFORE);
+              final long emptySpace = (long) vertex.getPropertyBean()
+                  .getValue(MemoryExclusionVertex.EMPTY_SPACE_BEFORE);
 
               // Put the vertex back to its real size
               vertex.setWeight(vertex.getWeight() - emptySpace);
 
               // And set the allocated offset
-              final int allocatedOffset = (int) vertex.getPropertyBean()
+              final long allocatedOffset = (long) vertex.getPropertyBean()
                   .getValue(MemoryExclusionVertex.MEMORY_OFFSET_PROPERTY);
 
               vertex.setPropertyValue(MemoryExclusionVertex.MEMORY_OFFSET_PROPERTY, allocatedOffset + emptySpace);
               @SuppressWarnings("unchecked")
-              final Map<DAGEdge, Integer> dagEdgeAllocation = (Map<DAGEdge, Integer>) meg.getPropertyBean()
+              final Map<DAGEdge, Long> dagEdgeAllocation = (Map<DAGEdge, Long>) meg.getPropertyBean()
                   .getValue(MemoryExclusionGraph.DAG_EDGE_ALLOCATION);
               dagEdgeAllocation.put(vertex.getEdge(), allocatedOffset + emptySpace);
             }

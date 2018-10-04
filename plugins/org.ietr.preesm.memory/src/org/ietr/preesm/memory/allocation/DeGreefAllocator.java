@@ -113,7 +113,7 @@ public class DeGreefAllocator extends MemoryAllocator {
 
       // Alignment constraint
       long align = -1;
-      final long typeSize = (long) vertex.getPropertyBean().getValue(MemoryExclusionVertex.TYPE_SIZE);
+      final Long typeSize = (Long) vertex.getPropertyBean().getValue(MemoryExclusionVertex.TYPE_SIZE);
       if (this.alignment == 0) {
         align = typeSize;
       } else if (this.alignment > 0) {

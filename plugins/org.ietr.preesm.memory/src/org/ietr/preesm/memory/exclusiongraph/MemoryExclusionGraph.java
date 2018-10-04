@@ -360,7 +360,7 @@ public class MemoryExclusionGraph extends SimpleGraph<MemoryExclusionVertex, Def
 
         // Create the Memory Object for the remaining of the FIFO (if
         // any)
-        final int fifoDepth = ((Long) dagInitVertex.getPropertyBean().getValue(SDFInitVertex.INIT_SIZE)).intValue();
+        final long fifoDepth = ((Long) dagInitVertex.getPropertyBean().getValue(SDFInitVertex.INIT_SIZE)).intValue();
         if (fifoDepth > (headMemoryNode.getWeight() / typeSize)) {
           final MemoryExclusionVertex fifoMemoryNode = new MemoryExclusionVertex("FIFO_Body_" + dagEndVertex.getName(),
               dagInitVertex.getName(), (fifoDepth * typeSize) - headMemoryNode.getWeight());
@@ -502,7 +502,7 @@ public class MemoryExclusionGraph extends SimpleGraph<MemoryExclusionVertex, Def
       // 2. Working Memory specific Processing
       // If the current vertex has some working memory, create the
       // associated MemoryExclusionGraphVertex
-      final Integer wMem = (Integer) vertexDAG.getPropertyBean().getValue("working_memory");
+      final Long wMem = (Long) vertexDAG.getPropertyBean().getValue("working_memory");
       if (wMem != null) {
         final MemoryExclusionVertex workingMemoryNode = new MemoryExclusionVertex(vertexDAG.getName(),
             vertexDAG.getName(), wMem);
@@ -510,7 +510,7 @@ public class MemoryExclusionGraph extends SimpleGraph<MemoryExclusionVertex, Def
         addVertex(workingMemoryNode);
         // Currently, there is no special alignment for working memory.
         // So we always assume a unitary typesize.
-        workingMemoryNode.setPropertyValue(MemoryExclusionVertex.TYPE_SIZE, 1);
+        workingMemoryNode.setPropertyValue(MemoryExclusionVertex.TYPE_SIZE, 1L);
 
         // Add Exclusions with all non-predecessors of the current
         // vertex
@@ -637,40 +637,43 @@ public class MemoryExclusionGraph extends SimpleGraph<MemoryExclusionVertex, Def
       for (final MemoryExclusionVertex hostVertex : hostVertices.keySet()) {
         // Put the host back to its original size (if it was changed,
         // i.e. if it was allocated)
-        final long hostSize = (long) hostVertex.getPropertyBean().getValue(MemoryExclusionVertex.HOST_SIZE);
-        hostVertex.setWeight(hostSize);
-        hostVertex.getPropertyBean().removeProperty(MemoryExclusionVertex.HOST_SIZE);
+        final Object hostSizeObj = hostVertex.getPropertyBean().getValue(MemoryExclusionVertex.HOST_SIZE);
+        if (hostSizeObj != null) {
+          final long hostSize = (long) hostSizeObj;
+          hostVertex.setWeight(hostSize);
+          hostVertex.getPropertyBean().removeProperty(MemoryExclusionVertex.HOST_SIZE);
 
-        // Scan merged vertices
-        for (final MemoryExclusionVertex mergedVertex : hostVertices.get(hostVertex)) {
-          // If the merged vertex was in the graph (i.e. it was
-          // already allocated)
-          if (containsVertex(mergedVertex)) {
-            // Add exclusions between host and adjacent vertex
-            // of
-            // the merged vertex
-            for (final MemoryExclusionVertex adjacentVertex : getAdjacentVertexOf(mergedVertex)) {
-              this.addEdge(hostVertex, adjacentVertex);
-            }
-            // Remove it from the MEG
-            removeVertex(mergedVertex);
-
-            // If the merged vertex is not split
-            if (mergedVertex.getWeight() != 0) {
-              // Put it back to its real weight
-              final int emptySpace = (int) mergedVertex.getPropertyBean()
-                  .getValue(MemoryExclusionVertex.EMPTY_SPACE_BEFORE);
-              mergedVertex.setWeight(mergedVertex.getWeight() - emptySpace);
-            } else {
-              // The vertex was divided
-              // Remove all fake mobjects
-              @SuppressWarnings("unchecked")
-              final List<MemoryExclusionVertex> fakeMobjects = (List<MemoryExclusionVertex>) mergedVertex
-                  .getPropertyBean().getValue(MemoryExclusionVertex.FAKE_MOBJECT);
-              for (final MemoryExclusionVertex fakeMobj : fakeMobjects) {
-                removeVertex(fakeMobj);
+          // Scan merged vertices
+          for (final MemoryExclusionVertex mergedVertex : hostVertices.get(hostVertex)) {
+            // If the merged vertex was in the graph (i.e. it was
+            // already allocated)
+            if (containsVertex(mergedVertex)) {
+              // Add exclusions between host and adjacent vertex
+              // of
+              // the merged vertex
+              for (final MemoryExclusionVertex adjacentVertex : getAdjacentVertexOf(mergedVertex)) {
+                this.addEdge(hostVertex, adjacentVertex);
               }
-              fakeMobjects.clear();
+              // Remove it from the MEG
+              removeVertex(mergedVertex);
+
+              // If the merged vertex is not split
+              if (mergedVertex.getWeight() != 0) {
+                // Put it back to its real weight
+                final int emptySpace = (int) mergedVertex.getPropertyBean()
+                    .getValue(MemoryExclusionVertex.EMPTY_SPACE_BEFORE);
+                mergedVertex.setWeight(mergedVertex.getWeight() - emptySpace);
+              } else {
+                // The vertex was divided
+                // Remove all fake mobjects
+                @SuppressWarnings("unchecked")
+                final List<MemoryExclusionVertex> fakeMobjects = (List<MemoryExclusionVertex>) mergedVertex
+                    .getPropertyBean().getValue(MemoryExclusionVertex.FAKE_MOBJECT);
+                for (final MemoryExclusionVertex fakeMobj : fakeMobjects) {
+                  removeVertex(fakeMobj);
+                }
+                fakeMobjects.clear();
+              }
             }
           }
         }
@@ -761,20 +764,20 @@ public class MemoryExclusionGraph extends SimpleGraph<MemoryExclusionVertex, Def
       final Map<MemoryExclusionVertex, MemoryExclusionVertex> mObjMap) {
     // DAG_EDGE_ALLOCATION
     @SuppressWarnings("unchecked")
-    final Map<DAGEdge, Integer> dagEdgeAlloc = (Map<DAGEdge, Integer>) getPropertyBean()
-        .getValue(MemoryExclusionGraph.DAG_EDGE_ALLOCATION);
+    final Map<DAGEdge,
+        Long> dagEdgeAlloc = (Map<DAGEdge, Long>) getPropertyBean().getValue(MemoryExclusionGraph.DAG_EDGE_ALLOCATION);
     if (dagEdgeAlloc != null) {
-      final Map<DAGEdge, Integer> dagEdgeAllocCopy = new LinkedHashMap<>(dagEdgeAlloc);
+      final Map<DAGEdge, Long> dagEdgeAllocCopy = new LinkedHashMap<>(dagEdgeAlloc);
       result.setPropertyValue(MemoryExclusionGraph.DAG_EDGE_ALLOCATION, dagEdgeAllocCopy);
     }
 
     // DAG_FIFO_ALLOCATION
     @SuppressWarnings("unchecked")
-    final Map<MemoryExclusionVertex, Integer> dagFifoAlloc = (Map<MemoryExclusionVertex, Integer>) getPropertyBean()
+    final Map<MemoryExclusionVertex, Long> dagFifoAlloc = (Map<MemoryExclusionVertex, Long>) getPropertyBean()
         .getValue(MemoryExclusionGraph.DAG_FIFO_ALLOCATION);
     if (dagFifoAlloc != null) {
-      final Map<MemoryExclusionVertex, Integer> dagFifoAllocCopy = new LinkedHashMap<>();
-      for (final Entry<MemoryExclusionVertex, Integer> fifoAlloc : dagFifoAlloc.entrySet()) {
+      final Map<MemoryExclusionVertex, Long> dagFifoAllocCopy = new LinkedHashMap<>();
+      for (final Entry<MemoryExclusionVertex, Long> fifoAlloc : dagFifoAlloc.entrySet()) {
         dagFifoAllocCopy.put(mObjMap.get(fifoAlloc.getKey()), fifoAlloc.getValue());
       }
       result.setPropertyValue(MemoryExclusionGraph.DAG_FIFO_ALLOCATION, dagFifoAllocCopy);
@@ -782,11 +785,11 @@ public class MemoryExclusionGraph extends SimpleGraph<MemoryExclusionVertex, Def
 
     // WORKING_MEM_ALLOCATION
     @SuppressWarnings("unchecked")
-    final Map<MemoryExclusionVertex, Integer> wMemAlloc = (Map<MemoryExclusionVertex, Integer>) getPropertyBean()
+    final Map<MemoryExclusionVertex, Long> wMemAlloc = (Map<MemoryExclusionVertex, Long>) getPropertyBean()
         .getValue(MemoryExclusionGraph.WORKING_MEM_ALLOCATION);
     if (wMemAlloc != null) {
-      final Map<MemoryExclusionVertex, Integer> wMemAllocCopy = new LinkedHashMap<>();
-      for (final Entry<MemoryExclusionVertex, Integer> wMem : wMemAlloc.entrySet()) {
+      final Map<MemoryExclusionVertex, Long> wMemAllocCopy = new LinkedHashMap<>();
+      for (final Entry<MemoryExclusionVertex, Long> wMem : wMemAlloc.entrySet()) {
         wMemAllocCopy.put(mObjMap.get(wMem.getKey()), wMem.getValue());
       }
       result.setPropertyValue(MemoryExclusionGraph.WORKING_MEM_ALLOCATION, wMemAllocCopy);
@@ -850,8 +853,7 @@ public class MemoryExclusionGraph extends SimpleGraph<MemoryExclusionVertex, Def
       final MemoryExclusionVertex vertexClone = entry.getValue();
 
       // MEMORY_OFFSET_PROPERTY
-      final Integer memOffset = (Integer) vertex.getPropertyBean()
-          .getValue(MemoryExclusionVertex.MEMORY_OFFSET_PROPERTY);
+      final Long memOffset = (Long) vertex.getPropertyBean().getValue(MemoryExclusionVertex.MEMORY_OFFSET_PROPERTY);
       if (memOffset != null) {
         vertexClone.setPropertyValue(MemoryExclusionVertex.MEMORY_OFFSET_PROPERTY, memOffset);
       }

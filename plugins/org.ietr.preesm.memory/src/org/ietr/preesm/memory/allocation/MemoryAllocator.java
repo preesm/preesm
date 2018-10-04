@@ -447,10 +447,10 @@ public abstract class MemoryAllocator {
           vertex.setWeight(vertex.getWeight() + emptySpace);
 
           // Allocate it at the right place
-          this.memExNodeAllocation.put(vertex, (offset + startOffset + hostZeroIndexOffset) - emptySpace);
-          this.edgeAllocation.put(vertex.getEdge(), (offset + startOffset + hostZeroIndexOffset) - emptySpace);
-          vertex.setPropertyValue(MemoryExclusionVertex.MEMORY_OFFSET_PROPERTY,
-              (offset + startOffset + hostZeroIndexOffset) - emptySpace);
+          final long memOffset = (offset + startOffset + hostZeroIndexOffset) - emptySpace;
+          this.memExNodeAllocation.put(vertex, memOffset);
+          this.edgeAllocation.put(vertex.getEdge(), memOffset);
+          vertex.setPropertyValue(MemoryExclusionVertex.MEMORY_OFFSET_PROPERTY, memOffset);
 
           // Put the MObject Back in the MEG
           this.inputExclusionGraph.addVertex(vertex);
@@ -716,7 +716,7 @@ public abstract class MemoryAllocator {
           // no declared type.
           // Process fifo memobjects here
           if (memObj.getSource().startsWith("FIFO_")) {
-            final long typeSize = (long) memObj.getPropertyBean().getValue(MemoryExclusionVertex.TYPE_SIZE);
+            final Long typeSize = (Long) memObj.getPropertyBean().getValue(MemoryExclusionVertex.TYPE_SIZE);
             if ((this.alignment == 0) && ((offset % typeSize) != 0)) {
               unalignedObjects.put(memObj, offset);
             }
