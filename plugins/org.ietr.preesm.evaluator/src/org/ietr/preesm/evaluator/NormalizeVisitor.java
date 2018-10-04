@@ -44,7 +44,6 @@ import org.ietr.dftools.algorithm.model.sdf.SDFInterfaceVertex;
 import org.ietr.dftools.algorithm.model.visitors.IGraphVisitor;
 import org.ietr.dftools.algorithm.model.visitors.SDF4JException;
 
-// TODO: Auto-generated Javadoc
 /**
  * Visitor used to normalize a graph, hierarchical (IBSDF) or not (SDF).
  *
@@ -89,6 +88,7 @@ public class NormalizeVisitor implements IGraphVisitor<SDFGraph, SDFAbstractVert
    */
   @Override
   public void visit(final SDFEdge sdfEdge) {
+    // nothing to do on edges
   }
 
   /*
@@ -98,6 +98,7 @@ public class NormalizeVisitor implements IGraphVisitor<SDFGraph, SDFAbstractVert
    */
   @Override
   public void visit(final SDFAbstractVertex sdfVertex) throws SDF4JException {
+    // nothing to do on abstract vertices
   }
 
   /**
@@ -111,16 +112,16 @@ public class NormalizeVisitor implements IGraphVisitor<SDFGraph, SDFAbstractVert
     // Use double instead of int for all edges
     try {
       for (final SDFEdge edge : g.edgeSet()) {
-        edge.setProd(new SDFDoubleEdgePropertyType((edge.getProd().intValue())));
-        edge.setDelay(new SDFDoubleEdgePropertyType((edge.getDelay().intValue())));
-        edge.setCons(new SDFDoubleEdgePropertyType((edge.getCons().intValue())));
+        edge.setProd(new SDFDoubleEdgePropertyType((edge.getProd().longValue())));
+        edge.setDelay(new SDFDoubleEdgePropertyType((edge.getDelay().longValue())));
+        edge.setCons(new SDFDoubleEdgePropertyType((edge.getCons().longValue())));
       }
     } catch (final InvalidExpressionException e) {
-      e.printStackTrace();
+      throw new EvaluationException("Could not prepare normalization", e);
     }
     // Apply the same to the lower levels of hierarchy
     for (final SDFAbstractVertex v : g.vertexSet()) {
-      if ((v.getGraphDescription() != null) && (v.getGraphDescription() instanceof SDFGraph)) {
+      if (v.getGraphDescription() instanceof SDFGraph) {
         prepareNorm((SDFGraph) v.getGraphDescription());
       }
     }
@@ -144,18 +145,18 @@ public class NormalizeVisitor implements IGraphVisitor<SDFGraph, SDFAbstractVert
       for (final SDFAbstractVertex vertex : g.vertexSet()) {
         z = 1;
         if (!vertex.getKind().equals("port")) {
-          if ((vertex.getGraphDescription() != null) && (vertex.getGraphDescription() instanceof SDFGraph)) {
+          if (vertex.getGraphDescription() instanceof SDFGraph) {
             // If it's a hierarchical actor, normalize its subgraph to obtain the z
             z = normalizeup((SDFGraph) vertex.getGraphDescription());
 
             // Retrieve the values on the output edges, used to compute M (ppcm (N_t * in_a))
             for (final SDFInterfaceVertex port : vertex.getSinks()) {
               M = SDFMathD.lcm(M,
-                  vertex.getNbRepeatAsInteger() * (double) vertex.getAssociatedEdge(port).getProd().getValue());
+                  vertex.getNbRepeatAsLong() * (double) vertex.getAssociatedEdge(port).getProd().getValue());
             }
             for (final SDFInterfaceVertex port : vertex.getSources()) {
               M = SDFMathD.lcm(M,
-                  vertex.getNbRepeatAsInteger() * (double) vertex.getAssociatedEdge(port).getCons().getValue());
+                  vertex.getNbRepeatAsLong() * (double) vertex.getAssociatedEdge(port).getCons().getValue());
             }
           } else {
             // the vertex is a "normal" actor, we compute its z with the in & out rates
@@ -164,17 +165,17 @@ public class NormalizeVisitor implements IGraphVisitor<SDFGraph, SDFAbstractVert
               if (port.getDirection().toString().equals("Input")) {
                 out = (double) ((SDFEdge) vertex.getAssociatedEdge(port)).getCons().getValue();
                 z = SDFMathD.lcm(z, out);
-                M = SDFMathD.lcm(M, vertex.getNbRepeatAsInteger() * out);
+                M = SDFMathD.lcm(M, vertex.getNbRepeatAsLong() * out);
               } else {
                 in = (double) ((SDFEdge) vertex.getAssociatedEdge(port)).getProd().getValue();
                 z = SDFMathD.lcm(z, in);
                 // ppcm (N_t * in_a)
-                M = SDFMathD.lcm(M, vertex.getNbRepeatAsInteger() * in);
+                M = SDFMathD.lcm(M, vertex.getNbRepeatAsLong() * in);
               }
             }
           }
           // M = ppcm(N_t * z_t)
-          M = SDFMathD.lcm(M, vertex.getNbRepeatAsInteger() * z);
+          M = SDFMathD.lcm(M, vertex.getNbRepeatAsLong() * z);
         }
       }
 
@@ -183,7 +184,7 @@ public class NormalizeVisitor implements IGraphVisitor<SDFGraph, SDFAbstractVert
         // sink port
         if (edge.getTarget().getKind().equals("port")) {
           in = (double) edge.getProd().getValue();
-          edge.setProd(new SDFDoubleEdgePropertyType(M / edge.getSource().getNbRepeatAsInteger()));
+          edge.setProd(new SDFDoubleEdgePropertyType(M / edge.getSource().getNbRepeatAsLong()));
           edge.setCons(new SDFDoubleEdgePropertyType(M));
           edge.setDelay(new SDFDoubleEdgePropertyType(
               ((double) edge.getProd().getValue() / in) * (double) edge.getDelay().getValue()));
@@ -191,14 +192,14 @@ public class NormalizeVisitor implements IGraphVisitor<SDFGraph, SDFAbstractVert
           // source port
           if (edge.getSource().getKind().equals("port")) {
             in = (double) edge.getCons().getValue();
-            edge.setCons(new SDFDoubleEdgePropertyType(M / edge.getTarget().getNbRepeatAsInteger()));
+            edge.setCons(new SDFDoubleEdgePropertyType(M / edge.getTarget().getNbRepeatAsLong()));
             edge.setProd(new SDFDoubleEdgePropertyType(M));
             edge.setDelay(new SDFDoubleEdgePropertyType(
                 ((double) edge.getCons().getValue() / in) * (double) edge.getDelay().getValue()));
           } else {
             in = (double) edge.getProd().getValue();
-            edge.setProd(new SDFDoubleEdgePropertyType(M / edge.getSource().getNbRepeatAsInteger()));
-            edge.setCons(new SDFDoubleEdgePropertyType(M / edge.getTarget().getNbRepeatAsInteger()));
+            edge.setProd(new SDFDoubleEdgePropertyType(M / edge.getSource().getNbRepeatAsLong()));
+            edge.setCons(new SDFDoubleEdgePropertyType(M / edge.getTarget().getNbRepeatAsLong()));
             edge.setDelay(new SDFDoubleEdgePropertyType(
                 ((double) edge.getProd().getValue() / in) * (double) (edge.getDelay().getValue())));
           }

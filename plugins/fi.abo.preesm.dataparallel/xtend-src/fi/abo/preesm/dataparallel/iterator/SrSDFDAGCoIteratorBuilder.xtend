@@ -39,7 +39,6 @@ package fi.abo.preesm.dataparallel.iterator
 import fi.abo.preesm.dataparallel.NodeChainGraph
 import fi.abo.preesm.dataparallel.PureDAGConstructor
 import java.util.List
-import java.util.logging.Logger
 import org.ietr.dftools.algorithm.model.sdf.SDFAbstractVertex
 import org.ietr.dftools.algorithm.model.sdf.SDFGraph
 import org.ietr.dftools.algorithm.model.sdf.visitors.ToHSDFVisitor
@@ -52,11 +51,6 @@ import org.ietr.dftools.algorithm.model.visitors.SDF4JException
  * @author Sudeep Kanur
  */
 class SrSDFDAGCoIteratorBuilder {
-	/**
-	 * Logger instance
-	 */
-	var Logger logger
-
 	/**
 	 * A DAG as {@link SDFGraph} instance obtained from implementations
 	 * of {@link PureDAGConstructor}
@@ -79,15 +73,10 @@ class SrSDFDAGCoIteratorBuilder {
 	 *
 	 * @param logger A Workflow logger
 	 */
-	new(Logger logger) {
-		this.logger = logger
+	new() {
 		this.dag = null
 		this.ncg = null
 		this.visitableNodes = null
-	}
-
-	new() {
-		this(null)
 	}
 
 	/**
@@ -152,10 +141,6 @@ class SrSDFDAGCoIteratorBuilder {
 			}
 		]
 
-		if(logger === null) {
-			return new SrSDFDAGCoIterator(dag, ncg, visitableNodes)
-		} else {
-			return new SrSDFDAGCoIterator(dag, ncg, visitableNodes, logger)
-		}
+		return new SrSDFDAGCoIterator(dag, ncg, visitableNodes)
 	}
 }

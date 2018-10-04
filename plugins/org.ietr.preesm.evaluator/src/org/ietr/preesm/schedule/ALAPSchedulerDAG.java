@@ -48,7 +48,7 @@ import org.ietr.preesm.throughput.tools.helpers.Stopwatch;
  * @author hderoui
  *
  */
-public class ALAPScheduler_DAG {
+public class ALAPSchedulerDAG {
   public GraphSimulationHelper         simulator;       // simulator helper
   private Double                       maxDate;         // throughput constraint
   private ArrayList<SDFAbstractVertex> actorsToExecute; // list of actors to execute
@@ -151,7 +151,7 @@ public class ALAPScheduler_DAG {
       boolean ready = true;
       for (final SDFInterfaceVertex output : actor.getSinks()) {
         final SDFEdge edge = actor.getAssociatedEdge(output);
-        if (edge.getDelay().intValue() == 0) {
+        if (edge.getDelay().longValue() == 0) {
           ready = false;
           break;
         } else {

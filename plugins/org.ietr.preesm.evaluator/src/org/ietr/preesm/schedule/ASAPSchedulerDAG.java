@@ -47,7 +47,7 @@ import org.ietr.preesm.throughput.tools.helpers.Stopwatch;
  * @author hderoui
  *
  */
-public class ASAPScheduler_DAG {
+public class ASAPSchedulerDAG {
   public GraphSimulationHelper         simulator;       // simulator helper
   public Double                        dur1Iter;        // duration of one iteration of a graph
   private ArrayList<SDFAbstractVertex> actorsToExecute; // list of actors to execute
@@ -151,7 +151,7 @@ public class ASAPScheduler_DAG {
       boolean ready = true;
       for (final SDFInterfaceVertex input : actor.getSources()) {
         final SDFEdge edge = actor.getAssociatedEdge(input);
-        if (edge.getDelay().intValue() == 0) {
+        if (edge.getDelay().longValue() == 0) {
           ready = false;
           break;
         } else {

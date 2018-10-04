@@ -45,6 +45,7 @@ import java.io.InputStreamReader
 import java.io.StringWriter
 import java.net.URL
 import java.util.ArrayList
+import java.util.Arrays
 import java.util.Collection
 import java.util.Date
 import java.util.List
@@ -77,7 +78,7 @@ import org.ietr.preesm.codegen.xtend.printer.DefaultPrinter
 import org.ietr.preesm.codegen.xtend.printer.net.c.TcpCPrinter
 import org.ietr.preesm.codegen.xtend.task.CodegenException
 import org.ietr.preesm.experiment.model.pimm.util.CHeaderUsedLocator
-import org.ietr.preesm.utils.files.URLResolver
+import org.ietr.preesm.experiment.model.pimm.util.URLResolver
 
 /**
  * This printer is currently used to print C code only for GPP processors
@@ -137,7 +138,7 @@ class CPrinter extends DefaultPrinter {
 	'''
 
 	override printSubBufferDefinition(SubBuffer buffer) '''
-	«buffer.type» *const «buffer.name» = («buffer.type»*) («var offset = 0»«
+	«buffer.type» *const «buffer.name» = («buffer.type»*) («var offset = 0L»«
 	{offset = buffer.offset
 	 var b = buffer.container;
 	 while(b instanceof SubBuffer){
@@ -241,7 +242,7 @@ class CPrinter extends DefaultPrinter {
 	}
 
 	override printFork(SpecialCall call) '''
-	// Fork «call.name»«var input = call.inputBuffers.head»«var index = 0»
+	// Fork «call.name»«var input = call.inputBuffers.head»«var index = 0L»
 	{
 		«FOR output : call.outputBuffers»
 			«printMemcpy(output,0,input,index,output.size,output.type)»«{index=(output.size+index); ""}»
@@ -250,11 +251,11 @@ class CPrinter extends DefaultPrinter {
 	'''
 
 	override printBroadcast(SpecialCall call) '''
-	// Broadcast «call.name»«var input = call.inputBuffers.head»«var index = 0»
+	// Broadcast «call.name»«var input = call.inputBuffers.head»«var index = 0L»
 	{
-	«FOR output : call.outputBuffers»«var outputIdx = 0»
+	«FOR output : call.outputBuffers»«var outputIdx = 0L»
 		«// TODO: Change how this loop iterates (nbIter is used in a comment only ...)
-		FOR nbIter : 0..output.size/input.size+1/*Worst case is output.size exec of the loop */»
+		FOR nbIter : 0..(output.size/input.size+1) as int/*Worst case is output.size exec of the loop */»
 			«IF outputIdx < output.size /* Execute loop core until all output for current buffer are produced */»
 				«val value = Math::min(output.size-outputIdx,input.size-index)»// memcpy #«nbIter»
 				«printMemcpy(output,outputIdx,input,index,value,output.type)»«
@@ -268,9 +269,9 @@ class CPrinter extends DefaultPrinter {
 
 
 	override printRoundBuffer(SpecialCall call) '''
-	// RoundBuffer «call.name»«var output = call.outputBuffers.head»«var index = 0»«var inputIdx = 0»
+	// RoundBuffer «call.name»«var output = call.outputBuffers.head»«var index = 0L»«var inputIdx = 0L»
 	«/*Compute a list of useful memcpy (the one writing the outputed value) */
-	var copiedInBuffers = {var totalSize = call.inputBuffers.fold(0)[res, buf | res+buf.size]
+	var copiedInBuffers = {var totalSize = call.inputBuffers.fold(0L)[res, buf | res+buf.size]
 		 var lastInputs = new ArrayList
 		 inputIdx = totalSize
 		 var i = call.inputBuffers.size	- 1
@@ -288,7 +289,7 @@ class CPrinter extends DefaultPrinter {
 	{
 		«FOR input : copiedInBuffers»
 			«// TODO: Change how this loop iterates (nbIter is used in a comment only ...)
-			FOR nbIter : 0..input.size/output.size+1/*Worst number the loop exec */»
+			FOR nbIter : 0..(input.size/output.size+1) as int/*Worst number the loop exec */»
 				«IF inputIdx < input.size /* Execute loop core until all input for current buffer are produced */»
 					«val value = Math::min(input.size-inputIdx,output.size-index)»// memcpy #«nbIter»
 					«printMemcpy(output,index,input,inputIdx,value,input.type)»«{
@@ -302,7 +303,7 @@ class CPrinter extends DefaultPrinter {
 	'''
 
 	override printJoin(SpecialCall call) '''
-	// Join «call.name»«var output = call.outputBuffers.head»«var index = 0»
+	// Join «call.name»«var output = call.outputBuffers.head»«var index = 0L»
 	{
 		«FOR input : call.inputBuffers»
 			«printMemcpy(output,index,input,0,input.size,input.type)»«{index=(input.size+index); ""}»
@@ -330,7 +331,7 @@ class CPrinter extends DefaultPrinter {
 	 *            the type of objects copied
 	 * @return a {@link CharSequence} containing the memcpy call (if any)
 	 */
-	def String printMemcpy(Buffer output, int outOffset, Buffer input, int inOffset, int size, String type) {
+	def String printMemcpy(Buffer output, long outOffset, Buffer input, long inOffset, long size, String type) {
 
 		// Retrieve the container buffer of the input and output as well
 		// as their offset in this buffer
@@ -415,7 +416,7 @@ class CPrinter extends DefaultPrinter {
 	override generateStandardLibFiles() {
 		val result = super.generateStandardLibFiles();
 		val String stdFilesFolder = "/stdfiles/c/"
-		val String[] files = #[
+		val files = Arrays.asList(#[
 						"communication.c",
 						"communication.h",
 						"dump.c",
@@ -424,7 +425,7 @@ class CPrinter extends DefaultPrinter {
 						"fifo.h",
 						"mac_barrier.c",
 						"mac_barrier.h"
-					];
+					]);
 		files.forEach[it | try {
 			result.put(it, URLResolver.readURLInPluginList(stdFilesFolder + it, CodegenPlugin.BUNDLE_ID))
 		} catch (IOException exc) {

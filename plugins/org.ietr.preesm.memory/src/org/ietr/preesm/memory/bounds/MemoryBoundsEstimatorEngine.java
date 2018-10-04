@@ -145,7 +145,7 @@ public class MemoryBoundsEstimatorEngine {
    *
    * @return the min bound
    */
-  public int getMinBound() {
+  public long getMinBound() {
     return this.solver.sumWeight(this.solver.getHeaviestClique());
   }
 
@@ -154,7 +154,7 @@ public class MemoryBoundsEstimatorEngine {
    *
    * @return the max bound
    */
-  public int getMaxBound() {
+  public long getMaxBound() {
     return this.solver.sumWeight(this.memEx.vertexSet());
   }
 }

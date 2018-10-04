@@ -236,7 +236,7 @@ public class TimingManager {
         maxTime += generateVertexTimingFromHierarchy(vertex, opDefId).getTime();
       } else if ((vertexTiming = getVertexTiming(vertex, opDefId)) != null) {
         try {
-          maxTime += vertexTiming.getTime() * vertex.getNbRepeatAsInteger();
+          maxTime += vertexTiming.getTime() * vertex.getNbRepeatAsLong();
         } catch (final InvalidExpressionException e) {
           maxTime += vertexTiming.getTime();
         }
@@ -249,14 +249,6 @@ public class TimingManager {
     // TODO: time calculation for underlying tasks not ready
     return (new Timing(opDefId, sdfVertex.getName(), maxTime));
 
-    /*
-     * SDFGraph graph = (SDFGraph)sdfVertex.getGraphDescription();
-     *
-     * int time = 0; for(SDFAbstractVertex v : graph.vertexSet()){ if(sdfVertex.getGraphDescription() == null){ time +=
-     * sdfVertex. } }
-     *
-     * if(time>=0) return(new Timing(opDef,sdfVertex,time)); else return null;
-     */
   }
 
   /**

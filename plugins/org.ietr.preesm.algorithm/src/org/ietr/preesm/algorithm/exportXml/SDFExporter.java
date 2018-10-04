@@ -66,7 +66,7 @@ public class SDFExporter extends AbstractTaskImplementation {
    */
   @Override
   public Map<String, Object> execute(final Map<String, Object> inputs, final Map<String, String> parameters,
-      final IProgressMonitor monitor, final String nodeName, final Workflow workflow) throws WorkflowException {
+      final IProgressMonitor monitor, final String nodeName, final Workflow workflow) {
 
     final SDFGraph algorithm = (SDFGraph) inputs.get("SDF");
     final String sXmlPath = PathTools.getAbsolutePath(parameters.get("path"), workflow.getProjectName());

@@ -38,7 +38,7 @@ package org.ietr.preesm.throughput;
 import org.ietr.dftools.algorithm.model.sdf.SDFAbstractVertex;
 import org.ietr.dftools.algorithm.model.sdf.SDFEdge;
 import org.ietr.dftools.algorithm.model.sdf.SDFGraph;
-import org.ietr.preesm.schedule.PeriodicScheduler_SDF;
+import org.ietr.preesm.schedule.PeriodicSchedulerSDF;
 import org.ietr.preesm.throughput.tools.helpers.GraphStructureHelper;
 import org.ietr.preesm.throughput.tools.helpers.Stopwatch;
 import org.ietr.preesm.throughput.tools.parsers.Identifier;
@@ -87,7 +87,7 @@ public class HPeriodicSchedule {
 
     // Step 3: compute the throughput with the Periodic Schedule
     System.out.println("Step 4: compute the throughput using the Periodic Schedule");
-    final PeriodicScheduler_SDF periodic = new PeriodicScheduler_SDF();
+    final PeriodicSchedulerSDF periodic = new PeriodicSchedulerSDF();
     final double throughput = periodic.computeGraphThroughput(inputGraph, null, false);
     this.timer.stop();
     System.out.println("Throughput of the graph = " + throughput + " computed in " + this.timer.toString());
@@ -129,7 +129,7 @@ public class HPeriodicSchedule {
     // SDFGraph g = SDFTransformer.convertToSrSDF(subgraph);
     SDFTransformer.normalize(g);
     // compute its normalized period K
-    final PeriodicScheduler_SDF periodic = new PeriodicScheduler_SDF();
+    final PeriodicSchedulerSDF periodic = new PeriodicSchedulerSDF();
     periodic.computeNormalizedPeriod(g, null);
     // compute the subgraph period
     return periodic.computeGraphPeriod(g);

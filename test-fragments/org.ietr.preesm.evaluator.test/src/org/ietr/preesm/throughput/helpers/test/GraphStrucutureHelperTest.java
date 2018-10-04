@@ -36,7 +36,8 @@
 package org.ietr.preesm.throughput.helpers.test;
 
 import java.util.ArrayList;
-import java.util.Hashtable;
+import java.util.List;
+import java.util.Map;
 import org.ietr.dftools.algorithm.model.sdf.SDFAbstractVertex;
 import org.ietr.dftools.algorithm.model.sdf.SDFEdge;
 import org.ietr.dftools.algorithm.model.sdf.SDFGraph;
@@ -64,12 +65,12 @@ public class GraphStrucutureHelperTest {
     sdf.setName("test");
 
     // Add a new actor to the SDF graph
-    GraphStructureHelper.addActor(sdf, "newActor", null, 3, 7., null, null);
+    GraphStructureHelper.addActor(sdf, "newActor", null, 3L, 7., 0, null);
 
     // check the results
     Assert.assertEquals(1, sdf.vertexSet().size());
     Assert.assertNotNull(sdf.getVertex("newActor"));
-    Assert.assertEquals(3, sdf.getVertex("newActor").getNbRepeat());
+    Assert.assertEquals(3L, sdf.getVertex("newActor").getNbRepeat());
     Assert.assertEquals(7, (double) sdf.getVertex("newActor").getPropertyBean().getValue("duration"), 0);
   }
 
@@ -81,8 +82,8 @@ public class GraphStrucutureHelperTest {
     sdf.setName("test");
 
     // Add actor A and B
-    GraphStructureHelper.addActor(sdf, "A", null, null, null, null, null);
-    GraphStructureHelper.addActor(sdf, "B", null, null, null, null, null);
+    GraphStructureHelper.addActor(sdf, "A", null, 0, 0, 0, null);
+    GraphStructureHelper.addActor(sdf, "B", null, 0, 0, 0, null);
 
     // Add the edge A to B
     GraphStructureHelper.addEdge(sdf, "A", null, "B", null, 2, 3, 5, null);
@@ -90,9 +91,9 @@ public class GraphStrucutureHelperTest {
     // check the results
     Assert.assertEquals(1, sdf.edgeSet().size());
     final SDFEdge e = sdf.edgeSet().iterator().next();
-    Assert.assertEquals(3, e.getCons().intValue());
-    Assert.assertEquals(2, e.getProd().intValue());
-    Assert.assertEquals(5, e.getDelay().intValue());
+    Assert.assertEquals(3L, e.getCons().longValue());
+    Assert.assertEquals(2L, e.getProd().longValue());
+    Assert.assertEquals(5L, e.getDelay().longValue());
   }
 
   @Test
@@ -103,7 +104,7 @@ public class GraphStrucutureHelperTest {
     sdf.setName("test");
 
     // Add a new InputInterface to the SDF graph
-    GraphStructureHelper.addInputInterface(sdf, "in", 1, 1., null, null);
+    GraphStructureHelper.addInputInterface(sdf, "in", 1, 1., 0, null);
 
     // check the results
     Assert.assertEquals(1, sdf.vertexSet().size());
@@ -119,7 +120,7 @@ public class GraphStrucutureHelperTest {
     sdf.setName("test");
 
     // Add a new OutputInterface to the SDF graph
-    GraphStructureHelper.addOutputInterface(sdf, "out", 1, 1., null, null);
+    GraphStructureHelper.addOutputInterface(sdf, "out", 1, 1., 0, null);
 
     // check the results
     Assert.assertEquals(1, sdf.vertexSet().size());
@@ -135,7 +136,7 @@ public class GraphStrucutureHelperTest {
     sdf.setName("test");
 
     // Add actor A
-    final SDFAbstractVertex A = GraphStructureHelper.addActor(sdf, "A", null, null, null, null, null);
+    final SDFAbstractVertex A = GraphStructureHelper.addActor(sdf, "A", null, 0, 0, 0, null);
     Assert.assertEquals(0, A.getSinks().size());
     Assert.assertEquals(0, A.getSources().size());
 
@@ -145,7 +146,7 @@ public class GraphStrucutureHelperTest {
     Assert.assertEquals(1, A.getSources().size());
 
     // check the results
-    final int portRate = (Integer) A.getSources().iterator().next().getPropertyBean().getValue("port_rate");
+    final long portRate = (long) A.getSources().iterator().next().getPropertyBean().getValue("port_rate");
     Assert.assertEquals(2, portRate);
   }
 
@@ -157,7 +158,7 @@ public class GraphStrucutureHelperTest {
     sdf.setName("test");
 
     // Add actor A
-    final SDFAbstractVertex A = GraphStructureHelper.addActor(sdf, "A", null, null, null, null, null);
+    final SDFAbstractVertex A = GraphStructureHelper.addActor(sdf, "A", null, 0, 0, 0, null);
     Assert.assertEquals(0, A.getSinks().size());
     Assert.assertEquals(0, A.getSources().size());
 
@@ -167,7 +168,7 @@ public class GraphStrucutureHelperTest {
     Assert.assertEquals(0, A.getSources().size());
 
     // check the results
-    final int portRate = (Integer) A.getSinks().iterator().next().getPropertyBean().getValue("port_rate");
+    final long portRate = (long) A.getSinks().iterator().next().getPropertyBean().getValue("port_rate");
     Assert.assertEquals(3, portRate);
   }
 
@@ -179,9 +180,9 @@ public class GraphStrucutureHelperTest {
     sdf.setName("test");
 
     // Add actor A and B
-    GraphStructureHelper.addActor(sdf, "A", null, null, null, null, null);
-    GraphStructureHelper.addActor(sdf, "B", null, null, null, null, null);
-    GraphStructureHelper.addActor(sdf, "C", null, null, null, null, null);
+    GraphStructureHelper.addActor(sdf, "A", null, 0, 0, 0, null);
+    GraphStructureHelper.addActor(sdf, "B", null, 0, 0, 0, null);
+    GraphStructureHelper.addActor(sdf, "C", null, 0, 0, 0, null);
 
     // Add the edge A to B
     SDFEdge e = GraphStructureHelper.addEdge(sdf, "A", null, "B", null, 2, 3, 5, null);
@@ -229,9 +230,9 @@ public class GraphStrucutureHelperTest {
     sdf.setName("test");
 
     // Add actor A and B
-    GraphStructureHelper.addActor(sdf, "A", null, null, null, null, null);
-    GraphStructureHelper.addActor(sdf, "B", null, null, null, null, null);
-    GraphStructureHelper.addActor(sdf, "C", null, null, null, null, null);
+    GraphStructureHelper.addActor(sdf, "A", null, 0, 0, 0, null);
+    GraphStructureHelper.addActor(sdf, "B", null, 0, 0, 0, null);
+    GraphStructureHelper.addActor(sdf, "C", null, 0, 0, 0, null);
 
     // Add the edge A to B
     SDFEdge e = GraphStructureHelper.addEdge(sdf, "A", null, "B", null, 2, 3, 5, null);
@@ -278,8 +279,7 @@ public class GraphStrucutureHelperTest {
     final SDFGraph ibsdf = generateIBSDFGraph3levels();
 
     // get the hierarchical acotrs of the topgraph
-    final Hashtable<String,
-        SDFAbstractVertex> listOfHierarchicalActors = GraphStructureHelper.getHierarchicalActors(ibsdf);
+    final Map<String, SDFAbstractVertex> listOfHierarchicalActors = GraphStructureHelper.getHierarchicalActors(ibsdf);
 
     // check the results
     Assert.assertNotNull(listOfHierarchicalActors);
@@ -294,7 +294,7 @@ public class GraphStrucutureHelperTest {
     final SDFGraph ibsdf = generateIBSDFGraph3levels();
 
     // get the hierarchical acotrs of the topgraph
-    final Hashtable<String,
+    final Map<String,
         SDFAbstractVertex> listOfHierarchicalActors = GraphStructureHelper.getAllHierarchicalActors(ibsdf);
 
     // check the results
@@ -320,10 +320,10 @@ public class GraphStrucutureHelperTest {
     // create the subgraph GH
     final SDFGraph GH = new SDFGraph();
     GH.setName("subgraph");
-    GraphStructureHelper.addActor(GH, "G", null, null, 1., null, null);
-    GraphStructureHelper.addActor(GH, "H", null, null, 1., null, null);
-    GraphStructureHelper.addInputInterface(GH, "f", null, 0., null, null);
-    GraphStructureHelper.addOutputInterface(GH, "e", null, 0., null, null);
+    GraphStructureHelper.addActor(GH, "G", null, 0, 1., 0, null);
+    GraphStructureHelper.addActor(GH, "H", null, 0, 1., 0, null);
+    GraphStructureHelper.addInputInterface(GH, "f", 0, 0., 0, null);
+    GraphStructureHelper.addOutputInterface(GH, "e", 0, 0., 0, null);
 
     GraphStructureHelper.addEdge(GH, "f", null, "G", null, 1, 1, 0, null);
     GraphStructureHelper.addEdge(GH, "G", null, "F", null, 1, 1, 0, null);
@@ -332,11 +332,11 @@ public class GraphStrucutureHelperTest {
     // create the subgraph DEF
     final SDFGraph DEF = new SDFGraph();
     DEF.setName("subgraph");
-    GraphStructureHelper.addActor(DEF, "D", GH, null, 1., null, null);
-    GraphStructureHelper.addActor(DEF, "E", null, null, 1., null, null);
-    GraphStructureHelper.addActor(DEF, "F", null, null, 1., null, null);
-    GraphStructureHelper.addInputInterface(DEF, "a", null, 0., null, null);
-    GraphStructureHelper.addOutputInterface(DEF, "c", null, 0., null, null);
+    GraphStructureHelper.addActor(DEF, "D", GH, 0, 1., 0, null);
+    GraphStructureHelper.addActor(DEF, "E", null, 0, 1., 0, null);
+    GraphStructureHelper.addActor(DEF, "F", null, 0, 1., 0, null);
+    GraphStructureHelper.addInputInterface(DEF, "a", 0, 0., 0, null);
+    GraphStructureHelper.addOutputInterface(DEF, "c", 0, 0., 0, null);
 
     GraphStructureHelper.addEdge(DEF, "a", null, "E", null, 2, 1, 0, null);
     GraphStructureHelper.addEdge(DEF, "E", null, "F", null, 2, 3, 0, null);
@@ -347,9 +347,9 @@ public class GraphStrucutureHelperTest {
     // create the top graph and add the subgraph to the hierarchical actor B
     final SDFGraph topgraph = new SDFGraph();
     topgraph.setName("topgraph");
-    GraphStructureHelper.addActor(topgraph, "A", null, null, 1., null, null);
-    GraphStructureHelper.addActor(topgraph, "B", DEF, null, null, null, null);
-    GraphStructureHelper.addActor(topgraph, "C", null, null, 1., null, null);
+    GraphStructureHelper.addActor(topgraph, "A", null, 0, 1., 0, null);
+    GraphStructureHelper.addActor(topgraph, "B", DEF, 0, 0, 0, null);
+    GraphStructureHelper.addActor(topgraph, "C", null, 0, 1., 0, null);
 
     GraphStructureHelper.addEdge(topgraph, "A", null, "B", "a", 3, 2, 3, null);
     GraphStructureHelper.addEdge(topgraph, "B", "c", "C", null, 1, 1, 0, null);
@@ -364,12 +364,12 @@ public class GraphStrucutureHelperTest {
     // create the DAG to sort
     final SDFGraph dag = new SDFGraph();
     dag.setName("dag");
-    GraphStructureHelper.addActor(dag, "0", null, 1, 1., null, null);
-    GraphStructureHelper.addActor(dag, "1", null, 1, 1., null, null);
-    GraphStructureHelper.addActor(dag, "2", null, 1, 1., null, null);
-    GraphStructureHelper.addActor(dag, "3", null, 1, 1., null, null);
-    GraphStructureHelper.addActor(dag, "4", null, 1, 1., null, null);
-    GraphStructureHelper.addActor(dag, "5", null, 1, 1., null, null);
+    GraphStructureHelper.addActor(dag, "0", null, 1L, 1., 0, null);
+    GraphStructureHelper.addActor(dag, "1", null, 1L, 1., 0, null);
+    GraphStructureHelper.addActor(dag, "2", null, 1L, 1., 0, null);
+    GraphStructureHelper.addActor(dag, "3", null, 1L, 1., 0, null);
+    GraphStructureHelper.addActor(dag, "4", null, 1L, 1., 0, null);
+    GraphStructureHelper.addActor(dag, "5", null, 1L, 1., 0, null);
 
     GraphStructureHelper.addEdge(dag, "5", null, "2", null, 1, 1, 0, null);
     GraphStructureHelper.addEdge(dag, "5", null, "0", null, 1, 1, 0, null);
@@ -390,7 +390,7 @@ public class GraphStrucutureHelperTest {
     // topological sorting
     final Stopwatch timer = new Stopwatch();
     timer.start();
-    final ArrayList<SDFAbstractVertex> topologicalSorting = GraphStructureHelper.topologicalSorting(dag);
+    final List<SDFAbstractVertex> topologicalSorting = GraphStructureHelper.topologicalSorting(dag);
     timer.stop();
 
     System.out.println("topological sorting computed in " + timer.toString() + ", the ordered actors: ");
@@ -405,7 +405,7 @@ public class GraphStrucutureHelperTest {
     }
 
     System.out.println("\nPartial topological sorting computed in " + timer.toString() + ", the ordered actors: ");
-    final ArrayList<SDFAbstractVertex> partialTopologicalSorting = GraphStructureHelper
+    final List<SDFAbstractVertex> partialTopologicalSorting = GraphStructureHelper
         .partialTopologicalSorting(dag.getVertex("5"));
     for (int i = 0; i < partialTopologicalSorting.size(); i++) {
       System.out.print(partialTopologicalSorting.get(i).getName() + " ");

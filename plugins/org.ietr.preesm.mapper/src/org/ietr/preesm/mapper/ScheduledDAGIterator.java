@@ -63,8 +63,8 @@ public class ScheduledDAGIterator implements Iterator<MapperDAGVertex> {
     final Map<Integer, MapperDAGVertex> orderedDAGVertexMap = new TreeMap<>();
     while (iter.hasNext()) {
       final MapperDAGVertex vertex = (MapperDAGVertex) iter.next();
-      final Integer order = vertex.getPropertyBean().getValue(ImplementationPropertyNames.Vertex_schedulingOrder,
-          Integer.class);
+      final Integer order = (Integer) vertex.getPropertyBean()
+          .getValue(ImplementationPropertyNames.Vertex_schedulingOrder);
       orderedDAGVertexMap.put(order, vertex);
     }
     this.vertexInSchedulingOrder.addAll(orderedDAGVertexMap.values());

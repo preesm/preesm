@@ -47,7 +47,7 @@ import org.ietr.dftools.algorithm.model.sdf.SDFGraph;
 import org.ietr.dftools.algorithm.model.sdf.esdf.SDFSinkInterfaceVertex;
 import org.ietr.dftools.algorithm.model.sdf.esdf.SDFSourceInterfaceVertex;
 import org.ietr.dftools.workflow.tools.WorkflowLogger;
-import org.ietr.preesm.mathematicalModels.PeriodicScheduleModel_ojAlgo;
+import org.ietr.preesm.mathematicalModels.PeriodicScheduleModelOjAlgo;
 
 // TODO: Auto-generated Javadoc
 /**
@@ -194,7 +194,7 @@ public class SDFThroughputEvaluator extends ThroughputEvaluator {
     // GLPK.glp_free_env();
 
     // return period;
-    final PeriodicScheduleModel_ojAlgo method = new PeriodicScheduleModel_ojAlgo();
+    final PeriodicScheduleModelOjAlgo method = new PeriodicScheduleModelOjAlgo();
     return method.computeNormalizedPeriod(sdf).doubleValue();
   }
 

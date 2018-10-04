@@ -32,7 +32,7 @@
  * The fact that you are presently reading this means that you have had
  * knowledge of the CeCILL license and that you accept its terms.
  */
-package org.ietr.preesm.utils.files;
+package org.ietr.preesm.experiment.model.pimm.util;
 
 import java.io.BufferedReader;
 import java.io.FileNotFoundException;
@@ -169,6 +169,12 @@ public final class URLResolver {
     }
     final IResource findMember = project.findMember(path);
     return findMember.getLocationURI().toURL();
+  }
+
+  /**
+   */
+  public static final URL resolveURLFromClasspath(final String resource, final Class<?> classpathContainedClass) {
+    return classpathContainedClass.getResource(resource);
   }
 
   private final URL resolveURLFromPluginClasspath(final String resource, final List<String> pluginFilterList) {

@@ -49,53 +49,53 @@ import org.ietr.dftools.algorithm.model.sdf.SDFGraph
 import org.ietr.dftools.algorithm.model.sdf.visitors.ToHSDFVisitor
 import org.ietr.dftools.algorithm.model.visitors.IGraphVisitor
 import org.ietr.dftools.algorithm.model.visitors.SDF4JException
-import org.jgrapht.alg.CycleDetector
+import org.jgrapht.alg.cycle.CycleDetector
 import fi.abo.preesm.dataparallel.CannotRearrange
-import org.jgrapht.alg.KosarajuStrongConnectivityInspector
+import org.jgrapht.alg.connectivity.KosarajuStrongConnectivityInspector
 import org.jgrapht.graph.AsSubgraph
 
 /**
  * Isolate strongly connected components of the original
- * {@link SDFGraph}. 
- * 
+ * {@link SDFGraph}.
+ *
  * @author Sudeep Kanur
  */
 class DataParallelCheckOperations implements IGraphVisitor<SDFGraph, SDFAbstractVertex, SDFEdge> {
-	
+
 	/**
 	 * Strongly connected subgraphs isolated from the original SDF. The subgraph is guaranteed
 	 * to contain at least one loop/cycle/strongly connected component
 	 */
 	@Accessors(PUBLIC_GETTER, PRIVATE_SETTER)
 	val List<AsSubgraph<SDFAbstractVertex, SDFEdge> > isolatedStronglyConnectedComponents
-	
+
 	/**
-	 * Output single rate graph. 
+	 * Output single rate graph.
 	 * If the graph is instance independent, then this graph is guaranteed to be data-parallel, as
 	 * it is rearranged according to DASIP 2017 paper "Detection of Data-Parallelism in SDFG".
 	 * Otherwise, it contains original input graph.
 	 */
 	@Accessors(PUBLIC_GETTER, PROTECTED_SETTER)
 	var SDFGraph cyclicGraph
-	
+
 	/**
 	 * {@link RetimingInfo} instance. Information required for scheduling and code generation stages.
 	 */
 	@Accessors(PUBLIC_GETTER, PROTECTED_SETTER)
 	var RetimingInfo info
-	
+
 	/**
 	 * <code>true</code> if the @{link SDFGraph} is data-parallel as well
 	 */
 	@Accessors(PUBLIC_GETTER, PRIVATE_SETTER)
 	var Boolean isDataParallel
-	
+
 	/**
 	 * <code>true</code> if @{link SDFGraph} is instance independent
 	 */
 	@Accessors(PUBLIC_GETTER, PRIVATE_SETTER)
 	var Boolean isInstanceIndependent
-	
+
 	/**
 	 * <code>true</code> if the @{link SDFGraph} is acyclic-like
 	 * This naturally means that it is data-parallel and instance independent
@@ -103,30 +103,30 @@ class DataParallelCheckOperations implements IGraphVisitor<SDFGraph, SDFAbstract
 	 */
 	@Accessors(PUBLIC_GETTER, PRIVATE_SETTER)
 	var Boolean isAcyclicLike
-	
+
 	/**
 	 * Optional Logging
 	 */
 	@Accessors(PROTECTED_GETTER, PRIVATE_SETTER)
 	val Logger logger
-	
+
 	/**
 	 * List of actor that have instance dependence. Empty if the DAG is instance independent
 	 * Each sublist is a strongly connected component that exhibits instance dependency
 	 */
 	@Accessors(PUBLIC_GETTER, PRIVATE_SETTER)
 	var List<List<SDFAbstractVertex>> dependentActors
-	
+
 	/**
 	 * List of actor sets that were failed to rearrange. Empty if either DAG is entirely instance
 	 * dependent or if all strongly connected components were rearranged successfully
 	 */
 	@Accessors(PUBLIC_GETTER, PRIVATE_SETTER)
 	var List<List<SDFAbstractVertex>> rearrangeFailedActors
-		
+
 	/**
 	 * Constructor
-	 * 
+	 *
 	 * @param logger A Workflow logger for logging purposes
 	 */
 	new(Logger logger) {
@@ -139,14 +139,14 @@ class DataParallelCheckOperations implements IGraphVisitor<SDFGraph, SDFAbstract
 		this.logger = logger
 		this.info = null
 	}
-	
+
 	/**
 	 * Constructor for testing purposes.
 	 */
 	new() {
 		this(null)
 	}
-	
+
 	/**
 	 * Conditional logging
 	 * @param level Level of the message
@@ -157,41 +157,41 @@ class DataParallelCheckOperations implements IGraphVisitor<SDFGraph, SDFAbstract
 			logger.log(level, message)
 		}
 	}
-	
+
 	/**
 	 * Perform data-parallel check and re-timing transformation on the {@link SDFGraph} given by the
-	 * user. 
+	 * user.
 	 */
 	override visit(SDFGraph sdf) throws SDF4JException {
 		if(!sdf.isSchedulable) {
 			throw new SDF4JException("Graph " + sdf + " not schedulable")
 		}
-		
+
 		// Check if DAG is flattened
 		for(vertex: sdf.vertexSet) {
 			if( (vertex.graphDescription !== null) && (vertex.graphDescription instanceof SDFGraph)) {
-				throw new SDF4JException("The graph " + sdf.name + " must be flattened.")				
+				throw new SDF4JException("The graph " + sdf.name + " must be flattened.")
 			}
 		}
-		
+
 		val topLevelCycleDetector = new CycleDetector(sdf)
-		
+
 		if(!topLevelCycleDetector.detectCycles) {
 			log(Level.INFO, "SDF is acyclic. Hence, independent and data-parallel")
 			isDataParallel = Boolean.TRUE
 			isInstanceIndependent = Boolean.TRUE
 			isAcyclicLike = Boolean.TRUE
 		}
-		
+
 		// Generate the mandatory single rate graph
 		val srsdfVisitor = new ToHSDFVisitor
-		sdf.accept(srsdfVisitor) 
+		sdf.accept(srsdfVisitor)
 		val srsdf = srsdfVisitor.output
-		
+
 		// Check if the graph is acyclic like
 		val acyclicLikeVisitor = new AcyclicLikeSubgraphDetector(logger)
 		sdf.accept(acyclicLikeVisitor)
-		
+
 		if(acyclicLikeVisitor.isAcyclicLike) {
 			log(Level.INFO, "SDF is acyclic-like. Hence, independent and data-parallel")
 			isDataParallel = Boolean.TRUE
@@ -200,33 +200,33 @@ class DataParallelCheckOperations implements IGraphVisitor<SDFGraph, SDFAbstract
 		} else {
 			log(Level.FINE, "SDF is instance-independent, but not data-parallel. Attempting rearranging...")
 			// SDF has other kinds of loops. So it can never be data-parallel on its own
-			
+
 			// Arrays to collect dependency information from each strongly connected component of
 			// each SDF subgraph
 			val subgraphDepActors = newArrayList
-			
-			val info = new RetimingInfo(newArrayList)			
-			
+
+			val info = new RetimingInfo(newArrayList)
+
 			// Get strongly connected components
 			val strongCompDetector = new KosarajuStrongConnectivityInspector(sdf)
-		
+
 			// Collect strongly connected component that has loops in it
 			// Needed because stronglyConnectedSubgraphs also yield subgraphs with no loops
 			strongCompDetector.getStronglyConnectedComponents.forEach[ subgraph |
-				val cycleDetector = new CycleDetector(subgraph as 
+				val cycleDetector = new CycleDetector(subgraph as
 					AsSubgraph<SDFAbstractVertex, SDFEdge>
-				) 
+				)
 				if(cycleDetector.detectCycles) {
 					// ASSUMPTION: Strongly connected component of a directed graph contains atleast
 					// one loop
-					
-					// We need not only strongly connected components, but also vertices that 
+
+					// We need not only strongly connected components, but also vertices that
 					// connect to the rest of the graph. This is because, calculation of root
 					// and exit vertices also depends if there are enough delay tokens at the
 					// interface edges.
 					val relevantVertices = newLinkedHashSet
 					val relevantEdges = newLinkedHashSet
-					
+
 					sdf.vertexSet.forEach[vertex |
 						if(subgraph.vertexSet.contains(vertex)) {
 							sdf.incomingEdgesOf(vertex).forEach[edge |
@@ -235,14 +235,14 @@ class DataParallelCheckOperations implements IGraphVisitor<SDFGraph, SDFAbstract
 									relevantEdges.add(edge)
 								}
 							]
-							
+
 							sdf.outgoingEdgesOf(vertex).forEach[edge |
 								if(!subgraph.vertexSet.contains(edge.target)) {
 									relevantVertices.add(edge.target)
 									relevantEdges.add(edge)
 								}
 							]
-						}	
+						}
 					]
 					relevantVertices.addAll(subgraph.vertexSet)
 					relevantEdges.addAll(subgraph.edgeSet)
@@ -251,23 +251,23 @@ class DataParallelCheckOperations implements IGraphVisitor<SDFGraph, SDFAbstract
 					isolatedStronglyConnectedComponents.add(subgraphInterfaceVertices)
 				}
 			]
-				
+
 			// Perform DAG instance check on each strongly connected subgraph
 			isolatedStronglyConnectedComponents.forEach[subgraph |
-				
+
 				val subgraphDAGGen = new SDF2DAG(subgraph, logger)
 				val depOps = new DependencyAnalysisOperations
 				subgraphDAGGen.accept(depOps)
-				
+
 				if(depOps.isIndependent) {
 					// Rearrange the loops as the subgraph is instance independent
 					log(Level.FINE, "Rearranging " + subgraph.vertexSet)
 
-					// Get source/interface vertices that are not part of this strongly connected 
+					// Get source/interface vertices that are not part of this strongly connected
 					// component
 					val sc = new KosarajuStrongConnectivityInspector(subgraph)
 					val neighInterfaceActors = sc.stronglyConnectedComponents.filter[sg |
-						val cycleDetector = new CycleDetector(sg as 
+						val cycleDetector = new CycleDetector(sg as
 							AsSubgraph<SDFAbstractVertex, SDFEdge>
 						)
 						!cycleDetector.detectCycles
@@ -281,14 +281,14 @@ class DataParallelCheckOperations implements IGraphVisitor<SDFGraph, SDFAbstract
 
 					val retimingVisitor = new RearrangeOperations(srsdf, info, neighInterfaceActors, logger)
 					try {
-						subgraphDAGGen.accept(retimingVisitor)	
+						subgraphDAGGen.accept(retimingVisitor)
 					} catch(CannotRearrange c) {
 						rearrangeFailedActors.add(newArrayList(sccActors))
-						log(Level.WARNING, "Could not rearrange the strongly connected component containing actors:\n" 
+						log(Level.WARNING, "Could not rearrange the strongly connected component containing actors:\n"
 							+ sccActors)
 					}
-					
-				} else {					
+
+				} else {
 					if(!depOps.instanceDependentActors.empty) {
 						subgraphDepActors.addAll(depOps.instanceDependentActors.toList)
 					} else {
@@ -297,10 +297,10 @@ class DataParallelCheckOperations implements IGraphVisitor<SDFGraph, SDFAbstract
 					}
 				}
 			]
-			
+
 			log(Level.INFO, "SDF has one or more strongly connected components.")
 			if(subgraphDepActors.empty) {
-				isInstanceIndependent = Boolean.TRUE				
+				isInstanceIndependent = Boolean.TRUE
 				log(Level.INFO, "SDF is also instance independent.")
 				if(rearrangeFailedActors.empty) {
 					isDataParallel = Boolean.TRUE
@@ -317,21 +317,21 @@ class DataParallelCheckOperations implements IGraphVisitor<SDFGraph, SDFAbstract
 			} else {
 				isInstanceIndependent = Boolean.FALSE
 				isDataParallel = Boolean.FALSE
-				log(Level.INFO, "SDF is **not** instance independent. Instance dependency " + 
+				log(Level.INFO, "SDF is **not** instance independent. Instance dependency " +
 					"occurs in:\n" + subgraphDepActors)
 			}
-			
+
 			this.info = info
 		}
 		this.cyclicGraph = srsdf
 	}
-	
+
 	override visit(SDFEdge sdfEdge) {
 		throw new UnsupportedOperationException("TODO: auto-generated method stub")
 	}
-	
+
 	override visit(SDFAbstractVertex sdfVertex) throws SDF4JException {
 		throw new UnsupportedOperationException("TODO: auto-generated method stub")
 	}
-	
+
 }

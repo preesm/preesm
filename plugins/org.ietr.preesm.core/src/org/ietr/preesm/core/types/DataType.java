@@ -37,8 +37,8 @@
 package org.ietr.preesm.core.types;
 
 import java.util.LinkedHashMap;
+import java.util.Map;
 
-// TODO: Auto-generated Javadoc
 /**
  * Representing a data type in code generation (exple: char, int...).
  *
@@ -50,13 +50,13 @@ public class DataType {
   private final String typeName;
 
   /** Size in base units (usually bytes). */
-  private Integer size;
+  private long size;
 
   /** The Constant defaultDataTypeSize. */
-  public static final Integer defaultDataTypeSize = 1;
+  public static final long defaultDataTypeSize = 1;
 
   /** The Constant nameToSize. */
-  public static final LinkedHashMap<String, Integer> nameToSize = new LinkedHashMap<>();
+  public static final Map<String, Long> nameToSize = new LinkedHashMap<>();
 
   /**
    * Instantiates a new data type.
@@ -94,7 +94,7 @@ public class DataType {
    * @param size
    *          the size
    */
-  public DataType(final String typeName, final Integer size) {
+  public DataType(final String typeName, final long size) {
     super();
     this.typeName = typeName;
     this.size = size;
@@ -115,7 +115,7 @@ public class DataType {
    *
    * @return the size
    */
-  public Integer getSize() {
+  public long getSize() {
     return this.size;
   }
 
@@ -125,7 +125,7 @@ public class DataType {
    * @param size
    *          the new size
    */
-  public void setSize(final Integer size) {
+  public void setSize(final long size) {
     this.size = size;
   }
 

@@ -48,7 +48,7 @@ import org.ietr.dftools.algorithm.model.sdf.SDFAbstractVertex
 import org.ietr.dftools.algorithm.model.sdf.SDFEdge
 import org.ietr.dftools.algorithm.model.sdf.SDFGraph
 import org.ietr.dftools.algorithm.model.visitors.SDF4JException
-import org.jgrapht.alg.CycleDetector
+import org.jgrapht.alg.cycle.CycleDetector
 
 /**
  * A subset of DAG is the set of all the instances that has a reachable path
@@ -205,16 +205,16 @@ final class DAGSubset extends AbstractDAGConstructor implements DAGSubsetConstru
 
 		// Check if there are any delays
 		for(edge: inputGraph.edgeSet) {
-			if(edge.delay.intValue != 0) {
-				throw new SDF4JException("Delay of " + edge.delay.intValue + " found at edge between "
+			if(edge.delay.longValue != 0) {
+				throw new SDF4JException("Delay of " + edge.delay.longValue + " found at edge between "
 					+ edge.source.name + " and " + edge.target.name + ". DAG must have no delays!" )
 			}
 		}
 
 		// Check that repetition vector is exactly one for all the vertices
 		for(node: inputGraph.vertexSet) {
-			if(node.nbRepeatAsInteger != 1) {
-				throw new SDF4JException("Node " + node.name + " has repetition count of " + node.nbRepeatAsInteger
+			if(node.nbRepeatAsLong != 1) {
+				throw new SDF4JException("Node " + node.name + " has repetition count of " + node.nbRepeatAsLong
 					+ ". DAG must have all repetition counts as one.");
 			}
 		}

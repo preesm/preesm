@@ -50,7 +50,6 @@ import org.ietr.dftools.workflow.implement.AbstractTaskImplementation;
 import org.ietr.dftools.workflow.implement.AbstractWorkflowNodeImplementation;
 import org.ietr.preesm.algorithm.optimization.clean.joinfork.JoinForkCleaner;
 
-// TODO: Auto-generated Javadoc
 /**
  * Head class to launch optimizations on a SDFGraph.
  *
@@ -66,7 +65,7 @@ public class AlgorithmOptimizationTask extends AbstractTaskImplementation {
    */
   @Override
   public Map<String, Object> execute(final Map<String, Object> inputs, final Map<String, String> parameters,
-      final IProgressMonitor monitor, final String nodeName, final Workflow workflow) throws WorkflowException {
+      final IProgressMonitor monitor, final String nodeName, final Workflow workflow) {
 
     // Get the SDFGraph to optimize
     final SDFGraph graph = (SDFGraph) inputs.get(AbstractWorkflowNodeImplementation.KEY_SDF_GRAPH);
@@ -80,16 +79,11 @@ public class AlgorithmOptimizationTask extends AbstractTaskImplementation {
     try {
       JoinForkCleaner.cleanJoinForkPairsFrom(graph);
     } catch (final InvalidExpressionException e) {
-      System.err.println("SDFGraph " + graph.getName() + " contains invalid expressions.");
-      e.printStackTrace();
-      throw new WorkflowException(e.getMessage());
+      throw new WorkflowException("SDFGraph " + graph.getName() + " contains invalid expressions.", e);
     } catch (final SDF4JException e) {
-      System.err.println("Error when cleaning fork/join pairs in SDFGraph " + graph.getName());
-      e.printStackTrace();
-      throw new WorkflowException(e.getMessage());
+      throw new WorkflowException("Error when cleaning fork/join pairs in SDFGraph " + graph.getName(), e);
     } catch (final Exception e) {
-      e.printStackTrace();
-      throw e;
+      throw new WorkflowException("Error while cleaning join fork", e);
     }
 
     final Map<String, Object> outputs = new LinkedHashMap<>();

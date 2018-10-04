@@ -54,10 +54,10 @@ import org.ietr.preesm.codegen.model.codegen.Variable
 class XMLPrinter extends DefaultPrinter {
 
 	override printBroadcast(SpecialCall call) '''
-		<CompoundCode name="«call.name»">«var input = call.inputBuffers.head»«var index = 0»
-		«FOR output : call.outputBuffers»«var outputIdx = 0»
+		<CompoundCode name="«call.name»">«var input = call.inputBuffers.head»«var index = 0L»
+		«FOR output : call.outputBuffers»«var outputIdx = 0L»
 			«// TODO: Change how this loop iterates (nbIter is used in a comment only ...)
-			FOR nbIter : 0..output.size/input.size+1/*Worst number the loop exec */»
+			FOR nbIter : 0..((output.size/input.size)+1) as int /*Worst number the loop exec */»
 				«IF outputIdx < output.size /* Execute only first loop cores */»
 					<!-- memcpy #«nbIter» -->
 					<userFunctionCall comment="" name="memcpy">
@@ -204,7 +204,7 @@ class XMLPrinter extends DefaultPrinter {
 	'''
 
 	override printFork(SpecialCall call) '''
-		<CompoundCode name="«call.name»">«var input = call.inputBuffers.head»«var index = 0»
+		<CompoundCode name="«call.name»">«var input = call.inputBuffers.head»«var index = 0L»
 			«FOR output : call.outputBuffers»
 				<userFunctionCall comment="" name="memcpy">
 					«output.doSwitch»
@@ -221,7 +221,7 @@ class XMLPrinter extends DefaultPrinter {
 	'''
 
 	override printJoin(SpecialCall call) '''
-		<CompoundCode name="«call.name»">«var output = call.outputBuffers.head»«var index = 0»
+		<CompoundCode name="«call.name»">«var output = call.outputBuffers.head»«var index = 0L»
 			«FOR input : call.inputBuffers»
 				<userFunctionCall comment="" name="memcpy">
 					<bufferAtIndex index="«index»" name="«output.name»"/>
@@ -247,10 +247,10 @@ class XMLPrinter extends DefaultPrinter {
 	'''
 
 	override printRoundBuffer(SpecialCall call) '''
-		<CompoundCode name="«call.name»">«var output = call.outputBuffers.head»«var index = 0»
-		«FOR buffer : call.inputBuffers»«var inputIdx = 0»
+		<CompoundCode name="«call.name»">«var output = call.outputBuffers.head»«var index = 0L»
+		«FOR buffer : call.inputBuffers»«var inputIdx = 0L»
 			«// TODO: Change how this loop iterates (nbIter is used in a comment only ...)
-			FOR nbIter : 0..buffer.size/output.size+1/*Worst case id buffer.size exec of the loop */»
+			FOR nbIter : 0..(buffer.size/output.size+1) as int/*Worst case id buffer.size exec of the loop */»
 				«IF inputIdx < buffer.size /* Execute only first loop core */»
 					<!-- memcpy #«nbIter» -->
 					<userFunctionCall comment="" name="memcpy">

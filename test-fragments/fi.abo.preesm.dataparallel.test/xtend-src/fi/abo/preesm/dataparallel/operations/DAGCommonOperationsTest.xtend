@@ -51,8 +51,8 @@ import java.util.Collection
 import org.ietr.dftools.algorithm.model.sdf.SDFAbstractVertex
 import org.ietr.dftools.algorithm.model.sdf.esdf.SDFForkVertex
 import org.ietr.dftools.algorithm.model.sdf.esdf.SDFJoinVertex
-import org.jgrapht.alg.CycleDetector
-import org.jgrapht.alg.KosarajuStrongConnectivityInspector
+import org.jgrapht.alg.cycle.CycleDetector
+import org.jgrapht.alg.connectivity.KosarajuStrongConnectivityInspector
 import org.jgrapht.graph.AsSubgraph
 import org.junit.Assert
 import org.junit.FixMethodOrder

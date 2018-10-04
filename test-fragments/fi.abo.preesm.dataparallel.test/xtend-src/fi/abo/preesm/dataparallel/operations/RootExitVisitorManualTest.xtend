@@ -47,10 +47,10 @@ import org.ietr.dftools.algorithm.model.sdf.SDFGraph
 import fi.abo.preesm.dataparallel.DAG2DAG
 import fi.abo.preesm.dataparallel.operations.RootExitOperations
 import org.junit.Assert
-import org.jgrapht.alg.CycleDetector
+import org.jgrapht.alg.cycle.CycleDetector
 import org.ietr.dftools.algorithm.model.sdf.SDFAbstractVertex
 import org.ietr.dftools.algorithm.model.sdf.SDFEdge
-import org.jgrapht.alg.KosarajuStrongConnectivityInspector
+import org.jgrapht.alg.connectivity.KosarajuStrongConnectivityInspector
 import org.jgrapht.graph.AsSubgraph
 
 /**

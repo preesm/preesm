@@ -36,8 +36,8 @@
 package org.ietr.preesm.schedule.test;
 
 import org.ietr.dftools.algorithm.model.sdf.SDFGraph;
-import org.ietr.preesm.schedule.ALAPScheduler_DAG;
-import org.ietr.preesm.schedule.ASAPScheduler_DAG;
+import org.ietr.preesm.schedule.ALAPSchedulerDAG;
+import org.ietr.preesm.schedule.ASAPSchedulerDAG;
 import org.ietr.preesm.throughput.tools.helpers.GraphStructureHelper;
 import org.junit.Assert;
 import org.junit.Test;
@@ -48,7 +48,7 @@ import org.junit.Test;
  * @author hderoui
  *
  */
-public class ALAPScheduler_DAGTest {
+public class ALAPSchedulerDAGTest {
 
   @Test
   public void testIterationDurationShouldBeComputed() {
@@ -56,7 +56,7 @@ public class ALAPScheduler_DAGTest {
     final SDFGraph dag = generateDAGOfGraphABC326();
 
     // schedule the DAG by an ASAP to get the throughput constraint
-    final ASAPScheduler_DAG asap = new ASAPScheduler_DAG();
+    final ASAPSchedulerDAG asap = new ASAPSchedulerDAG();
     final double ThConstraint = asap.schedule(dag);
     // check the throughput constraint
     Assert.assertEquals(12.0, ThConstraint, 0);
@@ -68,7 +68,7 @@ public class ALAPScheduler_DAGTest {
     asap.simulator.resetExecutionCounter();
 
     // ALAP schedule the DAG
-    final ALAPScheduler_DAG alap = new ALAPScheduler_DAG();
+    final ALAPSchedulerDAG alap = new ALAPSchedulerDAG();
     final double durationOf1Iteration = alap.schedule(dag, asap.simulator, ThConstraint);
 
     // check the value of the duration
@@ -97,9 +97,9 @@ public class ALAPScheduler_DAGTest {
     graph.setName("testABC");
 
     // add actors
-    GraphStructureHelper.addActor(graph, "A", null, 1, 5., null, null);
-    GraphStructureHelper.addActor(graph, "B", null, 1, 2., null, null);
-    GraphStructureHelper.addActor(graph, "C", null, 1, 7., null, null);
+    GraphStructureHelper.addActor(graph, "A", null, 1L, 5., 0, null);
+    GraphStructureHelper.addActor(graph, "B", null, 1L, 2., 0, null);
+    GraphStructureHelper.addActor(graph, "C", null, 1L, 7., 0, null);
 
     // add edges
     GraphStructureHelper.addEdge(graph, "A", null, "C", null, 1, 1, 0, null);

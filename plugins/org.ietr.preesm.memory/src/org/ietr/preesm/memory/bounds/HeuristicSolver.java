@@ -61,7 +61,7 @@ import org.jgrapht.graph.SimpleGraph;
  * @param <E>
  *          The edges class
  */
-public class HeuristicSolver<V extends IWeightedVertex<Integer> & Comparable<V>, E extends DefaultEdge>
+public class HeuristicSolver<V extends IWeightedVertex<Long> & Comparable<V>, E extends DefaultEdge>
     extends AbstractMaximumWeightCliqueSolver<V, E> {
 
   /**
@@ -76,10 +76,10 @@ public class HeuristicSolver<V extends IWeightedVertex<Integer> & Comparable<V>,
     /**
      * Number of edges of a vertex.
      */
-    private Integer nbEdges;
+    private long nbEdges;
 
     /** Sum of the weights of the neighborhood (including the vertex). */
-    private Integer neighborsWeight;
+    private long neighborsWeight;
 
     /**
      * Constructor.
@@ -89,7 +89,7 @@ public class HeuristicSolver<V extends IWeightedVertex<Integer> & Comparable<V>,
      * @param nbEdges
      *          the number of edges
      */
-    public VertexCost(final int weight, final int nbEdges) {
+    public VertexCost(final long weight, final long nbEdges) {
       this.neighborsWeight = weight;
       this.nbEdges = nbEdges;
     }
@@ -99,7 +99,7 @@ public class HeuristicSolver<V extends IWeightedVertex<Integer> & Comparable<V>,
      *
      * @return the nbEdges
      */
-    public Integer getNbEdges() {
+    public long getNbEdges() {
       return this.nbEdges;
     }
 
@@ -108,7 +108,7 @@ public class HeuristicSolver<V extends IWeightedVertex<Integer> & Comparable<V>,
      *
      * @return the neighborsWeight
      */
-    public Integer getNeighborsWeight() {
+    public long getNeighborsWeight() {
       return this.neighborsWeight;
     }
 
@@ -118,7 +118,7 @@ public class HeuristicSolver<V extends IWeightedVertex<Integer> & Comparable<V>,
      * @param nbEdges
      *          the nbEdges to set
      */
-    public void setNbEdges(final Integer nbEdges) {
+    public void setNbEdges(final long nbEdges) {
       this.nbEdges = nbEdges;
     }
 
@@ -128,7 +128,7 @@ public class HeuristicSolver<V extends IWeightedVertex<Integer> & Comparable<V>,
      * @param neighborsWeight
      *          the neighborsWeight to set
      */
-    public void setNeighborsWeight(final Integer neighborsWeight) {
+    public void setNeighborsWeight(final long neighborsWeight) {
       this.neighborsWeight = neighborsWeight;
     }
   }
@@ -406,8 +406,8 @@ public class HeuristicSolver<V extends IWeightedVertex<Integer> & Comparable<V>,
     // 1 - Initialize the costs list
     final Map<V, VertexCost> costsList = new LinkedHashMap<>();
     for (final V vertex : this.graph.vertexSet()) {
-      int weight;
-      int nbEdges;
+      long weight;
+      long nbEdges;
 
       nbEdges = this.graph.edgesOf(vertex).size();
 
@@ -426,15 +426,14 @@ public class HeuristicSolver<V extends IWeightedVertex<Integer> & Comparable<V>,
       // 3 - Search for the vertex to remove
       for (final Entry<V, VertexCost> entry : costsList.entrySet()) {
 
-        final boolean equalGain = (entry.getValue().getNbEdges().intValue() == selectedEntry.getValue().getNbEdges()
-            .intValue());
+        final boolean equalGain = (entry.getValue().getNbEdges() == selectedEntry.getValue().getNbEdges());
         // The less edges the vertex has, the greater the density gain
         // will be
         final boolean largerGain = (entry.getValue().getNbEdges() < selectedEntry.getValue().getNbEdges());
-        final boolean smallerWeight = (entry.getValue().getNeighborsWeight().intValue() < selectedEntry.getValue()
-            .getNeighborsWeight().intValue());
-        final boolean equalWeight = (entry.getValue().getNeighborsWeight().intValue() == selectedEntry.getValue()
-            .getNeighborsWeight().intValue());
+        final boolean smallerWeight = (entry.getValue().getNeighborsWeight() < selectedEntry.getValue()
+            .getNeighborsWeight());
+        final boolean equalWeight = (entry.getValue().getNeighborsWeight() == selectedEntry.getValue()
+            .getNeighborsWeight());
         final boolean smallerVertexWeight = (entry.getKey().getWeight().intValue() < selectedEntry.getKey().getWeight()
             .intValue());
 

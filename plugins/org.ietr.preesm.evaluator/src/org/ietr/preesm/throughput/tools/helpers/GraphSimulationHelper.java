@@ -36,6 +36,8 @@
 package org.ietr.preesm.throughput.tools.helpers;
 
 import java.util.Hashtable;
+import java.util.LinkedHashMap;
+import java.util.Map;
 import org.ietr.dftools.algorithm.model.AbstractEdgePropertyType;
 import org.ietr.dftools.algorithm.model.sdf.SDFAbstractVertex;
 import org.ietr.dftools.algorithm.model.sdf.SDFEdge;
@@ -49,12 +51,19 @@ import org.ietr.dftools.algorithm.model.sdf.types.SDFIntEdgePropertyType;
  *         A simulation helper.
  */
 public class GraphSimulationHelper {
+  private static final String NB_EXECUTION_PROPERTY = "nbExeution";
+
+  private static final String START_DATE_PROPERTY = "startDate";
+
+  private static final String FINISH_DATE_PROPERTY = "finishDate";
+
+  private static final String EXECUTION_COUNTER_PROPERTY = "executionCounter";
+
   // SDF graph and scenario
-  public SDFGraph graph;
-  // public PreesmScenario scenario;
+  private SDFGraph graph;
 
   // list of the initial marking to restore the graph
-  public Hashtable<SDFEdge, AbstractEdgePropertyType<?>> initialMarking;
+  private Map<SDFEdge, AbstractEdgePropertyType<?>> initialMarking;
 
   /**
    * @param graph
@@ -62,7 +71,6 @@ public class GraphSimulationHelper {
    */
   public GraphSimulationHelper(final SDFGraph graph) {
     this.graph = graph;
-    // this.scenario = scenario;
 
     // save the initial marking of the graph
     saveInitialMarking();
@@ -79,18 +87,19 @@ public class GraphSimulationHelper {
    *          SDF actor
    * @return number of allowed executions
    */
-  public int maxExecToCompleteAnIteration(final SDFAbstractVertex actor) {
+  public long maxExecToCompleteAnIteration(final SDFAbstractVertex actor) {
     // initialize the counter with a max value = RV - counter
     double maxStartDate = 0;
-    int maxExecutions = actor.getNbRepeatAsInteger() - (int) actor.getPropertyBean().getValue("executionCounter");
+    long maxExecutions = actor.getNbRepeatAsLong()
+        - (long) actor.getPropertyBean().getValue(EXECUTION_COUNTER_PROPERTY);
     if (maxExecutions <= 0) {
       return 0;
     } else {
       for (final SDFInterfaceVertex input : actor.getSources()) {
         final SDFEdge edge = actor.getAssociatedEdge(input);
         // compute the max number of executions that edge delays allow
-        final int n = (int) Math.floor(edge.getDelay().intValue() / edge.getCons().intValue());
-        final double newStartDate = (double) edge.getSource().getPropertyBean().getValue("finishDate");
+        final long n = edge.getDelay().longValue() / edge.getCons().longValue();
+        final double newStartDate = (double) edge.getSource().getPropertyBean().getValue(FINISH_DATE_PROPERTY);
         // if n = 0, it means that the actor is not ready to be fired
         if (n < maxExecutions) {
           maxExecutions = n;
@@ -102,7 +111,7 @@ public class GraphSimulationHelper {
           maxStartDate = newStartDate;
         }
       }
-      actor.setPropertyValue("startDate", maxStartDate);
+      actor.setPropertyValue(START_DATE_PROPERTY, maxStartDate);
       return maxExecutions;
     }
   }
@@ -115,11 +124,11 @@ public class GraphSimulationHelper {
    * @return executions number
    */
 
-  public int maxNbOfExecutions(final SDFAbstractVertex actor) {
-    int maxExecutions = Integer.MAX_VALUE; // initialize the counter with a max value
+  public long maxNbOfExecutions(final SDFAbstractVertex actor) {
+    long maxExecutions = Long.MAX_VALUE; // initialize the counter with a max value
     for (final SDFInterfaceVertex input : actor.getSources()) {
       final SDFEdge edge = actor.getAssociatedEdge(input);
-      final int n = (int) Math.floor(edge.getDelay().intValue() / edge.getCons().intValue());
+      final long n = edge.getDelay().longValue() / edge.getCons().longValue();
       // if n = 0, it means that the actor is not ready to be fired
       if (n < maxExecutions) {
         maxExecutions = n;
@@ -146,7 +155,7 @@ public class GraphSimulationHelper {
    * @param n
    *          number of executions
    */
-  public void execute(final SDFAbstractVertex actor, final int n) {
+  public void execute(final SDFAbstractVertex actor, final long n) {
     if (n != 0) {
       // consume n times data tokens from the input edges of the actor
       consume(actor, n);
@@ -162,9 +171,9 @@ public class GraphSimulationHelper {
    *          SDF actor
    * @return the number of executions
    */
-  public int executeMax(final SDFAbstractVertex actor) {
+  public long executeMax(final SDFAbstractVertex actor) {
     // determine the max executions number
-    final int n = maxNbOfExecutions(actor);
+    final long n = maxNbOfExecutions(actor);
     // execute the actor n times
     execute(actor, n);
     return n;
@@ -177,26 +186,25 @@ public class GraphSimulationHelper {
    * @param n
    *          number of executions
    */
-  public void consume(final SDFAbstractVertex actor, final int n) {
+  public void consume(final SDFAbstractVertex actor, final long n) {
     if (n > 0) {
       // consume n data tokens on each input edge
       for (final SDFInterfaceVertex input : actor.getSources()) {
         final SDFEdge edge = actor.getAssociatedEdge(input);
         // e.delay -= n * e.cons
-        final int newDelay = edge.getDelay().intValue() - (n * edge.getCons().intValue());
+        final long newDelay = edge.getDelay().longValue() - (n * edge.getCons().longValue());
         edge.setDelay(new SDFIntEdgePropertyType(newDelay));
       }
 
       // increment the counter by n
-      final int oldN = (int) actor.getPropertyBean().getValue("executionCounter");
-      actor.setPropertyValue("executionCounter", oldN + n);
+      final long oldN = (long) actor.getPropertyBean().getValue(EXECUTION_COUNTER_PROPERTY);
+      actor.setPropertyValue(EXECUTION_COUNTER_PROPERTY, oldN + n);
 
     } else {
       // restore n data tokens on each input edge
       for (final SDFInterfaceVertex input : actor.getSources()) {
         final SDFEdge edge = actor.getAssociatedEdge(input);
-        // e.delay += n * e.cons;
-        final int newDelay = edge.getDelay().intValue() + (n * edge.getCons().intValue());
+        final long newDelay = edge.getDelay().longValue() + (n * edge.getCons().longValue());
         edge.setDelay(new SDFIntEdgePropertyType(newDelay));
       }
     }
@@ -208,38 +216,36 @@ public class GraphSimulationHelper {
    * @param n
    *          number of executions
    */
-  public void produce(final SDFAbstractVertex actor, final int n) {
+  public void produce(final SDFAbstractVertex actor, final long n) {
     if (n > 0) {
       // produce n data tokens on each output edge
       for (final SDFInterfaceVertex output : actor.getSinks()) {
         final SDFEdge edge = actor.getAssociatedEdge(output);
-        // e.delay += n * e.prod;
-        final int newDelay = edge.getDelay().intValue() + (n * edge.getProd().intValue());
+        final long newDelay = edge.getDelay().longValue() + (n * edge.getProd().longValue());
         edge.setDelay(new SDFIntEdgePropertyType(newDelay));
       }
     } else {
       // remove n data tokens on each output edge
       for (final SDFInterfaceVertex output : actor.getSinks()) {
         final SDFEdge edge = actor.getAssociatedEdge(output);
-        // e.delay -= n * e.prod;
-        final int newDelay = edge.getDelay().intValue() - (n * edge.getProd().intValue());
+        final long newDelay = edge.getDelay().longValue() - (n * edge.getProd().longValue());
         edge.setDelay(new SDFIntEdgePropertyType(newDelay));
       }
 
       // decrement the counter by n
-      final int oldN = (int) actor.getPropertyBean().getValue("executionCounter");
-      actor.setPropertyValue("executionCounter", oldN - n);
+      final long oldN = (long) actor.getPropertyBean().getValue(EXECUTION_COUNTER_PROPERTY);
+      actor.setPropertyValue(EXECUTION_COUNTER_PROPERTY, oldN - n);
     }
   }
 
   /**
    * return the list of ready actors to execute
    */
-  public Hashtable<SDFAbstractVertex, Integer> getReadyActorsNbExecutions() {
-    final Hashtable<SDFAbstractVertex, Integer> readyActors = new Hashtable<>();
+  public Map<SDFAbstractVertex, Long> getReadyActorsNbExecutions() {
+    final Map<SDFAbstractVertex, Long> readyActors = new LinkedHashMap<>();
     // get the max number n of executions for each actor, if n>0 then add the actor to the list of ready actors
     for (final SDFAbstractVertex actor : this.graph.vertexSet()) {
-      final int n = maxNbOfExecutions(actor);
+      final long n = maxNbOfExecutions(actor);
       if (n > 0) {
         readyActors.put(actor, n);
       }
@@ -255,7 +261,7 @@ public class GraphSimulationHelper {
    * @return start Date
    */
   public double getStartDate(final SDFAbstractVertex actor) {
-    return (double) actor.getPropertyBean().getValue("startDate");
+    return (double) actor.getPropertyBean().getValue(START_DATE_PROPERTY);
   }
 
   /**
@@ -267,7 +273,7 @@ public class GraphSimulationHelper {
    *          start date
    */
   public void setStartDate(final SDFAbstractVertex actor, final double date) {
-    actor.setPropertyValue("startDate", date);
+    actor.setPropertyValue(START_DATE_PROPERTY, date);
   }
 
   /**
@@ -278,7 +284,7 @@ public class GraphSimulationHelper {
    * @return finish date
    */
   public double getFinishDate(final SDFAbstractVertex actor) {
-    return (double) actor.getPropertyBean().getValue("finishDate");
+    return (double) actor.getPropertyBean().getValue(FINISH_DATE_PROPERTY);
   }
 
   /**
@@ -288,7 +294,7 @@ public class GraphSimulationHelper {
    *          finish date
    */
   public void setfinishDate(final SDFAbstractVertex actor, final double date) {
-    actor.setPropertyValue("finishDate", date);
+    actor.setPropertyValue(FINISH_DATE_PROPERTY, date);
   }
 
   /**
@@ -309,8 +315,8 @@ public class GraphSimulationHelper {
    *          actor
    * @return execution counter
    */
-  public int getExecutionCounter(final SDFAbstractVertex actor) {
-    return (int) actor.getPropertyBean().getValue("executionCounter");
+  public long getExecutionCounter(final SDFAbstractVertex actor) {
+    return (long) actor.getPropertyBean().getValue(EXECUTION_COUNTER_PROPERTY);
   }
 
   /**
@@ -321,8 +327,8 @@ public class GraphSimulationHelper {
    * @param n
    *          number of execution to set
    */
-  public void setExecutionCounter(final SDFAbstractVertex actor, final int n) {
-    actor.setPropertyValue("executionCounter", n);
+  public void setExecutionCounter(final SDFAbstractVertex actor, final long n) {
+    actor.setPropertyValue(EXECUTION_COUNTER_PROPERTY, n);
   }
 
   /**
@@ -333,7 +339,7 @@ public class GraphSimulationHelper {
   public boolean isIterationCompleted() {
     // test if each actor was executed RV times
     for (final SDFAbstractVertex actor : this.graph.vertexSet()) {
-      if ((int) actor.getPropertyBean().getValue("executionCounter") < actor.getNbRepeatAsInteger()) {
+      if ((long) actor.getPropertyBean().getValue(EXECUTION_COUNTER_PROPERTY) < actor.getNbRepeatAsLong()) {
         return false;
       }
     }
@@ -363,10 +369,10 @@ public class GraphSimulationHelper {
    */
   public void prepareActors() {
     for (final SDFAbstractVertex actor : this.graph.vertexSet()) {
-      actor.setPropertyValue("startDate", 0.);
-      actor.setPropertyValue("finishDate", 0.);
-      actor.setPropertyValue("nbExeution", 0);
-      actor.setPropertyValue("executionCounter", 0);
+      actor.setPropertyValue(START_DATE_PROPERTY, 0.);
+      actor.setPropertyValue(FINISH_DATE_PROPERTY, 0.);
+      actor.setPropertyValue(NB_EXECUTION_PROPERTY, 0L);
+      actor.setPropertyValue(EXECUTION_COUNTER_PROPERTY, 0L);
     }
   }
 
@@ -386,7 +392,7 @@ public class GraphSimulationHelper {
    */
   public void resetExecutionCounter() {
     for (final SDFAbstractVertex actor : this.graph.vertexSet()) {
-      actor.setPropertyValue("executionCounter", 0);
+      actor.setPropertyValue(EXECUTION_COUNTER_PROPERTY, 0L);
     }
   }
 

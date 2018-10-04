@@ -49,11 +49,11 @@
          <outputs>
             <output
                   id="BoundMin"
-                  object="java.lang.Integer">
+                  object="java.lang.Long">
             </output>
             <output
                   id="BoundMax"
-                  object="java.lang.Integer">
+                  object="java.lang.Long">
             </output>
             <output
                   id="MemEx"

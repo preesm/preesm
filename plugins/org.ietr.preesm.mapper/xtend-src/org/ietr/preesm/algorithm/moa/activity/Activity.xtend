@@ -62,7 +62,7 @@ class Activity {
 		quanta = new HashMap<String, Long>();
 	}
 
-	def addTokenNumber(String archiEltName, long tokenNr) {
+	def void addTokenNumber(String archiEltName, long tokenNr) {
 		if(tokens.keySet.contains(archiEltName)){
 			tokens.put(archiEltName, tokens.get(archiEltName) + tokenNr)
 		}
@@ -71,7 +71,7 @@ class Activity {
 		}
 	}
 
-	def addQuantaNumber(String archiEltName, long quantaNr) {
+	def void addQuantaNumber(String archiEltName, long quantaNr) {
 		if(quanta.keySet.contains(archiEltName)){
 			quanta.put(archiEltName, quanta.get(archiEltName) + quantaNr)
 		}
@@ -85,7 +85,7 @@ class Activity {
 		tokens «tokens»
 		quanta «quanta»'''
 
-	def clear() {
+	def void clear() {
 		tokens.clear
 		quanta.clear
 	}

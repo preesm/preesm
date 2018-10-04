@@ -41,7 +41,6 @@ import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.eclipse.core.runtime.IProgressMonitor;
-import org.ietr.dftools.workflow.WorkflowException;
 import org.ietr.dftools.workflow.elements.Workflow;
 import org.ietr.dftools.workflow.implement.AbstractTaskImplementation;
 import org.ietr.dftools.workflow.tools.WorkflowLogger;
@@ -93,7 +92,7 @@ public class SerialMemoryBoundsEstimator extends AbstractTaskImplementation {
    */
   @Override
   public Map<String, Object> execute(final Map<String, Object> inputs, final Map<String, String> parameters,
-      final IProgressMonitor monitor, final String nodeName, final Workflow workflow) throws WorkflowException {
+      final IProgressMonitor monitor, final String nodeName, final Workflow workflow) {
 
     // Rem: Logger is used to display messages in the console
     final Logger logger = WorkflowLogger.getLogger();
@@ -144,8 +143,8 @@ public class SerialMemoryBoundsEstimator extends AbstractTaskImplementation {
       }
 
       solver.solve();
-      final int minBound = solver.sumWeight(solver.getHeaviestClique());
-      final int maxBound = solver.sumWeight(memEx.vertexSet());
+      final long minBound = solver.sumWeight(solver.getHeaviestClique());
+      final long maxBound = solver.sumWeight(memEx.vertexSet());
 
       logger.log(Level.INFO, "Memory(" + memory + ") Vertices = " + nbVertices + " Bound_Max = " + maxBound
           + " Bound_Min = " + minBound + " Density = " + density);

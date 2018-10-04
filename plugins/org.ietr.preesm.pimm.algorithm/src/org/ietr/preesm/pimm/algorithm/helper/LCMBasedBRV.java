@@ -52,7 +52,7 @@ import org.ietr.preesm.experiment.model.pimm.DataOutputPort;
 import org.ietr.preesm.experiment.model.pimm.Expression;
 import org.ietr.preesm.experiment.model.pimm.Fifo;
 import org.ietr.preesm.experiment.model.pimm.InterfaceActor;
-import org.ietr.preesm.throughput.tools.helpers.MathFunctionsHelper;
+import org.ietr.preesm.utils.math.MathFunctionsHelper;
 
 /**
  * This class is used to compute the basic repetition vector of a static PiSDF graph using LCM method.
@@ -133,7 +133,7 @@ public class LCMBasedBRV extends PiBRV {
 
   /**
    * Check consistency.
-   * 
+   *
    * @param subgraph
    *          current connected component
    * @param fifoProperties
@@ -153,16 +153,18 @@ public class LCMBasedBRV extends PiBRV {
       final long cons = fifoProperties.get(f).get(1);
       final long sourceRV = this.graphBRV.get(sourceActor);
       final long targetRV = this.graphBRV.get(targetActor);
-      if ((sourceRV * prod) != (targetRV * cons)) {
-        throw new PiMMHelperException("Graph non consistent: edge source production " + sourceActor.getName() + " "
-            + Long.toString(prod * sourceRV) + "!= edge target consumption " + Long.toString(cons * targetRV));
+
+      if (prod * sourceRV != cons * targetRV) {
+        throw new PiMMHelperException(
+            "Graph non consistent: edge source production " + sourceActor.getName() + " with rate [" + (prod * sourceRV)
+                + "] != edge target consumption " + targetActor.getName() + "with rate [" + (cons * targetRV) + "]");
       }
     }
   }
 
   /**
    * Computes and sets the repetition vector values for all actors of a given connected component.
-   * 
+   *
    * @param subgraph
    *          current connected component
    * @param reps
@@ -181,7 +183,7 @@ public class LCMBasedBRV extends PiBRV {
 
   /**
    * Initialize FIFO properties map to avoid multiple access to same information
-   * 
+   *
    * @param listFifos
    *          list of all a fifos
    * @param fifoProperties
@@ -234,7 +236,7 @@ public class LCMBasedBRV extends PiBRV {
       if (fa.getNum() == 0) {
         final long prod = fifoProperties.get(fifo).get(0);
         final long cons = fifoProperties.get(fifo).get(1);
-        final Rational edge = new Rational((int) prod, (int) cons);
+        final Rational edge = new Rational(prod, cons);
         final Rational r = Rational.prod(n, edge);
         LCMBasedBRV.setReps(targetActor, r, reps, fifoProperties);
       }
@@ -255,7 +257,7 @@ public class LCMBasedBRV extends PiBRV {
       if (fa.getNum() == 0) {
         final long prod = fifoProperties.get(fifo).get(0);
         final long cons = fifoProperties.get(fifo).get(1);
-        final Rational edge = new Rational((int) cons, (int) prod);
+        final Rational edge = new Rational(cons, prod);
         final Rational r = Rational.prod(n, edge);
         LCMBasedBRV.setReps(sourceActor, r, reps, fifoProperties);
       }

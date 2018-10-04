@@ -1420,21 +1420,6 @@ public class AutoLayoutFeature extends AbstractCustomFeature {
   }
 
   /**
-   * Remove a delay actor if it is not connected to a setter nor a getter actor as it should not be layout.
-   *
-   * @param actor
-   *          the {@link AbstractActor} tested
-   * @return true if the actor is a {@link DelayActor} and it should be removed, false else
-   */
-  private boolean removeDelayActor(final AbstractActor actor) {
-    if (actor instanceof DelayActor) {
-      final DelayActor delayActor = (DelayActor) actor;
-      return (delayActor.getSetterActor() == null) && (delayActor.getGetterActor() == null);
-    }
-    return false;
-  }
-
-  /**
    * Layout the stages of {@link Parameter}. Aparameter can be put in a stage if all its predecessors have been put in
    * previous stages.
    *

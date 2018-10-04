@@ -45,9 +45,9 @@ import org.ietr.dftools.algorithm.model.sdf.SDFGraph;
 import org.ietr.dftools.algorithm.model.sdf.SDFInterfaceVertex;
 import org.ietr.dftools.algorithm.model.sdf.esdf.SDFSinkInterfaceVertex;
 import org.ietr.dftools.algorithm.model.sdf.esdf.SDFSourceInterfaceVertex;
-import org.ietr.preesm.schedule.ALAPScheduler_DAG;
-import org.ietr.preesm.schedule.ASAPScheduler_DAG;
-import org.ietr.preesm.schedule.PeriodicScheduler_SDF;
+import org.ietr.preesm.schedule.ALAPSchedulerDAG;
+import org.ietr.preesm.schedule.ASAPSchedulerDAG;
+import org.ietr.preesm.schedule.PeriodicSchedulerSDF;
 import org.ietr.preesm.throughput.tools.helpers.GraphStructureHelper;
 import org.ietr.preesm.throughput.tools.helpers.Stopwatch;
 import org.ietr.preesm.throughput.tools.parsers.Identifier;
@@ -120,8 +120,8 @@ public class EvaluateScheduleReplace {
     // normalize the graph
     SDFTransformer.normalize(srSDF);
     // compute its normalized period K
-    final PeriodicScheduler_SDF periodic = new PeriodicScheduler_SDF();
-    final Fraction k = periodic.computeNormalizedPeriod(srSDF, PeriodicScheduler_SDF.Method.LinearProgram_Gurobi);
+    final PeriodicSchedulerSDF periodic = new PeriodicSchedulerSDF();
+    final Fraction k = periodic.computeNormalizedPeriod(srSDF, PeriodicSchedulerSDF.Method.LINEAR_PROGRAMMING_GUROBI);
     // compute its throughput as 1/K
     final double throughput = 1 / k.doubleValue();
     this.timer.stop();
@@ -216,8 +216,8 @@ public class EvaluateScheduleReplace {
     // normalize the graph first
     SDFTransformer.normalize(graph);
     // return the fraction k=L/H computed by the periodic schedule
-    final PeriodicScheduler_SDF scheduler = new PeriodicScheduler_SDF();
-    return scheduler.computeNormalizedPeriod(graph, PeriodicScheduler_SDF.Method.LinearProgram_Gurobi);
+    final PeriodicSchedulerSDF scheduler = new PeriodicSchedulerSDF();
+    return scheduler.computeNormalizedPeriod(graph, PeriodicSchedulerSDF.Method.LINEAR_PROGRAMMING_GUROBI);
   }
 
   /**
@@ -228,14 +228,14 @@ public class EvaluateScheduleReplace {
    */
   private void schedule(final SDFGraph graph) {
     // ASAP schedule to determine the start/finish date for each actor and the latency constraint
-    final ASAPScheduler_DAG ASAP_DAG = new ASAPScheduler_DAG();
+    final ASAPSchedulerDAG ASAP_DAG = new ASAPSchedulerDAG();
     ASAP_DAG.schedule(graph);
 
     // reset the execution counter of each actor
     ASAP_DAG.simulator.resetExecutionCounter();
 
     // step 2: ALAP schedule ESR paper version
-    final ALAPScheduler_DAG ALAP = new ALAPScheduler_DAG();
+    final ALAPSchedulerDAG ALAP = new ALAPSchedulerDAG();
     ALAP.schedule(graph, ASAP_DAG.simulator, ASAP_DAG.dur1Iter);
   }
 
@@ -270,8 +270,8 @@ public class EvaluateScheduleReplace {
       final SDFAbstractVertex subgraphInterface = subgraph
           .getVertex(((SDFInterfaceVertex) iInterface).getName() + "_1");
       final SDFAbstractVertex SEM_inetrface = GraphStructureHelper.addActor(subgraphExecutionModel,
-          subgraphInterface.getName(), null, subgraphInterface.getNbRepeatAsInteger(),
-          (Double) subgraphInterface.getPropertyBean().getValue("duration"), null,
+          subgraphInterface.getName(), null, subgraphInterface.getNbRepeatAsLong(),
+          (Double) subgraphInterface.getPropertyBean().getValue("duration"), 0,
           (SDFAbstractVertex) subgraphInterface.getPropertyBean().getValue("baseActor"));
 
       // get the execution start date of the interface
@@ -282,7 +282,7 @@ public class EvaluateScheduleReplace {
       if (timeLineActors.containsKey(startDate)) {
         timeActor = timeLineActors.get(startDate);
       } else {
-        timeActor = GraphStructureHelper.addActor(subgraphExecutionModel, "time" + startDate, null, 1, 0., null, null);
+        timeActor = GraphStructureHelper.addActor(subgraphExecutionModel, "time" + startDate, null, 1L, 0., 0, null);
         timeLineActors.put(startDate, timeActor);
       }
 
@@ -306,8 +306,8 @@ public class EvaluateScheduleReplace {
     for (int i = 0; i < (orderedTimeLine.size() - 1); i++) {
       // add the transition actor to the subgraph execution model
       final SDFAbstractVertex TransitionActor = GraphStructureHelper.addActor(subgraphExecutionModel,
-          "time" + orderedTimeLine.get(i) + "_to_time" + orderedTimeLine.get(i + 1), null, 1,
-          orderedTimeLine.get(i + 1) - orderedTimeLine.get(i), null, null);
+          "time" + orderedTimeLine.get(i) + "_to_time" + orderedTimeLine.get(i + 1), null, 1L,
+          orderedTimeLine.get(i + 1) - orderedTimeLine.get(i), 0, null);
 
       // add time actor i with the time actor i+1 through the transition actor
       GraphStructureHelper.addEdge(subgraphExecutionModel, timeLineActors.get(orderedTimeLine.get(i)).getName(), null,
@@ -325,8 +325,8 @@ public class EvaluateScheduleReplace {
       final SDFAbstractVertex lastTimeActor = timeLineActors.get(lastTime);
 
       // create the period actor
-      final SDFAbstractVertex periodActor = GraphStructureHelper.addActor(subgraphExecutionModel, "period", null, 1,
-          K.getNumerator() - (lastTime - firstTime), null, null);
+      final SDFAbstractVertex periodActor = GraphStructureHelper.addActor(subgraphExecutionModel, "period", null, 1L,
+          K.getNumerator() - (lastTime - firstTime), 0, null);
 
       // connect the period actor to the time line
       GraphStructureHelper.addEdge(subgraphExecutionModel, lastTimeActor.getName(), null, periodActor.getName(), null,

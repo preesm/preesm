@@ -35,7 +35,10 @@
  */
 package org.ietr.preesm.throughput.tools.transformers;
 
-import java.util.Hashtable;
+import java.util.ArrayList;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
 import org.ietr.dftools.algorithm.model.sdf.SDFAbstractVertex;
 import org.ietr.dftools.algorithm.model.sdf.SDFGraph;
 import org.ietr.dftools.algorithm.model.sdf.esdf.SDFSinkInterfaceVertex;
@@ -62,16 +65,15 @@ public abstract class IBSDFTransformer {
     timer.start();
 
     // Step 1: Convert all the SDF subgraphs to a srSDF subgraphs
-    final Hashtable<String, SDFGraph> srSDFsubgraphList = IBSDFTransformer.convertAllSubgraphs(IBSDF, withExecRulres);
+    final Map<String, SDFGraph> srSDFsubgraphList = IBSDFTransformer.convertAllSubgraphs(IBSDF, withExecRulres);
 
     // Step 2: Convert the top SDF graph to a srSDF graph
     final SDFGraph flatSrSDF = SDFTransformer.convertToSrSDF(IBSDF);
 
     // Step 3: Replace each instance of a hierarchical actor by its srSDF subgraph version
-    final Hashtable<String, SDFAbstractVertex> actorsToReplcae = GraphStructureHelper.getHierarchicalActors(flatSrSDF);
-    while (!actorsToReplcae.isEmpty()) {
-      // replace the hierarchical actor
-      final SDFAbstractVertex h = actorsToReplcae.elements().nextElement();
+    final Map<String, SDFAbstractVertex> actorsToReplace = GraphStructureHelper.getHierarchicalActors(flatSrSDF);
+    final List<SDFAbstractVertex> list = new ArrayList<>(actorsToReplace.values());
+    for (SDFAbstractVertex h : list) {
       final SDFGraph srSubgraph = srSDFsubgraphList
           .get(((SDFAbstractVertex) h.getPropertyBean().getValue("baseActor")).getName());
       GraphStructureHelper.replaceHierarchicalActor(flatSrSDF, h, srSubgraph);
@@ -80,38 +82,36 @@ public abstract class IBSDFTransformer {
       for (final SDFAbstractVertex a : srSubgraph.vertexSet()) {
         if (a.getGraphDescription() != null) {
           final String actorInstanceNewName = h.getName() + "_" + a.getName();
-          actorsToReplcae.put(actorInstanceNewName, flatSrSDF.getVertex(actorInstanceNewName));
+          actorsToReplace.put(actorInstanceNewName, flatSrSDF.getVertex(actorInstanceNewName));
         }
       }
 
       // remove the hierarchical actor from the list of actors to replace
-      actorsToReplcae.remove(h.getName());
+      actorsToReplace.remove(h.getName());
     }
 
     timer.stop();
-    System.out.println("IBSDF graph converted to SrSDF graph in " + timer.toString());
     return flatSrSDF;
   }
 
   /**
    * converts all the SDF subgraphs of the hierarchy into srSDF subgraphs
    *
-   * @param IBSDF
+   * @param ibsdf
    *          graph
    * @param withExecRulres
    *          boolean, add execution rules if true
    * @return the list of srSDF subgraphs
    */
-  private static Hashtable<String, SDFGraph> convertAllSubgraphs(final SDFGraph IBSDF, final boolean withExecRulres) {
+  private static Map<String, SDFGraph> convertAllSubgraphs(final SDFGraph ibsdf, final boolean withExecRulres) {
     // the list of srSDF subgraphs
-    final Hashtable<String, SDFGraph> srSDFsubgraphsList = new Hashtable<>();
+    final Map<String, SDFGraph> srSDFsubgraphsList = new LinkedHashMap<>();
 
     // get all the hierarchical actors of the IBSDF graph
-    final Hashtable<String, SDFAbstractVertex> actorsToConvert = GraphStructureHelper.getAllHierarchicalActors(IBSDF);
+    final Map<String, SDFAbstractVertex> actorsToConvert = GraphStructureHelper.getAllHierarchicalActors(ibsdf);
 
     // convert the hierarchical actors SDF subgraphs to a srSDF subgraph
     for (final SDFAbstractVertex h : actorsToConvert.values()) {
-      // System.out.println("====> converting the subgraph of actor " + h.getId());
       final SDFGraph srSDFsubgraph = SDFTransformer.convertToSrSDF((SDFGraph) h.getGraphDescription());
       // add the execution rules to the srSDF subgraph
       if (withExecRulres) {
@@ -131,8 +131,8 @@ public abstract class IBSDFTransformer {
    */
   private static void addExecRules(final SDFGraph srSDF) {
     // step 1: add the two special actors Start and End actors
-    GraphStructureHelper.addActor(srSDF, "start", null, 1, 0., null, null);
-    GraphStructureHelper.addActor(srSDF, "end", null, 1, 0., null, null);
+    GraphStructureHelper.addActor(srSDF, "start", null, 1L, 0., 0, null);
+    GraphStructureHelper.addActor(srSDF, "end", null, 1L, 0., 0, null);
 
     // add the edge back from End actor to Start actor (no need of the edge from start to end)
     GraphStructureHelper.addEdge(srSDF, "end", "to_start", "start", "from_end", 1, 1, 1, null);

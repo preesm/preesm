@@ -66,16 +66,16 @@ abstract class Variable extends Commentable {
 }
 
 class Buffer extends Variable {
-	int size
+	long size
 	refers SubBuffer[] childrens opposite ^container
-	int typeSize
+	long typeSize
 	transient EEList<range>mergedRange
 	boolean ^local = "false"
 }
 
 class SubBuffer extends Buffer {
 	refers Buffer ^container opposite childrens
-	int offset
+	long offset
 	op void reaffectContainer(Buffer newContainer) {
 	    setContainer(newContainer);
 	    if (getCreator() !== null) {
@@ -249,7 +249,7 @@ class IntVar extends Variable {
 }
 
 class BufferIterator extends SubBuffer {
-	int iterSize
+	long iterSize
 	refers IntVar iter
 }
 

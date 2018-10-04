@@ -56,7 +56,7 @@ import org.ietr.preesm.codegen.model.codegen.Variable;
 import org.ietr.preesm.codegen.xtend.CodegenPlugin;
 import org.ietr.preesm.codegen.xtend.printer.c.CPrinter;
 import org.ietr.preesm.codegen.xtend.task.CodegenException;
-import org.ietr.preesm.utils.files.URLResolver;
+import org.ietr.preesm.experiment.model.pimm.util.URLResolver;
 
 /**
  *
@@ -153,7 +153,7 @@ public class TcpCPrinter extends CPrinter {
       default:
         throw new UnsupportedOperationException("Unsupported [" + direction + "] communication direction.");
     }
-    final int size = communication.getData().getSize();
+    final long size = communication.getData().getSize();
 
     final String dataAddress = communication.getData().getName();
 

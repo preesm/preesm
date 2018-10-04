@@ -42,7 +42,7 @@ import org.ietr.dftools.algorithm.model.sdf.SDFAbstractVertex;
 import org.ietr.dftools.algorithm.model.sdf.SDFEdge;
 import org.ietr.dftools.algorithm.model.sdf.SDFGraph;
 import org.ietr.dftools.algorithm.model.sdf.SDFInterfaceVertex;
-import org.ietr.preesm.throughput.tools.helpers.MathFunctionsHelper;
+import org.ietr.preesm.utils.math.MathFunctionsHelper;
 import org.ojalgo.optimisation.Expression;
 import org.ojalgo.optimisation.ExpressionsBasedModel;
 import org.ojalgo.optimisation.Optimisation;
@@ -52,7 +52,7 @@ import org.ojalgo.optimisation.Variable;
  * @author hderoui
  *
  */
-public class PeriodicScheduleModel_ojAlgo implements SolverMethod {
+public class PeriodicScheduleModelOjAlgo implements SolverMethod {
   public Map<String, Variable> edgeVariables;
 
   /**
@@ -100,8 +100,8 @@ public class PeriodicScheduleModel_ojAlgo implements SolverMethod {
     // Second constraint : sum of H.x = 1
     final Expression expr = model.addExpression("sumHX").lower(1).upper(1);
     for (final SDFEdge e : SDF.edgeSet()) {
-      final double h = ((e.getDelay().intValue() - e.getCons().intValue())
-          + MathFunctionsHelper.gcd(e.getProd().intValue(), e.getCons().intValue()))
+      final double h = ((e.getDelay().longValue() - e.getCons().longValue())
+          + MathFunctionsHelper.gcd(e.getProd().longValue(), e.getCons().longValue()))
           * (double) e.getPropertyBean().getValue("normalizationFactor");
       expr.set(this.edgeVariables.get(e.getPropertyBean().getValue("edgeName")), h);
     }

@@ -144,7 +144,7 @@ public class StaticPiMM2SrDAGLauncher extends PiMMSwitch<Boolean> {
 
   /**
    * Convert the PiSDF graph to SRDAG
-   * 
+   *
    * @return the resulting SR DAG
    */
   private MapperDAG convert2SRDAG() {
@@ -184,7 +184,7 @@ public class StaticPiMM2SrDAGLauncher extends PiMMSwitch<Boolean> {
 
   /**
    * Computes the BRV of a PiSDF graph using either LCM method or Topology Matrix.
-   * 
+   *
    * @param method
    *          the method to use for computing the BRV
    * @throws StaticPiMM2SrDAGException
@@ -208,7 +208,7 @@ public class StaticPiMM2SrDAGLauncher extends PiMMSwitch<Boolean> {
       final String msg = "Repetition vector computed in" + timer + "s.";
       WorkflowLogger.getLogger().log(Level.INFO, msg);
     } catch (final PiMMHelperException e) {
-      throw new StaticPiMM2SrDAGException(e.getMessage());
+      throw new StaticPiMM2SrDAGException(e.getMessage(), e);
     }
   }
 
@@ -224,7 +224,7 @@ public class StaticPiMM2SrDAGLauncher extends PiMMSwitch<Boolean> {
 
   /**
    * Creates edge aggregate for all multi connection between two vertices.
-   * 
+   *
    * @param dag
    *          the dag on which to perform
    */
@@ -272,6 +272,10 @@ public class StaticPiMM2SrDAGLauncher extends PiMMSwitch<Boolean> {
      */
     public StaticPiMM2SrDAGException(final String message) {
       super(message);
+    }
+
+    public StaticPiMM2SrDAGException(final String message, final Throwable cause) {
+      super(message, cause);
     }
   }
 

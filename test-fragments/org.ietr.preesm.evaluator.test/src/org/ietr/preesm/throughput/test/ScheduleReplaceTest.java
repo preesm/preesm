@@ -89,11 +89,11 @@ public class ScheduleReplaceTest {
     // create the subgraph
     final SDFGraph subgraph = new SDFGraph();
     subgraph.setName("subgraph");
-    GraphStructureHelper.addActor(subgraph, "D", null, null, 1., null, null);
-    GraphStructureHelper.addActor(subgraph, "E", null, null, 1., null, null);
-    GraphStructureHelper.addActor(subgraph, "F", null, null, 1., null, null);
-    GraphStructureHelper.addInputInterface(subgraph, "a", null, 0., null, null);
-    GraphStructureHelper.addOutputInterface(subgraph, "c", null, 0., null, null);
+    GraphStructureHelper.addActor(subgraph, "D", null, 0, 1., 0, null);
+    GraphStructureHelper.addActor(subgraph, "E", null, 0, 1., 0, null);
+    GraphStructureHelper.addActor(subgraph, "F", null, 0, 1., 0, null);
+    GraphStructureHelper.addInputInterface(subgraph, "a", 0, 0., 0, null);
+    GraphStructureHelper.addOutputInterface(subgraph, "c", 0, 0., 0, null);
 
     GraphStructureHelper.addEdge(subgraph, "a", null, "E", null, 2, 1, 0, null);
     GraphStructureHelper.addEdge(subgraph, "E", null, "F", null, 2, 3, 0, null);
@@ -104,9 +104,9 @@ public class ScheduleReplaceTest {
     // create the top graph and add the subgraph to the hierarchical actor B
     final SDFGraph topgraph = new SDFGraph();
     topgraph.setName("topgraph");
-    GraphStructureHelper.addActor(topgraph, "A", null, null, 1., null, null);
-    GraphStructureHelper.addActor(topgraph, "B", subgraph, null, null, null, null);
-    GraphStructureHelper.addActor(topgraph, "C", null, null, 1., null, null);
+    GraphStructureHelper.addActor(topgraph, "A", null, 0, 1., 0, null);
+    GraphStructureHelper.addActor(topgraph, "B", subgraph, 0, 0, 0, null);
+    GraphStructureHelper.addActor(topgraph, "C", null, 0, 1., 0, null);
 
     GraphStructureHelper.addEdge(topgraph, "A", null, "B", "a", 3, 2, 3, null);
     GraphStructureHelper.addEdge(topgraph, "B", "c", "C", null, 1, 1, 0, null);

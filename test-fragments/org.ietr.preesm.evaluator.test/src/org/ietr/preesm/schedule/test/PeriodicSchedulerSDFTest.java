@@ -38,7 +38,7 @@ package org.ietr.preesm.schedule.test;
 import org.apache.commons.lang3.math.Fraction;
 import org.ietr.dftools.algorithm.model.sdf.SDFGraph;
 import org.ietr.preesm.deadlock.SDFConsistency;
-import org.ietr.preesm.schedule.PeriodicScheduler_SDF;
+import org.ietr.preesm.schedule.PeriodicSchedulerSDF;
 import org.ietr.preesm.throughput.tools.helpers.GraphStructureHelper;
 import org.junit.Assert;
 import org.junit.Test;
@@ -49,7 +49,7 @@ import org.junit.Test;
  * @author hderoui
  *
  */
-public class PeriodicScheduler_SDFTest {
+public class PeriodicSchedulerSDFTest {
 
   @Test
   public void testPeriodicScheduleShouldBeComputed() {
@@ -57,7 +57,7 @@ public class PeriodicScheduler_SDFTest {
     final SDFGraph sdf = generateSDFGraphABC326();
 
     // schedule the SDF graph
-    final PeriodicScheduler_SDF periodic = new PeriodicScheduler_SDF();
+    final PeriodicSchedulerSDF periodic = new PeriodicSchedulerSDF();
     final double throughput = periodic.schedule(sdf, null, true);
 
     // check the normalized rate of actors
@@ -124,11 +124,11 @@ public class PeriodicScheduler_SDFTest {
     graph.setName("testBenabid");
 
     // add actors
-    GraphStructureHelper.addActor(graph, "t1", null, null, 2., null, null);
-    GraphStructureHelper.addActor(graph, "t2", null, null, 2., null, null);
-    GraphStructureHelper.addActor(graph, "t3", null, null, 2., null, null);
-    GraphStructureHelper.addActor(graph, "t4", null, null, 10., null, null);
-    GraphStructureHelper.addActor(graph, "t5", null, null, 12., null, null);
+    GraphStructureHelper.addActor(graph, "t1", null, 0, 2., 0, null);
+    GraphStructureHelper.addActor(graph, "t2", null, 0, 2., 0, null);
+    GraphStructureHelper.addActor(graph, "t3", null, 0, 2., 0, null);
+    GraphStructureHelper.addActor(graph, "t4", null, 0, 10., 0, null);
+    GraphStructureHelper.addActor(graph, "t5", null, 0, 12., 0, null);
 
     // add edges
     GraphStructureHelper.addEdge(graph, "t1", null, "t3", null, 1, 2, 0, null);

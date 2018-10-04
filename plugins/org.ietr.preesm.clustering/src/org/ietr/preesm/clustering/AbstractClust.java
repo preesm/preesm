@@ -44,7 +44,7 @@ import org.ietr.preesm.memory.exclusiongraph.MemoryExclusionGraph;
  */
 public abstract class AbstractClust {
 
-  private int repeat;
+  private long repeat;
 
   private MemoryExclusionGraph memEx;
 
@@ -56,11 +56,11 @@ public abstract class AbstractClust {
     this.memEx = memEx;
   }
 
-  public int getRepeat() {
+  public long getRepeat() {
     return this.repeat;
   }
 
-  public void setRepeat(final int repeat) {
+  public void setRepeat(final long repeat) {
     this.repeat = repeat;
   }
 }

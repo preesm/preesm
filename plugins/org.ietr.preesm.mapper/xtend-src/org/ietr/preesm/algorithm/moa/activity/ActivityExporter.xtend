@@ -106,7 +106,7 @@ class ActivityExporter extends AbstractTaskImplementation {
 		// The abc contains all information on the implemented system
 		var abc = inputs.get(KEY_SDF_ABC) as LatencyAbc
 
-		if (abc != null) {
+		if (abc !== null) {
 			writeActivity(abc, filePath, workflow, human_readable)
 		} else {
 			logger.log(Level.SEVERE, "Not a valid set of ABCs for ActivityExporter.")
@@ -194,7 +194,7 @@ class ActivityExporter extends AbstractTaskImplementation {
 			for (AbstractRouteStep step : route) {
 				if(step instanceof MessageRouteStep){
 					// a step is internally composed of several communication nodes
-					val mstep = step as MessageRouteStep
+					val mstep = step
 					for (ComponentInstance node : mstep.nodes){
 						activity.addTokenNumber(node.instanceName, 1)
 						activity.addQuantaNumber(node.instanceName, size)
@@ -208,7 +208,7 @@ class ActivityExporter extends AbstractTaskImplementation {
 	/**
 	 * Writing CSV text containing the activity description in fileName located in stringPath.
 	 */
-	static def writeString(String text, String fileName, String stringPath,
+	static def void writeString(String text, String fileName, String stringPath,
 		Workflow workflow) {
 
 		var sPath = PathTools.getAbsolutePath(stringPath, workflow.getProjectName())
@@ -217,7 +217,7 @@ class ActivityExporter extends AbstractTaskImplementation {
 
 		// Get a complete valid path with all folders existing
 		try {
-			if (path.getFileExtension() != null) {
+			if (path.getFileExtension() !== null) {
 				ContainersManager.createMissingFolders(path.removeFileExtension().removeLastSegments(1))
 			} else {
 				ContainersManager.createMissingFolders(path)

@@ -36,7 +36,7 @@
 package org.ietr.preesm.mathematicalModels.test;
 
 import org.ietr.dftools.algorithm.model.sdf.SDFGraph;
-import org.ietr.preesm.mathematicalModels.PeriodicScheduleModel_ojAlgo;
+import org.ietr.preesm.mathematicalModels.PeriodicScheduleModelOjAlgo;
 import org.ietr.preesm.throughput.tools.helpers.GraphStructureHelper;
 import org.ietr.preesm.throughput.tools.transformers.SDFTransformer;
 import org.junit.Assert;
@@ -48,15 +48,15 @@ import org.junit.Test;
  * @author hderoui
  *
  */
-public class PeriodicScheduleModel_ojAlgo_tests {
+public class PeriodicScheduleModelOjAlgoTests {
 
   @Test
   public void testNormalizedPeriodShouldBeComputed() {
     // generate a normalized SDF graph
-    final SDFGraph ABC = generateNormalizedSDFGraphABC3();
+    final SDFGraph abc = generateNormalizedSDFGraphABC3();
     // compute its normalized period K
-    final PeriodicScheduleModel_ojAlgo model = new PeriodicScheduleModel_ojAlgo();
-    final double k = model.computeNormalizedPeriod(ABC).doubleValue();
+    final PeriodicScheduleModelOjAlgo model = new PeriodicScheduleModelOjAlgo();
+    final double k = model.computeNormalizedPeriod(abc).doubleValue();
     // check the value of K
     Assert.assertEquals(1, k, 0);
   }
@@ -80,10 +80,10 @@ public class PeriodicScheduleModel_ojAlgo_tests {
     graph.setName("testABC3");
 
     // add actors
-    GraphStructureHelper.addActor(graph, "A" /* name */, null /* subgraph */, 3 /* repetition factor */,
-        1. /* latency */, null /* normalizedRate */ , null /* base actor */);
-    GraphStructureHelper.addActor(graph, "B", null, 2, 1., null, null);
-    GraphStructureHelper.addActor(graph, "C", null, 6, 1., null, null);
+    GraphStructureHelper.addActor(graph, "A" /* name */, null /* subgraph */, 3L /* repetition factor */,
+        1. /* latency */, 0 /* normalizedRate */ , null /* base actor */);
+    GraphStructureHelper.addActor(graph, "B", null, 2L, 1., 0, null);
+    GraphStructureHelper.addActor(graph, "C", null, 6L, 1., 0, null);
 
     // add edges
     GraphStructureHelper.addEdge(graph, "A" /* srcActor */, null /* srcPort */, "B" /* tgtActor */, null /* tgtPort */,

@@ -36,7 +36,7 @@
 package org.ietr.preesm.schedule.test;
 
 import org.ietr.dftools.algorithm.model.sdf.SDFGraph;
-import org.ietr.preesm.schedule.ASAPScheduler_SDF;
+import org.ietr.preesm.schedule.ASAPSchedulerSDF;
 import org.ietr.preesm.throughput.tools.helpers.GraphStructureHelper;
 import org.junit.Assert;
 import org.junit.Test;
@@ -55,7 +55,7 @@ public class ASAPScheduler_SDFTest {
     final SDFGraph sdf = generateSDFGraphABC326();
 
     // schedule the SDF graph
-    final ASAPScheduler_SDF scheduler = new ASAPScheduler_SDF();
+    final ASAPSchedulerSDF scheduler = new ASAPSchedulerSDF();
     final double durationOf1Iteration = scheduler.schedule(sdf);
 
     // check the value of the duration
@@ -80,9 +80,9 @@ public class ASAPScheduler_SDFTest {
     graph.setName("testABC3");
 
     // add actors
-    GraphStructureHelper.addActor(graph, "A", null, 3, 1., null, null);
-    GraphStructureHelper.addActor(graph, "B", null, 2, 1., null, null);
-    GraphStructureHelper.addActor(graph, "C", null, 6, 1., null, null);
+    GraphStructureHelper.addActor(graph, "A", null, 3L, 1., 0, null);
+    GraphStructureHelper.addActor(graph, "B", null, 2L, 1., 0, null);
+    GraphStructureHelper.addActor(graph, "C", null, 6L, 1., 0, null);
 
     // add edges
     GraphStructureHelper.addEdge(graph, "A", null, "B", null, 2, 3, 6, null);
