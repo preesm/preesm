@@ -501,7 +501,7 @@ class RearrangeOperations implements DAGOperations {
 	 *
 	 * @param dagGen The DAG from which re-timing information can be extracted
 	 */
-	override visit(SDF2DAG dagGen) throws CannotRearrange {
+	override visit(SDF2DAG dagGen) {
 		rearrange(dagGen)
 	}
 
@@ -510,7 +510,7 @@ class RearrangeOperations implements DAGOperations {
 	 *
 	 * @param dagGen The DAG from which re-timing information can be extracted
 	 */
-	override visit(DAG2DAG dagGen) throws CannotRearrange {
+	override visit(DAG2DAG dagGen) {
 		rearrange(dagGen)
 	}
 

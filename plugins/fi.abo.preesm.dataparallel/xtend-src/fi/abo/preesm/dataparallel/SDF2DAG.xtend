@@ -236,18 +236,18 @@ final class SDF2DAG extends AbstractDAGConstructor implements PureDAGConstructor
 	 protected def void createInstances() {
 	 	// Create instances repetition vector times
 	 	for(actor: inputGraph.vertexSet) {
-	 		log(Level.FINE, "Actor " + actor + " has " + actor.nbRepeatAsInteger + " instances.")
+	 		log(Level.FINE, "Actor " + actor + " has " + actor.nbRepeatAsLong + " instances.")
 	 		val instances = newArrayList
 
-	 		for(var ii = 0; ii < actor.nbRepeatAsInteger; ii++) {
+	 		for(var ii = 0; ii < actor.nbRepeatAsLong; ii++) {
 	 			// Clone and set properties
 	 			val instance = actor.clone
-	 			if(actor.nbRepeatAsInteger == 1) {
+	 			if(actor.nbRepeatAsLong == 1) {
 	 				instance.name = actor.name
 	 			} else {
 	 				instance.name = actor.name + "_" + ii;
 	 			}
-	 			instance.nbRepeat = 1
+	 			instance.nbRepeat = 1L
 
 	 			// Add to maps
 	 			outputGraph.addVertex(instance)
@@ -267,7 +267,7 @@ final class SDF2DAG extends AbstractDAGConstructor implements PureDAGConstructor
 		// Edges that have delay tokens greater than buffer size need not have any
 		// links in the DAG
 		val filteredEdges = inputGraph.edgeSet.filter[edge |
-			edge.delay.intValue < edge.cons.intValue * edge.target.nbRepeatAsInteger
+			edge.delay.longValue < edge.cons.longValue * edge.target.nbRepeatAsLong
 		]
 
 		for(edge: filteredEdges) {
@@ -276,31 +276,31 @@ final class SDF2DAG extends AbstractDAGConstructor implements PureDAGConstructor
 			// var SDFInterfaceVertex outputVertex = null
 
 			// Total number of tokens that must be stored in the buffer
-			val bufferSize = edge.cons.intValue * edge.target.nbRepeatAsInteger
+			val bufferSize = edge.cons.longValue * edge.target.nbRepeatAsLong
 
 			val sourceInstances = actor2InstancesLocal.get(edge.source)
 			val targetInstances = actor2InstancesLocal.get(edge.target)
 			val originalSourceInstances = new ArrayList(sourceInstances)
 			val originalTargetInstances = new ArrayList(targetInstances)
 
-			var absoluteTarget = edge.delay.intValue
-			var absoluteSource = 0
-			var currentBufferSize = edge.delay.intValue
+			var absoluteTarget = edge.delay.longValue
+			var absoluteSource = 0L
+			var currentBufferSize = edge.delay.longValue
 
 			val newEdges = newArrayList
 			while(currentBufferSize < bufferSize) {
 				// Index of currently processed source instance among the instances of source actor.
 				// Similarly for target actor
-				val sourceIndex = (absoluteSource/edge.prod.intValue) % sourceInstances.size
-				val targetIndex = (absoluteTarget/edge.cons.intValue) % targetInstances.size
+				val int sourceIndex = ((absoluteSource/edge.prod.longValue) % sourceInstances.size) as int
+				val int targetIndex = ((absoluteTarget/edge.cons.longValue) % targetInstances.size) as int
 
 				// Number of tokens already consumed and produced by currently indexed instances
-				val sourceProd = absoluteSource % edge.prod.intValue
-				val targetCons = absoluteTarget % edge.cons.intValue
+				val sourceProd = absoluteSource % edge.prod.longValue
+				val targetCons = absoluteTarget % edge.cons.longValue
 
 				// Remaining tokens that needs to be handled in the next iteration
-				val restSource = edge.prod.intValue - sourceProd
-				val restTarget = edge.cons.intValue - targetCons
+				val restSource = edge.prod.longValue - sourceProd
+				val restTarget = edge.cons.longValue - targetCons
 				val rest = Math.min(restSource, restTarget)
 
 				// The below part of the code is from ToHSDFVisitor. It should not be relevant here as
@@ -323,8 +323,8 @@ final class SDF2DAG extends AbstractDAGConstructor implements PureDAGConstructor
 		        }
 
 		        // For inserting explode and implode when boolean is true
-		        val explode = rest < edge.prod.intValue
-		        val implode = rest < edge.cons.intValue
+		        val explode = rest < edge.prod.longValue
+		        val implode = rest < edge.cons.longValue
 
 		        // Add explode instance for non-broadcast, non-roundbuffer, non-fork/join actors
 				if(explode && !(sourceInstances.get(sourceIndex) instanceof SDFForkVertex)
@@ -340,8 +340,8 @@ final class SDF2DAG extends AbstractDAGConstructor implements PureDAGConstructor
 						// Add an edge between the explode and its instance
 						val newEdge = outputGraph.addEdge(originalInstance, explodeInstance)
 						newEdge.delay = new SDFIntEdgePropertyType(0)
-						newEdge.prod = new SDFIntEdgePropertyType(edge.prod.intValue)
-						newEdge.cons = new SDFIntEdgePropertyType(edge.prod.intValue)
+						newEdge.prod = new SDFIntEdgePropertyType(edge.prod.longValue)
+						newEdge.cons = new SDFIntEdgePropertyType(edge.prod.longValue)
 						newEdge.dataType = edge.dataType
 						// Name the ports and set its attributes
 						explodeInstance.addInterface(edge.targetInterface)
@@ -365,8 +365,8 @@ final class SDF2DAG extends AbstractDAGConstructor implements PureDAGConstructor
 					// Add an edge between the implode and its instance
 					val newEdge = outputGraph.addEdge(implodeInstance, originalInstance)
 					newEdge.delay = new SDFIntEdgePropertyType(0)
-					newEdge.prod = new SDFIntEdgePropertyType(edge.cons.intValue)
-					newEdge.cons = new SDFIntEdgePropertyType(edge.cons.intValue)
+					newEdge.prod = new SDFIntEdgePropertyType(edge.cons.longValue)
+					newEdge.cons = new SDFIntEdgePropertyType(edge.cons.longValue)
 					newEdge.dataType = edge.dataType
 					// Name the ports and set its attributes
 					implodeInstance.addInterface(edge.sourceInterface)
@@ -497,7 +497,7 @@ final class SDF2DAG extends AbstractDAGConstructor implements PureDAGConstructor
 
 		        // Below code although in ToHSDFVisitor class, does not occur in my case
 		        if ((currentBufferSize == bufferSize) && (targetInstances.get(0) instanceof SDFInterfaceVertex)
-		            && ((absoluteSource / edge.getProd().intValue()) < sourceInstances.size())) {
+		            && ((absoluteSource / edge.getProd().longValue()) < sourceInstances.size())) {
 		          throw new SDF4JException("CurrentBuffersize never needs to be reset. There is a bug, so contact" + " Sudeep Kanur (skanur@abo.fi) with the SDF graph that caused this.")
 		          // currentBufferSize = 0;
 		        }
@@ -514,13 +514,13 @@ final class SDF2DAG extends AbstractDAGConstructor implements PureDAGConstructor
 				val portModifier = edge.targetPortModifier
 				if( (portModifier !== null) && !portModifier.toString.equals(SDFEdge.MODIFIER_UNUSED)) {
 					// If the target is unused, set last edges targetModifier as read-only
-					var tokensToProduce = (edge.target.base.outgoingEdgesOf(edge.target) as Set<SDFEdge>).iterator.next.prod.intValue
+					var tokensToProduce = (edge.target.base.outgoingEdgesOf(edge.target) as Set<SDFEdge>).iterator.next.prod.longValue
 
 					// Scan the edges in reverse order
 					while ((tokensToProduce > 0) && iter.hasPrevious()) {
 						val SDFEdge newEdge = iter.previous()
 						newEdge.targetPortModifier = new SDFStringEdgePropertyType(SDFEdge.MODIFIER_READ_ONLY)
-						tokensToProduce -= newEdge.cons.intValue
+						tokensToProduce -= newEdge.cons.longValue
 					}
 				}
 			}

@@ -102,7 +102,7 @@ class SrSDFToSDF {
 	 */
 	new(SDFGraph sdf, SDFGraph srsdf) {
 		if(!srsdf.vertexSet.forall[vertex |
-			vertex.nbRepeatAsInteger == 1
+			vertex.nbRepeatAsLong == 1
 		]) {
 			throw new SDF4JException("SrSDF graph has instances with repeat count greater than 1.
 						\nCheck that argument order is not reversed")
@@ -193,7 +193,7 @@ class SrSDFToSDF {
 							throw new DAGComputationBug("Couldn't find similar edge " + connectingEdge
 								+ " from the original SDF graph in the re-timed SDF graph")
 						}
-						val prevDelay = actorEdge.delay.intValue
+						val prevDelay = actorEdge.delay.longValue
 						val delay = edgeDelayMap.get(connectingEdge)
 						if(delay === null) {
 							throw new DAGComputationBug("Couldn't find delay for the edge: " + connectingEdge)
@@ -218,8 +218,8 @@ class SrSDFToSDF {
 				val similarEdges = sdf.edgeSet.filter[sdfEdge |
 					sdfEdge.source.name == edge.source.name &&
 					sdfEdge.target.name == edge.target.name &&
-					sdfEdge.prod.intValue == edge.prod.intValue &&
-					sdfEdge.cons.intValue == edge.cons.intValue
+					sdfEdge.prod.longValue == edge.prod.longValue &&
+					sdfEdge.cons.longValue == edge.cons.longValue
 				]
 				if(similarEdges.size != 1) {
 					if(similarEdges.empty) {
@@ -231,7 +231,7 @@ class SrSDFToSDF {
 					}
 				} else {
 					val retimedEdge = similarEdges.get(0)
-					retimedEdge.delay = new SDFIntEdgePropertyType(edge.delay.intValue)
+					retimedEdge.delay = new SDFIntEdgePropertyType(edge.delay.longValue)
 				}
 			]
 		}
