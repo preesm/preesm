@@ -394,7 +394,7 @@ class CPrinter extends DefaultPrinter {
 
 	    // 3- init template reader
 	    val String templateLocalURL = "templates/c/preesm_gen.h";
-	    val URL mainTemplate = URLResolver.findFirstInPluginList(templateLocalURL, CodegenPlugin.BUNDLE_ID);
+	    val URL mainTemplate = URLResolver.findFirstInBundleList(templateLocalURL, CodegenPlugin.BUNDLE_ID);
 	    var InputStreamReader reader = null;
 	    try {
 	      reader = new InputStreamReader(mainTemplate.openStream());
@@ -427,7 +427,7 @@ class CPrinter extends DefaultPrinter {
 						"mac_barrier.h"
 					]);
 		files.forEach[it | try {
-			result.put(it, URLResolver.readURLInPluginList(stdFilesFolder + it, CodegenPlugin.BUNDLE_ID))
+			result.put(it, URLResolver.readURLInBundleList(stdFilesFolder + it, CodegenPlugin.BUNDLE_ID))
 		} catch (IOException exc) {
 			throw new CodegenException("Could not generated content for " + it, exc)
 		}]

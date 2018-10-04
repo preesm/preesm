@@ -58,17 +58,17 @@ import org.osgi.framework.Bundle;
  */
 public final class URLResolver {
 
-  public static final String readURLInPluginList(final String strUrl, final List<String> plugins) throws IOException {
-    final URL url = URLResolver.findFirstInPluginList(strUrl, plugins);
+  public static final String readURLInBundleList(final String strUrl, final List<String> bundles) throws IOException {
+    final URL url = URLResolver.findFirstInBundleList(strUrl, bundles);
     return URLResolver.readURL(url);
   }
 
-  public static final String readURLInPluginList(final String location, final String... plugins) throws IOException {
-    return URLResolver.readURLInPluginList(location, Arrays.asList(plugins));
+  public static final String readURLInBundleList(final String location, final String... bundles) throws IOException {
+    return URLResolver.readURLInBundleList(location, Arrays.asList(bundles));
   }
 
   public static final String readURL(final String strUrl) throws IOException {
-    return URLResolver.readURLInPluginList(strUrl);
+    return URLResolver.readURLInBundleList(strUrl);
   }
 
   /**
@@ -89,15 +89,25 @@ public final class URLResolver {
   }
 
   public static final URL findFirst(final String location) {
-    return URLResolver.findFirstInPluginList(location);
+    return URLResolver.findFirstInBundleList(location);
   }
 
-  public static final URL findFirstInPluginList(final String location, final String... plugins) {
-    return URLResolver.findFirstInPluginList(location, Arrays.asList(plugins));
+  public static final URL findFirstInBundleList(final String location, final String... bundles) {
+    return URLResolver.findFirstInBundleList(location, Arrays.asList(bundles));
   }
 
-  public static final URL findFirstInPluginList(final String location, final List<String> plugins) {
-    return new URLResolver().resolve(location, plugins);
+  public static final URL findFirstInBundleList(final String location, final List<String> bundles) {
+    return new URLResolver().resolve(location, bundles);
+  }
+
+  private final ClassLoader classLoader;
+
+  public URLResolver() {
+    this(ClassLoader.getSystemClassLoader());
+  }
+
+  public URLResolver(final ClassLoader classLoader) {
+    this.classLoader = classLoader;
   }
 
   /**
@@ -115,19 +125,23 @@ public final class URLResolver {
    * If none of the above method worked, returns null.
    *
    */
-  private final URL resolve(final String location, final List<String> projectPluginFilterList) {
+  public final URL resolve(final String location, final List<String> bundleFilterList) {
     if ((location == null) || location.isEmpty()) {
       return null;
     }
     URL resultURL;
     try {
-      resultURL = resolveURLFromWorkspace(location, projectPluginFilterList);
+      resultURL = resolveURLFromWorkspace(location, bundleFilterList);
     } catch (final MalformedURLException e) {
       resultURL = null;
     }
 
     if (resultURL == null) {
-      resultURL = resolveURLFromPluginClasspath(location, projectPluginFilterList);
+      resultURL = resolveURLFromBundleClasspath(location, bundleFilterList);
+    }
+
+    if (resultURL == null) {
+      resultURL = resolveURLFromClasspath(location);
     }
 
     if (resultURL == null) {
@@ -147,7 +161,7 @@ public final class URLResolver {
     return resultURL;
   }
 
-  private final URL resolveURLFromWorkspace(final String location, final List<String> projectFilterList)
+  private final URL resolveURLFromWorkspace(final String location, final List<String> bundleFilterList)
       throws MalformedURLException {
     final IWorkspace workspace;
     try {
@@ -162,7 +176,7 @@ public final class URLResolver {
     final IProject[] projects = workspace.getRoot().getProjects();
     final IPath path = new org.eclipse.core.runtime.Path(location);
     final IProject project = Stream.of(projects)
-        .filter(p -> projectFilterList.isEmpty() || projectFilterList.contains(p.getName())).filter(p -> p.exists(path))
+        .filter(p -> bundleFilterList.isEmpty() || bundleFilterList.contains(p.getName())).filter(p -> p.exists(path))
         .findFirst().orElse(null);
     if (project == null) {
       return null;
@@ -171,20 +185,18 @@ public final class URLResolver {
     return findMember.getLocationURI().toURL();
   }
 
-  /**
-   */
-  public static final URL resolveURLFromClasspath(final String resource, final Class<?> classpathContainedClass) {
-    return classpathContainedClass.getResource(resource);
+  private final URL resolveURLFromClasspath(final String resource) {
+    return classLoader.getResource(resource);
   }
 
-  private final URL resolveURLFromPluginClasspath(final String resource, final List<String> pluginFilterList) {
+  private final URL resolveURLFromBundleClasspath(final String resource, final List<String> bundleFilterList) {
     final ResourcesPlugin plugin = ResourcesPlugin.getPlugin();
     if (plugin == null) {
       // Eclipse is not running (call from plain Java or JUnit)
       return null;
     }
     final Bundle[] bundles = plugin.getBundle().getBundleContext().getBundles();
-    return Stream.of(bundles).filter(b -> pluginFilterList.isEmpty() || pluginFilterList.contains(b.getSymbolicName()))
+    return Stream.of(bundles).filter(b -> bundleFilterList.isEmpty() || bundleFilterList.contains(b.getSymbolicName()))
         .map(b -> b.getEntry(resource)).filter(Objects::nonNull).findFirst().orElse(null);
   }
 

@@ -409,7 +409,7 @@ class ScriptRunner {
 	 * Get the special script file at the right path and put it into the map
 	 */
 	private def void putSpecialScriptFile(Map<String, URL> specialScriptFiles, String filePath, String bundleFilter) {
-		var URL file = URLResolver.findFirstInPluginList(filePath, #[bundleFilter])
+		var URL file = URLResolver.findFirstInBundleList(filePath, #[bundleFilter])
 		if(file !== null) specialScriptFiles.put(filePath, file)
 	}
 

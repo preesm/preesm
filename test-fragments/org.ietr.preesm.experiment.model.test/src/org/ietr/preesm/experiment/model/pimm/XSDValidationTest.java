@@ -26,12 +26,12 @@ import org.xml.sax.SAXException;
 @RunWith(Parameterized.class)
 public class XSDValidationTest {
 
-  private static final URL SCHEMA_URL = URLResolver.resolveURLFromClasspath("/PiSDF.xsd", XSDValidationTest.class);
+  private static final URL SCHEMA_URL = URLResolver.findFirst("/PiSDF.xsd");
 
   private final URL pisdURL;
 
   public XSDValidationTest(final String pisdfName) {
-    this.pisdURL = URLResolver.findFirstInPluginList("resources/pisdf/" + pisdfName,
+    this.pisdURL = URLResolver.findFirstInBundleList("resources/pisdf/" + pisdfName,
         "org.ietr.preesm.experiment.model.test");
   }
 

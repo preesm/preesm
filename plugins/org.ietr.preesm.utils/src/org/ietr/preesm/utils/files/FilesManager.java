@@ -287,7 +287,7 @@ public class FilesManager {
    */
 
   static URL getUrl(final String path, final String... bundleNames) throws MalformedURLException, IOException {
-    return URLResolver.findFirstInPluginList(path, bundleNames);
+    return URLResolver.findFirstInBundleList(path, bundleNames);
   }
 
   /**
