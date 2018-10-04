@@ -8,7 +8,7 @@ PREESM Changelog
 * Add workflow task to manually input a schedule in the flow;
 
 ### Changes
-* Refactoring;
+* Major refactoring;
 * Adding graph optimizations for PiMM graphs as seperate process from PiMM2SRDAG.
 * Adding tests for graph transformations.
 * Adding new task to flatten a given PiMM graph.
