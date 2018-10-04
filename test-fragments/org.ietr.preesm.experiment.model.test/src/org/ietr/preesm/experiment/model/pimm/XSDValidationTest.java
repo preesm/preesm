@@ -51,7 +51,7 @@ public class XSDValidationTest {
     try {
       PiSDFXSDValidator.validate(this.pisdURL);
     } catch (PiSDFXSDValidationException e) {
-      e.printStackTrace();
+      System.out.println("Error on " + pisdURL.getFile() + ":\n" + e.getCause().getMessage());
       Assert.fail(e.getMessage());
     }
   }

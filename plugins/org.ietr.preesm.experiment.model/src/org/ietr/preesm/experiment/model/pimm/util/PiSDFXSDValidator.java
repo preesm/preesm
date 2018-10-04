@@ -24,18 +24,7 @@ public class PiSDFXSDValidator {
    *
    */
   public PiSDFXSDValidator() {
-    URL tmpURL = new URLResolver(this.getClass().getClassLoader()).resolve("PiSDF.xsd", Collections.emptyList());
-    if (tmpURL == null) {
-      tmpURL = new URLResolver(this.getClass().getClassLoader()).resolve("/PiSDF.xsd", Collections.emptyList());
-    }
-    if (tmpURL == null) {
-      tmpURL = new URLResolver(this.getClass().getClassLoader()).resolve("xsd/PiSDF.xsd", Collections.emptyList());
-    }
-    if (tmpURL == null) {
-      tmpURL = new URLResolver(this.getClass().getClassLoader()).resolve("/xsd/PiSDF.xsd", Collections.emptyList());
-    }
-    schemaURL = tmpURL;
-
+    schemaURL = new URLResolver(this.getClass().getClassLoader()).resolve("PiSDF.xsd", Collections.emptyList());
   }
 
   /**
