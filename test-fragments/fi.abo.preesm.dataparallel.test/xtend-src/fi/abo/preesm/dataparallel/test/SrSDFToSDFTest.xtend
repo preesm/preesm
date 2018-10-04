@@ -98,10 +98,10 @@ class SrSDFToSDFTest {
 	 * @param graph The SDFGraph
 	 * @return Total delays in this {@link SDFGraph} instance
 	 */
-	private def int getTotalDelays(SDFGraph graph) {
-		var totalDelays = 0
+	private def long getTotalDelays(SDFGraph graph) {
+		var totalDelays = 0L
 		for(edge: graph.edgeSet) {
-			totalDelays += edge.delay.intValue
+			totalDelays += edge.delay.longValue
 		}
 		return totalDelays
 	}
@@ -112,7 +112,7 @@ class SrSDFToSDFTest {
 	 * @param nodeChainGraph The {@link NodeChainGraph} instance
 	 * @param value Value of the delays
 	 */
-	private def NodeChainGraph setDelays(NodeChainGraph nodeChainGraph, int value) {
+	private def NodeChainGraph setDelays(NodeChainGraph nodeChainGraph, long value) {
 		for(node: nodeChainGraph.nodechains.keySet) {
 			val edgeDelayMap = nodeChainGraph.getEdgewiseInputDelays(node)
 			if(edgeDelayMap !== null) {

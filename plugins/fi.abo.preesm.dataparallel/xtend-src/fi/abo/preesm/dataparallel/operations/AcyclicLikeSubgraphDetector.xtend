@@ -97,11 +97,11 @@ class AcyclicLikeSubgraphDetector implements IGraphVisitor<SDFGraph, SDFAbstract
 		processedSDF = sdf.clone
 		val removableEdges = newArrayList
 		processedSDF.edgeSet.forEach[edge |
-			val prod = edge.prod.intValue
-			val cons = edge.cons.intValue
-			val delay = edge.delay.intValue
-			val sourceRep = edge.source.nbRepeatAsInteger
-			val targetRep = edge.target.nbRepeatAsInteger
+			val prod = edge.prod.longValue
+			val cons = edge.cons.longValue
+			val delay = edge.delay.longValue
+			val sourceRep = edge.source.nbRepeatAsLong
+			val targetRep = edge.target.nbRepeatAsLong
 
 			if((delay >= prod * sourceRep) &&
 				(delay >= cons * targetRep)) {

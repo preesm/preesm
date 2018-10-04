@@ -125,9 +125,9 @@ class NodeChainGraph {
 		// have delays equal to production/consumption rate
 		val removableEdges = newArrayList
 		localGraph.edgeSet.forEach[edge |
-			val prod = edge.prod.intValue
-			val delay = edge.delay.intValue
-			val rep = edge.source.nbRepeatAsInteger
+			val prod = edge.prod.longValue
+			val delay = edge.delay.longValue
+			val rep = edge.source.nbRepeatAsLong
 			if(delay >= rep * prod) {
 				removableEdges.add(edge)
 			}
@@ -321,7 +321,7 @@ class NodeChainGraph {
 	 * @param vertex The delays per edge of this vertex is returned
 	 * @return Lookup table of {@link SDFEdge} connected to the vertex and its delay values
 	 */
-	def Map<SDFEdge, Integer> getEdgewiseInputDelays(SDFAbstractVertex vertex) {
+	def Map<SDFEdge, Long> getEdgewiseInputDelays(SDFAbstractVertex vertex) {
 		val node = nodechains.get(vertex)
 		if(node === null) {
 			throw new SDF4JException("The vertex is not part of the SrSDF graph used to " +
@@ -332,14 +332,14 @@ class NodeChainGraph {
 		for(inEdge: graph.incomingEdgesOf(node.vertex)) {
 			// Check if this edge has an implode associated with this edge
 			if(node.implode !== null && node.implode.contains(inEdge.source)) {
-				var delays = 0
+				var delays = 0L
 				for(impEdge: graph.incomingEdgesOf(inEdge.source)) {
-					delays += impEdge.delay.intValue
+					delays += impEdge.delay.longValue
 				}
 
 				delayMap.put(inEdge, delays)
 			} else {
-				delayMap.put(inEdge, inEdge.delay.intValue)
+				delayMap.put(inEdge, inEdge.delay.longValue)
 			}
 		}
 
@@ -358,7 +358,7 @@ class NodeChainGraph {
 	 * @param vertex The delays per edge of this vertex is returned
 	 * @return Lookup table of {@link SDFEdge} connected out of the vertex and its delay values
 	 */
-	def Map<SDFEdge, Integer> getEdgewiseOutputDelays(SDFAbstractVertex vertex) {
+	def Map<SDFEdge, Long> getEdgewiseOutputDelays(SDFAbstractVertex vertex) {
 		val node = nodechains.get(vertex)
 		if(node === null) {
 			throw new SDF4JException("The vertex is not part of the SrSDF graph used to " +
@@ -368,14 +368,14 @@ class NodeChainGraph {
 		var delayMap = newLinkedHashMap
 		for(outEdge: graph.outgoingEdgesOf(node.vertex)) {
 			// Check if this edge has an explode instance associated with this edge
-			var delays = 0
+			var delays = 0L
 			if(node.explode !== null && node.explode.contains(outEdge.target)) {
 				for(exEdge: graph.outgoingEdgesOf(outEdge.target)) {
-					delays += exEdge.delay.intValue
+					delays += exEdge.delay.longValue
 				}
 				delayMap.put(outEdge, delays)
 			} else {
-				delayMap.put(outEdge, outEdge.delay.intValue)
+				delayMap.put(outEdge, outEdge.delay.longValue)
 			}
 		}
 		if(delayMap.empty) {
@@ -415,7 +415,7 @@ class NodeChainGraph {
 	 * @param isInput The direction of the edges. True if its input
 	 * @return Lookup table of delegated edge and the final delay value at it
 	 */
-	private def Map<SDFEdge, Integer> implodeExplodeDelayCalculator(SDFEdge edge, int delay, boolean isInput) {
+	private def Map<SDFEdge, Long> implodeExplodeDelayCalculator(SDFEdge edge, long delay, boolean isInput) {
 		val edgeDelayMap = newLinkedHashMap
 		var remainingDelays = delay
 
@@ -426,7 +426,7 @@ class NodeChainGraph {
 		}
 
 		for(impEdge: edgeSet){
-			edgeDelayMap.put(impEdge, 0)
+			edgeDelayMap.put(impEdge, 0L)
 		}
 
 		val positiveDelays = remainingDelays > 0
@@ -435,7 +435,7 @@ class NodeChainGraph {
 		while(iterate) {
 			for(impEdge: edgeSet) {
 				val prevDelay = edgeDelayMap.get(impEdge)
-				var cons = impEdge.cons.intValue
+				var cons = impEdge.cons.longValue
 
 				if(positiveDelays && remainingDelays >= cons && iterate) {
 					edgeDelayMap.put(impEdge, prevDelay + cons)
@@ -466,7 +466,7 @@ class NodeChainGraph {
 	 * @param delays Lookup table of edges of this vertex and its delays
 	 * @param isInput True if the delays of input are being set
 	 */
-	private def void setEdgewiseDelays(SDFAbstractVertex vertex, Map<SDFEdge, Integer> delays, boolean isInput) {
+	private def void setEdgewiseDelays(SDFAbstractVertex vertex, Map<SDFEdge, Long> delays, boolean isInput) {
 		val node = nodechains.get(vertex)
 		if(node === null) {
 			throw new SDF4JException("The vertex is not part of the SrSDF graph used to " +
@@ -526,7 +526,7 @@ class NodeChainGraph {
 	 * @param vertex The delays of edges input to this vertex are modified
 	 * @param Lookup table of edges input to the vertex and desired values to be set
 	 */
-	def void setEdgewiseInputDelays(SDFAbstractVertex vertex, Map<SDFEdge, Integer> delays) {
+	def void setEdgewiseInputDelays(SDFAbstractVertex vertex, Map<SDFEdge, Long> delays) {
 		setEdgewiseDelays(vertex, delays, true)
 	}
 
@@ -539,7 +539,7 @@ class NodeChainGraph {
 	 * @param vertex The delays of edges output to this vertex are modified
 	 * @param Lookup table of edges output to the vertex and desired values to be set
 	 */
-	def void setEdgewiseOutputDelays(SDFAbstractVertex vertex, Map<SDFEdge, Integer> delays) {
+	def void setEdgewiseOutputDelays(SDFAbstractVertex vertex, Map<SDFEdge, Long> delays) {
 		setEdgewiseDelays(vertex, delays, false)
 	}
 }

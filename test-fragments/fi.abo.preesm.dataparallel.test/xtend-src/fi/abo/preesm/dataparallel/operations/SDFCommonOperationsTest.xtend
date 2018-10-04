@@ -248,7 +248,7 @@ class SDFCommonOperationsTest {
 				// 3. Check transient graph has no delays
 				val edgesWithDelays = newArrayList
 				graph.edgeSet.forEach[edge |
-					if(edge.delay.intValue > 0) {
+					if(edge.delay.longValue > 0) {
 						edgesWithDelays.add(edge)
 					}
 				]
@@ -317,13 +317,13 @@ class SDFCommonOperationsTest {
 
 			// 8. Check all delays are positive
 			srsdf.edgeSet.forEach[edge |
-				if(edge.delay.intValue < 0) {
+				if(edge.delay.longValue < 0) {
 					println(edge)
 				}
 			]
 
 			Assert.assertTrue(srsdf.edgeSet.forall[edge |
-				edge.delay.intValue >= 0
+				edge.delay.longValue >= 0
 			])
 		}
 	}
