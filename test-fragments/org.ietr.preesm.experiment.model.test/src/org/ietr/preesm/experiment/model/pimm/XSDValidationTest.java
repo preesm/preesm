@@ -37,9 +37,25 @@ public class XSDValidationTest {
 
         { "actor_mlp.pi" },
 
-        { "top_display.pi" }
+        { "top_display.pi" },
 
-    };
+        { "adam.pi" },
+
+        { "layer_gradients.pi" },
+
+        { "mlp_raw.pi" },
+
+        { "mlp.pi" },
+
+        { "network_train.pi" },
+
+        { "output_gradients.pi" },
+
+        { "prediction.pi" },
+
+        { "training.pi" },
+
+        { "weight_generator.pi" } };
     return Arrays.asList(data);
   }
 

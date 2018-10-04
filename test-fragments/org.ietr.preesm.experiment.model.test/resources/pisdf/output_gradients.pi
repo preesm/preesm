@@ -1,0 +1,129 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<graphml xmlns="http://graphml.graphdrawing.org/xmlns">
+    <key attr.name="parameters" for="graph" id="parameters"/>
+    <key attr.name="variables" for="graph" id="variables"/>
+    <key attr.name="arguments" for="node" id="arguments"/>
+    <key attr.name="name" attr.type="string" for="graph"/>
+    <key attr.name="graph_desc" attr.type="string" for="node"/>
+    <graph edgedefault="directed">
+        <data key="name">output_gradients</data>
+        <node id="output_size" kind="cfg_in_iface"/>
+        <node id="input_size" kind="cfg_in_iface"/>
+        <node id="target" kind="src">
+            <port annotation="NONE" expr="output_size" kind="output" name="target"/>
+        </node>
+        <node id="inputs" kind="src">
+            <port annotation="NONE" expr="input_size" kind="output" name="inputs"/>
+        </node>
+        <node id="weights_gradient" kind="snk">
+            <port annotation="NONE" expr="input_size  * output_size"
+                kind="input" name="weights_gradient"/>
+        </node>
+        <node id="Output_Error" kind="actor">
+            <data key="graph_desc">Code/include/mlp.h</data>
+            <loop name="computeOutputError">
+                <param direction="IN" isConfig="true" name="output_size" type="int"/>
+                <param direction="IN" isConfig="false" name="valid" type="int "/>
+                <param direction="IN" isConfig="false"
+                    name="derivative_values" type="float "/>
+                <param direction="IN" isConfig="false" name="predicted" type="float "/>
+                <param direction="IN" isConfig="false" name="target" type="float "/>
+                <param direction="OUT" isConfig="false" name="errors" type="float "/>
+            </loop>
+            <port kind="cfg_input" name="output_size"/>
+            <port annotation="NONE" expr="output_size" kind="input" name="derivative_values"/>
+            <port annotation="NONE" expr="output_size" kind="input" name="predicted"/>
+            <port annotation="NONE" expr="1" kind="input" name="valid"/>
+            <port annotation="NONE" expr="output_size" kind="input" name="target"/>
+            <port annotation="NONE" expr="output_size" kind="output" name="errors"/>
+        </node>
+        <node id="Gradients" kind="actor">
+            <data key="graph_desc">Code/include/mlp.h</data>
+            <loop name="computeWeightsGradients">
+                <param direction="IN" isConfig="true" name="input_size" type="int"/>
+                <param direction="IN" isConfig="true" name="layer_size" type="int"/>
+                <param direction="IN" isConfig="false" name="errors" type="float "/>
+                <param direction="IN" isConfig="false" name="inputs" type="float "/>
+                <param direction="IN" isConfig="false" name="valid" type="int "/>
+                <param direction="OUT" isConfig="false" name="gradients" type="float "/>
+            </loop>
+            <port kind="cfg_input" name="input_size"/>
+            <port kind="cfg_input" name="layer_size"/>
+            <port annotation="NONE" expr="layer_size" kind="input" name="errors"/>
+            <port annotation="NONE" expr="input_size" kind="input" name="inputs"/>
+            <port annotation="NONE" expr="1" kind="input" name="valid"/>
+            <port annotation="NONE" expr=" input_size * layer_size"
+                kind="output" name="gradients"/>
+        </node>
+        <node id="Derivative_Function" kind="actor">
+            <data key="graph_desc">Code/include/mlp.h</data>
+            <loop name="derivativeLinear">
+                <param direction="IN" isConfig="false" name="input" type="float "/>
+                <param direction="OUT" isConfig="false" name="output" type="float "/>
+            </loop>
+            <port annotation="NONE" expr="1" kind="input" name="input"/>
+            <port annotation="NONE" expr="1" kind="output" name="output"/>
+        </node>
+        <node id="bias_gradient" kind="snk">
+            <port annotation="NONE" expr="output_size" kind="input" name="bias_gradient"/>
+        </node>
+        <node id="BroadcastError" kind="broadcast">
+            <port kind="cfg_input" name="size"/>
+            <port annotation="NONE" expr="size" kind="input" name="in"/>
+            <port annotation="NONE" expr="size" kind="output" name="out_1"/>
+            <port annotation="NONE" expr="size" kind="output" name="out_0"/>
+        </node>
+        <node id="valid" kind="src">
+            <port annotation="NONE" expr="1" kind="output" name="valid"/>
+        </node>
+        <node id="BroadCastValid" kind="broadcast">
+            <port annotation="NONE" expr="1" kind="input" name="in"/>
+            <port annotation="NONE" expr="1" kind="output" name="out_0"/>
+            <port annotation="NONE" expr="1" kind="output" name="out_1"/>
+        </node>
+        <node id="raw_output" kind="src">
+            <port annotation="NONE" expr="output_size" kind="output" name="raw_output"/>
+        </node>
+        <node id="output" kind="src">
+            <port annotation="NONE" expr="output_size" kind="output" name="output"/>
+        </node>
+        <edge kind="fifo" source="target" sourceport="target"
+            target="Output_Error" targetport="target" type="float"/>
+        <edge kind="fifo" source="Gradients" sourceport="gradients"
+            target="weights_gradient" targetport="weights_gradient" type="float"/>
+        <edge kind="fifo" source="Derivative_Function"
+            sourceport="output" target="Output_Error"
+            targetport="derivative_values" type="float"/>
+        <edge kind="fifo" source="Output_Error" sourceport="errors"
+            target="BroadcastError" targetport="in" type="float"/>
+        <edge kind="fifo" source="BroadcastError" sourceport="out_1"
+            target="Gradients" targetport="errors" type="float"/>
+        <edge kind="fifo" source="BroadcastError" sourceport="out_0"
+            target="bias_gradient" targetport="bias_gradient" type="float"/>
+        <edge kind="fifo" source="valid" sourceport="valid"
+            target="BroadCastValid" targetport="in" type="int"/>
+        <edge kind="fifo" source="BroadCastValid" sourceport="out_0"
+            target="Output_Error" targetport="valid" type="int"/>
+        <edge kind="fifo" source="BroadCastValid" sourceport="out_1"
+            target="Gradients" targetport="valid" type="int"/>
+        <edge kind="fifo" source="inputs" sourceport="inputs"
+            target="Gradients" targetport="inputs" type="float"/>
+        <edge kind="fifo" source="output" sourceport="output"
+            target="Output_Error" targetport="predicted" type="float"/>
+        <edge kind="fifo" source="raw_output" sourceport="raw_output"
+            target="Derivative_Function" targetport="input" type="float"/>
+        <edge kind="dependency" source="output_size"
+            target="Output_Error" targetport="output_size"/>
+        <edge kind="dependency" source="output_size" target="target"/>
+        <edge kind="dependency" source="output_size" target="Gradients" targetport="layer_size"/>
+        <edge kind="dependency" source="output_size"
+            target="BroadcastError" targetport="size"/>
+        <edge kind="dependency" source="output_size" target="bias_gradient"/>
+        <edge kind="dependency" source="output_size" target="weights_gradient"/>
+        <edge kind="dependency" source="input_size" target="inputs"/>
+        <edge kind="dependency" source="input_size" target="Gradients" targetport="input_size"/>
+        <edge kind="dependency" source="input_size" target="weights_gradient"/>
+        <edge kind="dependency" source="output_size" target="raw_output"/>
+        <edge kind="dependency" source="output_size" target="output"/>
+    </graph>
+</graphml>

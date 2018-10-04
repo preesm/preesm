@@ -1,0 +1,511 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<graphml xmlns="http://graphml.graphdrawing.org/xmlns">
+    <key attr.name="parameters" for="graph" id="parameters"/>
+    <key attr.name="variables" for="graph" id="variables"/>
+    <key attr.name="arguments" for="node" id="arguments"/>
+    <key attr.name="name" attr.type="string" for="graph"/>
+    <key attr.name="graph_desc" attr.type="string" for="node"/>
+    <key attr.name="delay" attr.type="string" for="edge"/>
+    <graph edgedefault="directed">
+        <data key="name">network_train</data>
+        <node id="input_size" kind="cfg_in_iface"/>
+        <node id="hidden_size" kind="cfg_in_iface"/>
+        <node id="output_size" kind="cfg_in_iface"/>
+        <node
+            expr="input_size * hidden_size + hidden_size * output_size"
+            id="weights_size" kind="param"/>
+        <node expr="hidden_size + output_size" id="bias_size" kind="param"/>
+        <node expr="input_size * hidden_size" id="hidden_weights_size" kind="param"/>
+        <node expr="hidden_size * output_size" id="output_weights_size" kind="param"/>
+        <node id="weights" kind="src">
+            <port annotation="NONE" expr="weights_size" kind="output" name="weights"/>
+        </node>
+        <node id="bias" kind="src">
+            <port annotation="NONE" expr="bias_size" kind="output" name="bias"/>
+        </node>
+        <node id="valid" kind="src">
+            <port annotation="NONE" expr="1" kind="output" name="valid"/>
+        </node>
+        <node id="inputs" kind="src">
+            <port annotation="NONE" expr="input_size" kind="output" name="inputs"/>
+        </node>
+        <node id="weights_out" kind="snk">
+            <port annotation="NONE" expr="weights_size" kind="input" name="weights_out"/>
+        </node>
+        <node id="bias_out" kind="snk">
+            <port annotation="NONE" expr="bias_size" kind="input" name="bias_out"/>
+        </node>
+        <node id="ForkWeights" kind="fork">
+            <port kind="cfg_input" name="hidden_size"/>
+            <port kind="cfg_input" name="output_size"/>
+            <port kind="cfg_input" name="weights_size"/>
+            <port annotation="NONE" expr="weights_size" kind="input" name="in"/>
+            <port annotation="NONE" expr="hidden_size" kind="output" name="out_0"/>
+            <port annotation="NONE" expr="output_size" kind="output" name="out_1"/>
+        </node>
+        <node id="ForkBias" kind="fork">
+            <port kind="cfg_input" name="hidden_size"/>
+            <port kind="cfg_input" name="output_size"/>
+            <port kind="cfg_input" name="bias_size"/>
+            <port annotation="NONE" expr="bias_size" kind="input" name="in"/>
+            <port annotation="NONE" expr="hidden_size" kind="output" name="out_0"/>
+            <port annotation="NONE" expr="output_size" kind="output" name="out_1"/>
+        </node>
+        <node id="AdamOutput" kind="actor">
+            <data key="graph_desc">Algo/training/adam.pi</data>
+            <port kind="cfg_input" name="layer_size"/>
+            <port kind="cfg_input" name="input_size"/>
+            <port annotation="NONE"
+                expr="input_size * layer_size + layer_size" kind="input" name="gradients"/>
+            <port annotation="NONE" expr="1" kind="input" name="epsilon"/>
+            <port annotation="NONE" expr="layer_size" kind="input" name="bias"/>
+            <port annotation="NONE" expr="4" kind="input" name="betas"/>
+            <port annotation="NONE" expr="input_size * layer_size"
+                kind="input" name="weights"/>
+            <port annotation="NONE" expr="1" kind="input" name="learning_rate"/>
+            <port annotation="NONE" expr="1" kind="input" name="valid"/>
+            <port annotation="NONE"
+                expr="input_size * layer_size + layer_size" kind="input" name="first_order_moments"/>
+            <port annotation="NONE"
+                expr="input_size * layer_size + layer_size" kind="input" name="second_order_moments"/>
+            <port annotation="NONE" expr="input_size * layer_size"
+                kind="output" name="weights_out"/>
+            <port annotation="NONE" expr="layer_size" kind="output" name="bias_out"/>
+            <port annotation="NONE"
+                expr="input_size * layer_size + layer_size"
+                kind="output" name="second_order_moments_out"/>
+            <port annotation="NONE"
+                expr="input_size * layer_size + layer_size"
+                kind="output" name="first_order_moments_out"/>
+        </node>
+        <node id="AdamHidden" kind="actor">
+            <data key="graph_desc">Algo/training/adam.pi</data>
+            <port kind="cfg_input" name="layer_size"/>
+            <port kind="cfg_input" name="input_size"/>
+            <port annotation="NONE"
+                expr="input_size * layer_size + layer_size" kind="input" name="gradients"/>
+            <port annotation="NONE" expr="1" kind="input" name="epsilon"/>
+            <port annotation="NONE" expr="4" kind="input" name="betas"/>
+            <port annotation="NONE" expr="layer_size" kind="input" name="bias"/>
+            <port annotation="NONE" expr="1" kind="input" name="learning_rate"/>
+            <port annotation="NONE" expr="input_size * layer_size"
+                kind="input" name="weights"/>
+            <port annotation="NONE" expr="1" kind="input" name="valid"/>
+            <port annotation="NONE"
+                expr="input_size * layer_size + layer_size" kind="input" name="second_order_moments"/>
+            <port annotation="NONE"
+                expr="input_size * layer_size + layer_size" kind="input" name="first_order_moments"/>
+            <port annotation="NONE" expr="input_size * layer_size"
+                kind="output" name="weights_out"/>
+            <port annotation="NONE" expr="layer_size" kind="output" name="bias_out"/>
+            <port annotation="NONE"
+                expr="input_size * layer_size + layer_size"
+                kind="output" name="second_order_moments_out"/>
+            <port annotation="NONE"
+                expr="input_size * layer_size + layer_size"
+                kind="output" name="first_order_moments_out"/>
+        </node>
+        <node id="JoinWeights" kind="join">
+            <port kind="cfg_input" name="weights_size"/>
+            <port kind="cfg_input" name="hidden_size"/>
+            <port kind="cfg_input" name="output_size"/>
+            <port annotation="NONE" expr="hidden_size" kind="input" name="in_0"/>
+            <port annotation="NONE" expr="output_size" kind="input" name="in_1"/>
+            <port annotation="NONE" expr="weights_size" kind="output" name="out"/>
+        </node>
+        <node id="JoinBias" kind="join">
+            <port kind="cfg_input" name="bias_size"/>
+            <port kind="cfg_input" name="hidden_size"/>
+            <port kind="cfg_input" name="output_size"/>
+            <port annotation="NONE" expr="hidden_size" kind="input" name="in_0"/>
+            <port annotation="NONE" expr="output_size" kind="input" name="in_1"/>
+            <port annotation="NONE" expr="bias_size" kind="output" name="out"/>
+        </node>
+        <node id="MLP" kind="actor">
+            <data key="graph_desc">Algo/training/mlp_raw.pi</data>
+            <port kind="cfg_input" name="output_size"/>
+            <port kind="cfg_input" name="hidden_size"/>
+            <port kind="cfg_input" name="input_size"/>
+            <port annotation="NONE" expr="hidden_size + output_size"
+                kind="input" name="bias"/>
+            <port annotation="NONE" expr="input_size" kind="input" name="input"/>
+            <port annotation="NONE"
+                expr="input_size * hidden_size + hidden_size * output_size"
+                kind="input" name="weights"/>
+            <port annotation="NONE" expr="hidden_size" kind="output" name="hidden"/>
+            <port annotation="NONE" expr="output_size" kind="output" name="raw_output"/>
+            <port annotation="NONE" expr="output_size" kind="output" name="output"/>
+            <port annotation="NONE" expr="hidden_size" kind="output" name="raw_hidden"/>
+        </node>
+        <node id="GradientsHidden" kind="actor">
+            <data key="graph_desc">Algo/training/layer_gradients.pi</data>
+            <port kind="cfg_input" name="layer_size"/>
+            <port kind="cfg_input" name="next_layer_size"/>
+            <port kind="cfg_input" name="input_size"/>
+            <port annotation="NONE" expr="next_layer_size" kind="input" name="next_layer_errors"/>
+            <port annotation="NONE" expr="layer_size" kind="input" name="raw_hidden"/>
+            <port annotation="NONE" expr="input_size" kind="input" name="inputs"/>
+            <port annotation="NONE" expr="layer_size * next_layer_size"
+                kind="input" name="next_layer_weights"/>
+            <port annotation="NONE" expr="1" kind="input" name="valid"/>
+            <port annotation="NONE" expr="layer_size" kind="output" name="bias_gradient"/>
+            <port annotation="NONE" expr="input_size * layer_size"
+                kind="output" name="weights_gradient"/>
+        </node>
+        <node id="GradientsOutput" kind="actor">
+            <data key="graph_desc">Algo/training/output_gradients.pi</data>
+            <port kind="cfg_input" name="output_size"/>
+            <port kind="cfg_input" name="input_size"/>
+            <port annotation="NONE" expr="input_size" kind="input" name="inputs"/>
+            <port annotation="NONE" expr="output_size" kind="input" name="raw_output"/>
+            <port annotation="NONE" expr="output_size" kind="input" name="output"/>
+            <port annotation="NONE" expr="output_size" kind="input" name="target"/>
+            <port annotation="NONE" expr="1" kind="input" name="valid"/>
+            <port annotation="NONE" expr="output_size" kind="output" name="bias_gradient"/>
+            <port annotation="NONE" expr="input_size * output_size"
+                kind="output" name="weights_gradient"/>
+        </node>
+        <node id="BroadcastWeights" kind="broadcast">
+            <port kind="cfg_input" name="size"/>
+            <port annotation="NONE" expr="size" kind="input" name="in"/>
+            <port annotation="NONE" expr="size" kind="output" name="out_1"/>
+            <port annotation="NONE" expr="size" kind="output" name="out_0"/>
+        </node>
+        <node id="BroadcastBias" kind="broadcast">
+            <port kind="cfg_input" name="size"/>
+            <port annotation="NONE" expr="size" kind="input" name="in"/>
+            <port annotation="NONE" expr="size" kind="output" name="out_1"/>
+            <port annotation="NONE" expr="size" kind="output" name="out_0"/>
+        </node>
+        <node id="BroadcastInput" kind="broadcast">
+            <port kind="cfg_input" name="size"/>
+            <port annotation="NONE" expr="size" kind="input" name="in"/>
+            <port annotation="NONE" expr="size" kind="output" name="out_0"/>
+            <port annotation="NONE" expr="size" kind="output" name="out_1"/>
+        </node>
+        <node id="BroadcastValid" kind="broadcast">
+            <port annotation="NONE" expr="1" kind="input" name="in"/>
+            <port annotation="NONE" expr="1" kind="output" name="out_0"/>
+            <port annotation="NONE" expr="1" kind="output" name="out_4"/>
+            <port annotation="NONE" expr="1" kind="output" name="out_2"/>
+            <port annotation="NONE" expr="1" kind="output" name="out_3"/>
+            <port annotation="NONE" expr="1" kind="output" name="out_1"/>
+        </node>
+        <node id="BroadcastWeights_output" kind="broadcast">
+            <port kind="cfg_input" name="size"/>
+            <port annotation="NONE" expr="size" kind="input" name="in"/>
+            <port annotation="NONE" expr="size" kind="output" name="out_1"/>
+            <port annotation="NONE" expr="size" kind="output" name="out_0"/>
+        </node>
+        <node id="JoinGradients_hidden" kind="join">
+            <port kind="cfg_input" name="weights_size"/>
+            <port kind="cfg_input" name="bias_size"/>
+            <port annotation="NONE" expr="bias_size" kind="input" name="in_0"/>
+            <port annotation="NONE" expr="weights_size" kind="input" name="in_1"/>
+            <port annotation="NONE" expr="bias_size + weights_size"
+                kind="output" name="out"/>
+        </node>
+        <node id="JoinGradients_output" kind="join">
+            <port kind="cfg_input" name="input_size"/>
+            <port kind="cfg_input" name="layer_size"/>
+            <port annotation="NONE" expr="layer_size" kind="input" name="in_1"/>
+            <port annotation="NONE" expr="input_size * layer_size"
+                kind="input" name="in_0"/>
+            <port annotation="NONE"
+                expr="input_size * layer_size + layer_size"
+                kind="output" name="out"/>
+        </node>
+        <node id="BroadcastErrors_output" kind="broadcast">
+            <port kind="cfg_input" name="size"/>
+            <port annotation="NONE" expr="size" kind="input" name="in"/>
+            <port annotation="NONE" expr="size" kind="output" name="out_1"/>
+            <port annotation="NONE" expr="size" kind="output" name="out_0"/>
+        </node>
+        <node id="targets" kind="src">
+            <port annotation="NONE" expr="output_size" kind="output" name="targets"/>
+        </node>
+        <node id="learning_rate" kind="src">
+            <port annotation="NONE" expr="1" kind="output" name="learning_rate"/>
+        </node>
+        <node id="BroadcastLearningRate" kind="broadcast">
+            <port annotation="NONE" expr="1" kind="input" name="in"/>
+            <port annotation="NONE" expr="1" kind="output" name="out_1"/>
+            <port annotation="NONE" expr="1" kind="output" name="out_0"/>
+        </node>
+        <node id="gen_epsilon" kind="actor">
+            <data key="graph_desc">Code/include/mlp.h</data>
+            <loop name="adamEpsilonGen">
+                <param direction="OUT" isConfig="false" name="epsilon" type="double "/>
+            </loop>
+            <port annotation="NONE" expr="1" kind="output" name="epsilon"/>
+        </node>
+        <node id="BroadcastEpsilon" kind="broadcast">
+            <port annotation="NONE" expr="1" kind="input" name="in"/>
+            <port annotation="NONE" expr="1" kind="output" name="out_1"/>
+            <port annotation="NONE" expr="1" kind="output" name="out_0"/>
+        </node>
+        <node id="adamBetas" kind="actor">
+            <data key="graph_desc">Code/include/mlp.h</data>
+            <loop name="adamUpdateBetas">
+                <param direction="IN" isConfig="false" name="betas_in" type="double "/>
+                <param direction="IN" isConfig="false" name="valid" type="int "/>
+                <param direction="OUT" isConfig="false" name="betas_out" type="double "/>
+            </loop>
+            <port annotation="NONE" expr="4" kind="input" name="betas_in"/>
+            <port annotation="NONE" expr="1" kind="input" name="valid"/>
+            <port annotation="NONE" expr="4" kind="output" name="betas_out"/>
+        </node>
+        <node id="BroadcastBetas" kind="broadcast">
+            <port annotation="NONE" expr="4" kind="input" name="in"/>
+            <port annotation="NONE" expr="4" kind="output" name="out_1"/>
+            <port annotation="NONE" expr="4" kind="output" name="out_0"/>
+            <port annotation="NONE" expr="4" kind="output" name="out_2"/>
+        </node>
+        <node expr="hidden_weights_size + hidden_size" getter=""
+            id="delay_AdamHidden_second_order_moments_out__AdamHidden_second_order_moments"
+            kind="delay" level="permanent" setter="">
+            <port annotation="NONE"
+                expr="hidden_weights_size + hidden_size" kind="input" name="set"/>
+            <port annotation="NONE"
+                expr="hidden_weights_size + hidden_size" kind="output" name="get"/>
+        </node>
+        <node expr="hidden_weights_size + hidden_size" getter=""
+            id="delay_AdamHidden_first_order_moments_out__AdamHidden_first_order_moments"
+            kind="delay" level="permanent" setter="">
+            <port annotation="NONE"
+                expr="hidden_weights_size + hidden_size" kind="input" name="set"/>
+            <port annotation="NONE"
+                expr="hidden_weights_size + hidden_size" kind="output" name="get"/>
+        </node>
+        <node expr="output_weights_size + output_size" getter=""
+            id="delay_AdamOutput_first_order_moments_out__AdamOutput_first_order_moments"
+            kind="delay" level="permanent" setter="">
+            <port annotation="NONE"
+                expr="output_weights_size + output_size" kind="input" name="set"/>
+            <port annotation="NONE"
+                expr="output_weights_size + output_size" kind="output" name="get"/>
+        </node>
+        <node expr="output_weights_size + output_size" getter=""
+            id="delay_AdamOutput_second_order_moments_out__AdamOutput_second_order_moments"
+            kind="delay" level="permanent" setter="">
+            <port annotation="NONE"
+                expr="output_weights_size + output_size" kind="input" name="set"/>
+            <port annotation="NONE"
+                expr="output_weights_size + output_size" kind="output" name="get"/>
+        </node>
+        <node expr="4" getter=""
+            id="delay_BroadcastBetas_out_2__adamBetas_betas_in"
+            kind="delay" level="permanent" setter="">
+            <port annotation="NONE" expr="4" kind="input" name="set"/>
+            <port annotation="NONE" expr="4" kind="output" name="get"/>
+        </node>
+        <edge expr="hidden_weights_size + hidden_size" kind="fifo"
+            source="AdamHidden" sourceport="second_order_moments_out"
+            target="AdamHidden" targetport="second_order_moments" type="double">
+            <data key="delay">delay_AdamHidden_second_order_moments_out__AdamHidden_second_order_moments</data>
+        </edge>
+        <edge expr="hidden_weights_size + hidden_size" kind="fifo"
+            source="AdamHidden" sourceport="first_order_moments_out"
+            target="AdamHidden" targetport="first_order_moments" type="double">
+            <data key="delay">delay_AdamHidden_first_order_moments_out__AdamHidden_first_order_moments</data>
+        </edge>
+        <edge expr="output_weights_size + output_size" kind="fifo"
+            source="AdamOutput" sourceport="first_order_moments_out"
+            target="AdamOutput" targetport="first_order_moments" type="double">
+            <data key="delay">delay_AdamOutput_first_order_moments_out__AdamOutput_first_order_moments</data>
+        </edge>
+        <edge expr="output_weights_size + output_size" kind="fifo"
+            source="AdamOutput" sourceport="second_order_moments_out"
+            target="AdamOutput" targetport="second_order_moments" type="double">
+            <data key="delay">delay_AdamOutput_second_order_moments_out__AdamOutput_second_order_moments</data>
+        </edge>
+        <edge expr="4" kind="fifo" source="BroadcastBetas"
+            sourceport="out_2" target="adamBetas" targetport="betas_in" type="double">
+            <data key="delay">delay_BroadcastBetas_out_2__adamBetas_betas_in</data>
+        </edge>
+        <edge kind="fifo" source="JoinWeights" sourceport="out"
+            target="weights_out" targetport="weights_out" type="float"/>
+        <edge kind="fifo" source="JoinBias" sourceport="out"
+            target="bias_out" targetport="bias_out" type="float"/>
+        <edge kind="fifo" source="AdamHidden" sourceport="weights_out"
+            target="JoinWeights" targetport="in_0" type="float"/>
+        <edge kind="fifo" source="AdamHidden" sourceport="bias_out"
+            target="JoinBias" targetport="in_0" type="float"/>
+        <edge kind="fifo" source="AdamOutput" sourceport="weights_out"
+            target="JoinWeights" targetport="in_1" type="float"/>
+        <edge kind="fifo" source="AdamOutput" sourceport="bias_out"
+            target="JoinBias" targetport="in_1" type="float"/>
+        <edge kind="fifo" source="MLP" sourceport="output"
+            target="GradientsOutput" targetport="output" type="float"/>
+        <edge kind="fifo" source="MLP" sourceport="raw_output"
+            target="GradientsOutput" targetport="raw_output" type="float"/>
+        <edge kind="fifo" source="MLP" sourceport="raw_hidden"
+            target="GradientsHidden" targetport="raw_hidden" type="float"/>
+        <edge kind="fifo" source="MLP" sourceport="hidden"
+            target="GradientsOutput" targetport="inputs" type="float"/>
+        <edge kind="fifo" source="BroadcastWeights" sourceport="out_1"
+            target="MLP" targetport="weights" type="float"/>
+        <edge kind="fifo" source="weights" sourceport="weights"
+            target="BroadcastWeights" targetport="in" type="float"/>
+        <edge kind="fifo" source="BroadcastWeights" sourceport="out_0"
+            target="ForkWeights" targetport="in" type="float"/>
+        <edge kind="fifo" source="bias" sourceport="bias"
+            target="BroadcastBias" targetport="in" type="float"/>
+        <edge kind="fifo" source="BroadcastBias" sourceport="out_1"
+            target="MLP" targetport="bias" type="float"/>
+        <edge kind="fifo" source="BroadcastBias" sourceport="out_0"
+            target="ForkBias" targetport="in" type="float"/>
+        <edge kind="fifo" source="ForkWeights" sourceport="out_0"
+            target="AdamHidden" targetport="weights" type="float"/>
+        <edge kind="fifo" source="ForkBias" sourceport="out_0"
+            target="AdamHidden" targetport="bias" type="float"/>
+        <edge kind="fifo" source="ForkBias" sourceport="out_1"
+            target="AdamOutput" targetport="bias" type="float"/>
+        <edge kind="fifo" source="valid" sourceport="valid"
+            target="BroadcastValid" targetport="in" type="int"/>
+        <edge kind="fifo" source="BroadcastValid" sourceport="out_1"
+            target="GradientsHidden" targetport="valid" type="int"/>
+        <edge kind="fifo" source="BroadcastValid" sourceport="out_0"
+            target="GradientsOutput" targetport="valid" type="int"/>
+        <edge kind="fifo" source="BroadcastValid" sourceport="out_2"
+            target="AdamHidden" targetport="valid" type="int"/>
+        <edge kind="fifo" source="BroadcastValid" sourceport="out_3"
+            target="AdamOutput" targetport="valid" type="int"/>
+        <edge kind="fifo" source="BroadcastInput" sourceport="out_0"
+            target="MLP" targetport="input" type="float"/>
+        <edge kind="fifo" source="BroadcastInput" sourceport="out_1"
+            target="GradientsHidden" targetport="inputs" type="float"/>
+        <edge kind="fifo" source="inputs" sourceport="inputs"
+            target="BroadcastInput" targetport="in" type="float"/>
+        <edge kind="fifo" source="BroadcastWeights_output"
+            sourceport="out_0" target="GradientsHidden"
+            targetport="next_layer_weights" type="float"/>
+        <edge kind="fifo" source="BroadcastWeights_output"
+            sourceport="out_1" target="AdamOutput" targetport="weights" type="float"/>
+        <edge kind="fifo" source="ForkWeights" sourceport="out_1"
+            target="BroadcastWeights_output" targetport="in" type="float"/>
+        <edge kind="fifo" source="JoinGradients_hidden" sourceport="out"
+            target="AdamHidden" targetport="gradients" type="float"/>
+        <edge kind="fifo" source="GradientsOutput"
+            sourceport="weights_gradient" target="JoinGradients_output"
+            targetport="in_0" type="float"/>
+        <edge kind="fifo" source="JoinGradients_output" sourceport="out"
+            target="AdamOutput" targetport="gradients" type="float"/>
+        <edge kind="fifo" source="GradientsOutput"
+            sourceport="bias_gradient" target="BroadcastErrors_output"
+            targetport="in" type="float"/>
+        <edge kind="fifo" source="BroadcastErrors_output"
+            sourceport="out_1" target="JoinGradients_output"
+            targetport="in_1" type="float"/>
+        <edge kind="fifo" source="BroadcastErrors_output"
+            sourceport="out_0" target="GradientsHidden"
+            targetport="next_layer_errors" type="float"/>
+        <edge kind="fifo" source="targets" sourceport="targets"
+            target="GradientsOutput" targetport="target" type="float"/>
+        <edge kind="fifo" source="learning_rate"
+            sourceport="learning_rate" target="BroadcastLearningRate"
+            targetport="in" type="float"/>
+        <edge kind="fifo" source="BroadcastLearningRate"
+            sourceport="out_0" target="AdamOutput"
+            targetport="learning_rate" type="float"/>
+        <edge kind="fifo" source="BroadcastLearningRate"
+            sourceport="out_1" target="AdamHidden"
+            targetport="learning_rate" type="float"/>
+        <edge kind="fifo" source="gen_epsilon" sourceport="epsilon"
+            target="BroadcastEpsilon" targetport="in" type="double"/>
+        <edge kind="fifo" source="BroadcastEpsilon" sourceport="out_1"
+            target="AdamOutput" targetport="epsilon" type="double"/>
+        <edge kind="fifo" source="BroadcastEpsilon" sourceport="out_0"
+            target="AdamHidden" targetport="epsilon" type="double"/>
+        <edge kind="fifo" source="BroadcastValid" sourceport="out_4"
+            target="adamBetas" targetport="valid" type="int"/>
+        <edge kind="fifo" source="adamBetas" sourceport="betas_out"
+            target="BroadcastBetas" targetport="in" type="double"/>
+        <edge kind="fifo" source="BroadcastBetas" sourceport="out_1"
+            target="AdamHidden" targetport="betas" type="double"/>
+        <edge kind="fifo" source="BroadcastBetas" sourceport="out_0"
+            target="AdamOutput" targetport="betas" type="double"/>
+        <edge kind="fifo" source="GradientsHidden"
+            sourceport="weights_gradient" target="JoinGradients_hidden"
+            targetport="in_1" type="float"/>
+        <edge kind="fifo" source="GradientsHidden"
+            sourceport="bias_gradient" target="JoinGradients_hidden"
+            targetport="in_0" type="float"/>
+        <edge kind="dependency" source="hidden_size" target="bias_size"/>
+        <edge kind="dependency" source="hidden_size" target="weights_size"/>
+        <edge kind="dependency" source="output_size" target="bias_size"/>
+        <edge kind="dependency" source="input_size" target="weights_size"/>
+        <edge kind="dependency" source="output_size" target="weights_size"/>
+        <edge kind="dependency" source="weights_size" target="weights"/>
+        <edge kind="dependency" source="bias_size" target="bias"/>
+        <edge kind="dependency" source="input_size" target="inputs"/>
+        <edge kind="dependency" source="bias_size" target="bias_out"/>
+        <edge kind="dependency" source="weights_size" target="weights_out"/>
+        <edge kind="dependency" source="weights_size"
+            target="ForkWeights" targetport="weights_size"/>
+        <edge kind="dependency" source="hidden_size" target="ForkBias" targetport="hidden_size"/>
+        <edge kind="dependency" source="output_size" target="ForkBias" targetport="output_size"/>
+        <edge kind="dependency" source="bias_size" target="ForkBias" targetport="bias_size"/>
+        <edge kind="dependency" source="hidden_size" target="hidden_weights_size"/>
+        <edge kind="dependency" source="input_size" target="hidden_weights_size"/>
+        <edge kind="dependency" source="hidden_weights_size"
+            target="ForkWeights" targetport="hidden_size"/>
+        <edge kind="dependency" source="output_weights_size"
+            target="ForkWeights" targetport="output_size"/>
+        <edge kind="dependency" source="output_size" target="output_weights_size"/>
+        <edge kind="dependency" source="hidden_size" target="output_weights_size"/>
+        <edge kind="dependency" source="hidden_size" target="AdamOutput" targetport="input_size"/>
+        <edge kind="dependency" source="output_size" target="AdamOutput" targetport="layer_size"/>
+        <edge kind="dependency" source="hidden_size" target="AdamHidden" targetport="layer_size"/>
+        <edge kind="dependency" source="input_size" target="AdamHidden" targetport="input_size"/>
+        <edge kind="dependency" source="hidden_weights_size"
+            target="JoinWeights" targetport="hidden_size"/>
+        <edge kind="dependency" source="output_weights_size"
+            target="JoinWeights" targetport="output_size"/>
+        <edge kind="dependency" source="weights_size"
+            target="JoinWeights" targetport="weights_size"/>
+        <edge kind="dependency" source="bias_size" target="JoinBias" targetport="bias_size"/>
+        <edge kind="dependency" source="output_size" target="JoinBias" targetport="output_size"/>
+        <edge kind="dependency" source="hidden_size" target="JoinBias" targetport="hidden_size"/>
+        <edge kind="dependency" source="hidden_size" target="AdamHidden.first_order_moments_out-AdamHidden.first_order_moments"/>
+        <edge kind="dependency" source="hidden_weights_size" target="AdamHidden.first_order_moments_out-AdamHidden.first_order_moments"/>
+        <edge kind="dependency" source="hidden_weights_size" target="AdamHidden.second_order_moments_out-AdamHidden.second_order_moments"/>
+        <edge kind="dependency" source="hidden_size" target="AdamHidden.second_order_moments_out-AdamHidden.second_order_moments"/>
+        <edge kind="dependency" source="output_weights_size" target="AdamOutput.second_order_moments_out-AdamOutput.second_order_moments"/>
+        <edge kind="dependency" source="output_size" target="AdamOutput.second_order_moments_out-AdamOutput.second_order_moments"/>
+        <edge kind="dependency" source="output_size" target="AdamOutput.first_order_moments_out-AdamOutput.first_order_moments"/>
+        <edge kind="dependency" source="output_weights_size" target="AdamOutput.first_order_moments_out-AdamOutput.first_order_moments"/>
+        <edge kind="dependency" source="output_size" target="MLP" targetport="output_size"/>
+        <edge kind="dependency" source="input_size" target="MLP" targetport="input_size"/>
+        <edge kind="dependency" source="hidden_size" target="MLP" targetport="hidden_size"/>
+        <edge kind="dependency" source="hidden_size"
+            target="GradientsHidden" targetport="layer_size"/>
+        <edge kind="dependency" source="output_size"
+            target="GradientsHidden" targetport="next_layer_size"/>
+        <edge kind="dependency" source="input_size"
+            target="GradientsHidden" targetport="input_size"/>
+        <edge kind="dependency" source="hidden_size"
+            target="GradientsOutput" targetport="input_size"/>
+        <edge kind="dependency" source="output_size"
+            target="GradientsOutput" targetport="output_size"/>
+        <edge kind="dependency" source="weights_size"
+            target="BroadcastWeights" targetport="size"/>
+        <edge kind="dependency" source="bias_size"
+            target="BroadcastBias" targetport="size"/>
+        <edge kind="dependency" source="input_size"
+            target="BroadcastInput" targetport="size"/>
+        <edge kind="dependency" source="output_weights_size"
+            target="BroadcastWeights_output" targetport="size"/>
+        <edge kind="dependency" source="hidden_size"
+            target="JoinGradients_hidden" targetport="bias_size"/>
+        <edge kind="dependency" source="hidden_size"
+            target="JoinGradients_output" targetport="input_size"/>
+        <edge kind="dependency" source="output_size"
+            target="JoinGradients_output" targetport="layer_size"/>
+        <edge kind="dependency" source="output_size"
+            target="BroadcastErrors_output" targetport="size"/>
+        <edge kind="dependency" source="output_size" target="targets"/>
+        <edge kind="dependency" source="hidden_weights_size"
+            target="JoinGradients_hidden" targetport="weights_size"/>
+    </graph>
+</graphml>
