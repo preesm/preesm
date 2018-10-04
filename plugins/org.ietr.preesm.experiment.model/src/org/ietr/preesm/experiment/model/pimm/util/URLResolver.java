@@ -171,6 +171,12 @@ public final class URLResolver {
     return findMember.getLocationURI().toURL();
   }
 
+  /**
+   */
+  public static final URL resolveURLFromClasspath(final String resource, final Class<?> classpathContainedClass) {
+    return classpathContainedClass.getResource(resource);
+  }
+
   private final URL resolveURLFromPluginClasspath(final String resource, final List<String> pluginFilterList) {
     final ResourcesPlugin plugin = ResourcesPlugin.getPlugin();
     if (plugin == null) {
