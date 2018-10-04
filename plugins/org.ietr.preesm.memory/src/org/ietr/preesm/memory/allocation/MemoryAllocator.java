@@ -365,8 +365,14 @@ public abstract class MemoryAllocator {
     }
 
     vertex.setPropertyValue(MemoryExclusionVertex.MEMORY_OFFSET_PROPERTY, offset);
-    final long size = (long) this.inputExclusionGraph.getPropertyBean()
+    final Object sizeValue = this.inputExclusionGraph.getPropertyBean()
         .getValue(MemoryExclusionGraph.ALLOCATED_MEMORY_SIZE);
+    final long size;
+    if (sizeValue == null) {
+      size = Long.MIN_VALUE;
+    } else {
+      size = (long) sizeValue;
+    }
     if (size < (offset + vertex.getWeight())) {
       this.inputExclusionGraph.setPropertyValue(MemoryExclusionGraph.ALLOCATED_MEMORY_SIZE,
           offset + vertex.getWeight());
@@ -775,7 +781,7 @@ public abstract class MemoryAllocator {
     this.fifoAllocation.clear();
     this.workingMemAllocation.clear();
     this.memExNodeAllocation.clear();
-    this.inputExclusionGraph.setPropertyValue(MemoryExclusionGraph.ALLOCATED_MEMORY_SIZE, 0);
+    this.inputExclusionGraph.setPropertyValue(MemoryExclusionGraph.ALLOCATED_MEMORY_SIZE, 0L);
     this.inputExclusionGraph.deallocate();
   }
 

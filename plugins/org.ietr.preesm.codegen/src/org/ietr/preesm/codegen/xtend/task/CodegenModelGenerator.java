@@ -333,7 +333,7 @@ public class CodegenModelGenerator {
     // Check that the input DAG is scheduled and Mapped on the targeted
     // architecture
     for (final DAGVertex vertex : dag.vertexSet()) {
-      final ComponentInstance operator = vertex.getPropertyBean().getValue("Operator", ComponentInstance.class);
+      final ComponentInstance operator = (ComponentInstance) vertex.getPropertyBean().getValue("Operator");
       if (operator == null) {
         final String msg = "The DAG Actor " + vertex + " is not mapped on any operator.\n"
             + " All actors must be mapped before using the code generation.";
@@ -386,8 +386,7 @@ public class CodegenModelGenerator {
         }
 
         // Check that the MemEx graph is allocated.
-        final Integer offset = memObj.getPropertyBean().getValue(MemoryExclusionVertex.MEMORY_OFFSET_PROPERTY,
-            Integer.class);
+        final Long offset = (Long) memObj.getPropertyBean().getValue(MemoryExclusionVertex.MEMORY_OFFSET_PROPERTY);
         if (offset == null) {
           throw new CodegenException("MemEx graph memory object (" + memObj + ") was not allocated in memory. \n"
               + "Make sure that the MemEx is processed by an allocation task before entering the codegen.");
@@ -462,7 +461,7 @@ public class CodegenModelGenerator {
       CoreBlock operatorBlock = null;
       // This call can not fail as checks were already performed in
       // the constructor
-      operator = vert.getPropertyBean().getValue(ImplementationPropertyNames.Vertex_Operator, ComponentInstance.class);
+      operator = (ComponentInstance) vert.getPropertyBean().getValue(ImplementationPropertyNames.Vertex_Operator);
       // If this is the first time this operator is encountered,
       // Create a Block and store it.
       operatorBlock = this.coreBlocks.get(operator);
@@ -474,8 +473,8 @@ public class CodegenModelGenerator {
       }
 
       // 1.1 - Construct the "loop" of each core.
-      final String vertexType = vert.getPropertyBean()
-          .getValue(ImplementationPropertyNames.Vertex_vertexType, VertexType.class).toString();
+      final String vertexType = ((VertexType) vert.getPropertyBean()
+          .getValue(ImplementationPropertyNames.Vertex_vertexType)).toString();
       switch (vertexType) {
 
         case VertexType.TYPE_TASK:
@@ -618,7 +617,7 @@ public class CodegenModelGenerator {
         final FunctionCall functionCall = generateFunctionCall(dagVertex, loopPrototype, false);
 
         // Check for papify in the dagVertex
-        String papifying = dagVertex.getPropertyBean().getValue(PapifyEngine.PAPIFY_CONFIGURATION, String.class);
+        String papifying = (String) dagVertex.getPropertyBean().getValue(PapifyEngine.PAPIFY_CONFIGURATION);
         // In case there is any monitoring add start functions
         if (papifying != null && papifying.equals("Papifying")) {
           // Add the function to configure the monitoring in this PE (operatorBlock)
@@ -630,7 +629,7 @@ public class CodegenModelGenerator {
           // Add the papify_action_s variable to the code
           Buffer papifyActionS = CodegenFactory.eINSTANCE.createBuffer();
           papifyActionS.setName(
-              dagVertex.getPropertyBean().getValue(PapifyEngine.PAPIFY_ACTION_NAME, PapifyAction.class).getName());
+              ((PapifyAction) dagVertex.getPropertyBean().getValue(PapifyEngine.PAPIFY_ACTION_NAME)).getName());
           papifyActionS.setSize(1);
           papifyActionS.setType("papify_action_s");
           papifyActionS.setComment("papify configuration variable");
@@ -640,16 +639,16 @@ public class CodegenModelGenerator {
           operatorBlock.getInitBlock().getCodeElts().add(functionCallPapifyConfigureActor);
 
           // Check for papify in the dagVertex
-          String papifyMonitoringEvents = dagVertex.getPropertyBean().getValue(PapifyEngine.PAPIFY_MONITOR_EVENTS,
-              String.class);
+          String papifyMonitoringEvents = (String) dagVertex.getPropertyBean()
+              .getValue(PapifyEngine.PAPIFY_MONITOR_EVENTS);
           if (papifyMonitoringEvents != null && papifyMonitoringEvents.equals("Yes")) {
             // Generate Papify start function for events
             final FunctionCall functionCallPapifyStart = generatePapifyStartFunctionCall(dagVertex, operatorBlock);
             // Add the Papify start function for events to the loop
             operatorBlock.getLoopBlock().getCodeElts().add(functionCallPapifyStart);
           }
-          String papifyMonitoringTiming = dagVertex.getPropertyBean().getValue(PapifyEngine.PAPIFY_MONITOR_TIMING,
-              String.class);
+          String papifyMonitoringTiming = (String) dagVertex.getPropertyBean()
+              .getValue(PapifyEngine.PAPIFY_MONITOR_TIMING);
           if (papifyMonitoringTiming != null && papifyMonitoringTiming.equals("Yes")) {
             // Generate Papify start timing function
             final FunctionCall functionCallPapifyTimingStart = generatePapifyStartTimingFunctionCall(dagVertex,
@@ -665,8 +664,8 @@ public class CodegenModelGenerator {
 
         // In case there is any monitoring add stop functions
         if (papifying != null && papifying.equals("Papifying")) {
-          String papifyMonitoringTiming = dagVertex.getPropertyBean().getValue(PapifyEngine.PAPIFY_MONITOR_TIMING,
-              String.class);
+          String papifyMonitoringTiming = (String) dagVertex.getPropertyBean()
+              .getValue(PapifyEngine.PAPIFY_MONITOR_TIMING);
           if (papifyMonitoringTiming != null && papifyMonitoringTiming.equals("Yes")) {
             // Generate Papify stop timing function
             final FunctionCall functionCallPapifyTimingStop = generatePapifyStopTimingFunctionCall(dagVertex,
@@ -674,8 +673,8 @@ public class CodegenModelGenerator {
             // Add the Papify stop timing function to the loop
             operatorBlock.getLoopBlock().getCodeElts().add(functionCallPapifyTimingStop);
           }
-          String papifyMonitoringEvents = dagVertex.getPropertyBean().getValue(PapifyEngine.PAPIFY_MONITOR_EVENTS,
-              String.class);
+          String papifyMonitoringEvents = (String) dagVertex.getPropertyBean()
+              .getValue(PapifyEngine.PAPIFY_MONITOR_EVENTS);
           if (papifyMonitoringEvents != null && papifyMonitoringEvents.equals("Yes")) {
             // Generate Papify stop function for events
             final FunctionCall functionCallPapifyStop = generatePapifyStopFunctionCall(dagVertex, operatorBlock);
@@ -1150,8 +1149,8 @@ public class CodegenModelGenerator {
     final Delimiter delimiter = (direction.equals(VertexType.TYPE_SEND)) ? Delimiter.START : Delimiter.END;
     newComm.setDirection(dir);
     newComm.setDelimiter(delimiter);
-    final MessageRouteStep routeStep = dagVertex.getPropertyBean()
-        .getValue(ImplementationPropertyNames.SendReceive_routeStep, MessageRouteStep.class);
+    final MessageRouteStep routeStep = (MessageRouteStep) dagVertex.getPropertyBean()
+        .getValue(ImplementationPropertyNames.SendReceive_routeStep);
     for (final ComponentInstance comp : routeStep.getNodes()) {
       final CommunicationNode comNode = CodegenFactory.eINSTANCE.createCommunicationNode();
       comNode.setName(comp.getInstanceName());
@@ -1160,8 +1159,8 @@ public class CodegenModelGenerator {
     }
 
     // Find the corresponding DAGEdge buffer(s)
-    final DAGEdge dagEdge = dagVertex.getPropertyBean()
-        .getValue(ImplementationPropertyNames.SendReceive_correspondingDagEdge, DAGEdge.class);
+    final DAGEdge dagEdge = (DAGEdge) dagVertex.getPropertyBean()
+        .getValue(ImplementationPropertyNames.SendReceive_correspondingDagEdge);
     final Buffer buffer = this.dagEdgeBuffers.get(dagEdge);
     if (buffer == null) {
       throw new CodegenException("No buffer found for edge" + dagEdge);
@@ -1276,10 +1275,8 @@ public class CodegenModelGenerator {
     for (final DAGEdge currentEdge : edges) {
       final DAGVertex source = currentEdge.getSource();
       final DAGVertex target = currentEdge.getTarget();
-      if (source.getPropertyBean().getValue(ImplementationPropertyNames.Vertex_vertexType, VertexType.class)
-          .equals(VertexType.TASK)
-          && target.getPropertyBean().getValue(ImplementationPropertyNames.Vertex_vertexType, VertexType.class)
-              .equals(VertexType.TASK)) {
+      if (source.getPropertyBean().getValue(ImplementationPropertyNames.Vertex_vertexType).equals(VertexType.TASK)
+          && target.getPropertyBean().getValue(ImplementationPropertyNames.Vertex_vertexType).equals(VertexType.TASK)) {
         edge = currentEdge;
       }
     }
@@ -1288,8 +1285,8 @@ public class CodegenModelGenerator {
           "DAGVertex " + dagVertex + " is not connected to any " + VertexType.TYPE_TASK + " vertex.");
     }
 
-    final BufferAggregate aggregate = edge.getPropertyBean().getValue(BufferAggregate.propertyBeanName,
-        BufferAggregate.class);
+    final BufferAggregate aggregate = (BufferAggregate) edge.getPropertyBean()
+        .getValue(BufferAggregate.propertyBeanName);
     final BufferProperties bufferProperty = aggregate.get(0);
     buffer = this.srSDFEdgeBuffers.get(bufferProperty);
     if (buffer == null) {
@@ -1446,17 +1443,17 @@ public class CodegenModelGenerator {
     final FunctionCall func = CodegenFactory.eINSTANCE.createFunctionCall();
     func.setName("configure_papify_actor");
     // Add the function parameters
-    func.addParameter(dagVertex.getPropertyBean().getValue(PapifyEngine.PAPIFY_ACTION_NAME, PapifyAction.class),
+    func.addParameter((Variable) dagVertex.getPropertyBean().getValue(PapifyEngine.PAPIFY_ACTION_NAME),
         PortDirection.OUTPUT);
-    func.addParameter(dagVertex.getPropertyBean().getValue(PapifyEngine.PAPIFY_COMPONENT_NAME, ConstantString.class),
+    func.addParameter((Variable) dagVertex.getPropertyBean().getValue(PapifyEngine.PAPIFY_COMPONENT_NAME),
         PortDirection.INPUT);
-    func.addParameter(dagVertex.getPropertyBean().getValue(PapifyEngine.PAPIFY_ACTOR_NAME, ConstantString.class),
+    func.addParameter((Variable) dagVertex.getPropertyBean().getValue(PapifyEngine.PAPIFY_ACTOR_NAME),
         PortDirection.INPUT);
-    func.addParameter(dagVertex.getPropertyBean().getValue(PapifyEngine.PAPIFY_CODESET_SIZE, Constant.class),
+    func.addParameter((Variable) dagVertex.getPropertyBean().getValue(PapifyEngine.PAPIFY_CODESET_SIZE),
         PortDirection.INPUT);
-    func.addParameter(dagVertex.getPropertyBean().getValue(PapifyEngine.PAPIFY_EVENTSET_NAMES, ConstantString.class),
+    func.addParameter((Variable) dagVertex.getPropertyBean().getValue(PapifyEngine.PAPIFY_EVENTSET_NAMES),
         PortDirection.INPUT);
-    func.addParameter(dagVertex.getPropertyBean().getValue(PapifyEngine.PAPIFY_CONFIG_NUMBER, Constant.class),
+    func.addParameter((Variable) dagVertex.getPropertyBean().getValue(PapifyEngine.PAPIFY_CONFIG_NUMBER),
         PortDirection.INPUT);
     // Add the function comment
     func.setActorName("Papify --> configure papification of ".concat(dagVertex.getName()));
@@ -1480,7 +1477,7 @@ public class CodegenModelGenerator {
     final FunctionCall func = CodegenFactory.eINSTANCE.createFunctionCall();
     func.setName("event_start");
     // Add the function parameters
-    func.addParameter(dagVertex.getPropertyBean().getValue(PapifyEngine.PAPIFY_ACTION_NAME, PapifyAction.class),
+    func.addParameter((Variable) dagVertex.getPropertyBean().getValue(PapifyEngine.PAPIFY_ACTION_NAME),
         PortDirection.INPUT);
     func.addParameter(papifyPEId, PortDirection.INPUT);
     // Add the function actor name
@@ -1506,7 +1503,7 @@ public class CodegenModelGenerator {
     final FunctionCall func = CodegenFactory.eINSTANCE.createFunctionCall();
     func.setName("event_start_papify_timing");
     // Add the function parameters
-    func.addParameter(dagVertex.getPropertyBean().getValue(PapifyEngine.PAPIFY_ACTION_NAME, PapifyAction.class),
+    func.addParameter((Variable) dagVertex.getPropertyBean().getValue(PapifyEngine.PAPIFY_ACTION_NAME),
         PortDirection.INPUT);
     func.addParameter(papifyPEId, PortDirection.INPUT);
     // Add the function actor name
@@ -1530,7 +1527,7 @@ public class CodegenModelGenerator {
     final FunctionCall func = CodegenFactory.eINSTANCE.createFunctionCall();
     func.setName("event_stop");
     // Add the function parameters
-    func.addParameter(dagVertex.getPropertyBean().getValue(PapifyEngine.PAPIFY_ACTION_NAME, PapifyAction.class),
+    func.addParameter((Variable) dagVertex.getPropertyBean().getValue(PapifyEngine.PAPIFY_ACTION_NAME),
         PortDirection.INPUT);
     func.addParameter(papifyPEId, PortDirection.INPUT);
     // Add the function actor name
@@ -1555,7 +1552,7 @@ public class CodegenModelGenerator {
     final FunctionCall func = CodegenFactory.eINSTANCE.createFunctionCall();
     func.setName("event_stop_papify_timing");
     // Add the function parameters
-    func.addParameter(dagVertex.getPropertyBean().getValue(PapifyEngine.PAPIFY_ACTION_NAME, PapifyAction.class),
+    func.addParameter((Variable) dagVertex.getPropertyBean().getValue(PapifyEngine.PAPIFY_ACTION_NAME),
         PortDirection.INPUT);
     func.addParameter(papifyPEId, PortDirection.INPUT);
     // Add the function actor name
@@ -1575,7 +1572,7 @@ public class CodegenModelGenerator {
     final FunctionCall func = CodegenFactory.eINSTANCE.createFunctionCall();
     func.setName("event_write_file");
     // Add the function parameters
-    func.addParameter(dagVertex.getPropertyBean().getValue(PapifyEngine.PAPIFY_ACTION_NAME, PapifyAction.class),
+    func.addParameter((Variable) dagVertex.getPropertyBean().getValue(PapifyEngine.PAPIFY_ACTION_NAME),
         PortDirection.INPUT);
     // Add the function actor name
     func.setActorName(dagVertex.getName());
@@ -1606,8 +1603,8 @@ public class CodegenModelGenerator {
 
       // Find the corresponding BufferProperty
       BufferProperties subBuffProperty = null;
-      final BufferAggregate buffers = correspondingEdge.getPropertyBean().getValue(BufferAggregate.propertyBeanName,
-          BufferAggregate.class);
+      final BufferAggregate buffers = (BufferAggregate) correspondingEdge.getPropertyBean()
+          .getValue(BufferAggregate.propertyBeanName);
       for (final BufferProperties subBufferProperties : buffers) {
         // The source and target actor are the same, check that the
         // ports are corrects
@@ -1707,10 +1704,10 @@ public class CodegenModelGenerator {
           + "edge. Check the exported DAG.");
     }
     for (final DAGEdge edge : candidates) {
-      if (edge.getSource().getPropertyBean().getValue(ImplementationPropertyNames.Vertex_vertexType, VertexType.class)
+      if (edge.getSource().getPropertyBean().getValue(ImplementationPropertyNames.Vertex_vertexType)
           .equals(VertexType.TASK)
-          && edge.getTarget().getPropertyBean()
-              .getValue(ImplementationPropertyNames.Vertex_vertexType, VertexType.class).equals(VertexType.TASK)) {
+          && edge.getTarget().getPropertyBean().getValue(ImplementationPropertyNames.Vertex_vertexType)
+              .equals(VertexType.TASK)) {
         lastEdge = edge;
       }
     }
@@ -1762,14 +1759,14 @@ public class CodegenModelGenerator {
 
     final Map<String, DataType> dataTypes = this.scenario.getSimulationManager().getDataTypes();
 
-    final BufferAggregate buffers = dagEdge.getPropertyBean().getValue(BufferAggregate.propertyBeanName,
-        BufferAggregate.class);
+    final BufferAggregate buffers = (BufferAggregate) dagEdge.getPropertyBean()
+        .getValue(BufferAggregate.propertyBeanName);
 
     // Retrieve the corresponding memory object from the MEG
     final MemoryExclusionVertex memObject = findMObject(dagEdge);
     @SuppressWarnings("unchecked")
-    final List<Integer> interSubbufferSpace = memObject.getPropertyBean()
-        .getValue(MemoryExclusionVertex.INTER_BUFFER_SPACES, List.class);
+    final List<Integer> interSubbufferSpace = (List<Integer>) memObject.getPropertyBean()
+        .getValue(MemoryExclusionVertex.INTER_BUFFER_SPACES);
 
     int aggregateOffset = 0;
     int idx = 0;
@@ -2163,8 +2160,8 @@ public class CodegenModelGenerator {
     // In case of multi-step communication, this is the easiest
     // way to retrieve the target and source of the communication
     // corresponding to the current Send/ReceiveVertex
-    final MessageRouteStep routeStep = dagVertex.getPropertyBean()
-        .getValue(ImplementationPropertyNames.SendReceive_routeStep, MessageRouteStep.class);
+    final MessageRouteStep routeStep = (MessageRouteStep) dagVertex.getPropertyBean()
+        .getValue(ImplementationPropertyNames.SendReceive_routeStep);
 
     String commID = routeStep.getSender().getInstanceName();
     commID += "__" + dagEdge.getSource().getName();

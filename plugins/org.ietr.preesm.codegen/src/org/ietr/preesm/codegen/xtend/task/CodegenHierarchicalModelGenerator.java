@@ -169,7 +169,7 @@ public class CodegenHierarchicalModelGenerator {
    */
   public int execute(final CoreBlock operatorBlock, final DAGVertex dagVertex) throws SDF4JException {
     // Check whether the ActorCall is a call to a hierarchical actor or not.
-    final SDFVertex sdfVertex = dagVertex.getPropertyBean().getValue(DAGVertex.SDF_VERTEX, SDFVertex.class);
+    final SDFVertex sdfVertex = (SDFVertex) dagVertex.getPropertyBean().getValue(DAGVertex.SDF_VERTEX);
     final Object refinement = sdfVertex.getPropertyBean().getValue(AbstractVertex.REFINEMENT);
 
     if (refinement instanceof AbstractGraph) {
@@ -203,7 +203,7 @@ public class CodegenHierarchicalModelGenerator {
       }
 
       final HSDFBuildLoops loopBuilder = new HSDFBuildLoops(this.scenario, null);
-      final AbstractClust clust = graph.getPropertyBean().getValue(MapperDAG.CLUSTERED_VERTEX, AbstractClust.class);
+      final AbstractClust clust = (AbstractClust) graph.getPropertyBean().getValue(MapperDAG.CLUSTERED_VERTEX);
       if (clust == null) {
         throw (new WorkflowException("Loop Codegen failed. Please make sure the clustering workflow is run."));
       }

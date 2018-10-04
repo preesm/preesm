@@ -919,9 +919,10 @@ public class MemoryExclusionGraph extends SimpleGraph<MemoryExclusionVertex, Def
         vertexClone.setPropertyValue(MemoryExclusionVertex.DIVIDED_PARTS_HOSTS, dividedPartHostCopy);
       }
 
+      final Object typeSizeValue = vertex.getPropertyBean().getValue(MemoryExclusionVertex.TYPE_SIZE);
       // TYPE_SIZE
-      final Integer typeSize = (Integer) vertex.getPropertyBean().getValue(MemoryExclusionVertex.TYPE_SIZE);
-      if (typeSize != null) {
+      if (typeSizeValue != null) {
+        final long typeSize = (long) typeSizeValue;
         vertexClone.setPropertyValue(MemoryExclusionVertex.TYPE_SIZE, typeSize);
       }
 
