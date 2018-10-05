@@ -38,6 +38,8 @@
  */
 package org.ietr.preesm.experiment.model.pimm.serialize;
 
+import java.io.BufferedInputStream;
+import java.io.IOException;
 import java.io.InputStream;
 import java.util.logging.Level;
 import org.eclipse.core.resources.IFile;
@@ -92,6 +94,7 @@ import org.ietr.preesm.experiment.model.pimm.PortKind;
 import org.ietr.preesm.experiment.model.pimm.PortMemoryAnnotation;
 import org.ietr.preesm.experiment.model.pimm.RefinementContainer;
 import org.ietr.preesm.experiment.model.pimm.util.PiIdentifiers;
+import org.ietr.preesm.experiment.model.pimm.util.PiSDFXSDValidator;
 import org.ietr.preesm.experiment.model.pimm.util.SubgraphConnectorVisitor;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -117,7 +120,7 @@ public class PiParser {
    * @throws CoreException
    *           the core exception
    */
-  public static PiGraph getPiGraph(final String algorithmURL) throws InvalidModelException, CoreException {
+  public static PiGraph getPiGraph(final String algorithmURL) {
     PiGraph pigraph = null;
     final ResourceSet resourceSet = new ResourceSetImpl();
 
@@ -192,8 +195,16 @@ public class PiParser {
     // Instantiate the graph that will be filled with parser informations
     final PiGraph graph = PiMMUserFactory.instance.createPiGraph();
 
+    final BufferedInputStream bis = new BufferedInputStream(inputStream);
+
+    try {
+      PiSDFXSDValidator.validate(bis);
+    } catch (IOException ex) {
+      throw new PiGraphException("Could not parse the input graph: \n" + ex.getMessage(), ex);
+    }
+
     // Parse the input stream
-    final Document document = DomUtil.parseDocument(inputStream);
+    final Document document = DomUtil.parseDocument(bis);
 
     // Retrieve the root element
     final Element rootElt = document.getDocumentElement();

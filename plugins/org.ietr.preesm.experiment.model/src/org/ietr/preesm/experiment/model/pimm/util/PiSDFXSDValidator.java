@@ -1,6 +1,8 @@
 package org.ietr.preesm.experiment.model.pimm.util;
 
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.net.URL;
 import java.util.Collections;
 import javax.xml.XMLConstants;
@@ -20,10 +22,7 @@ public class PiSDFXSDValidator {
 
   final URL schemaURL;
 
-  /**
-   *
-   */
-  public PiSDFXSDValidator() {
+  private PiSDFXSDValidator() {
     schemaURL = new URLResolver(this.getClass().getClassLoader()).resolve("PiSDF.xsd", Collections.emptyList());
   }
 
@@ -44,28 +43,37 @@ public class PiSDFXSDValidator {
 
   }
 
+  public static final void validate(final InputStream pisdfStreamed) throws IOException {
+    new PiSDFXSDValidator().validateLocal(pisdfStreamed);
+  }
+
   public static final void validate(final URL pisdfURL) throws IOException {
-    new PiSDFXSDValidator().validateLocal(pisdfURL);
+    validate(pisdfURL.openStream());
+  }
+
+  public static final void validate(final String pisdfcontent) throws IOException {
+    final InputStream targetStream = new ByteArrayInputStream(pisdfcontent.getBytes());
+    validate(targetStream);
   }
 
   /**
    * @throws IOException
    *
    */
-  private final void validateLocal(final URL pisdfURL) throws IOException {
+  private final void validateLocal(final InputStream pisdfStreamed) throws IOException {
     if (this.schemaURL == null) {
-      System.out.println("could not find schema");
-      throw new NullPointerException();
+      throw new NullPointerException("PiSDF XSD was not initialized properly");
     }
-
-    final Source xmlFile = new StreamSource(pisdfURL.openStream());
+    pisdfStreamed.mark(Integer.MAX_VALUE);
+    final Source xmlFile = new StreamSource(pisdfStreamed);
     final SchemaFactory schemaFactory = SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI);
     try {
       final Schema schema = schemaFactory.newSchema(schemaURL);
       final Validator validator = schema.newValidator();
       validator.validate(xmlFile);
     } catch (final SAXException e) {
-      throw new PiSDFXSDValidationException("Could not validate " + pisdfURL, e);
+      throw new PiSDFXSDValidationException("Could not validate PiSDF", e);
     }
+    pisdfStreamed.reset();
   }
 }
