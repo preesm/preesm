@@ -8,14 +8,17 @@ PREESM Changelog
 * Add workflow task to manually input a schedule in the flow;
 
 ### Changes
-* Major refactoring;
+* Major refactoring
+  * Use Long instead of Integer in the Memory allocation;
+  * Fix many bugs and code smells;
 * Adding graph optimizations for PiMM graphs as seperate process from PiMM2SRDAG.
 * Adding tests for graph transformations.
 * Adding new task to flatten a given PiMM graph.
 * Move travis dist to xenial;
-* Fix PiSDF Exporter to read a PiMM instead of a scenario;
+* Fix PiSDF Exporter task to read a PiMM instead of a scenario;
 * Fix Expression evaluator to properly handle several config input ports connected to the same parameter;
 * Copying the timing property during the PiMM2SRDAG conversion;
+* Add XSD for .pi files and corresponding Validator class;
 
 ### Bug fix
 
