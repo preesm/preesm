@@ -11,6 +11,7 @@ import javax.xml.transform.stream.StreamSource;
 import javax.xml.validation.Schema;
 import javax.xml.validation.SchemaFactory;
 import javax.xml.validation.Validator;
+import org.apache.commons.io.input.CloseShieldInputStream;
 import org.xml.sax.SAXException;
 
 /**
@@ -65,7 +66,8 @@ public class PiSDFXSDValidator {
       throw new NullPointerException("PiSDF XSD was not initialized properly");
     }
     pisdfStreamed.mark(Integer.MAX_VALUE);
-    final Source xmlFile = new StreamSource(pisdfStreamed);
+    final CloseShieldInputStream protectedStream = new CloseShieldInputStream(pisdfStreamed);
+    final Source xmlFile = new StreamSource(protectedStream);
     final SchemaFactory schemaFactory = SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI);
     try {
       final Schema schema = schemaFactory.newSchema(schemaURL);
