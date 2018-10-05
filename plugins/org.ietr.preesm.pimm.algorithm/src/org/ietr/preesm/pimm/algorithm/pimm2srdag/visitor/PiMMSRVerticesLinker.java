@@ -49,6 +49,7 @@ import org.ietr.preesm.experiment.model.pimm.AbstractVertex;
 import org.ietr.preesm.experiment.model.pimm.BroadcastActor;
 import org.ietr.preesm.experiment.model.pimm.DataInputPort;
 import org.ietr.preesm.experiment.model.pimm.DataOutputPort;
+import org.ietr.preesm.experiment.model.pimm.DataPort;
 import org.ietr.preesm.experiment.model.pimm.Delay;
 import org.ietr.preesm.experiment.model.pimm.DelayActor;
 import org.ietr.preesm.experiment.model.pimm.EndActor;
@@ -398,7 +399,8 @@ public class PiMMSRVerticesLinker {
    * @return the data source port
    */
   private DataOutputPort getOrCreateSourcePort(final SourceConnection src, long rate, AbstractActor sourceVertex) {
-    DataOutputPort currentSourcePort = (DataOutputPort) sourceVertex.lookupPort(src.getSourceLabel());
+    DataOutputPort currentSourcePort = (DataOutputPort) lookForPort(sourceVertex.getDataOutputPorts(),
+        src.getSourceLabel());
     if (currentSourcePort == null) {
       currentSourcePort = PiMMUserFactory.instance.createDataOutputPort();
       currentSourcePort.setName(src.getSourceLabel());
@@ -434,7 +436,7 @@ public class PiMMSRVerticesLinker {
    * @return The sink data port
    */
   private DataInputPort getOrCreateSinkPort(final SinkConnection snk, long rate, final AbstractActor sinkVertex) {
-    DataInputPort currentSinkPort = (DataInputPort) sinkVertex.lookupPort(snk.getTargetLabel());
+    DataInputPort currentSinkPort = (DataInputPort) lookForPort(sinkVertex.getDataInputPorts(), snk.getTargetLabel());
     if (currentSinkPort == null) {
       currentSinkPort = PiMMUserFactory.instance.createDataInputPort();
       currentSinkPort.setName(snk.getTargetLabel());
@@ -458,6 +460,24 @@ public class PiMMSRVerticesLinker {
   }
 
   /**
+   * Search for a DataPort with name "name" in a given list of DataPort
+   * 
+   * @param ports
+   *          List of DataPort
+   * @param name
+   *          Name of the DataPort to find
+   * @return Found DataPort if any, null else
+   */
+  private DataPort lookForPort(final List<? extends DataPort> ports, final String name) {
+    for (final DataPort dp : ports) {
+      if (dp.getName().equals(name)) {
+        return dp;
+      }
+    }
+    return null;
+  }
+
+  /**
    * Creates a new join actor in the context of an implosion
    * 
    * @param currentSink
@@ -477,7 +497,7 @@ public class PiMMSRVerticesLinker {
     joinActor.setName(implodeName);
     // Add a DataOutputPort
     final DataOutputPort joinOutputPort = PiMMUserFactory.instance.createDataOutputPort();
-    joinOutputPort.setName(source.getSourceLabel() + "_implode");
+    joinOutputPort.setName(source.getSourceLabel());
     joinOutputPort.getPortRateExpression().setExpressionString(Long.toString(currentSink.getConsumption()));
     joinOutputPort.setAnnotation(PortMemoryAnnotation.WRITE_ONLY);
     joinActor.getDataOutputPorts().add(joinOutputPort);
@@ -513,7 +533,7 @@ public class PiMMSRVerticesLinker {
     forkActor.setName(explodeName);
     // Add a DataInputPort
     final DataInputPort forkInputPort = PiMMUserFactory.instance.createDataInputPort();
-    forkInputPort.setName(sink.getTargetLabel() + "_explode");
+    forkInputPort.setName(sink.getTargetLabel());
     forkInputPort.getPortRateExpression().setExpressionString(Long.toString(currentSource.getProduction()));
     forkInputPort.setAnnotation(PortMemoryAnnotation.READ_ONLY);
     forkActor.getDataInputPorts().add(forkInputPort);
