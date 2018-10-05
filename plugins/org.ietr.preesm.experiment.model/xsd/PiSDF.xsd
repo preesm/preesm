@@ -1,145 +1,100 @@
-<xs:schema attributeFormDefault="unqualified" elementFormDefault="qualified"
-   targetNamespace="http://graphml.graphdrawing.org/xmlns" xmlns:xs="http://www.w3.org/2001/XMLSchema">
-   <xs:element name="graphml">
-      <xs:complexType>
-         <xs:sequence>
-            <xs:element name="key" maxOccurs="unbounded" minOccurs="0">
-               <xs:complexType>
-                  <xs:simpleContent>
-                     <xs:extension base="xs:string">
-                        <xs:attribute type="xs:string" name="attr.name" use="optional" />
-                        <xs:attribute type="xs:string" name="for" use="optional" />
-                        <xs:attribute type="xs:string" name="id" use="optional" />
-                        <xs:attribute type="xs:string" name="attr.type" use="optional" />
-                     </xs:extension>
-                  </xs:simpleContent>
-               </xs:complexType>
-            </xs:element>
-            <xs:element name="graph">
-               <xs:complexType>
-                  <xs:sequence>
-                     <xs:choice minOccurs="0" maxOccurs="unbounded">
-                        <xs:element name="data" maxOccurs="unbounded" minOccurs="0">
-                           <xs:complexType>
-                              <xs:simpleContent>
-                                 <xs:extension base="xs:string">
-                                    <xs:attribute type="xs:string" name="key" />
-                                 </xs:extension>
-                              </xs:simpleContent>
-                           </xs:complexType>
-                        </xs:element>
-                        <xs:element name="node" maxOccurs="unbounded" minOccurs="0">
-                           <xs:complexType mixed="true">
-                              <xs:sequence>
-                                 <xs:choice minOccurs="0" maxOccurs="unbounded">
-                                    <xs:element name="data" minOccurs="0">
-                                       <xs:complexType>
-                                          <xs:simpleContent>
-                                             <xs:extension base="xs:string">
-                                                <xs:attribute type="xs:string" name="key" />
-                                             </xs:extension>
-                                          </xs:simpleContent>
-                                       </xs:complexType>
-                                    </xs:element>
-                                    <xs:element name="loop" minOccurs="0">
-                                       <xs:complexType>
-                                          <xs:sequence>
-                                             <xs:element name="param" minOccurs="0" maxOccurs="unbounded">
-                                                <xs:complexType>
-                                                   <xs:simpleContent>
-                                                      <xs:extension base="xs:string">
-                                                         <xs:attribute type="xs:string" name="direction"
-                                                            use="optional" />
-                                                         <xs:attribute type="xs:string" name="isConfig"
-                                                            use="optional" />
-                                                         <xs:attribute type="xs:string" name="name"
-                                                            use="optional" />
-                                                         <xs:attribute type="xs:string" name="type"
-                                                            use="optional" />
-                                                      </xs:extension>
-                                                   </xs:simpleContent>
-                                                </xs:complexType>
-                                             </xs:element>
-                                          </xs:sequence>
-                                          <xs:attribute type="xs:string" name="name" />
-                                       </xs:complexType>
-                                    </xs:element>
-                                    <xs:element name="init" minOccurs="0">
-                                       <xs:complexType>
-                                          <xs:sequence>
-                                             <xs:element name="param" minOccurs="0" maxOccurs="unbounded">
-                                                <xs:complexType>
-                                                   <xs:simpleContent>
-                                                      <xs:extension base="xs:string">
-                                                         <xs:attribute type="xs:string" name="direction"
-                                                            use="optional" />
-                                                         <xs:attribute type="xs:string" name="isConfig"
-                                                            use="optional" />
-                                                         <xs:attribute type="xs:string" name="name"
-                                                            use="optional" />
-                                                         <xs:attribute type="xs:string" name="type"
-                                                            use="optional" />
-                                                      </xs:extension>
-                                                   </xs:simpleContent>
-                                                </xs:complexType>
-                                             </xs:element>
-                                          </xs:sequence>
-                                          <xs:attribute type="xs:string" name="name" />
-                                       </xs:complexType>
-                                    </xs:element>
-                                    <xs:element name="port" maxOccurs="unbounded" minOccurs="0">
-                                       <xs:complexType>
-                                          <xs:simpleContent>
-                                             <xs:extension base="xs:string">
-                                                <xs:attribute type="xs:string" name="annotation"
-                                                   use="optional" />
-                                                <xs:attribute type="xs:string" name="expr" use="optional" />
-                                                <xs:attribute type="xs:string" name="kind" use="optional" />
-                                                <xs:attribute type="xs:string" name="name" use="optional" />
-                                             </xs:extension>
-                                          </xs:simpleContent>
-                                       </xs:complexType>
-                                    </xs:element>
-                                 </xs:choice>
-                              </xs:sequence>
-                              <xs:attribute type="xs:string" name="id" use="optional" />
-                              <xs:attribute type="xs:string" name="kind" use="optional" />
-                              <xs:attribute type="xs:string" name="expr" use="optional" />
-                              <xs:attribute type="xs:string" name="getter" use="optional" />
-                              <xs:attribute type="xs:string" name="setter" use="optional" />
-                              <xs:attribute type="xs:string" name="level" use="optional" />
-                           </xs:complexType>
-                        </xs:element>
-                        <xs:element name="edge" maxOccurs="unbounded" minOccurs="0">
-                           <xs:complexType>
-                              <xs:sequence>
-                                 <xs:choice minOccurs="0" maxOccurs="unbounded">
-                                    <xs:element name="data" minOccurs="0">
-                                       <xs:complexType>
-                                          <xs:simpleContent>
-                                             <xs:extension base="xs:string">
-                                                <xs:attribute type="xs:string" name="key" />
-                                             </xs:extension>
-                                          </xs:simpleContent>
-                                       </xs:complexType>
-                                    </xs:element>
-                                 </xs:choice>
-                              </xs:sequence>
-                              <xs:attribute type="xs:string" name="kind" use="optional" />
-                              <xs:attribute type="xs:string" name="source" use="optional" />
-                              <xs:attribute type="xs:string" name="sourceport" use="optional" />
-                              <xs:attribute type="xs:string" name="target" use="optional" />
-                              <xs:attribute type="xs:string" name="targetport" use="optional" />
-                              <xs:attribute type="xs:string" name="type" use="optional" />
-                              <xs:attribute type="xs:string" name="expr" use="optional" />
-                           </xs:complexType>
-                        </xs:element>
-                     </xs:choice>
-                  </xs:sequence>
-                  <xs:attribute type="xs:string" name="edgedefault" />
-               </xs:complexType>
-            </xs:element>
-         </xs:sequence>
-      </xs:complexType>
-   </xs:element>
+<xs:schema elementFormDefault="qualified" targetNamespace="http://graphml.graphdrawing.org/xmlns"
+   xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:pisdf="http://graphml.graphdrawing.org/xmlns">
+   <xs:element name="graphml" type="pisdf:Root" />
+
+   <xs:complexType name="Root">
+      <xs:sequence>
+         <xs:element name="key" maxOccurs="unbounded" minOccurs="0" type="pisdf:KeyAttribute" />
+         <xs:element name="graph" type="pisdf:PiGraph" maxOccurs="1" minOccurs="1" />
+      </xs:sequence>
+   </xs:complexType>
+
+
+   <xs:complexType name="PiGraph">
+      <xs:sequence>
+         <xs:element name="data" maxOccurs="unbounded" minOccurs="0" type="pisdf:Key" />
+         <xs:element name="node" maxOccurs="unbounded" minOccurs="0" type="pisdf:Node" />
+         <xs:element name="edge" maxOccurs="unbounded" minOccurs="0" type="pisdf:Edge" />
+      </xs:sequence>
+      <xs:attribute type="xs:string" name="edgedefault" />
+   </xs:complexType>
+
+   <xs:complexType name="Edge">
+      <xs:sequence>
+         <xs:element name="data" maxOccurs="unbounded" minOccurs="0" type="pisdf:Key" />
+      </xs:sequence>
+      <xs:attribute type="xs:string" name="kind" use="optional" />
+      <xs:attribute type="xs:string" name="source" use="optional" />
+      <xs:attribute type="xs:string" name="sourceport" use="optional" />
+      <xs:attribute type="xs:string" name="target" use="optional" />
+      <xs:attribute type="xs:string" name="targetport" use="optional" />
+      <xs:attribute type="xs:string" name="type" use="optional" />
+      <xs:attribute type="xs:string" name="expr" use="optional" />
+   </xs:complexType>
+
+   <xs:complexType name="Node" mixed="true">
+      <xs:sequence>
+         <xs:choice minOccurs="0" maxOccurs="unbounded">
+            <xs:element name="data" minOccurs="0" type="pisdf:Key" />
+            <xs:element name="loop" minOccurs="0" type="pisdf:ActorPrototype" />
+            <xs:element name="init" minOccurs="0" type="pisdf:ActorPrototype" />
+            <xs:element name="port" maxOccurs="unbounded" minOccurs="0" type="pisdf:Port" />
+         </xs:choice>
+      </xs:sequence>
+      <xs:attribute type="xs:string" name="id" use="optional" />
+      <xs:attribute type="xs:string" name="kind" use="optional" />
+      <xs:attribute type="xs:string" name="expr" use="optional" />
+      <xs:attribute type="xs:string" name="getter" use="optional" />
+      <xs:attribute type="xs:string" name="setter" use="optional" />
+      <xs:attribute type="xs:string" name="level" use="optional" />
+   </xs:complexType>
+
+   <xs:complexType name="Port">
+      <xs:simpleContent>
+         <xs:extension base="xs:string">
+            <xs:attribute type="xs:string" name="annotation" use="optional" />
+            <xs:attribute type="xs:string" name="expr" use="optional" />
+            <xs:attribute type="xs:string" name="kind" use="optional" />
+            <xs:attribute type="xs:string" name="name" use="optional" />
+         </xs:extension>
+      </xs:simpleContent>
+   </xs:complexType>
+
+   <xs:complexType name="ActorPrototype">
+      <xs:sequence>
+         <xs:element name="param" minOccurs="0" maxOccurs="unbounded" type="pisdf:Parameter" />
+      </xs:sequence>
+      <xs:attribute type="xs:string" name="name" />
+   </xs:complexType>
+
+   <xs:complexType name="Parameter">
+      <xs:simpleContent>
+         <xs:extension base="xs:string">
+            <xs:attribute type="xs:string" name="direction" use="optional" />
+            <xs:attribute type="xs:string" name="isConfig" use="optional" />
+            <xs:attribute type="xs:string" name="name" use="optional" />
+            <xs:attribute type="xs:string" name="type" use="optional" />
+         </xs:extension>
+      </xs:simpleContent>
+   </xs:complexType>
+
+   <xs:complexType name="Key">
+      <xs:simpleContent>
+         <xs:extension base="xs:string">
+            <xs:attribute type="xs:string" name="key" />
+         </xs:extension>
+      </xs:simpleContent>
+   </xs:complexType>
+
+   <xs:complexType name="KeyAttribute">
+      <xs:simpleContent>
+         <xs:extension base="xs:string">
+            <xs:attribute type="xs:string" name="attr.name" use="optional" />
+            <xs:attribute type="xs:string" name="for" use="optional" />
+            <xs:attribute type="xs:string" name="id" use="optional" />
+            <xs:attribute type="xs:string" name="attr.type" use="optional" />
+         </xs:extension>
+      </xs:simpleContent>
+   </xs:complexType>
+
 </xs:schema>
