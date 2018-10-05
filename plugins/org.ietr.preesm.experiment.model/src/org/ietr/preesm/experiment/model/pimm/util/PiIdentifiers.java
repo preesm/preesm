@@ -107,7 +107,7 @@ public class PiIdentifiers {
   /** The Constant ACTOR_MEMORY_SCRIPT. */
   public static final String ACTOR_MEMORY_SCRIPT = "memoryScript";
 
-  /** The Constant ACTOR_MEMORY_SCRIPT. */
+  /** The Constant ACTOR_PERIOD. */
   public static final String ACTOR_PERIOD = "period";
 
   /** The Constant BROADCAST. */

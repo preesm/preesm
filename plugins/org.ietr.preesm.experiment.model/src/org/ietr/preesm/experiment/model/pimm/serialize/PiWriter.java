@@ -362,13 +362,6 @@ public class PiWriter {
     nameElt.setTextContent(textContent);
   }
 
-  protected void writePeriod(final Element parentElt, final String keyName, final String textContent) {
-    addKey(null, keyName, parentElt.getTagName(), "string", null);
-    final Element nameElt = appendChild(parentElt, PiIdentifiers.DATA);
-    nameElt.setAttribute(PiIdentifiers.DATA_KEY, keyName);
-    nameElt.setTextContent(textContent);
-  }
-
   /**
    * Write the {@link Delay} information in the given {@link Element}.
    *

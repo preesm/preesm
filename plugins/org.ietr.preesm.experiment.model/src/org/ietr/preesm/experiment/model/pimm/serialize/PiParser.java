@@ -244,7 +244,7 @@ public class PiParser {
     if (attribute != null && !attribute.isEmpty()) {
       actor.getPeriod().setExpressionString(attribute);
     } else {
-      // 0 or negative values means the actor is aperiodic
+      // 0 means the actor is aperiodic, negative generates an error during evaluation
       actor.getPeriod().setExpressionString("0");
     }
 
