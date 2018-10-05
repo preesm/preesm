@@ -24,7 +24,7 @@ public class PiSDFXSDValidator {
   final URL schemaURL;
 
   private PiSDFXSDValidator() {
-    schemaURL = new URLResolver(this.getClass().getClassLoader()).resolve("PiSDF.xsd", Collections.emptyList());
+    this.schemaURL = new URLResolver(this.getClass().getClassLoader()).resolve("PiSDF.xsd", Collections.emptyList());
   }
 
   /**
@@ -49,12 +49,12 @@ public class PiSDFXSDValidator {
   }
 
   public static final void validate(final URL pisdfURL) throws IOException {
-    validate(pisdfURL.openStream());
+    PiSDFXSDValidator.validate(pisdfURL.openStream());
   }
 
   public static final void validate(final String pisdfcontent) throws IOException {
     final InputStream targetStream = new ByteArrayInputStream(pisdfcontent.getBytes());
-    validate(targetStream);
+    PiSDFXSDValidator.validate(targetStream);
   }
 
   /**
@@ -70,7 +70,7 @@ public class PiSDFXSDValidator {
     final Source xmlFile = new StreamSource(protectedStream);
     final SchemaFactory schemaFactory = SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI);
     try {
-      final Schema schema = schemaFactory.newSchema(schemaURL);
+      final Schema schema = schemaFactory.newSchema(this.schemaURL);
       final Validator validator = schema.newValidator();
       validator.validate(xmlFile);
     } catch (final SAXException e) {

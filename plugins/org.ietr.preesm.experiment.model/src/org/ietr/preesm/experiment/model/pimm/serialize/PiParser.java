@@ -199,7 +199,7 @@ public class PiParser {
 
     try {
       PiSDFXSDValidator.validate(bis);
-    } catch (IOException ex) {
+    } catch (final IOException ex) {
       throw new PiGraphException("Could not parse the input graph: \n" + ex.getMessage(), ex);
     }
 
