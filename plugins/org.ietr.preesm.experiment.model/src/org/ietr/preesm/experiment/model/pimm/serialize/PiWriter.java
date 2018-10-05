@@ -39,6 +39,7 @@
  */
 package org.ietr.preesm.experiment.model.pimm.serialize;
 
+import java.io.IOException;
 import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
@@ -54,6 +55,7 @@ import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.EObject;
 import org.ietr.dftools.algorithm.exporter.Key;
 import org.ietr.dftools.architecture.utils.DomUtil;
+import org.ietr.preesm.experiment.model.PiGraphException;
 import org.ietr.preesm.experiment.model.pimm.AbstractActor;
 import org.ietr.preesm.experiment.model.pimm.AbstractVertex;
 import org.ietr.preesm.experiment.model.pimm.Actor;
@@ -83,6 +85,7 @@ import org.ietr.preesm.experiment.model.pimm.Port;
 import org.ietr.preesm.experiment.model.pimm.Refinement;
 import org.ietr.preesm.experiment.model.pimm.RoundBufferActor;
 import org.ietr.preesm.experiment.model.pimm.util.PiIdentifiers;
+import org.ietr.preesm.experiment.model.pimm.util.PiSDFXSDValidator;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -257,8 +260,29 @@ public class PiWriter {
     // Fill the root Element with the Graph
     writePi(this.rootElement, graph);
 
+    final OutputStream toto = new OutputStream() {
+      StringBuilder buffer = new StringBuilder();
+
+      @Override
+      public void write(final int b) throws IOException {
+        outputStream.write(b);
+        this.buffer.append((char) b);
+      }
+
+      @Override
+      public String toString() {
+        return this.buffer.toString();
+      }
+    };
+
     // Produce the output file
-    DomUtil.writeDocument(outputStream, this.domDocument);
+    DomUtil.writeDocument(toto, this.domDocument);
+
+    try {
+      PiSDFXSDValidator.validate(toto.toString());
+    } catch (final IOException e) {
+      throw new PiGraphException("Fatal Error: the wirtten PiSDF does not comply to the XSD Schema", e);
+    }
 
   }
 
@@ -279,7 +303,6 @@ public class PiWriter {
     vertexElt.setAttribute(PiIdentifiers.ACTOR_NAME, abstractActor.getName());
 
     // Add the name in the data of the node
-    // writeDataElt(vertexElt, "name", vertex.getName());
 
     if (abstractActor instanceof Actor) {
       writeActor(vertexElt, (Actor) abstractActor);

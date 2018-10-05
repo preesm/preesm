@@ -75,11 +75,11 @@ public class TcpCPrinter extends CPrinter {
     final Map<String, CharSequence> generateStandardLibFiles = super.generateStandardLibFiles();
     try {
       generateStandardLibFiles.put("tcp_communication.c",
-          URLResolver.readURLInPluginList("/stdfiles/tcpc/" + "tcp_communication.c", CodegenPlugin.BUNDLE_ID));
+          URLResolver.readURLInBundleList("/stdfiles/tcpc/" + "tcp_communication.c", CodegenPlugin.BUNDLE_ID));
       generateStandardLibFiles.put("tcp_communication.h",
-          URLResolver.readURLInPluginList("/stdfiles/tcpc/" + "tcp_communication.h", CodegenPlugin.BUNDLE_ID));
+          URLResolver.readURLInBundleList("/stdfiles/tcpc/" + "tcp_communication.h", CodegenPlugin.BUNDLE_ID));
       generateStandardLibFiles.put("preesm_gen_tcp.h",
-          URLResolver.readURLInPluginList("/stdfiles/tcpc/" + "preesm_gen_tcp.h", CodegenPlugin.BUNDLE_ID));
+          URLResolver.readURLInBundleList("/stdfiles/tcpc/" + "preesm_gen_tcp.h", CodegenPlugin.BUNDLE_ID));
     } catch (IOException e) {
       throw new CodegenException("Could not override communication files", e);
     }
@@ -195,7 +195,7 @@ public class TcpCPrinter extends CPrinter {
 
     // 3- init template reader
     final String templateLocalURL = "templates/tcpc/main.c";
-    final URL mainTemplate = URLResolver.findFirstInPluginList(templateLocalURL, CodegenPlugin.BUNDLE_ID);
+    final URL mainTemplate = URLResolver.findFirstInBundleList(templateLocalURL, CodegenPlugin.BUNDLE_ID);
     InputStreamReader reader = null;
     try {
       reader = new InputStreamReader(mainTemplate.openStream());
