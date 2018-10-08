@@ -42,6 +42,7 @@ import java.io.BufferedInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.logging.Level;
+import org.apache.commons.io.IOUtils;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IWorkspaceRoot;
@@ -195,10 +196,14 @@ public class PiParser {
     // Instantiate the graph that will be filled with parser informations
     final PiGraph graph = PiMMUserFactory.instance.createPiGraph();
 
+    // wrap the input stream in one that supports mark/reset
     final BufferedInputStream bis = new BufferedInputStream(inputStream);
 
     try {
-      PiSDFXSDValidator.validate(bis);
+      bis.mark(Integer.MAX_VALUE);
+      final String pisdfContent = IOUtils.toString(bis);
+      PiSDFXSDValidator.validate(pisdfContent);
+      bis.reset();
     } catch (final IOException ex) {
       throw new PiGraphException("Could not parse the input graph: \n" + ex.getMessage(), ex);
     }

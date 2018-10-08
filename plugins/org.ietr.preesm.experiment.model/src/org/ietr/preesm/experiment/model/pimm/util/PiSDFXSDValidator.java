@@ -11,6 +11,7 @@ import javax.xml.transform.stream.StreamSource;
 import javax.xml.validation.Schema;
 import javax.xml.validation.SchemaFactory;
 import javax.xml.validation.Validator;
+import org.apache.commons.io.IOUtils;
 import org.apache.commons.io.input.CloseShieldInputStream;
 import org.xml.sax.SAXException;
 
@@ -44,17 +45,21 @@ public class PiSDFXSDValidator {
 
   }
 
-  public static final void validate(final InputStream pisdfStreamed) throws IOException {
-    new PiSDFXSDValidator().validateLocal(pisdfStreamed);
-  }
-
+  /**
+   *
+   */
   public static final void validate(final URL pisdfURL) throws IOException {
-    PiSDFXSDValidator.validate(pisdfURL.openStream());
+    // get the content of the URL, then parse
+    final String pisdfContent = IOUtils.toString(pisdfURL);
+    PiSDFXSDValidator.validate(pisdfContent);
   }
 
+  /**
+   *
+   */
   public static final void validate(final String pisdfcontent) throws IOException {
     final InputStream targetStream = new ByteArrayInputStream(pisdfcontent.getBytes());
-    PiSDFXSDValidator.validate(targetStream);
+    new PiSDFXSDValidator().validateLocal(targetStream);
   }
 
   /**
