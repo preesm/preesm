@@ -56,7 +56,6 @@ import org.ietr.dftools.workflow.implement.AbstractWorkflowNodeImplementation;
 import org.ietr.preesm.core.scenario.ParameterValue;
 import org.ietr.preesm.core.scenario.PreesmScenario;
 import org.ietr.preesm.core.scenario.serialize.ScenarioParser;
-import org.ietr.preesm.experiment.model.pimm.Expression;
 import org.ietr.preesm.experiment.model.pimm.Parameter;
 import org.ietr.preesm.experiment.model.pimm.PiGraph;
 import org.ietr.preesm.experiment.model.pimm.serialize.PiParser;
@@ -136,13 +135,11 @@ public class AlgorithmAndArchitectureScenarioNode extends AbstractScenarioImplem
       if (newValue != null) {
         // note: need to lookup since graph reconnector may have changed Paramter objects
         final Parameter lookupParameterGivenGraph = piAlgorithm.lookupParameterGivenGraph(variableName, parentVertex);
-        final Expression valueExpression = lookupParameterGivenGraph.getExpression();
-        valueExpression.setExpressionString(newValue);
+        lookupParameterGivenGraph.setExpression(newValue);
       } else if (expression != null) {
         // note: need to lookup since graph reconnector may have changed Paramter objects
         final Parameter lookupParameterGivenGraph = piAlgorithm.lookupParameterGivenGraph(variableName, parentVertex);
-        final Expression valueExpression = lookupParameterGivenGraph.getExpression();
-        valueExpression.setExpressionString(expression);
+        lookupParameterGivenGraph.setExpression(expression);
       } else {
         // keep value from PiSDF graph
       }

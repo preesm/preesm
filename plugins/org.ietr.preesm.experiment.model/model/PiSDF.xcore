@@ -31,6 +31,7 @@ import java.util.Optional
 import org.ietr.preesm.experiment.model.PiGraphException
 import org.ietr.preesm.experiment.model.pimm.util.RefinementResolver
 import org.ietr.preesm.experiment.model.expression.ExpressionEvaluator
+import org.ietr.preesm.experiment.model.factory.PiMMUserFactory
 
 type IPath wraps org.eclipse.core.runtime.IPath
 
@@ -83,27 +84,36 @@ interface Parameterizable {
 		return inputParameters.filterNull.forall[isLocallyStatic]
 	}
 }
-
 class Expression {
 	refers ExpressionHolder holder opposite expression
-	String expressionString = "0"
-	op long evaluate() {
-		return ExpressionEvaluator.evaluate(this)
-	}
+	op String getExpressionAsString()
+	op long evaluate()
 }
 
+class StringExpression extends Expression {
+	String expressionString = "0"
+	op String getExpressionAsString() {
+		return expressionString
+	}
+	op long evaluate() {
+		ExpressionEvaluator.evaluate(this)
+	}
+}
 interface ExpressionHolder extends Parameterizable {
 	contains Expression expression opposite holder
+	op void setExpression (String newExpression) {
+		expression = PiMMUserFactory.instance.createStringExpression(newExpression)
+	}
 }
 
 class DelayLinkedExpression extends Expression {
 	refers Delay delay
 	op String getExpressionString() {
-		return delay.getExpression().expressionString
+		return delay.getExpression().getExpressionAsString
 	}
 
 	op void setExpressionString(String s) {
-		delay.expression.expressionString = s
+		delay.setExpression(s)
 	}
 }
 

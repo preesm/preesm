@@ -284,7 +284,7 @@ public class StaticPiMM2FlatPiMMVisitor extends PiMMSwitch<Boolean> {
     // Add the input port and the output port
     final DataInputPort in = PiMMUserFactory.instance.createDataInputPort();
     in.setName(actor.getName());
-    in.getPortRateExpression().setExpressionString(interfaceRateExpression.getExpressionString());
+    in.setExpression(interfaceRateExpression.getExpressionAsString());
     broadcastIn.getDataInputPorts().add(in);
     final DataOutputPort out = PiMMUserFactory.instance.createDataOutputPort();
     final Fifo outFifo = actor.getDataOutputPorts().get(0).getFifo();
@@ -293,8 +293,8 @@ public class StaticPiMM2FlatPiMMVisitor extends PiMMSwitch<Boolean> {
     out.setName("if_" + actor.getName());
     // Compute the appropriate out rate not to mess with repetition vector values
     final AbstractActor target = targetPort.getContainingActor();
-    final long targetRate = Long.parseLong(targetRateExpression.getExpressionString()) * this.brv.get(target);
-    out.getPortRateExpression().setExpressionString(Long.toString(targetRate));
+    final long targetRate = Long.parseLong(targetRateExpression.getExpressionAsString()) * this.brv.get(target);
+    out.setExpression(Long.toString(targetRate));
     broadcastIn.getDataOutputPorts().add(out);
     setPropertiesToCopyActor(actor, broadcastIn);
     return true;
@@ -310,7 +310,7 @@ public class StaticPiMM2FlatPiMMVisitor extends PiMMSwitch<Boolean> {
     // Add the input port and the output port
     final DataOutputPort out = PiMMUserFactory.instance.createDataOutputPort();
     out.setName(actor.getName());
-    out.getPortRateExpression().setExpressionString(interfaceRateExpression.getExpressionString());
+    out.setExpression(interfaceRateExpression.getExpressionAsString());
     roundbufferOut.getDataOutputPorts().add(out);
     final DataInputPort in = PiMMUserFactory.instance.createDataInputPort();
     final Fifo outFifo = actor.getDataInputPorts().get(0).getFifo();
@@ -319,8 +319,8 @@ public class StaticPiMM2FlatPiMMVisitor extends PiMMSwitch<Boolean> {
     in.setName("if_" + actor.getName());
     // Compute the appropriate in rate not to mess with repetition vector values
     final AbstractActor source = sourcePort.getContainingActor();
-    final long sourceRate = Long.parseLong(sourceRateExpression.getExpressionString()) * this.brv.get(source);
-    in.getPortRateExpression().setExpressionString(Long.toString(sourceRate));
+    final long sourceRate = Long.parseLong(sourceRateExpression.getExpressionAsString()) * this.brv.get(source);
+    in.setExpression(Long.toString(sourceRate));
     roundbufferOut.getDataInputPorts().add(in);
     setPropertiesToCopyActor(actor, roundbufferOut);
     return true;
@@ -330,10 +330,10 @@ public class StaticPiMM2FlatPiMMVisitor extends PiMMSwitch<Boolean> {
     final PiGraph graph = actor.getContainingPiGraph();
     final DataPort correspondingPort = graph.lookupGraphDataPortForInterfaceActor(actor);
     final Expression correspondingExpression = correspondingPort.getExpression();
-    if (!correspondingExpression.getExpressionString().equals(interfaceRateExpression.getExpressionString())) {
+    if (!correspondingExpression.getExpressionAsString().equals(interfaceRateExpression.getExpressionAsString())) {
       throw new WorkflowException("Interface [" + actor.getName()
-          + "] should have same rate as its definition. Graph rate [" + correspondingExpression.getExpressionString()
-          + "] vs interface rate [" + interfaceRateExpression.getExpressionString() + "]");
+          + "] should have same rate as its definition. Graph rate [" + correspondingExpression.getExpressionAsString()
+          + "] vs interface rate [" + interfaceRateExpression.getExpressionAsString() + "]");
     }
   }
 
@@ -410,11 +410,11 @@ public class StaticPiMM2FlatPiMMVisitor extends PiMMSwitch<Boolean> {
     final DataInputPort setterPort = actor.getDataInputPort();
     final DataInputPort copySetterPort = copyActor.getDataInputPort();
     copySetterPort.setName(setterPort.getName());
-    copySetterPort.getExpression().setExpressionString(setterPort.getExpression().getExpressionString());
+    copySetterPort.setExpression(setterPort.getExpression().getExpressionAsString());
     final DataOutputPort getterPort = actor.getDataOutputPort();
     final DataOutputPort copyGetterPort = copyActor.getDataOutputPort();
     copyGetterPort.setName(getterPort.getName());
-    copyGetterPort.getExpression().setExpressionString(getterPort.getExpression().getExpressionString());
+    copyGetterPort.setExpression(getterPort.getExpression().getExpressionAsString());
     // Adding the entry in the map
     this.actor2actor.put(actor, copyActor);
     this.result.addDelay(copy);
@@ -504,8 +504,8 @@ public class StaticPiMM2FlatPiMMVisitor extends PiMMSwitch<Boolean> {
     final DataInputPort in = PiMMUserFactory.instance.createDataInputPort();
     in.setName(actor.getName());
     final Long graphRV = getHierarchichalRV(graph);
-    final long inRate = Long.parseLong(interfaceRateExpression.getExpressionString()) * graphRV;
-    in.getPortRateExpression().setExpressionString(Long.toString(inRate));
+    final long inRate = Long.parseLong(interfaceRateExpression.getExpressionAsString()) * graphRV;
+    in.setExpression(Long.toString(inRate));
     in.setAnnotation(PortMemoryAnnotation.READ_ONLY);
     fork.getDataInputPorts().add(in);
     // Set the DataOutputPorts and connect them
@@ -517,7 +517,7 @@ public class StaticPiMM2FlatPiMMVisitor extends PiMMSwitch<Boolean> {
       // 2. Create the output port
       final DataOutputPort out = PiMMUserFactory.instance.createDataOutputPort();
       out.setName(actor.getName() + "_" + Long.toString(i));
-      out.getPortRateExpression().setExpressionString(interfaceRateExpression.getExpressionString());
+      out.setExpression(interfaceRateExpression.getExpressionAsString());
       out.setAnnotation(PortMemoryAnnotation.WRITE_ONLY);
       fork.getDataOutputPorts().add(out);
       // 3. Connect the port
@@ -543,8 +543,8 @@ public class StaticPiMM2FlatPiMMVisitor extends PiMMSwitch<Boolean> {
     final DataOutputPort out = PiMMUserFactory.instance.createDataOutputPort();
     out.setName(actor.getName());
     final Long graphRV = getHierarchichalRV(graph);
-    final long outRate = Long.parseLong(interfaceRateExpression.getExpressionString()) * graphRV;
-    out.getPortRateExpression().setExpressionString(Long.toString(outRate));
+    final long outRate = Long.parseLong(interfaceRateExpression.getExpressionAsString()) * graphRV;
+    out.setExpression(Long.toString(outRate));
     out.setAnnotation(PortMemoryAnnotation.WRITE_ONLY);
     join.getDataOutputPorts().add(out);
     // Set the DataOutputPorts and connect them
@@ -556,7 +556,7 @@ public class StaticPiMM2FlatPiMMVisitor extends PiMMSwitch<Boolean> {
       // 2. Create the output port
       final DataInputPort in = PiMMUserFactory.instance.createDataInputPort();
       in.setName(actor.getName() + "_" + Long.toString(i));
-      in.getPortRateExpression().setExpressionString(interfaceRateExpression.getExpressionString());
+      in.setExpression(interfaceRateExpression.getExpressionAsString());
       in.setAnnotation(PortMemoryAnnotation.READ_ONLY);
       join.getDataInputPorts().add(in);
       // 3. Connect the port

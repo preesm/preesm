@@ -270,26 +270,26 @@ public class StaticPiMM2ASrPiMMVisitor extends PiMMSwitch<Boolean> {
 
   /**
    * Generate the list of actor that will replace a given DelayActor at some point in the SR transformation.
-   * 
+   *
    * <pre>
-   * 
+   *
    * 0. Original PiMM description:
-   * 
+   *
    *   setter * RV(setter) ---> DelayActor ---> getter * RV(getter)
-   *   
+   *
    * 1. Current SR-Transform:
-   * 
+   *
    *  InitActor * RV(setter) ---> actors setA
-   *  
+   *
    *  actors setB ---> EndActor * RV(getter)
-   * 
+   *
    * 2. Final SR-Transform:
-   * 
-   *  setter * RV(setter) ---> actors setA 
-   *  
+   *
+   *  setter * RV(setter) ---> actors setA
+   *
    *  actors setB ---> getter * RV(getter)
    * </pre>
-   * 
+   *
    * @param port
    *          Data port of the DelayActor whose name is going to be replaced
    * @param actor
@@ -515,8 +515,8 @@ public class StaticPiMM2ASrPiMMVisitor extends PiMMSwitch<Boolean> {
     }
 
     // 2.2 Now check if we need a BroadcastActor
-    long prod = Long.parseLong(correspondingPort.getPortRateExpression().getExpressionString());
-    long cons = Long.parseLong(targetPort.getPortRateExpression().getExpressionString());
+    long prod = Long.parseLong(correspondingPort.getPortRateExpression().getExpressionAsString());
+    long cons = Long.parseLong(targetPort.getPortRateExpression().getExpressionAsString());
     long sinkRV = this.brv.get(sinkActor);
     final boolean needBroadcastInterface = prod != (cons * sinkRV);
     final boolean needBroadcastDelay = sourceActor.getDataOutputPorts().get(0).getOutgoingFifo().getDelay() != null;
@@ -648,8 +648,8 @@ public class StaticPiMM2ASrPiMMVisitor extends PiMMSwitch<Boolean> {
     }
 
     // 2.2 Now check if we need a RoundBufferActor
-    long cons = Long.parseLong(correspondingPort.getPortRateExpression().getExpressionString());
-    long prod = Long.parseLong(sourcePort.getPortRateExpression().getExpressionString());
+    long cons = Long.parseLong(correspondingPort.getPortRateExpression().getExpressionAsString());
+    long prod = Long.parseLong(sourcePort.getPortRateExpression().getExpressionAsString());
     long sourceRV = this.brv.get(sourceActor);
     final boolean needRoundbufferInterface = cons != (prod * sourceRV);
     final boolean needRoundbufferDelay = sinkActor.getDataInputPorts().get(0).getIncomingFifo().getDelay() != null;
@@ -869,7 +869,7 @@ public class StaticPiMM2ASrPiMMVisitor extends PiMMSwitch<Boolean> {
    */
   private void splitDelayActors(final Fifo fifo) {
     final DelayActor delayActor = fifo.getDelay().getActor();
-    final String delayExpression = fifo.getDelay().getExpression().getExpressionString();
+    final String delayExpression = fifo.getDelay().getExpression().getExpressionAsString();
     final PiGraph graph = fifo.getContainingPiGraph();
     // 0. Check if the DelayActor need to add Init / End
     if (delayActor.getSetterActor() == null) {
@@ -888,8 +888,7 @@ public class StaticPiMM2ASrPiMMVisitor extends PiMMSwitch<Boolean> {
     // 1.1.1 Setting the new target port of the setter FIFO
     final Fifo setterFifo = delayActor.getDataInputPort().getFifo();
     setterFifo.setTargetPort(setPort);
-    setPort.getPortRateExpression()
-        .setExpressionString(setterFifo.getSourcePort().getPortRateExpression().getExpressionString());
+    setPort.setExpression(setterFifo.getSourcePort().getPortRateExpression().getExpressionAsString());
     // 1.1.2 Setting the BRV value
     Long brvSetter = this.brv.get(setterFifo.getSourcePort().getContainingActor());
     if (brvSetter == null) {
@@ -901,13 +900,12 @@ public class StaticPiMM2ASrPiMMVisitor extends PiMMSwitch<Boolean> {
     getterActor.setName(delayActor.getName() + "_getter");
     final DataOutputPort getPort = PiMMUserFactory.instance.createDataOutputPort();
     getPort.setName(delayActor.getDataOutputPort().getName());
-    getPort.getPortRateExpression().setExpressionString(delayExpression);
+    getPort.setExpression(delayExpression);
     getterActor.getDataOutputPorts().add(getPort);
     // 1.2.1 Setting the new source port of the getter FIFO
     final Fifo getterFifo = delayActor.getDataOutputPort().getFifo();
     getterFifo.setSourcePort(getPort);
-    getPort.getPortRateExpression()
-        .setExpressionString(getterFifo.getTargetPort().getPortRateExpression().getExpressionString());
+    getPort.setExpression(getterFifo.getTargetPort().getPortRateExpression().getExpressionAsString());
     // 1.2.2 Setting the BRV value
     Long brvGetter = this.brv.get(getterFifo.getTargetPort().getContainingActor());
     if (brvGetter == null) {
@@ -925,7 +923,7 @@ public class StaticPiMM2ASrPiMMVisitor extends PiMMSwitch<Boolean> {
     final InitActor init = PiMMUserFactory.instance.createInitActor();
     final DataInputPort targetPort = fifo.getTargetPort();
     init.getDataOutputPort().setName(targetPort.getName());
-    init.getDataOutputPort().getPortRateExpression().setExpressionString(delayExpression);
+    init.getDataOutputPort().setExpression(delayExpression);
     // Set the proper init name
     final String initName = targetPort.getContainingActor().getName() + "_init_" + targetPort.getName();
     init.setName(initName);
@@ -946,7 +944,7 @@ public class StaticPiMM2ASrPiMMVisitor extends PiMMSwitch<Boolean> {
     final EndActor end = PiMMUserFactory.instance.createEndActor();
     final DataOutputPort sourcePort = fifo.getSourcePort();
     end.getDataInputPort().setName(sourcePort.getName());
-    end.getDataInputPort().getPortRateExpression().setExpressionString(delayExpression);
+    end.getDataInputPort().setExpression(delayExpression);
     // Set the proper end name
     final String endName = sourcePort.getContainingActor().getName() + "_end_" + sourcePort.getName();
     end.setName(endName);

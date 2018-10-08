@@ -320,10 +320,10 @@ public class FifoPropertiesSection extends DataPortPropertiesUpdater implements 
       if (bo instanceof Fifo) {
         final Fifo fifo = (Fifo) bo;
         final Expression srcRate = fifo.getSourcePort().getPortRateExpression();
-        final String srcExprString = srcRate.getExpressionString();
+        final String srcExprString = srcRate.getExpressionAsString();
 
         final Expression tgtRate = fifo.getTargetPort().getPortRateExpression();
-        final String tgtExprString = tgtRate.getExpressionString();
+        final String tgtExprString = tgtRate.getExpressionAsString();
 
         this.txtTypeObj.setText(fifo.getType());
         this.txtSourcePortExpression.setEnabled(true);

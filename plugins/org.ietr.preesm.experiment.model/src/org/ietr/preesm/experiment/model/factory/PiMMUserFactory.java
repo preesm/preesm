@@ -58,6 +58,7 @@ import org.ietr.preesm.experiment.model.pimm.InitActor;
 import org.ietr.preesm.experiment.model.pimm.Parameter;
 import org.ietr.preesm.experiment.model.pimm.PersistenceLevel;
 import org.ietr.preesm.experiment.model.pimm.PiGraph;
+import org.ietr.preesm.experiment.model.pimm.StringExpression;
 import org.ietr.preesm.experiment.model.pimm.adapter.GraphInterfaceObserver;
 import org.ietr.preesm.experiment.model.pimm.impl.PiMMFactoryImpl;
 
@@ -236,6 +237,15 @@ public final class PiMMUserFactory extends PiMMFactoryImpl {
     final DataInputPort port = PiMMUserFactory.instance.createDataInputPort();
     res.getDataInputPorts().add(port);
     return res;
+  }
+
+  /**
+   *
+   */
+  public StringExpression createStringExpression(final String value) {
+    final StringExpression createStringExpression = super.createStringExpression();
+    createStringExpression.setExpressionString(value);
+    return createStringExpression;
   }
 
   @Override

@@ -48,8 +48,7 @@ public class JEPCustomFunctionTest {
 
   private void testEvaluation(final String input, final long expected) {
     long evaluate = 0;
-    final Expression createExpression = PiMMUserFactory.instance.createExpression();
-    createExpression.setExpressionString(input);
+    final Expression createExpression = PiMMUserFactory.instance.createStringExpression(input);
     try {
       evaluate = ExpressionEvaluator.evaluate(createExpression);
     } catch (final ExpressionEvaluationException e) {

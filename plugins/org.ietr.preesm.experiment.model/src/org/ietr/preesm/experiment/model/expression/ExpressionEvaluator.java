@@ -77,7 +77,7 @@ public class ExpressionEvaluator {
    */
   public static final long evaluate(final Expression expression) {
     final Map<String, Number> addInputParameterValues = ExpressionEvaluator.addInputParameterValues(expression);
-    return ExpressionEvaluator.evaluate(expression.getExpressionString(), addInputParameterValues);
+    return ExpressionEvaluator.evaluate(expression.getExpressionAsString(), addInputParameterValues);
   }
 
   private static final long evaluate(final String expression, final Map<String, Number> addInputParameterValues) {

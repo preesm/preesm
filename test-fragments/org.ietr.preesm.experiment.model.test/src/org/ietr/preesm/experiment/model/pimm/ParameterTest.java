@@ -50,7 +50,7 @@ public class ParameterTest {
     final Parameter p = PiMMUserFactory.instance.createParameter();
     final Expression valueExpression = p.getValueExpression();
     Assert.assertNotNull("Parameter value expression cannot be null", valueExpression);
-    final String string = valueExpression.getExpressionString();
+    final String string = valueExpression.getExpressionAsString();
     Assert.assertNotNull("Expression value cannot be null", string);
     final String expectedDefaultalue = "0";
     Assert.assertTrue("Expression default value should be " + expectedDefaultalue, expectedDefaultalue.equals(string));

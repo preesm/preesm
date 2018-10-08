@@ -48,7 +48,7 @@ import org.ietr.preesm.experiment.model.pimm.Fifo;
 import org.ietr.preesm.experiment.model.pimm.PiGraph;
 
 /**
- * 
+ *
  * @author farresti
  *
  * @param <T>
@@ -87,7 +87,7 @@ public abstract class AbstractPiGraphSpecialActorRemover<T extends DataPort> {
 
   /**
    * Remove a special actor with only one input / output and with same rates.
-   * 
+   *
    * @param graph
    *          The graph in which the actor is.
    * @param actor
@@ -99,11 +99,11 @@ public abstract class AbstractPiGraphSpecialActorRemover<T extends DataPort> {
       // 0. Get input rate
       final DataInputPort dataInputPort = actor.getDataInputPorts().get(0);
       final Expression inputRateExpression = dataInputPort.getPortRateExpression();
-      final long inputRate = Long.parseLong(inputRateExpression.getExpressionString());
+      final long inputRate = Long.parseLong(inputRateExpression.getExpressionAsString());
       // 1. Get output rate
       final DataOutputPort dataOutputPort = actor.getDataOutputPorts().get(0);
       final Expression outputRateExpression = dataOutputPort.getPortRateExpression();
-      final long outputRate = Long.parseLong(outputRateExpression.getExpressionString());
+      final long outputRate = Long.parseLong(outputRateExpression.getExpressionAsString());
       if (inputRate == outputRate) {
         // 2. We can remove one of the FIFO and the actor
         final Fifo outgoingFifo = dataOutputPort.getOutgoingFifo();

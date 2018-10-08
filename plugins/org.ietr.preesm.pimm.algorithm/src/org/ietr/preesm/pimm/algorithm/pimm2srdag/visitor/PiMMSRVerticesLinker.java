@@ -110,11 +110,11 @@ public class PiMMSRVerticesLinker {
     }
     // Get the number of delay
     final Expression sizeExpression = fifo.getDelay().getSizeExpression();
-    final long nDelays = Long.parseLong(sizeExpression.getExpressionString());
+    final long nDelays = Long.parseLong(sizeExpression.getExpressionAsString());
     // Sanity check on delay value
     final DataInputPort targetPort = fifo.getTargetPort();
     final Expression portRateExpression = targetPort.getPortRateExpression();
-    final long targetRate = Long.parseLong(portRateExpression.getExpressionString());
+    final long targetRate = Long.parseLong(portRateExpression.getExpressionAsString());
     if (nDelays < 0) {
       throw new WorkflowException("Invalid number of delay on fifo[" + fifo.getId() + "]: " + Long.toString(nDelays));
     } else if (nDelays < targetRate) {
@@ -144,17 +144,17 @@ public class PiMMSRVerticesLinker {
     // Setting Source properties
     this.sourcePort = fifo.getSourcePort();
     final Expression sourceExpression = this.sourcePort.getPortRateExpression();
-    this.sourceProduction = Long.parseLong(sourceExpression.getExpressionString());
+    this.sourceProduction = Long.parseLong(sourceExpression.getExpressionAsString());
 
     // Setting Sink properties
     this.sinkPort = fifo.getTargetPort();
     final Expression sinkExpression = this.sinkPort.getPortRateExpression();
-    this.sinkConsumption = Long.parseLong(sinkExpression.getExpressionString());
+    this.sinkConsumption = Long.parseLong(sinkExpression.getExpressionAsString());
 
   }
 
   /**
-   * 
+   *
    */
   public PiMMSRVerticesLinker() {
     this.fifo = null;
@@ -199,7 +199,7 @@ public class PiMMSRVerticesLinker {
   }
 
   /**
-   * 
+   *
    * @param vertexSourceSet
    *          vertex source set
    * @param vertexSinkSet
@@ -215,12 +215,12 @@ public class PiMMSRVerticesLinker {
     // List of source vertices
     final List<SourceConnection> sourceSet = new ArrayList<>();
     vertexSourceSet.forEach((k, v) -> sourceSet
-        .add(new SourceConnection(v, Long.parseLong(k.getPortRateExpression().getExpressionString()), k.getName())));
+        .add(new SourceConnection(v, Long.parseLong(k.getPortRateExpression().getExpressionAsString()), k.getName())));
 
     // List of sink vertices
     final List<SinkConnection> sinkSet = new ArrayList<>();
     vertexSinkSet.forEach((k, v) -> sinkSet
-        .add(new SinkConnection(v, Long.parseLong(k.getPortRateExpression().getExpressionString()), k.getName())));
+        .add(new SinkConnection(v, Long.parseLong(k.getPortRateExpression().getExpressionAsString()), k.getName())));
 
     // Connect all the source to the sinks
     connectEdges(sourceSet, sinkSet);
@@ -363,7 +363,7 @@ public class PiMMSRVerticesLinker {
 
   /**
    * Create a FIFO between the sourceVertex and the sinkVertex using the connection info and with the given rate
-   * 
+   *
    * @param source
    *          SourceConnection information
    * @param sink
@@ -389,7 +389,7 @@ public class PiMMSRVerticesLinker {
 
   /**
    * Return the current source port, creates it if it does not exists
-   * 
+   *
    * @param src
    *          The source connection
    * @param rate
@@ -404,7 +404,7 @@ public class PiMMSRVerticesLinker {
     if (currentSourcePort == null) {
       currentSourcePort = PiMMUserFactory.instance.createDataOutputPort();
       currentSourcePort.setName(src.getSourceLabel());
-      currentSourcePort.getPortRateExpression().setExpressionString(Long.toString(rate));
+      currentSourcePort.setExpression(Long.toString(rate));
       sourceVertex.getDataOutputPorts().add(currentSourcePort);
     }
     // Check if the source is JoinActor / RoundBufferActor
@@ -426,7 +426,7 @@ public class PiMMSRVerticesLinker {
 
   /**
    * Return the sink port corresponding to the label, creates it if it does not exists
-   * 
+   *
    * @param snk
    *          The sink connection
    * @param rate
@@ -440,7 +440,7 @@ public class PiMMSRVerticesLinker {
     if (currentSinkPort == null) {
       currentSinkPort = PiMMUserFactory.instance.createDataInputPort();
       currentSinkPort.setName(snk.getTargetLabel());
-      currentSinkPort.getPortRateExpression().setExpressionString(Long.toString(rate));
+      currentSinkPort.setExpression(Long.toString(rate));
       sinkVertex.getDataInputPorts().add(currentSinkPort);
     }
     // Check if the sink is ForkActor / BroadcastActor
@@ -461,7 +461,7 @@ public class PiMMSRVerticesLinker {
 
   /**
    * Search for a DataPort with name "name" in a given list of DataPort
-   * 
+   *
    * @param ports
    *          List of DataPort
    * @param name
@@ -479,7 +479,7 @@ public class PiMMSRVerticesLinker {
 
   /**
    * Creates a new join actor in the context of an implosion
-   * 
+   *
    * @param currentSink
    *          The current sink connection
    * @param sinkVertex
@@ -498,7 +498,7 @@ public class PiMMSRVerticesLinker {
     // Add a DataOutputPort
     final DataOutputPort joinOutputPort = PiMMUserFactory.instance.createDataOutputPort();
     joinOutputPort.setName(source.getSourceLabel());
-    joinOutputPort.getPortRateExpression().setExpressionString(Long.toString(currentSink.getConsumption()));
+    joinOutputPort.setExpression(Long.toString(currentSink.getConsumption()));
     joinOutputPort.setAnnotation(PortMemoryAnnotation.WRITE_ONLY);
     joinActor.getDataOutputPorts().add(joinOutputPort);
 
@@ -515,7 +515,7 @@ public class PiMMSRVerticesLinker {
 
   /**
    * Creates a new fork actor in the context of an explosion
-   * 
+   *
    * @param currentSource
    *          The current source connection
    * @param sourceVertex
@@ -534,7 +534,7 @@ public class PiMMSRVerticesLinker {
     // Add a DataInputPort
     final DataInputPort forkInputPort = PiMMUserFactory.instance.createDataInputPort();
     forkInputPort.setName(sink.getTargetLabel());
-    forkInputPort.getPortRateExpression().setExpressionString(Long.toString(currentSource.getProduction()));
+    forkInputPort.setExpression(Long.toString(currentSource.getProduction()));
     forkInputPort.setAnnotation(PortMemoryAnnotation.READ_ONLY);
     forkActor.getDataInputPorts().add(forkInputPort);
 
@@ -552,7 +552,7 @@ public class PiMMSRVerticesLinker {
 
   /**
    * Creates a FIFO and connects it to the source / target ports. Finally, the FIFO is added to the graph
-   * 
+   *
    * @param graph
    *          the graph in which the FIFO must be added
    * @param sourcePort
@@ -619,13 +619,13 @@ public class PiMMSRVerticesLinker {
       final AbstractActor setterActor = incomingFifo.getSourcePort().getContainingActor();
       final String setterName = setterActor.getName();
       final Expression setterRateExpression = incomingFifo.getSourcePort().getPortRateExpression();
-      final long setterRate = Long.parseLong(setterRateExpression.getExpressionString());
+      final long setterRate = Long.parseLong(setterRateExpression.getExpressionAsString());
       if (setterActor instanceof InitActor) {
         final InitActor init = PiMMUserFactory.instance.createInitActor();
         init.setName(this.graphPrefixe + setterName);
         init.getDataOutputPort().setName(this.sinkPort.getName());
         init.setLevel(((InitActor) setterActor).getLevel());
-        init.getDataOutputPort().getPortRateExpression().setExpressionString(Long.toString(setterRate));
+        init.getDataOutputPort().setExpression(Long.toString(setterRate));
         resultGraph.addActor(init);
         sourceSet.add(new SourceConnection(init, setterRate, this.sinkPort.getName()));
       } else {
@@ -705,7 +705,7 @@ public class PiMMSRVerticesLinker {
       final AbstractActor getterActor = outgoingFifo.getTargetPort().getContainingActor();
       final String getterName = getterActor.getName();
       final Expression getterRateExpression = outgoingFifo.getTargetPort().getPortRateExpression();
-      final long getterRate = Long.parseLong(getterRateExpression.getExpressionString());
+      final long getterRate = Long.parseLong(getterRateExpression.getExpressionAsString());
       if (getterActor instanceof EndActor) {
         final EndActor end = PiMMUserFactory.instance.createEndActor();
         end.setName(this.graphPrefixe + getterName);
@@ -731,7 +731,7 @@ public class PiMMSRVerticesLinker {
 
   /**
    * Class modeling source connection for single rate edge connections
-   * 
+   *
    * @author farresti
    *
    */
@@ -761,7 +761,7 @@ public class PiMMSRVerticesLinker {
 
   /**
    * Class modeling sink connection for single rate edge connections
-   * 
+   *
    * @author farresti
    *
    */

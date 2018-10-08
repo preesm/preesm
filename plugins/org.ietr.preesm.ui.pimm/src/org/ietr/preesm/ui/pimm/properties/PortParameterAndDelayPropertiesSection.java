@@ -327,8 +327,8 @@ public class PortParameterAndDelayPropertiesSection extends DataPortPropertiesUp
 
       if (bo instanceof Parameter) {
         final Parameter param = (Parameter) bo;
-        if (param.getValueExpression().getExpressionString().compareTo(this.txtExpression.getText()) != 0) {
-          setNewExpression(param.getValueExpression(), this.txtExpression.getText());
+        if (param.getValueExpression().getExpressionAsString().compareTo(this.txtExpression.getText()) != 0) {
+          setNewExpression(param, this.txtExpression.getText());
           getDiagramTypeProvider().getDiagramBehavior().refreshRenderingDecorators(pe);
         }
       } // end Parameter
@@ -364,8 +364,8 @@ public class PortParameterAndDelayPropertiesSection extends DataPortPropertiesUp
 
       if (bo instanceof Delay) {
         final Delay delay = (Delay) bo;
-        if (delay.getSizeExpression().getExpressionString().compareTo(this.txtExpression.getText()) != 0) {
-          setNewExpression(delay.getSizeExpression(), this.txtExpression.getText());
+        if (delay.getSizeExpression().getExpressionAsString().compareTo(this.txtExpression.getText()) != 0) {
+          setNewExpression(delay, this.txtExpression.getText());
           getDiagramTypeProvider().getDiagramBehavior().refreshRenderingDecorators(pe);
         }
 
@@ -423,7 +423,7 @@ public class PortParameterAndDelayPropertiesSection extends DataPortPropertiesUp
         elementName = iface.getName();
         elementValueExpression = iface.getDataPort().getPortRateExpression();
       } else if (businessObject instanceof Delay) {
-        final Fifo fifo = (Fifo) ((Delay) businessObject).getContainingFifo();
+        final Fifo fifo = ((Delay) businessObject).getContainingFifo();
         elementName = fifo.getId();
         elementValueExpression = fifo.getDelay().getSizeExpression();
 
@@ -436,7 +436,7 @@ public class PortParameterAndDelayPropertiesSection extends DataPortPropertiesUp
       if (elementValueExpression != null) {
         this.txtExpression.setEnabled(true);
 
-        final String eltExprString = elementValueExpression.getExpressionString();
+        final String eltExprString = elementValueExpression.getExpressionAsString();
         if (this.txtExpression.getText().compareTo(eltExprString) != 0) {
           this.txtExpression.setText(eltExprString);
         }

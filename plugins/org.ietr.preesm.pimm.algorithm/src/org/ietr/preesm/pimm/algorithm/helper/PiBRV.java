@@ -152,7 +152,7 @@ public abstract class PiBRV {
 
   /**
    * Compute the scale factor to apply to RV values based on DataInputInterfaces
-   * 
+   *
    * @param graph
    *          the graph
    * @param subgraph
@@ -168,8 +168,8 @@ public abstract class PiBRV {
       final Fifo fifo = dataInputPort.getIncomingFifo();
       final AbstractActor sourceActor = fifo.getSourcePort().getContainingActor();
       if (!(sourceActor instanceof InterfaceActor) && subgraph.contains(sourceActor)) {
-        final long prod = Long.parseLong(fifo.getSourcePort().getPortRateExpression().getExpressionString());
-        final long cons = Long.parseLong(fifo.getTargetPort().getPortRateExpression().getExpressionString());
+        final long prod = Long.parseLong(fifo.getSourcePort().getPortRateExpression().getExpressionAsString());
+        final long cons = Long.parseLong(fifo.getTargetPort().getPortRateExpression().getExpressionAsString());
         final long sourceRV = this.graphBRV.get(sourceActor);
         final long tmp = scaleFactor * prod * sourceRV;
         if (tmp < cons) {
@@ -187,7 +187,7 @@ public abstract class PiBRV {
 
   /**
    * Compute the scale factor to apply to RV values based on DataOutputInterfaces
-   * 
+   *
    * @param graph
    *          the graph
    * @param subgraph
@@ -204,8 +204,8 @@ public abstract class PiBRV {
       final AbstractActor targetActor = fifo.getTargetPort().getContainingActor();
       if (!(targetActor instanceof InterfaceActor) && subgraph.contains(targetActor)) {
         final long targetRV = this.graphBRV.get(targetActor);
-        final long prod = Long.parseLong(fifo.getSourcePort().getPortRateExpression().getExpressionString());
-        final long cons = Long.parseLong(fifo.getTargetPort().getPortRateExpression().getExpressionString());
+        final long prod = Long.parseLong(fifo.getSourcePort().getPortRateExpression().getExpressionAsString());
+        final long cons = Long.parseLong(fifo.getTargetPort().getPortRateExpression().getExpressionAsString());
         final long tmp = scaleFactor * cons * targetRV;
         if (tmp < prod) {
           final long scaleScaleFactor = prod / tmp;

@@ -326,7 +326,7 @@ public class PiWriter {
     // TODO change this method when several kinds will exist
     // Set the kind of the Actor
     vertexElt.setAttribute(PiIdentifiers.NODE_KIND, PiIdentifiers.ACTOR);
-    vertexElt.setAttribute(PiIdentifiers.ACTOR_PERIOD, actor.getPeriod().getExpressionString());
+    vertexElt.setAttribute(PiIdentifiers.ACTOR_PERIOD, actor.getPeriod().getExpressionAsString());
     final Refinement refinement = actor.getRefinement();
     if (refinement != null) {
       writeRefinement(vertexElt, refinement);
@@ -389,7 +389,7 @@ public class PiWriter {
     vertexElt.setAttribute(PiIdentifiers.DELAY_SETTER, setterName);
     final String getterName = delay.hasGetterActor() ? actor.getGetterActor().getName() : "";
     vertexElt.setAttribute(PiIdentifiers.DELAY_GETTER, getterName);
-    vertexElt.setAttribute(PiIdentifiers.DELAY_EXPRESSION, delay.getSizeExpression().getExpressionString());
+    vertexElt.setAttribute(PiIdentifiers.DELAY_EXPRESSION, delay.getSizeExpression().getExpressionAsString());
 
     // Checks if the delay has refinement in case of no setter is provided
     if (!delay.hasSetterActor()) {
@@ -489,7 +489,7 @@ public class PiWriter {
 
     if (fifo.getDelay() != null) {
       writeDataElt(fifoElt, PiIdentifiers.DELAY, fifo.getDelay().getId());
-      fifoElt.setAttribute(PiIdentifiers.DELAY_EXPRESSION, fifo.getDelay().getSizeExpression().getExpressionString());
+      fifoElt.setAttribute(PiIdentifiers.DELAY_EXPRESSION, fifo.getDelay().getSizeExpression().getExpressionAsString());
     }
     // TODO other Fifo properties (if any)
   }
@@ -598,7 +598,7 @@ public class PiWriter {
     // Set the kind of the node
     if (!param.isConfigurationInterface()) {
       paramElt.setAttribute(PiIdentifiers.NODE_KIND, PiIdentifiers.PARAMETER);
-      paramElt.setAttribute(PiIdentifiers.PARAMETER_EXPRESSION, param.getValueExpression().getExpressionString());
+      paramElt.setAttribute(PiIdentifiers.PARAMETER_EXPRESSION, param.getValueExpression().getExpressionAsString());
     } else {
       paramElt.setAttribute(PiIdentifiers.NODE_KIND, InterfaceKind.CFG_INPUT.getLiteral());
     }
@@ -650,7 +650,7 @@ public class PiWriter {
         case DATA_INPUT:
         case DATA_OUTPUT:
           portElt.setAttribute(PiIdentifiers.PORT_EXPRESSION,
-              ((DataPort) port).getPortRateExpression().getExpressionString());
+              ((DataPort) port).getPortRateExpression().getExpressionAsString());
           break;
         case CFG_INPUT:
         case CFG_OUTPUT:

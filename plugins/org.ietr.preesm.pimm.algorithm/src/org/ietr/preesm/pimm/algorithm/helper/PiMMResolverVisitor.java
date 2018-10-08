@@ -54,6 +54,7 @@ import org.ietr.preesm.experiment.model.pimm.DelayActor;
 import org.ietr.preesm.experiment.model.pimm.Dependency;
 import org.ietr.preesm.experiment.model.pimm.ExecutableActor;
 import org.ietr.preesm.experiment.model.pimm.Expression;
+import org.ietr.preesm.experiment.model.pimm.ExpressionHolder;
 import org.ietr.preesm.experiment.model.pimm.ISetter;
 import org.ietr.preesm.experiment.model.pimm.InterfaceActor;
 import org.ietr.preesm.experiment.model.pimm.Parameter;
@@ -94,13 +95,12 @@ public class PiMMResolverVisitor extends PiMMSwitch<Boolean> {
       if (!parameterValues.containsKey(p)) {
         // Evaluate the expression wrt. the current values of the
         // parameters and set the result as new expression
-        final Expression pExp = PiMMUserFactory.instance.createExpression();
         final Expression valueExpression = p.getValueExpression();
         final long evaluate = valueExpression.evaluate();
-        pExp.setExpressionString(Long.toString(evaluate));
+        final Expression pExp = PiMMUserFactory.instance.createStringExpression(Long.toString(evaluate));
         p.setExpression(pExp);
         try {
-          final long value = Long.parseLong(p.getExpression().getExpressionString());
+          final long value = Long.parseLong(p.getExpression().getExpressionAsString());
           parameterValues.put(p, value);
         } catch (final NumberFormatException e) {
           WorkflowLogger.getLogger().log(Level.INFO, "TROLOLOLOLOLOLOLO.");
@@ -139,7 +139,7 @@ public class PiMMResolverVisitor extends PiMMSwitch<Boolean> {
     // Iterate over all data ports of the actor and resolve their rates
     for (final DataPort dp : actor.getAllDataPorts()) {
       try {
-        PiMMResolverVisitor.resolveExpression(dp.getPortRateExpression(), jepParser);
+        PiMMResolverVisitor.resolveExpression(dp, jepParser);
       } catch (final ParseException eparse) {
         throw new WorkflowException("Failed to parse rate for [" + dp.getId() + "] port: " + eparse.getMessage());
       }
@@ -149,7 +149,7 @@ public class PiMMResolverVisitor extends PiMMSwitch<Boolean> {
     if (actor instanceof PiGraph) {
       for (final Delay d : ((PiGraph) actor).getDelays()) {
         try {
-          PiMMResolverVisitor.resolveExpression(d.getSizeExpression(), jepParser);
+          PiMMResolverVisitor.resolveExpression(d, jepParser);
         } catch (final ParseException eparse) {
           throw new WorkflowException(
               "Failed to parse expression for delay [" + d.getName() + "]: " + eparse.getMessage());
@@ -163,21 +163,22 @@ public class PiMMResolverVisitor extends PiMMSwitch<Boolean> {
    * If rate expression is a constant, then parsing is ignored since it is already done. <br>
    * This implementation uses benefit of the fact that the parser is initialized once for a given actor.
    *
-   * @param expression
+   * @param holder
    *          the expression to evaluate
    * @param actorParser
    *          parser of the actor containing the port
    * @throws PiMMHelperException
    *           the PiMMHandlerException exception
    */
-  private static void resolveExpression(final Expression expression, final JEP actorParser) throws ParseException {
+  private static void resolveExpression(final ExpressionHolder holder, final JEP actorParser) throws ParseException {
     try {
-      // If we can parse it, then it is constant
-      Long.parseLong(expression.getExpressionString());
+      // If we can parse it, then it is constant => nothing to do
+      Long.parseLong(holder.getExpression().getExpressionAsString());
     } catch (final NumberFormatException e) {
       // Now, we deal with expression
-      final long rate = PiMMResolverVisitor.parsePortExpression(actorParser, expression.getExpressionString());
-      expression.setExpressionString(Long.toString(rate));
+      final long rate = PiMMResolverVisitor.parsePortExpression(actorParser,
+          holder.getExpression().getExpressionAsString());
+      holder.setExpression(Long.toString(rate));
     }
   }
 
@@ -201,7 +202,7 @@ public class PiMMResolverVisitor extends PiMMSwitch<Boolean> {
       // parameters and set the result as new expression
       final Expression valueExpression = p.getValueExpression();
       final long value = valueExpression.evaluate();
-      valueExpression.setExpressionString(Long.toString(value));
+      p.setExpression(Long.toString(value));
       this.parameterValues.put(p, value);
     }
     return true;
@@ -219,12 +220,11 @@ public class PiMMResolverVisitor extends PiMMSwitch<Boolean> {
     // Setter of an incoming dependency into a ConfigInputInterface must be
     // a parameter
     if (setter instanceof Parameter) {
-      final Expression pExp = PiMMUserFactory.instance.createExpression();
       // When we arrive here all upper graphs have been processed.
       // We can then directly evaluate parameter expression here.
       final Expression valueExpression = ((Parameter) setter).getValueExpression();
-      final String expressionString = valueExpression.getExpressionString();
-      pExp.setExpressionString(expressionString);
+      final String expressionString = valueExpression.getExpressionAsString();
+      final Expression pExp = PiMMUserFactory.instance.createStringExpression(expressionString);
       cii.setExpression(pExp);
       this.parameterValues.put(cii, Long.parseLong(expressionString));
     } else {
