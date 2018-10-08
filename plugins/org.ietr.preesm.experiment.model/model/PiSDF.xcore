@@ -30,7 +30,7 @@ package org.ietr.preesm.experiment.model.pimm
 import java.util.Optional
 import org.ietr.preesm.experiment.model.PiGraphException
 import org.ietr.preesm.experiment.model.pimm.util.RefinementResolver
-import org.ietr.preesm.experiment.model.expression.ExpressionEvaluator
+import org.ietr.preesm.experiment.model.expression.StringExpressionEvaluator
 import org.ietr.preesm.experiment.model.factory.PiMMUserFactory
 
 type IPath wraps org.eclipse.core.runtime.IPath
@@ -97,7 +97,7 @@ class StringExpression extends Expression {
 		return getExpressionString()
 	}
 	op long evaluate() {
-		return ExpressionEvaluator.evaluate(this)
+		return StringExpressionEvaluator.evaluate(this)
 	}
 }
 

@@ -55,6 +55,7 @@ import org.ietr.preesm.experiment.model.pimm.ExpressionHolder;
 import org.ietr.preesm.experiment.model.pimm.InterfaceActor;
 import org.ietr.preesm.experiment.model.pimm.Parameter;
 import org.ietr.preesm.experiment.model.pimm.PeriodicElement;
+import org.ietr.preesm.experiment.model.pimm.StringExpression;
 import org.nfunk.jep.JEP;
 import org.nfunk.jep.Node;
 import org.nfunk.jep.ParseException;
@@ -64,9 +65,9 @@ import org.nfunk.jep.ParseException;
  * @author anmorvan
  *
  */
-public class ExpressionEvaluator {
+public class StringExpressionEvaluator {
 
-  private ExpressionEvaluator() {
+  private StringExpressionEvaluator() {
     // use static methods only
   }
 
@@ -75,16 +76,16 @@ public class ExpressionEvaluator {
    * value representing the result
    *
    */
-  public static final long evaluate(final Expression expression) {
-    final Map<String, Number> addInputParameterValues = ExpressionEvaluator.addInputParameterValues(expression);
-    return ExpressionEvaluator.evaluate(expression.getExpressionAsString(), addInputParameterValues);
+  public static final long evaluate(final StringExpression expression) {
+    final Map<String, Number> addInputParameterValues = StringExpressionEvaluator.addInputParameterValues(expression);
+    return StringExpressionEvaluator.evaluate(expression.getExpressionAsString(), addInputParameterValues);
   }
 
   private static final long evaluate(final String expression, final Map<String, Number> addInputParameterValues) {
-    final JEP jep = ExpressionEvaluator.initJep(addInputParameterValues);
+    final JEP jep = StringExpressionEvaluator.initJep(addInputParameterValues);
     long result;
     try {
-      result = ExpressionEvaluator.parse(expression, jep);
+      result = StringExpressionEvaluator.parse(expression, jep);
     } catch (final ParseException e) {
       String msg = "Could not evaluate " + expression + ":\n" + e.getMessage();
       throw new ExpressionEvaluationException(msg, e);
