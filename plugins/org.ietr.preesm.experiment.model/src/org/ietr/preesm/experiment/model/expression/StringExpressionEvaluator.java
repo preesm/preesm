@@ -77,8 +77,12 @@ public class StringExpressionEvaluator {
    *
    */
   public static final long evaluate(final StringExpression expression) {
-    final Map<String, Number> addInputParameterValues = StringExpressionEvaluator.addInputParameterValues(expression);
-    return StringExpressionEvaluator.evaluate(expression.getExpressionAsString(), addInputParameterValues);
+    try {
+      return Long.parseLong(expression.getExpressionString());
+    } catch (final NumberFormatException e) {
+      final Map<String, Number> addInputParameterValues = StringExpressionEvaluator.addInputParameterValues(expression);
+      return StringExpressionEvaluator.evaluate(expression.getExpressionAsString(), addInputParameterValues);
+    }
   }
 
   private static final long evaluate(final String expression, final Map<String, Number> addInputParameterValues) {
@@ -87,7 +91,7 @@ public class StringExpressionEvaluator {
     try {
       result = StringExpressionEvaluator.parse(expression, jep);
     } catch (final ParseException e) {
-      String msg = "Could not evaluate " + expression + ":\n" + e.getMessage();
+      final String msg = "Could not evaluate " + expression + ":\n" + e.getMessage();
       throw new ExpressionEvaluationException(msg, e);
     }
     return result;

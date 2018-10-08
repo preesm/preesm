@@ -44,7 +44,6 @@ import java.util.logging.Level;
 import org.eclipse.emf.common.util.EList;
 import org.ietr.dftools.workflow.WorkflowException;
 import org.ietr.dftools.workflow.tools.WorkflowLogger;
-import org.ietr.preesm.experiment.model.factory.PiMMUserFactory;
 import org.ietr.preesm.experiment.model.pimm.AbstractActor;
 import org.ietr.preesm.experiment.model.pimm.ConfigInputInterface;
 import org.ietr.preesm.experiment.model.pimm.ConfigInputPort;
@@ -97,10 +96,9 @@ public class PiMMResolverVisitor extends PiMMSwitch<Boolean> {
         // parameters and set the result as new expression
         final Expression valueExpression = p.getValueExpression();
         final long evaluate = valueExpression.evaluate();
-        final Expression pExp = PiMMUserFactory.instance.createStringExpression(Long.toString(evaluate));
-        p.setExpression(pExp);
+        p.setExpression(evaluate);
         try {
-          final long value = Long.parseLong(p.getExpression().getExpressionAsString());
+          final long value = p.getExpression().evaluate();
           parameterValues.put(p, value);
         } catch (final NumberFormatException e) {
           WorkflowLogger.getLogger().log(Level.INFO, "TROLOLOLOLOLOLOLO.");
@@ -173,7 +171,7 @@ public class PiMMResolverVisitor extends PiMMSwitch<Boolean> {
   private static void resolveExpression(final ExpressionHolder holder, final JEP actorParser) throws ParseException {
     try {
       // If we can parse it, then it is constant => nothing to do
-      Long.parseLong(holder.getExpression().getExpressionAsString());
+      holder.getExpression().evaluate();
     } catch (final NumberFormatException e) {
       // Now, we deal with expression
       final long rate = PiMMResolverVisitor.parsePortExpression(actorParser,
@@ -223,10 +221,9 @@ public class PiMMResolverVisitor extends PiMMSwitch<Boolean> {
       // When we arrive here all upper graphs have been processed.
       // We can then directly evaluate parameter expression here.
       final Expression valueExpression = ((Parameter) setter).getValueExpression();
-      final String expressionString = valueExpression.getExpressionAsString();
-      final Expression pExp = PiMMUserFactory.instance.createStringExpression(expressionString);
-      cii.setExpression(pExp);
-      this.parameterValues.put(cii, Long.parseLong(expressionString));
+      final long evaluate = valueExpression.evaluate();
+      cii.setExpression(evaluate);
+      this.parameterValues.put(cii, evaluate);
     } else {
       throw new UnsupportedOperationException(
           "In a static PiMM graph, setter of an incomming dependency must be a parameter.");

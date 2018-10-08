@@ -125,16 +125,16 @@ interface ExpressionHolder extends Parameterizable {
 	contains Expression expression opposite holder
 	op void setExpression (String newExpression) {
 		if (expression instanceof ExpressionProxy) {
-			(expression as ExpressionProxy).proxy.setExpression(PiMMUserFactory.instance.createStringExpression(newExpression))
+			(expression as ExpressionProxy).proxy.setExpression(PiMMUserFactory.instance.createExpression(newExpression))
 		} else {
-			expression = PiMMUserFactory.instance.createStringExpression(newExpression)
+			expression = PiMMUserFactory.instance.createExpression(newExpression)
 		}
 	}
 	op void setExpression (long value) {
 		if (expression instanceof ExpressionProxy) {
-			(expression as ExpressionProxy).proxy.setExpression(PiMMUserFactory.instance.createLongExpression(value))
+			(expression as ExpressionProxy).proxy.setExpression(PiMMUserFactory.instance.createExpression(value))
 		} else {
-			expression = PiMMUserFactory.instance.createLongExpression(value)
+			expression = PiMMUserFactory.instance.createExpression(value)
 		}
 	}
 }

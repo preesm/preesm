@@ -194,10 +194,10 @@ public class LCMBasedBRV extends PiBRV {
       final List<Long> fifoProp = new ArrayList<>();
       final DataOutputPort sourcePort = f.getSourcePort();
       final Expression sourcePortRateExpression = sourcePort.getPortRateExpression();
-      final long prod = Long.parseLong(sourcePortRateExpression.getExpressionAsString());
+      final long prod = sourcePortRateExpression.evaluate();
       final DataInputPort targetPort = f.getTargetPort();
       final Expression targetPortRateExpression = targetPort.getPortRateExpression();
-      final long cons = Long.parseLong(targetPortRateExpression.getExpressionAsString());
+      final long cons = targetPortRateExpression.evaluate();
       fifoProp.add(prod);
       fifoProp.add(cons);
       fifoProperties.put(f, fifoProp);

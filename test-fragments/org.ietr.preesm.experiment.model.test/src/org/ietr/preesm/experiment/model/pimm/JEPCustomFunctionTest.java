@@ -36,7 +36,6 @@
 package org.ietr.preesm.experiment.model.pimm;
 
 import org.ietr.preesm.experiment.model.expression.ExpressionEvaluationException;
-import org.ietr.preesm.experiment.model.expression.StringExpressionEvaluator;
 import org.ietr.preesm.experiment.model.factory.PiMMUserFactory;
 import org.junit.Assert;
 import org.junit.Test;
@@ -48,9 +47,9 @@ public class JEPCustomFunctionTest {
 
   private void testEvaluation(final String input, final long expected) {
     long evaluate = 0;
-    final StringExpression createExpression = PiMMUserFactory.instance.createStringExpression(input);
+    final Expression createExpression = PiMMUserFactory.instance.createExpression(input);
     try {
-      evaluate = StringExpressionEvaluator.evaluate(createExpression);
+      evaluate = createExpression.evaluate();
     } catch (final ExpressionEvaluationException e) {
       Assert.fail();
     }

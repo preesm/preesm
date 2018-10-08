@@ -293,7 +293,7 @@ public class StaticPiMM2FlatPiMMVisitor extends PiMMSwitch<Boolean> {
     out.setName("if_" + actor.getName());
     // Compute the appropriate out rate not to mess with repetition vector values
     final AbstractActor target = targetPort.getContainingActor();
-    final long targetRate = Long.parseLong(targetRateExpression.getExpressionAsString()) * this.brv.get(target);
+    final long targetRate = targetRateExpression.evaluate() * this.brv.get(target);
     out.setExpression(targetRate);
     broadcastIn.getDataOutputPorts().add(out);
     setPropertiesToCopyActor(actor, broadcastIn);
@@ -319,7 +319,7 @@ public class StaticPiMM2FlatPiMMVisitor extends PiMMSwitch<Boolean> {
     in.setName("if_" + actor.getName());
     // Compute the appropriate in rate not to mess with repetition vector values
     final AbstractActor source = sourcePort.getContainingActor();
-    final long sourceRate = Long.parseLong(sourceRateExpression.getExpressionAsString()) * this.brv.get(source);
+    final long sourceRate = sourceRateExpression.evaluate() * this.brv.get(source);
     in.setExpression(sourceRate);
     roundbufferOut.getDataInputPorts().add(in);
     setPropertiesToCopyActor(actor, roundbufferOut);
@@ -504,7 +504,7 @@ public class StaticPiMM2FlatPiMMVisitor extends PiMMSwitch<Boolean> {
     final DataInputPort in = PiMMUserFactory.instance.createDataInputPort();
     in.setName(actor.getName());
     final Long graphRV = getHierarchichalRV(graph);
-    final long inRate = Long.parseLong(interfaceRateExpression.getExpressionAsString()) * graphRV;
+    final long inRate = interfaceRateExpression.evaluate() * graphRV;
     in.setExpression(inRate);
     in.setAnnotation(PortMemoryAnnotation.READ_ONLY);
     fork.getDataInputPorts().add(in);
@@ -543,7 +543,7 @@ public class StaticPiMM2FlatPiMMVisitor extends PiMMSwitch<Boolean> {
     final DataOutputPort out = PiMMUserFactory.instance.createDataOutputPort();
     out.setName(actor.getName());
     final Long graphRV = getHierarchichalRV(graph);
-    final long outRate = Long.parseLong(interfaceRateExpression.getExpressionAsString()) * graphRV;
+    final long outRate = interfaceRateExpression.evaluate() * graphRV;
     out.setExpression(outRate);
     out.setAnnotation(PortMemoryAnnotation.WRITE_ONLY);
     join.getDataOutputPorts().add(out);

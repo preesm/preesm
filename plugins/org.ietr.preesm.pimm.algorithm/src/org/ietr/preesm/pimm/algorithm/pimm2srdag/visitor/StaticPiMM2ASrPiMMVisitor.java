@@ -515,8 +515,8 @@ public class StaticPiMM2ASrPiMMVisitor extends PiMMSwitch<Boolean> {
     }
 
     // 2.2 Now check if we need a BroadcastActor
-    long prod = Long.parseLong(correspondingPort.getPortRateExpression().getExpressionAsString());
-    long cons = Long.parseLong(targetPort.getPortRateExpression().getExpressionAsString());
+    long prod = correspondingPort.getPortRateExpression().evaluate();
+    long cons = targetPort.getPortRateExpression().evaluate();
     long sinkRV = this.brv.get(sinkActor);
     final boolean needBroadcastInterface = prod != (cons * sinkRV);
     final boolean needBroadcastDelay = sourceActor.getDataOutputPorts().get(0).getOutgoingFifo().getDelay() != null;
@@ -648,8 +648,8 @@ public class StaticPiMM2ASrPiMMVisitor extends PiMMSwitch<Boolean> {
     }
 
     // 2.2 Now check if we need a RoundBufferActor
-    long cons = Long.parseLong(correspondingPort.getPortRateExpression().getExpressionAsString());
-    long prod = Long.parseLong(sourcePort.getPortRateExpression().getExpressionAsString());
+    long cons = correspondingPort.getPortRateExpression().evaluate();
+    long prod = sourcePort.getPortRateExpression().evaluate();
     long sourceRV = this.brv.get(sourceActor);
     final boolean needRoundbufferInterface = cons != (prod * sourceRV);
     final boolean needRoundbufferDelay = sinkActor.getDataInputPorts().get(0).getIncomingFifo().getDelay() != null;

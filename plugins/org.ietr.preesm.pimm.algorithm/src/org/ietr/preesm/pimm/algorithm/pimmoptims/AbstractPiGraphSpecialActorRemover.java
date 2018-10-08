@@ -99,11 +99,11 @@ public abstract class AbstractPiGraphSpecialActorRemover<T extends DataPort> {
       // 0. Get input rate
       final DataInputPort dataInputPort = actor.getDataInputPorts().get(0);
       final Expression inputRateExpression = dataInputPort.getPortRateExpression();
-      final long inputRate = Long.parseLong(inputRateExpression.getExpressionAsString());
+      final long inputRate = inputRateExpression.evaluate();
       // 1. Get output rate
       final DataOutputPort dataOutputPort = actor.getDataOutputPorts().get(0);
       final Expression outputRateExpression = dataOutputPort.getPortRateExpression();
-      final long outputRate = Long.parseLong(outputRateExpression.getExpressionAsString());
+      final long outputRate = outputRateExpression.evaluate();
       if (inputRate == outputRate) {
         // 2. We can remove one of the FIFO and the actor
         final Fifo outgoingFifo = dataOutputPort.getOutgoingFifo();
