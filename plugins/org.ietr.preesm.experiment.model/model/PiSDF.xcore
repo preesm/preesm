@@ -293,7 +293,7 @@ interface RefinementContainer {
 	contains Refinement refinement
 }
 
-class Actor extends ExecutableActor, RefinementContainer {
+class Actor extends ExecutableActor, RefinementContainer, PeriodicElement {
 	IPath memoryScriptPath
 	op boolean isConfigurationActor() {
 		return configOutputPorts.map[outgoingDependencies].filter[!it.isEmpty].map[it.get(0)].map[getter].exists[true]
@@ -314,6 +314,13 @@ class Actor extends ExecutableActor, RefinementContainer {
 		} else {
 			throw new UnsupportedOperationException("Cannot get the subgraph of a non hierarchical actor.")
 		}
+	}
+}
+
+
+interface PeriodicElement extends ExpressionHolder {
+	op Expression getPeriod() {
+		return expression;
 	}
 }
 

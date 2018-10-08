@@ -240,6 +240,14 @@ public class PiParser {
     // Get the actor properties
     actor.setName(nodeElt.getAttribute(PiIdentifiers.ACTOR_NAME));
 
+    final String attribute = nodeElt.getAttribute(PiIdentifiers.ACTOR_PERIOD);
+    if (attribute != null && !attribute.isEmpty()) {
+      actor.getPeriod().setExpressionString(attribute);
+    } else {
+      // 0 means the actor is aperiodic, negative generates an error during evaluation
+      actor.getPeriod().setExpressionString("0");
+    }
+
     // Add the actor to the parsed graph
     graph.addActor(actor);
 

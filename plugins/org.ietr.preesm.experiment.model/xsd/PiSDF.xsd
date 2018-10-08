@@ -47,6 +47,7 @@
       <xs:attribute type="xs:string" name="getter" use="optional" />
       <xs:attribute type="xs:string" name="setter" use="optional" />
       <xs:attribute type="xs:string" name="level" use="optional" />
+      <xs:attribute type="xs:string" name="period" use="optional" />
    </xs:complexType>
 
    <xs:complexType name="Port">

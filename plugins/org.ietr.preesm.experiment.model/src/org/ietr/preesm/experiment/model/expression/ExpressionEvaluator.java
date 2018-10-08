@@ -54,6 +54,7 @@ import org.ietr.preesm.experiment.model.pimm.Expression;
 import org.ietr.preesm.experiment.model.pimm.ExpressionHolder;
 import org.ietr.preesm.experiment.model.pimm.InterfaceActor;
 import org.ietr.preesm.experiment.model.pimm.Parameter;
+import org.ietr.preesm.experiment.model.pimm.PeriodicElement;
 import org.nfunk.jep.JEP;
 import org.nfunk.jep.Node;
 import org.nfunk.jep.ParseException;
@@ -137,7 +138,8 @@ public class ExpressionEvaluator {
       final Expression valueExpression = param.getValueExpression();
       final double value = ExpressionEvaluator.evaluate(valueExpression);
 
-      if ((holder instanceof Parameter) || (holder instanceof Delay) || (holder instanceof InterfaceActor)) {
+      if ((holder instanceof Parameter) || (holder instanceof Delay) || (holder instanceof InterfaceActor)
+          || (holder instanceof PeriodicElement)) {
         result.put(param.getName(), value);
       } else if (holder instanceof DataPort) {
         final AbstractActor containingActor = ((DataPort) holder).getContainingActor();
@@ -150,6 +152,7 @@ public class ExpressionEvaluator {
             result.put(name, value);
           }
         }
+
       } else {
         throw new ExpressionEvaluationException("Could not compute proper parameter name");
       }

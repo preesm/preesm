@@ -62,7 +62,7 @@ import org.ietr.preesm.experiment.model.pimm.Fifo;
  */
 public class FifoPropertiesSection extends DataPortPropertiesUpdater implements ITabbedPropertyConstants {
 
-  /** Items of the {@link ActorPropertiesSection}. */
+  /** Items of the {@link FifoPropertiesSection}. */
   private CLabel lblType;
 
   /** The txt type obj. */
