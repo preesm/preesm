@@ -50,6 +50,7 @@ import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.IPropertyListener;
 import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.ietr.dftools.algorithm.importer.InvalidModelException;
@@ -344,6 +345,14 @@ public class PapifyCheckStateListener implements ISDFCheckStateListener {
     for (final String id : result) {
       combo.add(id);
     }
+  }
+
+  /**
+   *
+   **/
+
+  public void setPropDirty() {
+    this.propertyListener.propertyChanged(this, IEditorPart.PROP_DIRTY);
   }
 
   /*

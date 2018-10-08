@@ -66,6 +66,18 @@ public class PapiEventInfo {
   /**
    *
    */
+  public PapiComponent getComponent(String id) {
+    for (final PapiComponent compAux : this.components) {
+      if (compAux.getId().equals(id)) {
+        return compAux;
+      }
+    }
+    return null;
+  }
+
+  /**
+   *
+   */
   public List<String> getComponentNames() {
 
     boolean checkingEvents = false;

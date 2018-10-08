@@ -119,8 +119,7 @@ public class PapifyConfigManager {
     final PapifyConfigPE pgSet = getCorePapifyConfigGroupPE(opId);
 
     if (pgSet == null) {
-      final PapifyConfigPE pg = new PapifyConfigPE();
-      pg.addCoreId(opId);
+      final PapifyConfigPE pg = new PapifyConfigPE(opId);
       pg.addPAPIComponent(component);
       this.papifyConfigGroupsPEs.add(pg);
     } else {
@@ -200,7 +199,7 @@ public class PapifyConfigManager {
    */
   public Set<PapifyConfigPE> getPapifyConfigGroupsPEs() {
 
-    return this.getPapifyConfigGroupsPEs();
+    return this.papifyConfigGroupsPEs;
   }
 
   /**
@@ -233,7 +232,7 @@ public class PapifyConfigManager {
     PapifyConfigPE papifyConfigGroup = null;
 
     for (final PapifyConfigPE pg : this.papifyConfigGroupsPEs) {
-      if (pg.isCoreId(opId)) {
+      if (pg.ispeType(opId)) {
         papifyConfigGroup = pg;
       }
     }

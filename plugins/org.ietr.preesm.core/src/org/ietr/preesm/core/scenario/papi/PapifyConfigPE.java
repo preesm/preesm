@@ -46,8 +46,8 @@ import java.util.Set;
  */
 public class PapifyConfigPE {
 
-  /** The core instance. */
-  private String coreId;
+  /** The peType instance. */
+  private String peType;
 
   /** The PAPI component(s) associated with the core instance. */
   private Set<PapiComponent> PAPIComponents;
@@ -58,21 +58,21 @@ public class PapifyConfigPE {
   /**
    * Instantiates a new PapifyConfig group.
    */
-  public PapifyConfigPE() {
-    this.coreId = "";
+  public PapifyConfigPE(final String peType) {
+    this.peType = peType;
     this.PAPIComponents = new LinkedHashSet<>();
     this.PAPIComponentIDs = new LinkedHashSet<>();
 
   }
 
   /**
-   * Adds the coreId.
+   * Adds the peType.
    *
-   * @param coreId
+   * @param peType
    *          the core instance
    */
-  public void addCoreId(final String coreId) {
-    this.coreId = coreId;
+  public void addpeType(final String peType) {
+    this.peType = peType;
 
   }
 
@@ -102,14 +102,14 @@ public class PapifyConfigPE {
   }
 
   /**
-   * Removes the coreId.
+   * Removes the peType.
    *
-   * @param coreId
-   *          the coreId
+   * @param peType
+   *          the peType
    */
-  public void removeCoreId(final String coreId) {
-    if (coreId.equals(this.coreId)) {
-      this.coreId = "";
+  public void removepeType(final String peType) {
+    if (peType.equals(this.peType)) {
+      this.peType = "";
     }
   }
 
@@ -129,8 +129,8 @@ public class PapifyConfigPE {
    *
    * @return the Core id
    */
-  public String getCoreId() {
-    return (this.coreId);
+  public String getpeType() {
+    return (this.peType);
   }
 
   /**
@@ -154,17 +154,13 @@ public class PapifyConfigPE {
   /**
    * Checks for Core id.
    *
-   * @param coreId
+   * @param peType
    *          the PAPI component
    * @return true, if successful
    */
-  public boolean isCoreId(final String coreId) {
+  public boolean ispeType(final String peType) {
 
-    if (coreId.equals(this.coreId)) {
-      return true;
-    }
-
-    return false;
+    return peType.equals(this.peType);
   }
 
   /**
@@ -191,7 +187,7 @@ public class PapifyConfigPE {
   @Override
   public String toString() {
     String s = "<Printing core> \n";
-    s += this.coreId.toString();
+    s += this.peType.toString();
     s += "\n<Printing component> \n";
     s += this.PAPIComponents.toString();
     s += "<end printing>\n";

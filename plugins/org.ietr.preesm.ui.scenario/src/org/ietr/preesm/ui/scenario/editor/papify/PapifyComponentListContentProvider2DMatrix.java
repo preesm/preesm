@@ -37,15 +37,17 @@
  */
 package org.ietr.preesm.ui.scenario.editor.papify;
 
-import java.util.ArrayList;
-import java.util.LinkedHashMap;
-import java.util.List;
+import java.util.LinkedHashSet;
 import java.util.Map;
+import java.util.Set;
 import org.eclipse.jface.viewers.ITreeContentProvider;
 import org.eclipse.jface.viewers.Viewer;
+import org.ietr.preesm.core.scenario.PreesmScenario;
 import org.ietr.preesm.core.scenario.papi.PapiComponent;
 import org.ietr.preesm.core.scenario.papi.PapiEventInfo;
 import org.ietr.preesm.core.scenario.papi.PapiEventSet;
+import org.ietr.preesm.core.scenario.papi.PapifyConfigPE;
+import org.ietr.preesm.ui.scenario.editor.papify.PapifyComponentListTreeElement.PAPIComponentStatus;
 
 // TODO: Auto-generated Javadoc
 /**
@@ -55,15 +57,148 @@ import org.ietr.preesm.core.scenario.papi.PapiEventSet;
  */
 public class PapifyComponentListContentProvider2DMatrix implements ITreeContentProvider {
 
-  private List<String> componentList;
+  /** Currently edited scenario. */
+  private PreesmScenario                                    scenario           = null;
+  private Set<PapifyComponentListTreeElement>               componentConfig;
+  PapifyCheckStateListener                                  checkStateListener = null;
+  private Set<PapifyComponentListContentProvider2DMatrixES> editingSupports    = new LinkedHashSet<>();
+
+  public PapifyComponentListContentProvider2DMatrix(PreesmScenario scenario) {
+    this.scenario = scenario;
+  }
 
   /**
    * Gets the Papi Component list.
    *
    * @return the Papi Component list
    */
-  public List<String> getComponents() {
-    return this.componentList;
+  public Set<PapifyComponentListTreeElement> getComponents() {
+    return this.componentConfig;
+  }
+
+  /**
+   * 
+   */
+  public void addCheckStateListener(PapifyCheckStateListener checkStateListener) {
+    this.checkStateListener = checkStateListener;
+  }
+
+  /**
+   * 
+   */
+  public void addEstatusSupport(PapifyComponentListContentProvider2DMatrixES edittingSupport) {
+    if (edittingSupport != null) {
+      this.editingSupports.add(edittingSupport);
+    }
+  }
+
+  /**
+   * 
+   */
+  public void removePEfromComp(String peType, String compName) {
+    if (!peType.equals("") && !compName.equals("")) {
+
+      PapifyConfigPE papiConfig = this.scenario.getPapifyConfigManager().getCorePapifyConfigGroupPE(peType);
+      PapiEventInfo papiData = this.scenario.getPapifyConfigManager().getPapifyData();
+      PapiComponent pc = papiData.getComponent(compName);
+      papiConfig.removePAPIComponent(pc);
+
+      System.out.println("Poniendo a no peType = " + peType + " y compName = " + compName);
+      for (PapifyComponentListTreeElement treeElement : this.componentConfig) {
+        if (treeElement.label.equals(compName)) {
+          final Map<String, PAPIComponentStatus> statuses = treeElement.PAPIComponentStatuses;
+          statuses.put(peType, PAPIComponentStatus.NO);
+        }
+      }
+    }
+  }
+
+  /**
+   * 
+   */
+  public void addPEtoComp(String peType, String compName) {
+    if (!peType.equals("") && !compName.equals("")) {
+      PapifyConfigPE papiConfig = this.scenario.getPapifyConfigManager().getCorePapifyConfigGroupPE(peType);
+      PapiEventInfo papiData = this.scenario.getPapifyConfigManager().getPapifyData();
+      PapiComponent pc = papiData.getComponent(compName);
+      papiConfig.addPAPIComponent(pc);
+
+      System.out.println("Poniendo a si peType = " + peType + " y compName = " + compName);
+      for (PapifyComponentListTreeElement treeElement : this.componentConfig) {
+        if (treeElement.label.equals(compName)) {
+          final Map<String, PAPIComponentStatus> statuses = treeElement.PAPIComponentStatuses;
+          statuses.put(peType, PAPIComponentStatus.YES);
+        }
+      }
+    }
+  }
+
+  /**
+   * 
+   */
+  public void cleanPE(String peType) {
+    PapifyConfigPE papiConfig = this.scenario.getPapifyConfigManager().getCorePapifyConfigGroupPE(peType);
+    if (!peType.equals("") && papiConfig != null) {
+      PapiEventInfo papiData = this.scenario.getPapifyConfigManager().getPapifyData();
+      for (PapiComponent pc : papiData.getComponents()) {
+        if (papiConfig.containsPAPIComponent(pc)) {
+          papiConfig.removePAPIComponent(pc);
+        }
+      }
+
+      System.out.println("Limpiando peType = " + peType);
+      for (PapifyComponentListTreeElement treeElement : this.componentConfig) {
+        final Map<String, PAPIComponentStatus> statuses = treeElement.PAPIComponentStatuses;
+        statuses.put(peType, PAPIComponentStatus.NO);
+      }
+    }
+  }
+
+  /**
+   * 
+   */
+  public void updateView() {
+
+    for (PapifyComponentListContentProvider2DMatrixES viewer : this.editingSupports) {
+      for (PapifyComponentListTreeElement treeElement : this.componentConfig) {
+        viewer.getViewer().update(treeElement, null);
+      }
+    }
+  }
+
+  /**
+   * 
+   */
+  public void setInput() {
+
+    Set<PapifyConfigPE> papiConfigs = this.scenario.getPapifyConfigManager().getPapifyConfigGroupsPEs();
+
+    for (PapifyConfigPE papiConfig : papiConfigs) {
+      String peType = papiConfig.getpeType();
+      for (String compName : papiConfig.getPAPIComponentIDs()) {
+        String comp = compName;
+        for (PapifyComponentListTreeElement treeElement : this.componentConfig) {
+          if (treeElement.label.equals(comp)) {
+            final Map<String, PAPIComponentStatus> statuses = treeElement.PAPIComponentStatuses;
+            statuses.put(peType, PAPIComponentStatus.YES);
+          }
+        }
+      }
+    }
+    for (PapifyComponentListContentProvider2DMatrixES viewer : this.editingSupports) {
+      for (PapifyComponentListTreeElement treeElement : this.componentConfig) {
+        viewer.getViewer().update(treeElement, null);
+      }
+    }
+  }
+
+  /**
+   * 
+   */
+  public void selectionUpdated() {
+
+    this.checkStateListener.setPropDirty();
+
   }
 
   /*
@@ -78,28 +213,24 @@ public class PapifyComponentListContentProvider2DMatrix implements ITreeContentP
 
     if (inputElement instanceof PapiEventInfo) {
       final PapiEventInfo inputPapiEventInfo = (PapiEventInfo) inputElement;
-      PapiComponent compAux = null;
-      this.componentList = new ArrayList<>();
-      PapiEventSet eventSetAux = null;
-
-      boolean checkingEvents = false;
+      componentConfig = new LinkedHashSet<>();
       boolean componentAdded = false;
 
-      for (int i = inputPapiEventInfo.getComponents().size() - 1; i >= 0; i--) {
-        compAux = inputPapiEventInfo.getComponents().get(i);
-        for (int j = compAux.getEventSets().size() - 1; j >= 0; j--) {
-          eventSetAux = compAux.getEventSets().get(j);
-          checkingEvents = eventSetAux.getEvents().isEmpty();
-          if (!checkingEvents) {
-            componentAdded = true;
+      for (final PapiComponent compAux : inputPapiEventInfo.getComponents()) {
+        if (!compAux.getEventSets().isEmpty()) {
+          for (final PapiEventSet eventSet : compAux.getEventSets()) {
+            if (!eventSet.getEvents().isEmpty()) {
+              componentAdded = true;
+            }
           }
         }
         if (componentAdded) {
           componentAdded = false;
-          this.componentList.add(compAux.getId());
+          final PapifyComponentListTreeElement element = new PapifyComponentListTreeElement(compAux.getId());
+          componentConfig.add(element);
         }
       }
-      elementTable = this.componentList.toArray();
+      elementTable = this.componentConfig.toArray();
     }
 
     return elementTable;
@@ -126,50 +257,6 @@ public class PapifyComponentListContentProvider2DMatrix implements ITreeContentP
   public void inputChanged(final Viewer viewer, final Object oldInput, final Object newInput) {
     // TODO Auto-generated method stub
 
-  }
-
-  /**
-   *
-   * @author dmadronal
-   *
-   */
-  enum PAPIComponentStatus {
-    // PAPI component supported
-    YES,
-
-    // PAPI component not supported
-    NO;
-
-    PAPIComponentStatus next() {
-      switch (this) {
-        case YES:
-          return NO;
-        case NO:
-          return YES;
-        default:
-          return null;
-      }
-    }
-  }
-
-  /**
-   *
-   * @author anmorvan
-   *
-   */
-  abstract class TreeElement {
-    String                           label;
-    Map<String, PAPIComponentStatus> PAPIComponentStatuses;
-
-    TreeElement(final String label) {
-      this.label = label;
-      this.PAPIComponentStatuses = new LinkedHashMap<>();
-    }
-
-    @Override
-    public String toString() {
-      return this.label;
-    }
   }
 
   @Override

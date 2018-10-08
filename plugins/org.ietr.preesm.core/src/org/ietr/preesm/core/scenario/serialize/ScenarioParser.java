@@ -839,14 +839,14 @@ public class ScenarioParser {
    */
   private PapifyConfigPE getPapifyConfigPE(final Element papifyConfigElt) {
 
-    final PapifyConfigPE pc = new PapifyConfigPE();
+    PapifyConfigPE pc = null;
     Node node = papifyConfigElt.getFirstChild();
 
     while (node != null) {
       if (node instanceof Element) {
         final Element elt = (Element) node;
-        final String coreId = elt.getAttribute("coreId");
-        pc.addCoreId(coreId);
+        final String peType = elt.getAttribute("peType");
+        pc = new PapifyConfigPE(peType);
         final Set<PapiComponent> components = getPAPIComponents(elt);
         pc.addPAPIComponents(components);
       }

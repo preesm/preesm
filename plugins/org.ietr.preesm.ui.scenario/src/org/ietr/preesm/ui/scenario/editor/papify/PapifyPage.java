@@ -45,9 +45,11 @@ import org.eclipse.core.resources.IWorkspace;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.Path;
+import org.eclipse.jface.viewers.AbstractTreeViewer;
 import org.eclipse.jface.viewers.CheckboxTableViewer;
 import org.eclipse.jface.viewers.CheckboxTreeViewer;
 import org.eclipse.jface.viewers.ColumnLabelProvider;
+import org.eclipse.jface.viewers.LabelProvider;
 import org.eclipse.jface.viewers.TreeViewerColumn;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.ControlAdapter;
@@ -103,11 +105,12 @@ public class PapifyPage extends FormPage implements IPropertyListener {
   /** The table viewer. */
 
   // DM added this
-  CheckboxTreeViewer  treeViewer           = null;
-  CheckboxTableViewer componentTableViewer = null;
-  CheckboxTableViewer eventTableViewer     = null;
-  PapiEventInfo       papiEvents           = null;
-  PapiConfigParser    papiParser           = new PapiConfigParser();
+  CheckboxTreeViewer                         treeViewer           = null;
+  CheckboxTableViewer                        componentTableViewer = null;
+  CheckboxTableViewer                        eventTableViewer     = null;
+  PapiEventInfo                              papiEvents           = null;
+  PapiConfigParser                           papiParser           = new PapiConfigParser();
+  PapifyComponentListContentProvider2DMatrix peContentProvider    = null;
 
   /**
    * Instantiates a new papify page.
@@ -156,6 +159,7 @@ public class PapifyPage extends FormPage implements IPropertyListener {
         parseXmlData(xmlFullPath);
       }
       if ((this.papiEvents != null) && !this.papiEvents.getComponents().isEmpty()) {
+        scenario.getPapifyConfigManager().addPapifyData(this.papiEvents);
         updateTables();
       } else {
         this.scenario.setPapifyConfigManager(new PapifyConfigManager());
@@ -443,6 +447,7 @@ public class PapifyPage extends FormPage implements IPropertyListener {
   private void parseXmlData(final String xmlfile) {
 
     this.papiEvents = this.papiParser.parse(xmlfile);
+    scenario.getPapifyConfigManager().addPapifyData(this.papiEvents);
 
   }
 
@@ -456,6 +461,7 @@ public class PapifyPage extends FormPage implements IPropertyListener {
 
     this.treeViewer.setInput(this.papiEvents);
     this.treeViewer.refresh();
+    this.peContentProvider.setInput();
     this.eventTableViewer.setInput(this.papiEvents);
     this.eventTableViewer.refresh();
 
@@ -475,33 +481,38 @@ public class PapifyPage extends FormPage implements IPropertyListener {
     tablecps.setVisible(true);
 
     // Creating the tree view
-    this.treeViewer = new CheckboxTreeViewer(toolkit.createTree(parent, SWT.CHECK)) {
+    this.treeViewer = new CheckboxTreeViewer(toolkit.createTree(parent, SWT.NONE)) {
 
     };
 
-    final PapifyComponentListContentProvider2DMatrix contentProvider = new PapifyComponentListContentProvider2DMatrix();
-    final PapifyComponentLabelProvider2DMatrix labelProvider = new PapifyComponentLabelProvider2DMatrix(this.scenario,
-        treeViewer, this);
+    this.peContentProvider = new PapifyComponentListContentProvider2DMatrix(this.scenario);
 
-    treeViewer.setContentProvider(contentProvider);
-    treeViewer.setLabelProvider(labelProvider);
+    treeViewer.setAutoExpandLevel(AbstractTreeViewer.ALL_LEVELS);
+
+    treeViewer.setContentProvider(this.peContentProvider);
+
+    treeViewer.setLabelProvider(new LabelProvider() {
+
+    });
     treeViewer.addCheckStateListener(this.checkStateListener);
 
-    this.checkStateListener.setComponentTreeViewer(treeViewer, contentProvider, this);
+    this.checkStateListener.setComponentTreeViewer(treeViewer, this.peContentProvider, this);
 
     treeViewer.setUseHashlookup(true);
 
     treeViewer.getTree().setLinesVisible(true);
     treeViewer.getTree().setHeaderVisible(true);
 
-    final TreeViewerColumn actorViewerColumn = new TreeViewerColumn(treeViewer, SWT.CENTER | SWT.CHECK);
-    final TreeColumn actorColumn = actorViewerColumn.getColumn();
-    actorColumn.setText("PE Name");
-    actorColumn.setWidth(200);
-    actorViewerColumn.setLabelProvider(new ColumnLabelProvider());
+    final TreeViewerColumn peViewerColumn = new TreeViewerColumn(treeViewer, SWT.CENTER | SWT.CHECK);
+    final TreeColumn peColumn = peViewerColumn.getColumn();
+    peColumn.setText("PE Name");
+    peColumn.setWidth(200);
+    peViewerColumn.setLabelProvider(new ColumnLabelProvider());
+
+    this.peContentProvider.addCheckStateListener(this.checkStateListener);
 
     int columnIndex = 1;
-    for (final String columnLabel : this.scenario.getOperatorIds()) {
+    for (final String columnLabel : this.scenario.getOperatorDefinitionIds()) {
 
       final TreeViewerColumn viewerColumn = new TreeViewerColumn(treeViewer, SWT.CENTER | SWT.CHECK);
       final TreeColumn column = viewerColumn.getColumn();
@@ -510,8 +521,13 @@ public class PapifyPage extends FormPage implements IPropertyListener {
       column.setMoveable(true);
       column.setWidth(150);
 
-      viewerColumn.setLabelProvider(new PapifyComponentListContentProvider2DMatrixCLP(columnLabel));
-      viewerColumn.setEditingSupport(new PapifyComponentListContentProvider2DMatrixES(treeViewer, columnLabel));
+      PapifyComponentListContentProvider2DMatrixES editingSupport = new PapifyComponentListContentProvider2DMatrixES(
+          this.scenario, treeViewer, columnLabel, this.peContentProvider);
+
+      viewerColumn.setLabelProvider(new PapifyComponentListContentProvider2DMatrixCLP(this.scenario, columnLabel));
+      viewerColumn.setEditingSupport(editingSupport);
+      this.peContentProvider.addEstatusSupport(editingSupport);
+
       columnIndex++;
     }
 

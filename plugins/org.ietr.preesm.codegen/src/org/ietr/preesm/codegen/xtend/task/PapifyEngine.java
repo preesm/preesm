@@ -164,7 +164,8 @@ public class PapifyEngine {
             this.dag.getVertex(vertex.getName()).getPropertyBean().setValue(PAPIFY_MONITOR_EVENTS, "No");
             this.dag.getVertex(vertex.getName()).getPropertyBean().setValue(PAPIFY_MONITOR_TIMING, "No");
             for (final String key : comp) {
-              for (PapiEvent singleEvent : config.getPAPIEvents().get(key)) {
+              events = config.getPAPIEvents().get(key);
+              for (PapiEvent singleEvent : events) {
                 if (singleEvent.equals(timingEvent)) {
                   // Monitoring time
                   this.dag.getVertex(vertex.getName()).getPropertyBean().setValue(PAPIFY_MONITOR_TIMING, "Yes");

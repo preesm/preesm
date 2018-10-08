@@ -37,12 +37,14 @@
  */
 package org.ietr.preesm.ui.scenario.editor.papify;
 
+import java.util.Map;
 import org.eclipse.jface.viewers.CellEditor;
 import org.eclipse.jface.viewers.CheckboxCellEditor;
 import org.eclipse.jface.viewers.ColumnViewer;
 import org.eclipse.jface.viewers.EditingSupport;
-import org.ietr.preesm.ui.scenario.editor.papify.PapifyComponentListContentProvider2DMatrix.PAPIComponentStatus;
-import org.ietr.preesm.ui.scenario.editor.papify.PapifyComponentListContentProvider2DMatrix.TreeElement;
+import org.ietr.preesm.core.scenario.PreesmScenario;
+import org.ietr.preesm.core.scenario.papi.PapiEventInfo;
+import org.ietr.preesm.ui.scenario.editor.papify.PapifyComponentListTreeElement.PAPIComponentStatus;
 
 // TODO: Auto-generated Javadoc
 /**
@@ -57,13 +59,19 @@ import org.ietr.preesm.ui.scenario.editor.papify.PapifyComponentListContentProvi
  */
 class PapifyComponentListContentProvider2DMatrixES extends EditingSupport {
 
-  public PapifyComponentListContentProvider2DMatrixES(final ColumnViewer viewer, final String name) {
-    super(viewer);
-    this.eventName = name;
-  }
+  /** Currently edited scenario. */
+  private PreesmScenario                     scenario = null;
+  String                                     peType;
+  CellEditor                                 editor   = new CheckboxCellEditor();
+  PapifyComponentListContentProvider2DMatrix contentProvider;
 
-  String     eventName;
-  CellEditor editor = new CheckboxCellEditor();
+  public PapifyComponentListContentProvider2DMatrixES(final PreesmScenario scenario, final ColumnViewer viewer,
+      final String name, PapifyComponentListContentProvider2DMatrix contentProvider) {
+    super(viewer);
+    this.peType = name;
+    this.scenario = scenario;
+    this.contentProvider = contentProvider;
+  }
 
   @Override
   protected CellEditor getCellEditor(final Object element) {
@@ -83,12 +91,23 @@ class PapifyComponentListContentProvider2DMatrixES extends EditingSupport {
 
   @Override
   protected void setValue(final Object element, final Object value) {
-    if (element instanceof TreeElement) {
-      System.out.println(this.eventName);
-      final PAPIComponentStatus PAPIComponentStatus = ((TreeElement) element).PAPIComponentStatuses.get(this.eventName);
-      ((TreeElement) element).PAPIComponentStatuses.put(this.eventName, PAPIComponentStatus.next());
+    if (element instanceof PapifyComponentListTreeElement) {
+      String elementName = ((PapifyComponentListTreeElement) element).label;
+      final Map<String,
+          PAPIComponentStatus> statuses = ((PapifyComponentListTreeElement) element).PAPIComponentStatuses;
+
+      final PAPIComponentStatus componentStatus = statuses.get(this.peType);
+      PapiEventInfo papiData = null;
+      if (componentStatus.next().equals(PAPIComponentStatus.NO)) {
+        this.contentProvider.removePEfromComp(this.peType, elementName);
+
+      } else {
+        this.contentProvider.cleanPE(this.peType);
+        this.contentProvider.addPEtoComp(this.peType, elementName);
+      }
     }
-    getViewer().update(element, null);
+    this.contentProvider.selectionUpdated();
+    this.contentProvider.updateView();
   }
 
 }

@@ -37,12 +37,8 @@
  */
 package org.ietr.preesm.ui.scenario.editor.papify;
 
+import java.util.LinkedHashMap;
 import java.util.Map;
-import org.eclipse.jface.viewers.ColumnLabelProvider;
-import org.eclipse.swt.graphics.Image;
-import org.ietr.preesm.core.scenario.PreesmScenario;
-import org.ietr.preesm.core.scenario.papi.PapifyConfigPE;
-import org.ietr.preesm.ui.scenario.editor.papify.PapifyComponentListTreeElement.PAPIComponentStatus;
 
 // TODO: Auto-generated Javadoc
 /**
@@ -57,38 +53,42 @@ import org.ietr.preesm.ui.scenario.editor.papify.PapifyComponentListTreeElement.
  *
  */
 
-class PapifyComponentListContentProvider2DMatrixCLP extends ColumnLabelProvider {
+class PapifyComponentListTreeElement {
+  String                           label;
+  Map<String, PAPIComponentStatus> PAPIComponentStatuses;
 
-  /** Currently edited scenario. */
-  private PreesmScenario scenario = null;
-  String                 peType;
+  /**
+   *
+   * @author dmadronal
+   *
+   */
+  enum PAPIComponentStatus {
+    // PAPI component supported
+    YES,
 
-  public PapifyComponentListContentProvider2DMatrixCLP(final PreesmScenario scenario, final String name) {
-    this.peType = name;
-    this.scenario = scenario;
-  }
+    // PAPI component not supported
+    NO;
 
-  @Override
-  public String getText(final Object element) {
-    if (element instanceof PapifyComponentListTreeElement) {
-      final PapifyComponentListTreeElement treeElement = (PapifyComponentListTreeElement) element;
-      final Map<String, PAPIComponentStatus> statuses = treeElement.PAPIComponentStatuses;
-      if (!statuses.containsKey(this.peType)) {
-        statuses.put(this.peType, PAPIComponentStatus.NO);
-        if (this.scenario.getPapifyConfigManager().getCorePapifyConfigGroupPE(this.peType) == null) {
-          this.scenario.getPapifyConfigManager().addPapifyConfigPEGroup(new PapifyConfigPE(this.peType));
-          System.out.println("Agregando componente llamado " + this.peType);
-        }
+    PAPIComponentStatus next() {
+      switch (this) {
+        case YES:
+
+          return NO;
+        case NO:
+          return YES;
+        default:
+          return null;
       }
-      return statuses.get(this.peType).toString();
-    } else {
-      return "ERROR";
     }
   }
 
-  @Override
-  public Image getImage(final Object element) {
-    return null;
+  PapifyComponentListTreeElement(final String label) {
+    this.label = label;
+    this.PAPIComponentStatuses = new LinkedHashMap<>();
   }
 
+  @Override
+  public String toString() {
+    return this.label;
+  }
 }
