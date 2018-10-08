@@ -178,7 +178,7 @@ public class PiMMResolverVisitor extends PiMMSwitch<Boolean> {
       // Now, we deal with expression
       final long rate = PiMMResolverVisitor.parsePortExpression(actorParser,
           holder.getExpression().getExpressionAsString());
-      holder.setExpression(Long.toString(rate));
+      holder.setExpression(rate);
     }
   }
 
@@ -202,7 +202,7 @@ public class PiMMResolverVisitor extends PiMMSwitch<Boolean> {
       // parameters and set the result as new expression
       final Expression valueExpression = p.getValueExpression();
       final long value = valueExpression.evaluate();
-      p.setExpression(Long.toString(value));
+      p.setExpression(value);
       this.parameterValues.put(p, value);
     }
     return true;

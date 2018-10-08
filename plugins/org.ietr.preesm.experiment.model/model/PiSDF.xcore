@@ -97,7 +97,17 @@ class StringExpression extends Expression {
 		return getExpressionString()
 	}
 	op long evaluate() {
-		ExpressionEvaluator.evaluate(this)
+		return ExpressionEvaluator.evaluate(this)
+	}
+}
+
+class LongExpression extends Expression {
+	long value = "0"
+	op String getExpressionAsString() {
+		return Long.toString(value)
+	}
+	op long evaluate() {
+		return value
 	}
 }
 
@@ -118,6 +128,13 @@ interface ExpressionHolder extends Parameterizable {
 			(expression as ExpressionProxy).proxy.setExpression(PiMMUserFactory.instance.createStringExpression(newExpression))
 		} else {
 			expression = PiMMUserFactory.instance.createStringExpression(newExpression)
+		}
+	}
+	op void setExpression (long value) {
+		if (expression instanceof ExpressionProxy) {
+			(expression as ExpressionProxy).proxy.setExpression(PiMMUserFactory.instance.createLongExpression(value))
+		} else {
+			expression = PiMMUserFactory.instance.createLongExpression(value)
 		}
 	}
 }

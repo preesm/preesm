@@ -294,7 +294,7 @@ public class StaticPiMM2FlatPiMMVisitor extends PiMMSwitch<Boolean> {
     // Compute the appropriate out rate not to mess with repetition vector values
     final AbstractActor target = targetPort.getContainingActor();
     final long targetRate = Long.parseLong(targetRateExpression.getExpressionAsString()) * this.brv.get(target);
-    out.setExpression(Long.toString(targetRate));
+    out.setExpression(targetRate);
     broadcastIn.getDataOutputPorts().add(out);
     setPropertiesToCopyActor(actor, broadcastIn);
     return true;
@@ -320,7 +320,7 @@ public class StaticPiMM2FlatPiMMVisitor extends PiMMSwitch<Boolean> {
     // Compute the appropriate in rate not to mess with repetition vector values
     final AbstractActor source = sourcePort.getContainingActor();
     final long sourceRate = Long.parseLong(sourceRateExpression.getExpressionAsString()) * this.brv.get(source);
-    in.setExpression(Long.toString(sourceRate));
+    in.setExpression(sourceRate);
     roundbufferOut.getDataInputPorts().add(in);
     setPropertiesToCopyActor(actor, roundbufferOut);
     return true;
@@ -505,7 +505,7 @@ public class StaticPiMM2FlatPiMMVisitor extends PiMMSwitch<Boolean> {
     in.setName(actor.getName());
     final Long graphRV = getHierarchichalRV(graph);
     final long inRate = Long.parseLong(interfaceRateExpression.getExpressionAsString()) * graphRV;
-    in.setExpression(Long.toString(inRate));
+    in.setExpression(inRate);
     in.setAnnotation(PortMemoryAnnotation.READ_ONLY);
     fork.getDataInputPorts().add(in);
     // Set the DataOutputPorts and connect them
@@ -544,7 +544,7 @@ public class StaticPiMM2FlatPiMMVisitor extends PiMMSwitch<Boolean> {
     out.setName(actor.getName());
     final Long graphRV = getHierarchichalRV(graph);
     final long outRate = Long.parseLong(interfaceRateExpression.getExpressionAsString()) * graphRV;
-    out.setExpression(Long.toString(outRate));
+    out.setExpression(outRate);
     out.setAnnotation(PortMemoryAnnotation.WRITE_ONLY);
     join.getDataOutputPorts().add(out);
     // Set the DataOutputPorts and connect them

@@ -404,7 +404,7 @@ public class PiMMSRVerticesLinker {
     if (currentSourcePort == null) {
       currentSourcePort = PiMMUserFactory.instance.createDataOutputPort();
       currentSourcePort.setName(src.getSourceLabel());
-      currentSourcePort.setExpression(Long.toString(rate));
+      currentSourcePort.setExpression(rate);
       sourceVertex.getDataOutputPorts().add(currentSourcePort);
     }
     // Check if the source is JoinActor / RoundBufferActor
@@ -440,7 +440,7 @@ public class PiMMSRVerticesLinker {
     if (currentSinkPort == null) {
       currentSinkPort = PiMMUserFactory.instance.createDataInputPort();
       currentSinkPort.setName(snk.getTargetLabel());
-      currentSinkPort.setExpression(Long.toString(rate));
+      currentSinkPort.setExpression(rate);
       sinkVertex.getDataInputPorts().add(currentSinkPort);
     }
     // Check if the sink is ForkActor / BroadcastActor
@@ -498,7 +498,7 @@ public class PiMMSRVerticesLinker {
     // Add a DataOutputPort
     final DataOutputPort joinOutputPort = PiMMUserFactory.instance.createDataOutputPort();
     joinOutputPort.setName(source.getSourceLabel());
-    joinOutputPort.setExpression(Long.toString(currentSink.getConsumption()));
+    joinOutputPort.setExpression(currentSink.getConsumption());
     joinOutputPort.setAnnotation(PortMemoryAnnotation.WRITE_ONLY);
     joinActor.getDataOutputPorts().add(joinOutputPort);
 
@@ -534,7 +534,7 @@ public class PiMMSRVerticesLinker {
     // Add a DataInputPort
     final DataInputPort forkInputPort = PiMMUserFactory.instance.createDataInputPort();
     forkInputPort.setName(sink.getTargetLabel());
-    forkInputPort.setExpression(Long.toString(currentSource.getProduction()));
+    forkInputPort.setExpression(currentSource.getProduction());
     forkInputPort.setAnnotation(PortMemoryAnnotation.READ_ONLY);
     forkActor.getDataInputPorts().add(forkInputPort);
 
@@ -625,7 +625,7 @@ public class PiMMSRVerticesLinker {
         init.setName(this.graphPrefixe + setterName);
         init.getDataOutputPort().setName(this.sinkPort.getName());
         init.setLevel(((InitActor) setterActor).getLevel());
-        init.getDataOutputPort().setExpression(Long.toString(setterRate));
+        init.getDataOutputPort().setExpression(setterRate);
         resultGraph.addActor(init);
         sourceSet.add(new SourceConnection(init, setterRate, this.sinkPort.getName()));
       } else {

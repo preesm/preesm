@@ -244,7 +244,7 @@ public class PiParser {
       actor.setExpression(attribute);
     } else {
       // 0 means the actor is aperiodic, negative generates an error during evaluation
-      actor.setExpression("0");
+      actor.setExpression(0);
     }
 
     // Add the actor to the parsed graph

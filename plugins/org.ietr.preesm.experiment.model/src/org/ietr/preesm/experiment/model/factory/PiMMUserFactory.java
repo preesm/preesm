@@ -55,6 +55,7 @@ import org.ietr.preesm.experiment.model.pimm.Expression;
 import org.ietr.preesm.experiment.model.pimm.Fifo;
 import org.ietr.preesm.experiment.model.pimm.ISetter;
 import org.ietr.preesm.experiment.model.pimm.InitActor;
+import org.ietr.preesm.experiment.model.pimm.LongExpression;
 import org.ietr.preesm.experiment.model.pimm.Parameter;
 import org.ietr.preesm.experiment.model.pimm.PersistenceLevel;
 import org.ietr.preesm.experiment.model.pimm.PiGraph;
@@ -246,6 +247,15 @@ public final class PiMMUserFactory extends PiMMFactoryImpl {
     final StringExpression createStringExpression = super.createStringExpression();
     createStringExpression.setExpressionString(value);
     return createStringExpression;
+  }
+
+  /**
+   *
+   */
+  public LongExpression createLongExpression(final long value) {
+    final LongExpression createLongExpression = super.createLongExpression();
+    createLongExpression.setValue(value);
+    return createLongExpression;
   }
 
   @Override
