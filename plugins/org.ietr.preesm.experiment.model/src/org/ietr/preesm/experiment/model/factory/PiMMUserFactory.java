@@ -110,7 +110,7 @@ public final class PiMMUserFactory extends PiMMFactoryImpl {
   @Override
   public ConfigInputInterface createConfigInputInterface() {
     final ConfigInputInterface res = super.createConfigInputInterface();
-    final Expression createExpression = createExpression();
+    final Expression createExpression = createStringExpression();
     res.setExpression(createExpression);
     return res;
   }
@@ -118,7 +118,7 @@ public final class PiMMUserFactory extends PiMMFactoryImpl {
   @Override
   public Parameter createParameter() {
     final Parameter createParameter = super.createParameter();
-    final Expression createExpression = createExpression();
+    final Expression createExpression = createStringExpression();
     createParameter.setExpression(createExpression);
     return createParameter;
   }
@@ -126,7 +126,7 @@ public final class PiMMUserFactory extends PiMMFactoryImpl {
   @Override
   public DataInputPort createDataInputPort() {
     final DataInputPort res = super.createDataInputPort();
-    res.setExpression(createExpression());
+    res.setExpression(createStringExpression());
     return res;
   }
 
@@ -139,7 +139,7 @@ public final class PiMMUserFactory extends PiMMFactoryImpl {
   public DataInputPort createDataInputPort(final Delay delay) {
     final DataInputPort res = super.createDataInputPort();
     final DelayLinkedExpression delayExpression = createDelayLinkedExpression();
-    delayExpression.setDelay(delay);
+    delayExpression.setProxy(delay);
     res.setExpression(delayExpression);
     return res;
   }
@@ -147,7 +147,7 @@ public final class PiMMUserFactory extends PiMMFactoryImpl {
   @Override
   public DataOutputPort createDataOutputPort() {
     final DataOutputPort res = super.createDataOutputPort();
-    res.setExpression(createExpression());
+    res.setExpression(createStringExpression());
     return res;
   }
 
@@ -160,7 +160,7 @@ public final class PiMMUserFactory extends PiMMFactoryImpl {
   public DataOutputPort createDataOutputPort(final Delay delay) {
     final DataOutputPort res = super.createDataOutputPort();
     final DelayLinkedExpression delayExpression = createDelayLinkedExpression();
-    delayExpression.setDelay(delay);
+    delayExpression.setProxy(delay);
     res.setExpression(delayExpression);
     return res;
   }
@@ -168,7 +168,7 @@ public final class PiMMUserFactory extends PiMMFactoryImpl {
   @Override
   public ConfigOutputPort createConfigOutputPort() {
     final ConfigOutputPort res = super.createConfigOutputPort();
-    res.setExpression(createExpression());
+    res.setExpression(createStringExpression());
     return res;
   }
 
@@ -176,7 +176,7 @@ public final class PiMMUserFactory extends PiMMFactoryImpl {
   public Delay createDelay() {
     final Delay res = super.createDelay();
     // 1. Set default expression
-    res.setExpression(createExpression());
+    res.setExpression(createStringExpression());
     // 2. Set the default level of persistence (permanent)
     res.setLevel(PersistenceLevel.PERMANENT);
     // 3. Create the non executable actor associated with the Delay directly here
@@ -218,7 +218,7 @@ public final class PiMMUserFactory extends PiMMFactoryImpl {
   @Override
   public Actor createActor() {
     final Actor res = super.createActor();
-    final Expression exp = createExpression();
+    final Expression exp = createStringExpression();
     res.setExpression(exp);
     return res;
   }

@@ -84,7 +84,8 @@ interface Parameterizable {
 		return inputParameters.filterNull.forall[isLocallyStatic]
 	}
 }
-class Expression {
+
+interface Expression {
 	refers ExpressionHolder holder opposite expression
 	op String getExpressionAsString()
 	op long evaluate()
@@ -93,28 +94,37 @@ class Expression {
 class StringExpression extends Expression {
 	String expressionString = "0"
 	op String getExpressionAsString() {
-		return expressionString
+		return getExpressionString()
 	}
 	op long evaluate() {
 		ExpressionEvaluator.evaluate(this)
 	}
 }
-interface ExpressionHolder extends Parameterizable {
-	contains Expression expression opposite holder
-	op void setExpression (String newExpression) {
-		expression = PiMMUserFactory.instance.createStringExpression(newExpression)
+
+interface ExpressionProxy extends Expression {
+	refers ExpressionHolder proxy
+	op String getExpressionAsString() {
+		return proxy.getExpression().getExpressionAsString
+	}
+	op long evaluate() {
+		proxy.getExpression().evaluate()
 	}
 }
 
-class DelayLinkedExpression extends Expression {
-	refers Delay delay
-	op String getExpressionString() {
-		return delay.getExpression().getExpressionAsString
+interface ExpressionHolder extends Parameterizable {
+	contains Expression expression opposite holder
+	op void setExpression (String newExpression) {
+		if (expression instanceof ExpressionProxy) {
+			(expression as ExpressionProxy).proxy.setExpression(PiMMUserFactory.instance.createStringExpression(newExpression))
+		} else {
+			expression = PiMMUserFactory.instance.createStringExpression(newExpression)
+		}
 	}
+}
 
-	op void setExpressionString(String s) {
-		delay.setExpression(s)
-	}
+
+class DelayLinkedExpression extends ExpressionProxy {
+
 }
 
 interface AbstractVertex extends Vertex {
