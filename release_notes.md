@@ -19,6 +19,7 @@ PREESM Changelog
 * Fix Expression evaluator to properly handle several config input ports connected to the same parameter;
 * Copying the timing property during the PiMM2SRDAG conversion;
 * Add XSD for .pi files and corresponding Validator class;
+* Move Xtend maven plugins to 2.15;
 
 ### Bug fix
 
