@@ -80,13 +80,7 @@ public class ExpressionEvaluator {
     return ExpressionEvaluator.evaluate(expression.getExpressionString(), addInputParameterValues);
   }
 
-  public static final long evaluate(final String expression) {
-    return ExpressionEvaluator.evaluate(expression, null);
-  }
-
-  /**
-   */
-  public static final long evaluate(final String expression, final Map<String, Number> addInputParameterValues) {
+  private static final long evaluate(final String expression, final Map<String, Number> addInputParameterValues) {
     final JEP jep = ExpressionEvaluator.initJep(addInputParameterValues);
     long result;
     try {
@@ -133,28 +127,31 @@ public class ExpressionEvaluator {
   private static Map<String, Number> addInputParameterValues(final Expression expression) {
     final Map<String, Number> result = new LinkedHashMap<>();
     final ExpressionHolder holder = expression.getHolder();
-    final EList<Parameter> inputParameters = holder.getInputParameters();
-    for (final Parameter param : inputParameters) {
-      final Expression valueExpression = param.getValueExpression();
-      final double value = ExpressionEvaluator.evaluate(valueExpression);
+    if (holder != null) {
+      final EList<Parameter> inputParameters = holder.getInputParameters();
+      for (final Parameter param : inputParameters) {
+        final Expression valueExpression = param.getValueExpression();
+        final double value = valueExpression.evaluate();
 
-      if ((holder instanceof Parameter) || (holder instanceof Delay) || (holder instanceof InterfaceActor)
-          || (holder instanceof PeriodicElement)) {
-        result.put(param.getName(), value);
-      } else if (holder instanceof DataPort) {
-        final AbstractActor containingActor = ((DataPort) holder).getContainingActor();
-        if (containingActor instanceof InterfaceActor || containingActor instanceof DelayActor) {
+        if ((holder instanceof Parameter) || (holder instanceof Delay) || (holder instanceof InterfaceActor)
+            || (holder instanceof PeriodicElement)) {
           result.put(param.getName(), value);
-        } else {
-          final List<ConfigInputPort> inputPorts = containingActor.lookupConfigInputPortsConnectedWithParameter(param);
-          for (ConfigInputPort cip : inputPorts) {
-            final String name = cip.getName();
-            result.put(name, value);
+        } else if (holder instanceof DataPort) {
+          final AbstractActor containingActor = ((DataPort) holder).getContainingActor();
+          if (containingActor instanceof InterfaceActor || containingActor instanceof DelayActor) {
+            result.put(param.getName(), value);
+          } else {
+            final List<
+                ConfigInputPort> inputPorts = containingActor.lookupConfigInputPortsConnectedWithParameter(param);
+            for (ConfigInputPort cip : inputPorts) {
+              final String name = cip.getName();
+              result.put(name, value);
+            }
           }
-        }
 
-      } else {
-        throw new ExpressionEvaluationException("Could not compute proper parameter name");
+        } else {
+          throw new ExpressionEvaluationException("Could not compute proper parameter name");
+        }
       }
     }
     return result;

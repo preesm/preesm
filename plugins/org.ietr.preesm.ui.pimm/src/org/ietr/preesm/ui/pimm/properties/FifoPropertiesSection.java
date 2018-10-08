@@ -51,7 +51,6 @@ import org.eclipse.ui.views.properties.tabbed.ITabbedPropertyConstants;
 import org.eclipse.ui.views.properties.tabbed.TabbedPropertySheetPage;
 import org.eclipse.ui.views.properties.tabbed.TabbedPropertySheetWidgetFactory;
 import org.ietr.preesm.experiment.model.expression.ExpressionEvaluationException;
-import org.ietr.preesm.experiment.model.expression.ExpressionEvaluator;
 import org.ietr.preesm.experiment.model.pimm.DataPort;
 import org.ietr.preesm.experiment.model.pimm.Expression;
 import org.ietr.preesm.experiment.model.pimm.Fifo;
@@ -339,7 +338,7 @@ public class FifoPropertiesSection extends DataPortPropertiesUpdater implements 
         try {
           // try out evaluating the expression
           // if evaluation went well, just write the result
-          final long evaluate = ExpressionEvaluator.evaluate(srcRate);
+          final long evaluate = srcRate.evaluate();
           this.lblSourcePortValueObj.setText(Long.toString(evaluate));
           this.txtSourcePortExpression.setBackground(new Color(null, 255, 255, 255));
         } catch (final ExpressionEvaluationException e) {
@@ -349,7 +348,7 @@ public class FifoPropertiesSection extends DataPortPropertiesUpdater implements 
         }
         try {
           // try out evaluating the expression
-          final long evaluate = ExpressionEvaluator.evaluate(tgtRate);
+          final long evaluate = tgtRate.evaluate();
           // if evaluation went well, just write the result
           this.lblTargetPortValueObj.setText(Long.toString(evaluate));
           this.txtTargetPortExpression.setBackground(new Color(null, 255, 255, 255));

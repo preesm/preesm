@@ -30,6 +30,7 @@ package org.ietr.preesm.experiment.model.pimm
 import java.util.Optional
 import org.ietr.preesm.experiment.model.PiGraphException
 import org.ietr.preesm.experiment.model.pimm.util.RefinementResolver
+import org.ietr.preesm.experiment.model.expression.ExpressionEvaluator
 
 type IPath wraps org.eclipse.core.runtime.IPath
 
@@ -86,6 +87,9 @@ interface Parameterizable {
 class Expression {
 	refers ExpressionHolder holder opposite expression
 	String expressionString = "0"
+	op long evaluate() {
+		return ExpressionEvaluator.evaluate(this)
+	}
 }
 
 interface ExpressionHolder extends Parameterizable {

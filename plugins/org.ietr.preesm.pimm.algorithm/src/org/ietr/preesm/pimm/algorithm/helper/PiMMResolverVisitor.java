@@ -44,7 +44,6 @@ import java.util.logging.Level;
 import org.eclipse.emf.common.util.EList;
 import org.ietr.dftools.workflow.WorkflowException;
 import org.ietr.dftools.workflow.tools.WorkflowLogger;
-import org.ietr.preesm.experiment.model.expression.ExpressionEvaluator;
 import org.ietr.preesm.experiment.model.factory.PiMMUserFactory;
 import org.ietr.preesm.experiment.model.pimm.AbstractActor;
 import org.ietr.preesm.experiment.model.pimm.ConfigInputInterface;
@@ -97,7 +96,7 @@ public class PiMMResolverVisitor extends PiMMSwitch<Boolean> {
         // parameters and set the result as new expression
         final Expression pExp = PiMMUserFactory.instance.createExpression();
         final Expression valueExpression = p.getValueExpression();
-        final long evaluate = ExpressionEvaluator.evaluate(valueExpression);
+        final long evaluate = valueExpression.evaluate();
         pExp.setExpressionString(Long.toString(evaluate));
         p.setExpression(pExp);
         try {
@@ -201,7 +200,7 @@ public class PiMMResolverVisitor extends PiMMSwitch<Boolean> {
       // Evaluate the expression wrt. the current values of the
       // parameters and set the result as new expression
       final Expression valueExpression = p.getValueExpression();
-      final long value = ExpressionEvaluator.evaluate(valueExpression);
+      final long value = valueExpression.evaluate();
       valueExpression.setExpressionString(Long.toString(value));
       this.parameterValues.put(p, value);
     }

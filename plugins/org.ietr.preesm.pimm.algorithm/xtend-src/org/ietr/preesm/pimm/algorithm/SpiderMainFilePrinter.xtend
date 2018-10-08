@@ -37,7 +37,6 @@
 package org.ietr.preesm.pimm.algorithm
 
 import java.util.Date
-import org.ietr.preesm.experiment.model.expression.ExpressionEvaluator
 import org.ietr.preesm.experiment.model.pimm.Actor
 import org.ietr.preesm.experiment.model.pimm.CHeaderRefinement
 import org.ietr.preesm.experiment.model.pimm.ConfigInputPort
@@ -248,7 +247,7 @@ class SpiderMainFilePrinter {
 	def static String printInitCall(Actor actor) '''
 	  «val proto = (actor.refinement as CHeaderRefinement).getInitPrototype»
 	  «proto.name»(«FOR param : proto.parameters SEPARATOR ", "»«
-	   ExpressionEvaluator.evaluate(((actor.lookupPort(param.name) as ConfigInputPort).incomingDependency.setter as Parameter).valueExpression)»«ENDFOR»);
+	   ((actor.lookupPort(param.name) as ConfigInputPort).incomingDependency.setter as Parameter).valueExpression.evaluate.toString»«ENDFOR»);
 	'''
 
 	def CharSequence printInitCallRec(PiGraph g) '''

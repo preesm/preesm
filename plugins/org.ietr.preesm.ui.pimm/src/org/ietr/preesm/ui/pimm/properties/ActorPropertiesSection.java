@@ -65,7 +65,6 @@ import org.eclipse.ui.views.properties.tabbed.ITabbedPropertyConstants;
 import org.eclipse.ui.views.properties.tabbed.TabbedPropertySheetPage;
 import org.eclipse.ui.views.properties.tabbed.TabbedPropertySheetWidgetFactory;
 import org.ietr.preesm.experiment.model.expression.ExpressionEvaluationException;
-import org.ietr.preesm.experiment.model.expression.ExpressionEvaluator;
 import org.ietr.preesm.experiment.model.pimm.Actor;
 import org.ietr.preesm.experiment.model.pimm.CHeaderRefinement;
 import org.ietr.preesm.experiment.model.pimm.ExecutableActor;
@@ -634,7 +633,7 @@ public class ActorPropertiesSection extends GFPropertySection implements ITabbed
 
             try {
               // try out evaluating the expression
-              final long evaluate = ExpressionEvaluator.evaluate(periodicExp);
+              final long evaluate = periodicExp.evaluate();
               if (evaluate < 0) {
                 throw new IllegalArgumentException("Period cannot be negative: either positive or 0 if aperiodic.");
               }
