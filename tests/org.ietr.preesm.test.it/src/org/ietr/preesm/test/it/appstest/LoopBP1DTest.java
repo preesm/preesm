@@ -36,38 +36,51 @@
 package org.ietr.preesm.test.it.appstest;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.Arrays;
+import java.util.Collection;
 import org.eclipse.core.runtime.CoreException;
 import org.ietr.preesm.test.it.api.WorkflowRunner;
 import org.junit.Assert;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.junit.runners.Parameterized;
+import org.junit.runners.Parameterized.Parameters;
 
 /**
  *
  */
+@RunWith(Parameterized.class)
 public class LoopBP1DTest {
+
+  static final String   projectName = "org.ietr.preesm.bp1d";
+  static final String   workflow    = "CodegenDistribNoFlat.workflow";
+  static final String[] scenarios   = new String[] { "1core.scenario", "4core.scenario", "MPPA2Explicit.scenario" };
+
+  final String scenario;
+
+  public LoopBP1DTest(final String scenario) {
+    this.scenario = scenario;
+  }
+
+  /**
+  *
+  */
+  @Parameters(name = "{0}")
+  public static Collection<Object[]> data() {
+    final Object[][] params = new Object[scenarios.length][1];
+    int i = 0;
+    for (String scenario : scenarios) {
+      params[i][0] = scenario;
+      i++;
+    }
+    return Arrays.asList(params);
+  }
+
   @Test
   public void testLoopBP1DFlow() throws IOException, CoreException {
-    final String projectName = "org.ietr.preesm.bp1d";
-
-    // fill workflows to set
-    final List<String> workflows = new ArrayList<>();
-    workflows.add("CodegenDistribNoFlat");
-
-    // fill scenarios to set
-    final List<String> scenarios = new ArrayList<>();
-    scenarios.add("1core");
-    scenarios.add("4core");
-    scenarios.add("MPPA2Explicit");
-
-    for (final String w : workflows) {
-      for (final String s : scenarios) {
-        final String workflowFilePathStr = "/Workflows/" + w + ".workflow";
-        final String scenarioFilePathStr = "/Scenarios/" + s + ".scenario";
-        final boolean success = WorkflowRunner.runWorkFlow(projectName, workflowFilePathStr, scenarioFilePathStr);
-        Assert.assertTrue("[FAILED] Workflow " + workflowFilePathStr + " Scenario " + scenarioFilePathStr, success);
-      }
-    }
+    final String workflowFilePathStr = "/Workflows/" + workflow;
+    final String scenarioFilePathStr = "/Scenarios/" + scenario;
+    final boolean success = WorkflowRunner.runWorkFlow(projectName, workflowFilePathStr, scenarioFilePathStr);
+    Assert.assertTrue("[FAILED] Workflow " + workflowFilePathStr + " Scenario " + scenarioFilePathStr, success);
   }
 }

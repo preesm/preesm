@@ -35,46 +35,62 @@
 package org.ietr.preesm.test.it.appstest;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
 import org.eclipse.core.runtime.CoreException;
 import org.ietr.preesm.test.it.api.WorkflowRunner;
 import org.junit.Assert;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.junit.runners.Parameterized;
+import org.junit.runners.Parameterized.Parameters;
 
 /**
  *
  */
+@RunWith(Parameterized.class)
 public class SpiderTest {
+
+  static final String   projectName = "org.ietr.preesm.spider.sobel";
+  static final String[] scenarios   = new String[] { "1core.scenario", "4core.scenario" };
+  static final String[] workflows   = new String[] { "SpiderCodegen.workflow", "Codegen.workflow" };
+
+  final String workflow;
+  final String scenario;
+
+  /**
+   */
+  public SpiderTest(final String workflow, final String scenario) {
+    this.scenario = scenario;
+    this.workflow = workflow;
+  }
+
+  /**
+   *
+   */
+  @Parameters(name = "{0} - {1}")
+  public static Collection<Object[]> data() {
+    final List<Object[]> params = new ArrayList<>();
+
+    for (String workflow : workflows) {
+      for (String scenario : scenarios) {
+        params.add(new Object[] { workflow, scenario });
+      }
+    }
+    return params;
+  }
 
   @Test
   public void testSobelSpider() throws IOException, CoreException {
-    final String projectName = "org.ietr.preesm.spider.sobel";
-    final String[] scenarios = new String[] { "1core.scenario", "4core.scenario" };
-    final String[] workflows = new String[] { "SpiderCodegen.workflow" };
-
-    for (final String workflow : workflows) {
-      for (final String scenario : scenarios) {
-        final String workflowFilePathStr = "/Workflows/" + workflow;
-        final String scenarioFilePathStr = "/Scenarios/" + scenario;
-        final boolean success = WorkflowRunner.runWorkFlow(projectName, workflowFilePathStr, scenarioFilePathStr);
-        Assert.assertTrue("Workflow [" + workflow + "] with scenario [" + scenario + "] caused failure", success);
-      }
+    final String workflowFilePathStr = "/Workflows/" + workflow;
+    final String scenarioFilePathStr = "/Scenarios/" + scenario;
+    final boolean success = WorkflowRunner.runWorkFlow(projectName, workflowFilePathStr, scenarioFilePathStr);
+    if ("Codegen.workflow".equals(workflow)) {
+      Assert.assertFalse("Workflow [" + workflow + "] with scenario [" + scenario + "] caused failure", success);
+    } else {
+      Assert.assertTrue("Workflow [" + workflow + "] with scenario [" + scenario + "] caused failure", success);
     }
   }
 
-  @Test
-  public void testSobelSpiderStaticWorkflowFail() throws IOException, CoreException {
-    final String projectName = "org.ietr.preesm.spider.sobel";
-    final String[] scenarios = new String[] { "1core.scenario", "4core.scenario" };
-    final String[] workflows = new String[] { "Codegen.workflow" };
-
-    for (final String workflow : workflows) {
-      for (final String scenario : scenarios) {
-        final String workflowFilePathStr = "/Workflows/" + workflow;
-        final String scenarioFilePathStr = "/Scenarios/" + scenario;
-        final boolean success = WorkflowRunner.runWorkFlow(projectName, workflowFilePathStr, scenarioFilePathStr);
-        Assert.assertFalse("Workflow [" + workflow + "] with scenario [" + scenario + "] successed when it should fail",
-            success);
-      }
-    }
-  }
 }

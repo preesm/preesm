@@ -45,20 +45,15 @@ import org.junit.Test;
  *
  */
 public class Issue33Test {
+  final String projectName = "issue33";
+  final String scenario    = "sample.scenario";
+  final String workflow    = "sample.workflow";
 
   @Test
   public void testLargeFFT34() throws IOException, CoreException {
-    final String projectName = "issue33";
-    final String[] scenarios = new String[] { "sample.scenario" };
-    final String[] workflows = new String[] { "sample.workflow" };
-
-    for (final String workflow : workflows) {
-      for (final String scenario : scenarios) {
-        final String workflowFilePathStr = "/Workflows/" + workflow;
-        final String scenarioFilePathStr = "/Scenarios/" + scenario;
-        final boolean success = WorkflowRunner.runWorkFlow(projectName, workflowFilePathStr, scenarioFilePathStr);
-        Assert.assertTrue("Workflow [" + workflow + "] with scenario [" + scenario + "] caused failure", success);
-      }
-    }
+    final String workflowFilePathStr = "/Workflows/" + workflow;
+    final String scenarioFilePathStr = "/Scenarios/" + scenario;
+    final boolean success = WorkflowRunner.runWorkFlow(projectName, workflowFilePathStr, scenarioFilePathStr);
+    Assert.assertTrue("Workflow [" + workflow + "] with scenario [" + scenario + "] caused failure", success);
   }
 }

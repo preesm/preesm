@@ -52,16 +52,12 @@ public class ThroughputPluginTest {
   @Test
   public void testThroughputShouldBeComputedDuringWorkflow() throws IOException, CoreException {
     final String projectName = "org.ietr.preesm.tutorials.throughputEvaluationIBSDF";
-    final String[] scenarios = new String[] { "scenario.scenario" };
-    final String[] workflows = new String[] { "ThroughputEvaluation.workflow" };
+    final String scenario = "scenario.scenario";
+    final String workflow = "ThroughputEvaluation.workflow";
 
-    for (final String workflow : workflows) {
-      for (final String scenario : scenarios) {
-        final String workflowFilePathStr = "/Workflows/" + workflow;
-        final String scenarioFilePathStr = "/Scenarios/" + scenario;
-        final boolean success = WorkflowRunner.runWorkFlow(projectName, workflowFilePathStr, scenarioFilePathStr);
-        Assert.assertTrue("Workflow [" + workflow + "] with scenario [" + scenario + "] caused failure", success);
-      }
-    }
+    final String workflowFilePathStr = "/Workflows/" + workflow;
+    final String scenarioFilePathStr = "/Scenarios/" + scenario;
+    final boolean success = WorkflowRunner.runWorkFlow(projectName, workflowFilePathStr, scenarioFilePathStr);
+    Assert.assertTrue("Workflow [" + workflow + "] with scenario [" + scenario + "] caused failure", success);
   }
 }

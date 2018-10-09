@@ -36,61 +36,60 @@
 package org.ietr.preesm.test.it.appstest;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
 import org.eclipse.core.runtime.CoreException;
 import org.ietr.preesm.test.it.api.WorkflowRunner;
 import org.junit.Assert;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.junit.runners.Parameterized;
+import org.junit.runners.Parameterized.Parameters;
 
 /**
  *
  */
+@RunWith(Parameterized.class)
 public class PiMMFlattenerTest {
 
-  @Test
-  public void testRL() throws IOException, CoreException {
-    final String projectName = "org.ietr.preesm.reinforcement_learning";
-    final String[] scenarios = new String[] { "1corePrediction.scenario", "1coreTraining.scenario" };
-    final String[] workflows = new String[] { "StaticPiMMFlattenerCodegen.workflow" };
+  final String workflow;
+  final String scenario;
+  final String projectName;
 
-    for (final String workflow : workflows) {
-      for (final String scenario : scenarios) {
-        final String workflowFilePathStr = "/Workflows/" + workflow;
-        final String scenarioFilePathStr = "/Scenarios/" + scenario;
-        final boolean success = WorkflowRunner.runWorkFlow(projectName, workflowFilePathStr, scenarioFilePathStr);
-        Assert.assertTrue("Workflow [" + workflow + "] with scenario [" + scenario + "] caused failure", success);
-      }
-    }
+  /**
+   */
+  public PiMMFlattenerTest(final String workflow, final String scenario, final String projectName) {
+    this.scenario = scenario;
+    this.workflow = workflow;
+    this.projectName = projectName;
+  }
+
+  /**
+   *
+   */
+  @Parameters(name = "{2} - {0} - {1}")
+  public static Collection<Object[]> data() {
+
+    final List<Object[]> params = new ArrayList<>();
+
+    params.add(new Object[] { "StaticPiMMFlattenerCodegen.workflow", "1corePrediction.scenario",
+        "org.ietr.preesm.reinforcement_learning" });
+    params.add(new Object[] { "StaticPiMMFlattenerCodegen.workflow", "1coreTraining.scenario",
+        "org.ietr.preesm.reinforcement_learning" });
+
+    params.add(new Object[] { "StaticPiMMFlattenerCodegen.workflow", "1core.scenario", "org.ietr.preesm.stereo" });
+
+    params.add(new Object[] { "StaticPiMMFlattenerCodegen.workflow", "1core.scenario", "org.ietr.preesm.sobel" });
+
+    return params;
   }
 
   @Test
-  public void testStereo() throws IOException, CoreException {
-    final String projectName = "org.ietr.preesm.stereo";
-    final String[] scenarios = new String[] { "1core.scenario" };
-    final String[] workflows = new String[] { "StaticPiMMFlattenerCodegen.workflow" };
-
-    for (final String workflow : workflows) {
-      for (final String scenario : scenarios) {
-        final String workflowFilePathStr = "/Workflows/" + workflow;
-        final String scenarioFilePathStr = "/Scenarios/" + scenario;
-        final boolean success = WorkflowRunner.runWorkFlow(projectName, workflowFilePathStr, scenarioFilePathStr);
-        Assert.assertTrue("Workflow [" + workflow + "] with scenario [" + scenario + "] caused failure", success);
-      }
-    }
-  }
-
-  @Test
-  public void testSobel() throws IOException, CoreException {
-    final String projectName = "org.ietr.preesm.sobel";
-    final String[] scenarios = new String[] { "1core.scenario" };
-    final String[] workflows = new String[] { "StaticPiMMFlattenerCodegen.workflow" };
-
-    for (final String workflow : workflows) {
-      for (final String scenario : scenarios) {
-        final String workflowFilePathStr = "/Workflows/" + workflow;
-        final String scenarioFilePathStr = "/Scenarios/" + scenario;
-        final boolean success = WorkflowRunner.runWorkFlow(projectName, workflowFilePathStr, scenarioFilePathStr);
-        Assert.assertTrue("Workflow [" + workflow + "] with scenario [" + scenario + "] caused failure", success);
-      }
-    }
+  public void testPiMMFlattener() throws IOException, CoreException {
+    final String workflowFilePathStr = "/Workflows/" + workflow;
+    final String scenarioFilePathStr = "/Scenarios/" + scenario;
+    final boolean success = WorkflowRunner.runWorkFlow(projectName, workflowFilePathStr, scenarioFilePathStr);
+    Assert.assertTrue("Workflow [" + workflow + "] with scenario [" + scenario + "] caused failure", success);
   }
 }

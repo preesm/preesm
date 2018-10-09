@@ -22,6 +22,7 @@ PREESM Changelog
 * Add XSD for .pi files and corresponding Validator class;
 * Move Xtend maven plugins to 2.15;
 * Add LongExpressions to speedup evaluation;
+* Use parameterized tests;
 
 ### Bug fix
 

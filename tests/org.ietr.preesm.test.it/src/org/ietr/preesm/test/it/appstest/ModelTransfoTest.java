@@ -36,79 +36,91 @@
 package org.ietr.preesm.test.it.appstest;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
 import org.eclipse.core.runtime.CoreException;
 import org.ietr.preesm.test.it.api.WorkflowRunner;
 import org.junit.Assert;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.junit.runners.Parameterized;
+import org.junit.runners.Parameterized.Parameters;
 
 /**
  *
  */
+@RunWith(Parameterized.class)
 public class ModelTransfoTest {
 
-  @Test
-  public void testFlat() throws IOException, CoreException {
-    final String projectName = "org.ietr.preesm.model_tests";
-    final String[] scenarios = new String[] { "Tests_Flat/simple.scenario", "Tests_Flat/delay_simple.scenario",
-        "Tests_Flat/delay_setter_getter.scenario" };
-    final String[] workflows = new String[] { "StaticPiMM2SRDAGCodegen.workflow",
-        "StaticPiMMFlattenerCodegen.workflow" };
+  final String  workflow;
+  final String  scenario;
+  final String  projectName;
+  final boolean shouldSuccess;
 
-    for (final String workflow : workflows) {
-      for (final String scenario : scenarios) {
-        final String workflowFilePathStr = "/Workflows/" + workflow;
-        final String scenarioFilePathStr = "/Scenarios/" + scenario;
-        final boolean success = WorkflowRunner.runWorkFlow(projectName, workflowFilePathStr, scenarioFilePathStr);
-        Assert.assertTrue("Workflow [" + workflow + "] with scenario [" + scenario + "] caused failure", success);
-      }
-    }
+  /**
+   */
+  public ModelTransfoTest(final String projectName, final String workflow, final String scenario,
+      final boolean shouldSuccess) {
+    this.scenario = scenario;
+    this.workflow = workflow;
+    this.projectName = projectName;
+    this.shouldSuccess = shouldSuccess;
   }
 
-  @Test
-  public void testHierarchy() throws IOException, CoreException {
-    final String projectName = "org.ietr.preesm.model_tests";
-    final String[] scenarios = new String[] { "Tests_H/simple_H.scenario", "Tests_H/simple_H_delay_p.scenario",
+  /**
+   *
+   */
+  @Parameters(name = "{index} - {0}:: {1} - {2} => {3}")
+  public static Collection<Object[]> data() {
+    final List<Object[]> params = new ArrayList<>();
+
+    String projectName = "org.ietr.preesm.model_tests";
+    String[] scenarios = new String[] { "Tests_Flat/simple.scenario", "Tests_Flat/delay_simple.scenario",
+        "Tests_Flat/delay_setter_getter.scenario" };
+    String[] workflows = new String[] { "StaticPiMM2SRDAGCodegen.workflow", "StaticPiMMFlattenerCodegen.workflow" };
+    for (String workflow : workflows) {
+      for (String scenario : scenarios) {
+        params.add(new Object[] { projectName, workflow, scenario, true });
+      }
+    }
+
+    projectName = "org.ietr.preesm.model_tests";
+    scenarios = new String[] { "Tests_H/simple_H.scenario", "Tests_H/simple_H_delay_p.scenario",
         "Tests_H/simple_H_delay_no_p.scenario", "Tests_H/simple_H_delay_p_no_p.scenario",
         "Tests_H/simple_H_delay_p_p.scenario" };
-    final String[] workflows = new String[] { "StaticPiMM2SRDAGCodegen.workflow",
-        "StaticPiMMFlattenerCodegen.workflow" };
-
-    for (final String workflow : workflows) {
-      for (final String scenario : scenarios) {
-        final String workflowFilePathStr = "/Workflows/" + workflow;
-        final String scenarioFilePathStr = "/Scenarios/" + scenario;
-        final boolean success = WorkflowRunner.runWorkFlow(projectName, workflowFilePathStr, scenarioFilePathStr);
-        if (scenario.equals("Tests_H/simple_H_delay_p_no_p.scenario")
-            && workflow.equals("StaticPiMMFlattenerCodegen.workflow")) {
-          Assert.assertFalse("Workflow [" + workflow + "] with scenario [" + scenario + "] caused failure", success);
-        } else {
-          Assert.assertTrue("Workflow [" + workflow + "] with scenario [" + scenario + "] caused failure", success);
-        }
+    workflows = new String[] { "StaticPiMM2SRDAGCodegen.workflow", "StaticPiMMFlattenerCodegen.workflow" };
+    for (String workflow : workflows) {
+      for (String scenario : scenarios) {
+        final boolean shouldFail = scenario.equals("Tests_H/simple_H_delay_p_no_p.scenario")
+            && workflow.equals("StaticPiMMFlattenerCodegen.workflow");
+        params.add(new Object[] { projectName, workflow, scenario, !shouldFail });
       }
     }
+
+    projectName = "org.ietr.preesm.model_tests";
+    scenarios = new String[] { "Tests_H/nested_H_simple.scenario", "Tests_H/nested_H_BR.scenario",
+        "Tests_H/nested_H_RB.scenario", "Tests_H/nested_H_delay_p.scenario", "Tests_H/nested_H_delay_no_p.scenario",
+        "Tests_H/nested_H_delay_p_no_p.scenario", "Tests_H/nested_H_delay_p_p.scenario" };
+    workflows = new String[] { "StaticPiMM2SRDAGCodegen.workflow", "StaticPiMMFlattenerCodegen.workflow" };
+    for (String workflow : workflows) {
+      for (String scenario : scenarios) {
+        final boolean shouldFail = scenario.equals("Tests_H/nested_H_delay_p_no_p.scenario")
+            && workflow.equals("StaticPiMMFlattenerCodegen.workflow");
+        params.add(new Object[] { projectName, workflow, scenario, !shouldFail });
+      }
+    }
+
+    return params;
   }
 
   @Test
-  public void testNestedHierarchy() throws IOException, CoreException {
-    final String projectName = "org.ietr.preesm.model_tests";
-    final String[] scenarios = new String[] { "Tests_H/nested_H_simple.scenario", "Tests_H/nested_H_BR.scenario",
-        "Tests_H/nested_H_RB.scenario", "Tests_H/nested_H_delay_p.scenario", "Tests_H/nested_H_delay_no_p.scenario",
-        "Tests_H/nested_H_delay_p_no_p.scenario", "Tests_H/nested_H_delay_p_p.scenario" };
-    final String[] workflows = new String[] { "StaticPiMM2SRDAGCodegen.workflow",
-        "StaticPiMMFlattenerCodegen.workflow" };
-
-    for (final String workflow : workflows) {
-      for (final String scenario : scenarios) {
-        final String workflowFilePathStr = "/Workflows/" + workflow;
-        final String scenarioFilePathStr = "/Scenarios/" + scenario;
-        final boolean success = WorkflowRunner.runWorkFlow(projectName, workflowFilePathStr, scenarioFilePathStr);
-        if (scenario.equals("Tests_H/nested_H_delay_p_no_p.scenario")
-            && workflow.equals("StaticPiMMFlattenerCodegen.workflow")) {
-          Assert.assertFalse("Workflow [" + workflow + "] with scenario [" + scenario + "] caused failure", success);
-        } else {
-          Assert.assertTrue("Workflow [" + workflow + "] with scenario [" + scenario + "] caused failure", success);
-        }
-      }
-    }
+  public void testModelTransfos() throws IOException, CoreException {
+    final String workflowFilePathStr = "/Workflows/" + workflow;
+    final String scenarioFilePathStr = "/Scenarios/" + scenario;
+    final boolean success = WorkflowRunner.runWorkFlow(projectName, workflowFilePathStr, scenarioFilePathStr);
+    Assert.assertEquals("Workflow [" + workflow + "] with scenario [" + scenario + "] ended unexpectedly",
+        shouldSuccess, success);
   }
+
 }
