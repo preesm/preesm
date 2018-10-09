@@ -67,8 +67,6 @@ import org.ietr.preesm.codegen.idl.Prototype;
 import org.ietr.preesm.codegen.model.CodeGenArgument;
 import org.ietr.preesm.codegen.model.CodeGenParameter;
 import org.ietr.preesm.experiment.model.PiGraphException;
-import org.ietr.preesm.experiment.model.expression.ExpressionEvaluator;
-import org.ietr.preesm.experiment.model.factory.PiMMUserFactory;
 import org.ietr.preesm.experiment.model.pimm.AbstractActor;
 import org.ietr.preesm.experiment.model.pimm.AbstractVertex;
 import org.ietr.preesm.experiment.model.pimm.Actor;
@@ -171,7 +169,7 @@ public class StaticPiMM2SDFVisitor extends PiMMSwitch<Boolean> {
    */
   protected void parameters2GraphVariables(final PiGraph pg, final SDFGraph sdf) {
     for (final Parameter p : pg.getParameters()) {
-      final String evaluate = Long.toString(ExpressionEvaluator.evaluate(p.getValueExpression()));
+      final String evaluate = Long.toString(p.getValueExpression().evaluate());
       final Variable var = new Variable(p.getName(), evaluate);
       sdf.addVariable(var);
     }
@@ -195,18 +193,14 @@ public class StaticPiMM2SDFVisitor extends PiMMSwitch<Boolean> {
       // be a parameter
       if (setter instanceof Parameter) {
         final Expression setterParam = ((Parameter) setter).getValueExpression();
-        final Expression pExp = PiMMUserFactory.instance.createExpression();
-        pExp.setExpressionString(setterParam.getExpressionString());
-        cii.setExpression(pExp);
+        cii.setExpression(setterParam.getExpressionAsString());
       }
     } else {
       // If there is only one value available for Parameter p, we can set
       // its
       if (this.execution.hasValue(p)) {
         final Integer value = this.execution.getValue(p);
-        final Expression pExp = PiMMUserFactory.instance.createExpression();
-        pExp.setExpressionString(value.toString());
-        p.setExpression(pExp);
+        p.setExpression(value.longValue());
       }
     }
     return true;
@@ -227,9 +221,7 @@ public class StaticPiMM2SDFVisitor extends PiMMSwitch<Boolean> {
     // Setter of an incoming dependency into a ConfigInputInterface must be
     // a parameter
     if (setter instanceof Parameter) {
-      final Expression pExp = PiMMUserFactory.instance.createExpression();
-      pExp.setExpressionString(((Parameter) setter).getValueExpression().getExpressionString());
-      cii.setExpression(pExp);
+      cii.setExpression(((Parameter) setter).getValueExpression().getExpressionAsString());
     }
     return true;
   }
@@ -252,11 +244,9 @@ public class StaticPiMM2SDFVisitor extends PiMMSwitch<Boolean> {
       if (!execution.hasValue(p)) {
         // Evaluate the expression wrt. the current values of the
         // parameters and set the result as new expression
-        final Expression pExp = PiMMUserFactory.instance.createExpression();
         final Expression valueExpression = p.getValueExpression();
-        final long evaluate = ExpressionEvaluator.evaluate(valueExpression);
-        pExp.setExpressionString(Long.toString(evaluate));
-        p.setExpression(pExp);
+        final long evaluate = valueExpression.evaluate();
+        p.setExpression(evaluate);
       }
     }
   }
@@ -403,17 +393,17 @@ public class StaticPiMM2SDFVisitor extends PiMMSwitch<Boolean> {
         // Evaluate the expression wrt. the current values of the
         // parameters
         delay = new SDFExpressionEdgePropertyType(
-            createValue(Long.toString(ExpressionEvaluator.evaluate(f.getDelay().getSizeExpression()))));
+            createValue(Long.toString(f.getDelay().getSizeExpression().evaluate())));
       } else {
         delay = new SDFExpressionEdgePropertyType(new ConstantValue(0L));
       }
       // Evaluate the expression wrt. the current values of the parameters
       final SDFExpressionEdgePropertyType cons = new SDFExpressionEdgePropertyType(
-          createValue(Long.toString(ExpressionEvaluator.evaluate(piInputPort.getPortRateExpression()))));
+          createValue(Long.toString(piInputPort.getPortRateExpression().evaluate())));
 
       // Evaluate the expression wrt. the current values of the parameters
       final SDFExpressionEdgePropertyType prod = new SDFExpressionEdgePropertyType(
-          createValue(Long.toString(ExpressionEvaluator.evaluate(piOutputPort.getPortRateExpression()))));
+          createValue(Long.toString(piOutputPort.getPortRateExpression().evaluate())));
 
       final SDFEdge edge = this.result.addEdge(sdfSource, sdfOutputPort, sdfTarget, sdfInputPort, prod, cons, delay);
 

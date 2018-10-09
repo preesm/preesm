@@ -40,12 +40,9 @@ package org.ietr.preesm.pimm.algorithm.helper;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
-import java.util.logging.Level;
 import org.eclipse.emf.common.util.EList;
 import org.ietr.dftools.workflow.WorkflowException;
-import org.ietr.dftools.workflow.tools.WorkflowLogger;
-import org.ietr.preesm.experiment.model.expression.ExpressionEvaluator;
-import org.ietr.preesm.experiment.model.factory.PiMMUserFactory;
+import org.ietr.preesm.experiment.model.PiGraphException;
 import org.ietr.preesm.experiment.model.pimm.AbstractActor;
 import org.ietr.preesm.experiment.model.pimm.ConfigInputInterface;
 import org.ietr.preesm.experiment.model.pimm.ConfigInputPort;
@@ -55,10 +52,14 @@ import org.ietr.preesm.experiment.model.pimm.DelayActor;
 import org.ietr.preesm.experiment.model.pimm.Dependency;
 import org.ietr.preesm.experiment.model.pimm.ExecutableActor;
 import org.ietr.preesm.experiment.model.pimm.Expression;
+import org.ietr.preesm.experiment.model.pimm.ExpressionHolder;
+import org.ietr.preesm.experiment.model.pimm.ExpressionProxy;
 import org.ietr.preesm.experiment.model.pimm.ISetter;
 import org.ietr.preesm.experiment.model.pimm.InterfaceActor;
+import org.ietr.preesm.experiment.model.pimm.LongExpression;
 import org.ietr.preesm.experiment.model.pimm.Parameter;
 import org.ietr.preesm.experiment.model.pimm.PiGraph;
+import org.ietr.preesm.experiment.model.pimm.StringExpression;
 import org.ietr.preesm.experiment.model.pimm.util.PiMMSwitch;
 import org.nfunk.jep.JEP;
 import org.nfunk.jep.Node;
@@ -80,13 +81,57 @@ public class PiMMResolverVisitor extends PiMMSwitch<Boolean> {
   }
 
   /**
+   *
+   * @author anmorvan
+   *
+   */
+  final class JEPFastExpressionResolver extends PiMMSwitch<Long> {
+
+    private final JEP jep;
+
+    JEPFastExpressionResolver(final JEP jep) {
+      this.jep = jep;
+    }
+
+    @Override
+    public Long caseLongExpression(final LongExpression object) {
+      return object.getValue();
+    }
+
+    @Override
+    public Long caseExpressionProxy(final ExpressionProxy object) {
+      return doSwitch(object.getProxy().getExpression());
+    }
+
+    @Override
+    public Long caseStringExpression(final StringExpression object) {
+      final long value;
+      try {
+        final Node parse = jep.parse(object.getExpressionString());
+        final Object result = jep.evaluate(parse);
+        if (result instanceof Long) {
+          value = (Long) result;
+        } else if (result instanceof Double) {
+          value = Math.round((Double) result);
+        } else {
+          throw new PiGraphException("Unsupported result type " + result.getClass().getSimpleName());
+        }
+      } catch (final ParseException e) {
+        throw new PiGraphException("Could not parse " + object.getExpressionString(), e);
+      }
+      return value;
+    }
+
+  }
+
+  /**
    * Set the value of parameters of a PiGraph when possible (i.e., if we have currently only one available value, or if
    * we can compute the value)
    *
    * @param graph
    *          the PiGraph in which we want to set the values of parameters
    */
-  private static void computeDerivedParameterValues(final PiGraph graph, final Map<Parameter, Long> parameterValues) {
+  private void computeDerivedParameterValues(final PiGraph graph, final Map<Parameter, Long> parameterValues) {
     // If there is no value or list of values for one Parameter, the value
     // of the parameter is derived (i.e., computed from other parameters
     // values), we can evaluate it (after the values of other parameters
@@ -95,23 +140,15 @@ public class PiMMResolverVisitor extends PiMMSwitch<Boolean> {
       if (!parameterValues.containsKey(p)) {
         // Evaluate the expression wrt. the current values of the
         // parameters and set the result as new expression
-        final Expression pExp = PiMMUserFactory.instance.createExpression();
         final Expression valueExpression = p.getValueExpression();
-        final long evaluate = ExpressionEvaluator.evaluate(valueExpression);
-        pExp.setExpressionString(Long.toString(evaluate));
-        p.setExpression(pExp);
-        try {
-          final long value = Long.parseLong(p.getExpression().getExpressionString());
-          parameterValues.put(p, value);
-        } catch (final NumberFormatException e) {
-          WorkflowLogger.getLogger().log(Level.INFO, "TROLOLOLOLOLOLOLO.");
-          break;
-        }
+        final long evaluate = valueExpression.evaluate();
+        p.setExpression(evaluate);
+        parameterValues.put(p, evaluate);
       }
     }
   }
 
-  private static JEP initJep(final LinkedHashMap<String, Long> portValues) {
+  private JEP initJep(final Map<String, Long> portValues) {
     final JEP jep = new JEP();
     if (portValues != null) {
       portValues.forEach(jep::addVariable);
@@ -122,39 +159,18 @@ public class PiMMResolverVisitor extends PiMMSwitch<Boolean> {
     return jep;
   }
 
-  private static long parsePortExpression(final JEP jep, final String expressionString) throws ParseException {
-    final Node parse = jep.parse(expressionString);
-    final Object result = jep.evaluate(parse);
-    if (result instanceof Long) {
-      return (Long) result;
-    } else if (result instanceof Double) {
-      return Math.round((Double) result);
-    } else {
-      throw new ParseException("Unsupported result type " + result.getClass().getSimpleName());
-    }
-  }
-
-  private static void parseJEP(final AbstractActor actor, final LinkedHashMap<String, Long> portValues) {
+  private void parseJEP(final AbstractActor actor, final Map<String, Long> portValues) {
     // Init the JEP parser associated with the actor
-    final JEP jepParser = PiMMResolverVisitor.initJep(portValues);
+    final JEP jepParser = initJep(portValues);
     // Iterate over all data ports of the actor and resolve their rates
     for (final DataPort dp : actor.getAllDataPorts()) {
-      try {
-        PiMMResolverVisitor.resolveExpression(dp.getPortRateExpression(), jepParser);
-      } catch (final ParseException eparse) {
-        throw new WorkflowException("Failed to parse rate for [" + dp.getId() + "] port: " + eparse.getMessage());
-      }
+      resolveExpression(dp, jepParser);
     }
 
     // Parse delays as well
     if (actor instanceof PiGraph) {
       for (final Delay d : ((PiGraph) actor).getDelays()) {
-        try {
-          PiMMResolverVisitor.resolveExpression(d.getSizeExpression(), jepParser);
-        } catch (final ParseException eparse) {
-          throw new WorkflowException(
-              "Failed to parse expression for delay [" + d.getName() + "]: " + eparse.getMessage());
-        }
+        resolveExpression(d, jepParser);
       }
     }
   }
@@ -164,22 +180,17 @@ public class PiMMResolverVisitor extends PiMMSwitch<Boolean> {
    * If rate expression is a constant, then parsing is ignored since it is already done. <br>
    * This implementation uses benefit of the fact that the parser is initialized once for a given actor.
    *
-   * @param expression
+   * @param holder
    *          the expression to evaluate
    * @param actorParser
    *          parser of the actor containing the port
    * @throws PiMMHelperException
    *           the PiMMHandlerException exception
    */
-  private static void resolveExpression(final Expression expression, final JEP actorParser) throws ParseException {
-    try {
-      // If we can parse it, then it is constant
-      Long.parseLong(expression.getExpressionString());
-    } catch (final NumberFormatException e) {
-      // Now, we deal with expression
-      final long rate = PiMMResolverVisitor.parsePortExpression(actorParser, expression.getExpressionString());
-      expression.setExpressionString(Long.toString(rate));
-    }
+  private void resolveExpression(final ExpressionHolder holder, final JEP jep) {
+    final Expression expression = holder.getExpression();
+    final long value = new JEPFastExpressionResolver(jep).doSwitch(expression);
+    holder.setExpression(value);
   }
 
   /**
@@ -201,8 +212,8 @@ public class PiMMResolverVisitor extends PiMMSwitch<Boolean> {
       // Evaluate the expression wrt. the current values of the
       // parameters and set the result as new expression
       final Expression valueExpression = p.getValueExpression();
-      final long value = ExpressionEvaluator.evaluate(valueExpression);
-      valueExpression.setExpressionString(Long.toString(value));
+      final long value = valueExpression.evaluate();
+      p.setExpression(value);
       this.parameterValues.put(p, value);
     }
     return true;
@@ -220,14 +231,12 @@ public class PiMMResolverVisitor extends PiMMSwitch<Boolean> {
     // Setter of an incoming dependency into a ConfigInputInterface must be
     // a parameter
     if (setter instanceof Parameter) {
-      final Expression pExp = PiMMUserFactory.instance.createExpression();
       // When we arrive here all upper graphs have been processed.
       // We can then directly evaluate parameter expression here.
       final Expression valueExpression = ((Parameter) setter).getValueExpression();
-      final String expressionString = valueExpression.getExpressionString();
-      pExp.setExpressionString(expressionString);
-      cii.setExpression(pExp);
-      this.parameterValues.put(cii, Long.parseLong(expressionString));
+      final long evaluate = valueExpression.evaluate();
+      cii.setExpression(evaluate);
+      this.parameterValues.put(cii, evaluate);
     } else {
       throw new UnsupportedOperationException(
           "In a static PiMM graph, setter of an incomming dependency must be a parameter.");
@@ -238,7 +247,7 @@ public class PiMMResolverVisitor extends PiMMSwitch<Boolean> {
   @Override
   public Boolean caseExecutableActor(final ExecutableActor actor) {
     // Map that associate to every parameter of an acotr the corresponding value in the graph
-    final LinkedHashMap<String, Long> portValues = new LinkedHashMap<>();
+    final Map<String, Long> portValues = new LinkedHashMap<>();
     // We have to fetch the corresponding parameter port for normal actors
     for (final Parameter p : actor.getInputParameters()) {
       final EList<ConfigInputPort> ports = actor.lookupConfigInputPortsConnectedWithParameter(p);
@@ -246,32 +255,28 @@ public class PiMMResolverVisitor extends PiMMSwitch<Boolean> {
         portValues.put(port.getName(), this.parameterValues.get(p));
       }
     }
-    PiMMResolverVisitor.parseJEP(actor, portValues);
+    parseJEP(actor, portValues);
     return true;
   }
 
   @Override
   public Boolean caseInterfaceActor(final InterfaceActor actor) {
-    // Map that associate to every parameter of an acotr the corresponding value in the graph
-    final LinkedHashMap<String, Long> portValues = new LinkedHashMap<>();
-    // Data interface actors do not have parameter ports, thus expression is directly graph parameter
-    for (final Parameter p : actor.getInputParameters()) {
-      portValues.put(p.getName(), this.parameterValues.get(p));
-    }
-    PiMMResolverVisitor.parseJEP(actor, portValues);
-    return true;
+    return caseOtherActors(actor);
   }
 
   @Override
   public Boolean caseDelayActor(final DelayActor actor) {
-    // Map that associate to every parameter of an actor the corresponding value in the graph
-    final LinkedHashMap<String, Long> portValues = new LinkedHashMap<>();
-    // Delay actors do not have parameter ports, they use the parameters of the linked delay
-    // Thus, since delays do not have parameter ports either, the expression is directly the graph parameter
+    return caseOtherActors(actor);
+  }
+
+  private Boolean caseOtherActors(final AbstractActor actor) {
+    // Map that associate to every parameter of an acotr the corresponding value in the graph
+    final Map<String, Long> portValues = new LinkedHashMap<>();
+    // Data interface actors do not have parameter ports, thus expression is directly graph parameter
     for (final Parameter p : actor.getInputParameters()) {
       portValues.put(p.getName(), this.parameterValues.get(p));
     }
-    PiMMResolverVisitor.parseJEP(actor, portValues);
+    parseJEP(actor, portValues);
     return true;
   }
 
@@ -287,7 +292,7 @@ public class PiMMResolverVisitor extends PiMMSwitch<Boolean> {
     }
 
     // Finally, we derive parameter values that have not already been processed
-    PiMMResolverVisitor.computeDerivedParameterValues(graph, this.parameterValues);
+    computeDerivedParameterValues(graph, this.parameterValues);
 
     // We can now resolve data port rates for this graph
     for (final AbstractActor actor : graph.getOnlyActors()) {
@@ -296,7 +301,7 @@ public class PiMMResolverVisitor extends PiMMSwitch<Boolean> {
 
     // Deals with data ports of the graph
     // Map that associate to every parameter of an acotr the corresponding value in the graph
-    final LinkedHashMap<String, Long> portValues = new LinkedHashMap<>();
+    final Map<String, Long> portValues = new LinkedHashMap<>();
     // We have to fetch the corresponding parameter port for normal actors
     // Port of a parameter may have a dependency to higher level parameter
     for (final Parameter p : graph.getInputParameters()) {
@@ -305,7 +310,7 @@ public class PiMMResolverVisitor extends PiMMSwitch<Boolean> {
         portValues.put(port.getName(), this.parameterValues.get(p));
       }
     }
-    PiMMResolverVisitor.parseJEP(graph, portValues);
+    parseJEP(graph, portValues);
 
     // Switch on child subgraphs
     for (final PiGraph g : graph.getChildrenGraphs()) {

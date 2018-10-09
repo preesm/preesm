@@ -43,7 +43,6 @@ import org.eclipse.graphiti.platform.IPlatformImageConstants;
 import org.eclipse.graphiti.tb.IDecorator;
 import org.eclipse.graphiti.tb.ImageDecorator;
 import org.ietr.preesm.experiment.model.expression.ExpressionEvaluationException;
-import org.ietr.preesm.experiment.model.expression.ExpressionEvaluator;
 import org.ietr.preesm.experiment.model.pimm.Delay;
 import org.ietr.preesm.experiment.model.pimm.Expression;
 
@@ -97,7 +96,7 @@ public class DelayDecorators {
 
     final Expression expression = delay.getSizeExpression();
     try {
-      ExpressionEvaluator.evaluate(expression);
+      expression.evaluate();
     } catch (final ExpressionEvaluationException e) {
       imageRenderingDecorator.setX(-8);
       imageRenderingDecorator.setY(8);

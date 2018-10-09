@@ -65,11 +65,11 @@ import org.eclipse.ui.views.properties.tabbed.ITabbedPropertyConstants;
 import org.eclipse.ui.views.properties.tabbed.TabbedPropertySheetPage;
 import org.eclipse.ui.views.properties.tabbed.TabbedPropertySheetWidgetFactory;
 import org.ietr.preesm.experiment.model.expression.ExpressionEvaluationException;
-import org.ietr.preesm.experiment.model.expression.ExpressionEvaluator;
 import org.ietr.preesm.experiment.model.pimm.Actor;
 import org.ietr.preesm.experiment.model.pimm.CHeaderRefinement;
 import org.ietr.preesm.experiment.model.pimm.ExecutableActor;
 import org.ietr.preesm.experiment.model.pimm.Expression;
+import org.ietr.preesm.experiment.model.pimm.ExpressionHolder;
 import org.ietr.preesm.experiment.model.pimm.PeriodicElement;
 import org.ietr.preesm.experiment.model.pimm.Refinement;
 import org.ietr.preesm.experiment.model.pimm.util.PrototypeFormatter;
@@ -242,12 +242,12 @@ public class ActorPropertiesSection extends GFPropertySection implements ITabbed
 
   }
 
-  protected void setNewPeriod(final Expression e, final String value) {
+  protected void setNewPeriod(final ExpressionHolder e, final String value) {
     final TransactionalEditingDomain editingDomain = getDiagramTypeProvider().getDiagramBehavior().getEditingDomain();
     editingDomain.getCommandStack().execute(new RecordingCommand(editingDomain) {
       @Override
       protected void doExecute() {
-        e.setExpressionString(value);
+        e.setExpression(value);
       }
     });
   }
@@ -264,8 +264,8 @@ public class ActorPropertiesSection extends GFPropertySection implements ITabbed
         final PeriodicElement periodEl = (PeriodicElement) bo;
         final Expression periodicExp = periodEl.getExpression();
         final String strPeriod = ActorPropertiesSection.this.txtPeriod.getText();
-        if (strPeriod.compareTo(periodicExp.getExpressionString()) != 0) {
-          setNewPeriod(periodEl.getExpression(), strPeriod);
+        if (strPeriod.compareTo(periodicExp.getExpressionAsString()) != 0) {
+          setNewPeriod(periodEl, strPeriod);
           // getDiagramTypeProvider().getDiagramBehavior().refreshRenderingDecorators((PictogramElement)
           // pe.eContainer());
           refresh();
@@ -627,14 +627,14 @@ public class ActorPropertiesSection extends GFPropertySection implements ITabbed
           if (periodicExp != null) {
             this.txtPeriod.setEnabled(true);
 
-            final String eltExprString = periodicExp.getExpressionString();
+            final String eltExprString = periodicExp.getExpressionAsString();
             if (this.txtPeriod.getText().compareTo(eltExprString) != 0) {
               this.txtPeriod.setText(eltExprString);
             }
 
             try {
               // try out evaluating the expression
-              final long evaluate = ExpressionEvaluator.evaluate(periodicExp);
+              final long evaluate = periodicExp.evaluate();
               if (evaluate < 0) {
                 throw new IllegalArgumentException("Period cannot be negative: either positive or 0 if aperiodic.");
               }

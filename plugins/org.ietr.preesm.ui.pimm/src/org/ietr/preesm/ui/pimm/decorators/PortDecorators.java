@@ -45,7 +45,6 @@ import org.eclipse.graphiti.platform.IPlatformImageConstants;
 import org.eclipse.graphiti.tb.IDecorator;
 import org.eclipse.graphiti.tb.ImageDecorator;
 import org.ietr.preesm.experiment.model.expression.ExpressionEvaluationException;
-import org.ietr.preesm.experiment.model.expression.ExpressionEvaluator;
 import org.ietr.preesm.experiment.model.pimm.ConfigOutputPort;
 import org.ietr.preesm.experiment.model.pimm.DataInputPort;
 import org.ietr.preesm.experiment.model.pimm.DataOutputPort;
@@ -110,7 +109,7 @@ public class PortDecorators {
       final Expression expression = ((DataInputPort) port).getPortRateExpression();
 
       try {
-        ExpressionEvaluator.evaluate(expression);
+        expression.evaluate();
       } catch (final ExpressionEvaluationException e) {
         imageRenderingDecorator.setX(-5);
         imageRenderingDecorator
@@ -124,7 +123,7 @@ public class PortDecorators {
       final Expression expression = ((DataOutputPort) port).getPortRateExpression();
 
       try {
-        ExpressionEvaluator.evaluate(expression);
+        expression.evaluate();
       } catch (final ExpressionEvaluationException e) {
         imageRenderingDecorator.setX(a.getReferencedGraphicsAlgorithm().getWidth() - 13);
         imageRenderingDecorator

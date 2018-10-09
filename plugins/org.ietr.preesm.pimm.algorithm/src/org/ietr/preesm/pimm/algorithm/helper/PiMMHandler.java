@@ -481,7 +481,7 @@ public class PiMMHandler {
   private Delay replaceLocalDelay(final PiGraph graph, final Delay delay) {
     final Fifo containingFifo = delay.getContainingFifo();
     final String type = containingFifo.getType();
-    final String delayExpression = delay.getSizeExpression().getExpressionString();
+    final String delayExpression = delay.getSizeExpression().getExpressionAsString();
     // 1. First we remove the level of persistence associated with the delay
     delay.setLevel(PersistenceLevel.LOCAL);
 
@@ -495,7 +495,7 @@ public class PiMMHandler {
     setterIn.setName(setterName);
     setterIn.getDataPort().setName(setterName);
     setterIn.getDataPort().setAnnotation(PortMemoryAnnotation.READ_ONLY);
-    setterIn.getDataPort().getExpression().setExpressionString(delayExpression);
+    setterIn.getDataPort().setExpression(delayExpression);
     // Add the DataOutputInterface to the graph
     final DataOutputInterface getterOut = PiMMUserFactory.instance.createDataOutputInterface();
     final DataOutputPort sourcePort = containingFifo.getSourcePort();
@@ -503,7 +503,7 @@ public class PiMMHandler {
     getterOut.setName(getterName);
     getterOut.getDataPort().setName(getterName);
     getterOut.getDataPort().setAnnotation(PortMemoryAnnotation.WRITE_ONLY);
-    getterOut.getDataPort().getExpression().setExpressionString(delayExpression);
+    getterOut.getDataPort().setExpression(delayExpression);
     graph.addActor(setterIn);
     graph.addActor(getterOut);
 
@@ -530,11 +530,11 @@ public class PiMMHandler {
     // 5. We set the expression of the corresponding ports on the graph
     final DataInputPort inPort = (DataInputPort) setterIn.getGraphPort();
     // Add the input port
-    inPort.getExpression().setExpressionString(delayExpression);
+    inPort.setExpression(delayExpression);
     inPort.setAnnotation(PortMemoryAnnotation.WRITE_ONLY);
     // Add the output port
     final DataOutputPort outPort = (DataOutputPort) getterOut.getGraphPort();
-    outPort.getExpression().setExpressionString(delayExpression);
+    outPort.setExpression(delayExpression);
     outPort.setAnnotation(PortMemoryAnnotation.READ_ONLY);
     // Now set the source / target port of the FIFO
     fifoPersistence.setSourcePort(outPort);
@@ -546,7 +546,7 @@ public class PiMMHandler {
     final String name = graph.getName() + "_" + setterIn.getName() + "__" + getterOut.getName();
     delayPersistence.setName(name);
     delayPersistence.setLevel(PersistenceLevel.NONE);
-    delayPersistence.getSizeExpression().setExpressionString(delayExpression);
+    delayPersistence.setExpression(delayExpression);
     final DelayActor newDelayActor = delayPersistence.getActor();
     newDelayActor.setName(name);
     newDelayActor.getDataInputPort().setName(originalDelayActor.getDataInputPort().getName());

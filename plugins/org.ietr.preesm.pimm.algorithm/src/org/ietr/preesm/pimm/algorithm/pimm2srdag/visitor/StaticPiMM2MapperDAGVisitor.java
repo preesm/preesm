@@ -311,10 +311,9 @@ public class StaticPiMM2MapperDAGVisitor extends PiMMSwitch<Boolean> {
   public Boolean caseInitActor(final InitActor actor) {
     final DAGVertex vertex = vertexFactory.createVertex(DAGInitVertex.DAG_INIT_VERTEX);
     final DataOutputPort dataOutputPort = actor.getDataOutputPorts().get(0);
-    final String expressionString = dataOutputPort.getPortRateExpression().getExpressionString();
 
     // Set the number of delay
-    vertex.getPropertyBean().setValue(DAGInitVertex.INIT_SIZE, Long.parseLong(expressionString));
+    vertex.getPropertyBean().setValue(DAGInitVertex.INIT_SIZE, dataOutputPort.getPortRateExpression().evaluate());
     vertex.setId(actor.getName());
     vertex.setName(actor.getName());
     vertex.setInfo(actor.getName());
@@ -370,7 +369,7 @@ public class StaticPiMM2MapperDAGVisitor extends PiMMSwitch<Boolean> {
       if (setter instanceof Parameter) {
         final Parameter param = (Parameter) setter;
         final Argument arg = new Argument(p.getName());
-        arg.setValue((param.getExpression().getExpressionString()));
+        arg.setValue((param.getExpression().getExpressionAsString()));
         vertex.getArguments().addArgument(arg);
       }
     }
@@ -404,7 +403,7 @@ public class StaticPiMM2MapperDAGVisitor extends PiMMSwitch<Boolean> {
 
     // 1. Create the edge
     // 1.1 Retrieve the rate
-    final long weight = Long.parseLong(fifo.getSourcePort().getPortRateExpression().getExpressionString());
+    final long weight = fifo.getSourcePort().getPortRateExpression().evaluate();
     // 1.2 Add an edge between the sourceVertex and the targetVertex in the MapperDAG
     final DAGEdge edge = this.result.addEdge(sourceVertex, targetVertex);
     // 1.3 For the rest of the workflow we need EdgeAggregation so...

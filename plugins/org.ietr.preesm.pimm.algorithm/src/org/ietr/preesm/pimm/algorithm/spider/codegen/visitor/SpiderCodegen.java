@@ -62,7 +62,6 @@ import org.ietr.preesm.core.scenario.papi.PapiComponent;
 import org.ietr.preesm.core.scenario.papi.PapiEvent;
 import org.ietr.preesm.core.scenario.papi.PapifyConfig;
 import org.ietr.preesm.core.scenario.papi.PapifyConfigManager;
-import org.ietr.preesm.experiment.model.expression.ExpressionEvaluator;
 import org.ietr.preesm.experiment.model.pimm.AbstractActor;
 import org.ietr.preesm.experiment.model.pimm.Actor;
 import org.ietr.preesm.experiment.model.pimm.CHeaderRefinement;
@@ -286,7 +285,7 @@ public class SpiderCodegen {
         if (parameters_proto.length() > 0) {
           parameters_proto.append(", ");
         }
-        parameters_proto.append("Param " + p.getName() + " = " + ExpressionEvaluator.evaluate(p.getValueExpression()));
+        parameters_proto.append("Param " + p.getName() + " = " + p.getValueExpression().evaluate());
       }
     }
     append(parameters_proto);

@@ -30,6 +30,8 @@ package org.ietr.preesm.experiment.model.pimm
 import java.util.Optional
 import org.ietr.preesm.experiment.model.PiGraphException
 import org.ietr.preesm.experiment.model.pimm.util.RefinementResolver
+import org.ietr.preesm.experiment.model.expression.StringExpressionEvaluator
+import org.ietr.preesm.experiment.model.factory.PiMMUserFactory
 
 type IPath wraps org.eclipse.core.runtime.IPath
 
@@ -83,24 +85,63 @@ interface Parameterizable {
 	}
 }
 
-class Expression {
+interface Expression {
 	refers ExpressionHolder holder opposite expression
+	op String getExpressionAsString()
+	op long evaluate()
+}
+
+class StringExpression extends Expression {
 	String expressionString = "0"
+	op String getExpressionAsString() {
+		return getExpressionString()
+	}
+	op long evaluate() {
+		return StringExpressionEvaluator.evaluate(this)
+	}
+}
+
+class LongExpression extends Expression {
+	long value = "0"
+	op String getExpressionAsString() {
+		return Long.toString(value)
+	}
+	op long evaluate() {
+		return value
+	}
+}
+
+interface ExpressionProxy extends Expression {
+	refers ExpressionHolder proxy
+	op String getExpressionAsString() {
+		return proxy.getExpression().getExpressionAsString
+	}
+	op long evaluate() {
+		proxy.getExpression().evaluate()
+	}
 }
 
 interface ExpressionHolder extends Parameterizable {
 	contains Expression expression opposite holder
+	op void setExpression (String newExpression) {
+		if (expression instanceof ExpressionProxy) {
+			(expression as ExpressionProxy).proxy.setExpression(PiMMUserFactory.instance.createExpression(newExpression))
+		} else {
+			expression = PiMMUserFactory.instance.createExpression(newExpression)
+		}
+	}
+	op void setExpression (long value) {
+		if (expression instanceof ExpressionProxy) {
+			(expression as ExpressionProxy).proxy.setExpression(PiMMUserFactory.instance.createExpression(value))
+		} else {
+			expression = PiMMUserFactory.instance.createExpression(value)
+		}
+	}
 }
 
-class DelayLinkedExpression extends Expression {
-	refers Delay delay
-	op String getExpressionString() {
-		return delay.getExpression().expressionString
-	}
 
-	op void setExpressionString(String s) {
-		delay.expression.expressionString = s
-	}
+class DelayLinkedExpression extends ExpressionProxy {
+
 }
 
 interface AbstractVertex extends Vertex {

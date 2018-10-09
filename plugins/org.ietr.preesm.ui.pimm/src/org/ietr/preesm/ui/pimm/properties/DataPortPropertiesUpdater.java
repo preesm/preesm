@@ -45,6 +45,7 @@ import org.ietr.preesm.experiment.model.pimm.DataOutputInterface;
 import org.ietr.preesm.experiment.model.pimm.DataOutputPort;
 import org.ietr.preesm.experiment.model.pimm.DataPort;
 import org.ietr.preesm.experiment.model.pimm.Expression;
+import org.ietr.preesm.experiment.model.pimm.ExpressionHolder;
 
 // TODO: Auto-generated Javadoc
 /**
@@ -61,21 +62,21 @@ public class DataPortPropertiesUpdater extends GFPropertySection {
    *          the text to update
    */
   protected void updateDataPortProperties(final DataPort port, final Text textToUpdate) {
-    if (!port.getPortRateExpression().getExpressionString().equals(textToUpdate.getText())) {
-      setNewExpression(port.getPortRateExpression(), textToUpdate.getText());
+    if (!port.getPortRateExpression().getExpressionAsString().equals(textToUpdate.getText())) {
+      setNewExpression(port, textToUpdate.getText());
       // If port is contained by an DataInterface, we should
       // also update the graph port of the DataInterface
       if (port.eContainer() instanceof DataOutputInterface) {
         final DataOutputInterface doi = (DataOutputInterface) port.eContainer();
         final DataOutputPort oPort = (DataOutputPort) doi.getGraphPort();
-        if (!oPort.getPortRateExpression().getExpressionString().equals(textToUpdate.getText())) {
-          setNewExpression(oPort.getPortRateExpression(), textToUpdate.getText());
+        if (!oPort.getPortRateExpression().getExpressionAsString().equals(textToUpdate.getText())) {
+          setNewExpression(oPort, textToUpdate.getText());
         }
       } else if (port.eContainer() instanceof DataInputInterface) {
         final DataInputInterface dii = (DataInputInterface) port.eContainer();
         final DataInputPort iPort = (DataInputPort) dii.getGraphPort();
-        if (!iPort.getPortRateExpression().getExpressionString().equals(textToUpdate.getText())) {
-          setNewExpression(iPort.getPortRateExpression(), textToUpdate.getText());
+        if (!iPort.getPortRateExpression().getExpressionAsString().equals(textToUpdate.getText())) {
+          setNewExpression(iPort, textToUpdate.getText());
         }
       }
     }
@@ -89,12 +90,12 @@ public class DataPortPropertiesUpdater extends GFPropertySection {
    * @param value
    *          String value
    */
-  protected void setNewExpression(final Expression e, final String value) {
+  protected void setNewExpression(final ExpressionHolder e, final String value) {
     final TransactionalEditingDomain editingDomain = getDiagramTypeProvider().getDiagramBehavior().getEditingDomain();
     editingDomain.getCommandStack().execute(new RecordingCommand(editingDomain) {
       @Override
       protected void doExecute() {
-        e.setExpressionString(value);
+        e.setExpression(value);
       }
     });
   }

@@ -55,6 +55,7 @@ import org.ietr.preesm.experiment.model.pimm.ExpressionHolder;
 import org.ietr.preesm.experiment.model.pimm.InterfaceActor;
 import org.ietr.preesm.experiment.model.pimm.Parameter;
 import org.ietr.preesm.experiment.model.pimm.PeriodicElement;
+import org.ietr.preesm.experiment.model.pimm.StringExpression;
 import org.nfunk.jep.JEP;
 import org.nfunk.jep.Node;
 import org.nfunk.jep.ParseException;
@@ -64,9 +65,9 @@ import org.nfunk.jep.ParseException;
  * @author anmorvan
  *
  */
-public class ExpressionEvaluator {
+public class StringExpressionEvaluator {
 
-  private ExpressionEvaluator() {
+  private StringExpressionEvaluator() {
     // use static methods only
   }
 
@@ -75,24 +76,22 @@ public class ExpressionEvaluator {
    * value representing the result
    *
    */
-  public static final long evaluate(final Expression expression) {
-    final Map<String, Number> addInputParameterValues = ExpressionEvaluator.addInputParameterValues(expression);
-    return ExpressionEvaluator.evaluate(expression.getExpressionString(), addInputParameterValues);
+  public static final long evaluate(final StringExpression expression) {
+    try {
+      return Long.parseLong(expression.getExpressionString());
+    } catch (final NumberFormatException e) {
+      final Map<String, Number> addInputParameterValues = StringExpressionEvaluator.addInputParameterValues(expression);
+      return StringExpressionEvaluator.evaluate(expression.getExpressionAsString(), addInputParameterValues);
+    }
   }
 
-  public static final long evaluate(final String expression) {
-    return ExpressionEvaluator.evaluate(expression, null);
-  }
-
-  /**
-   */
-  public static final long evaluate(final String expression, final Map<String, Number> addInputParameterValues) {
-    final JEP jep = ExpressionEvaluator.initJep(addInputParameterValues);
+  private static final long evaluate(final String expression, final Map<String, Number> addInputParameterValues) {
+    final JEP jep = StringExpressionEvaluator.initJep(addInputParameterValues);
     long result;
     try {
-      result = ExpressionEvaluator.parse(expression, jep);
+      result = StringExpressionEvaluator.parse(expression, jep);
     } catch (final ParseException e) {
-      String msg = "Could not evaluate " + expression + ":\n" + e.getMessage();
+      final String msg = "Could not evaluate " + expression + ":\n" + e.getMessage();
       throw new ExpressionEvaluationException(msg, e);
     }
     return result;
@@ -133,28 +132,31 @@ public class ExpressionEvaluator {
   private static Map<String, Number> addInputParameterValues(final Expression expression) {
     final Map<String, Number> result = new LinkedHashMap<>();
     final ExpressionHolder holder = expression.getHolder();
-    final EList<Parameter> inputParameters = holder.getInputParameters();
-    for (final Parameter param : inputParameters) {
-      final Expression valueExpression = param.getValueExpression();
-      final double value = ExpressionEvaluator.evaluate(valueExpression);
+    if (holder != null) {
+      final EList<Parameter> inputParameters = holder.getInputParameters();
+      for (final Parameter param : inputParameters) {
+        final Expression valueExpression = param.getValueExpression();
+        final double value = valueExpression.evaluate();
 
-      if ((holder instanceof Parameter) || (holder instanceof Delay) || (holder instanceof InterfaceActor)
-          || (holder instanceof PeriodicElement)) {
-        result.put(param.getName(), value);
-      } else if (holder instanceof DataPort) {
-        final AbstractActor containingActor = ((DataPort) holder).getContainingActor();
-        if (containingActor instanceof InterfaceActor || containingActor instanceof DelayActor) {
+        if ((holder instanceof Parameter) || (holder instanceof Delay) || (holder instanceof InterfaceActor)
+            || (holder instanceof PeriodicElement)) {
           result.put(param.getName(), value);
-        } else {
-          final List<ConfigInputPort> inputPorts = containingActor.lookupConfigInputPortsConnectedWithParameter(param);
-          for (ConfigInputPort cip : inputPorts) {
-            final String name = cip.getName();
-            result.put(name, value);
+        } else if (holder instanceof DataPort) {
+          final AbstractActor containingActor = ((DataPort) holder).getContainingActor();
+          if (containingActor instanceof InterfaceActor || containingActor instanceof DelayActor) {
+            result.put(param.getName(), value);
+          } else {
+            final List<
+                ConfigInputPort> inputPorts = containingActor.lookupConfigInputPortsConnectedWithParameter(param);
+            for (ConfigInputPort cip : inputPorts) {
+              final String name = cip.getName();
+              result.put(name, value);
+            }
           }
-        }
 
-      } else {
-        throw new ExpressionEvaluationException("Could not compute proper parameter name");
+        } else {
+          throw new ExpressionEvaluationException("Could not compute proper parameter name");
+        }
       }
     }
     return result;

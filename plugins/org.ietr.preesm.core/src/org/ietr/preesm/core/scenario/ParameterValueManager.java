@@ -140,7 +140,7 @@ public class ParameterValueManager {
       inputParametersNames.add(p.getName());
     }
 
-    addParameterDependentParameterValue(param, param.getExpression().getExpressionString(), inputParametersNames,
+    addParameterDependentParameterValue(param, param.getExpression().getExpressionAsString(), inputParametersNames,
         parent);
   }
 
@@ -185,7 +185,7 @@ public class ParameterValueManager {
         addParameterDependentParameterValue(param, parent);
       } else {
         // Add an independent parameter value
-        addIndependentParameterValue(param, param.getExpression().getExpressionString(), parent);
+        addIndependentParameterValue(param, param.getExpression().getExpressionAsString(), parent);
       }
     } else {
       final boolean isActorDependent = inputParameters.size() < param.getConfigInputPorts().size();

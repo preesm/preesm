@@ -55,9 +55,11 @@ import org.ietr.preesm.experiment.model.pimm.Expression;
 import org.ietr.preesm.experiment.model.pimm.Fifo;
 import org.ietr.preesm.experiment.model.pimm.ISetter;
 import org.ietr.preesm.experiment.model.pimm.InitActor;
+import org.ietr.preesm.experiment.model.pimm.LongExpression;
 import org.ietr.preesm.experiment.model.pimm.Parameter;
 import org.ietr.preesm.experiment.model.pimm.PersistenceLevel;
 import org.ietr.preesm.experiment.model.pimm.PiGraph;
+import org.ietr.preesm.experiment.model.pimm.StringExpression;
 import org.ietr.preesm.experiment.model.pimm.adapter.GraphInterfaceObserver;
 import org.ietr.preesm.experiment.model.pimm.impl.PiMMFactoryImpl;
 
@@ -138,7 +140,7 @@ public final class PiMMUserFactory extends PiMMFactoryImpl {
   public DataInputPort createDataInputPort(final Delay delay) {
     final DataInputPort res = super.createDataInputPort();
     final DelayLinkedExpression delayExpression = createDelayLinkedExpression();
-    delayExpression.setDelay(delay);
+    delayExpression.setProxy(delay);
     res.setExpression(delayExpression);
     return res;
   }
@@ -159,7 +161,7 @@ public final class PiMMUserFactory extends PiMMFactoryImpl {
   public DataOutputPort createDataOutputPort(final Delay delay) {
     final DataOutputPort res = super.createDataOutputPort();
     final DelayLinkedExpression delayExpression = createDelayLinkedExpression();
-    delayExpression.setDelay(delay);
+    delayExpression.setProxy(delay);
     res.setExpression(delayExpression);
     return res;
   }
@@ -236,6 +238,33 @@ public final class PiMMUserFactory extends PiMMFactoryImpl {
     final DataInputPort port = PiMMUserFactory.instance.createDataInputPort();
     res.getDataInputPorts().add(port);
     return res;
+  }
+
+  public Expression createExpression() {
+    return createExpression(0L);
+  }
+
+  /**
+   *
+   */
+  public Expression createExpression(final String value) {
+    try {
+      // try to convert the expression in its long value
+      return createExpression(Long.parseLong(value));
+    } catch (final NumberFormatException e) {
+      final StringExpression createStringExpression = super.createStringExpression();
+      createStringExpression.setExpressionString(value);
+      return createStringExpression;
+    }
+  }
+
+  /**
+   *
+   */
+  public Expression createExpression(final long value) {
+    final LongExpression createLongExpression = super.createLongExpression();
+    createLongExpression.setValue(value);
+    return createLongExpression;
   }
 
   @Override
