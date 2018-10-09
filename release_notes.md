@@ -23,6 +23,7 @@ PREESM Changelog
 * Move Xtend maven plugins to 2.15;
 * Add LongExpressions to speedup evaluation;
 * Use parameterized tests;
+* Add test case for stressing memory allocation;
 
 ### Bug fix
 

@@ -1,0 +1,282 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<scenario>
+    <files>
+        <algorithm url="/memory.allocator.overflow/Algo/extract.pi"/>
+        <architecture url="/memory.allocator.overflow/Archi/4CoreX86.slam"/>
+        <codegenDirectory url="/memory.allocator.overflow/Code/generated"/>
+    </files>
+    <constraints excelUrl="">
+        <constraintGroup>
+            <operator name="Core0"/>
+            <task name="extract/BdFilename"/>
+            <task name="extract/read_pgm"/>
+            <task name="extract/BdOriginalImage"/>
+            <task name="extract/draw_keypoints_to_ppm_file"/>
+            <task name="extract/filename1"/>
+            <task name="extract/BdKeypoints"/>
+            <task name="extract/BdNbKeypoints"/>
+            <task name="extract/export_keypoints_to_key_file"/>
+            <task name="extract/SIFT/compute_gaussian_coefs"/>
+            <task name="extract/SIFT/extract_descriptor"/>
+            <task name="extract/SIFT/detect_keypoints"/>
+            <task name="extract/SIFT/ITERATOR_detect_keypoints"/>
+            <task name="extract/SIFT/BdRot"/>
+            <task name="extract/SIFT/BdGrd"/>
+            <task name="extract/SIFT/build_dog_pyr"/>
+            <task name="extract/SIFT/ITERATOR_build_dog_pyr"/>
+            <task name="extract/SIFT/build_grd_rot_pyr"/>
+            <task name="extract/SIFT/ITERATOR_build_grd_rot_pyr"/>
+            <task name="extract/SIFT/to_float"/>
+            <task name="extract/SIFT/BdGpyr"/>
+            <task name="extract/SIFT/MERGE_gpyr"/>
+            <task name="extract/SIFT/BdFloatImg"/>
+            <task name="extract/SIFT/upsample2x"/>
+            <task name="extract/SIFT/downsample2xN"/>
+            <task name="extract/SIFT/row_filter_transpose2x_1"/>
+            <task name="extract/SIFT/row_filter_transpose2x_2"/>
+            <task name="extract/SIFT/row_filter_transpose_1"/>
+            <task name="extract/SIFT/row_filter_transpose_2"/>
+            <task name="extract/SIFT/BdCoefs"/>
+            <task name="extract/SIFT/BdSizes"/>
+            <task name="extract/SIFT/BdBlurUp2x"/>
+            <task name="extract/SIFT/BdBlurDown2x1"/>
+            <task name="extract/SIFT/seq_blur1"/>
+            <task name="extract/SIFT/downsample2x1"/>
+            <task name="extract/SIFT/seq_blurN"/>
+            <task name="extract/SIFT/BdBlurDown2xN"/>
+            <task name="extract/SIFT/counterGpyrLayer"/>
+            <task name="extract/SIFT/BdCounterGpyr"/>
+            <task name="extract/SIFT/BarrierTranspose2x_1"/>
+            <task name="extract/SIFT/BarrierTranspose_1"/>
+            <task name="extract/SIFT/counterOctaveDownN"/>
+            <task name="extract/SIFT/keypoints"/>
+            <task name="extract/SIFT/image"/>
+            <task name="extract/SIFT/BdGT"/>
+            <task name="extract/SIFT/BdGT_2x"/>
+            <task name="extract/SIFT/BdBlurred1"/>
+            <task name="extract/SIFT/BdBlurredN"/>
+            <task name="extract/SIFT/BdOctaveDown"/>
+            <task name="extract/SIFT/nbKeypoints"/>
+            <task name="extract/SIFT/MERGE_keypoints"/>
+            <task name="extract/SIFT/BdCounterGpyrXOctave"/>
+            <task name="extract/SIFT/BdDoG"/>
+            <task name="extract/SIFT/BarrierTranspose_2"/>
+            <task name="extract/SIFT/BarrierTranspose2x_2"/>
+            <task name="extract/SIFT/BarrierCounterGpyr"/>
+            <task name="extract/SIFT/SPLIT_upsample2x"/>
+            <task name="extract/SIFT/counterPLevels"/>
+            <task name="extract/SIFT"/>
+            <task name="extract"/>
+        </constraintGroup>
+        <constraintGroup>
+            <operator name="Core1"/>
+            <task name="extract/BdFilename"/>
+            <task name="extract/read_pgm"/>
+            <task name="extract/BdOriginalImage"/>
+            <task name="extract/draw_keypoints_to_ppm_file"/>
+            <task name="extract/filename1"/>
+            <task name="extract/BdKeypoints"/>
+            <task name="extract/BdNbKeypoints"/>
+            <task name="extract/export_keypoints_to_key_file"/>
+            <task name="extract/SIFT/compute_gaussian_coefs"/>
+            <task name="extract/SIFT/extract_descriptor"/>
+            <task name="extract/SIFT/detect_keypoints"/>
+            <task name="extract/SIFT/ITERATOR_detect_keypoints"/>
+            <task name="extract/SIFT/BdRot"/>
+            <task name="extract/SIFT/BdGrd"/>
+            <task name="extract/SIFT/build_dog_pyr"/>
+            <task name="extract/SIFT/ITERATOR_build_dog_pyr"/>
+            <task name="extract/SIFT/build_grd_rot_pyr"/>
+            <task name="extract/SIFT/ITERATOR_build_grd_rot_pyr"/>
+            <task name="extract/SIFT/to_float"/>
+            <task name="extract/SIFT/BdGpyr"/>
+            <task name="extract/SIFT/MERGE_gpyr"/>
+            <task name="extract/SIFT/BdFloatImg"/>
+            <task name="extract/SIFT/upsample2x"/>
+            <task name="extract/SIFT/downsample2xN"/>
+            <task name="extract/SIFT/row_filter_transpose2x_1"/>
+            <task name="extract/SIFT/row_filter_transpose2x_2"/>
+            <task name="extract/SIFT/row_filter_transpose_1"/>
+            <task name="extract/SIFT/row_filter_transpose_2"/>
+            <task name="extract/SIFT/BdCoefs"/>
+            <task name="extract/SIFT/BdSizes"/>
+            <task name="extract/SIFT/BdBlurUp2x"/>
+            <task name="extract/SIFT/BdBlurDown2x1"/>
+            <task name="extract/SIFT/seq_blur1"/>
+            <task name="extract/SIFT/downsample2x1"/>
+            <task name="extract/SIFT/seq_blurN"/>
+            <task name="extract/SIFT/BdBlurDown2xN"/>
+            <task name="extract/SIFT/counterGpyrLayer"/>
+            <task name="extract/SIFT/BdCounterGpyr"/>
+            <task name="extract/SIFT/BarrierTranspose2x_1"/>
+            <task name="extract/SIFT/BarrierTranspose_1"/>
+            <task name="extract/SIFT/counterOctaveDownN"/>
+            <task name="extract/SIFT/keypoints"/>
+            <task name="extract/SIFT/image"/>
+            <task name="extract/SIFT/BdGT"/>
+            <task name="extract/SIFT/BdGT_2x"/>
+            <task name="extract/SIFT/BdBlurred1"/>
+            <task name="extract/SIFT/BdBlurredN"/>
+            <task name="extract/SIFT/BdOctaveDown"/>
+            <task name="extract/SIFT/nbKeypoints"/>
+            <task name="extract/SIFT/MERGE_keypoints"/>
+            <task name="extract/SIFT/BdCounterGpyrXOctave"/>
+            <task name="extract/SIFT/BdDoG"/>
+            <task name="extract/SIFT/BarrierTranspose_2"/>
+            <task name="extract/SIFT/BarrierTranspose2x_2"/>
+            <task name="extract/SIFT/BarrierCounterGpyr"/>
+            <task name="extract/SIFT/SPLIT_upsample2x"/>
+            <task name="extract/SIFT/counterPLevels"/>
+            <task name="extract/SIFT"/>
+            <task name="extract"/>
+        </constraintGroup>
+        <constraintGroup>
+            <operator name="Core2"/>
+            <task name="extract/BdFilename"/>
+            <task name="extract/read_pgm"/>
+            <task name="extract/BdOriginalImage"/>
+            <task name="extract/draw_keypoints_to_ppm_file"/>
+            <task name="extract/filename1"/>
+            <task name="extract/BdKeypoints"/>
+            <task name="extract/BdNbKeypoints"/>
+            <task name="extract/export_keypoints_to_key_file"/>
+            <task name="extract/SIFT/compute_gaussian_coefs"/>
+            <task name="extract/SIFT/extract_descriptor"/>
+            <task name="extract/SIFT/detect_keypoints"/>
+            <task name="extract/SIFT/ITERATOR_detect_keypoints"/>
+            <task name="extract/SIFT/BdRot"/>
+            <task name="extract/SIFT/BdGrd"/>
+            <task name="extract/SIFT/build_dog_pyr"/>
+            <task name="extract/SIFT/ITERATOR_build_dog_pyr"/>
+            <task name="extract/SIFT/build_grd_rot_pyr"/>
+            <task name="extract/SIFT/ITERATOR_build_grd_rot_pyr"/>
+            <task name="extract/SIFT/to_float"/>
+            <task name="extract/SIFT/BdGpyr"/>
+            <task name="extract/SIFT/MERGE_gpyr"/>
+            <task name="extract/SIFT/BdFloatImg"/>
+            <task name="extract/SIFT/upsample2x"/>
+            <task name="extract/SIFT/downsample2xN"/>
+            <task name="extract/SIFT/row_filter_transpose2x_1"/>
+            <task name="extract/SIFT/row_filter_transpose2x_2"/>
+            <task name="extract/SIFT/row_filter_transpose_1"/>
+            <task name="extract/SIFT/row_filter_transpose_2"/>
+            <task name="extract/SIFT/BdCoefs"/>
+            <task name="extract/SIFT/BdSizes"/>
+            <task name="extract/SIFT/BdBlurUp2x"/>
+            <task name="extract/SIFT/BdBlurDown2x1"/>
+            <task name="extract/SIFT/seq_blur1"/>
+            <task name="extract/SIFT/downsample2x1"/>
+            <task name="extract/SIFT/seq_blurN"/>
+            <task name="extract/SIFT/BdBlurDown2xN"/>
+            <task name="extract/SIFT/counterGpyrLayer"/>
+            <task name="extract/SIFT/BdCounterGpyr"/>
+            <task name="extract/SIFT/BarrierTranspose2x_1"/>
+            <task name="extract/SIFT/BarrierTranspose_1"/>
+            <task name="extract/SIFT/counterOctaveDownN"/>
+            <task name="extract/SIFT/keypoints"/>
+            <task name="extract/SIFT/image"/>
+            <task name="extract/SIFT/BdGT"/>
+            <task name="extract/SIFT/BdGT_2x"/>
+            <task name="extract/SIFT/BdBlurred1"/>
+            <task name="extract/SIFT/BdBlurredN"/>
+            <task name="extract/SIFT/BdOctaveDown"/>
+            <task name="extract/SIFT/nbKeypoints"/>
+            <task name="extract/SIFT/MERGE_keypoints"/>
+            <task name="extract/SIFT/BdCounterGpyrXOctave"/>
+            <task name="extract/SIFT/BdDoG"/>
+            <task name="extract/SIFT/BarrierTranspose_2"/>
+            <task name="extract/SIFT/BarrierTranspose2x_2"/>
+            <task name="extract/SIFT/BarrierCounterGpyr"/>
+            <task name="extract/SIFT/SPLIT_upsample2x"/>
+            <task name="extract/SIFT/counterPLevels"/>
+            <task name="extract/SIFT"/>
+            <task name="extract"/>
+        </constraintGroup>
+        <constraintGroup>
+            <operator name="Core3"/>
+            <task name="extract/BdFilename"/>
+            <task name="extract/read_pgm"/>
+            <task name="extract/BdOriginalImage"/>
+            <task name="extract/draw_keypoints_to_ppm_file"/>
+            <task name="extract/filename1"/>
+            <task name="extract/BdKeypoints"/>
+            <task name="extract/BdNbKeypoints"/>
+            <task name="extract/export_keypoints_to_key_file"/>
+            <task name="extract/SIFT/compute_gaussian_coefs"/>
+            <task name="extract/SIFT/extract_descriptor"/>
+            <task name="extract/SIFT/detect_keypoints"/>
+            <task name="extract/SIFT/ITERATOR_detect_keypoints"/>
+            <task name="extract/SIFT/BdRot"/>
+            <task name="extract/SIFT/BdGrd"/>
+            <task name="extract/SIFT/build_dog_pyr"/>
+            <task name="extract/SIFT/ITERATOR_build_dog_pyr"/>
+            <task name="extract/SIFT/build_grd_rot_pyr"/>
+            <task name="extract/SIFT/ITERATOR_build_grd_rot_pyr"/>
+            <task name="extract/SIFT/to_float"/>
+            <task name="extract/SIFT/BdGpyr"/>
+            <task name="extract/SIFT/MERGE_gpyr"/>
+            <task name="extract/SIFT/BdFloatImg"/>
+            <task name="extract/SIFT/upsample2x"/>
+            <task name="extract/SIFT/downsample2xN"/>
+            <task name="extract/SIFT/row_filter_transpose2x_1"/>
+            <task name="extract/SIFT/row_filter_transpose2x_2"/>
+            <task name="extract/SIFT/row_filter_transpose_1"/>
+            <task name="extract/SIFT/row_filter_transpose_2"/>
+            <task name="extract/SIFT/BdCoefs"/>
+            <task name="extract/SIFT/BdSizes"/>
+            <task name="extract/SIFT/BdBlurUp2x"/>
+            <task name="extract/SIFT/BdBlurDown2x1"/>
+            <task name="extract/SIFT/seq_blur1"/>
+            <task name="extract/SIFT/downsample2x1"/>
+            <task name="extract/SIFT/seq_blurN"/>
+            <task name="extract/SIFT/BdBlurDown2xN"/>
+            <task name="extract/SIFT/counterGpyrLayer"/>
+            <task name="extract/SIFT/BdCounterGpyr"/>
+            <task name="extract/SIFT/BarrierTranspose2x_1"/>
+            <task name="extract/SIFT/BarrierTranspose_1"/>
+            <task name="extract/SIFT/counterOctaveDownN"/>
+            <task name="extract/SIFT/keypoints"/>
+            <task name="extract/SIFT/image"/>
+            <task name="extract/SIFT/BdGT"/>
+            <task name="extract/SIFT/BdGT_2x"/>
+            <task name="extract/SIFT/BdBlurred1"/>
+            <task name="extract/SIFT/BdBlurredN"/>
+            <task name="extract/SIFT/BdOctaveDown"/>
+            <task name="extract/SIFT/nbKeypoints"/>
+            <task name="extract/SIFT/MERGE_keypoints"/>
+            <task name="extract/SIFT/BdCounterGpyrXOctave"/>
+            <task name="extract/SIFT/BdDoG"/>
+            <task name="extract/SIFT/BarrierTranspose_2"/>
+            <task name="extract/SIFT/BarrierTranspose2x_2"/>
+            <task name="extract/SIFT/BarrierCounterGpyr"/>
+            <task name="extract/SIFT/SPLIT_upsample2x"/>
+            <task name="extract/SIFT/counterPLevels"/>
+            <task name="extract/SIFT"/>
+            <task name="extract"/>
+        </constraintGroup>
+    </constraints>
+    <relativeconstraints excelUrl=""/>
+    <timings excelUrl=""/>
+    <simuParams>
+        <mainCore>Core0</mainCore>
+        <mainComNode>shared_mem</mainComNode>
+        <averageDataSize>1000</averageDataSize>
+        <dataTypes>
+            <dataType name="SiftKpt" size="556"/>
+            <dataType name="char" size="1"/>
+            <dataType name="float" size="4"/>
+            <dataType name="unsigned char" size="1"/>
+            <dataType name="int" size="4"/>
+        </dataTypes>
+        <specialVertexOperators>
+            <specialVertexOperator path="Core0"/>
+            <specialVertexOperator path="Core1"/>
+            <specialVertexOperator path="Core2"/>
+            <specialVertexOperator path="Core3"/>
+        </specialVertexOperators>
+        <numberOfTopExecutions>1</numberOfTopExecutions>
+    </simuParams>
+    <variables excelUrl=""/>
+    <parameterValues/>
+    <papifyConfigs xmlUrl=""/>
+</scenario>
