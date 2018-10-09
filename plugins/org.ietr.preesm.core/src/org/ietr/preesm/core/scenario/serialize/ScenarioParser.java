@@ -797,15 +797,16 @@ public class ScenarioParser {
    */
   private PapifyConfigActor getPapifyConfigActor(final Element papifyConfigElt) {
 
-    final PapifyConfigActor pc = new PapifyConfigActor();
     Node node = papifyConfigElt.getFirstChild();
+    PapifyConfigActor pc = null;
 
     while (node != null) {
       if (node instanceof Element) {
         final Element elt = (Element) node;
 
         final String actorId = elt.getAttribute("actorId");
-        pc.addActorId(actorId);
+
+        pc = new PapifyConfigActor(actorId);
 
         Node nodeEvents = node.getFirstChild();
 
@@ -814,10 +815,10 @@ public class ScenarioParser {
           if (nodeEvents instanceof Element) {
             final Element eltEvents = (Element) nodeEvents;
             final String typeEvents = eltEvents.getTagName();
-            if (typeEvents.equals("EventSet")) {
-              final String component = elt.getAttribute("component");
+            if (typeEvents.equals("component")) {
+              final String component = eltEvents.getAttribute("component");
               final Set<PapiEvent> eventSet = new LinkedHashSet<>();
-              final List<PapiEvent> eventList = getPapifyEvents(elt);
+              final List<PapiEvent> eventList = getPapifyEvents(eltEvents);
               eventSet.addAll(eventList);
               pc.addPAPIEventSet(component, eventSet);
             }
@@ -950,24 +951,29 @@ public class ScenarioParser {
   private PapiEvent getPapifyEvent(final Element papifyEventElt) {
 
     final PapiEvent event = new PapiEvent();
-    final String eventDescription = papifyEventElt.getAttribute("eventDescription");
-    event.setDesciption(eventDescription);
-    final String eventId = papifyEventElt.getAttribute("eventId");
-    event.setIndex(Integer.valueOf(eventId));
-    final String eventName = papifyEventElt.getAttribute("eventName");
-    event.setName(eventName);
-    final List<PapiEventModifier> eventModiferList = new ArrayList<>();
-
     Node node = papifyEventElt.getFirstChild();
+    final List<PapiEventModifier> eventModiferList = new ArrayList<>();
     while (node != null) {
       if (node instanceof Element) {
         final Element elt = (Element) node;
-        final PapiEventModifier eventModifer = new PapiEventModifier();
-        final String description = elt.getAttribute("description");
-        eventModifer.setDescription(description);
-        final String name = elt.getAttribute("name");
-        eventModifer.setName(name);
-        eventModiferList.add(eventModifer);
+        final String type = elt.getTagName();
+        if (type.equals("eventDescription")) {
+          final String eventDescription = elt.getAttribute("eventDescription");
+          event.setDesciption(eventDescription);
+        } else if (type.equals("eventId")) {
+          final String eventId = elt.getAttribute("eventId");
+          event.setIndex(Integer.valueOf(eventId));
+        } else if (type.equals("eventName")) {
+          final String eventName = elt.getAttribute("eventName");
+          event.setName(eventName);
+        } else if (type.equals("eventModifier")) {
+          final PapiEventModifier eventModifer = new PapiEventModifier();
+          final String description = elt.getAttribute("description");
+          eventModifer.setDescription(description);
+          final String name = elt.getAttribute("name");
+          eventModifer.setName(name);
+          eventModiferList.add(eventModifer);
+        }
       }
       node = node.getNextSibling();
     }

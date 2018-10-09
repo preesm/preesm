@@ -41,8 +41,8 @@ import java.util.Map;
 import org.eclipse.jface.viewers.ColumnLabelProvider;
 import org.eclipse.swt.graphics.Image;
 import org.ietr.preesm.core.scenario.PreesmScenario;
-import org.ietr.preesm.core.scenario.papi.PapifyConfigPE;
-import org.ietr.preesm.ui.scenario.editor.papify.PapifyComponentListTreeElement.PAPIComponentStatus;
+import org.ietr.preesm.core.scenario.papi.PapifyConfigActor;
+import org.ietr.preesm.ui.scenario.editor.papify.PapifyActorListTreeElement.PAPIActorStatus;
 
 // TODO: Auto-generated Javadoc
 /**
@@ -57,29 +57,29 @@ import org.ietr.preesm.ui.scenario.editor.papify.PapifyComponentListTreeElement.
  *
  */
 
-class PapifyComponentListContentProvider2DMatrixCLP extends ColumnLabelProvider {
+class PapifyActorListContentProvider2DMatrixCLP extends ColumnLabelProvider {
 
   /** Currently edited scenario. */
   private PreesmScenario scenario = null;
-  String                 peType;
+  String                 actorName;
 
-  public PapifyComponentListContentProvider2DMatrixCLP(final PreesmScenario scenario, final String name) {
-    this.peType = name;
+  public PapifyActorListContentProvider2DMatrixCLP(final PreesmScenario scenario, final String name) {
+    this.actorName = name;
     this.scenario = scenario;
   }
 
   @Override
   public String getText(final Object element) {
-    if (element instanceof PapifyComponentListTreeElement) {
-      final PapifyComponentListTreeElement treeElement = (PapifyComponentListTreeElement) element;
-      final Map<String, PAPIComponentStatus> statuses = treeElement.PAPIComponentStatuses;
-      if (!statuses.containsKey(this.peType)) {
-        statuses.put(this.peType, PAPIComponentStatus.NO);
-        if (this.scenario.getPapifyConfigManager().getCorePapifyConfigGroupPE(this.peType) == null) {
-          this.scenario.getPapifyConfigManager().addPapifyConfigPEGroup(new PapifyConfigPE(this.peType));
+    if (element instanceof PapifyActorListTreeElement) {
+      final PapifyActorListTreeElement treeElement = (PapifyActorListTreeElement) element;
+      final Map<String, PAPIActorStatus> statuses = treeElement.PAPIActorStatuses;
+      if (!statuses.containsKey(this.actorName)) {
+        statuses.put(this.actorName, PAPIActorStatus.NO);
+        if (this.scenario.getPapifyConfigManager().getCorePapifyConfigGroupActor(this.actorName) == null) {
+          this.scenario.getPapifyConfigManager().addPapifyConfigActorGroup(new PapifyConfigActor(this.actorName));
         }
       }
-      return statuses.get(this.peType).toString();
+      return statuses.get(this.actorName).toString();
     } else {
       return "ERROR";
     }
@@ -87,11 +87,11 @@ class PapifyComponentListContentProvider2DMatrixCLP extends ColumnLabelProvider 
 
   @Override
   public Image getImage(final Object element) {
-    if (element instanceof PapifyComponentListTreeElement) {
-      final PapifyComponentListTreeElement treeElement = (PapifyComponentListTreeElement) element;
-      final Map<String, PAPIComponentStatus> statuses = treeElement.PAPIComponentStatuses;
-      if (statuses.containsKey(this.peType)) {
-        return treeElement.getImage(this.peType);
+    if (element instanceof PapifyActorListTreeElement) {
+      final PapifyActorListTreeElement treeElement = (PapifyActorListTreeElement) element;
+      final Map<String, PAPIActorStatus> statuses = treeElement.PAPIActorStatuses;
+      if (statuses.containsKey(this.actorName)) {
+        return treeElement.getImage(this.actorName);
       }
     }
     return null;

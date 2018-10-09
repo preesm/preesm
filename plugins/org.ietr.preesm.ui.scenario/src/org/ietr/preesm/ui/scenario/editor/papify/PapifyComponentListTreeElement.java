@@ -37,8 +37,16 @@
  */
 package org.ietr.preesm.ui.scenario.editor.papify;
 
+import java.net.URL;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import org.eclipse.core.runtime.FileLocator;
+import org.eclipse.core.runtime.Path;
+import org.eclipse.jface.resource.ImageDescriptor;
+import org.eclipse.swt.graphics.Image;
+import org.ietr.preesm.ui.scenario.editor.timings.TimingsTableLabelProvider;
+import org.osgi.framework.Bundle;
+import org.osgi.framework.FrameworkUtil;
 
 // TODO: Auto-generated Javadoc
 /**
@@ -56,6 +64,12 @@ import java.util.Map;
 class PapifyComponentListTreeElement {
   String                           label;
   Map<String, PAPIComponentStatus> PAPIComponentStatuses;
+
+  /** The image ok. */
+  private final Image imageOk;
+
+  /** The image error. */
+  private final Image imageError;
 
   /**
    *
@@ -85,6 +99,24 @@ class PapifyComponentListTreeElement {
   PapifyComponentListTreeElement(final String label) {
     this.label = label;
     this.PAPIComponentStatuses = new LinkedHashMap<>();
+
+    final Bundle bundle = FrameworkUtil.getBundle(this.getClass());
+
+    URL url = FileLocator.find(bundle, new Path("icons/error.png"), null);
+    ImageDescriptor imageDcr = ImageDescriptor.createFromURL(url);
+    this.imageError = imageDcr.createImage();
+
+    url = FileLocator.find(bundle, new Path("icons/ok.png"), null);
+    imageDcr = ImageDescriptor.createFromURL(url);
+    this.imageOk = imageDcr.createImage();
+  }
+
+  public Image getImage(String name) {
+    if (this.PAPIComponentStatuses.get(name).equals(PAPIComponentStatus.YES)) {
+      return this.imageOk;
+    } else {
+      return this.imageError;
+    }
   }
 
   @Override

@@ -38,11 +38,12 @@
 package org.ietr.preesm.ui.scenario.editor.papify;
 
 import java.util.Map;
-import org.eclipse.jface.viewers.ColumnLabelProvider;
-import org.eclipse.swt.graphics.Image;
+import org.eclipse.jface.viewers.CellEditor;
+import org.eclipse.jface.viewers.CheckboxCellEditor;
+import org.eclipse.jface.viewers.ColumnViewer;
+import org.eclipse.jface.viewers.EditingSupport;
 import org.ietr.preesm.core.scenario.PreesmScenario;
-import org.ietr.preesm.core.scenario.papi.PapifyConfigPE;
-import org.ietr.preesm.ui.scenario.editor.papify.PapifyComponentListTreeElement.PAPIComponentStatus;
+import org.ietr.preesm.ui.scenario.editor.papify.PapifyActorListTreeElement.PAPIActorStatus;
 
 // TODO: Auto-generated Javadoc
 /**
@@ -50,51 +51,59 @@ import org.ietr.preesm.ui.scenario.editor.papify.PapifyComponentListTreeElement.
  *
  * @author dmadronal
  */
-
 /**
  *
  * @author anmorvan
  *
  */
-
-class PapifyComponentListContentProvider2DMatrixCLP extends ColumnLabelProvider {
+class PapifyActorListContentProvider2DMatrixES extends EditingSupport {
 
   /** Currently edited scenario. */
-  private PreesmScenario scenario = null;
-  String                 peType;
+  private PreesmScenario                 scenario = null;
+  String                                 actorName;
+  CellEditor                             editor   = new CheckboxCellEditor();
+  PapifyActorListContentProvider2DMatrix actorProvider;
 
-  public PapifyComponentListContentProvider2DMatrixCLP(final PreesmScenario scenario, final String name) {
-    this.peType = name;
+  public PapifyActorListContentProvider2DMatrixES(final PreesmScenario scenario, final ColumnViewer viewer,
+      final String name, PapifyActorListContentProvider2DMatrix actorProvider) {
+    super(viewer);
+    this.actorName = name;
     this.scenario = scenario;
+    this.actorProvider = actorProvider;
   }
 
   @Override
-  public String getText(final Object element) {
-    if (element instanceof PapifyComponentListTreeElement) {
-      final PapifyComponentListTreeElement treeElement = (PapifyComponentListTreeElement) element;
-      final Map<String, PAPIComponentStatus> statuses = treeElement.PAPIComponentStatuses;
-      if (!statuses.containsKey(this.peType)) {
-        statuses.put(this.peType, PAPIComponentStatus.NO);
-        if (this.scenario.getPapifyConfigManager().getCorePapifyConfigGroupPE(this.peType) == null) {
-          this.scenario.getPapifyConfigManager().addPapifyConfigPEGroup(new PapifyConfigPE(this.peType));
-        }
-      }
-      return statuses.get(this.peType).toString();
-    } else {
-      return "ERROR";
-    }
+  protected CellEditor getCellEditor(final Object element) {
+    return this.editor;
   }
 
   @Override
-  public Image getImage(final Object element) {
-    if (element instanceof PapifyComponentListTreeElement) {
-      final PapifyComponentListTreeElement treeElement = (PapifyComponentListTreeElement) element;
-      final Map<String, PAPIComponentStatus> statuses = treeElement.PAPIComponentStatuses;
-      if (statuses.containsKey(this.peType)) {
-        return treeElement.getImage(this.peType);
+  protected boolean canEdit(final Object element) {
+    return true;
+  }
+
+  @Override
+  protected Object getValue(final Object element) {
+    // we do not need to read the value: it will rotate
+    return true;
+  }
+
+  @Override
+  protected void setValue(final Object element, final Object value) {
+    if (element instanceof PapifyActorListTreeElement) {
+      String eventName = ((PapifyActorListTreeElement) element).label;
+      final Map<String, PAPIActorStatus> statuses = ((PapifyActorListTreeElement) element).PAPIActorStatuses;
+
+      final PAPIActorStatus actorStatus = statuses.get(this.actorName);
+      if (actorStatus.next().equals(PAPIActorStatus.NO)) {
+        this.actorProvider.removeEventfromActor(this.actorName, eventName);
+
+      } else {
+        this.actorProvider.addEventtoActor(this.actorName, eventName);
       }
     }
-    return null;
+    this.actorProvider.selectionUpdated();
+    this.actorProvider.updateView();
   }
 
 }

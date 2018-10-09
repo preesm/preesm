@@ -43,7 +43,6 @@ import org.eclipse.jface.viewers.CheckboxCellEditor;
 import org.eclipse.jface.viewers.ColumnViewer;
 import org.eclipse.jface.viewers.EditingSupport;
 import org.ietr.preesm.core.scenario.PreesmScenario;
-import org.ietr.preesm.core.scenario.papi.PapiEventInfo;
 import org.ietr.preesm.ui.scenario.editor.papify.PapifyComponentListTreeElement.PAPIComponentStatus;
 
 // TODO: Auto-generated Javadoc
@@ -97,7 +96,6 @@ class PapifyComponentListContentProvider2DMatrixES extends EditingSupport {
           PAPIComponentStatus> statuses = ((PapifyComponentListTreeElement) element).PAPIComponentStatuses;
 
       final PAPIComponentStatus componentStatus = statuses.get(this.peType);
-      PapiEventInfo papiData = null;
       if (componentStatus.next().equals(PAPIComponentStatus.NO)) {
         this.contentProvider.removePEfromComp(this.peType, elementName);
 

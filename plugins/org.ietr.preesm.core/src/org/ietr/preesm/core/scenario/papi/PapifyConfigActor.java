@@ -57,8 +57,8 @@ public class PapifyConfigActor {
   /**
    * Instantiates a new PapifyConfig group.
    */
-  public PapifyConfigActor() {
-    this.actorId = "";
+  public PapifyConfigActor(final String actorId) {
+    this.actorId = actorId;
     this.actorEventMap = new LinkedHashMap<>();
   }
 

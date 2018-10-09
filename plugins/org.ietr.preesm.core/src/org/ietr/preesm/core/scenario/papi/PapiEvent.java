@@ -45,8 +45,8 @@ import java.util.List;
 public class PapiEvent {
 
   private int                     index;
-  private String                  name;
-  private String                  description;
+  private String                  name        = "";
+  private String                  description = "";
   private List<PapiEventModifier> modifiers;
 
   public int getIndex() {

@@ -226,6 +226,7 @@ public class ScenarioWriter {
 
       final Element actorId = this.dom.createElement("actorId");
       papifyConfigElt.appendChild(actorId);
+      actorId.setAttribute("actorId", config.getActorId());
       final Map<String, Set<PapiEvent>> eventSets = config.getPAPIEvents();
       final Set<String> keys = eventSets.keySet();
       for (final String key : keys) {
@@ -233,6 +234,7 @@ public class ScenarioWriter {
         if (!eventSet.isEmpty()) {
           final Element component = this.dom.createElement("component");
           actorId.appendChild(component);
+          component.setAttribute("component", key);
           for (final PapiEvent event : eventSet) {
             final Element singleEvent = this.dom.createElement("event");
             component.appendChild(singleEvent);
@@ -307,9 +309,15 @@ public class ScenarioWriter {
    */
   private void addPapifyEvent(final Element event, final PapiEvent papiEvent) {
 
-    event.setAttribute("eventId", Integer.toString(papiEvent.getIndex()));
-    event.setAttribute("eventName", papiEvent.getName());
-    event.setAttribute("eventDescription", papiEvent.getDescription());
+    final Element eventId = this.dom.createElement("eventId");
+    event.appendChild(eventId);
+    eventId.setAttribute("eventId", Integer.toString(papiEvent.getIndex()));
+    final Element eventName = this.dom.createElement("eventName");
+    event.appendChild(eventName);
+    eventName.setAttribute("eventName", papiEvent.getName());
+    final Element eventDescription = this.dom.createElement("eventDescription");
+    event.appendChild(eventDescription);
+    eventDescription.setAttribute("eventDescription", papiEvent.getDescription());
 
     for (final PapiEventModifier eventModifier : papiEvent.getModifiers()) {
       final Element singleEventModifier = this.dom.createElement("eventModifier");

@@ -37,12 +37,15 @@
  */
 package org.ietr.preesm.ui.scenario.editor.papify;
 
+import java.net.URL;
+import java.util.LinkedHashMap;
 import java.util.Map;
-import org.eclipse.jface.viewers.ColumnLabelProvider;
+import org.eclipse.core.runtime.FileLocator;
+import org.eclipse.core.runtime.Path;
+import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.swt.graphics.Image;
-import org.ietr.preesm.core.scenario.PreesmScenario;
-import org.ietr.preesm.core.scenario.papi.PapifyConfigPE;
-import org.ietr.preesm.ui.scenario.editor.papify.PapifyComponentListTreeElement.PAPIComponentStatus;
+import org.osgi.framework.Bundle;
+import org.osgi.framework.FrameworkUtil;
 
 // TODO: Auto-generated Javadoc
 /**
@@ -57,44 +60,65 @@ import org.ietr.preesm.ui.scenario.editor.papify.PapifyComponentListTreeElement.
  *
  */
 
-class PapifyComponentListContentProvider2DMatrixCLP extends ColumnLabelProvider {
+class PapifyActorListTreeElement {
+  String                       label;
+  Map<String, PAPIActorStatus> PAPIActorStatuses;
 
-  /** Currently edited scenario. */
-  private PreesmScenario scenario = null;
-  String                 peType;
+  /** The image ok. */
+  private final Image imageOk;
 
-  public PapifyComponentListContentProvider2DMatrixCLP(final PreesmScenario scenario, final String name) {
-    this.peType = name;
-    this.scenario = scenario;
+  /** The image error. */
+  private final Image imageError;
+
+  /**
+   *
+   * @author dmadronal
+   *
+   */
+  enum PAPIActorStatus {
+    // PAPI component supported
+    YES,
+
+    // PAPI component not supported
+    NO;
+
+    PAPIActorStatus next() {
+      switch (this) {
+        case YES:
+          return NO;
+        case NO:
+          return YES;
+        default:
+          return null;
+      }
+    }
   }
 
-  @Override
-  public String getText(final Object element) {
-    if (element instanceof PapifyComponentListTreeElement) {
-      final PapifyComponentListTreeElement treeElement = (PapifyComponentListTreeElement) element;
-      final Map<String, PAPIComponentStatus> statuses = treeElement.PAPIComponentStatuses;
-      if (!statuses.containsKey(this.peType)) {
-        statuses.put(this.peType, PAPIComponentStatus.NO);
-        if (this.scenario.getPapifyConfigManager().getCorePapifyConfigGroupPE(this.peType) == null) {
-          this.scenario.getPapifyConfigManager().addPapifyConfigPEGroup(new PapifyConfigPE(this.peType));
-        }
-      }
-      return statuses.get(this.peType).toString();
+  PapifyActorListTreeElement(final String label) {
+    this.label = label;
+    this.PAPIActorStatuses = new LinkedHashMap<>();
+
+    final Bundle bundle = FrameworkUtil.getBundle(this.getClass());
+
+    URL url = FileLocator.find(bundle, new Path("icons/error.png"), null);
+    ImageDescriptor imageDcr = ImageDescriptor.createFromURL(url);
+    this.imageError = imageDcr.createImage();
+
+    url = FileLocator.find(bundle, new Path("icons/ok.png"), null);
+    imageDcr = ImageDescriptor.createFromURL(url);
+    this.imageOk = imageDcr.createImage();
+  }
+
+  public Image getImage(String name) {
+    if (this.PAPIActorStatuses.get(name).equals(PAPIActorStatus.YES)) {
+      return this.imageOk;
     } else {
-      return "ERROR";
+      return this.imageError;
     }
   }
 
   @Override
-  public Image getImage(final Object element) {
-    if (element instanceof PapifyComponentListTreeElement) {
-      final PapifyComponentListTreeElement treeElement = (PapifyComponentListTreeElement) element;
-      final Map<String, PAPIComponentStatus> statuses = treeElement.PAPIComponentStatuses;
-      if (statuses.containsKey(this.peType)) {
-        return treeElement.getImage(this.peType);
-      }
-    }
-    return null;
+  public String toString() {
+    return this.label;
   }
-
 }

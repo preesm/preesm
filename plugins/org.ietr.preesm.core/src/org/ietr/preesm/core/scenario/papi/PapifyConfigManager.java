@@ -157,8 +157,7 @@ public class PapifyConfigManager {
     final PapifyConfigActor pgSet = getCorePapifyConfigGroupActor(opId);
 
     if (pgSet == null) {
-      final PapifyConfigActor pg = new PapifyConfigActor();
-      pg.addActorId(opId);
+      final PapifyConfigActor pg = new PapifyConfigActor(opId);
       pg.addPAPIEvent(component, event);
       this.papifyConfigGroupsActors.add(pg);
     } else {

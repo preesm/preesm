@@ -103,7 +103,6 @@ public class PapifyComponentListContentProvider2DMatrix implements ITreeContentP
       PapiComponent pc = papiData.getComponent(compName);
       papiConfig.removePAPIComponent(pc);
 
-      System.out.println("Poniendo a no peType = " + peType + " y compName = " + compName);
       for (PapifyComponentListTreeElement treeElement : this.componentConfig) {
         if (treeElement.label.equals(compName)) {
           final Map<String, PAPIComponentStatus> statuses = treeElement.PAPIComponentStatuses;
@@ -123,7 +122,6 @@ public class PapifyComponentListContentProvider2DMatrix implements ITreeContentP
       PapiComponent pc = papiData.getComponent(compName);
       papiConfig.addPAPIComponent(pc);
 
-      System.out.println("Poniendo a si peType = " + peType + " y compName = " + compName);
       for (PapifyComponentListTreeElement treeElement : this.componentConfig) {
         if (treeElement.label.equals(compName)) {
           final Map<String, PAPIComponentStatus> statuses = treeElement.PAPIComponentStatuses;
@@ -146,7 +144,6 @@ public class PapifyComponentListContentProvider2DMatrix implements ITreeContentP
         }
       }
 
-      System.out.println("Limpiando peType = " + peType);
       for (PapifyComponentListTreeElement treeElement : this.componentConfig) {
         final Map<String, PAPIComponentStatus> statuses = treeElement.PAPIComponentStatuses;
         statuses.put(peType, PAPIComponentStatus.NO);
