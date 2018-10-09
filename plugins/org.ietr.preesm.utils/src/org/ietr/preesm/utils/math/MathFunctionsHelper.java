@@ -36,6 +36,11 @@
  */
 package org.ietr.preesm.utils.math;
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+import org.apache.commons.math3.util.ArithmeticUtils;
+
 /**
  *
  * @author hderoui
@@ -80,6 +85,25 @@ public interface MathFunctionsHelper {
     return a;
   }
 
+  public static long gcd(final LongFraction a, final LongFraction b) {
+    return ArithmeticUtils.lcm(a.getDenominator(), b.getDenominator());
+  }
+
+  public static long gcd(final long a, final LongFraction b) {
+    return ArithmeticUtils.lcm(a, b.getDenominator());
+  }
+
+  /**
+   *
+   */
+  public static long gcd(final Collection<LongFraction> fracs) {
+    long gcd = 1;
+    for (final LongFraction f : fracs) {
+      gcd = gcd(gcd, f.abs());
+    }
+    return gcd;
+  }
+
   /**
    * computes the Greatest Common Divisor (GCD) of a vector of doubles
    *
@@ -91,6 +115,20 @@ public interface MathFunctionsHelper {
     double result = input[0];
     for (int i = 1; i < input.length; i++) {
       result = MathFunctionsHelper.gcd(result, input[i]);
+    }
+    return result;
+  }
+
+  /**
+   */
+  public static List<Long> toNatural(final Collection<LongFraction> fracs) {
+    final long gcd = gcd(fracs);
+    final List<Long> result = new ArrayList<>();
+    for (final LongFraction f : fracs) {
+      final LongFraction absRat = f.abs();
+      final long longNum = absRat.getNumerator();
+      final long longRes = (longNum * gcd) / absRat.getDenominator();
+      result.add(longRes);
     }
     return result;
   }

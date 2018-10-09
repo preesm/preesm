@@ -91,6 +91,7 @@ public class LongFraction extends Number implements FieldElement<LongFraction>, 
    * @throws FractionConversionException
    *           if the continued fraction failed to converge.
    */
+  @Deprecated
   public LongFraction(double value) throws FractionConversionException {
     this(value, DEFAULT_EPSILON, 100);
   }
@@ -115,6 +116,7 @@ public class LongFraction extends Number implements FieldElement<LongFraction>, 
    * @throws FractionConversionException
    *           if the continued fraction failed to converge.
    */
+  @Deprecated
   public LongFraction(double value, double epsilon, int maxIterations) throws FractionConversionException {
     this(value, epsilon, Long.MAX_VALUE, maxIterations);
   }
@@ -136,6 +138,7 @@ public class LongFraction extends Number implements FieldElement<LongFraction>, 
    * @throws FractionConversionException
    *           if the continued fraction failed to converge
    */
+  @Deprecated
   public LongFraction(double value, long maxDenominator) throws FractionConversionException {
     this(value, 0, maxDenominator, 100);
   }
@@ -172,6 +175,7 @@ public class LongFraction extends Number implements FieldElement<LongFraction>, 
    * @throws FractionConversionException
    *           if the continued fraction failed to converge.
    */
+  @Deprecated
   private LongFraction(double value, double epsilon, long maxDenominator, int maxIterations)
       throws FractionConversionException {
     long overflow = Integer.MAX_VALUE;
@@ -252,6 +256,14 @@ public class LongFraction extends Number implements FieldElement<LongFraction>, 
   }
 
   /**
+   * Create a fraction from another LongFraction.
+   *
+   */
+  public LongFraction(LongFraction f) {
+    this(f.getNumerator(), f.getDenominator());
+  }
+
+  /**
    * Create a fraction given the numerator and denominator. The fraction is reduced to lowest terms.
    *
    * @param num
@@ -311,8 +323,8 @@ public class LongFraction extends Number implements FieldElement<LongFraction>, 
    * @return -1 if this is less than {@code object}, +1 if this is greater than {@code object}, 0 if they are equal.
    */
   public int compareTo(LongFraction object) {
-    long nOd = ((long) numerator) * object.denominator;
-    long dOn = ((long) denominator) * object.numerator;
+    long nOd = numerator * object.denominator;
+    long dOn = denominator * object.numerator;
     return (nOd < dOn) ? -1 : ((nOd > dOn) ? +1 : 0);
   }
 
@@ -695,4 +707,7 @@ public class LongFraction extends Number implements FieldElement<LongFraction>, 
     return LongFractionField.getInstance();
   }
 
+  public boolean isZero() {
+    return this.equals(ZERO);
+  }
 }
