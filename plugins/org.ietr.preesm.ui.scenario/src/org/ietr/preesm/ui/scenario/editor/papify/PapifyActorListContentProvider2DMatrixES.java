@@ -43,7 +43,7 @@ import org.eclipse.jface.viewers.CheckboxCellEditor;
 import org.eclipse.jface.viewers.ColumnViewer;
 import org.eclipse.jface.viewers.EditingSupport;
 import org.ietr.preesm.core.scenario.PreesmScenario;
-import org.ietr.preesm.ui.scenario.editor.papify.PapifyActorListTreeElement.PAPIActorStatus;
+import org.ietr.preesm.ui.scenario.editor.papify.PapifyListTreeElement.PAPIStatus;
 
 // TODO: Auto-generated Javadoc
 /**
@@ -90,12 +90,12 @@ class PapifyActorListContentProvider2DMatrixES extends EditingSupport {
 
   @Override
   protected void setValue(final Object element, final Object value) {
-    if (element instanceof PapifyActorListTreeElement) {
-      String eventName = ((PapifyActorListTreeElement) element).label;
-      final Map<String, PAPIActorStatus> statuses = ((PapifyActorListTreeElement) element).PAPIActorStatuses;
+    if (element instanceof PapifyListTreeElement) {
+      String eventName = ((PapifyListTreeElement) element).label;
+      final Map<String, PAPIStatus> statuses = ((PapifyListTreeElement) element).PAPIStatuses;
 
-      final PAPIActorStatus actorStatus = statuses.get(this.actorName);
-      if (actorStatus.next().equals(PAPIActorStatus.NO)) {
+      final PAPIStatus actorStatus = statuses.get(this.actorName);
+      if (actorStatus.next().equals(PAPIStatus.NO)) {
         this.actorProvider.removeEventfromActor(this.actorName, eventName);
 
       } else {

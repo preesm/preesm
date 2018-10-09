@@ -42,7 +42,7 @@ import org.eclipse.jface.viewers.ColumnLabelProvider;
 import org.eclipse.swt.graphics.Image;
 import org.ietr.preesm.core.scenario.PreesmScenario;
 import org.ietr.preesm.core.scenario.papi.PapifyConfigPE;
-import org.ietr.preesm.ui.scenario.editor.papify.PapifyComponentListTreeElement.PAPIComponentStatus;
+import org.ietr.preesm.ui.scenario.editor.papify.PapifyListTreeElement.PAPIStatus;
 
 // TODO: Auto-generated Javadoc
 /**
@@ -70,11 +70,11 @@ class PapifyComponentListContentProvider2DMatrixCLP extends ColumnLabelProvider 
 
   @Override
   public String getText(final Object element) {
-    if (element instanceof PapifyComponentListTreeElement) {
-      final PapifyComponentListTreeElement treeElement = (PapifyComponentListTreeElement) element;
-      final Map<String, PAPIComponentStatus> statuses = treeElement.PAPIComponentStatuses;
+    if (element instanceof PapifyListTreeElement) {
+      final PapifyListTreeElement treeElement = (PapifyListTreeElement) element;
+      final Map<String, PAPIStatus> statuses = treeElement.PAPIStatuses;
       if (!statuses.containsKey(this.peType)) {
-        statuses.put(this.peType, PAPIComponentStatus.NO);
+        statuses.put(this.peType, PAPIStatus.NO);
         if (this.scenario.getPapifyConfigManager().getCorePapifyConfigGroupPE(this.peType) == null) {
           this.scenario.getPapifyConfigManager().addPapifyConfigPEGroup(new PapifyConfigPE(this.peType));
         }
@@ -87,9 +87,9 @@ class PapifyComponentListContentProvider2DMatrixCLP extends ColumnLabelProvider 
 
   @Override
   public Image getImage(final Object element) {
-    if (element instanceof PapifyComponentListTreeElement) {
-      final PapifyComponentListTreeElement treeElement = (PapifyComponentListTreeElement) element;
-      final Map<String, PAPIComponentStatus> statuses = treeElement.PAPIComponentStatuses;
+    if (element instanceof PapifyListTreeElement) {
+      final PapifyListTreeElement treeElement = (PapifyListTreeElement) element;
+      final Map<String, PAPIStatus> statuses = treeElement.PAPIStatuses;
       if (statuses.containsKey(this.peType)) {
         return treeElement.getImage(this.peType);
       }

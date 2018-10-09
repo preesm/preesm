@@ -44,7 +44,6 @@ import org.eclipse.core.runtime.FileLocator;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.swt.graphics.Image;
-import org.ietr.preesm.ui.scenario.editor.timings.TimingsTableLabelProvider;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.FrameworkUtil;
 
@@ -61,9 +60,9 @@ import org.osgi.framework.FrameworkUtil;
  *
  */
 
-class PapifyComponentListTreeElement {
-  String                           label;
-  Map<String, PAPIComponentStatus> PAPIComponentStatuses;
+class PapifyListTreeElement {
+  String                  label;
+  Map<String, PAPIStatus> PAPIStatuses;
 
   /** The image ok. */
   private final Image imageOk;
@@ -76,14 +75,14 @@ class PapifyComponentListTreeElement {
    * @author dmadronal
    *
    */
-  enum PAPIComponentStatus {
+  enum PAPIStatus {
     // PAPI component supported
     YES,
 
     // PAPI component not supported
     NO;
 
-    PAPIComponentStatus next() {
+    PAPIStatus next() {
       switch (this) {
         case YES:
 
@@ -96,9 +95,9 @@ class PapifyComponentListTreeElement {
     }
   }
 
-  PapifyComponentListTreeElement(final String label) {
+  PapifyListTreeElement(final String label) {
     this.label = label;
-    this.PAPIComponentStatuses = new LinkedHashMap<>();
+    this.PAPIStatuses = new LinkedHashMap<>();
 
     final Bundle bundle = FrameworkUtil.getBundle(this.getClass());
 
@@ -112,7 +111,7 @@ class PapifyComponentListTreeElement {
   }
 
   public Image getImage(String name) {
-    if (this.PAPIComponentStatuses.get(name).equals(PAPIComponentStatus.YES)) {
+    if (this.PAPIStatuses.get(name).equals(PAPIStatus.YES)) {
       return this.imageOk;
     } else {
       return this.imageError;

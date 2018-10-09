@@ -47,7 +47,7 @@ import org.ietr.preesm.core.scenario.papi.PapiComponent;
 import org.ietr.preesm.core.scenario.papi.PapiEventInfo;
 import org.ietr.preesm.core.scenario.papi.PapiEventSet;
 import org.ietr.preesm.core.scenario.papi.PapifyConfigPE;
-import org.ietr.preesm.ui.scenario.editor.papify.PapifyComponentListTreeElement.PAPIComponentStatus;
+import org.ietr.preesm.ui.scenario.editor.papify.PapifyListTreeElement.PAPIStatus;
 
 // TODO: Auto-generated Javadoc
 /**
@@ -59,7 +59,7 @@ public class PapifyComponentListContentProvider2DMatrix implements ITreeContentP
 
   /** Currently edited scenario. */
   private PreesmScenario                                    scenario           = null;
-  private Set<PapifyComponentListTreeElement>               componentConfig;
+  private Set<PapifyListTreeElement>                        componentConfig;
   PapifyCheckStateListener                                  checkStateListener = null;
   private Set<PapifyComponentListContentProvider2DMatrixES> editingSupports    = new LinkedHashSet<>();
 
@@ -72,7 +72,7 @@ public class PapifyComponentListContentProvider2DMatrix implements ITreeContentP
    *
    * @return the Papi Component list
    */
-  public Set<PapifyComponentListTreeElement> getComponents() {
+  public Set<PapifyListTreeElement> getComponents() {
     return this.componentConfig;
   }
 
@@ -103,10 +103,10 @@ public class PapifyComponentListContentProvider2DMatrix implements ITreeContentP
       PapiComponent pc = papiData.getComponent(compName);
       papiConfig.removePAPIComponent(pc);
 
-      for (PapifyComponentListTreeElement treeElement : this.componentConfig) {
+      for (PapifyListTreeElement treeElement : this.componentConfig) {
         if (treeElement.label.equals(compName)) {
-          final Map<String, PAPIComponentStatus> statuses = treeElement.PAPIComponentStatuses;
-          statuses.put(peType, PAPIComponentStatus.NO);
+          final Map<String, PAPIStatus> statuses = treeElement.PAPIStatuses;
+          statuses.put(peType, PAPIStatus.NO);
         }
       }
     }
@@ -122,10 +122,10 @@ public class PapifyComponentListContentProvider2DMatrix implements ITreeContentP
       PapiComponent pc = papiData.getComponent(compName);
       papiConfig.addPAPIComponent(pc);
 
-      for (PapifyComponentListTreeElement treeElement : this.componentConfig) {
+      for (PapifyListTreeElement treeElement : this.componentConfig) {
         if (treeElement.label.equals(compName)) {
-          final Map<String, PAPIComponentStatus> statuses = treeElement.PAPIComponentStatuses;
-          statuses.put(peType, PAPIComponentStatus.YES);
+          final Map<String, PAPIStatus> statuses = treeElement.PAPIStatuses;
+          statuses.put(peType, PAPIStatus.YES);
         }
       }
     }
@@ -144,9 +144,9 @@ public class PapifyComponentListContentProvider2DMatrix implements ITreeContentP
         }
       }
 
-      for (PapifyComponentListTreeElement treeElement : this.componentConfig) {
-        final Map<String, PAPIComponentStatus> statuses = treeElement.PAPIComponentStatuses;
-        statuses.put(peType, PAPIComponentStatus.NO);
+      for (PapifyListTreeElement treeElement : this.componentConfig) {
+        final Map<String, PAPIStatus> statuses = treeElement.PAPIStatuses;
+        statuses.put(peType, PAPIStatus.NO);
       }
     }
   }
@@ -157,7 +157,7 @@ public class PapifyComponentListContentProvider2DMatrix implements ITreeContentP
   public void updateView() {
 
     for (PapifyComponentListContentProvider2DMatrixES viewer : this.editingSupports) {
-      for (PapifyComponentListTreeElement treeElement : this.componentConfig) {
+      for (PapifyListTreeElement treeElement : this.componentConfig) {
         viewer.getViewer().update(treeElement, null);
       }
     }
@@ -174,16 +174,16 @@ public class PapifyComponentListContentProvider2DMatrix implements ITreeContentP
       String peType = papiConfig.getpeType();
       for (String compName : papiConfig.getPAPIComponentIDs()) {
         String comp = compName;
-        for (PapifyComponentListTreeElement treeElement : this.componentConfig) {
+        for (PapifyListTreeElement treeElement : this.componentConfig) {
           if (treeElement.label.equals(comp)) {
-            final Map<String, PAPIComponentStatus> statuses = treeElement.PAPIComponentStatuses;
-            statuses.put(peType, PAPIComponentStatus.YES);
+            final Map<String, PAPIStatus> statuses = treeElement.PAPIStatuses;
+            statuses.put(peType, PAPIStatus.YES);
           }
         }
       }
     }
     for (PapifyComponentListContentProvider2DMatrixES viewer : this.editingSupports) {
-      for (PapifyComponentListTreeElement treeElement : this.componentConfig) {
+      for (PapifyListTreeElement treeElement : this.componentConfig) {
         viewer.getViewer().update(treeElement, null);
       }
     }
@@ -223,7 +223,7 @@ public class PapifyComponentListContentProvider2DMatrix implements ITreeContentP
         }
         if (componentAdded) {
           componentAdded = false;
-          final PapifyComponentListTreeElement element = new PapifyComponentListTreeElement(compAux.getId());
+          final PapifyListTreeElement element = new PapifyListTreeElement(compAux.getId());
           componentConfig.add(element);
         }
       }

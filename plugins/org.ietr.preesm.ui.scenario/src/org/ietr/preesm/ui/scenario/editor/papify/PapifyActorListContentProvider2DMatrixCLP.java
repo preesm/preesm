@@ -42,7 +42,7 @@ import org.eclipse.jface.viewers.ColumnLabelProvider;
 import org.eclipse.swt.graphics.Image;
 import org.ietr.preesm.core.scenario.PreesmScenario;
 import org.ietr.preesm.core.scenario.papi.PapifyConfigActor;
-import org.ietr.preesm.ui.scenario.editor.papify.PapifyActorListTreeElement.PAPIActorStatus;
+import org.ietr.preesm.ui.scenario.editor.papify.PapifyListTreeElement.PAPIStatus;
 
 // TODO: Auto-generated Javadoc
 /**
@@ -70,11 +70,11 @@ class PapifyActorListContentProvider2DMatrixCLP extends ColumnLabelProvider {
 
   @Override
   public String getText(final Object element) {
-    if (element instanceof PapifyActorListTreeElement) {
-      final PapifyActorListTreeElement treeElement = (PapifyActorListTreeElement) element;
-      final Map<String, PAPIActorStatus> statuses = treeElement.PAPIActorStatuses;
+    if (element instanceof PapifyListTreeElement) {
+      final PapifyListTreeElement treeElement = (PapifyListTreeElement) element;
+      final Map<String, PAPIStatus> statuses = treeElement.PAPIStatuses;
       if (!statuses.containsKey(this.actorName)) {
-        statuses.put(this.actorName, PAPIActorStatus.NO);
+        statuses.put(this.actorName, PAPIStatus.NO);
         if (this.scenario.getPapifyConfigManager().getCorePapifyConfigGroupActor(this.actorName) == null) {
           this.scenario.getPapifyConfigManager().addPapifyConfigActorGroup(new PapifyConfigActor(this.actorName));
         }
@@ -87,9 +87,9 @@ class PapifyActorListContentProvider2DMatrixCLP extends ColumnLabelProvider {
 
   @Override
   public Image getImage(final Object element) {
-    if (element instanceof PapifyActorListTreeElement) {
-      final PapifyActorListTreeElement treeElement = (PapifyActorListTreeElement) element;
-      final Map<String, PAPIActorStatus> statuses = treeElement.PAPIActorStatuses;
+    if (element instanceof PapifyListTreeElement) {
+      final PapifyListTreeElement treeElement = (PapifyListTreeElement) element;
+      final Map<String, PAPIStatus> statuses = treeElement.PAPIStatuses;
       if (statuses.containsKey(this.actorName)) {
         return treeElement.getImage(this.actorName);
       }

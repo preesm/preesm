@@ -1,4 +1,4 @@
-/**
+/**PAPIStatus
  * Copyright or © or Copr. IETR/INSA - Rennes (2008 - 2018) :
  *
  * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017 - 2018)
@@ -43,7 +43,7 @@ import org.eclipse.jface.viewers.CheckboxCellEditor;
 import org.eclipse.jface.viewers.ColumnViewer;
 import org.eclipse.jface.viewers.EditingSupport;
 import org.ietr.preesm.core.scenario.PreesmScenario;
-import org.ietr.preesm.ui.scenario.editor.papify.PapifyComponentListTreeElement.PAPIComponentStatus;
+import org.ietr.preesm.ui.scenario.editor.papify.PapifyListTreeElement.PAPIStatus;
 
 // TODO: Auto-generated Javadoc
 /**
@@ -90,13 +90,12 @@ class PapifyComponentListContentProvider2DMatrixES extends EditingSupport {
 
   @Override
   protected void setValue(final Object element, final Object value) {
-    if (element instanceof PapifyComponentListTreeElement) {
-      String elementName = ((PapifyComponentListTreeElement) element).label;
-      final Map<String,
-          PAPIComponentStatus> statuses = ((PapifyComponentListTreeElement) element).PAPIComponentStatuses;
+    if (element instanceof PapifyListTreeElement) {
+      String elementName = ((PapifyListTreeElement) element).label;
+      final Map<String, PAPIStatus> statuses = ((PapifyListTreeElement) element).PAPIStatuses;
 
-      final PAPIComponentStatus componentStatus = statuses.get(this.peType);
-      if (componentStatus.next().equals(PAPIComponentStatus.NO)) {
+      final PAPIStatus componentStatus = statuses.get(this.peType);
+      if (componentStatus.next().equals(PAPIStatus.NO)) {
         this.contentProvider.removePEfromComp(this.peType, elementName);
 
       } else {

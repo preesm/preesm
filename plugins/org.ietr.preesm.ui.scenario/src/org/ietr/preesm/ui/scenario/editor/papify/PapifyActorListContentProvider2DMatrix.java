@@ -51,7 +51,7 @@ import org.ietr.preesm.core.scenario.papi.PapiEventInfo;
 import org.ietr.preesm.core.scenario.papi.PapiEventModifier;
 import org.ietr.preesm.core.scenario.papi.PapiEventSet;
 import org.ietr.preesm.core.scenario.papi.PapifyConfigActor;
-import org.ietr.preesm.ui.scenario.editor.papify.PapifyActorListTreeElement.PAPIActorStatus;
+import org.ietr.preesm.ui.scenario.editor.papify.PapifyListTreeElement.PAPIStatus;
 
 // TODO: Auto-generated Javadoc
 /**
@@ -63,7 +63,7 @@ public class PapifyActorListContentProvider2DMatrix implements ITreeContentProvi
 
   /** Currently edited scenario. */
   private PreesmScenario                                scenario           = null;
-  private Set<PapifyActorListTreeElement>               actorConfig;
+  private Set<PapifyListTreeElement>                    actorConfig;
   PapifyCheckStateListener                              checkStateListener = null;
   private Set<PapifyActorListContentProvider2DMatrixES> editingSupports    = new LinkedHashSet<>();
 
@@ -76,7 +76,7 @@ public class PapifyActorListContentProvider2DMatrix implements ITreeContentProvi
    *
    * @return the Papi Component list
    */
-  public Set<PapifyActorListTreeElement> getComponents() {
+  public Set<PapifyListTreeElement> getComponents() {
     return this.actorConfig;
   }
 
@@ -138,10 +138,10 @@ public class PapifyActorListContentProvider2DMatrix implements ITreeContentProvi
 
       boolean hierarchy = false;
       int hierarchyLevel = 0;
-      Map<String, PAPIActorStatus> statuses = new LinkedHashMap<>();
-      for (PapifyActorListTreeElement treeElement : this.actorConfig) {
+      Map<String, PAPIStatus> statuses = new LinkedHashMap<>();
+      for (PapifyListTreeElement treeElement : this.actorConfig) {
         if (treeElement.label.equals(eventName)) {
-          statuses = treeElement.PAPIActorStatuses;
+          statuses = treeElement.PAPIStatuses;
         }
       }
       if (found) {
@@ -152,7 +152,7 @@ public class PapifyActorListContentProvider2DMatrix implements ITreeContentProvi
               hierarchy = false;
             } else {
               papiConfig = this.scenario.getPapifyConfigManager().getCorePapifyConfigGroupActor(actorNameSearch);
-              statuses.put(actorNameSearch, PAPIActorStatus.NO);
+              statuses.put(actorNameSearch, PAPIStatus.NO);
               if (!timing) {
                 papiConfig.removePAPIEvent(compName, event);
               } else {
@@ -161,7 +161,7 @@ public class PapifyActorListContentProvider2DMatrix implements ITreeContentProvi
             }
           }
           if (actorName.equals(actorNameSearch)) {
-            statuses.put(actorNameSearch, PAPIActorStatus.NO);
+            statuses.put(actorNameSearch, PAPIStatus.NO);
             if (!timing) {
               papiConfig.removePAPIEvent(compName, event);
             } else {
@@ -217,10 +217,10 @@ public class PapifyActorListContentProvider2DMatrix implements ITreeContentProvi
 
       boolean hierarchy = false;
       int hierarchyLevel = 0;
-      Map<String, PAPIActorStatus> statuses = new LinkedHashMap<>();
-      for (PapifyActorListTreeElement treeElement : this.actorConfig) {
+      Map<String, PAPIStatus> statuses = new LinkedHashMap<>();
+      for (PapifyListTreeElement treeElement : this.actorConfig) {
         if (treeElement.label.equals(eventName)) {
-          statuses = treeElement.PAPIActorStatuses;
+          statuses = treeElement.PAPIStatuses;
         }
       }
       if (found) {
@@ -231,7 +231,7 @@ public class PapifyActorListContentProvider2DMatrix implements ITreeContentProvi
               hierarchy = false;
             } else {
               papiConfig = this.scenario.getPapifyConfigManager().getCorePapifyConfigGroupActor(actorNameSearch);
-              statuses.put(actorNameSearch, PAPIActorStatus.YES);
+              statuses.put(actorNameSearch, PAPIStatus.YES);
               if (!timing) {
                 papiConfig.addPAPIEvent(compName, event);
               } else {
@@ -240,7 +240,7 @@ public class PapifyActorListContentProvider2DMatrix implements ITreeContentProvi
             }
           }
           if (actorName.equals(actorNameSearch)) {
-            statuses.put(actorNameSearch, PAPIActorStatus.YES);
+            statuses.put(actorNameSearch, PAPIStatus.YES);
             if (!timing) {
               papiConfig.addPAPIEvent(compName, event);
             } else {
@@ -260,7 +260,7 @@ public class PapifyActorListContentProvider2DMatrix implements ITreeContentProvi
   public void updateView() {
 
     for (PapifyActorListContentProvider2DMatrixES viewer : this.editingSupports) {
-      for (PapifyActorListTreeElement treeElement : this.actorConfig) {
+      for (PapifyListTreeElement treeElement : this.actorConfig) {
         viewer.getViewer().update(treeElement, null);
       }
     }
@@ -277,17 +277,17 @@ public class PapifyActorListContentProvider2DMatrix implements ITreeContentProvi
       String actorId = papiConfig.getActorId();
       for (String compName : papiConfig.getPAPIEvents().keySet()) {
         for (PapiEvent event : papiConfig.getPAPIEvents().get(compName)) {
-          for (PapifyActorListTreeElement treeElement : this.actorConfig) {
+          for (PapifyListTreeElement treeElement : this.actorConfig) {
             if (treeElement.label.equals(event.getName())) {
-              final Map<String, PAPIActorStatus> statuses = treeElement.PAPIActorStatuses;
-              statuses.put(actorId, PAPIActorStatus.YES);
+              final Map<String, PAPIStatus> statuses = treeElement.PAPIStatuses;
+              statuses.put(actorId, PAPIStatus.YES);
             }
           }
         }
       }
     }
     for (PapifyActorListContentProvider2DMatrixES viewer : this.editingSupports) {
-      for (PapifyActorListTreeElement treeElement : this.actorConfig) {
+      for (PapifyListTreeElement treeElement : this.actorConfig) {
         viewer.getViewer().update(treeElement, null);
       }
     }
@@ -323,14 +323,14 @@ public class PapifyActorListContentProvider2DMatrix implements ITreeContentProvi
     if (inputElement instanceof PapiEventInfo) {
       final PapiEventInfo inputPapiEventInfo = (PapiEventInfo) inputElement;
       actorConfig = new LinkedHashSet<>();
-      final PapifyActorListTreeElement elementTiming = new PapifyActorListTreeElement(timingEvent.getName());
+      final PapifyListTreeElement elementTiming = new PapifyListTreeElement(timingEvent.getName());
       actorConfig.add(elementTiming);
       for (final PapiComponent compAux : inputPapiEventInfo.getComponents()) {
         if (!compAux.getEventSets().isEmpty()) {
           for (final PapiEventSet eventSet : compAux.getEventSets()) {
             for (final PapiEvent event : eventSet.getEvents()) {
               if (event.getModifiers().isEmpty()) {
-                final PapifyActorListTreeElement element = new PapifyActorListTreeElement(event.getName());
+                final PapifyListTreeElement element = new PapifyListTreeElement(event.getName());
                 actorConfig.add(element);
               }
             }
