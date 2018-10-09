@@ -67,7 +67,6 @@ import org.ietr.preesm.codegen.idl.Prototype;
 import org.ietr.preesm.codegen.model.CodeGenArgument;
 import org.ietr.preesm.codegen.model.CodeGenParameter;
 import org.ietr.preesm.experiment.model.PiGraphException;
-import org.ietr.preesm.experiment.model.factory.PiMMUserFactory;
 import org.ietr.preesm.experiment.model.pimm.AbstractActor;
 import org.ietr.preesm.experiment.model.pimm.AbstractVertex;
 import org.ietr.preesm.experiment.model.pimm.Actor;
@@ -194,16 +193,14 @@ public class StaticPiMM2SDFVisitor extends PiMMSwitch<Boolean> {
       // be a parameter
       if (setter instanceof Parameter) {
         final Expression setterParam = ((Parameter) setter).getValueExpression();
-        final Expression pExp = PiMMUserFactory.instance.createStringExpression(setterParam.getExpressionAsString());
-        cii.setExpression(pExp);
+        cii.setExpression(setterParam.getExpressionAsString());
       }
     } else {
       // If there is only one value available for Parameter p, we can set
       // its
       if (this.execution.hasValue(p)) {
         final Integer value = this.execution.getValue(p);
-        final Expression pExp = PiMMUserFactory.instance.createStringExpression(value.toString());
-        p.setExpression(pExp);
+        p.setExpression(value.longValue());
       }
     }
     return true;
@@ -224,9 +221,7 @@ public class StaticPiMM2SDFVisitor extends PiMMSwitch<Boolean> {
     // Setter of an incoming dependency into a ConfigInputInterface must be
     // a parameter
     if (setter instanceof Parameter) {
-      final Expression pExp = PiMMUserFactory.instance
-          .createStringExpression(((Parameter) setter).getValueExpression().getExpressionAsString());
-      cii.setExpression(pExp);
+      cii.setExpression(((Parameter) setter).getValueExpression().getExpressionAsString());
     }
     return true;
   }
@@ -251,8 +246,7 @@ public class StaticPiMM2SDFVisitor extends PiMMSwitch<Boolean> {
         // parameters and set the result as new expression
         final Expression valueExpression = p.getValueExpression();
         final long evaluate = valueExpression.evaluate();
-        final Expression pExp = PiMMUserFactory.instance.createStringExpression(Long.toString(evaluate));
-        p.setExpression(pExp);
+        p.setExpression(evaluate);
       }
     }
   }
