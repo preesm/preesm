@@ -90,9 +90,10 @@ public class LongFraction extends Number implements FieldElement<LongFraction>, 
    *          the double value to convert to a fraction.
    * @throws FractionConversionException
    *           if the continued fraction failed to converge.
+   * @deprecated Prefer use of exact cosntructor with long denominator
    */
   @Deprecated
-  public LongFraction(double value) throws FractionConversionException {
+  public LongFraction(double value) {
     this(value, DEFAULT_EPSILON, 100);
   }
 
@@ -115,9 +116,10 @@ public class LongFraction extends Number implements FieldElement<LongFraction>, 
    *          maximum number of convergents
    * @throws FractionConversionException
    *           if the continued fraction failed to converge.
+   * @deprecated Prefer use of exact cosntructor with long denominator
    */
   @Deprecated
-  public LongFraction(double value, double epsilon, int maxIterations) throws FractionConversionException {
+  public LongFraction(double value, double epsilon, int maxIterations) {
     this(value, epsilon, Long.MAX_VALUE, maxIterations);
   }
 
@@ -137,9 +139,10 @@ public class LongFraction extends Number implements FieldElement<LongFraction>, 
    *          The maximum allowed value for denominator
    * @throws FractionConversionException
    *           if the continued fraction failed to converge
+   * @deprecated Prefer use of exact cosntructor with long denominator
    */
   @Deprecated
-  public LongFraction(double value, long maxDenominator) throws FractionConversionException {
+  public LongFraction(double value, long maxDenominator) {
     this(value, 0, maxDenominator, 100);
   }
 
@@ -174,10 +177,10 @@ public class LongFraction extends Number implements FieldElement<LongFraction>, 
    *          maximum number of convergents
    * @throws FractionConversionException
    *           if the continued fraction failed to converge.
+   * @deprecated Prefer use of exact cosntructor with long denominator
    */
   @Deprecated
-  private LongFraction(double value, double epsilon, long maxDenominator, int maxIterations)
-      throws FractionConversionException {
+  private LongFraction(double value, double epsilon, long maxDenominator, int maxIterations) {
     long overflow = Integer.MAX_VALUE;
     double r0 = value;
     long a0 = (long) FastMath.floor(r0);
@@ -325,7 +328,8 @@ public class LongFraction extends Number implements FieldElement<LongFraction>, 
   public int compareTo(LongFraction object) {
     long nOd = numerator * object.denominator;
     long dOn = denominator * object.numerator;
-    return (nOd < dOn) ? -1 : ((nOd > dOn) ? +1 : 0);
+    final int tmpResult = (nOd > dOn) ? +1 : 0;
+    return (nOd < dOn) ? -1 : tmpResult;
   }
 
   /**

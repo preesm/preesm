@@ -24,6 +24,7 @@ PREESM Changelog
 * Add LongExpressions to speedup evaluation;
 * Use parameterized tests;
 * Add test case for stressing memory allocation;
+* Use LongFraction (tweak of apache.math3.Fraction) instead of Rationals and Fractions;
 
 ### Bug fix
 

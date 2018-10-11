@@ -27,7 +27,7 @@ import org.apache.commons.math3.FieldElement;
  * This class is a singleton.
  * </p>
  *
- * @see Fraction
+ * @see LongFraction
  * @since 2.0
  */
 public class LongFractionField implements Field<LongFraction>, Serializable {
