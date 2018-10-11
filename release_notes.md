@@ -1,8 +1,8 @@
 PREESM Changelog
 ================
 
-## Release version X.Y.Z
-*XXXX.XX.XX*
+## Release version 2.16.0
+*2018.10.11*
 
 ### New Feature
 * Add workflow task to manually input a schedule in the flow;
