@@ -104,29 +104,6 @@ public class MapperDAG extends DirectedAcyclicGraph {
   }
 
   /**
-   * give the number of vertices in the DAG.
-   *
-   * @return the number of vertices
-   */
-  public int getNumberOfVertices() {
-    return vertexSet().size();
-  }
-
-  /**
-   * Adds all vertices of a given set.
-   *
-   * @param set
-   *          the set
-   */
-  public void addAllVertices(final Set<MapperDAGVertex> set) {
-    final Iterator<MapperDAGVertex> iterator = set.iterator();
-
-    while (iterator.hasNext()) {
-      addVertex(iterator.next());
-    }
-  }
-
-  /**
    * Gets the schedule cost.
    *
    * @return the schedule cost
@@ -264,29 +241,6 @@ public class MapperDAG extends DirectedAcyclicGraph {
       }
     }
     return null;
-  }
-
-  /**
-   * Gets all the DAG vertices corresponding to a given SDF graph.
-   *
-   * @param sdfvertex
-   *          the sdfvertex
-   * @return the vertices
-   */
-  public Set<MapperDAGVertex> getVertices(final SDFAbstractVertex sdfvertex) {
-
-    final Set<MapperDAGVertex> currentset = new LinkedHashSet<>();
-    MapperDAGVertex currentvertex = null;
-    for (final DAGVertex currentv : vertexSet()) {
-      currentvertex = (MapperDAGVertex) currentv;
-
-      // Special vertices have null info
-      if ((currentvertex.getCorrespondingSDFVertex().getInfo() != null)
-          && currentvertex.getCorrespondingSDFVertex().getInfo().equals(sdfvertex.getInfo())) {
-        currentset.add(currentvertex);
-      }
-    }
-    return currentset;
   }
 
   /**

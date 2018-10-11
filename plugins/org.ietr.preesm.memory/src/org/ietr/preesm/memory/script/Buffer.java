@@ -334,10 +334,6 @@ public class Buffer {
     this.divisibilityRequiredMatches = new ArrayList<>();
   }
 
-  SDFAbstractVertex getSdfVertex() {
-    return this.dagVertex.getCorrespondingSDFVertex();
-  }
-
   void setMaxIndex(final int newValue) {
 
     // if the buffer was originally mergeable
