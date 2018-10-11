@@ -7,6 +7,7 @@ PREESM Changelog
 ### New Feature
 * Add workflow task to manually input a schedule in the flow;
 * A period can be specified for each actor (but not for special actors), it is not used during scheduling for now;
+  * Consistency is checked during workflow execution;
 
 ### Changes
 * Major refactoring

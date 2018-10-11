@@ -48,7 +48,6 @@ import java.util.Map.Entry;
 import java.util.logging.Level;
 import org.ietr.dftools.workflow.WorkflowException;
 import org.ietr.dftools.workflow.tools.WorkflowLogger;
-import org.ietr.preesm.experiment.model.expression.ExpressionEvaluator;
 import org.ietr.preesm.experiment.model.factory.PiMMUserFactory;
 import org.ietr.preesm.experiment.model.pimm.AbstractActor;
 import org.ietr.preesm.experiment.model.pimm.AbstractVertex;
@@ -567,7 +566,7 @@ public class PiMMHandler {
 
   /**
    * azmokfaze
-   * 
+   *
    * @param graphBRV
    *          Repetition Vector as a map.
    */
@@ -586,7 +585,7 @@ public class PiMMHandler {
         continue;
       } else if (av instanceof Actor) {
         final Actor actor = (Actor) av;
-        final long actorPeriod = ExpressionEvaluator.evaluate(actor.getPeriod());
+        final long actorPeriod = actor.getPeriod().evaluate();
         if (actorPeriod > 0) {
           final Long actorRV = en.getValue() * levelBRV.get(container);
           final long period = actorRV * actorPeriod;
@@ -621,7 +620,7 @@ public class PiMMHandler {
 
   /**
    * zerze
-   * 
+   *
    * @param graph
    *          zerz
    * @param graphBRV
