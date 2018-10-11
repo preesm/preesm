@@ -401,9 +401,9 @@ public class PapifyPage extends FormPage implements IPropertyListener {
       this.scenario.getPapifyConfigManager().addPapifyData(this.papiEvents);
       this.scenario.getPapifyConfigManager().setExcelFileURL(text.getText());
       this.peTreeViewer.setInput(this.papiEvents);
-      this.peTreeViewer.refresh();
-      this.eventTableViewer.setInput(this.papiEvents);
-      this.eventTableViewer.refresh();
+      this.peContentProvider.setInput();
+      this.actorTreeViewer.setInput(this.papiEvents);
+      this.actorContentProvider.setInput();
     }
     firePropertyChange(IEditorPart.PROP_DIRTY);
   }
@@ -578,6 +578,7 @@ public class PapifyPage extends FormPage implements IPropertyListener {
 
     Map<String, Integer> actorNamesAndLevels = this.checkStateListener.getAllActorNamesAndLevels();
     for (String columnLabel : actorNamesAndLevels.keySet()) {
+      System.out.println("Actor " + columnLabel + " has level " + actorNamesAndLevels.get(columnLabel));
 
       final TreeViewerColumn viewerColumn = new TreeViewerColumn(actorTreeViewer, SWT.CENTER | SWT.CHECK);
       final TreeColumn column = viewerColumn.getColumn();
