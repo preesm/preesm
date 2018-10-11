@@ -335,7 +335,7 @@ public class Buffer {
   }
 
   SDFAbstractVertex getSdfVertex() {
-    return (SDFAbstractVertex) this.dagVertex.getPropertyBean().getValue(DAGVertex.SDF_VERTEX);
+    return this.dagVertex.getCorrespondingSDFVertex();
   }
 
   void setMaxIndex(final int newValue) {

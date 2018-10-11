@@ -352,7 +352,6 @@ class ScriptRunner {
 		// Retrieve the original sdf folder
 		// Identify all actors with a memory Script
 		for (dagVertex : dag.vertexSet) {
-			val sdfVertex = dagVertex.propertyBean.getValue(DAGVertex.SDF_VERTEX) as SDFAbstractVertex
 			if (dagVertex.kind !== null) {
 				switch (dagVertex.kind) {
 					case DAGVertex.DAG_VERTEX: {
@@ -368,6 +367,10 @@ class ScriptRunner {
 							if (scriptFile !== null) {
 								scriptFiles.put(pathString, scriptFile)
 								scriptedVertices.put(dagVertex, scriptFile)
+							} else {
+								val message = "Memory script of vertex " + dagVertex.getName() + " is invalid: \"" +
+																		pathString + "\". Change it in the graphml editor."
+								WorkflowLogger.getLogger.log(Level.WARNING, message)
 							}
 						}
 					}
@@ -378,6 +381,7 @@ class ScriptRunner {
 						associateScriptToSpecialVertex(dagVertex, "join", specialScriptFiles.get(JOIN))
 					}
 					case DAGBroadcastVertex.DAG_BROADCAST_VERTEX: {
+						val sdfVertex = dagVertex.correspondingSDFVertex
 						if (sdfVertex instanceof SDFRoundBufferVertex) {
 							associateScriptToSpecialVertex(dagVertex, "roundbuffer", specialScriptFiles.get(ROUNDBUFFER))
 						} else {

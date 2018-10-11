@@ -169,7 +169,7 @@ public class CodegenHierarchicalModelGenerator {
    */
   public int execute(final CoreBlock operatorBlock, final DAGVertex dagVertex) throws SDF4JException {
     // Check whether the ActorCall is a call to a hierarchical actor or not.
-    final SDFVertex sdfVertex = (SDFVertex) dagVertex.getPropertyBean().getValue(DAGVertex.SDF_VERTEX);
+    final SDFAbstractVertex sdfVertex = dagVertex.getCorrespondingSDFVertex();
     final Object refinement = sdfVertex.getPropertyBean().getValue(AbstractVertex.REFINEMENT);
 
     if (refinement instanceof AbstractGraph) {
@@ -281,7 +281,7 @@ public class CodegenHierarchicalModelGenerator {
               }
 
             } else {
-              throw new CodegenException("Actor (" + sdfVertex + ") has no valid refinement (.idl, .h or .graphml)."
+              throw new CodegenException("Actor (" + dagVertex + ") has no valid refinement (.idl, .h or .graphml)."
                   + " Associate a refinement to this actor before generating code.");
             }
 
@@ -304,7 +304,7 @@ public class CodegenHierarchicalModelGenerator {
             }
 
           } else {
-            throw new CodegenException("Unsupported codegen for Actor: " + sdfVertex + " (Should be Fork or Join).");
+            throw new CodegenException("Unsupported codegen for Actor: " + dagVertex + " (Should be Fork or Join).");
           }
 
           // clust Sequence ForLoop only

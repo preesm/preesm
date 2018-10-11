@@ -272,7 +272,7 @@ public class MemExBroadcastMerger {
     final Set<DAGEdge> incomingEdges = vert.incomingEdges();
 
     // Retrieve the last memobject
-    final SDFAbstractVertex sdfVertex = (SDFAbstractVertex) vert.getPropertyBean().getValue(DAGVertex.SDF_VERTEX);
+    final SDFAbstractVertex sdfVertex = vert.getCorrespondingSDFVertex();
     final Map<Long,
         SDFEdge> orderedEdges = (Map<Long, SDFEdge>) sdfVertex.getPropertyBean().getValue(DAGForkVertex.EDGES_ORDER);
     final SDFEdge lastEdge = orderedEdges.get(Collections.max(orderedEdges.keySet()));
