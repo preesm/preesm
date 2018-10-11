@@ -46,9 +46,11 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Stream;
+import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.IWorkspace;
+import org.eclipse.core.resources.IWorkspaceRoot;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.IPath;
 import org.osgi.framework.Bundle;
@@ -173,8 +175,17 @@ public final class URLResolver {
       // Eclipse is not running (call from plain Java or JUnit)
       return null;
     }
-    final IProject[] projects = workspace.getRoot().getProjects();
+    final IWorkspaceRoot workspaceRoot = workspace.getRoot();
+    final IProject[] projects = workspaceRoot.getProjects();
     final IPath path = new org.eclipse.core.runtime.Path(location);
+    try {
+      final IFile file = workspaceRoot.getFile(path);
+      if (file != null) {
+        return file.getRawLocationURI().toURL();
+      }
+    } catch (final Exception e) {
+      // ignore
+    }
     final IProject project = Stream.of(projects)
         .filter(p -> bundleFilterList.isEmpty() || bundleFilterList.contains(p.getName())).filter(p -> p.exists(path))
         .findFirst().orElse(null);
