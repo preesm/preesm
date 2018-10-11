@@ -40,12 +40,18 @@ package org.ietr.preesm.pimm.algorithm.helper;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
 import java.util.logging.Level;
+import org.ietr.dftools.workflow.WorkflowException;
 import org.ietr.dftools.workflow.tools.WorkflowLogger;
 import org.ietr.preesm.experiment.model.factory.PiMMUserFactory;
 import org.ietr.preesm.experiment.model.pimm.AbstractActor;
+import org.ietr.preesm.experiment.model.pimm.AbstractVertex;
+import org.ietr.preesm.experiment.model.pimm.Actor;
 import org.ietr.preesm.experiment.model.pimm.DataInputInterface;
 import org.ietr.preesm.experiment.model.pimm.DataInputPort;
 import org.ietr.preesm.experiment.model.pimm.DataOutputInterface;
@@ -556,6 +562,84 @@ public class PiMMHandler {
     graph.getContainingPiGraph().addDelay(delayPersistence);
 
     return delayPersistence;
+  }
+
+  /**
+   * azmokfaze
+   *
+   * @param graphBRV
+   *          Repetition Vector as a map.
+   */
+  public static void checkPeriodicity(final Map<AbstractVertex, Long> graphBRV) {
+
+    final Map<PiGraph, Long> levelBRV = new HashMap<>();
+    final Map<Long, List<Actor>> mapGraphPeriods = new HashMap<>();
+
+    for (final Entry<AbstractVertex, Long> en : graphBRV.entrySet()) {
+      final AbstractVertex av = en.getKey();
+      final PiGraph container = av.getContainingPiGraph();
+      if (!levelBRV.containsKey(container)) {
+        levelBRV.put(container, getHierarchichalRV(container, graphBRV));
+      }
+      if (av instanceof PiGraph) {
+        continue;
+      } else if (av instanceof Actor) {
+        final Actor actor = (Actor) av;
+        final long actorPeriod = actor.getPeriod().evaluate();
+        if (actorPeriod > 0) {
+          final Long actorRV = en.getValue() * levelBRV.get(container);
+          final long period = actorRV * actorPeriod;
+          if (!mapGraphPeriods.containsKey(period)) {
+            mapGraphPeriods.put(period, new ArrayList<>());
+          }
+          mapGraphPeriods.get(period).add(actor);
+        }
+      }
+    }
+    if (mapGraphPeriods.size() > 1) {
+      StringBuilder sb = new StringBuilder("Different graph periods have been found:");
+      for (final Entry<Long, List<Actor>> en : mapGraphPeriods.entrySet()) {
+        sb.append("\n" + en.getKey() + " from: ");
+        for (Actor a : en.getValue()) {
+          sb.append(a.getName() + " / ");
+        }
+      }
+      sb.append("\n");
+      WorkflowLogger.getLogger().log(Level.SEVERE, sb.toString());
+      throw new WorkflowException("Periods are not consistent, abandon.");
+    } else if (mapGraphPeriods.size() == 1) {
+      long period = 0;
+      for (Long p : mapGraphPeriods.keySet()) {
+        period = p;
+      }
+      WorkflowLogger.getLogger().log(Level.INFO, "The graph period is set to: " + period + "\n");
+    } else {
+      WorkflowLogger.getLogger().log(Level.INFO, "No period for the graph.\n");
+    }
+  }
+
+  /**
+   * zerze
+   *
+   * @param graph
+   *          zerz
+   * @param graphBRV
+   *          zerze
+   * @return rggr
+   */
+  public static Long getHierarchichalRV(final PiGraph graph, final Map<AbstractVertex, Long> graphBRV) {
+    // We need to get the repetition vector of the graph
+    final Long graphRV = graphBRV.get(graph) == null ? 1 : graphBRV.get(graph);
+    // We also need to get the total repetition vector of the hierarchy to correctly flatten the hierarchy
+    Long graphHierarchicallRV = (long) (1);
+    PiGraph containingGraph = graph.getContainingPiGraph();
+    while (containingGraph != null) {
+      final Long currentGraphRV = graphBRV.get(containingGraph) == null ? 1 : graphBRV.get(containingGraph);
+      graphHierarchicallRV = graphHierarchicallRV * currentGraphRV;
+      containingGraph = containingGraph.getContainingPiGraph();
+    }
+    // We update the value of the graphRV accordingly
+    return graphRV * graphHierarchicallRV;
   }
 
 }

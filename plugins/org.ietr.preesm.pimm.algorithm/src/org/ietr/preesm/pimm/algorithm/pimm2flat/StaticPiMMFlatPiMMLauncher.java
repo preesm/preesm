@@ -116,6 +116,8 @@ public class StaticPiMMFlatPiMMLauncher extends PiMMSwitch<Boolean> {
     computeBRV();
     // 4. Print the RV values
     printRV();
+    // 4.5 Check periods with BRV
+    PiMMHandler.checkPeriodicity(this.graphBRV);
     // 5. Now, flatten the graph
     return convert2FlatPiMM();
   }
