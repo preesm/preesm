@@ -176,7 +176,7 @@ public class LCMBasedBRV extends PiBRV {
     for (final AbstractActor actor : subgraph) {
       final long num = reps.get(actor.getName()).getNumerator();
       final long denom = reps.get(actor.getName()).getDenominator();
-      final long rv = ((num * lcm) / denom);
+      final long rv = (num * (lcm / denom));
       this.graphBRV.put(actor, rv);
     }
   }
