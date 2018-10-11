@@ -1,6 +1,7 @@
 /**
  * Copyright or © or Copr. IETR/INSA - Rennes (2012 - 2018) :
  *
+ * Alexandre Honorat <ahonorat@insa-rennes.fr> (2018)
  * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017 - 2018)
  * Clément Guy <clement.guy@insa-rennes.fr> (2014 - 2015)
  * Florian Arrestier <florian.arrestier@insa-rennes.fr> (2018)
@@ -38,8 +39,11 @@
  */
 package org.ietr.preesm.experiment.model.pimm.serialize;
 
+import java.io.BufferedInputStream;
+import java.io.IOException;
 import java.io.InputStream;
 import java.util.logging.Level;
+import org.apache.commons.io.IOUtils;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IWorkspaceRoot;
@@ -76,7 +80,6 @@ import org.ietr.preesm.experiment.model.pimm.DelayActor;
 import org.ietr.preesm.experiment.model.pimm.Dependency;
 import org.ietr.preesm.experiment.model.pimm.Direction;
 import org.ietr.preesm.experiment.model.pimm.ExecutableActor;
-import org.ietr.preesm.experiment.model.pimm.Expression;
 import org.ietr.preesm.experiment.model.pimm.Fifo;
 import org.ietr.preesm.experiment.model.pimm.ForkActor;
 import org.ietr.preesm.experiment.model.pimm.FunctionParameter;
@@ -92,6 +95,7 @@ import org.ietr.preesm.experiment.model.pimm.PortKind;
 import org.ietr.preesm.experiment.model.pimm.PortMemoryAnnotation;
 import org.ietr.preesm.experiment.model.pimm.RefinementContainer;
 import org.ietr.preesm.experiment.model.pimm.util.PiIdentifiers;
+import org.ietr.preesm.experiment.model.pimm.util.PiSDFXSDValidator;
 import org.ietr.preesm.experiment.model.pimm.util.SubgraphConnectorVisitor;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -117,7 +121,7 @@ public class PiParser {
    * @throws CoreException
    *           the core exception
    */
-  public static PiGraph getPiGraph(final String algorithmURL) throws InvalidModelException, CoreException {
+  public static PiGraph getPiGraph(final String algorithmURL) {
     PiGraph pigraph = null;
     final ResourceSet resourceSet = new ResourceSetImpl();
 
@@ -192,8 +196,20 @@ public class PiParser {
     // Instantiate the graph that will be filled with parser informations
     final PiGraph graph = PiMMUserFactory.instance.createPiGraph();
 
+    // wrap the input stream in one that supports mark/reset
+    final BufferedInputStream bis = new BufferedInputStream(inputStream);
+
+    try {
+      bis.mark(Integer.MAX_VALUE);
+      final String pisdfContent = IOUtils.toString(bis);
+      PiSDFXSDValidator.validate(pisdfContent);
+      bis.reset();
+    } catch (final IOException ex) {
+      throw new PiGraphException("Could not parse the input graph: \n" + ex.getMessage(), ex);
+    }
+
     // Parse the input stream
-    final Document document = DomUtil.parseDocument(inputStream);
+    final Document document = DomUtil.parseDocument(bis);
 
     // Retrieve the root element
     final Element rootElt = document.getDocumentElement();
@@ -223,6 +239,14 @@ public class PiParser {
 
     // Get the actor properties
     actor.setName(nodeElt.getAttribute(PiIdentifiers.ACTOR_NAME));
+
+    final String attribute = nodeElt.getAttribute(PiIdentifiers.ACTOR_PERIOD);
+    if (attribute != null && !attribute.isEmpty()) {
+      actor.setExpression(attribute);
+    } else {
+      // 0 means the actor is aperiodic, negative generates an error during evaluation
+      actor.setExpression(0);
+    }
 
     // Add the actor to the parsed graph
     graph.addActor(actor);
@@ -520,7 +544,7 @@ public class PiParser {
       if (fifoDelay.isEmpty()) {
         // Support for old ".pi" files
         delay = PiMMUserFactory.instance.createDelay();
-        delay.getSizeExpression().setExpressionString(edgeElt.getAttribute(PiIdentifiers.DELAY_EXPRESSION));
+        delay.setExpression(edgeElt.getAttribute(PiIdentifiers.DELAY_EXPRESSION));
         graph.addDelay(delay);
       } else {
         // Find the delay of the FIFO
@@ -552,7 +576,7 @@ public class PiParser {
     final Delay delay = PiMMUserFactory.instance.createDelay();
 
     // 2. Set the delay expression
-    delay.getSizeExpression().setExpressionString(nodeElt.getAttribute(PiIdentifiers.DELAY_EXPRESSION));
+    delay.setExpression(nodeElt.getAttribute(PiIdentifiers.DELAY_EXPRESSION));
 
     // 3. Get the delay ID
     delay.setName(nodeElt.getAttribute(PiIdentifiers.DELAY_NAME));
@@ -746,7 +770,7 @@ public class PiParser {
   protected Parameter parseParameter(final Element nodeElt, final PiGraph graph) {
     // Instantiate the new Parameter
     final Parameter param = PiMMUserFactory.instance.createParameter();
-    param.getValueExpression().setExpressionString(nodeElt.getAttribute(PiIdentifiers.PARAMETER_EXPRESSION));
+    param.setExpression(nodeElt.getAttribute(PiIdentifiers.PARAMETER_EXPRESSION));
 
     // Get the actor properties
     param.setName(nodeElt.getAttribute(PiIdentifiers.PARAMETER_NAME));
@@ -788,7 +812,7 @@ public class PiParser {
     final String attribute = elt.getAttribute(PiIdentifiers.PORT_EXPRESSION);
     final String annotation = elt.getAttribute(PiIdentifiers.PORT_MEMORY_ANNOTATION);
     final PortMemoryAnnotation portMemoryAnnotation = PortMemoryAnnotation.get(annotation);
-    final Expression portRateExpression;
+
     switch (PortKind.get(portKind)) {
       case DATA_INPUT:
         // Throw an error if the parsed vertex is not an actor
@@ -809,8 +833,7 @@ public class PiParser {
         } else {
           iPort = ((AbstractActor) vertex).getDataInputPorts().get(0);
         }
-        portRateExpression = iPort.getPortRateExpression();
-        portRateExpression.setExpressionString(attribute);
+        iPort.setExpression(attribute);
         iPort.setAnnotation(portMemoryAnnotation);
         break;
       case DATA_OUTPUT:
@@ -832,8 +855,7 @@ public class PiParser {
         } else {
           oPort = ((AbstractActor) vertex).getDataOutputPorts().get(0);
         }
-        portRateExpression = oPort.getPortRateExpression();
-        portRateExpression.setExpressionString(attribute);
+        oPort.setExpression(attribute);
         oPort.setAnnotation(portMemoryAnnotation);
         break;
       case CFG_INPUT:

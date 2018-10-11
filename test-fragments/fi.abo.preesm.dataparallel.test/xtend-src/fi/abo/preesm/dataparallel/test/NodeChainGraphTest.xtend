@@ -270,7 +270,7 @@ class NodeChainGraphTest {
 		srsdfRootNodes.forEach[root |
 			val inEdgeDelay = nodechain.getEdgewiseInputDelays(root)
 			srsdf.incomingEdgesOf(root).forEach[inEdge |
-				val cons = inEdge.cons.intValue
+				val cons = inEdge.cons.longValue
 				val delay = inEdgeDelay.get(inEdge)
 				Assert.assertTrue(delay !== null)
 				Assert.assertTrue(delay.intValue >= cons)
@@ -329,7 +329,7 @@ class NodeChainGraphTest {
 			val inEdgeDelay = nodechain.getEdgewiseInputDelays(root)
 			val copyInEdgeDelay = new HashMap(inEdgeDelay)
 			val newEdgeDelay = new HashMap(inEdgeDelay)
-			newEdgeDelay.keySet.forEach[key | newEdgeDelay.put(key, 0)]
+			newEdgeDelay.keySet.forEach[key | newEdgeDelay.put(key, 0L)]
 			nodechain.setEdgewiseInputDelays(root, newEdgeDelay)
 
 			nodechain.getEdgewiseInputDelays(root).forEach[node, delay |
@@ -337,7 +337,7 @@ class NodeChainGraphTest {
 				Assert.assertTrue(delay == 0)
 			]
 
-			newEdgeDelay.keySet.forEach[key | newEdgeDelay.put(key, -100)]
+			newEdgeDelay.keySet.forEach[key | newEdgeDelay.put(key, -100L)]
 			nodechain.setEdgewiseInputDelays(root, newEdgeDelay)
 			nodechain.getEdgewiseInputDelays(root).forEach[node, delay |
 				Assert.assertTrue(delay !== null)
@@ -378,14 +378,14 @@ class NodeChainGraphTest {
 
 				val copyOutEdgeDelay = new HashMap(outEdgeDelay)
 				val newOutEdgeDelay = new HashMap(outEdgeDelay)
-				newOutEdgeDelay.keySet.forEach[key | newOutEdgeDelay.put(key, 0)]
+				newOutEdgeDelay.keySet.forEach[key | newOutEdgeDelay.put(key, 0L)]
 				nodechain.setEdgewiseOutputDelays(node.vertex, newOutEdgeDelay)
 				nodechain.getEdgewiseOutputDelays(node.vertex).forEach[n, delay |
 					Assert.assertTrue(delay !== null)
 					Assert.assertTrue(delay == 0)
 				]
 
-				newOutEdgeDelay.keySet.forEach[key | newOutEdgeDelay.put(key, -100)]
+				newOutEdgeDelay.keySet.forEach[key | newOutEdgeDelay.put(key, -100L)]
 				nodechain.setEdgewiseOutputDelays(node.vertex, newOutEdgeDelay)
 				nodechain.getEdgewiseOutputDelays(node.vertex).forEach[n, delay |
 					Assert.assertTrue(delay !== null)

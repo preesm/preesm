@@ -74,7 +74,7 @@ public class HierarchyFlattening extends AbstractTaskImplementation {
    */
   @Override
   public Map<String, Object> execute(final Map<String, Object> inputs, final Map<String, String> parameters,
-      final IProgressMonitor monitor, final String nodeName, final Workflow workflow) throws WorkflowException {
+      final IProgressMonitor monitor, final String nodeName, final Workflow workflow) {
 
     final Map<String, Object> outputs = new LinkedHashMap<>();
     final SDFGraph algorithm = (SDFGraph) inputs.get("SDF");
@@ -116,11 +116,7 @@ public class HierarchyFlattening extends AbstractTaskImplementation {
             throw (new WorkflowException(e.getMessage(), e));
           }
           HierarchyFlattening.LOGGER.log(Level.INFO, "Flattening complete with depth " + depth);
-          final SDFGraph resultGraph = flattener.getFlattenedGraph();// flatHier.getOutput();
-
-          // for (final SDFEdge e : resultGraph.edgeSet()) {
-          // p("Flatenning " + e.getSourceLabel() + " " + e.getTargetLabel() + " rate " + e.getDataType().toString());
-          // }
+          final SDFGraph resultGraph = flattener.getFlattenedGraph();
 
           outputs.put("SDF", resultGraph);
         } else {

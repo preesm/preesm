@@ -3,11 +3,12 @@
 #######################
 language: java
 sudo: false
+dist: xenial
 jdk:
   - openjdk8
 os:
   - linux
-dist: trusty
+
 
 install: true
 
@@ -29,5 +30,5 @@ addons:
     branches: .*
 
 script: 
-  - travis_retry ./releng/build_and_test.sh --fast
+  - ./releng/build_and_test.sh --fast
 

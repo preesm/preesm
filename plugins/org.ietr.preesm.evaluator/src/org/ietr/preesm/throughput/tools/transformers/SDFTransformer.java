@@ -39,53 +39,53 @@ import org.ietr.dftools.algorithm.model.sdf.SDFAbstractVertex;
 import org.ietr.dftools.algorithm.model.sdf.SDFEdge;
 import org.ietr.dftools.algorithm.model.sdf.SDFGraph;
 import org.ietr.preesm.throughput.tools.helpers.GraphStructureHelper;
-import org.ietr.preesm.throughput.tools.helpers.MathFunctionsHelper;
 import org.ietr.preesm.throughput.tools.helpers.Stopwatch;
+import org.ietr.preesm.utils.math.MathFunctionsHelper;
 
 /**
  * @author hderoui
  *
  *         This class implements SDF conversions algorithms : SDF to srSDF, HSDF and DAG.
  */
-public abstract class SDFTransformer {
+public interface SDFTransformer {
 
   /**
    * Converts an SDF graph to an HSDF graph : SDF => HSDF
    *
-   * @param SDF
+   * @param sdf
    *          graph
    * @return HSDF graph
    */
-  public static SDFGraph convertToHSDF(final SDFGraph SDF) {
+  public static SDFGraph convertToHSDF(final SDFGraph sdf) {
     final Stopwatch timer = new Stopwatch();
     timer.start();
 
     // create the SRSDF
-    final SDFGraph hsdf_graph = new SDFGraph();
-    hsdf_graph.setName(SDF.getName() + "_HSDF");
+    final SDFGraph hsdfGraph = new SDFGraph();
+    hsdfGraph.setName(sdf.getName() + "_HSDF");
 
     // create actors instances
-    for (final SDFAbstractVertex a : SDF.vertexSet()) {
-      for (int i = 1; i <= a.getNbRepeatAsInteger(); i++) {
+    for (final SDFAbstractVertex a : sdf.vertexSet()) {
+      for (long i = 1; i <= a.getNbRepeatAsLong(); i++) {
         // create an instance a_i of the actor a
-        GraphStructureHelper.addActor(hsdf_graph, a.getName() + "_" + i, (SDFGraph) a.getGraphDescription(), 1,
-            (Double) a.getPropertyBean().getValue("duration"), null, a);
+        GraphStructureHelper.addActor(hsdfGraph, a.getName() + "_" + i, (SDFGraph) a.getGraphDescription(), 1L,
+            (Double) a.getPropertyBean().getValue("duration"), 0, a);
 
       }
     }
 
     // creates the edges
-    for (final SDFEdge e : SDF.edgeSet()) {
-      for (int i = 1; i <= e.getSource().getNbRepeatAsInteger(); i++) {
-        for (int k = 1; k <= e.getProd().intValue(); k += 1) {
+    for (final SDFEdge e : sdf.edgeSet()) {
+      for (long i = 1; i <= e.getSource().getNbRepeatAsLong(); i++) {
+        for (long k = 1; k <= e.getProd().longValue(); k += 1) {
           // compute the target actor instance id, and delay
-          final int j = ((((e.getDelay().intValue() + ((i - 1) * e.getProd().intValue()) + k) - 1)
-              % (e.getCons().intValue() * e.getTarget().getNbRepeatAsInteger())) / e.getCons().intValue()) + 1;
-          final int d = (int) Math.floor(((e.getDelay().intValue() + ((i - 1) * e.getProd().intValue()) + k) - 1)
-              / (e.getCons().intValue() * e.getTarget().getNbRepeatAsInteger()));
+          final long j = ((((e.getDelay().longValue() + ((i - 1) * e.getProd().longValue()) + k) - 1)
+              % (e.getCons().longValue() * e.getTarget().getNbRepeatAsLong())) / e.getCons().longValue()) + 1;
+          final long d = ((e.getDelay().longValue() + ((i - 1) * e.getProd().longValue()) + k) - 1)
+              / (e.getCons().longValue() * e.getTarget().getNbRepeatAsLong());
 
           // add the edge
-          GraphStructureHelper.addEdge(hsdf_graph, e.getSource().getName() + "_" + i, null,
+          GraphStructureHelper.addEdge(hsdfGraph, e.getSource().getName() + "_" + i, null,
               e.getTarget().getName() + "_" + j, null, 1, 1, d, e);
 
         }
@@ -93,51 +93,48 @@ public abstract class SDFTransformer {
     }
 
     timer.stop();
-    System.out.println("SDF graph converted to HSDF graph in " + timer.toString());
-    return hsdf_graph;
+    return hsdfGraph;
   }
 
   /**
    * Converts an SDF graph to a srSDF graph : SDF => srSDF
    *
-   * @param SDF
+   * @param sdf
    *          graph
    * @return srSDF graph
    */
-  public static SDFGraph convertToSrSDF(final SDFGraph SDF) {
+  public static SDFGraph convertToSrSDF(final SDFGraph sdf) {
     final Stopwatch timer = new Stopwatch();
     timer.start();
 
-    // System.out.println("====> converting the subgraph " + SDF.getName());
     // create the SRSDF
     final SDFGraph singleRate = new SDFGraph();
-    singleRate.setName(SDF.getName() + "_srSDF");
+    singleRate.setName(sdf.getName() + "_srSDF");
 
     // create actors instances
-    for (final SDFAbstractVertex a : SDF.vertexSet()) {
-      // System.out.println("====> duplicating actor " + a.getId());
-      for (int i = 1; i <= a.getNbRepeatAsInteger(); i++) {
+    for (final SDFAbstractVertex a : sdf.vertexSet()) {
+      for (int i = 1; i <= a.getNbRepeatAsLong(); i++) {
         // create an instance a_i of the actor a
-        GraphStructureHelper.addActor(singleRate, a.getName() + "_" + i, (SDFGraph) a.getGraphDescription(), 1,
-            (Double) a.getPropertyBean().getValue("duration"), null, a);
+        GraphStructureHelper.addActor(singleRate, a.getName() + "_" + i, (SDFGraph) a.getGraphDescription(), 1L,
+            (Double) a.getPropertyBean().getValue("duration"), 0, a);
       }
     }
 
     // creates the edges
-    for (final SDFEdge e : SDF.edgeSet()) {
-      for (int i = 1; i <= e.getSource().getNbRepeatAsInteger(); i++) {
-        for (int k = 1; k <= e.getProd().intValue(); k += 1) {
+    for (final SDFEdge e : sdf.edgeSet()) {
+      for (long i = 1; i <= e.getSource().getNbRepeatAsLong(); i++) {
+        for (long k = 1; k <= e.getProd().longValue(); k += 1) {
           // compute the target actor instance id, cons/prod rate, and delay
-          final int l = ((((e.getDelay().intValue() + ((i - 1) * e.getProd().intValue()) + k) - 1)
-              % (e.getCons().intValue() * e.getTarget().getNbRepeatAsInteger())) % e.getCons().intValue()) + 1;
-          final int j = ((((e.getDelay().intValue() + ((i - 1) * e.getProd().intValue()) + k) - 1)
-              % (e.getCons().intValue() * e.getTarget().getNbRepeatAsInteger())) / e.getCons().intValue()) + 1;
-          final int d = (int) Math.floor(((e.getDelay().intValue() + ((i - 1) * e.getProd().intValue()) + k) - 1)
-              / (e.getCons().intValue() * e.getTarget().getNbRepeatAsInteger()));
+          final long l = ((((e.getDelay().longValue() + ((i - 1) * e.getProd().longValue()) + k) - 1)
+              % (e.getCons().longValue() * e.getTarget().getNbRepeatAsLong())) % e.getCons().longValue()) + 1;
+          final long j = ((((e.getDelay().longValue() + ((i - 1) * e.getProd().longValue()) + k) - 1)
+              % (e.getCons().longValue() * e.getTarget().getNbRepeatAsLong())) / e.getCons().longValue()) + 1;
+          final long d = ((e.getDelay().longValue() + ((i - 1) * e.getProd().longValue()) + k) - 1)
+              / (e.getCons().longValue() * e.getTarget().getNbRepeatAsLong());
 
-          final int ma = e.getProd().intValue() - (k - 1);
-          final int mb = e.getCons().intValue() - (l - 1);
-          final int m = Math.min(ma, mb);
+          final long ma = e.getProd().longValue() - (k - 1);
+          final long mb = e.getCons().longValue() - (l - 1);
+          final long m = Math.min(ma, mb);
           k += (m - 1);
 
           // add the edge
@@ -149,74 +146,70 @@ public abstract class SDFTransformer {
     }
 
     timer.stop();
-    System.out.println("SDF graph converted to srSDF graph in " + timer.toString());
     return singleRate;
   }
 
   /**
    * Converts an SDF graph to a reduced HSDF graph : SDF => srSDF => HSDF
    *
-   * @param SDF
+   * @param sdf
    *          graph
    * @return HSDF graph with less number of edges
    */
-  public static SDFGraph convertToReducedHSDF(final SDFGraph SDF) {
+  public static SDFGraph convertToReducedHSDF(final SDFGraph sdf) {
     final Stopwatch timer = new Stopwatch();
     timer.start();
 
     // convert the SDF graph to a srSDF graph first then convert the srSDF graph to an HSDF graph
-    SDFGraph hsdf_graph = SDFTransformer.convertToSrSDF(SDF);
-    hsdf_graph = SrSDFTransformer.convertToHSDF(hsdf_graph);
+    SDFGraph hsdfHraph = SDFTransformer.convertToSrSDF(sdf);
+    hsdfHraph = SrSDFTransformer.convertToHSDF(hsdfHraph);
 
     timer.stop();
-    System.out.println("SDF graph converted to reduced HSDF graph in " + timer.toString());
-    return hsdf_graph;
+    return hsdfHraph;
   }
 
   /**
    * Converts an SDF graph to a DAG : SDF => srSDF => DAG
    *
-   * @param SDF
+   * @param sdf
    *          graph
    * @return DAG
    */
-  public static SDFGraph convertToDAG(final SDFGraph SDF) {
+  public static SDFGraph convertToDAG(final SDFGraph sdf) {
     final Stopwatch timer = new Stopwatch();
     timer.start();
 
     // convert the SDF graph to a srSDF graph first then convert the srSDF graph to a DAG
-    SDFGraph dag = SDFTransformer.convertToSrSDF(SDF);
+    SDFGraph dag = SDFTransformer.convertToSrSDF(sdf);
     dag = SrSDFTransformer.convertToDAG(dag);
 
     timer.stop();
-    System.out.println("SDF graph converted to DAG in " + timer.toString());
     return dag;
   }
 
   /**
    * normalize an SDF graph for the liveness test with the sufficient condition and for periodic schedule computation.
    *
-   * @param SDF
+   * @param sdf
    *          graph
    */
-  public static void normalize(final SDFGraph SDF) {
+  public static void normalize(final SDFGraph sdf) {
     final Stopwatch timer = new Stopwatch();
     timer.start();
 
-    double K_RV = 1;
-    for (final SDFAbstractVertex actor : SDF.vertexSet()) {
-      K_RV = MathFunctionsHelper.lcm(K_RV, actor.getNbRepeatAsInteger());
+    double kRv = 1;
+    for (final SDFAbstractVertex actor : sdf.vertexSet()) {
+      kRv = MathFunctionsHelper.lcm(kRv, actor.getNbRepeatAsLong());
     }
 
-    for (final SDFEdge edge : SDF.edgeSet()) {
-      edge.getSource().setPropertyValue("normalizedRate", K_RV / edge.getSource().getNbRepeatAsInteger());
-      edge.getTarget().setPropertyValue("normalizedRate", K_RV / edge.getTarget().getNbRepeatAsInteger());
+    for (final SDFEdge edge : sdf.edgeSet()) {
+      edge.getSource().setPropertyValue("normalizedRate", kRv / edge.getSource().getNbRepeatAsLong());
+      edge.getTarget().setPropertyValue("normalizedRate", kRv / edge.getTarget().getNbRepeatAsLong());
       edge.setPropertyValue("normalizationFactor",
-          K_RV / (edge.getCons().intValue() * edge.getTarget().getNbRepeatAsInteger()));
+          kRv / (edge.getCons().longValue() * edge.getTarget().getNbRepeatAsLong()));
     }
 
     timer.stop();
-    System.out.println("SDF graph normalized in " + timer.toString());
   }
 
 }

@@ -37,11 +37,11 @@ package org.ietr.preesm.throughput.tools.helpers;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Hashtable;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.Map.Entry;
 import org.ietr.dftools.algorithm.model.AbstractVertex;
-import org.ietr.dftools.algorithm.model.IInterface;
-import org.ietr.dftools.algorithm.model.parameters.InvalidExpressionException;
 import org.ietr.dftools.algorithm.model.sdf.SDFAbstractVertex;
 import org.ietr.dftools.algorithm.model.sdf.SDFEdge;
 import org.ietr.dftools.algorithm.model.sdf.SDFGraph;
@@ -59,7 +59,14 @@ import org.ietr.preesm.throughput.tools.parsers.Identifier;
  *         A structure helper to simplify the manipulation of the structure of a SDF graph
  *
  */
-public abstract class GraphStructureHelper {
+public interface GraphStructureHelper {
+
+  public static final String WEIGHT_LP_PROPERTY       = "weight_LP";
+  public static final String PORT_RATE_PROPERTY       = "port_rate";
+  public static final String BASE_ACTOR_PROPERTY      = "baseActor";
+  public static final String NORMALIZED_RATE_PROPERTY = "normalizedRate";
+  public static final String DURATION_PROPERTY        = "duration";
+  public static final String BASE_EDGE_PROPERTY       = "baseEdge";
 
   /**
    * Adds a new edge to an SDF graph.
@@ -86,12 +93,12 @@ public abstract class GraphStructureHelper {
    */
 
   public static SDFEdge addEdge(final SDFGraph graph, final String srcActorName, final String srcPortName,
-      final String tgtActorName, final String tgtPortName, final int prodRate, final int consRate, final int delay,
+      final String tgtActorName, final String tgtPortName, final long prodRate, final long consRate, final long delay,
       final SDFEdge baseEdge) {
     // get the source actor if not exists create one
     SDFAbstractVertex srcActor = graph.getVertex(srcActorName);
     if (srcActor == null) {
-      srcActor = GraphStructureHelper.addActor(graph, srcActorName, null, null, null, null, null);
+      srcActor = GraphStructureHelper.addActor(graph, srcActorName, null, 0, 0, 0, null);
     }
     // get the source port if not create one
     SDFInterfaceVertex srcPort;
@@ -108,7 +115,7 @@ public abstract class GraphStructureHelper {
     // get the target actor if not exists create one
     SDFAbstractVertex tgtActor = graph.getVertex(tgtActorName);
     if (tgtActor == null) {
-      tgtActor = GraphStructureHelper.addActor(graph, tgtActorName, null, null, null, null, null);
+      tgtActor = GraphStructureHelper.addActor(graph, tgtActorName, null, 0, 0, 0, null);
     }
     // get the target port if not exists create one
     SDFInterfaceVertex tgtPort;
@@ -130,7 +137,7 @@ public abstract class GraphStructureHelper {
     edge.setProd(new SDFIntEdgePropertyType(prodRate));
     edge.setCons(new SDFIntEdgePropertyType(consRate));
     edge.setDelay(new SDFIntEdgePropertyType(delay));
-    edge.setPropertyValue("baseEdge", baseEdge);
+    edge.setPropertyValue(BASE_EDGE_PROPERTY, baseEdge);
 
     return edge;
   }
@@ -155,7 +162,7 @@ public abstract class GraphStructureHelper {
    * @return the created actor
    */
   public static SDFAbstractVertex addActor(final SDFGraph graph, final String actorName, final SDFGraph subgraph,
-      final Integer repititionFactor, final Double latency, final Double normalizedPortsRate,
+      final long repititionFactor, final double latency, final double normalizedPortsRate,
       final SDFAbstractVertex baseActor) {
     final SDFAbstractVertex actor = new SDFVertex(graph);
     // set the name
@@ -168,25 +175,19 @@ public abstract class GraphStructureHelper {
     }
 
     // set the repetition factor
-    if (repititionFactor != null) {
-      actor.setNbRepeat(repititionFactor);
-    }
+    actor.setNbRepeat(repititionFactor);
 
     // set the execution duration
-    if (latency != null) {
-      actor.setPropertyValue("duration", latency);
-    }
+    actor.setPropertyValue(DURATION_PROPERTY, latency);
 
     // set the normalized consumption/production rate
-    if (normalizedPortsRate != null) {
-      actor.setPropertyValue("normalizedRate", normalizedPortsRate);
-    }
+    actor.setPropertyValue(NORMALIZED_RATE_PROPERTY, normalizedPortsRate);
 
     // set the base actor
     if (baseActor != null) {
-      actor.setPropertyValue("baseActor", baseActor);
+      actor.setPropertyValue(BASE_ACTOR_PROPERTY, baseActor);
     } else {
-      actor.setPropertyValue("baseActor", actor);
+      actor.setPropertyValue(BASE_ACTOR_PROPERTY, actor);
     }
 
     graph.addVertex(actor);
@@ -206,12 +207,12 @@ public abstract class GraphStructureHelper {
    *          the execution duration of the interface
    * @param z
    *          the normalized rate
-   * @param Base
+   * @param base
    *          the base interface of the input interface
    * @return the created input interface
    */
   public static SDFSourceInterfaceVertex addInputInterface(final SDFGraph graph, final String interfaceName,
-      final Integer rv, final Double l, final Double z, final SDFAbstractVertex Base) {
+      final long rv, final double l, final double z, final SDFAbstractVertex base) {
     // an interface is an independent actor from its hierarchical parent actor but with the same name of its associated
     // port in the hierarchical parent actor
 
@@ -224,25 +225,19 @@ public abstract class GraphStructureHelper {
     in.setName(interfaceName);
 
     // set the repetition factor
-    if (rv != null) {
-      in.setNbRepeat(rv);
-    }
+    in.setNbRepeat(rv);
 
     // set the execution duration
-    if (l != null) {
-      in.setPropertyValue("duration", l);
-    }
+    in.setPropertyValue(DURATION_PROPERTY, l);
 
     // set the normalized consumption/production rate
-    if (z != null) {
-      in.setPropertyValue("normalizedRate", z);
-    }
+    in.setPropertyValue(NORMALIZED_RATE_PROPERTY, z);
 
     // set the base actor
-    if (Base != null) {
-      in.setPropertyValue("baseActor", Base);
+    if (base != null) {
+      in.setPropertyValue(BASE_ACTOR_PROPERTY, base);
     } else {
-      in.setPropertyValue("baseActor", in);
+      in.setPropertyValue(BASE_ACTOR_PROPERTY, in);
     }
 
     graph.addVertex(in);
@@ -263,12 +258,12 @@ public abstract class GraphStructureHelper {
    *          the execution duration of the interface
    * @param z
    *          the normalized rate
-   * @param Base
+   * @param base
    *          the base interface of the output interface
    * @return the created output interface
    */
   public static SDFSinkInterfaceVertex addOutputInterface(final SDFGraph graph, final String interfaceName,
-      final Integer rv, final Double l, final Double z, final SDFAbstractVertex Base) {
+      final long rv, final double l, final double z, final SDFAbstractVertex base) {
     // an interface is an independent actor from its hierarchical parent actor but with the same name of its associated
     // port in the hierarchical actor
 
@@ -281,25 +276,19 @@ public abstract class GraphStructureHelper {
     out.setName(interfaceName);
 
     // set the repetition factor
-    if (rv != null) {
-      out.setNbRepeat(rv);
-    }
+    out.setNbRepeat(rv);
 
     // set the execution duration
-    if (l != null) {
-      out.setPropertyValue("duration", l);
-    }
+    out.setPropertyValue(DURATION_PROPERTY, l);
 
     // set the normalized consumption/production rate
-    if (z != null) {
-      out.setPropertyValue("normalizedRate", z);
-    }
+    out.setPropertyValue(NORMALIZED_RATE_PROPERTY, z);
 
     // set the base actor
-    if (Base != null) {
-      out.setPropertyValue("baseActor", Base);
+    if (base != null) {
+      out.setPropertyValue(BASE_ACTOR_PROPERTY, base);
     } else {
-      out.setPropertyValue("baseActor", out);
+      out.setPropertyValue(BASE_ACTOR_PROPERTY, out);
     }
 
     graph.addVertex(out);
@@ -318,11 +307,11 @@ public abstract class GraphStructureHelper {
    * @return created port
    */
   public static SDFSourceInterfaceVertex addSrcPort(final SDFAbstractVertex actor, final String portName,
-      final Integer portRate) {
+      final long portRate) {
     final SDFSourceInterfaceVertex port = new SDFSourceInterfaceVertex();
     port.setId(portName);
     port.setName(portName);
-    port.setPropertyValue("port_rate", portRate);
+    port.setPropertyValue(PORT_RATE_PROPERTY, portRate);
     actor.addInterface(port);
     return port;
   }
@@ -339,11 +328,11 @@ public abstract class GraphStructureHelper {
    * @return created port
    */
   public static SDFSinkInterfaceVertex addSinkPort(final SDFAbstractVertex actor, final String portName,
-      final Integer portRate) {
+      final long portRate) {
     final SDFSinkInterfaceVertex port = new SDFSinkInterfaceVertex();
     port.setId(portName);
     port.setName(portName);
-    port.setPropertyValue("port_rate", portRate);
+    port.setPropertyValue(PORT_RATE_PROPERTY, portRate);
     actor.addInterface(port);
     return port;
   }
@@ -355,9 +344,9 @@ public abstract class GraphStructureHelper {
    *          IBSDF graph
    * @return the list of hierarchical actors
    */
-  public static Hashtable<String, SDFAbstractVertex> getAllHierarchicalActors(final SDFGraph graph) {
+  public static Map<String, SDFAbstractVertex> getAllHierarchicalActors(final SDFGraph graph) {
     // list of hierarchical actors
-    final Hashtable<String, SDFAbstractVertex> hierarchicalActorsList = new Hashtable<>();
+    final Map<String, SDFAbstractVertex> hierarchicalActorsList = new LinkedHashMap<>();
     final ArrayList<SDFGraph> subgraphsToCheck = new ArrayList<>();
 
     // add the hierarchical actors of the top graph
@@ -389,9 +378,9 @@ public abstract class GraphStructureHelper {
    *          SDF graph
    * @return list of hierarchical actors
    */
-  public static Hashtable<String, SDFAbstractVertex> getHierarchicalActors(final SDFGraph graph) {
+  public static Map<String, SDFAbstractVertex> getHierarchicalActors(final SDFGraph graph) {
     // list of hierarchical actors
-    final Hashtable<String, SDFAbstractVertex> hierarchicalActorsList = new Hashtable<>();
+    final Map<String, SDFAbstractVertex> hierarchicalActorsList = new LinkedHashMap<>();
     for (final SDFAbstractVertex a : graph.vertexSet()) {
       if (a.getGraphDescription() != null) {
         hierarchicalActorsList.put(a.getName(), a);
@@ -415,30 +404,32 @@ public abstract class GraphStructureHelper {
 
     // Step 1: add the replacement subgraph into the parent graph
     for (final SDFAbstractVertex a : replacementGraph.vertexSet()) {
-      GraphStructureHelper.addActor(parentGraph, h.getName() + "_" + a.getName(), (SDFGraph) a.getGraphDescription(), 1,
-          (Double) a.getPropertyBean().getValue("duration"), null,
-          (SDFAbstractVertex) a.getPropertyBean().getValue("baseActor"));
+      GraphStructureHelper.addActor(parentGraph, h.getName() + "_" + a.getName(), (SDFGraph) a.getGraphDescription(),
+          1L, (Double) a.getPropertyBean().getValue(DURATION_PROPERTY), 0,
+          (SDFAbstractVertex) a.getPropertyBean().getValue(BASE_ACTOR_PROPERTY));
     }
     for (final SDFEdge e : replacementGraph.edgeSet()) {
-      final SDFEdge e_clone = GraphStructureHelper.addEdge(parentGraph, h.getName() + "_" + e.getSource().getName(),
-          null, h.getName() + "_" + e.getTarget().getName(), null, e.getProd().intValue(), e.getCons().intValue(),
-          e.getDelay().intValue(), (SDFEdge) e.getPropertyBean().getValue("baseedge"));
+      final String cloneEdgeSrcName = h.getName() + "_" + e.getSource().getName();
+      final String cloneEdgeTgtName = h.getName() + "_" + e.getTarget().getName();
+      final SDFEdge edgeClone = GraphStructureHelper.addEdge(parentGraph, cloneEdgeSrcName, null, cloneEdgeTgtName,
+          null, e.getProd().longValue(), e.getCons().longValue(), e.getDelay().longValue(),
+          (SDFEdge) e.getPropertyBean().getValue("baseedge"));
 
       // copy properties
-      if (e.getPropertyBean().getValue("weight_LP") != null) {
-        e_clone.setPropertyValue("weight_LP", (double) e.getPropertyBean().getValue("weight_LP"));
+      if (e.getPropertyBean().getValue(WEIGHT_LP_PROPERTY) != null) {
+        edgeClone.setPropertyValue(WEIGHT_LP_PROPERTY, (double) e.getPropertyBean().getValue(WEIGHT_LP_PROPERTY));
       }
     }
 
     // Step 2: connect the interfaces of the added graph with actors of the parent graph
     // disconnect the edges from the hierarchical actor and connect them to their associated interface in the subgraph
-    ArrayList<SDFEdge> edges = new ArrayList<>();
+    List<SDFEdge> edges = new ArrayList<>();
     for (final SDFInterfaceVertex input : h.getSources()) {
       edges.add(h.getAssociatedEdge(input));
     }
     for (final SDFEdge edge : edges) {
-      final String hierarchicalPortName = ((SDFEdge) edge.getPropertyBean().getValue("baseEdge")).getTargetInterface()
-          .getName();
+      final String hierarchicalPortName = ((SDFEdge) edge.getPropertyBean().getValue(BASE_EDGE_PROPERTY))
+          .getTargetInterface().getName();
       final String subgraphInterfaceName = h.getName() + "_" + hierarchicalPortName + "_1";
       GraphStructureHelper.replaceEdgeTargetActor(parentGraph, edge, subgraphInterfaceName, null);
     }
@@ -449,8 +440,8 @@ public abstract class GraphStructureHelper {
       edges.add(h.getAssociatedEdge(output));
     }
     for (final SDFEdge edge : edges) {
-      final String hierarchicalPortName = ((SDFEdge) edge.getPropertyBean().getValue("baseEdge")).getSourceInterface()
-          .getName();
+      final String hierarchicalPortName = ((SDFEdge) edge.getPropertyBean().getValue(BASE_EDGE_PROPERTY))
+          .getSourceInterface().getName();
       final String subgraphInterfaceName = h.getName() + "_" + hierarchicalPortName + "_1";
       GraphStructureHelper.replaceEdgeSourceActor(parentGraph, edge, subgraphInterfaceName, null);
     }
@@ -475,8 +466,9 @@ public abstract class GraphStructureHelper {
       final String newSourcePort) {
     // create the new edge
     final SDFEdge nweEdge = GraphStructureHelper.addEdge(graph, newSourceActor, newSourcePort,
-        edge.getTarget().getName(), edge.getTargetInterface().getName(), edge.getProd().intValue(),
-        edge.getCons().intValue(), edge.getDelay().intValue(), (SDFEdge) edge.getPropertyBean().getValue("baseEdge"));
+        edge.getTarget().getName(), edge.getTargetInterface().getName(), edge.getProd().longValue(),
+        edge.getCons().longValue(), edge.getDelay().longValue(),
+        (SDFEdge) edge.getPropertyBean().getValue(BASE_EDGE_PROPERTY));
     // remove the old edge
     graph.removeEdge(edge);
     return nweEdge;
@@ -498,8 +490,9 @@ public abstract class GraphStructureHelper {
       final String newTargetPort) {
     // create the new edge
     final SDFEdge nweEdge = GraphStructureHelper.addEdge(graph, edge.getSource().getName(),
-        edge.getSourceInterface().getName(), newTargetActor, newTargetPort, edge.getProd().intValue(),
-        edge.getCons().intValue(), edge.getDelay().intValue(), (SDFEdge) edge.getPropertyBean().getValue("baseEdge"));
+        edge.getSourceInterface().getName(), newTargetActor, newTargetPort, edge.getProd().longValue(),
+        edge.getCons().longValue(), edge.getDelay().longValue(),
+        (SDFEdge) edge.getPropertyBean().getValue(BASE_EDGE_PROPERTY));
     // remove the old edge
     graph.removeEdge(edge);
     return nweEdge;
@@ -550,9 +543,9 @@ public abstract class GraphStructureHelper {
 
     // Step 2: execute actor as long as they are ready
     final GraphSimulationHelper simulator = new GraphSimulationHelper(subgraph);
-    Hashtable<SDFAbstractVertex, Integer> readyActors = simulator.getReadyActorsNbExecutions();
+    Map<SDFAbstractVertex, Long> readyActors = simulator.getReadyActorsNbExecutions();
     while (!readyActors.isEmpty()) {
-      for (final Entry<SDFAbstractVertex, Integer> e : readyActors.entrySet()) {
+      for (final Entry<SDFAbstractVertex, Long> e : readyActors.entrySet()) {
         simulator.execute(e.getKey(), e.getValue());
       }
       readyActors = simulator.getReadyActorsNbExecutions();
@@ -567,9 +560,9 @@ public abstract class GraphStructureHelper {
     for (final SDFAbstractVertex actor : subgraph.vertexSet()) {
       if (actor instanceof SDFSinkInterfaceVertex) {
         final SDFEdge e = h.getAssociatedEdge(h.getInterface(actor.getName()));
-        final int oldMarking = e.getDelay().intValue();
-        final int newMarking = oldMarking
-            + (h.getNbRepeatAsInteger() * (simulator.getExecutionCounter(actor) * e.getProd().intValue()));
+        final long oldMarking = e.getDelay().longValue();
+        final long newMarking = oldMarking
+            + (h.getNbRepeatAsLong() * (simulator.getExecutionCounter(actor) * e.getProd().longValue()));
         e.setDelay(new SDFIntEdgePropertyType(newMarking));
       }
     }
@@ -581,24 +574,23 @@ public abstract class GraphStructureHelper {
   /**
    * computes a topological sorting of the complete DAG
    *
-   * @param DAG
+   * @param dag
    *          graph
    * @return list of sorted actors
    */
-  public static ArrayList<SDFAbstractVertex> topologicalSorting(final SDFGraph DAG) {
+  public static List<SDFAbstractVertex> topologicalSorting(final SDFGraph dag) {
     // the sorted list (inverse order of topological sorting)
     // TODO uses stack instead
-    final ArrayList<SDFAbstractVertex> sortedActors = new ArrayList<>();
+    final List<SDFAbstractVertex> sortedActors = new ArrayList<>();
 
     // Mark all the actors as not visited
-    final Hashtable<String, Boolean> visited = new Hashtable<>();
-    for (final SDFAbstractVertex actor : DAG.vertexSet()) {
-      // System.out.println("processing actor: " + actor.getName());
+    final Map<String, Boolean> visited = new LinkedHashMap<>();
+    for (final SDFAbstractVertex actor : dag.vertexSet()) {
       visited.put(actor.getName(), false);
     }
 
     // Topological Sort starting from all actors one by on
-    for (final SDFAbstractVertex actor : DAG.vertexSet()) {
+    for (final SDFAbstractVertex actor : dag.vertexSet()) {
       if (!visited.get(actor.getName())) {
         GraphStructureHelper.recurciveTopologicalSorting(actor, visited, sortedActors);
       }
@@ -619,8 +611,8 @@ public abstract class GraphStructureHelper {
    * @param sortedActors
    *          the resulted list
    */
-  private static void recurciveTopologicalSorting(final SDFAbstractVertex source,
-      final Hashtable<String, Boolean> visited, final ArrayList<SDFAbstractVertex> sortedActors) {
+  public static void recurciveTopologicalSorting(final SDFAbstractVertex source, final Map<String, Boolean> visited,
+      final List<SDFAbstractVertex> sortedActors) {
     // Mark the current actor as visited
     visited.put(source.getName(), true);
 
@@ -645,10 +637,10 @@ public abstract class GraphStructureHelper {
    *          actor to start from
    * @return list of sorted actors
    */
-  public static ArrayList<SDFAbstractVertex> partialTopologicalSorting(final SDFAbstractVertex source) {
+  public static List<SDFAbstractVertex> partialTopologicalSorting(final SDFAbstractVertex source) {
     // prepare the lists
-    final Hashtable<String, Boolean> visited = new Hashtable<>();
-    final ArrayList<SDFAbstractVertex> sortedActors = new ArrayList<>();
+    final Map<String, Boolean> visited = new LinkedHashMap<>();
+    final List<SDFAbstractVertex> sortedActors = new ArrayList<>();
 
     // do a partial topological sorting
     GraphStructureHelper.recurciveTopologicalSorting(source, visited, sortedActors);
@@ -665,8 +657,8 @@ public abstract class GraphStructureHelper {
    *          source actor
    * @return list of distances
    */
-  public static Hashtable<String, Double> getLongestPathToAllTargets(final SDFAbstractVertex source,
-      final PreesmScenario scenario, ArrayList<SDFAbstractVertex> topoSortList) {
+  public static Map<String, Double> getLongestPathToAllTargets(final SDFAbstractVertex source,
+      final PreesmScenario scenario, List<SDFAbstractVertex> topoSortList) {
 
     // get the topological sorting of the graph
     if (topoSortList == null) {
@@ -674,7 +666,7 @@ public abstract class GraphStructureHelper {
     }
 
     // table of distances
-    final Hashtable<String, Double> distance = new Hashtable<>();
+    final Map<String, Double> distance = new LinkedHashMap<>();
     for (final SDFAbstractVertex actor : topoSortList) {
       distance.put(actor.getName(), Double.NEGATIVE_INFINITY);
     }
@@ -682,32 +674,31 @@ public abstract class GraphStructureHelper {
 
     for (int i = 0; i < topoSortList.size(); i++) {
       // get the current source actor
-      final SDFAbstractVertex current_source = topoSortList.get(i);
+      final SDFAbstractVertex currentSource = topoSortList.get(i);
 
       // define the edge weight as the duration of the current source actor
       double actorDuration;
       if (scenario != null) {
-        actorDuration = scenario.getTimingManager().getTimingOrDefault(current_source.getId(), "x86").getTime();
+        actorDuration = scenario.getTimingManager().getTimingOrDefault(currentSource.getId(), "x86").getTime();
       } else {
-        actorDuration = (double) current_source.getPropertyBean().getValue("duration");
+        actorDuration = (double) currentSource.getPropertyBean().getValue(DURATION_PROPERTY);
       }
 
       // update the distances
-      for (final SDFInterfaceVertex output : current_source.getSinks()) {
+      for (final SDFInterfaceVertex output : currentSource.getSinks()) {
         double edgeWeight = actorDuration;
         // get the associated output edge and its weight if defined
-        final SDFEdge outputEdge = current_source.getAssociatedEdge(output);
-        if (outputEdge.getPropertyBean().getValue("weight_LP") != null) {
-          edgeWeight = (double) outputEdge.getPropertyBean().getValue("weight_LP");
+        final SDFEdge outputEdge = currentSource.getAssociatedEdge(output);
+        if (outputEdge.getPropertyBean().getValue(WEIGHT_LP_PROPERTY) != null) {
+          edgeWeight = (double) outputEdge.getPropertyBean().getValue(WEIGHT_LP_PROPERTY);
         }
 
         // get the target actor of the associated output edge
-        // SDFAbstractVertex current_target = current_source.getAssociatedEdge(output).getTarget();
-        final SDFAbstractVertex current_target = outputEdge.getTarget();
+        final SDFAbstractVertex currentTarget = outputEdge.getTarget();
 
         // update the distance of the current target
-        if (distance.get(current_target.getName()) < (distance.get(current_source.getName()) + edgeWeight)) {
-          distance.replace(current_target.getName(), distance.get(current_source.getName()) + edgeWeight);
+        if (distance.get(currentTarget.getName()) < (distance.get(currentSource.getName()) + edgeWeight)) {
+          distance.replace(currentTarget.getName(), distance.get(currentSource.getName()) + edgeWeight);
         }
       }
     }
@@ -723,7 +714,7 @@ public abstract class GraphStructureHelper {
    * @return value of the longest path between the source and the target
    */
   public static double getLongestPathToTarget(final SDFAbstractVertex source, final SDFAbstractVertex target,
-      final PreesmScenario scenario, ArrayList<SDFAbstractVertex> topoSortList) {
+      final PreesmScenario scenario, List<SDFAbstractVertex> topoSortList) {
 
     // get the topological sorting of the graph
     if (topoSortList == null) {
@@ -731,7 +722,7 @@ public abstract class GraphStructureHelper {
     }
 
     // table of distances
-    final Hashtable<String, Double> distance = new Hashtable<>();
+    final Map<String, Double> distance = new LinkedHashMap<>();
     for (final SDFAbstractVertex actor : topoSortList) {
       distance.put(actor.getName(), Double.NEGATIVE_INFINITY);
     }
@@ -739,37 +730,36 @@ public abstract class GraphStructureHelper {
 
     for (int i = 0; i < topoSortList.size(); i++) {
       // get the current source actor
-      final SDFAbstractVertex current_source = topoSortList.get(i);
+      final SDFAbstractVertex currentSource = topoSortList.get(i);
 
       // check if the target actor is reached
-      if (current_source.getName().equals(target.getName())) {
+      if (currentSource.getName().equals(target.getName())) {
         return distance.get(target.getName());
       } else {
 
         // define the edge weight as the duration of the current source actor
         double actorDuration;
         if (scenario != null) {
-          actorDuration = scenario.getTimingManager().getTimingOrDefault(current_source.getId(), "x86").getTime();
+          actorDuration = scenario.getTimingManager().getTimingOrDefault(currentSource.getId(), "x86").getTime();
         } else {
-          actorDuration = (double) current_source.getPropertyBean().getValue("duration");
+          actorDuration = (double) currentSource.getPropertyBean().getValue(DURATION_PROPERTY);
         }
 
         // update the distances
-        for (final SDFInterfaceVertex output : current_source.getSinks()) {
+        for (final SDFInterfaceVertex output : currentSource.getSinks()) {
           double edgeWeight = actorDuration;
           // get the associated output edge and its weight if defined
-          final SDFEdge outputEdge = current_source.getAssociatedEdge(output);
-          if (outputEdge.getPropertyBean().getValue("weight_LP") != null) {
-            edgeWeight = (double) outputEdge.getPropertyBean().getValue("weight_LP");
+          final SDFEdge outputEdge = currentSource.getAssociatedEdge(output);
+          if (outputEdge.getPropertyBean().getValue(WEIGHT_LP_PROPERTY) != null) {
+            edgeWeight = (double) outputEdge.getPropertyBean().getValue(WEIGHT_LP_PROPERTY);
           }
 
           // get the target actor of the associated output edge
-          // SDFAbstractVertex current_target = current_source.getAssociatedEdge(output).getTarget();
-          final SDFAbstractVertex current_target = outputEdge.getTarget();
+          final SDFAbstractVertex currentTarget = outputEdge.getTarget();
 
           // update the distance of the current target
-          if (distance.get(current_target.getName()) < (distance.get(current_source.getName()) + edgeWeight)) {
-            distance.replace(current_target.getName(), distance.get(current_source.getName()) + edgeWeight);
+          if (distance.get(currentTarget.getName()) < (distance.get(currentSource.getName()) + edgeWeight)) {
+            distance.replace(currentTarget.getName(), distance.get(currentSource.getName()) + edgeWeight);
           }
         }
       }
@@ -780,46 +770,46 @@ public abstract class GraphStructureHelper {
   }
 
   /**
-   * @param DAG
+   * @param dag
    *          graph
    * @return value of the longest path in the graph
    */
-  public static double getLongestPath(final SDFGraph DAG, final PreesmScenario scenario,
-      ArrayList<SDFAbstractVertex> topoSortList) {
+  public static double getLongestPath(final SDFGraph dag, final PreesmScenario scenario,
+      List<SDFAbstractVertex> topoSortList) {
     // add a source and a target actor
-    final SDFAbstractVertex source = GraphStructureHelper.addActor(DAG, "S_LongestPath", null, 1, 0., null, null);
-    final SDFAbstractVertex target = GraphStructureHelper.addActor(DAG, "T_LongestPath", null, 1, 0., null, null);
+    final SDFAbstractVertex source = GraphStructureHelper.addActor(dag, "S_LongestPath", null, 1L, 0, 0, null);
+    final SDFAbstractVertex target = GraphStructureHelper.addActor(dag, "T_LongestPath", null, 1L, 0, 0, null);
 
     // connect the source to all input actors and the target to all output actors
-    for (final SDFAbstractVertex actor : DAG.vertexSet()) {
+    for (final SDFAbstractVertex actor : dag.vertexSet()) {
       // check if the actor has no input edges
       if (actor.getSources().isEmpty()) {
         // add an edge between the source and the current actor
-        GraphStructureHelper.addEdge(DAG, source.getName(), null, actor.getName(), null, 1, 1, 0, null);
+        GraphStructureHelper.addEdge(dag, source.getName(), null, actor.getName(), null, 1, 1, 0, null);
       }
       // check if the actor has no output edges
       if (actor.getSinks().isEmpty()) {
         // add an edge between the current actor and the target
-        GraphStructureHelper.addEdge(DAG, actor.getName(), null, target.getName(), null, 1, 1, 0, null);
+        GraphStructureHelper.addEdge(dag, actor.getName(), null, target.getName(), null, 1, 1, 0, null);
       }
     }
 
     // get the topological sorting of the graph
     if (topoSortList == null) {
-      topoSortList = GraphStructureHelper.topologicalSorting(DAG);
+      topoSortList = GraphStructureHelper.topologicalSorting(dag);
     } else {
       topoSortList.add(0, source);
       topoSortList.add(topoSortList.size(), target);
     }
 
     // compute the longest path from the source
-    final Hashtable<String,
+    final Map<String,
         Double> distance = GraphStructureHelper.getLongestPathToAllTargets(source, scenario, topoSortList);
     final double lp = distance.get(target.getName());
 
     // remove the source and the target from the graph
-    DAG.removeVertex(source);
-    DAG.removeVertex(target);
+    dag.removeVertex(source);
+    dag.removeVertex(target);
 
     return lp;
   }
@@ -839,7 +829,7 @@ public abstract class GraphStructureHelper {
     final SDFGraph clonedIBSDF = ibsdf.clone();
 
     // add the hierarchical actors of the new top-graph to the list
-    Hashtable<String, SDFAbstractVertex> hActors = GraphStructureHelper.getHierarchicalActors(clonedIBSDF);
+    Map<String, SDFAbstractVertex> hActors = GraphStructureHelper.getHierarchicalActors(clonedIBSDF);
     for (final SDFAbstractVertex a : hActors.values()) {
       hierarchicalActorsToBeCloned.add(a);
     }
@@ -865,59 +855,4 @@ public abstract class GraphStructureHelper {
 
     return clonedIBSDF;
   }
-
-  /**
-   * Print a IBSDF subgraph
-   *
-   * @param graph
-   *          IBSDF subgraph
-   */
-  public static void printSDF(final SDFGraph graph) {
-    System.out.println("=> Liste des vertex :");
-    for (final SDFAbstractVertex actor : graph.vertexSet()) {
-      try {
-        System.out.println(actor.getKind() + "  " + actor.getName() + ", rv= "
-            + actor.getPropertyBean().getValue(SDFAbstractVertex.NB_REPEAT) + ", dur="
-            + actor.getPropertyBean().getValue("duration"));
-
-        if (actor.getGraphDescription() != null) {
-          // System.out.println("Hierarchical duration = " +
-          // scenario.getTimingManager().generateVertexTimingFromHierarchy(actor, "x86"));
-        }
-
-      } catch (final InvalidExpressionException e) {
-        e.printStackTrace();
-      }
-
-      System.out.println("\t interfaces : ");
-      for (final IInterface inter : actor.getInterfaces()) {
-        final SDFInterfaceVertex _interface = (SDFInterfaceVertex) inter;
-        System.out.println("\t\t interface port name " + _interface.getName() + " : "
-            + actor.getAssociatedEdge(_interface).toString());
-      }
-
-      System.out.println("\t inputs : ");
-      for (final SDFInterfaceVertex input : actor.getSources()) {
-        System.out
-            .println("\t\t input port name " + input.getName() + " : " + actor.getAssociatedEdge(input).toString());
-      }
-
-      System.out.println("\t outputs : ");
-      for (final SDFInterfaceVertex output : actor.getSinks()) {
-        System.out
-            .println("\t\t output port name " + output.getName() + " : " + actor.getAssociatedEdge(output).toString());
-      }
-    }
-
-    System.out.println("\n=> Liste des edges :");
-    for (final SDFEdge edge : graph.edgeSet()) {
-      System.out.println("name: " + edge.toString());
-      System.out.println("e(" + edge.getSource().getName() + "," + edge.getTarget().getName() + "), p("
-          + edge.getSourceInterface().getName() + "," + edge.getTargetInterface().getName() + "), prod="
-          + edge.getProd() + " cons= " + edge.getCons() + " M0= " + edge.getDelay());
-    }
-
-    System.out.println("---------------------------");
-  }
-
 }

@@ -1,7 +1,7 @@
 /**
- * Copyright or © or Copr. IETR/INSA - Rennes (2012 - 2017) :
+ * Copyright or © or Copr. IETR/INSA - Rennes (2012 - 2018) :
  *
- * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017)
+ * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017 - 2018)
  * Clément Guy <clement.guy@insa-rennes.fr> (2014)
  * Karol Desnos <karol.desnos@insa-rennes.fr> (2012)
  * Yaset Oliva <yaset.oliva@insa-rennes.fr> (2013)
@@ -45,8 +45,8 @@ import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.ietr.dftools.algorithm.exporter.GMLSDFExporter;
 import org.ietr.dftools.algorithm.model.sdf.SDFGraph;
+import org.ietr.dftools.workflow.WorkflowException;
 
-// TODO: Auto-generated Javadoc
 /**
  * The Class SDF2GraphmlExporter.
  */
@@ -62,7 +62,6 @@ public class SDF2GraphmlExporter {
    */
   public void export(final SDFGraph algorithm, IPath xmlPath) {
     final GMLSDFExporter exporter = new GMLSDFExporter();
-    // SDFGraph clone = ((SDFGraph) (algorithm)).clone();
     if ((xmlPath.getFileExtension() == null) || !xmlPath.getFileExtension().equals("graphml")) {
       xmlPath = xmlPath.addFileExtension("graphml");
     }
@@ -76,7 +75,7 @@ public class SDF2GraphmlExporter {
       }
       exporter.export(algorithm, iFile.getRawLocation().toOSString());
     } catch (final CoreException ex) {
-      ex.printStackTrace();
+      throw new WorkflowException("Could not export SDF graph", ex);
     }
   }
 }

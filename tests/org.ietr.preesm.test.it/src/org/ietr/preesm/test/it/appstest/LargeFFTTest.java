@@ -1,7 +1,7 @@
 /**
- * Copyright or © or Copr. IETR/INSA - Rennes (2017) :
+ * Copyright or © or Copr. IETR/INSA - Rennes (2017 - 2018) :
  *
- * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017)
+ * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017 - 2018)
  *
  * This software is a computer program whose purpose is to help prototyping
  * parallel applications using dataflow formalism.
@@ -35,205 +35,59 @@
 package org.ietr.preesm.test.it.appstest;
 
 import java.io.IOException;
+import java.util.Arrays;
+import java.util.Collection;
 import org.eclipse.core.runtime.CoreException;
 import org.ietr.preesm.test.it.api.WorkflowRunner;
 import org.junit.Assert;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.junit.runners.Parameterized;
+import org.junit.runners.Parameterized.Parameters;
 
 /**
  *
  */
+@RunWith(Parameterized.class)
 public class LargeFFTTest {
 
-  @Test
-  public void testLargeFFT11() throws IOException, CoreException {
-    final String projectName = "org.ietr.preesm.largeFFT";
-    final String[] scenarios = new String[] { "largeFFT_hawking.scenario" };
-    final String[] workflows = new String[] { "CodegenWMemScripts.workflow" };
+  static final String[] scenarios = new String[] { "largeFFT_hawking.scenario", "largeFFT_lamaar.scenario",
+      "largeFFT_monox86.scenario" };
+  static final String[] workflows = new String[] { "CodegenWMemScripts.workflow", "SDF3Exporter.workflow",
+      "Simulate.workflow", "XTendCodegen.workflow" };
 
-    for (final String workflow : workflows) {
-      for (final String scenario : scenarios) {
-        final String workflowFilePathStr = "/Workflows/" + workflow;
-        final String scenarioFilePathStr = "/Scenarios/" + scenario;
-        final boolean success = WorkflowRunner.runWorkFlow(projectName, workflowFilePathStr, scenarioFilePathStr);
-        Assert.assertTrue("Workflow [" + workflow + "] with scenario [" + scenario + "] caused failure", success);
+  static final String projectName = "org.ietr.preesm.largeFFT";
+
+  final String workflow;
+  final String scenario;
+
+  public LargeFFTTest(final String workflow, final String scenario) {
+    this.scenario = scenario;
+    this.workflow = workflow;
+  }
+
+  /**
+   *
+   */
+  @Parameters(name = "{0} - {1}")
+  public static Collection<Object[]> data() {
+    final Object[][] params = new Object[workflows.length * scenarios.length][2];
+    int i = 0;
+    for (String workflow : workflows) {
+      for (String scenario : scenarios) {
+        params[i][0] = workflow;
+        params[i][1] = scenario;
+        i++;
       }
     }
+    return Arrays.asList(params);
   }
 
   @Test
-  public void testLargeFFT21() throws IOException, CoreException {
-    final String projectName = "org.ietr.preesm.largeFFT";
-    final String[] scenarios = new String[] { "largeFFT_lamaar.scenario" };
-    final String[] workflows = new String[] { "CodegenWMemScripts.workflow" };
-
-    for (final String workflow : workflows) {
-      for (final String scenario : scenarios) {
-        final String workflowFilePathStr = "/Workflows/" + workflow;
-        final String scenarioFilePathStr = "/Scenarios/" + scenario;
-        final boolean success = WorkflowRunner.runWorkFlow(projectName, workflowFilePathStr, scenarioFilePathStr);
-        Assert.assertTrue("Workflow [" + workflow + "] with scenario [" + scenario + "] caused failure", success);
-      }
-    }
-  }
-
-  @Test
-  public void testLargeFFT31() throws IOException, CoreException {
-    final String projectName = "org.ietr.preesm.largeFFT";
-    final String[] scenarios = new String[] { "largeFFT_monox86.scenario" };
-    final String[] workflows = new String[] { "CodegenWMemScripts.workflow" };
-
-    for (final String workflow : workflows) {
-      for (final String scenario : scenarios) {
-        final String workflowFilePathStr = "/Workflows/" + workflow;
-        final String scenarioFilePathStr = "/Scenarios/" + scenario;
-        final boolean success = WorkflowRunner.runWorkFlow(projectName, workflowFilePathStr, scenarioFilePathStr);
-        Assert.assertTrue("Workflow [" + workflow + "] with scenario [" + scenario + "] caused failure", success);
-      }
-    }
-  }
-
-  @Test
-  public void testLargeFFT12() throws IOException, CoreException {
-    final String projectName = "org.ietr.preesm.largeFFT";
-    final String[] scenarios = new String[] { "largeFFT_hawking.scenario" };
-    final String[] workflows = new String[] { "SDF3Exporter.workflow" };
-
-    for (final String workflow : workflows) {
-      for (final String scenario : scenarios) {
-        final String workflowFilePathStr = "/Workflows/" + workflow;
-        final String scenarioFilePathStr = "/Scenarios/" + scenario;
-        final boolean success = WorkflowRunner.runWorkFlow(projectName, workflowFilePathStr, scenarioFilePathStr);
-        Assert.assertTrue("Workflow [" + workflow + "] with scenario [" + scenario + "] caused failure", success);
-      }
-    }
-  }
-
-  @Test
-  public void testLargeFFT22() throws IOException, CoreException {
-    final String projectName = "org.ietr.preesm.largeFFT";
-    final String[] scenarios = new String[] { "largeFFT_lamaar.scenario" };
-    final String[] workflows = new String[] { "SDF3Exporter.workflow" };
-
-    for (final String workflow : workflows) {
-      for (final String scenario : scenarios) {
-        final String workflowFilePathStr = "/Workflows/" + workflow;
-        final String scenarioFilePathStr = "/Scenarios/" + scenario;
-        final boolean success = WorkflowRunner.runWorkFlow(projectName, workflowFilePathStr, scenarioFilePathStr);
-        Assert.assertTrue("Workflow [" + workflow + "] with scenario [" + scenario + "] caused failure", success);
-      }
-    }
-  }
-
-  @Test
-  public void testLargeFFT32() throws IOException, CoreException {
-    final String projectName = "org.ietr.preesm.largeFFT";
-    final String[] scenarios = new String[] { "largeFFT_monox86.scenario" };
-    final String[] workflows = new String[] { "SDF3Exporter.workflow" };
-
-    for (final String workflow : workflows) {
-      for (final String scenario : scenarios) {
-        final String workflowFilePathStr = "/Workflows/" + workflow;
-        final String scenarioFilePathStr = "/Scenarios/" + scenario;
-        final boolean success = WorkflowRunner.runWorkFlow(projectName, workflowFilePathStr, scenarioFilePathStr);
-        Assert.assertTrue("Workflow [" + workflow + "] with scenario [" + scenario + "] caused failure", success);
-      }
-    }
-  }
-
-  @Test
-  public void testLargeFFT13() throws IOException, CoreException {
-    final String projectName = "org.ietr.preesm.largeFFT";
-    final String[] scenarios = new String[] { "largeFFT_hawking.scenario" };
-    final String[] workflows = new String[] { "Simulate.workflow" };
-
-    for (final String workflow : workflows) {
-      for (final String scenario : scenarios) {
-        final String workflowFilePathStr = "/Workflows/" + workflow;
-        final String scenarioFilePathStr = "/Scenarios/" + scenario;
-        final boolean success = WorkflowRunner.runWorkFlow(projectName, workflowFilePathStr, scenarioFilePathStr);
-        Assert.assertTrue("Workflow [" + workflow + "] with scenario [" + scenario + "] caused failure", success);
-      }
-    }
-  }
-
-  @Test
-  public void testLargeFFT23() throws IOException, CoreException {
-    final String projectName = "org.ietr.preesm.largeFFT";
-    final String[] scenarios = new String[] { "largeFFT_lamaar.scenario" };
-    final String[] workflows = new String[] { "Simulate.workflow" };
-
-    for (final String workflow : workflows) {
-      for (final String scenario : scenarios) {
-        final String workflowFilePathStr = "/Workflows/" + workflow;
-        final String scenarioFilePathStr = "/Scenarios/" + scenario;
-        final boolean success = WorkflowRunner.runWorkFlow(projectName, workflowFilePathStr, scenarioFilePathStr);
-        Assert.assertTrue("Workflow [" + workflow + "] with scenario [" + scenario + "] caused failure", success);
-      }
-    }
-  }
-
-  @Test
-  public void testLargeFFT33() throws IOException, CoreException {
-    final String projectName = "org.ietr.preesm.largeFFT";
-    final String[] scenarios = new String[] { "largeFFT_monox86.scenario" };
-    final String[] workflows = new String[] { "Simulate.workflow" };
-
-    for (final String workflow : workflows) {
-      for (final String scenario : scenarios) {
-        final String workflowFilePathStr = "/Workflows/" + workflow;
-        final String scenarioFilePathStr = "/Scenarios/" + scenario;
-        final boolean success = WorkflowRunner.runWorkFlow(projectName, workflowFilePathStr, scenarioFilePathStr);
-        Assert.assertTrue("Workflow [" + workflow + "] with scenario [" + scenario + "] caused failure", success);
-      }
-    }
-  }
-
-  @Test
-  public void testLargeFFT14() throws IOException, CoreException {
-    final String projectName = "org.ietr.preesm.largeFFT";
-    final String[] scenarios = new String[] { "largeFFT_hawking.scenario" };
-    final String[] workflows = new String[] { "XTendCodegen.workflow" };
-
-    for (final String workflow : workflows) {
-      for (final String scenario : scenarios) {
-        final String workflowFilePathStr = "/Workflows/" + workflow;
-        final String scenarioFilePathStr = "/Scenarios/" + scenario;
-        final boolean success = WorkflowRunner.runWorkFlow(projectName, workflowFilePathStr, scenarioFilePathStr);
-        Assert.assertTrue("Workflow [" + workflow + "] with scenario [" + scenario + "] caused failure", success);
-      }
-    }
-  }
-
-  @Test
-  public void testLargeFFT24() throws IOException, CoreException {
-    final String projectName = "org.ietr.preesm.largeFFT";
-    final String[] scenarios = new String[] { "largeFFT_lamaar.scenario" };
-    final String[] workflows = new String[] { "XTendCodegen.workflow" };
-
-    for (final String workflow : workflows) {
-      for (final String scenario : scenarios) {
-        final String workflowFilePathStr = "/Workflows/" + workflow;
-        final String scenarioFilePathStr = "/Scenarios/" + scenario;
-        final boolean success = WorkflowRunner.runWorkFlow(projectName, workflowFilePathStr, scenarioFilePathStr);
-        Assert.assertTrue("Workflow [" + workflow + "] with scenario [" + scenario + "] caused failure", success);
-      }
-    }
-  }
-
-  @Test
-  public void testLargeFFT34() throws IOException, CoreException {
-    final String projectName = "org.ietr.preesm.largeFFT";
-    final String[] scenarios = new String[] { "largeFFT_monox86.scenario" };
-    final String[] workflows = new String[] { "XTendCodegen.workflow" };
-
-    for (final String workflow : workflows) {
-      for (final String scenario : scenarios) {
-        final String workflowFilePathStr = "/Workflows/" + workflow;
-        final String scenarioFilePathStr = "/Scenarios/" + scenario;
-        final boolean success = WorkflowRunner.runWorkFlow(projectName, workflowFilePathStr, scenarioFilePathStr);
-        Assert.assertTrue("Workflow [" + workflow + "] with scenario [" + scenario + "] caused failure", success);
-      }
-    }
+  public void testLargeFFT() throws IOException, CoreException {
+    final String workflowFilePathStr = "/Workflows/" + workflow;
+    final String scenarioFilePathStr = "/Scenarios/" + scenario;
+    final boolean success = WorkflowRunner.runWorkFlow(projectName, workflowFilePathStr, scenarioFilePathStr);
+    Assert.assertTrue("Workflow [" + workflow + "] with scenario [" + scenario + "] caused failure", success);
   }
 }

@@ -44,6 +44,7 @@ import java.util.Set
 import java.util.logging.Level
 import jxl.CellType
 import jxl.Workbook
+import jxl.read.biff.BiffException
 import org.eclipse.core.resources.ResourcesPlugin
 import org.eclipse.core.runtime.CoreException
 import org.eclipse.core.runtime.IPath
@@ -51,7 +52,6 @@ import org.eclipse.core.runtime.IProgressMonitor
 import org.eclipse.core.runtime.NullProgressMonitor
 import org.eclipse.core.runtime.Path
 import org.ietr.dftools.algorithm.importer.InvalidModelException
-import org.ietr.dftools.algorithm.model.sdf.SDFAbstractVertex
 import org.ietr.dftools.architecture.slam.ComponentInstance
 import org.ietr.dftools.workflow.WorkflowException
 import org.ietr.dftools.workflow.elements.Workflow
@@ -132,17 +132,17 @@ class CustomQuantaExporter extends AbstractTaskImplementation {
 
 		var inputXLSFile = parameters.get(INPUT_XLS_FILE)
 
-		// The pattern $SCENARIO$ in the input excel file name is replaced by the scenario name
-		val scenario = abc.scenario
-		val scenarioURL = scenario.scenarioURL
-		val scenarioName = Paths.get(scenarioURL).fileName.toString.replace(".scenario", "")
-		inputXLSFile = inputXLSFile.replace("$SCENARIO$", scenarioName)
-		inputXLSFile = PathTools.getAbsolutePath(inputXLSFile, workflow.getProjectName())
-
-		// parsing individual quanta values from an excel file
-		parseQuantaInputFile(inputXLSFile, abc.scenario)
-
 		if (abc !== null) {
+			// The pattern $SCENARIO$ in the input excel file name is replaced by the scenario name
+			val scenario = abc.scenario
+			val scenarioURL = scenario.scenarioURL
+			val scenarioName = Paths.get(scenarioURL).fileName.toString.replace(".scenario", "")
+			inputXLSFile = inputXLSFile.replace("$SCENARIO$", scenarioName)
+			inputXLSFile = PathTools.getAbsolutePath(inputXLSFile, workflow.getProjectName())
+
+			// parsing individual quanta values from an excel file
+			parseQuantaInputFile(inputXLSFile, abc.scenario)
+
 			writeActivity(abc, filePath, workflow, human_readable)
 		} else {
 			logger.log(Level.SEVERE, "Not a valid set of ABCs for ActivityExporter.")
@@ -214,21 +214,26 @@ class CustomQuantaExporter extends AbstractTaskImplementation {
 	def private visitVertex(MapperDAGVertex vertex) {
 		val duration = vertex.getPropertyStringValue(ImplementationPropertyNames.Task_duration)
 		val operator = vertex.getEffectiveComponent().component
-		val actor = vertex.correspondingSDFVertex as SDFAbstractVertex
+		val actor = vertex.correspondingSDFVertex
 		val cquanta = customQuanta.getQuanta(actor.id, operator.vlnv.name)
 
 		if(!cquanta.isEmpty){
 			// Resolving the value as a String expression of t
 			var jep = new JEP()
 			jep.addVariable("t", Double.valueOf(duration))
-			val node = jep.parse(cquanta)
-			val result = jep.evaluate(node) as Double
 
-			activity.addQuantaNumber(vertex.getEffectiveComponent().instanceName,
-				result.longValue)
+			try {
+				val node = jep.parse(cquanta)
+				val result = jep.evaluate(node) as Double
 
-			WorkflowLogger.getLogger().log(Level.INFO,
-				"Custom quanta set to " + result.longValue + " by solving " + cquanta + " with t=" + duration + " for " + vertex.name)
+				activity.addQuantaNumber(vertex.getEffectiveComponent().instanceName,
+					result.longValue)
+
+				WorkflowLogger.getLogger().log(Level.INFO,
+					"Custom quanta set to " + result.longValue + " by solving " + cquanta + " with t=" + duration + " for " + vertex.name)
+			} catch (ParseException exc) {
+				throw new RuntimeException(exc)
+			}
 		} else if(SpecialVertexManager.isBroadCast(vertex)){
 			// Broadcasts have a fix ponderation of their custom quanta compared to timing
 			var correctedDuration = Double.valueOf(duration)
@@ -259,7 +264,7 @@ class CustomQuantaExporter extends AbstractTaskImplementation {
 			for (AbstractRouteStep step : route) {
 				if(step instanceof MessageRouteStep){
 					// a step is internally composed of several communication nodes
-					val mstep = step as MessageRouteStep
+					val mstep = step
 					for (ComponentInstance node : mstep.nodes){
 						activity.addQuantaNumber(node.instanceName, size)
 					}
@@ -272,7 +277,7 @@ class CustomQuantaExporter extends AbstractTaskImplementation {
 	/**
 	 * Writing CSV text containing the activity description in fileName located in stringPath.
 	 */
-	static def writeString(String text, String fileName, String stringPath, Workflow workflow) {
+	static def void writeString(String text, String fileName, String stringPath, Workflow workflow) {
 
 		var sPath = PathTools.getAbsolutePath(stringPath, workflow.getProjectName())
 		var path = new Path(sPath) as IPath
@@ -280,7 +285,7 @@ class CustomQuantaExporter extends AbstractTaskImplementation {
 
 		// Get a complete valid path with all folders existing
 		try {
-			if (path.getFileExtension() != null) {
+			if (path.getFileExtension() !== null) {
 				ContainersManager.createMissingFolders(path.removeFileExtension().removeLastSegments(1))
 			} else {
 				ContainersManager.createMissingFolders(path)
@@ -306,7 +311,7 @@ class CustomQuantaExporter extends AbstractTaskImplementation {
 	/**
 	 * Reading individual quanta information from an excel file.
 	 */
-	def parseQuantaInputFile(String fileName, PreesmScenario scenario) {
+	def void  parseQuantaInputFile(String fileName, PreesmScenario scenario) {
 
 		val path = new Path(fileName);
 		val iFile = ResourcesPlugin.getWorkspace().getRoot().getFile(path)
@@ -336,6 +341,8 @@ class CustomQuantaExporter extends AbstractTaskImplementation {
 				e.printStackTrace()
 			} catch (InvalidModelException e) {
 				e.printStackTrace()
+			} catch (BiffException e) {
+				e.printStackTrace()
 			}
 		}
 
@@ -352,16 +359,16 @@ class CustomQuantaExporter extends AbstractTaskImplementation {
 		for (vertex : appli.actors) {
 			// Handle connected graphs from hierarchical vertices
 			if (vertex instanceof PiGraph) {
-				parseQuantaForPISDFGraph(w, vertex as PiGraph, operators)
+				parseQuantaForPISDFGraph(w, vertex, operators)
 			} else if (vertex instanceof Actor) {
 				val actor = vertex;
 
 				// Handle unconnected graphs from hierarchical vertices
 				val refinement = actor.getRefinement();
-				if (refinement != null){
+				if (refinement !== null){
 					val subgraph = refinement.abstractActor
 
-					if (subgraph != null && subgraph instanceof PiGraph) {
+					if (subgraph !== null && subgraph instanceof PiGraph) {
 						parseQuantaForPISDFGraph(w, subgraph as PiGraph, operators);
 					}
 					// If the actor is not hierarchical, parse its timing
@@ -382,14 +389,14 @@ class CustomQuantaExporter extends AbstractTaskImplementation {
 	 * Reading individual quanta information from an excel file.
 	 * Recursive method.
 	 */
-	def parseQuantaForVertex(Workbook w, String vertexName, Set<String> operators) {
+	def void parseQuantaForVertex(Workbook w, String vertexName, Set<String> operators) {
 
 		// Test excel reader, to be continued
 		for(opDefId : operators){
 			var vertexCell = w.getSheet(0).findCell(vertexName)
 			var operatorCell = w.getSheet(0).findCell(opDefId);
 
-			if (vertexCell != null && operatorCell != null) {
+			if (vertexCell !== null && operatorCell !== null) {
 				// Get the cell containing the timing
 				var timingCell = w.getSheet(0).getCell(operatorCell.getColumn(), vertexCell.getRow())
 
@@ -437,10 +444,10 @@ class CustomQuantaExporter extends AbstractTaskImplementation {
 
 				}
 			} else {
-				if (vertexCell == null) {
+				if (vertexCell === null) {
 					WorkflowLogger.getLogger().log(Level.WARNING,
 						"No line found in custom quanta excel sheet for vertex: " + vertexName)
-				} else if (operatorCell == null) {
+				} else if (operatorCell === null) {
 					WorkflowLogger.getLogger().log(Level.WARNING,
 						"No column found in custom quanta excel sheet for operator type: " + opDefId);
 				}

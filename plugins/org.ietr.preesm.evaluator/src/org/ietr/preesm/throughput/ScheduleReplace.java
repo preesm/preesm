@@ -38,8 +38,8 @@ package org.ietr.preesm.throughput;
 import org.apache.commons.lang3.math.Fraction;
 import org.ietr.dftools.algorithm.model.sdf.SDFAbstractVertex;
 import org.ietr.dftools.algorithm.model.sdf.SDFGraph;
-import org.ietr.preesm.schedule.ASAPScheduler_SDF;
-import org.ietr.preesm.schedule.PeriodicScheduler_SDF;
+import org.ietr.preesm.schedule.ASAPSchedulerSDF;
+import org.ietr.preesm.schedule.PeriodicSchedulerSDF;
 import org.ietr.preesm.throughput.tools.helpers.GraphStructureHelper;
 import org.ietr.preesm.throughput.tools.helpers.Stopwatch;
 import org.ietr.preesm.throughput.tools.transformers.SDFTransformer;
@@ -95,8 +95,8 @@ public class ScheduleReplace {
     // normalize the graph
     SDFTransformer.normalize(srSDF);
     // compute its normalized period K
-    final PeriodicScheduler_SDF periodic = new PeriodicScheduler_SDF();
-    final Fraction k = periodic.computeNormalizedPeriod(srSDF, PeriodicScheduler_SDF.Method.LinearProgram_Gurobi);
+    final PeriodicSchedulerSDF periodic = new PeriodicSchedulerSDF();
+    final Fraction k = periodic.computeNormalizedPeriod(srSDF, PeriodicSchedulerSDF.Method.LINEAR_PROGRAMMING_GUROBI);
     // compute its throughput as 1/K
     final double throughput = 1 / k.doubleValue();
     this.timer.stop();
@@ -124,7 +124,7 @@ public class ScheduleReplace {
     }
 
     // compute the subgraph duration using an ASAP schedule
-    final ASAPScheduler_SDF asap = new ASAPScheduler_SDF();
+    final ASAPSchedulerSDF asap = new ASAPSchedulerSDF();
     return asap.schedule(subgraph);
   }
 

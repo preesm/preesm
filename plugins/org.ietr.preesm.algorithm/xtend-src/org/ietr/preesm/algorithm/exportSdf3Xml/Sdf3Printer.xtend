@@ -1,7 +1,7 @@
 /**
- * Copyright or © or Copr. IETR/INSA - Rennes (2014 - 2017) :
+ * Copyright or © or Copr. IETR/INSA - Rennes (2014 - 2018) :
  *
- * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017)
+ * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017 - 2018)
  * Clément Guy <clement.guy@insa-rennes.fr> (2014)
  * Karol Desnos <karol.desnos@insa-rennes.fr> (2014)
  *
@@ -51,6 +51,7 @@ import org.ietr.dftools.architecture.slam.Design
 import org.ietr.preesm.core.scenario.PreesmScenario
 import org.ietr.preesm.core.scenario.Timing
 import org.ietr.dftools.algorithm.model.AbstractEdge
+import org.ietr.preesm.utils.math.MathFunctionsHelper
 
 /**
  * This class is used to print an {@link SDFGraph} in the SDF For Free (SDF3)
@@ -84,14 +85,6 @@ class Sdf3Printer {
 	 */
 	@Accessors
 	val Design archi
-
-	/**
-	 * Computes the Greatest Common Divisor of two numbers.
-	 */
-	static def int gcd(int a, int b) {
-		if(b == 0) return a
-		return gcd(b, a % b)
-	}
 
 	/**
 	 * Constructor of the {@link Sdf3Printer}.
@@ -154,11 +147,11 @@ class Sdf3Printer {
 	 * declaration of an actor port in the SDF3 format.
 	 */
 	def String print(IInterface port, SDFEdge edge) {
-		val tokenSize = gcd(edge.cons.intValue, edge.prod.intValue)
+		val tokenSize = MathFunctionsHelper.gcd(edge.cons.longValue, edge.prod.longValue)
 		var rate = if (port instanceof SDFSourceInterfaceVertex)
-				edge.cons.intValue / tokenSize
+				edge.cons.longValue / tokenSize
 			else
-				edge.prod.intValue / tokenSize
+				edge.prod.longValue / tokenSize
 
 		return '''
 			<port name="«port.name»" type="«if(port instanceof SDFSourceInterfaceVertex) "in" else "out"»" rate="«rate»"/>
@@ -196,11 +189,11 @@ class Sdf3Printer {
 	 * declaration of an edge in the SDF3 format.
 	 */
 	def String print(SDFEdge edge) {
-		val tokenSize = gcd(edge.cons.intValue, edge.prod.
-			intValue)
+		val tokenSize = MathFunctionsHelper.gcd(edge.cons.longValue, edge.prod.
+			longValue)
 		return '''
 			<channel name="«edge.printName»" srcActor="«edge.source»" srcPort="«edge.sourceLabel»" dstActor="«edge.target»" dstPort="«edge.
-				targetLabel»" initialTokens="«edge.delay.intValue/tokenSize»"/>
+				targetLabel»" initialTokens="«edge.delay.longValue/tokenSize»"/>
 		'''
 	}
 
@@ -234,13 +227,13 @@ class Sdf3Printer {
 		val simulationManager = scenario.simulationManager
 		var firstIsDefault = true
 
-		var nbMemCpy = 0
-		var size = 0
+		var nbMemCpy = 0L
+		var size = 0L
 
 		if (actor.class != SDFVertex) {
 			nbMemCpy = actor.interfaces.size - 1
 			size = actor.sources.fold(
-				0, [res, source|res + actor.getAssociatedEdge(source).prod.intValue])
+				0L, [res, source|res + actor.getAssociatedEdge(source).prod.longValue])
 		}
 
 		return '''
@@ -289,7 +282,7 @@ class Sdf3Printer {
 	 * properties of an edge in the SDF3 format.
 	 */
 	def String printProperties(SDFEdge edge) {
-		val tokenSize = gcd(edge.cons.intValue, edge.prod.intValue)
+		val tokenSize = MathFunctionsHelper.gcd(edge.cons.longValue, edge.prod.longValue)
 
 		return '''
 			<channelProperties channel="«edge.printName»">

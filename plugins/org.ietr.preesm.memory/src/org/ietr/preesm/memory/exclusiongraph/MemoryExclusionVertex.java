@@ -64,7 +64,7 @@ import org.ietr.preesm.memory.script.Range;
  *
  */
 public class MemoryExclusionVertex extends AbstractVertex<MemoryExclusionGraph>
-    implements IWeightedVertex<Integer>, Comparable<MemoryExclusionVertex> {
+    implements IWeightedVertex<Long>, Comparable<MemoryExclusionVertex> {
 
   /**
    * String used in the {@link PropertyBean} of a {@link MemoryExclusionVertex} to store the offset at which the memory
@@ -148,7 +148,7 @@ public class MemoryExclusionVertex extends AbstractVertex<MemoryExclusionGraph>
   }
 
   /** unique identifier of vertex for user convenience. */
-  private int identifier;
+  private long identifier;
 
   /**
    * ID of the task consuming the memory.
@@ -156,7 +156,7 @@ public class MemoryExclusionVertex extends AbstractVertex<MemoryExclusionGraph>
   private final String sink;
 
   /** Size of the memory used. */
-  private Integer size;
+  private long size;
 
   /**
    * ID of the task producing the memory.
@@ -247,7 +247,7 @@ public class MemoryExclusionVertex extends AbstractVertex<MemoryExclusionGraph>
    * @param sizeMem
    *          the size mem
    */
-  public MemoryExclusionVertex(final String sourceTask, final String sinkTask, final int sizeMem) {
+  public MemoryExclusionVertex(final String sourceTask, final String sinkTask, final long sizeMem) {
     this.source = sourceTask;
     this.sink = sinkTask;
     this.size = sizeMem;
@@ -274,7 +274,7 @@ public class MemoryExclusionVertex extends AbstractVertex<MemoryExclusionGraph>
    */
   @Override
   public int compareTo(final MemoryExclusionVertex o) {
-    return this.size - o.size;
+    return (int) (this.size - o.size);
   }
 
   /*
@@ -394,7 +394,7 @@ public class MemoryExclusionVertex extends AbstractVertex<MemoryExclusionGraph>
    * @return the unique identifier of the vertex
    */
   @Override
-  public int getIdentifier() {
+  public long getIdentifier() {
     return this.identifier;
   }
 
@@ -422,7 +422,7 @@ public class MemoryExclusionVertex extends AbstractVertex<MemoryExclusionGraph>
    * @return the weight
    */
   @Override
-  public Integer getWeight() {
+  public Long getWeight() {
     return this.size;
   }
 
@@ -445,7 +445,7 @@ public class MemoryExclusionVertex extends AbstractVertex<MemoryExclusionGraph>
    *          the identifier to set
    */
   @Override
-  public void setIdentifier(final int identifier) {
+  public void setIdentifier(final long identifier) {
     this.identifier = identifier;
   }
 
@@ -455,8 +455,8 @@ public class MemoryExclusionVertex extends AbstractVertex<MemoryExclusionGraph>
    * @see org.ietr.preesm.memory.exclusiongraph.IWeightedVertex#setWeight(java.lang.Object)
    */
   @Override
-  public void setWeight(final Integer w) {
-    this.size = w.intValue();
+  public void setWeight(final Long w) {
+    this.size = w;
   }
 
   /*

@@ -42,7 +42,6 @@ import java.util.ArrayList;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
-import java.util.Vector;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import org.ietr.dftools.algorithm.model.parameters.InvalidExpressionException;
@@ -60,8 +59,8 @@ import org.ietr.dftools.algorithm.model.sdf.types.SDFIntEdgePropertyType;
 import org.ietr.dftools.algorithm.model.sdf.types.SDFStringEdgePropertyType;
 import org.ietr.dftools.algorithm.model.sdf.visitors.SingleRateChecker;
 import org.ietr.dftools.algorithm.model.visitors.SDF4JException;
+import org.ietr.dftools.workflow.WorkflowException;
 
-// TODO: Auto-generated Javadoc
 /**
  * Class cleaning the useless join-fork pairs of vertices which may have been introduced by hierarchy flattening and
  * single rate transformation.
@@ -70,6 +69,10 @@ import org.ietr.dftools.algorithm.model.visitors.SDF4JException;
  * @author kdesnos
  */
 public class JoinForkCleaner {
+
+  private JoinForkCleaner() {
+    // forbid instantiation
+  }
 
   /**
    * Top method to call in order to remove all the join-fork pairs which can be removed safely from an SDFGraph.<br>
@@ -85,7 +88,7 @@ public class JoinForkCleaner {
    * @throws SDF4JException
    *           the SDF 4 J exception
    */
-  public static boolean cleanJoinForkPairsFrom(final SDFGraph graph) throws InvalidExpressionException, SDF4JException {
+  public static boolean cleanJoinForkPairsFrom(final SDFGraph graph) throws SDF4JException {
     boolean result = false;
 
     // Check that the graph is single rate.
@@ -104,7 +107,6 @@ public class JoinForkCleaner {
     boolean changeDone;
     do {
       // reset
-      changeDone = false;
       edgeToRemove = null;
       verticesToRemove = new LinkedHashSet<>();
 
@@ -155,43 +157,43 @@ public class JoinForkCleaner {
    * @throws InvalidExpressionException
    *           if some expressions associated to data ports or delays are invalid.
    */
-  private static void replaceEdge(final SDFEdge replacedEdge, final SDFGraph graph) throws InvalidExpressionException {
+  private static void replaceEdge(final SDFEdge replacedEdge, final SDFGraph graph) {
 
     // Retrieve the sources and targets actor to connect, as well as all
     // edges replaced b this algorithm.
-    final Vector<SDFAbstractVertex> sourceCopies = new Vector<>();
-    final Vector<SDFEdge> sourceEdges = new Vector<>();
+    final List<SDFAbstractVertex> sourceCopies = new ArrayList<>();
+    final List<SDFEdge> sourceEdges = new ArrayList<>();
     // retrieve connection in the right order
     for (final SDFEdge inEdge : ((SDFJoinVertex) replacedEdge.getSource()).getIncomingConnections()) {
       sourceCopies.add(inEdge.getSource());
       sourceEdges.add(inEdge);
     }
 
-    final Vector<SDFAbstractVertex> targetCopies = new Vector<>();
-    final Vector<SDFEdge> targetEdges = new Vector<>();
+    final List<SDFAbstractVertex> targetCopies = new ArrayList<>();
+    final List<SDFEdge> targetEdges = new ArrayList<>();
     // retrieve connection in the right order
     for (final SDFEdge outEdge : ((SDFForkVertex) replacedEdge.getTarget()).getOutgoingConnections()) {
       targetCopies.add(outEdge.getTarget());
       targetEdges.add(outEdge);
     }
 
-    final Vector<SDFAbstractVertex> originalSourceCopies = new Vector<>(sourceCopies);
-    final Vector<SDFAbstractVertex> originalTargetCopies = new Vector<>(targetCopies);
+    final List<SDFAbstractVertex> originalSourceCopies = new ArrayList<>(sourceCopies);
+    final List<SDFAbstractVertex> originalTargetCopies = new ArrayList<>(targetCopies);
 
     // Delays of the edge between the fork and the join
-    int nbDelays = replacedEdge.getDelay().intValue();
+    long nbDelays = replacedEdge.getDelay().longValue();
 
     // Total number of token exchanged (produced and consumed) for this edge
-    final int totalNbTokens = replacedEdge.getCons().intValue();
+    final long totalNbTokens = replacedEdge.getCons().longValue();
 
     // Absolute target is the targeted consumed token among the total
     // number of consumed/produced tokens
-    int absoluteTarget = nbDelays;
-    int absoluteSource = 0;
+    long absoluteTarget = nbDelays;
+    long absoluteSource = 0;
 
     // totProd is updated to store the number of token consumed by the
     // targets that are "satisfied" by the added edges.
-    int totProd = 0;
+    long totProd = 0;
 
     final List<SDFEdge> newEdges = new ArrayList<>();
     // Add edges until all consumed token are "satisfied"
@@ -199,50 +201,46 @@ public class JoinForkCleaner {
 
       // sourceProd and targetCons are the number of token already
       // produced/consumed by the currently indexed source/target
-      int sourceProd = 0;
-      int targetCons = 0;
+      long sourceProd = 0;
+      long targetCons = 0;
       // Index of the currently processed sourceVertex among the
       // duplicates of the current edge source.
       int sourceIndex = 0;
-      {
-        int producedTokens = 0;
-        while (producedTokens < absoluteSource) {
-          producedTokens += sourceEdges.get(sourceIndex).getProd().intValue();
-          sourceIndex++; // no need of modulo, producers are scanned
-          // once.
-        }
-        if (producedTokens > absoluteSource) {
-          sourceIndex--; // no need of modulo, producers are scanned
-          // once.
-          producedTokens -= sourceEdges.get(sourceIndex).getProd().intValue();
-          sourceProd = absoluteSource - producedTokens;
-        }
+      long producedTokens = 0;
+      while (producedTokens < absoluteSource) {
+        producedTokens += sourceEdges.get(sourceIndex).getProd().longValue();
+        sourceIndex++; // no need of modulo, producers are scanned
+        // once.
+      }
+      if (producedTokens > absoluteSource) {
+        sourceIndex--; // no need of modulo, producers are scanned
+        // once.
+        producedTokens -= sourceEdges.get(sourceIndex).getProd().longValue();
+        sourceProd = absoluteSource - producedTokens;
       }
 
       // targetIndex is used to know which duplicates of the target
       // will
       // be targeted by the currently indexed copy of the source.
       int targetIndex = 0;
-      {
-        int consumedTokens = 0;
-        while (consumedTokens < absoluteTarget) {
-          consumedTokens += targetEdges.get(targetIndex).getCons().intValue();
-          targetIndex = (targetIndex + 1) % targetEdges.size();
-        }
-        if (consumedTokens > absoluteTarget) {
-          targetIndex = ((targetIndex - 1) + targetEdges.size()) % targetEdges.size(); // modulo
-          // because
-          // of
-          // delays
-          consumedTokens -= targetEdges.get(targetIndex).getCons().intValue();
-          targetCons = absoluteTarget - consumedTokens;
-        }
+      long consumedTokens = 0;
+      while (consumedTokens < absoluteTarget) {
+        consumedTokens += targetEdges.get(targetIndex).getCons().longValue();
+        targetIndex = (targetIndex + 1) % targetEdges.size();
+      }
+      if (consumedTokens > absoluteTarget) {
+        targetIndex = ((targetIndex - 1) + targetEdges.size()) % targetEdges.size(); // modulo
+        // because
+        // of
+        // delays
+        consumedTokens -= targetEdges.get(targetIndex).getCons().longValue();
+        targetCons = absoluteTarget - consumedTokens;
       }
 
       // rest is both the production and consumption rate on the
       // created edge.
-      final int rest = Math.min(sourceEdges.get(sourceIndex).getProd().intValue() - sourceProd,
-          targetEdges.get(targetIndex).getCons().intValue() - targetCons);
+      final long rest = Math.min(sourceEdges.get(sourceIndex).getProd().longValue() - sourceProd,
+          targetEdges.get(targetIndex).getCons().longValue() - targetCons);
 
       // This int represent the number of iteration separating the
       // currently indexed source and target (between which an edge is
@@ -251,13 +249,13 @@ public class JoinForkCleaner {
       // have
       // delays (with delay=prod=cons of the added edge)
       // Warning, this integer division is not factorable
-      final int iterationDiff = (absoluteTarget / totalNbTokens) - (absoluteSource / totalNbTokens);
+      final long iterationDiff = (absoluteTarget / totalNbTokens) - (absoluteSource / totalNbTokens);
 
       // Testing zone beginning
       // for inserting explode and implode vertices
       // boolean set to true if an explode should be added
-      final boolean explode = rest < sourceEdges.get(sourceIndex).getProd().intValue();
-      final boolean implode = rest < targetEdges.get(targetIndex).getCons().intValue();
+      final boolean explode = rest < sourceEdges.get(sourceIndex).getProd().longValue();
+      final boolean implode = rest < targetEdges.get(targetIndex).getCons().longValue();
       if (explode && !(sourceCopies.get(sourceIndex) instanceof SDFForkVertex)
           && (!(sourceCopies.get(sourceIndex) instanceof SDFBroadcastVertex)
               || (sourceCopies.get(sourceIndex) instanceof SDFRoundBufferVertex))) {
@@ -276,8 +274,8 @@ public class JoinForkCleaner {
         // Add an edge between the source and the explode
         final SDFEdge newEdge = graph.addEdge(originVertex, explodeVertex);
         newEdge.setDelay(new SDFIntEdgePropertyType(0));
-        newEdge.setProd(new SDFIntEdgePropertyType(sourceEdges.get(sourceIndex).getProd().intValue()));
-        newEdge.setCons(new SDFIntEdgePropertyType(sourceEdges.get(sourceIndex).getProd().intValue()));
+        newEdge.setProd(new SDFIntEdgePropertyType(sourceEdges.get(sourceIndex).getProd().longValue()));
+        newEdge.setCons(new SDFIntEdgePropertyType(sourceEdges.get(sourceIndex).getProd().longValue()));
         newEdge.setDataType(sourceEdges.get(sourceIndex).getDataType());
         newEdge.setSourceInterface(sourceEdges.get(sourceIndex).getSourceInterface());
         explodeVertex.addInterface(sourceEdges.get(sourceIndex).getTargetInterface());
@@ -303,8 +301,8 @@ public class JoinForkCleaner {
         // Add an edge between the implode and the target
         final SDFEdge newEdge = graph.addEdge(implodeVertex, originVertex);
         newEdge.setDelay(new SDFIntEdgePropertyType(0));
-        newEdge.setProd(new SDFIntEdgePropertyType(targetEdges.get(targetIndex).getCons().intValue()));
-        newEdge.setCons(new SDFIntEdgePropertyType(targetEdges.get(targetIndex).getCons().intValue()));
+        newEdge.setProd(new SDFIntEdgePropertyType(targetEdges.get(targetIndex).getCons().longValue()));
+        newEdge.setCons(new SDFIntEdgePropertyType(targetEdges.get(targetIndex).getCons().longValue()));
         newEdge.setDataType(targetEdges.get(targetIndex).getDataType());
         implodeVertex.addInterface(targetEdges.get(targetIndex).getTargetInterface());
         newEdge.setSourceInterface(targetEdges.get(targetIndex).getSourceInterface());
@@ -355,7 +353,7 @@ public class JoinForkCleaner {
           final Matcher matcher = pattern.matcher(sourceInterface.getName());
           matcher.find();
           final int existingIdx = Integer.decode(matcher.group(SpecialActorPortsIndexer.groupXX));
-          final int newIdx = existingIdx + sourceProd;
+          final long newIdx = existingIdx + sourceProd;
           newInterfaceName = sourceInterface.getName().substring(0, matcher.start(SpecialActorPortsIndexer.groupXX))
               + newIdx;
         }
@@ -410,8 +408,8 @@ public class JoinForkCleaner {
           final Pattern pattern = Pattern.compile(SpecialActorPortsIndexer.indexRegex);
           final Matcher matcher = pattern.matcher(targetInterface.getName());
           matcher.find();
-          final int existingIdx = Integer.decode(matcher.group(SpecialActorPortsIndexer.groupXX));
-          final int newIdx = existingIdx + targetCons;
+          final long existingIdx = Long.decode(matcher.group(SpecialActorPortsIndexer.groupXX));
+          final long newIdx = existingIdx + targetCons;
           newInterfaceName = targetInterface.getName().substring(0, matcher.start(SpecialActorPortsIndexer.groupXX))
               + newIdx;
         }
@@ -443,7 +441,6 @@ public class JoinForkCleaner {
       }
 
       // Set the properties of the new edge
-      // newEdge.copyProperties(edge);
       newEdge.setProd(new SDFIntEdgePropertyType(rest));
       newEdge.setCons(new SDFIntEdgePropertyType(rest));
       newEdge.setDataType(replacedEdge.getDataType());
@@ -452,12 +449,12 @@ public class JoinForkCleaner {
       // SRSDF (i.e. if the source & target do not belong to the same
       // "iteration")
       if (iterationDiff > 0) {
-        final int addedDelays = (iterationDiff * newEdge.getCons().intValue());
+        final long addedDelays = (iterationDiff * newEdge.getCons().longValue());
         // Check that there are enough delays available
         if (nbDelays < addedDelays) {
           // kdesnos: I added this check, but it will most
           // probably never happen
-          throw new RuntimeException("Insufficient delays on edge " + replacedEdge.getSource().getName() + "."
+          throw new WorkflowException("Insufficient delays on edge " + replacedEdge.getSource().getName() + "."
               + replacedEdge.getSourceInterface().getName() + "=>" + replacedEdge.getTarget().getName() + "."
               + replacedEdge.getTargetInterface().getName() + ". At least " + addedDelays + " delays missing.");
         }
@@ -468,18 +465,18 @@ public class JoinForkCleaner {
       }
 
       // Preserve delays of sourceEdge and targetEdge.
-      if ((sourceEdges.get(sourceIndex).getDelay().intValue() > 0)
-          || (targetEdges.get(targetIndex).getDelay().intValue() > 0)) {
+      if ((sourceEdges.get(sourceIndex).getDelay().longValue() > 0)
+          || (targetEdges.get(targetIndex).getDelay().longValue() > 0)) {
         // Number of delays is a multiplier of production/consumption
         // rate (since the graph is single-rate).
-        final int multSource = sourceEdges.get(sourceIndex).getDelay().intValue()
-            / sourceEdges.get(sourceIndex).getProd().intValue();
-        final int multTarget = targetEdges.get(targetIndex).getDelay().intValue()
-            / targetEdges.get(targetIndex).getCons().intValue();
+        final long multSource = sourceEdges.get(sourceIndex).getDelay().longValue()
+            / sourceEdges.get(sourceIndex).getProd().longValue();
+        final long multTarget = targetEdges.get(targetIndex).getDelay().longValue()
+            / targetEdges.get(targetIndex).getCons().longValue();
 
         // Compute the new number of delays
-        final int nbPreservedDelays = newEdge.getDelay().intValue() + (multSource * newEdge.getProd().intValue())
-            + (multTarget * newEdge.getProd().intValue());
+        final long nbPreservedDelays = newEdge.getDelay().longValue() + (multSource * newEdge.getProd().longValue())
+            + (multTarget * newEdge.getProd().longValue());
 
         // Add the delays to the newEdge
         newEdge.setDelay(new SDFIntEdgePropertyType(nbPreservedDelays));
@@ -497,7 +494,7 @@ public class JoinForkCleaner {
 
     // Make sure all ports are in order
     if (!SpecialActorPortsIndexer.checkIndexes(graph)) {
-      throw new RuntimeException("There are still special actors with non-indexed ports. Contact Preesm developers.");
+      throw new WorkflowException("There are still special actors with non-indexed ports. Contact Preesm developers.");
     }
 
     SpecialActorPortsIndexer.sortIndexedPorts(graph);

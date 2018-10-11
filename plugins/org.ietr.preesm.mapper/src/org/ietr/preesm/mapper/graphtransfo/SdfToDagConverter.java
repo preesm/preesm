@@ -180,7 +180,7 @@ public class SdfToDagConverter {
   private static void setDataSizeForSDF(final SDFGraph graph, final PreesmScenario scenario) {
     for (final SDFEdge edge : graph.edgeSet()) {
       final String type = edge.getDataType().toString();
-      final int size = scenario.getSimulationManager().getDataTypeSizeOrDefault(type);
+      final long size = scenario.getSimulationManager().getDataTypeSizeOrDefault(type);
       edge.setDataSize(new SDFIntEdgePropertyType(size));
     }
   }

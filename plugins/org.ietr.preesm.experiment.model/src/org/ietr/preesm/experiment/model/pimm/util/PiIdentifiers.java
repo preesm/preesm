@@ -1,6 +1,7 @@
 /**
  * Copyright or © or Copr. IETR/INSA - Rennes (2014 - 2018) :
  *
+ * Alexandre Honorat <ahonorat@insa-rennes.fr> (2018)
  * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017 - 2018)
  * Clément Guy <clement.guy@insa-rennes.fr> (2014 - 2015)
  * Florian Arrestier <florian.arrestier@insa-rennes.fr> (2018)
@@ -106,6 +107,9 @@ public class PiIdentifiers {
 
   /** The Constant ACTOR_MEMORY_SCRIPT. */
   public static final String ACTOR_MEMORY_SCRIPT = "memoryScript";
+
+  /** The Constant ACTOR_PERIOD. */
+  public static final String ACTOR_PERIOD = "period";
 
   /** The Constant BROADCAST. */
   // SPECIAL ACTORS

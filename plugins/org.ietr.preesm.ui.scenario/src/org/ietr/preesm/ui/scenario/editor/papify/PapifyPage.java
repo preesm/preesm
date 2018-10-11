@@ -58,7 +58,6 @@ import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
-import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.ScrollBar;
 import org.eclipse.swt.widgets.Table;
@@ -589,19 +588,4 @@ public class PapifyPage extends FormPage implements IPropertyListener {
     gd.widthHint = 400;
     tablecps.setLayoutData(gd);
   }
-
-  /**
-   * Combo data init.
-   *
-   * @param combo
-   *          the combo
-   */
-  private void comboDataInit(final Combo combo) {
-
-    combo.removeAll();
-    for (final String id : this.scenario.getOrderedOperatorIds()) {
-      combo.add(id);
-    }
-  }
-
 }

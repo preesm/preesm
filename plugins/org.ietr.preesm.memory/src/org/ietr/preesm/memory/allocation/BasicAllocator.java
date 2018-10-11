@@ -41,8 +41,8 @@ import java.util.LinkedHashSet;
 import java.util.Set;
 import org.ietr.preesm.memory.exclusiongraph.MemoryExclusionGraph;
 import org.ietr.preesm.memory.exclusiongraph.MemoryExclusionVertex;
+import org.ietr.preesm.utils.math.MathFunctionsHelper;
 
-// TODO: Auto-generated Javadoc
 /**
  * This implementation of the MemoryAllocator mainly is an implementation example.<br>
  * The allocation performed here simply consists in allocating each edge of the graph into a dedicated memory space
@@ -78,12 +78,18 @@ public class BasicAllocator extends MemoryAllocator {
       final Set<MemoryExclusionVertex> vertexList = new LinkedHashSet<>(this.inputExclusionGraph.vertexSet());
       for (final MemoryExclusionVertex vertex : vertexList) {
         // If a data alignment is required
-        final Integer typeSize = vertex.getPropertyBean().getValue(MemoryExclusionVertex.TYPE_SIZE, Integer.class);
+        final long typeSize;
+        final Object value = vertex.getPropertyBean().getValue(MemoryExclusionVertex.TYPE_SIZE);
+        if (value != null) {
+          typeSize = (long) value;
+        } else {
+          typeSize = 1;
+        }
         if (this.alignment == 0) {
           offset += ((offset % typeSize) == 0) ? 0 : typeSize - (offset % typeSize);
         } else if (this.alignment > 0) {
           // Fixed alignment case
-          final int align = MemoryAllocator.lcm(typeSize, this.alignment);
+          final long align = MathFunctionsHelper.lcm(typeSize, this.alignment);
 
           offset += ((offset % align) == 0) ? 0 : align - (offset % align);
 
@@ -92,7 +98,7 @@ public class BasicAllocator extends MemoryAllocator {
         // Since the Mobject may be the result of a merge
         // vertex.getWeight may be changed during the call to
         // allocateMemoryObject
-        final int vertexWeight = vertex.getWeight();
+        final long vertexWeight = vertex.getWeight();
         allocateMemoryObject(vertex, offset);
         offset += vertexWeight;
       }

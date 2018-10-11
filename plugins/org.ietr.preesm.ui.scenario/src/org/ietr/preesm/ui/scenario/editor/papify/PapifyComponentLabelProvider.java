@@ -158,9 +158,6 @@ public class PapifyComponentLabelProvider implements ITableLabelProvider, Select
   @Override
   public void widgetSelected(final SelectionEvent e) {
     if (e.getSource() instanceof Combo) {
-      final Combo combo = ((Combo) e.getSource());
-      final String item = combo.getItem(combo.getSelectionIndex());
-
       this.tableViewer.refresh();
     }
 

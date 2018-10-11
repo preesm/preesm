@@ -40,7 +40,6 @@ package org.ietr.preesm.ui.scenario.editor.papify;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
-import org.eclipse.core.runtime.CoreException;
 import org.eclipse.jface.viewers.CheckStateChangedEvent;
 import org.eclipse.jface.viewers.CheckboxTableViewer;
 import org.eclipse.jface.viewers.CheckboxTreeViewer;
@@ -326,17 +325,13 @@ public class PapifyCheckStateListener implements ISDFCheckStateListener {
     final Set<String> result = new LinkedHashSet<>();
     String finalName;
     if (this.scenario.isPISDFScenario()) {
-      try {
-        final PiGraph graph = PiParser.getPiGraph(this.scenario.getAlgorithmURL());
-        for (final AbstractActor vertex : graph.getAllActors()) {
-          if (!(vertex instanceof PiGraph) && !(vertex instanceof DataInputInterface)
-              && !(vertex instanceof DataOutputInterface)) {
-            finalName = vertex.getVertexPath().substring(vertex.getVertexPath().indexOf('/') + 1);
-            result.add(finalName);
-          }
+      final PiGraph graph = PiParser.getPiGraph(this.scenario.getAlgorithmURL());
+      for (final AbstractActor vertex : graph.getAllActors()) {
+        if (!(vertex instanceof PiGraph) && !(vertex instanceof DataInputInterface)
+            && !(vertex instanceof DataOutputInterface)) {
+          finalName = vertex.getVertexPath().substring(vertex.getVertexPath().indexOf('/') + 1);
+          result.add(finalName);
         }
-      } catch (CoreException | InvalidModelException e) {
-        e.printStackTrace();
       }
     } else if (this.scenario.isIBSDFScenario()) {
       try {

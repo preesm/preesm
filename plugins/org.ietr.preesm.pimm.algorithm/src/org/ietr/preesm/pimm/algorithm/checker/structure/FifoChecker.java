@@ -109,15 +109,15 @@ public class FifoChecker {
    * @return true if no rate of f is at 0, false otherwise
    */
   private boolean checkFifoRates(final Fifo f) {
-    if (f.getSourcePort().getPortRateExpression().getExpressionString().equals("0")) {
-      if (f.getTargetPort().getPortRateExpression().getExpressionString().equals("0")) {
+    if (f.getSourcePort().getPortRateExpression().getExpressionAsString().equals("0")) {
+      if (f.getTargetPort().getPortRateExpression().getExpressionAsString().equals("0")) {
         this.fifoWithZeroRates.add(f);
         return false;
       } else {
         this.fifoWithOneZeroRate.add(f);
         return false;
       }
-    } else if (f.getTargetPort().getPortRateExpression().getExpressionString().equals("0")) {
+    } else if (f.getTargetPort().getPortRateExpression().getExpressionAsString().equals("0")) {
       this.fifoWithOneZeroRate.add(f);
       return false;
     }

@@ -53,7 +53,6 @@ import java.util.Set;
 import java.util.logging.Level;
 import org.ietr.dftools.workflow.tools.WorkflowLogger;
 import org.ietr.preesm.core.types.DataType;
-import org.ietr.preesm.experiment.model.expression.ExpressionEvaluator;
 import org.ietr.preesm.experiment.model.pimm.AbstractActor;
 import org.ietr.preesm.experiment.model.pimm.AbstractVertex;
 import org.ietr.preesm.experiment.model.pimm.Actor;
@@ -283,7 +282,7 @@ public class SpiderCodegenVisitor extends PiMMSwitch<Boolean> {
           parameters_proto.append(", ");
           parameters_def.append(", ");
         }
-        parameters_proto.append("Param " + p.getName() + " = " + ExpressionEvaluator.evaluate(p.getValueExpression()));
+        parameters_proto.append("Param " + p.getName() + " = " + p.getValueExpression().evaluate());
         parameters_def.append("Param " + p.getName());
       }
     }
@@ -576,7 +575,7 @@ public class SpiderCodegenVisitor extends PiMMSwitch<Boolean> {
     final DataOutputPort srcPort = f.getSourcePort();
     final DataInputPort snkPort = f.getTargetPort();
 
-    int typeSize;
+    long typeSize;
     if (this.dataTypes.containsKey(f.getType())) {
       typeSize = this.dataTypes.get(f.getType()).getSize();
     } else {
@@ -587,8 +586,8 @@ public class SpiderCodegenVisitor extends PiMMSwitch<Boolean> {
     final AbstractActor srcActor = (AbstractActor) srcPort.eContainer();
     final AbstractActor snkActor = (AbstractActor) snkPort.eContainer();
 
-    String srcProd = srcPort.getPortRateExpression().getExpressionString();
-    String snkProd = snkPort.getPortRateExpression().getExpressionString();
+    String srcProd = srcPort.getPortRateExpression().getExpressionAsString();
+    String snkProd = snkPort.getPortRateExpression().getExpressionAsString();
 
     /* Change port name in prod/cons/delay */
     for (final ConfigInputPort cfgPort : srcActor.getConfigInputPorts()) {
@@ -603,7 +602,7 @@ public class SpiderCodegenVisitor extends PiMMSwitch<Boolean> {
 
     String delay = "0";
     if (f.getDelay() != null) {
-      delay = f.getDelay().getSizeExpression().getExpressionString();
+      delay = f.getDelay().getSizeExpression().getExpressionAsString();
 
       for (final ConfigInputPort cfgPort : f.getDelay().getConfigInputPorts()) {
         final String paramName = ((Parameter) cfgPort.getIncomingDependency().getSetter()).getName();
@@ -642,7 +641,7 @@ public class SpiderCodegenVisitor extends PiMMSwitch<Boolean> {
       } else {
         /* DYNAMIC DEPENDANT */
         append("\tPiSDFParam *" + paramName + " = Spider::addDynamicDependentParam(graph, " + "\"" + p.getName()
-            + "\", \"" + p.getValueExpression().getExpressionString() + "\");\n");
+            + "\", \"" + p.getValueExpression().getExpressionAsString() + "\");\n");
       }
     } else if (p.isConfigurationInterface() && (((ConfigInputInterface) p).getGraphPort() instanceof ConfigInputPort)) {
       /* HERITED */
@@ -655,7 +654,7 @@ public class SpiderCodegenVisitor extends PiMMSwitch<Boolean> {
     } else {
       /* STATIC DEPENDANT */
       append("\tPiSDFParam *" + paramName + " = Spider::addStaticDependentParam(graph, " + "\"" + p.getName() + "\", \""
-          + p.getValueExpression().getExpressionString() + "\");\n");
+          + p.getValueExpression().getExpressionAsString() + "\");\n");
     }
     return true;
   }

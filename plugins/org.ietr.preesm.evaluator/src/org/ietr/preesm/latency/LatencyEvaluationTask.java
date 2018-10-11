@@ -48,7 +48,7 @@ import org.ietr.dftools.workflow.tools.WorkflowLogger;
 import org.ietr.preesm.core.scenario.PreesmScenario;
 import org.ietr.preesm.deadlock.IBSDFConsistency;
 import org.ietr.preesm.deadlock.IBSDFLiveness;
-import org.ietr.preesm.schedule.ASAPScheduler_DAG;
+import org.ietr.preesm.schedule.ASAPSchedulerDAG;
 import org.ietr.preesm.throughput.tools.helpers.GraphStructureHelper;
 import org.ietr.preesm.throughput.tools.helpers.Stopwatch;
 import org.ietr.preesm.throughput.tools.transformers.IBSDFTransformer;
@@ -118,7 +118,7 @@ public class LatencyEvaluationTask extends AbstractTaskImplementation {
             final SDFGraph dag_simu = SrSDFTransformer.convertToDAG(IBSDFTransformer.convertToSrSDF(inputGraph, false));
 
             // Simulate an ASAP schedule
-            final ASAPScheduler_DAG schedule = new ASAPScheduler_DAG();
+            final ASAPSchedulerDAG schedule = new ASAPSchedulerDAG();
             latency = schedule.schedule(dag_simu);
 
             this.timer.stop();

@@ -60,7 +60,7 @@ class CustomQuanta {
 
 		override equals(Object o){
 			if(o instanceof MapKeyPair){
-				val m = o as MapKeyPair
+				val m = o
 				return m.actor.equals(actor) &&
 					   m.operator.equals(operator)
 			}
@@ -80,7 +80,7 @@ class CustomQuanta {
 		customQuanta = new HashMap<MapKeyPair, String>();
 	}
 
-	def addQuantaExpression(String actor, String operator, String expression) {
+	def void addQuantaExpression(String actor, String operator, String expression) {
 		val mkp = new MapKeyPair(actor, operator)
 		customQuanta.put(mkp, expression)
 	}
@@ -104,7 +104,7 @@ class CustomQuanta {
 	override toString() '''
 		«customQuanta»'''
 
-	def clear() {
+	def void clear() {
 		customQuanta.clear
 	}
 

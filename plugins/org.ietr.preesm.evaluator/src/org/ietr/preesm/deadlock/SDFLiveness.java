@@ -35,21 +35,25 @@
  */
 package org.ietr.preesm.deadlock;
 
-import java.util.Hashtable;
+import java.util.LinkedHashMap;
+import java.util.Map;
 import org.ietr.dftools.algorithm.model.sdf.SDFAbstractVertex;
 import org.ietr.dftools.algorithm.model.sdf.SDFEdge;
 import org.ietr.dftools.algorithm.model.sdf.SDFGraph;
-import org.ietr.preesm.schedule.ASAPScheduler_SDF;
-import org.ietr.preesm.throughput.tools.helpers.MathFunctionsHelper;
+import org.ietr.preesm.evaluator.EvaluationException;
+import org.ietr.preesm.schedule.ASAPSchedulerSDF;
 import org.ietr.preesm.throughput.tools.helpers.Stopwatch;
 import org.ietr.preesm.throughput.tools.parsers.Identifier;
 import org.ietr.preesm.throughput.tools.transformers.SDFTransformer;
+import org.ietr.preesm.utils.math.MathFunctionsHelper;
 
 /**
  * @author hderoui
  *
  */
-public abstract class SDFLiveness {
+public interface SDFLiveness {
+
+  public static final String EDGE_NAME_PROPERTY = "edgeName";
 
   /**
    * @param sdf
@@ -61,23 +65,14 @@ public abstract class SDFLiveness {
     timer.start();
 
     // try first the Sufficient Condition of liveness
-    System.out.println("Liveness evaluation : trying the sufficient condition ...");
     boolean live = SDFLiveness.sufficientCondition(sdf);
 
     // if SC fails we can not conclude until we try the symbolic execution
     if (!live) {
-      System.err.println("Liveness evaluation : sufficient condition have failed");
-      System.out.println("Liveness evaluation : trying the symbolic execution ...");
       live = SDFLiveness.symbolicExecution(sdf);
     }
 
     timer.stop();
-    if (live) {
-      System.out.println("SDF Graph " + sdf.getName() + " is live !!  evaluated in " + timer.toString());
-    } else {
-      System.err.println("SDF Graph " + sdf.getName() + " is deadlock !!  evaluated in " + timer.toString());
-    }
-
     return live;
   }
 
@@ -91,7 +86,7 @@ public abstract class SDFLiveness {
   public static boolean sufficientCondition(final SDFGraph graph) {
     // add the name property for each edge of the graph
     for (final SDFEdge e : graph.edgeSet()) {
-      e.setPropertyValue("edgeName", Identifier.generateEdgeId());
+      e.setPropertyValue(EDGE_NAME_PROPERTY, Identifier.generateEdgeId());
     }
 
     // step 1: normalize the graph
@@ -101,23 +96,19 @@ public abstract class SDFLiveness {
 
     // set edges value : v = h (use the normalized version of the graph)
     // h = (out - M0 - gcd)* alpha(e)
-    final Hashtable<String, Double> edgeValue = new Hashtable<>(graph.edgeSet().size());
+    final Map<String, Double> edgeValue = new LinkedHashMap<>(graph.edgeSet().size());
     for (final SDFEdge e : graph.edgeSet()) {
-      final double gcd = MathFunctionsHelper.gcd(e.getProd().intValue(), e.getCons().intValue());
+      final long gcd = MathFunctionsHelper.gcd(e.getProd().longValue(), e.getCons().longValue());
       final double alpha = (double) e.getPropertyBean().getValue("normalizationFactor");
-      final double h = ((e.getDelay().intValue() - e.getCons().intValue()) + gcd) * alpha;
-      edgeValue.put((String) e.getPropertyBean().getValue("edgeName"), h);
+      final double h = ((e.getDelay().longValue() - e.getCons().longValue()) + gcd) * alpha;
+      edgeValue.put((String) e.getPropertyBean().getValue(EDGE_NAME_PROPERTY), h);
     }
 
     // initialize the vertex distance
-    final Hashtable<String, Double> vertexDistance = new Hashtable<>(graph.vertexSet().size());
+    final Map<String, Double> vertexDistance = new LinkedHashMap<>(graph.vertexSet().size());
     for (final SDFAbstractVertex a : graph.vertexSet()) {
       vertexDistance.put(a.getName(), Double.POSITIVE_INFINITY);
     }
-
-    // // print the edge value
-    // for(Edge e: g.edges.values())
-    // System.out.println("v(" + e.sourceActor.id + "," + e.targetActor.id + ") = " + edgeValue.get(e.id));
 
     // in case of a non strongly connected graph we need to choose many source vertex to evaluate all parts of the graph
     for (final SDFAbstractVertex vertexSource : graph.vertexSet()) {
@@ -138,7 +129,7 @@ public abstract class SDFLiveness {
           for (final SDFEdge e : graph.edgeSet()) {
             // test the distance
             final double newDistance = vertexDistance.get(e.getSource().getName())
-                + edgeValue.get(e.getPropertyBean().getValue("edgeName"));
+                + edgeValue.get(e.getPropertyBean().getValue(EDGE_NAME_PROPERTY));
             if (vertexDistance.get(e.getTarget().getName()) > newDistance) {
               // update the distance
               vertexDistance.put(e.getTarget().getName(), newDistance);
@@ -155,11 +146,10 @@ public abstract class SDFLiveness {
           // relax all the edges
           for (final SDFEdge e : graph.edgeSet()) {
             if (vertexDistance.get(e.getTarget().getName()) > (vertexDistance.get(e.getSource().getName())
-                + edgeValue.get(e.getPropertyBean().getValue("edgeName")))) {
+                + edgeValue.get(e.getPropertyBean().getValue(EDGE_NAME_PROPERTY)))) {
               // negative circuit detected if a part of the graph is not live the global graph is not too
-              System.err.println("Negativ cycle detected !!");
-              // System.err.println("This graph has no Periodic Schedule !");
-              return false;
+              final String message = "Negative cycle detected !!";
+              throw new EvaluationException(message);
             }
           }
         }
@@ -178,7 +168,7 @@ public abstract class SDFLiveness {
    */
   public static boolean symbolicExecution(final SDFGraph sdf) {
     // execute the graph until it finishes an iteration
-    final ASAPScheduler_SDF scheduler = new ASAPScheduler_SDF();
+    final ASAPSchedulerSDF scheduler = new ASAPSchedulerSDF();
     scheduler.schedule(sdf);
 
     // the live attribute of the scheduler will indicate if the schedule has succeeded to schedule a complete iteration

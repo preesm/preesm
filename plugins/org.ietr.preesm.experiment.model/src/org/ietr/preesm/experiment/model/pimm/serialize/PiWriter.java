@@ -1,6 +1,7 @@
 /**
  * Copyright or © or Copr. IETR/INSA - Rennes (2012 - 2018) :
  *
+ * Alexandre Honorat <ahonorat@insa-rennes.fr> (2018)
  * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017 - 2018)
  * Clément Guy <clement.guy@insa-rennes.fr> (2014)
  * Florian Arrestier <florian.arrestier@insa-rennes.fr> (2018)
@@ -55,6 +56,7 @@ import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.EObject;
 import org.ietr.dftools.algorithm.exporter.Key;
 import org.ietr.dftools.architecture.utils.DomUtil;
+import org.ietr.preesm.experiment.model.PiGraphException;
 import org.ietr.preesm.experiment.model.pimm.AbstractActor;
 import org.ietr.preesm.experiment.model.pimm.AbstractVertex;
 import org.ietr.preesm.experiment.model.pimm.Actor;
@@ -84,6 +86,7 @@ import org.ietr.preesm.experiment.model.pimm.Port;
 import org.ietr.preesm.experiment.model.pimm.Refinement;
 import org.ietr.preesm.experiment.model.pimm.RoundBufferActor;
 import org.ietr.preesm.experiment.model.pimm.util.PiIdentifiers;
+import org.ietr.preesm.experiment.model.pimm.util.PiSDFXSDValidator;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -258,15 +261,30 @@ public class PiWriter {
     // Fill the root Element with the Graph
     writePi(this.rootElement, graph);
 
-    // Produce the output file
-    DomUtil.writeDocument(outputStream, this.domDocument);
+    final OutputStream toto = new OutputStream() {
+      StringBuilder buffer = new StringBuilder();
 
-    // Close the output stream
+      @Override
+      public void write(final int b) throws IOException {
+        outputStream.write(b);
+        this.buffer.append((char) b);
+      }
+
+      @Override
+      public String toString() {
+        return this.buffer.toString();
+      }
+    };
+
+    // Produce the output file
+    DomUtil.writeDocument(toto, this.domDocument);
+
     try {
-      outputStream.close();
+      PiSDFXSDValidator.validate(toto.toString());
     } catch (final IOException e) {
-      e.printStackTrace();
+      throw new PiGraphException("Fatal Error: the wirtten PiSDF does not comply to the XSD Schema", e);
     }
+
   }
 
   /**
@@ -286,7 +304,6 @@ public class PiWriter {
     vertexElt.setAttribute(PiIdentifiers.ACTOR_NAME, abstractActor.getName());
 
     // Add the name in the data of the node
-    // writeDataElt(vertexElt, "name", vertex.getName());
 
     if (abstractActor instanceof Actor) {
       writeActor(vertexElt, (Actor) abstractActor);
@@ -310,6 +327,7 @@ public class PiWriter {
     // TODO change this method when several kinds will exist
     // Set the kind of the Actor
     vertexElt.setAttribute(PiIdentifiers.NODE_KIND, PiIdentifiers.ACTOR);
+    vertexElt.setAttribute(PiIdentifiers.ACTOR_PERIOD, actor.getPeriod().getExpressionAsString());
     final Refinement refinement = actor.getRefinement();
     if (refinement != null) {
       writeRefinement(vertexElt, refinement);
@@ -372,7 +390,7 @@ public class PiWriter {
     vertexElt.setAttribute(PiIdentifiers.DELAY_SETTER, setterName);
     final String getterName = delay.hasGetterActor() ? actor.getGetterActor().getName() : "";
     vertexElt.setAttribute(PiIdentifiers.DELAY_GETTER, getterName);
-    vertexElt.setAttribute(PiIdentifiers.DELAY_EXPRESSION, delay.getSizeExpression().getExpressionString());
+    vertexElt.setAttribute(PiIdentifiers.DELAY_EXPRESSION, delay.getSizeExpression().getExpressionAsString());
 
     // Checks if the delay has refinement in case of no setter is provided
     if (!delay.hasSetterActor()) {
@@ -472,7 +490,7 @@ public class PiWriter {
 
     if (fifo.getDelay() != null) {
       writeDataElt(fifoElt, PiIdentifiers.DELAY, fifo.getDelay().getId());
-      fifoElt.setAttribute(PiIdentifiers.DELAY_EXPRESSION, fifo.getDelay().getSizeExpression().getExpressionString());
+      fifoElt.setAttribute(PiIdentifiers.DELAY_EXPRESSION, fifo.getDelay().getSizeExpression().getExpressionAsString());
     }
     // TODO other Fifo properties (if any)
   }
@@ -581,7 +599,7 @@ public class PiWriter {
     // Set the kind of the node
     if (!param.isConfigurationInterface()) {
       paramElt.setAttribute(PiIdentifiers.NODE_KIND, PiIdentifiers.PARAMETER);
-      paramElt.setAttribute(PiIdentifiers.PARAMETER_EXPRESSION, param.getValueExpression().getExpressionString());
+      paramElt.setAttribute(PiIdentifiers.PARAMETER_EXPRESSION, param.getValueExpression().getExpressionAsString());
     } else {
       paramElt.setAttribute(PiIdentifiers.NODE_KIND, InterfaceKind.CFG_INPUT.getLiteral());
     }
@@ -633,7 +651,7 @@ public class PiWriter {
         case DATA_INPUT:
         case DATA_OUTPUT:
           portElt.setAttribute(PiIdentifiers.PORT_EXPRESSION,
-              ((DataPort) port).getPortRateExpression().getExpressionString());
+              ((DataPort) port).getPortRateExpression().getExpressionAsString());
           break;
         case CFG_INPUT:
         case CFG_OUTPUT:

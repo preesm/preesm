@@ -1,7 +1,7 @@
 /**
- * Copyright or © or Copr. IETR/INSA - Rennes (2017) :
+ * Copyright or © or Copr. IETR/INSA - Rennes (2017 - 2018) :
  *
- * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017)
+ * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017 - 2018)
  * Julien Hascoet <jhascoet@kalray.eu> (2017)
  *
  * This software is a computer program whose purpose is to help prototyping
@@ -36,38 +36,57 @@
 package org.ietr.preesm.test.it.appstest;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.Arrays;
+import java.util.Collection;
 import org.eclipse.core.runtime.CoreException;
 import org.ietr.preesm.test.it.api.WorkflowRunner;
 import org.junit.Assert;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.junit.runners.Parameterized;
+import org.junit.runners.Parameterized.Parameters;
 
 /**
 *
 */
+@RunWith(Parameterized.class)
 public class LoopGenerationTest {
-  @Test
-  public void testLoopGenFlow() throws IOException, CoreException {
-    final String projectName = "org.ietr.preesm.loopgen-sobel-erosion-dilation";
 
-    // fill workflows to set
-    final List<String> workflows = new ArrayList<>();
-    workflows.add("CodegenDistribNoFlat");
-    workflows.add("CodegenDistribFlat1");
+  static final String[] scenarios = new String[] { "4core.scenario", "4core2.scenario" };
+  static final String[] workflows = new String[] { "CodegenDistribNoFlat.workflow", "CodegenDistribFlat1.workflow" };
 
-    // fill scenarios to set
-    final List<String> scenarios = new ArrayList<>();
-    scenarios.add("4core");
-    scenarios.add("4core2");
+  static final String projectName = "org.ietr.preesm.loopgen-sobel-erosion-dilation";
 
-    for (final String w : workflows) {
-      for (final String s : scenarios) {
-        final String workflowFilePathStr = "/Workflows/" + w + ".workflow";
-        final String scenarioFilePathStr = "/Scenarios/" + s + ".scenario";
-        final boolean success = WorkflowRunner.runWorkFlow(projectName, workflowFilePathStr, scenarioFilePathStr);
-        Assert.assertTrue("[FAILED] Workflow " + workflowFilePathStr + " Scenario " + scenarioFilePathStr, success);
+  final String workflow;
+  final String scenario;
+
+  public LoopGenerationTest(final String workflow, final String scenario) {
+    this.scenario = scenario;
+    this.workflow = workflow;
+  }
+
+  /**
+   *
+   */
+  @Parameters(name = "{0} - {1}")
+  public static Collection<Object[]> data() {
+    final Object[][] params = new Object[workflows.length * scenarios.length][2];
+    int i = 0;
+    for (String workflow : workflows) {
+      for (String scenario : scenarios) {
+        params[i][0] = workflow;
+        params[i][1] = scenario;
+        i++;
       }
     }
+    return Arrays.asList(params);
+  }
+
+  @Test
+  public void testLoopGenFlow() throws IOException, CoreException {
+    final String workflowFilePathStr = "/Workflows/" + workflow;
+    final String scenarioFilePathStr = "/Scenarios/" + scenario;
+    final boolean success = WorkflowRunner.runWorkFlow(projectName, workflowFilePathStr, scenarioFilePathStr);
+    Assert.assertTrue("[FAILED] Workflow " + workflowFilePathStr + " Scenario " + scenarioFilePathStr, success);
   }
 }

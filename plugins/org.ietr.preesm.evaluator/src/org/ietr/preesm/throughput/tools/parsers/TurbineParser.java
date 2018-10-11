@@ -37,14 +37,14 @@ package org.ietr.preesm.throughput.tools.parsers;
 
 import java.io.BufferedReader;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.util.Hashtable;
+import java.util.LinkedHashMap;
+import java.util.Map;
 import org.ietr.dftools.algorithm.model.sdf.SDFAbstractVertex;
 import org.ietr.dftools.algorithm.model.sdf.SDFGraph;
 import org.ietr.dftools.algorithm.model.sdf.SDFInterfaceVertex;
-import org.ietr.preesm.core.scenario.PreesmScenario;
+import org.ietr.preesm.evaluator.EvaluationException;
 import org.ietr.preesm.throughput.tools.helpers.GraphStructureHelper;
 import org.ietr.preesm.throughput.tools.helpers.Stopwatch;
 
@@ -52,22 +52,21 @@ import org.ietr.preesm.throughput.tools.helpers.Stopwatch;
  * @author hderoui
  *
  */
-public abstract class TurbineParser {
+public interface TurbineParser {
 
-  public static final double InterfaceDuration_default = 0;
+  public static final double INTERFACE_DURATION_DEFAULT = 0;
 
   /**
    * @param path
    *          IBSDF file
    * @return IBSDF graph
    */
-  public static SDFGraph importIBSDFGraph(final String path, final PreesmScenario scenario) {
-    // TODO: add actors duration to the scenario
+  public static SDFGraph importIBSDFGraph(final String path) {
     final Stopwatch timer = new Stopwatch();
     timer.start();
 
     // initialize the actors id table
-    final Hashtable<String, String> actorsId = new Hashtable<>();
+    final Map<String, String> actorsId = new LinkedHashMap<>();
 
     // Open the file
     FileInputStream fstream;
@@ -84,7 +83,6 @@ public abstract class TurbineParser {
       // print the name of the graph
       TurbineParser.jumpToLine(br, 1);
       final String graphName = br.readLine().split(" ")[0];
-      // System.out.println("Graph's name: " + graphName);
 
       // create new graph
       final SDFGraph g = new SDFGraph();
@@ -98,7 +96,7 @@ public abstract class TurbineParser {
       nbEdges = Integer.parseInt(line[1]);
 
       // list of actors
-      final Hashtable<String, SDFAbstractVertex> listActors = new Hashtable<>();
+      final Map<String, SDFAbstractVertex> listActors = new LinkedHashMap<>();
 
       // reading actors description
       TurbineParser.jumpToLine(br, 2);
@@ -106,17 +104,15 @@ public abstract class TurbineParser {
         line = br.readLine().split(" ");
         // line structure: Id repetitionFactor phaseDuration
         final String _actorId = line[0];
-        final Integer _actorRF = Integer.parseInt(line[1]);
+        final Long _actorRF = Long.parseLong(line[1]);
         final double _actorDuration = Double.parseDouble(line[2]);
 
-        // String newActorId = Identifier.generateActorId();
         final String newActorId = _actorId;
         actorsId.put(_actorId, newActorId);
 
         // add the actor to the graph
-        final SDFAbstractVertex actor = GraphStructureHelper.addActor(g, newActorId, null, _actorRF, _actorDuration,
-            null, null);
-        // System.out.println("actor : " + newActorId + " " + _actorRF + " " + _actorDuration);
+        final SDFAbstractVertex actor = GraphStructureHelper.addActor(g, newActorId, null, _actorRF, _actorDuration, 0,
+            null);
         listActors.put(newActorId, actor);
       }
 
@@ -126,9 +122,9 @@ public abstract class TurbineParser {
         line = br.readLine().split(" ");
         // line structure: (source,target) initial_marking
         // production_vector consumption_vector
-        final String[] source_target = line[0].split(",");
-        final String srcActorId = actorsId.get(source_target[0].replace("(", ""));
-        final String trgActorId = actorsId.get(source_target[1].replace(")", ""));
+        final String[] sourceTarget = line[0].split(",");
+        final String srcActorId = actorsId.get(sourceTarget[0].replace("(", ""));
+        final String trgActorId = actorsId.get(sourceTarget[1].replace(")", ""));
         final Double _initialMarking = Double.parseDouble(line[1]);
         final Double _prod = Double.parseDouble(line[2]);
         final Double _cons = Double.parseDouble(line[3]);
@@ -136,12 +132,7 @@ public abstract class TurbineParser {
         // add the edge to the graph
         GraphStructureHelper.addEdge(g, srcActorId, null, trgActorId, null, _prod.intValue(), _cons.intValue(),
             _initialMarking.intValue(), null);
-        // System.out.println("edge : (" + srcActorId + "," + trgActorId + " ) prod= " + _prod.intValue() + " cons= " +
-        // _cons.intValue() + " d= " +
-        // _initialMarking.intValue());
       }
-
-      // GraphStructureHelper.printSDF(g);
 
       // subgraphs
       TurbineParser.jumpToLine(br, 2);
@@ -156,16 +147,10 @@ public abstract class TurbineParser {
         final String _parentActorId = line[0];
         hierarchicalActor = listActors.get(actorsId.get(_parentActorId));
 
-        // get the parent graph of the hierarchical actor
-        // SDFGraph topGraph = listActors.get(actorsId.get(_parentActorId)).ParentGraph;
-        // get the hierarchical actor
-        // HierarchicalActor HActor = topGraph.hierarchise(listActors.get(actorsId.get(_parentActorId)));
-
         // construct the subgraph
         // print the name of the graph
         TurbineParser.jumpToLine(br, 1);
         final String subGraphName = br.readLine().split(" ")[0];
-        // System.out.println("Graph's name: " + graphName);
 
         // create new graph
         final SDFGraph subGraph = new SDFGraph();
@@ -186,17 +171,15 @@ public abstract class TurbineParser {
           line = br.readLine().split(" ");
           // line structure: Id repetitionFactor phaseDuration
           final String _actorId = line[0];
-          final Integer _actorRF = Integer.parseInt(line[1]);
+          final Long _actorRF = Long.parseLong(line[1]);
           final Double _actorDuration = Double.parseDouble(line[2]);
 
-          // String newActorId = Identifier.generateActorId();
           final String newActorId = _actorId;
           actorsId.put(_actorId, newActorId);
 
           // add the actor to the graph
           final SDFAbstractVertex actor = GraphStructureHelper.addActor(subGraph, newActorId, null, _actorRF,
-              _actorDuration, null, null);
-          // System.out.println("actor : " + newActorId + " " + _actorRF + " " + _actorDuration);
+              _actorDuration, 0, null);
           listActors.put(newActorId, actor);
         }
 
@@ -206,9 +189,9 @@ public abstract class TurbineParser {
           line = br.readLine().split(" ");
           // line structure: (source,target) initial_marking
           // production_vector consumption_vector
-          final String[] source_target = line[0].split(",");
-          final String srcActorId = actorsId.get(source_target[0].replace("(", ""));
-          final String trgActorId = actorsId.get(source_target[1].replace(")", ""));
+          final String[] sourceTarget = line[0].split(",");
+          final String srcActorId = actorsId.get(sourceTarget[0].replace("(", ""));
+          final String trgActorId = actorsId.get(sourceTarget[1].replace(")", ""));
           final Double _initialMarking = Double.parseDouble(line[1]);
           final Double _prod = Double.parseDouble(line[2]);
           final Double _cons = Double.parseDouble(line[3]);
@@ -216,9 +199,6 @@ public abstract class TurbineParser {
           // add the edge to the graph
           GraphStructureHelper.addEdge(subGraph, srcActorId, null, trgActorId, null, _prod.intValue(), _cons.intValue(),
               _initialMarking.intValue(), null);
-          // System.out.println(
-          // "edge : (" + srcActorId + "," + trgActorId + " ) prod= " + _prod.intValue() + " cons= " + _cons.intValue()
-          // + " d= " + _initialMarking.intValue());
         }
 
         // reading Input interfaces description
@@ -226,30 +206,27 @@ public abstract class TurbineParser {
         for (int j = 0; j < nbInI; j++) {
           line = br.readLine().split(" ");
           // line structure: (source,target) consumption_vector
-          final String[] source_target = line[0].split(",");
-          final String srcActorId = actorsId.get(source_target[0].replace("(", ""));
-          Double _cons = 0.;
+          final String[] sourceTarget = line[0].split(",");
+          final String srcActorId = actorsId.get(sourceTarget[0].replace("(", ""));
+          double cons = 0.;
 
           String inputPort = null;
           // get the name of the input interface
           for (final SDFInterfaceVertex input : hierarchicalActor.getSources()) {
             if (hierarchicalActor.getAssociatedEdge(input).getSource().getName().equals(srcActorId)) {
               inputPort = input.getName();
-              _cons = (double) hierarchicalActor.getAssociatedEdge(input).getCons().intValue();
+              cons = (double) hierarchicalActor.getAssociatedEdge(input).getCons().longValue();
               break;
             }
           }
 
-          final String trgActorId = actorsId.get(source_target[1].replace(")", ""));
+          final String trgActorId = actorsId.get(sourceTarget[1].replace(")", ""));
           final Double _prod = Double.parseDouble(line[1]);
 
-          GraphStructureHelper.addInputInterface(subGraph, inputPort, null, TurbineParser.InterfaceDuration_default,
-              null, null);
-          // System.out.println("inputInterface : " + inputPort);
-          GraphStructureHelper.addEdge(subGraph, inputPort, null, trgActorId, null, _prod.intValue(), _cons.intValue(),
-              0, null);
-          // System.out.println("edge : (" + inputPort + "," + trgActorId + " ) prod= " + _prod.intValue() + " cons= " +
-          // _cons.intValue());
+          GraphStructureHelper.addInputInterface(subGraph, inputPort, 0L, TurbineParser.INTERFACE_DURATION_DEFAULT, 0,
+              null);
+          GraphStructureHelper.addEdge(subGraph, inputPort, null, trgActorId, null, _prod.intValue(), (long) cons, 0,
+              null);
         }
 
         // reading Output interfaces description
@@ -257,54 +234,44 @@ public abstract class TurbineParser {
         for (int j = 0; j < nbOutI; j++) {
           line = br.readLine().split(" ");
           // line structure: (source,target) production_vector
-          final String[] source_target = line[0].split(",");
-          final String trgActorId = actorsId.get(source_target[1].replace(")", ""));
-          Double _prod = 0.;
+          final String[] sourceTarget = line[0].split(",");
+          final String trgActorId = actorsId.get(sourceTarget[1].replace(")", ""));
+          double prod = 0.;
 
           String outputPort = null;
           // get the name of the output interface
           for (final SDFInterfaceVertex output : hierarchicalActor.getSinks()) {
             if (hierarchicalActor.getAssociatedEdge(output).getTarget().getName().equals(trgActorId)) {
               outputPort = output.getName();
-              _prod = (double) hierarchicalActor.getAssociatedEdge(output).getProd().intValue();
+              prod = (double) hierarchicalActor.getAssociatedEdge(output).getProd().longValue();
               break;
             }
           }
 
-          final String srcActorId = actorsId.get(source_target[0].replace("(", ""));
+          final String srcActorId = actorsId.get(sourceTarget[0].replace("(", ""));
           final Double _cons = Double.parseDouble(line[1]);
 
-          GraphStructureHelper.addOutputInterface(subGraph, outputPort, null, TurbineParser.InterfaceDuration_default,
-              null, null);
-          // System.out.println("outputInterface : " + outputPort);
-          GraphStructureHelper.addEdge(subGraph, srcActorId, null, outputPort, null, _prod.intValue(), _cons.intValue(),
-              0, null);
-          // System.out.println("edge : (" + srcActorId + "," + outputPort + " ) prod= " + _prod.intValue() + " cons= "
-          // + _cons.intValue());
+          GraphStructureHelper.addOutputInterface(subGraph, outputPort, 0, TurbineParser.INTERFACE_DURATION_DEFAULT, 0,
+              null);
+          GraphStructureHelper.addEdge(subGraph, srcActorId, null, outputPort, null, (long) prod, _cons.intValue(), 0,
+              null);
         }
 
         // add the subgraph description to the hierarchical actor
         hierarchicalActor.setGraphDescription(subGraph);
-        // GraphStructureHelper.printSDF(subGraph);
       }
 
       // Close the input stream
       br.close();
 
       timer.stop();
-      System.out.println("IBSDF Graph Imported in " + timer.toString());
 
       // return the imported graph
       return g;
 
-    } catch (final FileNotFoundException e) {
-      // TODO Auto-generated catch block
-      e.printStackTrace();
     } catch (final IOException e) {
-      // TODO Auto-generated catch block
-      e.printStackTrace();
+      throw new EvaluationException("Could not import IBSDF", e);
     }
-    return null;
   }
 
   /**
@@ -316,7 +283,7 @@ public abstract class TurbineParser {
    *          number of lines to skip
    * @return Line
    */
-  private static String jumpToLine(final BufferedReader br, final int n) {
+  static String jumpToLine(final BufferedReader br, final int n) {
     try {
       for (int i = 1; i < n; i++) {
         br.readLine();
@@ -324,10 +291,7 @@ public abstract class TurbineParser {
       return br.readLine();
 
     } catch (final IOException e) {
-      // TODO Auto-generated catch block
-      e.printStackTrace();
+      throw new EvaluationException("Could not read line " + n, e);
     }
-
-    return null;
   }
 }

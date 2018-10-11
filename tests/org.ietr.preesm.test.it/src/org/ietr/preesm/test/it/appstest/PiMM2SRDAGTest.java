@@ -36,64 +36,81 @@
 package org.ietr.preesm.test.it.appstest;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
 import org.eclipse.core.runtime.CoreException;
 import org.ietr.preesm.test.it.api.WorkflowRunner;
 import org.junit.Assert;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.junit.runners.Parameterized;
+import org.junit.runners.Parameterized.Parameters;
 
 /**
  *
  */
+@RunWith(Parameterized.class)
 public class PiMM2SRDAGTest {
 
-  @Test
-  public void testRL() throws IOException, CoreException {
-    final String projectName = "org.ietr.preesm.reinforcement_learning";
-    final String[] scenarios = new String[] { "1corePrediction.scenario", "4corePrediction.scenario",
+  final String workflow;
+  final String scenario;
+  final String projectName;
+
+  /**
+   */
+  public PiMM2SRDAGTest(final String workflow, final String scenario, final String projectName) {
+    this.scenario = scenario;
+    this.workflow = workflow;
+    this.projectName = projectName;
+  }
+
+  /**
+   *
+   */
+  @Parameters(name = "{2} - {0} - {1}")
+  public static Collection<Object[]> data() {
+
+    final List<Object[]> params = new ArrayList<>();
+
+    String projectName = "org.ietr.preesm.reinforcement_learning";
+    String[] scenarios = new String[] { "1corePrediction.scenario", "4corePrediction.scenario",
         "1coreTraining.scenario", "4coreTraining.scenario" };
-    final String[] workflows = new String[] { "StaticPiMM2SRDAGCodegen.workflow", "StaticPiMMCodegen.workflow" };
-
-    for (final String workflow : workflows) {
-      for (final String scenario : scenarios) {
-        final String workflowFilePathStr = "/Workflows/" + workflow;
-        final String scenarioFilePathStr = "/Scenarios/" + scenario;
-        final boolean success = WorkflowRunner.runWorkFlow(projectName, workflowFilePathStr, scenarioFilePathStr);
-        Assert.assertTrue("Workflow [" + workflow + "] with scenario [" + scenario + "] caused failure", success);
+    String[] workflows = new String[] { "StaticPiMM2SRDAGCodegen.workflow", "StaticPiMMCodegen.workflow" };
+    for (String workflow : workflows) {
+      for (String scenario : scenarios) {
+        params.add(new Object[] { workflow, scenario, projectName });
       }
     }
-  }
 
-  @Test
-  public void testStereo() throws IOException, CoreException {
-    final String projectName = "org.ietr.preesm.stereo";
-    final String[] scenarios = new String[] { "1core.scenario", "4core.scenario", "8coresC6678.scenario",
-        "lowMaxDisparity.scenario", "YUV4core.scenario" };
-    final String[] workflows = new String[] { "PiMM2SRDAGCodegenMemoryScriptsMixedMerged.workflow",
+    projectName = "org.ietr.preesm.stereo";
+    scenarios = new String[] { "1core.scenario", "4core.scenario", "8coresC6678.scenario", "lowMaxDisparity.scenario",
+        "YUV4core.scenario" };
+    workflows = new String[] { "PiMM2SRDAGCodegenMemoryScriptsMixedMerged.workflow",
         "StaticPiMM2SRDAGCodegen.workflow" };
-
-    for (final String workflow : workflows) {
-      for (final String scenario : scenarios) {
-        final String workflowFilePathStr = "/Workflows/" + workflow;
-        final String scenarioFilePathStr = "/Scenarios/" + scenario;
-        final boolean success = WorkflowRunner.runWorkFlow(projectName, workflowFilePathStr, scenarioFilePathStr);
-        Assert.assertTrue("Workflow [" + workflow + "] with scenario [" + scenario + "] caused failure", success);
+    for (String workflow : workflows) {
+      for (String scenario : scenarios) {
+        params.add(new Object[] { workflow, scenario, projectName });
       }
     }
+
+    projectName = "org.ietr.preesm.sobel";
+    scenarios = new String[] { "1core.scenario", "4core.scenario", "8coreC6678.scenario" };
+    workflows = new String[] { "StaticPiMM2SRDAGCodegen.workflow" };
+    for (String workflow : workflows) {
+      for (String scenario : scenarios) {
+        params.add(new Object[] { workflow, scenario, projectName });
+      }
+    }
+
+    return params;
   }
 
   @Test
-  public void testSobel() throws IOException, CoreException {
-    final String projectName = "org.ietr.preesm.sobel";
-    final String[] scenarios = new String[] { "1core.scenario", "4core.scenario", "8coreC6678.scenario" };
-    final String[] workflows = new String[] { "StaticPiMM2SRDAGCodegen.workflow" };
-
-    for (final String workflow : workflows) {
-      for (final String scenario : scenarios) {
-        final String workflowFilePathStr = "/Workflows/" + workflow;
-        final String scenarioFilePathStr = "/Scenarios/" + scenario;
-        final boolean success = WorkflowRunner.runWorkFlow(projectName, workflowFilePathStr, scenarioFilePathStr);
-        Assert.assertTrue("Workflow [" + workflow + "] with scenario [" + scenario + "] caused failure", success);
-      }
-    }
+  public void testSrdag() throws IOException, CoreException {
+    final String workflowFilePathStr = "/Workflows/" + workflow;
+    final String scenarioFilePathStr = "/Scenarios/" + scenario;
+    final boolean success = WorkflowRunner.runWorkFlow(projectName, workflowFilePathStr, scenarioFilePathStr);
+    Assert.assertTrue("Workflow [" + workflow + "] with scenario [" + scenario + "] caused failure", success);
   }
 }

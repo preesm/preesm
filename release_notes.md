@@ -1,6 +1,35 @@
 PREESM Changelog
 ================
 
+## Release version 2.16.0
+*2018.10.11*
+
+### New Feature
+* Add workflow task to manually input a schedule in the flow;
+* A period can be specified for each actor (but not for special actors), it is not used during scheduling for now;
+  * Consistency is checked during workflow execution;
+
+### Changes
+* Major refactoring
+  * Use Long instead of Integer in the Memory allocation;
+  * Fix many bugs and code smells;
+* Adding graph optimizations for PiMM graphs as seperate process from PiMM2SRDAG.
+* Adding tests for graph transformations.
+* Adding new task to flatten a given PiMM graph.
+* Move travis dist to xenial;
+* Fix PiSDF Exporter task to read a PiMM instead of a scenario;
+* Fix Expression evaluator to properly handle several config input ports connected to the same parameter;
+* Copying the timing property during the PiMM2SRDAG conversion;
+* Add XSD for .pi files and corresponding Validator class;
+* Move Xtend maven plugins to 2.15;
+* Add LongExpressions to speedup evaluation;
+* Use parameterized tests;
+* Add test case for stressing memory allocation;
+* Use LongFraction (tweak of apache.math3.Fraction) instead of Rationals and Fractions;
+
+### Bug fix
+
+
 ## Release version 2.15.1
 *2018.09.26*
 

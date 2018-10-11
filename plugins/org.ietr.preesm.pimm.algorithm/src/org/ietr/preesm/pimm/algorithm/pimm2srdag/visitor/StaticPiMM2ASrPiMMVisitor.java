@@ -1,6 +1,7 @@
 /**
  * Copyright or © or Copr. IETR/INSA - Rennes (2018) :
  *
+ * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2018)
  * Florian Arrestier <florian.arrestier@insa-rennes.fr> (2018)
  *
  * This software is a computer program whose purpose is to help prototyping
@@ -43,11 +44,14 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import org.eclipse.emf.common.util.EList;
 import org.eclipse.emf.ecore.util.EcoreUtil;
 import org.ietr.dftools.workflow.WorkflowException;
 import org.ietr.preesm.core.scenario.ConstraintGroup;
 import org.ietr.preesm.core.scenario.ConstraintGroupManager;
 import org.ietr.preesm.core.scenario.PreesmScenario;
+import org.ietr.preesm.core.scenario.Timing;
+import org.ietr.preesm.core.scenario.TimingManager;
 import org.ietr.preesm.experiment.model.factory.PiMMUserFactory;
 import org.ietr.preesm.experiment.model.pimm.AbstractActor;
 import org.ietr.preesm.experiment.model.pimm.AbstractVertex;
@@ -106,8 +110,11 @@ public class StaticPiMM2ASrPiMMVisitor extends PiMMSwitch<Boolean> {
   /** Map of all DataOutputInterface to corresponding vertices */
   private final Map<String, List<AbstractVertex>> outPort2SRActors = new LinkedHashMap<>();
 
-  /** List of the constrants operator ID of the current actor */
-  ArrayList<String> currentOperatorIDs;
+  /** List of the constraints operator ID of the current actor */
+  List<String> currentOperatorIDs;
+
+  /** List of the timing constraints of the current actor */
+  List<Timing> currentTimings;
 
   /** PiMM Graph name */
   String originalGraphName;
@@ -133,7 +140,7 @@ public class StaticPiMM2ASrPiMMVisitor extends PiMMSwitch<Boolean> {
    *          the Basic Repetition Vector Map
    * @param scenario
    *          the scenario
-   * 
+   *
    */
   public StaticPiMM2ASrPiMMVisitor(final PiGraph graph, final Map<AbstractVertex, Long> brv,
       final PreesmScenario scenario) {
@@ -146,25 +153,8 @@ public class StaticPiMM2ASrPiMMVisitor extends PiMMSwitch<Boolean> {
   }
 
   /**
-   * Build proper name for instance [index] of a given vertex.
-   * 
-   * @param prefixe
-   *          Prefix to apply to the vertex name
-   * @param vertexName
-   *          The vertex name
-   * @param index
-   *          Instance of the vertex in the single-rate graph
-   * @param vertexRV
-   *          Repetition vector of the actor
-   * @return The proper built name
-   */
-  private String buildName(final String prefixe, final String vertexName, final long index, final long vertexRV) {
-    return vertexRV > 1 ? prefixe + vertexName + "_" + Long.toString(index) : prefixe + vertexName;
-  }
-
-  /**
    * Set basic properties from a PiMM actor to the copied actor
-   * 
+   *
    * @param actor
    *          original PiMM actor
    * @param copyActor
@@ -176,13 +166,17 @@ public class StaticPiMM2ASrPiMMVisitor extends PiMMSwitch<Boolean> {
 
     // // Copy parameters
     for (final Parameter p : actor.getInputParameters()) {
-      final ConfigInputPort originalCIP = actor.lookupConfigInputPortConnectedWithParameter(p);
-      final ConfigInputPort cip = (ConfigInputPort) copyActor.lookupPort(originalCIP.getName());
-      if (cip != null) {
-        final Parameter copy = (Parameter) copier.copy(p);
-        final Dependency dep = PiMMUserFactory.instance.createDependency();
-        dep.setSetter(copy);
-        cip.setIncomingDependency(dep);
+
+      final EList<
+          ConfigInputPort> correspondingConfigInputPorts = actor.lookupConfigInputPortsConnectedWithParameter(p);
+      for (ConfigInputPort originalCIP : correspondingConfigInputPorts) {
+        final ConfigInputPort cip = (ConfigInputPort) copyActor.lookupPort(originalCIP.getName());
+        if (cip != null) {
+          final Parameter copy = (Parameter) copier.copy(p);
+          final Dependency dep = PiMMUserFactory.instance.createDependency();
+          dep.setSetter(copy);
+          cip.setIncomingDependency(dep);
+        }
       }
     }
 
@@ -195,6 +189,13 @@ public class StaticPiMM2ASrPiMMVisitor extends PiMMSwitch<Boolean> {
     // Add the scenario constraints
     final ConstraintGroupManager constraintGroupManager = this.scenario.getConstraintGroupManager();
     this.currentOperatorIDs.forEach(s -> constraintGroupManager.addConstraint(s, copyActor));
+    // Add the scenario timings
+    final TimingManager timingManager = this.scenario.getTimingManager();
+    for (final Timing t : this.currentTimings) {
+      final Timing addTiming = timingManager.addTiming(copyActor.getName(), t.getOperatorDefinitionId());
+      addTiming.setTime(t.getTime());
+      addTiming.setInputParameters(t.getInputParameters());
+    }
   }
 
   /*
@@ -254,55 +255,72 @@ public class StaticPiMM2ASrPiMMVisitor extends PiMMSwitch<Boolean> {
 
   @Override
   public Boolean caseDelayActor(final DelayActor actor) {
-    final boolean isSetter = this.currentFifo.getTargetPort().getContainingActor() instanceof DelayActor;
+    final AbstractActor targetActor = this.currentFifo.getTargetPort().getContainingActor();
+    final AbstractActor sourceActor = this.currentFifo.getSourcePort().getContainingActor();
+    final boolean isSetter = targetActor == actor;
     if (isSetter) {
-      this.actor2SRActors.put(this.graphPrefix + actor.getName(), generateSetterList(actor));
+      this.actor2SRActors.put(this.graphPrefix + actor.getName(),
+          generateList(actor.getDataInputPort(), sourceActor, "_init_"));
     } else {
-      this.actor2SRActors.put(this.graphPrefix + actor.getName(), generateGetterList(actor));
+      this.actor2SRActors.put(this.graphPrefix + actor.getName(),
+          generateList(actor.getDataOutputPort(), targetActor, "_end_"));
     }
     return true;
   }
 
-  private List<AbstractVertex> generateSetterList(final DelayActor actor) {
-    final AbstractActor sourceActor = this.currentFifo.getSourcePort().getContainingActor();
-    final List<AbstractVertex> setterList = new ArrayList<>();
-    final long setterRV = sourceActor instanceof InterfaceActor ? 1 : this.brv.get(sourceActor);
-    // // First we need to find the end actors
-    for (int i = 0; i < setterRV; ++i) {
-      final String currentInitName = sourceActor.getName() + "_init_" + Integer.toString(i);
-      final InitActor currentInit = (InitActor) this.result.lookupVertex(currentInitName);
-      final DataOutputPort outputPort = currentInit.getDataOutputPort();
-      final Fifo fifo = outputPort.getOutgoingFifo();
-      final DataInputPort targetPort = fifo.getTargetPort();
-      final AbstractActor target = targetPort.getContainingActor();
-      // Update port name
-      actor.getDataInputPort().setName(targetPort.getName());
-      setterList.add(target);
-      this.result.removeActor(currentInit);
+  /**
+   * Generate the list of actor that will replace a given DelayActor at some point in the SR transformation.
+   *
+   * <pre>
+   *
+   * 0. Original PiMM description:
+   *
+   *   setter * RV(setter) ---> DelayActor ---> getter * RV(getter)
+   *
+   * 1. Current SR-Transform:
+   *
+   *  InitActor * RV(setter) ---> actors setA
+   *
+   *  actors setB ---> EndActor * RV(getter)
+   *
+   * 2. Final SR-Transform:
+   *
+   *  setter * RV(setter) ---> actors setA
+   *
+   *  actors setB ---> getter * RV(getter)
+   * </pre>
+   *
+   * @param port
+   *          Data port of the DelayActor whose name is going to be replaced
+   * @param actor
+   *          Actor corresponding to either the Init or the End of the Delay linked to the DelayActor
+   * @param suffixe
+   *          Either "_init_" or "_end_" depending on whether we are dealing with Init / End of the Delay
+   * @return List of actors corresponding to the setter / getter actors of the Delay.
+   */
+  private List<AbstractVertex> generateList(final DataPort port, final AbstractActor actor, final String suffixe) {
+    final List<AbstractVertex> list = new ArrayList<>();
+    // 0. Get RV value of the Actor
+    final long actorRV = actor instanceof InterfaceActor ? 1 : this.brv.get(actor);
+    // 1. Find matched actors
+    for (long i = 0; i < actorRV; ++i) {
+      final String name = actor.getName() + suffixe + Long.toString(i);
+      final AbstractActor foundActor = (AbstractActor) this.result.lookupVertex(name);
+      final DataPort dataPort = foundActor.getAllDataPorts().get(0);
+      final Fifo fifo = dataPort.getFifo();
+      // Retrieve the opposite port of the FIFO
+      final DataPort oppositePort = dataPort instanceof DataOutputPort ? fifo.getTargetPort() : fifo.getSourcePort();
+      final AbstractActor actorToAdd = oppositePort.getContainingActor();
+      // Update the DataPort name to match the one of the corresponding port
+      final String portName = oppositePort.getName();
+      port.setName(portName);
+      // Add the actor to the list
+      list.add(actorToAdd);
+      // Remove actor and FIFO from the result graph
+      this.result.removeActor(foundActor);
       this.result.removeFifo(fifo);
     }
-    return setterList;
-  }
-
-  private List<AbstractVertex> generateGetterList(final DelayActor actor) {
-    final AbstractActor targetActor = this.currentFifo.getTargetPort().getContainingActor();
-    final List<AbstractVertex> getterList = new ArrayList<>();
-    final long getterRV = targetActor instanceof InterfaceActor ? 1 : this.brv.get(targetActor);
-    // First we need to find the end actors
-    for (int i = 0; i < getterRV; ++i) {
-      final String currentEndName = targetActor.getName() + "_end_" + Integer.toString(i);
-      final EndActor currentEnd = (EndActor) this.result.lookupVertex(currentEndName);
-      final DataInputPort inputPort = currentEnd.getDataInputPort();
-      final Fifo fifo = inputPort.getIncomingFifo();
-      final DataOutputPort sourcePort = fifo.getSourcePort();
-      final AbstractActor source = sourcePort.getContainingActor();
-      // Update port name
-      actor.getDataOutputPort().setName(sourcePort.getName());
-      getterList.add(source);
-      this.result.removeActor(currentEnd);
-      this.result.removeFifo(fifo);
-    }
-    return getterList;
+    return list;
   }
 
   @Override
@@ -406,7 +424,7 @@ public class StaticPiMM2ASrPiMMVisitor extends PiMMSwitch<Boolean> {
   }
 
   /**
-   * 
+   *
    * @param fifo
    *          the FIFO
    * @param sourcePort
@@ -451,7 +469,7 @@ public class StaticPiMM2ASrPiMMVisitor extends PiMMSwitch<Boolean> {
 
   /**
    * Search recursively in hierarchy for the matching source port in the real source actor connected to an interface
-   * 
+   *
    * @param graph
    *          Current graph containing the interface actor of name "sourceName"
    * @param source
@@ -477,7 +495,7 @@ public class StaticPiMM2ASrPiMMVisitor extends PiMMSwitch<Boolean> {
 
   /**
    * Handles a DataInputInterface replacement
-   * 
+   *
    * @param targetPort
    *          the target port
    * @param sourceActor
@@ -497,8 +515,8 @@ public class StaticPiMM2ASrPiMMVisitor extends PiMMSwitch<Boolean> {
     }
 
     // 2.2 Now check if we need a BroadcastActor
-    long prod = Long.parseLong(correspondingPort.getPortRateExpression().getExpressionString());
-    long cons = Long.parseLong(targetPort.getPortRateExpression().getExpressionString());
+    long prod = correspondingPort.getPortRateExpression().evaluate();
+    long cons = targetPort.getPortRateExpression().evaluate();
     long sinkRV = this.brv.get(sinkActor);
     final boolean needBroadcastInterface = prod != (cons * sinkRV);
     final boolean needBroadcastDelay = sourceActor.getDataOutputPorts().get(0).getOutgoingFifo().getDelay() != null;
@@ -525,21 +543,21 @@ public class StaticPiMM2ASrPiMMVisitor extends PiMMSwitch<Boolean> {
 
   /**
    * Add a BroadcastActor in the place of a DataInputInterface
-   * 
+   *
    * @param sourceActor
    *          the source interface
    * @return the BroadcastActor
    */
   private BroadcastActor addBroadCastIn(final AbstractActor sourceActor) {
     final BroadcastActor interfaceBR = PiMMUserFactory.instance.createBroadcastActor();
-    interfaceBR.setName("BR_" + this.graphName + "_" + sourceActor.getName());
+    interfaceBR.setName("BR_" + this.graphPrefix + "_" + sourceActor.getName());
     // Add the BroadcastActor to the graph
     this.result.addActor(interfaceBR);
     return interfaceBR;
   }
 
   /**
-   * 
+   *
    * @param fifo
    *          the FIFO
    * @param sourcePort
@@ -584,7 +602,7 @@ public class StaticPiMM2ASrPiMMVisitor extends PiMMSwitch<Boolean> {
 
   /**
    * Search recursively in hierarchy for the matching source port in the real source actor connected to an interface
-   * 
+   *
    * @param graph
    *          Current graph containing the interface actor of name "targetName"
    * @param target
@@ -610,7 +628,7 @@ public class StaticPiMM2ASrPiMMVisitor extends PiMMSwitch<Boolean> {
 
   /**
    * Handles a DataOutputInterface replacement
-   * 
+   *
    * @param targetPort
    *          the target port
    * @param sourceActor
@@ -630,8 +648,8 @@ public class StaticPiMM2ASrPiMMVisitor extends PiMMSwitch<Boolean> {
     }
 
     // 2.2 Now check if we need a RoundBufferActor
-    long cons = Long.parseLong(correspondingPort.getPortRateExpression().getExpressionString());
-    long prod = Long.parseLong(sourcePort.getPortRateExpression().getExpressionString());
+    long cons = correspondingPort.getPortRateExpression().evaluate();
+    long prod = sourcePort.getPortRateExpression().evaluate();
     long sourceRV = this.brv.get(sourceActor);
     final boolean needRoundbufferInterface = cons != (prod * sourceRV);
     final boolean needRoundbufferDelay = sinkActor.getDataInputPorts().get(0).getIncomingFifo().getDelay() != null;
@@ -656,14 +674,14 @@ public class StaticPiMM2ASrPiMMVisitor extends PiMMSwitch<Boolean> {
 
   /**
    * Add a RoundBufferActor in the place of a DataOutputInterface
-   * 
+   *
    * @param sinkActor
    *          the sink interface
    * @return the RoundBufferActor
    */
   private RoundBufferActor addRoundBufferOut(final AbstractActor sinkActor) {
     final RoundBufferActor interfaceRB = PiMMUserFactory.instance.createRoundBufferActor();
-    interfaceRB.setName("RB_" + this.graphName + "_" + sinkActor.getName());
+    interfaceRB.setName("RB_" + this.graphPrefix + "_" + sinkActor.getName());
     // Add the RoundBufferActor to the graph
     this.result.addActor(interfaceRB);
     return interfaceRB;
@@ -760,8 +778,15 @@ public class StaticPiMM2ASrPiMMVisitor extends PiMMSwitch<Boolean> {
       final Set<String> vertexPaths = cg.getVertexPaths();
       final Set<String> operatorIds = cg.getOperatorIds();
       if (vertexPaths.contains(actor.getVertexPath())) {
-        currentOperatorIDs.add((String) operatorIds.toArray()[0]);
+        this.currentOperatorIDs.add((String) operatorIds.toArray()[0]);
       }
+    }
+
+    // Initialize Timing list
+    this.currentTimings = new ArrayList<>();
+    for (final String operatorDefinitionID : this.scenario.getOperatorDefinitionIds()) {
+      final Timing timing = this.scenario.getTimingManager().getTimingOrDefault(actor.getName(), operatorDefinitionID);
+      this.currentTimings.add(timing);
     }
 
     // Populate the DAG with the appropriate number of instances of the actor
@@ -825,26 +850,26 @@ public class StaticPiMM2ASrPiMMVisitor extends PiMMSwitch<Boolean> {
 
   /**
    * Split each delay actors in two delay actors: a setter and a getter.
-   * 
+   *
    * <pre>
-   * 
+   *
    * 1. If a delay has no setter / getter actors, then init / end actors are added to replace them.
-   * 
+   *
    * 2. The setter actor is connected to a new delay actor and the same goes for the getter actor.
-   * 
+   *
    * </pre>
-   * 
+   *
    * The idea is to be able to first treat delay FIFOs normally and then come and replace the init / end actors added
    * during the single rate linking by the proper setter / getter ones.
-   * 
+   *
    * This pre-processing allows to keep the single-rate linking phase as generic as possible.
-   * 
+   *
    * @param fifo
    *          The current FIFO
    */
   private void splitDelayActors(final Fifo fifo) {
     final DelayActor delayActor = fifo.getDelay().getActor();
-    final String delayExpression = fifo.getDelay().getExpression().getExpressionString();
+    final String delayExpression = fifo.getDelay().getExpression().getExpressionAsString();
     final PiGraph graph = fifo.getContainingPiGraph();
     // 0. Check if the DelayActor need to add Init / End
     if (delayActor.getSetterActor() == null) {
@@ -863,8 +888,7 @@ public class StaticPiMM2ASrPiMMVisitor extends PiMMSwitch<Boolean> {
     // 1.1.1 Setting the new target port of the setter FIFO
     final Fifo setterFifo = delayActor.getDataInputPort().getFifo();
     setterFifo.setTargetPort(setPort);
-    setPort.getPortRateExpression()
-        .setExpressionString(setterFifo.getSourcePort().getPortRateExpression().getExpressionString());
+    setPort.setExpression(setterFifo.getSourcePort().getPortRateExpression().getExpressionAsString());
     // 1.1.2 Setting the BRV value
     Long brvSetter = this.brv.get(setterFifo.getSourcePort().getContainingActor());
     if (brvSetter == null) {
@@ -876,13 +900,12 @@ public class StaticPiMM2ASrPiMMVisitor extends PiMMSwitch<Boolean> {
     getterActor.setName(delayActor.getName() + "_getter");
     final DataOutputPort getPort = PiMMUserFactory.instance.createDataOutputPort();
     getPort.setName(delayActor.getDataOutputPort().getName());
-    getPort.getPortRateExpression().setExpressionString(delayExpression);
+    getPort.setExpression(delayExpression);
     getterActor.getDataOutputPorts().add(getPort);
     // 1.2.1 Setting the new source port of the getter FIFO
     final Fifo getterFifo = delayActor.getDataOutputPort().getFifo();
     getterFifo.setSourcePort(getPort);
-    getPort.getPortRateExpression()
-        .setExpressionString(getterFifo.getTargetPort().getPortRateExpression().getExpressionString());
+    getPort.setExpression(getterFifo.getTargetPort().getPortRateExpression().getExpressionAsString());
     // 1.2.2 Setting the BRV value
     Long brvGetter = this.brv.get(getterFifo.getTargetPort().getContainingActor());
     if (brvGetter == null) {
@@ -900,7 +923,7 @@ public class StaticPiMM2ASrPiMMVisitor extends PiMMSwitch<Boolean> {
     final InitActor init = PiMMUserFactory.instance.createInitActor();
     final DataInputPort targetPort = fifo.getTargetPort();
     init.getDataOutputPort().setName(targetPort.getName());
-    init.getDataOutputPort().getPortRateExpression().setExpressionString(delayExpression);
+    init.getDataOutputPort().setExpression(delayExpression);
     // Set the proper init name
     final String initName = targetPort.getContainingActor().getName() + "_init_" + targetPort.getName();
     init.setName(initName);
@@ -921,7 +944,7 @@ public class StaticPiMM2ASrPiMMVisitor extends PiMMSwitch<Boolean> {
     final EndActor end = PiMMUserFactory.instance.createEndActor();
     final DataOutputPort sourcePort = fifo.getSourcePort();
     end.getDataInputPort().setName(sourcePort.getName());
-    end.getDataInputPort().getPortRateExpression().setExpressionString(delayExpression);
+    end.getDataInputPort().setExpression(delayExpression);
     // Set the proper end name
     final String endName = sourcePort.getContainingActor().getName() + "_end_" + sourcePort.getName();
     end.setName(endName);

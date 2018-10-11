@@ -70,7 +70,7 @@ public interface IWeightedVertex<W> {
    *
    * @return the unique identifier of the vertex
    */
-  public abstract int getIdentifier();
+  public abstract long getIdentifier();
 
   /**
    * Set the unique identifier of the vertex. Each vertex must have a unique identifier. If two vertices have the same
@@ -79,7 +79,7 @@ public interface IWeightedVertex<W> {
    * @param id
    *          the new identifier of the vertex
    */
-  public abstract void setIdentifier(int id);
+  public abstract void setIdentifier(long id);
 
   /**
    * Get a deep copy of the vertex.

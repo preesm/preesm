@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<graphml xmlns="http://graphml.graphdrawing.org/xmlns">
+    <key attr.name="parameters" for="graph" id="parameters"/>
+    <key attr.name="variables" for="graph" id="variables"/>
+    <key attr.name="arguments" for="node" id="arguments"/>
+    <key attr.name="name" attr.type="string" for="graph"/>
+    <key attr.name="delay" attr.type="string" for="edge"/>
+    <graph edgedefault="directed">
+        <data key="name">weight_generator</data>
+        <node expr="input_size * layer_size" id="size" kind="param"/>
+        <node id="layer_size" kind="cfg_in_iface"/>
+        <node id="input_size" kind="cfg_in_iface"/>
+        <node id="BroadcastWeightsGen" kind="broadcast">
+            <port kind="cfg_input" name="size"/>
+            <port annotation="NONE" expr="size" kind="input" name="weights_in"/>
+            <port annotation="NONE" expr="size" kind="output" name="weights_out0"/>
+            <port annotation="NONE" expr="size" kind="output" name="weights_out1"/>
+        </node>
+        <node id="weights_out" kind="snk">
+            <port annotation="NONE" expr="size" kind="input" name="weights_out"/>
+        </node>
+        <node id="bias_out" kind="snk">
+            <port annotation="NONE" expr="layer_size" kind="input" name="bias_out"/>
+        </node>
+        <node id="BroadcastBiasGen" kind="broadcast">
+            <port kind="cfg_input" name="size"/>
+            <port annotation="NONE" expr="size" kind="input" name="bias_in"/>
+            <port annotation="NONE" expr="size" kind="output" name="bias_out0"/>
+            <port annotation="NONE" expr="size" kind="output" name="bias_out1"/>
+        </node>
+        <node id="WeightsCopy" kind="fork">
+            <port kind="cfg_input" name="size"/>
+            <port annotation="NONE" expr="size" kind="input" name="in"/>
+            <port annotation="NONE" expr="size" kind="output" name="out"/>
+        </node>
+        <node id="BiasCopy" kind="fork">
+            <port kind="cfg_input" name="size"/>
+            <port annotation="NONE" expr="size" kind="input" name="in"/>
+            <port annotation="NONE" expr="size" kind="output" name="out"/>
+        </node>
+        <node expr="layer_size" getter=""
+            id="delay_BroadcastBiasGen_bias_out1__BiasCopy_in"
+            kind="delay" level="permanent" setter="">
+            <port annotation="NONE" expr="layer_size" kind="input" name="set"/>
+            <port annotation="NONE" expr="layer_size" kind="output" name="get"/>
+        </node>
+        <node expr="size" getter=""
+            id="delay_BroadcastWeightsGen_weights_out1__WeightsCopy_in"
+            kind="delay" level="permanent" setter="">
+            <port annotation="NONE" expr="size" kind="input" name="set"/>
+            <port annotation="NONE" expr="size" kind="output" name="get"/>
+        </node>
+        <edge expr="layer_size" kind="fifo" source="BroadcastBiasGen"
+            sourceport="bias_out1" target="BiasCopy" targetport="in" type="float">
+            <data key="delay">delay_BroadcastBiasGen_bias_out1__BiasCopy_in</data>
+        </edge>
+        <edge expr="size" kind="fifo" source="BroadcastWeightsGen"
+            sourceport="weights_out1" target="WeightsCopy"
+            targetport="in" type="float">
+            <data key="delay">delay_BroadcastWeightsGen_weights_out1__WeightsCopy_in</data>
+        </edge>
+        <edge kind="fifo" source="BroadcastWeightsGen"
+            sourceport="weights_out0" target="weights_out"
+            targetport="weights_out" type="float"/>
+        <edge kind="fifo" source="BroadcastBiasGen"
+            sourceport="bias_out0" target="bias_out"
+            targetport="bias_out" type="float"/>
+        <edge kind="fifo" source="BiasCopy" sourceport="out"
+            target="BroadcastBiasGen" targetport="bias_in" type="float"/>
+        <edge kind="fifo" source="WeightsCopy" sourceport="out"
+            target="BroadcastWeightsGen" targetport="weights_in" type="float"/>
+        <edge kind="dependency" source="size"
+            target="BroadcastWeightsGen" targetport="size"/>
+        <edge kind="dependency" source="layer_size"
+            target="BroadcastBiasGen" targetport="size"/>
+        <edge kind="dependency" source="layer_size" target="bias_out"/>
+        <edge kind="dependency" source="size" target="weights_out"/>
+        <edge kind="dependency" source="input_size" target="size"/>
+        <edge kind="dependency" source="layer_size" target="size"/>
+        <edge kind="dependency" source="size" target="WeightsCopy" targetport="size"/>
+        <edge kind="dependency" source="layer_size" target="BiasCopy" targetport="size"/>
+        <edge kind="dependency" source="layer_size" target="BroadcastBiasGen.bias_out1-BiasCopy.in"/>
+        <edge kind="dependency" source="size" target="BroadcastWeightsGen.weights_out1-WeightsCopy.in"/>
+    </graph>
+</graphml>

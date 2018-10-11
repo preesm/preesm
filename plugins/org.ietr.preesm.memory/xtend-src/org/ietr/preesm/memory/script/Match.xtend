@@ -45,7 +45,7 @@ class Match {
 	/**
 	 * Does not save the match in the buffer matchTable
 	 */
-	new(Buffer localBuffer, int localIndex, Buffer remoteBuffer, int remoteIndex, int size) {
+	new(Buffer localBuffer, long localIndex, Buffer remoteBuffer, long remoteIndex, long size) {
 		this.localBuffer = localBuffer
 		this.localIndex = localIndex
 		this.remoteBuffer = remoteBuffer
@@ -80,13 +80,13 @@ class Match {
 	@Accessors
 	Buffer localBuffer
 	@Accessors
-	int localIndex
+	long localIndex
 	@Accessors
 	Buffer remoteBuffer
 	@Accessors
-	int remoteIndex
+	long remoteIndex
 	@Accessors
-	int length
+	long length
 	@Accessors
 	List<Match> conflictingMatches
 	@Accessors

@@ -3,7 +3,7 @@ Bundle-ManifestVersion: 2
 Bundle-Name: %pluginName
 Automatic-Module-Name: org.ietr.preesm.experiment.model
 Bundle-SymbolicName: org.ietr.preesm.experiment.model;singleton:=true
-Bundle-Version: 2.15.1
+Bundle-Version: 2.16.0
 Require-Bundle: org.eclipse.core.runtime,
  org.eclipse.emf.ecore;visibility:=reexport,
  org.eclipse.xtext.xbase.lib,
@@ -11,6 +11,7 @@ Require-Bundle: org.eclipse.core.runtime,
  org.eclipse.ui;bundle-version="3.7.0",
  org.eclipse.core.resources;bundle-version="3.7.100",
  org.eclipse.emf.ecore.xmi;bundle-version="2.7.0",
+ org.apache.commons.io;bundle-version="2.2.0",
  jep;bundle-version="2.40.0",
  org.ietr.dftools.architecture;bundle-version="[1.9.0,2.0.0)";visibility:=reexport,
  org.ietr.dftools.algorithm;bundle-version="[1.9.0,2.0.0)";visibility:=reexport,
@@ -25,6 +26,7 @@ Export-Package: org.ietr.preesm.experiment.model,
  org.ietr.preesm.experiment.model.pimm.serialize,
  org.ietr.preesm.experiment.model.pimm.util
 Bundle-ActivationPolicy: lazy
-Bundle-ClassPath: .
+Bundle-ClassPath: .,
+ xsd/
 Bundle-Vendor: %providerName
 Bundle-Localization: plugin

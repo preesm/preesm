@@ -3,7 +3,7 @@ Bundle-ManifestVersion: 2
 Bundle-Name: Preesm S-LAM Tools Test
 Automatic-Module-Name: org.ietr.preesm.architecture.test
 Bundle-SymbolicName: org.ietr.preesm.architecture.test
-Bundle-Version: 2.15.1
+Bundle-Version: 2.16.0
 Bundle-Vendor: IETR/INSA Rennes
 Fragment-Host: org.ietr.preesm.architecture
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8

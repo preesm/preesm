@@ -47,4 +47,8 @@ public class PreesmMapperException extends RuntimeException {
     super(message, cause);
   }
 
+  public PreesmMapperException(final String message) {
+    super(message);
+  }
+
 }

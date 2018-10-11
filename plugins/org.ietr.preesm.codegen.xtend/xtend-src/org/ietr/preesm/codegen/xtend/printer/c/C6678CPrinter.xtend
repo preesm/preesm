@@ -179,7 +179,7 @@ class C6678CPrinter extends CPrinter {
 		«ENDIF»
 	'''
 
-	override printMemcpy(Buffer output, int outOffset, Buffer input, int inOffset, int size, String type) {
+	override printMemcpy(Buffer output, long outOffset, Buffer input, long inOffset, long size, String type) {
 
 		// Cast pointers into void pointers for non-aligned memory access
 		var result = super.printMemcpy(output, outOffset, input, inOffset, size, type).toString;

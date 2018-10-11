@@ -35,63 +35,73 @@
 package org.ietr.preesm.test.it.appstest;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
 import org.eclipse.core.runtime.CoreException;
 import org.ietr.preesm.test.it.api.WorkflowRunner;
 import org.junit.Assert;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.junit.runners.Parameterized;
+import org.junit.runners.Parameterized.Parameters;
 
 /**
  *
  */
+@RunWith(Parameterized.class)
 public class TutorialsTest {
 
-  @Test
-  public void testStereo() throws IOException, CoreException {
-    final String projectName = "org.ietr.preesm.stereo";
-    final String[] scenarios = new String[] { "1core.scenario", "4core.scenario", "8coresC6678.scenario",
+  final String workflow;
+  final String scenario;
+  final String projectName;
+
+  /**
+   */
+  public TutorialsTest(final String workflow, final String scenario, final String projectName) {
+    this.scenario = scenario;
+    this.workflow = workflow;
+    this.projectName = projectName;
+  }
+
+  /**
+   *
+   */
+  @Parameters(name = "{2} - {0} - {1}")
+  public static Collection<Object[]> data() {
+
+    final List<Object[]> params = new ArrayList<>();
+
+    params.add(new Object[] { "Codegen.workflow", "TestComPC.scenario", "org.ietr.preesm.tutorials.tutorial1" });
+
+    final String sobelProjectName = "org.ietr.preesm.sobel";
+    final String[] sobelScenarios = new String[] { "1core.scenario", "4core.scenario", "8coreC6678.scenario" };
+    final String[] sobelWorkflows = new String[] { "Codegen.workflow", "InstrumentedCodegen.workflow" };
+    for (String workflow : sobelWorkflows) {
+      for (String scenario : sobelScenarios) {
+        params.add(new Object[] { workflow, scenario, sobelProjectName });
+      }
+    }
+
+    final String stereoProjectName = "org.ietr.preesm.stereo";
+    final String[] stereoScenarios = new String[] { "1core.scenario", "4core.scenario", "8coresC6678.scenario",
         "lowMaxDisparity.scenario", "YUV4core.scenario" };
-    final String[] workflows = new String[] { "CodegenMemoryScriptsMixedMerged.workflow", "StaticPiMMCodegen.workflow",
-        "StaticPiMMCodegenMemoryScripts.workflow" };
-
-    for (final String workflow : workflows) {
-      for (final String scenario : scenarios) {
-        final String workflowFilePathStr = "/Workflows/" + workflow;
-        final String scenarioFilePathStr = "/Scenarios/" + scenario;
-        final boolean success = WorkflowRunner.runWorkFlow(projectName, workflowFilePathStr, scenarioFilePathStr);
-        Assert.assertTrue("Workflow [" + workflow + "] with scenario [" + scenario + "] caused failure", success);
+    final String[] stereoWorkflows = new String[] { "CodegenMemoryScriptsMixedMerged.workflow",
+        "StaticPiMMCodegen.workflow", "StaticPiMMCodegenMemoryScripts.workflow" };
+    for (String workflow : stereoWorkflows) {
+      for (String scenario : stereoScenarios) {
+        params.add(new Object[] { workflow, scenario, stereoProjectName });
       }
     }
+
+    return params;
   }
 
   @Test
-  public void testSobel() throws IOException, CoreException {
-    final String projectName = "org.ietr.preesm.sobel";
-    final String[] scenarios = new String[] { "1core.scenario", "4core.scenario", "8coreC6678.scenario" };
-    final String[] workflows = new String[] { "Codegen.workflow", "InstrumentedCodegen.workflow" };
-
-    for (final String workflow : workflows) {
-      for (final String scenario : scenarios) {
-        final String workflowFilePathStr = "/Workflows/" + workflow;
-        final String scenarioFilePathStr = "/Scenarios/" + scenario;
-        final boolean success = WorkflowRunner.runWorkFlow(projectName, workflowFilePathStr, scenarioFilePathStr);
-        Assert.assertTrue("Workflow [" + workflow + "] with scenario [" + scenario + "] caused failure", success);
-      }
-    }
-  }
-
-  @Test
-  public void testTutorial1() throws IOException, CoreException {
-    final String projectName = "org.ietr.preesm.tutorials.tutorial1";
-    final String[] scenarios = new String[] { "TestComPC.scenario" };
-    final String[] workflows = new String[] { "Codegen.workflow" };
-
-    for (final String workflow : workflows) {
-      for (final String scenario : scenarios) {
-        final String workflowFilePathStr = "/Workflows/" + workflow;
-        final String scenarioFilePathStr = "/Scenarios/" + scenario;
-        final boolean success = WorkflowRunner.runWorkFlow(projectName, workflowFilePathStr, scenarioFilePathStr);
-        Assert.assertTrue("Workflow [" + workflow + "] with scenario [" + scenario + "] caused failure", success);
-      }
-    }
+  public void test() throws IOException, CoreException {
+    final String workflowFilePathStr = "/Workflows/" + workflow;
+    final String scenarioFilePathStr = "/Scenarios/" + scenario;
+    final boolean success = WorkflowRunner.runWorkFlow(projectName, workflowFilePathStr, scenarioFilePathStr);
+    Assert.assertTrue("Workflow [" + workflow + "] with scenario [" + scenario + "] caused failure", success);
   }
 }

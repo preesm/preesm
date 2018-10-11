@@ -38,8 +38,12 @@
 package org.ietr.preesm.mapper.abc;
 
 import org.ietr.dftools.algorithm.model.dag.DAGVertex;
+import org.ietr.dftools.algorithm.model.dag.edag.DAGBroadcastVertex;
+import org.ietr.dftools.algorithm.model.dag.edag.DAGEndVertex;
+import org.ietr.dftools.algorithm.model.dag.edag.DAGForkVertex;
+import org.ietr.dftools.algorithm.model.dag.edag.DAGInitVertex;
+import org.ietr.dftools.algorithm.model.dag.edag.DAGJoinVertex;
 
-// TODO: Auto-generated Javadoc
 /**
  * The special vertices are special to the mapper because they have additional mapping rules.
  *
@@ -47,9 +51,13 @@ import org.ietr.dftools.algorithm.model.dag.DAGVertex;
  */
 public class SpecialVertexManager {
 
+  private SpecialVertexManager() {
+    // forbid instantiation
+  }
+
   /** The Constant dissuasiveCost. */
   // Not ready to use. Needs some improvements on scheduling before
-  public static final long dissuasiveCost = 10000000000L;
+  public static final long DISSUASIVE_COST = 10000000000L;
 
   /**
    * Tests if a vertex is of type broadcast.
@@ -65,13 +73,9 @@ public class SpecialVertexManager {
       return false;
     }
 
-    if (kind.equalsIgnoreCase("dag_broadcast_vertex") || kind.equalsIgnoreCase("dag_fork_vertex")
-        || kind.equalsIgnoreCase("dag_join_vertex") || kind.equalsIgnoreCase("dag_init_vertex")
-        || kind.equalsIgnoreCase("dag_end_vertex")) {
-      return true;
-    }
-
-    return false;
+    return kind.equalsIgnoreCase(DAGBroadcastVertex.DAG_BROADCAST_VERTEX)
+        || kind.equalsIgnoreCase(DAGForkVertex.DAG_FORK_VERTEX) || kind.equalsIgnoreCase(DAGJoinVertex.DAG_JOIN_VERTEX)
+        || kind.equalsIgnoreCase(DAGInitVertex.DAG_INIT_VERTEX) || kind.equalsIgnoreCase(DAGEndVertex.DAG_END_VERTEX);
   }
 
   /**
@@ -88,11 +92,7 @@ public class SpecialVertexManager {
       return false;
     }
 
-    if (kind.equalsIgnoreCase("dag_broadcast_vertex")) {
-      return true;
-    }
-
-    return false;
+    return kind.equalsIgnoreCase(DAGBroadcastVertex.DAG_BROADCAST_VERTEX);
   }
 
   /**
@@ -109,11 +109,7 @@ public class SpecialVertexManager {
       return false;
     }
 
-    if (kind.equalsIgnoreCase("dag_fork_vertex")) {
-      return true;
-    }
-
-    return false;
+    return kind.equalsIgnoreCase(DAGForkVertex.DAG_FORK_VERTEX);
   }
 
   /**
@@ -130,11 +126,7 @@ public class SpecialVertexManager {
       return false;
     }
 
-    if (kind.equalsIgnoreCase("dag_join_vertex")) {
-      return true;
-    }
-
-    return false;
+    return kind.equalsIgnoreCase(DAGJoinVertex.DAG_JOIN_VERTEX);
   }
 
   /**
@@ -151,11 +143,7 @@ public class SpecialVertexManager {
       return false;
     }
 
-    if (kind.equalsIgnoreCase("dag_init_vertex")) {
-      return true;
-    }
-
-    return false;
+    return kind.equalsIgnoreCase(DAGInitVertex.DAG_INIT_VERTEX);
   }
 
   /**
@@ -172,11 +160,7 @@ public class SpecialVertexManager {
       return false;
     }
 
-    if (kind.equalsIgnoreCase("dag_end_vertex")) {
-      return true;
-    }
-
-    return false;
+    return kind.equalsIgnoreCase(DAGEndVertex.DAG_END_VERTEX);
   }
 
 }

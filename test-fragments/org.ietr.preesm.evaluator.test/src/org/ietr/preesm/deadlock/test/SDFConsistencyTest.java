@@ -38,6 +38,7 @@ package org.ietr.preesm.deadlock.test;
 import org.ietr.dftools.algorithm.model.sdf.SDFGraph;
 import org.ietr.dftools.algorithm.model.sdf.types.SDFIntEdgePropertyType;
 import org.ietr.preesm.deadlock.SDFConsistency;
+import org.ietr.preesm.evaluator.EvaluationException;
 import org.ietr.preesm.throughput.tools.helpers.GraphStructureHelper;
 import org.junit.Assert;
 import org.junit.Test;
@@ -74,9 +75,13 @@ public class SDFConsistencyTest {
     // change the consumption rate of a random edge so that the graph becomes non consistent
     ABC.edgeSet().iterator().next().setCons(new SDFIntEdgePropertyType(10));
     // evaluate the consistency
-    consistent = SDFConsistency.computeRV(ABC);
-    Assert.assertFalse(consistent);
 
+    try {
+      SDFConsistency.computeRV(ABC);
+      Assert.fail();
+    } catch (EvaluationException e) {
+      // success
+    }
   }
 
   /**
@@ -94,9 +99,9 @@ public class SDFConsistencyTest {
     graph.setName("testABC326");
 
     // add actors
-    GraphStructureHelper.addActor(graph, "A", null, null, null, null, null);
-    GraphStructureHelper.addActor(graph, "B", null, null, null, null, null);
-    GraphStructureHelper.addActor(graph, "C", null, null, null, null, null);
+    GraphStructureHelper.addActor(graph, "A", null, 0, 0, 0, null);
+    GraphStructureHelper.addActor(graph, "B", null, 0, 0, 0, null);
+    GraphStructureHelper.addActor(graph, "C", null, 0, 0, 0, null);
 
     // add edges
     GraphStructureHelper.addEdge(graph, "A", null, "B", null, 2, 3, 0, null);

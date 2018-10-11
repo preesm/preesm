@@ -36,70 +36,60 @@
  */
 package fi.abo.preesm.dataparallel.iterator
 
+import fi.abo.preesm.dataparallel.DAGUtils
 import fi.abo.preesm.dataparallel.NodeChainGraph
 import fi.abo.preesm.dataparallel.PureDAGConstructor
 import java.util.Iterator
 import java.util.LinkedList
 import java.util.List
+import java.util.NoSuchElementException
 import java.util.Queue
-import java.util.logging.Logger
 import org.ietr.dftools.algorithm.model.sdf.SDFAbstractVertex
 import org.ietr.dftools.algorithm.model.sdf.SDFGraph
 import org.ietr.dftools.algorithm.model.sdf.visitors.ToHSDFVisitor
 import org.jgrapht.traverse.TopologicalOrderIterator
-import java.util.NoSuchElementException
-import fi.abo.preesm.dataparallel.DAGUtils
 
 /**
- * The iterator walks one graph w.r.t to nodes present in the another graph such that atleast the 
+ * The iterator walks one graph w.r.t to nodes present in the another graph such that atleast the
  * nodes of a given set from the source graph is visited.
  * <p>
- * Eg. Let "source" graph be a DAG and "dest" graph be a SrSDF. 
+ * Eg. Let "source" graph be a DAG and "dest" graph be a SrSDF.
  * Let visitable nodes be set of nodes of "source" graph that must be seen in "dest" graph
  * Let startInstance be the starting node in "dest" from which walking must be carried out.
  * Then,
  * This iterator walks the "dest" graph such that all the nodes of
  * "visitable nodes" are seen. Additional nodes of "dest" can be seen in order to reach all the nodes
- * of the "visitable nodes". 
+ * of the "visitable nodes".
  * <p>
  * Note that "visitable nodes" is defined w.r.t to "source" graph and we need to
  * find explicit equivalent of these in the "dest" graph.
  * <p>
- * The class is written explicitly to be used with a {@link NodeChainGraph} of Single Rate Graph or 
+ * The class is written explicitly to be used with a {@link NodeChainGraph} of Single Rate Graph or
  * HSDF as "dest" graph
  * and the custom DAG (obtained from {@link PureDAGConstructor} implementations).
  * <p>
  * Construct the iterator through the builder {@link SrSDFDAGCoIteratorBuilder}
- * 
+ *
  * Note: The iteration is eagerly evaluated at the time of construction
- * 
- * @author Sudeep Kanur 
+ *
+ * @author Sudeep Kanur
  */
 class SrSDFDAGCoIterator implements Iterator<SDFAbstractVertex>  {
-	
-	/**
-	 * Logging instance
-	 */
-	val Logger logger
-	
 	/**
 	 * Queue to hold instances
 	 */
 	val Queue<SDFAbstractVertex> queue
-	
+
 	/**
 	 * Constructor
-	 * 
+	 *
 	 * @param dag DAG obtained from implementations of {@link PureDAGConstructor}
-	 * @param ncg A {@link NodeChainGraph} constructed from the single rate SDF graph (SrSDF) 
+	 * @param ncg A {@link NodeChainGraph} constructed from the single rate SDF graph (SrSDF)
 	 * 	obtained from {@link ToHSDFVisitor}
 	 * @param visitableNodes Traverse such that only these nodes are seen
 	 * @param logger A logger instance
 	 */
-	protected new(SDFGraph dag, NodeChainGraph ncg, List<SDFAbstractVertex>visitableNodes, 
-		Logger logger
-	) {
-		this.logger = logger
+	protected new(SDFGraph dag, NodeChainGraph ncg, List<SDFAbstractVertex>visitableNodes) {
 		this.queue = new LinkedList<SDFAbstractVertex>
 		val mainNodes = ncg.nodechains.keySet
 		val topo = new TopologicalOrderIterator(dag)
@@ -111,34 +101,22 @@ class SrSDFDAGCoIterator implements Iterator<SDFAbstractVertex>  {
 				if(chain.implode !== null) {
 					for(imp: chain.implode) {
 						queue.offer(imp)
-					}	
+					}
 				}
 				queue.offer(chain.vertex)
 				if(chain.explode !== null) {
 					for(exp: chain.explode) {
 						queue.offer(exp)
-					}	
+					}
 				}
 			}
 		}
 	}
-	
-	/**
-	 * Constructor
-	 * 
-	 * @param dag DAG obtained from implementations of {@link PureDAGConstructor}
-	 * @param ncg A {@link NodeChainGraph} constructed from the single rate SDF graph (SrSDF) 
-	 * 	obtained from {@link ToHSDFVisitor}
-	 * @param visitableNodes Traverse such that only these nodes are seen
-	 */	
-	protected new(SDFGraph dag, NodeChainGraph ncg, List<SDFAbstractVertex>visitableNodes) {
-			this(dag, ncg, visitableNodes, null)
-	}
-	
+
 	override hasNext() {
 		return !queue.isEmpty
 	}
-	
+
 	override next() {
 		val node = queue.poll
 		if(node === null) {
@@ -146,5 +124,5 @@ class SrSDFDAGCoIterator implements Iterator<SDFAbstractVertex>  {
 		}
 		return node
 	}
-	
+
 }

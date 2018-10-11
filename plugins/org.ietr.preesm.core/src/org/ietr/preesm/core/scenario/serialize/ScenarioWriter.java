@@ -157,7 +157,7 @@ public class ScenarioWriter {
     switch (value.getType()) {
       case INDEPENDENT:
         valueToPrint = "" + value.getValue();
-        if (!value.getParameter().getExpression().getExpressionString().equals(valueToPrint)) {
+        if (!value.getParameter().getExpression().getExpressionAsString().equals(valueToPrint)) {
           needToBeSerialized = true;
         }
         break;
@@ -167,7 +167,7 @@ public class ScenarioWriter {
         break;
       case PARAMETER_DEPENDENT:
         valueToPrint = value.getExpression();
-        if (!value.getParameter().getExpression().getExpressionString().equals(valueToPrint)) {
+        if (!value.getParameter().getExpression().getExpressionAsString().equals(valueToPrint)) {
           needToBeSerialized = true;
         }
         break;
@@ -373,7 +373,7 @@ public class ScenarioWriter {
     final Element dataTypeElt = this.dom.createElement("dataType");
     parent.appendChild(dataTypeElt);
     dataTypeElt.setAttribute("name", dataType.getTypeName());
-    dataTypeElt.setAttribute("size", Integer.toString(dataType.getSize()));
+    dataTypeElt.setAttribute("size", Long.toString(dataType.getSize()));
   }
 
   /**

@@ -35,7 +35,7 @@
  */
 package org.ietr.preesm.deadlock;
 
-import java.util.Hashtable;
+import java.util.Map;
 import org.ietr.dftools.algorithm.model.sdf.SDFAbstractVertex;
 import org.ietr.dftools.algorithm.model.sdf.SDFGraph;
 import org.ietr.preesm.throughput.tools.helpers.GraphStructureHelper;
@@ -44,7 +44,7 @@ import org.ietr.preesm.throughput.tools.helpers.GraphStructureHelper;
  * @author hderoui
  *
  */
-public abstract class IBSDFLiveness {
+public interface IBSDFLiveness {
 
   /**
    * Test if each subgraph in the hierarchy is live including the top graph
@@ -60,14 +60,13 @@ public abstract class IBSDFLiveness {
     // step 2 check the liveness of the subgraphs
     if (live) {
       // get the list of hierarchical actors
-      final Hashtable<String,
-          SDFAbstractVertex> allHierarchicalActors = GraphStructureHelper.getAllHierarchicalActors(ibsdf);
+      final Map<String, SDFAbstractVertex> allHierarchicalActors = GraphStructureHelper.getAllHierarchicalActors(ibsdf);
 
       // check the liveness of the subgraph of each hierarchical actor in the list
       for (final SDFAbstractVertex h : allHierarchicalActors.values()) {
         live = SDFLiveness.evaluate((SDFGraph) h.getGraphDescription());
         // if the subgraph is not live return false
-        if (live == false) {
+        if (!live) {
           return false;
         }
       }

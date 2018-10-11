@@ -41,14 +41,14 @@ package org.ietr.preesm.pimm.algorithm.helper;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.Vector;
 import java.util.logging.Level;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
-import org.ietr.dftools.algorithm.Rational;
 import org.ietr.dftools.workflow.tools.WorkflowLogger;
 import org.ietr.preesm.experiment.model.pimm.AbstractActor;
 import org.ietr.preesm.experiment.model.pimm.Fifo;
+import org.ietr.preesm.utils.math.LongFraction;
+import org.ietr.preesm.utils.math.MathFunctionsHelper;
 import org.math.array.LinearAlgebra;
 
 /**
@@ -96,10 +96,10 @@ public class TopologyBasedBRV extends PiBRV {
               + Long.toString(subgraph.size() - 1));
         }
         // Compute BRV
-        final ArrayList<Rational> vrb = TopologyBasedBRV.computeRationnalNullSpace(topologyMatrix);
+        final List<LongFraction> vrb = TopologyBasedBRV.computeRationnalNullSpace(topologyMatrix);
         // final List<Long> result = Rational.toNatural(new Vector<>(vrb))
         final List<Long> result = new ArrayList<>();
-        Rational.toNatural(new Vector<>(vrb)).forEach(rv -> result.add((long) rv));
+        MathFunctionsHelper.toNatural(vrb).forEach(rv -> result.add((long) rv));
         this.graphBRV.putAll(TopologyBasedBRV.zipToMap(subgraph, result));
       }
 
@@ -120,8 +120,8 @@ public class TopologyBasedBRV extends PiBRV {
     for (final Fifo fifo : listFifo) {
       final AbstractActor sourceActor = fifo.getSourcePort().getContainingActor();
       final AbstractActor targetActor = fifo.getTargetPort().getContainingActor();
-      final long prod = Long.parseLong(fifo.getSourcePort().getPortRateExpression().getExpressionString());
-      final long cons = Long.parseLong(fifo.getTargetPort().getPortRateExpression().getExpressionString());
+      final long prod = fifo.getSourcePort().getPortRateExpression().evaluate();
+      final long cons = fifo.getTargetPort().getPortRateExpression().evaluate();
       if ((prod < 0) || (cons < 0)) {
         final String prodString = "Prod: " + Long.toString(prod) + "\n";
         final String consString = "Cons: " + Long.toString(cons) + "\n";
@@ -153,8 +153,8 @@ public class TopologyBasedBRV extends PiBRV {
    *          the matrix
    * @return the vector
    */
-  private static ArrayList<Rational> computeRationnalNullSpace(final double[][] matrix) {
-    final ArrayList<Rational> vrb = new ArrayList<>();
+  private static List<LongFraction> computeRationnalNullSpace(final double[][] matrix) {
+    final List<LongFraction> vrb = new ArrayList<>();
     final int numberOfRows = matrix.length;
     int numberOfColumns = 1;
 
@@ -164,21 +164,21 @@ public class TopologyBasedBRV extends PiBRV {
 
     if ((numberOfRows == 0) || (numberOfColumns == 1)) {
       for (int i = 0; i < numberOfColumns; i++) {
-        vrb.add(new Rational(1, 1));
+        vrb.add(new LongFraction(1, 1));
       }
       return vrb;
     }
 
-    final Rational[][] rationnalTopology = new Rational[numberOfRows][numberOfColumns];
+    final LongFraction[][] rationnalTopology = new LongFraction[numberOfRows][numberOfColumns];
 
     for (int i = 0; i < numberOfRows; i++) {
       for (int j = 0; j < numberOfColumns; j++) {
-        rationnalTopology[i][j] = new Rational(((Double) matrix[i][j]).longValue(), 1);
+        rationnalTopology[i][j] = new LongFraction(((Double) matrix[i][j]).longValue(), 1);
       }
     }
     int switchIndices = 1;
-    while (rationnalTopology[0][0].zero()) {
-      final Rational[] buffer = rationnalTopology[0];
+    while (rationnalTopology[0][0].isZero()) {
+      final LongFraction[] buffer = rationnalTopology[0];
       rationnalTopology[0] = rationnalTopology[switchIndices];
       rationnalTopology[switchIndices] = buffer;
       switchIndices++;
@@ -194,7 +194,7 @@ public class TopologyBasedBRV extends PiBRV {
         }
       }
       if ((pivotMax != 0) && (maxIndex != i)) {
-        final Rational[] buffer = rationnalTopology[i];
+        final LongFraction[] buffer = rationnalTopology[i];
         rationnalTopology[i] = rationnalTopology[maxIndex];
         rationnalTopology[maxIndex] = buffer;
         pivot = i;
@@ -203,34 +203,35 @@ public class TopologyBasedBRV extends PiBRV {
       } else {
         break;
       }
-      final Rational odlPivot = rationnalTopology[i][i].clone();
+      final LongFraction odlPivot = new LongFraction(rationnalTopology[i][i]);
       for (int t = i; t < numberOfColumns; t++) {
-        rationnalTopology[i][t] = Rational.div(rationnalTopology[i][t], odlPivot);
+        rationnalTopology[i][t] = rationnalTopology[i][t].divide(odlPivot);
       }
       for (int j = i + 1; j < numberOfRows; j++) {
-        if (!rationnalTopology[j][i].zero()) {
-          final Rational oldji = new Rational(rationnalTopology[j][i].getNum(), rationnalTopology[j][i].getDenum());
+        if (!rationnalTopology[j][i].isZero()) {
+          final LongFraction oldji = new LongFraction(rationnalTopology[j][i].getNumerator(),
+              rationnalTopology[j][i].getDenominator());
           for (int k = 0; k < numberOfColumns; k++) {
-            rationnalTopology[j][k] = Rational.sub(rationnalTopology[j][k],
-                Rational.prod(rationnalTopology[i][k], Rational.div(oldji, rationnalTopology[pivot][pivot])));
+            rationnalTopology[j][k] = rationnalTopology[j][k]
+                .subtract(rationnalTopology[i][k].multiply(oldji.divide(rationnalTopology[pivot][pivot])));
           }
         }
       }
     }
     for (int i = 0; i < numberOfColumns; i++) {
-      vrb.add(new Rational(1, 1));
+      vrb.add(new LongFraction(1, 1));
     }
     int i = numberOfRows - 1;
     while (i >= 0) {
-      Rational val = new Rational(0, 0);
+      LongFraction val = new LongFraction(0, 0);
       for (int k = i + 1; k < numberOfColumns; k++) {
-        val = Rational.add(val, Rational.prod(rationnalTopology[i][k], vrb.get(k)));
+        val = val.add(rationnalTopology[i][k].multiply(vrb.get(k)));
       }
-      if (!val.zero()) {
-        if (rationnalTopology[i][i].zero()) {
+      if (!val.isZero()) {
+        if (rationnalTopology[i][i].isZero()) {
           System.out.println("elt diagonal zero");
         }
-        vrb.set(i, Rational.div(val.abs(), rationnalTopology[i][i]));
+        vrb.set(i, val.abs().divide(rationnalTopology[i][i]));
       }
       i--;
     }

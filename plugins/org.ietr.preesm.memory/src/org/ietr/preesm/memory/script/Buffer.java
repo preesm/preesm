@@ -109,11 +109,11 @@ public class Buffer {
    */
   boolean isCompletelyMatched() {
     final List<Range> coveredRange = new ArrayList<>();
-    final Iterator<Entry<Integer, List<Match>>> iterEntry = this.matchTable.entrySet().iterator();
+    final Iterator<Entry<Long, List<Match>>> iterEntry = this.matchTable.entrySet().iterator();
     boolean stop = false;
 
     while (iterEntry.hasNext() && !stop) {
-      final Entry<Integer, List<Match>> entry = iterEntry.next();
+      final Entry<Long, List<Match>> entry = iterEntry.next();
       final Iterator<Match> iterMatch = entry.getValue().iterator();
       while (iterMatch.hasNext() && !stop) {
         final Match match = iterMatch.next();
@@ -138,7 +138,7 @@ public class Buffer {
   boolean isReciprocal() {
     return this.matchTable.entrySet().stream().allMatch(entry -> {
       final List<Match> matches = entry.getValue();
-      final int localIdx = entry.getKey();
+      final long localIdx = entry.getKey();
       // for all matches
       return matches.stream().allMatch(match -> {
         final List<Match> remoteMatches = match.getRemoteBuffer().matchTable.get(match.getRemoteIndex());
@@ -169,11 +169,11 @@ public class Buffer {
    *          {@link Match matches}.
    */
   void simplifyMatches(final List<Match> processedMatch) {
-    final List<Integer> removedEntry = new ArrayList<>();
+    final List<Long> removedEntry = new ArrayList<>();
 
     // Process the match table
-    for (final Entry<Integer, List<Match>> entry : this.matchTable.entrySet()) {
-      final int localIdx = entry.getKey();
+    for (final Entry<Long, List<Match>> entry : this.matchTable.entrySet()) {
+      final long localIdx = entry.getKey();
       final List<Match> matchSet = entry.getValue();
       // For each match
       for (final Match match : matchSet) {
@@ -207,10 +207,10 @@ public class Buffer {
             remMatchSet.remove(remMatch.getReciprocate());
 
             // Remove empty matchLists from the matchTable
-            if (remMatchSet.size() == 0) {
+            if (remMatchSet.isEmpty()) {
               remMatch.getRemoteBuffer().matchTable.remove(remMatch.getRemoteIndex());
             }
-            if (candidateSet.size() == 0) {
+            if (candidateSet.isEmpty()) {
               removedEntry.add(localIdx + match.getLength());
             }
 
@@ -226,7 +226,7 @@ public class Buffer {
     }
 
     // Remove empty matchLists from matchTable
-    for (final int i : removedEntry) {
+    for (final long i : removedEntry) {
       this.matchTable.remove(i);
     }
   }
@@ -234,7 +234,7 @@ public class Buffer {
   /**
    * cf {@link #minIndex}.
    */
-  int maxIndex;
+  long maxIndex;
 
   /**
    * Minimum index for the buffer content. Constructor initialize this value to 0 but it is possible to lower this value
@@ -242,13 +242,13 @@ public class Buffer {
    * For example: <code>this.matchWith(-3, a, 0, 6)</code> results in matching this[-3..2] with a[0..5], thus lowering
    * this.minIndex to -3.
    */
-  int minIndex;
+  long minIndex;
 
   /**
    * This table is protected to ensure that matches are set only by using {@link #matchWith(int,Buffer,int)} methods in
    * the scripts.
    */
-  final Map<Integer, List<Match>> matchTable;
+  final Map<Long, List<Match>> matchTable;
 
   /**
    * This property is used to mark the {@link Buffer buffers} that were {@link #applyMatches(List) matched}. Originally
@@ -264,15 +264,15 @@ public class Buffer {
 
   final String name;
 
-  final int nbTokens;
+  final long nbTokens;
 
-  public int getNbTokens() {
+  public long getNbTokens() {
     return this.nbTokens;
   }
 
-  final int tokenSize;
+  final long tokenSize;
 
-  public int getTokenSize() {
+  public long getTokenSize() {
     return this.tokenSize;
   }
 
@@ -294,7 +294,7 @@ public class Buffer {
    */
   List<List<Match>> divisibilityRequiredMatches;
 
-  protected final Map<Range, Pair<Buffer, Integer>> appliedMatches;
+  protected final Map<Range, Pair<Buffer, Long>> appliedMatches;
 
   /**
    * This flag is set at the {@link Buffer} instantiation to indicate whether the buffer is mergeable or not. If the
@@ -314,8 +314,8 @@ public class Buffer {
    * @param tokenSize
    *          The size of one token of the buffer.
    */
-  public Buffer(final DAGEdge edge, final DAGVertex dagVertex, final String name, final int nbTokens,
-      final int tokenSize, final boolean mergeable) {
+  public Buffer(final DAGEdge edge, final DAGVertex dagVertex, final String name, final long nbTokens,
+      final long tokenSize, final boolean mergeable) {
     this.dagEdge = edge;
     this.name = name;
     this.nbTokens = nbTokens;
@@ -335,7 +335,7 @@ public class Buffer {
   }
 
   SDFAbstractVertex getSdfVertex() {
-    return this.dagVertex.getPropertyBean().getValue(DAGVertex.SDF_VERTEX, SDFAbstractVertex.class);
+    return this.dagVertex.getCorrespondingSDFVertex();
   }
 
   void setMaxIndex(final int newValue) {
@@ -361,7 +361,7 @@ public class Buffer {
   /**
    * Cf. {@link Buffer#matchWith(int, Buffer, int, int)} with size = 1
    */
-  public Match matchWith(final int localIdx, final Buffer buffer, final int remoteIdx) {
+  public Match matchWith(final long localIdx, final Buffer buffer, final long remoteIdx) {
     return matchWith(localIdx, buffer, remoteIdx, 1);
   }
 
@@ -389,7 +389,7 @@ public class Buffer {
    *          the size of the matched range
    * @return the created local {@link Match}
    */
-  public Match matchWith(final int localIdx, final Buffer buffer, final int remoteIdx, final int size) {
+  public Match matchWith(final long localIdx, final Buffer buffer, final long remoteIdx, final long size) {
 
     if (this.tokenSize != buffer.tokenSize) {
       throw new RuntimeException("Cannot match " + this.dagVertex.getName() + "." + this.name + "with "
@@ -397,12 +397,12 @@ public class Buffer {
           + this.tokenSize + " != " + buffer.tokenSize + " )");
     }
 
-    final int maxLocal = (localIdx + size) - 1;
-    final int maxRemote = (remoteIdx + size) - 1;
+    final long maxLocal = (localIdx + size) - 1;
+    final long maxRemote = (remoteIdx + size) - 1;
 
     // Test if a matched range is completely out of real tokens
     if ((localIdx >= this.nbTokens) || (maxLocal < 0)) {
-      final int maxLTokens = this.nbTokens - 1;
+      final long maxLTokens = this.nbTokens - 1;
       throw new RuntimeException("Cannot match " + this.dagVertex.getName() + "." + this.name + "[" + localIdx + ".."
           + maxLocal + "] and " + buffer.dagVertex.getName() + "." + buffer.name + "[" + remoteIdx + ".." + maxRemote
           + "] because no \"real\" token from " + this.dagVertex.getName() + "." + this.name + "[0.." + maxLTokens
@@ -410,7 +410,7 @@ public class Buffer {
     }
 
     if ((remoteIdx >= buffer.nbTokens) || (maxRemote < 0)) {
-      final int maxRTokens = buffer.nbTokens - 1;
+      final long maxRTokens = buffer.nbTokens - 1;
       throw new RuntimeException("Cannot match " + this.dagVertex.getName() + "." + this.name + "[" + localIdx + ".."
           + maxLocal + "] and " + buffer.dagVertex.getName() + "." + buffer.name + "[" + remoteIdx + ".." + maxRemote
           + "] because no \"real\" token from " + buffer.dagVertex.getName() + "." + buffer.name + "[0.." + maxRTokens
@@ -441,7 +441,8 @@ public class Buffer {
   /**
    * Cf. {@link Buffer#byteMatchWith(int, Buffer, int, int, boolean)} with check = true
    */
-  public Match byteMatchWith(final int localByteIdx, final Buffer buffer, final int remoteByteIdx, final int byteSize) {
+  public Match byteMatchWith(final long localByteIdx, final Buffer buffer, final long remoteByteIdx,
+      final long byteSize) {
     return byteMatchWith(localByteIdx, buffer, remoteByteIdx, byteSize, true);
   }
 
@@ -460,10 +461,10 @@ public class Buffer {
    *          whether or not the match feasibility (e.g. with virtual ranges) must be checked
    * @return the created local {@link Match}
    */
-  public Match byteMatchWith(final int localByteIdx, final Buffer buffer, final int remoteByteIdx, final int byteSize,
-      final boolean check) {
-    final int byteLMax = (localByteIdx + byteSize) - 1;
-    final int byteRMax = (remoteByteIdx + byteSize) - 1;
+  public Match byteMatchWith(final long localByteIdx, final Buffer buffer, final long remoteByteIdx,
+      final long byteSize, final boolean check) {
+    final long byteLMax = (localByteIdx + byteSize) - 1;
+    final long byteRMax = (remoteByteIdx + byteSize) - 1;
 
     // Test if a matched range is completely out of real bytes
     // This rule is indispensable to make sure that "virtual" token
@@ -486,14 +487,14 @@ public class Buffer {
     // real tokens.
     if (check) {
       if ((localByteIdx >= (this.nbTokens * this.tokenSize)) || (byteLMax < 0)) {
-        final int tokenLMax = (this.nbTokens * this.tokenSize) - 1;
+        final long tokenLMax = (this.nbTokens * this.tokenSize) - 1;
         throw new RuntimeException("Cannot match bytes " + this.dagVertex.getName() + "." + this.name + "["
             + localByteIdx + ".." + byteLMax + "] and " + buffer.dagVertex.getName() + "." + buffer.name + "["
             + remoteByteIdx + ".." + byteRMax + "] because no \"real\" byte from " + this.dagVertex.getName() + "."
             + this.name + "[0.." + tokenLMax + "] is matched.");
       }
       if ((remoteByteIdx >= (buffer.nbTokens * buffer.tokenSize)) || (byteRMax < 0)) {
-        final int tokenRMax = (buffer.nbTokens * buffer.tokenSize) - 1;
+        final long tokenRMax = (buffer.nbTokens * buffer.tokenSize) - 1;
         throw new RuntimeException("Cannot match bytes " + this.dagVertex.getName() + "." + this.name + "["
             + localByteIdx + ".." + byteLMax + "] and " + buffer.dagVertex.getName() + "." + buffer.name + "["
             + remoteByteIdx + ".." + byteRMax + "] because no \"real\" byte from " + buffer.dagVertex.getName() + "."
@@ -850,8 +851,8 @@ public class Buffer {
       modifiedMatch.setLength(newRange.getLength());
       modifiedMatch.getReciprocate().setLength(newRange.getLength());
       // If the match must be moved
-      final int originalIndex = modifiedMatch.getLocalIndex();
-      final int originalRemoteIndex = modifiedMatch.getRemoteIndex();
+      final long originalIndex = modifiedMatch.getLocalIndex();
+      final long originalRemoteIndex = modifiedMatch.getRemoteIndex();
       if (newRange.getStart() != originalIndex) {
 
         // Move the local match
@@ -1294,7 +1295,7 @@ public class Buffer {
 
   @Override
   public String toString() {
-    final int size = this.nbTokens * this.tokenSize;
+    final long size = this.nbTokens * this.tokenSize;
     return dagVertex.getName() + "." + this.name + "[" + size + "]";
   }
 

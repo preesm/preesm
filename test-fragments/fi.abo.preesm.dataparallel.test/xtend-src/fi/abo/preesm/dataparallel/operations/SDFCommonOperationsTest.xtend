@@ -47,7 +47,7 @@ import org.ietr.dftools.algorithm.model.sdf.SDFAbstractVertex
 import org.ietr.dftools.algorithm.model.sdf.SDFEdge
 import org.ietr.dftools.algorithm.model.sdf.SDFGraph
 import org.ietr.dftools.algorithm.model.sdf.visitors.ToHSDFVisitor
-import org.jgrapht.alg.CycleDetector
+import org.jgrapht.alg.cycle.CycleDetector
 import org.junit.Assert
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -57,7 +57,7 @@ import fi.abo.preesm.dataparallel.fifo.FifoActor
 import fi.abo.preesm.dataparallel.fifo.FifoActorBeanKey
 import fi.abo.preesm.dataparallel.operations.MovableInstances
 import fi.abo.preesm.dataparallel.NodeChainGraph
-import org.jgrapht.alg.KosarajuStrongConnectivityInspector
+import org.jgrapht.alg.connectivity.KosarajuStrongConnectivityInspector
 import org.jgrapht.graph.AsSubgraph
 
 /**
@@ -248,7 +248,7 @@ class SDFCommonOperationsTest {
 				// 3. Check transient graph has no delays
 				val edgesWithDelays = newArrayList
 				graph.edgeSet.forEach[edge |
-					if(edge.delay.intValue > 0) {
+					if(edge.delay.longValue > 0) {
 						edgesWithDelays.add(edge)
 					}
 				]
@@ -317,13 +317,13 @@ class SDFCommonOperationsTest {
 
 			// 8. Check all delays are positive
 			srsdf.edgeSet.forEach[edge |
-				if(edge.delay.intValue < 0) {
+				if(edge.delay.longValue < 0) {
 					println(edge)
 				}
 			]
 
 			Assert.assertTrue(srsdf.edgeSet.forall[edge |
-				edge.delay.intValue >= 0
+				edge.delay.longValue >= 0
 			])
 		}
 	}

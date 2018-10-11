@@ -37,7 +37,6 @@
 package org.ietr.preesm.pimm.algorithm
 
 import java.util.Date
-import org.ietr.preesm.experiment.model.expression.ExpressionEvaluator
 import org.ietr.preesm.experiment.model.pimm.Actor
 import org.ietr.preesm.experiment.model.pimm.CHeaderRefinement
 import org.ietr.preesm.experiment.model.pimm.ConfigInputPort
@@ -45,8 +44,8 @@ import org.ietr.preesm.experiment.model.pimm.Parameter
 import org.ietr.preesm.experiment.model.pimm.PiGraph
 
 class SpiderMainFilePrinter {
-	
-	var refinementDone = newArrayList 
+
+	var refinementDone = newArrayList
 	var initRefinementDone = newArrayList
 
 	def String print(PiGraph pg, int nbCores, boolean usingPapify) '''
@@ -67,7 +66,7 @@ class SpiderMainFilePrinter {
 «printRefinementRec(pg)»
 
 	#include "../generated/«pg.name».h"
-	
+
 	#define SH_MEM_SIZE 0x04000000
 
 	#define NB_LRT «nbCores»
@@ -171,7 +170,7 @@ class SpiderMainFilePrinter {
 		// Setting graph PiSDF graph
 		cfg.platform.fcts = «pg.name»_fcts;
 		cfg.platform.nLrtFcts = N_FCT_«pg.name.toUpperCase»;
-		
+
 		// Initialize the architecture information
 		if (init_archi_infos(&cfg.platform) < 0) {
 			fprintf(stderr, "ERROR: failed to initialize the architecture.\n");
@@ -181,7 +180,7 @@ class SpiderMainFilePrinter {
 		cfg.verbose = false;
 		cfg.traceEnabled = false;
 		cfg.useGraphOptim = true;
-		
+
 		«IF usingPapify»
 			// Papify initialization
 			cfg.usePapify = true;
@@ -194,21 +193,21 @@ class SpiderMainFilePrinter {
 		try {
 			// Spider initialisation
 			Spider::init(cfg);
-			
-«printInitCallRec(pg)»			
+
+«printInitCallRec(pg)»
 			// PiSDF graph construction
 			init_«pg.name»();
-			
+
 			// Reserving memory for persistent delays
 			Spider::initReservedMemory();
-	
+
 			printf("Start\n");
-	
+
 			// Main loop, exception handling can be removed to increase performance
 			for(int i=0; i<NB_ITERATION && !stopThreads; i++){
 				// Compute the SR-DAG, scheduling and executing the main graph
 				Spider::iterate();
-	
+
 				// Printing Gantt
 				if (cfg.traceEnabled) {
 					Spider::printGantt("gantt.pgantt", "gantt_tex.dat", &stat);
@@ -217,24 +216,24 @@ class SpiderMainFilePrinter {
 					printf("SPIDER overhead time: %lf ms\n",  stat.schedTime / 1000000.);
 				}
 			}
-			
+
 			printf("finished\n");
-	
+
 			// PiSDF graph destruction
 			free_«pg.name»();
-	
+
 			Spider::clean();
-			
+
 			«IF usingPapify»
-					 // Freeing PapifyConfigs 
+					 // Freeing PapifyConfigs
 					free_«pg.name»_papifyConfigs(cfg.papifyJobInfo);
 			«ENDIF»
-			
+
 			// Actor finalisation here if needed
-			
+
 			// Free the information linked to the architecture
 			free_archi_infos(&cfg.platform);
-			
+
 		} catch(std::exception &e) {
 			printf("Exception : %s\n", e.what());
 		}
@@ -248,10 +247,10 @@ class SpiderMainFilePrinter {
 	def static String printInitCall(Actor actor) '''
 	  «val proto = (actor.refinement as CHeaderRefinement).getInitPrototype»
 	  «proto.name»(«FOR param : proto.parameters SEPARATOR ", "»«
-	   ExpressionEvaluator.evaluate(((actor.lookupPort(param.name) as ConfigInputPort).incomingDependency.setter as Parameter).valueExpression)»«ENDFOR»);
+	   ((actor.lookupPort(param.name) as ConfigInputPort).incomingDependency.setter as Parameter).valueExpression.evaluate.toString»«ENDFOR»);
 	'''
-	
-	def printInitCallRec(PiGraph g) '''
+
+	def CharSequence printInitCallRec(PiGraph g) '''
 		«IF !g.actorsWithRefinement.isEmpty()»
 		«"\t\t// Actor initializations of graph " + g.vertexPath»
 			«FOR actor : g.actorsWithRefinement»
@@ -263,21 +262,21 @@ class SpiderMainFilePrinter {
 				«ENDIF»
 			«ENDFOR»
   		«ENDIF»
-  		
+
 		«FOR cg : g.childrenGraphs»
 			«printInitCallRec(cg)»
 		«ENDFOR»
 	'''
-	
-	def printRefinementRec(PiGraph g) '''
+
+	def CharSequence printRefinementRec(PiGraph g) '''
 		«FOR actor : g.actorsWithRefinement»
 		  «IF actor.refinement instanceof CHeaderRefinement && (actor.refinement as CHeaderRefinement).getInitPrototype !== null»
 		  	«IF !this.refinementDone.contains(actor.refinement.fileName)»
-		  	«"#include <" + actor.refinement.getFileName + ">"» 
+		  	«"#include <" + actor.refinement.getFileName + ">"»
 		  	«{this.refinementDone.add(actor.refinement.fileName) ""}»
 		  	«ENDIF»
 		  «ENDIF»
-		«ENDFOR»		
+		«ENDFOR»
 		«FOR cg : g.childrenGraphs»
 		«printRefinementRec(cg)»
 		«ENDFOR»

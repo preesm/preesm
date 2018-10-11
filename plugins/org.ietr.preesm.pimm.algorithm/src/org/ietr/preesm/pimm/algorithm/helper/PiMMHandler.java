@@ -1,6 +1,7 @@
 /**
  * Copyright or © or Copr. IETR/INSA - Rennes (2018) :
  *
+ * Alexandre Honorat <ahonorat@insa-rennes.fr> (2018)
  * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2018)
  * Florian Arrestier <florian.arrestier@insa-rennes.fr> (2018)
  *
@@ -40,12 +41,18 @@ package org.ietr.preesm.pimm.algorithm.helper;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
 import java.util.logging.Level;
+import org.ietr.dftools.workflow.WorkflowException;
 import org.ietr.dftools.workflow.tools.WorkflowLogger;
 import org.ietr.preesm.experiment.model.factory.PiMMUserFactory;
 import org.ietr.preesm.experiment.model.pimm.AbstractActor;
+import org.ietr.preesm.experiment.model.pimm.AbstractVertex;
+import org.ietr.preesm.experiment.model.pimm.Actor;
 import org.ietr.preesm.experiment.model.pimm.DataInputInterface;
 import org.ietr.preesm.experiment.model.pimm.DataInputPort;
 import org.ietr.preesm.experiment.model.pimm.DataOutputInterface;
@@ -449,11 +456,9 @@ public class PiMMHandler {
         PiGraph currentGraph = graph;
         Delay currentDelay = delay;
         do {
-          currentDelay.setName(delayShortID);
           final Delay newDelay = replaceLocalDelay(currentGraph, currentDelay);
           newDelay.setLevel(PersistenceLevel.PERMANENT);
           // Update current graph and delay
-          delayShortID = currentGraph.getName() + "_" + delayShortID;
           currentGraph = currentGraph.getContainingPiGraph();
           currentDelay = newDelay;
         } while (currentGraph.getContainingPiGraph() != null);
@@ -483,7 +488,7 @@ public class PiMMHandler {
   private Delay replaceLocalDelay(final PiGraph graph, final Delay delay) {
     final Fifo containingFifo = delay.getContainingFifo();
     final String type = containingFifo.getType();
-    final String delayExpression = delay.getSizeExpression().getExpressionString();
+    final String delayExpression = delay.getSizeExpression().getExpressionAsString();
     // 1. First we remove the level of persistence associated with the delay
     delay.setLevel(PersistenceLevel.LOCAL);
 
@@ -497,7 +502,7 @@ public class PiMMHandler {
     setterIn.setName(setterName);
     setterIn.getDataPort().setName(setterName);
     setterIn.getDataPort().setAnnotation(PortMemoryAnnotation.READ_ONLY);
-    setterIn.getDataPort().getExpression().setExpressionString(delayExpression);
+    setterIn.getDataPort().setExpression(delayExpression);
     // Add the DataOutputInterface to the graph
     final DataOutputInterface getterOut = PiMMUserFactory.instance.createDataOutputInterface();
     final DataOutputPort sourcePort = containingFifo.getSourcePort();
@@ -505,7 +510,7 @@ public class PiMMHandler {
     getterOut.setName(getterName);
     getterOut.getDataPort().setName(getterName);
     getterOut.getDataPort().setAnnotation(PortMemoryAnnotation.WRITE_ONLY);
-    getterOut.getDataPort().getExpression().setExpressionString(delayExpression);
+    getterOut.getDataPort().setExpression(delayExpression);
     graph.addActor(setterIn);
     graph.addActor(getterOut);
 
@@ -532,11 +537,11 @@ public class PiMMHandler {
     // 5. We set the expression of the corresponding ports on the graph
     final DataInputPort inPort = (DataInputPort) setterIn.getGraphPort();
     // Add the input port
-    inPort.getExpression().setExpressionString(delayExpression);
+    inPort.setExpression(delayExpression);
     inPort.setAnnotation(PortMemoryAnnotation.WRITE_ONLY);
     // Add the output port
     final DataOutputPort outPort = (DataOutputPort) getterOut.getGraphPort();
-    outPort.getExpression().setExpressionString(delayExpression);
+    outPort.setExpression(delayExpression);
     outPort.setAnnotation(PortMemoryAnnotation.READ_ONLY);
     // Now set the source / target port of the FIFO
     fifoPersistence.setSourcePort(outPort);
@@ -548,7 +553,7 @@ public class PiMMHandler {
     final String name = graph.getName() + "_" + setterIn.getName() + "__" + getterOut.getName();
     delayPersistence.setName(name);
     delayPersistence.setLevel(PersistenceLevel.NONE);
-    delayPersistence.getSizeExpression().setExpressionString(delayExpression);
+    delayPersistence.setExpression(delayExpression);
     final DelayActor newDelayActor = delayPersistence.getActor();
     newDelayActor.setName(name);
     newDelayActor.getDataInputPort().setName(originalDelayActor.getDataInputPort().getName());
@@ -558,6 +563,84 @@ public class PiMMHandler {
     graph.getContainingPiGraph().addDelay(delayPersistence);
 
     return delayPersistence;
+  }
+
+  /**
+   * azmokfaze
+   *
+   * @param graphBRV
+   *          Repetition Vector as a map.
+   */
+  public static void checkPeriodicity(final Map<AbstractVertex, Long> graphBRV) {
+
+    final Map<PiGraph, Long> levelBRV = new HashMap<>();
+    final Map<Long, List<Actor>> mapGraphPeriods = new HashMap<>();
+
+    for (final Entry<AbstractVertex, Long> en : graphBRV.entrySet()) {
+      final AbstractVertex av = en.getKey();
+      final PiGraph container = av.getContainingPiGraph();
+      if (!levelBRV.containsKey(container)) {
+        levelBRV.put(container, getHierarchichalRV(container, graphBRV));
+      }
+      if (av instanceof PiGraph) {
+        continue;
+      } else if (av instanceof Actor) {
+        final Actor actor = (Actor) av;
+        final long actorPeriod = actor.getPeriod().evaluate();
+        if (actorPeriod > 0) {
+          final Long actorRV = en.getValue() * levelBRV.get(container);
+          final long period = actorRV * actorPeriod;
+          if (!mapGraphPeriods.containsKey(period)) {
+            mapGraphPeriods.put(period, new ArrayList<>());
+          }
+          mapGraphPeriods.get(period).add(actor);
+        }
+      }
+    }
+    if (mapGraphPeriods.size() > 1) {
+      StringBuilder sb = new StringBuilder("Different graph periods have been found:");
+      for (final Entry<Long, List<Actor>> en : mapGraphPeriods.entrySet()) {
+        sb.append("\n" + en.getKey() + " from: ");
+        for (Actor a : en.getValue()) {
+          sb.append(a.getName() + " / ");
+        }
+      }
+      sb.append("\n");
+      WorkflowLogger.getLogger().log(Level.SEVERE, sb.toString());
+      throw new WorkflowException("Periods are not consistent, abandon.");
+    } else if (mapGraphPeriods.size() == 1) {
+      long period = 0;
+      for (Long p : mapGraphPeriods.keySet()) {
+        period = p;
+      }
+      WorkflowLogger.getLogger().log(Level.INFO, "The graph period is set to: " + period + "\n");
+    } else {
+      WorkflowLogger.getLogger().log(Level.INFO, "No period for the graph.\n");
+    }
+  }
+
+  /**
+   * zerze
+   *
+   * @param graph
+   *          zerz
+   * @param graphBRV
+   *          zerze
+   * @return rggr
+   */
+  public static Long getHierarchichalRV(final PiGraph graph, final Map<AbstractVertex, Long> graphBRV) {
+    // We need to get the repetition vector of the graph
+    final Long graphRV = graphBRV.get(graph) == null ? 1 : graphBRV.get(graph);
+    // We also need to get the total repetition vector of the hierarchy to correctly flatten the hierarchy
+    Long graphHierarchicallRV = (long) (1);
+    PiGraph containingGraph = graph.getContainingPiGraph();
+    while (containingGraph != null) {
+      final Long currentGraphRV = graphBRV.get(containingGraph) == null ? 1 : graphBRV.get(containingGraph);
+      graphHierarchicallRV = graphHierarchicallRV * currentGraphRV;
+      containingGraph = containingGraph.getContainingPiGraph();
+    }
+    // We update the value of the graphRV accordingly
+    return graphRV * graphHierarchicallRV;
   }
 
 }

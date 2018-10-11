@@ -56,7 +56,6 @@ import org.ietr.dftools.algorithm.model.sdf.SDFEdge;
 import org.ietr.dftools.algorithm.model.sdf.SDFVertex;
 import org.ietr.dftools.algorithm.model.sdf.types.SDFStringEdgePropertyType;
 import org.ietr.dftools.workflow.WorkflowException;
-import org.ietr.dftools.workflow.tools.WorkflowLogger;
 import org.ietr.preesm.codegen.idl.ActorPrototypes;
 import org.ietr.preesm.codegen.idl.Prototype;
 import org.ietr.preesm.codegen.model.CodeGenArgument;
@@ -118,7 +117,7 @@ public class StaticPiMM2MapperDAGVisitor extends PiMMSwitch<Boolean> {
 
   /**
    * Instantiates a new StaticPiMM2MapperDAGVisitor
-   * 
+   *
    * @param piGraph
    *          The Single-Rate Acyclic PiGraph to convert to MapperDAG
    * @param scenario
@@ -259,7 +258,6 @@ public class StaticPiMM2MapperDAGVisitor extends PiMMSwitch<Boolean> {
     // Check Join use
     if (actor.getDataOutputPorts().size() > 1) {
       final String message = "Join actors should have only one output. Bad use on [" + actor.getVertexPath() + "]";
-      WorkflowLogger.getLogger().severe(message);
       throw new WorkflowException(message);
     }
     // Handle input parameters as instance arguments
@@ -283,7 +281,6 @@ public class StaticPiMM2MapperDAGVisitor extends PiMMSwitch<Boolean> {
     // Check Fork use
     if (actor.getDataInputPorts().size() > 1) {
       final String message = "Fork actors should have only one input. Bad use on [" + actor.getVertexPath() + "]";
-      WorkflowLogger.getLogger().severe(message);
       throw new WorkflowException(message);
     }
     // Handle input parameters as instance arguments
@@ -314,10 +311,9 @@ public class StaticPiMM2MapperDAGVisitor extends PiMMSwitch<Boolean> {
   public Boolean caseInitActor(final InitActor actor) {
     final DAGVertex vertex = vertexFactory.createVertex(DAGInitVertex.DAG_INIT_VERTEX);
     final DataOutputPort dataOutputPort = actor.getDataOutputPorts().get(0);
-    final String expressionString = dataOutputPort.getPortRateExpression().getExpressionString();
 
     // Set the number of delay
-    vertex.getPropertyBean().setValue(DAGInitVertex.INIT_SIZE, Long.parseLong(expressionString));
+    vertex.getPropertyBean().setValue(DAGInitVertex.INIT_SIZE, dataOutputPort.getPortRateExpression().evaluate());
     vertex.setId(actor.getName());
     vertex.setName(actor.getName());
     vertex.setInfo(actor.getName());
@@ -373,7 +369,7 @@ public class StaticPiMM2MapperDAGVisitor extends PiMMSwitch<Boolean> {
       if (setter instanceof Parameter) {
         final Parameter param = (Parameter) setter;
         final Argument arg = new Argument(p.getName());
-        arg.setValue((param.getExpression().getExpressionString()));
+        arg.setValue((param.getExpression().getExpressionAsString()));
         vertex.getArguments().addArgument(arg);
       }
     }
@@ -407,7 +403,7 @@ public class StaticPiMM2MapperDAGVisitor extends PiMMSwitch<Boolean> {
 
     // 1. Create the edge
     // 1.1 Retrieve the rate
-    final long weight = Long.parseLong(fifo.getSourcePort().getPortRateExpression().getExpressionString());
+    final long weight = fifo.getSourcePort().getPortRateExpression().evaluate();
     // 1.2 Add an edge between the sourceVertex and the targetVertex in the MapperDAG
     final DAGEdge edge = this.result.addEdge(sourceVertex, targetVertex);
     // 1.3 For the rest of the workflow we need EdgeAggregation so...
@@ -421,7 +417,7 @@ public class StaticPiMM2MapperDAGVisitor extends PiMMSwitch<Boolean> {
       newEdge.setTargetPortModifier(new SDFStringEdgePropertyType(targetModifier));
     }
     // 1.4 Set the different properties of the Edge
-    final int dataSize = this.scenario.getSimulationManager().getDataTypeSizeOrDefault(fifo.getType());
+    final long dataSize = this.scenario.getSimulationManager().getDataTypeSizeOrDefault(fifo.getType());
     newEdge.setPropertyValue(SDFEdge.DATA_TYPE, fifo.getType());
     newEdge.setPropertyValue(SDFEdge.DATA_SIZE, dataSize);
     newEdge.setWeight(new DAGDefaultEdgePropertyType(weight));

@@ -92,20 +92,20 @@ public abstract class OrderedAllocator extends MemoryAllocator {
    * Ordered list of {@link MemoryExclusionVertex} used to perform the shuffled allocations. These lists are memorized
    * in order to retrieve the one that corresponds best to the Policy after all "shuffled" allocations were performed
    */
-  protected ArrayList<ArrayList<MemoryExclusionVertex>> lists;
+  protected List<List<MemoryExclusionVertex>> lists;
   /**
    * For each {@link #allocateInOrder(ArrayList)} resulting from an ordered list in {@link #lists}, this list store the
    * size of the allocated memory.
    */
-  public ArrayList<Integer>                             listsSize;
+  public List<Long>                           listsSize;
   /**
    * The number of allocation do perform with randomly ordered vertices list.
    */
-  protected int                                         nbShuffle;
+  protected int                               nbShuffle;
   /**
    * The current policy when asking for an allocation with getAllocation.
    */
-  protected Policy                                      policy;
+  protected Policy                            policy;
 
   /**
    * The current {@link Order} used to {@link #allocate()} vertices of the {@link MemoryExclusionGraph}.
@@ -161,7 +161,7 @@ public abstract class OrderedAllocator extends MemoryAllocator {
    *          the ordered vertex list.
    * @return the resulting allocation size.
    */
-  protected abstract int allocateInOrder(List<MemoryExclusionVertex> vertexList);
+  protected abstract long allocateInOrder(List<MemoryExclusionVertex> vertexList);
 
   /**
    * Perform the allocation with the vertex ordered according to largest first order. If the policy of the allocator is
@@ -224,7 +224,7 @@ public abstract class OrderedAllocator extends MemoryAllocator {
       Collections.shuffle(list);
 
       // Allocate it
-      final int size = allocateInOrder(list);
+      final long size = allocateInOrder(list);
 
       // Store the results
       this.lists.add(new ArrayList<>(list));
@@ -272,9 +272,9 @@ public abstract class OrderedAllocator extends MemoryAllocator {
    *          the number to compare with
    * @return the number of allocation that give a better memory size
    */
-  public int getNumberBetter(final int reference) {
+  public int getNumberBetter(final long reference) {
     int result = 0;
-    for (final int size : this.listsSize) {
+    for (final long size : this.listsSize) {
       if (size < reference) {
         result++;
       }
@@ -372,7 +372,7 @@ public abstract class OrderedAllocator extends MemoryAllocator {
 
       switch (this.policy) {
         case best:
-          int min = this.listsSize.get(0);
+          long min = this.listsSize.get(0);
           for (int iter = 1; iter < this.listsSize.size(); iter++) {
             min = (min < this.listsSize.get(iter)) ? min : this.listsSize.get(iter);
             index = (min == this.listsSize.get(iter)) ? iter : index;
@@ -380,7 +380,7 @@ public abstract class OrderedAllocator extends MemoryAllocator {
           break;
 
         case worst:
-          int max = this.listsSize.get(0);
+          long max = this.listsSize.get(0);
           for (int iter = 1; iter < this.listsSize.size(); iter++) {
             max = (max > this.listsSize.get(iter)) ? max : this.listsSize.get(iter);
             index = (max == this.listsSize.get(iter)) ? iter : index;
@@ -388,10 +388,9 @@ public abstract class OrderedAllocator extends MemoryAllocator {
           break;
 
         case mediane:
-          @SuppressWarnings("unchecked")
-          final ArrayList<Integer> listCopy = (ArrayList<Integer>) this.listsSize.clone();
+          final List<Long> listCopy = new ArrayList<>(listsSize);
           Collections.sort(listCopy);
-          final int mediane = listCopy.get(this.listsSize.size() / 2);
+          final long mediane = listCopy.get(this.listsSize.size() / 2);
           index = this.listsSize.indexOf(mediane);
           break;
 

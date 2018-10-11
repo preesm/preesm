@@ -40,8 +40,8 @@
  */
 package org.ietr.preesm.algorithm.exportXml;
 
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
+import java.io.IOException;
 import java.io.OutputStream;
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -52,14 +52,10 @@ import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.emf.common.util.URI;
-import org.eclipse.emf.ecore.resource.Resource;
-import org.eclipse.emf.ecore.resource.ResourceSet;
-import org.eclipse.emf.ecore.resource.impl.ResourceSetImpl;
 import org.ietr.dftools.workflow.WorkflowException;
 import org.ietr.dftools.workflow.elements.Workflow;
 import org.ietr.dftools.workflow.implement.AbstractTaskImplementation;
 import org.ietr.dftools.workflow.implement.AbstractWorkflowNodeImplementation;
-import org.ietr.preesm.core.scenario.PreesmScenario;
 import org.ietr.preesm.experiment.model.pimm.PiGraph;
 import org.ietr.preesm.experiment.model.pimm.serialize.PiWriter;
 import org.ietr.preesm.utils.files.ContainersManager;
@@ -79,25 +75,13 @@ public class PiSDFExporter extends AbstractTaskImplementation {
    */
   @Override
   public Map<String, Object> execute(final Map<String, Object> inputs, final Map<String, String> parameters,
-      final IProgressMonitor monitor, final String nodeName, final Workflow workflow) throws WorkflowException {
+      final IProgressMonitor monitor, final String nodeName, final Workflow workflow) {
 
-    final PreesmScenario scenario = (PreesmScenario) inputs.get(AbstractWorkflowNodeImplementation.KEY_SCENARIO);
-
-    // Parse the graph
-    final String url = scenario.getAlgorithmURL();
-    final ResourceSet resourceSet = new ResourceSetImpl();
-
-    final URI uriGraph = URI.createPlatformResourceURI(url, true);
-    if ((uriGraph.fileExtension() == null) || !uriGraph.fileExtension().contentEquals("pi")) {
-      throw new WorkflowException("unhandled file exception: " + uriGraph.fileExtension());
-    }
-    Resource ressource;
-    ressource = resourceSet.getResource(uriGraph, true);
-    final PiGraph graph = (PiGraph) (ressource.getContents().get(0));
+    final PiGraph graph = (PiGraph) inputs.get(AbstractWorkflowNodeImplementation.KEY_PI_GRAPH);
 
     // Creates the output file now
-    final String sXmlPath = PathTools.getAbsolutePath(parameters.get("path"), workflow.getProjectName())
-        + "/Algo/generated";
+    final String relative = parameters.get("path");
+    final String sXmlPath = PathTools.getAbsolutePath(relative, workflow.getProjectName());
     IPath xmlPath = new Path(sXmlPath);
     // Get a complete valid path with all folders existing
     try {
@@ -105,23 +89,21 @@ public class PiSDFExporter extends AbstractTaskImplementation {
         ContainersManager.createMissingFolders(xmlPath.removeFileExtension().removeLastSegments(1));
       } else {
         ContainersManager.createMissingFolders(xmlPath);
-        xmlPath = xmlPath.append(graph.getName() + ".xml");
+        xmlPath = xmlPath.append(graph.getName() + ".pi");
       }
     } catch (CoreException | IllegalArgumentException e) {
       throw new WorkflowException("Path " + sXmlPath + " is not a valid path for export.\n" + e.getMessage());
     }
 
-    OutputStream outStream;
-    try {
+    final URI uri = URI.createPlatformResourceURI(xmlPath.toString(), true);
+    // Get the project
+    final String platformString = uri.toPlatformString(true);
+    final IFile documentFile = ResourcesPlugin.getWorkspace().getRoot().getFile(new Path(platformString));
+    final String osString = documentFile.getLocation().toOSString();
+    try (final OutputStream outStream = new FileOutputStream(osString);) {
       // Write the Graph to the OutputStream using the Pi format
-      final URI uri = URI.createPlatformResourceURI(xmlPath.toString(), true);
-      // Get the project
-      final String platformString = uri.toPlatformString(true);
-      final IFile documentFile = ResourcesPlugin.getWorkspace().getRoot().getFile(new Path(platformString));
-      outStream = new FileOutputStream(documentFile.getLocation().toOSString());
-
       new PiWriter(uri).write(graph, outStream);
-    } catch (FileNotFoundException e) {
+    } catch (IOException e) {
       throw new WorkflowException("Could not open outputstream file " + xmlPath.toString());
     }
 

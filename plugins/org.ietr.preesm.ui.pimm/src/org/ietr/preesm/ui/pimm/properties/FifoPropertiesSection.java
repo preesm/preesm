@@ -51,7 +51,6 @@ import org.eclipse.ui.views.properties.tabbed.ITabbedPropertyConstants;
 import org.eclipse.ui.views.properties.tabbed.TabbedPropertySheetPage;
 import org.eclipse.ui.views.properties.tabbed.TabbedPropertySheetWidgetFactory;
 import org.ietr.preesm.experiment.model.expression.ExpressionEvaluationException;
-import org.ietr.preesm.experiment.model.expression.ExpressionEvaluator;
 import org.ietr.preesm.experiment.model.pimm.DataPort;
 import org.ietr.preesm.experiment.model.pimm.Expression;
 import org.ietr.preesm.experiment.model.pimm.Fifo;
@@ -62,7 +61,7 @@ import org.ietr.preesm.experiment.model.pimm.Fifo;
  */
 public class FifoPropertiesSection extends DataPortPropertiesUpdater implements ITabbedPropertyConstants {
 
-  /** Items of the {@link ActorPropertiesSection}. */
+  /** Items of the {@link FifoPropertiesSection}. */
   private CLabel lblType;
 
   /** The txt type obj. */
@@ -321,10 +320,10 @@ public class FifoPropertiesSection extends DataPortPropertiesUpdater implements 
       if (bo instanceof Fifo) {
         final Fifo fifo = (Fifo) bo;
         final Expression srcRate = fifo.getSourcePort().getPortRateExpression();
-        final String srcExprString = srcRate.getExpressionString();
+        final String srcExprString = srcRate.getExpressionAsString();
 
         final Expression tgtRate = fifo.getTargetPort().getPortRateExpression();
-        final String tgtExprString = tgtRate.getExpressionString();
+        final String tgtExprString = tgtRate.getExpressionAsString();
 
         this.txtTypeObj.setText(fifo.getType());
         this.txtSourcePortExpression.setEnabled(true);
@@ -339,7 +338,7 @@ public class FifoPropertiesSection extends DataPortPropertiesUpdater implements 
         try {
           // try out evaluating the expression
           // if evaluation went well, just write the result
-          final long evaluate = ExpressionEvaluator.evaluate(srcRate);
+          final long evaluate = srcRate.evaluate();
           this.lblSourcePortValueObj.setText(Long.toString(evaluate));
           this.txtSourcePortExpression.setBackground(new Color(null, 255, 255, 255));
         } catch (final ExpressionEvaluationException e) {
@@ -349,7 +348,7 @@ public class FifoPropertiesSection extends DataPortPropertiesUpdater implements 
         }
         try {
           // try out evaluating the expression
-          final long evaluate = ExpressionEvaluator.evaluate(tgtRate);
+          final long evaluate = tgtRate.evaluate();
           // if evaluation went well, just write the result
           this.lblTargetPortValueObj.setText(Long.toString(evaluate));
           this.txtTargetPortExpression.setBackground(new Color(null, 255, 255, 255));
