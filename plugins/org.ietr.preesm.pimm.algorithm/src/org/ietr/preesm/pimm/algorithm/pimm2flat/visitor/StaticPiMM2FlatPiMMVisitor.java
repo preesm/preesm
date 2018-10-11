@@ -82,6 +82,7 @@ import org.ietr.preesm.experiment.model.pimm.Port;
 import org.ietr.preesm.experiment.model.pimm.PortMemoryAnnotation;
 import org.ietr.preesm.experiment.model.pimm.RoundBufferActor;
 import org.ietr.preesm.experiment.model.pimm.util.PiMMSwitch;
+import org.ietr.preesm.pimm.algorithm.helper.PiMMHandler;
 
 /**
  * @author farresti
@@ -503,7 +504,7 @@ public class StaticPiMM2FlatPiMMVisitor extends PiMMSwitch<Boolean> {
     // Add the input port and the output port
     final DataInputPort in = PiMMUserFactory.instance.createDataInputPort();
     in.setName(actor.getName());
-    final Long graphRV = getHierarchichalRV(graph);
+    final Long graphRV = PiMMHandler.getHierarchichalRV(graph, this.brv);
     final long inRate = interfaceRateExpression.evaluate() * graphRV;
     in.setExpression(inRate);
     in.setAnnotation(PortMemoryAnnotation.READ_ONLY);
@@ -542,7 +543,7 @@ public class StaticPiMM2FlatPiMMVisitor extends PiMMSwitch<Boolean> {
     // Add the input port and the output port
     final DataOutputPort out = PiMMUserFactory.instance.createDataOutputPort();
     out.setName(actor.getName());
-    final Long graphRV = getHierarchichalRV(graph);
+    final Long graphRV = PiMMHandler.getHierarchichalRV(graph, this.brv);
     final long outRate = interfaceRateExpression.evaluate() * graphRV;
     out.setExpression(outRate);
     out.setAnnotation(PortMemoryAnnotation.WRITE_ONLY);
@@ -626,7 +627,7 @@ public class StaticPiMM2FlatPiMMVisitor extends PiMMSwitch<Boolean> {
   private void quasiSRTransformation(final PiGraph graph) {
     final String backupPrefix = this.graphPrefix;
     // We need to get the repetition vector of the graph
-    Long graphRV = getHierarchichalRV(graph);
+    Long graphRV = PiMMHandler.getHierarchichalRV(graph, this.brv);
     for (long i = 0; i < graphRV; ++i) {
       if (!backupPrefix.isEmpty()) {
         this.graphPrefix = backupPrefix + Long.toString(i) + "_";
@@ -642,21 +643,6 @@ public class StaticPiMM2FlatPiMMVisitor extends PiMMSwitch<Boolean> {
       joinOutputInterface(doi, graph);
     }
     this.graphPrefix = backupPrefix;
-  }
-
-  private Long getHierarchichalRV(final PiGraph graph) {
-    // We need to get the repetition vector of the graph
-    final Long graphRV = this.brv.get(graph) == null ? 1 : this.brv.get(graph);
-    // We also need to get the total repetition vector of the hierarchy to correctly flatten the hierarchy
-    Long graphHierarchicallRV = (long) (1);
-    PiGraph containingGraph = graph.getContainingPiGraph();
-    while (containingGraph != null) {
-      final Long currentGraphRV = this.brv.get(containingGraph) == null ? 1 : this.brv.get(containingGraph);
-      graphHierarchicallRV = graphHierarchicallRV * currentGraphRV;
-      containingGraph = containingGraph.getContainingPiGraph();
-    }
-    // We update the value of the graphRV accordingly
-    return graphRV * graphHierarchicallRV;
   }
 
 }

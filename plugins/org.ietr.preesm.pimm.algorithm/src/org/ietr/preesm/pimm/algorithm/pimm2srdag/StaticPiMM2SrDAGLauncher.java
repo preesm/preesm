@@ -125,6 +125,8 @@ public class StaticPiMM2SrDAGLauncher extends PiMMSwitch<Boolean> {
     computeBRV(method);
     // 4. Print the RV values
     printRV();
+    // 4.5 Check periods with BRV
+    PiMMHandler.checkPeriodicity(this.graphBRV);
     // 5. Convert to SR-DAG
     final MapperDAG result = convert2SRDAG();
     // 6. Aggregate edges
