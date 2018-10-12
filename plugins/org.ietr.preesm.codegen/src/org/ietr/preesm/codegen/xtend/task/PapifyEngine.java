@@ -106,6 +106,7 @@ public class PapifyEngine {
 
     boolean configAdded = false;
     String configPosition = "";
+    String configToAdd = "";
 
     // The timing event
     timingEvent.setName("Timing");
@@ -126,7 +127,6 @@ public class PapifyEngine {
           finalName = vertex.getInfo().substring(vertex.getInfo().indexOf('/') + 1).replace('/', '_');
           config = papifyConfig.getCorePapifyConfigGroupActor(finalName);
           if (config != null && !config.getPAPIEvents().keySet().isEmpty()) {
-            configAdded = false;
             configPosition = "";
             this.dag.getVertex(vertex.getName()).getPropertyBean().setValue(PAPIFY_MONITOR_TIMING, "No");
             if (config.getPAPIEvents().containsKey("Timing")
@@ -135,15 +135,41 @@ public class PapifyEngine {
             }
 
             // Check if the current monitoring has already been included
-            for (PapifyConfigActor tmp : configSet) {
-              if (config.getPAPIEvents().equals(tmp.getPAPIEvents())) {
-                configAdded = true;
-                configPosition = Integer.toString(configSet.indexOf(tmp));
+
+            for (String compNewConfig : config.getPAPIEvents().keySet()) {
+              if (!compNewConfig.equals("Timing")) {
+                Set<PapiEvent> eventSetNew = config.getPAPIEvents().get(compNewConfig);
+                configAdded = false;
+                configToAdd = "";
+                for (PapifyConfigActor tmp : configSet) {
+                  for (String compConfigTmp : tmp.getPAPIEvents().keySet()) {
+                    if (!compConfigTmp.equals("Timing")) {
+                      Set<PapiEvent> eventSetTmp = tmp.getPAPIEvents().get(compConfigTmp);
+                      if (eventSetTmp.equals(eventSetNew)) {
+                        configAdded = true;
+                        if (configPosition.equals("")) {
+                          configPosition = Integer.toString(configSet.indexOf(tmp));
+                        } else {
+                          configPosition = configPosition.concat(",").concat(Integer.toString(configSet.indexOf(tmp)));
+                        }
+                        configToAdd = finalName.concat(compNewConfig);
+                      }
+                    }
+                  }
+                }
+                if (!configAdded) {
+                  PapifyConfigActor actorConfigToAdd = new PapifyConfigActor(configToAdd);
+                  actorConfigToAdd.addPAPIEventSet(compNewConfig, config.getPAPIEvents().get(compNewConfig));
+                  configSet.add(actorConfigToAdd);
+                  if (configPosition.equals("")) {
+                    configPosition = Integer.toString(configSet.indexOf(actorConfigToAdd));
+                  } else {
+                    configPosition = configPosition.concat(",")
+                        .concat(Integer.toString(configSet.indexOf(actorConfigToAdd)));
+                  }
+                }
+
               }
-            }
-            if (!configAdded) {
-              configSet.add(config);
-              configPosition = Integer.toString(configSet.indexOf(config));
             }
 
             // The variable to store the monitoring
