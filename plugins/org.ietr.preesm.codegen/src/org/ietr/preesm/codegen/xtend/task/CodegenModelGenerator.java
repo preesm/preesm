@@ -1418,12 +1418,25 @@ public class CodegenModelGenerator {
     // Create the variable associated to the PE name
     ConstantString papifyPEName = CodegenFactory.eINSTANCE.createConstantString();
     papifyPEName.setValue(operatorBlock.getName());
+    // Create the variable associated to the PAPI component
+    String compsSupported = "";
+    ConstantString papifyComponentName = CodegenFactory.eINSTANCE.createConstantString();
+    for (String compType : this.getScenario().getPapifyConfigManager()
+        .getCorePapifyConfigGroupPE(operatorBlock.getCoreType()).getPAPIComponentIDs()) {
+      if (compsSupported.equals("")) {
+        compsSupported = compType;
+      } else {
+        compsSupported = compsSupported.concat(",").concat(compType);
+      }
+    }
+    papifyComponentName.setValue(compsSupported);
     // Create the variable associated to the PE id
     Constant papifyPEId = CodegenFactory.eINSTANCE.createConstant();
     papifyPEId.setName(PAPIFY_PE_ID_CONSTANT_NAME);
     papifyPEId.setValue(this.papifiedPEs.indexOf(operatorBlock.getName()));
     // Add the function parameters
     configurePapifyPE.addParameter(papifyPEName, PortDirection.INPUT);
+    configurePapifyPE.addParameter(papifyComponentName, PortDirection.INPUT);
     configurePapifyPE.addParameter(papifyPEId, PortDirection.INPUT);
     // Add the function comment
     configurePapifyPE.setActorName("Papify --> configure papification of ".concat(operatorBlock.getName()));
