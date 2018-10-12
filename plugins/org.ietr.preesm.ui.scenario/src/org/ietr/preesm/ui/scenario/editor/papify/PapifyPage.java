@@ -578,7 +578,7 @@ public class PapifyPage extends FormPage implements IPropertyListener {
 
     Map<String, Integer> actorNamesAndLevels = this.checkStateListener.getAllActorNamesAndLevels();
     for (String columnLabel : actorNamesAndLevels.keySet()) {
-      System.out.println("Actor " + columnLabel + " has level " + actorNamesAndLevels.get(columnLabel));
+      // System.out.println("Actor " + columnLabel + " has level " + actorNamesAndLevels.get(columnLabel));
 
       final TreeViewerColumn viewerColumn = new TreeViewerColumn(actorTreeViewer, SWT.CENTER | SWT.CHECK);
       final TreeColumn column = viewerColumn.getColumn();
