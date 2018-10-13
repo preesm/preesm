@@ -17,7 +17,9 @@ Require-Bundle: org.eclipse.core.runtime,
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Bundle-ActivationPolicy: lazy
 Export-Package: org.ietr.preesm.pimm.algorithm.checker,
+ org.ietr.preesm.pimm.algorithm.checker.periods,
  org.ietr.preesm.pimm.algorithm.checker.task,
+ org.ietr.preesm.pimm.algorithm.pimm2flat,
  org.ietr.preesm.pimm.algorithm.pimm2sdf,
  org.ietr.preesm.pimm.algorithm.pimm2srdag,
  org.ietr.preesm.pimm.algorithm.spider.codegen
