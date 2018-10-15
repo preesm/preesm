@@ -682,7 +682,7 @@ public class CodegenModelGenerator {
             operatorBlock.getLoopBlock().getCodeElts().add(functionCallPapifyStop);
           }
           // Generate Papify writing function
-          final FunctionCall functionCallPapifyWriting = generatePapifyWritingFunctionCall(dagVertex);
+          final FunctionCall functionCallPapifyWriting = generatePapifyWritingFunctionCall(dagVertex, operatorBlock);
           // Add the Papify writing function to the loop
           operatorBlock.getLoopBlock().getCodeElts().add(functionCallPapifyWriting);
         }
@@ -1468,6 +1468,8 @@ public class CodegenModelGenerator {
         PortDirection.INPUT);
     func.addParameter((Variable) dagVertex.getPropertyBean().getValue(PapifyEngine.PAPIFY_CONFIG_NUMBER),
         PortDirection.INPUT);
+    func.addParameter((Variable) dagVertex.getPropertyBean().getValue(PapifyEngine.PAPIFY_COUNTER_CONFIGS),
+        PortDirection.INPUT);
     // Add the function comment
     func.setActorName("Papify --> configure papification of ".concat(dagVertex.getName()));
 
@@ -1580,13 +1582,18 @@ public class CodegenModelGenerator {
    *          the {@link DAGVertex} corresponding to the {@link FunctionCall}.
    * @return The {@link FunctionCall} corresponding to the {@link DAGVertex actor} firing.
    */
-  protected FunctionCall generatePapifyWritingFunctionCall(final DAGVertex dagVertex) {
+  protected FunctionCall generatePapifyWritingFunctionCall(final DAGVertex dagVertex, final CoreBlock operatorBlock) {
     // Create the corresponding FunctionCall
     final FunctionCall func = CodegenFactory.eINSTANCE.createFunctionCall();
     func.setName("event_write_file");
+    // Create the variable associated to the PE id
+    Constant papifyPEId = CodegenFactory.eINSTANCE.createConstant();
+    papifyPEId.setName(PAPIFY_PE_ID_CONSTANT_NAME);
+    papifyPEId.setValue(this.papifiedPEs.indexOf(operatorBlock.getName()));
     // Add the function parameters
     func.addParameter((Variable) dagVertex.getPropertyBean().getValue(PapifyEngine.PAPIFY_ACTION_NAME),
         PortDirection.INPUT);
+    func.addParameter(papifyPEId, PortDirection.INPUT);
     // Add the function actor name
     func.setActorName(dagVertex.getName());
     return func;
