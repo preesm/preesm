@@ -59,17 +59,17 @@ import org.ietr.preesm.ui.scenario.editor.papify.PapifyListTreeElement.PAPIStatu
 class PapifyActorListContentProvider2DMatrixES extends EditingSupport {
 
   /** Currently edited scenario. */
-  private PreesmScenario                 scenario = null;
-  String                                 actorName;
-  CellEditor                             editor   = new CheckboxCellEditor();
-  PapifyActorListContentProvider2DMatrix actorProvider;
+  private PreesmScenario   scenario = null;
+  String                   actorName;
+  CellEditor               editor   = new CheckboxCellEditor();
+  PapifyCheckStateListener actorProvider;
 
   public PapifyActorListContentProvider2DMatrixES(final PreesmScenario scenario, final ColumnViewer viewer,
-      final String name, PapifyActorListContentProvider2DMatrix actorProvider) {
+      final String name, PapifyCheckStateListener checkStateListener) {
     super(viewer);
     this.actorName = name;
     this.scenario = scenario;
-    this.actorProvider = actorProvider;
+    this.actorProvider = checkStateListener;
   }
 
   @Override
@@ -102,7 +102,7 @@ class PapifyActorListContentProvider2DMatrixES extends EditingSupport {
         this.actorProvider.addEventtoActor(this.actorName, eventName);
       }
     }
-    this.actorProvider.selectionUpdated();
+    this.actorProvider.setPropDirty();
     this.actorProvider.updateView();
   }
 

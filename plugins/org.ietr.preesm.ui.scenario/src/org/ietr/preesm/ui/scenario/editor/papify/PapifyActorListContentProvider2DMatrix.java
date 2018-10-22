@@ -37,21 +37,26 @@
  */
 package org.ietr.preesm.ui.scenario.editor.papify;
 
-import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.ConcurrentSkipListSet;
+import org.eclipse.emf.common.util.EList;
 import org.eclipse.jface.viewers.ITreeContentProvider;
 import org.eclipse.jface.viewers.Viewer;
+import org.ietr.dftools.algorithm.model.IRefinement;
+import org.ietr.dftools.algorithm.model.sdf.SDFAbstractVertex;
+import org.ietr.dftools.algorithm.model.sdf.SDFGraph;
+import org.ietr.dftools.algorithm.model.sdf.SDFVertex;
 import org.ietr.preesm.core.scenario.PreesmScenario;
-import org.ietr.preesm.core.scenario.papi.PapiComponent;
-import org.ietr.preesm.core.scenario.papi.PapiEvent;
-import org.ietr.preesm.core.scenario.papi.PapiEventInfo;
-import org.ietr.preesm.core.scenario.papi.PapiEventModifier;
-import org.ietr.preesm.core.scenario.papi.PapiEventSet;
-import org.ietr.preesm.core.scenario.papi.PapifyConfigActor;
-import org.ietr.preesm.ui.scenario.editor.papify.PapifyListTreeElement.PAPIStatus;
+import org.ietr.preesm.core.scenario.serialize.ScenarioParser;
+import org.ietr.preesm.experiment.model.pimm.AbstractActor;
+import org.ietr.preesm.experiment.model.pimm.Actor;
+import org.ietr.preesm.experiment.model.pimm.PiGraph;
+import org.ietr.preesm.experiment.model.pimm.serialize.PiParser;
+import org.ietr.preesm.ui.scenario.editor.HierarchicalSDFVertex;
+import org.ietr.preesm.ui.scenario.editor.PathComparator;
 
 // TODO: Auto-generated Javadoc
 /**
@@ -62,22 +67,29 @@ import org.ietr.preesm.ui.scenario.editor.papify.PapifyListTreeElement.PAPIStatu
 public class PapifyActorListContentProvider2DMatrix implements ITreeContentProvider {
 
   /** Currently edited scenario. */
-  private PreesmScenario                                scenario           = null;
-  private Set<PapifyListTreeElement>                    actorConfig;
-  PapifyCheckStateListener                              checkStateListener = null;
-  private Set<PapifyActorListContentProvider2DMatrixES> editingSupports    = new LinkedHashSet<>();
+  private PreesmScenario   scenario           = null;
+  PapifyCheckStateListener checkStateListener = null;
 
-  public PapifyActorListContentProvider2DMatrix(PreesmScenario scenario) {
-    this.scenario = scenario;
-  }
+  /** The current IBSDF graph. */
+  private SDFGraph currentIBSDFGraph = null;
+
+  /** The current PISDF graph. */
+  private PiGraph                            currentPISDFGraph          = null;
+  /**
+   * This map keeps the VertexWithPath used as a tree content for each vertex.
+   */
+  private Map<String, HierarchicalSDFVertex> correspondingVertexWithMap = null;
 
   /**
-   * Gets the Papi Component list.
+   * Instantiates a new preesm algorithm tree content provider for PAPIFY.
    *
-   * @return the Papi Component list
+   * @param scenario
+   *          the scenario
    */
-  public Set<PapifyListTreeElement> getComponents() {
-    return this.actorConfig;
+  public PapifyActorListContentProvider2DMatrix(PreesmScenario scenario) {
+    super();
+    this.scenario = scenario;
+    this.correspondingVertexWithMap = new LinkedHashMap<>();
   }
 
   /**
@@ -90,257 +102,133 @@ public class PapifyActorListContentProvider2DMatrix implements ITreeContentProvi
   /**
    * 
    */
-  public void addEstatusSupport(PapifyActorListContentProvider2DMatrixES editingSupport) {
-    if (editingSupport != null) {
-      this.editingSupports.add(editingSupport);
-    }
-  }
-
-  /**
+  /*
+   * public void setInput() {
    * 
-   */
-  public void removeEventfromActor(String actorName, String eventName) {
-    // The timing event
-    PapiEvent timingEvent = new PapiEvent();
-    ArrayList<PapiEventModifier> modifTimingList = new ArrayList<>();
-    timingEvent.setName("Timing");
-    timingEvent.setDesciption("Event to time through PAPI_get_time()");
-    timingEvent.setIndex(9999);
-    timingEvent.setModifiers(modifTimingList);
-    boolean timing = false;
-
-    if (!actorName.equals("") && !eventName.equals("")) {
-
-      if (eventName.equals(timingEvent.getName())) {
-        timing = true;
-      }
-      PapifyConfigActor papiConfig = this.scenario.getPapifyConfigManager().getCorePapifyConfigGroupActor(actorName);
-      PapiEventInfo papiData = this.scenario.getPapifyConfigManager().getPapifyData();
-      String compName = "";
-      PapiEvent event = null;
-      boolean found = false;
-      if (!timing) {
-        for (PapiComponent comp : papiData.getComponents()) {
-          for (PapiEventSet eventSet : comp.getEventSets()) {
-            for (PapiEvent eventAux : eventSet.getEvents()) {
-              if (eventAux.getModifiers().isEmpty() && eventAux.getName().equals(eventName)) {
-                compName = comp.getId();
-                event = eventAux;
-                found = true;
-              }
-            }
-          }
-        }
-      } else {
-        found = true;
-        event = timingEvent;
-      }
-
-      boolean hierarchy = false;
-      int hierarchyLevel = 0;
-      Map<String, PAPIStatus> statuses = new LinkedHashMap<>();
-      for (PapifyListTreeElement treeElement : this.actorConfig) {
-        if (treeElement.label.equals(eventName)) {
-          statuses = treeElement.PAPIStatuses;
-        }
-      }
-      if (found) {
-        Map<String, Integer> actorNamesAndLevels = this.checkStateListener.getAllActorNamesAndLevels();
-        for (String actorNameSearch : actorNamesAndLevels.keySet()) {
-          if (hierarchy) {
-            if (hierarchyLevel >= actorNamesAndLevels.get(actorNameSearch)) {
-              hierarchy = false;
-            } else {
-              papiConfig = this.scenario.getPapifyConfigManager().getCorePapifyConfigGroupActor(actorNameSearch);
-              statuses.put(actorNameSearch, PAPIStatus.NO);
-              if (!timing) {
-                papiConfig.removePAPIEvent(compName, event);
-              } else {
-                papiConfig.removePAPIEvent("Timing", event);
-              }
-            }
-          }
-          if (actorName.equals(actorNameSearch)) {
-            statuses.put(actorNameSearch, PAPIStatus.NO);
-            if (!timing) {
-              papiConfig.removePAPIEvent(compName, event);
-            } else {
-              papiConfig.removePAPIEvent("Timing", event);
-            }
-            hierarchy = true;
-            hierarchyLevel = actorNamesAndLevels.get(actorName);
-          }
-        }
-      }
-    }
-  }
-
-  /**
+   * Set<PapifyConfigActor> papiConfigs = this.scenario.getPapifyConfigManager().getPapifyConfigGroupsActors();
    * 
+   * for (PapifyConfigActor papiConfig : papiConfigs) { String actorId = papiConfig.getActorId(); for (String compName :
+   * papiConfig.getPAPIEvents().keySet()) { for (PapiEvent event : papiConfig.getPAPIEvents().get(compName)) { for
+   * (PapifyListTreeElement treeElement : this.elementList) { if (treeElement.label.equals(event.getName())) { final
+   * Map<String, PAPIStatus> statuses = treeElement.PAPIStatuses; statuses.put(actorId, PAPIStatus.YES); } } } } } for
+   * (PapifyActorListContentProvider2DMatrixES viewer : this.editingSupports) { for (PapifyListTreeElement treeElement :
+   * this.elementList) { viewer.getViewer().update(treeElement, null); } } }
    */
-  public void addEventtoActor(String actorName, String eventName) {
-    // The timing event
-    PapiEvent timingEvent = new PapiEvent();
-    ArrayList<PapiEventModifier> modifTimingList = new ArrayList<>();
-    timingEvent.setName("Timing");
-    timingEvent.setDesciption("Event to time through PAPI_get_time()");
-    timingEvent.setIndex(9999);
-    timingEvent.setModifiers(modifTimingList);
-    boolean timing = false;
+  /*
+   * (non-Javadoc)
+   *
+   * @see org.eclipse.jface.viewers.ITreeContentProvider#getChildren(java.lang.Object)
+   */
+  @Override
+  public Object[] getChildren(final Object parentElement) {
+    Object[] table = null;
 
-    if (!actorName.equals("") && !eventName.equals("")) {
+    if (this.scenario.isIBSDFScenario()) {
+      if (parentElement instanceof SDFGraph) {
+        final SDFGraph graph = (SDFGraph) parentElement;
 
-      if (eventName.equals(timingEvent.getName())) {
-        timing = true;
-      }
-      PapifyConfigActor papiConfig = this.scenario.getPapifyConfigManager().getCorePapifyConfigGroupActor(actorName);
-      PapiEventInfo papiData = this.scenario.getPapifyConfigManager().getPapifyData();
-      String compName = "";
-      PapiEvent event = null;
-      boolean found = false;
-      if (!timing) {
-        for (PapiComponent comp : papiData.getComponents()) {
-          for (PapiEventSet eventSet : comp.getEventSets()) {
-            for (PapiEvent eventAux : eventSet.getEvents()) {
-              if (eventAux.getModifiers().isEmpty() && eventAux.getName().equals(eventName)) {
-                compName = comp.getId();
-                event = eventAux;
-                found = true;
-              }
-            }
-          }
-        }
-      } else {
-        found = true;
-        event = timingEvent;
-      }
+        // Some types of vertices are ignored in the constraints view
+        table = filterIBSDFChildren(graph.vertexSet()).toArray();
+      } else if (parentElement instanceof HierarchicalSDFVertex) {
+        final HierarchicalSDFVertex vertex = (HierarchicalSDFVertex) parentElement;
+        final IRefinement refinement = vertex.getStoredVertex().getRefinement();
 
-      boolean hierarchy = false;
-      int hierarchyLevel = 0;
-      Map<String, PAPIStatus> statuses = new LinkedHashMap<>();
-      for (PapifyListTreeElement treeElement : this.actorConfig) {
-        if (treeElement.label.equals(eventName)) {
-          statuses = treeElement.PAPIStatuses;
+        if ((refinement != null) && (refinement instanceof SDFGraph)) {
+          final SDFGraph graph = (SDFGraph) refinement;
+          table = filterIBSDFChildren(graph.vertexSet()).toArray();
         }
       }
-      if (found) {
-        Map<String, Integer> actorNamesAndLevels = this.checkStateListener.getAllActorNamesAndLevels();
-        for (String actorNameSearch : actorNamesAndLevels.keySet()) {
-          if (hierarchy) {
-            if (hierarchyLevel >= actorNamesAndLevels.get(actorNameSearch)) {
-              hierarchy = false;
-            } else {
-              papiConfig = this.scenario.getPapifyConfigManager().getCorePapifyConfigGroupActor(actorNameSearch);
-              statuses.put(actorNameSearch, PAPIStatus.YES);
-              if (!timing) {
-                papiConfig.addPAPIEvent(compName, event);
-              } else {
-                papiConfig.addPAPIEvent("Timing", event);
-              }
-            }
-          }
-          if (actorName.equals(actorNameSearch)) {
-            statuses.put(actorNameSearch, PAPIStatus.YES);
-            if (!timing) {
-              papiConfig.addPAPIEvent(compName, event);
-            } else {
-              papiConfig.addPAPIEvent("Timing", event);
-            }
-            hierarchy = true;
-            hierarchyLevel = actorNamesAndLevels.get(actorName);
-          }
+    } else if (this.scenario.isPISDFScenario()) {
+      if (parentElement instanceof PiGraph) {
+        final PiGraph graph = (PiGraph) parentElement;
+        // Some types of vertices are ignored in the constraints view
+        table = filterPISDFChildren(graph.getActors()).toArray();
+      } else if (parentElement instanceof Actor) {
+        final Actor actor = (Actor) parentElement;
+        if (actor.isHierarchical()) {
+          final PiGraph subGraph = actor.getSubGraph();
+          table = filterPISDFChildren(subGraph.getActors()).toArray();
         }
       }
     }
-  }
 
-  /**
-   * 
-   */
-  public void updateView() {
-
-    for (PapifyActorListContentProvider2DMatrixES viewer : this.editingSupports) {
-      for (PapifyListTreeElement treeElement : this.actorConfig) {
-        viewer.getViewer().update(treeElement, null);
-      }
-    }
-  }
-
-  /**
-   * 
-   */
-  public void setInput() {
-
-    Set<PapifyConfigActor> papiConfigs = this.scenario.getPapifyConfigManager().getPapifyConfigGroupsActors();
-
-    for (PapifyConfigActor papiConfig : papiConfigs) {
-      String actorId = papiConfig.getActorId();
-      for (String compName : papiConfig.getPAPIEvents().keySet()) {
-        for (PapiEvent event : papiConfig.getPAPIEvents().get(compName)) {
-          for (PapifyListTreeElement treeElement : this.actorConfig) {
-            if (treeElement.label.equals(event.getName())) {
-              final Map<String, PAPIStatus> statuses = treeElement.PAPIStatuses;
-              statuses.put(actorId, PAPIStatus.YES);
-            }
-          }
-        }
-      }
-    }
-    for (PapifyActorListContentProvider2DMatrixES viewer : this.editingSupports) {
-      for (PapifyListTreeElement treeElement : this.actorConfig) {
-        viewer.getViewer().update(treeElement, null);
-      }
-    }
-  }
-
-  /**
-   * 
-   */
-  public void selectionUpdated() {
-
-    this.checkStateListener.setPropDirty();
-
+    return table;
   }
 
   /*
    * (non-Javadoc)
    *
-   * @see org.eclipse.jface.viewers.IStructuredContentProvider#getElements(java.lang.Object)
+   * @see org.eclipse.jface.viewers.ITreeContentProvider#getParent(java.lang.Object)
+   */
+  @Override
+  public Object getParent(final Object element) {
+    // TODO Auto-generated method stub
+    return null;
+  }
+
+  /*
+   * (non-Javadoc)
+   *
+   * @see org.eclipse.jface.viewers.ITreeContentProvider#hasChildren(java.lang.Object)
+   */
+  @Override
+  public boolean hasChildren(final Object element) {
+    boolean hasChildren = false;
+
+    if (this.scenario.isIBSDFScenario()) {
+      if (element instanceof SDFGraph) {
+        final SDFGraph graph = (SDFGraph) element;
+        hasChildren = !graph.vertexSet().isEmpty();
+      } else if (element instanceof HierarchicalSDFVertex) {
+        final SDFAbstractVertex sdfVertex = ((HierarchicalSDFVertex) element).getStoredVertex();
+        if (sdfVertex instanceof SDFVertex) {
+          final SDFVertex vertex = (SDFVertex) sdfVertex;
+          hasChildren = vertex.getRefinement() != null;
+        }
+      }
+    } else if (this.scenario.isPISDFScenario()) {
+      if (element instanceof PiGraph) {
+        final PiGraph graph = (PiGraph) element;
+        hasChildren = !graph.getActors().isEmpty();
+      } else if (element instanceof Actor) {
+        final Actor actor = (Actor) element;
+        hasChildren = actor.getRefinement() != null;
+      }
+    }
+
+    return hasChildren;
+  }
+
+  /*
+   * (non-Javadoc)
+   *
+   * @see org.eclipse.jface.viewers.ITreeContentProvider#getElements(java.lang.Object)
    */
   @Override
   public Object[] getElements(final Object inputElement) {
+    final Object[] table = new Object[1];
+    System.out.println("Hola1 ");
 
-    Object[] elementTable = null;
-
-    // The timing event
-    PapiEvent timingEvent = new PapiEvent();
-    ArrayList<PapiEventModifier> modifTimingList = new ArrayList<>();
-    timingEvent.setName("Timing");
-    timingEvent.setDesciption("Event to time through PAPI_get_time()");
-    timingEvent.setIndex(9999);
-    timingEvent.setModifiers(modifTimingList);
-
-    if (inputElement instanceof PapiEventInfo) {
-      final PapiEventInfo inputPapiEventInfo = (PapiEventInfo) inputElement;
-      actorConfig = new LinkedHashSet<>();
-      final PapifyListTreeElement elementTiming = new PapifyListTreeElement(timingEvent.getName());
-      actorConfig.add(elementTiming);
-      for (final PapiComponent compAux : inputPapiEventInfo.getComponents()) {
-        if (!compAux.getEventSets().isEmpty()) {
-          for (final PapiEventSet eventSet : compAux.getEventSets()) {
-            for (final PapiEvent event : eventSet.getEvents()) {
-              if (event.getModifiers().isEmpty()) {
-                final PapifyListTreeElement element = new PapifyListTreeElement(event.getName());
-                actorConfig.add(element);
-              }
-            }
-          }
+    if (inputElement instanceof PreesmScenario) {
+      this.scenario = (PreesmScenario) inputElement;
+      // Opening algorithm from file
+      if (this.scenario.isIBSDFScenario()) {
+        try {
+          this.currentIBSDFGraph = ScenarioParser.getSDFGraph(this.scenario.getAlgorithmURL());
+        } catch (final Exception e) {
+          e.printStackTrace();
         }
+        table[0] = this.currentIBSDFGraph;
+      } else if (this.scenario.isPISDFScenario()) {
+        try {
+          this.currentPISDFGraph = PiParser.getPiGraph(this.scenario.getAlgorithmURL());
+        } catch (final Exception e) {
+          e.printStackTrace();
+        }
+        table[0] = this.currentPISDFGraph;
       }
-      elementTable = this.actorConfig.toArray();
     }
-
-    return elementTable;
+    return table;
   }
 
   /*
@@ -366,22 +254,56 @@ public class PapifyActorListContentProvider2DMatrix implements ITreeContentProvi
 
   }
 
-  @Override
-  public Object[] getChildren(Object parentElement) {
-    // TODO Auto-generated method stub
-    return null;
+  /**
+   * Filters the children to display in the tree.
+   *
+   * @param vertices
+   *          the vertices
+   * @return the sets the
+   */
+  public Set<AbstractActor> filterPISDFChildren(final EList<AbstractActor> vertices) {
+    final Set<AbstractActor> result = new LinkedHashSet<>();
+    for (final AbstractActor actor : vertices) {
+      // TODO: Filter if needed
+      result.add(actor);
+    }
+    return result;
   }
 
-  @Override
-  public Object getParent(Object element) {
-    // TODO Auto-generated method stub
-    return null;
+  /**
+   * Filter IBSDF children.
+   *
+   * @param children
+   *          the children
+   * @return the sets the
+   */
+  public Set<HierarchicalSDFVertex> filterIBSDFChildren(final Set<SDFAbstractVertex> children) {
+
+    final ConcurrentSkipListSet<
+        HierarchicalSDFVertex> appropriateChildren = new ConcurrentSkipListSet<>(new PathComparator());
+
+    for (final SDFAbstractVertex v : children) {
+      if (v.getKind().equalsIgnoreCase("vertex")) {
+        appropriateChildren.add(convertSDFChild(v));
+      }
+    }
+
+    return appropriateChildren;
   }
 
-  @Override
-  public boolean hasChildren(Object element) {
-    // TODO Auto-generated method stub
-    return false;
+  /**
+   * Convert SDF child.
+   *
+   * @param child
+   *          the child
+   * @return the hierarchical SDF vertex
+   */
+  public HierarchicalSDFVertex convertSDFChild(final SDFAbstractVertex child) {
+    if (!this.correspondingVertexWithMap.containsKey(child.getInfo())) {
+      this.correspondingVertexWithMap.put(child.getInfo(), new HierarchicalSDFVertex(child));
+    }
+
+    return this.correspondingVertexWithMap.get(child.getInfo());
   }
 
 }

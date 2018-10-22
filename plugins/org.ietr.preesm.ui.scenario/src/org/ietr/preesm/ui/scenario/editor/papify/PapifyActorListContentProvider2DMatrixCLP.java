@@ -40,8 +40,11 @@ package org.ietr.preesm.ui.scenario.editor.papify;
 import java.util.Map;
 import org.eclipse.jface.viewers.ColumnLabelProvider;
 import org.eclipse.swt.graphics.Image;
+import org.ietr.dftools.algorithm.model.sdf.SDFGraph;
 import org.ietr.preesm.core.scenario.PreesmScenario;
 import org.ietr.preesm.core.scenario.papi.PapifyConfigActor;
+import org.ietr.preesm.experiment.model.pimm.AbstractActor;
+import org.ietr.preesm.ui.scenario.editor.HierarchicalSDFVertex;
 import org.ietr.preesm.ui.scenario.editor.papify.PapifyListTreeElement.PAPIStatus;
 
 // TODO: Auto-generated Javadoc
@@ -80,6 +83,12 @@ class PapifyActorListContentProvider2DMatrixCLP extends ColumnLabelProvider {
         }
       }
       return statuses.get(this.actorName).toString();
+    } else if (element instanceof HierarchicalSDFVertex) {
+      return ((HierarchicalSDFVertex) element).getName();
+    } else if (element instanceof SDFGraph) {
+      return "graph";
+    } else if (element instanceof AbstractActor) {
+      return ((AbstractActor) element).getName();
     } else {
       return "ERROR";
     }

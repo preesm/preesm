@@ -37,6 +37,7 @@
  */
 package org.ietr.preesm.ui.scenario.editor.papify;
 
+import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.Map;
@@ -59,6 +60,12 @@ import org.ietr.dftools.algorithm.importer.InvalidModelException;
 import org.ietr.dftools.algorithm.model.sdf.SDFAbstractVertex;
 import org.ietr.dftools.algorithm.model.sdf.SDFGraph;
 import org.ietr.preesm.core.scenario.PreesmScenario;
+import org.ietr.preesm.core.scenario.papi.PapiComponent;
+import org.ietr.preesm.core.scenario.papi.PapiEvent;
+import org.ietr.preesm.core.scenario.papi.PapiEventInfo;
+import org.ietr.preesm.core.scenario.papi.PapiEventModifier;
+import org.ietr.preesm.core.scenario.papi.PapiEventSet;
+import org.ietr.preesm.core.scenario.papi.PapifyConfigActor;
 import org.ietr.preesm.core.scenario.serialize.ScenarioParser;
 import org.ietr.preesm.experiment.model.pimm.AbstractActor;
 import org.ietr.preesm.experiment.model.pimm.BroadcastActor;
@@ -73,6 +80,7 @@ import org.ietr.preesm.experiment.model.pimm.serialize.PiParser;
 import org.ietr.preesm.ui.scenario.editor.ISDFCheckStateListener;
 import org.ietr.preesm.ui.scenario.editor.Messages;
 import org.ietr.preesm.ui.scenario.editor.PreesmAlgorithmTreeContentProvider;
+import org.ietr.preesm.ui.scenario.editor.papify.PapifyListTreeElement.PAPIStatus;
 
 // TODO: Auto-generated Javadoc
 /**
@@ -90,6 +98,10 @@ public class PapifyCheckStateListener implements ISDFCheckStateListener {
   /** Constraints page used as a property listener to change the dirty state. */
   private IPropertyListener propertyListener = null;
 
+  private Set<PapifyActorListContentProvider2DMatrixES> editingSupports = new LinkedHashSet<>();
+
+  private Set<PapifyListTreeElement> elementList;
+
   /**
    * Instantiates a new constraints check state listener.
    *
@@ -99,6 +111,194 @@ public class PapifyCheckStateListener implements ISDFCheckStateListener {
   public PapifyCheckStateListener(final Composite container, final PreesmScenario scenario) {
     super();
     this.scenario = scenario;
+  }
+
+  /**
+   * Gets the Papi Component list.
+   *
+   * @return the Papi Component list
+   */
+  public Set<PapifyListTreeElement> getComponents() {
+    return this.elementList;
+  }
+
+  /**
+   * 
+   */
+  public void addEstatusSupport(PapifyActorListContentProvider2DMatrixES editingSupport) {
+    if (editingSupport != null) {
+      this.editingSupports.add(editingSupport);
+    }
+  }
+
+  /**
+   * 
+   */
+  public void removeEventfromActor(String actorName, String eventName) {
+    // The timing event
+    PapiEvent timingEvent = new PapiEvent();
+    ArrayList<PapiEventModifier> modifTimingList = new ArrayList<>();
+    timingEvent.setName("Timing");
+    timingEvent.setDesciption("Event to time through PAPI_get_time()");
+    timingEvent.setIndex(9999);
+    timingEvent.setModifiers(modifTimingList);
+    boolean timing = false;
+
+    if (!actorName.equals("") && !eventName.equals("")) {
+
+      if (eventName.equals(timingEvent.getName())) {
+        timing = true;
+      }
+      PapifyConfigActor papiConfig = this.scenario.getPapifyConfigManager().getCorePapifyConfigGroupActor(actorName);
+      PapiEventInfo papiData = this.scenario.getPapifyConfigManager().getPapifyData();
+      String compName = "";
+      PapiEvent event = null;
+      boolean found = false;
+      if (!timing) {
+        for (PapiComponent comp : papiData.getComponents()) {
+          for (PapiEventSet eventSet : comp.getEventSets()) {
+            for (PapiEvent eventAux : eventSet.getEvents()) {
+              if (eventAux.getModifiers().isEmpty() && eventAux.getName().equals(eventName)) {
+                compName = comp.getId();
+                event = eventAux;
+                found = true;
+              }
+            }
+          }
+        }
+      } else {
+        found = true;
+        event = timingEvent;
+      }
+
+      boolean hierarchy = false;
+      int hierarchyLevel = 0;
+      Map<String, PAPIStatus> statuses = new LinkedHashMap<>();
+      for (PapifyListTreeElement treeElement : this.elementList) {
+        if (treeElement.label.equals(eventName)) {
+          statuses = treeElement.PAPIStatuses;
+        }
+      }
+      if (found) {
+        Map<String, Integer> actorNamesAndLevels = getAllActorNamesAndLevels();
+        for (String actorNameSearch : actorNamesAndLevels.keySet()) {
+          if (hierarchy) {
+            if (hierarchyLevel >= actorNamesAndLevels.get(actorNameSearch)) {
+              hierarchy = false;
+            } else {
+              papiConfig = this.scenario.getPapifyConfigManager().getCorePapifyConfigGroupActor(actorNameSearch);
+              statuses.put(actorNameSearch, PAPIStatus.NO);
+              if (!timing) {
+                papiConfig.removePAPIEvent(compName, event);
+              } else {
+                papiConfig.removePAPIEvent("Timing", event);
+              }
+            }
+          }
+          if (actorName.equals(actorNameSearch)) {
+            statuses.put(actorNameSearch, PAPIStatus.NO);
+            if (!timing) {
+              papiConfig.removePAPIEvent(compName, event);
+            } else {
+              papiConfig.removePAPIEvent("Timing", event);
+            }
+            hierarchy = true;
+            hierarchyLevel = actorNamesAndLevels.get(actorName);
+          }
+        }
+      }
+    }
+  }
+
+  /**
+   * 
+   */
+  public void addEventtoActor(String actorName, String eventName) {
+    // The timing event
+    PapiEvent timingEvent = new PapiEvent();
+    ArrayList<PapiEventModifier> modifTimingList = new ArrayList<>();
+    timingEvent.setName("Timing");
+    timingEvent.setDesciption("Event to time through PAPI_get_time()");
+    timingEvent.setIndex(9999);
+    timingEvent.setModifiers(modifTimingList);
+    boolean timing = false;
+
+    if (!actorName.equals("") && !eventName.equals("")) {
+
+      if (eventName.equals(timingEvent.getName())) {
+        timing = true;
+      }
+      PapifyConfigActor papiConfig = this.scenario.getPapifyConfigManager().getCorePapifyConfigGroupActor(actorName);
+      PapiEventInfo papiData = this.scenario.getPapifyConfigManager().getPapifyData();
+      String compName = "";
+      PapiEvent event = null;
+      boolean found = false;
+      if (!timing) {
+        for (PapiComponent comp : papiData.getComponents()) {
+          for (PapiEventSet eventSet : comp.getEventSets()) {
+            for (PapiEvent eventAux : eventSet.getEvents()) {
+              if (eventAux.getModifiers().isEmpty() && eventAux.getName().equals(eventName)) {
+                compName = comp.getId();
+                event = eventAux;
+                found = true;
+              }
+            }
+          }
+        }
+      } else {
+        found = true;
+        event = timingEvent;
+      }
+
+      boolean hierarchy = false;
+      int hierarchyLevel = 0;
+      Map<String, PAPIStatus> statuses = new LinkedHashMap<>();
+      for (PapifyListTreeElement treeElement : this.elementList) {
+        if (treeElement.label.equals(eventName)) {
+          statuses = treeElement.PAPIStatuses;
+        }
+      }
+      if (found) {
+        Map<String, Integer> actorNamesAndLevels = getAllActorNamesAndLevels();
+        for (String actorNameSearch : actorNamesAndLevels.keySet()) {
+          if (hierarchy) {
+            if (hierarchyLevel >= actorNamesAndLevels.get(actorNameSearch)) {
+              hierarchy = false;
+            } else {
+              papiConfig = this.scenario.getPapifyConfigManager().getCorePapifyConfigGroupActor(actorNameSearch);
+              statuses.put(actorNameSearch, PAPIStatus.YES);
+              if (!timing) {
+                papiConfig.addPAPIEvent(compName, event);
+              } else {
+                papiConfig.addPAPIEvent("Timing", event);
+              }
+            }
+          }
+          if (actorName.equals(actorNameSearch)) {
+            statuses.put(actorNameSearch, PAPIStatus.YES);
+            if (!timing) {
+              papiConfig.addPAPIEvent(compName, event);
+            } else {
+              papiConfig.addPAPIEvent("Timing", event);
+            }
+            hierarchy = true;
+            hierarchyLevel = actorNamesAndLevels.get(actorName);
+          }
+        }
+      }
+    }
+  }
+
+  /**
+   * 
+   */
+  public void updateView() {
+
+    for (PapifyActorListContentProvider2DMatrixES viewer : this.editingSupports) {
+      for (PapifyListTreeElement treeElement : this.elementList) {
+        viewer.getViewer().update(treeElement, null);
+      }
+    }
   }
 
   /**
