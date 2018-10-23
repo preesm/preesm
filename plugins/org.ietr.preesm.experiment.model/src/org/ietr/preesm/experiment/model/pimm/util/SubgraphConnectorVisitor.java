@@ -150,19 +150,21 @@ public class SubgraphConnectorVisitor extends PiMMSwitch<Boolean> {
     // PiGraph, visit it to connect the subgraph to its supergraph
     if (a.isHierarchical()) {
       final PiGraph innerGraph = a.getSubGraph();
-      // Connect all Fifos and Dependencies incoming into a and outgoing
-      // from a in order to make them incoming into innerGraph and
-      // outgoing from innerGraph instead
-      SubgraphReconnector.reconnectPiGraph(a, innerGraph);
+      if (innerGraph != null) {
+        // Connect all Fifos and Dependencies incoming into a and outgoing
+        // from a in order to make them incoming into innerGraph and
+        // outgoing from innerGraph instead
+        SubgraphReconnector.reconnectPiGraph(a, innerGraph);
 
-      this.currentActor = innerGraph;
-      doSwitch(innerGraph);
+        this.currentActor = innerGraph;
+        doSwitch(innerGraph);
 
-      final ActorByGraphReplacement replacement = new ActorByGraphReplacement(a, innerGraph);
-      if (!this.graphReplacements.containsKey(this.currentGraph)) {
-        this.graphReplacements.put(this.currentGraph, new ArrayList<ActorByGraphReplacement>());
+        final ActorByGraphReplacement replacement = new ActorByGraphReplacement(a, innerGraph);
+        if (!this.graphReplacements.containsKey(this.currentGraph)) {
+          this.graphReplacements.put(this.currentGraph, new ArrayList<ActorByGraphReplacement>());
+        }
+        this.graphReplacements.get(this.currentGraph).add(replacement);
       }
-      this.graphReplacements.get(this.currentGraph).add(replacement);
     }
     return true;
   }
