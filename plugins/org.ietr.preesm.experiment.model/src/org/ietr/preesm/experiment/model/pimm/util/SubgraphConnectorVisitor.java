@@ -42,11 +42,9 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import org.eclipse.emf.ecore.EObject;
 import org.ietr.preesm.experiment.model.pimm.AbstractActor;
-import org.ietr.preesm.experiment.model.pimm.AbstractVertex;
 import org.ietr.preesm.experiment.model.pimm.Actor;
-import org.ietr.preesm.experiment.model.pimm.BroadcastActor;
-import org.ietr.preesm.experiment.model.pimm.CHeaderRefinement;
 import org.ietr.preesm.experiment.model.pimm.ConfigInputInterface;
 import org.ietr.preesm.experiment.model.pimm.ConfigInputPort;
 import org.ietr.preesm.experiment.model.pimm.ConfigOutputInterface;
@@ -55,26 +53,10 @@ import org.ietr.preesm.experiment.model.pimm.DataInputInterface;
 import org.ietr.preesm.experiment.model.pimm.DataInputPort;
 import org.ietr.preesm.experiment.model.pimm.DataOutputInterface;
 import org.ietr.preesm.experiment.model.pimm.DataOutputPort;
-import org.ietr.preesm.experiment.model.pimm.DataPort;
-import org.ietr.preesm.experiment.model.pimm.Delay;
 import org.ietr.preesm.experiment.model.pimm.DelayActor;
-import org.ietr.preesm.experiment.model.pimm.Dependency;
 import org.ietr.preesm.experiment.model.pimm.ExecutableActor;
-import org.ietr.preesm.experiment.model.pimm.Expression;
-import org.ietr.preesm.experiment.model.pimm.Fifo;
-import org.ietr.preesm.experiment.model.pimm.ForkActor;
-import org.ietr.preesm.experiment.model.pimm.FunctionParameter;
-import org.ietr.preesm.experiment.model.pimm.FunctionPrototype;
-import org.ietr.preesm.experiment.model.pimm.ISetter;
-import org.ietr.preesm.experiment.model.pimm.InterfaceActor;
-import org.ietr.preesm.experiment.model.pimm.JoinActor;
 import org.ietr.preesm.experiment.model.pimm.Parameter;
-import org.ietr.preesm.experiment.model.pimm.Parameterizable;
 import org.ietr.preesm.experiment.model.pimm.PiGraph;
-import org.ietr.preesm.experiment.model.pimm.PiSDFRefinement;
-import org.ietr.preesm.experiment.model.pimm.Port;
-import org.ietr.preesm.experiment.model.pimm.Refinement;
-import org.ietr.preesm.experiment.model.pimm.RoundBufferActor;
 
 /**
  * Parse and connect hierarchical sub-{@link PiGraph} to a top level {@link PiGraph}.
@@ -83,6 +65,31 @@ import org.ietr.preesm.experiment.model.pimm.RoundBufferActor;
  * @author kdesnos
  */
 public class SubgraphConnectorVisitor extends PiMMSwitch<Boolean> {
+
+  /**
+   * The Class ActorByGraphReplacement.
+   */
+  public class ActorByGraphReplacement {
+
+    /** The to be removed. */
+    public final Actor toBeRemoved;
+
+    /** The to be added. */
+    public final PiGraph toBeAdded;
+
+    /**
+     * Instantiates a new actor by graph replacement.
+     *
+     * @param toBeRemoved
+     *          the to be removed
+     * @param toBeAdded
+     *          the to be added
+     */
+    public ActorByGraphReplacement(final Actor toBeRemoved, final PiGraph toBeAdded) {
+      this.toBeRemoved = toBeRemoved;
+      this.toBeAdded = toBeAdded;
+    }
+  }
 
   /** The current actor. */
   // Actor in the outer graph corresponding to the currently visited graph
@@ -242,160 +249,17 @@ public class SubgraphConnectorVisitor extends PiMMSwitch<Boolean> {
   }
 
   @Override
-  public Boolean caseAbstractActor(final AbstractActor aa) {
-    throw new UnsupportedOperationException();
-  }
-
-  @Override
   public Boolean caseDelayActor(final DelayActor da) {
     return true;
   }
 
   @Override
-  public Boolean caseAbstractVertex(final AbstractVertex av) {
+  public Boolean defaultCase(EObject object) {
     throw new UnsupportedOperationException();
-  }
-
-  @Override
-  public Boolean caseConfigInputPort(final ConfigInputPort cip) {
-    throw new UnsupportedOperationException();
-  }
-
-  @Override
-  public Boolean caseConfigOutputPort(final ConfigOutputPort cop) {
-    throw new UnsupportedOperationException();
-  }
-
-  @Override
-  public Boolean caseDataPort(final DataPort p) {
-    throw new UnsupportedOperationException();
-  }
-
-  @Override
-  public Boolean caseDataInputPort(final DataInputPort dip) {
-    throw new UnsupportedOperationException();
-  }
-
-  @Override
-  public Boolean caseDataOutputPort(final DataOutputPort dop) {
-    throw new UnsupportedOperationException();
-  }
-
-  @Override
-  public Boolean caseDelay(final Delay d) {
-    throw new UnsupportedOperationException();
-  }
-
-  @Override
-  public Boolean caseDependency(final Dependency d) {
-    throw new UnsupportedOperationException();
-  }
-
-  @Override
-  public Boolean caseExpression(final Expression e) {
-    throw new UnsupportedOperationException();
-  }
-
-  @Override
-  public Boolean caseFifo(final Fifo f) {
-    throw new UnsupportedOperationException();
-  }
-
-  @Override
-  public Boolean caseInterfaceActor(final InterfaceActor ia) {
-    throw new UnsupportedOperationException();
-  }
-
-  @Override
-  public Boolean caseISetter(final ISetter is) {
-    throw new UnsupportedOperationException();
-  }
-
-  @Override
-  public Boolean caseParameterizable(final Parameterizable p) {
-    throw new UnsupportedOperationException();
-  }
-
-  @Override
-  public Boolean casePort(final Port p) {
-    throw new UnsupportedOperationException();
-  }
-
-  @Override
-  public Boolean caseRefinement(final Refinement r) {
-    throw new UnsupportedOperationException();
-  }
-
-  @Override
-  public Boolean casePiSDFRefinement(final PiSDFRefinement r) {
-    throw new UnsupportedOperationException();
-  }
-
-  @Override
-  public Boolean caseFunctionParameter(final FunctionParameter functionParameter) {
-    throw new UnsupportedOperationException();
-  }
-
-  @Override
-  public Boolean caseFunctionPrototype(final FunctionPrototype functionPrototype) {
-    throw new UnsupportedOperationException();
-  }
-
-  @Override
-  public Boolean caseBroadcastActor(final BroadcastActor ba) {
-    // Do nothing
-    return true;
-  }
-
-  @Override
-  public Boolean caseJoinActor(final JoinActor ja) {
-    return true;
-  }
-
-  @Override
-  public Boolean caseForkActor(final ForkActor fa) {
-    // Do nothing
-    return true;
-  }
-
-  @Override
-  public Boolean caseRoundBufferActor(final RoundBufferActor rba) {
-    // Do nothing
-    return true;
   }
 
   @Override
   public Boolean caseExecutableActor(final ExecutableActor ea) {
-    throw new UnsupportedOperationException();
-  }
-
-  @Override
-  public Boolean caseCHeaderRefinement(final CHeaderRefinement hRefinement) {
-    throw new UnsupportedOperationException();
-  }
-
-  /**
-   * The Class ActorByGraphReplacement.
-   */
-  public class ActorByGraphReplacement {
-
-    /** The to be removed. */
-    public final Actor toBeRemoved;
-
-    /** The to be added. */
-    public final PiGraph toBeAdded;
-
-    /**
-     * Instantiates a new actor by graph replacement.
-     *
-     * @param toBeRemoved
-     *          the to be removed
-     * @param toBeAdded
-     *          the to be added
-     */
-    public ActorByGraphReplacement(final Actor toBeRemoved, final PiGraph toBeAdded) {
-      this.toBeRemoved = toBeRemoved;
-      this.toBeAdded = toBeAdded;
-    }
+    return true;
   }
 }
