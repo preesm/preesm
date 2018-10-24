@@ -42,6 +42,7 @@ import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.Set;
+import org.eclipse.emf.common.util.EList;
 import org.eclipse.jface.viewers.CheckStateChangedEvent;
 import org.eclipse.jface.viewers.CheckboxTableViewer;
 import org.eclipse.jface.viewers.CheckboxTreeViewer;
@@ -57,8 +58,10 @@ import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.IPropertyListener;
 import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.ietr.dftools.algorithm.importer.InvalidModelException;
+import org.ietr.dftools.algorithm.model.IRefinement;
 import org.ietr.dftools.algorithm.model.sdf.SDFAbstractVertex;
 import org.ietr.dftools.algorithm.model.sdf.SDFGraph;
+import org.ietr.dftools.algorithm.model.sdf.SDFVertex;
 import org.ietr.preesm.core.scenario.PreesmScenario;
 import org.ietr.preesm.core.scenario.papi.PapiComponent;
 import org.ietr.preesm.core.scenario.papi.PapiEvent;
@@ -68,6 +71,7 @@ import org.ietr.preesm.core.scenario.papi.PapiEventSet;
 import org.ietr.preesm.core.scenario.papi.PapifyConfigActor;
 import org.ietr.preesm.core.scenario.serialize.ScenarioParser;
 import org.ietr.preesm.experiment.model.pimm.AbstractActor;
+import org.ietr.preesm.experiment.model.pimm.Actor;
 import org.ietr.preesm.experiment.model.pimm.BroadcastActor;
 import org.ietr.preesm.experiment.model.pimm.DataInputInterface;
 import org.ietr.preesm.experiment.model.pimm.DataOutputInterface;
@@ -165,22 +169,22 @@ public class PapifyCheckStateListener implements ISDFCheckStateListener {
     timingEvent.setModifiers(modifTimingList);
     boolean timing = false;
 
-    String actorName = "";
+    String actorPath = "";
 
     if (actorInstance instanceof HierarchicalSDFVertex) {
-      actorName = ((HierarchicalSDFVertex) actorInstance).getName();
+      actorPath = ((HierarchicalSDFVertex) actorInstance).getName();
     } else if (actorInstance instanceof SDFGraph) {
-      actorName = "graph";
+      actorPath = ((SDFGraph) actorInstance).getName();
     } else if (actorInstance instanceof AbstractActor) {
-      actorName = ((AbstractActor) actorInstance).getName();
+      actorPath = ((AbstractActor) actorInstance).getVertexPath();
     }
 
-    if (!actorName.equals("") && !eventName.equals("")) {
+    if (!actorPath.equals("") && !eventName.equals("")) {
 
       if (eventName.equals(timingEvent.getName())) {
         timing = true;
       }
-      PapifyConfigActor papiConfig = this.scenario.getPapifyConfigManager().getCorePapifyConfigGroupActor(actorName);
+      PapifyConfigActor papiConfig = this.scenario.getPapifyConfigManager().getCorePapifyConfigGroupActor(actorPath);
       PapiEventInfo papiData = this.scenario.getPapifyConfigManager().getPapifyData();
       String compName = "";
       PapiEvent event = null;
@@ -193,6 +197,7 @@ public class PapifyCheckStateListener implements ISDFCheckStateListener {
                 compName = comp.getId();
                 event = eventAux;
                 found = true;
+                break;
               }
             }
           }
@@ -202,44 +207,36 @@ public class PapifyCheckStateListener implements ISDFCheckStateListener {
         event = timingEvent;
       }
 
-      boolean hierarchy = false;
-      int hierarchyLevel = 0;
       Map<String, PAPIEventStatus> statuses = new LinkedHashMap<>();
       for (PapifyEventListTreeElement treeElement : this.elementList) {
-        if (treeElement.label.equals(actorName)) {
+        if (treeElement.actorPath.equals(actorPath)) {
           statuses = treeElement.PAPIStatuses;
+          break;
         }
       }
       if (found) {
-        Map<String, Integer> actorNamesAndLevels = getAllActorNamesAndLevels();
-        for (String actorNameSearch : actorNamesAndLevels.keySet()) {
-          if (hierarchy) {
-            if (hierarchyLevel >= actorNamesAndLevels.get(actorNameSearch)) {
-              hierarchy = false;
-            } else {
-              papiConfig = this.scenario.getPapifyConfigManager().getCorePapifyConfigGroupActor(actorNameSearch);
-              statuses.put(eventName, PAPIEventStatus.NO);
-              for (PapifyEventListTreeElement treeElement : this.elementList) {
-                if (treeElement.label.equals(actorNameSearch)) {
-                  treeElement.PAPIStatuses.put(eventName, PAPIEventStatus.NO);
+
+        if (!timing) {
+          papiConfig.removePAPIEvent(compName, event);
+        } else {
+          papiConfig.removePAPIEvent("Timing", event);
+        }
+        statuses.put(eventName, PAPIEventStatus.NO);
+        if (hasChildren(actorInstance)) {
+          final Set<String> actorPaths = getChildren(actorInstance);
+          for (String oneActorPath : actorPaths) {
+            for (PapifyEventListTreeElement treeElement : this.elementList) {
+              if (treeElement.actorPath.equals(oneActorPath)) {
+                treeElement.PAPIStatuses.put(eventName, PAPIEventStatus.NO);
+                papiConfig = this.scenario.getPapifyConfigManager().getCorePapifyConfigGroupActor(oneActorPath);
+                if (!timing) {
+                  papiConfig.removePAPIEvent(compName, event);
+                } else {
+                  papiConfig.removePAPIEvent("Timing", event);
                 }
-              }
-              if (!timing) {
-                papiConfig.removePAPIEvent(compName, event);
-              } else {
-                papiConfig.removePAPIEvent("Timing", event);
+                break;
               }
             }
-          }
-          if (actorName.equals(actorNameSearch)) {
-            statuses.put(eventName, PAPIEventStatus.NO);
-            if (!timing) {
-              papiConfig.removePAPIEvent(compName, event);
-            } else {
-              papiConfig.removePAPIEvent("Timing", event);
-            }
-            hierarchy = true;
-            hierarchyLevel = actorNamesAndLevels.get(actorName);
           }
         }
       }
@@ -259,22 +256,22 @@ public class PapifyCheckStateListener implements ISDFCheckStateListener {
     timingEvent.setModifiers(modifTimingList);
     boolean timing = false;
 
-    String actorName = "";
+    String actorPath = "";
 
     if (actorInstance instanceof HierarchicalSDFVertex) {
-      actorName = ((HierarchicalSDFVertex) actorInstance).getName();
+      actorPath = ((HierarchicalSDFVertex) actorInstance).getName();
     } else if (actorInstance instanceof SDFGraph) {
-      actorName = "graph";
+      actorPath = ((SDFGraph) actorInstance).getName();
     } else if (actorInstance instanceof AbstractActor) {
-      actorName = ((AbstractActor) actorInstance).getName();
+      actorPath = ((AbstractActor) actorInstance).getVertexPath();
     }
 
-    if (!actorName.equals("") && !eventName.equals("")) {
+    if (!actorPath.equals("") && !eventName.equals("")) {
 
       if (eventName.equals(timingEvent.getName())) {
         timing = true;
       }
-      PapifyConfigActor papiConfig = this.scenario.getPapifyConfigManager().getCorePapifyConfigGroupActor(actorName);
+      PapifyConfigActor papiConfig = this.scenario.getPapifyConfigManager().getCorePapifyConfigGroupActor(actorPath);
       PapiEventInfo papiData = this.scenario.getPapifyConfigManager().getPapifyData();
       String compName = "";
       PapiEvent event = null;
@@ -287,6 +284,7 @@ public class PapifyCheckStateListener implements ISDFCheckStateListener {
                 compName = comp.getId();
                 event = eventAux;
                 found = true;
+                break;
               }
             }
           }
@@ -296,45 +294,36 @@ public class PapifyCheckStateListener implements ISDFCheckStateListener {
         event = timingEvent;
       }
 
-      boolean hierarchy = false;
-      int hierarchyLevel = 0;
       Map<String, PAPIEventStatus> statuses = new LinkedHashMap<>();
       for (PapifyEventListTreeElement treeElement : this.elementList) {
-        if (treeElement.label.equals(actorName)) {
+        if (treeElement.actorPath.equals(actorPath)) {
           statuses = treeElement.PAPIStatuses;
+          break;
         }
       }
       if (found) {
-        Map<String, Integer> actorNamesAndLevels = getAllActorNamesAndLevels();
-        for (String actorNameSearch : actorNamesAndLevels.keySet()) {
-          if (hierarchy) {
-            if (hierarchyLevel >= actorNamesAndLevels.get(actorNameSearch)) {
-              hierarchy = false;
-            } else {
-              papiConfig = this.scenario.getPapifyConfigManager().getCorePapifyConfigGroupActor(actorNameSearch);
-              statuses.put(eventName, PAPIEventStatus.YES);
-              for (PapifyEventListTreeElement treeElement : this.elementList) {
-                if (treeElement.label.equals(actorNameSearch)) {
-                  treeElement.PAPIStatuses.put(eventName, PAPIEventStatus.YES);
-                }
-              }
 
-              if (!timing) {
-                papiConfig.addPAPIEvent(compName, event);
-              } else {
-                papiConfig.addPAPIEvent("Timing", event);
+        if (!timing) {
+          papiConfig.addPAPIEvent(compName, event);
+        } else {
+          papiConfig.addPAPIEvent("Timing", event);
+        }
+        statuses.put(eventName, PAPIEventStatus.YES);
+        if (hasChildren(actorInstance)) {
+          final Set<String> actorPaths = getChildren(actorInstance);
+          for (String oneActorPath : actorPaths) {
+            for (PapifyEventListTreeElement treeElement : this.elementList) {
+              if (treeElement.actorPath.equals(oneActorPath)) {
+                treeElement.PAPIStatuses.put(eventName, PAPIEventStatus.YES);
+                papiConfig = this.scenario.getPapifyConfigManager().getCorePapifyConfigGroupActor(oneActorPath);
+                if (!timing) {
+                  papiConfig.addPAPIEvent(compName, event);
+                } else {
+                  papiConfig.addPAPIEvent("Timing", event);
+                }
+                break;
               }
             }
-          }
-          if (actorName.equals(actorNameSearch)) {
-            statuses.put(eventName, PAPIEventStatus.YES);
-            if (!timing) {
-              papiConfig.addPAPIEvent(compName, event);
-            } else {
-              papiConfig.addPAPIEvent("Timing", event);
-            }
-            hierarchy = true;
-            hierarchyLevel = actorNamesAndLevels.get(actorName);
           }
         }
       }
@@ -351,6 +340,7 @@ public class PapifyCheckStateListener implements ISDFCheckStateListener {
         for (PapifyEventListTreeElement treeElement : this.elementList) {
           viewer.getViewer().update(treeElement, null);
         }
+        break;
       }
     }
   }
@@ -457,120 +447,6 @@ public class PapifyCheckStateListener implements ISDFCheckStateListener {
   }
 
   /**
-   *
-   */
-  public Set<String> getChildrenNames(PiGraph graph) {
-
-    final Set<String> result = new LinkedHashSet<>();
-    for (final AbstractActor vertex : graph.getAllActors()) {
-      if (vertex instanceof PiGraph) {
-        result.add(vertex.getName());
-        result.addAll(getChildrenNames((PiGraph) vertex));
-      } else if (!(vertex instanceof DataInputInterface) && !(vertex instanceof DataOutputInterface)
-          && !(vertex instanceof BroadcastActor) && !(vertex instanceof JoinActor) && !(vertex instanceof ForkActor)
-          && !(vertex instanceof RoundBufferActor) && !(vertex instanceof DelayActor)) {
-        result.add(vertex.getName());
-      }
-    }
-    return result;
-  }
-
-  /**
-   *
-   */
-  public Map<String, Integer> getChildrenNamesAndLevels(PiGraph graph, int count) {
-
-    int countNew = count + 1;
-    final Map<String, Integer> result = new LinkedHashMap<>();
-    for (final AbstractActor vertex : graph.getAllActors()) {
-      if (vertex instanceof PiGraph) {
-        if (!result.containsKey(vertex.getName())) {
-          result.put(vertex.getName(), countNew);
-        }
-        Map<String, Integer> resultAux = getChildrenNamesAndLevels((PiGraph) vertex, countNew);
-        for (String actorName : resultAux.keySet()) {
-          if (!result.containsKey(actorName)) {
-            result.put(actorName, resultAux.get(actorName));
-          }
-        }
-      } else if (!(vertex instanceof DataInputInterface) && !(vertex instanceof DataOutputInterface)
-          && !(vertex instanceof BroadcastActor) && !(vertex instanceof JoinActor) && !(vertex instanceof ForkActor)
-          && !(vertex instanceof RoundBufferActor) && !(vertex instanceof DelayActor)) {
-        if (!result.containsKey(vertex.getName())) {
-          result.put(vertex.getName(), countNew);
-        }
-      }
-    }
-    return result;
-  }
-
-  /**
-   *
-   */
-  public Map<String, Integer> getAllActorNamesAndLevels() {
-
-    final Map<String, Integer> result = new LinkedHashMap<>();
-    int count = 1;
-    if (this.scenario.isPISDFScenario()) {
-      final PiGraph graph = PiParser.getPiGraph(this.scenario.getAlgorithmURL());
-      if (graph != null) {
-        if (!result.containsKey(graph.getName())) {
-          result.put(graph.getName(), count);
-        }
-        if (graph instanceof PiGraph) {
-          Map<String, Integer> resultAux = getChildrenNamesAndLevels(graph, count);
-          for (String actorName : resultAux.keySet()) {
-            if (!result.containsKey(actorName)) {
-              result.put(actorName, resultAux.get(actorName));
-            }
-          }
-        }
-      }
-    } else if (this.scenario.isIBSDFScenario()) {
-      try {
-        final SDFGraph graph = ScenarioParser.getSDFGraph(this.scenario.getAlgorithmURL());
-        for (final SDFAbstractVertex vertex : graph.vertexSet()) {
-          if (!result.containsKey(vertex.getName())) {
-            result.put(vertex.getName(), count);
-          }
-        }
-      } catch (final InvalidModelException e) {
-        e.printStackTrace();
-      }
-    }
-
-    return result;
-  }
-
-  /**
-   *
-   */
-  public Set<String> getAllActorNames() {
-
-    final Set<String> result = new LinkedHashSet<>();
-    if (this.scenario.isPISDFScenario()) {
-      final PiGraph graph = PiParser.getPiGraph(this.scenario.getAlgorithmURL());
-      if (graph != null) {
-        result.add(graph.getName());
-        if (graph instanceof PiGraph) {
-          result.addAll(getChildrenNames(graph));
-        }
-      }
-    } else if (this.scenario.isIBSDFScenario()) {
-      try {
-        final SDFGraph graph = ScenarioParser.getSDFGraph(this.scenario.getAlgorithmURL());
-        for (final SDFAbstractVertex vertex : graph.vertexSet()) {
-          result.add(vertex.getName());
-        }
-      } catch (final InvalidModelException e) {
-        e.printStackTrace();
-      }
-    }
-
-    return result;
-  }
-
-  /**
    * 
    */
   public void updateEvents() {
@@ -582,9 +458,7 @@ public class PapifyCheckStateListener implements ISDFCheckStateListener {
       Map<String, Set<PapiEvent>> actorEventMap = papiConfig.getPAPIEvents();
 
       for (PapifyEventListTreeElement treeElement : this.elementList) {
-        System.out.println("Looking for " + actorPath + " --> this treeElement is " + treeElement.actorPath);
         if (treeElement.actorPath.equals(actorPath)) {
-          System.out.println("Match!");
           for (String comp : actorEventMap.keySet()) {
             for (PapiEvent oneEvent : actorEventMap.get(comp)) {
               treeElement.PAPIStatuses.put(oneEvent.getName(), PAPIEventStatus.YES);
@@ -595,6 +469,113 @@ public class PapifyCheckStateListener implements ISDFCheckStateListener {
         }
       }
     }
+  }
+
+  /**
+   * 
+   */
+  public boolean hasChildren(Object actorInstance) {
+    boolean hasChildren = false;
+    if (this.scenario.isIBSDFScenario()) {
+      if (actorInstance instanceof SDFGraph) {
+        final SDFGraph graph = (SDFGraph) actorInstance;
+        hasChildren = !graph.vertexSet().isEmpty();
+      } else if (actorInstance instanceof HierarchicalSDFVertex) {
+        final SDFAbstractVertex sdfVertex = ((HierarchicalSDFVertex) actorInstance).getStoredVertex();
+        if (sdfVertex instanceof SDFVertex) {
+          final SDFVertex vertex = (SDFVertex) sdfVertex;
+          hasChildren = vertex.getRefinement() != null;
+        }
+      }
+    } else if (this.scenario.isPISDFScenario()) {
+      if (actorInstance instanceof PiGraph) {
+        final PiGraph graph = (PiGraph) actorInstance;
+        hasChildren = !graph.getActors().isEmpty();
+      } else if (actorInstance instanceof Actor) {
+        final Actor actor = (Actor) actorInstance;
+        hasChildren = actor.getRefinement() != null;
+      }
+    }
+    return hasChildren;
+  }
+
+  /**
+   * 
+   */
+  public Set<String> getChildren(final Object parentElement) {
+    Set<String> table = new LinkedHashSet<>();
+    if (this.scenario.isIBSDFScenario()) {
+      if (parentElement instanceof SDFGraph) {
+        final SDFGraph graph = (SDFGraph) parentElement;
+
+        // Some types of vertices are ignored in the constraints view
+        table.addAll(filterIBSDFChildren(graph.vertexSet()));
+      } else if (parentElement instanceof HierarchicalSDFVertex) {
+        final HierarchicalSDFVertex vertex = (HierarchicalSDFVertex) parentElement;
+        final IRefinement refinement = vertex.getStoredVertex().getRefinement();
+
+        if ((refinement != null) && (refinement instanceof SDFGraph)) {
+          final SDFGraph graph = (SDFGraph) refinement;
+          table.addAll(filterIBSDFChildren(graph.vertexSet()));
+        }
+      }
+    } else if (this.scenario.isPISDFScenario()) {
+      if (parentElement instanceof PiGraph) {
+        final PiGraph graph = (PiGraph) parentElement;
+        // Some types of vertices are ignored in the constraints view
+        table.addAll(filterPISDFChildren(graph.getAllActors()));
+      } else if (parentElement instanceof Actor) {
+        final Actor actor = (Actor) parentElement;
+        if (actor.isHierarchical()) {
+          final PiGraph subGraph = actor.getSubGraph();
+          table.addAll(filterPISDFChildren(subGraph.getActors()));
+        }
+      }
+    }
+
+    return table;
+  }
+
+  /**
+   * Filters the children to display in the tree.
+   *
+   * @param vertices
+   *          the vertices
+   * @return the sets the
+   */
+  public Set<String> filterPISDFChildren(final EList<AbstractActor> vertices) {
+    final Set<String> actorPaths = new LinkedHashSet<>();
+    for (final AbstractActor actor : vertices) {
+      // TODO: Filter if needed
+      if (!(actor instanceof DataInputInterface) && !(actor instanceof DataOutputInterface)
+          && !(actor instanceof BroadcastActor) && !(actor instanceof JoinActor) && !(actor instanceof ForkActor)
+          && !(actor instanceof RoundBufferActor) && !(actor instanceof DelayActor)) {
+        final String elementActor = actor.getVertexPath();
+        actorPaths.add(elementActor);
+
+      }
+    }
+    return actorPaths;
+  }
+
+  /**
+   * Filter IBSDF children.
+   *
+   * @param children
+   *          the children
+   * @return the sets the
+   */
+  public Set<String> filterIBSDFChildren(final Set<SDFAbstractVertex> children) {
+
+    final Set<String> actorPaths = new LinkedHashSet<>();
+
+    for (final SDFAbstractVertex v : children) {
+      if (v.getKind().equalsIgnoreCase("vertex")) {
+        actorPaths.add(v.getName());
+      }
+    }
+
+    return actorPaths;
   }
 
   /**

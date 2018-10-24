@@ -589,7 +589,8 @@ public class PapifyPage extends FormPage implements IPropertyListener {
 
     this.actorTreeViewer.setInput(this.scenario);
 
-    final GridData gd = new GridData(GridData.VERTICAL_ALIGN_BEGINNING | GridData.FILL_HORIZONTAL);
+    final GridData gd = new GridData(
+        GridData.VERTICAL_ALIGN_BEGINNING | GridData.FILL_HORIZONTAL | GridData.FILL_VERTICAL);
     gd.heightHint = 140;
     this.actorTreeViewer.getTree().setLayoutData(gd);
     // toolkit.paintBordersFor(parent);

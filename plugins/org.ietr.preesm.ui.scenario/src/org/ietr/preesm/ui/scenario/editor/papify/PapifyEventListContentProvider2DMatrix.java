@@ -53,7 +53,14 @@ import org.ietr.preesm.core.scenario.PreesmScenario;
 import org.ietr.preesm.core.scenario.serialize.ScenarioParser;
 import org.ietr.preesm.experiment.model.pimm.AbstractActor;
 import org.ietr.preesm.experiment.model.pimm.Actor;
+import org.ietr.preesm.experiment.model.pimm.BroadcastActor;
+import org.ietr.preesm.experiment.model.pimm.DataInputInterface;
+import org.ietr.preesm.experiment.model.pimm.DataOutputInterface;
+import org.ietr.preesm.experiment.model.pimm.DelayActor;
+import org.ietr.preesm.experiment.model.pimm.ForkActor;
+import org.ietr.preesm.experiment.model.pimm.JoinActor;
 import org.ietr.preesm.experiment.model.pimm.PiGraph;
+import org.ietr.preesm.experiment.model.pimm.RoundBufferActor;
 import org.ietr.preesm.experiment.model.pimm.serialize.PiParser;
 import org.ietr.preesm.ui.scenario.editor.HierarchicalSDFVertex;
 import org.ietr.preesm.ui.scenario.editor.PathComparator;
@@ -282,10 +289,15 @@ public class PapifyEventListContentProvider2DMatrix implements ITreeContentProvi
     final Set<PapifyEventListTreeElement> papifyTreeElements = new LinkedHashSet<>();
     for (final AbstractActor actor : vertices) {
       // TODO: Filter if needed
-      result.add(actor);
-      final PapifyEventListTreeElement elementActor = new PapifyEventListTreeElement(actor);
-      this.checkStateListener.addEventListTreeElement(elementActor);
-      papifyTreeElements.add(elementActor);
+      if (!(actor instanceof DataInputInterface) && !(actor instanceof DataOutputInterface)
+          && !(actor instanceof BroadcastActor) && !(actor instanceof JoinActor) && !(actor instanceof ForkActor)
+          && !(actor instanceof RoundBufferActor) && !(actor instanceof DelayActor)) {
+        result.add(actor);
+        final PapifyEventListTreeElement elementActor = new PapifyEventListTreeElement(actor);
+        this.checkStateListener.addEventListTreeElement(elementActor);
+        papifyTreeElements.add(elementActor);
+
+      }
     }
     return papifyTreeElements;
   }
@@ -324,6 +336,7 @@ public class PapifyEventListContentProvider2DMatrix implements ITreeContentProvi
    */
   public HierarchicalSDFVertex convertSDFChild(final SDFAbstractVertex child) {
     if (!this.correspondingVertexWithMap.containsKey(child.getInfo())) {
+      System.out.println(child.getName() + " is of kind " + child.getKind());
       this.correspondingVertexWithMap.put(child.getInfo(), new HierarchicalSDFVertex(child));
     }
 

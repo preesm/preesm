@@ -213,6 +213,18 @@ public class PapifyConfigActor {
   }
 
   /**
+   * Checks for Actor path.
+   *
+   * @param actorPath
+   *          the actor path
+   * @return true, if successful
+   */
+  public boolean isActorPath(final String actorPath) {
+
+    return actorPath.equals(this.actorPath);
+  }
+
+  /**
    * Checks for PAPI events.
    *
    * @param event

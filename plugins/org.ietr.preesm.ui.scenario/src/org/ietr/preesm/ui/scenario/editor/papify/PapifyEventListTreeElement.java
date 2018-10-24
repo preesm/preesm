@@ -106,8 +106,8 @@ class PapifyEventListTreeElement {
       this.label = ((HierarchicalSDFVertex) algorithmElement).getName();
       this.actorPath = ((HierarchicalSDFVertex) algorithmElement).getName();
     } else if (algorithmElement instanceof SDFGraph) {
-      this.label = "graph";
-      this.actorPath = "graph";
+      this.label = ((SDFGraph) algorithmElement).getName();
+      this.actorPath = ((SDFGraph) algorithmElement).getName();
     } else if (algorithmElement instanceof AbstractActor) {
       this.label = ((AbstractActor) algorithmElement).getName();
       this.actorPath = ((AbstractActor) algorithmElement).getVertexPath();

@@ -203,15 +203,15 @@ public class PapifyConfigManager {
   /**
    * Gets the op PapifyConfigActor group.
    *
-   * @param opId
-   *          the op id
+   * @param opPath
+   *          the op path
    * @return the op PapifyConfigActor groups
    */
-  public PapifyConfigActor getCorePapifyConfigGroupActor(final String opId) {
+  public PapifyConfigActor getCorePapifyConfigGroupActor(final String opPath) {
     PapifyConfigActor papifyConfigGroup = null;
 
     for (final PapifyConfigActor pg : this.papifyConfigGroupsActors) {
-      if (pg.isActorId(opId)) {
+      if (pg.isActorPath(opPath)) {
         papifyConfigGroup = pg;
       }
     }
