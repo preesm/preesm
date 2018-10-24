@@ -43,30 +43,14 @@ import java.io.IOException;
 import java.io.Writer;
 import java.util.LinkedHashSet;
 import java.util.Set;
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.parsers.ParserConfigurationException;
-import javax.xml.transform.OutputKeys;
-import javax.xml.transform.Transformer;
-import javax.xml.transform.TransformerConfigurationException;
-import javax.xml.transform.TransformerException;
-import javax.xml.transform.TransformerFactory;
-import javax.xml.transform.TransformerFactoryConfigurationError;
-import javax.xml.transform.dom.DOMSource;
-import javax.xml.transform.stream.StreamResult;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.graphiti.features.IFeatureProvider;
 import org.eclipse.graphiti.features.context.ICustomContext;
 import org.eclipse.graphiti.features.custom.AbstractCustomFeature;
 import org.eclipse.graphiti.mm.pictograms.PictogramElement;
-import org.ietr.preesm.experiment.model.pimm.AbstractActor;
-import org.ietr.preesm.experiment.model.pimm.Dependency;
-import org.ietr.preesm.experiment.model.pimm.Fifo;
-import org.ietr.preesm.experiment.model.pimm.Parameter;
 import org.ietr.preesm.experiment.model.pimm.PiGraph;
 import org.ietr.preesm.ui.pimm.util.PiMMUtil;
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
+import org.ietr.preesm.ui.utils.ErrorWithExceptionDialog;
 
 /**
  * The Class ExportSVGFeature.
@@ -137,90 +121,8 @@ public class ExportSVGFeature extends AbstractCustomFeature {
     final Object bo = getBusinessObjectForPictogramElement(pes[0]);
     final PiGraph graph = (PiGraph) bo;
 
-    exportPiGraphToSVG(graph);
-  }
-
-  private void exportPiGraphToSVG(final PiGraph graph) {
-    /* Create Document Builder */
-    final DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
-    DocumentBuilder builder;
-    try {
-      builder = dbf.newDocumentBuilder();
-    } catch (final ParserConfigurationException e) {
-
-      e.printStackTrace();
-      return;
-    }
-    final Document doc = builder.newDocument();
-
-    /* Populate XML Files with File Header */
-    final Element svg = doc.createElement("svg");
-    doc.appendChild(svg);
-    svg.setAttribute("font-family", "Arial");
-    svg.setAttribute("xmlns", "http://www.w3.org/2000/svg");
-
-    final Element defs = doc.createElement("defs");
-    svg.appendChild(defs);
-
-    final Element fifoMarker = doc.createElement("marker");
-    defs.appendChild(fifoMarker);
-    {
-      fifoMarker.setAttribute("id", "fifoEnd");
-      fifoMarker.setAttribute("markerWidth", "4");
-      fifoMarker.setAttribute("markerHeight", "4");
-      fifoMarker.setAttribute("refX", "4");
-      fifoMarker.setAttribute("refY", "2");
-      final Element polygon = doc.createElement("polygon");
-      fifoMarker.appendChild(polygon);
-      polygon.setAttribute("points", "0,0 5,2 0,4");
-      polygon.setAttribute("fill", "rgb(100, 100, 100)");
-      polygon.setAttribute("stroke-width", "none");
-    }
-
-    final Element depMarker = doc.createElement("marker");
-    defs.appendChild(depMarker);
-    {
-      depMarker.setAttribute("id", "depEnd");
-      depMarker.setAttribute("markerWidth", "4");
-      depMarker.setAttribute("markerHeight", "4");
-      depMarker.setAttribute("refX", "4");
-      depMarker.setAttribute("refY", "2");
-      final Element polygon = doc.createElement("polygon");
-      depMarker.appendChild(polygon);
-      polygon.setAttribute("points", "0,0 5,2 0,4");
-      polygon.setAttribute("fill", "rgb(98, 131, 167)");
-      polygon.setAttribute("stroke-width", "none");
-    }
-
-    /* Populate SVG File with Graph Data */
-    final SVGExporterSwitch visitor = new SVGExporterSwitch(this, doc, svg);
-    for (final Dependency d : graph.getDependencies()) {
-      visitor.doSwitch(d);
-    }
-    for (final Fifo f : graph.getFifos()) {
-      visitor.doSwitch(f);
-    }
-    for (final Parameter p : graph.getParameters()) {
-      visitor.doSwitch(p);
-    }
-    for (final AbstractActor aa : graph.getActors()) {
-      visitor.doSwitch(aa);
-    }
-
-    svg.setAttribute("width", "" + (visitor.getTotalWidth() + 20));
-    svg.setAttribute("height", "" + (visitor.getTotalHeight() + 20));
-
-    /* Write the SVG File */
-    Transformer tf;
-    try {
-      tf = TransformerFactory.newInstance().newTransformer();
-    } catch (TransformerConfigurationException | TransformerFactoryConfigurationError e) {
-      e.printStackTrace();
-      return;
-    }
-    tf.setOutputProperty(OutputKeys.ENCODING, "UTF-8");
-    tf.setOutputProperty(OutputKeys.INDENT, "yes");
-    tf.setOutputProperty("{http://xml.apache.org/xslt}indent-amount", "4");
+    final SVGExporterSwitch visitor = new SVGExporterSwitch(this);
+    final String svgContent = visitor.exportPiGraphToSVG(graph);
 
     /* Ask SVG File Location */
     final Set<String> fileExtensions = new LinkedHashSet<>();
@@ -233,15 +135,10 @@ public class ExportSVGFeature extends AbstractCustomFeature {
 
     final File svgFile = new File(path.toOSString());
     try (Writer out = new FileWriter(svgFile)) {
-      try {
-        tf.transform(new DOMSource(doc), new StreamResult(out));
-      } catch (final TransformerException e) {
-        e.printStackTrace();
-        return;
-      }
+      out.append(svgContent);
     } catch (final IOException e) {
-      e.printStackTrace();
-      return;
+      ErrorWithExceptionDialog.errorDialogWithStackTrace("Could not write SVG file", e);
     }
   }
+
 }

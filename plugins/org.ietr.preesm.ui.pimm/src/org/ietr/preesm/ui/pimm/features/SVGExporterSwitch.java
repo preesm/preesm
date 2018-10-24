@@ -1,8 +1,20 @@
 package org.ietr.preesm.ui.pimm.features;
 
+import java.io.BufferedOutputStream;
+import java.io.ByteArrayOutputStream;
 import java.util.Collections;
 import java.util.LinkedHashSet;
 import java.util.Set;
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.transform.OutputKeys;
+import javax.xml.transform.Transformer;
+import javax.xml.transform.TransformerException;
+import javax.xml.transform.TransformerFactory;
+import javax.xml.transform.TransformerFactoryConfigurationError;
+import javax.xml.transform.dom.DOMSource;
+import javax.xml.transform.stream.StreamResult;
 import org.eclipse.emf.common.util.EList;
 import org.eclipse.graphiti.datatypes.ILocation;
 import org.eclipse.graphiti.mm.algorithms.Ellipse;
@@ -19,6 +31,7 @@ import org.eclipse.graphiti.mm.pictograms.PictogramElement;
 import org.eclipse.graphiti.mm.pictograms.Shape;
 import org.eclipse.graphiti.services.Graphiti;
 import org.eclipse.graphiti.ui.services.GraphitiUi;
+import org.ietr.preesm.experiment.model.pimm.AbstractActor;
 import org.ietr.preesm.experiment.model.pimm.AbstractVertex;
 import org.ietr.preesm.experiment.model.pimm.ConfigInputInterface;
 import org.ietr.preesm.experiment.model.pimm.ConfigInputPort;
@@ -32,8 +45,11 @@ import org.ietr.preesm.experiment.model.pimm.Dependency;
 import org.ietr.preesm.experiment.model.pimm.ExecutableActor;
 import org.ietr.preesm.experiment.model.pimm.Fifo;
 import org.ietr.preesm.experiment.model.pimm.Parameter;
+import org.ietr.preesm.experiment.model.pimm.PiGraph;
 import org.ietr.preesm.experiment.model.pimm.Port;
 import org.ietr.preesm.experiment.model.pimm.util.PiMMSwitch;
+import org.ietr.preesm.ui.PreesmUIException;
+import org.ietr.preesm.ui.utils.ErrorWithExceptionDialog;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
@@ -87,12 +103,101 @@ public class SVGExporterSwitch extends PiMMSwitch<Integer> {
    * Instantiates a new SVG exporter switch.
    *
    */
-  public SVGExporterSwitch(ExportSVGFeature exportSVGFeature, final Document doc, final Element svg) {
+  public SVGExporterSwitch(ExportSVGFeature exportSVGFeature) {
     this.exportSVGFeature = exportSVGFeature;
-    this.doc = doc;
-    this.svg = svg;
     this.totalWidth = 0;
     this.totalHeight = 0;
+  }
+
+  /**
+   *
+   */
+  public String exportPiGraphToSVG(final PiGraph graph) {
+    /* Create Document Builder */
+    final DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
+    DocumentBuilder builder;
+    try {
+      builder = dbf.newDocumentBuilder();
+    } catch (final ParserConfigurationException e) {
+      final String message = "Could not create new document";
+      ErrorWithExceptionDialog.errorDialogWithStackTrace(message, e);
+      throw new PreesmUIException(message, e);
+    }
+    this.doc = builder.newDocument();
+
+    /* Populate XML Files with File Header */
+    this.svg = doc.createElement("svg");
+    doc.appendChild(svg);
+    svg.setAttribute("font-family", "Arial");
+    svg.setAttribute("xmlns", "http://www.w3.org/2000/svg");
+
+    final Element defs = doc.createElement("defs");
+    svg.appendChild(defs);
+
+    final Element fifoMarker = doc.createElement("marker");
+    defs.appendChild(fifoMarker);
+    {
+      fifoMarker.setAttribute("id", "fifoEnd");
+      fifoMarker.setAttribute("markerWidth", "4");
+      fifoMarker.setAttribute("markerHeight", "4");
+      fifoMarker.setAttribute("refX", "4");
+      fifoMarker.setAttribute("refY", "2");
+      final Element polygon = doc.createElement("polygon");
+      fifoMarker.appendChild(polygon);
+      polygon.setAttribute("points", "0,0 5,2 0,4");
+      polygon.setAttribute("fill", "rgb(100, 100, 100)");
+      polygon.setAttribute("stroke-width", "none");
+    }
+
+    final Element depMarker = doc.createElement("marker");
+    defs.appendChild(depMarker);
+    {
+      depMarker.setAttribute("id", "depEnd");
+      depMarker.setAttribute("markerWidth", "4");
+      depMarker.setAttribute("markerHeight", "4");
+      depMarker.setAttribute("refX", "4");
+      depMarker.setAttribute("refY", "2");
+      final Element polygon = doc.createElement("polygon");
+      depMarker.appendChild(polygon);
+      polygon.setAttribute("points", "0,0 5,2 0,4");
+      polygon.setAttribute("fill", "rgb(98, 131, 167)");
+      polygon.setAttribute("stroke-width", "none");
+    }
+
+    /* Populate SVG File with Graph Data */
+    for (final Dependency d : graph.getDependencies()) {
+      doSwitch(d);
+    }
+    for (final Fifo f : graph.getFifos()) {
+      doSwitch(f);
+    }
+    for (final Parameter p : graph.getParameters()) {
+      doSwitch(p);
+    }
+    for (final AbstractActor aa : graph.getActors()) {
+      doSwitch(aa);
+    }
+
+    svg.setAttribute("width", "" + (getTotalWidth() + 20));
+    svg.setAttribute("height", "" + (getTotalHeight() + 20));
+
+    /* Write the SVG to String */
+    Transformer tf;
+    try {
+      tf = TransformerFactory.newInstance().newTransformer();
+      tf.setOutputProperty(OutputKeys.ENCODING, "UTF-8");
+      tf.setOutputProperty(OutputKeys.INDENT, "yes");
+      tf.setOutputProperty("{http://xml.apache.org/xslt}indent-amount", "4");
+
+      final ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+      final BufferedOutputStream bufferedOutputStream = new BufferedOutputStream(byteArrayOutputStream);
+      tf.transform(new DOMSource(doc), new StreamResult(bufferedOutputStream));
+      return new String(byteArrayOutputStream.toByteArray());
+    } catch (TransformerFactoryConfigurationError | TransformerException e) {
+      final String message = "Could not transform SVG to String";
+      ErrorWithExceptionDialog.errorDialogWithStackTrace(message, e);
+      throw new PreesmUIException(message, e);
+    }
   }
 
   /*
