@@ -161,7 +161,7 @@ public class PapifyEngine {
                   }
                 }
                 if (!configAdded) {
-                  PapifyConfigActor actorConfigToAdd = new PapifyConfigActor(configToAdd);
+                  PapifyConfigActor actorConfigToAdd = new PapifyConfigActor(configToAdd, configToAdd);
                   actorConfigToAdd.addPAPIEventSet(compNewConfig, config.getPAPIEvents().get(compNewConfig));
                   configSet.add(actorConfigToAdd);
                   counterConfigs = counterConfigs + 1;

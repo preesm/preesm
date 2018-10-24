@@ -77,10 +77,11 @@ import org.ietr.preesm.experiment.model.pimm.JoinActor;
 import org.ietr.preesm.experiment.model.pimm.PiGraph;
 import org.ietr.preesm.experiment.model.pimm.RoundBufferActor;
 import org.ietr.preesm.experiment.model.pimm.serialize.PiParser;
+import org.ietr.preesm.ui.scenario.editor.HierarchicalSDFVertex;
 import org.ietr.preesm.ui.scenario.editor.ISDFCheckStateListener;
 import org.ietr.preesm.ui.scenario.editor.Messages;
 import org.ietr.preesm.ui.scenario.editor.PreesmAlgorithmTreeContentProvider;
-import org.ietr.preesm.ui.scenario.editor.papify.PapifyListTreeElement.PAPIStatus;
+import org.ietr.preesm.ui.scenario.editor.papify.PapifyEventListTreeElement.PAPIEventStatus;
 
 // TODO: Auto-generated Javadoc
 /**
@@ -98,9 +99,9 @@ public class PapifyCheckStateListener implements ISDFCheckStateListener {
   /** Constraints page used as a property listener to change the dirty state. */
   private IPropertyListener propertyListener = null;
 
-  private Set<PapifyActorListContentProvider2DMatrixES> editingSupports = new LinkedHashSet<>();
+  private Set<PapifyEventListContentProvider2DMatrixES> editingSupports = new LinkedHashSet<>();
 
-  private Set<PapifyListTreeElement> elementList;
+  private Set<PapifyEventListTreeElement> elementList;
 
   /**
    * Instantiates a new constraints check state listener.
@@ -111,6 +112,17 @@ public class PapifyCheckStateListener implements ISDFCheckStateListener {
   public PapifyCheckStateListener(final Composite container, final PreesmScenario scenario) {
     super();
     this.scenario = scenario;
+    this.elementList = new LinkedHashSet<>();
+  }
+
+  /**
+   * Add a new element to the tree.
+   *
+   */
+  public void addEventListTreeElement(final PapifyEventListTreeElement element) {
+    if (!this.elementList.contains(element)) {
+      this.elementList.add(element);
+    }
   }
 
   /**
@@ -118,14 +130,23 @@ public class PapifyCheckStateListener implements ISDFCheckStateListener {
    *
    * @return the Papi Component list
    */
-  public Set<PapifyListTreeElement> getComponents() {
+  public Set<PapifyEventListTreeElement> getComponents() {
     return this.elementList;
+  }
+
+  /**
+   * Clear the checkStateListener for the events table.
+   *
+   */
+  public void clearEvents() {
+    this.editingSupports = new LinkedHashSet<>();
+    this.elementList = new LinkedHashSet<>();
   }
 
   /**
    * 
    */
-  public void addEstatusSupport(PapifyActorListContentProvider2DMatrixES editingSupport) {
+  public void addEstatusSupport(PapifyEventListContentProvider2DMatrixES editingSupport) {
     if (editingSupport != null) {
       this.editingSupports.add(editingSupport);
     }
@@ -134,7 +155,7 @@ public class PapifyCheckStateListener implements ISDFCheckStateListener {
   /**
    * 
    */
-  public void removeEventfromActor(String actorName, String eventName) {
+  public void removeEventfromActor(Object actorInstance, String eventName) {
     // The timing event
     PapiEvent timingEvent = new PapiEvent();
     ArrayList<PapiEventModifier> modifTimingList = new ArrayList<>();
@@ -143,6 +164,16 @@ public class PapifyCheckStateListener implements ISDFCheckStateListener {
     timingEvent.setIndex(9999);
     timingEvent.setModifiers(modifTimingList);
     boolean timing = false;
+
+    String actorName = "";
+
+    if (actorInstance instanceof HierarchicalSDFVertex) {
+      actorName = ((HierarchicalSDFVertex) actorInstance).getName();
+    } else if (actorInstance instanceof SDFGraph) {
+      actorName = "graph";
+    } else if (actorInstance instanceof AbstractActor) {
+      actorName = ((AbstractActor) actorInstance).getName();
+    }
 
     if (!actorName.equals("") && !eventName.equals("")) {
 
@@ -173,9 +204,9 @@ public class PapifyCheckStateListener implements ISDFCheckStateListener {
 
       boolean hierarchy = false;
       int hierarchyLevel = 0;
-      Map<String, PAPIStatus> statuses = new LinkedHashMap<>();
-      for (PapifyListTreeElement treeElement : this.elementList) {
-        if (treeElement.label.equals(eventName)) {
+      Map<String, PAPIEventStatus> statuses = new LinkedHashMap<>();
+      for (PapifyEventListTreeElement treeElement : this.elementList) {
+        if (treeElement.label.equals(actorName)) {
           statuses = treeElement.PAPIStatuses;
         }
       }
@@ -187,7 +218,12 @@ public class PapifyCheckStateListener implements ISDFCheckStateListener {
               hierarchy = false;
             } else {
               papiConfig = this.scenario.getPapifyConfigManager().getCorePapifyConfigGroupActor(actorNameSearch);
-              statuses.put(actorNameSearch, PAPIStatus.NO);
+              statuses.put(eventName, PAPIEventStatus.NO);
+              for (PapifyEventListTreeElement treeElement : this.elementList) {
+                if (treeElement.label.equals(actorNameSearch)) {
+                  treeElement.PAPIStatuses.put(eventName, PAPIEventStatus.NO);
+                }
+              }
               if (!timing) {
                 papiConfig.removePAPIEvent(compName, event);
               } else {
@@ -196,7 +232,7 @@ public class PapifyCheckStateListener implements ISDFCheckStateListener {
             }
           }
           if (actorName.equals(actorNameSearch)) {
-            statuses.put(actorNameSearch, PAPIStatus.NO);
+            statuses.put(eventName, PAPIEventStatus.NO);
             if (!timing) {
               papiConfig.removePAPIEvent(compName, event);
             } else {
@@ -213,7 +249,7 @@ public class PapifyCheckStateListener implements ISDFCheckStateListener {
   /**
    * 
    */
-  public void addEventtoActor(String actorName, String eventName) {
+  public void addEventtoActor(Object actorInstance, String eventName) {
     // The timing event
     PapiEvent timingEvent = new PapiEvent();
     ArrayList<PapiEventModifier> modifTimingList = new ArrayList<>();
@@ -222,6 +258,16 @@ public class PapifyCheckStateListener implements ISDFCheckStateListener {
     timingEvent.setIndex(9999);
     timingEvent.setModifiers(modifTimingList);
     boolean timing = false;
+
+    String actorName = "";
+
+    if (actorInstance instanceof HierarchicalSDFVertex) {
+      actorName = ((HierarchicalSDFVertex) actorInstance).getName();
+    } else if (actorInstance instanceof SDFGraph) {
+      actorName = "graph";
+    } else if (actorInstance instanceof AbstractActor) {
+      actorName = ((AbstractActor) actorInstance).getName();
+    }
 
     if (!actorName.equals("") && !eventName.equals("")) {
 
@@ -252,9 +298,9 @@ public class PapifyCheckStateListener implements ISDFCheckStateListener {
 
       boolean hierarchy = false;
       int hierarchyLevel = 0;
-      Map<String, PAPIStatus> statuses = new LinkedHashMap<>();
-      for (PapifyListTreeElement treeElement : this.elementList) {
-        if (treeElement.label.equals(eventName)) {
+      Map<String, PAPIEventStatus> statuses = new LinkedHashMap<>();
+      for (PapifyEventListTreeElement treeElement : this.elementList) {
+        if (treeElement.label.equals(actorName)) {
           statuses = treeElement.PAPIStatuses;
         }
       }
@@ -266,7 +312,13 @@ public class PapifyCheckStateListener implements ISDFCheckStateListener {
               hierarchy = false;
             } else {
               papiConfig = this.scenario.getPapifyConfigManager().getCorePapifyConfigGroupActor(actorNameSearch);
-              statuses.put(actorNameSearch, PAPIStatus.YES);
+              statuses.put(eventName, PAPIEventStatus.YES);
+              for (PapifyEventListTreeElement treeElement : this.elementList) {
+                if (treeElement.label.equals(actorNameSearch)) {
+                  treeElement.PAPIStatuses.put(eventName, PAPIEventStatus.YES);
+                }
+              }
+
               if (!timing) {
                 papiConfig.addPAPIEvent(compName, event);
               } else {
@@ -275,7 +327,7 @@ public class PapifyCheckStateListener implements ISDFCheckStateListener {
             }
           }
           if (actorName.equals(actorNameSearch)) {
-            statuses.put(actorNameSearch, PAPIStatus.YES);
+            statuses.put(eventName, PAPIEventStatus.YES);
             if (!timing) {
               papiConfig.addPAPIEvent(compName, event);
             } else {
@@ -292,11 +344,13 @@ public class PapifyCheckStateListener implements ISDFCheckStateListener {
   /**
    * 
    */
-  public void updateView() {
+  public void updateView(String event) {
 
-    for (PapifyActorListContentProvider2DMatrixES viewer : this.editingSupports) {
-      for (PapifyListTreeElement treeElement : this.elementList) {
-        viewer.getViewer().update(treeElement, null);
+    for (PapifyEventListContentProvider2DMatrixES viewer : this.editingSupports) {
+      if (viewer.eventName.equals(event)) {
+        for (PapifyEventListTreeElement treeElement : this.elementList) {
+          viewer.getViewer().update(treeElement, null);
+        }
       }
     }
   }
@@ -514,6 +568,33 @@ public class PapifyCheckStateListener implements ISDFCheckStateListener {
     }
 
     return result;
+  }
+
+  /**
+   * 
+   */
+  public void updateEvents() {
+
+    Set<PapifyConfigActor> papiConfigs = this.scenario.getPapifyConfigManager().getPapifyConfigGroupsActors();
+
+    for (PapifyConfigActor papiConfig : papiConfigs) {
+      String actorPath = papiConfig.getActorPath();
+      Map<String, Set<PapiEvent>> actorEventMap = papiConfig.getPAPIEvents();
+
+      for (PapifyEventListTreeElement treeElement : this.elementList) {
+        System.out.println("Looking for " + actorPath + " --> this treeElement is " + treeElement.actorPath);
+        if (treeElement.actorPath.equals(actorPath)) {
+          System.out.println("Match!");
+          for (String comp : actorEventMap.keySet()) {
+            for (PapiEvent oneEvent : actorEventMap.get(comp)) {
+              treeElement.PAPIStatuses.put(oneEvent.getName(), PAPIEventStatus.YES);
+              updateView(oneEvent.getName());
+            }
+          }
+          break;
+        }
+      }
+    }
   }
 
   /**

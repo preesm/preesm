@@ -40,12 +40,9 @@ package org.ietr.preesm.ui.scenario.editor.papify;
 import java.util.Map;
 import org.eclipse.jface.viewers.ColumnLabelProvider;
 import org.eclipse.swt.graphics.Image;
-import org.ietr.dftools.algorithm.model.sdf.SDFGraph;
 import org.ietr.preesm.core.scenario.PreesmScenario;
 import org.ietr.preesm.core.scenario.papi.PapifyConfigActor;
-import org.ietr.preesm.experiment.model.pimm.AbstractActor;
-import org.ietr.preesm.ui.scenario.editor.HierarchicalSDFVertex;
-import org.ietr.preesm.ui.scenario.editor.papify.PapifyListTreeElement.PAPIStatus;
+import org.ietr.preesm.ui.scenario.editor.papify.PapifyEventListTreeElement.PAPIEventStatus;
 
 // TODO: Auto-generated Javadoc
 /**
@@ -60,35 +57,39 @@ import org.ietr.preesm.ui.scenario.editor.papify.PapifyListTreeElement.PAPIStatu
  *
  */
 
-class PapifyActorListContentProvider2DMatrixCLP extends ColumnLabelProvider {
+class PapifyEventListContentProvider2DMatrixCLP extends ColumnLabelProvider {
 
   /** Currently edited scenario. */
-  private PreesmScenario scenario = null;
-  String                 actorName;
+  private PreesmScenario   scenario           = null;
+  String                   eventName;
+  PapifyCheckStateListener checkStateListener = null;
 
-  public PapifyActorListContentProvider2DMatrixCLP(final PreesmScenario scenario, final String name) {
-    this.actorName = name;
+  public PapifyEventListContentProvider2DMatrixCLP(final PreesmScenario scenario, final String eventName,
+      final PapifyCheckStateListener listener) {
+    this.eventName = eventName;
     this.scenario = scenario;
+    this.checkStateListener = listener;
   }
 
   @Override
   public String getText(final Object element) {
-    if (element instanceof PapifyListTreeElement) {
-      final PapifyListTreeElement treeElement = (PapifyListTreeElement) element;
-      final Map<String, PAPIStatus> statuses = treeElement.PAPIStatuses;
-      if (!statuses.containsKey(this.actorName)) {
-        statuses.put(this.actorName, PAPIStatus.NO);
-        if (this.scenario.getPapifyConfigManager().getCorePapifyConfigGroupActor(this.actorName) == null) {
-          this.scenario.getPapifyConfigManager().addPapifyConfigActorGroup(new PapifyConfigActor(this.actorName));
+    if (element instanceof PapifyEventListTreeElement) {
+      final PapifyEventListTreeElement treeElement = (PapifyEventListTreeElement) element;
+      String actorName = treeElement.label;
+      String actorPath = treeElement.actorPath;
+      if (this.eventName.equals("First_column")) {
+        return actorName;
+      }
+
+      final Map<String, PAPIEventStatus> statuses = treeElement.PAPIStatuses;
+      if (!statuses.containsKey(this.eventName)) {
+        statuses.put(this.eventName, PAPIEventStatus.NO);
+        if (this.scenario.getPapifyConfigManager().getCorePapifyConfigGroupActor(actorName) == null) {
+          this.scenario.getPapifyConfigManager().addPapifyConfigActorGroup(new PapifyConfigActor(actorName, actorPath));
         }
       }
-      return statuses.get(this.actorName).toString();
-    } else if (element instanceof HierarchicalSDFVertex) {
-      return ((HierarchicalSDFVertex) element).getName();
-    } else if (element instanceof SDFGraph) {
-      return "graph";
-    } else if (element instanceof AbstractActor) {
-      return ((AbstractActor) element).getName();
+      return statuses.get(this.eventName).toString();
+
     } else {
       return "ERROR";
     }
@@ -96,11 +97,11 @@ class PapifyActorListContentProvider2DMatrixCLP extends ColumnLabelProvider {
 
   @Override
   public Image getImage(final Object element) {
-    if (element instanceof PapifyListTreeElement) {
-      final PapifyListTreeElement treeElement = (PapifyListTreeElement) element;
-      final Map<String, PAPIStatus> statuses = treeElement.PAPIStatuses;
-      if (statuses.containsKey(this.actorName)) {
-        return treeElement.getImage(this.actorName);
+    if (element instanceof PapifyEventListTreeElement) {
+      final PapifyEventListTreeElement treeElement = (PapifyEventListTreeElement) element;
+      final Map<String, PAPIEventStatus> statuses = treeElement.PAPIStatuses;
+      if (statuses.containsKey(this.eventName)) {
+        return treeElement.getImage(this.eventName);
       }
     }
     return null;

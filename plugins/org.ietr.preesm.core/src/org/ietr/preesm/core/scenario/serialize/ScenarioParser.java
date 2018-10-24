@@ -798,33 +798,38 @@ public class ScenarioParser {
   private PapifyConfigActor getPapifyConfigActor(final Element papifyConfigElt) {
 
     Node node = papifyConfigElt.getFirstChild();
-    PapifyConfigActor pc = null;
+    PapifyConfigActor pc = new PapifyConfigActor();
 
     while (node != null) {
       if (node instanceof Element) {
         final Element elt = (Element) node;
+        final String type = elt.getTagName();
+        String actorPath = "";
+        String actorId = "";
+        if (type.equals("actorPath")) {
+          actorPath = elt.getAttribute("actorPath");
+          pc.addActorPath(actorPath);
+        } else if (type.equals("actorId")) {
+          actorId = elt.getAttribute("actorId");
+          pc.addActorId(actorId);
+          Node nodeEvents = node.getFirstChild();
+          while (nodeEvents != null) {
 
-        final String actorId = elt.getAttribute("actorId");
-
-        pc = new PapifyConfigActor(actorId);
-
-        Node nodeEvents = node.getFirstChild();
-
-        while (nodeEvents != null) {
-
-          if (nodeEvents instanceof Element) {
-            final Element eltEvents = (Element) nodeEvents;
-            final String typeEvents = eltEvents.getTagName();
-            if (typeEvents.equals("component")) {
-              final String component = eltEvents.getAttribute("component");
-              final Set<PapiEvent> eventSet = new LinkedHashSet<>();
-              final List<PapiEvent> eventList = getPapifyEvents(eltEvents);
-              eventSet.addAll(eventList);
-              pc.addPAPIEventSet(component, eventSet);
+            if (nodeEvents instanceof Element) {
+              final Element eltEvents = (Element) nodeEvents;
+              final String typeEvents = eltEvents.getTagName();
+              if (typeEvents.equals("component")) {
+                final String component = eltEvents.getAttribute("component");
+                final Set<PapiEvent> eventSet = new LinkedHashSet<>();
+                final List<PapiEvent> eventList = getPapifyEvents(eltEvents);
+                eventSet.addAll(eventList);
+                pc.addPAPIEventSet(component, eventSet);
+              }
             }
+            nodeEvents = nodeEvents.getNextSibling();
           }
-          nodeEvents = nodeEvents.getNextSibling();
         }
+
       }
       node = node.getNextSibling();
     }

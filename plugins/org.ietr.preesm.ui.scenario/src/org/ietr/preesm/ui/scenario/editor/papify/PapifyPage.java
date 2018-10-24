@@ -38,6 +38,7 @@
 package org.ietr.preesm.ui.scenario.editor.papify;
 
 import java.io.FileNotFoundException;
+import java.util.ArrayList;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IWorkspace;
 import org.eclipse.core.resources.ResourcesPlugin;
@@ -76,11 +77,11 @@ import org.ietr.preesm.core.scenario.papi.PapiComponent;
 import org.ietr.preesm.core.scenario.papi.PapiConfigParser;
 import org.ietr.preesm.core.scenario.papi.PapiEvent;
 import org.ietr.preesm.core.scenario.papi.PapiEventInfo;
+import org.ietr.preesm.core.scenario.papi.PapiEventModifier;
 import org.ietr.preesm.core.scenario.papi.PapiEventSet;
 import org.ietr.preesm.core.scenario.papi.PapifyConfigManager;
 import org.ietr.preesm.ui.scenario.editor.FileSelectionAdapter;
 import org.ietr.preesm.ui.scenario.editor.Messages;
-import org.ietr.preesm.ui.scenario.editor.PreesmAlgorithmTreeContentProvider;
 import org.ietr.preesm.ui.scenario.editor.PreesmAlgorithmTreeLabelProvider;
 import org.ietr.preesm.utils.files.WorkspaceUtils;
 
@@ -105,7 +106,7 @@ public class PapifyPage extends FormPage implements IPropertyListener {
   PapiEventInfo                              papiEvents           = null;
   PapiConfigParser                           papiParser           = new PapiConfigParser();
   PapifyComponentListContentProvider2DMatrix peContentProvider    = null;
-  PreesmAlgorithmTreeContentProvider         actorContentProvider = null;
+  PapifyEventListContentProvider2DMatrix     actorContentProvider = null;
 
   /**
    * Instantiates a new papify page.
@@ -404,11 +405,13 @@ public class PapifyPage extends FormPage implements IPropertyListener {
       this.scenario.getPapifyConfigManager().setExcelFileURL(text.getText());
       this.peTreeViewer.setInput(this.papiEvents);
       this.peContentProvider.setInput();
+
+      this.checkStateListener.clearEvents();
       updateColumns();
       if (this.checkStateListener != null) {
         // this.checkStateListener.updateCheck();
       }
-      // this.actorTreeViewer.setInput(this.scenario);
+      this.actorTreeViewer.setInput(this.scenario);
       // this.actorContentProvider.setInput();
     }
     firePropertyChange(IEditorPart.PROP_DIRTY);
@@ -460,8 +463,10 @@ public class PapifyPage extends FormPage implements IPropertyListener {
     this.peTreeViewer.setInput(this.papiEvents);
     // this.peTreeViewer.refresh();
     this.peContentProvider.setInput();
+    this.checkStateListener.clearEvents();
     updateColumns();
     this.actorTreeViewer.setInput(this.scenario);
+    this.checkStateListener.updateEvents();
     // this.actorContentProvider.setInput();
   }
 
@@ -557,7 +562,8 @@ public class PapifyPage extends FormPage implements IPropertyListener {
 
     };
 
-    this.actorContentProvider = new PreesmAlgorithmTreeContentProvider(this.actorTreeViewer);
+    this.actorContentProvider = new PapifyEventListContentProvider2DMatrix(this.scenario);
+    this.actorContentProvider.addCheckStateListener(this.checkStateListener);
 
     this.actorTreeViewer.setAutoExpandLevel(AbstractTreeViewer.ALL_LEVELS);
 
@@ -574,6 +580,12 @@ public class PapifyPage extends FormPage implements IPropertyListener {
     this.actorTreeViewer.getTree().setHeaderVisible(true);
 
     // updateColumns();
+    final TreeViewerColumn actorViewerColumn = new TreeViewerColumn(this.actorTreeViewer, SWT.CENTER | SWT.CHECK);
+    final TreeColumn peColumn = actorViewerColumn.getColumn();
+    peColumn.setText("Actor name \\ Event name");
+    peColumn.setWidth(200);
+    actorViewerColumn.setLabelProvider(
+        (new PapifyEventListContentProvider2DMatrixCLP(this.scenario, "First_column", this.checkStateListener)));
 
     this.actorTreeViewer.setInput(this.scenario);
 
@@ -596,13 +608,29 @@ public class PapifyPage extends FormPage implements IPropertyListener {
       counter++;
     }
 
-    if (this.actorTreeViewer.getTree().getColumns().length == 0) {
-      final TreeViewerColumn actorViewerColumn = new TreeViewerColumn(this.actorTreeViewer, SWT.CENTER | SWT.CHECK);
-      final TreeColumn peColumn = actorViewerColumn.getColumn();
-      peColumn.setText("Actor name \\ Event name");
-      peColumn.setWidth(200);
-      actorViewerColumn.setLabelProvider(new PapifyActorListContentProvider2DMatrixCLP(this.scenario, "Hola"));
-    }
+    // The timing event
+    PapiEvent timingEvent = new PapiEvent();
+    ArrayList<PapiEventModifier> modifTimingList = new ArrayList<>();
+    timingEvent.setName("Timing");
+    timingEvent.setDesciption("Event to time through PAPI_get_time()");
+    timingEvent.setIndex(9999);
+    timingEvent.setModifiers(modifTimingList);
+
+    final TreeViewerColumn viewerColumnTiming = new TreeViewerColumn(this.actorTreeViewer, SWT.CENTER | SWT.CHECK);
+    final TreeColumn columnTiming = viewerColumnTiming.getColumn();
+
+    columnTiming.setText(timingEvent.getName());
+    columnTiming.setMoveable(true);
+    columnTiming.setWidth(150);
+
+    PapifyEventListContentProvider2DMatrixES editingSupportTiming = new PapifyEventListContentProvider2DMatrixES(
+        this.scenario, this.actorTreeViewer, timingEvent.getName(), this.checkStateListener);
+
+    viewerColumnTiming.setLabelProvider(
+        new PapifyEventListContentProvider2DMatrixCLP(this.scenario, timingEvent.getName(), this.checkStateListener));
+    viewerColumnTiming.setEditingSupport(editingSupportTiming);
+    this.checkStateListener.addEstatusSupport(editingSupportTiming);
+
     for (PapiComponent oneComponent : this.papiEvents.getComponents()) {
       if (!oneComponent.getEventSets().isEmpty()) {
         for (PapiEventSet oneEventSet : oneComponent.getEventSets()) {
@@ -615,11 +643,11 @@ public class PapifyPage extends FormPage implements IPropertyListener {
               column.setMoveable(true);
               column.setWidth(150);
 
-              PapifyActorListContentProvider2DMatrixES editingSupport = new PapifyActorListContentProvider2DMatrixES(
+              PapifyEventListContentProvider2DMatrixES editingSupport = new PapifyEventListContentProvider2DMatrixES(
                   this.scenario, this.actorTreeViewer, oneEvent.getName(), this.checkStateListener);
 
-              viewerColumn
-                  .setLabelProvider(new PapifyActorListContentProvider2DMatrixCLP(this.scenario, oneEvent.getName()));
+              viewerColumn.setLabelProvider(new PapifyEventListContentProvider2DMatrixCLP(this.scenario,
+                  oneEvent.getName(), this.checkStateListener));
               viewerColumn.setEditingSupport(editingSupport);
               this.checkStateListener.addEstatusSupport(editingSupport);
             }

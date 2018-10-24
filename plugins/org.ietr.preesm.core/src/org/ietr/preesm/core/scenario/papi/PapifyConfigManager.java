@@ -156,13 +156,12 @@ public class PapifyConfigManager {
 
     final PapifyConfigActor pgSet = getCorePapifyConfigGroupActor(opId);
 
-    if (pgSet == null) {
-      final PapifyConfigActor pg = new PapifyConfigActor(opId);
-      pg.addPAPIEvent(component, event);
-      this.papifyConfigGroupsActors.add(pg);
-    } else {
-      pgSet.addPAPIEvent(component, event);
-    }
+    /*
+     * if (pgSet == null) { final PapifyConfigActor pg = new PapifyConfigActor(opId); pg.addPAPIEvent(component, event);
+     * this.papifyConfigGroupsActors.add(pg); } else {
+     */
+    pgSet.addPAPIEvent(component, event);
+    // }
   }
 
   /**

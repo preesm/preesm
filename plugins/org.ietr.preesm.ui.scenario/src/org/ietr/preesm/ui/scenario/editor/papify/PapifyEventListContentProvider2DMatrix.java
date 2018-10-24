@@ -64,7 +64,7 @@ import org.ietr.preesm.ui.scenario.editor.PathComparator;
  *
  * @author dmadronal
  */
-public class PapifyActorListContentProvider2DMatrix implements ITreeContentProvider {
+public class PapifyEventListContentProvider2DMatrix implements ITreeContentProvider {
 
   /** Currently edited scenario. */
   private PreesmScenario   scenario           = null;
@@ -81,15 +81,22 @@ public class PapifyActorListContentProvider2DMatrix implements ITreeContentProvi
   private Map<String, HierarchicalSDFVertex> correspondingVertexWithMap = null;
 
   /**
+   * This map keeps the VertexWithPath used as a tree content for each vertex.
+   */
+  // private Set<PapifyEventListTreeElement> papifyEventListElements;
+  // private Map<SDFAbstractVertex, HierarchicalSDFVertex> correspondingVertexWithMap = null;
+
+  /**
    * Instantiates a new preesm algorithm tree content provider for PAPIFY.
    *
    * @param scenario
    *          the scenario
    */
-  public PapifyActorListContentProvider2DMatrix(PreesmScenario scenario) {
+  public PapifyEventListContentProvider2DMatrix(PreesmScenario scenario) {
     super();
     this.scenario = scenario;
     this.correspondingVertexWithMap = new LinkedHashMap<>();
+    // this.papifyEventListElements = new LinkedHashSet<>();
   }
 
   /**
@@ -123,31 +130,34 @@ public class PapifyActorListContentProvider2DMatrix implements ITreeContentProvi
   public Object[] getChildren(final Object parentElement) {
     Object[] table = null;
 
-    if (this.scenario.isIBSDFScenario()) {
-      if (parentElement instanceof SDFGraph) {
-        final SDFGraph graph = (SDFGraph) parentElement;
+    if (parentElement instanceof PapifyEventListTreeElement) {
+      Object algorithmElement = ((PapifyEventListTreeElement) parentElement).getAlgorithmElement();
+      if (this.scenario.isIBSDFScenario()) {
+        if (algorithmElement instanceof SDFGraph) {
+          final SDFGraph graph = (SDFGraph) algorithmElement;
 
-        // Some types of vertices are ignored in the constraints view
-        table = filterIBSDFChildren(graph.vertexSet()).toArray();
-      } else if (parentElement instanceof HierarchicalSDFVertex) {
-        final HierarchicalSDFVertex vertex = (HierarchicalSDFVertex) parentElement;
-        final IRefinement refinement = vertex.getStoredVertex().getRefinement();
-
-        if ((refinement != null) && (refinement instanceof SDFGraph)) {
-          final SDFGraph graph = (SDFGraph) refinement;
+          // Some types of vertices are ignored in the constraints view
           table = filterIBSDFChildren(graph.vertexSet()).toArray();
+        } else if (algorithmElement instanceof HierarchicalSDFVertex) {
+          final HierarchicalSDFVertex vertex = (HierarchicalSDFVertex) algorithmElement;
+          final IRefinement refinement = vertex.getStoredVertex().getRefinement();
+
+          if ((refinement != null) && (refinement instanceof SDFGraph)) {
+            final SDFGraph graph = (SDFGraph) refinement;
+            table = filterIBSDFChildren(graph.vertexSet()).toArray();
+          }
         }
-      }
-    } else if (this.scenario.isPISDFScenario()) {
-      if (parentElement instanceof PiGraph) {
-        final PiGraph graph = (PiGraph) parentElement;
-        // Some types of vertices are ignored in the constraints view
-        table = filterPISDFChildren(graph.getActors()).toArray();
-      } else if (parentElement instanceof Actor) {
-        final Actor actor = (Actor) parentElement;
-        if (actor.isHierarchical()) {
-          final PiGraph subGraph = actor.getSubGraph();
-          table = filterPISDFChildren(subGraph.getActors()).toArray();
+      } else if (this.scenario.isPISDFScenario()) {
+        if (algorithmElement instanceof PiGraph) {
+          final PiGraph graph = (PiGraph) algorithmElement;
+          // Some types of vertices are ignored in the constraints view
+          table = filterPISDFChildren(graph.getActors()).toArray();
+        } else if (algorithmElement instanceof Actor) {
+          final Actor actor = (Actor) algorithmElement;
+          if (actor.isHierarchical()) {
+            final PiGraph subGraph = actor.getSubGraph();
+            table = filterPISDFChildren(subGraph.getActors()).toArray();
+          }
         }
       }
     }
@@ -175,24 +185,27 @@ public class PapifyActorListContentProvider2DMatrix implements ITreeContentProvi
   public boolean hasChildren(final Object element) {
     boolean hasChildren = false;
 
-    if (this.scenario.isIBSDFScenario()) {
-      if (element instanceof SDFGraph) {
-        final SDFGraph graph = (SDFGraph) element;
-        hasChildren = !graph.vertexSet().isEmpty();
-      } else if (element instanceof HierarchicalSDFVertex) {
-        final SDFAbstractVertex sdfVertex = ((HierarchicalSDFVertex) element).getStoredVertex();
-        if (sdfVertex instanceof SDFVertex) {
-          final SDFVertex vertex = (SDFVertex) sdfVertex;
-          hasChildren = vertex.getRefinement() != null;
+    if (element instanceof PapifyEventListTreeElement) {
+      Object algorithmElement = ((PapifyEventListTreeElement) element).getAlgorithmElement();
+      if (this.scenario.isIBSDFScenario()) {
+        if (algorithmElement instanceof SDFGraph) {
+          final SDFGraph graph = (SDFGraph) algorithmElement;
+          hasChildren = !graph.vertexSet().isEmpty();
+        } else if (algorithmElement instanceof HierarchicalSDFVertex) {
+          final SDFAbstractVertex sdfVertex = ((HierarchicalSDFVertex) algorithmElement).getStoredVertex();
+          if (sdfVertex instanceof SDFVertex) {
+            final SDFVertex vertex = (SDFVertex) sdfVertex;
+            hasChildren = vertex.getRefinement() != null;
+          }
         }
-      }
-    } else if (this.scenario.isPISDFScenario()) {
-      if (element instanceof PiGraph) {
-        final PiGraph graph = (PiGraph) element;
-        hasChildren = !graph.getActors().isEmpty();
-      } else if (element instanceof Actor) {
-        final Actor actor = (Actor) element;
-        hasChildren = actor.getRefinement() != null;
+      } else if (this.scenario.isPISDFScenario()) {
+        if (algorithmElement instanceof PiGraph) {
+          final PiGraph graph = (PiGraph) algorithmElement;
+          hasChildren = !graph.getActors().isEmpty();
+        } else if (algorithmElement instanceof Actor) {
+          final Actor actor = (Actor) algorithmElement;
+          hasChildren = actor.getRefinement() != null;
+        }
       }
     }
 
@@ -207,7 +220,6 @@ public class PapifyActorListContentProvider2DMatrix implements ITreeContentProvi
   @Override
   public Object[] getElements(final Object inputElement) {
     final Object[] table = new Object[1];
-    System.out.println("Hola1 ");
 
     if (inputElement instanceof PreesmScenario) {
       this.scenario = (PreesmScenario) inputElement;
@@ -218,14 +230,18 @@ public class PapifyActorListContentProvider2DMatrix implements ITreeContentProvi
         } catch (final Exception e) {
           e.printStackTrace();
         }
-        table[0] = this.currentIBSDFGraph;
+        final PapifyEventListTreeElement element = new PapifyEventListTreeElement(this.currentIBSDFGraph);
+        this.checkStateListener.addEventListTreeElement(element);
+        table[0] = element;
       } else if (this.scenario.isPISDFScenario()) {
         try {
           this.currentPISDFGraph = PiParser.getPiGraph(this.scenario.getAlgorithmURL());
         } catch (final Exception e) {
           e.printStackTrace();
         }
-        table[0] = this.currentPISDFGraph;
+        final PapifyEventListTreeElement element = new PapifyEventListTreeElement(this.currentPISDFGraph);
+        this.checkStateListener.addEventListTreeElement(element);
+        table[0] = element;
       }
     }
     return table;
@@ -261,13 +277,17 @@ public class PapifyActorListContentProvider2DMatrix implements ITreeContentProvi
    *          the vertices
    * @return the sets the
    */
-  public Set<AbstractActor> filterPISDFChildren(final EList<AbstractActor> vertices) {
+  public Set<PapifyEventListTreeElement> filterPISDFChildren(final EList<AbstractActor> vertices) {
     final Set<AbstractActor> result = new LinkedHashSet<>();
+    final Set<PapifyEventListTreeElement> papifyTreeElements = new LinkedHashSet<>();
     for (final AbstractActor actor : vertices) {
       // TODO: Filter if needed
       result.add(actor);
+      final PapifyEventListTreeElement elementActor = new PapifyEventListTreeElement(actor);
+      this.checkStateListener.addEventListTreeElement(elementActor);
+      papifyTreeElements.add(elementActor);
     }
-    return result;
+    return papifyTreeElements;
   }
 
   /**
@@ -277,18 +297,22 @@ public class PapifyActorListContentProvider2DMatrix implements ITreeContentProvi
    *          the children
    * @return the sets the
    */
-  public Set<HierarchicalSDFVertex> filterIBSDFChildren(final Set<SDFAbstractVertex> children) {
+  public Set<PapifyEventListTreeElement> filterIBSDFChildren(final Set<SDFAbstractVertex> children) {
 
     final ConcurrentSkipListSet<
         HierarchicalSDFVertex> appropriateChildren = new ConcurrentSkipListSet<>(new PathComparator());
+    final Set<PapifyEventListTreeElement> papifyTreeElements = new LinkedHashSet<>();
 
     for (final SDFAbstractVertex v : children) {
       if (v.getKind().equalsIgnoreCase("vertex")) {
         appropriateChildren.add(convertSDFChild(v));
+        final PapifyEventListTreeElement element = new PapifyEventListTreeElement(v);
+        this.checkStateListener.addEventListTreeElement(element);
+        papifyTreeElements.add(element);
       }
     }
 
-    return appropriateChildren;
+    return papifyTreeElements;
   }
 
   /**

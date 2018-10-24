@@ -224,6 +224,9 @@ public class ScenarioWriter {
       final Element papifyConfigElt = this.dom.createElement("papifyConfigActor");
       parent.appendChild(papifyConfigElt);
 
+      final Element actorPath = this.dom.createElement("actorPath");
+      papifyConfigElt.appendChild(actorPath);
+      actorPath.setAttribute("actorPath", config.getActorPath());
       final Element actorId = this.dom.createElement("actorId");
       papifyConfigElt.appendChild(actorId);
       actorId.setAttribute("actorId", config.getActorId());

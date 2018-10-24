@@ -43,7 +43,7 @@ import org.eclipse.jface.viewers.CheckboxCellEditor;
 import org.eclipse.jface.viewers.ColumnViewer;
 import org.eclipse.jface.viewers.EditingSupport;
 import org.ietr.preesm.core.scenario.PreesmScenario;
-import org.ietr.preesm.ui.scenario.editor.papify.PapifyListTreeElement.PAPIStatus;
+import org.ietr.preesm.ui.scenario.editor.papify.PapifyEventListTreeElement.PAPIEventStatus;
 
 // TODO: Auto-generated Javadoc
 /**
@@ -56,18 +56,18 @@ import org.ietr.preesm.ui.scenario.editor.papify.PapifyListTreeElement.PAPIStatu
  * @author anmorvan
  *
  */
-class PapifyActorListContentProvider2DMatrixES extends EditingSupport {
+class PapifyEventListContentProvider2DMatrixES extends EditingSupport {
 
   /** Currently edited scenario. */
   private PreesmScenario   scenario = null;
-  String                   actorName;
+  String                   eventName;
   CellEditor               editor   = new CheckboxCellEditor();
   PapifyCheckStateListener actorProvider;
 
-  public PapifyActorListContentProvider2DMatrixES(final PreesmScenario scenario, final ColumnViewer viewer,
+  public PapifyEventListContentProvider2DMatrixES(final PreesmScenario scenario, final ColumnViewer viewer,
       final String name, PapifyCheckStateListener checkStateListener) {
     super(viewer);
-    this.actorName = name;
+    this.eventName = name;
     this.scenario = scenario;
     this.actorProvider = checkStateListener;
   }
@@ -90,20 +90,20 @@ class PapifyActorListContentProvider2DMatrixES extends EditingSupport {
 
   @Override
   protected void setValue(final Object element, final Object value) {
-    if (element instanceof PapifyListTreeElement) {
-      String eventName = ((PapifyListTreeElement) element).label;
-      final Map<String, PAPIStatus> statuses = ((PapifyListTreeElement) element).PAPIStatuses;
+    if (element instanceof PapifyEventListTreeElement) {
+      final PapifyEventListTreeElement treeElement = (PapifyEventListTreeElement) element;
+      Object actorInstance = treeElement.getAlgorithmElement();
+      final Map<String, PAPIEventStatus> statuses = treeElement.PAPIStatuses;
 
-      final PAPIStatus actorStatus = statuses.get(this.actorName);
-      if (actorStatus.next().equals(PAPIStatus.NO)) {
-        this.actorProvider.removeEventfromActor(this.actorName, eventName);
+      final PAPIEventStatus actorStatus = statuses.get(this.eventName);
+      if (actorStatus.next().equals(PAPIEventStatus.NO)) {
+        this.actorProvider.removeEventfromActor(actorInstance, this.eventName);
 
       } else {
-        this.actorProvider.addEventtoActor(this.actorName, eventName);
+        this.actorProvider.addEventtoActor(actorInstance, this.eventName);
       }
+      this.actorProvider.setPropDirty();
+      this.actorProvider.updateView(this.eventName);
     }
-    this.actorProvider.setPropDirty();
-    this.actorProvider.updateView();
   }
-
 }

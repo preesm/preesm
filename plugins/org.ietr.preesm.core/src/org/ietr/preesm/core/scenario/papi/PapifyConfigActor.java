@@ -50,6 +50,8 @@ public class PapifyConfigActor {
 
   /** The actor instance. */
   private String actorId;
+  /** The actor instance path. */
+  private String actorPath;
 
   /** The set of eventSets that are going to be monitored. */
   private Map<String, Set<PapiEvent>> actorEventMap;
@@ -57,8 +59,16 @@ public class PapifyConfigActor {
   /**
    * Instantiates a new PapifyConfig group.
    */
-  public PapifyConfigActor(final String actorId) {
+  public PapifyConfigActor() {
+    this.actorEventMap = new LinkedHashMap<>();
+  }
+
+  /**
+   * Instantiates a new PapifyConfig group.
+   */
+  public PapifyConfigActor(final String actorId, final String actorPath) {
     this.actorId = actorId;
+    this.actorPath = actorPath;
     this.actorEventMap = new LinkedHashMap<>();
   }
 
@@ -70,6 +80,17 @@ public class PapifyConfigActor {
    */
   public void addActorId(final String actorId) {
     this.actorId = actorId;
+
+  }
+
+  /**
+   * Adds the actorPath.
+   *
+   * @param actorPath
+   *          the actor instance
+   */
+  public void addActorPath(final String actorPath) {
+    this.actorPath = actorPath;
 
   }
 
@@ -162,6 +183,15 @@ public class PapifyConfigActor {
   }
 
   /**
+   * Gets the actor path.
+   *
+   * @return the actor path
+   */
+  public String getActorPath() {
+    return (this.actorPath);
+  }
+
+  /**
    * Gets the PAPI events.
    *
    * @return the PAPI events
@@ -209,8 +239,10 @@ public class PapifyConfigActor {
    */
   @Override
   public String toString() {
-    String s = "<Printing core> \n";
+    String s = "<Printing actorId> \n";
     s += this.actorId;
+    s += "<Printing actorPath> \n";
+    s += this.actorPath;
     s += "\n<Printing components and Events> \n";
     s += this.actorEventMap.toString();
     s += "<end printing>\n";
