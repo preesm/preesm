@@ -621,7 +621,7 @@ public class PapifyPage extends FormPage implements IPropertyListener {
     final TreeColumn columnTiming = viewerColumnTiming.getColumn();
 
     columnTiming.setText(timingEvent.getName());
-    columnTiming.setMoveable(true);
+    columnTiming.setToolTipText(timingEvent.getDescription());
     columnTiming.setWidth(150);
 
     PapifyEventListContentProvider2DMatrixES editingSupportTiming = new PapifyEventListContentProvider2DMatrixES(
@@ -641,7 +641,7 @@ public class PapifyPage extends FormPage implements IPropertyListener {
               final TreeColumn column = viewerColumn.getColumn();
 
               column.setText(oneEvent.getName());
-              column.setMoveable(true);
+              column.setToolTipText(oneEvent.getDescription());
               column.setWidth(150);
 
               PapifyEventListContentProvider2DMatrixES editingSupport = new PapifyEventListContentProvider2DMatrixES(
