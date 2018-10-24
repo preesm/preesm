@@ -127,7 +127,7 @@ public class PapifyEngine {
         finalName = vertex.getInfo();
         if (finalName != null) {
           finalName = vertex.getInfo().substring(vertex.getInfo().indexOf('/') + 1).replace('/', '_');
-          config = papifyConfig.getCorePapifyConfigGroupActor(finalName);
+          config = papifyConfig.getCorePapifyConfigGroupActor(vertex.getInfo());
           if (config != null && !config.getPAPIEvents().keySet().isEmpty()) {
             configPosition = "";
             this.dag.getVertex(vertex.getName()).getPropertyBean().setValue(PAPIFY_MONITOR_TIMING, "No");
