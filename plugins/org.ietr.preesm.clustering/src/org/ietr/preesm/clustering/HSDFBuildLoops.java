@@ -597,7 +597,7 @@ public class HSDFBuildLoops {
   private List<SDFAbstractVertex> getHierarchicalActor(final SDFGraph graph) {
     final List<SDFAbstractVertex> l = new ArrayList<>();
     for (final SDFAbstractVertex v : graph.vertexSet()) {
-      final Object refinement = v.getPropertyBean().getValue(AbstractVertex.REFINEMENT);
+      final Object refinement = v.getPropertyBean().getValue(AbstractVertex.REFINEMENT_LITERAL);
       // If the actor is hierarchical
       if (refinement instanceof AbstractGraph) {
         l.add(v);

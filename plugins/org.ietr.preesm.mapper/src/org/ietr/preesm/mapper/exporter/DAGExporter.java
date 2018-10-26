@@ -126,7 +126,7 @@ public class DAGExporter extends GMLExporter<DAGVertex, DAGEdge> {
           kind = "vertex";
       }
     }
-    vertexElt.setAttribute(AbstractVertex.KIND, kind);
+    vertexElt.setAttribute(AbstractVertex.KIND_LITERAL, kind);
 
     exportKeys(vertex, "node", vertexElt);
 

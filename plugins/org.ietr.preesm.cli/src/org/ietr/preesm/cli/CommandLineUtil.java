@@ -63,7 +63,7 @@ public class CommandLineUtil {
     // modify and set it to the current workspace.
     final IWorkspaceDescription desc = wp.getDescription();
     if (wp.isAutoBuilding()) {
-      CLIWorkflowLogger.debugln("Disbale auto-building");
+      CLIWorkflowLogger.printDebugln("Disbale auto-building");
       desc.setAutoBuilding(false);
       wp.setDescription(desc);
       return true;
@@ -81,7 +81,7 @@ public class CommandLineUtil {
    *           the core exception
    */
   public static void enableAutoBuild(final IWorkspace wp) throws CoreException {
-    CLIWorkflowLogger.debugln("Re-enable auto-building");
+    CLIWorkflowLogger.printDebugln("Re-enable auto-building");
     // IWorkspace.getDescription() returns a copy. We need to extract,
     // modify and set it to the current workspace.
     final IWorkspaceDescription desc = wp.getDescription();

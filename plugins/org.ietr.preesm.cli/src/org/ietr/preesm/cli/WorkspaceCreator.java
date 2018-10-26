@@ -130,12 +130,12 @@ public class WorkspaceCreator implements IApplication {
 
               if (project.exists()) {
                 project.close(this.progressMonitor);
-                CLIWorkflowLogger.traceln("A project named " + project.getName() + " is already registered, "
+                CLIWorkflowLogger.printTraceln("A project named " + project.getName() + " is already registered, "
                     + "deleting previous project from Workspace: ");
               }
               project.create(description, this.progressMonitor);
               project.open(this.progressMonitor);
-              CLIWorkflowLogger.traceln("New project registered: " + project.getName());
+              CLIWorkflowLogger.printTraceln("New project registered: " + project.getName());
             }
           }
         }
@@ -162,7 +162,7 @@ public class WorkspaceCreator implements IApplication {
 
         final String path = FilesManager.sanitize(args[0]);
         final File searchPath = new File(path).getCanonicalFile();
-        CLIWorkflowLogger.traceln("Register projects from \"" + searchPath.getAbsolutePath() + "\" to workspace \""
+        CLIWorkflowLogger.printTraceln("Register projects from \"" + searchPath.getAbsolutePath() + "\" to workspace \""
             + this.workspace.getRoot().getLocation() + "\"");
         searchForProjects(searchPath);
 
@@ -176,18 +176,18 @@ public class WorkspaceCreator implements IApplication {
         final IJobManager manager = Job.getJobManager();
         int i = 0;
         while (!manager.isIdle()) {
-          CLIWorkflowLogger.traceln("Waiting for completion of" + " currently running jobs - " + ++i);
+          CLIWorkflowLogger.printTraceln("Waiting for completion of" + " currently running jobs - " + ++i);
           Thread.sleep(500);
         }
 
       } catch (final CoreException e) {
-        CLIWorkflowLogger.severeln(e.getMessage());
+        CLIWorkflowLogger.printSevereln(e.getMessage());
         e.printStackTrace();
       } catch (final IOException e) {
-        CLIWorkflowLogger.severeln(e.getMessage());
+        CLIWorkflowLogger.printSevereln(e.getMessage());
         e.printStackTrace();
       } catch (final InterruptedException e) {
-        CLIWorkflowLogger.severeln(e.getMessage());
+        CLIWorkflowLogger.printSevereln(e.getMessage());
         e.printStackTrace();
       } finally {
         try {
@@ -197,12 +197,12 @@ public class WorkspaceCreator implements IApplication {
           }
           return IApplication.EXIT_OK;
         } catch (final CoreException e) {
-          CLIWorkflowLogger.severeln(e.getMessage());
+          CLIWorkflowLogger.printSevereln(e.getMessage());
           e.printStackTrace();
         }
       }
     } else {
-      CLIWorkflowLogger.severeln("Please add the path to a directories containing projects.");
+      CLIWorkflowLogger.printSevereln("Please add the path to a directories containing projects.");
     }
 
     return IApplication.EXIT_RESTART;

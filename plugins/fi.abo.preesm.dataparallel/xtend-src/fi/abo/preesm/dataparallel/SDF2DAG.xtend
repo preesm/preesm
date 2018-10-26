@@ -405,13 +405,13 @@ final class SDF2DAG extends AbstractDAGConstructor implements PureDAGConstructor
 					var newInterfaceName = sourceInterface.name + "_" + sourceProd
 
 					// Get the current index of the port (if any) and update it
-					if(sourceInterface.name.matches(SpecialActorPortsIndexer.indexRegex)) {
-						val pattern = Pattern.compile(SpecialActorPortsIndexer.indexRegex)
+					if(sourceInterface.name.matches(SpecialActorPortsIndexer.INDEX_REGEX)) {
+						val pattern = Pattern.compile(SpecialActorPortsIndexer.INDEX_REGEX)
 						val matcher = pattern.matcher(sourceInterface.name)
 						matcher.find
-						val existingIdx = Integer.decode(matcher.group(SpecialActorPortsIndexer.groupXX))
+						val existingIdx = Integer.decode(matcher.group(SpecialActorPortsIndexer.GROUP_XX))
 						val newIdx = existingIdx + sourceProd
-						newInterfaceName = sourceInterface.name.substring(0, matcher.start(SpecialActorPortsIndexer.groupXX)) + newIdx
+						newInterfaceName = sourceInterface.name.substring(0, matcher.start(SpecialActorPortsIndexer.GROUP_XX)) + newIdx
 					}
 
 					sourceInterface.name = newInterfaceName
@@ -450,13 +450,13 @@ final class SDF2DAG extends AbstractDAGConstructor implements PureDAGConstructor
 					var newInterfaceName = targetInterface.name + "_" + targetCons
 
 					// Get the current index of the port (if any) and update it
-					if(targetInterface.name.matches(SpecialActorPortsIndexer.indexRegex)) {
-						val pattern = Pattern.compile(SpecialActorPortsIndexer.indexRegex)
+					if(targetInterface.name.matches(SpecialActorPortsIndexer.INDEX_REGEX)) {
+						val pattern = Pattern.compile(SpecialActorPortsIndexer.INDEX_REGEX)
 						val matcher = pattern.matcher(targetInterface.name)
 						matcher.find
-						val existingIdx = Integer.decode(matcher.group(SpecialActorPortsIndexer.groupXX))
+						val existingIdx = Integer.decode(matcher.group(SpecialActorPortsIndexer.GROUP_XX))
 						val newIdx = existingIdx + targetCons
-						newInterfaceName = targetInterface.name.substring(0, matcher.start(SpecialActorPortsIndexer.groupXX)) + newIdx
+						newInterfaceName = targetInterface.name.substring(0, matcher.start(SpecialActorPortsIndexer.GROUP_XX)) + newIdx
 					}
 
 					targetInterface.name = newInterfaceName

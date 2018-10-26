@@ -94,7 +94,7 @@ public class JoinForkCleaner {
     // Check that the graph is single rate.
     final SingleRateChecker srChecker = new SingleRateChecker();
     graph.accept(srChecker);
-    if (!srChecker.isSingleRate) {
+    if (!srChecker.isSingleRate()) {
       throw new SDF4JException("Cannot clean fork/join pairs in a non-single-rate graph.");
     }
 
@@ -348,13 +348,13 @@ public class JoinForkCleaner {
 
         // Get the current index of the port (if any)
         // and update it
-        if (sourceInterface.getName().matches(SpecialActorPortsIndexer.indexRegex)) {
-          final Pattern pattern = Pattern.compile(SpecialActorPortsIndexer.indexRegex);
+        if (sourceInterface.getName().matches(SpecialActorPortsIndexer.INDEX_REGEX)) {
+          final Pattern pattern = Pattern.compile(SpecialActorPortsIndexer.INDEX_REGEX);
           final Matcher matcher = pattern.matcher(sourceInterface.getName());
           matcher.find();
-          final int existingIdx = Integer.decode(matcher.group(SpecialActorPortsIndexer.groupXX));
+          final int existingIdx = Integer.decode(matcher.group(SpecialActorPortsIndexer.GROUP_XX));
           final long newIdx = existingIdx + sourceProd;
-          newInterfaceName = sourceInterface.getName().substring(0, matcher.start(SpecialActorPortsIndexer.groupXX))
+          newInterfaceName = sourceInterface.getName().substring(0, matcher.start(SpecialActorPortsIndexer.GROUP_XX))
               + newIdx;
         }
 
@@ -404,13 +404,13 @@ public class JoinForkCleaner {
         String newInterfaceName = targetInterface.getName() + "_" + targetCons;
         // Get the current index of the port (if any)
         // and update it
-        if (targetInterface.getName().matches(SpecialActorPortsIndexer.indexRegex)) {
-          final Pattern pattern = Pattern.compile(SpecialActorPortsIndexer.indexRegex);
+        if (targetInterface.getName().matches(SpecialActorPortsIndexer.INDEX_REGEX)) {
+          final Pattern pattern = Pattern.compile(SpecialActorPortsIndexer.INDEX_REGEX);
           final Matcher matcher = pattern.matcher(targetInterface.getName());
           matcher.find();
-          final long existingIdx = Long.decode(matcher.group(SpecialActorPortsIndexer.groupXX));
+          final long existingIdx = Long.decode(matcher.group(SpecialActorPortsIndexer.GROUP_XX));
           final long newIdx = existingIdx + targetCons;
-          newInterfaceName = targetInterface.getName().substring(0, matcher.start(SpecialActorPortsIndexer.groupXX))
+          newInterfaceName = targetInterface.getName().substring(0, matcher.start(SpecialActorPortsIndexer.GROUP_XX))
               + newIdx;
         }
 

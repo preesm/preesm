@@ -127,40 +127,17 @@ class FifoActor extends SDFAbstractVertex {
 	 */
 	override addInterface(IInterface port) {
 		if((port instanceof SDFInterfaceVertex) &&
-			(port.direction == InterfaceDirection.Input)) {
+			(port.direction == InterfaceDirection.INPUT)) {
 			if(this.sources.size >= 1) {
 				throw new SDF4JException("FIFO-Actor cannot have more than one source")
 			}
 		} else if((port instanceof SDFInterfaceVertex) &&
-					(port.direction == InterfaceDirection.Output)) {
+					(port.direction == InterfaceDirection.OUTPUT)) {
 			if(this.sinks.size >= 1) {
 				throw new SDF4JException("FIFO-Actor cannot have more than one sink")
 			}
 		}
 		return super.addInterface(port)
-	}
-
-	/**
-	 * In addition to adding a list of interfaces, it checks that the {@link FifoActor} has not
-	 * more than 1 source and sink interface
-	 *
-	 * @param interfaces List of {@link IInterface} instances
-	 */
-	override addInterfaces(List<IInterface> interfaces) {
-		interfaces.forEach[interface |
-			if((interface instanceof SDFInterfaceVertex) &&
-				(interface.direction == InterfaceDirection.Input)) {
-				if(this.sources.size >= 1) {
-					throw new SDF4JException("FIFO-Actor cannot have more than one source")
-				}
-			} else if((interface instanceof SDFInterfaceVertex) &&
-						(interface.direction == InterfaceDirection.Output)) {
-				if(this.sinks.size >= 1) {
-					throw new SDF4JException("FIFO-Actor cannot have more than one sink")
-				}
-			}
-		]
-		super.addInterfaces(interfaces)
 	}
 
 	/**

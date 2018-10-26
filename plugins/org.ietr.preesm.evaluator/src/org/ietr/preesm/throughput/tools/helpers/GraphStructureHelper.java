@@ -218,7 +218,7 @@ public interface GraphStructureHelper {
 
     // create an input interface and set the parent graph
     final SDFSourceInterfaceVertex in = new SDFSourceInterfaceVertex();
-    in.setPropertyValue(AbstractVertex.BASE, graph);
+    in.setPropertyValue(AbstractVertex.BASE_LITERAL, graph);
 
     // set the name
     in.setId(interfaceName);
@@ -269,7 +269,7 @@ public interface GraphStructureHelper {
 
     // create an output interface and set the parent graph
     final SDFSinkInterfaceVertex out = new SDFSinkInterfaceVertex();
-    out.setPropertyValue(AbstractVertex.BASE, graph);
+    out.setPropertyValue(AbstractVertex.BASE_LITERAL, graph);
 
     // set the name
     out.setId(interfaceName);
