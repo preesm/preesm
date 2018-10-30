@@ -49,7 +49,7 @@ import org.ietr.dftools.algorithm.model.sdf.SDFInterfaceVertex;
 import org.ietr.dftools.algorithm.model.sdf.SDFVertex;
 import org.ietr.dftools.algorithm.model.sdf.esdf.SDFSinkInterfaceVertex;
 import org.ietr.dftools.algorithm.model.sdf.esdf.SDFSourceInterfaceVertex;
-import org.ietr.dftools.algorithm.model.sdf.types.SDFIntEdgePropertyType;
+import org.ietr.dftools.algorithm.model.types.SDFIntEdgePropertyType;
 import org.ietr.preesm.core.scenario.PreesmScenario;
 import org.ietr.preesm.throughput.tools.parsers.Identifier;
 

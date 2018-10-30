@@ -46,7 +46,7 @@ import org.ietr.dftools.algorithm.model.sdf.SDFEdge
 import org.ietr.dftools.algorithm.model.sdf.SDFGraph
 import org.ietr.dftools.algorithm.model.sdf.esdf.SDFSinkInterfaceVertex
 import org.ietr.dftools.algorithm.model.sdf.esdf.SDFSourceInterfaceVertex
-import org.ietr.dftools.algorithm.model.sdf.types.SDFIntEdgePropertyType
+import org.ietr.dftools.algorithm.model.types.SDFIntEdgePropertyType
 import org.ietr.dftools.workflow.WorkflowException
 import org.ietr.dftools.workflow.elements.Workflow
 import org.ietr.dftools.workflow.implement.AbstractTaskImplementation

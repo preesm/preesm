@@ -36,6 +36,7 @@
  */
 package fi.abo.preesm.dataparallel
 
+import fi.abo.preesm.dataparallel.pojo.NodeChain
 import java.util.List
 import java.util.Map
 import java.util.Set
@@ -46,11 +47,10 @@ import org.ietr.dftools.algorithm.model.sdf.SDFEdge
 import org.ietr.dftools.algorithm.model.sdf.SDFGraph
 import org.ietr.dftools.algorithm.model.sdf.esdf.SDFForkVertex
 import org.ietr.dftools.algorithm.model.sdf.esdf.SDFJoinVertex
-import org.ietr.dftools.algorithm.model.sdf.types.SDFIntEdgePropertyType
+import org.ietr.dftools.algorithm.model.sdf.visitors.ToHSDFVisitor
+import org.ietr.dftools.algorithm.model.types.SDFIntEdgePropertyType
 import org.ietr.dftools.algorithm.model.visitors.SDF4JException
 import org.jgrapht.traverse.TopologicalOrderIterator
-import org.ietr.dftools.algorithm.model.sdf.visitors.ToHSDFVisitor
-import fi.abo.preesm.dataparallel.pojo.NodeChain
 
 /**
  * Apart from the poor choice of name for this class ;) , this class groups the vertices of

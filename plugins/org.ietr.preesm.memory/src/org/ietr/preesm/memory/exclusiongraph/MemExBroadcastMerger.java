@@ -56,7 +56,7 @@ import org.ietr.dftools.algorithm.model.dag.edag.DAGForkVertex;
 import org.ietr.dftools.algorithm.model.sdf.SDFAbstractVertex;
 import org.ietr.dftools.algorithm.model.sdf.SDFEdge;
 import org.ietr.dftools.algorithm.model.sdf.esdf.SDFBroadcastVertex;
-import org.ietr.dftools.algorithm.model.sdf.types.SDFStringEdgePropertyType;
+import org.ietr.dftools.algorithm.model.types.SDFStringEdgePropertyType;
 import org.ietr.preesm.memory.script.MemoryScriptEngine;
 
 /**

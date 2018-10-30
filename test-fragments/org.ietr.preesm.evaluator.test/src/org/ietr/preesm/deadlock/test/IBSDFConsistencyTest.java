@@ -38,7 +38,7 @@ package org.ietr.preesm.deadlock.test;
 import org.ietr.dftools.algorithm.model.sdf.SDFAbstractVertex;
 import org.ietr.dftools.algorithm.model.sdf.SDFEdge;
 import org.ietr.dftools.algorithm.model.sdf.SDFGraph;
-import org.ietr.dftools.algorithm.model.sdf.types.SDFIntEdgePropertyType;
+import org.ietr.dftools.algorithm.model.types.SDFIntEdgePropertyType;
 import org.ietr.preesm.deadlock.IBSDFConsistency;
 import org.ietr.preesm.evaluator.EvaluationException;
 import org.ietr.preesm.throughput.tools.helpers.GraphStructureHelper;

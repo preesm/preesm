@@ -46,7 +46,7 @@ import org.ietr.dftools.algorithm.model.sdf.SDFGraph;
 import org.ietr.dftools.algorithm.model.sdf.SDFInterfaceVertex;
 import org.ietr.dftools.algorithm.model.sdf.esdf.SDFSinkInterfaceVertex;
 import org.ietr.dftools.algorithm.model.sdf.esdf.SDFSourceInterfaceVertex;
-import org.ietr.dftools.algorithm.model.sdf.types.SDFIntEdgePropertyType;
+import org.ietr.dftools.algorithm.model.types.SDFIntEdgePropertyType;
 import org.ietr.preesm.evaluator.EvaluationException;
 import org.ietr.preesm.throughput.tools.helpers.Stopwatch;
 import org.ietr.preesm.utils.math.MathFunctionsHelper;

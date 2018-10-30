@@ -55,9 +55,9 @@ import org.ietr.dftools.algorithm.model.sdf.esdf.SDFForkVertex;
 import org.ietr.dftools.algorithm.model.sdf.esdf.SDFJoinVertex;
 import org.ietr.dftools.algorithm.model.sdf.esdf.SDFRoundBufferVertex;
 import org.ietr.dftools.algorithm.model.sdf.transformations.SpecialActorPortsIndexer;
-import org.ietr.dftools.algorithm.model.sdf.types.SDFIntEdgePropertyType;
-import org.ietr.dftools.algorithm.model.sdf.types.SDFStringEdgePropertyType;
 import org.ietr.dftools.algorithm.model.sdf.visitors.SingleRateChecker;
+import org.ietr.dftools.algorithm.model.types.SDFIntEdgePropertyType;
+import org.ietr.dftools.algorithm.model.types.SDFStringEdgePropertyType;
 import org.ietr.dftools.algorithm.model.visitors.SDF4JException;
 import org.ietr.dftools.workflow.WorkflowException;
 

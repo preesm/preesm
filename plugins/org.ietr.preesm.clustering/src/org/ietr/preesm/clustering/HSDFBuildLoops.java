@@ -56,7 +56,7 @@ import org.ietr.dftools.algorithm.model.sdf.SDFVertex;
 import org.ietr.dftools.algorithm.model.sdf.esdf.SDFBroadcastVertex;
 import org.ietr.dftools.algorithm.model.sdf.esdf.SDFRoundBufferVertex;
 import org.ietr.dftools.algorithm.model.sdf.transformations.IbsdfFlattener;
-import org.ietr.dftools.algorithm.model.sdf.types.SDFIntEdgePropertyType;
+import org.ietr.dftools.algorithm.model.types.SDFIntEdgePropertyType;
 import org.ietr.dftools.algorithm.model.visitors.SDF4JException;
 import org.ietr.dftools.architecture.slam.Design;
 import org.ietr.dftools.workflow.WorkflowException;

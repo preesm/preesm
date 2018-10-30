@@ -36,13 +36,14 @@
  */
 package fi.abo.preesm.dataparallel
 
+import fi.abo.preesm.dataparallel.operations.DAGOperations
 import java.util.ArrayList
 import java.util.List
 import java.util.Map
 import java.util.Set
+import java.util.logging.Level
 import java.util.logging.Logger
 import java.util.regex.Pattern
-import fi.abo.preesm.dataparallel.operations.DAGOperations
 import org.eclipse.xtend.lib.annotations.Accessors
 import org.ietr.dftools.algorithm.model.sdf.SDFAbstractVertex
 import org.ietr.dftools.algorithm.model.sdf.SDFEdge
@@ -53,12 +54,11 @@ import org.ietr.dftools.algorithm.model.sdf.esdf.SDFForkVertex
 import org.ietr.dftools.algorithm.model.sdf.esdf.SDFJoinVertex
 import org.ietr.dftools.algorithm.model.sdf.esdf.SDFRoundBufferVertex
 import org.ietr.dftools.algorithm.model.sdf.transformations.SpecialActorPortsIndexer
-import org.ietr.dftools.algorithm.model.sdf.types.SDFIntEdgePropertyType
-import org.ietr.dftools.algorithm.model.sdf.types.SDFStringEdgePropertyType
+import org.ietr.dftools.algorithm.model.types.SDFIntEdgePropertyType
+import org.ietr.dftools.algorithm.model.types.SDFStringEdgePropertyType
 import org.ietr.dftools.algorithm.model.visitors.SDF4JException
 import org.jgrapht.alg.cycle.CycleDetector
 import org.jgrapht.graph.AbstractGraph
-import java.util.logging.Level
 import org.jgrapht.graph.AsSubgraph
 
 /**

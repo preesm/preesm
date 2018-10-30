@@ -40,7 +40,7 @@
 package org.ietr.preesm.mapper.model.special;
 
 import org.ietr.dftools.algorithm.model.AbstractVertex;
-import org.ietr.dftools.algorithm.model.dag.types.DAGDefaultVertexPropertyType;
+import org.ietr.dftools.algorithm.model.types.DAGDefaultVertexPropertyType;
 import org.ietr.preesm.core.types.ImplementationPropertyNames;
 import org.ietr.preesm.mapper.model.MapperDAG;
 import org.ietr.preesm.mapper.model.MapperDAGVertex;
