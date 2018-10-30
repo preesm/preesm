@@ -37,7 +37,7 @@ package org.ietr.preesm.deadlock.test;
 
 import org.ietr.dftools.algorithm.model.sdf.SDFEdge;
 import org.ietr.dftools.algorithm.model.sdf.SDFGraph;
-import org.ietr.dftools.algorithm.model.types.SDFIntEdgePropertyType;
+import org.ietr.dftools.algorithm.model.types.LongEdgePropertyType;
 import org.ietr.preesm.deadlock.SDFConsistency;
 import org.ietr.preesm.deadlock.SDFLiveness;
 import org.ietr.preesm.evaluator.EvaluationException;
@@ -70,7 +70,7 @@ public class SDFLivenessTest {
     final SDFGraph ABC = generateSDFGraphABC326();
     // remove the initial delays
     for (final SDFEdge e : ABC.edgeSet()) {
-      e.setDelay(new SDFIntEdgePropertyType(0));
+      e.setDelay(new LongEdgePropertyType(0));
     }
     // check the liveness of the graph
 

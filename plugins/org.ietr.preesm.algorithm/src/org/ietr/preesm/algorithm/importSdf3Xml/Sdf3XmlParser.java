@@ -47,8 +47,8 @@ import org.ietr.dftools.algorithm.model.sdf.SDFInterfaceVertex;
 import org.ietr.dftools.algorithm.model.sdf.SDFVertex;
 import org.ietr.dftools.algorithm.model.sdf.esdf.SDFSinkInterfaceVertex;
 import org.ietr.dftools.algorithm.model.sdf.esdf.SDFSourceInterfaceVertex;
-import org.ietr.dftools.algorithm.model.types.SDFIntEdgePropertyType;
-import org.ietr.dftools.algorithm.model.types.SDFStringEdgePropertyType;
+import org.ietr.dftools.algorithm.model.types.LongEdgePropertyType;
+import org.ietr.dftools.algorithm.model.types.StringEdgePropertyType;
 import org.ietr.dftools.architecture.utils.DomUtil;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -296,8 +296,8 @@ public class Sdf3XmlParser {
     final SDFEdge edge = graph.addEdge(srcActor, srcPort, tgtActor, tgtPort);
 
     // Set the prod/consumption rates
-    edge.setProd(new SDFIntEdgePropertyType((Integer) srcPort.getPropertyBean().getValue("port_rate")));
-    edge.setCons(new SDFIntEdgePropertyType((Integer) tgtPort.getPropertyBean().getValue("port_rate")));
+    edge.setProd(new LongEdgePropertyType((Integer) srcPort.getPropertyBean().getValue("port_rate")));
+    edge.setCons(new LongEdgePropertyType((Integer) tgtPort.getPropertyBean().getValue("port_rate")));
 
     // Give a name to the edge (not really usefull in SDFGraphs but since
     // the name exists in SDF3, we might as well keep track of it
@@ -312,7 +312,7 @@ public class Sdf3XmlParser {
     // Add the delays (if any)
     final String delay = channelElt.getAttribute("initialTokens");
     if (!delay.isEmpty()) {
-      final SDFIntEdgePropertyType delayProperty = new SDFIntEdgePropertyType(delay);
+      final LongEdgePropertyType delayProperty = new LongEdgePropertyType(delay);
       edge.setDelay(delayProperty);
     }
 
@@ -347,7 +347,7 @@ public class Sdf3XmlParser {
         throw new RuntimeException("Channel " + channelName + " token size is not set properly.");
       }
       final String dataType = "t" + tokenSz;
-      edge.setDataType(new SDFStringEdgePropertyType(dataType));
+      edge.setDataType(new StringEdgePropertyType(dataType));
       this.dataTypes.put(dataType, new Integer(tokenSz));
     } catch (final RuntimeException e) {
       e.printStackTrace();

@@ -52,9 +52,9 @@ import org.ietr.dftools.algorithm.model.dag.edag.DAGJoinVertex;
 import org.ietr.dftools.algorithm.model.parameters.Argument;
 import org.ietr.dftools.algorithm.model.sdf.SDFEdge;
 import org.ietr.dftools.algorithm.model.sdf.SDFVertex;
-import org.ietr.dftools.algorithm.model.types.DAGDefaultEdgePropertyType;
-import org.ietr.dftools.algorithm.model.types.DAGDefaultVertexPropertyType;
-import org.ietr.dftools.algorithm.model.types.SDFStringEdgePropertyType;
+import org.ietr.dftools.algorithm.model.types.LongEdgePropertyType;
+import org.ietr.dftools.algorithm.model.types.LongVertexPropertyType;
+import org.ietr.dftools.algorithm.model.types.StringEdgePropertyType;
 import org.ietr.dftools.workflow.WorkflowException;
 import org.ietr.preesm.codegen.idl.ActorPrototypes;
 import org.ietr.preesm.codegen.idl.Prototype;
@@ -144,9 +144,9 @@ public class StaticPiMM2MapperDAGVisitor extends PiMMSwitch<Boolean> {
     // Handle ID
     vertex.setId(actor.getName());
     // Set Repetition vector to 1 since it is a single rate vertex
-    vertex.setNbRepeat(new DAGDefaultVertexPropertyType(1));
+    vertex.setNbRepeat(new LongVertexPropertyType(1));
     // Set default time property
-    vertex.setTime(new DAGDefaultVertexPropertyType(0));
+    vertex.setTime(new LongVertexPropertyType(0));
     // Adds the list of source ports
     for (final DataInputPort port : actor.getDataInputPorts()) {
       vertex.addSourceName(port.getName());
@@ -317,7 +317,7 @@ public class StaticPiMM2MapperDAGVisitor extends PiMMSwitch<Boolean> {
     vertex.setId(actor.getName());
     vertex.setName(actor.getName());
     vertex.setInfo(actor.getName());
-    vertex.setNbRepeat(new DAGDefaultVertexPropertyType(1));
+    vertex.setNbRepeat(new LongVertexPropertyType(1));
 
     // Set the PERSISTENCE_LEVEL property
     vertex.setPropertyValue(DAGInitVertex.PERSISTENCE_LEVEL, actor.getLevel());
@@ -340,7 +340,7 @@ public class StaticPiMM2MapperDAGVisitor extends PiMMSwitch<Boolean> {
     vertex.setId(actor.getName());
     vertex.setName(actor.getName());
     vertex.setInfo(actor.getName());
-    vertex.setNbRepeat(new DAGDefaultVertexPropertyType(1));
+    vertex.setNbRepeat(new LongVertexPropertyType(1));
 
     final String delayInitID = actor.getEndReference();
     // Handle the END_REFERENCE property
@@ -411,23 +411,23 @@ public class StaticPiMM2MapperDAGVisitor extends PiMMSwitch<Boolean> {
     final String sourceModifier = getAnnotationFromPort(fifo.getSourcePort());
     final String targetModifier = getAnnotationFromPort(fifo.getTargetPort());
     if (!sourceModifier.isEmpty()) {
-      newEdge.setSourcePortModifier(new SDFStringEdgePropertyType(sourceModifier));
+      newEdge.setSourcePortModifier(new StringEdgePropertyType(sourceModifier));
     }
     if (!targetModifier.isEmpty()) {
-      newEdge.setTargetPortModifier(new SDFStringEdgePropertyType(targetModifier));
+      newEdge.setTargetPortModifier(new StringEdgePropertyType(targetModifier));
     }
     // 1.4 Set the different properties of the Edge
     final long dataSize = this.scenario.getSimulationManager().getDataTypeSizeOrDefault(fifo.getType());
     newEdge.setPropertyValue(SDFEdge.DATA_TYPE, fifo.getType());
     newEdge.setPropertyValue(SDFEdge.DATA_SIZE, dataSize);
-    newEdge.setWeight(new DAGDefaultEdgePropertyType(weight));
+    newEdge.setWeight(new LongEdgePropertyType(weight));
     newEdge.setSourceLabel(fifo.getSourcePort().getName());
     newEdge.setTargetLabel(fifo.getTargetPort().getName());
     newEdge.setPropertyValue(AbstractEdge.BASE, this.result);
     newEdge.setContainingEdge(edge);
 
     edge.getAggregate().add(newEdge);
-    edge.setWeight(new DAGDefaultEdgePropertyType(weight * dataSize));
+    edge.setWeight(new LongEdgePropertyType(weight * dataSize));
 
     return true;
   }

@@ -59,8 +59,8 @@ import org.ietr.dftools.algorithm.model.sdf.esdf.SDFJoinVertex
 import org.ietr.dftools.algorithm.model.sdf.esdf.SDFSinkInterfaceVertex
 import org.ietr.dftools.algorithm.model.sdf.esdf.SDFSourceInterfaceVertex
 import org.ietr.dftools.algorithm.model.sdf.transformations.SpecialActorPortsIndexer
-import org.ietr.dftools.algorithm.model.types.SDFIntEdgePropertyType
-import org.ietr.dftools.algorithm.model.types.SDFStringEdgePropertyType
+import org.ietr.dftools.algorithm.model.types.LongEdgePropertyType
+import org.ietr.dftools.algorithm.model.types.StringEdgePropertyType
 
 /**
  * Perform re-timing operation for an instance independent strongly connected component.
@@ -295,11 +295,11 @@ class RearrangeOperations implements DAGOperations {
 			val actorIn = edge.targetInterface
 			val newEdge = transientGraph.addEdge(fifoActor, fifoActorOut,
 										     	 node, actorIn,
-										     	 new SDFIntEdgePropertyType(1),
-										     	 new SDFIntEdgePropertyType(edge.cons.longValue),
-										     	 new SDFIntEdgePropertyType(0))
+										     	 new LongEdgePropertyType(1),
+										     	 new LongEdgePropertyType(edge.cons.longValue),
+										     	 new LongEdgePropertyType(0))
 			newEdge.dataType = edge.dataType.clone
-			newEdge.sourcePortModifier = new SDFStringEdgePropertyType(SDFEdge.MODIFIER_WRITE_ONLY)
+			newEdge.sourcePortModifier = new StringEdgePropertyType(SDFEdge.MODIFIER_WRITE_ONLY)
 			newEdge.targetPortModifier = edge.targetPortModifier
 		]
 	}
@@ -397,12 +397,12 @@ class RearrangeOperations implements DAGOperations {
 
 				val originalFifoImplodeEdge = transientGraph.addEdge(originalFifoActor, originalFifoActorOut,
 																	 implode, implodeFifoIn,
-																	 new SDFIntEdgePropertyType(1),
-																	 new SDFIntEdgePropertyType(originalFifoActor.nbRepeatAsLong),
-																	 new SDFIntEdgePropertyType(0))
+																	 new LongEdgePropertyType(1),
+																	 new LongEdgePropertyType(originalFifoActor.nbRepeatAsLong),
+																	 new LongEdgePropertyType(0))
 				originalFifoImplodeEdge.dataType = edge.dataType
-				originalFifoImplodeEdge.sourcePortModifier = new SDFStringEdgePropertyType(SDFEdge.MODIFIER_WRITE_ONLY)
-				originalFifoImplodeEdge.targetPortModifier = new SDFStringEdgePropertyType(SDFEdge.MODIFIER_READ_ONLY)
+				originalFifoImplodeEdge.sourcePortModifier = new StringEdgePropertyType(SDFEdge.MODIFIER_WRITE_ONLY)
+				originalFifoImplodeEdge.targetPortModifier = new StringEdgePropertyType(SDFEdge.MODIFIER_READ_ONLY)
 
 				// Add edge between node output and implode
 				val implodeNodeIn= new SDFSourceInterfaceVertex
@@ -410,12 +410,12 @@ class RearrangeOperations implements DAGOperations {
 				implode.addSource(implodeNodeIn)
 				val nodeImplodeEdge = transientGraph.addEdge(node, edge.sourceInterface,
 															 implode, implodeNodeIn,
-															 new SDFIntEdgePropertyType(edge.prod.longValue),
-															 new SDFIntEdgePropertyType(edge.prod.longValue),
-															 new SDFIntEdgePropertyType(0))
+															 new LongEdgePropertyType(edge.prod.longValue),
+															 new LongEdgePropertyType(edge.prod.longValue),
+															 new LongEdgePropertyType(0))
 				nodeImplodeEdge.dataType = edge.dataType
-				nodeImplodeEdge.sourcePortModifier = new SDFStringEdgePropertyType(SDFEdge.MODIFIER_WRITE_ONLY)
-				nodeImplodeEdge.targetPortModifier = new SDFStringEdgePropertyType(SDFEdge.MODIFIER_READ_ONLY)
+				nodeImplodeEdge.sourcePortModifier = new StringEdgePropertyType(SDFEdge.MODIFIER_WRITE_ONLY)
+				nodeImplodeEdge.targetPortModifier = new StringEdgePropertyType(SDFEdge.MODIFIER_READ_ONLY)
 
 				if(nodeImplodeEdge.dataType != originalFifoImplodeEdge.dataType) {
 					throw new DAGComputationBug("Data type of fifo-implode edge: (" +
@@ -431,22 +431,22 @@ class RearrangeOperations implements DAGOperations {
 				val implodeProd = originalFifoActor.nbRepeatAsLong + edge.prod.longValue
 				fifoInEdge = transientGraph.addEdge(implode, implodeOut,
 													fifoActor, fifoActorIn,
-													new SDFIntEdgePropertyType(implodeProd),
-													new SDFIntEdgePropertyType(1),
-													new SDFIntEdgePropertyType(0))
+													new LongEdgePropertyType(implodeProd),
+													new LongEdgePropertyType(1),
+													new LongEdgePropertyType(0))
 
 			} else {
 				// Edge is just the edge coming out of the node
 				fifoInEdge = transientGraph.addEdge(node, edge.sourceInterface,
 													fifoActor, fifoActorIn,
-													new SDFIntEdgePropertyType(edge.prod.longValue),
-													new SDFIntEdgePropertyType(1),
-													new SDFIntEdgePropertyType(0))
+													new LongEdgePropertyType(edge.prod.longValue),
+													new LongEdgePropertyType(1),
+													new LongEdgePropertyType(0))
 			}
 
 			fifoInEdge.dataType = edge.dataType
-			fifoInEdge.sourcePortModifier = new SDFStringEdgePropertyType(SDFEdge.MODIFIER_WRITE_ONLY)
-			fifoInEdge.targetPortModifier = new SDFStringEdgePropertyType(SDFEdge.MODIFIER_READ_ONLY)
+			fifoInEdge.sourcePortModifier = new StringEdgePropertyType(SDFEdge.MODIFIER_WRITE_ONLY)
+			fifoInEdge.targetPortModifier = new StringEdgePropertyType(SDFEdge.MODIFIER_READ_ONLY)
 		]
 	}
 
@@ -468,7 +468,7 @@ class RearrangeOperations implements DAGOperations {
 			// 2. It is trivial FIFO initialisation, where all delays have same values
 			// Either ways, token order does not matter, thus, starting edge can be set to 0
 			fifoActor = new FifoActor(0)
-			fifoActor.nbRepeat = new SDFIntEdgePropertyType(delay)
+			fifoActor.nbRepeat = new LongEdgePropertyType(delay)
 			fifoActor.name = edge.source.name + "_" + edge.target.name + "_init"
 		} else {
 			fifoActor = value as FifoActor

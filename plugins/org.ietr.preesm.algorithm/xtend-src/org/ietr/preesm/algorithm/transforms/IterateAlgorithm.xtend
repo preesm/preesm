@@ -46,7 +46,7 @@ import org.ietr.dftools.algorithm.model.sdf.SDFEdge
 import org.ietr.dftools.algorithm.model.sdf.SDFGraph
 import org.ietr.dftools.algorithm.model.sdf.esdf.SDFSinkInterfaceVertex
 import org.ietr.dftools.algorithm.model.sdf.esdf.SDFSourceInterfaceVertex
-import org.ietr.dftools.algorithm.model.types.SDFIntEdgePropertyType
+import org.ietr.dftools.algorithm.model.types.LongEdgePropertyType
 import org.ietr.dftools.workflow.WorkflowException
 import org.ietr.dftools.workflow.elements.Workflow
 import org.ietr.dftools.workflow.implement.AbstractTaskImplementation
@@ -93,8 +93,8 @@ class IterateAlgorithm extends AbstractTaskImplementation {
 				var previous = refGraph.getVertex(mergedVertexName + "_" + (index - 1))
 				if (previous !== null && current !== null) {
 					var newEdge = refGraph.addEdge(previous, current)
-					newEdge.setProd(new SDFIntEdgePropertyType(1));
-					newEdge.setCons(new SDFIntEdgePropertyType(1));
+					newEdge.setProd(new LongEdgePropertyType(1));
+					newEdge.setCons(new LongEdgePropertyType(1));
 
 					// Create a new source stateout port
 					var statein = new SDFSourceInterfaceVertex()

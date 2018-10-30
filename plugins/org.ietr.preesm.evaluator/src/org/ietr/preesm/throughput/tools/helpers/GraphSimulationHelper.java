@@ -43,7 +43,7 @@ import org.ietr.dftools.algorithm.model.sdf.SDFAbstractVertex;
 import org.ietr.dftools.algorithm.model.sdf.SDFEdge;
 import org.ietr.dftools.algorithm.model.sdf.SDFGraph;
 import org.ietr.dftools.algorithm.model.sdf.SDFInterfaceVertex;
-import org.ietr.dftools.algorithm.model.types.SDFIntEdgePropertyType;
+import org.ietr.dftools.algorithm.model.types.LongEdgePropertyType;
 
 /**
  * @author hderoui
@@ -193,7 +193,7 @@ public class GraphSimulationHelper {
         final SDFEdge edge = actor.getAssociatedEdge(input);
         // e.delay -= n * e.cons
         final long newDelay = edge.getDelay().longValue() - (n * edge.getCons().longValue());
-        edge.setDelay(new SDFIntEdgePropertyType(newDelay));
+        edge.setDelay(new LongEdgePropertyType(newDelay));
       }
 
       // increment the counter by n
@@ -205,7 +205,7 @@ public class GraphSimulationHelper {
       for (final SDFInterfaceVertex input : actor.getSources()) {
         final SDFEdge edge = actor.getAssociatedEdge(input);
         final long newDelay = edge.getDelay().longValue() + (n * edge.getCons().longValue());
-        edge.setDelay(new SDFIntEdgePropertyType(newDelay));
+        edge.setDelay(new LongEdgePropertyType(newDelay));
       }
     }
   }
@@ -222,14 +222,14 @@ public class GraphSimulationHelper {
       for (final SDFInterfaceVertex output : actor.getSinks()) {
         final SDFEdge edge = actor.getAssociatedEdge(output);
         final long newDelay = edge.getDelay().longValue() + (n * edge.getProd().longValue());
-        edge.setDelay(new SDFIntEdgePropertyType(newDelay));
+        edge.setDelay(new LongEdgePropertyType(newDelay));
       }
     } else {
       // remove n data tokens on each output edge
       for (final SDFInterfaceVertex output : actor.getSinks()) {
         final SDFEdge edge = actor.getAssociatedEdge(output);
         final long newDelay = edge.getDelay().longValue() - (n * edge.getProd().longValue());
-        edge.setDelay(new SDFIntEdgePropertyType(newDelay));
+        edge.setDelay(new LongEdgePropertyType(newDelay));
       }
 
       // decrement the counter by n

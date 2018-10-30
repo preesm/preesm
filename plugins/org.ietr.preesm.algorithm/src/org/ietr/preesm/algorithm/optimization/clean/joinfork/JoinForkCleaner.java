@@ -56,8 +56,8 @@ import org.ietr.dftools.algorithm.model.sdf.esdf.SDFJoinVertex;
 import org.ietr.dftools.algorithm.model.sdf.esdf.SDFRoundBufferVertex;
 import org.ietr.dftools.algorithm.model.sdf.transformations.SpecialActorPortsIndexer;
 import org.ietr.dftools.algorithm.model.sdf.visitors.SingleRateChecker;
-import org.ietr.dftools.algorithm.model.types.SDFIntEdgePropertyType;
-import org.ietr.dftools.algorithm.model.types.SDFStringEdgePropertyType;
+import org.ietr.dftools.algorithm.model.types.LongEdgePropertyType;
+import org.ietr.dftools.algorithm.model.types.StringEdgePropertyType;
 import org.ietr.dftools.algorithm.model.visitors.SDF4JException;
 import org.ietr.dftools.workflow.WorkflowException;
 
@@ -273,9 +273,9 @@ public class JoinForkCleaner {
 
         // Add an edge between the source and the explode
         final SDFEdge newEdge = graph.addEdge(originVertex, explodeVertex);
-        newEdge.setDelay(new SDFIntEdgePropertyType(0));
-        newEdge.setProd(new SDFIntEdgePropertyType(sourceEdges.get(sourceIndex).getProd().longValue()));
-        newEdge.setCons(new SDFIntEdgePropertyType(sourceEdges.get(sourceIndex).getProd().longValue()));
+        newEdge.setDelay(new LongEdgePropertyType(0));
+        newEdge.setProd(new LongEdgePropertyType(sourceEdges.get(sourceIndex).getProd().longValue()));
+        newEdge.setCons(new LongEdgePropertyType(sourceEdges.get(sourceIndex).getProd().longValue()));
         newEdge.setDataType(sourceEdges.get(sourceIndex).getDataType());
         newEdge.setSourceInterface(sourceEdges.get(sourceIndex).getSourceInterface());
         explodeVertex.addInterface(sourceEdges.get(sourceIndex).getTargetInterface());
@@ -283,7 +283,7 @@ public class JoinForkCleaner {
         newEdge.setSourcePortModifier(sourceEdges.get(sourceIndex).getSourcePortModifier());
 
         // Add a target port modifier to the edge
-        newEdge.setTargetPortModifier(new SDFStringEdgePropertyType(SDFEdge.MODIFIER_READ_ONLY));
+        newEdge.setTargetPortModifier(new StringEdgePropertyType(SDFEdge.MODIFIER_READ_ONLY));
       }
       if (implode && !(targetCopies.get(targetIndex) instanceof SDFJoinVertex)
           && !(targetCopies.get(targetIndex) instanceof SDFRoundBufferVertex)) {
@@ -300,9 +300,9 @@ public class JoinForkCleaner {
 
         // Add an edge between the implode and the target
         final SDFEdge newEdge = graph.addEdge(implodeVertex, originVertex);
-        newEdge.setDelay(new SDFIntEdgePropertyType(0));
-        newEdge.setProd(new SDFIntEdgePropertyType(targetEdges.get(targetIndex).getCons().longValue()));
-        newEdge.setCons(new SDFIntEdgePropertyType(targetEdges.get(targetIndex).getCons().longValue()));
+        newEdge.setDelay(new LongEdgePropertyType(0));
+        newEdge.setProd(new LongEdgePropertyType(targetEdges.get(targetIndex).getCons().longValue()));
+        newEdge.setCons(new LongEdgePropertyType(targetEdges.get(targetIndex).getCons().longValue()));
         newEdge.setDataType(targetEdges.get(targetIndex).getDataType());
         implodeVertex.addInterface(targetEdges.get(targetIndex).getTargetInterface());
         newEdge.setSourceInterface(targetEdges.get(targetIndex).getSourceInterface());
@@ -310,7 +310,7 @@ public class JoinForkCleaner {
         newEdge.setTargetPortModifier(targetEdges.get(targetIndex).getTargetPortModifier());
 
         // Add a source port modifier to the edge
-        newEdge.setSourcePortModifier(new SDFStringEdgePropertyType(SDFEdge.MODIFIER_WRITE_ONLY));
+        newEdge.setSourcePortModifier(new StringEdgePropertyType(SDFEdge.MODIFIER_WRITE_ONLY));
       }
       // end of testing zone
 
@@ -362,7 +362,7 @@ public class JoinForkCleaner {
         newEdge.setSourceInterface(sourceInterface);
         newEdge.getSource().addInterface(sourceInterface);
         // Add a source port modifier
-        newEdge.setSourcePortModifier(new SDFStringEdgePropertyType(SDFEdge.MODIFIER_WRITE_ONLY));
+        newEdge.setSourcePortModifier(new StringEdgePropertyType(SDFEdge.MODIFIER_WRITE_ONLY));
       }
 
       // Set the target interface of the new edge
@@ -418,7 +418,7 @@ public class JoinForkCleaner {
         newEdge.setTargetInterface(targetInterface);
         newEdge.getTarget().addInterface(targetInterface);
         // Add a target port modifier
-        newEdge.setTargetPortModifier(new SDFStringEdgePropertyType(SDFEdge.MODIFIER_READ_ONLY));
+        newEdge.setTargetPortModifier(new StringEdgePropertyType(SDFEdge.MODIFIER_READ_ONLY));
 
       }
 
@@ -441,8 +441,8 @@ public class JoinForkCleaner {
       }
 
       // Set the properties of the new edge
-      newEdge.setProd(new SDFIntEdgePropertyType(rest));
-      newEdge.setCons(new SDFIntEdgePropertyType(rest));
+      newEdge.setProd(new LongEdgePropertyType(rest));
+      newEdge.setCons(new LongEdgePropertyType(rest));
       newEdge.setDataType(replacedEdge.getDataType());
 
       // If the replacedEdge has a delay and that delay still exist in the
@@ -458,10 +458,10 @@ public class JoinForkCleaner {
               + replacedEdge.getSourceInterface().getName() + "=>" + replacedEdge.getTarget().getName() + "."
               + replacedEdge.getTargetInterface().getName() + ". At least " + addedDelays + " delays missing.");
         }
-        newEdge.setDelay(new SDFIntEdgePropertyType(addedDelays));
+        newEdge.setDelay(new LongEdgePropertyType(addedDelays));
         nbDelays = nbDelays - addedDelays;
       } else {
-        newEdge.setDelay(new SDFIntEdgePropertyType(0));
+        newEdge.setDelay(new LongEdgePropertyType(0));
       }
 
       // Preserve delays of sourceEdge and targetEdge.
@@ -479,7 +479,7 @@ public class JoinForkCleaner {
             + (multTarget * newEdge.getProd().longValue());
 
         // Add the delays to the newEdge
-        newEdge.setDelay(new SDFIntEdgePropertyType(nbPreservedDelays));
+        newEdge.setDelay(new LongEdgePropertyType(nbPreservedDelays));
       }
 
       // Update the number of token produced/consumed by the currently

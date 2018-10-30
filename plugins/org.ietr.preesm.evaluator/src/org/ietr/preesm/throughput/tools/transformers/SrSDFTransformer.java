@@ -38,7 +38,7 @@ package org.ietr.preesm.throughput.tools.transformers;
 import java.util.ArrayList;
 import org.ietr.dftools.algorithm.model.sdf.SDFEdge;
 import org.ietr.dftools.algorithm.model.sdf.SDFGraph;
-import org.ietr.dftools.algorithm.model.types.SDFIntEdgePropertyType;
+import org.ietr.dftools.algorithm.model.types.LongEdgePropertyType;
 import org.ietr.preesm.throughput.tools.helpers.Stopwatch;
 
 /**
@@ -66,9 +66,9 @@ public interface SrSDFTransformer {
     // for each edge set cons=prod=1 and delay=delay/prod
     for (final SDFEdge edge : hsdfGraph.edgeSet()) {
       final long delay = edge.getDelay().longValue() / edge.getProd().longValue();
-      edge.setProd(new SDFIntEdgePropertyType(1));
-      edge.setCons(new SDFIntEdgePropertyType(1));
-      edge.setDelay(new SDFIntEdgePropertyType(delay));
+      edge.setProd(new LongEdgePropertyType(1));
+      edge.setCons(new LongEdgePropertyType(1));
+      edge.setDelay(new LongEdgePropertyType(delay));
     }
 
     timer.stop();

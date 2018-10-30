@@ -54,8 +54,8 @@ import org.ietr.dftools.algorithm.model.sdf.esdf.SDFForkVertex
 import org.ietr.dftools.algorithm.model.sdf.esdf.SDFJoinVertex
 import org.ietr.dftools.algorithm.model.sdf.esdf.SDFRoundBufferVertex
 import org.ietr.dftools.algorithm.model.sdf.transformations.SpecialActorPortsIndexer
-import org.ietr.dftools.algorithm.model.types.SDFIntEdgePropertyType
-import org.ietr.dftools.algorithm.model.types.SDFStringEdgePropertyType
+import org.ietr.dftools.algorithm.model.types.LongEdgePropertyType
+import org.ietr.dftools.algorithm.model.types.StringEdgePropertyType
 import org.ietr.dftools.algorithm.model.visitors.SDF4JException
 import org.jgrapht.alg.cycle.CycleDetector
 import org.jgrapht.graph.AbstractGraph
@@ -339,9 +339,9 @@ final class SDF2DAG extends AbstractDAGConstructor implements PureDAGConstructor
 						updateMaps(originalInstance, explodeInstance)
 						// Add an edge between the explode and its instance
 						val newEdge = outputGraph.addEdge(originalInstance, explodeInstance)
-						newEdge.delay = new SDFIntEdgePropertyType(0)
-						newEdge.prod = new SDFIntEdgePropertyType(edge.prod.longValue)
-						newEdge.cons = new SDFIntEdgePropertyType(edge.prod.longValue)
+						newEdge.delay = new LongEdgePropertyType(0)
+						newEdge.prod = new LongEdgePropertyType(edge.prod.longValue)
+						newEdge.cons = new LongEdgePropertyType(edge.prod.longValue)
 						newEdge.dataType = edge.dataType
 						// Name the ports and set its attributes
 						explodeInstance.addInterface(edge.targetInterface)
@@ -349,7 +349,7 @@ final class SDF2DAG extends AbstractDAGConstructor implements PureDAGConstructor
 						newEdge.targetInterface = edge.targetInterface
 						newEdge.sourcePortModifier = edge.sourcePortModifier
 						// As its explode, target port modifier is read-only
-						newEdge.targetPortModifier = new SDFStringEdgePropertyType(SDFEdge.MODIFIER_READ_ONLY)
+						newEdge.targetPortModifier = new StringEdgePropertyType(SDFEdge.MODIFIER_READ_ONLY)
 				}
 
 				// Add implode instance for non-fork/join and non-roundbuffer
@@ -364,9 +364,9 @@ final class SDF2DAG extends AbstractDAGConstructor implements PureDAGConstructor
 					updateMaps(originalInstance, implodeInstance)
 					// Add an edge between the implode and its instance
 					val newEdge = outputGraph.addEdge(implodeInstance, originalInstance)
-					newEdge.delay = new SDFIntEdgePropertyType(0)
-					newEdge.prod = new SDFIntEdgePropertyType(edge.cons.longValue)
-					newEdge.cons = new SDFIntEdgePropertyType(edge.cons.longValue)
+					newEdge.delay = new LongEdgePropertyType(0)
+					newEdge.prod = new LongEdgePropertyType(edge.cons.longValue)
+					newEdge.cons = new LongEdgePropertyType(edge.cons.longValue)
 					newEdge.dataType = edge.dataType
 					// Name the ports and set its attributes
 					implodeInstance.addInterface(edge.sourceInterface)
@@ -374,7 +374,7 @@ final class SDF2DAG extends AbstractDAGConstructor implements PureDAGConstructor
 					newEdge.targetInterface = edge.targetInterface
 					newEdge.targetPortModifier = edge.targetPortModifier
 					// As its implode, source port modifier is write-only
-					newEdge.sourcePortModifier = new SDFStringEdgePropertyType(SDFEdge.MODIFIER_WRITE_ONLY)
+					newEdge.sourcePortModifier = new StringEdgePropertyType(SDFEdge.MODIFIER_WRITE_ONLY)
 				}
 
 				// Create the new edge for the output graph
@@ -418,7 +418,7 @@ final class SDF2DAG extends AbstractDAGConstructor implements PureDAGConstructor
 					newEdge.sourceInterface = sourceInterface
 					newEdge.source.addInterface(sourceInterface)
 					// Add a source port modifier
-					newEdge.sourcePortModifier = new SDFStringEdgePropertyType(SDFEdge.MODIFIER_WRITE_ONLY)
+					newEdge.sourcePortModifier = new StringEdgePropertyType(SDFEdge.MODIFIER_WRITE_ONLY)
 				}
 
 				// Set the target interface of the new edge
@@ -463,7 +463,7 @@ final class SDF2DAG extends AbstractDAGConstructor implements PureDAGConstructor
 					newEdge.targetInterface = targetInterface
 					newEdge.target.addInterface(targetInterface)
 					// Add a target port modifier
-					newEdge.targetPortModifier = new SDFStringEdgePropertyType(SDFEdge.MODIFIER_READ_ONLY)
+					newEdge.targetPortModifier = new StringEdgePropertyType(SDFEdge.MODIFIER_READ_ONLY)
 				}
 
 				// Associate the interfaces to the new edge
@@ -486,10 +486,10 @@ final class SDF2DAG extends AbstractDAGConstructor implements PureDAGConstructor
 		        // }
 
 		        // Set the properties of the new edge
-		        newEdge.prod = new SDFIntEdgePropertyType(rest)
-		        newEdge.cons = new SDFIntEdgePropertyType(rest)
+		        newEdge.prod = new LongEdgePropertyType(rest)
+		        newEdge.cons = new LongEdgePropertyType(rest)
 		        newEdge.dataType = edge.dataType
-		        newEdge.delay = new SDFIntEdgePropertyType(0)
+		        newEdge.delay = new LongEdgePropertyType(0)
 
 		        absoluteTarget += rest
 		        absoluteSource += rest
@@ -509,7 +509,7 @@ final class SDF2DAG extends AbstractDAGConstructor implements PureDAGConstructor
 				SpecialActorPortsIndexer.sortFifoList(newEdges, false);
 				val iter = newEdges.listIterator()
 				while(iter.hasNext()) {
-					iter.next().targetPortModifier = new SDFStringEdgePropertyType(SDFEdge.MODIFIER_UNUSED)
+					iter.next().targetPortModifier = new StringEdgePropertyType(SDFEdge.MODIFIER_UNUSED)
 				}
 				val portModifier = edge.targetPortModifier
 				if( (portModifier !== null) && !portModifier.toString.equals(SDFEdge.MODIFIER_UNUSED)) {
@@ -519,7 +519,7 @@ final class SDF2DAG extends AbstractDAGConstructor implements PureDAGConstructor
 					// Scan the edges in reverse order
 					while ((tokensToProduce > 0) && iter.hasPrevious()) {
 						val SDFEdge newEdge = iter.previous()
-						newEdge.targetPortModifier = new SDFStringEdgePropertyType(SDFEdge.MODIFIER_READ_ONLY)
+						newEdge.targetPortModifier = new StringEdgePropertyType(SDFEdge.MODIFIER_READ_ONLY)
 						tokensToProduce -= newEdge.cons.longValue
 					}
 				}

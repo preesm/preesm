@@ -40,7 +40,7 @@
 package org.ietr.preesm.mapper.model.special;
 
 import org.ietr.dftools.algorithm.model.AbstractVertex;
-import org.ietr.dftools.algorithm.model.types.DAGDefaultVertexPropertyType;
+import org.ietr.dftools.algorithm.model.types.LongVertexPropertyType;
 import org.ietr.preesm.core.types.ImplementationPropertyNames;
 import org.ietr.preesm.mapper.model.MapperDAG;
 import org.ietr.preesm.mapper.model.MapperDAGVertex;
@@ -86,8 +86,8 @@ public class SendVertex extends TransferVertex {
    * @see org.ietr.dftools.algorithm.model.dag.DAGVertex#getNbRepeat()
    */
   @Override
-  public DAGDefaultVertexPropertyType getNbRepeat() {
-    return new DAGDefaultVertexPropertyType(1);
+  public LongVertexPropertyType getNbRepeat() {
+    return new LongVertexPropertyType(1);
   }
 
 }

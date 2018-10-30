@@ -48,7 +48,7 @@ import org.ietr.dftools.algorithm.model.sdf.SDFGraph
 import org.ietr.dftools.algorithm.model.sdf.esdf.SDFForkVertex
 import org.ietr.dftools.algorithm.model.sdf.esdf.SDFJoinVertex
 import org.ietr.dftools.algorithm.model.sdf.visitors.ToHSDFVisitor
-import org.ietr.dftools.algorithm.model.types.SDFIntEdgePropertyType
+import org.ietr.dftools.algorithm.model.types.LongEdgePropertyType
 import org.ietr.dftools.algorithm.model.visitors.SDF4JException
 import org.jgrapht.traverse.TopologicalOrderIterator
 
@@ -513,7 +513,7 @@ class NodeChainGraph {
 
 		// Now set the delays
 		edgeDelayMap.forEach[edge, delay |
-			edge.delay = new SDFIntEdgePropertyType(delay.intValue)
+			edge.delay = new LongEdgePropertyType(delay.intValue)
 		]
 	}
 

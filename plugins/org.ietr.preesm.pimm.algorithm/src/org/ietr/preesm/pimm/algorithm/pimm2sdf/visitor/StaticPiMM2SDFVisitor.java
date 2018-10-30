@@ -60,8 +60,8 @@ import org.ietr.dftools.algorithm.model.sdf.esdf.SDFRoundBufferVertex;
 import org.ietr.dftools.algorithm.model.sdf.esdf.SDFSinkInterfaceVertex;
 import org.ietr.dftools.algorithm.model.sdf.esdf.SDFSourceInterfaceVertex;
 import org.ietr.dftools.algorithm.model.sdf.transformations.SpecialActorPortsIndexer;
-import org.ietr.dftools.algorithm.model.types.SDFExpressionEdgePropertyType;
-import org.ietr.dftools.algorithm.model.types.SDFStringEdgePropertyType;
+import org.ietr.dftools.algorithm.model.types.ExpressionEdgePropertyType;
+import org.ietr.dftools.algorithm.model.types.StringEdgePropertyType;
 import org.ietr.preesm.codegen.idl.ActorPrototypes;
 import org.ietr.preesm.codegen.idl.Prototype;
 import org.ietr.preesm.codegen.model.CodeGenArgument;
@@ -388,27 +388,27 @@ public class StaticPiMM2SDFVisitor extends PiMMSwitch<Boolean> {
       final SDFSourceInterfaceVertex sdfInputPort = (SDFSourceInterfaceVertex) this.piPort2SDFPort.get(piInputPort);
 
       // Handle Delay, Consumption and Production rates
-      SDFExpressionEdgePropertyType delay;
+      ExpressionEdgePropertyType delay;
       if (f.getDelay() != null) {
         // Evaluate the expression wrt. the current values of the
         // parameters
-        delay = new SDFExpressionEdgePropertyType(
+        delay = new ExpressionEdgePropertyType(
             createValue(Long.toString(f.getDelay().getSizeExpression().evaluate())));
       } else {
-        delay = new SDFExpressionEdgePropertyType(new ConstantValue(0L));
+        delay = new ExpressionEdgePropertyType(new ConstantValue(0L));
       }
       // Evaluate the expression wrt. the current values of the parameters
-      final SDFExpressionEdgePropertyType cons = new SDFExpressionEdgePropertyType(
+      final ExpressionEdgePropertyType cons = new ExpressionEdgePropertyType(
           createValue(Long.toString(piInputPort.getPortRateExpression().evaluate())));
 
       // Evaluate the expression wrt. the current values of the parameters
-      final SDFExpressionEdgePropertyType prod = new SDFExpressionEdgePropertyType(
+      final ExpressionEdgePropertyType prod = new ExpressionEdgePropertyType(
           createValue(Long.toString(piOutputPort.getPortRateExpression().evaluate())));
 
       final SDFEdge edge = this.result.addEdge(sdfSource, sdfOutputPort, sdfTarget, sdfInputPort, prod, cons, delay);
 
       // Set the data type of the edge
-      edge.setDataType(new SDFStringEdgePropertyType(f.getType()));
+      edge.setDataType(new StringEdgePropertyType(f.getType()));
 
       // Handle memory annotations
       convertAnnotationsFromTo(piOutputPort, edge, SDFEdge.SOURCE_PORT_MODIFIER);
@@ -430,13 +430,13 @@ public class StaticPiMM2SDFVisitor extends PiMMSwitch<Boolean> {
   private void convertAnnotationsFromTo(final DataPort piPort, final SDFEdge edge, final String property) {
     switch (piPort.getAnnotation()) {
       case READ_ONLY:
-        edge.setPropertyValue(property, new SDFStringEdgePropertyType(SDFEdge.MODIFIER_READ_ONLY));
+        edge.setPropertyValue(property, new StringEdgePropertyType(SDFEdge.MODIFIER_READ_ONLY));
         break;
       case WRITE_ONLY:
-        edge.setPropertyValue(property, new SDFStringEdgePropertyType(SDFEdge.MODIFIER_WRITE_ONLY));
+        edge.setPropertyValue(property, new StringEdgePropertyType(SDFEdge.MODIFIER_WRITE_ONLY));
         break;
       case UNUSED:
-        edge.setPropertyValue(property, new SDFStringEdgePropertyType(SDFEdge.MODIFIER_UNUSED));
+        edge.setPropertyValue(property, new StringEdgePropertyType(SDFEdge.MODIFIER_UNUSED));
         break;
       default:
     }

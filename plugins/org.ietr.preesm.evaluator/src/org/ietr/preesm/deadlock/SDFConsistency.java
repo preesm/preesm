@@ -46,7 +46,7 @@ import org.ietr.dftools.algorithm.model.sdf.SDFGraph;
 import org.ietr.dftools.algorithm.model.sdf.SDFInterfaceVertex;
 import org.ietr.dftools.algorithm.model.sdf.esdf.SDFSinkInterfaceVertex;
 import org.ietr.dftools.algorithm.model.sdf.esdf.SDFSourceInterfaceVertex;
-import org.ietr.dftools.algorithm.model.types.SDFIntEdgePropertyType;
+import org.ietr.dftools.algorithm.model.types.LongEdgePropertyType;
 import org.ietr.preesm.evaluator.EvaluationException;
 import org.ietr.preesm.throughput.tools.helpers.Stopwatch;
 import org.ietr.preesm.utils.math.MathFunctionsHelper;
@@ -109,14 +109,14 @@ public abstract class SDFConsistency {
       if (actor instanceof SDFSourceInterfaceVertex) {
         final SDFEdge e = actor.getAssociatedEdge(actor.getSinks().iterator().next());
         final long prod = e.getProd().longValue();
-        e.setProd(new SDFIntEdgePropertyType(prod * actor.getNbRepeatAsLong()));
+        e.setProd(new LongEdgePropertyType(prod * actor.getNbRepeatAsLong()));
         actor.setNbRepeat(1L);
       }
       // output interface
       if (actor instanceof SDFSinkInterfaceVertex) {
         final SDFEdge e = actor.getAssociatedEdge(actor.getSources().iterator().next());
         final long cons = e.getCons().longValue();
-        e.setCons(new SDFIntEdgePropertyType(cons * actor.getNbRepeatAsLong()));
+        e.setCons(new LongEdgePropertyType(cons * actor.getNbRepeatAsLong()));
         actor.setNbRepeat(1L);
       }
     }

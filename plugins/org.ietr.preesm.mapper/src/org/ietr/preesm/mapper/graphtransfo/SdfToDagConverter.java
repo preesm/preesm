@@ -55,7 +55,7 @@ import org.ietr.dftools.algorithm.model.dag.DAGVertex;
 import org.ietr.dftools.algorithm.model.sdf.SDFEdge;
 import org.ietr.dftools.algorithm.model.sdf.SDFGraph;
 import org.ietr.dftools.algorithm.model.sdf.visitors.DAGTransformation;
-import org.ietr.dftools.algorithm.model.types.SDFIntEdgePropertyType;
+import org.ietr.dftools.algorithm.model.types.LongEdgePropertyType;
 import org.ietr.dftools.algorithm.model.visitors.SDF4JException;
 import org.ietr.dftools.architecture.slam.ComponentInstance;
 import org.ietr.dftools.architecture.slam.Design;
@@ -181,7 +181,7 @@ public class SdfToDagConverter {
     for (final SDFEdge edge : graph.edgeSet()) {
       final String type = edge.getDataType().toString();
       final long size = scenario.getSimulationManager().getDataTypeSizeOrDefault(type);
-      edge.setDataSize(new SDFIntEdgePropertyType(size));
+      edge.setDataSize(new LongEdgePropertyType(size));
     }
   }
 
