@@ -36,12 +36,12 @@
  */
 package org.ietr.preesm.cli;
 
+import java.util.logging.Level;
 import org.eclipse.core.resources.IWorkspace;
 import org.eclipse.core.resources.IWorkspaceDescription;
 import org.eclipse.core.runtime.CoreException;
 import org.ietr.dftools.workflow.tools.CLIWorkflowLogger;
 
-// TODO: Auto-generated Javadoc
 /**
  * Define methods to use in specific cases of IApplication executions, in command-line.
  *
@@ -63,7 +63,7 @@ public class CommandLineUtil {
     // modify and set it to the current workspace.
     final IWorkspaceDescription desc = wp.getDescription();
     if (wp.isAutoBuilding()) {
-      CLIWorkflowLogger.printDebugln("Disbale auto-building");
+      CLIWorkflowLogger.log(Level.FINER, "Disbale auto-building");
       desc.setAutoBuilding(false);
       wp.setDescription(desc);
       return true;
@@ -81,7 +81,7 @@ public class CommandLineUtil {
    *           the core exception
    */
   public static void enableAutoBuild(final IWorkspace wp) throws CoreException {
-    CLIWorkflowLogger.printDebugln("Re-enable auto-building");
+    CLIWorkflowLogger.log(Level.FINER, "Re-enable auto-building");
     // IWorkspace.getDescription() returns a copy. We need to extract,
     // modify and set it to the current workspace.
     final IWorkspaceDescription desc = wp.getDescription();

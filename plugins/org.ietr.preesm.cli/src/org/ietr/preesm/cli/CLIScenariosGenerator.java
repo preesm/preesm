@@ -36,6 +36,7 @@
 package org.ietr.preesm.cli;
 
 import java.text.ParseException;
+import java.util.logging.Level;
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.CommandLineParser;
 import org.apache.commons.cli.HelpFormatter;
@@ -76,8 +77,8 @@ public class CLIScenariosGenerator implements IApplication {
 
       final String cliOpts = StringUtils
           .join((Object[]) context.getArguments().get(IApplicationContext.APPLICATION_ARGS), " ");
-      CLIWorkflowLogger.printTraceln("Starting scenarios generation");
-      CLIWorkflowLogger.printTraceln("Command line arguments: " + cliOpts);
+      CLIWorkflowLogger.log(Level.FINE, "Starting scenarios generation");
+      CLIWorkflowLogger.log(Level.FINE, "Command line arguments: " + cliOpts);
 
       // parse the command line arguments
       final CommandLine line = parser.parse(options,

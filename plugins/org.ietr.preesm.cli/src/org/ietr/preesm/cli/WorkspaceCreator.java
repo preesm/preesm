@@ -39,6 +39,7 @@ package org.ietr.preesm.cli;
 import java.io.File;
 import java.io.IOException;
 import java.util.Map;
+import java.util.logging.Level;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IProjectDescription;
 import org.eclipse.core.resources.IWorkspace;
@@ -130,12 +131,12 @@ public class WorkspaceCreator implements IApplication {
 
               if (project.exists()) {
                 project.close(this.progressMonitor);
-                CLIWorkflowLogger.printTraceln("A project named " + project.getName() + " is already registered, "
+                CLIWorkflowLogger.log(Level.FINE, "A project named " + project.getName() + " is already registered, "
                     + "deleting previous project from Workspace: ");
               }
               project.create(description, this.progressMonitor);
               project.open(this.progressMonitor);
-              CLIWorkflowLogger.printTraceln("New project registered: " + project.getName());
+              CLIWorkflowLogger.log(Level.FINE, "New project registered: " + project.getName());
             }
           }
         }
@@ -162,8 +163,8 @@ public class WorkspaceCreator implements IApplication {
 
         final String path = FilesManager.sanitize(args[0]);
         final File searchPath = new File(path).getCanonicalFile();
-        CLIWorkflowLogger.printTraceln("Register projects from \"" + searchPath.getAbsolutePath() + "\" to workspace \""
-            + this.workspace.getRoot().getLocation() + "\"");
+        CLIWorkflowLogger.log(Level.SEVERE, "Register projects from \"" + searchPath.getAbsolutePath()
+            + "\" to workspace \"" + this.workspace.getRoot().getLocation() + "\"");
         searchForProjects(searchPath);
 
         // Avoid warning messages of type "The workspace exited
@@ -176,18 +177,18 @@ public class WorkspaceCreator implements IApplication {
         final IJobManager manager = Job.getJobManager();
         int i = 0;
         while (!manager.isIdle()) {
-          CLIWorkflowLogger.printTraceln("Waiting for completion of" + " currently running jobs - " + ++i);
+          CLIWorkflowLogger.log(Level.SEVERE, "Waiting for completion of" + " currently running jobs - " + ++i);
           Thread.sleep(500);
         }
 
       } catch (final CoreException e) {
-        CLIWorkflowLogger.printSevereln(e.getMessage());
+        CLIWorkflowLogger.log(Level.SEVERE, e.getMessage());
         e.printStackTrace();
       } catch (final IOException e) {
-        CLIWorkflowLogger.printSevereln(e.getMessage());
+        CLIWorkflowLogger.log(Level.SEVERE, e.getMessage());
         e.printStackTrace();
       } catch (final InterruptedException e) {
-        CLIWorkflowLogger.printSevereln(e.getMessage());
+        CLIWorkflowLogger.log(Level.SEVERE, e.getMessage());
         e.printStackTrace();
       } finally {
         try {
@@ -197,12 +198,12 @@ public class WorkspaceCreator implements IApplication {
           }
           return IApplication.EXIT_OK;
         } catch (final CoreException e) {
-          CLIWorkflowLogger.printSevereln(e.getMessage());
+          CLIWorkflowLogger.log(Level.SEVERE, e.getMessage());
           e.printStackTrace();
         }
       }
     } else {
-      CLIWorkflowLogger.printSevereln("Please add the path to a directories containing projects.");
+      CLIWorkflowLogger.log(Level.SEVERE, "Please add the path to a directories containing projects.");
     }
 
     return IApplication.EXIT_RESTART;
