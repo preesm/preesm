@@ -154,7 +154,7 @@ public class CsvTimingParser {
     // Depending on the type of SDF graph we process (IBSDF or PISDF), call
     // one or the other method
     if (this.scenario.isIBSDFScenario()) {
-      throw new InvalidModelException();
+      throw new InvalidModelException("Timings are not supported for IBSDF graphs");
     } else if (this.scenario.isPISDFScenario()) {
       final PiGraph currentGraph = PiParser.getPiGraph(this.scenario.getAlgorithmURL());
       parseTimingsForPISDFGraph(timings, currentGraph, opDefIds);
