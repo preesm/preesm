@@ -387,11 +387,11 @@ class RearrangeOperations implements DAGOperations {
 				transientGraph.addVertex(implode)
 
 				// Add edge between original fifo and implode
-				val originalFifoActorOut = new SDFSourceInterfaceVertex
+				val originalFifoActorOut = new SDFSinkInterfaceVertex
 				originalFifoActorOut.name =  getFifoInterfaceName(originalFifoActor)
 				originalFifoActor.addSink(originalFifoActorOut)
 
-				val implodeFifoIn = new SDFSinkInterfaceVertex
+				val implodeFifoIn = new SDFSourceInterfaceVertex
 				implodeFifoIn.name = "implode_fifo_" + originalFifoActor.startIndex
 				implode.addSource(implodeFifoIn)
 
@@ -424,7 +424,7 @@ class RearrangeOperations implements DAGOperations {
 				}
 
 				// Add edge between implode output and FifoActor
-				val implodeOut = new SDFSourceInterfaceVertex
+				val implodeOut = new SDFSinkInterfaceVertex
 				implodeOut.name = implode.name + "_out"
 				implode.addSink(implodeOut)
 

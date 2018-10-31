@@ -45,6 +45,8 @@ import org.ietr.dftools.algorithm.model.IInterface
 import org.ietr.dftools.algorithm.model.InterfaceDirection
 import org.ietr.dftools.algorithm.model.sdf.SDFAbstractVertex
 import org.ietr.dftools.algorithm.model.sdf.SDFInterfaceVertex
+import org.ietr.dftools.algorithm.model.sdf.esdf.SDFSinkInterfaceVertex
+import org.ietr.dftools.algorithm.model.sdf.esdf.SDFSourceInterfaceVertex
 import org.ietr.dftools.algorithm.model.visitors.SDF4JException
 
 /**
@@ -146,7 +148,7 @@ class FifoActor extends SDFAbstractVertex {
 	 *
 	 * @param sink The output port interface that needs to be added to the actor
 	 */
-	override addSink(SDFInterfaceVertex sink) {
+	override addSink(SDFSinkInterfaceVertex sink) {
 		if(this.sinks.size >= 1) {
 			throw new SDF4JException("FIFO-Actor cannot have more than one sink")
 		}
@@ -159,7 +161,7 @@ class FifoActor extends SDFAbstractVertex {
 	 *
 	 * @param source The input port interface that is added to the actor
 	 */
-	override addSource(SDFInterfaceVertex source) {
+	override addSource(SDFSourceInterfaceVertex source) {
 		if(this.sources.size >= 1) {
 			throw new SDF4JException("FIFO-Actor cannot have more than one source")
 		}
@@ -172,7 +174,7 @@ class FifoActor extends SDFAbstractVertex {
 	 *
 	 * @param sinks A list of output ports
 	 */
-	override setSinks(List<SDFInterfaceVertex> sinks) {
+	override setSinks(List<SDFSinkInterfaceVertex> sinks) {
 		if(sinks.size > 1) {
 			throw new SDF4JException("FIFO-Actor cannot have more than one sink. Argument has " +
 				sinks.size + " sink interfaces.")
@@ -186,7 +188,7 @@ class FifoActor extends SDFAbstractVertex {
 	 *
 	 * @param sources A list of input ports
 	 */
-	override setSources(List<SDFInterfaceVertex> sources) {
+	override setSources(List<SDFSourceInterfaceVertex> sources) {
 		if(sources.size > 1) {
 			throw new SDF4JException("FIFO-Actor cannot have more than one source. Argument has " +
 				sources.size + " source interfaces.")

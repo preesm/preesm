@@ -55,6 +55,8 @@ import org.ietr.dftools.algorithm.model.sdf.SDFInterfaceVertex;
 import org.ietr.dftools.algorithm.model.sdf.SDFVertex;
 import org.ietr.dftools.algorithm.model.sdf.esdf.SDFBroadcastVertex;
 import org.ietr.dftools.algorithm.model.sdf.esdf.SDFRoundBufferVertex;
+import org.ietr.dftools.algorithm.model.sdf.esdf.SDFSinkInterfaceVertex;
+import org.ietr.dftools.algorithm.model.sdf.esdf.SDFSourceInterfaceVertex;
 import org.ietr.dftools.algorithm.model.sdf.transformations.IbsdfFlattener;
 import org.ietr.dftools.algorithm.model.types.LongEdgePropertyType;
 import org.ietr.dftools.algorithm.model.visitors.SDF4JException;
@@ -324,13 +326,13 @@ public class HSDFBuildLoops {
     }
 
     // get sources of vertex
-    final List<SDFInterfaceVertex> sourcesVertex = new ArrayList<>();
+    final List<SDFSourceInterfaceVertex> sourcesVertex = new ArrayList<>();
     for (final SDFEdge e : inEdgeVertex) {
       sourcesVertex.add(e.getTargetInterface());
     }
 
     // get sinks of vertex
-    final List<SDFInterfaceVertex> sinksVertex = new ArrayList<>();
+    final List<SDFSinkInterfaceVertex> sinksVertex = new ArrayList<>();
     for (final SDFEdge e : outEdgeVertex) {
       sinksVertex.add(e.getSourceInterface());
     }
