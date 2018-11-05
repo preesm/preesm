@@ -44,6 +44,7 @@ package org.ietr.preesm.algorithm.transforms;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.logging.Level;
+import java.util.logging.Logger;
 import org.apache.commons.lang3.time.StopWatch;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.ietr.dftools.algorithm.model.sdf.SDFGraph;
@@ -64,7 +65,7 @@ import org.ietr.dftools.workflow.tools.WorkflowLogger;
  */
 public class HierarchyFlattening extends AbstractTaskImplementation {
 
-  private static final WorkflowLogger LOGGER = WorkflowLogger.getLogger();
+  private static final Logger LOGGER = WorkflowLogger.getLogger();
 
   /*
    * (non-Javadoc)
@@ -107,6 +108,7 @@ public class HierarchyFlattening extends AbstractTaskImplementation {
 
       final IbsdfFlattener flattener = new IbsdfFlattener(algorithm, depth);
       VisitorOutput.setLogger(HierarchyFlattening.LOGGER);
+      algorithm.insertBroadcasts();
       try {
         final boolean validateModel = algorithm.validateModel();
         if (validateModel) {

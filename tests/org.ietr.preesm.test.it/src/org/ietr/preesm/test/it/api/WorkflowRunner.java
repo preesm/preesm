@@ -42,6 +42,7 @@ import java.nio.file.FileVisitOption;
 import java.nio.file.Files;
 import java.util.Comparator;
 import java.util.logging.Level;
+import java.util.logging.Logger;
 import org.eclipse.core.resources.IContainer;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IFolder;
@@ -81,7 +82,7 @@ public class WorkflowRunner {
     project.open(null);
 
     DFToolsWorkflowLogger.runFromCLI();
-    final WorkflowLogger logger = WorkflowLogger.getLogger();
+    final Logger logger = WorkflowLogger.getLogger();
     logger.setLevel(Level.ALL);
 
     // run workflow

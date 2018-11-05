@@ -105,15 +105,6 @@ public class SdfToDagConverter {
 
     WorkflowLogger.getLogger().log(Level.INFO, "Converting from SDF to DAG.");
 
-    try {
-
-      if (!sdfIn.validateModel()) {
-        return null;
-      }
-    } catch (final SDF4JException e) {
-      WorkflowLogger.getLogger().log(Level.SEVERE, e.getMessage());
-      return null;
-    }
     final SDFGraph sdf = sdfIn.clone();
     SdfToDagConverter.setDataSizeForSDF(sdf, scenario);
 
