@@ -108,7 +108,7 @@ public class HierarchyFlattening extends AbstractTaskImplementation {
       final IbsdfFlattener flattener = new IbsdfFlattener(algorithm, depth);
       VisitorOutput.setLogger(HierarchyFlattening.LOGGER);
       try {
-        final boolean validateModel = algorithm.validateModel(HierarchyFlattening.LOGGER);
+        final boolean validateModel = algorithm.validateModel();
         if (validateModel) {
           try {
             flattener.flattenGraph();

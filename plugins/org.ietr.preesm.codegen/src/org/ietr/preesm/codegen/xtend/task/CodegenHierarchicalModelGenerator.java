@@ -187,7 +187,7 @@ public class CodegenHierarchicalModelGenerator {
         throw (new WorkflowException(e.getMessage(), e));
       }
       // compute repetition vectors
-      resultGraph.validateModel(WorkflowLogger.getLogger());
+      resultGraph.validateModel();
       if (!resultGraph.isSchedulable()) {
         throw (new WorkflowException("HSDF Build Loops generate clustering: Graph not schedulable"));
       }

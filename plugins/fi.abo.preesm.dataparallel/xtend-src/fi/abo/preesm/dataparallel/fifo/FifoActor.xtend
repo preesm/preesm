@@ -38,7 +38,6 @@ package fi.abo.preesm.dataparallel.fifo
 
 import java.util.List
 import java.util.logging.Level
-import java.util.logging.Logger
 import org.eclipse.xtend.lib.annotations.Accessors
 import org.ietr.dftools.algorithm.model.AbstractEdge
 import org.ietr.dftools.algorithm.model.IInterface
@@ -48,6 +47,7 @@ import org.ietr.dftools.algorithm.model.sdf.SDFInterfaceVertex
 import org.ietr.dftools.algorithm.model.sdf.esdf.SDFSinkInterfaceVertex
 import org.ietr.dftools.algorithm.model.sdf.esdf.SDFSourceInterfaceVertex
 import org.ietr.dftools.algorithm.model.visitors.SDF4JException
+import org.ietr.dftools.workflow.tools.WorkflowLogger
 
 /**
  * Class that represents a FIFO initialisation refinement. Firing this actor represents
@@ -215,22 +215,22 @@ class FifoActor extends SDFAbstractVertex {
 	 *  <li> The number of sinks are not more than one
 	 * </ul>
 	 */
-	override validateModel(Logger logger) {
+	override validateModel() {
 		if(this.sinks.size > 1) {
-			logger.log(Level.SEVERE, "FIFO-Actor cannot have more than one sink")
+			WorkflowLogger.getLogger().log(Level.SEVERE, "FIFO-Actor cannot have more than one sink")
 			return false
 		}
 
 		if(this.sources.size > 1) {
-			logger.log(Level.SEVERE, "FIFO-Actor cannot have more than one source")
+			WorkflowLogger.getLogger().log(Level.SEVERE, "FIFO-Actor cannot have more than one source")
 			return false
 		}
 
 		if(this.nbRepeatAsLong <= 0) {
-			logger.log(Level.SEVERE, "FIFO-Actor cannot have repetition vector less than 1 ")
+			WorkflowLogger.getLogger().log(Level.SEVERE, "FIFO-Actor cannot have repetition vector less than 1 ")
 			return false
 		}
 
-		return super.validateModel(logger)
+		return super.validateModel()
 	}
 }

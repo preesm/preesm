@@ -107,7 +107,7 @@ public class SdfToDagConverter {
 
     try {
 
-      if (!sdfIn.validateModel(WorkflowLogger.getLogger())) {
+      if (!sdfIn.validateModel()) {
         return null;
       }
     } catch (final SDF4JException e) {

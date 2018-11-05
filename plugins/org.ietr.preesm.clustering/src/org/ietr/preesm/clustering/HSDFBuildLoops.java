@@ -714,7 +714,7 @@ public class HSDFBuildLoops {
         throw (new WorkflowException(e.getMessage()));
       }
       try {
-        resultGraph.validateModel(WorkflowLogger.getLogger());
+        resultGraph.validateModel();
       } catch (final SDF4JException e) {
         throw new WorkflowException("execute failed", e);
       } // compute repetition vectors
