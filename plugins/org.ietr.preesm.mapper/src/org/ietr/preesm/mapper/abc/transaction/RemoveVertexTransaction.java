@@ -104,7 +104,12 @@ public class RemoveVertexTransaction extends Transaction {
 
     // Adding precedence between predecessor and sucessor if they don't
     // share data
-    final Set<DAGEdge> edges = this.implementation.getAllEdges(prev, next);
+    final Set<DAGEdge> edges;
+    if (prev != null && next != null) {
+      edges = this.implementation.getAllEdges(prev, next);
+    } else {
+      edges = null;
+    }
     if (((prev != null) && (next != null)) && ((edges == null) || edges.isEmpty())) {
       adder.addPrecedenceEdge(prev, next);
     }
