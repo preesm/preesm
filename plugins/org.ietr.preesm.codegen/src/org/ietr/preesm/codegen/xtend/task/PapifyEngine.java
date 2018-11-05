@@ -227,8 +227,8 @@ public class PapifyEngine {
 
             // Add the actor name
             ConstantString actorName = CodegenFactory.eINSTANCE.createConstantString();
-            actorName.setName("actor_name".concat(vertex.getName()));
-            actorName.setValue(vertex.getName());
+            actorName.setName("actor_name".concat(vertex.getId()));
+            actorName.setValue(vertex.getId());
             actorName.setComment("Actor name");
 
             // Add the size of the CodeSet
