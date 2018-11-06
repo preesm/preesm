@@ -209,7 +209,7 @@ public class FastPopulation {
     for (int i = 0; i < getPopulationNum(); i++) {
 
       MapperDAG tempdag = null;
-      tempdag = dag.clone();
+      tempdag = dag.copy();
 
       // perform the initialization
       final LatencyAbc simu = new InfiniteHomogeneousAbc(
@@ -224,8 +224,8 @@ public class FastPopulation {
       final FastAlgorithm algorithm = new FastAlgorithm(initialLists, scenario);
       tempdag = algorithm
           .map("population", this.abcParams, fastParams, tempdag, this.archi, false, true, false, null, taskSched)
-          .clone();
-      temp.add(tempdag.clone());
+          .copy();
+      temp.add(tempdag.copy());
 
     }
     this.population.addAll(temp);

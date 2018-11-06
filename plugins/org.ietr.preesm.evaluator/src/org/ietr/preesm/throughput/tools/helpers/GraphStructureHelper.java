@@ -826,7 +826,7 @@ public interface GraphStructureHelper {
     final ArrayList<SDFAbstractVertex> hierarchicalActorsToBeCloned = new ArrayList<>();
 
     // clone the tograph
-    final SDFGraph clonedIBSDF = ibsdf.clone();
+    final SDFGraph clonedIBSDF = ibsdf.copy();
 
     // add the hierarchical actors of the new top-graph to the list
     Map<String, SDFAbstractVertex> hActors = GraphStructureHelper.getHierarchicalActors(clonedIBSDF);
@@ -839,7 +839,7 @@ public interface GraphStructureHelper {
       // get a hierarchical actor
       final SDFAbstractVertex h = hierarchicalActorsToBeCloned.get(0);
       // clone its subgraph
-      final SDFGraph cloneSubgraph = ((SDFGraph) h.getGraphDescription()).clone();
+      final SDFGraph cloneSubgraph = ((SDFGraph) h.getGraphDescription()).copy();
       // set the subgraph cloned
       h.setGraphDescription(cloneSubgraph);
 

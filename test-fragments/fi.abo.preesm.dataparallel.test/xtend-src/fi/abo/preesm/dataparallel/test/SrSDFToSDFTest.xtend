@@ -141,7 +141,7 @@ class SrSDFToSDFTest {
 	 */
 	@Test
 	def void testSDFRetiming() {
-		val sdfCopy = sdf.clone
+		val sdfCopy = sdf.copy
 		val srsdfVisitor = new ToHSDFVisitor
 		sdfCopy.accept(srsdfVisitor)
 		val srsdfCopy = srsdfVisitor.output

@@ -298,7 +298,7 @@ class RearrangeOperations implements DAGOperations {
 										     	 new LongEdgePropertyType(1),
 										     	 new LongEdgePropertyType(edge.cons.longValue),
 										     	 new LongEdgePropertyType(0))
-			newEdge.dataType = edge.dataType.clone
+			newEdge.dataType = edge.dataType.copy
 			newEdge.sourcePortModifier = new StringEdgePropertyType(SDFEdge.MODIFIER_WRITE_ONLY)
 			newEdge.targetPortModifier = edge.targetPortModifier
 		]

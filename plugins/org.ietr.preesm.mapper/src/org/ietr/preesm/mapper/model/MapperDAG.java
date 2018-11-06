@@ -138,7 +138,7 @@ public class MapperDAG extends DirectedAcyclicGraph {
    * @return the mapper DAG
    */
   @Override
-  public MapperDAG clone() {
+  public MapperDAG copy() {
 
     // create clone
     final MapperDAG newDAG = new MapperDAG(new MapperEdgeFactory(), getReferencePiMMGraph());
@@ -148,7 +148,7 @@ public class MapperDAG extends DirectedAcyclicGraph {
     final Iterator<DAGVertex> iterV = vertexSet().iterator();
     while (iterV.hasNext()) {
       MapperDAGVertex currentVertex = (MapperDAGVertex) iterV.next();
-      currentVertex = currentVertex.clone();
+      currentVertex = currentVertex.copy();
       newDAG.addVertex(currentVertex);
     }
 
@@ -164,8 +164,8 @@ public class MapperDAG extends DirectedAcyclicGraph {
       final String targetName = target.getName();
       final MapperDAGEdge newEdge = (MapperDAGEdge) newDAG.addEdge(newDAG.getVertex(sourceName),
           newDAG.getVertex(targetName));
-      newEdge.setInit(origEdge.getInit().clone());
-      newEdge.setTiming(origEdge.getTiming().clone());
+      newEdge.setInit(origEdge.getInit().copy());
+      newEdge.setTiming(origEdge.getTiming().copy());
       newEdge.copyProperties(origEdge);
       // Updating the aggregate list with proper reference
       newEdge.setAggregate(new EdgeAggregate());
@@ -179,8 +179,8 @@ public class MapperDAG extends DirectedAcyclicGraph {
     }
     newDAG.copyProperties(this);
 
-    newDAG.setMappings((DAGMappings) getMappings().clone());
-    newDAG.setTimings((DAGTimings) getTimings().clone());
+    newDAG.setMappings((DAGMappings) getMappings().copy());
+    newDAG.setTimings((DAGTimings) getTimings().copy());
 
     return newDAG;
   }

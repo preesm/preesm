@@ -230,9 +230,9 @@ public class AddSendReceiveTransaction extends Transaction {
     this.newEdge2 = (MapperDAGEdge) this.implementation.addEdge(this.sendVertex, this.receiveVertex);
     this.newEdge3 = (MapperDAGEdge) this.implementation.addEdge(this.receiveVertex, currentTarget);
 
-    this.newEdge1.setInit(this.edge.getInit().clone());
-    this.newEdge2.setInit(this.edge.getInit().clone());
-    this.newEdge3.setInit(this.edge.getInit().clone());
+    this.newEdge1.setInit(this.edge.getInit().copy());
+    this.newEdge2.setInit(this.edge.getInit().copy());
+    this.newEdge3.setInit(this.edge.getInit().copy());
 
     this.newEdge1.getTiming().setCost(0);
     this.newEdge2.getTiming().setCost(0);

@@ -254,7 +254,7 @@ public class DAGExporter extends GMLExporter<DAGVertex, DAGEdge> {
     // not modify the dag)?
     final MapperDAG mapperDag = (MapperDAG) dag;
 
-    final MapperDAG clone = mapperDag.clone();
+    final MapperDAG clone = mapperDag.copy();
     final IWorkspace workspace = ResourcesPlugin.getWorkspace();
     final IFile iGraphMLFile = workspace.getRoot().getFile(path);
 

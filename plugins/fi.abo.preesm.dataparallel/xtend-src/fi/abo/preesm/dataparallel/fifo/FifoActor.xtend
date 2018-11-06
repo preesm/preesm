@@ -82,7 +82,7 @@ class FifoActor extends SDFAbstractVertex {
 		this(0)
 	}
 
-	override clone() {
+	override FifoActor copy() {
 		val FifoActor newActor = new FifoActor(this.startIndex)
 
 		// Copy bean properties, if any
@@ -100,11 +100,11 @@ class FifoActor extends SDFAbstractVertex {
 
 		// Copy source and sink interfaces, if any
 		this.sinks.forEach[sink |
-			newActor.addSink(sink.clone())
+			newActor.addSink(sink.copy())
 		]
 
 		this.sources.forEach[source |
-			newActor.addSource(source.clone())
+			newActor.addSource(source.copy())
 		]
 
 		newActor.name = this.name

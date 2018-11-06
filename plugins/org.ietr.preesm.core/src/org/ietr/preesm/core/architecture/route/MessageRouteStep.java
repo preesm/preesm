@@ -202,7 +202,7 @@ public class MessageRouteStep extends AbstractRouteStep {
    * @see org.ietr.preesm.core.architecture.route.AbstractRouteStep#clone()
    */
   @Override
-  protected Object clone() throws CloneNotSupportedException {
+  public MessageRouteStep copy() {
     return new MessageRouteStep(getSender(), this.nodes, getReceiver());
   }
 

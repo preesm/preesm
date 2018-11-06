@@ -91,8 +91,8 @@ public class HierarchyFlattening extends AbstractTaskImplementation {
     }
 
     if (depth == 0) {
-      outputs.put("SDF",
-          algorithm.clone()); /* we now extract repetition vector into non-flattened hierarchical actors. */
+      /* we now extract repetition vector into non-flattened hierarchical actors. */
+      outputs.put("SDF", algorithm.copy());
       HierarchyFlattening.LOGGER.log(Level.INFO, "flattening depth = 0: no flattening");
       return outputs;
     } else if (depth < 0) {
@@ -130,7 +130,7 @@ public class HierarchyFlattening extends AbstractTaskImplementation {
       }
     } else {
       HierarchyFlattening.LOGGER.log(Level.SEVERE, "Inconsistent Hierarchy, graph can't be flattened");
-      outputs.put("SDF", algorithm.clone());
+      outputs.put("SDF", algorithm.copy());
       throw (new WorkflowException("Inconsistent Hierarchy, graph can't be flattened"));
     }
 

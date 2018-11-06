@@ -103,7 +103,7 @@ class DAGSubsetTest {
 			// Collect strongly connected component that has loops in it
 			// Needed because stronglyConnectedSubgraphs also yield subgraphs with no loops
 			strongCompDetector.stronglyConnectedSets.forEach[ subgraphSet |
-				val subgraph = new AsSubgraph(sdf.clone, subgraphSet)
+				val subgraph = new AsSubgraph(sdf.copy, subgraphSet)
 				val cycleDetector = new CycleDetector(subgraph)
 				if(cycleDetector.detectCycles) {
 					// ASSUMPTION: Strongly connected component of a directed graph contains atleast

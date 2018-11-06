@@ -109,7 +109,7 @@ class SrSDFToSDF {
 		}
 
 		this.sdf = sdf
-		this.originalSDF = sdf.clone
+		this.originalSDF = sdf.copy
 
 		this.nodeChainGraph = new NodeChainGraph(srsdf)
 		this.dagGen = new SDF2DAG(sdf)

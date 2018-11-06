@@ -105,7 +105,7 @@ public class SdfToDagConverter {
 
     WorkflowLogger.getLogger().log(Level.INFO, "Converting from SDF to DAG.");
 
-    final SDFGraph sdf = sdfIn.clone();
+    final SDFGraph sdf = sdfIn.copy();
     SdfToDagConverter.setDataSizeForSDF(sdf, scenario);
 
     final PiGraph pisdGraph = (PiGraph) sdf.getPropertyBean().getValue(PiGraph.class.getCanonicalName());

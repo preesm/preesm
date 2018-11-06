@@ -52,6 +52,7 @@ import java.util.Set;
 import java.util.logging.Level;
 import org.eclipse.xtext.xbase.lib.Pair;
 import org.ietr.dftools.algorithm.iterators.TopologicalDAGIterator;
+import org.ietr.dftools.algorithm.model.CloneableProperty;
 import org.ietr.dftools.algorithm.model.PropertyBean;
 import org.ietr.dftools.algorithm.model.PropertyFactory;
 import org.ietr.dftools.algorithm.model.PropertySource;
@@ -94,7 +95,8 @@ import org.jgrapht.graph.SimpleGraph;
  * @author kdesnos
  *
  */
-public class MemoryExclusionGraph extends SimpleGraph<MemoryExclusionVertex, DefaultEdge> implements PropertySource {
+public class MemoryExclusionGraph extends SimpleGraph<MemoryExclusionVertex, DefaultEdge>
+    implements PropertySource, CloneableProperty<MemoryExclusionGraph> {
 
   /** Mandatory when extending SimpleGraph. */
   private static final long serialVersionUID = 6491894138235944107L;
@@ -595,10 +597,9 @@ public class MemoryExclusionGraph extends SimpleGraph<MemoryExclusionVertex, Def
    * @override
    */
   @Override
-  public Object clone() {
-    final Object o = super.clone();
-    ((MemoryExclusionGraph) o).adjacentVerticesBackup = new LinkedHashMap<>();
-
+  public MemoryExclusionGraph copy() {
+    final MemoryExclusionGraph o = (MemoryExclusionGraph) super.clone();
+    o.adjacentVerticesBackup = new LinkedHashMap<>();
     return o;
 
   }
@@ -849,7 +850,7 @@ public class MemoryExclusionGraph extends SimpleGraph<MemoryExclusionVertex, Def
         final List<Pair<MemoryExclusionVertex, Pair<Range, Range>>> realTokenRangeCopy = new ArrayList<>();
         for (final Pair<MemoryExclusionVertex, Pair<Range, Range>> pair : realTokenRange) {
           realTokenRangeCopy.add(Pair.of(mObjMap.get(pair.getKey()),
-              Pair.of((Range) pair.getValue().getKey().clone(), (Range) pair.getValue().getValue().clone())));
+              Pair.of((Range) pair.getValue().getKey().copy(), (Range) pair.getValue().getValue().copy())));
         }
         vertexClone.setPropertyValue(MemoryExclusionVertex.REAL_TOKEN_RANGE_PROPERTY, realTokenRangeCopy);
       }
@@ -1403,7 +1404,7 @@ public class MemoryExclusionGraph extends SimpleGraph<MemoryExclusionVertex, Def
   protected void updateFIFOMemObjectWithSchedule(final DirectedAcyclicGraph inputDAG) {
 
     // Create a DAG with new edges from scheduling info
-    final DirectedAcyclicGraph scheduledDAG = (DirectedAcyclicGraph) inputDAG.clone();
+    final DirectedAcyclicGraph scheduledDAG = (DirectedAcyclicGraph) inputDAG.copy();
 
     // Create an List of the DAGVertices, in scheduling order.
     final List<DAGVertex> verticesMap = new ArrayList<>();

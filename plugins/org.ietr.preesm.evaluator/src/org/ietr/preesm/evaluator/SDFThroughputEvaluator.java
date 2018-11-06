@@ -71,7 +71,7 @@ public class SDFThroughputEvaluator extends ThroughputEvaluator {
   public double launch(final SDFGraph inputGraph) throws InvalidExpressionException {
 
     double period;
-    final SDFGraph sdf = inputGraph.clone();
+    final SDFGraph sdf = inputGraph.copy();
 
     // Check condition of existence of a periodic schedule (Bellman Ford)
     final boolean periodic_schedule = has_periodic_schedule(sdf);

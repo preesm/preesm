@@ -1799,7 +1799,7 @@ class ScriptRunner {
 				rootBuffers.entrySet.forEach [ entry |
 					val rootMObj = bufferAndMObjectMap.get(entry.value.key)
 					val localRange = entry.key.intersection(realTokenRange)
-					val translatedLocalRange = localRange.clone as Range
+					val translatedLocalRange = localRange.copy
 					translatedLocalRange.translate(entry.value.value.start - entry.key.start)
 					val remoteRange = entry.value.value.intersection(translatedLocalRange)
 					if (remoteRange != translatedLocalRange) {

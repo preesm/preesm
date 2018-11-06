@@ -71,7 +71,7 @@ public class SDFDoubleEdgePropertyType extends AbstractEdgePropertyType<Double> 
    * @see org.ietr.dftools.algorithm.model.AbstractEdgePropertyType#clone()
    */
   @Override
-  public AbstractEdgePropertyType<Double> clone() {
+  public SDFDoubleEdgePropertyType copy() {
     return new SDFDoubleEdgePropertyType(this.value);
   }
 

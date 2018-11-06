@@ -119,7 +119,7 @@ class NodeChainGraph {
 		nodechains = newLinkedHashMap
 		explodeRelatedVertex = newLinkedHashMap
 		this.graph = graph
-		val localGraph = graph.clone
+		val localGraph = graph.copy
 
 		// Topological sort only works on acyclic graph. So remove edges that
 		// have delays equal to production/consumption rate

@@ -49,7 +49,6 @@ import java.util.stream.Collectors;
 import org.eclipse.xtext.xbase.lib.Pair;
 import org.ietr.dftools.algorithm.model.dag.DAGEdge;
 import org.ietr.dftools.algorithm.model.dag.DAGVertex;
-import org.ietr.dftools.algorithm.model.sdf.SDFAbstractVertex;
 
 /**
  * This class implements the Buffer concept used in memory scripts.
@@ -566,7 +565,7 @@ public class Buffer {
     if (isCompletelyMatched() && (this.indivisibleRanges.size() > 1)) {
       // Test that all ranges are covered by the indivisible ranges
       final List<Range> copy = new ArrayList<>(
-          this.indivisibleRanges.stream().map(it -> (Range) it.clone()).collect(Collectors.toList()));
+          this.indivisibleRanges.stream().map(it -> it.copy()).collect(Collectors.toList()));
       final Range firstElement = copy.get(0);
       copy.remove(0);
       final Range coveredRange = Range.union(copy, firstElement);
@@ -652,8 +651,8 @@ public class Buffer {
       forwardMatch.getLocalBuffer().matchTable.values().stream().flatMap(it -> it.stream())
           .filter(it -> it.getType() == MatchType.BACKWARD).forEach(item -> {
             // Copy the forbiddenLocalRanges of the applied forward match
-            final List<Range> newForbiddenRanges = forwardMatch.getForbiddenLocalRanges().stream()
-                .map(it -> (Range) it.clone()).collect(Collectors.toList());
+            final List<Range> newForbiddenRanges = forwardMatch.getForbiddenLocalRanges().stream().map(it -> it.copy())
+                .collect(Collectors.toList());
             // translate to the backward match remoteBuffer indexes
             Range.translate(newForbiddenRanges, item.getRemoteIndex() - item.getLocalIndex());
             // Add it to the forward match (i.e. the reciprocate of the backward)
@@ -666,9 +665,9 @@ public class Buffer {
 
             // Copy the forbiddenLocalRanges and mergeableLocalRange of the applied backward match
             final List<Range> newForbiddenRanges = forwardMatch.getReciprocate().getForbiddenLocalRanges().stream()
-                .map(it -> (Range) it.clone()).collect(Collectors.toList());
+                .map(it -> it.copy()).collect(Collectors.toList());
             final List<Range> newMergeableRanges = forwardMatch.getReciprocate().getMergeableLocalRanges().stream()
-                .map(it -> (Range) it.clone()).collect(Collectors.toList());
+                .map(it -> it.copy()).collect(Collectors.toList());
             // translate to the forward match remoteBuffer indexes
             Range.translate(newForbiddenRanges, item.getRemoteIndex() - item.getLocalIndex());
             Range.translate(newMergeableRanges, item.getRemoteIndex() - item.getLocalIndex());
@@ -761,10 +760,9 @@ public class Buffer {
   private void unionBackwardMatchConflictCandidatesRanges(final List<Range> remoteMergeableRange,
       final List<Range> forbiddenRanges, final List<Match> matches) {
     for (final Match conflictMatch : matches) {
-      final List<Range> newMergeableRanges = remoteMergeableRange.stream().map(it -> (Range) it.clone())
-          .collect(Collectors.toList());
-      final List<Range> newForbiddenRanges = forbiddenRanges.stream().map(it -> (Range) it.clone())
-          .collect(Collectors.toList());
+      final List<
+          Range> newMergeableRanges = remoteMergeableRange.stream().map(it -> it.copy()).collect(Collectors.toList());
+      final List<Range> newForbiddenRanges = forbiddenRanges.stream().map(it -> it.copy()).collect(Collectors.toList());
       // translate it to localBuffer of conflictMatches indexes
       Range.translate(newMergeableRanges, conflictMatch.getLocalIndex() - conflictMatch.getRemoteIndex());
       Range.translate(newForbiddenRanges, conflictMatch.getLocalIndex() - conflictMatch.getRemoteIndex());
@@ -1131,7 +1129,7 @@ public class Buffer {
     // range. For example, if the range includes virtual tokens
     // toList to make sure the map function is applied only once
     final List<Range> localIndivisibleRanges = match.getLocalBuffer().indivisibleRanges.stream()
-        .filter(it -> Range.hasOverlap(it, localRange)).map(it -> (Range) it.clone()).collect(Collectors.toList());
+        .filter(it -> Range.hasOverlap(it, localRange)).map(it -> it.copy()).collect(Collectors.toList());
 
     // Align them with the remote ranges
     Range.translate(localIndivisibleRanges, match.getRemoteIndex() - match.getLocalIndex());

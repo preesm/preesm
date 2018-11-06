@@ -60,7 +60,7 @@ public interface SrSDFTransformer {
     timer.start();
 
     // clone the srSDF
-    final SDFGraph hsdfGraph = srSDF.clone();
+    final SDFGraph hsdfGraph = srSDF.copy();
     hsdfGraph.setName(srSDF.getName() + "_HSDF");
 
     // for each edge set cons=prod=1 and delay=delay/prod
@@ -87,7 +87,7 @@ public interface SrSDFTransformer {
     timer.start();
 
     // clone the srSDF
-    final SDFGraph dag = srSDF.clone();
+    final SDFGraph dag = srSDF.copy();
     dag.setName(srSDF.getName() + "_DAG");
 
     // save the list of edges

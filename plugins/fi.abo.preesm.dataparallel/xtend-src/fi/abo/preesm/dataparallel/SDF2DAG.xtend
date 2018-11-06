@@ -241,7 +241,7 @@ final class SDF2DAG extends AbstractDAGConstructor implements PureDAGConstructor
 
 	 		for(var ii = 0; ii < actor.nbRepeatAsLong; ii++) {
 	 			// Clone and set properties
-	 			val instance = actor.clone
+	 			val instance = actor.copy
 	 			if(actor.nbRepeatAsLong == 1) {
 	 				instance.name = actor.name
 	 			} else {
@@ -394,14 +394,14 @@ final class SDF2DAG extends AbstractDAGConstructor implements PureDAGConstructor
 						newEdge.sourceInterface = sourceInstances.get(sourceIndex).getSink(edge.sourceInterface.name)
 					} else {
 						// source does not have an interface
-						newEdge.sourceInterface = edge.sourceInterface.clone
+						newEdge.sourceInterface = edge.sourceInterface.copy
 						sourceInstances.get(sourceIndex).addInterface(newEdge.sourceInterface)
 					}
 					// Copy the source port modifier of the original source
 					newEdge.sourcePortModifier = edge.sourcePortModifier
 				} else {
 					// if the source is a fork (new or not) or a broadcast with a new port
-					val sourceInterface = edge.sourceInterface.clone
+					val sourceInterface = edge.sourceInterface.copy
 					var newInterfaceName = sourceInterface.name + "_" + sourceProd
 
 					// Get the current index of the port (if any) and update it
@@ -435,7 +435,7 @@ final class SDF2DAG extends AbstractDAGConstructor implements PureDAGConstructor
 						newEdge.targetInterface = targetInstances.get(targetIndex).getSource(edge.targetInterface.name)
 					} else {
 						// if the target does not have the interface
-						newEdge.targetInterface = edge.targetInterface.clone
+						newEdge.targetInterface = edge.targetInterface.copy
 						targetInstances.get(targetIndex).addInterface(newEdge.targetInterface)
 					}
 					// Copy the target port modifier of the original source, except roundbuffers
@@ -446,7 +446,7 @@ final class SDF2DAG extends AbstractDAGConstructor implements PureDAGConstructor
 					}
 				} else {
 					// if the target is join (new or not)/ roundbuffer with new ports
-					val targetInterface = edge.targetInterface.clone
+					val targetInterface = edge.targetInterface.copy
 					var newInterfaceName = targetInterface.name + "_" + targetCons
 
 					// Get the current index of the port (if any) and update it

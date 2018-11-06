@@ -334,7 +334,7 @@ public class JoinForkCleaner {
               sourceCopies.get(sourceIndex).getSink(sourceEdges.get(sourceIndex).getSourceInterface().getName()));
         } else {
           // if the source does not have the interface.
-          newEdge.setSourceInterface(sourceEdges.get(sourceIndex).getSourceInterface().clone());
+          newEdge.setSourceInterface(sourceEdges.get(sourceIndex).getSourceInterface().copy());
           sourceCopies.get(sourceIndex).addInterface(newEdge.getSourceInterface());
         }
         // Copy the source port modifier of the original source
@@ -342,7 +342,7 @@ public class JoinForkCleaner {
       } else {
         // If the source is a fork (new or not)
         // or a broadcast with a new port
-        final SDFInterfaceVertex sourceInterface = sourceEdges.get(sourceIndex).getSourceInterface().clone();
+        final SDFInterfaceVertex sourceInterface = sourceEdges.get(sourceIndex).getSourceInterface().copy();
 
         String newInterfaceName = sourceInterface.getName() + "_" + sourceProd;
 
@@ -385,7 +385,7 @@ public class JoinForkCleaner {
               targetCopies.get(targetIndex).getSource(targetEdges.get(targetIndex).getTargetInterface().getName()));
         } else {
           // if the target does not have the interface.
-          newEdge.setTargetInterface(targetEdges.get(targetIndex).getTargetInterface().clone());
+          newEdge.setTargetInterface(targetEdges.get(targetIndex).getTargetInterface().copy());
           targetCopies.get(targetIndex).addInterface(newEdge.getTargetInterface());
         }
         // Copy the target port modifier of the original source
@@ -399,7 +399,7 @@ public class JoinForkCleaner {
       } else {
         // If the target is join (new or not) /roundbuffer with new
         // ports
-        final SDFInterfaceVertex targetInterface = targetEdges.get(targetIndex).getTargetInterface().clone();
+        final SDFInterfaceVertex targetInterface = targetEdges.get(targetIndex).getTargetInterface().copy();
 
         String newInterfaceName = targetInterface.getName() + "_" + targetCons;
         // Get the current index of the port (if any)

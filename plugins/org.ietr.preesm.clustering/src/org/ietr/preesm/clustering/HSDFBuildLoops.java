@@ -477,7 +477,7 @@ public class HSDFBuildLoops {
   public AbstractClust generateClustering(final SDFGraph inGraph) {
 
     // deep clone of graph SDF
-    this.graph = inGraph.clone();
+    this.graph = inGraph.copy();
 
     // copy vertexes
     final List<SDFAbstractVertex> vertexesCpy = new ArrayList<>();
@@ -704,7 +704,7 @@ public class HSDFBuildLoops {
 
     /* allocate internal working buffer for the hierarchical actor */
     for (final SDFAbstractVertex g : list) {
-      final SDFGraph graphClone = ((SDFGraph) g.getGraphDescription()).clone();
+      final SDFGraph graphClone = ((SDFGraph) g.getGraphDescription()).copy();
       final IbsdfFlattener flattener = new IbsdfFlattener(graphClone, 10);
       SDFGraph resultGraph = null;
       try {

@@ -94,7 +94,7 @@ class AcyclicLikeSubgraphDetector implements IGraphVisitor<SDFGraph, SDFAbstract
 	 * @param sdf A {@link SDFGraph} instance that has to be checked
 	 */
 	override visit(SDFGraph sdf) throws SDF4JException {
-		processedSDF = sdf.clone
+		processedSDF = sdf.copy
 		val removableEdges = newArrayList
 		processedSDF.edgeSet.forEach[edge |
 			val prod = edge.prod.longValue
@@ -129,7 +129,7 @@ class AcyclicLikeSubgraphDetector implements IGraphVisitor<SDFGraph, SDFAbstract
 		val sdfSubgraphs = newArrayList
 
 		processedSDF.allSubGraphs.forEach[subgraphVertexList |
-			val sdfSubgraph = processedSDF.clone
+			val sdfSubgraph = processedSDF.copy
 			val removableEdges = newArrayList
 			val removableVertices = newArrayList
 

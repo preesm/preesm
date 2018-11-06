@@ -112,7 +112,7 @@ public abstract class AbstractMappingFromDAG extends AbstractTaskImplementation 
 
     final AbcParameters abcParams = new AbcParameters(parameters);
 
-    final MapperDAG clonedDag = dag.clone();
+    final MapperDAG clonedDag = dag.copy();
 
     // calculates the DAG span length on the architecture main operator (the
     // tasks that can not be executed by the main operator are deported

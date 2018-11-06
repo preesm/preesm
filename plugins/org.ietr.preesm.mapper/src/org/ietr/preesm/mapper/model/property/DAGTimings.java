@@ -38,6 +38,7 @@ package org.ietr.preesm.mapper.model.property;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
+import org.ietr.dftools.algorithm.model.CloneableProperty;
 import org.ietr.preesm.mapper.model.MapperDAGVertex;
 
 /**
@@ -45,7 +46,7 @@ import org.ietr.preesm.mapper.model.MapperDAGVertex;
  *
  * @author mpelcat
  */
-public class DAGTimings {
+public class DAGTimings implements CloneableProperty<DAGTimings> {
 
   /** The timings. */
   private final Map<String, VertexTiming> timings;
@@ -108,10 +109,10 @@ public class DAGTimings {
    * @see java.lang.Object#clone()
    */
   @Override
-  public Object clone() {
+  public DAGTimings copy() {
     final DAGTimings newTimings = new DAGTimings();
     for (final String s : this.timings.keySet()) {
-      newTimings.put(s, this.timings.get(s).clone());
+      newTimings.put(s, this.timings.get(s).copy());
     }
     return newTimings;
   }
