@@ -5,12 +5,14 @@ import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Level;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.ietr.dftools.architecture.slam.Design;
 import org.ietr.dftools.workflow.WorkflowException;
 import org.ietr.dftools.workflow.elements.Workflow;
 import org.ietr.dftools.workflow.implement.AbstractTaskImplementation;
 import org.ietr.dftools.workflow.implement.AbstractWorkflowNodeImplementation;
+import org.ietr.dftools.workflow.tools.WorkflowLogger;
 import org.ietr.preesm.core.scenario.PreesmScenario;
 import org.ietr.preesm.experiment.model.pimm.AbstractActor;
 import org.ietr.preesm.experiment.model.pimm.Actor;
@@ -51,9 +53,10 @@ public class PeriodsPreschedulingChecker extends AbstractTaskImplementation {
     }
 
     final String rateStr = parameters.get(SELECTION_RATE);
+    int rate = 100;
     try {
-      int rate = Integer.parseInt(rateStr);
-      if (rate < 1 || rate > 100) {
+      rate = Integer.parseInt(rateStr);
+      if (rate < 0 || rate > 100) {
         throw new WorkflowException(GENERIC_RATE_ERROR + rate + ".");
       }
     } catch (NumberFormatException e) {
@@ -89,6 +92,18 @@ public class PeriodsPreschedulingChecker extends AbstractTaskImplementation {
     }
 
     // 2. perform heuristic to select periodic nodes
+    final StringBuilder sbNBFF = new StringBuilder();
+    Map<Actor, Long> actorsNBFF = HeuristicPeriodicActorSelection.selectActors(periodicActors, sourceActors, rate,
+        graph, scenario, false);
+    actorsNBFF.keySet().forEach(a -> sbNBFF.append(a.getName() + " / "));
+    WorkflowLogger.getLogger().log(Level.WARNING, "Periodic actor for NBFF: " + sbNBFF.toString());
+
+    final StringBuilder sbNBLF = new StringBuilder();
+    Map<Actor, Long> actorsNBLF = HeuristicPeriodicActorSelection.selectActors(periodicActors, sinkActors, rate, graph,
+        scenario, true);
+    actorsNBLF.keySet().forEach(a -> sbNBLF.append(a.getName() + " / "));
+    WorkflowLogger.getLogger().log(Level.WARNING, "Periodic actor for NBLF: " + sbNBLF.toString());
+
     // 3. for each selected periodic node for nblf:
     // _a compute subgraph
     // _b compute nblf
