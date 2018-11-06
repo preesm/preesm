@@ -52,7 +52,6 @@ import java.util.Set;
 import java.util.logging.Level;
 import org.eclipse.xtext.xbase.lib.Pair;
 import org.ietr.dftools.algorithm.iterators.TopologicalDAGIterator;
-import org.ietr.dftools.algorithm.model.CloneableProperty;
 import org.ietr.dftools.algorithm.model.PropertyBean;
 import org.ietr.dftools.algorithm.model.PropertyFactory;
 import org.ietr.dftools.algorithm.model.PropertySource;
@@ -602,23 +601,6 @@ public class MemoryExclusionGraph extends SimpleGraph<MemoryExclusionVertex, Def
 
     return o;
 
-  }
-
-  /*
-   * (non-Javadoc)
-   *
-   * @see
-   * org.ietr.dftools.algorithm.model.PropertySource#copyProperties(org.ietr.dftools.algorithm.model.PropertySource)
-   */
-  @Override
-  public void copyProperties(final PropertySource props) {
-    for (final String key : props.getPropertyBean().keys()) {
-      if (props.getPropertyBean().getValue(key) instanceof CloneableProperty) {
-        getPropertyBean().setValue(key, ((CloneableProperty) props.getPropertyBean().getValue(key)).clone());
-      } else {
-        getPropertyBean().setValue(key, props.getPropertyBean().getValue(key));
-      }
-    }
   }
 
   /**
@@ -1243,19 +1225,6 @@ public class MemoryExclusionGraph extends SimpleGraph<MemoryExclusionVertex, Def
   /*
    * (non-Javadoc)
    *
-   * @see org.ietr.dftools.algorithm.model.PropertySource#getPropertyStringValue(java.lang.String)
-   */
-  @Override
-  public String getPropertyStringValue(final String propertyName) {
-    if (getPropertyBean().getValue(propertyName) != null) {
-      return getPropertyBean().getValue(propertyName).toString();
-    }
-    return null;
-  }
-
-  /*
-   * (non-Javadoc)
-   *
    * @see org.ietr.dftools.algorithm.model.PropertySource#getPublicProperties()
    */
   @Override
@@ -1421,16 +1390,6 @@ public class MemoryExclusionGraph extends SimpleGraph<MemoryExclusionVertex, Def
       }
     }
     this.adjacentVerticesBackup = new LinkedHashMap<>();
-  }
-
-  /*
-   * (non-Javadoc)
-   *
-   * @see org.ietr.dftools.algorithm.model.PropertySource#setPropertyValue(java.lang.String, java.lang.Object)
-   */
-  @Override
-  public void setPropertyValue(final String propertyName, final Object value) {
-    getPropertyBean().setValue(propertyName, value);
   }
 
   /**
