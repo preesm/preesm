@@ -1,7 +1,9 @@
 package org.ietr.preesm.pimm.algorithm.checker.periods;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.ietr.dftools.architecture.slam.Design;
@@ -72,6 +74,20 @@ public class PeriodsPreschedulingChecker extends AbstractTaskImplementation {
     }
 
     // 1. find all actor w/o incoming edges and all other with incoming edges
+    final List<Actor> sourceActors = new ArrayList<>();
+    final List<Actor> sinkActors = new ArrayList<>();
+    for (final AbstractActor absActor : graph.getActors()) {
+      if (absActor instanceof PeriodicElement) {
+        final Actor actor = (Actor) absActor;
+        if (actor.getOutEdges().isEmpty()) {
+          sinkActors.add(actor);
+        }
+        if (actor.getInEdges().isEmpty()) {
+          sourceActors.add(actor);
+        }
+      }
+    }
+
     // 2. perform heuristic to select periodic nodes
     // 3. for each selected periodic node for nblf:
     // _a compute subgraph
