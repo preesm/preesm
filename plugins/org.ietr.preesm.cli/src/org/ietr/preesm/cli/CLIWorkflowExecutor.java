@@ -61,7 +61,6 @@ import org.eclipse.equinox.app.IApplication;
 import org.eclipse.equinox.app.IApplicationContext;
 import org.ietr.dftools.ui.workflow.tools.DFToolsWorkflowLogger;
 import org.ietr.dftools.workflow.AbstractWorkflowExecutor;
-import org.ietr.dftools.workflow.WorkflowException;
 import org.ietr.dftools.workflow.messages.WorkflowMessages;
 import org.ietr.dftools.workflow.tools.CLIWorkflowLogger;
 
@@ -75,6 +74,8 @@ import org.ietr.dftools.workflow.tools.CLIWorkflowLogger;
  * @author Antoine Lorence
  */
 public class CLIWorkflowExecutor extends AbstractWorkflowExecutor implements IApplication {
+
+  private static final int EXIT_ERROR = 1;
 
   /** Project containing the. */
   protected IProject project;
@@ -98,6 +99,10 @@ public class CLIWorkflowExecutor extends AbstractWorkflowExecutor implements IAp
    */
   @Override
   public Object start(final IApplicationContext context) throws Exception {
+
+    // avoid printing whole JVM status when failing
+    System.setProperty(IApplicationContext.EXIT_DATA_PROPERTY, "");
+
     final Options options = getCommandLineOptions();
 
     try {
@@ -175,8 +180,10 @@ public class CLIWorkflowExecutor extends AbstractWorkflowExecutor implements IAp
       for (final String wPath : workflowPaths) {
         for (final String sPath : scenarioPaths) {
           if (!execute(wPath, sPath, null)) {
-            throw new WorkflowException(
-                "Workflow " + wPath + " did not complete its execution normally with scenario " + sPath + ".");
+            final String message = "Workflow " + wPath + " did not complete its execution normally with scenario "
+                + sPath + ".";
+            CLIWorkflowLogger.getLogger().log(Level.SEVERE, message);
+            return EXIT_ERROR;
           }
         }
       }
