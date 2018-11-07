@@ -77,8 +77,8 @@ public class CLIScenariosGenerator implements IApplication {
 
       final String cliOpts = StringUtils
           .join((Object[]) context.getArguments().get(IApplicationContext.APPLICATION_ARGS), " ");
-      CLIWorkflowLogger.log(Level.FINE, "Starting scenarios generation");
-      CLIWorkflowLogger.log(Level.FINE, "Command line arguments: " + cliOpts);
+      CLIWorkflowLogger.getLogger().log(Level.FINE, "Starting scenarios generation");
+      CLIWorkflowLogger.getLogger().log(Level.FINE, "Command line arguments: " + cliOpts);
 
       // parse the command line arguments
       final CommandLine line = parser.parse(options,

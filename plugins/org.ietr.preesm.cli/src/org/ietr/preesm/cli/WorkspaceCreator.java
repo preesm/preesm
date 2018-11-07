@@ -131,12 +131,12 @@ public class WorkspaceCreator implements IApplication {
 
               if (project.exists()) {
                 project.close(this.progressMonitor);
-                CLIWorkflowLogger.log(Level.FINE, "A project named " + project.getName() + " is already registered, "
-                    + "deleting previous project from Workspace: ");
+                CLIWorkflowLogger.getLogger().log(Level.FINE, "A project named " + project.getName()
+                    + " is already registered, " + "deleting previous project from Workspace: ");
               }
               project.create(description, this.progressMonitor);
               project.open(this.progressMonitor);
-              CLIWorkflowLogger.log(Level.FINE, "New project registered: " + project.getName());
+              CLIWorkflowLogger.getLogger().log(Level.FINE, "New project registered: " + project.getName());
             }
           }
         }
@@ -163,7 +163,7 @@ public class WorkspaceCreator implements IApplication {
 
         final String path = FilesManager.sanitize(args[0]);
         final File searchPath = new File(path).getCanonicalFile();
-        CLIWorkflowLogger.log(Level.SEVERE, "Register projects from \"" + searchPath.getAbsolutePath()
+        CLIWorkflowLogger.getLogger().log(Level.SEVERE, "Register projects from \"" + searchPath.getAbsolutePath()
             + "\" to workspace \"" + this.workspace.getRoot().getLocation() + "\"");
         searchForProjects(searchPath);
 
@@ -177,18 +177,19 @@ public class WorkspaceCreator implements IApplication {
         final IJobManager manager = Job.getJobManager();
         int i = 0;
         while (!manager.isIdle()) {
-          CLIWorkflowLogger.log(Level.SEVERE, "Waiting for completion of" + " currently running jobs - " + ++i);
+          CLIWorkflowLogger.getLogger().log(Level.SEVERE,
+              "Waiting for completion of" + " currently running jobs - " + ++i);
           Thread.sleep(500);
         }
 
       } catch (final CoreException e) {
-        CLIWorkflowLogger.log(Level.SEVERE, e.getMessage());
+        CLIWorkflowLogger.getLogger().log(Level.SEVERE, e.getMessage());
         e.printStackTrace();
       } catch (final IOException e) {
-        CLIWorkflowLogger.log(Level.SEVERE, e.getMessage());
+        CLIWorkflowLogger.getLogger().log(Level.SEVERE, e.getMessage());
         e.printStackTrace();
       } catch (final InterruptedException e) {
-        CLIWorkflowLogger.log(Level.SEVERE, e.getMessage());
+        CLIWorkflowLogger.getLogger().log(Level.SEVERE, e.getMessage());
         e.printStackTrace();
       } finally {
         try {
@@ -198,12 +199,12 @@ public class WorkspaceCreator implements IApplication {
           }
           return IApplication.EXIT_OK;
         } catch (final CoreException e) {
-          CLIWorkflowLogger.log(Level.SEVERE, e.getMessage());
+          CLIWorkflowLogger.getLogger().log(Level.SEVERE, e.getMessage());
           e.printStackTrace();
         }
       }
     } else {
-      CLIWorkflowLogger.log(Level.SEVERE, "Please add the path to a directories containing projects.");
+      CLIWorkflowLogger.getLogger().log(Level.SEVERE, "Please add the path to a directories containing projects.");
     }
 
     return IApplication.EXIT_RESTART;

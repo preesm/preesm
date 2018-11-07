@@ -105,8 +105,8 @@ public class CLIWorkflowExecutor extends AbstractWorkflowExecutor implements IAp
 
       final String cliOpts = StringUtils
           .join((Object[]) context.getArguments().get(IApplicationContext.APPLICATION_ARGS), " ");
-      CLIWorkflowLogger.log(Level.FINE, "Starting workflows execution");
-      CLIWorkflowLogger.log(Level.FINE, "Command line arguments: " + cliOpts);
+      CLIWorkflowLogger.getLogger().log(Level.FINE, "Starting workflows execution");
+      CLIWorkflowLogger.getLogger().log(Level.FINE, "Command line arguments: " + cliOpts);
 
       // parse the command line arguments
       final CommandLine line = parser.parse(options,
@@ -169,7 +169,7 @@ public class CLIWorkflowExecutor extends AbstractWorkflowExecutor implements IAp
         scenarioPaths.add(scenarioPath);
       }
 
-      CLIWorkflowLogger.log(Level.FINE, "Launching workflows execution");
+      CLIWorkflowLogger.getLogger().log(Level.FINE, "Launching workflows execution");
       // Launch the execution of the workflos with the scenarios
       DFToolsWorkflowLogger.runFromCLI();
       for (final String wPath : workflowPaths) {
@@ -280,6 +280,6 @@ public class CLIWorkflowExecutor extends AbstractWorkflowExecutor implements IAp
    */
   @Override
   protected void log(final Level level, final String msgKey, final String... variables) {
-    CLIWorkflowLogger.logln(level, WorkflowMessages.getString(msgKey, variables));
+    CLIWorkflowLogger.getLogger().log(level, WorkflowMessages.getString(msgKey, variables));
   }
 }
