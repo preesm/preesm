@@ -33,7 +33,7 @@ class HeuristicPeriodicActorSelection {
       return new HashMap<>();
     }
 
-    Map<AbstractActor, Long> topoRanks = null;
+    Map<AbstractActor, ActorVisit> topoRanks = null;
     if (reverse) {
       topoRanks = topologicalASAPrankingT(originActors, graph);
     } else {
@@ -42,7 +42,7 @@ class HeuristicPeriodicActorSelection {
     final Map<Actor, Double> topoRanksPeriodic = new HashMap<>();
     for (Entry<Actor, Long> e : periodicActors.entrySet()) {
       final Actor actor = e.getKey();
-      final long rank = topoRanks.get(actor);
+      final long rank = topoRanks.get(actor).rank;
       final long period = e.getValue();
       long wcetMin = Long.MAX_VALUE;
       for (String operatorDefinitionID : scenario.getOperatorDefinitionIds()) {
@@ -82,48 +82,80 @@ class HeuristicPeriodicActorSelection {
     return selectedActors;
   }
 
-  private static Map<AbstractActor, Long> topologicalASAPranking(final List<Actor> sourceActors, final PiGraph graph) {
-    final Map<AbstractActor, Long> topoRanks = new HashMap<>();
+  /**
+   * This class helps to create the topological rank.
+   * 
+   * @author ahonorat
+   */
+  private static class ActorVisit {
+    final int nbMaxVisit;
+    int       nbVisit = 0;
+    long      rank    = 0;
+
+    ActorVisit(int nbMaxVisit, long rank) {
+      this.nbMaxVisit = nbMaxVisit;
+      this.rank = rank;
+    }
+
+  }
+
+  private static Map<AbstractActor, ActorVisit> topologicalASAPranking(final List<Actor> sourceActors,
+      final PiGraph graph) {
+    final Map<AbstractActor, ActorVisit> topoRanks = new HashMap<>();
     for (Actor actor : sourceActors) {
-      topoRanks.put(actor, 1L);
+      topoRanks.put(actor, new ActorVisit(0, 1L));
     }
 
     final Deque<AbstractActor> toVisit = new ArrayDeque<>(sourceActors);
     while (!toVisit.isEmpty()) {
       final AbstractActor actor = toVisit.removeFirst();
-      final long rank = topoRanks.get(actor);
+      final long rank = topoRanks.get(actor).rank;
       for (DataOutputPort sport : actor.getDataOutputPorts()) {
         final Fifo fifo = sport.getOutgoingFifo();
         final DataInputPort tport = fifo.getTargetPort();
         final AbstractActor dest = tport.getContainingActor();
         if (!topoRanks.containsKey(dest)) {
-          topoRanks.put(dest, rank + 1);
+          ActorVisit av = new ActorVisit(dest.getDataInputPorts().size(), rank);
+          topoRanks.put(dest, av);
+        }
+        ActorVisit av = topoRanks.get(dest);
+        av.nbVisit++;
+        if (av.nbVisit == av.nbMaxVisit) {
           toVisit.addLast(dest);
         }
+        System.err.println("Rank: " + rank + " (" + dest.getName() + ")");
       }
     }
 
     return topoRanks;
   }
 
-  private static Map<AbstractActor, Long> topologicalASAPrankingT(final List<Actor> sinkActors, final PiGraph graph) {
-    final Map<AbstractActor, Long> topoRanks = new HashMap<>();
+  private static Map<AbstractActor, ActorVisit> topologicalASAPrankingT(final List<Actor> sinkActors,
+      final PiGraph graph) {
+    final Map<AbstractActor, ActorVisit> topoRanks = new HashMap<>();
     for (Actor actor : sinkActors) {
-      topoRanks.put(actor, 1L);
+      topoRanks.put(actor, new ActorVisit(0, 1L));
     }
 
     final Deque<AbstractActor> toVisit = new ArrayDeque<>(sinkActors);
     while (!toVisit.isEmpty()) {
       final AbstractActor actor = toVisit.removeFirst();
-      final long rank = topoRanks.get(actor);
+      final long rank = topoRanks.get(actor).rank;
       for (DataInputPort tport : actor.getDataInputPorts()) {
         final Fifo fifo = tport.getIncomingFifo();
         final DataOutputPort sport = fifo.getSourcePort();
         final AbstractActor dest = sport.getContainingActor();
         if (!topoRanks.containsKey(dest)) {
-          topoRanks.put(dest, rank + 1);
+          ActorVisit av = new ActorVisit(dest.getDataOutputPorts().size(), rank);
+          topoRanks.put(dest, av);
+        }
+        ActorVisit av = topoRanks.get(dest);
+        av.nbVisit++;
+        av.rank = Math.max(av.rank, rank + 1L);
+        if (av.nbVisit == av.nbMaxVisit) {
           toVisit.addLast(dest);
         }
+        System.err.println("RankT: " + rank + " (" + dest.getName() + ")");
       }
     }
 

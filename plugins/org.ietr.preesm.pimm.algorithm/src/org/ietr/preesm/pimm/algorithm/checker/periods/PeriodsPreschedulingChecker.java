@@ -82,10 +82,10 @@ public class PeriodsPreschedulingChecker extends AbstractTaskImplementation {
     for (final AbstractActor absActor : graph.getActors()) {
       if (absActor instanceof PeriodicElement) {
         final Actor actor = (Actor) absActor;
-        if (actor.getOutEdges().isEmpty()) {
+        if (actor.getDataOutputPorts().isEmpty()) {
           sinkActors.add(actor);
         }
-        if (actor.getInEdges().isEmpty()) {
+        if (actor.getDataInputPorts().isEmpty()) {
           sourceActors.add(actor);
         }
       }
