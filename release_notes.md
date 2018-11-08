@@ -7,6 +7,7 @@ PREESM Changelog
 ### New Feature
 
 ### Changes
+* Use RCPTT runner prefetch script when deploying;
 
 ### Bug fix
 
