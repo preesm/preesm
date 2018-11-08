@@ -59,12 +59,9 @@ import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.equinox.app.IApplication;
 import org.eclipse.equinox.app.IApplicationContext;
-import org.ietr.dftools.ui.workflow.tools.DFToolsWorkflowLogger;
 import org.ietr.dftools.workflow.AbstractWorkflowExecutor;
-import org.ietr.dftools.workflow.messages.WorkflowMessages;
 import org.ietr.dftools.workflow.tools.CLIWorkflowLogger;
 
-// TODO: Auto-generated Javadoc
 /**
  * IApplication to execute PREESM workflows through command line interface.
  *
@@ -102,7 +99,6 @@ public class CLIWorkflowExecutor extends AbstractWorkflowExecutor implements IAp
 
     // avoid printing whole JVM status when failing
     System.setProperty(IApplicationContext.EXIT_DATA_PROPERTY, "");
-
     final Options options = getCommandLineOptions();
 
     try {
@@ -110,12 +106,16 @@ public class CLIWorkflowExecutor extends AbstractWorkflowExecutor implements IAp
 
       final String cliOpts = StringUtils
           .join((Object[]) context.getArguments().get(IApplicationContext.APPLICATION_ARGS), " ");
-      CLIWorkflowLogger.getLogger().log(Level.FINE, "Starting workflows execution");
-      CLIWorkflowLogger.getLogger().log(Level.FINE, "Command line arguments: " + cliOpts);
 
       // parse the command line arguments
       final CommandLine line = parser.parse(options,
           (String[]) context.getArguments().get(IApplicationContext.APPLICATION_ARGS));
+      final boolean isDebug = line.hasOption('d');
+      this.setDebug(isDebug);
+      this.setLogger(new CLIWorkflowLogger(isDebug));
+
+      getLogger().log(Level.FINE, "Starting workflows execution");
+      getLogger().log(Level.FINE, "Command line arguments: " + cliOpts);
 
       if (line.getArgs().length != 1) {
         throw new ParseException("Expected project name as first argument", 0);
@@ -130,14 +130,14 @@ public class CLIWorkflowExecutor extends AbstractWorkflowExecutor implements IAp
       this.project.refreshLocal(IResource.DEPTH_INFINITE, null);
 
       // Handle options
-      String workflowPath = line.getOptionValue('w');
-      String scenarioPath = line.getOptionValue('s');
 
       // Set of workflows to execute
       Set<String> workflowPaths = new LinkedHashSet<>();
       // Set of scenarios to execute
       Set<String> scenarioPaths = new LinkedHashSet<>();
 
+      String workflowPath = line.getOptionValue('w');
+      String scenarioPath = line.getOptionValue('s');
       // If paths to workflow and scenario are not specified using
       // options, find them in the project given as arguments
       if (workflowPath == null) {
@@ -174,15 +174,14 @@ public class CLIWorkflowExecutor extends AbstractWorkflowExecutor implements IAp
         scenarioPaths.add(scenarioPath);
       }
 
-      CLIWorkflowLogger.getLogger().log(Level.FINE, "Launching workflows execution");
+      getLogger().log(Level.FINE, "Launching workflows execution");
       // Launch the execution of the workflos with the scenarios
-      DFToolsWorkflowLogger.runFromCLI();
       for (final String wPath : workflowPaths) {
         for (final String sPath : scenarioPaths) {
           if (!execute(wPath, sPath, null)) {
             final String message = "Workflow " + wPath + " did not complete its execution normally with scenario "
                 + sPath + ".";
-            CLIWorkflowLogger.getLogger().log(Level.SEVERE, message);
+            getLogger().log(Level.SEVERE, message);
             return EXIT_ERROR;
           }
         }
@@ -252,6 +251,8 @@ public class CLIWorkflowExecutor extends AbstractWorkflowExecutor implements IAp
     opt = new Option("s", "scenario", true, "Scenario path");
     options.addOption(opt);
 
+    opt = new Option("d", "debug", false, "Debug mode: print stack traces when failing");
+    options.addOption(opt);
     return options;
   }
 
@@ -275,18 +276,4 @@ public class CLIWorkflowExecutor extends AbstractWorkflowExecutor implements IAp
     helpFormatter.printHelp(getClass().getSimpleName() + " [options] ", "Valid options are :", options, footer);
   }
 
-  /**
-   * Log method for workflow execution without eclipse UI.
-   *
-   * @param level
-   *          the level
-   * @param msgKey
-   *          the msg key
-   * @param variables
-   *          the variables
-   */
-  @Override
-  protected void log(final Level level, final String msgKey, final String... variables) {
-    CLIWorkflowLogger.getLogger().log(level, WorkflowMessages.getString(msgKey, variables));
-  }
 }

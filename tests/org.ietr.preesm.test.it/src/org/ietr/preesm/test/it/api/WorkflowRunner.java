@@ -53,8 +53,7 @@ import org.eclipse.core.resources.IWorkspaceRoot;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.Path;
-import org.ietr.dftools.ui.workflow.tools.DFToolsWorkflowLogger;
-import org.ietr.dftools.workflow.WorkflowManager;
+import org.ietr.dftools.workflow.AbstractWorkflowExecutor;
 import org.ietr.dftools.workflow.tools.WorkflowLogger;
 
 /**
@@ -81,13 +80,12 @@ public class WorkflowRunner {
     project.create(newProjectDescription, null);
     project.open(null);
 
-    DFToolsWorkflowLogger.runFromCLI();
     final Logger logger = WorkflowLogger.getLogger();
     logger.setLevel(Level.ALL);
 
     // run workflow
     WorkflowRunner.copyFiles(new File(WorkflowRunner.PROJECT_RESOURCES_LOCAL_PATH + "/" + projectName + "/"), project);
-    final WorkflowManager workflowManager = new WorkflowManager();
+    final AbstractWorkflowExecutor workflowManager = new PreesmTestWorkflowExecutor();
     workflowManager.setDebug(true);
     final String workflowPath = "/" + projectName + workflowFilePathStr;
     final String scenarioPath = "/" + projectName + scenarioFilePathStr;
