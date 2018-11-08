@@ -3,7 +3,7 @@ Bundle-ManifestVersion: 2
 Bundle-Name: Preesm core plug-in
 Automatic-Module-Name: org.ietr.preesm.core
 Bundle-SymbolicName: org.ietr.preesm.core;singleton:=true
-Bundle-Version: 2.16.0.qualifier
+Bundle-Version: 2.17.0
 Bundle-Vendor: IETR/INSA Rennes
 Require-Bundle: org.eclipse.core.resources,
  org.eclipse.core.runtime,

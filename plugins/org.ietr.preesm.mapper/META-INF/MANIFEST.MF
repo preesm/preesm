@@ -3,7 +3,7 @@ Bundle-ManifestVersion: 2
 Bundle-Name: Preesm mapper Plug-in
 Automatic-Module-Name: org.ietr.preesm.mapper
 Bundle-SymbolicName: org.ietr.preesm.mapper;singleton:=true
-Bundle-Version: 2.16.0.qualifier
+Bundle-Version: 2.17.0
 Bundle-Activator: org.ietr.preesm.mapper.activator.Activator
 Require-Bundle: org.eclipse.core.runtime,
  org.eclipse.xtend.lib,
