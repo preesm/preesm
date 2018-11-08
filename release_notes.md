@@ -14,6 +14,8 @@ PREESM Changelog
 * Refactor 
   * Impact DFTool refactor;
   * Remove dead code;
+* Update DFTools to 2.0.0+
+* Update Graphiti to 1.11.0+
 
 ### Bug fix
 
