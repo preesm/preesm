@@ -188,7 +188,7 @@ public class ForkJoinRemover {
             }
 
             // Create new vertex
-            final SDFBroadcastVertex newVert = (SDFBroadcastVertex) vert.clone();
+            final SDFBroadcastVertex newVert = (SDFBroadcastVertex) vert.copy();
             hsdf.addVertex(newVert);
 
             // Link it to its input
@@ -231,7 +231,7 @@ public class ForkJoinRemover {
           // Duplicate the roundbuffer for each outgoing edge
           for (final SDFEdge outEdge : outgoingEdges) {
             // Create new vertex
-            final SDFRoundBufferVertex newVert = (SDFRoundBufferVertex) vert.clone();
+            final SDFRoundBufferVertex newVert = (SDFRoundBufferVertex) vert.copy();
             hsdf.addVertex(newVert);
 
             // link it to its output.

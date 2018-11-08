@@ -46,7 +46,7 @@ import org.ietr.dftools.algorithm.model.sdf.SDFEdge
 import org.ietr.dftools.algorithm.model.sdf.SDFGraph
 import org.ietr.dftools.algorithm.model.sdf.esdf.SDFSinkInterfaceVertex
 import org.ietr.dftools.algorithm.model.sdf.esdf.SDFSourceInterfaceVertex
-import org.ietr.dftools.algorithm.model.sdf.types.SDFIntEdgePropertyType
+import org.ietr.dftools.algorithm.model.types.LongEdgePropertyType
 import org.ietr.dftools.workflow.WorkflowException
 import org.ietr.dftools.workflow.elements.Workflow
 import org.ietr.dftools.workflow.implement.AbstractTaskImplementation
@@ -78,7 +78,7 @@ class IterateAlgorithm extends AbstractTaskImplementation {
 	def SDFGraph merge(SDFGraph refGraph, SDFGraph mergedGraphIn, int index, boolean setStates) {
 
 		// Generating a graph clone to avoid concurrent modifications
-		var mergedGraph = mergedGraphIn.clone
+		var mergedGraph = mergedGraphIn.copy
 
 		for (SDFAbstractVertex vertex : mergedGraph.vertexSet) {
 			var mergedVertexName = vertex.getName
@@ -93,8 +93,8 @@ class IterateAlgorithm extends AbstractTaskImplementation {
 				var previous = refGraph.getVertex(mergedVertexName + "_" + (index - 1))
 				if (previous !== null && current !== null) {
 					var newEdge = refGraph.addEdge(previous, current)
-					newEdge.setProd(new SDFIntEdgePropertyType(1));
-					newEdge.setCons(new SDFIntEdgePropertyType(1));
+					newEdge.setProd(new LongEdgePropertyType(1));
+					newEdge.setCons(new LongEdgePropertyType(1));
 
 					// Create a new source stateout port
 					var statein = new SDFSourceInterfaceVertex()
@@ -120,9 +120,9 @@ class IterateAlgorithm extends AbstractTaskImplementation {
 			target.setInterfaceVertexExternalLink(newEdge, edge.getTargetInterface())
 			source.setInterfaceVertexExternalLink(newEdge, edge.getSourceInterface())
 
-			newEdge.setCons(edge.getCons().clone())
-			newEdge.setProd(edge.getProd().clone())
-			newEdge.setDelay(edge.getDelay().clone())
+			newEdge.setCons(edge.getCons().copy())
+			newEdge.setProd(edge.getProd().copy())
+			newEdge.setDelay(edge.getDelay().copy())
 
 		}
 
@@ -138,7 +138,7 @@ class IterateAlgorithm extends AbstractTaskImplementation {
 	 */
 	def SDFGraph iterate(SDFGraph inputAlgorithm, int nbIt, boolean setStates, PreesmScenario scenario) {
 
-		var mainIteration = inputAlgorithm.clone
+		var mainIteration = inputAlgorithm.copy
 
 		if(nbIt > 1){
 			var groupId = 0

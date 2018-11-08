@@ -187,7 +187,7 @@ class Match {
 		// Copy the overlapping indivisible range(s)
 		val overlappingIndivisibleRanges = this.getLocalBuffer.indivisibleRanges.filter [
 			it.hasOverlap(localIndivisiblerange)
-		].map[it.clone as Range].toList // toList to make sure the map function is applied only once
+		].map[it.copy].toList // toList to make sure the map function is applied only once
 
 		// Do the lazy union of the match and its overlapping indivisible
 		// ranges

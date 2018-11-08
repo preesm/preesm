@@ -123,7 +123,6 @@ fi
 
 # make sure integration works before deploying and pushing
 git stash pop
-./releng/build_and_test.sh
 
 #commit new version in develop
 git add -A

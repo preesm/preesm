@@ -125,7 +125,7 @@ public class ImplExportTransform extends AbstractTaskImplementation {
     final MapperDAG mapperDag = (MapperDAG) dag;
 
     final ImplementationExporter exporter = new ImplementationExporter();
-    final MapperDAG clone = mapperDag.clone();
+    final MapperDAG clone = mapperDag.copy();
     final IWorkspace workspace = ResourcesPlugin.getWorkspace();
     final IFile iGraphMLFile = workspace.getRoot().getFile(path);
 

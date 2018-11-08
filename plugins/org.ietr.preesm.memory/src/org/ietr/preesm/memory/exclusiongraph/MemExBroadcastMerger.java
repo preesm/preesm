@@ -56,7 +56,7 @@ import org.ietr.dftools.algorithm.model.dag.edag.DAGForkVertex;
 import org.ietr.dftools.algorithm.model.sdf.SDFAbstractVertex;
 import org.ietr.dftools.algorithm.model.sdf.SDFEdge;
 import org.ietr.dftools.algorithm.model.sdf.esdf.SDFBroadcastVertex;
-import org.ietr.dftools.algorithm.model.sdf.types.SDFStringEdgePropertyType;
+import org.ietr.dftools.algorithm.model.types.StringEdgePropertyType;
 import org.ietr.preesm.memory.script.MemoryScriptEngine;
 
 /**
@@ -205,7 +205,7 @@ public class MemExBroadcastMerger {
       // mergeable.
       boolean readOnly = true;
       for (final AbstractEdge<?, ?> aggrEdge : edge.getAggregate()) {
-        final SDFStringEdgePropertyType modifier = ((DAGEdge) aggrEdge).getTargetPortModifier();
+        final StringEdgePropertyType modifier = ((DAGEdge) aggrEdge).getTargetPortModifier();
         // Check that all aggregated edges have the adequate
         // modifier
         if ((modifier == null) || !modifier.toString().contains(SDFEdge.MODIFIER_READ_ONLY)) {
@@ -304,7 +304,7 @@ public class MemExBroadcastMerger {
       // mergeable.
       boolean writeOnly = true;
       for (final AbstractEdge<?, ?> aggrEdge : edge.getAggregate()) {
-        final SDFStringEdgePropertyType modifier = ((DAGEdge) aggrEdge).getSourcePortModifier();
+        final StringEdgePropertyType modifier = ((DAGEdge) aggrEdge).getSourcePortModifier();
         // Check that all aggregated edges have the adequate
         // modifier
         if ((modifier == null) || !modifier.toString().contains(SDFEdge.MODIFIER_WRITE_ONLY)) {

@@ -109,7 +109,7 @@ public class MemoryExclusionGraphBuilder extends AbstractTaskImplementation {
     // The DAG is altered when building the exclusion graph.
     final DirectedAcyclicGraph dag = (DirectedAcyclicGraph) inputs.get("DAG");
     // Clone is deep copy i.e. vertices are thus copied too.
-    DirectedAcyclicGraph localDAG = (DirectedAcyclicGraph) dag.clone();
+    DirectedAcyclicGraph localDAG = dag.copy();
     if (localDAG == null) {
       localDAG = dag;
     }

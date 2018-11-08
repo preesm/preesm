@@ -380,7 +380,7 @@ public class Distributor {
           // add the range covered by this buffer to the
           // rangesInBank (use a clone because the range will be
           // modified during call to the union method
-          Range.union(rangesInBank, (Range) rangesInHost.get(0).getValue().getValue().clone());
+          Range.union(rangesInBank, rangesInHost.get(0).getValue().getValue().copy());
         } else {
           // Divided buffers:
           // Check if all parts of the MObj were allocated in the same memory bank
@@ -397,7 +397,7 @@ public class Distributor {
             // The split is maintained, and rangesInHost must be updated
             // (use a clone because the range will be
             // modified during call to the union method)
-            rangesInHost.forEach(range -> Range.union(rangesInBank, (Range) range.getValue().getValue().clone()));
+            rangesInHost.forEach(range -> Range.union(rangesInBank, range.getValue().getValue().copy()));
           } else {
             // Not all hosts were allocated in the same bank
             // The mObj cannot be splitted

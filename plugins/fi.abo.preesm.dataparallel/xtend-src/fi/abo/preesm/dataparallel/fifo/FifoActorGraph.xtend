@@ -46,6 +46,7 @@ import org.ietr.dftools.algorithm.model.sdf.SDFAbstractVertex
 import org.ietr.dftools.algorithm.model.sdf.SDFEdge
 import org.ietr.dftools.algorithm.model.sdf.SDFGraph
 import org.ietr.dftools.algorithm.model.visitors.SDF4JException
+import org.ietr.dftools.workflow.tools.WorkflowLogger
 import org.jgrapht.EdgeFactory
 
 /**
@@ -123,14 +124,14 @@ class FifoActorGraph extends SDFGraph {
 	 *
 	 * @param logger {@link Logger} logger instance
 	 */
-	override validateModel(Logger logger) {
+	override validateModel() {
 		if(!edgeSet.forall[edge |
 			edge.delay.longValue == 0
 		]) {
 			val message = "Edges of FIFO Actor cannot have delays in them."
-			logger.log(Level.SEVERE, message)
+			WorkflowLogger.getLogger().log(Level.SEVERE, message)
 			throw new SDF4JException(message)
 		}
-		return super.validateModel(logger)
+		return super.validateModel()
 	}
 }

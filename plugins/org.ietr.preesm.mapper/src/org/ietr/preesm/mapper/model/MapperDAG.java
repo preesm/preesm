@@ -82,8 +82,8 @@ public class MapperDAG extends DirectedAcyclicGraph {
   public static final String CLUSTERED_VERTEX = "clustered_vertex";
 
   static {
-    AbstractGraph.public_properties.add(MapperDAG.SCHEDULE_COST);
-    AbstractGraph.public_properties.add(MapperDAG.CLUSTERED_VERTEX);
+    AbstractGraph.PUBLIC_PROPERTIES.add(MapperDAG.SCHEDULE_COST);
+    AbstractGraph.PUBLIC_PROPERTIES.add(MapperDAG.CLUSTERED_VERTEX);
   }
 
   /**
@@ -101,29 +101,6 @@ public class MapperDAG extends DirectedAcyclicGraph {
 
   public MapperDAG(final MapperEdgeFactory factory) {
     this(factory, null);
-  }
-
-  /**
-   * give the number of vertices in the DAG.
-   *
-   * @return the number of vertices
-   */
-  public int getNumberOfVertices() {
-    return vertexSet().size();
-  }
-
-  /**
-   * Adds all vertices of a given set.
-   *
-   * @param set
-   *          the set
-   */
-  public void addAllVertices(final Set<MapperDAGVertex> set) {
-    final Iterator<MapperDAGVertex> iterator = set.iterator();
-
-    while (iterator.hasNext()) {
-      addVertex(iterator.next());
-    }
   }
 
   /**
@@ -161,7 +138,7 @@ public class MapperDAG extends DirectedAcyclicGraph {
    * @return the mapper DAG
    */
   @Override
-  public MapperDAG clone() {
+  public MapperDAG copy() {
 
     // create clone
     final MapperDAG newDAG = new MapperDAG(new MapperEdgeFactory(), getReferencePiMMGraph());
@@ -171,7 +148,7 @@ public class MapperDAG extends DirectedAcyclicGraph {
     final Iterator<DAGVertex> iterV = vertexSet().iterator();
     while (iterV.hasNext()) {
       MapperDAGVertex currentVertex = (MapperDAGVertex) iterV.next();
-      currentVertex = currentVertex.clone();
+      currentVertex = currentVertex.copy();
       newDAG.addVertex(currentVertex);
     }
 
@@ -187,8 +164,8 @@ public class MapperDAG extends DirectedAcyclicGraph {
       final String targetName = target.getName();
       final MapperDAGEdge newEdge = (MapperDAGEdge) newDAG.addEdge(newDAG.getVertex(sourceName),
           newDAG.getVertex(targetName));
-      newEdge.setInit(origEdge.getInit().clone());
-      newEdge.setTiming(origEdge.getTiming().clone());
+      newEdge.setInit(origEdge.getInit().copy());
+      newEdge.setTiming(origEdge.getTiming().copy());
       newEdge.copyProperties(origEdge);
       // Updating the aggregate list with proper reference
       newEdge.setAggregate(new EdgeAggregate());
@@ -202,8 +179,8 @@ public class MapperDAG extends DirectedAcyclicGraph {
     }
     newDAG.copyProperties(this);
 
-    newDAG.setMappings((DAGMappings) getMappings().clone());
-    newDAG.setTimings((DAGTimings) getTimings().clone());
+    newDAG.setMappings((DAGMappings) getMappings().copy());
+    newDAG.setTimings((DAGTimings) getTimings().copy());
 
     return newDAG;
   }
@@ -264,29 +241,6 @@ public class MapperDAG extends DirectedAcyclicGraph {
       }
     }
     return null;
-  }
-
-  /**
-   * Gets all the DAG vertices corresponding to a given SDF graph.
-   *
-   * @param sdfvertex
-   *          the sdfvertex
-   * @return the vertices
-   */
-  public Set<MapperDAGVertex> getVertices(final SDFAbstractVertex sdfvertex) {
-
-    final Set<MapperDAGVertex> currentset = new LinkedHashSet<>();
-    MapperDAGVertex currentvertex = null;
-    for (final DAGVertex currentv : vertexSet()) {
-      currentvertex = (MapperDAGVertex) currentv;
-
-      // Special vertices have null info
-      if ((currentvertex.getCorrespondingSDFVertex().getInfo() != null)
-          && currentvertex.getCorrespondingSDFVertex().getInfo().equals(sdfvertex.getInfo())) {
-        currentset.add(currentvertex);
-      }
-    }
-    return currentset;
   }
 
   /**

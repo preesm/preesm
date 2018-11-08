@@ -34,6 +34,7 @@
  */
 package org.ietr.preesm.cli.test;
 
+import java.util.logging.Logger;
 import org.eclipse.core.runtime.CoreException;
 import org.ietr.preesm.cli.CommandLineUtil;
 import org.junit.Assert;
@@ -46,7 +47,7 @@ public class CommandLineUtilTest {
   @Test
   public void testDisableuatobuild() {
     try {
-      CommandLineUtil.disableAutoBuild(null);
+      CommandLineUtil.disableAutoBuild(null, Logger.getAnonymousLogger());
       Assert.fail();
     } catch (final CoreException e) {
       Assert.fail();

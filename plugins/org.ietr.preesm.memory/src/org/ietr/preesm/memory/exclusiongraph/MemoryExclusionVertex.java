@@ -260,7 +260,7 @@ public class MemoryExclusionVertex extends AbstractVertex<MemoryExclusionGraph>
    * @see org.ietr.dftools.algorithm.model.AbstractVertex#clone()
    */
   @Override
-  public AbstractVertex<MemoryExclusionGraph> clone() {
+  public MemoryExclusionVertex copy() {
     // TODO Auto-generated method stub
     return null;
   }

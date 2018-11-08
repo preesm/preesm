@@ -95,7 +95,8 @@ import org.jgrapht.graph.SimpleGraph;
  * @author kdesnos
  *
  */
-public class MemoryExclusionGraph extends SimpleGraph<MemoryExclusionVertex, DefaultEdge> implements PropertySource {
+public class MemoryExclusionGraph extends SimpleGraph<MemoryExclusionVertex, DefaultEdge>
+    implements PropertySource, CloneableProperty<MemoryExclusionGraph> {
 
   /** Mandatory when extending SimpleGraph. */
   private static final long serialVersionUID = 6491894138235944107L;
@@ -596,29 +597,11 @@ public class MemoryExclusionGraph extends SimpleGraph<MemoryExclusionVertex, Def
    * @override
    */
   @Override
-  public Object clone() {
-    final Object o = super.clone();
-    ((MemoryExclusionGraph) o).adjacentVerticesBackup = new LinkedHashMap<>();
-
+  public MemoryExclusionGraph copy() {
+    final MemoryExclusionGraph o = (MemoryExclusionGraph) super.clone();
+    o.adjacentVerticesBackup = new LinkedHashMap<>();
     return o;
 
-  }
-
-  /*
-   * (non-Javadoc)
-   *
-   * @see
-   * org.ietr.dftools.algorithm.model.PropertySource#copyProperties(org.ietr.dftools.algorithm.model.PropertySource)
-   */
-  @Override
-  public void copyProperties(final PropertySource props) {
-    for (final String key : props.getPropertyBean().keys()) {
-      if (props.getPropertyBean().getValue(key) instanceof CloneableProperty) {
-        getPropertyBean().setValue(key, ((CloneableProperty) props.getPropertyBean().getValue(key)).clone());
-      } else {
-        getPropertyBean().setValue(key, props.getPropertyBean().getValue(key));
-      }
-    }
   }
 
   /**
@@ -867,7 +850,7 @@ public class MemoryExclusionGraph extends SimpleGraph<MemoryExclusionVertex, Def
         final List<Pair<MemoryExclusionVertex, Pair<Range, Range>>> realTokenRangeCopy = new ArrayList<>();
         for (final Pair<MemoryExclusionVertex, Pair<Range, Range>> pair : realTokenRange) {
           realTokenRangeCopy.add(Pair.of(mObjMap.get(pair.getKey()),
-              Pair.of((Range) pair.getValue().getKey().clone(), (Range) pair.getValue().getValue().clone())));
+              Pair.of((Range) pair.getValue().getKey().copy(), (Range) pair.getValue().getValue().copy())));
         }
         vertexClone.setPropertyValue(MemoryExclusionVertex.REAL_TOKEN_RANGE_PROPERTY, realTokenRangeCopy);
       }
@@ -1243,19 +1226,6 @@ public class MemoryExclusionGraph extends SimpleGraph<MemoryExclusionVertex, Def
   /*
    * (non-Javadoc)
    *
-   * @see org.ietr.dftools.algorithm.model.PropertySource#getPropertyStringValue(java.lang.String)
-   */
-  @Override
-  public String getPropertyStringValue(final String propertyName) {
-    if (getPropertyBean().getValue(propertyName) != null) {
-      return getPropertyBean().getValue(propertyName).toString();
-    }
-    return null;
-  }
-
-  /*
-   * (non-Javadoc)
-   *
    * @see org.ietr.dftools.algorithm.model.PropertySource#getPublicProperties()
    */
   @Override
@@ -1423,16 +1393,6 @@ public class MemoryExclusionGraph extends SimpleGraph<MemoryExclusionVertex, Def
     this.adjacentVerticesBackup = new LinkedHashMap<>();
   }
 
-  /*
-   * (non-Javadoc)
-   *
-   * @see org.ietr.dftools.algorithm.model.PropertySource#setPropertyValue(java.lang.String, java.lang.Object)
-   */
-  @Override
-  public void setPropertyValue(final String propertyName, final Object value) {
-    getPropertyBean().setValue(propertyName, value);
-  }
-
   /**
    * Method used to update the exclusions between memory objects corresponding to Fifo heads and other memory objects of
    * the {@link MemoryExclusionGraph}. Exclusions will be removed from the exclusion graph, but no exclusions will be
@@ -1444,7 +1404,7 @@ public class MemoryExclusionGraph extends SimpleGraph<MemoryExclusionVertex, Def
   protected void updateFIFOMemObjectWithSchedule(final DirectedAcyclicGraph inputDAG) {
 
     // Create a DAG with new edges from scheduling info
-    final DirectedAcyclicGraph scheduledDAG = (DirectedAcyclicGraph) inputDAG.clone();
+    final DirectedAcyclicGraph scheduledDAG = (DirectedAcyclicGraph) inputDAG.copy();
 
     // Create an List of the DAGVertices, in scheduling order.
     final List<DAGVertex> verticesMap = new ArrayList<>();

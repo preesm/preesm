@@ -7,6 +7,15 @@ PREESM Changelog
 ### New Feature
 
 ### Changes
+* Fix BRV computation (more resilient to integer overflow);
+* Fix travis file;
+* Add tests
+* Fix product definition (exporting from Eclipse now works properly);
+* Refactor 
+  * Impact DFTool refactor;
+  * Remove dead code;
+* Update DFTools to 2.0.0+
+* Update Graphiti to 1.11.0+
 
 ### Bug fix
 

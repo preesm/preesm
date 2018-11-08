@@ -52,7 +52,7 @@ import org.eclipse.core.resources.IWorkspaceRoot;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.Path;
-import org.ietr.dftools.workflow.tools.CLIWorkflowLogger;
+import org.ietr.dftools.workflow.tools.WorkflowLogger;
 
 // TODO: Auto-generated Javadoc
 /**
@@ -103,7 +103,7 @@ public class XsltTransformer {
     }
 
     if (this.transformer == null) {
-      CLIWorkflowLogger.log(Level.SEVERE, "XSL sheet not found or not valid: " + fileName);
+      WorkflowLogger.getLogger().log(Level.SEVERE, "XSL sheet not found or not valid: " + fileName);
       return false;
     }
 
@@ -137,7 +137,7 @@ public class XsltTransformer {
         outStream.close();
 
       } catch (final FileNotFoundException e) {
-        CLIWorkflowLogger.log(Level.SEVERE,
+        WorkflowLogger.getLogger().log(Level.SEVERE,
             "Problem finding files for XSL transfo (" + osSourceFilePath + "," + osDestFilePath + ")");
       } catch (final TransformerException e) {
         e.printStackTrace();

@@ -18,7 +18,7 @@ notifications:
     on_failure: always
   slack:
     on_success: change
-    on_failure: always
+    on_failure: change
     rooms:
       - vaader-ietr:EEtUq0RrGRpHSXWZiEApSDwS#preesm
 

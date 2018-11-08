@@ -150,7 +150,7 @@ class PFastCallable implements Callable<MapperDAG> {
     // Critical sections where the data from the main thread are copied for
     // this thread
     synchronized (this.inputDAG) {
-      callableDAG = this.inputDAG.clone();
+      callableDAG = this.inputDAG.copy();
     }
 
     synchronized (this.inputArchi) {
@@ -162,7 +162,7 @@ class PFastCallable implements Callable<MapperDAG> {
     }
 
     // Create the CPN Dominant Sequence
-    final LatencyAbc IHsimu = new InfiniteHomogeneousAbc(this.abcParams, callableDAG.clone(), callableArchi,
+    final LatencyAbc IHsimu = new InfiniteHomogeneousAbc(this.abcParams, callableDAG.copy(), callableArchi,
         this.scenario);
     final InitialLists initialLists = new InitialLists();
     initialLists.constructInitialLists(callableDAG, IHsimu);

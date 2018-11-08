@@ -128,7 +128,7 @@ public class MapperDAGVertex extends DAGVertex {
    * @see org.ietr.dftools.algorithm.model.dag.DAGVertex#clone()
    */
   @Override
-  public MapperDAGVertex clone() {
+  public MapperDAGVertex copy() {
 
     MapperDAGVertex result = null;
 
@@ -149,7 +149,9 @@ public class MapperDAGVertex extends DAGVertex {
       result = new MapperDAGVertex(getId(), getName(), (MapperDAG) getBase());
     }
 
-    result.setInit(getInit().clone(result));
+    final VertexInit copy = getInit().copy();
+    copy.setParentVertex(result);
+    result.setInit(copy);
     result.setEffectiveComponent(getEffectiveComponent());
 
     for (final String propertyKey : getPropertyBean().keys()) {

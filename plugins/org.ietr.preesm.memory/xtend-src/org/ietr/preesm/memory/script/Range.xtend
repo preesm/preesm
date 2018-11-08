@@ -39,9 +39,10 @@ import java.util.ArrayList
 import java.util.Collection
 import java.util.List
 import org.eclipse.xtend.lib.annotations.Accessors
+import org.ietr.dftools.algorithm.model.CloneableProperty
 
 @SuppressWarnings("unchecked")
-class Range {
+class Range implements CloneableProperty<Range> {
 
 	/**
 	 * Realize the subtraction between the {@link Range} instance and another
@@ -65,7 +66,7 @@ class Range {
 				result.add(new Range(inter.getEnd, this.getEnd))
 			}
 		} else {
-			result.add(this.clone as Range)
+			result.add(this.copy)
 		}
 
 		return result
@@ -108,7 +109,7 @@ class Range {
 	static def List<Range> difference(List<Range> ranges, List<Range> ranges2) {
 
 		// Copy the original list
-		var List<Range> result = new ArrayList(ranges.map[it.clone as Range]) // to make sure the map function is applied only once
+		var List<Range> result = new ArrayList(ranges.map[it.copy]) // to make sure the map function is applied only once
 
 		// Successively subtract all ranges from ranges2
 		for (range : ranges2) {
@@ -259,7 +260,7 @@ class Range {
 		var changed = true
 		while (changed == true) {
 			changed = false
-			val originalRange = newRange.clone
+			val originalRange = newRange.copy
 			var iter = ranges.iterator
 			while (iter.hasNext) {
 				val range = iter.next
@@ -392,7 +393,7 @@ class Range {
 		}
 	}
 
-	override clone() {
+	override Range copy() {
 		return new Range(this)
 	}
 }

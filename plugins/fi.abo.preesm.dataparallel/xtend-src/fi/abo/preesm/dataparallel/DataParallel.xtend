@@ -51,17 +51,17 @@ import org.ietr.dftools.workflow.tools.WorkflowLogger
 
 /**
  * Wrapper class that performs the data-parallel checks and transforms
- * 
+ *
  * @author Sudeep Kanur
  */
 class DataParallel extends AbstractTaskImplementation {
-	
+
 	@Accessors(PUBLIC_GETTER, PRIVATE_SETTER)
 	val KEY_INFO = "Info"
-	
+
 	@Accessors(PUBLIC_GETTER, PRIVATE_SETTER)
 	val KEY_CySDF = "CySDF"
-	
+
 	/**
 	 * Execute data-parallel plugin and re-timing transformation. Actual work is carried out
 	 * by {@link DataParallelCheckOperations}
@@ -72,29 +72,29 @@ class DataParallel extends AbstractTaskImplementation {
 		if(!sdf.isSchedulable) {
 			throw new SDF4JException("Graph " + sdf + " not schedulable")
 		}
-		
+
 		val logger = WorkflowLogger.logger
-		
-		val checker = new DataParallelCheckOperations(logger as Logger)
+
+		val checker = new DataParallelCheckOperations(logger)
 		sdf.accept(checker)
-		
+
 		return newLinkedHashMap(KEY_INFO -> checker.info,
 						  KEY_CySDF -> checker.cyclicGraph
 		)
 	}
-	
+
 	/**
 	 * No default parameters yet
 	 */
 	override getDefaultParameters() {
 		return newLinkedHashMap
 	}
-	
+
 	/**
 	 * Default monitor message
 	 */
 	override monitorMessage() {
 		return "Running Data-parallel checks and transformations"
 	}
-	
+
 }

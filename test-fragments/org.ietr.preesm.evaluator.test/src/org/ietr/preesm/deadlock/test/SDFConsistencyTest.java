@@ -36,7 +36,7 @@
 package org.ietr.preesm.deadlock.test;
 
 import org.ietr.dftools.algorithm.model.sdf.SDFGraph;
-import org.ietr.dftools.algorithm.model.sdf.types.SDFIntEdgePropertyType;
+import org.ietr.dftools.algorithm.model.types.LongEdgePropertyType;
 import org.ietr.preesm.deadlock.SDFConsistency;
 import org.ietr.preesm.evaluator.EvaluationException;
 import org.ietr.preesm.throughput.tools.helpers.GraphStructureHelper;
@@ -73,7 +73,7 @@ public class SDFConsistencyTest {
     Assert.assertTrue(consistent);
 
     // change the consumption rate of a random edge so that the graph becomes non consistent
-    ABC.edgeSet().iterator().next().setCons(new SDFIntEdgePropertyType(10));
+    ABC.edgeSet().iterator().next().setCons(new LongEdgePropertyType(10));
     // evaluate the consistency
 
     try {

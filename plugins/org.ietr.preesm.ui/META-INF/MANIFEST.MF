@@ -16,7 +16,7 @@ Require-Bundle: org.eclipse.ui.console;bundle-version="3.5.100",
  org.eclipse.emf.edit.ui,
  org.eclipse.xtend.lib,
  net.sourceforge.jexcelapi.jxl;bundle-version="2.6.10",
- org.ietr.dftools.ui;bundle-version="[1.9.0,2.0.0)";visibility:=reexport,
+ org.ietr.dftools.ui;bundle-version="[2.0.0,3.0.0)";visibility:=reexport,
  org.ietr.preesm.core;visibility:=reexport
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Bundle-ActivationPolicy: lazy

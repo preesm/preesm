@@ -41,6 +41,7 @@ import java.util.Iterator;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
+import org.ietr.dftools.algorithm.model.CloneableProperty;
 import org.ietr.preesm.mapper.model.MapperDAG;
 import org.ietr.preesm.mapper.model.MapperDAGVertex;
 
@@ -50,33 +51,16 @@ import org.ietr.preesm.mapper.model.MapperDAGVertex;
  *
  * @author mpelcat
  */
-public abstract class GroupProperty implements Cloneable {
+public abstract class GroupProperty implements CloneableProperty<GroupProperty> {
 
   /** IDs of the vertices that share the property. */
-  private final Set<String> vertexIDs;
+  protected final Set<String> vertexIDs;
 
   /**
    * Instantiates a new group property.
    */
   public GroupProperty() {
     this.vertexIDs = new LinkedHashSet<>();
-  }
-
-  /**
-   * Duplicating the group property.
-   *
-   * @return the object
-   */
-  @Override
-  protected Object clone() {
-    GroupProperty newProp = null;
-    try {
-      newProp = (GroupProperty) super.clone();
-      newProp.vertexIDs.addAll(this.vertexIDs);
-    } catch (final CloneNotSupportedException e) {
-      e.printStackTrace();
-    }
-    return newProp;
   }
 
   /**

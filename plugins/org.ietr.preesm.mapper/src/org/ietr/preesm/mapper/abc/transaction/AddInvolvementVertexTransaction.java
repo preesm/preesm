@@ -152,7 +152,7 @@ public class AddInvolvementVertexTransaction extends Transaction {
 
       if (this.isSender) {
         final MapperDAGEdge newInEdge = (MapperDAGEdge) this.implementation.addEdge(currentSource, this.iVertex);
-        newInEdge.setInit(this.edge.getInit().clone());
+        newInEdge.setInit(this.edge.getInit().copy());
         newInEdge.getTiming().setCost(0);
 
         MapperDAGVertex receiverVertex = currentTarget;
@@ -170,7 +170,7 @@ public class AddInvolvementVertexTransaction extends Transaction {
         } while (receiverVertex instanceof TransferVertex);
 
         final MapperDAGEdge newoutEdge = (MapperDAGEdge) this.implementation.addEdge(this.iVertex, receiverVertex);
-        newoutEdge.setInit(this.edge.getInit().clone());
+        newoutEdge.setInit(this.edge.getInit().copy());
         newoutEdge.getTiming().setCost(0);
 
         // TODO: Look at switching possibilities
@@ -182,7 +182,7 @@ public class AddInvolvementVertexTransaction extends Transaction {
 
       } else {
         final MapperDAGEdge newOutEdge = (MapperDAGEdge) this.implementation.addEdge(this.iVertex, currentTarget);
-        newOutEdge.setInit(this.edge.getInit().clone());
+        newOutEdge.setInit(this.edge.getInit().copy());
         newOutEdge.getTiming().setCost(0);
 
         this.orderManager.insertAfter(currentSource, this.iVertex);

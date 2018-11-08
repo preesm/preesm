@@ -85,8 +85,9 @@ public class VertexTiming extends GroupProperty {
    * @see org.ietr.preesm.mapper.model.property.GroupProperty#clone()
    */
   @Override
-  public VertexTiming clone() {
-    final VertexTiming property = (VertexTiming) super.clone();
+  public VertexTiming copy() {
+    final VertexTiming property = new VertexTiming();
+    property.vertexIDs.addAll(this.vertexIDs);
     property.setBLevel(getBLevel());
     property.setTLevel(getTLevel());
     property.setCost(getCost());

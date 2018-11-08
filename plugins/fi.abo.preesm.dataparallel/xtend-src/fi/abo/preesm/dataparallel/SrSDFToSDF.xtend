@@ -38,9 +38,9 @@ package fi.abo.preesm.dataparallel
 
 import org.eclipse.xtend.lib.annotations.Accessors
 import org.ietr.dftools.algorithm.model.sdf.SDFGraph
-import org.ietr.dftools.algorithm.model.sdf.types.SDFIntEdgePropertyType
-import org.jgrapht.alg.shortestpath.DijkstraShortestPath
+import org.ietr.dftools.algorithm.model.types.LongEdgePropertyType
 import org.ietr.dftools.algorithm.model.visitors.SDF4JException
+import org.jgrapht.alg.shortestpath.DijkstraShortestPath
 
 /**
  * Helper class to represent delays present in an SrSDF graph back in its original SDF graph
@@ -109,7 +109,7 @@ class SrSDFToSDF {
 		}
 
 		this.sdf = sdf
-		this.originalSDF = sdf.clone
+		this.originalSDF = sdf.copy
 
 		this.nodeChainGraph = new NodeChainGraph(srsdf)
 		this.dagGen = new SDF2DAG(sdf)
@@ -132,7 +132,7 @@ class SrSDFToSDF {
 		hasRetimed = true
 		// First set delays of SDF to 0
 		sdf.edgeSet.forEach[edge |
-			edge.delay = new SDFIntEdgePropertyType(0)
+			edge.delay = new LongEdgePropertyType(0)
 		]
 
 		val seenConnectingEdges = newArrayList
@@ -198,7 +198,7 @@ class SrSDFToSDF {
 						if(delay === null) {
 							throw new DAGComputationBug("Couldn't find delay for the edge: " + connectingEdge)
 						}
-						actorEdge.delay = new SDFIntEdgePropertyType(prevDelay + delay.intValue)
+						actorEdge.delay = new LongEdgePropertyType(prevDelay + delay.intValue)
 					}
 				]
 			}
@@ -231,7 +231,7 @@ class SrSDFToSDF {
 					}
 				} else {
 					val retimedEdge = similarEdges.get(0)
-					retimedEdge.delay = new SDFIntEdgePropertyType(edge.delay.longValue)
+					retimedEdge.delay = new LongEdgePropertyType(edge.delay.longValue)
 				}
 			]
 		}

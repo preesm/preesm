@@ -346,7 +346,7 @@ public class PFastAlgorithm extends Observable {
 
     // step 1
     // step 2
-    dagfinal = scheduler.schedule(dag, cpnDominantVector, archisimu, null, null).clone();
+    dagfinal = scheduler.schedule(dag, cpnDominantVector, archisimu, null, null).copy();
 
     this.bestTotalOrder = archisimu.getTotalOrder();
     archisimu.updateFinalCosts();
@@ -408,7 +408,7 @@ public class PFastAlgorithm extends Observable {
 
         // step 12
         if (!population) {
-          dag = mappedDAGSet.first().clone();
+          dag = mappedDAGSet.first().copy();
 
           iBest = dag.getScheduleCost();
           setChanged();
@@ -447,7 +447,7 @@ public class PFastAlgorithm extends Observable {
     }
 
     this.bestTotalOrder = (VertexOrderList) mappedDAGSet.first().getPropertyBean().getValue("bestTotalOrder");
-    dagfinal = mappedDAGSet.first().clone();
+    dagfinal = mappedDAGSet.first().copy();
 
     return dagfinal;
   }

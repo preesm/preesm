@@ -47,7 +47,7 @@ import org.ietr.dftools.algorithm.model.sdf.esdf.SDFJoinVertex
 import org.ietr.dftools.algorithm.model.sdf.esdf.SDFRoundBufferVertex
 import org.ietr.dftools.algorithm.model.sdf.esdf.SDFSinkInterfaceVertex
 import org.ietr.dftools.algorithm.model.sdf.esdf.SDFSourceInterfaceVertex
-import org.ietr.dftools.algorithm.model.sdf.types.SDFIntEdgePropertyType
+import org.ietr.dftools.algorithm.model.types.LongEdgePropertyType
 import org.junit.Assert
 import org.junit.Test
 
@@ -143,9 +143,9 @@ class ExampleGraphs {
 			target.addSource(inPort)
 
 			outputGraph.addEdge(source, outPort, target, inPort,
-				new SDFIntEdgePropertyType(prod),
-				new SDFIntEdgePropertyType(cons),
-				new SDFIntEdgePropertyType(delay)
+				new LongEdgePropertyType(prod),
+				new LongEdgePropertyType(cons),
+				new LongEdgePropertyType(delay)
 			)
 			return this
 		}

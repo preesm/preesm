@@ -39,6 +39,7 @@ package org.ietr.preesm.mapper.model.property;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Set;
+import org.ietr.dftools.algorithm.model.CloneableProperty;
 import org.ietr.preesm.mapper.model.MapperDAGVertex;
 
 // TODO: Auto-generated Javadoc
@@ -48,7 +49,7 @@ import org.ietr.preesm.mapper.model.MapperDAGVertex;
  *
  * @author mpelcat
  */
-public class DAGMappings {
+public class DAGMappings implements CloneableProperty<DAGMappings> {
 
   /**
    * A mapping is associated to IDs of the vertices belonging to it (for fast access).
@@ -129,7 +130,7 @@ public class DAGMappings {
    * @return the object
    */
   @Override
-  public Object clone() {
+  public DAGMappings copy() {
     final Map<VertexMapping, VertexMapping> relateOldAndNew = new LinkedHashMap<>();
     final DAGMappings newMappings = new DAGMappings();
     for (final String s : this.mappings.keySet()) {
@@ -137,7 +138,7 @@ public class DAGMappings {
       if (relateOldAndNew.containsKey(m)) {
         newMappings.put(s, relateOldAndNew.get(m));
       } else {
-        final VertexMapping newM = this.mappings.get(s).clone();
+        final VertexMapping newM = this.mappings.get(s).copy();
         relateOldAndNew.put(m, newM);
         newMappings.put(s, newM);
       }
