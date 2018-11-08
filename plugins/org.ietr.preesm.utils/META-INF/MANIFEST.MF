@@ -3,7 +3,7 @@ Bundle-ManifestVersion: 2
 Bundle-Name: PREESM utilities
 Automatic-Module-Name: org.ietr.preesm.utils
 Bundle-SymbolicName: org.ietr.preesm.utils
-Bundle-Version: 2.16.0
+Bundle-Version: 2.17.0
 Bundle-Activator: org.ietr.preesm.utils.Activator
 Bundle-Vendor: IETR/INSA Rennes
 Require-Bundle: org.eclipse.core.runtime,

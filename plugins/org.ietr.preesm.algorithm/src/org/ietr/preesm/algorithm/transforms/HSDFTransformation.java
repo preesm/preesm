@@ -89,7 +89,8 @@ public class HSDFTransformation extends AbstractTaskImplementation {
       logger.setLevel(Level.FINEST);
       logger.log(Level.FINER, "Transforming application " + algorithm.getName() + " to HSDF");
       VisitorOutput.setLogger(logger);
-      if (algorithm.validateModel(WorkflowLogger.getLogger())) {
+      algorithm.insertBroadcasts();
+      if (algorithm.validateModel()) {
 
         final ToHSDFVisitor toHsdf = new ToHSDFVisitor();
 

@@ -480,7 +480,7 @@ public class CodegenModelGenerator {
         case VertexType.TYPE_TASK:
           // May be an actor (Hierarchical or not) call
           // or a Fork Join call
-          final String vertKind = vert.getPropertyBean().getValue(AbstractVertex.KIND).toString();
+          final String vertKind = vert.getPropertyBean().getValue(AbstractVertex.KIND_LITERAL).toString();
           switch (vertKind) {
             case DAGVertex.DAG_VERTEX:
               generateActorFiring(operatorBlock, vert);
@@ -1648,7 +1648,7 @@ public class CodegenModelGenerator {
   protected void generateSpecialCall(final CoreBlock operatorBlock, final DAGVertex dagVertex) {
     final SpecialCall f = CodegenFactory.eINSTANCE.createSpecialCall();
     f.setName(dagVertex.getName());
-    final String vertexType = dagVertex.getPropertyStringValue(AbstractVertex.KIND);
+    final String vertexType = dagVertex.getPropertyStringValue(AbstractVertex.KIND_LITERAL);
     switch (vertexType) {
       case DAGForkVertex.DAG_FORK_VERTEX:
         f.setType(SpecialType.FORK);

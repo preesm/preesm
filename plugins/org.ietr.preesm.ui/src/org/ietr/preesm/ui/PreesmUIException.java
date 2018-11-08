@@ -1,11 +1,7 @@
 /**
- * Copyright or © or Copr. IETR/INSA - Rennes (2008 - 2018) :
+ * Copyright or © or Copr. IETR/INSA - Rennes (2018) :
  *
- * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017 - 2018)
- * Clément Guy <clement.guy@insa-rennes.fr> (2014)
- * Jonathan Piat <jpiat@laas.fr> (2011)
- * Matthieu Wipliez <matthieu.wipliez@insa-rennes.fr> (2008)
- * Maxime Pelcat <maxime.pelcat@insa-rennes.fr> (2008 - 2012)
+ * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2018)
  *
  * This software is a computer program whose purpose is to help prototyping
  * parallel applications using dataflow formalism.
@@ -36,63 +32,22 @@
  * The fact that you are presently reading this means that you have had
  * knowledge of the CeCILL license and that you accept its terms.
  */
-package org.ietr.preesm.mapper.model.property;
+package org.ietr.preesm.ui;
 
-import org.ietr.dftools.algorithm.model.AbstractEdgePropertyType;
-
-// TODO: Auto-generated Javadoc
 /**
- * Extending propertyType.
  *
- * @author mpelcat
+ * @author anmorvan
+ *
  */
-public class EdgePropertyType extends AbstractEdgePropertyType<Integer> {
+public class PreesmUIException extends RuntimeException {
 
-  /** The time. */
-  int time;
+  private static final long serialVersionUID = -2444889221654370756L;
 
-  /**
-   * Instantiates a new edge property type.
-   *
-   * @param time
-   *          the time
-   */
-  public EdgePropertyType(final int time) {
-    super();
-    this.time = time;
-
+  public PreesmUIException(final String message) {
+    super(message);
   }
 
-  /*
-   * (non-Javadoc)
-   *
-   * @see org.ietr.dftools.algorithm.model.AbstractEdgePropertyType#clone()
-   */
-  @Override
-  public AbstractEdgePropertyType<Integer> clone() {
-    // TODO Auto-generated method stub
-    return null;
+  public PreesmUIException(final String message, final Throwable cause) {
+    super(message, cause);
   }
-
-  /*
-   * (non-Javadoc)
-   *
-   * @see org.ietr.dftools.algorithm.model.AbstractEdgePropertyType#intValue()
-   */
-  @Override
-  public long longValue() {
-    // TODO Auto-generated method stub
-    return this.time;
-  }
-
-  /*
-   * (non-Javadoc)
-   *
-   * @see org.ietr.dftools.algorithm.model.AbstractEdgePropertyType#toString()
-   */
-  @Override
-  public String toString() {
-    return String.format("%d", this.time);
-  }
-
 }

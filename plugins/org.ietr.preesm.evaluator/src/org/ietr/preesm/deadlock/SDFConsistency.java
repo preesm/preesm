@@ -43,10 +43,9 @@ import org.apache.commons.math3.fraction.BigFraction;
 import org.ietr.dftools.algorithm.model.sdf.SDFAbstractVertex;
 import org.ietr.dftools.algorithm.model.sdf.SDFEdge;
 import org.ietr.dftools.algorithm.model.sdf.SDFGraph;
-import org.ietr.dftools.algorithm.model.sdf.SDFInterfaceVertex;
 import org.ietr.dftools.algorithm.model.sdf.esdf.SDFSinkInterfaceVertex;
 import org.ietr.dftools.algorithm.model.sdf.esdf.SDFSourceInterfaceVertex;
-import org.ietr.dftools.algorithm.model.sdf.types.SDFIntEdgePropertyType;
+import org.ietr.dftools.algorithm.model.types.LongEdgePropertyType;
 import org.ietr.preesm.evaluator.EvaluationException;
 import org.ietr.preesm.throughput.tools.helpers.Stopwatch;
 import org.ietr.preesm.utils.math.MathFunctionsHelper;
@@ -109,14 +108,14 @@ public abstract class SDFConsistency {
       if (actor instanceof SDFSourceInterfaceVertex) {
         final SDFEdge e = actor.getAssociatedEdge(actor.getSinks().iterator().next());
         final long prod = e.getProd().longValue();
-        e.setProd(new SDFIntEdgePropertyType(prod * actor.getNbRepeatAsLong()));
+        e.setProd(new LongEdgePropertyType(prod * actor.getNbRepeatAsLong()));
         actor.setNbRepeat(1L);
       }
       // output interface
       if (actor instanceof SDFSinkInterfaceVertex) {
         final SDFEdge e = actor.getAssociatedEdge(actor.getSources().iterator().next());
         final long cons = e.getCons().longValue();
-        e.setCons(new SDFIntEdgePropertyType(cons * actor.getNbRepeatAsLong()));
+        e.setCons(new LongEdgePropertyType(cons * actor.getNbRepeatAsLong()));
         actor.setNbRepeat(1L);
       }
     }
@@ -128,10 +127,10 @@ public abstract class SDFConsistency {
   private static int setReps(final SDFGraph g, final SDFAbstractVertex a, final BigFraction n) {
     SDFConsistency.reps.put(a.getName(), n);
     // DFS forward
-    final List<SDFInterfaceVertex> sinks = a.getSinks();
-    final List<SDFInterfaceVertex> sources = a.getSources();
+    final List<SDFSinkInterfaceVertex> sinks = a.getSinks();
+    final List<SDFSourceInterfaceVertex> sources = a.getSources();
 
-    for (final SDFInterfaceVertex output : sinks) {
+    for (final SDFSinkInterfaceVertex output : sinks) {
       final SDFEdge e = a.getAssociatedEdge(output);
       final BigFraction fa = SDFConsistency.reps.get(e.getTarget().getName());
       if (fa.getNumerator().equals(BigInteger.ZERO)) {
@@ -143,7 +142,7 @@ public abstract class SDFConsistency {
     }
 
     // DFS backward
-    for (final SDFInterfaceVertex input : sources) {
+    for (final SDFSourceInterfaceVertex input : sources) {
       final SDFEdge e = a.getAssociatedEdge(input);
       final BigFraction fa = SDFConsistency.reps.get(e.getSource().getName());
       if (fa.getNumerator().equals(BigInteger.ZERO)) {

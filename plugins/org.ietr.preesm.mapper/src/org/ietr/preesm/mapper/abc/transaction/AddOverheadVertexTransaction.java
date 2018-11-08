@@ -144,8 +144,8 @@ public class AddOverheadVertexTransaction extends Transaction {
       this.newInEdge = (MapperDAGEdge) this.implementation.addEdge(currentSource, this.oVertex);
       this.newOutEdge = (MapperDAGEdge) this.implementation.addEdge(this.oVertex, currentTarget);
 
-      this.newInEdge.setInit(this.edge.getInit().clone());
-      this.newOutEdge.setInit(this.edge.getInit().clone());
+      this.newInEdge.setInit(this.edge.getInit().copy());
+      this.newOutEdge.setInit(this.edge.getInit().copy());
 
       this.newInEdge.getTiming().setCost(0);
       this.newOutEdge.getTiming().setCost(0);

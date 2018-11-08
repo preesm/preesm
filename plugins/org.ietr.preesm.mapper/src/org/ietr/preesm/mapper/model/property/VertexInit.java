@@ -43,6 +43,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
+import org.ietr.dftools.algorithm.model.CloneableProperty;
 import org.ietr.dftools.architecture.slam.ComponentInstance;
 import org.ietr.preesm.core.architecture.util.DesignTools;
 import org.ietr.preesm.core.scenario.Timing;
@@ -54,7 +55,7 @@ import org.ietr.preesm.mapper.model.MapperDAGVertex;
  *
  * @author mpelcat
  */
-public class VertexInit {
+public class VertexInit implements CloneableProperty<VertexInit> {
 
   /** Corresponding vertex. */
   private MapperDAGVertex parentVertex;
@@ -126,17 +127,11 @@ public class VertexInit {
   /**
    * Clone.
    *
-   * @param parentVertex
-   *          the parent vertex
    * @return the vertex init
    */
-  public VertexInit clone(final MapperDAGVertex parentVertex) {
+  public VertexInit copy() {
 
     final VertexInit property = new VertexInit();
-
-    if (parentVertex != null) {
-      property.setParentVertex(parentVertex);
-    }
 
     final Iterator<Timing> it = getTimings().iterator();
     while (it.hasNext()) {

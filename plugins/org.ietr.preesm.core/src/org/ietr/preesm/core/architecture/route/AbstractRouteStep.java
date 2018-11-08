@@ -1,7 +1,7 @@
 /**
- * Copyright or © or Copr. IETR/INSA - Rennes (2009 - 2017) :
+ * Copyright or © or Copr. IETR/INSA - Rennes (2009 - 2018) :
  *
- * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017)
+ * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017 - 2018)
  * Clément Guy <clement.guy@insa-rennes.fr> (2014)
  * Jonathan Piat <jpiat@laas.fr> (2011)
  * Maxime Pelcat <maxime.pelcat@insa-rennes.fr> (2009 - 2016)
@@ -37,6 +37,7 @@
  */
 package org.ietr.preesm.core.architecture.route;
 
+import org.ietr.dftools.algorithm.model.CloneableProperty;
 import org.ietr.dftools.architecture.slam.ComponentInstance;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -47,7 +48,7 @@ import org.w3c.dom.Element;
  *
  * @author mpelcat
  */
-public abstract class AbstractRouteStep {
+public abstract class AbstractRouteStep implements CloneableProperty<AbstractRouteStep> {
 
   /**
    * The sender of the route step. A route step is always directed.
@@ -154,7 +155,7 @@ public abstract class AbstractRouteStep {
    * @see java.lang.Object#clone()
    */
   @Override
-  protected abstract Object clone() throws CloneNotSupportedException;
+  public abstract AbstractRouteStep copy();
 
   /**
    * Appends the route step informations to a dom3 xml file.

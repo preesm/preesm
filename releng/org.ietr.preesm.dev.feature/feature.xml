@@ -38,7 +38,7 @@
 <feature
       id="org.ietr.preesm.dev.feature"
       label="PREESM Developper Requirements (Meta Feature)"
-      version="2.16.0">
+      version="2.17.0">
 
    <description url="http://org/">
       This feature embeds all required Eclipse plugins for developping PREESM. That includes XTend, GEF, EMF, Graphiti (Eclipse) Plus SDKs, along with Checkstyle integration for Eclipse, Maven integration for Eclipse (and appropriate extension), and other IETR dependencies (third party libraries, DFTools and Graphiti).
@@ -628,8 +628,8 @@ Version 1.0 dated 2006-09-05.]]>
 
       <!-- IETR dependencies -->
       <import feature="org.ietr.externaldeps.aio.deps" version="3.3.0" match="compatible"/>
-      <import feature="org.ietr.graphiti.feature" version="1.10.0" match="compatible"/>
-      <import feature="org.ietr.dftools.feature" version="1.9.0" match="compatible"/>
+      <import feature="org.ietr.graphiti.feature" version="1.11.0" match="compatible"/>
+      <import feature="org.ietr.dftools.feature" version="2.0.0" match="compatible"/>
       <!--
 		If building along with Graphiti and/or DFTools source (without Preesm Meta
 		Dev Feature), the following features are not available. That is because the

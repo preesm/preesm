@@ -38,7 +38,7 @@ package org.ietr.preesm.throughput.tools.transformers;
 import java.util.ArrayList;
 import org.ietr.dftools.algorithm.model.sdf.SDFEdge;
 import org.ietr.dftools.algorithm.model.sdf.SDFGraph;
-import org.ietr.dftools.algorithm.model.sdf.types.SDFIntEdgePropertyType;
+import org.ietr.dftools.algorithm.model.types.LongEdgePropertyType;
 import org.ietr.preesm.throughput.tools.helpers.Stopwatch;
 
 /**
@@ -60,15 +60,15 @@ public interface SrSDFTransformer {
     timer.start();
 
     // clone the srSDF
-    final SDFGraph hsdfGraph = srSDF.clone();
+    final SDFGraph hsdfGraph = srSDF.copy();
     hsdfGraph.setName(srSDF.getName() + "_HSDF");
 
     // for each edge set cons=prod=1 and delay=delay/prod
     for (final SDFEdge edge : hsdfGraph.edgeSet()) {
       final long delay = edge.getDelay().longValue() / edge.getProd().longValue();
-      edge.setProd(new SDFIntEdgePropertyType(1));
-      edge.setCons(new SDFIntEdgePropertyType(1));
-      edge.setDelay(new SDFIntEdgePropertyType(delay));
+      edge.setProd(new LongEdgePropertyType(1));
+      edge.setCons(new LongEdgePropertyType(1));
+      edge.setDelay(new LongEdgePropertyType(delay));
     }
 
     timer.stop();
@@ -87,7 +87,7 @@ public interface SrSDFTransformer {
     timer.start();
 
     // clone the srSDF
-    final SDFGraph dag = srSDF.clone();
+    final SDFGraph dag = srSDF.copy();
     dag.setName(srSDF.getName() + "_DAG");
 
     // save the list of edges

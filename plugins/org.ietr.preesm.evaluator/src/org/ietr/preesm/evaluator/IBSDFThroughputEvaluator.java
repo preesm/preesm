@@ -156,7 +156,7 @@ public class IBSDFThroughputEvaluator extends ThroughputEvaluator {
    * @return null if the condition not respected
    */
   private Map<String, Map<String, Double>> test_period(final double K, final SDFGraph sdf) {
-    final SDFGraph g = sdf.clone();
+    final SDFGraph g = sdf.copy();
 
     // The set of edges that will be used to compute shortest paths
     final Map<SDFEdge, Double> e = new LinkedHashMap<>(g.edgeSet().size());

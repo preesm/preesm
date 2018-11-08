@@ -38,7 +38,7 @@ package org.ietr.preesm.deadlock.test;
 import org.ietr.dftools.algorithm.model.sdf.SDFAbstractVertex;
 import org.ietr.dftools.algorithm.model.sdf.SDFEdge;
 import org.ietr.dftools.algorithm.model.sdf.SDFGraph;
-import org.ietr.dftools.algorithm.model.sdf.types.SDFIntEdgePropertyType;
+import org.ietr.dftools.algorithm.model.types.LongEdgePropertyType;
 import org.ietr.preesm.deadlock.IBSDFConsistency;
 import org.ietr.preesm.evaluator.EvaluationException;
 import org.ietr.preesm.throughput.tools.helpers.GraphStructureHelper;
@@ -92,7 +92,7 @@ public class IBSDFConsistencyTest {
     // change the production rate of the edge EF so that the subgraph becomes non consistent
     final SDFGraph subgraph = (SDFGraph) ibsdf.getVertex("B").getGraphDescription();
     final SDFAbstractVertex E = subgraph.getVertex("E");
-    E.getAssociatedEdge(E.getSinks().iterator().next()).setProd(new SDFIntEdgePropertyType(10));
+    E.getAssociatedEdge(E.getSinks().iterator().next()).setProd(new LongEdgePropertyType(10));
 
     // evaluate the consistency
     try {

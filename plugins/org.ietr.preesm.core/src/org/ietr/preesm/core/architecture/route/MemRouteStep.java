@@ -120,7 +120,7 @@ public class MemRouteStep extends MessageRouteStep {
    * @see org.ietr.preesm.core.architecture.route.MessageRouteStep#clone()
    */
   @Override
-  protected Object clone() throws CloneNotSupportedException {
+  public MemRouteStep copy() {
     return new MemRouteStep(getSender(), getNodes(), getReceiver(), this.mem, this.ramNodeIndex);
   }
 

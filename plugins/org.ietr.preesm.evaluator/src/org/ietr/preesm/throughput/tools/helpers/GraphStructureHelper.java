@@ -49,7 +49,7 @@ import org.ietr.dftools.algorithm.model.sdf.SDFInterfaceVertex;
 import org.ietr.dftools.algorithm.model.sdf.SDFVertex;
 import org.ietr.dftools.algorithm.model.sdf.esdf.SDFSinkInterfaceVertex;
 import org.ietr.dftools.algorithm.model.sdf.esdf.SDFSourceInterfaceVertex;
-import org.ietr.dftools.algorithm.model.sdf.types.SDFIntEdgePropertyType;
+import org.ietr.dftools.algorithm.model.types.LongEdgePropertyType;
 import org.ietr.preesm.core.scenario.PreesmScenario;
 import org.ietr.preesm.throughput.tools.parsers.Identifier;
 
@@ -134,9 +134,9 @@ public interface GraphStructureHelper {
     edge.setPropertyValue("edgeName",
         "from_" + srcActorName + "_" + srcPortName + "_to_" + tgtActorName + "_" + tgtPortName);
     edge.setPropertyValue("edgeId", Identifier.generateEdgeId());
-    edge.setProd(new SDFIntEdgePropertyType(prodRate));
-    edge.setCons(new SDFIntEdgePropertyType(consRate));
-    edge.setDelay(new SDFIntEdgePropertyType(delay));
+    edge.setProd(new LongEdgePropertyType(prodRate));
+    edge.setCons(new LongEdgePropertyType(consRate));
+    edge.setDelay(new LongEdgePropertyType(delay));
     edge.setPropertyValue(BASE_EDGE_PROPERTY, baseEdge);
 
     return edge;
@@ -218,7 +218,7 @@ public interface GraphStructureHelper {
 
     // create an input interface and set the parent graph
     final SDFSourceInterfaceVertex in = new SDFSourceInterfaceVertex();
-    in.setPropertyValue(AbstractVertex.BASE, graph);
+    in.setPropertyValue(AbstractVertex.BASE_LITERAL, graph);
 
     // set the name
     in.setId(interfaceName);
@@ -269,7 +269,7 @@ public interface GraphStructureHelper {
 
     // create an output interface and set the parent graph
     final SDFSinkInterfaceVertex out = new SDFSinkInterfaceVertex();
-    out.setPropertyValue(AbstractVertex.BASE, graph);
+    out.setPropertyValue(AbstractVertex.BASE_LITERAL, graph);
 
     // set the name
     out.setId(interfaceName);
@@ -563,7 +563,7 @@ public interface GraphStructureHelper {
         final long oldMarking = e.getDelay().longValue();
         final long newMarking = oldMarking
             + (h.getNbRepeatAsLong() * (simulator.getExecutionCounter(actor) * e.getProd().longValue()));
-        e.setDelay(new SDFIntEdgePropertyType(newMarking));
+        e.setDelay(new LongEdgePropertyType(newMarking));
       }
     }
 
@@ -826,7 +826,7 @@ public interface GraphStructureHelper {
     final ArrayList<SDFAbstractVertex> hierarchicalActorsToBeCloned = new ArrayList<>();
 
     // clone the tograph
-    final SDFGraph clonedIBSDF = ibsdf.clone();
+    final SDFGraph clonedIBSDF = ibsdf.copy();
 
     // add the hierarchical actors of the new top-graph to the list
     Map<String, SDFAbstractVertex> hActors = GraphStructureHelper.getHierarchicalActors(clonedIBSDF);
@@ -839,7 +839,7 @@ public interface GraphStructureHelper {
       // get a hierarchical actor
       final SDFAbstractVertex h = hierarchicalActorsToBeCloned.get(0);
       // clone its subgraph
-      final SDFGraph cloneSubgraph = ((SDFGraph) h.getGraphDescription()).clone();
+      final SDFGraph cloneSubgraph = ((SDFGraph) h.getGraphDescription()).copy();
       // set the subgraph cloned
       h.setGraphDescription(cloneSubgraph);
 

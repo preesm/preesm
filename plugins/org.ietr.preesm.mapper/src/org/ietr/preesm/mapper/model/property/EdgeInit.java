@@ -37,12 +37,14 @@
  */
 package org.ietr.preesm.mapper.model.property;
 
+import org.ietr.dftools.algorithm.model.CloneableProperty;
+
 /**
  * Properties of an edge set when converting dag to mapper dag.
  *
  * @author mpelcat
  */
-public class EdgeInit {
+public class EdgeInit implements CloneableProperty<EdgeInit> {
 
   /** The data size. */
   private long dataSize = 0;
@@ -71,7 +73,7 @@ public class EdgeInit {
    * @see java.lang.Object#clone()
    */
   @Override
-  public EdgeInit clone() {
+  public EdgeInit copy() {
     final EdgeInit property = new EdgeInit();
     property.setDataSize(getDataSize());
     return property;

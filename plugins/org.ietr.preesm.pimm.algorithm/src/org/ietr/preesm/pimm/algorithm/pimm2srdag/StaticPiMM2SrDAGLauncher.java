@@ -43,7 +43,7 @@ import java.util.logging.Level;
 import org.apache.commons.lang3.time.StopWatch;
 import org.ietr.dftools.algorithm.model.dag.DAGEdge;
 import org.ietr.dftools.algorithm.model.dag.DAGVertex;
-import org.ietr.dftools.algorithm.model.dag.types.DAGDefaultEdgePropertyType;
+import org.ietr.dftools.algorithm.model.types.LongEdgePropertyType;
 import org.ietr.dftools.workflow.tools.WorkflowLogger;
 import org.ietr.preesm.core.scenario.PreesmScenario;
 import org.ietr.preesm.experiment.model.pimm.AbstractVertex;
@@ -248,7 +248,7 @@ public class StaticPiMM2SrDAGLauncher extends PiMMSwitch<Boolean> {
         for (final DAGEdge extraEdge : allEdges) {
           // Update the weight
           firstEdge.setWeight(
-              new DAGDefaultEdgePropertyType(firstEdge.getWeight().longValue() + extraEdge.getWeight().longValue()));
+              new LongEdgePropertyType(firstEdge.getWeight().longValue() + extraEdge.getWeight().longValue()));
           // Add the aggregate edge
           firstEdge.getAggregate().add(extraEdge.getAggregate().get(0));
           toRemove.add(extraEdge);

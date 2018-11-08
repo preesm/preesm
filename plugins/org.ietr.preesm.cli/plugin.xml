@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
 
-    Copyright or © or Copr. IETR/INSA - Rennes (2014 - 2017) :
+    Copyright or © or Copr. IETR/INSA - Rennes (2014 - 2018) :
 
-    Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017)
+    Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017 - 2018)
     Clément Guy <clement.guy@insa-rennes.fr> (2014 - 2015)
 
     This software is a computer program whose purpose is to help prototyping
@@ -48,30 +48,6 @@
             visible="true">
          <run
                class="org.ietr.preesm.cli.CLIWorkflowExecutor">
-         </run>
-      </application>
-   </extension>
-   <extension
-         id="workspaceSetup"
-         point="org.eclipse.core.runtime.applications">
-      <application
-            cardinality="singleton-global"
-            thread="main"
-            visible="true">
-         <run
-               class="org.ietr.preesm.cli.WorkspaceCreator">
-         </run>
-      </application>
-   </extension>
-   <extension
-         id="scenariosGenCli"
-         point="org.eclipse.core.runtime.applications">
-      <application
-            cardinality="singleton-global"
-            thread="main"
-            visible="true">
-         <run
-               class="org.ietr.preesm.cli.CLIScenariosGenerator">
          </run>
       </application>
    </extension>

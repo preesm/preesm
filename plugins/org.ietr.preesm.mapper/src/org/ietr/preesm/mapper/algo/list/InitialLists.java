@@ -104,7 +104,7 @@ public class InitialLists implements Cloneable {
     // retrieve and clone the cpnDominantList
     Iterator<MapperDAGVertex> iter = this.cpnDominant.listIterator();
     while (iter.hasNext()) {
-      final MapperDAGVertex temp = iter.next().clone();
+      final MapperDAGVertex temp = iter.next().copy();
       if (temp != null) {
         newlist.add(temp);
       }
@@ -115,7 +115,7 @@ public class InitialLists implements Cloneable {
     final List<MapperDAGVertex> newlist2 = new ArrayList<>();
     iter = this.blockingNodes.iterator();
     while (iter.hasNext()) {
-      final MapperDAGVertex temp = iter.next().clone();
+      final MapperDAGVertex temp = iter.next().copy();
       if (temp != null) {
         newlist2.add(temp);
       }
@@ -126,7 +126,7 @@ public class InitialLists implements Cloneable {
     final List<MapperDAGVertex> newlist3 = new ArrayList<>();
     iter = this.criticalPath.iterator();
     while (iter.hasNext()) {
-      final MapperDAGVertex temp = iter.next().clone();
+      final MapperDAGVertex temp = iter.next().copy();
       if (temp != null) {
         newlist3.add(temp);
       }

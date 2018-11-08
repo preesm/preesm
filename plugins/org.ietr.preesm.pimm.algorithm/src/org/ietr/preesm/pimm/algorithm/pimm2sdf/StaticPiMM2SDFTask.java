@@ -40,6 +40,7 @@ import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.logging.Level;
+import java.util.logging.Logger;
 import org.apache.commons.lang3.time.StopWatch;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.ietr.dftools.algorithm.model.sdf.SDFGraph;
@@ -79,7 +80,7 @@ public class StaticPiMM2SDFTask extends AbstractTaskImplementation {
     try {
       result = launcher.launch();
     } catch (final StaticPiMM2SDFException e) {
-      final WorkflowLogger logger = WorkflowLogger.getLogger();
+      final Logger logger = WorkflowLogger.getLogger();
       logger.log(Level.WARNING, e.getMessage());
     }
 

@@ -69,9 +69,10 @@ public class VertexMapping extends GroupProperty {
    * @see org.ietr.preesm.mapper.model.property.GroupProperty#clone()
    */
   @Override
-  public VertexMapping clone() {
+  public VertexMapping copy() {
 
-    final VertexMapping property = (VertexMapping) super.clone();
+    final VertexMapping property = new VertexMapping();
+    property.vertexIDs.addAll(this.vertexIDs);
     return property;
   }
 

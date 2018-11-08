@@ -214,8 +214,8 @@ public class AddTransferVertexTransaction extends Transaction {
       this.newInEdge = (MapperDAGEdge) this.implementation.addEdge(this.currentSource, this.tVertex);
       this.newOutEdge = (MapperDAGEdge) this.implementation.addEdge(this.tVertex, currentTarget);
 
-      this.newInEdge.setInit(this.edge.getInit().clone());
-      this.newOutEdge.setInit(this.edge.getInit().clone());
+      this.newInEdge.setInit(this.edge.getInit().copy());
+      this.newOutEdge.setInit(this.edge.getInit().copy());
 
       this.newInEdge.getTiming().setCost(0);
       this.newOutEdge.getTiming().setCost(0);

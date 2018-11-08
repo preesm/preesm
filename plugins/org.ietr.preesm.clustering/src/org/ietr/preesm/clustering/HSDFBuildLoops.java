@@ -55,8 +55,10 @@ import org.ietr.dftools.algorithm.model.sdf.SDFInterfaceVertex;
 import org.ietr.dftools.algorithm.model.sdf.SDFVertex;
 import org.ietr.dftools.algorithm.model.sdf.esdf.SDFBroadcastVertex;
 import org.ietr.dftools.algorithm.model.sdf.esdf.SDFRoundBufferVertex;
+import org.ietr.dftools.algorithm.model.sdf.esdf.SDFSinkInterfaceVertex;
+import org.ietr.dftools.algorithm.model.sdf.esdf.SDFSourceInterfaceVertex;
 import org.ietr.dftools.algorithm.model.sdf.transformations.IbsdfFlattener;
-import org.ietr.dftools.algorithm.model.sdf.types.SDFIntEdgePropertyType;
+import org.ietr.dftools.algorithm.model.types.LongEdgePropertyType;
 import org.ietr.dftools.algorithm.model.visitors.SDF4JException;
 import org.ietr.dftools.architecture.slam.Design;
 import org.ietr.dftools.workflow.WorkflowException;
@@ -299,7 +301,7 @@ public class HSDFBuildLoops {
         } catch (final InvalidExpressionException ex) {
           throw new WorkflowException("generatePairedClusteredVertex failed", ex);
         }
-        e.setCons(new SDFIntEdgePropertyType((rvRight * cons) / pgcm));
+        e.setCons(new LongEdgePropertyType((rvRight * cons) / pgcm));
       }
     }
 
@@ -319,18 +321,18 @@ public class HSDFBuildLoops {
         } catch (final InvalidExpressionException ex) {
           throw new WorkflowException("generatePairedClusteredVertex failed", ex);
         }
-        e.setProd(new SDFIntEdgePropertyType((rvLeft * prod) / pgcm));
+        e.setProd(new LongEdgePropertyType((rvLeft * prod) / pgcm));
       }
     }
 
     // get sources of vertex
-    final List<SDFInterfaceVertex> sourcesVertex = new ArrayList<>();
+    final List<SDFSourceInterfaceVertex> sourcesVertex = new ArrayList<>();
     for (final SDFEdge e : inEdgeVertex) {
       sourcesVertex.add(e.getTargetInterface());
     }
 
     // get sinks of vertex
-    final List<SDFInterfaceVertex> sinksVertex = new ArrayList<>();
+    final List<SDFSinkInterfaceVertex> sinksVertex = new ArrayList<>();
     for (final SDFEdge e : outEdgeVertex) {
       sinksVertex.add(e.getSourceInterface());
     }
@@ -475,7 +477,7 @@ public class HSDFBuildLoops {
   public AbstractClust generateClustering(final SDFGraph inGraph) {
 
     // deep clone of graph SDF
-    this.graph = inGraph.clone();
+    this.graph = inGraph.copy();
 
     // copy vertexes
     final List<SDFAbstractVertex> vertexesCpy = new ArrayList<>();
@@ -597,7 +599,7 @@ public class HSDFBuildLoops {
   private List<SDFAbstractVertex> getHierarchicalActor(final SDFGraph graph) {
     final List<SDFAbstractVertex> l = new ArrayList<>();
     for (final SDFAbstractVertex v : graph.vertexSet()) {
-      final Object refinement = v.getPropertyBean().getValue(AbstractVertex.REFINEMENT);
+      final Object refinement = v.getPropertyBean().getValue(AbstractVertex.REFINEMENT_LITERAL);
       // If the actor is hierarchical
       if (refinement instanceof AbstractGraph) {
         l.add(v);
@@ -702,7 +704,7 @@ public class HSDFBuildLoops {
 
     /* allocate internal working buffer for the hierarchical actor */
     for (final SDFAbstractVertex g : list) {
-      final SDFGraph graphClone = ((SDFGraph) g.getGraphDescription()).clone();
+      final SDFGraph graphClone = ((SDFGraph) g.getGraphDescription()).copy();
       final IbsdfFlattener flattener = new IbsdfFlattener(graphClone, 10);
       SDFGraph resultGraph = null;
       try {
@@ -712,7 +714,7 @@ public class HSDFBuildLoops {
         throw (new WorkflowException(e.getMessage()));
       }
       try {
-        resultGraph.validateModel(WorkflowLogger.getLogger());
+        resultGraph.validateModel();
       } catch (final SDF4JException e) {
         throw new WorkflowException("execute failed", e);
       } // compute repetition vectors

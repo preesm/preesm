@@ -165,17 +165,19 @@ public class PrecedenceEdgeAdder {
    *          the v 2
    */
   public void removePrecedenceEdge(final MapperDAGVertex v1, final MapperDAGVertex v2) {
-    final Set<DAGEdge> edges = this.implementation.getAllEdges(v1, v2);
+    if (v1 != null && v2 != null) {
+      final Set<DAGEdge> edges = this.implementation.getAllEdges(v1, v2);
 
-    if (edges != null) {
-      if (edges.size() >= 2) {
-        WorkflowLogger.getLogger().log(Level.SEVERE,
-            "too many edges between " + v1.toString() + " and " + v2.toString());
-      }
+      if (edges != null) {
+        if (edges.size() >= 2) {
+          WorkflowLogger.getLogger().log(Level.SEVERE,
+              "too many edges between " + v1.toString() + " and " + v2.toString());
+        }
 
-      for (final DAGEdge edge : edges) {
-        if (edge instanceof PrecedenceEdge) {
-          this.implementation.removeEdge(edge);
+        for (final DAGEdge edge : edges) {
+          if (edge instanceof PrecedenceEdge) {
+            this.implementation.removeEdge(edge);
+          }
         }
       }
     }
@@ -212,20 +214,24 @@ public class PrecedenceEdgeAdder {
     final MapperDAGVertex prev = this.orderManager.getPrevious(newVertex);
     final MapperDAGVertex next = this.orderManager.getNext(newVertex);
 
-    final Set<DAGEdge> prevEdges = this.implementation.getAllEdges(prev, newVertex);
-    final Set<DAGEdge> nextEdges = this.implementation.getAllEdges(newVertex, next);
-
-    boolean prevAndNewLinked = ((prevEdges != null) && !prevEdges.isEmpty());
-    boolean newAndNextLinked = ((nextEdges != null) && !nextEdges.isEmpty());
-
-    if (((prev != null) && (newVertex != null)) && !prevAndNewLinked) {
-      addPrecedenceEdge(prev, newVertex);
-      prevAndNewLinked = true;
+    boolean prevAndNewLinked = false;
+    if (prev != null) {
+      final Set<DAGEdge> prevEdges = this.implementation.getAllEdges(prev, newVertex);
+      prevAndNewLinked = ((prevEdges != null) && !prevEdges.isEmpty());
+      if (((prev != null) && (newVertex != null)) && !prevAndNewLinked) {
+        addPrecedenceEdge(prev, newVertex);
+        prevAndNewLinked = true;
+      }
     }
 
-    if (((newVertex != null) && (next != null)) && !newAndNextLinked) {
-      addPrecedenceEdge(newVertex, next);
-      newAndNextLinked = true;
+    boolean newAndNextLinked = false;
+    if (next != null) {
+      final Set<DAGEdge> nextEdges = this.implementation.getAllEdges(newVertex, next);
+      newAndNextLinked = ((nextEdges != null) && !nextEdges.isEmpty());
+      if (((newVertex != null) && (next != null)) && !newAndNextLinked) {
+        addPrecedenceEdge(newVertex, next);
+        newAndNextLinked = true;
+      }
     }
 
     if (prevAndNewLinked && newAndNextLinked) {

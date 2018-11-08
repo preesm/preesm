@@ -96,7 +96,7 @@ public class MemExUpdaterEngine {
   public void createLocalDag(final boolean forkJoin) {
     // Make a copy of the Input DAG for treatment
     // Clone is deep copy i.e. vertices are thus copied too.
-    this.localDAG = (DirectedAcyclicGraph) this.dag.clone();
+    this.localDAG = this.dag.copy();
     if (this.localDAG == null) {
       this.localDAG = this.dag;
     }

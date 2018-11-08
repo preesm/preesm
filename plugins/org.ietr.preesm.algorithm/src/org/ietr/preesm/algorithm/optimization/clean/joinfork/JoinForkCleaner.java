@@ -55,9 +55,9 @@ import org.ietr.dftools.algorithm.model.sdf.esdf.SDFForkVertex;
 import org.ietr.dftools.algorithm.model.sdf.esdf.SDFJoinVertex;
 import org.ietr.dftools.algorithm.model.sdf.esdf.SDFRoundBufferVertex;
 import org.ietr.dftools.algorithm.model.sdf.transformations.SpecialActorPortsIndexer;
-import org.ietr.dftools.algorithm.model.sdf.types.SDFIntEdgePropertyType;
-import org.ietr.dftools.algorithm.model.sdf.types.SDFStringEdgePropertyType;
 import org.ietr.dftools.algorithm.model.sdf.visitors.SingleRateChecker;
+import org.ietr.dftools.algorithm.model.types.LongEdgePropertyType;
+import org.ietr.dftools.algorithm.model.types.StringEdgePropertyType;
 import org.ietr.dftools.algorithm.model.visitors.SDF4JException;
 import org.ietr.dftools.workflow.WorkflowException;
 
@@ -94,7 +94,7 @@ public class JoinForkCleaner {
     // Check that the graph is single rate.
     final SingleRateChecker srChecker = new SingleRateChecker();
     graph.accept(srChecker);
-    if (!srChecker.isSingleRate) {
+    if (!srChecker.isSingleRate()) {
       throw new SDF4JException("Cannot clean fork/join pairs in a non-single-rate graph.");
     }
 
@@ -273,9 +273,9 @@ public class JoinForkCleaner {
 
         // Add an edge between the source and the explode
         final SDFEdge newEdge = graph.addEdge(originVertex, explodeVertex);
-        newEdge.setDelay(new SDFIntEdgePropertyType(0));
-        newEdge.setProd(new SDFIntEdgePropertyType(sourceEdges.get(sourceIndex).getProd().longValue()));
-        newEdge.setCons(new SDFIntEdgePropertyType(sourceEdges.get(sourceIndex).getProd().longValue()));
+        newEdge.setDelay(new LongEdgePropertyType(0));
+        newEdge.setProd(new LongEdgePropertyType(sourceEdges.get(sourceIndex).getProd().longValue()));
+        newEdge.setCons(new LongEdgePropertyType(sourceEdges.get(sourceIndex).getProd().longValue()));
         newEdge.setDataType(sourceEdges.get(sourceIndex).getDataType());
         newEdge.setSourceInterface(sourceEdges.get(sourceIndex).getSourceInterface());
         explodeVertex.addInterface(sourceEdges.get(sourceIndex).getTargetInterface());
@@ -283,7 +283,7 @@ public class JoinForkCleaner {
         newEdge.setSourcePortModifier(sourceEdges.get(sourceIndex).getSourcePortModifier());
 
         // Add a target port modifier to the edge
-        newEdge.setTargetPortModifier(new SDFStringEdgePropertyType(SDFEdge.MODIFIER_READ_ONLY));
+        newEdge.setTargetPortModifier(new StringEdgePropertyType(SDFEdge.MODIFIER_READ_ONLY));
       }
       if (implode && !(targetCopies.get(targetIndex) instanceof SDFJoinVertex)
           && !(targetCopies.get(targetIndex) instanceof SDFRoundBufferVertex)) {
@@ -300,9 +300,9 @@ public class JoinForkCleaner {
 
         // Add an edge between the implode and the target
         final SDFEdge newEdge = graph.addEdge(implodeVertex, originVertex);
-        newEdge.setDelay(new SDFIntEdgePropertyType(0));
-        newEdge.setProd(new SDFIntEdgePropertyType(targetEdges.get(targetIndex).getCons().longValue()));
-        newEdge.setCons(new SDFIntEdgePropertyType(targetEdges.get(targetIndex).getCons().longValue()));
+        newEdge.setDelay(new LongEdgePropertyType(0));
+        newEdge.setProd(new LongEdgePropertyType(targetEdges.get(targetIndex).getCons().longValue()));
+        newEdge.setCons(new LongEdgePropertyType(targetEdges.get(targetIndex).getCons().longValue()));
         newEdge.setDataType(targetEdges.get(targetIndex).getDataType());
         implodeVertex.addInterface(targetEdges.get(targetIndex).getTargetInterface());
         newEdge.setSourceInterface(targetEdges.get(targetIndex).getSourceInterface());
@@ -310,7 +310,7 @@ public class JoinForkCleaner {
         newEdge.setTargetPortModifier(targetEdges.get(targetIndex).getTargetPortModifier());
 
         // Add a source port modifier to the edge
-        newEdge.setSourcePortModifier(new SDFStringEdgePropertyType(SDFEdge.MODIFIER_WRITE_ONLY));
+        newEdge.setSourcePortModifier(new StringEdgePropertyType(SDFEdge.MODIFIER_WRITE_ONLY));
       }
       // end of testing zone
 
@@ -334,7 +334,7 @@ public class JoinForkCleaner {
               sourceCopies.get(sourceIndex).getSink(sourceEdges.get(sourceIndex).getSourceInterface().getName()));
         } else {
           // if the source does not have the interface.
-          newEdge.setSourceInterface(sourceEdges.get(sourceIndex).getSourceInterface().clone());
+          newEdge.setSourceInterface(sourceEdges.get(sourceIndex).getSourceInterface().copy());
           sourceCopies.get(sourceIndex).addInterface(newEdge.getSourceInterface());
         }
         // Copy the source port modifier of the original source
@@ -342,19 +342,19 @@ public class JoinForkCleaner {
       } else {
         // If the source is a fork (new or not)
         // or a broadcast with a new port
-        final SDFInterfaceVertex sourceInterface = sourceEdges.get(sourceIndex).getSourceInterface().clone();
+        final SDFInterfaceVertex sourceInterface = sourceEdges.get(sourceIndex).getSourceInterface().copy();
 
         String newInterfaceName = sourceInterface.getName() + "_" + sourceProd;
 
         // Get the current index of the port (if any)
         // and update it
-        if (sourceInterface.getName().matches(SpecialActorPortsIndexer.indexRegex)) {
-          final Pattern pattern = Pattern.compile(SpecialActorPortsIndexer.indexRegex);
+        if (sourceInterface.getName().matches(SpecialActorPortsIndexer.INDEX_REGEX)) {
+          final Pattern pattern = Pattern.compile(SpecialActorPortsIndexer.INDEX_REGEX);
           final Matcher matcher = pattern.matcher(sourceInterface.getName());
           matcher.find();
-          final int existingIdx = Integer.decode(matcher.group(SpecialActorPortsIndexer.groupXX));
+          final int existingIdx = Integer.decode(matcher.group(SpecialActorPortsIndexer.GROUP_XX));
           final long newIdx = existingIdx + sourceProd;
-          newInterfaceName = sourceInterface.getName().substring(0, matcher.start(SpecialActorPortsIndexer.groupXX))
+          newInterfaceName = sourceInterface.getName().substring(0, matcher.start(SpecialActorPortsIndexer.GROUP_XX))
               + newIdx;
         }
 
@@ -362,7 +362,7 @@ public class JoinForkCleaner {
         newEdge.setSourceInterface(sourceInterface);
         newEdge.getSource().addInterface(sourceInterface);
         // Add a source port modifier
-        newEdge.setSourcePortModifier(new SDFStringEdgePropertyType(SDFEdge.MODIFIER_WRITE_ONLY));
+        newEdge.setSourcePortModifier(new StringEdgePropertyType(SDFEdge.MODIFIER_WRITE_ONLY));
       }
 
       // Set the target interface of the new edge
@@ -385,7 +385,7 @@ public class JoinForkCleaner {
               targetCopies.get(targetIndex).getSource(targetEdges.get(targetIndex).getTargetInterface().getName()));
         } else {
           // if the target does not have the interface.
-          newEdge.setTargetInterface(targetEdges.get(targetIndex).getTargetInterface().clone());
+          newEdge.setTargetInterface(targetEdges.get(targetIndex).getTargetInterface().copy());
           targetCopies.get(targetIndex).addInterface(newEdge.getTargetInterface());
         }
         // Copy the target port modifier of the original source
@@ -399,18 +399,18 @@ public class JoinForkCleaner {
       } else {
         // If the target is join (new or not) /roundbuffer with new
         // ports
-        final SDFInterfaceVertex targetInterface = targetEdges.get(targetIndex).getTargetInterface().clone();
+        final SDFInterfaceVertex targetInterface = targetEdges.get(targetIndex).getTargetInterface().copy();
 
         String newInterfaceName = targetInterface.getName() + "_" + targetCons;
         // Get the current index of the port (if any)
         // and update it
-        if (targetInterface.getName().matches(SpecialActorPortsIndexer.indexRegex)) {
-          final Pattern pattern = Pattern.compile(SpecialActorPortsIndexer.indexRegex);
+        if (targetInterface.getName().matches(SpecialActorPortsIndexer.INDEX_REGEX)) {
+          final Pattern pattern = Pattern.compile(SpecialActorPortsIndexer.INDEX_REGEX);
           final Matcher matcher = pattern.matcher(targetInterface.getName());
           matcher.find();
-          final long existingIdx = Long.decode(matcher.group(SpecialActorPortsIndexer.groupXX));
+          final long existingIdx = Long.decode(matcher.group(SpecialActorPortsIndexer.GROUP_XX));
           final long newIdx = existingIdx + targetCons;
-          newInterfaceName = targetInterface.getName().substring(0, matcher.start(SpecialActorPortsIndexer.groupXX))
+          newInterfaceName = targetInterface.getName().substring(0, matcher.start(SpecialActorPortsIndexer.GROUP_XX))
               + newIdx;
         }
 
@@ -418,7 +418,7 @@ public class JoinForkCleaner {
         newEdge.setTargetInterface(targetInterface);
         newEdge.getTarget().addInterface(targetInterface);
         // Add a target port modifier
-        newEdge.setTargetPortModifier(new SDFStringEdgePropertyType(SDFEdge.MODIFIER_READ_ONLY));
+        newEdge.setTargetPortModifier(new StringEdgePropertyType(SDFEdge.MODIFIER_READ_ONLY));
 
       }
 
@@ -441,8 +441,8 @@ public class JoinForkCleaner {
       }
 
       // Set the properties of the new edge
-      newEdge.setProd(new SDFIntEdgePropertyType(rest));
-      newEdge.setCons(new SDFIntEdgePropertyType(rest));
+      newEdge.setProd(new LongEdgePropertyType(rest));
+      newEdge.setCons(new LongEdgePropertyType(rest));
       newEdge.setDataType(replacedEdge.getDataType());
 
       // If the replacedEdge has a delay and that delay still exist in the
@@ -458,10 +458,10 @@ public class JoinForkCleaner {
               + replacedEdge.getSourceInterface().getName() + "=>" + replacedEdge.getTarget().getName() + "."
               + replacedEdge.getTargetInterface().getName() + ". At least " + addedDelays + " delays missing.");
         }
-        newEdge.setDelay(new SDFIntEdgePropertyType(addedDelays));
+        newEdge.setDelay(new LongEdgePropertyType(addedDelays));
         nbDelays = nbDelays - addedDelays;
       } else {
-        newEdge.setDelay(new SDFIntEdgePropertyType(0));
+        newEdge.setDelay(new LongEdgePropertyType(0));
       }
 
       // Preserve delays of sourceEdge and targetEdge.
@@ -479,7 +479,7 @@ public class JoinForkCleaner {
             + (multTarget * newEdge.getProd().longValue());
 
         // Add the delays to the newEdge
-        newEdge.setDelay(new SDFIntEdgePropertyType(nbPreservedDelays));
+        newEdge.setDelay(new LongEdgePropertyType(nbPreservedDelays));
       }
 
       // Update the number of token produced/consumed by the currently

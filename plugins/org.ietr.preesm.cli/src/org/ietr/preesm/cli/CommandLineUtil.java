@@ -1,7 +1,7 @@
 /**
- * Copyright or © or Copr. IETR/INSA - Rennes (2011 - 2017) :
+ * Copyright or © or Copr. IETR/INSA - Rennes (2011 - 2018) :
  *
- * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017)
+ * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017 - 2018)
  * Clément Guy <clement.guy@insa-rennes.fr> (2014 - 2015)
  * Maxime Pelcat <maxime.pelcat@insa-rennes.fr> (2011)
  *
@@ -36,12 +36,12 @@
  */
 package org.ietr.preesm.cli;
 
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import org.eclipse.core.resources.IWorkspace;
 import org.eclipse.core.resources.IWorkspaceDescription;
 import org.eclipse.core.runtime.CoreException;
-import org.ietr.dftools.workflow.tools.CLIWorkflowLogger;
 
-// TODO: Auto-generated Javadoc
 /**
  * Define methods to use in specific cases of IApplication executions, in command-line.
  *
@@ -58,12 +58,12 @@ public class CommandLineUtil {
    * @throws CoreException
    *           the core exception
    */
-  public static boolean disableAutoBuild(final IWorkspace wp) throws CoreException {
+  public static boolean disableAutoBuild(final IWorkspace wp, Logger logger) throws CoreException {
     // IWorkspace.getDescription() returns a copy. We need to extract,
     // modify and set it to the current workspace.
     final IWorkspaceDescription desc = wp.getDescription();
     if (wp.isAutoBuilding()) {
-      CLIWorkflowLogger.debugln("Disbale auto-building");
+      logger.log(Level.FINER, "Disbale auto-building");
       desc.setAutoBuilding(false);
       wp.setDescription(desc);
       return true;
@@ -80,8 +80,8 @@ public class CommandLineUtil {
    * @throws CoreException
    *           the core exception
    */
-  public static void enableAutoBuild(final IWorkspace wp) throws CoreException {
-    CLIWorkflowLogger.debugln("Re-enable auto-building");
+  public static void enableAutoBuild(final IWorkspace wp, Logger logger) throws CoreException {
+    logger.log(Level.FINER, "Re-enable auto-building");
     // IWorkspace.getDescription() returns a copy. We need to extract,
     // modify and set it to the current workspace.
     final IWorkspaceDescription desc = wp.getDescription();

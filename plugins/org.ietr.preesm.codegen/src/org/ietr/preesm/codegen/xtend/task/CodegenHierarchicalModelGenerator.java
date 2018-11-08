@@ -170,7 +170,7 @@ public class CodegenHierarchicalModelGenerator {
   public int execute(final CoreBlock operatorBlock, final DAGVertex dagVertex) throws SDF4JException {
     // Check whether the ActorCall is a call to a hierarchical actor or not.
     final SDFAbstractVertex sdfVertex = dagVertex.getCorrespondingSDFVertex();
-    final Object refinement = sdfVertex.getPropertyBean().getValue(AbstractVertex.REFINEMENT);
+    final Object refinement = sdfVertex.getPropertyBean().getValue(AbstractVertex.REFINEMENT_LITERAL);
 
     if (refinement instanceof AbstractGraph) {
       final SDFGraph graph = (SDFGraph) sdfVertex.getGraphDescription();
@@ -187,7 +187,7 @@ public class CodegenHierarchicalModelGenerator {
         throw (new WorkflowException(e.getMessage(), e));
       }
       // compute repetition vectors
-      resultGraph.validateModel(WorkflowLogger.getLogger());
+      resultGraph.validateModel();
       if (!resultGraph.isSchedulable()) {
         throw (new WorkflowException("HSDF Build Loops generate clustering: Graph not schedulable"));
       }
@@ -243,7 +243,7 @@ public class CodegenHierarchicalModelGenerator {
           // Vertex
           if (repVertex instanceof SDFVertex) {
             ActorPrototypes prototypes = null;
-            final Object vertexRef = repVertex.getPropertyBean().getValue(AbstractVertex.REFINEMENT);
+            final Object vertexRef = repVertex.getPropertyBean().getValue(AbstractVertex.REFINEMENT_LITERAL);
             if (vertexRef instanceof ActorPrototypes) {
               prototypes = (ActorPrototypes) vertexRef;
             }
@@ -608,7 +608,7 @@ public class CodegenHierarchicalModelGenerator {
     p("generateRepeatedSpecialCall " + repVertex.getName() + " isInputActor: " + isInputActor + " isOutputActor: "
         + isOutputActor);
     final SpecialCall f = CodegenFactory.eINSTANCE.createSpecialCall();
-    final String vertexType = repVertex.getPropertyStringValue(AbstractVertex.KIND);
+    final String vertexType = repVertex.getPropertyStringValue(AbstractVertex.KIND_LITERAL);
     f.setName(repVertex.getName());
     if (repVertex instanceof SDFRoundBufferVertex) {
       f.setType(SpecialType.ROUND_BUFFER);

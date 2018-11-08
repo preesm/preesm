@@ -1,7 +1,7 @@
 /**
- * Copyright or © or Copr. IETR/INSA - Rennes (2008 - 2017) :
+ * Copyright or © or Copr. IETR/INSA - Rennes (2008 - 2018) :
  *
- * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017)
+ * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017 - 2018)
  * Clément Guy <clement.guy@insa-rennes.fr> (2014 - 2015)
  * Jonathan Piat <jpiat@laas.fr> (2009 - 2011)
  * Matthieu Wipliez <matthieu.wipliez@insa-rennes.fr> (2008)
@@ -38,19 +38,18 @@
  */
 package org.ietr.preesm.mapper.model;
 
-import org.ietr.dftools.algorithm.factories.ModelVertexFactory;
+import org.ietr.dftools.algorithm.factories.IModelVertexFactory;
 import org.ietr.dftools.algorithm.model.AbstractVertex;
 import org.ietr.dftools.algorithm.model.IInterface;
 import org.ietr.dftools.algorithm.model.dag.DAGVertex;
 import org.w3c.dom.Element;
 
-// TODO: Auto-generated Javadoc
 /**
  * Creates vertices of type {@link MapperDAGVertex}.
  *
  * @author mpelcat
  */
-public class MapperVertexFactory extends ModelVertexFactory<DAGVertex> {
+public class MapperVertexFactory implements IModelVertexFactory<DAGVertex> {
 
   /** The instance. */
   private static MapperVertexFactory instance;
@@ -93,7 +92,7 @@ public class MapperVertexFactory extends ModelVertexFactory<DAGVertex> {
    */
   @Override
   public DAGVertex createVertex(final Element vertexElt) {
-    final String kind = getProperty(vertexElt, AbstractVertex.KIND);
+    final String kind = getProperty(vertexElt, AbstractVertex.KIND_LITERAL);
     return this.createVertex(kind);
   }
 

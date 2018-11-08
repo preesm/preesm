@@ -54,8 +54,8 @@ import org.ietr.dftools.algorithm.model.dag.DAGEdge;
 import org.ietr.dftools.algorithm.model.dag.DAGVertex;
 import org.ietr.dftools.algorithm.model.sdf.SDFEdge;
 import org.ietr.dftools.algorithm.model.sdf.SDFGraph;
-import org.ietr.dftools.algorithm.model.sdf.types.SDFIntEdgePropertyType;
 import org.ietr.dftools.algorithm.model.sdf.visitors.DAGTransformation;
+import org.ietr.dftools.algorithm.model.types.LongEdgePropertyType;
 import org.ietr.dftools.algorithm.model.visitors.SDF4JException;
 import org.ietr.dftools.architecture.slam.ComponentInstance;
 import org.ietr.dftools.architecture.slam.Design;
@@ -105,16 +105,7 @@ public class SdfToDagConverter {
 
     WorkflowLogger.getLogger().log(Level.INFO, "Converting from SDF to DAG.");
 
-    try {
-
-      if (!sdfIn.validateModel(WorkflowLogger.getLogger())) {
-        return null;
-      }
-    } catch (final SDF4JException e) {
-      WorkflowLogger.getLogger().log(Level.SEVERE, e.getMessage());
-      return null;
-    }
-    final SDFGraph sdf = sdfIn.clone();
+    final SDFGraph sdf = sdfIn.copy();
     SdfToDagConverter.setDataSizeForSDF(sdf, scenario);
 
     final PiGraph pisdGraph = (PiGraph) sdf.getPropertyBean().getValue(PiGraph.class.getCanonicalName());
@@ -181,7 +172,7 @@ public class SdfToDagConverter {
     for (final SDFEdge edge : graph.edgeSet()) {
       final String type = edge.getDataType().toString();
       final long size = scenario.getSimulationManager().getDataTypeSizeOrDefault(type);
-      edge.setDataSize(new SDFIntEdgePropertyType(size));
+      edge.setDataSize(new LongEdgePropertyType(size));
     }
   }
 

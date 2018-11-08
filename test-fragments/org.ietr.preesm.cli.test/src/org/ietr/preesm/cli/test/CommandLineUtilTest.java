@@ -1,7 +1,7 @@
 /**
- * Copyright or © or Copr. IETR/INSA - Rennes (2017) :
+ * Copyright or © or Copr. IETR/INSA - Rennes (2017 - 2018) :
  *
- * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017)
+ * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017 - 2018)
  *
  * This software is a computer program whose purpose is to help prototyping
  * parallel applications using dataflow formalism.
@@ -34,6 +34,7 @@
  */
 package org.ietr.preesm.cli.test;
 
+import java.util.logging.Logger;
 import org.eclipse.core.runtime.CoreException;
 import org.ietr.preesm.cli.CommandLineUtil;
 import org.junit.Assert;
@@ -46,7 +47,7 @@ public class CommandLineUtilTest {
   @Test
   public void testDisableuatobuild() {
     try {
-      CommandLineUtil.disableAutoBuild(null);
+      CommandLineUtil.disableAutoBuild(null, Logger.getAnonymousLogger());
       Assert.fail();
     } catch (final CoreException e) {
       Assert.fail();

@@ -1,7 +1,7 @@
 /**
- * Copyright or © or Copr. IETR/INSA - Rennes (2008 - 2017) :
+ * Copyright or © or Copr. IETR/INSA - Rennes (2008 - 2018) :
  *
- * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017)
+ * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017 - 2018)
  * Clément Guy <clement.guy@insa-rennes.fr> (2015)
  * Matthieu Wipliez <matthieu.wipliez@insa-rennes.fr> (2008)
  * Maxime Pelcat <maxime.pelcat@insa-rennes.fr> (2008 - 2012)
@@ -37,13 +37,15 @@
  */
 package org.ietr.preesm.mapper.model.property;
 
+import org.ietr.dftools.algorithm.model.CloneableProperty;
+
 // TODO: Auto-generated Javadoc
 /**
  * Property added to a DAG edge to give its timing properties. Only used within ABCs.
  *
  * @author mpelcat
  */
-public class EdgeTiming {
+public class EdgeTiming implements CloneableProperty<EdgeTiming> {
 
   /** The Constant UNAVAILABLE. */
   public static final long UNAVAILABLE = -1;
@@ -65,7 +67,7 @@ public class EdgeTiming {
    * @see java.lang.Object#clone()
    */
   @Override
-  public EdgeTiming clone() {
+  public EdgeTiming copy() {
     final EdgeTiming property = new EdgeTiming();
     property.setCost(getCost());
     return property;

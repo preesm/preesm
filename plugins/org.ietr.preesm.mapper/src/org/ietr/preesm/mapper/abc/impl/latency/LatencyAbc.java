@@ -831,7 +831,7 @@ public abstract class LatencyAbc {
     this.dag = dag;
 
     // implementation is a duplicate from dag
-    this.implementation = dag.clone();
+    this.implementation = dag.copy();
 
     // Initializes relative constraints
     initRelativeConstraints();
@@ -864,7 +864,7 @@ public abstract class LatencyAbc {
   public void setDAG(final MapperDAG dag) {
 
     this.dag = dag;
-    this.implementation = dag.clone();
+    this.implementation = dag.copy();
 
     this.orderManager.reconstructTotalOrderFromDAG(this.implementation);
 

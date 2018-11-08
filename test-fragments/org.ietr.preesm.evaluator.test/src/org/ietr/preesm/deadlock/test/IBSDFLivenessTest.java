@@ -37,7 +37,7 @@ package org.ietr.preesm.deadlock.test;
 
 import org.ietr.dftools.algorithm.model.sdf.SDFEdge;
 import org.ietr.dftools.algorithm.model.sdf.SDFGraph;
-import org.ietr.dftools.algorithm.model.sdf.types.SDFIntEdgePropertyType;
+import org.ietr.dftools.algorithm.model.types.LongEdgePropertyType;
 import org.ietr.preesm.deadlock.IBSDFConsistency;
 import org.ietr.preesm.deadlock.IBSDFLiveness;
 import org.ietr.preesm.evaluator.EvaluationException;
@@ -70,7 +70,7 @@ public class IBSDFLivenessTest {
     // remove the initial delays of the subgraph
     final SDFGraph subgraph = (SDFGraph) ibsdf.getVertex("B").getGraphDescription();
     for (final SDFEdge e : subgraph.edgeSet()) {
-      e.setDelay(new SDFIntEdgePropertyType(0));
+      e.setDelay(new LongEdgePropertyType(0));
     }
 
     // check the liveness of the ibsdf graph

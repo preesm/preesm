@@ -1,0 +1,37 @@
+--- RCPTT testcase ---
+Format-Version: 1.0
+Contexts: _ZEsW0Ob4EeeMlf4lWoX8aw
+Element-Name: exportSvgFeatureTest
+Element-Type: testcase
+Element-Version: 3.0
+External-Reference: 
+Id: _SAvX8NdjEeij89qZ0VpWmw
+Runtime-Version: 2.3.0.201806262310
+Save-Time: 10/24/18 3:48 PM
+Testcase-Type: ecl
+
+------=_.content-0a7243a0-75d3-3d5f-9791-539de0e5b7ac
+Content-Type: text/ecl
+Entry-Name: .content
+
+get-view "Project Explorer" | get-tree | select "org.ietr.preesm.reinforcement_learning/Algo/common/neuron.pi"
+    | get-menu -path "Preesm/Generate .diagram" | click
+with [get-editor neuron | get-diagram -index 1] {
+    mouse-move 338 298 button1 -height 485 -width 619
+    mouse-press 338 298 button1 -height 485 -width 619
+    mouse-release 338 298 button1 524288 -height 485 -width 619
+    mouse-hover 338 298 -height 485 -width 619
+    mouse-press 338 298 button3 -height 485 -width 619
+}
+set-dialog-result File "Untitled.svg"
+with [get-editor neuron | get-diagram -index 1] {
+    get-menu -path "Export to SVG" | click
+
+    try -command {
+	    get-edit-part -name neuron | mouse-move "-19" 421 -height 485 -width 619
+    } -catch {
+    	restart-aut
+        throw-error "Could not locate proper window. Restarting AUT."
+    }
+}
+------=_.content-0a7243a0-75d3-3d5f-9791-539de0e5b7ac--

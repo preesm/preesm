@@ -568,7 +568,7 @@ public class ScenarioParser {
               this.scenario.setArchitectureURL(url);
               initializeArchitectureInformation(url);
             } catch (final Exception e) {
-              throw new ScenarioParserException("Could not parse the architecture", e);
+              throw new ScenarioParserException("Could not parse the architecture: " + e.getMessage(), e);
             }
           } else if (type.equals("codegenDirectory")) {
             this.scenario.getCodegenManager().setCodegenDirectory(url);

@@ -245,11 +245,11 @@ public class FastAlgorithm extends Observable {
     long SL = initial;
     dag.setScheduleCost(initial);
     if (blockingNodesList.size() < 2) {
-      return simulator.getDAG().clone();
+      return simulator.getDAG().copy();
     }
     long bestSL = initial;
     Long iBest;
-    MapperDAG dagfinal = simulator.getDAG().clone();
+    MapperDAG dagfinal = simulator.getDAG().copy();
     dagfinal.setScheduleCost(bestSL);
 
     // A switcher task scheduler is chosen for the fast refinement
@@ -286,7 +286,7 @@ public class FastAlgorithm extends Observable {
         // Mode stop
         if ((costPlotter.getActionType() == 1) || ((monitor != null) && monitor.isCanceled())) {
 
-          return dagfinal.clone();
+          return dagfinal.copy();
         } else if (costPlotter.getActionType() == 2) {
           // Mode Pause
           try {
@@ -358,7 +358,7 @@ public class FastAlgorithm extends Observable {
       if (bestSL > simulator.getFinalCost()) {
 
         // step 13
-        dagfinal = simulator.getDAG().clone();
+        dagfinal = simulator.getDAG().copy();
         // step 14
 
         bestSL = simulator.getFinalCost();
