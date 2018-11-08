@@ -7,9 +7,9 @@
       <image path="/org.ietr.preesm.rcp.utils/icons/preesmLogo_48x48.png"/>
       <text>
          PREESM [&apos;prɪzəm] is an open source rapid prototyping tool. It simulates signal processing applications and generates code for heterogeneous multi/many-core embedded systems. Its dataflow language eases the description of parallel signal processing applications.
-         
+
          PREESM is released under the CeCILL-C License.
-         
+
          Please visit our webpage for more info : http://preesm.org/
       </text>
    </aboutInfo>
@@ -27,7 +27,7 @@
    <splash
       location="org.ietr.preesm.rcp.utils"
       startupProgressRect="5,275,445,15"
-      startupMessageRect="7,252,445,20"
+      startupMessageRect="7,251,445,20"
       startupForegroundColor="000000" />
    <launcher>
       <linux icon="icons/preesmLogo_256x256.xpm"/>
@@ -167,7 +167,7 @@ These expressions may be used both in singular and plural form.
 The purpose of the Agreement is the grant by the Licensor to the
 Licensee of a non-exclusive, transferable and worldwide license for the
 Software as set forth in Article 5 hereinafter for the whole term of the
-protection granted by the rights over said Software. 
+protection granted by the rights over said Software.
 
 
     Article 3 - ACCEPTANCE
@@ -313,7 +313,7 @@ When the Licensee creates Derivative Software, this Derivative Software
 may be distributed under a license agreement other than this Agreement,
 subject to compliance with the requirement to include a notice
 concerning the rights over the Software as defined in Article 6.4.
-In the event the creation of the Derivative Software required modification 
+In the event the creation of the Derivative Software required modification
 of the Source Code, the Licensee undertakes that:
 
    1. the resulting Modified Software will be governed by this Agreement,
@@ -567,9 +567,6 @@ Version 1.0 dated 2006-09-05.
    </plugins>
 
    <features>
-      <feature id="org.ietr.graphiti.feature"/>
-      <feature id="org.ietr.dftools.feature"/>
-      <feature id="org.ietr.preesm.feature"/>
       <feature id="org.eclipse.platform"/>
       <feature id="org.eclipse.equinox.p2.user.ui"/>
       <feature id="org.eclipse.ecf.filetransfer.httpclient4.feature"/>
@@ -600,6 +597,9 @@ Version 1.0 dated 2006-09-05.
       <feature id="org.eclipse.cdt.native"/>
       <feature id="org.eclipse.cdt.gnu.debug"/>
       <feature id="org.eclipse.cdt.gdb"/>
+      <feature id="org.ietr.graphiti.feature"/>
+      <feature id="org.ietr.dftools.feature"/>
+      <feature id="org.ietr.preesm.feature"/>
    </features>
 
    <configurations>
