@@ -1,0 +1,241 @@
+<!--
+
+    Copyright or © or Copr. IETR/INSA - Rennes (2015 - 2018) :
+
+    Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017 - 2018)
+    Julien Heulot <julien.heulot@insa-rennes.fr> (2015 - 2016)
+    Karol Desnos <karol.desnos@insa-rennes.fr> (2016)
+
+    This software is a computer program whose purpose is to help prototyping
+    parallel applications using dataflow formalism.
+
+    This software is governed by the CeCILL  license under French law and
+    abiding by the rules of distribution of free software.  You can  use,
+    modify and/ or redistribute the software under the terms of the CeCILL
+    license as circulated by CEA, CNRS and INRIA at the following URL
+    "http://www.cecill.info".
+
+    As a counterpart to the access to the source code and  rights to copy,
+    modify and redistribute granted by the license, users are provided only
+    with a limited warranty  and the software's author,  the holder of the
+    economic rights,  and the successive licensors  have only  limited
+    liability.
+
+    In this respect, the user's attention is drawn to the risks associated
+    with loading,  using,  modifying and/or developing or reproducing the
+    software by the user in light of its specific status of free software,
+    that may mean  that it is complicated to manipulate,  and  that  also
+    therefore means  that it is reserved for developers  and  experienced
+    professionals having in-depth computer knowledge. Users are therefore
+    encouraged to load and test the software's suitability as regards their
+    requirements in conditions enabling the security of their systems and/or
+    data to be ensured and,  more generally, to use and operate it in the
+    same conditions as regards security.
+
+    The fact that you are presently reading this means that you have had
+    knowledge of the CeCILL license and that you accept its terms.
+
+-->
+<!-- Copyright or © or Copr. IETR/INSA - Rennes (2015 - 2018) : Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017 - 2018)
+   Julien Heulot <julien.heulot@insa-rennes.fr> (2015 - 2016) Karol Desnos <karol.desnos@insa-rennes.fr> (2016) This software
+   is a computer program whose purpose is to help prototyping parallel applications using dataflow formalism. This software
+   is governed by the CeCILL license under French law and abiding by the rules of distribution of free software. You can use,
+   modify and/ or redistribute the software under the terms of the CeCILL license as circulated by CEA, CNRS and INRIA at the
+   following URL "http://www.cecill.info". As a counterpart to the access to the source code and rights to copy, modify and
+   redistribute granted by the license, users are provided only with a limited warranty and the software's author, the holder
+   of the economic rights, and the successive licensors have only limited liability. In this respect, the user's attention is
+   drawn to the risks associated with loading, using, modifying and/or developing or reproducing the software by the user in
+   light of its specific status of free software, that may mean that it is complicated to manipulate, and that also therefore
+   means that it is reserved for developers and experienced professionals having in-depth computer knowledge. Users are therefore
+   encouraged to load and test the software's suitability as regards their requirements in conditions enabling the security
+   of their systems and/or data to be ensured and, more generally, to use and operate it in the same conditions as regards security.
+   The fact that you are presently reading this means that you have had knowledge of the CeCILL license and that you accept
+   its terms. -->
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+   xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+   <modelVersion>4.0.0</modelVersion>
+   <artifactId>org.ietr.dftools.architecture</artifactId>
+   <packaging>eclipse-plugin</packaging>
+	<parent>
+		<groupId>org.ietr.preesm</groupId>
+		<artifactId>org.ietr.preesm.plugins</artifactId>
+		<version>2.17.0-SNAPSHOT</version>
+		<relativePath>..</relativePath>
+	</parent>
+
+   <dependencies>
+      <dependency>
+         <groupId>org.eclipse.emf</groupId>
+         <artifactId>org.eclipse.emf.common</artifactId>
+         <version>${emf-common-version}</version>
+      </dependency>
+
+      <dependency>
+         <groupId>org.eclipse.emf</groupId>
+         <artifactId>org.eclipse.emf.ecore</artifactId>
+         <version>${emf-version}</version>
+      </dependency>
+
+      <dependency>
+         <groupId>org.eclipse.emf</groupId>
+         <artifactId>org.eclipse.emf.ecore.xcore.lib</artifactId>
+         <version>${ecore-xcore-lib-version}</version>
+      </dependency>
+
+      <dependency>
+         <groupId>org.eclipse.xtext</groupId>
+         <artifactId>org.eclipse.xtext.xbase.lib</artifactId>
+         <version>${xtext-version}</version>
+      </dependency>
+
+      <dependency>
+         <groupId>junit</groupId>
+         <artifactId>junit</artifactId>
+         <version>4.12</version>
+         <scope>test</scope>
+      </dependency>
+
+   </dependencies>
+
+   <build>
+      <plugins>
+         <plugin>
+            <!-- enable tycho build extension -->
+            <groupId>org.eclipse.tycho</groupId>
+            <artifactId>tycho-maven-plugin</artifactId>
+            <version>1.2.0</version>
+            <extensions>true</extensions>
+         </plugin>
+         <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-compiler-plugin</artifactId>
+            <version>3.1</version>
+            <configuration>
+               <source>1.8</source>
+               <target>1.8</target>
+            </configuration>
+         </plugin>
+
+         <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-clean-plugin</artifactId>
+            <version>3.1.0</version>
+            <configuration>
+               <filesets>
+                  <fileset>
+                     <directory>ecore-gen</directory>
+                  </fileset>
+               </filesets>
+            </configuration>
+         </plugin>
+
+         <plugin>
+            <groupId>org.eclipse.xtext</groupId>
+            <artifactId>xtext-maven-plugin</artifactId>
+            <version>${xtext-version}</version>
+            <executions>
+               <execution>
+                  <phase>generate-sources</phase>
+                  <goals>
+                     <goal>generate</goal>
+                  </goals>
+               </execution>
+            </executions>
+            <configuration>
+               <languages>
+                  <language>
+                     <setup>org.eclipse.xtext.ecore.EcoreSupport</setup>
+                  </language>
+                  <language>
+                     <setup>org.eclipse.emf.codegen.ecore.xtext.GenModelSupport</setup>
+                  </language>
+                  <language>
+                     <setup>org.eclipse.emf.ecore.xcore.XcoreStandaloneSetup</setup>
+                     <outputConfigurations>
+                        <outputConfiguration>
+                           <outputDirectory>${project.basedir}/ecore-gen</outputDirectory>
+                        </outputConfiguration>
+                     </outputConfigurations>
+                  </language>
+               </languages>
+               <sourceRoots>
+                  <root>${basedir}/model</root>
+               </sourceRoots>
+               <failOnValidationError>false</failOnValidationError>
+            </configuration>
+            <dependencies>
+               <dependency>
+                  <groupId>org.eclipse.platform</groupId>
+                  <artifactId>org.eclipse.text</artifactId>
+                  <version>3.6.100</version>
+               </dependency>
+               <dependency>
+                  <groupId>org.eclipse.platform</groupId>
+                  <artifactId>org.eclipse.core.resources</artifactId>
+                  <version>3.12.0</version>
+               </dependency>
+               <dependency>
+                  <groupId>org.eclipse.xtext</groupId>
+                  <artifactId>org.eclipse.xtext.ecore</artifactId>
+                  <version>${xtext-version}</version>
+               </dependency>
+               <dependency>
+                  <groupId>org.eclipse.xtext</groupId>
+                  <artifactId>org.eclipse.xtext.generator</artifactId>
+                  <version>${xtext-version}</version>
+               </dependency>
+               <dependency>
+                  <groupId>org.eclipse.xtext</groupId>
+                  <artifactId>org.eclipse.xtext.builder.standalone</artifactId>
+                  <version>${xtext-version}</version>
+               </dependency>
+               <dependency>
+                  <groupId>org.eclipse.emf</groupId>
+                  <artifactId>org.eclipse.emf.codegen.ecore.xtext</artifactId>
+                  <version>${ecore-xtext-version}</version>
+               </dependency>
+               <dependency>
+                  <groupId>org.eclipse.emf</groupId>
+                  <artifactId>org.eclipse.emf.common</artifactId>
+                  <version>${emf-common-version}</version>
+               </dependency>
+               <dependency>
+                  <groupId>org.eclipse.emf</groupId>
+                  <artifactId>org.eclipse.emf.ecore</artifactId>
+                  <version>${emf-version}</version>
+               </dependency>
+               <dependency>
+                  <groupId>org.eclipse.emf</groupId>
+                  <artifactId>org.eclipse.emf.ecore.xmi</artifactId>
+                  <version>${emf-version}</version>
+               </dependency>
+               <dependency>
+                  <groupId>org.eclipse.emf</groupId>
+                  <artifactId>org.eclipse.emf.codegen</artifactId>
+                  <version>2.13.0</version>
+               </dependency>
+               <dependency>
+                  <groupId>org.eclipse.emf</groupId>
+                  <artifactId>org.eclipse.emf.codegen.ecore</artifactId>
+                  <version>${emf-codegen-version}</version>
+               </dependency>
+               <dependency>
+                  <groupId>org.eclipse.emf</groupId>
+                  <artifactId>org.eclipse.emf.ecore.xcore</artifactId>
+                  <version>${ecore-xcore-version}</version>
+               </dependency>
+               <dependency>
+                  <groupId>org.eclipse.emf</groupId>
+                  <artifactId>org.eclipse.emf.ecore.xcore.lib</artifactId>
+                  <version>${ecore-xcore-lib-version}</version>
+               </dependency>
+               <dependency>
+                  <groupId>org.antlr</groupId>
+                  <artifactId>antlr-runtime</artifactId>
+                  <version>[3.2.0,3.3.0)</version>
+               </dependency>
+            </dependencies>
+         </plugin>
+      </plugins>
+   </build>
+</project>

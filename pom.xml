@@ -460,30 +460,7 @@
   </dependencies>
 
   <modules>
-    <module>plugins/org.ietr.preesm.utils</module>
-    <module>plugins/org.ietr.preesm.experiment.model</module>
-    <module>plugins/org.ietr.preesm.core</module>
-
-    <module>plugins/org.ietr.preesm.algorithm</module>
-    <module>plugins/org.ietr.preesm.clustering</module>
-    <module>plugins/org.ietr.preesm.archi</module>
-    <module>plugins/org.ietr.preesm.cli</module>
-    <module>plugins/org.ietr.preesm.codegen</module>
-    <module>plugins/org.ietr.preesm.codegen.xtend</module>
-
-    <module>plugins/org.ietr.preesm.evaluator</module>
-
-    <module>plugins/org.ietr.preesm.mapper</module>
-    <module>plugins/org.ietr.preesm.memory</module>
-    <module>plugins/org.ietr.preesm.pimm.algorithm</module>
-
-    <module>plugins/fi.abo.preesm.dataparallel</module>
-
-    <module>plugins/org.ietr.preesm.ui</module>
-    <module>plugins/org.ietr.preesm.ui.pimm</module>
-    <module>plugins/org.ietr.preesm.ui.scenario</module>
-    <module>plugins/org.ietr.preesm.ui.sdf</module>
-
+    <module>plugins</module>
     <module>test-fragments</module>
     <module>tests</module>
     <module>releng</module>

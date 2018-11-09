@@ -1,0 +1,201 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<!-- Schema file written by PDE -->
+<schema targetNamespace="org.ietr.dftools.workflow" xmlns="http://www.w3.org/2001/XMLSchema">
+<annotation>
+      <appinfo>
+         <meta.schema plugin="org.ietr.dftools.workflow" id="org.ietr.dftools.workflow.tasks" name="Workflow task"/>
+      </appinfo>
+      <documentation>
+         The tasks extension point allows plug-ins to declare classes as Workflow task plug-ins.
+      </documentation>
+   </annotation>
+
+   <element name="extension">
+      <annotation>
+         <appinfo>
+            <meta.element />
+         </appinfo>
+         <documentation>
+            Implement here tasks that can be added to a workflow
+         </documentation>
+      </annotation>
+      <complexType>
+         <sequence minOccurs="1" maxOccurs="unbounded">
+            <element ref="task"/>
+         </sequence>
+         <attribute name="point" type="string" use="required">
+            <annotation>
+               <documentation>
+                  
+               </documentation>
+            </annotation>
+         </attribute>
+         <attribute name="id" type="string">
+            <annotation>
+               <documentation>
+                  
+               </documentation>
+            </annotation>
+         </attribute>
+         <attribute name="name" type="string">
+            <annotation>
+               <documentation>
+                  
+               </documentation>
+               <appinfo>
+                  <meta.attribute translatable="true"/>
+               </appinfo>
+            </annotation>
+         </attribute>
+      </complexType>
+   </element>
+
+   <element name="task">
+      <annotation>
+         <documentation>
+            A task specifies a class that implements the behavior of a workflow graph node type. A prototype is needed to specify which inputs and outputs are exposed by this task.
+         </documentation>
+      </annotation>
+      <complexType>
+         <sequence minOccurs="0" maxOccurs="1">
+            <element ref="inputs"/>
+            <element ref="outputs"/>
+         </sequence>
+         <attribute name="type" type="string" use="required">
+            <annotation>
+               <documentation>
+                  The fully qualified name of a Java class that extends Task.
+               </documentation>
+               <appinfo>
+                  <meta.attribute kind="java" basedOn="org.ietr.dftools.workflow.elements.Task:"/>
+               </appinfo>
+            </annotation>
+         </attribute>
+         <attribute name="id" type="string" use="required">
+            <annotation>
+               <documentation>
+                  The identifier of this task. It must unique amongst the registered tasks identifiers. Example: org.ietr.preesm.plugin.mapping
+               </documentation>
+            </annotation>
+         </attribute>
+         <attribute name="name" type="string">
+            <annotation>
+               <documentation>
+                  The task name, for example the algorithm implemented.
+               </documentation>
+            </annotation>
+         </attribute>
+      </complexType>
+   </element>
+
+   <element name="input">
+      <annotation>
+         <documentation>
+            An input data is specified by an id that correspond to the port name in the graph and an object type that corresponds to the type of the data object.
+         </documentation>
+      </annotation>
+      <complexType>
+         <attribute name="id" type="string" use="required">
+            <annotation>
+               <documentation>
+                  id that correspond to the port name in the graph
+               </documentation>
+            </annotation>
+         </attribute>
+         <attribute name="object" type="string">
+            <annotation>
+               <documentation>
+                  object type that corresponds to the type of the data object
+               </documentation>
+               <appinfo>
+                  <meta.attribute kind="java" basedOn="java.lang.Object:"/>
+               </appinfo>
+            </annotation>
+         </attribute>
+      </complexType>
+   </element>
+
+   <element name="output">
+      <annotation>
+         <documentation>
+            An output data is specified by an id that correspond to the port name in the graph and an object type that corresponds to the type of the data object.
+         </documentation>
+      </annotation>
+      <complexType>
+         <attribute name="id" type="string">
+            <annotation>
+               <documentation>
+                  id that correspond to the port name in the graph
+               </documentation>
+            </annotation>
+         </attribute>
+         <attribute name="object" type="string">
+            <annotation>
+               <documentation>
+                  object type that corresponds to the type of the data object
+               </documentation>
+               <appinfo>
+                  <meta.attribute kind="java" basedOn="java.lang.Object:"/>
+               </appinfo>
+            </annotation>
+         </attribute>
+      </complexType>
+   </element>
+
+   <element name="inputs">
+      <complexType>
+         <sequence minOccurs="0" maxOccurs="unbounded">
+            <element ref="input"/>
+         </sequence>
+      </complexType>
+   </element>
+
+   <element name="outputs">
+      <complexType>
+         <sequence minOccurs="0" maxOccurs="unbounded">
+            <element ref="output"/>
+         </sequence>
+      </complexType>
+   </element>
+
+   <annotation>
+      <appinfo>
+         <meta.section type="since"/>
+      </appinfo>
+      <documentation>
+         1.0
+      </documentation>
+   </annotation>
+
+   <annotation>
+      <appinfo>
+         <meta.section type="examples"/>
+      </appinfo>
+      <documentation>
+         Following is an example of an adapter declaration.  This example declares that this plug-in will provide an adapter factory that will adapt objects of type IFile to objects of type MyFile.
+&lt;p&gt;
+   &lt;pre&gt;
+      &lt;extension point=&quot;org.eclipse.core.runtime.adapters&quot;&gt;
+         &lt;factory 
+            class=&quot;com.xyz.MyFileAdapterFactory&quot; 
+            adaptableType=&quot;org.eclipse.core.resources.IFile&quot;&gt;
+            &lt;adapter type=&quot;com.xyz.MyFile&quot;/&gt;
+         &lt;/factory&gt;
+      &lt;/extension&gt;
+   &lt;/pre&gt;
+&lt;/p&gt;
+      </documentation>
+   </annotation>
+
+
+
+   <annotation>
+      <appinfo>
+         <meta.section type="copyright"/>
+      </appinfo>
+      <documentation>
+         Copyright (c) 2008 IETR
+      </documentation>
+   </annotation>
+
+</schema>

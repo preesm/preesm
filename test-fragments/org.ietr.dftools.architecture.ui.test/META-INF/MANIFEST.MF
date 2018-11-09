@@ -1,0 +1,10 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: S-LAM UI Test
+Automatic-Module-Name: org.ietr.dftools.architecture.ui.test
+Bundle-SymbolicName: org.ietr.dftools.architecture.ui.test
+Bundle-Version: 2.0.0.qualifier
+Bundle-Vendor: IETR/INSA Rennes
+Fragment-Host: org.ietr.dftools.architecture.ui
+Bundle-RequiredExecutionEnvironment: JavaSE-1.8
+Require-Bundle: org.junit;bundle-version="4.12.0"

@@ -717,4 +717,38 @@ Version 1.0 dated 2006-09-05.]]>
          version="2.17.1.qualifier"
          unpack="false"/>
 
+   <plugin
+         id="org.ietr.dftools.algorithm"
+         download-size="0"
+         install-size="0"
+         version="2.17.0.qualifier"
+         unpack="false"/>
+
+   <plugin
+         id="org.ietr.dftools.architecture"
+         download-size="0"
+         install-size="0"
+         version="2.17.0.qualifier"
+         unpack="false"/>
+
+   <plugin
+         id="org.ietr.dftools.architecture.ui"
+         download-size="0"
+         install-size="0"
+         version="2.17.0.qualifier"
+         unpack="false"/>
+
+   <plugin
+         id="org.ietr.dftools.ui"
+         download-size="0"
+         install-size="0"
+         version="2.17.0.qualifier"
+         unpack="false"/>
+
+   <plugin
+         id="org.ietr.dftools.workflow"
+         download-size="0"
+         install-size="0"
+         version="2.17.0.qualifier"
+         unpack="false"/>
 </feature>

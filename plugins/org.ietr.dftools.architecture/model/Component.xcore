@@ -1,0 +1,90 @@
+
+@GenModel(
+	modelName="Slam", prefix="Component",
+	modelDirectory="/org.ietr.dftools.architecture/ecore-gen",
+//	editDirectory="/org.ietr.dftools.architecture.edit/ecore-gen",
+//	editorDirectory="/org.ietr.dftools.architecture.editor/ecore-gen",
+//	testsDirectory="/org.ietr.dftools.architecture.tests/ecore-gen",
+
+	// redirection="",
+	// classNamePattern="",
+
+	// codeFormatting="true",
+	// cleanup="true",
+
+	importerID="org.eclipse.emf.importer.ecore",
+
+	// !! if true a instrs.ecore is generated in .impl and is used by xxpackage.init() to
+	// load the intrs packages (by default this false unless the generated XyzPackage might
+	// exceed Java's byte code limit of 64k)
+	loadInitialization="false",
+	creationCommands="false",
+	creationIcons="false",
+	dataTypeConverters="false",
+	operationReflection="false"
+)
+
+@Ecore(nsURI="http://org.ietr.preesm/architecture/slam/component")
+
+package org.ietr.dftools.architecture.slam.component
+
+import org.ietr.dftools.architecture.slam.ComponentInstance
+import org.ietr.dftools.architecture.slam.Design
+import org.ietr.dftools.architecture.slam.ParameterizedElement
+import org.ietr.dftools.architecture.slam.VLNVedElement
+import org.ietr.dftools.architecture.slam.attributes.VLNV
+
+type IPath wraps org.eclipse.core.runtime.IPath
+
+// !!! This is needed as of the current versions of xcore/xtext
+// For some reason when using the default String/... (i.e. without the following)
+// the corresponding EPackage attributes/... are resolved to type java.lang.Object
+// instead of java.lang.String.
+// This causes a problem for Tom mapping generation for instance.
+// The following fixes this problem.
+type String wraps String
+type int wraps int
+type long wraps long
+type double wraps double
+
+
+class Component extends VLNVedElement , ParameterizedElement {
+	contains ComInterface[] interfaces opposite component
+	refers ComponentInstance[] instances opposite component
+	contains Design[] refinements opposite refined
+	op ComInterface getInterface(String name) {
+		return interfaces.findFirst[it -> it.name == name]
+	}
+}
+
+class Operator extends Component {
+}
+
+class ComNode extends Component {
+	boolean parallel = "true"
+	float speed = "1"
+}
+
+abstract class Enabler extends Component {
+}
+
+class Dma extends Enabler {
+	int setupTime = "0"
+}
+
+class Mem extends Enabler {
+	int size = "1"
+}
+
+class HierarchyPort {
+	refers ComInterface externalInterface
+	refers ComInterface internalInterface
+	refers ComponentInstance internalComponentInstance
+}
+
+class ComInterface {
+	container Component component opposite interfaces
+	contains VLNV busType
+	id String name = ""
+}
+
