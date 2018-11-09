@@ -607,6 +607,9 @@ Version 1.0 dated 2006-09-05.]]>
       <import feature="org.eclipse.graphiti.sdk.plus.feature.source"/>
       <import feature="org.eclipse.emf.ecore.xcore.sdk"/>
 
+      <!-- UI Testing -->
+      <import feature="org.eclipse.rcptt.platform"/>
+
       <!-- Git & Checkstyle -->
       <import feature="org.eclipse.egit"/>
       <import feature="net.sf.eclipsecs"/>
