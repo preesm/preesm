@@ -69,7 +69,7 @@
       </editor>
    </extension>
    <extension
-         point="org.ietr.dftools.workflow.tasks">
+         point="org.preesm.workflow.tasks">
       <task
             id="org.ietr.preesm.mapper.getpimm"
             name="GetPiMM"

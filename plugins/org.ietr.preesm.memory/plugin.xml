@@ -41,7 +41,7 @@
 
 <plugin>
    <extension
-         point="org.ietr.dftools.workflow.tasks">
+         point="org.preesm.workflow.tasks">
       <task
             id="org.ietr.preesm.memory.bounds.MemoryBoundsEstimator"
             name="Memory Bounds Estimator"

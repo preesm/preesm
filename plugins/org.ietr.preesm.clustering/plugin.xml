@@ -40,7 +40,7 @@
 <?eclipse version="3.4"?>
 <plugin>
    <extension
-         point="org.ietr.dftools.workflow.tasks">
+         point="org.preesm.workflow.tasks">
       <task
             id="org.ietr.preesm.Clustering"
             name="Clustering"

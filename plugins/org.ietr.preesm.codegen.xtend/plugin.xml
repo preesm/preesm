@@ -132,7 +132,7 @@
          </printer>
       </printers>
    </extension>
-   <extension point="org.ietr.dftools.workflow.tasks">
+   <extension point="org.preesm.workflow.tasks">
       <task id="org.ietr.preesm.codegen.xtend.task.CodegenTask"
          name="Xtend Codegen"
          type="org.ietr.preesm.codegen.xtend.task.CodegenTask">

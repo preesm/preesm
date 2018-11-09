@@ -1,0 +1,11 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: S-LAM UI
+Automatic-Module-Name: org.preesm.architecture.ui
+Bundle-SymbolicName: org.preesm.architecture.ui;singleton:=true
+Bundle-Version: 2.17.0.qualifier
+Bundle-Activator: org.ietr.dftools.architecture.ui.Activator
+Require-Bundle: org.preesm.ui
+Bundle-ActivationPolicy: lazy
+Bundle-RequiredExecutionEnvironment: JavaSE-1.8
+Bundle-Vendor: IETR/INSA Rennes

@@ -40,7 +40,7 @@
 <?eclipse version="3.4"?>
 <plugin>
    <extension
-         point="org.ietr.dftools.workflow.tasks">
+         point="org.preesm.workflow.tasks">
       <task
             id="fi.abo.preesm.dataparallel.DataParallel"
             name="Data-Parallel"

@@ -72,11 +72,11 @@
     <module>org.ietr.preesm.ui.scenario</module>
     <module>org.ietr.preesm.ui.sdf</module>
 
-    <module>org.ietr.dftools.architecture</module>
-    <module>org.ietr.dftools.workflow</module>
-    <module>org.ietr.dftools.algorithm</module>
-    <module>org.ietr.dftools.architecture.ui</module>
-    <module>org.ietr.dftools.ui</module>
+    <module>org.preesm.architecture</module>
+    <module>org.preesm.workflow</module>
+    <module>org.preesm.algorithm</module>
+    <module>org.preesm.architecture.ui</module>
+    <module>org.preesm.ui</module>
     
   </modules>
 

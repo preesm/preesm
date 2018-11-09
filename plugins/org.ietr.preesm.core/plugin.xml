@@ -42,7 +42,7 @@
 
 <plugin>
    <extension
-         point="org.ietr.dftools.workflow.scenarios">
+         point="org.preesm.workflow.scenarios">
       <scenario
             id="org.ietr.preesm.scenario.task"
             type="org.ietr.preesm.core.workflow.AlgorithmAndArchitectureScenarioNode">
