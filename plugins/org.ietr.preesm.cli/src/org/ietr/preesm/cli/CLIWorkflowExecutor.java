@@ -3,6 +3,7 @@
  *
  * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017 - 2018)
  * Clément Guy <clement.guy@insa-rennes.fr> (2014 - 2015)
+ * Julien Heulot <julien.heulot@insa-rennes.fr> (2018)
  * Karol Desnos <karol.desnos@insa-rennes.fr> (2015)
  *
  * This software is a computer program whose purpose is to help prototyping
@@ -165,9 +166,7 @@ public class CLIWorkflowExecutor extends AbstractWorkflowExecutor implements IAp
             CLIWorkflowExecutor.scenarioDir);
       } else {
         // Otherwise, format the scenarioPath and execute it
-        if (!scenarioPath.contains(projectName)) {
-          scenarioPath = projectName + CLIWorkflowExecutor.scenarioDir + "/" + scenarioPath;
-        }
+        scenarioPath = this.project.getName() + CLIWorkflowExecutor.scenarioDir + "/" + scenarioPath;
         if (!scenarioPath.endsWith(CLIWorkflowExecutor.scenarioExt)) {
           scenarioPath = scenarioPath + "." + CLIWorkflowExecutor.scenarioExt;
         }

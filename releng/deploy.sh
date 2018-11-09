@@ -19,6 +19,9 @@ function find_free_display_number {
     fi
   done
 }
+
+$DIR/releng/fetch-rcptt-runner.sh
+
 if [ -x /usr/bin/Xvfb ]; then
   XDN=$(find_free_display_number)
   export DISPLAY=:${XDN}.0

@@ -1,6 +1,21 @@
 PREESM Changelog
 ================
 
+## Release version 2.17.1
+*2018.11.09*
+
+### New Feature
+
+### Changes
+* Use RCPTT runner prefetch script when deploying;
+* Add RCPTT to dev feature dependencies;
+* Synhcronize RCP plugin and Eclipse product;
+* Add missing plugin to Preesm feature;
+* Fix CLI Workflow Executor scenario path formatter;
+
+### Bug fix
+
+
 ## Release version 2.17.0
 *2018.11.08*
 
