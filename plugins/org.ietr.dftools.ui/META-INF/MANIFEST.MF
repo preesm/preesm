@@ -3,7 +3,7 @@ Bundle-ManifestVersion: 2
 Bundle-Name: DFTools UI
 Automatic-Module-Name: org.ietr.dftools.ui
 Bundle-SymbolicName: org.ietr.dftools.ui;singleton:=true
-Bundle-Version: 2.0.0.qualifier
+Bundle-Version: 2.17.0.qualifier
 Bundle-Activator: org.ietr.dftools.ui.Activator
 Require-Bundle: org.eclipse.core.runtime;visibility:=reexport,
  org.eclipse.core.resources,
