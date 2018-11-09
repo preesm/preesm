@@ -19,5 +19,5 @@ Require-Bundle: org.apache.velocity;bundle-version="1.7.0",
  org.ietr.preesm.mapper
 Bundle-ActivationPolicy: lazy
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
-Bundle-Version: 2.17.1
+Bundle-Version: 2.17.1.qualifier
 
