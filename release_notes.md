@@ -8,6 +8,9 @@ PREESM Changelog
 
 ### Changes
 * Use RCPTT runner prefetch script when deploying;
+* Add RCPTT to dev feature dependencies;
+* Synhcronize RCP plugin and Eclipse product;
+* Add missing plugin to Preesm feature;
 
 ### Bug fix
 
