@@ -710,4 +710,11 @@ Version 1.0 dated 2006-09-05.]]>
          version="2.17.0.qualifier"
          unpack="false"/>
 
+   <plugin
+         id="fi.abo.preesm.dataparallel"
+         download-size="0"
+         install-size="0"
+         version="2.17.0.qualifier"
+         unpack="false"/>
+
 </feature>
