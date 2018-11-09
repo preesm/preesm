@@ -11,6 +11,7 @@ PREESM Changelog
 * Add RCPTT to dev feature dependencies;
 * Synhcronize RCP plugin and Eclipse product;
 * Add missing plugin to Preesm feature;
+* Fix CLI Workflow Executor scenario path formatter;
 
 ### Bug fix
 

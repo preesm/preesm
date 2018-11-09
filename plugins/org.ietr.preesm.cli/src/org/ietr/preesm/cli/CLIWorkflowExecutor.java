@@ -165,9 +165,7 @@ public class CLIWorkflowExecutor extends AbstractWorkflowExecutor implements IAp
             CLIWorkflowExecutor.scenarioDir);
       } else {
         // Otherwise, format the scenarioPath and execute it
-        if (!scenarioPath.contains(projectName)) {
-          scenarioPath = projectName + CLIWorkflowExecutor.scenarioDir + "/" + scenarioPath;
-        }
+        scenarioPath = this.project.getName() + CLIWorkflowExecutor.scenarioDir + "/" + scenarioPath;
         if (!scenarioPath.endsWith(CLIWorkflowExecutor.scenarioExt)) {
           scenarioPath = scenarioPath + "." + CLIWorkflowExecutor.scenarioExt;
         }
