@@ -44,7 +44,7 @@
    <extension point="org.eclipse.emf.ecore.generated_package">
       <!-- @generated Slam -->
       <package
-            uri="http://org.preesm/architecture/slam"
+            uri="http://org.preesm/model/slam"
             class="org.ietr.dftools.architecture.slam.SlamPackage"
             genModel="model/Slam.xcore"/>
    </extension>
@@ -52,7 +52,7 @@
    <extension point="org.eclipse.emf.ecore.generated_package">
       <!-- @generated Attributes -->
       <package
-            uri="http://org.preesm/architecture/slam/attributes"
+            uri="http://org.preesm/model/slam/attributes"
             class="org.ietr.dftools.architecture.slam.attributes.AttributesPackage"
             genModel="model/Attributes.xcore"/>
    </extension>
@@ -60,7 +60,7 @@
    <extension point="org.eclipse.emf.ecore.generated_package">
       <!-- @generated Component -->
       <package
-            uri="http://org.preesm/architecture/slam/component"
+            uri="http://org.preesm/model/slam/component"
             class="org.ietr.dftools.architecture.slam.component.ComponentPackage"
             genModel="model/Component.xcore"/>
    </extension>
@@ -68,7 +68,7 @@
    <extension point="org.eclipse.emf.ecore.generated_package">
       <!-- @generated Link -->
       <package
-            uri="http://org.preesm/architecture/slam/link"
+            uri="http://org.preesm/model/slam/link"
             class="org.ietr.dftools.architecture.slam.link.LinkPackage"
             genModel="model/Link.xcore"/>
    </extension>

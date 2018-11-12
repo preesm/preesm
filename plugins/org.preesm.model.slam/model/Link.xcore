@@ -1,7 +1,7 @@
 
 @GenModel(
 	modelName="Slam", prefix="Link",
-	modelDirectory="/org.preesm.architecture/ecore-gen",
+	modelDirectory="/org.preesm.model.slam/ecore-gen",
 //	editDirectory="/org.ietr.dftools.architecture.edit/ecore-gen",
 //	editorDirectory="/org.ietr.dftools.architecture.editor/ecore-gen",
 //	testsDirectory="/org.ietr.dftools.architecture.tests/ecore-gen",
@@ -24,7 +24,7 @@
 	operationReflection="false"
 )
 
-@Ecore(nsURI="http://org.preesm/architecture/slam/link")
+@Ecore(nsURI="http://org.preesm/model/slam/link")
 
 
 

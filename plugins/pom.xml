@@ -70,7 +70,7 @@
     <module>org.ietr.preesm.ui.scenario</module>
     <module>org.ietr.preesm.ui.sdf</module>
 
-    <module>org.preesm.architecture</module>
+    <module>org.preesm.model.slam</module>
     <module>org.preesm.workflow</module>
     <module>org.preesm.algorithm</module>
     <module>org.preesm.architecture.ui</module>

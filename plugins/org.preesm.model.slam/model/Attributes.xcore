@@ -2,7 +2,7 @@
 
 @GenModel(
 	modelName="Slam", prefix="Attributes",
-	modelDirectory="/org.preesm.architecture/ecore-gen",
+	modelDirectory="/org.preesm.model.slam/ecore-gen",
 //	editDirectory="/org.ietr.dftools.architecture.edit/ecore-gen",
 //	editorDirectory="/org.ietr.dftools.architecture.editor/ecore-gen",
 //	testsDirectory="/org.ietr.dftools.architecture.tests/ecore-gen",
@@ -25,7 +25,7 @@
 	operationReflection="false"
 )
 
-@Ecore(nsURI="http://org.preesm/architecture/slam/attributes")
+@Ecore(nsURI="http://org.preesm/model/slam/attributes")
 
 package org.ietr.dftools.architecture.slam.attributes
 

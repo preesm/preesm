@@ -1,8 +1,8 @@
 Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: %pluginName
-Automatic-Module-Name: org.preesm.architecture
-Bundle-SymbolicName: org.preesm.architecture;singleton:=true
+Automatic-Module-Name: org.preesm.model.slam
+Bundle-SymbolicName: org.preesm.model.slam;singleton:=true
 Bundle-Version: 2.17.1.qualifier
 Bundle-ClassPath: .
 Bundle-Localization: plugin
@@ -26,8 +26,8 @@ Require-Bundle: org.eclipse.core.runtime,
  org.eclipse.emf.ecore;visibility:=reexport,
  org.eclipse.xtext.xbase.lib,
  org.eclipse.emf.ecore.xcore.lib,
+ org.preesm.model.slam;visibility:=reexport,
  javax.annotation;bundle-version="1.2.0";visibility:=reexport,
- org.preesm.architecture;visibility:=reexport,
  org.preesm.workflow
 Bundle-ActivationPolicy: lazy
 Bundle-Vendor: %providerName
