@@ -79,59 +79,65 @@ public class WorkflowValidator implements IValidator {
     final Set<Vertex> vertices = graph.vertexSet();
     for (final Vertex vertex : vertices) {
       if ("Task".equals(vertex.getType().getName())) {
-        // Getting the plugin ID and the associated class name.
-        final String pluginId = (String) vertex.getValue("plugin identifier");
-
-        if (pluginId == null) {
-          createMarker(file, "Enter a plugin identifier for each plugin.", "Any plugin", IMarker.PROBLEM,
-              IMarker.SEVERITY_ERROR);
-          return false;
-        }
-
-        final IExtensionRegistry registry = Platform.getExtensionRegistry();
-        final IConfigurationElement[] elements = registry
-            .getConfigurationElementsFor("org.ietr.dftools.workflow.tasks");
-
-        boolean foundClass = false;
-
-        // Looking for the Id of the workflow task among the registry
-        // elements
-        for (final IConfigurationElement element : elements) {
-          final String taskId = element.getAttribute("id");
-          if (pluginId.equals(taskId)) {
-            try {
-              final String taskType = element.getAttribute("type");
-              /**
-               * Getting the class corresponding to the taskType string. This is only possible because of
-               * "Eclipse-BuddyPolicy: global" in the manifest: the Graphiti configuration class loader has a global
-               * knowledge of classes
-               */
-
-              final Class<?> vertexTaskClass = Class.forName(taskType);
-
-              final Object vertexTaskObj = vertexTaskClass.newInstance();
-
-              // Adding the default parameters if necessary
-              addDefaultParameters(vertex, vertexTaskObj, file);
-
-              foundClass = true;
-
-            } catch (final Exception e) {
-              createMarker(file, "Class associated to the workflow task not found. Is the class path exported?",
-                  pluginId, IMarker.PROBLEM, IMarker.SEVERITY_ERROR);
-              return true;
-            }
-          }
-        }
-
-        if (!foundClass) {
-          createMarker(file, "Plugin associated to the workflow task not found.", pluginId, IMarker.PROBLEM,
-              IMarker.SEVERITY_ERROR);
+        if (!validateTaskVertex(file, vertex)) {
           return false;
         }
       }
     }
 
+    return true;
+  }
+
+  private boolean validateTaskVertex(final IFile file, final Vertex vertex) {
+    // Getting the plugin ID and the associated class name.
+    final String pluginId = (String) vertex.getValue("plugin identifier");
+
+    if (pluginId == null) {
+      createMarker(file, "Enter a plugin identifier for each plugin.", "Any plugin", IMarker.PROBLEM,
+          IMarker.SEVERITY_ERROR);
+      return false;
+    }
+
+    final IExtensionRegistry registry = Platform.getExtensionRegistry();
+    final IConfigurationElement[] elements = registry.getConfigurationElementsFor("org.preesm.workflow.tasks");
+
+    boolean foundClass = false;
+
+    // Looking for the Id of the workflow task among the registry
+    // elements
+    for (final IConfigurationElement element : elements) {
+      final String taskId = element.getAttribute("id");
+      if (pluginId.equals(taskId)) {
+        try {
+          final String taskType = element.getAttribute("type");
+          /**
+           * Getting the class corresponding to the taskType string. This is only possible because of
+           * "Eclipse-BuddyPolicy: global" in the manifest: the Graphiti configuration class loader has a global
+           * knowledge of classes
+           */
+
+          final Class<?> vertexTaskClass = Class.forName(taskType);
+
+          final Object vertexTaskObj = vertexTaskClass.newInstance();
+
+          // Adding the default parameters if necessary
+          addDefaultParameters(vertex, vertexTaskObj, file);
+
+          foundClass = true;
+
+        } catch (final Exception e) {
+          createMarker(file, "Class associated to the workflow task not found. Is the class path exported?", pluginId,
+              IMarker.PROBLEM, IMarker.SEVERITY_ERROR);
+          return true;
+        }
+      }
+    }
+
+    if (!foundClass) {
+      createMarker(file, "Plugin associated to the workflow task not found.", pluginId, IMarker.PROBLEM,
+          IMarker.SEVERITY_ERROR);
+      return false;
+    }
     return true;
   }
 
