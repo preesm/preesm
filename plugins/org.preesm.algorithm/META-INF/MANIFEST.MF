@@ -13,8 +13,8 @@ Require-Bundle: org.eclipse.core.runtime,
  gov.nist.math.jama;bundle-version="1.0.3",
  com.github.yannrichet.JMathArray;bundle-version="1.0.0",
  jgraph;bundle-version="5.13.0",
- org.preesm.workflow,
- org.jacorb.idl-compiler;bundle-version="2.3.1"
+ org.jacorb.idl-compiler;bundle-version="2.3.1",
+ org.preesm.workflow
 Export-Package: org.ietr.dftools.algorithm,
  org.ietr.dftools.algorithm.exceptions,
  org.ietr.dftools.algorithm.exporter,
