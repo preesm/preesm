@@ -5,6 +5,7 @@ PREESM Changelog
 *XXXX.XX.XX*
 
 ### New Feature
+* Add a simple scheduler that maps everything to the main PE;
 
 ### Changes
 * Merge DFTools code in Preesm and remove upstream dependency;
