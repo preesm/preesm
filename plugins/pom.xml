@@ -52,16 +52,13 @@
     <module>org.preesm.model.pisdf</module>
     <module>org.ietr.preesm.core</module>
 
-    <module>org.ietr.preesm.algorithm</module>
     <module>org.ietr.preesm.clustering</module>
     <module>org.ietr.preesm.cli</module>
     <module>org.ietr.preesm.codegen</module>
     <module>org.ietr.preesm.codegen.xtend</module>
 
 
-    <module>org.ietr.preesm.mapper</module>
     <module>org.ietr.preesm.memory</module>
-    <module>org.ietr.preesm.pimm.algorithm</module>
 
     <module>fi.abo.preesm.dataparallel</module>
 

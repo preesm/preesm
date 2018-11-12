@@ -9,7 +9,7 @@ Require-Bundle: org.eclipse.core.runtime,
  org.eclipse.xtext.util;bundle-version="2.11.0",
  org.eclipse.xtend.lib;bundle-version="2.11.0",
  org.beanshell.bsh;bundle-version="2.1.8",
- org.ietr.preesm.mapper;visibility:=reexport
+ org.ietr.preesm.core;visibility:=reexport
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Bundle-Vendor: IETR/INSA Rennes
 Bundle-ClassPath: .

@@ -64,15 +64,12 @@
   </build>
 
   <modules>
-    <module>org.ietr.preesm.algorithm.test</module>
     <module>org.ietr.preesm.cli.test</module>
     <module>org.ietr.preesm.codegen.test</module>
     <module>org.ietr.preesm.codegen.xtend.test</module>
     <module>org.ietr.preesm.core.test</module>
     <module>org.preesm.model.pisdf.test</module>
-    <module>org.ietr.preesm.mapper.test</module>
     <module>org.ietr.preesm.memory.test</module>
-    <module>org.ietr.preesm.pimm.algorithm.test</module>
     <module>org.preesm.commons.test</module>
 
     <module>org.preesm.algorithm.test</module>

@@ -585,13 +585,6 @@ Version 1.0 dated 2006-09-05.]]>
    </requires>
 
    <plugin
-         id="org.ietr.preesm.algorithm"
-         download-size="0"
-         install-size="0"
-         version="2.17.1.qualifier"
-         unpack="false"/>
-
-   <plugin
          id="org.ietr.preesm.codegen"
          download-size="0"
          install-size="0"
@@ -614,13 +607,6 @@ Version 1.0 dated 2006-09-05.]]>
 
    <plugin
          id="org.preesm.model.pisdf"
-         download-size="0"
-         install-size="0"
-         version="2.17.1.qualifier"
-         unpack="false"/>
-
-   <plugin
-         id="org.ietr.preesm.mapper"
          download-size="0"
          install-size="0"
          version="2.17.1.qualifier"
@@ -663,13 +649,6 @@ Version 1.0 dated 2006-09-05.]]>
 
    <plugin
          id="org.ietr.preesm.cli"
-         download-size="0"
-         install-size="0"
-         version="2.17.1.qualifier"
-         unpack="false"/>
-
-   <plugin
-         id="org.ietr.preesm.pimm.algorithm"
          download-size="0"
          install-size="0"
          version="2.17.1.qualifier"
