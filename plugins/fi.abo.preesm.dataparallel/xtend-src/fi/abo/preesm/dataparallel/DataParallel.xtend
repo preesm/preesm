@@ -36,9 +36,8 @@
  */
 package fi.abo.preesm.dataparallel
 
-import java.util.Map
-import java.util.logging.Logger
 import fi.abo.preesm.dataparallel.operations.DataParallelCheckOperations
+import java.util.Map
 import org.eclipse.core.runtime.IProgressMonitor
 import org.eclipse.xtend.lib.annotations.Accessors
 import org.ietr.dftools.algorithm.model.sdf.SDFGraph
