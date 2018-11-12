@@ -50,7 +50,7 @@ import org.eclipse.ui.console.IConsole;
 import org.eclipse.ui.console.IConsoleManager;
 import org.eclipse.ui.console.MessageConsole;
 import org.eclipse.ui.console.MessageConsoleStream;
-import org.ietr.dftools.ui.Activator;
+import org.ietr.dftools.ui.PreesmUIPlugin;
 import org.ietr.dftools.workflow.WorkflowException;
 import org.ietr.dftools.workflow.tools.WorkflowLogger;
 
@@ -117,7 +117,7 @@ public class DFToolsWorkflowLogger extends WorkflowLogger {
         // Writes a log in console
         this.console.activate();
         try (final MessageConsoleStream stream = new MessageConsoleStream(this.console, this.console.getCharset())) {
-          Activator.getDefault().getWorkbench().getDisplay().asyncExec(() -> {
+          PreesmUIPlugin.getDefault().getWorkbench().getDisplay().asyncExec(() -> {
             if (levelVal < Level.WARNING.intValue()) {
               stream.setColor(new Color(null, 0, 0, 0));
             } else if (levelVal == Level.WARNING.intValue()) {

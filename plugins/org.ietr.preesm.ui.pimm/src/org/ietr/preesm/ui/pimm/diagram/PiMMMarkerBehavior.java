@@ -58,10 +58,10 @@ import org.eclipse.graphiti.ui.editor.DefaultMarkerBehavior;
 import org.eclipse.graphiti.ui.editor.DiagramBehavior;
 import org.eclipse.graphiti.ui.internal.T;
 import org.eclipse.swt.widgets.Display;
+import org.ietr.dftools.ui.PreesmUIPlugin;
 import org.ietr.preesm.experiment.model.pimm.PiGraph;
 import org.ietr.preesm.experiment.model.pimm.serialize.PiResourceImpl;
 import org.ietr.preesm.pimm.algorithm.checker.PiMMAlgorithmChecker;
-import org.ietr.preesm.ui.PreesmUIPlugin;
 
 /**
  * Class inheriting from the {@link DefaultMarkerBehavior}. This class was created to define a custom

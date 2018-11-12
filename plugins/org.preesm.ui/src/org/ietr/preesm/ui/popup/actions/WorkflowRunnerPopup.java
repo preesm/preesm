@@ -45,12 +45,14 @@ import org.eclipse.jface.viewers.ITreeSelection;
 import org.eclipse.jface.viewers.StructuredSelection;
 import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IEditorPart;
+import org.eclipse.ui.IWorkbench;
 import org.eclipse.ui.IWorkbenchPage;
+import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.handlers.HandlerUtil;
 import org.eclipse.ui.ide.ResourceUtil;
 import org.eclipse.ui.views.properties.tabbed.ITabbedPropertySheetPageContributor;
+import org.ietr.dftools.ui.PreesmUIPlugin;
 import org.ietr.dftools.ui.workflow.launch.WorkflowLaunchShortcut;
-import org.ietr.preesm.ui.PreesmUIPlugin;
 
 /**
  *
@@ -81,8 +83,10 @@ public class WorkflowRunnerPopup extends AbstractHandler {
           // get there when the active selection is within a tab with id PropertiesConstants.CONTRIBUTOR_ID from
           // Graphiti package.
           // this is one way to make sure the command is triggered from Graphiti editor
-          final IWorkbenchPage page = PreesmUIPlugin.getDefault().getWorkbench().getActiveWorkbenchWindow()
-              .getActivePage();
+          final PreesmUIPlugin default1 = PreesmUIPlugin.getDefault();
+          final IWorkbench workbench = default1.getWorkbench();
+          final IWorkbenchWindow activeWorkbenchWindow = workbench.getActiveWorkbenchWindow();
+          final IWorkbenchPage page = activeWorkbenchWindow.getActivePage();
           final IEditorPart activeEditor = page.getActiveEditor();
           final IEditorInput input = activeEditor.getEditorInput();
           workflowFile = ResourceUtil.getFile(input);

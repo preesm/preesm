@@ -41,7 +41,7 @@ import org.eclipse.debug.core.ILaunchConfiguration;
 import org.eclipse.debug.core.ILaunchConfigurationWorkingCopy;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Composite;
-import org.ietr.dftools.ui.Activator;
+import org.ietr.dftools.ui.PreesmUIPlugin;
 
 // TODO: Auto-generated Javadoc
 /**
@@ -115,7 +115,7 @@ public class WorkFlowLaunchWorkflowTab extends AbstractWorkFlowLaunchTab {
    */
   @Override
   public Image getImage() {
-    final Image image = Activator.getImage("icons/workflow.png");
+    final Image image = PreesmUIPlugin.getImage("icons/workflow.png");
 
     if (image != null) {
       return image;

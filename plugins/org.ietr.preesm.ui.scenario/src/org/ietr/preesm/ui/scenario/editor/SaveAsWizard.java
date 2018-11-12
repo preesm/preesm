@@ -48,7 +48,7 @@ import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.ide.IDE;
 import org.eclipse.ui.wizards.newresource.BasicNewResourceWizard;
-import org.ietr.preesm.ui.PreesmUIPlugin;
+import org.ietr.dftools.ui.PreesmUIPlugin;
 
 /**
  * This class provides a save as excel sheet wizard.

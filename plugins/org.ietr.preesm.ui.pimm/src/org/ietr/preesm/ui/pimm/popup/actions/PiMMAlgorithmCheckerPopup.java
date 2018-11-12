@@ -44,10 +44,10 @@ import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.viewers.TreeSelection;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.ui.IWorkbenchPage;
+import org.ietr.dftools.ui.PreesmUIPlugin;
 import org.ietr.preesm.experiment.model.pimm.PiGraph;
 import org.ietr.preesm.experiment.model.pimm.serialize.PiParser;
 import org.ietr.preesm.pimm.algorithm.checker.PiMMAlgorithmChecker;
-import org.ietr.preesm.ui.PreesmUIPlugin;
 
 /**
  * Class to launch a PiGraph check through pop-up menu.

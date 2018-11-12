@@ -42,7 +42,7 @@ import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.MultiStatus;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.jface.dialogs.ErrorDialog;
-import org.ietr.preesm.ui.PreesmUIPlugin;
+import org.ietr.dftools.ui.PreesmUIPlugin;
 
 /**
  *

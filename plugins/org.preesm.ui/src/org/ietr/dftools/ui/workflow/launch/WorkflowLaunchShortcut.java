@@ -62,7 +62,7 @@ import org.eclipse.swt.widgets.Shell;
 import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.dialogs.ElementListSelectionDialog;
 import org.eclipse.ui.part.FileEditorInput;
-import org.ietr.dftools.ui.Activator;
+import org.ietr.dftools.ui.PreesmUIPlugin;
 import org.ietr.dftools.ui.util.FileUtils;
 import org.ietr.dftools.ui.workflow.ScenarioConfiguration;
 import org.ietr.dftools.workflow.messages.WorkflowMessages;
@@ -243,7 +243,7 @@ public class WorkflowLaunchShortcut implements ILaunchShortcut {
    * @return the shell
    */
   private Shell getShell() {
-    return Activator.getDefault().getWorkbench().getActiveWorkbenchWindow().getShell();
+    return PreesmUIPlugin.getDefault().getWorkbench().getActiveWorkbenchWindow().getShell();
   }
 
   /**
