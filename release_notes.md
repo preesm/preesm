@@ -7,6 +7,7 @@ PREESM Changelog
 ### New Feature
 
 ### Changes
+* Merge DFTools code in Preesm;
 
 ### Bug fix
 
