@@ -7,9 +7,12 @@ PREESM Changelog
 ### New Feature
 
 ### Changes
-* Merge DFTools code in Preesm;
+* Merge DFTools code in Preesm and remove upstream dependency;
 * Improve periodic actor support in UI; 
 * Add periodic actor check (not working with cycles yet);
+* Improve Papify support: 
+  * implement 2D array for selecting event to monitor per actor;
+  * implement codegen for static schedules (no support in spider yet);
 
 ### Bug fix
 

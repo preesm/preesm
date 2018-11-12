@@ -16,7 +16,8 @@ Require-Bundle: org.eclipse.ui.console;bundle-version="3.5.100",
  org.eclipse.xtend.lib,
  org.apache.commons.io;bundle-version="2.2.0",
  net.sourceforge.jexcelapi.jxl;bundle-version="2.6.10",
- org.ietr.preesm.ui
+ org.ietr.preesm.ui,
+ org.ietr.preesm.core
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Bundle-ActivationPolicy: lazy
 Eclipse-BuddyPolicy: global

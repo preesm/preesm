@@ -58,9 +58,8 @@ import org.ietr.dftools.workflow.tools.WorkflowLogger;
 import org.ietr.preesm.core.scenario.ConstraintGroup;
 import org.ietr.preesm.core.scenario.PreesmScenario;
 import org.ietr.preesm.core.scenario.Timing;
-import org.ietr.preesm.core.scenario.papi.PapiComponent;
 import org.ietr.preesm.core.scenario.papi.PapiEvent;
-import org.ietr.preesm.core.scenario.papi.PapifyConfig;
+import org.ietr.preesm.core.scenario.papi.PapifyConfigActor;
 import org.ietr.preesm.core.scenario.papi.PapifyConfigManager;
 import org.ietr.preesm.experiment.model.pimm.AbstractActor;
 import org.ietr.preesm.experiment.model.pimm.Actor;
@@ -409,7 +408,7 @@ public class SpiderCodegen {
     final ArrayList<AbstractActor> papifiedActors = new ArrayList<>();
 
     for (final AbstractActor actor : this.functionMap.keySet()) {
-      PapifyConfig corePapifyConfigGroups = papifyConfigManager.getCorePapifyConfigGroups(actor.getName());
+      PapifyConfigActor corePapifyConfigGroups = papifyConfigManager.getCorePapifyConfigGroupActor(actor.getName());
       if (corePapifyConfigGroups != null) {
         papifiedActors.add(actor);
         if (!generatePapifyConfig(corePapifyConfigGroups, actor, uniqueEventSets, eventSetID)) {
@@ -454,10 +453,11 @@ public class SpiderCodegen {
    *          The current event set ID
    * @return true if the actor has the same event set as an existing one, false else
    */
-  private boolean generatePapifyConfig(final PapifyConfig corePapifyConfigGroups, final AbstractActor actor,
+  private boolean generatePapifyConfig(final PapifyConfigActor corePapifyConfigGroups, final AbstractActor actor,
       final HashMap<ArrayList<String>, Integer> uniqueEventSets, final Integer eventSetID) {
-    PapiComponent papiComponent = corePapifyConfigGroups.getPAPIComponent();
-    Set<PapiEvent> papiEvents = corePapifyConfigGroups.getPAPIEvents();
+    Map<String, Set<PapiEvent>> configInfo = corePapifyConfigGroups.getPAPIEvents();
+    // PapiComponent papiComponent = corePapifyConfigGroups.getPAPIComponent();
+    // Set<PapiEvent> papiEvents = corePapifyConfigGroups.getPAPIEvents();
 
     Set<PapiEvent> includedEvents = new LinkedHashSet<>();
     ArrayList<String> eventNames = new ArrayList<>();
@@ -467,13 +467,21 @@ public class SpiderCodegen {
 
     final PapiEvent timingEvent = new PapiEvent();
     timingEvent.setName("Timing");
-    for (PapiEvent event : papiEvents) {
-      if (event.getName().equals(timingEvent.getName())) {
-        timingMonitoring = true;
-      } else if (papiComponent.containsEvent(event)) {
-        includedEvents.add(event);
-        eventMonitoring = true;
-        eventNames.add(event.getName());
+    /*
+     * for (PapiEvent event : papiEvents) { if (event.getName().equals(timingEvent.getName())) { timingMonitoring =
+     * true; } else if (papiComponent.containsEvent(event)) { includedEvents.add(event); eventMonitoring = true;
+     * eventNames.add(event.getName()); } }
+     */
+    // DM changed this to avoid errors
+    for (String compName : configInfo.keySet()) {
+      for (PapiEvent event : configInfo.get(compName)) {
+        if (event.getName().equals(timingEvent.getName())) {
+          timingMonitoring = true;
+        } else {
+          includedEvents.add(event);
+          eventMonitoring = true;
+          eventNames.add(event.getName());
+        }
       }
     }
     // Check if this set of ID already exists
@@ -501,7 +509,9 @@ public class SpiderCodegen {
     append("\tPapifyConfig* config  = new PapifyConfig;\n\n");
     append("\t// Setting the PapifyConfig for actor: " + actor.getName() + "\n");
     append("\tconfig->peID_            = 0;\n");
-    append("\tconfig->peType_          = \"" + papiComponent.getId() + "\";\n");
+    // append("\tconfig->peType_ = \"" + papiComponent.getId() + "\";\n");
+    // DM changed this to avoid errors
+    append("\tconfig->peType_          = \"" + configInfo.keySet() + "\";\n");
     append("\tconfig->actorName_       = \"" + actor.getName() + "\";\n");
     append("\tconfig->eventSize_       = " + Integer.toString(eventNames.size()) + ";\n");
     append("\tconfig->eventSetID_      = " + realEventSetID.toString() + ";\n");

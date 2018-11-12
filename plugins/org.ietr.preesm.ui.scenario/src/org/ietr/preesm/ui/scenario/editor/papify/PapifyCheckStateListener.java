@@ -37,14 +37,16 @@
  */
 package org.ietr.preesm.ui.scenario.editor.papify;
 
+import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
-import java.util.List;
+import java.util.Map;
 import java.util.Set;
+import org.eclipse.emf.common.util.EList;
 import org.eclipse.jface.viewers.CheckStateChangedEvent;
 import org.eclipse.jface.viewers.CheckboxTableViewer;
 import org.eclipse.jface.viewers.CheckboxTreeViewer;
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.custom.BusyIndicator;
 import org.eclipse.swt.events.FocusEvent;
 import org.eclipse.swt.events.FocusListener;
 import org.eclipse.swt.events.PaintEvent;
@@ -56,21 +58,34 @@ import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.IPropertyListener;
 import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.ietr.dftools.algorithm.importer.InvalidModelException;
+import org.ietr.dftools.algorithm.model.IRefinement;
 import org.ietr.dftools.algorithm.model.sdf.SDFAbstractVertex;
 import org.ietr.dftools.algorithm.model.sdf.SDFGraph;
+import org.ietr.dftools.algorithm.model.sdf.SDFVertex;
 import org.ietr.preesm.core.scenario.PreesmScenario;
 import org.ietr.preesm.core.scenario.papi.PapiComponent;
 import org.ietr.preesm.core.scenario.papi.PapiEvent;
-import org.ietr.preesm.core.scenario.papi.PapifyConfig;
+import org.ietr.preesm.core.scenario.papi.PapiEventInfo;
+import org.ietr.preesm.core.scenario.papi.PapiEventModifier;
+import org.ietr.preesm.core.scenario.papi.PapiEventSet;
+import org.ietr.preesm.core.scenario.papi.PapifyConfigActor;
 import org.ietr.preesm.core.scenario.serialize.ScenarioParser;
 import org.ietr.preesm.experiment.model.pimm.AbstractActor;
+import org.ietr.preesm.experiment.model.pimm.Actor;
+import org.ietr.preesm.experiment.model.pimm.BroadcastActor;
 import org.ietr.preesm.experiment.model.pimm.DataInputInterface;
 import org.ietr.preesm.experiment.model.pimm.DataOutputInterface;
+import org.ietr.preesm.experiment.model.pimm.DelayActor;
+import org.ietr.preesm.experiment.model.pimm.ForkActor;
+import org.ietr.preesm.experiment.model.pimm.JoinActor;
 import org.ietr.preesm.experiment.model.pimm.PiGraph;
+import org.ietr.preesm.experiment.model.pimm.RoundBufferActor;
 import org.ietr.preesm.experiment.model.pimm.serialize.PiParser;
+import org.ietr.preesm.ui.scenario.editor.HierarchicalSDFVertex;
 import org.ietr.preesm.ui.scenario.editor.ISDFCheckStateListener;
 import org.ietr.preesm.ui.scenario.editor.Messages;
 import org.ietr.preesm.ui.scenario.editor.PreesmAlgorithmTreeContentProvider;
+import org.ietr.preesm.ui.scenario.editor.papify.PapifyEventListTreeElement.PAPIEventStatus;
 
 // TODO: Auto-generated Javadoc
 /**
@@ -85,22 +100,12 @@ public class PapifyCheckStateListener implements ISDFCheckStateListener {
   /** Currently edited scenario. */
   private PreesmScenario scenario = null;
 
-  /** Current operator. */
-  private String currentOpId = null;
-
-  /** Current composite (necessary to diplay busy status). */
-  private Composite container = null;
-
-  /** Tables used to set the checked status. */
-  private CheckboxTableViewer componentTableViewer = null;
-  private CheckboxTableViewer eventTableViewer     = null;
-
-  /** Content provider used to get the elements currently displayed. */
-  private PapifyComponentListContentProvider componentContentProvider = null;
-  private PapifyEventListContentProvider     eventContentProvider     = null;
-
   /** Constraints page used as a property listener to change the dirty state. */
   private IPropertyListener propertyListener = null;
+
+  private Set<PapifyEventListContentProvider2DMatrixES> editingSupports = new LinkedHashSet<>();
+
+  private Set<PapifyEventListTreeElement> elementList;
 
   /**
    * Instantiates a new constraints check state listener.
@@ -110,104 +115,254 @@ public class PapifyCheckStateListener implements ISDFCheckStateListener {
    */
   public PapifyCheckStateListener(final Composite container, final PreesmScenario scenario) {
     super();
-    this.container = container;
     this.scenario = scenario;
+    this.elementList = new LinkedHashSet<>();
+  }
+
+  /**
+   * Add a new element to the tree.
+   *
+   */
+  public void addEventListTreeElement(final PapifyEventListTreeElement element) {
+    if (!this.elementList.contains(element)) {
+      this.elementList.add(element);
+    }
+  }
+
+  /**
+   * Gets the Papi Component list.
+   *
+   * @return the Papi Component list
+   */
+  public Set<PapifyEventListTreeElement> getComponents() {
+    return this.elementList;
+  }
+
+  /**
+   * Clear the checkStateListener for the events table.
+   *
+   */
+  public void clearEvents() {
+    this.editingSupports = new LinkedHashSet<>();
+    this.elementList = new LinkedHashSet<>();
+  }
+
+  /**
+   * 
+   */
+  public void addEstatusSupport(PapifyEventListContentProvider2DMatrixES editingSupport) {
+    if (editingSupport != null) {
+      this.editingSupports.add(editingSupport);
+    }
+  }
+
+  /**
+   * 
+   */
+  public void removeEventfromActor(Object actorInstance, String eventName) {
+    // The timing event
+    PapiEvent timingEvent = new PapiEvent();
+    ArrayList<PapiEventModifier> modifTimingList = new ArrayList<>();
+    timingEvent.setName("Timing");
+    timingEvent.setDesciption("Event to time through PAPI_get_time()");
+    timingEvent.setIndex(9999);
+    timingEvent.setModifiers(modifTimingList);
+    boolean timing = false;
+
+    String actorPath = "";
+
+    if (actorInstance instanceof HierarchicalSDFVertex) {
+      actorPath = ((HierarchicalSDFVertex) actorInstance).getName();
+    } else if (actorInstance instanceof SDFGraph) {
+      actorPath = ((SDFGraph) actorInstance).getName();
+    } else if (actorInstance instanceof AbstractActor) {
+      actorPath = ((AbstractActor) actorInstance).getVertexPath();
+    }
+
+    if (!actorPath.equals("") && !eventName.equals("")) {
+
+      if (eventName.equals(timingEvent.getName())) {
+        timing = true;
+      }
+      PapifyConfigActor papiConfig = this.scenario.getPapifyConfigManager().getCorePapifyConfigGroupActor(actorPath);
+      PapiEventInfo papiData = this.scenario.getPapifyConfigManager().getPapifyData();
+      String compName = "";
+      PapiEvent event = null;
+      boolean found = false;
+      if (!timing) {
+        for (PapiComponent comp : papiData.getComponents()) {
+          for (PapiEventSet eventSet : comp.getEventSets()) {
+            for (PapiEvent eventAux : eventSet.getEvents()) {
+              if (eventAux.getModifiers().isEmpty() && eventAux.getName().equals(eventName)) {
+                compName = comp.getId();
+                event = eventAux;
+                found = true;
+                break;
+              }
+            }
+          }
+        }
+      } else {
+        found = true;
+        event = timingEvent;
+      }
+
+      Map<String, PAPIEventStatus> statuses = new LinkedHashMap<>();
+      for (PapifyEventListTreeElement treeElement : this.elementList) {
+        if (treeElement.actorPath.equals(actorPath)) {
+          statuses = treeElement.PAPIStatuses;
+          break;
+        }
+      }
+      if (found) {
+
+        if (!timing) {
+          papiConfig.removePAPIEvent(compName, event);
+        } else {
+          papiConfig.removePAPIEvent("Timing", event);
+        }
+        statuses.put(eventName, PAPIEventStatus.NO);
+        if (hasChildren(actorInstance)) {
+          final Set<String> actorPaths = getChildren(actorInstance);
+          for (String oneActorPath : actorPaths) {
+            for (PapifyEventListTreeElement treeElement : this.elementList) {
+              if (treeElement.actorPath.equals(oneActorPath)) {
+                treeElement.PAPIStatuses.put(eventName, PAPIEventStatus.NO);
+                papiConfig = this.scenario.getPapifyConfigManager().getCorePapifyConfigGroupActor(oneActorPath);
+                if (!timing) {
+                  papiConfig.removePAPIEvent(compName, event);
+                } else {
+                  papiConfig.removePAPIEvent("Timing", event);
+                }
+                break;
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+
+  /**
+   * 
+   */
+  public void addEventtoActor(Object actorInstance, String eventName) {
+    // The timing event
+    PapiEvent timingEvent = new PapiEvent();
+    ArrayList<PapiEventModifier> modifTimingList = new ArrayList<>();
+    timingEvent.setName("Timing");
+    timingEvent.setDesciption("Event to time through PAPI_get_time()");
+    timingEvent.setIndex(9999);
+    timingEvent.setModifiers(modifTimingList);
+    boolean timing = false;
+
+    String actorPath = "";
+
+    if (actorInstance instanceof HierarchicalSDFVertex) {
+      actorPath = ((HierarchicalSDFVertex) actorInstance).getName();
+    } else if (actorInstance instanceof SDFGraph) {
+      actorPath = ((SDFGraph) actorInstance).getName();
+    } else if (actorInstance instanceof AbstractActor) {
+      actorPath = ((AbstractActor) actorInstance).getVertexPath();
+    }
+
+    if (!actorPath.equals("") && !eventName.equals("")) {
+
+      if (eventName.equals(timingEvent.getName())) {
+        timing = true;
+      }
+      PapifyConfigActor papiConfig = this.scenario.getPapifyConfigManager().getCorePapifyConfigGroupActor(actorPath);
+      PapiEventInfo papiData = this.scenario.getPapifyConfigManager().getPapifyData();
+      String compName = "";
+      PapiEvent event = null;
+      boolean found = false;
+      if (!timing) {
+        for (PapiComponent comp : papiData.getComponents()) {
+          for (PapiEventSet eventSet : comp.getEventSets()) {
+            for (PapiEvent eventAux : eventSet.getEvents()) {
+              if (eventAux.getModifiers().isEmpty() && eventAux.getName().equals(eventName)) {
+                compName = comp.getId();
+                event = eventAux;
+                found = true;
+                break;
+              }
+            }
+          }
+        }
+      } else {
+        found = true;
+        event = timingEvent;
+      }
+
+      Map<String, PAPIEventStatus> statuses = new LinkedHashMap<>();
+      for (PapifyEventListTreeElement treeElement : this.elementList) {
+        if (treeElement.actorPath.equals(actorPath)) {
+          statuses = treeElement.PAPIStatuses;
+          break;
+        }
+      }
+      if (found) {
+
+        if (!timing) {
+          papiConfig.addPAPIEvent(compName, event);
+        } else {
+          papiConfig.addPAPIEvent("Timing", event);
+        }
+        statuses.put(eventName, PAPIEventStatus.YES);
+        if (hasChildren(actorInstance)) {
+          final Set<String> actorPaths = getChildren(actorInstance);
+          for (String oneActorPath : actorPaths) {
+            for (PapifyEventListTreeElement treeElement : this.elementList) {
+              if (treeElement.actorPath.equals(oneActorPath)) {
+                treeElement.PAPIStatuses.put(eventName, PAPIEventStatus.YES);
+                papiConfig = this.scenario.getPapifyConfigManager().getCorePapifyConfigGroupActor(oneActorPath);
+                if (!timing) {
+                  papiConfig.addPAPIEvent(compName, event);
+                } else {
+                  papiConfig.addPAPIEvent("Timing", event);
+                }
+                break;
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+
+  /**
+   * 
+   */
+  public void updateView(String event) {
+
+    for (PapifyEventListContentProvider2DMatrixES viewer : this.editingSupports) {
+      if (viewer.eventName.equals(event)) {
+        for (PapifyEventListTreeElement treeElement : this.elementList) {
+          viewer.getViewer().update(treeElement, null);
+        }
+        break;
+      }
+    }
   }
 
   /**
    * Sets the different necessary attributes.
    *
-   * @param tableViewer
-   *          the tree viewer
-   * @param contentProvider
-   *          the content provider
    * @param propertyListener
    *          the property listener
    */
-  public void setComponentTableViewer(final CheckboxTableViewer tableViewer,
-      final PapifyComponentListContentProvider contentProvider, final IPropertyListener propertyListener) {
-    this.componentTableViewer = tableViewer;
-    this.componentContentProvider = contentProvider;
+  public void setComponentTreeViewer(final IPropertyListener propertyListener) {
     this.propertyListener = propertyListener;
   }
 
   /**
    * Sets the different necessary attributes.
    *
-   * @param tableViewer
-   *          the tree viewer
-   * @param contentProvider
-   *          the content provider
    * @param propertyListener
    *          the property listener
    */
-  public void setEventTableViewer(final CheckboxTableViewer tableViewer,
-      final PapifyEventListContentProvider contentProvider, final IPropertyListener propertyListener) {
-    this.eventTableViewer = tableViewer;
-    this.eventContentProvider = contentProvider;
+  public void setEventTreeViewer(final IPropertyListener propertyListener) {
     this.propertyListener = propertyListener;
-  }
-
-  /**
-   * Fired when an element has been checked or unchecked.
-   *
-   * @param event
-   *          the event
-   */
-  @Override
-  public void checkStateChanged(final CheckStateChangedEvent event) {
-    final Object element = event.getElement();
-    final boolean isChecked = event.getChecked();
-
-    BusyIndicator.showWhile(this.container.getDisplay(), () -> {
-      if (element instanceof PapiComponent) {
-        final PapiComponent comp1 = (PapiComponent) element;
-        fireOnCheck(comp1, isChecked);
-        updateComponentCheck();
-      } else if (element instanceof PapiEvent) {
-        final PapiEvent event1 = (PapiEvent) element;
-        fireOnCheck(event1, isChecked);
-        updateEventCheck();
-
-      }
-    });
-    this.propertyListener.propertyChanged(this, IEditorPart.PROP_DIRTY);
-  }
-
-  /**
-   * Adds or remove a component depending on the isChecked status.
-   *
-   * @param comp
-   *          the new PAPI component
-   * @param isChecked
-   *          the is checked
-   */
-  private void fireOnCheck(final PapiComponent comp, final boolean isChecked) {
-    if (this.currentOpId != null) {
-      if (isChecked) {
-        this.scenario.getPapifyConfigManager().addComponent(this.currentOpId, comp);
-      } else {
-        this.scenario.getPapifyConfigManager().removeComponent(this.currentOpId, comp);
-      }
-    }
-  }
-
-  /**
-   * Fire on check.
-   *
-   * @param event
-   *          the Papi event
-   * @param isChecked
-   *          the is checked
-   */
-  private void fireOnCheck(final PapiEvent event, final boolean isChecked) {
-    if (this.currentOpId != null) {
-      if (isChecked) {
-        this.scenario.getPapifyConfigManager().addEvent(this.currentOpId, event);
-      } else {
-        this.scenario.getPapifyConfigManager().removeEvent(this.currentOpId, event);
-      }
-    }
   }
 
   /*
@@ -219,64 +374,6 @@ public class PapifyCheckStateListener implements ISDFCheckStateListener {
   public void widgetDefaultSelected(final SelectionEvent e) {
     // TODO Auto-generated method stub
 
-  }
-
-  /**
-   * Core combo box listener that selects the current core.
-   *
-   * @param e
-   *          the e
-   */
-  @Override
-  public void widgetSelected(final SelectionEvent e) {
-    if (e.getSource() instanceof Combo) {
-      final Combo combo = ((Combo) e.getSource());
-      final String item = combo.getItem(combo.getSelectionIndex());
-
-      this.currentOpId = item.replace('/', '_');
-      updateComponentCheck();
-      updateEventCheck();
-    }
-
-  }
-
-  /**
-   * Update the check status of both the tables.
-   */
-  public void updateComponentCheck() {
-    if (this.scenario != null) {
-      final List<PapiComponent> papiComponents = this.componentContentProvider.getComponents();
-      final Set<PapiComponent> pcgSet = new LinkedHashSet<>();
-
-      if ((this.currentOpId != null) && (papiComponents != null)) {
-        final PapifyConfig pcgSetRead = this.scenario.getPapifyConfigManager()
-            .getCorePapifyConfigGroups(this.currentOpId);
-        if ((pcgSetRead != null) && (pcgSetRead.getPAPIComponent() != null)) {
-          pcgSet.add(pcgSetRead.getPAPIComponent());
-        }
-        this.componentTableViewer.setCheckedElements(pcgSet.toArray());
-      }
-    }
-  }
-
-  /**
-   * Update the check status of event table.
-   */
-  public void updateEventCheck() {
-    if (this.scenario != null) {
-      final List<PapiEvent> papiEvents = this.eventContentProvider.getEvents();
-      Set<PapiEvent> pegSetfinal = new LinkedHashSet<>();
-
-      if ((this.currentOpId != null) && (papiEvents != null)) {
-        final PapifyConfig pegSetRead = this.scenario.getPapifyConfigManager()
-            .getCorePapifyConfigGroups(this.currentOpId);
-        if ((pegSetRead != null) && !pegSetRead.getPAPIEvents().isEmpty()) {
-          pegSetfinal = pegSetRead.getPAPIEvents();
-        }
-
-        this.eventTableViewer.setCheckedElements(pegSetfinal.toArray());
-      }
-    }
   }
 
   /**
@@ -349,16 +446,144 @@ public class PapifyCheckStateListener implements ISDFCheckStateListener {
     }
   }
 
-  /*
-   * (non-Javadoc)
-   *
-   * @see org.eclipse.swt.events.PaintListener#paintControl(org.eclipse.swt.events.PaintEvent)
+  /**
+   * 
    */
-  @Override
-  public void paintControl(final PaintEvent e) {
-    updateComponentCheck();
-    updateEventCheck();
+  public void updateEvents() {
 
+    Set<PapifyConfigActor> papiConfigs = this.scenario.getPapifyConfigManager().getPapifyConfigGroupsActors();
+
+    for (PapifyConfigActor papiConfig : papiConfigs) {
+      String actorPath = papiConfig.getActorPath();
+      Map<String, Set<PapiEvent>> actorEventMap = papiConfig.getPAPIEvents();
+
+      for (PapifyEventListTreeElement treeElement : this.elementList) {
+        if (treeElement.actorPath.equals(actorPath)) {
+          for (String comp : actorEventMap.keySet()) {
+            for (PapiEvent oneEvent : actorEventMap.get(comp)) {
+              treeElement.PAPIStatuses.put(oneEvent.getName(), PAPIEventStatus.YES);
+              updateView(oneEvent.getName());
+            }
+          }
+          break;
+        }
+      }
+    }
+  }
+
+  /**
+   * 
+   */
+  public boolean hasChildren(Object actorInstance) {
+    boolean hasChildren = false;
+    if (this.scenario.isIBSDFScenario()) {
+      if (actorInstance instanceof SDFGraph) {
+        final SDFGraph graph = (SDFGraph) actorInstance;
+        hasChildren = !graph.vertexSet().isEmpty();
+      } else if (actorInstance instanceof HierarchicalSDFVertex) {
+        final SDFAbstractVertex sdfVertex = ((HierarchicalSDFVertex) actorInstance).getStoredVertex();
+        if (sdfVertex instanceof SDFVertex) {
+          final SDFVertex vertex = (SDFVertex) sdfVertex;
+          hasChildren = vertex.getRefinement() != null;
+        }
+      }
+    } else if (this.scenario.isPISDFScenario()) {
+      if (actorInstance instanceof PiGraph) {
+        final PiGraph graph = (PiGraph) actorInstance;
+        hasChildren = !graph.getActors().isEmpty();
+      } else if (actorInstance instanceof Actor) {
+        final Actor actor = (Actor) actorInstance;
+        hasChildren = actor.getRefinement() != null;
+      }
+    }
+    return hasChildren;
+  }
+
+  /**
+   * 
+   */
+  public Set<String> getChildren(final Object parentElement) {
+    Set<String> table = new LinkedHashSet<>();
+    if (this.scenario.isIBSDFScenario()) {
+      if (parentElement instanceof SDFGraph) {
+        final SDFGraph graph = (SDFGraph) parentElement;
+
+        // Some types of vertices are ignored in the constraints view
+        table.addAll(filterIBSDFChildren(graph.vertexSet()));
+      } else if (parentElement instanceof HierarchicalSDFVertex) {
+        final HierarchicalSDFVertex vertex = (HierarchicalSDFVertex) parentElement;
+        final IRefinement refinement = vertex.getStoredVertex().getRefinement();
+
+        if ((refinement != null) && (refinement instanceof SDFGraph)) {
+          final SDFGraph graph = (SDFGraph) refinement;
+          table.addAll(filterIBSDFChildren(graph.vertexSet()));
+        }
+      }
+    } else if (this.scenario.isPISDFScenario()) {
+      if (parentElement instanceof PiGraph) {
+        final PiGraph graph = (PiGraph) parentElement;
+        // Some types of vertices are ignored in the constraints view
+        table.addAll(filterPISDFChildren(graph.getAllActors()));
+      } else if (parentElement instanceof Actor) {
+        final Actor actor = (Actor) parentElement;
+        if (actor.isHierarchical()) {
+          final PiGraph subGraph = actor.getSubGraph();
+          table.addAll(filterPISDFChildren(subGraph.getActors()));
+        }
+      }
+    }
+
+    return table;
+  }
+
+  /**
+   * Filters the children to display in the tree.
+   *
+   * @param vertices
+   *          the vertices
+   * @return the sets the
+   */
+  public Set<String> filterPISDFChildren(final EList<AbstractActor> vertices) {
+    final Set<String> actorPaths = new LinkedHashSet<>();
+    for (final AbstractActor actor : vertices) {
+      // TODO: Filter if needed
+      if (!(actor instanceof DataInputInterface) && !(actor instanceof DataOutputInterface)
+          && !(actor instanceof BroadcastActor) && !(actor instanceof JoinActor) && !(actor instanceof ForkActor)
+          && !(actor instanceof RoundBufferActor) && !(actor instanceof DelayActor)) {
+        final String elementActor = actor.getVertexPath();
+        actorPaths.add(elementActor);
+
+      }
+    }
+    return actorPaths;
+  }
+
+  /**
+   * Filter IBSDF children.
+   *
+   * @param children
+   *          the children
+   * @return the sets the
+   */
+  public Set<String> filterIBSDFChildren(final Set<SDFAbstractVertex> children) {
+
+    final Set<String> actorPaths = new LinkedHashSet<>();
+
+    for (final SDFAbstractVertex v : children) {
+      if (v.getKind().equalsIgnoreCase("vertex")) {
+        actorPaths.add(v.getName());
+      }
+    }
+
+    return actorPaths;
+  }
+
+  /**
+   *
+   **/
+
+  public void setPropDirty() {
+    this.propertyListener.propertyChanged(this, IEditorPart.PROP_DIRTY);
   }
 
   public void setTableViewer(final CheckboxTableViewer tableviewer,
@@ -370,6 +595,24 @@ public class PapifyCheckStateListener implements ISDFCheckStateListener {
   @Override
   public void setTreeViewer(final CheckboxTreeViewer treeViewer,
       final PreesmAlgorithmTreeContentProvider contentProvider, final IPropertyListener propertyListener) {
+    // TODO Auto-generated method stub
+
+  }
+
+  @Override
+  public void widgetSelected(SelectionEvent e) {
+    // TODO Auto-generated method stub
+
+  }
+
+  @Override
+  public void checkStateChanged(CheckStateChangedEvent event) {
+    // TODO Auto-generated method stub
+
+  }
+
+  @Override
+  public void paintControl(PaintEvent e) {
     // TODO Auto-generated method stub
 
   }

@@ -44,35 +44,35 @@ import java.util.Set;
  *
  * @author dmadronal
  */
-public class PapifyConfig {
+public class PapifyConfigPE {
 
-  /** The core instance. */
-  private String coreId;
+  /** The peType instance. */
+  private String peType;
 
-  /** The PAPI component associated to the core instance. */
-  private PapiComponent PAPIComponent;
+  /** The PAPI component(s) associated with the core instance. */
+  private Set<PapiComponent> PAPIComponents;
 
-  /** The set of events that are going to be monitored. */
-  private final Set<PapiEvent> PAPIEvents;
+  /** The PAPI component(s) ID(s) associated with the core instance. */
+  private Set<String> PAPIComponentIDs;
 
   /**
    * Instantiates a new PapifyConfig group.
    */
-  public PapifyConfig() {
-    this.coreId = "";
-    this.PAPIComponent = null;
-    this.PAPIEvents = new LinkedHashSet<>();
+  public PapifyConfigPE(final String peType) {
+    this.peType = peType;
+    this.PAPIComponents = new LinkedHashSet<>();
+    this.PAPIComponentIDs = new LinkedHashSet<>();
 
   }
 
   /**
-   * Adds the coreId.
+   * Adds the peType.
    *
-   * @param coreId
+   * @param peType
    *          the core instance
    */
-  public void addCoreId(final String coreId) {
-    this.coreId = coreId;
+  public void addpeType(final String peType) {
+    this.peType = peType;
 
   }
 
@@ -83,31 +83,33 @@ public class PapifyConfig {
    *          the PAPI component
    */
   public void addPAPIComponent(final PapiComponent component) {
-    this.PAPIComponent = component;
+    this.PAPIComponents.add(component);
+    this.PAPIComponentIDs.add(component.getId());
 
   }
 
   /**
-   * Adding an event
+   * Adds the PAPI components.
    *
-   * @param event
-   *          the PAPI event
+   * @param components
+   *          the PAPI components
    */
-  public void addPAPIEvent(final PapiEvent event) {
-    if (!this.PAPIEvents.contains(event)) {
-      this.PAPIEvents.add(event);
+  public void addPAPIComponents(final Set<PapiComponent> components) {
+    for (final PapiComponent component : components) {
+      this.PAPIComponents.add(component);
+      this.PAPIComponentIDs.add(component.getId());
     }
   }
 
   /**
-   * Removes the coreId.
+   * Removes the peType.
    *
-   * @param coreId
-   *          the coreId
+   * @param peType
+   *          the peType
    */
-  public void removeCoreId(final String coreId) {
-    if (coreId.equals(this.coreId)) {
-      this.coreId = "";
+  public void removepeType(final String peType) {
+    if (peType.equals(this.peType)) {
+      this.peType = "";
     }
   }
 
@@ -118,21 +120,8 @@ public class PapifyConfig {
    *          the PAPI component
    */
   public void removePAPIComponent(final PapiComponent component) {
-    if (component.equals(this.PAPIComponent)) {
-      this.PAPIComponent = null;
-    }
-  }
-
-  /**
-   * Removes an event.
-   *
-   * @param event
-   *          the PAPI event
-   */
-  public void removePAPIEvent(final PapiEvent event) {
-    if (this.PAPIEvents.contains(event)) {
-      this.PAPIEvents.remove(event);
-    }
+    this.PAPIComponents.remove(component);
+    this.PAPIComponentIDs.remove(component.getId());
   }
 
   /**
@@ -140,42 +129,38 @@ public class PapifyConfig {
    *
    * @return the Core id
    */
-  public String getCoreId() {
-    return (this.coreId);
+  public String getpeType() {
+    return (this.peType);
   }
 
   /**
-   * Gets the PAPI component.
+   * Gets the PAPI components.
    *
-   * @return the PAPI component
+   * @return the PAPI components
    */
-  public PapiComponent getPAPIComponent() {
-    return (this.PAPIComponent);
+  public Set<PapiComponent> getPAPIComponents() {
+    return (this.PAPIComponents);
   }
 
   /**
-   * Gets the PAPI events.
+   * Gets the PAPI component IDs.
    *
-   * @return the PAPI events
+   * @return the PAPI component IDs
    */
-  public Set<PapiEvent> getPAPIEvents() {
-    return new LinkedHashSet<>(this.PAPIEvents);
+  public Set<String> getPAPIComponentIDs() {
+    return (this.PAPIComponentIDs);
   }
 
   /**
    * Checks for Core id.
    *
-   * @param coreId
+   * @param peType
    *          the PAPI component
    * @return true, if successful
    */
-  public boolean isCoreId(final String coreId) {
+  public boolean ispeType(final String peType) {
 
-    if (coreId.equals(this.coreId)) {
-      return true;
-    }
-
-    return false;
+    return peType.equals(this.peType);
   }
 
   /**
@@ -185,28 +170,10 @@ public class PapifyConfig {
    *          the PAPI component
    * @return true, if successful
    */
-  public boolean isPAPIComponent(final PapiComponent component) {
+  public boolean containsPAPIComponent(final PapiComponent component) {
 
-    if (component.equals(this.PAPIComponent)) {
+    if (this.PAPIComponents.contains(component)) {
       return true;
-    }
-
-    return false;
-  }
-
-  /**
-   * Checks for PAPI events.
-   *
-   * @param event
-   *          the PAPI event
-   * @return true, if successful
-   */
-  public boolean hasPapiEvent(final PapiEvent event) {
-
-    for (final PapiEvent eventTest : this.PAPIEvents) {
-      if (eventTest.equals(event)) {
-        return true;
-      }
     }
 
     return false;
@@ -220,11 +187,9 @@ public class PapifyConfig {
   @Override
   public String toString() {
     String s = "<Printing core> \n";
-    s += this.coreId.toString();
+    s += this.peType.toString();
     s += "\n<Printing component> \n";
-    s += this.PAPIComponent.toString();
-    s += "\n<Printing events> \n";
-    s += this.PAPIEvents.toString();
+    s += this.PAPIComponents.toString();
     s += "<end printing>\n";
 
     return s;

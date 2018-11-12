@@ -682,7 +682,7 @@ public class CodegenModelGenerator {
             operatorBlock.getLoopBlock().getCodeElts().add(functionCallPapifyStop);
           }
           // Generate Papify writing function
-          final FunctionCall functionCallPapifyWriting = generatePapifyWritingFunctionCall(dagVertex);
+          final FunctionCall functionCallPapifyWriting = generatePapifyWritingFunctionCall(dagVertex, operatorBlock);
           // Add the Papify writing function to the loop
           operatorBlock.getLoopBlock().getCodeElts().add(functionCallPapifyWriting);
         }
@@ -1418,12 +1418,25 @@ public class CodegenModelGenerator {
     // Create the variable associated to the PE name
     ConstantString papifyPEName = CodegenFactory.eINSTANCE.createConstantString();
     papifyPEName.setValue(operatorBlock.getName());
+    // Create the variable associated to the PAPI component
+    String compsSupported = "";
+    ConstantString papifyComponentName = CodegenFactory.eINSTANCE.createConstantString();
+    for (String compType : this.getScenario().getPapifyConfigManager()
+        .getCorePapifyConfigGroupPE(operatorBlock.getCoreType()).getPAPIComponentIDs()) {
+      if (compsSupported.equals("")) {
+        compsSupported = compType;
+      } else {
+        compsSupported = compsSupported.concat(",").concat(compType);
+      }
+    }
+    papifyComponentName.setValue(compsSupported);
     // Create the variable associated to the PE id
     Constant papifyPEId = CodegenFactory.eINSTANCE.createConstant();
     papifyPEId.setName(PAPIFY_PE_ID_CONSTANT_NAME);
     papifyPEId.setValue(this.papifiedPEs.indexOf(operatorBlock.getName()));
     // Add the function parameters
     configurePapifyPE.addParameter(papifyPEName, PortDirection.INPUT);
+    configurePapifyPE.addParameter(papifyComponentName, PortDirection.INPUT);
     configurePapifyPE.addParameter(papifyPEId, PortDirection.INPUT);
     // Add the function comment
     configurePapifyPE.setActorName("Papify --> configure papification of ".concat(operatorBlock.getName()));
@@ -1454,6 +1467,8 @@ public class CodegenModelGenerator {
     func.addParameter((Variable) dagVertex.getPropertyBean().getValue(PapifyEngine.PAPIFY_EVENTSET_NAMES),
         PortDirection.INPUT);
     func.addParameter((Variable) dagVertex.getPropertyBean().getValue(PapifyEngine.PAPIFY_CONFIG_NUMBER),
+        PortDirection.INPUT);
+    func.addParameter((Variable) dagVertex.getPropertyBean().getValue(PapifyEngine.PAPIFY_COUNTER_CONFIGS),
         PortDirection.INPUT);
     // Add the function comment
     func.setActorName("Papify --> configure papification of ".concat(dagVertex.getName()));
@@ -1567,13 +1582,18 @@ public class CodegenModelGenerator {
    *          the {@link DAGVertex} corresponding to the {@link FunctionCall}.
    * @return The {@link FunctionCall} corresponding to the {@link DAGVertex actor} firing.
    */
-  protected FunctionCall generatePapifyWritingFunctionCall(final DAGVertex dagVertex) {
+  protected FunctionCall generatePapifyWritingFunctionCall(final DAGVertex dagVertex, final CoreBlock operatorBlock) {
     // Create the corresponding FunctionCall
     final FunctionCall func = CodegenFactory.eINSTANCE.createFunctionCall();
     func.setName("event_write_file");
+    // Create the variable associated to the PE id
+    Constant papifyPEId = CodegenFactory.eINSTANCE.createConstant();
+    papifyPEId.setName(PAPIFY_PE_ID_CONSTANT_NAME);
+    papifyPEId.setValue(this.papifiedPEs.indexOf(operatorBlock.getName()));
     // Add the function parameters
     func.addParameter((Variable) dagVertex.getPropertyBean().getValue(PapifyEngine.PAPIFY_ACTION_NAME),
         PortDirection.INPUT);
+    func.addParameter(papifyPEId, PortDirection.INPUT);
     // Add the function actor name
     func.setActorName(dagVertex.getName());
     return func;
