@@ -632,7 +632,6 @@ Version 1.0 dated 2006-09-05.]]>
       <!-- IETR dependencies -->
       <import feature="org.ietr.externaldeps.aio.deps" version="3.3.0" match="compatible"/>
       <import feature="org.ietr.graphiti.feature" version="1.11.0" match="compatible"/>
-      <import feature="org.ietr.dftools.feature" version="2.0.0" match="compatible"/>
       <!--
 		If building along with Graphiti and/or DFTools source (without Preesm Meta
 		Dev Feature), the following features are not available. That is because the
@@ -640,7 +639,6 @@ Version 1.0 dated 2006-09-05.]]>
 		Please do not discard them.
 		-->
       <import feature="org.ietr.graphiti.feature.source"/>
-      <import feature="org.ietr.dftools.feature.source"/>
    </requires>
 
 </feature>

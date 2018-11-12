@@ -43,7 +43,7 @@
 
 <plugin>
    <extension
-         point="org.ietr.dftools.workflow.tasks">
+         point="org.preesm.workflow.tasks">
       <task
             id="org.ietr.preesm.pimm.algorithm.spider.codegen.SpiderCodegenTask"
             name="Spider Codegen from PiMM Models Task"

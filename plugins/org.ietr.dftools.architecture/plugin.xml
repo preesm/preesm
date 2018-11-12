@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.0"?>
+
+<!--
+-->
+
+<plugin>
+
+   <extension point="org.eclipse.emf.ecore.generated_package">
+      <!-- @generated Component -->
+      <package
+            uri="http://org.ietr.preesm/architecture/slam/component"
+            class="org.ietr.dftools.architecture.slam.component.ComponentPackage"/>
+   </extension>
+
+   <extension point="org.eclipse.emf.ecore.generated_package">
+      <!-- @generated Slam -->
+      <package
+            uri="http://org.ietr.preesm/architecture/slam"
+            class="org.ietr.dftools.architecture.slam.SlamPackage"/>
+   </extension>
+
+   <extension point="org.eclipse.emf.ecore.generated_package">
+      <!-- @generated Link -->
+      <package
+            uri="http://org.ietr.preesm/architecture/slam/link"
+            class="org.ietr.dftools.architecture.slam.link.LinkPackage"/>
+   </extension>
+
+   <extension point="org.eclipse.emf.ecore.generated_package">
+      <!-- @generated Attributes -->
+      <package
+            uri="http://org.ietr.preesm/architecture/slam/attributes"
+            class="org.ietr.dftools.architecture.slam.attributes.AttributesPackage"/>
+   </extension>
+
+</plugin>

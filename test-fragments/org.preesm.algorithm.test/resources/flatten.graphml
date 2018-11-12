@@ -1,0 +1,541 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<graphml xmlns="http://graphml.graphdrawing.org/xmlns">
+    <key attr.name="parameters" for="graph" id="parameters"/>
+    <key attr.name="variables" for="graph" id="variables"/>
+    <key attr.name="arguments" for="node" id="arguments"/>
+    <key attr.name="name" attr.type="string" for="graph"/>
+    <key attr.name="kind" attr.type="string" for="graph"/>
+    <key attr.name="graph_desc" attr.type="string" for="node"/>
+    <key attr.name="name" attr.type="string" for="node"/>
+    <key attr.name="kind" attr.type="string" for="node"/>
+    <key attr.name="nbRepeat" attr.type="int" for="node"/>
+    <key attr.name="edge_cons" attr.type="string" for="edge"/>
+    <key attr.name="edge_delay" attr.type="string" for="edge"/>
+    <key attr.name="edge_prod" attr.type="string" for="edge"/>
+    <key attr.name="data_type" attr.type="string" for="edge"/>
+    <key attr.name="source_port_modifier" attr.type="string" for="edge"/>
+    <key attr.name="target_port_modifier" attr.type="string" for="edge"/>
+    <key attr.name="Weight" attr.type="string" for="edge"/>
+    <graph edgedefault="directed" kind="sdf">
+        <data key="name">top</data>
+        <data key="kind">sdf</data>
+        <data key="variables">
+            <variable name="width" value="360"/>
+            <variable name="height" value="202"/>
+            <variable name="id" value="0"/>
+            <variable name="border" value="100"/>
+            <variable name="displayWidth" value="560"/>
+            <variable name="displayHeight" value="402"/>
+            <variable name="displaySize" value="225120"/>
+            <variable name="blockWidth" value="32"/>
+            <variable name="blockHeight" value="32"/>
+            <variable name="maxDeltaY" value="21"/>
+            <variable name="maxDeltaX" value="38"/>
+            <variable name="nbVectors" value="66"/>
+            <variable name="Stabilization_height" value="202"/>
+            <variable name="Stabilization_displayHeight" value="402"/>
+            <variable name="Stabilization_border" value="100"/>
+            <variable name="Stabilization_width" value="360"/>
+            <variable name="Stabilization_displayWidth" value="560"/>
+            <variable name="ComputeBlockMotionVectorss_blockWidth" value="32"/>
+            <variable name="ComputeBlockMotionVectorss_maxDeltaX" value="38"/>
+            <variable name="ComputeBlockMotionVectorss_width" value="360"/>
+            <variable name="ComputeBlockMotionVectorss_blockHeight" value="32"/>
+            <variable name="ComputeBlockMotionVectorss_maxDeltaY" value="21"/>
+            <variable name="ComputeBlockMotionVectorss_height" value="202"/>
+            <variable name="ComputeBlockMotionVectorss_nbVectors" value="66"/>
+        </data>
+        <node id="ReadYUV">
+            <data key="graph_desc">org.ietr.preesm.codegen.idl.ActorPrototypes@4db57138</data>
+            <data key="name">ReadYUV</data>
+            <data key="kind">vertex</data>
+            <data key="nbRepeat">1</data>
+            <data key="arguments">
+                <argument name="width" value="width"/>
+                <argument name="height" value="height"/>
+            </data>
+        </node>
+        <node id="DisplayYUV">
+            <data key="graph_desc">org.ietr.preesm.codegen.idl.ActorPrototypes@1107b339</data>
+            <data key="name">DisplayYUV</data>
+            <data key="kind">vertex</data>
+            <data key="nbRepeat">1</data>
+            <data key="arguments">
+                <argument name="id" value="id"/>
+                <argument name="height" value="displayHeight"/>
+                <argument name="width" value="displayWidth"/>
+                <argument name="border" value="border"/>
+            </data>
+        </node>
+        <node id="MD5">
+            <data key="graph_desc">org.ietr.preesm.codegen.idl.ActorPrototypes@7a8f2c51</data>
+            <data key="name">MD5</data>
+            <data key="kind">vertex</data>
+            <data key="nbRepeat">1</data>
+            <data key="arguments">
+                <argument name="size" value="displaySize"/>
+            </data>
+        </node>
+        <node id="DuplicateY">
+            <data key="name">DuplicateY</data>
+            <data key="kind">Broadcast</data>
+            <data key="nbRepeat">1</data>
+            <data key="arguments"/>
+        </node>
+        <node id="WriteYUV">
+            <data key="graph_desc">org.ietr.preesm.codegen.idl.ActorPrototypes@33844df4</data>
+            <data key="name">WriteYUV</data>
+            <data key="kind">vertex</data>
+            <data key="nbRepeat">1</data>
+            <data key="arguments">
+                <argument name="width" value="displayWidth"/>
+                <argument name="height" value="displayHeight"/>
+            </data>
+        </node>
+        <node id="DuplicateU">
+            <data key="name">DuplicateU</data>
+            <data key="kind">Broadcast</data>
+            <data key="nbRepeat">1</data>
+            <data key="arguments"/>
+        </node>
+        <node id="DuplicateV">
+            <data key="name">DuplicateV</data>
+            <data key="kind">Broadcast</data>
+            <data key="nbRepeat">1</data>
+            <data key="arguments"/>
+        </node>
+        <node id="Stabilization_DuplicateFrame">
+            <data key="name">Stabilization_DuplicateFrame</data>
+            <data key="kind">Broadcast</data>
+            <data key="nbRepeat">1</data>
+            <data key="arguments"/>
+        </node>
+        <node id="Stabilization_FindDominatingMotion">
+            <data key="graph_desc">org.ietr.preesm.codegen.idl.ActorPrototypes@555ed60d</data>
+            <data key="name">Stabilization_FindDominatingMotion</data>
+            <data key="kind">vertex</data>
+            <data key="nbRepeat">1</data>
+            <data key="arguments">
+                <argument name="nbVectors" value="nbVectors"/>
+                <argument name="width" value="Stabilization_width"/>
+                <argument name="height" value="Stabilization_height"/>
+            </data>
+        </node>
+        <node id="Stabilization_renderFrame">
+            <data key="graph_desc">org.ietr.preesm.codegen.idl.ActorPrototypes@79ec39e4</data>
+            <data key="name">Stabilization_renderFrame</data>
+            <data key="kind">vertex</data>
+            <data key="nbRepeat">1</data>
+            <data key="arguments">
+                <argument name="frameWidth" value="Stabilization_width"/>
+                <argument name="frameHeight" value="Stabilization_height"/>
+                <argument name="dispWidth" value="Stabilization_displayWidth"/>
+                <argument name="dispHeight" value="Stabilization_displayHeight"/>
+            </data>
+        </node>
+        <node id="Stabilization_AccumulateMotion">
+            <data key="graph_desc">org.ietr.preesm.codegen.idl.ActorPrototypes@7a027f2c</data>
+            <data key="name">Stabilization_AccumulateMotion</data>
+            <data key="kind">vertex</data>
+            <data key="nbRepeat">1</data>
+            <data key="arguments"/>
+        </node>
+        <node id="Stabilization_DuplicateAccumulatedMotion">
+            <data key="name">Stabilization_DuplicateAccumulatedMotion</data>
+            <data key="kind">Broadcast</data>
+            <data key="nbRepeat">1</data>
+            <data key="arguments"/>
+        </node>
+        <node id="Stabilization_BrY">
+            <data key="name">Stabilization_BrY</data>
+            <data key="kind">Broadcast</data>
+            <data key="nbRepeat">1</data>
+            <data key="arguments"/>
+        </node>
+        <node id="Stabilization_BrU">
+            <data key="name">Stabilization_BrU</data>
+            <data key="kind">Broadcast</data>
+            <data key="nbRepeat">1</data>
+            <data key="arguments"/>
+        </node>
+        <node id="Stabilization_BrV">
+            <data key="name">Stabilization_BrV</data>
+            <data key="kind">Broadcast</data>
+            <data key="nbRepeat">1</data>
+            <data key="arguments"/>
+        </node>
+        <node id="Stabilization_brFilteredMotion">
+            <data key="name">Stabilization_brFilteredMotion</data>
+            <data key="kind">Broadcast</data>
+            <data key="nbRepeat">1</data>
+            <data key="arguments"/>
+        </node>
+        <node id="Stabilization_ComputeBlockMotionVectorss_DivideBlocks">
+            <data key="graph_desc">org.ietr.preesm.codegen.idl.ActorPrototypes@6b787675</data>
+            <data key="name">Stabilization_ComputeBlockMotionVectorss_DivideBlocks</data>
+            <data key="kind">vertex</data>
+            <data key="nbRepeat">1</data>
+            <data key="arguments">
+                <argument name="width" value="ComputeBlockMotionVectorss_width"/>
+                <argument name="height" value="ComputeBlockMotionVectorss_height"/>
+                <argument name="blockWidth" value="ComputeBlockMotionVectorss_blockWidth"/>
+                <argument name="blockHeight" value="ComputeBlockMotionVectorss_blockHeight"/>
+                <argument name="nbVectors" value="ComputeBlockMotionVectorss_nbVectors"/>
+            </data>
+        </node>
+        <node id="Stabilization_ComputeBlockMotionVectorss_ComputeBlockMotionVector">
+            <data key="graph_desc">org.ietr.preesm.codegen.idl.ActorPrototypes@48353ba9</data>
+            <data key="name">Stabilization_ComputeBlockMotionVectorss_ComputeBlockMotionVector</data>
+            <data key="kind">vertex</data>
+            <data key="nbRepeat">66</data>
+            <data key="arguments">
+                <argument name="width" value="ComputeBlockMotionVectorss_width"/>
+                <argument name="height" value="ComputeBlockMotionVectorss_height"/>
+                <argument name="blockWidth" value="ComputeBlockMotionVectorss_blockWidth"/>
+                <argument name="blockHeight" value="ComputeBlockMotionVectorss_blockHeight"/>
+                <argument name="maxDeltaX" value="ComputeBlockMotionVectorss_maxDeltaX"/>
+                <argument name="maxDeltaY" value="ComputeBlockMotionVectorss_maxDeltaY"/>
+            </data>
+        </node>
+        <node id="Stabilization_ComputeBlockMotionVectorss_DuplicatePreviousFrame">
+            <data key="name">Stabilization_ComputeBlockMotionVectorss_DuplicatePreviousFrame</data>
+            <data key="kind">Broadcast</data>
+            <data key="nbRepeat">1</data>
+            <data key="arguments"/>
+        </node>
+        <edge source="DuplicateY" sourceport="out_0" target="DisplayYUV" targetport="y">
+            <data key="edge_cons">225120</data>
+            <data key="edge_delay">0</data>
+            <data key="edge_prod">225120</data>
+            <data key="data_type">uchar</data>
+            <data key="source_port_modifier"/>
+            <data key="target_port_modifier">read_only</data>
+            <data key="Weight"/>
+        </edge>
+        <edge source="DuplicateY" sourceport="out_1" target="MD5" targetport="data">
+            <data key="edge_cons">225120</data>
+            <data key="edge_delay">0</data>
+            <data key="edge_prod">225120</data>
+            <data key="data_type">uchar</data>
+            <data key="source_port_modifier"/>
+            <data key="target_port_modifier">read_only</data>
+            <data key="Weight"/>
+        </edge>
+        <edge source="DuplicateY" sourceport="out_2" target="WriteYUV" targetport="y">
+            <data key="edge_cons">225120</data>
+            <data key="edge_delay">0</data>
+            <data key="edge_prod">225120</data>
+            <data key="data_type">uchar</data>
+            <data key="source_port_modifier"/>
+            <data key="target_port_modifier">read_only</data>
+            <data key="Weight"/>
+        </edge>
+        <edge source="DuplicateU" sourceport="out_0" target="DisplayYUV" targetport="u">
+            <data key="edge_cons">56280</data>
+            <data key="edge_delay">0</data>
+            <data key="edge_prod">56280</data>
+            <data key="data_type">uchar</data>
+            <data key="source_port_modifier"/>
+            <data key="target_port_modifier">read_only</data>
+            <data key="Weight"/>
+        </edge>
+        <edge source="DuplicateU" sourceport="out_1" target="WriteYUV" targetport="u">
+            <data key="edge_cons">56280</data>
+            <data key="edge_delay">0</data>
+            <data key="edge_prod">56280</data>
+            <data key="data_type">uchar</data>
+            <data key="source_port_modifier"/>
+            <data key="target_port_modifier">read_only</data>
+            <data key="Weight"/>
+        </edge>
+        <edge source="DuplicateV" sourceport="out_0" target="DisplayYUV" targetport="v">
+            <data key="edge_cons">56280</data>
+            <data key="edge_delay">0</data>
+            <data key="edge_prod">56280</data>
+            <data key="data_type">uchar</data>
+            <data key="source_port_modifier"/>
+            <data key="target_port_modifier">read_only</data>
+            <data key="Weight"/>
+        </edge>
+        <edge source="DuplicateV" sourceport="out_1" target="WriteYUV" targetport="v">
+            <data key="edge_cons">56280</data>
+            <data key="edge_delay">0</data>
+            <data key="edge_prod">56280</data>
+            <data key="data_type">uchar</data>
+            <data key="source_port_modifier"/>
+            <data key="target_port_modifier">read_only</data>
+            <data key="Weight"/>
+        </edge>
+        <edge source="Stabilization_DuplicateAccumulatedMotion"
+            sourceport="out_1" target="Stabilization_AccumulateMotion" targetport="accumulatedMotionIn">
+            <data key="edge_cons">1</data>
+            <data key="edge_delay">1</data>
+            <data key="edge_prod">1</data>
+            <data key="data_type">coordf</data>
+            <data key="source_port_modifier"/>
+            <data key="target_port_modifier">read_only</data>
+            <data key="Weight"/>
+        </edge>
+        <edge source="Stabilization_BrY" sourceport="out_1"
+            target="Stabilization_renderFrame" targetport="yPrev">
+            <data key="edge_cons">225120</data>
+            <data key="edge_delay">225120</data>
+            <data key="edge_prod">225120</data>
+            <data key="data_type">uchar</data>
+            <data key="source_port_modifier"/>
+            <data key="target_port_modifier">read_only</data>
+            <data key="Weight"/>
+        </edge>
+        <edge source="Stabilization_BrU" sourceport="out_1"
+            target="Stabilization_renderFrame" targetport="uPrev">
+            <data key="edge_cons">56280</data>
+            <data key="edge_delay">56280</data>
+            <data key="edge_prod">56280</data>
+            <data key="data_type">uchar</data>
+            <data key="source_port_modifier"/>
+            <data key="target_port_modifier">read_only</data>
+            <data key="Weight"/>
+        </edge>
+        <edge source="Stabilization_BrV" sourceport="out_1"
+            target="Stabilization_renderFrame" targetport="vPrev">
+            <data key="edge_cons">56280</data>
+            <data key="edge_delay">56280</data>
+            <data key="edge_prod">56280</data>
+            <data key="data_type">uchar</data>
+            <data key="source_port_modifier"/>
+            <data key="target_port_modifier">read_only</data>
+            <data key="Weight"/>
+        </edge>
+        <edge source="Stabilization_brFilteredMotion" sourceport="out_1"
+            target="Stabilization_AccumulateMotion" targetport="filteredMotionIn">
+            <data key="edge_cons">1</data>
+            <data key="edge_delay">1</data>
+            <data key="edge_prod">1</data>
+            <data key="data_type">coordf</data>
+            <data key="source_port_modifier"/>
+            <data key="target_port_modifier"/>
+            <data key="Weight"/>
+        </edge>
+        <edge source="Stabilization_DuplicateFrame" sourceport="out_2"
+            target="Stabilization_renderFrame" targetport="yIn">
+            <data key="edge_cons">72720</data>
+            <data key="edge_delay">0</data>
+            <data key="edge_prod">72720</data>
+            <data key="data_type">uchar</data>
+            <data key="source_port_modifier"/>
+            <data key="target_port_modifier">read_only</data>
+            <data key="Weight"/>
+        </edge>
+        <edge source="Stabilization_FindDominatingMotion"
+            sourceport="dominatingVector"
+            target="Stabilization_AccumulateMotion" targetport="motionVector">
+            <data key="edge_cons">1</data>
+            <data key="edge_delay">0</data>
+            <data key="edge_prod">1</data>
+            <data key="data_type">coordf</data>
+            <data key="source_port_modifier"/>
+            <data key="target_port_modifier"/>
+            <data key="Weight"/>
+        </edge>
+        <edge source="Stabilization_DuplicateAccumulatedMotion"
+            sourceport="out_0" target="Stabilization_renderFrame" targetport="delta">
+            <data key="edge_cons">1</data>
+            <data key="edge_delay">0</data>
+            <data key="edge_prod">1</data>
+            <data key="data_type">coordf</data>
+            <data key="source_port_modifier"/>
+            <data key="target_port_modifier">read_only</data>
+            <data key="Weight"/>
+        </edge>
+        <edge source="Stabilization_AccumulateMotion"
+            sourceport="accumulatedMotionOut"
+            target="Stabilization_DuplicateAccumulatedMotion" targetport="in">
+            <data key="edge_cons">1</data>
+            <data key="edge_delay">0</data>
+            <data key="edge_prod">1</data>
+            <data key="data_type">coordf</data>
+            <data key="source_port_modifier"/>
+            <data key="target_port_modifier"/>
+            <data key="Weight"/>
+        </edge>
+        <edge source="Stabilization_renderFrame" sourceport="yOut"
+            target="Stabilization_BrY" targetport="in">
+            <data key="edge_cons">225120</data>
+            <data key="edge_delay">0</data>
+            <data key="edge_prod">225120</data>
+            <data key="data_type">uchar</data>
+            <data key="source_port_modifier"/>
+            <data key="target_port_modifier"/>
+            <data key="Weight"/>
+        </edge>
+        <edge source="Stabilization_renderFrame" sourceport="uOut"
+            target="Stabilization_BrU" targetport="in">
+            <data key="edge_cons">56280</data>
+            <data key="edge_delay">0</data>
+            <data key="edge_prod">56280</data>
+            <data key="data_type">uchar</data>
+            <data key="source_port_modifier"/>
+            <data key="target_port_modifier"/>
+            <data key="Weight"/>
+        </edge>
+        <edge source="Stabilization_renderFrame" sourceport="vOut"
+            target="Stabilization_BrV" targetport="in">
+            <data key="edge_cons">56280</data>
+            <data key="edge_delay">0</data>
+            <data key="edge_prod">56280</data>
+            <data key="data_type">uchar</data>
+            <data key="source_port_modifier"/>
+            <data key="target_port_modifier"/>
+            <data key="Weight"/>
+        </edge>
+        <edge source="Stabilization_AccumulateMotion"
+            sourceport="filteredMotionOut"
+            target="Stabilization_brFilteredMotion" targetport="in">
+            <data key="edge_cons">1</data>
+            <data key="edge_delay">0</data>
+            <data key="edge_prod">1</data>
+            <data key="data_type">coordf</data>
+            <data key="source_port_modifier"/>
+            <data key="target_port_modifier"/>
+            <data key="Weight"/>
+        </edge>
+        <edge source="Stabilization_brFilteredMotion" sourceport="out_0"
+            target="Stabilization_renderFrame" targetport="deltaPrev">
+            <data key="edge_cons">1</data>
+            <data key="edge_delay">0</data>
+            <data key="edge_prod">1</data>
+            <data key="data_type">coordf</data>
+            <data key="source_port_modifier"/>
+            <data key="target_port_modifier"/>
+            <data key="Weight"/>
+        </edge>
+        <edge source="ReadYUV" sourceport="y"
+            target="Stabilization_DuplicateFrame" targetport="in">
+            <data key="edge_cons">72720</data>
+            <data key="edge_delay">0</data>
+            <data key="edge_prod">72720</data>
+            <data key="data_type">uchar</data>
+            <data key="source_port_modifier"/>
+            <data key="target_port_modifier"/>
+            <data key="Weight"/>
+        </edge>
+        <edge source="Stabilization_BrY" sourceport="out_0"
+            target="DuplicateY" targetport="in">
+            <data key="edge_cons">225120</data>
+            <data key="edge_delay">0</data>
+            <data key="edge_prod">225120</data>
+            <data key="data_type">uchar</data>
+            <data key="source_port_modifier"/>
+            <data key="target_port_modifier">read_only</data>
+            <data key="Weight"/>
+        </edge>
+        <edge source="ReadYUV" sourceport="u"
+            target="Stabilization_renderFrame" targetport="uIn">
+            <data key="edge_cons">18180</data>
+            <data key="edge_delay">0</data>
+            <data key="edge_prod">18180</data>
+            <data key="data_type">uchar</data>
+            <data key="source_port_modifier"/>
+            <data key="target_port_modifier"/>
+            <data key="Weight"/>
+        </edge>
+        <edge source="ReadYUV" sourceport="v"
+            target="Stabilization_renderFrame" targetport="vIn">
+            <data key="edge_cons">18180</data>
+            <data key="edge_delay">0</data>
+            <data key="edge_prod">18180</data>
+            <data key="data_type">uchar</data>
+            <data key="source_port_modifier"/>
+            <data key="target_port_modifier"/>
+            <data key="Weight"/>
+        </edge>
+        <edge source="Stabilization_BrU" sourceport="out_0"
+            target="DuplicateU" targetport="in">
+            <data key="edge_cons">56280</data>
+            <data key="edge_delay">0</data>
+            <data key="edge_prod">56280</data>
+            <data key="data_type">uchar</data>
+            <data key="source_port_modifier"/>
+            <data key="target_port_modifier">read_only</data>
+            <data key="Weight"/>
+        </edge>
+        <edge source="Stabilization_BrV" sourceport="out_0"
+            target="DuplicateV" targetport="in">
+            <data key="edge_cons">56280</data>
+            <data key="edge_delay">0</data>
+            <data key="edge_prod">56280</data>
+            <data key="data_type">uchar</data>
+            <data key="source_port_modifier"/>
+            <data key="target_port_modifier">read_only</data>
+            <data key="Weight"/>
+        </edge>
+        <edge
+            source="Stabilization_ComputeBlockMotionVectorss_DivideBlocks"
+            sourceport="blocksCoord"
+            target="Stabilization_ComputeBlockMotionVectorss_ComputeBlockMotionVector" targetport="blockCoord">
+            <data key="edge_cons">1</data>
+            <data key="edge_delay">0</data>
+            <data key="edge_prod">66</data>
+            <data key="data_type">coord</data>
+            <data key="source_port_modifier">write_only</data>
+            <data key="target_port_modifier">read_only</data>
+            <data key="Weight"/>
+        </edge>
+        <edge
+            source="Stabilization_ComputeBlockMotionVectorss_DivideBlocks"
+            sourceport="blocksData"
+            target="Stabilization_ComputeBlockMotionVectorss_ComputeBlockMotionVector" targetport="blockData">
+            <data key="edge_cons">1024</data>
+            <data key="edge_delay">0</data>
+            <data key="edge_prod">67584</data>
+            <data key="data_type">uchar</data>
+            <data key="source_port_modifier"/>
+            <data key="target_port_modifier">read_only</data>
+            <data key="Weight"/>
+        </edge>
+        <edge
+            source="Stabilization_ComputeBlockMotionVectorss_DuplicatePreviousFrame"
+            sourceport="out_0_0"
+            target="Stabilization_ComputeBlockMotionVectorss_ComputeBlockMotionVector" targetport="previousFrame">
+            <data key="edge_cons">72720</data>
+            <data key="edge_delay">0</data>
+            <data key="edge_prod">4799520</data>
+            <data key="data_type">uchar</data>
+            <data key="source_port_modifier"/>
+            <data key="target_port_modifier">read_only</data>
+            <data key="Weight"/>
+        </edge>
+        <edge source="Stabilization_DuplicateFrame" sourceport="out_0"
+            target="Stabilization_ComputeBlockMotionVectorss_DivideBlocks" targetport="frame">
+            <data key="edge_cons">72720</data>
+            <data key="edge_delay">0</data>
+            <data key="edge_prod">72720</data>
+            <data key="data_type">uchar</data>
+            <data key="source_port_modifier"/>
+            <data key="target_port_modifier"/>
+            <data key="Weight"/>
+        </edge>
+        <edge
+            source="Stabilization_ComputeBlockMotionVectorss_ComputeBlockMotionVector"
+            sourceport="vector"
+            target="Stabilization_FindDominatingMotion" targetport="vectors">
+            <data key="edge_cons">66</data>
+            <data key="edge_delay">0</data>
+            <data key="edge_prod">1</data>
+            <data key="data_type">coord</data>
+            <data key="source_port_modifier"/>
+            <data key="target_port_modifier"/>
+            <data key="Weight"/>
+        </edge>
+        <edge source="Stabilization_DuplicateFrame" sourceport="out_1"
+            target="Stabilization_ComputeBlockMotionVectorss_DuplicatePreviousFrame" targetport="in">
+            <data key="edge_cons">72720</data>
+            <data key="edge_delay">72720</data>
+            <data key="edge_prod">72720</data>
+            <data key="data_type">uchar</data>
+            <data key="source_port_modifier"/>
+            <data key="target_port_modifier">read_only</data>
+            <data key="Weight"/>
+        </edge>
+    </graph>
+</graphml>

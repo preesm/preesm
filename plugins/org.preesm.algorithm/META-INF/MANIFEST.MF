@@ -1,0 +1,38 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: DFTools algorithm
+Automatic-Module-Name: org.preesm.algorithm
+Bundle-SymbolicName: org.preesm.algorithm
+Bundle-Version: 2.17.1.qualifier
+Bundle-Vendor: IETR/INSA Rennes
+Require-Bundle: org.eclipse.core.runtime,
+ com.google.guava,
+ org.jgrapht.core;bundle-version="1.1.0",
+ org.apache.commons.math3;bundle-version="3.6.1",
+ jep;bundle-version="2.40.0",
+ gov.nist.math.jama;bundle-version="1.0.3",
+ com.github.yannrichet.JMathArray;bundle-version="1.0.0",
+ jgraph;bundle-version="5.13.0",
+ org.preesm.workflow
+Export-Package: org.ietr.dftools.algorithm,
+ org.ietr.dftools.algorithm.exceptions,
+ org.ietr.dftools.algorithm.exporter,
+ org.ietr.dftools.algorithm.factories,
+ org.ietr.dftools.algorithm.generator,
+ org.ietr.dftools.algorithm.importer,
+ org.ietr.dftools.algorithm.iterators,
+ org.ietr.dftools.algorithm.model,
+ org.ietr.dftools.algorithm.model.dag,
+ org.ietr.dftools.algorithm.model.dag.edag,
+ org.ietr.dftools.algorithm.model.generic,
+ org.ietr.dftools.algorithm.model.listenable,
+ org.ietr.dftools.algorithm.model.parameters,
+ org.ietr.dftools.algorithm.model.sdf,
+ org.ietr.dftools.algorithm.model.sdf.esdf,
+ org.ietr.dftools.algorithm.model.sdf.transformations,
+ org.ietr.dftools.algorithm.model.sdf.visitors,
+ org.ietr.dftools.algorithm.model.types,
+ org.ietr.dftools.algorithm.model.visitors
+Bundle-ClassPath: .
+Bundle-RequiredExecutionEnvironment: JavaSE-1.8
+

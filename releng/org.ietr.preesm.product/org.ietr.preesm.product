@@ -604,7 +604,6 @@ Version 1.0 dated 2006-09-05.
       <feature id="org.eclipse.graphiti.feature"/>
 
       <feature id="org.ietr.graphiti.feature"/>
-      <feature id="org.ietr.dftools.feature"/>
       <feature id="org.ietr.preesm.feature"/>
    </features>
 

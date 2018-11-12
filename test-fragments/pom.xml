@@ -78,6 +78,12 @@
     <module>org.ietr.preesm.ui.test</module>
     <module>org.ietr.preesm.utils.test</module>
 
+    <module>org.preesm.algorithm.test</module>
+    <module>org.preesm.architecture.test</module>
+    <module>org.preesm.architecture.ui.test</module>
+    <module>org.preesm.ui.test</module>
+    <module>org.preesm.workflow.test</module>
+
     <module>fi.abo.preesm.dataparallel.test</module>
   </modules>
 
