@@ -54,7 +54,6 @@
 
     <module>org.ietr.preesm.algorithm</module>
     <module>org.ietr.preesm.clustering</module>
-    <module>org.ietr.preesm.archi</module>
     <module>org.ietr.preesm.cli</module>
     <module>org.ietr.preesm.codegen</module>
     <module>org.ietr.preesm.codegen.xtend</module>

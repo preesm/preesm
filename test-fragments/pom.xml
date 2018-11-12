@@ -65,7 +65,6 @@
 
   <modules>
     <module>org.ietr.preesm.algorithm.test</module>
-    <module>org.ietr.preesm.archi.test</module>
     <module>org.ietr.preesm.cli.test</module>
     <module>org.ietr.preesm.codegen.test</module>
     <module>org.ietr.preesm.codegen.xtend.test</module>

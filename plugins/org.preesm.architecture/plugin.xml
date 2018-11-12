@@ -73,4 +73,35 @@
             genModel="model/Link.xcore"/>
    </extension>
 
+   <extension
+         point="org.preesm.workflow.tasks">
+      <task
+            id="org.ietr.preesm.plugin.architransfo.transforms.ArchitectureExporter"
+            name="Architecture exporter"
+            type="org.ietr.preesm.architecture.transforms.ArchitectureExporter">
+         <inputs>
+            <input
+                  id="architecture"
+                  object="org.ietr.dftools.architecture.slam.Design">
+            </input>
+         </inputs>
+      </task>
+      <task
+            id="org.ietr.preesm.archi.slam.flattening"
+            name="Slam Hierarchy Flattening"
+            type="org.ietr.preesm.architecture.slam.SlamHierarchyFlattening">
+         <inputs>
+            <input
+                  id="architecture"
+                  object="org.ietr.dftools.architecture.slam.Design">
+            </input>
+         </inputs>
+         <outputs>
+            <output
+                  id="architecture"
+                  object="org.ietr.dftools.architecture.slam.Design">
+            </output>
+         </outputs>
+      </task>
+   </extension>
 </plugin>
