@@ -65,7 +65,6 @@
 
     <module>fi.abo.preesm.dataparallel</module>
 
-    <module>org.ietr.preesm.ui</module>
     <module>org.ietr.preesm.ui.pimm</module>
     <module>org.ietr.preesm.ui.scenario</module>
     <module>org.ietr.preesm.ui.sdf</module>

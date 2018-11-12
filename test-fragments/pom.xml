@@ -73,7 +73,6 @@
     <module>org.ietr.preesm.mapper.test</module>
     <module>org.ietr.preesm.memory.test</module>
     <module>org.ietr.preesm.pimm.algorithm.test</module>
-    <module>org.ietr.preesm.ui.test</module>
     <module>org.preesm.commons.test</module>
 
     <module>org.preesm.algorithm.test</module>

@@ -19,6 +19,6 @@ Require-Bundle: org.junit;bundle-version="4.12.0",
  org.ietr.preesm.mapper,
  org.ietr.preesm.memory,
  org.ietr.preesm.pimm.algorithm,
- org.ietr.preesm.ui,
  org.preesm.commons,
- fi.abo.preesm.dataparallel
+ fi.abo.preesm.dataparallel,
+ org.preesm.ui
