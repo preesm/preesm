@@ -104,7 +104,7 @@
                 <copy
                   todir="${project.build.directory}/deploy/${project.version}/">
                   <fileset
-                    dir="${project.basedir}/../org.ietr.preesm.product/target/products/"
+                    dir="${project.basedir}/../org.preesm.product/target/products/"
                     includes="*.zip, *.tar.gz" />
                 </copy>
               </target>

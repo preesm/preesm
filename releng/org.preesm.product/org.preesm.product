@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <?pde version="3.5"?>
 
-<product name="Preesm" uid="org.preesm.product" id="org.ietr.preesm.rcp.utils.product" application="org.eclipse.ui.ide.workbench" version="2.17.1.qualifier" useFeatures="true" includeLaunchers="true">
+<product name="Preesm" uid="org.preesm.product" id="org.preesm.rcp.utils.product" application="org.eclipse.ui.ide.workbench" version="2.17.1.qualifier" useFeatures="true" includeLaunchers="true">
 
    <aboutInfo>
-      <image path="/org.ietr.preesm.rcp.utils/icons/preesmLogo_48x48.png"/>
+      <image path="/org.preesm.rcp.utils/icons/preesmLogo_48x48.png"/>
       <text>
          PREESM [&apos;prɪzəm] is an open source rapid prototyping tool. It simulates signal processing applications and generates code for heterogeneous multi/many-core embedded systems. Its dataflow language eases the description of parallel signal processing applications.
 
@@ -25,7 +25,7 @@
    <windowImages i16="icons/preesmLogo_16x16.bmp" i32="icons/preesmLogo_32x32.bmp" i48="icons/preesmLogo_48x48.bmp" i64="icons/preesmLogo_64x64.bmp" i128="icons/preesmLogo_128x128.bmp" i256="icons/preesmLogo_256x256.bmp"/>
 
    <splash
-      location="org.ietr.preesm.rcp.utils"
+      location="org.preesm.rcp.utils"
       startupProgressRect="5,275,445,15"
       startupMessageRect="7,251,445,20"
       startupForegroundColor="000000" />
