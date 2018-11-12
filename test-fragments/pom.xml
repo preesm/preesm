@@ -78,7 +78,7 @@
 
     <module>org.preesm.algorithm.test</module>
     <module>org.preesm.model.slam.test</module>
-    <module>org.preesm.architecture.ui.test</module>
+    <module>org.preesm.ui.slam.test</module>
     <module>org.preesm.ui.test</module>
     <module>org.preesm.workflow.test</module>
 
