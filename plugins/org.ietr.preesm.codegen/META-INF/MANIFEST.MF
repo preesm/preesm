@@ -7,7 +7,6 @@ Bundle-Version: 2.17.1.qualifier
 Require-Bundle: org.eclipse.core.runtime,
  org.eclipse.emf.ecore;visibility:=reexport,
  org.eclipse.core.resources,
- org.jacorb.idl-compiler;bundle-version="2.3.1",
  org.ietr.preesm.core,
  org.ietr.preesm.memory,
  org.eclipse.emf.ecore.xmi,
@@ -22,12 +21,9 @@ Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Bundle-ClassPath: .
 Bundle-Vendor: %providerName
 Bundle-Localization: plugin
-Export-Package: org.ietr.preesm.codegen.idl,
- org.ietr.preesm.codegen.model,
- org.ietr.preesm.codegen.model.codegen,
+Export-Package: org.ietr.preesm.codegen.model.codegen,
  org.ietr.preesm.codegen.model.codegen.impl,
  org.ietr.preesm.codegen.model.codegen.util,
- org.ietr.preesm.codegen.model.containers,
  org.ietr.preesm.codegen.model.util,
  org.ietr.preesm.codegen.printer,
  org.ietr.preesm.codegen.xtend.task

@@ -13,7 +13,8 @@ Require-Bundle: org.eclipse.core.runtime,
  gov.nist.math.jama;bundle-version="1.0.3",
  com.github.yannrichet.JMathArray;bundle-version="1.0.0",
  jgraph;bundle-version="5.13.0",
- org.preesm.workflow
+ org.preesm.workflow,
+ org.jacorb.idl-compiler;bundle-version="2.3.1"
 Export-Package: org.ietr.dftools.algorithm,
  org.ietr.dftools.algorithm.exceptions,
  org.ietr.dftools.algorithm.exporter,
@@ -32,7 +33,10 @@ Export-Package: org.ietr.dftools.algorithm,
  org.ietr.dftools.algorithm.model.sdf.transformations,
  org.ietr.dftools.algorithm.model.sdf.visitors,
  org.ietr.dftools.algorithm.model.types,
- org.ietr.dftools.algorithm.model.visitors
+ org.ietr.dftools.algorithm.model.visitors,
+ org.ietr.preesm.codegen.idl,
+ org.ietr.preesm.codegen.model,
+ org.ietr.preesm.codegen.model.containers
 Bundle-ClassPath: .
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 
