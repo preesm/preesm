@@ -39,20 +39,20 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
   xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
-  <artifactId>org.ietr.preesm.releng</artifactId>
+  <artifactId>org.preesm.releng</artifactId>
   <packaging>pom</packaging>
 
   <parent>
-    <groupId>org.ietr.preesm</groupId>
-    <artifactId>org.ietr.preesm.parent</artifactId>
+    <groupId>org.preesm</groupId>
+    <artifactId>org.preesm.parent</artifactId>
     <version>2.17.1-SNAPSHOT</version>
     <relativePath>..</relativePath>
   </parent>
 
   <modules>
-    <module>org.ietr.preesm.rcp.utils</module>
-    <module>org.ietr.preesm.feature</module>
-    <module>org.ietr.preesm.product</module>
+    <module>org.preesm.rcp.utils</module>
+    <module>org.preesm.feature</module>
+    <module>org.preesm.product</module>
   </modules>
 
   <profiles>
@@ -94,8 +94,8 @@
         </repository>
       </repositories>
       <modules>
-        <module>org.ietr.preesm.dev.feature</module>
-        <module>org.ietr.preesm.complete.site</module>
+        <module>org.preesm.dev.feature</module>
+        <module>org.preesm.complete.site</module>
       </modules>
     </profile>
   </profiles>

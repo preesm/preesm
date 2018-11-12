@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<scenario>
+    <files>
+        <algorithm url="/schedule.overflow/Algo/extract.pi"/>
+        <architecture url="/schedule.overflow/Archi/4CoreX86.slam"/>
+        <codegenDirectory url="/SIFTpreesm/Code/generated"/>
+    </files>
+    <constraints excelUrl=""/>
+    <relativeconstraints excelUrl=""/>
+    <timings excelUrl=""/>
+    <simuParams>
+        <mainCore>Core0</mainCore>
+        <mainComNode>shared_mem</mainComNode>
+        <averageDataSize>1000</averageDataSize>
+        <dataTypes>
+            <dataType name="SiftKpt" size="556"/>
+            <dataType name="char" size="1"/>
+            <dataType name="float" size="4"/>
+            <dataType name="unsigned char" size="1"/>
+            <dataType name="int" size="4"/>
+        </dataTypes>
+        <specialVertexOperators>
+            <specialVertexOperator path="Core0"/>
+            <specialVertexOperator path="Core1"/>
+            <specialVertexOperator path="Core2"/>
+            <specialVertexOperator path="Core3"/>
+        </specialVertexOperators>
+        <numberOfTopExecutions>1</numberOfTopExecutions>
+    </simuParams>
+    <variables excelUrl=""/>
+    <parameterValues/>
+    <papifyConfigs xmlUrl=""/>
+</scenario>

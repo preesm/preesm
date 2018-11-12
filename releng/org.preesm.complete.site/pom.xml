@@ -1,0 +1,195 @@
+<!--
+
+    Copyright or © or Copr. IETR/INSA - Rennes (2015 - 2018) :
+
+    Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017 - 2018)
+    Julien Heulot <julien.heulot@insa-rennes.fr> (2015 - 2016)
+    Karol Desnos <karol.desnos@insa-rennes.fr> (2015 - 2016)
+
+    This software is a computer program whose purpose is to help prototyping
+    parallel applications using dataflow formalism.
+
+    This software is governed by the CeCILL  license under French law and
+    abiding by the rules of distribution of free software.  You can  use,
+    modify and/ or redistribute the software under the terms of the CeCILL
+    license as circulated by CEA, CNRS and INRIA at the following URL
+    "http://www.cecill.info".
+
+    As a counterpart to the access to the source code and  rights to copy,
+    modify and redistribute granted by the license, users are provided only
+    with a limited warranty  and the software's author,  the holder of the
+    economic rights,  and the successive licensors  have only  limited
+    liability.
+
+    In this respect, the user's attention is drawn to the risks associated
+    with loading,  using,  modifying and/or developing or reproducing the
+    software by the user in light of its specific status of free software,
+    that may mean  that it is complicated to manipulate,  and  that  also
+    therefore means  that it is reserved for developers  and  experienced
+    professionals having in-depth computer knowledge. Users are therefore
+    encouraged to load and test the software's suitability as regards their
+    requirements in conditions enabling the security of their systems and/or
+    data to be ensured and,  more generally, to use and operate it in the
+    same conditions as regards security.
+
+    The fact that you are presently reading this means that you have had
+    knowledge of the CeCILL license and that you accept its terms.
+
+-->
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  <artifactId>org.preesm.complete.site</artifactId>
+  <packaging>eclipse-repository</packaging>
+
+  <parent>
+    <groupId>org.preesm</groupId>
+    <artifactId>org.preesm.releng</artifactId>
+    <version>2.17.1-SNAPSHOT</version>
+    <relativePath>..</relativePath>
+  </parent>
+
+  <build>
+    <plugins>
+      <!-- This plugins builds the update site for the current release and
+        puts all files in ${project.build.directory}/repository -->
+      <plugin>
+        <groupId>org.eclipse.tycho</groupId>
+        <artifactId>tycho-p2-repository-plugin</artifactId>
+        <version>${tycho-version}</version>
+        <configuration>
+          <includeAllDependencies>true</includeAllDependencies>
+          <compress>false</compress>
+          <repositoryName>IETR/INSA - Rennes PREESM Update Site</repositoryName>
+          <skipArchive>true</skipArchive>
+        </configuration>
+      </plugin>
+      <plugin>
+        <!-- ## NOTE: make sure this is after the tycho-p2-extras-plugin
+          in the pom.xml text -->
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-antrun-plugin</artifactId>
+        <version>1.8</version>
+        <executions>
+          <execution>
+            <id>copy-repo</id>
+            <phase>package</phase>
+            <goals>
+              <goal>run</goal>
+            </goals>
+            <configuration>
+              <target name="Copy content">
+                <!-- Copy repo to gensite folder -->
+                <copy
+                  todir="${project.build.directory}/gensite/update-site/${project.groupId}-${project.version}/">
+                  <fileset dir="${project.build.directory}/repository/" />
+                </copy>
+                <!-- Web resources for the current release -->
+                <copy
+                  todir="${project.build.directory}/gensite/update-site/${project.groupId}-${project.version}/web/">
+                  <fileset dir="${basedir}/web" includes="*" />
+                </copy>
+                <copy
+                  todir="${project.build.directory}/gensite/update-site/${project.groupId}-${project.version}/">
+                  <fileset dir="${basedir}" includes="index.html" />
+                </copy>
+                <copy file="${project.build.directory}/category.xml"
+                  tofile="${project.build.directory}/gensite/update-site/${project.groupId}-${project.version}/site.xml" />
+                <!-- Add symlink for latest release -->
+                <symlink
+                  link="${project.build.directory}/gensite/update-site/${project.groupId}-latest"
+                  resource="${project.groupId}-${project.version}" />
+              </target>
+              <exportAntProperties>true</exportAntProperties>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+
+      <plugin>
+        <groupId>com.googlecode.maven-download-plugin</groupId>
+        <artifactId>download-maven-plugin</artifactId>
+        <version>1.3.0</version>
+        <executions>
+          <execution>
+            <phase>deploy</phase>
+            <id>fetch-artifacts.xml</id>
+            <goals>
+              <goal>wget</goal>
+            </goals>
+            <configuration>
+              <skipCache>true</skipCache>
+              <url>${preesm.p2.repo}/artifacts.xml</url>
+              <outputFileName>artifacts.xml</outputFileName>
+              <outputDirectory>${project.build.directory}/gensite/update-site/complete/</outputDirectory>
+            </configuration>
+          </execution>
+          <execution>
+            <phase>deploy</phase>
+            <id>fetch-content.xml</id>
+            <goals>
+              <goal>wget</goal>
+            </goals>
+            <configuration>
+              <skipCache>true</skipCache>
+              <url>${preesm.p2.repo}/content.xml</url>
+              <outputFileName>content.xml</outputFileName>
+              <outputDirectory>${project.build.directory}/gensite/update-site/complete/</outputDirectory>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+
+      <plugin>
+        <groupId>org.eclipse.tycho.extras</groupId>
+        <artifactId>tycho-p2-extras-plugin</artifactId>
+        <version>${tycho-version}</version>
+        <executions>
+          <execution>
+            <id>append-current-build</id>
+            <phase>deploy</phase>
+            <goals>
+              <goal>mirror</goal>
+            </goals>
+            <configuration>
+              <source>
+                <repository>
+                  <url>${project.baseUri}/target/gensite/update-site/${project.groupId}-${project.version}</url>
+                </repository>
+              </source>
+              <append>true</append>
+              <compress>false</compress>
+              <includeOptional>true</includeOptional>
+              <destination>${project.build.directory}/gensite/update-site/complete</destination>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+
+      <!-- Finally upload merged metadata and new content -->
+      <plugin>
+        <groupId>org.preesm.maven</groupId>
+        <artifactId>sftp-maven-plugin</artifactId>
+        <version>1.0.0</version>
+        <executions>
+          <execution>
+            <id>upload-repo</id>
+            <phase>deploy</phase>
+            <configuration>
+              <serverId>preesm-insa-rennes</serverId>
+              <serverHost>preesm.insa-rennes.fr</serverHost>
+              <serverPort>8022</serverPort>
+              <strictHostKeyChecking>false</strictHostKeyChecking>
+              <mode>send</mode>
+              <localPath>${project.build.directory}/gensite/update-site/</localPath>
+              <remotePath>/repo/</remotePath>
+            </configuration>
+            <goals>
+              <goal>sftp-transfert</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+    </plugins>
+  </build>
+</project>

@@ -1,0 +1,15 @@
+/**
+ * Split memory script
+ * Input buffer: i_in
+ * Output buffer: o_out
+ * Parameters: image_height, image_width, parallelismLevels, imgDouble
+ */
+
+int rChunckSize = (image_width * image_height) / parallelismLevels; 
+int chunckSize = rChunckSize + image_width;
+
+if (imgDouble == 1) {
+	for(int i=0; i<parallelismLevels ;i++){
+   		o_out.matchWith(i*chunckSize, i_in, i*rChunckSize, chunckSize);
+	}
+}

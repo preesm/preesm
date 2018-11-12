@@ -1,0 +1,172 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<graphml xmlns="http://graphml.graphdrawing.org/xmlns">
+    <key attr.name="parameters" for="graph" id="parameters"/>
+    <key attr.name="variables" for="graph" id="variables"/>
+    <key attr.name="arguments" for="node" id="arguments"/>
+    <key attr.name="name" attr.type="string" for="graph"/>
+    <key attr.name="graph_desc" attr.type="string" for="node"/>
+    <graph edgedefault="directed">
+        <data key="name">extract</data>
+        <node expr="512" id="FilePathLength" kind="param"/>
+        <node expr="2400" id="nbKptMax" kind="param"/>
+        <node expr="3840" id="imgW" kind="param"/>
+        <node expr="2400" id="imgH" kind="param"/>
+        <node id="BdFilename" kind="broadcast">
+            <port kind="cfg_input" name="FilePathLength"/>
+            <port annotation="NONE" expr="FilePathLength" kind="input" name="filename"/>
+            <port annotation="NONE" expr="FilePathLength" kind="output" name="forRead"/>
+            <port annotation="NONE" expr="FilePathLength" kind="output" name="forDraw"/>
+            <port annotation="NONE" expr="FilePathLength" kind="output" name="forExport"/>
+        </node>
+        <node id="read_pgm" kind="actor">
+            <data key="graph_desc">Code/include/ezsift-preesm.h</data>
+            <loop name="read_pgm">
+                <param direction="IN" isConfig="true"
+                    name="FilePathLength" type="int"/>
+                <param direction="IN" isConfig="false" name="filename" type="char "/>
+                <param direction="IN" isConfig="true" name="imgW" type="int"/>
+                <param direction="IN" isConfig="true" name="imgH" type="int"/>
+                <param direction="OUT" isConfig="false" name="img" type="unsigned char "/>
+            </loop>
+            <port kind="cfg_input" name="FilePathLength"/>
+            <port kind="cfg_input" name="imgW"/>
+            <port kind="cfg_input" name="imgH"/>
+            <port annotation="READ_ONLY" expr="FilePathLength"
+                kind="input" name="filename"/>
+            <port annotation="WRITE_ONLY" expr="imgH*imgW" kind="output" name="img"/>
+        </node>
+        <node id="BdOriginalImage" kind="broadcast">
+            <port kind="cfg_input" name="imgW"/>
+            <port kind="cfg_input" name="imgH"/>
+            <port annotation="READ_ONLY" expr="imgW*imgH" kind="input" name="originalImage"/>
+            <port annotation="WRITE_ONLY" expr="imgW*imgH" kind="output" name="forSift"/>
+            <port annotation="WRITE_ONLY" expr="imgW*imgH" kind="output" name="forDump"/>
+        </node>
+        <node id="draw_keypoints_to_ppm_file" kind="actor">
+            <data key="graph_desc">Code/include/ezsift-preesm.h</data>
+            <loop name="draw_keypoints_to_ppm_file">
+                <param direction="IN" isConfig="true"
+                    name="FilePathLength" type="int"/>
+                <param direction="IN" isConfig="true" name="nbKptMax" type="int"/>
+                <param direction="IN" isConfig="true" name="imgW" type="int"/>
+                <param direction="IN" isConfig="true" name="imgH" type="int"/>
+                <param direction="IN" isConfig="false"
+                    name="nbKeypoints" type="int "/>
+                <param direction="IN" isConfig="false" name="filename" type="char "/>
+                <param direction="IN" isConfig="false" name="image" type="unsigned char "/>
+                <param direction="IN" isConfig="false" name="keypoints" type="struct SiftKeypoint "/>
+            </loop>
+            <port kind="cfg_input" name="FilePathLength"/>
+            <port kind="cfg_input" name="imgH"/>
+            <port kind="cfg_input" name="imgW"/>
+            <port kind="cfg_input" name="nbKptMax"/>
+            <port annotation="READ_ONLY" expr="nbKptMax" kind="input" name="keypoints"/>
+            <port annotation="READ_ONLY" expr="1" kind="input" name="nbKeypoints"/>
+            <port annotation="READ_ONLY" expr="imgH*imgW" kind="input" name="image"/>
+            <port annotation="READ_ONLY" expr="FilePathLength"
+                kind="input" name="filename"/>
+        </node>
+        <node id="SIFT" kind="actor">
+            <data key="graph_desc">Algo/top_sift.pi</data>
+            <port kind="cfg_input" name="nbKptMax"/>
+            <port kind="cfg_input" name="imgW"/>
+            <port kind="cfg_input" name="imgH"/>
+            <port annotation="READ_ONLY" expr="imgW*imgH" kind="input" name="image"/>
+            <port annotation="WRITE_ONLY" expr="nbKptMax" kind="output" name="keypoints"/>
+            <port annotation="WRITE_ONLY" expr="1" kind="output" name="nbKeypoints"/>
+        </node>
+        <node id="filename1" kind="actor">
+            <data key="graph_desc">Code/include/ezsift-preesm.h</data>
+            <loop name="filename1">
+                <param direction="IN" isConfig="true"
+                    name="FilePathLength" type="int"/>
+                <param direction="OUT" isConfig="false" name="filename" type="char "/>
+            </loop>
+            <port kind="cfg_input" name="FilePathLength"/>
+            <port annotation="WRITE_ONLY" expr="FilePathLength"
+                kind="output" name="filename"/>
+        </node>
+        <node id="BdKeypoints" kind="broadcast">
+            <port kind="cfg_input" name="nbKptMax"/>
+            <port annotation="NONE" expr="nbKptMax" kind="input" name="kpts"/>
+            <port annotation="NONE" expr="nbKptMax" kind="output" name="forDraw"/>
+            <port annotation="NONE" expr="nbKptMax" kind="output" name="forDump"/>
+        </node>
+        <node id="BdNbKeypoints" kind="broadcast">
+            <port annotation="NONE" expr="1" kind="input" name="nbKpts"/>
+            <port annotation="NONE" expr="1" kind="output" name="forDraw"/>
+            <port annotation="NONE" expr="1" kind="output" name="forDump"/>
+        </node>
+        <node id="export_keypoints_to_key_file" kind="actor">
+            <data key="graph_desc">Code/include/ezsift-preesm.h</data>
+            <loop name="export_keypoints_to_key_file">
+                <param direction="IN" isConfig="true"
+                    name="FilePathLength" type="int"/>
+                <param direction="IN" isConfig="true" name="nbKptMax" type="int"/>
+                <param direction="IN" isConfig="false" name="filename" type="char "/>
+                <param direction="IN" isConfig="false"
+                    name="nbKeypoints" type="int "/>
+                <param direction="IN" isConfig="false" name="keypoints" type="SiftKpt "/>
+            </loop>
+            <port kind="cfg_input" name="FilePathLength"/>
+            <port kind="cfg_input" name="nbKptMax"/>
+            <port annotation="READ_ONLY" expr="FilePathLength"
+                kind="input" name="filename"/>
+            <port annotation="READ_ONLY" expr="nbKptMax" kind="input" name="keypoints"/>
+            <port annotation="READ_ONLY" expr="1" kind="input" name="nbKeypoints"/>
+        </node>
+        <edge kind="fifo" source="read_pgm" sourceport="img"
+            target="BdOriginalImage" targetport="originalImage" type="unsigned char"/>
+        <edge kind="fifo" source="BdFilename" sourceport="forRead"
+            target="read_pgm" targetport="filename" type="char"/>
+        <edge kind="fifo" source="BdOriginalImage" sourceport="forSift"
+            target="SIFT" targetport="image" type="unsigned char"/>
+        <edge kind="fifo" source="filename1" sourceport="filename"
+            target="BdFilename" targetport="filename" type="char"/>
+        <edge kind="fifo" source="BdOriginalImage" sourceport="forDump"
+            target="draw_keypoints_to_ppm_file" targetport="image" type="unsigned char"/>
+        <edge kind="fifo" source="BdFilename" sourceport="forDraw"
+            target="draw_keypoints_to_ppm_file" targetport="filename" type="char"/>
+        <edge kind="fifo" source="SIFT" sourceport="keypoints"
+            target="BdKeypoints" targetport="kpts" type="SiftKpt"/>
+        <edge kind="fifo" source="SIFT" sourceport="nbKeypoints"
+            target="BdNbKeypoints" targetport="nbKpts" type="int"/>
+        <edge kind="fifo" source="BdKeypoints" sourceport="forDraw"
+            target="draw_keypoints_to_ppm_file" targetport="keypoints" type="SiftKpt"/>
+        <edge kind="fifo" source="BdNbKeypoints" sourceport="forDraw"
+            target="draw_keypoints_to_ppm_file" targetport="nbKeypoints" type="int"/>
+        <edge kind="fifo" source="BdFilename" sourceport="forExport"
+            target="export_keypoints_to_key_file" targetport="filename" type="char"/>
+        <edge kind="fifo" source="BdNbKeypoints" sourceport="forDump"
+            target="export_keypoints_to_key_file"
+            targetport="nbKeypoints" type="int"/>
+        <edge kind="fifo" source="BdKeypoints" sourceport="forDump"
+            target="export_keypoints_to_key_file" targetport="keypoints" type="SiftKpt"/>
+        <edge kind="dependency" source="FilePathLength"
+            target="read_pgm" targetport="FilePathLength"/>
+        <edge kind="dependency" source="FilePathLength"
+            target="draw_keypoints_to_ppm_file" targetport="FilePathLength"/>
+        <edge kind="dependency" source="FilePathLength"
+            target="BdFilename" targetport="FilePathLength"/>
+        <edge kind="dependency" source="nbKptMax" target="SIFT" targetport="nbKptMax"/>
+        <edge kind="dependency" source="imgW" target="SIFT" targetport="imgW"/>
+        <edge kind="dependency" source="imgH" target="SIFT" targetport="imgH"/>
+        <edge kind="dependency" source="imgW" target="read_pgm" targetport="imgW"/>
+        <edge kind="dependency" source="imgH" target="read_pgm" targetport="imgH"/>
+        <edge kind="dependency" source="imgW" target="BdOriginalImage" targetport="imgW"/>
+        <edge kind="dependency" source="imgH" target="BdOriginalImage" targetport="imgH"/>
+        <edge kind="dependency" source="imgH"
+            target="draw_keypoints_to_ppm_file" targetport="imgH"/>
+        <edge kind="dependency" source="imgW"
+            target="draw_keypoints_to_ppm_file" targetport="imgW"/>
+        <edge kind="dependency" source="nbKptMax"
+            target="draw_keypoints_to_ppm_file" targetport="nbKptMax"/>
+        <edge kind="dependency" source="FilePathLength"
+            target="filename1" targetport="FilePathLength"/>
+        <edge kind="dependency" source="nbKptMax" target="BdKeypoints" targetport="nbKptMax"/>
+        <edge kind="dependency" source="FilePathLength"
+            target="export_keypoints_to_key_file" targetport="FilePathLength"/>
+        <edge kind="dependency" source="nbKptMax"
+            target="export_keypoints_to_key_file" targetport="nbKptMax"/>
+    </graph>
+</graphml>

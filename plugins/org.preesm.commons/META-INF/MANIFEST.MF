@@ -1,0 +1,23 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: PREESM utilities
+Automatic-Module-Name: org.preesm.commons
+Bundle-SymbolicName: org.preesm.commons
+Bundle-Version: 2.17.1.qualifier
+Bundle-Activator: org.ietr.preesm.utils.Activator
+Bundle-Vendor: IETR/INSA Rennes
+Require-Bundle: org.eclipse.core.runtime,
+ org.eclipse.xtend.lib,
+ org.eclipse.emf.ecore,
+ org.eclipse.core.resources,
+ org.apache.commons.math3;bundle-version="3.6.1";visibility:=reexport,
+ org.ietr.preesm.experiment.model;visibility:=reexport
+Bundle-RequiredExecutionEnvironment: JavaSE-1.8
+Bundle-ActivationPolicy: lazy
+Export-Package: org.ietr.preesm.utils.files,
+ org.ietr.preesm.utils.math,
+ org.ietr.preesm.utils.paths,
+ org.ietr.preesm.utils.pimm.header.parser,
+ org.ietr.preesm.utils.sdf,
+ org.ietr.preesm.utils.xml
+

@@ -1,0 +1,1614 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<graphml xmlns="http://graphml.graphdrawing.org/xmlns">
+    <key attr.name="parameters" for="graph" id="parameters"/>
+    <key attr.name="variables" for="graph" id="variables"/>
+    <key attr.name="arguments" for="node" id="arguments"/>
+    <key attr.name="name" attr.type="string" for="graph"/>
+    <key attr.name="graph_desc" attr.type="string" for="node"/>
+    <key attr.name="memoryScript" attr.type="string" for="node"/>
+    <key attr.name="delay" attr.type="string" for="edge"/>
+    <graph edgedefault="directed">
+        <data key="name">top_sift</data>
+        <node expr="imgW" id="image_width" kind="param"/>
+        <node expr="imgH" id="image_height" kind="param"/>
+        <node
+            expr="if(1,6,floor(ln(min(image_height, image_width))/ln(2) - 3 +imgDouble))"
+            id="nOctaves" kind="param"/>
+        <node expr="1" id="imgDouble" kind="param"/>
+        <node expr="3" id="nLayers" kind="param"/>
+        <node expr="nLayers+3" id="nGpyrLayers" kind="param"/>
+        <node expr="nGpyrLayers-1" id="nDogLayers" kind="param"/>
+        <node
+            expr="if(3.0*1.6*sqrt(2^((2*(nGpyrLayers-1))/nLayers)-2^((2*(nGpyrLayers-2))/nLayers))>1.0, ceil(3.0*1.6*sqrt(2^((2*(nGpyrLayers-1))/nLayers)-2^((2*(nGpyrLayers-2))/nLayers))), 1.0)"
+            id="gRmax" kind="param"/>
+        <node expr="2*gRmax+1" id="gWmax" kind="param"/>
+        <node expr="nbKptMax" id="nbKeypointsMax" kind="param"/>
+        <node expr="20" id="parallelismLevels" kind="param"/>
+        <node
+            expr="if(imgDouble, geo_sum(4*image_height*image_width,1/4,nOctaves), geo_sum(image_height*image_width,1/4,nOctaves))"
+            id="totSizeWithoutLayers" kind="param"/>
+        <node expr="if(imgDouble, nOctaves-3, nOctaves-2)"
+            id="nOctavesDownN" kind="param"/>
+        <node id="nbKptMax" kind="cfg_in_iface"/>
+        <node id="imgW" kind="cfg_in_iface"/>
+        <node id="imgH" kind="cfg_in_iface"/>
+        <node id="compute_gaussian_coefs" kind="actor">
+            <data key="graph_desc">Code/include/ezsift-preesm.h</data>
+            <loop name="compute_gaussian_coefs">
+                <param direction="IN" isConfig="true" name="gWmax" type="int"/>
+                <param direction="IN" isConfig="true" name="nGpyrLayers" type="int"/>
+                <param direction="OUT" isConfig="false"
+                    name="columns_sizes" type="int "/>
+                <param direction="OUT" isConfig="false"
+                    name="gaussian_coefs" type="float "/>
+            </loop>
+            <port kind="cfg_input" name="gWmax"/>
+            <port kind="cfg_input" name="nGpyrLayers"/>
+            <port annotation="WRITE_ONLY" expr="nGpyrLayers"
+                kind="output" name="columns_sizes"/>
+            <port annotation="WRITE_ONLY" expr="nGpyrLayers*gWmax"
+                kind="output" name="gaussian_coefs"/>
+        </node>
+        <node id="extract_descriptor" kind="actor">
+            <data key="graph_desc">Code/include/ezsift-preesm.h</data>
+            <loop name="extract_descriptor">
+                <param direction="IN" isConfig="true" name="nLayers" type="int"/>
+                <param direction="IN" isConfig="true"
+                    name="totSizeWithoutLayers" type="int"/>
+                <param direction="IN" isConfig="true"
+                    name="parallelismLevels" type="int"/>
+                <param direction="IN" isConfig="true"
+                    name="nbKeypointsMax" type="int"/>
+                <param direction="IN" isConfig="false" name="grdPyr" type="float "/>
+                <param direction="IN" isConfig="false" name="rotPyr" type="float "/>
+                <param direction="IN" isConfig="false"
+                    name="keypoints_in" type="SiftKpt "/>
+                <param direction="OUT" isConfig="false"
+                    name="keypoints_out" type="SiftKpt "/>
+            </loop>
+            <data key="memoryScript">Code/mem_scripts/extract.bsh</data>
+            <port kind="cfg_input" name="parallelismLevels"/>
+            <port kind="cfg_input" name="nbKeypointsMax"/>
+            <port kind="cfg_input" name="totSizeWithoutLayers"/>
+            <port kind="cfg_input" name="nLayers"/>
+            <port annotation="NONE"
+                expr="nbKeypointsMax/parallelismLevels+1" kind="input" name="keypoints_in"/>
+            <port annotation="READ_ONLY"
+                expr="totSizeWithoutLayers*nLayers" kind="input" name="grdPyr"/>
+            <port annotation="READ_ONLY"
+                expr="totSizeWithoutLayers*nLayers" kind="input" name="rotPyr"/>
+            <port annotation="WRITE_ONLY"
+                expr="nbKeypointsMax/parallelismLevels+1" kind="output" name="keypoints_out"/>
+        </node>
+        <node id="detect_keypoints" kind="actor">
+            <data key="graph_desc">Code/include/ezsift-preesm.h</data>
+            <loop name="detect_keypoints">
+                <param direction="IN" isConfig="true" name="nLayers" type="int"/>
+                <param direction="IN" isConfig="true"
+                    name="totSizeWithoutLayers" type="int"/>
+                <param direction="IN" isConfig="true"
+                    name="parallelismLevels" type="int"/>
+                <param direction="IN" isConfig="true" name="nDogLayers" type="int"/>
+                <param direction="IN" isConfig="true"
+                    name="nbKeypointsMax" type="int"/>
+                <param direction="IN" isConfig="false" name="dogPyr" type="float "/>
+                <param direction="IN" isConfig="false" name="grdPyr" type="float "/>
+                <param direction="IN" isConfig="false" name="rotPyr" type="float "/>
+                <param direction="IN" isConfig="false"
+                    name="start_octave" type="int "/>
+                <param direction="IN" isConfig="false"
+                    name="stop_octave" type="int "/>
+                <param direction="IN" isConfig="false"
+                    name="start_layer" type="int "/>
+                <param direction="IN" isConfig="false" name="stop_layer" type="int "/>
+                <param direction="IN" isConfig="false" name="start_line" type="int "/>
+                <param direction="IN" isConfig="false" name="stop_line" type="int "/>
+                <param direction="IN" isConfig="false" name="start_col" type="int "/>
+                <param direction="IN" isConfig="false" name="stop_col" type="int "/>
+                <param direction="OUT" isConfig="false" name="keypoints" type="SiftKpt "/>
+            </loop>
+            <port kind="cfg_input" name="nbKeypointsMax"/>
+            <port kind="cfg_input" name="totSizeWithoutLayers"/>
+            <port kind="cfg_input" name="parallelismLevels"/>
+            <port kind="cfg_input" name="nDogLayers"/>
+            <port kind="cfg_input" name="nLayers"/>
+            <port annotation="READ_ONLY"
+                expr="totSizeWithoutLayers*nLayers" kind="input" name="grdPyr"/>
+            <port annotation="READ_ONLY"
+                expr="totSizeWithoutLayers*nLayers" kind="input" name="rotPyr"/>
+            <port annotation="READ_ONLY"
+                expr="totSizeWithoutLayers*nDogLayers" kind="input" name="dogPyr"/>
+            <port annotation="READ_ONLY" expr="1" kind="input" name="start_octave"/>
+            <port annotation="READ_ONLY" expr="1" kind="input" name="stop_octave"/>
+            <port annotation="READ_ONLY" expr="1" kind="input" name="start_layer"/>
+            <port annotation="READ_ONLY" expr="1" kind="input" name="stop_layer"/>
+            <port annotation="READ_ONLY" expr="1" kind="input" name="start_line"/>
+            <port annotation="READ_ONLY" expr="1" kind="input" name="stop_line"/>
+            <port annotation="NONE" expr="1" kind="input" name="start_col"/>
+            <port annotation="NONE" expr="1" kind="input" name="stop_col"/>
+            <port annotation="WRITE_ONLY"
+                expr="nbKeypointsMax/parallelismLevels+1" kind="output" name="keypoints"/>
+        </node>
+        <node id="ITERATOR_detect_keypoints" kind="actor">
+            <data key="graph_desc">Code/include/ezsift-preesm.h</data>
+            <loop name="ITERATOR_detect_keypoints">
+                <param direction="IN" isConfig="true"
+                    name="parallelismLevels" type="int"/>
+                <param direction="OUT" isConfig="false"
+                    name="start_octave" type="int "/>
+                <param direction="OUT" isConfig="false"
+                    name="stop_octave" type="int "/>
+                <param direction="OUT" isConfig="false"
+                    name="start_layer" type="int "/>
+                <param direction="OUT" isConfig="false"
+                    name="stop_layer" type="int "/>
+                <param direction="OUT" isConfig="false"
+                    name="start_line" type="int "/>
+                <param direction="OUT" isConfig="false" name="stop_line" type="int "/>
+                <param direction="OUT" isConfig="false" name="start_col" type="int "/>
+                <param direction="OUT" isConfig="false" name="stop_col" type="int "/>
+            </loop>
+            <port kind="cfg_input" name="parallelismLevels"/>
+            <port annotation="WRITE_ONLY" expr="parallelismLevels"
+                kind="output" name="start_octave"/>
+            <port annotation="WRITE_ONLY" expr="parallelismLevels"
+                kind="output" name="stop_octave"/>
+            <port annotation="WRITE_ONLY" expr="parallelismLevels"
+                kind="output" name="start_layer"/>
+            <port annotation="WRITE_ONLY" expr="parallelismLevels"
+                kind="output" name="stop_layer"/>
+            <port annotation="WRITE_ONLY" expr="parallelismLevels"
+                kind="output" name="start_line"/>
+            <port annotation="WRITE_ONLY" expr="parallelismLevels"
+                kind="output" name="stop_line"/>
+            <port annotation="NONE" expr="parallelismLevels"
+                kind="output" name="start_col"/>
+            <port annotation="NONE" expr="parallelismLevels"
+                kind="output" name="stop_col"/>
+        </node>
+        <node id="BdRot" kind="broadcast">
+            <port kind="cfg_input" name="totSizeWithoutLayers"/>
+            <port kind="cfg_input" name="parallelismLevels"/>
+            <port kind="cfg_input" name="nLayers"/>
+            <port annotation="NONE" expr="totSizeWithoutLayers*nLayers"
+                kind="input" name="rotPyr"/>
+            <port annotation="NONE"
+                expr="totSizeWithoutLayers*nLayers*parallelismLevels"
+                kind="output" name="forDetection"/>
+            <port annotation="NONE"
+                expr="totSizeWithoutLayers*nLayers*parallelismLevels"
+                kind="output" name="forExtraction"/>
+        </node>
+        <node id="BdGrd" kind="broadcast">
+            <port kind="cfg_input" name="totSizeWithoutLayers"/>
+            <port kind="cfg_input" name="parallelismLevels"/>
+            <port kind="cfg_input" name="nLayers"/>
+            <port annotation="NONE" expr="totSizeWithoutLayers*nLayers"
+                kind="input" name="grdPyr"/>
+            <port annotation="NONE"
+                expr="totSizeWithoutLayers*nLayers*parallelismLevels"
+                kind="output" name="forDetection"/>
+            <port annotation="NONE"
+                expr="totSizeWithoutLayers*nLayers*parallelismLevels"
+                kind="output" name="forExtraction"/>
+        </node>
+        <node id="build_dog_pyr" kind="actor">
+            <data key="graph_desc">Code/include/ezsift-preesm.h</data>
+            <loop name="build_dog_pyr">
+                <param direction="IN" isConfig="true" name="nGpyrLayers" type="int"/>
+                <param direction="IN" isConfig="true"
+                    name="totSizeWithoutLayers" type="int"/>
+                <param direction="IN" isConfig="true"
+                    name="parallelismLevels" type="int"/>
+                <param direction="IN" isConfig="true" name="nDogLayers" type="int"/>
+                <param direction="IN" isConfig="false" name="gpyr" type="float "/>
+                <param direction="OUT" isConfig="false" name="dogPyr" type="float "/>
+                <param direction="IN" isConfig="false"
+                    name="start_octave" type="int "/>
+                <param direction="IN" isConfig="false"
+                    name="stop_octave" type="int "/>
+                <param direction="IN" isConfig="false"
+                    name="start_layer" type="int "/>
+                <param direction="IN" isConfig="false" name="stop_layer" type="int "/>
+                <param direction="IN" isConfig="false" name="start_line" type="int "/>
+                <param direction="IN" isConfig="false" name="stop_line" type="int "/>
+                <param direction="IN" isConfig="false" name="start_col" type="int "/>
+                <param direction="IN" isConfig="false" name="stop_col" type="int "/>
+            </loop>
+            <port kind="cfg_input" name="nDogLayers"/>
+            <port kind="cfg_input" name="totSizeWithoutLayers"/>
+            <port kind="cfg_input" name="parallelismLevels"/>
+            <port kind="cfg_input" name="nGpyrLayers"/>
+            <port annotation="READ_ONLY"
+                expr="totSizeWithoutLayers*nGpyrLayers" kind="input" name="gpyr"/>
+            <port annotation="READ_ONLY" expr="1" kind="input" name="start_octave"/>
+            <port annotation="READ_ONLY" expr="1" kind="input" name="stop_octave"/>
+            <port annotation="READ_ONLY" expr="1" kind="input" name="start_layer"/>
+            <port annotation="READ_ONLY" expr="1" kind="input" name="stop_layer"/>
+            <port annotation="READ_ONLY" expr="1" kind="input" name="start_line"/>
+            <port annotation="READ_ONLY" expr="1" kind="input" name="stop_line"/>
+            <port annotation="NONE" expr="1" kind="input" name="start_col"/>
+            <port annotation="NONE" expr="1" kind="input" name="stop_col"/>
+            <port annotation="WRITE_ONLY"
+                expr="(totSizeWithoutLayers*nDogLayers)/parallelismLevels"
+                kind="output" name="dogPyr"/>
+        </node>
+        <node id="ITERATOR_build_dog_pyr" kind="actor">
+            <data key="graph_desc">Code/include/ezsift-preesm.h</data>
+            <loop name="ITERATOR_build_dog_pyr">
+                <param direction="IN" isConfig="true"
+                    name="parallelismLevels" type="int"/>
+                <param direction="OUT" isConfig="false"
+                    name="start_octave" type="int "/>
+                <param direction="OUT" isConfig="false"
+                    name="stop_octave" type="int "/>
+                <param direction="OUT" isConfig="false"
+                    name="start_layer" type="int "/>
+                <param direction="OUT" isConfig="false"
+                    name="stop_layer" type="int "/>
+                <param direction="OUT" isConfig="false"
+                    name="start_line" type="int "/>
+                <param direction="OUT" isConfig="false" name="stop_line" type="int "/>
+                <param direction="OUT" isConfig="false" name="start_col" type="int "/>
+                <param direction="OUT" isConfig="false" name="stop_col" type="int "/>
+            </loop>
+            <port kind="cfg_input" name="parallelismLevels"/>
+            <port annotation="WRITE_ONLY" expr="parallelismLevels"
+                kind="output" name="start_octave"/>
+            <port annotation="WRITE_ONLY" expr="parallelismLevels"
+                kind="output" name="stop_octave"/>
+            <port annotation="WRITE_ONLY" expr="parallelismLevels"
+                kind="output" name="start_layer"/>
+            <port annotation="WRITE_ONLY" expr="parallelismLevels"
+                kind="output" name="stop_layer"/>
+            <port annotation="WRITE_ONLY" expr="parallelismLevels"
+                kind="output" name="start_line"/>
+            <port annotation="WRITE_ONLY" expr="parallelismLevels"
+                kind="output" name="stop_line"/>
+            <port annotation="NONE" expr="parallelismLevels"
+                kind="output" name="start_col"/>
+            <port annotation="NONE" expr="parallelismLevels"
+                kind="output" name="stop_col"/>
+        </node>
+        <node id="build_grd_rot_pyr" kind="actor">
+            <data key="graph_desc">Code/include/ezsift-preesm.h</data>
+            <loop name="build_grd_rot_pyr">
+                <param direction="IN" isConfig="true" name="nGpyrLayers" type="int"/>
+                <param direction="IN" isConfig="true"
+                    name="totSizeWithoutLayers" type="int"/>
+                <param direction="IN" isConfig="true"
+                    name="parallelismLevels" type="int"/>
+                <param direction="IN" isConfig="true" name="nLayers" type="int"/>
+                <param direction="IN" isConfig="false" name="gpyr" type="float "/>
+                <param direction="OUT" isConfig="false" name="grdPyr" type="float "/>
+                <param direction="OUT" isConfig="false" name="rotPyr" type="float "/>
+                <param direction="IN" isConfig="false"
+                    name="start_octave" type="int "/>
+                <param direction="IN" isConfig="false"
+                    name="stop_octave" type="int "/>
+                <param direction="IN" isConfig="false"
+                    name="start_layer" type="int "/>
+                <param direction="IN" isConfig="false" name="stop_layer" type="int "/>
+                <param direction="IN" isConfig="false" name="start_line" type="int "/>
+                <param direction="IN" isConfig="false" name="stop_line" type="int "/>
+                <param direction="IN" isConfig="false" name="start_col" type="int "/>
+                <param direction="IN" isConfig="false" name="stop_col" type="int "/>
+            </loop>
+            <port kind="cfg_input" name="totSizeWithoutLayers"/>
+            <port kind="cfg_input" name="parallelismLevels"/>
+            <port kind="cfg_input" name="nLayers"/>
+            <port kind="cfg_input" name="nGpyrLayers"/>
+            <port annotation="READ_ONLY"
+                expr="totSizeWithoutLayers*nGpyrLayers" kind="input" name="gpyr"/>
+            <port annotation="READ_ONLY" expr="1" kind="input" name="start_octave"/>
+            <port annotation="READ_ONLY" expr="1" kind="input" name="stop_octave"/>
+            <port annotation="READ_ONLY" expr="1" kind="input" name="start_layer"/>
+            <port annotation="READ_ONLY" expr="1" kind="input" name="stop_layer"/>
+            <port annotation="READ_ONLY" expr="1" kind="input" name="start_line"/>
+            <port annotation="READ_ONLY" expr="1" kind="input" name="stop_line"/>
+            <port annotation="NONE" expr="1" kind="input" name="start_col"/>
+            <port annotation="NONE" expr="1" kind="input" name="stop_col"/>
+            <port annotation="WRITE_ONLY"
+                expr="(totSizeWithoutLayers*nLayers)/parallelismLevels"
+                kind="output" name="grdPyr"/>
+            <port annotation="WRITE_ONLY"
+                expr="(totSizeWithoutLayers*nLayers)/parallelismLevels"
+                kind="output" name="rotPyr"/>
+        </node>
+        <node id="ITERATOR_build_grd_rot_pyr" kind="actor">
+            <data key="graph_desc">Code/include/ezsift-preesm.h</data>
+            <loop name="ITERATOR_build_grd_rot_pyr">
+                <param direction="IN" isConfig="true"
+                    name="parallelismLevels" type="int"/>
+                <param direction="OUT" isConfig="false"
+                    name="start_octave" type="int "/>
+                <param direction="OUT" isConfig="false"
+                    name="stop_octave" type="int "/>
+                <param direction="OUT" isConfig="false"
+                    name="start_layer" type="int "/>
+                <param direction="OUT" isConfig="false"
+                    name="stop_layer" type="int "/>
+                <param direction="OUT" isConfig="false"
+                    name="start_line" type="int "/>
+                <param direction="OUT" isConfig="false" name="stop_line" type="int "/>
+                <param direction="OUT" isConfig="false" name="start_col" type="int "/>
+                <param direction="OUT" isConfig="false" name="stop_col" type="int "/>
+            </loop>
+            <port kind="cfg_input" name="parallelismLevels"/>
+            <port annotation="WRITE_ONLY" expr="parallelismLevels"
+                kind="output" name="start_octave"/>
+            <port annotation="WRITE_ONLY" expr="parallelismLevels"
+                kind="output" name="stop_octave"/>
+            <port annotation="WRITE_ONLY" expr="parallelismLevels"
+                kind="output" name="start_layer"/>
+            <port annotation="WRITE_ONLY" expr="parallelismLevels"
+                kind="output" name="stop_layer"/>
+            <port annotation="WRITE_ONLY" expr="parallelismLevels"
+                kind="output" name="start_line"/>
+            <port annotation="WRITE_ONLY" expr="parallelismLevels"
+                kind="output" name="stop_line"/>
+            <port annotation="NONE" expr="parallelismLevels"
+                kind="output" name="start_col"/>
+            <port annotation="NONE" expr="parallelismLevels"
+                kind="output" name="stop_col"/>
+        </node>
+        <node id="to_float" kind="actor">
+            <data key="graph_desc">Code/include/ezsift-preesm.h</data>
+            <loop name="to_float">
+                <param direction="IN" isConfig="true"
+                    name="parallelismLevels" type="int"/>
+                <param direction="IN" isConfig="true" name="image_width" type="int"/>
+                <param direction="IN" isConfig="true"
+                    name="image_height" type="int"/>
+                <param direction="IN" isConfig="false" name="uchar_img" type="unsigned char "/>
+                <param direction="OUT" isConfig="false" name="float_img" type="float "/>
+            </loop>
+            <port kind="cfg_input" name="parallelismLevels"/>
+            <port kind="cfg_input" name="image_width"/>
+            <port kind="cfg_input" name="image_height"/>
+            <port annotation="READ_ONLY"
+                expr="(image_width*image_height)/parallelismLevels"
+                kind="input" name="uchar_img"/>
+            <port annotation="WRITE_ONLY"
+                expr="(image_width*image_height)/parallelismLevels"
+                kind="output" name="float_img"/>
+        </node>
+        <node id="BdGpyr" kind="broadcast">
+            <port kind="cfg_input" name="totSizeWithoutLayers"/>
+            <port kind="cfg_input" name="parallelismLevels"/>
+            <port kind="cfg_input" name="nGpyrLayers"/>
+            <port annotation="NONE"
+                expr="totSizeWithoutLayers*nGpyrLayers" kind="input" name="gpyr"/>
+            <port annotation="NONE"
+                expr="totSizeWithoutLayers*nGpyrLayers*parallelismLevels"
+                kind="output" name="forDogPyr"/>
+            <port annotation="NONE"
+                expr="totSizeWithoutLayers*nGpyrLayers*parallelismLevels"
+                kind="output" name="forGrdRotPyr"/>
+        </node>
+        <node id="MERGE_gpyr" kind="actor">
+            <data key="graph_desc">Code/include/ezsift-preesm.h</data>
+            <loop name="MERGE_gpyr">
+                <param direction="IN" isConfig="true"
+                    name="image_height" type="int"/>
+                <param direction="IN" isConfig="true" name="image_width" type="int"/>
+                <param direction="IN" isConfig="true" name="nGpyrLayers" type="int"/>
+                <param direction="IN" isConfig="true" name="imgDouble" type="int"/>
+                <param direction="IN" isConfig="true"
+                    name="nOctavesDownN" type="int"/>
+                <param direction="IN" isConfig="true"
+                    name="totSizeWithoutLayers" type="int"/>
+                <param direction="OUT" isConfig="false" name="gpyr" type="float "/>
+                <param direction="IN" isConfig="false" name="gpyrs" type="float "/>
+                <param direction="IN" isConfig="false" name="gpyrsUp2x" type="float "/>
+                <param direction="IN" isConfig="false"
+                    name="gpyrsDown2x1" type="float "/>
+                <param direction="IN" isConfig="false"
+                    name="gpyrsDown2xN" type="float "/>
+            </loop>
+            <port kind="cfg_input" name="nGpyrLayers"/>
+            <port kind="cfg_input" name="image_height"/>
+            <port kind="cfg_input" name="imgDouble"/>
+            <port kind="cfg_input" name="image_width"/>
+            <port kind="cfg_input" name="nOctavesDownN"/>
+            <port kind="cfg_input" name="totSizeWithoutLayers"/>
+            <port annotation="READ_ONLY"
+                expr="image_width*image_height*nGpyrLayers" kind="input" name="gpyrs"/>
+            <port annotation="READ_ONLY"
+                expr="if(imgDouble, 4*image_width*image_height*nGpyrLayers, 1)"
+                kind="input" name="gpyrsUp2x"/>
+            <port annotation="READ_ONLY"
+                expr="(image_width*image_height*nGpyrLayers)/4"
+                kind="input" name="gpyrsDown2x1"/>
+            <port annotation="READ_ONLY"
+                expr="(image_width*image_height*nGpyrLayers*nOctavesDownN)/16"
+                kind="input" name="gpyrsDown2xN"/>
+            <port annotation="WRITE_ONLY"
+                expr="totSizeWithoutLayers*nGpyrLayers" kind="output" name="gpyr"/>
+        </node>
+        <node id="BdFloatImg" kind="broadcast">
+            <port kind="cfg_input" name="nOctaves"/>
+            <port kind="cfg_input" name="imgDouble"/>
+            <port kind="cfg_input" name="image_width"/>
+            <port kind="cfg_input" name="image_height"/>
+            <port kind="cfg_input" name="parallelismLevels"/>
+            <port kind="cfg_input" name="nGpyrLayers"/>
+            <port annotation="NONE" expr="image_width*image_height"
+                kind="input" name="float_img"/>
+            <port annotation="NONE"
+                expr="if(imgDouble,image_width*image_height,1)"
+                kind="output" name="forUpsample"/>
+            <port annotation="NONE"
+                expr="(image_width*image_height)*nGpyrLayers"
+                kind="output" name="forDirectGaussian"/>
+            <port annotation="NONE" expr="image_width*image_height"
+                kind="output" name="forDownSample"/>
+        </node>
+        <node id="upsample2x" kind="actor">
+            <data key="graph_desc">Code/include/ezsift-preesm.h</data>
+            <loop name="upsample2x">
+                <param direction="IN" isConfig="true" name="image_width" type="int"/>
+                <param direction="IN" isConfig="true"
+                    name="image_height" type="int"/>
+                <param direction="IN" isConfig="true"
+                    name="parallelismLevels" type="int"/>
+                <param direction="IN" isConfig="true" name="imgDouble" type="int"/>
+                <param direction="IN" isConfig="false" name="iter" type="int "/>
+                <param direction="IN" isConfig="false" name="img" type="float "/>
+                <param direction="OUT" isConfig="false" name="img2x" type="float "/>
+            </loop>
+            <port kind="cfg_input" name="image_height"/>
+            <port kind="cfg_input" name="imgDouble"/>
+            <port kind="cfg_input" name="image_width"/>
+            <port kind="cfg_input" name="parallelismLevels"/>
+            <port annotation="READ_ONLY"
+                expr="if(imgDouble,(image_width*image_height)/parallelismLevels + image_width,1)"
+                kind="input" name="img"/>
+            <port annotation="READ_ONLY" expr="1" kind="input" name="iter"/>
+            <port annotation="WRITE_ONLY"
+                expr="if(imgDouble,(4*image_width*image_height)/parallelismLevels,1)"
+                kind="output" name="img2x"/>
+        </node>
+        <node id="downsample2xN" kind="actor">
+            <data key="graph_desc">Code/include/ezsift-preesm.h</data>
+            <loop name="downsample2xN">
+                <param direction="IN" isConfig="true" name="image_width" type="int"/>
+                <param direction="IN" isConfig="true"
+                    name="image_height" type="int"/>
+                <param direction="IN" isConfig="false" name="fst_img" type="float "/>
+                <param direction="IN" isConfig="false"
+                    name="imgDownPrev" type="float "/>
+                <param direction="IN" isConfig="false" name="iter" type="int "/>
+                <param direction="OUT" isConfig="false" name="imgDown2x" type="float "/>
+            </loop>
+            <port kind="cfg_input" name="image_height"/>
+            <port kind="cfg_input" name="image_width"/>
+            <port annotation="READ_ONLY"
+                expr="(image_width*image_height)/4" kind="input" name="fst_img"/>
+            <port annotation="READ_ONLY"
+                expr="(image_width*image_height)/16" kind="input" name="imgDownPrev"/>
+            <port annotation="NONE" expr="1" kind="input" name="iter"/>
+            <port annotation="WRITE_ONLY"
+                expr="(image_width*image_height)/16" kind="output" name="imgDown2x"/>
+        </node>
+        <node id="row_filter_transpose2x_1" kind="actor">
+            <data key="graph_desc">Code/include/ezsift-preesm.h</data>
+            <loop name="row_filter_transpose2x_1">
+                <param direction="IN" isConfig="true"
+                    name="image_height" type="int"/>
+                <param direction="IN" isConfig="true" name="image_width" type="int"/>
+                <param direction="IN" isConfig="true" name="nGpyrLayers" type="int"/>
+                <param direction="IN" isConfig="true" name="gWmax" type="int"/>
+                <param direction="IN" isConfig="true"
+                    name="parallelismLevels" type="int"/>
+                <param direction="IN" isConfig="true" name="imgDouble" type="int"/>
+                <param direction="IN" isConfig="false"
+                    name="gaussian_coefs" type="float "/>
+                <param direction="IN" isConfig="false"
+                    name="column_sizes" type="int "/>
+                <param direction="IN" isConfig="false" name="img" type="float "/>
+                <param direction="IN" isConfig="false"
+                    name="imgIterPrev" type="float "/>
+                <param direction="IN" isConfig="false" name="iter" type="int "/>
+                <param direction="OUT" isConfig="false" name="imgGT" type="float "/>
+            </loop>
+            <port kind="cfg_input" name="image_height"/>
+            <port kind="cfg_input" name="image_width"/>
+            <port kind="cfg_input" name="imgDouble"/>
+            <port kind="cfg_input" name="nGpyrLayers"/>
+            <port kind="cfg_input" name="parallelismLevels"/>
+            <port kind="cfg_input" name="gWmax"/>
+            <port annotation="READ_ONLY" expr="nGpyrLayers*gWmax"
+                kind="input" name="gaussian_coefs"/>
+            <port annotation="READ_ONLY"
+                expr="if(imgDouble,(4*image_width*image_height)/parallelismLevels,1)"
+                kind="input" name="img"/>
+            <port annotation="READ_ONLY" expr="nGpyrLayers" kind="input" name="column_sizes"/>
+            <port annotation="READ_ONLY"
+                expr="if(imgDouble,(4*image_width*image_height)/parallelismLevels,1)"
+                kind="input" name="imgIterPrev"/>
+            <port annotation="READ_ONLY" expr="1" kind="input" name="iter"/>
+            <port annotation="WRITE_ONLY"
+                expr="if(imgDouble, (4*image_width*image_height)/parallelismLevels, 1)"
+                kind="output" name="imgGT"/>
+        </node>
+        <node id="row_filter_transpose2x_2" kind="actor">
+            <data key="graph_desc">Code/include/ezsift-preesm.h</data>
+            <loop name="row_filter_transpose2x_2">
+                <param direction="IN" isConfig="true"
+                    name="image_height" type="int"/>
+                <param direction="IN" isConfig="true" name="image_width" type="int"/>
+                <param direction="IN" isConfig="true" name="nGpyrLayers" type="int"/>
+                <param direction="IN" isConfig="true" name="gWmax" type="int"/>
+                <param direction="IN" isConfig="true"
+                    name="parallelismLevels" type="int"/>
+                <param direction="IN" isConfig="true" name="imgDouble" type="int"/>
+                <param direction="IN" isConfig="false"
+                    name="gaussian_coefs" type="float "/>
+                <param direction="IN" isConfig="false"
+                    name="column_sizes" type="int "/>
+                <param direction="IN" isConfig="false" name="img" type="float "/>
+                <param direction="IN" isConfig="false" name="iter" type="int "/>
+                <param direction="OUT" isConfig="false" name="imgGT" type="float "/>
+            </loop>
+            <port kind="cfg_input" name="image_height"/>
+            <port kind="cfg_input" name="image_width"/>
+            <port kind="cfg_input" name="imgDouble"/>
+            <port kind="cfg_input" name="nGpyrLayers"/>
+            <port kind="cfg_input" name="parallelismLevels"/>
+            <port kind="cfg_input" name="gWmax"/>
+            <port annotation="READ_ONLY" expr="nGpyrLayers" kind="input" name="column_sizes"/>
+            <port annotation="READ_ONLY"
+                expr="if(imgDouble, (4*image_width*image_height)/parallelismLevels, 1)"
+                kind="input" name="img"/>
+            <port annotation="READ_ONLY" expr="nGpyrLayers*gWmax"
+                kind="input" name="gaussian_coefs"/>
+            <port annotation="NONE" expr="1" kind="input" name="iter"/>
+            <port annotation="WRITE_ONLY"
+                expr="if(imgDouble, (4*image_width*image_height)/parallelismLevels, 1)"
+                kind="output" name="imgGT"/>
+        </node>
+        <node id="row_filter_transpose_1" kind="actor">
+            <data key="graph_desc">Code/include/ezsift-preesm.h</data>
+            <loop name="row_filter_transpose_1">
+                <param direction="IN" isConfig="true"
+                    name="image_height" type="int"/>
+                <param direction="IN" isConfig="true" name="image_width" type="int"/>
+                <param direction="IN" isConfig="true" name="nGpyrLayers" type="int"/>
+                <param direction="IN" isConfig="true" name="gWmax" type="int"/>
+                <param direction="IN" isConfig="true"
+                    name="parallelismLevels" type="int"/>
+                <param direction="IN" isConfig="false"
+                    name="gaussian_coefs" type="float "/>
+                <param direction="IN" isConfig="false"
+                    name="column_sizes" type="int "/>
+                <param direction="IN" isConfig="false" name="img" type="float "/>
+                <param direction="IN" isConfig="false"
+                    name="imgIterPrev" type="float "/>
+                <param direction="IN" isConfig="false" name="iter" type="int "/>
+                <param direction="OUT" isConfig="false" name="imgGT" type="float "/>
+            </loop>
+            <port kind="cfg_input" name="image_height"/>
+            <port kind="cfg_input" name="image_width"/>
+            <port kind="cfg_input" name="nGpyrLayers"/>
+            <port kind="cfg_input" name="parallelismLevels"/>
+            <port kind="cfg_input" name="gWmax"/>
+            <port annotation="READ_ONLY" expr="nGpyrLayers*gWmax"
+                kind="input" name="gaussian_coefs"/>
+            <port annotation="READ_ONLY"
+                expr="(image_width*image_height)/parallelismLevels"
+                kind="input" name="img"/>
+            <port annotation="READ_ONLY" expr="nGpyrLayers" kind="input" name="column_sizes"/>
+            <port annotation="READ_ONLY"
+                expr="(image_width*image_height)/parallelismLevels"
+                kind="input" name="imgIterPrev"/>
+            <port annotation="READ_ONLY" expr="1" kind="input" name="iter"/>
+            <port annotation="WRITE_ONLY"
+                expr="(image_width*image_height)/parallelismLevels"
+                kind="output" name="imgGT"/>
+        </node>
+        <node id="row_filter_transpose_2" kind="actor">
+            <data key="graph_desc">Code/include/ezsift-preesm.h</data>
+            <loop name="row_filter_transpose_2">
+                <param direction="IN" isConfig="true"
+                    name="image_height" type="int"/>
+                <param direction="IN" isConfig="true" name="image_width" type="int"/>
+                <param direction="IN" isConfig="true" name="nGpyrLayers" type="int"/>
+                <param direction="IN" isConfig="true" name="gWmax" type="int"/>
+                <param direction="IN" isConfig="true"
+                    name="parallelismLevels" type="int"/>
+                <param direction="IN" isConfig="false"
+                    name="gaussian_coefs" type="float "/>
+                <param direction="IN" isConfig="false"
+                    name="column_sizes" type="int "/>
+                <param direction="IN" isConfig="false" name="img" type="float "/>
+                <param direction="IN" isConfig="false" name="iter" type="int "/>
+                <param direction="OUT" isConfig="false" name="imgGT" type="float "/>
+            </loop>
+            <port kind="cfg_input" name="image_height"/>
+            <port kind="cfg_input" name="image_width"/>
+            <port kind="cfg_input" name="nGpyrLayers"/>
+            <port kind="cfg_input" name="parallelismLevels"/>
+            <port kind="cfg_input" name="gWmax"/>
+            <port annotation="READ_ONLY" expr="nGpyrLayers*gWmax"
+                kind="input" name="gaussian_coefs"/>
+            <port annotation="READ_ONLY"
+                expr="(image_width*image_height)/parallelismLevels"
+                kind="input" name="img"/>
+            <port annotation="READ_ONLY" expr="nGpyrLayers" kind="input" name="column_sizes"/>
+            <port annotation="NONE" expr="1" kind="input" name="iter"/>
+            <port annotation="WRITE_ONLY"
+                expr="(image_width*image_height)/parallelismLevels"
+                kind="output" name="imgGT"/>
+        </node>
+        <node id="BdCoefs" kind="broadcast">
+            <port kind="cfg_input" name="nGpyrLayers"/>
+            <port kind="cfg_input" name="gWmax"/>
+            <port kind="cfg_input" name="parallelismLevels"/>
+            <port kind="cfg_input" name="nOctavesDownN"/>
+            <port annotation="NONE" expr="nGpyrLayers*gWmax"
+                kind="input" name="coefs"/>
+            <port annotation="NONE"
+                expr="nGpyrLayers*nGpyrLayers*parallelismLevels*gWmax"
+                kind="output" name="rt2x1"/>
+            <port annotation="NONE"
+                expr="nGpyrLayers*nGpyrLayers*parallelismLevels*gWmax"
+                kind="output" name="rt2x2"/>
+            <port annotation="NONE"
+                expr="nGpyrLayers*nGpyrLayers*parallelismLevels*gWmax"
+                kind="output" name="rt1"/>
+            <port annotation="NONE"
+                expr="nGpyrLayers*nGpyrLayers*parallelismLevels*gWmax"
+                kind="output" name="rt2"/>
+            <port annotation="NONE" expr="nGpyrLayers*nGpyrLayers*gWmax"
+                kind="output" name="seq1"/>
+            <port annotation="NONE"
+                expr="nGpyrLayers*nGpyrLayers*gWmax*nOctavesDownN"
+                kind="output" name="seqN"/>
+        </node>
+        <node id="BdSizes" kind="broadcast">
+            <port kind="cfg_input" name="nGpyrLayers"/>
+            <port kind="cfg_input" name="parallelismLevels"/>
+            <port kind="cfg_input" name="nOctavesDownN"/>
+            <port annotation="NONE" expr="nGpyrLayers" kind="input" name="sizes"/>
+            <port annotation="NONE"
+                expr="nGpyrLayers*nGpyrLayers*parallelismLevels"
+                kind="output" name="rt2x1"/>
+            <port annotation="NONE"
+                expr="nGpyrLayers*nGpyrLayers*parallelismLevels"
+                kind="output" name="rt2x2"/>
+            <port annotation="NONE"
+                expr="nGpyrLayers*nGpyrLayers*parallelismLevels"
+                kind="output" name="rt1"/>
+            <port annotation="NONE"
+                expr="nGpyrLayers*nGpyrLayers*parallelismLevels"
+                kind="output" name="rt2"/>
+            <port annotation="NONE" expr="nGpyrLayers*nGpyrLayers"
+                kind="output" name="seq1"/>
+            <port annotation="NONE"
+                expr="nGpyrLayers*nGpyrLayers*nOctavesDownN"
+                kind="output" name="seqN"/>
+        </node>
+        <node id="BdBlurUp2x" kind="broadcast">
+            <port kind="cfg_input" name="image_height"/>
+            <port kind="cfg_input" name="imgDouble"/>
+            <port kind="cfg_input" name="image_width"/>
+            <port kind="cfg_input" name="parallelismLevels"/>
+            <port kind="cfg_input" name="nGpyrLayers"/>
+            <port annotation="NONE"
+                expr="if(imgDouble,4*image_width*image_height,1)"
+                kind="input" name="img"/>
+            <port annotation="NONE"
+                expr="if(imgDouble, nGpyrLayers*4*image_width*image_height,1)"
+                kind="output" name="forBlurUp2x"/>
+        </node>
+        <node id="BdBlurDown2x1" kind="broadcast">
+            <port kind="cfg_input" name="image_height"/>
+            <port kind="cfg_input" name="image_width"/>
+            <port kind="cfg_input" name="parallelismLevels"/>
+            <port kind="cfg_input" name="nGpyrLayers"/>
+            <port kind="cfg_input" name="nOctavesDownN"/>
+            <port annotation="NONE" expr="(image_width*image_height)/4"
+                kind="input" name="img"/>
+            <port annotation="NONE"
+                expr="(nOctavesDownN*image_width*image_height)/4"
+                kind="output" name="forRec"/>
+            <port annotation="NONE"
+                expr="(nGpyrLayers*image_width*image_height)/4"
+                kind="output" name="forBlur1"/>
+        </node>
+        <node id="seq_blur1" kind="actor">
+            <data key="graph_desc">Code/include/ezsift-preesm.h</data>
+            <loop name="seq_blur1">
+                <param direction="IN" isConfig="true"
+                    name="image_height" type="int"/>
+                <param direction="IN" isConfig="true" name="image_width" type="int"/>
+                <param direction="IN" isConfig="true" name="nGpyrLayers" type="int"/>
+                <param direction="IN" isConfig="true" name="gWmax" type="int"/>
+                <param direction="IN" isConfig="false"
+                    name="gaussian_coefs" type="float "/>
+                <param direction="IN" isConfig="false"
+                    name="column_sizes" type="int "/>
+                <param direction="IN" isConfig="false" name="fst_img" type="float "/>
+                <param direction="IN" isConfig="false"
+                    name="imgBlurPrev" type="float "/>
+                <param direction="IN" isConfig="false" name="iter" type="int "/>
+                <param direction="OUT" isConfig="false"
+                    name="imgBlurred" type="float "/>
+            </loop>
+            <port kind="cfg_input" name="image_width"/>
+            <port kind="cfg_input" name="image_height"/>
+            <port kind="cfg_input" name="nGpyrLayers"/>
+            <port kind="cfg_input" name="gWmax"/>
+            <port annotation="READ_ONLY"
+                expr="(image_width*image_height)/4" kind="input" name="fst_img"/>
+            <port annotation="READ_ONLY"
+                expr="(image_width*image_height)/4" kind="input" name="imgBlurPrev"/>
+            <port annotation="READ_ONLY" expr="nGpyrLayers*gWmax"
+                kind="input" name="gaussian_coefs"/>
+            <port annotation="READ_ONLY" expr="nGpyrLayers" kind="input" name="column_sizes"/>
+            <port annotation="READ_ONLY" expr="1" kind="input" name="iter"/>
+            <port annotation="WRITE_ONLY"
+                expr="(image_width*image_height)/4" kind="output" name="imgBlurred"/>
+        </node>
+        <node id="downsample2x1" kind="actor">
+            <data key="graph_desc">Code/include/ezsift-preesm.h</data>
+            <loop name="downsample2x1">
+                <param direction="IN" isConfig="true" name="image_width" type="int"/>
+                <param direction="IN" isConfig="true"
+                    name="image_height" type="int"/>
+                <param direction="IN" isConfig="true"
+                    name="parallelismLevels" type="int"/>
+                <param direction="IN" isConfig="false" name="img2x" type="float "/>
+                <param direction="OUT" isConfig="false" name="img" type="float "/>
+            </loop>
+            <port kind="cfg_input" name="image_height"/>
+            <port kind="cfg_input" name="image_width"/>
+            <port kind="cfg_input" name="parallelismLevels"/>
+            <port annotation="READ_ONLY"
+                expr="(image_width*image_height)/parallelismLevels"
+                kind="input" name="img2x"/>
+            <port annotation="WRITE_ONLY"
+                expr="(image_width*image_height)/(parallelismLevels*4)"
+                kind="output" name="img"/>
+        </node>
+        <node id="seq_blurN" kind="actor">
+            <data key="graph_desc">Code/include/ezsift-preesm.h</data>
+            <loop name="seq_blurN">
+                <param direction="IN" isConfig="true"
+                    name="image_height" type="int"/>
+                <param direction="IN" isConfig="true" name="image_width" type="int"/>
+                <param direction="IN" isConfig="true" name="nGpyrLayers" type="int"/>
+                <param direction="IN" isConfig="true" name="gWmax" type="int"/>
+                <param direction="IN" isConfig="false"
+                    name="octaveLevel" type="int"/>
+                <param direction="IN" isConfig="false"
+                    name="gaussian_coefs" type="float "/>
+                <param direction="IN" isConfig="false"
+                    name="column_sizes" type="int "/>
+                <param direction="IN" isConfig="false" name="fst_img" type="float "/>
+                <param direction="IN" isConfig="false"
+                    name="imgBlurPrev" type="float "/>
+                <param direction="IN" isConfig="false" name="iter" type="int "/>
+                <param direction="OUT" isConfig="false"
+                    name="imgBlurred" type="float "/>
+            </loop>
+            <port kind="cfg_input" name="image_width"/>
+            <port kind="cfg_input" name="image_height"/>
+            <port kind="cfg_input" name="nGpyrLayers"/>
+            <port kind="cfg_input" name="gWmax"/>
+            <port annotation="READ_ONLY"
+                expr="(image_height*image_width)/16" kind="input" name="fst_img"/>
+            <port annotation="READ_ONLY"
+                expr="(image_width*image_height)/16" kind="input" name="imgBlurPrev"/>
+            <port annotation="READ_ONLY" expr="nGpyrLayers*gWmax"
+                kind="input" name="gaussian_coefs"/>
+            <port annotation="READ_ONLY" expr="nGpyrLayers" kind="input" name="column_sizes"/>
+            <port annotation="READ_ONLY" expr="1" kind="input" name="iter"/>
+            <port annotation="NONE" expr="1" kind="input" name="octaveLevel"/>
+            <port annotation="WRITE_ONLY"
+                expr="(image_width*image_height)/16" kind="output" name="imgBlurred"/>
+        </node>
+        <node id="BdBlurDown2xN" kind="broadcast">
+            <port kind="cfg_input" name="image_height"/>
+            <port kind="cfg_input" name="image_width"/>
+            <port kind="cfg_input" name="nGpyrLayers"/>
+            <port annotation="NONE" expr="(image_width*image_height)/16"
+                kind="input" name="img"/>
+            <port annotation="NONE"
+                expr="(image_height*image_width*nGpyrLayers)/16"
+                kind="output" name="forBlurN"/>
+            <port annotation="NONE" expr="(image_width*image_height)/16"
+                kind="output" name="forRec"/>
+        </node>
+        <node id="counterGpyrLayer" kind="actor">
+            <data key="graph_desc">Code/include/ezsift-preesm.h</data>
+            <loop name="counterGpyrLayer">
+                <param direction="IN" isConfig="true" name="nGpyrLayers" type="int"/>
+                <param direction="OUT" isConfig="false" name="iter" type="int "/>
+            </loop>
+            <port kind="cfg_input" name="nGpyrLayers"/>
+            <port annotation="WRITE_ONLY" expr="nGpyrLayers"
+                kind="output" name="iter"/>
+        </node>
+        <node id="BdCounterGpyr" kind="broadcast">
+            <port kind="cfg_input" name="nGpyrLayers"/>
+            <port kind="cfg_input" name="parallelismLevels"/>
+            <port annotation="NONE" expr="1" kind="input" name="iter"/>
+            <port annotation="NONE" expr="parallelismLevels"
+                kind="output" name="for2x"/>
+            <port annotation="NONE" expr="parallelismLevels"
+                kind="output" name="forDirectGaussian"/>
+            <port annotation="NONE" expr="1" kind="output" name="forBlur1"/>
+            <port annotation="NONE" expr="parallelismLevels"
+                kind="output" name="for2x_2"/>
+            <port annotation="NONE" expr="parallelismLevels"
+                kind="output" name="forDirectGaussian_2"/>
+            <port annotation="NONE" expr="1" kind="output" name="forBdOctave"/>
+        </node>
+        <node id="BarrierTranspose2x_1" kind="actor">
+            <data key="graph_desc">Code/include/ezsift-preesm.h</data>
+            <loop name="BarrierTranspose2x_1">
+                <param direction="IN" isConfig="true" name="image_width" type="int"/>
+                <param direction="IN" isConfig="true"
+                    name="image_height" type="int"/>
+                <param direction="IN" isConfig="true" name="imgDouble" type="int"/>
+                <param direction="IN" isConfig="false" name="img_in" type="float "/>
+                <param direction="OUT" isConfig="false" name="img_out" type="float "/>
+            </loop>
+            <port kind="cfg_input" name="image_width"/>
+            <port kind="cfg_input" name="image_height"/>
+            <port kind="cfg_input" name="imgDouble"/>
+            <port annotation="READ_ONLY"
+                expr="if(imgDouble, 4*image_width*image_height, 1)"
+                kind="input" name="img_in"/>
+            <port annotation="WRITE_ONLY"
+                expr="if(imgDouble, 4*image_width*image_height, 1)"
+                kind="output" name="img_out"/>
+        </node>
+        <node id="BarrierTranspose_1" kind="actor">
+            <data key="graph_desc">Code/include/ezsift-preesm.h</data>
+            <loop name="BarrierTranspose_1">
+                <param direction="IN" isConfig="true" name="image_width" type="int"/>
+                <param direction="IN" isConfig="true"
+                    name="image_height" type="int"/>
+                <param direction="IN" isConfig="false" name="img_in" type="float "/>
+                <param direction="OUT" isConfig="false" name="img_out" type="float "/>
+            </loop>
+            <port kind="cfg_input" name="image_width"/>
+            <port kind="cfg_input" name="image_height"/>
+            <port annotation="READ_ONLY" expr="image_width*image_height"
+                kind="input" name="img_in"/>
+            <port annotation="WRITE_ONLY"
+                expr="image_width*image_height" kind="output" name="img_out"/>
+        </node>
+        <node id="counterOctaveDownN" kind="actor">
+            <data key="graph_desc">Code/include/ezsift-preesm.h</data>
+            <loop name="counterOctaveDownN">
+                <param direction="IN" isConfig="true"
+                    name="nOctavesDownN" type="int"/>
+                <param direction="OUT" isConfig="false" name="iter" type="int "/>
+            </loop>
+            <port kind="cfg_input" name="nOctavesDownN"/>
+            <port annotation="WRITE_ONLY" expr="nOctavesDownN"
+                kind="output" name="iter"/>
+        </node>
+        <node id="keypoints" kind="snk">
+            <port annotation="NONE" expr="nbKeypointsMax" kind="input" name="keypoints"/>
+        </node>
+        <node id="image" kind="src">
+            <port annotation="NONE" expr="image_width*image_height"
+                kind="output" name="image"/>
+        </node>
+        <node id="BdGT" kind="broadcast">
+            <port kind="cfg_input" name="image_height"/>
+            <port kind="cfg_input" name="image_width"/>
+            <port annotation="NONE" expr="(image_width*image_height)"
+                kind="input" name="imgBlurred"/>
+            <port annotation="NONE" expr="(image_width*image_height)"
+                kind="output" name="forRec"/>
+            <port annotation="NONE" expr="(image_width*image_height)"
+                kind="output" name="forMerge"/>
+        </node>
+        <node id="BdGT_2x" kind="broadcast">
+            <port kind="cfg_input" name="image_height"/>
+            <port kind="cfg_input" name="image_width"/>
+            <port kind="cfg_input" name="imgDouble"/>
+            <port kind="cfg_input" name="parallelismLevels"/>
+            <port annotation="NONE"
+                expr="if(imgDouble, (4*image_width*image_height), 1)"
+                kind="input" name="imgBlurred"/>
+            <port annotation="NONE"
+                expr="if(imgDouble, (4*image_width*image_height), 1)"
+                kind="output" name="forRec"/>
+            <port annotation="NONE"
+                expr="if(imgDouble, (4*image_width*image_height), 1)"
+                kind="output" name="forMerge"/>
+        </node>
+        <node id="BdBlurred1" kind="broadcast">
+            <port kind="cfg_input" name="image_height"/>
+            <port kind="cfg_input" name="image_width"/>
+            <port annotation="NONE" expr="(image_width*image_height)/4"
+                kind="input" name="imgBlurred"/>
+            <port annotation="NONE" expr="(image_width*image_height)/4"
+                kind="output" name="forRec"/>
+            <port annotation="NONE" expr="(image_width*image_height)/4"
+                kind="output" name="forMerge"/>
+        </node>
+        <node id="BdBlurredN" kind="broadcast">
+            <port kind="cfg_input" name="image_height"/>
+            <port kind="cfg_input" name="image_width"/>
+            <port annotation="NONE" expr="(image_width*image_height)/16"
+                kind="input" name="imgBlurred"/>
+            <port annotation="NONE" expr="(image_width*image_height)/16"
+                kind="output" name="forRec"/>
+            <port annotation="NONE" expr="(image_width*image_height)/16"
+                kind="output" name="forMerge"/>
+        </node>
+        <node id="BdOctaveDown" kind="broadcast">
+            <port kind="cfg_input" name="nGpyrLayers"/>
+            <port annotation="NONE" expr="1" kind="input" name="iter"/>
+            <port annotation="NONE" expr="1" kind="output" name="forDown"/>
+            <port annotation="NONE" expr="nGpyrLayers" kind="output" name="forBlur"/>
+        </node>
+        <node id="nbKeypoints" kind="snk">
+            <port annotation="NONE" expr="1" kind="input" name="nbKeypoints"/>
+        </node>
+        <node id="MERGE_keypoints" kind="actor">
+            <data key="graph_desc">Code/include/ezsift-preesm.h</data>
+            <loop name="MERGE_keypoints">
+                <param direction="IN" isConfig="true"
+                    name="nbKeypointsMax" type="int"/>
+                <param direction="IN" isConfig="true"
+                    name="parallelismLevels" type="int"/>
+                <param direction="IN" isConfig="false"
+                    name="keypoints_in" type="SiftKpt "/>
+                <param direction="OUT" isConfig="false"
+                    name="keypoints_out" type="SiftKpt "/>
+                <param direction="OUT" isConfig="false"
+                    name="nbKeypoints_out" type="int "/>
+            </loop>
+            <port kind="cfg_input" name="nbKeypointsMax"/>
+            <port kind="cfg_input" name="parallelismLevels"/>
+            <port annotation="NONE"
+                expr="nbKeypointsMax+parallelismLevels" kind="input" name="keypoints_in"/>
+            <port annotation="WRITE_ONLY" expr="nbKeypointsMax"
+                kind="output" name="keypoints_out"/>
+            <port annotation="WRITE_ONLY" expr="1" kind="output" name="nbKeypoints_out"/>
+        </node>
+        <node id="BdCounterGpyrXOctave" kind="broadcast">
+            <port kind="cfg_input" name="nOctavesDownN"/>
+            <port kind="cfg_input" name="nGpyrLayers"/>
+            <port annotation="NONE" expr="nGpyrLayers" kind="input" name="iter"/>
+            <port annotation="NONE" expr="nGpyrLayers*nOctavesDownN"
+                kind="output" name="forBlurN"/>
+        </node>
+        <node id="BdDoG" kind="broadcast">
+            <port kind="cfg_input" name="nDogLayers"/>
+            <port kind="cfg_input" name="totSizeWithoutLayers"/>
+            <port kind="cfg_input" name="parallelismLevels"/>
+            <port annotation="NONE"
+                expr="totSizeWithoutLayers*nDogLayers" kind="input" name="dogPyr"/>
+            <port annotation="NONE"
+                expr="totSizeWithoutLayers*nDogLayers*parallelismLevels"
+                kind="output" name="forDetection"/>
+        </node>
+        <node id="BarrierTranspose_2" kind="actor">
+            <data key="graph_desc">Code/include/ezsift-preesm.h</data>
+            <loop name="BarrierTranspose_2">
+                <param direction="IN" isConfig="true" name="image_width" type="int"/>
+                <param direction="IN" isConfig="true"
+                    name="image_height" type="int"/>
+                <param direction="IN" isConfig="false" name="img_in" type="float "/>
+                <param direction="OUT" isConfig="false" name="img_out" type="float "/>
+            </loop>
+            <port kind="cfg_input" name="image_width"/>
+            <port kind="cfg_input" name="image_height"/>
+            <port annotation="READ_ONLY" expr="image_width*image_height"
+                kind="input" name="img_in"/>
+            <port annotation="WRITE_ONLY"
+                expr="image_width*image_height" kind="output" name="img_out"/>
+        </node>
+        <node id="BarrierTranspose2x_2" kind="actor">
+            <data key="graph_desc">Code/include/ezsift-preesm.h</data>
+            <loop name="BarrierTranspose2x_2">
+                <param direction="IN" isConfig="true" name="image_width" type="int"/>
+                <param direction="IN" isConfig="true"
+                    name="image_height" type="int"/>
+                <param direction="IN" isConfig="true" name="imgDouble" type="int"/>
+                <param direction="IN" isConfig="false" name="img_in" type="float "/>
+                <param direction="OUT" isConfig="false" name="img_out" type="float "/>
+            </loop>
+            <port kind="cfg_input" name="image_width"/>
+            <port kind="cfg_input" name="image_height"/>
+            <port kind="cfg_input" name="imgDouble"/>
+            <port annotation="READ_ONLY"
+                expr="if(imgDouble, 4*image_width*image_height, 1)"
+                kind="input" name="img_in"/>
+            <port annotation="WRITE_ONLY"
+                expr="if(imgDouble, 4*image_width*image_height, 1)"
+                kind="output" name="img_out"/>
+        </node>
+        <node id="BarrierCounterGpyr" kind="actor">
+            <data key="graph_desc">Code/include/ezsift-preesm.h</data>
+            <loop name="BarrierCounterGpyr">
+                <param direction="IN" isConfig="true" name="nGpyrLayers" type="int"/>
+                <param direction="IN" isConfig="false" name="iters_in" type="int "/>
+                <param direction="OUT" isConfig="false" name="iters_out" type="int "/>
+            </loop>
+            <port kind="cfg_input" name="nGpyrLayers"/>
+            <port annotation="READ_ONLY" expr="nGpyrLayers" kind="input" name="iters_in"/>
+            <port annotation="WRITE_ONLY" expr="nGpyrLayers"
+                kind="output" name="iters_out"/>
+        </node>
+        <node id="SPLIT_upsample2x" kind="actor">
+            <data key="graph_desc">Code/include/ezsift-preesm.h</data>
+            <loop name="SPLIT_upsample2x">
+                <param direction="IN" isConfig="true"
+                    name="parallelismLevels" type="int"/>
+                <param direction="IN" isConfig="true" name="imgDouble" type="int"/>
+                <param direction="IN" isConfig="true" name="image_width" type="int"/>
+                <param direction="IN" isConfig="true"
+                    name="image_height" type="int"/>
+                <param direction="IN" isConfig="false" name="in" type="float "/>
+                <param direction="OUT" isConfig="false" name="out" type="float "/>
+            </loop>
+            <data key="memoryScript">Code/mem_scripts/split.bsh</data>
+            <port kind="cfg_input" name="image_width"/>
+            <port kind="cfg_input" name="imgDouble"/>
+            <port kind="cfg_input" name="image_height"/>
+            <port kind="cfg_input" name="parallelismLevels"/>
+            <port annotation="NONE"
+                expr="if(imgDouble,image_width*image_height,1)"
+                kind="input" name="in"/>
+            <port annotation="NONE"
+                expr="if(imgDouble,image_width*(image_height + parallelismLevels),1)"
+                kind="output" name="out"/>
+        </node>
+        <node id="counterPLevels" kind="actor">
+            <data key="graph_desc">Code/include/ezsift-preesm.h</data>
+            <loop name="counterPLevels">
+                <param direction="IN" isConfig="true"
+                    name="parallelismLevels" type="int"/>
+                <param direction="OUT" isConfig="false" name="iter" type="int "/>
+            </loop>
+            <port kind="cfg_input" name="parallelismLevels"/>
+            <port annotation="WRITE_ONLY" expr="parallelismLevels"
+                kind="output" name="iter"/>
+        </node>
+        <edge kind="fifo" source="detect_keypoints"
+            sourceport="keypoints" target="extract_descriptor"
+            targetport="keypoints_in" type="SiftKpt"/>
+        <edge kind="fifo" source="ITERATOR_detect_keypoints"
+            sourceport="start_octave" target="detect_keypoints"
+            targetport="start_octave" type="int"/>
+        <edge kind="fifo" source="ITERATOR_detect_keypoints"
+            sourceport="stop_octave" target="detect_keypoints"
+            targetport="stop_octave" type="int"/>
+        <edge kind="fifo" source="ITERATOR_detect_keypoints"
+            sourceport="start_layer" target="detect_keypoints"
+            targetport="start_layer" type="int"/>
+        <edge kind="fifo" source="ITERATOR_detect_keypoints"
+            sourceport="stop_layer" target="detect_keypoints"
+            targetport="stop_layer" type="int"/>
+        <edge kind="fifo" source="ITERATOR_detect_keypoints"
+            sourceport="start_line" target="detect_keypoints"
+            targetport="start_line" type="int"/>
+        <edge kind="fifo" source="ITERATOR_detect_keypoints"
+            sourceport="stop_line" target="detect_keypoints"
+            targetport="stop_line" type="int"/>
+        <edge kind="fifo" source="BdGrd" sourceport="forDetection"
+            target="detect_keypoints" targetport="grdPyr" type="float"/>
+        <edge kind="fifo" source="BdGrd" sourceport="forExtraction"
+            target="extract_descriptor" targetport="grdPyr" type="float"/>
+        <edge kind="fifo" source="BdRot" sourceport="forDetection"
+            target="detect_keypoints" targetport="rotPyr" type="float"/>
+        <edge kind="fifo" source="BdRot" sourceport="forExtraction"
+            target="extract_descriptor" targetport="rotPyr" type="float"/>
+        <edge kind="fifo" source="ITERATOR_build_dog_pyr"
+            sourceport="start_octave" target="build_dog_pyr"
+            targetport="start_octave" type="int"/>
+        <edge kind="fifo" source="ITERATOR_build_dog_pyr"
+            sourceport="stop_octave" target="build_dog_pyr"
+            targetport="stop_octave" type="int"/>
+        <edge kind="fifo" source="ITERATOR_build_dog_pyr"
+            sourceport="start_layer" target="build_dog_pyr"
+            targetport="start_layer" type="int"/>
+        <edge kind="fifo" source="ITERATOR_build_dog_pyr"
+            sourceport="stop_layer" target="build_dog_pyr"
+            targetport="stop_layer" type="int"/>
+        <edge kind="fifo" source="ITERATOR_build_dog_pyr"
+            sourceport="start_line" target="build_dog_pyr"
+            targetport="start_line" type="int"/>
+        <edge kind="fifo" source="ITERATOR_build_dog_pyr"
+            sourceport="stop_line" target="build_dog_pyr"
+            targetport="stop_line" type="int"/>
+        <edge kind="fifo" source="ITERATOR_build_grd_rot_pyr"
+            sourceport="start_octave" target="build_grd_rot_pyr"
+            targetport="start_octave" type="int"/>
+        <edge kind="fifo" source="ITERATOR_build_grd_rot_pyr"
+            sourceport="stop_octave" target="build_grd_rot_pyr"
+            targetport="stop_octave" type="int"/>
+        <edge kind="fifo" source="ITERATOR_build_grd_rot_pyr"
+            sourceport="start_layer" target="build_grd_rot_pyr"
+            targetport="start_layer" type="int"/>
+        <edge kind="fifo" source="ITERATOR_build_grd_rot_pyr"
+            sourceport="stop_layer" target="build_grd_rot_pyr"
+            targetport="stop_layer" type="int"/>
+        <edge kind="fifo" source="ITERATOR_build_grd_rot_pyr"
+            sourceport="start_line" target="build_grd_rot_pyr"
+            targetport="start_line" type="int"/>
+        <edge kind="fifo" source="ITERATOR_build_grd_rot_pyr"
+            sourceport="stop_line" target="build_grd_rot_pyr"
+            targetport="stop_line" type="int"/>
+        <edge kind="fifo" source="build_grd_rot_pyr" sourceport="grdPyr"
+            target="BdGrd" targetport="grdPyr" type="float"/>
+        <edge kind="fifo" source="build_grd_rot_pyr" sourceport="rotPyr"
+            target="BdRot" targetport="rotPyr" type="float"/>
+        <edge kind="fifo" source="BdGpyr" sourceport="forGrdRotPyr"
+            target="build_grd_rot_pyr" targetport="gpyr" type="float"/>
+        <edge kind="fifo" source="BdGpyr" sourceport="forDogPyr"
+            target="build_dog_pyr" targetport="gpyr" type="float"/>
+        <edge kind="fifo" source="MERGE_gpyr" sourceport="gpyr"
+            target="BdGpyr" targetport="gpyr" type="float"/>
+        <edge kind="fifo" source="to_float" sourceport="float_img"
+            target="BdFloatImg" targetport="float_img" type="float"/>
+        <edge kind="fifo" source="BdFloatImg"
+            sourceport="forDirectGaussian"
+            target="row_filter_transpose_1" targetport="img" type="float"/>
+        <edge kind="fifo" source="compute_gaussian_coefs"
+            sourceport="columns_sizes" target="BdSizes"
+            targetport="sizes" type="int"/>
+        <edge kind="fifo" source="compute_gaussian_coefs"
+            sourceport="gaussian_coefs" target="BdCoefs"
+            targetport="coefs" type="float"/>
+        <edge kind="fifo" source="upsample2x" sourceport="img2x"
+            target="BdBlurUp2x" targetport="img" type="float"/>
+        <edge kind="fifo" source="BdBlurUp2x" sourceport="forBlurUp2x"
+            target="row_filter_transpose2x_1" targetport="img" type="float"/>
+        <edge kind="fifo" source="BdBlurDown2x1" sourceport="forRec"
+            target="downsample2xN" targetport="fst_img" type="float"/>
+        <edge kind="fifo" source="BdFloatImg" sourceport="forDownSample"
+            target="downsample2x1" targetport="img2x" type="float"/>
+        <edge kind="fifo" source="downsample2x1" sourceport="img"
+            target="BdBlurDown2x1" targetport="img" type="float"/>
+        <edge kind="fifo" source="BdBlurDown2x1" sourceport="forBlur1"
+            target="seq_blur1" targetport="fst_img" type="float"/>
+        <edge kind="fifo" source="BdBlurDown2xN" sourceport="forBlurN"
+            target="seq_blurN" targetport="fst_img" type="float"/>
+        <edge kind="fifo" source="BdSizes" sourceport="rt2x2"
+            target="row_filter_transpose2x_2" targetport="column_sizes" type="int"/>
+        <edge kind="fifo" source="BdCoefs" sourceport="rt2x2"
+            target="row_filter_transpose2x_2"
+            targetport="gaussian_coefs" type="float"/>
+        <edge kind="fifo" source="BdCoefs" sourceport="rt2"
+            target="row_filter_transpose_2" targetport="gaussian_coefs" type="float"/>
+        <edge kind="fifo" source="BdSizes" sourceport="rt2"
+            target="row_filter_transpose_2" targetport="column_sizes" type="int"/>
+        <edge kind="fifo" source="BdCoefs" sourceport="rt1"
+            target="row_filter_transpose_1" targetport="gaussian_coefs" type="float"/>
+        <edge kind="fifo" source="BdSizes" sourceport="rt1"
+            target="row_filter_transpose_1" targetport="column_sizes" type="int"/>
+        <edge kind="fifo" source="BdSizes" sourceport="seq1"
+            target="seq_blur1" targetport="column_sizes" type="int"/>
+        <edge kind="fifo" source="BdCoefs" sourceport="seq1"
+            target="seq_blur1" targetport="gaussian_coefs" type="float"/>
+        <edge kind="fifo" source="BdSizes" sourceport="rt2x1"
+            target="row_filter_transpose2x_1" targetport="column_sizes" type="int"/>
+        <edge kind="fifo" source="BdCoefs" sourceport="rt2x1"
+            target="row_filter_transpose2x_1"
+            targetport="gaussian_coefs" type="float"/>
+        <edge kind="fifo" source="counterGpyrLayer" sourceport="iter"
+            target="BdCounterGpyr" targetport="iter" type="int"/>
+        <edge kind="fifo" source="BdCounterGpyr" sourceport="for2x"
+            target="row_filter_transpose2x_1" targetport="iter" type="int"/>
+        <edge kind="fifo" source="BdCounterGpyr"
+            sourceport="forDirectGaussian"
+            target="row_filter_transpose_1" targetport="iter" type="int"/>
+        <edge kind="fifo" source="BdCounterGpyr" sourceport="forBlur1"
+            target="seq_blur1" targetport="iter" type="int"/>
+        <edge kind="fifo" source="row_filter_transpose2x_1"
+            sourceport="imgGT" target="BarrierTranspose2x_1"
+            targetport="img_in" type="float"/>
+        <edge kind="fifo" source="BarrierTranspose2x_1"
+            sourceport="img_out" target="row_filter_transpose2x_2"
+            targetport="img" type="float"/>
+        <edge kind="fifo" source="BarrierTranspose_1"
+            sourceport="img_out" target="row_filter_transpose_2"
+            targetport="img" type="float"/>
+        <edge kind="fifo" source="row_filter_transpose_1"
+            sourceport="imgGT" target="BarrierTranspose_1"
+            targetport="img_in" type="float"/>
+        <edge kind="fifo" source="image" sourceport="image"
+            target="to_float" targetport="uchar_img" type="unsigned char"/>
+        <edge expr="if(imgDouble,4*image_width*image_height,1)"
+            kind="fifo" source="BdGT_2x" sourceport="forRec"
+            target="row_filter_transpose2x_1" targetport="imgIterPrev" type="float">
+            <data key="delay"/>
+        </edge>
+        <edge kind="fifo" source="BdGT_2x" sourceport="forMerge"
+            target="MERGE_gpyr" targetport="gpyrsUp2x" type="float"/>
+        <edge kind="fifo" source="BdGT" sourceport="forMerge"
+            target="MERGE_gpyr" targetport="gpyrs" type="float"/>
+        <edge expr="image_width*image_height" kind="fifo" source="BdGT"
+            sourceport="forRec" target="row_filter_transpose_1"
+            targetport="imgIterPrev" type="float">
+            <data key="delay"/>
+        </edge>
+        <edge expr="(image_width*image_height)/16" kind="fifo"
+            source="BdBlurDown2xN" sourceport="forRec"
+            target="downsample2xN" targetport="imgDownPrev" type="float">
+            <data key="delay"/>
+        </edge>
+        <edge kind="fifo" source="downsample2xN" sourceport="imgDown2x"
+            target="BdBlurDown2xN" targetport="img" type="float"/>
+        <edge kind="fifo" source="seq_blur1" sourceport="imgBlurred"
+            target="BdBlurred1" targetport="imgBlurred" type="float"/>
+        <edge expr="(image_width*image_height)/4" kind="fifo"
+            source="BdBlurred1" sourceport="forRec" target="seq_blur1"
+            targetport="imgBlurPrev" type="float">
+            <data key="delay"/>
+        </edge>
+        <edge kind="fifo" source="BdBlurred1" sourceport="forMerge"
+            target="MERGE_gpyr" targetport="gpyrsDown2x1" type="float"/>
+        <edge kind="fifo" source="seq_blurN" sourceport="imgBlurred"
+            target="BdBlurredN" targetport="imgBlurred" type="float"/>
+        <edge expr="(image_width*image_height)/16" kind="fifo"
+            source="BdBlurredN" sourceport="forRec" target="seq_blurN"
+            targetport="imgBlurPrev" type="float">
+            <data key="delay"/>
+        </edge>
+        <edge kind="fifo" source="BdBlurredN" sourceport="forMerge"
+            target="MERGE_gpyr" targetport="gpyrsDown2xN" type="float"/>
+        <edge kind="fifo" source="BdCounterGpyr" sourceport="for2x_2"
+            target="row_filter_transpose2x_2" targetport="iter" type="int"/>
+        <edge kind="fifo" source="BdCounterGpyr"
+            sourceport="forDirectGaussian_2"
+            target="row_filter_transpose_2" targetport="iter" type="int"/>
+        <edge kind="fifo" source="counterOctaveDownN" sourceport="iter"
+            target="BdOctaveDown" targetport="iter" type="int"/>
+        <edge kind="fifo" source="BdOctaveDown" sourceport="forDown"
+            target="downsample2xN" targetport="iter" type="int"/>
+        <edge kind="fifo" source="BdOctaveDown" sourceport="forBlur"
+            target="seq_blurN" targetport="octaveLevel" type="int"/>
+        <edge kind="fifo" source="extract_descriptor"
+            sourceport="keypoints_out" target="MERGE_keypoints"
+            targetport="keypoints_in" type="SiftKpt"/>
+        <edge kind="fifo" source="MERGE_keypoints"
+            sourceport="keypoints_out" target="keypoints"
+            targetport="keypoints" type="SiftKpt"/>
+        <edge kind="fifo" source="MERGE_keypoints"
+            sourceport="nbKeypoints_out" target="nbKeypoints"
+            targetport="nbKeypoints" type="int"/>
+        <edge kind="fifo" source="BdCounterGpyrXOctave"
+            sourceport="forBlurN" target="seq_blurN" targetport="iter" type="int"/>
+        <edge kind="fifo" source="BdSizes" sourceport="seqN"
+            target="seq_blurN" targetport="column_sizes" type="int"/>
+        <edge kind="fifo" source="BdCoefs" sourceport="seqN"
+            target="seq_blurN" targetport="gaussian_coefs" type="float"/>
+        <edge kind="fifo" source="build_dog_pyr" sourceport="dogPyr"
+            target="BdDoG" targetport="dogPyr" type="float"/>
+        <edge kind="fifo" source="BdDoG" sourceport="forDetection"
+            target="detect_keypoints" targetport="dogPyr" type="float"/>
+        <edge kind="fifo" source="row_filter_transpose_2"
+            sourceport="imgGT" target="BarrierTranspose_2"
+            targetport="img_in" type="float"/>
+        <edge kind="fifo" source="BarrierTranspose_2"
+            sourceport="img_out" target="BdGT" targetport="imgBlurred" type="float"/>
+        <edge kind="fifo" source="row_filter_transpose2x_2"
+            sourceport="imgGT" target="BarrierTranspose2x_2"
+            targetport="img_in" type="float"/>
+        <edge kind="fifo" source="BarrierTranspose2x_2"
+            sourceport="img_out" target="BdGT_2x"
+            targetport="imgBlurred" type="float"/>
+        <edge kind="fifo" source="BdCounterGpyr"
+            sourceport="forBdOctave" target="BarrierCounterGpyr"
+            targetport="iters_in" type="int"/>
+        <edge kind="fifo" source="BarrierCounterGpyr"
+            sourceport="iters_out" target="BdCounterGpyrXOctave"
+            targetport="iter" type="int"/>
+        <edge kind="fifo" source="ITERATOR_build_dog_pyr"
+            sourceport="start_col" target="build_dog_pyr"
+            targetport="start_col" type="int"/>
+        <edge kind="fifo" source="ITERATOR_build_dog_pyr"
+            sourceport="stop_col" target="build_dog_pyr"
+            targetport="stop_col" type="int"/>
+        <edge kind="fifo" source="ITERATOR_build_grd_rot_pyr"
+            sourceport="start_col" target="build_grd_rot_pyr"
+            targetport="start_col" type="int"/>
+        <edge kind="fifo" source="ITERATOR_build_grd_rot_pyr"
+            sourceport="stop_col" target="build_grd_rot_pyr"
+            targetport="stop_col" type="int"/>
+        <edge kind="fifo" source="ITERATOR_detect_keypoints"
+            sourceport="start_col" target="detect_keypoints"
+            targetport="start_col" type="int"/>
+        <edge kind="fifo" source="ITERATOR_detect_keypoints"
+            sourceport="stop_col" target="detect_keypoints"
+            targetport="stop_col" type="int"/>
+        <edge kind="fifo" source="BdFloatImg" sourceport="forUpsample"
+            target="SPLIT_upsample2x" targetport="in" type="float"/>
+        <edge kind="fifo" source="SPLIT_upsample2x" sourceport="out"
+            target="upsample2x" targetport="img" type="float"/>
+        <edge kind="fifo" source="counterPLevels" sourceport="iter"
+            target="upsample2x" targetport="iter" type="int"/>
+        <edge kind="dependency" source="imgDouble" target="nOctaves"/>
+        <edge kind="dependency" source="image_width" target="nOctaves"/>
+        <edge kind="dependency" source="image_height" target="nOctaves"/>
+        <edge kind="dependency" source="nLayers" target="nGpyrLayers"/>
+        <edge kind="dependency" source="nLayers" target="gRmax"/>
+        <edge kind="dependency" source="gRmax" target="gWmax"/>
+        <edge kind="dependency" source="gWmax"
+            target="compute_gaussian_coefs" targetport="gWmax"/>
+        <edge kind="dependency" source="parallelismLevels"
+            target="extract_descriptor" targetport="parallelismLevels"/>
+        <edge kind="dependency" source="nbKeypointsMax"
+            target="extract_descriptor" targetport="nbKeypointsMax"/>
+        <edge kind="dependency" source="nbKeypointsMax"
+            target="detect_keypoints" targetport="nbKeypointsMax"/>
+        <edge kind="dependency" source="parallelismLevels"
+            target="ITERATOR_detect_keypoints" targetport="parallelismLevels"/>
+        <edge kind="dependency" source="image_height" target="totSizeWithoutLayers"/>
+        <edge kind="dependency" source="image_width" target="totSizeWithoutLayers"/>
+        <edge kind="dependency" source="nOctaves" target="totSizeWithoutLayers"/>
+        <edge kind="dependency" source="imgDouble" target="totSizeWithoutLayers"/>
+        <edge kind="dependency" source="totSizeWithoutLayers"
+            target="BdGrd" targetport="totSizeWithoutLayers"/>
+        <edge kind="dependency" source="totSizeWithoutLayers"
+            target="BdRot" targetport="totSizeWithoutLayers"/>
+        <edge kind="dependency" source="totSizeWithoutLayers"
+            target="detect_keypoints" targetport="totSizeWithoutLayers"/>
+        <edge kind="dependency" source="totSizeWithoutLayers"
+            target="extract_descriptor" targetport="totSizeWithoutLayers"/>
+        <edge kind="dependency" source="nDogLayers"
+            target="build_dog_pyr" targetport="nDogLayers"/>
+        <edge kind="dependency" source="parallelismLevels"
+            target="ITERATOR_build_dog_pyr" targetport="parallelismLevels"/>
+        <edge kind="dependency" source="parallelismLevels"
+            target="ITERATOR_build_grd_rot_pyr" targetport="parallelismLevels"/>
+        <edge kind="dependency" source="parallelismLevels"
+            target="to_float" targetport="parallelismLevels"/>
+        <edge kind="dependency" source="image_width" target="to_float" targetport="image_width"/>
+        <edge kind="dependency" source="image_height" target="to_float" targetport="image_height"/>
+        <edge kind="dependency" source="nOctaves" target="BdFloatImg" targetport="nOctaves"/>
+        <edge kind="dependency" source="imgDouble" target="BdFloatImg" targetport="imgDouble"/>
+        <edge kind="dependency" source="image_width" target="BdFloatImg" targetport="image_width"/>
+        <edge kind="dependency" source="image_height"
+            target="BdFloatImg" targetport="image_height"/>
+        <edge kind="dependency" source="image_height"
+            target="upsample2x" targetport="image_height"/>
+        <edge kind="dependency" source="imgDouble" target="upsample2x" targetport="imgDouble"/>
+        <edge kind="dependency" source="image_width" target="upsample2x" targetport="image_width"/>
+        <edge kind="dependency" source="image_height"
+            target="downsample2xN" targetport="image_height"/>
+        <edge kind="dependency" source="image_width"
+            target="downsample2xN" targetport="image_width"/>
+        <edge kind="dependency" source="image_height"
+            target="row_filter_transpose2x_1" targetport="image_height"/>
+        <edge kind="dependency" source="image_height"
+            target="row_filter_transpose2x_2" targetport="image_height"/>
+        <edge kind="dependency" source="image_width"
+            target="row_filter_transpose2x_2" targetport="image_width"/>
+        <edge kind="dependency" source="image_width"
+            target="row_filter_transpose2x_1" targetport="image_width"/>
+        <edge kind="dependency" source="imgDouble"
+            target="row_filter_transpose2x_1" targetport="imgDouble"/>
+        <edge kind="dependency" source="imgDouble"
+            target="row_filter_transpose2x_2" targetport="imgDouble"/>
+        <edge kind="dependency" source="image_height"
+            target="row_filter_transpose_1" targetport="image_height"/>
+        <edge kind="dependency" source="image_width"
+            target="row_filter_transpose_1" targetport="image_width"/>
+        <edge kind="dependency" source="image_height"
+            target="row_filter_transpose_2" targetport="image_height"/>
+        <edge kind="dependency" source="image_width"
+            target="row_filter_transpose_2" targetport="image_width"/>
+        <edge kind="dependency" source="image_height"
+            target="BdBlurUp2x" targetport="image_height"/>
+        <edge kind="dependency" source="imgDouble" target="BdBlurUp2x" targetport="imgDouble"/>
+        <edge kind="dependency" source="image_width" target="BdBlurUp2x" targetport="image_width"/>
+        <edge kind="dependency" source="image_height"
+            target="BdBlurDown2x1" targetport="image_height"/>
+        <edge kind="dependency" source="image_width"
+            target="BdBlurDown2x1" targetport="image_width"/>
+        <edge kind="dependency" source="image_height"
+            target="downsample2x1" targetport="image_height"/>
+        <edge kind="dependency" source="image_width"
+            target="downsample2x1" targetport="image_width"/>
+        <edge kind="dependency" source="image_width" target="seq_blur1" targetport="image_width"/>
+        <edge kind="dependency" source="image_height" target="seq_blur1" targetport="image_height"/>
+        <edge kind="dependency" source="image_width" target="seq_blurN" targetport="image_width"/>
+        <edge kind="dependency" source="image_height" target="seq_blurN" targetport="image_height"/>
+        <edge kind="dependency" source="image_height"
+            target="BdBlurDown2xN" targetport="image_height"/>
+        <edge kind="dependency" source="image_width"
+            target="BdBlurDown2xN" targetport="image_width"/>
+        <edge kind="dependency" source="nGpyrLayers"
+            target="compute_gaussian_coefs" targetport="nGpyrLayers"/>
+        <edge kind="dependency" source="nGpyrLayers" target="BdSizes" targetport="nGpyrLayers"/>
+        <edge kind="dependency" source="nGpyrLayers" target="BdCoefs" targetport="nGpyrLayers"/>
+        <edge kind="dependency" source="gWmax" target="BdCoefs" targetport="gWmax"/>
+        <edge kind="dependency" source="parallelismLevels"
+            target="BdSizes" targetport="parallelismLevels"/>
+        <edge kind="dependency" source="parallelismLevels"
+            target="BdCoefs" targetport="parallelismLevels"/>
+        <edge kind="dependency" source="nGpyrLayers"
+            target="row_filter_transpose_1" targetport="nGpyrLayers"/>
+        <edge kind="dependency" source="nGpyrLayers"
+            target="row_filter_transpose_2" targetport="nGpyrLayers"/>
+        <edge kind="dependency" source="nGpyrLayers"
+            target="row_filter_transpose2x_1" targetport="nGpyrLayers"/>
+        <edge kind="dependency" source="nGpyrLayers"
+            target="row_filter_transpose2x_2" targetport="nGpyrLayers"/>
+        <edge kind="dependency" source="nGpyrLayers" target="seq_blur1" targetport="nGpyrLayers"/>
+        <edge kind="dependency" source="nGpyrLayers" target="seq_blurN" targetport="nGpyrLayers"/>
+        <edge kind="dependency" source="parallelismLevels"
+            target="row_filter_transpose_1" targetport="parallelismLevels"/>
+        <edge kind="dependency" source="parallelismLevels"
+            target="row_filter_transpose_2" targetport="parallelismLevels"/>
+        <edge kind="dependency" source="parallelismLevels"
+            target="upsample2x" targetport="parallelismLevels"/>
+        <edge kind="dependency" source="parallelismLevels"
+            target="downsample2x1" targetport="parallelismLevels"/>
+        <edge kind="dependency" source="parallelismLevels"
+            target="row_filter_transpose2x_1" targetport="parallelismLevels"/>
+        <edge kind="dependency" source="parallelismLevels"
+            target="row_filter_transpose2x_2" targetport="parallelismLevels"/>
+        <edge kind="dependency" source="gWmax"
+            target="row_filter_transpose_1" targetport="gWmax"/>
+        <edge kind="dependency" source="gWmax"
+            target="row_filter_transpose_2" targetport="gWmax"/>
+        <edge kind="dependency" source="gWmax"
+            target="row_filter_transpose2x_1" targetport="gWmax"/>
+        <edge kind="dependency" source="gWmax"
+            target="row_filter_transpose2x_2" targetport="gWmax"/>
+        <edge kind="dependency" source="gWmax" target="seq_blurN" targetport="gWmax"/>
+        <edge kind="dependency" source="gWmax" target="seq_blur1" targetport="gWmax"/>
+        <edge kind="dependency" source="parallelismLevels"
+            target="BdFloatImg" targetport="parallelismLevels"/>
+        <edge kind="dependency" source="parallelismLevels"
+            target="BdBlurUp2x" targetport="parallelismLevels"/>
+        <edge kind="dependency" source="parallelismLevels"
+            target="BdBlurDown2x1" targetport="parallelismLevels"/>
+        <edge kind="dependency" source="nGpyrLayers" target="BdFloatImg" targetport="nGpyrLayers"/>
+        <edge kind="dependency" source="nGpyrLayers" target="BdBlurUp2x" targetport="nGpyrLayers"/>
+        <edge kind="dependency" source="nGpyrLayers"
+            target="BdBlurDown2x1" targetport="nGpyrLayers"/>
+        <edge kind="dependency" source="nGpyrLayers"
+            target="BdBlurDown2xN" targetport="nGpyrLayers"/>
+        <edge kind="dependency" source="nGpyrLayers"
+            target="counterGpyrLayer" targetport="nGpyrLayers"/>
+        <edge kind="dependency" source="nGpyrLayers"
+            target="BdCounterGpyr" targetport="nGpyrLayers"/>
+        <edge kind="dependency" source="parallelismLevels"
+            target="BdCounterGpyr" targetport="parallelismLevels"/>
+        <edge kind="dependency" source="image_width"
+            target="BarrierTranspose2x_1" targetport="image_width"/>
+        <edge kind="dependency" source="image_height"
+            target="BarrierTranspose2x_1" targetport="image_height"/>
+        <edge kind="dependency" source="imgDouble"
+            target="BarrierTranspose2x_1" targetport="imgDouble"/>
+        <edge kind="dependency" source="image_width"
+            target="BarrierTranspose_1" targetport="image_width"/>
+        <edge kind="dependency" source="image_height"
+            target="BarrierTranspose_1" targetport="image_height"/>
+        <edge kind="dependency" source="nGpyrLayers" target="MERGE_gpyr" targetport="nGpyrLayers"/>
+        <edge kind="dependency" source="image_height"
+            target="MERGE_gpyr" targetport="image_height"/>
+        <edge kind="dependency" source="imgDouble" target="MERGE_gpyr" targetport="imgDouble"/>
+        <edge kind="dependency" source="image_width" target="MERGE_gpyr" targetport="image_width"/>
+        <edge kind="dependency" source="totSizeWithoutLayers"
+            target="BdGpyr" targetport="totSizeWithoutLayers"/>
+        <edge kind="dependency" source="imgDouble" target="nOctavesDownN"/>
+        <edge kind="dependency" source="nOctaves" target="nOctavesDownN"/>
+        <edge kind="dependency" source="nOctavesDownN"
+            target="BdBlurDown2x1" targetport="nOctavesDownN"/>
+        <edge kind="dependency" source="nOctavesDownN"
+            target="MERGE_gpyr" targetport="nOctavesDownN"/>
+        <edge kind="dependency" source="nOctavesDownN"
+            target="counterOctaveDownN" targetport="nOctavesDownN"/>
+        <edge kind="dependency" source="totSizeWithoutLayers"
+            target="MERGE_gpyr" targetport="totSizeWithoutLayers"/>
+        <edge kind="dependency" source="totSizeWithoutLayers"
+            target="build_dog_pyr" targetport="totSizeWithoutLayers"/>
+        <edge kind="dependency" source="totSizeWithoutLayers"
+            target="build_grd_rot_pyr" targetport="totSizeWithoutLayers"/>
+        <edge kind="dependency" source="parallelismLevels"
+            target="detect_keypoints" targetport="parallelismLevels"/>
+        <edge kind="dependency" source="parallelismLevels"
+            target="build_dog_pyr" targetport="parallelismLevels"/>
+        <edge kind="dependency" source="parallelismLevels"
+            target="build_grd_rot_pyr" targetport="parallelismLevels"/>
+        <edge kind="dependency" source="parallelismLevels"
+            target="BdGrd" targetport="parallelismLevels"/>
+        <edge kind="dependency" source="parallelismLevels"
+            target="BdRot" targetport="parallelismLevels"/>
+        <edge kind="dependency" source="parallelismLevels"
+            target="BdGpyr" targetport="parallelismLevels"/>
+        <edge kind="dependency" source="nDogLayers"
+            target="detect_keypoints" targetport="nDogLayers"/>
+        <edge kind="dependency" source="nbKeypointsMax" target="keypoints"/>
+        <edge kind="dependency" source="image_width" target="image"/>
+        <edge kind="dependency" source="image_height" target="image"/>
+        <edge kind="dependency" source="nbKptMax" target="nbKeypointsMax"/>
+        <edge kind="dependency" source="imgH" target="image_height"/>
+        <edge kind="dependency" source="imgW" target="image_width"/>
+        <edge kind="dependency" source="image_height" target="BdGT" targetport="image_height"/>
+        <edge kind="dependency" source="image_width" target="BdGT" targetport="image_width"/>
+        <edge kind="dependency" source="image_height" target="BdGT_2x" targetport="image_height"/>
+        <edge kind="dependency" source="image_width" target="BdGT_2x" targetport="image_width"/>
+        <edge kind="dependency" source="imgDouble" target="BdGT_2x" targetport="imgDouble"/>
+        <edge kind="dependency" source="parallelismLevels"
+            target="BdGT_2x" targetport="parallelismLevels"/>
+        <edge kind="dependency" source="imgDouble" target="BdGT_2x.forRec-row_filter_transpose2x_1.imgIterPrev"/>
+        <edge kind="dependency" source="image_width" target="BdGT_2x.forRec-row_filter_transpose2x_1.imgIterPrev"/>
+        <edge kind="dependency" source="image_height" target="BdGT_2x.forRec-row_filter_transpose2x_1.imgIterPrev"/>
+        <edge kind="dependency" source="image_height"
+            target="BdBlurred1" targetport="image_height"/>
+        <edge kind="dependency" source="image_width" target="BdBlurred1" targetport="image_width"/>
+        <edge kind="dependency" source="image_height"
+            target="BdBlurredN" targetport="image_height"/>
+        <edge kind="dependency" source="image_width" target="BdBlurredN" targetport="image_width"/>
+        <edge kind="dependency" source="image_width" target="BdGT.forRec-row_filter_transpose_1.imgIterPrev"/>
+        <edge kind="dependency" source="image_height" target="BdBlurDown2xN.forRec-downsample2xN.imgDownPrev"/>
+        <edge kind="dependency" source="image_width" target="BdBlurDown2xN.forRec-downsample2xN.imgDownPrev"/>
+        <edge kind="dependency" source="image_width" target="BdBlurred1.forRec-seq_blur1.imgBlurPrev"/>
+        <edge kind="dependency" source="image_height" target="BdBlurred1.forRec-seq_blur1.imgBlurPrev"/>
+        <edge kind="dependency" source="image_width" target="BdBlurredN.forRec-seq_blurN.imgBlurPrev"/>
+        <edge kind="dependency" source="image_height" target="BdBlurredN.forRec-seq_blurN.imgBlurPrev"/>
+        <edge kind="dependency" source="image_height" target="BdGT.forRec-row_filter_transpose_1.imgIterPrev"/>
+        <edge kind="dependency" source="nGpyrLayers"
+            target="BdOctaveDown" targetport="nGpyrLayers"/>
+        <edge kind="dependency" source="nbKeypointsMax"
+            target="MERGE_keypoints" targetport="nbKeypointsMax"/>
+        <edge kind="dependency" source="parallelismLevels"
+            target="MERGE_keypoints" targetport="parallelismLevels"/>
+        <edge kind="dependency" source="nOctavesDownN"
+            target="BdCounterGpyrXOctave" targetport="nOctavesDownN"/>
+        <edge kind="dependency" source="nGpyrLayers"
+            target="BdCounterGpyrXOctave" targetport="nGpyrLayers"/>
+        <edge kind="dependency" source="nOctavesDownN" target="BdSizes" targetport="nOctavesDownN"/>
+        <edge kind="dependency" source="nOctavesDownN" target="BdCoefs" targetport="nOctavesDownN"/>
+        <edge kind="dependency" source="nDogLayers" target="BdDoG" targetport="nDogLayers"/>
+        <edge kind="dependency" source="totSizeWithoutLayers"
+            target="BdDoG" targetport="totSizeWithoutLayers"/>
+        <edge kind="dependency" source="parallelismLevels"
+            target="BdDoG" targetport="parallelismLevels"/>
+        <edge kind="dependency" source="image_width"
+            target="BarrierTranspose_2" targetport="image_width"/>
+        <edge kind="dependency" source="image_height"
+            target="BarrierTranspose_2" targetport="image_height"/>
+        <edge kind="dependency" source="image_width"
+            target="BarrierTranspose2x_2" targetport="image_width"/>
+        <edge kind="dependency" source="image_height"
+            target="BarrierTranspose2x_2" targetport="image_height"/>
+        <edge kind="dependency" source="imgDouble"
+            target="BarrierTranspose2x_2" targetport="imgDouble"/>
+        <edge kind="dependency" source="nGpyrLayers"
+            target="BarrierCounterGpyr" targetport="nGpyrLayers"/>
+        <edge kind="dependency" source="nGpyrLayers" target="nDogLayers"/>
+        <edge kind="dependency" source="image_width"
+            target="SPLIT_upsample2x" targetport="image_width"/>
+        <edge kind="dependency" source="imgDouble"
+            target="SPLIT_upsample2x" targetport="imgDouble"/>
+        <edge kind="dependency" source="image_height"
+            target="SPLIT_upsample2x" targetport="image_height"/>
+        <edge kind="dependency" source="parallelismLevels"
+            target="SPLIT_upsample2x" targetport="parallelismLevels"/>
+        <edge kind="dependency" source="nLayers"
+            target="detect_keypoints" targetport="nLayers"/>
+        <edge kind="dependency" source="nLayers" target="BdRot" targetport="nLayers"/>
+        <edge kind="dependency" source="nLayers"
+            target="build_grd_rot_pyr" targetport="nLayers"/>
+        <edge kind="dependency" source="nLayers" target="BdGrd" targetport="nLayers"/>
+        <edge kind="dependency" source="nLayers"
+            target="extract_descriptor" targetport="nLayers"/>
+        <edge kind="dependency" source="parallelismLevels"
+            target="counterPLevels" targetport="parallelismLevels"/>
+        <edge kind="dependency" source="nGpyrLayers" target="gRmax"/>
+        <edge kind="dependency" source="nGpyrLayers"
+            target="build_grd_rot_pyr" targetport="nGpyrLayers"/>
+        <edge kind="dependency" source="nGpyrLayers"
+            target="build_dog_pyr" targetport="nGpyrLayers"/>
+        <edge kind="dependency" source="nGpyrLayers" target="BdGpyr" targetport="nGpyrLayers"/>
+    </graph>
+</graphml>
