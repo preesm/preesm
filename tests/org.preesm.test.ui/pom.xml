@@ -120,8 +120,8 @@
             </runner>
             <!-- The main configuration section goes here -->
             <aut>
-              <groupId>org.ietr.preesm</groupId>
-              <artifactId>org.ietr.preesm.product</artifactId>
+              <groupId>org.preesm</groupId>
+              <artifactId>org.preesm.product</artifactId>
               <version>${project.version}</version>
               <vmArgs>
                 <vmArg>-javaagent:${settings.localRepository}/org/jacoco/org.jacoco.agent/${jacoco-version}/org.jacoco.agent-${jacoco-version}-runtime.jar=destfile=${project.basedir}/${sonar.jacoco.reportPaths},append=true,excludes=**/tests/**:**/test-fragments/**:**/releng/**</vmArg>
