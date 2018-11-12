@@ -47,13 +47,14 @@ import org.ietr.dftools.workflow.implement.AbstractTaskImplementation;
 import org.ietr.dftools.workflow.tools.WorkflowLogger;
 import org.ietr.preesm.experiment.model.pimm.PiGraph;
 
-// TODO: Auto-generated Javadoc
 /**
- * A Test workflow element for PiGraphs.
+ * A Test workflow element for PiGraphs. This task does not take into account hierarchies, thus it has been made
+ * deprecated.
  *
  * @author mpelcat
  * @author jheulot
  */
+@Deprecated
 public class PrintPISDFStats extends AbstractTaskImplementation {
 
   /*

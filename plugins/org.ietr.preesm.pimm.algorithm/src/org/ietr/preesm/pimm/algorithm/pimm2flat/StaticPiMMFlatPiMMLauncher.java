@@ -142,7 +142,7 @@ public class StaticPiMMFlatPiMMLauncher extends PiMMSwitch<Boolean> {
   }
 
   /**
-   * Computes the BRV of a PiSDF graph using either LCM method or Topology Matrix.
+   * Computes the BRV of a PiSDF graph using either LCM method.
    *
    * @throws StaticPiMMFlatPiMMException
    *           the StaticPiMM2SrDAGException exception
@@ -163,7 +163,7 @@ public class StaticPiMMFlatPiMMLauncher extends PiMMSwitch<Boolean> {
   }
 
   /**
-   * Print the BRV values of every vertex
+   * Print the BRV values of every vertex.
    */
   private void printRV() {
     for (final Map.Entry<AbstractVertex, Long> rv : this.graphBRV.entrySet()) {

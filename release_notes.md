@@ -8,6 +8,8 @@ PREESM Changelog
 
 ### Changes
 * Merge DFTools code in Preesm;
+* Improve periodic actor support in UI; 
+* Add periodic actor check (not working with cycles yet);
 
 ### Bug fix
 

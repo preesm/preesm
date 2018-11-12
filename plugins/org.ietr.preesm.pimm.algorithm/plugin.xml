@@ -174,6 +174,30 @@
             </output>
          </outputs>
       </task>
+      <task
+            id="org.ietr.preesm.pimm.algorithm.checker.periods.PeriodsPreschedulingChecker"
+            name="Periods Prescheduling Checker"
+            type="org.ietr.preesm.pimm.algorithm.checker.periods.PeriodsPreschedulingChecker">
+         <inputs>
+            <input
+                  id="PiMM"
+                  object="org.ietr.preesm.experiment.model.pimm.PiGraph">
+            </input>
+            <input
+                  id="scenario"
+                  object="org.ietr.preesm.core.scenario.PreesmScenario">
+            </input>
+            <input
+                  id="architecture"
+                  object="org.ietr.dftools.architecture.slam.Design">
+            </input>
+         </inputs>
+         <outputs>
+            <output
+                  id="PiMM"
+                  object="org.ietr.preesm.experiment.model.pimm.PiGraph">
+            </output>
+         </outputs>
+      </task>
    </extension>
-
 </plugin>

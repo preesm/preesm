@@ -50,6 +50,8 @@ import org.ietr.dftools.workflow.WorkflowException;
 import org.ietr.preesm.core.scenario.ConstraintGroup;
 import org.ietr.preesm.core.scenario.ConstraintGroupManager;
 import org.ietr.preesm.core.scenario.PreesmScenario;
+import org.ietr.preesm.core.scenario.Timing;
+import org.ietr.preesm.core.scenario.TimingManager;
 import org.ietr.preesm.experiment.model.factory.PiMMUserFactory;
 import org.ietr.preesm.experiment.model.pimm.AbstractActor;
 import org.ietr.preesm.experiment.model.pimm.AbstractVertex;
@@ -180,8 +182,21 @@ public class StaticPiMM2FlatPiMMVisitor extends PiMMSwitch<Boolean> {
         currentOperatorIDs.add((String) operatorIds.toArray()[0]);
       }
     }
+
     final ConstraintGroupManager constraintGroupManager = this.scenario.getConstraintGroupManager();
     currentOperatorIDs.forEach(s -> constraintGroupManager.addConstraint(s, copyActor));
+    // Add the scenario timings
+    final List<Timing> currentTimings = new ArrayList<>();
+    for (final String operatorDefinitionID : this.scenario.getOperatorDefinitionIds()) {
+      final Timing timing = this.scenario.getTimingManager().getTimingOrDefault(actor.getName(), operatorDefinitionID);
+      currentTimings.add(timing);
+    }
+    final TimingManager timingManager = this.scenario.getTimingManager();
+    for (final Timing t : currentTimings) {
+      final Timing addTiming = timingManager.addTiming(copyActor.getName(), t.getOperatorDefinitionId());
+      addTiming.setTime(t.getTime());
+      addTiming.setInputParameters(t.getInputParameters());
+    }
   }
 
   /*

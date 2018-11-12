@@ -116,9 +116,9 @@ public class PiMMSRVerticesLinker {
     final Expression portRateExpression = targetPort.getPortRateExpression();
     final long targetRate = portRateExpression.evaluate();
     if (nDelays < 0) {
-      throw new WorkflowException("Invalid number of delay on fifo[" + fifo.getId() + "]: " + Long.toString(nDelays));
+      throw new WorkflowException("Invalid number of delays on fifo[" + fifo.getId() + "]: " + Long.toString(nDelays));
     } else if (nDelays < targetRate) {
-      throw new WorkflowException("Insuffisiant number of delay on fifo[" + fifo.getId() + "]: number of delays: "
+      throw new WorkflowException("Not enough delays on fifo[" + fifo.getId() + "]: number of delays: "
           + Long.toString(nDelays) + ", consumption: " + Long.toString(targetRate));
     }
     return nDelays;
