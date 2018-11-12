@@ -69,7 +69,7 @@
     <module>org.ietr.preesm.codegen.test</module>
     <module>org.ietr.preesm.codegen.xtend.test</module>
     <module>org.ietr.preesm.core.test</module>
-    <module>org.ietr.preesm.experiment.model.test</module>
+    <module>org.preesm.model.pisdf.test</module>
     <module>org.ietr.preesm.mapper.test</module>
     <module>org.ietr.preesm.memory.test</module>
     <module>org.ietr.preesm.pimm.algorithm.test</module>

@@ -1,7 +1,7 @@
 
 @GenModel(
 	modelName="PiMM", prefix="PiMM",
-	modelDirectory="/org.ietr.preesm.experiment.model/ecore-gen",
+	modelDirectory="/org.preesm.model.pisdf/ecore-gen",
 	// editDirectory="/org.ietr.preesm.model.edit/ecore-gen",
 	// editorDirectory="/org.ietr.preesm.model.editor/ecore-gen",
 	// testsDirectory="/org.ietr.preesm.model.tests/ecore-gen",
@@ -24,7 +24,7 @@
 	operationReflection="false"
 )
 
-@Ecore(nsURI="http://org.ietr.preesm/model/pimm")
+@Ecore(nsURI="http://org.preesm/model/pisdf")
 package org.ietr.preesm.experiment.model.pimm
 
 import java.util.Optional

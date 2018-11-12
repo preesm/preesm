@@ -49,7 +49,7 @@
 
   <modules>
     <module>org.preesm.commons</module>
-    <module>org.ietr.preesm.experiment.model</module>
+    <module>org.preesm.model.pisdf</module>
     <module>org.ietr.preesm.core</module>
 
     <module>org.ietr.preesm.algorithm</module>
