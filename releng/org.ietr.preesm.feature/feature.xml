@@ -721,34 +721,34 @@ Version 1.0 dated 2006-09-05.]]>
          id="org.preesm.algorithm"
          download-size="0"
          install-size="0"
-         version="2.17.0.qualifier"
+         version="2.17.1.qualifier"
          unpack="false"/>
 
    <plugin
          id="org.preesm.architecture"
          download-size="0"
          install-size="0"
-         version="2.17.0.qualifier"
+         version="2.17.1.qualifier"
          unpack="false"/>
 
    <plugin
          id="org.preesm.architecture.ui"
          download-size="0"
          install-size="0"
-         version="2.17.0.qualifier"
+         version="2.17.1.qualifier"
          unpack="false"/>
 
    <plugin
          id="org.preesm.ui"
          download-size="0"
          install-size="0"
-         version="2.17.0.qualifier"
+         version="2.17.1.qualifier"
          unpack="false"/>
 
    <plugin
          id="org.preesm.workflow"
          download-size="0"
          install-size="0"
-         version="2.17.0.qualifier"
+         version="2.17.1.qualifier"
          unpack="false"/>
 </feature>

@@ -3,7 +3,7 @@ Bundle-ManifestVersion: 2
 Bundle-Name: DFTools Workflow
 Automatic-Module-Name: org.preesm.workflow
 Bundle-SymbolicName: org.preesm.workflow;singleton:=true
-Bundle-Version: 2.17.0.qualifier
+Bundle-Version: 2.17.1.qualifier
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Require-Bundle: org.eclipse.core.runtime,
  org.eclipse.core.resources,
