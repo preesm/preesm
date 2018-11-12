@@ -11,7 +11,6 @@ Require-Bundle: org.eclipse.core.runtime,
  org.eclipse.xtend.lib;bundle-version="2.11.0",
  org.ietr.preesm.core,
  org.ietr.preesm.codegen,
- org.ietr.preesm.evaluator,
  org.apache.commons.lang3,
  com.github.yannrichet.JMathArray;bundle-version="1.0.0"
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8

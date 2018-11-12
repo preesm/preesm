@@ -59,7 +59,6 @@
     <module>org.ietr.preesm.codegen</module>
     <module>org.ietr.preesm.codegen.xtend</module>
 
-    <module>org.ietr.preesm.evaluator</module>
 
     <module>org.ietr.preesm.mapper</module>
     <module>org.ietr.preesm.memory</module>

@@ -7,12 +7,24 @@ Bundle-Version: 2.17.1.qualifier
 Require-Bundle: org.eclipse.core.runtime,
  org.eclipse.core.resources;bundle-version="3.4.0",
  org.eclipse.xtend.lib,
+ org.ojalgo;bundle-version="44.0.0",
+ org.apache.commons.lang3;bundle-version="3.5.0",
  org.ietr.preesm.core;visibility:=reexport
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Bundle-Vendor: IETR/INSA Rennes
 Export-Package: org.ietr.preesm.algorithm.exportSdf3Xml,
  org.ietr.preesm.algorithm.exportXml,
  org.ietr.preesm.algorithm.importSdf3Xml,
+ org.ietr.preesm.algorithm.optimization.clean.joinfork,
  org.ietr.preesm.algorithm.randomsdf,
- org.ietr.preesm.algorithm.transforms
+ org.ietr.preesm.algorithm.transforms,
+ org.ietr.preesm.deadlock,
+ org.ietr.preesm.evaluator,
+ org.ietr.preesm.latency,
+ org.ietr.preesm.mathematicalModels,
+ org.ietr.preesm.schedule,
+ org.ietr.preesm.throughput,
+ org.ietr.preesm.throughput.tools.helpers,
+ org.ietr.preesm.throughput.tools.parsers,
+ org.ietr.preesm.throughput.tools.transformers
 Import-Package: org.apache.commons.lang3.time

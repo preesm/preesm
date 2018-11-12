@@ -669,7 +669,7 @@ Version 1.0 dated 2006-09-05.]]>
          unpack="false"/>
 
    <plugin
-         id="org.ietr.preesm.utils"
+         id="org.preesm.commons"
          download-size="0"
          install-size="0"
          version="2.17.1.qualifier"
@@ -690,14 +690,7 @@ Version 1.0 dated 2006-09-05.]]>
          unpack="false"/>
 
    <plugin
-         id="org.ietr.preesm.evaluator"
-         download-size="0"
-         install-size="0"
-         version="2.17.1.qualifier"
-         unpack="false"/>
-
-   <plugin
-         id="org.ietr.preesm.rcp.utils"
+         id="org.preesm.rcp.utils"
          download-size="0"
          install-size="0"
          version="2.17.1.qualifier"
