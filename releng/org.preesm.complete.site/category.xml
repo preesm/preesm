@@ -39,13 +39,13 @@
 
 -->
 <site>
-  <feature id="org.ietr.preesm.feature">
+  <feature id="org.preesm.feature">
     <category name="PREESM" />
   </feature>
-  <feature id="org.ietr.preesm.dev.feature">
+  <feature id="org.preesm.dev.feature">
     <category name="dev_components" />
   </feature>
-  <feature id="org.ietr.preesm.feature.source">
+  <feature id="org.preesm.feature.source">
     <category name="dev_components" />
     <category name="PREESM" />
   </feature>
