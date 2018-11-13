@@ -95,7 +95,7 @@ class ScriptRunner {
 	public static final String BROADCAST_SCRIPT = "broadcast.bsh"
 
 	// Name of bundle where to look for files (allow not to search into all projects)
-	public static final String bundleId = "org.ietr.preesm.memory"
+	public static final String bundleId = "org.preesm.algorithm"
 
 	// Paths to the special scripts files
 	public static final String JOIN = SCRIPT_FOLDER + IPath.SEPARATOR + JOIN_SCRIPT
