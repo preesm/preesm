@@ -599,7 +599,7 @@ Version 1.0 dated 2006-09-05.]]>
          unpack="false"/>
 
    <plugin
-         id="org.ietr.preesm.core"
+         id="org.preesm.algorithm"
          download-size="0"
          install-size="0"
          version="2.17.1.qualifier"
@@ -670,13 +670,6 @@ Version 1.0 dated 2006-09-05.]]>
 
    <plugin
          id="fi.abo.preesm.dataparallel"
-         download-size="0"
-         install-size="0"
-         version="2.17.1.qualifier"
-         unpack="false"/>
-
-   <plugin
-         id="org.preesm.algorithm"
          download-size="0"
          install-size="0"
          version="2.17.1.qualifier"

@@ -50,7 +50,7 @@
   <modules>
     <module>org.preesm.commons</module>
     <module>org.preesm.model.pisdf</module>
-    <module>org.ietr.preesm.core</module>
+    <module>org.preesm.algorithm</module>
 
     <module>org.ietr.preesm.clustering</module>
     <module>org.ietr.preesm.cli</module>
@@ -68,7 +68,6 @@
 
     <module>org.preesm.model.slam</module>
     <module>org.preesm.workflow</module>
-    <module>org.preesm.algorithm</module>
     <module>org.preesm.ui.slam</module>
     <module>org.preesm.ui</module>
     
