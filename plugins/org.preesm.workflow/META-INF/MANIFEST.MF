@@ -15,9 +15,7 @@ Bundle-ClassPath: .
 Export-Package: org.ietr.dftools.workflow,
  org.ietr.dftools.workflow.converter,
  org.ietr.dftools.workflow.elements,
- org.ietr.dftools.workflow.implement,
- org.ietr.dftools.workflow.messages,
- org.ietr.dftools.workflow.tools
+ org.ietr.dftools.workflow.implement
 Bundle-Activator: org.ietr.dftools.workflow.Activator
 Bundle-ActivationPolicy: lazy
 Bundle-Vendor: IETR/INSA Rennes
