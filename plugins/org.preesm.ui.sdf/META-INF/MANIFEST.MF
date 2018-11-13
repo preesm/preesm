@@ -1,8 +1,8 @@
 Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
-Bundle-Name: Preesm UI :: PiSDF
-Automatic-Module-Name: org.ietr.preesm.ui.pimm
-Bundle-SymbolicName: org.ietr.preesm.ui.pimm;singleton:=true
+Bundle-Name: Preesm UI :: SDF
+Automatic-Module-Name: org.ietr.preesm.ui.sdf
+Bundle-SymbolicName: org.preesm.ui.sdf;singleton:=true
 Bundle-Version: 2.17.1.qualifier
 Bundle-Vendor: IETR/INSA Rennes
 Require-Bundle: org.eclipse.ui.console;bundle-version="3.5.100",
@@ -19,5 +19,4 @@ Require-Bundle: org.eclipse.ui.console;bundle-version="3.5.100",
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Bundle-ActivationPolicy: lazy
 Eclipse-BuddyPolicy: global
-Export-Package: org.ietr.preesm.ui.pimm.features
 

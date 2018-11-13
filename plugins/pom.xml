@@ -58,9 +58,9 @@
 
     <module>fi.abo.preesm.dataparallel</module>
 
-    <module>org.ietr.preesm.ui.pimm</module>
-    <module>org.ietr.preesm.ui.scenario</module>
-    <module>org.ietr.preesm.ui.sdf</module>
+    <module>org.preesm.ui.pisdf</module>
+    <module>org.preesm.ui.scenario</module>
+    <module>org.preesm.ui.sdf</module>
 
     <module>org.preesm.model.slam</module>
     <module>org.preesm.workflow</module>
