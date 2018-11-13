@@ -52,7 +52,7 @@
     <module>org.preesm.model.pisdf</module>
     <module>org.preesm.algorithm</module>
 
-    <module>org.ietr.preesm.cli</module>
+    <module>org.preesm.cli</module>
     <module>org.ietr.preesm.codegen</module>
     <module>org.ietr.preesm.codegen.xtend</module>
 

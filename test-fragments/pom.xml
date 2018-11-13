@@ -64,7 +64,7 @@
   </build>
 
   <modules>
-    <module>org.ietr.preesm.cli.test</module>
+    <module>org.preesm.cli.test</module>
     <module>org.ietr.preesm.codegen.test</module>
     <module>org.ietr.preesm.codegen.xtend.test</module>
     <module>org.preesm.model.pisdf.test</module>

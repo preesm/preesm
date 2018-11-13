@@ -641,7 +641,7 @@ Version 1.0 dated 2006-09-05.]]>
          unpack="false"/>
 
    <plugin
-         id="org.ietr.preesm.cli"
+         id="org.preesm.cli"
          download-size="0"
          install-size="0"
          version="2.17.1.qualifier"
