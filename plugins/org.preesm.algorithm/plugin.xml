@@ -70,6 +70,33 @@
 
    <extension
          point="org.preesm.workflow.tasks">
+         
+      <task
+            id="org.ietr.preesm.Clustering"
+            name="Clustering"
+            type="org.ietr.preesm.clustering.Clustering">
+         <inputs>
+            <input
+                  id="SDF"
+                  object="org.ietr.dftools.algorithm.model.sdf.SDFGraph">
+            </input>
+            <input
+                  id="scenario"
+                  object="org.ietr.preesm.core.scenario.PreesmScenario">
+            </input>
+            <input
+                  id="architecture"
+                  object="org.ietr.dftools.architecture.slam.Design">
+            </input>
+         </inputs>
+         <outputs>
+            <output
+                  id="SDF"
+                  object="org.ietr.dftools.algorithm.model.sdf.SDFGraph">
+            </output>
+         </outputs>
+      </task>
+      
       <task
             id="org.ietr.preesm.memory.bounds.MemoryBoundsEstimator"
             name="Memory Bounds Estimator"
