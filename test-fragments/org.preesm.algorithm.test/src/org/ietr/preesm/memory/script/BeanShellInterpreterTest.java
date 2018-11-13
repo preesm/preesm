@@ -63,6 +63,8 @@ import org.junit.Test;
  */
 public class BeanShellInterpreterTest {
 
+  private static final String MEMORY_SCRIPT_PLUGIN = "org.preesm.algorithm";
+
   @Test
   public void testBasicEval() throws EvalError {
     final Interpreter interpreter = new Interpreter();
@@ -295,7 +297,7 @@ public class BeanShellInterpreterTest {
    */
   @Test
   public void testFork() throws URISyntaxException, IOException, EvalError {
-    final String plugin_name = "org.ietr.preesm.memory";
+    final String plugin_name = MEMORY_SCRIPT_PLUGIN;
     final String script_path = "/scripts/fork.bsh";
 
     final StringBuffer content = new StringBuffer();
@@ -359,7 +361,7 @@ public class BeanShellInterpreterTest {
    */
   @Test
   public void testJoin() throws URISyntaxException, IOException, EvalError {
-    final String plugin_name = "org.ietr.preesm.memory";
+    final String plugin_name = MEMORY_SCRIPT_PLUGIN;
     final String script_path = "/scripts/join.bsh";
 
     final StringBuffer content = new StringBuffer();
@@ -423,7 +425,7 @@ public class BeanShellInterpreterTest {
    */
   @Test
   public void testRoundBuffer() throws URISyntaxException, IOException, EvalError {
-    final String plugin_name = "org.ietr.preesm.memory";
+    final String plugin_name = MEMORY_SCRIPT_PLUGIN;
     final String script_path = "/scripts/roundbuffer.bsh";
 
     final StringBuffer content = new StringBuffer();
@@ -473,7 +475,7 @@ public class BeanShellInterpreterTest {
    */
   @Test
   public void testBroadCast() throws URISyntaxException, IOException, EvalError {
-    final String plugin_name = "org.ietr.preesm.memory";
+    final String plugin_name = MEMORY_SCRIPT_PLUGIN;
     final String script_path = "/scripts/broadcast.bsh";
 
     final StringBuffer content = new StringBuffer();
