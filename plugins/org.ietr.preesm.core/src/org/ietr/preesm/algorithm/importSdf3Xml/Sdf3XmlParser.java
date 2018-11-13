@@ -37,6 +37,7 @@
  */
 package org.ietr.preesm.algorithm.importSdf3Xml;
 
+import java.io.File;
 import java.io.InputStream;
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -49,7 +50,7 @@ import org.ietr.dftools.algorithm.model.sdf.esdf.SDFSinkInterfaceVertex;
 import org.ietr.dftools.algorithm.model.sdf.esdf.SDFSourceInterfaceVertex;
 import org.ietr.dftools.algorithm.model.types.LongEdgePropertyType;
 import org.ietr.dftools.algorithm.model.types.StringEdgePropertyType;
-import org.ietr.dftools.architecture.utils.DomUtil;
+import org.ietr.preesm.utils.DomUtil;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;

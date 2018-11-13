@@ -72,9 +72,9 @@ import org.ietr.dftools.workflow.WorkflowException
 import org.ietr.dftools.workflow.tools.WorkflowLogger
 import org.ietr.preesm.core.scenario.PreesmScenario
 import org.ietr.preesm.core.types.DataType
-import org.ietr.preesm.experiment.model.pimm.util.URLResolver
 import org.ietr.preesm.memory.exclusiongraph.MemoryExclusionGraph
 import org.ietr.preesm.memory.exclusiongraph.MemoryExclusionVertex
+import org.ietr.preesm.utils.files.URLResolver
 
 import static extension org.ietr.preesm.memory.script.Range.*
 

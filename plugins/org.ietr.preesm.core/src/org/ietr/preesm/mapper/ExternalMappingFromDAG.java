@@ -57,7 +57,6 @@ import org.ietr.preesm.core.scenario.PreesmScenario;
 import org.ietr.preesm.experiment.model.pimm.AbstractActor;
 import org.ietr.preesm.experiment.model.pimm.PiGraph;
 import org.ietr.preesm.experiment.model.pimm.util.PiIdentifiers;
-import org.ietr.preesm.experiment.model.pimm.util.URLResolver;
 import org.ietr.preesm.mapper.abc.impl.latency.LatencyAbc;
 import org.ietr.preesm.mapper.abc.taskscheduling.AbstractTaskSched;
 import org.ietr.preesm.mapper.algo.list.InitialLists;
@@ -68,6 +67,7 @@ import org.ietr.preesm.mapper.schedule.Architecture;
 import org.ietr.preesm.mapper.schedule.Schedule;
 import org.ietr.preesm.mapper.schedule.ScheduleEntry;
 import org.ietr.preesm.mapper.schedule.ScheduleUtils;
+import org.ietr.preesm.utils.files.URLResolver;
 
 /**
  *

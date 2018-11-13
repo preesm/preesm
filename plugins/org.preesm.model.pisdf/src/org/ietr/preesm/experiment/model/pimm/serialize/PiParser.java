@@ -56,8 +56,6 @@ import org.eclipse.emf.common.util.WrappedException;
 import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.emf.ecore.resource.ResourceSet;
 import org.eclipse.emf.ecore.resource.impl.ResourceSetImpl;
-import org.ietr.dftools.algorithm.importer.InvalidModelException;
-import org.ietr.dftools.architecture.utils.DomUtil;
 import org.ietr.dftools.workflow.tools.WorkflowLogger;
 import org.ietr.preesm.experiment.model.PiGraphException;
 import org.ietr.preesm.experiment.model.factory.PiMMUserFactory;
@@ -97,6 +95,7 @@ import org.ietr.preesm.experiment.model.pimm.RefinementContainer;
 import org.ietr.preesm.experiment.model.pimm.util.PiIdentifiers;
 import org.ietr.preesm.experiment.model.pimm.util.PiSDFXSDValidator;
 import org.ietr.preesm.experiment.model.pimm.util.SubgraphConnectorVisitor;
+import org.ietr.preesm.utils.DomUtil;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -116,8 +115,6 @@ public class PiParser {
    * @param algorithmURL
    *          URL of the Algorithm.
    * @return the {@link PiGraph} algorithm.
-   * @throws InvalidModelException
-   *           the invalid model exception
    * @throws CoreException
    *           the core exception
    */

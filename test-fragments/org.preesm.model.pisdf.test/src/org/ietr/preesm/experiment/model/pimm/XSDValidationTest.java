@@ -40,7 +40,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import org.ietr.preesm.experiment.model.pimm.util.PiSDFXSDValidator;
 import org.ietr.preesm.experiment.model.pimm.util.PiSDFXSDValidator.PiSDFXSDValidationException;
-import org.ietr.preesm.experiment.model.pimm.util.URLResolver;
+import org.ietr.preesm.utils.files.URLResolver;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;

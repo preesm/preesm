@@ -42,7 +42,6 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.util.Iterator;
 import org.ietr.dftools.algorithm.exporter.GMLExporter;
-import org.ietr.dftools.algorithm.exporter.Key;
 import org.ietr.dftools.algorithm.model.AbstractGraph;
 import org.ietr.dftools.algorithm.model.PropertyBean;
 import org.ietr.dftools.algorithm.model.dag.DAGEdge;
@@ -56,6 +55,7 @@ import org.ietr.preesm.mapper.model.MapperDAG;
 import org.ietr.preesm.mapper.model.MapperDAGVertex;
 import org.ietr.preesm.mapper.model.property.VertexInit;
 import org.ietr.preesm.mapper.model.special.TransferVertex;
+import org.ietr.preesm.utils.GMLKey;
 import org.w3c.dom.Element;
 
 /**
@@ -159,7 +159,7 @@ public class ImplementationExporter extends GMLExporter<DAGVertex, DAGEdge> {
           operatorAdress.setTextContent(memAddress);
           vertexElt.appendChild(operatorAdress);
 
-          addKey("Operator_address", new Key("Operator_address", "vertex", "string", null));
+          addKey("Operator_address", new GMLKey("Operator_address", "vertex", "string", null));
         }
 
         exportRouteStep(routeStep, vertexElt);

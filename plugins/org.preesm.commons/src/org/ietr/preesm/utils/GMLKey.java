@@ -36,7 +36,7 @@
  * The fact that you are presently reading this means that you have had
  * knowledge of the CeCILL license and that you accept its terms.
  */
-package org.ietr.dftools.algorithm.exporter;
+package org.ietr.preesm.utils;
 
 import java.util.Objects;
 
@@ -45,7 +45,7 @@ import java.util.Objects;
  *
  * @author jpiat
  */
-public class Key {
+public class GMLKey {
 
   /** The apply to. */
   String applyTo;
@@ -75,7 +75,7 @@ public class Key {
    * @param desc
    *          The class name of the properties value (SDFEdgePorperty.class) ...
    */
-  public Key(final String name, final String applyTo, final String type, final Class<?> desc) {
+  public GMLKey(final String name, final String applyTo, final String type, final Class<?> desc) {
     this.name = name;
     this.type = type;
     this.applyTo = applyTo;
@@ -144,8 +144,8 @@ public class Key {
    */
   @Override
   public boolean equals(final Object key) {
-    if (key instanceof Key) {
-      final Key kKey = (Key) key;
+    if (key instanceof GMLKey) {
+      final GMLKey kKey = (GMLKey) key;
       // Since when it exists, the id is always equal to the name, we
       // remove
       // the equality test for this.id

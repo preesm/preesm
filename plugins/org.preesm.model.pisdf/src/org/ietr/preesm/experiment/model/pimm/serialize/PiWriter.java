@@ -54,8 +54,6 @@ import org.eclipse.core.runtime.Path;
 import org.eclipse.emf.common.util.EList;
 import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.EObject;
-import org.ietr.dftools.algorithm.exporter.Key;
-import org.ietr.dftools.architecture.utils.DomUtil;
 import org.ietr.preesm.experiment.model.PiGraphException;
 import org.ietr.preesm.experiment.model.pimm.AbstractActor;
 import org.ietr.preesm.experiment.model.pimm.AbstractVertex;
@@ -87,6 +85,8 @@ import org.ietr.preesm.experiment.model.pimm.Refinement;
 import org.ietr.preesm.experiment.model.pimm.RoundBufferActor;
 import org.ietr.preesm.experiment.model.pimm.util.PiIdentifiers;
 import org.ietr.preesm.experiment.model.pimm.util.PiSDFXSDValidator;
+import org.ietr.preesm.utils.DomUtil;
+import org.ietr.preesm.utils.GMLKey;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -108,9 +108,10 @@ public class PiWriter {
 
   /**
    * This LinkedHashMap associates a List to each <b>element</b> (graph, node, edge, port) of a Pi description. For each
-   * <b>element</b>, a list of {@link Key} s is associated. A {@link Key} can be seen as an attribute of this element.
+   * <b>element</b>, a list of {@link GMLKey} s is associated. A {@link GMLKey} can be seen as an attribute of this
+   * element.
    */
-  protected Map<String, List<Key>> elementKeys;
+  protected Map<String, List<GMLKey>> elementKeys;
 
   /** Graph {@link Element} of the DOM {@link Document} of this Writer. */
   protected Element graphElement;
@@ -165,7 +166,7 @@ public class PiWriter {
    */
   protected void addKey(final String id, final String name, final String elt, final String type, final Class<?> desc) {
     // Create the new Key
-    final Key key = new Key(name, elt, type, desc);
+    final GMLKey key = new GMLKey(name, elt, type, desc);
     key.setId(id);
 
     // Create the corresponding keyElement (if it does not exists)
@@ -206,12 +207,12 @@ public class PiWriter {
    *          the key
    * @return the element
    */
-  protected Element createKeyElt(final Key key) {
+  protected Element createKeyElt(final GMLKey key) {
     // Check if the element already has a Key list
     if (this.elementKeys.get(key.getApplyTo()) == null) {
       // If not, create the Key list for this element and add it to
       // elementKeys
-      final ArrayList<Key> keys = new ArrayList<>();
+      final ArrayList<GMLKey> keys = new ArrayList<>();
       this.elementKeys.put(key.getApplyTo(), keys);
     } else {
       // If the element already exists
@@ -347,7 +348,7 @@ public class PiWriter {
 
   /**
    * Add a data child {@link Element} to the parent {@link Element} whit the given key name and the given content. If
-   * the {@link Key} does not exist yet, it will be created automatically.
+   * the {@link GMLKey} does not exist yet, it will be created automatically.
    *
    * @param parentElt
    *          The element to which the data is added

@@ -35,10 +35,11 @@
  * The fact that you are presently reading this means that you have had
  * knowledge of the CeCILL license and that you accept its terms.
  */
-package org.ietr.dftools.architecture.utils;
+package org.ietr.preesm.utils;
 
 import java.io.InputStream;
 import java.io.OutputStream;
+import org.ietr.preesm.utils.exceptions.PreesmException;
 import org.w3c.dom.DOMConfiguration;
 import org.w3c.dom.DOMImplementation;
 import org.w3c.dom.Document;
@@ -104,7 +105,7 @@ public class DomUtil {
       try {
         DomUtil.registry = DOMImplementationRegistry.newInstance();
       } catch (ClassCastException | ClassNotFoundException | InstantiationException | IllegalAccessException e) {
-        throw new SlamException("Could not instantiate DOM", e);
+        throw new PreesmException("Could not instantiate DOM", e);
       }
     }
 

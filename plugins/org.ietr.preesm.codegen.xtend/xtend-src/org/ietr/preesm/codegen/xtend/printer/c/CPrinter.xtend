@@ -78,7 +78,7 @@ import org.ietr.preesm.codegen.xtend.printer.DefaultPrinter
 import org.ietr.preesm.codegen.xtend.printer.net.c.TcpCPrinter
 import org.ietr.preesm.codegen.xtend.task.CodegenException
 import org.ietr.preesm.experiment.model.pimm.util.CHeaderUsedLocator
-import org.ietr.preesm.experiment.model.pimm.util.URLResolver
+import org.ietr.preesm.utils.files.URLResolver
 
 /**
  * This printer is currently used to print C code only for GPP processors

@@ -28,6 +28,6 @@ Require-Bundle: org.eclipse.core.runtime,
  org.eclipse.emf.ecore.xcore.lib,
  org.preesm.model.slam;visibility:=reexport,
  javax.annotation;bundle-version="1.2.0";visibility:=reexport,
- org.preesm.workflow
+ org.preesm.commons;visibility:=reexport
 Bundle-ActivationPolicy: lazy
 Bundle-Vendor: %providerName

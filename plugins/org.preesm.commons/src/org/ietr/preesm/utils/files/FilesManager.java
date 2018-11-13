@@ -58,7 +58,6 @@ import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 import java.util.stream.Collectors;
 import org.eclipse.core.runtime.Assert;
-import org.ietr.preesm.experiment.model.pimm.util.URLResolver;
 
 /**
  * Utility class to manipulate files. It brings everything needed to extract files from a jar plugin to the filesystem,
