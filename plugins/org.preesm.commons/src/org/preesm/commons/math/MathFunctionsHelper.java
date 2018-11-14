@@ -85,6 +85,25 @@ public interface MathFunctionsHelper {
     return a;
   }
 
+  /**
+   * Computes the gcd (greatest common divider) of a list of integer.
+   *
+   * @param valList
+   *          The list of integer to compute
+   * @return The gcd (greatest common divider) of the list
+   */
+  public static long gcd(final List<Long> valList) {
+    long gcd = 0;
+    for (final Long val : valList) {
+      if (gcd == 0) {
+        gcd = val;
+      } else {
+        gcd = ArithmeticUtils.gcd(gcd, val);
+      }
+    }
+    return gcd;
+  }
+
   public static long gcd(final LongFraction a, final LongFraction b) {
     return ArithmeticUtils.lcm(a.getDenominator(), b.getDenominator());
   }

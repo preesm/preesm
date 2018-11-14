@@ -53,6 +53,7 @@ import org.ietr.dftools.algorithm.model.sdf.SDFInterfaceVertex;
 import org.ietr.dftools.algorithm.model.sdf.esdf.SDFSinkInterfaceVertex;
 import org.ietr.dftools.algorithm.model.sdf.esdf.SDFSourceInterfaceVertex;
 import org.math.array.DoubleArray;
+import org.preesm.commons.math.Rational;
 
 /**
  * Provides static math method useful for SDF analysis.

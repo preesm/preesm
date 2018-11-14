@@ -49,7 +49,7 @@ import java.util.logging.Logger;
 import org.eclipse.core.runtime.IConfigurationElement;
 import org.eclipse.core.runtime.IExtensionRegistry;
 import org.eclipse.core.runtime.Platform;
-import org.preesm.commons.messages.WorkflowMessages;
+import org.preesm.commons.messages.PreesmMessages;
 
 /**
  * The logger is used to display messages in the console. Its behavior is delegated to the workflow ui plugin.
@@ -111,7 +111,7 @@ public abstract class PreesmLogger extends Logger {
   }
 
   /**
-   * adds a log retrieved from a property file {@link WorkflowMessages} and parameterized with variables Each string
+   * adds a log retrieved from a property file {@link PreesmMessages} and parameterized with variables Each string
    * "%VAR%" is replaced by a given variable.
    *
    * @param level
@@ -122,7 +122,7 @@ public abstract class PreesmLogger extends Logger {
    *          the variables
    */
   public static void logFromProperty(Level level, String msgKey, String... variables) {
-    getLogger().log(level, WorkflowMessages.getString(msgKey, variables));
+    getLogger().log(level, PreesmMessages.getString(msgKey, variables));
   }
 
   /**

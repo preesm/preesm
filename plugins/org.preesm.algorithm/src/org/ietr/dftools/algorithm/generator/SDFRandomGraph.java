@@ -46,7 +46,6 @@ import java.util.Map;
 import java.util.Set;
 import java.util.Vector;
 import org.apache.commons.math3.util.ArithmeticUtils;
-import org.ietr.dftools.algorithm.Rational;
 import org.ietr.dftools.algorithm.model.parameters.InvalidExpressionException;
 import org.ietr.dftools.algorithm.model.sdf.SDFAbstractVertex;
 import org.ietr.dftools.algorithm.model.sdf.SDFEdge;
@@ -55,6 +54,7 @@ import org.ietr.dftools.algorithm.model.sdf.SDFVertex;
 import org.ietr.dftools.algorithm.model.types.LongEdgePropertyType;
 import org.ietr.dftools.algorithm.model.visitors.SDF4JException;
 import org.jgrapht.alg.cycle.CycleDetector;
+import org.preesm.commons.math.Rational;
 
 /**
  * Generate a schedulable Random graph, by setting the number of vertices and who have random numbers of sources and

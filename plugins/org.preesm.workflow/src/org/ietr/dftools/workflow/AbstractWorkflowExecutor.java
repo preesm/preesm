@@ -61,7 +61,7 @@ import org.ietr.dftools.workflow.implement.AbstractScenarioImplementation;
 import org.ietr.dftools.workflow.implement.AbstractTaskImplementation;
 import org.ietr.dftools.workflow.implement.AbstractWorkflowNodeImplementation;
 import org.preesm.commons.logger.PreesmLogger;
-import org.preesm.commons.messages.WorkflowMessages;
+import org.preesm.commons.messages.PreesmMessages;
 
 /**
  * This abstract class provides methods to check and execute a workflow. A workflow consists of several transformation
@@ -531,7 +531,7 @@ public abstract class AbstractWorkflowExecutor {
    *          the variables
    */
   protected void log(Level level, String msgKey, String... variables) {
-    getLogger().log(level, WorkflowMessages.getString(msgKey, variables));
+    getLogger().log(level, PreesmMessages.getString(msgKey, variables));
   }
 
   /**

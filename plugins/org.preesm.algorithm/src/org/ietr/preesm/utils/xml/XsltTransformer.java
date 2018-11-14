@@ -52,6 +52,7 @@ import org.eclipse.core.resources.IWorkspaceRoot;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.Path;
+import org.ietr.preesm.mapper.exporter.XsltTransform;
 import org.preesm.commons.logger.PreesmLogger;
 
 // TODO: Auto-generated Javadoc

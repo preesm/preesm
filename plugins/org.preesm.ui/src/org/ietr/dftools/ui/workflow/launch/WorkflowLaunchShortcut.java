@@ -66,7 +66,7 @@ import org.ietr.dftools.ui.PreesmUIPlugin;
 import org.ietr.dftools.ui.util.FileUtils;
 import org.ietr.dftools.ui.workflow.ScenarioConfiguration;
 import org.preesm.commons.logger.PreesmLogger;
-import org.preesm.commons.messages.WorkflowMessages;
+import org.preesm.commons.messages.PreesmMessages;
 
 /**
  * Shortcut for launching an executable directly from the navigator, without having to create a launch configuration
@@ -129,7 +129,7 @@ public class WorkflowLaunchShortcut implements ILaunchShortcut {
     final Set<String> scenarioExtensions = new LinkedHashSet<>();
     scenarioExtensions.add("scenario");
     scenarioExtensions.add("piscenario");
-    final String message = WorkflowMessages.getString("Workflow.browseScenarioTitle");
+    final String message = PreesmMessages.getString("Workflow.browseScenarioTitle");
     return FileUtils.browseFiles(message, scenarioExtensions);
   }
 

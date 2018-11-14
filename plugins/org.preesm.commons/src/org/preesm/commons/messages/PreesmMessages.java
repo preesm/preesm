@@ -46,18 +46,18 @@ import java.util.ResourceBundle;
  *
  * @author mpelcat
  */
-public class WorkflowMessages {
+public class PreesmMessages {
 
   /** The Constant BUNDLE_NAME. */
-  private static final String BUNDLE_NAME = "org.preesm.commons.messages.workflowMessages";
+  private static final String BUNDLE_NAME = "org.preesm.commons.messages.PreesmMessages";
 
   /** The Constant RESOURCE_BUNDLE. */
-  private static final ResourceBundle RESOURCE_BUNDLE = ResourceBundle.getBundle(WorkflowMessages.BUNDLE_NAME);
+  private static final ResourceBundle RESOURCE_BUNDLE = ResourceBundle.getBundle(PreesmMessages.BUNDLE_NAME);
 
   /**
    * Instantiates a new workflow messages.
    */
-  private WorkflowMessages() {
+  private PreesmMessages() {
   }
 
   /**
@@ -71,7 +71,7 @@ public class WorkflowMessages {
    */
   public static String getString(final String key, final String... variables) {
     try {
-      String message = WorkflowMessages.RESOURCE_BUNDLE.getString(key);
+      String message = PreesmMessages.RESOURCE_BUNDLE.getString(key);
       for (final String var : variables) {
         if (var != null) {
           message = message.replaceFirst("%VAR%", var);
