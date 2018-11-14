@@ -44,9 +44,7 @@
 <?eclipse version="3.4"?>
 
 <plugin>
-   <extension-point id="printers" name="Printers"
-      schema="schema/printers.exsd" />
-   <extension point="org.preesm.codegen.xtend.printers">
+   <extension point="org.preesm.codegen.printers">
       <printers language="XML">
          <printer
             class="org.ietr.preesm.codegen.xtend.printer.XMLPrinter"

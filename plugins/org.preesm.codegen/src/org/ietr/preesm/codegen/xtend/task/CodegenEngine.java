@@ -84,7 +84,7 @@ import org.ietr.preesm.memory.exclusiongraph.MemoryExclusionGraph;
  */
 public class CodegenEngine {
 
-  public static final String PRINTERS_EXTENSION_ID = "org.preesm.codegen.xtend.printers";
+  public static final String PRINTERS_EXTENSION_ID = "org.preesm.codegen.printers";
 
   /** The codegen path. */
   private final String codegenPath;

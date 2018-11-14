@@ -54,4 +54,6 @@
             genModel="model/Codegen.xcore"/>
    </extension>
 
+   <extension-point id="printers" name="Printers"
+      schema="schema/printers.exsd" />
 </plugin>
