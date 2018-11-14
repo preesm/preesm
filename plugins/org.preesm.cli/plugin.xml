@@ -47,7 +47,7 @@
             thread="main"
             visible="true">
          <run
-               class="org.ietr.preesm.cli.CLIWorkflowExecutor">
+               class="org.preesm.cli.CLIWorkflowExecutor">
          </run>
       </application>
    </extension>

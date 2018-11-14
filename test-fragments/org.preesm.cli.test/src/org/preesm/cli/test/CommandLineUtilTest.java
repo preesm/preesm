@@ -32,13 +32,13 @@
  * The fact that you are presently reading this means that you have had
  * knowledge of the CeCILL license and that you accept its terms.
  */
-package org.ietr.preesm.cli.test;
+package org.preesm.cli.test;
 
 import java.util.logging.Logger;
 import org.eclipse.core.runtime.CoreException;
-import org.ietr.preesm.cli.CommandLineUtil;
 import org.junit.Assert;
 import org.junit.Test;
+import org.preesm.cli.CommandLineUtil;
 
 /**
  */

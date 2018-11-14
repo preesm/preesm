@@ -11,4 +11,4 @@ Require-Bundle: org.apache.commons.cli;bundle-version="1.2.0",
  org.preesm.workflow
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Bundle-Vendor: IETR/INSA Rennes
-Export-Package: org.ietr.preesm.cli
+Export-Package: org.preesm.cli

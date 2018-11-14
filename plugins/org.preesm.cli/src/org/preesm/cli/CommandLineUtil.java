@@ -34,7 +34,7 @@
  * The fact that you are presently reading this means that you have had
  * knowledge of the CeCILL license and that you accept its terms.
  */
-package org.ietr.preesm.cli;
+package org.preesm.cli;
 
 import java.util.logging.Level;
 import java.util.logging.Logger;
