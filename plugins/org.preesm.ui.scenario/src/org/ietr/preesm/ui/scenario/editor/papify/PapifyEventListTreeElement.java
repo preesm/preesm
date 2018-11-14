@@ -45,10 +45,10 @@ import org.eclipse.core.runtime.Path;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.swt.graphics.Image;
 import org.ietr.dftools.algorithm.model.sdf.SDFGraph;
-import org.ietr.preesm.experiment.model.pimm.AbstractActor;
 import org.ietr.preesm.ui.scenario.editor.HierarchicalSDFVertex;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.FrameworkUtil;
+import org.preesm.model.pisdf.AbstractActor;
 
 // TODO: Auto-generated Javadoc
 /**

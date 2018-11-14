@@ -44,18 +44,18 @@ import org.eclipse.graphiti.features.context.impl.ReconnectionContext;
 import org.eclipse.graphiti.features.impl.DefaultReconnectionFeature;
 import org.eclipse.graphiti.mm.pictograms.Anchor;
 import org.eclipse.graphiti.mm.pictograms.PictogramElement;
-import org.ietr.preesm.experiment.model.factory.PiMMUserFactory;
-import org.ietr.preesm.experiment.model.pimm.ConfigInputPort;
-import org.ietr.preesm.experiment.model.pimm.ConfigOutputPort;
-import org.ietr.preesm.experiment.model.pimm.Configurable;
-import org.ietr.preesm.experiment.model.pimm.Delay;
-import org.ietr.preesm.experiment.model.pimm.Dependency;
-import org.ietr.preesm.experiment.model.pimm.ExecutableActor;
-import org.ietr.preesm.experiment.model.pimm.ISetter;
-import org.ietr.preesm.experiment.model.pimm.InterfaceActor;
-import org.ietr.preesm.experiment.model.pimm.Parameter;
-import org.ietr.preesm.experiment.model.pimm.Parameterizable;
-import org.ietr.preesm.experiment.model.pimm.Port;
+import org.preesm.model.pisdf.ConfigInputPort;
+import org.preesm.model.pisdf.ConfigOutputPort;
+import org.preesm.model.pisdf.Configurable;
+import org.preesm.model.pisdf.Delay;
+import org.preesm.model.pisdf.Dependency;
+import org.preesm.model.pisdf.ExecutableActor;
+import org.preesm.model.pisdf.ISetter;
+import org.preesm.model.pisdf.InterfaceActor;
+import org.preesm.model.pisdf.Parameter;
+import org.preesm.model.pisdf.Parameterizable;
+import org.preesm.model.pisdf.Port;
+import org.preesm.model.pisdf.factory.PiMMUserFactory;
 
 // TODO: Auto-generated Javadoc
 /**

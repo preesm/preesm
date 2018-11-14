@@ -41,16 +41,16 @@ import java.util.Map;
 import java.util.logging.Level;
 import org.apache.commons.lang3.time.StopWatch;
 import org.ietr.preesm.core.scenario.PreesmScenario;
-import org.ietr.preesm.experiment.model.pimm.AbstractVertex;
-import org.ietr.preesm.experiment.model.pimm.Parameter;
-import org.ietr.preesm.experiment.model.pimm.PiGraph;
-import org.ietr.preesm.experiment.model.pimm.util.PiMMSwitch;
 import org.ietr.preesm.pimm.algorithm.helper.LCMBasedBRV;
 import org.ietr.preesm.pimm.algorithm.helper.PiBRV;
 import org.ietr.preesm.pimm.algorithm.helper.PiMMHandler;
 import org.ietr.preesm.pimm.algorithm.helper.PiMMHelperException;
 import org.ietr.preesm.pimm.algorithm.pimm2flat.visitor.StaticPiMM2FlatPiMMVisitor;
 import org.preesm.commons.logger.PreesmLogger;
+import org.preesm.model.pisdf.AbstractVertex;
+import org.preesm.model.pisdf.Parameter;
+import org.preesm.model.pisdf.PiGraph;
+import org.preesm.model.pisdf.util.PiMMSwitch;
 
 /**
  * The Class StaticPiMM2SDFLauncher.

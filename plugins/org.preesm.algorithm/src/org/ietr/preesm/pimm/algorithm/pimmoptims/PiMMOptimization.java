@@ -38,7 +38,7 @@
  */
 package org.ietr.preesm.pimm.algorithm.pimmoptims;
 
-import org.ietr.preesm.experiment.model.pimm.PiGraph;
+import org.preesm.model.pisdf.PiGraph;
 
 /**
  * @author farresti

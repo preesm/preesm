@@ -36,7 +36,7 @@
 package org.ietr.preesm.pimm.algorithm.pimm2sdf;
 
 import java.util.Map;
-import org.ietr.preesm.experiment.model.pimm.Parameter;
+import org.preesm.model.pisdf.Parameter;
 
 /**
  * This class corresponds to one execution of a PiGraph with given values for each parameters.

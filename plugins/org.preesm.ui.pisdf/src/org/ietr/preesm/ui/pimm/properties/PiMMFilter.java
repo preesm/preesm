@@ -42,14 +42,14 @@ import org.eclipse.emf.ecore.EObject;
 import org.eclipse.graphiti.mm.pictograms.PictogramElement;
 import org.eclipse.graphiti.services.Graphiti;
 import org.eclipse.graphiti.ui.platform.AbstractPropertySectionFilter;
-import org.ietr.preesm.experiment.model.pimm.ConfigOutputPort;
-import org.ietr.preesm.experiment.model.pimm.DataInputInterface;
-import org.ietr.preesm.experiment.model.pimm.DataInputPort;
-import org.ietr.preesm.experiment.model.pimm.DataOutputInterface;
-import org.ietr.preesm.experiment.model.pimm.DataOutputPort;
-import org.ietr.preesm.experiment.model.pimm.Delay;
-import org.ietr.preesm.experiment.model.pimm.ExecutableActor;
-import org.ietr.preesm.experiment.model.pimm.Parameter;
+import org.preesm.model.pisdf.ConfigOutputPort;
+import org.preesm.model.pisdf.DataInputInterface;
+import org.preesm.model.pisdf.DataInputPort;
+import org.preesm.model.pisdf.DataOutputInterface;
+import org.preesm.model.pisdf.DataOutputPort;
+import org.preesm.model.pisdf.Delay;
+import org.preesm.model.pisdf.ExecutableActor;
+import org.preesm.model.pisdf.Parameter;
 
 // TODO: Auto-generated Javadoc
 /**

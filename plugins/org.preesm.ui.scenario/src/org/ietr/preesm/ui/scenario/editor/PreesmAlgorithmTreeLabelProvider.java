@@ -38,7 +38,7 @@ package org.ietr.preesm.ui.scenario.editor;
 
 import org.eclipse.jface.viewers.LabelProvider;
 import org.ietr.dftools.algorithm.model.sdf.SDFGraph;
-import org.ietr.preesm.experiment.model.pimm.AbstractActor;
+import org.preesm.model.pisdf.AbstractActor;
 
 // TODO: Auto-generated Javadoc
 /**

@@ -39,8 +39,8 @@ import org.eclipse.graphiti.features.IFeatureProvider;
 import org.eclipse.graphiti.features.context.ICustomContext;
 import org.eclipse.graphiti.features.custom.AbstractCustomFeature;
 import org.eclipse.graphiti.mm.pictograms.PictogramElement;
-import org.ietr.preesm.experiment.model.pimm.Fifo;
 import org.ietr.preesm.ui.pimm.util.PiMMUtil;
+import org.preesm.model.pisdf.Fifo;
 
 // TODO: Auto-generated Javadoc
 /**

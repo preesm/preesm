@@ -40,12 +40,12 @@ package org.ietr.preesm.pimm.algorithm.checker;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import org.eclipse.emf.ecore.EObject;
-import org.ietr.preesm.experiment.model.pimm.AbstractVertex;
-import org.ietr.preesm.experiment.model.pimm.Actor;
-import org.ietr.preesm.experiment.model.pimm.Fifo;
-import org.ietr.preesm.experiment.model.pimm.PiGraph;
 import org.ietr.preesm.pimm.algorithm.checker.structure.FifoChecker;
 import org.ietr.preesm.pimm.algorithm.checker.structure.RefinementChecker;
+import org.preesm.model.pisdf.AbstractVertex;
+import org.preesm.model.pisdf.Actor;
+import org.preesm.model.pisdf.Fifo;
+import org.preesm.model.pisdf.PiGraph;
 
 // TODO: Auto-generated Javadoc
 /**

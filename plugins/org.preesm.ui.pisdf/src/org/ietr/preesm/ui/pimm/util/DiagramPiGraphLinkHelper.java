@@ -45,12 +45,12 @@ import org.eclipse.graphiti.mm.pictograms.FreeFormConnection;
 import org.eclipse.graphiti.mm.pictograms.PictogramElement;
 import org.eclipse.graphiti.services.Graphiti;
 import org.eclipse.graphiti.services.ILinkService;
-import org.ietr.preesm.experiment.model.pimm.AbstractActor;
-import org.ietr.preesm.experiment.model.pimm.Delay;
-import org.ietr.preesm.experiment.model.pimm.DelayActor;
-import org.ietr.preesm.experiment.model.pimm.Dependency;
-import org.ietr.preesm.experiment.model.pimm.Fifo;
-import org.ietr.preesm.experiment.model.pimm.PiGraph;
+import org.preesm.model.pisdf.AbstractActor;
+import org.preesm.model.pisdf.Delay;
+import org.preesm.model.pisdf.DelayActor;
+import org.preesm.model.pisdf.Dependency;
+import org.preesm.model.pisdf.Fifo;
+import org.preesm.model.pisdf.PiGraph;
 
 // TODO: Auto-generated Javadoc
 /**

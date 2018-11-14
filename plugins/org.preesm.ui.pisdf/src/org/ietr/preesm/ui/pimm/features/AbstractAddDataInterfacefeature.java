@@ -51,9 +51,9 @@ import org.eclipse.graphiti.services.Graphiti;
 import org.eclipse.graphiti.services.IGaService;
 import org.eclipse.graphiti.services.IPeCreateService;
 import org.eclipse.graphiti.util.IColorConstant;
-import org.ietr.preesm.experiment.model.pimm.DataPort;
-import org.ietr.preesm.experiment.model.pimm.InterfaceActor;
-import org.ietr.preesm.experiment.model.pimm.PiGraph;
+import org.preesm.model.pisdf.DataPort;
+import org.preesm.model.pisdf.InterfaceActor;
+import org.preesm.model.pisdf.PiGraph;
 
 /**
  *

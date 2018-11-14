@@ -41,10 +41,10 @@ import java.util.Set;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.IPath;
-import org.ietr.preesm.experiment.model.pimm.AbstractActor;
-import org.ietr.preesm.experiment.model.pimm.Actor;
-import org.ietr.preesm.experiment.model.pimm.PiGraph;
-import org.ietr.preesm.experiment.model.pimm.Refinement;
+import org.preesm.model.pisdf.AbstractActor;
+import org.preesm.model.pisdf.Actor;
+import org.preesm.model.pisdf.PiGraph;
+import org.preesm.model.pisdf.Refinement;
 
 // TODO: Auto-generated Javadoc
 /**

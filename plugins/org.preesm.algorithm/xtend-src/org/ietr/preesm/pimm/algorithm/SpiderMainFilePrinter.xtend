@@ -37,11 +37,11 @@
 package org.ietr.preesm.pimm.algorithm
 
 import java.util.Date
-import org.ietr.preesm.experiment.model.pimm.Actor
-import org.ietr.preesm.experiment.model.pimm.CHeaderRefinement
-import org.ietr.preesm.experiment.model.pimm.ConfigInputPort
-import org.ietr.preesm.experiment.model.pimm.Parameter
-import org.ietr.preesm.experiment.model.pimm.PiGraph
+import org.preesm.model.pisdf.Actor
+import org.preesm.model.pisdf.CHeaderRefinement
+import org.preesm.model.pisdf.ConfigInputPort
+import org.preesm.model.pisdf.Parameter
+import org.preesm.model.pisdf.PiGraph
 
 class SpiderMainFilePrinter {
 

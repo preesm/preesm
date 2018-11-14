@@ -48,7 +48,7 @@ import org.eclipse.graphiti.features.context.impl.MultiDeleteInfo;
 import org.eclipse.graphiti.mm.pictograms.Anchor;
 import org.eclipse.graphiti.mm.pictograms.BoxRelativeAnchor;
 import org.eclipse.graphiti.mm.pictograms.ContainerShape;
-import org.ietr.preesm.experiment.model.pimm.AbstractActor;
+import org.preesm.model.pisdf.AbstractActor;
 
 /**
  * Delete Feature for {@link AbstractActor}.

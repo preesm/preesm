@@ -38,10 +38,10 @@
  */
 package org.ietr.preesm.pimm.algorithm.pimmoptims;
 
-import org.ietr.preesm.experiment.model.pimm.BroadcastActor;
-import org.ietr.preesm.experiment.model.pimm.PiGraph;
-import org.ietr.preesm.experiment.model.pimm.RoundBufferActor;
-import org.ietr.preesm.experiment.model.pimm.util.PiMMSwitch;
+import org.preesm.model.pisdf.BroadcastActor;
+import org.preesm.model.pisdf.PiGraph;
+import org.preesm.model.pisdf.RoundBufferActor;
+import org.preesm.model.pisdf.util.PiMMSwitch;
 
 /**
  * @author farresti

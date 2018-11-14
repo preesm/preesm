@@ -40,8 +40,8 @@ import org.eclipse.core.runtime.IProgressMonitor;
 import org.ietr.dftools.workflow.elements.Workflow;
 import org.ietr.dftools.workflow.implement.AbstractTaskImplementation;
 import org.ietr.dftools.workflow.implement.AbstractWorkflowNodeImplementation;
-import org.ietr.preesm.experiment.model.pimm.PiGraph;
 import org.ietr.preesm.mapper.model.MapperDAG;
+import org.preesm.model.pisdf.PiGraph;
 
 /**
  */

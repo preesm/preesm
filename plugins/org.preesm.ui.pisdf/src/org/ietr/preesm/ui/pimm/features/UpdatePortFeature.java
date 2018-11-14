@@ -46,8 +46,8 @@ import org.eclipse.graphiti.mm.algorithms.GraphicsAlgorithm;
 import org.eclipse.graphiti.mm.algorithms.Text;
 import org.eclipse.graphiti.mm.pictograms.BoxRelativeAnchor;
 import org.eclipse.graphiti.mm.pictograms.PictogramElement;
-import org.ietr.preesm.experiment.model.pimm.InterfaceActor;
-import org.ietr.preesm.experiment.model.pimm.Port;
+import org.preesm.model.pisdf.InterfaceActor;
+import org.preesm.model.pisdf.Port;
 
 // TODO: Auto-generated Javadoc
 /**

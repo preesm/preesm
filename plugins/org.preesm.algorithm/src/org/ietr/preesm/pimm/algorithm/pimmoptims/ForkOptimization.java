@@ -38,12 +38,12 @@
  */
 package org.ietr.preesm.pimm.algorithm.pimmoptims;
 
-import org.ietr.preesm.experiment.model.pimm.AbstractActor;
-import org.ietr.preesm.experiment.model.pimm.DataInputPort;
-import org.ietr.preesm.experiment.model.pimm.DataOutputPort;
-import org.ietr.preesm.experiment.model.pimm.Fifo;
-import org.ietr.preesm.experiment.model.pimm.ForkActor;
-import org.ietr.preesm.experiment.model.pimm.PiGraph;
+import org.preesm.model.pisdf.AbstractActor;
+import org.preesm.model.pisdf.DataInputPort;
+import org.preesm.model.pisdf.DataOutputPort;
+import org.preesm.model.pisdf.Fifo;
+import org.preesm.model.pisdf.ForkActor;
+import org.preesm.model.pisdf.PiGraph;
 
 /**
  * @author farresti

@@ -46,7 +46,7 @@ import org.eclipse.graphiti.features.custom.AbstractCustomFeature;
 import org.eclipse.graphiti.mm.pictograms.PictogramElement;
 import org.eclipse.ui.PlatformUI;
 import org.ietr.dftools.ui.util.FileUtils;
-import org.ietr.preesm.experiment.model.pimm.Actor;
+import org.preesm.model.pisdf.Actor;
 
 // TODO: Auto-generated Javadoc
 /**

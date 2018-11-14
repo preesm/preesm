@@ -50,9 +50,9 @@ import org.eclipse.graphiti.mm.pictograms.PictogramElement;
 import org.eclipse.graphiti.mm.pictograms.Shape;
 import org.eclipse.graphiti.services.Graphiti;
 import org.eclipse.graphiti.ui.services.GraphitiUi;
-import org.ietr.preesm.experiment.model.pimm.AbstractVertex;
-import org.ietr.preesm.experiment.model.pimm.InterfaceActor;
-import org.ietr.preesm.experiment.model.pimm.Parameter;
+import org.preesm.model.pisdf.AbstractVertex;
+import org.preesm.model.pisdf.InterfaceActor;
+import org.preesm.model.pisdf.Parameter;
 
 /**
  * Layout Feature for {@link InterfaceActor} and Config Input Interface (i.e. {@link Parameter}).

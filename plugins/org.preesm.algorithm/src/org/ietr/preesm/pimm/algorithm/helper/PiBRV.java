@@ -41,16 +41,16 @@ package org.ietr.preesm.pimm.algorithm.helper;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import org.ietr.preesm.experiment.model.pimm.AbstractActor;
-import org.ietr.preesm.experiment.model.pimm.AbstractVertex;
-import org.ietr.preesm.experiment.model.pimm.DataInputInterface;
-import org.ietr.preesm.experiment.model.pimm.DataInputPort;
-import org.ietr.preesm.experiment.model.pimm.DataOutputInterface;
-import org.ietr.preesm.experiment.model.pimm.DataOutputPort;
-import org.ietr.preesm.experiment.model.pimm.DelayActor;
-import org.ietr.preesm.experiment.model.pimm.Fifo;
-import org.ietr.preesm.experiment.model.pimm.InterfaceActor;
-import org.ietr.preesm.experiment.model.pimm.PiGraph;
+import org.preesm.model.pisdf.AbstractActor;
+import org.preesm.model.pisdf.AbstractVertex;
+import org.preesm.model.pisdf.DataInputInterface;
+import org.preesm.model.pisdf.DataInputPort;
+import org.preesm.model.pisdf.DataOutputInterface;
+import org.preesm.model.pisdf.DataOutputPort;
+import org.preesm.model.pisdf.DelayActor;
+import org.preesm.model.pisdf.Fifo;
+import org.preesm.model.pisdf.InterfaceActor;
+import org.preesm.model.pisdf.PiGraph;
 
 /**
  * @author farresti

@@ -43,12 +43,12 @@ import org.eclipse.graphiti.mm.pictograms.PictogramElement;
 import org.eclipse.graphiti.platform.IPlatformImageConstants;
 import org.eclipse.graphiti.tb.IDecorator;
 import org.eclipse.graphiti.tb.ImageDecorator;
-import org.ietr.preesm.experiment.model.expression.ExpressionEvaluationException;
-import org.ietr.preesm.experiment.model.pimm.Dependency;
-import org.ietr.preesm.experiment.model.pimm.Expression;
-import org.ietr.preesm.experiment.model.pimm.Parameter;
-import org.ietr.preesm.experiment.model.pimm.util.DependencyCycleDetector;
 import org.ietr.preesm.ui.pimm.diagram.PiMMImageProvider;
+import org.preesm.model.pisdf.Dependency;
+import org.preesm.model.pisdf.Expression;
+import org.preesm.model.pisdf.Parameter;
+import org.preesm.model.pisdf.expression.ExpressionEvaluationException;
+import org.preesm.model.pisdf.util.DependencyCycleDetector;
 
 // TODO: Auto-generated Javadoc
 /**

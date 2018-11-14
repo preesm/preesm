@@ -51,7 +51,7 @@ import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.ide.IDE;
-import org.ietr.preesm.experiment.model.pimm.Actor;
+import org.preesm.model.pisdf.Actor;
 
 // TODO: Auto-generated Javadoc
 /**

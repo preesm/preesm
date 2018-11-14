@@ -46,7 +46,7 @@ import org.eclipse.core.runtime.CoreException;
 import org.ietr.dftools.algorithm.importer.InvalidModelException;
 import org.ietr.dftools.algorithm.model.sdf.SDFAbstractVertex;
 import org.ietr.preesm.core.scenario.serialize.ExcelConstraintsParser;
-import org.ietr.preesm.experiment.model.pimm.AbstractActor;
+import org.preesm.model.pisdf.AbstractActor;
 
 // TODO: Auto-generated Javadoc
 /**

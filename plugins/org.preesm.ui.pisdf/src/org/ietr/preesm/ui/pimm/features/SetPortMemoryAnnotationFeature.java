@@ -39,8 +39,8 @@ import org.eclipse.graphiti.features.IFeatureProvider;
 import org.eclipse.graphiti.features.context.ICustomContext;
 import org.eclipse.graphiti.features.custom.AbstractCustomFeature;
 import org.eclipse.graphiti.mm.pictograms.PictogramElement;
-import org.ietr.preesm.experiment.model.pimm.DataPort;
-import org.ietr.preesm.experiment.model.pimm.PortMemoryAnnotation;
+import org.preesm.model.pisdf.DataPort;
+import org.preesm.model.pisdf.PortMemoryAnnotation;
 
 // TODO: Auto-generated Javadoc
 /**

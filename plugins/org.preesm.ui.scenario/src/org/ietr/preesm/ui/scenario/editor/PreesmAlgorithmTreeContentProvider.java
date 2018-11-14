@@ -51,10 +51,10 @@ import org.ietr.dftools.algorithm.model.sdf.SDFGraph;
 import org.ietr.dftools.algorithm.model.sdf.SDFVertex;
 import org.ietr.preesm.core.scenario.PreesmScenario;
 import org.ietr.preesm.core.scenario.serialize.ScenarioParser;
-import org.ietr.preesm.experiment.model.pimm.AbstractActor;
-import org.ietr.preesm.experiment.model.pimm.Actor;
-import org.ietr.preesm.experiment.model.pimm.PiGraph;
-import org.ietr.preesm.experiment.model.pimm.serialize.PiParser;
+import org.preesm.model.pisdf.AbstractActor;
+import org.preesm.model.pisdf.Actor;
+import org.preesm.model.pisdf.PiGraph;
+import org.preesm.model.pisdf.serialize.PiParser;
 
 // TODO: Auto-generated Javadoc
 /**

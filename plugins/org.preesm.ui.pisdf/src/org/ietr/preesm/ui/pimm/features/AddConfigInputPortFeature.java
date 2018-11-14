@@ -45,10 +45,10 @@ import org.eclipse.graphiti.mm.algorithms.styles.Orientation;
 import org.eclipse.graphiti.services.Graphiti;
 import org.eclipse.graphiti.services.IGaService;
 import org.eclipse.graphiti.util.IColorConstant;
-import org.ietr.preesm.experiment.model.factory.PiMMUserFactory;
-import org.ietr.preesm.experiment.model.pimm.ConfigInputPort;
-import org.ietr.preesm.experiment.model.pimm.ExecutableActor;
-import org.ietr.preesm.experiment.model.pimm.Port;
+import org.preesm.model.pisdf.ConfigInputPort;
+import org.preesm.model.pisdf.ExecutableActor;
+import org.preesm.model.pisdf.Port;
+import org.preesm.model.pisdf.factory.PiMMUserFactory;
 
 // TODO: Auto-generated Javadoc
 /**

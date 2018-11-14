@@ -41,8 +41,8 @@ import org.eclipse.graphiti.features.IFeatureProvider;
 import org.eclipse.graphiti.features.context.IAddContext;
 import org.eclipse.graphiti.mm.pictograms.Diagram;
 import org.eclipse.graphiti.util.IColorConstant;
-import org.ietr.preesm.experiment.model.pimm.DataOutputInterface;
-import org.ietr.preesm.experiment.model.pimm.PiGraph;
+import org.preesm.model.pisdf.DataOutputInterface;
+import org.preesm.model.pisdf.PiGraph;
 
 /**
  * Add feature to add a new {@link DataOutputInterface} to the {@link PiGraph}.

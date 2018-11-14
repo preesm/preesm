@@ -44,12 +44,12 @@ import java.util.Map;
 import java.util.logging.Level;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
-import org.ietr.preesm.experiment.model.pimm.AbstractActor;
-import org.ietr.preesm.experiment.model.pimm.Fifo;
 import org.math.array.LinearAlgebra;
 import org.preesm.commons.logger.PreesmLogger;
 import org.preesm.commons.math.LongFraction;
 import org.preesm.commons.math.MathFunctionsHelper;
+import org.preesm.model.pisdf.AbstractActor;
+import org.preesm.model.pisdf.Fifo;
 
 /**
  * This class is used to compute the basic repetition vector of a static PiSDF graph using topology matrix method.

@@ -60,14 +60,6 @@ import org.eclipse.graphiti.tb.DefaultToolBehaviorProvider;
 import org.eclipse.graphiti.tb.IDecorator;
 import org.eclipse.graphiti.tb.IToolBehaviorProvider;
 import org.eclipse.jface.dialogs.MessageDialog;
-import org.ietr.preesm.experiment.model.pimm.AbstractVertex;
-import org.ietr.preesm.experiment.model.pimm.Actor;
-import org.ietr.preesm.experiment.model.pimm.ConfigInputPort;
-import org.ietr.preesm.experiment.model.pimm.Delay;
-import org.ietr.preesm.experiment.model.pimm.ExecutableActor;
-import org.ietr.preesm.experiment.model.pimm.Parameter;
-import org.ietr.preesm.experiment.model.pimm.PiGraph;
-import org.ietr.preesm.experiment.model.pimm.Port;
 import org.ietr.preesm.ui.pimm.decorators.ActorDecorators;
 import org.ietr.preesm.ui.pimm.decorators.DelayDecorators;
 import org.ietr.preesm.ui.pimm.decorators.ParameterDecorators;
@@ -79,6 +71,14 @@ import org.ietr.preesm.ui.pimm.features.OpenRefinementFeature;
 import org.ietr.preesm.ui.pimm.features.RenameAbstractVertexFeature;
 import org.ietr.preesm.ui.pimm.features.RenameActorPortFeature;
 import org.ietr.preesm.ui.pimm.layout.AutoLayoutFeature;
+import org.preesm.model.pisdf.AbstractVertex;
+import org.preesm.model.pisdf.Actor;
+import org.preesm.model.pisdf.ConfigInputPort;
+import org.preesm.model.pisdf.Delay;
+import org.preesm.model.pisdf.ExecutableActor;
+import org.preesm.model.pisdf.Parameter;
+import org.preesm.model.pisdf.PiGraph;
+import org.preesm.model.pisdf.Port;
 
 /**
  * {@link IToolBehaviorProvider} for the {@link Diagram} with type {@link PiMMDiagramTypeProvider}.

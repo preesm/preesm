@@ -41,8 +41,8 @@ import java.util.Set;
 import java.util.concurrent.ConcurrentSkipListSet;
 import org.eclipse.emf.ecore.EObject;
 import org.ietr.preesm.core.scenario.ParameterValue.ParameterType;
-import org.ietr.preesm.experiment.model.pimm.Parameter;
-import org.ietr.preesm.experiment.model.pimm.PiGraph;
+import org.preesm.model.pisdf.Parameter;
+import org.preesm.model.pisdf.PiGraph;
 
 // TODO: Auto-generated Javadoc
 /**

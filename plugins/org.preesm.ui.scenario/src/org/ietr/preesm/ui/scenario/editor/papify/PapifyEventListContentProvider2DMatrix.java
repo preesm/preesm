@@ -51,19 +51,19 @@ import org.ietr.dftools.algorithm.model.sdf.SDFGraph;
 import org.ietr.dftools.algorithm.model.sdf.SDFVertex;
 import org.ietr.preesm.core.scenario.PreesmScenario;
 import org.ietr.preesm.core.scenario.serialize.ScenarioParser;
-import org.ietr.preesm.experiment.model.pimm.AbstractActor;
-import org.ietr.preesm.experiment.model.pimm.Actor;
-import org.ietr.preesm.experiment.model.pimm.BroadcastActor;
-import org.ietr.preesm.experiment.model.pimm.DataInputInterface;
-import org.ietr.preesm.experiment.model.pimm.DataOutputInterface;
-import org.ietr.preesm.experiment.model.pimm.DelayActor;
-import org.ietr.preesm.experiment.model.pimm.ForkActor;
-import org.ietr.preesm.experiment.model.pimm.JoinActor;
-import org.ietr.preesm.experiment.model.pimm.PiGraph;
-import org.ietr.preesm.experiment.model.pimm.RoundBufferActor;
-import org.ietr.preesm.experiment.model.pimm.serialize.PiParser;
 import org.ietr.preesm.ui.scenario.editor.HierarchicalSDFVertex;
 import org.ietr.preesm.ui.scenario.editor.PathComparator;
+import org.preesm.model.pisdf.AbstractActor;
+import org.preesm.model.pisdf.Actor;
+import org.preesm.model.pisdf.BroadcastActor;
+import org.preesm.model.pisdf.DataInputInterface;
+import org.preesm.model.pisdf.DataOutputInterface;
+import org.preesm.model.pisdf.DelayActor;
+import org.preesm.model.pisdf.ForkActor;
+import org.preesm.model.pisdf.JoinActor;
+import org.preesm.model.pisdf.PiGraph;
+import org.preesm.model.pisdf.RoundBufferActor;
+import org.preesm.model.pisdf.serialize.PiParser;
 
 // TODO: Auto-generated Javadoc
 /**

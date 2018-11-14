@@ -9,13 +9,13 @@ import java.util.Map.Entry;
 import java.util.logging.Level;
 import java.util.stream.Collectors;
 import org.ietr.preesm.core.scenario.PreesmScenario;
-import org.ietr.preesm.experiment.model.pimm.AbstractActor;
-import org.ietr.preesm.experiment.model.pimm.Actor;
-import org.ietr.preesm.experiment.model.pimm.DataInputPort;
-import org.ietr.preesm.experiment.model.pimm.DataOutputPort;
-import org.ietr.preesm.experiment.model.pimm.Fifo;
-import org.ietr.preesm.experiment.model.pimm.PiGraph;
 import org.preesm.commons.logger.PreesmLogger;
+import org.preesm.model.pisdf.AbstractActor;
+import org.preesm.model.pisdf.Actor;
+import org.preesm.model.pisdf.DataInputPort;
+import org.preesm.model.pisdf.DataOutputPort;
+import org.preesm.model.pisdf.Fifo;
+import org.preesm.model.pisdf.PiGraph;
 
 /**
  * This class aims to select periodic actors on which execute the period checkers (nbff and nblf).

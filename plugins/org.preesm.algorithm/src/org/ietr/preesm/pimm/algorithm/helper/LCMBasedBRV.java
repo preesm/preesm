@@ -44,15 +44,15 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
-import org.ietr.preesm.experiment.model.pimm.AbstractActor;
-import org.ietr.preesm.experiment.model.pimm.DataInputPort;
-import org.ietr.preesm.experiment.model.pimm.DataOutputPort;
-import org.ietr.preesm.experiment.model.pimm.Expression;
-import org.ietr.preesm.experiment.model.pimm.Fifo;
-import org.ietr.preesm.experiment.model.pimm.InterfaceActor;
 import org.preesm.commons.logger.PreesmLogger;
 import org.preesm.commons.math.LongFraction;
 import org.preesm.commons.math.MathFunctionsHelper;
+import org.preesm.model.pisdf.AbstractActor;
+import org.preesm.model.pisdf.DataInputPort;
+import org.preesm.model.pisdf.DataOutputPort;
+import org.preesm.model.pisdf.Expression;
+import org.preesm.model.pisdf.Fifo;
+import org.preesm.model.pisdf.InterfaceActor;
 
 /**
  * This class is used to compute the basic repetition vector of a static PiSDF graph using LCM method.

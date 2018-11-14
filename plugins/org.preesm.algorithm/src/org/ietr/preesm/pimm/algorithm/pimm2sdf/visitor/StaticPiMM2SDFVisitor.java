@@ -66,42 +66,42 @@ import org.ietr.preesm.codegen.idl.ActorPrototypes;
 import org.ietr.preesm.codegen.idl.Prototype;
 import org.ietr.preesm.codegen.model.CodeGenArgument;
 import org.ietr.preesm.codegen.model.CodeGenParameter;
-import org.ietr.preesm.experiment.model.PiGraphException;
-import org.ietr.preesm.experiment.model.pimm.AbstractActor;
-import org.ietr.preesm.experiment.model.pimm.AbstractVertex;
-import org.ietr.preesm.experiment.model.pimm.Actor;
-import org.ietr.preesm.experiment.model.pimm.BroadcastActor;
-import org.ietr.preesm.experiment.model.pimm.CHeaderRefinement;
-import org.ietr.preesm.experiment.model.pimm.ConfigInputInterface;
-import org.ietr.preesm.experiment.model.pimm.ConfigInputPort;
-import org.ietr.preesm.experiment.model.pimm.ConfigOutputInterface;
-import org.ietr.preesm.experiment.model.pimm.ConfigOutputPort;
-import org.ietr.preesm.experiment.model.pimm.Configurable;
-import org.ietr.preesm.experiment.model.pimm.DataInputInterface;
-import org.ietr.preesm.experiment.model.pimm.DataInputPort;
-import org.ietr.preesm.experiment.model.pimm.DataOutputInterface;
-import org.ietr.preesm.experiment.model.pimm.DataOutputPort;
-import org.ietr.preesm.experiment.model.pimm.DataPort;
-import org.ietr.preesm.experiment.model.pimm.Delay;
-import org.ietr.preesm.experiment.model.pimm.DelayActor;
-import org.ietr.preesm.experiment.model.pimm.Dependency;
-import org.ietr.preesm.experiment.model.pimm.ExecutableActor;
-import org.ietr.preesm.experiment.model.pimm.Expression;
-import org.ietr.preesm.experiment.model.pimm.Fifo;
-import org.ietr.preesm.experiment.model.pimm.ForkActor;
-import org.ietr.preesm.experiment.model.pimm.FunctionParameter;
-import org.ietr.preesm.experiment.model.pimm.FunctionPrototype;
-import org.ietr.preesm.experiment.model.pimm.ISetter;
-import org.ietr.preesm.experiment.model.pimm.InterfaceActor;
-import org.ietr.preesm.experiment.model.pimm.JoinActor;
-import org.ietr.preesm.experiment.model.pimm.Parameter;
-import org.ietr.preesm.experiment.model.pimm.PiGraph;
-import org.ietr.preesm.experiment.model.pimm.PiSDFRefinement;
-import org.ietr.preesm.experiment.model.pimm.Port;
-import org.ietr.preesm.experiment.model.pimm.Refinement;
-import org.ietr.preesm.experiment.model.pimm.RoundBufferActor;
-import org.ietr.preesm.experiment.model.pimm.util.PiMMSwitch;
 import org.ietr.preesm.pimm.algorithm.pimm2sdf.PiGraphExecution;
+import org.preesm.model.pisdf.AbstractActor;
+import org.preesm.model.pisdf.AbstractVertex;
+import org.preesm.model.pisdf.Actor;
+import org.preesm.model.pisdf.BroadcastActor;
+import org.preesm.model.pisdf.CHeaderRefinement;
+import org.preesm.model.pisdf.ConfigInputInterface;
+import org.preesm.model.pisdf.ConfigInputPort;
+import org.preesm.model.pisdf.ConfigOutputInterface;
+import org.preesm.model.pisdf.ConfigOutputPort;
+import org.preesm.model.pisdf.Configurable;
+import org.preesm.model.pisdf.DataInputInterface;
+import org.preesm.model.pisdf.DataInputPort;
+import org.preesm.model.pisdf.DataOutputInterface;
+import org.preesm.model.pisdf.DataOutputPort;
+import org.preesm.model.pisdf.DataPort;
+import org.preesm.model.pisdf.Delay;
+import org.preesm.model.pisdf.DelayActor;
+import org.preesm.model.pisdf.Dependency;
+import org.preesm.model.pisdf.ExecutableActor;
+import org.preesm.model.pisdf.Expression;
+import org.preesm.model.pisdf.Fifo;
+import org.preesm.model.pisdf.ForkActor;
+import org.preesm.model.pisdf.FunctionParameter;
+import org.preesm.model.pisdf.FunctionPrototype;
+import org.preesm.model.pisdf.ISetter;
+import org.preesm.model.pisdf.InterfaceActor;
+import org.preesm.model.pisdf.JoinActor;
+import org.preesm.model.pisdf.Parameter;
+import org.preesm.model.pisdf.PiGraph;
+import org.preesm.model.pisdf.PiGraphException;
+import org.preesm.model.pisdf.PiSDFRefinement;
+import org.preesm.model.pisdf.Port;
+import org.preesm.model.pisdf.Refinement;
+import org.preesm.model.pisdf.RoundBufferActor;
+import org.preesm.model.pisdf.util.PiMMSwitch;
 
 /**
  * The Class StaticPiMM2SDFVisitor.
@@ -392,8 +392,7 @@ public class StaticPiMM2SDFVisitor extends PiMMSwitch<Boolean> {
       if (f.getDelay() != null) {
         // Evaluate the expression wrt. the current values of the
         // parameters
-        delay = new ExpressionEdgePropertyType(
-            createValue(Long.toString(f.getDelay().getSizeExpression().evaluate())));
+        delay = new ExpressionEdgePropertyType(createValue(Long.toString(f.getDelay().getSizeExpression().evaluate())));
       } else {
         delay = new ExpressionEdgePropertyType(new ConstantValue(0L));
       }

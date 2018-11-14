@@ -61,11 +61,11 @@ import org.eclipse.graphiti.mm.pictograms.Shape;
 import org.eclipse.graphiti.services.Graphiti;
 import org.eclipse.graphiti.services.IGaCreateService;
 import org.eclipse.graphiti.services.IPeLayoutService;
-import org.ietr.preesm.experiment.model.pimm.AbstractActor;
-import org.ietr.preesm.experiment.model.pimm.Delay;
-import org.ietr.preesm.experiment.model.pimm.Dependency;
-import org.ietr.preesm.experiment.model.pimm.Fifo;
-import org.ietr.preesm.experiment.model.pimm.Port;
+import org.preesm.model.pisdf.AbstractActor;
+import org.preesm.model.pisdf.Delay;
+import org.preesm.model.pisdf.Dependency;
+import org.preesm.model.pisdf.Fifo;
+import org.preesm.model.pisdf.Port;
 
 // TODO: Auto-generated Javadoc
 /**

@@ -46,7 +46,7 @@ import org.eclipse.graphiti.mm.algorithms.Text;
 import org.eclipse.graphiti.mm.pictograms.ContainerShape;
 import org.eclipse.graphiti.mm.pictograms.PictogramElement;
 import org.eclipse.graphiti.mm.pictograms.Shape;
-import org.ietr.preesm.experiment.model.pimm.AbstractVertex;
+import org.preesm.model.pisdf.AbstractVertex;
 
 // TODO: Auto-generated Javadoc
 /**

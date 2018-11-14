@@ -61,7 +61,7 @@
             </output>
             <output
                   id="PiMM"
-                  object="org.ietr.preesm.experiment.model.pimm.PiGraph">
+                  object="org.preesm.model.pisdf.PiGraph">
             </output>
          </outputs>
       </scenario>
@@ -272,7 +272,7 @@
          <inputs>
             <input
                   id="PiMM"
-                  object="org.ietr.preesm.experiment.model.pimm.PiGraph">
+                  object="org.preesm.model.pisdf.PiGraph">
             </input>
             <input
                   id="scenario"
@@ -291,7 +291,7 @@
          <inputs>
             <input
                   id="PiMM"
-                  object="org.ietr.preesm.experiment.model.pimm.PiGraph">
+                  object="org.preesm.model.pisdf.PiGraph">
             </input>
             <input
                   id="scenario"
@@ -312,13 +312,13 @@
          <inputs>
             <input
                   id="PiMM"
-                  object="org.ietr.preesm.experiment.model.pimm.PiGraph">
+                  object="org.preesm.model.pisdf.PiGraph">
             </input>
          </inputs>
          <outputs>
             <output
                   id="PiMM"
-                  object="org.ietr.preesm.experiment.model.pimm.PiGraph"></output>
+                  object="org.preesm.model.pisdf.PiGraph"></output>
          </outputs>
       </task>
       <task
@@ -328,7 +328,7 @@
          <inputs>
             <input
                   id="PiMM"
-                  object="org.ietr.preesm.experiment.model.pimm.PiGraph">
+                  object="org.preesm.model.pisdf.PiGraph">
             </input>
          </inputs>
       </task>
@@ -339,13 +339,13 @@
          <inputs>
             <input
                   id="PiMM"
-                  object="org.ietr.preesm.experiment.model.pimm.PiGraph">
+                  object="org.preesm.model.pisdf.PiGraph">
             </input>
          </inputs>
          <outputs>
             <output
                   id="PiMM"
-                  object="org.ietr.preesm.experiment.model.pimm.PiGraph">
+                  object="org.preesm.model.pisdf.PiGraph">
             </output>
          </outputs>
       </task>
@@ -356,7 +356,7 @@
          <inputs>
             <input
                   id="PiMM"
-                  object="org.ietr.preesm.experiment.model.pimm.PiGraph">
+                  object="org.preesm.model.pisdf.PiGraph">
             </input>
             <input
                   id="scenario"
@@ -381,7 +381,7 @@
          <inputs>
             <input
                   id="PiMM"
-                  object="org.ietr.preesm.experiment.model.pimm.PiGraph">
+                  object="org.preesm.model.pisdf.PiGraph">
             </input>
             <input
                   id="scenario"
@@ -391,7 +391,7 @@
          <outputs>
             <output
                   id="PiMM"
-                  object="org.ietr.preesm.experiment.model.pimm.PiGraph">
+                  object="org.preesm.model.pisdf.PiGraph">
             </output>
          </outputs>
       </task>
@@ -402,7 +402,7 @@
          <inputs>
             <input
                   id="PiMM"
-                  object="org.ietr.preesm.experiment.model.pimm.PiGraph">
+                  object="org.preesm.model.pisdf.PiGraph">
             </input>
             <input
                   id="scenario"
@@ -416,7 +416,7 @@
          <outputs>
             <output
                   id="PiMM"
-                  object="org.ietr.preesm.experiment.model.pimm.PiGraph">
+                  object="org.preesm.model.pisdf.PiGraph">
             </output>
          </outputs>
       </task>
@@ -564,7 +564,7 @@
          <inputs>
             <input
                   id="PiMM"
-                  object="org.ietr.preesm.experiment.model.pimm.PiGraph">
+                  object="org.preesm.model.pisdf.PiGraph">
             </input>
          </inputs>
       </task>
@@ -671,7 +671,7 @@
          <outputs>
             <output
                   id="PiMM"
-                  object="org.ietr.preesm.experiment.model.pimm.PiGraph">
+                  object="org.preesm.model.pisdf.PiGraph">
             </output>
          </outputs>
       </task>

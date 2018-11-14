@@ -50,9 +50,9 @@ import org.ietr.dftools.algorithm.model.dag.DAGVertex;
 import org.ietr.dftools.algorithm.model.dag.DirectedAcyclicGraph;
 import org.ietr.dftools.algorithm.model.dag.EdgeAggregate;
 import org.ietr.dftools.algorithm.model.sdf.SDFAbstractVertex;
-import org.ietr.preesm.experiment.model.pimm.PiGraph;
 import org.ietr.preesm.mapper.model.property.DAGMappings;
 import org.ietr.preesm.mapper.model.property.DAGTimings;
+import org.preesm.model.pisdf.PiGraph;
 
 /**
  * The Class MapperDAG.

@@ -38,10 +38,10 @@ package org.ietr.preesm.ui.pimm.features;
 import org.eclipse.graphiti.features.IFeatureProvider;
 import org.eclipse.graphiti.features.custom.AbstractCustomFeature;
 import org.eclipse.graphiti.mm.pictograms.PictogramElement;
-import org.ietr.preesm.experiment.model.pimm.ConfigInputPort;
-import org.ietr.preesm.experiment.model.pimm.Configurable;
-import org.ietr.preesm.experiment.model.pimm.Dependency;
-import org.ietr.preesm.experiment.model.pimm.ISetter;
+import org.preesm.model.pisdf.ConfigInputPort;
+import org.preesm.model.pisdf.Configurable;
+import org.preesm.model.pisdf.Dependency;
+import org.preesm.model.pisdf.ISetter;
 
 // TODO: Auto-generated Javadoc
 /**

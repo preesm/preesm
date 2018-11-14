@@ -45,8 +45,8 @@ import org.eclipse.graphiti.features.context.impl.MultiDeleteInfo;
 import org.eclipse.graphiti.features.context.impl.RemoveContext;
 import org.eclipse.graphiti.mm.pictograms.Connection;
 import org.eclipse.graphiti.ui.features.DefaultDeleteFeature;
-import org.ietr.preesm.experiment.model.pimm.Delay;
-import org.ietr.preesm.experiment.model.pimm.Fifo;
+import org.preesm.model.pisdf.Delay;
+import org.preesm.model.pisdf.Fifo;
 
 // TODO: Auto-generated Javadoc
 /**

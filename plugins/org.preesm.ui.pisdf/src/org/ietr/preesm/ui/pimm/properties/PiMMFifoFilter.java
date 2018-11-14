@@ -40,7 +40,7 @@ package org.ietr.preesm.ui.pimm.properties;
 import org.eclipse.graphiti.mm.pictograms.PictogramElement;
 import org.eclipse.graphiti.services.Graphiti;
 import org.eclipse.graphiti.ui.platform.AbstractPropertySectionFilter;
-import org.ietr.preesm.experiment.model.pimm.Fifo;
+import org.preesm.model.pisdf.Fifo;
 
 // TODO: Auto-generated Javadoc
 /**

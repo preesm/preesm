@@ -40,7 +40,7 @@ package org.ietr.preesm.ui.pimm.features;
 import org.eclipse.graphiti.features.IFeatureProvider;
 import org.eclipse.graphiti.features.IReason;
 import org.eclipse.graphiti.features.context.IUpdateContext;
-import org.ietr.preesm.experiment.model.pimm.ExecutableActor;
+import org.preesm.model.pisdf.ExecutableActor;
 
 // TODO: Auto-generated Javadoc
 /**

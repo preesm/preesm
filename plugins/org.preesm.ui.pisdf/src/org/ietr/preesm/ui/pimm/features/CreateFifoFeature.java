@@ -47,20 +47,20 @@ import org.eclipse.graphiti.mm.pictograms.Anchor;
 import org.eclipse.graphiti.mm.pictograms.Connection;
 import org.eclipse.graphiti.mm.pictograms.Diagram;
 import org.eclipse.graphiti.mm.pictograms.PictogramElement;
-import org.ietr.preesm.experiment.model.factory.PiMMUserFactory;
-import org.ietr.preesm.experiment.model.pimm.AbstractActor;
-import org.ietr.preesm.experiment.model.pimm.ConfigInputPort;
-import org.ietr.preesm.experiment.model.pimm.ConfigOutputPort;
-import org.ietr.preesm.experiment.model.pimm.DataInputPort;
-import org.ietr.preesm.experiment.model.pimm.DataOutputPort;
-import org.ietr.preesm.experiment.model.pimm.Delay;
-import org.ietr.preesm.experiment.model.pimm.DelayActor;
-import org.ietr.preesm.experiment.model.pimm.Fifo;
-import org.ietr.preesm.experiment.model.pimm.PersistenceLevel;
-import org.ietr.preesm.experiment.model.pimm.PiGraph;
-import org.ietr.preesm.experiment.model.pimm.Port;
-import org.ietr.preesm.experiment.model.pimm.PortKind;
 import org.ietr.preesm.ui.pimm.util.PiMMUtil;
+import org.preesm.model.pisdf.AbstractActor;
+import org.preesm.model.pisdf.ConfigInputPort;
+import org.preesm.model.pisdf.ConfigOutputPort;
+import org.preesm.model.pisdf.DataInputPort;
+import org.preesm.model.pisdf.DataOutputPort;
+import org.preesm.model.pisdf.Delay;
+import org.preesm.model.pisdf.DelayActor;
+import org.preesm.model.pisdf.Fifo;
+import org.preesm.model.pisdf.PersistenceLevel;
+import org.preesm.model.pisdf.PiGraph;
+import org.preesm.model.pisdf.Port;
+import org.preesm.model.pisdf.PortKind;
+import org.preesm.model.pisdf.factory.PiMMUserFactory;
 
 // TODO: Auto-generated Javadoc
 /**

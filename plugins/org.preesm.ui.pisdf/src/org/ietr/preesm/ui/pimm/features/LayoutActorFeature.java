@@ -61,18 +61,18 @@ import org.eclipse.graphiti.services.Graphiti;
 import org.eclipse.graphiti.services.IGaService;
 import org.eclipse.graphiti.ui.services.GraphitiUi;
 import org.eclipse.graphiti.util.IColorConstant;
-import org.ietr.preesm.experiment.model.pimm.Actor;
-import org.ietr.preesm.experiment.model.pimm.BroadcastActor;
-import org.ietr.preesm.experiment.model.pimm.ConfigInputPort;
-import org.ietr.preesm.experiment.model.pimm.ConfigOutputPort;
-import org.ietr.preesm.experiment.model.pimm.DataInputPort;
-import org.ietr.preesm.experiment.model.pimm.DataOutputPort;
-import org.ietr.preesm.experiment.model.pimm.ExecutableActor;
-import org.ietr.preesm.experiment.model.pimm.ForkActor;
-import org.ietr.preesm.experiment.model.pimm.JoinActor;
-import org.ietr.preesm.experiment.model.pimm.PiMMPackage;
-import org.ietr.preesm.experiment.model.pimm.Refinement;
-import org.ietr.preesm.experiment.model.pimm.RoundBufferActor;
+import org.preesm.model.pisdf.Actor;
+import org.preesm.model.pisdf.BroadcastActor;
+import org.preesm.model.pisdf.ConfigInputPort;
+import org.preesm.model.pisdf.ConfigOutputPort;
+import org.preesm.model.pisdf.DataInputPort;
+import org.preesm.model.pisdf.DataOutputPort;
+import org.preesm.model.pisdf.ExecutableActor;
+import org.preesm.model.pisdf.ForkActor;
+import org.preesm.model.pisdf.JoinActor;
+import org.preesm.model.pisdf.PiMMPackage;
+import org.preesm.model.pisdf.Refinement;
+import org.preesm.model.pisdf.RoundBufferActor;
 
 /**
  * Layout Feature for Actors.

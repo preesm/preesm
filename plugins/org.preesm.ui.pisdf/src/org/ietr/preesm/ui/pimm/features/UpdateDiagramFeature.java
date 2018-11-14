@@ -44,8 +44,8 @@ import org.eclipse.graphiti.mm.pictograms.ContainerShape;
 import org.eclipse.graphiti.mm.pictograms.Diagram;
 import org.eclipse.graphiti.mm.pictograms.Shape;
 import org.eclipse.graphiti.services.Graphiti;
-import org.ietr.preesm.experiment.model.pimm.Actor;
-import org.ietr.preesm.experiment.model.pimm.ExecutableActor;
+import org.preesm.model.pisdf.Actor;
+import org.preesm.model.pisdf.ExecutableActor;
 
 // TODO: Auto-generated Javadoc
 /**

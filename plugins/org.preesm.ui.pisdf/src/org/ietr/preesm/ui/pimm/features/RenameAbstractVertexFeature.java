@@ -41,11 +41,11 @@ import org.eclipse.graphiti.features.IFeatureProvider;
 import org.eclipse.graphiti.features.context.ICustomContext;
 import org.eclipse.graphiti.features.custom.AbstractCustomFeature;
 import org.eclipse.graphiti.mm.pictograms.PictogramElement;
-import org.ietr.preesm.experiment.model.pimm.AbstractVertex;
-import org.ietr.preesm.experiment.model.pimm.InterfaceActor;
-import org.ietr.preesm.experiment.model.pimm.PiGraph;
-import org.ietr.preesm.experiment.model.pimm.util.VertexNameValidator;
 import org.ietr.preesm.ui.pimm.util.PiMMUtil;
+import org.preesm.model.pisdf.AbstractVertex;
+import org.preesm.model.pisdf.InterfaceActor;
+import org.preesm.model.pisdf.PiGraph;
+import org.preesm.model.pisdf.util.VertexNameValidator;
 
 /**
  * Custom feature to rename an {@link AbstractVertex}.

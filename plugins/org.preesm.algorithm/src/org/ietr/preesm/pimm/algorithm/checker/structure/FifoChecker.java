@@ -37,8 +37,8 @@ package org.ietr.preesm.pimm.algorithm.checker.structure;
 
 import java.util.LinkedHashSet;
 import java.util.Set;
-import org.ietr.preesm.experiment.model.pimm.Fifo;
-import org.ietr.preesm.experiment.model.pimm.PiGraph;
+import org.preesm.model.pisdf.Fifo;
+import org.preesm.model.pisdf.PiGraph;
 
 // TODO: Auto-generated Javadoc
 /**

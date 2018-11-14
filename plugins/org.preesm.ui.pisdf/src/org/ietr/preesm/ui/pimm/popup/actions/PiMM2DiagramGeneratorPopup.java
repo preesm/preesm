@@ -78,18 +78,18 @@ import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.part.FileEditorInput;
 import org.ietr.dftools.ui.PreesmUIPlugin;
-import org.ietr.preesm.experiment.model.pimm.AbstractVertex;
-import org.ietr.preesm.experiment.model.pimm.Delay;
-import org.ietr.preesm.experiment.model.pimm.Dependency;
-import org.ietr.preesm.experiment.model.pimm.Fifo;
-import org.ietr.preesm.experiment.model.pimm.NonExecutableActor;
-import org.ietr.preesm.experiment.model.pimm.Parameter;
-import org.ietr.preesm.experiment.model.pimm.PiGraph;
-import org.ietr.preesm.experiment.model.pimm.serialize.PiParser;
 import org.ietr.preesm.ui.pimm.diagram.PiMMDiagramEditor;
 import org.ietr.preesm.ui.pimm.features.PasteFeature;
 import org.ietr.preesm.ui.pimm.layout.AutoLayoutFeature;
 import org.ietr.preesm.ui.utils.ErrorWithExceptionDialog;
+import org.preesm.model.pisdf.AbstractVertex;
+import org.preesm.model.pisdf.Delay;
+import org.preesm.model.pisdf.Dependency;
+import org.preesm.model.pisdf.Fifo;
+import org.preesm.model.pisdf.NonExecutableActor;
+import org.preesm.model.pisdf.Parameter;
+import org.preesm.model.pisdf.PiGraph;
+import org.preesm.model.pisdf.serialize.PiParser;
 
 /**
  *

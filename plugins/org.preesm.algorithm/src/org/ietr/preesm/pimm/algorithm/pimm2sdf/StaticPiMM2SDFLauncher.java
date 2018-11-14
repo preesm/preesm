@@ -44,9 +44,9 @@ import org.ietr.dftools.algorithm.model.sdf.SDFGraph;
 import org.ietr.preesm.core.scenario.ParameterValue;
 import org.ietr.preesm.core.scenario.ParameterValueManager;
 import org.ietr.preesm.core.scenario.PreesmScenario;
-import org.ietr.preesm.experiment.model.pimm.Parameter;
-import org.ietr.preesm.experiment.model.pimm.PiGraph;
 import org.ietr.preesm.pimm.algorithm.pimm2sdf.visitor.StaticPiMM2SDFVisitor;
+import org.preesm.model.pisdf.Parameter;
+import org.preesm.model.pisdf.PiGraph;
 
 /**
  * The Class StaticPiMM2SDFLauncher.

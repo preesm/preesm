@@ -57,10 +57,10 @@ import org.eclipse.graphiti.services.Graphiti;
 import org.eclipse.graphiti.services.IGaService;
 import org.eclipse.graphiti.services.IPeCreateService;
 import org.eclipse.graphiti.services.IPeLayoutService;
-import org.ietr.preesm.experiment.model.factory.PiMMUserFactory;
-import org.ietr.preesm.experiment.model.pimm.Delay;
-import org.ietr.preesm.experiment.model.pimm.Fifo;
-import org.ietr.preesm.experiment.model.pimm.PiGraph;
+import org.preesm.model.pisdf.Delay;
+import org.preesm.model.pisdf.Fifo;
+import org.preesm.model.pisdf.PiGraph;
+import org.preesm.model.pisdf.factory.PiMMUserFactory;
 
 /**
  * Add feature responsible for creating and adding a delay to a {@link Fifo}.

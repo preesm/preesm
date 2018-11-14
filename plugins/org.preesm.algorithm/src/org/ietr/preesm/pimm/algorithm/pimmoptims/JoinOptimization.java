@@ -34,7 +34,7 @@
  * knowledge of the CeCILL license and that you accept its terms.
  */
 /**
- * 
+ *
  */
 package org.ietr.preesm.pimm.algorithm.pimmoptims;
 
@@ -43,16 +43,16 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import org.ietr.dftools.workflow.WorkflowException;
-import org.ietr.preesm.experiment.model.pimm.AbstractActor;
-import org.ietr.preesm.experiment.model.pimm.AbstractVertex;
-import org.ietr.preesm.experiment.model.pimm.DataInputPort;
-import org.ietr.preesm.experiment.model.pimm.DataOutputPort;
-import org.ietr.preesm.experiment.model.pimm.Fifo;
-import org.ietr.preesm.experiment.model.pimm.ForkActor;
-import org.ietr.preesm.experiment.model.pimm.JoinActor;
-import org.ietr.preesm.experiment.model.pimm.PiGraph;
 import org.ietr.preesm.pimm.algorithm.helper.PiMMHelperException;
 import org.ietr.preesm.pimm.algorithm.pimm2srdag.visitor.PiMMSRVerticesLinker;
+import org.preesm.model.pisdf.AbstractActor;
+import org.preesm.model.pisdf.AbstractVertex;
+import org.preesm.model.pisdf.DataInputPort;
+import org.preesm.model.pisdf.DataOutputPort;
+import org.preesm.model.pisdf.Fifo;
+import org.preesm.model.pisdf.ForkActor;
+import org.preesm.model.pisdf.JoinActor;
+import org.preesm.model.pisdf.PiGraph;
 
 /**
  * @author farresti
@@ -62,15 +62,15 @@ public class JoinOptimization extends AbstractPiGraphSpecialActorRemover<DataInp
 
   /**
    * Remove the Join -> RoundBuffer / Join connections
-   * 
+   *
    * <pre>
-   * in_0 -> | J | -> in | RB | 
-   * in_1 -> |   |  
-   * 
-   * becomes  in_0 -> | RB | 
+   * in_0 -> | J | -> in | RB |
+   * in_1 -> |   |
+   *
+   * becomes  in_0 -> | RB |
    *          in_1 -> |    |
    * </pre>
-   * 
+   *
    * @param graph
    *          the graph
    * @param actor
@@ -99,10 +99,10 @@ public class JoinOptimization extends AbstractPiGraphSpecialActorRemover<DataInp
 
   /**
    * Optimize Join to Fork connections
-   * 
+   *
    * We first remove the Join and Fork actors and re-do the SR-Link between sources of the Join and the sinks of the
    * Fork.
-   * 
+   *
    * @param graph
    *          The graph
    * @param actor

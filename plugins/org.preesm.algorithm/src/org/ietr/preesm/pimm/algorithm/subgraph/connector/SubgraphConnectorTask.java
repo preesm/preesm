@@ -43,8 +43,8 @@ import org.ietr.dftools.workflow.WorkflowException;
 import org.ietr.dftools.workflow.elements.Workflow;
 import org.ietr.dftools.workflow.implement.AbstractTaskImplementation;
 import org.ietr.dftools.workflow.implement.AbstractWorkflowNodeImplementation;
-import org.ietr.preesm.experiment.model.pimm.PiGraph;
-import org.ietr.preesm.experiment.model.pimm.util.SubgraphConnectorVisitor;
+import org.preesm.model.pisdf.PiGraph;
+import org.preesm.model.pisdf.util.SubgraphConnectorVisitor;
 
 // TODO: Auto-generated Javadoc
 /**

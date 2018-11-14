@@ -48,12 +48,12 @@ import org.eclipse.graphiti.mm.pictograms.PictogramElement;
 import org.eclipse.graphiti.platform.IPlatformImageConstants;
 import org.eclipse.graphiti.tb.IDecorator;
 import org.eclipse.graphiti.tb.ImageDecorator;
-import org.ietr.preesm.experiment.model.pimm.AbstractActor;
-import org.ietr.preesm.experiment.model.pimm.Actor;
-import org.ietr.preesm.experiment.model.pimm.PiSDFRefinement;
-import org.ietr.preesm.experiment.model.pimm.Port;
 import org.ietr.preesm.ui.pimm.diagram.PiMMImageProvider;
 import org.ietr.preesm.ui.pimm.util.PortEqualityHelper;
+import org.preesm.model.pisdf.AbstractActor;
+import org.preesm.model.pisdf.Actor;
+import org.preesm.model.pisdf.PiSDFRefinement;
+import org.preesm.model.pisdf.Port;
 
 // TODO: Auto-generated Javadoc
 /**

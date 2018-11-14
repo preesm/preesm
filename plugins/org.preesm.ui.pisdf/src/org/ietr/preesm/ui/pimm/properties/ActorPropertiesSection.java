@@ -64,21 +64,21 @@ import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.views.properties.tabbed.ITabbedPropertyConstants;
 import org.eclipse.ui.views.properties.tabbed.TabbedPropertySheetPage;
 import org.eclipse.ui.views.properties.tabbed.TabbedPropertySheetWidgetFactory;
-import org.ietr.preesm.experiment.model.expression.ExpressionEvaluationException;
-import org.ietr.preesm.experiment.model.pimm.Actor;
-import org.ietr.preesm.experiment.model.pimm.CHeaderRefinement;
-import org.ietr.preesm.experiment.model.pimm.ExecutableActor;
-import org.ietr.preesm.experiment.model.pimm.Expression;
-import org.ietr.preesm.experiment.model.pimm.ExpressionHolder;
-import org.ietr.preesm.experiment.model.pimm.PeriodicElement;
-import org.ietr.preesm.experiment.model.pimm.Refinement;
-import org.ietr.preesm.experiment.model.pimm.util.PrototypeFormatter;
 import org.ietr.preesm.ui.pimm.features.ClearActorMemoryScriptFeature;
 import org.ietr.preesm.ui.pimm.features.ClearActorRefinementFeature;
 import org.ietr.preesm.ui.pimm.features.OpenMemoryScriptFeature;
 import org.ietr.preesm.ui.pimm.features.OpenRefinementFeature;
 import org.ietr.preesm.ui.pimm.features.SetActorMemoryScriptFeature;
 import org.ietr.preesm.ui.pimm.features.SetActorRefinementFeature;
+import org.preesm.model.pisdf.Actor;
+import org.preesm.model.pisdf.CHeaderRefinement;
+import org.preesm.model.pisdf.ExecutableActor;
+import org.preesm.model.pisdf.Expression;
+import org.preesm.model.pisdf.ExpressionHolder;
+import org.preesm.model.pisdf.PeriodicElement;
+import org.preesm.model.pisdf.Refinement;
+import org.preesm.model.pisdf.expression.ExpressionEvaluationException;
+import org.preesm.model.pisdf.util.PrototypeFormatter;
 
 /**
  * Properties Section used for Actors.

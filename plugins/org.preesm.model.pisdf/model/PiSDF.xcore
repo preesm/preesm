@@ -2,9 +2,6 @@
 @GenModel(
 	modelName="PiMM", prefix="PiMM",
 	modelDirectory="/org.preesm.model.pisdf/ecore-gen",
-	// editDirectory="/org.ietr.preesm.model.edit/ecore-gen",
-	// editorDirectory="/org.ietr.preesm.model.editor/ecore-gen",
-	// testsDirectory="/org.ietr.preesm.model.tests/ecore-gen",
 
 	// redirection="",
 	// classNamePattern="",
@@ -25,13 +22,13 @@
 )
 
 @Ecore(nsURI="http://org.preesm/model/pisdf")
-package org.ietr.preesm.experiment.model.pimm
+package org.preesm.model.pisdf
 
 import java.util.Optional
-import org.ietr.preesm.experiment.model.PiGraphException
-import org.ietr.preesm.experiment.model.pimm.util.RefinementResolver
-import org.ietr.preesm.experiment.model.expression.StringExpressionEvaluator
-import org.ietr.preesm.experiment.model.factory.PiMMUserFactory
+import org.preesm.model.pisdf.PiGraphException
+import org.preesm.model.pisdf.util.RefinementResolver
+import org.preesm.model.pisdf.expression.StringExpressionEvaluator
+import org.preesm.model.pisdf.factory.PiMMUserFactory
 
 type IPath wraps org.eclipse.core.runtime.IPath
 

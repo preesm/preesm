@@ -38,10 +38,10 @@ package org.ietr.preesm.core.scenario;
 
 import java.util.LinkedHashSet;
 import java.util.Set;
-import org.ietr.preesm.experiment.model.pimm.Parameter;
 import org.nfunk.jep.JEP;
 import org.nfunk.jep.Node;
 import org.nfunk.jep.ParseException;
+import org.preesm.model.pisdf.Parameter;
 
 /**
  * Value(s) of a parameter in a graph. It can be: Static, Dependent or Dynamic.

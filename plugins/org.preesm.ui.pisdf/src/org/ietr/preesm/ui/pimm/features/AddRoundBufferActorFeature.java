@@ -53,8 +53,8 @@ import org.eclipse.graphiti.services.IGaService;
 import org.eclipse.graphiti.services.IPeCreateService;
 import org.eclipse.graphiti.util.ColorConstant;
 import org.eclipse.graphiti.util.IColorConstant;
-import org.ietr.preesm.experiment.model.pimm.PiGraph;
-import org.ietr.preesm.experiment.model.pimm.RoundBufferActor;
+import org.preesm.model.pisdf.PiGraph;
+import org.preesm.model.pisdf.RoundBufferActor;
 
 // TODO: Auto-generated Javadoc
 /**

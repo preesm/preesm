@@ -52,10 +52,10 @@ import org.eclipse.graphiti.services.IGaService;
 import org.eclipse.graphiti.services.IPeCreateService;
 import org.eclipse.graphiti.ui.services.GraphitiUi;
 import org.eclipse.graphiti.util.IColorConstant;
-import org.ietr.preesm.experiment.model.pimm.ExecutableActor;
-import org.ietr.preesm.experiment.model.pimm.Port;
-import org.ietr.preesm.experiment.model.pimm.util.PortNameValidator;
 import org.ietr.preesm.ui.pimm.util.PiMMUtil;
+import org.preesm.model.pisdf.ExecutableActor;
+import org.preesm.model.pisdf.Port;
+import org.preesm.model.pisdf.util.PortNameValidator;
 
 // TODO: Auto-generated Javadoc
 /**

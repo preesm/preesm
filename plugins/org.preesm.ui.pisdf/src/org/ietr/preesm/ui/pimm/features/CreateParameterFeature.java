@@ -42,11 +42,11 @@ import org.eclipse.graphiti.features.context.ICreateContext;
 import org.eclipse.graphiti.features.impl.AbstractCreateFeature;
 import org.eclipse.graphiti.func.ICreate;
 import org.eclipse.graphiti.mm.pictograms.Diagram;
-import org.ietr.preesm.experiment.model.factory.PiMMUserFactory;
-import org.ietr.preesm.experiment.model.pimm.Parameter;
-import org.ietr.preesm.experiment.model.pimm.PiGraph;
-import org.ietr.preesm.experiment.model.pimm.util.VertexNameValidator;
 import org.ietr.preesm.ui.pimm.util.PiMMUtil;
+import org.preesm.model.pisdf.Parameter;
+import org.preesm.model.pisdf.PiGraph;
+import org.preesm.model.pisdf.factory.PiMMUserFactory;
+import org.preesm.model.pisdf.util.VertexNameValidator;
 
 // TODO: Auto-generated Javadoc
 /**

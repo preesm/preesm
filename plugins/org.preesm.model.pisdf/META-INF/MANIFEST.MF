@@ -15,15 +15,14 @@ Require-Bundle: org.eclipse.core.runtime,
  jep;bundle-version="2.40.0",
  org.preesm.commons;visibility:=reexport
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
-Export-Package: org.ietr.preesm.experiment.model,
- org.ietr.preesm.experiment.model.expression,
- org.ietr.preesm.experiment.model.factory,
- org.ietr.preesm.experiment.model.pimm,
- org.ietr.preesm.experiment.model.pimm.adapter,
- org.ietr.preesm.experiment.model.pimm.impl,
- org.ietr.preesm.experiment.model.pimm.serialize,
- org.ietr.preesm.experiment.model.pimm.util,
- org.ietr.preesm.utils.pimm.header.parser
+Export-Package: org.preesm.model.pisdf,
+ org.preesm.model.pisdf.adapter,
+ org.preesm.model.pisdf.expression,
+ org.preesm.model.pisdf.factory,
+ org.preesm.model.pisdf.header.parser,
+ org.preesm.model.pisdf.impl,
+ org.preesm.model.pisdf.serialize,
+ org.preesm.model.pisdf.util
 Bundle-ActivationPolicy: lazy
 Bundle-ClassPath: .,
  xsd/

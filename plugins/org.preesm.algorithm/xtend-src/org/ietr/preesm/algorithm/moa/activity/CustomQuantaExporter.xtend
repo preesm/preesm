@@ -59,9 +59,6 @@ import org.ietr.preesm.core.architecture.route.AbstractRouteStep
 import org.ietr.preesm.core.architecture.route.MessageRouteStep
 import org.ietr.preesm.core.scenario.PreesmScenario
 import org.ietr.preesm.core.types.ImplementationPropertyNames
-import org.ietr.preesm.experiment.model.pimm.Actor
-import org.ietr.preesm.experiment.model.pimm.PiGraph
-import org.ietr.preesm.experiment.model.pimm.serialize.PiParser
 import org.ietr.preesm.mapper.abc.SpecialVertexManager
 import org.ietr.preesm.mapper.abc.impl.latency.LatencyAbc
 import org.ietr.preesm.mapper.model.MapperDAGEdge
@@ -71,6 +68,9 @@ import org.nfunk.jep.ParseException
 import org.preesm.commons.files.ContainersManager
 import org.preesm.commons.files.PathTools
 import org.preesm.commons.logger.PreesmLogger
+import org.preesm.model.pisdf.Actor
+import org.preesm.model.pisdf.PiGraph
+import org.preesm.model.pisdf.serialize.PiParser
 import org.preesm.model.slam.ComponentInstance
 
 /**

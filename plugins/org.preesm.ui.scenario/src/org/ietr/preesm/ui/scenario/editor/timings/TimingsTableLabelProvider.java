@@ -58,10 +58,10 @@ import org.ietr.dftools.algorithm.model.sdf.SDFAbstractVertex;
 import org.ietr.dftools.algorithm.model.sdf.SDFVertex;
 import org.ietr.preesm.core.scenario.PreesmScenario;
 import org.ietr.preesm.core.scenario.Timing;
-import org.ietr.preesm.experiment.model.pimm.AbstractActor;
 import org.ietr.preesm.ui.scenario.editor.Messages;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.FrameworkUtil;
+import org.preesm.model.pisdf.AbstractActor;
 
 // TODO: Auto-generated Javadoc
 /**

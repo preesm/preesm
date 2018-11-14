@@ -59,17 +59,18 @@ import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.views.properties.tabbed.ITabbedPropertyConstants;
 import org.eclipse.ui.views.properties.tabbed.TabbedPropertySheetPage;
 import org.eclipse.ui.views.properties.tabbed.TabbedPropertySheetWidgetFactory;
-import org.ietr.preesm.experiment.model.expression.ExpressionEvaluationException;
-import org.ietr.preesm.experiment.model.pimm.DataPort;
-import org.ietr.preesm.experiment.model.pimm.Delay;
-import org.ietr.preesm.experiment.model.pimm.Expression;
-import org.ietr.preesm.experiment.model.pimm.Fifo;
-import org.ietr.preesm.experiment.model.pimm.InterfaceActor;
-import org.ietr.preesm.experiment.model.pimm.Parameter;
-import org.ietr.preesm.experiment.model.pimm.PersistenceLevel;
-import org.ietr.preesm.experiment.model.pimm.PortMemoryAnnotation;
 import org.ietr.preesm.ui.pimm.features.SetPersistenceLevelFeature;
 import org.ietr.preesm.ui.pimm.features.SetPortMemoryAnnotationFeature;
+import org.preesm.model.pisdf.DataPort;
+import org.preesm.model.pisdf.Delay;
+import org.preesm.model.pisdf.Expression;
+import org.preesm.model.pisdf.Fifo;
+import org.preesm.model.pisdf.InterfaceActor;
+import org.preesm.model.pisdf.Parameter;
+import org.preesm.model.pisdf.PersistenceLevel;
+import org.preesm.model.pisdf.Port;
+import org.preesm.model.pisdf.PortMemoryAnnotation;
+import org.preesm.model.pisdf.expression.ExpressionEvaluationException;
 
 // TODO: Auto-generated Javadoc
 /**

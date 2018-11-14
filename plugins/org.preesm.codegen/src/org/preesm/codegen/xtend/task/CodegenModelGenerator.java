@@ -99,7 +99,6 @@ import org.ietr.preesm.core.types.BufferProperties;
 import org.ietr.preesm.core.types.DataType;
 import org.ietr.preesm.core.types.ImplementationPropertyNames;
 import org.ietr.preesm.core.types.VertexType;
-import org.ietr.preesm.experiment.model.pimm.PersistenceLevel;
 import org.ietr.preesm.mapper.ScheduledDAGIterator;
 import org.ietr.preesm.mapper.model.MapperDAG;
 import org.ietr.preesm.memory.allocation.AbstractMemoryAllocatorTask;
@@ -136,6 +135,7 @@ import org.preesm.codegen.model.SubBuffer;
 import org.preesm.codegen.model.Variable;
 import org.preesm.codegen.model.util.CodegenModelUserFactory;
 import org.preesm.commons.logger.PreesmLogger;
+import org.preesm.model.pisdf.PersistenceLevel;
 import org.preesm.model.slam.ComponentInstance;
 import org.preesm.model.slam.Design;
 

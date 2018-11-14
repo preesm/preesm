@@ -42,10 +42,10 @@ import org.eclipse.graphiti.features.context.ICopyContext;
 import org.eclipse.graphiti.mm.pictograms.Diagram;
 import org.eclipse.graphiti.mm.pictograms.PictogramElement;
 import org.eclipse.graphiti.ui.features.AbstractCopyFeature;
-import org.ietr.preesm.experiment.model.pimm.AbstractVertex;
-import org.ietr.preesm.experiment.model.pimm.Configurable;
-import org.ietr.preesm.experiment.model.pimm.Delay;
-import org.ietr.preesm.experiment.model.pimm.PiGraph;
+import org.preesm.model.pisdf.AbstractVertex;
+import org.preesm.model.pisdf.Configurable;
+import org.preesm.model.pisdf.Delay;
+import org.preesm.model.pisdf.PiGraph;
 
 /**
  * Graphiti feature that implements the Copy action for PiMM vertices.

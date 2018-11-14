@@ -49,9 +49,9 @@ import org.ietr.dftools.workflow.elements.Workflow;
 import org.ietr.dftools.workflow.implement.AbstractTaskImplementation;
 import org.ietr.dftools.workflow.implement.AbstractWorkflowNodeImplementation;
 import org.ietr.preesm.core.scenario.PreesmScenario;
-import org.ietr.preesm.experiment.model.pimm.PiGraph;
 import org.ietr.preesm.pimm.algorithm.pimm2flat.StaticPiMMFlatPiMMLauncher.StaticPiMMFlatPiMMException;
 import org.preesm.commons.logger.PreesmLogger;
+import org.preesm.model.pisdf.PiGraph;
 
 /**
  * @author farresti
