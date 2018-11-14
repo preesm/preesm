@@ -613,9 +613,9 @@ public class PiMMHandler {
       for (Long p : mapGraphPeriods.keySet()) {
         period = p;
       }
-      WorkflowLogger.getLogger().log(Level.INFO, "The graph period is set to: " + period + "\n");
+      WorkflowLogger.getLogger().log(Level.INFO, "The graph period is set to: " + period);
     } else {
-      WorkflowLogger.getLogger().log(Level.INFO, "No period for the graph.\n");
+      WorkflowLogger.getLogger().log(Level.INFO, "No period for the graph.");
     }
   }
 
