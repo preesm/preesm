@@ -41,10 +41,10 @@ import java.nio.file.Files;
 import java.util.List;
 import java.util.Map;
 import org.ietr.dftools.algorithm.exporter.GMLDAGExporter;
-import org.ietr.dftools.algorithm.exporter.Key;
 import org.ietr.dftools.algorithm.importer.GMLDAGImporter;
 import org.ietr.dftools.algorithm.importer.InvalidModelException;
 import org.ietr.dftools.algorithm.model.dag.DirectedAcyclicGraph;
+import org.ietr.preesm.utils.GMLKey;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -64,7 +64,7 @@ public class GMLDAGImporterTest {
 
     final GMLDAGImporter importer = new GMLDAGImporter();
     final DirectedAcyclicGraph graph = importer.parse(new File(inputDagXMLPath));
-    final Map<String, List<Key>> keySet = importer.getKeySet();
+    final Map<String, List<GMLKey>> keySet = importer.getKeySet();
 
     final File createTempFile = File.createTempFile("export_test_", ".xml");
     createTempFile.deleteOnExit();

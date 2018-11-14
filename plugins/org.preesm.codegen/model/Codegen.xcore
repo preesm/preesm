@@ -1,0 +1,257 @@
+
+
+
+@GenModel(
+	modelName="Codegen", prefix="Codegen",
+	modelDirectory="/org.preesm.codegen/ecore-gen",
+//	editDirectory="/org.ietr.preesm.codegen.xtend.edit/ecore-gen",
+//	editorDirectory="/org.ietr.preesm.codegen.xtend.editor/ecore-gen",
+//	testsDirectory="/org.ietr.preesm.codegen.xtend.tests/ecore-gen",
+
+	// redirection="",
+	// classNamePattern="",
+
+	// codeFormatting="true",
+	// cleanup="true",
+
+	importerID="org.eclipse.emf.importer.ecore",
+
+	// !! if true a instrs.ecore is generated in .impl and is used by xxpackage.init() to
+	// load the intrs packages (by default this false unless the generated XyzPackage might
+	// exceed Java's byte code limit of 64k)
+	loadInitialization="false",
+	creationCommands="false",
+	creationIcons="false",
+	dataTypeConverters="false",
+	operationReflection="false"
+)
+
+@Ecore(nsURI="http://org.preesm/model/codegen")
+
+package org.ietr.preesm.codegen.model.codegen
+
+import org.eclipse.emf.ecore.EEList
+
+class Block extends CodeElt {
+	contains readonly CodeElt[] codeElts
+	refers readonly Variable[] declarations opposite users
+	String name
+	contains Variable[] definitions opposite creator
+}
+
+interface CodeElt extends Commentable {
+}
+
+abstract class Call extends CodeElt {
+	@GenModel(propertySortChoices="true")
+	refers readonly Variable[] parameters
+	String name
+	refers Call EReference0
+	PortDirection[] parameterDirections
+	op void addParameter(Variable variable , PortDirection direction) {
+	    parameters.add(variable);
+	    parameterDirections.add(direction);
+	}
+	op void removeParameter(Variable variable)
+}
+
+abstract class Variable extends Commentable {
+	id String name
+	String ^type
+	container Block creator opposite definitions
+	refers readonly Block[+] users opposite declarations
+	op void reaffectCreator(Block creator) {
+      setCreator(creator);
+    }
+}
+
+class Buffer extends Variable {
+	long size
+	refers SubBuffer[] childrens opposite ^container
+	long typeSize
+	transient EEList<range>mergedRange
+	boolean ^local = "false"
+}
+
+class SubBuffer extends Buffer {
+	refers Buffer ^container opposite childrens
+	long offset
+	op void reaffectContainer(Buffer newContainer) {
+	    setContainer(newContainer);
+	    if (getCreator() !== null) {
+	      newContainer.users.add(getCreator());
+	    }
+	}
+	op void reaffectCreator(Block creator) {
+        super.reaffectCreator(creator);
+	    val Buffer parentBuffer = getContainer();
+	    if (parentBuffer !== null) {
+	      parentBuffer.getUsers().add(creator);
+	    }
+    }
+}
+
+class Constant extends Variable {
+	long value
+}
+
+class FunctionCall extends Call {
+	String actorName
+}
+
+class Communication extends Call {
+	Direction direction
+	Delimiter delimiter
+	refers Buffer data
+	refers transient Communication sendStart
+	refers transient Communication sendEnd
+	refers transient Communication receiveStart
+	refers transient Communication receiveEnd
+	int ^id
+	contains CommunicationNode[+] nodes
+	refers transient Communication receiveRelease
+	refers transient Communication sendReserve
+	boolean redundant = "false"
+	op CoreBlock getCoreContainer() {
+	    var parent = eContainer();
+	    while (!(parent instanceof CoreBlock) && (parent !== null)) {
+	      parent = parent.eContainer();
+	    }
+	    if (parent === null) {
+	      return null;
+	    } else {
+	      return parent as org.ietr.preesm.codegen.model.codegen.CoreBlock;
+	    }
+    }
+}
+
+enum Direction {
+	SEND
+	RECEIVE = 1
+}
+
+enum Delimiter {
+	START
+	END = 1
+}
+
+class CoreBlock extends Block {
+	refers LoopBlock loopBlock
+	refers CallBlock initBlock
+	String coreType
+	unordered id int coreID
+}
+
+class ActorBlock extends Block {
+	refers LoopBlock loopBlock
+	refers CallBlock initBlock
+}
+
+class LoopBlock extends Block {
+}
+
+class ActorCall extends Call {
+}
+
+class CallBlock extends Block {
+}
+
+class SpecialCall extends Call {
+	SpecialType ^type
+	refers readonly Buffer[+] inputBuffers
+	refers local readonly Buffer[+] outputBuffers
+	op boolean isFork() {
+		return SpecialType.FORK == ^type
+	}
+	op boolean isJoin() {
+		return SpecialType.JOIN == ^type
+	}
+	op boolean isBroadcast() {
+		return SpecialType.BROADCAST == ^type
+	}
+	op boolean isRoundBuffer() {
+		return SpecialType.ROUND_BUFFER == ^type
+	}
+	op void addInputBuffer(Buffer buffer) {
+		inputBuffers.add(buffer);
+    	addParameter(buffer, PortDirection.INPUT);
+	}
+	op void addOutputBuffer(Buffer buffer) {
+		outputBuffers.add(buffer);
+    	addParameter(buffer, PortDirection.OUTPUT);
+	}
+	op void removeInputBuffer(Buffer buffer) {
+	    inputBuffers.remove(buffer);
+	    removeParameter(buffer);
+    }
+	op void removeOutputBuffer(Buffer buffer) {
+	    outputBuffers.remove(buffer);
+	    removeParameter(buffer);
+    }
+}
+
+enum SpecialType {
+	FORK
+	JOIN = 1
+	BROADCAST = 2
+	ROUND_BUFFER = 3
+}
+
+class FifoCall extends Call {
+	FifoOperation operation
+	refers transient FifoCall fifoHead
+	refers transient FifoCall fifoTail
+	refers Buffer headBuffer
+	refers Buffer bodyBuffer
+}
+
+enum FifoOperation {
+	PUSH
+	POP = 1
+	INIT = 2
+}
+
+abstract class Commentable {
+	String comment
+}
+
+class CommunicationNode extends Commentable {
+	String name
+	String ^type
+}
+
+class SharedMemoryCommunication extends Communication {
+}
+
+enum PortDirection {
+	INPUT
+	OUTPUT = 1
+	NONE = 2
+}
+
+class ConstantString extends Variable {
+	String value
+}
+
+class NullBuffer extends SubBuffer {
+}
+
+type range wraps org.ietr.preesm.memory.script.Range
+
+class FiniteLoopBlock extends LoopBlock {
+	int nbIter
+	refers IntVar iter
+	refers BufferIterator[] inBuffers
+	refers BufferIterator[] outBuffers
+}
+
+class IntVar extends Variable {
+}
+
+class BufferIterator extends SubBuffer {
+	long iterSize
+	refers IntVar iter
+}
+
+class PapifyAction extends Variable {
+}

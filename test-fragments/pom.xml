@@ -39,12 +39,12 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
   xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
-  <artifactId>org.ietr.preesm.test-fragments</artifactId>
+  <artifactId>org.preesm.test-fragments</artifactId>
   <packaging>pom</packaging>
 
   <parent>
-    <groupId>org.ietr.preesm</groupId>
-    <artifactId>org.ietr.preesm.parent</artifactId>
+    <groupId>org.preesm</groupId>
+    <artifactId>org.preesm.parent</artifactId>
     <version>2.17.1-SNAPSHOT</version>
     <relativePath>..</relativePath>
   </parent>
@@ -64,23 +64,14 @@
   </build>
 
   <modules>
-    <module>org.ietr.preesm.algorithm.test</module>
-    <module>org.ietr.preesm.archi.test</module>
-    <module>org.ietr.preesm.cli.test</module>
-    <module>org.ietr.preesm.codegen.test</module>
-    <module>org.ietr.preesm.codegen.xtend.test</module>
-    <module>org.ietr.preesm.core.test</module>
-    <module>org.ietr.preesm.evaluator.test</module>
-    <module>org.ietr.preesm.experiment.model.test</module>
-    <module>org.ietr.preesm.mapper.test</module>
-    <module>org.ietr.preesm.memory.test</module>
-    <module>org.ietr.preesm.pimm.algorithm.test</module>
-    <module>org.ietr.preesm.ui.test</module>
-    <module>org.ietr.preesm.utils.test</module>
+    <module>org.preesm.cli.test</module>
+    <module>org.preesm.codegen.test</module>
+    <module>org.preesm.codegen.xtend.test</module>
+    <module>org.preesm.model.pisdf.test</module>
+    <module>org.preesm.commons.test</module>
 
     <module>org.preesm.algorithm.test</module>
-    <module>org.preesm.architecture.test</module>
-    <module>org.preesm.architecture.ui.test</module>
+    <module>org.preesm.model.slam.test</module>
     <module>org.preesm.ui.test</module>
     <module>org.preesm.workflow.test</module>
 

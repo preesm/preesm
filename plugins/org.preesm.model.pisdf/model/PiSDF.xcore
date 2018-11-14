@@ -1,0 +1,750 @@
+
+@GenModel(
+	modelName="PiMM", prefix="PiMM",
+	modelDirectory="/org.preesm.model.pisdf/ecore-gen",
+	// editDirectory="/org.ietr.preesm.model.edit/ecore-gen",
+	// editorDirectory="/org.ietr.preesm.model.editor/ecore-gen",
+	// testsDirectory="/org.ietr.preesm.model.tests/ecore-gen",
+
+	// redirection="",
+	// classNamePattern="",
+
+	// codeFormatting="true",
+	// cleanup="true",
+
+	importerID="org.eclipse.emf.importer.ecore",
+
+	// !! if true a instrs.ecore is generated in .impl and is used by xxpackage.init() to
+	// load the intrs packages (by default this false unless the generated XyzPackage might
+	// exceed Java's byte code limit of 64k)
+	loadInitialization="false",
+	creationCommands="false",
+	creationIcons="false",
+	dataTypeConverters="false",
+	operationReflection="false"
+)
+
+@Ecore(nsURI="http://org.preesm/model/pisdf")
+package org.ietr.preesm.experiment.model.pimm
+
+import java.util.Optional
+import org.ietr.preesm.experiment.model.PiGraphException
+import org.ietr.preesm.experiment.model.pimm.util.RefinementResolver
+import org.ietr.preesm.experiment.model.expression.StringExpressionEvaluator
+import org.ietr.preesm.experiment.model.factory.PiMMUserFactory
+
+type IPath wraps org.eclipse.core.runtime.IPath
+
+// !!! This is needed as of the current versions of xcore/xtext
+// For some reason when using the default String/... (i.e. without the following)
+// the corresponding EPackage attributes/... are resolved to type java.lang.Object
+// instead of java.lang.String.
+// This causes a problem for Tom mapping generation for instance.
+// The following fixes this problem.
+type String wraps String
+type int wraps int
+type long wraps long
+type double wraps double
+
+/*************************************
+ *
+ * Generic Graph Definition
+ *
+ **************************************/
+
+class Vertex {
+	container Graph containingGraph opposite vertices
+	refers Edge[] outEdges opposite source
+	refers Edge[] inEdges opposite target
+}
+
+class Edge {
+	container Graph containingGraph opposite edges
+	refers Vertex source opposite outEdges
+	refers Vertex target opposite inEdges
+}
+
+class Graph {
+	contains Vertex[] vertices opposite containingGraph
+	contains Edge[] edges opposite containingGraph
+}
+
+
+/*************************************
+ *
+ * PiSDF Specification
+ *
+ **************************************/
+
+
+interface Parameterizable {
+	op unique Parameter[] getInputParameters()
+	op boolean isLocallyStatic() {
+		// a Parameterizable is static if all its parameters are static (or it has no parameter)
+		return inputParameters.filterNull.forall[isLocallyStatic]
+	}
+}
+
+interface Expression {
+	refers ExpressionHolder holder opposite expression
+	op String getExpressionAsString()
+	op long evaluate()
+}
+
+class StringExpression extends Expression {
+	String expressionString = "0"
+	op String getExpressionAsString() {
+		return getExpressionString()
+	}
+	op long evaluate() {
+		return StringExpressionEvaluator.evaluate(this)
+	}
+}
+
+class LongExpression extends Expression {
+	long value = "0"
+	op String getExpressionAsString() {
+		return Long.toString(value)
+	}
+	op long evaluate() {
+		return value
+	}
+}
+
+interface ExpressionProxy extends Expression {
+	refers ExpressionHolder proxy
+	op String getExpressionAsString() {
+		return proxy.getExpression().getExpressionAsString
+	}
+	op long evaluate() {
+		proxy.getExpression().evaluate()
+	}
+}
+
+interface ExpressionHolder extends Parameterizable {
+	contains Expression expression opposite holder
+	op void setExpression (String newExpression) {
+		if (expression instanceof ExpressionProxy) {
+			(expression as ExpressionProxy).proxy.setExpression(PiMMUserFactory.instance.createExpression(newExpression))
+		} else {
+			expression = PiMMUserFactory.instance.createExpression(newExpression)
+		}
+	}
+	op void setExpression (long value) {
+		if (expression instanceof ExpressionProxy) {
+			(expression as ExpressionProxy).proxy.setExpression(PiMMUserFactory.instance.createExpression(value))
+		} else {
+			expression = PiMMUserFactory.instance.createExpression(value)
+		}
+	}
+}
+
+
+class DelayLinkedExpression extends ExpressionProxy {
+
+}
+
+interface AbstractVertex extends Vertex {
+	String name
+	op PiGraph getContainingPiGraph() {
+		return super.containingGraph as PiGraph
+	}
+	op unique Port[] getAllPorts()
+	op Port lookupPort(String portName) {
+		return getAllPorts().filterNull.findFirst [
+			(it.getName() === null) && (portName === null) || (it.getName() !== null) && it.getName().equals(portName)
+		]
+	}
+	op String getVertexPath() {
+		val actorName = name;
+		return Optional.ofNullable(containingPiGraph).map[it|it.vertexPath + "/" + actorName].orElse(actorName)
+	}
+}
+
+abstract class Configurable extends AbstractVertex, Parameterizable {
+	contains ConfigInputPort[] configInputPorts opposite configurable
+	op unique Parameter[] getInputParameters() {
+		return configInputPorts.filterNull.map[incomingDependency].filterNull.map[setter].filter(Parameter).toEList.
+			unmodifiableView
+	}
+	/*
+	 * Lookup within all the ConfigInputPort and return the first one connected to the given
+	 * Parameter, or null if the actor is not connected to it.
+	 */
+	op ConfigInputPort[] lookupConfigInputPortsConnectedWithParameter(Parameter parameter) {
+		return configInputPorts.filterNull.map[incomingDependency].filterNull.filter [
+			it.setter === parameter
+		].map[getter].toEList.unmodifiableView
+	}
+	op unique Port[] getAllConfigPorts() {
+		return configInputPorts.unmodifiableView
+	}
+	op unique Port[] getAllPorts() {
+		return allConfigPorts.unmodifiableView
+	}
+}
+
+abstract class AbstractActor extends Configurable {
+	contains DataInputPort[] dataInputPorts
+	contains DataOutputPort[] dataOutputPorts
+	contains ConfigOutputPort[] configOutputPorts
+	op unique DataPort[] getAllDataPorts() {
+		return (dataInputPorts + dataOutputPorts).toEList.unmodifiableView
+	}
+	op unique Port[] getAllConfigPorts() {
+		return (super.allConfigPorts + configOutputPorts).toEList.unmodifiableView
+	}
+	op unique Port[] getAllPorts() {
+		return (allConfigPorts + allDataPorts).toEList.unmodifiableView
+	}
+	/*
+	 * @deprecated use getVertexPath() instead;
+	 */
+	op String getActorPath() {
+		return vertexPath
+	}
+}
+
+class PiGraph extends AbstractActor, Graph {
+
+	op unique boolean addActor(AbstractActor actor) {
+		vertices.add(actor)
+	}
+	op unique boolean addParameter(Parameter parameter) {
+		vertices.add(parameter)
+	}
+	op unique boolean addDelay(Delay delay) {
+		vertices.add(delay)
+		vertices.add(delay.getActor())
+	}
+	op unique boolean addFifo(Fifo fifo) {
+		edges.add(fifo)
+	}
+	op unique boolean addDependency(Dependency dependency) {
+		edges.add(dependency)
+	}
+
+	op unique Parameter[] getParameters(){
+		return vertices.filter(Parameter).toEList.unmodifiableView
+	}
+	op unique AbstractActor[] getActors(){
+		return vertices.filter(AbstractActor).toEList.unmodifiableView
+	}
+	op unique AbstractActor[] getOnlyActors(){
+		return (actors.filter(it|!(it instanceof PiGraph))).toEList.unmodifiableView
+	}
+	op unique Delay[] getDelays() {
+		return vertices.filter(Delay).toEList.unmodifiableView
+	}
+	op unique Fifo[] getFifos() {
+		return edges.filter(Fifo).toEList.unmodifiableView
+	}
+	op unique Dependency[] getDependencies() {
+		return edges.filter(Dependency).toEList.unmodifiableView
+	}
+
+	op unique boolean removeActor(AbstractActor actor) {
+		vertices.remove(actor);
+	}
+
+	op unique boolean removeDelay(Delay delay) {
+		removeActor(delay.actor)
+		vertices.remove(delay)
+	}
+
+	op unique boolean removeFifo(Fifo fifo) {
+		edges.remove(fifo)
+	}
+
+	op unique Parameter[] getOnlyParameters(){
+		return parameters.filter(it | !((it instanceof ConfigInputInterface) || (it instanceof ConfigOutputInterface) )).toEList.unmodifiableView
+	}
+
+	op unique String[] getActorsNames() {
+		return actors.map[name].unmodifiableView
+	}
+	op unique String[] getParametersNames() {
+		return parameters.map[name].unmodifiableView
+	}
+	op unique Actor[] getActorsWithRefinement() {
+		return actors.filter(Actor).toEList.unmodifiableView
+	}
+	op unique Parameter[] getAllParameters() {
+		return (parameters + childrenGraphs.map[allParameters].flatten).toEList.unmodifiableView
+	}
+	op unique PiGraph[] getChildrenGraphs() {
+		return (actors.filter(PiGraph) + actorsWithRefinement.filter[isHierarchical].map[subGraph]).toEList.
+			unmodifiableView
+	}
+	op unique AbstractActor[] getAllActors() {
+		return (actors + childrenGraphs.map[allActors].flatten).toEList.unmodifiableView
+	}
+
+	op unique Delay[] getAllDelays() {
+		return (delays + childrenGraphs.map[allDelays].flatten).toEList.unmodifiableView
+	}
+
+	op unique ConfigInputInterface[] getConfigInputInterfaces() {
+		return parameters.filter(ConfigInputInterface).toEList.unmodifiableView
+	}
+
+	op unique DataInputInterface[] getDataInputInterfaces() {
+		return actors.filter(DataInputInterface).toEList.unmodifiableView
+	}
+
+	op unique DataOutputInterface[] getDataOutputInterfaces() {
+		return actors.filter(DataOutputInterface).toEList.unmodifiableView
+	}
+
+	op Parameter lookupParameterGivenGraph(String parameterName , String graphName) {
+		return allParameters.findFirst[it.name == parameterName && (it.containingPiGraph).name == graphName]
+	}
+
+    /*
+     * Find the first {@link DataPort} of this {@link PiGraph} whose name matches the name of the {@link InterfaceActor} given as argument.
+     * Return null if none matches.
+	 */
+	op DataPort lookupGraphDataPortForInterfaceActor(InterfaceActor interfaceActor) {
+		return allDataPorts.findFirst[it.name == interfaceActor.name]
+	}
+
+	op AbstractVertex lookupVertex(String vertexName) {
+		return (actors + parameters).findFirst[it.name == vertexName]
+	}
+	op Fifo lookupFifo(String fifoId) {
+		return fifos.findFirst[it.id == fifoId]
+	}
+	op Delay lookupDelay(String delayId) {
+		return delays.findFirst[it.name == delayId]
+	}
+
+	op unique Fifo[] getFifosWithDelay() {
+		return (fifos.filter[delay !== null]).toEList.unmodifiableView
+	}
+
+	op unique Fifo[] getFifosWithoutDelay() {
+		return (fifos.filter[delay === null]).toEList.unmodifiableView
+	}
+}
+
+abstract class ExecutableActor extends AbstractActor {
+}
+
+interface RefinementContainer {
+	contains Refinement refinement
+}
+
+class Actor extends ExecutableActor, RefinementContainer, PeriodicElement {
+	IPath memoryScriptPath
+	op boolean isConfigurationActor() {
+		return configOutputPorts.map[outgoingDependencies].filter[!it.isEmpty].map[it.get(0)].map[getter].exists[true]
+	}
+	op boolean isHierarchical() {
+		return refinement.isHierarchical
+	}
+	op AbstractActor getChildAbstractActor() {
+		if (refinement === null) {
+			return null;
+		} else {
+			return refinement.abstractActor
+		}
+	}
+	op PiGraph getSubGraph() {
+		if (hierarchical) {
+			return childAbstractActor as PiGraph
+		} else {
+			throw new UnsupportedOperationException("Cannot get the subgraph of a non hierarchical actor.")
+		}
+	}
+}
+
+
+interface PeriodicElement extends ExpressionHolder {
+	op Expression getPeriod() {
+		return expression;
+	}
+}
+
+class BroadcastActor extends ExecutableActor {
+}
+
+class JoinActor extends ExecutableActor {
+}
+
+class ForkActor extends ExecutableActor {
+}
+
+class RoundBufferActor extends ExecutableActor {
+}
+
+abstract class NonExecutableActor extends AbstractActor {
+}
+
+class InitActor extends NonExecutableActor {
+	PersistenceLevel level
+	String endReference = ""
+	op DataOutputPort getDataOutputPort() {
+		// Init actors only have one output port
+		return dataOutputPorts.get(0)
+	}
+}
+
+class EndActor extends NonExecutableActor {
+	PersistenceLevel level
+	String endReference = ""
+	op DataInputPort getDataInputPort() {
+		// End actors only have one input port
+		return dataInputPorts.get(0)
+	}
+}
+
+class DelayActor extends NonExecutableActor, RefinementContainer {
+	refers Delay linkedDelay opposite actor
+
+	// Return parameter of delays
+	op Parameter[] getInputParameters() {
+		return linkedDelay.inputParameters
+	}
+	// Delay actors have a unique input port and a unique output port
+	op DataInputPort getDataInputPort() {
+		if (dataInputPorts.empty) {
+			return null
+		}
+		return dataInputPorts.get(0)
+	}
+	op DataOutputPort getDataOutputPort() {
+		if (dataOutputPorts.empty) {
+			return null
+		}
+		return dataOutputPorts.get(0)
+	}
+	// Return the actor that set / get the delay
+	op AbstractActor getSetterActor() {
+		return Optional.ofNullable(Optional.ofNullable(dataInputPort).map[incomingFifo].orElse(null)).map[sourcePort.containingActor].orElse(null)
+	}
+	op AbstractActor getGetterActor() {
+		return Optional.ofNullable(Optional.ofNullable(dataOutputPort).map[outgoingFifo].orElse(null)).map[targetPort.containingActor].orElse(null)
+	}
+	op ConfigInputPort[] lookupConfigInputPortsConnectedWithParameter(Parameter p) {
+		return linkedDelay.lookupConfigInputPortsConnectedWithParameter(p)
+	}
+
+	// Checks that the prototype matches the template
+	// void delayInitRefinement(IN int size, OUT <type> *fifo);
+	op boolean isValidRefinement(CHeaderRefinement hrefinement) {
+		var FunctionPrototype initPrototype = hrefinement.getLoopPrototype()
+		if (initPrototype.getParameters().length != 2) {
+			return false
+		}
+		if (initPrototype.getParameters().get(0).direction !== Direction.IN) {
+			return false
+		}
+		if (initPrototype.getParameters().get(1).direction !== Direction.OUT) {
+			return false
+		}
+		return true
+	}
+}
+
+interface Port {
+	String name
+	op PortKind getKind()
+}
+
+abstract class DataPort extends Port, ExpressionHolder {
+	op Expression getPortRateExpression() {
+		return getExpression
+	}
+	PortMemoryAnnotation ^annotation
+	op AbstractActor getContainingActor() {
+		if (eContainer() instanceof AbstractActor) {
+			return eContainer() as AbstractActor;
+		}
+		return null;
+	}
+	op Parameter[] getInputParameters() {
+		return containingActor.inputParameters.unmodifiableView
+	}
+	op String getId() {
+		val String actorName = Optional.ofNullable(getContainingActor()).map[name].orElseThrow [
+			new PiGraphException("Data port " + this + " is not contained in an AbstractActor.")
+		];
+		val String portName = Optional.ofNullable(name).filter[!it.isEmpty()].map["." + it].orElse("");
+		return actorName + portName;
+	}
+	op Fifo getFifo()
+}
+
+class DataInputPort extends DataPort {
+	refers Fifo incomingFifo opposite targetPort
+	op PortKind getKind() {
+		return PortKind.DATA_INPUT
+	}
+	op Fifo getFifo() {
+		return incomingFifo;
+	}
+}
+
+class DataOutputPort extends DataPort {
+	refers Fifo outgoingFifo opposite sourcePort
+	op PortKind getKind() {
+		return PortKind.DATA_OUTPUT
+	}
+	op Fifo getFifo() {
+		return outgoingFifo;
+	}
+}
+
+class ConfigInputPort extends Port {
+	refers Dependency incomingDependency opposite getter
+	container Configurable configurable opposite configInputPorts
+	op PortKind getKind() {
+		return PortKind.CFG_INPUT
+	}
+}
+
+class ConfigOutputPort extends DataOutputPort , ISetter {
+	op boolean isLocallyStatic() {
+		// config output ports are never considered static
+		return false
+	}
+	op PortKind getKind() {
+		return PortKind.CFG_OUTPUT
+	}
+}
+
+class Fifo extends Edge {
+	refers DataOutputPort sourcePort opposite outgoingFifo
+	refers DataInputPort targetPort opposite incomingFifo
+	refers Delay delay opposite containingFifo
+	String ^type = "void"
+
+	op PiGraph getContainingPiGraph() {
+		return containingGraph as PiGraph
+	}
+
+	/*
+	 * Return a {@link String} composed as follow:<br>
+	 * "&ltSourceName&gt[.&ltSourcePortName&gt]-&ltTargetName&gt[.&ltTargetPortName&gt]" <br>
+	 * <br>
+	 * This ID should be unique since each {@link Port} can only have one {@link Fifo} connected to them. Moreover, a {@link Port} with no name is always the
+	 * unique data {@link Port} of its owner.
+	 */
+	op String getId() {
+		return Optional.ofNullable(sourcePort).map[id].orElseThrow[new PiGraphException("Fifo has no source port.")] +
+			"-" + Optional.ofNullable(targetPort).map[id].orElseThrow[new PiGraphException("Fifo has no target port.")]
+	}
+}
+
+interface InterfaceActor extends AbstractActor {
+	refers Port graphPort
+	op DataPort getDataPort() {
+		// Data in/out interfaces have only one data port
+		return allDataPorts.get(0)
+	}
+	op InterfaceKind getKind()
+}
+
+class DataInputInterface extends InterfaceActor {
+	op InterfaceKind getKind() {
+		return InterfaceKind.DATA_INPUT
+	}
+}
+
+class DataOutputInterface extends InterfaceActor {
+	op InterfaceKind getKind() {
+		return InterfaceKind.DATA_OUTPUT
+	}
+}
+
+class ConfigInputInterface extends Parameter {
+	refers ConfigInputPort graphPort
+	op boolean isLocallyStatic() {
+		// a ConfigInputInterface gets its value from the parent graph once per execution
+		// during one iteration, its value does not change, thus is locally static
+		return true
+	}
+	op boolean isConfigurationInterface() {
+		return true
+	}
+}
+
+class ConfigOutputInterface extends InterfaceActor {
+	op InterfaceKind getKind() {
+		return InterfaceKind.CFG_OUTPUT
+	}
+}
+
+interface Refinement {
+	IPath filePath
+	op AbstractActor getAbstractActor() {
+		return RefinementResolver.resolveAbstractActor(this)
+	}
+	op String getFileName() {
+		return Optional.ofNullable(filePath).map[lastSegment].orElse(null)
+	}
+	op boolean isHierarchical()
+}
+
+class PiSDFRefinement extends Refinement {
+	op boolean isHierarchical() {
+		return (getFilePath() !== null) && !getFilePath().isEmpty()
+	}
+}
+
+
+class CHeaderRefinement extends Refinement {
+	contains FunctionPrototype loopPrototype
+	contains FunctionPrototype initPrototype
+	op boolean isHierarchical() {
+		// C Header Refinement means it is obviously not a subgraph
+		return false
+	}
+}
+
+class Parameter extends Vertex, Configurable, ISetter, ExpressionHolder {
+	op Expression getValueExpression() {
+		return getExpression
+	}
+	op boolean isLocallyStatic() {
+		// a parameter is static if all its setters are static (or it has no setter)
+		return getConfigInputPorts().map[incomingDependency].map[setter].forall[isLocallyStatic]
+	}
+	op boolean isDependent() {
+		return !(configInputPorts.empty)
+	}
+	op boolean isConfigurationInterface() {
+		return false
+	}
+}
+
+class Dependency extends Edge {
+	refers ISetter setter opposite outgoingDependencies
+	refers ConfigInputPort getter opposite incomingDependency
+}
+
+interface ISetter {
+	refers Dependency[] outgoingDependencies opposite setter
+	op boolean isLocallyStatic()
+}
+
+
+class Delay extends Configurable, ExpressionHolder {
+	op Expression getSizeExpression() {
+		return getExpression
+	}
+	refers DelayActor actor opposite linkedDelay
+	refers Fifo containingFifo opposite delay
+	PersistenceLevel ^level = "permanent"
+
+	op boolean hasSetterActor() {
+		return Optional.ofNullable(actor).map[dataInputPort.incomingFifo !== null].orElse(false)
+	}
+
+	op boolean hasGetterActor() {
+		return Optional.ofNullable(actor).map[dataOutputPort.outgoingFifo !== null].orElse(false)
+	}
+
+	op boolean isDynamic() {
+		return hasSetterActor || hasGetterActor
+	}
+
+	op AbstractActor getGetterActor() {
+		return actor.getterActor
+	}
+
+	op AbstractActor getSetterActor() {
+		return actor.setterActor
+	}
+
+	op DataInputPort getGetterPort() {
+		return Optional.ofNullable(actor.dataOutputPort.outgoingFifo.targetPort).orElse(null)
+	}
+
+	op DataOutputPort getSetterPort() {
+		return Optional.ofNullable(actor.dataInputPort.incomingFifo.sourcePort).orElse(null)
+	}
+
+	op unique void setName(String newName) {
+		if (newName !== null) {
+			if (newName.empty) {
+				var String srcName = Optional.ofNullable(containingFifo).map[sourcePort.containingActor.getName()].orElse("")
+				var String tgtName = Optional.ofNullable(containingFifo).map[targetPort.containingActor.getName()].orElse("")
+				super.setName("delay_" + srcName + "--" + tgtName)
+			} else {
+				super.setName(newName)
+			}
+			actor.setName(name)
+		}
+	}
+
+	 /*
+	 * Return a {@link String} unique ID for Delay.
+	 * This ID should be unique.
+	 */
+	op unique String getId() {
+		var String srcName = Optional.ofNullable(containingFifo).map[sourcePort.containingActor.getName()].orElse("")
+		var String srcPortName = Optional.ofNullable(containingFifo).map[sourcePort.name].orElse("")
+		var String tgtName = Optional.ofNullable(containingFifo).map[targetPort.containingActor.getName()].orElse("")
+		var String tgtPortName = Optional.ofNullable(containingFifo).map[targetPort.name].orElse("")
+		var String delayID = srcName + "_" + srcPortName + "__" + tgtName + "_" + tgtPortName
+		var containingGraph = Optional.ofNullable(containingFifo).map[containingPiGraph].orElse(null)
+		while (containingGraph.containingPiGraph !== null) {
+			delayID = containingGraph.name + "_" + delayID
+			containingGraph = containingGraph.containingPiGraph
+		}
+		return "delay_" + delayID
+	}
+
+	op unique String getShortId() {
+		var String srcName = Optional.ofNullable(containingFifo).map[sourcePort.containingActor.getName()].orElse("")
+		var String srcPortName = Optional.ofNullable(containingFifo).map[sourcePort.name].orElse("")
+		var String tgtName = Optional.ofNullable(containingFifo).map[targetPort.containingActor.getName()].orElse("")
+		var String tgtPortName = Optional.ofNullable(containingFifo).map[targetPort.name].orElse("")
+		return srcName + "_" + srcPortName + "__" + tgtName + "_" + tgtPortName
+	}
+}
+
+class FunctionPrototype {
+	String name
+	contains FunctionParameter[] parameters
+}
+
+class FunctionParameter {
+	String name
+	Direction direction
+	String ^type
+	boolean isConfigurationParameter
+}
+
+enum Direction {
+	IN = 0
+	OUT = 1
+}
+
+enum PortMemoryAnnotation {
+	NONE = 0
+	READ_ONLY = 1
+	WRITE_ONLY = 2
+	UNUSED = 3
+}
+
+enum PersistenceLevel {
+	NONE as "none" = 0
+	PERMANENT as "permanent" = 1
+	LOCAL as "local" = 2
+}
+
+enum PortKind {
+	CFG_INPUT as "cfg_input" = 0
+	DATA_INPUT as "input" = 1
+	DATA_OUTPUT as "output" = 2
+	CFG_OUTPUT as "cfg_output" = 3
+}
+
+enum InterfaceKind {
+	DATA_INPUT as "src" = 0
+	DATA_OUTPUT as "snk" = 1
+	CFG_OUTPUT as "cfg_out_iface" = 2
+	CFG_INPUT as "cfg_in_iface" = 3
+}

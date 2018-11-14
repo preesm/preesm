@@ -4,7 +4,7 @@ Bundle-Name: DFTools UI
 Automatic-Module-Name: org.preesm.ui
 Bundle-SymbolicName: org.preesm.ui;singleton:=true
 Bundle-Version: 2.17.1.qualifier
-Bundle-Activator: org.ietr.dftools.ui.Activator
+Bundle-Activator: org.ietr.dftools.ui.PreesmUIPlugin
 Require-Bundle: org.eclipse.core.runtime;visibility:=reexport,
  org.eclipse.core.resources,
  org.eclipse.debug.ui;visibility:=reexport,
@@ -14,12 +14,20 @@ Require-Bundle: org.eclipse.core.runtime;visibility:=reexport,
  org.eclipse.ui.views.properties.tabbed;visibility:=reexport,
  org.eclipse.gef;visibility:=reexport,
  org.ietr.graphiti.ui;bundle-version="[1.11.0,2.0.0)";visibility:=reexport,
- org.preesm.architecture,
- org.preesm.workflow
+ org.preesm.algorithm;visibility:=reexport
 Bundle-ActivationPolicy: lazy
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
-Export-Package: org.ietr.dftools.ui.util,
+Export-Package: org.ietr.dftools.ui,
+ org.ietr.dftools.ui.util,
  org.ietr.dftools.ui.workflow.launch,
- org.ietr.dftools.ui.workflow.tools
+ org.ietr.dftools.ui.workflow.tools,
+ org.ietr.preesm.ui,
+ org.ietr.preesm.ui.console,
+ org.ietr.preesm.ui.editor.graph.validators,
+ org.ietr.preesm.ui.fields,
+ org.ietr.preesm.ui.perspective,
+ org.ietr.preesm.ui.popup.actions,
+ org.ietr.preesm.ui.utils,
+ org.ietr.preesm.ui.wizards
 Eclipse-BuddyPolicy: global
 Bundle-Vendor: IETR/INSA Rennes

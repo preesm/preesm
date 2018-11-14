@@ -40,7 +40,7 @@ package org.ietr.dftools.ui.workflow.launch;
 import org.eclipse.debug.core.ILaunchConfigurationWorkingCopy;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Composite;
-import org.ietr.dftools.ui.Activator;
+import org.ietr.dftools.ui.PreesmUIPlugin;
 import org.ietr.dftools.ui.workflow.ScenarioConfiguration;
 
 // TODO: Auto-generated Javadoc
@@ -95,7 +95,7 @@ public class WorkFlowLaunchScenarioTab extends AbstractWorkFlowLaunchTab {
    */
   @Override
   public Image getImage() {
-    final Image image = Activator.getImage("icons/workflow.png");
+    final Image image = PreesmUIPlugin.getImage("icons/workflow.png");
 
     if (image != null) {
       return image;

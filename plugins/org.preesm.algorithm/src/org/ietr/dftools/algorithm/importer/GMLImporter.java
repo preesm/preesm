@@ -52,7 +52,6 @@ import java.util.List;
 import java.util.Map;
 import org.eclipse.core.runtime.Path;
 import org.ietr.dftools.algorithm.DFToolsAlgoException;
-import org.ietr.dftools.algorithm.exporter.Key;
 import org.ietr.dftools.algorithm.factories.IModelVertexFactory;
 import org.ietr.dftools.algorithm.model.AbstractEdge;
 import org.ietr.dftools.algorithm.model.AbstractGraph;
@@ -63,6 +62,7 @@ import org.ietr.dftools.algorithm.model.PropertySource;
 import org.ietr.dftools.algorithm.model.parameters.Argument;
 import org.ietr.dftools.algorithm.model.parameters.Parameter;
 import org.ietr.dftools.algorithm.model.parameters.Variable;
+import org.ietr.preesm.utils.GMLKey;
 import org.jgrapht.EdgeFactory;
 import org.w3c.dom.DOMConfiguration;
 import org.w3c.dom.Document;
@@ -95,7 +95,7 @@ public abstract class GMLImporter<G extends AbstractGraph<?, ?>, V extends Abstr
   private static final String PARAMETERS_LITERAL = "parameters";
 
   /** The class key set. */
-  protected Map<String, List<Key>> classKeySet;
+  protected Map<String, List<GMLKey>> classKeySet;
 
   /** The edge factory. */
   protected EdgeFactory<V, E> edgeFactory;
@@ -128,7 +128,7 @@ public abstract class GMLImporter<G extends AbstractGraph<?, ?>, V extends Abstr
    *
    * @return This Importer Key set
    */
-  public Map<String, List<Key>> getKeySet() {
+  public Map<String, List<GMLKey>> getKeySet() {
     return this.classKeySet;
   }
 
@@ -251,12 +251,12 @@ public abstract class GMLImporter<G extends AbstractGraph<?, ?>, V extends Abstr
    */
   protected List<Object> parseKey(final Element dataElt, final String eltType) {
     final List<Object> result = new ArrayList<>();
-    final List<Key> keySet = this.classKeySet.get(eltType);
+    final List<GMLKey> keySet = this.classKeySet.get(eltType);
     if (keySet == null) {
       return Collections.emptyList();
     }
     final String key = dataElt.getAttribute("key");
-    for (final Key oneKey : keySet) {
+    for (final GMLKey oneKey : keySet) {
       // Ignoring special keys
       if (oneKey.getId().equals(key) && (oneKey.getType() != null)
           && !oneKey.getId().equalsIgnoreCase(ARGUMENTS_LITERAL) && !oneKey.getId().equalsIgnoreCase(PARAMETERS_LITERAL)
@@ -382,9 +382,9 @@ public abstract class GMLImporter<G extends AbstractGraph<?, ?>, V extends Abstr
         final String id = childElt.getAttribute("id");
         childElt.getChildNodes();
         final Class<?> type = null;
-        final Key newKey = new Key(attrName, isFor, typeParamType, type);
+        final GMLKey newKey = new GMLKey(attrName, isFor, typeParamType, type);
         newKey.setId(id);
-        final List<Key> keys;
+        final List<GMLKey> keys;
         if (!this.classKeySet.containsKey(isFor)) {
           keys = new ArrayList<>();
           this.classKeySet.put(isFor, keys);
@@ -532,7 +532,7 @@ public abstract class GMLImporter<G extends AbstractGraph<?, ?>, V extends Abstr
    * @param keys
    *          the keys
    */
-  protected void setKeySet(final Map<String, List<Key>> keys) {
+  protected void setKeySet(final Map<String, List<GMLKey>> keys) {
     this.classKeySet = keys;
   }
 

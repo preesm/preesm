@@ -37,45 +37,34 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
   xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
-  <artifactId>org.ietr.preesm.plugins</artifactId>
+  <artifactId>org.preesm.plugins</artifactId>
   <packaging>pom</packaging>
 
   <parent>
-    <groupId>org.ietr.preesm</groupId>
-    <artifactId>org.ietr.preesm.parent</artifactId>
+    <groupId>org.preesm</groupId>
+    <artifactId>org.preesm.parent</artifactId>
     <version>2.17.1-SNAPSHOT</version>
     <relativePath>..</relativePath>
   </parent>
 
   <modules>
-    <module>org.ietr.preesm.utils</module>
-    <module>org.ietr.preesm.experiment.model</module>
-    <module>org.ietr.preesm.core</module>
+    <module>org.preesm.commons</module>
+    <module>org.preesm.model.pisdf</module>
+    <module>org.preesm.algorithm</module>
 
-    <module>org.ietr.preesm.algorithm</module>
-    <module>org.ietr.preesm.clustering</module>
-    <module>org.ietr.preesm.archi</module>
-    <module>org.ietr.preesm.cli</module>
-    <module>org.ietr.preesm.codegen</module>
-    <module>org.ietr.preesm.codegen.xtend</module>
-
-    <module>org.ietr.preesm.evaluator</module>
-
-    <module>org.ietr.preesm.mapper</module>
-    <module>org.ietr.preesm.memory</module>
-    <module>org.ietr.preesm.pimm.algorithm</module>
+    <module>org.preesm.cli</module>
+    <module>org.preesm.codegen</module>
+    <module>org.preesm.codegen.xtend</module>
 
     <module>fi.abo.preesm.dataparallel</module>
 
-    <module>org.ietr.preesm.ui</module>
-    <module>org.ietr.preesm.ui.pimm</module>
-    <module>org.ietr.preesm.ui.scenario</module>
-    <module>org.ietr.preesm.ui.sdf</module>
+    <module>org.preesm.ui.pisdf</module>
+    <module>org.preesm.ui.scenario</module>
+    <module>org.preesm.ui.sdf</module>
 
-    <module>org.preesm.architecture</module>
+    <module>org.preesm.model.slam</module>
     <module>org.preesm.workflow</module>
-    <module>org.preesm.algorithm</module>
-    <module>org.preesm.architecture.ui</module>
+    <module>org.preesm.ui.slam</module>
     <module>org.preesm.ui</module>
     
   </modules>

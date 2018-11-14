@@ -9,6 +9,7 @@ PREESM Changelog
 
 ### Changes
 * Merge DFTools code in Preesm and remove upstream dependency;
+* Rename plugins into org.preesm instead of org.ietr.{preesm|dftools};
 * Improve periodic actor support in UI; 
 * Add periodic actor check (not working with cycles yet);
 * Improve Papify support: 

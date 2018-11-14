@@ -55,6 +55,7 @@ import org.ietr.dftools.algorithm.model.parameters.Parameter;
 import org.ietr.dftools.algorithm.model.parameters.ParameterSet;
 import org.ietr.dftools.algorithm.model.parameters.Variable;
 import org.ietr.dftools.algorithm.model.parameters.VariableSet;
+import org.ietr.preesm.utils.GMLKey;
 import org.w3c.dom.DOMImplementation;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -82,7 +83,7 @@ public abstract class GMLExporter<V extends AbstractVertex<?>, E extends Abstrac
   protected String path;
 
   /** The class key set. */
-  protected Map<String, List<Key>> classKeySet;
+  protected Map<String, List<GMLKey>> classKeySet;
 
   /** The index. */
   protected int index = 0;
@@ -129,9 +130,9 @@ public abstract class GMLExporter<V extends AbstractVertex<?>, E extends Abstrac
    *          the desc
    */
   private void addKey(final String id, final String name, final String elt, final String type, final Class<?> desc) {
-    final Key key = new Key(name, elt, type, desc);
+    final GMLKey key = new GMLKey(name, elt, type, desc);
     if (!this.classKeySet.containsKey(elt)) {
-      final ArrayList<Key> keys = new ArrayList<>();
+      final ArrayList<GMLKey> keys = new ArrayList<>();
       this.classKeySet.put(elt, keys);
     }
     key.setId(id);
@@ -146,10 +147,10 @@ public abstract class GMLExporter<V extends AbstractVertex<?>, E extends Abstrac
    * @param key
    *          the key
    */
-  protected void addKey(final String eltType, final Key key) {
+  protected void addKey(final String eltType, final GMLKey key) {
     key.setId(key.getName());
     if (!this.classKeySet.containsKey(eltType)) {
-      this.classKeySet.put(eltType, new ArrayList<Key>());
+      this.classKeySet.put(eltType, new ArrayList<GMLKey>());
     }
     if (!this.classKeySet.get(eltType).contains(key)) {
       this.classKeySet.get(eltType).add(key);
@@ -170,8 +171,8 @@ public abstract class GMLExporter<V extends AbstractVertex<?>, E extends Abstrac
    *          the doc E lement
    */
   protected void addKeySet(final Element docELement) {
-    for (final List<Key> keys : this.classKeySet.values()) {
-      for (final Key key : keys) {
+    for (final List<GMLKey> keys : this.classKeySet.values()) {
+      for (final GMLKey key : keys) {
         final Element keyElt = appendChild(docELement, "key");
         keyElt.setAttribute("id", key.getId());
 
@@ -349,9 +350,9 @@ public abstract class GMLExporter<V extends AbstractVertex<?>, E extends Abstrac
         dataElt.setAttribute("key", key);
         dataElt.setTextContent(source.getPropertyStringValue(key));
         if (source.getPropertyBean().getValue(key) instanceof Number) {
-          this.addKey(forElt, new Key(key, forElt, "int", null));
+          this.addKey(forElt, new GMLKey(key, forElt, "int", null));
         } else {
-          this.addKey(forElt, new Key(key, forElt, "string", null));
+          this.addKey(forElt, new GMLKey(key, forElt, "string", null));
         }
       }
     }
@@ -384,7 +385,7 @@ public abstract class GMLExporter<V extends AbstractVertex<?>, E extends Abstrac
    *
    * @return a Map containing this Exporter key set
    */
-  public Map<String, List<Key>> getKeySet() {
+  public Map<String, List<GMLKey>> getKeySet() {
     return this.classKeySet;
   }
 
@@ -394,7 +395,7 @@ public abstract class GMLExporter<V extends AbstractVertex<?>, E extends Abstrac
    * @param keys
    *          The key set
    */
-  public void setKeySet(final Map<String, List<Key>> keys) {
+  public void setKeySet(final Map<String, List<GMLKey>> keys) {
     this.classKeySet = keys;
   }
 
