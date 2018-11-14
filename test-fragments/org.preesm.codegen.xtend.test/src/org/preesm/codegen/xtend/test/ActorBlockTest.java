@@ -32,7 +32,7 @@
  * The fact that you are presently reading this means that you have had
  * knowledge of the CeCILL license and that you accept its terms.
  */
-package org.ietr.preesm.codegen.xtend.test;
+package org.preesm.codegen.xtend.test;
 
 import org.eclipse.emf.common.util.EList;
 import org.ietr.preesm.codegen.model.codegen.ActorBlock;
