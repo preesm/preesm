@@ -585,14 +585,14 @@ Version 1.0 dated 2006-09-05.]]>
    </requires>
 
    <plugin
-         id="org.ietr.preesm.codegen"
+         id="org.preesm.codegen"
          download-size="0"
          install-size="0"
          version="2.17.1.qualifier"
          unpack="false"/>
 
    <plugin
-         id="org.ietr.preesm.codegen.xtend"
+         id="org.preesm.codegen.xtend"
          download-size="0"
          install-size="0"
          version="2.17.1.qualifier"

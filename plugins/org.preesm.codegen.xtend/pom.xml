@@ -36,46 +36,14 @@
     knowledge of the CeCILL license and that you accept its terms.
 
 -->
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-  <modelVersion>4.0.0</modelVersion>
-  <artifactId>org.preesm.test-fragments</artifactId>
-  <packaging>pom</packaging>
-
-  <parent>
-    <groupId>org.preesm</groupId>
-    <artifactId>org.preesm.parent</artifactId>
-    <version>2.17.1-SNAPSHOT</version>
-    <relativePath>..</relativePath>
-  </parent>
-
-  <build>
-    <plugins>
-      <plugin>
-        <groupId>org.eclipse.tycho</groupId>
-        <artifactId>tycho-surefire-plugin</artifactId>
-        <version>${tycho-version}</version>
-        <configuration>
-          <useUIThread>false</useUIThread>
-          <useUIHarness>false</useUIHarness>
-        </configuration>
-      </plugin>
-    </plugins>
-  </build>
-
-  <modules>
-    <module>org.preesm.cli.test</module>
-    <module>org.preesm.codegen.test</module>
-    <module>org.preesm.codegen.xtend.test</module>
-    <module>org.preesm.model.pisdf.test</module>
-    <module>org.preesm.commons.test</module>
-
-    <module>org.preesm.algorithm.test</module>
-    <module>org.preesm.model.slam.test</module>
-    <module>org.preesm.ui.test</module>
-    <module>org.preesm.workflow.test</module>
-
-    <module>fi.abo.preesm.dataparallel.test</module>
-  </modules>
-
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<artifactId>org.preesm.codegen.xtend</artifactId>
+	<packaging>eclipse-plugin</packaging>
+	<parent>
+		<groupId>org.preesm</groupId>
+		<artifactId>org.preesm.plugins</artifactId>
+		<version>2.17.1-SNAPSHOT</version>
+		<relativePath>..</relativePath>
+	</parent>
 </project>

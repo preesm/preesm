@@ -53,8 +53,8 @@
     <module>org.preesm.algorithm</module>
 
     <module>org.preesm.cli</module>
-    <module>org.ietr.preesm.codegen</module>
-    <module>org.ietr.preesm.codegen.xtend</module>
+    <module>org.preesm.codegen</module>
+    <module>org.preesm.codegen.xtend</module>
 
     <module>fi.abo.preesm.dataparallel</module>
 
