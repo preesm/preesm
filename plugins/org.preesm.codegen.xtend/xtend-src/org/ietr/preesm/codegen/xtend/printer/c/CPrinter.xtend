@@ -73,8 +73,8 @@ import org.ietr.preesm.codegen.model.codegen.SharedMemoryCommunication
 import org.ietr.preesm.codegen.model.codegen.SpecialCall
 import org.ietr.preesm.codegen.model.codegen.SubBuffer
 import org.ietr.preesm.codegen.model.codegen.Variable
+import org.ietr.preesm.codegen.printer.DefaultPrinter
 import org.ietr.preesm.codegen.xtend.CodegenPlugin
-import org.ietr.preesm.codegen.xtend.printer.DefaultPrinter
 import org.ietr.preesm.codegen.xtend.printer.net.c.TcpCPrinter
 import org.ietr.preesm.codegen.xtend.task.CodegenException
 import org.ietr.preesm.experiment.model.pimm.util.CHeaderUsedLocator

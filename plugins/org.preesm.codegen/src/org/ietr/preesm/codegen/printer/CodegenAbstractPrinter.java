@@ -215,7 +215,7 @@ public abstract class CodegenAbstractPrinter extends CodegenSwitch<CharSequence>
   protected final int getMainOperatorId() {
     final String mainOperatorName = getEngine().getScenario().getSimulationManager().getMainOperatorName();
     final Collection<Block> codeBlocks = getEngine().getCodeBlocks();
-    for (Block block : codeBlocks) {
+    for (final Block block : codeBlocks) {
       if (block.getName().equals(mainOperatorName)) {
         if (block instanceof CoreBlock) {
           return ((CoreBlock) block).getCoreID();
@@ -253,18 +253,18 @@ public abstract class CodegenAbstractPrinter extends CodegenSwitch<CharSequence>
   private CodegenEngine engine;
 
   public CoreBlock getPrintedCoreBlock() {
-    return printedCoreBlock;
+    return this.printedCoreBlock;
   }
 
-  public void setPrintedCoreBlock(CoreBlock printedCoreBlock) {
+  public void setPrintedCoreBlock(final CoreBlock printedCoreBlock) {
     this.printedCoreBlock = printedCoreBlock;
   }
 
   public CodegenEngine getEngine() {
-    return engine;
+    return this.engine;
   }
 
-  public void setEngine(CodegenEngine engine) {
+  public void setEngine(final CodegenEngine engine) {
     this.engine = engine;
   }
 
@@ -280,7 +280,9 @@ public abstract class CodegenAbstractPrinter extends CodegenSwitch<CharSequence>
    *          The list of all {@link Block blocks} printed during a workflow execution. This list includes all
    *          printerBlocks
    */
-  public abstract void preProcessing(List<Block> printerBlocks, Collection<Block> allBlocks);
+  public void preProcessing(final List<Block> printerBlocks, final Collection<Block> allBlocks) {
+    // no pre processing by default
+  }
 
   /**
    * Method called after printing a set of {@link Block blocks}. This method can perform some printer specific
@@ -289,7 +291,10 @@ public abstract class CodegenAbstractPrinter extends CodegenSwitch<CharSequence>
    * {@link Block} to print after the pre-processing to do so.
    *
    */
-  public abstract CharSequence postProcessing(CharSequence charSeq);
+  public CharSequence postProcessing(final CharSequence charSeq) {
+    // no postProcess by default
+    return charSeq;
+  }
 
   /**
    * This method is called after all the {@link Block blocks} have been printed by the printer to give the opportunity

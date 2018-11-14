@@ -41,6 +41,7 @@ import org.ietr.preesm.codegen.model.codegen.Delimiter
 import org.ietr.preesm.codegen.model.codegen.Direction
 import org.ietr.preesm.codegen.model.codegen.SharedMemoryCommunication
 import org.ietr.preesm.codegen.printer.CodegenAbstractPrinter
+import org.ietr.preesm.codegen.printer.DefaultPrinter
 
 /**
  * This {@link ComTrackingPrinter} is a dummy implementation of the

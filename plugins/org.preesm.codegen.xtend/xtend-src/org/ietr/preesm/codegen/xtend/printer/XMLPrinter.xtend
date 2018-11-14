@@ -50,6 +50,7 @@ import org.ietr.preesm.codegen.model.codegen.LoopBlock
 import org.ietr.preesm.codegen.model.codegen.SpecialCall
 import org.ietr.preesm.codegen.model.codegen.SubBuffer
 import org.ietr.preesm.codegen.model.codegen.Variable
+import org.ietr.preesm.codegen.printer.DefaultPrinter
 
 class XMLPrinter extends DefaultPrinter {
 
