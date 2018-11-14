@@ -164,7 +164,7 @@
    </extension>
    <extension point="org.preesm.workflow.loggers">
       <logger id="net.sf.dftools.ui.workflow.logger"
-         type="org.ietr.dftools.ui.workflow.tools.DFToolsWorkflowLogger">
+         type="org.ietr.dftools.ui.workflow.tools.PreesmWorkflowLogger">
       </logger>
    </extension>
    <extension point="graphiti.definition">

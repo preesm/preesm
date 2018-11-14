@@ -48,7 +48,6 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.logging.Level;
 import org.ietr.dftools.workflow.WorkflowException;
-import org.ietr.dftools.workflow.tools.WorkflowLogger;
 import org.ietr.preesm.experiment.model.factory.PiMMUserFactory;
 import org.ietr.preesm.experiment.model.pimm.AbstractActor;
 import org.ietr.preesm.experiment.model.pimm.AbstractVertex;
@@ -65,6 +64,7 @@ import org.ietr.preesm.experiment.model.pimm.InterfaceActor;
 import org.ietr.preesm.experiment.model.pimm.PersistenceLevel;
 import org.ietr.preesm.experiment.model.pimm.PiGraph;
 import org.ietr.preesm.experiment.model.pimm.PortMemoryAnnotation;
+import org.preesm.commons.logger.PreesmLogger;
 
 /**
  * @author farresti
@@ -195,7 +195,7 @@ public class PiMMHandler {
    */
   public List<Fifo> getFifosFromCC(final List<AbstractActor> cc) throws PiMMHelperException {
     if (cc.isEmpty()) {
-      WorkflowLogger.getLogger().log(Level.INFO, "No FIFOs to extrac, empty connectedComponent.");
+      PreesmLogger.getLogger().log(Level.INFO, "No FIFOs to extrac, empty connectedComponent.");
       return Collections.<Fifo>emptyList();
     }
     final boolean containsInterfaceActors = PiMMHandler.containsInterfaceActors(cc);
@@ -606,16 +606,16 @@ public class PiMMHandler {
         }
       }
       sb.append("\n");
-      WorkflowLogger.getLogger().log(Level.SEVERE, sb.toString());
+      PreesmLogger.getLogger().log(Level.SEVERE, sb.toString());
       throw new WorkflowException("Periods are not consistent, abandon.");
     } else if (mapGraphPeriods.size() == 1) {
       long period = 0;
       for (Long p : mapGraphPeriods.keySet()) {
         period = p;
       }
-      WorkflowLogger.getLogger().log(Level.INFO, "The graph period is set to: " + period);
+      PreesmLogger.getLogger().log(Level.INFO, "The graph period is set to: " + period);
     } else {
-      WorkflowLogger.getLogger().log(Level.INFO, "No period for the graph.");
+      PreesmLogger.getLogger().log(Level.INFO, "No period for the graph.");
     }
   }
 

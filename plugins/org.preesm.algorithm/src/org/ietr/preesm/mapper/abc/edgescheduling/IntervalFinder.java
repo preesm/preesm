@@ -40,11 +40,11 @@ import java.util.List;
 import java.util.Random;
 import java.util.logging.Level;
 import org.ietr.dftools.architecture.slam.ComponentInstance;
-import org.ietr.dftools.workflow.tools.WorkflowLogger;
 import org.ietr.preesm.mapper.abc.order.OrderManager;
 import org.ietr.preesm.mapper.model.MapperDAGVertex;
 import org.ietr.preesm.mapper.model.property.VertexTiming;
 import org.ietr.preesm.mapper.model.special.TransferVertex;
+import org.preesm.commons.logger.PreesmLogger;
 
 // TODO: Auto-generated Javadoc
 /**
@@ -283,7 +283,7 @@ public class IntervalFinder {
       }
     }
 
-    WorkflowLogger.getLogger().log(Level.INFO, trace);
+    PreesmLogger.getLogger().log(Level.INFO, trace);
   }
 
   /**

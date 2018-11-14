@@ -2,9 +2,8 @@
  * Copyright or © or Copr. IETR/INSA - Rennes (2012 - 2017) :
  *
  * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017)
- * Clément Guy <clement.guy@insa-rennes.fr> (2014 - 2015)
- * Karol Desnos <karol.desnos@insa-rennes.fr> (2012)
- * Yaset Oliva <yaset.oliva@insa-rennes.fr> (2013)
+ * Clément Guy <clement.guy@insa-rennes.fr> (2015)
+ * Maxime Pelcat <maxime.pelcat@insa-rennes.fr> (2012)
  *
  * This software is a computer program whose purpose is to help prototyping
  * parallel applications using dataflow formalism.
@@ -35,47 +34,34 @@
  * The fact that you are presently reading this means that you have had
  * knowledge of the CeCILL license and that you accept its terms.
  */
-package org.ietr.preesm.utils;
-
-import org.osgi.framework.BundleActivator;
-import org.osgi.framework.BundleContext;
+package org.preesm.commons.files;
 
 // TODO: Auto-generated Javadoc
 /**
- * The Class Activator.
+ * Tools to manipulate paths.
+ *
+ * @author mpelcat
  */
-public class Activator implements BundleActivator {
-
-  /** The context. */
-  private static BundleContext context;
+public class PathTools {
 
   /**
-   * Gets the context.
+   * Returns the same path if it started with /projectName or prefixes it with /projectName/.
    *
-   * @return the context
+   * @param relative
+   *          Project absolute or relative path.
+   * @param projectName
+   *          Name of the project prefixing the path.
+   * @return Project absolute path.
    */
-  static BundleContext getContext() {
-    return Activator.context;
-  }
+  public static String getAbsolutePath(final String relative, final String projectName) {
+    String absolute = new String();
 
-  /*
-   * (non-Javadoc)
-   *
-   * @see org.osgi.framework.BundleActivator#start(org.osgi.framework.BundleContext)
-   */
-  @Override
-  public void start(final BundleContext bundleContext) throws Exception {
-    Activator.context = bundleContext;
-  }
+    if (relative.startsWith("/" + projectName)) {
+      return relative;
+    } else {
+      absolute = "/" + projectName + "/" + relative;
+    }
 
-  /*
-   * (non-Javadoc)
-   *
-   * @see org.osgi.framework.BundleActivator#stop(org.osgi.framework.BundleContext)
-   */
-  @Override
-  public void stop(final BundleContext bundleContext) throws Exception {
-    Activator.context = null;
+    return absolute;
   }
-
 }

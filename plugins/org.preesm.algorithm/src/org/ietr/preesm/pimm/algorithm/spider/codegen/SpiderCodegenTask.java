@@ -57,10 +57,10 @@ import org.ietr.dftools.workflow.WorkflowException;
 import org.ietr.dftools.workflow.elements.Workflow;
 import org.ietr.dftools.workflow.implement.AbstractTaskImplementation;
 import org.ietr.dftools.workflow.implement.AbstractWorkflowNodeImplementation;
-import org.ietr.dftools.workflow.tools.WorkflowLogger;
 import org.ietr.preesm.core.scenario.PreesmScenario;
 import org.ietr.preesm.experiment.model.pimm.PiGraph;
 import org.ietr.preesm.pimm.algorithm.spider.codegen.visitor.SpiderCodegen;
+import org.preesm.commons.logger.PreesmLogger;
 
 // TODO: Auto-generated Javadoc
 /**
@@ -112,7 +112,7 @@ public class SpiderCodegenTask extends AbstractTaskImplementation {
     final String codegenPath = scenario.getCodegenManager().getCodegenDirectory() + "/";
 
     if (codegenPath.equals("/")) {
-      WorkflowLogger.getLogger().log(Level.SEVERE, "Error: A Codegen folder must be specified in Scenario");
+      PreesmLogger.getLogger().log(Level.SEVERE, "Error: A Codegen folder must be specified in Scenario");
       return Collections.emptyMap();
     }
 

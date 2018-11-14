@@ -43,7 +43,7 @@ import org.eclipse.core.runtime.IConfigurationElement;
 import org.eclipse.core.runtime.IExtensionRegistry;
 import org.eclipse.core.runtime.Platform;
 import org.ietr.dftools.workflow.implement.AbstractScenarioImplementation;
-import org.ietr.dftools.workflow.tools.WorkflowLogger;
+import org.preesm.commons.logger.PreesmLogger;
 
 /**
  * This class provides a scenario workflow node.
@@ -155,7 +155,7 @@ public class ScenarioNode extends AbstractWorkflowNode {
 
       return false;
     } catch (final CoreException e) {
-      WorkflowLogger.getLogger().log(Level.SEVERE, "Failed to find the scenario from workflow");
+      PreesmLogger.getLogger().log(Level.SEVERE, "Failed to find the scenario from workflow");
       return false;
     }
   }

@@ -40,7 +40,7 @@ import org.ietr.dftools.algorithm.model.sdf.SDFEdge;
 import org.ietr.dftools.algorithm.model.sdf.SDFGraph;
 import org.ietr.preesm.throughput.tools.helpers.GraphStructureHelper;
 import org.ietr.preesm.throughput.tools.helpers.Stopwatch;
-import org.ietr.preesm.utils.math.MathFunctionsHelper;
+import org.preesm.commons.math.MathFunctionsHelper;
 
 /**
  * @author hderoui

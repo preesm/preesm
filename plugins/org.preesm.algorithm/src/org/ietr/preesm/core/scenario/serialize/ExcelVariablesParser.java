@@ -50,9 +50,9 @@ import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.Path;
 import org.ietr.dftools.algorithm.importer.InvalidModelException;
 import org.ietr.dftools.algorithm.model.sdf.SDFGraph;
-import org.ietr.dftools.workflow.tools.WorkflowLogger;
 import org.ietr.preesm.core.scenario.PreesmScenario;
-import org.ietr.preesm.utils.files.WorkspaceUtils;
+import org.preesm.commons.files.WorkspaceUtils;
+import org.preesm.commons.logger.PreesmLogger;
 
 /**
  * Importing variables in a scenario from an excel file.
@@ -84,7 +84,7 @@ public class ExcelVariablesParser {
    *           the invalid model exception
    */
   public void parse(final String url) throws InvalidModelException {
-    WorkflowLogger.getLogger().log(Level.INFO, "Importing variables from an excel sheet.");
+    PreesmLogger.getLogger().log(Level.INFO, "Importing variables from an excel sheet.");
 
     final IWorkspace workspace = ResourcesPlugin.getWorkspace();
 
@@ -128,10 +128,10 @@ public class ExcelVariablesParser {
 
           this.scenario.getVariablesManager().setVariable(varName, value);
 
-          WorkflowLogger.getLogger().log(Level.INFO, "Importing variable: " + varName);
+          PreesmLogger.getLogger().log(Level.INFO, "Importing variable: " + varName);
         }
       } else {
-        WorkflowLogger.getLogger().log(Level.WARNING, "No cell found in excel sheet for variable: " + varName);
+        PreesmLogger.getLogger().log(Level.WARNING, "No cell found in excel sheet for variable: " + varName);
       }
 
     }

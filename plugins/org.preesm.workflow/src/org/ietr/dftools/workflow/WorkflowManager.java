@@ -38,7 +38,7 @@
  */
 package org.ietr.dftools.workflow;
 
-import org.ietr.dftools.workflow.tools.WorkflowLogger;
+import org.preesm.commons.logger.PreesmLogger;
 
 /**
  * This class provides methods to check and execute a workflow. A workflow consists of several transformation plug-ins
@@ -57,7 +57,7 @@ public class WorkflowManager extends AbstractWorkflowExecutor {
    * Instantiates a new workflow manager.
    */
   public WorkflowManager() {
-    setLogger(WorkflowLogger.getLogger());
+    setLogger(PreesmLogger.getLogger());
   }
 
 }

@@ -41,7 +41,7 @@ import java.util.LinkedHashSet;
 import java.util.Set;
 import org.ietr.preesm.memory.exclusiongraph.MemoryExclusionGraph;
 import org.ietr.preesm.memory.exclusiongraph.MemoryExclusionVertex;
-import org.ietr.preesm.utils.math.MathFunctionsHelper;
+import org.preesm.commons.math.MathFunctionsHelper;
 
 /**
  * This implementation of the MemoryAllocator mainly is an implementation example.<br>

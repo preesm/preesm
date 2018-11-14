@@ -43,7 +43,6 @@ package org.ietr.preesm.mapper;
 import java.util.Map;
 import java.util.logging.Level;
 import org.ietr.dftools.architecture.slam.Design;
-import org.ietr.dftools.workflow.tools.WorkflowLogger;
 import org.ietr.preesm.core.scenario.PreesmScenario;
 import org.ietr.preesm.mapper.abc.impl.latency.LatencyAbc;
 import org.ietr.preesm.mapper.abc.taskscheduling.AbstractTaskSched;
@@ -52,6 +51,7 @@ import org.ietr.preesm.mapper.algo.pfast.PFastAlgorithm;
 import org.ietr.preesm.mapper.model.MapperDAG;
 import org.ietr.preesm.mapper.params.AbcParameters;
 import org.ietr.preesm.mapper.params.PFastAlgoParameters;
+import org.preesm.commons.logger.PreesmLogger;
 
 /**
  * PFAST is a parallel mapping/scheduling method based on list scheduling followed by a neighborhood search phase. It
@@ -88,7 +88,7 @@ public class PFASTMappingFromDAG extends AbstractMappingFromDAG {
 
     final LatencyAbc simu2 = LatencyAbc.getInstance(abcParameters, dag, architecture, scenario);
 
-    WorkflowLogger.getLogger().log(Level.INFO, "Mapping");
+    PreesmLogger.getLogger().log(Level.INFO, "Mapping");
 
     final PFastAlgorithm pfastAlgorithm = new PFastAlgorithm();
     final PFastAlgoParameters pFastParams = new PFastAlgoParameters(parameters);
@@ -96,7 +96,7 @@ public class PFASTMappingFromDAG extends AbstractMappingFromDAG {
         0, pFastParams.isDisplaySolutions(), null, taskSched);
 
     simu2.setDAG(resdag);
-    WorkflowLogger.getLogger().log(Level.INFO, "Mapping finished");
+    PreesmLogger.getLogger().log(Level.INFO, "Mapping finished");
 
     // The transfers are reordered using the best found order during
     // scheduling

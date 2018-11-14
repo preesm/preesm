@@ -41,8 +41,8 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.logging.Level;
 import org.ietr.dftools.algorithm.model.IRefinement;
-import org.ietr.dftools.workflow.tools.WorkflowLogger;
 import org.ietr.preesm.codegen.model.containers.CodeSectionType;
+import org.preesm.commons.logger.PreesmLogger;
 
 // TODO: Auto-generated Javadoc
 /**
@@ -118,7 +118,7 @@ public class ActorPrototypes implements IRefinement {
    */
   public void setInitPrototype(final Prototype init, final int i) {
     if (this.initPrototypes.containsKey(i)) {
-      WorkflowLogger.getLogger().log(Level.WARNING,
+      PreesmLogger.getLogger().log(Level.WARNING,
           "IDL: Init phase number (-)" + i + " was defined several time for file " + this.path);
     }
     this.initPrototypes.put(i, init);

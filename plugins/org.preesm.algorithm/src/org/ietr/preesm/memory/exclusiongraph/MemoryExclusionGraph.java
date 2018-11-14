@@ -68,7 +68,6 @@ import org.ietr.dftools.algorithm.model.parameters.InvalidExpressionException;
 import org.ietr.dftools.algorithm.model.sdf.esdf.SDFInitVertex;
 import org.ietr.dftools.architecture.slam.ComponentInstance;
 import org.ietr.dftools.workflow.WorkflowException;
-import org.ietr.dftools.workflow.tools.WorkflowLogger;
 import org.ietr.preesm.core.types.BufferAggregate;
 import org.ietr.preesm.core.types.DataType;
 import org.ietr.preesm.core.types.ImplementationPropertyNames;
@@ -78,6 +77,7 @@ import org.ietr.preesm.memory.allocation.MemoryAllocationException;
 import org.ietr.preesm.memory.script.Range;
 import org.jgrapht.graph.DefaultEdge;
 import org.jgrapht.graph.SimpleGraph;
+import org.preesm.commons.logger.PreesmLogger;
 
 // TODO: Auto-generated Javadoc
 /**
@@ -236,7 +236,7 @@ public class MemoryExclusionGraph extends SimpleGraph<MemoryExclusionVertex, Def
       // somehow..
       if (!added) {
         // This may come from several edges belonging to an implodeSet
-        WorkflowLogger.getLogger().log(Level.WARNING, "Vertex not added : " + newNode.toString());
+        PreesmLogger.getLogger().log(Level.WARNING, "Vertex not added : " + newNode.toString());
         newNode = null;
       }
 

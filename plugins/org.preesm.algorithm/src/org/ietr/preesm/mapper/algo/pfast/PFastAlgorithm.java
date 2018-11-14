@@ -53,7 +53,6 @@ import java.util.concurrent.Semaphore;
 import java.util.logging.Level;
 import org.ietr.dftools.architecture.slam.Design;
 import org.ietr.dftools.workflow.WorkflowException;
-import org.ietr.dftools.workflow.tools.WorkflowLogger;
 import org.ietr.preesm.core.scenario.PreesmScenario;
 import org.ietr.preesm.mapper.PreesmMapperException;
 import org.ietr.preesm.mapper.abc.impl.latency.LatencyAbc;
@@ -69,6 +68,7 @@ import org.ietr.preesm.mapper.params.FastAlgoParameters;
 import org.ietr.preesm.mapper.params.PFastAlgoParameters;
 import org.ietr.preesm.mapper.ui.BestCostPlotter;
 import org.ietr.preesm.mapper.ui.bestcost.BestCostEditor;
+import org.preesm.commons.logger.PreesmLogger;
 
 /**
  * Task scheduling FAST algorithm multithread.
@@ -167,7 +167,7 @@ public class PFastAlgorithm extends Observable {
     final int nbsubsets = setThreadNumber(blockingNodelist, nboperator, nodesmin);
 
     if (nbsubsets == 0) {
-      WorkflowLogger.getLogger().log(Level.SEVERE,
+      PreesmLogger.getLogger().log(Level.SEVERE,
           "Not enough nodes to execute PFAST. Try reducing nodesmin in workflow or use another mapper.");
     }
 

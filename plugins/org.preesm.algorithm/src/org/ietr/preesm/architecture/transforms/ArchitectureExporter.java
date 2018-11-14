@@ -43,7 +43,7 @@ import org.eclipse.core.runtime.IProgressMonitor;
 import org.ietr.dftools.workflow.WorkflowException;
 import org.ietr.dftools.workflow.elements.Workflow;
 import org.ietr.dftools.workflow.implement.AbstractTaskImplementation;
-import org.ietr.dftools.workflow.tools.WorkflowLogger;
+import org.preesm.commons.logger.PreesmLogger;
 
 // TODO: Auto-generated Javadoc
 /**
@@ -68,7 +68,7 @@ public class ArchitectureExporter extends AbstractTaskImplementation {
      * writer.writeDom(path);
      */
 
-    WorkflowLogger.getLogger().log(Level.SEVERE, "ArchitectureExporter is no more supported");
+    PreesmLogger.getLogger().log(Level.SEVERE, "ArchitectureExporter is no more supported");
     return new LinkedHashMap<>();
   }
 

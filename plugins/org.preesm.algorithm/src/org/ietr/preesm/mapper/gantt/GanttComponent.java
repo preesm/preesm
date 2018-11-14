@@ -39,7 +39,7 @@ package org.ietr.preesm.mapper.gantt;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.logging.Level;
-import org.ietr.dftools.workflow.tools.WorkflowLogger;
+import org.preesm.commons.logger.PreesmLogger;
 
 /**
  * A Gantt component is the information for 1 line in a Gantt chart.
@@ -92,7 +92,7 @@ public class GanttComponent {
         if (t.equals(task)) {
           final String message = "Gantt: Trying to add to the Gantt chart several identical tasks: " + t + " and "
               + task;
-          WorkflowLogger.getLogger().log(Level.SEVERE, message);
+          PreesmLogger.getLogger().log(Level.SEVERE, message);
           return false;
         }
       }
@@ -109,7 +109,7 @@ public class GanttComponent {
           final GanttTask precedingTask = this.tasks.get(index - 1);
           if ((precedingTask.getStartTime() + precedingTask.getDuration()) > task.getStartTime()) {
             final String message = "Gantt: Two tasks are overlapping: " + precedingTask + " and " + task;
-            WorkflowLogger.getLogger().log(Level.SEVERE, message);
+            PreesmLogger.getLogger().log(Level.SEVERE, message);
             return false;
           }
         }

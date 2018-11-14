@@ -54,11 +54,11 @@ import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.Path;
 import org.ietr.dftools.algorithm.model.dag.DirectedAcyclicGraph;
-import org.ietr.dftools.workflow.tools.WorkflowLogger;
 import org.ietr.preesm.core.scenario.PreesmScenario;
 import org.ietr.preesm.core.types.DataType;
 import org.ietr.preesm.memory.allocation.AbstractMemoryAllocatorTask;
 import org.ietr.preesm.memory.exclusiongraph.MemoryExclusionGraph;
+import org.preesm.commons.logger.PreesmLogger;
 
 // TODO: Auto-generated Javadoc
 /**
@@ -103,7 +103,7 @@ public class MemoryScriptEngine {
       final PreesmScenario scenario) {
     this.verbose = verbose;
     // Get the logger
-    this.logger = WorkflowLogger.getLogger();
+    this.logger = PreesmLogger.getLogger();
     this.scenario = scenario;
     int alignment;
     switch (valueAlignment.substring(0, Math.min(valueAlignment.length(), 7))) {

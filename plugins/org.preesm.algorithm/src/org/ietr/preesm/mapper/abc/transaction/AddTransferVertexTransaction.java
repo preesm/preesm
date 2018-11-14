@@ -40,7 +40,6 @@ package org.ietr.preesm.mapper.abc.transaction;
 import java.util.List;
 import java.util.logging.Level;
 import org.ietr.dftools.architecture.slam.ComponentInstance;
-import org.ietr.dftools.workflow.tools.WorkflowLogger;
 import org.ietr.preesm.core.architecture.route.AbstractRouteStep;
 import org.ietr.preesm.mapper.abc.edgescheduling.IEdgeSched;
 import org.ietr.preesm.mapper.abc.order.OrderManager;
@@ -50,6 +49,7 @@ import org.ietr.preesm.mapper.model.MapperDAGVertex;
 import org.ietr.preesm.mapper.model.special.PrecedenceEdge;
 import org.ietr.preesm.mapper.model.special.PrecedenceEdgeAdder;
 import org.ietr.preesm.mapper.model.special.TransferVertex;
+import org.preesm.commons.logger.PreesmLogger;
 
 // TODO: Auto-generated Javadoc
 /**
@@ -164,7 +164,7 @@ public class AddTransferVertexTransaction extends Transaction {
     this.transferTime = transferTime;
 
     if (transferTime == 0) {
-      WorkflowLogger.getLogger().log(Level.WARNING, "adding a transfer of size 0.");
+      PreesmLogger.getLogger().log(Level.WARNING, "adding a transfer of size 0.");
     }
   }
 
@@ -195,7 +195,7 @@ public class AddTransferVertexTransaction extends Transaction {
         + ((MapperDAGVertex) this.edge.getSource()).getName() + "," + currentTarget.getName() + ")";
 
     if (this.edge instanceof PrecedenceEdge) {
-      WorkflowLogger.getLogger().log(Level.INFO, "no transfer vertex corresponding to a schedule edge");
+      PreesmLogger.getLogger().log(Level.INFO, "no transfer vertex corresponding to a schedule edge");
       return;
     }
 

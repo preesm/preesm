@@ -50,7 +50,7 @@ import org.ietr.dftools.algorithm.model.sdf.SDFInterfaceVertex;
 import org.ietr.dftools.algorithm.model.sdf.SDFVertex;
 import org.ietr.dftools.algorithm.model.sdf.esdf.SDFSinkInterfaceVertex;
 import org.ietr.dftools.algorithm.model.sdf.esdf.SDFSourceInterfaceVertex;
-import org.ietr.dftools.workflow.tools.WorkflowLogger;
+import org.preesm.commons.logger.PreesmLogger;
 
 // TODO: Auto-generated Javadoc
 /**
@@ -91,7 +91,7 @@ public class IBSDFThroughputEvaluator extends ThroughputEvaluator {
         Kmax *= 10;
         // avoid infinite loop if there is no periodic schedule
         if (Kmax >= (Double.MAX_VALUE / 10)) {
-          WorkflowLogger.getLogger().log(Level.SEVERE, "No periodic schedule for this graph");
+          PreesmLogger.getLogger().log(Level.SEVERE, "No periodic schedule for this graph");
           return 0;
         }
       }

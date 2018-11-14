@@ -43,10 +43,10 @@ import java.util.logging.Logger;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.ietr.dftools.workflow.elements.Workflow;
 import org.ietr.dftools.workflow.implement.AbstractTaskImplementation;
-import org.ietr.dftools.workflow.tools.WorkflowLogger;
 import org.ietr.preesm.memory.exclusiongraph.MemoryExclusionGraph;
 import org.ietr.preesm.memory.exclusiongraph.MemoryExclusionVertex;
 import org.jgrapht.graph.DefaultEdge;
+import org.preesm.commons.logger.PreesmLogger;
 
 // TODO: Auto-generated Javadoc
 /**
@@ -95,7 +95,7 @@ public class SerialMemoryBoundsEstimator extends AbstractTaskImplementation {
       final IProgressMonitor monitor, final String nodeName, final Workflow workflow) {
 
     // Rem: Logger is used to display messages in the console
-    final Logger logger = WorkflowLogger.getLogger();
+    final Logger logger = PreesmLogger.getLogger();
 
     // Check Workflow element parameters
     final String valueVerbose = parameters.get(SerialMemoryBoundsEstimator.PARAM_VERBOSE);

@@ -49,12 +49,12 @@ import org.ietr.dftools.workflow.WorkflowException;
 import org.ietr.dftools.workflow.elements.Workflow;
 import org.ietr.dftools.workflow.implement.AbstractTaskImplementation;
 import org.ietr.dftools.workflow.implement.AbstractWorkflowNodeImplementation;
-import org.ietr.dftools.workflow.tools.WorkflowLogger;
 import org.ietr.preesm.core.scenario.PreesmScenario;
 import org.ietr.preesm.experiment.model.pimm.PiGraph;
 import org.ietr.preesm.mapper.graphtransfo.SdfToDagConverter;
 import org.ietr.preesm.mapper.model.MapperDAG;
 import org.ietr.preesm.pimm.algorithm.pimm2srdag.StaticPiMM2SrDAGLauncher.StaticPiMM2SrDAGException;
+import org.preesm.commons.logger.PreesmLogger;
 
 /**
  * @author farresti
@@ -87,7 +87,7 @@ public class StaticPiMM2SrDAGTask extends AbstractTaskImplementation {
     final StaticPiMM2SrDAGLauncher launcher = new StaticPiMM2SrDAGLauncher(scenario, graph);
 
     MapperDAG result = null;
-    final Logger logger = WorkflowLogger.getLogger();
+    final Logger logger = PreesmLogger.getLogger();
     VisitorOutput.setLogger(logger);
     try {
       logger.setLevel(Level.FINEST);
@@ -108,7 +108,7 @@ public class StaticPiMM2SrDAGTask extends AbstractTaskImplementation {
       throw new WorkflowException(e.getMessage(), e);
     }
 
-    WorkflowLogger.getLogger().log(Level.INFO,
+    PreesmLogger.getLogger().log(Level.INFO,
         "mapping a DAG with " + result.vertexSet().size() + " vertices and " + result.edgeSet().size() + " edges");
 
     final Map<String, Object> output = new LinkedHashMap<>();

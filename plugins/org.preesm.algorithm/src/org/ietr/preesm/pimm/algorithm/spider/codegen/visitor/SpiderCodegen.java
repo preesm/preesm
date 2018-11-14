@@ -54,7 +54,6 @@ import org.eclipse.emf.common.util.EList;
 import org.ietr.dftools.architecture.slam.ComponentInstance;
 import org.ietr.dftools.architecture.slam.Design;
 import org.ietr.dftools.architecture.slam.component.Component;
-import org.ietr.dftools.workflow.tools.WorkflowLogger;
 import org.ietr.preesm.core.scenario.ConstraintGroup;
 import org.ietr.preesm.core.scenario.PreesmScenario;
 import org.ietr.preesm.core.scenario.Timing;
@@ -72,6 +71,7 @@ import org.ietr.preesm.experiment.model.pimm.Port;
 import org.ietr.preesm.experiment.model.pimm.util.ActorPath;
 import org.ietr.preesm.pimm.algorithm.SpiderMainFilePrinter;
 import org.ietr.preesm.pimm.algorithm.spider.codegen.utils.SpiderNameGenerator;
+import org.preesm.commons.logger.PreesmLogger;
 
 /**
  * The Class SpiderCodegen.
@@ -174,7 +174,7 @@ public class SpiderCodegen {
     if ((mainOperator == null) || mainOperator.equals("")) {
       /* Warning */
       mainOperator = this.scenario.getOrderedOperatorIds().get(0);
-      WorkflowLogger.getLogger().warning("No Main Operator selected in scenario, " + mainOperator + " used by default");
+      PreesmLogger.getLogger().warning("No Main Operator selected in scenario, " + mainOperator + " used by default");
     }
     this.coreIds.put(mainOperator, 0);
     int coreId = 1;
@@ -793,7 +793,7 @@ public class SpiderCodegen {
           default:
         }
         if (!found) {
-          WorkflowLogger.getLogger().warning("Port " + param.getName() + " in Actor " + a.getName() + " not found.");
+          PreesmLogger.getLogger().warning("Port " + param.getName() + " in Actor " + a.getName() + " not found.");
         }
       }
       append("\n\t);\n");

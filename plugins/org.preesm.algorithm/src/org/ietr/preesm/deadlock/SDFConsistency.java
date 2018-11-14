@@ -48,7 +48,7 @@ import org.ietr.dftools.algorithm.model.sdf.esdf.SDFSourceInterfaceVertex;
 import org.ietr.dftools.algorithm.model.types.LongEdgePropertyType;
 import org.ietr.preesm.evaluator.EvaluationException;
 import org.ietr.preesm.throughput.tools.helpers.Stopwatch;
-import org.ietr.preesm.utils.math.MathFunctionsHelper;
+import org.preesm.commons.math.MathFunctionsHelper;
 
 /**
  * @author hderoui

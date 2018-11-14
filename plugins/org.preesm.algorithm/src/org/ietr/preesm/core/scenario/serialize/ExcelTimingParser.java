@@ -55,12 +55,12 @@ import org.eclipse.core.runtime.Path;
 import org.ietr.dftools.algorithm.importer.InvalidModelException;
 import org.ietr.dftools.algorithm.model.sdf.SDFAbstractVertex;
 import org.ietr.dftools.algorithm.model.sdf.SDFGraph;
-import org.ietr.dftools.workflow.tools.WorkflowLogger;
 import org.ietr.preesm.core.scenario.PreesmScenario;
 import org.ietr.preesm.core.scenario.Timing;
 import org.ietr.preesm.experiment.model.pimm.PiGraph;
 import org.ietr.preesm.experiment.model.pimm.serialize.PiParser;
-import org.ietr.preesm.utils.files.WorkspaceUtils;
+import org.preesm.commons.files.WorkspaceUtils;
+import org.preesm.commons.logger.PreesmLogger;
 
 /**
  * Importing timings in a scenario from an excel file. task names are rows while operator types are columns
@@ -94,7 +94,7 @@ public class ExcelTimingParser {
    *           the invalid model exception
    */
   public void parse(final String url, final Set<String> opDefIds) throws InvalidModelException, FileNotFoundException {
-    WorkflowLogger.getLogger().log(Level.INFO,
+    PreesmLogger.getLogger().log(Level.INFO,
         "Importing timings from an excel sheet. Non precised timings are kept unmodified.");
 
     final IWorkspace workspace = ResourcesPlugin.getWorkspace();
@@ -212,19 +212,19 @@ public class ExcelTimingParser {
 
               this.scenario.getTimingManager().addTiming(timing);
 
-              WorkflowLogger.getLogger().log(Level.INFO, "Importing timing: " + timing.toString());
+              PreesmLogger.getLogger().log(Level.INFO, "Importing timing: " + timing.toString());
             } catch (final NumberFormatException e) {
-              WorkflowLogger.getLogger().log(Level.SEVERE, "Problem importing timing of " + vertexName + " on "
+              PreesmLogger.getLogger().log(Level.SEVERE, "Problem importing timing of " + vertexName + " on "
                   + opDefId
                   + ". Integer with no space or special character needed. Be careful on the special number formats.");
             }
           }
         } else {
           if ((vertexCell == null) && !missingVertices.contains(vertexName)) {
-            WorkflowLogger.getLogger().log(Level.WARNING, "No line found in excel sheet for vertex: " + vertexName);
+            PreesmLogger.getLogger().log(Level.WARNING, "No line found in excel sheet for vertex: " + vertexName);
             missingVertices.add(vertexName);
           } else if ((operatorCell == null) && !missingOperatorTypes.contains(opDefId)) {
-            WorkflowLogger.getLogger().log(Level.WARNING,
+            PreesmLogger.getLogger().log(Level.WARNING,
                 "No column found in excel sheet for operator type: " + opDefId);
             missingOperatorTypes.add(opDefId);
           }

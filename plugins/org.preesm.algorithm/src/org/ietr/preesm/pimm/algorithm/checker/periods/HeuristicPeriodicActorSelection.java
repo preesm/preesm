@@ -8,7 +8,6 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.logging.Level;
 import java.util.stream.Collectors;
-import org.ietr.dftools.workflow.tools.WorkflowLogger;
 import org.ietr.preesm.core.scenario.PreesmScenario;
 import org.ietr.preesm.experiment.model.pimm.AbstractActor;
 import org.ietr.preesm.experiment.model.pimm.Actor;
@@ -16,6 +15,7 @@ import org.ietr.preesm.experiment.model.pimm.DataInputPort;
 import org.ietr.preesm.experiment.model.pimm.DataOutputPort;
 import org.ietr.preesm.experiment.model.pimm.Fifo;
 import org.ietr.preesm.experiment.model.pimm.PiGraph;
+import org.preesm.commons.logger.PreesmLogger;
 
 /**
  * This class aims to select periodic actors on which execute the period checkers (nbff and nblf).
@@ -56,7 +56,7 @@ class HeuristicPeriodicActorSelection {
     }
     final StringBuilder sb = new StringBuilder();
     topoRanksPeriodic.entrySet().forEach(a -> sb.append(a.getKey().getName() + "(" + a.getValue() + ") / "));
-    WorkflowLogger.getLogger().log(Level.WARNING, "Periodic actor ranks: " + sb.toString());
+    PreesmLogger.getLogger().log(Level.WARNING, "Periodic actor ranks: " + sb.toString());
 
     return selectFromRate(periodicActors, topoRanksPeriodic, rate);
   }

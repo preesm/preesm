@@ -40,7 +40,6 @@ package org.ietr.preesm.pimm.algorithm.spider.codegen.visitor;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
-import org.ietr.dftools.workflow.tools.WorkflowLogger;
 import org.ietr.preesm.experiment.model.pimm.AbstractActor;
 import org.ietr.preesm.experiment.model.pimm.Actor;
 import org.ietr.preesm.experiment.model.pimm.BroadcastActor;
@@ -72,6 +71,7 @@ import org.ietr.preesm.experiment.model.pimm.PiSDFRefinement;
 import org.ietr.preesm.experiment.model.pimm.Port;
 import org.ietr.preesm.experiment.model.pimm.RoundBufferActor;
 import org.ietr.preesm.experiment.model.pimm.util.PiMMSwitch;
+import org.preesm.commons.logger.PreesmLogger;
 
 /**
  * The Class SpiderPreProcessVisitor.
@@ -195,7 +195,7 @@ public class SpiderPreProcessVisitor extends PiMMSwitch<Boolean> {
     if (!(a instanceof PiGraph)) {
       this.functionMap.put(a, this.functionMap.size());
       if (!(a.getRefinement() instanceof CHeaderRefinement)) {
-        WorkflowLogger.getLogger().warning("Actor " + a.getName() + " doesn't have correct refinement.");
+        PreesmLogger.getLogger().warning("Actor " + a.getName() + " doesn't have correct refinement.");
       }
     }
 

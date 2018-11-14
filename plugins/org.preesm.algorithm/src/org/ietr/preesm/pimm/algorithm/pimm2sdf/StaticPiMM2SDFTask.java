@@ -48,10 +48,10 @@ import org.ietr.dftools.workflow.WorkflowException;
 import org.ietr.dftools.workflow.elements.Workflow;
 import org.ietr.dftools.workflow.implement.AbstractTaskImplementation;
 import org.ietr.dftools.workflow.implement.AbstractWorkflowNodeImplementation;
-import org.ietr.dftools.workflow.tools.WorkflowLogger;
 import org.ietr.preesm.core.scenario.PreesmScenario;
 import org.ietr.preesm.experiment.model.pimm.PiGraph;
 import org.ietr.preesm.pimm.algorithm.pimm2sdf.StaticPiMM2SDFLauncher.StaticPiMM2SDFException;
+import org.preesm.commons.logger.PreesmLogger;
 
 // TODO: Auto-generated Javadoc
 /**
@@ -80,12 +80,12 @@ public class StaticPiMM2SDFTask extends AbstractTaskImplementation {
     try {
       result = launcher.launch();
     } catch (final StaticPiMM2SDFException e) {
-      final Logger logger = WorkflowLogger.getLogger();
+      final Logger logger = PreesmLogger.getLogger();
       logger.log(Level.WARNING, e.getMessage());
     }
 
     timer.stop();
-    WorkflowLogger.getLogger().log(Level.INFO, "PiMM2SDF transformation: " + timer.toString() + "s.");
+    PreesmLogger.getLogger().log(Level.INFO, "PiMM2SDF transformation: " + timer.toString() + "s.");
     final Map<String, Object> output = new LinkedHashMap<>();
     output.put(AbstractWorkflowNodeImplementation.KEY_SDF_GRAPH, result);
     return output;

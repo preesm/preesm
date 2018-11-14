@@ -44,10 +44,10 @@ import java.util.Map;
 import java.util.logging.Level;
 import org.ietr.dftools.algorithm.iterators.TopologicalDAGIterator;
 import org.ietr.dftools.architecture.slam.ComponentInstance;
-import org.ietr.dftools.workflow.tools.WorkflowLogger;
 import org.ietr.preesm.core.architecture.util.DesignTools;
 import org.ietr.preesm.mapper.model.MapperDAG;
 import org.ietr.preesm.mapper.model.MapperDAGVertex;
+import org.preesm.commons.logger.PreesmLogger;
 
 /**
  * GanttData carries information that can be displayed in a Gantt chart.
@@ -125,7 +125,7 @@ public class GanttData {
       } else {
         final String message = "Gantt: task can not be displayed in Gantt because it has no component: "
             + currentVertex;
-        WorkflowLogger.getLogger().log(Level.SEVERE, message);
+        PreesmLogger.getLogger().log(Level.SEVERE, message);
       }
     }
     return true;

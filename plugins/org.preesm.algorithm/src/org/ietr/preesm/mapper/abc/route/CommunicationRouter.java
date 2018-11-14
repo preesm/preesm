@@ -51,7 +51,6 @@ import org.ietr.dftools.algorithm.model.dag.DAGEdge;
 import org.ietr.dftools.algorithm.model.dag.DAGVertex;
 import org.ietr.dftools.architecture.slam.ComponentInstance;
 import org.ietr.dftools.architecture.slam.Design;
-import org.ietr.dftools.workflow.tools.WorkflowLogger;
 import org.ietr.preesm.core.architecture.route.AbstractRouteStep;
 import org.ietr.preesm.core.architecture.route.DmaRouteStep;
 import org.ietr.preesm.core.architecture.route.MemRouteStep;
@@ -72,6 +71,7 @@ import org.ietr.preesm.mapper.model.MapperDAG;
 import org.ietr.preesm.mapper.model.MapperDAGEdge;
 import org.ietr.preesm.mapper.model.MapperDAGVertex;
 import org.ietr.preesm.mapper.model.special.PrecedenceEdge;
+import org.preesm.commons.logger.PreesmLogger;
 
 /**
  * Routes the communications. Based on bridge design pattern. The processing is delegated to implementers
@@ -372,7 +372,7 @@ public class CommunicationRouter {
       final Route route = this.calculator.getRoute(sourceOp, destOp);
       cost = route.evaluateTransferCost(edge.getInit().getDataSize());
     } else {
-      WorkflowLogger.getLogger().log(Level.SEVERE, "trying to evaluate a transfer between non mapped operators.");
+      PreesmLogger.getLogger().log(Level.SEVERE, "trying to evaluate a transfer between non mapped operators.");
     }
 
     return cost;

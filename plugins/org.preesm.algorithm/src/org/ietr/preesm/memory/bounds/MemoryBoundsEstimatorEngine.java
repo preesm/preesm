@@ -39,10 +39,10 @@ package org.ietr.preesm.memory.bounds;
 
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import org.ietr.dftools.workflow.tools.WorkflowLogger;
 import org.ietr.preesm.memory.exclusiongraph.MemoryExclusionGraph;
 import org.ietr.preesm.memory.exclusiongraph.MemoryExclusionVertex;
 import org.jgrapht.graph.DefaultEdge;
+import org.preesm.commons.logger.PreesmLogger;
 
 // TODO: Auto-generated Javadoc
 /**
@@ -70,7 +70,7 @@ public class MemoryBoundsEstimatorEngine {
 
   /** The logger. */
   // Rem: Logger is used to display messages in the console
-  private final Logger logger = WorkflowLogger.getLogger();
+  private final Logger logger = PreesmLogger.getLogger();
 
   /** The mem ex. */
   private final MemoryExclusionGraph memEx;

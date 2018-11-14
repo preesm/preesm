@@ -44,7 +44,7 @@ import java.util.List;
 import java.util.Set;
 import org.ietr.preesm.memory.exclusiongraph.MemoryExclusionGraph;
 import org.ietr.preesm.memory.exclusiongraph.MemoryExclusionVertex;
-import org.ietr.preesm.utils.math.MathFunctionsHelper;
+import org.preesm.commons.math.MathFunctionsHelper;
 
 /**
  * In this class, an adapted version of the first fit allocator is implemented. As the lifetime of the memory elements

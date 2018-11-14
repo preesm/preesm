@@ -47,11 +47,11 @@ import org.eclipse.core.runtime.IProgressMonitor;
 import org.ietr.dftools.algorithm.model.dag.DirectedAcyclicGraph;
 import org.ietr.dftools.workflow.WorkflowException;
 import org.ietr.dftools.workflow.elements.Workflow;
-import org.ietr.dftools.workflow.tools.WorkflowLogger;
 import org.ietr.preesm.core.scenario.PreesmScenario;
 import org.ietr.preesm.core.types.DataType;
 import org.ietr.preesm.memory.allocation.AbstractMemoryAllocatorTask;
 import org.ietr.preesm.memory.exclusiongraph.MemoryExclusionGraph;
+import org.preesm.commons.logger.PreesmLogger;
 
 // TODO: Auto-generated Javadoc
 /**
@@ -96,7 +96,7 @@ public class MemoryScriptTask extends AbstractMemoryScriptTask {
       engine.runScripts(dag, dataTypes, checkString);
     } catch (CoreException | IOException | URISyntaxException | EvalError e) {
       final String message = "An error occurred during memory scripts execution";
-      WorkflowLogger.getLogger().log(Level.SEVERE, message, e);
+      PreesmLogger.getLogger().log(Level.SEVERE, message, e);
       throw new WorkflowException(message, e);
     }
     engine.updateMemEx(meg);

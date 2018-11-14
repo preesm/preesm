@@ -40,8 +40,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
 import org.ietr.dftools.architecture.slam.ComponentInstance;
-import org.ietr.dftools.workflow.tools.WorkflowLogger;
 import org.ietr.preesm.core.architecture.util.DesignTools;
+import org.preesm.commons.logger.PreesmLogger;
 
 // TODO: Auto-generated Javadoc
 /**
@@ -105,7 +105,7 @@ public class RelativeConstraint {
     final List<ComponentInstance> operators = new ArrayList<>();
 
     if (this.vertices.isEmpty()) {
-      WorkflowLogger.getLogger().log(Level.SEVERE, "Relative constraint with no vertex.");
+      PreesmLogger.getLogger().log(Level.SEVERE, "Relative constraint with no vertex.");
 
       return operators;
     } else {

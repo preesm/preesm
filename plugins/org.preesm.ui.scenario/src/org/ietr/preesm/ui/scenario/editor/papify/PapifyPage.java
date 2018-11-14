@@ -83,7 +83,7 @@ import org.ietr.preesm.core.scenario.papi.PapifyConfigManager;
 import org.ietr.preesm.ui.scenario.editor.FileSelectionAdapter;
 import org.ietr.preesm.ui.scenario.editor.Messages;
 import org.ietr.preesm.ui.scenario.editor.PreesmAlgorithmTreeLabelProvider;
-import org.ietr.preesm.utils.files.WorkspaceUtils;
+import org.preesm.commons.files.WorkspaceUtils;
 
 /**
  * Papify editor within the implementation editor.

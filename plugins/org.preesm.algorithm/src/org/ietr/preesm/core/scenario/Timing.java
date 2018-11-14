@@ -44,10 +44,10 @@ import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.Set;
 import java.util.logging.Level;
-import org.ietr.dftools.workflow.tools.WorkflowLogger;
 import org.nfunk.jep.JEP;
 import org.nfunk.jep.Node;
 import org.nfunk.jep.ParseException;
+import org.preesm.commons.logger.PreesmLogger;
 
 // TODO: Auto-generated Javadoc
 /**
@@ -209,7 +209,7 @@ public class Timing {
     if (time > 0) {
       this.time = time;
     } else {
-      WorkflowLogger.getLogger().log(Level.WARNING,
+      PreesmLogger.getLogger().log(Level.WARNING,
           "Trying to set a non strictly positive time for vertex " + this.vertexId);
       this.time = 1;
     }

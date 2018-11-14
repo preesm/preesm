@@ -38,10 +38,10 @@
 package org.ietr.preesm.mapper.tools;
 
 import java.util.logging.Level;
-import org.ietr.dftools.workflow.tools.WorkflowLogger;
 import org.ietr.preesm.mapper.abc.impl.latency.LatencyAbc;
 import org.ietr.preesm.mapper.model.MapperDAG;
 import org.ietr.preesm.mapper.model.MapperDAGVertex;
+import org.preesm.commons.logger.PreesmLogger;
 
 // TODO: Auto-generated Javadoc
 /**
@@ -81,7 +81,7 @@ public class SchedulingOrderIterator extends ImplementationIterator {
 
     // Preventing equal scheduling order element discard
     if (dif == 0) {
-      WorkflowLogger.getLogger().log(Level.SEVERE, "Found two vertices with the same total order");
+      PreesmLogger.getLogger().log(Level.SEVERE, "Found two vertices with the same total order");
     }
     return (dif);
   }

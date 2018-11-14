@@ -62,8 +62,8 @@ import org.ietr.dftools.algorithm.model.sdf.esdf.SDFEndVertex;
 import org.ietr.dftools.algorithm.model.sdf.esdf.SDFForkVertex;
 import org.ietr.dftools.algorithm.model.sdf.esdf.SDFInitVertex;
 import org.ietr.dftools.algorithm.model.sdf.esdf.SDFJoinVertex;
-import org.ietr.dftools.workflow.tools.WorkflowLogger;
 import org.ietr.preesm.mapper.model.MapperDAG;
+import org.preesm.commons.logger.PreesmLogger;
 import org.w3c.dom.Element;
 
 // TODO: Auto-generated Javadoc
@@ -261,7 +261,7 @@ public class DAGExporter extends GMLExporter<DAGVertex, DAGEdge> {
     if (iGraphMLFile.getLocation() != null) {
       export(clone, iGraphMLFile.getLocation().toOSString());
     } else {
-      WorkflowLogger.getLogger().log(Level.SEVERE, "The output file " + path + " can not be written.");
+      PreesmLogger.getLogger().log(Level.SEVERE, "The output file " + path + " can not be written.");
     }
   }
 

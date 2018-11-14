@@ -41,10 +41,10 @@ import java.util.Map;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IPersistableElement;
-import org.ietr.dftools.workflow.tools.WorkflowLogger;
 import org.ietr.preesm.core.scenario.PreesmScenario;
 import org.ietr.preesm.mapper.abc.impl.latency.LatencyAbc;
 import org.ietr.preesm.mapper.activator.Activator;
+import org.preesm.commons.logger.PreesmLogger;
 
 /**
  * Input of the editor of implementation statistics.
@@ -146,9 +146,9 @@ public class StatEditorInput implements IEditorInput {
     if (this.abc instanceof LatencyAbc) {
       this.abc.updateFinalCosts();
       return "Latency:" + ((LatencyAbc) this.abc).getFinalLatency() + " Cost:" + this.abc.getFinalCost() + " "
-          + WorkflowLogger.getFormattedTime();
+          + PreesmLogger.getFormattedTime();
     } else {
-      return "Stats " + WorkflowLogger.getFormattedTime();
+      return "Stats " + PreesmLogger.getFormattedTime();
     }
   }
 

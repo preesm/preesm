@@ -76,10 +76,10 @@ import org.ietr.dftools.algorithm.model.types.LongEdgePropertyType;
 import org.ietr.dftools.algorithm.model.types.StringEdgePropertyType;
 import org.ietr.dftools.algorithm.model.visitors.SDF4JException;
 import org.ietr.dftools.algorithm.model.visitors.VisitorOutput;
-import org.ietr.dftools.workflow.tools.WorkflowLogger;
 import org.jgrapht.EdgeFactory;
 import org.math.array.DoubleArray;
 import org.math.array.LinearAlgebra;
+import org.preesm.commons.logger.PreesmLogger;
 
 /**
  * Abstract Class representing an SDF graph.
@@ -582,7 +582,7 @@ public class SDFGraph extends AbstractGraph<SDFAbstractVertex, SDFEdge> {
       if (connections.get(port).size() > 1) {
         final String message = "Warning: Implicit Broadcast added in graph " + getName() + " at port " + vertex + "."
             + port.getName();
-        WorkflowLogger.getLogger().log(Level.WARNING, message);
+        PreesmLogger.getLogger().log(Level.WARNING, message);
         final SDFBroadcastVertex broadcastPort = new SDFBroadcastVertex();
         broadcastPort.setName("br_" + vertex.getName() + "_" + port.getName());
         final SDFSourceInterfaceVertex inPort = new SDFSourceInterfaceVertex();

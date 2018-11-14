@@ -46,8 +46,8 @@ import org.ietr.dftools.algorithm.model.sdf.SDFAbstractVertex
 import org.ietr.dftools.algorithm.model.sdf.SDFEdge
 import org.ietr.dftools.algorithm.model.sdf.SDFGraph
 import org.ietr.dftools.algorithm.model.visitors.SDF4JException
-import org.ietr.dftools.workflow.tools.WorkflowLogger
 import org.jgrapht.EdgeFactory
+import org.preesm.commons.logger.PreesmLogger
 
 /**
  * A special case of {@link SDFGraph} used to denote non-trivial initialization of FIFOs
@@ -129,7 +129,7 @@ class FifoActorGraph extends SDFGraph {
 			edge.delay.longValue == 0
 		]) {
 			val message = "Edges of FIFO Actor cannot have delays in them."
-			WorkflowLogger.getLogger().log(Level.SEVERE, message)
+			PreesmLogger.getLogger().log(Level.SEVERE, message)
 			throw new SDF4JException(message)
 		}
 		return super.validateModel()

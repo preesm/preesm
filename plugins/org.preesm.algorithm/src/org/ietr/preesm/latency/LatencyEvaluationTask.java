@@ -44,7 +44,6 @@ import org.ietr.dftools.algorithm.model.sdf.SDFGraph;
 import org.ietr.dftools.workflow.WorkflowException;
 import org.ietr.dftools.workflow.elements.Workflow;
 import org.ietr.dftools.workflow.implement.AbstractTaskImplementation;
-import org.ietr.dftools.workflow.tools.WorkflowLogger;
 import org.ietr.preesm.core.scenario.PreesmScenario;
 import org.ietr.preesm.deadlock.IBSDFConsistency;
 import org.ietr.preesm.deadlock.IBSDFLiveness;
@@ -53,6 +52,7 @@ import org.ietr.preesm.throughput.tools.helpers.GraphStructureHelper;
 import org.ietr.preesm.throughput.tools.helpers.Stopwatch;
 import org.ietr.preesm.throughput.tools.transformers.IBSDFTransformer;
 import org.ietr.preesm.throughput.tools.transformers.SrSDFTransformer;
+import org.preesm.commons.logger.PreesmLogger;
 
 /**
  * @author hderoui
@@ -132,13 +132,13 @@ public class LatencyEvaluationTask extends AbstractTaskImplementation {
             break;
 
           default:
-            WorkflowLogger.getLogger().log(Level.WARNING,
+            PreesmLogger.getLogger().log(Level.WARNING,
                 "The suported methods are: \"flat\" = classical method, \"fast\" = hierarchical method !");
             break;
         }
 
         // print a message with the latency value
-        WorkflowLogger.getLogger().log(Level.INFO, "The minimum Latency value of a multicore execution = " + latency
+        PreesmLogger.getLogger().log(Level.INFO, "The minimum Latency value of a multicore execution = " + latency
             + " Cycle, Computed in : " + this.timer.toString());
 
       } else {
@@ -148,13 +148,13 @@ public class LatencyEvaluationTask extends AbstractTaskImplementation {
         this.timer = evaluator.timer;
 
         // print a message with the latency value
-        WorkflowLogger.getLogger().log(Level.INFO, "The minimum Latency value of a singlecore execution = " + latency
+        PreesmLogger.getLogger().log(Level.INFO, "The minimum Latency value of a singlecore execution = " + latency
             + " Cycle, Computed in : " + this.timer.toString());
       }
 
     } else {
       // print an error message
-      WorkflowLogger.getLogger().log(Level.WARNING, "ERROR : The graph is deadlock !!");
+      PreesmLogger.getLogger().log(Level.WARNING, "ERROR : The graph is deadlock !!");
     }
 
     // set the outputs

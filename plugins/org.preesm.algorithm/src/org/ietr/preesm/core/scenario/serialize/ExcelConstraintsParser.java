@@ -53,13 +53,13 @@ import org.eclipse.core.runtime.Path;
 import org.ietr.dftools.algorithm.importer.InvalidModelException;
 import org.ietr.dftools.algorithm.model.sdf.SDFAbstractVertex;
 import org.ietr.dftools.algorithm.model.sdf.SDFGraph;
-import org.ietr.dftools.workflow.tools.WorkflowLogger;
 import org.ietr.preesm.core.scenario.PreesmScenario;
 import org.ietr.preesm.experiment.model.pimm.AbstractActor;
 import org.ietr.preesm.experiment.model.pimm.Actor;
 import org.ietr.preesm.experiment.model.pimm.PiGraph;
 import org.ietr.preesm.experiment.model.pimm.serialize.PiParser;
-import org.ietr.preesm.utils.files.WorkspaceUtils;
+import org.preesm.commons.files.WorkspaceUtils;
+import org.preesm.commons.logger.PreesmLogger;
 
 /**
  * Importing constraints in a scenario from an excel file. The existing timings mean that the task can be mapped on the
@@ -105,7 +105,7 @@ public class ExcelConstraintsParser {
     final IFile file = workspace.getRoot().getFile(path);
 
     this.scenario.getConstraintGroupManager().removeAll();
-    WorkflowLogger.getLogger().log(Level.INFO,
+    PreesmLogger.getLogger().log(Level.INFO,
         "Importing constraints from an excel sheet. Previously defined constraints are discarded.");
 
     try {
@@ -170,23 +170,23 @@ public class ExcelConstraintsParser {
 
           this.scenario.getConstraintGroupManager().addConstraint(operatorId, vertex);
 
-          WorkflowLogger.getLogger().log(Level.FINE, "Importing constraint: {" + operatorId + "," + vertex + ",yes}");
+          PreesmLogger.getLogger().log(Level.FINE, "Importing constraint: {" + operatorId + "," + vertex + ",yes}");
 
         } else {
-          WorkflowLogger.getLogger().log(Level.FINE, "Importing constraint: {" + operatorId + "," + vertex + ",no}");
+          PreesmLogger.getLogger().log(Level.FINE, "Importing constraint: {" + operatorId + "," + vertex + ",no}");
         }
       } else {
         if ((vertexCell == null) && !missingVertices.contains(vertexName)) {
           if (vertex.getRefinement() != null) {
-            WorkflowLogger.getLogger().log(Level.WARNING,
+            PreesmLogger.getLogger().log(Level.WARNING,
                 "No line found in excel sheet for hierarchical vertex: " + vertexName);
           } else {
-            WorkflowLogger.getLogger().log(Level.SEVERE,
+            PreesmLogger.getLogger().log(Level.SEVERE,
                 "No line found in excel sheet for atomic vertex: " + vertexName);
           }
           missingVertices.add(vertexName);
         } else if ((operatorCell == null) && !missingOperators.contains(operatorId)) {
-          WorkflowLogger.getLogger().log(Level.SEVERE, "No column found in excel sheet for operator: " + operatorId);
+          PreesmLogger.getLogger().log(Level.SEVERE, "No column found in excel sheet for operator: " + operatorId);
           missingOperators.add(operatorId);
         }
       }
@@ -222,23 +222,23 @@ public class ExcelConstraintsParser {
 
           this.scenario.getConstraintGroupManager().addConstraint(operatorId, vertex);
 
-          WorkflowLogger.getLogger().log(Level.FINE, "Importing constraint: {" + operatorId + "," + vertex + ",yes}");
+          PreesmLogger.getLogger().log(Level.FINE, "Importing constraint: {" + operatorId + "," + vertex + ",yes}");
 
         } else {
-          WorkflowLogger.getLogger().log(Level.FINE, "Importing constraint: {" + operatorId + "," + vertex + ",no}");
+          PreesmLogger.getLogger().log(Level.FINE, "Importing constraint: {" + operatorId + "," + vertex + ",no}");
         }
       } else {
         if ((vertexCell == null) && !missingVertices.contains(vertexName)) {
           if (vertex.getGraphDescription() != null) {
-            WorkflowLogger.getLogger().log(Level.WARNING,
+            PreesmLogger.getLogger().log(Level.WARNING,
                 "No line found in excel sheet for hierarchical vertex: " + vertexName);
           } else {
-            WorkflowLogger.getLogger().log(Level.SEVERE,
+            PreesmLogger.getLogger().log(Level.SEVERE,
                 "No line found in excel sheet for atomic vertex: " + vertexName);
           }
           missingVertices.add(vertexName);
         } else if ((operatorCell == null) && !missingOperators.contains(operatorId)) {
-          WorkflowLogger.getLogger().log(Level.SEVERE, "No column found in excel sheet for operator: " + operatorId);
+          PreesmLogger.getLogger().log(Level.SEVERE, "No column found in excel sheet for operator: " + operatorId);
           missingOperators.add(operatorId);
         }
       }

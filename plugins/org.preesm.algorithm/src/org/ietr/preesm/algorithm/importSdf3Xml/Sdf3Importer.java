@@ -47,9 +47,9 @@ import org.ietr.dftools.architecture.slam.Design;
 import org.ietr.dftools.workflow.elements.Workflow;
 import org.ietr.dftools.workflow.implement.AbstractTaskImplementation;
 import org.ietr.dftools.workflow.implement.AbstractWorkflowNodeImplementation;
-import org.ietr.dftools.workflow.tools.WorkflowLogger;
 import org.ietr.preesm.core.scenario.PreesmScenario;
-import org.ietr.preesm.utils.paths.PathTools;
+import org.preesm.commons.files.PathTools;
+import org.preesm.commons.logger.PreesmLogger;
 
 /**
  * This class is a {@link Workflow} task that parse a SDF in the SDF3 XML format and output its corresponding
@@ -77,7 +77,7 @@ public class Sdf3Importer extends AbstractTaskImplementation {
       final IProgressMonitor monitor, final String nodeName, final Workflow workflow) {
 
     // Rem: Logger is used to display messages in the console
-    final Logger logger = WorkflowLogger.getLogger();
+    final Logger logger = PreesmLogger.getLogger();
 
     // Retrieve the inputs
     final Design architecture = (Design) inputs.get(AbstractWorkflowNodeImplementation.KEY_ARCHITECTURE);

@@ -41,6 +41,7 @@ import java.io.FileWriter
 import java.io.IOException
 import java.util.Collection
 import org.eclipse.xtend.lib.annotations.Accessors
+import org.ietr.dftools.algorithm.model.AbstractEdge
 import org.ietr.dftools.algorithm.model.IInterface
 import org.ietr.dftools.algorithm.model.sdf.SDFAbstractVertex
 import org.ietr.dftools.algorithm.model.sdf.SDFEdge
@@ -50,8 +51,7 @@ import org.ietr.dftools.algorithm.model.sdf.esdf.SDFSourceInterfaceVertex
 import org.ietr.dftools.architecture.slam.Design
 import org.ietr.preesm.core.scenario.PreesmScenario
 import org.ietr.preesm.core.scenario.Timing
-import org.ietr.dftools.algorithm.model.AbstractEdge
-import org.ietr.preesm.utils.math.MathFunctionsHelper
+import org.preesm.commons.math.MathFunctionsHelper
 
 /**
  * This class is used to print an {@link SDFGraph} in the SDF For Free (SDF3)

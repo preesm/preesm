@@ -55,7 +55,7 @@ import org.ietr.dftools.algorithm.model.parameters.NoIntegerValueException;
 import org.ietr.dftools.algorithm.model.sdf.esdf.SDFSinkInterfaceVertex;
 import org.ietr.dftools.algorithm.model.sdf.esdf.SDFSourceInterfaceVertex;
 import org.ietr.dftools.algorithm.model.visitors.SDF4JException;
-import org.ietr.dftools.workflow.tools.WorkflowLogger;
+import org.preesm.commons.logger.PreesmLogger;
 
 /**
  * Abstract class representing SDF Vertices.
@@ -409,8 +409,8 @@ public abstract class SDFAbstractVertex extends AbstractVertex<SDFGraph> {
       if (getGraphDescription() != null) {
         final AbstractVertex truePort = getGraphDescription().getVertex(source.getName());
         if (getGraphDescription().outgoingEdgesOf(truePort).isEmpty()) {
-          if (WorkflowLogger.getLogger() != null) {
-            WorkflowLogger.getLogger().log(Level.INFO,
+          if (PreesmLogger.getLogger() != null) {
+            PreesmLogger.getLogger().log(Level.INFO,
                 "The interface " + source.getName()
                     + " has no inside connection and will be removed for further processing.\n "
                     + "Outside connection has been taken into account for reptition factor computation");
@@ -429,7 +429,7 @@ public abstract class SDFAbstractVertex extends AbstractVertex<SDFGraph> {
       if (getGraphDescription() != null) {
         final AbstractVertex truePort = getGraphDescription().getVertex(sink.getName());
         if (getGraphDescription().incomingEdgesOf(truePort).isEmpty()) {
-          WorkflowLogger.getLogger().log(Level.INFO,
+          PreesmLogger.getLogger().log(Level.INFO,
               "interface " + sink.getName() + " has no inside connection, consider removing this interface if unused");
           throw (new DFToolsAlgoException(
               "interface " + sink.getName() + " has no inside connection, consider removing this interface if unused"));

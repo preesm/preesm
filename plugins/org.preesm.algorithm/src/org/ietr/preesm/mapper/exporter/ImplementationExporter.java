@@ -55,7 +55,7 @@ import org.ietr.preesm.mapper.model.MapperDAG;
 import org.ietr.preesm.mapper.model.MapperDAGVertex;
 import org.ietr.preesm.mapper.model.property.VertexInit;
 import org.ietr.preesm.mapper.model.special.TransferVertex;
-import org.ietr.preesm.utils.GMLKey;
+import org.preesm.commons.GMLKey;
 import org.w3c.dom.Element;
 
 /**

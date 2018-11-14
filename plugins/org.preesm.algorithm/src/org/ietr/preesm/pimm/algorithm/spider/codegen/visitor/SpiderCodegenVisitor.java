@@ -51,7 +51,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.logging.Level;
-import org.ietr.dftools.workflow.tools.WorkflowLogger;
 import org.ietr.preesm.core.types.DataType;
 import org.ietr.preesm.experiment.model.pimm.AbstractActor;
 import org.ietr.preesm.experiment.model.pimm.AbstractVertex;
@@ -89,6 +88,7 @@ import org.ietr.preesm.experiment.model.pimm.util.PiMMSwitch;
 import org.ietr.preesm.pimm.algorithm.spider.codegen.utils.SpiderNameGenerator;
 import org.ietr.preesm.pimm.algorithm.spider.codegen.utils.SpiderTypeConverter;
 import org.ietr.preesm.pimm.algorithm.spider.codegen.utils.SpiderTypeConverter.PiSDFSubType;
+import org.preesm.commons.logger.PreesmLogger;
 
 // TODO: Find a cleaner way to setParentEdge in Interfaces
 /*
@@ -491,7 +491,7 @@ public class SpiderCodegenVisitor extends PiMMSwitch<Boolean> {
           }
         }
       } else {
-        WorkflowLogger.getLogger().log(Level.WARNING,
+        PreesmLogger.getLogger().log(Level.WARNING,
             "Actor " + aa.getName() + " does not have a valid operator to execute on");
       }
     }
@@ -506,7 +506,7 @@ public class SpiderCodegenVisitor extends PiMMSwitch<Boolean> {
         append("\");\n");
       }
     } else {
-      WorkflowLogger.getLogger().log(Level.WARNING, "Actor " + aa.getName() + " does not have timing information.");
+      PreesmLogger.getLogger().log(Level.WARNING, "Actor " + aa.getName() + " does not have timing information.");
     }
 
     append("\n");
@@ -579,7 +579,7 @@ public class SpiderCodegenVisitor extends PiMMSwitch<Boolean> {
     if (this.dataTypes.containsKey(f.getType())) {
       typeSize = this.dataTypes.get(f.getType()).getSize();
     } else {
-      WorkflowLogger.getLogger().warning("Type " + f.getType() + " is not defined in scenario (considered size = 1).");
+      PreesmLogger.getLogger().warning("Type " + f.getType() + " is not defined in scenario (considered size = 1).");
       typeSize = 1;
     }
 

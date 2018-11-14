@@ -46,8 +46,8 @@ import org.ietr.dftools.algorithm.model.sdf.SDFEdge;
 import org.ietr.dftools.algorithm.model.sdf.SDFGraph;
 import org.ietr.dftools.algorithm.model.sdf.esdf.SDFSinkInterfaceVertex;
 import org.ietr.dftools.algorithm.model.sdf.esdf.SDFSourceInterfaceVertex;
-import org.ietr.dftools.workflow.tools.WorkflowLogger;
 import org.ietr.preesm.mathematicalModels.PeriodicScheduleModelOjAlgo;
+import org.preesm.commons.logger.PreesmLogger;
 
 // TODO: Auto-generated Javadoc
 /**
@@ -81,7 +81,7 @@ public class SDFThroughputEvaluator extends ThroughputEvaluator {
       period = period_computation(sdf);
       // Deduce throughput of the schedule
     } else {
-      WorkflowLogger.getLogger().log(Level.SEVERE, "No periodic schedule for this graph ");
+      PreesmLogger.getLogger().log(Level.SEVERE, "No periodic schedule for this graph ");
       return 0;
     }
     return period;

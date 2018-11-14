@@ -43,10 +43,10 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.ietr.dftools.architecture.slam.ComponentInstance;
 import org.ietr.dftools.workflow.WorkflowException;
-import org.ietr.dftools.workflow.tools.WorkflowLogger;
 import org.ietr.preesm.mapper.abc.impl.latency.LatencyAbc;
 import org.ietr.preesm.mapper.model.MapperDAG;
 import org.ietr.preesm.mapper.model.MapperDAGVertex;
+import org.preesm.commons.logger.PreesmLogger;
 
 /**
  * List scheduler from Yu Kwong Kwok PhD thesis.
@@ -118,7 +118,7 @@ public class KwokListScheduler {
 
     // Variables
     ComponentInstance chosenoperator = null;
-    final Logger logger = WorkflowLogger.getLogger();
+    final Logger logger = PreesmLogger.getLogger();
 
     // Maps the fastest one to be ready among the operators in the vertex
     // check the vertex by priority in the CPN-Dominant list

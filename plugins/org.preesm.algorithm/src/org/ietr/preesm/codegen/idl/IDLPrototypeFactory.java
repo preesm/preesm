@@ -42,7 +42,6 @@ import java.util.Enumeration;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.logging.Level;
-import org.ietr.dftools.workflow.tools.WorkflowLogger;
 import org.ietr.preesm.codegen.model.CodeGenArgument;
 import org.ietr.preesm.codegen.model.CodeGenParameter;
 import org.ietr.preesm.codegen.model.IFunctionFactory;
@@ -71,6 +70,7 @@ import org.jacorb.idl.UnionType;
 import org.jacorb.idl.Value;
 import org.jacorb.idl.VectorType;
 import org.jacorb.idl.parser;
+import org.preesm.commons.logger.PreesmLogger;
 
 // TODO: Auto-generated Javadoc
 /**
@@ -195,7 +195,7 @@ public class IDLPrototypeFactory implements IFunctionFactory, IDLTreeVisitor {
           this.maxInitIndex = index;
         }
       } catch (final NumberFormatException e) {
-        WorkflowLogger.getLogger().log(Level.SEVERE,
+        PreesmLogger.getLogger().log(Level.SEVERE,
             "Badly formatted IDL interface, loop, init or init-i accepted : " + arg0.name());
       }
     } else if (arg0.name().equals("loop")) {
@@ -204,7 +204,7 @@ public class IDLPrototypeFactory implements IFunctionFactory, IDLTreeVisitor {
       this.finalPrototypes.setLoopPrototype(this.currentPrototype);
       arg0.body.accept(this);
     } else {
-      WorkflowLogger.getLogger().log(Level.WARNING,
+      PreesmLogger.getLogger().log(Level.WARNING,
           "Ignored badly formatted IDL interface, loop, init or init-i accepted : " + arg0.name());
     }
   }

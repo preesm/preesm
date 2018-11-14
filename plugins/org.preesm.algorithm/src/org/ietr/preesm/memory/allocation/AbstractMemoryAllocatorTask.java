@@ -47,10 +47,10 @@ import org.eclipse.core.runtime.IProgressMonitor;
 import org.ietr.dftools.workflow.WorkflowException;
 import org.ietr.dftools.workflow.elements.Workflow;
 import org.ietr.dftools.workflow.implement.AbstractTaskImplementation;
-import org.ietr.dftools.workflow.tools.WorkflowLogger;
 import org.ietr.preesm.memory.allocation.OrderedAllocator.Order;
 import org.ietr.preesm.memory.allocation.OrderedAllocator.Policy;
 import org.ietr.preesm.memory.exclusiongraph.MemoryExclusionGraph;
+import org.preesm.commons.logger.PreesmLogger;
 
 // TODO: Auto-generated Javadoc
 /**
@@ -156,7 +156,7 @@ public abstract class AbstractMemoryAllocatorTask extends AbstractTaskImplementa
 
   /** The logger. */
   // Rem: Logger is used to display messages in the console
-  protected Logger logger = WorkflowLogger.getLogger();
+  protected Logger logger = PreesmLogger.getLogger();
 
   /** The value verbose. */
   // Shared attributes

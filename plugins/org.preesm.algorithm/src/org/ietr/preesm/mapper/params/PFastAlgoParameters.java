@@ -40,7 +40,7 @@ package org.ietr.preesm.mapper.params;
 
 import java.util.Map;
 import java.util.logging.Level;
-import org.ietr.dftools.workflow.tools.WorkflowLogger;
+import org.preesm.commons.logger.PreesmLogger;
 
 // TODO: Auto-generated Javadoc
 /**
@@ -95,7 +95,7 @@ public class PFastAlgoParameters {
       this.fastNumber = Integer.valueOf(textParameters.get("fastNumber"));
     }
 
-    WorkflowLogger.getLogger().log(Level.INFO,
+    PreesmLogger.getLogger().log(Level.INFO,
         "The PFast algo parameters are: nodesMin; procNumber; displaySolutions=true/false; "
             + "fastTime in seconds; fastLocalSearchTime in seconds; fastNumber");
 

@@ -46,7 +46,7 @@ import org.eclipse.core.runtime.IExtensionRegistry;
 import org.eclipse.core.runtime.Platform;
 import org.ietr.dftools.workflow.WorkflowParser;
 import org.ietr.dftools.workflow.implement.AbstractTaskImplementation;
-import org.ietr.dftools.workflow.tools.WorkflowLogger;
+import org.preesm.commons.logger.PreesmLogger;
 
 /**
  * This class provides a task workflow node.
@@ -208,7 +208,7 @@ public class TaskNode extends AbstractWorkflowNode {
     } catch (final CoreException e) {
       final String message = "Failed to find plugins from workflow for pluginID = [" + pluginId + "] and taskID = ["
           + taskId + "]: " + e.getMessage();
-      WorkflowLogger.getLogger().log(Level.SEVERE, message);
+      PreesmLogger.getLogger().log(Level.SEVERE, message);
       return false;
     }
   }

@@ -89,7 +89,6 @@ import org.ietr.dftools.architecture.slam.ComponentInstance;
 import org.ietr.dftools.architecture.slam.Design;
 import org.ietr.dftools.workflow.WorkflowException;
 import org.ietr.dftools.workflow.elements.Workflow;
-import org.ietr.dftools.workflow.tools.WorkflowLogger;
 import org.ietr.preesm.codegen.idl.ActorPrototypes;
 import org.ietr.preesm.codegen.idl.IDLPrototypeFactory;
 import org.ietr.preesm.codegen.idl.Prototype;
@@ -138,6 +137,7 @@ import org.preesm.codegen.model.SpecialType;
 import org.preesm.codegen.model.SubBuffer;
 import org.preesm.codegen.model.Variable;
 import org.preesm.codegen.model.util.CodegenModelUserFactory;
+import org.preesm.commons.logger.PreesmLogger;
 
 /**
  * The objective of this class is to generate an intermediate model that will be used to print the generated code. <br>
@@ -555,7 +555,7 @@ public class CodegenModelGenerator {
   }
 
   private void p(final String s) {
-    final Logger logger = WorkflowLogger.getLogger();
+    final Logger logger = PreesmLogger.getLogger();
     logger.log(Level.INFO, s);
   }
 

@@ -44,8 +44,8 @@ import org.eclipse.core.runtime.IProgressMonitor;
 import org.ietr.dftools.workflow.WorkflowException;
 import org.ietr.dftools.workflow.elements.Workflow;
 import org.ietr.dftools.workflow.implement.AbstractTaskImplementation;
-import org.ietr.dftools.workflow.tools.WorkflowLogger;
 import org.ietr.preesm.experiment.model.pimm.PiGraph;
+import org.preesm.commons.logger.PreesmLogger;
 
 /**
  * A Test workflow element for PiGraphs. This task does not take into account hierarchies, thus it has been made
@@ -69,11 +69,11 @@ public class PrintPISDFStats extends AbstractTaskImplementation {
 
     final PiGraph piGraph = (PiGraph) inputs.get("PiMM");
 
-    WorkflowLogger.getLogger().log(Level.INFO, "PiMM Stats:");
-    WorkflowLogger.getLogger().log(Level.INFO, "Name         : " + piGraph.getName());
-    WorkflowLogger.getLogger().log(Level.INFO, "Nb Vertices  : " + piGraph.getActors().size());
-    WorkflowLogger.getLogger().log(Level.INFO, "Nb Fifos     : " + piGraph.getFifos().size());
-    WorkflowLogger.getLogger().log(Level.INFO, "Nb Parameters: " + piGraph.getParameters().size());
+    PreesmLogger.getLogger().log(Level.INFO, "PiMM Stats:");
+    PreesmLogger.getLogger().log(Level.INFO, "Name         : " + piGraph.getName());
+    PreesmLogger.getLogger().log(Level.INFO, "Nb Vertices  : " + piGraph.getActors().size());
+    PreesmLogger.getLogger().log(Level.INFO, "Nb Fifos     : " + piGraph.getFifos().size());
+    PreesmLogger.getLogger().log(Level.INFO, "Nb Parameters: " + piGraph.getParameters().size());
 
     return new LinkedHashMap<>();
   }

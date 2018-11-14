@@ -44,10 +44,10 @@ import java.util.logging.Level;
 import org.ietr.dftools.algorithm.iterators.TopologicalDAGIterator;
 import org.ietr.dftools.architecture.slam.ComponentInstance;
 import org.ietr.dftools.workflow.WorkflowException;
-import org.ietr.dftools.workflow.tools.WorkflowLogger;
 import org.ietr.preesm.mapper.abc.impl.latency.LatencyAbc;
 import org.ietr.preesm.mapper.abc.order.VertexOrderList;
 import org.ietr.preesm.mapper.model.MapperDAGVertex;
+import org.preesm.commons.logger.PreesmLogger;
 
 /**
  * Scheduler that simulates a dynamic queuing system.
@@ -167,7 +167,7 @@ public class DynamicQueuingScheduler {
     if (currentMinOp != null) {
       abc.map(currentvertex, currentMinOp, true, false);
     } else {
-      WorkflowLogger.getLogger().log(Level.SEVERE, "No available operator for " + currentvertex);
+      PreesmLogger.getLogger().log(Level.SEVERE, "No available operator for " + currentvertex);
     }
 
     // ------------------Second half of temp fix----------

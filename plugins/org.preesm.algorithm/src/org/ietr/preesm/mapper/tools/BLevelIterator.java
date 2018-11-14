@@ -38,10 +38,10 @@
 package org.ietr.preesm.mapper.tools;
 
 import java.util.logging.Level;
-import org.ietr.dftools.workflow.tools.WorkflowLogger;
 import org.ietr.preesm.mapper.abc.impl.latency.LatencyAbc;
 import org.ietr.preesm.mapper.model.MapperDAG;
 import org.ietr.preesm.mapper.model.MapperDAGVertex;
+import org.preesm.commons.logger.PreesmLogger;
 
 // TODO: Auto-generated Javadoc
 /**
@@ -80,7 +80,7 @@ public class BLevelIterator extends ImplementationIterator {
     }
 
     if (!arg0.getTiming().hasBLevel() || !arg1.getTiming().hasBLevel()) {
-      WorkflowLogger.getLogger().log(Level.SEVERE, "B Level Iterator problem");
+      PreesmLogger.getLogger().log(Level.SEVERE, "B Level Iterator problem");
     }
 
     long bLevelDifference = (arg0.getTiming().getBLevel() - arg1.getTiming().getBLevel());

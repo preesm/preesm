@@ -44,7 +44,6 @@ import java.util.Set;
 import java.util.logging.Level;
 import org.ietr.dftools.algorithm.model.dag.DAGEdge;
 import org.ietr.dftools.architecture.slam.ComponentInstance;
-import org.ietr.dftools.workflow.tools.WorkflowLogger;
 import org.ietr.preesm.mapper.abc.order.OrderManager;
 import org.ietr.preesm.mapper.abc.transaction.AddPrecedenceEdgeTransaction;
 import org.ietr.preesm.mapper.abc.transaction.RemoveEdgeTransaction;
@@ -53,6 +52,7 @@ import org.ietr.preesm.mapper.abc.transaction.TransactionManager;
 import org.ietr.preesm.mapper.model.MapperDAG;
 import org.ietr.preesm.mapper.model.MapperDAGEdge;
 import org.ietr.preesm.mapper.model.MapperDAGVertex;
+import org.preesm.commons.logger.PreesmLogger;
 
 // TODO: Auto-generated Javadoc
 /**
@@ -170,7 +170,7 @@ public class PrecedenceEdgeAdder {
 
       if (edges != null) {
         if (edges.size() >= 2) {
-          WorkflowLogger.getLogger().log(Level.SEVERE,
+          PreesmLogger.getLogger().log(Level.SEVERE,
               "too many edges between " + v1.toString() + " and " + v2.toString());
         }
 

@@ -40,9 +40,9 @@ package org.ietr.preesm.mapper.ui.gantt;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IPersistableElement;
-import org.ietr.dftools.workflow.tools.WorkflowLogger;
 import org.ietr.preesm.mapper.activator.Activator;
 import org.ietr.preesm.mapper.gantt.GanttData;
+import org.preesm.commons.logger.PreesmLogger;
 
 /**
  * Input of the simple editor of implementation gantt chart.
@@ -117,7 +117,7 @@ public class GanttEditorInput implements IEditorInput {
    */
   @Override
   public String getName() {
-    return this.name + " " + WorkflowLogger.getFormattedTime();
+    return this.name + " " + PreesmLogger.getFormattedTime();
   }
 
   /*

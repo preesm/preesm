@@ -62,7 +62,6 @@ import org.ietr.dftools.algorithm.model.types.LongEdgePropertyType;
 import org.ietr.dftools.algorithm.model.visitors.SDF4JException;
 import org.ietr.dftools.architecture.slam.Design;
 import org.ietr.dftools.workflow.WorkflowException;
-import org.ietr.dftools.workflow.tools.WorkflowLogger;
 import org.ietr.preesm.core.scenario.PreesmScenario;
 import org.ietr.preesm.core.types.DataType;
 import org.ietr.preesm.mapper.graphtransfo.SdfToDagConverter;
@@ -73,7 +72,8 @@ import org.ietr.preesm.memory.allocation.OrderedAllocator;
 import org.ietr.preesm.memory.allocation.OrderedAllocator.Order;
 import org.ietr.preesm.memory.exclusiongraph.MemoryExclusionGraph;
 import org.ietr.preesm.memory.script.MemoryScriptEngine;
-import org.ietr.preesm.utils.math.MathFunctionsHelper;
+import org.preesm.commons.logger.PreesmLogger;
+import org.preesm.commons.math.MathFunctionsHelper;
 
 /**
  * This class is used to perform the clusterization (loop IR builder and memory allocation). It is used to set the
@@ -85,7 +85,7 @@ import org.ietr.preesm.utils.math.MathFunctionsHelper;
  */
 public class HSDFBuildLoops {
 
-  private final Logger logger = WorkflowLogger.getLogger();
+  private final Logger logger = PreesmLogger.getLogger();
 
   private final Map<String, DataType> dataTypes;
 
@@ -625,7 +625,7 @@ public class HSDFBuildLoops {
       engine.runScripts(dag, this.dataTypes, checkString);
     } catch (CoreException | IOException | URISyntaxException | EvalError e) {
       final String message = "An error occurred during memory scripts execution";
-      WorkflowLogger.getLogger().log(Level.SEVERE, message, e);
+      PreesmLogger.getLogger().log(Level.SEVERE, message, e);
       throw new WorkflowException(message, e);
     }
     engine.updateMemEx(memEx);

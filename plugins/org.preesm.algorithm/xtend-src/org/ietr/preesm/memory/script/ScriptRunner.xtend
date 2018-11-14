@@ -69,14 +69,14 @@ import org.ietr.dftools.algorithm.model.sdf.SDFGraph
 import org.ietr.dftools.algorithm.model.sdf.SDFVertex
 import org.ietr.dftools.algorithm.model.sdf.esdf.SDFRoundBufferVertex
 import org.ietr.dftools.workflow.WorkflowException
-import org.ietr.dftools.workflow.tools.WorkflowLogger
 import org.ietr.preesm.core.scenario.PreesmScenario
 import org.ietr.preesm.core.types.DataType
 import org.ietr.preesm.memory.exclusiongraph.MemoryExclusionGraph
 import org.ietr.preesm.memory.exclusiongraph.MemoryExclusionVertex
-import org.ietr.preesm.utils.files.URLResolver
+import org.preesm.commons.files.URLResolver
 
 import static extension org.ietr.preesm.memory.script.Range.*
+import org.preesm.commons.logger.PreesmLogger
 
 enum CheckPolicy {
 	NONE,
@@ -234,7 +234,7 @@ class ScriptRunner {
 			localBuffer.reciprocal
 		]
 		if (!res1 && checkPolicy == CheckPolicy::FAST) {
-			val logger = WorkflowLogger.logger
+			val logger = PreesmLogger.getLogger
 			logger.log(Level.WARNING,
 				"Error in " + script + ":\nOne or more match is not reciprocal." +
 					" Please set matches only by using Buffer.matchWith() methods.")
@@ -243,7 +243,7 @@ class ScriptRunner {
 				// for all matcheSet
 				val res = localBuffer.reciprocal
 				if (!res && checkPolicy == CheckPolicy::THOROUGH) {
-					val logger = WorkflowLogger.logger
+					val logger = PreesmLogger.getLogger
 					logger.log(Level.WARNING,
 						"Error in " + script + ":\nBuffer " + localBuffer + " has nonreciprocal matches:\n" + localBuffer.
 							matchTable.values.flatten.filter[match|
@@ -266,7 +266,7 @@ class ScriptRunner {
 			]
 		]
 		if (!res2 && checkPolicy == CheckPolicy::FAST) {
-			val logger = WorkflowLogger.logger
+			val logger = PreesmLogger.getLogger
 			logger.log(Level.WARNING,
 				"Error in " + script + ":\nOne or more match links an input (or an output) to another." +
 					"\nPlease set matches only between inputs and outputs.")
@@ -274,7 +274,7 @@ class ScriptRunner {
 			result.key.forEach [ buffer |
 				buffer.matchTable.values.flatten.forEach [ match |
 					if (!result.value.contains(match.remoteBuffer)) {
-						val logger = WorkflowLogger.logger
+						val logger = PreesmLogger.getLogger
 						logger.log(Level.WARNING,
 							"Error in " + script + ":\nMatch " + match + " links an input to another." +
 								"\nPlease set matches only between inputs and outputs.")
@@ -284,7 +284,7 @@ class ScriptRunner {
 			result.value.forEach [ buffer |
 				buffer.matchTable.values.flatten.forEach [ match |
 					if (!result.key.contains(match.remoteBuffer)) {
-						val logger = WorkflowLogger.logger
+						val logger = PreesmLogger.getLogger
 						logger.log(Level.WARNING,
 							"Error in " + script + ":\nMatch " + match + " links an output to another." +
 								"\nPlease set matches only between inputs and outputs.")
@@ -301,13 +301,13 @@ class ScriptRunner {
 			result.key.contains(it.key) || it.value.size == 0
 		]
 		if (!res3 && checkPolicy == CheckPolicy::FAST) {
-			val logger = WorkflowLogger.logger
+			val logger = PreesmLogger.getLogger
 			logger.log(Level.WARNING,
 				"Error in " + script + ":\nMatching multiple times a range of an output buffer is not allowed.")
 		} else if (!res3 && checkPolicy == CheckPolicy::THOROUGH) {
 			multipleRanges.forEach [
 				if (!(result.key.contains(it.key) || it.value.size == 0)) {
-					val logger = WorkflowLogger.logger
+					val logger = PreesmLogger.getLogger
 					logger.log(Level.WARNING,
 						"Error in " + script + ":\nMatching multiple times output buffer " + it.key + " is not allowed." +
 							"\nRange matched multiple times:" + it.value)
@@ -370,7 +370,7 @@ class ScriptRunner {
 							} else {
 								val message = "Memory script of vertex " + dagVertex.getName() + " is invalid: \"" +
 																		pathString + "\". Change it in the graphml editor."
-								WorkflowLogger.getLogger.log(Level.WARNING, message)
+								PreesmLogger.getLogger.log(Level.WARNING, message)
 							}
 						}
 					}
@@ -1655,19 +1655,19 @@ class ScriptRunner {
 		} catch (ParseException error) {
 
 			// Logger is used to display messages in the console
-			val logger = WorkflowLogger.getLogger
+			val logger = PreesmLogger.getLogger
 			var message = error.rawMessage + "\n" + error.cause
 			logger.log(Level.WARNING, "Parse error in " + dagVertex.name + " memory script:\n" + message)
 		} catch (EvalError error) {
 
 			// Logger is used to display messages in the console
-			val logger = WorkflowLogger.getLogger
+			val logger = PreesmLogger.getLogger
 			var message = error.rawMessage + "\n" + error.cause
 			logger.log(Level.WARNING,
 				"Evaluation error in " + dagVertex.name + " memory script:\n[Line " + error.errorLineNumber + "] " +
 					message)
 		} catch (IOException exception) {
-			val logger = WorkflowLogger.getLogger
+			val logger = PreesmLogger.getLogger
 			logger.log(Level.WARNING,exception.message, exception)
 		}
 	}

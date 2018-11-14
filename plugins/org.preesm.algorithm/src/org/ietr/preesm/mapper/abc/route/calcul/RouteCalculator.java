@@ -49,7 +49,6 @@ import org.ietr.dftools.architecture.slam.Design;
 import org.ietr.dftools.architecture.slam.component.Operator;
 import org.ietr.dftools.architecture.slam.component.impl.ComNodeImpl;
 import org.ietr.dftools.architecture.slam.link.Link;
-import org.ietr.dftools.workflow.tools.WorkflowLogger;
 import org.ietr.preesm.core.architecture.route.AbstractRouteStep;
 import org.ietr.preesm.core.architecture.route.Route;
 import org.ietr.preesm.core.architecture.route.RouteStepFactory;
@@ -57,6 +56,7 @@ import org.ietr.preesm.core.architecture.util.DesignTools;
 import org.ietr.preesm.core.scenario.PreesmScenario;
 import org.ietr.preesm.mapper.model.MapperDAGEdge;
 import org.ietr.preesm.mapper.model.MapperDAGVertex;
+import org.preesm.commons.logger.PreesmLogger;
 
 /**
  * This class can evaluate a given transfer and choose the best route between two operators.
@@ -144,7 +144,7 @@ public class RouteCalculator {
    * Creating recursively the route steps from the architecture.
    */
   private void createRouteSteps() {
-    WorkflowLogger.getLogger().log(Level.INFO, "creating route steps.");
+    PreesmLogger.getLogger().log(Level.INFO, "creating route steps.");
 
     for (final ComponentInstance c : DesignTools.getOperatorInstances(this.archi)) {
       final ComponentInstance o = c;
@@ -216,7 +216,7 @@ public class RouteCalculator {
    * Building recursively the routes between the cores.
    */
   private void createRoutes() {
-    WorkflowLogger.getLogger().log(Level.INFO, "Initializing routing table.");
+    PreesmLogger.getLogger().log(Level.INFO, "Initializing routing table.");
 
     floydWarshall(this.table, DesignTools.getOperatorInstances(this.archi));
   }
@@ -290,7 +290,7 @@ public class RouteCalculator {
 
     if (r == null) {
       final String msg = "Did not find a route between " + op1 + " and " + op2 + ".";
-      WorkflowLogger.getLogger().log(Level.SEVERE, msg);
+      PreesmLogger.getLogger().log(Level.SEVERE, msg);
     }
 
     return r;

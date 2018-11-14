@@ -52,12 +52,12 @@ import org.ietr.dftools.architecture.slam.component.Operator;
 import org.ietr.dftools.workflow.WorkflowException;
 import org.ietr.dftools.workflow.elements.Workflow;
 import org.ietr.dftools.workflow.implement.AbstractTaskImplementation;
-import org.ietr.dftools.workflow.tools.WorkflowLogger;
 import org.ietr.preesm.core.architecture.util.DesignTools;
 import org.ietr.preesm.core.scenario.PreesmScenario;
 import org.ietr.preesm.core.scenario.serialize.ScenarioParser;
 import org.ietr.preesm.core.types.ImplementationPropertyNames;
-import org.ietr.preesm.utils.files.WorkspaceUtils;
+import org.preesm.commons.files.WorkspaceUtils;
+import org.preesm.commons.logger.PreesmLogger;
 
 /**
  * This class defines a method to load a new scenario and optionally change some constraints from an output DAG.
@@ -103,13 +103,13 @@ public class ScenarioGenerator extends AbstractTaskImplementation {
 
     final Map<String, Object> outputs = new LinkedHashMap<>();
 
-    WorkflowLogger.getLogger().log(Level.INFO, "Generating scenario");
+    PreesmLogger.getLogger().log(Level.INFO, "Generating scenario");
 
     final String scenarioFileName = parameters.get("scenarioFile");
 
     // Retrieving the scenario
     if (scenarioFileName.isEmpty()) {
-      WorkflowLogger.getLogger().log(Level.SEVERE, "lack of a scenarioFile parameter");
+      PreesmLogger.getLogger().log(Level.SEVERE, "lack of a scenarioFile parameter");
       return null;
     } else {
 
@@ -132,7 +132,7 @@ public class ScenarioGenerator extends AbstractTaskImplementation {
       }
 
       if (algo == null) {
-        WorkflowLogger.getLogger().log(Level.SEVERE, "cannot retrieve algorithm");
+        PreesmLogger.getLogger().log(Level.SEVERE, "cannot retrieve algorithm");
         return null;
       } else {
         outputs.put("SDF", algo);
@@ -141,7 +141,7 @@ public class ScenarioGenerator extends AbstractTaskImplementation {
       // Retrieving the architecture
       final Design archi = ScenarioParser.parseSlamDesign(scenario.getArchitectureURL());
       if (archi == null) {
-        WorkflowLogger.getLogger().log(Level.SEVERE, "cannot retrieve architecture");
+        PreesmLogger.getLogger().log(Level.SEVERE, "cannot retrieve architecture");
         return null;
       } else {
         outputs.put("architecture", archi);
@@ -152,7 +152,7 @@ public class ScenarioGenerator extends AbstractTaskImplementation {
     final String dagFileName = parameters.get("dagFile");
     // Parsing the output DAG if present and updating the constraints
     if (dagFileName.isEmpty()) {
-      WorkflowLogger.getLogger().log(Level.WARNING, "No dagFile -> retrieving the scenario as is");
+      PreesmLogger.getLogger().log(Level.WARNING, "No dagFile -> retrieving the scenario as is");
     } else {
       final GMLMapperDAGImporter importer = new GMLMapperDAGImporter();
 
@@ -182,7 +182,7 @@ public class ScenarioGenerator extends AbstractTaskImplementation {
         }
 
       } catch (final Exception e) {
-        WorkflowLogger.getLogger().log(Level.SEVERE, e.getMessage());
+        PreesmLogger.getLogger().log(Level.SEVERE, e.getMessage());
       }
 
     }

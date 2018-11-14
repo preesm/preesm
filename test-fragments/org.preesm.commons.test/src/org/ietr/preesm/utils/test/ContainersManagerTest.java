@@ -34,9 +34,9 @@
  */
 package org.ietr.preesm.utils.test;
 
-import org.ietr.preesm.utils.files.ContainersManager;
 import org.junit.Assert;
 import org.junit.Test;
+import org.preesm.commons.files.ContainersManager;
 
 // TODO: Auto-generated Javadoc
 /**

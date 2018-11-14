@@ -44,12 +44,12 @@ import java.util.Map;
 import java.util.logging.Level;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
-import org.ietr.dftools.workflow.tools.WorkflowLogger;
 import org.ietr.preesm.experiment.model.pimm.AbstractActor;
 import org.ietr.preesm.experiment.model.pimm.Fifo;
-import org.ietr.preesm.utils.math.LongFraction;
-import org.ietr.preesm.utils.math.MathFunctionsHelper;
 import org.math.array.LinearAlgebra;
+import org.preesm.commons.logger.PreesmLogger;
+import org.preesm.commons.math.LongFraction;
+import org.preesm.commons.math.MathFunctionsHelper;
 
 /**
  * This class is used to compute the basic repetition vector of a static PiSDF graph using topology matrix method.
@@ -70,7 +70,7 @@ public class TopologyBasedBRV extends PiBRV {
   @Override
   public boolean execute() throws PiMMHelperException {
     if (this.piHandler.getReferenceGraph() == null) {
-      WorkflowLogger.getLogger().log(Level.SEVERE, "cannot compute BRV for null graph.");
+      PreesmLogger.getLogger().log(Level.SEVERE, "cannot compute BRV for null graph.");
       return false;
     }
     // Get all sub graph composing the current graph

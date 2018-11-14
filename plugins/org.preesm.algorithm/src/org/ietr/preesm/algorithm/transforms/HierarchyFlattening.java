@@ -55,7 +55,7 @@ import org.ietr.dftools.algorithm.model.visitors.VisitorOutput;
 import org.ietr.dftools.workflow.WorkflowException;
 import org.ietr.dftools.workflow.elements.Workflow;
 import org.ietr.dftools.workflow.implement.AbstractTaskImplementation;
-import org.ietr.dftools.workflow.tools.WorkflowLogger;
+import org.preesm.commons.logger.PreesmLogger;
 
 /**
  * Class used to flatten the hierarchy of a given graph.
@@ -65,7 +65,7 @@ import org.ietr.dftools.workflow.tools.WorkflowLogger;
  */
 public class HierarchyFlattening extends AbstractTaskImplementation {
 
-  private static final Logger LOGGER = WorkflowLogger.getLogger();
+  private static final Logger LOGGER = PreesmLogger.getLogger();
 
   /*
    * (non-Javadoc)
@@ -135,7 +135,7 @@ public class HierarchyFlattening extends AbstractTaskImplementation {
     }
 
     timer.stop();
-    WorkflowLogger.getLogger().log(Level.INFO, "Flattening: " + timer.toString() + "s.");
+    PreesmLogger.getLogger().log(Level.INFO, "Flattening: " + timer.toString() + "s.");
 
     return outputs;
   }

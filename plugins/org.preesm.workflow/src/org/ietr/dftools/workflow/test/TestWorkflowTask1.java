@@ -43,7 +43,7 @@ import java.util.logging.Level;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.ietr.dftools.workflow.elements.Workflow;
 import org.ietr.dftools.workflow.implement.AbstractTaskImplementation;
-import org.ietr.dftools.workflow.tools.WorkflowLogger;
+import org.preesm.commons.logger.PreesmLogger;
 
 /**
  * The Class TestWorkflowTask1.
@@ -61,7 +61,7 @@ public class TestWorkflowTask1 extends AbstractTaskImplementation {
       final IProgressMonitor monitor, final String nodeName, final Workflow workflow) {
     final Map<String, Object> outputs = new LinkedHashMap<>();
     final String message = "Executing TestWorkflowTask1; node: " + nodeName;
-    WorkflowLogger.getLogger().log(Level.INFO, message);
+    PreesmLogger.getLogger().log(Level.INFO, message);
     outputs.put("superData", "superData1");
     return outputs;
   }

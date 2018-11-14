@@ -50,15 +50,15 @@ import org.ietr.dftools.architecture.slam.ComponentInstance
 import org.ietr.dftools.workflow.WorkflowException
 import org.ietr.dftools.workflow.elements.Workflow
 import org.ietr.dftools.workflow.implement.AbstractTaskImplementation
-import org.ietr.dftools.workflow.tools.WorkflowLogger
 import org.ietr.preesm.core.architecture.route.AbstractRouteStep
 import org.ietr.preesm.core.architecture.route.MessageRouteStep
 import org.ietr.preesm.core.types.ImplementationPropertyNames
 import org.ietr.preesm.mapper.abc.impl.latency.LatencyAbc
 import org.ietr.preesm.mapper.model.MapperDAGEdge
 import org.ietr.preesm.mapper.model.MapperDAGVertex
-import org.ietr.preesm.utils.files.ContainersManager
-import org.ietr.preesm.utils.paths.PathTools
+import org.preesm.commons.files.ContainersManager
+import org.preesm.commons.files.PathTools
+import org.preesm.commons.logger.PreesmLogger
 
 /**
  * Exports activity information in terms of tokens and quanta based on LatencyAbc information
@@ -99,7 +99,7 @@ class MonoActivityExporter extends AbstractTaskImplementation {
 	 */
 	override execute(Map<String, Object> inputs, Map<String, String> parameters, IProgressMonitor monitor,
 		String nodeName, Workflow workflow) throws WorkflowException {
-		var logger = WorkflowLogger.getLogger()
+		var logger = PreesmLogger.getLogger()
 
 		val filePath = parameters.get(PATH)
 		val human_readable = (parameters.get(HUMAN_READABLE) == "Yes")

@@ -1,4 +1,4 @@
-package org.ietr.preesm.utils.exceptions;
+package org.preesm.commons.exceptions;
 
 /**
  *

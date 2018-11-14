@@ -52,7 +52,7 @@ import org.eclipse.ui.console.MessageConsole;
 import org.eclipse.ui.console.MessageConsoleStream;
 import org.ietr.dftools.ui.PreesmUIPlugin;
 import org.ietr.dftools.workflow.WorkflowException;
-import org.ietr.dftools.workflow.tools.WorkflowLogger;
+import org.preesm.commons.logger.PreesmLogger;
 
 /**
  * Displaying information or error messages through a console initialized by the initConsole method.
@@ -60,7 +60,7 @@ import org.ietr.dftools.workflow.tools.WorkflowLogger;
  * @author mwipliez
  * @author mpelcat
  */
-public class DFToolsWorkflowLogger extends WorkflowLogger {
+public class PreesmWorkflowLogger extends Logger {
 
   /** The Constant LOGGER_NAME. */
   private static final String LOGGER_NAME = "net.sf.dftools.log.WorkflowLogger";
@@ -68,22 +68,11 @@ public class DFToolsWorkflowLogger extends WorkflowLogger {
   /** The console. */
   MessageConsole console = null;
 
-  /*
-   * (non-Javadoc)
-   *
-   * @see java.util.logging.Logger#setLevel(java.util.logging.Level)
-   */
-  @Override
-  public void setLevel(final Level newLevel) {
-    // Enabling only info level
-    super.setLevel(Level.INFO);
-  }
-
   /**
    * Instantiates a new DF tools workflow logger.
    */
-  public DFToolsWorkflowLogger() {
-    super(DFToolsWorkflowLogger.LOGGER_NAME, null);
+  public PreesmWorkflowLogger() {
+    super(PreesmWorkflowLogger.LOGGER_NAME, null);
     LogManager.getLogManager().addLogger(this);
 
     initConsole();
@@ -96,16 +85,6 @@ public class DFToolsWorkflowLogger extends WorkflowLogger {
    */
   @Override
   public void log(final LogRecord record) {
-    logGUI(record);
-  }
-
-  /**
-   * Log GUI.
-   *
-   * @param record
-   *          the record
-   */
-  private void logGUI(final LogRecord record) {
     final Level level = record.getLevel();
     final int levelVal = level.intValue();
     if ((getLevel() == null) || (levelVal >= getLevel().intValue())) {
@@ -126,7 +105,7 @@ public class DFToolsWorkflowLogger extends WorkflowLogger {
               stream.setColor(new Color(null, 255, 0, 0));
             }
           });
-          stream.println(WorkflowLogger.getFormattedTime(new Date(record.getMillis())) + record.getMessage());
+          stream.println(PreesmLogger.getFormattedTime(new Date(record.getMillis())) + record.getMessage());
           if (record.getThrown() != null) {
             Logger.getAnonymousLogger().log(Level.SEVERE, record.getThrown().getMessage(), record.getThrown());
           }

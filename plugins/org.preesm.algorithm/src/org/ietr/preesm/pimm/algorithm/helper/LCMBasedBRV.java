@@ -44,15 +44,15 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
-import org.ietr.dftools.workflow.tools.WorkflowLogger;
 import org.ietr.preesm.experiment.model.pimm.AbstractActor;
 import org.ietr.preesm.experiment.model.pimm.DataInputPort;
 import org.ietr.preesm.experiment.model.pimm.DataOutputPort;
 import org.ietr.preesm.experiment.model.pimm.Expression;
 import org.ietr.preesm.experiment.model.pimm.Fifo;
 import org.ietr.preesm.experiment.model.pimm.InterfaceActor;
-import org.ietr.preesm.utils.math.LongFraction;
-import org.ietr.preesm.utils.math.MathFunctionsHelper;
+import org.preesm.commons.logger.PreesmLogger;
+import org.preesm.commons.math.LongFraction;
+import org.preesm.commons.math.MathFunctionsHelper;
 
 /**
  * This class is used to compute the basic repetition vector of a static PiSDF graph using LCM method.
@@ -73,7 +73,7 @@ public class LCMBasedBRV extends PiBRV {
   @Override
   public boolean execute() throws PiMMHelperException {
     if (this.piHandler.getReferenceGraph() == null) {
-      WorkflowLogger.getLogger().log(Level.SEVERE, "cannot compute BRV for null graph.");
+      PreesmLogger.getLogger().log(Level.SEVERE, "cannot compute BRV for null graph.");
       return false;
     }
 

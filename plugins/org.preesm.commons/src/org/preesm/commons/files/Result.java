@@ -33,7 +33,7 @@
  * The fact that you are presently reading this means that you have had
  * knowledge of the CeCILL license and that you accept its terms.
  */
-package org.ietr.preesm.utils.files;
+package org.preesm.commons.files;
 
 // TODO: Auto-generated Javadoc
 /**

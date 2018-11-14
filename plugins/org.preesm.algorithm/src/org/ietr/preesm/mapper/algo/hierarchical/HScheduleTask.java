@@ -43,8 +43,8 @@ import org.ietr.dftools.algorithm.model.sdf.SDFGraph;
 import org.ietr.dftools.workflow.WorkflowException;
 import org.ietr.dftools.workflow.elements.Workflow;
 import org.ietr.dftools.workflow.implement.AbstractTaskImplementation;
-import org.ietr.dftools.workflow.tools.WorkflowLogger;
 import org.ietr.preesm.throughput.tools.helpers.GraphStructureHelper;
+import org.preesm.commons.logger.PreesmLogger;
 
 /**
  * @author hderoui
@@ -61,8 +61,8 @@ public class HScheduleTask extends AbstractTaskImplementation {
 
     //
 
-    WorkflowLogger.getLogger().log(Level.INFO, "Throughput value");
-    WorkflowLogger.getLogger().log(Level.WARNING, "ERROR : The graph is deadlock !!");
+    PreesmLogger.getLogger().log(Level.INFO, "Throughput value");
+    PreesmLogger.getLogger().log(Level.WARNING, "ERROR : The graph is deadlock !!");
 
     // set the outputs
     final Map<String, Object> outputs = new HashMap<>();

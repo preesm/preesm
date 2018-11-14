@@ -56,7 +56,6 @@ import org.ietr.dftools.architecture.slam.ComponentInstance
 import org.ietr.dftools.workflow.WorkflowException
 import org.ietr.dftools.workflow.elements.Workflow
 import org.ietr.dftools.workflow.implement.AbstractTaskImplementation
-import org.ietr.dftools.workflow.tools.WorkflowLogger
 import org.ietr.preesm.core.architecture.route.AbstractRouteStep
 import org.ietr.preesm.core.architecture.route.MessageRouteStep
 import org.ietr.preesm.core.scenario.PreesmScenario
@@ -68,10 +67,11 @@ import org.ietr.preesm.mapper.abc.SpecialVertexManager
 import org.ietr.preesm.mapper.abc.impl.latency.LatencyAbc
 import org.ietr.preesm.mapper.model.MapperDAGEdge
 import org.ietr.preesm.mapper.model.MapperDAGVertex
-import org.ietr.preesm.utils.files.ContainersManager
-import org.ietr.preesm.utils.paths.PathTools
 import org.nfunk.jep.JEP
 import org.nfunk.jep.ParseException
+import org.preesm.commons.files.ContainersManager
+import org.preesm.commons.files.PathTools
+import org.preesm.commons.logger.PreesmLogger
 
 /**
  * Exports activity information in terms of  quanta based on
@@ -123,7 +123,7 @@ class CustomQuantaExporter extends AbstractTaskImplementation {
 	 */
 	override execute(Map<String, Object> inputs, Map<String, String> parameters, IProgressMonitor monitor,
 		String nodeName, Workflow workflow) throws WorkflowException {
-		var logger = WorkflowLogger.getLogger()
+		var logger = PreesmLogger.getLogger()
 
 		val filePath = parameters.get(PATH)
 		val human_readable = (parameters.get(HUMAN_READABLE) == "Yes")
@@ -229,7 +229,7 @@ class CustomQuantaExporter extends AbstractTaskImplementation {
 				activity.addQuantaNumber(vertex.getEffectiveComponent().instanceName,
 					result.longValue)
 
-				WorkflowLogger.getLogger().log(Level.INFO,
+				PreesmLogger.getLogger().log(Level.INFO,
 					"Custom quanta set to " + result.longValue + " by solving " + cquanta + " with t=" + duration + " for " + vertex.name)
 			} catch (ParseException exc) {
 				throw new RuntimeException(exc)
@@ -241,7 +241,7 @@ class CustomQuantaExporter extends AbstractTaskImplementation {
 			activity.addQuantaNumber(vertex.getEffectiveComponent().instanceName,
 				correctedDuration.longValue)
 
-			WorkflowLogger.getLogger().log(Level.INFO,
+			PreesmLogger.getLogger().log(Level.INFO,
 				"Broadcast custom quanta set to " + correctedDuration.longValue + " by applying constant factor 0.72 to " + duration + " for " + vertex.name)
 
 		} else {
@@ -317,10 +317,10 @@ class CustomQuantaExporter extends AbstractTaskImplementation {
 		val iFile = ResourcesPlugin.getWorkspace().getRoot().getFile(path)
 
 		if (!iFile.exists()) {
-			WorkflowLogger.getLogger().log(Level.SEVERE,
+			PreesmLogger.getLogger().log(Level.SEVERE,
 				"The custom quanta input file " + fileName + " does not exist.")
 		} else {
-			WorkflowLogger.getLogger().log(Level.INFO, "Reading custom quanta from file " + fileName + ".")
+			PreesmLogger.getLogger().log(Level.INFO, "Reading custom quanta from file " + fileName + ".")
 			try {
 				var w = Workbook.getWorkbook(iFile.getContents())
 
@@ -329,7 +329,7 @@ class CustomQuantaExporter extends AbstractTaskImplementation {
 					val operators = scenario.getOperatorDefinitionIds()
 					parseQuantaForPISDFGraph(w, currentGraph, operators)
 				} else {
-					WorkflowLogger.getLogger().log(Level.SEVERE,
+					PreesmLogger.getLogger().log(Level.SEVERE,
 						"Only PiSDF graphs are supported for custom quanta export.")
 				}
 
@@ -411,13 +411,13 @@ class CustomQuantaExporter extends AbstractTaskImplementation {
 						// Testing the validity of the value as a Long number.
 						var quantaValue = Long.valueOf(timingCell.contents)
 
-						WorkflowLogger.getLogger().log(Level.INFO, "Importing custom quantum: " +
+						PreesmLogger.getLogger().log(Level.INFO, "Importing custom quantum: " +
 							vertexName + " on " + opDefId + ": " + quantaValue
 						)
 						customQuanta.addQuantaExpression(vertexName, opDefId, timingCell.contents)
 
 					} catch (NumberFormatException e) {
-						WorkflowLogger.getLogger().log(Level.SEVERE,
+						PreesmLogger.getLogger().log(Level.SEVERE,
 							"Problem importing quanta of " + vertexName + " on " + opDefId +
 								". Integer with no space or special character needed. Be careful on the special number formats.")
 					}
@@ -426,7 +426,7 @@ class CustomQuantaExporter extends AbstractTaskImplementation {
 
 					try {
 						// Case of a string formula
-						WorkflowLogger.getLogger().log(Level.INFO, "Detected formula: " + timingCell.contents +
+						PreesmLogger.getLogger().log(Level.INFO, "Detected formula: " + timingCell.contents +
 							" for " + vertexName + " on " + opDefId)
 
 						// Testing the validity of the value as a String expression of t
@@ -437,7 +437,7 @@ class CustomQuantaExporter extends AbstractTaskImplementation {
 
 						customQuanta.addQuantaExpression(vertexName, opDefId, timingCell.contents)
 					} catch (ParseException e) {
-						WorkflowLogger.getLogger().log(Level.SEVERE,
+						PreesmLogger.getLogger().log(Level.SEVERE,
 							"Problem evaluating quanta expression of " + vertexName + " on " + opDefId +
 								": " + timingCell.contents)
 					}
@@ -445,10 +445,10 @@ class CustomQuantaExporter extends AbstractTaskImplementation {
 				}
 			} else {
 				if (vertexCell === null) {
-					WorkflowLogger.getLogger().log(Level.WARNING,
+					PreesmLogger.getLogger().log(Level.WARNING,
 						"No line found in custom quanta excel sheet for vertex: " + vertexName)
 				} else if (operatorCell === null) {
-					WorkflowLogger.getLogger().log(Level.WARNING,
+					PreesmLogger.getLogger().log(Level.WARNING,
 						"No column found in custom quanta excel sheet for operator type: " + opDefId);
 				}
 			}

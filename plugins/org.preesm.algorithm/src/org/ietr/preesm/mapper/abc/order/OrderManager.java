@@ -50,11 +50,11 @@ import java.util.logging.Level;
 import org.ietr.dftools.algorithm.model.dag.DAGVertex;
 import org.ietr.dftools.architecture.slam.ComponentInstance;
 import org.ietr.dftools.architecture.slam.Design;
-import org.ietr.dftools.workflow.tools.WorkflowLogger;
 import org.ietr.preesm.core.architecture.util.DesignTools;
 import org.ietr.preesm.mapper.PreesmMapperException;
 import org.ietr.preesm.mapper.model.MapperDAG;
 import org.ietr.preesm.mapper.model.MapperDAGVertex;
+import org.preesm.commons.logger.PreesmLogger;
 
 /**
  * The scheduling order manager keeps a total order of the vertices and a partial order in each schedule. It is used by
@@ -140,7 +140,7 @@ public class OrderManager extends Observable {
       if ((elt == null) || elt.equals(vertex)) {
         elt = vertex;
       } else {
-        WorkflowLogger.getLogger().log(Level.SEVERE, "Error in sched order!!");
+        PreesmLogger.getLogger().log(Level.SEVERE, "Error in sched order!!");
       }
 
       // Adds vertex or synchro vertices after its chosen predecessor

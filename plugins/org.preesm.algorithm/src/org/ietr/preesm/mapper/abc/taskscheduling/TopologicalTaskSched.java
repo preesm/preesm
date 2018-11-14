@@ -43,10 +43,10 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.logging.Level;
 import org.ietr.dftools.algorithm.model.dag.DAGVertex;
-import org.ietr.dftools.workflow.tools.WorkflowLogger;
 import org.ietr.preesm.mapper.abc.order.VertexOrderList;
 import org.ietr.preesm.mapper.model.MapperDAG;
 import org.ietr.preesm.mapper.model.MapperDAGVertex;
+import org.preesm.commons.logger.PreesmLogger;
 
 // TODO: Auto-generated Javadoc
 /**
@@ -122,7 +122,7 @@ public class TopologicalTaskSched extends AbstractTaskSched {
       this.topolist.add((MapperDAGVertex) v);
 
       if (!this.initList.contains(v.getName())) {
-        WorkflowLogger.getLogger().log(Level.SEVERE, "problem with topological ordering.");
+        PreesmLogger.getLogger().log(Level.SEVERE, "problem with topological ordering.");
       }
     }
 

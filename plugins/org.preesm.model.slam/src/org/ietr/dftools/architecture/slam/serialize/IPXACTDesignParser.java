@@ -75,7 +75,7 @@ import org.ietr.dftools.architecture.slam.link.LinkPackage;
 import org.ietr.dftools.architecture.slam.serialize.IPXACTDesignVendorExtensionsParser.LinkDescription;
 import org.ietr.dftools.architecture.utils.SlamException;
 import org.ietr.dftools.architecture.utils.SlamUserFactory;
-import org.ietr.preesm.utils.DomUtil;
+import org.preesm.commons.DomUtil;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;

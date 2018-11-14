@@ -58,9 +58,9 @@ import org.ietr.dftools.algorithm.model.sdf.esdf.SDFBroadcastVertex;
 import org.ietr.dftools.algorithm.model.sdf.esdf.SDFJoinVertex;
 import org.ietr.dftools.algorithm.model.sdf.esdf.SDFRoundBufferVertex;
 import org.ietr.dftools.workflow.WorkflowException;
-import org.ietr.dftools.workflow.tools.WorkflowLogger;
 import org.ietr.preesm.core.types.ImplementationPropertyNames;
 import org.ietr.preesm.core.types.VertexType;
+import org.preesm.commons.logger.PreesmLogger;
 
 /**
  * Utility class created to gather all static methods used to remove fork/join nodes from a graph.
@@ -127,13 +127,13 @@ public class ForkJoinRemover {
       if (vertKind.equals("fork") || vertKind.equals("join")) {
 
         if (vertKind.equals("fork") && (vert.getBase().incomingEdgesOf(vert).size() > 1)) {
-          WorkflowLogger.getLogger().log(Level.SEVERE,
+          PreesmLogger.getLogger().log(Level.SEVERE,
               "Skipped Fork vertex with multiple inputs (" + vert.getId() + ")");
           continue;
         }
 
         if ((vert.getBase().outgoingEdgesOf(vert).size() > 1) && (vert.getBase().incomingEdgesOf(vert).size() > 1)) {
-          WorkflowLogger.getLogger().log(Level.SEVERE,
+          PreesmLogger.getLogger().log(Level.SEVERE,
               "Skipped Fork/Join vertex with both multiple inputs and outputs (" + vert.getId() + ")");
           continue;
         }
@@ -265,10 +265,10 @@ public class ForkJoinRemover {
       final String message = "Expecting " + nonTaskVertices.size() + " edges removed but got "
           + ((nbEdgeBefore + nbEdgeAdded) - hsdf.edgeSet().size()) + " edges removed instead";
       final String message2 = "Consider deactivating Implode/Explode suprression in HSDF workflow element parameters";
-      WorkflowLogger.getLogger().log(Level.SEVERE, message);
-      WorkflowLogger.getLogger().log(Level.SEVERE, message2);
+      PreesmLogger.getLogger().log(Level.SEVERE, message);
+      PreesmLogger.getLogger().log(Level.SEVERE, message2);
     } else {
-      WorkflowLogger.getLogger().log(Level.INFO,
+      PreesmLogger.getLogger().log(Level.INFO,
           "" + nonTaskVertices.size() + " implode/explode vertices removed (and as many edges)");
     }
   }

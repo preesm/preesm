@@ -43,10 +43,10 @@ import java.util.List;
 import java.util.Set;
 import java.util.logging.Level;
 import org.ietr.dftools.architecture.slam.ComponentInstance;
-import org.ietr.dftools.workflow.tools.WorkflowLogger;
 import org.ietr.preesm.core.architecture.util.DesignTools;
 import org.ietr.preesm.mapper.model.MapperDAG;
 import org.ietr.preesm.mapper.model.MapperDAGVertex;
+import org.preesm.commons.logger.PreesmLogger;
 
 // TODO: Auto-generated Javadoc
 /**
@@ -96,7 +96,7 @@ public class VertexMapping extends GroupProperty {
     final List<MapperDAGVertex> relatedVertices = getVertices(dag);
 
     if (relatedVertices.size() < 1) {
-      WorkflowLogger.getLogger().log(Level.SEVERE, "Relative constraint with no vertex.");
+      PreesmLogger.getLogger().log(Level.SEVERE, "Relative constraint with no vertex.");
 
       return operators;
     }
@@ -125,7 +125,7 @@ public class VertexMapping extends GroupProperty {
     }
 
     if (operators.isEmpty()) {
-      WorkflowLogger.getLogger().log(Level.SEVERE, "Relative constraint with no operator." + relatedVertices);
+      PreesmLogger.getLogger().log(Level.SEVERE, "Relative constraint with no operator." + relatedVertices);
     }
 
     return operators;

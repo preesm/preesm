@@ -51,7 +51,6 @@ import org.ietr.dftools.workflow.WorkflowException;
 import org.ietr.dftools.workflow.elements.Workflow;
 import org.ietr.dftools.workflow.implement.AbstractTaskImplementation;
 import org.ietr.dftools.workflow.implement.AbstractWorkflowNodeImplementation;
-import org.ietr.dftools.workflow.tools.WorkflowLogger;
 import org.ietr.preesm.core.scenario.PreesmScenario;
 import org.ietr.preesm.mapper.abc.impl.latency.InfiniteHomogeneousAbc;
 import org.ietr.preesm.mapper.abc.impl.latency.LatencyAbc;
@@ -66,6 +65,7 @@ import org.ietr.preesm.mapper.graphtransfo.TagDAG;
 import org.ietr.preesm.mapper.model.MapperDAG;
 import org.ietr.preesm.mapper.optimizer.RedundantSynchronizationCleaner;
 import org.ietr.preesm.mapper.params.AbcParameters;
+import org.preesm.commons.logger.PreesmLogger;
 
 /**
  * Generic class representing the scheduling algorithm behaviour.
@@ -125,7 +125,7 @@ public abstract class AbstractMappingFromDAG extends AbstractTaskImplementation 
     final InitialLists initial = new InitialLists();
     final boolean couldConstructInitialLists = initial.constructInitialLists(dag, simu);
     if (!couldConstructInitialLists) {
-      WorkflowLogger.getLogger().log(Level.SEVERE, "Error in scheduling");
+      PreesmLogger.getLogger().log(Level.SEVERE, "Error in scheduling");
       outputs.put(AbstractWorkflowNodeImplementation.KEY_SDF_DAG, dag);
     } else {
 

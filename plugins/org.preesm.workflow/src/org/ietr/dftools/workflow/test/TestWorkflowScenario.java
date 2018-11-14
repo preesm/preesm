@@ -41,7 +41,7 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.logging.Level;
 import org.ietr.dftools.workflow.implement.AbstractScenarioImplementation;
-import org.ietr.dftools.workflow.tools.WorkflowLogger;
+import org.preesm.commons.logger.PreesmLogger;
 
 /**
  * The Class TestWorkflowScenario.
@@ -56,7 +56,7 @@ public class TestWorkflowScenario extends AbstractScenarioImplementation {
   @Override
   public Map<String, Object> extractData(final String path) {
     final Map<String, Object> outputs = new LinkedHashMap<>();
-    WorkflowLogger.getLogger().log(Level.INFO, "Retrieving data from scenario");
+    PreesmLogger.getLogger().log(Level.INFO, "Retrieving data from scenario");
 
     outputs.put("algo", "algo1");
     outputs.put("archi", "archi1");

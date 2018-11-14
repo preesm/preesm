@@ -65,8 +65,8 @@ import org.eclipse.ui.part.FileEditorInput;
 import org.ietr.dftools.ui.PreesmUIPlugin;
 import org.ietr.dftools.ui.util.FileUtils;
 import org.ietr.dftools.ui.workflow.ScenarioConfiguration;
-import org.ietr.dftools.workflow.messages.WorkflowMessages;
-import org.ietr.dftools.workflow.tools.WorkflowLogger;
+import org.preesm.commons.logger.PreesmLogger;
+import org.preesm.commons.messages.WorkflowMessages;
 
 /**
  * Shortcut for launching an executable directly from the navigator, without having to create a launch configuration
@@ -105,7 +105,7 @@ public class WorkflowLaunchShortcut implements ILaunchShortcut {
           scenarioPath);
       workingCopy = type.newInstance(null, launchConfigurationName);
     } catch (final CoreException e) {
-      WorkflowLogger.getLogger().log(Level.SEVERE, "Problem creating the Preesm launch configuration.", e);
+      PreesmLogger.getLogger().log(Level.SEVERE, "Problem creating the Preesm launch configuration.", e);
       return null;
     }
 
@@ -204,7 +204,7 @@ public class WorkflowLaunchShortcut implements ILaunchShortcut {
           }
         }
       } catch (final CoreException e) {
-        WorkflowLogger.getLogger().log(Level.SEVERE, "Error while looking for existing ILaunchConfiguration", e);
+        PreesmLogger.getLogger().log(Level.SEVERE, "Error while looking for existing ILaunchConfiguration", e);
 
       }
 

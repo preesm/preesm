@@ -38,7 +38,7 @@
 /**
  *
  */
-package org.ietr.dftools.workflow.tools;
+package org.preesm.commons.logger;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
@@ -49,14 +49,14 @@ import java.util.logging.Logger;
 import org.eclipse.core.runtime.IConfigurationElement;
 import org.eclipse.core.runtime.IExtensionRegistry;
 import org.eclipse.core.runtime.Platform;
-import org.ietr.dftools.workflow.messages.WorkflowMessages;
+import org.preesm.commons.messages.WorkflowMessages;
 
 /**
  * The logger is used to display messages in the console. Its behavior is delegated to the workflow ui plugin.
  *
  * @author mpelcat
  */
-public abstract class WorkflowLogger extends Logger {
+public abstract class PreesmLogger extends Logger {
 
   /** The logger. */
   private static Logger logger = null;
@@ -69,12 +69,12 @@ public abstract class WorkflowLogger extends Logger {
    * @param resourceBundleName
    *          the resource bundle name
    */
-  protected WorkflowLogger(final String name, final String resourceBundleName) {
+  protected PreesmLogger(final String name, final String resourceBundleName) {
     super(name, resourceBundleName);
   }
 
   public static void setLogger(final Logger newLogger) {
-    WorkflowLogger.logger = newLogger;
+    PreesmLogger.logger = newLogger;
   }
 
   /**
@@ -83,7 +83,7 @@ public abstract class WorkflowLogger extends Logger {
    * @return a Logger
    */
   public static Logger getLogger() {
-    if (WorkflowLogger.logger == null) {
+    if (PreesmLogger.logger == null) {
       // use CLI logger by default
       try {
         final IExtensionRegistry registry = Platform.getExtensionRegistry();
@@ -94,8 +94,8 @@ public abstract class WorkflowLogger extends Logger {
             final Object obj = element.createExecutableExtension("type");
 
             // and checks it actually is an ITransformation.
-            if (obj instanceof WorkflowLogger) {
-              setLogger((WorkflowLogger) obj);
+            if (obj instanceof Logger) {
+              setLogger((Logger) obj);
             }
           }
         }
@@ -104,10 +104,10 @@ public abstract class WorkflowLogger extends Logger {
         setLogger(Logger.getAnonymousLogger());
       }
     }
-    for (Handler handler : WorkflowLogger.logger.getHandlers()) {
+    for (Handler handler : PreesmLogger.logger.getHandlers()) {
       handler.setFormatter(new DefaultPreesmFormatter());
     }
-    return WorkflowLogger.logger;
+    return PreesmLogger.logger;
   }
 
   /**

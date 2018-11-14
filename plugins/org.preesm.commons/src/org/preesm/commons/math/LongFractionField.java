@@ -32,7 +32,7 @@
  * The fact that you are presently reading this means that you have had
  * knowledge of the CeCILL license and that you accept its terms.
  */
-package org.ietr.preesm.utils.math;
+package org.preesm.commons.math;
 
 /*
  * Licensed to the Apache Software Foundation (ASF) under one or more

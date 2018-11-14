@@ -43,7 +43,6 @@ package org.ietr.preesm.mapper;
 import java.util.Map;
 import java.util.logging.Level;
 import org.ietr.dftools.architecture.slam.Design;
-import org.ietr.dftools.workflow.tools.WorkflowLogger;
 import org.ietr.preesm.core.scenario.PreesmScenario;
 import org.ietr.preesm.mapper.abc.impl.latency.LatencyAbc;
 import org.ietr.preesm.mapper.abc.taskscheduling.AbstractTaskSched;
@@ -53,6 +52,7 @@ import org.ietr.preesm.mapper.algo.list.InitialLists;
 import org.ietr.preesm.mapper.model.MapperDAG;
 import org.ietr.preesm.mapper.params.AbcParameters;
 import org.ietr.preesm.mapper.params.FastAlgoParameters;
+import org.preesm.commons.logger.PreesmLogger;
 
 /**
  * FAST is a sequential mapping/scheduling method based on list scheduling followed by a neighborhood search phase. It
@@ -83,14 +83,14 @@ public class FASTMappingFromDAG extends AbstractMappingFromDAG {
       final InitialLists initial, final PreesmScenario scenario, final AbcParameters abcParams, final MapperDAG dag,
       final Design architecture, final AbstractTaskSched taskSched) {
 
-    WorkflowLogger.getLogger().log(Level.INFO, "Mapping");
+    PreesmLogger.getLogger().log(Level.INFO, "Mapping");
 
     final FastAlgoParameters fastParams = new FastAlgoParameters(parameters);
     final FastAlgorithm fastAlgorithm = new FastAlgorithm(initial, scenario);
     final MapperDAG resDag = fastAlgorithm.map("test", abcParams, fastParams, dag, architecture, false, false,
         fastParams.isDisplaySolutions(), null, taskSched);
 
-    WorkflowLogger.getLogger().log(Level.INFO, "Mapping finished");
+    PreesmLogger.getLogger().log(Level.INFO, "Mapping finished");
 
     final LatencyAbc simu2 = LatencyAbc.getInstance(abcParams, resDag, architecture, scenario);
     // Transfer vertices are automatically regenerated

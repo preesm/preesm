@@ -50,10 +50,10 @@ import org.ietr.dftools.algorithm.model.dag.DirectedAcyclicGraph;
 import org.ietr.dftools.workflow.WorkflowException;
 import org.ietr.dftools.workflow.elements.Workflow;
 import org.ietr.dftools.workflow.implement.AbstractTaskImplementation;
-import org.ietr.dftools.workflow.tools.WorkflowLogger;
 import org.ietr.preesm.mapper.model.MapperDAG;
-import org.ietr.preesm.utils.files.WorkspaceUtils;
-import org.ietr.preesm.utils.paths.PathTools;
+import org.preesm.commons.files.PathTools;
+import org.preesm.commons.files.WorkspaceUtils;
+import org.preesm.commons.logger.PreesmLogger;
 
 /**
  * Block in workflow exporting a DAG that contains all information of an implementation.
@@ -132,7 +132,7 @@ public class ImplExportTransform extends AbstractTaskImplementation {
     if (iGraphMLFile.getLocation() != null) {
       exporter.export(clone, iGraphMLFile.getLocation().toOSString());
     } else {
-      WorkflowLogger.getLogger().log(Level.SEVERE, "The output file " + path + " can not be written.");
+      PreesmLogger.getLogger().log(Level.SEVERE, "The output file " + path + " can not be written.");
     }
   }
 

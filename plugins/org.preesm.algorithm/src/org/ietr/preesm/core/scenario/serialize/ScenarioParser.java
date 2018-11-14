@@ -70,7 +70,6 @@ import org.ietr.dftools.algorithm.model.sdf.SDFGraph;
 import org.ietr.dftools.architecture.slam.Design;
 import org.ietr.dftools.architecture.slam.SlamPackage;
 import org.ietr.dftools.architecture.slam.serialize.IPXACTResourceFactoryImpl;
-import org.ietr.dftools.workflow.tools.WorkflowLogger;
 import org.ietr.preesm.core.architecture.util.DesignTools;
 import org.ietr.preesm.core.scenario.ConstraintGroup;
 import org.ietr.preesm.core.scenario.MemCopySpeed;
@@ -91,6 +90,7 @@ import org.ietr.preesm.experiment.model.pimm.Parameter;
 import org.ietr.preesm.experiment.model.pimm.PiGraph;
 import org.ietr.preesm.experiment.model.pimm.serialize.PiParser;
 import org.ietr.preesm.experiment.model.pimm.util.ActorPath;
+import org.preesm.commons.logger.PreesmLogger;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -286,7 +286,7 @@ public class ScenarioParser {
 
     currentParameter = graph.lookupParameterGivenGraph(name, parent);
     if (currentParameter == null) {
-      WorkflowLogger.getLogger().log(Level.WARNING,
+      PreesmLogger.getLogger().log(Level.WARNING,
           "Parameter with name '" + name + "' cannot be found in PiGraph '" + parent + "'.");
     } else {
       switch (type) {
@@ -589,7 +589,7 @@ public class ScenarioParser {
    */
   private void initializeArchitectureInformation(final String url) {
     if (url.contains(".design")) {
-      WorkflowLogger.getLogger().log(Level.SEVERE,
+      PreesmLogger.getLogger().log(Level.SEVERE,
           "SLAM architecture 1.0 is no more supported. Use .slam architecture files.");
     } else if (url.contains(".slam")) {
 
@@ -627,7 +627,7 @@ public class ScenarioParser {
 
     final URI uri = URI.createPlatformResourceURI(url, true);
     if ((uri.fileExtension() == null) || !uri.fileExtension().contentEquals("slam")) {
-      WorkflowLogger.getLogger().log(Level.SEVERE, "Expecting .slam file");
+      PreesmLogger.getLogger().log(Level.SEVERE, "Expecting .slam file");
       return null;
     }
     final Resource ressource;
@@ -635,7 +635,7 @@ public class ScenarioParser {
       ressource = resourceSet.getResource(uri, true);
       slamDesign = (Design) (ressource.getContents().get(0));
     } catch (final WrappedException e) {
-      WorkflowLogger.getLogger().log(Level.SEVERE,
+      PreesmLogger.getLogger().log(Level.SEVERE,
           "The architecture file \"" + uri + "\" specified by the scenario does not exist any more.");
       return null;
     }

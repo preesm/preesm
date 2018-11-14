@@ -35,11 +35,11 @@
  * The fact that you are presently reading this means that you have had
  * knowledge of the CeCILL license and that you accept its terms.
  */
-package org.ietr.preesm.utils;
+package org.preesm.commons;
 
 import java.io.InputStream;
 import java.io.OutputStream;
-import org.ietr.preesm.utils.exceptions.PreesmException;
+import org.preesm.commons.exceptions.PreesmException;
 import org.w3c.dom.DOMConfiguration;
 import org.w3c.dom.DOMImplementation;
 import org.w3c.dom.Document;

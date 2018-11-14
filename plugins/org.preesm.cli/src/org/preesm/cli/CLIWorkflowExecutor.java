@@ -61,7 +61,7 @@ import org.eclipse.core.runtime.Path;
 import org.eclipse.equinox.app.IApplication;
 import org.eclipse.equinox.app.IApplicationContext;
 import org.ietr.dftools.workflow.AbstractWorkflowExecutor;
-import org.ietr.dftools.workflow.tools.CLIWorkflowLogger;
+import org.preesm.commons.logger.CLIWorkflowLogger;
 
 /**
  * IApplication to execute PREESM workflows through command line interface.

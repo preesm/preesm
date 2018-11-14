@@ -44,7 +44,6 @@ import org.apache.commons.lang3.time.StopWatch;
 import org.ietr.dftools.algorithm.model.dag.DAGEdge;
 import org.ietr.dftools.algorithm.model.dag.DAGVertex;
 import org.ietr.dftools.algorithm.model.types.LongEdgePropertyType;
-import org.ietr.dftools.workflow.tools.WorkflowLogger;
 import org.ietr.preesm.core.scenario.PreesmScenario;
 import org.ietr.preesm.experiment.model.pimm.AbstractVertex;
 import org.ietr.preesm.experiment.model.pimm.Parameter;
@@ -60,6 +59,7 @@ import org.ietr.preesm.pimm.algorithm.pimm2srdag.visitor.StaticPiMM2ASrPiMMVisit
 import org.ietr.preesm.pimm.algorithm.pimm2srdag.visitor.StaticPiMM2MapperDAGVisitor;
 import org.ietr.preesm.pimm.algorithm.pimmoptims.BroadcastRoundBufferOptimization;
 import org.ietr.preesm.pimm.algorithm.pimmoptims.ForkJoinOptimization;
+import org.preesm.commons.logger.PreesmLogger;
 
 /**
  * The Class StaticPiMM2SDFLauncher.
@@ -111,14 +111,14 @@ public class StaticPiMM2SrDAGLauncher extends PiMMSwitch<Boolean> {
       this.piHandler.resolveAllParameters();
       timer.stop();
       String msg = "Parameters and rates evaluations: " + timer + "s.";
-      WorkflowLogger.getLogger().log(Level.INFO, msg);
+      PreesmLogger.getLogger().log(Level.INFO, msg);
       // 2. We perform the delay transformation step that deals with persistence
       timer.reset();
       timer.start();
       this.piHandler.removePersistence();
       timer.stop();
       String msg2 = "Persistence removal: " + timer + "s.";
-      WorkflowLogger.getLogger().log(Level.INFO, msg2);
+      PreesmLogger.getLogger().log(Level.INFO, msg2);
     } catch (PiMMHelperException e) {
       throw new StaticPiMM2SrDAGException(e.getMessage());
     }
@@ -141,7 +141,7 @@ public class StaticPiMM2SrDAGLauncher extends PiMMSwitch<Boolean> {
     aggregateEdges(result);
     timer.stop();
     final String msg = "Edge aggregation: " + timer + "s.";
-    WorkflowLogger.getLogger().log(Level.INFO, msg);
+    PreesmLogger.getLogger().log(Level.INFO, msg);
     return result;
   }
 
@@ -159,7 +159,7 @@ public class StaticPiMM2SrDAGLauncher extends PiMMSwitch<Boolean> {
     visitorPiMM2ASRPiMM.doSwitch(this.graph);
     timer.stop();
     final String msgPiMM2ASRPiMM = "Acyclic Single-Rate transformation: " + timer + "s.";
-    WorkflowLogger.getLogger().log(Level.INFO, msgPiMM2ASRPiMM);
+    PreesmLogger.getLogger().log(Level.INFO, msgPiMM2ASRPiMM);
     // Do some optimization on the graph
     timer.reset();
     timer.start();
@@ -170,7 +170,7 @@ public class StaticPiMM2SrDAGLauncher extends PiMMSwitch<Boolean> {
     brRbOptimization.optimize(acyclicSRPiMM);
     timer.stop();
     final String msgOptimsGraphs = "Graph optimizations: " + timer + "s.";
-    WorkflowLogger.getLogger().log(Level.INFO, msgOptimsGraphs);
+    PreesmLogger.getLogger().log(Level.INFO, msgOptimsGraphs);
 
     final StaticPiMM2MapperDAGVisitor visitor = new StaticPiMM2MapperDAGVisitor(acyclicSRPiMM, this.scenario);
     // Convert the PiMM vertices to DAG vertices
@@ -179,7 +179,7 @@ public class StaticPiMM2SrDAGLauncher extends PiMMSwitch<Boolean> {
     visitor.doSwitch(acyclicSRPiMM);
     timer.stop();
     final String msgPiMM2DAG = "Dag conversion: " + timer + "s.";
-    WorkflowLogger.getLogger().log(Level.INFO, msgPiMM2DAG);
+    PreesmLogger.getLogger().log(Level.INFO, msgPiMM2DAG);
     timer.reset();
     // Get the result
     return visitor.getResult();
@@ -209,7 +209,7 @@ public class StaticPiMM2SrDAGLauncher extends PiMMSwitch<Boolean> {
       this.graphBRV = piBRVAlgo.getBRV();
       timer.stop();
       final String msg = "Repetition vector computed in" + timer + "s.";
-      WorkflowLogger.getLogger().log(Level.INFO, msg);
+      PreesmLogger.getLogger().log(Level.INFO, msg);
     } catch (final PiMMHelperException e) {
       throw new StaticPiMM2SrDAGException(e.getMessage(), e);
     }
@@ -221,7 +221,7 @@ public class StaticPiMM2SrDAGLauncher extends PiMMSwitch<Boolean> {
   private void printRV() {
     for (final Map.Entry<AbstractVertex, Long> rv : this.graphBRV.entrySet()) {
       final String msg = rv.getKey().getVertexPath() + " x" + Long.toString(rv.getValue());
-      WorkflowLogger.getLogger().log(Level.INFO, msg);
+      PreesmLogger.getLogger().log(Level.INFO, msg);
     }
   }
 

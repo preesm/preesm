@@ -55,7 +55,7 @@ import org.ietr.dftools.algorithm.model.parameters.Parameter;
 import org.ietr.dftools.algorithm.model.parameters.ParameterSet;
 import org.ietr.dftools.algorithm.model.parameters.Variable;
 import org.ietr.dftools.algorithm.model.parameters.VariableSet;
-import org.ietr.preesm.utils.GMLKey;
+import org.preesm.commons.GMLKey;
 import org.w3c.dom.DOMImplementation;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;

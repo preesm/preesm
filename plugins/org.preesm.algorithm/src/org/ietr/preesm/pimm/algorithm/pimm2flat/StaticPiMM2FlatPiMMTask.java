@@ -48,10 +48,10 @@ import org.ietr.dftools.workflow.WorkflowException;
 import org.ietr.dftools.workflow.elements.Workflow;
 import org.ietr.dftools.workflow.implement.AbstractTaskImplementation;
 import org.ietr.dftools.workflow.implement.AbstractWorkflowNodeImplementation;
-import org.ietr.dftools.workflow.tools.WorkflowLogger;
 import org.ietr.preesm.core.scenario.PreesmScenario;
 import org.ietr.preesm.experiment.model.pimm.PiGraph;
 import org.ietr.preesm.pimm.algorithm.pimm2flat.StaticPiMMFlatPiMMLauncher.StaticPiMMFlatPiMMException;
+import org.preesm.commons.logger.PreesmLogger;
 
 /**
  * @author farresti
@@ -74,7 +74,7 @@ public class StaticPiMM2FlatPiMMTask extends AbstractTaskImplementation {
     final StaticPiMMFlatPiMMLauncher launcher = new StaticPiMMFlatPiMMLauncher(scenario, graph);
 
     PiGraph result = null;
-    final Logger logger = WorkflowLogger.getLogger();
+    final Logger logger = PreesmLogger.getLogger();
     VisitorOutput.setLogger(logger);
     try {
       logger.setLevel(Level.FINEST);

@@ -56,7 +56,6 @@ import org.eclipse.emf.common.util.WrappedException;
 import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.emf.ecore.resource.ResourceSet;
 import org.eclipse.emf.ecore.resource.impl.ResourceSetImpl;
-import org.ietr.dftools.workflow.tools.WorkflowLogger;
 import org.ietr.preesm.experiment.model.PiGraphException;
 import org.ietr.preesm.experiment.model.factory.PiMMUserFactory;
 import org.ietr.preesm.experiment.model.pimm.AbstractActor;
@@ -95,7 +94,8 @@ import org.ietr.preesm.experiment.model.pimm.RefinementContainer;
 import org.ietr.preesm.experiment.model.pimm.util.PiIdentifiers;
 import org.ietr.preesm.experiment.model.pimm.util.PiSDFXSDValidator;
 import org.ietr.preesm.experiment.model.pimm.util.SubgraphConnectorVisitor;
-import org.ietr.preesm.utils.DomUtil;
+import org.preesm.commons.DomUtil;
+import org.preesm.commons.logger.PreesmLogger;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -134,7 +134,7 @@ public class PiParser {
       final SubgraphConnectorVisitor connector = new SubgraphConnectorVisitor();
       connector.connectSubgraphs(pigraph);
     } catch (final WrappedException e) {
-      WorkflowLogger.getLogger().log(Level.SEVERE,
+      PreesmLogger.getLogger().log(Level.SEVERE,
           "The algorithm file \"" + uri + "\" specified by the scenario does not exist any more.");
     }
 
@@ -609,7 +609,7 @@ public class PiParser {
               "Delay INIT prototype must match following prototype: void init(IN int size, OUT <type>* fifo)");
         }
         final String delayInitPrototype = "Delay INIT function used: " + hrefinement.getLoopPrototype().getName();
-        WorkflowLogger.getLogger().log(Level.INFO, delayInitPrototype);
+        PreesmLogger.getLogger().log(Level.INFO, delayInitPrototype);
       }
     }
 

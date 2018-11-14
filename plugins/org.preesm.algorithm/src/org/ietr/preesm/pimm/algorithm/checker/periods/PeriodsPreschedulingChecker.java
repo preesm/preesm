@@ -12,12 +12,12 @@ import org.ietr.dftools.workflow.WorkflowException;
 import org.ietr.dftools.workflow.elements.Workflow;
 import org.ietr.dftools.workflow.implement.AbstractTaskImplementation;
 import org.ietr.dftools.workflow.implement.AbstractWorkflowNodeImplementation;
-import org.ietr.dftools.workflow.tools.WorkflowLogger;
 import org.ietr.preesm.core.scenario.PreesmScenario;
 import org.ietr.preesm.experiment.model.pimm.AbstractActor;
 import org.ietr.preesm.experiment.model.pimm.Actor;
 import org.ietr.preesm.experiment.model.pimm.PeriodicElement;
 import org.ietr.preesm.experiment.model.pimm.PiGraph;
+import org.preesm.commons.logger.PreesmLogger;
 
 /**
  * This class computes necessary conditions for the schedulability of graphs with periods.
@@ -96,13 +96,13 @@ public class PeriodsPreschedulingChecker extends AbstractTaskImplementation {
     Map<Actor, Long> actorsNBFF = HeuristicPeriodicActorSelection.selectActors(periodicActors, sourceActors, rate,
         graph, scenario, false);
     actorsNBFF.keySet().forEach(a -> sbNBFF.append(a.getName() + " / "));
-    WorkflowLogger.getLogger().log(Level.WARNING, "Periodic actor for NBFF: " + sbNBFF.toString());
+    PreesmLogger.getLogger().log(Level.WARNING, "Periodic actor for NBFF: " + sbNBFF.toString());
 
     final StringBuilder sbNBLF = new StringBuilder();
     Map<Actor, Long> actorsNBLF = HeuristicPeriodicActorSelection.selectActors(periodicActors, sinkActors, rate, graph,
         scenario, true);
     actorsNBLF.keySet().forEach(a -> sbNBLF.append(a.getName() + " / "));
-    WorkflowLogger.getLogger().log(Level.WARNING, "Periodic actor for NBLF: " + sbNBLF.toString());
+    PreesmLogger.getLogger().log(Level.WARNING, "Periodic actor for NBLF: " + sbNBLF.toString());
 
     // 3. for each selected periodic node for nblf:
     // _a compute subgraph

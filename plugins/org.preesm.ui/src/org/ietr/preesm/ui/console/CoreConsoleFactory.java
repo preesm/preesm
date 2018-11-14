@@ -41,7 +41,7 @@ import org.eclipse.ui.IWorkbenchPage;
 import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.console.IConsoleFactory;
-import org.ietr.dftools.workflow.tools.WorkflowLogger;
+import org.preesm.commons.logger.PreesmLogger;
 
 // TODO: Auto-generated Javadoc
 /**
@@ -64,7 +64,7 @@ public class CoreConsoleFactory implements IConsoleFactory {
       final IWorkbenchPage page = window.getActivePage();
       if (page != null) {
         // Creates a console for the logger.ui
-        WorkflowLogger.getLogger().log(Level.INFO, "");
+        PreesmLogger.getLogger().log(Level.INFO, "");
       }
     }
   }

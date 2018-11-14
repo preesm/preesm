@@ -35,8 +35,8 @@
 package org.ietr.dftools.workflow.test;
 
 import java.util.logging.Level;
-import org.ietr.dftools.workflow.tools.CLIWorkflowLogger;
 import org.junit.Test;
+import org.preesm.commons.logger.CLIWorkflowLogger;
 
 /**
  * The Class SampleTest.

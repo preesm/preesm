@@ -55,8 +55,8 @@ import org.ietr.dftools.algorithm.model.visitors.VisitorOutput;
 import org.ietr.dftools.workflow.WorkflowException;
 import org.ietr.dftools.workflow.elements.Workflow;
 import org.ietr.dftools.workflow.implement.AbstractTaskImplementation;
-import org.ietr.dftools.workflow.tools.WorkflowLogger;
 import org.ietr.preesm.algorithm.optimization.clean.joinfork.JoinForkCleaner;
+import org.preesm.commons.logger.PreesmLogger;
 
 /**
  * Class used to transform a SDF graph into a HSDF graph. Actually into a single rate graph (close enough :->)
@@ -80,7 +80,7 @@ public class HSDFTransformation extends AbstractTaskImplementation {
     final Map<String, Object> outputs = new LinkedHashMap<>();
     final SDFGraph algorithm = (SDFGraph) inputs.get("SDF");
 
-    final Logger logger = WorkflowLogger.getLogger();
+    final Logger logger = PreesmLogger.getLogger();
     StopWatch timer = new StopWatch();
     timer.start();
 
@@ -123,7 +123,7 @@ public class HSDFTransformation extends AbstractTaskImplementation {
     }
 
     timer.stop();
-    WorkflowLogger.getLogger().log(Level.INFO, "HSDF transformation: " + timer.toString() + "s.");
+    PreesmLogger.getLogger().log(Level.INFO, "HSDF transformation: " + timer.toString() + "s.");
 
     return outputs;
   }

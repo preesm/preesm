@@ -48,9 +48,9 @@ import org.ietr.dftools.algorithm.model.dag.DirectedAcyclicGraph;
 import org.ietr.dftools.workflow.WorkflowException;
 import org.ietr.dftools.workflow.elements.Workflow;
 import org.ietr.dftools.workflow.implement.AbstractTaskImplementation;
-import org.ietr.preesm.utils.files.ContainersManager;
-import org.ietr.preesm.utils.files.WorkspaceUtils;
-import org.ietr.preesm.utils.paths.PathTools;
+import org.preesm.commons.files.ContainersManager;
+import org.preesm.commons.files.PathTools;
+import org.preesm.commons.files.WorkspaceUtils;
 
 /**
  * Block in workflow exporting a DAG that can be displayed in Graphiti.

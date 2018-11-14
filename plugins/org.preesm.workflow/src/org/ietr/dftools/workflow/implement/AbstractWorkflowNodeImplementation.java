@@ -46,7 +46,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.logging.Level;
 import org.ietr.dftools.workflow.WorkflowManager;
-import org.ietr.dftools.workflow.tools.WorkflowLogger;
+import org.preesm.commons.logger.PreesmLogger;
 
 /**
  * Node implementation is the superclass of both scenario and task implementation. Their outputs are handled the same
@@ -198,7 +198,7 @@ public abstract class AbstractWorkflowNodeImplementation {
 
     for (final String outputPortName : outputPortNames) {
       if (!this.outputPrototype.keySet().contains(outputPortName)) {
-        WorkflowLogger.logFromProperty(Level.SEVERE, "Workflow.FalseOutputEdge", outputPortName,
+        PreesmLogger.logFromProperty(Level.SEVERE, "Workflow.FalseOutputEdge", outputPortName,
             WorkflowManager.IGNORE_PORT_NAME);
         return false;
       }

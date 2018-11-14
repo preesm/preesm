@@ -54,7 +54,7 @@ import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.Path;
 import org.ietr.dftools.workflow.AbstractWorkflowExecutor;
-import org.ietr.dftools.workflow.tools.WorkflowLogger;
+import org.preesm.commons.logger.PreesmLogger;
 
 /**
  *
@@ -80,7 +80,7 @@ public class WorkflowRunner {
     project.create(newProjectDescription, null);
     project.open(null);
 
-    final Logger logger = WorkflowLogger.getLogger();
+    final Logger logger = PreesmLogger.getLogger();
     logger.setLevel(Level.ALL);
 
     // run workflow

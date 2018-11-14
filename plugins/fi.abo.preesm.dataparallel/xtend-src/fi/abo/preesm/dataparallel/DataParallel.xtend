@@ -46,7 +46,7 @@ import org.ietr.dftools.workflow.WorkflowException
 import org.ietr.dftools.workflow.elements.Workflow
 import org.ietr.dftools.workflow.implement.AbstractTaskImplementation
 import org.ietr.dftools.workflow.implement.AbstractWorkflowNodeImplementation
-import org.ietr.dftools.workflow.tools.WorkflowLogger
+import org.preesm.commons.logger.PreesmLogger
 
 /**
  * Wrapper class that performs the data-parallel checks and transforms
@@ -72,7 +72,7 @@ class DataParallel extends AbstractTaskImplementation {
 			throw new SDF4JException("Graph " + sdf + " not schedulable")
 		}
 
-		val logger = WorkflowLogger.logger
+		val logger = PreesmLogger.getLogger
 
 		val checker = new DataParallelCheckOperations(logger)
 		sdf.accept(checker)

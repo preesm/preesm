@@ -45,9 +45,9 @@ import org.ietr.dftools.workflow.WorkflowException;
 import org.ietr.dftools.workflow.elements.Workflow;
 import org.ietr.dftools.workflow.implement.AbstractTaskImplementation;
 import org.ietr.dftools.workflow.implement.AbstractWorkflowNodeImplementation;
-import org.ietr.dftools.workflow.tools.WorkflowLogger;
 import org.ietr.preesm.experiment.model.pimm.PiGraph;
 import org.ietr.preesm.pimm.algorithm.checker.PiMMAlgorithmChecker;
+import org.preesm.commons.logger.PreesmLogger;
 
 // TODO: Auto-generated Javadoc
 /**
@@ -59,7 +59,7 @@ public class PiMMAlgorithmCheckerTask extends AbstractTaskImplementation {
 
   /** The logger. */
   // Rem: Logger is used to display messages in the console
-  protected Logger logger = WorkflowLogger.getLogger();
+  protected Logger logger = PreesmLogger.getLogger();
 
   /*
    * (non-Javadoc)

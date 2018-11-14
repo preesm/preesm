@@ -52,7 +52,6 @@ import java.util.List
 import org.apache.velocity.VelocityContext
 import org.apache.velocity.app.VelocityEngine
 import org.ietr.preesm.experiment.model.pimm.util.CHeaderUsedLocator
-import org.ietr.preesm.utils.files.URLResolver
 import org.preesm.codegen.CodegenException
 import org.preesm.codegen.model.Block
 import org.preesm.codegen.model.Buffer
@@ -78,6 +77,7 @@ import org.preesm.codegen.model.SubBuffer
 import org.preesm.codegen.model.Variable
 import org.preesm.codegen.printer.DefaultPrinter
 import org.preesm.codegen.xtend.CodegenPlugin
+import org.preesm.commons.files.URLResolver
 
 /**
  * This printer is currently used to print C code only for GPP processors

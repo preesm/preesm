@@ -41,7 +41,6 @@ import org.ietr.dftools.architecture.slam.ComponentInstance;
 import org.ietr.dftools.architecture.slam.Design;
 import org.ietr.dftools.architecture.slam.component.ComNode;
 import org.ietr.dftools.workflow.WorkflowException;
-import org.ietr.dftools.workflow.tools.WorkflowLogger;
 import org.ietr.preesm.core.architecture.util.DesignTools;
 import org.ietr.preesm.core.scenario.PreesmScenario;
 import org.ietr.preesm.mapper.abc.AbcType;
@@ -52,6 +51,7 @@ import org.ietr.preesm.mapper.model.MapperDAGEdge;
 import org.ietr.preesm.mapper.model.MapperDAGVertex;
 import org.ietr.preesm.mapper.params.AbcParameters;
 import org.ietr.preesm.mapper.tools.TLevelIterator;
+import org.preesm.commons.logger.PreesmLogger;
 
 /**
  * Simulates an architecture having as many cores as necessary to execute one operation on one core. All core have the
@@ -108,14 +108,14 @@ public class InfiniteHomogeneousAbc extends LatencyAbc {
         scenario.getSimulationManager().getMainOperatorName());
 
     if (mainComNode != null) {
-      WorkflowLogger.getLogger().info("Infinite homogeneous simulation");
+      PreesmLogger.getLogger().info("Infinite homogeneous simulation");
     } else {
-      WorkflowLogger.getLogger()
+      PreesmLogger.getLogger()
           .severe("Current architecture has no main communication node. Please set a main communication node.");
     }
 
     if (mainOperator == null) {
-      WorkflowLogger.getLogger().severe("Current architecture has no main operator. Please set a main operator.");
+      PreesmLogger.getLogger().severe("Current architecture has no main operator. Please set a main operator.");
     }
 
     // The InfiniteHomogeneousArchitectureSimulator is specifically done
@@ -152,7 +152,7 @@ public class InfiniteHomogeneousAbc extends LatencyAbc {
      * As we have an infinite homogeneous architecture, each communication is done through the unique type of medium
      */
     if (effectiveOp == DesignTools.NO_COMPONENT_INSTANCE) {
-      WorkflowLogger.getLogger().severe("implementation of " + vertex.getName() + " failed. No operator was assigned.");
+      PreesmLogger.getLogger().severe("implementation of " + vertex.getName() + " failed. No operator was assigned.");
 
       vertex.getTiming().setCost(0);
 

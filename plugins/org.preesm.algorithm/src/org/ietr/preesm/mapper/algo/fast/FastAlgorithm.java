@@ -48,7 +48,6 @@ import org.eclipse.core.runtime.IProgressMonitor;
 import org.ietr.dftools.architecture.slam.ComponentInstance;
 import org.ietr.dftools.architecture.slam.Design;
 import org.ietr.dftools.workflow.WorkflowException;
-import org.ietr.dftools.workflow.tools.WorkflowLogger;
 import org.ietr.preesm.core.architecture.util.DesignTools;
 import org.ietr.preesm.core.scenario.PreesmScenario;
 import org.ietr.preesm.mapper.PreesmMapperException;
@@ -67,6 +66,7 @@ import org.ietr.preesm.mapper.tools.RandomIterator;
 import org.ietr.preesm.mapper.ui.BestCostPlotter;
 import org.ietr.preesm.mapper.ui.bestcost.BestCostEditor;
 import org.ietr.preesm.mapper.ui.gantt.GanttEditorRunnable;
+import org.preesm.commons.logger.PreesmLogger;
 
 /**
  * Fast Algorithm.
@@ -210,7 +210,7 @@ public class FastAlgorithm extends Observable {
     ComponentInstance operatortest;
     ComponentInstance operatorfcp;
     ComponentInstance operatorprec;
-    final Logger logger = WorkflowLogger.getLogger();
+    final Logger logger = PreesmLogger.getLogger();
 
     // these steps are linked to the description of the FAST algorithm to
     // understand the steps, please refer to the Kwok thesis
@@ -237,7 +237,7 @@ public class FastAlgorithm extends Observable {
     }
 
     final String msg = "Found List solution; Cost:" + initial;
-    WorkflowLogger.getLogger().log(Level.INFO, msg);
+    PreesmLogger.getLogger().log(Level.INFO, msg);
 
     final String msg2 = "InitialSP " + initial;
     logger.log(Level.FINE, msg2);
@@ -320,7 +320,7 @@ public class FastAlgorithm extends Observable {
         operatorprec = simulator.getEffectiveComponent(currentvertex);
 
         if (operatortest == null) {
-          WorkflowLogger.getLogger().log(Level.SEVERE,
+          PreesmLogger.getLogger().log(Level.SEVERE,
               "FAST algorithm has difficulties to find a valid component for vertex: " + currentvertex);
         }
 
@@ -328,7 +328,7 @@ public class FastAlgorithm extends Observable {
         simulator.map(currentvertex, operatortest, false, true);
 
         if (!currentvertex.hasEffectiveComponent()) {
-          WorkflowLogger.getLogger().log(Level.SEVERE,
+          PreesmLogger.getLogger().log(Level.SEVERE,
               "FAST algorithm has difficulties to find a valid component for vertex: " + currentvertex);
         }
 
@@ -371,7 +371,7 @@ public class FastAlgorithm extends Observable {
           launchEditor(ganttData, "Cost:" + bestSL + " Fast");
         }
 
-        WorkflowLogger.getLogger().log(Level.INFO, "Found Fast solution; Cost:" + bestSL);
+        PreesmLogger.getLogger().log(Level.INFO, "Found Fast solution; Cost:" + bestSL);
 
         dagfinal.setScheduleCost(bestSL);
       }

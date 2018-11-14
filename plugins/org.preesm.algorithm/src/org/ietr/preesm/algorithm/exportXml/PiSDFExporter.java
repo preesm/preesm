@@ -58,9 +58,9 @@ import org.ietr.dftools.workflow.implement.AbstractTaskImplementation;
 import org.ietr.dftools.workflow.implement.AbstractWorkflowNodeImplementation;
 import org.ietr.preesm.experiment.model.pimm.PiGraph;
 import org.ietr.preesm.experiment.model.pimm.serialize.PiWriter;
-import org.ietr.preesm.utils.files.ContainersManager;
-import org.ietr.preesm.utils.files.WorkspaceUtils;
-import org.ietr.preesm.utils.paths.PathTools;
+import org.preesm.commons.files.ContainersManager;
+import org.preesm.commons.files.PathTools;
+import org.preesm.commons.files.WorkspaceUtils;
 
 /**
  * The Class SDFExporter.

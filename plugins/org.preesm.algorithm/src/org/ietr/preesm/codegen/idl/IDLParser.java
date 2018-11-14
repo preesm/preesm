@@ -39,7 +39,6 @@
 package org.ietr.preesm.codegen.idl;
 
 import java.util.logging.Level;
-import org.ietr.dftools.workflow.tools.WorkflowLogger;
 import org.jacorb.idl.ConstDecl;
 import org.jacorb.idl.GlobalInputStream;
 import org.jacorb.idl.IDLTreeVisitor;
@@ -47,6 +46,7 @@ import org.jacorb.idl.NameTable;
 import org.jacorb.idl.TypeMap;
 import org.jacorb.idl.lexer;
 import org.jacorb.idl.parser;
+import org.preesm.commons.logger.PreesmLogger;
 
 // TODO: Auto-generated Javadoc
 /**
@@ -80,7 +80,7 @@ public class IDLParser extends parser {
 
       new parser().parse();
     } catch (final Exception e) {
-      WorkflowLogger.getLogger().log(Level.WARNING, "IDL Parser internal exception: " + e.getMessage());
+      PreesmLogger.getLogger().log(Level.WARNING, "IDL Parser internal exception: " + e.getMessage());
     }
   }
 }

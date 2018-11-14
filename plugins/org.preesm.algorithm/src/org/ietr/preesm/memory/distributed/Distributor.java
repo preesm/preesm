@@ -53,12 +53,12 @@ import org.ietr.dftools.algorithm.model.dag.DAGEdge;
 import org.ietr.dftools.algorithm.model.dag.DAGVertex;
 import org.ietr.dftools.algorithm.model.dag.DirectedAcyclicGraph;
 import org.ietr.dftools.architecture.slam.ComponentInstance;
-import org.ietr.dftools.workflow.tools.WorkflowLogger;
 import org.ietr.preesm.memory.allocation.AbstractMemoryAllocatorTask;
 import org.ietr.preesm.memory.allocation.MemoryAllocationException;
 import org.ietr.preesm.memory.exclusiongraph.MemoryExclusionGraph;
 import org.ietr.preesm.memory.exclusiongraph.MemoryExclusionVertex;
 import org.ietr.preesm.memory.script.Range;
+import org.preesm.commons.logger.PreesmLogger;
 
 /**
  * This class contains all the code responsible for splitting a {@link MemoryExclusionGraph} into several graphs, each
@@ -76,7 +76,7 @@ public class Distributor {
   /**
    * {@link Logger} used to provide feedback on the distribution to the developer.
    */
-  protected static Logger logger = WorkflowLogger.getLogger();
+  protected static Logger logger = PreesmLogger.getLogger();
 
   /**
    * This method analyzes a {@link MemoryExclusionGraph} and divides it into several {@link MemoryExclusionGraph}, each

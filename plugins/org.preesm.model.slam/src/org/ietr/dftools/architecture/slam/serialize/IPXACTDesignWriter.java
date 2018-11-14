@@ -52,7 +52,7 @@ import org.ietr.dftools.architecture.slam.component.ComInterface;
 import org.ietr.dftools.architecture.slam.component.HierarchyPort;
 import org.ietr.dftools.architecture.slam.link.Link;
 import org.ietr.dftools.architecture.utils.SlamException;
-import org.ietr.preesm.utils.DomUtil;
+import org.preesm.commons.DomUtil;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 

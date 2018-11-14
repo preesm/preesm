@@ -47,9 +47,9 @@ import org.eclipse.core.runtime.Path;
 import org.ietr.dftools.workflow.WorkflowException;
 import org.ietr.dftools.workflow.elements.Workflow;
 import org.ietr.dftools.workflow.implement.AbstractTaskImplementation;
-import org.ietr.dftools.workflow.tools.WorkflowLogger;
-import org.ietr.preesm.utils.paths.PathTools;
 import org.ietr.preesm.utils.xml.XsltTransformer;
+import org.preesm.commons.files.PathTools;
+import org.preesm.commons.logger.PreesmLogger;
 
 // TODO: Auto-generated Javadoc
 /**
@@ -86,7 +86,7 @@ public class XsltTransform extends AbstractTaskImplementation {
       try {
         final XsltTransformer xsltTransfo = new XsltTransformer();
         if (xsltTransfo.setXSLFile(xslPath.toOSString())) {
-          WorkflowLogger.getLogger().log(Level.INFO, "Generating file: " + outputPath.toOSString());
+          PreesmLogger.getLogger().log(Level.INFO, "Generating file: " + outputPath.toOSString());
           xsltTransfo.transformFileToFile(inputPath.toOSString(), outputPath.toOSString());
         }
 

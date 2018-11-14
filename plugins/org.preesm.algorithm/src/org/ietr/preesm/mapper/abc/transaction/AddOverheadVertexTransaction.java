@@ -39,7 +39,6 @@ package org.ietr.preesm.mapper.abc.transaction;
 
 import java.util.List;
 import java.util.logging.Level;
-import org.ietr.dftools.workflow.tools.WorkflowLogger;
 import org.ietr.preesm.core.architecture.route.AbstractRouteStep;
 import org.ietr.preesm.mapper.abc.order.OrderManager;
 import org.ietr.preesm.mapper.model.MapperDAG;
@@ -49,6 +48,7 @@ import org.ietr.preesm.mapper.model.special.OverheadVertex;
 import org.ietr.preesm.mapper.model.special.PrecedenceEdge;
 import org.ietr.preesm.mapper.model.special.PrecedenceEdgeAdder;
 import org.ietr.preesm.mapper.model.special.TransferVertex;
+import org.preesm.commons.logger.PreesmLogger;
 
 // TODO: Auto-generated Javadoc
 /**
@@ -122,7 +122,7 @@ public class AddOverheadVertexTransaction extends Transaction {
     final MapperDAGVertex currentTarget = (MapperDAGVertex) this.edge.getTarget();
 
     if (this.edge instanceof PrecedenceEdge) {
-      WorkflowLogger.getLogger().log(Level.INFO, "no overhead vertex corresponding to a schedule edge");
+      PreesmLogger.getLogger().log(Level.INFO, "no overhead vertex corresponding to a schedule edge");
       return;
     }
 
@@ -134,7 +134,7 @@ public class AddOverheadVertexTransaction extends Transaction {
       this.implementation.getMappings().dedicate(this.oVertex);
 
       if (!(currentTarget instanceof TransferVertex)) {
-        WorkflowLogger.getLogger().log(Level.SEVERE, "An overhead must be followed by a transfer");
+        PreesmLogger.getLogger().log(Level.SEVERE, "An overhead must be followed by a transfer");
       }
 
       this.implementation.addVertex(this.oVertex);

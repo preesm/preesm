@@ -39,8 +39,8 @@ package org.ietr.preesm.memory.exclusiongraph;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.ietr.dftools.algorithm.model.dag.DirectedAcyclicGraph;
-import org.ietr.dftools.workflow.tools.WorkflowLogger;
 import org.ietr.preesm.algorithm.transforms.ForkJoinRemover;
+import org.preesm.commons.logger.PreesmLogger;
 
 // TODO: Auto-generated Javadoc
 /**
@@ -68,7 +68,7 @@ public class MemExUpdaterEngine {
 
   /** The logger. */
   // Rem: Logger is used to display messages in the console
-  private final Logger logger = WorkflowLogger.getLogger();
+  private final Logger logger = PreesmLogger.getLogger();
 
   /**
    * Instantiates a new mem ex updater engine.

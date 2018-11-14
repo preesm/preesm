@@ -60,7 +60,6 @@ import org.ietr.dftools.algorithm.model.visitors.SDF4JException;
 import org.ietr.dftools.architecture.slam.ComponentInstance;
 import org.ietr.dftools.architecture.slam.Design;
 import org.ietr.dftools.architecture.slam.component.Operator;
-import org.ietr.dftools.workflow.tools.WorkflowLogger;
 import org.ietr.preesm.core.architecture.util.DesignTools;
 import org.ietr.preesm.core.scenario.ConstraintGroup;
 import org.ietr.preesm.core.scenario.PreesmScenario;
@@ -77,6 +76,7 @@ import org.ietr.preesm.mapper.model.MapperVertexFactory;
 import org.ietr.preesm.mapper.model.property.EdgeInit;
 import org.ietr.preesm.mapper.model.property.VertexInit;
 import org.ietr.preesm.mapper.model.special.TransferVertex;
+import org.preesm.commons.logger.PreesmLogger;
 
 /**
  * Uses the SDF4J library to convert the input SDF into a DAG before scheduling.
@@ -103,7 +103,7 @@ public class SdfToDagConverter {
    */
   public static MapperDAG convert(final SDFGraph sdfIn, final Design architecture, final PreesmScenario scenario) {
 
-    WorkflowLogger.getLogger().log(Level.INFO, "Converting from SDF to DAG.");
+    PreesmLogger.getLogger().log(Level.INFO, "Converting from SDF to DAG.");
 
     final SDFGraph sdf = sdfIn.copy();
     SdfToDagConverter.setDataSizeForSDF(sdf, scenario);
@@ -127,12 +127,12 @@ public class SdfToDagConverter {
     SdfToDagConverter.addInitialProperties(dag, architecture, scenario);
 
     if (dag.vertexSet().isEmpty()) {
-      WorkflowLogger.getLogger().log(Level.SEVERE, "Can not map a DAG with no vertex.");
+      PreesmLogger.getLogger().log(Level.SEVERE, "Can not map a DAG with no vertex.");
     } else {
-      WorkflowLogger.getLogger().log(Level.INFO, "Conversion finished.");
+      PreesmLogger.getLogger().log(Level.INFO, "Conversion finished.");
       final String msg = "mapping a DAG with " + dag.vertexSet().size() + " vertices and " + dag.edgeSet().size()
           + " edges.";
-      WorkflowLogger.getLogger().log(Level.INFO, msg);
+      PreesmLogger.getLogger().log(Level.INFO, msg);
     }
 
     scenario.getDAGs2SDFs().put(dag.getName(), sdfIn);

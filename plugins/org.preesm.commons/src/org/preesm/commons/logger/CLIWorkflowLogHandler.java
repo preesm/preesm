@@ -1,9 +1,7 @@
 /**
- * Copyright or © or Copr. IETR/INSA - Rennes (2015 - 2018) :
+ * Copyright or © or Copr. IETR/INSA - Rennes (2018) :
  *
- * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017 - 2018)
- * Clément Guy <clement.guy@insa-rennes.fr> (2015)
- * Karol Desnos <karol.desnos@insa-rennes.fr> (2015)
+ * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2018)
  *
  * This software is a computer program whose purpose is to help prototyping
  * parallel applications using dataflow formalism.
@@ -34,58 +32,51 @@
  * The fact that you are presently reading this means that you have had
  * knowledge of the CeCILL license and that you accept its terms.
  */
-package org.ietr.dftools.workflow.tools;
+package org.preesm.commons.logger;
 
 import java.util.logging.Handler;
 import java.util.logging.Level;
-import java.util.logging.Logger;
+import java.util.logging.LogRecord;
+import java.util.logging.StreamHandler;
 
 /**
- * Define the singleton managing PREESM loggers. When using this helper class, your debug, info, warning and errors
- * messages will be displayed in the right eclipse console. If no Eclipse GUI plugin is loaded (i.e. executing a job in
- * command line), all the messages will be sent to the system console.
  *
- * @author cguy
- *
- *         Code adapted from ORCC (net.sf.orcc.core, https://github.com/orcc/orcc)
- * @author Antoine Lorence
+ * @author anmorvan
  *
  */
-public class CLIWorkflowLogger extends Logger {
+public class CLIWorkflowLogHandler extends Handler {
 
-  /** The Constant RAW_FLAG. */
-  static final String RAW_FLAG = "raw_record";
+  private final boolean debugMode;
 
-  /** The logger. */
-  public CLIWorkflowLogger(final boolean debugMode) {
-    super("Preesm-CLI", null);
-    final Handler handler = new CLIWorkflowLogHandler(debugMode);
-    this.addHandler(handler);
-    this.setUseParentHandlers(false);
+  private final Handler stderrStreamHandler = new StreamHandler(System.err, new DefaultPreesmFormatter());
+  private final Handler stdoutStreamHandler = new StreamHandler(System.out, new DefaultPreesmFormatter());
 
-  }
-
-  /**
-   * Log.
-   *
-   * @param level
-   *          the level
-   * @param msg
-   *          the msg
-   */
-  @Override
-  public void log(final Level level, final String msg) {
-    final String message = msg + "\n";
-    super.log(level, message);
+  public CLIWorkflowLogHandler(final boolean debugMode) {
+    super();
+    this.debugMode = debugMode;
   }
 
   @Override
-  public void setLevel(Level newLevel) {
-    super.setLevel(newLevel);
-    final Handler[] handlers = getHandlers();
-    for (Handler h : handlers) {
-      h.setLevel(newLevel);
+  public synchronized void publish(LogRecord record) {
+    if (!debugMode && record.getThrown() != null) {
+      record.setThrown(null);
     }
+    if (record.getLevel().intValue() >= Level.WARNING.intValue()) {
+      stderrStreamHandler.publish(record);
+    } else {
+      stdoutStreamHandler.publish(record);
+    }
+    flush();
   }
 
+  @Override
+  public void close() {
+    flush();
+  }
+
+  @Override
+  public void flush() {
+    stderrStreamHandler.flush();
+    stdoutStreamHandler.flush();
+  }
 }

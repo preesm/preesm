@@ -46,7 +46,7 @@ import org.ietr.dftools.architecture.slam.process.SlamFlattener;
 import org.ietr.dftools.workflow.WorkflowException;
 import org.ietr.dftools.workflow.elements.Workflow;
 import org.ietr.dftools.workflow.implement.AbstractTaskImplementation;
-import org.ietr.dftools.workflow.tools.WorkflowLogger;
+import org.preesm.commons.logger.PreesmLogger;
 
 /**
  * Flattening the hierarchy of a given S-LAM architecture.
@@ -75,7 +75,7 @@ public class SlamHierarchyFlattening extends AbstractTaskImplementation {
       depth = 1;
     }
 
-    final Logger logger = WorkflowLogger.getLogger();
+    final Logger logger = PreesmLogger.getLogger();
     logger.log(Level.INFO, "flattening " + depth + " level(s) of hierarchy");
 
     // Copier copier = new Copier();

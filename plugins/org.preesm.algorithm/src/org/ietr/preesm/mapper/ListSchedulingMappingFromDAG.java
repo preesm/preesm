@@ -43,7 +43,6 @@ package org.ietr.preesm.mapper;
 import java.util.Map;
 import java.util.logging.Level;
 import org.ietr.dftools.architecture.slam.Design;
-import org.ietr.dftools.workflow.tools.WorkflowLogger;
 import org.ietr.preesm.core.scenario.PreesmScenario;
 import org.ietr.preesm.mapper.abc.impl.latency.LatencyAbc;
 import org.ietr.preesm.mapper.abc.taskscheduling.AbstractTaskSched;
@@ -51,6 +50,7 @@ import org.ietr.preesm.mapper.algo.list.InitialLists;
 import org.ietr.preesm.mapper.algo.list.KwokListScheduler;
 import org.ietr.preesm.mapper.model.MapperDAG;
 import org.ietr.preesm.mapper.params.AbcParameters;
+import org.preesm.commons.logger.PreesmLogger;
 
 /**
  * List scheduling is a cheep, greedy, sequential mapping/scheduling method.
@@ -65,7 +65,7 @@ public class ListSchedulingMappingFromDAG extends AbstractMappingFromDAG {
       final InitialLists initial, final PreesmScenario scenario, final AbcParameters abcParameters, final MapperDAG dag,
       final Design architecture, final AbstractTaskSched taskSched) {
 
-    WorkflowLogger.getLogger().log(Level.INFO, "Mapping");
+    PreesmLogger.getLogger().log(Level.INFO, "Mapping");
 
     final LatencyAbc simu2 = LatencyAbc.getInstance(abcParameters, dag, architecture, scenario);
     simu2.setTaskScheduler(taskSched);
@@ -73,7 +73,7 @@ public class ListSchedulingMappingFromDAG extends AbstractMappingFromDAG {
     final KwokListScheduler scheduler = new KwokListScheduler();
     scheduler.schedule(dag, initial.getCpnDominant(), simu2, null, null);
 
-    WorkflowLogger.getLogger().log(Level.INFO, "Mapping finished");
+    PreesmLogger.getLogger().log(Level.INFO, "Mapping finished");
 
     return simu2;
 

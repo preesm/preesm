@@ -44,7 +44,7 @@ import java.util.logging.Level;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.ietr.dftools.workflow.WorkflowException;
 import org.ietr.dftools.workflow.elements.Workflow;
-import org.ietr.dftools.workflow.tools.WorkflowLogger;
+import org.preesm.commons.logger.PreesmLogger;
 
 /**
  * This interface must be implemented by any workflow task element. The prototype of the workflow task is specified in
@@ -89,13 +89,13 @@ public abstract class AbstractTaskImplementation extends AbstractWorkflowNodeImp
 
     for (final String protoInputPortName : this.inputPrototype.keySet()) {
       if (!graphInputPorts.keySet().contains(protoInputPortName)) {
-        WorkflowLogger.logFromProperty(Level.SEVERE, "Workflow.FalseInputEdge", protoInputPortName);
+        PreesmLogger.logFromProperty(Level.SEVERE, "Workflow.FalseInputEdge", protoInputPortName);
         return false;
       } else {
         final String protoType = this.inputPrototype.get(protoInputPortName);
         final String graphType = graphInputPorts.get(protoInputPortName);
         if (!protoType.equals(graphType)) {
-          WorkflowLogger.logFromProperty(Level.SEVERE, "Workflow.FalseInputType", protoInputPortName, graphType,
+          PreesmLogger.logFromProperty(Level.SEVERE, "Workflow.FalseInputType", protoInputPortName, graphType,
               protoType);
           return false;
         }
@@ -103,7 +103,7 @@ public abstract class AbstractTaskImplementation extends AbstractWorkflowNodeImp
     }
 
     if (graphInputPorts.keySet().size() > this.inputPrototype.keySet().size()) {
-      WorkflowLogger.logFromProperty(Level.SEVERE, "Workflow.TooManyInputEdges",
+      PreesmLogger.logFromProperty(Level.SEVERE, "Workflow.TooManyInputEdges",
           String.valueOf(graphInputPorts.keySet().size()), String.valueOf(this.inputPrototype.keySet().size()));
       return false;
     }

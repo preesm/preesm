@@ -53,7 +53,6 @@ import org.ietr.dftools.algorithm.model.dag.edag.DAGInitVertex;
 import org.ietr.dftools.architecture.slam.ComponentInstance;
 import org.ietr.dftools.architecture.slam.Design;
 import org.ietr.dftools.workflow.WorkflowException;
-import org.ietr.dftools.workflow.tools.WorkflowLogger;
 import org.ietr.preesm.core.architecture.util.DesignTools;
 import org.ietr.preesm.core.scenario.PreesmScenario;
 import org.ietr.preesm.mapper.PreesmMapperException;
@@ -81,6 +80,7 @@ import org.ietr.preesm.mapper.params.AbcParameters;
 import org.ietr.preesm.mapper.timekeeper.TimeKeeper;
 import org.ietr.preesm.mapper.tools.CustomTopologicalIterator;
 import org.ietr.preesm.mapper.tools.SchedulingOrderIterator;
+import org.preesm.commons.logger.PreesmLogger;
 
 /**
  * Abc that minimizes latency.
@@ -317,7 +317,7 @@ public abstract class LatencyAbc {
 
     } else {
       final String msg = impvertex + " can not be mapped (single) on " + operator;
-      WorkflowLogger.getLogger().log(Level.SEVERE, msg);
+      PreesmLogger.getLogger().log(Level.SEVERE, msg);
     }
   }
 
@@ -355,7 +355,7 @@ public abstract class LatencyAbc {
 
     if (LatencyAbc.DEBUG_TRACES) {
       final String msg = "unmap and remap " + orderedVList + " on " + operator;
-      WorkflowLogger.getLogger().log(Level.INFO, msg);
+      PreesmLogger.getLogger().log(Level.INFO, msg);
     }
 
     for (final MapperDAGVertex dv : orderedVList) {
@@ -376,20 +376,20 @@ public abstract class LatencyAbc {
         // Unmapping if necessary before mapping
         if (LatencyAbc.DEBUG_TRACES) {
           final String msg = "unmap " + dvi;
-          WorkflowLogger.getLogger().log(Level.INFO, msg);
+          PreesmLogger.getLogger().log(Level.INFO, msg);
         }
         unmap(dvi);
 
         if (LatencyAbc.DEBUG_TRACES) {
           final String msg = "unmapped " + dvi;
-          WorkflowLogger.getLogger().log(Level.INFO, msg);
+          PreesmLogger.getLogger().log(Level.INFO, msg);
         }
       }
 
       if (isToMap) {
         if (LatencyAbc.DEBUG_TRACES) {
           final String msg = "map " + dvi + " to " + operator;
-          WorkflowLogger.getLogger().log(Level.INFO, msg);
+          PreesmLogger.getLogger().log(Level.INFO, msg);
         }
 
         dv.setEffectiveOperator(operator);
@@ -399,12 +399,12 @@ public abstract class LatencyAbc {
 
         if (LatencyAbc.DEBUG_TRACES) {
           final String msg = "mapped " + dvi;
-          WorkflowLogger.getLogger().log(Level.INFO, msg);
+          PreesmLogger.getLogger().log(Level.INFO, msg);
         }
 
       } else if (dv.equals(dagvertex) || remapGroup) {
         final String msg = dagvertex + " can not be mapped (group) on " + operator;
-        WorkflowLogger.getLogger().log(Level.SEVERE, msg);
+        PreesmLogger.getLogger().log(Level.SEVERE, msg);
         dv.setEffectiveOperator(DesignTools.NO_COMPONENT_INSTANCE);
         dv.setEffectiveOperator(DesignTools.NO_COMPONENT_INSTANCE);
       }
@@ -412,7 +412,7 @@ public abstract class LatencyAbc {
 
     if (LatencyAbc.DEBUG_TRACES) {
       final String msg = "unmapped and remapped " + orderedVList + " on " + operator;
-      WorkflowLogger.getLogger().log(Level.INFO, msg);
+      PreesmLogger.getLogger().log(Level.INFO, msg);
     }
   }
 
@@ -444,7 +444,7 @@ public abstract class LatencyAbc {
         mapVertexWithGroup(dagvertex, operator, updateRank, remapGroup);
       }
     } else {
-      WorkflowLogger.getLogger().log(Level.SEVERE, "Operator asked may not exist");
+      PreesmLogger.getLogger().log(Level.SEVERE, "Operator asked may not exist");
     }
   }
 
@@ -488,9 +488,9 @@ public abstract class LatencyAbc {
         // Mapping in list order without remapping the group
         map(currentvertex, adequateOp, true, false);
       } else {
-        WorkflowLogger.getLogger()
+        PreesmLogger.getLogger()
             .severe("The current mapping algorithm necessitates that all vertices can be mapped on an operator");
-        WorkflowLogger.getLogger()
+        PreesmLogger.getLogger()
             .severe("Problem with: " + currentvertex.getName() + ". Consider changing the scenario.");
 
         possible = false;
@@ -526,13 +526,13 @@ public abstract class LatencyAbc {
     } else {
       initOperators = vertex.getInit().getInitialOperatorList();
       final String msg = "Found no mapping group for vertex " + vertex;
-      WorkflowLogger.getLogger().log(Level.WARNING, msg);
+      PreesmLogger.getLogger().log(Level.WARNING, msg);
     }
 
     if (initOperators.isEmpty()) {
       final String message = "Empty operator set for a vertex: " + vertex.getName()
           + ". Consider relaxing constraints in scenario.";
-      WorkflowLogger.getLogger().log(Level.SEVERE, message);
+      PreesmLogger.getLogger().log(Level.SEVERE, message);
       throw new WorkflowException(message);
     }
 
@@ -639,7 +639,7 @@ public abstract class LatencyAbc {
 
     if (internalVertex == null) {
       final String message = "No simulator internal vertex with id " + vertex.getName();
-      WorkflowLogger.getLogger().log(Level.SEVERE, message);
+      PreesmLogger.getLogger().log(Level.SEVERE, message);
       throw new PreesmMapperException(message, new NullPointerException());
     }
     return internalVertex;
@@ -905,7 +905,7 @@ public abstract class LatencyAbc {
     final ComponentInstance effectiveOp = vertex.getEffectiveOperator();
 
     if (effectiveOp == DesignTools.NO_COMPONENT_INSTANCE) {
-      WorkflowLogger.getLogger().severe("implementation of " + vertex.getName() + " failed");
+      PreesmLogger.getLogger().severe("implementation of " + vertex.getName() + " failed");
     } else {
 
       final long vertextime = vertex.getInit().getTime(effectiveOp);
@@ -986,7 +986,7 @@ public abstract class LatencyAbc {
     final long finalTime = this.nTimeKeeper.getFinalTime(vertex);
 
     if (finalTime < 0) {
-      WorkflowLogger.getLogger().log(Level.SEVERE, "negative vertex final time");
+      PreesmLogger.getLogger().log(Level.SEVERE, "negative vertex final time");
     }
 
     return finalTime;
@@ -1030,7 +1030,7 @@ public abstract class LatencyAbc {
     final long finalTime = this.nTimeKeeper.getFinalTime();
 
     if (finalTime < 0) {
-      WorkflowLogger.getLogger().log(Level.SEVERE, "negative implementation final latency");
+      PreesmLogger.getLogger().log(Level.SEVERE, "negative implementation final latency");
     }
 
     return finalTime;

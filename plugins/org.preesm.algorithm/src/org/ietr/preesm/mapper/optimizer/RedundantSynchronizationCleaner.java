@@ -40,8 +40,8 @@ import java.util.Set;
 import java.util.logging.Level;
 import org.ietr.dftools.algorithm.model.dag.DAGVertex;
 import org.ietr.dftools.algorithm.model.dag.DirectedAcyclicGraph;
-import org.ietr.dftools.workflow.tools.WorkflowLogger;
 import org.ietr.preesm.mapper.model.special.TransferVertex;
+import org.preesm.commons.logger.PreesmLogger;
 
 /**
  * The purpose of this class is to remove redundant synchronization created during the scheduling of an application.
@@ -75,7 +75,7 @@ public class RedundantSynchronizationCleaner {
 
     final Set<DAGVertex> toBeRemoved = RedundantSynchronizationCleaner.proMethod(dag);
     toBeRemoved.forEach(transferVertex -> transferVertex.setPropertyValue("Redundant", Boolean.valueOf(true)));
-    WorkflowLogger.getLogger().log(Level.INFO, "removing " + toBeRemoved.size() + " syncs");
+    PreesmLogger.getLogger().log(Level.INFO, "removing " + toBeRemoved.size() + " syncs");
   }
 
   private static Set<DAGVertex> proMethod(final DirectedAcyclicGraph dag) {

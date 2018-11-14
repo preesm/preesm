@@ -35,9 +35,9 @@
  */
 package org.ietr.preesm.throughput.helpers.test;
 
-import org.ietr.preesm.utils.math.MathFunctionsHelper;
 import org.junit.Assert;
 import org.junit.Test;
+import org.preesm.commons.math.MathFunctionsHelper;
 
 /**
  * unit test of MathFunctionsHelper class

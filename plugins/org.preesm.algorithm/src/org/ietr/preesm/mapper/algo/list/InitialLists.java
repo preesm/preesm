@@ -47,7 +47,6 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.ietr.dftools.algorithm.model.dag.DAGEdge;
 import org.ietr.dftools.algorithm.model.dag.DAGVertex;
-import org.ietr.dftools.workflow.tools.WorkflowLogger;
 import org.ietr.preesm.mapper.abc.impl.latency.LatencyAbc;
 import org.ietr.preesm.mapper.model.MapperDAG;
 import org.ietr.preesm.mapper.model.MapperDAGEdge;
@@ -55,6 +54,7 @@ import org.ietr.preesm.mapper.model.MapperDAGVertex;
 import org.ietr.preesm.mapper.tools.BLevelIterator;
 import org.jgrapht.Graph;
 import org.jgrapht.alg.util.NeighborCache;
+import org.preesm.commons.logger.PreesmLogger;
 
 /**
  * Creates the CPN dominant list.
@@ -173,7 +173,7 @@ public class InitialLists implements Cloneable {
       if (cpnvertex != null) {
         predset.addAll(neighborindex.predecessorsOf(cpnvertex));
       } else {
-        WorkflowLogger.getLogger().log(Level.SEVERE, "Predecessor not found");
+        PreesmLogger.getLogger().log(Level.SEVERE, "Predecessor not found");
         return false;
       }
 
@@ -223,7 +223,7 @@ public class InitialLists implements Cloneable {
         blevelmax = bLevel;
         tlevelmax = tLevel;
       } else if (bLevel == -1) {
-        WorkflowLogger.getLogger().log(Level.SEVERE,
+        PreesmLogger.getLogger().log(Level.SEVERE,
             "CPN list construction: b-level can not be computed for vertex " + currentvertex);
       }
 
@@ -250,7 +250,7 @@ public class InitialLists implements Cloneable {
   public boolean constructCPN(final MapperDAG dag, final List<MapperDAGVertex> cpnDominant,
       final List<MapperDAGVertex> criticalPath, final LatencyAbc abc) {
 
-    WorkflowLogger.getLogger().log(Level.INFO, "Starting to build CPN list");
+    PreesmLogger.getLogger().log(Level.INFO, "Starting to build CPN list");
 
     // variables
     MapperDAGVertex currentvertex;
@@ -285,7 +285,7 @@ public class InitialLists implements Cloneable {
     // Find the successor of the first CPN (Critical Path Node)
     succset.addAll(neighborindex.successorsOf(cpnvertex));
 
-    WorkflowLogger.getLogger().log(Level.INFO, "Building CPN list.");
+    PreesmLogger.getLogger().log(Level.INFO, "Building CPN list.");
 
     /* Do the process while the vertex is not a leaf */
     while (!(succset.isEmpty())) {
@@ -321,7 +321,7 @@ public class InitialLists implements Cloneable {
       while (!(cpnDominant.contains(currentvertex))) {
         // If no predecessor was found
         if (!choosePredecessor(dag, currentvertex, cpnDominant, abc)) {
-          WorkflowLogger.getLogger().log(Level.SEVERE,
+          PreesmLogger.getLogger().log(Level.SEVERE,
               "No predecessor was found for vertex: " + currentvertex.getName());
           return false;
         }
@@ -386,15 +386,15 @@ public class InitialLists implements Cloneable {
       // construction of critical path and CPN dominant list with CPN and
       // IBN actors
       if (!constructCPN(dag, this.cpnDominant, this.criticalPath, simu)) {
-        WorkflowLogger.getLogger().log(Level.SEVERE, "Problem with initial list construction");
+        PreesmLogger.getLogger().log(Level.SEVERE, "Problem with initial list construction");
         return false;
       }
     } else {
-      WorkflowLogger.getLogger().log(Level.SEVERE, "To construct initial lists, a latency ABC is needed.");
+      PreesmLogger.getLogger().log(Level.SEVERE, "To construct initial lists, a latency ABC is needed.");
       return false;
     }
 
-    WorkflowLogger.getLogger().log(Level.INFO, "Adding OBN actors to CPN and IBN actors in CPN dominant list");
+    PreesmLogger.getLogger().log(Level.INFO, "Adding OBN actors to CPN and IBN actors in CPN dominant list");
     addCPNobn(dag, this.cpnDominant, simu);
 
     for (final DAGVertex v : dag.vertexSet()) {
@@ -421,7 +421,7 @@ public class InitialLists implements Cloneable {
     // Variables
     final Iterator<MapperDAGVertex> iter = tempset.iterator();
     MapperDAGVertex currentvertex;
-    final Logger logger = WorkflowLogger.getLogger();
+    final Logger logger = PreesmLogger.getLogger();
     // check all the list
     while (iter.hasNext()) {
       currentvertex = iter.next();

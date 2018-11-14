@@ -44,9 +44,9 @@ import org.ietr.dftools.algorithm.exporter.GMLDAGExporter;
 import org.ietr.dftools.algorithm.importer.GMLDAGImporter;
 import org.ietr.dftools.algorithm.importer.InvalidModelException;
 import org.ietr.dftools.algorithm.model.dag.DirectedAcyclicGraph;
-import org.ietr.preesm.utils.GMLKey;
 import org.junit.Assert;
 import org.junit.Test;
+import org.preesm.commons.GMLKey;
 
 /**
  */

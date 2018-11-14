@@ -40,7 +40,6 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.logging.Level;
 import org.apache.commons.lang3.time.StopWatch;
-import org.ietr.dftools.workflow.tools.WorkflowLogger;
 import org.ietr.preesm.core.scenario.PreesmScenario;
 import org.ietr.preesm.experiment.model.pimm.AbstractVertex;
 import org.ietr.preesm.experiment.model.pimm.Parameter;
@@ -51,6 +50,7 @@ import org.ietr.preesm.pimm.algorithm.helper.PiBRV;
 import org.ietr.preesm.pimm.algorithm.helper.PiMMHandler;
 import org.ietr.preesm.pimm.algorithm.helper.PiMMHelperException;
 import org.ietr.preesm.pimm.algorithm.pimm2flat.visitor.StaticPiMM2FlatPiMMVisitor;
+import org.preesm.commons.logger.PreesmLogger;
 
 /**
  * The Class StaticPiMM2SDFLauncher.
@@ -102,14 +102,14 @@ public class StaticPiMMFlatPiMMLauncher extends PiMMSwitch<Boolean> {
       this.piHandler.resolveAllParameters();
       timer.stop();
       String msg = "Parameters and rates evaluations: " + timer + "s.";
-      WorkflowLogger.getLogger().log(Level.INFO, msg);
+      PreesmLogger.getLogger().log(Level.INFO, msg);
       // 2. We perform the delay transformation step that deals with persistence
       timer.reset();
       timer.start();
       this.piHandler.removePersistence();
       timer.stop();
       String msg2 = "Persistence removal: " + timer + "s.";
-      WorkflowLogger.getLogger().log(Level.INFO, msg2);
+      PreesmLogger.getLogger().log(Level.INFO, msg2);
     } catch (PiMMHelperException e) {
       throw new StaticPiMMFlatPiMMException(e.getMessage());
     }
@@ -136,7 +136,7 @@ public class StaticPiMMFlatPiMMLauncher extends PiMMSwitch<Boolean> {
     visitor.doSwitch(this.graph);
     timer.stop();
     final String msgPiMM2ASRPiMM = "Flattening transformation: " + timer + "s.";
-    WorkflowLogger.getLogger().log(Level.INFO, msgPiMM2ASRPiMM);
+    PreesmLogger.getLogger().log(Level.INFO, msgPiMM2ASRPiMM);
     final PiGraph result = visitor.getResult();
     return result;
   }
@@ -156,7 +156,7 @@ public class StaticPiMMFlatPiMMLauncher extends PiMMSwitch<Boolean> {
       this.graphBRV = piBRVAlgo.getBRV();
       timer.stop();
       final String msg = "Repetition vector computed in" + timer + "s.";
-      WorkflowLogger.getLogger().log(Level.INFO, msg);
+      PreesmLogger.getLogger().log(Level.INFO, msg);
     } catch (final PiMMHelperException e) {
       throw new StaticPiMMFlatPiMMException(e.getMessage());
     }
@@ -168,7 +168,7 @@ public class StaticPiMMFlatPiMMLauncher extends PiMMSwitch<Boolean> {
   private void printRV() {
     for (final Map.Entry<AbstractVertex, Long> rv : this.graphBRV.entrySet()) {
       final String msg = rv.getKey().getVertexPath() + " x" + Long.toString(rv.getValue());
-      WorkflowLogger.getLogger().log(Level.INFO, msg);
+      PreesmLogger.getLogger().log(Level.INFO, msg);
     }
   }
 

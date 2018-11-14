@@ -50,12 +50,12 @@ import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.Path;
 import org.ietr.dftools.algorithm.importer.InvalidModelException;
-import org.ietr.dftools.workflow.tools.WorkflowLogger;
 import org.ietr.preesm.core.scenario.PreesmScenario;
 import org.ietr.preesm.core.scenario.Timing;
 import org.ietr.preesm.experiment.model.pimm.PiGraph;
 import org.ietr.preesm.experiment.model.pimm.serialize.PiParser;
-import org.ietr.preesm.utils.files.WorkspaceUtils;
+import org.preesm.commons.files.WorkspaceUtils;
+import org.preesm.commons.logger.PreesmLogger;
 
 /**
  * Importing timings in a scenario from a csv file. task names are rows while operator types are columns
@@ -89,7 +89,7 @@ public class CsvTimingParser {
    *           the invalid model exception
    */
   public void parse(final String url, final Set<String> opDefIds) throws InvalidModelException {
-    WorkflowLogger.getLogger().log(Level.INFO,
+    PreesmLogger.getLogger().log(Level.INFO,
         "Importing timings from a csv sheet. Non precised timings are kept unmodified.");
 
     final IWorkspace workspace = ResourcesPlugin.getWorkspace();
@@ -109,7 +109,7 @@ public class CsvTimingParser {
       if (line != null) {
         final String[] opNames = line.split(";");
         if ((opNames.length <= 1) || !opNames[0].equals("Actors")) {
-          WorkflowLogger.getLogger().log(Level.WARNING,
+          PreesmLogger.getLogger().log(Level.WARNING,
               "Timing csv file must have an header line starting with \"Actors\"\nNothing done");
           return;
         }
@@ -204,10 +204,10 @@ public class CsvTimingParser {
 
           this.scenario.getTimingManager().addTiming(timing);
 
-          WorkflowLogger.getLogger().log(Level.INFO, "Importing timing: {0}", timing.toString());
+          PreesmLogger.getLogger().log(Level.INFO, "Importing timing: {0}", timing.toString());
 
         } catch (final Exception e) {
-          WorkflowLogger.getLogger().log(Level.INFO, "Cannot retreive timing for ({0}, {1})",
+          PreesmLogger.getLogger().log(Level.INFO, "Cannot retreive timing for ({0}, {1})",
               new Object[] { vertexName, opDefId });
         }
       }

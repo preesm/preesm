@@ -60,8 +60,8 @@ import org.ietr.dftools.workflow.elements.WorkflowEdge;
 import org.ietr.dftools.workflow.implement.AbstractScenarioImplementation;
 import org.ietr.dftools.workflow.implement.AbstractTaskImplementation;
 import org.ietr.dftools.workflow.implement.AbstractWorkflowNodeImplementation;
-import org.ietr.dftools.workflow.messages.WorkflowMessages;
-import org.ietr.dftools.workflow.tools.WorkflowLogger;
+import org.preesm.commons.logger.PreesmLogger;
+import org.preesm.commons.messages.WorkflowMessages;
 
 /**
  * This abstract class provides methods to check and execute a workflow. A workflow consists of several transformation
@@ -85,7 +85,7 @@ public abstract class AbstractWorkflowExecutor {
 
   public final void setLogger(final Logger logger) {
     this.logger = logger;
-    WorkflowLogger.setLogger(logger);
+    PreesmLogger.setLogger(logger);
   }
 
   public final Logger getLogger() {
@@ -436,7 +436,7 @@ public abstract class AbstractWorkflowExecutor {
       final IProject project = workspace.getRoot().getProject(projectName);
       project.refreshLocal(IResource.DEPTH_INFINITE, monitor);
     } catch (final Exception e) {
-      WorkflowLogger.getLogger().log(Level.WARNING, warningMessage, e);
+      PreesmLogger.getLogger().log(Level.WARNING, warningMessage, e);
     }
   }
 

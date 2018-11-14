@@ -51,7 +51,6 @@ import org.ietr.dftools.architecture.slam.ComponentInstance;
 import org.ietr.dftools.architecture.slam.Design;
 import org.ietr.dftools.architecture.slam.attributes.VLNV;
 import org.ietr.dftools.architecture.slam.component.Operator;
-import org.ietr.dftools.workflow.tools.WorkflowLogger;
 import org.ietr.preesm.core.architecture.util.DesignTools.ComponentInstanceComparator;
 import org.ietr.preesm.core.scenario.PreesmScenario;
 import org.ietr.preesm.experiment.model.pimm.AbstractActor;
@@ -67,7 +66,8 @@ import org.ietr.preesm.mapper.schedule.Architecture;
 import org.ietr.preesm.mapper.schedule.Schedule;
 import org.ietr.preesm.mapper.schedule.ScheduleEntry;
 import org.ietr.preesm.mapper.schedule.ScheduleUtils;
-import org.ietr.preesm.utils.files.URLResolver;
+import org.preesm.commons.files.URLResolver;
+import org.preesm.commons.logger.PreesmLogger;
 
 /**
  *
@@ -245,7 +245,7 @@ public class ExternalMappingFromDAG extends AbstractMappingFromDAG {
       final String actorName = actor.getName();
       if (!actorNameToScheduleEntry.containsKey(actorName)) {
         final String msg = "Single Rate actor [" + actorName + "] has no schedule entry";
-        WorkflowLogger.getLogger().log(Level.WARNING, msg);
+        PreesmLogger.getLogger().log(Level.WARNING, msg);
       }
     }
   }

@@ -1,7 +1,9 @@
 /**
- * Copyright or © or Copr. IETR/INSA - Rennes (2017 - 2018) :
+ * Copyright or © or Copr. IETR/INSA - Rennes (2015 - 2018) :
  *
  * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017 - 2018)
+ * Clément Guy <clement.guy@insa-rennes.fr> (2015)
+ * Karol Desnos <karol.desnos@insa-rennes.fr> (2015)
  *
  * This software is a computer program whose purpose is to help prototyping
  * parallel applications using dataflow formalism.
@@ -32,31 +34,58 @@
  * The fact that you are presently reading this means that you have had
  * knowledge of the CeCILL license and that you accept its terms.
  */
-package org.ietr.preesm.utils.files;
+package org.preesm.commons.logger;
 
-import org.eclipse.core.resources.IResource;
-import org.eclipse.core.resources.IWorkspace;
-import org.eclipse.core.resources.ResourcesPlugin;
-import org.eclipse.core.runtime.NullProgressMonitor;
+import java.util.logging.Handler;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
+ * Define the singleton managing PREESM loggers. When using this helper class, your debug, info, warning and errors
+ * messages will be displayed in the right eclipse console. If no Eclipse GUI plugin is loaded (i.e. executing a job in
+ * command line), all the messages will be sent to the system console.
  *
- * @author anmorvan
+ * @author cguy
+ *
+ *         Code adapted from ORCC (net.sf.orcc.core, https://github.com/orcc/orcc)
+ * @author Antoine Lorence
  *
  */
-public class WorkspaceUtils {
+public class CLIWorkflowLogger extends Logger {
+
+  /** The Constant RAW_FLAG. */
+  static final String RAW_FLAG = "raw_record";
+
+  /** The logger. */
+  public CLIWorkflowLogger(final boolean debugMode) {
+    super("Preesm-CLI", null);
+    final Handler handler = new CLIWorkflowLogHandler(debugMode);
+    this.addHandler(handler);
+    this.setUseParentHandlers(false);
+
+  }
 
   /**
-   * Update workspace.
+   * Log.
+   *
+   * @param level
+   *          the level
+   * @param msg
+   *          the msg
    */
-  public static final void updateWorkspace() {
+  @Override
+  public void log(final Level level, final String msg) {
+    final String message = msg + "\n";
+    super.log(level, message);
+  }
 
-    try {
-      final IWorkspace workspace = ResourcesPlugin.getWorkspace();
-
-      workspace.getRoot().refreshLocal(IResource.DEPTH_INFINITE, new NullProgressMonitor());
-    } catch (final Exception e) {
-      e.printStackTrace();
+  @Override
+  public void setLevel(Level newLevel) {
+    super.setLevel(newLevel);
+    final Handler[] handlers = getHandlers();
+    for (Handler h : handlers) {
+      h.setLevel(newLevel);
     }
   }
+
 }

@@ -50,11 +50,11 @@ import org.ietr.dftools.algorithm.model.PropertyBean;
 import org.ietr.dftools.algorithm.model.PropertyFactory;
 import org.ietr.dftools.algorithm.model.dag.DAGEdge;
 import org.ietr.dftools.algorithm.model.dag.DAGVertex;
-import org.ietr.dftools.workflow.tools.WorkflowLogger;
 import org.ietr.preesm.core.types.BufferAggregate;
 import org.ietr.preesm.core.types.BufferProperties;
 import org.ietr.preesm.core.types.DataType;
 import org.ietr.preesm.memory.script.Range;
+import org.preesm.commons.logger.PreesmLogger;
 
 // TODO: Auto-generated Javadoc
 /**
@@ -231,7 +231,7 @@ public class MemoryExclusionVertex extends AbstractVertex<MemoryExclusionGraph>
     this.size = vertexWeight;
 
     if (vertexWeight == 0) {
-      WorkflowLogger.getLogger().log(Level.WARNING, "Probable ERROR: Vertex weight is 0");
+      PreesmLogger.getLogger().log(Level.WARNING, "Probable ERROR: Vertex weight is 0");
     }
 
     this.edge = inputEdge;

@@ -40,7 +40,6 @@ package org.ietr.preesm.mapper.abc.transaction;
 import java.util.List;
 import java.util.Set;
 import java.util.logging.Level;
-import org.ietr.dftools.workflow.tools.WorkflowLogger;
 import org.ietr.preesm.core.architecture.route.AbstractRouteStep;
 import org.ietr.preesm.mapper.abc.order.OrderManager;
 import org.ietr.preesm.mapper.model.MapperDAG;
@@ -50,6 +49,7 @@ import org.ietr.preesm.mapper.model.special.InvolvementVertex;
 import org.ietr.preesm.mapper.model.special.PrecedenceEdge;
 import org.ietr.preesm.mapper.model.special.PrecedenceEdgeAdder;
 import org.ietr.preesm.mapper.model.special.TransferVertex;
+import org.preesm.commons.logger.PreesmLogger;
 
 // TODO: Auto-generated Javadoc
 /**
@@ -128,7 +128,7 @@ public class AddInvolvementVertexTransaction extends Transaction {
     final MapperDAGVertex currentTarget = (MapperDAGVertex) this.edge.getTarget();
 
     if (this.edge instanceof PrecedenceEdge) {
-      WorkflowLogger.getLogger().log(Level.INFO, "no involvement vertex corresponding to a schedule edge");
+      PreesmLogger.getLogger().log(Level.INFO, "no involvement vertex corresponding to a schedule edge");
       return;
     }
 
@@ -159,7 +159,7 @@ public class AddInvolvementVertexTransaction extends Transaction {
         do {
           final Set<MapperDAGVertex> succs = receiverVertex.getSuccessors(false).keySet();
           if (succs.isEmpty() && (receiverVertex instanceof TransferVertex)) {
-            WorkflowLogger.getLogger().log(Level.SEVERE, "Transfer has no successor: " + receiverVertex.getName());
+            PreesmLogger.getLogger().log(Level.SEVERE, "Transfer has no successor: " + receiverVertex.getName());
           }
 
           for (final MapperDAGVertex next : receiverVertex.getSuccessors(false).keySet()) {

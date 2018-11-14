@@ -45,7 +45,7 @@ import org.ietr.preesm.schedule.ASAPSchedulerSDF;
 import org.ietr.preesm.throughput.tools.helpers.Stopwatch;
 import org.ietr.preesm.throughput.tools.parsers.Identifier;
 import org.ietr.preesm.throughput.tools.transformers.SDFTransformer;
-import org.ietr.preesm.utils.math.MathFunctionsHelper;
+import org.preesm.commons.math.MathFunctionsHelper;
 
 /**
  * @author hderoui
