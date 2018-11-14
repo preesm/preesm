@@ -1,7 +1,9 @@
 /**
- * Copyright or © or Copr. IETR/INSA - Rennes (2018) :
+ * Copyright or © or Copr. IETR/INSA - Rennes (2013 - 2018) :
  *
- * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2018)
+ * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017 - 2018)
+ * Clément Guy <clement.guy@insa-rennes.fr> (2014)
+ * Karol Desnos <karol.desnos@insa-rennes.fr> (2013)
  *
  * This software is a computer program whose purpose is to help prototyping
  * parallel applications using dataflow formalism.
@@ -32,11 +34,36 @@
  * The fact that you are presently reading this means that you have had
  * knowledge of the CeCILL license and that you accept its terms.
  */
-package org.ietr.preesm.codegen.printer;
+package org.preesm.codegen;
+
+import org.ietr.dftools.workflow.AbstractWorkflowExecutor;
+import org.ietr.dftools.workflow.WorkflowException;
 
 /**
+ * Exception thrown when an error has occurred during the codegen.
  *
+ * This extends {@link WorkflowException} so that it is caught by the {@link AbstractWorkflowExecutor}.
+ *
+ * @author kdesnos
+ * @author Antoine Morvan
  */
-public enum PrinterState {
-  PRINTING_DEFINITIONS, PRINTING_DECLARATIONS, PRINTING_INIT_BLOCK, PRINTING_LOOP_BLOCK, IDLE
+public class CodegenException extends WorkflowException {
+
+  /** The Constant serialVersionUID. */
+  private static final long serialVersionUID = 277244171165787353L;
+
+  /**
+   * Instantiates a new codegen exception.
+   *
+   * @param msg
+   *          the msg
+   */
+  public CodegenException(final String msg) {
+    this(msg, null);
+  }
+
+  public CodegenException(final String msg, final Throwable t) {
+    super(msg, t);
+  }
+
 }

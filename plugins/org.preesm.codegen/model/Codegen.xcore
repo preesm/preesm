@@ -28,7 +28,7 @@
 
 @Ecore(nsURI="http://org.preesm/model/codegen")
 
-package org.ietr.preesm.codegen.model.codegen
+package org.preesm.codegen.model
 
 import org.eclipse.emf.ecore.EEList
 
@@ -120,7 +120,7 @@ class Communication extends Call {
 	    if (parent === null) {
 	      return null;
 	    } else {
-	      return parent as org.ietr.preesm.codegen.model.codegen.CoreBlock;
+	      return parent as CoreBlock;
 	    }
     }
 }

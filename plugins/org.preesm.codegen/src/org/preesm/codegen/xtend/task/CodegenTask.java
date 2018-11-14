@@ -36,7 +36,7 @@
  * The fact that you are presently reading this means that you have had
  * knowledge of the CeCILL license and that you accept its terms.
  */
-package org.ietr.preesm.codegen.xtend.task;
+package org.preesm.codegen.xtend.task;
 
 import java.io.File;
 import java.util.Collection;
@@ -53,10 +53,10 @@ import org.ietr.dftools.architecture.slam.Design;
 import org.ietr.dftools.workflow.WorkflowException;
 import org.ietr.dftools.workflow.elements.Workflow;
 import org.ietr.dftools.workflow.implement.AbstractTaskImplementation;
-import org.ietr.preesm.codegen.model.codegen.Block;
 import org.ietr.preesm.core.scenario.PreesmScenario;
 import org.ietr.preesm.mapper.model.MapperDAG;
 import org.ietr.preesm.memory.exclusiongraph.MemoryExclusionGraph;
+import org.preesm.codegen.model.Block;
 
 /**
  * The Class CodegenTask.

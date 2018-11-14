@@ -32,14 +32,14 @@
  * The fact that you are presently reading this means that you have had
  * knowledge of the CeCILL license and that you accept its terms.
  */
-package org.ietr.preesm.codegen.model.util;
+package org.preesm.codegen.model.util;
 
-import org.ietr.preesm.codegen.model.codegen.ActorBlock;
-import org.ietr.preesm.codegen.model.codegen.CallBlock;
-import org.ietr.preesm.codegen.model.codegen.CodegenFactory;
-import org.ietr.preesm.codegen.model.codegen.CoreBlock;
-import org.ietr.preesm.codegen.model.codegen.LoopBlock;
-import org.ietr.preesm.codegen.model.codegen.NullBuffer;
+import org.preesm.codegen.model.ActorBlock;
+import org.preesm.codegen.model.CallBlock;
+import org.preesm.codegen.model.CodegenFactory;
+import org.preesm.codegen.model.CoreBlock;
+import org.preesm.codegen.model.LoopBlock;
+import org.preesm.codegen.model.NullBuffer;
 
 /**
  *

@@ -33,7 +33,7 @@
  * The fact that you are presently reading this means that you have had
  * knowledge of the CeCILL license and that you accept its terms.
  */
-package org.ietr.preesm.codegen.xtend.task;
+package org.preesm.codegen.xtend.task;
 
 import com.google.common.collect.BiMap;
 import java.util.AbstractMap;
@@ -72,28 +72,29 @@ import org.ietr.preesm.codegen.idl.ActorPrototypes;
 import org.ietr.preesm.codegen.idl.Prototype;
 import org.ietr.preesm.codegen.model.CodeGenArgument;
 import org.ietr.preesm.codegen.model.CodeGenParameter;
-import org.ietr.preesm.codegen.model.codegen.Buffer;
-import org.ietr.preesm.codegen.model.codegen.BufferIterator;
-import org.ietr.preesm.codegen.model.codegen.Call;
-import org.ietr.preesm.codegen.model.codegen.CodegenFactory;
-import org.ietr.preesm.codegen.model.codegen.CodegenPackage;
-import org.ietr.preesm.codegen.model.codegen.Communication;
-import org.ietr.preesm.codegen.model.codegen.Constant;
-import org.ietr.preesm.codegen.model.codegen.CoreBlock;
-import org.ietr.preesm.codegen.model.codegen.FiniteLoopBlock;
-import org.ietr.preesm.codegen.model.codegen.FunctionCall;
-import org.ietr.preesm.codegen.model.codegen.IntVar;
-import org.ietr.preesm.codegen.model.codegen.LoopBlock;
-import org.ietr.preesm.codegen.model.codegen.PortDirection;
-import org.ietr.preesm.codegen.model.codegen.SpecialCall;
-import org.ietr.preesm.codegen.model.codegen.SpecialType;
-import org.ietr.preesm.codegen.model.codegen.SubBuffer;
-import org.ietr.preesm.codegen.model.codegen.Variable;
 import org.ietr.preesm.core.scenario.PreesmScenario;
 import org.ietr.preesm.core.types.BufferAggregate;
 import org.ietr.preesm.core.types.BufferProperties;
 import org.ietr.preesm.core.types.DataType;
 import org.ietr.preesm.mapper.model.MapperDAG;
+import org.preesm.codegen.CodegenException;
+import org.preesm.codegen.model.Buffer;
+import org.preesm.codegen.model.BufferIterator;
+import org.preesm.codegen.model.Call;
+import org.preesm.codegen.model.CodegenFactory;
+import org.preesm.codegen.model.CodegenPackage;
+import org.preesm.codegen.model.Communication;
+import org.preesm.codegen.model.Constant;
+import org.preesm.codegen.model.CoreBlock;
+import org.preesm.codegen.model.FiniteLoopBlock;
+import org.preesm.codegen.model.FunctionCall;
+import org.preesm.codegen.model.IntVar;
+import org.preesm.codegen.model.LoopBlock;
+import org.preesm.codegen.model.PortDirection;
+import org.preesm.codegen.model.SpecialCall;
+import org.preesm.codegen.model.SpecialType;
+import org.preesm.codegen.model.SubBuffer;
+import org.preesm.codegen.model.Variable;
 
 /**
  *

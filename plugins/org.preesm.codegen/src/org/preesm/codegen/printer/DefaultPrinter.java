@@ -1,28 +1,28 @@
-package org.ietr.preesm.codegen.printer;
+package org.preesm.codegen.printer;
 
 import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import org.ietr.preesm.codegen.model.codegen.Block;
-import org.ietr.preesm.codegen.model.codegen.Buffer;
-import org.ietr.preesm.codegen.model.codegen.BufferIterator;
-import org.ietr.preesm.codegen.model.codegen.CallBlock;
-import org.ietr.preesm.codegen.model.codegen.Communication;
-import org.ietr.preesm.codegen.model.codegen.Constant;
-import org.ietr.preesm.codegen.model.codegen.ConstantString;
-import org.ietr.preesm.codegen.model.codegen.CoreBlock;
-import org.ietr.preesm.codegen.model.codegen.FifoCall;
-import org.ietr.preesm.codegen.model.codegen.FiniteLoopBlock;
-import org.ietr.preesm.codegen.model.codegen.FunctionCall;
-import org.ietr.preesm.codegen.model.codegen.IntVar;
-import org.ietr.preesm.codegen.model.codegen.LoopBlock;
-import org.ietr.preesm.codegen.model.codegen.NullBuffer;
-import org.ietr.preesm.codegen.model.codegen.PapifyAction;
-import org.ietr.preesm.codegen.model.codegen.SharedMemoryCommunication;
-import org.ietr.preesm.codegen.model.codegen.SpecialCall;
-import org.ietr.preesm.codegen.model.codegen.SubBuffer;
-import org.ietr.preesm.codegen.model.codegen.Variable;
+import org.preesm.codegen.model.Block;
+import org.preesm.codegen.model.Buffer;
+import org.preesm.codegen.model.BufferIterator;
+import org.preesm.codegen.model.CallBlock;
+import org.preesm.codegen.model.Communication;
+import org.preesm.codegen.model.Constant;
+import org.preesm.codegen.model.ConstantString;
+import org.preesm.codegen.model.CoreBlock;
+import org.preesm.codegen.model.FifoCall;
+import org.preesm.codegen.model.FiniteLoopBlock;
+import org.preesm.codegen.model.FunctionCall;
+import org.preesm.codegen.model.IntVar;
+import org.preesm.codegen.model.LoopBlock;
+import org.preesm.codegen.model.NullBuffer;
+import org.preesm.codegen.model.PapifyAction;
+import org.preesm.codegen.model.SharedMemoryCommunication;
+import org.preesm.codegen.model.SpecialCall;
+import org.preesm.codegen.model.SubBuffer;
+import org.preesm.codegen.model.Variable;
 
 /**
  * This {@link DefaultPrinter} is a dummy implementation of the {@link CodegenAbstractPrinter} where all print methods

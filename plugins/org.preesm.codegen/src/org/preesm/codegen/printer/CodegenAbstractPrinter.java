@@ -32,7 +32,7 @@
  * The fact that you are presently reading this means that you have had
  * knowledge of the CeCILL license and that you accept its terms.
  */
-package org.ietr.preesm.codegen.printer;
+package org.preesm.codegen.printer;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -42,31 +42,31 @@ import java.util.Map.Entry;
 import org.eclipse.emf.common.util.EList;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.xtend2.lib.StringConcatenation;
-import org.ietr.preesm.codegen.model.codegen.Block;
-import org.ietr.preesm.codegen.model.codegen.Buffer;
-import org.ietr.preesm.codegen.model.codegen.BufferIterator;
-import org.ietr.preesm.codegen.model.codegen.CallBlock;
-import org.ietr.preesm.codegen.model.codegen.CodeElt;
-import org.ietr.preesm.codegen.model.codegen.CodegenPackage;
-import org.ietr.preesm.codegen.model.codegen.Communication;
-import org.ietr.preesm.codegen.model.codegen.Constant;
-import org.ietr.preesm.codegen.model.codegen.ConstantString;
-import org.ietr.preesm.codegen.model.codegen.CoreBlock;
-import org.ietr.preesm.codegen.model.codegen.FifoCall;
-import org.ietr.preesm.codegen.model.codegen.FiniteLoopBlock;
-import org.ietr.preesm.codegen.model.codegen.FunctionCall;
-import org.ietr.preesm.codegen.model.codegen.IntVar;
-import org.ietr.preesm.codegen.model.codegen.LoopBlock;
-import org.ietr.preesm.codegen.model.codegen.NullBuffer;
-import org.ietr.preesm.codegen.model.codegen.PapifyAction;
-import org.ietr.preesm.codegen.model.codegen.SharedMemoryCommunication;
-import org.ietr.preesm.codegen.model.codegen.SpecialCall;
-import org.ietr.preesm.codegen.model.codegen.SpecialType;
-import org.ietr.preesm.codegen.model.codegen.SubBuffer;
-import org.ietr.preesm.codegen.model.codegen.Variable;
-import org.ietr.preesm.codegen.model.codegen.util.CodegenSwitch;
-import org.ietr.preesm.codegen.xtend.task.CodegenEngine;
-import org.ietr.preesm.codegen.xtend.task.CodegenException;
+import org.preesm.codegen.CodegenException;
+import org.preesm.codegen.model.Block;
+import org.preesm.codegen.model.Buffer;
+import org.preesm.codegen.model.BufferIterator;
+import org.preesm.codegen.model.CallBlock;
+import org.preesm.codegen.model.CodeElt;
+import org.preesm.codegen.model.CodegenPackage;
+import org.preesm.codegen.model.Communication;
+import org.preesm.codegen.model.Constant;
+import org.preesm.codegen.model.ConstantString;
+import org.preesm.codegen.model.CoreBlock;
+import org.preesm.codegen.model.FifoCall;
+import org.preesm.codegen.model.FiniteLoopBlock;
+import org.preesm.codegen.model.FunctionCall;
+import org.preesm.codegen.model.IntVar;
+import org.preesm.codegen.model.LoopBlock;
+import org.preesm.codegen.model.NullBuffer;
+import org.preesm.codegen.model.PapifyAction;
+import org.preesm.codegen.model.SharedMemoryCommunication;
+import org.preesm.codegen.model.SpecialCall;
+import org.preesm.codegen.model.SpecialType;
+import org.preesm.codegen.model.SubBuffer;
+import org.preesm.codegen.model.Variable;
+import org.preesm.codegen.model.util.CodegenSwitch;
+import org.preesm.codegen.xtend.task.CodegenEngine;
 
 /**
  * The {@link CodegenAbstractPrinter} is used to visit a {@link CodegenPackage Codegen model}. To use a printer, the

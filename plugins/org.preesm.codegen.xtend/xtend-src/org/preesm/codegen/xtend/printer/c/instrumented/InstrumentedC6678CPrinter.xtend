@@ -39,24 +39,24 @@ import java.util.Collection
 import java.util.Date
 import java.util.LinkedHashSet
 import java.util.List
-import org.ietr.preesm.codegen.model.codegen.Block
-import org.ietr.preesm.codegen.model.codegen.Buffer
-import org.ietr.preesm.codegen.model.codegen.Call
-import org.ietr.preesm.codegen.model.codegen.CallBlock
-import org.ietr.preesm.codegen.model.codegen.CodeElt
-import org.ietr.preesm.codegen.model.codegen.CodegenFactory
-import org.ietr.preesm.codegen.model.codegen.CoreBlock
-import org.ietr.preesm.codegen.model.codegen.Delimiter
-import org.ietr.preesm.codegen.model.codegen.Direction
-import org.ietr.preesm.codegen.model.codegen.FifoCall
-import org.ietr.preesm.codegen.model.codegen.FifoOperation
-import org.ietr.preesm.codegen.model.codegen.FunctionCall
-import org.ietr.preesm.codegen.model.codegen.LoopBlock
-import org.ietr.preesm.codegen.model.codegen.NullBuffer
-import org.ietr.preesm.codegen.model.codegen.PortDirection
-import org.ietr.preesm.codegen.model.codegen.SharedMemoryCommunication
-import org.ietr.preesm.codegen.model.codegen.SpecialCall
-import org.ietr.preesm.codegen.model.codegen.Variable
+import org.preesm.codegen.model.Block
+import org.preesm.codegen.model.Buffer
+import org.preesm.codegen.model.Call
+import org.preesm.codegen.model.CallBlock
+import org.preesm.codegen.model.CodeElt
+import org.preesm.codegen.model.CodegenFactory
+import org.preesm.codegen.model.CoreBlock
+import org.preesm.codegen.model.Delimiter
+import org.preesm.codegen.model.Direction
+import org.preesm.codegen.model.FifoCall
+import org.preesm.codegen.model.FifoOperation
+import org.preesm.codegen.model.FunctionCall
+import org.preesm.codegen.model.LoopBlock
+import org.preesm.codegen.model.NullBuffer
+import org.preesm.codegen.model.PortDirection
+import org.preesm.codegen.model.SharedMemoryCommunication
+import org.preesm.codegen.model.SpecialCall
+import org.preesm.codegen.model.Variable
 
 class InstrumentedC6678CPrinter extends InstrumentedCPrinter {
 

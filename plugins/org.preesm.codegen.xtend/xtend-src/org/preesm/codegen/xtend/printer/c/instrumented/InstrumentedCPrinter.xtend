@@ -41,19 +41,19 @@ import java.util.ArrayList
 import java.util.Collection
 import java.util.LinkedHashMap
 import java.util.List
-import org.ietr.preesm.codegen.model.codegen.Block
-import org.ietr.preesm.codegen.model.codegen.Buffer
-import org.ietr.preesm.codegen.model.codegen.CodeElt
-import org.ietr.preesm.codegen.model.codegen.CodegenFactory
-import org.ietr.preesm.codegen.model.codegen.CoreBlock
-import org.ietr.preesm.codegen.model.codegen.FifoCall
-import org.ietr.preesm.codegen.model.codegen.FunctionCall
-import org.ietr.preesm.codegen.model.codegen.LoopBlock
-import org.ietr.preesm.codegen.model.codegen.PortDirection
-import org.ietr.preesm.codegen.model.codegen.SharedMemoryCommunication
-import org.ietr.preesm.codegen.model.codegen.SpecialCall
-import org.ietr.preesm.codegen.model.codegen.Variable
-import org.ietr.preesm.codegen.printer.PrinterState
+import org.preesm.codegen.model.Block
+import org.preesm.codegen.model.Buffer
+import org.preesm.codegen.model.CodeElt
+import org.preesm.codegen.model.CodegenFactory
+import org.preesm.codegen.model.CoreBlock
+import org.preesm.codegen.model.FifoCall
+import org.preesm.codegen.model.FunctionCall
+import org.preesm.codegen.model.LoopBlock
+import org.preesm.codegen.model.PortDirection
+import org.preesm.codegen.model.SharedMemoryCommunication
+import org.preesm.codegen.model.SpecialCall
+import org.preesm.codegen.model.Variable
+import org.preesm.codegen.printer.PrinterState
 import org.preesm.codegen.xtend.printer.c.CPrinter
 
 /**

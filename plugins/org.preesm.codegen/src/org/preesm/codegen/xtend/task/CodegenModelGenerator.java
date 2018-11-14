@@ -38,7 +38,7 @@
  * The fact that you are presently reading this means that you have had
  * knowledge of the CeCILL license and that you accept its terms.
  */
-package org.ietr.preesm.codegen.xtend.task;
+package org.preesm.codegen.xtend.task;
 
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
@@ -95,33 +95,6 @@ import org.ietr.preesm.codegen.idl.IDLPrototypeFactory;
 import org.ietr.preesm.codegen.idl.Prototype;
 import org.ietr.preesm.codegen.model.CodeGenArgument;
 import org.ietr.preesm.codegen.model.CodeGenParameter;
-import org.ietr.preesm.codegen.model.codegen.ActorBlock;
-import org.ietr.preesm.codegen.model.codegen.ActorCall;
-import org.ietr.preesm.codegen.model.codegen.Block;
-import org.ietr.preesm.codegen.model.codegen.Buffer;
-import org.ietr.preesm.codegen.model.codegen.Call;
-import org.ietr.preesm.codegen.model.codegen.CodegenFactory;
-import org.ietr.preesm.codegen.model.codegen.CodegenPackage;
-import org.ietr.preesm.codegen.model.codegen.Communication;
-import org.ietr.preesm.codegen.model.codegen.CommunicationNode;
-import org.ietr.preesm.codegen.model.codegen.Constant;
-import org.ietr.preesm.codegen.model.codegen.ConstantString;
-import org.ietr.preesm.codegen.model.codegen.CoreBlock;
-import org.ietr.preesm.codegen.model.codegen.Delimiter;
-import org.ietr.preesm.codegen.model.codegen.Direction;
-import org.ietr.preesm.codegen.model.codegen.FifoCall;
-import org.ietr.preesm.codegen.model.codegen.FifoOperation;
-import org.ietr.preesm.codegen.model.codegen.FunctionCall;
-import org.ietr.preesm.codegen.model.codegen.LoopBlock;
-import org.ietr.preesm.codegen.model.codegen.NullBuffer;
-import org.ietr.preesm.codegen.model.codegen.PapifyAction;
-import org.ietr.preesm.codegen.model.codegen.PortDirection;
-import org.ietr.preesm.codegen.model.codegen.SharedMemoryCommunication;
-import org.ietr.preesm.codegen.model.codegen.SpecialCall;
-import org.ietr.preesm.codegen.model.codegen.SpecialType;
-import org.ietr.preesm.codegen.model.codegen.SubBuffer;
-import org.ietr.preesm.codegen.model.codegen.Variable;
-import org.ietr.preesm.codegen.model.util.CodegenModelUserFactory;
 import org.ietr.preesm.core.architecture.route.MessageRouteStep;
 import org.ietr.preesm.core.scenario.PreesmScenario;
 import org.ietr.preesm.core.types.BufferAggregate;
@@ -137,6 +110,34 @@ import org.ietr.preesm.memory.allocation.MemoryAllocator;
 import org.ietr.preesm.memory.exclusiongraph.MemoryExclusionGraph;
 import org.ietr.preesm.memory.exclusiongraph.MemoryExclusionVertex;
 import org.ietr.preesm.memory.script.Range;
+import org.preesm.codegen.CodegenException;
+import org.preesm.codegen.model.ActorBlock;
+import org.preesm.codegen.model.ActorCall;
+import org.preesm.codegen.model.Block;
+import org.preesm.codegen.model.Buffer;
+import org.preesm.codegen.model.Call;
+import org.preesm.codegen.model.CodegenFactory;
+import org.preesm.codegen.model.CodegenPackage;
+import org.preesm.codegen.model.Communication;
+import org.preesm.codegen.model.CommunicationNode;
+import org.preesm.codegen.model.Constant;
+import org.preesm.codegen.model.ConstantString;
+import org.preesm.codegen.model.CoreBlock;
+import org.preesm.codegen.model.Delimiter;
+import org.preesm.codegen.model.Direction;
+import org.preesm.codegen.model.FifoCall;
+import org.preesm.codegen.model.FifoOperation;
+import org.preesm.codegen.model.FunctionCall;
+import org.preesm.codegen.model.LoopBlock;
+import org.preesm.codegen.model.NullBuffer;
+import org.preesm.codegen.model.PapifyAction;
+import org.preesm.codegen.model.PortDirection;
+import org.preesm.codegen.model.SharedMemoryCommunication;
+import org.preesm.codegen.model.SpecialCall;
+import org.preesm.codegen.model.SpecialType;
+import org.preesm.codegen.model.SubBuffer;
+import org.preesm.codegen.model.Variable;
+import org.preesm.codegen.model.util.CodegenModelUserFactory;
 
 /**
  * The objective of this class is to generate an intermediate model that will be used to print the generated code. <br>

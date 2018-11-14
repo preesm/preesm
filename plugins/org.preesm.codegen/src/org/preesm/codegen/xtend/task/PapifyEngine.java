@@ -36,22 +36,22 @@
  * The fact that you are presently reading this means that you have had
  * knowledge of the CeCILL license and that you accept its terms.
  */
-package org.ietr.preesm.codegen.xtend.task;
+package org.preesm.codegen.xtend.task;
 
 import java.util.ArrayList;
 import java.util.LinkedHashSet;
 import java.util.Set;
 import org.ietr.dftools.algorithm.model.dag.DAGVertex;
 import org.ietr.dftools.algorithm.model.dag.DirectedAcyclicGraph;
-import org.ietr.preesm.codegen.model.codegen.CodegenFactory;
-import org.ietr.preesm.codegen.model.codegen.Constant;
-import org.ietr.preesm.codegen.model.codegen.ConstantString;
-import org.ietr.preesm.codegen.model.codegen.PapifyAction;
 import org.ietr.preesm.core.scenario.PreesmScenario;
 import org.ietr.preesm.core.scenario.papi.PapiEvent;
 import org.ietr.preesm.core.scenario.papi.PapiEventModifier;
 import org.ietr.preesm.core.scenario.papi.PapifyConfigActor;
 import org.ietr.preesm.core.scenario.papi.PapifyConfigManager;
+import org.preesm.codegen.model.CodegenFactory;
+import org.preesm.codegen.model.Constant;
+import org.preesm.codegen.model.ConstantString;
+import org.preesm.codegen.model.PapifyAction;
 
 /**
  * The Class PapifyEngine.

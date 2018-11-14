@@ -45,23 +45,13 @@
 -->
 
 <plugin>
-
-   <extension point="org.eclipse.emf.ecore.generated_package">
-      <!-- @generated codegen -->
-      <package
-            uri="http://codegen/1.0"
-            class="org.ietr.preesm.codegen.model.codegen.CodegenPackage"
-            genModel="model/Codegen.xcore"/>
-   </extension>
-
    <extension-point id="printers" name="Printers"
       schema="schema/printers.exsd" />
-
 
    <extension point="org.preesm.workflow.tasks">
       <task id="org.ietr.preesm.codegen.xtend.task.CodegenTask"
          name="Xtend Codegen"
-         type="org.ietr.preesm.codegen.xtend.task.CodegenTask">
+         type="org.preesm.codegen.xtend.task.CodegenTask">
          <inputs>
             <input id="MEGs" object="java.util.Map">
             </input>
@@ -79,7 +69,7 @@
       <task
             id="org.ietr.preesm.codegen.xtend.task.CodegenPapifyEngineTask"
             name="Papify Engine Task"
-            type="org.ietr.preesm.codegen.xtend.task.CodegenPapifyEngineTask">
+            type="org.preesm.codegen.xtend.task.CodegenPapifyEngineTask">
             <inputs>
             	<input
                   id="scenario"
@@ -98,4 +88,13 @@
          </outputs>
       </task>
    </extension>
+
+   <extension point="org.eclipse.emf.ecore.generated_package">
+      <!-- @generated Codegen -->
+      <package
+            uri="http://org.preesm/model/codegen"
+            class="org.preesm.codegen.model.CodegenPackage"
+            genModel="model/Codegen.xcore"/>
+   </extension>
+
 </plugin>
