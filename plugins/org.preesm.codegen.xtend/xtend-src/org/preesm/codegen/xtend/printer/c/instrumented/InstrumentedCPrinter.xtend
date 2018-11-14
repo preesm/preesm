@@ -35,7 +35,7 @@
  * The fact that you are presently reading this means that you have had
  * knowledge of the CeCILL license and that you accept its terms.
  */
-package org.ietr.preesm.codegen.xtend.printer.c.instrumented
+package org.preesm.codegen.xtend.printer.c.instrumented
 
 import java.util.ArrayList
 import java.util.Collection
@@ -54,7 +54,7 @@ import org.ietr.preesm.codegen.model.codegen.SharedMemoryCommunication
 import org.ietr.preesm.codegen.model.codegen.SpecialCall
 import org.ietr.preesm.codegen.model.codegen.Variable
 import org.ietr.preesm.codegen.printer.PrinterState
-import org.ietr.preesm.codegen.xtend.printer.c.CPrinter
+import org.preesm.codegen.xtend.printer.c.CPrinter
 
 /**
  * This printer currently prints instrumented C code for X86 cores with all

@@ -47,7 +47,7 @@
    <extension point="org.preesm.codegen.printers">
       <printers language="XML">
          <printer
-            class="org.ietr.preesm.codegen.xtend.printer.XMLPrinter"
+            class="org.preesm.codegen.xtend.printer.XMLPrinter"
             extension=".xml">
             <core_type type="x86">
             </core_type>
@@ -57,7 +57,7 @@
       </printers>
       <printers language="C">
          <printer
-            class="org.ietr.preesm.codegen.xtend.printer.c.CPrinter"
+            class="org.preesm.codegen.xtend.printer.c.CPrinter"
             extension=".c">
             <core_type type="x86">
             </core_type>
@@ -71,19 +71,19 @@
             </core_type>
          </printer>
          <printer
-            class="org.ietr.preesm.codegen.xtend.printer.c.C6678CPrinter"
+            class="org.preesm.codegen.xtend.printer.c.C6678CPrinter"
             extension=".c">
             <core_type type="c6678">
             </core_type>
          </printer>
          <printer
-            class="org.ietr.preesm.codegen.xtend.printer.c.MPPA2Printer"
+            class="org.preesm.codegen.xtend.printer.c.MPPA2Printer"
             extension=".c">
             <core_type type="MPPA2">
             </core_type>
          </printer>
          <printer
-            class="org.ietr.preesm.codegen.xtend.printer.c.MPPA2ExplicitPrinter"
+            class="org.preesm.codegen.xtend.printer.c.MPPA2ExplicitPrinter"
             extension=".c">
             <core_type type="MPPA2Explicit">
             </core_type>
@@ -91,7 +91,7 @@
       </printers>
       <printers language="InstrumentedC">
          <printer
-            class="org.ietr.preesm.codegen.xtend.printer.c.instrumented.InstrumentedCPrinter"
+            class="org.preesm.codegen.xtend.printer.c.instrumented.InstrumentedCPrinter"
             extension=".c">
             <core_type type="x86">
             </core_type>
@@ -105,7 +105,7 @@
             </core_type>
          </printer>
          <printer
-            class="org.ietr.preesm.codegen.xtend.printer.c.instrumented.InstrumentedC6678CPrinter"
+            class="org.preesm.codegen.xtend.printer.c.instrumented.InstrumentedC6678CPrinter"
             extension=".c">
             <core_type type="c6678">
             </core_type>
@@ -113,7 +113,7 @@
       </printers>
       <printers language="ComTracking">
          <printer
-            class="org.ietr.preesm.codegen.xtend.printer.ComTrackingPrinter"
+            class="org.preesm.codegen.xtend.printer.ComTrackingPrinter"
             extension=".txt">
             <core_type type="x86">
             </core_type>
@@ -123,51 +123,11 @@
       </printers>
       <printers language="TcpC">
          <printer
-            class="org.ietr.preesm.codegen.xtend.printer.net.c.TcpCPrinter"
+            class="org.preesm.codegen.xtend.printer.net.c.TcpCPrinter"
             extension=".c">
             <core_type type="x86">
             </core_type>
          </printer>
       </printers>
-   </extension>
-   <extension point="org.preesm.workflow.tasks">
-      <task id="org.ietr.preesm.codegen.xtend.task.CodegenTask"
-         name="Xtend Codegen"
-         type="org.ietr.preesm.codegen.xtend.task.CodegenTask">
-         <inputs>
-            <input id="MEGs" object="java.util.Map">
-            </input>
-            <input id="architecture"
-               object="org.ietr.dftools.architecture.slam.Design">
-            </input>
-            <input id="DAG"
-               object="org.ietr.dftools.algorithm.model.dag.DirectedAcyclicGraph">
-            </input>
-            <input id="scenario"
-               object="org.ietr.preesm.core.scenario.PreesmScenario">
-            </input>
-         </inputs>
-      </task>
-      <task
-            id="org.ietr.preesm.codegen.xtend.task.CodegenPapifyEngineTask"
-            name="Papify Engine Task"
-            type="org.ietr.preesm.codegen.xtend.task.CodegenPapifyEngineTask">
-            <inputs>
-            	<input
-                  id="scenario"
-                  object="org.ietr.preesm.core.scenario.PreesmScenario">
-            	</input>
-	            <input
-	                  id="DAG"
-	                  object="org.ietr.dftools.algorithm.model.dag.DirectedAcyclicGraph">
-	            </input>
-            </inputs>
-         <outputs>
-            <output
-                  id="DAG"
-                  object="org.ietr.dftools.algorithm.model.dag.DirectedAcyclicGraph">
-            </output>
-         </outputs>
-      </task>
    </extension>
 </plugin>

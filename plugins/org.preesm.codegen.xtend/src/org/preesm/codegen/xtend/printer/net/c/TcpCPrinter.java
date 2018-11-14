@@ -32,7 +32,7 @@
  * The fact that you are presently reading this means that you have had
  * knowledge of the CeCILL license and that you accept its terms.
  */
-package org.ietr.preesm.codegen.xtend.printer.net.c;
+package org.preesm.codegen.xtend.printer.net.c;
 
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -53,10 +53,10 @@ import org.ietr.preesm.codegen.model.codegen.Direction;
 import org.ietr.preesm.codegen.model.codegen.LoopBlock;
 import org.ietr.preesm.codegen.model.codegen.SharedMemoryCommunication;
 import org.ietr.preesm.codegen.model.codegen.Variable;
-import org.ietr.preesm.codegen.xtend.CodegenPlugin;
-import org.ietr.preesm.codegen.xtend.printer.c.CPrinter;
 import org.ietr.preesm.codegen.xtend.task.CodegenException;
 import org.ietr.preesm.utils.files.URLResolver;
+import org.preesm.codegen.xtend.CodegenPlugin;
+import org.preesm.codegen.xtend.printer.c.CPrinter;
 
 /**
  *

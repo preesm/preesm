@@ -56,4 +56,46 @@
 
    <extension-point id="printers" name="Printers"
       schema="schema/printers.exsd" />
+
+
+   <extension point="org.preesm.workflow.tasks">
+      <task id="org.ietr.preesm.codegen.xtend.task.CodegenTask"
+         name="Xtend Codegen"
+         type="org.ietr.preesm.codegen.xtend.task.CodegenTask">
+         <inputs>
+            <input id="MEGs" object="java.util.Map">
+            </input>
+            <input id="architecture"
+               object="org.ietr.dftools.architecture.slam.Design">
+            </input>
+            <input id="DAG"
+               object="org.ietr.dftools.algorithm.model.dag.DirectedAcyclicGraph">
+            </input>
+            <input id="scenario"
+               object="org.ietr.preesm.core.scenario.PreesmScenario">
+            </input>
+         </inputs>
+      </task>
+      <task
+            id="org.ietr.preesm.codegen.xtend.task.CodegenPapifyEngineTask"
+            name="Papify Engine Task"
+            type="org.ietr.preesm.codegen.xtend.task.CodegenPapifyEngineTask">
+            <inputs>
+            	<input
+                  id="scenario"
+                  object="org.ietr.preesm.core.scenario.PreesmScenario">
+            	</input>
+	            <input
+	                  id="DAG"
+	                  object="org.ietr.dftools.algorithm.model.dag.DirectedAcyclicGraph">
+	            </input>
+            </inputs>
+         <outputs>
+            <output
+                  id="DAG"
+                  object="org.ietr.dftools.algorithm.model.dag.DirectedAcyclicGraph">
+            </output>
+         </outputs>
+      </task>
+   </extension>
 </plugin>

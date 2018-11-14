@@ -33,18 +33,14 @@
  * The fact that you are presently reading this means that you have had
  * knowledge of the CeCILL license and that you accept its terms.
  */
-package org.ietr.preesm.codegen.xtend.printer.c.instrumented
+package org.preesm.codegen.xtend.printer.c
 
-import java.util.Collection
 import java.util.Date
 import java.util.LinkedHashSet
 import java.util.List
-import org.ietr.preesm.codegen.model.codegen.Block
 import org.ietr.preesm.codegen.model.codegen.Buffer
 import org.ietr.preesm.codegen.model.codegen.Call
 import org.ietr.preesm.codegen.model.codegen.CallBlock
-import org.ietr.preesm.codegen.model.codegen.CodeElt
-import org.ietr.preesm.codegen.model.codegen.CodegenFactory
 import org.ietr.preesm.codegen.model.codegen.CoreBlock
 import org.ietr.preesm.codegen.model.codegen.Delimiter
 import org.ietr.preesm.codegen.model.codegen.Direction
@@ -58,7 +54,7 @@ import org.ietr.preesm.codegen.model.codegen.SharedMemoryCommunication
 import org.ietr.preesm.codegen.model.codegen.SpecialCall
 import org.ietr.preesm.codegen.model.codegen.Variable
 
-class InstrumentedC6678CPrinter extends InstrumentedCPrinter {
+class C6678CPrinter extends CPrinter {
 
 	new() {
 		// do not generate a main file
@@ -70,33 +66,6 @@ class InstrumentedC6678CPrinter extends InstrumentedCPrinter {
 	 * multiple times in a broadcast or roundbuffer call.
 	 */
 	var currentOperationMemcpy = new LinkedHashSet<CharSequence>();
-
-
-	/**
-	 * This methods prints a call to the cache invalidate method for each
-	 * {@link PortDirection#INPUT input} {@link Buffer} of the given
-	 * {@link Call}. If the input port is a {@link NullBuffer}, nothing is
-	 * printed.
-	 *
-	 * @param call
-	 *            the {@link Call} whose {@link PortDirection#INPUT input}
-	 *            {@link Buffer buffers} must be invalidated.
-	 * @return the corresponding code.
-	 */
-	def String printCacheCoherency(Call call)'''
-		«IF call.parameters.size > 0»
-			«FOR i :  0 .. call.parameters.size - 1»
-				«IF call.parameterDirections.get(i) == PortDirection.INPUT && !(call.parameters.get(i) instanceof NullBuffer)»
-					«IF (call.parameters.get(i) as Buffer).mergedRange !== null»
-						«FOR range : (call.parameters.get(i) as Buffer).mergedRange»
-							cache_wb(((char*)«call.parameters.get(i).doSwitch») + «range.start», «range.length»);
-						«ENDFOR»
-					«ENDIF»
-					cache_inv(«call.parameters.get(i).doSwitch», «(call.parameters.get(i) as Buffer).size»*sizeof(«call.parameters.get(i).type»));
-				«ENDIF»
-			«ENDFOR»
-		«ENDIF»
-	'''
 
 	override printCoreBlockHeader(CoreBlock block) '''
 		/**
@@ -110,11 +79,11 @@ class InstrumentedC6678CPrinter extends InstrumentedCPrinter {
 		#include "utils.h"
 		#include "communication.h"
 		#include "fifo.h"
-		#include "dump.h"
 		#include "cache.h"
 
 
 	'''
+
 	override printBroadcast(SpecialCall call) '''
 		«{
 			currentOperationMemcpy.clear
@@ -151,6 +120,7 @@ class InstrumentedC6678CPrinter extends InstrumentedCPrinter {
 				busy_barrier();
 
 	'''
+
 	override printFifoCall(FifoCall fifoCall) '''
 		«IF fifoCall.operation == FifoOperation::POP»
 			cache_inv(«fifoCall.headBuffer.doSwitch», «fifoCall.headBuffer.size»*sizeof(«fifoCall.headBuffer.type»));
@@ -183,56 +153,30 @@ class InstrumentedC6678CPrinter extends InstrumentedCPrinter {
 		«printCacheCoherency(call)»
 	'''
 
-	override printSharedMemoryCommunication(SharedMemoryCommunication communication) '''
-		«IF communication.direction == Direction::SEND && communication.delimiter == Delimiter::START»
-		cache_wbInv(«communication.data.doSwitch», «communication.data.size»*sizeof(«communication.data.type»));
+	/**
+	 * This methods prints a call to the cache invalidate method for each
+	 * {@link PortDirection#INPUT input} {@link Buffer} of the given
+	 * {@link Call}. If the input port is a {@link NullBuffer}, nothing is
+	 * printed.
+	 *
+	 * @param call
+	 *            the {@link Call} whose {@link PortDirection#INPUT input}
+	 *            {@link Buffer buffers} must be invalidated.
+	 * @return the corresponding code.
+	 */
+	def String printCacheCoherency(Call call)'''
+		«IF call.parameters.size > 0»
+			«FOR i :  0 .. call.parameters.size - 1»
+				«IF call.parameterDirections.get(i) == PortDirection.INPUT && !((call.parameters.get(i) as Buffer).local)  && !(call.parameters.get(i) instanceof NullBuffer)»
+					«IF (call.parameters.get(i) as Buffer).mergedRange !== null»
+						«FOR range : (call.parameters.get(i) as Buffer).mergedRange»
+							cache_wb(((char*)«call.parameters.get(i).doSwitch») + «range.start», «range.length»);
+						«ENDFOR»
+					«ENDIF»
+					cache_inv(«call.parameters.get(i).doSwitch», «(call.parameters.get(i) as Buffer).size»*sizeof(«call.parameters.get(i).type»));
+				«ENDIF»
+			«ENDFOR»
 		«ENDIF»
-		«communication.direction.toString.toLowerCase»«communication.delimiter.toString.toLowerCase.toFirstUpper»(«IF (communication.
-			direction == Direction::SEND && communication.delimiter == Delimiter::START) ||
-			(communication.direction == Direction::RECEIVE && communication.delimiter == Delimiter::END)»«{
-			var coreName = if (communication.direction == Direction::SEND) {
-					communication.receiveStart.coreContainer.name
-				} else {
-					communication.sendStart.coreContainer.name
-				}
-			coreName.charAt(coreName.length - 1)
-		}»«ENDIF»); // «communication.sendStart.coreContainer.name» > «communication.receiveStart.coreContainer.name»: «communication.
-			data.doSwitch»
-		«IF communication.direction == Direction::RECEIVE && communication.delimiter == Delimiter::END»
-		cache_inv(«communication.data.doSwitch», «communication.data.size»*sizeof(«communication.data.type»));
-		«ENDIF»
-	'''
-
-	override preProcessing(List<Block> printerBlocks, Collection<Block> allBlocks) {
-		super.preProcessing(printerBlocks, allBlocks)
-
-		// Change dumpTimedBuffer type to int
-		dumpTimedBuffer.type = "int"
-	}
-
-	override printCoreLoopBlockFooter(LoopBlock block2) '''
-			busy_barrier();
-			«IF dumpTimedBuffer.creator == block2.eContainer»
-					writeTime(«dumpTimedBuffer.doSwitch»,«{
-						val const = CodegenFactory::eINSTANCE.createConstant
-						const.name = "nbDump"
-						const.type = "int"
-						const.value = dumpTimedBuffer.size
-						const
-					}.doSwitch», «nbExec.doSwitch»);
-			«ENDIF»
-		}
-	}
-	'''
-
-		override printDefinitionsFooter(List<Variable> list) '''
-	«IF !list.empty»
-
-	«ENDIF»
-	'''
-
-	override printInstrumentedCall(CodeElt elt, CharSequence superPrint)'''
-		«superPrint»
 	'''
 
 	override printMemcpy(Buffer output, long outOffset, Buffer input, long inOffset, long size, String type) {
@@ -246,8 +190,9 @@ class InstrumentedC6678CPrinter extends InstrumentedCPrinter {
 		// Then a writeback is needed for the output to make sure that when a consumer
 		// finish its execution and invalidate the buffer, if another consumer of the same
 		// merged buffer is executed on the same core, its data will still be valid
-		if(result.empty) {
-						if (!(input instanceof NullBuffer)) {
+		// Unless the buffer is in a local memory
+		if (result.empty && !input.local) {
+			if (!(input instanceof NullBuffer)) {
 				result = '''cache_wb(«input.doSwitch», «input.size»*sizeof(«input.type»));'''
 			} else {
 
@@ -272,5 +217,30 @@ class InstrumentedC6678CPrinter extends InstrumentedCPrinter {
 			super.printRoundBuffer(call)
 		}»
 		«printCacheCoherency(call)»
+	'''
+
+	override printSharedMemoryCommunication(SharedMemoryCommunication communication) '''
+		«IF communication.direction == Direction::SEND && communication.delimiter == Delimiter::START»
+			«IF !(communication.data instanceof NullBuffer)»
+				cache_wbInv(«communication.data.doSwitch», «communication.data.size»*sizeof(«communication.data.type»));
+			«ENDIF»
+		«ENDIF»
+		«/** TODO: replace with super.printSharedMemoryCommunication() */
+		communication.direction.toString.toLowerCase»«communication.delimiter.toString.toLowerCase.toFirstUpper»(«IF (communication.
+			direction == Direction::SEND && communication.delimiter == Delimiter::START) ||
+			(communication.direction == Direction::RECEIVE && communication.delimiter == Delimiter::END)»«{
+			var coreName = if (communication.direction == Direction::SEND) {
+					communication.receiveStart.coreContainer.name
+				} else {
+					communication.sendStart.coreContainer.name
+				}
+			coreName.charAt(coreName.length - 1)
+		}»«ENDIF»); // «communication.sendStart.coreContainer.name» > «communication.receiveStart.coreContainer.name»: «communication.
+			data.doSwitch»
+		«IF communication.direction == Direction::RECEIVE && communication.delimiter == Delimiter::END»
+			«IF !(communication.data instanceof NullBuffer)»
+				cache_inv(«communication.data.doSwitch», «communication.data.size»*sizeof(«communication.data.type»));
+			«ENDIF»
+		«ENDIF»
 	'''
 }
