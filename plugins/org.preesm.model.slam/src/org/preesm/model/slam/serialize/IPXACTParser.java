@@ -37,10 +37,10 @@
 /**
  *
  */
-package org.ietr.dftools.architecture.slam.serialize;
+package org.preesm.model.slam.serialize;
 
-import org.ietr.dftools.architecture.slam.attributes.AttributesFactory;
-import org.ietr.dftools.architecture.slam.attributes.VLNV;
+import org.preesm.model.slam.attributes.AttributesFactory;
+import org.preesm.model.slam.attributes.VLNV;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 

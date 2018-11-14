@@ -36,10 +36,10 @@
  */
 package org.ietr.preesm.mapper.abc.edgescheduling;
 
-import org.ietr.dftools.architecture.slam.ComponentInstance;
 import org.ietr.preesm.mapper.abc.order.OrderManager;
 import org.ietr.preesm.mapper.model.MapperDAGVertex;
 import org.ietr.preesm.mapper.model.special.TransferVertex;
+import org.preesm.model.slam.ComponentInstance;
 
 /**
  * A complex edge scheduler used for tests. Do not use it for the moment.

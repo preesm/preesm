@@ -57,9 +57,6 @@ import org.ietr.dftools.algorithm.model.sdf.SDFGraph;
 import org.ietr.dftools.algorithm.model.sdf.visitors.DAGTransformation;
 import org.ietr.dftools.algorithm.model.types.LongEdgePropertyType;
 import org.ietr.dftools.algorithm.model.visitors.SDF4JException;
-import org.ietr.dftools.architecture.slam.ComponentInstance;
-import org.ietr.dftools.architecture.slam.Design;
-import org.ietr.dftools.architecture.slam.component.Operator;
 import org.ietr.preesm.core.architecture.util.DesignTools;
 import org.ietr.preesm.core.scenario.ConstraintGroup;
 import org.ietr.preesm.core.scenario.PreesmScenario;
@@ -77,6 +74,9 @@ import org.ietr.preesm.mapper.model.property.EdgeInit;
 import org.ietr.preesm.mapper.model.property.VertexInit;
 import org.ietr.preesm.mapper.model.special.TransferVertex;
 import org.preesm.commons.logger.PreesmLogger;
+import org.preesm.model.slam.ComponentInstance;
+import org.preesm.model.slam.Design;
+import org.preesm.model.slam.component.Operator;
 
 /**
  * Uses the SDF4J library to convert the input SDF into a DAG before scheduling.

@@ -37,8 +37,6 @@
  */
 package org.ietr.preesm.mapper.abc.impl.latency;
 
-import org.ietr.dftools.architecture.slam.ComponentInstance;
-import org.ietr.dftools.architecture.slam.Design;
 import org.ietr.preesm.core.architecture.util.DesignTools;
 import org.ietr.preesm.core.scenario.PreesmScenario;
 import org.ietr.preesm.mapper.abc.AbcType;
@@ -48,6 +46,8 @@ import org.ietr.preesm.mapper.model.MapperDAGEdge;
 import org.ietr.preesm.mapper.model.MapperDAGVertex;
 import org.ietr.preesm.mapper.model.special.PrecedenceEdgeAdder;
 import org.ietr.preesm.mapper.params.AbcParameters;
+import org.preesm.model.slam.ComponentInstance;
+import org.preesm.model.slam.Design;
 
 // TODO: Auto-generated Javadoc
 /**

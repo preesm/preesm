@@ -46,8 +46,6 @@ import org.ietr.dftools.algorithm.model.AbstractGraph;
 import org.ietr.dftools.algorithm.model.PropertyBean;
 import org.ietr.dftools.algorithm.model.dag.DAGEdge;
 import org.ietr.dftools.algorithm.model.dag.DAGVertex;
-import org.ietr.dftools.architecture.slam.attributes.Parameter;
-import org.ietr.dftools.architecture.slam.impl.ComponentInstanceImpl;
 import org.ietr.preesm.core.architecture.route.AbstractRouteStep;
 import org.ietr.preesm.core.types.ImplementationPropertyNames;
 import org.ietr.preesm.mapper.PreesmMapperException;
@@ -56,6 +54,8 @@ import org.ietr.preesm.mapper.model.MapperDAGVertex;
 import org.ietr.preesm.mapper.model.property.VertexInit;
 import org.ietr.preesm.mapper.model.special.TransferVertex;
 import org.preesm.commons.GMLKey;
+import org.preesm.model.slam.attributes.Parameter;
+import org.preesm.model.slam.impl.ComponentInstanceImpl;
 import org.w3c.dom.Element;
 
 /**

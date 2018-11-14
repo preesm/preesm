@@ -69,7 +69,6 @@ import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.emf.ecore.resource.ResourceSet;
 import org.eclipse.emf.ecore.resource.impl.ResourceSetImpl;
 import org.eclipse.emf.ecore.xmi.impl.XMIResourceFactoryImpl;
-import org.ietr.dftools.architecture.slam.Design;
 import org.ietr.dftools.workflow.WorkflowException;
 import org.ietr.preesm.core.scenario.PreesmScenario;
 import org.ietr.preesm.mapper.model.MapperDAG;
@@ -79,6 +78,7 @@ import org.preesm.codegen.model.Block;
 import org.preesm.codegen.model.CoreBlock;
 import org.preesm.codegen.printer.CodegenAbstractPrinter;
 import org.preesm.commons.logger.PreesmLogger;
+import org.preesm.model.slam.Design;
 
 /**
  * The Class CodegenEngine.
@@ -264,8 +264,7 @@ public class CodegenEngine {
         File folder = new File(osString);
         if (!folder.exists()) {
           folder.mkdirs();
-          PreesmLogger.getLogger()
-              .info("Created missing target dir [" + folder.getAbsolutePath() + "] during codegen");
+          PreesmLogger.getLogger().info("Created missing target dir [" + folder.getAbsolutePath() + "] during codegen");
         }
         workspace.getRoot().refreshLocal(IResource.DEPTH_INFINITE, null);
         if (!f.exists()) {

@@ -49,7 +49,6 @@ import org.ietr.dftools.algorithm.importer.InvalidModelException;
 import org.ietr.dftools.algorithm.model.parameters.VariableSet;
 import org.ietr.dftools.algorithm.model.sdf.SDFGraph;
 import org.ietr.dftools.algorithm.model.sdf.transformations.SpecialActorPortsIndexer;
-import org.ietr.dftools.architecture.slam.Design;
 import org.ietr.dftools.workflow.WorkflowException;
 import org.ietr.dftools.workflow.implement.AbstractScenarioImplementation;
 import org.ietr.dftools.workflow.implement.AbstractWorkflowNodeImplementation;
@@ -59,6 +58,7 @@ import org.ietr.preesm.core.scenario.serialize.ScenarioParser;
 import org.ietr.preesm.experiment.model.pimm.Parameter;
 import org.ietr.preesm.experiment.model.pimm.PiGraph;
 import org.ietr.preesm.experiment.model.pimm.serialize.PiParser;
+import org.preesm.model.slam.Design;
 
 /**
  * Implementing the new DFTools scenario node behavior for Preesm. This version generates an architecture with the

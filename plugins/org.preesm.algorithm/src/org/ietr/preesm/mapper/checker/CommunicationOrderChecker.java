@@ -43,10 +43,10 @@ import java.util.Set;
 import org.ietr.dftools.algorithm.model.dag.DAGEdge;
 import org.ietr.dftools.algorithm.model.dag.DAGVertex;
 import org.ietr.dftools.algorithm.model.dag.DirectedAcyclicGraph;
-import org.ietr.dftools.architecture.slam.ComponentInstance;
 import org.ietr.dftools.workflow.WorkflowException;
 import org.ietr.preesm.core.types.ImplementationPropertyNames;
 import org.ietr.preesm.mapper.ScheduledDAGIterator;
+import org.preesm.model.slam.ComponentInstance;
 
 /**
  * The purpose of the {@link CommunicationOrderChecker} is to verify the order of communications resulting from a

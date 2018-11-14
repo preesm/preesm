@@ -43,9 +43,9 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.concurrent.ConcurrentSkipListSet;
 import org.apache.commons.lang3.tuple.MutablePair;
-import org.ietr.dftools.architecture.slam.ComponentInstance;
 import org.ietr.preesm.core.architecture.route.Route;
 import org.ietr.preesm.core.scenario.PreesmScenario;
+import org.preesm.model.slam.ComponentInstance;
 
 /**
  * Table representing the different routes available to go from one operator to another.

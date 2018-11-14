@@ -52,8 +52,8 @@ import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.ui.dialogs.ListDialog;
 import org.eclipse.ui.model.WorkbenchContentProvider;
-import org.ietr.dftools.architecture.slam.serialize.RefinementList;
 import org.ietr.dftools.graphiti.model.Vertex;
+import org.preesm.model.slam.serialize.RefinementList;
 
 /**
  * A dialog box used to select multiple refinements for a single vertex in a Graphiti graph. It also gives a mean to

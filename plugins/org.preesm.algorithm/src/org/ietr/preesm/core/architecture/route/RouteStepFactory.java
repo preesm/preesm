@@ -37,14 +37,14 @@
 package org.ietr.preesm.core.architecture.route;
 
 import java.util.List;
-import org.ietr.dftools.architecture.slam.ComponentInstance;
-import org.ietr.dftools.architecture.slam.Design;
-import org.ietr.dftools.architecture.slam.component.Dma;
-import org.ietr.dftools.architecture.slam.component.Mem;
-import org.ietr.dftools.architecture.slam.component.impl.DmaImpl;
-import org.ietr.dftools.architecture.slam.component.impl.MemImpl;
-import org.ietr.dftools.architecture.slam.link.ControlLink;
-import org.ietr.dftools.architecture.slam.link.Link;
+import org.preesm.model.slam.ComponentInstance;
+import org.preesm.model.slam.Design;
+import org.preesm.model.slam.component.Dma;
+import org.preesm.model.slam.component.Mem;
+import org.preesm.model.slam.component.impl.DmaImpl;
+import org.preesm.model.slam.component.impl.MemImpl;
+import org.preesm.model.slam.link.ControlLink;
+import org.preesm.model.slam.link.Link;
 
 // TODO: Auto-generated Javadoc
 /**

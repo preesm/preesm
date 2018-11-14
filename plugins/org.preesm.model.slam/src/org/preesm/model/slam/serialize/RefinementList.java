@@ -34,7 +34,7 @@
  * The fact that you are presently reading this means that you have had
  * knowledge of the CeCILL license and that you accept its terms.
  */
-package org.ietr.dftools.architecture.slam.serialize;
+package org.preesm.model.slam.serialize;
 
 import java.util.ArrayList;
 import java.util.Arrays;

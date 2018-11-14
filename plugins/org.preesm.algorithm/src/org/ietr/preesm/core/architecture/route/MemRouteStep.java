@@ -38,9 +38,9 @@ package org.ietr.preesm.core.architecture.route;
 
 import java.util.ArrayList;
 import java.util.List;
-import org.ietr.dftools.architecture.slam.ComponentInstance;
-import org.ietr.dftools.architecture.slam.component.ComNode;
-import org.ietr.dftools.architecture.slam.component.Mem;
+import org.preesm.model.slam.ComponentInstance;
+import org.preesm.model.slam.component.ComNode;
+import org.preesm.model.slam.component.Mem;
 
 // TODO: Auto-generated Javadoc
 /**

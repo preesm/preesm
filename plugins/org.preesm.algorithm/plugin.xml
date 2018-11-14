@@ -57,7 +57,7 @@
             </output>
             <output
                   id="architecture"
-                  object="org.ietr.dftools.architecture.slam.Design">
+                  object="org.preesm.model.slam.Design">
             </output>
             <output
                   id="PiMM"
@@ -70,7 +70,7 @@
 
    <extension
          point="org.preesm.workflow.tasks">
-         
+
       <task
             id="org.ietr.preesm.Clustering"
             name="Clustering"
@@ -86,7 +86,7 @@
             </input>
             <input
                   id="architecture"
-                  object="org.ietr.dftools.architecture.slam.Design">
+                  object="org.preesm.model.slam.Design">
             </input>
          </inputs>
          <outputs>
@@ -96,7 +96,7 @@
             </output>
          </outputs>
       </task>
-      
+
       <task
             id="org.ietr.preesm.memory.bounds.MemoryBoundsEstimator"
             name="Memory Bounds Estimator"
@@ -243,7 +243,7 @@
          <inputs>
             <input
                   id="architecture"
-                  object="org.ietr.dftools.architecture.slam.Design">
+                  object="org.preesm.model.slam.Design">
             </input>
          </inputs>
       </task>
@@ -254,13 +254,13 @@
          <inputs>
             <input
                   id="architecture"
-                  object="org.ietr.dftools.architecture.slam.Design">
+                  object="org.preesm.model.slam.Design">
             </input>
          </inputs>
          <outputs>
             <output
                   id="architecture"
-                  object="org.ietr.dftools.architecture.slam.Design">
+                  object="org.preesm.model.slam.Design">
             </output>
          </outputs>
       </task>
@@ -280,7 +280,7 @@
             </input>
             <input
                   id="architecture"
-                  object="org.ietr.dftools.architecture.slam.Design">
+                  object="org.preesm.model.slam.Design">
             </input>
          </inputs>
       </task>
@@ -364,7 +364,7 @@
             </input>
             <input
                   id="architecture"
-                  object="org.ietr.dftools.architecture.slam.Design">
+                  object="org.preesm.model.slam.Design">
             </input>
          </inputs>
          <outputs>
@@ -410,7 +410,7 @@
             </input>
             <input
                   id="architecture"
-                  object="org.ietr.dftools.architecture.slam.Design">
+                  object="org.preesm.model.slam.Design">
             </input>
          </inputs>
          <outputs>
@@ -482,7 +482,7 @@
             </input>
             <input
                   id="architecture"
-                  object="org.ietr.dftools.architecture.slam.Design">
+                  object="org.preesm.model.slam.Design">
             </input>
          </inputs>
          <outputs>
@@ -517,7 +517,7 @@
             </input>
             <input
                   id="architecture"
-                  object="org.ietr.dftools.architecture.slam.Design">
+                  object="org.preesm.model.slam.Design">
             </input>
          </inputs>
       </task>
@@ -536,7 +536,7 @@
             </input>
             <input
                   id="architecture"
-                  object="org.ietr.dftools.architecture.slam.Design">
+                  object="org.preesm.model.slam.Design">
             </input>
          </inputs>
       </task>
@@ -694,7 +694,7 @@
             </input>
             <input
                   id="architecture"
-                  object="org.ietr.dftools.architecture.slam.Design">
+                  object="org.preesm.model.slam.Design">
             </input>
          </inputs>
          <outputs>
@@ -732,7 +732,7 @@
             </input>
             <input
                   id="architecture"
-                  object="org.ietr.dftools.architecture.slam.Design">
+                  object="org.preesm.model.slam.Design">
             </input>
             <input
                   id="scenario"
@@ -761,7 +761,7 @@
             </input>
             <input
                   id="architecture"
-                  object="org.ietr.dftools.architecture.slam.Design">
+                  object="org.preesm.model.slam.Design">
             </input>
             <input
                   id="scenario"
@@ -786,7 +786,7 @@
          <inputs>
             <input
                   id="architecture"
-                  object="org.ietr.dftools.architecture.slam.Design">
+                  object="org.preesm.model.slam.Design">
             </input>
             <input
                   id="scenario"
@@ -838,7 +838,7 @@
             </output>
             <output
                   id="architecture"
-                  object="org.ietr.dftools.architecture.slam.Design">
+                  object="org.preesm.model.slam.Design">
             </output>
          </outputs>
       </task>
@@ -918,7 +918,7 @@
             </input>
             <input
                   id="architecture"
-                  object="org.ietr.dftools.architecture.slam.Design">
+                  object="org.preesm.model.slam.Design">
             </input>
          </inputs>
          <outputs>
@@ -939,7 +939,7 @@
             </input>
             <input
                   id="architecture"
-                  object="org.ietr.dftools.architecture.slam.Design">
+                  object="org.preesm.model.slam.Design">
             </input>
             <input
                   id="DAG"
@@ -964,7 +964,7 @@
          <inputs>
             <input
                   id="architecture"
-                  object="org.ietr.dftools.architecture.slam.Design">
+                  object="org.preesm.model.slam.Design">
             </input>
             <input
                   id="scenario"
@@ -993,7 +993,7 @@
          <inputs>
             <input
                   id="architecture"
-                  object="org.ietr.dftools.architecture.slam.Design">
+                  object="org.preesm.model.slam.Design">
             </input>
             <input
                   id="scenario"
@@ -1022,7 +1022,7 @@
          <inputs>
             <input
                   id="architecture"
-                  object="org.ietr.dftools.architecture.slam.Design">
+                  object="org.preesm.model.slam.Design">
             </input>
             <input
                   id="scenario"
@@ -1051,7 +1051,7 @@
          <inputs>
             <input
                   id="architecture"
-                  object="org.ietr.dftools.architecture.slam.Design">
+                  object="org.preesm.model.slam.Design">
             </input>
             <input
                   id="scenario"

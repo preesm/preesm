@@ -42,12 +42,12 @@ import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
 import org.ietr.dftools.algorithm.iterators.TopologicalDAGIterator;
-import org.ietr.dftools.architecture.slam.ComponentInstance;
 import org.ietr.dftools.workflow.WorkflowException;
 import org.ietr.preesm.mapper.abc.impl.latency.LatencyAbc;
 import org.ietr.preesm.mapper.abc.order.VertexOrderList;
 import org.ietr.preesm.mapper.model.MapperDAGVertex;
 import org.preesm.commons.logger.PreesmLogger;
+import org.preesm.model.slam.ComponentInstance;
 
 /**
  * Scheduler that simulates a dynamic queuing system.

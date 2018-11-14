@@ -37,9 +37,6 @@
  */
 package org.ietr.preesm.mapper.abc.impl.latency;
 
-import org.ietr.dftools.architecture.slam.ComponentInstance;
-import org.ietr.dftools.architecture.slam.Design;
-import org.ietr.dftools.architecture.slam.component.ComNode;
 import org.ietr.dftools.workflow.WorkflowException;
 import org.ietr.preesm.core.architecture.util.DesignTools;
 import org.ietr.preesm.core.scenario.PreesmScenario;
@@ -52,6 +49,9 @@ import org.ietr.preesm.mapper.model.MapperDAGVertex;
 import org.ietr.preesm.mapper.params.AbcParameters;
 import org.ietr.preesm.mapper.tools.TLevelIterator;
 import org.preesm.commons.logger.PreesmLogger;
+import org.preesm.model.slam.ComponentInstance;
+import org.preesm.model.slam.Design;
+import org.preesm.model.slam.component.ComNode;
 
 /**
  * Simulates an architecture having as many cores as necessary to execute one operation on one core. All core have the

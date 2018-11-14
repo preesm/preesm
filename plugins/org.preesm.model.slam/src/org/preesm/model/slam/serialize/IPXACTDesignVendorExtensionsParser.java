@@ -37,7 +37,7 @@
 /**
  *
  */
-package org.ietr.dftools.architecture.slam.serialize;
+package org.preesm.model.slam.serialize;
 
 import java.util.LinkedHashMap;
 import java.util.Map;

@@ -37,8 +37,8 @@
 package org.ietr.preesm.core.architecture.route;
 
 import java.util.List;
-import org.ietr.dftools.architecture.slam.ComponentInstance;
-import org.ietr.dftools.architecture.slam.component.Dma;
+import org.preesm.model.slam.ComponentInstance;
+import org.preesm.model.slam.component.Dma;
 
 // TODO: Auto-generated Javadoc
 /**

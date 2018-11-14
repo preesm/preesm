@@ -43,12 +43,12 @@ package org.ietr.preesm.mapper;
 import java.util.Map;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.ietr.dftools.algorithm.model.sdf.SDFGraph;
-import org.ietr.dftools.architecture.slam.Design;
 import org.ietr.dftools.workflow.elements.Workflow;
 import org.ietr.dftools.workflow.implement.AbstractWorkflowNodeImplementation;
 import org.ietr.preesm.core.scenario.PreesmScenario;
 import org.ietr.preesm.mapper.graphtransfo.SdfToDagConverter;
 import org.ietr.preesm.mapper.model.MapperDAG;
+import org.preesm.model.slam.Design;
 
 /**
  * FAST is a sequential mapping/scheduling method based on list scheduling followed by a neighborhood search phase. It

@@ -1,7 +1,7 @@
 /**
- * Copyright or © or Copr. IETR/INSA - Rennes (2011 - 2017) :
+ * Copyright or © or Copr. IETR/INSA - Rennes (2011 - 2018) :
  *
- * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017)
+ * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017 - 2018)
  * Clément Guy <clement.guy@insa-rennes.fr> (2014)
  * Maxime Pelcat <maxime.pelcat@insa-rennes.fr> (2011)
  *
@@ -37,34 +37,62 @@
 /**
  *
  */
-package org.ietr.dftools.architecture.slam.serialize;
+package org.preesm.model.slam.serialize;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.util.Map;
 import org.eclipse.emf.common.util.URI;
-import org.eclipse.emf.ecore.resource.Resource;
-import org.eclipse.emf.ecore.resource.impl.ResourceFactoryImpl;
+import org.eclipse.emf.ecore.resource.impl.ResourceImpl;
+import org.preesm.model.slam.Design;
 
 // TODO: Auto-generated Javadoc
 /**
- * Resource factory used to serialize the System-Level Architecture Model into IP-XACT.
+ * Resource implementation used to (de)serialize the System-Level Architecture Model into IP-XACT.
  *
  * @author mpelcat
  */
-public class IPXACTResourceFactoryImpl extends ResourceFactoryImpl {
+public class IPXACTResourceImpl extends ResourceImpl {
 
   /**
-   * Constructor for IPXACTResourceFactoryImpl.
+   * Constructor for XMIResourceImpl.
+   *
+   * @param uri
+   *          the uri
    */
-  public IPXACTResourceFactoryImpl() {
-    super();
+  public IPXACTResourceImpl(final URI uri) {
+    super(uri);
   }
 
   /*
    * (non-Javadoc)
    *
-   * @see org.eclipse.emf.ecore.resource.impl.ResourceFactoryImpl#createResource(org.eclipse.emf.common.util.URI)
+   * @see org.eclipse.emf.ecore.resource.impl.ResourceImpl#doSave(java.io.OutputStream, java.util.Map)
    */
   @Override
-  public Resource createResource(final URI uri) {
-    return new IPXACTResourceImpl(uri);
+  public void doSave(final OutputStream outputStream, final Map<?, ?> options) throws IOException {
+
+    final IPXACTDesignWriter designWriter = new IPXACTDesignWriter();
+
+    final Design design = (Design) getContents().get(0);
+
+    designWriter.write(design, outputStream);
+  }
+
+  /*
+   * (non-Javadoc)
+   *
+   * @see org.eclipse.emf.ecore.resource.impl.ResourceImpl#doLoad(java.io.InputStream, java.util.Map)
+   */
+  @Override
+  protected void doLoad(final InputStream inputStream, final Map<?, ?> options) throws IOException {
+
+    final IPXACTDesignParser designParser = new IPXACTDesignParser(this.uri);
+
+    final Design design = designParser.parse(inputStream, null, null);
+    if ((design != null) && !getContents().contains(design)) {
+      getContents().add(design);
+    }
   }
 }

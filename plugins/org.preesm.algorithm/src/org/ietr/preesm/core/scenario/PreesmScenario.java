@@ -51,15 +51,15 @@ import org.eclipse.emf.ecore.resource.Resource;
 import org.ietr.dftools.algorithm.importer.InvalidModelException;
 import org.ietr.dftools.algorithm.model.sdf.SDFAbstractVertex;
 import org.ietr.dftools.algorithm.model.sdf.SDFGraph;
-import org.ietr.dftools.architecture.slam.Design;
-import org.ietr.dftools.architecture.slam.SlamPackage;
-import org.ietr.dftools.architecture.slam.serialize.IPXACTResourceFactoryImpl;
 import org.ietr.preesm.core.architecture.util.DesignTools;
 import org.ietr.preesm.core.scenario.papi.PapifyConfigManager;
 import org.ietr.preesm.core.scenario.serialize.ScenarioParser;
 import org.ietr.preesm.experiment.model.pimm.AbstractActor;
 import org.ietr.preesm.experiment.model.pimm.PiGraph;
 import org.ietr.preesm.experiment.model.pimm.serialize.PiParser;
+import org.preesm.model.slam.Design;
+import org.preesm.model.slam.SlamPackage;
+import org.preesm.model.slam.serialize.IPXACTResourceFactoryImpl;
 
 /**
  * Storing all information of a scenario.

@@ -37,22 +37,22 @@
 /**
  *
  */
-package org.ietr.dftools.architecture.slam.serialize;
+package org.preesm.model.slam.serialize;
 
 import java.io.IOException;
 import java.io.OutputStream;
 import java.util.UUID;
 import org.eclipse.emf.common.util.EList;
-import org.ietr.dftools.architecture.slam.ComponentInstance;
-import org.ietr.dftools.architecture.slam.Design;
-import org.ietr.dftools.architecture.slam.VLNVedElement;
-import org.ietr.dftools.architecture.slam.attributes.Parameter;
-import org.ietr.dftools.architecture.slam.attributes.VLNV;
-import org.ietr.dftools.architecture.slam.component.ComInterface;
-import org.ietr.dftools.architecture.slam.component.HierarchyPort;
-import org.ietr.dftools.architecture.slam.link.Link;
-import org.ietr.dftools.architecture.utils.SlamException;
 import org.preesm.commons.DomUtil;
+import org.preesm.model.slam.ComponentInstance;
+import org.preesm.model.slam.Design;
+import org.preesm.model.slam.VLNVedElement;
+import org.preesm.model.slam.attributes.Parameter;
+import org.preesm.model.slam.attributes.VLNV;
+import org.preesm.model.slam.component.ComInterface;
+import org.preesm.model.slam.component.HierarchyPort;
+import org.preesm.model.slam.link.Link;
+import org.preesm.model.slam.utils.SlamException;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 

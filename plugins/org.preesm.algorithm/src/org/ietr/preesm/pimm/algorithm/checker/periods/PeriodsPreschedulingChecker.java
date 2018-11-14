@@ -7,7 +7,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
 import org.eclipse.core.runtime.IProgressMonitor;
-import org.ietr.dftools.architecture.slam.Design;
 import org.ietr.dftools.workflow.WorkflowException;
 import org.ietr.dftools.workflow.elements.Workflow;
 import org.ietr.dftools.workflow.implement.AbstractTaskImplementation;
@@ -18,6 +17,7 @@ import org.ietr.preesm.experiment.model.pimm.Actor;
 import org.ietr.preesm.experiment.model.pimm.PeriodicElement;
 import org.ietr.preesm.experiment.model.pimm.PiGraph;
 import org.preesm.commons.logger.PreesmLogger;
+import org.preesm.model.slam.Design;
 
 /**
  * This class computes necessary conditions for the schedulability of graphs with periods.

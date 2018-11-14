@@ -46,7 +46,6 @@ import java.util.logging.Level;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.ietr.dftools.algorithm.model.dag.DirectedAcyclicGraph;
 import org.ietr.dftools.algorithm.model.parameters.InvalidExpressionException;
-import org.ietr.dftools.architecture.slam.Design;
 import org.ietr.dftools.workflow.WorkflowException;
 import org.ietr.dftools.workflow.elements.Workflow;
 import org.ietr.dftools.workflow.implement.AbstractTaskImplementation;
@@ -66,6 +65,7 @@ import org.ietr.preesm.mapper.model.MapperDAG;
 import org.ietr.preesm.mapper.optimizer.RedundantSynchronizationCleaner;
 import org.ietr.preesm.mapper.params.AbcParameters;
 import org.preesm.commons.logger.PreesmLogger;
+import org.preesm.model.slam.Design;
 
 /**
  * Generic class representing the scheduling algorithm behaviour.

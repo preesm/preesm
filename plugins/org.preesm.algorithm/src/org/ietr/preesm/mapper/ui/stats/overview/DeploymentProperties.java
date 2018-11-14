@@ -48,10 +48,10 @@ import org.eclipse.jface.viewers.IStructuredContentProvider;
 import org.eclipse.jface.viewers.ITableLabelProvider;
 import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.swt.graphics.Image;
-import org.ietr.dftools.architecture.slam.ComponentInstance;
 import org.ietr.preesm.core.architecture.util.DesignTools;
 import org.ietr.preesm.mapper.ui.Messages;
 import org.ietr.preesm.mapper.ui.stats.StatGenerator;
+import org.preesm.model.slam.ComponentInstance;
 
 // TODO: Auto-generated Javadoc
 /**

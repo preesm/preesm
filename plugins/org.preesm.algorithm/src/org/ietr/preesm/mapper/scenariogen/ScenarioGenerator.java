@@ -46,9 +46,6 @@ import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.Path;
 import org.ietr.dftools.algorithm.model.sdf.SDFAbstractVertex;
 import org.ietr.dftools.algorithm.model.sdf.SDFGraph;
-import org.ietr.dftools.architecture.slam.ComponentInstance;
-import org.ietr.dftools.architecture.slam.Design;
-import org.ietr.dftools.architecture.slam.component.Operator;
 import org.ietr.dftools.workflow.WorkflowException;
 import org.ietr.dftools.workflow.elements.Workflow;
 import org.ietr.dftools.workflow.implement.AbstractTaskImplementation;
@@ -58,6 +55,9 @@ import org.ietr.preesm.core.scenario.serialize.ScenarioParser;
 import org.ietr.preesm.core.types.ImplementationPropertyNames;
 import org.preesm.commons.files.WorkspaceUtils;
 import org.preesm.commons.logger.PreesmLogger;
+import org.preesm.model.slam.ComponentInstance;
+import org.preesm.model.slam.Design;
+import org.preesm.model.slam.component.Operator;
 
 /**
  * This class defines a method to load a new scenario and optionally change some constraints from an output DAG.

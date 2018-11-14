@@ -45,9 +45,9 @@ import org.ietr.dftools.algorithm.model.dag.DAGVertex;
 import org.ietr.dftools.algorithm.model.dag.DirectedAcyclicGraph;
 import org.ietr.dftools.algorithm.model.visitors.IGraphVisitor;
 import org.ietr.dftools.algorithm.model.visitors.SDF4JException;
-import org.ietr.dftools.architecture.slam.ComponentInstance;
 import org.ietr.preesm.core.types.ImplementationPropertyNames;
 import org.ietr.preesm.core.types.VertexType;
+import org.preesm.model.slam.ComponentInstance;
 
 /**
  * Visitor to identify the inter-core communications of a mapped DAG. This visitor is inspired by

@@ -39,7 +39,6 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.Set;
-import org.ietr.dftools.architecture.slam.ComponentInstance;
 import org.ietr.dftools.workflow.WorkflowException;
 import org.ietr.preesm.core.architecture.util.DesignTools;
 import org.ietr.preesm.mapper.PreesmMapperException;
@@ -48,6 +47,7 @@ import org.ietr.preesm.mapper.gantt.GanttComponent;
 import org.ietr.preesm.mapper.gantt.GanttData;
 import org.ietr.preesm.mapper.gantt.GanttTask;
 import org.ietr.preesm.mapper.ui.stats.StatGenerator;
+import org.preesm.model.slam.ComponentInstance;
 
 /**
  * This class exports stats from an IAbc (architecture benchmark computer) in XML format.

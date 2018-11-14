@@ -44,7 +44,6 @@ import java.util.Set;
 import org.ietr.dftools.algorithm.model.PropertyBean;
 import org.ietr.dftools.algorithm.model.dag.DAGEdge;
 import org.ietr.dftools.algorithm.model.dag.DAGVertex;
-import org.ietr.dftools.architecture.slam.ComponentInstance;
 import org.ietr.dftools.workflow.WorkflowException;
 import org.ietr.preesm.core.architecture.util.DesignTools;
 import org.ietr.preesm.core.scenario.PreesmScenario;
@@ -61,6 +60,7 @@ import org.ietr.preesm.mapper.model.special.PrecedenceEdge;
 import org.ietr.preesm.mapper.model.special.ReceiveVertex;
 import org.ietr.preesm.mapper.model.special.SendVertex;
 import org.ietr.preesm.mapper.model.special.TransferVertex;
+import org.preesm.model.slam.ComponentInstance;
 
 /**
  * Generating the statistics to be displayed in stat editor.

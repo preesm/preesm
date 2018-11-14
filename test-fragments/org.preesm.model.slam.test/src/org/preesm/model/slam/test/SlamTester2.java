@@ -34,7 +34,7 @@
  * The fact that you are presently reading this means that you have had
  * knowledge of the CeCILL license and that you accept its terms.
  */
-package org.ietr.dftools.architecture.test;
+package org.preesm.model.slam.test;
 
 import java.io.File;
 import java.io.IOException;
@@ -46,13 +46,13 @@ import org.eclipse.emf.ecore.EPackage;
 import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.emf.ecore.resource.ResourceSet;
 import org.eclipse.emf.ecore.resource.impl.ResourceSetImpl;
-import org.ietr.dftools.architecture.slam.Design;
-import org.ietr.dftools.architecture.slam.SlamPackage;
-import org.ietr.dftools.architecture.slam.process.SlamFlattener;
-import org.ietr.dftools.architecture.slam.serialize.IPXACTResourceFactoryImpl;
-import org.ietr.dftools.architecture.utils.SlamException;
 import org.junit.Assert;
 import org.junit.Test;
+import org.preesm.model.slam.Design;
+import org.preesm.model.slam.SlamPackage;
+import org.preesm.model.slam.process.SlamFlattener;
+import org.preesm.model.slam.serialize.IPXACTResourceFactoryImpl;
+import org.preesm.model.slam.utils.SlamException;
 
 /**
  */

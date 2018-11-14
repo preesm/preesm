@@ -45,8 +45,6 @@ import java.util.Set;
 import org.ietr.dftools.algorithm.model.AbstractVertex;
 import org.ietr.dftools.algorithm.model.dag.DAGEdge;
 import org.ietr.dftools.algorithm.model.dag.DAGVertex;
-import org.ietr.dftools.architecture.slam.ComponentInstance;
-import org.ietr.dftools.architecture.slam.component.Operator;
 import org.ietr.preesm.core.architecture.util.DesignTools;
 import org.ietr.preesm.core.types.ImplementationPropertyNames;
 import org.ietr.preesm.mapper.model.property.VertexInit;
@@ -57,6 +55,8 @@ import org.ietr.preesm.mapper.model.special.PrecedenceEdge;
 import org.ietr.preesm.mapper.model.special.ReceiveVertex;
 import org.ietr.preesm.mapper.model.special.SendVertex;
 import org.ietr.preesm.mapper.model.special.TransferVertex;
+import org.preesm.model.slam.ComponentInstance;
+import org.preesm.model.slam.component.Operator;
 
 /**
  * Represents a vertex in a DAG of type {@link MapperDAG} used in the mapper.

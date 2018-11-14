@@ -51,7 +51,6 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.FutureTask;
 import java.util.concurrent.Semaphore;
 import java.util.logging.Level;
-import org.ietr.dftools.architecture.slam.Design;
 import org.ietr.dftools.workflow.WorkflowException;
 import org.ietr.preesm.core.scenario.PreesmScenario;
 import org.ietr.preesm.mapper.PreesmMapperException;
@@ -69,6 +68,7 @@ import org.ietr.preesm.mapper.params.PFastAlgoParameters;
 import org.ietr.preesm.mapper.ui.BestCostPlotter;
 import org.ietr.preesm.mapper.ui.bestcost.BestCostEditor;
 import org.preesm.commons.logger.PreesmLogger;
+import org.preesm.model.slam.Design;
 
 /**
  * Task scheduling FAST algorithm multithread.

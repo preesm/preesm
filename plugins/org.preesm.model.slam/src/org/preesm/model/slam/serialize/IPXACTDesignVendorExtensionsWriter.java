@@ -37,15 +37,15 @@
 /**
  *
  */
-package org.ietr.dftools.architecture.slam.serialize;
+package org.preesm.model.slam.serialize;
 
-import org.ietr.dftools.architecture.slam.Design;
-import org.ietr.dftools.architecture.slam.attributes.Parameter;
-import org.ietr.dftools.architecture.slam.component.ComNode;
-import org.ietr.dftools.architecture.slam.component.Component;
-import org.ietr.dftools.architecture.slam.component.Dma;
-import org.ietr.dftools.architecture.slam.component.Mem;
-import org.ietr.dftools.architecture.slam.link.Link;
+import org.preesm.model.slam.Design;
+import org.preesm.model.slam.attributes.Parameter;
+import org.preesm.model.slam.component.ComNode;
+import org.preesm.model.slam.component.Component;
+import org.preesm.model.slam.component.Dma;
+import org.preesm.model.slam.component.Mem;
+import org.preesm.model.slam.link.Link;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 

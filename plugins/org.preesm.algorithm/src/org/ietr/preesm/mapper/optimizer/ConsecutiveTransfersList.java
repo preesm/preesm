@@ -36,10 +36,10 @@ package org.ietr.preesm.mapper.optimizer;
 
 import java.util.ArrayList;
 import org.ietr.dftools.algorithm.model.dag.DAGVertex;
-import org.ietr.dftools.architecture.slam.ComponentInstance;
 import org.ietr.preesm.mapper.model.special.ReceiveVertex;
 import org.ietr.preesm.mapper.model.special.SendVertex;
 import org.ietr.preesm.mapper.model.special.TransferVertex;
+import org.preesm.model.slam.ComponentInstance;
 
 /**
  *

@@ -41,14 +41,14 @@ import java.util.Iterator;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
-import org.ietr.dftools.architecture.slam.ComponentHolder;
-import org.ietr.dftools.architecture.slam.ComponentInstance;
-import org.ietr.dftools.architecture.slam.Design;
-import org.ietr.dftools.architecture.slam.attributes.Parameter;
-import org.ietr.dftools.architecture.slam.component.Component;
-import org.ietr.dftools.architecture.slam.component.Operator;
-import org.ietr.dftools.architecture.slam.component.impl.ComNodeImpl;
-import org.ietr.dftools.architecture.slam.link.Link;
+import org.preesm.model.slam.ComponentHolder;
+import org.preesm.model.slam.ComponentInstance;
+import org.preesm.model.slam.Design;
+import org.preesm.model.slam.attributes.Parameter;
+import org.preesm.model.slam.component.Component;
+import org.preesm.model.slam.component.Operator;
+import org.preesm.model.slam.component.impl.ComNodeImpl;
+import org.preesm.model.slam.link.Link;
 
 // TODO: Auto-generated Javadoc
 /**
@@ -169,7 +169,7 @@ public class DesignTools {
     if (design != null) {
       final ComponentHolder componentHolder = design.getComponentHolder();
       if (componentHolder != null) {
-        for (final org.ietr.dftools.architecture.slam.component.Component component : componentHolder.getComponents()) {
+        for (final org.preesm.model.slam.component.Component component : componentHolder.getComponents()) {
           if (component instanceof Operator) {
             operatorIds.add(component.getVlnv().getName());
           }
@@ -190,8 +190,7 @@ public class DesignTools {
   public static Set<Component> getOperatorComponents(final Design design) {
     final Set<Component> operators = new LinkedHashSet<>();
 
-    for (final org.ietr.dftools.architecture.slam.component.Component component : design.getComponentHolder()
-        .getComponents()) {
+    for (final org.preesm.model.slam.component.Component component : design.getComponentHolder().getComponents()) {
       if (component instanceof Operator) {
         operators.add(component);
       }

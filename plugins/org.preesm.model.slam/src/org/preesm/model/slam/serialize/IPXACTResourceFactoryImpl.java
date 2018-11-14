@@ -1,7 +1,9 @@
 /**
- * Copyright or © or Copr. IETR/INSA - Rennes (2018) :
+ * Copyright or © or Copr. IETR/INSA - Rennes (2011 - 2017) :
  *
- * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2018)
+ * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017)
+ * Clément Guy <clement.guy@insa-rennes.fr> (2014)
+ * Maxime Pelcat <maxime.pelcat@insa-rennes.fr> (2011)
  *
  * This software is a computer program whose purpose is to help prototyping
  * parallel applications using dataflow formalism.
@@ -32,23 +34,37 @@
  * The fact that you are presently reading this means that you have had
  * knowledge of the CeCILL license and that you accept its terms.
  */
-package org.ietr.dftools.architecture.utils;
-
 /**
  *
- * @author anmorvan
- *
  */
-public class SlamException extends RuntimeException {
+package org.preesm.model.slam.serialize;
 
-  private static final long serialVersionUID = 1L;
+import org.eclipse.emf.common.util.URI;
+import org.eclipse.emf.ecore.resource.Resource;
+import org.eclipse.emf.ecore.resource.impl.ResourceFactoryImpl;
 
-  public SlamException(final String message) {
-    super(message);
+// TODO: Auto-generated Javadoc
+/**
+ * Resource factory used to serialize the System-Level Architecture Model into IP-XACT.
+ *
+ * @author mpelcat
+ */
+public class IPXACTResourceFactoryImpl extends ResourceFactoryImpl {
+
+  /**
+   * Constructor for IPXACTResourceFactoryImpl.
+   */
+  public IPXACTResourceFactoryImpl() {
+    super();
   }
 
-  public SlamException(final String message, final Throwable cause) {
-    super(message, cause);
+  /*
+   * (non-Javadoc)
+   *
+   * @see org.eclipse.emf.ecore.resource.impl.ResourceFactoryImpl#createResource(org.eclipse.emf.common.util.URI)
+   */
+  @Override
+  public Resource createResource(final URI uri) {
+    return new IPXACTResourceImpl(uri);
   }
-
 }

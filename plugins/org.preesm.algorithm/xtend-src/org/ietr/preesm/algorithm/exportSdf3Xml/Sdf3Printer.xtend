@@ -48,10 +48,10 @@ import org.ietr.dftools.algorithm.model.sdf.SDFEdge
 import org.ietr.dftools.algorithm.model.sdf.SDFGraph
 import org.ietr.dftools.algorithm.model.sdf.SDFVertex
 import org.ietr.dftools.algorithm.model.sdf.esdf.SDFSourceInterfaceVertex
-import org.ietr.dftools.architecture.slam.Design
 import org.ietr.preesm.core.scenario.PreesmScenario
 import org.ietr.preesm.core.scenario.Timing
 import org.preesm.commons.math.MathFunctionsHelper
+import org.preesm.model.slam.Design
 
 /**
  * This class is used to print an {@link SDFGraph} in the SDF For Free (SDF3)

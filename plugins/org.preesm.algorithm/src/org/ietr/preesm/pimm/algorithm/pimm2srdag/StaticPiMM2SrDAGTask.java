@@ -44,7 +44,6 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.ietr.dftools.algorithm.model.visitors.VisitorOutput;
-import org.ietr.dftools.architecture.slam.Design;
 import org.ietr.dftools.workflow.WorkflowException;
 import org.ietr.dftools.workflow.elements.Workflow;
 import org.ietr.dftools.workflow.implement.AbstractTaskImplementation;
@@ -55,6 +54,7 @@ import org.ietr.preesm.mapper.graphtransfo.SdfToDagConverter;
 import org.ietr.preesm.mapper.model.MapperDAG;
 import org.ietr.preesm.pimm.algorithm.pimm2srdag.StaticPiMM2SrDAGLauncher.StaticPiMM2SrDAGException;
 import org.preesm.commons.logger.PreesmLogger;
+import org.preesm.model.slam.Design;
 
 /**
  * @author farresti

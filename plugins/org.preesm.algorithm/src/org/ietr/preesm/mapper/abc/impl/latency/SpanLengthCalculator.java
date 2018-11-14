@@ -36,13 +36,13 @@
  */
 package org.ietr.preesm.mapper.abc.impl.latency;
 
-import org.ietr.dftools.architecture.slam.Design;
 import org.ietr.dftools.workflow.WorkflowException;
 import org.ietr.preesm.core.scenario.PreesmScenario;
 import org.ietr.preesm.mapper.abc.taskscheduling.TaskSchedType;
 import org.ietr.preesm.mapper.model.MapperDAG;
 import org.ietr.preesm.mapper.model.MapperDAGEdge;
 import org.ietr.preesm.mapper.params.AbcParameters;
+import org.preesm.model.slam.Design;
 
 /**
  * Using infinite homogeneous simulation to calculate the span length of a dag.

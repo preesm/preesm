@@ -56,7 +56,7 @@
             <input id="MEGs" object="java.util.Map">
             </input>
             <input id="architecture"
-               object="org.ietr.dftools.architecture.slam.Design">
+               object="org.preesm.model.slam.Design">
             </input>
             <input id="DAG"
                object="org.ietr.dftools.algorithm.model.dag.DirectedAcyclicGraph">

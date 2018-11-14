@@ -39,7 +39,6 @@ package org.ietr.preesm.mapper.abc.transaction;
 
 import java.util.List;
 import java.util.logging.Level;
-import org.ietr.dftools.architecture.slam.ComponentInstance;
 import org.ietr.preesm.core.architecture.route.AbstractRouteStep;
 import org.ietr.preesm.mapper.abc.edgescheduling.IEdgeSched;
 import org.ietr.preesm.mapper.abc.order.OrderManager;
@@ -50,6 +49,7 @@ import org.ietr.preesm.mapper.model.special.PrecedenceEdge;
 import org.ietr.preesm.mapper.model.special.PrecedenceEdgeAdder;
 import org.ietr.preesm.mapper.model.special.TransferVertex;
 import org.preesm.commons.logger.PreesmLogger;
+import org.preesm.model.slam.ComponentInstance;
 
 // TODO: Auto-generated Javadoc
 /**

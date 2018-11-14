@@ -49,7 +49,6 @@ import org.eclipse.core.runtime.IExtensionRegistry;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.Platform;
 import org.ietr.dftools.algorithm.model.dag.DirectedAcyclicGraph;
-import org.ietr.dftools.architecture.slam.Design;
 import org.ietr.dftools.workflow.WorkflowException;
 import org.ietr.dftools.workflow.elements.Workflow;
 import org.ietr.dftools.workflow.implement.AbstractTaskImplementation;
@@ -57,6 +56,7 @@ import org.ietr.preesm.core.scenario.PreesmScenario;
 import org.ietr.preesm.mapper.model.MapperDAG;
 import org.ietr.preesm.memory.exclusiongraph.MemoryExclusionGraph;
 import org.preesm.codegen.model.Block;
+import org.preesm.model.slam.Design;
 
 /**
  * The Class CodegenTask.

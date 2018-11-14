@@ -37,7 +37,7 @@
 /**
  *
  */
-package org.ietr.dftools.architecture.slam.process;
+package org.preesm.model.slam.process;
 
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
@@ -47,19 +47,19 @@ import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
 import org.eclipse.emf.common.util.EList;
-import org.ietr.dftools.architecture.slam.ComponentInstance;
-import org.ietr.dftools.architecture.slam.Design;
-import org.ietr.dftools.architecture.slam.SlamFactory;
-import org.ietr.dftools.architecture.slam.attributes.AttributesFactory;
-import org.ietr.dftools.architecture.slam.attributes.Parameter;
-import org.ietr.dftools.architecture.slam.component.ComInterface;
-import org.ietr.dftools.architecture.slam.component.Component;
-import org.ietr.dftools.architecture.slam.component.HierarchyPort;
-import org.ietr.dftools.architecture.slam.link.ControlLink;
-import org.ietr.dftools.architecture.slam.link.DataLink;
-import org.ietr.dftools.architecture.slam.link.Link;
-import org.ietr.dftools.architecture.slam.link.LinkFactory;
-import org.ietr.dftools.architecture.utils.SlamException;
+import org.preesm.model.slam.ComponentInstance;
+import org.preesm.model.slam.Design;
+import org.preesm.model.slam.SlamFactory;
+import org.preesm.model.slam.attributes.AttributesFactory;
+import org.preesm.model.slam.attributes.Parameter;
+import org.preesm.model.slam.component.ComInterface;
+import org.preesm.model.slam.component.Component;
+import org.preesm.model.slam.component.HierarchyPort;
+import org.preesm.model.slam.link.ControlLink;
+import org.preesm.model.slam.link.DataLink;
+import org.preesm.model.slam.link.Link;
+import org.preesm.model.slam.link.LinkFactory;
+import org.preesm.model.slam.utils.SlamException;
 
 /**
  * Methods to flatten the hierarchy of a System-Level Architecture Model. If multiple refinements are available for a

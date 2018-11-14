@@ -38,7 +38,7 @@
 package org.ietr.preesm.core.architecture.route;
 
 import org.ietr.dftools.algorithm.model.CloneableProperty;
-import org.ietr.dftools.architecture.slam.ComponentInstance;
+import org.preesm.model.slam.ComponentInstance;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 

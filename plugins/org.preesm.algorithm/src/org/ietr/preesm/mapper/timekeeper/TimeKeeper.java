@@ -44,11 +44,11 @@ import java.util.Observable;
 import java.util.Observer;
 import java.util.Set;
 import org.ietr.dftools.algorithm.model.dag.DAGVertex;
-import org.ietr.dftools.architecture.slam.ComponentInstance;
 import org.ietr.preesm.mapper.abc.order.OrderManager;
 import org.ietr.preesm.mapper.model.MapperDAG;
 import org.ietr.preesm.mapper.model.MapperDAGVertex;
 import org.ietr.preesm.mapper.model.property.VertexTiming;
+import org.preesm.model.slam.ComponentInstance;
 
 /**
  * New version of the time keeper. Trying to minimize the mapping time by reducing the evaluation time of timings.

@@ -48,13 +48,13 @@ import java.util.Observable;
 import java.util.Set;
 import java.util.logging.Level;
 import org.ietr.dftools.algorithm.model.dag.DAGVertex;
-import org.ietr.dftools.architecture.slam.ComponentInstance;
-import org.ietr.dftools.architecture.slam.Design;
 import org.ietr.preesm.core.architecture.util.DesignTools;
 import org.ietr.preesm.mapper.PreesmMapperException;
 import org.ietr.preesm.mapper.model.MapperDAG;
 import org.ietr.preesm.mapper.model.MapperDAGVertex;
 import org.preesm.commons.logger.PreesmLogger;
+import org.preesm.model.slam.ComponentInstance;
+import org.preesm.model.slam.Design;
 
 /**
  * The scheduling order manager keeps a total order of the vertices and a partial order in each schedule. It is used by

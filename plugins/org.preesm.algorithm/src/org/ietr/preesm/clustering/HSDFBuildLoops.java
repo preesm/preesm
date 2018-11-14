@@ -60,7 +60,6 @@ import org.ietr.dftools.algorithm.model.sdf.esdf.SDFSourceInterfaceVertex;
 import org.ietr.dftools.algorithm.model.sdf.transformations.IbsdfFlattener;
 import org.ietr.dftools.algorithm.model.types.LongEdgePropertyType;
 import org.ietr.dftools.algorithm.model.visitors.SDF4JException;
-import org.ietr.dftools.architecture.slam.Design;
 import org.ietr.dftools.workflow.WorkflowException;
 import org.ietr.preesm.core.scenario.PreesmScenario;
 import org.ietr.preesm.core.types.DataType;
@@ -74,6 +73,7 @@ import org.ietr.preesm.memory.exclusiongraph.MemoryExclusionGraph;
 import org.ietr.preesm.memory.script.MemoryScriptEngine;
 import org.preesm.commons.logger.PreesmLogger;
 import org.preesm.commons.math.MathFunctionsHelper;
+import org.preesm.model.slam.Design;
 
 /**
  * This class is used to perform the clusterization (loop IR builder and memory allocation). It is used to set the

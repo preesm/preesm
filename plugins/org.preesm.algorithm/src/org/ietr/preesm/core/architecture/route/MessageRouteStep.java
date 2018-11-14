@@ -38,10 +38,10 @@ package org.ietr.preesm.core.architecture.route;
 
 import java.util.ArrayList;
 import java.util.List;
-import org.ietr.dftools.architecture.slam.ComponentInstance;
-import org.ietr.dftools.architecture.slam.component.ComNode;
-import org.ietr.dftools.architecture.slam.component.Component;
-import org.ietr.dftools.architecture.slam.component.impl.ComNodeImpl;
+import org.preesm.model.slam.ComponentInstance;
+import org.preesm.model.slam.component.ComNode;
+import org.preesm.model.slam.component.Component;
+import org.preesm.model.slam.component.impl.ComNodeImpl;
 
 // TODO: Auto-generated Javadoc
 /**

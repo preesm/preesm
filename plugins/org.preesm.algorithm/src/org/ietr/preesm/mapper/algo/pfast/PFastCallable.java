@@ -41,7 +41,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 import java.util.concurrent.Callable;
-import org.ietr.dftools.architecture.slam.Design;
 import org.ietr.preesm.core.scenario.PreesmScenario;
 import org.ietr.preesm.mapper.abc.impl.latency.InfiniteHomogeneousAbc;
 import org.ietr.preesm.mapper.abc.impl.latency.LatencyAbc;
@@ -52,6 +51,7 @@ import org.ietr.preesm.mapper.model.MapperDAG;
 import org.ietr.preesm.mapper.model.MapperDAGVertex;
 import org.ietr.preesm.mapper.params.AbcParameters;
 import org.ietr.preesm.mapper.params.FastAlgoParameters;
+import org.preesm.model.slam.Design;
 
 /**
  * One thread of Task scheduling FAST algorithm multithread.

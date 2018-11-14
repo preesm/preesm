@@ -47,10 +47,6 @@ import org.ietr.dftools.algorithm.model.dag.DAGEdge;
 import org.ietr.dftools.algorithm.model.dag.DAGVertex;
 import org.ietr.dftools.algorithm.model.dag.edag.DAGForkVertex;
 import org.ietr.dftools.algorithm.model.dag.edag.DAGJoinVertex;
-import org.ietr.dftools.architecture.slam.ComponentInstance;
-import org.ietr.dftools.architecture.slam.Design;
-import org.ietr.dftools.architecture.slam.attributes.VLNV;
-import org.ietr.dftools.architecture.slam.component.Operator;
 import org.ietr.preesm.core.architecture.util.DesignTools.ComponentInstanceComparator;
 import org.ietr.preesm.core.scenario.PreesmScenario;
 import org.ietr.preesm.experiment.model.pimm.AbstractActor;
@@ -68,6 +64,10 @@ import org.ietr.preesm.mapper.schedule.ScheduleEntry;
 import org.ietr.preesm.mapper.schedule.ScheduleUtils;
 import org.preesm.commons.files.URLResolver;
 import org.preesm.commons.logger.PreesmLogger;
+import org.preesm.model.slam.ComponentInstance;
+import org.preesm.model.slam.Design;
+import org.preesm.model.slam.attributes.VLNV;
+import org.preesm.model.slam.component.Operator;
 
 /**
  *

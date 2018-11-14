@@ -52,7 +52,6 @@ import org.eclipse.core.runtime.IProgressMonitor
 import org.eclipse.core.runtime.NullProgressMonitor
 import org.eclipse.core.runtime.Path
 import org.ietr.dftools.algorithm.importer.InvalidModelException
-import org.ietr.dftools.architecture.slam.ComponentInstance
 import org.ietr.dftools.workflow.WorkflowException
 import org.ietr.dftools.workflow.elements.Workflow
 import org.ietr.dftools.workflow.implement.AbstractTaskImplementation
@@ -72,6 +71,7 @@ import org.nfunk.jep.ParseException
 import org.preesm.commons.files.ContainersManager
 import org.preesm.commons.files.PathTools
 import org.preesm.commons.logger.PreesmLogger
+import org.preesm.model.slam.ComponentInstance
 
 /**
  * Exports activity information in terms of  quanta based on

@@ -41,12 +41,12 @@ import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.eclipse.core.runtime.IProgressMonitor;
-import org.ietr.dftools.architecture.slam.Design;
-import org.ietr.dftools.architecture.slam.process.SlamFlattener;
 import org.ietr.dftools.workflow.WorkflowException;
 import org.ietr.dftools.workflow.elements.Workflow;
 import org.ietr.dftools.workflow.implement.AbstractTaskImplementation;
 import org.preesm.commons.logger.PreesmLogger;
+import org.preesm.model.slam.Design;
+import org.preesm.model.slam.process.SlamFlattener;
 
 /**
  * Flattening the hierarchy of a given S-LAM architecture.

@@ -44,14 +44,14 @@ import org.ietr.dftools.algorithm.generator.SDFRandomGraph;
 import org.ietr.dftools.algorithm.model.sdf.SDFAbstractVertex;
 import org.ietr.dftools.algorithm.model.sdf.SDFGraph;
 import org.ietr.dftools.algorithm.model.visitors.SDF4JException;
-import org.ietr.dftools.architecture.slam.ComponentInstance;
-import org.ietr.dftools.architecture.slam.Design;
 import org.ietr.dftools.workflow.WorkflowException;
 import org.ietr.dftools.workflow.elements.Workflow;
 import org.ietr.dftools.workflow.implement.AbstractTaskImplementation;
 import org.ietr.preesm.core.scenario.ConstraintGroupManager;
 import org.ietr.preesm.core.scenario.PreesmScenario;
 import org.ietr.preesm.core.scenario.Timing;
+import org.preesm.model.slam.ComponentInstance;
+import org.preesm.model.slam.Design;
 
 /**
  * This Workflow element is used to generate random SDF graphs The user can define the following options: - Number of

@@ -42,11 +42,11 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.logging.Level;
-import org.ietr.dftools.architecture.slam.ComponentInstance;
 import org.ietr.preesm.core.architecture.util.DesignTools;
 import org.ietr.preesm.mapper.model.MapperDAG;
 import org.ietr.preesm.mapper.model.MapperDAGVertex;
 import org.preesm.commons.logger.PreesmLogger;
+import org.preesm.model.slam.ComponentInstance;
 
 // TODO: Auto-generated Javadoc
 /**

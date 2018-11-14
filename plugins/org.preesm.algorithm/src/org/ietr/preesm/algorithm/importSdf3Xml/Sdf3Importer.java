@@ -43,13 +43,13 @@ import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.Path;
 import org.ietr.dftools.algorithm.model.sdf.SDFGraph;
-import org.ietr.dftools.architecture.slam.Design;
 import org.ietr.dftools.workflow.elements.Workflow;
 import org.ietr.dftools.workflow.implement.AbstractTaskImplementation;
 import org.ietr.dftools.workflow.implement.AbstractWorkflowNodeImplementation;
 import org.ietr.preesm.core.scenario.PreesmScenario;
 import org.preesm.commons.files.PathTools;
 import org.preesm.commons.logger.PreesmLogger;
+import org.preesm.model.slam.Design;
 
 /**
  * This class is a {@link Workflow} task that parse a SDF in the SDF3 XML format and output its corresponding

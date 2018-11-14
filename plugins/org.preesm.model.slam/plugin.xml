@@ -45,7 +45,7 @@
       <!-- @generated Slam -->
       <package
             uri="http://org.preesm/model/slam"
-            class="org.ietr.dftools.architecture.slam.SlamPackage"
+            class="org.preesm.model.slam.SlamPackage"
             genModel="model/Slam.xcore"/>
    </extension>
 
@@ -53,7 +53,7 @@
       <!-- @generated Attributes -->
       <package
             uri="http://org.preesm/model/slam/attributes"
-            class="org.ietr.dftools.architecture.slam.attributes.AttributesPackage"
+            class="org.preesm.model.slam.attributes.AttributesPackage"
             genModel="model/Attributes.xcore"/>
    </extension>
 
@@ -61,7 +61,7 @@
       <!-- @generated Component -->
       <package
             uri="http://org.preesm/model/slam/component"
-            class="org.ietr.dftools.architecture.slam.component.ComponentPackage"
+            class="org.preesm.model.slam.component.ComponentPackage"
             genModel="model/Component.xcore"/>
    </extension>
 
@@ -69,7 +69,7 @@
       <!-- @generated Link -->
       <package
             uri="http://org.preesm/model/slam/link"
-            class="org.ietr.dftools.architecture.slam.link.LinkPackage"
+            class="org.preesm.model.slam.link.LinkPackage"
             genModel="model/Link.xcore"/>
    </extension>
 

@@ -1,7 +1,7 @@
 /**
- * Copyright or © or Copr. IETR/INSA - Rennes (2017 - 2018) :
+ * Copyright or © or Copr. IETR/INSA - Rennes (2018) :
  *
- * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017 - 2018)
+ * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2018)
  *
  * This software is a computer program whose purpose is to help prototyping
  * parallel applications using dataflow formalism.
@@ -32,35 +32,23 @@
  * The fact that you are presently reading this means that you have had
  * knowledge of the CeCILL license and that you accept its terms.
  */
-package org.ietr.dftools.architecture.utils;
-
-import org.eclipse.emf.ecore.EClass;
-import org.ietr.dftools.architecture.slam.attributes.VLNV;
-import org.ietr.dftools.architecture.slam.component.Component;
-import org.ietr.dftools.architecture.slam.component.ComponentFactory;
-import org.ietr.dftools.architecture.slam.component.ComponentPackage;
+package org.preesm.model.slam.utils;
 
 /**
  *
  * @author anmorvan
  *
  */
-public class SlamUserFactory {
+public class SlamException extends RuntimeException {
 
-  private SlamUserFactory() {
-    // Not meant to be instantiated: use static methods.
+  private static final long serialVersionUID = 1L;
+
+  public SlamException(final String message) {
+    super(message);
   }
 
-  private static final ComponentFactory factory = ComponentFactory.eINSTANCE;
-
-  /**
-   *
-   */
-  public static final Component createComponent(final VLNV name, final String componentType) {
-    final EClass eClass = (EClass) ComponentPackage.eINSTANCE.getEClassifier(componentType);
-    final Component component = (Component) SlamUserFactory.factory.create(eClass);
-    component.setVlnv(name);
-    return component;
+  public SlamException(final String message, final Throwable cause) {
+    super(message, cause);
   }
 
 }

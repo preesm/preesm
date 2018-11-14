@@ -26,13 +26,13 @@
 
 @Ecore(nsURI="http://org.preesm/model/slam/component")
 
-package org.ietr.dftools.architecture.slam.component
+package org.preesm.model.slam.component
 
-import org.ietr.dftools.architecture.slam.ComponentInstance
-import org.ietr.dftools.architecture.slam.Design
-import org.ietr.dftools.architecture.slam.ParameterizedElement
-import org.ietr.dftools.architecture.slam.VLNVedElement
-import org.ietr.dftools.architecture.slam.attributes.VLNV
+import org.preesm.model.slam.ComponentInstance
+import org.preesm.model.slam.Design
+import org.preesm.model.slam.ParameterizedElement
+import org.preesm.model.slam.VLNVedElement
+import org.preesm.model.slam.attributes.VLNV
 
 type IPath wraps org.eclipse.core.runtime.IPath
 

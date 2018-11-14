@@ -37,7 +37,7 @@
 /**
  *
  */
-package org.ietr.dftools.architecture.slam.serialize;
+package org.preesm.model.slam.serialize;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -54,28 +54,28 @@ import org.eclipse.core.runtime.Path;
 import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.EClass;
 import org.eclipse.emf.ecore.EPackage;
-import org.ietr.dftools.architecture.slam.ComponentHolder;
-import org.ietr.dftools.architecture.slam.ComponentInstance;
-import org.ietr.dftools.architecture.slam.Design;
-import org.ietr.dftools.architecture.slam.ParameterizedElement;
-import org.ietr.dftools.architecture.slam.SlamFactory;
-import org.ietr.dftools.architecture.slam.attributes.AttributesFactory;
-import org.ietr.dftools.architecture.slam.attributes.Parameter;
-import org.ietr.dftools.architecture.slam.attributes.VLNV;
-import org.ietr.dftools.architecture.slam.component.ComInterface;
-import org.ietr.dftools.architecture.slam.component.ComNode;
-import org.ietr.dftools.architecture.slam.component.Component;
-import org.ietr.dftools.architecture.slam.component.ComponentFactory;
-import org.ietr.dftools.architecture.slam.component.Dma;
-import org.ietr.dftools.architecture.slam.component.HierarchyPort;
-import org.ietr.dftools.architecture.slam.component.Mem;
-import org.ietr.dftools.architecture.slam.link.Link;
-import org.ietr.dftools.architecture.slam.link.LinkFactory;
-import org.ietr.dftools.architecture.slam.link.LinkPackage;
-import org.ietr.dftools.architecture.slam.serialize.IPXACTDesignVendorExtensionsParser.LinkDescription;
-import org.ietr.dftools.architecture.utils.SlamException;
-import org.ietr.dftools.architecture.utils.SlamUserFactory;
 import org.preesm.commons.DomUtil;
+import org.preesm.model.slam.ComponentHolder;
+import org.preesm.model.slam.ComponentInstance;
+import org.preesm.model.slam.Design;
+import org.preesm.model.slam.ParameterizedElement;
+import org.preesm.model.slam.SlamFactory;
+import org.preesm.model.slam.attributes.AttributesFactory;
+import org.preesm.model.slam.attributes.Parameter;
+import org.preesm.model.slam.attributes.VLNV;
+import org.preesm.model.slam.component.ComInterface;
+import org.preesm.model.slam.component.ComNode;
+import org.preesm.model.slam.component.Component;
+import org.preesm.model.slam.component.ComponentFactory;
+import org.preesm.model.slam.component.Dma;
+import org.preesm.model.slam.component.HierarchyPort;
+import org.preesm.model.slam.component.Mem;
+import org.preesm.model.slam.link.Link;
+import org.preesm.model.slam.link.LinkFactory;
+import org.preesm.model.slam.link.LinkPackage;
+import org.preesm.model.slam.serialize.IPXACTDesignVendorExtensionsParser.LinkDescription;
+import org.preesm.model.slam.utils.SlamException;
+import org.preesm.model.slam.utils.SlamUserFactory;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;

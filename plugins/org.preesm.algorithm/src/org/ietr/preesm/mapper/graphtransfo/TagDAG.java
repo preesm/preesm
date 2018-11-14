@@ -49,8 +49,6 @@ import org.ietr.dftools.algorithm.model.parameters.InvalidExpressionException;
 import org.ietr.dftools.algorithm.model.sdf.SDFAbstractVertex;
 import org.ietr.dftools.algorithm.model.sdf.SDFEdge;
 import org.ietr.dftools.algorithm.model.sdf.SDFGraph;
-import org.ietr.dftools.architecture.slam.ComponentInstance;
-import org.ietr.dftools.architecture.slam.Design;
 import org.ietr.preesm.core.architecture.route.AbstractRouteStep;
 import org.ietr.preesm.core.architecture.util.DesignTools;
 import org.ietr.preesm.core.scenario.PreesmScenario;
@@ -70,6 +68,8 @@ import org.ietr.preesm.mapper.model.MapperDAGEdge;
 import org.ietr.preesm.mapper.model.MapperDAGVertex;
 import org.ietr.preesm.mapper.model.special.ReceiveVertex;
 import org.ietr.preesm.mapper.model.special.SendVertex;
+import org.preesm.model.slam.ComponentInstance;
+import org.preesm.model.slam.Design;
 
 /**
  * Tags an SDF with the implementation information necessary for code generation, and DAG exporting.

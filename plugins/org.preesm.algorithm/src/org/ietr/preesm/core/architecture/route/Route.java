@@ -40,7 +40,7 @@ package org.ietr.preesm.core.architecture.route;
 import java.util.ArrayList;
 import java.util.LinkedHashSet;
 import java.util.Set;
-import org.ietr.dftools.architecture.slam.ComponentInstance;
+import org.preesm.model.slam.ComponentInstance;
 
 // TODO: Auto-generated Javadoc
 /**

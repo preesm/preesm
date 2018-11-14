@@ -39,8 +39,6 @@ package org.ietr.preesm.mapper.abc.route.impl;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
-import org.ietr.dftools.architecture.slam.ComponentInstance;
-import org.ietr.dftools.architecture.slam.component.Dma;
 import org.ietr.preesm.core.architecture.route.AbstractRouteStep;
 import org.ietr.preesm.core.architecture.route.DmaRouteStep;
 import org.ietr.preesm.mapper.abc.edgescheduling.IEdgeSched;
@@ -56,6 +54,8 @@ import org.ietr.preesm.mapper.model.MapperDAGEdge;
 import org.ietr.preesm.mapper.model.MapperDAGVertex;
 import org.ietr.preesm.mapper.model.special.TransferVertex;
 import org.preesm.commons.logger.PreesmLogger;
+import org.preesm.model.slam.ComponentInstance;
+import org.preesm.model.slam.component.Dma;
 
 /**
  * Class responsible to generate the suited vertices while simulating a dma communication.

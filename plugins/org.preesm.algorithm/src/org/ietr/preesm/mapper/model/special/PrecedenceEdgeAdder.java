@@ -43,7 +43,6 @@ import java.util.List;
 import java.util.Set;
 import java.util.logging.Level;
 import org.ietr.dftools.algorithm.model.dag.DAGEdge;
-import org.ietr.dftools.architecture.slam.ComponentInstance;
 import org.ietr.preesm.mapper.abc.order.OrderManager;
 import org.ietr.preesm.mapper.abc.transaction.AddPrecedenceEdgeTransaction;
 import org.ietr.preesm.mapper.abc.transaction.RemoveEdgeTransaction;
@@ -53,6 +52,7 @@ import org.ietr.preesm.mapper.model.MapperDAG;
 import org.ietr.preesm.mapper.model.MapperDAGEdge;
 import org.ietr.preesm.mapper.model.MapperDAGVertex;
 import org.preesm.commons.logger.PreesmLogger;
+import org.preesm.model.slam.ComponentInstance;
 
 // TODO: Auto-generated Javadoc
 /**

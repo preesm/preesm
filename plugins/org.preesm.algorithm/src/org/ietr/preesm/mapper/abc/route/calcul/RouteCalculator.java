@@ -44,11 +44,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.logging.Level;
-import org.ietr.dftools.architecture.slam.ComponentInstance;
-import org.ietr.dftools.architecture.slam.Design;
-import org.ietr.dftools.architecture.slam.component.Operator;
-import org.ietr.dftools.architecture.slam.component.impl.ComNodeImpl;
-import org.ietr.dftools.architecture.slam.link.Link;
 import org.ietr.preesm.core.architecture.route.AbstractRouteStep;
 import org.ietr.preesm.core.architecture.route.Route;
 import org.ietr.preesm.core.architecture.route.RouteStepFactory;
@@ -57,6 +52,11 @@ import org.ietr.preesm.core.scenario.PreesmScenario;
 import org.ietr.preesm.mapper.model.MapperDAGEdge;
 import org.ietr.preesm.mapper.model.MapperDAGVertex;
 import org.preesm.commons.logger.PreesmLogger;
+import org.preesm.model.slam.ComponentInstance;
+import org.preesm.model.slam.Design;
+import org.preesm.model.slam.component.Operator;
+import org.preesm.model.slam.component.impl.ComNodeImpl;
+import org.preesm.model.slam.link.Link;
 
 /**
  * This class can evaluate a given transfer and choose the best route between two operators.

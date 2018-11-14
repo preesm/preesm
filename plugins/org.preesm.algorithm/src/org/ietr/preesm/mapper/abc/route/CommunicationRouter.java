@@ -49,8 +49,6 @@ import java.util.Set;
 import java.util.logging.Level;
 import org.ietr.dftools.algorithm.model.dag.DAGEdge;
 import org.ietr.dftools.algorithm.model.dag.DAGVertex;
-import org.ietr.dftools.architecture.slam.ComponentInstance;
-import org.ietr.dftools.architecture.slam.Design;
 import org.ietr.preesm.core.architecture.route.AbstractRouteStep;
 import org.ietr.preesm.core.architecture.route.DmaRouteStep;
 import org.ietr.preesm.core.architecture.route.MemRouteStep;
@@ -72,6 +70,8 @@ import org.ietr.preesm.mapper.model.MapperDAGEdge;
 import org.ietr.preesm.mapper.model.MapperDAGVertex;
 import org.ietr.preesm.mapper.model.special.PrecedenceEdge;
 import org.preesm.commons.logger.PreesmLogger;
+import org.preesm.model.slam.ComponentInstance;
+import org.preesm.model.slam.Design;
 
 /**
  * Routes the communications. Based on bridge design pattern. The processing is delegated to implementers

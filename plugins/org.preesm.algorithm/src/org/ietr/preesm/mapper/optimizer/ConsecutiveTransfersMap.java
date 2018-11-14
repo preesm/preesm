@@ -38,8 +38,8 @@ import java.util.LinkedHashMap;
 import java.util.Map.Entry;
 import org.ietr.dftools.algorithm.model.dag.DAGVertex;
 import org.ietr.dftools.algorithm.model.dag.DirectedAcyclicGraph;
-import org.ietr.dftools.architecture.slam.ComponentInstance;
 import org.ietr.preesm.mapper.ScheduledDAGIterator;
+import org.preesm.model.slam.ComponentInstance;
 
 /**
  *

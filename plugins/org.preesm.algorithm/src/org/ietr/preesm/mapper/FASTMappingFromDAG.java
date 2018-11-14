@@ -42,7 +42,6 @@ package org.ietr.preesm.mapper;
 
 import java.util.Map;
 import java.util.logging.Level;
-import org.ietr.dftools.architecture.slam.Design;
 import org.ietr.preesm.core.scenario.PreesmScenario;
 import org.ietr.preesm.mapper.abc.impl.latency.LatencyAbc;
 import org.ietr.preesm.mapper.abc.taskscheduling.AbstractTaskSched;
@@ -53,6 +52,7 @@ import org.ietr.preesm.mapper.model.MapperDAG;
 import org.ietr.preesm.mapper.params.AbcParameters;
 import org.ietr.preesm.mapper.params.FastAlgoParameters;
 import org.preesm.commons.logger.PreesmLogger;
+import org.preesm.model.slam.Design;
 
 /**
  * FAST is a sequential mapping/scheduling method based on list scheduling followed by a neighborhood search phase. It
