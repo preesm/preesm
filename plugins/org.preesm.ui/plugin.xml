@@ -971,4 +971,55 @@
          </includes>
       </viewerContentBinding>
    </extension>
+
+   <extension
+         id="application"
+         point="org.eclipse.core.runtime.applications">
+      <application>
+         <run
+               class="org.ietr.preesm.rcp.utils.PreesmApplication">
+         </run>
+      </application>
+   </extension>
+   <extension
+         id="product"
+         point="org.eclipse.core.runtime.products">
+      <product
+            application="org.eclipse.ui.ide.workbench"
+            name="Preesm">
+         <property
+               name="windowImages"
+               value="icons/preesmLogo_16x16.bmp,icons/preesmLogo_32x32.bmp,icons/preesmLogo_48x48.bmp,icons/preesmLogo_64x64.bmp,icons/preesmLogo_128x128.bmp,icons/preesmLogo_256x256.bmp">
+         </property>
+         <property
+               name="appName"
+               value="Preesm">
+         </property>
+         <property
+               name="startupForegroundColor"
+               value="000000">
+         </property>
+         <property
+               name="startupMessageRect"
+               value="7,251,445,20">
+         </property>
+         <property
+               name="startupProgressRect"
+               value="5,275,445,15">
+         </property>
+         <property
+               name="aboutText"
+               value="PREESM [&apos;prɪzəm] is an open source rapid prototyping tool. It simulates signal processing applications and generates code for heterogeneous multi/many-core embedded systems. Its dataflow language eases the description of parallel signal processing applications.&#x0A;&#x0A;         PREESM is released under the CeCILL-C License.&#x0A;&#x0A;         Please visit our webpage for more info : http://preesm.org/"/>
+		<property
+				name="aboutImage"
+				value="icons/preesmLogo_48x48.png"/>
+  <property
+        name="preferenceCustomization"
+        value="plugin_customization.ini">
+  </property>
+
+
+
+      </product>
+   </extension>
 </plugin>

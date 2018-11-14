@@ -50,7 +50,6 @@
   </parent>
 
   <modules>
-    <module>org.preesm.rcp.utils</module>
     <module>org.preesm.feature</module>
     <module>org.preesm.product</module>
   </modules>
