@@ -106,7 +106,7 @@ public class PiMMToolBehaviorProvider extends DefaultToolBehaviorProvider {
   public PiMMToolBehaviorProvider(final IDiagramTypeProvider diagramTypeProvider) {
     super(diagramTypeProvider);
     this.toolTips = new LinkedHashMap<>();
-    this.decoratorAdapter = new PiMMDecoratorAdapter(diagramTypeProvider);
+    this.decoratorAdapter = new PiMMDecoratorAdapter();
 
     final IFeatureProvider featureProvider = getFeatureProvider();
     final Diagram diagram = diagramTypeProvider.getDiagram();
