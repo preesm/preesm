@@ -48,24 +48,27 @@ import java.util.Map;
  * @author mpelcat
  *
  */
-class Activity {
+public class Activity {
 
   /*
    * Information on number of tokens per architecture element (identified by name)
    */
-  Map<String, Long> tokens = null;
+  private Map<String, Long> tokens = null;
 
   /*
    * Information on number of quanta per architecture element (identified by name)
    */
-  Map<String, Long> quanta = null;
+  private Map<String, Long> quanta = null;
 
-  Activity() {
+  public Activity() {
     tokens = new HashMap<String, Long>();
     quanta = new HashMap<String, Long>();
   }
 
-  void addTokenNumber(String archiEltName, long tokenNr) {
+  /**
+   *
+   */
+  public void addTokenNumber(String archiEltName, long tokenNr) {
     if (tokens.keySet().contains(archiEltName)) {
       tokens.put(archiEltName, tokens.get(archiEltName) + tokenNr);
     } else {
@@ -73,7 +76,10 @@ class Activity {
     }
   }
 
-  void addQuantaNumber(String archiEltName, long quantaNr) {
+  /**
+   *
+   */
+  public void addQuantaNumber(String archiEltName, long quantaNr) {
     if (quanta.keySet().contains(archiEltName)) {
       quanta.put(archiEltName, quanta.get(archiEltName) + quantaNr);
     } else {
@@ -86,16 +92,16 @@ class Activity {
     return "tokens " + tokens + "\n" + " quanta " + quanta;
   }
 
-  void clear() {
+  public void clear() {
     tokens.clear();
     quanta.clear();
   }
 
-  /*
+  /**
    * Generating a string in CSV format from token information If human_readable=true, the names of the architecture
    * components are displayed.
    */
-  String tokensString(boolean human_readable) {
+  public String tokensString(boolean human_readable) {
     String str = "";
 
     List<String> sortedNames = new ArrayList<>(tokens.keySet());
@@ -118,11 +124,11 @@ class Activity {
     return str;
   }
 
-  /*
+  /**
    * Generating a string in CSV format from quanta information If human_readable=true, the names of the architecture
    * components are displayed.
    */
-  String quantaString(boolean human_readable) {
+  public String quantaString(boolean human_readable) {
     String str = "";
     List<String> sortedNames = new ArrayList<>(quanta.keySet());
     Collections.sort(sortedNames);
