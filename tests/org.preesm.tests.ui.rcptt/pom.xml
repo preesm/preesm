@@ -37,12 +37,12 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
-	<artifactId>org.preesm.test.ui</artifactId>
+	<artifactId>org.preesm.tests.ui.rcptt</artifactId>
 	<packaging>rcpttTest</packaging>
 
 	<parent>
 		<groupId>org.preesm</groupId>
-		<artifactId>org.preesm.test</artifactId>
+		<artifactId>org.preesm.tests</artifactId>
 		<version>2.17.1-SNAPSHOT</version>
 		<relativePath>..</relativePath>
 	</parent>

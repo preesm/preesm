@@ -1,8 +1,8 @@
 Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: PREESM Framework Tests
-Automatic-Module-Name: org.preesm.framework.test
-Bundle-SymbolicName: org.preesm.framework.test
+Automatic-Module-Name: org.preesm.tests.framework
+Bundle-SymbolicName: org.preesm.tests.framework
 Bundle-Version: 2.17.1.qualifier
 Bundle-Vendor: IETR/INSA Rennes
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8

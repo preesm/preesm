@@ -38,7 +38,7 @@
 -->
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
-	<artifactId>org.preesm.test</artifactId>
+	<artifactId>org.preesm.tests</artifactId>
 	<packaging>pom</packaging>
 
 	<parent>
@@ -63,13 +63,15 @@
 	</build>
 
   <modules>
-    <module>org.preesm.framework.test</module>
-    <module>org.preesm.model.test</module>
-    <module>org.preesm.algorithm.test</module>
-    <module>org.preesm.ui.test</module>
+    <module>org.preesm.tests.framework</module>
+    <module>org.preesm.tests.model</module>
+    <module>org.preesm.tests.algorithm</module>
+		<module>org.preesm.tests.integration</module>
+    
+    <module>org.preesm.tests.ui</module>
+		<module>org.preesm.tests.ui.rcptt</module>
+    
     <module>fi.abo.preesm.dataparallel.test</module>
-		<module>org.preesm.test.it</module>
-		<module>org.preesm.test.ui</module>
 	</modules>
 
 </project>
