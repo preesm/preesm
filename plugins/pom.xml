@@ -50,6 +50,9 @@
   <modules>
     <module>org.preesm.commons</module>
     <module>org.preesm.model.pisdf</module>
+    <module>org.preesm.model.scenario</module>
+    
+    
     <module>org.preesm.algorithm</module>
 
     <module>org.preesm.cli</module>

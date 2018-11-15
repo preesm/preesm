@@ -662,6 +662,13 @@ Version 1.0 dated 2006-09-05.]]>
          unpack="false"/>
 
    <plugin
+         id="org.preesm.model.scenario"
+         download-size="0"
+         install-size="0"
+         version="2.17.1.qualifier"
+         unpack="false"/>
+
+   <plugin
          id="org.preesm.ui.slam"
          download-size="0"
          install-size="0"

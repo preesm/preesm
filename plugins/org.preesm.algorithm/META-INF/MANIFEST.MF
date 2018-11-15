@@ -28,10 +28,9 @@ Require-Bundle: org.eclipse.core.resources,
  com.fasterxml.jackson.module.jackson-module-jsonSchema;bundle-version="2.9.5",
  com.fasterxml.jackson.core.jackson-annotations;bundle-version="2.9.0",
  com.fasterxml.jackson.core.jackson-databind;bundle-version="2.9.5",
- org.preesm.model.pisdf;visibility:=reexport,
- org.preesm.model.slam;visibility:=reexport,
+ org.beanshell.bsh;bundle-version="2.1.8",
  org.preesm.workflow;visibility:=reexport,
- org.beanshell.bsh;bundle-version="2.1.8"
+ org.preesm.model.scenario;visibility:=reexport
 Bundle-ClassPath: .
 Export-Package: org.ietr.dftools.algorithm,
  org.ietr.dftools.algorithm.exceptions,
