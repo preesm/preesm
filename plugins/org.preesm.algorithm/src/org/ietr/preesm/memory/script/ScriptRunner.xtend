@@ -1767,7 +1767,7 @@ class ScriptRunner {
 				// a pair of a root buffer and its range for the buffer
 				val Map<Range, Pair<Buffer, Range>> rootBuffers = newLinkedHashMap()
 				for (match : buffer.matched) {
-					rootBuffers.putAll(match.root)
+					rootBuffers.putAll(match.getRoot())
 				}
 
 				val mObj = bufferAndMObjectMap.get(buffer)

@@ -167,10 +167,10 @@ class Range implements CloneableProperty<Range> {
 	 * intersection of the newRanges with the ranges.
 	 */
 	// dispatch is used because otherwise, XTend wants 'it' to be a Collection<Range>
-	dispatch def static List<Range> intersection(Collection<Range> ranges, Collection<Range> newRanges) {
+	def static List<Range> intersection(Collection<Range> ranges, Collection<Range> newRanges) {
 		val intersectionRanges = newArrayList
 		newRanges.forEach [
-			intersectionRanges.union(ranges.intersection(it))
+			intersectionRanges.union(intersection(ranges,it))
 		]
 
 		return intersectionRanges
@@ -193,7 +193,7 @@ class Range implements CloneableProperty<Range> {
 	 * @return the {@link List} of {@link Range} ranges corresponding to the
 	 * intersection of the newRange with the ranges.
 	 */
-	dispatch def static List<Range> intersection(List<Range> ranges, Range newRange) {
+	def static List<Range> intersection(Collection<Range> ranges, Range newRange) {
 		val intersectionRanges = newArrayList
 		ranges.forEach [ range |
 			// If the ranges overlap
@@ -201,7 +201,7 @@ class Range implements CloneableProperty<Range> {
 			// !== is equivalent to the != of java
 			// if we use !=, .equals will be called
 			if (intersect !== null) {
-				intersectionRanges.union(intersect)
+				union(intersectionRanges,intersect)
 			}
 		]
 
