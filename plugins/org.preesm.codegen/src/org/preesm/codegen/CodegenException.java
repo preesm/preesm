@@ -36,8 +36,8 @@
  */
 package org.preesm.codegen;
 
-import org.ietr.dftools.workflow.AbstractWorkflowExecutor;
-import org.ietr.dftools.workflow.WorkflowException;
+import org.preesm.workflow.AbstractWorkflowExecutor;
+import org.preesm.workflow.WorkflowException;
 
 /**
  * Exception thrown when an error has occurred during the codegen.

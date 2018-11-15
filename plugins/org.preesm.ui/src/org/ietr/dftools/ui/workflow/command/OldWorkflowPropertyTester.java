@@ -38,8 +38,8 @@ import java.io.File;
 import java.io.IOException;
 import org.eclipse.core.expressions.PropertyTester;
 import org.eclipse.core.resources.IFile;
-import org.ietr.dftools.workflow.WorkflowException;
-import org.ietr.dftools.workflow.converter.WorkflowConverter;
+import org.preesm.workflow.WorkflowException;
+import org.preesm.workflow.converter.WorkflowConverter;
 
 /**
  */

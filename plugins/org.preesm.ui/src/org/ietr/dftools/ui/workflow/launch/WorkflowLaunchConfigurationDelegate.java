@@ -43,7 +43,7 @@ import org.eclipse.debug.core.ILaunch;
 import org.eclipse.debug.core.ILaunchConfiguration;
 import org.eclipse.debug.core.model.ILaunchConfigurationDelegate;
 import org.ietr.dftools.ui.workflow.ScenarioConfiguration;
-import org.ietr.dftools.workflow.WorkflowManager;
+import org.preesm.workflow.WorkflowManager;
 
 /**
  * Launch a workflow in run mode, using the previously created launch configuration.

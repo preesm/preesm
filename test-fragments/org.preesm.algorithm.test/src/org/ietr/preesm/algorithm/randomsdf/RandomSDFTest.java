@@ -39,11 +39,11 @@ import java.util.Map;
 import java.util.Set;
 import org.ietr.dftools.algorithm.model.sdf.SDFAbstractVertex;
 import org.ietr.dftools.algorithm.model.sdf.SDFGraph;
-import org.ietr.dftools.workflow.WorkflowException;
 import org.ietr.preesm.core.scenario.PreesmScenario;
 import org.junit.Assert;
 import org.junit.Test;
 import org.preesm.model.slam.SlamFactory;
+import org.preesm.workflow.WorkflowException;
 
 /**
  */

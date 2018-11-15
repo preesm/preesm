@@ -2,7 +2,7 @@
  * Copyright or © or Copr. IETR/INSA - Rennes (2011 - 2018) :
  *
  * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017 - 2018)
- * Clément Guy <clement.guy@insa-rennes.fr> (2014)
+ * Clément Guy <clement.guy@insa-rennes.fr> (2014 - 2015)
  * Matthieu Wipliez <matthieu.wipliez@insa-rennes.fr> (2011)
  * Maxime Pelcat <maxime.pelcat@insa-rennes.fr> (2011 - 2012)
  *
@@ -35,59 +35,82 @@
  * The fact that you are presently reading this means that you have had
  * knowledge of the CeCILL license and that you accept its terms.
  */
-package org.ietr.dftools.workflow.test;
+package org.preesm.workflow.elements;
 
-import java.util.LinkedHashMap;
-import java.util.Map;
-import java.util.logging.Level;
-import org.eclipse.core.runtime.IProgressMonitor;
-import org.ietr.dftools.workflow.elements.Workflow;
-import org.ietr.dftools.workflow.implement.AbstractTaskImplementation;
-import org.preesm.commons.logger.PreesmLogger;
+import java.util.ArrayList;
+import java.util.List;
+import org.eclipse.core.runtime.IPath;
+import org.jgrapht.graph.DirectedMultigraph;
+import org.jgrapht.traverse.TopologicalOrderIterator;
 
 /**
- * The Class TestWorkflowTask1.
+ * Workflow graph.
+ *
+ * @author mpelcat
  */
-public class TestWorkflowTask1 extends AbstractTaskImplementation {
+public class Workflow extends DirectedMultigraph<AbstractWorkflowNode, WorkflowEdge> {
 
-  /*
-   * (non-Javadoc)
-   *
-   * @see org.ietr.dftools.workflow.implement.AbstractTaskImplementation#execute(java.util.Map, java.util.Map,
-   * org.eclipse.core.runtime.IProgressMonitor, java.lang.String, org.ietr.dftools.workflow.elements.Workflow)
+  /** The Constant serialVersionUID. */
+  private static final long serialVersionUID = -908014142930559238L;
+
+  /** Path of the file that contains the workflow. */
+  private IPath path = null;
+
+  /**
+   * Instantiates a new workflow.
    */
-  @Override
-  public Map<String, Object> execute(final Map<String, Object> inputs, final Map<String, String> parameters,
-      final IProgressMonitor monitor, final String nodeName, final Workflow workflow) {
-    final Map<String, Object> outputs = new LinkedHashMap<>();
-    final String message = "Executing TestWorkflowTask1; node: " + nodeName;
-    PreesmLogger.getLogger().log(Level.INFO, message);
-    outputs.put("superData", "superData1");
-    return outputs;
+  public Workflow() {
+    super(WorkflowEdge.class);
   }
 
-  /*
-   * (non-Javadoc)
+  /**
+   * Vertex topological list.
    *
-   * @see org.ietr.dftools.workflow.implement.AbstractTaskImplementation#getDefaultParameters()
+   * @return the list
    */
-  @Override
-  public Map<String, String> getDefaultParameters() {
-    final Map<String, String> parameters = new LinkedHashMap<>();
+  public List<AbstractWorkflowNode> vertexTopologicalList() {
+    final List<AbstractWorkflowNode> nodeList = new ArrayList<>();
+    final TopologicalOrderIterator<AbstractWorkflowNode, WorkflowEdge> it = new TopologicalOrderIterator<>(this);
 
-    parameters.put("size", "25");
-    parameters.put("duration", "short");
-    return parameters;
+    while (it.hasNext()) {
+      final AbstractWorkflowNode node = it.next();
+      nodeList.add(node);
+    }
+
+    return nodeList;
   }
 
-  /*
-   * (non-Javadoc)
+  /**
+   * Sets the path.
    *
-   * @see org.ietr.dftools.workflow.implement.AbstractWorkflowNodeImplementation#monitorMessage()
+   * @param path
+   *          the new path
    */
-  @Override
-  public String monitorMessage() {
-    return "Executing TestWorkflowTask1";
+  public void setPath(final IPath path) {
+    this.path = path;
   }
 
+  /**
+   * Gets the project name.
+   *
+   * @return the project name
+   */
+  public String getProjectName() {
+    return this.path.segment(0);
+  }
+
+  /**
+   * Checks for scenario.
+   *
+   * @return true, if successful
+   */
+  public boolean hasScenario() {
+    int nbScenarios = 0;
+    for (final AbstractWorkflowNode node : vertexSet()) {
+      if (node.isScenarioNode()) {
+        nbScenarios++;
+      }
+    }
+    return nbScenarios == 1;
+  }
 }

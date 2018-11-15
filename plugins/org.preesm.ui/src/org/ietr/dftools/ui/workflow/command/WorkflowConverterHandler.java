@@ -45,8 +45,8 @@ import org.eclipse.core.runtime.CoreException;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.ITreeSelection;
 import org.eclipse.ui.handlers.HandlerUtil;
-import org.ietr.dftools.workflow.WorkflowException;
-import org.ietr.dftools.workflow.converter.WorkflowConverter;
+import org.preesm.workflow.WorkflowException;
+import org.preesm.workflow.converter.WorkflowConverter;
 
 /**
  *

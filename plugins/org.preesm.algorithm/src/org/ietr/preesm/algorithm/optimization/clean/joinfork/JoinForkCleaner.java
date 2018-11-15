@@ -59,7 +59,7 @@ import org.ietr.dftools.algorithm.model.sdf.visitors.SingleRateChecker;
 import org.ietr.dftools.algorithm.model.types.LongEdgePropertyType;
 import org.ietr.dftools.algorithm.model.types.StringEdgePropertyType;
 import org.ietr.dftools.algorithm.model.visitors.SDF4JException;
-import org.ietr.dftools.workflow.WorkflowException;
+import org.preesm.workflow.WorkflowException;
 
 /**
  * Class cleaning the useless join-fork pairs of vertices which may have been introduced by hierarchy flattening and

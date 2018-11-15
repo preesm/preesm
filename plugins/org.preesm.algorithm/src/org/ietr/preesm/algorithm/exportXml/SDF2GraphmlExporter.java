@@ -45,7 +45,7 @@ import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.ietr.dftools.algorithm.exporter.GMLSDFExporter;
 import org.ietr.dftools.algorithm.model.sdf.SDFGraph;
-import org.ietr.dftools.workflow.WorkflowException;
+import org.preesm.workflow.WorkflowException;
 
 /**
  * The Class SDF2GraphmlExporter.

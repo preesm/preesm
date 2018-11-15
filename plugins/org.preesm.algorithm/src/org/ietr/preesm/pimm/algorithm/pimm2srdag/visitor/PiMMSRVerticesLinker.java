@@ -41,7 +41,6 @@ package org.ietr.preesm.pimm.algorithm.pimm2srdag.visitor;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import org.ietr.dftools.workflow.WorkflowException;
 import org.ietr.preesm.core.scenario.PreesmScenario;
 import org.ietr.preesm.pimm.algorithm.helper.PiMMHelperException;
 import org.preesm.model.pisdf.AbstractActor;
@@ -62,6 +61,7 @@ import org.preesm.model.pisdf.PiGraph;
 import org.preesm.model.pisdf.PortMemoryAnnotation;
 import org.preesm.model.pisdf.RoundBufferActor;
 import org.preesm.model.pisdf.factory.PiMMUserFactory;
+import org.preesm.workflow.WorkflowException;
 
 /**
  *

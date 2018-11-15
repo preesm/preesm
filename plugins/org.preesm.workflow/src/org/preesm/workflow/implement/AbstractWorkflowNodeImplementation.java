@@ -39,14 +39,14 @@
 /**
  *
  */
-package org.ietr.dftools.workflow.implement;
+package org.preesm.workflow.implement;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Set;
 import java.util.logging.Level;
-import org.ietr.dftools.workflow.WorkflowManager;
 import org.preesm.commons.logger.PreesmLogger;
+import org.preesm.workflow.WorkflowManager;
 
 /**
  * Node implementation is the superclass of both scenario and task implementation. Their outputs are handled the same

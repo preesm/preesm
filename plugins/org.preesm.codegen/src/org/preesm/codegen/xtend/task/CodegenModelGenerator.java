@@ -85,8 +85,6 @@ import org.ietr.dftools.algorithm.model.sdf.SDFGraph;
 import org.ietr.dftools.algorithm.model.sdf.SDFVertex;
 import org.ietr.dftools.algorithm.model.sdf.esdf.SDFInitVertex;
 import org.ietr.dftools.algorithm.model.visitors.SDF4JException;
-import org.ietr.dftools.workflow.WorkflowException;
-import org.ietr.dftools.workflow.elements.Workflow;
 import org.ietr.preesm.codegen.idl.ActorPrototypes;
 import org.ietr.preesm.codegen.idl.IDLPrototypeFactory;
 import org.ietr.preesm.codegen.idl.Prototype;
@@ -138,6 +136,8 @@ import org.preesm.commons.logger.PreesmLogger;
 import org.preesm.model.pisdf.PersistenceLevel;
 import org.preesm.model.slam.ComponentInstance;
 import org.preesm.model.slam.Design;
+import org.preesm.workflow.WorkflowException;
+import org.preesm.workflow.elements.Workflow;
 
 /**
  * The objective of this class is to generate an intermediate model that will be used to print the generated code. <br>

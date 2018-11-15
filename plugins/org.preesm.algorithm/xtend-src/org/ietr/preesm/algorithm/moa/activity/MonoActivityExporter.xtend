@@ -46,9 +46,6 @@ import org.eclipse.core.runtime.IPath
 import org.eclipse.core.runtime.IProgressMonitor
 import org.eclipse.core.runtime.NullProgressMonitor
 import org.eclipse.core.runtime.Path
-import org.ietr.dftools.workflow.WorkflowException
-import org.ietr.dftools.workflow.elements.Workflow
-import org.ietr.dftools.workflow.implement.AbstractTaskImplementation
 import org.ietr.preesm.core.architecture.route.AbstractRouteStep
 import org.ietr.preesm.core.architecture.route.MessageRouteStep
 import org.ietr.preesm.core.types.ImplementationPropertyNames
@@ -59,6 +56,9 @@ import org.preesm.commons.files.ContainersManager
 import org.preesm.commons.files.PathTools
 import org.preesm.commons.logger.PreesmLogger
 import org.preesm.model.slam.ComponentInstance
+import org.preesm.workflow.WorkflowException
+import org.preesm.workflow.elements.Workflow
+import org.preesm.workflow.implement.AbstractTaskImplementation
 
 /**
  * Exports activity information in terms of tokens and quanta based on LatencyAbc information

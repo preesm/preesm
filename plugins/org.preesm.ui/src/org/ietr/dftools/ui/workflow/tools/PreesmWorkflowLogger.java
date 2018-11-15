@@ -51,8 +51,8 @@ import org.eclipse.ui.console.IConsoleManager;
 import org.eclipse.ui.console.MessageConsole;
 import org.eclipse.ui.console.MessageConsoleStream;
 import org.ietr.dftools.ui.PreesmUIPlugin;
-import org.ietr.dftools.workflow.WorkflowException;
 import org.preesm.commons.logger.PreesmLogger;
+import org.preesm.workflow.WorkflowException;
 
 /**
  * Displaying information or error messages through a console initialized by the initConsole method.

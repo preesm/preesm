@@ -48,8 +48,8 @@ import org.eclipse.ui.forms.widgets.ExpandableComposite;
 import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.eclipse.ui.forms.widgets.ScrolledForm;
 import org.eclipse.ui.forms.widgets.Section;
-import org.ietr.dftools.workflow.WorkflowException;
 import org.ietr.preesm.mapper.ui.Messages;
+import org.preesm.workflow.WorkflowException;
 
 // TODO: Auto-generated Javadoc
 /**

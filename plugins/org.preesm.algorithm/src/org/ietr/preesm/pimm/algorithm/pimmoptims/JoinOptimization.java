@@ -42,7 +42,6 @@ import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import org.ietr.dftools.workflow.WorkflowException;
 import org.ietr.preesm.pimm.algorithm.helper.PiMMHelperException;
 import org.ietr.preesm.pimm.algorithm.pimm2srdag.visitor.PiMMSRVerticesLinker;
 import org.preesm.model.pisdf.AbstractActor;
@@ -53,6 +52,7 @@ import org.preesm.model.pisdf.Fifo;
 import org.preesm.model.pisdf.ForkActor;
 import org.preesm.model.pisdf.JoinActor;
 import org.preesm.model.pisdf.PiGraph;
+import org.preesm.workflow.WorkflowException;
 
 /**
  * @author farresti

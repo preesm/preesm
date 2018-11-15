@@ -34,8 +34,8 @@
  */
 package org.ietr.preesm.test.it.api;
 
-import org.ietr.dftools.workflow.AbstractWorkflowExecutor;
 import org.preesm.commons.logger.CLIWorkflowLogger;
+import org.preesm.workflow.AbstractWorkflowExecutor;
 
 /**
  *

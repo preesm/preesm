@@ -53,8 +53,8 @@ import org.eclipse.core.resources.IWorkspaceRoot;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.Path;
-import org.ietr.dftools.workflow.AbstractWorkflowExecutor;
 import org.preesm.commons.logger.PreesmLogger;
+import org.preesm.workflow.AbstractWorkflowExecutor;
 
 /**
  *

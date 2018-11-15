@@ -78,8 +78,8 @@ import org.ietr.dftools.algorithm.model.types.LongEdgePropertyType;
 import org.ietr.dftools.algorithm.model.types.LongVertexPropertyType;
 import org.ietr.dftools.algorithm.model.visitors.IGraphVisitor;
 import org.ietr.dftools.algorithm.model.visitors.SDF4JException;
-import org.ietr.dftools.workflow.WorkflowException;
 import org.jgrapht.alg.cycle.CycleDetector;
+import org.preesm.workflow.WorkflowException;
 
 /**
  * Visitor to use to transform a SDF Graph in a Directed Acyclic Graph.

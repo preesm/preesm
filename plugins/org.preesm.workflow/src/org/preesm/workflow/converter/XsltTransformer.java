@@ -32,7 +32,7 @@
  * The fact that you are presently reading this means that you have had
  * knowledge of the CeCILL license and that you accept its terms.
  */
-package org.ietr.dftools.workflow.converter;
+package org.preesm.workflow.converter;
 
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
@@ -44,7 +44,7 @@ import javax.xml.transform.TransformerException;
 import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.stream.StreamResult;
 import javax.xml.transform.stream.StreamSource;
-import org.ietr.dftools.workflow.WorkflowException;
+import org.preesm.workflow.WorkflowException;
 
 /**
  * This class provides methods to transform an XML file via XSLT

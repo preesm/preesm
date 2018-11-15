@@ -56,7 +56,6 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.awt.SWT_AWT;
 import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.widgets.Composite;
-import org.ietr.dftools.workflow.WorkflowException;
 import org.ietr.preesm.mapper.gantt.GanttComponent;
 import org.ietr.preesm.mapper.gantt.GanttData;
 import org.ietr.preesm.mapper.gantt.GanttTask;
@@ -76,6 +75,7 @@ import org.jfree.data.time.SimpleTimePeriod;
 import org.jfree.ui.ApplicationFrame;
 import org.jfree.ui.RectangleInsets;
 import org.jfree.ui.RefineryUtilities;
+import org.preesm.workflow.WorkflowException;
 
 /**
  * Gantt plotter of a mapperdagvertex using JFreeChart.

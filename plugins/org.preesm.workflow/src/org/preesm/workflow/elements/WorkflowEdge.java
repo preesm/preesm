@@ -35,42 +35,80 @@
  * The fact that you are presently reading this means that you have had
  * knowledge of the CeCILL license and that you accept its terms.
  */
-package org.ietr.dftools.workflow.test;
-
-import java.util.LinkedHashMap;
-import java.util.Map;
-import java.util.logging.Level;
-import org.ietr.dftools.workflow.implement.AbstractScenarioImplementation;
-import org.preesm.commons.logger.PreesmLogger;
+package org.preesm.workflow.elements;
 
 /**
- * The Class TestWorkflowScenario.
+ * An edge between two workflow tasks.
+ *
+ * @author mpelcat
  */
-public class TestWorkflowScenario extends AbstractScenarioImplementation {
 
-  /*
-   * (non-Javadoc)
+public class WorkflowEdge {
+
+  /** Name of the output port of the source that must correspond to the name in the corresponding task prototype. */
+  private String sourcePort = null;
+
+  /** Name of the input port of the target that must correspond to the name in the corresponding task prototype. */
+  private String targetPort = null;
+
+  /** Object carrying the data. */
+  private Object data = null;
+
+  /**
+   * Gets the data.
    *
-   * @see org.ietr.dftools.workflow.implement.AbstractScenarioImplementation#extractData(java.lang.String)
+   * @return the data
    */
-  @Override
-  public Map<String, Object> extractData(final String path) {
-    final Map<String, Object> outputs = new LinkedHashMap<>();
-    PreesmLogger.getLogger().log(Level.INFO, "Retrieving data from scenario");
-
-    outputs.put("algo", "algo1");
-    outputs.put("archi", "archi1");
-    return outputs;
+  public Object getData() {
+    return this.data;
   }
 
-  /*
-   * (non-Javadoc)
+  /**
+   * Sets the data.
    *
-   * @see org.ietr.dftools.workflow.implement.AbstractWorkflowNodeImplementation#monitorMessage()
+   * @param data
+   *          the new data
    */
-  @Override
-  public String monitorMessage() {
-    return "Retrieving data from scenario";
+  public void setData(final Object data) {
+    this.data = data;
+  }
+
+  /**
+   * Gets the source port.
+   *
+   * @return the source port
+   */
+  public String getSourcePort() {
+    return this.sourcePort;
+  }
+
+  /**
+   * Sets the source port.
+   *
+   * @param sourcePort
+   *          the new source port
+   */
+  public void setSourcePort(final String sourcePort) {
+    this.sourcePort = sourcePort;
+  }
+
+  /**
+   * Gets the target port.
+   *
+   * @return the target port
+   */
+  public String getTargetPort() {
+    return this.targetPort;
+  }
+
+  /**
+   * Sets the target port.
+   *
+   * @param targetPort
+   *          the new target port
+   */
+  public void setTargetPort(final String targetPort) {
+    this.targetPort = targetPort;
   }
 
 }

@@ -42,10 +42,10 @@ import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.eclipse.core.runtime.IProgressMonitor;
-import org.ietr.dftools.workflow.elements.Workflow;
-import org.ietr.dftools.workflow.implement.AbstractWorkflowNodeImplementation;
 import org.ietr.preesm.memory.exclusiongraph.MemoryExclusionGraph;
 import org.preesm.commons.logger.PreesmLogger;
+import org.preesm.workflow.elements.Workflow;
+import org.preesm.workflow.implement.AbstractWorkflowNodeImplementation;
 
 /**
  * Workflow element that takes a MemoryExclusionGraph as input and computes its memory bounds. It outputs the unmodified

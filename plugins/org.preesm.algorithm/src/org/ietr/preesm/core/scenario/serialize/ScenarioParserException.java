@@ -34,7 +34,7 @@
  */
 package org.ietr.preesm.core.scenario.serialize;
 
-import org.ietr.dftools.workflow.WorkflowException;
+import org.preesm.workflow.WorkflowException;
 
 /**
  *

@@ -43,9 +43,9 @@ import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
 import org.ietr.dftools.algorithm.model.sdf.SDFGraph;
-import org.ietr.dftools.workflow.WorkflowException;
 import org.ietr.preesm.core.scenario.PreesmScenario;
 import org.preesm.model.slam.Design;
+import org.preesm.workflow.WorkflowException;
 
 /**
  * The Class SDF3ExporterEngine.

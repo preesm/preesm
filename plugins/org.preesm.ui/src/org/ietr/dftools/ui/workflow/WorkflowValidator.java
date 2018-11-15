@@ -50,7 +50,7 @@ import org.eclipse.core.runtime.Platform;
 import org.ietr.dftools.graphiti.model.Graph;
 import org.ietr.dftools.graphiti.model.IValidator;
 import org.ietr.dftools.graphiti.model.Vertex;
-import org.ietr.dftools.workflow.WorkflowException;
+import org.preesm.workflow.WorkflowException;
 
 /**
  * This class implements a Workflow model validator. This validator checks that the workflow is executable.

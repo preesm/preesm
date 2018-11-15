@@ -2,9 +2,9 @@
  * Copyright or © or Copr. IETR/INSA - Rennes (2011 - 2018) :
  *
  * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017 - 2018)
- * Clément Guy <clement.guy@insa-rennes.fr> (2014 - 2015)
+ * Clément Guy <clement.guy@insa-rennes.fr> (2014)
  * Matthieu Wipliez <matthieu.wipliez@insa-rennes.fr> (2011)
- * Maxime Pelcat <maxime.pelcat@insa-rennes.fr> (2011 - 2012)
+ * Maxime Pelcat <maxime.pelcat@insa-rennes.fr> (2011)
  *
  * This software is a computer program whose purpose is to help prototyping
  * parallel applications using dataflow formalism.
@@ -35,82 +35,42 @@
  * The fact that you are presently reading this means that you have had
  * knowledge of the CeCILL license and that you accept its terms.
  */
-package org.ietr.dftools.workflow.elements;
+package org.preesm.workflow.test;
 
-import java.util.ArrayList;
-import java.util.List;
-import org.eclipse.core.runtime.IPath;
-import org.jgrapht.graph.DirectedMultigraph;
-import org.jgrapht.traverse.TopologicalOrderIterator;
+import java.util.LinkedHashMap;
+import java.util.Map;
+import java.util.logging.Level;
+import org.preesm.commons.logger.PreesmLogger;
+import org.preesm.workflow.implement.AbstractScenarioImplementation;
 
 /**
- * Workflow graph.
- *
- * @author mpelcat
+ * The Class TestWorkflowScenario.
  */
-public class Workflow extends DirectedMultigraph<AbstractWorkflowNode, WorkflowEdge> {
+public class TestWorkflowScenario extends AbstractScenarioImplementation {
 
-  /** The Constant serialVersionUID. */
-  private static final long serialVersionUID = -908014142930559238L;
-
-  /** Path of the file that contains the workflow. */
-  private IPath path = null;
-
-  /**
-   * Instantiates a new workflow.
-   */
-  public Workflow() {
-    super(WorkflowEdge.class);
-  }
-
-  /**
-   * Vertex topological list.
+  /*
+   * (non-Javadoc)
    *
-   * @return the list
+   * @see org.ietr.dftools.workflow.implement.AbstractScenarioImplementation#extractData(java.lang.String)
    */
-  public List<AbstractWorkflowNode> vertexTopologicalList() {
-    final List<AbstractWorkflowNode> nodeList = new ArrayList<>();
-    final TopologicalOrderIterator<AbstractWorkflowNode, WorkflowEdge> it = new TopologicalOrderIterator<>(this);
+  @Override
+  public Map<String, Object> extractData(final String path) {
+    final Map<String, Object> outputs = new LinkedHashMap<>();
+    PreesmLogger.getLogger().log(Level.INFO, "Retrieving data from scenario");
 
-    while (it.hasNext()) {
-      final AbstractWorkflowNode node = it.next();
-      nodeList.add(node);
-    }
-
-    return nodeList;
+    outputs.put("algo", "algo1");
+    outputs.put("archi", "archi1");
+    return outputs;
   }
 
-  /**
-   * Sets the path.
+  /*
+   * (non-Javadoc)
    *
-   * @param path
-   *          the new path
+   * @see org.ietr.dftools.workflow.implement.AbstractWorkflowNodeImplementation#monitorMessage()
    */
-  public void setPath(final IPath path) {
-    this.path = path;
+  @Override
+  public String monitorMessage() {
+    return "Retrieving data from scenario";
   }
 
-  /**
-   * Gets the project name.
-   *
-   * @return the project name
-   */
-  public String getProjectName() {
-    return this.path.segment(0);
-  }
-
-  /**
-   * Checks for scenario.
-   *
-   * @return true, if successful
-   */
-  public boolean hasScenario() {
-    int nbScenarios = 0;
-    for (final AbstractWorkflowNode node : vertexSet()) {
-      if (node.isScenarioNode()) {
-        nbScenarios++;
-      }
-    }
-    return nbScenarios == 1;
-  }
 }

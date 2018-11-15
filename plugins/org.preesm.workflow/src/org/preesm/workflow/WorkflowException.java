@@ -2,7 +2,7 @@
  * Copyright or © or Copr. IETR/INSA - Rennes (2011 - 2018) :
  *
  * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017 - 2018)
- * Clément Guy <clement.guy@insa-rennes.fr> (2014 - 2015)
+ * Clément Guy <clement.guy@insa-rennes.fr> (2014)
  * Matthieu Wipliez <matthieu.wipliez@insa-rennes.fr> (2011)
  * Maxime Pelcat <maxime.pelcat@insa-rennes.fr> (2011)
  *
@@ -35,38 +35,31 @@
  * The fact that you are presently reading this means that you have had
  * knowledge of the CeCILL license and that you accept its terms.
  */
-package org.ietr.dftools.workflow.implement;
-
-import java.util.Map;
-import org.ietr.dftools.workflow.WorkflowException;
+package org.preesm.workflow;
 
 /**
- * Abstract scenario that can be implemented by a plugin wanting workflow execution capabilities. The prototype of the
- * scenario element is set in the plugin extension.
+ * Exception thrown when an error has occurred in a workflow task.
+ *
+ * It extends {@link RuntimeException} so that it does not need to be checked (and actually it should not be caught by
+ * anything else than a {@link AbstractWorkflowExecutor}).
  *
  * @author mpelcat
+ * @author Antoine Morvan
  */
-public abstract class AbstractScenarioImplementation extends AbstractWorkflowNodeImplementation {
+public class WorkflowException extends RuntimeException {
+
+  /** The Constant serialVersionUID. */
+  private static final long serialVersionUID = -82239037652340760L;
 
   /**
-   * Returns the preferred prototype for the node in a workflow. Useful to give user information in the workflow
+   * Instantiates a new workflow exception.
    *
-   * @return the string
    */
-  @Override
-  public final String displayPrototype() {
-    return super.displayPrototype();
+  public WorkflowException(final String message, final Throwable cause) {
+    super(message, cause);
   }
 
-  /**
-   * The workflow scenario element must have an initialize method that is called by the workflow to generate the
-   * scenario outputs (for example, an algorithm and an architecture).
-   *
-   * @param path
-   *          the path
-   * @return the map
-   * @throws WorkflowException
-   *           the workflow exception
-   */
-  public abstract Map<String, Object> extractData(String path);
+  public WorkflowException(final String message) {
+    this(message, null);
+  }
 }

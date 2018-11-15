@@ -35,7 +35,7 @@
  */
 package org.ietr.preesm.memory.exclusiongraph;
 
-import org.ietr.dftools.workflow.implement.AbstractTaskImplementation;
+import org.preesm.workflow.implement.AbstractTaskImplementation;
 
 // TODO: Auto-generated Javadoc
 /**

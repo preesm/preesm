@@ -41,7 +41,6 @@ package org.ietr.preesm.pimm.algorithm.helper;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import org.eclipse.emf.common.util.EList;
-import org.ietr.dftools.workflow.WorkflowException;
 import org.nfunk.jep.JEP;
 import org.nfunk.jep.Node;
 import org.nfunk.jep.ParseException;
@@ -64,6 +63,7 @@ import org.preesm.model.pisdf.PiGraph;
 import org.preesm.model.pisdf.PiGraphException;
 import org.preesm.model.pisdf.StringExpression;
 import org.preesm.model.pisdf.util.PiMMSwitch;
+import org.preesm.workflow.WorkflowException;
 
 /**
  * @author farresti

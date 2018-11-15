@@ -35,31 +35,42 @@
  * The fact that you are presently reading this means that you have had
  * knowledge of the CeCILL license and that you accept its terms.
  */
-package org.ietr.dftools.workflow;
+package org.preesm.workflow.elements;
+
+import org.preesm.workflow.implement.AbstractWorkflowNodeImplementation;
 
 /**
- * Exception thrown when an error has occurred in a workflow task.
- *
- * It extends {@link RuntimeException} so that it does not need to be checked (and actually it should not be caught by
- * anything else than a {@link AbstractWorkflowExecutor}).
+ * This class provides methods to manipulate workflow nodes.
  *
  * @author mpelcat
- * @author Antoine Morvan
+ *
  */
-public class WorkflowException extends RuntimeException {
+public abstract class AbstractWorkflowNode {
 
-  /** The Constant serialVersionUID. */
-  private static final long serialVersionUID = -82239037652340760L;
+  /** Implementation of this node. */
+  protected AbstractWorkflowNodeImplementation implementation = null;
 
   /**
-   * Instantiates a new workflow exception.
+   * Gets the implementation.
    *
+   * @return the implementation
    */
-  public WorkflowException(final String message, final Throwable cause) {
-    super(message, cause);
+  public final AbstractWorkflowNodeImplementation getImplementation() {
+    return this.implementation;
   }
 
-  public WorkflowException(final String message) {
-    this(message, null);
-  }
+  /**
+   * Checks if is scenario node.
+   *
+   * @return True if this node is a scenario node, false otherwise.
+   */
+  public abstract boolean isScenarioNode();
+
+  /**
+   * Checks if is task node.
+   *
+   * @return True if this node is a transformation node, false otherwise.
+   */
+  public abstract boolean isTaskNode();
+
 }

@@ -69,7 +69,6 @@ import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.emf.ecore.resource.ResourceSet;
 import org.eclipse.emf.ecore.resource.impl.ResourceSetImpl;
 import org.eclipse.emf.ecore.xmi.impl.XMIResourceFactoryImpl;
-import org.ietr.dftools.workflow.WorkflowException;
 import org.ietr.preesm.core.scenario.PreesmScenario;
 import org.ietr.preesm.mapper.model.MapperDAG;
 import org.ietr.preesm.memory.exclusiongraph.MemoryExclusionGraph;
@@ -79,6 +78,7 @@ import org.preesm.codegen.model.CoreBlock;
 import org.preesm.codegen.printer.CodegenAbstractPrinter;
 import org.preesm.commons.logger.PreesmLogger;
 import org.preesm.model.slam.Design;
+import org.preesm.workflow.WorkflowException;
 
 /**
  * The Class CodegenEngine.

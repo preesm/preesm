@@ -2,9 +2,10 @@
  * Copyright or © or Copr. IETR/INSA - Rennes (2011 - 2018) :
  *
  * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017 - 2018)
- * Clément Guy <clement.guy@insa-rennes.fr> (2014)
+ * Antoine Morvan <antoine.morvan.pro@gmail.com> (2018)
+ * Clément Guy <clement.guy@insa-rennes.fr> (2014 - 2015)
  * Matthieu Wipliez <matthieu.wipliez@insa-rennes.fr> (2011)
- * Maxime Pelcat <maxime.pelcat@insa-rennes.fr> (2011)
+ * Maxime Pelcat <maxime.pelcat@insa-rennes.fr> (2011 - 2012)
  *
  * This software is a computer program whose purpose is to help prototyping
  * parallel applications using dataflow formalism.
@@ -35,80 +36,28 @@
  * The fact that you are presently reading this means that you have had
  * knowledge of the CeCILL license and that you accept its terms.
  */
-package org.ietr.dftools.workflow.elements;
+package org.preesm.workflow;
+
+import org.preesm.commons.logger.PreesmLogger;
 
 /**
- * An edge between two workflow tasks.
+ * This class provides methods to check and execute a workflow. A workflow consists of several transformation plug-ins
+ * tasks applied to a scenario.
  *
  * @author mpelcat
  */
-
-public class WorkflowEdge {
-
-  /** Name of the output port of the source that must correspond to the name in the corresponding task prototype. */
-  private String sourcePort = null;
-
-  /** Name of the input port of the target that must correspond to the name in the corresponding task prototype. */
-  private String targetPort = null;
-
-  /** Object carrying the data. */
-  private Object data = null;
+public class WorkflowManager extends AbstractWorkflowExecutor {
 
   /**
-   * Gets the data.
-   *
-   * @return the data
+   * Ports with this name are ignored when exchanging data. They just specify precedence.
    */
-  public Object getData() {
-    return this.data;
-  }
+  public static final String IGNORE_PORT_NAME = "void";
 
   /**
-   * Sets the data.
-   *
-   * @param data
-   *          the new data
+   * Instantiates a new workflow manager.
    */
-  public void setData(final Object data) {
-    this.data = data;
-  }
-
-  /**
-   * Gets the source port.
-   *
-   * @return the source port
-   */
-  public String getSourcePort() {
-    return this.sourcePort;
-  }
-
-  /**
-   * Sets the source port.
-   *
-   * @param sourcePort
-   *          the new source port
-   */
-  public void setSourcePort(final String sourcePort) {
-    this.sourcePort = sourcePort;
-  }
-
-  /**
-   * Gets the target port.
-   *
-   * @return the target port
-   */
-  public String getTargetPort() {
-    return this.targetPort;
-  }
-
-  /**
-   * Sets the target port.
-   *
-   * @param targetPort
-   *          the new target port
-   */
-  public void setTargetPort(final String targetPort) {
-    this.targetPort = targetPort;
+  public WorkflowManager() {
+    setLogger(PreesmLogger.getLogger());
   }
 
 }

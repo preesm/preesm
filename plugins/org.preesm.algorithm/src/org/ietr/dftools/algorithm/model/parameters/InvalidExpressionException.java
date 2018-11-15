@@ -36,8 +36,8 @@
  */
 package org.ietr.dftools.algorithm.model.parameters;
 
-import org.ietr.dftools.workflow.AbstractWorkflowExecutor;
-import org.ietr.dftools.workflow.WorkflowException;
+import org.preesm.workflow.AbstractWorkflowExecutor;
+import org.preesm.workflow.WorkflowException;
 
 /**
  * Class representing exception while solving expressions.

@@ -1,10 +1,7 @@
 /**
- * Copyright or © or Copr. IETR/INSA - Rennes (2011 - 2018) :
+ * Copyright or © or Copr. IETR/INSA - Rennes (2017 - 2018) :
  *
  * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017 - 2018)
- * Clément Guy <clement.guy@insa-rennes.fr> (2014)
- * Matthieu Wipliez <matthieu.wipliez@insa-rennes.fr> (2011)
- * Maxime Pelcat <maxime.pelcat@insa-rennes.fr> (2011)
  *
  * This software is a computer program whose purpose is to help prototyping
  * parallel applications using dataflow formalism.
@@ -35,42 +32,31 @@
  * The fact that you are presently reading this means that you have had
  * knowledge of the CeCILL license and that you accept its terms.
  */
-package org.ietr.dftools.workflow.elements;
+package org.preesm.workflow.test;
 
-import org.ietr.dftools.workflow.implement.AbstractWorkflowNodeImplementation;
+import java.util.logging.Level;
+import org.junit.Test;
+import org.preesm.commons.logger.CLIWorkflowLogger;
 
 /**
- * This class provides methods to manipulate workflow nodes.
- *
- * @author mpelcat
- *
+ * The Class SampleTest.
  */
-public abstract class AbstractWorkflowNode {
-
-  /** Implementation of this node. */
-  protected AbstractWorkflowNodeImplementation implementation = null;
+public class CLILoggerTest {
 
   /**
-   * Gets the implementation.
-   *
-   * @return the implementation
+   * Test sample.
    */
-  public final AbstractWorkflowNodeImplementation getImplementation() {
-    return this.implementation;
+  @Test
+  public void testLog() {
+    new CLIWorkflowLogger(false).log(Level.INFO, "test message");
+    new CLIWorkflowLogger(false).log(Level.FINEST, "test message");
   }
 
   /**
-   * Checks if is scenario node.
-   *
-   * @return True if this node is a scenario node, false otherwise.
+   * Test sample.
    */
-  public abstract boolean isScenarioNode();
-
-  /**
-   * Checks if is task node.
-   *
-   * @return True if this node is a transformation node, false otherwise.
-   */
-  public abstract boolean isTaskNode();
-
+  @Test
+  public void testLogException() {
+    new CLIWorkflowLogger(false).log(Level.INFO, "test message", new NullPointerException());
+  }
 }

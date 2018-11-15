@@ -2,9 +2,9 @@
  * Copyright or © or Copr. IETR/INSA - Rennes (2011 - 2018) :
  *
  * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017 - 2018)
- * Clément Guy <clement.guy@insa-rennes.fr> (2014 - 2015)
+ * Clément Guy <clement.guy@insa-rennes.fr> (2014)
  * Matthieu Wipliez <matthieu.wipliez@insa-rennes.fr> (2011)
- * Maxime Pelcat <maxime.pelcat@insa-rennes.fr> (2011)
+ * Maxime Pelcat <maxime.pelcat@insa-rennes.fr> (2011 - 2012)
  *
  * This software is a computer program whose purpose is to help prototyping
  * parallel applications using dataflow formalism.
@@ -35,54 +35,59 @@
  * The fact that you are presently reading this means that you have had
  * knowledge of the CeCILL license and that you accept its terms.
  */
-package org.ietr.dftools.workflow;
+package org.preesm.workflow.test;
 
-import org.eclipse.core.runtime.Plugin;
-import org.osgi.framework.BundleContext;
+import java.util.LinkedHashMap;
+import java.util.Map;
+import java.util.logging.Level;
+import org.eclipse.core.runtime.IProgressMonitor;
+import org.preesm.commons.logger.PreesmLogger;
+import org.preesm.workflow.elements.Workflow;
+import org.preesm.workflow.implement.AbstractTaskImplementation;
 
 /**
- * The activator class controls the plug-in life cycle.
- *
- * @author mpelcat
+ * The Class TestWorkflowTask1.
  */
-public class Activator extends Plugin {
-
-  /** The Constant PLUGIN_ID. */
-  // The plug-in ID
-  public static final String PLUGIN_ID = "org.preesm.workflow"; //$NON-NLS-1$
-
-  /** The plugin. */
-  // The shared instance
-  private static Activator plugin;
+public class TestWorkflowTask1 extends AbstractTaskImplementation {
 
   /*
    * (non-Javadoc)
    *
-   * @see org.eclipse.ui.plugin.AbstractUIPlugin#start(org.osgi.framework. BundleContext )
+   * @see org.ietr.dftools.workflow.implement.AbstractTaskImplementation#execute(java.util.Map, java.util.Map,
+   * org.eclipse.core.runtime.IProgressMonitor, java.lang.String, org.ietr.dftools.workflow.elements.Workflow)
    */
   @Override
-  public void start(final BundleContext context) throws Exception {
-    super.start(context);
-    Activator.plugin = this;
+  public Map<String, Object> execute(final Map<String, Object> inputs, final Map<String, String> parameters,
+      final IProgressMonitor monitor, final String nodeName, final Workflow workflow) {
+    final Map<String, Object> outputs = new LinkedHashMap<>();
+    final String message = "Executing TestWorkflowTask1; node: " + nodeName;
+    PreesmLogger.getLogger().log(Level.INFO, message);
+    outputs.put("superData", "superData1");
+    return outputs;
   }
 
   /*
    * (non-Javadoc)
    *
-   * @see org.eclipse.ui.plugin.AbstractUIPlugin#stop(org.osgi.framework. BundleContext )
+   * @see org.ietr.dftools.workflow.implement.AbstractTaskImplementation#getDefaultParameters()
    */
   @Override
-  public void stop(final BundleContext context) throws Exception {
-    Activator.plugin = null;
-    super.stop(context);
+  public Map<String, String> getDefaultParameters() {
+    final Map<String, String> parameters = new LinkedHashMap<>();
+
+    parameters.put("size", "25");
+    parameters.put("duration", "short");
+    return parameters;
   }
 
-  /**
-   * Returns the shared instance.
+  /*
+   * (non-Javadoc)
    *
-   * @return the shared instance
+   * @see org.ietr.dftools.workflow.implement.AbstractWorkflowNodeImplementation#monitorMessage()
    */
-  public static Activator getDefault() {
-    return Activator.plugin;
+  @Override
+  public String monitorMessage() {
+    return "Executing TestWorkflowTask1";
   }
+
 }

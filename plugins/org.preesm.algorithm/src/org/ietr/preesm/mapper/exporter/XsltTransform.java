@@ -44,12 +44,12 @@ import java.util.logging.Level;
 import javax.xml.transform.TransformerConfigurationException;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.Path;
-import org.ietr.dftools.workflow.WorkflowException;
-import org.ietr.dftools.workflow.elements.Workflow;
-import org.ietr.dftools.workflow.implement.AbstractTaskImplementation;
 import org.ietr.preesm.utils.xml.XsltTransformer;
 import org.preesm.commons.files.PathTools;
 import org.preesm.commons.logger.PreesmLogger;
+import org.preesm.workflow.WorkflowException;
+import org.preesm.workflow.elements.Workflow;
+import org.preesm.workflow.implement.AbstractTaskImplementation;
 
 // TODO: Auto-generated Javadoc
 /**

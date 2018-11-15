@@ -32,7 +32,7 @@
  * The fact that you are presently reading this means that you have had
  * knowledge of the CeCILL license and that you accept its terms.
  */
-package org.ietr.dftools.workflow.converter;
+package org.preesm.workflow.converter;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -45,9 +45,9 @@ import java.net.URL;
 import java.nio.file.Files;
 import javax.xml.transform.TransformerConfigurationException;
 import org.eclipse.core.runtime.Platform;
-import org.ietr.dftools.workflow.Activator;
-import org.ietr.dftools.workflow.WorkflowException;
 import org.osgi.framework.Bundle;
+import org.preesm.workflow.Activator;
+import org.preesm.workflow.WorkflowException;
 
 /**
  * @author mpelcat

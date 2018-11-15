@@ -68,15 +68,15 @@ import org.ietr.dftools.algorithm.model.sdf.SDFEdge
 import org.ietr.dftools.algorithm.model.sdf.SDFGraph
 import org.ietr.dftools.algorithm.model.sdf.SDFVertex
 import org.ietr.dftools.algorithm.model.sdf.esdf.SDFRoundBufferVertex
-import org.ietr.dftools.workflow.WorkflowException
 import org.ietr.preesm.core.scenario.PreesmScenario
 import org.ietr.preesm.core.types.DataType
 import org.ietr.preesm.memory.exclusiongraph.MemoryExclusionGraph
 import org.ietr.preesm.memory.exclusiongraph.MemoryExclusionVertex
 import org.preesm.commons.files.URLResolver
+import org.preesm.commons.logger.PreesmLogger
+import org.preesm.workflow.WorkflowException
 
 import static extension org.ietr.preesm.memory.script.Range.*
-import org.preesm.commons.logger.PreesmLogger
 
 enum CheckPolicy {
 	NONE,

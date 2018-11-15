@@ -35,15 +35,15 @@
  * The fact that you are presently reading this means that you have had
  * knowledge of the CeCILL license and that you accept its terms.
  */
-package org.ietr.dftools.workflow.elements;
+package org.preesm.workflow.elements;
 
 import java.util.logging.Level;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IConfigurationElement;
 import org.eclipse.core.runtime.IExtensionRegistry;
 import org.eclipse.core.runtime.Platform;
-import org.ietr.dftools.workflow.implement.AbstractScenarioImplementation;
 import org.preesm.commons.logger.PreesmLogger;
+import org.preesm.workflow.implement.AbstractScenarioImplementation;
 
 /**
  * This class provides a scenario workflow node.

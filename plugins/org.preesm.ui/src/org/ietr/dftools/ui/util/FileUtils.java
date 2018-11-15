@@ -62,7 +62,7 @@ import org.eclipse.ui.dialogs.ElementTreeSelectionDialog;
 import org.eclipse.ui.dialogs.ISelectionStatusValidator;
 import org.eclipse.ui.model.WorkbenchContentProvider;
 import org.eclipse.ui.model.WorkbenchLabelProvider;
-import org.ietr.dftools.workflow.Activator;
+import org.preesm.workflow.Activator;
 
 // TODO: Auto-generated Javadoc
 /**

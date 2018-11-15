@@ -35,7 +35,7 @@
  * The fact that you are presently reading this means that you have had
  * knowledge of the CeCILL license and that you accept its terms.
  */
-package org.ietr.dftools.workflow;
+package org.preesm.workflow;
 
 import java.io.IOException;
 import java.util.LinkedHashMap;
@@ -44,11 +44,11 @@ import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.Path;
-import org.ietr.dftools.workflow.elements.AbstractWorkflowNode;
-import org.ietr.dftools.workflow.elements.ScenarioNode;
-import org.ietr.dftools.workflow.elements.TaskNode;
-import org.ietr.dftools.workflow.elements.Workflow;
-import org.ietr.dftools.workflow.elements.WorkflowEdge;
+import org.preesm.workflow.elements.AbstractWorkflowNode;
+import org.preesm.workflow.elements.ScenarioNode;
+import org.preesm.workflow.elements.TaskNode;
+import org.preesm.workflow.elements.Workflow;
+import org.preesm.workflow.elements.WorkflowEdge;
 import org.xml.sax.Attributes;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;

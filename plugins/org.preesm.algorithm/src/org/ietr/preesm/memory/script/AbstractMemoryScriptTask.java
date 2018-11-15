@@ -37,8 +37,8 @@ package org.ietr.preesm.memory.script;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
-import org.ietr.dftools.workflow.implement.AbstractTaskImplementation;
 import org.ietr.preesm.memory.allocation.AbstractMemoryAllocatorTask;
+import org.preesm.workflow.implement.AbstractTaskImplementation;
 
 // TODO: Auto-generated Javadoc
 /**

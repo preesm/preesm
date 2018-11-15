@@ -42,11 +42,11 @@ import org.eclipse.core.runtime.IProgressMonitor
 import org.eclipse.xtend.lib.annotations.Accessors
 import org.ietr.dftools.algorithm.model.sdf.SDFGraph
 import org.ietr.dftools.algorithm.model.visitors.SDF4JException
-import org.ietr.dftools.workflow.WorkflowException
-import org.ietr.dftools.workflow.elements.Workflow
-import org.ietr.dftools.workflow.implement.AbstractTaskImplementation
-import org.ietr.dftools.workflow.implement.AbstractWorkflowNodeImplementation
 import org.preesm.commons.logger.PreesmLogger
+import org.preesm.workflow.WorkflowException
+import org.preesm.workflow.elements.Workflow
+import org.preesm.workflow.implement.AbstractTaskImplementation
+import org.preesm.workflow.implement.AbstractWorkflowNodeImplementation
 
 /**
  * Wrapper class that performs the data-parallel checks and transforms

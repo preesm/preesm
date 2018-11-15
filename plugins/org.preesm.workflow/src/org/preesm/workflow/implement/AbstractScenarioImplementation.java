@@ -2,10 +2,9 @@
  * Copyright or © or Copr. IETR/INSA - Rennes (2011 - 2018) :
  *
  * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017 - 2018)
- * Antoine Morvan <antoine.morvan.pro@gmail.com> (2018)
  * Clément Guy <clement.guy@insa-rennes.fr> (2014 - 2015)
  * Matthieu Wipliez <matthieu.wipliez@insa-rennes.fr> (2011)
- * Maxime Pelcat <maxime.pelcat@insa-rennes.fr> (2011 - 2012)
+ * Maxime Pelcat <maxime.pelcat@insa-rennes.fr> (2011)
  *
  * This software is a computer program whose purpose is to help prototyping
  * parallel applications using dataflow formalism.
@@ -36,28 +35,38 @@
  * The fact that you are presently reading this means that you have had
  * knowledge of the CeCILL license and that you accept its terms.
  */
-package org.ietr.dftools.workflow;
+package org.preesm.workflow.implement;
 
-import org.preesm.commons.logger.PreesmLogger;
+import java.util.Map;
+import org.preesm.workflow.WorkflowException;
 
 /**
- * This class provides methods to check and execute a workflow. A workflow consists of several transformation plug-ins
- * tasks applied to a scenario.
+ * Abstract scenario that can be implemented by a plugin wanting workflow execution capabilities. The prototype of the
+ * scenario element is set in the plugin extension.
  *
  * @author mpelcat
  */
-public class WorkflowManager extends AbstractWorkflowExecutor {
+public abstract class AbstractScenarioImplementation extends AbstractWorkflowNodeImplementation {
 
   /**
-   * Ports with this name are ignored when exchanging data. They just specify precedence.
+   * Returns the preferred prototype for the node in a workflow. Useful to give user information in the workflow
+   *
+   * @return the string
    */
-  public static final String IGNORE_PORT_NAME = "void";
-
-  /**
-   * Instantiates a new workflow manager.
-   */
-  public WorkflowManager() {
-    setLogger(PreesmLogger.getLogger());
+  @Override
+  public final String displayPrototype() {
+    return super.displayPrototype();
   }
 
+  /**
+   * The workflow scenario element must have an initialize method that is called by the workflow to generate the
+   * scenario outputs (for example, an algorithm and an architecture).
+   *
+   * @param path
+   *          the path
+   * @return the map
+   * @throws WorkflowException
+   *           the workflow exception
+   */
+  public abstract Map<String, Object> extractData(String path);
 }

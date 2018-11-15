@@ -47,10 +47,10 @@ import org.ietr.dftools.algorithm.model.sdf.SDFGraph
 import org.ietr.dftools.algorithm.model.sdf.esdf.SDFSinkInterfaceVertex
 import org.ietr.dftools.algorithm.model.sdf.esdf.SDFSourceInterfaceVertex
 import org.ietr.dftools.algorithm.model.types.LongEdgePropertyType
-import org.ietr.dftools.workflow.WorkflowException
-import org.ietr.dftools.workflow.elements.Workflow
-import org.ietr.dftools.workflow.implement.AbstractTaskImplementation
 import org.ietr.preesm.core.scenario.PreesmScenario
+import org.preesm.workflow.WorkflowException
+import org.preesm.workflow.elements.Workflow
+import org.preesm.workflow.implement.AbstractTaskImplementation
 
 /**
  * Repeating N times the same single rate IBSDF algorithm into a new IBSDF graph.
