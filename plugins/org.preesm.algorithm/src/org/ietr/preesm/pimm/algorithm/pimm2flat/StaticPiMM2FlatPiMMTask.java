@@ -77,7 +77,6 @@ public class StaticPiMM2FlatPiMMTask extends AbstractTaskImplementation {
     final Logger logger = PreesmLogger.getLogger();
     VisitorOutput.setLogger(logger);
     try {
-      logger.setLevel(Level.FINEST);
       logger.log(Level.INFO, "Computing Repetition Vector for graph [" + graph.getName() + "]");
       // Flatten the graph
       result = launcher.launch();

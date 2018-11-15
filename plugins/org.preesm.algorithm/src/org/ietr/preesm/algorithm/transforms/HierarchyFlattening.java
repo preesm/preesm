@@ -99,7 +99,6 @@ public class HierarchyFlattening extends AbstractTaskImplementation {
       depth = Integer.MAX_VALUE;
     }
 
-    HierarchyFlattening.LOGGER.setLevel(Level.FINEST);
     VisitorOutput.setLogger(HierarchyFlattening.LOGGER);
     final ConsistencyChecker checkConsistent = new ConsistencyChecker();
     if (checkConsistent.verifyGraph(algorithm)) {

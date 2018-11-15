@@ -95,7 +95,9 @@ public abstract class PreesmLogger extends Logger {
 
             // and checks it actually is an ITransformation.
             if (obj instanceof Logger) {
-              setLogger((Logger) obj);
+              final Logger preesmLogger = (Logger) obj;
+              preesmLogger.setLevel(Level.INFO);
+              setLogger(preesmLogger);
             }
           }
         }

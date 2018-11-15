@@ -86,8 +86,7 @@ public class HSDFTransformation extends AbstractTaskImplementation {
 
     try {
 
-      logger.setLevel(Level.FINEST);
-      logger.log(Level.FINER, "Transforming application " + algorithm.getName() + " to HSDF");
+      logger.log(Level.INFO, "Transforming application " + algorithm.getName() + " to HSDF");
       VisitorOutput.setLogger(logger);
       algorithm.insertBroadcasts();
       if (algorithm.validateModel()) {
@@ -98,12 +97,12 @@ public class HSDFTransformation extends AbstractTaskImplementation {
         try {
           algorithm.accept(toHsdf);
           hsdf = toHsdf.getOutput();
-          logger.log(Level.FINER, "Minimize special actors");
+          logger.log(Level.INFO, "Minimize special actors");
           JoinForkCleaner.cleanJoinForkPairsFrom(hsdf);
         } catch (final SDF4JException | InvalidExpressionException e) {
           throw new WorkflowException(e.getMessage(), e);
         }
-        logger.log(Level.FINER, "HSDF transformation complete");
+        logger.log(Level.INFO, "HSDF transformation complete");
 
         logger.log(Level.INFO,
             "HSDF with " + hsdf.vertexSet().size() + " vertices and " + hsdf.edgeSet().size() + " edges.");

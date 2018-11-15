@@ -68,7 +68,7 @@ class DefaultPreesmFormatter extends Formatter {
         output.append(" ").append(record.getLevel());
       } else if (record.getLevel().intValue() == Level.INFO.intValue()) {
         output.append(" NOTICE");
-      } else if (record.getLevel().intValue() == Level.FINER.intValue()) {
+      } else if (record.getLevel().intValue() < Level.INFO.intValue()) {
         output.append(" DEBUG");
       }
       output.append(": ");
