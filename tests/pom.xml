@@ -62,7 +62,12 @@
 		</plugins>
 	</build>
 
-	<modules>
+  <modules>
+    <module>org.preesm.framework.test</module>
+    <module>org.preesm.model.test</module>
+    <module>org.preesm.algorithm.test</module>
+    <module>org.preesm.ui.test</module>
+    <module>fi.abo.preesm.dataparallel.test</module>
 		<module>org.preesm.test.it</module>
 		<module>org.preesm.test.ui</module>
 	</modules>

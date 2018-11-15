@@ -102,7 +102,7 @@
     <sonar.core.codeCoveragePlugin>jacoco</sonar.core.codeCoveragePlugin>
     <sonar.dynamicAnalysis>reuseReports</sonar.dynamicAnalysis>
     <sonar.jacoco.reportPaths>../../target/jacoco.exec</sonar.jacoco.reportPaths>
-    <sonar.exclusions>**/tests/**, **/test-fragments/**, **/releng/**, **/ecore-gen/**</sonar.exclusions>
+    <sonar.exclusions>**/tests/**, **/releng/**, **/ecore-gen/**</sonar.exclusions>
 
     <!-- XCore related properties  -->
     <maven.compiler.fork>true</maven.compiler.fork>
@@ -200,7 +200,6 @@
               <append>true</append>
               <excludes>
                 <exclude>**/tests/**</exclude>
-                <exclude>**/test-fragments/**</exclude>
                 <exclude>**/releng/**</exclude>
               </excludes>
             </configuration>
@@ -461,7 +460,6 @@
 
   <modules>
     <module>plugins</module>
-    <module>test-fragments</module>
     <module>tests</module>
     <module>releng</module>
   </modules>
