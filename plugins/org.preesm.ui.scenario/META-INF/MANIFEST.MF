@@ -21,12 +21,12 @@ Require-Bundle: org.eclipse.ui.console;bundle-version="3.5.100",
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Bundle-ActivationPolicy: lazy
 Eclipse-BuddyPolicy: global
-Export-Package: org.ietr.preesm.ui.scenario.editor,
- org.ietr.preesm.ui.scenario.editor.codegen,
- org.ietr.preesm.ui.scenario.editor.constraints,
- org.ietr.preesm.ui.scenario.editor.parametervalues,
- org.ietr.preesm.ui.scenario.editor.relativeconstraints,
- org.ietr.preesm.ui.scenario.editor.simulation,
- org.ietr.preesm.ui.scenario.editor.timings,
- org.ietr.preesm.ui.scenario.editor.variables
+Export-Package: org.preesm.ui.scenario.editor,
+ org.preesm.ui.scenario.editor.codegen,
+ org.preesm.ui.scenario.editor.constraints,
+ org.preesm.ui.scenario.editor.parametervalues,
+ org.preesm.ui.scenario.editor.relativeconstraints,
+ org.preesm.ui.scenario.editor.simulation,
+ org.preesm.ui.scenario.editor.timings,
+ org.preesm.ui.scenario.editor.variables
 
