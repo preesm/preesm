@@ -53,9 +53,9 @@ import org.eclipse.graphiti.services.IPeCreateService;
 import org.eclipse.graphiti.ui.services.GraphitiUi;
 import org.eclipse.graphiti.util.IColorConstant;
 import org.ietr.preesm.ui.pimm.util.PiMMUtil;
+import org.ietr.preesm.ui.pimm.util.PortNameValidator;
 import org.preesm.model.pisdf.ExecutableActor;
 import org.preesm.model.pisdf.Port;
-import org.preesm.model.pisdf.util.PortNameValidator;
 
 // TODO: Auto-generated Javadoc
 /**

@@ -34,7 +34,7 @@
  * The fact that you are presently reading this means that you have had
  * knowledge of the CeCILL license and that you accept its terms.
  */
-package org.preesm.model.pisdf.util;
+package org.ietr.preesm.ui.pimm.util;
 
 import java.util.LinkedHashSet;
 import java.util.Set;

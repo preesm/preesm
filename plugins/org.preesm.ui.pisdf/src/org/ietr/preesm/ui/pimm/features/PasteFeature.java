@@ -61,6 +61,7 @@ import org.eclipse.graphiti.ui.features.AbstractPasteFeature;
 import org.eclipse.graphiti.ui.services.GraphitiUi;
 import org.eclipse.xtext.xbase.lib.Pair;
 import org.ietr.preesm.ui.pimm.features.CopyFeature.VertexCopy;
+import org.ietr.preesm.ui.pimm.util.VertexNameValidator;
 import org.preesm.model.pisdf.AbstractActor;
 import org.preesm.model.pisdf.AbstractVertex;
 import org.preesm.model.pisdf.ConfigInputInterface;
@@ -82,7 +83,6 @@ import org.preesm.model.pisdf.Parameterizable;
 import org.preesm.model.pisdf.PiGraph;
 import org.preesm.model.pisdf.Port;
 import org.preesm.model.pisdf.factory.PiMMUserFactory;
-import org.preesm.model.pisdf.util.VertexNameValidator;
 
 /**
  * Graphiti feature that implements the Paste feature for PiMM Vertices. Creates a new copy of the PiMM element

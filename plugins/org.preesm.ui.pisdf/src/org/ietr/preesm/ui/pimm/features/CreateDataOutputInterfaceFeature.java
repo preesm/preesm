@@ -43,10 +43,10 @@ import org.eclipse.graphiti.features.impl.AbstractCreateFeature;
 import org.eclipse.graphiti.func.ICreate;
 import org.eclipse.graphiti.mm.pictograms.Diagram;
 import org.ietr.preesm.ui.pimm.util.PiMMUtil;
+import org.ietr.preesm.ui.pimm.util.VertexNameValidator;
 import org.preesm.model.pisdf.DataOutputInterface;
 import org.preesm.model.pisdf.PiGraph;
 import org.preesm.model.pisdf.factory.PiMMUserFactory;
-import org.preesm.model.pisdf.util.VertexNameValidator;
 
 // TODO: Auto-generated Javadoc
 /**

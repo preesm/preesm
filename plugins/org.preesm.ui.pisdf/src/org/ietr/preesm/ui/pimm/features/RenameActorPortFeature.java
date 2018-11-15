@@ -44,10 +44,10 @@ import org.eclipse.graphiti.mm.algorithms.GraphicsAlgorithm;
 import org.eclipse.graphiti.mm.pictograms.BoxRelativeAnchor;
 import org.eclipse.graphiti.mm.pictograms.PictogramElement;
 import org.ietr.preesm.ui.pimm.util.PiMMUtil;
+import org.ietr.preesm.ui.pimm.util.PortNameValidator;
 import org.preesm.model.pisdf.AbstractActor;
 import org.preesm.model.pisdf.ExecutableActor;
 import org.preesm.model.pisdf.Port;
-import org.preesm.model.pisdf.util.PortNameValidator;
 
 // TODO: Auto-generated Javadoc
 /**
