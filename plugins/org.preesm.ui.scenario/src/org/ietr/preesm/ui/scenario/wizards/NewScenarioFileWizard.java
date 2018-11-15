@@ -43,7 +43,7 @@ import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.ui.dialogs.WizardNewFileCreationPage;
 import org.eclipse.ui.wizards.newresource.BasicNewFileResourceWizard;
-import org.ietr.preesm.ui.utils.ErrorWithExceptionDialog;
+import org.preesm.ui.utils.ErrorWithExceptionDialog;
 
 /**
  * The Class NewScenarioFileWizard.

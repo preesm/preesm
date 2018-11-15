@@ -42,6 +42,8 @@
 <?eclipse version="3.4"?>
 
 <plugin>
+
+   <!-- Workflow editor & config -->
    <extension point="org.eclipse.ui.editors">
       <editor
          class="org.ietr.dftools.graphiti.ui.editors.GraphEditor"
@@ -53,13 +55,13 @@
    <extension
       point="org.eclipse.core.expressions.propertyTesters">
       <propertyTester
-         class="org.ietr.dftools.ui.workflow.launch.WorkflowPropertyTester"
+         class="org.preesm.ui.workflow.launch.WorkflowPropertyTester"
          id="net.sf.dftools.ui.workflow.workflowTester"
          namespace="net.sf.dftools" properties="isWorkflow"
          type="org.eclipse.core.runtime.IAdaptable">
       </propertyTester>
       <propertyTester
-         class="org.ietr.dftools.ui.workflow.command.OldWorkflowPropertyTester"
+         class="org.preesm.ui.workflow.command.OldWorkflowPropertyTester"
          id="net.sf.dftools.ui.workflow.oldWorkflowTester"
          namespace="net.sf.dftools" properties="isOldWorkflow"
          type="org.eclipse.core.resources.IResource">
@@ -68,7 +70,7 @@
    <extension point="org.eclipse.ui.newWizards">
       <wizard canFinishEarly="false"
          category="org.ietr.preesm.category"
-         class="org.ietr.dftools.ui.workflow.NewWorkflowFileWizard"
+         class="org.preesm.ui.workflow.NewWorkflowFileWizard"
          hasPages="true" icon="icons/graphiti.gif"
          id="org.ietr.preesm.ui.wizards.workflow" name="Preesm Workflow"
          project="false">
@@ -82,8 +84,8 @@
       <propertySections
          contributorId="org.ietr.dftools.graphiti.ui.properties.contributor">
          <propertySection
-            class="org.ietr.dftools.ui.workflow.properties.WorkflowTaskVariablesMapSection"
-            filter="org.ietr.dftools.ui.workflow.filters.WorkflowTaskFilter"
+            class="org.preesm.ui.workflow.properties.WorkflowTaskVariablesMapSection"
+            filter="org.preesm.ui.workflow.filters.WorkflowTaskFilter"
             id="net.sf.dftools.ui.workflow.variables.section"
             tab="net.sf.dftools.ui.workflow.variables">
          </propertySection>
@@ -103,7 +105,7 @@
    <extension
       point="org.eclipse.debug.ui.launchConfigurationTabGroups">
       <launchConfigurationTabGroup
-         class="org.ietr.dftools.ui.workflow.launch.WorkflowLaunchConfigurationTabGroup"
+         class="org.preesm.ui.workflow.launch.WorkflowLaunchConfigurationTabGroup"
          id="net.sf.dftools.ui.workflow.launchConfigurationTabGroup"
          type="net.sf.dftools.ui.workflow.launchConfigurationType">
       </launchConfigurationTabGroup>
@@ -119,20 +121,20 @@
    <extension
       point="org.eclipse.debug.core.launchConfigurationTypes">
       <launchConfigurationType
-         delegate="org.ietr.dftools.ui.workflow.launch.WorkflowLaunchConfigurationDelegate"
+         delegate="org.preesm.ui.workflow.launch.WorkflowLaunchConfigurationDelegate"
          id="net.sf.dftools.ui.workflow.launchConfigurationType"
          modes="run" name="DFTools Workflow" public="true">
       </launchConfigurationType>
    </extension>
    <extension point="org.preesm.workflow.loggers">
       <logger id="net.sf.dftools.ui.workflow.logger"
-         type="org.ietr.dftools.ui.workflow.tools.PreesmWorkflowLogger">
+         type="org.preesm.ui.workflow.tools.PreesmWorkflowLogger">
       </logger>
    </extension>
    <extension point="graphiti.definition">
       <configuration extension="workflow" name="Workflow"
          type="text/xml"
-         validator="org.ietr.dftools.ui.workflow.WorkflowValidator">
+         validator="org.preesm.ui.workflow.WorkflowValidator">
          <graphType name="DFTools Workflow">
          </graphType>
          <import>
@@ -196,7 +198,7 @@
 
    <extension point="org.eclipse.ui.handlers">
       <handler
-         class="org.ietr.dftools.ui.workflow.command.WorkflowConverterHandler"
+         class="org.preesm.ui.workflow.command.WorkflowConverterHandler"
          commandId="org.ietr.dftools.ui.command.workflow.converter">
       </handler>
    </extension>
@@ -243,7 +245,7 @@
    <extension
          point="org.eclipse.ui.perspectives">
       <perspective
-            class="org.ietr.preesm.ui.perspective.PreesmPerspective"
+            class="org.preesm.ui.perspective.PreesmPerspective"
             fixed="false"
             icon="icons/preesmProject.png"
             id="org.ietr.preesm.ui.perspective"
@@ -291,7 +293,7 @@
       <!-- new Preesm Project -->
       <wizard
             category="org.ietr.preesm.category"
-            class="org.ietr.preesm.ui.wizards.NewPreesmProjectWizard"
+            class="org.preesm.ui.wizards.NewPreesmProjectWizard"
             hasPages="true"
             icon="icons/preesmProject.png"
             id="org.ietr.preesm.core.wizards.NewPreesmProjectWizard"
@@ -318,7 +320,7 @@
    <extension
          point="org.eclipse.ui.console.consoleFactories">
       <consoleFactory
-            class="org.ietr.preesm.ui.console.CoreConsoleFactory"
+            class="org.preesm.ui.console.CoreConsoleFactory"
             icon="icons/preesm2mini.PNG"
             label="Preesm Log">
       </consoleFactory>
@@ -343,7 +345,7 @@
       <!-- *.layout filter -->
       <commonFilter
             activeByDefault="true"
-            class="org.ietr.preesm.ui.ProjectExplorerFilter"
+            class="org.preesm.ui.ProjectExplorerFilter"
             description="Filters the *.layout files"
             id="org.ietr.preesm.core.layoutfilefilter"
             name="LayoutFileFilter"
@@ -383,7 +385,7 @@
          point="org.eclipse.core.resources.natures">
       <runtime>
          <run
-               class="org.ietr.preesm.ui.wizards.PreesmProjectNature">
+               class="org.preesm.ui.wizards.PreesmProjectNature">
          </run>
       </runtime>
    </extension>
@@ -395,7 +397,7 @@
             extension="design"
             name="IP-XACT Design"
             type="text/xml"
-            validator="org.ietr.preesm.ui.editor.graph.validators.IPXACTValidator">
+            validator="org.preesm.ui.editor.graph.validators.IPXACTValidator">
          <graphType
                name="Spirit IP-XACT simple design">
             <parameter
@@ -739,7 +741,7 @@
             extension="component"
             name="IP-XACT Component"
             type="text/xml"
-            validator="org.ietr.preesm.ui.editor.graph.validators.IPXACTValidator">
+            validator="org.preesm.ui.editor.graph.validators.IPXACTValidator">
          <graphType
                name="Spirit IP-XACT simple component">
             <parameter
@@ -934,7 +936,7 @@
    <extension
          point="org.eclipse.ui.handlers">
       <handler
-            class="org.ietr.preesm.ui.popup.actions.WorkflowRunnerPopup"
+            class="org.preesm.ui.popup.actions.WorkflowRunnerPopup"
             commandId="org.ietr.preesm.ui.command.RunWorkflow">
       </handler>
    </extension>
@@ -972,12 +974,13 @@
       </viewerContentBinding>
    </extension>
 
+   <!-- RCP definitions -->
    <extension
          id="application"
          point="org.eclipse.core.runtime.applications">
       <application>
          <run
-               class="org.ietr.preesm.rcp.utils.PreesmApplication">
+               class="org.preesm.ui.rcp.utils.PreesmApplication">
          </run>
       </application>
    </extension>

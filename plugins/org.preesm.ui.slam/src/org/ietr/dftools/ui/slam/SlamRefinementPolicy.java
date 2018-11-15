@@ -43,8 +43,8 @@ import org.eclipse.core.runtime.Path;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.ietr.dftools.graphiti.model.DefaultRefinementPolicy;
 import org.ietr.dftools.graphiti.model.Vertex;
-import org.ietr.dftools.ui.DFToolsUIException;
-import org.ietr.dftools.ui.util.FileUtils;
+import org.preesm.ui.DFToolsUIException;
+import org.preesm.ui.utils.FileUtils;
 
 /**
  * This class extends the default refinement policy with S-LAM-specific policy.

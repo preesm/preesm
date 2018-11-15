@@ -58,7 +58,7 @@ import org.ietr.preesm.ui.scenario.editor.relativeconstraints.RelativeConstraint
 import org.ietr.preesm.ui.scenario.editor.simulation.SimulationPage;
 import org.ietr.preesm.ui.scenario.editor.timings.TimingsPage;
 import org.ietr.preesm.ui.scenario.editor.variables.VariablesPage;
-import org.ietr.preesm.ui.utils.ErrorWithExceptionDialog;
+import org.preesm.ui.utils.ErrorWithExceptionDialog;
 
 /**
  * The scenario editor allows to change all parameters in scenario; i.e. depending on both algorithm and architecture.

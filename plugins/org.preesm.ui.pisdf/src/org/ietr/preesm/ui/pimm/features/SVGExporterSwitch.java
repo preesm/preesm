@@ -65,8 +65,6 @@ import org.eclipse.graphiti.mm.pictograms.PictogramElement;
 import org.eclipse.graphiti.mm.pictograms.Shape;
 import org.eclipse.graphiti.services.Graphiti;
 import org.eclipse.graphiti.ui.services.GraphitiUi;
-import org.ietr.preesm.ui.PreesmUIException;
-import org.ietr.preesm.ui.utils.ErrorWithExceptionDialog;
 import org.preesm.model.pisdf.AbstractActor;
 import org.preesm.model.pisdf.AbstractVertex;
 import org.preesm.model.pisdf.ConfigInputInterface;
@@ -84,6 +82,8 @@ import org.preesm.model.pisdf.Parameter;
 import org.preesm.model.pisdf.PiGraph;
 import org.preesm.model.pisdf.Port;
 import org.preesm.model.pisdf.util.PiMMSwitch;
+import org.preesm.ui.PreesmUIException;
+import org.preesm.ui.utils.ErrorWithExceptionDialog;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 

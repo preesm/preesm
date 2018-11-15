@@ -49,8 +49,8 @@ import org.eclipse.graphiti.features.context.ICustomContext;
 import org.eclipse.graphiti.features.custom.AbstractCustomFeature;
 import org.eclipse.graphiti.mm.pictograms.PictogramElement;
 import org.ietr.preesm.ui.pimm.util.PiMMUtil;
-import org.ietr.preesm.ui.utils.ErrorWithExceptionDialog;
 import org.preesm.model.pisdf.PiGraph;
+import org.preesm.ui.utils.ErrorWithExceptionDialog;
 
 /**
  * The Class ExportSVGFeature.

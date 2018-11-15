@@ -49,7 +49,7 @@ import org.ietr.dftools.graphiti.model.Edge;
 import org.ietr.dftools.graphiti.model.Graph;
 import org.ietr.dftools.graphiti.model.IValidator;
 import org.ietr.dftools.graphiti.model.Vertex;
-import org.ietr.dftools.ui.DFToolsUIException;
+import org.preesm.ui.DFToolsUIException;
 
 /**
  * Validating the System-Level Architecture Model.

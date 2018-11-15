@@ -43,9 +43,9 @@ import org.eclipse.core.commands.ExecutionException;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.jface.viewers.TreeSelection;
 import org.eclipse.ui.IWorkbenchPage;
-import org.ietr.dftools.ui.PreesmUIPlugin;
 import org.ietr.preesm.core.scenarios.generator.ScenariosGenerator;
-import org.ietr.preesm.ui.wizards.PreesmProjectNature;
+import org.preesm.ui.PreesmUIPlugin;
+import org.preesm.ui.wizards.PreesmProjectNature;
 
 /**
  * Class for pop-up menu on IProjects, allowing to generate PreesmScenarios from the content of the Algo and Archi

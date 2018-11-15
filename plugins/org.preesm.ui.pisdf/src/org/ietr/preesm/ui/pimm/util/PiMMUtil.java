@@ -66,11 +66,11 @@ import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.dialogs.ElementListSelectionDialog;
 import org.eclipse.ui.dialogs.ElementTreeSelectionDialog;
 import org.eclipse.ui.model.WorkbenchLabelProvider;
-import org.ietr.dftools.ui.util.FileUtils;
-import org.ietr.dftools.ui.util.FileUtils.FileContentProvider;
 import org.ietr.preesm.ui.pimm.diagram.PiMMToolBehaviorProvider;
 import org.preesm.model.pisdf.FunctionPrototype;
 import org.preesm.model.pisdf.util.PrototypeFormatter;
+import org.preesm.ui.utils.FileUtils;
+import org.preesm.ui.utils.FileUtils.FileContentProvider;
 
 // TODO: Auto-generated Javadoc
 /**

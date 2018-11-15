@@ -101,7 +101,9 @@ public abstract class PreesmLogger extends Logger {
         }
 
       } catch (final Exception e) {
-        setLogger(Logger.getAnonymousLogger());
+        final Logger anonymousLogger = Logger.getAnonymousLogger();
+        anonymousLogger.log(Level.WARNING, "Could not initialize WorkflowLogger; using anonymous logger.");
+        setLogger(anonymousLogger);
       }
     }
     for (Handler handler : PreesmLogger.logger.getHandlers()) {

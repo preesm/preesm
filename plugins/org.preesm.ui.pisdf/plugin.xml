@@ -280,7 +280,7 @@
       <!-- *.layout filter -->
       <commonFilter
             activeByDefault="true"
-            class="org.ietr.preesm.ui.ProjectExplorerFilter"
+            class="org.preesm.ui.ProjectExplorerFilter"
             description="Filters the *.layout files"
             id="org.ietr.preesm.core.layoutfilefilter"
             name="LayoutFileFilter"

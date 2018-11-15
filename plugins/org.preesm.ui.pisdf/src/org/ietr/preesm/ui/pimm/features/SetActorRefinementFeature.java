@@ -49,7 +49,6 @@ import org.eclipse.graphiti.features.context.ICustomContext;
 import org.eclipse.graphiti.features.custom.AbstractCustomFeature;
 import org.eclipse.graphiti.mm.pictograms.PictogramElement;
 import org.eclipse.ui.PlatformUI;
-import org.ietr.dftools.ui.util.FileUtils;
 import org.ietr.preesm.ui.pimm.util.PiMMUtil;
 import org.preesm.model.pisdf.Actor;
 import org.preesm.model.pisdf.CHeaderRefinement;
@@ -58,6 +57,7 @@ import org.preesm.model.pisdf.FunctionPrototype;
 import org.preesm.model.pisdf.PiSDFRefinement;
 import org.preesm.model.pisdf.factory.PiMMUserFactory;
 import org.preesm.model.pisdf.header.parser.HeaderParser;
+import org.preesm.ui.utils.FileUtils;
 
 // TODO: Auto-generated Javadoc
 /**

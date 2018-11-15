@@ -58,9 +58,9 @@ import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.eclipse.ui.forms.widgets.ScrolledForm;
 import org.eclipse.ui.forms.widgets.Section;
 import org.ietr.preesm.core.scenario.PreesmScenario;
-import org.ietr.preesm.ui.fields.FieldUtils;
 import org.ietr.preesm.ui.scenario.editor.FileSelectionAdapter;
 import org.ietr.preesm.ui.scenario.editor.Messages;
+import org.preesm.ui.fields.FieldUtils;
 
 // TODO: Auto-generated Javadoc
 /**

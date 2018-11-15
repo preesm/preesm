@@ -34,9 +34,9 @@
  */
 package org.ietr.preesm.ui.test;
 
-import org.ietr.preesm.ui.wizards.PreesmProjectNature;
 import org.junit.Assert;
 import org.junit.Test;
+import org.preesm.ui.wizards.PreesmProjectNature;
 
 // TODO: Auto-generated Javadoc
 /**

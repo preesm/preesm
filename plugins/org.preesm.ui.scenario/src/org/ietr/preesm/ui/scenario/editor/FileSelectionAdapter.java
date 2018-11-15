@@ -44,7 +44,7 @@ import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.PlatformUI;
-import org.ietr.dftools.ui.util.FileUtils;
+import org.preesm.ui.utils.FileUtils;
 
 /**
  * This class calls the file browser when a "browse" button is pushed.

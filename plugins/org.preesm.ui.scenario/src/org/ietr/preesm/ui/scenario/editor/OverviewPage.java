@@ -61,7 +61,7 @@ import org.eclipse.ui.forms.widgets.ScrolledForm;
 import org.eclipse.ui.forms.widgets.Section;
 import org.ietr.dftools.algorithm.importer.InvalidModelException;
 import org.ietr.preesm.core.scenario.PreesmScenario;
-import org.ietr.preesm.ui.fields.FieldUtils;
+import org.preesm.ui.fields.FieldUtils;
 
 /**
  * This page contains general informations of the scenario including current algorithm and current architecture.
