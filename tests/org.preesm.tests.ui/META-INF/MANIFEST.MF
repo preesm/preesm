@@ -1,8 +1,8 @@
 Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: DFTools UI Test
-Automatic-Module-Name: org.preesm.ui.test
-Bundle-SymbolicName: org.preesm.ui.test;singleton:=true
+Automatic-Module-Name: org.preesm.tests.ui
+Bundle-SymbolicName: org.preesm.tests.ui;singleton:=true
 Bundle-Version: 2.17.1.qualifier
 Bundle-Vendor: IETR/INSA Rennes
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
