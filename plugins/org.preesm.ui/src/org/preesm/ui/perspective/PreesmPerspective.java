@@ -48,7 +48,7 @@ public class PreesmPerspective implements IPerspectiveFactory {
   /**
    * The corresponding ID in the plugin.xml file
    */
-  public static final String PERSPECTIVE_ID = "org.ietr.preesm.ui.perspective";
+  public static final String PERSPECTIVE_ID = "org.preesm.ui.perspective";
 
   @Override
   public void createInitialLayout(final IPageLayout layout) {

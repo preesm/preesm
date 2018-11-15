@@ -248,7 +248,7 @@
             class="org.preesm.ui.perspective.PreesmPerspective"
             fixed="false"
             icon="icons/preesmProject.png"
-            id="org.ietr.preesm.ui.perspective"
+            id="org.preesm.ui.perspective"
             name="Preesm">
       </perspective>
    </extension>
