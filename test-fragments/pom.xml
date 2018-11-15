@@ -67,10 +67,9 @@
     <module>org.preesm.framework.test</module>
     <module>org.preesm.codegen.test</module>
     <module>org.preesm.codegen.xtend.test</module>
-    <module>org.preesm.model.pisdf.test</module>
+    <module>org.preesm.model.test</module>
 
     <module>org.preesm.algorithm.test</module>
-    <module>org.preesm.model.slam.test</module>
     <module>org.preesm.ui.test</module>
 
     <module>fi.abo.preesm.dataparallel.test</module>
