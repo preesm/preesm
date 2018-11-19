@@ -41,13 +41,13 @@ package org.ietr.preesm.memory.script;
 import bsh.EvalError;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
-import java.net.URISyntaxException;
 import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IFolder;
+import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.IWorkspace;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
@@ -57,10 +57,10 @@ import org.ietr.dftools.algorithm.model.dag.DirectedAcyclicGraph;
 import org.ietr.preesm.core.scenario.PreesmScenario;
 import org.ietr.preesm.core.types.DataType;
 import org.ietr.preesm.memory.allocation.AbstractMemoryAllocatorTask;
+import org.ietr.preesm.memory.allocation.MemoryAllocationException;
 import org.ietr.preesm.memory.exclusiongraph.MemoryExclusionGraph;
 import org.preesm.commons.logger.PreesmLogger;
 
-// TODO: Auto-generated Javadoc
 /**
  * The Class MemoryScriptEngine.
  */
@@ -84,9 +84,6 @@ public class MemoryScriptEngine {
   /** The logger. */
   private final Logger logger;
 
-  /** The scenario. */
-  private final PreesmScenario scenario;
-
   /**
    * Instantiates a new memory script engine.
    *
@@ -96,15 +93,11 @@ public class MemoryScriptEngine {
    *          the log
    * @param verbose
    *          the verbose
-   * @param scenario
-   *          the scenario
    */
-  public MemoryScriptEngine(final String valueAlignment, final String log, final boolean verbose,
-      final PreesmScenario scenario) {
+  public MemoryScriptEngine(final String valueAlignment, final String log, final boolean verbose) {
     this.verbose = verbose;
     // Get the logger
     this.logger = PreesmLogger.getLogger();
-    this.scenario = scenario;
     int alignment;
     switch (valueAlignment.substring(0, Math.min(valueAlignment.length(), 7))) {
       case AbstractMemoryAllocatorTask.VALUE_ALIGNEMENT_NONE:
@@ -121,11 +114,12 @@ public class MemoryScriptEngine {
         alignment = -1;
     }
     if (verbose) {
-      this.logger.log(Level.INFO, "Scripts with alignment:=" + alignment + ".");
+      final String message = "Scripts with alignment:=" + alignment + ".";
+      this.logger.log(Level.INFO, message);
     }
 
     this.sr = new ScriptRunner(alignment);
-    this.sr.generateLog = !(log.equals(""));
+    this.sr.setGenerateLog(!(log.equals("")));
   }
 
   /**
@@ -139,15 +133,16 @@ public class MemoryScriptEngine {
    *          the check string
    */
   public void runScripts(final DirectedAcyclicGraph dag, final Map<String, DataType> dataTypes,
-      final String checkString) throws CoreException, IOException, URISyntaxException, EvalError {
+      final String checkString) throws EvalError {
     // Retrieve all the scripts
-    final int nbScripts = this.sr.findScripts(dag, this.scenario);
+    final int nbScripts = this.sr.findScripts(dag);
 
     this.sr.setDataTypes(dataTypes);
 
     // Execute all the scripts
     if (this.verbose) {
-      this.logger.log(Level.INFO, "Running " + nbScripts + " memory scripts.");
+      final String message = "Running " + nbScripts + " memory scripts.";
+      this.logger.log(Level.INFO, message);
     }
     this.sr.run();
 
@@ -184,7 +179,8 @@ public class MemoryScriptEngine {
         break;
     }
     if (this.verbose) {
-      this.logger.log(Level.INFO, "Checking results of memory scripts with checking policy: " + checkString + ".");
+      final String message = "Checking results of memory scripts with checking policy: " + checkString + ".";
+      this.logger.log(Level.INFO, message);
     }
     this.sr.check();
   }
@@ -200,11 +196,12 @@ public class MemoryScriptEngine {
     if (this.verbose) {
       this.logger.log(Level.INFO, "Updating memory exclusion graph.");
       // Display a message for each divided buffers
-      for (final List<Buffer> group : this.sr.bufferGroups) {
+      for (final List<Buffer> group : this.sr.getBufferGroups()) {
         for (final Buffer buffer : group) {
           if ((buffer.matched != null) && (buffer.matched.size() > 1)) {
-            this.logger.log(Level.WARNING,
-                "Buffer " + buffer + " was divided and will be replaced by a NULL pointer in the generated code.");
+            final String message = "Buffer " + buffer
+                + " was divided and will be replaced by a NULL pointer in the generated code.";
+            this.logger.log(Level.WARNING, message);
           }
         }
       }
@@ -221,7 +218,7 @@ public class MemoryScriptEngine {
    * @param log
    *          the log
    */
-  public void generateCode(final PreesmScenario scenario, final String log) {
+  public void generateCodee(final PreesmScenario scenario, final String log) {
     final IWorkspace workspace = ResourcesPlugin.getWorkspace();
     final String codegenPath = scenario.getCodegenManager().getCodegenDirectory() + "/";
 
@@ -232,7 +229,7 @@ public class MemoryScriptEngine {
     try {
       if (!iFile.exists()) {
         final IFolder iFolder = workspace.getRoot().getFolder(new Path(codegenPath));
-        if (!iFolder.exists()) {
+        if (!iFolder.exists() && !iFolder.getRawLocation().toFile().exists()) {
           iFolder.create(false, true, new NullProgressMonitor());
         }
 
@@ -241,8 +238,32 @@ public class MemoryScriptEngine {
       iFile.setContents(new ByteArrayInputStream(this.sr.getLog().toString().getBytes()), true, false,
           new NullProgressMonitor());
     } catch (final CoreException e) {
-      e.printStackTrace();
+      throw new MemoryAllocationException("Could not write logs", e);
     }
+  }
 
+  /**
+   *
+   */
+  public void generateCode(final PreesmScenario scenario, final String log) {
+    final String codegenPath = scenario.getCodegenManager().getCodegenDirectory() + "/";
+
+    final IFile iFile = ResourcesPlugin.getWorkspace().getRoot().getFile(new Path(codegenPath + log + ".txt"));
+    try {
+      ResourcesPlugin.getWorkspace().getRoot().refreshLocal(IResource.DEPTH_INFINITE, null);
+      final IFolder iFolder = ResourcesPlugin.getWorkspace().getRoot().getFolder(new Path(codegenPath));
+      if (!iFolder.exists()) {
+        iFolder.create(false, true, new NullProgressMonitor());
+      }
+      if (!iFile.exists()) {
+        iFile.create(new ByteArrayInputStream("".getBytes()), false, new NullProgressMonitor());
+      }
+      try (final ByteArrayInputStream source = new ByteArrayInputStream(this.sr.getLog().toString().getBytes())) {
+        iFile.setContents(source, true, false, new NullProgressMonitor());
+      }
+
+    } catch (final CoreException | IOException e) {
+      throw new MemoryAllocationException("Could not write logs", e);
+    }
   }
 }

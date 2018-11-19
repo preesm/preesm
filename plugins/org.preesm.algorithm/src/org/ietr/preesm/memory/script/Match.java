@@ -50,12 +50,13 @@ public class Match {
   /**
    * Does not save the match in the buffer matchTable
    */
-  public Match(Buffer localBuffer, long localIndex, Buffer remoteBuffer, long remoteIndex, long size) {
+  public Match(final Buffer localBuffer, final long localIndex, final Buffer remoteBuffer, final long remoteIndex,
+      final long size) {
     this.localBuffer = localBuffer;
     this.localIndex = localIndex;
     this.remoteBuffer = remoteBuffer;
     this.remoteIndex = remoteIndex;
-    length = size;
+    this.length = size;
     this.conflictingMatches = new ArrayList<>();
     this.conflictCandidates = new ArrayList<>();
     this.applied = false;
@@ -74,7 +75,7 @@ public class Match {
    * <li>{@link #getType() type}</li>
    * </ul>
    */
-  private Match(Match m) {
+  private Match(final Match m) {
     this.localBuffer = m.localBuffer;
     this.localIndex = m.localIndex;
     this.remoteBuffer = m.remoteBuffer;
@@ -128,103 +129,103 @@ public class Match {
   private Match _reciprocate;
 
   public Buffer getLocalBuffer() {
-    return localBuffer;
+    return this.localBuffer;
   }
 
-  public void setLocalBuffer(Buffer localBuffer) {
+  public void setLocalBuffer(final Buffer localBuffer) {
     this.localBuffer = localBuffer;
   }
 
   public long getLocalIndex() {
-    return localIndex;
+    return this.localIndex;
   }
 
-  public void setLocalIndex(long localIndex) {
+  public void setLocalIndex(final long localIndex) {
     this.localIndex = localIndex;
   }
 
   public Buffer getRemoteBuffer() {
-    return remoteBuffer;
+    return this.remoteBuffer;
   }
 
-  public void setRemoteBuffer(Buffer remoteBuffer) {
+  public void setRemoteBuffer(final Buffer remoteBuffer) {
     this.remoteBuffer = remoteBuffer;
   }
 
   public long getRemoteIndex() {
-    return remoteIndex;
+    return this.remoteIndex;
   }
 
-  public void setRemoteIndex(long remoteIndex) {
+  public void setRemoteIndex(final long remoteIndex) {
     this.remoteIndex = remoteIndex;
   }
 
   public long getLength() {
-    return length;
+    return this.length;
   }
 
-  public void setLength(long length) {
+  public void setLength(final long length) {
     this.length = length;
   }
 
   public List<Match> getConflictingMatches() {
-    return conflictingMatches;
+    return this.conflictingMatches;
   }
 
-  public void setConflictingMatches(List<Match> conflictingMatches) {
+  public void setConflictingMatches(final List<Match> conflictingMatches) {
     this.conflictingMatches = conflictingMatches;
   }
 
   public List<Match> getConflictCandidates() {
-    return conflictCandidates;
+    return this.conflictCandidates;
   }
 
-  public void setConflictCandidates(List<Match> conflictCandidates) {
+  public void setConflictCandidates(final List<Match> conflictCandidates) {
     this.conflictCandidates = conflictCandidates;
   }
 
   public Match getOriginalMatch() {
-    return originalMatch;
+    return this.originalMatch;
   }
 
-  public void setOriginalMatch(Match originalMatch) {
+  public void setOriginalMatch(final Match originalMatch) {
     this.originalMatch = originalMatch;
   }
 
   public List<Range> getForbiddenLocalRanges() {
-    return forbiddenLocalRanges;
+    return this.forbiddenLocalRanges;
   }
 
-  public void setForbiddenLocalRanges(List<Range> forbiddenLocalRanges) {
+  public void setForbiddenLocalRanges(final List<Range> forbiddenLocalRanges) {
     this.forbiddenLocalRanges = forbiddenLocalRanges;
   }
 
   public List<Range> getMergeableLocalRanges() {
-    return mergeableLocalRanges;
+    return this.mergeableLocalRanges;
   }
 
-  public void setMergeableLocalRanges(List<Range> mergeableLocalRanges) {
+  public void setMergeableLocalRanges(final List<Range> mergeableLocalRanges) {
     this.mergeableLocalRanges = mergeableLocalRanges;
   }
 
   public boolean isApplied() {
-    return applied;
+    return this.applied;
   }
 
-  public void setApplied(boolean applied) {
+  public void setApplied(final boolean applied) {
     this.applied = applied;
   }
 
   public Match get_reciprocate() {
-    return _reciprocate;
+    return this._reciprocate;
   }
 
-  public void set_reciprocate(Match _reciprocate) {
+  public void set_reciprocate(final Match _reciprocate) {
     this._reciprocate = _reciprocate;
   }
 
   public MatchType getType() {
-    return type;
+    return this.type;
   }
 
   /**
@@ -232,23 +233,23 @@ public class Match {
    * created for the {@link #getMergeableLocalRanges() mergeableLocalRanges}. Otherwise mergeableLocalRanges is set to
    * <code>null</code>.
    */
-  public List<Range> setType(MatchType newType) {
-    type = newType;
+  public List<Range> setType(final MatchType newType) {
+    this.type = newType;
     if (getType() == MatchType.BACKWARD) {
-      mergeableLocalRanges = new ArrayList<>();
+      this.mergeableLocalRanges = new ArrayList<>();
     } else {
-      mergeableLocalRanges = null;
+      this.mergeableLocalRanges = null;
     }
-    return mergeableLocalRanges;
+    return this.mergeableLocalRanges;
   }
 
-  public void setReciprocate(Match remoteMatch) {
-    _reciprocate = remoteMatch;
+  public void setReciprocate(final Match remoteMatch) {
+    this._reciprocate = remoteMatch;
     remoteMatch._reciprocate = this;
   }
 
   public Match getReciprocate() {
-    return _reciprocate;
+    return this._reciprocate;
   }
 
   /**
@@ -269,12 +270,12 @@ public class Match {
    */
   public Range getLocalIndivisibleRange() {
 
-    final Range localIndivisiblerange = this.getLocalRange();
+    final Range localIndivisiblerange = getLocalRange();
 
     // Copy the overlapping indivisible range(s)
-    final List<Range> indivisibleRanges = this.getLocalBuffer().indivisibleRanges;
+    final List<Range> indivisibleRanges = getLocalBuffer().indivisibleRanges;
     // toList to make sure the map function is applied only once
-    List<Range> overlappingIndivisibleRanges = indivisibleRanges.stream()
+    final List<Range> overlappingIndivisibleRanges = indivisibleRanges.stream()
         .filter(r -> Range.hasOverlap(r, localIndivisiblerange)).map(r -> r.copy()).collect(Collectors.toList());
 
     // Do the lazy union of the match and its overlapping indivisible
@@ -293,9 +294,9 @@ public class Match {
   public Range getLocalImpactedRange() {
 
     // Get the aligned smallest indivisible range (local or remote)
-    final Range localRange = this.getLocalRange();
-    final Range remoteIndivisibleRange = this.getReciprocate().getLocalIndivisibleRange();
-    remoteIndivisibleRange.translate(this.getLocalIndex() - this.getRemoteIndex());
+    final Range localRange = getLocalRange();
+    final Range remoteIndivisibleRange = getReciprocate().getLocalIndivisibleRange();
+    remoteIndivisibleRange.translate(getLocalIndex() - getRemoteIndex());
     final Range smallestRange;
     if (localRange.getLength() > remoteIndivisibleRange.getLength()) {
       smallestRange = localRange;
@@ -323,7 +324,7 @@ public class Match {
    * Reciprocate is not considered
    */
   @Override
-  public boolean equals(Object obj) {
+  public boolean equals(final Object obj) {
     if (this == obj) {
       return true;
     }
@@ -333,10 +334,10 @@ public class Match {
     if (this.getClass() != obj.getClass()) {
       return false;
     }
-    Match other = (Match) obj;
-    return this.getLocalBuffer() == other.getLocalBuffer() && this.getLocalIndex() == other.getLocalIndex()
-        && this.getRemoteBuffer() == other.getRemoteBuffer() && this.getRemoteIndex() == other.getRemoteIndex()
-        && this.getLength() == other.getLength();
+    final Match other = (Match) obj;
+    return (getLocalBuffer() == other.getLocalBuffer()) && (getLocalIndex() == other.getLocalIndex())
+        && (getRemoteBuffer() == other.getRemoteBuffer()) && (getRemoteIndex() == other.getRemoteIndex())
+        && (getLength() == other.getLength());
   }
 
   @Override
@@ -353,18 +354,18 @@ public class Match {
   public boolean isApplicable() {
 
     // Does not match forbidden tokens
-    final Range impactedTokens = this.getLocalImpactedRange()
-        .intersection(new Range(this.getLocalBuffer().minIndex, this.getLocalBuffer().maxIndex));
-    final boolean rangeEmpty = Range.intersection(this.getForbiddenLocalRanges(), impactedTokens).isEmpty();
+    final Range impactedTokens = getLocalImpactedRange()
+        .intersection(new Range(getLocalBuffer().minIndex, getLocalBuffer().maxIndex));
+    final boolean rangeEmpty = Range.intersection(getForbiddenLocalRanges(), impactedTokens).isEmpty();
     if (!rangeEmpty) {
       return false;
     } else {
       // And match only localMergeableRange are in fact mergeable
-      if (this.getType() == MatchType.FORWARD) {
+      if (getType() == MatchType.FORWARD) {
         return true;
       } else {
-        final List<Range> mustBeMergeableRanges = Range.intersection(this.getMergeableLocalRanges(), impactedTokens);
-        final List<Range> mergeableRanges = Range.intersection(this.getLocalBuffer().mergeableRanges, impactedTokens);
+        final List<Range> mustBeMergeableRanges = Range.intersection(getMergeableLocalRanges(), impactedTokens);
+        final List<Range> mergeableRanges = Range.intersection(getLocalBuffer().mergeableRanges, impactedTokens);
         return Range.difference(mustBeMergeableRanges, mergeableRanges).isEmpty();
       }
     }
@@ -380,26 +381,26 @@ public class Match {
    *
    */
   public Map<Range, Pair<Buffer, Range>> getRoot() {
-    Map<Range, Pair<Buffer, Range>> result = new LinkedHashMap<>();
-    final Range remoteRange = this.getLocalIndivisibleRange().translate(this.getRemoteIndex() - this.getLocalIndex());
+    final Map<Range, Pair<Buffer, Range>> result = new LinkedHashMap<>();
+    final Range remoteRange = getLocalIndivisibleRange().translate(getRemoteIndex() - getLocalIndex());
 
     // Termination case if the remote Buffer is not matched
-    final List<Match> matched = this.getRemoteBuffer().matched;
+    final List<Match> matched = getRemoteBuffer().matched;
     if (matched == null) {
-      result.put(this.getLocalIndivisibleRange(), new Pair<Buffer, Range>(this.getRemoteBuffer(), remoteRange));
+      result.put(getLocalIndivisibleRange(), new Pair<>(getRemoteBuffer(), remoteRange));
     } else {
       // Else, recursive call
 
-      List<Match> c = matched.stream().filter(m -> Range.hasOverlap(m.getLocalIndivisibleRange(), remoteRange))
+      final List<Match> c = matched.stream().filter(m -> Range.hasOverlap(m.getLocalIndivisibleRange(), remoteRange))
           .collect(Collectors.toList());
 
-      for (Match match : c) {
+      for (final Match match : c) {
         final Map<Range, Pair<Buffer, Range>> recursiveResult = match.getRoot();
-        for (Entry<Range, Pair<Buffer, Range>> entry : recursiveResult.entrySet()) {
+        for (final Entry<Range, Pair<Buffer, Range>> entry : recursiveResult.entrySet()) {
           final Range range = entry.getKey();
 
           // translate back to local range
-          range.translate(this.getLocalIndex() - this.getRemoteIndex());
+          range.translate(getLocalIndex() - getRemoteIndex());
           result.put(range, entry.getValue());
         }
       }

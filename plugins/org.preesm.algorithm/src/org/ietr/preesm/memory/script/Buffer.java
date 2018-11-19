@@ -1290,7 +1290,7 @@ public class Buffer {
   @Override
   public String toString() {
     final long size = this.nbTokens * this.tokenSize;
-    return dagVertex.getName() + "." + this.name + "[" + size + "]";
+    return this.dagVertex.getName() + "." + this.name + "[" + size + "]";
   }
 
 }

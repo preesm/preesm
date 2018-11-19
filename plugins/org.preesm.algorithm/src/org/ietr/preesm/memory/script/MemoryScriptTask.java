@@ -37,12 +37,9 @@
 package org.ietr.preesm.memory.script;
 
 import bsh.EvalError;
-import java.io.IOException;
-import java.net.URISyntaxException;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.logging.Level;
-import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.ietr.dftools.algorithm.model.dag.DirectedAcyclicGraph;
 import org.ietr.preesm.core.scenario.PreesmScenario;
@@ -91,10 +88,10 @@ public class MemoryScriptTask extends AbstractMemoryScriptTask {
     final MemoryExclusionGraph meg = (MemoryExclusionGraph) inputs.get("MemEx");
 
     // execute
-    final MemoryScriptEngine engine = new MemoryScriptEngine(valueAlignment, log, verbose, scenario);
+    final MemoryScriptEngine engine = new MemoryScriptEngine(valueAlignment, log, verbose);
     try {
       engine.runScripts(dag, dataTypes, checkString);
-    } catch (CoreException | IOException | URISyntaxException | EvalError e) {
+    } catch (final EvalError e) {
       final String message = "An error occurred during memory scripts execution";
       PreesmLogger.getLogger().log(Level.SEVERE, message, e);
       throw new WorkflowException(message, e);

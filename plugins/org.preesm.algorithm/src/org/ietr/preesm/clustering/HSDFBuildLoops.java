@@ -36,15 +36,12 @@
 package org.ietr.preesm.clustering;
 
 import bsh.EvalError;
-import java.io.IOException;
-import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import org.eclipse.core.runtime.CoreException;
 import org.ietr.dftools.algorithm.model.AbstractGraph;
 import org.ietr.dftools.algorithm.model.AbstractVertex;
 import org.ietr.dftools.algorithm.model.parameters.InvalidExpressionException;
@@ -620,10 +617,10 @@ public class HSDFBuildLoops {
     final String valueAlignment = "0";
     final String log = "";
     final String checkString = "";
-    final MemoryScriptEngine engine = new MemoryScriptEngine(valueAlignment, log, false, this.scenario);
+    final MemoryScriptEngine engine = new MemoryScriptEngine(valueAlignment, log, false);
     try {
       engine.runScripts(dag, this.dataTypes, checkString);
-    } catch (CoreException | IOException | URISyntaxException | EvalError e) {
+    } catch (EvalError e) {
       final String message = "An error occurred during memory scripts execution";
       PreesmLogger.getLogger().log(Level.SEVERE, message, e);
       throw new WorkflowException(message, e);

@@ -57,19 +57,19 @@ public class Range implements CloneableProperty<Range> {
    * @return a {@link List} of {@link Range} corresponding to the current {@link Range} except all overlapping parts
    *         with the {@link Range} passed as a parameter.
    */
-  public List<Range> difference(Range range) {
-    List<Range> result = new ArrayList<>();
-    if (hasOverlap(this, range)) {
-      Range inter = this.intersection(range);
-      if (inter.getStart() > this.getStart()) {
-        result.add(new Range(this.getStart(), inter.getStart()));
+  public List<Range> difference(final Range range) {
+    final List<Range> result = new ArrayList<>();
+    if (Range.hasOverlap(this, range)) {
+      final Range inter = this.intersection(range);
+      if (inter.getStart() > getStart()) {
+        result.add(new Range(getStart(), inter.getStart()));
       }
 
-      if (inter.getEnd() < this.getEnd()) {
-        result.add(new Range(inter.getEnd(), this.getEnd()));
+      if (inter.getEnd() < getEnd()) {
+        result.add(new Range(inter.getEnd(), getEnd()));
       }
     } else {
-      result.add(this.copy());
+      result.add(copy());
     }
 
     return result;
@@ -85,9 +85,9 @@ public class Range implements CloneableProperty<Range> {
    *          {@link Range} subtracted from each element of the list.
    * @return a {@link List} of {@link Range} corresponding to the result of the subtraction.
    */
-  public static List<Range> difference(List<Range> ranges, Range range) {
+  public static List<Range> difference(final List<Range> ranges, final Range range) {
     final List<Range> result = new ArrayList<>();
-    ranges.stream().forEach(r -> union(result, r.difference(range)));
+    ranges.stream().forEach(r -> Range.union(result, r.difference(range)));
     return result;
   }
 
@@ -102,7 +102,7 @@ public class Range implements CloneableProperty<Range> {
    *
    * @return the result of the subtraction as a {@link List} of {@link Range}.
    */
-  public static List<Range> difference(List<Range> ranges, List<Range> ranges2) {
+  public static List<Range> difference(final List<Range> ranges, final List<Range> ranges2) {
 
     // Copy the original list
     // to make sure the map function is applied only once
@@ -110,8 +110,8 @@ public class Range implements CloneableProperty<Range> {
     List<Range> result = new ArrayList<>(ranges.stream().map(Range::copy).collect(Collectors.toList()));
 
     // Successively subtract all ranges from ranges2
-    for (Range range : ranges2) {
-      result = difference(result, range);
+    for (final Range range : ranges2) {
+      result = Range.difference(result, range);
     }
 
     return result;
@@ -124,7 +124,7 @@ public class Range implements CloneableProperty<Range> {
    * @param delta
    *          The long value used to {@link Range#translate(long) translate} the {@link Range ranges}.
    */
-  public static void translate(Iterable<Range> ranges, long delta) {
+  public static void translate(final Iterable<Range> ranges, final long delta) {
     StreamSupport.stream(ranges.spliterator(), false).forEach(r -> r.translate(delta));
   }
 
@@ -137,9 +137,9 @@ public class Range implements CloneableProperty<Range> {
    * @return this
    *
    */
-  public Range translate(long delta) {
-    start = getStart() + delta;
-    end = getEnd() + delta;
+  public Range translate(final long delta) {
+    this.start = getStart() + delta;
+    this.end = getEnd() + delta;
     return this;
   }
 
@@ -158,9 +158,9 @@ public class Range implements CloneableProperty<Range> {
    * @return the {@link List} of {@link Range} ranges corresponding to the intersection of the newRanges with the
    *         ranges.
    */
-  public static List<Range> intersection(Collection<Range> ranges, Collection<Range> newRanges) {
-    List<Range> intersectionRanges = new ArrayList<>();
-    newRanges.stream().forEach(r -> union(intersectionRanges, intersection(ranges, r)));
+  public static List<Range> intersection(final Collection<Range> ranges, final Collection<Range> newRanges) {
+    final List<Range> intersectionRanges = new ArrayList<>();
+    newRanges.stream().forEach(r -> Range.union(intersectionRanges, Range.intersection(ranges, r)));
     return intersectionRanges;
   }
 
@@ -178,7 +178,7 @@ public class Range implements CloneableProperty<Range> {
    *
    * @return the {@link List} of {@link Range} ranges corresponding to the intersection of the newRange with the ranges.
    */
-  public static List<Range> intersection(Collection<Range> ranges, Range newRange) {
+  public static List<Range> intersection(final Collection<Range> ranges, final Range newRange) {
     final List<Range> intersectionRanges = new ArrayList<>();
     ranges.stream().forEach(range -> {
       // If the ranges overlap
@@ -186,7 +186,7 @@ public class Range implements CloneableProperty<Range> {
       // !== is equivalent to the != of java
       // if we use !=, .equals will be called
       if (intersect != null) {
-        union(intersectionRanges, intersect);
+        Range.union(intersectionRanges, intersect);
       }
     });
     return intersectionRanges;
@@ -196,10 +196,10 @@ public class Range implements CloneableProperty<Range> {
    * If the two ranges overlap, the intersection of the two ranges is returned. Else, null is returned Ranges passed as
    * parameter are not modified
    */
-  public Range intersection(Range range) {
-    if (hasOverlap(this, range)) {
-      final long newStart = Math.max(this.getStart(), range.getStart());
-      final long newEnd = Math.min(this.getEnd(), range.getEnd());
+  public Range intersection(final Range range) {
+    if (Range.hasOverlap(this, range)) {
+      final long newStart = Math.max(getStart(), range.getStart());
+      final long newEnd = Math.min(getEnd(), range.getEnd());
       return new Range(newStart, newEnd);
     }
     return null;
@@ -213,8 +213,8 @@ public class Range implements CloneableProperty<Range> {
    *
    * @return ranges0, that contains the union result
    */
-  public static List<Range> union(List<Range> ranges0, List<Range> ranges1) {
-    ranges1.stream().forEach(r -> union(ranges0, r));
+  public static List<Range> union(final List<Range> ranges0, final List<Range> ranges1) {
+    ranges1.stream().forEach(r -> Range.union(ranges0, r));
     return ranges0;
   }
 
@@ -233,16 +233,16 @@ public class Range implements CloneableProperty<Range> {
    *
    * @return the updated newRange {@link Range}.
    */
-  public static Range union(List<Range> ranges, Range newRange) {
+  public static Range union(final List<Range> ranges, final Range newRange) {
     boolean changed = true;
     while (changed) {
       final Range originalRange = newRange.copy();
-      Iterator<Range> iter = ranges.iterator();
+      final Iterator<Range> iter = ranges.iterator();
       while (iter.hasNext()) {
         final Range range = iter.next();
 
         // If new range overlaps with current range or are contiguous
-        if (hasOverlap(range, newRange) || isContiguous(range, newRange)) {
+        if (Range.hasOverlap(range, newRange) || Range.isContiguous(range, newRange)) {
 
           // Remove old range and include it with the new
           iter.remove();
@@ -264,8 +264,8 @@ public class Range implements CloneableProperty<Range> {
    *
    * @return ranges0, that contains the lazy union result
    */
-  public static List<Range> lazyUnion(List<Range> ranges0, Iterable<Range> ranges1) {
-    StreamSupport.stream(ranges1.spliterator(), false).forEach(r -> lazyUnion(ranges0, r));
+  public static List<Range> lazyUnion(final List<Range> ranges0, final Iterable<Range> ranges1) {
+    StreamSupport.stream(ranges1.spliterator(), false).forEach(r -> Range.lazyUnion(ranges0, r));
     return ranges0;
   }
 
@@ -281,13 +281,13 @@ public class Range implements CloneableProperty<Range> {
    *
    * @return the updated newRange {@link Range}.
    */
-  public static Range lazyUnion(List<Range> ranges, Range newRange) {
-    Iterator<Range> iter = ranges.iterator();
+  public static Range lazyUnion(final List<Range> ranges, final Range newRange) {
+    final Iterator<Range> iter = ranges.iterator();
     while (iter.hasNext()) {
       final Range range = iter.next();
 
       // If new range overlaps with current range
-      if (hasOverlap(range, newRange)) {
+      if (Range.hasOverlap(range, newRange)) {
 
         // Remove old range and include it with the new
         iter.remove();
@@ -302,31 +302,31 @@ public class Range implements CloneableProperty<Range> {
   /**
    * Return the minimum start value of the ranges
    */
-  public static long minStart(Iterable<Range> ranges) {
+  public static long minStart(final Iterable<Range> ranges) {
     return StreamSupport.stream(ranges.spliterator(), false).map(Range::getStart).reduce(Long.MAX_VALUE, Math::min);
   }
 
   /**
    * Return the minimum start value of the ranges
    */
-  public static long maxEnd(Iterable<Range> ranges) {
+  public static long maxEnd(final Iterable<Range> ranges) {
     return StreamSupport.stream(ranges.spliterator(), false).map(Range::getEnd).reduce(Long.MIN_VALUE, Math::max);
   }
 
-  public static boolean isContiguous(Range range1, Range range2) {
-    return range1.getStart() == range2.getEnd() || range2.getStart() == range1.getEnd();
+  public static boolean isContiguous(final Range range1, final Range range2) {
+    return (range1.getStart() == range2.getEnd()) || (range2.getStart() == range1.getEnd());
   }
 
   /**
    *
    */
-  public static boolean hasOverlap(List<Range> ranges, Range range) {
-    return !(ranges.stream().allMatch(r -> !hasOverlap(r, range)));
+  public static boolean hasOverlap(final List<Range> ranges, final Range range) {
+    return !(ranges.stream().allMatch(r -> !Range.hasOverlap(r, range)));
 
   }
 
-  public static boolean hasOverlap(Range range1, Range range2) {
-    return range1.getStart() < range2.getEnd() && range2.getStart() < range1.getEnd();
+  public static boolean hasOverlap(final Range range1, final Range range2) {
+    return (range1.getStart() < range2.getEnd()) && (range2.getStart() < range1.getEnd());
   }
 
   /**
@@ -347,12 +347,12 @@ public class Range implements CloneableProperty<Range> {
     return this.end;
   }
 
-  public Range(Range original) {
-    start = original.getStart();
-    end = original.getEnd();
+  public Range(final Range original) {
+    this.start = original.getStart();
+    this.end = original.getEnd();
   }
 
-  public Range(long start, long end) {
+  public Range(final long start, final long end) {
     this.start = start;
     this.end = end;
   }
@@ -367,11 +367,11 @@ public class Range implements CloneableProperty<Range> {
   }
 
   @Override
-  public boolean equals(Object o) {
+  public boolean equals(final Object o) {
     if (!(o instanceof Range)) {
       return false;
     } else {
-      return this.getStart() == ((Range) o).getStart() && this.getEnd() == ((Range) o).getEnd();
+      return (getStart() == ((Range) o).getStart()) && (getEnd() == ((Range) o).getEnd());
     }
   }
 
