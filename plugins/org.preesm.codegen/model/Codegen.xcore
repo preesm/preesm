@@ -236,7 +236,7 @@ class ConstantString extends Variable {
 class NullBuffer extends SubBuffer {
 }
 
-type range wraps org.ietr.preesm.memory.script.Range
+type range wraps org.preesm.algorithm.memory.script.Range
 
 class FiniteLoopBlock extends LoopBlock {
 	int nbIter

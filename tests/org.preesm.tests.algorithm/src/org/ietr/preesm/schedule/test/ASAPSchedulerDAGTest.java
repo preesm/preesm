@@ -35,11 +35,11 @@
  */
 package org.ietr.preesm.schedule.test;
 
-import org.ietr.preesm.schedule.ASAPSchedulerDAG;
-import org.ietr.preesm.throughput.tools.helpers.GraphStructureHelper;
 import org.junit.Assert;
 import org.junit.Test;
 import org.preesm.algorithm.model.sdf.SDFGraph;
+import org.preesm.algorithm.schedule.ASAPSchedulerDAG;
+import org.preesm.algorithm.throughput.tools.helpers.GraphStructureHelper;
 
 /**
  * Unit test of ASAPScheduler_DAG class

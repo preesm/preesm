@@ -58,7 +58,7 @@ import org.eclipse.graphiti.ui.editor.DefaultMarkerBehavior;
 import org.eclipse.graphiti.ui.editor.DiagramBehavior;
 import org.eclipse.graphiti.ui.internal.T;
 import org.eclipse.swt.widgets.Display;
-import org.ietr.preesm.pimm.algorithm.checker.PiMMAlgorithmChecker;
+import org.preesm.algorithm.pisdf.checker.PiMMAlgorithmChecker;
 import org.preesm.model.pisdf.PiGraph;
 import org.preesm.model.pisdf.serialize.PiResourceImpl;
 import org.preesm.ui.PreesmUIPlugin;

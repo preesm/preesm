@@ -56,6 +56,8 @@ import java.util.List;
 import java.util.Map;
 import org.junit.Assert;
 import org.junit.Test;
+import org.preesm.algorithm.memory.script.Buffer;
+import org.preesm.algorithm.memory.script.Match;
 import org.preesm.algorithm.model.dag.DAGVertex;
 
 /**

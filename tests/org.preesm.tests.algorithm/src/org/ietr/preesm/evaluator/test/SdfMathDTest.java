@@ -34,9 +34,9 @@
  */
 package org.ietr.preesm.evaluator.test;
 
-import org.ietr.preesm.evaluator.SDFMathD;
 import org.junit.Assert;
 import org.junit.Test;
+import org.preesm.algorithm.evaluator.SDFMathD;
 
 /**
  */

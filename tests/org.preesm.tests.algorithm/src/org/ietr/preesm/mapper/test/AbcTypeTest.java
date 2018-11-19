@@ -34,9 +34,9 @@
  */
 package org.ietr.preesm.mapper.test;
 
-import org.ietr.preesm.mapper.abc.AbcType;
 import org.junit.Assert;
 import org.junit.Test;
+import org.preesm.algorithm.mapper.abc.AbcType;
 
 /**
  */

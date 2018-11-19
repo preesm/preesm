@@ -39,6 +39,7 @@ import static org.junit.Assert.assertEquals;
 import java.util.ArrayList;
 import java.util.List;
 import org.junit.Test;
+import org.preesm.algorithm.memory.script.Range;
 
 /**
  *

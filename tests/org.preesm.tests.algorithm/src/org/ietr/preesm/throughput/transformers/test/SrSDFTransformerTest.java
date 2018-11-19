@@ -35,12 +35,12 @@
  */
 package org.ietr.preesm.throughput.transformers.test;
 
-import org.ietr.preesm.throughput.tools.helpers.GraphStructureHelper;
-import org.ietr.preesm.throughput.tools.transformers.SrSDFTransformer;
 import org.junit.Assert;
 import org.junit.Test;
 import org.preesm.algorithm.model.sdf.SDFEdge;
 import org.preesm.algorithm.model.sdf.SDFGraph;
+import org.preesm.algorithm.throughput.tools.helpers.GraphStructureHelper;
+import org.preesm.algorithm.throughput.tools.transformers.SrSDFTransformer;
 
 /**
  * Unit test of SrSDFTransformer class

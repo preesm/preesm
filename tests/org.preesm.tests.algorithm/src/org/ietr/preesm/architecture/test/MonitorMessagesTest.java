@@ -34,10 +34,10 @@
  */
 package org.ietr.preesm.architecture.test;
 
-import org.ietr.preesm.architecture.slam.SlamHierarchyFlattening;
-import org.ietr.preesm.architecture.transforms.ArchitectureExporter;
 import org.junit.Assert;
 import org.junit.Test;
+import org.preesm.algorithm.architecture.slam.SlamHierarchyFlattening;
+import org.preesm.algorithm.architecture.transforms.ArchitectureExporter;
 
 // TODO: Auto-generated Javadoc
 /**

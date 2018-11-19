@@ -47,8 +47,8 @@ import org.eclipse.swt.graphics.Image;
 import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.IPropertyListener;
 import org.eclipse.ui.PlatformUI;
-import org.ietr.preesm.core.scenario.PreesmScenario;
-import org.ietr.preesm.core.types.DataType;
+import org.preesm.algorithm.core.scenario.PreesmScenario;
+import org.preesm.algorithm.core.types.DataType;
 import org.preesm.ui.scenario.editor.Messages;
 
 // TODO: Auto-generated Javadoc

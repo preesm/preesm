@@ -46,10 +46,10 @@ import org.eclipse.jface.viewers.LabelProvider;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Table;
-import org.ietr.preesm.core.scenario.ParameterValue;
-import org.ietr.preesm.core.scenario.ParameterValue.ParameterType;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.FrameworkUtil;
+import org.preesm.algorithm.core.scenario.ParameterValue;
+import org.preesm.algorithm.core.scenario.ParameterValue.ParameterType;
 
 // TODO: Auto-generated Javadoc
 /**

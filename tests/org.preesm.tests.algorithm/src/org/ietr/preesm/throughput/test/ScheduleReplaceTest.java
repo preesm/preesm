@@ -35,12 +35,12 @@
  */
 package org.ietr.preesm.throughput.test;
 
-import org.ietr.preesm.deadlock.IBSDFConsistency;
-import org.ietr.preesm.throughput.ScheduleReplace;
-import org.ietr.preesm.throughput.tools.helpers.GraphStructureHelper;
 import org.junit.Assert;
 import org.junit.Test;
+import org.preesm.algorithm.deadlock.IBSDFConsistency;
 import org.preesm.algorithm.model.sdf.SDFGraph;
+import org.preesm.algorithm.throughput.ScheduleReplace;
+import org.preesm.algorithm.throughput.tools.helpers.GraphStructureHelper;
 
 /**
  * Unit test of ScheduleReplace class

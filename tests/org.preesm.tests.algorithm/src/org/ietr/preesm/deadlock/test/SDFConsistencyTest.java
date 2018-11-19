@@ -35,13 +35,13 @@
  */
 package org.ietr.preesm.deadlock.test;
 
-import org.ietr.preesm.deadlock.SDFConsistency;
-import org.ietr.preesm.evaluator.EvaluationException;
-import org.ietr.preesm.throughput.tools.helpers.GraphStructureHelper;
 import org.junit.Assert;
 import org.junit.Test;
+import org.preesm.algorithm.deadlock.SDFConsistency;
+import org.preesm.algorithm.evaluator.EvaluationException;
 import org.preesm.algorithm.model.sdf.SDFGraph;
 import org.preesm.algorithm.model.types.LongEdgePropertyType;
+import org.preesm.algorithm.throughput.tools.helpers.GraphStructureHelper;
 
 /**
  *

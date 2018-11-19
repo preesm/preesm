@@ -38,7 +38,7 @@ package org.preesm.ui.scenario.editor.variables;
 
 import org.eclipse.jface.viewers.IStructuredContentProvider;
 import org.eclipse.jface.viewers.Viewer;
-import org.ietr.preesm.core.scenario.PreesmScenario;
+import org.preesm.algorithm.core.scenario.PreesmScenario;
 
 // TODO: Auto-generated Javadoc
 /**

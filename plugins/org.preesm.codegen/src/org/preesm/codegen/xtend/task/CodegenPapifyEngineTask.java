@@ -40,7 +40,7 @@ import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import org.eclipse.core.runtime.IProgressMonitor;
-import org.ietr.preesm.core.scenario.PreesmScenario;
+import org.preesm.algorithm.core.scenario.PreesmScenario;
 import org.preesm.algorithm.model.dag.DirectedAcyclicGraph;
 import org.preesm.workflow.elements.Workflow;
 import org.preesm.workflow.implement.AbstractTaskImplementation;

@@ -43,7 +43,7 @@ import org.eclipse.core.commands.ExecutionException;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.jface.viewers.TreeSelection;
 import org.eclipse.ui.IWorkbenchPage;
-import org.ietr.preesm.core.scenarios.generator.ScenariosGenerator;
+import org.preesm.algorithm.core.scenarios.generator.ScenariosGenerator;
 import org.preesm.ui.PreesmUIPlugin;
 import org.preesm.ui.wizards.PreesmProjectNature;
 

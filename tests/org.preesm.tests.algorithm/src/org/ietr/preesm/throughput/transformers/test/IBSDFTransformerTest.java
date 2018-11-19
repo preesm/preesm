@@ -35,14 +35,14 @@
  */
 package org.ietr.preesm.throughput.transformers.test;
 
-import org.ietr.preesm.deadlock.IBSDFConsistency;
-import org.ietr.preesm.throughput.tools.helpers.GraphStructureHelper;
-import org.ietr.preesm.throughput.tools.transformers.IBSDFTransformer;
 import org.junit.Assert;
 import org.junit.Test;
+import org.preesm.algorithm.deadlock.IBSDFConsistency;
 import org.preesm.algorithm.model.sdf.SDFAbstractVertex;
 import org.preesm.algorithm.model.sdf.SDFEdge;
 import org.preesm.algorithm.model.sdf.SDFGraph;
+import org.preesm.algorithm.throughput.tools.helpers.GraphStructureHelper;
+import org.preesm.algorithm.throughput.tools.transformers.IBSDFTransformer;
 
 /**
  * Unit test of IBSDFTransformer class

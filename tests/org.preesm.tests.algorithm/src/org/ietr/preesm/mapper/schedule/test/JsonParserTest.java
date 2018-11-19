@@ -36,10 +36,10 @@ package org.ietr.preesm.mapper.schedule.test;
 
 import java.io.File;
 import java.io.IOException;
-import org.ietr.preesm.mapper.schedule.Schedule;
-import org.ietr.preesm.mapper.schedule.ScheduleUtils;
 import org.junit.Assert;
 import org.junit.Test;
+import org.preesm.algorithm.mapper.schedule.Schedule;
+import org.preesm.algorithm.mapper.schedule.ScheduleUtils;
 
 /**
  *

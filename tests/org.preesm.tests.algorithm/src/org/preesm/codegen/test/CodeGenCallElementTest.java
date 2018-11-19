@@ -34,9 +34,9 @@
  */
 package org.preesm.codegen.test;
 
-import org.ietr.preesm.codegen.model.CodeGenCallElement;
 import org.junit.Assert;
 import org.junit.Test;
+import org.preesm.algorithm.codegen.model.CodeGenCallElement;
 
 /**
  */

@@ -58,7 +58,7 @@
             </input>
             <input
                   id="scenario"
-                  object="org.ietr.preesm.core.scenario.PreesmScenario">
+                  object="org.preesm.algorithm.core.scenario.PreesmScenario">
             </input>
             <input
                   id="architecture"

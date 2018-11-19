@@ -36,9 +36,9 @@
 package org.ietr.preesm.evaluator.test;
 
 import java.io.IOException;
-import org.ietr.preesm.evaluator.IBSDFGenerator;
 import org.junit.Ignore;
 import org.junit.Test;
+import org.preesm.algorithm.evaluator.IBSDFGenerator;
 import org.preesm.algorithm.model.parameters.InvalidExpressionException;
 import org.preesm.algorithm.model.visitors.SDF4JException;
 

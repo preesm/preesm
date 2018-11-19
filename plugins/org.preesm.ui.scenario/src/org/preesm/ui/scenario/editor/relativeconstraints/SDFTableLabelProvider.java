@@ -47,7 +47,7 @@ import org.eclipse.swt.graphics.Image;
 import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.IPropertyListener;
 import org.eclipse.ui.PlatformUI;
-import org.ietr.preesm.core.scenario.PreesmScenario;
+import org.preesm.algorithm.core.scenario.PreesmScenario;
 import org.preesm.algorithm.model.sdf.SDFAbstractVertex;
 import org.preesm.algorithm.model.sdf.SDFVertex;
 import org.preesm.ui.scenario.editor.Messages;

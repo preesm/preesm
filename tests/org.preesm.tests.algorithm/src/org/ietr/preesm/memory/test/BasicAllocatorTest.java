@@ -34,9 +34,9 @@
  */
 package org.ietr.preesm.memory.test;
 
-import org.ietr.preesm.memory.allocation.BasicAllocator;
 import org.junit.Assert;
 import org.junit.Test;
+import org.preesm.algorithm.memory.allocation.BasicAllocator;
 
 /**
  */

@@ -35,9 +35,9 @@
  */
 package org.ietr.preesm.throughput.parsers.test;
 
-import org.ietr.preesm.throughput.tools.parsers.TurbineParser;
 import org.junit.Ignore;
 import org.junit.Test;
+import org.preesm.algorithm.throughput.tools.parsers.TurbineParser;
 
 /**
  * Unit test of GraphStrucutureHelper class

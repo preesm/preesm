@@ -51,7 +51,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.logging.Level;
-import org.ietr.preesm.core.types.DataType;
+import org.preesm.algorithm.core.types.DataType;
 import org.preesm.codegen.xtend.spider.utils.SpiderNameGenerator;
 import org.preesm.codegen.xtend.spider.utils.SpiderTypeConverter;
 import org.preesm.codegen.xtend.spider.utils.SpiderTypeConverter.PiSDFSubType;

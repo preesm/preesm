@@ -52,7 +52,7 @@ import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.Path;
-import org.ietr.preesm.core.scenario.PreesmScenario;
+import org.preesm.algorithm.core.scenario.PreesmScenario;
 import org.preesm.codegen.xtend.spider.visitor.SpiderCodegen;
 import org.preesm.commons.logger.PreesmLogger;
 import org.preesm.model.pisdf.PiGraph;

@@ -44,8 +44,8 @@ import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.ui.IPropertyListener;
-import org.ietr.preesm.core.scenario.PreesmScenario;
-import org.ietr.preesm.core.scenario.papi.PapiEvent;
+import org.preesm.algorithm.core.scenario.PreesmScenario;
+import org.preesm.algorithm.core.scenario.papi.PapiEvent;
 
 // TODO: Auto-generated Javadoc
 /**
