@@ -34,9 +34,9 @@
  */
 package org.ietr.preesm.pimm.algorithm.test;
 
-import org.ietr.preesm.pimm.algorithm.spider.codegen.utils.SpiderNameGenerator;
 import org.junit.Assert;
 import org.junit.Test;
+import org.preesm.codegen.xtend.spider.utils.SpiderNameGenerator;
 
 /**
  */

@@ -39,7 +39,7 @@
  * The fact that you are presently reading this means that you have had
  * knowledge of the CeCILL license and that you accept its terms.
  */
-package org.ietr.preesm.pimm.algorithm.spider.codegen.visitor;
+package org.preesm.codegen.xtend.spider.visitor;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -52,9 +52,9 @@ import java.util.Map;
 import java.util.Set;
 import java.util.logging.Level;
 import org.ietr.preesm.core.types.DataType;
-import org.ietr.preesm.pimm.algorithm.spider.codegen.utils.SpiderNameGenerator;
-import org.ietr.preesm.pimm.algorithm.spider.codegen.utils.SpiderTypeConverter;
-import org.ietr.preesm.pimm.algorithm.spider.codegen.utils.SpiderTypeConverter.PiSDFSubType;
+import org.preesm.codegen.xtend.spider.utils.SpiderNameGenerator;
+import org.preesm.codegen.xtend.spider.utils.SpiderTypeConverter;
+import org.preesm.codegen.xtend.spider.utils.SpiderTypeConverter.PiSDFSubType;
 import org.preesm.commons.logger.PreesmLogger;
 import org.preesm.model.pisdf.AbstractActor;
 import org.preesm.model.pisdf.AbstractVertex;

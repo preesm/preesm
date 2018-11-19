@@ -38,7 +38,7 @@
  * The fact that you are presently reading this means that you have had
  * knowledge of the CeCILL license and that you accept its terms.
  */
-package org.ietr.preesm.pimm.algorithm.spider.codegen.visitor;
+package org.preesm.codegen.xtend.spider.visitor;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -57,8 +57,8 @@ import org.ietr.preesm.core.scenario.Timing;
 import org.ietr.preesm.core.scenario.papi.PapiEvent;
 import org.ietr.preesm.core.scenario.papi.PapifyConfigActor;
 import org.ietr.preesm.core.scenario.papi.PapifyConfigManager;
-import org.ietr.preesm.pimm.algorithm.SpiderMainFilePrinter;
-import org.ietr.preesm.pimm.algorithm.spider.codegen.utils.SpiderNameGenerator;
+import org.preesm.codegen.xtend.spider.SpiderMainFilePrinter;
+import org.preesm.codegen.xtend.spider.utils.SpiderNameGenerator;
 import org.preesm.commons.logger.PreesmLogger;
 import org.preesm.model.pisdf.AbstractActor;
 import org.preesm.model.pisdf.Actor;

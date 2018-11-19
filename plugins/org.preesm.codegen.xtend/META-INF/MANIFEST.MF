@@ -16,7 +16,7 @@ Require-Bundle: org.apache.velocity;bundle-version="1.7.0",
 Bundle-ActivationPolicy: lazy
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Bundle-Version: 2.17.1.qualifier
-Export-Package: org.ietr.preesm.pimm.algorithm.spider.codegen,
- org.ietr.preesm.pimm.algorithm.spider.codegen.utils,
- org.ietr.preesm.pimm.algorithm.spider.codegen.visitor
+Export-Package: org.preesm.codegen.xtend.spider,
+ org.preesm.codegen.xtend.spider.utils,
+ org.preesm.codegen.xtend.spider.visitor
 

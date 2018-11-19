@@ -50,7 +50,7 @@
       <task
             id="org.ietr.preesm.pimm.algorithm.spider.codegen.SpiderCodegenTask"
             name="Spider Codegen from PiMM Models Task"
-            type="org.ietr.preesm.pimm.algorithm.spider.codegen.SpiderCodegenTask">
+            type="org.preesm.codegen.xtend.spider.SpiderCodegenTask">
          <inputs>
             <input
                   id="PiMM"
