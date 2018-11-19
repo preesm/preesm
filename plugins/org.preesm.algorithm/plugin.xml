@@ -266,25 +266,6 @@
       </task>
 
       <task
-            id="org.ietr.preesm.pimm.algorithm.spider.codegen.SpiderCodegenTask"
-            name="Spider Codegen from PiMM Models Task"
-            type="org.ietr.preesm.pimm.algorithm.spider.codegen.SpiderCodegenTask">
-         <inputs>
-            <input
-                  id="PiMM"
-                  object="org.preesm.model.pisdf.PiGraph">
-            </input>
-            <input
-                  id="scenario"
-                  object="org.ietr.preesm.core.scenario.PreesmScenario">
-            </input>
-            <input
-                  id="architecture"
-                  object="org.preesm.model.slam.Design">
-            </input>
-         </inputs>
-      </task>
-      <task
             id="org.ietr.preesm.experiment.pimm2sdf.StaticPiMM2SDFTask"
             name="Static PiMM to SDF transformation"
             type="org.ietr.preesm.pimm.algorithm.pimm2sdf.StaticPiMM2SDFTask">
