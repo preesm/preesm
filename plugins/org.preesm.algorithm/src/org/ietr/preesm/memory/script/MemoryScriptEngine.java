@@ -53,12 +53,12 @@ import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.Path;
-import org.ietr.dftools.algorithm.model.dag.DirectedAcyclicGraph;
 import org.ietr.preesm.core.scenario.PreesmScenario;
 import org.ietr.preesm.core.types.DataType;
 import org.ietr.preesm.memory.allocation.AbstractMemoryAllocatorTask;
 import org.ietr.preesm.memory.allocation.MemoryAllocationException;
 import org.ietr.preesm.memory.exclusiongraph.MemoryExclusionGraph;
+import org.preesm.algorithm.model.dag.DirectedAcyclicGraph;
 import org.preesm.commons.logger.PreesmLogger;
 
 /**

@@ -36,27 +36,23 @@
  */
 package fi.abo.preesm.dataparallel.operations
 
-import java.util.Collection
 import fi.abo.preesm.dataparallel.DAG2DAG
 import fi.abo.preesm.dataparallel.PureDAGConstructor
 import fi.abo.preesm.dataparallel.SDF2DAG
-import fi.abo.preesm.dataparallel.operations.AcyclicLikeSubgraphDetector
-import fi.abo.preesm.dataparallel.operations.MovableInstances
-import fi.abo.preesm.dataparallel.operations.OperationsUtils
-import fi.abo.preesm.dataparallel.operations.RootExitOperations
 import fi.abo.preesm.dataparallel.test.util.Util
-import org.ietr.dftools.algorithm.model.sdf.SDFAbstractVertex
-import org.ietr.dftools.algorithm.model.sdf.SDFEdge
-import org.ietr.dftools.algorithm.model.sdf.SDFGraph
-import org.ietr.dftools.algorithm.model.sdf.esdf.SDFForkVertex
-import org.ietr.dftools.algorithm.model.sdf.esdf.SDFJoinVertex
+import java.util.Collection
+import org.jgrapht.alg.connectivity.KosarajuStrongConnectivityInspector
 import org.jgrapht.alg.cycle.CycleDetector
+import org.jgrapht.graph.AsSubgraph
 import org.junit.Assert
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.junit.runners.Parameterized
-import org.jgrapht.alg.connectivity.KosarajuStrongConnectivityInspector
-import org.jgrapht.graph.AsSubgraph
+import org.preesm.algorithm.model.sdf.SDFAbstractVertex
+import org.preesm.algorithm.model.sdf.SDFEdge
+import org.preesm.algorithm.model.sdf.SDFGraph
+import org.preesm.algorithm.model.sdf.esdf.SDFForkVertex
+import org.preesm.algorithm.model.sdf.esdf.SDFJoinVertex
 
 /**
  * Property based tests for {@link MovableInstances}

@@ -54,12 +54,12 @@ import org.eclipse.swt.widgets.Combo;
 import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.IPropertyListener;
 import org.eclipse.ui.PlatformUI;
-import org.ietr.dftools.algorithm.model.sdf.SDFAbstractVertex;
-import org.ietr.dftools.algorithm.model.sdf.SDFVertex;
 import org.ietr.preesm.core.scenario.PreesmScenario;
 import org.ietr.preesm.core.scenario.Timing;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.FrameworkUtil;
+import org.preesm.algorithm.model.sdf.SDFAbstractVertex;
+import org.preesm.algorithm.model.sdf.SDFVertex;
 import org.preesm.model.pisdf.AbstractActor;
 import org.preesm.ui.scenario.editor.Messages;
 

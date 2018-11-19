@@ -47,8 +47,8 @@ import java.util.Map.Entry;
 import java.util.Set;
 import java.util.stream.Collectors;
 import org.eclipse.xtext.xbase.lib.Pair;
-import org.ietr.dftools.algorithm.model.dag.DAGEdge;
-import org.ietr.dftools.algorithm.model.dag.DAGVertex;
+import org.preesm.algorithm.model.dag.DAGEdge;
+import org.preesm.algorithm.model.dag.DAGVertex;
 
 /**
  * This class implements the Buffer concept used in memory scripts.

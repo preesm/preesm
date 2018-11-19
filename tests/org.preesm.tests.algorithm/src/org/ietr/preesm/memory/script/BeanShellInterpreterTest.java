@@ -54,9 +54,9 @@ import java.util.Arrays;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import org.ietr.dftools.algorithm.model.dag.DAGVertex;
 import org.junit.Assert;
 import org.junit.Test;
+import org.preesm.algorithm.model.dag.DAGVertex;
 
 /**
  * Non regression tests for the BeanShell2 third party dependency.

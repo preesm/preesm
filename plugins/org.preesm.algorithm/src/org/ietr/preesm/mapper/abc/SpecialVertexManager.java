@@ -37,12 +37,12 @@
  */
 package org.ietr.preesm.mapper.abc;
 
-import org.ietr.dftools.algorithm.model.dag.DAGVertex;
-import org.ietr.dftools.algorithm.model.dag.edag.DAGBroadcastVertex;
-import org.ietr.dftools.algorithm.model.dag.edag.DAGEndVertex;
-import org.ietr.dftools.algorithm.model.dag.edag.DAGForkVertex;
-import org.ietr.dftools.algorithm.model.dag.edag.DAGInitVertex;
-import org.ietr.dftools.algorithm.model.dag.edag.DAGJoinVertex;
+import org.preesm.algorithm.model.dag.DAGVertex;
+import org.preesm.algorithm.model.dag.edag.DAGBroadcastVertex;
+import org.preesm.algorithm.model.dag.edag.DAGEndVertex;
+import org.preesm.algorithm.model.dag.edag.DAGForkVertex;
+import org.preesm.algorithm.model.dag.edag.DAGInitVertex;
+import org.preesm.algorithm.model.dag.edag.DAGJoinVertex;
 
 /**
  * The special vertices are special to the mapper because they have additional mapping rules.

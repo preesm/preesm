@@ -48,11 +48,8 @@ import fi.abo.preesm.dataparallel.iterator.SubsetTopologicalIterator
 import fi.abo.preesm.dataparallel.test.util.Util
 import java.util.ArrayList
 import java.util.Collection
-import org.ietr.dftools.algorithm.model.sdf.SDFAbstractVertex
-import org.ietr.dftools.algorithm.model.sdf.esdf.SDFForkVertex
-import org.ietr.dftools.algorithm.model.sdf.esdf.SDFJoinVertex
-import org.jgrapht.alg.cycle.CycleDetector
 import org.jgrapht.alg.connectivity.KosarajuStrongConnectivityInspector
+import org.jgrapht.alg.cycle.CycleDetector
 import org.jgrapht.graph.AsSubgraph
 import org.junit.Assert
 import org.junit.FixMethodOrder
@@ -60,6 +57,9 @@ import org.junit.Test
 import org.junit.runner.RunWith
 import org.junit.runners.MethodSorters
 import org.junit.runners.Parameterized
+import org.preesm.algorithm.model.sdf.SDFAbstractVertex
+import org.preesm.algorithm.model.sdf.esdf.SDFForkVertex
+import org.preesm.algorithm.model.sdf.esdf.SDFJoinVertex
 
 /**
  * Perform property based tests for operations that derive from {@link DAGCommonOperations}

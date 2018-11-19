@@ -40,7 +40,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map.Entry;
 import java.util.Set;
-import org.ietr.dftools.algorithm.model.dag.DAGVertex;
 import org.ietr.preesm.core.architecture.route.MessageRouteStep;
 import org.ietr.preesm.mapper.AbstractMappingFromDAG;
 import org.ietr.preesm.mapper.PreesmMapperException;
@@ -49,6 +48,7 @@ import org.ietr.preesm.mapper.model.special.TransferVertex;
 import org.jgrapht.alg.TransitiveReduction;
 import org.jgrapht.io.ComponentNameProvider;
 import org.jgrapht.io.DOTExporter;
+import org.preesm.algorithm.model.dag.DAGVertex;
 import org.preesm.model.slam.ComponentInstance;
 import org.preesm.model.slam.attributes.Parameter;
 

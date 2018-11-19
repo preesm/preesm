@@ -37,7 +37,7 @@
  */
 package org.ietr.preesm.mapper.model.property;
 
-import org.ietr.dftools.algorithm.model.CloneableProperty;
+import org.preesm.algorithm.model.CloneableProperty;
 
 // TODO: Auto-generated Javadoc
 /**

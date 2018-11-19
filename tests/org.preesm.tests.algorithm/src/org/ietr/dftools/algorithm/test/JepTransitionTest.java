@@ -34,12 +34,12 @@
  */
 package org.ietr.dftools.algorithm.test;
 
-import org.ietr.dftools.algorithm.DFToolsAlgoException;
-import org.ietr.dftools.algorithm.model.parameters.ExpressionValue;
-import org.ietr.dftools.algorithm.model.parameters.InvalidExpressionException;
-import org.ietr.dftools.algorithm.model.parameters.NoIntegerValueException;
 import org.junit.Assert;
 import org.junit.Test;
+import org.preesm.algorithm.DFToolsAlgoException;
+import org.preesm.algorithm.model.parameters.ExpressionValue;
+import org.preesm.algorithm.model.parameters.InvalidExpressionException;
+import org.preesm.algorithm.model.parameters.NoIntegerValueException;
 
 /**
  * The Class JepTransitionTest.

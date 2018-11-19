@@ -40,8 +40,8 @@ package org.ietr.preesm.codegen.idl;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.logging.Level;
-import org.ietr.dftools.algorithm.model.IRefinement;
 import org.ietr.preesm.codegen.model.containers.CodeSectionType;
+import org.preesm.algorithm.model.IRefinement;
 import org.preesm.commons.logger.PreesmLogger;
 
 // TODO: Auto-generated Javadoc

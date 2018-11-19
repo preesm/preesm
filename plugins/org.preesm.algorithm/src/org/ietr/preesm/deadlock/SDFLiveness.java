@@ -37,14 +37,14 @@ package org.ietr.preesm.deadlock;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
-import org.ietr.dftools.algorithm.model.sdf.SDFAbstractVertex;
-import org.ietr.dftools.algorithm.model.sdf.SDFEdge;
-import org.ietr.dftools.algorithm.model.sdf.SDFGraph;
 import org.ietr.preesm.evaluator.EvaluationException;
 import org.ietr.preesm.schedule.ASAPSchedulerSDF;
 import org.ietr.preesm.throughput.tools.helpers.Stopwatch;
 import org.ietr.preesm.throughput.tools.parsers.Identifier;
 import org.ietr.preesm.throughput.tools.transformers.SDFTransformer;
+import org.preesm.algorithm.model.sdf.SDFAbstractVertex;
+import org.preesm.algorithm.model.sdf.SDFEdge;
+import org.preesm.algorithm.model.sdf.SDFGraph;
 import org.preesm.commons.math.MathFunctionsHelper;
 
 /**

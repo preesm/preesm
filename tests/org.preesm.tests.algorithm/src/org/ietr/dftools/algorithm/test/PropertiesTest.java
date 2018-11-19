@@ -34,9 +34,9 @@
  */
 package org.ietr.dftools.algorithm.test;
 
-import org.ietr.dftools.algorithm.model.sdf.SDFAbstractVertex;
 import org.junit.Assert;
 import org.junit.Test;
+import org.preesm.algorithm.model.sdf.SDFAbstractVertex;
 
 /**
  * The Class PropertiesTest.

@@ -38,16 +38,16 @@ package org.ietr.preesm.throughput.helpers.test;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import org.ietr.dftools.algorithm.model.sdf.SDFAbstractVertex;
-import org.ietr.dftools.algorithm.model.sdf.SDFEdge;
-import org.ietr.dftools.algorithm.model.sdf.SDFGraph;
-import org.ietr.dftools.algorithm.model.sdf.esdf.SDFSinkInterfaceVertex;
-import org.ietr.dftools.algorithm.model.sdf.esdf.SDFSourceInterfaceVertex;
 import org.ietr.preesm.deadlock.IBSDFConsistency;
 import org.ietr.preesm.throughput.tools.helpers.GraphStructureHelper;
 import org.ietr.preesm.throughput.tools.helpers.Stopwatch;
 import org.junit.Assert;
 import org.junit.Test;
+import org.preesm.algorithm.model.sdf.SDFAbstractVertex;
+import org.preesm.algorithm.model.sdf.SDFEdge;
+import org.preesm.algorithm.model.sdf.SDFGraph;
+import org.preesm.algorithm.model.sdf.esdf.SDFSinkInterfaceVertex;
+import org.preesm.algorithm.model.sdf.esdf.SDFSourceInterfaceVertex;
 
 /**
  * Unit test of GraphStrucutureHelper class

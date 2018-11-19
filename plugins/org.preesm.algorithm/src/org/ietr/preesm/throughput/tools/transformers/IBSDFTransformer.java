@@ -39,12 +39,12 @@ import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import org.ietr.dftools.algorithm.model.sdf.SDFAbstractVertex;
-import org.ietr.dftools.algorithm.model.sdf.SDFGraph;
-import org.ietr.dftools.algorithm.model.sdf.esdf.SDFSinkInterfaceVertex;
-import org.ietr.dftools.algorithm.model.sdf.esdf.SDFSourceInterfaceVertex;
 import org.ietr.preesm.throughput.tools.helpers.GraphStructureHelper;
 import org.ietr.preesm.throughput.tools.helpers.Stopwatch;
+import org.preesm.algorithm.model.sdf.SDFAbstractVertex;
+import org.preesm.algorithm.model.sdf.SDFGraph;
+import org.preesm.algorithm.model.sdf.esdf.SDFSinkInterfaceVertex;
+import org.preesm.algorithm.model.sdf.esdf.SDFSourceInterfaceVertex;
 
 /**
  * @author hderoui

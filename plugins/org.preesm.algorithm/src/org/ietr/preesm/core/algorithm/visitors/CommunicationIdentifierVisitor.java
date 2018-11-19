@@ -39,14 +39,14 @@ package org.ietr.preesm.core.algorithm.visitors;
 import java.util.Iterator;
 import java.util.LinkedHashSet;
 import java.util.Set;
-import org.ietr.dftools.algorithm.model.PropertyBean;
-import org.ietr.dftools.algorithm.model.dag.DAGEdge;
-import org.ietr.dftools.algorithm.model.dag.DAGVertex;
-import org.ietr.dftools.algorithm.model.dag.DirectedAcyclicGraph;
-import org.ietr.dftools.algorithm.model.visitors.IGraphVisitor;
-import org.ietr.dftools.algorithm.model.visitors.SDF4JException;
 import org.ietr.preesm.core.types.ImplementationPropertyNames;
 import org.ietr.preesm.core.types.VertexType;
+import org.preesm.algorithm.model.PropertyBean;
+import org.preesm.algorithm.model.dag.DAGEdge;
+import org.preesm.algorithm.model.dag.DAGVertex;
+import org.preesm.algorithm.model.dag.DirectedAcyclicGraph;
+import org.preesm.algorithm.model.visitors.IGraphVisitor;
+import org.preesm.algorithm.model.visitors.SDF4JException;
 import org.preesm.model.slam.ComponentInstance;
 
 /**

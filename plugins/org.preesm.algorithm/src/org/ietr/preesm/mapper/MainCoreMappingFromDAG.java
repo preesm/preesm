@@ -5,7 +5,6 @@ import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import org.ietr.dftools.algorithm.iterators.TopologicalDAGIterator;
 import org.ietr.preesm.core.architecture.util.DesignTools.ComponentInstanceComparator;
 import org.ietr.preesm.core.scenario.PreesmScenario;
 import org.ietr.preesm.mapper.abc.impl.latency.LatencyAbc;
@@ -14,6 +13,7 @@ import org.ietr.preesm.mapper.algo.list.InitialLists;
 import org.ietr.preesm.mapper.model.MapperDAG;
 import org.ietr.preesm.mapper.model.MapperDAGVertex;
 import org.ietr.preesm.mapper.params.AbcParameters;
+import org.preesm.algorithm.iterators.TopologicalDAGIterator;
 import org.preesm.model.slam.ComponentInstance;
 import org.preesm.model.slam.Design;
 

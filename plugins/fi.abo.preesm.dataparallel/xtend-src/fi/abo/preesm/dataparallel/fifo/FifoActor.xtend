@@ -39,14 +39,14 @@ package fi.abo.preesm.dataparallel.fifo
 import java.util.List
 import java.util.logging.Level
 import org.eclipse.xtend.lib.annotations.Accessors
-import org.ietr.dftools.algorithm.model.AbstractEdge
-import org.ietr.dftools.algorithm.model.IInterface
-import org.ietr.dftools.algorithm.model.InterfaceDirection
-import org.ietr.dftools.algorithm.model.sdf.SDFAbstractVertex
-import org.ietr.dftools.algorithm.model.sdf.SDFInterfaceVertex
-import org.ietr.dftools.algorithm.model.sdf.esdf.SDFSinkInterfaceVertex
-import org.ietr.dftools.algorithm.model.sdf.esdf.SDFSourceInterfaceVertex
-import org.ietr.dftools.algorithm.model.visitors.SDF4JException
+import org.preesm.algorithm.model.AbstractEdge
+import org.preesm.algorithm.model.IInterface
+import org.preesm.algorithm.model.InterfaceDirection
+import org.preesm.algorithm.model.sdf.SDFAbstractVertex
+import org.preesm.algorithm.model.sdf.SDFInterfaceVertex
+import org.preesm.algorithm.model.sdf.esdf.SDFSinkInterfaceVertex
+import org.preesm.algorithm.model.sdf.esdf.SDFSourceInterfaceVertex
+import org.preesm.algorithm.model.visitors.SDF4JException
 import org.preesm.commons.logger.PreesmLogger
 
 /**

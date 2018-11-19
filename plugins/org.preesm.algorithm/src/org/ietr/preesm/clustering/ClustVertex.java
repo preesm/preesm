@@ -35,7 +35,7 @@
  */
 package org.ietr.preesm.clustering;
 
-import org.ietr.dftools.algorithm.model.sdf.SDFAbstractVertex;
+import org.preesm.algorithm.model.sdf.SDFAbstractVertex;
 
 /**
  * Class representing an actor with its factorized repetition vector.

@@ -45,17 +45,18 @@ import fi.abo.preesm.dataparallel.test.util.Util
 import java.util.Collection
 import java.util.HashMap
 import java.util.List
-import org.ietr.dftools.algorithm.model.sdf.SDFAbstractVertex
-import org.ietr.dftools.algorithm.model.sdf.SDFGraph
-import org.ietr.dftools.algorithm.model.sdf.SDFVertex
-import org.ietr.dftools.algorithm.model.sdf.esdf.SDFBroadcastVertex
-import org.ietr.dftools.algorithm.model.sdf.esdf.SDFForkVertex
-import org.ietr.dftools.algorithm.model.sdf.esdf.SDFJoinVertex
-import org.ietr.dftools.algorithm.model.sdf.visitors.ToHSDFVisitor
 import org.jgrapht.alg.shortestpath.DijkstraShortestPath
 import org.junit.Assert
+import org.junit.Test
 import org.junit.runner.RunWith
 import org.junit.runners.Parameterized
+import org.preesm.algorithm.model.sdf.SDFAbstractVertex
+import org.preesm.algorithm.model.sdf.SDFGraph
+import org.preesm.algorithm.model.sdf.SDFVertex
+import org.preesm.algorithm.model.sdf.esdf.SDFBroadcastVertex
+import org.preesm.algorithm.model.sdf.esdf.SDFForkVertex
+import org.preesm.algorithm.model.sdf.esdf.SDFJoinVertex
+import org.preesm.algorithm.model.sdf.visitors.ToHSDFVisitor
 
 /**
  * Parameteric test for {@link NodeChainGraph}s
@@ -135,7 +136,7 @@ class NodeChainGraphTest {
 	 * <p>
 	 * <i>Weak Test</i> as it checks only existence of such nodes
 	 */
-	@org.junit.Test def void testNodechainHasUserImplodesExplodes() {
+	@Test def void testNodechainHasUserImplodesExplodes() {
 		if(hasImplodes){
 			Assert.assertTrue(nodechain.nodechains.keySet.exists[vertex |
 				vertex instanceof SDFJoinVertex
@@ -155,7 +156,7 @@ class NodeChainGraphTest {
 	 * <p>
 	 * Somewhat <i>strong test</i>
 	 */
-	@org.junit.Test def void testNodechainVertexIsProperType() {
+	@Test def void testNodechainVertexIsProperType() {
 		if(!hasImplodes && !hasExplodes) {
 			Assert.assertTrue(nodechain.nodechains.keySet.forall[vertex |
 				vertex instanceof SDFVertex || vertex instanceof SDFBroadcastVertex
@@ -172,7 +173,7 @@ class NodeChainGraphTest {
 	 * <p>
 	 * <i>Strong test</i>
 	 */
-	@org.junit.Test def void testImplodesExplodesAreProperlyAssociated() {
+	@Test def void testImplodesExplodesAreProperlyAssociated() {
 		if(!hasImplodes && !hasExplodes) {
 			srsdf.vertexSet.forEach[vertex |
 
@@ -201,7 +202,7 @@ class NodeChainGraphTest {
 	 * <p>
 	 * <i>Strong test</i>
 	 */
-	@org.junit.Test def void testAppropriateEdgeExistsBetweenNodes() {
+	@Test def void testAppropriateEdgeExistsBetweenNodes() {
 		nodechain.nodechains.forEach[vertex, chain |
 			val prevNodes = nodechain.getPreviousNodes(vertex)
 
@@ -262,7 +263,7 @@ class NodeChainGraphTest {
 	 * <p>
 	 * <i>Strong Test</i>
 	 */
-	@org.junit.Test def void testFetchingInputDelays() {
+	@Test def void testFetchingInputDelays() {
 		val srsdfRootNodes = nonSourceRootNodes
 
 		// Now each srsdf root nodes (that is not source node) must have
@@ -287,7 +288,7 @@ class NodeChainGraphTest {
 	 * <p>
 	 * <i>Somewhat Strong Test</i>
 	 */
-	@org.junit.Test def void testFetchingOutputDelays() {
+	@Test def void testFetchingOutputDelays() {
 		val srsdfRootNodes = nonSourceRootNodes
 
 		srsdfRootNodes.forEach[root |
@@ -322,7 +323,7 @@ class NodeChainGraphTest {
 	 * <p>
 	 * <i>Strong Test</i>
 	 */
-	@org.junit.Test def void testSettingInputDelays() {
+	@Test def void testSettingInputDelays() {
 		val srsdfRootNodes = nonSourceRootNodes
 
 		srsdfRootNodes.forEach[root |
@@ -367,7 +368,7 @@ class NodeChainGraphTest {
 	 * <p>
 	 * <i>Strong Test</i>
 	 */
-	@org.junit.Test def void testSettingOutputDelays() {
+	@Test def void testSettingOutputDelays() {
 		val srsdfRootNodes = nonSourceRootNodes
 
 		srsdfRootNodes.forEach[root |

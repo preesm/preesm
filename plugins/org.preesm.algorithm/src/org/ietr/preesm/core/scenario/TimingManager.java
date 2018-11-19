@@ -46,13 +46,13 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import org.ietr.dftools.algorithm.model.AbstractGraph;
-import org.ietr.dftools.algorithm.model.dag.DAGVertex;
-import org.ietr.dftools.algorithm.model.parameters.InvalidExpressionException;
-import org.ietr.dftools.algorithm.model.sdf.SDFAbstractVertex;
-import org.ietr.dftools.algorithm.model.sdf.SDFGraph;
 import org.ietr.preesm.core.scenario.serialize.CsvTimingParser;
 import org.ietr.preesm.core.scenario.serialize.ExcelTimingParser;
+import org.preesm.algorithm.model.AbstractGraph;
+import org.preesm.algorithm.model.dag.DAGVertex;
+import org.preesm.algorithm.model.parameters.InvalidExpressionException;
+import org.preesm.algorithm.model.sdf.SDFAbstractVertex;
+import org.preesm.algorithm.model.sdf.SDFGraph;
 
 // TODO: Auto-generated Javadoc
 /**

@@ -36,12 +36,12 @@
  */
 package fi.abo.preesm.dataparallel.test.util
 
+import fi.abo.preesm.dataparallel.SDF2DAG
+import fi.abo.preesm.dataparallel.iterator.SubsetTopologicalIterator
 import java.util.List
 import java.util.NoSuchElementException
-import fi.abo.preesm.dataparallel.SDF2DAG
-import org.ietr.dftools.algorithm.model.sdf.SDFAbstractVertex
-import org.ietr.dftools.algorithm.model.sdf.SDFGraph
-import fi.abo.preesm.dataparallel.iterator.SubsetTopologicalIterator
+import org.preesm.algorithm.model.sdf.SDFAbstractVertex
+import org.preesm.algorithm.model.sdf.SDFGraph
 
 /**
  * Utility class that holds many useful static functions

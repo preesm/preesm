@@ -38,7 +38,7 @@
 package org.ietr.preesm.utils.sdf;
 
 import java.util.Comparator;
-import org.ietr.dftools.algorithm.model.sdf.SDFAbstractVertex;
+import org.preesm.algorithm.model.sdf.SDFAbstractVertex;
 
 // TODO: Auto-generated Javadoc
 /**

@@ -41,17 +41,17 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
-import org.ietr.dftools.algorithm.model.AbstractVertex;
-import org.ietr.dftools.algorithm.model.sdf.SDFAbstractVertex;
-import org.ietr.dftools.algorithm.model.sdf.SDFEdge;
-import org.ietr.dftools.algorithm.model.sdf.SDFGraph;
-import org.ietr.dftools.algorithm.model.sdf.SDFInterfaceVertex;
-import org.ietr.dftools.algorithm.model.sdf.SDFVertex;
-import org.ietr.dftools.algorithm.model.sdf.esdf.SDFSinkInterfaceVertex;
-import org.ietr.dftools.algorithm.model.sdf.esdf.SDFSourceInterfaceVertex;
-import org.ietr.dftools.algorithm.model.types.LongEdgePropertyType;
 import org.ietr.preesm.core.scenario.PreesmScenario;
 import org.ietr.preesm.throughput.tools.parsers.Identifier;
+import org.preesm.algorithm.model.AbstractVertex;
+import org.preesm.algorithm.model.sdf.SDFAbstractVertex;
+import org.preesm.algorithm.model.sdf.SDFEdge;
+import org.preesm.algorithm.model.sdf.SDFGraph;
+import org.preesm.algorithm.model.sdf.SDFInterfaceVertex;
+import org.preesm.algorithm.model.sdf.SDFVertex;
+import org.preesm.algorithm.model.sdf.esdf.SDFSinkInterfaceVertex;
+import org.preesm.algorithm.model.sdf.esdf.SDFSourceInterfaceVertex;
+import org.preesm.algorithm.model.types.LongEdgePropertyType;
 
 /**
  * @author hderoui

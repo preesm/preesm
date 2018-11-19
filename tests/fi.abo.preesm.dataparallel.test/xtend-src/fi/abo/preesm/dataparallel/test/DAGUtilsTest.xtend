@@ -36,17 +36,18 @@
  */
 package fi.abo.preesm.dataparallel.test
 
+import fi.abo.preesm.dataparallel.DAGUtils
+import fi.abo.preesm.dataparallel.SDF2DAG
+import fi.abo.preesm.dataparallel.test.util.Util
+import java.util.Collection
+import org.junit.Assert
+import org.junit.Test
 import org.junit.runner.RunWith
 import org.junit.runners.Parameterized
-import org.ietr.dftools.algorithm.model.sdf.SDFGraph
-import java.util.Collection
-import org.ietr.dftools.algorithm.model.sdf.visitors.ToHSDFVisitor
-import fi.abo.preesm.dataparallel.SDF2DAG
-import fi.abo.preesm.dataparallel.DAGUtils
-import org.junit.Assert
-import org.ietr.dftools.algorithm.model.sdf.esdf.SDFForkVertex
-import org.ietr.dftools.algorithm.model.sdf.esdf.SDFJoinVertex
-import fi.abo.preesm.dataparallel.test.util.Util
+import org.preesm.algorithm.model.sdf.SDFGraph
+import org.preesm.algorithm.model.sdf.esdf.SDFForkVertex
+import org.preesm.algorithm.model.sdf.esdf.SDFJoinVertex
+import org.preesm.algorithm.model.sdf.visitors.ToHSDFVisitor
 
 /**
  * Property based test for {@link DAGUtils#findVertex}
@@ -99,7 +100,7 @@ class DAGUtilsTest {
 	 * This forms the basis for coiteration. The test ensures that is the case
 	 * <i>Strong Test</i>
 	 */
-	@org.junit.Test
+	@Test
 	def void nameAreUnique() {
 		val hsdfNameList = newArrayList
 		hsdf.vertexSet.forEach[vertex |
@@ -119,7 +120,7 @@ class DAGUtilsTest {
 	 * <p>
 	 * <i>Weak Test</i>
 	 */
-	@org.junit.Test
+	@Test
 	def void hsdfAndDAGareSame() {
 
 		// Check every vertex of hsdf is in dag

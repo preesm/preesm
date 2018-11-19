@@ -36,18 +36,19 @@
  */
 package fi.abo.preesm.dataparallel.pojo
 
+import fi.abo.preesm.dataparallel.NodeChainGraph
 import java.util.List
 import org.eclipse.xtend.lib.annotations.Accessors
-import org.ietr.dftools.algorithm.model.sdf.SDFAbstractVertex
-import org.ietr.dftools.algorithm.model.sdf.esdf.SDFForkVertex
-import org.ietr.dftools.algorithm.model.sdf.esdf.SDFJoinVertex
-import fi.abo.preesm.dataparallel.NodeChainGraph
+import org.eclipse.xtend.lib.annotations.Data
+import org.preesm.algorithm.model.sdf.SDFAbstractVertex
+import org.preesm.algorithm.model.sdf.esdf.SDFForkVertex
+import org.preesm.algorithm.model.sdf.esdf.SDFJoinVertex
 
 /**
  * POJO to hold optional explode and implode nodes associated with a vertex. To be used
  * in {@link NodeChainGraph}.
  */
-@org.eclipse.xtend.lib.annotations.Data class NodeChain {
+@Data class NodeChain {
 	/**
 	 * Optional associated explode instances connected to the output of this vertex
 	 */

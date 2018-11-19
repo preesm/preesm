@@ -53,7 +53,7 @@
             </output>
             <output
                   id="SDF"
-                  object="org.ietr.dftools.algorithm.model.sdf.SDFGraph">
+                  object="org.preesm.algorithm.model.sdf.SDFGraph">
             </output>
             <output
                   id="architecture"
@@ -78,7 +78,7 @@
          <inputs>
             <input
                   id="SDF"
-                  object="org.ietr.dftools.algorithm.model.sdf.SDFGraph">
+                  object="org.preesm.algorithm.model.sdf.SDFGraph">
             </input>
             <input
                   id="scenario"
@@ -92,7 +92,7 @@
          <outputs>
             <output
                   id="SDF"
-                  object="org.ietr.dftools.algorithm.model.sdf.SDFGraph">
+                  object="org.preesm.algorithm.model.sdf.SDFGraph">
             </output>
          </outputs>
       </task>
@@ -129,7 +129,7 @@
          <inputs>
             <input
                   id="DAG"
-                  object="org.ietr.dftools.algorithm.model.dag.DirectedAcyclicGraph">
+                  object="org.preesm.algorithm.model.dag.DirectedAcyclicGraph">
             </input>
             <input
                   id="scenario"
@@ -161,7 +161,7 @@
          <inputs>
             <input
                   id="DAG"
-                  object="org.ietr.dftools.algorithm.model.dag.DirectedAcyclicGraph">
+                  object="org.preesm.algorithm.model.dag.DirectedAcyclicGraph">
             </input>
             <input
                   id="MemEx"
@@ -203,7 +203,7 @@
             </input>
             <input
                   id="DAG"
-                  object="org.ietr.dftools.algorithm.model.dag.DirectedAcyclicGraph">
+                  object="org.preesm.algorithm.model.dag.DirectedAcyclicGraph">
             </input>
             <input
                   id="scenario"
@@ -282,7 +282,7 @@
          <outputs>
             <output
                   id="SDF"
-                  object="org.ietr.dftools.algorithm.model.sdf.SDFGraph">
+                  object="org.preesm.algorithm.model.sdf.SDFGraph">
             </output>
          </outputs>
       </task>
@@ -351,7 +351,7 @@
          <outputs>
             <output
                   id="DAG"
-                  object="org.ietr.dftools.algorithm.model.dag.DirectedAcyclicGraph">
+                  object="org.preesm.algorithm.model.dag.DirectedAcyclicGraph">
             </output>
          </outputs>
       </task>
@@ -410,7 +410,7 @@
          <inputs>
             <input
                   id="SDF"
-                  object="org.ietr.dftools.algorithm.model.sdf.SDFGraph">
+                  object="org.preesm.algorithm.model.sdf.SDFGraph">
             </input>
          </inputs>
       </task>
@@ -421,13 +421,13 @@
          <inputs>
             <input
                   id="SDF"
-                  object="org.ietr.dftools.algorithm.model.sdf.SDFGraph">
+                  object="org.preesm.algorithm.model.sdf.SDFGraph">
             </input>
          </inputs>
          <outputs>
             <output
                   id="SDF"
-                  object="org.ietr.dftools.algorithm.model.sdf.SDFGraph">
+                  object="org.preesm.algorithm.model.sdf.SDFGraph">
             </output>
          </outputs>
       </task>
@@ -438,13 +438,13 @@
          <inputs>
             <input
                   id="SDF"
-                  object="org.ietr.dftools.algorithm.model.sdf.SDFGraph">
+                  object="org.preesm.algorithm.model.sdf.SDFGraph">
             </input>
          </inputs>
          <outputs>
             <output
                   id="SDF"
-                  object="org.ietr.dftools.algorithm.model.sdf.SDFGraph">
+                  object="org.preesm.algorithm.model.sdf.SDFGraph">
             </output>
          </outputs>
       </task>
@@ -455,7 +455,7 @@
          <inputs>
             <input
                   id="SDF"
-                  object="org.ietr.dftools.algorithm.model.sdf.SDFGraph">
+                  object="org.preesm.algorithm.model.sdf.SDFGraph">
             </input>
             <input
                   id="scenario"
@@ -469,7 +469,7 @@
          <outputs>
             <output
                   id="SDF"
-                  object="org.ietr.dftools.algorithm.model.sdf.SDFGraph">
+                  object="org.preesm.algorithm.model.sdf.SDFGraph">
             </output>
             <output
                   id="scenario"
@@ -484,7 +484,7 @@
          <outputs>
             <output
                   id="SDF"
-                  object="org.ietr.dftools.algorithm.model.sdf.SDFGraph">
+                  object="org.preesm.algorithm.model.sdf.SDFGraph">
             </output>
             <output
                   id="scenario"
@@ -513,7 +513,7 @@
             </input>
             <input
                   id="SDF"
-                  object="org.ietr.dftools.algorithm.model.sdf.SDFGraph">
+                  object="org.preesm.algorithm.model.sdf.SDFGraph">
             </input>
             <input
                   id="architecture"
@@ -528,13 +528,13 @@
          <inputs>
             <input
                   id="SDF"
-                  object="org.ietr.dftools.algorithm.model.sdf.SDFGraph">
+                  object="org.preesm.algorithm.model.sdf.SDFGraph">
             </input>
          </inputs>
          <outputs>
             <output
                   id="SDF"
-                  object="org.ietr.dftools.algorithm.model.sdf.SDFGraph">
+                  object="org.preesm.algorithm.model.sdf.SDFGraph">
             </output>
          </outputs>
       </task>
@@ -556,7 +556,7 @@
          <inputs>
             <input
                   id="SDF"
-                  object="org.ietr.dftools.algorithm.model.sdf.SDFGraph">
+                  object="org.preesm.algorithm.model.sdf.SDFGraph">
             </input>
             <input
                   id="scenario"
@@ -566,7 +566,7 @@
          <outputs>
             <output
                   id="SDF"
-                  object="org.ietr.dftools.algorithm.model.sdf.SDFGraph">
+                  object="org.preesm.algorithm.model.sdf.SDFGraph">
             </output>
             <output
                   id="Throughput"
@@ -581,7 +581,7 @@
          <inputs>
             <input
                   id="SDF"
-                  object="org.ietr.dftools.algorithm.model.sdf.SDFGraph">
+                  object="org.preesm.algorithm.model.sdf.SDFGraph">
             </input>
             <input
                   id="scenario"
@@ -591,7 +591,7 @@
          <outputs>
             <output
                   id="SDF"
-                  object="org.ietr.dftools.algorithm.model.sdf.SDFGraph">
+                  object="org.preesm.algorithm.model.sdf.SDFGraph">
             </output>
             <output
                   id="scenario"
@@ -610,7 +610,7 @@
          <inputs>
             <input
                   id="SDF"
-                  object="org.ietr.dftools.algorithm.model.sdf.SDFGraph">
+                  object="org.preesm.algorithm.model.sdf.SDFGraph">
             </input>
             <input
                   id="scenario"
@@ -620,7 +620,7 @@
          <outputs>
             <output
                   id="SDF"
-                  object="org.ietr.dftools.algorithm.model.sdf.SDFGraph">
+                  object="org.preesm.algorithm.model.sdf.SDFGraph">
             </output>
             <output
                   id="scenario"
@@ -646,7 +646,7 @@
          <inputs>
             <input
                   id="DAG"
-                  object="org.ietr.dftools.algorithm.model.dag.DirectedAcyclicGraph">
+                  object="org.preesm.algorithm.model.dag.DirectedAcyclicGraph">
             </input>
          </inputs>
          <outputs>
@@ -663,7 +663,7 @@
          <inputs>
             <input
                   id="SDF"
-                  object="org.ietr.dftools.algorithm.model.sdf.SDFGraph">
+                  object="org.preesm.algorithm.model.sdf.SDFGraph">
             </input>
             <input
                   id="scenario"
@@ -671,7 +671,7 @@
             </input>
             <input
                   id="DAG"
-                  object="org.ietr.dftools.algorithm.model.dag.DirectedAcyclicGraph">
+                  object="org.preesm.algorithm.model.dag.DirectedAcyclicGraph">
             </input>
             <input
                   id="architecture"
@@ -709,7 +709,7 @@
          <inputs>
             <input
                   id="SDF"
-                  object="org.ietr.dftools.algorithm.model.sdf.SDFGraph">
+                  object="org.preesm.algorithm.model.sdf.SDFGraph">
             </input>
             <input
                   id="architecture"
@@ -723,7 +723,7 @@
          <outputs>
             <output
                   id="DAG"
-                  object="org.ietr.dftools.algorithm.model.dag.DirectedAcyclicGraph">
+                  object="org.preesm.algorithm.model.dag.DirectedAcyclicGraph">
             </output>
             <output
                   id="ABC"
@@ -738,7 +738,7 @@
          <inputs>
             <input
                   id="SDF"
-                  object="org.ietr.dftools.algorithm.model.sdf.SDFGraph">
+                  object="org.preesm.algorithm.model.sdf.SDFGraph">
             </input>
             <input
                   id="architecture"
@@ -752,7 +752,7 @@
          <outputs>
             <output
                   id="DAG"
-                  object="org.ietr.dftools.algorithm.model.dag.DirectedAcyclicGraph">
+                  object="org.preesm.algorithm.model.dag.DirectedAcyclicGraph">
             </output>
             <output
                   id="ABC"
@@ -775,13 +775,13 @@
             </input>
             <input
                   id="SDF"
-                  object="org.ietr.dftools.algorithm.model.sdf.SDFGraph">
+                  object="org.preesm.algorithm.model.sdf.SDFGraph">
             </input>
          </inputs>
          <outputs>
             <output
                   id="DAG"
-                  object="org.ietr.dftools.algorithm.model.dag.DirectedAcyclicGraph">
+                  object="org.preesm.algorithm.model.dag.DirectedAcyclicGraph">
             </output>
             <output
                   id="ABC"
@@ -815,7 +815,7 @@
             </output>
             <output
                   id="SDF"
-                  object="org.ietr.dftools.algorithm.model.sdf.SDFGraph">
+                  object="org.preesm.algorithm.model.sdf.SDFGraph">
             </output>
             <output
                   id="architecture"
@@ -830,7 +830,7 @@
          <inputs>
             <input
                   id="DAG"
-                  object="org.ietr.dftools.algorithm.model.dag.DirectedAcyclicGraph">
+                  object="org.preesm.algorithm.model.dag.DirectedAcyclicGraph">
             </input>
          </inputs>
       </task>
@@ -891,7 +891,7 @@
          <inputs>
             <input
                   id="SDF"
-                  object="org.ietr.dftools.algorithm.model.sdf.SDFGraph">
+                  object="org.preesm.algorithm.model.sdf.SDFGraph">
             </input>
             <input
                   id="scenario"
@@ -905,7 +905,7 @@
          <outputs>
             <output
                   id="DAG"
-                  object="org.ietr.dftools.algorithm.model.dag.DirectedAcyclicGraph">
+                  object="org.preesm.algorithm.model.dag.DirectedAcyclicGraph">
             </output>
          </outputs>
       </task>
@@ -924,13 +924,13 @@
             </input>
             <input
                   id="DAG"
-                  object="org.ietr.dftools.algorithm.model.dag.DirectedAcyclicGraph">
+                  object="org.preesm.algorithm.model.dag.DirectedAcyclicGraph">
             </input>
          </inputs>
          <outputs>
             <output
                   id="DAG"
-                  object="org.ietr.dftools.algorithm.model.dag.DirectedAcyclicGraph">
+                  object="org.preesm.algorithm.model.dag.DirectedAcyclicGraph">
             </output>
             <output
                   id="ABC"
@@ -953,13 +953,13 @@
             </input>
             <input
                   id="DAG"
-                  object="org.ietr.dftools.algorithm.model.dag.DirectedAcyclicGraph">
+                  object="org.preesm.algorithm.model.dag.DirectedAcyclicGraph">
             </input>
          </inputs>
          <outputs>
             <output
                   id="DAG"
-                  object="org.ietr.dftools.algorithm.model.dag.DirectedAcyclicGraph">
+                  object="org.preesm.algorithm.model.dag.DirectedAcyclicGraph">
             </output>
             <output
                   id="ABC"
@@ -982,13 +982,13 @@
             </input>
             <input
                   id="DAG"
-                  object="org.ietr.dftools.algorithm.model.dag.DirectedAcyclicGraph">
+                  object="org.preesm.algorithm.model.dag.DirectedAcyclicGraph">
             </input>
          </inputs>
          <outputs>
             <output
                   id="DAG"
-                  object="org.ietr.dftools.algorithm.model.dag.DirectedAcyclicGraph">
+                  object="org.preesm.algorithm.model.dag.DirectedAcyclicGraph">
             </output>
             <output
                   id="ABC"
@@ -1011,13 +1011,13 @@
             </input>
             <input
                   id="DAG"
-                  object="org.ietr.dftools.algorithm.model.dag.DirectedAcyclicGraph">
+                  object="org.preesm.algorithm.model.dag.DirectedAcyclicGraph">
             </input>
          </inputs>
          <outputs>
             <output
                   id="DAG"
-                  object="org.ietr.dftools.algorithm.model.dag.DirectedAcyclicGraph">
+                  object="org.preesm.algorithm.model.dag.DirectedAcyclicGraph">
             </output>
             <output
                   id="ABC"
@@ -1040,13 +1040,13 @@
             </input>
             <input
                   id="DAG"
-                  object="org.ietr.dftools.algorithm.model.dag.DirectedAcyclicGraph">
+                  object="org.preesm.algorithm.model.dag.DirectedAcyclicGraph">
             </input>
          </inputs>
          <outputs>
             <output
                   id="DAG"
-                  object="org.ietr.dftools.algorithm.model.dag.DirectedAcyclicGraph">
+                  object="org.preesm.algorithm.model.dag.DirectedAcyclicGraph">
             </output>
             <output
                   id="ABC"

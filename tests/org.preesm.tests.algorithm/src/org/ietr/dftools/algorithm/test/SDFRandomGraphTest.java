@@ -35,12 +35,12 @@
 package org.ietr.dftools.algorithm.test;
 
 import java.util.Set;
-import org.ietr.dftools.algorithm.generator.SDFRandomGraph;
-import org.ietr.dftools.algorithm.model.sdf.SDFAbstractVertex;
-import org.ietr.dftools.algorithm.model.sdf.SDFGraph;
-import org.ietr.dftools.algorithm.model.visitors.SDF4JException;
 import org.junit.Assert;
 import org.junit.Test;
+import org.preesm.algorithm.generator.SDFRandomGraph;
+import org.preesm.algorithm.model.sdf.SDFAbstractVertex;
+import org.preesm.algorithm.model.sdf.SDFGraph;
+import org.preesm.algorithm.model.visitors.SDF4JException;
 
 /**
  * The Class SDFRandomGraphTest.

@@ -36,11 +36,11 @@
 package org.ietr.preesm.evaluator.test;
 
 import java.io.IOException;
-import org.ietr.dftools.algorithm.model.parameters.InvalidExpressionException;
-import org.ietr.dftools.algorithm.model.visitors.SDF4JException;
 import org.ietr.preesm.evaluator.IBSDFGenerator;
 import org.junit.Ignore;
 import org.junit.Test;
+import org.preesm.algorithm.model.parameters.InvalidExpressionException;
+import org.preesm.algorithm.model.visitors.SDF4JException;
 
 /**
  * Generator of hierarchical graphs (IBSDF) from alive SDF graphs generated with

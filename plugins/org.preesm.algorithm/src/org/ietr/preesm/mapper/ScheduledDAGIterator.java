@@ -39,10 +39,10 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
-import org.ietr.dftools.algorithm.iterators.TopologicalDAGIterator;
-import org.ietr.dftools.algorithm.model.dag.DirectedAcyclicGraph;
 import org.ietr.preesm.core.types.ImplementationPropertyNames;
 import org.ietr.preesm.mapper.model.MapperDAGVertex;
+import org.preesm.algorithm.iterators.TopologicalDAGIterator;
+import org.preesm.algorithm.model.dag.DirectedAcyclicGraph;
 
 /**
  *

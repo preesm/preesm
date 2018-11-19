@@ -36,29 +36,26 @@
  */
 package fi.abo.preesm.dataparallel.operations
 
-import java.util.Collection
+import fi.abo.preesm.dataparallel.NodeChainGraph
 import fi.abo.preesm.dataparallel.SDF2DAG
 import fi.abo.preesm.dataparallel.SrSDFToSDF
-import fi.abo.preesm.dataparallel.operations.AcyclicLikeSubgraphDetector
-import fi.abo.preesm.dataparallel.operations.RearrangeOperations
+import fi.abo.preesm.dataparallel.fifo.FifoActor
+import fi.abo.preesm.dataparallel.fifo.FifoActorBeanKey
+import fi.abo.preesm.dataparallel.fifo.FifoActorGraph
 import fi.abo.preesm.dataparallel.pojo.RetimingInfo
 import fi.abo.preesm.dataparallel.test.util.Util
-import org.ietr.dftools.algorithm.model.sdf.SDFAbstractVertex
-import org.ietr.dftools.algorithm.model.sdf.SDFEdge
-import org.ietr.dftools.algorithm.model.sdf.SDFGraph
-import org.ietr.dftools.algorithm.model.sdf.visitors.ToHSDFVisitor
+import java.util.Collection
+import org.jgrapht.alg.connectivity.KosarajuStrongConnectivityInspector
 import org.jgrapht.alg.cycle.CycleDetector
+import org.jgrapht.graph.AsSubgraph
 import org.junit.Assert
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.junit.runners.Parameterized
-import fi.abo.preesm.dataparallel.fifo.FifoActorGraph
-import fi.abo.preesm.dataparallel.fifo.FifoActor
-import fi.abo.preesm.dataparallel.fifo.FifoActorBeanKey
-import fi.abo.preesm.dataparallel.operations.MovableInstances
-import fi.abo.preesm.dataparallel.NodeChainGraph
-import org.jgrapht.alg.connectivity.KosarajuStrongConnectivityInspector
-import org.jgrapht.graph.AsSubgraph
+import org.preesm.algorithm.model.sdf.SDFAbstractVertex
+import org.preesm.algorithm.model.sdf.SDFEdge
+import org.preesm.algorithm.model.sdf.SDFGraph
+import org.preesm.algorithm.model.sdf.visitors.ToHSDFVisitor
 
 /**
  * Property based test for {@link RearrangeOperations} on {@link SDFGraph}s

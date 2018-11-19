@@ -36,10 +36,10 @@
  */
 package fi.abo.preesm.dataparallel.pojo
 
-import java.util.List
 import fi.abo.preesm.dataparallel.fifo.FifoActorGraph
-import org.eclipse.xtend.lib.annotations.Data
+import java.util.List
 import org.eclipse.xtend.lib.annotations.Accessors
+import org.eclipse.xtend.lib.annotations.Data
 
 /**
  * POJO to hold transient graphs.

@@ -44,16 +44,16 @@ import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
 import org.eclipse.xtext.util.Pair;
-import org.ietr.dftools.algorithm.model.AbstractEdge;
-import org.ietr.dftools.algorithm.model.AbstractVertex;
-import org.ietr.dftools.algorithm.model.PropertyBean;
-import org.ietr.dftools.algorithm.model.PropertyFactory;
-import org.ietr.dftools.algorithm.model.dag.DAGEdge;
-import org.ietr.dftools.algorithm.model.dag.DAGVertex;
 import org.ietr.preesm.core.types.BufferAggregate;
 import org.ietr.preesm.core.types.BufferProperties;
 import org.ietr.preesm.core.types.DataType;
 import org.ietr.preesm.memory.script.Range;
+import org.preesm.algorithm.model.AbstractEdge;
+import org.preesm.algorithm.model.AbstractVertex;
+import org.preesm.algorithm.model.PropertyBean;
+import org.preesm.algorithm.model.PropertyFactory;
+import org.preesm.algorithm.model.dag.DAGEdge;
+import org.preesm.algorithm.model.dag.DAGVertex;
 import org.preesm.commons.logger.PreesmLogger;
 
 // TODO: Auto-generated Javadoc

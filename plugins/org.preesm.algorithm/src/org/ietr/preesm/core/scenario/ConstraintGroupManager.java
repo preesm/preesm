@@ -43,9 +43,9 @@ import java.io.FileNotFoundException;
 import java.util.LinkedHashSet;
 import java.util.Set;
 import org.eclipse.core.runtime.CoreException;
-import org.ietr.dftools.algorithm.importer.InvalidModelException;
-import org.ietr.dftools.algorithm.model.sdf.SDFAbstractVertex;
 import org.ietr.preesm.core.scenario.serialize.ExcelConstraintsParser;
+import org.preesm.algorithm.importer.InvalidModelException;
+import org.preesm.algorithm.model.sdf.SDFAbstractVertex;
 import org.preesm.model.pisdf.AbstractActor;
 
 // TODO: Auto-generated Javadoc

@@ -38,9 +38,9 @@ package fi.abo.preesm.dataparallel
 
 import java.util.List
 import java.util.Map
-import java.util.logging.Logger
-import org.ietr.dftools.algorithm.model.sdf.SDFAbstractVertex
 import java.util.logging.Level
+import java.util.logging.Logger
+import org.preesm.algorithm.model.sdf.SDFAbstractVertex
 
 /**
  * Construct DAG from SDF or from another DAG

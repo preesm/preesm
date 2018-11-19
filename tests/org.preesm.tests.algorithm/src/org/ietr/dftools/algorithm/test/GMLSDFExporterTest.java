@@ -38,22 +38,22 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.util.List;
-import org.ietr.dftools.algorithm.exporter.GMLGenericExporter;
-import org.ietr.dftools.algorithm.model.AbstractEdge;
-import org.ietr.dftools.algorithm.model.AbstractGraph;
-import org.ietr.dftools.algorithm.model.AbstractVertex;
-import org.ietr.dftools.algorithm.model.parameters.Argument;
-import org.ietr.dftools.algorithm.model.parameters.Parameter;
-import org.ietr.dftools.algorithm.model.parameters.Variable;
-import org.ietr.dftools.algorithm.model.sdf.SDFEdge;
-import org.ietr.dftools.algorithm.model.sdf.SDFGraph;
-import org.ietr.dftools.algorithm.model.sdf.SDFInterfaceVertex;
-import org.ietr.dftools.algorithm.model.sdf.SDFVertex;
-import org.ietr.dftools.algorithm.model.sdf.esdf.SDFSinkInterfaceVertex;
-import org.ietr.dftools.algorithm.model.sdf.esdf.SDFSourceInterfaceVertex;
-import org.ietr.dftools.algorithm.model.types.LongEdgePropertyType;
 import org.junit.Assert;
 import org.junit.Test;
+import org.preesm.algorithm.exporter.GMLGenericExporter;
+import org.preesm.algorithm.model.AbstractEdge;
+import org.preesm.algorithm.model.AbstractGraph;
+import org.preesm.algorithm.model.AbstractVertex;
+import org.preesm.algorithm.model.parameters.Argument;
+import org.preesm.algorithm.model.parameters.Parameter;
+import org.preesm.algorithm.model.parameters.Variable;
+import org.preesm.algorithm.model.sdf.SDFEdge;
+import org.preesm.algorithm.model.sdf.SDFGraph;
+import org.preesm.algorithm.model.sdf.SDFInterfaceVertex;
+import org.preesm.algorithm.model.sdf.SDFVertex;
+import org.preesm.algorithm.model.sdf.esdf.SDFSinkInterfaceVertex;
+import org.preesm.algorithm.model.sdf.esdf.SDFSourceInterfaceVertex;
+import org.preesm.algorithm.model.types.LongEdgePropertyType;
 
 /**
  *

@@ -38,18 +38,18 @@ package fi.abo.preesm.dataparallel.test.util
 
 import fi.abo.preesm.dataparallel.SDF2DAG
 import fi.abo.preesm.dataparallel.operations.DependencyAnalysisOperations
-import org.ietr.dftools.algorithm.model.sdf.SDFAbstractVertex
-import org.ietr.dftools.algorithm.model.sdf.SDFGraph
-import org.ietr.dftools.algorithm.model.sdf.SDFVertex
-import org.ietr.dftools.algorithm.model.sdf.esdf.SDFBroadcastVertex
-import org.ietr.dftools.algorithm.model.sdf.esdf.SDFForkVertex
-import org.ietr.dftools.algorithm.model.sdf.esdf.SDFJoinVertex
-import org.ietr.dftools.algorithm.model.sdf.esdf.SDFRoundBufferVertex
-import org.ietr.dftools.algorithm.model.sdf.esdf.SDFSinkInterfaceVertex
-import org.ietr.dftools.algorithm.model.sdf.esdf.SDFSourceInterfaceVertex
-import org.ietr.dftools.algorithm.model.types.LongEdgePropertyType
 import org.junit.Assert
 import org.junit.Test
+import org.preesm.algorithm.model.sdf.SDFAbstractVertex
+import org.preesm.algorithm.model.sdf.SDFGraph
+import org.preesm.algorithm.model.sdf.SDFVertex
+import org.preesm.algorithm.model.sdf.esdf.SDFBroadcastVertex
+import org.preesm.algorithm.model.sdf.esdf.SDFForkVertex
+import org.preesm.algorithm.model.sdf.esdf.SDFJoinVertex
+import org.preesm.algorithm.model.sdf.esdf.SDFRoundBufferVertex
+import org.preesm.algorithm.model.sdf.esdf.SDFSinkInterfaceVertex
+import org.preesm.algorithm.model.sdf.esdf.SDFSourceInterfaceVertex
+import org.preesm.algorithm.model.types.LongEdgePropertyType
 
 /**
  * Manually construct example graphs for testing purposes

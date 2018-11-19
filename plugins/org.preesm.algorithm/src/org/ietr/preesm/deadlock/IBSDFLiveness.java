@@ -36,9 +36,9 @@
 package org.ietr.preesm.deadlock;
 
 import java.util.Map;
-import org.ietr.dftools.algorithm.model.sdf.SDFAbstractVertex;
-import org.ietr.dftools.algorithm.model.sdf.SDFGraph;
 import org.ietr.preesm.throughput.tools.helpers.GraphStructureHelper;
+import org.preesm.algorithm.model.sdf.SDFAbstractVertex;
+import org.preesm.algorithm.model.sdf.SDFGraph;
 
 /**
  * @author hderoui

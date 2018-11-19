@@ -40,12 +40,12 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.util.List;
 import java.util.Map;
-import org.ietr.dftools.algorithm.exporter.GMLDAGExporter;
-import org.ietr.dftools.algorithm.importer.GMLDAGImporter;
-import org.ietr.dftools.algorithm.importer.InvalidModelException;
-import org.ietr.dftools.algorithm.model.dag.DirectedAcyclicGraph;
 import org.junit.Assert;
 import org.junit.Test;
+import org.preesm.algorithm.exporter.GMLDAGExporter;
+import org.preesm.algorithm.importer.GMLDAGImporter;
+import org.preesm.algorithm.importer.InvalidModelException;
+import org.preesm.algorithm.model.dag.DirectedAcyclicGraph;
 import org.preesm.commons.GMLKey;
 
 /**

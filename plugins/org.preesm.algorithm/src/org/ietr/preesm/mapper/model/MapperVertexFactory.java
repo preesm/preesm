@@ -38,10 +38,10 @@
  */
 package org.ietr.preesm.mapper.model;
 
-import org.ietr.dftools.algorithm.factories.IModelVertexFactory;
-import org.ietr.dftools.algorithm.model.AbstractVertex;
-import org.ietr.dftools.algorithm.model.IInterface;
-import org.ietr.dftools.algorithm.model.dag.DAGVertex;
+import org.preesm.algorithm.factories.IModelVertexFactory;
+import org.preesm.algorithm.model.AbstractVertex;
+import org.preesm.algorithm.model.IInterface;
+import org.preesm.algorithm.model.dag.DAGVertex;
 import org.w3c.dom.Element;
 
 /**

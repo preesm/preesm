@@ -40,8 +40,8 @@ import fi.abo.preesm.dataparallel.operations.DataParallelCheckOperations
 import java.util.Map
 import org.eclipse.core.runtime.IProgressMonitor
 import org.eclipse.xtend.lib.annotations.Accessors
-import org.ietr.dftools.algorithm.model.sdf.SDFGraph
-import org.ietr.dftools.algorithm.model.visitors.SDF4JException
+import org.preesm.algorithm.model.sdf.SDFGraph
+import org.preesm.algorithm.model.visitors.SDF4JException
 import org.preesm.commons.logger.PreesmLogger
 import org.preesm.workflow.WorkflowException
 import org.preesm.workflow.elements.Workflow

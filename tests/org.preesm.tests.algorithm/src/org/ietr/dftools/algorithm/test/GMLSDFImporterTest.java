@@ -40,15 +40,15 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.util.List;
-import org.ietr.dftools.algorithm.exporter.GMLGenericExporter;
-import org.ietr.dftools.algorithm.importer.GMLSDFImporter;
-import org.ietr.dftools.algorithm.importer.InvalidModelException;
-import org.ietr.dftools.algorithm.model.AbstractEdge;
-import org.ietr.dftools.algorithm.model.AbstractGraph;
-import org.ietr.dftools.algorithm.model.AbstractVertex;
-import org.ietr.dftools.algorithm.model.sdf.SDFGraph;
 import org.junit.Assert;
 import org.junit.Test;
+import org.preesm.algorithm.exporter.GMLGenericExporter;
+import org.preesm.algorithm.importer.GMLSDFImporter;
+import org.preesm.algorithm.importer.InvalidModelException;
+import org.preesm.algorithm.model.AbstractEdge;
+import org.preesm.algorithm.model.AbstractGraph;
+import org.preesm.algorithm.model.AbstractVertex;
+import org.preesm.algorithm.model.sdf.SDFGraph;
 
 /**
  */

@@ -36,7 +36,7 @@
  */
 package org.preesm.ui.scenario.editor;
 
-import org.ietr.dftools.algorithm.model.sdf.SDFAbstractVertex;
+import org.preesm.algorithm.model.sdf.SDFAbstractVertex;
 
 // TODO: Auto-generated Javadoc
 /**

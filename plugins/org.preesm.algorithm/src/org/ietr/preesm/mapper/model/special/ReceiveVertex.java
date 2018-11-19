@@ -39,11 +39,11 @@
  */
 package org.ietr.preesm.mapper.model.special;
 
-import org.ietr.dftools.algorithm.model.AbstractVertex;
-import org.ietr.dftools.algorithm.model.types.LongVertexPropertyType;
 import org.ietr.preesm.core.types.ImplementationPropertyNames;
 import org.ietr.preesm.mapper.model.MapperDAG;
 import org.ietr.preesm.mapper.model.MapperDAGVertex;
+import org.preesm.algorithm.model.AbstractVertex;
+import org.preesm.algorithm.model.types.LongVertexPropertyType;
 
 // TODO: Auto-generated Javadoc
 /**

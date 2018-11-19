@@ -39,15 +39,15 @@ package org.ietr.preesm.mapper.timekeeper;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import org.ietr.dftools.algorithm.model.dag.DAGVertex;
-import org.ietr.dftools.algorithm.model.visitors.IGraphVisitor;
-import org.ietr.dftools.algorithm.model.visitors.SDF4JException;
 import org.ietr.preesm.mapper.model.MapperDAG;
 import org.ietr.preesm.mapper.model.MapperDAGEdge;
 import org.ietr.preesm.mapper.model.MapperDAGVertex;
 import org.ietr.preesm.mapper.model.property.EdgeTiming;
 import org.ietr.preesm.mapper.model.property.VertexTiming;
 import org.ietr.preesm.mapper.tools.CustomTopologicalIterator;
+import org.preesm.algorithm.model.dag.DAGVertex;
+import org.preesm.algorithm.model.visitors.IGraphVisitor;
+import org.preesm.algorithm.model.visitors.SDF4JException;
 
 // TODO: Auto-generated Javadoc
 /**

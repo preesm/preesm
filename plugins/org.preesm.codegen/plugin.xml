@@ -59,7 +59,7 @@
                object="org.preesm.model.slam.Design">
             </input>
             <input id="DAG"
-               object="org.ietr.dftools.algorithm.model.dag.DirectedAcyclicGraph">
+               object="org.preesm.algorithm.model.dag.DirectedAcyclicGraph">
             </input>
             <input id="scenario"
                object="org.ietr.preesm.core.scenario.PreesmScenario">
@@ -77,13 +77,13 @@
             	</input>
 	            <input
 	                  id="DAG"
-	                  object="org.ietr.dftools.algorithm.model.dag.DirectedAcyclicGraph">
+	                  object="org.preesm.algorithm.model.dag.DirectedAcyclicGraph">
 	            </input>
             </inputs>
          <outputs>
             <output
                   id="DAG"
-                  object="org.ietr.dftools.algorithm.model.dag.DirectedAcyclicGraph">
+                  object="org.preesm.algorithm.model.dag.DirectedAcyclicGraph">
             </output>
          </outputs>
       </task>

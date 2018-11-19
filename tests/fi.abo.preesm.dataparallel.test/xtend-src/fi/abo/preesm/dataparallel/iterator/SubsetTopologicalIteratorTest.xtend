@@ -36,11 +36,11 @@
  */
 package fi.abo.preesm.dataparallel.iterator
 
-import java.util.Collection
-import java.util.NoSuchElementException
 import fi.abo.preesm.dataparallel.SDF2DAG
 import fi.abo.preesm.dataparallel.operations.RootExitOperations
 import fi.abo.preesm.dataparallel.test.util.Util
+import java.util.Collection
+import java.util.NoSuchElementException
 import org.junit.Assert
 import org.junit.Test
 import org.junit.runner.RunWith

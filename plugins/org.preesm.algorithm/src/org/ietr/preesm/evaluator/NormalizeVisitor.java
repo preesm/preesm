@@ -35,14 +35,14 @@
  */
 package org.ietr.preesm.evaluator;
 
-import org.ietr.dftools.algorithm.model.IInterface;
-import org.ietr.dftools.algorithm.model.parameters.InvalidExpressionException;
-import org.ietr.dftools.algorithm.model.sdf.SDFAbstractVertex;
-import org.ietr.dftools.algorithm.model.sdf.SDFEdge;
-import org.ietr.dftools.algorithm.model.sdf.SDFGraph;
-import org.ietr.dftools.algorithm.model.sdf.SDFInterfaceVertex;
-import org.ietr.dftools.algorithm.model.visitors.IGraphVisitor;
-import org.ietr.dftools.algorithm.model.visitors.SDF4JException;
+import org.preesm.algorithm.model.IInterface;
+import org.preesm.algorithm.model.parameters.InvalidExpressionException;
+import org.preesm.algorithm.model.sdf.SDFAbstractVertex;
+import org.preesm.algorithm.model.sdf.SDFEdge;
+import org.preesm.algorithm.model.sdf.SDFGraph;
+import org.preesm.algorithm.model.sdf.SDFInterfaceVertex;
+import org.preesm.algorithm.model.visitors.IGraphVisitor;
+import org.preesm.algorithm.model.visitors.SDF4JException;
 
 /**
  * Visitor used to normalize a graph, hierarchical (IBSDF) or not (SDF).

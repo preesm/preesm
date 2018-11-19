@@ -38,15 +38,15 @@ package fi.abo.preesm.dataparallel.fifo
 
 import java.util.logging.Level
 import java.util.logging.Logger
-import org.ietr.dftools.algorithm.factories.SDFEdgeFactory
-import org.ietr.dftools.algorithm.model.AbstractEdgePropertyType
-import org.ietr.dftools.algorithm.model.AbstractGraph
-import org.ietr.dftools.algorithm.model.IInterface
-import org.ietr.dftools.algorithm.model.sdf.SDFAbstractVertex
-import org.ietr.dftools.algorithm.model.sdf.SDFEdge
-import org.ietr.dftools.algorithm.model.sdf.SDFGraph
-import org.ietr.dftools.algorithm.model.visitors.SDF4JException
 import org.jgrapht.EdgeFactory
+import org.preesm.algorithm.factories.SDFEdgeFactory
+import org.preesm.algorithm.model.AbstractEdgePropertyType
+import org.preesm.algorithm.model.AbstractGraph
+import org.preesm.algorithm.model.IInterface
+import org.preesm.algorithm.model.sdf.SDFAbstractVertex
+import org.preesm.algorithm.model.sdf.SDFEdge
+import org.preesm.algorithm.model.sdf.SDFGraph
+import org.preesm.algorithm.model.visitors.SDF4JException
 import org.preesm.commons.logger.PreesmLogger
 
 /**

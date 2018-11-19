@@ -37,7 +37,7 @@
  */
 package org.ietr.preesm.core.types;
 
-import org.ietr.dftools.algorithm.model.dag.DAGEdge;
+import org.preesm.algorithm.model.dag.DAGEdge;
 
 // TODO: Auto-generated Javadoc
 /**

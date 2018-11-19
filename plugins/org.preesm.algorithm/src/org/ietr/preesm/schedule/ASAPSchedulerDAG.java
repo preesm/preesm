@@ -36,12 +36,12 @@
 package org.ietr.preesm.schedule;
 
 import java.util.ArrayList;
-import org.ietr.dftools.algorithm.model.sdf.SDFAbstractVertex;
-import org.ietr.dftools.algorithm.model.sdf.SDFEdge;
-import org.ietr.dftools.algorithm.model.sdf.SDFGraph;
-import org.ietr.dftools.algorithm.model.sdf.SDFInterfaceVertex;
 import org.ietr.preesm.throughput.tools.helpers.GraphSimulationHelper;
 import org.ietr.preesm.throughput.tools.helpers.Stopwatch;
+import org.preesm.algorithm.model.sdf.SDFAbstractVertex;
+import org.preesm.algorithm.model.sdf.SDFEdge;
+import org.preesm.algorithm.model.sdf.SDFGraph;
+import org.preesm.algorithm.model.sdf.SDFInterfaceVertex;
 
 /**
  * @author hderoui

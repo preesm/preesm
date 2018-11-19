@@ -45,21 +45,21 @@ import java.util.logging.Level
 import java.util.logging.Logger
 import java.util.regex.Pattern
 import org.eclipse.xtend.lib.annotations.Accessors
-import org.ietr.dftools.algorithm.model.sdf.SDFAbstractVertex
-import org.ietr.dftools.algorithm.model.sdf.SDFEdge
-import org.ietr.dftools.algorithm.model.sdf.SDFGraph
-import org.ietr.dftools.algorithm.model.sdf.SDFInterfaceVertex
-import org.ietr.dftools.algorithm.model.sdf.esdf.SDFBroadcastVertex
-import org.ietr.dftools.algorithm.model.sdf.esdf.SDFForkVertex
-import org.ietr.dftools.algorithm.model.sdf.esdf.SDFJoinVertex
-import org.ietr.dftools.algorithm.model.sdf.esdf.SDFRoundBufferVertex
-import org.ietr.dftools.algorithm.model.sdf.transformations.SpecialActorPortsIndexer
-import org.ietr.dftools.algorithm.model.types.LongEdgePropertyType
-import org.ietr.dftools.algorithm.model.types.StringEdgePropertyType
-import org.ietr.dftools.algorithm.model.visitors.SDF4JException
 import org.jgrapht.alg.cycle.CycleDetector
 import org.jgrapht.graph.AbstractGraph
 import org.jgrapht.graph.AsSubgraph
+import org.preesm.algorithm.model.sdf.SDFAbstractVertex
+import org.preesm.algorithm.model.sdf.SDFEdge
+import org.preesm.algorithm.model.sdf.SDFGraph
+import org.preesm.algorithm.model.sdf.SDFInterfaceVertex
+import org.preesm.algorithm.model.sdf.esdf.SDFBroadcastVertex
+import org.preesm.algorithm.model.sdf.esdf.SDFForkVertex
+import org.preesm.algorithm.model.sdf.esdf.SDFJoinVertex
+import org.preesm.algorithm.model.sdf.esdf.SDFRoundBufferVertex
+import org.preesm.algorithm.model.sdf.transformations.SpecialActorPortsIndexer
+import org.preesm.algorithm.model.types.LongEdgePropertyType
+import org.preesm.algorithm.model.types.StringEdgePropertyType
+import org.preesm.algorithm.model.visitors.SDF4JException
 
 /**
  * Construct DAG from a SDF Graph

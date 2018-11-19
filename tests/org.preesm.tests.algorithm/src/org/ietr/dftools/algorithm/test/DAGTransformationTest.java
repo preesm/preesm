@@ -37,19 +37,19 @@ package org.ietr.dftools.algorithm.test;
 
 import java.io.File;
 import java.io.FileNotFoundException;
-import org.ietr.dftools.algorithm.DFToolsAlgoException;
-import org.ietr.dftools.algorithm.factories.DAGVertexFactory;
-import org.ietr.dftools.algorithm.importer.GMLSDFImporter;
-import org.ietr.dftools.algorithm.importer.InvalidModelException;
-import org.ietr.dftools.algorithm.model.dag.DAGEdge;
-import org.ietr.dftools.algorithm.model.dag.DAGVertex;
-import org.ietr.dftools.algorithm.model.dag.DirectedAcyclicGraph;
-import org.ietr.dftools.algorithm.model.sdf.SDFGraph;
-import org.ietr.dftools.algorithm.model.sdf.visitors.DAGTransformation;
-import org.ietr.dftools.algorithm.model.visitors.SDF4JException;
 import org.jgrapht.alg.cycle.CycleDetector;
 import org.junit.Assert;
 import org.junit.Test;
+import org.preesm.algorithm.DFToolsAlgoException;
+import org.preesm.algorithm.factories.DAGVertexFactory;
+import org.preesm.algorithm.importer.GMLSDFImporter;
+import org.preesm.algorithm.importer.InvalidModelException;
+import org.preesm.algorithm.model.dag.DAGEdge;
+import org.preesm.algorithm.model.dag.DAGVertex;
+import org.preesm.algorithm.model.dag.DirectedAcyclicGraph;
+import org.preesm.algorithm.model.sdf.SDFGraph;
+import org.preesm.algorithm.model.sdf.visitors.DAGTransformation;
+import org.preesm.algorithm.model.visitors.SDF4JException;
 
 /**
  */

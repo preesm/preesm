@@ -38,9 +38,9 @@ package org.ietr.preesm.mapper.optimizer;
 import java.util.LinkedHashSet;
 import java.util.Set;
 import java.util.logging.Level;
-import org.ietr.dftools.algorithm.model.dag.DAGVertex;
-import org.ietr.dftools.algorithm.model.dag.DirectedAcyclicGraph;
 import org.ietr.preesm.mapper.model.special.TransferVertex;
+import org.preesm.algorithm.model.dag.DAGVertex;
+import org.preesm.algorithm.model.dag.DirectedAcyclicGraph;
 import org.preesm.commons.logger.PreesmLogger;
 
 /**

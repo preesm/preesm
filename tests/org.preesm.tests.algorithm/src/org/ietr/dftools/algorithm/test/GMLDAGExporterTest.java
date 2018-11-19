@@ -39,13 +39,13 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.util.List;
-import org.ietr.dftools.algorithm.exporter.GMLDAGExporter;
-import org.ietr.dftools.algorithm.model.dag.DAGEdge;
-import org.ietr.dftools.algorithm.model.dag.DAGVertex;
-import org.ietr.dftools.algorithm.model.dag.DirectedAcyclicGraph;
-import org.ietr.dftools.algorithm.model.types.LongEdgePropertyType;
 import org.junit.Assert;
 import org.junit.Test;
+import org.preesm.algorithm.exporter.GMLDAGExporter;
+import org.preesm.algorithm.model.dag.DAGEdge;
+import org.preesm.algorithm.model.dag.DAGVertex;
+import org.preesm.algorithm.model.dag.DirectedAcyclicGraph;
+import org.preesm.algorithm.model.types.LongEdgePropertyType;
 
 /**
  */

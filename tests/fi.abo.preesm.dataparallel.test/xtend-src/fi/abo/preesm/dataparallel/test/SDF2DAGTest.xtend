@@ -36,22 +36,22 @@
  */
 package fi.abo.preesm.dataparallel.test
 
-import java.util.Collection
 import fi.abo.preesm.dataparallel.SDF2DAG
-import org.ietr.dftools.algorithm.model.sdf.SDFAbstractVertex
-import org.ietr.dftools.algorithm.model.sdf.SDFEdge
-import org.ietr.dftools.algorithm.model.sdf.SDFGraph
-import org.ietr.dftools.algorithm.model.sdf.esdf.SDFForkVertex
-import org.ietr.dftools.algorithm.model.sdf.esdf.SDFJoinVertex
+import fi.abo.preesm.dataparallel.test.util.ExampleGraphs
+import java.util.Collection
+import org.jgrapht.alg.connectivity.KosarajuStrongConnectivityInspector
 import org.jgrapht.alg.cycle.CycleDetector
 import org.jgrapht.graph.AbstractGraph
+import org.jgrapht.graph.AsSubgraph
 import org.junit.Assert
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.junit.runners.Parameterized
-import fi.abo.preesm.dataparallel.test.util.ExampleGraphs
-import org.jgrapht.alg.connectivity.KosarajuStrongConnectivityInspector
-import org.jgrapht.graph.AsSubgraph
+import org.preesm.algorithm.model.sdf.SDFAbstractVertex
+import org.preesm.algorithm.model.sdf.SDFEdge
+import org.preesm.algorithm.model.sdf.SDFGraph
+import org.preesm.algorithm.model.sdf.esdf.SDFForkVertex
+import org.preesm.algorithm.model.sdf.esdf.SDFJoinVertex
 
 /**
  * Manual test for {@link SDF2DAG}

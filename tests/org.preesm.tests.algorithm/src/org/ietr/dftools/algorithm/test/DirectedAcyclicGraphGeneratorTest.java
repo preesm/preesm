@@ -39,8 +39,8 @@ package org.ietr.dftools.algorithm.test;
 
 import java.security.SecureRandom;
 import java.util.Random;
-import org.ietr.dftools.algorithm.generator.DirectedAcyclicGraphGenerator;
 import org.junit.Test;
+import org.preesm.algorithm.generator.DirectedAcyclicGraphGenerator;
 
 /**
  */

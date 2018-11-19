@@ -44,9 +44,9 @@ import org.eclipse.core.runtime.FileLocator;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.swt.graphics.Image;
-import org.ietr.dftools.algorithm.model.sdf.SDFGraph;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.FrameworkUtil;
+import org.preesm.algorithm.model.sdf.SDFGraph;
 import org.preesm.model.pisdf.AbstractActor;
 import org.preesm.ui.scenario.editor.HierarchicalSDFVertex;
 

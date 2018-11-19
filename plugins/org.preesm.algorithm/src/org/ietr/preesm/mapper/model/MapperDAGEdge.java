@@ -38,9 +38,9 @@
  */
 package org.ietr.preesm.mapper.model;
 
-import org.ietr.dftools.algorithm.model.dag.DAGEdge;
 import org.ietr.preesm.mapper.model.property.EdgeInit;
 import org.ietr.preesm.mapper.model.property.EdgeTiming;
+import org.preesm.algorithm.model.dag.DAGEdge;
 
 /**
  * Represents an edge in a DAG of type {@link MapperDAG} used in the mapper.

@@ -43,8 +43,8 @@ import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.NullProgressMonitor;
-import org.ietr.dftools.algorithm.exporter.GMLSDFExporter;
-import org.ietr.dftools.algorithm.model.sdf.SDFGraph;
+import org.preesm.algorithm.exporter.GMLSDFExporter;
+import org.preesm.algorithm.model.sdf.SDFGraph;
 import org.preesm.workflow.WorkflowException;
 
 /**

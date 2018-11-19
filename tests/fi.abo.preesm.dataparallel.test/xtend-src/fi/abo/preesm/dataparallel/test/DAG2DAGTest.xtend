@@ -43,14 +43,14 @@ import fi.abo.preesm.dataparallel.operations.OperationsUtils
 import fi.abo.preesm.dataparallel.test.util.Util
 import java.util.Collection
 import java.util.HashMap
-import org.ietr.dftools.algorithm.model.sdf.SDFGraph
-import org.jgrapht.alg.cycle.CycleDetector
 import org.jgrapht.alg.connectivity.KosarajuStrongConnectivityInspector
+import org.jgrapht.alg.cycle.CycleDetector
 import org.jgrapht.graph.AsSubgraph
 import org.junit.Assert
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.junit.runners.Parameterized
+import org.preesm.algorithm.model.sdf.SDFGraph
 
 /**
  * Property based test to check {@link DAG2DAG} construction

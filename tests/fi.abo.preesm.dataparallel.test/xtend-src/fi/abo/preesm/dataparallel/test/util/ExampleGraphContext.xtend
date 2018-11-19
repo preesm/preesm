@@ -36,14 +36,15 @@
  */
 package fi.abo.preesm.dataparallel.test.util
 
-import org.ietr.dftools.algorithm.model.sdf.SDFGraph
+import org.eclipse.xtend.lib.annotations.Data
+import org.preesm.algorithm.model.sdf.SDFGraph
 
 /**
  * POJO that wraps context needed for each ExampleGraphs and is used by certain test functions
  * 
  * @author Sudeep Kanur
  */
-@org.eclipse.xtend.lib.annotations.Data class ExampleGraphContext {
+@Data class ExampleGraphContext {
 	
 	/**
 	 * Manually written example {@link SDFGraph} graph

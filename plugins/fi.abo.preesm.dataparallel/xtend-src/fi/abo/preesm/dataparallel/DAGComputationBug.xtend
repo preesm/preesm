@@ -37,8 +37,8 @@
 package fi.abo.preesm.dataparallel
 
 import java.io.File
-import org.ietr.dftools.algorithm.model.sdf.SDFGraph
-import org.ietr.dftools.algorithm.model.visitors.SDF4JException
+import org.preesm.algorithm.model.sdf.SDFGraph
+import org.preesm.algorithm.model.visitors.SDF4JException
 
 /**
  * Exception class used exclusively when certain assertions fail

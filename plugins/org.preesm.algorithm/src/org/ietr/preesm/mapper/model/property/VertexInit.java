@@ -43,11 +43,11 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
-import org.ietr.dftools.algorithm.model.CloneableProperty;
 import org.ietr.preesm.core.architecture.util.DesignTools;
 import org.ietr.preesm.core.scenario.Timing;
 import org.ietr.preesm.mapper.abc.SpecialVertexManager;
 import org.ietr.preesm.mapper.model.MapperDAGVertex;
+import org.preesm.algorithm.model.CloneableProperty;
 import org.preesm.model.slam.ComponentInstance;
 
 /**

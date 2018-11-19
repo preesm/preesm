@@ -37,9 +37,9 @@
  */
 package org.ietr.preesm.mapper.model.special;
 
-import org.ietr.dftools.algorithm.model.dag.DirectedAcyclicGraph;
 import org.ietr.preesm.mapper.model.MapperDAGEdge;
 import org.ietr.preesm.mapper.model.MapperDAGVertex;
+import org.preesm.algorithm.model.dag.DirectedAcyclicGraph;
 
 // TODO: Auto-generated Javadoc
 /**

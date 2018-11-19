@@ -41,15 +41,15 @@ import java.io.FileWriter
 import java.io.IOException
 import java.util.Collection
 import org.eclipse.xtend.lib.annotations.Accessors
-import org.ietr.dftools.algorithm.model.AbstractEdge
-import org.ietr.dftools.algorithm.model.IInterface
-import org.ietr.dftools.algorithm.model.sdf.SDFAbstractVertex
-import org.ietr.dftools.algorithm.model.sdf.SDFEdge
-import org.ietr.dftools.algorithm.model.sdf.SDFGraph
-import org.ietr.dftools.algorithm.model.sdf.SDFVertex
-import org.ietr.dftools.algorithm.model.sdf.esdf.SDFSourceInterfaceVertex
 import org.ietr.preesm.core.scenario.PreesmScenario
 import org.ietr.preesm.core.scenario.Timing
+import org.preesm.algorithm.model.AbstractEdge
+import org.preesm.algorithm.model.IInterface
+import org.preesm.algorithm.model.sdf.SDFAbstractVertex
+import org.preesm.algorithm.model.sdf.SDFEdge
+import org.preesm.algorithm.model.sdf.SDFGraph
+import org.preesm.algorithm.model.sdf.SDFVertex
+import org.preesm.algorithm.model.sdf.esdf.SDFSourceInterfaceVertex
 import org.preesm.commons.math.MathFunctionsHelper
 import org.preesm.model.slam.Design
 

@@ -36,7 +36,7 @@
 package org.ietr.preesm.mathematicalModels;
 
 import org.apache.commons.lang3.math.Fraction;
-import org.ietr.dftools.algorithm.model.sdf.SDFGraph;
+import org.preesm.algorithm.model.sdf.SDFGraph;
 
 /**
  *

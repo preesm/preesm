@@ -36,18 +36,18 @@
  */
 package fi.abo.preesm.dataparallel.test
 
-import java.util.Collection
-import java.util.HashMap
 import fi.abo.preesm.dataparallel.NodeChainGraph
 import fi.abo.preesm.dataparallel.SrSDFToSDF
-import org.ietr.dftools.algorithm.model.sdf.SDFGraph
-import org.ietr.dftools.algorithm.model.sdf.visitors.ToHSDFVisitor
+import fi.abo.preesm.dataparallel.test.util.Util
+import java.util.Collection
+import java.util.HashMap
 import org.junit.Assert
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.junit.runners.Parameterized
 import org.junit.runners.Parameterized.Parameters
-import fi.abo.preesm.dataparallel.test.util.Util
+import org.preesm.algorithm.model.sdf.SDFGraph
+import org.preesm.algorithm.model.sdf.visitors.ToHSDFVisitor
 
 /**
  * Parametric test for {@link SrSDFToSDF}

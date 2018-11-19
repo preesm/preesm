@@ -37,7 +37,7 @@
 
 package org.ietr.preesm.evaluator;
 
-import org.ietr.dftools.algorithm.model.AbstractEdgePropertyType;
+import org.preesm.algorithm.model.AbstractEdgePropertyType;
 
 // TODO: Auto-generated Javadoc
 /**

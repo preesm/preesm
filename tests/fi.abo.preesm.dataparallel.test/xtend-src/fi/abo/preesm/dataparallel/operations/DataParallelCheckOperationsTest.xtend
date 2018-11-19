@@ -36,15 +36,15 @@
  */
 package fi.abo.preesm.dataparallel.operations
 
-import java.util.Collection
 import fi.abo.preesm.dataparallel.test.util.ExampleGraphs
 import fi.abo.preesm.dataparallel.test.util.Util
-import org.ietr.dftools.algorithm.model.sdf.SDFGraph
-import org.ietr.dftools.algorithm.model.visitors.SDF4JException
+import java.util.Collection
 import org.junit.Assert
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.junit.runners.Parameterized
+import org.preesm.algorithm.model.sdf.SDFGraph
+import org.preesm.algorithm.model.visitors.SDF4JException
 
 /**
  * Property based test to verify {@link DataParallelCheckOperations} works as expected

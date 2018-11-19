@@ -36,11 +36,11 @@
  */
 package fi.abo.preesm.dataparallel.iterator
 
-import org.ietr.dftools.algorithm.model.sdf.SDFAbstractVertex
-import org.ietr.dftools.algorithm.model.sdf.SDFEdge
-import org.jgrapht.traverse.GraphIterator
 import java.util.List
 import java.util.Map
+import org.jgrapht.traverse.GraphIterator
+import org.preesm.algorithm.model.sdf.SDFAbstractVertex
+import org.preesm.algorithm.model.sdf.SDFEdge
 
 /**
  * Interface that iterates through a DAG in topological

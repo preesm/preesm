@@ -48,13 +48,13 @@
          <inputs>
             <input
                   id="SDF"
-                  object="org.ietr.dftools.algorithm.model.sdf.SDFGraph">
+                  object="org.preesm.algorithm.model.sdf.SDFGraph">
             </input>
          </inputs>
          <outputs>
             <output
                   id="CySDF"
-                  object="org.ietr.dftools.algorithm.model.sdf.SDFGraph">
+                  object="org.preesm.algorithm.model.sdf.SDFGraph">
             </output>
             <output
                   id="Info"

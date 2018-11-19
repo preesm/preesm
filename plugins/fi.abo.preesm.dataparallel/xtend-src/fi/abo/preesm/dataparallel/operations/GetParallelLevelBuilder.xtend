@@ -36,10 +36,10 @@
  */
 package fi.abo.preesm.dataparallel.operations
 
-import java.util.Map
 import fi.abo.preesm.dataparallel.PureDAGConstructor
-import org.ietr.dftools.algorithm.model.sdf.SDFAbstractVertex
-import org.ietr.dftools.algorithm.model.visitors.SDF4JException
+import java.util.Map
+import org.preesm.algorithm.model.sdf.SDFAbstractVertex
+import org.preesm.algorithm.model.visitors.SDF4JException
 
 /**
  * Helper class to properly initialize and use {@link OperationsUtils#getParallelLevel}.

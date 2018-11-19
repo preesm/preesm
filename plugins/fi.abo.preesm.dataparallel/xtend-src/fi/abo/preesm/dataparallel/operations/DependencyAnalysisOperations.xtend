@@ -36,15 +36,15 @@
  */
 package fi.abo.preesm.dataparallel.operations
 
-import java.util.Set
 import fi.abo.preesm.dataparallel.DAG2DAG
 import fi.abo.preesm.dataparallel.DAGSubset
 import fi.abo.preesm.dataparallel.PureDAGConstructor
 import fi.abo.preesm.dataparallel.SDF2DAG
+import java.util.Set
 import org.eclipse.xtend.lib.annotations.Accessors
-import org.ietr.dftools.algorithm.model.sdf.SDFAbstractVertex
-import org.ietr.dftools.algorithm.model.sdf.SDFEdge
 import org.jgrapht.traverse.BreadthFirstIterator
+import org.preesm.algorithm.model.sdf.SDFAbstractVertex
+import org.preesm.algorithm.model.sdf.SDFEdge
 
 /**
  * Operation that performs instance dependencies in a DAG and return

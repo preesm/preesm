@@ -34,18 +34,18 @@
  */
 package org.ietr.dftools.algorithm.test;
 
-import org.ietr.dftools.algorithm.DFToolsAlgoException;
-import org.ietr.dftools.algorithm.model.parameters.ConstantValue;
-import org.ietr.dftools.algorithm.model.parameters.ExpressionValue;
-import org.ietr.dftools.algorithm.model.parameters.Variable;
-import org.ietr.dftools.algorithm.model.sdf.SDFEdge;
-import org.ietr.dftools.algorithm.model.sdf.SDFGraph;
-import org.ietr.dftools.algorithm.model.sdf.SDFVertex;
-import org.ietr.dftools.algorithm.model.sdf.visitors.ToHSDFVisitor;
-import org.ietr.dftools.algorithm.model.types.ExpressionEdgePropertyType;
-import org.ietr.dftools.algorithm.model.types.LongEdgePropertyType;
-import org.ietr.dftools.algorithm.model.visitors.SDF4JException;
 import org.junit.Test;
+import org.preesm.algorithm.DFToolsAlgoException;
+import org.preesm.algorithm.model.parameters.ConstantValue;
+import org.preesm.algorithm.model.parameters.ExpressionValue;
+import org.preesm.algorithm.model.parameters.Variable;
+import org.preesm.algorithm.model.sdf.SDFEdge;
+import org.preesm.algorithm.model.sdf.SDFGraph;
+import org.preesm.algorithm.model.sdf.SDFVertex;
+import org.preesm.algorithm.model.sdf.visitors.ToHSDFVisitor;
+import org.preesm.algorithm.model.types.ExpressionEdgePropertyType;
+import org.preesm.algorithm.model.types.LongEdgePropertyType;
+import org.preesm.algorithm.model.visitors.SDF4JException;
 
 /**
  */

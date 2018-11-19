@@ -36,10 +36,10 @@
 package org.ietr.preesm.throughput.tools.transformers;
 
 import java.util.ArrayList;
-import org.ietr.dftools.algorithm.model.sdf.SDFEdge;
-import org.ietr.dftools.algorithm.model.sdf.SDFGraph;
-import org.ietr.dftools.algorithm.model.types.LongEdgePropertyType;
 import org.ietr.preesm.throughput.tools.helpers.Stopwatch;
+import org.preesm.algorithm.model.sdf.SDFEdge;
+import org.preesm.algorithm.model.sdf.SDFGraph;
+import org.preesm.algorithm.model.types.LongEdgePropertyType;
 
 /**
  * @author hderoui

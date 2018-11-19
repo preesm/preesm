@@ -39,8 +39,8 @@ package org.ietr.preesm.mapper.model.property;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Set;
-import org.ietr.dftools.algorithm.model.CloneableProperty;
 import org.ietr.preesm.mapper.model.MapperDAGVertex;
+import org.preesm.algorithm.model.CloneableProperty;
 
 // TODO: Auto-generated Javadoc
 /**

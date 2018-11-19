@@ -36,22 +36,22 @@
  */
 package fi.abo.preesm.dataparallel.operations
 
+import fi.abo.preesm.dataparallel.DAG2DAG
+import fi.abo.preesm.dataparallel.PureDAGConstructor
+import fi.abo.preesm.dataparallel.SDF2DAG
+import fi.abo.preesm.dataparallel.test.util.ExampleGraphs
+import java.util.Collection
+import java.util.List
+import org.jgrapht.alg.connectivity.KosarajuStrongConnectivityInspector
+import org.jgrapht.alg.cycle.CycleDetector
+import org.jgrapht.graph.AsSubgraph
+import org.junit.Assert
+import org.junit.Test
 import org.junit.runner.RunWith
 import org.junit.runners.Parameterized
-import fi.abo.preesm.dataparallel.PureDAGConstructor
-import java.util.List
-import java.util.Collection
-import fi.abo.preesm.dataparallel.test.util.ExampleGraphs
-import fi.abo.preesm.dataparallel.SDF2DAG
-import org.ietr.dftools.algorithm.model.sdf.SDFGraph
-import fi.abo.preesm.dataparallel.DAG2DAG
-import fi.abo.preesm.dataparallel.operations.RootExitOperations
-import org.junit.Assert
-import org.jgrapht.alg.cycle.CycleDetector
-import org.ietr.dftools.algorithm.model.sdf.SDFAbstractVertex
-import org.ietr.dftools.algorithm.model.sdf.SDFEdge
-import org.jgrapht.alg.connectivity.KosarajuStrongConnectivityInspector
-import org.jgrapht.graph.AsSubgraph
+import org.preesm.algorithm.model.sdf.SDFAbstractVertex
+import org.preesm.algorithm.model.sdf.SDFEdge
+import org.preesm.algorithm.model.sdf.SDFGraph
 
 /**
  * <b>Manual test</b> for verifying root and exit instances and actors of {@link RootExitOperations}
@@ -209,7 +209,7 @@ class RootExitVisitorManualTest {
 	/**
 	 * Manually determined root instances match the computed ones
 	 */
-	@org.junit.Test
+	@Test
 	def void checkRootInstances() {
 		val rootOp = new RootExitOperations
 		dagGen.accept(rootOp)
@@ -221,7 +221,7 @@ class RootExitVisitorManualTest {
 	/**
 	 * Manually determined exit instances match the computed ones
 	 */
-	@org.junit.Test
+	@Test
 	def void checkExitInstances() {
 		val exitOp = new RootExitOperations
 		dagGen.accept(exitOp)
@@ -233,7 +233,7 @@ class RootExitVisitorManualTest {
 	/**
 	 * Manually determined actors match the computed ones
 	 */
-	@org.junit.Test
+	@Test
 	def void checkActors() {
 		val actorOp = new RootExitOperations
 		dagGen.accept(actorOp)

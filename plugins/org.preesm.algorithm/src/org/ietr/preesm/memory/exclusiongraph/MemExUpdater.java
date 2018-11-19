@@ -41,7 +41,7 @@ package org.ietr.preesm.memory.exclusiongraph;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import org.eclipse.core.runtime.IProgressMonitor;
-import org.ietr.dftools.algorithm.model.dag.DirectedAcyclicGraph;
+import org.preesm.algorithm.model.dag.DirectedAcyclicGraph;
 import org.preesm.workflow.WorkflowException;
 import org.preesm.workflow.elements.Workflow;
 import org.preesm.workflow.implement.AbstractWorkflowNodeImplementation;

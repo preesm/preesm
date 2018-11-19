@@ -38,12 +38,12 @@ package org.ietr.preesm.throughput.tools.helpers;
 import java.util.Hashtable;
 import java.util.LinkedHashMap;
 import java.util.Map;
-import org.ietr.dftools.algorithm.model.AbstractEdgePropertyType;
-import org.ietr.dftools.algorithm.model.sdf.SDFAbstractVertex;
-import org.ietr.dftools.algorithm.model.sdf.SDFEdge;
-import org.ietr.dftools.algorithm.model.sdf.SDFGraph;
-import org.ietr.dftools.algorithm.model.sdf.SDFInterfaceVertex;
-import org.ietr.dftools.algorithm.model.types.LongEdgePropertyType;
+import org.preesm.algorithm.model.AbstractEdgePropertyType;
+import org.preesm.algorithm.model.sdf.SDFAbstractVertex;
+import org.preesm.algorithm.model.sdf.SDFEdge;
+import org.preesm.algorithm.model.sdf.SDFGraph;
+import org.preesm.algorithm.model.sdf.SDFInterfaceVertex;
+import org.preesm.algorithm.model.types.LongEdgePropertyType;
 
 /**
  * @author hderoui

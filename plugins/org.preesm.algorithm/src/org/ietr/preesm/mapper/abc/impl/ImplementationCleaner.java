@@ -39,8 +39,6 @@ package org.ietr.preesm.mapper.abc.impl;
 
 import java.util.LinkedHashSet;
 import java.util.Set;
-import org.ietr.dftools.algorithm.model.dag.DAGEdge;
-import org.ietr.dftools.algorithm.model.dag.DAGVertex;
 import org.ietr.preesm.mapper.abc.order.OrderManager;
 import org.ietr.preesm.mapper.abc.transaction.RemoveVertexTransaction;
 import org.ietr.preesm.mapper.abc.transaction.TransactionManager;
@@ -50,6 +48,8 @@ import org.ietr.preesm.mapper.model.special.InvolvementVertex;
 import org.ietr.preesm.mapper.model.special.OverheadVertex;
 import org.ietr.preesm.mapper.model.special.PrecedenceEdgeAdder;
 import org.ietr.preesm.mapper.model.special.TransferVertex;
+import org.preesm.algorithm.model.dag.DAGEdge;
+import org.preesm.algorithm.model.dag.DAGVertex;
 
 // TODO: Auto-generated Javadoc
 /**

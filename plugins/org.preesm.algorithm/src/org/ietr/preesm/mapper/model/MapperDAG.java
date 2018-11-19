@@ -43,15 +43,15 @@ package org.ietr.preesm.mapper.model;
 import java.util.Iterator;
 import java.util.LinkedHashSet;
 import java.util.Set;
-import org.ietr.dftools.algorithm.model.AbstractEdge;
-import org.ietr.dftools.algorithm.model.AbstractGraph;
-import org.ietr.dftools.algorithm.model.dag.DAGEdge;
-import org.ietr.dftools.algorithm.model.dag.DAGVertex;
-import org.ietr.dftools.algorithm.model.dag.DirectedAcyclicGraph;
-import org.ietr.dftools.algorithm.model.dag.EdgeAggregate;
-import org.ietr.dftools.algorithm.model.sdf.SDFAbstractVertex;
 import org.ietr.preesm.mapper.model.property.DAGMappings;
 import org.ietr.preesm.mapper.model.property.DAGTimings;
+import org.preesm.algorithm.model.AbstractEdge;
+import org.preesm.algorithm.model.AbstractGraph;
+import org.preesm.algorithm.model.dag.DAGEdge;
+import org.preesm.algorithm.model.dag.DAGVertex;
+import org.preesm.algorithm.model.dag.DirectedAcyclicGraph;
+import org.preesm.algorithm.model.dag.EdgeAggregate;
+import org.preesm.algorithm.model.sdf.SDFAbstractVertex;
 import org.preesm.model.pisdf.PiGraph;
 
 /**

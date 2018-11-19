@@ -39,11 +39,11 @@ package org.ietr.preesm.mapper.abc.transaction;
 
 import java.util.List;
 import java.util.Set;
-import org.ietr.dftools.algorithm.model.dag.DAGEdge;
 import org.ietr.preesm.mapper.abc.order.OrderManager;
 import org.ietr.preesm.mapper.model.MapperDAG;
 import org.ietr.preesm.mapper.model.MapperDAGVertex;
 import org.ietr.preesm.mapper.model.special.PrecedenceEdgeAdder;
+import org.preesm.algorithm.model.dag.DAGEdge;
 
 // TODO: Auto-generated Javadoc
 /**

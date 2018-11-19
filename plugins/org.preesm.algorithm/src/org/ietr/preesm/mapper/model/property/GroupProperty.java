@@ -41,9 +41,9 @@ import java.util.Iterator;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
-import org.ietr.dftools.algorithm.model.CloneableProperty;
 import org.ietr.preesm.mapper.model.MapperDAG;
 import org.ietr.preesm.mapper.model.MapperDAGVertex;
+import org.preesm.algorithm.model.CloneableProperty;
 
 // TODO: Auto-generated Javadoc
 /**

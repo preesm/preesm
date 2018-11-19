@@ -36,7 +36,7 @@
  */
 package fi.abo.preesm.dataparallel.fifo
 
-import org.ietr.dftools.algorithm.model.sdf.SDFEdge
+import org.preesm.algorithm.model.sdf.SDFEdge
 
 /**
  * {@link SDFEdge} can store {@link FifoActor} as their bean property

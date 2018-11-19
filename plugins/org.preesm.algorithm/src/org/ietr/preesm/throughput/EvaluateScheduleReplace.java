@@ -39,12 +39,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Hashtable;
 import org.apache.commons.lang3.math.Fraction;
-import org.ietr.dftools.algorithm.model.IInterface;
-import org.ietr.dftools.algorithm.model.sdf.SDFAbstractVertex;
-import org.ietr.dftools.algorithm.model.sdf.SDFGraph;
-import org.ietr.dftools.algorithm.model.sdf.SDFInterfaceVertex;
-import org.ietr.dftools.algorithm.model.sdf.esdf.SDFSinkInterfaceVertex;
-import org.ietr.dftools.algorithm.model.sdf.esdf.SDFSourceInterfaceVertex;
 import org.ietr.preesm.schedule.ALAPSchedulerDAG;
 import org.ietr.preesm.schedule.ASAPSchedulerDAG;
 import org.ietr.preesm.schedule.PeriodicSchedulerSDF;
@@ -53,6 +47,12 @@ import org.ietr.preesm.throughput.tools.helpers.Stopwatch;
 import org.ietr.preesm.throughput.tools.parsers.Identifier;
 import org.ietr.preesm.throughput.tools.transformers.SDFTransformer;
 import org.ietr.preesm.throughput.tools.transformers.SrSDFTransformer;
+import org.preesm.algorithm.model.IInterface;
+import org.preesm.algorithm.model.sdf.SDFAbstractVertex;
+import org.preesm.algorithm.model.sdf.SDFGraph;
+import org.preesm.algorithm.model.sdf.SDFInterfaceVertex;
+import org.preesm.algorithm.model.sdf.esdf.SDFSinkInterfaceVertex;
+import org.preesm.algorithm.model.sdf.esdf.SDFSourceInterfaceVertex;
 
 /**
  * @author hderoui

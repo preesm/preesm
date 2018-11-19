@@ -44,10 +44,10 @@ import java.util.LinkedList
 import java.util.List
 import java.util.NoSuchElementException
 import java.util.Queue
-import org.ietr.dftools.algorithm.model.sdf.SDFAbstractVertex
-import org.ietr.dftools.algorithm.model.sdf.SDFGraph
-import org.ietr.dftools.algorithm.model.sdf.visitors.ToHSDFVisitor
 import org.jgrapht.traverse.TopologicalOrderIterator
+import org.preesm.algorithm.model.sdf.SDFAbstractVertex
+import org.preesm.algorithm.model.sdf.SDFGraph
+import org.preesm.algorithm.model.sdf.visitors.ToHSDFVisitor
 
 /**
  * The iterator walks one graph w.r.t to nodes present in the another graph such that atleast the

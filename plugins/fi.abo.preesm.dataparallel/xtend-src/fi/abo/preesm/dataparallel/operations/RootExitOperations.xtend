@@ -36,14 +36,14 @@
  */
 package fi.abo.preesm.dataparallel.operations
 
-import fi.abo.preesm.dataparallel.SDF2DAG
-import fi.abo.preesm.dataparallel.DAGSubset
 import fi.abo.preesm.dataparallel.DAG2DAG
-import org.eclipse.xtend.lib.annotations.Accessors
-import org.ietr.dftools.algorithm.model.sdf.SDFAbstractVertex
-import java.util.List
-import fi.abo.preesm.dataparallel.PureDAGConstructor
 import fi.abo.preesm.dataparallel.DAGConstructor
+import fi.abo.preesm.dataparallel.DAGSubset
+import fi.abo.preesm.dataparallel.PureDAGConstructor
+import fi.abo.preesm.dataparallel.SDF2DAG
+import java.util.List
+import org.eclipse.xtend.lib.annotations.Accessors
+import org.preesm.algorithm.model.sdf.SDFAbstractVertex
 
 /**
  * Calculate root (entry) and exit nodes of a DAG
