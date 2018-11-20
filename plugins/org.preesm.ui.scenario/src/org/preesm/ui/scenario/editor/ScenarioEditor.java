@@ -57,7 +57,6 @@ import org.preesm.ui.scenario.editor.parametervalues.PiParametersPage;
 import org.preesm.ui.scenario.editor.relativeconstraints.RelativeConstraintsPage;
 import org.preesm.ui.scenario.editor.simulation.SimulationPage;
 import org.preesm.ui.scenario.editor.timings.TimingsPage;
-import org.preesm.ui.scenario.editor.variables.VariablesPage;
 import org.preesm.ui.utils.ErrorWithExceptionDialog;
 
 /**
@@ -137,8 +136,6 @@ public class ScenarioEditor extends SharedHeaderFormEditor implements IPropertyL
     simulationPage.addPropertyListener(this);
     final CodegenPage codegenPage = new CodegenPage(this.scenario, this, "Codegen", "Codegen");
     codegenPage.addPropertyListener(this);
-    final VariablesPage variablesPage = new VariablesPage(this.scenario, this, "Variables", "Variables");
-    variablesPage.addPropertyListener(this);
     final PiParametersPage paramPage = new PiParametersPage(this.scenario, this, "Parameters", "Parameters");
     paramPage.addPropertyListener(this);
 
@@ -152,7 +149,6 @@ public class ScenarioEditor extends SharedHeaderFormEditor implements IPropertyL
       addPage(timingsPage);
       addPage(simulationPage);
       addPage(codegenPage);
-      addPage(variablesPage);
       addPage(paramPage);
       addPage(papifyPage);
     } catch (final PartInitException e) {
