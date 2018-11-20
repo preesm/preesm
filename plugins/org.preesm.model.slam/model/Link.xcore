@@ -28,10 +28,10 @@
 
 
 
-package org.ietr.dftools.architecture.slam.link
+package org.preesm.model.slam.link
 
-import org.ietr.dftools.architecture.slam.ComponentInstance
-import org.ietr.dftools.architecture.slam.component.ComInterface
+import org.preesm.model.slam.ComponentInstance
+import org.preesm.model.slam.component.ComInterface
 
 
 type IPath wraps org.eclipse.core.runtime.IPath

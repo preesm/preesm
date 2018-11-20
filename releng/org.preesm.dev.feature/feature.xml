@@ -38,7 +38,8 @@
 <feature
       id="org.preesm.dev.feature"
       label="PREESM Developper Requirements (Meta Feature)"
-      version="2.17.1.qualifier">
+      version="2.17.1.qualifier"
+      provider-name="IETR / INSA Rennes - VAADER">
 
    <description url="http://org/">
       This feature embeds all required Eclipse plugins for developping PREESM. That includes XTend, GEF, EMF, Graphiti (Eclipse) Plus SDKs, along with Checkstyle integration for Eclipse, Maven integration for Eclipse (and appropriate extension), and other IETR dependencies (third party libraries, DFTools and Graphiti).

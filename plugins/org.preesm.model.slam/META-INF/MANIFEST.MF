@@ -7,26 +7,28 @@ Bundle-Version: 2.17.1.qualifier
 Bundle-ClassPath: .
 Bundle-Localization: plugin
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
-Export-Package: org.ietr.dftools.architecture.slam,
- org.ietr.dftools.architecture.slam.attributes,
- org.ietr.dftools.architecture.slam.attributes.impl,
- org.ietr.dftools.architecture.slam.attributes.util,
- org.ietr.dftools.architecture.slam.component,
- org.ietr.dftools.architecture.slam.component.impl,
- org.ietr.dftools.architecture.slam.component.util,
- org.ietr.dftools.architecture.slam.impl,
- org.ietr.dftools.architecture.slam.link,
- org.ietr.dftools.architecture.slam.link.impl,
- org.ietr.dftools.architecture.slam.link.util,
- org.ietr.dftools.architecture.slam.util,
- org.ietr.dftools.architecture.slam.process,
- org.ietr.dftools.architecture.slam.serialize,
- org.ietr.dftools.architecture.utils
+Export-Package: org.preesm.model.slam,
+ org.preesm.model.slam.attributes,
+ org.preesm.model.slam.attributes.impl,
+ org.preesm.model.slam.attributes.util,
+ org.preesm.model.slam.component,
+ org.preesm.model.slam.component.impl,
+ org.preesm.model.slam.component.util,
+ org.preesm.model.slam.impl,
+ org.preesm.model.slam.link,
+ org.preesm.model.slam.link.impl,
+ org.preesm.model.slam.link.util,
+ org.preesm.model.slam.process,
+ org.preesm.model.slam.route,
+ org.preesm.model.slam.serialize,
+ org.preesm.model.slam.util,
+ org.preesm.model.slam.utils
 Require-Bundle: org.eclipse.core.runtime,
  org.eclipse.emf.ecore;visibility:=reexport,
  org.eclipse.xtext.xbase.lib,
  org.eclipse.emf.ecore.xcore.lib,
  org.preesm.model.slam;visibility:=reexport,
- org.preesm.commons;visibility:=reexport
+ org.preesm.commons;visibility:=reexport,
+ org.preesm.workflow;visibility:=reexport
 Bundle-ActivationPolicy: lazy
 Bundle-Vendor: %providerName

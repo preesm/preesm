@@ -41,66 +41,62 @@
 <?eclipse version="3.2"?>
 
 <plugin>
+
    <extension
          point="org.preesm.workflow.scenarios">
       <scenario
             id="org.ietr.preesm.scenario.task"
-            type="org.ietr.preesm.core.workflow.AlgorithmAndArchitectureScenarioNode">
+            type="org.preesm.scenario.workflow.AlgorithmAndArchitectureScenarioNode">
          <outputs>
             <output
                   id="scenario"
-                  object="org.ietr.preesm.core.scenario.PreesmScenario">
-            </output>
-            <output
-                  id="SDF"
-                  object="org.ietr.dftools.algorithm.model.sdf.SDFGraph">
+                  object="org.preesm.scenario.PreesmScenario">
             </output>
             <output
                   id="architecture"
-                  object="org.ietr.dftools.architecture.slam.Design">
+                  object="org.preesm.model.slam.Design">
             </output>
             <output
                   id="PiMM"
-                  object="org.ietr.preesm.experiment.model.pimm.PiGraph">
+                  object="org.preesm.model.pisdf.PiGraph">
             </output>
          </outputs>
       </scenario>
    </extension>
 
-
    <extension
          point="org.preesm.workflow.tasks">
-         
+
       <task
             id="org.ietr.preesm.Clustering"
             name="Clustering"
-            type="org.ietr.preesm.clustering.Clustering">
+            type="org.preesm.algorithm.clustering.Clustering">
          <inputs>
             <input
                   id="SDF"
-                  object="org.ietr.dftools.algorithm.model.sdf.SDFGraph">
+                  object="org.preesm.algorithm.model.sdf.SDFGraph">
             </input>
             <input
                   id="scenario"
-                  object="org.ietr.preesm.core.scenario.PreesmScenario">
+                  object="org.preesm.scenario.PreesmScenario">
             </input>
             <input
                   id="architecture"
-                  object="org.ietr.dftools.architecture.slam.Design">
+                  object="org.preesm.model.slam.Design">
             </input>
          </inputs>
          <outputs>
             <output
                   id="SDF"
-                  object="org.ietr.dftools.algorithm.model.sdf.SDFGraph">
+                  object="org.preesm.algorithm.model.sdf.SDFGraph">
             </output>
          </outputs>
       </task>
-      
+
       <task
             id="org.ietr.preesm.memory.bounds.MemoryBoundsEstimator"
             name="Memory Bounds Estimator"
-            type="org.ietr.preesm.memory.bounds.MemoryBoundsEstimator">
+            type="org.preesm.algorithm.memory.bounds.MemoryBoundsEstimator">
          <outputs>
             <output
                   id="BoundMin"
@@ -112,41 +108,41 @@
             </output>
             <output
                   id="MemEx"
-                  object="org.ietr.preesm.memory.exclusiongraph.MemoryExclusionGraph">
+                  object="org.preesm.algorithm.memory.exclusiongraph.MemoryExclusionGraph">
             </output>
          </outputs>
          <inputs>
             <input
                   id="MemEx"
-                  object="org.ietr.preesm.memory.exclusiongraph.MemoryExclusionGraph">
+                  object="org.preesm.algorithm.memory.exclusiongraph.MemoryExclusionGraph">
             </input>
          </inputs>
       </task>
       <task
             id="org.ietr.preesm.memory.exclusiongraph.MemoryExclusionGraphBuilder"
             name="Memory Exclusion Graph Builder"
-            type="org.ietr.preesm.memory.exclusiongraph.MemoryExclusionGraphBuilder">
+            type="org.preesm.algorithm.memory.exclusiongraph.MemoryExclusionGraphBuilder">
          <inputs>
             <input
                   id="DAG"
-                  object="org.ietr.dftools.algorithm.model.dag.DirectedAcyclicGraph">
+                  object="org.preesm.algorithm.model.dag.DirectedAcyclicGraph">
             </input>
             <input
                   id="scenario"
-                  object="org.ietr.preesm.core.scenario.PreesmScenario">
+                  object="org.preesm.scenario.PreesmScenario">
             </input>
          </inputs>
          <outputs>
             <output
                   id="MemEx"
-                  object="org.ietr.preesm.memory.exclusiongraph.MemoryExclusionGraph">
+                  object="org.preesm.algorithm.memory.exclusiongraph.MemoryExclusionGraph">
             </output>
          </outputs>
       </task>
       <task
             id="org.ietr.preesm.memory.bounds.SerialMemoryBoundsEstimator"
             name="Serial Memory Bounds Estimator"
-            type="org.ietr.preesm.memory.bounds.SerialMemoryBoundsEstimator">
+            type="org.preesm.algorithm.memory.bounds.SerialMemoryBoundsEstimator">
          <inputs>
             <input
                   id="MEGs"
@@ -157,32 +153,32 @@
       <task
             id="org.ietr.preesm.memory.exclusiongraph.MemExUpdater"
             name="MemEx Updater"
-            type="org.ietr.preesm.memory.exclusiongraph.MemExUpdater">
+            type="org.preesm.algorithm.memory.exclusiongraph.MemExUpdater">
          <inputs>
             <input
                   id="DAG"
-                  object="org.ietr.dftools.algorithm.model.dag.DirectedAcyclicGraph">
+                  object="org.preesm.algorithm.model.dag.DirectedAcyclicGraph">
             </input>
             <input
                   id="MemEx"
-                  object="org.ietr.preesm.memory.exclusiongraph.MemoryExclusionGraph">
+                  object="org.preesm.algorithm.memory.exclusiongraph.MemoryExclusionGraph">
             </input>
          </inputs>
          <outputs>
             <output
                   id="MemEx"
-                  object="org.ietr.preesm.memory.exclusiongraph.MemoryExclusionGraph">
+                  object="org.preesm.algorithm.memory.exclusiongraph.MemoryExclusionGraph">
             </output>
          </outputs>
       </task>
       <task
             id="org.ietr.preesm.memory.allocation.MemoryAllocatorTask"
             name="Memory Allocator"
-            type="org.ietr.preesm.memory.allocation.MemoryAllocatorTask">
+            type="org.preesm.algorithm.memory.allocation.MemoryAllocatorTask">
          <inputs>
             <input
                   id="MemEx"
-                  object="org.ietr.preesm.memory.exclusiongraph.MemoryExclusionGraph">
+                  object="org.preesm.algorithm.memory.exclusiongraph.MemoryExclusionGraph">
             </input>
          </inputs>
          <outputs>
@@ -195,36 +191,36 @@
       <task
             id="org.ietr.preesm.memory.script.MemoryScriptTask"
             name="Memory Script Runner"
-            type="org.ietr.preesm.memory.script.MemoryScriptTask">
+            type="org.preesm.algorithm.memory.script.MemoryScriptTask">
          <inputs>
             <input
                   id="MemEx"
-                  object="org.ietr.preesm.memory.exclusiongraph.MemoryExclusionGraph">
+                  object="org.preesm.algorithm.memory.exclusiongraph.MemoryExclusionGraph">
             </input>
             <input
                   id="DAG"
-                  object="org.ietr.dftools.algorithm.model.dag.DirectedAcyclicGraph">
+                  object="org.preesm.algorithm.model.dag.DirectedAcyclicGraph">
             </input>
             <input
                   id="scenario"
-                  object="org.ietr.preesm.core.scenario.PreesmScenario">
+                  object="org.preesm.scenario.PreesmScenario">
             </input>
          </inputs>
          <outputs>
             <output
                   id="MemEx"
-                  object="org.ietr.preesm.memory.exclusiongraph.MemoryExclusionGraph">
+                  object="org.preesm.algorithm.memory.exclusiongraph.MemoryExclusionGraph">
             </output>
          </outputs>
       </task>
       <task
             id="org.ietr.preesm.memory.distributed.MapperTask"
             name="Memory Exclusion Graph Mapper"
-            type="org.ietr.preesm.memory.distributed.MapperTask">
+            type="org.preesm.algorithm.memory.distributed.MapperTask">
          <inputs>
             <input
                   id="MemEx"
-                  object="org.ietr.preesm.memory.exclusiongraph.MemoryExclusionGraph">
+                  object="org.preesm.algorithm.memory.exclusiongraph.MemoryExclusionGraph">
             </input>
          </inputs>
          <outputs>
@@ -237,186 +233,156 @@
 
 
       <task
-            id="org.ietr.preesm.plugin.architransfo.transforms.ArchitectureExporter"
-            name="Architecture exporter"
-            type="org.ietr.preesm.architecture.transforms.ArchitectureExporter">
-         <inputs>
-            <input
-                  id="architecture"
-                  object="org.ietr.dftools.architecture.slam.Design">
-            </input>
-         </inputs>
-      </task>
-      <task
             id="org.ietr.preesm.archi.slam.flattening"
             name="Slam Hierarchy Flattening"
-            type="org.ietr.preesm.architecture.slam.SlamHierarchyFlattening">
+            type="org.preesm.architecture.slam.SlamHierarchyFlattening">
          <inputs>
             <input
                   id="architecture"
-                  object="org.ietr.dftools.architecture.slam.Design">
+                  object="org.preesm.model.slam.Design">
             </input>
          </inputs>
          <outputs>
             <output
                   id="architecture"
-                  object="org.ietr.dftools.architecture.slam.Design">
+                  object="org.preesm.model.slam.Design">
             </output>
          </outputs>
       </task>
 
       <task
-            id="org.ietr.preesm.pimm.algorithm.spider.codegen.SpiderCodegenTask"
-            name="Spider Codegen from PiMM Models Task"
-            type="org.ietr.preesm.pimm.algorithm.spider.codegen.SpiderCodegenTask">
-         <inputs>
-            <input
-                  id="PiMM"
-                  object="org.ietr.preesm.experiment.model.pimm.PiGraph">
-            </input>
-            <input
-                  id="scenario"
-                  object="org.ietr.preesm.core.scenario.PreesmScenario">
-            </input>
-            <input
-                  id="architecture"
-                  object="org.ietr.dftools.architecture.slam.Design">
-            </input>
-         </inputs>
-      </task>
-      <task
             id="org.ietr.preesm.experiment.pimm2sdf.StaticPiMM2SDFTask"
             name="Static PiMM to SDF transformation"
-            type="org.ietr.preesm.pimm.algorithm.pimm2sdf.StaticPiMM2SDFTask">
+            type="org.preesm.algorithm.pisdf.pimm2sdf.StaticPiMM2SDFTask">
          <inputs>
             <input
                   id="PiMM"
-                  object="org.ietr.preesm.experiment.model.pimm.PiGraph">
+                  object="org.preesm.model.pisdf.PiGraph">
             </input>
             <input
                   id="scenario"
-                  object="org.ietr.preesm.core.scenario.PreesmScenario">
+                  object="org.preesm.scenario.PreesmScenario">
             </input>
          </inputs>
          <outputs>
             <output
                   id="SDF"
-                  object="org.ietr.dftools.algorithm.model.sdf.SDFGraph">
+                  object="org.preesm.algorithm.model.sdf.SDFGraph">
             </output>
          </outputs>
       </task>
       <task
             id="org.ietr.preesm.experiment.pimm.subgraph.connector.SubgraphConnectorTask"
             name="PiMM Subgraph Connector Task"
-            type="org.ietr.preesm.pimm.algorithm.subgraph.connector.SubgraphConnectorTask">
+            type="org.preesm.algorithm.pisdf.subgraph.connector.SubgraphConnectorTask">
          <inputs>
             <input
                   id="PiMM"
-                  object="org.ietr.preesm.experiment.model.pimm.PiGraph">
+                  object="org.preesm.model.pisdf.PiGraph">
             </input>
          </inputs>
          <outputs>
             <output
                   id="PiMM"
-                  object="org.ietr.preesm.experiment.model.pimm.PiGraph"></output>
+                  object="org.preesm.model.pisdf.PiGraph"></output>
          </outputs>
       </task>
       <task
             id="org.ietr.preesm.experiment.model.transformation.taskExpression"
             name="PREESM PiSDF Stats Printer"
-            type="org.ietr.preesm.pimm.algorithm.stats.printer.PrintPISDFStats">
+            type="org.preesm.algorithm.pisdf.stats.printer.PrintPISDFStats">
          <inputs>
             <input
                   id="PiMM"
-                  object="org.ietr.preesm.experiment.model.pimm.PiGraph">
+                  object="org.preesm.model.pisdf.PiGraph">
             </input>
          </inputs>
       </task>
       <task
             id="org.ietr.preesm.pimm.checker.task.PiMMAlgorithmCheckerTask"
             name="PiMM Checker"
-            type="org.ietr.preesm.pimm.algorithm.checker.task.PiMMAlgorithmCheckerTask">
+            type="org.preesm.algorithm.pisdf.checker.task.PiMMAlgorithmCheckerTask">
          <inputs>
             <input
                   id="PiMM"
-                  object="org.ietr.preesm.experiment.model.pimm.PiGraph">
+                  object="org.preesm.model.pisdf.PiGraph">
             </input>
          </inputs>
          <outputs>
             <output
                   id="PiMM"
-                  object="org.ietr.preesm.experiment.model.pimm.PiGraph">
+                  object="org.preesm.model.pisdf.PiGraph">
             </output>
          </outputs>
       </task>
       <task
             id="org.ietr.preesm.experiment.pimm2srdag.StaticPiMM2SrDAGTask"
             name="Static PiMM to Single-Rate DAG transformation"
-            type="org.ietr.preesm.pimm.algorithm.pimm2srdag.StaticPiMM2SrDAGTask">
+            type="org.preesm.algorithm.pisdf.pimm2srdag.StaticPiMM2SrDAGTask">
          <inputs>
             <input
                   id="PiMM"
-                  object="org.ietr.preesm.experiment.model.pimm.PiGraph">
+                  object="org.preesm.model.pisdf.PiGraph">
             </input>
             <input
                   id="scenario"
-                  object="org.ietr.preesm.core.scenario.PreesmScenario">
+                  object="org.preesm.scenario.PreesmScenario">
             </input>
             <input
                   id="architecture"
-                  object="org.ietr.dftools.architecture.slam.Design">
+                  object="org.preesm.model.slam.Design">
             </input>
          </inputs>
          <outputs>
             <output
                   id="DAG"
-                  object="org.ietr.dftools.algorithm.model.dag.DirectedAcyclicGraph">
+                  object="org.preesm.algorithm.model.dag.DirectedAcyclicGraph">
             </output>
          </outputs>
       </task>
       <task
             id="org.ietr.preesm.pimm.algorithm.pimm2flat.StaticPiMM2FlatPiMMTask"
             name="Static PiMM to Flat PiMM transformation"
-            type="org.ietr.preesm.pimm.algorithm.pimm2flat.StaticPiMM2FlatPiMMTask">
+            type="org.preesm.algorithm.pisdf.pimm2flat.StaticPiMM2FlatPiMMTask">
          <inputs>
             <input
                   id="PiMM"
-                  object="org.ietr.preesm.experiment.model.pimm.PiGraph">
+                  object="org.preesm.model.pisdf.PiGraph">
             </input>
             <input
                   id="scenario"
-                  object="org.ietr.preesm.core.scenario.PreesmScenario">
+                  object="org.preesm.scenario.PreesmScenario">
             </input>
          </inputs>
          <outputs>
             <output
                   id="PiMM"
-                  object="org.ietr.preesm.experiment.model.pimm.PiGraph">
+                  object="org.preesm.model.pisdf.PiGraph">
             </output>
          </outputs>
       </task>
       <task
             id="org.ietr.preesm.pimm.algorithm.checker.periods.PeriodsPreschedulingChecker"
             name="Periods Prescheduling Checker"
-            type="org.ietr.preesm.pimm.algorithm.checker.periods.PeriodsPreschedulingChecker">
+            type="org.preesm.algorithm.pisdf.checker.periods.PeriodsPreschedulingChecker">
          <inputs>
             <input
                   id="PiMM"
-                  object="org.ietr.preesm.experiment.model.pimm.PiGraph">
+                  object="org.preesm.model.pisdf.PiGraph">
             </input>
             <input
                   id="scenario"
-                  object="org.ietr.preesm.core.scenario.PreesmScenario">
+                  object="org.preesm.scenario.PreesmScenario">
             </input>
             <input
                   id="architecture"
-                  object="org.ietr.dftools.architecture.slam.Design">
+                  object="org.preesm.model.slam.Design">
             </input>
          </inputs>
          <outputs>
             <output
                   id="PiMM"
-                  object="org.ietr.preesm.experiment.model.pimm.PiGraph">
+                  object="org.preesm.model.pisdf.PiGraph">
             </output>
          </outputs>
       </task>
@@ -425,167 +391,156 @@
       <task
             id="org.ietr.preesm.plugin.exportXml.sdf4jgml"
             name="SDF4J GML Exporter "
-            type="org.ietr.preesm.algorithm.exportXml.SDFExporter">
+            type="org.preesm.algorithm.io.xml.SDFExporter">
          <inputs>
             <input
                   id="SDF"
-                  object="org.ietr.dftools.algorithm.model.sdf.SDFGraph">
+                  object="org.preesm.algorithm.model.sdf.SDFGraph">
             </input>
          </inputs>
       </task>
       <task
             id="org.ietr.preesm.plugin.transforms.sdf2hsdf"
             name="SDF2HSDF"
-            type="org.ietr.preesm.algorithm.transforms.HSDFTransformation">
+            type="org.preesm.algorithm.transforms.HSDFTransformation">
          <inputs>
             <input
                   id="SDF"
-                  object="org.ietr.dftools.algorithm.model.sdf.SDFGraph">
+                  object="org.preesm.algorithm.model.sdf.SDFGraph">
             </input>
          </inputs>
          <outputs>
             <output
                   id="SDF"
-                  object="org.ietr.dftools.algorithm.model.sdf.SDFGraph">
+                  object="org.preesm.algorithm.model.sdf.SDFGraph">
             </output>
          </outputs>
       </task>
       <task
             id="org.ietr.preesm.plugin.transforms.flathierarchy"
             name="Hierarchy flattening"
-            type="org.ietr.preesm.algorithm.transforms.HierarchyFlattening">
+            type="org.preesm.algorithm.transforms.HierarchyFlattening">
          <inputs>
             <input
                   id="SDF"
-                  object="org.ietr.dftools.algorithm.model.sdf.SDFGraph">
+                  object="org.preesm.algorithm.model.sdf.SDFGraph">
             </input>
          </inputs>
          <outputs>
             <output
                   id="SDF"
-                  object="org.ietr.dftools.algorithm.model.sdf.SDFGraph">
+                  object="org.preesm.algorithm.model.sdf.SDFGraph">
             </output>
          </outputs>
       </task>
       <task
             id="org.ietr.preesm.algorithm.randomsdf.RandomSDF"
             name="Random SDF Generator"
-            type="org.ietr.preesm.algorithm.randomsdf.RandomSDF">
+            type="org.preesm.algorithm.randomsdf.RandomSDF">
          <inputs>
             <input
                   id="SDF"
-                  object="org.ietr.dftools.algorithm.model.sdf.SDFGraph">
+                  object="org.preesm.algorithm.model.sdf.SDFGraph">
             </input>
             <input
                   id="scenario"
-                  object="org.ietr.preesm.core.scenario.PreesmScenario">
+                  object="org.preesm.scenario.PreesmScenario">
             </input>
             <input
                   id="architecture"
-                  object="org.ietr.dftools.architecture.slam.Design">
+                  object="org.preesm.model.slam.Design">
             </input>
          </inputs>
          <outputs>
             <output
                   id="SDF"
-                  object="org.ietr.dftools.algorithm.model.sdf.SDFGraph">
+                  object="org.preesm.algorithm.model.sdf.SDFGraph">
             </output>
             <output
                   id="scenario"
-                  object="org.ietr.preesm.core.scenario.PreesmScenario">
+                  object="org.preesm.scenario.PreesmScenario">
             </output>
          </outputs>
       </task>
       <task
             id="org.ietr.preesm.algorithm.importSdf3Xml.Sdf3Importer"
             name="SDF3 Importer"
-            type="org.ietr.preesm.algorithm.importSdf3Xml.Sdf3Importer">
+            type="org.preesm.algorithm.io.sdf3.Sdf3Importer">
          <outputs>
             <output
                   id="SDF"
-                  object="org.ietr.dftools.algorithm.model.sdf.SDFGraph">
+                  object="org.preesm.algorithm.model.sdf.SDFGraph">
             </output>
             <output
                   id="scenario"
-                  object="org.ietr.preesm.core.scenario.PreesmScenario">
+                  object="org.preesm.scenario.PreesmScenario">
             </output>
          </outputs>
          <inputs>
             <input
                   id="scenario"
-                  object="org.ietr.preesm.core.scenario.PreesmScenario">
+                  object="org.preesm.scenario.PreesmScenario">
             </input>
             <input
                   id="architecture"
-                  object="org.ietr.dftools.architecture.slam.Design">
+                  object="org.preesm.model.slam.Design">
             </input>
          </inputs>
       </task>
       <task
             id="org.ietr.preesm.algorithm.exportSdf3Xml.Sdf3Exporter"
             name="SDF3 Exporter"
-            type="org.ietr.preesm.algorithm.exportSdf3Xml.Sdf3Exporter">
+            type="org.preesm.algorithm.io.sdf3.Sdf3ExporterTask">
          <inputs>
             <input
                   id="scenario"
-                  object="org.ietr.preesm.core.scenario.PreesmScenario">
+                  object="org.preesm.scenario.PreesmScenario">
             </input>
             <input
                   id="SDF"
-                  object="org.ietr.dftools.algorithm.model.sdf.SDFGraph">
+                  object="org.preesm.algorithm.model.sdf.SDFGraph">
             </input>
             <input
                   id="architecture"
-                  object="org.ietr.dftools.architecture.slam.Design">
+                  object="org.preesm.model.slam.Design">
             </input>
          </inputs>
       </task>
       <task
             id="org.ietr.preesm.algorithm.transforms.IterateAlgorithm"
             name="Algorithm Iterator"
-            type="org.ietr.preesm.algorithm.transforms.IterateAlgorithm">
+            type="org.preesm.algorithm.transforms.IterateAlgorithm">
          <inputs>
             <input
                   id="SDF"
-                  object="org.ietr.dftools.algorithm.model.sdf.SDFGraph">
+                  object="org.preesm.algorithm.model.sdf.SDFGraph">
             </input>
          </inputs>
          <outputs>
             <output
                   id="SDF"
-                  object="org.ietr.dftools.algorithm.model.sdf.SDFGraph">
+                  object="org.preesm.algorithm.model.sdf.SDFGraph">
             </output>
          </outputs>
       </task>
       <task
-            id="org.ietr.preesm.algorithm.exportXml.pimm2xml"
-            name="PiSDFExporter"
-            type="org.ietr.preesm.algorithm.exportXml.PiSDFExporter">
-         <inputs>
-            <input
-                  id="PiMM"
-                  object="org.ietr.preesm.experiment.model.pimm.PiGraph">
-            </input>
-         </inputs>
-      </task>
-      <task
             id="org.ietr.preesm.evaluator.PeriodicEvaluator"
             name="Periodic Schedule Evaluation"
-            type="org.ietr.preesm.evaluator.PeriodicEvaluator">
+            type="org.preesm.evaluator.PeriodicEvaluator">
          <inputs>
             <input
                   id="SDF"
-                  object="org.ietr.dftools.algorithm.model.sdf.SDFGraph">
+                  object="org.preesm.algorithm.model.sdf.SDFGraph">
             </input>
             <input
                   id="scenario"
-                  object="org.ietr.preesm.core.scenario.PreesmScenario">
+                  object="org.preesm.scenario.PreesmScenario">
             </input>
          </inputs>
          <outputs>
             <output
                   id="SDF"
-                  object="org.ietr.dftools.algorithm.model.sdf.SDFGraph">
+                  object="org.preesm.algorithm.model.sdf.SDFGraph">
             </output>
             <output
                   id="Throughput"
@@ -596,25 +551,25 @@
       <task
             id="org.ietr.preesm.throughput.ThroughputPlugin"
             name="Throughput Evaluation"
-            type="org.ietr.preesm.throughput.ThroughputEvaluationTask">
+            type="org.preesm.algorithm.throughput.ThroughputEvaluationTask">
          <inputs>
             <input
                   id="SDF"
-                  object="org.ietr.dftools.algorithm.model.sdf.SDFGraph">
+                  object="org.preesm.algorithm.model.sdf.SDFGraph">
             </input>
             <input
                   id="scenario"
-                  object="org.ietr.preesm.core.scenario.PreesmScenario">
+                  object="org.preesm.scenario.PreesmScenario">
             </input>
          </inputs>
          <outputs>
             <output
                   id="SDF"
-                  object="org.ietr.dftools.algorithm.model.sdf.SDFGraph">
+                  object="org.preesm.algorithm.model.sdf.SDFGraph">
             </output>
             <output
                   id="scenario"
-                  object="org.ietr.preesm.core.scenario.PreesmScenario">
+                  object="org.preesm.scenario.PreesmScenario">
             </output>
             <output
                   id="throughput"
@@ -625,25 +580,25 @@
       <task
             id="org.ietr.preesm.latency.LatencyEvaluationPlugin"
             name="Latency Evaluation"
-            type="org.ietr.preesm.latency.LatencyEvaluationTask">
+            type="org.preesm.latency.LatencyEvaluationTask">
          <inputs>
             <input
                   id="SDF"
-                  object="org.ietr.dftools.algorithm.model.sdf.SDFGraph">
+                  object="org.preesm.algorithm.model.sdf.SDFGraph">
             </input>
             <input
                   id="scenario"
-                  object="org.ietr.preesm.core.scenario.PreesmScenario">
+                  object="org.preesm.scenario.PreesmScenario">
             </input>
          </inputs>
          <outputs>
             <output
                   id="SDF"
-                  object="org.ietr.dftools.algorithm.model.sdf.SDFGraph">
+                  object="org.preesm.algorithm.model.sdf.SDFGraph">
             </output>
             <output
                   id="scenario"
-                  object="org.ietr.preesm.core.scenario.PreesmScenario">
+                  object="org.preesm.scenario.PreesmScenario">
             </output>
             <output
                   id="latency"
@@ -654,47 +609,47 @@
       <task
             id="org.ietr.preesm.latency.LatencyExplorationPlugin"
             name="Latency Exploration"
-            type="org.ietr.preesm.latency.LatencyExplorationTask">
+            type="org.preesm.latency.LatencyExplorationTask">
       </task>
 
 
       <task
             id="org.ietr.preesm.mapper.getpimm"
             name="GetPiMM"
-            type="org.ietr.preesm.mapper.GetPiMMFromDAGTask">
+            type="org.preesm.algorithm.mapper.GetPiMMFromDAGTask">
          <inputs>
             <input
                   id="DAG"
-                  object="org.ietr.dftools.algorithm.model.dag.DirectedAcyclicGraph">
+                  object="org.preesm.algorithm.model.dag.DirectedAcyclicGraph">
             </input>
          </inputs>
          <outputs>
             <output
                   id="PiMM"
-                  object="org.ietr.preesm.experiment.model.pimm.PiGraph">
+                  object="org.preesm.model.pisdf.PiGraph">
             </output>
          </outputs>
       </task>
       <task
             id="org.ietr.preesm.plugin.mapper.exporter.ImplExportTransform"
             name="Implementation Exporter"
-            type="org.ietr.preesm.mapper.exporter.ImplExportTransform">
+            type="org.preesm.algorithm.mapper.exporter.ImplExportTransform">
          <inputs>
             <input
                   id="SDF"
-                  object="org.ietr.dftools.algorithm.model.sdf.SDFGraph">
+                  object="org.preesm.algorithm.model.sdf.SDFGraph">
             </input>
             <input
                   id="scenario"
-                  object="org.ietr.preesm.core.scenario.PreesmScenario">
+                  object="org.preesm.scenario.PreesmScenario">
             </input>
             <input
                   id="DAG"
-                  object="org.ietr.dftools.algorithm.model.dag.DirectedAcyclicGraph">
+                  object="org.preesm.algorithm.model.dag.DirectedAcyclicGraph">
             </input>
             <input
                   id="architecture"
-                  object="org.ietr.dftools.architecture.slam.Design">
+                  object="org.preesm.model.slam.Design">
             </input>
          </inputs>
          <outputs>
@@ -707,7 +662,7 @@
       <task
             id="org.ietr.preesm.XsltTransform"
             name="Xslt file transformation"
-            type="org.ietr.preesm.mapper.exporter.XsltTransform">
+            type="org.preesm.algorithm.mapper.exporter.XsltTransform">
          <inputs>
             <input
                   id="xml"
@@ -724,147 +679,147 @@
       <task
             id="org.ietr.preesm.plugin.mapper.fast"
             name="Kwok FAST algorithm"
-            type="org.ietr.preesm.mapper.FASTMapping">
+            type="org.preesm.algorithm.mapper.FASTMapping">
          <inputs>
             <input
                   id="SDF"
-                  object="org.ietr.dftools.algorithm.model.sdf.SDFGraph">
+                  object="org.preesm.algorithm.model.sdf.SDFGraph">
             </input>
             <input
                   id="architecture"
-                  object="org.ietr.dftools.architecture.slam.Design">
+                  object="org.preesm.model.slam.Design">
             </input>
             <input
                   id="scenario"
-                  object="org.ietr.preesm.core.scenario.PreesmScenario">
+                  object="org.preesm.scenario.PreesmScenario">
             </input>
          </inputs>
          <outputs>
             <output
                   id="DAG"
-                  object="org.ietr.dftools.algorithm.model.dag.DirectedAcyclicGraph">
+                  object="org.preesm.algorithm.model.dag.DirectedAcyclicGraph">
             </output>
             <output
                   id="ABC"
-                  object="org.ietr.preesm.mapper.abc.impl.latency.LatencyAbc">
+                  object="org.preesm.algorithm.mapper.abc.impl.latency.LatencyAbc">
             </output>
          </outputs>
       </task>
       <task
             id="org.ietr.preesm.plugin.mapper.pfast"
             name="Kwok PFAST algorithm (parallel version of FAST)"
-            type="org.ietr.preesm.mapper.PFASTMapping">
+            type="org.preesm.algorithm.mapper.PFASTMapping">
          <inputs>
             <input
                   id="SDF"
-                  object="org.ietr.dftools.algorithm.model.sdf.SDFGraph">
+                  object="org.preesm.algorithm.model.sdf.SDFGraph">
             </input>
             <input
                   id="architecture"
-                  object="org.ietr.dftools.architecture.slam.Design">
+                  object="org.preesm.model.slam.Design">
             </input>
             <input
                   id="scenario"
-                  object="org.ietr.preesm.core.scenario.PreesmScenario">
+                  object="org.preesm.scenario.PreesmScenario">
             </input>
          </inputs>
          <outputs>
             <output
                   id="DAG"
-                  object="org.ietr.dftools.algorithm.model.dag.DirectedAcyclicGraph">
+                  object="org.preesm.algorithm.model.dag.DirectedAcyclicGraph">
             </output>
             <output
                   id="ABC"
-                  object="org.ietr.preesm.mapper.abc.impl.latency.LatencyAbc">
+                  object="org.preesm.algorithm.mapper.abc.impl.latency.LatencyAbc">
             </output>
          </outputs>
       </task>
       <task
             id="org.ietr.preesm.plugin.mapper.listscheduling"
             name="Kwok list scheduling algorithm"
-            type="org.ietr.preesm.mapper.ListSchedulingMapping">
+            type="org.preesm.algorithm.mapper.ListSchedulingMapping">
          <inputs>
             <input
                   id="architecture"
-                  object="org.ietr.dftools.architecture.slam.Design">
+                  object="org.preesm.model.slam.Design">
             </input>
             <input
                   id="scenario"
-                  object="org.ietr.preesm.core.scenario.PreesmScenario">
+                  object="org.preesm.scenario.PreesmScenario">
             </input>
             <input
                   id="SDF"
-                  object="org.ietr.dftools.algorithm.model.sdf.SDFGraph">
+                  object="org.preesm.algorithm.model.sdf.SDFGraph">
             </input>
          </inputs>
          <outputs>
             <output
                   id="DAG"
-                  object="org.ietr.dftools.algorithm.model.dag.DirectedAcyclicGraph">
+                  object="org.preesm.algorithm.model.dag.DirectedAcyclicGraph">
             </output>
             <output
                   id="ABC"
-                  object="org.ietr.preesm.mapper.abc.impl.latency.LatencyAbc">
+                  object="org.preesm.algorithm.mapper.abc.impl.latency.LatencyAbc">
             </output>
          </outputs>
       </task>
       <task
             id="org.ietr.preesm.plugin.mapper.plot"
             name="Gantt plot transform"
-            type="org.ietr.preesm.mapper.ui.stats.StatEditorTransform">
+            type="org.preesm.algorithm.mapper.ui.stats.StatEditorTransform">
          <inputs>
             <input
                   id="scenario"
-                  object="org.ietr.preesm.core.scenario.PreesmScenario">
+                  object="org.preesm.scenario.PreesmScenario">
             </input>
             <input
                   id="ABC"
-                  object="org.ietr.preesm.mapper.abc.impl.latency.LatencyAbc">
+                  object="org.preesm.algorithm.mapper.abc.impl.latency.LatencyAbc">
             </input>
          </inputs>
       </task>
       <task
             id="org.ietr.preesm.plugin.mapper.scenariogen.ScenarioGenerator"
             name="Scenario Generator"
-            type="org.ietr.preesm.mapper.scenariogen.ScenarioGenerator">
+            type="org.preesm.algorithm.mapper.scenariogen.ScenarioGenerator">
          <outputs>
             <output
                   id="scenario"
-                  object="org.ietr.preesm.core.scenario.PreesmScenario">
+                  object="org.preesm.scenario.PreesmScenario">
             </output>
             <output
                   id="SDF"
-                  object="org.ietr.dftools.algorithm.model.sdf.SDFGraph">
+                  object="org.preesm.algorithm.model.sdf.SDFGraph">
             </output>
             <output
                   id="architecture"
-                  object="org.ietr.dftools.architecture.slam.Design">
+                  object="org.preesm.model.slam.Design">
             </output>
          </outputs>
       </task>
       <task
             id="org.ietr.preesm.mapper.exporter.DAGExportTransform"
             name="DAG Exporter"
-            type="org.ietr.preesm.mapper.exporter.DAGExportTransform">
+            type="org.preesm.algorithm.mapper.exporter.DAGExportTransform">
          <inputs>
             <input
                   id="DAG"
-                  object="org.ietr.dftools.algorithm.model.dag.DirectedAcyclicGraph">
+                  object="org.preesm.algorithm.model.dag.DirectedAcyclicGraph">
             </input>
          </inputs>
       </task>
       <task
             id="org.ietr.preesm.stats.exporter.StatsExporterTask"
             name="Preesm Stats Exporter"
-            type="org.ietr.preesm.mapper.stats.exporter.StatsExporterTask">
+            type="org.preesm.algorithm.mapper.stats.exporter.StatsExporterTask">
          <inputs>
             <input
                   id="ABC"
-                  object="org.ietr.preesm.mapper.abc.impl.latency.LatencyAbc">
+                  object="org.preesm.algorithm.mapper.abc.impl.latency.LatencyAbc">
             </input>
             <input
                   id="scenario"
-                  object="org.ietr.preesm.core.scenario.PreesmScenario">
+                  object="org.preesm.scenario.PreesmScenario">
             </input>
          </inputs>
       </task>
@@ -873,203 +828,203 @@
       <task
             id="org.ietr.preesm.algorithm.moa.activity.ActivityExporter"
             name="Activity Exporter of Tokens and Quanta"
-            type="org.ietr.preesm.algorithm.moa.activity.ActivityExporter">
+            type="org.preesm.algorithm.moa.activity.ActivityExporter">
          <inputs>
             <input
                   id="ABC"
-                  object="org.ietr.preesm.mapper.abc.impl.latency.LatencyAbc">
+                  object="org.preesm.algorithm.mapper.abc.impl.latency.LatencyAbc">
             </input>
          </inputs>
       </task>
       <task
             id="org.ietr.preesm.algorithm.moa.activity.CustomQuantaExporter"
             name="Activity Exporter of Custom Quanta"
-            type="org.ietr.preesm.algorithm.moa.activity.CustomQuantaExporter">
+            type="org.preesm.algorithm.moa.activity.CustomQuantaExporter">
          <inputs>
             <input
                   id="ABC"
-                  object="org.ietr.preesm.mapper.abc.impl.latency.LatencyAbc">
+                  object="org.preesm.algorithm.mapper.abc.impl.latency.LatencyAbc">
             </input>
          </inputs>
       </task>
       <task
             id="org.ietr.preesm.algorithm.moa.activity.MonoActivityExporter"
             name="Activity Exporter of Tokens and Quanta for a single ABC"
-            type="org.ietr.preesm.algorithm.moa.activity.MonoActivityExporter">
+            type="org.preesm.algorithm.moa.activity.MonoActivityExporter">
          <inputs>
             <input
                   id="ABC"
-                  object="org.ietr.preesm.mapper.abc.impl.latency.LatencyAbc">
+                  object="org.preesm.algorithm.mapper.abc.impl.latency.LatencyAbc">
             </input>
          </inputs>
       </task>
       <task
             id="org.ietr.preesm.mapper.SDF2DAGTransformation"
             name="Single rate SDF to DAG Transformation"
-            type="org.ietr.preesm.mapper.graphtransfo.SDF2DAGTransformation">
+            type="org.preesm.algorithm.mapper.graphtransfo.SDF2DAGTransformation">
          <inputs>
             <input
                   id="SDF"
-                  object="org.ietr.dftools.algorithm.model.sdf.SDFGraph">
+                  object="org.preesm.algorithm.model.sdf.SDFGraph">
             </input>
             <input
                   id="scenario"
-                  object="org.ietr.preesm.core.scenario.PreesmScenario">
+                  object="org.preesm.scenario.PreesmScenario">
             </input>
             <input
                   id="architecture"
-                  object="org.ietr.dftools.architecture.slam.Design">
+                  object="org.preesm.model.slam.Design">
             </input>
          </inputs>
          <outputs>
             <output
                   id="DAG"
-                  object="org.ietr.dftools.algorithm.model.dag.DirectedAcyclicGraph">
+                  object="org.preesm.algorithm.model.dag.DirectedAcyclicGraph">
             </output>
          </outputs>
       </task>
       <task
             id="org.ietr.preesm.plugin.mapper.listschedulingfromdag"
             name="List scheduling algorithm (DAG)"
-            type="org.ietr.preesm.mapper.ListSchedulingMappingFromDAG">
+            type="org.preesm.algorithm.mapper.ListSchedulingMappingFromDAG">
          <inputs>
             <input
                   id="scenario"
-                  object="org.ietr.preesm.core.scenario.PreesmScenario">
+                  object="org.preesm.scenario.PreesmScenario">
             </input>
             <input
                   id="architecture"
-                  object="org.ietr.dftools.architecture.slam.Design">
+                  object="org.preesm.model.slam.Design">
             </input>
             <input
                   id="DAG"
-                  object="org.ietr.dftools.algorithm.model.dag.DirectedAcyclicGraph">
+                  object="org.preesm.algorithm.model.dag.DirectedAcyclicGraph">
             </input>
          </inputs>
          <outputs>
             <output
                   id="DAG"
-                  object="org.ietr.dftools.algorithm.model.dag.DirectedAcyclicGraph">
+                  object="org.preesm.algorithm.model.dag.DirectedAcyclicGraph">
             </output>
             <output
                   id="ABC"
-                  object="org.ietr.preesm.mapper.abc.impl.latency.LatencyAbc">
+                  object="org.preesm.algorithm.mapper.abc.impl.latency.LatencyAbc">
             </output>
          </outputs>
       </task>
       <task
             id="org.ietr.preesm.plugin.mapper.pfastdag"
             name="PFAST algorithm (parallel version of FAST) (DAG)"
-            type="org.ietr.preesm.mapper.PFASTMappingFromDAG">
+            type="org.preesm.algorithm.mapper.PFASTMappingFromDAG">
          <inputs>
             <input
                   id="architecture"
-                  object="org.ietr.dftools.architecture.slam.Design">
+                  object="org.preesm.model.slam.Design">
             </input>
             <input
                   id="scenario"
-                  object="org.ietr.preesm.core.scenario.PreesmScenario">
+                  object="org.preesm.scenario.PreesmScenario">
             </input>
             <input
                   id="DAG"
-                  object="org.ietr.dftools.algorithm.model.dag.DirectedAcyclicGraph">
+                  object="org.preesm.algorithm.model.dag.DirectedAcyclicGraph">
             </input>
          </inputs>
          <outputs>
             <output
                   id="DAG"
-                  object="org.ietr.dftools.algorithm.model.dag.DirectedAcyclicGraph">
+                  object="org.preesm.algorithm.model.dag.DirectedAcyclicGraph">
             </output>
             <output
                   id="ABC"
-                  object="org.ietr.preesm.mapper.abc.impl.latency.LatencyAbc">
+                  object="org.preesm.algorithm.mapper.abc.impl.latency.LatencyAbc">
             </output>
          </outputs>
       </task>
       <task
             id="org.ietr.preesm.plugin.mapper.fastdag"
             name="FAST algorithm (DAG)"
-            type="org.ietr.preesm.mapper.FASTMappingFromDAG">
+            type="org.preesm.algorithm.mapper.FASTMappingFromDAG">
          <inputs>
             <input
                   id="architecture"
-                  object="org.ietr.dftools.architecture.slam.Design">
+                  object="org.preesm.model.slam.Design">
             </input>
             <input
                   id="scenario"
-                  object="org.ietr.preesm.core.scenario.PreesmScenario">
+                  object="org.preesm.scenario.PreesmScenario">
             </input>
             <input
                   id="DAG"
-                  object="org.ietr.dftools.algorithm.model.dag.DirectedAcyclicGraph">
+                  object="org.preesm.algorithm.model.dag.DirectedAcyclicGraph">
             </input>
          </inputs>
          <outputs>
             <output
                   id="DAG"
-                  object="org.ietr.dftools.algorithm.model.dag.DirectedAcyclicGraph">
+                  object="org.preesm.algorithm.model.dag.DirectedAcyclicGraph">
             </output>
             <output
                   id="ABC"
-                  object="org.ietr.preesm.mapper.abc.impl.latency.LatencyAbc">
+                  object="org.preesm.algorithm.mapper.abc.impl.latency.LatencyAbc">
             </output>
          </outputs>
       </task>
       <task
             id="org.ietr.preesm.plugin.mapper.external"
             name="External Scheduler (DAG)"
-            type="org.ietr.preesm.mapper.ExternalMappingFromDAG">
+            type="org.preesm.algorithm.mapper.ExternalMappingFromDAG">
          <inputs>
             <input
                   id="architecture"
-                  object="org.ietr.dftools.architecture.slam.Design">
+                  object="org.preesm.model.slam.Design">
             </input>
             <input
                   id="scenario"
-                  object="org.ietr.preesm.core.scenario.PreesmScenario">
+                  object="org.preesm.scenario.PreesmScenario">
             </input>
             <input
                   id="DAG"
-                  object="org.ietr.dftools.algorithm.model.dag.DirectedAcyclicGraph">
+                  object="org.preesm.algorithm.model.dag.DirectedAcyclicGraph">
             </input>
          </inputs>
          <outputs>
             <output
                   id="DAG"
-                  object="org.ietr.dftools.algorithm.model.dag.DirectedAcyclicGraph">
+                  object="org.preesm.algorithm.model.dag.DirectedAcyclicGraph">
             </output>
             <output
                   id="ABC"
-                  object="org.ietr.preesm.mapper.abc.impl.latency.LatencyAbc">
+                  object="org.preesm.algorithm.mapper.abc.impl.latency.LatencyAbc">
             </output>
          </outputs>
       </task>
       <task
             id="org.ietr.preesm.plugin.mapper.simple"
             name="Main Core Simple Mapping (DAG)"
-            type="org.ietr.preesm.mapper.MainCoreMappingFromDAG">
+            type="org.preesm.algorithm.mapper.MainCoreMappingFromDAG">
          <inputs>
             <input
                   id="architecture"
-                  object="org.ietr.dftools.architecture.slam.Design">
+                  object="org.preesm.model.slam.Design">
             </input>
             <input
                   id="scenario"
-                  object="org.ietr.preesm.core.scenario.PreesmScenario">
+                  object="org.preesm.scenario.PreesmScenario">
             </input>
             <input
                   id="DAG"
-                  object="org.ietr.dftools.algorithm.model.dag.DirectedAcyclicGraph">
+                  object="org.preesm.algorithm.model.dag.DirectedAcyclicGraph">
             </input>
          </inputs>
          <outputs>
             <output
                   id="DAG"
-                  object="org.ietr.dftools.algorithm.model.dag.DirectedAcyclicGraph">
+                  object="org.preesm.algorithm.model.dag.DirectedAcyclicGraph">
             </output>
             <output
                   id="ABC"
-                  object="org.ietr.preesm.mapper.abc.impl.latency.LatencyAbc">
+                  object="org.preesm.algorithm.mapper.abc.impl.latency.LatencyAbc">
             </output>
          </outputs>
       </task>
@@ -1079,21 +1034,21 @@
    <extension
          point="org.eclipse.ui.editors">
       <editor
-            class="org.ietr.preesm.mapper.ui.bestcost.BestCostEditor"
+            class="org.preesm.algorithm.mapper.ui.bestcost.BestCostEditor"
             default="true"
             icon="icons/preesm4mini.PNG"
             id="org.ietr.preesm.plugin.mapper.plot.TimeEditor"
             name="TimeEditor">
       </editor>
       <editor
-            class="org.ietr.preesm.mapper.ui.stats.StatEditor"
+            class="org.preesm.algorithm.mapper.ui.stats.StatEditor"
             default="false"
             icon="icons/preesm2mini.PNG"
             id="org.ietr.preesm.plugin.mapper.plot.stats.StatEditor"
             name="StatEditor">
       </editor>
       <editor
-            class="org.ietr.preesm.mapper.ui.gantt.GanttEditor"
+            class="org.preesm.algorithm.mapper.ui.gantt.GanttEditor"
             default="true"
             icon="icons/preesm3mini.PNG"
             id="org.ietr.preesm.mapper.plot.GanttEditor"

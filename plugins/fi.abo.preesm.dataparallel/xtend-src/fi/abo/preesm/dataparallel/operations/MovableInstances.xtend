@@ -36,22 +36,22 @@
  */
 package fi.abo.preesm.dataparallel.operations
 
+import fi.abo.preesm.dataparallel.CannotRearrange
 import fi.abo.preesm.dataparallel.DAG2DAG
 import fi.abo.preesm.dataparallel.DAGComputationBug
 import fi.abo.preesm.dataparallel.PureDAGConstructor
 import fi.abo.preesm.dataparallel.SDF2DAG
 import fi.abo.preesm.dataparallel.iterator.SubsetTopologicalIterator
+import java.util.ArrayList
 import java.util.List
 import java.util.Map
 import java.util.logging.Level
 import java.util.logging.Logger
 import org.eclipse.xtend.lib.annotations.Accessors
-import org.ietr.dftools.algorithm.model.sdf.SDFAbstractVertex
-import org.ietr.dftools.algorithm.model.sdf.esdf.SDFForkVertex
-import org.ietr.dftools.algorithm.model.sdf.esdf.SDFJoinVertex
-import org.ietr.dftools.algorithm.model.visitors.SDF4JException
-import fi.abo.preesm.dataparallel.CannotRearrange
-import java.util.ArrayList
+import org.preesm.algorithm.model.sdf.SDFAbstractVertex
+import org.preesm.algorithm.model.sdf.esdf.SDFForkVertex
+import org.preesm.algorithm.model.sdf.esdf.SDFJoinVertex
+import org.preesm.algorithm.model.visitors.SDF4JException
 
 /**
  * DAG operation that finds the instances that needs to be moved in the

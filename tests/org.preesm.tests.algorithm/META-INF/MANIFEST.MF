@@ -1,0 +1,15 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: PREESM :: Tests :: Algorithms
+Automatic-Module-Name: org.preesm.tests.algorithm
+Bundle-SymbolicName: org.preesm.tests.algorithm
+Bundle-Version: 2.17.1.qualifier
+Bundle-Vendor: IETR / INSA Rennes - VAADER
+Bundle-RequiredExecutionEnvironment: JavaSE-1.8
+Require-Bundle: org.junit;bundle-version="4.12.0",
+ org.apache.commons.lang3;bundle-version="3.7.0",
+ org.eclipse.core.runtime;bundle-version="3.14.0",
+ org.preesm.algorithm,
+ org.preesm.codegen,
+ org.preesm.codegen.xtend,
+ org.beanshell.bsh;bundle-version="2.1.8"

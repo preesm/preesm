@@ -26,14 +26,14 @@
 
 @Ecore(nsURI="http://org.preesm/model/slam")
 
-package org.ietr.dftools.architecture.slam
+package org.preesm.model.slam
 
-import org.ietr.dftools.architecture.slam.attributes.Parameter
-import org.ietr.dftools.architecture.slam.attributes.VLNV
-import org.ietr.dftools.architecture.slam.component.Component
-import org.ietr.dftools.architecture.slam.component.HierarchyPort
-import org.ietr.dftools.architecture.slam.link.Link
-import org.ietr.dftools.architecture.utils.VLNVComparator
+import org.preesm.model.slam.attributes.Parameter
+import org.preesm.model.slam.attributes.VLNV
+import org.preesm.model.slam.component.Component
+import org.preesm.model.slam.component.HierarchyPort
+import org.preesm.model.slam.link.Link
+import org.preesm.model.slam.utils.VLNVComparator
 
 type IPath wraps org.eclipse.core.runtime.IPath
 

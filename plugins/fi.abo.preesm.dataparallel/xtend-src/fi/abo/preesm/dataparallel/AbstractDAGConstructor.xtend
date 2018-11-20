@@ -41,7 +41,7 @@ import java.util.Map
 import java.util.logging.Level
 import java.util.logging.Logger
 import org.eclipse.xtend.lib.annotations.Accessors
-import org.ietr.dftools.algorithm.model.sdf.SDFAbstractVertex
+import org.preesm.algorithm.model.sdf.SDFAbstractVertex
 
 /**
  * Implement common getter methods and instance variables for {@link DAGConstructor} class

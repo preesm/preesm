@@ -36,14 +36,14 @@
  */
 package fi.abo.preesm.dataparallel.iterator
 
-import org.ietr.dftools.algorithm.model.sdf.SDFAbstractVertex
-import org.ietr.dftools.algorithm.model.sdf.SDFEdge
-import org.jgrapht.traverse.TopologicalOrderIterator
-import java.util.logging.Logger
+import fi.abo.preesm.dataparallel.PureDAGConstructor
+import java.util.Collections
 import java.util.List
 import java.util.Map
-import java.util.Collections
-import fi.abo.preesm.dataparallel.PureDAGConstructor
+import java.util.logging.Logger
+import org.jgrapht.traverse.TopologicalOrderIterator
+import org.preesm.algorithm.model.sdf.SDFAbstractVertex
+import org.preesm.algorithm.model.sdf.SDFEdge
 
 /**
  * A topological order iterator specialised to traverse a SDFGraph

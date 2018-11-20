@@ -37,10 +37,10 @@
 package fi.abo.preesm.dataparallel
 
 import org.eclipse.xtend.lib.annotations.Accessors
-import org.ietr.dftools.algorithm.model.sdf.SDFGraph
-import org.ietr.dftools.algorithm.model.types.LongEdgePropertyType
-import org.ietr.dftools.algorithm.model.visitors.SDF4JException
 import org.jgrapht.alg.shortestpath.DijkstraShortestPath
+import org.preesm.algorithm.model.sdf.SDFGraph
+import org.preesm.algorithm.model.types.LongEdgePropertyType
+import org.preesm.algorithm.model.visitors.SDF4JException
 
 /**
  * Helper class to represent delays present in an SrSDF graph back in its original SDF graph

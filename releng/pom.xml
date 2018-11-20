@@ -41,6 +41,7 @@
   <modelVersion>4.0.0</modelVersion>
   <artifactId>org.preesm.releng</artifactId>
   <packaging>pom</packaging>
+  <name>PREESM :: Releng :: Parent</name>
 
   <parent>
     <groupId>org.preesm</groupId>
@@ -50,7 +51,6 @@
   </parent>
 
   <modules>
-    <module>org.preesm.rcp.utils</module>
     <module>org.preesm.feature</module>
     <module>org.preesm.product</module>
   </modules>

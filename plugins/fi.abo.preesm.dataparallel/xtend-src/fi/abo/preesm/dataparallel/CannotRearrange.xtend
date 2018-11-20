@@ -37,7 +37,7 @@
  package fi.abo.preesm.dataparallel
 
 import java.io.File
-import org.ietr.dftools.algorithm.model.sdf.SDFGraph
+import org.preesm.algorithm.model.sdf.SDFGraph
 
 class CannotRearrange extends Error {
 	static val message = "Cannot rearrange the DAG due to insufficient root instances."

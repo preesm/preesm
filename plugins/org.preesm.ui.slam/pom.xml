@@ -40,6 +40,8 @@
   <modelVersion>4.0.0</modelVersion>
   <artifactId>org.preesm.ui.slam</artifactId>
   <packaging>eclipse-plugin</packaging>
+  <name>PREESM :: Plugins :: Slam UI</name>
+
 	<parent>
 		<groupId>org.preesm</groupId>
 		<artifactId>org.preesm.plugins</artifactId>

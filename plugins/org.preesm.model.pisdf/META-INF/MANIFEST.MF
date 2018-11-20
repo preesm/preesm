@@ -8,22 +8,21 @@ Require-Bundle: org.eclipse.core.runtime,
  org.eclipse.emf.ecore;visibility:=reexport,
  org.eclipse.xtext.xbase.lib,
  org.eclipse.emf.ecore.xcore.lib,
- org.eclipse.ui;bundle-version="3.7.0",
  org.eclipse.core.resources;bundle-version="3.7.100",
  org.eclipse.emf.ecore.xmi;bundle-version="2.7.0",
  org.apache.commons.io;bundle-version="2.2.0",
- jep;bundle-version="2.40.0",
- org.preesm.commons;visibility:=reexport
+ jep;bundle-version="2.40.0";visibility:=reexport,
+ org.preesm.commons;visibility:=reexport,
+ org.preesm.workflow
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
-Export-Package: org.ietr.preesm.experiment.model,
- org.ietr.preesm.experiment.model.expression,
- org.ietr.preesm.experiment.model.factory,
- org.ietr.preesm.experiment.model.pimm,
- org.ietr.preesm.experiment.model.pimm.adapter,
- org.ietr.preesm.experiment.model.pimm.impl,
- org.ietr.preesm.experiment.model.pimm.serialize,
- org.ietr.preesm.experiment.model.pimm.util,
- org.ietr.preesm.utils.pimm.header.parser
+Export-Package: org.preesm.model.pisdf,
+ org.preesm.model.pisdf.adapter,
+ org.preesm.model.pisdf.expression,
+ org.preesm.model.pisdf.factory,
+ org.preesm.model.pisdf.header.parser,
+ org.preesm.model.pisdf.impl,
+ org.preesm.model.pisdf.serialize,
+ org.preesm.model.pisdf.util
 Bundle-ActivationPolicy: lazy
 Bundle-ClassPath: .,
  xsd/

@@ -41,6 +41,7 @@
   <modelVersion>4.0.0</modelVersion>
   <artifactId>org.preesm.complete.site</artifactId>
   <packaging>eclipse-repository</packaging>
+  <name>PREESM :: Releng :: Update Site</name>
 
   <parent>
     <groupId>org.preesm</groupId>

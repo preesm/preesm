@@ -43,7 +43,7 @@
    <extension
          point="org.eclipse.graphiti.ui.imageProviders">
       <imageProvider
-            class="org.ietr.preesm.ui.pimm.diagram.PiMMImageProvider"
+            class="org.preesm.ui.pisdf.diagram.PiMMImageProvider"
             id="org.ietr.preesm.experiment.ui.pimm.util.PiMMImageProvider">
       </imageProvider>
    </extension>
@@ -52,7 +52,7 @@
    <extension
          point="org.eclipse.ltk.core.refactoring.renameParticipants">
       <renameParticipant
-            class="org.ietr.preesm.ui.pimm.refactoring.RenamePi"
+            class="org.preesm.ui.pisdf.refactoring.RenamePi"
             id="org.ietr.preesm.experiment.ui.pimm.refactoring.RenamePi"
             name="RenamePi">
          <enablement>
@@ -68,7 +68,7 @@
          </enablement>
       </renameParticipant>
       <renameParticipant
-            class="org.ietr.preesm.ui.pimm.refactoring.RenameDiagram"
+            class="org.preesm.ui.pisdf.refactoring.RenameDiagram"
             id="org.ietr.preesm.experiment.ui.pimm.refactoring.RenameDiagram"
             name="RenameDiagram">
          <enablement>
@@ -89,7 +89,7 @@
    <extension
          point="org.eclipse.ltk.core.refactoring.copyParticipants">
       <copyParticipant
-            class="org.ietr.preesm.ui.pimm.refactoring.CopyPi"
+            class="org.preesm.ui.pisdf.refactoring.CopyPi"
             id="org.ietr.preesm.experiment.ui.pimm.refactoring.CopyPi"
             name="CopyPi">
          <enablement>
@@ -105,7 +105,7 @@
          </enablement>
       </copyParticipant>
       <copyParticipant
-            class="org.ietr.preesm.ui.pimm.refactoring.CopyDiagram"
+            class="org.preesm.ui.pisdf.refactoring.CopyDiagram"
             id="org.ietr.preesm.experiment.ui.pimm.refactoring.CopyDiagram"
             name="CopyDiagram">
          <enablement>
@@ -127,20 +127,20 @@
       <propertySections
             contributorId="PiMM.PropertyContributor">
          <propertySection
-               class="org.ietr.preesm.ui.pimm.properties.PortParameterAndDelayPropertiesSection"
-               filter="org.ietr.preesm.ui.pimm.properties.PiMMFilter"
+               class="org.preesm.ui.pisdf.properties.PortParameterAndDelayPropertiesSection"
+               filter="org.preesm.ui.pisdf.properties.PiMMFilter"
                id="org.ietr.preesm.experiment.model.transformation.properties.section.graph.basic"
                tab="org.ietr.preesm.experiment.model.transformation.properties.tab.graph.basic">
          </propertySection>
          <propertySection
-               class="org.ietr.preesm.ui.pimm.properties.ActorPropertiesSection"
-               filter="org.ietr.preesm.ui.pimm.properties.PiMMActorFilter"
+               class="org.preesm.ui.pisdf.properties.ActorPropertiesSection"
+               filter="org.preesm.ui.pisdf.properties.PiMMActorFilter"
                id="org.ietr.preesm.experiment.model.org.ietr.preesm.experiment.model.transformation.properties.tab.graph.basicActor.properties.section.graph.basicActor"
                tab="org.ietr.preesm.experiment.model.transformation.properties.tab.graph.basicActor">
          </propertySection>
          <propertySection
-               class="org.ietr.preesm.ui.pimm.properties.FifoPropertiesSection"
-               filter="org.ietr.preesm.ui.pimm.properties.PiMMFifoFilter"
+               class="org.preesm.ui.pisdf.properties.FifoPropertiesSection"
+               filter="org.preesm.ui.pisdf.properties.PiMMFifoFilter"
                id="org.ietr.preesm.experiment.model.org.ietr.preesm.experiment.model.transformation.properties.tab.graph.basicActor.properties.section.graph.basicFifo"
                tab="org.ietr.preesm.experiment.model.transformation.properties.tab.graph.basicFifo">
          </propertySection>
@@ -160,7 +160,7 @@
    <extension
          point="org.eclipse.graphiti.ui.diagramTypeProviders">
       <diagramTypeProvider
-            class="org.ietr.preesm.ui.pimm.diagram.PiMMDiagramTypeProvider"
+            class="org.preesm.ui.pisdf.diagram.PiMMDiagramTypeProvider"
             context="org.ietr.preesm.experiment.ui.pimm"
             id="org.ietr.preesm.experiment.ui.pimm.pimmDiagramTypeProvider"
             name="PiMM Diagram Type Provider">
@@ -177,7 +177,7 @@
    <extension
          point="org.eclipse.ui.editors">
       <editor
-            class="org.ietr.preesm.ui.pimm.diagram.PiMMDiagramEditor"
+            class="org.preesm.ui.pisdf.diagram.PiMMDiagramEditor"
             contributorClass="org.eclipse.graphiti.ui.editor.DiagramEditorActionBarContributor"
             default="true"
             extensions="diagram"
@@ -203,7 +203,7 @@
       <wizard
             canFinishEarly="false"
             category="org.ietr.preesm.category"
-            class="org.ietr.preesm.ui.pimm.wizards.NewPiMMWizard"
+            class="org.preesm.ui.pisdf.wizards.NewPiMMWizard"
             hasPages="true"
             icon="icons/pi.gif"
             id="org.ietr.preesm.experiment.ui.pimm.wizards.NewPiMMWizard"
@@ -231,11 +231,11 @@
    <extension
          point="org.eclipse.ui.handlers">
       <handler
-            class="org.ietr.preesm.ui.pimm.popup.actions.PiMMAlgorithmCheckerPopup"
+            class="org.preesm.ui.pisdf.popup.actions.PiMMAlgorithmCheckerPopup"
             commandId="org.ietr.preesm.ui.command.PimmChecker">
       </handler>
       <handler
-            class="org.ietr.preesm.ui.pimm.popup.actions.PiMM2DiagramGeneratorPopup"
+            class="org.preesm.ui.pisdf.popup.actions.PiMM2DiagramGeneratorPopup"
             commandId="org.ietr.preesm.ui.command.PiMM2Diagram">
       </handler>
    </extension>
@@ -280,7 +280,7 @@
       <!-- *.layout filter -->
       <commonFilter
             activeByDefault="true"
-            class="org.ietr.preesm.ui.ProjectExplorerFilter"
+            class="org.preesm.ui.ProjectExplorerFilter"
             description="Filters the *.layout files"
             id="org.ietr.preesm.core.layoutfilefilter"
             name="LayoutFileFilter"

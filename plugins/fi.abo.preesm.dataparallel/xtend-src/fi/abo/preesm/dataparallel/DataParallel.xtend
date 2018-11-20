@@ -40,13 +40,13 @@ import fi.abo.preesm.dataparallel.operations.DataParallelCheckOperations
 import java.util.Map
 import org.eclipse.core.runtime.IProgressMonitor
 import org.eclipse.xtend.lib.annotations.Accessors
-import org.ietr.dftools.algorithm.model.sdf.SDFGraph
-import org.ietr.dftools.algorithm.model.visitors.SDF4JException
-import org.ietr.dftools.workflow.WorkflowException
-import org.ietr.dftools.workflow.elements.Workflow
-import org.ietr.dftools.workflow.implement.AbstractTaskImplementation
-import org.ietr.dftools.workflow.implement.AbstractWorkflowNodeImplementation
-import org.ietr.dftools.workflow.tools.WorkflowLogger
+import org.preesm.algorithm.model.sdf.SDFGraph
+import org.preesm.algorithm.model.visitors.SDF4JException
+import org.preesm.commons.logger.PreesmLogger
+import org.preesm.workflow.WorkflowException
+import org.preesm.workflow.elements.Workflow
+import org.preesm.workflow.implement.AbstractTaskImplementation
+import org.preesm.workflow.implement.AbstractWorkflowNodeImplementation
 
 /**
  * Wrapper class that performs the data-parallel checks and transforms
@@ -72,7 +72,7 @@ class DataParallel extends AbstractTaskImplementation {
 			throw new SDF4JException("Graph " + sdf + " not schedulable")
 		}
 
-		val logger = WorkflowLogger.logger
+		val logger = PreesmLogger.getLogger
 
 		val checker = new DataParallelCheckOperations(logger)
 		sdf.accept(checker)

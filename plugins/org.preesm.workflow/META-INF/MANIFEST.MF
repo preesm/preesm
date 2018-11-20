@@ -1,6 +1,6 @@
 Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
-Bundle-Name: DFTools Workflow
+Bundle-Name: PREESM :: Plugins :: Workflow
 Automatic-Module-Name: org.preesm.workflow
 Bundle-SymbolicName: org.preesm.workflow;singleton:=true
 Bundle-Version: 2.17.1.qualifier
@@ -11,10 +11,10 @@ Require-Bundle: org.eclipse.core.runtime,
  org.apache.commons.lang3;bundle-version="3.7.0",
  org.preesm.commons;visibility:=reexport
 Bundle-ClassPath: .
-Export-Package: org.ietr.dftools.workflow,
- org.ietr.dftools.workflow.converter,
- org.ietr.dftools.workflow.elements,
- org.ietr.dftools.workflow.implement
-Bundle-Activator: org.ietr.dftools.workflow.Activator
+Export-Package: org.preesm.workflow,
+ org.preesm.workflow.converter,
+ org.preesm.workflow.elements,
+ org.preesm.workflow.implement
+Bundle-Activator: org.preesm.workflow.Activator
 Bundle-ActivationPolicy: lazy
-Bundle-Vendor: IETR/INSA Rennes
+Bundle-Vendor: IETR / INSA Rennes - VAADER

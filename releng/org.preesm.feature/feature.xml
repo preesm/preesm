@@ -42,7 +42,7 @@
       id="org.preesm.feature"
       label="PREESM"
       version="2.17.1.qualifier"
-      provider-name="IETR/INSA Rennes">
+      provider-name="IETR / INSA Rennes - VAADER">
 
    <description url="http://preesm.org/">
       PREESM (the Parallel and Real-time Embedded Executives Scheduling Method) is an open source rapid prototyping and code generation tool. It is primarily employed to simulate signal processing applications and generate code for multi-core Digital Signal Processors. PREESM is developed at the Institute of Electronics and Telecommunications-Rennes (IETR) in collaboration with Texas Instruments France in Nice.
@@ -648,13 +648,6 @@ Version 1.0 dated 2006-09-05.]]>
          unpack="false"/>
 
    <plugin
-         id="org.preesm.rcp.utils"
-         download-size="0"
-         install-size="0"
-         version="2.17.1.qualifier"
-         unpack="false"/>
-
-   <plugin
          id="fi.abo.preesm.dataparallel"
          download-size="0"
          install-size="0"
@@ -663,6 +656,13 @@ Version 1.0 dated 2006-09-05.]]>
 
    <plugin
          id="org.preesm.model.slam"
+         download-size="0"
+         install-size="0"
+         version="2.17.1.qualifier"
+         unpack="false"/>
+
+   <plugin
+         id="org.preesm.model.scenario"
          download-size="0"
          install-size="0"
          version="2.17.1.qualifier"

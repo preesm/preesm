@@ -41,6 +41,7 @@
   <modelVersion>4.0.0</modelVersion>
   <artifactId>org.preesm.feature</artifactId>
   <packaging>eclipse-feature</packaging>
+  <name>PREESM :: Releng :: Feature</name>
 
   <parent>
     <groupId>org.preesm</groupId>

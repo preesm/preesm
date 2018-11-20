@@ -1,10 +1,10 @@
 Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
-Bundle-Name: Preesm UI :: Scenario
+Bundle-Name: PREESM :: Plugins :: Scenario UI
 Automatic-Module-Name: org.preesm.ui.scenario
 Bundle-SymbolicName: org.preesm.ui.scenario;singleton:=true
 Bundle-Version: 2.17.1.qualifier
-Bundle-Vendor: IETR/INSA Rennes
+Bundle-Vendor: IETR / INSA Rennes - VAADER
 Require-Bundle: org.eclipse.ui.console;bundle-version="3.5.100",
  org.eclipse.ui.editors,
  org.eclipse.graphiti.ui,
@@ -16,16 +16,16 @@ Require-Bundle: org.eclipse.ui.console;bundle-version="3.5.100",
  org.eclipse.xtend.lib,
  org.apache.commons.io;bundle-version="2.2.0",
  net.sourceforge.jexcelapi.jxl;bundle-version="2.6.10",
- org.preesm.ui
+ org.preesm.ui,
+ org.preesm.algorithm
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Bundle-ActivationPolicy: lazy
 Eclipse-BuddyPolicy: global
-Export-Package: org.ietr.preesm.ui.scenario.editor,
- org.ietr.preesm.ui.scenario.editor.codegen,
- org.ietr.preesm.ui.scenario.editor.constraints,
- org.ietr.preesm.ui.scenario.editor.parametervalues,
- org.ietr.preesm.ui.scenario.editor.relativeconstraints,
- org.ietr.preesm.ui.scenario.editor.simulation,
- org.ietr.preesm.ui.scenario.editor.timings,
- org.ietr.preesm.ui.scenario.editor.variables
+Export-Package: org.preesm.ui.scenario.editor,
+ org.preesm.ui.scenario.editor.codegen,
+ org.preesm.ui.scenario.editor.constraints,
+ org.preesm.ui.scenario.editor.parametervalues,
+ org.preesm.ui.scenario.editor.relativeconstraints,
+ org.preesm.ui.scenario.editor.simulation,
+ org.preesm.ui.scenario.editor.timings
 

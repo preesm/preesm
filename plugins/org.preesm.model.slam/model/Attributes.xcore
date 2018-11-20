@@ -27,7 +27,7 @@
 
 @Ecore(nsURI="http://org.preesm/model/slam/attributes")
 
-package org.ietr.dftools.architecture.slam.attributes
+package org.preesm.model.slam.attributes
 
 type IPath wraps org.eclipse.core.runtime.IPath
 

@@ -41,18 +41,35 @@
 <plugin>
 
    <extension point="org.eclipse.emf.ecore.generated_package">
+      <!-- @generated PiSDF -->
       <package
-            uri="http://org.ietr.preesm/experiment/model/pimm"
-            class="org.ietr.preesm.experiment.model.pimm.PiMMPackage"
-            />
+            uri="http://org.preesm/model/pisdf"
+            class="org.preesm.model.pisdf.PiMMPackage"
+            genModel="model/PiSDF.xcore"/>
    </extension>
 
    <extension
          point="org.eclipse.emf.ecore.extension_parser">
       <parser
-            class="org.ietr.preesm.experiment.model.pimm.serialize.PiResourceFactoryImpl"
+            class="org.preesm.model.pisdf.serialize.PiResourceFactoryImpl"
             type="pi">
       </parser>
+   </extension>
+
+
+   <extension
+         point="org.preesm.workflow.tasks">
+      <task
+            id="org.ietr.preesm.algorithm.exportXml.pimm2xml"
+            name="PiSDFExporter"
+            type="org.preesm.model.pisdf.serialize.PiSDFExporterTask">
+         <inputs>
+            <input
+                  id="PiMM"
+                  object="org.preesm.model.pisdf.PiGraph">
+            </input>
+         </inputs>
+      </task>
    </extension>
 
 </plugin>

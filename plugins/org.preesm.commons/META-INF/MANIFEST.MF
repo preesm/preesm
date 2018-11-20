@@ -1,11 +1,10 @@
 Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
-Bundle-Name: PREESM utilities
+Bundle-Name: PREESM :: Plugins :: Commons
 Automatic-Module-Name: org.preesm.commons
 Bundle-SymbolicName: org.preesm.commons
 Bundle-Version: 2.17.1.qualifier
-Bundle-Activator: org.ietr.preesm.utils.Activator
-Bundle-Vendor: IETR/INSA Rennes
+Bundle-Vendor: IETR / INSA Rennes - VAADER
 Require-Bundle: org.eclipse.core.runtime,
  org.eclipse.xtend.lib,
  org.eclipse.emf.ecore,
@@ -15,11 +14,10 @@ Require-Bundle: org.eclipse.core.runtime,
  javax.annotation;bundle-version="1.2.0";visibility:=reexport
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Bundle-ActivationPolicy: lazy
-Export-Package: org.ietr.dftools.workflow.messages,
- org.ietr.dftools.workflow.tools,
- org.ietr.preesm.utils,
- org.ietr.preesm.utils.exceptions,
- org.ietr.preesm.utils.files,
- org.ietr.preesm.utils.math,
- org.ietr.preesm.utils.paths
+Export-Package: org.preesm.commons,
+ org.preesm.commons.exceptions,
+ org.preesm.commons.files,
+ org.preesm.commons.logger,
+ org.preesm.commons.math,
+ org.preesm.commons.messages
 

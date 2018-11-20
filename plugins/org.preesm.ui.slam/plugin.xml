@@ -50,15 +50,40 @@
       <wizard
             canFinishEarly="false"
             category="org.ietr.dftools.architecture.ui.ArchitectureCategory"
-            class="org.ietr.dftools.architecture.ui.ArchitectureProjectWizard"
+            class="org.preesm.ui.slam.ArchitectureProjectWizard"
             hasPages="true"
             id="org.ietr.dftools.architecture.ui.ArchitectureProjectWizard"
             name="Architecture Project"
             project="true">
       </wizard>
    </extension>
+
+
    <extension
-         point="org.eclipse.ui.editors">
+      point="org.eclipse.ui.views.properties.tabbed.propertyTabs">
+      <propertyTabs
+         contributorId="org.ietr.dftools.graphiti.ui.properties.contributor">
+         <propertyTab
+            category="org.ietr.dftools.graphiti.ui.properties.category.vertex"
+            id="net.sf.dftools.ui.slam.vertex.parameters"
+            label="Custom Parameters">
+         </propertyTab>
+         <propertyTab
+            category="org.ietr.dftools.graphiti.ui.properties.category.graph"
+            id="net.sf.dftools.ui.slam.design.parameters"
+            label="Design Parameters">
+         </propertyTab>
+      </propertyTabs>
+   </extension>
+
+   <extension point="org.eclipse.ui.editors">
+      <editor
+         class="org.ietr.dftools.graphiti.ui.editors.GraphEditor"
+         contributorClass="org.ietr.dftools.graphiti.ui.editors.GraphActionBarContributor"
+         default="true" extensions="slam" icon="icons/graphiti.gif"
+         id="net.sf.dftools.ui.SlamEditor" name="S-LAM Editor">
+      </editor>
+
       <editor
             class="org.ietr.dftools.graphiti.ui.editors.GraphEditor"
             contributorClass="org.ietr.dftools.graphiti.ui.editors.GraphActionBarContributor"
@@ -83,12 +108,267 @@
       <propertySections
             contributorId="org.ietr.dftools.graphiti.ui.properties.contributor">
          <propertySection
-               class="org.ietr.dftools.architecture.ui.properties.VertexParametersMapSection"
-               filter="org.ietr.dftools.architecture.ui.properties.ArchitectureVertexFilter"
+               class="org.preesm.ui.slam.properties.VertexParametersMapSection"
+               filter="org.preesm.ui.slam.properties.ArchitectureVertexFilter"
                id="org.ietr.dftools.architecture.ui.properties.section.vertex.parameters"
                tab="org.ietr.dftools.architecture.ui.properties.tab.vertex.parameters">
          </propertySection>
       </propertySections>
    </extension>
 
+   <extension point="org.eclipse.ui.newWizards">
+      <wizard canFinishEarly="false"
+         category="org.ietr.preesm.category"
+         class="org.preesm.ui.slam.NewSlamFileWizard"
+         hasPages="true" icon="icons/graphiti.gif"
+         id="net.sf.dftools.ui.slam.NewSlamFileWizard"
+         name="S-LAM Architecture" project="false">
+         <description>
+            Create a new S-LAM architecture description file
+         </description>
+      </wizard>
+   </extension>
+
+   <extension
+      point="org.eclipse.ui.views.properties.tabbed.propertySections">
+      <propertySections
+         contributorId="org.ietr.dftools.graphiti.ui.properties.contributor">
+         <propertySection
+            class="org.preesm.ui.slam.properties.SlamComponentVariablesMapSection"
+            filter="org.preesm.ui.slam.filters.SlamComponentFilter"
+            id="net.sf.dftools.ui.slam.vertex.parameters.section"
+            tab="net.sf.dftools.ui.slam.vertex.parameters">
+         </propertySection>
+         <propertySection
+            class="org.preesm.ui.slam.properties.SlamDesignVariablesMapSection"
+            filter="org.preesm.ui.slam.filters.SlamDesignFilter"
+            id="net.sf.dftools.ui.slam.design.parameters.section"
+            tab="net.sf.dftools.ui.slam.design.parameters">
+         </propertySection>
+      </propertySections>
+   </extension>
+
+
+   <extension point="graphiti.definition">
+      <configuration extension="slam" name="S-LAM Design"
+         refinement="org.preesm.ui.slam.SlamRefinementPolicy"
+         type="text/xml"
+         validator="org.preesm.ui.slam.SlamValidator">
+         <graphType name="S-LAM Design">
+            <parameter name="vendor" type="java.lang.String">
+            </parameter>
+            <parameter name="library" type="java.lang.String">
+            </parameter>
+            <parameter name="name" type="java.lang.String">
+            </parameter>
+            <parameter name="version" type="java.lang.String">
+            </parameter>
+            <parameter name="design parameters"
+               type="java.util.Map">
+            </parameter>
+         </graphType>
+         <import>
+            <xslt name="xslt/net/sf/dftools/s-lam/input_S-LAM.xslt">
+            </xslt>
+         </import>
+         <vertexType name="hierConnection">
+            <color blue="0" green="0" red="255">
+            </color>
+            <shape type="roundedBox">
+            </shape>
+            <size height="40" width="40">
+            </size>
+            <parameter name="id" type="java.lang.String">
+            </parameter>
+         </vertexType>
+         <vertexType name="Operator">
+            <color blue="140" green="81" red="19">
+            </color>
+            <shape type="roundedBox">
+            </shape>
+            <parameter name="id" type="java.lang.String">
+            </parameter>
+            <size height="40" width="40">
+            </size>
+            <parameter name="refinement"
+               type="java.lang.String">
+            </parameter>
+            <parameter name="definition"
+               type="java.lang.String">
+            </parameter>
+            <parameter name="custom parameters"
+               type="java.util.Map">
+            </parameter>
+         </vertexType>
+         <edgeType directed="false" name="hierConnection">
+            <color blue="0" green="0" red="255">
+            </color>
+            <parameter name="source port"
+               type="java.lang.String">
+            </parameter>
+         </edgeType>
+         <edgeType directed="true" name="ControlLink">
+            <color blue="41" green="213" red="165">
+            </color>
+            <parameter name="id" type="java.lang.String">
+            </parameter>
+            <parameter name="source port"
+               type="java.lang.String">
+            </parameter>
+            <parameter name="target port"
+               type="java.lang.String">
+            </parameter>
+            <parameter name="custom parameters"
+               type="java.util.Map">
+            </parameter>
+         </edgeType>
+         <export>
+            <xslt
+               name="xslt/net/sf/dftools/s-lam/output_S-LAM.xslt">
+            </xslt>
+         </export>
+         <vertexType name="Mem">
+            <color blue="173" green="237" red="198">
+            </color>
+            <shape type="roundedBox">
+            </shape>
+            <parameter name="id" type="java.lang.String">
+            </parameter>
+            <size height="40" width="40">
+            </size>
+            <parameter name="refinement"
+               type="java.lang.String">
+            </parameter>
+            <parameter name="definition"
+               type="java.lang.String">
+            </parameter>
+            <parameter name="custom parameters"
+               type="java.util.Map">
+            </parameter>
+            <parameter name="memSize" type="java.lang.String">
+            </parameter>
+         </vertexType>
+         <edgeType directed="false" name="undirectedDataLink">
+            <color blue="0" green="0" red="0">
+            </color>
+            <parameter name="id" type="java.lang.String">
+            </parameter>
+            <parameter name="source port"
+               type="java.lang.String">
+            </parameter>
+            <parameter name="target port"
+               type="java.lang.String">
+            </parameter>
+            <parameter name="custom parameters"
+               type="java.util.Map">
+            </parameter>
+         </edgeType>
+         <vertexType name="Dma">
+            <color blue="31" green="135" red="70">
+            </color>
+            <shape type="roundedBox">
+            </shape>
+            <parameter name="id" type="java.lang.String">
+            </parameter>
+            <size height="40" width="40">
+            </size>
+            <parameter name="refinement"
+               type="java.lang.String">
+            </parameter>
+            <parameter name="definition"
+               type="java.lang.String">
+            </parameter>
+            <parameter name="custom parameters"
+               type="java.util.Map">
+            </parameter>
+            <parameter name="setupTime"
+               type="java.lang.String">
+            </parameter>
+         </vertexType>
+         <edgeType directed="true" name="directedDataLink">
+            <color blue="0" green="0" red="0">
+            </color>
+            <parameter name="id" type="java.lang.String">
+            </parameter>
+            <parameter name="source port"
+               type="java.lang.String">
+            </parameter>
+            <parameter name="target port"
+               type="java.lang.String">
+            </parameter>
+            <parameter name="custom parameters"
+               type="java.util.Map">
+            </parameter>
+         </edgeType>
+         <vertexType name="contentionComNode">
+            <color blue="0" green="124" red="249">
+            </color>
+            <shape type="roundedBox">
+            </shape>
+            <parameter name="id" type="java.lang.String">
+            </parameter>
+            <size height="40" width="40">
+            </size>
+            <parameter name="speed" type="java.lang.String">
+            </parameter>
+            <parameter name="custom parameters"
+               type="java.util.Map">
+            </parameter>
+            <parameter name="refinement"
+               type="java.lang.String">
+            </parameter>
+            <parameter name="definition"
+               type="java.lang.String">
+            </parameter>
+         </vertexType>
+         <vertexType name="parallelComNode">
+            <color blue="191" green="223" red="255">
+            </color>
+            <shape type="roundedBox">
+            </shape>
+            <parameter name="id" type="java.lang.String">
+            </parameter>
+            <size height="40" width="40">
+            </size>
+            <parameter name="speed" type="java.lang.String">
+            </parameter>
+            <parameter name="refinement"
+               type="java.lang.String">
+            </parameter>
+            <parameter name="definition"
+               type="java.lang.String">
+            </parameter>
+            <parameter name="custom parameters"
+               type="java.util.Map">
+            </parameter>
+         </vertexType>
+      </configuration>
+   </extension>
+
+   <!-- Navigator content -->
+   <extension
+         point="org.eclipse.ui.navigator.navigatorContent">
+      <!-- *.layout filter -->
+      <commonFilter
+            activeByDefault="true"
+            class="org.preesm.ui.ProjectExplorerFilter"
+            description="Filters the *.layout files"
+            id="org.ietr.preesm.core.layoutfilefilter"
+            name="LayoutFileFilter"
+            visibleInUI="true">
+     </commonFilter>
+
+     <!-- Slam Wizard ref -->
+     <!-- TODO: id comes from dftools.... -->
+	 <commonWizard type="new"
+	   wizardId="net.sf.dftools.ui.slam.NewSlamFileWizard">
+	     <enablement>
+		   <or>
+		    <adapt type="org.eclipse.core.resources.IFolder" />
+		    <adapt type="org.eclipse.core.resources.IProject" />
+		   </or>
+	     </enablement>
+	 </commonWizard>
+
+   </extension>
 </plugin>

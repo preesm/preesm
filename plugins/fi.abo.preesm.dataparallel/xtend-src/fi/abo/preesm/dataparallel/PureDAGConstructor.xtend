@@ -36,13 +36,13 @@
  */
 package fi.abo.preesm.dataparallel
 
+import fi.abo.preesm.dataparallel.operations.DAGOperations
 import java.util.List
 import java.util.Map
-import fi.abo.preesm.dataparallel.operations.DAGOperations
-import org.ietr.dftools.algorithm.model.sdf.SDFAbstractVertex
-import org.ietr.dftools.algorithm.model.sdf.SDFEdge
-import org.ietr.dftools.algorithm.model.sdf.SDFGraph
 import org.jgrapht.graph.AbstractGraph
+import org.preesm.algorithm.model.sdf.SDFAbstractVertex
+import org.preesm.algorithm.model.sdf.SDFEdge
+import org.preesm.algorithm.model.sdf.SDFGraph
 
 /**
  * Interface for construction of Pure DAGs only.
