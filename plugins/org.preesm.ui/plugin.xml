@@ -253,35 +253,6 @@
       </perspective>
    </extension>
 
-   <!-- Workflow Run As... shortcut (deprecated)
-   <extension
-         point="org.eclipse.debug.ui.launchShortcuts">
-      <shortcut
-            class="org.ietr.dftools.ui.workflow.launch.WorkflowLaunchShortcut"
-            icon="icons/workflow.png"
-            id="org.ietr.dftools.ui.workflow.workflowLaunchShortcut"
-            label="Preesm Workflow"
-            modes="run">
-         <description
-               description="Launch a Preesm workflow"
-               mode="run">
-         </description>
-         <contextualLaunch>
-            <enablement>
-              <with variable="selection">
-                <count value="1"/>
-                  <iterate>
-                    <adapt type="org.eclipse.core.resources.IResource">
-                      <and>
-                        <test property="org.eclipse.core.resources.name" value="*.workflow"/>
-                      </and>
-                    </adapt>
-                  </iterate>
-               </with>
-            </enablement>
-         </contextualLaunch>
-      </shortcut>
-   </extension> -->
    <!-- Wizards -->
    <extension
          point="org.eclipse.ui.newWizards">
