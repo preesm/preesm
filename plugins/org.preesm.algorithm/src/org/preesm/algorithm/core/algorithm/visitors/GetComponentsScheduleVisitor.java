@@ -40,8 +40,6 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.Map;
-import org.preesm.algorithm.core.types.ImplementationPropertyNames;
-import org.preesm.algorithm.core.types.VertexType;
 import org.preesm.algorithm.model.PropertyBean;
 import org.preesm.algorithm.model.dag.DAGEdge;
 import org.preesm.algorithm.model.dag.DAGVertex;
@@ -49,6 +47,8 @@ import org.preesm.algorithm.model.dag.DirectedAcyclicGraph;
 import org.preesm.algorithm.model.visitors.IGraphVisitor;
 import org.preesm.algorithm.model.visitors.SDF4JException;
 import org.preesm.model.slam.ComponentInstance;
+import org.preesm.scenario.types.ImplementationPropertyNames;
+import org.preesm.scenario.types.VertexType;
 
 /**
  * Visitor to retrieve the schedule of each component of a mapped Directed Acyclic Graph.

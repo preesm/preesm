@@ -53,13 +53,13 @@ import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.Path;
-import org.preesm.algorithm.core.scenario.PreesmScenario;
-import org.preesm.algorithm.core.types.DataType;
 import org.preesm.algorithm.memory.allocation.AbstractMemoryAllocatorTask;
 import org.preesm.algorithm.memory.allocation.MemoryAllocationException;
 import org.preesm.algorithm.memory.exclusiongraph.MemoryExclusionGraph;
 import org.preesm.algorithm.model.dag.DirectedAcyclicGraph;
 import org.preesm.commons.logger.PreesmLogger;
+import org.preesm.scenario.PreesmScenario;
+import org.preesm.scenario.types.DataType;
 
 /**
  * The Class MemoryScriptEngine.

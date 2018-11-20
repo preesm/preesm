@@ -54,14 +54,14 @@ import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.ui.IWorkbench;
 import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.PlatformUI;
-import org.preesm.algorithm.core.scenario.PreesmScenario;
-import org.preesm.algorithm.core.scenario.serialize.ScenarioParser;
 import org.preesm.algorithm.importer.InvalidModelException;
 import org.preesm.algorithm.model.parameters.InvalidExpressionException;
 import org.preesm.algorithm.model.parameters.NoIntegerValueException;
 import org.preesm.algorithm.model.parameters.Variable;
 import org.preesm.algorithm.model.parameters.VariableSet;
 import org.preesm.algorithm.model.sdf.SDFGraph;
+import org.preesm.scenario.PreesmScenario;
+import org.preesm.scenario.serialize.ScenarioParser;
 import org.preesm.ui.scenario.editor.ExcelWriter;
 import org.preesm.ui.scenario.editor.SaveAsWizard;
 

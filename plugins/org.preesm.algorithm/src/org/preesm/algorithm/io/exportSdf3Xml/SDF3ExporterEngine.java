@@ -42,9 +42,9 @@ import org.eclipse.core.resources.IWorkspace;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
-import org.preesm.algorithm.core.scenario.PreesmScenario;
 import org.preesm.algorithm.model.sdf.SDFGraph;
 import org.preesm.model.slam.Design;
+import org.preesm.scenario.PreesmScenario;
 import org.preesm.workflow.WorkflowException;
 
 /**

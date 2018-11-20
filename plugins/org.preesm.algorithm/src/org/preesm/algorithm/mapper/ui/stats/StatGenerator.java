@@ -41,9 +41,6 @@ package org.preesm.algorithm.mapper.ui.stats;
 import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.Set;
-import org.preesm.algorithm.core.scenario.PreesmScenario;
-import org.preesm.algorithm.core.types.ImplementationPropertyNames;
-import org.preesm.algorithm.core.types.VertexType;
 import org.preesm.algorithm.mapper.abc.impl.latency.LatencyAbc;
 import org.preesm.algorithm.mapper.abc.impl.latency.SpanLengthCalculator;
 import org.preesm.algorithm.mapper.model.MapperDAG;
@@ -60,6 +57,9 @@ import org.preesm.algorithm.model.dag.DAGEdge;
 import org.preesm.algorithm.model.dag.DAGVertex;
 import org.preesm.model.slam.ComponentInstance;
 import org.preesm.model.slam.utils.DesignTools;
+import org.preesm.scenario.PreesmScenario;
+import org.preesm.scenario.types.ImplementationPropertyNames;
+import org.preesm.scenario.types.VertexType;
 import org.preesm.workflow.WorkflowException;
 
 /**

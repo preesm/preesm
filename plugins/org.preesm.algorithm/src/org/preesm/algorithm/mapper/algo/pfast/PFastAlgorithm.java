@@ -51,7 +51,6 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.FutureTask;
 import java.util.concurrent.Semaphore;
 import java.util.logging.Level;
-import org.preesm.algorithm.core.scenario.PreesmScenario;
 import org.preesm.algorithm.mapper.PreesmMapperException;
 import org.preesm.algorithm.mapper.abc.impl.latency.LatencyAbc;
 import org.preesm.algorithm.mapper.abc.order.VertexOrderList;
@@ -68,6 +67,7 @@ import org.preesm.algorithm.mapper.ui.BestCostPlotter;
 import org.preesm.algorithm.mapper.ui.bestcost.BestCostEditor;
 import org.preesm.commons.logger.PreesmLogger;
 import org.preesm.model.slam.Design;
+import org.preesm.scenario.PreesmScenario;
 import org.preesm.workflow.WorkflowException;
 
 /**

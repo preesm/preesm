@@ -36,8 +36,8 @@ package org.ietr.preesm.core.test;
 
 import org.junit.Assert;
 import org.junit.Test;
-import org.preesm.algorithm.core.scenario.papi.PapiConfigParser;
-import org.preesm.algorithm.core.scenario.papi.PapiEventInfo;
+import org.preesm.scenario.papi.PapiConfigParser;
+import org.preesm.scenario.papi.PapiEventInfo;
 
 /**
  *

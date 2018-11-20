@@ -69,7 +69,6 @@ import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.emf.ecore.resource.ResourceSet;
 import org.eclipse.emf.ecore.resource.impl.ResourceSetImpl;
 import org.eclipse.emf.ecore.xmi.impl.XMIResourceFactoryImpl;
-import org.preesm.algorithm.core.scenario.PreesmScenario;
 import org.preesm.algorithm.mapper.model.MapperDAG;
 import org.preesm.algorithm.memory.exclusiongraph.MemoryExclusionGraph;
 import org.preesm.codegen.CodegenException;
@@ -78,6 +77,7 @@ import org.preesm.codegen.model.CoreBlock;
 import org.preesm.codegen.printer.CodegenAbstractPrinter;
 import org.preesm.commons.logger.PreesmLogger;
 import org.preesm.model.slam.Design;
+import org.preesm.scenario.PreesmScenario;
 import org.preesm.workflow.WorkflowException;
 
 /**

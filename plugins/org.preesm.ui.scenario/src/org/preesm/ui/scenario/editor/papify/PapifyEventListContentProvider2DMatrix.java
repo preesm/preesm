@@ -45,8 +45,6 @@ import java.util.concurrent.ConcurrentSkipListSet;
 import org.eclipse.emf.common.util.EList;
 import org.eclipse.jface.viewers.ITreeContentProvider;
 import org.eclipse.jface.viewers.Viewer;
-import org.preesm.algorithm.core.scenario.PreesmScenario;
-import org.preesm.algorithm.core.scenario.serialize.ScenarioParser;
 import org.preesm.algorithm.model.IRefinement;
 import org.preesm.algorithm.model.sdf.SDFAbstractVertex;
 import org.preesm.algorithm.model.sdf.SDFGraph;
@@ -62,6 +60,8 @@ import org.preesm.model.pisdf.JoinActor;
 import org.preesm.model.pisdf.PiGraph;
 import org.preesm.model.pisdf.RoundBufferActor;
 import org.preesm.model.pisdf.serialize.PiParser;
+import org.preesm.scenario.PreesmScenario;
+import org.preesm.scenario.serialize.ScenarioParser;
 import org.preesm.ui.scenario.editor.HierarchicalSDFVertex;
 import org.preesm.ui.scenario.editor.PathComparator;
 

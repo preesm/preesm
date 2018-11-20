@@ -42,7 +42,7 @@ import org.eclipse.jface.viewers.CellEditor;
 import org.eclipse.jface.viewers.CheckboxCellEditor;
 import org.eclipse.jface.viewers.ColumnViewer;
 import org.eclipse.jface.viewers.EditingSupport;
-import org.preesm.algorithm.core.scenario.PreesmScenario;
+import org.preesm.scenario.PreesmScenario;
 import org.preesm.ui.scenario.editor.papify.PapifyEventListTreeElement.PAPIEventStatus;
 
 // TODO: Auto-generated Javadoc

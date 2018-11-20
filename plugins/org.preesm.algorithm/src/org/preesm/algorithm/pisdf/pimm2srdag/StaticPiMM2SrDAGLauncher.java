@@ -41,7 +41,6 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.logging.Level;
 import org.apache.commons.lang3.time.StopWatch;
-import org.preesm.algorithm.core.scenario.PreesmScenario;
 import org.preesm.algorithm.mapper.model.MapperDAG;
 import org.preesm.algorithm.model.dag.DAGEdge;
 import org.preesm.algorithm.model.dag.DAGVertex;
@@ -60,6 +59,7 @@ import org.preesm.model.pisdf.AbstractVertex;
 import org.preesm.model.pisdf.Parameter;
 import org.preesm.model.pisdf.PiGraph;
 import org.preesm.model.pisdf.util.PiMMSwitch;
+import org.preesm.scenario.PreesmScenario;
 
 /**
  * The Class StaticPiMM2SDFLauncher.

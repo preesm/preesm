@@ -53,10 +53,6 @@ import java.util.logging.Level;
 import org.eclipse.xtext.xbase.lib.Pair;
 import org.jgrapht.graph.DefaultEdge;
 import org.jgrapht.graph.SimpleGraph;
-import org.preesm.algorithm.core.types.BufferAggregate;
-import org.preesm.algorithm.core.types.DataType;
-import org.preesm.algorithm.core.types.ImplementationPropertyNames;
-import org.preesm.algorithm.core.types.VertexType;
 import org.preesm.algorithm.iterators.TopologicalDAGIterator;
 import org.preesm.algorithm.mapper.ScheduledDAGIterator;
 import org.preesm.algorithm.memory.allocation.MemoryAllocationException;
@@ -77,6 +73,10 @@ import org.preesm.algorithm.model.sdf.esdf.SDFInitVertex;
 import org.preesm.commons.CloneableProperty;
 import org.preesm.commons.logger.PreesmLogger;
 import org.preesm.model.slam.ComponentInstance;
+import org.preesm.scenario.types.BufferAggregate;
+import org.preesm.scenario.types.DataType;
+import org.preesm.scenario.types.ImplementationPropertyNames;
+import org.preesm.scenario.types.VertexType;
 import org.preesm.workflow.WorkflowException;
 
 // TODO: Auto-generated Javadoc

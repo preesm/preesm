@@ -44,8 +44,6 @@ import java.util.ArrayList;
 import java.util.LinkedHashSet;
 import java.util.Set;
 import java.util.logging.Level;
-import org.preesm.algorithm.core.types.ImplementationPropertyNames;
-import org.preesm.algorithm.core.types.VertexType;
 import org.preesm.algorithm.iterators.SDFIterator;
 import org.preesm.algorithm.iterators.TopologicalDAGIterator;
 import org.preesm.algorithm.model.dag.DAGEdge;
@@ -60,6 +58,8 @@ import org.preesm.algorithm.model.sdf.esdf.SDFBroadcastVertex;
 import org.preesm.algorithm.model.sdf.esdf.SDFJoinVertex;
 import org.preesm.algorithm.model.sdf.esdf.SDFRoundBufferVertex;
 import org.preesm.commons.logger.PreesmLogger;
+import org.preesm.scenario.types.ImplementationPropertyNames;
+import org.preesm.scenario.types.VertexType;
 import org.preesm.workflow.WorkflowException;
 
 /**

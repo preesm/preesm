@@ -50,9 +50,6 @@ import org.eclipse.xtext.xbase.lib.Functions.Function1;
 import org.eclipse.xtext.xbase.lib.IterableExtensions;
 import org.eclipse.xtext.xbase.lib.Pair;
 import org.jgrapht.graph.DefaultEdge;
-import org.preesm.algorithm.core.types.BufferAggregate;
-import org.preesm.algorithm.core.types.BufferProperties;
-import org.preesm.algorithm.core.types.DataType;
 import org.preesm.algorithm.memory.exclusiongraph.MemoryExclusionGraph;
 import org.preesm.algorithm.memory.exclusiongraph.MemoryExclusionVertex;
 import org.preesm.algorithm.memory.script.Range;
@@ -63,6 +60,9 @@ import org.preesm.algorithm.model.sdf.SDFEdge;
 import org.preesm.algorithm.model.sdf.SDFGraph;
 import org.preesm.commons.logger.PreesmLogger;
 import org.preesm.commons.math.MathFunctionsHelper;
+import org.preesm.scenario.types.BufferAggregate;
+import org.preesm.scenario.types.BufferProperties;
+import org.preesm.scenario.types.DataType;
 
 // TODO: Auto-generated Javadoc
 /**

@@ -42,7 +42,6 @@ package org.preesm.algorithm.mapper;
 
 import java.util.Map;
 import java.util.logging.Level;
-import org.preesm.algorithm.core.scenario.PreesmScenario;
 import org.preesm.algorithm.mapper.abc.impl.latency.LatencyAbc;
 import org.preesm.algorithm.mapper.abc.taskscheduling.AbstractTaskSched;
 import org.preesm.algorithm.mapper.algo.list.InitialLists;
@@ -51,6 +50,7 @@ import org.preesm.algorithm.mapper.model.MapperDAG;
 import org.preesm.algorithm.mapper.params.AbcParameters;
 import org.preesm.commons.logger.PreesmLogger;
 import org.preesm.model.slam.Design;
+import org.preesm.scenario.PreesmScenario;
 
 /**
  * List scheduling is a cheep, greedy, sequential mapping/scheduling method.

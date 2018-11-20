@@ -39,7 +39,6 @@ package org.preesm.algorithm.mapper.abc.impl.latency;
 
 import java.util.ArrayList;
 import java.util.List;
-import org.preesm.algorithm.core.scenario.PreesmScenario;
 import org.preesm.algorithm.mapper.abc.AbcType;
 import org.preesm.algorithm.mapper.abc.edgescheduling.EdgeSchedType;
 import org.preesm.algorithm.mapper.abc.route.CommunicationRouter;
@@ -51,6 +50,7 @@ import org.preesm.algorithm.mapper.params.AbcParameters;
 import org.preesm.model.slam.ComponentInstance;
 import org.preesm.model.slam.Design;
 import org.preesm.model.slam.utils.DesignTools;
+import org.preesm.scenario.PreesmScenario;
 
 // TODO: Auto-generated Javadoc
 /**

@@ -44,9 +44,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
 import org.eclipse.xtext.util.Pair;
-import org.preesm.algorithm.core.types.BufferAggregate;
-import org.preesm.algorithm.core.types.BufferProperties;
-import org.preesm.algorithm.core.types.DataType;
 import org.preesm.algorithm.memory.script.Range;
 import org.preesm.algorithm.model.AbstractEdge;
 import org.preesm.algorithm.model.AbstractVertex;
@@ -55,6 +52,9 @@ import org.preesm.algorithm.model.PropertyFactory;
 import org.preesm.algorithm.model.dag.DAGEdge;
 import org.preesm.algorithm.model.dag.DAGVertex;
 import org.preesm.commons.logger.PreesmLogger;
+import org.preesm.scenario.types.BufferAggregate;
+import org.preesm.scenario.types.BufferProperties;
+import org.preesm.scenario.types.DataType;
 
 // TODO: Auto-generated Javadoc
 /**

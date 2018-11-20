@@ -43,9 +43,9 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.concurrent.ConcurrentSkipListSet;
 import org.apache.commons.lang3.tuple.MutablePair;
-import org.preesm.algorithm.core.scenario.PreesmScenario;
 import org.preesm.model.slam.ComponentInstance;
 import org.preesm.model.slam.route.Route;
+import org.preesm.scenario.PreesmScenario;
 
 /**
  * Table representing the different routes available to go from one operator to another.

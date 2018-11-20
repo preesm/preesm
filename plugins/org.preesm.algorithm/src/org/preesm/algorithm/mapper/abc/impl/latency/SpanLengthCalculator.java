@@ -36,12 +36,12 @@
  */
 package org.preesm.algorithm.mapper.abc.impl.latency;
 
-import org.preesm.algorithm.core.scenario.PreesmScenario;
 import org.preesm.algorithm.mapper.abc.taskscheduling.TaskSchedType;
 import org.preesm.algorithm.mapper.model.MapperDAG;
 import org.preesm.algorithm.mapper.model.MapperDAGEdge;
 import org.preesm.algorithm.mapper.params.AbcParameters;
 import org.preesm.model.slam.Design;
+import org.preesm.scenario.PreesmScenario;
 import org.preesm.workflow.WorkflowException;
 
 /**

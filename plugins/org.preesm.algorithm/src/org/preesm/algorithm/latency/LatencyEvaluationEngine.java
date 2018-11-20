@@ -39,13 +39,13 @@ import java.util.ArrayList;
 import java.util.Hashtable;
 import java.util.List;
 import java.util.Map;
-import org.preesm.algorithm.core.scenario.PreesmScenario;
 import org.preesm.algorithm.model.sdf.SDFAbstractVertex;
 import org.preesm.algorithm.model.sdf.SDFEdge;
 import org.preesm.algorithm.model.sdf.SDFGraph;
 import org.preesm.algorithm.throughput.tools.helpers.GraphStructureHelper;
 import org.preesm.algorithm.throughput.tools.helpers.Stopwatch;
 import org.preesm.algorithm.throughput.tools.transformers.SDFTransformer;
+import org.preesm.scenario.PreesmScenario;
 
 /**
  * @author hderoui

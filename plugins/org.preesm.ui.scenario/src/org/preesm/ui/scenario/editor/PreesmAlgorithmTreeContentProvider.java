@@ -45,8 +45,6 @@ import org.eclipse.emf.common.util.EList;
 import org.eclipse.jface.viewers.CheckboxTreeViewer;
 import org.eclipse.jface.viewers.ITreeContentProvider;
 import org.eclipse.jface.viewers.Viewer;
-import org.preesm.algorithm.core.scenario.PreesmScenario;
-import org.preesm.algorithm.core.scenario.serialize.ScenarioParser;
 import org.preesm.algorithm.model.IRefinement;
 import org.preesm.algorithm.model.sdf.SDFAbstractVertex;
 import org.preesm.algorithm.model.sdf.SDFGraph;
@@ -55,6 +53,8 @@ import org.preesm.model.pisdf.AbstractActor;
 import org.preesm.model.pisdf.Actor;
 import org.preesm.model.pisdf.PiGraph;
 import org.preesm.model.pisdf.serialize.PiParser;
+import org.preesm.scenario.PreesmScenario;
+import org.preesm.scenario.serialize.ScenarioParser;
 
 // TODO: Auto-generated Javadoc
 /**

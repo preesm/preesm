@@ -42,7 +42,6 @@ package org.preesm.algorithm.mapper.model;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Set;
-import org.preesm.algorithm.core.types.ImplementationPropertyNames;
 import org.preesm.algorithm.mapper.model.property.VertexInit;
 import org.preesm.algorithm.mapper.model.property.VertexMapping;
 import org.preesm.algorithm.mapper.model.property.VertexTiming;
@@ -57,6 +56,7 @@ import org.preesm.algorithm.model.dag.DAGVertex;
 import org.preesm.model.slam.ComponentInstance;
 import org.preesm.model.slam.component.Operator;
 import org.preesm.model.slam.utils.DesignTools;
+import org.preesm.scenario.types.ImplementationPropertyNames;
 
 /**
  * Represents a vertex in a DAG of type {@link MapperDAG} used in the mapper.

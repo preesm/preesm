@@ -42,8 +42,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import org.preesm.algorithm.core.scenario.PreesmScenario;
-import org.preesm.algorithm.core.types.DataType;
 import org.preesm.algorithm.mapper.graphtransfo.SdfToDagConverter;
 import org.preesm.algorithm.mapper.model.MapperDAG;
 import org.preesm.algorithm.memory.allocation.BestFitAllocator;
@@ -70,6 +68,8 @@ import org.preesm.algorithm.model.visitors.SDF4JException;
 import org.preesm.commons.logger.PreesmLogger;
 import org.preesm.commons.math.MathFunctionsHelper;
 import org.preesm.model.slam.Design;
+import org.preesm.scenario.PreesmScenario;
+import org.preesm.scenario.types.DataType;
 import org.preesm.workflow.WorkflowException;
 
 /**

@@ -39,11 +39,11 @@ import java.util.Map;
 import java.util.Set;
 import org.junit.Assert;
 import org.junit.Test;
-import org.preesm.algorithm.core.scenario.PreesmScenario;
 import org.preesm.algorithm.model.sdf.SDFAbstractVertex;
 import org.preesm.algorithm.model.sdf.SDFGraph;
 import org.preesm.algorithm.randomsdf.RandomSDF;
 import org.preesm.model.slam.SlamFactory;
+import org.preesm.scenario.PreesmScenario;
 import org.preesm.workflow.WorkflowException;
 
 /**

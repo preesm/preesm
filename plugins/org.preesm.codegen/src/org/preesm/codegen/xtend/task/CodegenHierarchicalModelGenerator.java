@@ -54,10 +54,6 @@ import org.preesm.algorithm.codegen.idl.ActorPrototypes;
 import org.preesm.algorithm.codegen.idl.Prototype;
 import org.preesm.algorithm.codegen.model.CodeGenArgument;
 import org.preesm.algorithm.codegen.model.CodeGenParameter;
-import org.preesm.algorithm.core.scenario.PreesmScenario;
-import org.preesm.algorithm.core.types.BufferAggregate;
-import org.preesm.algorithm.core.types.BufferProperties;
-import org.preesm.algorithm.core.types.DataType;
 import org.preesm.algorithm.mapper.model.MapperDAG;
 import org.preesm.algorithm.model.AbstractGraph;
 import org.preesm.algorithm.model.AbstractVertex;
@@ -94,6 +90,10 @@ import org.preesm.codegen.model.SpecialType;
 import org.preesm.codegen.model.SubBuffer;
 import org.preesm.codegen.model.Variable;
 import org.preesm.commons.logger.PreesmLogger;
+import org.preesm.scenario.PreesmScenario;
+import org.preesm.scenario.types.BufferAggregate;
+import org.preesm.scenario.types.BufferProperties;
+import org.preesm.scenario.types.DataType;
 import org.preesm.workflow.WorkflowException;
 
 /**

@@ -41,10 +41,10 @@ import java.util.Map;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IPersistableElement;
-import org.preesm.algorithm.core.scenario.PreesmScenario;
 import org.preesm.algorithm.mapper.abc.impl.latency.LatencyAbc;
 import org.preesm.algorithm.mapper.activator.Activator;
 import org.preesm.commons.logger.PreesmLogger;
+import org.preesm.scenario.PreesmScenario;
 
 /**
  * Input of the editor of implementation statistics.

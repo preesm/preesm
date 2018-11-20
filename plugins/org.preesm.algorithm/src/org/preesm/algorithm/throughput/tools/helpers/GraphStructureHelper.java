@@ -41,7 +41,6 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
-import org.preesm.algorithm.core.scenario.PreesmScenario;
 import org.preesm.algorithm.model.AbstractVertex;
 import org.preesm.algorithm.model.sdf.SDFAbstractVertex;
 import org.preesm.algorithm.model.sdf.SDFEdge;
@@ -52,6 +51,7 @@ import org.preesm.algorithm.model.sdf.esdf.SDFSinkInterfaceVertex;
 import org.preesm.algorithm.model.sdf.esdf.SDFSourceInterfaceVertex;
 import org.preesm.algorithm.model.types.LongEdgePropertyType;
 import org.preesm.algorithm.throughput.tools.parsers.Identifier;
+import org.preesm.scenario.PreesmScenario;
 
 /**
  * @author hderoui

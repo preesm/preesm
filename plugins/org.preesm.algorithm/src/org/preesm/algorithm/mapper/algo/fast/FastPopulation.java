@@ -39,7 +39,6 @@ package org.preesm.algorithm.mapper.algo.fast;
 
 import java.util.ArrayList;
 import java.util.List;
-import org.preesm.algorithm.core.scenario.PreesmScenario;
 import org.preesm.algorithm.mapper.abc.AbcType;
 import org.preesm.algorithm.mapper.abc.edgescheduling.EdgeSchedType;
 import org.preesm.algorithm.mapper.abc.impl.latency.InfiniteHomogeneousAbc;
@@ -50,6 +49,7 @@ import org.preesm.algorithm.mapper.model.MapperDAG;
 import org.preesm.algorithm.mapper.params.AbcParameters;
 import org.preesm.algorithm.mapper.params.FastAlgoParameters;
 import org.preesm.model.slam.Design;
+import org.preesm.scenario.PreesmScenario;
 import org.preesm.workflow.WorkflowException;
 
 /**

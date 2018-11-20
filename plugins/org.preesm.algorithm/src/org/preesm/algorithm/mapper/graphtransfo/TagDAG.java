@@ -41,12 +41,6 @@
 package org.preesm.algorithm.mapper.graphtransfo;
 
 import java.util.Iterator;
-import org.preesm.algorithm.core.scenario.PreesmScenario;
-import org.preesm.algorithm.core.types.BufferAggregate;
-import org.preesm.algorithm.core.types.BufferProperties;
-import org.preesm.algorithm.core.types.DataType;
-import org.preesm.algorithm.core.types.ImplementationPropertyNames;
-import org.preesm.algorithm.core.types.VertexType;
 import org.preesm.algorithm.mapper.abc.edgescheduling.AbstractEdgeSched;
 import org.preesm.algorithm.mapper.abc.edgescheduling.EdgeSchedType;
 import org.preesm.algorithm.mapper.abc.edgescheduling.IEdgeSched;
@@ -70,6 +64,12 @@ import org.preesm.model.slam.ComponentInstance;
 import org.preesm.model.slam.Design;
 import org.preesm.model.slam.route.AbstractRouteStep;
 import org.preesm.model.slam.utils.DesignTools;
+import org.preesm.scenario.PreesmScenario;
+import org.preesm.scenario.types.BufferAggregate;
+import org.preesm.scenario.types.BufferProperties;
+import org.preesm.scenario.types.DataType;
+import org.preesm.scenario.types.ImplementationPropertyNames;
+import org.preesm.scenario.types.VertexType;
 
 /**
  * Tags an SDF with the implementation information necessary for code generation, and DAG exporting.

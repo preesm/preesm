@@ -46,14 +46,14 @@ import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IWorkspace;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.IPath;
-import org.preesm.algorithm.core.scenario.ConstraintGroupManager;
-import org.preesm.algorithm.core.scenario.PreesmScenario;
-import org.preesm.algorithm.core.scenario.Timing;
-import org.preesm.algorithm.core.types.DataType;
 import org.preesm.algorithm.model.sdf.SDFAbstractVertex;
 import org.preesm.algorithm.model.sdf.SDFGraph;
 import org.preesm.model.slam.ComponentInstance;
 import org.preesm.model.slam.Design;
+import org.preesm.scenario.ConstraintGroupManager;
+import org.preesm.scenario.PreesmScenario;
+import org.preesm.scenario.Timing;
+import org.preesm.scenario.types.DataType;
 import org.preesm.workflow.WorkflowException;
 
 // TODO: Auto-generated Javadoc

@@ -39,7 +39,7 @@ package org.preesm.ui.scenario.editor.parametervalues;
 
 import org.eclipse.jface.viewers.IStructuredContentProvider;
 import org.eclipse.jface.viewers.Viewer;
-import org.preesm.algorithm.core.scenario.PreesmScenario;
+import org.preesm.scenario.PreesmScenario;
 
 // TODO: Auto-generated Javadoc
 /**

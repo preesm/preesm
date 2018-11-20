@@ -46,11 +46,6 @@ import java.util.Map;
 import java.util.Set;
 import org.eclipse.emf.common.util.EList;
 import org.eclipse.emf.ecore.util.EcoreUtil;
-import org.preesm.algorithm.core.scenario.ConstraintGroup;
-import org.preesm.algorithm.core.scenario.ConstraintGroupManager;
-import org.preesm.algorithm.core.scenario.PreesmScenario;
-import org.preesm.algorithm.core.scenario.Timing;
-import org.preesm.algorithm.core.scenario.TimingManager;
 import org.preesm.algorithm.pisdf.helper.PiMMHandler;
 import org.preesm.model.pisdf.AbstractActor;
 import org.preesm.model.pisdf.AbstractVertex;
@@ -83,6 +78,11 @@ import org.preesm.model.pisdf.PortMemoryAnnotation;
 import org.preesm.model.pisdf.RoundBufferActor;
 import org.preesm.model.pisdf.factory.PiMMUserFactory;
 import org.preesm.model.pisdf.util.PiMMSwitch;
+import org.preesm.scenario.ConstraintGroup;
+import org.preesm.scenario.ConstraintGroupManager;
+import org.preesm.scenario.PreesmScenario;
+import org.preesm.scenario.Timing;
+import org.preesm.scenario.TimingManager;
 import org.preesm.workflow.WorkflowException;
 
 /**

@@ -41,17 +41,17 @@ package org.preesm.codegen.xtend.task;
 import java.util.ArrayList;
 import java.util.LinkedHashSet;
 import java.util.Set;
-import org.preesm.algorithm.core.scenario.PreesmScenario;
-import org.preesm.algorithm.core.scenario.papi.PapiEvent;
-import org.preesm.algorithm.core.scenario.papi.PapiEventModifier;
-import org.preesm.algorithm.core.scenario.papi.PapifyConfigActor;
-import org.preesm.algorithm.core.scenario.papi.PapifyConfigManager;
 import org.preesm.algorithm.model.dag.DAGVertex;
 import org.preesm.algorithm.model.dag.DirectedAcyclicGraph;
 import org.preesm.codegen.model.CodegenFactory;
 import org.preesm.codegen.model.Constant;
 import org.preesm.codegen.model.ConstantString;
 import org.preesm.codegen.model.PapifyAction;
+import org.preesm.scenario.PreesmScenario;
+import org.preesm.scenario.papi.PapiEvent;
+import org.preesm.scenario.papi.PapiEventModifier;
+import org.preesm.scenario.papi.PapifyConfigActor;
+import org.preesm.scenario.papi.PapifyConfigManager;
 
 /**
  * The Class PapifyEngine.

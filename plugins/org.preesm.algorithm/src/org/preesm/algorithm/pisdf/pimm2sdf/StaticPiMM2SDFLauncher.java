@@ -40,13 +40,13 @@ package org.preesm.algorithm.pisdf.pimm2sdf;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Set;
-import org.preesm.algorithm.core.scenario.ParameterValue;
-import org.preesm.algorithm.core.scenario.ParameterValueManager;
-import org.preesm.algorithm.core.scenario.PreesmScenario;
 import org.preesm.algorithm.model.sdf.SDFGraph;
 import org.preesm.algorithm.pisdf.pimm2sdf.visitor.StaticPiMM2SDFVisitor;
 import org.preesm.model.pisdf.Parameter;
 import org.preesm.model.pisdf.PiGraph;
+import org.preesm.scenario.ParameterValue;
+import org.preesm.scenario.ParameterValueManager;
+import org.preesm.scenario.PreesmScenario;
 
 /**
  * The Class StaticPiMM2SDFLauncher.

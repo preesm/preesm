@@ -51,12 +51,6 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 import org.eclipse.emf.common.util.EList;
-import org.preesm.algorithm.core.scenario.ConstraintGroup;
-import org.preesm.algorithm.core.scenario.PreesmScenario;
-import org.preesm.algorithm.core.scenario.Timing;
-import org.preesm.algorithm.core.scenario.papi.PapiEvent;
-import org.preesm.algorithm.core.scenario.papi.PapifyConfigActor;
-import org.preesm.algorithm.core.scenario.papi.PapifyConfigManager;
 import org.preesm.codegen.xtend.spider.SpiderMainFilePrinter;
 import org.preesm.codegen.xtend.spider.utils.SpiderNameGenerator;
 import org.preesm.commons.logger.PreesmLogger;
@@ -72,6 +66,12 @@ import org.preesm.model.pisdf.util.ActorPath;
 import org.preesm.model.slam.ComponentInstance;
 import org.preesm.model.slam.Design;
 import org.preesm.model.slam.component.Component;
+import org.preesm.scenario.ConstraintGroup;
+import org.preesm.scenario.PreesmScenario;
+import org.preesm.scenario.Timing;
+import org.preesm.scenario.papi.PapiEvent;
+import org.preesm.scenario.papi.PapifyConfigActor;
+import org.preesm.scenario.papi.PapifyConfigManager;
 
 /**
  * The Class SpiderCodegen.

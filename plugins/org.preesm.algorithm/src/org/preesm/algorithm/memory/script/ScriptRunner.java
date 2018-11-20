@@ -61,7 +61,6 @@ import java.util.logging.Logger;
 import java.util.stream.Collectors;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.xtext.xbase.lib.Pair;
-import org.preesm.algorithm.core.types.DataType;
 import org.preesm.algorithm.memory.allocation.MemoryAllocationException;
 import org.preesm.algorithm.memory.exclusiongraph.MemoryExclusionGraph;
 import org.preesm.algorithm.memory.exclusiongraph.MemoryExclusionVertex;
@@ -81,6 +80,7 @@ import org.preesm.algorithm.model.sdf.SDFVertex;
 import org.preesm.algorithm.model.sdf.esdf.SDFRoundBufferVertex;
 import org.preesm.commons.files.URLResolver;
 import org.preesm.commons.logger.PreesmLogger;
+import org.preesm.scenario.types.DataType;
 import org.preesm.workflow.WorkflowException;
 
 /**

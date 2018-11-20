@@ -37,7 +37,6 @@
  */
 package org.preesm.algorithm.mapper.abc.impl.latency;
 
-import org.preesm.algorithm.core.scenario.PreesmScenario;
 import org.preesm.algorithm.mapper.abc.AbcType;
 import org.preesm.algorithm.mapper.abc.edgescheduling.EdgeSchedType;
 import org.preesm.algorithm.mapper.abc.taskscheduling.TaskSchedType;
@@ -51,6 +50,7 @@ import org.preesm.model.slam.ComponentInstance;
 import org.preesm.model.slam.Design;
 import org.preesm.model.slam.component.ComNode;
 import org.preesm.model.slam.utils.DesignTools;
+import org.preesm.scenario.PreesmScenario;
 import org.preesm.workflow.WorkflowException;
 
 /**

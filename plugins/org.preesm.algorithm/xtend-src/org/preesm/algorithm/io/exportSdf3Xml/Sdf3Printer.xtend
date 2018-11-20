@@ -41,8 +41,6 @@ import java.io.FileWriter
 import java.io.IOException
 import java.util.Collection
 import org.eclipse.xtend.lib.annotations.Accessors
-import org.preesm.algorithm.core.scenario.PreesmScenario
-import org.preesm.algorithm.core.scenario.Timing
 import org.preesm.algorithm.model.AbstractEdge
 import org.preesm.algorithm.model.IInterface
 import org.preesm.algorithm.model.sdf.SDFAbstractVertex
@@ -52,6 +50,8 @@ import org.preesm.algorithm.model.sdf.SDFVertex
 import org.preesm.algorithm.model.sdf.esdf.SDFSourceInterfaceVertex
 import org.preesm.commons.math.MathFunctionsHelper
 import org.preesm.model.slam.Design
+import org.preesm.scenario.PreesmScenario
+import org.preesm.scenario.Timing
 
 /**
  * This class is used to print an {@link SDFGraph} in the SDF For Free (SDF3)

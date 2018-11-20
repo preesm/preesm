@@ -51,7 +51,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.logging.Level;
-import org.preesm.algorithm.core.types.DataType;
 import org.preesm.codegen.xtend.spider.utils.SpiderNameGenerator;
 import org.preesm.codegen.xtend.spider.utils.SpiderTypeConverter;
 import org.preesm.codegen.xtend.spider.utils.SpiderTypeConverter.PiSDFSubType;
@@ -89,6 +88,7 @@ import org.preesm.model.pisdf.PiSDFRefinement;
 import org.preesm.model.pisdf.Port;
 import org.preesm.model.pisdf.RoundBufferActor;
 import org.preesm.model.pisdf.util.PiMMSwitch;
+import org.preesm.scenario.types.DataType;
 
 // TODO: Find a cleaner way to setParentEdge in Interfaces
 /*

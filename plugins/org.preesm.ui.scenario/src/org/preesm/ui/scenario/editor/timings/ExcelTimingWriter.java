@@ -57,12 +57,12 @@ import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.ui.IWorkbench;
 import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.PlatformUI;
-import org.preesm.algorithm.core.scenario.PreesmScenario;
-import org.preesm.algorithm.core.scenario.Timing;
-import org.preesm.algorithm.core.scenario.serialize.PreesmAlgorithmListContentProvider;
 import org.preesm.algorithm.importer.InvalidModelException;
 import org.preesm.algorithm.model.sdf.SDFAbstractVertex;
 import org.preesm.model.pisdf.AbstractActor;
+import org.preesm.scenario.PreesmScenario;
+import org.preesm.scenario.Timing;
+import org.preesm.scenario.serialize.PreesmAlgorithmListContentProvider;
 import org.preesm.ui.scenario.editor.ExcelWriter;
 import org.preesm.ui.scenario.editor.SaveAsWizard;
 

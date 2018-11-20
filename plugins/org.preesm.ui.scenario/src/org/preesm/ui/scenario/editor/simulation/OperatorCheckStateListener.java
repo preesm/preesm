@@ -45,7 +45,7 @@ import org.eclipse.swt.events.PaintListener;
 import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.IPropertyListener;
 import org.eclipse.ui.forms.widgets.Section;
-import org.preesm.algorithm.core.scenario.PreesmScenario;
+import org.preesm.scenario.PreesmScenario;
 
 // TODO: Auto-generated Javadoc
 /**

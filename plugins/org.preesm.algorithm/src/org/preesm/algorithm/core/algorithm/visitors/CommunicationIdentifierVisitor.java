@@ -39,8 +39,6 @@ package org.preesm.algorithm.core.algorithm.visitors;
 import java.util.Iterator;
 import java.util.LinkedHashSet;
 import java.util.Set;
-import org.preesm.algorithm.core.types.ImplementationPropertyNames;
-import org.preesm.algorithm.core.types.VertexType;
 import org.preesm.algorithm.model.PropertyBean;
 import org.preesm.algorithm.model.dag.DAGEdge;
 import org.preesm.algorithm.model.dag.DAGVertex;
@@ -48,6 +46,8 @@ import org.preesm.algorithm.model.dag.DirectedAcyclicGraph;
 import org.preesm.algorithm.model.visitors.IGraphVisitor;
 import org.preesm.algorithm.model.visitors.SDF4JException;
 import org.preesm.model.slam.ComponentInstance;
+import org.preesm.scenario.types.ImplementationPropertyNames;
+import org.preesm.scenario.types.VertexType;
 
 /**
  * Visitor to identify the inter-core communications of a mapped DAG. This visitor is inspired by

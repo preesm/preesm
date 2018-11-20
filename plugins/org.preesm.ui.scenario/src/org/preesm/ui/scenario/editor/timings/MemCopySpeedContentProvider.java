@@ -41,8 +41,8 @@ import java.util.Collections;
 import java.util.List;
 import org.eclipse.jface.viewers.IStructuredContentProvider;
 import org.eclipse.jface.viewers.Viewer;
-import org.preesm.algorithm.core.scenario.MemCopySpeed;
-import org.preesm.algorithm.core.scenario.PreesmScenario;
+import org.preesm.scenario.MemCopySpeed;
+import org.preesm.scenario.PreesmScenario;
 
 // TODO: Auto-generated Javadoc
 /**

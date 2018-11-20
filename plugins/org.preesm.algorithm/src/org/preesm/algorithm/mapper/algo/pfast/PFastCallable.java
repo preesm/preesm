@@ -41,7 +41,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 import java.util.concurrent.Callable;
-import org.preesm.algorithm.core.scenario.PreesmScenario;
 import org.preesm.algorithm.mapper.abc.impl.latency.InfiniteHomogeneousAbc;
 import org.preesm.algorithm.mapper.abc.impl.latency.LatencyAbc;
 import org.preesm.algorithm.mapper.abc.taskscheduling.TopologicalTaskSched;
@@ -52,6 +51,7 @@ import org.preesm.algorithm.mapper.model.MapperDAGVertex;
 import org.preesm.algorithm.mapper.params.AbcParameters;
 import org.preesm.algorithm.mapper.params.FastAlgoParameters;
 import org.preesm.model.slam.Design;
+import org.preesm.scenario.PreesmScenario;
 
 /**
  * One thread of Task scheduling FAST algorithm multithread.
