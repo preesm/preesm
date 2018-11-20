@@ -1,3 +1,4 @@
+package org.preesm.model.pisdf.serialize;
 /**
  * Copyright or © or Copr. IETR/INSA - Rennes (2008 - 2018) :
  *
@@ -38,7 +39,6 @@
  * The fact that you are presently reading this means that you have had
  * knowledge of the CeCILL license and that you accept its terms.
  */
-package org.preesm.algorithm.io.xml;
 
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -56,7 +56,6 @@ import org.preesm.commons.files.ContainersManager;
 import org.preesm.commons.files.PathTools;
 import org.preesm.commons.files.WorkspaceUtils;
 import org.preesm.model.pisdf.PiGraph;
-import org.preesm.model.pisdf.serialize.PiWriter;
 import org.preesm.workflow.WorkflowException;
 import org.preesm.workflow.elements.Workflow;
 import org.preesm.workflow.implement.AbstractTaskImplementation;
