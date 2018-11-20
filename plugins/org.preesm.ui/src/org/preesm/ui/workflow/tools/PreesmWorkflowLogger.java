@@ -39,7 +39,6 @@
 package org.preesm.ui.workflow.tools;
 
 import java.io.IOException;
-import java.util.Date;
 import java.util.logging.Level;
 import java.util.logging.LogManager;
 import java.util.logging.LogRecord;
@@ -50,7 +49,7 @@ import org.eclipse.ui.console.IConsole;
 import org.eclipse.ui.console.IConsoleManager;
 import org.eclipse.ui.console.MessageConsole;
 import org.eclipse.ui.console.MessageConsoleStream;
-import org.preesm.commons.logger.PreesmLogger;
+import org.preesm.commons.logger.DefaultPreesmFormatter;
 import org.preesm.ui.PreesmUIPlugin;
 import org.preesm.workflow.WorkflowException;
 
@@ -105,8 +104,9 @@ public class PreesmWorkflowLogger extends Logger {
               stream.setColor(new Color(null, 255, 0, 0));
             }
           });
-          stream.println(PreesmLogger.getFormattedTime(new Date(record.getMillis())) + record.getMessage());
+          stream.println(new DefaultPreesmFormatter(false).format(record));
           if (record.getThrown() != null) {
+            // always log stack trace in the anonymous logger
             Logger.getAnonymousLogger().log(Level.SEVERE, record.getThrown().getMessage(), record.getThrown());
           }
         } catch (IOException e) {

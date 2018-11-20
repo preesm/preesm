@@ -48,12 +48,17 @@ public class CLIWorkflowLogHandler extends Handler {
 
   private final boolean debugMode;
 
-  private final Handler stderrStreamHandler = new StreamHandler(System.err, new DefaultPreesmFormatter());
-  private final Handler stdoutStreamHandler = new StreamHandler(System.out, new DefaultPreesmFormatter());
+  private final Handler stderrStreamHandler;
+  private final Handler stdoutStreamHandler;
 
+  /**
+   *
+   */
   public CLIWorkflowLogHandler(final boolean debugMode) {
     super();
     this.debugMode = debugMode;
+    stderrStreamHandler = new StreamHandler(System.err, new DefaultPreesmFormatter(debugMode));
+    stdoutStreamHandler = new StreamHandler(System.out, new DefaultPreesmFormatter(debugMode));
   }
 
   @Override

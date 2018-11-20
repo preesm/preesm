@@ -38,8 +38,6 @@
  */
 package org.preesm.workflow;
 
-import java.io.PrintWriter;
-import java.io.StringWriter;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.Map;
@@ -390,9 +388,7 @@ public abstract class AbstractWorkflowExecutor {
             error(e, e.getMessage());
             return false;
           } catch (final Exception e) {
-            final StringWriter error = new StringWriter();
-            e.printStackTrace(new PrintWriter(error));
-            error(e, "Unexpected Exception: " + error.toString()
+            error(e, "Unexpected Exception: " + e.getClass().getCanonicalName() + ":" + e.getMessage()
                 + "\n Contact Preesm developers if you cannot solve the problem.");
             return false;
           }

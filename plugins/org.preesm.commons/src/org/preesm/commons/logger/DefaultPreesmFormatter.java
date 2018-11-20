@@ -34,7 +34,6 @@
  */
 package org.preesm.commons.logger;
 
-import java.text.DateFormat;
 import java.util.Date;
 import java.util.logging.Formatter;
 import java.util.logging.Level;
@@ -46,7 +45,14 @@ import org.apache.commons.lang3.exception.ExceptionUtils;
  *
  * @author Antoine Lorence
  */
-class DefaultPreesmFormatter extends Formatter {
+public class DefaultPreesmFormatter extends Formatter {
+
+  private final boolean debugMode;
+
+  public DefaultPreesmFormatter(final boolean debugMode) {
+    super();
+    this.debugMode = debugMode;
+  }
 
   /*
    * (non-Javadoc)
@@ -60,11 +66,12 @@ class DefaultPreesmFormatter extends Formatter {
 
     if (!hasRawFlag(record)) {
       final Date date = new Date(record.getMillis());
-      final DateFormat df = DateFormat.getTimeInstance();
 
-      output.append(df.format(date));
+      output.append(PreesmLogger.getFormattedTime(date));
       // Default printing for warn & severe
-      if (record.getLevel().intValue() > Level.INFO.intValue()) {
+      if (record.getLevel().intValue() > Level.WARNING.intValue()) {
+        output.append(" ").append(record.getLevel());
+      } else if (record.getLevel().intValue() > Level.INFO.intValue()) {
         output.append(" ").append(record.getLevel());
       } else if (record.getLevel().intValue() == Level.INFO.intValue()) {
         output.append(" NOTICE");
@@ -78,7 +85,9 @@ class DefaultPreesmFormatter extends Formatter {
 
     final Throwable thrown = record.getThrown();
     if (thrown != null) {
-      output.append("\n" + ExceptionUtils.getStackTrace(thrown));
+      if (debugMode) {
+        output.append("\n" + ExceptionUtils.getStackTrace(thrown));
+      }
     }
 
     return output.toString();

@@ -43,7 +43,6 @@ package org.preesm.commons.logger;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.logging.Handler;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.eclipse.core.runtime.IConfigurationElement;
@@ -108,9 +107,6 @@ public abstract class PreesmLogger extends Logger {
         setLogger(anonymousLogger);
       }
     }
-    for (Handler handler : PreesmLogger.logger.getHandlers()) {
-      handler.setFormatter(new DefaultPreesmFormatter());
-    }
     return PreesmLogger.logger;
   }
 
@@ -139,7 +135,7 @@ public abstract class PreesmLogger extends Logger {
   }
 
   public static String getFormattedTime(final Date date) {
-    final DateFormat dateFormat = new SimpleDateFormat("HH:mm:ss ");
+    final DateFormat dateFormat = new SimpleDateFormat("HH:mm:ss");
     return dateFormat.format(date);
   }
 
