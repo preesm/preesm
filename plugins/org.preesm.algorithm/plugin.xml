@@ -299,6 +299,10 @@
                   id="DAG"
                   object="org.preesm.algorithm.model.dag.DirectedAcyclicGraph">
             </output>
+            <output
+                  id="PiMM"
+                  object="org.preesm.model.pisdf.PiGraph">
+            </output>
          </outputs>
       </task>
       <task

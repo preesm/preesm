@@ -160,7 +160,7 @@ public class PiSDFExporterTask extends AbstractTaskImplementation {
   public Map<String, String> getDefaultParameters() {
     final Map<String, String> parameters = new LinkedHashMap<>();
 
-    parameters.put("path", "");
+    parameters.put("path", "/Algo/generated/pisdf/");
     return parameters;
   }
 

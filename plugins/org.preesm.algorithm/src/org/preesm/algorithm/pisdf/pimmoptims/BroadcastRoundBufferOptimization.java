@@ -34,10 +34,13 @@
  * knowledge of the CeCILL license and that you accept its terms.
  */
 /**
- * 
+ *
  */
 package org.preesm.algorithm.pisdf.pimmoptims;
 
+import java.util.logging.Level;
+import org.apache.commons.lang3.time.StopWatch;
+import org.preesm.commons.logger.PreesmLogger;
 import org.preesm.model.pisdf.BroadcastActor;
 import org.preesm.model.pisdf.PiGraph;
 import org.preesm.model.pisdf.RoundBufferActor;
@@ -53,19 +56,24 @@ public class BroadcastRoundBufferOptimization extends PiMMSwitch<Boolean> implem
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see
    * org.ietr.preesm.pimm.algorithm.pimmoptims.PiMMOptimization#optimize(org.ietr.preesm.experiment.model.pimm.PiGraph)
    */
   @Override
   public boolean optimize(PiGraph graph) {
+    final StopWatch timer = new StopWatch();
+    timer.start();
+
     do {
       this.keepGoing = false;
       final Boolean doSwitch = doSwitch(graph);
-      if (doSwitch == null) {
-        return false;
-      }
+      this.keepGoing = (doSwitch == null);
     } while (this.keepGoing);
+    timer.stop();
+    final String msgOptimsGraphs = "BroadcastRoundBuffer optimizations: " + timer + "s.";
+    PreesmLogger.getLogger().log(Level.INFO, msgOptimsGraphs);
+
     return true;
   }
 

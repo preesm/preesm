@@ -40,6 +40,8 @@
  */
 package org.preesm.algorithm.pisdf.pimm2srdag.visitor;
 
+import java.util.logging.Level;
+import org.apache.commons.lang3.time.StopWatch;
 import org.preesm.algorithm.codegen.idl.ActorPrototypes;
 import org.preesm.algorithm.codegen.idl.Prototype;
 import org.preesm.algorithm.codegen.model.CodeGenArgument;
@@ -63,6 +65,7 @@ import org.preesm.algorithm.model.sdf.SDFVertex;
 import org.preesm.algorithm.model.types.LongEdgePropertyType;
 import org.preesm.algorithm.model.types.LongVertexPropertyType;
 import org.preesm.algorithm.model.types.StringEdgePropertyType;
+import org.preesm.commons.logger.PreesmLogger;
 import org.preesm.model.pisdf.AbstractActor;
 import org.preesm.model.pisdf.Actor;
 import org.preesm.model.pisdf.BroadcastActor;
@@ -601,6 +604,8 @@ public class StaticPiMM2MapperDAGVisitor extends PiMMSwitch<Boolean> {
 
   @Override
   public Boolean casePiGraph(final PiGraph graph) {
+    final StopWatch timer = new StopWatch();
+    timer.start();
     // If there is no actor we leave
     if (graph.getActors().isEmpty()) {
       throw new UnsupportedOperationException(
@@ -621,6 +626,10 @@ public class StaticPiMM2MapperDAGVisitor extends PiMMSwitch<Boolean> {
     for (final Fifo fifo : graph.getFifos()) {
       doSwitch(fifo);
     }
+    timer.stop();
+    final String msgPiMM2DAG = "Dag conversion: " + timer + "s.";
+    PreesmLogger.getLogger().log(Level.INFO, msgPiMM2DAG);
+    timer.reset();
     return true;
   }
 }

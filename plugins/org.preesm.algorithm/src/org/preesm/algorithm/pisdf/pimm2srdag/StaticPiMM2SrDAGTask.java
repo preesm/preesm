@@ -86,7 +86,8 @@ public class StaticPiMM2SrDAGTask extends AbstractTaskImplementation {
 
     final StaticPiMM2SrDAGLauncher launcher = new StaticPiMM2SrDAGLauncher(scenario, graph);
 
-    MapperDAG result = null;
+    final MapperDAG result;
+    final PiGraph resultPi;
     final Logger logger = PreesmLogger.getLogger();
     VisitorOutput.setLogger(logger);
     try {
@@ -101,7 +102,10 @@ public class StaticPiMM2SrDAGTask extends AbstractTaskImplementation {
         throw new WorkflowException("Unsupported method for checking consistency [" + consistencyMethod + "]");
       }
       // Convert the PiGraph to the Single-Rate Directed Acyclic Graph
-      result = launcher.launch(method);
+      resultPi = launcher.launch(method);
+
+      result = launcher.covnertToMapperDAG(resultPi);
+
       SdfToDagConverter.addInitialProperties(result, architecture, scenario);
     } catch (final StaticPiMM2SrDAGException e) {
       throw new WorkflowException(e.getMessage(), e);
@@ -112,6 +116,7 @@ public class StaticPiMM2SrDAGTask extends AbstractTaskImplementation {
 
     final Map<String, Object> output = new LinkedHashMap<>();
     output.put(AbstractWorkflowNodeImplementation.KEY_SDF_DAG, result);
+    output.put(AbstractWorkflowNodeImplementation.KEY_PI_GRAPH, resultPi);
     return output;
   }
 

@@ -102,7 +102,7 @@ public class StaticPiMM2SrDAGLauncher extends PiMMSwitch<Boolean> {
    * @throws StaticPiMM2SrDAGException
    *           the static pi MM 2 SDF exception
    */
-  public MapperDAG launch(final int method) throws StaticPiMM2SrDAGException {
+  public PiGraph launch(final int method) throws StaticPiMM2SrDAGException {
     final StopWatch timer = new StopWatch();
     try {
       timer.start();
@@ -129,20 +129,8 @@ public class StaticPiMM2SrDAGLauncher extends PiMMSwitch<Boolean> {
     // 4.5 Check periods with BRV
     PiMMHandler.checkPeriodicity(this.graphBRV);
     // 5. Convert to SR-DAG
-    final MapperDAG result = convert2SRDAG();
-    // 6. Aggregate edges
-    timer.reset();
-    timer.start();
-    // This is needed as the memory allocator does not yet handle multiple edges
-    // There is a potential TODO for someone with a brave heart here
-    // if you're doing this, remember to check for addAggregate in TAGDag.java and for createEdge in
-    // SRVerticesLinker.java.
-    // also in ScriptRunner.xtend, there is a part where the aggregate list is flatten, check that also
-    aggregateEdges(result);
-    timer.stop();
-    final String msg = "Edge aggregation: " + timer + "s.";
-    PreesmLogger.getLogger().log(Level.INFO, msg);
-    return result;
+    PiGraph convert2srdag = convert2SRDAG();
+    return convert2srdag;
   }
 
   /**
@@ -150,39 +138,21 @@ public class StaticPiMM2SrDAGLauncher extends PiMMSwitch<Boolean> {
    *
    * @return the resulting SR DAG
    */
-  private MapperDAG convert2SRDAG() {
-    final StopWatch timer = new StopWatch();
+  private PiGraph convert2SRDAG() {
+
+    // 1- Convert to acyclic single rate
     final StaticPiMM2ASrPiMMVisitor visitorPiMM2ASRPiMM = new StaticPiMM2ASrPiMMVisitor(this.graph, this.graphBRV,
         this.scenario);
-    timer.start();
-    // Transform Multi-Rate PiMM to Acyclic Single-Rate PiMM
     visitorPiMM2ASRPiMM.doSwitch(this.graph);
-    timer.stop();
-    final String msgPiMM2ASRPiMM = "Acyclic Single-Rate transformation: " + timer + "s.";
-    PreesmLogger.getLogger().log(Level.INFO, msgPiMM2ASRPiMM);
-    // Do some optimization on the graph
-    timer.reset();
-    timer.start();
     final PiGraph acyclicSRPiMM = visitorPiMM2ASRPiMM.getResult();
+
+    // 2- do some optimization on the graph
     final ForkJoinOptimization forkJoinOptimization = new ForkJoinOptimization();
     forkJoinOptimization.optimize(acyclicSRPiMM);
     final BroadcastRoundBufferOptimization brRbOptimization = new BroadcastRoundBufferOptimization();
     brRbOptimization.optimize(acyclicSRPiMM);
-    timer.stop();
-    final String msgOptimsGraphs = "Graph optimizations: " + timer + "s.";
-    PreesmLogger.getLogger().log(Level.INFO, msgOptimsGraphs);
 
-    final StaticPiMM2MapperDAGVisitor visitor = new StaticPiMM2MapperDAGVisitor(acyclicSRPiMM, this.scenario);
-    // Convert the PiMM vertices to DAG vertices
-    timer.reset();
-    timer.start();
-    visitor.doSwitch(acyclicSRPiMM);
-    timer.stop();
-    final String msgPiMM2DAG = "Dag conversion: " + timer + "s.";
-    PreesmLogger.getLogger().log(Level.INFO, msgPiMM2DAG);
-    timer.reset();
-    // Get the result
-    return visitor.getResult();
+    return acyclicSRPiMM;
   }
 
   /**
@@ -280,6 +250,30 @@ public class StaticPiMM2SrDAGLauncher extends PiMMSwitch<Boolean> {
     public StaticPiMM2SrDAGException(final String message, final Throwable cause) {
       super(message, cause);
     }
+  }
+
+  /**
+   * Converts the single rate acyclic PiSDF to {@link MapperDAG} and aggregate edges
+   */
+  public MapperDAG covnertToMapperDAG(PiGraph resultPi) {
+    // Convert the PiMM vertices to DAG vertices
+    final StaticPiMM2MapperDAGVisitor visitor = new StaticPiMM2MapperDAGVisitor(resultPi, this.scenario);
+    visitor.doSwitch(resultPi);
+    MapperDAG result = visitor.getResult();
+
+    // 6. Aggregate edges
+    final StopWatch timer = new StopWatch();
+    timer.start();
+    // This is needed as the memory allocator does not yet handle multiple edges
+    // There is a potential TODO for someone with a brave heart here
+    // if you're doing this, remember to check for addAggregate in TAGDag.java and for createEdge in
+    // SRVerticesLinker.java.
+    // also in ScriptRunner.xtend, there is a part where the aggregate list is flatten, check that also
+    aggregateEdges(result);
+    timer.stop();
+    final String msg = "Edge aggregation: " + timer + "s.";
+    PreesmLogger.getLogger().log(Level.INFO, msg);
+    return result;
   }
 
 }

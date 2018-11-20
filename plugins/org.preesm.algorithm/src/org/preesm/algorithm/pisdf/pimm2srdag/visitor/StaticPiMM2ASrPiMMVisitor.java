@@ -44,9 +44,12 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.logging.Level;
+import org.apache.commons.lang3.time.StopWatch;
 import org.eclipse.emf.common.util.EList;
 import org.eclipse.emf.ecore.util.EcoreUtil;
 import org.preesm.algorithm.pisdf.helper.PiMMHelperException;
+import org.preesm.commons.logger.PreesmLogger;
 import org.preesm.model.pisdf.AbstractActor;
 import org.preesm.model.pisdf.AbstractVertex;
 import org.preesm.model.pisdf.Actor;
@@ -806,6 +809,9 @@ public class StaticPiMM2ASrPiMMVisitor extends PiMMSwitch<Boolean> {
 
   @Override
   public Boolean casePiGraph(final PiGraph graph) {
+    final StopWatch timer = new StopWatch();
+    timer.start();
+
     // If there are no actors in the graph we leave
     if (graph.getActors().isEmpty()) {
       throw new UnsupportedOperationException(
@@ -845,6 +851,11 @@ public class StaticPiMM2ASrPiMMVisitor extends PiMMSwitch<Boolean> {
       }
     }
 
+    timer.stop();
+    final String msgPiMM2ASRPiMM = "Acyclic Single-Rate transformation: " + timer + "s.";
+    PreesmLogger.getLogger().log(Level.INFO, msgPiMM2ASRPiMM);
+    // Do some optimization on the graph
+    timer.reset();
     return true;
   }
 
