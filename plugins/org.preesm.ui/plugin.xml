@@ -974,16 +974,6 @@
       </viewerContentBinding>
    </extension>
 
-   <!-- RCP definitions -->
-   <extension
-         id="application"
-         point="org.eclipse.core.runtime.applications">
-      <application>
-         <run
-               class="org.preesm.ui.rcp.utils.PreesmApplication">
-         </run>
-      </application>
-   </extension>
    <extension
          id="product"
          point="org.eclipse.core.runtime.products">
