@@ -42,7 +42,6 @@ package org.preesm.algorithm.mapper;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
-import java.util.logging.Level;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.preesm.algorithm.mapper.abc.impl.latency.InfiniteHomogeneousAbc;
 import org.preesm.algorithm.mapper.abc.impl.latency.LatencyAbc;
@@ -59,7 +58,7 @@ import org.preesm.algorithm.mapper.optimizer.RedundantSynchronizationCleaner;
 import org.preesm.algorithm.mapper.params.AbcParameters;
 import org.preesm.algorithm.model.dag.DirectedAcyclicGraph;
 import org.preesm.algorithm.model.parameters.InvalidExpressionException;
-import org.preesm.commons.logger.PreesmLogger;
+import org.preesm.commons.exceptions.PreesmException;
 import org.preesm.model.slam.Design;
 import org.preesm.scenario.PreesmScenario;
 import org.preesm.workflow.WorkflowException;
@@ -125,8 +124,8 @@ public abstract class AbstractMappingFromDAG extends AbstractTaskImplementation 
     final InitialLists initial = new InitialLists();
     final boolean couldConstructInitialLists = initial.constructInitialLists(dag, simu);
     if (!couldConstructInitialLists) {
-      PreesmLogger.getLogger().log(Level.SEVERE, "Error in scheduling");
-      outputs.put(AbstractWorkflowNodeImplementation.KEY_SDF_DAG, dag);
+      final String msg = "Error in scheduling";
+      throw new PreesmException(msg);
     } else {
 
       // Using topological task scheduling in list scheduling: the t-level

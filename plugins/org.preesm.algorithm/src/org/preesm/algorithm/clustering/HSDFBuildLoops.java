@@ -622,7 +622,6 @@ public class HSDFBuildLoops {
       engine.runScripts(dag, this.dataTypes, checkString);
     } catch (EvalError e) {
       final String message = "An error occurred during memory scripts execution";
-      PreesmLogger.getLogger().log(Level.SEVERE, message, e);
       throw new WorkflowException(message, e);
     }
     engine.updateMemEx(memEx);

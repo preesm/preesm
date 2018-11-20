@@ -48,6 +48,7 @@ import org.eclipse.core.runtime.IProgressMonitor;
 import org.preesm.algorithm.memory.distributed.Distributor;
 import org.preesm.algorithm.memory.exclusiongraph.MemoryExclusionGraph;
 import org.preesm.algorithm.memory.exclusiongraph.MemoryExclusionVertex;
+import org.preesm.commons.exceptions.PreesmException;
 import org.preesm.workflow.WorkflowException;
 import org.preesm.workflow.elements.Workflow;
 
@@ -117,7 +118,7 @@ public class MemoryAllocatorTask extends AbstractMemoryAllocatorTask {
       verticesBeforeDistribution.removeAll(verticesInMegs);
       final String msg = "Problem in the MEG distribution, some memory objects were lost during the distribution.\n"
           + verticesBeforeDistribution + "\nContact Preesm developers to solve this issue.";
-      this.logger.log(Level.SEVERE, msg);
+      throw new PreesmException(msg);
     }
 
     for (final Entry<String, MemoryExclusionGraph> entry : megs.entrySet()) {

@@ -53,6 +53,7 @@ import org.eclipse.core.runtime.Path;
 import org.preesm.algorithm.io.gml.InvalidModelException;
 import org.preesm.algorithm.model.sdf.SDFAbstractVertex;
 import org.preesm.algorithm.model.sdf.SDFGraph;
+import org.preesm.commons.exceptions.PreesmException;
 import org.preesm.commons.files.WorkspaceUtils;
 import org.preesm.commons.logger.PreesmLogger;
 import org.preesm.model.pisdf.AbstractActor;
@@ -181,13 +182,13 @@ public class ExcelConstraintsParser {
             PreesmLogger.getLogger().log(Level.WARNING,
                 "No line found in excel sheet for hierarchical vertex: " + vertexName);
           } else {
-            PreesmLogger.getLogger().log(Level.SEVERE,
-                "No line found in excel sheet for atomic vertex: " + vertexName);
+            final String message = "No line found in excel sheet for atomic vertex: " + vertexName;
+            throw new PreesmException(message);
           }
           missingVertices.add(vertexName);
         } else if ((operatorCell == null) && !missingOperators.contains(operatorId)) {
-          PreesmLogger.getLogger().log(Level.SEVERE, "No column found in excel sheet for operator: " + operatorId);
-          missingOperators.add(operatorId);
+          final String message = "No column found in excel sheet for operator: " + operatorId;
+          throw new PreesmException(message);
         }
       }
     }
@@ -233,8 +234,7 @@ public class ExcelConstraintsParser {
             PreesmLogger.getLogger().log(Level.WARNING,
                 "No line found in excel sheet for hierarchical vertex: " + vertexName);
           } else {
-            PreesmLogger.getLogger().log(Level.SEVERE,
-                "No line found in excel sheet for atomic vertex: " + vertexName);
+            PreesmLogger.getLogger().log(Level.SEVERE, "No line found in excel sheet for atomic vertex: " + vertexName);
           }
           missingVertices.add(vertexName);
         } else if ((operatorCell == null) && !missingOperators.contains(operatorId)) {

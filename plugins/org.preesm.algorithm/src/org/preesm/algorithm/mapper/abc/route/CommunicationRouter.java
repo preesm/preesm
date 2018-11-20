@@ -46,7 +46,6 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.logging.Level;
 import org.preesm.algorithm.mapper.PreesmMapperException;
 import org.preesm.algorithm.mapper.abc.edgescheduling.IEdgeSched;
 import org.preesm.algorithm.mapper.abc.order.OrderManager;
@@ -63,7 +62,7 @@ import org.preesm.algorithm.mapper.model.MapperDAGVertex;
 import org.preesm.algorithm.mapper.model.special.PrecedenceEdge;
 import org.preesm.algorithm.model.dag.DAGEdge;
 import org.preesm.algorithm.model.dag.DAGVertex;
-import org.preesm.commons.logger.PreesmLogger;
+import org.preesm.commons.exceptions.PreesmException;
 import org.preesm.model.slam.ComponentInstance;
 import org.preesm.model.slam.Design;
 import org.preesm.model.slam.route.AbstractRouteStep;
@@ -372,7 +371,8 @@ public class CommunicationRouter {
       final Route route = this.calculator.getRoute(sourceOp, destOp);
       cost = route.evaluateTransferCost(edge.getInit().getDataSize());
     } else {
-      PreesmLogger.getLogger().log(Level.SEVERE, "trying to evaluate a transfer between non mapped operators.");
+      final String msg = "trying to evaluate a transfer between non mapped operators.";
+      throw new PreesmException(msg);
     }
 
     return cost;

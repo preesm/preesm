@@ -129,7 +129,6 @@ class FifoActorGraph extends SDFGraph {
 			edge.delay.longValue == 0
 		]) {
 			val message = "Edges of FIFO Actor cannot have delays in them."
-			PreesmLogger.getLogger().log(Level.SEVERE, message)
 			throw new SDF4JException(message)
 		}
 		return super.validateModel()

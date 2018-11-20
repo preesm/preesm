@@ -41,9 +41,8 @@ import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.logging.Level;
 import org.preesm.algorithm.mapper.model.MapperDAGVertex;
-import org.preesm.commons.logger.PreesmLogger;
+import org.preesm.commons.exceptions.PreesmException;
 
 // TODO: Auto-generated Javadoc
 /**
@@ -165,11 +164,11 @@ public class VertexOrderList {
    */
   public int orderOf(final String name) {
     if (this.nameMap.get(name) == null) {
-      PreesmLogger.getLogger().log(Level.SEVERE, "Vertex could not be scheduled, check constraints: " + name);
+      final String msg = "Vertex could not be scheduled, check constraints: " + name;
+      throw new PreesmException(msg);
     } else {
       return this.nameMap.get(name).getOrder();
     }
-    return -1;
   }
 
   /**

@@ -46,12 +46,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.Observable;
 import java.util.Set;
-import java.util.logging.Level;
 import org.preesm.algorithm.mapper.PreesmMapperException;
 import org.preesm.algorithm.mapper.model.MapperDAG;
 import org.preesm.algorithm.mapper.model.MapperDAGVertex;
 import org.preesm.algorithm.model.dag.DAGVertex;
-import org.preesm.commons.logger.PreesmLogger;
+import org.preesm.commons.exceptions.PreesmException;
 import org.preesm.model.slam.ComponentInstance;
 import org.preesm.model.slam.Design;
 import org.preesm.model.slam.utils.DesignTools;
@@ -140,7 +139,8 @@ public class OrderManager extends Observable {
       if ((elt == null) || elt.equals(vertex)) {
         elt = vertex;
       } else {
-        PreesmLogger.getLogger().log(Level.SEVERE, "Error in sched order!!");
+        final String msg = "Error in sched order!!";
+        throw new PreesmException(msg);
       }
 
       // Adds vertex or synchro vertices after its chosen predecessor

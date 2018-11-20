@@ -41,12 +41,11 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
-import java.util.logging.Level;
 import org.preesm.algorithm.mapper.abc.order.VertexOrderList;
 import org.preesm.algorithm.mapper.model.MapperDAG;
 import org.preesm.algorithm.mapper.model.MapperDAGVertex;
 import org.preesm.algorithm.model.dag.DAGVertex;
-import org.preesm.commons.logger.PreesmLogger;
+import org.preesm.commons.exceptions.PreesmException;
 
 // TODO: Auto-generated Javadoc
 /**
@@ -122,7 +121,8 @@ public class TopologicalTaskSched extends AbstractTaskSched {
       this.topolist.add((MapperDAGVertex) v);
 
       if (!this.initList.contains(v.getName())) {
-        PreesmLogger.getLogger().log(Level.SEVERE, "problem with topological ordering.");
+        final String msg = "problem with topological ordering.";
+        throw new PreesmException(msg);
       }
     }
 

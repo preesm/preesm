@@ -41,7 +41,6 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.LinkedHashMap;
 import java.util.Map;
-import java.util.logging.Level;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IWorkspace;
 import org.eclipse.core.resources.ResourcesPlugin;
@@ -63,7 +62,7 @@ import org.preesm.algorithm.model.sdf.esdf.SDFEndVertex;
 import org.preesm.algorithm.model.sdf.esdf.SDFForkVertex;
 import org.preesm.algorithm.model.sdf.esdf.SDFInitVertex;
 import org.preesm.algorithm.model.sdf.esdf.SDFJoinVertex;
-import org.preesm.commons.logger.PreesmLogger;
+import org.preesm.commons.exceptions.PreesmException;
 import org.w3c.dom.Element;
 
 // TODO: Auto-generated Javadoc
@@ -261,7 +260,8 @@ public class DAGExporter extends GMLExporter<DAGVertex, DAGEdge> {
     if (iGraphMLFile.getLocation() != null) {
       export(clone, iGraphMLFile.getLocation().toOSString());
     } else {
-      PreesmLogger.getLogger().log(Level.SEVERE, "The output file " + path + " can not be written.");
+      final String msg = "The output file " + path + " can not be written.";
+      throw new PreesmException(msg);
     }
   }
 

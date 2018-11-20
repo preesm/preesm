@@ -57,6 +57,7 @@ import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.emf.ecore.resource.ResourceSet;
 import org.eclipse.emf.ecore.resource.impl.ResourceSetImpl;
 import org.preesm.commons.DomUtil;
+import org.preesm.commons.exceptions.PreesmException;
 import org.preesm.commons.logger.PreesmLogger;
 import org.preesm.model.pisdf.AbstractActor;
 import org.preesm.model.pisdf.AbstractVertex;
@@ -134,8 +135,8 @@ public class PiParser {
       final SubgraphConnectorVisitor connector = new SubgraphConnectorVisitor();
       connector.connectSubgraphs(pigraph);
     } catch (final WrappedException e) {
-      PreesmLogger.getLogger().log(Level.SEVERE,
-          "The algorithm file \"" + uri + "\" specified by the scenario does not exist any more.");
+      final String message = "The algorithm file \"" + uri + "\" specified by the scenario does not exist any more.";
+      throw new PreesmException(message, e);
     }
 
     return pigraph;

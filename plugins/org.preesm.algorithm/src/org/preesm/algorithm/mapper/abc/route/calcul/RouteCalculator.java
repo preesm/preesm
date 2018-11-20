@@ -46,6 +46,7 @@ import java.util.Set;
 import java.util.logging.Level;
 import org.preesm.algorithm.mapper.model.MapperDAGEdge;
 import org.preesm.algorithm.mapper.model.MapperDAGVertex;
+import org.preesm.commons.exceptions.PreesmException;
 import org.preesm.commons.logger.PreesmLogger;
 import org.preesm.model.slam.ComponentInstance;
 import org.preesm.model.slam.Design;
@@ -290,7 +291,7 @@ public class RouteCalculator {
 
     if (r == null) {
       final String msg = "Did not find a route between " + op1 + " and " + op2 + ".";
-      PreesmLogger.getLogger().log(Level.SEVERE, msg);
+      throw new PreesmException(msg);
     }
 
     return r;

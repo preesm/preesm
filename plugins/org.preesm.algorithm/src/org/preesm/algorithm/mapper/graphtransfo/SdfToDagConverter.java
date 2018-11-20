@@ -67,6 +67,7 @@ import org.preesm.algorithm.model.sdf.SDFGraph;
 import org.preesm.algorithm.model.sdf.visitors.DAGTransformation;
 import org.preesm.algorithm.model.types.LongEdgePropertyType;
 import org.preesm.algorithm.model.visitors.SDF4JException;
+import org.preesm.commons.exceptions.PreesmException;
 import org.preesm.commons.logger.PreesmLogger;
 import org.preesm.model.pisdf.PiGraph;
 import org.preesm.model.slam.ComponentInstance;
@@ -127,7 +128,8 @@ public class SdfToDagConverter {
     SdfToDagConverter.addInitialProperties(dag, architecture, scenario);
 
     if (dag.vertexSet().isEmpty()) {
-      PreesmLogger.getLogger().log(Level.SEVERE, "Can not map a DAG with no vertex.");
+      final String msg = "Can not map a DAG with no vertex.";
+      throw new PreesmException(msg);
     } else {
       PreesmLogger.getLogger().log(Level.INFO, "Conversion finished.");
       final String msg = "mapping a DAG with " + dag.vertexSet().size() + " vertices and " + dag.edgeSet().size()

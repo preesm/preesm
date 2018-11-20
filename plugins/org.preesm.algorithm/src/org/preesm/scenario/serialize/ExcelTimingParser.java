@@ -55,6 +55,7 @@ import org.eclipse.core.runtime.Path;
 import org.preesm.algorithm.io.gml.InvalidModelException;
 import org.preesm.algorithm.model.sdf.SDFAbstractVertex;
 import org.preesm.algorithm.model.sdf.SDFGraph;
+import org.preesm.commons.exceptions.PreesmException;
 import org.preesm.commons.files.WorkspaceUtils;
 import org.preesm.commons.logger.PreesmLogger;
 import org.preesm.model.pisdf.PiGraph;
@@ -214,9 +215,10 @@ public class ExcelTimingParser {
 
               PreesmLogger.getLogger().log(Level.INFO, "Importing timing: " + timing.toString());
             } catch (final NumberFormatException e) {
-              PreesmLogger.getLogger().log(Level.SEVERE, "Problem importing timing of " + vertexName + " on "
-                  + opDefId
-                  + ". Integer with no space or special character needed. Be careful on the special number formats.");
+              final String message = "Problem importing timing of " + vertexName + " on " + opDefId
+                  + ". Integer with no space or special character needed. Be careful on the special number formats.";
+              throw new PreesmException(message);
+
             }
           }
         } else {
@@ -224,8 +226,7 @@ public class ExcelTimingParser {
             PreesmLogger.getLogger().log(Level.WARNING, "No line found in excel sheet for vertex: " + vertexName);
             missingVertices.add(vertexName);
           } else if ((operatorCell == null) && !missingOperatorTypes.contains(opDefId)) {
-            PreesmLogger.getLogger().log(Level.WARNING,
-                "No column found in excel sheet for operator type: " + opDefId);
+            PreesmLogger.getLogger().log(Level.WARNING, "No column found in excel sheet for operator type: " + opDefId);
             missingOperatorTypes.add(opDefId);
           }
         }

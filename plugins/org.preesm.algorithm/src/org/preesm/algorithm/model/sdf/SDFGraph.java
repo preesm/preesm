@@ -668,7 +668,7 @@ public class SDFGraph extends AbstractGraph<SDFAbstractVertex, SDFEdge> {
             schedulable &= true;
           } else {
             schedulable &= false;
-            VisitorOutput.getLogger().log(Level.SEVERE, "Graph " + getName() + " is not schedulable");
+            VisitorOutput.getLogger().log(Level.WARNING, "Graph " + getName() + " is not schedulable");
           }
         }
       }

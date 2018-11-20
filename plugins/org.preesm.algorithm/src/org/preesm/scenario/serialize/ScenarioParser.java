@@ -67,6 +67,7 @@ import org.preesm.algorithm.io.gml.GMLSDFImporter;
 import org.preesm.algorithm.io.gml.InvalidModelException;
 import org.preesm.algorithm.model.sdf.SDFAbstractVertex;
 import org.preesm.algorithm.model.sdf.SDFGraph;
+import org.preesm.commons.exceptions.PreesmException;
 import org.preesm.commons.logger.PreesmLogger;
 import org.preesm.model.pisdf.AbstractActor;
 import org.preesm.model.pisdf.Parameter;
@@ -589,8 +590,7 @@ public class ScenarioParser {
    */
   private void initializeArchitectureInformation(final String url) {
     if (url.contains(".design")) {
-      PreesmLogger.getLogger().log(Level.SEVERE,
-          "SLAM architecture 1.0 is no more supported. Use .slam architecture files.");
+      throw new PreesmException("SLAM architecture 1.0 is no more supported. Use .slam architecture files.");
     } else if (url.contains(".slam")) {
 
       final Map<String, Object> extToFactoryMap = Resource.Factory.Registry.INSTANCE.getExtensionToFactoryMap();
@@ -627,17 +627,15 @@ public class ScenarioParser {
 
     final URI uri = URI.createPlatformResourceURI(url, true);
     if ((uri.fileExtension() == null) || !uri.fileExtension().contentEquals("slam")) {
-      PreesmLogger.getLogger().log(Level.SEVERE, "Expecting .slam file");
-      return null;
+      throw new PreesmException("Expecting .slam file");
     }
     final Resource ressource;
     try {
       ressource = resourceSet.getResource(uri, true);
       slamDesign = (Design) (ressource.getContents().get(0));
     } catch (final WrappedException e) {
-      PreesmLogger.getLogger().log(Level.SEVERE,
-          "The architecture file \"" + uri + "\" specified by the scenario does not exist any more.");
-      return null;
+      throw new PreesmException(
+          "The architecture file \"" + uri + "\" specified by the scenario does not exist any more.", e);
     }
 
     return slamDesign;

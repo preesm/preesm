@@ -40,7 +40,6 @@ package org.preesm.algorithm.mapper.exporter;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
-import java.util.logging.Level;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IWorkspace;
 import org.eclipse.core.resources.ResourcesPlugin;
@@ -48,9 +47,9 @@ import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.Path;
 import org.preesm.algorithm.mapper.model.MapperDAG;
 import org.preesm.algorithm.model.dag.DirectedAcyclicGraph;
+import org.preesm.commons.exceptions.PreesmException;
 import org.preesm.commons.files.PathTools;
 import org.preesm.commons.files.WorkspaceUtils;
-import org.preesm.commons.logger.PreesmLogger;
 import org.preesm.workflow.WorkflowException;
 import org.preesm.workflow.elements.Workflow;
 import org.preesm.workflow.implement.AbstractTaskImplementation;
@@ -132,7 +131,8 @@ public class ImplExportTransform extends AbstractTaskImplementation {
     if (iGraphMLFile.getLocation() != null) {
       exporter.export(clone, iGraphMLFile.getLocation().toOSString());
     } else {
-      PreesmLogger.getLogger().log(Level.SEVERE, "The output file " + path + " can not be written.");
+      final String msg = "The output file " + path + " can not be written.";
+      throw new PreesmException(msg);
     }
   }
 

@@ -45,7 +45,6 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.logging.Level;
 import org.eclipse.xtext.xbase.lib.Functions.Function1;
 import org.eclipse.xtext.xbase.lib.IterableExtensions;
 import org.eclipse.xtext.xbase.lib.Pair;
@@ -58,7 +57,7 @@ import org.preesm.algorithm.model.dag.DAGEdge;
 import org.preesm.algorithm.model.parameters.InvalidExpressionException;
 import org.preesm.algorithm.model.sdf.SDFEdge;
 import org.preesm.algorithm.model.sdf.SDFGraph;
-import org.preesm.commons.logger.PreesmLogger;
+import org.preesm.commons.exceptions.PreesmException;
 import org.preesm.commons.math.MathFunctionsHelper;
 import org.preesm.scenario.types.BufferAggregate;
 import org.preesm.scenario.types.BufferProperties;
@@ -136,11 +135,10 @@ public abstract class MemoryAllocator {
             long typeSize;
             // A proper type was not set for the considered edge
             if (type == null) {
-              PreesmLogger.getLogger().log(Level.SEVERE,
-                  "No valid data type was found on an edge between actors " + edge.getSource().getName() + " and "
-                      + edge.getTarget().getName()
-                      + ".\nCheck the edge in the graph editor and the declared types in the scenario.");
-              typeSize = 1;
+              final String msg = "No valid data type was found on an edge between actors " + edge.getSource().getName()
+                  + " and " + edge.getTarget().getName()
+                  + ".\nCheck the edge in the graph editor and the declared types in the scenario.";
+              throw new PreesmException(msg);
             } else {
               typeSize = type.getSize();
             }

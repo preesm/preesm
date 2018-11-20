@@ -205,7 +205,6 @@ public class WorkflowLaunchShortcut implements ILaunchShortcut {
         }
       } catch (final CoreException e) {
         PreesmLogger.getLogger().log(Level.SEVERE, "Error while looking for existing ILaunchConfiguration", e);
-
       }
 
       // If there are no existing configs associated with the IFile,

@@ -639,7 +639,6 @@ public abstract class LatencyAbc {
 
     if (internalVertex == null) {
       final String message = "No simulator internal vertex with id " + vertex.getName();
-      PreesmLogger.getLogger().log(Level.SEVERE, message);
       throw new PreesmMapperException(message, new NullPointerException());
     }
     return internalVertex;

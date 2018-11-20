@@ -39,12 +39,10 @@ package org.preesm.algorithm.memory.script;
 import bsh.EvalError;
 import java.util.LinkedHashMap;
 import java.util.Map;
-import java.util.logging.Level;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.preesm.algorithm.memory.allocation.AbstractMemoryAllocatorTask;
 import org.preesm.algorithm.memory.exclusiongraph.MemoryExclusionGraph;
 import org.preesm.algorithm.model.dag.DirectedAcyclicGraph;
-import org.preesm.commons.logger.PreesmLogger;
 import org.preesm.scenario.PreesmScenario;
 import org.preesm.scenario.types.DataType;
 import org.preesm.workflow.WorkflowException;
@@ -93,7 +91,6 @@ public class MemoryScriptTask extends AbstractMemoryScriptTask {
       engine.runScripts(dag, dataTypes, checkString);
     } catch (final EvalError e) {
       final String message = "An error occurred during memory scripts execution";
-      PreesmLogger.getLogger().log(Level.SEVERE, message, e);
       throw new WorkflowException(message, e);
     }
     engine.updateMemEx(meg);

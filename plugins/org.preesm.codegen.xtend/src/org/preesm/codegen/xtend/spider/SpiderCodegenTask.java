@@ -45,7 +45,6 @@ import java.io.IOException;
 import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.Map;
-import java.util.logging.Level;
 import org.eclipse.core.resources.IFolder;
 import org.eclipse.core.resources.IWorkspace;
 import org.eclipse.core.resources.ResourcesPlugin;
@@ -53,7 +52,7 @@ import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.Path;
 import org.preesm.codegen.xtend.spider.visitor.SpiderCodegen;
-import org.preesm.commons.logger.PreesmLogger;
+import org.preesm.commons.exceptions.PreesmException;
 import org.preesm.model.pisdf.PiGraph;
 import org.preesm.model.slam.Design;
 import org.preesm.scenario.PreesmScenario;
@@ -112,8 +111,8 @@ public class SpiderCodegenTask extends AbstractTaskImplementation {
     final String codegenPath = scenario.getCodegenManager().getCodegenDirectory() + "/";
 
     if (codegenPath.equals("/")) {
-      PreesmLogger.getLogger().log(Level.SEVERE, "Error: A Codegen folder must be specified in Scenario");
-      return Collections.emptyMap();
+      final String message = "Error: A Codegen folder must be specified in Scenario";
+      throw new PreesmException(message);
     }
 
     final IFolder f = workspace.getRoot().getFolder(new Path(codegenPath));

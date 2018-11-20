@@ -128,9 +128,7 @@ public class HierarchyFlattening extends AbstractTaskImplementation {
         throw (new WorkflowException(e.getMessage(), e));
       }
     } else {
-      HierarchyFlattening.LOGGER.log(Level.SEVERE, "Inconsistent Hierarchy, graph can't be flattened");
-      outputs.put("SDF", algorithm.copy());
-      throw (new WorkflowException("Inconsistent Hierarchy, graph can't be flattened"));
+      throw new WorkflowException("Inconsistent Hierarchy, graph can't be flattened");
     }
 
     timer.stop();

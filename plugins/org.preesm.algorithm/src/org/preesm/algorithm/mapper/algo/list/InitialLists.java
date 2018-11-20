@@ -54,6 +54,7 @@ import org.preesm.algorithm.mapper.model.MapperDAGVertex;
 import org.preesm.algorithm.mapper.tools.BLevelIterator;
 import org.preesm.algorithm.model.dag.DAGEdge;
 import org.preesm.algorithm.model.dag.DAGVertex;
+import org.preesm.commons.exceptions.PreesmException;
 import org.preesm.commons.logger.PreesmLogger;
 
 /**
@@ -173,8 +174,7 @@ public class InitialLists implements Cloneable {
       if (cpnvertex != null) {
         predset.addAll(neighborindex.predecessorsOf(cpnvertex));
       } else {
-        PreesmLogger.getLogger().log(Level.SEVERE, "Predecessor not found");
-        return false;
+        final String msg = "Predecessor not found";
       }
 
     }
@@ -223,8 +223,8 @@ public class InitialLists implements Cloneable {
         blevelmax = bLevel;
         tlevelmax = tLevel;
       } else if (bLevel == -1) {
-        PreesmLogger.getLogger().log(Level.SEVERE,
-            "CPN list construction: b-level can not be computed for vertex " + currentvertex);
+        final String msg = "CPN list construction: b-level can not be computed for vertex " + currentvertex;
+        throw new PreesmException(msg);
       }
 
     }
@@ -321,9 +321,8 @@ public class InitialLists implements Cloneable {
       while (!(cpnDominant.contains(currentvertex))) {
         // If no predecessor was found
         if (!choosePredecessor(dag, currentvertex, cpnDominant, abc)) {
-          PreesmLogger.getLogger().log(Level.SEVERE,
-              "No predecessor was found for vertex: " + currentvertex.getName());
-          return false;
+          final String msg = "No predecessor was found for vertex: " + currentvertex.getName();
+          throw new PreesmException(msg);
         }
       }
 
@@ -386,12 +385,12 @@ public class InitialLists implements Cloneable {
       // construction of critical path and CPN dominant list with CPN and
       // IBN actors
       if (!constructCPN(dag, this.cpnDominant, this.criticalPath, simu)) {
-        PreesmLogger.getLogger().log(Level.SEVERE, "Problem with initial list construction");
-        return false;
+        final String msg = "Problem with initial list construction";
+        throw new PreesmException(msg);
       }
     } else {
-      PreesmLogger.getLogger().log(Level.SEVERE, "To construct initial lists, a latency ABC is needed.");
-      return false;
+      final String msg = "To construct initial lists, a latency ABC is needed.";
+      throw new PreesmException(msg);
     }
 
     PreesmLogger.getLogger().log(Level.INFO, "Adding OBN actors to CPN and IBN actors in CPN dominant list");

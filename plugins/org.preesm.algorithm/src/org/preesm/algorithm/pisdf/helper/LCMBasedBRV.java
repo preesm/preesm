@@ -43,8 +43,7 @@ import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.logging.Level;
-import org.preesm.commons.logger.PreesmLogger;
+import org.preesm.commons.exceptions.PreesmException;
 import org.preesm.commons.math.LongFraction;
 import org.preesm.commons.math.MathFunctionsHelper;
 import org.preesm.model.pisdf.AbstractActor;
@@ -73,8 +72,8 @@ public class LCMBasedBRV extends PiBRV {
   @Override
   public boolean execute() throws PiMMHelperException {
     if (this.piHandler.getReferenceGraph() == null) {
-      PreesmLogger.getLogger().log(Level.SEVERE, "cannot compute BRV for null graph.");
-      return false;
+      final String msg = "cannot compute BRV for null graph.";
+      throw new PreesmException(msg);
     }
 
     // Get all sub graph composing the current graph

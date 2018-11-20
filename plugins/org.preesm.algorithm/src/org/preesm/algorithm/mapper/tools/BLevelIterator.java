@@ -41,6 +41,7 @@ import java.util.logging.Level;
 import org.preesm.algorithm.mapper.abc.impl.latency.LatencyAbc;
 import org.preesm.algorithm.mapper.model.MapperDAG;
 import org.preesm.algorithm.mapper.model.MapperDAGVertex;
+import org.preesm.commons.exceptions.PreesmException;
 import org.preesm.commons.logger.PreesmLogger;
 
 // TODO: Auto-generated Javadoc
@@ -80,7 +81,8 @@ public class BLevelIterator extends ImplementationIterator {
     }
 
     if (!arg0.getTiming().hasBLevel() || !arg1.getTiming().hasBLevel()) {
-      PreesmLogger.getLogger().log(Level.SEVERE, "B Level Iterator problem");
+      final String msg = "B Level Iterator problem";
+      throw new PreesmException(msg);
     }
 
     long bLevelDifference = (arg0.getTiming().getBLevel() - arg1.getTiming().getBLevel());

@@ -40,7 +40,6 @@ package org.preesm.algorithm.utils.xml;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.util.logging.Level;
 import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerConfigurationException;
 import javax.xml.transform.TransformerException;
@@ -53,7 +52,7 @@ import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.Path;
 import org.preesm.algorithm.mapper.exporter.XsltTransform;
-import org.preesm.commons.logger.PreesmLogger;
+import org.preesm.commons.exceptions.PreesmException;
 
 // TODO: Auto-generated Javadoc
 /**
@@ -99,13 +98,14 @@ public class XsltTransformer {
       try {
         this.transformer = factory.newTransformer(source);
       } catch (final Exception e) {
-        e.printStackTrace();
+        final String message = "Could not transform";
+        throw new PreesmException(message, e);
       }
     }
 
     if (this.transformer == null) {
-      PreesmLogger.getLogger().log(Level.SEVERE, "XSL sheet not found or not valid: " + fileName);
-      return false;
+      final String msg = "XSL sheet not found or not valid: " + fileName;
+      throw new PreesmException(msg);
     }
 
     return true;
@@ -138,12 +138,12 @@ public class XsltTransformer {
         outStream.close();
 
       } catch (final FileNotFoundException e) {
-        PreesmLogger.getLogger().log(Level.SEVERE,
-            "Problem finding files for XSL transfo (" + osSourceFilePath + "," + osDestFilePath + ")");
-      } catch (final TransformerException e) {
-        e.printStackTrace();
-      } catch (final IOException e) {
-        e.printStackTrace();
+        final String message = "Problem finding files for XSL transfo (" + osSourceFilePath + "," + osDestFilePath
+            + ")";
+        throw new PreesmException(message);
+      } catch (final TransformerException | IOException e) {
+        final String message = "Error while transforming ";
+        throw new PreesmException(message, e);
       }
 
     }
