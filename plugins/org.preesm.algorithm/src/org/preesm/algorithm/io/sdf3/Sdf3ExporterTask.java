@@ -47,7 +47,6 @@ import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.Path;
-import org.preesm.algorithm.io.exportSdf3Xml.Sdf3Printer;
 import org.preesm.algorithm.model.sdf.SDFGraph;
 import org.preesm.commons.files.PathTools;
 import org.preesm.model.slam.Design;
