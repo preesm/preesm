@@ -45,7 +45,7 @@ import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.Path;
-import org.preesm.algorithm.importer.InvalidModelException;
+import org.preesm.algorithm.io.gml.InvalidModelException;
 import org.preesm.algorithm.model.parameters.VariableSet;
 import org.preesm.algorithm.model.sdf.SDFGraph;
 import org.preesm.algorithm.model.sdf.transformations.SpecialActorPortsIndexer;

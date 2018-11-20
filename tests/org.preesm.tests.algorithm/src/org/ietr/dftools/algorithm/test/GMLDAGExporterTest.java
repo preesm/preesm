@@ -41,7 +41,7 @@ import java.nio.file.Files;
 import java.util.List;
 import org.junit.Assert;
 import org.junit.Test;
-import org.preesm.algorithm.exporter.GMLDAGExporter;
+import org.preesm.algorithm.io.gml.GMLDAGExporter;
 import org.preesm.algorithm.model.dag.DAGEdge;
 import org.preesm.algorithm.model.dag.DAGVertex;
 import org.preesm.algorithm.model.dag.DirectedAcyclicGraph;

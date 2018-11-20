@@ -37,8 +37,8 @@
  package fi.abo.preesm.dataparallel
 
 import org.eclipse.core.runtime.CoreException
-import org.preesm.algorithm.exporter.GMLSDFExporter
-import org.preesm.algorithm.io.exportXml.SDF2GraphmlExporter
+import org.preesm.algorithm.io.gml.GMLSDFExporter
+import org.preesm.algorithm.io.xml.SDF2GraphmlExporter
 import org.preesm.algorithm.model.sdf.SDFGraph
 
 class SDFExporter extends SDF2GraphmlExporter {

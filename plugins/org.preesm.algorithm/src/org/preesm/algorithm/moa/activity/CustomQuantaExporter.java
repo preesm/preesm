@@ -57,7 +57,7 @@ import org.eclipse.core.runtime.Path;
 import org.nfunk.jep.JEP;
 import org.nfunk.jep.Node;
 import org.nfunk.jep.ParseException;
-import org.preesm.algorithm.importer.InvalidModelException;
+import org.preesm.algorithm.io.gml.InvalidModelException;
 import org.preesm.algorithm.mapper.abc.SpecialVertexManager;
 import org.preesm.algorithm.mapper.abc.impl.latency.LatencyAbc;
 import org.preesm.algorithm.mapper.model.MapperDAGEdge;

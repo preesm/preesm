@@ -57,7 +57,7 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.IPropertyListener;
 import org.eclipse.ui.forms.widgets.FormToolkit;
-import org.preesm.algorithm.importer.InvalidModelException;
+import org.preesm.algorithm.io.gml.InvalidModelException;
 import org.preesm.algorithm.model.IRefinement;
 import org.preesm.algorithm.model.sdf.SDFAbstractVertex;
 import org.preesm.algorithm.model.sdf.SDFGraph;

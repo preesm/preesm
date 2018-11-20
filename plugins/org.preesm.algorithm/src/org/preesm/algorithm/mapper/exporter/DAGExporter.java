@@ -46,7 +46,7 @@ import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IWorkspace;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.IPath;
-import org.preesm.algorithm.exporter.GMLExporter;
+import org.preesm.algorithm.io.gml.GMLExporter;
 import org.preesm.algorithm.mapper.model.MapperDAG;
 import org.preesm.algorithm.model.AbstractGraph;
 import org.preesm.algorithm.model.AbstractVertex;

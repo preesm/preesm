@@ -54,7 +54,7 @@ import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.ui.IWorkbench;
 import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.PlatformUI;
-import org.preesm.algorithm.importer.InvalidModelException;
+import org.preesm.algorithm.io.gml.InvalidModelException;
 import org.preesm.algorithm.model.parameters.InvalidExpressionException;
 import org.preesm.algorithm.model.parameters.NoIntegerValueException;
 import org.preesm.algorithm.model.parameters.Variable;

@@ -71,7 +71,7 @@ import org.eclipse.ui.forms.widgets.ExpandableComposite;
 import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.eclipse.ui.forms.widgets.ScrolledForm;
 import org.eclipse.ui.forms.widgets.Section;
-import org.preesm.algorithm.importer.InvalidModelException;
+import org.preesm.algorithm.io.gml.InvalidModelException;
 import org.preesm.commons.files.WorkspaceUtils;
 import org.preesm.scenario.PreesmScenario;
 import org.preesm.scenario.papi.PapiComponent;

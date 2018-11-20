@@ -28,6 +28,7 @@ Require-Bundle: org.eclipse.core.runtime,
  org.eclipse.xtext.xbase.lib,
  org.eclipse.emf.ecore.xcore.lib,
  org.preesm.model.slam;visibility:=reexport,
- org.preesm.commons;visibility:=reexport
+ org.preesm.commons;visibility:=reexport,
+ org.preesm.workflow;visibility:=reexport
 Bundle-ActivationPolicy: lazy
 Bundle-Vendor: %providerName

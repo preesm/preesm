@@ -44,7 +44,7 @@ import jxl.write.WritableSheet;
 import jxl.write.biff.RowsExceededException;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.swt.events.SelectionListener;
-import org.preesm.algorithm.importer.InvalidModelException;
+import org.preesm.algorithm.io.gml.InvalidModelException;
 
 /**
  * Abstract class, must be implementing when exporting Timings, or variables into an excel sheet.

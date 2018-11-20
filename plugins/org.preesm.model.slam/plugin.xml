@@ -73,4 +73,9 @@
             genModel="model/Link.xcore"/>
    </extension>
 
+   <extension
+         point="org.preesm.workflow.tasks">
+
+   </extension>
+
 </plugin>

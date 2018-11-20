@@ -39,7 +39,7 @@ package org.preesm.algorithm.mapper.scenariogen;
 
 import org.preesm.algorithm.factories.SDFEdgeFactory;
 import org.preesm.algorithm.factories.SDFVertexFactory;
-import org.preesm.algorithm.importer.GMLImporter;
+import org.preesm.algorithm.io.gml.GMLImporter;
 import org.preesm.algorithm.model.sdf.SDFAbstractVertex;
 import org.preesm.algorithm.model.sdf.SDFEdge;
 import org.preesm.algorithm.model.sdf.SDFGraph;

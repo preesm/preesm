@@ -57,7 +57,7 @@ import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.ui.IWorkbench;
 import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.PlatformUI;
-import org.preesm.algorithm.importer.InvalidModelException;
+import org.preesm.algorithm.io.gml.InvalidModelException;
 import org.preesm.algorithm.model.sdf.SDFAbstractVertex;
 import org.preesm.model.pisdf.AbstractActor;
 import org.preesm.scenario.PreesmScenario;

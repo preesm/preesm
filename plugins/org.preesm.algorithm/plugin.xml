@@ -233,17 +233,6 @@
 
 
       <task
-            id="org.ietr.preesm.plugin.architransfo.transforms.ArchitectureExporter"
-            name="Architecture exporter"
-            type="org.preesm.architecture.transforms.ArchitectureExporter">
-         <inputs>
-            <input
-                  id="architecture"
-                  object="org.preesm.model.slam.Design">
-            </input>
-         </inputs>
-      </task>
-      <task
             id="org.ietr.preesm.archi.slam.flattening"
             name="Slam Hierarchy Flattening"
             type="org.preesm.architecture.slam.SlamHierarchyFlattening">
@@ -402,7 +391,7 @@
       <task
             id="org.ietr.preesm.plugin.exportXml.sdf4jgml"
             name="SDF4J GML Exporter "
-            type="org.preesm.algorithm.io.exportXml.SDFExporter">
+            type="org.preesm.algorithm.io.xml.SDFExporter">
          <inputs>
             <input
                   id="SDF"
@@ -476,7 +465,7 @@
       <task
             id="org.ietr.preesm.algorithm.importSdf3Xml.Sdf3Importer"
             name="SDF3 Importer"
-            type="org.preesm.algorithm.importSdf3Xml.Sdf3Importer">
+            type="org.preesm.algorithm.io.sdf3.Sdf3Importer">
          <outputs>
             <output
                   id="SDF"
@@ -501,7 +490,7 @@
       <task
             id="org.ietr.preesm.algorithm.exportSdf3Xml.Sdf3Exporter"
             name="SDF3 Exporter"
-            type="org.preesm.algorithm.io.exportSdf3Xml.Sdf3Exporter">
+            type="org.preesm.algorithm.io.sdf3.Sdf3ExporterTask">
          <inputs>
             <input
                   id="scenario"
@@ -537,7 +526,7 @@
       <task
             id="org.ietr.preesm.algorithm.exportXml.pimm2xml"
             name="PiSDFExporter"
-            type="org.preesm.algorithm.io.exportXml.PiSDFExporter">
+            type="org.preesm.algorithm.io.xml.PiSDFExporterTask">
          <inputs>
             <input
                   id="PiMM"

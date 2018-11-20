@@ -43,7 +43,7 @@ import java.io.FileNotFoundException;
 import java.util.LinkedHashSet;
 import java.util.Set;
 import org.eclipse.core.runtime.CoreException;
-import org.preesm.algorithm.importer.InvalidModelException;
+import org.preesm.algorithm.io.gml.InvalidModelException;
 import org.preesm.algorithm.model.sdf.SDFAbstractVertex;
 import org.preesm.model.pisdf.AbstractActor;
 import org.preesm.scenario.serialize.ExcelConstraintsParser;

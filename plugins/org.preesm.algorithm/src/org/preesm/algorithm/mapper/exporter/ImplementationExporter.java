@@ -41,7 +41,7 @@ package org.preesm.algorithm.mapper.exporter;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.util.Iterator;
-import org.preesm.algorithm.exporter.GMLExporter;
+import org.preesm.algorithm.io.gml.GMLExporter;
 import org.preesm.algorithm.mapper.PreesmMapperException;
 import org.preesm.algorithm.mapper.model.MapperDAG;
 import org.preesm.algorithm.mapper.model.MapperDAGVertex;

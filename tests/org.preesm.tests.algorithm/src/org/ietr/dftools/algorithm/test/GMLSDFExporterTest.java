@@ -40,7 +40,7 @@ import java.nio.file.Files;
 import java.util.List;
 import org.junit.Assert;
 import org.junit.Test;
-import org.preesm.algorithm.exporter.GMLGenericExporter;
+import org.preesm.algorithm.io.gml.GMLGenericExporter;
 import org.preesm.algorithm.model.AbstractEdge;
 import org.preesm.algorithm.model.AbstractGraph;
 import org.preesm.algorithm.model.AbstractVertex;
