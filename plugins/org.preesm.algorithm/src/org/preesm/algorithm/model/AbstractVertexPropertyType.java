@@ -36,6 +36,8 @@
  */
 package org.preesm.algorithm.model;
 
+import org.preesm.commons.CloneableProperty;
+
 /**
  * Abstract generic Class to represent any Vertex Property.
  *

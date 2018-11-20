@@ -39,7 +39,6 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.Set;
-import org.preesm.algorithm.core.architecture.util.DesignTools;
 import org.preesm.algorithm.mapper.PreesmMapperException;
 import org.preesm.algorithm.mapper.abc.impl.latency.LatencyAbc;
 import org.preesm.algorithm.mapper.gantt.GanttComponent;
@@ -47,6 +46,7 @@ import org.preesm.algorithm.mapper.gantt.GanttData;
 import org.preesm.algorithm.mapper.gantt.GanttTask;
 import org.preesm.algorithm.mapper.ui.stats.StatGenerator;
 import org.preesm.model.slam.ComponentInstance;
+import org.preesm.model.slam.utils.DesignTools;
 import org.preesm.workflow.WorkflowException;
 
 /**

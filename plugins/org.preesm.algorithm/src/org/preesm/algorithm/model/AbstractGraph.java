@@ -62,6 +62,7 @@ import org.preesm.algorithm.model.parameters.factories.ArgumentFactory;
 import org.preesm.algorithm.model.parameters.factories.ParameterFactory;
 import org.preesm.algorithm.model.visitors.IGraphVisitor;
 import org.preesm.algorithm.model.visitors.SDF4JException;
+import org.preesm.commons.CloneableProperty;
 
 /**
  * Abstract class common to all graphs.

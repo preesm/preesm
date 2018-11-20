@@ -38,6 +38,7 @@
 package org.preesm.algorithm.model;
 
 import org.eclipse.core.runtime.IPath;
+import org.preesm.commons.CloneableProperty;
 
 /**
  * Code to refine a vertex.

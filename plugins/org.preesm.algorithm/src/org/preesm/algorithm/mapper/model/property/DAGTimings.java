@@ -39,7 +39,7 @@ package org.preesm.algorithm.mapper.model.property;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import org.preesm.algorithm.mapper.model.MapperDAGVertex;
-import org.preesm.algorithm.model.CloneableProperty;
+import org.preesm.commons.CloneableProperty;
 
 /**
  * MapperDAG stores mapping properties shared by several of its vertices that are synchronized.

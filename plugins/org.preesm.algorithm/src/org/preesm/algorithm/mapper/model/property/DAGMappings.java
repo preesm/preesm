@@ -40,7 +40,7 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Set;
 import org.preesm.algorithm.mapper.model.MapperDAGVertex;
-import org.preesm.algorithm.model.CloneableProperty;
+import org.preesm.commons.CloneableProperty;
 
 // TODO: Auto-generated Javadoc
 /**

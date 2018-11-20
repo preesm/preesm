@@ -41,7 +41,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
-import org.preesm.algorithm.model.CloneableProperty;
+import org.preesm.commons.CloneableProperty;
 
 /**
  *

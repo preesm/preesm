@@ -38,8 +38,6 @@ package org.preesm.algorithm.mapper.abc.route.impl;
 
 import java.util.ArrayList;
 import java.util.List;
-import org.preesm.algorithm.core.architecture.route.AbstractRouteStep;
-import org.preesm.algorithm.core.architecture.route.MemRouteStep;
 import org.preesm.algorithm.mapper.abc.edgescheduling.IEdgeSched;
 import org.preesm.algorithm.mapper.abc.edgescheduling.SimpleEdgeSched;
 import org.preesm.algorithm.mapper.abc.route.CommunicationRouter;
@@ -53,6 +51,8 @@ import org.preesm.algorithm.mapper.model.MapperDAGEdge;
 import org.preesm.algorithm.mapper.model.MapperDAGVertex;
 import org.preesm.algorithm.mapper.model.special.TransferVertex;
 import org.preesm.model.slam.ComponentInstance;
+import org.preesm.model.slam.route.AbstractRouteStep;
+import org.preesm.model.slam.route.MemRouteStep;
 
 /**
  * Class responsible to generate the suited vertices while simulating a shared ram communication.

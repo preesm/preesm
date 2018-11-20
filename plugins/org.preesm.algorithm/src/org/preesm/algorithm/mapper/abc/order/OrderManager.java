@@ -47,7 +47,6 @@ import java.util.Map;
 import java.util.Observable;
 import java.util.Set;
 import java.util.logging.Level;
-import org.preesm.algorithm.core.architecture.util.DesignTools;
 import org.preesm.algorithm.mapper.PreesmMapperException;
 import org.preesm.algorithm.mapper.model.MapperDAG;
 import org.preesm.algorithm.mapper.model.MapperDAGVertex;
@@ -55,6 +54,7 @@ import org.preesm.algorithm.model.dag.DAGVertex;
 import org.preesm.commons.logger.PreesmLogger;
 import org.preesm.model.slam.ComponentInstance;
 import org.preesm.model.slam.Design;
+import org.preesm.model.slam.utils.DesignTools;
 
 /**
  * The scheduling order manager keeps a total order of the vertices and a partial order in each schedule. It is used by

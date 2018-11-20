@@ -46,12 +46,12 @@ import java.util.List;
 import java.util.Map;
 import java.util.Observable;
 import java.util.Set;
-import org.preesm.algorithm.core.architecture.util.DesignTools;
 import org.preesm.algorithm.mapper.model.MapperDAG;
 import org.preesm.algorithm.mapper.model.MapperDAGVertex;
 import org.preesm.algorithm.model.dag.DAGVertex;
 import org.preesm.model.slam.ComponentInstance;
 import org.preesm.model.slam.Design;
+import org.preesm.model.slam.utils.DesignTools;
 
 // TODO: Auto-generated Javadoc
 /**

@@ -37,7 +37,7 @@
  */
 package org.preesm.algorithm.mapper.model.property;
 
-import org.preesm.algorithm.model.CloneableProperty;
+import org.preesm.commons.CloneableProperty;
 
 /**
  * Properties of an edge set when converting dag to mapper dag.

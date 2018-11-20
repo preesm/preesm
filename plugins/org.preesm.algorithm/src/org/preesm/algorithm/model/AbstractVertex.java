@@ -50,6 +50,7 @@ import org.preesm.algorithm.model.parameters.Argument;
 import org.preesm.algorithm.model.parameters.ArgumentSet;
 import org.preesm.algorithm.model.visitors.IGraphVisitor;
 import org.preesm.algorithm.model.visitors.SDF4JException;
+import org.preesm.commons.CloneableProperty;
 
 /**
  * Abstract class for all vertex types.

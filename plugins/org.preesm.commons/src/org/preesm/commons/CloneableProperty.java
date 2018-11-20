@@ -1,3 +1,4 @@
+package org.preesm.commons;
 /**
  * Copyright or © or Copr. IETR/INSA - Rennes (2011 - 2018) :
  *
@@ -34,7 +35,7 @@
  * The fact that you are presently reading this means that you have had
  * knowledge of the CeCILL license and that you accept its terms.
  */
-package org.preesm.algorithm.model;
+
 
 /**
  *

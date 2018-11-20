@@ -71,7 +71,6 @@ import org.preesm.algorithm.codegen.idl.IDLPrototypeFactory;
 import org.preesm.algorithm.codegen.idl.Prototype;
 import org.preesm.algorithm.codegen.model.CodeGenArgument;
 import org.preesm.algorithm.codegen.model.CodeGenParameter;
-import org.preesm.algorithm.core.architecture.route.MessageRouteStep;
 import org.preesm.algorithm.core.scenario.PreesmScenario;
 import org.preesm.algorithm.core.types.BufferAggregate;
 import org.preesm.algorithm.core.types.BufferProperties;
@@ -136,6 +135,7 @@ import org.preesm.commons.logger.PreesmLogger;
 import org.preesm.model.pisdf.PersistenceLevel;
 import org.preesm.model.slam.ComponentInstance;
 import org.preesm.model.slam.Design;
+import org.preesm.model.slam.route.MessageRouteStep;
 import org.preesm.workflow.WorkflowException;
 import org.preesm.workflow.elements.Workflow;
 

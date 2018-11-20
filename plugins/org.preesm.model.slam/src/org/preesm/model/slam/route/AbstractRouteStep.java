@@ -35,9 +35,9 @@
  * The fact that you are presently reading this means that you have had
  * knowledge of the CeCILL license and that you accept its terms.
  */
-package org.preesm.algorithm.core.architecture.route;
+package org.preesm.model.slam.route;
 
-import org.preesm.algorithm.model.CloneableProperty;
+import org.preesm.commons.CloneableProperty;
 import org.preesm.model.slam.ComponentInstance;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;

@@ -39,7 +39,6 @@ package org.preesm.algorithm.mapper.abc.transaction;
 
 import java.util.List;
 import java.util.logging.Level;
-import org.preesm.algorithm.core.architecture.route.AbstractRouteStep;
 import org.preesm.algorithm.mapper.abc.order.OrderManager;
 import org.preesm.algorithm.mapper.model.MapperDAG;
 import org.preesm.algorithm.mapper.model.MapperDAGEdge;
@@ -49,6 +48,7 @@ import org.preesm.algorithm.mapper.model.special.PrecedenceEdge;
 import org.preesm.algorithm.mapper.model.special.PrecedenceEdgeAdder;
 import org.preesm.algorithm.mapper.model.special.TransferVertex;
 import org.preesm.commons.logger.PreesmLogger;
+import org.preesm.model.slam.route.AbstractRouteStep;
 
 // TODO: Auto-generated Javadoc
 /**

@@ -44,10 +44,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.logging.Level;
-import org.preesm.algorithm.core.architecture.route.AbstractRouteStep;
-import org.preesm.algorithm.core.architecture.route.Route;
-import org.preesm.algorithm.core.architecture.route.RouteStepFactory;
-import org.preesm.algorithm.core.architecture.util.DesignTools;
 import org.preesm.algorithm.core.scenario.PreesmScenario;
 import org.preesm.algorithm.mapper.model.MapperDAGEdge;
 import org.preesm.algorithm.mapper.model.MapperDAGVertex;
@@ -57,6 +53,10 @@ import org.preesm.model.slam.Design;
 import org.preesm.model.slam.component.Operator;
 import org.preesm.model.slam.component.impl.ComNodeImpl;
 import org.preesm.model.slam.link.Link;
+import org.preesm.model.slam.route.AbstractRouteStep;
+import org.preesm.model.slam.route.Route;
+import org.preesm.model.slam.route.RouteStepFactory;
+import org.preesm.model.slam.utils.DesignTools;
 
 /**
  * This class can evaluate a given transfer and choose the best route between two operators.

@@ -36,13 +36,13 @@
 package org.preesm.algorithm.mapper.abc.route;
 
 import java.util.List;
-import org.preesm.algorithm.core.architecture.route.AbstractRouteStep;
 import org.preesm.algorithm.mapper.abc.edgescheduling.IEdgeSched;
 import org.preesm.algorithm.mapper.abc.order.OrderManager;
 import org.preesm.algorithm.mapper.abc.transaction.Transaction;
 import org.preesm.algorithm.mapper.abc.transaction.TransactionManager;
 import org.preesm.algorithm.mapper.model.MapperDAG;
 import org.preesm.algorithm.mapper.model.MapperDAGEdge;
+import org.preesm.model.slam.route.AbstractRouteStep;
 
 /**
  * Routes a communication and creates the necessary communication vertices.

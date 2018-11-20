@@ -43,7 +43,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.logging.Level;
-import org.preesm.algorithm.core.architecture.util.DesignTools.ComponentInstanceComparator;
 import org.preesm.algorithm.core.scenario.PreesmScenario;
 import org.preesm.algorithm.mapper.abc.impl.latency.LatencyAbc;
 import org.preesm.algorithm.mapper.abc.taskscheduling.AbstractTaskSched;
@@ -68,6 +67,7 @@ import org.preesm.model.slam.ComponentInstance;
 import org.preesm.model.slam.Design;
 import org.preesm.model.slam.attributes.VLNV;
 import org.preesm.model.slam.component.Operator;
+import org.preesm.model.slam.utils.DesignTools.ComponentInstanceComparator;
 
 /**
  *

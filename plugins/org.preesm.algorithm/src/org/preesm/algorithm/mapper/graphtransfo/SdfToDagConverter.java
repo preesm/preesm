@@ -49,7 +49,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.logging.Level;
-import org.preesm.algorithm.core.architecture.util.DesignTools;
 import org.preesm.algorithm.core.scenario.ConstraintGroup;
 import org.preesm.algorithm.core.scenario.PreesmScenario;
 import org.preesm.algorithm.core.scenario.RelativeConstraintManager;
@@ -77,6 +76,7 @@ import org.preesm.model.pisdf.PiGraph;
 import org.preesm.model.slam.ComponentInstance;
 import org.preesm.model.slam.Design;
 import org.preesm.model.slam.component.Operator;
+import org.preesm.model.slam.utils.DesignTools;
 
 /**
  * Uses the SDF4J library to convert the input SDF into a DAG before scheduling.

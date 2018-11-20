@@ -41,7 +41,6 @@ package org.preesm.algorithm.mapper.ui.stats;
 import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.Set;
-import org.preesm.algorithm.core.architecture.util.DesignTools;
 import org.preesm.algorithm.core.scenario.PreesmScenario;
 import org.preesm.algorithm.core.types.ImplementationPropertyNames;
 import org.preesm.algorithm.core.types.VertexType;
@@ -60,6 +59,7 @@ import org.preesm.algorithm.model.PropertyBean;
 import org.preesm.algorithm.model.dag.DAGEdge;
 import org.preesm.algorithm.model.dag.DAGVertex;
 import org.preesm.model.slam.ComponentInstance;
+import org.preesm.model.slam.utils.DesignTools;
 import org.preesm.workflow.WorkflowException;
 
 /**

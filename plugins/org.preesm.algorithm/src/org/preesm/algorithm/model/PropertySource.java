@@ -39,6 +39,7 @@ package org.preesm.algorithm.model;
 
 import java.util.ArrayList;
 import java.util.List;
+import org.preesm.commons.CloneableProperty;
 
 /**
  * Interface for object using a property bean to store properties.

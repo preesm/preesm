@@ -48,10 +48,10 @@ import org.eclipse.jface.viewers.IStructuredContentProvider;
 import org.eclipse.jface.viewers.ITableLabelProvider;
 import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.swt.graphics.Image;
-import org.preesm.algorithm.core.architecture.util.DesignTools;
 import org.preesm.algorithm.mapper.ui.Messages;
 import org.preesm.algorithm.mapper.ui.stats.StatGenerator;
 import org.preesm.model.slam.ComponentInstance;
+import org.preesm.model.slam.utils.DesignTools;
 
 // TODO: Auto-generated Javadoc
 /**

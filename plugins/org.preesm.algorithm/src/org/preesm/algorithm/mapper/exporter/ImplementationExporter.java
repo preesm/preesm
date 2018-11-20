@@ -41,7 +41,6 @@ package org.preesm.algorithm.mapper.exporter;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.util.Iterator;
-import org.preesm.algorithm.core.architecture.route.AbstractRouteStep;
 import org.preesm.algorithm.core.types.ImplementationPropertyNames;
 import org.preesm.algorithm.exporter.GMLExporter;
 import org.preesm.algorithm.mapper.PreesmMapperException;
@@ -56,6 +55,7 @@ import org.preesm.algorithm.model.dag.DAGVertex;
 import org.preesm.commons.GMLKey;
 import org.preesm.model.slam.attributes.Parameter;
 import org.preesm.model.slam.impl.ComponentInstanceImpl;
+import org.preesm.model.slam.route.AbstractRouteStep;
 import org.w3c.dom.Element;
 
 /**

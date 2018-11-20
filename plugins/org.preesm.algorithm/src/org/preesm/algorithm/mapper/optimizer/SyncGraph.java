@@ -43,7 +43,6 @@ import java.util.Set;
 import org.jgrapht.alg.TransitiveReduction;
 import org.jgrapht.io.ComponentNameProvider;
 import org.jgrapht.io.DOTExporter;
-import org.preesm.algorithm.core.architecture.route.MessageRouteStep;
 import org.preesm.algorithm.mapper.AbstractMappingFromDAG;
 import org.preesm.algorithm.mapper.PreesmMapperException;
 import org.preesm.algorithm.mapper.model.special.SendVertex;
@@ -51,6 +50,7 @@ import org.preesm.algorithm.mapper.model.special.TransferVertex;
 import org.preesm.algorithm.model.dag.DAGVertex;
 import org.preesm.model.slam.ComponentInstance;
 import org.preesm.model.slam.attributes.Parameter;
+import org.preesm.model.slam.route.MessageRouteStep;
 
 /**
  *

@@ -43,12 +43,12 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
-import org.preesm.algorithm.core.architecture.util.DesignTools;
 import org.preesm.algorithm.core.scenario.Timing;
 import org.preesm.algorithm.mapper.abc.SpecialVertexManager;
 import org.preesm.algorithm.mapper.model.MapperDAGVertex;
-import org.preesm.algorithm.model.CloneableProperty;
+import org.preesm.commons.CloneableProperty;
 import org.preesm.model.slam.ComponentInstance;
+import org.preesm.model.slam.utils.DesignTools;
 
 /**
  * Properties of a mapped vertex set when converting dag to mapper dag.

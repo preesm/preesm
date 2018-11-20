@@ -37,7 +37,7 @@
  */
 package org.preesm.algorithm.model.parameters;
 
-import org.preesm.algorithm.model.CloneableProperty;
+import org.preesm.commons.CloneableProperty;
 
 /**
  * Class representing parameters that can be used to configure a graph ...

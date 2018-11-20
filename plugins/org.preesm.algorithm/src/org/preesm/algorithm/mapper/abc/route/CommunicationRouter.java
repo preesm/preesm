@@ -47,11 +47,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.logging.Level;
-import org.preesm.algorithm.core.architecture.route.AbstractRouteStep;
-import org.preesm.algorithm.core.architecture.route.DmaRouteStep;
-import org.preesm.algorithm.core.architecture.route.MemRouteStep;
-import org.preesm.algorithm.core.architecture.route.MessageRouteStep;
-import org.preesm.algorithm.core.architecture.route.Route;
 import org.preesm.algorithm.core.scenario.PreesmScenario;
 import org.preesm.algorithm.mapper.PreesmMapperException;
 import org.preesm.algorithm.mapper.abc.edgescheduling.IEdgeSched;
@@ -72,6 +67,11 @@ import org.preesm.algorithm.model.dag.DAGVertex;
 import org.preesm.commons.logger.PreesmLogger;
 import org.preesm.model.slam.ComponentInstance;
 import org.preesm.model.slam.Design;
+import org.preesm.model.slam.route.AbstractRouteStep;
+import org.preesm.model.slam.route.DmaRouteStep;
+import org.preesm.model.slam.route.MemRouteStep;
+import org.preesm.model.slam.route.MessageRouteStep;
+import org.preesm.model.slam.route.Route;
 
 /**
  * Routes the communications. Based on bridge design pattern. The processing is delegated to implementers

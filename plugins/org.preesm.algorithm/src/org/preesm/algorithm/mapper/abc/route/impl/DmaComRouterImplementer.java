@@ -39,8 +39,6 @@ package org.preesm.algorithm.mapper.abc.route.impl;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
-import org.preesm.algorithm.core.architecture.route.AbstractRouteStep;
-import org.preesm.algorithm.core.architecture.route.DmaRouteStep;
 import org.preesm.algorithm.mapper.abc.edgescheduling.IEdgeSched;
 import org.preesm.algorithm.mapper.abc.edgescheduling.SimpleEdgeSched;
 import org.preesm.algorithm.mapper.abc.route.CommunicationRouter;
@@ -56,6 +54,8 @@ import org.preesm.algorithm.mapper.model.special.TransferVertex;
 import org.preesm.commons.logger.PreesmLogger;
 import org.preesm.model.slam.ComponentInstance;
 import org.preesm.model.slam.component.Dma;
+import org.preesm.model.slam.route.AbstractRouteStep;
+import org.preesm.model.slam.route.DmaRouteStep;
 
 /**
  * Class responsible to generate the suited vertices while simulating a dma communication.

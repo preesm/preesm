@@ -39,9 +39,9 @@ package org.preesm.algorithm.mapper.model;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
-import org.preesm.algorithm.core.architecture.util.DesignTools;
 import org.preesm.commons.logger.PreesmLogger;
 import org.preesm.model.slam.ComponentInstance;
+import org.preesm.model.slam.utils.DesignTools;
 
 // TODO: Auto-generated Javadoc
 /**

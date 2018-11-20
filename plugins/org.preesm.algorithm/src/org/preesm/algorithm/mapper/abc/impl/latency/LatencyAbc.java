@@ -46,7 +46,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.logging.Level;
-import org.preesm.algorithm.core.architecture.util.DesignTools;
 import org.preesm.algorithm.core.scenario.PreesmScenario;
 import org.preesm.algorithm.iterators.TopologicalDAGIterator;
 import org.preesm.algorithm.mapper.PreesmMapperException;
@@ -80,6 +79,7 @@ import org.preesm.algorithm.model.dag.edag.DAGInitVertex;
 import org.preesm.commons.logger.PreesmLogger;
 import org.preesm.model.slam.ComponentInstance;
 import org.preesm.model.slam.Design;
+import org.preesm.model.slam.utils.DesignTools;
 import org.preesm.workflow.WorkflowException;
 
 /**

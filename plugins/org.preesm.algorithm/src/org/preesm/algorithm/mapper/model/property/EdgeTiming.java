@@ -37,7 +37,7 @@
  */
 package org.preesm.algorithm.mapper.model.property;
 
-import org.preesm.algorithm.model.CloneableProperty;
+import org.preesm.commons.CloneableProperty;
 
 // TODO: Auto-generated Javadoc
 /**

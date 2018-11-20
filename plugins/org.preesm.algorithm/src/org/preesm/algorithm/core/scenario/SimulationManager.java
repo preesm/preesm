@@ -41,8 +41,8 @@ import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.Set;
-import org.preesm.algorithm.core.architecture.route.Route;
 import org.preesm.algorithm.core.types.DataType;
+import org.preesm.model.slam.route.Route;
 
 // TODO: Auto-generated Javadoc
 /**

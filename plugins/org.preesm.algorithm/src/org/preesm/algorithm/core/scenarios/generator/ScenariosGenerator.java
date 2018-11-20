@@ -50,7 +50,6 @@ import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.emf.ecore.EPackage;
 import org.eclipse.emf.ecore.resource.Resource;
-import org.preesm.algorithm.core.architecture.util.DesignTools;
 import org.preesm.algorithm.core.scenario.PreesmScenario;
 import org.preesm.algorithm.core.scenario.ScenarioUtils;
 import org.preesm.algorithm.core.scenario.Timing;
@@ -66,6 +65,7 @@ import org.preesm.model.pisdf.serialize.PiParser;
 import org.preesm.model.slam.Design;
 import org.preesm.model.slam.SlamPackage;
 import org.preesm.model.slam.serialize.IPXACTResourceFactoryImpl;
+import org.preesm.model.slam.utils.DesignTools;
 
 // TODO: Auto-generated Javadoc
 /**

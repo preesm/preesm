@@ -19,6 +19,7 @@ Export-Package: org.preesm.model.slam,
  org.preesm.model.slam.link.impl,
  org.preesm.model.slam.link.util,
  org.preesm.model.slam.process,
+ org.preesm.model.slam.route,
  org.preesm.model.slam.serialize,
  org.preesm.model.slam.util,
  org.preesm.model.slam.utils

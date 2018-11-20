@@ -48,7 +48,6 @@ import java.util.Set;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.emf.ecore.EPackage;
 import org.eclipse.emf.ecore.resource.Resource;
-import org.preesm.algorithm.core.architecture.util.DesignTools;
 import org.preesm.algorithm.core.scenario.papi.PapifyConfigManager;
 import org.preesm.algorithm.core.scenario.serialize.ScenarioParser;
 import org.preesm.algorithm.importer.InvalidModelException;
@@ -60,6 +59,7 @@ import org.preesm.model.pisdf.serialize.PiParser;
 import org.preesm.model.slam.Design;
 import org.preesm.model.slam.SlamPackage;
 import org.preesm.model.slam.serialize.IPXACTResourceFactoryImpl;
+import org.preesm.model.slam.utils.DesignTools;
 
 /**
  * Storing all information of a scenario.

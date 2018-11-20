@@ -37,6 +37,7 @@
 package org.preesm.algorithm.model;
 
 import org.preesm.algorithm.model.parameters.InvalidExpressionException;
+import org.preesm.commons.CloneableProperty;
 
 /**
  * Abstract generic Class used to represent a Edge property.
