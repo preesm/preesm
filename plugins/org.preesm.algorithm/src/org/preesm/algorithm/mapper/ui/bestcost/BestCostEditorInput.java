@@ -39,7 +39,7 @@ package org.preesm.algorithm.mapper.ui.bestcost;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IPersistableElement;
-import org.preesm.algorithm.mapper.activator.Activator;
+import org.preesm.algorithm.PreesmAlgorithmPlugin;
 import org.preesm.algorithm.mapper.ui.BestCostPlotter;
 
 // TODO: Auto-generated Javadoc
@@ -91,7 +91,7 @@ public class BestCostEditorInput implements IEditorInput {
    */
   @Override
   public ImageDescriptor getImageDescriptor() {
-    final ImageDescriptor img = Activator.getImageDescriptor("icons/preesm2mini.PNG");
+    final ImageDescriptor img = PreesmAlgorithmPlugin.getInstance().getImageDescriptor("icons/preesm2mini.PNG");
     return img;
   }
 

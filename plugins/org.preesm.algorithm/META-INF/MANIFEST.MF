@@ -59,7 +59,6 @@ Export-Package: org.preesm.algorithm,
  org.preesm.algorithm.mapper.abc.route.impl,
  org.preesm.algorithm.mapper.abc.taskscheduling,
  org.preesm.algorithm.mapper.abc.transaction,
- org.preesm.algorithm.mapper.activator,
  org.preesm.algorithm.mapper.algo.dynamic,
  org.preesm.algorithm.mapper.algo.fast,
  org.preesm.algorithm.mapper.algo.hierarchical,
@@ -105,7 +104,6 @@ Export-Package: org.preesm.algorithm,
  org.preesm.algorithm.model.types,
  org.preesm.algorithm.model.visitors,
  org.preesm.algorithm.optimization.clean.joinfork,
- org.preesm.algorithm.pisdf,
  org.preesm.algorithm.pisdf.checker,
  org.preesm.algorithm.pisdf.checker.periods,
  org.preesm.algorithm.pisdf.checker.schedulability,
@@ -137,3 +135,5 @@ Export-Package: org.preesm.algorithm,
  org.preesm.scenario.types,
  org.preesm.scenario.workflow
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
+Bundle-ActivationPolicy: lazy
+Bundle-Activator: org.preesm.algorithm.PreesmAlgorithmPlugin

@@ -39,7 +39,7 @@ import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import org.apache.commons.lang3.math.Fraction;
-import org.preesm.algorithm.evaluator.Activator;
+import org.preesm.algorithm.PreesmAlgorithmPlugin;
 import org.preesm.algorithm.evaluator.EvaluationException;
 import org.preesm.algorithm.mathematicalModels.PeriodicScheduleModelOjAlgo;
 import org.preesm.algorithm.mathematicalModels.SolverMethod;
@@ -281,12 +281,13 @@ public class PeriodicSchedulerSDF {
       method = Method.LINEAR_PROGRAMMING_GUROBI;
     }
 
-    if (Activator.solverMethodRegistry.containsKey(method)) {
-      final SolverMethod solverMethod = Activator.solverMethodRegistry.get(method);
+    if (PreesmAlgorithmPlugin.getInstance().solverMethodRegistry.containsKey(method)) {
+      final SolverMethod solverMethod = PreesmAlgorithmPlugin.getInstance().solverMethodRegistry.get(method);
       period = solverMethod.computeNormalizedPeriod(graph);
     } else {
       // use the default method
-      SolverMethod solverMethod = Activator.solverMethodRegistry.get(PeriodicSchedulerSDF.METHOD_DEFAULT_VALUE);
+      SolverMethod solverMethod = PreesmAlgorithmPlugin.getInstance().solverMethodRegistry
+          .get(PeriodicSchedulerSDF.METHOD_DEFAULT_VALUE);
       // if the activator have not been executed yet, then instantiate the solverMethod manually ()
       if (solverMethod == null) {
         solverMethod = new PeriodicScheduleModelOjAlgo();

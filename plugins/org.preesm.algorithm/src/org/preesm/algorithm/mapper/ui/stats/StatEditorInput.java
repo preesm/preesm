@@ -41,8 +41,8 @@ import java.util.Map;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IPersistableElement;
+import org.preesm.algorithm.PreesmAlgorithmPlugin;
 import org.preesm.algorithm.mapper.abc.impl.latency.LatencyAbc;
-import org.preesm.algorithm.mapper.activator.Activator;
 import org.preesm.commons.logger.PreesmLogger;
 import org.preesm.scenario.PreesmScenario;
 
@@ -133,7 +133,7 @@ public class StatEditorInput implements IEditorInput {
    */
   @Override
   public ImageDescriptor getImageDescriptor() {
-    return Activator.getImageDescriptor("icons/preesm1mini.PNG");
+    return PreesmAlgorithmPlugin.getInstance().getImageDescriptor("icons/preesm1mini.PNG");
   }
 
   /*
