@@ -48,7 +48,7 @@ import java.util.ResourceBundle;
 public class Messages {
 
   /** The Constant BUNDLE_NAME. */
-  private static final String BUNDLE_NAME = "org.ietr.preesm.ui.scenario.editor.messages"; //$NON-NLS-1$
+  private static final String BUNDLE_NAME = "org.preesm.ui.scenario.editor.messages"; //$NON-NLS-1$
 
   /** The Constant RESOURCE_BUNDLE. */
   private static final ResourceBundle RESOURCE_BUNDLE = ResourceBundle.getBundle(Messages.BUNDLE_NAME);
