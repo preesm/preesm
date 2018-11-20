@@ -121,7 +121,7 @@ public class ScenariosGenerator {
       throws InvalidModelException, CoreException, FileNotFoundException {
     final IFolder archiDir = project.getFolder(ScenariosGenerator.archiDirName);
     final IFolder algoDir = project.getFolder(ScenariosGenerator.algoDirName);
-    return generateScenarios(archiDir, algoDir);
+    return generateScenarios(project, archiDir, algoDir);
   }
 
   /**
@@ -139,7 +139,7 @@ public class ScenariosGenerator {
    * @throws FileNotFoundException
    *           the file not found exception
    */
-  public Set<PreesmScenario> generateScenarios(final IFolder archiDir, final IFolder algoDir)
+  public Set<PreesmScenario> generateScenarios(final IProject project, final IFolder archiDir, final IFolder algoDir)
       throws InvalidModelException, CoreException, FileNotFoundException {
     final Set<String> archis = new LinkedHashSet<>();
     final Set<String> algos = new LinkedHashSet<>();
@@ -160,7 +160,7 @@ public class ScenariosGenerator {
         }
       }
     }
-    return generateScenarios(archis, algos);
+    return generateScenarios(project, archis, algos);
   }
 
   /**
@@ -178,12 +178,12 @@ public class ScenariosGenerator {
    * @throws FileNotFoundException
    *           the file not found exception
    */
-  private Set<PreesmScenario> generateScenarios(final Set<String> archis, final Set<String> algos)
-      throws InvalidModelException, CoreException, FileNotFoundException {
+  private Set<PreesmScenario> generateScenarios(final IProject project, final Set<String> archis,
+      final Set<String> algos) throws InvalidModelException, CoreException, FileNotFoundException {
     final Set<PreesmScenario> scenarios = new LinkedHashSet<>();
     for (final String archiURL : archis) {
       for (final String algoURL : algos) {
-        scenarios.add(createScenario(archiURL, algoURL));
+        scenarios.add(createScenario(project, archiURL, algoURL));
       }
     }
     return scenarios;
@@ -204,7 +204,7 @@ public class ScenariosGenerator {
    * @throws FileNotFoundException
    *           the file not found exception
    */
-  private PreesmScenario createScenario(final String archiURL, final String algoURL)
+  private PreesmScenario createScenario(final IProject project, final String archiURL, final String algoURL)
       throws InvalidModelException, CoreException, FileNotFoundException {
     // Create a new PreesmScenario
     final PreesmScenario scenario = new PreesmScenario();
@@ -228,8 +228,12 @@ public class ScenariosGenerator {
     // Set default values for constraints, timings and simulation parameters
     if (algoURL.endsWith(ScenariosGenerator.piAlgoExt)) {
       fillPiScenario(scenario, archi, algoURL);
+
     } else if (algoURL.endsWith(ScenariosGenerator.sdfAlgoExt)) {
       fillSDFScenario(scenario, archi, algoURL);
+      // Add a single data type uint
+      scenario.getSimulationManager().putDataType(new DataType("uint", 1));
+
     }
     // Add a main core (first of the list)
     scenario.getSimulationManager().setMainOperatorName(coreIds.get(0));
@@ -237,9 +241,8 @@ public class ScenariosGenerator {
     scenario.getSimulationManager().setMainComNodeName(comNodeIds.get(0));
     // Add a average transfer size
     scenario.getSimulationManager().setAverageDataSize(1000);
-    // Add a single data type uint
-    scenario.getSimulationManager().putDataType(new DataType("uint", 1));
 
+    scenario.getCodegenManager().setCodegenDirectory("/" + project.getName() + "/Code/generated/");
     return scenario;
   }
 
@@ -259,9 +262,9 @@ public class ScenariosGenerator {
    */
   private void fillPiScenario(final PreesmScenario scenario, final Design archi, final String algoURL)
       throws InvalidModelException, CoreException {
-    final PiGraph algo = PiParser.getPiGraph(algoURL);
-    scenario.setAlgorithmURL(algoURL);
     // Get com nodes and cores names
+    scenario.setAlgorithmURL(algoURL);
+    final PiGraph algo = PiParser.getPiGraph(algoURL);
     final List<String> coreIds = new ArrayList<>(DesignTools.getOperatorInstanceIds(archi));
 
     // for all different type of cores
@@ -272,14 +275,18 @@ public class ScenariosGenerator {
       }
     }
     for (final String coreId : coreIds) {
-      for (final AbstractActor aa : algo.getAllActors()) {
+      for (final AbstractActor actor : algo.getAllActors()) {
         // Add constraint: aa can be run on ci
-        scenario.getConstraintGroupManager().addConstraint(coreId, aa);
+        scenario.getConstraintGroupManager().addConstraint(coreId, actor);
       }
       // Add special actors operator id (all cores can execute special
       // actors)
       scenario.getSimulationManager().addSpecialVertexOperatorId(coreId);
     }
+
+    // Fill data-types found in the algo with default value of 1 byte size
+    new PiSDFTypeGatherer().doSwitch(algo)
+        .forEach(type -> scenario.getSimulationManager().putDataType(new DataType(type, 1)));
   }
 
   /**
@@ -357,9 +364,9 @@ public class ScenariosGenerator {
    * @throws FileNotFoundException
    *           the file not found exception
    */
-  public void generateAndSaveScenarios(final IFolder archiDir, final IFolder algoDir, final IFolder scenarioDir)
-      throws CoreException, InvalidModelException, FileNotFoundException {
-    saveScenarios(generateScenarios(archiDir, algoDir), scenarioDir);
+  public void generateAndSaveScenarios(final IProject project, final IFolder archiDir, final IFolder algoDir,
+      final IFolder scenarioDir) throws CoreException, InvalidModelException, FileNotFoundException {
+    saveScenarios(generateScenarios(project, archiDir, algoDir), scenarioDir);
   }
 
   /**
