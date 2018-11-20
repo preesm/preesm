@@ -40,6 +40,8 @@
 	<modelVersion>4.0.0</modelVersion>
 	<artifactId>org.preesm.codegen</artifactId>
 	<packaging>eclipse-plugin</packaging>
+    <name>PREESM :: Plugins :: Code Generation</name>
+
 	<parent>
 		<groupId>org.preesm</groupId>
 		<artifactId>org.preesm.plugins</artifactId>

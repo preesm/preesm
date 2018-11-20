@@ -41,6 +41,8 @@
    <modelVersion>4.0.0</modelVersion>
    <artifactId>org.preesm.model.scenario</artifactId>
    <packaging>eclipse-plugin</packaging>
+    <name>PREESM :: Plugins :: Scenario Model</name>
+
 	<parent>
 		<groupId>org.preesm</groupId>
 		<artifactId>org.preesm.plugins</artifactId>

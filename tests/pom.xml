@@ -40,6 +40,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<artifactId>org.preesm.tests</artifactId>
 	<packaging>pom</packaging>
+    <name>PREESM :: Tests :: Parent</name>
 
 	<parent>
 		<groupId>org.preesm</groupId>
@@ -67,10 +68,10 @@
     <module>org.preesm.tests.model</module>
     <module>org.preesm.tests.algorithm</module>
 		<module>org.preesm.tests.integration</module>
-    
+
     <module>org.preesm.tests.ui</module>
 		<module>org.preesm.tests.ui.rcptt</module>
-    
+
     <module>fi.abo.preesm.dataparallel.test</module>
 	</modules>
 

@@ -39,6 +39,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<artifactId>org.preesm.tests.ui.rcptt</artifactId>
 	<packaging>rcpttTest</packaging>
+    <name>PREESM :: Tests :: RCPTT</name>
 
 	<parent>
 		<groupId>org.preesm</groupId>

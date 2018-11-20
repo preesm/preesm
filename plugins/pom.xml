@@ -39,6 +39,7 @@
   <modelVersion>4.0.0</modelVersion>
   <artifactId>org.preesm.plugins</artifactId>
   <packaging>pom</packaging>
+  <name>PREESM :: Plugins :: Parent</name>
 
   <parent>
     <groupId>org.preesm</groupId>
@@ -51,8 +52,8 @@
     <module>org.preesm.commons</module>
     <module>org.preesm.model.pisdf</module>
     <module>org.preesm.model.scenario</module>
-    
-    
+
+
     <module>org.preesm.algorithm</module>
 
     <module>org.preesm.cli</module>
@@ -69,7 +70,7 @@
     <module>org.preesm.workflow</module>
     <module>org.preesm.ui.slam</module>
     <module>org.preesm.ui</module>
-    
+
   </modules>
 
 </project>

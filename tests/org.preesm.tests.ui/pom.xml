@@ -39,6 +39,8 @@
 	<modelVersion>4.0.0</modelVersion>
 	<artifactId>org.preesm.tests.ui</artifactId>
 	<packaging>eclipse-test-plugin</packaging>
+    <name>PREESM :: Tests :: UI</name>
+
 	<parent>
 		<groupId>org.preesm</groupId>
 		<artifactId>org.preesm.tests</artifactId>

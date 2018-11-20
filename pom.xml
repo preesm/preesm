@@ -46,7 +46,7 @@
   <packaging>pom</packaging>
 
   <!-- More Project Information -->
-  <name>PREESM</name>
+  <name>PREESM :: Parent</name>
   <description>PREESM is an open source rapid prototyping tool targetting heterogeneous multi/many-core embedded systems from and using dataflow language.</description>
   <url>http://preesm.org/</url>
 

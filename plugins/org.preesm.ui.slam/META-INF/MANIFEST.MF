@@ -1,6 +1,6 @@
 Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
-Bundle-Name: S-LAM UI
+Bundle-Name: PREESM :: Plugins :: Salm UI
 Automatic-Module-Name: org.preesm.ui.slam
 Bundle-SymbolicName: org.preesm.ui.slam;singleton:=true
 Bundle-Version: 2.17.1.qualifier
@@ -8,4 +8,4 @@ Require-Bundle: org.preesm.ui,
  org.preesm.model.slam
 Bundle-ActivationPolicy: lazy
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
-Bundle-Vendor: IETR/INSA Rennes
+Bundle-Vendor: IETR / INSA Rennes - VAADER

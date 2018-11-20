@@ -14,4 +14,4 @@ Require-Bundle: org.eclipse.core.runtime,
  org.preesm.model.slam;visibility:=reexport,
  org.preesm.model.pisdf;visibility:=reexport
 Bundle-ActivationPolicy: lazy
-Bundle-Vendor: %providerName
+Bundle-Vendor: IETR / INSA Rennes - VAADER
