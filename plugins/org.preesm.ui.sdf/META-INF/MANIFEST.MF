@@ -3,7 +3,7 @@ Bundle-ManifestVersion: 2
 Bundle-Name: PREESM :: Plugins :: IBSDF UI
 Automatic-Module-Name: org.preesm.ui.sdf
 Bundle-SymbolicName: org.preesm.ui.sdf;singleton:=true
-Bundle-Version: 2.99.0
+Bundle-Version: 2.99.0.qualifier
 Bundle-Vendor: IETR / INSA Rennes - VAADER
 Require-Bundle: org.eclipse.ui.console;bundle-version="3.5.100",
  org.eclipse.ui.editors,
