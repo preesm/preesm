@@ -1,9 +1,9 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <!-- Schema file written by PDE -->
-<schema targetNamespace="org.ietr.preesm.codegen.xtend" xmlns="http://www.w3.org/2001/XMLSchema">
+<schema targetNamespace="org.preesm.codegen.xtend" xmlns="http://www.w3.org/2001/XMLSchema">
 <annotation>
       <appinfo>
-         <meta.schema plugin="org.ietr.preesm.codegen.xtend" id="printers" name="Printers"/>
+         <meta.schema plugin="org.preesm.codegen.xtend" id="printers" name="Printers"/>
       </appinfo>
       <documentation>
          The printers extension point allows a plugin to register a new printer for the Xtend codegen.

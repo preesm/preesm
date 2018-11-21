@@ -1,9 +1,9 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <!-- Schema file written by PDE -->
-<schema targetNamespace="org.ietr.dftools.workflow" xmlns="http://www.w3.org/2001/XMLSchema">
+<schema targetNamespace="org.preesm.workflow" xmlns="http://www.w3.org/2001/XMLSchema">
 <annotation>
       <appinfo>
-         <meta.schema plugin="org.ietr.dftools.workflow" id="org.ietr.dftools.workflow.loggers" name="Workflow logger"/>
+         <meta.schema plugin="org.preesm.workflow" id="org.preesm.workflow.loggers" name="Workflow logger"/>
       </appinfo>
       <documentation>
          The logger displays information in the console. It is delegated to the ui.

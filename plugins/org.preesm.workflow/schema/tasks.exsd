@@ -1,9 +1,9 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <!-- Schema file written by PDE -->
-<schema targetNamespace="org.ietr.dftools.workflow" xmlns="http://www.w3.org/2001/XMLSchema">
+<schema targetNamespace="org.preesm.workflow" xmlns="http://www.w3.org/2001/XMLSchema">
 <annotation>
       <appinfo>
-         <meta.schema plugin="org.ietr.dftools.workflow" id="org.ietr.dftools.workflow.tasks" name="Workflow task"/>
+         <meta.schema plugin="org.preesm.workflow" id="org.preesm.workflow.tasks" name="Workflow task"/>
       </appinfo>
       <documentation>
          The tasks extension point allows plug-ins to declare classes as Workflow task plug-ins.
@@ -64,17 +64,17 @@
          <attribute name="type" type="string" use="required">
             <annotation>
                <documentation>
-                  The fully qualified name of a Java class that extends Task.
+                  The fully qualified name of a Java class that extends AbstractTaskImplementation.
                </documentation>
                <appinfo>
-                  <meta.attribute kind="java" basedOn="org.ietr.dftools.workflow.elements.Task:"/>
+                  <meta.attribute kind="java" basedOn="org.preesm.workflow.implement.AbstractTaskImplementation:"/>
                </appinfo>
             </annotation>
          </attribute>
          <attribute name="id" type="string" use="required">
             <annotation>
                <documentation>
-                  The identifier of this task. It must unique amongst the registered tasks identifiers. Example: org.ietr.preesm.plugin.mapping
+                  The identifier of this task. It must unique amongst the registered tasks identifiers. Example: org.preesm.plugin.mapping
                </documentation>
             </annotation>
          </attribute>
