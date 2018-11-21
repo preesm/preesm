@@ -50,6 +50,19 @@
     <relativePath>..</relativePath>
   </parent>
 
+  <pluginRepositories>
+    <pluginRepository>
+      <id>sonatype-public</id>
+      <url>http://repository.sonatype.org/content/groups/sonatype-public-grid</url>
+      <snapshots>
+        <enabled>true</enabled>
+      </snapshots>
+      <releases>
+        <enabled>true</enabled>
+      </releases>
+    </pluginRepository>
+  </pluginRepositories>
+
   <build>
     <plugins>
       <!-- This plugins builds the update site for the current release and
@@ -59,12 +72,48 @@
         <artifactId>tycho-p2-repository-plugin</artifactId>
         <version>${tycho-version}</version>
         <configuration>
-          <includeAllDependencies>true</includeAllDependencies>
-          <compress>false</compress>
           <repositoryName>IETR/INSA - Rennes PREESM Update Site</repositoryName>
           <skipArchive>true</skipArchive>
         </configuration>
       </plugin>
+
+			<plugin>
+				<groupId>org.jboss.tools.tycho-plugins</groupId>
+				<artifactId>repository-utils</artifactId>
+				<version>1.1.0</version>
+				<executions>
+					<!-- creates index.html and other artifacts -->
+					<!-- see https://github.com/jbosstools/jbosstools-maven-plugins/wiki -->
+					<execution>
+						<id>generate-facade</id>
+						<phase>package</phase>
+						<goals>
+							<goal>generate-repository-facade</goal>
+						</goals>
+						<configuration>
+							<siteTemplateFolder>siteTemplateFolder</siteTemplateFolder>
+							<!-- configuration options for the generated HTML page -->
+							<symbols>
+								<update.site.name>Preesm</update.site.name>
+								<update.site.description>Eclipse</update.site.description>
+								<update.site.version>${qualifiedVersion}</update.site.version>
+							</symbols>
+
+							<!-- this adds repository references to the update site's content.xml -->
+							<associateSites>
+								<site>${updatesite.preesm}</site>
+								<site>${updatesite.eclipse}</site>
+								<site>${updatesite.eclipse.updates}</site>
+								<site>${updatesite.tmf}</site>
+							</associateSites>
+							<!-- to remove the default category created for any uncategorized 
+								features or bundles, set this to true -->
+							<removeDefaultCategory>true</removeDefaultCategory>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+
       <plugin>
         <!-- ## NOTE: make sure this is after the tycho-p2-extras-plugin
           in the pom.xml text -->
@@ -120,7 +169,7 @@
             </goals>
             <configuration>
               <skipCache>true</skipCache>
-              <url>${preesm.p2.repo}/artifacts.xml</url>
+              <url>${updatesite.preesm}/artifacts.xml</url>
               <outputFileName>artifacts.xml</outputFileName>
               <outputDirectory>${project.build.directory}/gensite/update-site/complete/</outputDirectory>
             </configuration>
@@ -133,7 +182,7 @@
             </goals>
             <configuration>
               <skipCache>true</skipCache>
-              <url>${preesm.p2.repo}/content.xml</url>
+              <url>${updatesite.preesm}/content.xml</url>
               <outputFileName>content.xml</outputFileName>
               <outputDirectory>${project.build.directory}/gensite/update-site/complete/</outputDirectory>
             </configuration>

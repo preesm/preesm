@@ -571,15 +571,8 @@ jurisdiction, by the more diligent Party.
 Version 1.0 dated 2006-09-05.]]>
    </license>
 
-   <url>
-      <discovery label="Eclipse" url="http://mirror.ibcp.fr/pub/eclipse/releases/photon/"/>
-      <discovery label="Eclipse Updates" url="http://mirror.ibcp.fr/pub/eclipse/eclipse/updates/4.8"/>
-      <discovery label="TMF Releases" url="http://mirror.ibcp.fr/pub/eclipse/modeling/tmf/xtext/updates/releases/"/>
-      <discovery label="Preesm" url="http://preesm.insa-rennes.fr/repo/complete/"/>
-   </url>
-
    <requires>
-      <import feature="org.eclipse.xtext.xbase.lib" version="2.14" match="greaterOrEqual"/>
+      <import feature="org.eclipse.xtext.xbase.lib" version="2.15" match="greaterOrEqual"/>
       <import feature="org.eclipse.tm.terminal.feature"/>
       <import feature="org.eclipse.cdt"/>
    </requires>
