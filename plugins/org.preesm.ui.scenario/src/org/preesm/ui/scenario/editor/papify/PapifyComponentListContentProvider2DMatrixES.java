@@ -1,4 +1,4 @@
-/**PAPIStatus
+/**
  * Copyright or © or Copr. IETR/INSA - Rennes (2008 - 2018) :
  *
  * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017 - 2018)

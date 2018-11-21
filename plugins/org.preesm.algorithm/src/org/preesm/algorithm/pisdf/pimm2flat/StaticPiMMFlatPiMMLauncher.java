@@ -2,6 +2,7 @@
  * Copyright or © or Copr. IETR/INSA - Rennes (2018) :
  *
  * Alexandre Honorat <ahonorat@insa-rennes.fr> (2018)
+ * Alexandre Honorat <alexandre.honorat@insa-rennes.fr> (2018)
  * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2018)
  * Florian Arrestier <florian.arrestier@insa-rennes.fr> (2018)
  *
