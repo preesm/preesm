@@ -175,6 +175,7 @@ public class InitialLists implements Cloneable {
         predset.addAll(neighborindex.predecessorsOf(cpnvertex));
       } else {
         final String msg = "Predecessor not found";
+        throw new PreesmException(msg);
       }
 
     }

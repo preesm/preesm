@@ -36,7 +36,6 @@
  */
 package fi.abo.preesm.dataparallel.fifo
 
-import java.util.logging.Level
 import java.util.logging.Logger
 import org.jgrapht.EdgeFactory
 import org.preesm.algorithm.factories.SDFEdgeFactory
@@ -47,7 +46,6 @@ import org.preesm.algorithm.model.sdf.SDFAbstractVertex
 import org.preesm.algorithm.model.sdf.SDFEdge
 import org.preesm.algorithm.model.sdf.SDFGraph
 import org.preesm.algorithm.model.visitors.SDF4JException
-import org.preesm.commons.logger.PreesmLogger
 
 /**
  * A special case of {@link SDFGraph} used to denote non-trivial initialization of FIFOs
