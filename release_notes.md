@@ -21,6 +21,7 @@ PREESM Changelog
 * Improve Papify support: 
   * implement 2D array for selecting event to monitor per actor;
   * implement codegen for static schedules (no support in spider yet);
+* Remove preesm dev feature (moved to another repo);
 
 ### Bug fix
 
