@@ -1,8 +1,8 @@
 PREESM Changelog
 ================
 
-## Release version X.Y.Z
-*XXXX.XX.XX*
+## Release version 2.99.0
+*2018.11.21*
 
 ### New Feature
 * Add a simple scheduler that maps everything to the main PE;

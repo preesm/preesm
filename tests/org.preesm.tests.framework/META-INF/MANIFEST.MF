@@ -3,7 +3,7 @@ Bundle-ManifestVersion: 2
 Bundle-Name: PREESM :: Tests :: Framework
 Automatic-Module-Name: org.preesm.tests.framework
 Bundle-SymbolicName: org.preesm.tests.framework
-Bundle-Version: 2.17.1.qualifier
+Bundle-Version: 2.99.0
 Bundle-Vendor: IETR / INSA Rennes - VAADER
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Require-Bundle: org.junit;bundle-version="4.12.0",
