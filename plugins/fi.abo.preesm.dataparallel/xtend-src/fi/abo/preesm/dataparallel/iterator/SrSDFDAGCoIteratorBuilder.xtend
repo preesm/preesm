@@ -39,10 +39,10 @@ package fi.abo.preesm.dataparallel.iterator
 import fi.abo.preesm.dataparallel.NodeChainGraph
 import fi.abo.preesm.dataparallel.PureDAGConstructor
 import java.util.List
-import org.ietr.dftools.algorithm.model.sdf.SDFAbstractVertex
-import org.ietr.dftools.algorithm.model.sdf.SDFGraph
-import org.ietr.dftools.algorithm.model.sdf.visitors.ToHSDFVisitor
-import org.ietr.dftools.algorithm.model.visitors.SDF4JException
+import org.preesm.algorithm.model.sdf.SDFAbstractVertex
+import org.preesm.algorithm.model.sdf.SDFGraph
+import org.preesm.algorithm.model.sdf.visitors.ToHSDFVisitor
+import org.preesm.algorithm.model.visitors.SDF4JException
 
 /**
  * Helper builder class for {@link SrSDFDAGCoIterator}

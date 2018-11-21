@@ -1,0 +1,20 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: PREESM :: Tests :: Integration
+Automatic-Module-Name: org.preesm.tests.integration
+Bundle-SymbolicName: org.preesm.tests.integration
+Bundle-Version: 2.99.0
+Bundle-Vendor: IETR / INSA Rennes - VAADER
+Bundle-RequiredExecutionEnvironment: JavaSE-1.8
+Require-Bundle: org.junit;bundle-version="4.12.0",
+ org.jgrapht.core;bundle-version="1.1.0",
+ org.eclipse.core.resources,
+ org.eclipse.core.runtime,
+ org.preesm.algorithm,
+ org.preesm.cli,
+ org.preesm.codegen,
+ org.preesm.codegen.xtend,
+ org.preesm.model.pisdf,
+ org.preesm.commons,
+ fi.abo.preesm.dataparallel,
+ org.preesm.ui

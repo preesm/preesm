@@ -1,0 +1,36 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: PREESM :: Plugins :: UI
+Automatic-Module-Name: org.preesm.ui
+Bundle-SymbolicName: org.preesm.ui;singleton:=true
+Bundle-Version: 2.99.0
+Bundle-Activator: org.preesm.ui.PreesmUIPlugin
+Require-Bundle: org.eclipse.core.runtime;visibility:=reexport,
+ org.eclipse.core.resources,
+ org.eclipse.debug.ui;visibility:=reexport,
+ org.eclipse.ui.ide;visibility:=reexport,
+ org.eclipse.ui.console,
+ org.eclipse.core.expressions,
+ org.eclipse.ui.views.properties.tabbed;visibility:=reexport,
+ org.eclipse.gef;visibility:=reexport,
+ org.ietr.graphiti.ui;bundle-version="[1.11.0,2.0.0)";visibility:=reexport,
+ org.preesm.workflow
+Bundle-ActivationPolicy: lazy
+Bundle-RequiredExecutionEnvironment: JavaSE-1.8
+Export-Package: org.preesm.ui,
+ org.preesm.ui.console,
+ org.preesm.ui.editor.graph.validators,
+ org.preesm.ui.fields,
+ org.preesm.ui.perspective,
+ org.preesm.ui.popup.actions,
+ org.preesm.ui.rcp.utils,
+ org.preesm.ui.utils,
+ org.preesm.ui.wizards,
+ org.preesm.ui.workflow,
+ org.preesm.ui.workflow.command,
+ org.preesm.ui.workflow.filters,
+ org.preesm.ui.workflow.launch,
+ org.preesm.ui.workflow.properties,
+ org.preesm.ui.workflow.tools
+Eclipse-BuddyPolicy: global
+Bundle-Vendor: IETR / INSA Rennes - VAADER

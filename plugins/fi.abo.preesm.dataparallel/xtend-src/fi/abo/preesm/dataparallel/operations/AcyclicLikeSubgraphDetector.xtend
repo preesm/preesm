@@ -36,15 +36,15 @@
  */
 package fi.abo.preesm.dataparallel.operations
 
+import java.util.List
 import java.util.logging.Logger
 import org.eclipse.xtend.lib.annotations.Accessors
-import org.ietr.dftools.algorithm.model.sdf.SDFAbstractVertex
-import org.ietr.dftools.algorithm.model.sdf.SDFEdge
-import org.ietr.dftools.algorithm.model.sdf.SDFGraph
-import org.ietr.dftools.algorithm.model.visitors.IGraphVisitor
-import org.ietr.dftools.algorithm.model.visitors.SDF4JException
 import org.jgrapht.alg.cycle.CycleDetector
-import java.util.List
+import org.preesm.algorithm.model.sdf.SDFAbstractVertex
+import org.preesm.algorithm.model.sdf.SDFEdge
+import org.preesm.algorithm.model.sdf.SDFGraph
+import org.preesm.algorithm.model.visitors.IGraphVisitor
+import org.preesm.algorithm.model.visitors.SDF4JException
 
 /**
  * Class that detects Acyclic-like patterns from a given subgraph.

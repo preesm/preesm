@@ -36,18 +36,16 @@
  */
 package fi.abo.preesm.dataparallel.fifo
 
-import java.util.logging.Level
 import java.util.logging.Logger
-import org.ietr.dftools.algorithm.factories.SDFEdgeFactory
-import org.ietr.dftools.algorithm.model.AbstractEdgePropertyType
-import org.ietr.dftools.algorithm.model.AbstractGraph
-import org.ietr.dftools.algorithm.model.IInterface
-import org.ietr.dftools.algorithm.model.sdf.SDFAbstractVertex
-import org.ietr.dftools.algorithm.model.sdf.SDFEdge
-import org.ietr.dftools.algorithm.model.sdf.SDFGraph
-import org.ietr.dftools.algorithm.model.visitors.SDF4JException
-import org.ietr.dftools.workflow.tools.WorkflowLogger
 import org.jgrapht.EdgeFactory
+import org.preesm.algorithm.factories.SDFEdgeFactory
+import org.preesm.algorithm.model.AbstractEdgePropertyType
+import org.preesm.algorithm.model.AbstractGraph
+import org.preesm.algorithm.model.IInterface
+import org.preesm.algorithm.model.sdf.SDFAbstractVertex
+import org.preesm.algorithm.model.sdf.SDFEdge
+import org.preesm.algorithm.model.sdf.SDFGraph
+import org.preesm.algorithm.model.visitors.SDF4JException
 
 /**
  * A special case of {@link SDFGraph} used to denote non-trivial initialization of FIFOs
@@ -129,7 +127,6 @@ class FifoActorGraph extends SDFGraph {
 			edge.delay.longValue == 0
 		]) {
 			val message = "Edges of FIFO Actor cannot have delays in them."
-			WorkflowLogger.getLogger().log(Level.SEVERE, message)
 			throw new SDF4JException(message)
 		}
 		return super.validateModel()

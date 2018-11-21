@@ -36,11 +36,10 @@
  */
 package fi.abo.preesm.dataparallel
 
-import fi.abo.preesm.dataparallel.DAGConstructor
-import java.util.List
-import org.ietr.dftools.algorithm.model.sdf.SDFAbstractVertex
 import fi.abo.preesm.dataparallel.iterator.SubsetTopologicalIterator
 import fi.abo.preesm.dataparallel.operations.DAGCommonOperations
+import java.util.List
+import org.preesm.algorithm.model.sdf.SDFAbstractVertex
 
 /**
  * Interface for constructing a subset of a DAG constructor

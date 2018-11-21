@@ -42,15 +42,15 @@ import java.util.Map
 import java.util.Set
 import java.util.regex.Pattern
 import org.eclipse.xtend.lib.annotations.Accessors
-import org.ietr.dftools.algorithm.model.sdf.SDFAbstractVertex
-import org.ietr.dftools.algorithm.model.sdf.SDFEdge
-import org.ietr.dftools.algorithm.model.sdf.SDFGraph
-import org.ietr.dftools.algorithm.model.sdf.esdf.SDFForkVertex
-import org.ietr.dftools.algorithm.model.sdf.esdf.SDFJoinVertex
-import org.ietr.dftools.algorithm.model.sdf.visitors.ToHSDFVisitor
-import org.ietr.dftools.algorithm.model.types.LongEdgePropertyType
-import org.ietr.dftools.algorithm.model.visitors.SDF4JException
 import org.jgrapht.traverse.TopologicalOrderIterator
+import org.preesm.algorithm.model.sdf.SDFAbstractVertex
+import org.preesm.algorithm.model.sdf.SDFEdge
+import org.preesm.algorithm.model.sdf.SDFGraph
+import org.preesm.algorithm.model.sdf.esdf.SDFForkVertex
+import org.preesm.algorithm.model.sdf.esdf.SDFJoinVertex
+import org.preesm.algorithm.model.sdf.visitors.ToHSDFVisitor
+import org.preesm.algorithm.model.types.LongEdgePropertyType
+import org.preesm.algorithm.model.visitors.SDF4JException
 
 /**
  * Apart from the poor choice of name for this class ;) , this class groups the vertices of

@@ -36,23 +36,23 @@
  */
 package fi.abo.preesm.dataparallel.operations
 
-import java.util.List
-import java.util.logging.Level
-import java.util.logging.Logger
+import fi.abo.preesm.dataparallel.CannotRearrange
 import fi.abo.preesm.dataparallel.DAGComputationBug
 import fi.abo.preesm.dataparallel.SDF2DAG
 import fi.abo.preesm.dataparallel.pojo.RetimingInfo
+import java.util.List
+import java.util.logging.Level
+import java.util.logging.Logger
 import org.eclipse.xtend.lib.annotations.Accessors
-import org.ietr.dftools.algorithm.model.sdf.SDFAbstractVertex
-import org.ietr.dftools.algorithm.model.sdf.SDFEdge
-import org.ietr.dftools.algorithm.model.sdf.SDFGraph
-import org.ietr.dftools.algorithm.model.sdf.visitors.ToHSDFVisitor
-import org.ietr.dftools.algorithm.model.visitors.IGraphVisitor
-import org.ietr.dftools.algorithm.model.visitors.SDF4JException
-import org.jgrapht.alg.cycle.CycleDetector
-import fi.abo.preesm.dataparallel.CannotRearrange
 import org.jgrapht.alg.connectivity.KosarajuStrongConnectivityInspector
+import org.jgrapht.alg.cycle.CycleDetector
 import org.jgrapht.graph.AsSubgraph
+import org.preesm.algorithm.model.sdf.SDFAbstractVertex
+import org.preesm.algorithm.model.sdf.SDFEdge
+import org.preesm.algorithm.model.sdf.SDFGraph
+import org.preesm.algorithm.model.sdf.visitors.ToHSDFVisitor
+import org.preesm.algorithm.model.visitors.IGraphVisitor
+import org.preesm.algorithm.model.visitors.SDF4JException
 
 /**
  * Isolate strongly connected components of the original

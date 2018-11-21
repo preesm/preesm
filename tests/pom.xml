@@ -38,13 +38,14 @@
 -->
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
-	<artifactId>org.ietr.preesm.test</artifactId>
+	<artifactId>org.preesm.tests</artifactId>
 	<packaging>pom</packaging>
+    <name>PREESM :: Tests :: Parent</name>
 
 	<parent>
-		<groupId>org.ietr.preesm</groupId>
-		<artifactId>org.ietr.preesm.parent</artifactId>
-		<version>2.17.1</version>
+		<groupId>org.preesm</groupId>
+		<artifactId>org.preesm.parent</artifactId>
+		<version>2.99.0</version>
 		<relativePath>..</relativePath>
 	</parent>
 
@@ -62,9 +63,16 @@
 		</plugins>
 	</build>
 
-	<modules>
-		<module>org.ietr.preesm.test.it</module>
-		<module>org.preesm.test.ui</module>
+  <modules>
+    <module>org.preesm.tests.framework</module>
+    <module>org.preesm.tests.model</module>
+    <module>org.preesm.tests.algorithm</module>
+		<module>org.preesm.tests.integration</module>
+
+    <module>org.preesm.tests.ui</module>
+		<module>org.preesm.tests.ui.rcptt</module>
+
+    <module>fi.abo.preesm.dataparallel.test</module>
 	</modules>
 
 </project>

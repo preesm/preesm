@@ -36,10 +36,10 @@
  */
  package fi.abo.preesm.dataparallel
 
-import org.ietr.preesm.algorithm.exportXml.SDF2GraphmlExporter
-import org.ietr.dftools.algorithm.model.sdf.SDFGraph
-import org.ietr.dftools.algorithm.exporter.GMLSDFExporter
 import org.eclipse.core.runtime.CoreException
+import org.preesm.algorithm.io.gml.GMLSDFExporter
+import org.preesm.algorithm.io.xml.SDF2GraphmlExporter
+import org.preesm.algorithm.model.sdf.SDFGraph
 
 class SDFExporter extends SDF2GraphmlExporter {
 	new() {

@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!--
+
+    Copyright or © or Copr. IETR/INSA - Rennes (2008 - 2018) :
+
+    Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017 - 2018)
+    Clément Guy <clement.guy@insa-rennes.fr> (2014)
+    Maxime Pelcat <maxime.pelcat@insa-rennes.fr> (2008 - 2012)
+
+    This software is a computer program whose purpose is to help prototyping
+    parallel applications using dataflow formalism.
+
+    This software is governed by the CeCILL  license under French law and
+    abiding by the rules of distribution of free software.  You can  use,
+    modify and/ or redistribute the software under the terms of the CeCILL
+    license as circulated by CEA, CNRS and INRIA at the following URL
+    "http://www.cecill.info".
+
+    As a counterpart to the access to the source code and  rights to copy,
+    modify and redistribute granted by the license, users are provided only
+    with a limited warranty  and the software's author,  the holder of the
+    economic rights,  and the successive licensors  have only  limited
+    liability.
+
+    In this respect, the user's attention is drawn to the risks associated
+    with loading,  using,  modifying and/or developing or reproducing the
+    software by the user in light of its specific status of free software,
+    that may mean  that it is complicated to manipulate,  and  that  also
+    therefore means  that it is reserved for developers  and  experienced
+    professionals having in-depth computer knowledge. Users are therefore
+    encouraged to load and test the software's suitability as regards their
+    requirements in conditions enabling the security of their systems and/or
+    data to be ensured and,  more generally, to use and operate it in the
+    same conditions as regards security.
+
+    The fact that you are presently reading this means that you have had
+    knowledge of the CeCILL license and that you accept its terms.
+
+-->
+<graphml xmlns="http://graphml.graphdrawing.org/xmlns/1.0rc">
+<key attr.name="Weight" attr.type="int" for="edge" id="Weight">
+<desc>org.ietr.dftools.algorithm.model.dag.DAGDefaultEdgePropertyType</desc>
+</key>
+<key attr.name="name" attr.type="string" for="vertex" id="name">
+<desc>java.lang.String</desc>
+</key>
+<graph edgedefault="directed">
+<node id="25860de1-c253-4385-bf99-dbe651768fc0">
+<data key="name">Sensor</data>
+</node>
+<node id="0c7528f2-3a27-4ed9-9fce-5f29ef1d070e">
+<data key="name">Gen_int</data>
+</node>
+<node id="f64ba1b6-4364-4021-8bd5-6b20c64a91bc">
+<data key="name">Copy</data>
+</node>
+<node id="10252fb6-188c-40d9-ab90-4921dbdbc10b">
+<data key="name">Actuator</data>
+</node>
+<node id="7887fc56-5871-46dc-b8b7-6fcde91a8c97">
+<data key="name">ParallelTest</data>
+</node>
+<node id="2529a6b7-6984-43bd-bf01-8d5f35960cdf">
+<data key="name">ParallelTest2</data>
+</node>
+<node id="7016162e-dd1e-4179-851a-d4e182a4fc50">
+<data key="name">__send1 (Sensor,ParallelTest)</data>
+</node>
+<node id="9fdf4a73-a88a-4636-8202-8abea35a38d0">
+<data key="name">__receive1 (Sensor,ParallelTest)</data>
+</node>
+<node id="976ca70a-944e-4413-913a-135852fab9fc">
+<data key="name">__send1 (ParallelTest2,Actuator)</data>
+</node>
+<node id="3e07789c-3ea7-4753-8efb-bea5971eef18">
+<data key="name">__receive1 (ParallelTest2,Actuator)</data>
+</node>
+<edge source="25860de1-c253-4385-bf99-dbe651768fc0" target="0c7528f2-3a27-4ed9-9fce-5f29ef1d070e">
+<data key="Weight">1</data>
+</edge>
+<edge source="0c7528f2-3a27-4ed9-9fce-5f29ef1d070e" target="f64ba1b6-4364-4021-8bd5-6b20c64a91bc">
+<data key="Weight">10</data>
+</edge>
+<edge source="f64ba1b6-4364-4021-8bd5-6b20c64a91bc" target="10252fb6-188c-40d9-ab90-4921dbdbc10b">
+<data key="Weight">10</data>
+</edge>
+<edge source="0c7528f2-3a27-4ed9-9fce-5f29ef1d070e" target="10252fb6-188c-40d9-ab90-4921dbdbc10b">
+<data key="Weight">0</data>
+</edge>
+<edge source="25860de1-c253-4385-bf99-dbe651768fc0" target="7887fc56-5871-46dc-b8b7-6fcde91a8c97">
+<data key="Weight">1</data>
+</edge>
+<edge source="7887fc56-5871-46dc-b8b7-6fcde91a8c97" target="2529a6b7-6984-43bd-bf01-8d5f35960cdf">
+<data key="Weight">1</data>
+</edge>
+<edge source="2529a6b7-6984-43bd-bf01-8d5f35960cdf" target="10252fb6-188c-40d9-ab90-4921dbdbc10b">
+<data key="Weight">1</data>
+</edge>
+<edge source="25860de1-c253-4385-bf99-dbe651768fc0" target="7016162e-dd1e-4179-851a-d4e182a4fc50"/>
+<edge source="7016162e-dd1e-4179-851a-d4e182a4fc50" target="9fdf4a73-a88a-4636-8202-8abea35a38d0"/>
+<edge source="9fdf4a73-a88a-4636-8202-8abea35a38d0" target="7887fc56-5871-46dc-b8b7-6fcde91a8c97"/>
+<edge source="2529a6b7-6984-43bd-bf01-8d5f35960cdf" target="976ca70a-944e-4413-913a-135852fab9fc"/>
+<edge source="976ca70a-944e-4413-913a-135852fab9fc" target="3e07789c-3ea7-4753-8efb-bea5971eef18"/>
+<edge source="3e07789c-3ea7-4753-8efb-bea5971eef18" target="10252fb6-188c-40d9-ab90-4921dbdbc10b"/>
+</graph>
+</graphml>

@@ -36,8 +36,6 @@
  */
 package fi.abo.preesm.dataparallel.operations
 
-import java.util.List
-import java.util.Map
 import fi.abo.preesm.dataparallel.DAG2DAG
 import fi.abo.preesm.dataparallel.DAGComputationBug
 import fi.abo.preesm.dataparallel.DAGSubset
@@ -45,9 +43,11 @@ import fi.abo.preesm.dataparallel.SDF2DAG
 import fi.abo.preesm.dataparallel.iterator.DAGTopologicalIterator
 import fi.abo.preesm.dataparallel.iterator.DAGTopologicalIteratorInterface
 import fi.abo.preesm.dataparallel.iterator.SubsetTopologicalIterator
+import java.util.List
+import java.util.Map
 import org.eclipse.xtend.lib.annotations.Accessors
-import org.ietr.dftools.algorithm.model.sdf.SDFAbstractVertex
-import org.ietr.dftools.algorithm.model.sdf.SDFGraph
+import org.preesm.algorithm.model.sdf.SDFAbstractVertex
+import org.preesm.algorithm.model.sdf.SDFGraph
 
 /**
  * DAG Operation to obtain the level set of a DAG.

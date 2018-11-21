@@ -1,0 +1,98 @@
+<!--
+
+    Copyright or © or Copr. IETR/INSA - Rennes (2018) :
+
+    Antoine Morvan <antoine.morvan@insa-rennes.fr> (2018)
+
+    This software is a computer program whose purpose is to help prototyping
+    parallel applications using dataflow formalism.
+
+    This software is governed by the CeCILL  license under French law and
+    abiding by the rules of distribution of free software.  You can  use,
+    modify and/ or redistribute the software under the terms of the CeCILL
+    license as circulated by CEA, CNRS and INRIA at the following URL
+    "http://www.cecill.info".
+
+    As a counterpart to the access to the source code and  rights to copy,
+    modify and redistribute granted by the license, users are provided only
+    with a limited warranty  and the software's author,  the holder of the
+    economic rights,  and the successive licensors  have only  limited
+    liability.
+
+    In this respect, the user's attention is drawn to the risks associated
+    with loading,  using,  modifying and/or developing or reproducing the
+    software by the user in light of its specific status of free software,
+    that may mean  that it is complicated to manipulate,  and  that  also
+    therefore means  that it is reserved for developers  and  experienced
+    professionals having in-depth computer knowledge. Users are therefore
+    encouraged to load and test the software's suitability as regards their
+    requirements in conditions enabling the security of their systems and/or
+    data to be ensured and,  more generally, to use and operate it in the
+    same conditions as regards security.
+
+    The fact that you are presently reading this means that you have had
+    knowledge of the CeCILL license and that you accept its terms.
+
+-->
+<html>
+<head>
+<title>${update.site.name} - ${update.site.description} Update Site: ${update.site.version}</title>
+</head>
+<body marginheight="0" marginwidth="0" leftmargin="0" topmargin="0">
+<center>
+<table cellspacing="0" cellpadding="0" class="table">
+	<tr>
+		<td colspan="3" class="td_header">&nbsp;</td>
+	</tr>
+	<tr>
+		<td>&#160;&#160;&#160;&#160;&#160;&#160;</td>
+		<td>&#160;&#160;&#160;&#160;&#160;&#160;</td>
+		<td>&#160;&#160;&#160;&#160;&#160;&#160;</td>
+	</tr>
+	<tr>
+		<td>&#160;&#160;&#160;&#160;&#160;&#160;</td>
+		<td>
+		<h2 class="title">${update.site.name} - ${update.site.description} Update Site</h2>
+		<table width="100%">
+			<tr class="header">
+				<td class="sub-header" width="100%"><span>Build: ${update.site.version}</span></td>
+			</tr>
+
+			<tr class="light-row" style="height: 30px">
+				<td class="bodyText">
+				<p class="bodyText">This is the <b>${update.site.description}</b>
+				Update Site for ${update.site.name}.
+								<blockquote style="border: 1px dashed #1778be; padding: 2px">
+									<ol>
+										<li>To install from this site, start up Eclipse, then do:
+											<ul>
+												<code><strong>Help > Install New Software... ></strong></code>
+											</ul>
+										</li>
+										<li>Copy this site's URL into Eclipse, and hit Enter.</li>
+										<li>When the site loads, select the features to install,
+											or click the <code><strong>Select All</strong></code> button.</li>
+										<li>To properly resolve all dependencies, check
+										<ul><code><strong>[x] Contact all update sites during install to find required software</strong></code></ul>
+
+										<li>Click <code><strong>Next</strong></code>, agree to the license
+											terms, and install.</li>
+
+									</ol>
+								</blockquote>
+							</td>
+						</tr>
+		</table>
+		</td>
+		<td>&#160;&#160;&#160;&#160;&#160;&#160;</td>
+	</tr>
+	<tr>
+		<td></td>
+		<td>
+	        ${site.contents}
+		</td>
+		<td></td>
+	</tr>
+</table>
+</center>
+</html>

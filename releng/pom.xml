@@ -39,63 +39,27 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
   xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
-  <artifactId>org.ietr.preesm.releng</artifactId>
+  <artifactId>org.preesm.releng</artifactId>
   <packaging>pom</packaging>
+  <name>PREESM :: Releng :: Parent</name>
 
   <parent>
-    <groupId>org.ietr.preesm</groupId>
-    <artifactId>org.ietr.preesm.parent</artifactId>
-    <version>2.17.1</version>
+    <groupId>org.preesm</groupId>
+    <artifactId>org.preesm.parent</artifactId>
+    <version>2.99.0</version>
     <relativePath>..</relativePath>
   </parent>
 
   <modules>
-    <module>org.ietr.preesm.rcp.utils</module>
-    <module>org.ietr.preesm.feature</module>
-    <module>org.ietr.preesm.product</module>
+    <module>org.preesm.feature</module>
+    <module>org.preesm.product</module>
   </modules>
 
   <profiles>
     <profile>
       <id>doUpdateSite</id>
-      <!-- Extra repositories for building the all-in-one dev feature -->
-      <repositories>
-        <repository>
-          <id>RCPTT</id>
-          <layout>p2</layout>
-          <url>${eclipse.mirror}/rcptt/release/${rcptt-version}/repository/</url>
-        </repository>
-
-        <repository>
-          <id>Checkstyle</id>
-          <layout>p2</layout>
-          <url>https://dl.bintray.com/eclipse-cs/eclipse-cs/8.10.0/</url>
-        </repository>
-        <repository>
-          <id>Sonarlint</id>
-          <layout>p2</layout>
-          <url>http://eclipse.sonarlint.org/</url>
-        </repository>
-
-        <repository>
-          <id>Tycho M2E extension</id>
-          <layout>p2</layout>
-          <url>http://repo1.maven.org/maven2/.m2e/connectors/m2eclipse-tycho/0.9.0/N/LATEST/</url>
-        </repository>
-        <repository>
-          <id>Checkstyle M2E extension</id>
-          <layout>p2</layout>
-          <url>https://m2e-code-quality.github.io/m2e-code-quality-p2-site/</url>
-        </repository>
-        <repository>
-          <id>Settings M2E extension</id>
-          <layout>p2</layout>
-          <url>https://preesm.github.io/m2e-settings/site/</url>
-        </repository>
-      </repositories>
       <modules>
-        <module>org.ietr.preesm.dev.feature</module>
-        <module>org.ietr.preesm.complete.site</module>
+        <module>org.preesm.complete.site</module>
       </modules>
     </profile>
   </profiles>

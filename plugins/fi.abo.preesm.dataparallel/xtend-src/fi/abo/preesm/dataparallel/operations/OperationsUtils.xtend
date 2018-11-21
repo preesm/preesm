@@ -36,14 +36,14 @@
  */
 package fi.abo.preesm.dataparallel.operations
 
-import java.util.Collection
-import java.util.List
-import java.util.Map
 import fi.abo.preesm.dataparallel.DAGComputationBug
 import fi.abo.preesm.dataparallel.DAGConstructor
 import fi.abo.preesm.dataparallel.DAGSubsetConstructor
 import fi.abo.preesm.dataparallel.PureDAGConstructor
-import org.ietr.dftools.algorithm.model.sdf.SDFAbstractVertex
+import java.util.Collection
+import java.util.List
+import java.util.Map
+import org.preesm.algorithm.model.sdf.SDFAbstractVertex
 
 /**
  * Static class that contains various utility functions. The functions

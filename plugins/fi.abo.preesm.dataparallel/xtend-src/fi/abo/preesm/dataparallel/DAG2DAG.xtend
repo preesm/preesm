@@ -36,16 +36,16 @@
  */
 package fi.abo.preesm.dataparallel
 
+import fi.abo.preesm.dataparallel.operations.DAGOperations
 import java.util.ArrayList
 import java.util.List
 import java.util.logging.Logger
-import fi.abo.preesm.dataparallel.operations.DAGOperations
 import org.eclipse.xtend.lib.annotations.Accessors
-import org.ietr.dftools.algorithm.model.sdf.SDFAbstractVertex
-import org.ietr.dftools.algorithm.model.sdf.SDFEdge
-import org.ietr.dftools.algorithm.model.sdf.SDFGraph
-import org.ietr.dftools.algorithm.model.sdf.transformations.SpecialActorPortsIndexer
 import org.jgrapht.graph.AbstractGraph
+import org.preesm.algorithm.model.sdf.SDFAbstractVertex
+import org.preesm.algorithm.model.sdf.SDFEdge
+import org.preesm.algorithm.model.sdf.SDFGraph
+import org.preesm.algorithm.model.sdf.transformations.SpecialActorPortsIndexer
 
 /**
  * Class that creates re-populates all necessary data-structures for a new

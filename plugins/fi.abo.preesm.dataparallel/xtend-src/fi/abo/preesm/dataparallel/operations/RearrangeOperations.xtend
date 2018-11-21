@@ -52,15 +52,15 @@ import java.util.Map
 import java.util.logging.Level
 import java.util.logging.Logger
 import org.eclipse.xtend.lib.annotations.Accessors
-import org.ietr.dftools.algorithm.model.sdf.SDFAbstractVertex
-import org.ietr.dftools.algorithm.model.sdf.SDFEdge
-import org.ietr.dftools.algorithm.model.sdf.SDFGraph
-import org.ietr.dftools.algorithm.model.sdf.esdf.SDFJoinVertex
-import org.ietr.dftools.algorithm.model.sdf.esdf.SDFSinkInterfaceVertex
-import org.ietr.dftools.algorithm.model.sdf.esdf.SDFSourceInterfaceVertex
-import org.ietr.dftools.algorithm.model.sdf.transformations.SpecialActorPortsIndexer
-import org.ietr.dftools.algorithm.model.types.LongEdgePropertyType
-import org.ietr.dftools.algorithm.model.types.StringEdgePropertyType
+import org.preesm.algorithm.model.sdf.SDFAbstractVertex
+import org.preesm.algorithm.model.sdf.SDFEdge
+import org.preesm.algorithm.model.sdf.SDFGraph
+import org.preesm.algorithm.model.sdf.esdf.SDFJoinVertex
+import org.preesm.algorithm.model.sdf.esdf.SDFSinkInterfaceVertex
+import org.preesm.algorithm.model.sdf.esdf.SDFSourceInterfaceVertex
+import org.preesm.algorithm.model.sdf.transformations.SpecialActorPortsIndexer
+import org.preesm.algorithm.model.types.LongEdgePropertyType
+import org.preesm.algorithm.model.types.StringEdgePropertyType
 
 /**
  * Perform re-timing operation for an instance independent strongly connected component.

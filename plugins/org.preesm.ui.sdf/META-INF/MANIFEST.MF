@@ -1,0 +1,22 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: PREESM :: Plugins :: IBSDF UI
+Automatic-Module-Name: org.preesm.ui.sdf
+Bundle-SymbolicName: org.preesm.ui.sdf;singleton:=true
+Bundle-Version: 2.99.0
+Bundle-Vendor: IETR / INSA Rennes - VAADER
+Require-Bundle: org.eclipse.ui.console;bundle-version="3.5.100",
+ org.eclipse.ui.editors,
+ org.eclipse.graphiti.ui,
+ org.eclipse.graphiti,
+ org.eclipse.emf.transaction,
+ org.eclipse.ltk.core.refactoring,
+ org.eclipse.text,
+ org.eclipse.emf.edit.ui,
+ org.eclipse.xtend.lib,
+ net.sourceforge.jexcelapi.jxl;bundle-version="2.6.10",
+ org.preesm.ui
+Bundle-RequiredExecutionEnvironment: JavaSE-1.8
+Bundle-ActivationPolicy: lazy
+Eclipse-BuddyPolicy: global
+
