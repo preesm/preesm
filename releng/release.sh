@@ -195,7 +195,7 @@ UPLOAD_URL=$(echo ${API_RESPONSE} | \
 
 echo "   => ${UPLOAD_URL}"
 
-for PRODUCT in $(ls ./releng/org.ietr.preesm.product/target/products/*.zip); do
+for PRODUCT in $(ls ./releng/org.preesm.product/target/products/*.zip); do
   echo " * upload $PRODUCT"
   FILE=$PRODUCT
   curl -H "Authorization: token $OAUTH_TOKEN" -H "Content-Type: $(file -b --mime-type $FILE)" -X POST "$UPLOAD_URL?name=$(basename $FILE)" --upload-file $FILE > /dev/null
