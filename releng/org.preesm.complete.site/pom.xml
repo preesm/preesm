@@ -131,24 +131,24 @@
               <target name="Copy content">
                 <!-- Copy repo to gensite folder -->
                 <copy
-                  todir="${project.build.directory}/gensite/update-site/${project.groupId}-${project.version}/">
+                  todir="${project.build.directory}/gensite/update-site/${project.groupId}-${qualifiedVersion}/">
                   <fileset dir="${project.build.directory}/repository/" />
                 </copy>
                 <!-- Web resources for the current release -->
                 <copy
-                  todir="${project.build.directory}/gensite/update-site/${project.groupId}-${project.version}/web/">
+                  todir="${project.build.directory}/gensite/update-site/${project.groupId}-${qualifiedVersion}/web/">
                   <fileset dir="${basedir}/web" includes="*" />
                 </copy>
                 <copy
-                  todir="${project.build.directory}/gensite/update-site/${project.groupId}-${project.version}/">
+                  todir="${project.build.directory}/gensite/update-site/${project.groupId}-${qualifiedVersion}/">
                   <fileset dir="${basedir}" includes="index.html" />
                 </copy>
                 <copy file="${project.build.directory}/category.xml"
-                  tofile="${project.build.directory}/gensite/update-site/${project.groupId}-${project.version}/site.xml" />
+                  tofile="${project.build.directory}/gensite/update-site/${project.groupId}-${qualifiedVersion}/site.xml" />
                 <!-- Add symlink for latest release -->
                 <symlink
                   link="${project.build.directory}/gensite/update-site/${project.groupId}-latest"
-                  resource="${project.groupId}-${project.version}" />
+                  resource="${project.groupId}-${qualifiedVersion}" />
               </target>
               <exportAntProperties>true</exportAntProperties>
             </configuration>
@@ -204,7 +204,7 @@
             <configuration>
               <source>
                 <repository>
-                  <url>${project.baseUri}/target/gensite/update-site/${project.groupId}-${project.version}</url>
+                  <url>${project.baseUri}/target/gensite/update-site/${project.groupId}-${qualifiedVersion}</url>
                 </repository>
               </source>
               <append>true</append>
