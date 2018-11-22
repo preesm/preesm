@@ -233,24 +233,6 @@
 
 
       <task
-            id="org.ietr.preesm.archi.slam.flattening"
-            name="Slam Hierarchy Flattening"
-            type="org.preesm.architecture.slam.SlamHierarchyFlattening">
-         <inputs>
-            <input
-                  id="architecture"
-                  object="org.preesm.model.slam.Design">
-            </input>
-         </inputs>
-         <outputs>
-            <output
-                  id="architecture"
-                  object="org.preesm.model.slam.Design">
-            </output>
-         </outputs>
-      </task>
-
-      <task
             id="org.ietr.preesm.experiment.pimm2sdf.StaticPiMM2SDFTask"
             name="Static PiMM to SDF transformation"
             type="org.preesm.algorithm.pisdf.pimm2sdf.StaticPiMM2SDFTask">
@@ -526,7 +508,7 @@
       <task
             id="org.ietr.preesm.evaluator.PeriodicEvaluator"
             name="Periodic Schedule Evaluation"
-            type="org.preesm.evaluator.PeriodicEvaluator">
+            type="org.preesm.algorithm.evaluator.PeriodicEvaluator">
          <inputs>
             <input
                   id="SDF"
@@ -580,7 +562,7 @@
       <task
             id="org.ietr.preesm.latency.LatencyEvaluationPlugin"
             name="Latency Evaluation"
-            type="org.preesm.latency.LatencyEvaluationTask">
+            type="org.preesm.algorithm.latency.LatencyEvaluationTask">
          <inputs>
             <input
                   id="SDF"
@@ -609,7 +591,7 @@
       <task
             id="org.ietr.preesm.latency.LatencyExplorationPlugin"
             name="Latency Exploration"
-            type="org.preesm.latency.LatencyExplorationTask">
+            type="org.preesm.algorithm.latency.LatencyExplorationTask">
       </task>
 
 
