@@ -72,7 +72,7 @@ if [ "$FAST" == "YES" ]; then
   echo "Fast build ..."
   time (
     (cd $DIR && ./releng/fetch-rcptt-runner.sh)
-    (cd $DIR && mvn -e -C clean verify ${SONAR})
+    (cd $DIR && mvn -e -B -C clean verify ${SONAR})
   )
   exit 0
 fi
