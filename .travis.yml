@@ -40,7 +40,8 @@ deploy:
   - provider: pages
     skip_cleanup: true
     github_token: $GITHUB_TOKEN
-    local_dir: releng/org.preesm.site/target/gensite/update-site/org.preesm-3.0.1
+    local_dir: releng/org.preesm.site/target/repository
     repo: preesm/preesm-snapshot-site
     target_branch: gh-pages
-    branch: develop
+    on: 
+      branch: develop
