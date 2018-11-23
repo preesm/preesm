@@ -53,7 +53,7 @@
    <properties>
       <generate-composite-site.compositeSiteFolder>composite</generate-composite-site.compositeSiteFolder>
       <generate-composite-site.childSites>
-         ${updatesite.preesm}/${project.groupId}/${project.groupId}-${project.version}/
+         ${updatesite.preesm}/${project.groupId}/${project.groupId}-${qualifiedVersion}/
       </generate-composite-site.childSites>
       <generate-composite-site.collectChildrenFromRemoteURL>
          ${updatesite.preesm}/${project.groupId}/

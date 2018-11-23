@@ -613,7 +613,7 @@ Version 1.0 dated 2006-09-05.
    </configurations>
 
    <repositories>
-      <repository location="http://preesm.insa-rennes.fr/repo/complete/" enabled="true" />
+      <repository location="http://preesm.insa-rennes.fr/repo/" enabled="true" />
    </repositories>
 
    <preferencesInfo>
