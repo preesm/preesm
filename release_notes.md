@@ -1,6 +1,17 @@
 PREESM Changelog
 ================
 
+## Release version 3.0.1
+*2018.11.23*
+
+### New Feature
+
+### Changes
+* Enable maven batch mode to prevent log to exceed size limit on travis;
+
+### Bug fix
+
+
 ## Release version 3.0.0
 *2018.11.23*
 
