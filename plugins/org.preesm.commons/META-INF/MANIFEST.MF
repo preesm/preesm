@@ -3,7 +3,7 @@ Bundle-ManifestVersion: 2
 Bundle-Name: PREESM :: Plugins :: Commons
 Automatic-Module-Name: org.preesm.commons
 Bundle-SymbolicName: org.preesm.commons
-Bundle-Version: 3.0.0.qualifier
+Bundle-Version: 3.0.1
 Bundle-Vendor: IETR / INSA Rennes - VAADER
 Require-Bundle: org.eclipse.core.runtime,
  org.eclipse.xtend.lib,

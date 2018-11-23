@@ -1,8 +1,8 @@
 PREESM Changelog
 ================
 
-## Release version X.Y.Z
-*XXXX.XX.XX*
+## Release version 3.0.1
+*2018.11.23*
 
 ### New Feature
 
