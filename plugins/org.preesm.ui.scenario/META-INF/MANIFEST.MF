@@ -3,7 +3,7 @@ Bundle-ManifestVersion: 2
 Bundle-Name: PREESM :: Plugins :: Scenario UI
 Automatic-Module-Name: org.preesm.ui.scenario
 Bundle-SymbolicName: org.preesm.ui.scenario;singleton:=true
-Bundle-Version: 2.99.0.qualifier
+Bundle-Version: 3.0.0
 Bundle-Vendor: IETR / INSA Rennes - VAADER
 Require-Bundle: org.eclipse.ui.console;bundle-version="3.5.100",
  org.eclipse.ui.editors,
