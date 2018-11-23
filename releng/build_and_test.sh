@@ -54,8 +54,8 @@ if [ "$FETCH" == "YES" ]; then
   echo "Fetch dependencies ..."
   time (
     (cd $DIR && ./releng/fetch-rcptt-runner.sh)
-    (cd $DIR && mvn -U -e -C -B -P doUpdateSite -Dtycho.mode=maven dependency:go-offline)
-    (cd $DIR && mvn -U -e -C -B -P doUpdateSite help:help)
+    (cd $DIR && mvn -U -e -C -B -Dtycho.mode=maven dependency:go-offline)
+    (cd $DIR && mvn -U -e -C -B help:help)
   )
   exit 0
 fi
@@ -63,7 +63,7 @@ fi
 #check version:
 if [ "$CHECK" == "YES" ]; then
   echo "Check code ..."
-  time (cd $DIR && mvn  -e -C -B -P doUpdateSite -Dtycho.mode=maven checkstyle:check)
+  time (cd $DIR && mvn  -e -C -B -Dtycho.mode=maven checkstyle:check)
   exit 0
 fi
 
@@ -72,7 +72,7 @@ if [ "$FAST" == "YES" ]; then
   echo "Fast build ..."
   time (
     (cd $DIR && ./releng/fetch-rcptt-runner.sh)
-    (cd $DIR && mvn -e -C -B clean verify ${SONAR} -fae)
+    (cd $DIR && mvn -e -C clean verify ${SONAR})
   )
   exit 0
 fi
@@ -82,13 +82,13 @@ time (
   echo ""
   echo "Validate POM"
   echo ""
-  (cd $DIR && mvn -U -e -C -B -V -P doUpdateSite -Dtycho.mode=maven help:help -q) || exit 1
+  (cd $DIR && mvn -U -e -C -B -V -Dtycho.mode=maven help:help -q) || exit 1
   #fetch maven deps
   echo ""
   echo "Fetch Maven Deps"
   echo ""
   (cd $DIR && ./releng/fetch-rcptt-runner.sh) || exit 21
-  (cd $DIR && mvn -U -e -C -B -V -P doUpdateSite -Dtycho.mode=maven dependency:go-offline) || exit 22
+  (cd $DIR && mvn -U -e -C -B -V -Dtycho.mode=maven dependency:go-offline) || exit 22
   #CHECKSTYLE (offline)
   echo ""
   echo "Checkstyle"
@@ -98,12 +98,12 @@ time (
   echo ""
   echo "Fetch P2 Deps"
   echo ""
-  (cd $DIR && mvn -U -e -C -B -V -P doUpdateSite help:help) || exit 4
+  (cd $DIR && mvn -U -e -C -B -V help:help) || exit 4
   #clean (offline)
   echo ""
   echo "Clean"
   echo ""
-  (cd $DIR && mvn -e -C -B -V -P doUpdateSite -Dtycho.mode=maven clean) || exit 5
+  (cd $DIR && mvn -e -C -B -V -Dtycho.mode=maven clean) || exit 5
   #build code and package (offline, no tests)
   echo ""
   echo "Build & Package"
@@ -114,11 +114,6 @@ time (
   echo "Test all & Run Sonar"
   echo ""
   (cd $DIR && mvn -e -C -B -V verify ${SONAR} -fae) || exit 7
-  #package update site (offline, no tests)
-  echo ""
-  echo "Package update site"
-  echo ""
-  (cd $DIR && mvn -e -C -B -V -P doUpdateSite package -fae -Dmaven.test.skip=true) || exit 8
 )
 
 
