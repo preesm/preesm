@@ -38,7 +38,7 @@ node {
 			,
 				'Validate POM': {
 					stage ('Validate POM') {
-						sh "mvn ${mavenOpts} -P doUpdateSite -Dtycho.mode=maven help:help -q"
+						sh "mvn ${mavenOpts} -Dtycho.mode=maven help:help -q"
 					}
 				}
 			)
@@ -48,7 +48,7 @@ node {
 					stage ('Resolve Maven Dependencies') {
 						retry(retryResolveCount) {
 							// resolve Maven dependencies (jars, plugins) for all modules
-							sh "mvn ${mavenOpts} -P doUpdateSite dependency:go-offline -Dtycho.mode=maven"
+							sh "mvn ${mavenOpts} dependency:go-offline -Dtycho.mode=maven"
 						}
 					}
 				}
@@ -62,7 +62,7 @@ node {
 						// tycho P2 resolver that will load all required dependencies
 						// This will allow to run next stages in offline mode
 						retry(retryResolveCount) {
-							sh "mvn ${mavenOpts} -P doUpdateSite help:help"
+							sh "mvn ${mavenOpts} help:help"
 						}
 					}
 				}
@@ -101,7 +101,7 @@ node {
 						stage ('Check Packaging') {
 							// final stage to check that the products and site can be packaged
 							// noneed to redo all tests there
-							sh "mvn --offline ${mavenOpts} -Dmaven.test.skip=true -P doUpdateSite package"
+							sh "mvn --offline ${mavenOpts} -Dmaven.test.skip=true package"
 						}
 					}
 				)

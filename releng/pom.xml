@@ -46,21 +46,14 @@
   <parent>
     <groupId>org.preesm</groupId>
     <artifactId>org.preesm.parent</artifactId>
-    <version>2.99.0</version>
+    <version>3.0.0</version>
     <relativePath>..</relativePath>
   </parent>
 
   <modules>
     <module>org.preesm.feature</module>
     <module>org.preesm.product</module>
+    <module>org.preesm.site</module>
   </modules>
 
-  <profiles>
-    <profile>
-      <id>doUpdateSite</id>
-      <modules>
-        <module>org.preesm.complete.site</module>
-      </modules>
-    </profile>
-  </profiles>
 </project>

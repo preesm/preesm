@@ -1,6 +1,17 @@
 PREESM Changelog
 ================
 
+## Release version 3.0.0
+*2018.11.23*
+
+### New Feature
+
+### Changes
+* Update release process;
+
+### Bug fix
+
+
 ## Release version 2.99.0
 *2018.11.21*
 

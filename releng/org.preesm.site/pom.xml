@@ -39,27 +39,32 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
   xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
-  <artifactId>org.preesm.complete.site</artifactId>
+  <artifactId>org.preesm.site</artifactId>
   <packaging>eclipse-repository</packaging>
   <name>PREESM :: Releng :: Update Site</name>
 
   <parent>
     <groupId>org.preesm</groupId>
     <artifactId>org.preesm.releng</artifactId>
-    <version>2.99.0</version>
+    <version>3.0.0</version>
     <relativePath>..</relativePath>
   </parent>
+
+   <properties>
+      <generate-composite-site.compositeSiteFolder>composite</generate-composite-site.compositeSiteFolder>
+      <generate-composite-site.childSites>
+         ${updatesite.preesm}/${project.groupId}/${project.groupId}-${qualifiedVersion}/
+      </generate-composite-site.childSites>
+      <generate-composite-site.collectChildrenFromRemoteURL>
+         ${updatesite.preesm}/${project.groupId}/
+      </generate-composite-site.collectChildrenFromRemoteURL>
+      <generate-composite-site.collectChildrenFromRemoteRegex>org\.(.*)\d+\.\d+\.\d+/</generate-composite-site.collectChildrenFromRemoteRegex>
+   </properties>
 
   <pluginRepositories>
     <pluginRepository>
       <id>sonatype-public</id>
       <url>http://repository.jboss.org/nexus/content/repositories/releases/</url>
-      <snapshots>
-        <enabled>true</enabled>
-      </snapshots>
-      <releases>
-        <enabled>true</enabled>
-      </releases>
     </pluginRepository>
   </pluginRepositories>
 
@@ -101,7 +106,8 @@
 
 							<!-- this adds repository references to the update site's content.xml -->
 							<associateSites>
-								<site>${updatesite.preesm}</site>
+								<site>${updatesite.preesm.externaldeps}</site>
+								<site>${updatesite.preesm.graphiti}</site>
 								<site>${updatesite.eclipse}</site>
 								<site>${updatesite.eclipse.updates}</site>
 								<site>${updatesite.tmf}</site>
@@ -111,6 +117,13 @@
 							<removeDefaultCategory>true</removeDefaultCategory>
 						</configuration>
 					</execution>
+           <execution>
+              <id>generate-composite</id>
+              <phase>package</phase>
+              <goals>
+                 <goal>generate-composite-site</goal>
+              </goals>
+           </execution>
 				</executions>
 			</plugin>
 
@@ -131,86 +144,15 @@
               <target name="Copy content">
                 <!-- Copy repo to gensite folder -->
                 <copy
-                  todir="${project.build.directory}/gensite/update-site/${project.groupId}-${project.version}/">
+                  todir="${project.build.directory}/gensite/update-site/${project.groupId}-${qualifiedVersion}/">
                   <fileset dir="${project.build.directory}/repository/" />
                 </copy>
-                <!-- Web resources for the current release -->
-                <copy
-                  todir="${project.build.directory}/gensite/update-site/${project.groupId}-${project.version}/web/">
-                  <fileset dir="${basedir}/web" includes="*" />
-                </copy>
-                <copy
-                  todir="${project.build.directory}/gensite/update-site/${project.groupId}-${project.version}/">
-                  <fileset dir="${basedir}" includes="index.html" />
-                </copy>
-                <copy file="${project.build.directory}/category.xml"
-                  tofile="${project.build.directory}/gensite/update-site/${project.groupId}-${project.version}/site.xml" />
                 <!-- Add symlink for latest release -->
                 <symlink
                   link="${project.build.directory}/gensite/update-site/${project.groupId}-latest"
-                  resource="${project.groupId}-${project.version}" />
+                  resource="${project.groupId}-${qualifiedVersion}" />
               </target>
               <exportAntProperties>true</exportAntProperties>
-            </configuration>
-          </execution>
-        </executions>
-      </plugin>
-
-      <plugin>
-        <groupId>com.googlecode.maven-download-plugin</groupId>
-        <artifactId>download-maven-plugin</artifactId>
-        <version>1.3.0</version>
-        <executions>
-          <execution>
-            <phase>deploy</phase>
-            <id>fetch-artifacts.xml</id>
-            <goals>
-              <goal>wget</goal>
-            </goals>
-            <configuration>
-              <skipCache>true</skipCache>
-              <url>${updatesite.preesm}/artifacts.xml</url>
-              <outputFileName>artifacts.xml</outputFileName>
-              <outputDirectory>${project.build.directory}/gensite/update-site/complete/</outputDirectory>
-            </configuration>
-          </execution>
-          <execution>
-            <phase>deploy</phase>
-            <id>fetch-content.xml</id>
-            <goals>
-              <goal>wget</goal>
-            </goals>
-            <configuration>
-              <skipCache>true</skipCache>
-              <url>${updatesite.preesm}/content.xml</url>
-              <outputFileName>content.xml</outputFileName>
-              <outputDirectory>${project.build.directory}/gensite/update-site/complete/</outputDirectory>
-            </configuration>
-          </execution>
-        </executions>
-      </plugin>
-
-      <plugin>
-        <groupId>org.eclipse.tycho.extras</groupId>
-        <artifactId>tycho-p2-extras-plugin</artifactId>
-        <version>${tycho-version}</version>
-        <executions>
-          <execution>
-            <id>append-current-build</id>
-            <phase>deploy</phase>
-            <goals>
-              <goal>mirror</goal>
-            </goals>
-            <configuration>
-              <source>
-                <repository>
-                  <url>${project.baseUri}/target/gensite/update-site/${project.groupId}-${project.version}</url>
-                </repository>
-              </source>
-              <append>true</append>
-              <compress>false</compress>
-              <includeOptional>true</includeOptional>
-              <destination>${project.build.directory}/gensite/update-site/complete</destination>
             </configuration>
           </execution>
         </executions>
@@ -232,12 +174,28 @@
               <strictHostKeyChecking>false</strictHostKeyChecking>
               <mode>send</mode>
               <localPath>${project.build.directory}/gensite/update-site/</localPath>
-              <remotePath>/repo/</remotePath>
+              <remotePath>/repo/${project.groupId}/</remotePath>
             </configuration>
             <goals>
               <goal>sftp-transfert</goal>
             </goals>
           </execution>
+         <execution>
+            <id>upload-composite</id>
+            <phase>deploy</phase>
+            <configuration>
+               <serverId>preesm-insa-rennes</serverId>
+               <serverHost>preesm.insa-rennes.fr</serverHost>
+               <serverPort>8022</serverPort>
+               <strictHostKeyChecking>false</strictHostKeyChecking>
+               <mode>send</mode>
+               <localPath>${project.build.directory}/composite/</localPath>
+               <remotePath>/repo/${project.groupId}/</remotePath>
+            </configuration>
+            <goals>
+               <goal>sftp-transfert</goal>
+            </goals>
+         </execution>
         </executions>
       </plugin>
     </plugins>

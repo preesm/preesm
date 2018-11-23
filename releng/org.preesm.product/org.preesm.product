@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <?pde version="3.5"?>
 
-<product name="Preesm" uid="org.preesm.product" id="org.preesm.ui.product" application="org.eclipse.ui.ide.workbench" version="2.99.0" useFeatures="true" includeLaunchers="true">
+<product name="Preesm" uid="org.preesm.product" id="org.preesm.ui.product" application="org.eclipse.ui.ide.workbench" version="3.0.0" useFeatures="true" includeLaunchers="true">
 
    <aboutInfo>
       <image path="/org.preesm.ui/icons/preesmLogo_48x48.png"/>
@@ -613,7 +613,7 @@ Version 1.0 dated 2006-09-05.
    </configurations>
 
    <repositories>
-      <repository location="http://preesm.insa-rennes.fr/repo/complete/" enabled="true" />
+      <repository location="http://preesm.insa-rennes.fr/repo/" enabled="true" />
    </repositories>
 
    <preferencesInfo>

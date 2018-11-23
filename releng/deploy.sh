@@ -29,7 +29,7 @@ if [ -x /usr/bin/Xvfb ]; then
   XVFBPID=$!
 fi
 
-(cd $DIR && mvn -e -C -U -V -P doUpdateSite clean deploy)
+(cd $DIR && mvn -e -C -U -V clean deploy)
 
 if [ -x /usr/bin/Xvfb ]; then
   kill -2 $XVFBPID

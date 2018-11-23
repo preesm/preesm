@@ -46,7 +46,7 @@
   <parent>
     <groupId>org.preesm</groupId>
     <artifactId>org.preesm.releng</artifactId>
-    <version>2.99.0</version>
+    <version>3.0.0</version>
     <relativePath>..</relativePath>
   </parent>
 
@@ -79,7 +79,7 @@
           <products>
             <product>
               <id>org.preesm.product</id>
-              <archiveFileName>preesm-${project.version}${buildQualifier}</archiveFileName>
+              <archiveFileName>preesm-${qualifiedVersion}</archiveFileName>
             </product>
           </products>
         </configuration>
@@ -103,7 +103,7 @@
               <target name="Move products">
                 <!-- Copy products -->
                 <copy
-                  todir="${project.build.directory}/deploy/${project.version}/">
+                  todir="${project.build.directory}/deploy/${qualifiedVersion}/">
                   <fileset
                     dir="${project.basedir}/../org.preesm.product/target/products/"
                     includes="*.zip, *.tar.gz" />
@@ -130,8 +130,8 @@
               <serverPort>8022</serverPort>
               <strictHostKeyChecking>false</strictHostKeyChecking>
               <mode>send</mode>
-              <localPath>${project.build.directory}/deploy/${project.version}/</localPath>
-              <remotePath>/releases/${project.version}/</remotePath>
+              <localPath>${project.build.directory}/deploy/${qualifiedVersion}/</localPath>
+              <remotePath>/releases/${qualifiedVersion}/</remotePath>
             </configuration>
             <goals>
               <goal>sftp-transfert</goal>
