@@ -137,4 +137,14 @@ public class JEPCustomFunctionTest {
     testEvaluation("geo_sum(512000,0.25,7)", 682625);
   }
 
+  @Test
+  public void jepPowDivMax1() {
+    testEvaluation("pow_div_max(2, 72)", 3);
+  }
+
+  @Test
+  public void jepPowDivMax2() {
+    testEvaluation("pow_div_max(2, 73)", 0);
+  }
+
 }
