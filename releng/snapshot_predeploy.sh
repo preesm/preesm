@@ -70,6 +70,7 @@ done
   echo "-- cp $GEN_RELEASE"
 cp -R releng/org.preesm.site/target/gensite/update-site/${GEN_RELEASE} ${NEW_SITE_FOLDER}/${GEN_RELEASE}
 
+echo "This is an Eclipse Update site. Please read [https://preesm.github.io/get/#eclipse-update-site](https://preesm.github.io/get/#eclipse-update-site) for more information." > ${NEW_SITE_FOLDER}/index.md
 
 ## -- regenerate composite meta data
 STABLE_RELEASES="${CURRENT_PUBLISHED_RELEASES} ${GEN_RELEASE}"
