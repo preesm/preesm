@@ -7,6 +7,7 @@ PREESM Changelog
 ### New Feature
 
 ### Changes
+* Adding a new function to jep, in order to compute i for max divisibility by 2**i;
 
 ### Bug fix
 
