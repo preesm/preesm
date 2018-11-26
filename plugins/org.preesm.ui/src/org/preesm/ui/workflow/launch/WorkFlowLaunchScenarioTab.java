@@ -36,16 +36,13 @@
  */
 package org.preesm.ui.workflow.launch;
 
-import org.eclipse.debug.core.ILaunchConfigurationWorkingCopy;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Composite;
 import org.preesm.ui.PreesmUIPlugin;
 import org.preesm.ui.workflow.ScenarioConfiguration;
 
-// TODO: Auto-generated Javadoc
 /**
- * Launch Tab for scenario options. From this tab, an {@link ScenarioConfiguration} is generated that feeds an
- * {@link ScenarioRetriever} to create the input scenario.
+ * Launch Tab for scenario options.
  *
  * @author mpelcat
  */
@@ -60,8 +57,7 @@ public class WorkFlowLaunchScenarioTab extends AbstractWorkFlowLaunchTab {
   public void createControl(final Composite parent) {
 
     super.createControl(parent);
-
-    drawFileChooser("Scenario file:", ScenarioConfiguration.ATTR_SCENARIO_FILE_NAME);
+    drawFileChooser("Scenario file:", ScenarioConfiguration.ATTR_SCENARIO_FILE_NAME, "scenario");
 
   }
 
@@ -78,23 +74,11 @@ public class WorkFlowLaunchScenarioTab extends AbstractWorkFlowLaunchTab {
   /*
    * (non-Javadoc)
    *
-   * @see org.ietr.dftools.ui.workflow.launch.AbstractWorkFlowLaunchTab#setDefaults(org.eclipse.debug.core.
-   * ILaunchConfigurationWorkingCopy)
-   */
-  @Override
-  public void setDefaults(final ILaunchConfigurationWorkingCopy configuration) {
-    // TODO Auto-generated method stub
-
-  }
-
-  /*
-   * (non-Javadoc)
-   *
    * @see org.eclipse.debug.ui.AbstractLaunchConfigurationTab#getImage()
    */
   @Override
   public Image getImage() {
-    final Image image = PreesmUIPlugin.getImage("icons/workflow.png");
+    final Image image = PreesmUIPlugin.getImage("icons/preesm4mini.PNG");
 
     if (image != null) {
       return image;

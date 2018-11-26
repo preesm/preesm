@@ -39,7 +39,6 @@ package org.preesm.ui.workflow.launch;
 import org.eclipse.core.expressions.PropertyTester;
 import org.eclipse.core.resources.IFile;
 
-// TODO: Auto-generated Javadoc
 /**
  * This class tests the isWorkflow property to enable workflow execution.
  *
@@ -47,12 +46,6 @@ import org.eclipse.core.resources.IFile;
  * @author mpelcat
  */
 public class WorkflowPropertyTester extends PropertyTester {
-
-  /**
-   * Instantiates a new workflow property tester.
-   */
-  public WorkflowPropertyTester() {
-  }
 
   /*
    * (non-Javadoc)
@@ -62,11 +55,9 @@ public class WorkflowPropertyTester extends PropertyTester {
    */
   @Override
   public boolean test(final Object receiver, final String property, final Object[] args, final Object expectedValue) {
-    if (property.equals("isWorkflow")) {
-      if (receiver instanceof IFile) {
-        final IFile file = (IFile) receiver;
-        return file.getFileExtension().equals("workflow");
-      }
+    if (property.equals("isWorkflow") && receiver instanceof IFile) {
+      final IFile file = (IFile) receiver;
+      return file.getFileExtension().equals("workflow");
     }
     return false;
   }
