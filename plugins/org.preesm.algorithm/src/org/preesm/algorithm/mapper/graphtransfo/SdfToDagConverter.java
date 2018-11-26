@@ -137,8 +137,6 @@ public class SdfToDagConverter {
       PreesmLogger.getLogger().log(Level.INFO, msg);
     }
 
-    scenario.getDAGs2SDFs().put(dag.getName(), sdfIn);
-
     return dag;
   }
 

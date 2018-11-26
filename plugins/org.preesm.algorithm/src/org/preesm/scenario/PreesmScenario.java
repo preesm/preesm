@@ -40,7 +40,6 @@ package org.preesm.scenario;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
@@ -49,8 +48,7 @@ import org.eclipse.core.runtime.CoreException;
 import org.eclipse.emf.ecore.EPackage;
 import org.eclipse.emf.ecore.resource.Resource;
 import org.preesm.algorithm.io.gml.InvalidModelException;
-import org.preesm.algorithm.model.sdf.SDFAbstractVertex;
-import org.preesm.algorithm.model.sdf.SDFGraph;
+import org.preesm.commons.exceptions.PreesmException;
 import org.preesm.model.pisdf.AbstractActor;
 import org.preesm.model.pisdf.PiGraph;
 import org.preesm.model.pisdf.serialize.PiParser;
@@ -110,10 +108,6 @@ public class PreesmScenario {
   /** Manager of PapifyConfig groups. */
   private PapifyConfigManager papifyconfiggroupmanager = null;
 
-  /** The dags 2 sdfs. */
-  // Map from DAGs names to SDFGraphs from which they are generated
-  private final Map<String, SDFGraph> dags2sdfs;
-
   /**
    * Instantiates a new preesm scenario.
    */
@@ -125,7 +119,6 @@ public class PreesmScenario {
     this.codegenManager = new CodegenManager();
     this.variablesManager = new VariablesManager();
     this.parameterValueManager = new ParameterValueManager();
-    this.dags2sdfs = new LinkedHashMap<>();
     this.papifyconfiggroupmanager = new PapifyConfigManager();
   }
 
@@ -167,28 +160,10 @@ public class PreesmScenario {
     if (isPISDFScenario()) {
       return getPiActorNames();
     } else if (isIBSDFScenario()) {
-      return getSDFActorNames();
+      throw new PreesmException("IBSDF is not supported anymore");
     } else {
       return Collections.emptySet();
     }
-  }
-
-  /**
-   * Gets the SDF actor names.
-   *
-   * @return the SDF actor names
-   */
-  private Set<String> getSDFActorNames() {
-    final Set<String> result = new LinkedHashSet<>();
-    try {
-      final SDFGraph graph = ScenarioParser.getSDFGraph(this.algorithmURL);
-      for (final SDFAbstractVertex vertex : graph.vertexSet()) {
-        result.add(vertex.getName());
-      }
-    } catch (final InvalidModelException e) {
-      e.printStackTrace();
-    }
-    return result;
   }
 
   /**
@@ -491,12 +466,4 @@ public class PreesmScenario {
     }
   }
 
-  /**
-   * Gets the DA gs 2 SD fs.
-   *
-   * @return the DA gs 2 SD fs
-   */
-  public Map<String, SDFGraph> getDAGs2SDFs() {
-    return this.dags2sdfs;
-  }
 }
