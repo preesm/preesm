@@ -63,7 +63,7 @@ public class GeometricSum extends AbstractPreesmMathFunction {
     // the stack is in the reverse order
     final double a = args[2];
     final double r = args[1];
-    int i = (int) args[0];
+    long i = (long) args[0];
     if (i < 1) {
       throw new ParseException("Third argument of geo_sum must be a strictly positive integer.");
     }

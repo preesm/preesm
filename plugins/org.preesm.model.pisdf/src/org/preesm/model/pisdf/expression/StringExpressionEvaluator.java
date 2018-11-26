@@ -58,6 +58,7 @@ import org.preesm.model.pisdf.expression.functions.CeilFunction;
 import org.preesm.model.pisdf.expression.functions.FloorFunction;
 import org.preesm.model.pisdf.expression.functions.GeometricSum;
 import org.preesm.model.pisdf.expression.functions.MaxFunction;
+import org.preesm.model.pisdf.expression.functions.MaxPowerDivisibility;
 import org.preesm.model.pisdf.expression.functions.MinFunction;
 
 /**
@@ -112,6 +113,7 @@ public class StringExpressionEvaluator {
     new MinFunction().integrateWithin(jep);
     new MaxFunction().integrateWithin(jep);
     new GeometricSum().integrateWithin(jep);
+    new MaxPowerDivisibility().integrateWithin(jep);
 
     return jep;
   }
