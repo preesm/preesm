@@ -39,8 +39,6 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.Vector;
-import org.apache.commons.math3.util.ArithmeticUtils;
 import org.math.array.DoubleArray;
 import org.preesm.algorithm.model.sdf.SDFAbstractVertex;
 import org.preesm.algorithm.model.sdf.SDFEdge;
@@ -49,7 +47,8 @@ import org.preesm.algorithm.model.sdf.SDFInterfaceVertex;
 import org.preesm.algorithm.model.sdf.esdf.SDFSinkInterfaceVertex;
 import org.preesm.algorithm.model.sdf.esdf.SDFSourceInterfaceVertex;
 import org.preesm.commons.exceptions.PreesmException;
-import org.preesm.commons.math.Rational;
+import org.preesm.commons.math.LongFraction;
+import org.preesm.commons.math.MathFunctionsHelper;
 
 /**
  * Provides static math method useful for SDF analysis.
@@ -57,14 +56,9 @@ import org.preesm.commons.math.Rational;
  * @author jpiat
  * @author jheulot
  */
-public class SDFMath {
-
-  private SDFMath() {
-    // prevent instantiation
-  }
-
+public interface SDFMath {
   /**
-   * Computes the basic repetition vector of an SDFAbstractGraph using rational.
+   * Computes the basic repetition vector of an SDFAbstractGraph using LongFraction.
    *
    * @param subgraph
    *          the subgraph
@@ -78,16 +72,16 @@ public class SDFMath {
     int i = 0;
 
     final double[][] topology = graph.getTopologyMatrix(subgraph);
-    final List<Rational> vrb = SDFMath.computeRationnalNullSpace(topology);
+    final List<LongFraction> vrb = SDFMath.computeRationnalNullSpace(topology);
     try {
-      final List<Long> result = Rational.toNatural(new Vector<>(vrb));
+      final List<Long> result = MathFunctionsHelper.toNatural(vrb);
       for (final SDFAbstractVertex vertex : subgraph) {
         trueVrb.put(vertex, result.get(i));
         i++;
       }
       return trueVrb;
     } catch (Exception e) {
-      throw new PreesmException("Could not compute Rational VRB", e);
+      throw new PreesmException("Could not compute LongFraction VRB", e);
     }
   }
 
@@ -98,8 +92,8 @@ public class SDFMath {
    *          the matrix
    * @return the vector
    */
-  private static List<Rational> computeRationnalNullSpace(final double[][] matrix) {
-    final List<Rational> vrb = new ArrayList<>();
+  public static List<LongFraction> computeRationnalNullSpace(final double[][] matrix) {
+    final List<LongFraction> vrb = new ArrayList<>();
     final int li = matrix.length;
     int col = 1;
 
@@ -109,21 +103,21 @@ public class SDFMath {
 
     if ((li == 0) || (col == 1)) {
       for (int i = 0; i < col; i++) {
-        vrb.add(new Rational(1, 1));
+        vrb.add(new LongFraction(1, 1));
       }
       return vrb;
     }
 
-    final Rational[][] rationnalTopology = new Rational[li][col];
+    final LongFraction[][] rationnalTopology = new LongFraction[li][col];
 
     for (int i = 0; i < li; i++) {
       for (int j = 0; j < col; j++) {
-        rationnalTopology[i][j] = new Rational(((Double) matrix[i][j]).longValue(), 1);
+        rationnalTopology[i][j] = new LongFraction(((Double) matrix[i][j]).longValue(), 1);
       }
     }
     int switchIndices = 1;
-    while (rationnalTopology[0][0].zero()) {
-      final Rational[] buffer = rationnalTopology[0];
+    while (rationnalTopology[0][0].isZero()) {
+      final LongFraction[] buffer = rationnalTopology[0];
       rationnalTopology[0] = rationnalTopology[switchIndices];
       rationnalTopology[switchIndices] = buffer;
       switchIndices++;
@@ -139,7 +133,7 @@ public class SDFMath {
         }
       }
       if ((pivotMax != 0) && (maxIndex != i)) {
-        final Rational[] buffer = rationnalTopology[i];
+        final LongFraction[] buffer = rationnalTopology[i];
         rationnalTopology[i] = rationnalTopology[maxIndex];
         rationnalTopology[maxIndex] = buffer;
         pivot = i;
@@ -148,34 +142,35 @@ public class SDFMath {
       } else {
         break;
       }
-      final Rational odlPivot = new Rational(rationnalTopology[i][i]);
+      final LongFraction odlPivot = new LongFraction(rationnalTopology[i][i]);
       for (int t = i; t < col; t++) {
-        rationnalTopology[i][t] = Rational.div(rationnalTopology[i][t], odlPivot);
+        rationnalTopology[i][t] = rationnalTopology[i][t].divide(odlPivot);
       }
       for (int j = i + 1; j < li; j++) {
-        if (!rationnalTopology[j][i].zero()) {
-          final Rational oldji = new Rational(rationnalTopology[j][i].getNum(), rationnalTopology[j][i].getDenum());
+        if (!rationnalTopology[j][i].isZero()) {
+          final LongFraction oldji = new LongFraction(rationnalTopology[j][i].getNumerator(),
+              rationnalTopology[j][i].getDenominator());
           for (int k = 0; k < col; k++) {
-            rationnalTopology[j][k] = Rational.sub(rationnalTopology[j][k],
-                Rational.prod(rationnalTopology[i][k], Rational.div(oldji, rationnalTopology[pivot][pivot])));
+            rationnalTopology[j][k] = rationnalTopology[j][k]
+                .subtract(rationnalTopology[i][k].multiply(oldji.divide(rationnalTopology[pivot][pivot])));
           }
         }
       }
     }
     for (int i = 0; i < col; i++) {
-      vrb.add(new Rational(1, 1));
+      vrb.add(new LongFraction(1, 1));
     }
     int i = li - 1;
     while (i >= 0) {
-      Rational val = new Rational(0, 0);
+      LongFraction val = new LongFraction(0, 0);
       for (int k = i + 1; k < col; k++) {
-        val = Rational.add(val, Rational.prod(rationnalTopology[i][k], vrb.get(k)));
+        val = val.add(rationnalTopology[i][k].multiply(vrb.get(k)));
       }
-      if (!val.zero()) {
-        if (rationnalTopology[i][i].zero()) {
+      if (!val.isZero()) {
+        if (rationnalTopology[i][i].isZero()) {
           throw new PreesmException("Should have zero elements in the diagonal");
         }
-        vrb.set(i, Rational.div(val.abs(), rationnalTopology[i][i]));
+        vrb.set(i, val.abs().divide(rationnalTopology[i][i]));
       }
       i--;
     }
@@ -183,7 +178,7 @@ public class SDFMath {
   }
 
   /**
-   * Compute the graphs rational vrb with interfaces being taken into account.
+   * Compute the graphs LongFraction vrb with interfaces being taken into account.
    *
    * @param subgraph
    *          the subgraph
@@ -257,32 +252,13 @@ public class SDFMath {
       }
     }
 
-    final List<Rational> nullSpace = SDFMath.computeRationnalNullSpace(interfaceArrayTopology);
-    final List<Long> result = Rational.toNatural(nullSpace);
+    final List<LongFraction> nullSpace = SDFMath.computeRationnalNullSpace(interfaceArrayTopology);
+    final List<Long> result = MathFunctionsHelper.toNatural(nullSpace);
     for (Entry<SDFAbstractVertex, Long> e : vrb.entrySet()) {
       vrb.put(e.getKey(), e.getValue() * result.get(result.size() - 1));
     }
 
     return vrb;
-  }
-
-  /**
-   * Computes the gcd (greatest common divider) of a list of integer.
-   *
-   * @param valList
-   *          The list of integer to compute
-   * @return The gcd (greatest common divider) of the list
-   */
-  public static long gcd(final List<Long> valList) {
-    long gcd = 0;
-    for (final Long val : valList) {
-      if (gcd == 0) {
-        gcd = val;
-      } else {
-        gcd = ArithmeticUtils.gcd(gcd, val);
-      }
-    }
-    return gcd;
   }
 
 }

@@ -49,7 +49,7 @@ import org.preesm.algorithm.model.sdf.SDFGraph;
 import org.preesm.algorithm.model.sdf.SDFVertex;
 import org.preesm.algorithm.model.types.LongEdgePropertyType;
 import org.preesm.commons.exceptions.PreesmException;
-import org.preesm.commons.math.Rational;
+import org.preesm.commons.math.LongFraction;
 
 /**
  * Generate a schedulable Random graph, by setting the number of vertices and who have random numbers of sources and
@@ -67,7 +67,7 @@ public class SDFRandomGraph {
   protected static final List<SDFRandomGraph> ADAPTERS = new ArrayList<>();
 
   /** Instance fractions is the fraction of each vertex. */
-  protected static final Map<SDFAbstractVertex, Rational> FRACTIONS = new LinkedHashMap<>();
+  protected static final Map<SDFAbstractVertex, LongFraction> FRACTIONS = new LinkedHashMap<>();
 
   /** The Constant CLUSTER. */
   private static final String CLUSTER = "cluster";
@@ -89,7 +89,7 @@ public class SDFRandomGraph {
     long l = 1;
     // Find lowest common multiple (lcm) of all denominators
     for (final SDFAbstractVertex vertex : graph.vertexSet()) {
-      l = ArithmeticUtils.lcm(l, SDFRandomGraph.FRACTIONS.get(vertex).getDenum());
+      l = ArithmeticUtils.lcm(l, SDFRandomGraph.FRACTIONS.get(vertex).getDenominator());
     }
     // Zero vector?
     if (l == 0) {
@@ -97,8 +97,8 @@ public class SDFRandomGraph {
     }
     // Calculate non-zero repetition vector
     for (final SDFAbstractVertex vertex : graph.vertexSet()) {
-      vrb.put(vertex,
-          (SDFRandomGraph.FRACTIONS.get(vertex).getNum() * l) / SDFRandomGraph.FRACTIONS.get(vertex).getDenum());
+      vrb.put(vertex, (SDFRandomGraph.FRACTIONS.get(vertex).getNumerator() * l)
+          / SDFRandomGraph.FRACTIONS.get(vertex).getDenominator());
     }
     // Find greatest common divisor (gcd)
     long g = 1;
@@ -121,13 +121,13 @@ public class SDFRandomGraph {
    *          the rate multiplier
    */
   public static void makeConsistentConnectedActors(final SDFGraph graph, final int rateMultiplier) {
-    Rational ratioSrcDst;
+    LongFraction ratioSrcDst;
     for (final SDFAbstractVertex Src : graph.vertexSet()) {
       for (final SDFAbstractVertex Dst : graph.vertexSet()) {
         if (graph.containsEdge(Src, Dst)) {
-          ratioSrcDst = Rational.div(SDFRandomGraph.FRACTIONS.get(Src), SDFRandomGraph.FRACTIONS.get(Dst));
-          graph.getEdge(Src, Dst).setProd(new LongEdgePropertyType(ratioSrcDst.getDenum() * rateMultiplier));
-          graph.getEdge(Src, Dst).setCons(new LongEdgePropertyType(ratioSrcDst.getNum() * rateMultiplier));
+          ratioSrcDst = SDFRandomGraph.FRACTIONS.get(Src).divide(SDFRandomGraph.FRACTIONS.get(Dst));
+          graph.getEdge(Src, Dst).setProd(new LongEdgePropertyType(ratioSrcDst.getDenominator() * rateMultiplier));
+          graph.getEdge(Src, Dst).setCons(new LongEdgePropertyType(ratioSrcDst.getNumerator() * rateMultiplier));
         }
       }
     }
@@ -305,7 +305,7 @@ public class SDFRandomGraph {
       final double max2 = Math.sqrt(maxRate);
       final int randNum = (int) min2 + (new SecureRandom().nextInt((int) (max2 - min2) + 1));
       final int randDenum = (int) min2 + (new SecureRandom().nextInt((int) (max2 - min2) + 1));
-      SDFRandomGraph.FRACTIONS.put(vertex, new Rational(randNum, randDenum));
+      SDFRandomGraph.FRACTIONS.put(vertex, new LongFraction(randNum, randDenum));
       // If Not the first
       if ((nbVertexgraph >= nbSensors) && (nbSinksVertex[nbVertexgraph] != 0) && (nbSources != 0) && (nbSinks != 0)) {
         // Create an edge between the last Vertex and another random
