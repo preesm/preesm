@@ -388,7 +388,7 @@ class InitActor extends NonExecutableActor {
 
 class EndActor extends NonExecutableActor {
 	PersistenceLevel level
-	String endReference = ""
+	String initReference = ""
 	op DataInputPort getDataInputPort() {
 		// End actors only have one input port
 		return dataInputPorts.get(0)

@@ -252,7 +252,7 @@ public class StaticPiMM2ASrPiMMVisitor extends PiMMSwitch<Boolean> {
     // Update name
     endActor.setName(this.graphPrefix + endActor.getName());
     // Update END_REFERENCE
-    endActor.setEndReference(this.graphPrefix + endActor.getEndReference());
+    endActor.setInitReference(this.graphPrefix + endActor.getInitReference());
     return true;
   }
 
@@ -963,7 +963,7 @@ public class StaticPiMM2ASrPiMMVisitor extends PiMMSwitch<Boolean> {
     end.setLevel(fifo.getDelay().getLevel());
     // Set the END_REFERENCE
     // TODO: handle asymetric configuration
-    end.setEndReference(fifo.getDelay().getSetterActor().getName());
+    end.setInitReference(fifo.getDelay().getSetterActor().getName());
     // Create the FIFO and connect it
     final Fifo endFifo = PiMMUserFactory.instance.createFifo();
     endFifo.setType(fifo.getType());

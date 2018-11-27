@@ -712,7 +712,7 @@ public class PiMMSRVerticesLinker {
         end.setName(this.graphPrefixe + getterName);
         end.getDataInputPort().setName(this.sourcePort.getName());
         end.setLevel(((EndActor) getterActor).getLevel());
-        end.setEndReference(this.graphPrefixe + ((EndActor) getterActor).getEndReference());
+        end.setInitReference(this.graphPrefixe + ((EndActor) getterActor).getInitReference());
         resultGraph.addActor(end);
         sinkSet.add(new SinkConnection(end, getterRate, this.sourcePort.getName()));
       } else {

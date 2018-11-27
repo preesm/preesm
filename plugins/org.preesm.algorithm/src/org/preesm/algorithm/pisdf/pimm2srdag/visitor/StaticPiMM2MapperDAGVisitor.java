@@ -345,7 +345,7 @@ public class StaticPiMM2MapperDAGVisitor extends PiMMSwitch<Boolean> {
     vertex.setInfo(actor.getName());
     vertex.setNbRepeat(new LongVertexPropertyType(1));
 
-    final String delayInitID = actor.getEndReference();
+    final String delayInitID = actor.getInitReference();
     // Handle the END_REFERENCE property
     final DAGVertex initVertex = this.result.getVertex(delayInitID);
     if (initVertex != null) {
