@@ -64,6 +64,7 @@ import org.preesm.model.pisdf.PersistenceLevel;
 import org.preesm.model.pisdf.PiGraph;
 import org.preesm.model.pisdf.PortMemoryAnnotation;
 import org.preesm.model.pisdf.factory.PiMMUserFactory;
+import org.preesm.model.pisdf.statictools.PiSDFParameterResolverVisitor;
 
 /**
  * @author farresti

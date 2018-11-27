@@ -36,7 +36,7 @@
 /**
  *
  */
-package org.preesm.algorithm.pisdf.helper;
+package org.preesm.model.pisdf.statictools;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -57,6 +57,7 @@ import org.preesm.model.pisdf.ISetter;
 import org.preesm.model.pisdf.InterfaceActor;
 import org.preesm.model.pisdf.Parameter;
 import org.preesm.model.pisdf.PiGraph;
+import org.preesm.model.pisdf.expression.JEPFastExpressionResolver;
 import org.preesm.model.pisdf.util.PiMMSwitch;
 
 /**

@@ -1,4 +1,4 @@
-package org.preesm.algorithm.pisdf.helper;
+package org.preesm.model.pisdf.expression;
 
 import org.nfunk.jep.JEP;
 import org.nfunk.jep.Node;
@@ -14,11 +14,11 @@ import org.preesm.model.pisdf.util.PiMMSwitch;
  * @author anmorvan
  *
  */
-final class JEPFastExpressionResolver extends PiMMSwitch<Long> {
+public final class JEPFastExpressionResolver extends PiMMSwitch<Long> {
 
   private final JEP jep;
 
-  JEPFastExpressionResolver(final JEP jep) {
+  public JEPFastExpressionResolver(final JEP jep) {
     this.jep = jep;
   }
 
