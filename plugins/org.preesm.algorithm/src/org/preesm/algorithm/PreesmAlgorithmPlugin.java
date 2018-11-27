@@ -57,7 +57,14 @@ public class PreesmAlgorithmPlugin extends AbstractUIPlugin {
 
   private static PreesmAlgorithmPlugin instance = null;
 
+  /**
+   *
+   */
   public static final PreesmAlgorithmPlugin getInstance() {
+    if (instance == null) {
+      // special case when calling as plain java (outside eclipse framework)
+      instance = new PreesmAlgorithmPlugin();
+    }
     return instance;
   }
 
