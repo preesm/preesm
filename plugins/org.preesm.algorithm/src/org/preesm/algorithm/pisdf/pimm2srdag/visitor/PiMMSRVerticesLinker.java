@@ -42,7 +42,7 @@ package org.preesm.algorithm.pisdf.pimm2srdag.visitor;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import org.preesm.algorithm.pisdf.helper.PiMMHelperException;
+import org.preesm.commons.exceptions.PreesmException;
 import org.preesm.model.pisdf.AbstractActor;
 import org.preesm.model.pisdf.AbstractVertex;
 import org.preesm.model.pisdf.BroadcastActor;
@@ -187,7 +187,7 @@ public class PiMMSRVerticesLinker {
    * @return true if no error, false else
    */
   public Boolean execute(final Map<AbstractVertex, Long> brv, final List<AbstractVertex> vertexSourceSet,
-      final List<AbstractVertex> vertexSinkSet) throws PiMMHelperException {
+      final List<AbstractVertex> vertexSinkSet) {
     // List of source vertices
     final List<SourceConnection> sourceSet = getSourceSet(vertexSourceSet, vertexSinkSet, brv);
 
@@ -207,12 +207,10 @@ public class PiMMSRVerticesLinker {
    *          vertex sink set
    *
    *
-   * @return true if no error, false else
-   * @throws PiMMHelperException
-   *           the execption
+   * @return true if no error, false else @ the execption
    */
   public Boolean execute(final Map<DataOutputPort, AbstractVertex> vertexSourceSet,
-      final Map<DataInputPort, AbstractVertex> vertexSinkSet) throws PiMMHelperException {
+      final Map<DataInputPort, AbstractVertex> vertexSinkSet) {
     // List of source vertices
     final List<SourceConnection> sourceSet = new ArrayList<>();
     vertexSourceSet
@@ -592,12 +590,10 @@ public class PiMMSRVerticesLinker {
    *          repetition vector values
    * @param vertexSourceSet
    *          Set of source vertices
-   * @return set of SourceConnection
-   * @throws PiMMHelperException
-   *           the exception
+   * @return set of SourceConnection @ the exception
    */
   private List<SourceConnection> getSourceSet(final List<AbstractVertex> vertexSourceSet,
-      final List<AbstractVertex> vertexSinkSet, final Map<AbstractVertex, Long> brv) throws PiMMHelperException {
+      final List<AbstractVertex> vertexSinkSet, final Map<AbstractVertex, Long> brv) {
     // Initialize empty source set
     final List<SourceConnection> sourceSet = new ArrayList<>();
 
@@ -612,7 +608,7 @@ public class PiMMSRVerticesLinker {
       // 1.1 Now get the DelayActor associated to the setter of the delay
       final DelayActor setterDelayActor = (DelayActor) originalGraph.lookupVertex(delayActor.getName() + "_setter");
       if (setterDelayActor == null) {
-        throw new PiMMHelperException("Setter actor [" + delayActor.getName() + "_setter] not found.");
+        throw new PreesmException("Setter actor [" + delayActor.getName() + "_setter] not found.");
       }
       final Long setterRV = brv.get(setterDelayActor);
 
@@ -652,7 +648,7 @@ public class PiMMSRVerticesLinker {
       vertexSourceSet
           .forEach(v -> sourceSet.add(new SourceConnection(v, this.sourceProduction, this.sourcePort.getName())));
     } else {
-      throw new PiMMHelperException("Unhandled type of actor: " + realSource.getClass().toString());
+      throw new PreesmException("Unhandled type of actor: " + realSource.getClass().toString());
     }
 
     return sourceSet;
@@ -665,12 +661,10 @@ public class PiMMSRVerticesLinker {
    *          repetition vector values
    * @param vertexSinkSet
    *          Set of sink vertices
-   * @return Set of SinkConnection
-   * @throws PiMMHelperException
-   *           the exception
+   * @return Set of SinkConnection @ the exception
    */
   private List<SinkConnection> getSinkSet(final List<AbstractVertex> vertexSinkSet,
-      final List<AbstractVertex> vertexSourceSet, final Map<AbstractVertex, Long> brv) throws PiMMHelperException {
+      final List<AbstractVertex> vertexSourceSet, final Map<AbstractVertex, Long> brv) {
     // Initialize empty source set
     final List<SinkConnection> sinkSet = new ArrayList<>();
 
@@ -684,7 +678,7 @@ public class PiMMSRVerticesLinker {
       // Add the list of the SR-DAG vertex associated with the source
       vertexSinkSet.forEach(v -> sinkSet.add(new SinkConnection(v, this.sinkConsumption, this.sinkPort.getName())));
     } else {
-      throw new PiMMHelperException("Unhandled type of actor: " + realSink.getClass().toString());
+      throw new PreesmException("Unhandled type of actor: " + realSink.getClass().toString());
     }
 
     // Deals delays
@@ -698,7 +692,7 @@ public class PiMMSRVerticesLinker {
       final PiGraph originalGraph = this.fifo.getContainingPiGraph();
       final DelayActor getterDelayActor = (DelayActor) originalGraph.lookupVertex(delayActor.getName() + "_getter");
       if (getterDelayActor == null) {
-        throw new PiMMHelperException("Getter actor [" + delayActor.getName() + "_setter] not found.");
+        throw new PreesmException("Getter actor [" + delayActor.getName() + "_setter] not found.");
       }
       final Long brvGetter = brv.get(getterDelayActor);
 

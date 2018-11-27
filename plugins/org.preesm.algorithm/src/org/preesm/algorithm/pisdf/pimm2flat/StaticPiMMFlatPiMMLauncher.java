@@ -44,7 +44,6 @@ import org.apache.commons.lang3.time.StopWatch;
 import org.preesm.algorithm.pisdf.helper.LCMBasedBRV;
 import org.preesm.algorithm.pisdf.helper.PiBRV;
 import org.preesm.algorithm.pisdf.helper.PiMMHandler;
-import org.preesm.algorithm.pisdf.helper.PiMMHelperException;
 import org.preesm.algorithm.pisdf.pimm2flat.visitor.StaticPiMM2FlatPiMMVisitor;
 import org.preesm.commons.logger.PreesmLogger;
 import org.preesm.model.pisdf.AbstractVertex;
@@ -91,29 +90,23 @@ public class StaticPiMMFlatPiMMLauncher extends PiMMSwitch<Boolean> {
    * Precondition: All.
    *
    * @return the SDFGraph obtained by visiting graph
-   * @throws StaticPiMMFlatPiMMException
-   *           the static pi MM 2 SDF exception
    */
-  public PiGraph launch() throws StaticPiMMFlatPiMMException {
+  public PiGraph launch() {
     final StopWatch timer = new StopWatch();
-    try {
-      timer.start();
-      // 1. First we resolve all parameters.
-      // It must be done first because, when removing persistence, local parameters have to be known at upper level
-      this.piHandler.resolveAllParameters();
-      timer.stop();
-      String msg = "Parameters and rates evaluations: " + timer + "s.";
-      PreesmLogger.getLogger().log(Level.INFO, msg);
-      // 2. We perform the delay transformation step that deals with persistence
-      timer.reset();
-      timer.start();
-      this.piHandler.removePersistence();
-      timer.stop();
-      String msg2 = "Persistence removal: " + timer + "s.";
-      PreesmLogger.getLogger().log(Level.INFO, msg2);
-    } catch (PiMMHelperException e) {
-      throw new StaticPiMMFlatPiMMException(e.getMessage());
-    }
+    timer.start();
+    // 1. First we resolve all parameters.
+    // It must be done first because, when removing persistence, local parameters have to be known at upper level
+    this.piHandler.resolveAllParameters();
+    timer.stop();
+    String msg = "Parameters and rates evaluations: " + timer + "s.";
+    PreesmLogger.getLogger().log(Level.INFO, msg);
+    // 2. We perform the delay transformation step that deals with persistence
+    timer.reset();
+    timer.start();
+    this.piHandler.removePersistence();
+    timer.stop();
+    String msg2 = "Persistence removal: " + timer + "s.";
+    PreesmLogger.getLogger().log(Level.INFO, msg2);
     // 3. Compute BRV following the chosen method
     computeBRV();
     // 4. Print the RV values
@@ -145,22 +138,16 @@ public class StaticPiMMFlatPiMMLauncher extends PiMMSwitch<Boolean> {
   /**
    * Computes the BRV of a PiSDF graph using either LCM method.
    *
-   * @throws StaticPiMMFlatPiMMException
-   *           the StaticPiMM2SrDAGException exception
    */
-  private void computeBRV() throws StaticPiMMFlatPiMMException {
+  private void computeBRV() {
     final PiBRV piBRVAlgo = new LCMBasedBRV(this.piHandler);
-    try {
-      final StopWatch timer = new StopWatch();
-      timer.start();
-      piBRVAlgo.execute();
-      this.graphBRV = piBRVAlgo.getBRV();
-      timer.stop();
-      final String msg = "Repetition vector computed in" + timer + "s.";
-      PreesmLogger.getLogger().log(Level.INFO, msg);
-    } catch (final PiMMHelperException e) {
-      throw new StaticPiMMFlatPiMMException(e.getMessage());
-    }
+    final StopWatch timer = new StopWatch();
+    timer.start();
+    piBRVAlgo.execute();
+    this.graphBRV = piBRVAlgo.getBRV();
+    timer.stop();
+    final String msg = "Repetition vector computed in" + timer + "s.";
+    PreesmLogger.getLogger().log(Level.INFO, msg);
   }
 
   /**
@@ -170,25 +157,6 @@ public class StaticPiMMFlatPiMMLauncher extends PiMMSwitch<Boolean> {
     for (final Map.Entry<AbstractVertex, Long> rv : this.graphBRV.entrySet()) {
       final String msg = rv.getKey().getVertexPath() + " x" + Long.toString(rv.getValue());
       PreesmLogger.getLogger().log(Level.INFO, msg);
-    }
-  }
-
-  /**
-   * The Class StaticPiMMFlatPiMMException.
-   */
-  public class StaticPiMMFlatPiMMException extends Exception {
-
-    /** The Constant serialVersionUID. */
-    private static final long serialVersionUID = 8272147472427685537L;
-
-    /**
-     * Instantiates a new static pi MM 2 SDF exception.
-     *
-     * @param message
-     *          the message
-     */
-    public StaticPiMMFlatPiMMException(final String message) {
-      super(message);
     }
   }
 

@@ -67,7 +67,7 @@ public class TopologyBasedBRV extends PiBRV {
    * @see org.ietr.preesm.pimm.algorithm.math.PiBRV#execute()
    */
   @Override
-  public boolean execute() throws PiMMHelperException {
+  public boolean execute() {
     if (this.piHandler.getReferenceGraph() == null) {
       final String msg = "cannot compute BRV for null graph.";
       throw new PreesmException(msg);
@@ -80,7 +80,7 @@ public class TopologyBasedBRV extends PiBRV {
 
       // Get the topology matrix
       if (subgraph.isEmpty()) {
-        throw new PiMMHelperException("Impossible to compute consistency. Empty graph.");
+        throw new PreesmException("Impossible to compute consistency. Empty graph.");
       }
       // We have only one actor connected to Interface Actor
       // The graph is consistent
@@ -91,7 +91,7 @@ public class TopologyBasedBRV extends PiBRV {
         final double[][] topologyMatrix = getTopologyMatrix(listFifo, subgraph);
         final long rank = LinearAlgebra.rank(topologyMatrix);
         if (rank != (subgraph.size() - 1)) {
-          throw new PiMMHelperException("Graph not consitent. rank: " + Long.toString(rank) + ", expected: "
+          throw new PreesmException("Graph not consitent. rank: " + Long.toString(rank) + ", expected: "
               + Long.toString(subgraph.size() - 1));
         }
         // Compute BRV
@@ -113,8 +113,7 @@ public class TopologyBasedBRV extends PiBRV {
     return true;
   }
 
-  private double[][] getTopologyMatrix(final List<Fifo> listFifo, final List<AbstractActor> subgraph)
-      throws PiMMHelperException {
+  private double[][] getTopologyMatrix(final List<Fifo> listFifo, final List<AbstractActor> subgraph) {
     final double[][] topologyMatrix = new double[listFifo.size()][subgraph.size()];
     for (final Fifo fifo : listFifo) {
       final AbstractActor sourceActor = fifo.getSourcePort().getContainingActor();
@@ -125,12 +124,12 @@ public class TopologyBasedBRV extends PiBRV {
         final String prodString = "Prod: " + Long.toString(prod) + "\n";
         final String consString = "Cons: " + Long.toString(cons) + "\n";
         final String errorString = "Bad production / consumption rates\n";
-        throw new PiMMHelperException("Fifo [" + fifo.getId() + "]\n" + prodString + consString + errorString);
+        throw new PreesmException("Fifo [" + fifo.getId() + "]\n" + prodString + consString + errorString);
       }
       final int sourceIndex = subgraph.indexOf(sourceActor);
       final int targetIndex = subgraph.indexOf(targetActor);
       if ((sourceIndex < 0) || (targetIndex < 0)) {
-        throw new PiMMHelperException(
+        throw new PreesmException(
             "Bad index error:\nSource actor index [" + sourceActor.getName() + "]: " + Integer.toString(sourceIndex)
                 + "\nTarget actor index [" + targetActor.getName() + "]: " + Integer.toString(targetIndex));
       }

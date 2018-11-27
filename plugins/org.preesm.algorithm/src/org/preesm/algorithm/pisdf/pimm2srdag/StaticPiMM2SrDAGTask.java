@@ -46,7 +46,6 @@ import org.eclipse.core.runtime.IProgressMonitor;
 import org.preesm.algorithm.mapper.graphtransfo.SdfToDagConverter;
 import org.preesm.algorithm.mapper.model.MapperDAG;
 import org.preesm.algorithm.model.visitors.VisitorOutput;
-import org.preesm.algorithm.pisdf.pimm2srdag.StaticPiMM2SrDAGLauncher.StaticPiMM2SrDAGException;
 import org.preesm.commons.logger.PreesmLogger;
 import org.preesm.model.pisdf.PiGraph;
 import org.preesm.model.scenario.PreesmScenario;
@@ -90,29 +89,26 @@ public class StaticPiMM2SrDAGTask extends AbstractTaskImplementation {
     final PiGraph resultPi;
     final Logger logger = PreesmLogger.getLogger();
     VisitorOutput.setLogger(logger);
-    try {
-      logger.log(Level.INFO, "Computing Repetition Vector for graph [" + graph.getName() + "]");
-      // Check the consistency of the PiGraph and compute the associated Basic Repetition Vector
-      // We use Topology-Matrix based method by default
-      final String consistencyMethod = parameters.get(StaticPiMM2SrDAGTask.CONSISTENCY_METHOD);
-      int method = 0;
-      if (consistencyMethod.equals(StaticPiMM2SrDAGTask.LCM_METHOD)) {
-        method = 1;
-      } else if (!consistencyMethod.equals(StaticPiMM2SrDAGTask.TOPOLOGY_METHOD)) {
-        throw new WorkflowException("Unsupported method for checking consistency [" + consistencyMethod + "]");
-      }
-      // Convert the PiGraph to the Single-Rate Directed Acyclic Graph
-      resultPi = launcher.launch(method);
-
-      result = launcher.covnertToMapperDAG(resultPi);
-
-      SdfToDagConverter.addInitialProperties(result, architecture, scenario);
-    } catch (final StaticPiMM2SrDAGException e) {
-      throw new WorkflowException(e.getMessage(), e);
+    logger.log(Level.INFO, "Computing Repetition Vector for graph [" + graph.getName() + "]");
+    // Check the consistency of the PiGraph and compute the associated Basic Repetition Vector
+    // We use Topology-Matrix based method by default
+    final String consistencyMethod = parameters.get(StaticPiMM2SrDAGTask.CONSISTENCY_METHOD);
+    int method = 0;
+    if (consistencyMethod.equals(StaticPiMM2SrDAGTask.LCM_METHOD)) {
+      method = 1;
+    } else if (!consistencyMethod.equals(StaticPiMM2SrDAGTask.TOPOLOGY_METHOD)) {
+      throw new WorkflowException("Unsupported method for checking consistency [" + consistencyMethod + "]");
     }
+    // Convert the PiGraph to the Single-Rate Directed Acyclic Graph
+    resultPi = launcher.launch(method);
 
-    PreesmLogger.getLogger().log(Level.INFO,
-        "mapping a DAG with " + result.vertexSet().size() + " vertices and " + result.edgeSet().size() + " edges");
+    result = launcher.covnertToMapperDAG(resultPi);
+
+    SdfToDagConverter.addInitialProperties(result, architecture, scenario);
+
+    final String message = "mapping a DAG with " + result.vertexSet().size() + " vertices and "
+        + result.edgeSet().size() + " edges";
+    PreesmLogger.getLogger().log(Level.INFO, message);
 
     final Map<String, Object> output = new LinkedHashMap<>();
     output.put(AbstractWorkflowNodeImplementation.KEY_SDF_DAG, result);

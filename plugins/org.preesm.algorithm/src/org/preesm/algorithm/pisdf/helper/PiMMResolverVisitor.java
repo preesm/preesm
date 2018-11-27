@@ -42,8 +42,6 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import org.eclipse.emf.common.util.EList;
 import org.nfunk.jep.JEP;
-import org.nfunk.jep.Node;
-import org.nfunk.jep.ParseException;
 import org.preesm.model.pisdf.AbstractActor;
 import org.preesm.model.pisdf.ConfigInputInterface;
 import org.preesm.model.pisdf.ConfigInputPort;
@@ -54,14 +52,10 @@ import org.preesm.model.pisdf.Dependency;
 import org.preesm.model.pisdf.ExecutableActor;
 import org.preesm.model.pisdf.Expression;
 import org.preesm.model.pisdf.ExpressionHolder;
-import org.preesm.model.pisdf.ExpressionProxy;
 import org.preesm.model.pisdf.ISetter;
 import org.preesm.model.pisdf.InterfaceActor;
-import org.preesm.model.pisdf.LongExpression;
 import org.preesm.model.pisdf.Parameter;
 import org.preesm.model.pisdf.PiGraph;
-import org.preesm.model.pisdf.PiGraphException;
-import org.preesm.model.pisdf.StringExpression;
 import org.preesm.model.pisdf.util.PiMMSwitch;
 import org.preesm.workflow.WorkflowException;
 
@@ -78,50 +72,6 @@ public class PiMMResolverVisitor extends PiMMSwitch<Boolean> {
 
   public PiMMResolverVisitor(final Map<Parameter, Long> parameterValues) {
     this.parameterValues = parameterValues;
-  }
-
-  /**
-   *
-   * @author anmorvan
-   *
-   */
-  final class JEPFastExpressionResolver extends PiMMSwitch<Long> {
-
-    private final JEP jep;
-
-    JEPFastExpressionResolver(final JEP jep) {
-      this.jep = jep;
-    }
-
-    @Override
-    public Long caseLongExpression(final LongExpression object) {
-      return object.getValue();
-    }
-
-    @Override
-    public Long caseExpressionProxy(final ExpressionProxy object) {
-      return doSwitch(object.getProxy().getExpression());
-    }
-
-    @Override
-    public Long caseStringExpression(final StringExpression object) {
-      final long value;
-      try {
-        final Node parse = jep.parse(object.getExpressionString());
-        final Object result = jep.evaluate(parse);
-        if (result instanceof Long) {
-          value = (Long) result;
-        } else if (result instanceof Double) {
-          value = Math.round((Double) result);
-        } else {
-          throw new PiGraphException("Unsupported result type " + result.getClass().getSimpleName());
-        }
-      } catch (final ParseException e) {
-        throw new PiGraphException("Could not parse " + object.getExpressionString(), e);
-      }
-      return value;
-    }
-
   }
 
   /**

@@ -42,7 +42,6 @@ import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import org.preesm.algorithm.pisdf.helper.PiMMHelperException;
 import org.preesm.algorithm.pisdf.pimm2srdag.visitor.PiMMSRVerticesLinker;
 import org.preesm.model.pisdf.AbstractActor;
 import org.preesm.model.pisdf.AbstractVertex;
@@ -52,7 +51,6 @@ import org.preesm.model.pisdf.Fifo;
 import org.preesm.model.pisdf.ForkActor;
 import org.preesm.model.pisdf.JoinActor;
 import org.preesm.model.pisdf.PiGraph;
-import org.preesm.workflow.WorkflowException;
 
 /**
  * @author farresti
@@ -132,11 +130,7 @@ public class JoinOptimization extends AbstractPiGraphSpecialActorRemover<DataInp
 
       // 3. We remove the JoinActor and the ForkActor and we re-do the SR-Link between the sources / sinks
       final PiMMSRVerticesLinker srLinker = new PiMMSRVerticesLinker();
-      try {
-        srLinker.execute(sourceSet, sinkSet);
-      } catch (final PiMMHelperException e) {
-        throw new WorkflowException(e.getMessage());
-      }
+      srLinker.execute(sourceSet, sinkSet);
       fifoToRemove.forEach(graph::removeFifo);
       graph.removeActor(actor);
       graph.removeActor(target);

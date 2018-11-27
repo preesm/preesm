@@ -48,7 +48,6 @@ import java.util.logging.Level;
 import org.apache.commons.lang3.time.StopWatch;
 import org.eclipse.emf.common.util.EList;
 import org.eclipse.emf.ecore.util.EcoreUtil;
-import org.preesm.algorithm.pisdf.helper.PiMMHelperException;
 import org.preesm.commons.logger.PreesmLogger;
 import org.preesm.model.pisdf.AbstractActor;
 import org.preesm.model.pisdf.AbstractVertex;
@@ -414,11 +413,7 @@ public class StaticPiMM2ASrPiMMVisitor extends PiMMSwitch<Boolean> {
     // 4. Do the Single-Rate connections
     final PiMMSRVerticesLinker srVerticesLinker = new PiMMSRVerticesLinker(fifo, this.result, this.scenario,
         this.graphPrefix);
-    try {
-      srVerticesLinker.execute(this.brv, sourceSet, sinkSet);
-    } catch (final PiMMHelperException e) {
-      throw new WorkflowException(e.getMessage());
-    }
+    srVerticesLinker.execute(this.brv, sourceSet, sinkSet);
 
     // In the case of Interfaces we might have disconnected the FIFO so let's reconnect it
     fifo.setSourcePort(sourcePort);

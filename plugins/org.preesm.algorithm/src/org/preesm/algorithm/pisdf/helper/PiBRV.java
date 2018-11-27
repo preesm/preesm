@@ -41,6 +41,7 @@ package org.preesm.algorithm.pisdf.helper;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import org.preesm.commons.exceptions.PreesmException;
 import org.preesm.model.pisdf.AbstractActor;
 import org.preesm.model.pisdf.AbstractVertex;
 import org.preesm.model.pisdf.DataInputInterface;
@@ -80,7 +81,7 @@ public abstract class PiBRV {
    *
    * Set the associated PiGraph. If current BRV map was not empty, it is cleared. The BRV is automatically recomputed.
    */
-  public void setAssociatedGraphHandler(final PiMMHandler piHandler) throws PiMMHelperException {
+  public void setAssociatedGraphHandler(final PiMMHandler piHandler) {
     this.piHandler = piHandler;
     if (!this.graphBRV.isEmpty()) {
       this.graphBRV.clear();
@@ -101,7 +102,7 @@ public abstract class PiBRV {
    *
    * @return a map of vertex and associated repetition vector values
    */
-  public Map<AbstractVertex, Long> getBRV() throws PiMMHelperException {
+  public Map<AbstractVertex, Long> getBRV() {
     if (this.graphBRV.isEmpty()) {
       execute();
     }
@@ -126,10 +127,9 @@ public abstract class PiBRV {
    * @throws PiMMHelperException
    *           the PiMMHandlerException exception
    */
-  public abstract boolean execute() throws PiMMHelperException;
+  public abstract boolean execute();
 
-  protected void updateRVWithInterfaces(final PiGraph graph, final List<AbstractActor> subgraph)
-      throws PiMMHelperException {
+  protected void updateRVWithInterfaces(final PiGraph graph, final List<AbstractActor> subgraph) {
     // Update RV values based on the interface
     long scaleFactor = 1;
 
@@ -144,7 +144,7 @@ public abstract class PiBRV {
       final long newRV = this.graphBRV.get(actor) * scaleFactor;
       this.graphBRV.put(actor, newRV);
       if ((actor instanceof DelayActor) && (newRV != 1)) {
-        throw new PiMMHelperException("Inconsistent graph. DelayActor [" + actor.getName()
+        throw new PreesmException("Inconsistent graph. DelayActor [" + actor.getName()
             + "] with a repetition vector of " + Long.toString(newRV));
       }
     }

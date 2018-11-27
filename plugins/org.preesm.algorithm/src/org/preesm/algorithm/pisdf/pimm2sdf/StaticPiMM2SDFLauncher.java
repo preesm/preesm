@@ -42,6 +42,7 @@ import java.util.Map;
 import java.util.Set;
 import org.preesm.algorithm.model.sdf.SDFGraph;
 import org.preesm.algorithm.pisdf.pimm2sdf.visitor.StaticPiMM2SDFVisitor;
+import org.preesm.commons.exceptions.PreesmException;
 import org.preesm.model.pisdf.Parameter;
 import org.preesm.model.pisdf.PiGraph;
 import org.preesm.model.scenario.ParameterValue;
@@ -76,10 +77,8 @@ public class StaticPiMM2SDFLauncher {
    * Precondition: All.
    *
    * @return the SDFGraph obtained by visiting graph
-   * @throws StaticPiMM2SDFException
-   *           the static pi MM 2 SDF exception
    */
-  public SDFGraph launch() throws StaticPiMM2SDFException {
+  public SDFGraph launch() {
     SDFGraph result;
 
     // Get all the available values for all the parameters
@@ -98,10 +97,8 @@ public class StaticPiMM2SDFLauncher {
    * Gets the parameters values.
    *
    * @return the parameters values
-   * @throws StaticPiMM2SDFException
-   *           the static pi MM 2 SDF exception
    */
-  private Map<Parameter, Integer> getParametersValues() throws StaticPiMM2SDFException {
+  private Map<Parameter, Integer> getParametersValues() {
     final Map<Parameter, Integer> result = new LinkedHashMap<>();
 
     final ParameterValueManager parameterValueManager = this.scenario.getParameterValueManager();
@@ -109,7 +106,7 @@ public class StaticPiMM2SDFLauncher {
     for (final ParameterValue paramValue : parameterValues) {
       switch (paramValue.getType()) {
         case ACTOR_DEPENDENT:
-          throw new StaticPiMM2SDFException("Parameter " + paramValue.getName()
+          throw new PreesmException("Parameter " + paramValue.getName()
               + " is depends on a configuration actor. It is thus impossible to use the"
               + " Static PiMM 2 SDF transformation. Try instead the Dynamic PiMM 2 SDF"
               + " transformation (id: org.ietr.preesm.experiment.pimm2sdf.PiMM2SDFTask)");
@@ -130,25 +127,6 @@ public class StaticPiMM2SDFLauncher {
     }
 
     return result;
-  }
-
-  /**
-   * The Class StaticPiMM2SDFException.
-   */
-  public class StaticPiMM2SDFException extends Exception {
-
-    /** The Constant serialVersionUID. */
-    private static final long serialVersionUID = 8272147472427685537L;
-
-    /**
-     * Instantiates a new static pi MM 2 SDF exception.
-     *
-     * @param message
-     *          the message
-     */
-    public StaticPiMM2SDFException(final String message) {
-      super(message);
-    }
   }
 
 }

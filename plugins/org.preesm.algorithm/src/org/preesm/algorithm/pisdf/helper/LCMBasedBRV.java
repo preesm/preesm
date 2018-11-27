@@ -70,7 +70,7 @@ public class LCMBasedBRV extends PiBRV {
    * @see org.ietr.preesm.pimm.algorithm.math.PiBRV#execute()
    */
   @Override
-  public boolean execute() throws PiMMHelperException {
+  public boolean execute() {
     if (this.piHandler.getReferenceGraph() == null) {
       final String msg = "cannot compute BRV for null graph.";
       throw new PreesmException(msg);
@@ -140,8 +140,7 @@ public class LCMBasedBRV extends PiBRV {
    * @throws PiMMHelperException
    *           the exception
    */
-  private void checkConsistency(final List<AbstractActor> subgraph, final Map<Fifo, List<Long>> fifoProperties)
-      throws PiMMHelperException {
+  private void checkConsistency(final List<AbstractActor> subgraph, final Map<Fifo, List<Long>> fifoProperties) {
     for (final Fifo f : this.piHandler.getFifosFromCC(subgraph)) {
       final AbstractActor sourceActor = f.getSourcePort().getContainingActor();
       final AbstractActor targetActor = f.getTargetPort().getContainingActor();
@@ -154,7 +153,7 @@ public class LCMBasedBRV extends PiBRV {
       final long targetRV = this.graphBRV.get(targetActor);
 
       if (prod * sourceRV != cons * targetRV) {
-        throw new PiMMHelperException(
+        throw new PreesmException(
             "Graph non consistent: edge source production " + sourceActor.getName() + " with rate [" + (prod * sourceRV)
                 + "] != edge target consumption " + targetActor.getName() + "with rate [" + (cons * targetRV) + "]");
       }
@@ -216,7 +215,7 @@ public class LCMBasedBRV extends PiBRV {
    *           the PiBRV exception
    */
   private static void setReps(final AbstractActor actor, final LongFraction n, final HashMap<String, LongFraction> reps,
-      final Map<Fifo, List<Long>> fifoProperties) throws PiMMHelperException {
+      final Map<Fifo, List<Long>> fifoProperties) {
     // Update value in the HashMap
     reps.put(actor.getName(), n);
 
@@ -224,7 +223,7 @@ public class LCMBasedBRV extends PiBRV {
     for (final DataOutputPort output : actor.getDataOutputPorts()) {
       final Fifo fifo = output.getOutgoingFifo();
       if (fifo == null) {
-        throw new PiMMHelperException(
+        throw new PreesmException(
             "Actor [" + actor.getName() + "] has output port [" + output.getName() + "] not connected to any FIFO.");
       }
       final AbstractActor targetActor = fifo.getTargetPort().getContainingActor();
@@ -245,7 +244,7 @@ public class LCMBasedBRV extends PiBRV {
     for (final DataInputPort input : actor.getDataInputPorts()) {
       final Fifo fifo = input.getIncomingFifo();
       if (fifo == null) {
-        throw new PiMMHelperException(
+        throw new PreesmException(
             "Actor [" + actor.getName() + "] has input port [" + input.getName() + "] not connected to any FIFO.");
       }
       final AbstractActor sourceActor = fifo.getSourcePort().getContainingActor();

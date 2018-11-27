@@ -47,6 +47,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.logging.Level;
+import org.preesm.commons.exceptions.PreesmException;
 import org.preesm.commons.logger.PreesmLogger;
 import org.preesm.model.pisdf.AbstractActor;
 import org.preesm.model.pisdf.AbstractVertex;
@@ -189,11 +190,10 @@ public class PiMMHandler {
    *
    * @param cc
    *          the connectedComponent to evaluate
-   * @return all FIFOs contained in the connectedComponent, null if the connectedComponent is empty
-   * @throws PiMMHelperException
-   *           the PiMMHandlerException exception
+   * @return all FIFOs contained in the connectedComponent, null if the connectedComponent is empty @ the
+   *         PiMMHandlerException exception
    */
-  public List<Fifo> getFifosFromCC(final List<AbstractActor> cc) throws PiMMHelperException {
+  public List<Fifo> getFifosFromCC(final List<AbstractActor> cc) {
     if (cc.isEmpty()) {
       PreesmLogger.getLogger().log(Level.INFO, "No FIFOs to extrac, empty connectedComponent.");
       return Collections.<Fifo>emptyList();
@@ -214,16 +214,14 @@ public class PiMMHandler {
    * @param actor
    *          the actor to evaluate
    * @param fifos
-   *          list of Fifo to update
-   * @throws PiMMHelperException
-   *           the PiMMHandlerException exception
+   *          list of Fifo to update @ the PiMMHandlerException exception
    */
   private void extractFifosFromActor(final boolean containsInterfaceActors, final AbstractActor actor,
-      final List<Fifo> fifos) throws PiMMHelperException {
+      final List<Fifo> fifos) {
     for (final DataPort port : actor.getAllDataPorts()) {
       final Fifo fifo = port.getFifo();
       if (fifo == null) {
-        throw new PiMMHelperException(PiMMHandler.noFIFOExceptionMessage(actor, port));
+        throw new PreesmException(PiMMHandler.noFIFOExceptionMessage(actor, port));
       }
       final AbstractActor sourceActor = fifo.getSourcePort().getContainingActor();
       final AbstractActor targetActor = fifo.getTargetPort().getContainingActor();
@@ -242,11 +240,10 @@ public class PiMMHandler {
    *
    * @param cc
    *          the connectedComponent to evaluate
-   * @return all FIFOs contained in the connectedComponent, null if the subgraph is empty
-   * @throws PiMMHelperException
-   *           the PiMMHandlerException exception
+   * @return all FIFOs contained in the connectedComponent, null if the subgraph is empty @ the PiMMHandlerException
+   *         exception
    */
-  public List<Fifo> getFifosFromCCWOSelfLoop(final List<AbstractActor> cc) throws PiMMHelperException {
+  public List<Fifo> getFifosFromCCWOSelfLoop(final List<AbstractActor> cc) {
     final List<Fifo> fifos = getFifosFromCC(cc);
     fifos.removeIf(fifo -> (fifo.getSourcePort().getContainingActor() == fifo.getTargetPort().getContainingActor()));
     return fifos;
@@ -260,11 +257,9 @@ public class PiMMHandler {
    *
    * First access can be slow since the List of CCs has to be computed.
    *
-   * @return all CCs contained in the reference graph (read only access)
-   * @throws PiMMHelperException
-   *           the PiMMHandlerException exception
+   * @return all CCs contained in the reference graph (read only access) @ the PiMMHandlerException exception
    */
-  public List<List<AbstractActor>> getAllConnectedComponents() throws PiMMHelperException {
+  public List<List<AbstractActor>> getAllConnectedComponents() {
     if (this.listConnectedComponents.isEmpty()) {
       PiMMHandler.ccsFetcher(this.graph, this.listConnectedComponents);
     }
@@ -279,11 +274,9 @@ public class PiMMHandler {
    * This method uses getAllConnectedComponents to extract connected components, i.e a call to getAllConnectedComponents
    * afterward will be fast.
    *
-   * @return all CCs contained in the associated graph (read only access)
-   * @throws PiMMHelperException
-   *           the PiMMHandlerException exception
+   * @return all CCs contained in the associated graph (read only access) @ the PiMMHandlerException exception
    */
-  public List<List<AbstractActor>> getAllConnectedComponentsWOInterfaces() throws PiMMHelperException {
+  public List<List<AbstractActor>> getAllConnectedComponentsWOInterfaces() {
     // First fetch all subgraphs
     if (this.listConnectedComponents.isEmpty()) {
       PiMMHandler.ccsFetcher(this.graph, this.listConnectedComponents);
@@ -324,12 +317,9 @@ public class PiMMHandler {
    * @param graph
    *          the graph to process
    * @param listCCs
-   *          list of subgraphs to be updated
-   * @throws PiMMHelperException
-   *           the PiMMHandlerException exception
+   *          list of subgraphs to be updated @ the PiMMHandlerException exception
    */
-  private static void ccsFetcher(final PiGraph graph, final List<List<AbstractActor>> listCCs)
-      throws PiMMHelperException {
+  private static void ccsFetcher(final PiGraph graph, final List<List<AbstractActor>> listCCs) {
     // Fetch all actors without interfaces in the PiGraph
     final List<AbstractActor> fullActorList = new ArrayList<>();
     fullActorList.addAll(graph.getActors());
@@ -360,16 +350,13 @@ public class PiMMHandler {
    * @param actor
    *          the current actor
    * @param cc
-   *          the current connected component
-   * @throws PiMMHelperException
-   *           the PiMMHandlerException exception
+   *          the current connected component @ the PiMMHandlerException exception
    */
-  private static void iterativeCCFetcher(final AbstractActor actor, final List<AbstractActor> cc)
-      throws PiMMHelperException {
+  private static void iterativeCCFetcher(final AbstractActor actor, final List<AbstractActor> cc) {
     for (final DataOutputPort output : actor.getDataOutputPorts()) {
       final Fifo fifo = output.getOutgoingFifo();
       if (fifo == null) {
-        throw new PiMMHelperException(PiMMHandler.noFIFOExceptionMessage(actor, output));
+        throw new PreesmException(PiMMHandler.noFIFOExceptionMessage(actor, output));
       }
       final AbstractActor targetActor = fifo.getTargetPort().getContainingActor();
       if (!cc.contains(targetActor)) {
@@ -380,7 +367,7 @@ public class PiMMHandler {
     for (final DataInputPort input : actor.getDataInputPorts()) {
       final Fifo fifo = input.getIncomingFifo();
       if (fifo == null) {
-        throw new PiMMHelperException(PiMMHandler.noFIFOExceptionMessage(actor, input));
+        throw new PreesmException(PiMMHandler.noFIFOExceptionMessage(actor, input));
       }
       final AbstractActor sourceActor = fifo.getSourcePort().getContainingActor();
       if (!cc.contains(sourceActor)) {
@@ -401,10 +388,9 @@ public class PiMMHandler {
   /**
    * Resolve all parameter values of the reference PiGraph and its child sub-graph.
    *
-   * @throws PiMMHelperException
-   *           the PiMMHandlerException exception
+   * @ the PiMMHandlerException exception
    */
-  public void resolveAllParameters() throws PiMMHelperException {
+  public void resolveAllParameters() {
     final PiMMResolverVisitor piMMResolverVisitor = new PiMMResolverVisitor(new LinkedHashMap<>());
     piMMResolverVisitor.doSwitch(this.graph);
   }
@@ -412,10 +398,9 @@ public class PiMMHandler {
   /**
    * Remove the persistence levels and replace them with the appropriate interfaces.
    *
-   * @throws PiMMHelperException
-   *           the PiMMHandlerException exception
+   * @ the PiMMHandlerException exception
    */
-  public void removePersistence() throws PiMMHelperException {
+  public void removePersistence() {
     for (final Fifo fifo : this.graph.getFifosWithDelay()) {
       final Delay delay = fifo.getDelay();
       // 0. Rename all the data ports of delay actors
@@ -432,7 +417,7 @@ public class PiMMHandler {
     }
   }
 
-  private void recursiveRemovePersistence(final PiGraph graph) throws PiMMHelperException {
+  private void recursiveRemovePersistence(final PiGraph graph) {
     // We assume that if the user want to make a delay persist across multiple levels,
     // he did it explicitly.
     for (final Fifo fifo : graph.getFifosWithDelay()) {
@@ -442,14 +427,14 @@ public class PiMMHandler {
       delay.getActor().getDataOutputPort().setName(fifo.getSourcePort().getName());
       if (delay.getLevel().equals(PersistenceLevel.LOCAL)) {
         if (delay.hasGetterActor() || delay.hasSetterActor()) {
-          throw new PiMMHelperException(
+          throw new PreesmException(
               "Delay with local persistence can not be connected to a setter nor a getter actor.");
         }
         delay.setName(delayShortID);
         replaceLocalDelay(graph, delay);
       } else if (delay.getLevel().equals(PersistenceLevel.PERMANENT)) {
         if (delay.hasGetterActor() || delay.hasSetterActor()) {
-          throw new PiMMHelperException(
+          throw new PreesmException(
               "Delay with global persistence can not be connected to a setter nor a getter actor.");
         }
         // In the case of a permanent delay we have to make it go up to the top.
@@ -465,9 +450,8 @@ public class PiMMHandler {
       } else {
         if (((delay.hasSetterActor()) && !(delay.hasGetterActor()))
             || ((delay.hasGetterActor()) && (!delay.hasSetterActor()))) {
-          throw new PiMMHelperException(
-              "Asymetric configuration for delay setter / getter actor is not yet supported.\n"
-                  + "Please Contact PREESM developers.");
+          throw new PreesmException("Asymetric configuration for delay setter / getter actor is not yet supported.\n"
+              + "Please Contact PREESM developers.");
         }
       }
     }
