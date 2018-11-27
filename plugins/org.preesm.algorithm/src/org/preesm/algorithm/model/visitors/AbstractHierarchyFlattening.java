@@ -43,10 +43,10 @@ import org.preesm.algorithm.model.AbstractGraph;
 import org.preesm.algorithm.model.AbstractVertex;
 import org.preesm.algorithm.model.IInterface;
 import org.preesm.algorithm.model.parameters.Argument;
-import org.preesm.algorithm.model.parameters.NoIntegerValueException;
 import org.preesm.algorithm.model.sdf.SDFAbstractVertex;
 import org.preesm.algorithm.model.sdf.SDFInterfaceVertex;
 import org.preesm.commons.exceptions.PreesmException;
+import org.preesm.model.pisdf.expression.ExpressionEvaluationException;
 
 /**
  * HierarchyFlattening for a given depth.
@@ -119,7 +119,7 @@ public abstract class AbstractHierarchyFlattening<G extends AbstractGraph> {
           for (final Argument arg : trueVertex.getArguments().values()) {
             try {
               cloneVertex.getArgument(arg.getName()).setValue(String.valueOf(arg.longValue()));
-            } catch (final NoIntegerValueException e) {
+            } catch (final ExpressionEvaluationException e) {
               throw new PreesmException("Could not clone value", e);
             }
           }

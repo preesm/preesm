@@ -38,6 +38,7 @@
 package org.preesm.algorithm.model.parameters;
 
 import org.preesm.commons.CloneableProperty;
+import org.preesm.model.pisdf.expression.ExpressionEvaluationException;
 
 /**
  * Class representing parameters that can be used to configure a graph ...
@@ -86,7 +87,7 @@ public class Parameter implements CloneableProperty<Parameter> {
    * Gets the value.
    *
    * @return The value of the parameter
-   * @throws NoIntegerValueException
+   * @throws ExpressionEvaluationException
    *           the no integer value exception
    */
   public Long getValue() {

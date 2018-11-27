@@ -44,11 +44,11 @@ import org.preesm.algorithm.model.InterfaceDirection;
 import org.preesm.algorithm.model.PropertyBean;
 import org.preesm.algorithm.model.PropertyFactory;
 import org.preesm.algorithm.model.parameters.Argument;
-import org.preesm.algorithm.model.parameters.NoIntegerValueException;
 import org.preesm.algorithm.model.sdf.esdf.SDFSinkInterfaceVertex;
 import org.preesm.algorithm.model.sdf.esdf.SDFSourceInterfaceVertex;
 import org.preesm.commons.exceptions.PreesmException;
 import org.preesm.commons.logger.PreesmLogger;
+import org.preesm.model.pisdf.expression.ExpressionEvaluationException;
 
 /**
  * Abstract class representing SDF Vertices.
@@ -429,7 +429,7 @@ public abstract class SDFAbstractVertex extends AbstractVertex<SDFGraph> {
       for (final Argument arg : getArguments().values()) {
         try {
           arg.longValue();
-        } catch (final NoIntegerValueException e) {
+        } catch (final ExpressionEvaluationException e) {
           throw new PreesmException("Could not evaluate argument value", e);
         }
       }

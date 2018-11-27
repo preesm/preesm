@@ -44,7 +44,6 @@ import org.nfunk.jep.JEP;
 import org.nfunk.jep.Node;
 import org.preesm.algorithm.factories.IModelVertexFactory;
 import org.preesm.algorithm.model.parameters.IExpressionSolver;
-import org.preesm.algorithm.model.parameters.NoIntegerValueException;
 import org.preesm.algorithm.model.parameters.Parameter;
 import org.preesm.algorithm.model.parameters.ParameterSet;
 import org.preesm.algorithm.model.parameters.Value;
@@ -765,7 +764,7 @@ public abstract class AbstractGraph<V extends AbstractVertex, E extends Abstract
           this.getParameters().get(arg).setValue(paramValue);
         }
         jep.addVariable(arg, paramValue);
-      } catch (final NoIntegerValueException e) {
+      } catch (final ExpressionEvaluationException e) {
         throw new PreesmException("Could not evaluate value", e);
       }
     }

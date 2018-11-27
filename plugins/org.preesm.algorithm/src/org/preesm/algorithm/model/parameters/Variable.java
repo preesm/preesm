@@ -35,6 +35,7 @@
 package org.preesm.algorithm.model.parameters;
 
 import org.preesm.commons.CloneableProperty;
+import org.preesm.model.pisdf.expression.ExpressionEvaluationException;
 
 /**
  * Class used to represent variable.
@@ -113,7 +114,7 @@ public class Variable implements CloneableProperty<Variable> {
    * @return the int
    * @throws InvalidExpressionException
    *           the invalid expression exception
-   * @throws NoIntegerValueException
+   * @throws ExpressionEvaluationException
    *           the no integer value exception
    */
   public long longValue() {
