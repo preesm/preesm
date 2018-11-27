@@ -50,6 +50,7 @@ import org.preesm.algorithm.model.sdf.SDFGraph;
 import org.preesm.algorithm.model.sdf.SDFVertex;
 import org.preesm.algorithm.model.types.LongEdgePropertyType;
 import org.preesm.algorithm.model.visitors.SDF4JException;
+import org.preesm.commons.exceptions.PreesmException;
 import org.preesm.commons.math.Rational;
 
 /**
@@ -213,7 +214,7 @@ public class SDFRandomGraph {
     try {
       return createRandomGraph(nbVertex, minInDegree, maxInDegree, minOutDegree, maxOutDegree, minRate, maxRate, 1, 1);
     } catch (final InvalidExpressionException e) {
-      throw new GraphGeneratroException("Could not create random graph", e);
+      throw new PreesmException("Could not create random graph", e);
     }
   }
 
@@ -247,7 +248,7 @@ public class SDFRandomGraph {
       return createRandomGraph(nbVertex, minInDegree, maxInDegree, minOutDegree, maxOutDegree, minRate, maxRate,
           rateMultiplier, 1);
     } catch (final InvalidExpressionException e) {
-      throw new GraphGeneratroException("Could not create random graph", e);
+      throw new PreesmException("Could not create random graph", e);
     }
   }
 

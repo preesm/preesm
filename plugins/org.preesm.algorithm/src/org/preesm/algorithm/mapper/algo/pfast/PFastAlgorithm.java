@@ -51,7 +51,6 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.FutureTask;
 import java.util.concurrent.Semaphore;
 import java.util.logging.Level;
-import org.preesm.algorithm.mapper.PreesmMapperException;
 import org.preesm.algorithm.mapper.abc.impl.latency.LatencyAbc;
 import org.preesm.algorithm.mapper.abc.order.VertexOrderList;
 import org.preesm.algorithm.mapper.abc.taskscheduling.AbstractTaskSched;
@@ -429,7 +428,7 @@ public class PFastAlgorithm extends Observable {
         es.shutdown();
 
       } catch (final InterruptedException | ExecutionException e) {
-        throw new PreesmMapperException("Error in PFast", e);
+        throw new PreesmException("Error in PFast", e);
       }
       // step 13
       totalsearchcount++;

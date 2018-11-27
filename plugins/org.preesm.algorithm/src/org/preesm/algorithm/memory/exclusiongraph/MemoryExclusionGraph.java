@@ -55,7 +55,6 @@ import org.jgrapht.graph.DefaultEdge;
 import org.jgrapht.graph.SimpleGraph;
 import org.preesm.algorithm.iterators.TopologicalDAGIterator;
 import org.preesm.algorithm.mapper.ScheduledDAGIterator;
-import org.preesm.algorithm.memory.allocation.MemoryAllocationException;
 import org.preesm.algorithm.memory.script.Range;
 import org.preesm.algorithm.model.PropertyBean;
 import org.preesm.algorithm.model.PropertyFactory;
@@ -1652,7 +1651,7 @@ public class MemoryExclusionGraph extends SimpleGraph<MemoryExclusionVertex, Def
         final Integer schedulingOrder = (Integer) currentVertex.getPropertyBean()
             .getValue(ImplementationPropertyNames.Vertex_schedulingOrder);
         if (schedulingOrder == null) {
-          throw new MemoryAllocationException("Cannot build the memory exclusion graph of a non scheduled DAG",
+          throw new PreesmException("Cannot build the memory exclusion graph of a non scheduled DAG",
               new NullPointerException());
         }
         verticesMap.put(schedulingOrder, currentVertex);

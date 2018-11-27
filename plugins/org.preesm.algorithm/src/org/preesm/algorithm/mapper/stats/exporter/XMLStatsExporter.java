@@ -39,7 +39,6 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.Set;
-import org.preesm.algorithm.mapper.PreesmMapperException;
 import org.preesm.algorithm.mapper.abc.impl.latency.LatencyAbc;
 import org.preesm.algorithm.mapper.gantt.GanttComponent;
 import org.preesm.algorithm.mapper.gantt.GanttData;
@@ -96,7 +95,7 @@ public class XMLStatsExporter {
     try (FileWriter out = new FileWriter(file)) {
       out.write(content);
     } catch (final IOException e) {
-      throw new PreesmMapperException("Could not export stats", e);
+      throw new PreesmException("Could not export stats", e);
     }
   }
 
@@ -135,7 +134,7 @@ public class XMLStatsExporter {
     try {
       append(statGen.getDAGWorkLength());
     } catch (final PreesmException e) {
-      throw new PreesmMapperException("Could not generate perf stats.", e);
+      throw new PreesmException("Could not generate perf stats.", e);
     }
     append("\"");
     // Span length

@@ -44,7 +44,7 @@ import jxl.write.WritableSheet;
 import jxl.write.biff.RowsExceededException;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.swt.events.SelectionListener;
-import org.preesm.algorithm.io.gml.InvalidModelException;
+import org.preesm.commons.exceptions.PreesmException;
 
 /**
  * Abstract class, must be implementing when exporting Timings, or variables into an excel sheet.
@@ -73,7 +73,7 @@ public abstract class ExcelWriter implements SelectionListener {
    *
    * @param sheet
    *          the sheet
-   * @throws InvalidModelException
+   * @throws PreesmException
    *           the invalid model exception
    * @throws FileNotFoundException
    *           the file not found exception
@@ -83,6 +83,6 @@ public abstract class ExcelWriter implements SelectionListener {
    *           the core exception
    */
   protected abstract void addCells(WritableSheet sheet)
-      throws InvalidModelException, FileNotFoundException, RowsExceededException, CoreException;
+      throws PreesmException, FileNotFoundException, RowsExceededException, CoreException;
 
 }

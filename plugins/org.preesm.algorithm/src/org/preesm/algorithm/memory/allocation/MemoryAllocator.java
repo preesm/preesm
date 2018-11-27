@@ -738,7 +738,7 @@ public abstract class MemoryAllocator {
    */
   public Map<MemoryExclusionVertex, Long> checkAllocation() {
     if (this.memExNodeAllocation == null) {
-      throw new MemoryAllocationException("Cannot check memory allocation because no allocation was performed.");
+      throw new PreesmException("Cannot check memory allocation because no allocation was performed.");
     }
 
     Map<MemoryExclusionVertex, Long> conflictingElements;

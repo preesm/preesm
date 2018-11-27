@@ -44,10 +44,10 @@ import org.jgrapht.alg.TransitiveReduction;
 import org.jgrapht.io.ComponentNameProvider;
 import org.jgrapht.io.DOTExporter;
 import org.preesm.algorithm.mapper.AbstractMappingFromDAG;
-import org.preesm.algorithm.mapper.PreesmMapperException;
 import org.preesm.algorithm.mapper.model.special.SendVertex;
 import org.preesm.algorithm.mapper.model.special.TransferVertex;
 import org.preesm.algorithm.model.dag.DAGVertex;
+import org.preesm.commons.exceptions.PreesmException;
 import org.preesm.model.slam.ComponentInstance;
 import org.preesm.model.slam.attributes.Parameter;
 import org.preesm.model.slam.route.MessageRouteStep;
@@ -185,7 +185,7 @@ public class SyncGraph extends org.jgrapht.graph.SimpleDirectedWeightedGraph<Con
     try {
       writer.close();
     } catch (final IOException e) {
-      throw new PreesmMapperException("Could not close string writer", e);
+      throw new PreesmException("Could not close string writer", e);
     }
     return writer.toString();
   }

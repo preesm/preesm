@@ -57,7 +57,6 @@ import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.ui.IWorkbench;
 import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.PlatformUI;
-import org.preesm.algorithm.io.gml.InvalidModelException;
 import org.preesm.commons.exceptions.PreesmException;
 import org.preesm.model.pisdf.AbstractActor;
 import org.preesm.model.scenario.PreesmScenario;
@@ -141,7 +140,7 @@ public class ExcelTimingWriter extends ExcelWriter {
    *
    * @param sheet
    *          the sheet
-   * @throws InvalidModelException
+   * @throws PreesmException
    *           the invalid model exception
    * @throws FileNotFoundException
    *           the file not found exception
@@ -150,7 +149,7 @@ public class ExcelTimingWriter extends ExcelWriter {
    */
   @Override
   protected void addCells(final WritableSheet sheet)
-      throws InvalidModelException, FileNotFoundException, CoreException {
+      throws PreesmException, FileNotFoundException, CoreException {
     if (sheet != null) {
 
       Integer maxOpAbscissa = 1;

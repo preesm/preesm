@@ -43,17 +43,17 @@ import org.junit.Assert;
 import org.junit.Test;
 import org.preesm.algorithm.io.gml.GMLGenericExporter;
 import org.preesm.algorithm.io.gml.GMLSDFImporter;
-import org.preesm.algorithm.io.gml.InvalidModelException;
 import org.preesm.algorithm.model.AbstractEdge;
 import org.preesm.algorithm.model.AbstractGraph;
 import org.preesm.algorithm.model.AbstractVertex;
 import org.preesm.algorithm.model.sdf.SDFGraph;
+import org.preesm.commons.exceptions.PreesmException;
 
 /**
  */
 public class GMLSDFImporterTest {
 
-  private void testImport(final String filePath) throws FileNotFoundException, IOException, InvalidModelException {
+  private void testImport(final String filePath) throws FileNotFoundException, IOException, PreesmException {
     final GMLSDFImporter importer = new GMLSDFImporter();
     final SDFGraph graph = importer.parse(new File(filePath));
 
@@ -75,7 +75,7 @@ public class GMLSDFImporterTest {
   /**
    */
   @Test
-  public void testImportStereo() throws InvalidModelException, IOException {
+  public void testImportStereo() throws PreesmException, IOException {
     final String filePath = "./resources/stereo_top.graphml";
     testImport(filePath);
   }
@@ -83,7 +83,7 @@ public class GMLSDFImporterTest {
   /**
    */
   @Test
-  public void testImportStereoYUV() throws InvalidModelException, IOException {
+  public void testImportStereoYUV() throws PreesmException, IOException {
     final String filePath = "./resources/yuv_stereo_top.graphml";
     testImport(filePath);
   }
@@ -91,7 +91,7 @@ public class GMLSDFImporterTest {
   /**
    */
   @Test
-  public void testImportFlatten() throws InvalidModelException, IOException {
+  public void testImportFlatten() throws PreesmException, IOException {
     final String filePath = "./resources/flatten.graphml";
     testImport(filePath);
   }

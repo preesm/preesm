@@ -47,7 +47,6 @@ import java.util.Map;
 import java.util.Set;
 import java.util.logging.Level;
 import org.preesm.algorithm.iterators.TopologicalDAGIterator;
-import org.preesm.algorithm.mapper.PreesmMapperException;
 import org.preesm.algorithm.mapper.abc.AbcType;
 import org.preesm.algorithm.mapper.abc.SpecialVertexManager;
 import org.preesm.algorithm.mapper.abc.edgescheduling.AbstractEdgeSched;
@@ -639,7 +638,7 @@ public abstract class LatencyAbc {
 
     if (internalVertex == null) {
       final String message = "No simulator internal vertex with id " + vertex.getName();
-      throw new PreesmMapperException(message, new NullPointerException());
+      throw new PreesmException(message, new NullPointerException());
     }
     return internalVertex;
   }

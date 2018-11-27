@@ -42,13 +42,13 @@ import org.junit.Test;
 import org.preesm.algorithm.DFToolsAlgoException;
 import org.preesm.algorithm.factories.DAGVertexFactory;
 import org.preesm.algorithm.io.gml.GMLSDFImporter;
-import org.preesm.algorithm.io.gml.InvalidModelException;
 import org.preesm.algorithm.model.dag.DAGEdge;
 import org.preesm.algorithm.model.dag.DAGVertex;
 import org.preesm.algorithm.model.dag.DirectedAcyclicGraph;
 import org.preesm.algorithm.model.sdf.SDFGraph;
 import org.preesm.algorithm.model.sdf.visitors.DAGTransformation;
 import org.preesm.algorithm.model.visitors.SDF4JException;
+import org.preesm.commons.exceptions.PreesmException;
 
 /**
  */
@@ -64,7 +64,7 @@ public class DAGTransformationTest {
     final GMLSDFImporter importer = new GMLSDFImporter();
     try {
       demoGraph = importer.parse(new File("resources/flatten.graphml"));
-    } catch (InvalidModelException | FileNotFoundException e) {
+    } catch (PreesmException | FileNotFoundException e) {
       throw new DFToolsAlgoException("Could not read test file", e);
     }
     final DAGTransformation<DirectedAcyclicGraph> dageur = new DAGTransformation<>(new DirectedAcyclicGraph(),

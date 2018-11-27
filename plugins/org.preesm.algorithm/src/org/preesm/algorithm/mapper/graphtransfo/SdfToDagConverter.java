@@ -50,7 +50,6 @@ import java.util.Map;
 import java.util.Set;
 import java.util.logging.Level;
 import org.preesm.algorithm.iterators.TopologicalDAGIterator;
-import org.preesm.algorithm.mapper.PreesmMapperException;
 import org.preesm.algorithm.mapper.abc.SpecialVertexManager;
 import org.preesm.algorithm.mapper.model.MapperDAG;
 import org.preesm.algorithm.mapper.model.MapperDAGEdge;
@@ -121,7 +120,7 @@ public class SdfToDagConverter {
     try {
       sdf.accept(visitor);
     } catch (final SDF4JException e) {
-      throw new PreesmMapperException("Error", e);
+      throw new PreesmException("Error", e);
     }
 
     // Adds the necessary properties to vertices and edges

@@ -56,7 +56,6 @@ import java.util.logging.Logger;
 import java.util.stream.Collectors;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.xtext.xbase.lib.Pair;
-import org.preesm.algorithm.memory.allocation.MemoryAllocationException;
 import org.preesm.algorithm.memory.exclusiongraph.MemoryExclusionGraph;
 import org.preesm.algorithm.memory.exclusiongraph.MemoryExclusionVertex;
 import org.preesm.algorithm.model.AbstractEdge;
@@ -526,7 +525,7 @@ public class ScriptRunner {
       it.matchTable.values().forEach(flatten::addAll);
       flatten.stream().forEach(match -> {
         if (result.getKey().contains(match.getRemoteBuffer())) {
-          throw new MemoryAllocationException("Inter-sibling matches are no longer allowed.");
+          throw new PreesmException("Inter-sibling matches are no longer allowed.");
         } else {
           match.setType(MatchType.FORWARD);
         }
@@ -538,7 +537,7 @@ public class ScriptRunner {
       it.matchTable.values().forEach(flatten::addAll);
       flatten.stream().forEach(match -> {
         if (result.getValue().contains(match.getRemoteBuffer())) {
-          throw new MemoryAllocationException("Inter-sibling matches are no longer allowed.");
+          throw new PreesmException("Inter-sibling matches are no longer allowed.");
         } else {
           match.setType(MatchType.BACKWARD);
         }
@@ -717,7 +716,7 @@ public class ScriptRunner {
           matchedBuffers = processGroupStep7(buffers);
           break;
         default:
-          throw new MemoryAllocationException("Unsupported step number " + step);
+          throw new PreesmException("Unsupported step number " + step);
       }
 
       if (!matchedBuffers.isEmpty()) {
@@ -1921,7 +1920,7 @@ public class ScriptRunner {
           final Range remoteRange = entry.getValue().getValue().intersection(translatedLocalRange);
           if (!remoteRange.equals(translatedLocalRange)) {
             // Should never be the case
-            throw new MemoryAllocationException("Unexpected error !");
+            throw new PreesmException("Unexpected error !");
           }
           mObjRoots.add(new Pair<>(rootMObj, new Pair<>(localRange, remoteRange)));
         });

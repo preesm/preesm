@@ -463,14 +463,14 @@ public class ScenarioParser {
                 this.algoPi = getPiGraph();
               }
             } catch (final Exception e) {
-              throw new ScenarioParserException("Could not parse the algorithm: " + e.getMessage(), e);
+              throw new PreesmException("Could not parse the algorithm: " + e.getMessage(), e);
             }
           } else if (type.equals("architecture")) {
             try {
               this.scenario.setArchitectureURL(url);
               initializeArchitectureInformation(url);
             } catch (final Exception e) {
-              throw new ScenarioParserException("Could not parse the architecture: " + e.getMessage(), e);
+              throw new PreesmException("Could not parse the architecture: " + e.getMessage(), e);
             }
           } else if (type.equals("codegenDirectory")) {
             this.scenario.getCodegenManager().setCodegenDirectory(url);

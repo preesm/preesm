@@ -57,7 +57,6 @@ import org.eclipse.core.runtime.Path;
 import org.nfunk.jep.JEP;
 import org.nfunk.jep.Node;
 import org.nfunk.jep.ParseException;
-import org.preesm.algorithm.io.gml.InvalidModelException;
 import org.preesm.algorithm.mapper.abc.SpecialVertexManager;
 import org.preesm.algorithm.mapper.abc.impl.latency.LatencyAbc;
 import org.preesm.algorithm.mapper.model.MapperDAGEdge;
@@ -342,7 +341,7 @@ class CustomQuantaExporter extends AbstractTaskImplementation {
 
         // Warnings are displayed once for each missing operator or vertex
         // in the excel sheet
-      } catch (IOException | CoreException | InvalidModelException | BiffException e) {
+      } catch (IOException | CoreException | PreesmException | BiffException e) {
         e.printStackTrace();
       }
     }

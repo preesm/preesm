@@ -45,7 +45,6 @@ import java.util.concurrent.Semaphore;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.eclipse.core.runtime.IProgressMonitor;
-import org.preesm.algorithm.mapper.PreesmMapperException;
 import org.preesm.algorithm.mapper.abc.impl.latency.LatencyAbc;
 import org.preesm.algorithm.mapper.abc.order.VertexOrderList;
 import org.preesm.algorithm.mapper.abc.taskscheduling.AbstractTaskSched;
@@ -293,7 +292,7 @@ public class FastAlgorithm extends Observable {
             pauseSemaphore.acquire();
             pauseSemaphore.release();
           } catch (final InterruptedException e) {
-            throw new PreesmMapperException("Semaphore issue", e);
+            throw new PreesmException("Semaphore issue", e);
           }
         }
 
