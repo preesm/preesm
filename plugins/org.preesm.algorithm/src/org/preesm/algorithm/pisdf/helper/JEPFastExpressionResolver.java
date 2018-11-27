@@ -3,9 +3,9 @@ package org.preesm.algorithm.pisdf.helper;
 import org.nfunk.jep.JEP;
 import org.nfunk.jep.Node;
 import org.nfunk.jep.ParseException;
+import org.preesm.commons.exceptions.PreesmException;
 import org.preesm.model.pisdf.ExpressionProxy;
 import org.preesm.model.pisdf.LongExpression;
-import org.preesm.model.pisdf.PiGraphException;
 import org.preesm.model.pisdf.StringExpression;
 import org.preesm.model.pisdf.util.PiMMSwitch;
 
@@ -43,10 +43,10 @@ final class JEPFastExpressionResolver extends PiMMSwitch<Long> {
       } else if (result instanceof Double) {
         value = Math.round((Double) result);
       } else {
-        throw new PiGraphException("Unsupported result type " + result.getClass().getSimpleName());
+        throw new PreesmException("Unsupported result type " + result.getClass().getSimpleName());
       }
     } catch (final ParseException e) {
-      throw new PiGraphException("Could not parse " + object.getExpressionString(), e);
+      throw new PreesmException("Could not parse " + object.getExpressionString(), e);
     }
     return value;
   }

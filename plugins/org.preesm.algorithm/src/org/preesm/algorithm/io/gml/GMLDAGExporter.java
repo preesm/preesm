@@ -36,11 +36,11 @@ package org.preesm.algorithm.io.gml;
 
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
-import org.preesm.algorithm.DFToolsAlgoException;
 import org.preesm.algorithm.model.AbstractGraph;
 import org.preesm.algorithm.model.dag.DAGEdge;
 import org.preesm.algorithm.model.dag.DAGVertex;
 import org.preesm.algorithm.model.dag.DirectedAcyclicGraph;
+import org.preesm.commons.exceptions.PreesmException;
 import org.w3c.dom.Element;
 
 /**
@@ -70,7 +70,7 @@ public class GMLDAGExporter extends GMLExporter<DAGVertex, DAGEdge> {
       exportGraph(graph);
       transform(new FileOutputStream(path));
     } catch (final FileNotFoundException e) {
-      throw new DFToolsAlgoException("Could not export graph", e);
+      throw new PreesmException("Could not export graph", e);
     }
   }
 
@@ -115,7 +115,7 @@ public class GMLDAGExporter extends GMLExporter<DAGVertex, DAGEdge> {
       }
       return graphElt;
     } catch (final Exception e) {
-      throw new DFToolsAlgoException("Could not export graph", e);
+      throw new PreesmException("Could not export graph", e);
     }
   }
 

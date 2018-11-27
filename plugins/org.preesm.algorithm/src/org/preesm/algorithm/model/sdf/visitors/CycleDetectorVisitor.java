@@ -37,7 +37,6 @@ package org.preesm.algorithm.model.sdf.visitors;
 import java.util.ArrayList;
 import java.util.List;
 import org.jgrapht.alg.cycle.CycleDetector;
-import org.preesm.algorithm.DFToolsAlgoException;
 import org.preesm.algorithm.model.sdf.SDFAbstractVertex;
 import org.preesm.algorithm.model.sdf.SDFEdge;
 import org.preesm.algorithm.model.sdf.SDFGraph;
@@ -69,7 +68,7 @@ public class CycleDetectorVisitor implements IGraphVisitor<SDFGraph, SDFVertex, 
     try {
       graph.accept(this);
     } catch (final PreesmException e) {
-      throw new DFToolsAlgoException("Could not verify graph", e);
+      throw new PreesmException("Could not verify graph", e);
     }
     return this.hasCycle;
   }

@@ -34,7 +34,6 @@
  */
 package org.preesm.algorithm.model.sdf.visitors;
 
-import org.preesm.algorithm.DFToolsAlgoException;
 import org.preesm.algorithm.model.parameters.InvalidExpressionException;
 import org.preesm.algorithm.model.sdf.SDFAbstractVertex;
 import org.preesm.algorithm.model.sdf.SDFEdge;
@@ -81,7 +80,7 @@ public class SingleRateChecker implements IGraphVisitor<SDFGraph, SDFAbstractVer
     } catch (final InvalidExpressionException e) {
       // Supposedly, will not happen, expressions were already parsed when
       // verifying actors number of repetition.
-      throw new DFToolsAlgoException("Could not check rate", e);
+      throw new PreesmException("Could not check rate", e);
     }
   }
 

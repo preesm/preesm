@@ -49,6 +49,7 @@ import org.preesm.algorithm.model.sdf.SDFGraph;
 import org.preesm.algorithm.model.sdf.SDFInterfaceVertex;
 import org.preesm.algorithm.model.sdf.esdf.SDFSinkInterfaceVertex;
 import org.preesm.algorithm.model.sdf.esdf.SDFSourceInterfaceVertex;
+import org.preesm.commons.exceptions.PreesmException;
 import org.preesm.commons.math.Rational;
 
 /**
@@ -89,7 +90,7 @@ public class SDFMath {
       }
       return trueVrb;
     } catch (Exception e) {
-      throw new DFToolsAlgoException("Could not compute Rational VRB", e);
+      throw new PreesmException("Could not compute Rational VRB", e);
     }
   }
 
@@ -175,7 +176,7 @@ public class SDFMath {
       }
       if (!val.zero()) {
         if (rationnalTopology[i][i].zero()) {
-          throw new DFToolsAlgoException("Should have zero elements in the diagonal");
+          throw new PreesmException("Should have zero elements in the diagonal");
         }
         vrb.set(i, Rational.div(val.abs(), rationnalTopology[i][i]));
       }

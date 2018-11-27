@@ -67,6 +67,7 @@ import org.preesm.algorithm.model.sdf.transformations.SpecialActorPortsIndexer;
 import org.preesm.algorithm.model.types.ExpressionEdgePropertyType;
 import org.preesm.algorithm.model.types.StringEdgePropertyType;
 import org.preesm.algorithm.pisdf.pimm2sdf.PiGraphExecution;
+import org.preesm.commons.exceptions.PreesmException;
 import org.preesm.model.pisdf.AbstractActor;
 import org.preesm.model.pisdf.AbstractVertex;
 import org.preesm.model.pisdf.Actor;
@@ -96,7 +97,6 @@ import org.preesm.model.pisdf.InterfaceActor;
 import org.preesm.model.pisdf.JoinActor;
 import org.preesm.model.pisdf.Parameter;
 import org.preesm.model.pisdf.PiGraph;
-import org.preesm.model.pisdf.PiGraphException;
 import org.preesm.model.pisdf.PiSDFRefinement;
 import org.preesm.model.pisdf.Port;
 import org.preesm.model.pisdf.Refinement;
@@ -344,7 +344,7 @@ public class StaticPiMM2SDFVisitor extends PiMMSwitch<Boolean> {
     for (final ConfigInputPort p : a.getConfigInputPorts()) {
       final Dependency incomingDependency = p.getIncomingDependency();
       if (incomingDependency == null) {
-        throw new PiGraphException(
+        throw new PreesmException(
             "Actor config input port '" + a.getVertexPath() + "." + p.getName() + "' is not connected.",
             new NullPointerException());
       }

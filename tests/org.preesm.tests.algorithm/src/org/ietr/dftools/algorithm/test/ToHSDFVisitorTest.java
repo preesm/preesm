@@ -35,7 +35,6 @@
 package org.ietr.dftools.algorithm.test;
 
 import org.junit.Test;
-import org.preesm.algorithm.DFToolsAlgoException;
 import org.preesm.algorithm.model.parameters.ConstantValue;
 import org.preesm.algorithm.model.parameters.ExpressionValue;
 import org.preesm.algorithm.model.parameters.Variable;
@@ -61,7 +60,7 @@ public class ToHSDFVisitorTest {
     try {
       demoGraph.accept(visitor);
     } catch (final PreesmException e) {
-      throw new DFToolsAlgoException("Could not convert to HSDF", e);
+      throw new PreesmException("Could not convert to HSDF", e);
     }
   }
 

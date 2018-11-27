@@ -36,10 +36,10 @@ package org.ietr.dftools.algorithm.test;
 
 import org.junit.Assert;
 import org.junit.Test;
-import org.preesm.algorithm.DFToolsAlgoException;
 import org.preesm.algorithm.model.parameters.ExpressionValue;
 import org.preesm.algorithm.model.parameters.InvalidExpressionException;
 import org.preesm.algorithm.model.parameters.NoIntegerValueException;
+import org.preesm.commons.exceptions.PreesmException;
 
 /**
  * The Class JepTransitionTest.
@@ -58,10 +58,10 @@ public class JepTransitionTest {
       Assert.assertEquals((int) expected, intValue);
     } catch (final InvalidExpressionException e) {
       final String message = "Expression should be valid, but failed with " + e.getMessage();
-      throw new DFToolsAlgoException(message, e);
+      throw new PreesmException(message, e);
     } catch (final NoIntegerValueException e) {
       final String message = "Result should be integer, but failed with " + e.getMessage();
-      throw new DFToolsAlgoException(message, e);
+      throw new PreesmException(message, e);
     }
   }
 }

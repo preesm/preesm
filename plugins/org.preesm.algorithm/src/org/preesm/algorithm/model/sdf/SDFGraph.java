@@ -47,7 +47,6 @@ import java.util.stream.Collectors;
 import org.jgrapht.EdgeFactory;
 import org.math.array.DoubleArray;
 import org.math.array.LinearAlgebra;
-import org.preesm.algorithm.DFToolsAlgoException;
 import org.preesm.algorithm.SDFMath;
 import org.preesm.algorithm.factories.IModelVertexFactory;
 import org.preesm.algorithm.factories.SDFEdgeFactory;
@@ -583,7 +582,7 @@ public class SDFGraph extends AbstractGraph<SDFAbstractVertex, SDFEdge> {
         inPort.setName("in");
         broadcastPort.addSource(inPort);
         if (!addVertex(broadcastPort)) {
-          throw new DFToolsAlgoException("Could not insert broadcast vertex");
+          throw new PreesmException("Could not insert broadcast vertex");
         }
         final SDFEdge baseEdge = this.addEdge(vertex, broadcastPort);
         baseEdge.setSourceInterface(port);
@@ -618,7 +617,7 @@ public class SDFGraph extends AbstractGraph<SDFAbstractVertex, SDFEdge> {
             baseEdge.setDataType(oldEdge.getDataType());
             this.removeEdge(oldEdge);
           } catch (final InvalidExpressionException e) {
-            throw new DFToolsAlgoException("Could not insert broadcast", e);
+            throw new PreesmException("Could not insert broadcast", e);
           }
         }
       }
@@ -826,7 +825,7 @@ public class SDFGraph extends AbstractGraph<SDFAbstractVertex, SDFEdge> {
 
     // validate vertex
     if (!child.validateModel()) {
-      throw new DFToolsAlgoException(child.getName() + " is not a valid vertex, verify arguments");
+      throw new PreesmException(child.getName() + " is not a valid vertex, verify arguments");
     }
 
     if (child.getGraphDescription() != null) {

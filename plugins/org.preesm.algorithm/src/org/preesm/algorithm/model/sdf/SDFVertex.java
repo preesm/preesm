@@ -34,11 +34,11 @@
  */
 package org.preesm.algorithm.model.sdf;
 
-import org.preesm.algorithm.DFToolsAlgoException;
 import org.preesm.algorithm.model.AbstractVertex;
 import org.preesm.algorithm.model.parameters.InvalidExpressionException;
 import org.preesm.algorithm.model.sdf.esdf.SDFSinkInterfaceVertex;
 import org.preesm.algorithm.model.sdf.esdf.SDFSourceInterfaceVertex;
+import org.preesm.commons.exceptions.PreesmException;
 
 /**
  * Class used to represent Hierachical vertices, meaning it is a vertex in the parent graph, but is itself a graph.
@@ -115,7 +115,7 @@ public class SDFVertex extends SDFAbstractVertex {
     try {
       newVertex.setNbRepeat(getNbRepeat());
     } catch (final InvalidExpressionException e) {
-      throw new DFToolsAlgoException("Could not clone vertex", e);
+      throw new PreesmException("Could not clone vertex", e);
     }
 
     return newVertex;

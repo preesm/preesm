@@ -35,7 +35,6 @@
 package org.preesm.algorithm.model.sdf.visitors;
 
 import java.util.logging.Level;
-import org.preesm.algorithm.DFToolsAlgoException;
 import org.preesm.algorithm.model.sdf.SDFAbstractVertex;
 import org.preesm.algorithm.model.sdf.SDFEdge;
 import org.preesm.algorithm.model.sdf.SDFGraph;
@@ -120,7 +119,7 @@ public class ConsistencyChecker implements IGraphVisitor<SDFGraph, SDFAbstractVe
     try {
       toVerify.accept(this);
     } catch (final PreesmException e) {
-      throw new DFToolsAlgoException("Could not verify graph", e);
+      throw new PreesmException("Could not verify graph", e);
     }
     return this.isConsistent;
   }

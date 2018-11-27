@@ -39,7 +39,6 @@ import java.io.FileNotFoundException;
 import org.jgrapht.alg.cycle.CycleDetector;
 import org.junit.Assert;
 import org.junit.Test;
-import org.preesm.algorithm.DFToolsAlgoException;
 import org.preesm.algorithm.factories.DAGVertexFactory;
 import org.preesm.algorithm.io.gml.GMLSDFImporter;
 import org.preesm.algorithm.model.dag.DAGEdge;
@@ -64,14 +63,14 @@ public class DAGTransformationTest {
     try {
       demoGraph = importer.parse(new File("resources/flatten.graphml"));
     } catch (PreesmException | FileNotFoundException e) {
-      throw new DFToolsAlgoException("Could not read test file", e);
+      throw new PreesmException("Could not read test file", e);
     }
     final DAGTransformation<DirectedAcyclicGraph> dageur = new DAGTransformation<>(new DirectedAcyclicGraph(),
         DAGVertexFactory.getInstance());
     try {
       demoGraph.accept(dageur);
     } catch (final PreesmException e) {
-      throw new DFToolsAlgoException("Could not transform sdf to dag", e);
+      throw new PreesmException("Could not transform sdf to dag", e);
     }
     final DirectedAcyclicGraph dag = dageur.getOutput();
     final CycleDetector<DAGVertex, DAGEdge> detectCycles = new CycleDetector<>(dag);

@@ -42,11 +42,11 @@ import java.util.Set;
 import java.util.Vector;
 import org.jgrapht.event.TraversalListener;
 import org.jgrapht.traverse.GraphIterator;
-import org.preesm.algorithm.DFToolsAlgoException;
 import org.preesm.algorithm.model.parameters.InvalidExpressionException;
 import org.preesm.algorithm.model.sdf.SDFAbstractVertex;
 import org.preesm.algorithm.model.sdf.SDFEdge;
 import org.preesm.algorithm.model.sdf.SDFGraph;
+import org.preesm.commons.exceptions.PreesmException;
 
 /**
  * Class used to iterate over a SDF following the dependencies order.
@@ -104,7 +104,7 @@ public class SDFIterator implements GraphIterator<SDFAbstractVertex, SDFEdge> {
       // Find the non-reacheable vertices
       final List<SDFAbstractVertex> unreachable = new ArrayList<>(graph.vertexSet());
       unreachable.removeAll(reached);
-      throw new DFToolsAlgoException("Not all graph vertices are reachable with the SDFIterator.\n"
+      throw new PreesmException("Not all graph vertices are reachable with the SDFIterator.\n"
           + "Possible cause: There is a cycle without delay.\n" + "Unreachable Vertices: " + unreachable);
     }
 
@@ -225,7 +225,7 @@ public class SDFIterator implements GraphIterator<SDFAbstractVertex, SDFEdge> {
         throw new NoSuchElementException();
       }
     } catch (final InvalidExpressionException e) {
-      throw new DFToolsAlgoException("Could not find next", e);
+      throw new PreesmException("Could not find next", e);
     }
   }
 

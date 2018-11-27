@@ -25,7 +25,7 @@
 package org.preesm.model.pisdf
 
 import java.util.Optional
-import org.preesm.model.pisdf.PiGraphException
+import org.preesm.commons.exceptions.PreesmException
 import org.preesm.model.pisdf.util.RefinementResolver
 import org.preesm.model.pisdf.expression.StringExpressionEvaluator
 import org.preesm.model.pisdf.factory.PiMMUserFactory
@@ -464,7 +464,7 @@ abstract class DataPort extends Port, ExpressionHolder {
 	}
 	op String getId() {
 		val String actorName = Optional.ofNullable(getContainingActor()).map[name].orElseThrow [
-			new PiGraphException("Data port " + this + " is not contained in an AbstractActor.")
+			new PreesmException("Data port " + this + " is not contained in an AbstractActor.")
 		];
 		val String portName = Optional.ofNullable(name).filter[!it.isEmpty()].map["." + it].orElse("");
 		return actorName + portName;
@@ -528,8 +528,8 @@ class Fifo extends Edge {
 	 * unique data {@link Port} of its owner.
 	 */
 	op String getId() {
-		return Optional.ofNullable(sourcePort).map[id].orElseThrow[new PiGraphException("Fifo has no source port.")] +
-			"-" + Optional.ofNullable(targetPort).map[id].orElseThrow[new PiGraphException("Fifo has no target port.")]
+		return Optional.ofNullable(sourcePort).map[id].orElseThrow[new PreesmException("Fifo has no source port.")] +
+			"-" + Optional.ofNullable(targetPort).map[id].orElseThrow[new PreesmException("Fifo has no target port.")]
 	}
 }
 

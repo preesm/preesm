@@ -42,6 +42,7 @@ import java.io.OutputStream;
 import java.util.UUID;
 import org.eclipse.emf.common.util.EList;
 import org.preesm.commons.DomUtil;
+import org.preesm.commons.exceptions.PreesmException;
 import org.preesm.model.slam.ComponentInstance;
 import org.preesm.model.slam.Design;
 import org.preesm.model.slam.VLNVedElement;
@@ -50,7 +51,6 @@ import org.preesm.model.slam.attributes.VLNV;
 import org.preesm.model.slam.component.ComInterface;
 import org.preesm.model.slam.component.HierarchyPort;
 import org.preesm.model.slam.link.Link;
-import org.preesm.model.slam.utils.SlamException;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
@@ -93,7 +93,7 @@ public class IPXACTDesignWriter {
     try {
       outputStream.close();
     } catch (final IOException e) {
-      throw new SlamException("Could not close stream", e);
+      throw new PreesmException("Could not close stream", e);
     }
 
   }

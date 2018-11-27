@@ -38,11 +38,11 @@ import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import org.preesm.algorithm.DFToolsAlgoException;
 import org.preesm.algorithm.model.AbstractEdge;
 import org.preesm.algorithm.model.parameters.InvalidExpressionException;
 import org.preesm.algorithm.model.sdf.SDFEdge;
 import org.preesm.algorithm.model.sdf.SDFInterfaceVertex;
+import org.preesm.commons.exceptions.PreesmException;
 
 /**
  * Special vertex that supports broadcast.
@@ -78,7 +78,7 @@ public class SDFBroadcastVertex extends SDFAbstractSpecialVertex {
     try {
       copy.setNbRepeat(getNbRepeat());
     } catch (final InvalidExpressionException e) {
-      throw new DFToolsAlgoException("could not clone vertex", e);
+      throw new PreesmException("could not clone vertex", e);
     }
 
     // Copy the ports

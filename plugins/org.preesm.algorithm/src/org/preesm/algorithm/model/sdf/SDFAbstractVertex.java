@@ -38,7 +38,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 import java.util.logging.Level;
-import org.preesm.algorithm.DFToolsAlgoException;
 import org.preesm.algorithm.model.AbstractVertex;
 import org.preesm.algorithm.model.IInterface;
 import org.preesm.algorithm.model.InterfaceDirection;
@@ -426,7 +425,7 @@ public abstract class SDFAbstractVertex extends AbstractVertex<SDFGraph> {
         if (getGraphDescription().incomingEdgesOf(truePort).isEmpty()) {
           PreesmLogger.getLogger().log(Level.INFO,
               "interface " + sink.getName() + " has no inside connection, consider removing this interface if unused");
-          throw (new DFToolsAlgoException(
+          throw (new PreesmException(
               "interface " + sink.getName() + " has no inside connection, consider removing this interface if unused"));
         }
       }
@@ -436,7 +435,7 @@ public abstract class SDFAbstractVertex extends AbstractVertex<SDFGraph> {
         try {
           arg.longValue();
         } catch (final NoIntegerValueException e) {
-          throw new DFToolsAlgoException("Could not evaluate argument value", e);
+          throw new PreesmException("Could not evaluate argument value", e);
         }
       }
     }

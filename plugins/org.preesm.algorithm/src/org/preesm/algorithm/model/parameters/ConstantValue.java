@@ -35,7 +35,7 @@
  */
 package org.preesm.algorithm.model.parameters;
 
-import org.preesm.algorithm.DFToolsAlgoException;
+import org.preesm.commons.exceptions.PreesmException;
 
 /**
  * The Class ConstantValue.
@@ -98,7 +98,7 @@ public class ConstantValue implements Value {
       final long lValue = Long.parseLong(value);
       this.value = lValue;
     } catch (final NumberFormatException e) {
-      throw new DFToolsAlgoException("Could not parse value", e);
+      throw new PreesmException("Could not parse value", e);
     }
   }
 

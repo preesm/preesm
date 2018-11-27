@@ -39,7 +39,6 @@ import java.io.FileNotFoundException;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import org.eclipse.core.runtime.Path;
-import org.preesm.algorithm.DFToolsAlgoException;
 import org.preesm.algorithm.factories.SDFEdgeFactory;
 import org.preesm.algorithm.factories.SDFVertexFactory;
 import org.preesm.algorithm.model.AbstractVertex;
@@ -192,7 +191,7 @@ public class GMLSDFImporterV1 extends GMLImporter<SDFGraph, SDFAbstractVertex, S
                 }
               }
             } catch (final FileNotFoundException e) {
-              throw new DFToolsAlgoException("Could not parse graph description", e);
+              throw new PreesmException("Could not parse graph description", e);
             }
           }
         } else if (path.length() > 0) {

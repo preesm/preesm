@@ -43,7 +43,6 @@ import java.util.Set;
 import java.util.logging.Level;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import org.preesm.algorithm.DFToolsAlgoException;
 import org.preesm.algorithm.model.parameters.InvalidExpressionException;
 import org.preesm.algorithm.model.sdf.SDFAbstractVertex;
 import org.preesm.algorithm.model.sdf.SDFEdge;
@@ -360,7 +359,7 @@ public class ToHSDFVisitor implements IGraphVisitor<SDFGraph, SDFAbstractVertex,
           if (nbDelays < addedDelays) {
             // kdesnos: I added this check, but it will most
             // probably never happen
-            throw new DFToolsAlgoException("Insufficient delays on edge " + edge.getSource().getName() + "."
+            throw new PreesmException("Insufficient delays on edge " + edge.getSource().getName() + "."
                 + edge.getSourceInterface().getName() + "=>" + edge.getTarget().getName() + "."
                 + edge.getTargetInterface().getName() + ". At least " + addedDelays + " delays missing.");
           }
@@ -452,7 +451,7 @@ public class ToHSDFVisitor implements IGraphVisitor<SDFGraph, SDFAbstractVertex,
 
     // Make sure all ports are in order
     if (!SpecialActorPortsIndexer.checkIndexes(output)) {
-      throw new DFToolsAlgoException(
+      throw new PreesmException(
           "There are still special actors with non-indexed ports. Contact Preesm developers.");
     }
 

@@ -38,7 +38,6 @@ import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import org.preesm.algorithm.DFToolsAlgoException;
 import org.preesm.algorithm.model.AbstractEdge;
 import org.preesm.algorithm.model.AbstractGraph;
 import org.preesm.algorithm.model.AbstractVertex;
@@ -128,7 +127,7 @@ public abstract class AbstractHierarchyFlattening<G extends AbstractGraph> {
             try {
               cloneVertex.getArgument(arg.getName()).setValue(String.valueOf(arg.longValue()));
             } catch (final NoIntegerValueException e) {
-              throw new DFToolsAlgoException("Could not clone value", e);
+              throw new PreesmException("Could not clone value", e);
             }
           }
         }

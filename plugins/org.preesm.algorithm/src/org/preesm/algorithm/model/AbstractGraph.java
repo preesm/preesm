@@ -42,7 +42,6 @@ import org.jgrapht.EdgeFactory;
 import org.jgrapht.graph.DirectedPseudograph;
 import org.nfunk.jep.JEP;
 import org.nfunk.jep.Node;
-import org.preesm.algorithm.DFToolsAlgoException;
 import org.preesm.algorithm.factories.IModelVertexFactory;
 import org.preesm.algorithm.model.parameters.IExpressionSolver;
 import org.preesm.algorithm.model.parameters.InvalidExpressionException;
@@ -247,7 +246,7 @@ public abstract class AbstractGraph<V extends AbstractVertex, E extends Abstract
    */
   protected void checkMultipleEdges(final V source, final V target) {
     if (source != null && target != null && getAllEdges(source, target).size() > 1) {
-      throw new DFToolsAlgoException("removeEdge(source,target) cannot be used.\n" + "Reason: there are "
+      throw new PreesmException("removeEdge(source,target) cannot be used.\n" + "Reason: there are "
           + getAllEdges(source, target).size() + " edges between actors " + source + " and " + target);
     }
   }
@@ -767,7 +766,7 @@ public abstract class AbstractGraph<V extends AbstractVertex, E extends Abstract
         }
         jep.addVariable(arg, paramValue);
       } catch (final NoIntegerValueException e) {
-        throw new DFToolsAlgoException("Could not evaluate value", e);
+        throw new PreesmException("Could not evaluate value", e);
       }
     }
   }

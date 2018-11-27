@@ -41,9 +41,6 @@ import java.util.Map;
 import java.util.Set;
 import org.apache.commons.math3.util.ArithmeticUtils;
 import org.jgrapht.alg.cycle.CycleDetector;
-import org.preesm.algorithm.DFToolsAlgoException;
-import org.preesm.algorithm.exceptions.CreateCycleException;
-import org.preesm.algorithm.exceptions.CreateMultigraphException;
 import org.preesm.algorithm.factories.IModelVertexFactory;
 import org.preesm.algorithm.iterators.SDFIterator;
 import org.preesm.algorithm.model.dag.DAGEdge;
@@ -268,7 +265,7 @@ public class DAGTransformation<T extends DirectedAcyclicGraph>
           if (edge.getDelay().longValue() == 0) {
             try {
               createEdge(edge);
-            } catch (final CreateMultigraphException | CreateCycleException e) {
+            } catch (final PreesmException e) {
               throw new PreesmException(
                   "Error in the DAG creation. Check the single-rate SDF to identify where delays are missing", e);
             }
@@ -276,7 +273,7 @@ public class DAGTransformation<T extends DirectedAcyclicGraph>
         }
       }
     } catch (final InvalidExpressionException e) {
-      throw (new PreesmException(e.getMessage()));
+      throw (new PreesmException(e.getMessage(), e));
     }
   }
 
@@ -285,9 +282,9 @@ public class DAGTransformation<T extends DirectedAcyclicGraph>
    *
    * @param edge
    *          the SDF edge
-   * @throws CreateMultigraphException
+   * @throws PreesmException
    *           the CreateMultigraphException exception
-   * @throws CreateCycleException
+   * @throws PreesmException
    *           the CreateCycleException exception
    */
   private void createEdge(final SDFEdge edge) {
@@ -297,12 +294,12 @@ public class DAGTransformation<T extends DirectedAcyclicGraph>
     final DAGVertex target = this.outputGraph.getVertex(edgeTarget.getName());
 
     if (source == null) {
-      throw new DFToolsAlgoException(
+      throw new PreesmException(
           "Output DAG does not contain edge source vertex '" + edgeSource + "' from input SDF.");
     }
 
     if (target == null) {
-      throw new DFToolsAlgoException(
+      throw new PreesmException(
           "Output DAG does not contain edge target vertex '" + edgeTarget + "' from input SDF.");
     }
 
@@ -480,7 +477,7 @@ public class DAGTransformation<T extends DirectedAcyclicGraph>
           graph.removeEdge(edge);
         }
       } catch (final InvalidExpressionException e) {
-        throw new DFToolsAlgoException("Could not treat delays", e);
+        throw new PreesmException("Could not treat delays", e);
       }
       edges.remove(0);
     }

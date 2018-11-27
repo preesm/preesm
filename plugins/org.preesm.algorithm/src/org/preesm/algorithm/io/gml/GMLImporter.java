@@ -46,7 +46,6 @@ import java.util.List;
 import java.util.Map;
 import org.eclipse.core.runtime.Path;
 import org.jgrapht.EdgeFactory;
-import org.preesm.algorithm.DFToolsAlgoException;
 import org.preesm.algorithm.factories.IModelVertexFactory;
 import org.preesm.algorithm.model.AbstractEdge;
 import org.preesm.algorithm.model.AbstractGraph;
@@ -180,7 +179,7 @@ public abstract class GMLImporter<G extends AbstractGraph<?, ?>, V extends Abstr
       registry = DOMImplementationRegistry.newInstance();
       impl = (DOMImplementationLS) registry.getDOMImplementation("Core 3.0 XML 3.0 LS");
     } catch (ClassCastException | ClassNotFoundException | InstantiationException | IllegalAccessException e) {
-      throw new DFToolsAlgoException("Could not import graph", e);
+      throw new PreesmException("Could not import graph", e);
     }
 
     final LSInput lsInput = impl.createLSInput();
@@ -295,7 +294,7 @@ public abstract class GMLImporter<G extends AbstractGraph<?, ?>, V extends Abstr
 
           return result;
         } catch (final Exception e) {
-          throw new DFToolsAlgoException("Could not parse key", e);
+          throw new PreesmException("Could not parse key", e);
         }
 
       }
@@ -511,7 +510,7 @@ public abstract class GMLImporter<G extends AbstractGraph<?, ?>, V extends Abstr
               final AbstractGraph<?, ?> refine = importer.parse(new File(directoryPath + refinementPath));
               vertex.setGraphDescription(refine);
             } catch (FileNotFoundException | PreesmException e) {
-              throw new DFToolsAlgoException("Could not parse gaph description", e);
+              throw new PreesmException("Could not parse gaph description", e);
             }
           }
         } else if (refinementPath.length() > 0) {
