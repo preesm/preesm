@@ -39,6 +39,7 @@
 package org.preesm.algorithm.pisdf.helper;
 
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -48,6 +49,7 @@ import org.preesm.commons.exceptions.PreesmException;
 import org.preesm.commons.math.LongFraction;
 import org.preesm.commons.math.MathFunctionsHelper;
 import org.preesm.model.pisdf.AbstractActor;
+import org.preesm.model.pisdf.AbstractVertex;
 import org.preesm.model.pisdf.Fifo;
 
 /**
@@ -61,13 +63,9 @@ public class TopologyBasedBRV extends PiBRV {
     super(piHandler);
   }
 
-  /*
-   * (non-Javadoc)
-   *
-   * @see org.ietr.preesm.pimm.algorithm.math.PiBRV#execute()
-   */
   @Override
-  protected void computeBRV() {
+  public Map<AbstractVertex, Long> computeBRV() {
+    Map<AbstractVertex, Long> graphBRV = new LinkedHashMap<>();
     if (this.piHandler.getReferenceGraph() == null) {
       final String msg = "cannot compute BRV for null graph.";
       throw new PreesmException(msg);
@@ -86,7 +84,7 @@ public class TopologyBasedBRV extends PiBRV {
       // The graph is consistent
       // We just have to update the BRV
       if (listFifo.isEmpty()) {
-        this.graphBRV.put(subgraph.get(0), (long) 1);
+        graphBRV.put(subgraph.get(0), (long) 1);
       } else {
         final double[][] topologyMatrix = getTopologyMatrix(listFifo, subgraph);
         final long rank = LinearAlgebra.rank(topologyMatrix);
@@ -99,17 +97,18 @@ public class TopologyBasedBRV extends PiBRV {
         // final List<Long> result = Rational.toNatural(new Vector<>(vrb))
         final List<Long> result = new ArrayList<>();
         MathFunctionsHelper.toNatural(vrb).forEach(rv -> result.add((long) rv));
-        this.graphBRV.putAll(TopologyBasedBRV.zipToMap(subgraph, result));
+        graphBRV.putAll(TopologyBasedBRV.zipToMap(subgraph, result));
       }
 
       // Update BRV values with interfaces
-      updateRVWithInterfaces(this.piHandler.getReferenceGraph(), subgraph);
+      updateRVWithInterfaces(this.piHandler.getReferenceGraph(), subgraph, graphBRV);
     }
     for (final PiMMHandler g : this.piHandler.getChildrenGraphsHandler()) {
       final TopologyBasedBRV topologyBRV = new TopologyBasedBRV(g);
       topologyBRV.computeBRV();
-      this.graphBRV.putAll(topologyBRV.getBRV());
+      graphBRV.putAll(topologyBRV.computeBRV());
     }
+    return graphBRV;
   }
 
   private double[][] getTopologyMatrix(final List<Fifo> listFifo, final List<AbstractActor> subgraph) {

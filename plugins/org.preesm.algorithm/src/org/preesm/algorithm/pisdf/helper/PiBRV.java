@@ -38,7 +38,6 @@
  */
 package org.preesm.algorithm.pisdf.helper;
 
-import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import org.preesm.commons.exceptions.PreesmException;
@@ -61,8 +60,6 @@ public abstract class PiBRV {
   /*
    * Repetition Vector value fully linked to an AbstractVertex
    */
-  protected Map<AbstractVertex, Long> graphBRV;
-
   /** The graph handler structure. */
   protected PiMMHandler piHandler;
 
@@ -73,43 +70,7 @@ public abstract class PiBRV {
    *          PiSDF graph handler on which we are working
    */
   public PiBRV(final PiMMHandler piHandler) {
-    this.graphBRV = new LinkedHashMap<>();
     this.piHandler = piHandler;
-  }
-
-  /**
-   *
-   * Set the associated PiGraph. If current BRV map was not empty, it is cleared. The BRV is automatically recomputed.
-   */
-  public void setAssociatedGraphHandler(final PiMMHandler piHandler) {
-    this.piHandler = piHandler;
-    if (!this.graphBRV.isEmpty()) {
-      this.graphBRV.clear();
-      computeBRV();
-    }
-  }
-
-  /**
-   * First call will be slower since it has to compute the BRV.
-   *
-   * @return a map of vertex and associated repetition vector values
-   */
-  public Map<AbstractVertex, Long> getBRV() {
-    if (this.graphBRV.isEmpty()) {
-      computeBRV();
-    }
-    return this.graphBRV;
-  }
-
-  /**
-   * Getter of the Basic Repetition Vector (BRV) value of a given vertex.
-   *
-   * @param vertex
-   *          vertex for which we get the BRV value
-   * @return Repetition Vector value Long associated with the vertex, null if the vertex is not in list
-   */
-  public Long getBRVForVertex(final AbstractVertex vertex) {
-    return this.graphBRV.get(vertex);
   }
 
   /**
@@ -119,22 +80,23 @@ public abstract class PiBRV {
    * @throws PiMMHelperException
    *           the PiMMHandlerException exception
    */
-  protected abstract void computeBRV();
+  public abstract Map<AbstractVertex, Long> computeBRV();
 
-  protected void updateRVWithInterfaces(final PiGraph graph, final List<AbstractActor> subgraph) {
+  protected void updateRVWithInterfaces(final PiGraph graph, final List<AbstractActor> subgraph,
+      final Map<AbstractVertex, Long> graphBRV) {
     // Update RV values based on the interface
     long scaleFactor = 1;
 
     // Compute scaleFactor for input interfaces
-    scaleFactor = getInputInterfacesScaleFactor(graph, subgraph, scaleFactor);
+    scaleFactor = getInputInterfacesScaleFactor(graph, subgraph, scaleFactor, graphBRV);
 
     // Compute scaleFactor for output interfaces
-    scaleFactor = getOutputInterfacesScaleFactor(graph, subgraph, scaleFactor);
+    scaleFactor = getOutputInterfacesScaleFactor(graph, subgraph, scaleFactor, graphBRV);
 
     // Do the actual update
     for (final AbstractActor actor : subgraph) {
-      final long newRV = this.graphBRV.get(actor) * scaleFactor;
-      this.graphBRV.put(actor, newRV);
+      final long newRV = graphBRV.get(actor) * scaleFactor;
+      graphBRV.put(actor, newRV);
       if ((actor instanceof DelayActor) && (newRV != 1)) {
         throw new PreesmException("Inconsistent graph. DelayActor [" + actor.getName()
             + "] with a repetition vector of " + Long.toString(newRV));
@@ -154,7 +116,8 @@ public abstract class PiBRV {
    * @return new value of scale factor
    */
   private long getOutputInterfacesScaleFactor(final PiGraph graph, final List<AbstractActor> subgraph,
-      long scaleFactor) {
+      final long inscaleFactor, final Map<AbstractVertex, Long> graphBRV) {
+    long scaleFactor = inscaleFactor;
     for (final DataOutputInterface out : graph.getDataOutputInterfaces()) {
       final DataInputPort dataInputPort = (DataInputPort) out.getDataPort();
       final Fifo fifo = dataInputPort.getIncomingFifo();
@@ -162,7 +125,7 @@ public abstract class PiBRV {
       if (!(sourceActor instanceof InterfaceActor) && subgraph.contains(sourceActor)) {
         final long prod = fifo.getSourcePort().getPortRateExpression().evaluate();
         final long cons = fifo.getTargetPort().getPortRateExpression().evaluate();
-        final long sourceRV = this.graphBRV.get(sourceActor);
+        final long sourceRV = graphBRV.get(sourceActor);
         final long tmp = scaleFactor * prod * sourceRV;
         if (tmp < cons) {
           final long scaleScaleFactor = cons / tmp;
@@ -189,13 +152,14 @@ public abstract class PiBRV {
    * @return new value of scale factor
    */
   private long getInputInterfacesScaleFactor(final PiGraph graph, final List<AbstractActor> subgraph,
-      long scaleFactor) {
+      final long inscaleFactor, final Map<AbstractVertex, Long> graphBRV) {
+    long scaleFactor = inscaleFactor;
     for (final DataInputInterface in : graph.getDataInputInterfaces()) {
       final DataOutputPort dataOutputPort = (DataOutputPort) in.getDataPort();
       final Fifo fifo = dataOutputPort.getOutgoingFifo();
       final AbstractActor targetActor = fifo.getTargetPort().getContainingActor();
       if (!(targetActor instanceof InterfaceActor) && subgraph.contains(targetActor)) {
-        final long targetRV = this.graphBRV.get(targetActor);
+        final long targetRV = graphBRV.get(targetActor);
         final long prod = fifo.getSourcePort().getPortRateExpression().evaluate();
         final long cons = fifo.getTargetPort().getPortRateExpression().evaluate();
         final long tmp = scaleFactor * cons * targetRV;

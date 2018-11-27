@@ -47,6 +47,7 @@ import org.preesm.commons.exceptions.PreesmException;
 import org.preesm.commons.math.LongFraction;
 import org.preesm.commons.math.MathFunctionsHelper;
 import org.preesm.model.pisdf.AbstractActor;
+import org.preesm.model.pisdf.AbstractVertex;
 import org.preesm.model.pisdf.DataInputPort;
 import org.preesm.model.pisdf.DataOutputPort;
 import org.preesm.model.pisdf.Expression;
@@ -70,7 +71,8 @@ public class LCMBasedBRV extends PiBRV {
    * @see org.ietr.preesm.pimm.algorithm.math.PiBRV#execute()
    */
   @Override
-  protected void computeBRV() {
+  public Map<AbstractVertex, Long> computeBRV() {
+    Map<AbstractVertex, Long> graphBRV = new LinkedHashMap<>();
     if (this.piHandler.getReferenceGraph() == null) {
       final String msg = "cannot compute BRV for null graph.";
       throw new PreesmException(msg);
@@ -92,7 +94,7 @@ public class LCMBasedBRV extends PiBRV {
       // The graph is consistent
       // We just have to update the BRV
       if (listFifos.isEmpty()) {
-        this.graphBRV.put(subgraph.get(0), (long) 1);
+        graphBRV.put(subgraph.get(0), (long) 1);
       } else {
         // TODO not optimal to use List ?
         final Map<Fifo, List<Long>> fifoProperties = new LinkedHashMap<>();
@@ -110,13 +112,13 @@ public class LCMBasedBRV extends PiBRV {
         }
 
         // Set actors repetition factor
-        computeAndSetRV(subgraph, reps, lcm);
+        computeAndSetRV(subgraph, reps, lcm, graphBRV);
 
         // Edge condition verification
-        checkConsistency(subgraph, fifoProperties);
+        checkConsistency(subgraph, fifoProperties, graphBRV);
       }
       // Update BRV values with interfaces
-      updateRVWithInterfaces(this.piHandler.getReferenceGraph(), subgraph);
+      updateRVWithInterfaces(this.piHandler.getReferenceGraph(), subgraph, graphBRV);
     }
 
     // Recursively compute BRV of sub-graphs
@@ -125,8 +127,10 @@ public class LCMBasedBRV extends PiBRV {
     for (final PiMMHandler g : this.piHandler.getChildrenGraphsHandler()) {
       final LCMBasedBRV lcmBRV = new LCMBasedBRV(g);
       lcmBRV.computeBRV();
-      this.graphBRV.putAll(lcmBRV.getBRV());
+      graphBRV.putAll(lcmBRV.computeBRV());
     }
+
+    return graphBRV;
   }
 
   /**
@@ -139,7 +143,8 @@ public class LCMBasedBRV extends PiBRV {
    * @throws PiMMHelperException
    *           the exception
    */
-  private void checkConsistency(final List<AbstractActor> subgraph, final Map<Fifo, List<Long>> fifoProperties) {
+  private void checkConsistency(final List<AbstractActor> subgraph, final Map<Fifo, List<Long>> fifoProperties,
+      final Map<AbstractVertex, Long> graphBRV) {
     for (final Fifo f : this.piHandler.getFifosFromCC(subgraph)) {
       final AbstractActor sourceActor = f.getSourcePort().getContainingActor();
       final AbstractActor targetActor = f.getTargetPort().getContainingActor();
@@ -148,8 +153,8 @@ public class LCMBasedBRV extends PiBRV {
       }
       final long prod = fifoProperties.get(f).get(0);
       final long cons = fifoProperties.get(f).get(1);
-      final long sourceRV = this.graphBRV.get(sourceActor);
-      final long targetRV = this.graphBRV.get(targetActor);
+      final long sourceRV = graphBRV.get(sourceActor);
+      final long targetRV = graphBRV.get(targetActor);
 
       if (prod * sourceRV != cons * targetRV) {
         throw new PreesmException(
@@ -169,12 +174,13 @@ public class LCMBasedBRV extends PiBRV {
    * @param lcm
    *          lcm of the connected component
    */
-  private void computeAndSetRV(final List<AbstractActor> subgraph, final HashMap<String, LongFraction> reps, long lcm) {
+  private void computeAndSetRV(final List<AbstractActor> subgraph, final HashMap<String, LongFraction> reps, long lcm,
+      final Map<AbstractVertex, Long> graphBRV) {
     for (final AbstractActor actor : subgraph) {
       final long num = reps.get(actor.getName()).getNumerator();
       final long denom = reps.get(actor.getName()).getDenominator();
       final long rv = (num * (lcm / denom));
-      this.graphBRV.put(actor, rv);
+      graphBRV.put(actor, rv);
     }
   }
 

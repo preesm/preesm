@@ -156,7 +156,7 @@ public class StaticPiMM2SrDAGLauncher extends PiMMSwitch<Boolean> {
       default:
         throw new PreesmException("unexpected value for BRV method: [" + method + "]");
     }
-    this.graphBRV = piBRVAlgo.getBRV();
+    this.graphBRV = piBRVAlgo.computeBRV();
   }
 
   /**
