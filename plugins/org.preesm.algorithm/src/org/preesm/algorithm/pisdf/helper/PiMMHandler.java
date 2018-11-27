@@ -195,7 +195,7 @@ public class PiMMHandler {
   public List<Fifo> getFifosFromCC(final List<AbstractActor> cc) {
     if (cc.isEmpty()) {
       PreesmLogger.getLogger().log(Level.INFO, "No FIFOs to extrac, empty connectedComponent.");
-      return Collections.<Fifo>emptyList();
+      return Collections.emptyList();
     }
     final boolean containsInterfaceActors = PiMMHandler.containsInterfaceActors(cc);
     final List<Fifo> fifos = new ArrayList<>();
@@ -220,7 +220,8 @@ public class PiMMHandler {
     for (final DataPort port : actor.getAllDataPorts()) {
       final Fifo fifo = port.getFifo();
       if (fifo == null) {
-        throw new PreesmException(PiMMHandler.noFIFOExceptionMessage(actor, port));
+        throw new PreesmException(
+            "Actor [" + actor.getName() + "] data port [" + port.getName() + "] is not connected to a FIFO.");
       }
       final AbstractActor sourceActor = fifo.getSourcePort().getContainingActor();
       final AbstractActor targetActor = fifo.getTargetPort().getContainingActor();
@@ -355,7 +356,8 @@ public class PiMMHandler {
     for (final DataOutputPort output : actor.getDataOutputPorts()) {
       final Fifo fifo = output.getOutgoingFifo();
       if (fifo == null) {
-        throw new PreesmException(PiMMHandler.noFIFOExceptionMessage(actor, output));
+        throw new PreesmException(
+            "Actor [" + actor.getName() + "] data port [" + output.getName() + "] is not connected to a FIFO.");
       }
       final AbstractActor targetActor = fifo.getTargetPort().getContainingActor();
       if (!cc.contains(targetActor)) {
@@ -366,7 +368,8 @@ public class PiMMHandler {
     for (final DataInputPort input : actor.getDataInputPorts()) {
       final Fifo fifo = input.getIncomingFifo();
       if (fifo == null) {
-        throw new PreesmException(PiMMHandler.noFIFOExceptionMessage(actor, input));
+        throw new PreesmException(
+            "Actor [" + actor.getName() + "] data port [" + input.getName() + "] is not connected to a FIFO.");
       }
       final AbstractActor sourceActor = fifo.getSourcePort().getContainingActor();
       if (!cc.contains(sourceActor)) {
@@ -374,14 +377,6 @@ public class PiMMHandler {
         PiMMHandler.iterativeCCFetcher(sourceActor, cc);
       }
     }
-  }
-
-  /**
-   *
-   * @return Formatted message for a no FIFO connected exception
-   */
-  private static String noFIFOExceptionMessage(final AbstractActor actor, final DataPort port) {
-    return "Actor [" + actor.getName() + "] data port [" + port.getName() + "] is not connected to a FIFO.";
   }
 
   /**

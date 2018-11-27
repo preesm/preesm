@@ -70,7 +70,7 @@ public class LCMBasedBRV extends PiBRV {
    * @see org.ietr.preesm.pimm.algorithm.math.PiBRV#execute()
    */
   @Override
-  public boolean execute() {
+  protected void computeBRV() {
     if (this.piHandler.getReferenceGraph() == null) {
       final String msg = "cannot compute BRV for null graph.";
       throw new PreesmException(msg);
@@ -124,10 +124,9 @@ public class LCMBasedBRV extends PiBRV {
     // or use visitor pattern
     for (final PiMMHandler g : this.piHandler.getChildrenGraphsHandler()) {
       final LCMBasedBRV lcmBRV = new LCMBasedBRV(g);
-      lcmBRV.execute();
+      lcmBRV.computeBRV();
       this.graphBRV.putAll(lcmBRV.getBRV());
     }
-    return true;
   }
 
   /**

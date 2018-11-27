@@ -67,7 +67,7 @@ public class TopologyBasedBRV extends PiBRV {
    * @see org.ietr.preesm.pimm.algorithm.math.PiBRV#execute()
    */
   @Override
-  public boolean execute() {
+  protected void computeBRV() {
     if (this.piHandler.getReferenceGraph() == null) {
       final String msg = "cannot compute BRV for null graph.";
       throw new PreesmException(msg);
@@ -92,7 +92,7 @@ public class TopologyBasedBRV extends PiBRV {
         final long rank = LinearAlgebra.rank(topologyMatrix);
         if (rank != (subgraph.size() - 1)) {
           throw new PreesmException("Graph not consitent. rank: " + Long.toString(rank) + ", expected: "
-              + Long.toString(subgraph.size() - 1));
+              + Integer.toString(subgraph.size() - 1));
         }
         // Compute BRV
         final List<LongFraction> vrb = TopologyBasedBRV.computeRationnalNullSpace(topologyMatrix);
@@ -107,10 +107,9 @@ public class TopologyBasedBRV extends PiBRV {
     }
     for (final PiMMHandler g : this.piHandler.getChildrenGraphsHandler()) {
       final TopologyBasedBRV topologyBRV = new TopologyBasedBRV(g);
-      topologyBRV.execute();
+      topologyBRV.computeBRV();
       this.graphBRV.putAll(topologyBRV.getBRV());
     }
-    return true;
   }
 
   private double[][] getTopologyMatrix(final List<Fifo> listFifo, final List<AbstractActor> subgraph) {

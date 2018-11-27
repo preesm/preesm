@@ -45,6 +45,7 @@ import org.preesm.algorithm.mapper.model.MapperDAG;
 import org.preesm.algorithm.model.dag.DAGEdge;
 import org.preesm.algorithm.model.dag.DAGVertex;
 import org.preesm.algorithm.model.types.LongEdgePropertyType;
+import org.preesm.algorithm.pisdf.helper.BRVMethod;
 import org.preesm.algorithm.pisdf.helper.LCMBasedBRV;
 import org.preesm.algorithm.pisdf.helper.PiBRV;
 import org.preesm.algorithm.pisdf.helper.PiMMHandler;
@@ -100,31 +101,19 @@ public class StaticPiMM2SrDAGLauncher extends PiMMSwitch<Boolean> {
    *
    * @return the SDFGraph obtained by visiting graph
    */
-  public PiGraph launch(final int method) {
-    final StopWatch timer = new StopWatch();
-    timer.start();
+  public PiGraph launch(final BRVMethod method) {
     // 1. First we resolve all parameters.
     // It must be done first because, when removing persistence, local parameters have to be known at upper level
     this.piHandler.resolveAllParameters();
-    timer.stop();
-    String msg = "Parameters and rates evaluations: " + timer + "s.";
-    PreesmLogger.getLogger().log(Level.INFO, msg);
     // 2. We perform the delay transformation step that deals with persistence
-    timer.reset();
-    timer.start();
     this.piHandler.removePersistence();
-    timer.stop();
-    String msg2 = "Persistence removal: " + timer + "s.";
-    PreesmLogger.getLogger().log(Level.INFO, msg2);
     // 3. Compute BRV following the chosen method
     computeBRV(method);
     // 4. Print the RV values
-    printRV();
     // 4.5 Check periods with BRV
     PiMMHandler.checkPeriodicity(this.graphBRV);
     // 5. Convert to SR-DAG
-    PiGraph convert2srdag = convert2SRDAG();
-    return convert2srdag;
+    return convert2SRDAG();
   }
 
   /**
@@ -155,32 +144,19 @@ public class StaticPiMM2SrDAGLauncher extends PiMMSwitch<Boolean> {
    * @param method
    *          the method to use for computing the BRV
    */
-  private void computeBRV(final int method) {
-    PiBRV piBRVAlgo;
-    if (method == 0) {
-      piBRVAlgo = new TopologyBasedBRV(this.piHandler);
-    } else if (method == 1) {
-      piBRVAlgo = new LCMBasedBRV(this.piHandler);
-    } else {
-      throw new PreesmException("unexpected value for BRV method: [" + Integer.toString(method) + "]");
+  private void computeBRV(final BRVMethod method) {
+    final PiBRV piBRVAlgo;
+    switch (method) {
+      case LCM:
+        piBRVAlgo = new LCMBasedBRV(this.piHandler);
+        break;
+      case TOPOLOGY:
+        piBRVAlgo = new TopologyBasedBRV(this.piHandler);
+        break;
+      default:
+        throw new PreesmException("unexpected value for BRV method: [" + method + "]");
     }
-    final StopWatch timer = new StopWatch();
-    timer.start();
-    piBRVAlgo.execute();
     this.graphBRV = piBRVAlgo.getBRV();
-    timer.stop();
-    final String msg = "Repetition vector computed in" + timer + "s.";
-    PreesmLogger.getLogger().log(Level.INFO, msg);
-  }
-
-  /**
-   * Print the BRV values of every vertex
-   */
-  private void printRV() {
-    for (final Map.Entry<AbstractVertex, Long> rv : this.graphBRV.entrySet()) {
-      final String msg = rv.getKey().getVertexPath() + " x" + Long.toString(rv.getValue());
-      PreesmLogger.getLogger().log(Level.INFO, msg);
-    }
   }
 
   /**

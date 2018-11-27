@@ -85,16 +85,8 @@ public abstract class PiBRV {
     this.piHandler = piHandler;
     if (!this.graphBRV.isEmpty()) {
       this.graphBRV.clear();
-      execute();
+      computeBRV();
     }
-  }
-
-  /**
-   *
-   * @return associated PiGraph
-   */
-  public PiMMHandler getAssociatedGraphHandler() {
-    return this.piHandler;
   }
 
   /**
@@ -104,7 +96,7 @@ public abstract class PiBRV {
    */
   public Map<AbstractVertex, Long> getBRV() {
     if (this.graphBRV.isEmpty()) {
-      execute();
+      computeBRV();
     }
     return this.graphBRV;
   }
@@ -127,7 +119,7 @@ public abstract class PiBRV {
    * @throws PiMMHelperException
    *           the PiMMHandlerException exception
    */
-  public abstract boolean execute();
+  protected abstract void computeBRV();
 
   protected void updateRVWithInterfaces(final PiGraph graph, final List<AbstractActor> subgraph) {
     // Update RV values based on the interface

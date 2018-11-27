@@ -46,6 +46,7 @@ import org.eclipse.core.runtime.IProgressMonitor;
 import org.preesm.algorithm.mapper.graphtransfo.SdfToDagConverter;
 import org.preesm.algorithm.mapper.model.MapperDAG;
 import org.preesm.algorithm.model.visitors.VisitorOutput;
+import org.preesm.algorithm.pisdf.helper.BRVMethod;
 import org.preesm.commons.exceptions.PreesmException;
 import org.preesm.commons.logger.PreesmLogger;
 import org.preesm.model.pisdf.PiGraph;
@@ -61,21 +62,8 @@ import org.preesm.workflow.implement.AbstractWorkflowNodeImplementation;
  */
 public class StaticPiMM2SrDAGTask extends AbstractTaskImplementation {
 
-  /** The Constant TOPOLOGY_METHOD. */
-  public static final String TOPOLOGY_METHOD = "Topology";
-
-  /** The Constant LCM_METHOD. */
-  public static final String LCM_METHOD = "LCM";
-
-  /** The Constant CONSISTENCY_METHOD. */
   public static final String CONSISTENCY_METHOD = "Consistency_Method";
 
-  /*
-   * (non-Javadoc)
-   *
-   * @see org.ietr.dftools.workflow.implement.AbstractTaskImplementation#execute(java.util.Map, java.util.Map,
-   * org.eclipse.core.runtime.IProgressMonitor, java.lang.String, org.ietr.dftools.workflow.elements.Workflow)
-   */
   @Override
   public Map<String, Object> execute(final Map<String, Object> inputs, final Map<String, String> parameters,
       final IProgressMonitor monitor, final String nodeName, final Workflow workflow) {
@@ -93,12 +81,12 @@ public class StaticPiMM2SrDAGTask extends AbstractTaskImplementation {
     // Check the consistency of the PiGraph and compute the associated Basic Repetition Vector
     // We use Topology-Matrix based method by default
     final String consistencyMethod = parameters.get(StaticPiMM2SrDAGTask.CONSISTENCY_METHOD);
-    int method = 0;
-    if (consistencyMethod.equals(StaticPiMM2SrDAGTask.LCM_METHOD)) {
-      method = 1;
-    } else if (!consistencyMethod.equals(StaticPiMM2SrDAGTask.TOPOLOGY_METHOD)) {
+    final BRVMethod method = BRVMethod.getByName(consistencyMethod);
+
+    if (method == null) {
       throw new PreesmException("Unsupported method for checking consistency [" + consistencyMethod + "]");
     }
+
     // Convert the PiGraph to the Single-Rate Directed Acyclic Graph
     resultPi = launcher.launch(method);
 
@@ -116,23 +104,13 @@ public class StaticPiMM2SrDAGTask extends AbstractTaskImplementation {
     return output;
   }
 
-  /*
-   * (non-Javadoc)
-   *
-   * @see org.ietr.dftools.workflow.implement.AbstractTaskImplementation#getDefaultParameters()
-   */
   @Override
   public Map<String, String> getDefaultParameters() {
     final LinkedHashMap<String, String> res = new LinkedHashMap<>();
-    res.put(CONSISTENCY_METHOD, LCM_METHOD);
+    res.put(CONSISTENCY_METHOD, BRVMethod.LCM.getLiteral());
     return res;
   }
 
-  /*
-   * (non-Javadoc)
-   *
-   * @see org.ietr.dftools.workflow.implement.AbstractWorkflowNodeImplementation#monitorMessage()
-   */
   @Override
   public String monitorMessage() {
     return "Transforming PiGraph to Single-Rate Directed Acyclic Graph.";
