@@ -53,7 +53,6 @@ import org.preesm.model.scenario.Timing;
 import org.preesm.model.scenario.types.DataType;
 import org.preesm.model.slam.ComponentInstance;
 import org.preesm.model.slam.Design;
-import org.preesm.workflow.WorkflowException;
 
 // TODO: Auto-generated Javadoc
 /**
@@ -83,17 +82,17 @@ public class SDF3ImporterEngine {
    * @param logger
    *          the logger
    * @return the SDF graph
-   * @throws WorkflowException
+   * @throws PreesmException
    *           the workflow exception
    */
   public SDFGraph importFrom(final IPath path, final PreesmScenario scenario, final Design architecture,
-      final Logger logger) throws WorkflowException {
+      final Logger logger) throws PreesmException {
     final IWorkspace workspace = ResourcesPlugin.getWorkspace();
     final IFile iFile = workspace.getRoot().getFile(path);
 
     if (!iFile.exists()) {
       final String message = "The parsed xml file does not exists: " + path.toOSString();
-      throw new WorkflowException(message);
+      throw new PreesmException(message);
     }
 
     final File file = new File(iFile.getRawLocation().toOSString());

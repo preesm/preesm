@@ -61,12 +61,12 @@ import org.preesm.algorithm.mapper.tools.RandomIterator;
 import org.preesm.algorithm.mapper.ui.BestCostPlotter;
 import org.preesm.algorithm.mapper.ui.bestcost.BestCostEditor;
 import org.preesm.algorithm.mapper.ui.gantt.GanttEditorRunnable;
+import org.preesm.commons.exceptions.PreesmException;
 import org.preesm.commons.logger.PreesmLogger;
 import org.preesm.model.scenario.PreesmScenario;
 import org.preesm.model.slam.ComponentInstance;
 import org.preesm.model.slam.Design;
 import org.preesm.model.slam.utils.DesignTools;
-import org.preesm.workflow.WorkflowException;
 
 /**
  * Fast Algorithm.
@@ -125,7 +125,7 @@ public class FastAlgorithm extends Observable {
    * @param taskSched
    *          the task sched
    * @return the mapper DAG
-   * @throws WorkflowException
+   * @throws PreesmException
    *           the workflow exception
    */
   public MapperDAG map(final String threadName, final AbcParameters abcParams, final FastAlgoParameters fastParams,
@@ -171,7 +171,7 @@ public class FastAlgorithm extends Observable {
    * @param taskSched
    *          the task sched
    * @return the mapper DAG
-   * @throws WorkflowException
+   * @throws PreesmException
    *           the workflow exception
    */
   public MapperDAG map(final String threadName, final AbcParameters abcParams, final FastAlgoParameters fastParams,
@@ -422,10 +422,10 @@ public class FastAlgorithm extends Observable {
    *          the gantt data
    * @param name
    *          the name
-   * @throws WorkflowException
+   * @throws PreesmException
    *           the workflow exception
    */
-  public void launchEditor(final GanttData ganttData, final String name) throws WorkflowException {
+  public void launchEditor(final GanttData ganttData, final String name) throws PreesmException {
 
     GanttEditorRunnable.run(ganttData, name);
 

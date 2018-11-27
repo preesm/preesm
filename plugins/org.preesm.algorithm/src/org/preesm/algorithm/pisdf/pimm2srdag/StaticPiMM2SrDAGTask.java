@@ -46,11 +46,11 @@ import org.eclipse.core.runtime.IProgressMonitor;
 import org.preesm.algorithm.mapper.graphtransfo.SdfToDagConverter;
 import org.preesm.algorithm.mapper.model.MapperDAG;
 import org.preesm.algorithm.model.visitors.VisitorOutput;
+import org.preesm.commons.exceptions.PreesmException;
 import org.preesm.commons.logger.PreesmLogger;
 import org.preesm.model.pisdf.PiGraph;
 import org.preesm.model.scenario.PreesmScenario;
 import org.preesm.model.slam.Design;
-import org.preesm.workflow.WorkflowException;
 import org.preesm.workflow.elements.Workflow;
 import org.preesm.workflow.implement.AbstractTaskImplementation;
 import org.preesm.workflow.implement.AbstractWorkflowNodeImplementation;
@@ -97,7 +97,7 @@ public class StaticPiMM2SrDAGTask extends AbstractTaskImplementation {
     if (consistencyMethod.equals(StaticPiMM2SrDAGTask.LCM_METHOD)) {
       method = 1;
     } else if (!consistencyMethod.equals(StaticPiMM2SrDAGTask.TOPOLOGY_METHOD)) {
-      throw new WorkflowException("Unsupported method for checking consistency [" + consistencyMethod + "]");
+      throw new PreesmException("Unsupported method for checking consistency [" + consistencyMethod + "]");
     }
     // Convert the PiGraph to the Single-Rate Directed Acyclic Graph
     resultPi = launcher.launch(method);

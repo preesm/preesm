@@ -65,7 +65,6 @@ import org.preesm.model.pisdf.PersistenceLevel;
 import org.preesm.model.pisdf.PiGraph;
 import org.preesm.model.pisdf.PortMemoryAnnotation;
 import org.preesm.model.pisdf.factory.PiMMUserFactory;
-import org.preesm.workflow.WorkflowException;
 
 /**
  * @author farresti
@@ -591,7 +590,7 @@ public class PiMMHandler {
       }
       sb.append("\n");
       PreesmLogger.getLogger().log(Level.SEVERE, sb.toString());
-      throw new WorkflowException("Periods are not consistent, abandon.");
+      throw new PreesmException("Periods are not consistent, abandon.");
     } else if (mapGraphPeriods.size() == 1) {
       long period = 0;
       for (Long p : mapGraphPeriods.keySet()) {

@@ -73,10 +73,10 @@ import org.preesm.algorithm.model.sdf.SDFEdge;
 import org.preesm.algorithm.model.sdf.SDFGraph;
 import org.preesm.algorithm.model.sdf.SDFVertex;
 import org.preesm.algorithm.model.sdf.esdf.SDFRoundBufferVertex;
+import org.preesm.commons.exceptions.PreesmException;
 import org.preesm.commons.files.URLResolver;
 import org.preesm.commons.logger.PreesmLogger;
 import org.preesm.model.scenario.types.DataType;
-import org.preesm.workflow.WorkflowException;
 
 /**
  *
@@ -1698,7 +1698,7 @@ public class ScriptRunner {
       try {
         return new Buffer(it, dagVertex, it.getTargetLabel(), nbTokens, dataSize, isMergeable);
       } catch (final NullPointerException exc) {
-        throw new WorkflowException("SDFEdge " + it.getSource().getName() + "_" + it.getSourceLabel() + "->"
+        throw new PreesmException("SDFEdge " + it.getSource().getName() + "_" + it.getSourceLabel() + "->"
             + it.getTarget().getName() + "_" + it.getTargetLabel() + " has unknows type " + dataType.toString()
             + ". Add the corresponding data type to the scenario.", exc);
       }
@@ -1726,7 +1726,7 @@ public class ScriptRunner {
       try {
         return new Buffer(it, dagVertex, it.getSourceLabel(), nbTokens, dataSize, isMergeable);
       } catch (final NullPointerException exc) {
-        throw new WorkflowException("SDFEdge " + it.getSource().getName() + "_" + it.getSourceLabel() + "->"
+        throw new PreesmException("SDFEdge " + it.getSource().getName() + "_" + it.getSourceLabel() + "->"
             + it.getTarget().getName() + "_" + it.getTargetLabel() + " has unknows type " + dataType.toString()
             + ". Add the corresponding data type to the scenario.", exc);
       }
@@ -1803,7 +1803,7 @@ public class ScriptRunner {
 
         final MemoryExclusionVertex mObj = meg.getVertex(mObjCopy);
         if (mObj == null) {
-          throw new WorkflowException(
+          throw new PreesmException(
               "Cannot find " + mObjCopy + " in the given MEG. Contact developers for more information.");
         }
 
@@ -1822,7 +1822,7 @@ public class ScriptRunner {
           //
           // Also we will need to make sure that the code generation
           // printerS are still functional
-          throw new WorkflowException(
+          throw new PreesmException(
               "Aggregated DAG Edge " + mObj + " not yet supported. Contact Preesm developers for more information.");
         }
         bufferAndMObjectMap.put(buffer, mObj);

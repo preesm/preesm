@@ -75,7 +75,7 @@ import org.jfree.ui.RefineryUtilities;
 import org.preesm.algorithm.mapper.gantt.GanttComponent;
 import org.preesm.algorithm.mapper.gantt.GanttData;
 import org.preesm.algorithm.mapper.gantt.GanttTask;
-import org.preesm.workflow.WorkflowException;
+import org.preesm.commons.exceptions.PreesmException;
 
 /**
  * Gantt plotter of a mapperdagvertex using JFreeChart.
@@ -262,7 +262,7 @@ public class GanttPlotter extends ApplicationFrame {
       final JEditorPane comp = new JEditorPane(resource);
       helpFrame.getContentPane().add(comp, BorderLayout.PAGE_START);
     } catch (final IOException ex) {
-      throw new WorkflowException("Could not load Gantt Help file", ex);
+      throw new PreesmException("Could not load Gantt Help file", ex);
     }
     menuItem.addActionListener(e -> helpFrame.setVisible(true));
   }

@@ -41,6 +41,7 @@ import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.Path;
+import org.preesm.commons.exceptions.PreesmException;
 import org.preesm.workflow.elements.AbstractWorkflowNode;
 import org.preesm.workflow.elements.ScenarioNode;
 import org.preesm.workflow.elements.TaskNode;
@@ -107,7 +108,7 @@ public class WorkflowParser extends DefaultHandler2 {
       reader.setContentHandler(this);
       reader.parse(new InputSource(file.getContents()));
     } catch (SAXException | IOException | CoreException e) {
-      throw new WorkflowException("Could not parse workflow", e);
+      throw new PreesmException("Could not parse workflow", e);
     }
     return this.workflow;
   }

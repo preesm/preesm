@@ -47,6 +47,7 @@ import java.util.Set;
 import org.eclipse.emf.common.util.EList;
 import org.eclipse.emf.ecore.util.EcoreUtil;
 import org.preesm.algorithm.pisdf.helper.PiMMHandler;
+import org.preesm.commons.exceptions.PreesmException;
 import org.preesm.model.pisdf.AbstractActor;
 import org.preesm.model.pisdf.AbstractVertex;
 import org.preesm.model.pisdf.Actor;
@@ -83,7 +84,6 @@ import org.preesm.model.scenario.ConstraintGroupManager;
 import org.preesm.model.scenario.PreesmScenario;
 import org.preesm.model.scenario.Timing;
 import org.preesm.model.scenario.TimingManager;
-import org.preesm.workflow.WorkflowException;
 
 /**
  * @author farresti
@@ -346,7 +346,7 @@ public class StaticPiMM2FlatPiMMVisitor extends PiMMSwitch<Boolean> {
     final DataPort correspondingPort = graph.lookupGraphDataPortForInterfaceActor(actor);
     final Expression correspondingExpression = correspondingPort.getExpression();
     if (!correspondingExpression.getExpressionAsString().equals(interfaceRateExpression.getExpressionAsString())) {
-      throw new WorkflowException("Interface [" + actor.getName()
+      throw new PreesmException("Interface [" + actor.getName()
           + "] should have same rate as its definition. Graph rate [" + correspondingExpression.getExpressionAsString()
           + "] vs interface rate [" + interfaceRateExpression.getExpressionAsString() + "]");
     }
@@ -614,7 +614,7 @@ public class StaticPiMM2FlatPiMMVisitor extends PiMMSwitch<Boolean> {
       }
     }
     if (containsNonPersistent && containsPersistent) {
-      throw new WorkflowException("We have detected persistent and non-persistent delays in graph [" + graph.getName()
+      throw new PreesmException("We have detected persistent and non-persistent delays in graph [" + graph.getName()
           + "]. This is not supported by the flattening transformation for now.");
     } else if (containsNonPersistent) {
       quasiSRTransformation(graph);

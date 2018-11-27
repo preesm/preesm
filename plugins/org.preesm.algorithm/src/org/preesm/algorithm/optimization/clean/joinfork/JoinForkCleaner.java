@@ -59,7 +59,7 @@ import org.preesm.algorithm.model.sdf.visitors.SingleRateChecker;
 import org.preesm.algorithm.model.types.LongEdgePropertyType;
 import org.preesm.algorithm.model.types.StringEdgePropertyType;
 import org.preesm.algorithm.model.visitors.SDF4JException;
-import org.preesm.workflow.WorkflowException;
+import org.preesm.commons.exceptions.PreesmException;
 
 /**
  * Class cleaning the useless join-fork pairs of vertices which may have been introduced by hierarchy flattening and
@@ -454,7 +454,7 @@ public class JoinForkCleaner {
         if (nbDelays < addedDelays) {
           // kdesnos: I added this check, but it will most
           // probably never happen
-          throw new WorkflowException("Insufficient delays on edge " + replacedEdge.getSource().getName() + "."
+          throw new PreesmException("Insufficient delays on edge " + replacedEdge.getSource().getName() + "."
               + replacedEdge.getSourceInterface().getName() + "=>" + replacedEdge.getTarget().getName() + "."
               + replacedEdge.getTargetInterface().getName() + ". At least " + addedDelays + " delays missing.");
         }
@@ -494,7 +494,7 @@ public class JoinForkCleaner {
 
     // Make sure all ports are in order
     if (!SpecialActorPortsIndexer.checkIndexes(graph)) {
-      throw new WorkflowException("There are still special actors with non-indexed ports. Contact Preesm developers.");
+      throw new PreesmException("There are still special actors with non-indexed ports. Contact Preesm developers.");
     }
 
     SpecialActorPortsIndexer.sortIndexedPorts(graph);

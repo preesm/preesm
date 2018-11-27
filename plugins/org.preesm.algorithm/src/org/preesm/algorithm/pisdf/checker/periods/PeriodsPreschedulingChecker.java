@@ -43,6 +43,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
 import org.eclipse.core.runtime.IProgressMonitor;
+import org.preesm.commons.exceptions.PreesmException;
 import org.preesm.commons.logger.PreesmLogger;
 import org.preesm.model.pisdf.AbstractActor;
 import org.preesm.model.pisdf.Actor;
@@ -50,7 +51,6 @@ import org.preesm.model.pisdf.PeriodicElement;
 import org.preesm.model.pisdf.PiGraph;
 import org.preesm.model.scenario.PreesmScenario;
 import org.preesm.model.slam.Design;
-import org.preesm.workflow.WorkflowException;
 import org.preesm.workflow.elements.Workflow;
 import org.preesm.workflow.implement.AbstractTaskImplementation;
 import org.preesm.workflow.implement.AbstractWorkflowNodeImplementation;
@@ -78,14 +78,14 @@ public class PeriodsPreschedulingChecker extends AbstractTaskImplementation {
 
   @Override
   public Map<String, Object> execute(Map<String, Object> inputs, Map<String, String> parameters,
-      IProgressMonitor monitor, String nodeName, Workflow workflow) throws WorkflowException {
+      IProgressMonitor monitor, String nodeName, Workflow workflow) throws PreesmException {
 
     final Design architecture = (Design) inputs.get(AbstractWorkflowNodeImplementation.KEY_ARCHITECTURE);
     final PreesmScenario scenario = (PreesmScenario) inputs.get(AbstractWorkflowNodeImplementation.KEY_SCENARIO);
     final PiGraph graph = (PiGraph) inputs.get(AbstractWorkflowNodeImplementation.KEY_PI_GRAPH);
 
     if (!graph.getChildrenGraphs().isEmpty()) {
-      throw new WorkflowException("This task must be called with a flatten PiMM graph, abandon.");
+      throw new PreesmException("This task must be called with a flatten PiMM graph, abandon.");
     }
 
     final String rateStr = parameters.get(SELECTION_RATE);
@@ -93,10 +93,10 @@ public class PeriodsPreschedulingChecker extends AbstractTaskImplementation {
     try {
       rate = Integer.parseInt(rateStr);
       if (rate < 0 || rate > 100) {
-        throw new WorkflowException(GENERIC_RATE_ERROR + rate + ".");
+        throw new PreesmException(GENERIC_RATE_ERROR + rate + ".");
       }
     } catch (NumberFormatException e) {
-      throw new WorkflowException(GENERIC_RATE_ERROR + rateStr + ".", e);
+      throw new PreesmException(GENERIC_RATE_ERROR + rateStr + ".", e);
     }
 
     final Map<Actor, Long> periodicActors = new HashMap<>();

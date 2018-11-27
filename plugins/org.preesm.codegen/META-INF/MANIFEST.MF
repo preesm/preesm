@@ -18,8 +18,7 @@ Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Bundle-ClassPath: .
 Bundle-Vendor: %providerName
 Bundle-Localization: plugin
-Export-Package: org.preesm.codegen,
- org.preesm.codegen.model,
+Export-Package: org.preesm.codegen.model,
  org.preesm.codegen.model.impl,
  org.preesm.codegen.model.util,
  org.preesm.codegen.printer,

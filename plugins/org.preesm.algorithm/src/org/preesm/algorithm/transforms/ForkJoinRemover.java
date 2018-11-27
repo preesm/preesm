@@ -57,10 +57,10 @@ import org.preesm.algorithm.model.sdf.SDFGraph;
 import org.preesm.algorithm.model.sdf.esdf.SDFBroadcastVertex;
 import org.preesm.algorithm.model.sdf.esdf.SDFJoinVertex;
 import org.preesm.algorithm.model.sdf.esdf.SDFRoundBufferVertex;
+import org.preesm.commons.exceptions.PreesmException;
 import org.preesm.commons.logger.PreesmLogger;
 import org.preesm.model.scenario.types.ImplementationPropertyNames;
 import org.preesm.model.scenario.types.VertexType;
-import org.preesm.workflow.WorkflowException;
 
 /**
  * Utility class created to gather all static methods used to remove fork/join nodes from a graph.
@@ -89,7 +89,7 @@ public class ForkJoinRemover {
     try {
       iterSDFVertices = new SDFIterator(hsdf);
     } catch (final RuntimeException e) {
-      throw new WorkflowException(e.getMessage(), e);
+      throw new PreesmException(e.getMessage(), e);
     }
 
     // Keep track of the initial number of edge to check if the right number

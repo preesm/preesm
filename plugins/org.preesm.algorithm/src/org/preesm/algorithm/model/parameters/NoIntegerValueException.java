@@ -36,16 +36,16 @@
  */
 package org.preesm.algorithm.model.parameters;
 
+import org.preesm.commons.exceptions.PreesmException;
 import org.preesm.workflow.AbstractWorkflowExecutor;
-import org.preesm.workflow.WorkflowException;
 
 /**
  * The Class NoIntegerValueException.
  *
- * This extends {@link WorkflowException} so that it is caught by the {@link AbstractWorkflowExecutor}.
+ * This extends {@link PreesmException} so that it is caught by the {@link AbstractWorkflowExecutor}.
  *
  */
-public class NoIntegerValueException extends WorkflowException {
+public class NoIntegerValueException extends PreesmException {
 
   /** The Constant serialVersionUID. */
   private static final long serialVersionUID = 329486828642421615L;

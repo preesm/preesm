@@ -38,8 +38,8 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.logging.Level;
 import org.eclipse.core.runtime.IProgressMonitor;
+import org.preesm.commons.exceptions.PreesmException;
 import org.preesm.commons.logger.PreesmLogger;
-import org.preesm.workflow.WorkflowException;
 import org.preesm.workflow.elements.Workflow;
 
 /**
@@ -131,7 +131,7 @@ public abstract class AbstractTaskImplementation extends AbstractWorkflowNodeImp
    * @param workflow
    *          the workflow that launched the task
    * @return a map associating output objects to their data type in the graph
-   * @throws WorkflowException
+   * @throws PreesmException
    *           the workflow exception
    */
   public abstract Map<String, Object> execute(Map<String, Object> inputs, Map<String, String> parameters,

@@ -65,10 +65,10 @@ import org.preesm.algorithm.mapper.params.FastAlgoParameters;
 import org.preesm.algorithm.mapper.params.PFastAlgoParameters;
 import org.preesm.algorithm.mapper.ui.BestCostPlotter;
 import org.preesm.algorithm.mapper.ui.bestcost.BestCostEditor;
+import org.preesm.commons.exceptions.PreesmException;
 import org.preesm.commons.logger.PreesmLogger;
 import org.preesm.model.scenario.PreesmScenario;
 import org.preesm.model.slam.Design;
-import org.preesm.workflow.WorkflowException;
 
 /**
  * Task scheduling FAST algorithm multithread.
@@ -299,7 +299,7 @@ public class PFastAlgorithm extends Observable {
    * @param taskSched
    *          the task sched
    * @return MapperDAG
-   * @throws WorkflowException
+   * @throws PreesmException
    *           the workflow exception
    */
   public MapperDAG map(MapperDAG dag, final Design archi, final PreesmScenario scenario,

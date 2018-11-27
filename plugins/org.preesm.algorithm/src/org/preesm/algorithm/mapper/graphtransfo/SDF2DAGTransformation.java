@@ -44,9 +44,9 @@ import org.eclipse.core.runtime.IProgressMonitor;
 import org.preesm.algorithm.mapper.model.MapperDAG;
 import org.preesm.algorithm.model.sdf.SDFGraph;
 import org.preesm.algorithm.model.visitors.SDF4JException;
+import org.preesm.commons.exceptions.PreesmException;
 import org.preesm.model.scenario.PreesmScenario;
 import org.preesm.model.slam.Design;
-import org.preesm.workflow.WorkflowException;
 import org.preesm.workflow.elements.Workflow;
 import org.preesm.workflow.implement.AbstractTaskImplementation;
 import org.preesm.workflow.implement.AbstractWorkflowNodeImplementation;
@@ -67,7 +67,7 @@ public class SDF2DAGTransformation extends AbstractTaskImplementation {
    */
   @Override
   public Map<String, Object> execute(Map<String, Object> inputs, Map<String, String> parameters,
-      IProgressMonitor monitor, String nodeName, Workflow workflow) throws WorkflowException {
+      IProgressMonitor monitor, String nodeName, Workflow workflow) throws PreesmException {
     final SDFGraph algorithm = (SDFGraph) inputs.get(AbstractWorkflowNodeImplementation.KEY_SDF_GRAPH);
     final PreesmScenario scenario = (PreesmScenario) inputs.get(AbstractWorkflowNodeImplementation.KEY_SCENARIO);
     final Design architecture = (Design) inputs.get(AbstractWorkflowNodeImplementation.KEY_ARCHITECTURE);
@@ -76,7 +76,7 @@ public class SDF2DAGTransformation extends AbstractTaskImplementation {
     try {
       dag = SdfToDagConverter.convert(algorithm, architecture, scenario);
     } catch (SDF4JException e) {
-      throw (new WorkflowException(e.getMessage()));
+      throw (new PreesmException(e.getMessage()));
     }
     // TODO Auto-generated method stub
     final Map<String, Object> outputs = new LinkedHashMap<>();

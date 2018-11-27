@@ -62,7 +62,6 @@ import org.preesm.model.pisdf.PortMemoryAnnotation;
 import org.preesm.model.pisdf.RoundBufferActor;
 import org.preesm.model.pisdf.factory.PiMMUserFactory;
 import org.preesm.model.scenario.PreesmScenario;
-import org.preesm.workflow.WorkflowException;
 
 /**
  *
@@ -117,9 +116,9 @@ public class PiMMSRVerticesLinker {
     final Expression portRateExpression = targetPort.getPortRateExpression();
     final long targetRate = portRateExpression.evaluate();
     if (nDelays < 0) {
-      throw new WorkflowException("Invalid number of delays on fifo[" + fifo.getId() + "]: " + Long.toString(nDelays));
+      throw new PreesmException("Invalid number of delays on fifo[" + fifo.getId() + "]: " + Long.toString(nDelays));
     } else if (nDelays < targetRate) {
-      throw new WorkflowException("Not enough delays on fifo[" + fifo.getId() + "]: number of delays: "
+      throw new PreesmException("Not enough delays on fifo[" + fifo.getId() + "]: number of delays: "
           + Long.toString(nDelays) + ", consumption: " + Long.toString(targetRate));
     }
     return nDelays;

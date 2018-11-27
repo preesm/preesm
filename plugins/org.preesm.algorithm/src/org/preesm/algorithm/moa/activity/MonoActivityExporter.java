@@ -51,6 +51,7 @@ import org.eclipse.core.runtime.Path;
 import org.preesm.algorithm.mapper.abc.impl.latency.LatencyAbc;
 import org.preesm.algorithm.mapper.model.MapperDAGEdge;
 import org.preesm.algorithm.mapper.model.MapperDAGVertex;
+import org.preesm.commons.exceptions.PreesmException;
 import org.preesm.commons.files.ContainersManager;
 import org.preesm.commons.files.PathTools;
 import org.preesm.commons.logger.PreesmLogger;
@@ -60,7 +61,6 @@ import org.preesm.model.slam.Design;
 import org.preesm.model.slam.route.AbstractRouteStep;
 import org.preesm.model.slam.route.MessageRouteStep;
 import org.preesm.model.slam.route.Route;
-import org.preesm.workflow.WorkflowException;
 import org.preesm.workflow.elements.Workflow;
 import org.preesm.workflow.implement.AbstractTaskImplementation;
 
@@ -229,7 +229,7 @@ class MonoActivityExporter extends AbstractTaskImplementation {
         ContainersManager.createMissingFolders(path);
       }
     } catch (CoreException e) {
-      throw new WorkflowException("Path " + path + " is not a valid path for export.");
+      throw new PreesmException("Path " + path + " is not a valid path for export.");
     }
 
     IFile iFile = ResourcesPlugin.getWorkspace().getRoot().getFile(path);

@@ -65,6 +65,7 @@ import org.preesm.algorithm.model.sdf.SDFVertex;
 import org.preesm.algorithm.model.types.LongEdgePropertyType;
 import org.preesm.algorithm.model.types.LongVertexPropertyType;
 import org.preesm.algorithm.model.types.StringEdgePropertyType;
+import org.preesm.commons.exceptions.PreesmException;
 import org.preesm.commons.logger.PreesmLogger;
 import org.preesm.model.pisdf.AbstractActor;
 import org.preesm.model.pisdf.Actor;
@@ -98,7 +99,6 @@ import org.preesm.model.pisdf.Refinement;
 import org.preesm.model.pisdf.RoundBufferActor;
 import org.preesm.model.pisdf.util.PiMMSwitch;
 import org.preesm.model.scenario.PreesmScenario;
-import org.preesm.workflow.WorkflowException;
 
 /**
  * @author farresti
@@ -261,7 +261,7 @@ public class StaticPiMM2MapperDAGVisitor extends PiMMSwitch<Boolean> {
     // Check Join use
     if (actor.getDataOutputPorts().size() > 1) {
       final String message = "Join actors should have only one output. Bad use on [" + actor.getVertexPath() + "]";
-      throw new WorkflowException(message);
+      throw new PreesmException(message);
     }
     // Handle input parameters as instance arguments
     setArguments(actor, vertex);
@@ -284,7 +284,7 @@ public class StaticPiMM2MapperDAGVisitor extends PiMMSwitch<Boolean> {
     // Check Fork use
     if (actor.getDataInputPorts().size() > 1) {
       final String message = "Fork actors should have only one input. Bad use on [" + actor.getVertexPath() + "]";
-      throw new WorkflowException(message);
+      throw new PreesmException(message);
     }
     // Handle input parameters as instance arguments
     setArguments(actor, vertex);

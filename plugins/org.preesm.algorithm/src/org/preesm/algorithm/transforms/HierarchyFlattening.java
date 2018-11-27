@@ -52,8 +52,8 @@ import org.preesm.algorithm.model.sdf.transformations.IbsdfFlattener;
 import org.preesm.algorithm.model.sdf.visitors.ConsistencyChecker;
 import org.preesm.algorithm.model.visitors.SDF4JException;
 import org.preesm.algorithm.model.visitors.VisitorOutput;
+import org.preesm.commons.exceptions.PreesmException;
 import org.preesm.commons.logger.PreesmLogger;
-import org.preesm.workflow.WorkflowException;
 import org.preesm.workflow.elements.Workflow;
 import org.preesm.workflow.implement.AbstractTaskImplementation;
 
@@ -114,7 +114,7 @@ public class HierarchyFlattening extends AbstractTaskImplementation {
           try {
             flattener.flattenGraph();
           } catch (final SDF4JException e) {
-            throw (new WorkflowException(e.getMessage(), e));
+            throw (new PreesmException(e.getMessage(), e));
           }
           HierarchyFlattening.LOGGER.log(Level.INFO, "Flattening complete with depth " + depth);
           final SDFGraph resultGraph = flattener.getFlattenedGraph();
@@ -122,13 +122,13 @@ public class HierarchyFlattening extends AbstractTaskImplementation {
           outputs.put("SDF", resultGraph);
         } else {
           final String message = "Could not compute a schedule, graph can't be flattened";
-          throw (new WorkflowException(message));
+          throw (new PreesmException(message));
         }
       } catch (final SDF4JException e) {
-        throw (new WorkflowException(e.getMessage(), e));
+        throw (new PreesmException(e.getMessage(), e));
       }
     } else {
-      throw new WorkflowException("Inconsistent Hierarchy, graph can't be flattened");
+      throw new PreesmException("Inconsistent Hierarchy, graph can't be flattened");
     }
 
     timer.stop();

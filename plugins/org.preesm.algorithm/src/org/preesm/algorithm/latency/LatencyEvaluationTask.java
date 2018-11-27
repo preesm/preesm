@@ -48,9 +48,9 @@ import org.preesm.algorithm.throughput.tools.helpers.GraphStructureHelper;
 import org.preesm.algorithm.throughput.tools.helpers.Stopwatch;
 import org.preesm.algorithm.throughput.tools.transformers.IBSDFTransformer;
 import org.preesm.algorithm.throughput.tools.transformers.SrSDFTransformer;
+import org.preesm.commons.exceptions.PreesmException;
 import org.preesm.commons.logger.PreesmLogger;
 import org.preesm.model.scenario.PreesmScenario;
-import org.preesm.workflow.WorkflowException;
 import org.preesm.workflow.elements.Workflow;
 import org.preesm.workflow.implement.AbstractTaskImplementation;
 
@@ -78,7 +78,7 @@ public class LatencyEvaluationTask extends AbstractTaskImplementation {
 
   @Override
   public Map<String, Object> execute(final Map<String, Object> inputs, final Map<String, String> parameters,
-      final IProgressMonitor monitor, final String nodeName, final Workflow workflow) throws WorkflowException {
+      final IProgressMonitor monitor, final String nodeName, final Workflow workflow) throws PreesmException {
 
     // get the input graph, the scenario for actors duration, and the total number of cores
     final SDFGraph inputGraph = GraphStructureHelper.cloneIBSDF((SDFGraph) inputs.get("SDF"));

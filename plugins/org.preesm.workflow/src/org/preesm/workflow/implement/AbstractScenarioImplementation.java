@@ -37,7 +37,7 @@
 package org.preesm.workflow.implement;
 
 import java.util.Map;
-import org.preesm.workflow.WorkflowException;
+import org.preesm.commons.exceptions.PreesmException;
 
 /**
  * Abstract scenario that can be implemented by a plugin wanting workflow execution capabilities. The prototype of the
@@ -64,7 +64,7 @@ public abstract class AbstractScenarioImplementation extends AbstractWorkflowNod
    * @param path
    *          the path
    * @return the map
-   * @throws WorkflowException
+   * @throws PreesmException
    *           the workflow exception
    */
   public abstract Map<String, Object> extractData(String path);

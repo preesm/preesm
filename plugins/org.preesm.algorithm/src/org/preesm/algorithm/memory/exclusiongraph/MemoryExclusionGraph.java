@@ -71,13 +71,13 @@ import org.preesm.algorithm.model.dag.edag.DAGJoinVertex;
 import org.preesm.algorithm.model.parameters.InvalidExpressionException;
 import org.preesm.algorithm.model.sdf.esdf.SDFInitVertex;
 import org.preesm.commons.CloneableProperty;
+import org.preesm.commons.exceptions.PreesmException;
 import org.preesm.commons.logger.PreesmLogger;
 import org.preesm.model.scenario.types.BufferAggregate;
 import org.preesm.model.scenario.types.DataType;
 import org.preesm.model.scenario.types.ImplementationPropertyNames;
 import org.preesm.model.scenario.types.VertexType;
 import org.preesm.model.slam.ComponentInstance;
-import org.preesm.workflow.WorkflowException;
 
 // TODO: Auto-generated Javadoc
 /**
@@ -388,10 +388,10 @@ public class MemoryExclusionGraph extends SimpleGraph<MemoryExclusionVertex, Def
    *          "merge" node are treated before treating the "merge" node. The DAG will be modified by this function.
    * @throws InvalidExpressionException
    *           the invalid expression exception
-   * @throws WorkflowException
+   * @throws PreesmException
    *           the workflow exception
    */
-  public void buildGraph(final DirectedAcyclicGraph dag) throws InvalidExpressionException, WorkflowException {
+  public void buildGraph(final DirectedAcyclicGraph dag) throws InvalidExpressionException, PreesmException {
 
     final String localOrdering = "memExBuildingLocalOrdering";
 
@@ -560,7 +560,7 @@ public class MemoryExclusionGraph extends SimpleGraph<MemoryExclusionVertex, Def
         } else {
           // If the node was not added.
           // Should never happen
-          throw new WorkflowException(
+          throw new PreesmException(
               "The exclusion graph vertex corresponding to edge " + edge.toString() + " was not added to the graph.");
         }
       }

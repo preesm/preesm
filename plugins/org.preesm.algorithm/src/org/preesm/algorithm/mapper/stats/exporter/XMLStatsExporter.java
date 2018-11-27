@@ -45,9 +45,9 @@ import org.preesm.algorithm.mapper.gantt.GanttComponent;
 import org.preesm.algorithm.mapper.gantt.GanttData;
 import org.preesm.algorithm.mapper.gantt.GanttTask;
 import org.preesm.algorithm.mapper.ui.stats.StatGenerator;
+import org.preesm.commons.exceptions.PreesmException;
 import org.preesm.model.slam.ComponentInstance;
 import org.preesm.model.slam.utils.DesignTools;
-import org.preesm.workflow.WorkflowException;
 
 /**
  * This class exports stats from an IAbc (architecture benchmark computer) in XML format.
@@ -134,7 +134,7 @@ public class XMLStatsExporter {
     append(XMLStatsExporter.NLT + XMLStatsExporter.TAB + "work=\"");
     try {
       append(statGen.getDAGWorkLength());
-    } catch (final WorkflowException e) {
+    } catch (final PreesmException e) {
       throw new PreesmMapperException("Could not generate perf stats.", e);
     }
     append("\"");

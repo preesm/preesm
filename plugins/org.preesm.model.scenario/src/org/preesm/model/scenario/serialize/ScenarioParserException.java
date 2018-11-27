@@ -34,14 +34,14 @@
  */
 package org.preesm.model.scenario.serialize;
 
-import org.preesm.workflow.WorkflowException;
+import org.preesm.commons.exceptions.PreesmException;
 
 /**
  *
  * @author anmorvan
  *
  */
-public class ScenarioParserException extends WorkflowException {
+public class ScenarioParserException extends PreesmException {
 
   public ScenarioParserException(final String string, final Exception e) {
     super(string, e);

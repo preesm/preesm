@@ -36,18 +36,18 @@
  */
 package org.preesm.algorithm.model.parameters;
 
+import org.preesm.commons.exceptions.PreesmException;
 import org.preesm.workflow.AbstractWorkflowExecutor;
-import org.preesm.workflow.WorkflowException;
 
 /**
  * Class representing exception while solving expressions.
  *
- * This extends {@link WorkflowException} so that it is caught by the {@link AbstractWorkflowExecutor}.
+ * This extends {@link PreesmException} so that it is caught by the {@link AbstractWorkflowExecutor}.
  *
  * @author jpiat
  * @author Antoine Morvan
  */
-public class InvalidExpressionException extends WorkflowException {
+public class InvalidExpressionException extends PreesmException {
 
   /** The Constant serialVersionUID. */
   private static final long serialVersionUID = 8877519082638596867L;

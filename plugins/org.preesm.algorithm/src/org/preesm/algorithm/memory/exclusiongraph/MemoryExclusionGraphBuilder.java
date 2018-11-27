@@ -46,10 +46,10 @@ import org.eclipse.core.runtime.IProgressMonitor;
 import org.preesm.algorithm.model.dag.DirectedAcyclicGraph;
 import org.preesm.algorithm.model.parameters.InvalidExpressionException;
 import org.preesm.algorithm.transforms.ForkJoinRemover;
+import org.preesm.commons.exceptions.PreesmException;
 import org.preesm.commons.logger.PreesmLogger;
 import org.preesm.model.scenario.PreesmScenario;
 import org.preesm.model.scenario.types.DataType;
-import org.preesm.workflow.WorkflowException;
 import org.preesm.workflow.elements.Workflow;
 import org.preesm.workflow.implement.AbstractTaskImplementation;
 import org.preesm.workflow.implement.AbstractWorkflowNodeImplementation;
@@ -86,7 +86,7 @@ public class MemoryExclusionGraphBuilder extends AbstractTaskImplementation {
    */
   @Override
   public Map<String, Object> execute(final Map<String, Object> inputs, final Map<String, String> parameters,
-      final IProgressMonitor monitor, final String nodeName, final Workflow workflow) throws WorkflowException {
+      final IProgressMonitor monitor, final String nodeName, final Workflow workflow) throws PreesmException {
 
     // Rem: Logger is used to display messages in the console
     final Logger logger = PreesmLogger.getLogger();
@@ -127,7 +127,7 @@ public class MemoryExclusionGraphBuilder extends AbstractTaskImplementation {
     try {
       memEx.buildGraph(localDAG);
     } catch (final InvalidExpressionException e) {
-      throw new WorkflowException(e.getLocalizedMessage());
+      throw new PreesmException(e.getLocalizedMessage());
     }
     final double density = memEx.edgeSet().size() / ((memEx.vertexSet().size() * (memEx.vertexSet().size() - 1)) / 2.0);
     if (verbose) {

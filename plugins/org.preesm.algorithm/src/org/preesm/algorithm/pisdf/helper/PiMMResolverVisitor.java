@@ -42,6 +42,7 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import org.eclipse.emf.common.util.EList;
 import org.nfunk.jep.JEP;
+import org.preesm.commons.exceptions.PreesmException;
 import org.preesm.model.pisdf.AbstractActor;
 import org.preesm.model.pisdf.ConfigInputInterface;
 import org.preesm.model.pisdf.ConfigInputPort;
@@ -57,7 +58,6 @@ import org.preesm.model.pisdf.InterfaceActor;
 import org.preesm.model.pisdf.Parameter;
 import org.preesm.model.pisdf.PiGraph;
 import org.preesm.model.pisdf.util.PiMMSwitch;
-import org.preesm.workflow.WorkflowException;
 
 /**
  * @author farresti
@@ -153,7 +153,7 @@ public class PiMMResolverVisitor extends PiMMSwitch<Boolean> {
   @Override
   public Boolean caseParameter(final Parameter p) {
     if (!p.isLocallyStatic()) {
-      throw new WorkflowException(
+      throw new PreesmException(
           "Parameter " + p.getName() + " is depends on a configuration actor. It is thus impossible to use the"
               + " Static PiMM 2 SDF transformation. Try instead the Dynamic PiMM 2 SDF"
               + " transformation (id: org.ietr.preesm.experiment.pimm2sdf.PiMM2SDFTask)");

@@ -48,6 +48,7 @@ import java.util.logging.Level;
 import org.apache.commons.lang3.time.StopWatch;
 import org.eclipse.emf.common.util.EList;
 import org.eclipse.emf.ecore.util.EcoreUtil;
+import org.preesm.commons.exceptions.PreesmException;
 import org.preesm.commons.logger.PreesmLogger;
 import org.preesm.model.pisdf.AbstractActor;
 import org.preesm.model.pisdf.AbstractVertex;
@@ -83,7 +84,6 @@ import org.preesm.model.scenario.ConstraintGroupManager;
 import org.preesm.model.scenario.PreesmScenario;
 import org.preesm.model.scenario.Timing;
 import org.preesm.model.scenario.TimingManager;
-import org.preesm.workflow.WorkflowException;
 
 /**
  * @author farresti
@@ -445,7 +445,7 @@ public class StaticPiMM2ASrPiMMVisitor extends PiMMSwitch<Boolean> {
       // We should retrieve the correct source set
       final String key = sourceActor.getName() + "_" + sourcePort.getName();
       if (!this.outPort2SRActors.containsKey(key)) {
-        throw new WorkflowException("No replacement found for DataOutputPort [" + sourcePort.getName()
+        throw new PreesmException("No replacement found for DataOutputPort [" + sourcePort.getName()
             + "] of hierarchical actor [" + sourceActor.getName() + "].");
       }
       final List<AbstractVertex> sourceSet = this.outPort2SRActors.remove(key);
@@ -578,7 +578,7 @@ public class StaticPiMM2ASrPiMMVisitor extends PiMMSwitch<Boolean> {
       // We should retrieve the correct source set
       final String key = sinkActor.getName() + "_" + targetPort.getName();
       if (!this.inPort2SRActors.containsKey(key)) {
-        throw new WorkflowException("No replacement found for DataInputPort [" + targetPort.getName()
+        throw new PreesmException("No replacement found for DataInputPort [" + targetPort.getName()
             + "] of hierarchical actor [" + sinkActor.getName() + "].");
       }
       final List<AbstractVertex> sinkSet = this.inPort2SRActors.remove(key);

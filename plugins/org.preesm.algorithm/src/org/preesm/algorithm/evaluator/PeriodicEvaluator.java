@@ -43,9 +43,9 @@ import org.preesm.algorithm.model.parameters.InvalidExpressionException;
 import org.preesm.algorithm.model.sdf.SDFAbstractVertex;
 import org.preesm.algorithm.model.sdf.SDFGraph;
 import org.preesm.algorithm.model.visitors.SDF4JException;
+import org.preesm.commons.exceptions.PreesmException;
 import org.preesm.commons.logger.PreesmLogger;
 import org.preesm.model.scenario.PreesmScenario;
-import org.preesm.workflow.WorkflowException;
 import org.preesm.workflow.elements.Workflow;
 import org.preesm.workflow.implement.AbstractTaskImplementation;
 
@@ -66,7 +66,7 @@ public class PeriodicEvaluator extends AbstractTaskImplementation {
    */
   @Override
   public Map<String, Object> execute(final Map<String, Object> inputs, final Map<String, String> parameters,
-      final IProgressMonitor monitor, final String nodeName, final Workflow workflow) throws WorkflowException {
+      final IProgressMonitor monitor, final String nodeName, final Workflow workflow) throws PreesmException {
 
     double period;
     double throughput = 0;
@@ -81,7 +81,7 @@ public class PeriodicEvaluator extends AbstractTaskImplementation {
     try {
       inputGraph.accept(normalize);
     } catch (final SDF4JException e) {
-      throw (new WorkflowException("The graph cannot be normalized"));
+      throw (new PreesmException("The graph cannot be normalized"));
     }
     final SDFGraph NormSDF = normalize.getOutput();
     PreesmLogger.getLogger().log(Level.INFO, "Normalization finished");

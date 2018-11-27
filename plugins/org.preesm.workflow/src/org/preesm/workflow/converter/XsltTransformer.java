@@ -47,7 +47,7 @@ import javax.xml.transform.TransformerException;
 import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.stream.StreamResult;
 import javax.xml.transform.stream.StreamSource;
-import org.preesm.workflow.WorkflowException;
+import org.preesm.commons.exceptions.PreesmException;
 
 /**
  * This class provides methods to transform an XML file via XSLT
@@ -87,11 +87,11 @@ public class XsltTransformer {
     try {
       this.transformer = factory.newTransformer(source);
     } catch (final Exception e) {
-      throw new WorkflowException("Could not transform Xslt", e);
+      throw new PreesmException("Could not transform Xslt", e);
     }
 
     if (this.transformer == null) {
-      throw new WorkflowException("XSL sheet not found or not valid: " + xslFileLoc);
+      throw new PreesmException("XSL sheet not found or not valid: " + xslFileLoc);
     }
     this.transformer.setOutputProperty(OutputKeys.INDENT, "yes");
     return true;
@@ -109,9 +109,9 @@ public class XsltTransformer {
             new StreamResult(new FileOutputStream(destFileLoc)));
       } catch (final FileNotFoundException ex) {
         final String message = "Problem finding files for XSL transfo (" + sourceFileLoc + "," + destFileLoc + ")";
-        throw new WorkflowException(message, ex);
+        throw new PreesmException(message, ex);
       } catch (final TransformerException ex) {
-        throw new WorkflowException("Could not transform file", ex);
+        throw new PreesmException("Could not transform file", ex);
       }
     }
 

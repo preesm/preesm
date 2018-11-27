@@ -71,14 +71,13 @@ import org.eclipse.emf.ecore.resource.impl.ResourceSetImpl;
 import org.eclipse.emf.ecore.xmi.impl.XMIResourceFactoryImpl;
 import org.preesm.algorithm.mapper.model.MapperDAG;
 import org.preesm.algorithm.memory.exclusiongraph.MemoryExclusionGraph;
-import org.preesm.codegen.CodegenException;
 import org.preesm.codegen.model.Block;
 import org.preesm.codegen.model.CoreBlock;
 import org.preesm.codegen.printer.CodegenAbstractPrinter;
+import org.preesm.commons.exceptions.PreesmException;
 import org.preesm.commons.logger.PreesmLogger;
 import org.preesm.model.scenario.PreesmScenario;
 import org.preesm.model.slam.Design;
-import org.preesm.workflow.WorkflowException;
 
 /**
  * The Class CodegenEngine.
@@ -173,10 +172,10 @@ public class CodegenEngine {
    *
    * @param selectedPrinter
    *          the selected printer
-   * @throws WorkflowException
+   * @throws PreesmException
    *           the workflow exception
    */
-  public void registerPrintersAndBlocks(final String selectedPrinter) throws WorkflowException {
+  public void registerPrintersAndBlocks(final String selectedPrinter) throws PreesmException {
     this.registeredPrintersAndBlocks = new LinkedHashMap<>();
 
     // 1. Get the printers of the desired "language"
@@ -218,11 +217,11 @@ public class CodegenEngine {
           }
           blocks.add(b);
         } else {
-          throw new WorkflowException(
+          throw new PreesmException(
               "Could not find a printer for language \"" + selectedPrinter + "\" and core type \"" + coreType + "\".");
         }
       } else {
-        throw new WorkflowException("Only CoreBlock CodeBlocks can be printed in the current version of Preesm.");
+        throw new PreesmException("Only CoreBlock CodeBlocks can be printed in the current version of Preesm.");
       }
     }
   }
@@ -230,7 +229,7 @@ public class CodegenEngine {
   /**
    * Preprocess printers.
    *
-   * @throws WorkflowException
+   * @throws PreesmException
    *           the workflow exception
    */
   public void preprocessPrinters() {
@@ -246,7 +245,7 @@ public class CodegenEngine {
       try {
         printer = (CodegenAbstractPrinter) printerAndBlocks.getKey().createExecutableExtension("class");
       } catch (final CoreException e) {
-        throw new WorkflowException(e.getMessage(), e);
+        throw new PreesmException(e.getMessage(), e);
       }
 
       // Erase previous files with extension
@@ -257,7 +256,7 @@ public class CodegenEngine {
         final IFolder f = workspace.getRoot().getFolder(new Path(this.codegenPath));
         final IPath rawLocation = f.getRawLocation();
         if (rawLocation == null) {
-          throw new CodegenException("Could not find target project for given path [" + this.codegenPath
+          throw new PreesmException("Could not find target project for given path [" + this.codegenPath
               + "]. Please change path in the scenario editor.");
         }
         final String osString = rawLocation.toOSString();
@@ -285,8 +284,8 @@ public class CodegenEngine {
           }
         }
       } catch (CoreException | FileNotFoundException e) {
-        throw new WorkflowException(
-            "Could not access target directory [" + this.codegenPath + "] during code generation", e);
+        throw new PreesmException("Could not access target directory [" + this.codegenPath + "] during code generation",
+            e);
       }
 
       // initialize printer engine
@@ -346,7 +345,7 @@ public class CodegenEngine {
           new NullProgressMonitor());
 
     } catch (final CoreException ex) {
-      throw new CodegenException("Could not generated source file for " + fileName, ex);
+      throw new PreesmException("Could not generated source file for " + fileName, ex);
     }
   }
 }

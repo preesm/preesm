@@ -73,7 +73,7 @@ import org.preesm.algorithm.model.types.LongEdgePropertyType;
 import org.preesm.algorithm.model.types.LongVertexPropertyType;
 import org.preesm.algorithm.model.visitors.IGraphVisitor;
 import org.preesm.algorithm.model.visitors.SDF4JException;
-import org.preesm.workflow.WorkflowException;
+import org.preesm.commons.exceptions.PreesmException;
 
 /**
  * Visitor to use to transform a SDF Graph in a Directed Acyclic Graph.
@@ -270,7 +270,7 @@ public class DAGTransformation<T extends DirectedAcyclicGraph>
             try {
               createEdge(edge);
             } catch (final CreateMultigraphException | CreateCycleException e) {
-              throw new WorkflowException(
+              throw new PreesmException(
                   "Error in the DAG creation. Check the single-rate SDF to identify where delays are missing", e);
             }
           }

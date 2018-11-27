@@ -55,12 +55,12 @@ import org.preesm.algorithm.mapper.model.special.TransferVertex;
 import org.preesm.algorithm.model.PropertyBean;
 import org.preesm.algorithm.model.dag.DAGEdge;
 import org.preesm.algorithm.model.dag.DAGVertex;
+import org.preesm.commons.exceptions.PreesmException;
 import org.preesm.model.scenario.PreesmScenario;
 import org.preesm.model.scenario.types.ImplementationPropertyNames;
 import org.preesm.model.scenario.types.VertexType;
 import org.preesm.model.slam.ComponentInstance;
 import org.preesm.model.slam.utils.DesignTools;
-import org.preesm.workflow.WorkflowException;
 
 /**
  * Generating the statistics to be displayed in stat editor.
@@ -128,7 +128,7 @@ public class StatGenerator {
    * The work is the sum of all task lengths excluding vertices added by the mapping.
    *
    * @return the DAG work length
-   * @throws WorkflowException
+   * @throws PreesmException
    *           the workflow exception
    */
   public long getDAGWorkLength() {
