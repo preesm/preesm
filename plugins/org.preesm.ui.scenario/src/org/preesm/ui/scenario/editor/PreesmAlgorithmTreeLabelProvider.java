@@ -37,7 +37,6 @@
 package org.preesm.ui.scenario.editor;
 
 import org.eclipse.jface.viewers.LabelProvider;
-import org.preesm.algorithm.model.sdf.SDFGraph;
 import org.preesm.model.pisdf.AbstractActor;
 
 // TODO: Auto-generated Javadoc
@@ -56,11 +55,7 @@ public class PreesmAlgorithmTreeLabelProvider extends LabelProvider {
   @Override
   public String getText(final Object element) {
     String name = "";
-    if (element instanceof HierarchicalSDFVertex) {
-      name = ((HierarchicalSDFVertex) element).getName();
-    } else if (element instanceof SDFGraph) {
-      name = "graph";
-    } else if (element instanceof AbstractActor) {
+    if (element instanceof AbstractActor) {
       name = ((AbstractActor) element).getName();
     }
 

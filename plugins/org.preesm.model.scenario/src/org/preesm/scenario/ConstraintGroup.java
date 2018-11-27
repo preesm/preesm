@@ -42,7 +42,6 @@ import java.util.Iterator;
 import java.util.LinkedHashSet;
 import java.util.Set;
 
-// TODO: Auto-generated Javadoc
 /**
  * A ConstraintGroup associates a set of graph definitions and a set of processing units on which they can be matched.
  *

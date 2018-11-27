@@ -50,9 +50,6 @@ import org.eclipse.core.resources.IWorkspace;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.Path;
-import org.preesm.algorithm.io.gml.InvalidModelException;
-import org.preesm.algorithm.model.sdf.SDFAbstractVertex;
-import org.preesm.algorithm.model.sdf.SDFGraph;
 import org.preesm.commons.exceptions.PreesmException;
 import org.preesm.commons.files.WorkspaceUtils;
 import org.preesm.commons.logger.PreesmLogger;
@@ -91,12 +88,10 @@ public class ExcelConstraintsParser {
    *          the url
    * @param allOperatorIds
    *          the all operator ids
-   * @throws InvalidModelException
-   *           the invalid model exception
    * @throws CoreException
    *           the core exception
    */
-  public void parse(final String url, final Set<String> allOperatorIds) throws InvalidModelException, CoreException {
+  public void parse(final String url, final Set<String> allOperatorIds) throws CoreException {
 
     final IWorkspace workspace = ResourcesPlugin.getWorkspace();
 
@@ -118,14 +113,7 @@ public class ExcelConstraintsParser {
       final Set<String> missingOperators = new LinkedHashSet<>();
 
       if (this.scenario.isIBSDFScenario()) {
-        final SDFGraph currentIBSDFGraph = ScenarioParser.getSDFGraph(this.scenario.getAlgorithmURL());
-        for (final SDFAbstractVertex vertex : currentIBSDFGraph.getHierarchicalVertexSet()) {
-          if (vertex.getKind().equalsIgnoreCase("vertex")) {
-            for (final String operatorId : allOperatorIds) {
-              checkOpIBSDFConstraint(w, operatorId, vertex, missingVertices, missingOperators);
-            }
-          }
-        }
+        throw new PreesmException("IBSDF is not supported anymore");
       } else if (this.scenario.isPISDFScenario()) {
         final PiGraph currentPiGraph = PiParser.getPiGraph(this.scenario.getAlgorithmURL());
         for (final AbstractActor vertex : currentPiGraph.getAllActors()) {
@@ -194,54 +182,4 @@ public class ExcelConstraintsParser {
     }
   }
 
-  /**
-   * Importing constraints from component names.
-   *
-   * @param w
-   *          the w
-   * @param operatorId
-   *          the operator id
-   * @param vertex
-   *          the vertex
-   * @param missingVertices
-   *          the missing vertices
-   * @param missingOperators
-   *          the missing operators
-   */
-  private void checkOpIBSDFConstraint(final Workbook w, final String operatorId, final SDFAbstractVertex vertex,
-      final Set<String> missingVertices, final Set<String> missingOperators) {
-    final String vertexName = vertex.getName();
-
-    if (!operatorId.isEmpty() && !vertexName.isEmpty()) {
-      final Cell vertexCell = w.getSheet(0).findCell(vertexName);
-      final Cell operatorCell = w.getSheet(0).findCell(operatorId);
-
-      if ((vertexCell != null) && (operatorCell != null)) {
-        final Cell timingCell = w.getSheet(0).getCell(operatorCell.getColumn(), vertexCell.getRow());
-
-        if (timingCell.getType().equals(CellType.NUMBER) || timingCell.getType().equals(CellType.NUMBER_FORMULA)) {
-
-          this.scenario.getConstraintGroupManager().addConstraint(operatorId, vertex);
-
-          PreesmLogger.getLogger().log(Level.FINE, "Importing constraint: {" + operatorId + "," + vertex + ",yes}");
-
-        } else {
-          PreesmLogger.getLogger().log(Level.FINE, "Importing constraint: {" + operatorId + "," + vertex + ",no}");
-        }
-      } else {
-        if ((vertexCell == null) && !missingVertices.contains(vertexName)) {
-          if (vertex.getGraphDescription() != null) {
-            PreesmLogger.getLogger().log(Level.WARNING,
-                "No line found in excel sheet for hierarchical vertex: " + vertexName);
-          } else {
-            PreesmLogger.getLogger().log(Level.SEVERE, "No line found in excel sheet for atomic vertex: " + vertexName);
-          }
-          missingVertices.add(vertexName);
-        } else if ((operatorCell == null) && !missingOperators.contains(operatorId)) {
-          PreesmLogger.getLogger().log(Level.SEVERE, "No column found in excel sheet for operator: " + operatorId);
-          missingOperators.add(operatorId);
-        }
-      }
-    }
-  }
 }

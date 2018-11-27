@@ -126,13 +126,7 @@ Export-Package: org.preesm.algorithm,
  org.preesm.algorithm.throughput.tools.transformers,
  org.preesm.algorithm.transforms,
  org.preesm.algorithm.utils.sdf,
- org.preesm.algorithm.utils.xml,
- org.preesm.scenario,
- org.preesm.scenario.generator,
- org.preesm.scenario.papi,
- org.preesm.scenario.serialize,
- org.preesm.scenario.types,
- org.preesm.scenario.workflow
+ org.preesm.algorithm.utils.xml
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Bundle-ActivationPolicy: lazy
 Bundle-Activator: org.preesm.algorithm.PreesmAlgorithmPlugin

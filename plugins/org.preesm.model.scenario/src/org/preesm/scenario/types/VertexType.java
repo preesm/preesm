@@ -3,7 +3,9 @@
  *
  * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017 - 2018)
  * Clément Guy <clement.guy@insa-rennes.fr> (2014)
- * Maxime Pelcat <maxime.pelcat@insa-rennes.fr> (2010 - 2011)
+ * Jonathan Piat <jpiat@laas.fr> (2011)
+ * Karol Desnos <karol.desnos@insa-rennes.fr> (2013)
+ * Maxime Pelcat <maxime.pelcat@insa-rennes.fr> (2010 - 2012)
  *
  * This software is a computer program whose purpose is to help prototyping
  * parallel applications using dataflow formalism.
@@ -34,80 +36,86 @@
  * The fact that you are presently reading this means that you have had
  * knowledge of the CeCILL license and that you accept its terms.
  */
-package org.preesm.ui.scenario.editor;
+package org.preesm.scenario.types;
 
-import org.preesm.algorithm.model.sdf.SDFAbstractVertex;
-
-// TODO: Auto-generated Javadoc
 /**
- * Class used as a scenario editor tree content to distinguish two vertices with the same name but different paths
- * (stored in "info" property).
+ * Represents the type of a vertex in its propertybeans.
  *
  * @author mpelcat
  */
-public class HierarchicalSDFVertex implements IHierarchicalVertex {
+public class VertexType {
 
-  /** The stored vertex. */
-  private final SDFAbstractVertex storedVertex;
+  /** String used to qualify receive actors. */
+  public static final String TYPE_RECEIVE = "receive";
+
+  /** String used to qualify send actors. */
+  public static final String TYPE_SEND = "send";
+
+  /** String used to qualify task actors. */
+  public static final String TYPE_TASK = "task";
+
+  /** VertexType representing a receive operation. */
+  public static final VertexType RECEIVE = new VertexType(VertexType.TYPE_RECEIVE);
+
+  /** VertexType representing a send operation. */
+  public static final VertexType SEND = new VertexType(VertexType.TYPE_SEND);
+
+  /** VertexType representing a task. */
+  public static final VertexType TASK = new VertexType(VertexType.TYPE_TASK);
+
+  /** VertexType representing a task. */
+  private String type = "";
 
   /**
-   * Instantiates a new hierarchical SDF vertex.
+   * Instantiates a new vertex type.
    *
-   * @param storedVertex
-   *          the stored vertex
+   * @param type
+   *          the type
    */
-  public HierarchicalSDFVertex(final SDFAbstractVertex storedVertex) {
+  private VertexType(final String type) {
     super();
-    this.storedVertex = storedVertex;
+    this.type = type;
   }
 
   /*
    * (non-Javadoc)
    *
-   * @see org.ietr.preesm.ui.scenario.editor.IHierarchicalVertex#getStoredVertex()
+   * @see java.lang.Object#equals(java.lang.Object)
    */
   @Override
-  public SDFAbstractVertex getStoredVertex() {
-    return this.storedVertex;
-  }
+  public boolean equals(final Object obj) {
 
-  /*
-   * (non-Javadoc)
-   *
-   * @see org.ietr.preesm.ui.scenario.editor.IHierarchicalVertex#getName()
-   */
-  @Override
-  public String getName() {
-    return this.storedVertex.getName();
+    if (obj instanceof VertexType) {
+      return (((VertexType) obj).type.equals(this.type));
+    }
+    return false;
   }
 
   /**
-   * Checking equality between vertices but also between their paths.
+   * Checks if is receive.
    *
-   * @param e
-   *          the e
-   * @return true, if successful
+   * @return true, if is receive
    */
-  @Override
-  public boolean equals(final Object e) {
-    if (e instanceof HierarchicalSDFVertex) {
-      final HierarchicalSDFVertex v = ((HierarchicalSDFVertex) e);
-      final SDFAbstractVertex vStored = v.getStoredVertex();
-      final SDFAbstractVertex thisStored = getStoredVertex();
+  public boolean isReceive() {
+    return (this == VertexType.RECEIVE);
+  }
 
-      boolean equals = vStored.equals(thisStored);
+  /**
+   * Checks if is send.
+   *
+   * @return true, if is send
+   */
+  public boolean isSend() {
+    return (this == VertexType.SEND);
+  }
 
-      if (equals) {
-        if (!((vStored.getInfo() == null) || (thisStored.getInfo() == null))) {
-          if ((!(vStored.getInfo().isEmpty()) || thisStored.getInfo().isEmpty())) {
-            equals = vStored.getInfo().equals(thisStored.getInfo());
-          }
-        }
-      }
-      return equals;
-    } else {
-      return false;
-    }
+  /**
+   * Checks if is task.
+   *
+   * @return true, if is task
+   */
+  public boolean isTask() {
+    return (this == VertexType.TASK);
   }
 
   /*
@@ -117,6 +125,7 @@ public class HierarchicalSDFVertex implements IHierarchicalVertex {
    */
   @Override
   public String toString() {
-    return this.storedVertex.getInfo();
+    return this.type;
   }
+
 }

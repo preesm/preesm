@@ -50,7 +50,6 @@ import org.preesm.algorithm.model.sdf.SDFGraph;
 import org.preesm.commons.exceptions.PreesmException;
 import org.preesm.model.slam.ComponentInstance;
 import org.preesm.model.slam.Design;
-import org.preesm.scenario.ConstraintGroupManager;
 import org.preesm.scenario.PreesmScenario;
 import org.preesm.scenario.Timing;
 import org.preesm.scenario.types.DataType;
@@ -115,7 +114,7 @@ public class SDF3ImporterEngine {
     }
 
     if (graph != null) {
-      updateScenario(graph, scenario, architecture);
+      updateScenario(scenario, architecture);
     }
 
     return graph;
@@ -131,10 +130,9 @@ public class SDF3ImporterEngine {
    * @param architecture
    *          the architecture
    */
-  private void updateScenario(final SDFGraph graph, final PreesmScenario scenario, final Design architecture) {
+  private void updateScenario(final PreesmScenario scenario, final Design architecture) {
     // Update the input scenario so that all task can be scheduled
     // on all operators, and all have the same runtime.
-    final ConstraintGroupManager constraint = scenario.getConstraintGroupManager();
     // For each operator of the architecture
     for (final ComponentInstance component : architecture.getComponentInstances()) {
       // for each actor of the graph
@@ -142,7 +140,6 @@ public class SDF3ImporterEngine {
         // Add the operator to the available operator for the
         // current actor
         entry.getKey().setInfo(entry.getKey().getName());
-        constraint.addConstraint(component.getInstanceName(), entry.getKey());
         // Set the timing of the actor
         final Timing t = scenario.getTimingManager().addTiming(entry.getKey().getName(),
             component.getComponent().getVlnv().getName());

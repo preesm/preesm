@@ -300,32 +300,14 @@ public class SdfToDagConverter {
       final long nbRepeat = currentVertex.getNbRepeat().longValue();
       currentVertexInit.setNbRepeat(nbRepeat);
 
-      // The SDF vertex id is used to reference the timings
-      final List<Timing> timelist = scenario.getTimingManager().getGraphTimings(currentVertex,
-          DesignTools.getOperatorComponentIds(architecture));
-
-      // Iterating over timings for each DAG vertex
-      final Iterator<Timing> listiterator = timelist.iterator();
-
       // Special vertices time computation is delayed until edge sizes are initialized
       final boolean special = SpecialVertexManager.isSpecial(currentVertex);
       if (!special) {
-        if (!timelist.isEmpty()) {
-          // If there is no time defined
-          while (listiterator.hasNext()) {
-            final Timing timing = listiterator.next();
-
-            // Importing timings from scenario
-            currentVertexInit.addTiming(timing);
-          }
-          // If the vertex is not special and has no defined timings
-        } else {
-          // Default timings are given
-          for (final ComponentInstance op : DesignTools.getOperatorInstances(architecture)) {
-            final Timing time = new Timing(op.getComponent().getVlnv().getName(), currentVertex.getId(),
-                Timing.DEFAULT_TASK_TIME);
-            currentVertexInit.addTiming(time);
-          }
+        // Default timings are given
+        for (final ComponentInstance op : DesignTools.getOperatorInstances(architecture)) {
+          final Timing time = new Timing(op.getComponent().getVlnv().getName(), currentVertex.getId(),
+              Timing.DEFAULT_TASK_TIME);
+          currentVertexInit.addTiming(time);
         }
       }
     }

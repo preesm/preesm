@@ -37,26 +37,19 @@
  */
 package org.preesm.scenario.serialize;
 
-import java.io.FileNotFoundException;
-import java.util.Iterator;
 import java.util.Set;
-import java.util.concurrent.ConcurrentSkipListSet;
 import java.util.stream.Collectors;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.emf.common.util.EList;
 import org.eclipse.jface.viewers.IStructuredContentProvider;
 import org.eclipse.jface.viewers.Viewer;
-import org.preesm.algorithm.io.gml.InvalidModelException;
-import org.preesm.algorithm.model.sdf.SDFAbstractVertex;
-import org.preesm.algorithm.model.sdf.SDFGraph;
-import org.preesm.algorithm.utils.sdf.NameComparator;
+import org.preesm.commons.exceptions.PreesmException;
 import org.preesm.model.pisdf.AbstractActor;
 import org.preesm.model.pisdf.Actor;
 import org.preesm.model.pisdf.PiGraph;
 import org.preesm.model.pisdf.serialize.PiParser;
 import org.preesm.scenario.PreesmScenario;
 
-// TODO: Auto-generated Javadoc
 /**
  * Provides the elements contained in the timing editor.
  *
@@ -79,7 +72,7 @@ public class PreesmAlgorithmListContentProvider implements IStructuredContentPro
 
       try {
         if (inputScenario.isIBSDFScenario()) {
-          elementTable = getSortedIBSDFVertices(inputScenario).toArray();
+          throw new PreesmException("IBSDF is not supported anymore");
         } else if (inputScenario.isPISDFScenario()) {
           elementTable = getSortedPISDFVertices(inputScenario).toArray();
         }
@@ -96,13 +89,10 @@ public class PreesmAlgorithmListContentProvider implements IStructuredContentPro
    * @param inputScenario
    *          the input scenario
    * @return the sorted PISDF vertices
-   * @throws InvalidModelException
-   *           the invalid model exception
    * @throws CoreException
    *           the core exception
    */
-  public Set<AbstractActor> getSortedPISDFVertices(final PreesmScenario inputScenario)
-      throws InvalidModelException, CoreException {
+  public Set<AbstractActor> getSortedPISDFVertices(final PreesmScenario inputScenario) throws CoreException {
     final PiGraph currentGraph = PiParser.getPiGraph(inputScenario.getAlgorithmURL());
     return filterVertices(currentGraph.getAllActors());
   }
@@ -117,64 +107,6 @@ public class PreesmAlgorithmListContentProvider implements IStructuredContentPro
   private Set<AbstractActor> filterVertices(final EList<AbstractActor> vertices) {
     return vertices.stream().filter(Actor.class::isInstance).map(Actor.class::cast).filter(a -> !a.isHierarchical())
         .collect(Collectors.toSet());
-  }
-
-  /**
-   * Depending on the kind of vertex, timings are edited or not.
-   *
-   * @param vertices
-   *          the vertices
-   */
-  public void filterVertices(final Set<SDFAbstractVertex> vertices) {
-
-    final Iterator<SDFAbstractVertex> iterator = vertices.iterator();
-
-    while (iterator.hasNext()) {
-      final SDFAbstractVertex vertex = iterator.next();
-
-      if (vertex.getKind().equalsIgnoreCase("Broadcast")) {
-        iterator.remove();
-      } else if (vertex.getKind().equalsIgnoreCase("port")) {
-        iterator.remove();
-      } else if (vertex.getGraphDescription() != null) {
-        // Timings of vertices with graph description are deduced and
-        // not entered in scenario
-        iterator.remove();
-      }
-    }
-  }
-
-  /**
-   * Gets the sorted IBSDF vertices.
-   *
-   * @param inputScenario
-   *          the input scenario
-   * @return the sorted IBSDF vertices
-   * @throws InvalidModelException
-   *           the invalid model exception
-   * @throws FileNotFoundException
-   *           the file not found exception
-   */
-  public Set<SDFAbstractVertex> getSortedIBSDFVertices(final PreesmScenario inputScenario)
-      throws InvalidModelException, FileNotFoundException {
-    Set<SDFAbstractVertex> sortedVertices = null;
-    // Opening algorithm from file
-    final SDFGraph currentGraph = ScenarioParser.getSDFGraph(inputScenario.getAlgorithmURL());
-
-    // Displays the task names in alphabetical order
-    if (currentGraph != null) {
-
-      // lists the vertices in hierarchy
-      final Set<SDFAbstractVertex> vertices = currentGraph.getHierarchicalVertexSet();
-
-      // Filters the results
-      filterVertices(vertices);
-
-      sortedVertices = new ConcurrentSkipListSet<>(new NameComparator());
-      sortedVertices.addAll(vertices);
-    }
-
-    return sortedVertices;
   }
 
   /*

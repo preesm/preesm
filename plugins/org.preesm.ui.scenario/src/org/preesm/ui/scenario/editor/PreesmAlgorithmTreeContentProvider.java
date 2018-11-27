@@ -36,25 +36,19 @@
  */
 package org.preesm.ui.scenario.editor;
 
-import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
-import java.util.Map;
 import java.util.Set;
-import java.util.concurrent.ConcurrentSkipListSet;
 import org.eclipse.emf.common.util.EList;
 import org.eclipse.jface.viewers.CheckboxTreeViewer;
 import org.eclipse.jface.viewers.ITreeContentProvider;
 import org.eclipse.jface.viewers.Viewer;
-import org.preesm.algorithm.model.IRefinement;
-import org.preesm.algorithm.model.sdf.SDFAbstractVertex;
 import org.preesm.algorithm.model.sdf.SDFGraph;
-import org.preesm.algorithm.model.sdf.SDFVertex;
+import org.preesm.commons.exceptions.PreesmException;
 import org.preesm.model.pisdf.AbstractActor;
 import org.preesm.model.pisdf.Actor;
 import org.preesm.model.pisdf.PiGraph;
 import org.preesm.model.pisdf.serialize.PiParser;
 import org.preesm.scenario.PreesmScenario;
-import org.preesm.scenario.serialize.ScenarioParser;
 
 // TODO: Auto-generated Javadoc
 /**
@@ -75,11 +69,6 @@ public class PreesmAlgorithmTreeContentProvider implements ITreeContentProvider 
   private PreesmScenario scenario;
 
   /**
-   * This map keeps the VertexWithPath used as a tree content for each vertex.
-   */
-  private Map<String, HierarchicalSDFVertex> correspondingVertexWithMap = null;
-
-  /**
    * Instantiates a new preesm algorithm tree content provider.
    *
    * @param treeViewer
@@ -87,7 +76,6 @@ public class PreesmAlgorithmTreeContentProvider implements ITreeContentProvider 
    */
   public PreesmAlgorithmTreeContentProvider(final CheckboxTreeViewer treeViewer) {
     super();
-    this.correspondingVertexWithMap = new LinkedHashMap<>();
   }
 
   /*
@@ -100,20 +88,7 @@ public class PreesmAlgorithmTreeContentProvider implements ITreeContentProvider 
     Object[] table = null;
 
     if (this.scenario.isIBSDFScenario()) {
-      if (parentElement instanceof SDFGraph) {
-        final SDFGraph graph = (SDFGraph) parentElement;
-
-        // Some types of vertices are ignored in the constraints view
-        table = filterIBSDFChildren(graph.vertexSet()).toArray();
-      } else if (parentElement instanceof HierarchicalSDFVertex) {
-        final HierarchicalSDFVertex vertex = (HierarchicalSDFVertex) parentElement;
-        final IRefinement refinement = vertex.getStoredVertex().getRefinement();
-
-        if ((refinement != null) && (refinement instanceof SDFGraph)) {
-          final SDFGraph graph = (SDFGraph) refinement;
-          table = filterIBSDFChildren(graph.vertexSet()).toArray();
-        }
-      }
+      throw new PreesmException("IBSDF is not supported anymore");
     } else if (this.scenario.isPISDFScenario()) {
       if (parentElement instanceof PiGraph) {
         final PiGraph graph = (PiGraph) parentElement;
@@ -138,7 +113,6 @@ public class PreesmAlgorithmTreeContentProvider implements ITreeContentProvider 
    */
   @Override
   public Object getParent(final Object element) {
-    // TODO Auto-generated method stub
     return null;
   }
 
@@ -152,16 +126,7 @@ public class PreesmAlgorithmTreeContentProvider implements ITreeContentProvider 
     boolean hasChildren = false;
 
     if (this.scenario.isIBSDFScenario()) {
-      if (element instanceof SDFGraph) {
-        final SDFGraph graph = (SDFGraph) element;
-        hasChildren = !graph.vertexSet().isEmpty();
-      } else if (element instanceof HierarchicalSDFVertex) {
-        final SDFAbstractVertex sdfVertex = ((HierarchicalSDFVertex) element).getStoredVertex();
-        if (sdfVertex instanceof SDFVertex) {
-          final SDFVertex vertex = (SDFVertex) sdfVertex;
-          hasChildren = vertex.getRefinement() != null;
-        }
-      }
+      throw new PreesmException("IBSDF is not supported anymore");
     } else if (this.scenario.isPISDFScenario()) {
       if (element instanceof PiGraph) {
         final PiGraph graph = (PiGraph) element;
@@ -188,12 +153,7 @@ public class PreesmAlgorithmTreeContentProvider implements ITreeContentProvider 
       this.scenario = (PreesmScenario) inputElement;
       // Opening algorithm from file
       if (this.scenario.isIBSDFScenario()) {
-        try {
-          this.currentIBSDFGraph = ScenarioParser.getSDFGraph(this.scenario.getAlgorithmURL());
-        } catch (final Exception e) {
-          e.printStackTrace();
-        }
-        table[0] = this.currentIBSDFGraph;
+        throw new PreesmException("IBSDF is not supported anymore");
       } else if (this.scenario.isPISDFScenario()) {
         try {
           this.currentPISDFGraph = PiParser.getPiGraph(this.scenario.getAlgorithmURL());
@@ -260,42 +220,6 @@ public class PreesmAlgorithmTreeContentProvider implements ITreeContentProvider 
       result.add(actor);
     }
     return result;
-  }
-
-  /**
-   * Filter IBSDF children.
-   *
-   * @param children
-   *          the children
-   * @return the sets the
-   */
-  public Set<HierarchicalSDFVertex> filterIBSDFChildren(final Set<SDFAbstractVertex> children) {
-
-    final ConcurrentSkipListSet<
-        HierarchicalSDFVertex> appropriateChildren = new ConcurrentSkipListSet<>(new PathComparator());
-
-    for (final SDFAbstractVertex v : children) {
-      if (v.getKind().equalsIgnoreCase("vertex")) {
-        appropriateChildren.add(convertSDFChild(v));
-      }
-    }
-
-    return appropriateChildren;
-  }
-
-  /**
-   * Convert SDF child.
-   *
-   * @param child
-   *          the child
-   * @return the hierarchical SDF vertex
-   */
-  public HierarchicalSDFVertex convertSDFChild(final SDFAbstractVertex child) {
-    if (!this.correspondingVertexWithMap.containsKey(child.getInfo())) {
-      this.correspondingVertexWithMap.put(child.getInfo(), new HierarchicalSDFVertex(child));
-    }
-
-    return this.correspondingVertexWithMap.get(child.getInfo());
   }
 
 }

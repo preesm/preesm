@@ -43,12 +43,9 @@ import java.io.FileNotFoundException;
 import java.util.LinkedHashSet;
 import java.util.Set;
 import org.eclipse.core.runtime.CoreException;
-import org.preesm.algorithm.io.gml.InvalidModelException;
-import org.preesm.algorithm.model.sdf.SDFAbstractVertex;
 import org.preesm.model.pisdf.AbstractActor;
 import org.preesm.scenario.serialize.ExcelConstraintsParser;
 
-// TODO: Auto-generated Javadoc
 /**
  * container and manager of Constraint groups. It can load and store constraint groups
  *
@@ -78,28 +75,6 @@ public class ConstraintGroupManager {
   public void addConstraintGroup(final ConstraintGroup cg) {
 
     this.constraintgroups.add(cg);
-  }
-
-  /**
-   * Adding a simple constraint on one vertex and one operator.
-   *
-   * @param opId
-   *          the op id
-   * @param vertex
-   *          the vertex
-   */
-  public void addConstraint(final String opId, final SDFAbstractVertex vertex) {
-
-    final Set<ConstraintGroup> cgSet = getOpConstraintGroups(opId);
-
-    if (cgSet.isEmpty()) {
-      final ConstraintGroup cg = new ConstraintGroup();
-      cg.addOperatorId(opId);
-      cg.addActorPath(vertex.getInfo());
-      this.constraintgroups.add(cg);
-    } else {
-      ((ConstraintGroup) cgSet.toArray()[0]).addActorPath(vertex.getInfo());
-    }
   }
 
   /**
@@ -147,25 +122,6 @@ public class ConstraintGroupManager {
   }
 
   /**
-   * Removing a simple constraint on one vertex and one core.
-   *
-   * @param opId
-   *          the op id
-   * @param vertex
-   *          the vertex
-   */
-  public void removeConstraint(final String opId, final SDFAbstractVertex vertex) {
-
-    final Set<ConstraintGroup> cgSet = getOpConstraintGroups(opId);
-
-    if (!cgSet.isEmpty()) {
-      for (final ConstraintGroup cg : cgSet) {
-        cg.removeVertexPath(vertex.getInfo());
-      }
-    }
-  }
-
-  /**
    * Removes the constraint.
    *
    * @param opId
@@ -194,25 +150,6 @@ public class ConstraintGroupManager {
   }
 
   /**
-   * Gets the graph constraint groups.
-   *
-   * @param vertex
-   *          the vertex
-   * @return the graph constraint groups
-   */
-  public Set<ConstraintGroup> getGraphConstraintGroups(final SDFAbstractVertex vertex) {
-    final Set<ConstraintGroup> graphConstraintGroups = new LinkedHashSet<>();
-
-    for (final ConstraintGroup cg : this.constraintgroups) {
-      if (cg.hasVertexPath(vertex.getInfo())) {
-        graphConstraintGroups.add(cg);
-      }
-    }
-
-    return graphConstraintGroups;
-  }
-
-  /**
    * Gets the op constraint groups.
    *
    * @param opId
@@ -229,24 +166,6 @@ public class ConstraintGroupManager {
     }
 
     return graphConstraintGroups;
-  }
-
-  /**
-   * Checks if is compatible to constraints.
-   *
-   * @param vertex
-   *          the vertex
-   * @param opId
-   *          the op id
-   * @return true, if is compatible to constraints
-   */
-  public boolean isCompatibleToConstraints(final SDFAbstractVertex vertex, final String opId) {
-    final Set<ConstraintGroup> opGroups = getOpConstraintGroups(opId);
-    final Set<ConstraintGroup> graphGroups = getGraphConstraintGroups(vertex);
-
-    opGroups.retainAll(graphGroups);
-
-    return !opGroups.isEmpty();
   }
 
   /**
@@ -297,15 +216,12 @@ public class ConstraintGroupManager {
    *
    * @param currentScenario
    *          the current scenario
-   * @throws InvalidModelException
-   *           the invalid model exception
    * @throws FileNotFoundException
    *           the file not found exception
    * @throws CoreException
    *           the core exception
    */
-  public void importConstraints(final PreesmScenario currentScenario)
-      throws InvalidModelException, FileNotFoundException, CoreException {
+  public void importConstraints(final PreesmScenario currentScenario) throws FileNotFoundException, CoreException {
     if (!this.excelFileURL.isEmpty() && (currentScenario != null)) {
       final ExcelConstraintsParser parser = new ExcelConstraintsParser(currentScenario);
       parser.parse(this.excelFileURL, currentScenario.getOperatorIds());

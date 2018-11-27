@@ -45,16 +45,9 @@ import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
-import org.preesm.algorithm.model.AbstractGraph;
-import org.preesm.algorithm.model.dag.DAGVertex;
-import org.preesm.algorithm.model.parameters.InvalidExpressionException;
-import org.preesm.algorithm.model.sdf.SDFAbstractVertex;
-import org.preesm.algorithm.model.sdf.SDFGraph;
 import org.preesm.scenario.serialize.CsvTimingParser;
 import org.preesm.scenario.serialize.ExcelTimingParser;
 
-// TODO: Auto-generated Javadoc
 /**
  * Manager of the graphs timings.
  *
@@ -157,98 +150,6 @@ public class TimingManager {
    */
   public void setTiming(final String dagVertexId, final String operatorDefinitionId, final String value) {
     addTiming(dagVertexId, operatorDefinitionId).setStringValue(value);
-  }
-
-  /**
-   * Gets the graph timings.
-   *
-   * @param dagVertex
-   *          the dag vertex
-   * @param operatorDefinitionIds
-   *          the operator definition ids
-   * @return the graph timings
-   */
-  public List<Timing> getGraphTimings(final DAGVertex dagVertex, final Set<String> operatorDefinitionIds) {
-    final List<Timing> vals = new ArrayList<>();
-    final AbstractGraph<?, ?> graphDescription = dagVertex.getGraphDescription();
-    final String id = dagVertex.getId();
-
-    if (graphDescription == null) {
-      for (final Timing timing : getTimings()) {
-        if (timing.getVertexId().equals(id)) {
-          vals.add(timing);
-        }
-      }
-    } else {
-      if (graphDescription instanceof SDFGraph) {
-        // Adds timings for all operators in hierarchy if they can be
-        // calculated
-        // from underlying vertices
-        for (final String opDefId : operatorDefinitionIds) {
-          final SDFAbstractVertex correspondingSDFVertex = dagVertex.getCorrespondingSDFVertex();
-          final Timing t = generateVertexTimingFromHierarchy(correspondingSDFVertex, opDefId);
-          if (t != null) {
-            vals.add(t);
-          }
-        }
-      } else {
-        throw new UnsupportedOperationException("Could not get timings for " + graphDescription);
-      }
-    }
-
-    return vals;
-  }
-
-  /**
-   * Gets the vertex timing.
-   *
-   * @param sdfVertex
-   *          the sdf vertex
-   * @param opDefId
-   *          the op def id
-   * @return the vertex timing
-   */
-  private Timing getVertexTiming(final SDFAbstractVertex sdfVertex, final String opDefId) {
-    for (final Timing timing : this.timings) {
-      if (timing.getVertexId().equals(sdfVertex.getName()) && timing.getOperatorDefinitionId().equals(opDefId)) {
-        return timing;
-      }
-    }
-    return null;
-  }
-
-  /**
-   * Calculates a vertex timing from its underlying vertices.
-   *
-   * @param sdfVertex
-   *          the sdf vertex
-   * @param opDefId
-   *          the op def id
-   * @return the timing
-   */
-  public Timing generateVertexTimingFromHierarchy(final SDFAbstractVertex sdfVertex, final String opDefId) {
-    long maxTime = 0;
-    final SDFGraph graphDescription = (SDFGraph) sdfVertex.getGraphDescription();
-
-    for (final SDFAbstractVertex vertex : graphDescription.vertexSet()) {
-      Timing vertexTiming;
-      if (vertex.getGraphDescription() != null) {
-        maxTime += generateVertexTimingFromHierarchy(vertex, opDefId).getTime();
-      } else if ((vertexTiming = getVertexTiming(vertex, opDefId)) != null) {
-        try {
-          maxTime += vertexTiming.getTime() * vertex.getNbRepeatAsLong();
-        } catch (final InvalidExpressionException e) {
-          maxTime += vertexTiming.getTime();
-        }
-      }
-      if (maxTime < 0) {
-        maxTime = Integer.MAX_VALUE;
-        break;
-      }
-    }
-    // TODO: time calculation for underlying tasks not ready
-    return (new Timing(opDefId, sdfVertex.getName(), maxTime));
-
   }
 
   /**

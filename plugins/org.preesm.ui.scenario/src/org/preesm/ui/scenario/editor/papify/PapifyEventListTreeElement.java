@@ -46,9 +46,7 @@ import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.swt.graphics.Image;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.FrameworkUtil;
-import org.preesm.algorithm.model.sdf.SDFGraph;
 import org.preesm.model.pisdf.AbstractActor;
-import org.preesm.ui.scenario.editor.HierarchicalSDFVertex;
 
 // TODO: Auto-generated Javadoc
 /**
@@ -102,13 +100,7 @@ class PapifyEventListTreeElement {
 
   PapifyEventListTreeElement(final Object algorithmElement) {
     this.algorithmElement = algorithmElement;
-    if (algorithmElement instanceof HierarchicalSDFVertex) {
-      this.label = ((HierarchicalSDFVertex) algorithmElement).getName();
-      this.actorPath = ((HierarchicalSDFVertex) algorithmElement).getName();
-    } else if (algorithmElement instanceof SDFGraph) {
-      this.label = ((SDFGraph) algorithmElement).getName();
-      this.actorPath = ((SDFGraph) algorithmElement).getName();
-    } else if (algorithmElement instanceof AbstractActor) {
+    if (algorithmElement instanceof AbstractActor) {
       this.label = ((AbstractActor) algorithmElement).getName();
       this.actorPath = ((AbstractActor) algorithmElement).getVertexPath();
     }

@@ -52,9 +52,6 @@ import org.eclipse.core.resources.IWorkspace;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.Path;
-import org.preesm.algorithm.io.gml.InvalidModelException;
-import org.preesm.algorithm.model.sdf.SDFAbstractVertex;
-import org.preesm.algorithm.model.sdf.SDFGraph;
 import org.preesm.commons.exceptions.PreesmException;
 import org.preesm.commons.files.WorkspaceUtils;
 import org.preesm.commons.logger.PreesmLogger;
@@ -91,10 +88,8 @@ public class ExcelTimingParser {
    *          the url
    * @param opDefIds
    *          the op def ids
-   * @throws InvalidModelException
-   *           the invalid model exception
    */
-  public void parse(final String url, final Set<String> opDefIds) throws InvalidModelException, FileNotFoundException {
+  public void parse(final String url, final Set<String> opDefIds) throws FileNotFoundException {
     PreesmLogger.getLogger().log(Level.INFO,
         "Importing timings from an excel sheet. Non precised timings are kept unmodified.");
 
@@ -130,18 +125,15 @@ public class ExcelTimingParser {
    *          the missing vertices
    * @param missingOperatorTypes
    *          the missing operator types
-   * @throws InvalidModelException
-   *           the invalid model exception
    * @throws CoreException
    *           the core exception
    */
   private void parseTimings(final Workbook w, final Set<String> opDefIds, final Set<String> missingVertices,
-      final Set<String> missingOperatorTypes) throws InvalidModelException, CoreException {
+      final Set<String> missingOperatorTypes) throws CoreException {
     // Depending on the type of SDF graph we process (IBSDF or PISDF), call
     // one or the other method
     if (this.scenario.isIBSDFScenario()) {
-      final SDFGraph currentGraph = ScenarioParser.getSDFGraph(this.scenario.getAlgorithmURL());
-      parseTimingsForIBSDFGraph(w, currentGraph, opDefIds, missingVertices, missingOperatorTypes);
+      throw new PreesmException("IBSDF is not supported anymore");
     } else if (this.scenario.isPISDFScenario()) {
       final PiGraph currentGraph = PiParser.getPiGraph(this.scenario.getAlgorithmURL());
       parseTimingsForPISDFGraph(w, currentGraph, opDefIds, missingVertices, missingOperatorTypes);
@@ -234,33 +226,4 @@ public class ExcelTimingParser {
     }
   }
 
-  /**
-   * Parses the timings for IBSDF graph.
-   *
-   * @param w
-   *          the w
-   * @param currentGraph
-   *          the current graph
-   * @param opDefIds
-   *          the op def ids
-   * @param missingVertices
-   *          the missing vertices
-   * @param missingOperatorTypes
-   *          the missing operator types
-   */
-  private void parseTimingsForIBSDFGraph(final Workbook w, final SDFGraph currentGraph, final Set<String> opDefIds,
-      final Set<String> missingVertices, final Set<String> missingOperatorTypes) {
-    // Each of the vertices of the graph is either itself a graph
-    // (hierarchical vertex), in which case we call recursively this method;
-    // a standard vertex, in which case we parser its timing; or another
-    // kind of vertex, in which case we do nothing
-    for (final SDFAbstractVertex vertex : currentGraph.vertexSet()) {
-      if (vertex.getGraphDescription() != null) {
-        parseTimingsForIBSDFGraph(w, (SDFGraph) vertex.getGraphDescription(), opDefIds, missingVertices,
-            missingOperatorTypes);
-      } else if (vertex.getKind().equalsIgnoreCase("vertex")) {
-        parseTimingForVertex(w, vertex.getName(), opDefIds, missingVertices, missingOperatorTypes);
-      }
-    }
-  }
 }

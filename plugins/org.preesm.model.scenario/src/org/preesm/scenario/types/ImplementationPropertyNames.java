@@ -37,9 +37,6 @@
  */
 package org.preesm.scenario.types;
 
-import org.preesm.algorithm.model.dag.DAGEdge;
-
-// TODO: Auto-generated Javadoc
 /**
  * This class contains property bean names used to exchange vertex properties between the mapper and the code generation
  * plugins.

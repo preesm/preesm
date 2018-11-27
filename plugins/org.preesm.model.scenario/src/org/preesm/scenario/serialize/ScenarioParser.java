@@ -40,7 +40,6 @@
  */
 package org.preesm.scenario.serialize;
 
-import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -54,19 +53,13 @@ import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 import org.eclipse.core.resources.IFile;
-import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
-import org.eclipse.core.runtime.Path;
 import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.common.util.WrappedException;
 import org.eclipse.emf.ecore.EPackage;
 import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.emf.ecore.resource.ResourceSet;
 import org.eclipse.emf.ecore.resource.impl.ResourceSetImpl;
-import org.preesm.algorithm.io.gml.GMLSDFImporter;
-import org.preesm.algorithm.io.gml.InvalidModelException;
-import org.preesm.algorithm.model.sdf.SDFAbstractVertex;
-import org.preesm.algorithm.model.sdf.SDFGraph;
 import org.preesm.commons.exceptions.PreesmException;
 import org.preesm.commons.logger.PreesmLogger;
 import org.preesm.model.pisdf.AbstractActor;
@@ -110,9 +103,6 @@ public class ScenarioParser {
   /** scenario being retrieved. */
   private PreesmScenario scenario = null;
 
-  /** current algorithm. */
-  private SDFGraph algoSDF = null;
-
   /** The algo pi. */
   private PiGraph algoPi = null;
 
@@ -139,15 +129,12 @@ public class ScenarioParser {
    * @param file
    *          the file
    * @return the preesm scenario
-   * @throws InvalidModelException
-   *           the invalid model exception
    * @throws FileNotFoundException
    *           the file not found exception
    * @throws CoreException
    *           the core exception
    */
-  public PreesmScenario parseXmlFile(final IFile file)
-      throws InvalidModelException, FileNotFoundException, CoreException {
+  public PreesmScenario parseXmlFile(final IFile file) throws FileNotFoundException, CoreException {
     // get the factory
     final DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
 
@@ -179,23 +166,23 @@ public class ScenarioParser {
             case "constraints":
               parseConstraintGroups(elt);
               break;
-            case "relativeconstraints":
-              parseRelativeConstraints(elt);
-              break;
             case "timings":
               parseTimings(elt);
               break;
             case "simuParams":
               parseSimuParams(elt);
               break;
-            case "variables":
-              parseVariables(elt);
-              break;
             case "parameterValues":
               parseParameterValues(elt);
               break;
             case "papifyConfigs":
               parsePapifyConfigs(elt);
+              break;
+            case "variables":
+              // deprecated
+              break;
+            case "relativeconstraints":
+              // deprecated
               break;
             default:
           }
@@ -215,7 +202,7 @@ public class ScenarioParser {
    * @param paramValuesElt
    *          the param values elt
    */
-  private void parseParameterValues(final Element paramValuesElt) throws InvalidModelException, CoreException {
+  private void parseParameterValues(final Element paramValuesElt) {
 
     Node node = paramValuesElt.getFirstChild();
 
@@ -249,7 +236,7 @@ public class ScenarioParser {
     }
   }
 
-  private PiGraph getPiGraph() throws InvalidModelException, CoreException {
+  private PiGraph getPiGraph() {
     final PiGraph piGraph;
     if (this.algoPi != null) {
       piGraph = this.algoPi;
@@ -331,90 +318,6 @@ public class ScenarioParser {
       }
     }
     return currentParameter;
-  }
-
-  /**
-   * Retrieves the timings.
-   *
-   * @param relConsElt
-   *          the rel cons elt
-   */
-  private void parseRelativeConstraints(final Element relConsElt) {
-
-    final String relConsFileUrl = relConsElt.getAttribute("excelUrl");
-    this.scenario.getTimingManager().setExcelFileURL(relConsFileUrl);
-
-    Node node = relConsElt.getFirstChild();
-
-    while (node != null) {
-
-      if (node instanceof Element) {
-        final Element elt = (Element) node;
-        final String type = elt.getTagName();
-        if (type.equals("relativeconstraint")) {
-          parseRelativeConstraint(elt);
-        }
-      }
-
-      node = node.getNextSibling();
-    }
-  }
-
-  /**
-   * Retrieves one timing.
-   *
-   * @param timingElt
-   *          the timing elt
-   */
-  private void parseRelativeConstraint(final Element timingElt) {
-
-    int group = -1;
-
-    if (this.algoSDF != null) {
-      final String type = timingElt.getTagName();
-      if (type.equals("relativeconstraint")) {
-        final String vertexpath = timingElt.getAttribute("vertexname");
-
-        try {
-          group = Integer.parseInt(timingElt.getAttribute("group"));
-        } catch (final NumberFormatException e) {
-          group = -1;
-        }
-
-        this.scenario.getRelativeconstraintManager().addConstraint(vertexpath, group);
-      }
-
-    }
-  }
-
-  /**
-   * Retrieves the timings.
-   *
-   * @param varsElt
-   *          the vars elt
-   */
-  private void parseVariables(final Element varsElt) {
-
-    final String excelFileUrl = varsElt.getAttribute("excelUrl");
-    this.scenario.getVariablesManager().setExcelFileURL(excelFileUrl);
-
-    Node node = varsElt.getFirstChild();
-
-    while (node != null) {
-
-      if (node instanceof Element) {
-        final Element elt = (Element) node;
-        final String type = elt.getTagName();
-        if (type.equals("variable")) {
-          final String name = elt.getAttribute("name");
-          final String value = elt.getAttribute("value");
-
-          this.scenario.getVariablesManager().setVariable(name, value);
-        }
-      }
-
-      node = node.getNextSibling();
-    }
   }
 
   /**
@@ -534,14 +437,12 @@ public class ScenarioParser {
    *
    * @param filesElt
    *          the files elt
-   * @throws InvalidModelException
-   *           the invalid model exception
    * @throws FileNotFoundException
    *           the file not found exception
    * @throws CoreException
    *           the core exception
    */
-  private void parseFileNames(final Element filesElt) throws InvalidModelException, CoreException {
+  private void parseFileNames(final Element filesElt) throws CoreException {
 
     Node node = filesElt.getFirstChild();
 
@@ -554,11 +455,10 @@ public class ScenarioParser {
         if (url.length() > 0) {
           if (type.equals("algorithm")) {
             this.scenario.setAlgorithmURL(url);
-            this.algoSDF = null;
             this.algoPi = null;
             try {
               if (url.endsWith(".graphml")) {
-                this.algoSDF = ScenarioParser.getSDFGraph(url);
+                throw new PreesmException("IBSDF is not supported anymore.");
               } else if (url.endsWith(".pi")) {
                 this.algoPi = getPiGraph();
               }
@@ -642,55 +542,6 @@ public class ScenarioParser {
   }
 
   /**
-   * Gets the SDF graph.
-   *
-   * @param path
-   *          the path
-   * @return the SDF graph
-   * @throws InvalidModelException
-   *           the invalid model exception
-   */
-  public static SDFGraph getSDFGraph(final String path) throws InvalidModelException {
-    SDFGraph algorithm = null;
-    final GMLSDFImporter importer = new GMLSDFImporter();
-
-    final Path relativePath = new Path(path);
-    final IFile file = ResourcesPlugin.getWorkspace().getRoot().getFile(relativePath);
-
-    try {
-      algorithm = importer.parse(new File(file.getLocation().toOSString()));
-
-      ScenarioParser.addVertexPathProperties(algorithm, "");
-    } catch (final InvalidModelException e) {
-      e.printStackTrace();
-    } catch (final FileNotFoundException e) {
-      throw new ScenarioParserException("Could not locate " + path, e);
-    }
-
-    return algorithm;
-  }
-
-  /**
-   * Adding an information that keeps the path of each vertex relative to the hierarchy.
-   *
-   * @param algorithm
-   *          the algorithm
-   * @param currentPath
-   *          the current path
-   */
-  private static void addVertexPathProperties(final SDFGraph algorithm, final String currentPath) {
-
-    for (final SDFAbstractVertex vertex : algorithm.vertexSet()) {
-      String newPath = currentPath + vertex.getName();
-      vertex.setInfo(newPath);
-      newPath += "/";
-      if (vertex.getGraphDescription() != null) {
-        ScenarioParser.addVertexPathProperties((SDFGraph) vertex.getGraphDescription(), newPath);
-      }
-    }
-  }
-
-  /**
    * Retrieves all the constraint groups.
    *
    * @param cstGroupsElt
@@ -729,7 +580,7 @@ public class ScenarioParser {
 
     final ConstraintGroup cg = new ConstraintGroup();
 
-    if ((this.algoSDF != null) || (this.algoPi != null)) {
+    if (this.algoPi != null) {
       Node node = cstGroupElt.getFirstChild();
 
       while (node != null) {
@@ -1027,7 +878,7 @@ public class ScenarioParser {
 
     Timing timing = null;
 
-    if ((this.algoSDF != null) || (this.algoPi != null)) {
+    if (this.algoPi != null) {
 
       final String type = timingElt.getTagName();
       if (type.equals("timing")) {
@@ -1073,9 +924,7 @@ public class ScenarioParser {
    */
   private Object getActorFromPath(final String path) {
     Object result = null;
-    if (this.algoSDF != null) {
-      result = this.algoSDF.getHierarchicalVertexFromPath(path);
-    } else if (this.algoPi != null) {
+    if (this.algoPi != null) {
       result = ActorPath.lookup(this.algoPi, path);
     }
     return result;
@@ -1091,12 +940,8 @@ public class ScenarioParser {
    */
   private String getActorNameFromPath(final String path) {
     final Object actor = getActorFromPath(path);
-    if (actor != null) {
-      if (actor instanceof SDFAbstractVertex) {
-        return ((SDFAbstractVertex) actor).getName();
-      } else if (actor instanceof AbstractActor) {
-        return ((AbstractActor) actor).getName();
-      }
+    if (actor instanceof AbstractActor) {
+      return ((AbstractActor) actor).getName();
     }
     return null;
   }
@@ -1111,8 +956,7 @@ public class ScenarioParser {
    */
   private void retrieveMemcpySpeed(final TimingManager timingManager, final Element timingElt) {
 
-    if ((this.algoSDF != null) || (this.algoPi != null)) {
-
+    if (this.algoPi != null) {
       final String type = timingElt.getTagName();
       if (type.equals("memcpyspeed")) {
         final String opdefname = timingElt.getAttribute("opname");

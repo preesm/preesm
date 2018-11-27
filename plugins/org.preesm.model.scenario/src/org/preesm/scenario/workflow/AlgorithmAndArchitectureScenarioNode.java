@@ -45,10 +45,7 @@ import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.Path;
-import org.preesm.algorithm.io.gml.InvalidModelException;
-import org.preesm.algorithm.model.parameters.VariableSet;
-import org.preesm.algorithm.model.sdf.SDFGraph;
-import org.preesm.algorithm.model.sdf.transformations.SpecialActorPortsIndexer;
+import org.preesm.commons.exceptions.PreesmException;
 import org.preesm.model.pisdf.Parameter;
 import org.preesm.model.pisdf.PiGraph;
 import org.preesm.model.pisdf.serialize.PiParser;
@@ -92,25 +89,18 @@ public class AlgorithmAndArchitectureScenarioNode extends AbstractScenarioImplem
 
     PreesmScenario scenario;
     // Retrieving the algorithm
-    SDFGraph sdfAlgorithm = null;
     PiGraph piAlgorithm = null;
 
     try {
       scenario = scenarioParser.parseXmlFile(file);
       final String url = scenario.getAlgorithmURL();
       if (scenario.isIBSDFScenario()) {
-        // Parse the graph
-        sdfAlgorithm = ScenarioParser.getSDFGraph(url);
-        // Add indexes to all its special actor ports
-        SpecialActorPortsIndexer.addIndexes(sdfAlgorithm);
-        SpecialActorPortsIndexer.sortIndexedPorts(sdfAlgorithm);
-
-        applyScenarioVariableValues(scenario, sdfAlgorithm);
+        throw new PreesmException("IBSDF is not supported anymore");
       } else if (scenario.isPISDFScenario()) {
         piAlgorithm = PiParser.getPiGraph(url);
         applyScenarioParameterValues(scenario, piAlgorithm);
       }
-    } catch (FileNotFoundException | InvalidModelException | CoreException e) {
+    } catch (FileNotFoundException | CoreException e) {
       throw new WorkflowException(e.getMessage());
     }
 
@@ -118,7 +108,6 @@ public class AlgorithmAndArchitectureScenarioNode extends AbstractScenarioImplem
     final Design slamDesign = ScenarioParser.parseSlamDesign(scenario.getArchitectureURL());
 
     outputs.put(AbstractWorkflowNodeImplementation.KEY_SCENARIO, scenario);
-    outputs.put(AbstractWorkflowNodeImplementation.KEY_SDF_GRAPH, sdfAlgorithm);
     outputs.put(AbstractWorkflowNodeImplementation.KEY_PI_GRAPH, piAlgorithm);
     outputs.put(AbstractWorkflowNodeImplementation.KEY_ARCHITECTURE, slamDesign);
     return outputs;
@@ -143,18 +132,6 @@ public class AlgorithmAndArchitectureScenarioNode extends AbstractScenarioImplem
       } else {
         // keep value from PiSDF graph
       }
-    }
-  }
-
-  private void applyScenarioVariableValues(final PreesmScenario scenario, final SDFGraph sdfAlgorithm) {
-    // Apply to the algorithm the values of variables
-    // defined in the scenario
-    final VariableSet variablesScenario = scenario.getVariablesManager().getVariables();
-    final VariableSet variablesGraph = sdfAlgorithm.getVariables();
-
-    for (final String variableName : variablesScenario.keySet()) {
-      final String newValue = variablesScenario.get(variableName).getValue();
-      variablesGraph.getVariable(variableName).setValue(newValue);
     }
   }
 

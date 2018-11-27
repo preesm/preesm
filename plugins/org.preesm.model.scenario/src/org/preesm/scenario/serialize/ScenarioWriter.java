@@ -41,12 +41,10 @@ package org.preesm.scenario.serialize;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
-import java.util.Collection;
 import java.util.Map;
 import java.util.Set;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.runtime.NullProgressMonitor;
-import org.preesm.algorithm.model.parameters.Variable;
 import org.preesm.scenario.ConstraintGroup;
 import org.preesm.scenario.ParameterValue;
 import org.preesm.scenario.ParameterValueManager;
@@ -119,7 +117,6 @@ public class ScenarioWriter {
     addRelativeConstraints(root);
     addTimings(root);
     addSimuParams(root);
-    addVariables(root);
     addParameterValues(root);
     addPapifyConfigs(root);
 
@@ -328,43 +325,6 @@ public class ScenarioWriter {
       singleEventModifier.setAttribute("name", eventModifier.getName());
       singleEventModifier.setAttribute("description", eventModifier.getDescription());
     }
-  }
-
-  /**
-   * Adds the variables.
-   *
-   * @param parent
-   *          the parent
-   */
-  private void addVariables(final Element parent) {
-
-    final Element variables = this.dom.createElement("variables");
-    parent.appendChild(variables);
-
-    variables.setAttribute("excelUrl", this.scenario.getVariablesManager().getExcelFileURL());
-
-    final Collection<Variable> variablesSet = this.scenario.getVariablesManager().getVariables().values();
-    for (final Variable variable : variablesSet) {
-      addVariable(variables, variable.getName(), variable.getValue());
-    }
-  }
-
-  /**
-   * Adds the variable.
-   *
-   * @param parent
-   *          the parent
-   * @param variableName
-   *          the variable name
-   * @param variableValue
-   *          the variable value
-   */
-  private void addVariable(final Element parent, final String variableName, final String variableValue) {
-
-    final Element variableelt = this.dom.createElement("variable");
-    parent.appendChild(variableelt);
-    variableelt.setAttribute("name", variableName);
-    variableelt.setAttribute("value", variableValue);
   }
 
   /**

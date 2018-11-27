@@ -47,7 +47,6 @@ import java.util.Set;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.emf.ecore.EPackage;
 import org.eclipse.emf.ecore.resource.Resource;
-import org.preesm.algorithm.io.gml.InvalidModelException;
 import org.preesm.commons.exceptions.PreesmException;
 import org.preesm.model.pisdf.AbstractActor;
 import org.preesm.model.pisdf.PiGraph;
@@ -77,9 +76,6 @@ public class PreesmScenario {
 
   /** Manager of simulation parameters. */
   private SimulationManager simulationManager = null;
-
-  /** Manager of graph variables. */
-  private VariablesManager variablesManager = null;
 
   /** Manager of code generation parameters. */
   private CodegenManager codegenManager = null;
@@ -117,7 +113,6 @@ public class PreesmScenario {
     this.timingmanager = new TimingManager();
     this.simulationManager = new SimulationManager();
     this.codegenManager = new CodegenManager();
-    this.variablesManager = new VariablesManager();
     this.parameterValueManager = new ParameterValueManager();
     this.papifyconfiggroupmanager = new PapifyConfigManager();
   }
@@ -178,15 +173,6 @@ public class PreesmScenario {
       result.add(vertex.getName());
     }
     return result;
-  }
-
-  /**
-   * Gets the variables manager.
-   *
-   * @return the variables manager
-   */
-  public VariablesManager getVariablesManager() {
-    return this.variablesManager;
   }
 
   /**
@@ -418,8 +404,7 @@ public class PreesmScenario {
    *           the core exception
    */
 
-  public void update(final boolean algorithmChange, final boolean architectureChange)
-      throws InvalidModelException, CoreException {
+  public void update(final boolean algorithmChange, final boolean architectureChange) throws CoreException {
     // If the architecture changes, operator ids, operator defintion ids and
     // com node ids are no more valid (they are extracted from the
     // architecture)
@@ -454,7 +439,7 @@ public class PreesmScenario {
       if (isPISDFScenario()) {
         this.parameterValueManager.updateWith(PiParser.getPiGraph(this.algorithmURL));
       } else if (isIBSDFScenario()) {
-        this.variablesManager.updateWith(ScenarioParser.getSDFGraph(this.algorithmURL));
+        throw new PreesmException("IBSDF is not supported anymore");
       }
     }
     // If the algorithm or the architecture changes, timings and constraints

@@ -49,7 +49,7 @@ import org.eclipse.core.resources.IWorkspace;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.Path;
-import org.preesm.algorithm.io.gml.InvalidModelException;
+import org.preesm.commons.exceptions.PreesmException;
 import org.preesm.commons.files.WorkspaceUtils;
 import org.preesm.commons.logger.PreesmLogger;
 import org.preesm.model.pisdf.PiGraph;
@@ -85,10 +85,8 @@ public class CsvTimingParser {
    *          the url
    * @param opDefIds
    *          the op def ids
-   * @throws InvalidModelException
-   *           the invalid model exception
    */
-  public void parse(final String url, final Set<String> opDefIds) throws InvalidModelException {
+  public void parse(final String url, final Set<String> opDefIds) {
     PreesmLogger.getLogger().log(Level.INFO,
         "Importing timings from a csv sheet. Non precised timings are kept unmodified.");
 
@@ -144,17 +142,15 @@ public class CsvTimingParser {
    *          the timings
    * @param opDefIds
    *          the op def ids
-   * @throws InvalidModelException
-   *           the invalid model exception
    * @throws CoreException
    *           the core exception
    */
   private void parseTimings(final Map<String, Map<String, String>> timings, final Set<String> opDefIds)
-      throws InvalidModelException, CoreException {
+      throws CoreException {
     // Depending on the type of SDF graph we process (IBSDF or PISDF), call
     // one or the other method
     if (this.scenario.isIBSDFScenario()) {
-      throw new InvalidModelException("Timings are not supported for IBSDF graphs");
+      throw new PreesmException("IBSDF is not supported anymore");
     } else if (this.scenario.isPISDFScenario()) {
       final PiGraph currentGraph = PiParser.getPiGraph(this.scenario.getAlgorithmURL());
       parseTimingsForPISDFGraph(timings, currentGraph, opDefIds);

@@ -36,7 +36,6 @@
  */
 package org.preesm.scenario;
 
-// TODO: Auto-generated Javadoc
 /**
  * Handles code generation parameters.
  *
@@ -53,7 +52,7 @@ public class CodegenManager {
   public CodegenManager() {
     super();
 
-    this.codegenDirectory = new String();
+    this.codegenDirectory = "";
   }
 
   /**

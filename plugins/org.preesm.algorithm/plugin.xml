@@ -42,27 +42,6 @@
 
 <plugin>
 
-   <extension
-         point="org.preesm.workflow.scenarios">
-      <scenario
-            id="org.ietr.preesm.scenario.task"
-            type="org.preesm.scenario.workflow.AlgorithmAndArchitectureScenarioNode">
-         <outputs>
-            <output
-                  id="scenario"
-                  object="org.preesm.scenario.PreesmScenario">
-            </output>
-            <output
-                  id="architecture"
-                  object="org.preesm.model.slam.Design">
-            </output>
-            <output
-                  id="PiMM"
-                  object="org.preesm.model.pisdf.PiGraph">
-            </output>
-         </outputs>
-      </scenario>
-   </extension>
 
    <extension
          point="org.preesm.workflow.tasks">
@@ -759,25 +738,6 @@
                   object="org.preesm.algorithm.mapper.abc.impl.latency.LatencyAbc">
             </input>
          </inputs>
-      </task>
-      <task
-            id="org.ietr.preesm.plugin.mapper.scenariogen.ScenarioGenerator"
-            name="Scenario Generator"
-            type="org.preesm.algorithm.mapper.scenariogen.ScenarioGenerator">
-         <outputs>
-            <output
-                  id="scenario"
-                  object="org.preesm.scenario.PreesmScenario">
-            </output>
-            <output
-                  id="SDF"
-                  object="org.preesm.algorithm.model.sdf.SDFGraph">
-            </output>
-            <output
-                  id="architecture"
-                  object="org.preesm.model.slam.Design">
-            </output>
-         </outputs>
       </task>
       <task
             id="org.ietr.preesm.mapper.exporter.DAGExportTransform"
