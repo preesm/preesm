@@ -96,7 +96,6 @@ import org.preesm.algorithm.model.sdf.SDFEdge;
 import org.preesm.algorithm.model.sdf.SDFGraph;
 import org.preesm.algorithm.model.sdf.SDFVertex;
 import org.preesm.algorithm.model.sdf.esdf.SDFInitVertex;
-import org.preesm.algorithm.model.visitors.SDF4JException;
 import org.preesm.codegen.model.ActorBlock;
 import org.preesm.codegen.model.ActorCall;
 import org.preesm.codegen.model.Block;
@@ -580,7 +579,7 @@ public class CodegenModelGenerator {
               + ") are not yet supported by the Xtend Code Generation.\n"
               + "Flatten the graph completely before using this code-generation.");
         }
-      } catch (final SDF4JException e) {
+      } catch (final PreesmException e) {
         throw new PreesmException("Codegen for " + dagVertex.getName() + "failed.", e);
       }
     } else {

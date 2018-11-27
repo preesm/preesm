@@ -70,7 +70,6 @@ import org.preesm.algorithm.model.sdf.SDFVertex;
 import org.preesm.algorithm.model.sdf.esdf.SDFBroadcastVertex;
 import org.preesm.algorithm.model.sdf.esdf.SDFRoundBufferVertex;
 import org.preesm.algorithm.model.sdf.transformations.IbsdfFlattener;
-import org.preesm.algorithm.model.visitors.SDF4JException;
 import org.preesm.codegen.model.Buffer;
 import org.preesm.codegen.model.BufferIterator;
 import org.preesm.codegen.model.Call;
@@ -167,7 +166,7 @@ public class CodegenHierarchicalModelGenerator {
   /**
    *
    */
-  public int execute(final CoreBlock operatorBlock, final DAGVertex dagVertex) throws SDF4JException {
+  public int execute(final CoreBlock operatorBlock, final DAGVertex dagVertex) throws PreesmException {
     // Check whether the ActorCall is a call to a hierarchical actor or not.
     final SDFAbstractVertex sdfVertex = dagVertex.getCorrespondingSDFVertex();
     final Object refinement = sdfVertex.getPropertyBean().getValue(AbstractVertex.REFINEMENT_LITERAL);
@@ -183,7 +182,7 @@ public class CodegenHierarchicalModelGenerator {
       try {
         flattener.flattenGraph();
         resultGraph = flattener.getFlattenedGraph();
-      } catch (final SDF4JException e) {
+      } catch (final PreesmException e) {
         throw (new PreesmException(e.getMessage(), e));
       }
       // compute repetition vectors

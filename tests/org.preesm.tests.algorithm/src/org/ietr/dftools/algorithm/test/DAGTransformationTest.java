@@ -47,7 +47,6 @@ import org.preesm.algorithm.model.dag.DAGVertex;
 import org.preesm.algorithm.model.dag.DirectedAcyclicGraph;
 import org.preesm.algorithm.model.sdf.SDFGraph;
 import org.preesm.algorithm.model.sdf.visitors.DAGTransformation;
-import org.preesm.algorithm.model.visitors.SDF4JException;
 import org.preesm.commons.exceptions.PreesmException;
 
 /**
@@ -71,7 +70,7 @@ public class DAGTransformationTest {
         DAGVertexFactory.getInstance());
     try {
       demoGraph.accept(dageur);
-    } catch (final SDF4JException e) {
+    } catch (final PreesmException e) {
       throw new DFToolsAlgoException("Could not transform sdf to dag", e);
     }
     final DirectedAcyclicGraph dag = dageur.getOutput();

@@ -43,7 +43,6 @@ import java.util.Map;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.preesm.algorithm.mapper.model.MapperDAG;
 import org.preesm.algorithm.model.sdf.SDFGraph;
-import org.preesm.algorithm.model.visitors.SDF4JException;
 import org.preesm.commons.exceptions.PreesmException;
 import org.preesm.model.scenario.PreesmScenario;
 import org.preesm.model.slam.Design;
@@ -75,7 +74,7 @@ public class SDF2DAGTransformation extends AbstractTaskImplementation {
     final MapperDAG dag;
     try {
       dag = SdfToDagConverter.convert(algorithm, architecture, scenario);
-    } catch (SDF4JException e) {
+    } catch (PreesmException e) {
       throw (new PreesmException(e.getMessage()));
     }
     // TODO Auto-generated method stub

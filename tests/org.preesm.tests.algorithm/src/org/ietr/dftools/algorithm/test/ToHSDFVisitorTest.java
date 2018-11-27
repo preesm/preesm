@@ -45,7 +45,7 @@ import org.preesm.algorithm.model.sdf.SDFVertex;
 import org.preesm.algorithm.model.sdf.visitors.ToHSDFVisitor;
 import org.preesm.algorithm.model.types.ExpressionEdgePropertyType;
 import org.preesm.algorithm.model.types.LongEdgePropertyType;
-import org.preesm.algorithm.model.visitors.SDF4JException;
+import org.preesm.commons.exceptions.PreesmException;
 
 /**
  */
@@ -60,7 +60,7 @@ public class ToHSDFVisitorTest {
     final ToHSDFVisitor visitor = new ToHSDFVisitor();
     try {
       demoGraph.accept(visitor);
-    } catch (final SDF4JException e) {
+    } catch (final PreesmException e) {
       throw new DFToolsAlgoException("Could not convert to HSDF", e);
     }
   }

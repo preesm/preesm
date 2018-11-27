@@ -47,10 +47,8 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.apache.commons.lang3.time.StopWatch;
 import org.eclipse.core.runtime.IProgressMonitor;
-import org.preesm.algorithm.model.parameters.InvalidExpressionException;
 import org.preesm.algorithm.model.sdf.SDFGraph;
 import org.preesm.algorithm.model.sdf.visitors.ToHSDFVisitor;
-import org.preesm.algorithm.model.visitors.SDF4JException;
 import org.preesm.algorithm.model.visitors.VisitorOutput;
 import org.preesm.algorithm.optimization.clean.joinfork.JoinForkCleaner;
 import org.preesm.commons.exceptions.PreesmException;
@@ -99,7 +97,7 @@ public class HSDFTransformation extends AbstractTaskImplementation {
           hsdf = toHsdf.getOutput();
           logger.log(Level.INFO, "Minimize special actors");
           JoinForkCleaner.cleanJoinForkPairsFrom(hsdf);
-        } catch (final SDF4JException | InvalidExpressionException e) {
+        } catch (final PreesmException e) {
           throw new PreesmException(e.getMessage(), e);
         }
         logger.log(Level.INFO, "HSDF transformation complete");
@@ -117,7 +115,7 @@ public class HSDFTransformation extends AbstractTaskImplementation {
       } else {
         throw (new PreesmException("Graph not valid, not schedulable"));
       }
-    } catch (final SDF4JException e) {
+    } catch (final PreesmException e) {
       throw (new PreesmException(e.getMessage(), e));
     }
 

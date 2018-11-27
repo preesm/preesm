@@ -48,6 +48,7 @@ import org.preesm.algorithm.model.parameters.InvalidExpressionException;
 import org.preesm.algorithm.model.parameters.NoIntegerValueException;
 import org.preesm.algorithm.model.sdf.SDFAbstractVertex;
 import org.preesm.algorithm.model.sdf.SDFInterfaceVertex;
+import org.preesm.commons.exceptions.PreesmException;
 
 /**
  * HierarchyFlattening for a given depth.
@@ -172,10 +173,10 @@ public abstract class AbstractHierarchyFlattening<G extends AbstractGraph> {
    *          The graph to flatten
    * @param depth
    *          The depth to flatten the graph
-   * @throws SDF4JException
+   * @throws PreesmException
    *           the SDF 4 J exception
    */
-  public void flattenGraph(final G sdf, final int depth) throws SDF4JException {
+  public void flattenGraph(final G sdf, final int depth) throws PreesmException {
     if (depth > 0) {
       final int newDepth = depth - 1;
       this.output = (G) sdf.copy();
@@ -185,7 +186,7 @@ public abstract class AbstractHierarchyFlattening<G extends AbstractGraph> {
           try {
             treatVertex(vertices.get(i), this.output);
           } catch (final InvalidExpressionException e) {
-            throw (new SDF4JException(e.getMessage()));
+            throw (new PreesmException(e.getMessage()));
           }
           this.output.removeVertex(vertices.get(i));
         }

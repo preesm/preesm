@@ -49,7 +49,7 @@ import org.preesm.algorithm.model.parameters.InvalidExpressionException;
 import org.preesm.algorithm.model.parameters.NoIntegerValueException;
 import org.preesm.algorithm.model.sdf.esdf.SDFSinkInterfaceVertex;
 import org.preesm.algorithm.model.sdf.esdf.SDFSourceInterfaceVertex;
-import org.preesm.algorithm.model.visitors.SDF4JException;
+import org.preesm.commons.exceptions.PreesmException;
 import org.preesm.commons.logger.PreesmLogger;
 
 /**
@@ -390,7 +390,7 @@ public abstract class SDFAbstractVertex extends AbstractVertex<SDFGraph> {
    * Validate model.
    *
    * @return true, if successful
-   * @throws SDF4JException
+   * @throws PreesmException
    *           the SDF 4 J exception
    * @throws InvalidExpressionException
    *           the invalid expression exception

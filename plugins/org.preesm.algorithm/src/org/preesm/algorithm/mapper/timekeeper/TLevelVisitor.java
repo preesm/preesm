@@ -51,7 +51,7 @@ import org.preesm.algorithm.mapper.model.property.EdgeTiming;
 import org.preesm.algorithm.mapper.model.property.VertexTiming;
 import org.preesm.algorithm.model.dag.DAGVertex;
 import org.preesm.algorithm.model.visitors.IGraphVisitor;
-import org.preesm.algorithm.model.visitors.SDF4JException;
+import org.preesm.commons.exceptions.PreesmException;
 
 /**
  * Visitor computing the TLevel of each actor firing.
@@ -96,7 +96,7 @@ public class TLevelVisitor implements IGraphVisitor<MapperDAG, MapperDAGVertex, 
           final DAGVertex next = iterator.next();
           try {
             next.accept(this);
-          } catch (final SDF4JException e) {
+          } catch (final PreesmException e) {
             e.printStackTrace();
           }
         }
@@ -112,7 +112,7 @@ public class TLevelVisitor implements IGraphVisitor<MapperDAG, MapperDAGVertex, 
           }
         }
       }
-    } catch (final SDF4JException e) {
+    } catch (final PreesmException e) {
       e.printStackTrace();
     } catch (final NoSuchElementException e) {
       e.printStackTrace();
@@ -124,11 +124,11 @@ public class TLevelVisitor implements IGraphVisitor<MapperDAG, MapperDAGVertex, 
    *
    * @param dagVertex
    *          the dag vertex
-   * @throws SDF4JException
+   * @throws PreesmException
    *           the SDF 4 J exception
    */
   @Override
-  public void visit(final MapperDAGVertex dagVertex) throws SDF4JException {
+  public void visit(final MapperDAGVertex dagVertex) throws PreesmException {
     long maxTLevel = -1;
     final VertexTiming timing = dagVertex.getTiming();
 

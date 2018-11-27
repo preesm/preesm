@@ -50,7 +50,6 @@ import org.eclipse.core.runtime.IProgressMonitor;
 import org.preesm.algorithm.model.sdf.SDFGraph;
 import org.preesm.algorithm.model.sdf.transformations.IbsdfFlattener;
 import org.preesm.algorithm.model.sdf.visitors.ConsistencyChecker;
-import org.preesm.algorithm.model.visitors.SDF4JException;
 import org.preesm.algorithm.model.visitors.VisitorOutput;
 import org.preesm.commons.exceptions.PreesmException;
 import org.preesm.commons.logger.PreesmLogger;
@@ -113,7 +112,7 @@ public class HierarchyFlattening extends AbstractTaskImplementation {
         if (validateModel) {
           try {
             flattener.flattenGraph();
-          } catch (final SDF4JException e) {
+          } catch (final PreesmException e) {
             throw (new PreesmException(e.getMessage(), e));
           }
           HierarchyFlattening.LOGGER.log(Level.INFO, "Flattening complete with depth " + depth);
@@ -124,7 +123,7 @@ public class HierarchyFlattening extends AbstractTaskImplementation {
           final String message = "Could not compute a schedule, graph can't be flattened";
           throw (new PreesmException(message));
         }
-      } catch (final SDF4JException e) {
+      } catch (final PreesmException e) {
         throw (new PreesmException(e.getMessage(), e));
       }
     } else {

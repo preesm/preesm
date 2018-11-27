@@ -72,7 +72,6 @@ import org.preesm.algorithm.model.sdf.transformations.SpecialActorPortsIndexer;
 import org.preesm.algorithm.model.types.LongEdgePropertyType;
 import org.preesm.algorithm.model.types.LongVertexPropertyType;
 import org.preesm.algorithm.model.visitors.IGraphVisitor;
-import org.preesm.algorithm.model.visitors.SDF4JException;
 import org.preesm.commons.exceptions.PreesmException;
 
 /**
@@ -252,7 +251,7 @@ public class DAGTransformation<T extends DirectedAcyclicGraph>
    *
    * @param graph
    *          the graph
-   * @throws SDF4JException
+   * @throws PreesmException
    *           the SDF 4 J exception
    */
   private void transformsTop(final SDFGraph graph) {
@@ -277,7 +276,7 @@ public class DAGTransformation<T extends DirectedAcyclicGraph>
         }
       }
     } catch (final InvalidExpressionException e) {
-      throw (new SDF4JException(e.getMessage()));
+      throw (new PreesmException(e.getMessage()));
     }
   }
 
@@ -521,12 +520,12 @@ public class DAGTransformation<T extends DirectedAcyclicGraph>
       sdf.getPropertyBean().setValue("schedulable", true);
       transformsTop(sdf);
     } catch (final InvalidExpressionException e) {
-      throw (new SDF4JException(e.getMessage()));
+      throw (new PreesmException(e.getMessage()));
     }
 
     // Make sure all ports are in order
     if (!SpecialActorPortsIndexer.checkIndexes(sdf)) {
-      throw new SDF4JException("There are still special actors with non-indexed ports. Contact Preesm developers.");
+      throw new PreesmException("There are still special actors with non-indexed ports. Contact Preesm developers.");
     }
     SpecialActorPortsIndexer.sortIndexedPorts(sdf);
   }

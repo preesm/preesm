@@ -40,7 +40,7 @@ import org.junit.Test;
 import org.preesm.algorithm.generator.SDFRandomGraph;
 import org.preesm.algorithm.model.sdf.SDFAbstractVertex;
 import org.preesm.algorithm.model.sdf.SDFGraph;
-import org.preesm.algorithm.model.visitors.SDF4JException;
+import org.preesm.commons.exceptions.PreesmException;
 
 /**
  * The Class SDFRandomGraphTest.
@@ -64,7 +64,7 @@ public class SDFRandomGraphTest {
       final int size = allVertices.size();
       Assert.assertEquals(nbVertex, size);
 
-    } catch (final SDF4JException e) {
+    } catch (final PreesmException e) {
       Assert.fail("Should not fail with SDF4J, but catch exception " + e.getMessage());
     }
   }

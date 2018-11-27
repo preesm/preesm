@@ -58,8 +58,8 @@ import org.preesm.algorithm.model.sdf.transformations.SpecialActorPortsIndexer;
 import org.preesm.algorithm.model.types.LongEdgePropertyType;
 import org.preesm.algorithm.model.types.StringEdgePropertyType;
 import org.preesm.algorithm.model.visitors.IGraphVisitor;
-import org.preesm.algorithm.model.visitors.SDF4JException;
 import org.preesm.algorithm.model.visitors.VisitorOutput;
+import org.preesm.commons.exceptions.PreesmException;
 
 /**
  * Visitor used to transform an SDF into a single-rate SDF (for all edges : prod = cons).
@@ -482,12 +482,12 @@ public class ToHSDFVisitor implements IGraphVisitor<SDFGraph, SDFAbstractVertex,
    *          the input {@link SDFGraph}
    * @param output
    *          the Single-Rate output {@link SDFGraph}
-   * @throws SDF4JException
+   * @throws PreesmException
    *           the SDF 4 J exception
    * @throws InvalidExpressionException
    *           the invalid expression exception
    */
-  private void transformsTop(final SDFGraph graph, final SDFGraph output) throws SDF4JException {
+  private void transformsTop(final SDFGraph graph, final SDFGraph output) throws PreesmException {
     // This map associates each vertex of the input graph to corresponding
     // instances in the output graph
     this.matchCopies = new LinkedHashMap<>();
@@ -532,7 +532,7 @@ public class ToHSDFVisitor implements IGraphVisitor<SDFGraph, SDFAbstractVertex,
       output.getPropertyBean().setValue("schedulable", true);
     } else {
       VisitorOutput.getLogger().log(Level.SEVERE, "graph " + graph.getName() + " is not schedulable");
-      throw (new SDF4JException("Graph " + graph.getName() + " is not schedulable"));
+      throw (new PreesmException("Graph " + graph.getName() + " is not schedulable"));
     }
   }
 
@@ -542,7 +542,7 @@ public class ToHSDFVisitor implements IGraphVisitor<SDFGraph, SDFAbstractVertex,
    * @see org.ietr.dftools.algorithm.model.visitors.IGraphVisitor#visit(org.ietr.dftools.algorithm.model.AbstractGraph)
    */
   @Override
-  public void visit(final SDFGraph sdf) throws SDF4JException {
+  public void visit(final SDFGraph sdf) throws PreesmException {
     this.outputGraph = sdf.copy();
     boolean isHSDF = true;
     try {
@@ -573,7 +573,7 @@ public class ToHSDFVisitor implements IGraphVisitor<SDFGraph, SDFAbstractVertex,
         }
       }
     } catch (final InvalidExpressionException e) {
-      throw (new SDF4JException(e.getMessage()));
+      throw (new PreesmException(e.getMessage()));
     }
 
     if (!isHSDF) {
@@ -589,7 +589,7 @@ public class ToHSDFVisitor implements IGraphVisitor<SDFGraph, SDFAbstractVertex,
       try {
         transformsTop(sdf, this.outputGraph);
       } catch (final InvalidExpressionException e) {
-        throw (new SDF4JException(e.getMessage()));
+        throw (new PreesmException(e.getMessage()));
       }
     }
 

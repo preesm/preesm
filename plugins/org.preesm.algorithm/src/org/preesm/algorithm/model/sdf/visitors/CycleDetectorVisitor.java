@@ -43,7 +43,7 @@ import org.preesm.algorithm.model.sdf.SDFEdge;
 import org.preesm.algorithm.model.sdf.SDFGraph;
 import org.preesm.algorithm.model.sdf.SDFVertex;
 import org.preesm.algorithm.model.visitors.IGraphVisitor;
-import org.preesm.algorithm.model.visitors.SDF4JException;
+import org.preesm.commons.exceptions.PreesmException;
 
 /**
  * Visitor to use to detect cycle in a hierarchical graph.
@@ -68,7 +68,7 @@ public class CycleDetectorVisitor implements IGraphVisitor<SDFGraph, SDFVertex, 
   public boolean detectCyles(final SDFGraph graph) {
     try {
       graph.accept(this);
-    } catch (final SDF4JException e) {
+    } catch (final PreesmException e) {
       throw new DFToolsAlgoException("Could not verify graph", e);
     }
     return this.hasCycle;
@@ -80,7 +80,7 @@ public class CycleDetectorVisitor implements IGraphVisitor<SDFGraph, SDFVertex, 
    * @see org.ietr.dftools.algorithm.model.visitors.IGraphVisitor#visit(org.ietr.dftools.algorithm.model.AbstractGraph)
    */
   @Override
-  public void visit(final SDFGraph sdf) throws SDF4JException {
+  public void visit(final SDFGraph sdf) throws PreesmException {
     boolean currentGraphHasCycle;
     final CycleDetector<SDFAbstractVertex, SDFEdge> detector = new CycleDetector<>(sdf);
     currentGraphHasCycle = detector.detectCycles();
@@ -99,7 +99,7 @@ public class CycleDetectorVisitor implements IGraphVisitor<SDFGraph, SDFVertex, 
    * @see org.ietr.dftools.algorithm.model.visitors.IGraphVisitor#visit(org.ietr.dftools.algorithm.model.AbstractVertex)
    */
   @Override
-  public void visit(final SDFVertex sdfVertex) throws SDF4JException {
+  public void visit(final SDFVertex sdfVertex) throws PreesmException {
     if (sdfVertex.getGraphDescription() != null) {
       sdfVertex.getGraphDescription().accept(this);
     }

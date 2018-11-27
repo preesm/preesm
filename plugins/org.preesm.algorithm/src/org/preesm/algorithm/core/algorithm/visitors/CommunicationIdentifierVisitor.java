@@ -44,7 +44,7 @@ import org.preesm.algorithm.model.dag.DAGEdge;
 import org.preesm.algorithm.model.dag.DAGVertex;
 import org.preesm.algorithm.model.dag.DirectedAcyclicGraph;
 import org.preesm.algorithm.model.visitors.IGraphVisitor;
-import org.preesm.algorithm.model.visitors.SDF4JException;
+import org.preesm.commons.exceptions.PreesmException;
 import org.preesm.model.scenario.types.ImplementationPropertyNames;
 import org.preesm.model.scenario.types.VertexType;
 import org.preesm.model.slam.ComponentInstance;
@@ -111,7 +111,7 @@ public class CommunicationIdentifierVisitor implements IGraphVisitor<DirectedAcy
    * @see org.ietr.dftools.algorithm.model.visitors.IGraphVisitor#visit(org.ietr.dftools.algorithm.model.AbstractGraph)
    */
   @Override
-  public void visit(final DirectedAcyclicGraph dag) throws SDF4JException {
+  public void visit(final DirectedAcyclicGraph dag) throws PreesmException {
     // We iterate the edges
     final Iterator<DAGEdge> iterator = dag.edgeSet().iterator();
 
@@ -127,7 +127,7 @@ public class CommunicationIdentifierVisitor implements IGraphVisitor<DirectedAcy
    * @see org.ietr.dftools.algorithm.model.visitors.IGraphVisitor#visit(org.ietr.dftools.algorithm.model.AbstractVertex)
    */
   @Override
-  public void visit(final DAGVertex dagVertex) throws SDF4JException {
+  public void visit(final DAGVertex dagVertex) throws PreesmException {
     // Nothing to do here for this visitor
 
   }

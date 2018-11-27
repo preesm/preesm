@@ -42,7 +42,7 @@ import org.preesm.algorithm.model.sdf.SDFEdge;
 import org.preesm.algorithm.model.sdf.SDFGraph;
 import org.preesm.algorithm.model.sdf.SDFInterfaceVertex;
 import org.preesm.algorithm.model.visitors.IGraphVisitor;
-import org.preesm.algorithm.model.visitors.SDF4JException;
+import org.preesm.commons.exceptions.PreesmException;
 
 /**
  * Visitor used to normalize a graph, hierarchical (IBSDF) or not (SDF).
@@ -69,7 +69,7 @@ public class NormalizeVisitor implements IGraphVisitor<SDFGraph, SDFAbstractVert
    * @see org.ietr.dftools.algorithm.model.visitors.IGraphVisitor#visit(org.ietr.dftools.algorithm.model.AbstractGraph)
    */
   @Override
-  public void visit(final SDFGraph sdf) throws SDF4JException {
+  public void visit(final SDFGraph sdf) throws PreesmException {
 
     this.outputGraph = sdf;
 
@@ -97,7 +97,7 @@ public class NormalizeVisitor implements IGraphVisitor<SDFGraph, SDFAbstractVert
    * @see org.ietr.dftools.algorithm.model.visitors.IGraphVisitor#visit(org.ietr.dftools.algorithm.model.AbstractVertex)
    */
   @Override
-  public void visit(final SDFAbstractVertex sdfVertex) throws SDF4JException {
+  public void visit(final SDFAbstractVertex sdfVertex) throws PreesmException {
     // nothing to do on abstract vertices
   }
 

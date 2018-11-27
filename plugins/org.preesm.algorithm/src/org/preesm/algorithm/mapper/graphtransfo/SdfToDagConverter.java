@@ -65,7 +65,6 @@ import org.preesm.algorithm.model.sdf.SDFEdge;
 import org.preesm.algorithm.model.sdf.SDFGraph;
 import org.preesm.algorithm.model.sdf.visitors.DAGTransformation;
 import org.preesm.algorithm.model.types.LongEdgePropertyType;
-import org.preesm.algorithm.model.visitors.SDF4JException;
 import org.preesm.commons.exceptions.PreesmException;
 import org.preesm.commons.logger.PreesmLogger;
 import org.preesm.model.pisdf.PiGraph;
@@ -119,7 +118,7 @@ public class SdfToDagConverter {
     // visits the SDF to generate the DAG
     try {
       sdf.accept(visitor);
-    } catch (final SDF4JException e) {
+    } catch (final PreesmException e) {
       throw new PreesmException("Error", e);
     }
 

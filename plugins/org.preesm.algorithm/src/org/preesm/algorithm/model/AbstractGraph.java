@@ -55,8 +55,8 @@ import org.preesm.algorithm.model.parameters.VariableSet;
 import org.preesm.algorithm.model.parameters.factories.ArgumentFactory;
 import org.preesm.algorithm.model.parameters.factories.ParameterFactory;
 import org.preesm.algorithm.model.visitors.IGraphVisitor;
-import org.preesm.algorithm.model.visitors.SDF4JException;
 import org.preesm.commons.CloneableProperty;
+import org.preesm.commons.exceptions.PreesmException;
 
 /**
  * Abstract class common to all graphs.
@@ -132,10 +132,10 @@ public abstract class AbstractGraph<V extends AbstractVertex, E extends Abstract
    *
    * @param visitor
    *          The visitor to accept
-   * @throws SDF4JException
+   * @throws PreesmException
    *           the SDF 4 J exception
    */
-  public void accept(final IGraphVisitor visitor) throws SDF4JException {
+  public void accept(final IGraphVisitor visitor) throws PreesmException {
     visitor.visit(this);
   }
 
@@ -776,7 +776,7 @@ public abstract class AbstractGraph<V extends AbstractVertex, E extends Abstract
    * Validate model.
    *
    * @return true, if successful
-   * @throws SDF4JException
+   * @throws PreesmException
    *           the SDF 4 J exception
    */
   public abstract boolean validateModel();

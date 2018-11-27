@@ -51,7 +51,7 @@ import org.preesm.algorithm.model.sdf.SDFGraph;
 import org.preesm.algorithm.model.sdf.SDFInterfaceVertex;
 import org.preesm.algorithm.model.sdf.esdf.SDFSinkInterfaceVertex;
 import org.preesm.algorithm.model.sdf.esdf.SDFSourceInterfaceVertex;
-import org.preesm.algorithm.model.visitors.SDF4JException;
+import org.preesm.commons.exceptions.PreesmException;
 
 // TODO: Auto-generated Javadoc
 /**
@@ -235,12 +235,12 @@ public class IBSDFGenerator {
    *           Signals that an I/O exception has occurred.
    * @throws InterruptedException
    *           the interrupted exception
-   * @throws SDF4JException
+   * @throws PreesmException
    *           the SDF 4 J exception
    * @throws InvalidExpressionException
    *           the invalid expression exception
    */
-  public boolean hierarchize() throws IOException, InterruptedException, SDF4JException, InvalidExpressionException {
+  public boolean hierarchize() throws IOException, InterruptedException, PreesmException, InvalidExpressionException {
     int remaining_graphs;
     int current;
     int r;

@@ -39,6 +39,7 @@ package org.preesm.algorithm.model.visitors;
 import org.preesm.algorithm.model.AbstractEdge;
 import org.preesm.algorithm.model.AbstractGraph;
 import org.preesm.algorithm.model.AbstractVertex;
+import org.preesm.commons.exceptions.PreesmException;
 
 /**
  * Interface of the SDF visitor.
@@ -69,7 +70,7 @@ public interface IGraphVisitor<G extends AbstractGraph, V extends AbstractVertex
    *
    * @param sdf
    *          the sdf
-   * @throws SDF4JException
+   * @throws PreesmException
    *           the SDF 4 J exception
    */
   public default void visit(G sdf) {
@@ -81,7 +82,7 @@ public interface IGraphVisitor<G extends AbstractGraph, V extends AbstractVertex
    *
    * @param sdfVertex
    *          the sdf vertex
-   * @throws SDF4JException
+   * @throws PreesmException
    *           the SDF 4 J exception
    */
   public default void visit(V sdfVertex) {

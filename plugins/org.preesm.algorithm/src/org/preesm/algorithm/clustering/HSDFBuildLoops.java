@@ -64,7 +64,6 @@ import org.preesm.algorithm.model.sdf.esdf.SDFSinkInterfaceVertex;
 import org.preesm.algorithm.model.sdf.esdf.SDFSourceInterfaceVertex;
 import org.preesm.algorithm.model.sdf.transformations.IbsdfFlattener;
 import org.preesm.algorithm.model.types.LongEdgePropertyType;
-import org.preesm.algorithm.model.visitors.SDF4JException;
 import org.preesm.commons.exceptions.PreesmException;
 import org.preesm.commons.logger.PreesmLogger;
 import org.preesm.commons.math.MathFunctionsHelper;
@@ -706,19 +705,19 @@ public class HSDFBuildLoops {
       try {
         flattener.flattenGraph();
         resultGraph = flattener.getFlattenedGraph();
-      } catch (final SDF4JException e) {
+      } catch (final PreesmException e) {
         throw (new PreesmException(e.getMessage()));
       }
       try {
         resultGraph.validateModel();
-      } catch (final SDF4JException e) {
+      } catch (final PreesmException e) {
         throw new PreesmException("execute failed", e);
       } // compute repetition vectors
       try {
         if (!resultGraph.isSchedulable()) {
           throw (new PreesmException("HSDF Build Loops generate clustering: Graph not schedulable"));
         }
-      } catch (final SDF4JException e) {
+      } catch (final PreesmException e) {
         throw new PreesmException("execute failed", e);
       }
 

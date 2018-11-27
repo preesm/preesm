@@ -49,7 +49,6 @@ import org.preesm.algorithm.model.sdf.SDFEdge;
 import org.preesm.algorithm.model.sdf.SDFGraph;
 import org.preesm.algorithm.model.sdf.SDFVertex;
 import org.preesm.algorithm.model.types.LongEdgePropertyType;
-import org.preesm.algorithm.model.visitors.SDF4JException;
 import org.preesm.commons.exceptions.PreesmException;
 import org.preesm.commons.math.Rational;
 
@@ -206,7 +205,7 @@ public class SDFRandomGraph {
    * @param maxRate
    *          is the maximum production and consumption on edge
    * @return The created random graph
-   * @throws SDF4JException
+   * @throws PreesmException
    *           the SDF 4 J exception
    */
   public SDFGraph createRandomGraph(final int nbVertex, final int minInDegree, final int maxInDegree,
@@ -239,7 +238,7 @@ public class SDFRandomGraph {
    * @param rateMultiplier
    *          a coefficient multiplying ALL productions and consumption rates of the generated sdf.
    * @return The created random graph
-   * @throws SDF4JException
+   * @throws PreesmException
    *           the SDF 4 J exception
    */
   public SDFGraph createRandomGraph(final int nbVertex, final int minInDegree, final int maxInDegree,

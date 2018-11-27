@@ -43,7 +43,6 @@ import org.eclipse.core.runtime.IProgressMonitor;
 import org.preesm.algorithm.generator.SDFRandomGraph;
 import org.preesm.algorithm.model.sdf.SDFAbstractVertex;
 import org.preesm.algorithm.model.sdf.SDFGraph;
-import org.preesm.algorithm.model.visitors.SDF4JException;
 import org.preesm.commons.exceptions.PreesmException;
 import org.preesm.model.scenario.ConstraintGroupManager;
 import org.preesm.model.scenario.PreesmScenario;
@@ -128,7 +127,7 @@ public class RandomSDF extends AbstractTaskImplementation {
     try {
       generatedGraph = graphGenerator.createRandomGraph(this.nbVertex, this.minInDegree, this.maxInDegree,
           this.minOutDegree, this.maxOutDegree, this.minRate, this.maxRate, this.rateMultiplier);
-    } catch (final SDF4JException ex) {
+    } catch (final PreesmException ex) {
       throw new PreesmException(ex.getMessage(), ex);
     }
 

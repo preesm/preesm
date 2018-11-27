@@ -40,7 +40,7 @@ import org.preesm.algorithm.model.sdf.SDFAbstractVertex;
 import org.preesm.algorithm.model.sdf.SDFEdge;
 import org.preesm.algorithm.model.sdf.SDFGraph;
 import org.preesm.algorithm.model.visitors.IGraphVisitor;
-import org.preesm.algorithm.model.visitors.SDF4JException;
+import org.preesm.commons.exceptions.PreesmException;
 
 /**
  * Checks whether a visited graph is single-rate.
@@ -115,7 +115,7 @@ public class SingleRateChecker implements IGraphVisitor<SDFGraph, SDFAbstractVer
     try {
       this.isSingleRate &= (sdfVertex.getNbRepeatAsLong() == 1);
     } catch (final InvalidExpressionException e) {
-      throw new SDF4JException(e.getMessage());
+      throw new PreesmException(e.getMessage());
     }
   }
 }

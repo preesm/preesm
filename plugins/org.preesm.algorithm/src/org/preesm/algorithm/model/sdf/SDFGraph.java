@@ -71,8 +71,8 @@ import org.preesm.algorithm.model.sdf.esdf.SDFSourceInterfaceVertex;
 import org.preesm.algorithm.model.sdf.transformations.SpecialActorPortsIndexer;
 import org.preesm.algorithm.model.types.LongEdgePropertyType;
 import org.preesm.algorithm.model.types.StringEdgePropertyType;
-import org.preesm.algorithm.model.visitors.SDF4JException;
 import org.preesm.algorithm.model.visitors.VisitorOutput;
+import org.preesm.commons.exceptions.PreesmException;
 import org.preesm.commons.logger.PreesmLogger;
 
 /**
@@ -629,10 +629,10 @@ public class SDFGraph extends AbstractGraph<SDFAbstractVertex, SDFEdge> {
    * Check the schedulability of the graph.
    *
    * @return True if the graph is schedulable
-   * @throws SDF4JException
+   * @throws PreesmException
    *           the SDF 4 J exception
    */
-  public boolean isSchedulable() throws SDF4JException {
+  public boolean isSchedulable() throws PreesmException {
     boolean schedulable = true;
     for (final SDFAbstractVertex vertex : vertexSet()) {
       if (!(vertex instanceof SDFInterfaceVertex) && vertex.getGraphDescription() instanceof SDFGraph) {
@@ -667,7 +667,7 @@ public class SDFGraph extends AbstractGraph<SDFAbstractVertex, SDFEdge> {
         }
       }
     } catch (final InvalidExpressionException e) {
-      throw new SDF4JException(getName() + ": " + e.getMessage(), e);
+      throw new PreesmException(getName() + ": " + e.getMessage(), e);
     }
     return schedulable;
   }
@@ -819,7 +819,7 @@ public class SDFGraph extends AbstractGraph<SDFAbstractVertex, SDFEdge> {
    *          the logger
    * @throws InvalidExpressionException
    *           thrown if the child contains invalid expressions
-   * @throws SDF4JException
+   * @throws PreesmException
    *           thrown if the child is not valid
    */
   private void validateChild(final SDFAbstractVertex child) {
@@ -834,7 +834,7 @@ public class SDFGraph extends AbstractGraph<SDFAbstractVertex, SDFEdge> {
       final String childGraphName = child.getGraphDescription().getName();
       final SDFGraph descritption = ((SDFGraph) child.getGraphDescription());
       if (!descritption.validateModel()) {
-        throw (new SDF4JException(childGraphName + " is not schedulable"));
+        throw (new PreesmException(childGraphName + " is not schedulable"));
       }
       // validate child graph I/Os w.r.t. actor I/Os
       final List<SDFAbstractVertex> validatedInputs = validateInputs(child);
@@ -845,7 +845,7 @@ public class SDFGraph extends AbstractGraph<SDFAbstractVertex, SDFEdge> {
         validatedInputs.retainAll(validatedOutputs);
         final List<SDFAbstractVertex> multiplyDefinedEdges = validatedInputs.stream().peek(AbstractVertex::getName)
             .collect(Collectors.toList());
-        throw new SDF4JException(multiplyDefinedEdges + " are multiply connected, consider using broadcast ");
+        throw new PreesmException(multiplyDefinedEdges + " are multiply connected, consider using broadcast ");
       }
     } else {
       // validate concrete actor implementation
@@ -853,7 +853,7 @@ public class SDFGraph extends AbstractGraph<SDFAbstractVertex, SDFEdge> {
     }
   }
 
-  private List<SDFAbstractVertex> validateOutputs(final SDFAbstractVertex hierarchicalActor) throws SDF4JException {
+  private List<SDFAbstractVertex> validateOutputs(final SDFAbstractVertex hierarchicalActor) throws PreesmException {
     final SDFGraph subGraph = ((SDFGraph) hierarchicalActor.getGraphDescription());
     final List<SDFAbstractVertex> validatedOutInterfaces = new ArrayList<>();
     final Set<SDFEdge> actorOutgoingEdges = outgoingEdgesOf(hierarchicalActor);
@@ -862,7 +862,7 @@ public class SDFGraph extends AbstractGraph<SDFAbstractVertex, SDFEdge> {
           .getSourceInterface();
       final String subGraphSinkInterfaceName = subGraphSinkInterface.getName();
       if (validatedOutInterfaces.contains(subGraphSinkInterface)) {
-        throw new SDF4JException(subGraphSinkInterfaceName + " is multiply connected, consider using broadcast ");
+        throw new PreesmException(subGraphSinkInterfaceName + " is multiply connected, consider using broadcast ");
       } else {
         validatedOutInterfaces.add(subGraphSinkInterface);
       }
@@ -874,11 +874,12 @@ public class SDFGraph extends AbstractGraph<SDFAbstractVertex, SDFEdge> {
           final AbstractEdgePropertyType<?> subInterfaceConsExpr = subGraphSinkInterfaceInEdge.getCons();
           final long sinkInterfaceConsrate = subInterfaceConsExpr.longValue();
           if (sinkInterfaceConsrate != actorOutEdgeProdRate) {
-            throw new SDF4JException("Sink [" + subGraphSinkInterfaceName + "] in actor [" + hierarchicalActor.getName()
-                + "] has incompatible outside actor production and inside sink vertex consumption "
-                + sinkInterfaceConsrate + " != " + actorOutEdgeProdRate
-                + " (sub graph sink interface consumption rate of " + subInterfaceConsExpr
-                + " does not match actor production rate of " + actorOutEdgeProdExpr + ")");
+            throw new PreesmException(
+                "Sink [" + subGraphSinkInterfaceName + "] in actor [" + hierarchicalActor.getName()
+                    + "] has incompatible outside actor production and inside sink vertex consumption "
+                    + sinkInterfaceConsrate + " != " + actorOutEdgeProdRate
+                    + " (sub graph sink interface consumption rate of " + subInterfaceConsExpr
+                    + " does not match actor production rate of " + actorOutEdgeProdExpr + ")");
           }
         }
       }
@@ -886,7 +887,7 @@ public class SDFGraph extends AbstractGraph<SDFAbstractVertex, SDFEdge> {
     return validatedOutInterfaces;
   }
 
-  private List<SDFAbstractVertex> validateInputs(final SDFAbstractVertex hierarchicalActor) throws SDF4JException {
+  private List<SDFAbstractVertex> validateInputs(final SDFAbstractVertex hierarchicalActor) throws PreesmException {
     final SDFGraph subGraph = ((SDFGraph) hierarchicalActor.getGraphDescription());
     final List<SDFAbstractVertex> validatedInInterfaces = new ArrayList<>();
     final Set<SDFEdge> actorIncomingEdges = incomingEdgesOf(hierarchicalActor);
@@ -895,7 +896,7 @@ public class SDFGraph extends AbstractGraph<SDFAbstractVertex, SDFEdge> {
           .getTargetInterface();
       final String subGraphSourceInterfaceName = subGraphSourceInterface.getName();
       if (validatedInInterfaces.contains(subGraphSourceInterface)) {
-        throw new SDF4JException(subGraphSourceInterfaceName + " is multiply connected, consider using broadcast ");
+        throw new PreesmException(subGraphSourceInterfaceName + " is multiply connected, consider using broadcast ");
       } else {
         validatedInInterfaces.add(subGraphSourceInterface);
       }
@@ -908,7 +909,7 @@ public class SDFGraph extends AbstractGraph<SDFAbstractVertex, SDFEdge> {
           final AbstractEdgePropertyType<?> subInterfaceProdExpr = subGraphSourceInterfaceOutEdge.getProd();
           final long sourceInterfaceProdRate = subInterfaceProdExpr.longValue();
           if (sourceInterfaceProdRate != actorInEdgeConsRate) {
-            throw new SDF4JException(
+            throw new PreesmException(
                 "Source [" + subGraphSourceInterfaceName + "] in actor [" + hierarchicalActor.getName()
                     + "} has incompatible outside actor consumption and inside source vertex production "
                     + sourceInterfaceProdRate + " != " + actorInEdgeConsRate
@@ -925,7 +926,7 @@ public class SDFGraph extends AbstractGraph<SDFAbstractVertex, SDFEdge> {
    * Validate the model's schedulability.
    *
    * @return True if the model is valid, false otherwise ...
-   * @throws SDF4JException
+   * @throws PreesmException
    *           the SDF 4 J exception
    */
   @Override
@@ -944,7 +945,7 @@ public class SDFGraph extends AbstractGraph<SDFAbstractVertex, SDFEdge> {
       }
       return false;
     } catch (final InvalidExpressionException e) {
-      throw new SDF4JException(getName() + ": " + e.getMessage(), e);
+      throw new PreesmException(getName() + ": " + e.getMessage(), e);
     }
   }
 

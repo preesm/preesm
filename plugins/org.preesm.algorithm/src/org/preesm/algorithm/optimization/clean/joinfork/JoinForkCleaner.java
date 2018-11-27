@@ -58,7 +58,6 @@ import org.preesm.algorithm.model.sdf.transformations.SpecialActorPortsIndexer;
 import org.preesm.algorithm.model.sdf.visitors.SingleRateChecker;
 import org.preesm.algorithm.model.types.LongEdgePropertyType;
 import org.preesm.algorithm.model.types.StringEdgePropertyType;
-import org.preesm.algorithm.model.visitors.SDF4JException;
 import org.preesm.commons.exceptions.PreesmException;
 
 /**
@@ -85,17 +84,17 @@ public class JoinForkCleaner {
    * @return true if some join-fork pairs has be removed
    * @throws InvalidExpressionException
    *           the invalid expression exception
-   * @throws SDF4JException
+   * @throws PreesmException
    *           the SDF 4 J exception
    */
-  public static boolean cleanJoinForkPairsFrom(final SDFGraph graph) throws SDF4JException {
+  public static boolean cleanJoinForkPairsFrom(final SDFGraph graph) throws PreesmException {
     boolean result = false;
 
     // Check that the graph is single rate.
     final SingleRateChecker srChecker = new SingleRateChecker();
     graph.accept(srChecker);
     if (!srChecker.isSingleRate()) {
-      throw new SDF4JException("Cannot clean fork/join pairs in a non-single-rate graph.");
+      throw new PreesmException("Cannot clean fork/join pairs in a non-single-rate graph.");
     }
 
     // Set of edges to remove from graph
