@@ -37,9 +37,9 @@ package org.ietr.dftools.algorithm.test;
 import org.junit.Assert;
 import org.junit.Test;
 import org.preesm.algorithm.model.parameters.ExpressionValue;
-import org.preesm.algorithm.model.parameters.InvalidExpressionException;
 import org.preesm.algorithm.model.parameters.NoIntegerValueException;
 import org.preesm.commons.exceptions.PreesmException;
+import org.preesm.model.pisdf.expression.ExpressionEvaluationException;
 
 /**
  * The Class JepTransitionTest.
@@ -56,7 +56,7 @@ public class JepTransitionTest {
     try {
       final long intValue = value.longValue();
       Assert.assertEquals((int) expected, intValue);
-    } catch (final InvalidExpressionException e) {
+    } catch (final ExpressionEvaluationException e) {
       final String message = "Expression should be valid, but failed with " + e.getMessage();
       throw new PreesmException(message, e);
     } catch (final NoIntegerValueException e) {

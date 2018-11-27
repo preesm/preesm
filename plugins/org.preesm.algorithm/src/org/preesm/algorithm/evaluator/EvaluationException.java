@@ -34,12 +34,14 @@
  */
 package org.preesm.algorithm.evaluator;
 
+import org.preesm.commons.exceptions.PreesmException;
+
 /**
  *
  * @author anmorvan
  *
  */
-public class EvaluationException extends RuntimeException {
+public class EvaluationException extends PreesmException {
 
   private static final long serialVersionUID = 1L;
 

@@ -52,7 +52,6 @@ import org.preesm.algorithm.memory.exclusiongraph.MemoryExclusionGraph;
 import org.preesm.algorithm.memory.script.MemoryScriptEngine;
 import org.preesm.algorithm.model.AbstractGraph;
 import org.preesm.algorithm.model.AbstractVertex;
-import org.preesm.algorithm.model.parameters.InvalidExpressionException;
 import org.preesm.algorithm.model.sdf.SDFAbstractVertex;
 import org.preesm.algorithm.model.sdf.SDFEdge;
 import org.preesm.algorithm.model.sdf.SDFGraph;
@@ -291,12 +290,8 @@ public class HSDFBuildLoops {
         inEdgeVertex.add(e);
         long cons = 0;
         long rvRight = 0;
-        try {
-          cons = e.getCons().longValue();
-          rvRight = right.getNbRepeatAsLong();
-        } catch (final InvalidExpressionException ex) {
-          throw new PreesmException("generatePairedClusteredVertex failed", ex);
-        }
+        cons = e.getCons().longValue();
+        rvRight = right.getNbRepeatAsLong();
         e.setCons(new LongEdgePropertyType((rvRight * cons) / pgcm));
       }
     }
@@ -311,12 +306,8 @@ public class HSDFBuildLoops {
         outEdgeVertex.add(e);
         long prod = 0;
         long rvLeft = 0;
-        try {
-          prod = e.getProd().longValue();
-          rvLeft = left.getNbRepeatAsLong();
-        } catch (final InvalidExpressionException ex) {
-          throw new PreesmException("generatePairedClusteredVertex failed", ex);
-        }
+        prod = e.getProd().longValue();
+        rvLeft = left.getNbRepeatAsLong();
         e.setProd(new LongEdgePropertyType((rvLeft * prod) / pgcm));
       }
     }
@@ -498,13 +489,9 @@ public class HSDFBuildLoops {
     for (int i = 0; i < (nbActor - 1); i++) {
       // get actor
       final List<SDFAbstractVertex> current = getClusteringVertexes(vertexesCpy);
-      try {
-        pgcm = MathFunctionsHelper.gcd(current.get(0).getNbRepeatAsLong(), current.get(1).getNbRepeatAsLong());
-        repLeft = current.get(0).getNbRepeatAsLong() / pgcm;
-        repRight = current.get(1).getNbRepeatAsLong() / pgcm;
-      } catch (final InvalidExpressionException e) {
-        throw new PreesmException("generateClustering failed", e);
-      }
+      pgcm = MathFunctionsHelper.gcd(current.get(0).getNbRepeatAsLong(), current.get(1).getNbRepeatAsLong());
+      repLeft = current.get(0).getNbRepeatAsLong() / pgcm;
+      repRight = current.get(1).getNbRepeatAsLong() / pgcm;
 
       // clusterized at graph level the choosen actors (graph transfo)
       final SDFAbstractVertex clusteredVertex = generatePairedClusteredVertex(pgcm, current.get(0)/* left */,
@@ -662,15 +649,11 @@ public class HSDFBuildLoops {
             long nbRep = 0;
 
             try {
-              nbRep = (long) e.getTarget().getNbRepeat();
-            } catch (final NumberFormatException | InvalidExpressionException ex) {
+              nbRep = e.getTarget().getNbRepeat();
+            } catch (final NumberFormatException ex) {
               throw new PreesmException("Internal Memory allocation failed for actor " + v.getName(), ex);
             }
-            try {
-              mem = nbRep * e.getCons().longValue();
-            } catch (final InvalidExpressionException ex) {
-              throw new PreesmException("Internal Memory allocation failed for actor " + v.getName(), ex);
-            }
+            mem = nbRep * e.getCons().longValue();
           } else if ((v instanceof SDFBroadcastVertex) || (v instanceof SDFRoundBufferVertex)) {
             mem += e.getCons().longValue() * v.getNbRepeatAsLong();
           } else {

@@ -57,7 +57,6 @@ import org.preesm.algorithm.mapper.model.MapperDAG;
 import org.preesm.algorithm.mapper.optimizer.RedundantSynchronizationCleaner;
 import org.preesm.algorithm.mapper.params.AbcParameters;
 import org.preesm.algorithm.model.dag.DirectedAcyclicGraph;
-import org.preesm.algorithm.model.parameters.InvalidExpressionException;
 import org.preesm.commons.exceptions.PreesmException;
 import org.preesm.model.scenario.PreesmScenario;
 import org.preesm.model.slam.Design;
@@ -138,11 +137,7 @@ public abstract class AbstractMappingFromDAG extends AbstractTaskImplementation 
       final MapperDAG resDag = resSimu.getDAG();
       final TagDAG tagSDF = new TagDAG();
 
-      try {
-        tagSDF.tag(dag, architecture, scenario, resSimu, abcParams.getEdgeSchedType());
-      } catch (final InvalidExpressionException e) {
-        throw new PreesmException(e.getMessage());
-      }
+      tagSDF.tag(dag, architecture, scenario, resSimu, abcParams.getEdgeSchedType());
 
       outputs.put(AbstractWorkflowNodeImplementation.KEY_SDF_ABC, resSimu);
       outputs.put(AbstractWorkflowNodeImplementation.KEY_SDF_DAG, dag);

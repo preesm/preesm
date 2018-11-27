@@ -44,7 +44,6 @@ import org.preesm.algorithm.model.InterfaceDirection;
 import org.preesm.algorithm.model.PropertyBean;
 import org.preesm.algorithm.model.PropertyFactory;
 import org.preesm.algorithm.model.parameters.Argument;
-import org.preesm.algorithm.model.parameters.InvalidExpressionException;
 import org.preesm.algorithm.model.parameters.NoIntegerValueException;
 import org.preesm.algorithm.model.sdf.esdf.SDFSinkInterfaceVertex;
 import org.preesm.algorithm.model.sdf.esdf.SDFSourceInterfaceVertex;
@@ -337,8 +336,6 @@ public abstract class SDFAbstractVertex extends AbstractVertex<SDFGraph> {
    * Gives this vertex Nb repeat.
    *
    * @return The number of time to repeat this vertex
-   * @throws InvalidExpressionException
-   *           the invalid expression exception
    */
   public long getNbRepeat() {
     if (getPropertyBean().getValue(SDFAbstractVertex.NB_REPEAT) == null) {
@@ -351,8 +348,6 @@ public abstract class SDFAbstractVertex extends AbstractVertex<SDFGraph> {
    * Gives this vertex Nb repeat.
    *
    * @return The number of time to repeat this vertex
-   * @throws InvalidExpressionException
-   *           the invalid expression exception
    */
   public long getNbRepeatAsLong() {
     if (getPropertyBean().getValue(SDFAbstractVertex.NB_REPEAT) == null) {

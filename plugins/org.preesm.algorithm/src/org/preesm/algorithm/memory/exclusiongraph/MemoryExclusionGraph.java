@@ -67,7 +67,6 @@ import org.preesm.algorithm.model.dag.edag.DAGEndVertex;
 import org.preesm.algorithm.model.dag.edag.DAGForkVertex;
 import org.preesm.algorithm.model.dag.edag.DAGInitVertex;
 import org.preesm.algorithm.model.dag.edag.DAGJoinVertex;
-import org.preesm.algorithm.model.parameters.InvalidExpressionException;
 import org.preesm.algorithm.model.sdf.esdf.SDFInitVertex;
 import org.preesm.commons.CloneableProperty;
 import org.preesm.commons.exceptions.PreesmException;
@@ -385,12 +384,8 @@ public class MemoryExclusionGraph extends SimpleGraph<MemoryExclusionVertex, Def
    *          This DirectedAcyclicGraph is analyzed to create the nodes and edges of the MemoryExclusionGraph. The DAG
    *          used must be the output of a scheduling process. This property ensures that all preceding nodes of a
    *          "merge" node are treated before treating the "merge" node. The DAG will be modified by this function.
-   * @throws InvalidExpressionException
-   *           the invalid expression exception
-   * @throws PreesmException
-   *           the workflow exception
    */
-  public void buildGraph(final DirectedAcyclicGraph dag) throws InvalidExpressionException, PreesmException {
+  public void buildGraph(final DirectedAcyclicGraph dag) {
 
     final String localOrdering = "memExBuildingLocalOrdering";
 

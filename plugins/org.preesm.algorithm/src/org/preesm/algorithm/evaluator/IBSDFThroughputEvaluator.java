@@ -42,7 +42,6 @@ import java.util.Map;
 import java.util.Set;
 import java.util.logging.Level;
 import org.preesm.algorithm.model.AbstractEdgePropertyType;
-import org.preesm.algorithm.model.parameters.InvalidExpressionException;
 import org.preesm.algorithm.model.sdf.SDFAbstractVertex;
 import org.preesm.algorithm.model.sdf.SDFEdge;
 import org.preesm.algorithm.model.sdf.SDFGraph;
@@ -67,11 +66,9 @@ public class IBSDFThroughputEvaluator extends ThroughputEvaluator {
    * @param inputGraph
    *          the input graph
    * @return the double
-   * @throws InvalidExpressionException
-   *           the invalid expression exception
    */
   @Override
-  public double launch(final SDFGraph inputGraph) throws InvalidExpressionException {
+  public double launch(final SDFGraph inputGraph) {
 
     // Find a lower bound on the minimal period by inspecting the bottom levels
     double Kmin = starting_period(inputGraph);
@@ -119,10 +116,8 @@ public class IBSDFThroughputEvaluator extends ThroughputEvaluator {
    * @param inputGraph
    *          the input graph
    * @return the double
-   * @throws InvalidExpressionException
-   *           the invalid expression exception
    */
-  private double starting_period(final SDFGraph inputGraph) throws InvalidExpressionException {
+  private double starting_period(final SDFGraph inputGraph) {
     boolean hierarchical = false;
     double K;
     double Kmax = 0;

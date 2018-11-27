@@ -39,8 +39,6 @@ import java.io.IOException;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.preesm.algorithm.evaluator.IBSDFGenerator;
-import org.preesm.algorithm.model.parameters.InvalidExpressionException;
-import org.preesm.commons.exceptions.PreesmException;
 
 /**
  * Generator of hierarchical graphs (IBSDF) from alive SDF graphs generated with
@@ -61,7 +59,7 @@ public class IBSDFGeneratorTest {
    * Deroui about it
    */
   @Ignore
-  public void testGenerator() throws IOException, InterruptedException, PreesmException, InvalidExpressionException {
+  public void testGenerator() throws IOException, InterruptedException {
     final IBSDFGenerator x = new IBSDFGenerator(50);
     x.graphSet_gen();
     x.hierarchize();

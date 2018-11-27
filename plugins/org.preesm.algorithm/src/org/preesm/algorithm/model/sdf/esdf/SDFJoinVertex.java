@@ -40,10 +40,8 @@ import java.util.List;
 import java.util.Map;
 import org.preesm.algorithm.model.AbstractEdge;
 import org.preesm.algorithm.model.PropertySource;
-import org.preesm.algorithm.model.parameters.InvalidExpressionException;
 import org.preesm.algorithm.model.sdf.SDFEdge;
 import org.preesm.algorithm.model.sdf.SDFInterfaceVertex;
-import org.preesm.commons.exceptions.PreesmException;
 
 /**
  * Class to represent join vertices (implode).
@@ -102,11 +100,7 @@ public class SDFJoinVertex extends SDFAbstractSpecialVertex {
     }
 
     // Copy the nr of repetitions
-    try {
-      newVertex.setNbRepeat(getNbRepeat());
-    } catch (final InvalidExpressionException e) {
-      throw new PreesmException("could not clone vertex", e);
-    }
+    newVertex.setNbRepeat(getNbRepeat());
 
     // Remove the edge order
     newVertex.getPropertyBean().removeProperty(SDFJoinVertex.EDGES_ORDER);

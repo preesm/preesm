@@ -43,7 +43,6 @@ import java.util.Set;
 import java.util.Vector;
 import org.apache.commons.math3.util.ArithmeticUtils;
 import org.jgrapht.alg.cycle.CycleDetector;
-import org.preesm.algorithm.model.parameters.InvalidExpressionException;
 import org.preesm.algorithm.model.sdf.SDFAbstractVertex;
 import org.preesm.algorithm.model.sdf.SDFEdge;
 import org.preesm.algorithm.model.sdf.SDFGraph;
@@ -143,8 +142,6 @@ public class SDFRandomGraph {
    *          The number of vertices of the graph
    * @param sensors
    *          The input vertices of the Graph
-   * @throws InvalidExpressionException
-   *           the invalid expression exception
    */
   @SuppressWarnings({ "rawtypes", "unchecked" })
   public static void placeDelay(final SDFGraph graph, final int nbVertexgraph, final List<SDFAbstractVertex> sensors) {
@@ -210,11 +207,7 @@ public class SDFRandomGraph {
    */
   public SDFGraph createRandomGraph(final int nbVertex, final int minInDegree, final int maxInDegree,
       final int minOutDegree, final int maxOutDegree, final int minRate, final int maxRate) {
-    try {
-      return createRandomGraph(nbVertex, minInDegree, maxInDegree, minOutDegree, maxOutDegree, minRate, maxRate, 1, 1);
-    } catch (final InvalidExpressionException e) {
-      throw new PreesmException("Could not create random graph", e);
-    }
+    return createRandomGraph(nbVertex, minInDegree, maxInDegree, minOutDegree, maxOutDegree, minRate, maxRate, 1, 1);
   }
 
   /**
@@ -243,12 +236,8 @@ public class SDFRandomGraph {
    */
   public SDFGraph createRandomGraph(final int nbVertex, final int minInDegree, final int maxInDegree,
       final int minOutDegree, final int maxOutDegree, final int minRate, final int maxRate, final int rateMultiplier) {
-    try {
-      return createRandomGraph(nbVertex, minInDegree, maxInDegree, minOutDegree, maxOutDegree, minRate, maxRate,
-          rateMultiplier, 1);
-    } catch (final InvalidExpressionException e) {
-      throw new PreesmException("Could not create random graph", e);
-    }
+    return createRandomGraph(nbVertex, minInDegree, maxInDegree, minOutDegree, maxOutDegree, minRate, maxRate,
+        rateMultiplier, 1);
   }
 
   /**
@@ -274,8 +263,6 @@ public class SDFRandomGraph {
    * @param nbSensors
    *          Exact number of input vertices in the graph
    * @return The created random graph
-   * @throws InvalidExpressionException
-   *           the invalid expression exception
    */
   public SDFGraph createRandomGraph(final int nbVertex, final int minInDegree, final int maxInDegree,
       final int minOutDegree, final int maxOutDegree, final int minRate, final int maxRate, final int rateMultiplier,

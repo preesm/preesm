@@ -44,7 +44,6 @@ import org.nfunk.jep.JEP;
 import org.nfunk.jep.Node;
 import org.preesm.algorithm.factories.IModelVertexFactory;
 import org.preesm.algorithm.model.parameters.IExpressionSolver;
-import org.preesm.algorithm.model.parameters.InvalidExpressionException;
 import org.preesm.algorithm.model.parameters.NoIntegerValueException;
 import org.preesm.algorithm.model.parameters.Parameter;
 import org.preesm.algorithm.model.parameters.ParameterSet;
@@ -56,6 +55,7 @@ import org.preesm.algorithm.model.parameters.factories.ParameterFactory;
 import org.preesm.algorithm.model.visitors.IGraphVisitor;
 import org.preesm.commons.CloneableProperty;
 import org.preesm.commons.exceptions.PreesmException;
+import org.preesm.model.pisdf.expression.ExpressionEvaluationException;
 
 /**
  * Abstract class common to all graphs.
@@ -748,10 +748,10 @@ public abstract class AbstractGraph<V extends AbstractVertex, E extends Abstract
       if (result instanceof Number) {
         resultValue = ((Number) result).longValue();
       } else {
-        throw (new InvalidExpressionException("Not a numerical expression"));
+        throw (new ExpressionEvaluationException("Not a numerical expression"));
       }
     } catch (final Exception e) {
-      throw (new InvalidExpressionException("Could not parse expresion:" + expression));
+      throw (new ExpressionEvaluationException("Could not parse expresion:" + expression));
     }
     return resultValue;
   }

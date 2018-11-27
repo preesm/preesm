@@ -42,7 +42,6 @@ import java.util.Set;
 import java.util.Vector;
 import org.jgrapht.event.TraversalListener;
 import org.jgrapht.traverse.GraphIterator;
-import org.preesm.algorithm.model.parameters.InvalidExpressionException;
 import org.preesm.algorithm.model.sdf.SDFAbstractVertex;
 import org.preesm.algorithm.model.sdf.SDFEdge;
 import org.preesm.algorithm.model.sdf.SDFGraph;
@@ -70,10 +69,6 @@ public class SDFIterator implements GraphIterator<SDFAbstractVertex, SDFEdge> {
    *
    * @param graph
    *          The graph to iterate over
-   * @throws InvalidExpressionException
-   *           the invalid expression exception
-   * @throws RuntimeException
-   *           the runtime exception
    */
   public SDFIterator(final SDFGraph graph) {
     this.graph = graph;
@@ -176,56 +171,52 @@ public class SDFIterator implements GraphIterator<SDFAbstractVertex, SDFEdge> {
    */
   @Override
   public SDFAbstractVertex next() {
-    try {
-      // If the iterator has a next
-      if (hasNext()) {
-        // Get the returned value from the stack
-        final SDFAbstractVertex next = this.stack.get(0);
-        // Add it to the list of already treated vertices (so as not to
-        // "treat" it twice)
-        this.treated.add(next);
+    // If the iterator has a next
+    if (hasNext()) {
+      // Get the returned value from the stack
+      final SDFAbstractVertex next = this.stack.get(0);
+      // Add it to the list of already treated vertices (so as not to
+      // "treat" it twice)
+      this.treated.add(next);
 
-        // Check if the current vertex has a successor that was not yet
-        // treated.
-        final Set<SDFEdge> outgoingEdges = this.graph.outgoingEdgesOf(next);
-        for (final SDFEdge edge : outgoingEdges) {
-          // If the current outgoingEdge is not a self loop on the
-          // current vertex
-          if (this.graph.getEdgeTarget(edge) != next) {
-            // Boolean indicating if all predecessors of the target
-            // of the current edge were previously treated (in which
-            // case the target of the current edge must be added to
-            // the stack).
-            boolean prevTreated = true;
-            final SDFAbstractVertex fol = this.graph.getEdgeTarget(edge);
-            // Check if all predecessors of the target of the
-            // current edge were already treated
-            for (final SDFEdge incomingEdge : this.graph.incomingEdgesOf(fol)) {
-              // Ignore the incomingEdge if this is a self loop or
-              // the edge coming from the current vertex (i.e. the
-              // returned vertex)
-              if ((this.graph.getEdgeSource(incomingEdge) != fol) && (this.graph.getEdgeSource(incomingEdge) != next)) {
-                // prevTreated stays true if:
-                // The source of the incomingEdge has already
-                // been treated OR
-                // The delay of the incomingEdge is greater or
-                // equal to the consumption rate of this edge
-                prevTreated = prevTreated && ((this.treated.contains(this.graph.getEdgeSource(incomingEdge)))
-                    || (incomingEdge.getDelay().longValue() >= incomingEdge.getCons().longValue()));
-              }
-            }
-            if (prevTreated && !this.treated.contains(fol) && !this.stack.contains(fol)) {
-              this.stack.add(fol);
+      // Check if the current vertex has a successor that was not yet
+      // treated.
+      final Set<SDFEdge> outgoingEdges = this.graph.outgoingEdgesOf(next);
+      for (final SDFEdge edge : outgoingEdges) {
+        // If the current outgoingEdge is not a self loop on the
+        // current vertex
+        if (this.graph.getEdgeTarget(edge) != next) {
+          // Boolean indicating if all predecessors of the target
+          // of the current edge were previously treated (in which
+          // case the target of the current edge must be added to
+          // the stack).
+          boolean prevTreated = true;
+          final SDFAbstractVertex fol = this.graph.getEdgeTarget(edge);
+          // Check if all predecessors of the target of the
+          // current edge were already treated
+          for (final SDFEdge incomingEdge : this.graph.incomingEdgesOf(fol)) {
+            // Ignore the incomingEdge if this is a self loop or
+            // the edge coming from the current vertex (i.e. the
+            // returned vertex)
+            if ((this.graph.getEdgeSource(incomingEdge) != fol) && (this.graph.getEdgeSource(incomingEdge) != next)) {
+              // prevTreated stays true if:
+              // The source of the incomingEdge has already
+              // been treated OR
+              // The delay of the incomingEdge is greater or
+              // equal to the consumption rate of this edge
+              prevTreated = prevTreated && ((this.treated.contains(this.graph.getEdgeSource(incomingEdge)))
+                  || (incomingEdge.getDelay().longValue() >= incomingEdge.getCons().longValue()));
             }
           }
+          if (prevTreated && !this.treated.contains(fol) && !this.stack.contains(fol)) {
+            this.stack.add(fol);
+          }
         }
-        this.stack.remove(0);
-        return next;
-      } else {
-        throw new NoSuchElementException();
       }
-    } catch (final InvalidExpressionException e) {
-      throw new PreesmException("Could not find next", e);
+      this.stack.remove(0);
+      return next;
+    } else {
+      throw new NoSuchElementException();
     }
   }
 
@@ -242,8 +233,6 @@ public class SDFIterator implements GraphIterator<SDFAbstractVertex, SDFEdge> {
    *          yet encountered in recursive calls)
    * @return list of {@link SDFAbstractVertex vertices} that are at the origin of the given {@link SDFAbstractVertex
    *         vertex}.
-   * @throws InvalidExpressionException
-   *           the invalid expression exception
    */
   private List<SDFAbstractVertex> originOf(final SDFAbstractVertex vertex, final List<SDFAbstractVertex> notTreated) {
     final List<SDFAbstractVertex> origins = new ArrayList<>();

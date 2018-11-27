@@ -43,7 +43,6 @@ import java.util.Set;
 import java.util.logging.Level;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import org.preesm.algorithm.model.parameters.InvalidExpressionException;
 import org.preesm.algorithm.model.sdf.SDFAbstractVertex;
 import org.preesm.algorithm.model.sdf.SDFEdge;
 import org.preesm.algorithm.model.sdf.SDFGraph;
@@ -94,8 +93,6 @@ public class ToHSDFVisitor implements IGraphVisitor<SDFGraph, SDFAbstractVertex,
    * @param output
    *          the output Single-Rate {@link SDFGraph} where the {@link SDFVertex} have already been inserted by
    *          {@link #transformsTop(SDFGraph, SDFGraph)}.
-   * @throws InvalidExpressionException
-   *           the invalid expression exception
    */
   private void linkVerticesTop(final SDFGraph sdf, final Map<SDFAbstractVertex, List<SDFAbstractVertex>> matchCopies,
       final SDFGraph output) {
@@ -451,8 +448,7 @@ public class ToHSDFVisitor implements IGraphVisitor<SDFGraph, SDFAbstractVertex,
 
     // Make sure all ports are in order
     if (!SpecialActorPortsIndexer.checkIndexes(output)) {
-      throw new PreesmException(
-          "There are still special actors with non-indexed ports. Contact Preesm developers.");
+      throw new PreesmException("There are still special actors with non-indexed ports. Contact Preesm developers.");
     }
 
     SpecialActorPortsIndexer.sortIndexedPorts(output);
@@ -481,12 +477,8 @@ public class ToHSDFVisitor implements IGraphVisitor<SDFGraph, SDFAbstractVertex,
    *          the input {@link SDFGraph}
    * @param output
    *          the Single-Rate output {@link SDFGraph}
-   * @throws PreesmException
-   *           the SDF 4 J exception
-   * @throws InvalidExpressionException
-   *           the invalid expression exception
    */
-  private void transformsTop(final SDFGraph graph, final SDFGraph output) throws PreesmException {
+  private void transformsTop(final SDFGraph graph, final SDFGraph output) {
     // This map associates each vertex of the input graph to corresponding
     // instances in the output graph
     this.matchCopies = new LinkedHashMap<>();
@@ -541,38 +533,34 @@ public class ToHSDFVisitor implements IGraphVisitor<SDFGraph, SDFAbstractVertex,
    * @see org.ietr.dftools.algorithm.model.visitors.IGraphVisitor#visit(org.ietr.dftools.algorithm.model.AbstractGraph)
    */
   @Override
-  public void visit(final SDFGraph sdf) throws PreesmException {
+  public void visit(final SDFGraph sdf) {
     this.outputGraph = sdf.copy();
     boolean isHSDF = true;
-    try {
-      for (final SDFAbstractVertex vertex : this.outputGraph.vertexSet()) {
+    for (final SDFAbstractVertex vertex : this.outputGraph.vertexSet()) {
 
-        if ((vertex instanceof SDFVertex) && (vertex.getNbRepeatAsLong() > 1)) {
+      if ((vertex instanceof SDFVertex) && (vertex.getNbRepeatAsLong() > 1)) {
+        isHSDF = false;
+        break;
+      }
+
+    }
+
+    if (isHSDF) {
+      for (final SDFEdge edge : this.outputGraph.edgeSet()) {
+        long nbDelay;
+
+        nbDelay = edge.getDelay().longValue();
+        final long prod = edge.getProd().longValue();
+
+        // No need to get the cons, if this code is reached cons ==
+        // prod
+        // If the number of delay on the edge is not a multiplier of
+        // prod, the hsdf transformation is needed
+        if ((nbDelay % prod) != 0) {
           isHSDF = false;
           break;
         }
-
       }
-
-      if (isHSDF) {
-        for (final SDFEdge edge : this.outputGraph.edgeSet()) {
-          long nbDelay;
-
-          nbDelay = edge.getDelay().longValue();
-          final long prod = edge.getProd().longValue();
-
-          // No need to get the cons, if this code is reached cons ==
-          // prod
-          // If the number of delay on the edge is not a multiplier of
-          // prod, the hsdf transformation is needed
-          if ((nbDelay % prod) != 0) {
-            isHSDF = false;
-            break;
-          }
-        }
-      }
-    } catch (final InvalidExpressionException e) {
-      throw (new PreesmException(e.getMessage()));
     }
 
     if (!isHSDF) {
@@ -585,11 +573,7 @@ public class ToHSDFVisitor implements IGraphVisitor<SDFGraph, SDFAbstractVertex,
           vertices.get(i).accept(this);
         }
       }
-      try {
-        transformsTop(sdf, this.outputGraph);
-      } catch (final InvalidExpressionException e) {
-        throw (new PreesmException(e.getMessage()));
-      }
+      transformsTop(sdf, this.outputGraph);
     }
 
   }

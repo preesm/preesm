@@ -39,7 +39,6 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.logging.Level;
 import org.eclipse.core.runtime.IProgressMonitor;
-import org.preesm.algorithm.model.parameters.InvalidExpressionException;
 import org.preesm.algorithm.model.sdf.SDFAbstractVertex;
 import org.preesm.algorithm.model.sdf.SDFGraph;
 import org.preesm.commons.exceptions.PreesmException;
@@ -67,9 +66,6 @@ public class PeriodicEvaluator extends AbstractTaskImplementation {
   public Map<String, Object> execute(final Map<String, Object> inputs, final Map<String, String> parameters,
       final IProgressMonitor monitor, final String nodeName, final Workflow workflow) throws PreesmException {
 
-    double period;
-    double throughput = 0;
-
     // Retrieve the input dataflow and the scenario
     final SDFGraph inputGraph = (SDFGraph) inputs.get("SDF");
     final PreesmScenario scenario = (PreesmScenario) inputs.get("scenario");
@@ -92,22 +88,18 @@ public class PeriodicEvaluator extends AbstractTaskImplementation {
           || ((vertex.getGraphDescription() != null) && (vertex.getGraphDescription() instanceof SDFGraph));
     }
 
-    try {
-      // if IBSDF -> hierarchical algorithm
-      ThroughputEvaluator scheduler;
-      if (hierarchical) {
-        scheduler = new IBSDFThroughputEvaluator();
-      } else {
-        // if SDF -> linear program for periodic schedule
-        scheduler = new SDFThroughputEvaluator();
-      }
-      PreesmLogger.getLogger().log(Level.INFO, "Computation of the optimal periodic schedule");
-      scheduler.scenar = scenario;
-      period = scheduler.launch(NormSDF);
-      throughput = scheduler.throughput_computation(period, inputGraph);
-    } catch (final InvalidExpressionException e) {
-      e.printStackTrace();
+    // if IBSDF -> hierarchical algorithm
+    ThroughputEvaluator scheduler;
+    if (hierarchical) {
+      scheduler = new IBSDFThroughputEvaluator();
+    } else {
+      // if SDF -> linear program for periodic schedule
+      scheduler = new SDFThroughputEvaluator();
     }
+    PreesmLogger.getLogger().log(Level.INFO, "Computation of the optimal periodic schedule");
+    scheduler.scenar = scenario;
+    double period = scheduler.launch(NormSDF);
+    double throughput = scheduler.throughput_computation(period, inputGraph);
 
     final Map<String, Object> outputs = new LinkedHashMap<>();
     // Normalized graph in the outputs

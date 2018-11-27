@@ -60,7 +60,6 @@ import org.preesm.algorithm.model.PropertyBean;
 import org.preesm.algorithm.model.PropertyFactory;
 import org.preesm.algorithm.model.dag.DAGEdge;
 import org.preesm.algorithm.model.dag.DAGVertex;
-import org.preesm.algorithm.model.parameters.InvalidExpressionException;
 import org.preesm.algorithm.model.sdf.esdf.SDFBroadcastVertex;
 import org.preesm.algorithm.model.sdf.esdf.SDFForkVertex;
 import org.preesm.algorithm.model.sdf.esdf.SDFJoinVertex;
@@ -323,8 +322,6 @@ public class SDFGraph extends AbstractGraph<SDFAbstractVertex, SDFEdge> {
    * Compute the vrb of this graph and affect the nbRepeat property to vertices.
    *
    * @return true, if successful
-   * @throws InvalidExpressionException
-   *           the invalid expression exception
    */
   protected boolean computeVRB() {
     final Map<SDFAbstractVertex, Long> vrb = new LinkedHashMap<>();
@@ -504,8 +501,6 @@ public class SDFGraph extends AbstractGraph<SDFAbstractVertex, SDFEdge> {
    * @param subgraph
    *          the subgraph
    * @return the topology matrix
-   * @throws InvalidExpressionException
-   *           the invalid expression exception
    */
   public double[][] getTopologyMatrix(final List<SDFAbstractVertex> subgraph) {
     final List<double[]> topologyListMatrix = new ArrayList<>();
@@ -592,33 +587,29 @@ public class SDFGraph extends AbstractGraph<SDFAbstractVertex, SDFEdge> {
         // Add all outgoing edges
         int nbTokens = 0;
         for (final SDFEdge oldEdge : connections.get(port)) {
-          try {
-            // Create a new outport
-            final SDFSinkInterfaceVertex outPort = new SDFSinkInterfaceVertex();
-            outPort.setName("out_" + (nbTokens / baseEdge.getCons().longValue()) + "_"
-                + (nbTokens % baseEdge.getCons().longValue()));
-            nbTokens += oldEdge.getProd().longValue();
+          // Create a new outport
+          final SDFSinkInterfaceVertex outPort = new SDFSinkInterfaceVertex();
+          outPort.setName(
+              "out_" + (nbTokens / baseEdge.getCons().longValue()) + "_" + (nbTokens % baseEdge.getCons().longValue()));
+          nbTokens += oldEdge.getProd().longValue();
 
-            broadcastPort.addSink(outPort);
+          broadcastPort.addSink(outPort);
 
-            final SDFEdge newEdge = this.addEdge(broadcastPort, oldEdge.getTarget());
-            newEdge.setSourceInterface(outPort);
-            newEdge.setTargetInterface(oldEdge.getTargetInterface());
-            newEdge.setTargetPortModifier(oldEdge.getTargetPortModifier());
-            newEdge.setProd(oldEdge.getProd());
-            newEdge.setCons(oldEdge.getCons());
-            newEdge.setDelay(oldEdge.getDelay());
-            newEdge.setDataType(oldEdge.getDataType());
-            newEdge.setSourcePortModifier(new StringEdgePropertyType(SDFEdge.MODIFIER_WRITE_ONLY));
-            baseEdge.setSourcePortModifier(oldEdge.getSourcePortModifier());
-            baseEdge.setProd(oldEdge.getProd().copy());
-            baseEdge.setCons(oldEdge.getProd().copy());
-            baseEdge.setDelay(new LongEdgePropertyType(0));
-            baseEdge.setDataType(oldEdge.getDataType());
-            this.removeEdge(oldEdge);
-          } catch (final InvalidExpressionException e) {
-            throw new PreesmException("Could not insert broadcast", e);
-          }
+          final SDFEdge newEdge = this.addEdge(broadcastPort, oldEdge.getTarget());
+          newEdge.setSourceInterface(outPort);
+          newEdge.setTargetInterface(oldEdge.getTargetInterface());
+          newEdge.setTargetPortModifier(oldEdge.getTargetPortModifier());
+          newEdge.setProd(oldEdge.getProd());
+          newEdge.setCons(oldEdge.getCons());
+          newEdge.setDelay(oldEdge.getDelay());
+          newEdge.setDataType(oldEdge.getDataType());
+          newEdge.setSourcePortModifier(new StringEdgePropertyType(SDFEdge.MODIFIER_WRITE_ONLY));
+          baseEdge.setSourcePortModifier(oldEdge.getSourcePortModifier());
+          baseEdge.setProd(oldEdge.getProd().copy());
+          baseEdge.setCons(oldEdge.getProd().copy());
+          baseEdge.setDelay(new LongEdgePropertyType(0));
+          baseEdge.setDataType(oldEdge.getDataType());
+          this.removeEdge(oldEdge);
         }
       }
     }
@@ -641,32 +632,28 @@ public class SDFGraph extends AbstractGraph<SDFAbstractVertex, SDFEdge> {
     }
     final List<List<SDFAbstractVertex>> subgraphs = getAllSubGraphs();
 
-    try {
-      for (final List<SDFAbstractVertex> subgraph : subgraphs) {
+    for (final List<SDFAbstractVertex> subgraph : subgraphs) {
 
-        final List<SDFAbstractVertex> subgraphWOInterfaces = new ArrayList<>();
-        for (final SDFAbstractVertex vertex : subgraph) {
-          if (!(vertex instanceof SDFInterfaceVertex)) {
-            subgraphWOInterfaces.add(vertex);
-          }
-        }
-
-        final double[][] topologyMatrix = getTopologyMatrix(subgraphWOInterfaces);
-
-        final int length = topologyMatrix.length;
-        if (length > 0) {
-          final int rank = LinearAlgebra.rank(topologyMatrix);
-          final int expectedRankValue = subgraphWOInterfaces.size() - 1;
-          if (rank == expectedRankValue) {
-            schedulable &= true;
-          } else {
-            schedulable &= false;
-            VisitorOutput.getLogger().log(Level.WARNING, "Graph " + getName() + " is not schedulable");
-          }
+      final List<SDFAbstractVertex> subgraphWOInterfaces = new ArrayList<>();
+      for (final SDFAbstractVertex vertex : subgraph) {
+        if (!(vertex instanceof SDFInterfaceVertex)) {
+          subgraphWOInterfaces.add(vertex);
         }
       }
-    } catch (final InvalidExpressionException e) {
-      throw new PreesmException(getName() + ": " + e.getMessage(), e);
+
+      final double[][] topologyMatrix = getTopologyMatrix(subgraphWOInterfaces);
+
+      final int length = topologyMatrix.length;
+      if (length > 0) {
+        final int rank = LinearAlgebra.rank(topologyMatrix);
+        final int expectedRankValue = subgraphWOInterfaces.size() - 1;
+        if (rank == expectedRankValue) {
+          schedulable &= true;
+        } else {
+          schedulable &= false;
+          VisitorOutput.getLogger().log(Level.WARNING, "Graph " + getName() + " is not schedulable");
+        }
+      }
     }
     return schedulable;
   }
@@ -816,10 +803,6 @@ public class SDFGraph extends AbstractGraph<SDFAbstractVertex, SDFEdge> {
    *          the child
    * @param logger
    *          the logger
-   * @throws InvalidExpressionException
-   *           thrown if the child contains invalid expressions
-   * @throws PreesmException
-   *           thrown if the child is not valid
    */
   private void validateChild(final SDFAbstractVertex child) {
 
@@ -925,27 +908,21 @@ public class SDFGraph extends AbstractGraph<SDFAbstractVertex, SDFEdge> {
    * Validate the model's schedulability.
    *
    * @return True if the model is valid, false otherwise ...
-   * @throws PreesmException
-   *           the SDF 4 J exception
    */
   @Override
   public boolean validateModel() {
-    try {
-      final boolean schedulable = isSchedulable();
-      if (schedulable) {
-        computeVRB();
-        // TODO: variable should only need to be resolved once, but
-        // keep memory of their integer value
-        final Set<SDFAbstractVertex> vertexSet = vertexSet();
-        for (final SDFAbstractVertex child : vertexSet) {
-          validateChild(child);
-        }
-        return true;
+    final boolean schedulable = isSchedulable();
+    if (schedulable) {
+      computeVRB();
+      // TODO: variable should only need to be resolved once, but
+      // keep memory of their integer value
+      final Set<SDFAbstractVertex> vertexSet = vertexSet();
+      for (final SDFAbstractVertex child : vertexSet) {
+        validateChild(child);
       }
-      return false;
-    } catch (final InvalidExpressionException e) {
-      throw new PreesmException(getName() + ": " + e.getMessage(), e);
+      return true;
     }
+    return false;
   }
 
   /**

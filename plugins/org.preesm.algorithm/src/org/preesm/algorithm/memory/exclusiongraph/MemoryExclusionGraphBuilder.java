@@ -44,7 +44,6 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.preesm.algorithm.model.dag.DirectedAcyclicGraph;
-import org.preesm.algorithm.model.parameters.InvalidExpressionException;
 import org.preesm.algorithm.transforms.ForkJoinRemover;
 import org.preesm.commons.exceptions.PreesmException;
 import org.preesm.commons.logger.PreesmLogger;
@@ -124,11 +123,7 @@ public class MemoryExclusionGraphBuilder extends AbstractTaskImplementation {
       logger.log(Level.INFO, "Memory exclusion graph : start building");
     }
     final MemoryExclusionGraph memEx = new MemoryExclusionGraph();
-    try {
-      memEx.buildGraph(localDAG);
-    } catch (final InvalidExpressionException e) {
-      throw new PreesmException(e.getLocalizedMessage());
-    }
+    memEx.buildGraph(localDAG);
     final double density = memEx.edgeSet().size() / ((memEx.vertexSet().size() * (memEx.vertexSet().size() - 1)) / 2.0);
     if (verbose) {
       logger.log(Level.INFO,

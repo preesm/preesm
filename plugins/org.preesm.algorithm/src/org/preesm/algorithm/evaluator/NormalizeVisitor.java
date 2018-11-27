@@ -36,7 +36,6 @@
 package org.preesm.algorithm.evaluator;
 
 import org.preesm.algorithm.model.IInterface;
-import org.preesm.algorithm.model.parameters.InvalidExpressionException;
 import org.preesm.algorithm.model.sdf.SDFAbstractVertex;
 import org.preesm.algorithm.model.sdf.SDFEdge;
 import org.preesm.algorithm.model.sdf.SDFGraph;
@@ -110,14 +109,10 @@ public class NormalizeVisitor implements IGraphVisitor<SDFGraph, SDFAbstractVert
    */
   private void prepareNorm(final SDFGraph g) {
     // Use double instead of int for all edges
-    try {
-      for (final SDFEdge edge : g.edgeSet()) {
-        edge.setProd(new SDFDoubleEdgePropertyType((edge.getProd().longValue())));
-        edge.setDelay(new SDFDoubleEdgePropertyType((edge.getDelay().longValue())));
-        edge.setCons(new SDFDoubleEdgePropertyType((edge.getCons().longValue())));
-      }
-    } catch (final InvalidExpressionException e) {
-      throw new EvaluationException("Could not prepare normalization", e);
+    for (final SDFEdge edge : g.edgeSet()) {
+      edge.setProd(new SDFDoubleEdgePropertyType((edge.getProd().longValue())));
+      edge.setDelay(new SDFDoubleEdgePropertyType((edge.getDelay().longValue())));
+      edge.setCons(new SDFDoubleEdgePropertyType((edge.getCons().longValue())));
     }
     // Apply the same to the lower levels of hierarchy
     for (final SDFAbstractVertex v : g.vertexSet()) {
@@ -141,73 +136,68 @@ public class NormalizeVisitor implements IGraphVisitor<SDFGraph, SDFAbstractVert
     double z = 1;
     double in;
     double out;
-    try {
-      for (final SDFAbstractVertex vertex : g.vertexSet()) {
-        z = 1;
-        if (!vertex.getKind().equals("port")) {
-          if (vertex.getGraphDescription() instanceof SDFGraph) {
-            // If it's a hierarchical actor, normalize its subgraph to obtain the z
-            z = normalizeup((SDFGraph) vertex.getGraphDescription());
+    for (final SDFAbstractVertex vertex : g.vertexSet()) {
+      z = 1;
+      if (!vertex.getKind().equals("port")) {
+        if (vertex.getGraphDescription() instanceof SDFGraph) {
+          // If it's a hierarchical actor, normalize its subgraph to obtain the z
+          z = normalizeup((SDFGraph) vertex.getGraphDescription());
 
-            // Retrieve the values on the output edges, used to compute M (ppcm (N_t * in_a))
-            for (final SDFInterfaceVertex port : vertex.getSinks()) {
-              M = SDFMathD.lcm(M,
-                  vertex.getNbRepeatAsLong() * (double) vertex.getAssociatedEdge(port).getProd().getValue());
-            }
-            for (final SDFInterfaceVertex port : vertex.getSources()) {
-              M = SDFMathD.lcm(M,
-                  vertex.getNbRepeatAsLong() * (double) vertex.getAssociatedEdge(port).getCons().getValue());
-            }
-          } else {
-            // the vertex is a "normal" actor, we compute its z with the in & out rates
-            // of its adjacent edges
-            for (final IInterface port : vertex.getInterfaces()) {
-              if (port.getDirection().toString().equals("Input")) {
-                out = (double) ((SDFEdge) vertex.getAssociatedEdge(port)).getCons().getValue();
-                z = SDFMathD.lcm(z, out);
-                M = SDFMathD.lcm(M, vertex.getNbRepeatAsLong() * out);
-              } else {
-                in = (double) ((SDFEdge) vertex.getAssociatedEdge(port)).getProd().getValue();
-                z = SDFMathD.lcm(z, in);
-                // ppcm (N_t * in_a)
-                M = SDFMathD.lcm(M, vertex.getNbRepeatAsLong() * in);
-              }
+          // Retrieve the values on the output edges, used to compute M (ppcm (N_t * in_a))
+          for (final SDFInterfaceVertex port : vertex.getSinks()) {
+            M = SDFMathD.lcm(M,
+                vertex.getNbRepeatAsLong() * (double) vertex.getAssociatedEdge(port).getProd().getValue());
+          }
+          for (final SDFInterfaceVertex port : vertex.getSources()) {
+            M = SDFMathD.lcm(M,
+                vertex.getNbRepeatAsLong() * (double) vertex.getAssociatedEdge(port).getCons().getValue());
+          }
+        } else {
+          // the vertex is a "normal" actor, we compute its z with the in & out rates
+          // of its adjacent edges
+          for (final IInterface port : vertex.getInterfaces()) {
+            if (port.getDirection().toString().equals("Input")) {
+              out = (double) ((SDFEdge) vertex.getAssociatedEdge(port)).getCons().getValue();
+              z = SDFMathD.lcm(z, out);
+              M = SDFMathD.lcm(M, vertex.getNbRepeatAsLong() * out);
+            } else {
+              in = (double) ((SDFEdge) vertex.getAssociatedEdge(port)).getProd().getValue();
+              z = SDFMathD.lcm(z, in);
+              // ppcm (N_t * in_a)
+              M = SDFMathD.lcm(M, vertex.getNbRepeatAsLong() * in);
             }
           }
-          // M = ppcm(N_t * z_t)
-          M = SDFMathD.lcm(M, vertex.getNbRepeatAsLong() * z);
         }
+        // M = ppcm(N_t * z_t)
+        M = SDFMathD.lcm(M, vertex.getNbRepeatAsLong() * z);
       }
+    }
 
-      // new Z for each actor : M / repet_actor
-      for (final SDFEdge edge : g.edgeSet()) {
-        // sink port
-        if (edge.getTarget().getKind().equals("port")) {
+    // new Z for each actor : M / repet_actor
+    for (final SDFEdge edge : g.edgeSet()) {
+      // sink port
+      if (edge.getTarget().getKind().equals("port")) {
+        in = (double) edge.getProd().getValue();
+        edge.setProd(new SDFDoubleEdgePropertyType(M / edge.getSource().getNbRepeatAsLong()));
+        edge.setCons(new SDFDoubleEdgePropertyType(M));
+        edge.setDelay(new SDFDoubleEdgePropertyType(
+            ((double) edge.getProd().getValue() / in) * (double) edge.getDelay().getValue()));
+      } else {
+        // source port
+        if (edge.getSource().getKind().equals("port")) {
+          in = (double) edge.getCons().getValue();
+          edge.setCons(new SDFDoubleEdgePropertyType(M / edge.getTarget().getNbRepeatAsLong()));
+          edge.setProd(new SDFDoubleEdgePropertyType(M));
+          edge.setDelay(new SDFDoubleEdgePropertyType(
+              ((double) edge.getCons().getValue() / in) * (double) edge.getDelay().getValue()));
+        } else {
           in = (double) edge.getProd().getValue();
           edge.setProd(new SDFDoubleEdgePropertyType(M / edge.getSource().getNbRepeatAsLong()));
-          edge.setCons(new SDFDoubleEdgePropertyType(M));
+          edge.setCons(new SDFDoubleEdgePropertyType(M / edge.getTarget().getNbRepeatAsLong()));
           edge.setDelay(new SDFDoubleEdgePropertyType(
-              ((double) edge.getProd().getValue() / in) * (double) edge.getDelay().getValue()));
-        } else {
-          // source port
-          if (edge.getSource().getKind().equals("port")) {
-            in = (double) edge.getCons().getValue();
-            edge.setCons(new SDFDoubleEdgePropertyType(M / edge.getTarget().getNbRepeatAsLong()));
-            edge.setProd(new SDFDoubleEdgePropertyType(M));
-            edge.setDelay(new SDFDoubleEdgePropertyType(
-                ((double) edge.getCons().getValue() / in) * (double) edge.getDelay().getValue()));
-          } else {
-            in = (double) edge.getProd().getValue();
-            edge.setProd(new SDFDoubleEdgePropertyType(M / edge.getSource().getNbRepeatAsLong()));
-            edge.setCons(new SDFDoubleEdgePropertyType(M / edge.getTarget().getNbRepeatAsLong()));
-            edge.setDelay(new SDFDoubleEdgePropertyType(
-                ((double) edge.getProd().getValue() / in) * (double) (edge.getDelay().getValue())));
-          }
+              ((double) edge.getProd().getValue() / in) * (double) (edge.getDelay().getValue())));
         }
       }
-    } catch (final InvalidExpressionException e) {
-      // Auto-generated catch block
-      e.printStackTrace();
     }
     return M;
   }

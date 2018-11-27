@@ -42,7 +42,6 @@ import java.util.Map.Entry;
 import java.util.Vector;
 import org.apache.commons.math3.util.ArithmeticUtils;
 import org.math.array.DoubleArray;
-import org.preesm.algorithm.model.parameters.InvalidExpressionException;
 import org.preesm.algorithm.model.sdf.SDFAbstractVertex;
 import org.preesm.algorithm.model.sdf.SDFEdge;
 import org.preesm.algorithm.model.sdf.SDFGraph;
@@ -72,8 +71,6 @@ public class SDFMath {
    * @param graph
    *          the graph
    * @return the hash map mapping vertices to their repetition factor
-   * @throws InvalidExpressionException
-   *           the invalid expression exception
    */
   public static Map<SDFAbstractVertex, Long> computeRationnalVRB(final List<SDFAbstractVertex> subgraph,
       final SDFGraph graph) {
@@ -193,8 +190,6 @@ public class SDFMath {
    * @param graph
    *          The graph on which to perform the vrb
    * @return The basic repetition vector of the graph
-   * @throws InvalidExpressionException
-   *           the invalid expression exception
    */
   public static Map<SDFAbstractVertex, Long> computeRationnalVRBWithInterfaces(final List<SDFAbstractVertex> subgraph,
       final SDFGraph graph) {

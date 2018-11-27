@@ -43,7 +43,6 @@ import org.preesm.algorithm.model.AbstractGraph;
 import org.preesm.algorithm.model.AbstractVertex;
 import org.preesm.algorithm.model.IInterface;
 import org.preesm.algorithm.model.parameters.Argument;
-import org.preesm.algorithm.model.parameters.InvalidExpressionException;
 import org.preesm.algorithm.model.parameters.NoIntegerValueException;
 import org.preesm.algorithm.model.sdf.SDFAbstractVertex;
 import org.preesm.algorithm.model.sdf.SDFInterfaceVertex;
@@ -80,8 +79,6 @@ public abstract class AbstractHierarchyFlattening<G extends AbstractGraph> {
    *          the parent graph
    * @param depth
    *          the depth
-   * @throws InvalidExpressionException
-   *           the invalid expression exception
    */
   protected abstract void treatSourceInterface(AbstractVertex vertex, AbstractGraph parentGraph, int depth);
 
@@ -94,8 +91,6 @@ public abstract class AbstractHierarchyFlattening<G extends AbstractGraph> {
    *          the parent graph
    * @param depth
    *          the depth
-   * @throws InvalidExpressionException
-   *           the invalid expression exception
    */
   protected abstract void treatSinkInterface(AbstractVertex vertex, AbstractGraph parentGraph, int depth);
 
@@ -108,8 +103,6 @@ public abstract class AbstractHierarchyFlattening<G extends AbstractGraph> {
    *          The new parent graph
    * @param depth
    *          the depth
-   * @throws InvalidExpressionException
-   *           the invalid expression exception
    */
   private void treatVertex(final AbstractVertex vertex, final G parentGraph) {
     final List<SDFAbstractVertex> vertices = new ArrayList<>(vertex.getGraphDescription().vertexSet());
@@ -172,21 +165,15 @@ public abstract class AbstractHierarchyFlattening<G extends AbstractGraph> {
    *          The graph to flatten
    * @param depth
    *          The depth to flatten the graph
-   * @throws PreesmException
-   *           the SDF 4 J exception
    */
-  public void flattenGraph(final G sdf, final int depth) throws PreesmException {
+  public void flattenGraph(final G sdf, final int depth) {
     if (depth > 0) {
       final int newDepth = depth - 1;
       this.output = (G) sdf.copy();
       final List<AbstractVertex> vertices = new ArrayList<>(this.output.vertexSet());
       for (int i = 0; i < vertices.size(); i++) {
         if (vertices.get(i).getGraphDescription() != null) {
-          try {
-            treatVertex(vertices.get(i), this.output);
-          } catch (final InvalidExpressionException e) {
-            throw (new PreesmException(e.getMessage()));
-          }
+          treatVertex(vertices.get(i), this.output);
           this.output.removeVertex(vertices.get(i));
         }
       }
@@ -201,8 +188,6 @@ public abstract class AbstractHierarchyFlattening<G extends AbstractGraph> {
    *          the vertex
    * @param depth
    *          the depth
-   * @throws InvalidExpressionException
-   *           the invalid expression exception
    */
   protected void prepareHierarchy(final AbstractVertex vertex, final int depth) {
     final List<AbstractVertex> vertices = new ArrayList<>(vertex.getGraphDescription().vertexSet());

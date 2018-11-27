@@ -44,7 +44,6 @@ import java.util.List;
 import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import org.preesm.algorithm.model.parameters.InvalidExpressionException;
 import org.preesm.algorithm.model.sdf.SDFAbstractVertex;
 import org.preesm.algorithm.model.sdf.SDFEdge;
 import org.preesm.algorithm.model.sdf.SDFGraph;
@@ -82,12 +81,8 @@ public class JoinForkCleaner {
    * @param graph
    *          the SDFGraph we want to clean
    * @return true if some join-fork pairs has be removed
-   * @throws InvalidExpressionException
-   *           the invalid expression exception
-   * @throws PreesmException
-   *           the SDF 4 J exception
    */
-  public static boolean cleanJoinForkPairsFrom(final SDFGraph graph) throws PreesmException {
+  public static boolean cleanJoinForkPairsFrom(final SDFGraph graph) {
     boolean result = false;
 
     // Check that the graph is single rate.
@@ -153,8 +148,6 @@ public class JoinForkCleaner {
    *          the {@link SDFEdge} to replace.
    * @param graph
    *          the processed single-rate {@link SDFGraph}.
-   * @throws InvalidExpressionException
-   *           if some expressions associated to data ports or delays are invalid.
    */
   private static void replaceEdge(final SDFEdge replacedEdge, final SDFGraph graph) {
 

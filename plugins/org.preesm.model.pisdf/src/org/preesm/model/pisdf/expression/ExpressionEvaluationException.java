@@ -35,13 +35,14 @@
 package org.preesm.model.pisdf.expression;
 
 import org.nfunk.jep.ParseException;
+import org.preesm.commons.exceptions.PreesmException;
 
 /**
  *
  * @author anmorvan
  *
  */
-public class ExpressionEvaluationException extends RuntimeException {
+public class ExpressionEvaluationException extends PreesmException {
 
   public ExpressionEvaluationException(final String msg) {
     super(msg);

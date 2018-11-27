@@ -61,7 +61,6 @@ import org.preesm.algorithm.model.dag.DAGEdge;
 import org.preesm.algorithm.model.dag.DAGVertex;
 import org.preesm.algorithm.model.dag.DirectedAcyclicGraph;
 import org.preesm.algorithm.model.parameters.Argument;
-import org.preesm.algorithm.model.parameters.InvalidExpressionException;
 import org.preesm.algorithm.model.sdf.SDFAbstractVertex;
 import org.preesm.algorithm.model.sdf.SDFEdge;
 import org.preesm.algorithm.model.sdf.SDFGraph;
@@ -464,27 +463,19 @@ public class CodegenHierarchicalModelGenerator {
       long bufSize = 0;
 
       long rep = 1;
-      try {
-        rep = sdfVertex.getNbRepeatAsLong();
-      } catch (final InvalidExpressionException e) {
-        throw new PreesmException("Could not compute nb repeat", e);
-      }
+      rep = sdfVertex.getNbRepeatAsLong();
 
       if (isInputActorTmp || isOutputActorTmp) {
         var = this.srSDFEdgeBuffers.get(subBufferProperties);
         bufIterSize = subBufferProperties.getSize() / rep;
         bufSize = subBufferProperties.getSize();
       } else {
-        try {
-          if (arg.getDirection() == CodeGenArgument.INPUT) {
-            bufIterSize = currentEdge.getCons().longValue();
-            bufSize = currentEdge.getCons().longValue() * rep;
-          } else {
-            bufIterSize = currentEdge.getProd().longValue();
-            bufSize = currentEdge.getProd().longValue() * rep;
-          }
-        } catch (final InvalidExpressionException ex) {
-          throw new PreesmException("Could not get direction", ex);
+        if (arg.getDirection() == CodeGenArgument.INPUT) {
+          bufIterSize = currentEdge.getCons().longValue();
+          bufSize = currentEdge.getCons().longValue() * rep;
+        } else {
+          bufIterSize = currentEdge.getProd().longValue();
+          bufSize = currentEdge.getProd().longValue() * rep;
         }
 
         final SubBuffer workingMemBuf = (SubBuffer) this.linkHSDFVertexBuffer.get(dagVertex);
