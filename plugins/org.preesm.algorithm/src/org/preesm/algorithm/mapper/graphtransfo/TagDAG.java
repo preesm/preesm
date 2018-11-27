@@ -60,16 +60,16 @@ import org.preesm.algorithm.model.parameters.InvalidExpressionException;
 import org.preesm.algorithm.model.sdf.SDFAbstractVertex;
 import org.preesm.algorithm.model.sdf.SDFEdge;
 import org.preesm.algorithm.model.sdf.SDFGraph;
+import org.preesm.model.scenario.PreesmScenario;
+import org.preesm.model.scenario.types.BufferAggregate;
+import org.preesm.model.scenario.types.BufferProperties;
+import org.preesm.model.scenario.types.DataType;
+import org.preesm.model.scenario.types.ImplementationPropertyNames;
+import org.preesm.model.scenario.types.VertexType;
 import org.preesm.model.slam.ComponentInstance;
 import org.preesm.model.slam.Design;
 import org.preesm.model.slam.route.AbstractRouteStep;
 import org.preesm.model.slam.utils.DesignTools;
-import org.preesm.scenario.PreesmScenario;
-import org.preesm.scenario.types.BufferAggregate;
-import org.preesm.scenario.types.BufferProperties;
-import org.preesm.scenario.types.DataType;
-import org.preesm.scenario.types.ImplementationPropertyNames;
-import org.preesm.scenario.types.VertexType;
 
 /**
  * Tags an SDF with the implementation information necessary for code generation, and DAG exporting.

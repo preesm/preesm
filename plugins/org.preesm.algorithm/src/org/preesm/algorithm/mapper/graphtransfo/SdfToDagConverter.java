@@ -70,14 +70,14 @@ import org.preesm.algorithm.model.visitors.SDF4JException;
 import org.preesm.commons.exceptions.PreesmException;
 import org.preesm.commons.logger.PreesmLogger;
 import org.preesm.model.pisdf.PiGraph;
+import org.preesm.model.scenario.ConstraintGroup;
+import org.preesm.model.scenario.PreesmScenario;
+import org.preesm.model.scenario.RelativeConstraintManager;
+import org.preesm.model.scenario.Timing;
 import org.preesm.model.slam.ComponentInstance;
 import org.preesm.model.slam.Design;
 import org.preesm.model.slam.component.Operator;
 import org.preesm.model.slam.utils.DesignTools;
-import org.preesm.scenario.ConstraintGroup;
-import org.preesm.scenario.PreesmScenario;
-import org.preesm.scenario.RelativeConstraintManager;
-import org.preesm.scenario.Timing;
 
 /**
  * Uses the SDF4J library to convert the input SDF into a DAG before scheduling.

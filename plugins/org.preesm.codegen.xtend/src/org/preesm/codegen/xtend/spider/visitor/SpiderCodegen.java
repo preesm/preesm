@@ -64,15 +64,15 @@ import org.preesm.model.pisdf.Parameter;
 import org.preesm.model.pisdf.PiGraph;
 import org.preesm.model.pisdf.Port;
 import org.preesm.model.pisdf.util.ActorPath;
+import org.preesm.model.scenario.ConstraintGroup;
+import org.preesm.model.scenario.PreesmScenario;
+import org.preesm.model.scenario.Timing;
+import org.preesm.model.scenario.papi.PapiEvent;
+import org.preesm.model.scenario.papi.PapifyConfigActor;
+import org.preesm.model.scenario.papi.PapifyConfigManager;
 import org.preesm.model.slam.ComponentInstance;
 import org.preesm.model.slam.Design;
 import org.preesm.model.slam.component.Component;
-import org.preesm.scenario.ConstraintGroup;
-import org.preesm.scenario.PreesmScenario;
-import org.preesm.scenario.Timing;
-import org.preesm.scenario.papi.PapiEvent;
-import org.preesm.scenario.papi.PapifyConfigActor;
-import org.preesm.scenario.papi.PapifyConfigManager;
 
 /**
  * The Class SpiderCodegen.

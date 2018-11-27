@@ -42,11 +42,11 @@
          point="org.preesm.workflow.scenarios">
       <scenario
             id="org.ietr.preesm.scenario.task"
-            type="org.preesm.scenario.workflow.AlgorithmAndArchitectureScenarioNode">
+            type="org.preesm.model.scenario.workflow.AlgorithmAndArchitectureScenarioNode">
          <outputs>
             <output
                   id="scenario"
-                  object="org.preesm.scenario.PreesmScenario">
+                  object="org.preesm.model.scenario.PreesmScenario">
             </output>
             <output
                   id="architecture"

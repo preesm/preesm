@@ -44,9 +44,9 @@ import org.preesm.algorithm.model.sdf.SDFGraph;
 import org.preesm.algorithm.pisdf.pimm2sdf.visitor.StaticPiMM2SDFVisitor;
 import org.preesm.model.pisdf.Parameter;
 import org.preesm.model.pisdf.PiGraph;
-import org.preesm.scenario.ParameterValue;
-import org.preesm.scenario.ParameterValueManager;
-import org.preesm.scenario.PreesmScenario;
+import org.preesm.model.scenario.ParameterValue;
+import org.preesm.model.scenario.ParameterValueManager;
+import org.preesm.model.scenario.PreesmScenario;
 
 /**
  * The Class StaticPiMM2SDFLauncher.

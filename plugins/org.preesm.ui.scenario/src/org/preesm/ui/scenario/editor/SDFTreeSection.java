@@ -46,7 +46,7 @@ import org.eclipse.ui.IPropertyListener;
 import org.eclipse.ui.forms.SectionPart;
 import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.eclipse.ui.forms.widgets.Section;
-import org.preesm.scenario.PreesmScenario;
+import org.preesm.model.scenario.PreesmScenario;
 
 // TODO: Auto-generated Javadoc
 /**

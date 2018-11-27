@@ -47,7 +47,7 @@ import org.preesm.algorithm.model.visitors.VisitorOutput;
 import org.preesm.algorithm.pisdf.pimm2flat.StaticPiMMFlatPiMMLauncher.StaticPiMMFlatPiMMException;
 import org.preesm.commons.logger.PreesmLogger;
 import org.preesm.model.pisdf.PiGraph;
-import org.preesm.scenario.PreesmScenario;
+import org.preesm.model.scenario.PreesmScenario;
 import org.preesm.workflow.WorkflowException;
 import org.preesm.workflow.elements.Workflow;
 import org.preesm.workflow.implement.AbstractTaskImplementation;

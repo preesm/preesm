@@ -90,10 +90,10 @@ import org.preesm.codegen.model.SpecialType;
 import org.preesm.codegen.model.SubBuffer;
 import org.preesm.codegen.model.Variable;
 import org.preesm.commons.logger.PreesmLogger;
-import org.preesm.scenario.PreesmScenario;
-import org.preesm.scenario.types.BufferAggregate;
-import org.preesm.scenario.types.BufferProperties;
-import org.preesm.scenario.types.DataType;
+import org.preesm.model.scenario.PreesmScenario;
+import org.preesm.model.scenario.types.BufferAggregate;
+import org.preesm.model.scenario.types.BufferProperties;
+import org.preesm.model.scenario.types.DataType;
 import org.preesm.workflow.WorkflowException;
 
 /**

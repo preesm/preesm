@@ -62,12 +62,12 @@ import org.preesm.commons.logger.PreesmLogger;
 import org.preesm.model.pisdf.AbstractActor;
 import org.preesm.model.pisdf.PiGraph;
 import org.preesm.model.pisdf.util.PiIdentifiers;
+import org.preesm.model.scenario.PreesmScenario;
 import org.preesm.model.slam.ComponentInstance;
 import org.preesm.model.slam.Design;
 import org.preesm.model.slam.attributes.VLNV;
 import org.preesm.model.slam.component.Operator;
 import org.preesm.model.slam.utils.DesignTools.ComponentInstanceComparator;
-import org.preesm.scenario.PreesmScenario;
 
 /**
  *

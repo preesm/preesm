@@ -52,10 +52,10 @@ import org.preesm.algorithm.model.PropertyBean;
 import org.preesm.algorithm.model.dag.DAGEdge;
 import org.preesm.algorithm.model.dag.DAGVertex;
 import org.preesm.commons.GMLKey;
+import org.preesm.model.scenario.types.ImplementationPropertyNames;
 import org.preesm.model.slam.attributes.Parameter;
 import org.preesm.model.slam.impl.ComponentInstanceImpl;
 import org.preesm.model.slam.route.AbstractRouteStep;
-import org.preesm.scenario.types.ImplementationPropertyNames;
 import org.w3c.dom.Element;
 
 /**

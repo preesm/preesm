@@ -43,8 +43,8 @@ import org.eclipse.core.runtime.IProgressMonitor;
 import org.preesm.algorithm.memory.allocation.AbstractMemoryAllocatorTask;
 import org.preesm.algorithm.memory.exclusiongraph.MemoryExclusionGraph;
 import org.preesm.algorithm.model.dag.DirectedAcyclicGraph;
-import org.preesm.scenario.PreesmScenario;
-import org.preesm.scenario.types.DataType;
+import org.preesm.model.scenario.PreesmScenario;
+import org.preesm.model.scenario.types.DataType;
 import org.preesm.workflow.WorkflowException;
 import org.preesm.workflow.elements.Workflow;
 

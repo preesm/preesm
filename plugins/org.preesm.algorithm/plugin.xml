@@ -57,7 +57,7 @@
             </input>
             <input
                   id="scenario"
-                  object="org.preesm.scenario.PreesmScenario">
+                  object="org.preesm.model.scenario.PreesmScenario">
             </input>
             <input
                   id="architecture"
@@ -108,7 +108,7 @@
             </input>
             <input
                   id="scenario"
-                  object="org.preesm.scenario.PreesmScenario">
+                  object="org.preesm.model.scenario.PreesmScenario">
             </input>
          </inputs>
          <outputs>
@@ -182,7 +182,7 @@
             </input>
             <input
                   id="scenario"
-                  object="org.preesm.scenario.PreesmScenario">
+                  object="org.preesm.model.scenario.PreesmScenario">
             </input>
          </inputs>
          <outputs>
@@ -222,7 +222,7 @@
             </input>
             <input
                   id="scenario"
-                  object="org.preesm.scenario.PreesmScenario">
+                  object="org.preesm.model.scenario.PreesmScenario">
             </input>
          </inputs>
          <outputs>
@@ -287,7 +287,7 @@
             </input>
             <input
                   id="scenario"
-                  object="org.preesm.scenario.PreesmScenario">
+                  object="org.preesm.model.scenario.PreesmScenario">
             </input>
             <input
                   id="architecture"
@@ -312,7 +312,7 @@
             </input>
             <input
                   id="scenario"
-                  object="org.preesm.scenario.PreesmScenario">
+                  object="org.preesm.model.scenario.PreesmScenario">
             </input>
          </inputs>
          <outputs>
@@ -333,7 +333,7 @@
             </input>
             <input
                   id="scenario"
-                  object="org.preesm.scenario.PreesmScenario">
+                  object="org.preesm.model.scenario.PreesmScenario">
             </input>
             <input
                   id="architecture"
@@ -405,7 +405,7 @@
             </input>
             <input
                   id="scenario"
-                  object="org.preesm.scenario.PreesmScenario">
+                  object="org.preesm.model.scenario.PreesmScenario">
             </input>
             <input
                   id="architecture"
@@ -419,7 +419,7 @@
             </output>
             <output
                   id="scenario"
-                  object="org.preesm.scenario.PreesmScenario">
+                  object="org.preesm.model.scenario.PreesmScenario">
             </output>
          </outputs>
       </task>
@@ -434,13 +434,13 @@
             </output>
             <output
                   id="scenario"
-                  object="org.preesm.scenario.PreesmScenario">
+                  object="org.preesm.model.scenario.PreesmScenario">
             </output>
          </outputs>
          <inputs>
             <input
                   id="scenario"
-                  object="org.preesm.scenario.PreesmScenario">
+                  object="org.preesm.model.scenario.PreesmScenario">
             </input>
             <input
                   id="architecture"
@@ -455,7 +455,7 @@
          <inputs>
             <input
                   id="scenario"
-                  object="org.preesm.scenario.PreesmScenario">
+                  object="org.preesm.model.scenario.PreesmScenario">
             </input>
             <input
                   id="SDF"
@@ -495,7 +495,7 @@
             </input>
             <input
                   id="scenario"
-                  object="org.preesm.scenario.PreesmScenario">
+                  object="org.preesm.model.scenario.PreesmScenario">
             </input>
          </inputs>
          <outputs>
@@ -520,7 +520,7 @@
             </input>
             <input
                   id="scenario"
-                  object="org.preesm.scenario.PreesmScenario">
+                  object="org.preesm.model.scenario.PreesmScenario">
             </input>
          </inputs>
          <outputs>
@@ -530,7 +530,7 @@
             </output>
             <output
                   id="scenario"
-                  object="org.preesm.scenario.PreesmScenario">
+                  object="org.preesm.model.scenario.PreesmScenario">
             </output>
             <output
                   id="throughput"
@@ -549,7 +549,7 @@
             </input>
             <input
                   id="scenario"
-                  object="org.preesm.scenario.PreesmScenario">
+                  object="org.preesm.model.scenario.PreesmScenario">
             </input>
          </inputs>
          <outputs>
@@ -559,7 +559,7 @@
             </output>
             <output
                   id="scenario"
-                  object="org.preesm.scenario.PreesmScenario">
+                  object="org.preesm.model.scenario.PreesmScenario">
             </output>
             <output
                   id="latency"
@@ -602,7 +602,7 @@
             </input>
             <input
                   id="scenario"
-                  object="org.preesm.scenario.PreesmScenario">
+                  object="org.preesm.model.scenario.PreesmScenario">
             </input>
             <input
                   id="DAG"
@@ -652,7 +652,7 @@
             </input>
             <input
                   id="scenario"
-                  object="org.preesm.scenario.PreesmScenario">
+                  object="org.preesm.model.scenario.PreesmScenario">
             </input>
          </inputs>
          <outputs>
@@ -681,7 +681,7 @@
             </input>
             <input
                   id="scenario"
-                  object="org.preesm.scenario.PreesmScenario">
+                  object="org.preesm.model.scenario.PreesmScenario">
             </input>
          </inputs>
          <outputs>
@@ -706,7 +706,7 @@
             </input>
             <input
                   id="scenario"
-                  object="org.preesm.scenario.PreesmScenario">
+                  object="org.preesm.model.scenario.PreesmScenario">
             </input>
             <input
                   id="SDF"
@@ -731,7 +731,7 @@
          <inputs>
             <input
                   id="scenario"
-                  object="org.preesm.scenario.PreesmScenario">
+                  object="org.preesm.model.scenario.PreesmScenario">
             </input>
             <input
                   id="ABC"
@@ -761,7 +761,7 @@
             </input>
             <input
                   id="scenario"
-                  object="org.preesm.scenario.PreesmScenario">
+                  object="org.preesm.model.scenario.PreesmScenario">
             </input>
          </inputs>
       </task>
@@ -811,7 +811,7 @@
             </input>
             <input
                   id="scenario"
-                  object="org.preesm.scenario.PreesmScenario">
+                  object="org.preesm.model.scenario.PreesmScenario">
             </input>
             <input
                   id="architecture"
@@ -832,7 +832,7 @@
          <inputs>
             <input
                   id="scenario"
-                  object="org.preesm.scenario.PreesmScenario">
+                  object="org.preesm.model.scenario.PreesmScenario">
             </input>
             <input
                   id="architecture"
@@ -865,7 +865,7 @@
             </input>
             <input
                   id="scenario"
-                  object="org.preesm.scenario.PreesmScenario">
+                  object="org.preesm.model.scenario.PreesmScenario">
             </input>
             <input
                   id="DAG"
@@ -894,7 +894,7 @@
             </input>
             <input
                   id="scenario"
-                  object="org.preesm.scenario.PreesmScenario">
+                  object="org.preesm.model.scenario.PreesmScenario">
             </input>
             <input
                   id="DAG"
@@ -923,7 +923,7 @@
             </input>
             <input
                   id="scenario"
-                  object="org.preesm.scenario.PreesmScenario">
+                  object="org.preesm.model.scenario.PreesmScenario">
             </input>
             <input
                   id="DAG"
@@ -952,7 +952,7 @@
             </input>
             <input
                   id="scenario"
-                  object="org.preesm.scenario.PreesmScenario">
+                  object="org.preesm.model.scenario.PreesmScenario">
             </input>
             <input
                   id="DAG"

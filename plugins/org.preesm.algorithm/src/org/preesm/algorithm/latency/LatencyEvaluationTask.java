@@ -49,7 +49,7 @@ import org.preesm.algorithm.throughput.tools.helpers.Stopwatch;
 import org.preesm.algorithm.throughput.tools.transformers.IBSDFTransformer;
 import org.preesm.algorithm.throughput.tools.transformers.SrSDFTransformer;
 import org.preesm.commons.logger.PreesmLogger;
-import org.preesm.scenario.PreesmScenario;
+import org.preesm.model.scenario.PreesmScenario;
 import org.preesm.workflow.WorkflowException;
 import org.preesm.workflow.elements.Workflow;
 import org.preesm.workflow.implement.AbstractTaskImplementation;

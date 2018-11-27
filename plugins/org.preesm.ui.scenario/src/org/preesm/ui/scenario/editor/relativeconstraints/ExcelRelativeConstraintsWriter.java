@@ -60,9 +60,9 @@ import org.eclipse.ui.PlatformUI;
 import org.preesm.algorithm.io.gml.InvalidModelException;
 import org.preesm.commons.exceptions.PreesmException;
 import org.preesm.model.pisdf.AbstractActor;
-import org.preesm.scenario.PreesmScenario;
-import org.preesm.scenario.Timing;
-import org.preesm.scenario.serialize.PreesmAlgorithmListContentProvider;
+import org.preesm.model.scenario.PreesmScenario;
+import org.preesm.model.scenario.Timing;
+import org.preesm.model.scenario.serialize.PreesmAlgorithmListContentProvider;
 import org.preesm.ui.scenario.editor.ExcelWriter;
 import org.preesm.ui.scenario.editor.SaveAsWizard;
 

@@ -48,11 +48,11 @@ import org.eclipse.core.runtime.IPath;
 import org.preesm.algorithm.model.sdf.SDFAbstractVertex;
 import org.preesm.algorithm.model.sdf.SDFGraph;
 import org.preesm.commons.exceptions.PreesmException;
+import org.preesm.model.scenario.PreesmScenario;
+import org.preesm.model.scenario.Timing;
+import org.preesm.model.scenario.types.DataType;
 import org.preesm.model.slam.ComponentInstance;
 import org.preesm.model.slam.Design;
-import org.preesm.scenario.PreesmScenario;
-import org.preesm.scenario.Timing;
-import org.preesm.scenario.types.DataType;
 import org.preesm.workflow.WorkflowException;
 
 // TODO: Auto-generated Javadoc

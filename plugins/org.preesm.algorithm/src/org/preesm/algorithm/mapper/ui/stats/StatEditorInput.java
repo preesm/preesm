@@ -44,7 +44,7 @@ import org.eclipse.ui.IPersistableElement;
 import org.preesm.algorithm.PreesmAlgorithmPlugin;
 import org.preesm.algorithm.mapper.abc.impl.latency.LatencyAbc;
 import org.preesm.commons.logger.PreesmLogger;
-import org.preesm.scenario.PreesmScenario;
+import org.preesm.model.scenario.PreesmScenario;
 
 /**
  * Input of the editor of implementation statistics.

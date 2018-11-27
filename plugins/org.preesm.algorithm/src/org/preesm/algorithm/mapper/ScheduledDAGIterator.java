@@ -42,7 +42,7 @@ import java.util.TreeMap;
 import org.preesm.algorithm.iterators.TopologicalDAGIterator;
 import org.preesm.algorithm.mapper.model.MapperDAGVertex;
 import org.preesm.algorithm.model.dag.DirectedAcyclicGraph;
-import org.preesm.scenario.types.ImplementationPropertyNames;
+import org.preesm.model.scenario.types.ImplementationPropertyNames;
 
 /**
  *

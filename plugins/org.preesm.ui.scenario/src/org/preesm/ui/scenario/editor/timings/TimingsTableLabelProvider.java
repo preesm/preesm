@@ -59,8 +59,8 @@ import org.osgi.framework.FrameworkUtil;
 import org.preesm.algorithm.model.sdf.SDFAbstractVertex;
 import org.preesm.algorithm.model.sdf.SDFVertex;
 import org.preesm.model.pisdf.AbstractActor;
-import org.preesm.scenario.PreesmScenario;
-import org.preesm.scenario.Timing;
+import org.preesm.model.scenario.PreesmScenario;
+import org.preesm.model.scenario.Timing;
 import org.preesm.ui.scenario.editor.Messages;
 
 // TODO: Auto-generated Javadoc

@@ -75,7 +75,7 @@ import org.preesm.algorithm.model.sdf.SDFVertex;
 import org.preesm.algorithm.model.sdf.esdf.SDFRoundBufferVertex;
 import org.preesm.commons.files.URLResolver;
 import org.preesm.commons.logger.PreesmLogger;
-import org.preesm.scenario.types.DataType;
+import org.preesm.model.scenario.types.DataType;
 import org.preesm.workflow.WorkflowException;
 
 /**

@@ -58,8 +58,8 @@ import org.preesm.algorithm.memory.allocation.MemoryAllocationException;
 import org.preesm.algorithm.memory.exclusiongraph.MemoryExclusionGraph;
 import org.preesm.algorithm.model.dag.DirectedAcyclicGraph;
 import org.preesm.commons.logger.PreesmLogger;
-import org.preesm.scenario.PreesmScenario;
-import org.preesm.scenario.types.DataType;
+import org.preesm.model.scenario.PreesmScenario;
+import org.preesm.model.scenario.types.DataType;
 
 /**
  * The Class MemoryScriptEngine.

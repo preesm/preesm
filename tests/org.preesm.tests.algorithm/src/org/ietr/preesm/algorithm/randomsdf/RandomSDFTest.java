@@ -42,8 +42,8 @@ import org.junit.Test;
 import org.preesm.algorithm.model.sdf.SDFAbstractVertex;
 import org.preesm.algorithm.model.sdf.SDFGraph;
 import org.preesm.algorithm.randomsdf.RandomSDF;
+import org.preesm.model.scenario.PreesmScenario;
 import org.preesm.model.slam.SlamFactory;
-import org.preesm.scenario.PreesmScenario;
 import org.preesm.workflow.WorkflowException;
 
 /**

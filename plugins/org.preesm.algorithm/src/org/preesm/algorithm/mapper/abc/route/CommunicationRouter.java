@@ -63,6 +63,7 @@ import org.preesm.algorithm.mapper.model.special.PrecedenceEdge;
 import org.preesm.algorithm.model.dag.DAGEdge;
 import org.preesm.algorithm.model.dag.DAGVertex;
 import org.preesm.commons.exceptions.PreesmException;
+import org.preesm.model.scenario.PreesmScenario;
 import org.preesm.model.slam.ComponentInstance;
 import org.preesm.model.slam.Design;
 import org.preesm.model.slam.route.AbstractRouteStep;
@@ -70,7 +71,6 @@ import org.preesm.model.slam.route.DmaRouteStep;
 import org.preesm.model.slam.route.MemRouteStep;
 import org.preesm.model.slam.route.MessageRouteStep;
 import org.preesm.model.slam.route.Route;
-import org.preesm.scenario.PreesmScenario;
 
 /**
  * Routes the communications. Based on bridge design pattern. The processing is delegated to implementers

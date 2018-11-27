@@ -44,8 +44,8 @@ import org.preesm.algorithm.mapper.ScheduledDAGIterator;
 import org.preesm.algorithm.model.dag.DAGEdge;
 import org.preesm.algorithm.model.dag.DAGVertex;
 import org.preesm.algorithm.model.dag.DirectedAcyclicGraph;
+import org.preesm.model.scenario.types.ImplementationPropertyNames;
 import org.preesm.model.slam.ComponentInstance;
-import org.preesm.scenario.types.ImplementationPropertyNames;
 import org.preesm.workflow.WorkflowException;
 
 /**
