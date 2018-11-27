@@ -40,7 +40,6 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import org.apache.commons.math3.fraction.BigFraction;
-import org.preesm.algorithm.evaluator.EvaluationException;
 import org.preesm.algorithm.model.sdf.SDFAbstractVertex;
 import org.preesm.algorithm.model.sdf.SDFEdge;
 import org.preesm.algorithm.model.sdf.SDFGraph;
@@ -48,6 +47,7 @@ import org.preesm.algorithm.model.sdf.esdf.SDFSinkInterfaceVertex;
 import org.preesm.algorithm.model.sdf.esdf.SDFSourceInterfaceVertex;
 import org.preesm.algorithm.model.types.LongEdgePropertyType;
 import org.preesm.algorithm.throughput.tools.helpers.Stopwatch;
+import org.preesm.commons.exceptions.PreesmException;
 import org.preesm.commons.math.MathFunctionsHelper;
 
 /**
@@ -98,7 +98,7 @@ public abstract class SDFConsistency {
           * e.getCons().longValue())) {
         timer.stop();
         final String message = "Graph not consistent !! evaluated in " + timer.toString();
-        throw new EvaluationException(message);
+        throw new PreesmException(message);
       }
     }
 

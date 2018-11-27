@@ -38,10 +38,10 @@ package org.ietr.preesm.deadlock.test;
 import org.junit.Assert;
 import org.junit.Test;
 import org.preesm.algorithm.deadlock.SDFConsistency;
-import org.preesm.algorithm.evaluator.EvaluationException;
 import org.preesm.algorithm.model.sdf.SDFGraph;
 import org.preesm.algorithm.model.types.LongEdgePropertyType;
 import org.preesm.algorithm.throughput.tools.helpers.GraphStructureHelper;
+import org.preesm.commons.exceptions.PreesmException;
 
 /**
  *
@@ -79,7 +79,7 @@ public class SDFConsistencyTest {
     try {
       SDFConsistency.computeRV(ABC);
       Assert.fail();
-    } catch (EvaluationException e) {
+    } catch (PreesmException e) {
       // success
     }
   }

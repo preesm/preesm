@@ -39,11 +39,11 @@ import org.junit.Assert;
 import org.junit.Test;
 import org.preesm.algorithm.deadlock.IBSDFConsistency;
 import org.preesm.algorithm.deadlock.IBSDFLiveness;
-import org.preesm.algorithm.evaluator.EvaluationException;
 import org.preesm.algorithm.model.sdf.SDFEdge;
 import org.preesm.algorithm.model.sdf.SDFGraph;
 import org.preesm.algorithm.model.types.LongEdgePropertyType;
 import org.preesm.algorithm.throughput.tools.helpers.GraphStructureHelper;
+import org.preesm.commons.exceptions.PreesmException;
 
 /**
  *
@@ -77,7 +77,7 @@ public class IBSDFLivenessTest {
     try {
       IBSDFLiveness.evaluate(ibsdf);
       Assert.fail();
-    } catch (EvaluationException e) {
+    } catch (PreesmException e) {
       // success
     }
   }
