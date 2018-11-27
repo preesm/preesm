@@ -59,7 +59,7 @@ import org.preesm.model.pisdf.AbstractVertex;
 import org.preesm.model.pisdf.Parameter;
 import org.preesm.model.pisdf.PiGraph;
 import org.preesm.model.pisdf.util.PiMMSwitch;
-import org.preesm.scenario.PreesmScenario;
+import org.preesm.model.scenario.PreesmScenario;
 
 /**
  * The Class StaticPiMM2SDFLauncher.

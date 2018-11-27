@@ -40,8 +40,8 @@ package org.preesm.ui.scenario.editor.papify;
 import java.util.Map;
 import org.eclipse.jface.viewers.ColumnLabelProvider;
 import org.eclipse.swt.graphics.Image;
-import org.preesm.scenario.PreesmScenario;
-import org.preesm.scenario.papi.PapifyConfigActor;
+import org.preesm.model.scenario.PreesmScenario;
+import org.preesm.model.scenario.papi.PapifyConfigActor;
 import org.preesm.ui.scenario.editor.papify.PapifyEventListTreeElement.PAPIEventStatus;
 
 // TODO: Auto-generated Javadoc

@@ -46,10 +46,10 @@ import org.preesm.algorithm.mapper.algo.list.InitialLists;
 import org.preesm.algorithm.mapper.model.MapperDAG;
 import org.preesm.algorithm.mapper.model.MapperDAGVertex;
 import org.preesm.algorithm.mapper.params.AbcParameters;
+import org.preesm.model.scenario.PreesmScenario;
 import org.preesm.model.slam.ComponentInstance;
 import org.preesm.model.slam.Design;
 import org.preesm.model.slam.utils.DesignTools.ComponentInstanceComparator;
-import org.preesm.scenario.PreesmScenario;
 
 /**
  *

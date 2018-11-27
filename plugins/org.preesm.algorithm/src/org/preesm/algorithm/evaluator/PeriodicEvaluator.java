@@ -44,7 +44,7 @@ import org.preesm.algorithm.model.sdf.SDFAbstractVertex;
 import org.preesm.algorithm.model.sdf.SDFGraph;
 import org.preesm.algorithm.model.visitors.SDF4JException;
 import org.preesm.commons.logger.PreesmLogger;
-import org.preesm.scenario.PreesmScenario;
+import org.preesm.model.scenario.PreesmScenario;
 import org.preesm.workflow.WorkflowException;
 import org.preesm.workflow.elements.Workflow;
 import org.preesm.workflow.implement.AbstractTaskImplementation;

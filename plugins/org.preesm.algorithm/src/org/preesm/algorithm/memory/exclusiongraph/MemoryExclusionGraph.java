@@ -72,11 +72,11 @@ import org.preesm.algorithm.model.parameters.InvalidExpressionException;
 import org.preesm.algorithm.model.sdf.esdf.SDFInitVertex;
 import org.preesm.commons.CloneableProperty;
 import org.preesm.commons.logger.PreesmLogger;
+import org.preesm.model.scenario.types.BufferAggregate;
+import org.preesm.model.scenario.types.DataType;
+import org.preesm.model.scenario.types.ImplementationPropertyNames;
+import org.preesm.model.scenario.types.VertexType;
 import org.preesm.model.slam.ComponentInstance;
-import org.preesm.scenario.types.BufferAggregate;
-import org.preesm.scenario.types.DataType;
-import org.preesm.scenario.types.ImplementationPropertyNames;
-import org.preesm.scenario.types.VertexType;
 import org.preesm.workflow.WorkflowException;
 
 // TODO: Auto-generated Javadoc

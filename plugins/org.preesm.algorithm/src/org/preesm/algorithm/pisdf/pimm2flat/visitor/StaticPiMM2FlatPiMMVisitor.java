@@ -78,11 +78,11 @@ import org.preesm.model.pisdf.PortMemoryAnnotation;
 import org.preesm.model.pisdf.RoundBufferActor;
 import org.preesm.model.pisdf.factory.PiMMUserFactory;
 import org.preesm.model.pisdf.util.PiMMSwitch;
-import org.preesm.scenario.ConstraintGroup;
-import org.preesm.scenario.ConstraintGroupManager;
-import org.preesm.scenario.PreesmScenario;
-import org.preesm.scenario.Timing;
-import org.preesm.scenario.TimingManager;
+import org.preesm.model.scenario.ConstraintGroup;
+import org.preesm.model.scenario.ConstraintGroupManager;
+import org.preesm.model.scenario.PreesmScenario;
+import org.preesm.model.scenario.Timing;
+import org.preesm.model.scenario.TimingManager;
 import org.preesm.workflow.WorkflowException;
 
 /**

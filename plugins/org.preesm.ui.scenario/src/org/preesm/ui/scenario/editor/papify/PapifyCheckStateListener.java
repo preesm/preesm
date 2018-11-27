@@ -57,11 +57,8 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.IPropertyListener;
 import org.eclipse.ui.forms.widgets.FormToolkit;
-import org.preesm.algorithm.io.gml.InvalidModelException;
-import org.preesm.algorithm.model.IRefinement;
 import org.preesm.algorithm.model.sdf.SDFAbstractVertex;
-import org.preesm.algorithm.model.sdf.SDFGraph;
-import org.preesm.algorithm.model.sdf.SDFVertex;
+import org.preesm.commons.exceptions.PreesmException;
 import org.preesm.model.pisdf.AbstractActor;
 import org.preesm.model.pisdf.Actor;
 import org.preesm.model.pisdf.BroadcastActor;
@@ -73,15 +70,13 @@ import org.preesm.model.pisdf.JoinActor;
 import org.preesm.model.pisdf.PiGraph;
 import org.preesm.model.pisdf.RoundBufferActor;
 import org.preesm.model.pisdf.serialize.PiParser;
-import org.preesm.scenario.PreesmScenario;
-import org.preesm.scenario.papi.PapiComponent;
-import org.preesm.scenario.papi.PapiEvent;
-import org.preesm.scenario.papi.PapiEventInfo;
-import org.preesm.scenario.papi.PapiEventModifier;
-import org.preesm.scenario.papi.PapiEventSet;
-import org.preesm.scenario.papi.PapifyConfigActor;
-import org.preesm.scenario.serialize.ScenarioParser;
-import org.preesm.ui.scenario.editor.HierarchicalSDFVertex;
+import org.preesm.model.scenario.PreesmScenario;
+import org.preesm.model.scenario.papi.PapiComponent;
+import org.preesm.model.scenario.papi.PapiEvent;
+import org.preesm.model.scenario.papi.PapiEventInfo;
+import org.preesm.model.scenario.papi.PapiEventModifier;
+import org.preesm.model.scenario.papi.PapiEventSet;
+import org.preesm.model.scenario.papi.PapifyConfigActor;
 import org.preesm.ui.scenario.editor.ISDFCheckStateListener;
 import org.preesm.ui.scenario.editor.Messages;
 import org.preesm.ui.scenario.editor.PreesmAlgorithmTreeContentProvider;
@@ -148,7 +143,7 @@ public class PapifyCheckStateListener implements ISDFCheckStateListener {
   }
 
   /**
-   * 
+   *
    */
   public void addEstatusSupport(PapifyEventListContentProvider2DMatrixES editingSupport) {
     if (editingSupport != null) {
@@ -157,7 +152,7 @@ public class PapifyCheckStateListener implements ISDFCheckStateListener {
   }
 
   /**
-   * 
+   *
    */
   public void removeEventfromActor(Object actorInstance, String eventName) {
     // The timing event
@@ -171,11 +166,7 @@ public class PapifyCheckStateListener implements ISDFCheckStateListener {
 
     String actorPath = "";
 
-    if (actorInstance instanceof HierarchicalSDFVertex) {
-      actorPath = ((HierarchicalSDFVertex) actorInstance).getName();
-    } else if (actorInstance instanceof SDFGraph) {
-      actorPath = ((SDFGraph) actorInstance).getName();
-    } else if (actorInstance instanceof AbstractActor) {
+    if (actorInstance instanceof AbstractActor) {
       actorPath = ((AbstractActor) actorInstance).getVertexPath();
     }
 
@@ -244,7 +235,7 @@ public class PapifyCheckStateListener implements ISDFCheckStateListener {
   }
 
   /**
-   * 
+   *
    */
   public void addEventtoActor(Object actorInstance, String eventName) {
     // The timing event
@@ -258,11 +249,7 @@ public class PapifyCheckStateListener implements ISDFCheckStateListener {
 
     String actorPath = "";
 
-    if (actorInstance instanceof HierarchicalSDFVertex) {
-      actorPath = ((HierarchicalSDFVertex) actorInstance).getName();
-    } else if (actorInstance instanceof SDFGraph) {
-      actorPath = ((SDFGraph) actorInstance).getName();
-    } else if (actorInstance instanceof AbstractActor) {
+    if (actorInstance instanceof AbstractActor) {
       actorPath = ((AbstractActor) actorInstance).getVertexPath();
     }
 
@@ -331,7 +318,7 @@ public class PapifyCheckStateListener implements ISDFCheckStateListener {
   }
 
   /**
-   * 
+   *
    */
   public void updateView(String event) {
 
@@ -431,14 +418,7 @@ public class PapifyCheckStateListener implements ISDFCheckStateListener {
         }
       }
     } else if (this.scenario.isIBSDFScenario()) {
-      try {
-        final SDFGraph graph = ScenarioParser.getSDFGraph(this.scenario.getAlgorithmURL());
-        for (final SDFAbstractVertex vertex : graph.vertexSet()) {
-          result.add(vertex.getName());
-        }
-      } catch (final InvalidModelException e) {
-        e.printStackTrace();
-      }
+      throw new PreesmException("IBSDF is not supported anymore");
     }
 
     for (final String id : result) {
@@ -447,7 +427,7 @@ public class PapifyCheckStateListener implements ISDFCheckStateListener {
   }
 
   /**
-   * 
+   *
    */
   public void updateEvents() {
 
@@ -472,21 +452,12 @@ public class PapifyCheckStateListener implements ISDFCheckStateListener {
   }
 
   /**
-   * 
+   *
    */
   public boolean hasChildren(Object actorInstance) {
     boolean hasChildren = false;
     if (this.scenario.isIBSDFScenario()) {
-      if (actorInstance instanceof SDFGraph) {
-        final SDFGraph graph = (SDFGraph) actorInstance;
-        hasChildren = !graph.vertexSet().isEmpty();
-      } else if (actorInstance instanceof HierarchicalSDFVertex) {
-        final SDFAbstractVertex sdfVertex = ((HierarchicalSDFVertex) actorInstance).getStoredVertex();
-        if (sdfVertex instanceof SDFVertex) {
-          final SDFVertex vertex = (SDFVertex) sdfVertex;
-          hasChildren = vertex.getRefinement() != null;
-        }
-      }
+      throw new PreesmException("IBSDF is not supported anymore");
     } else if (this.scenario.isPISDFScenario()) {
       if (actorInstance instanceof PiGraph) {
         final PiGraph graph = (PiGraph) actorInstance;
@@ -500,25 +471,12 @@ public class PapifyCheckStateListener implements ISDFCheckStateListener {
   }
 
   /**
-   * 
+   *
    */
   public Set<String> getChildren(final Object parentElement) {
     Set<String> table = new LinkedHashSet<>();
     if (this.scenario.isIBSDFScenario()) {
-      if (parentElement instanceof SDFGraph) {
-        final SDFGraph graph = (SDFGraph) parentElement;
-
-        // Some types of vertices are ignored in the constraints view
-        table.addAll(filterIBSDFChildren(graph.vertexSet()));
-      } else if (parentElement instanceof HierarchicalSDFVertex) {
-        final HierarchicalSDFVertex vertex = (HierarchicalSDFVertex) parentElement;
-        final IRefinement refinement = vertex.getStoredVertex().getRefinement();
-
-        if ((refinement != null) && (refinement instanceof SDFGraph)) {
-          final SDFGraph graph = (SDFGraph) refinement;
-          table.addAll(filterIBSDFChildren(graph.vertexSet()));
-        }
-      }
+      throw new PreesmException("IBSDF is not supported anymore");
     } else if (this.scenario.isPISDFScenario()) {
       if (parentElement instanceof PiGraph) {
         final PiGraph graph = (PiGraph) parentElement;

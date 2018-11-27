@@ -58,11 +58,11 @@ import org.eclipse.ui.IWorkbench;
 import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.PlatformUI;
 import org.preesm.algorithm.io.gml.InvalidModelException;
-import org.preesm.algorithm.model.sdf.SDFAbstractVertex;
+import org.preesm.commons.exceptions.PreesmException;
 import org.preesm.model.pisdf.AbstractActor;
-import org.preesm.scenario.PreesmScenario;
-import org.preesm.scenario.Timing;
-import org.preesm.scenario.serialize.PreesmAlgorithmListContentProvider;
+import org.preesm.model.scenario.PreesmScenario;
+import org.preesm.model.scenario.Timing;
+import org.preesm.model.scenario.serialize.PreesmAlgorithmListContentProvider;
 import org.preesm.ui.scenario.editor.ExcelWriter;
 import org.preesm.ui.scenario.editor.SaveAsWizard;
 
@@ -161,10 +161,7 @@ public class ExcelTimingWriter extends ExcelWriter {
       final Set<String> vertexNames = new LinkedHashSet<>();
 
       if (this.scenario.isIBSDFScenario()) {
-        final Set<SDFAbstractVertex> vSet = provider.getSortedIBSDFVertices(this.scenario);
-        for (final SDFAbstractVertex vertex : vSet) {
-          vertexNames.add(vertex.getName());
-        }
+        throw new PreesmException("IBSDF is not supported anymore");
       } else if (this.scenario.isPISDFScenario()) {
         final Set<AbstractActor> vSet = provider.getSortedPISDFVertices(this.scenario);
         for (final AbstractActor vertex : vSet) {

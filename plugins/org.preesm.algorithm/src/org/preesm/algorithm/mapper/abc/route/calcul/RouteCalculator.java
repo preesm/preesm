@@ -48,6 +48,7 @@ import org.preesm.algorithm.mapper.model.MapperDAGEdge;
 import org.preesm.algorithm.mapper.model.MapperDAGVertex;
 import org.preesm.commons.exceptions.PreesmException;
 import org.preesm.commons.logger.PreesmLogger;
+import org.preesm.model.scenario.PreesmScenario;
 import org.preesm.model.slam.ComponentInstance;
 import org.preesm.model.slam.Design;
 import org.preesm.model.slam.component.Operator;
@@ -57,7 +58,6 @@ import org.preesm.model.slam.route.AbstractRouteStep;
 import org.preesm.model.slam.route.Route;
 import org.preesm.model.slam.route.RouteStepFactory;
 import org.preesm.model.slam.utils.DesignTools;
-import org.preesm.scenario.PreesmScenario;
 
 /**
  * This class can evaluate a given transfer and choose the best route between two operators.

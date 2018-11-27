@@ -58,7 +58,7 @@
             </input>
             <input
                   id="scenario"
-                  object="org.preesm.scenario.PreesmScenario">
+                  object="org.preesm.model.scenario.PreesmScenario">
             </input>
             <input
                   id="architecture"

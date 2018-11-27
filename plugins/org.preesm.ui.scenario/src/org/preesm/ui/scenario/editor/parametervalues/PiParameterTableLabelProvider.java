@@ -48,8 +48,8 @@ import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Table;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.FrameworkUtil;
-import org.preesm.scenario.ParameterValue;
-import org.preesm.scenario.ParameterValue.ParameterType;
+import org.preesm.model.scenario.ParameterValue;
+import org.preesm.model.scenario.ParameterValue.ParameterType;
 
 // TODO: Auto-generated Javadoc
 /**

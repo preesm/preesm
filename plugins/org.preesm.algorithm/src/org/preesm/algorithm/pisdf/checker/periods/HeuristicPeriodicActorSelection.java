@@ -50,7 +50,7 @@ import org.preesm.model.pisdf.DataInputPort;
 import org.preesm.model.pisdf.DataOutputPort;
 import org.preesm.model.pisdf.Fifo;
 import org.preesm.model.pisdf.PiGraph;
-import org.preesm.scenario.PreesmScenario;
+import org.preesm.model.scenario.PreesmScenario;
 
 /**
  * This class aims to select periodic actors on which execute the period checkers (nbff and nblf).

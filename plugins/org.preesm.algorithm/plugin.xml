@@ -42,27 +42,6 @@
 
 <plugin>
 
-   <extension
-         point="org.preesm.workflow.scenarios">
-      <scenario
-            id="org.ietr.preesm.scenario.task"
-            type="org.preesm.scenario.workflow.AlgorithmAndArchitectureScenarioNode">
-         <outputs>
-            <output
-                  id="scenario"
-                  object="org.preesm.scenario.PreesmScenario">
-            </output>
-            <output
-                  id="architecture"
-                  object="org.preesm.model.slam.Design">
-            </output>
-            <output
-                  id="PiMM"
-                  object="org.preesm.model.pisdf.PiGraph">
-            </output>
-         </outputs>
-      </scenario>
-   </extension>
 
    <extension
          point="org.preesm.workflow.tasks">
@@ -78,7 +57,7 @@
             </input>
             <input
                   id="scenario"
-                  object="org.preesm.scenario.PreesmScenario">
+                  object="org.preesm.model.scenario.PreesmScenario">
             </input>
             <input
                   id="architecture"
@@ -129,7 +108,7 @@
             </input>
             <input
                   id="scenario"
-                  object="org.preesm.scenario.PreesmScenario">
+                  object="org.preesm.model.scenario.PreesmScenario">
             </input>
          </inputs>
          <outputs>
@@ -203,7 +182,7 @@
             </input>
             <input
                   id="scenario"
-                  object="org.preesm.scenario.PreesmScenario">
+                  object="org.preesm.model.scenario.PreesmScenario">
             </input>
          </inputs>
          <outputs>
@@ -243,7 +222,7 @@
             </input>
             <input
                   id="scenario"
-                  object="org.preesm.scenario.PreesmScenario">
+                  object="org.preesm.model.scenario.PreesmScenario">
             </input>
          </inputs>
          <outputs>
@@ -308,7 +287,7 @@
             </input>
             <input
                   id="scenario"
-                  object="org.preesm.scenario.PreesmScenario">
+                  object="org.preesm.model.scenario.PreesmScenario">
             </input>
             <input
                   id="architecture"
@@ -333,7 +312,7 @@
             </input>
             <input
                   id="scenario"
-                  object="org.preesm.scenario.PreesmScenario">
+                  object="org.preesm.model.scenario.PreesmScenario">
             </input>
          </inputs>
          <outputs>
@@ -354,7 +333,7 @@
             </input>
             <input
                   id="scenario"
-                  object="org.preesm.scenario.PreesmScenario">
+                  object="org.preesm.model.scenario.PreesmScenario">
             </input>
             <input
                   id="architecture"
@@ -426,7 +405,7 @@
             </input>
             <input
                   id="scenario"
-                  object="org.preesm.scenario.PreesmScenario">
+                  object="org.preesm.model.scenario.PreesmScenario">
             </input>
             <input
                   id="architecture"
@@ -440,7 +419,7 @@
             </output>
             <output
                   id="scenario"
-                  object="org.preesm.scenario.PreesmScenario">
+                  object="org.preesm.model.scenario.PreesmScenario">
             </output>
          </outputs>
       </task>
@@ -455,13 +434,13 @@
             </output>
             <output
                   id="scenario"
-                  object="org.preesm.scenario.PreesmScenario">
+                  object="org.preesm.model.scenario.PreesmScenario">
             </output>
          </outputs>
          <inputs>
             <input
                   id="scenario"
-                  object="org.preesm.scenario.PreesmScenario">
+                  object="org.preesm.model.scenario.PreesmScenario">
             </input>
             <input
                   id="architecture"
@@ -476,7 +455,7 @@
          <inputs>
             <input
                   id="scenario"
-                  object="org.preesm.scenario.PreesmScenario">
+                  object="org.preesm.model.scenario.PreesmScenario">
             </input>
             <input
                   id="SDF"
@@ -516,7 +495,7 @@
             </input>
             <input
                   id="scenario"
-                  object="org.preesm.scenario.PreesmScenario">
+                  object="org.preesm.model.scenario.PreesmScenario">
             </input>
          </inputs>
          <outputs>
@@ -541,7 +520,7 @@
             </input>
             <input
                   id="scenario"
-                  object="org.preesm.scenario.PreesmScenario">
+                  object="org.preesm.model.scenario.PreesmScenario">
             </input>
          </inputs>
          <outputs>
@@ -551,7 +530,7 @@
             </output>
             <output
                   id="scenario"
-                  object="org.preesm.scenario.PreesmScenario">
+                  object="org.preesm.model.scenario.PreesmScenario">
             </output>
             <output
                   id="throughput"
@@ -570,7 +549,7 @@
             </input>
             <input
                   id="scenario"
-                  object="org.preesm.scenario.PreesmScenario">
+                  object="org.preesm.model.scenario.PreesmScenario">
             </input>
          </inputs>
          <outputs>
@@ -580,7 +559,7 @@
             </output>
             <output
                   id="scenario"
-                  object="org.preesm.scenario.PreesmScenario">
+                  object="org.preesm.model.scenario.PreesmScenario">
             </output>
             <output
                   id="latency"
@@ -623,7 +602,7 @@
             </input>
             <input
                   id="scenario"
-                  object="org.preesm.scenario.PreesmScenario">
+                  object="org.preesm.model.scenario.PreesmScenario">
             </input>
             <input
                   id="DAG"
@@ -673,7 +652,7 @@
             </input>
             <input
                   id="scenario"
-                  object="org.preesm.scenario.PreesmScenario">
+                  object="org.preesm.model.scenario.PreesmScenario">
             </input>
          </inputs>
          <outputs>
@@ -702,7 +681,7 @@
             </input>
             <input
                   id="scenario"
-                  object="org.preesm.scenario.PreesmScenario">
+                  object="org.preesm.model.scenario.PreesmScenario">
             </input>
          </inputs>
          <outputs>
@@ -727,7 +706,7 @@
             </input>
             <input
                   id="scenario"
-                  object="org.preesm.scenario.PreesmScenario">
+                  object="org.preesm.model.scenario.PreesmScenario">
             </input>
             <input
                   id="SDF"
@@ -752,32 +731,13 @@
          <inputs>
             <input
                   id="scenario"
-                  object="org.preesm.scenario.PreesmScenario">
+                  object="org.preesm.model.scenario.PreesmScenario">
             </input>
             <input
                   id="ABC"
                   object="org.preesm.algorithm.mapper.abc.impl.latency.LatencyAbc">
             </input>
          </inputs>
-      </task>
-      <task
-            id="org.ietr.preesm.plugin.mapper.scenariogen.ScenarioGenerator"
-            name="Scenario Generator"
-            type="org.preesm.algorithm.mapper.scenariogen.ScenarioGenerator">
-         <outputs>
-            <output
-                  id="scenario"
-                  object="org.preesm.scenario.PreesmScenario">
-            </output>
-            <output
-                  id="SDF"
-                  object="org.preesm.algorithm.model.sdf.SDFGraph">
-            </output>
-            <output
-                  id="architecture"
-                  object="org.preesm.model.slam.Design">
-            </output>
-         </outputs>
       </task>
       <task
             id="org.ietr.preesm.mapper.exporter.DAGExportTransform"
@@ -801,7 +761,7 @@
             </input>
             <input
                   id="scenario"
-                  object="org.preesm.scenario.PreesmScenario">
+                  object="org.preesm.model.scenario.PreesmScenario">
             </input>
          </inputs>
       </task>
@@ -851,7 +811,7 @@
             </input>
             <input
                   id="scenario"
-                  object="org.preesm.scenario.PreesmScenario">
+                  object="org.preesm.model.scenario.PreesmScenario">
             </input>
             <input
                   id="architecture"
@@ -872,7 +832,7 @@
          <inputs>
             <input
                   id="scenario"
-                  object="org.preesm.scenario.PreesmScenario">
+                  object="org.preesm.model.scenario.PreesmScenario">
             </input>
             <input
                   id="architecture"
@@ -905,7 +865,7 @@
             </input>
             <input
                   id="scenario"
-                  object="org.preesm.scenario.PreesmScenario">
+                  object="org.preesm.model.scenario.PreesmScenario">
             </input>
             <input
                   id="DAG"
@@ -934,7 +894,7 @@
             </input>
             <input
                   id="scenario"
-                  object="org.preesm.scenario.PreesmScenario">
+                  object="org.preesm.model.scenario.PreesmScenario">
             </input>
             <input
                   id="DAG"
@@ -963,7 +923,7 @@
             </input>
             <input
                   id="scenario"
-                  object="org.preesm.scenario.PreesmScenario">
+                  object="org.preesm.model.scenario.PreesmScenario">
             </input>
             <input
                   id="DAG"
@@ -992,7 +952,7 @@
             </input>
             <input
                   id="scenario"
-                  object="org.preesm.scenario.PreesmScenario">
+                  object="org.preesm.model.scenario.PreesmScenario">
             </input>
             <input
                   id="DAG"

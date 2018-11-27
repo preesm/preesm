@@ -59,9 +59,9 @@ import org.preesm.algorithm.model.sdf.SDFEdge;
 import org.preesm.algorithm.model.sdf.SDFGraph;
 import org.preesm.commons.exceptions.PreesmException;
 import org.preesm.commons.math.MathFunctionsHelper;
-import org.preesm.scenario.types.BufferAggregate;
-import org.preesm.scenario.types.BufferProperties;
-import org.preesm.scenario.types.DataType;
+import org.preesm.model.scenario.types.BufferAggregate;
+import org.preesm.model.scenario.types.BufferProperties;
+import org.preesm.model.scenario.types.DataType;
 
 // TODO: Auto-generated Javadoc
 /**

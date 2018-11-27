@@ -55,11 +55,11 @@ import org.preesm.algorithm.mapper.model.special.TransferVertex;
 import org.preesm.algorithm.model.PropertyBean;
 import org.preesm.algorithm.model.dag.DAGEdge;
 import org.preesm.algorithm.model.dag.DAGVertex;
+import org.preesm.model.scenario.PreesmScenario;
+import org.preesm.model.scenario.types.ImplementationPropertyNames;
+import org.preesm.model.scenario.types.VertexType;
 import org.preesm.model.slam.ComponentInstance;
 import org.preesm.model.slam.utils.DesignTools;
-import org.preesm.scenario.PreesmScenario;
-import org.preesm.scenario.types.ImplementationPropertyNames;
-import org.preesm.scenario.types.VertexType;
 import org.preesm.workflow.WorkflowException;
 
 /**

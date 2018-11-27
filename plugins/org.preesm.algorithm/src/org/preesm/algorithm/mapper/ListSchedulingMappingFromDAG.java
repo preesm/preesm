@@ -49,8 +49,8 @@ import org.preesm.algorithm.mapper.algo.list.KwokListScheduler;
 import org.preesm.algorithm.mapper.model.MapperDAG;
 import org.preesm.algorithm.mapper.params.AbcParameters;
 import org.preesm.commons.logger.PreesmLogger;
+import org.preesm.model.scenario.PreesmScenario;
 import org.preesm.model.slam.Design;
-import org.preesm.scenario.PreesmScenario;
 
 /**
  * List scheduling is a cheep, greedy, sequential mapping/scheduling method.

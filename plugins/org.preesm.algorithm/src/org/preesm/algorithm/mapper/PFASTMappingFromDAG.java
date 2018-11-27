@@ -50,8 +50,8 @@ import org.preesm.algorithm.mapper.model.MapperDAG;
 import org.preesm.algorithm.mapper.params.AbcParameters;
 import org.preesm.algorithm.mapper.params.PFastAlgoParameters;
 import org.preesm.commons.logger.PreesmLogger;
+import org.preesm.model.scenario.PreesmScenario;
 import org.preesm.model.slam.Design;
-import org.preesm.scenario.PreesmScenario;
 
 /**
  * PFAST is a parallel mapping/scheduling method based on list scheduling followed by a neighborhood search phase. It

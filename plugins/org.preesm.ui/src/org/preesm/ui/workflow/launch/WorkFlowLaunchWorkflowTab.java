@@ -34,16 +34,12 @@
  */
 package org.preesm.ui.workflow.launch;
 
-import org.eclipse.debug.core.ILaunchConfiguration;
-import org.eclipse.debug.core.ILaunchConfigurationWorkingCopy;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Composite;
 import org.preesm.ui.PreesmUIPlugin;
 
-// TODO: Auto-generated Javadoc
 /**
- * Launch Tab for algorithm options. From this tab, an {@link AlgorithmConfiguration} is generated that feeds an
- * {@link AlgorithmRetriever} to create the input algorithm.
+ * Launch Tab for workflow options.
  *
  * @author mpelcat
  */
@@ -58,7 +54,7 @@ public class WorkFlowLaunchWorkflowTab extends AbstractWorkFlowLaunchTab {
   public void createControl(final Composite parent) {
 
     super.createControl(parent);
-    drawFileChooser("Workflow file:", WorkflowLaunchConfigurationDelegate.ATTR_WORKFLOW_FILE_NAME);
+    drawFileChooser("Workflow file:", WorkflowLaunchConfigurationDelegate.ATTR_WORKFLOW_FILE_NAME, "workflow");
   }
 
   /*
@@ -69,40 +65,6 @@ public class WorkFlowLaunchWorkflowTab extends AbstractWorkFlowLaunchTab {
   @Override
   public String getName() {
     return "Workflow";
-  }
-
-  /*
-   * (non-Javadoc)
-   *
-   * @see org.ietr.dftools.ui.workflow.launch.AbstractWorkFlowLaunchTab#initializeFrom(org.eclipse.debug.core.
-   * ILaunchConfiguration)
-   */
-  @Override
-  public void initializeFrom(final ILaunchConfiguration configuration) {
-    super.initializeFrom(configuration);
-    setDirty(false);
-  }
-
-  /*
-   * (non-Javadoc)
-   *
-   * @see org.ietr.dftools.ui.workflow.launch.AbstractWorkFlowLaunchTab#performApply(org.eclipse.debug.core.
-   * ILaunchConfigurationWorkingCopy)
-   */
-  @Override
-  public void performApply(final ILaunchConfigurationWorkingCopy configuration) {
-    super.performApply(configuration);
-  }
-
-  /*
-   * (non-Javadoc)
-   *
-   * @see org.ietr.dftools.ui.workflow.launch.AbstractWorkFlowLaunchTab#setDefaults(org.eclipse.debug.core.
-   * ILaunchConfigurationWorkingCopy)
-   */
-  @Override
-  public void setDefaults(final ILaunchConfigurationWorkingCopy configuration) {
-
   }
 
   /*

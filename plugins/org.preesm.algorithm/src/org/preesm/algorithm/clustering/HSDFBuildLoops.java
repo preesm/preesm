@@ -67,9 +67,9 @@ import org.preesm.algorithm.model.types.LongEdgePropertyType;
 import org.preesm.algorithm.model.visitors.SDF4JException;
 import org.preesm.commons.logger.PreesmLogger;
 import org.preesm.commons.math.MathFunctionsHelper;
+import org.preesm.model.scenario.PreesmScenario;
+import org.preesm.model.scenario.types.DataType;
 import org.preesm.model.slam.Design;
-import org.preesm.scenario.PreesmScenario;
-import org.preesm.scenario.types.DataType;
 import org.preesm.workflow.WorkflowException;
 
 /**

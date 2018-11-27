@@ -42,7 +42,6 @@ import org.eclipse.jface.viewers.IFilter;
 import org.ietr.dftools.graphiti.model.Graph;
 import org.ietr.dftools.graphiti.model.Vertex;
 
-// TODO: Auto-generated Javadoc
 /**
  * This class filters workflow task vertices to enable the correct property tabs.
  *

@@ -63,9 +63,9 @@ import org.eclipse.ui.forms.widgets.ExpandableComposite;
 import org.eclipse.ui.forms.widgets.ScrolledForm;
 import org.eclipse.ui.forms.widgets.Section;
 import org.preesm.algorithm.io.gml.InvalidModelException;
-import org.preesm.scenario.ParameterValue;
-import org.preesm.scenario.ParameterValue.ParameterType;
-import org.preesm.scenario.PreesmScenario;
+import org.preesm.model.scenario.ParameterValue;
+import org.preesm.model.scenario.ParameterValue.ParameterType;
+import org.preesm.model.scenario.PreesmScenario;
 import org.preesm.ui.scenario.editor.Messages;
 
 // TODO: Auto-generated Javadoc
