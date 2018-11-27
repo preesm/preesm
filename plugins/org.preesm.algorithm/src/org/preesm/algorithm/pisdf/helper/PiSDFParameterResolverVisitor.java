@@ -63,14 +63,21 @@ import org.preesm.model.pisdf.util.PiMMSwitch;
  * @author farresti
  *
  */
-public class PiMMResolverVisitor extends PiMMSwitch<Boolean> {
+public class PiSDFParameterResolverVisitor extends PiMMSwitch<Boolean> {
 
   /*
    * Map used to rapidly check if a parameter value has allready been resolved
    */
-  final Map<Parameter, Long> parameterValues;
+  private final Map<Parameter, Long> parameterValues;
 
-  public PiMMResolverVisitor(final Map<Parameter, Long> parameterValues) {
+  public PiSDFParameterResolverVisitor() {
+    this(new LinkedHashMap<>());
+  }
+
+  /**
+   * private constructor for initializing visit of children subgraphs
+   */
+  private PiSDFParameterResolverVisitor(final Map<Parameter, Long> parameterValues) {
     this.parameterValues = parameterValues;
   }
 
@@ -264,7 +271,7 @@ public class PiMMResolverVisitor extends PiMMSwitch<Boolean> {
 
     // Switch on child subgraphs
     for (final PiGraph g : graph.getChildrenGraphs()) {
-      final PiMMResolverVisitor piMMResolverVisitor = new PiMMResolverVisitor(this.parameterValues);
+      final PiSDFParameterResolverVisitor piMMResolverVisitor = new PiSDFParameterResolverVisitor(this.parameterValues);
       piMMResolverVisitor.doSwitch(g);
     }
 

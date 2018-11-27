@@ -42,7 +42,6 @@ package org.preesm.algorithm.pisdf.helper;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -390,7 +389,7 @@ public class PiMMHandler {
    * @ the PiMMHandlerException exception
    */
   public void resolveAllParameters() {
-    final PiMMResolverVisitor piMMResolverVisitor = new PiMMResolverVisitor(new LinkedHashMap<>());
+    final PiSDFParameterResolverVisitor piMMResolverVisitor = new PiSDFParameterResolverVisitor();
     piMMResolverVisitor.doSwitch(this.graph);
   }
 
