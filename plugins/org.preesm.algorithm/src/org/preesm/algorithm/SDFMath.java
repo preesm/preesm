@@ -162,7 +162,7 @@ public interface SDFMath {
     }
     int i = li - 1;
     while (i >= 0) {
-      LongFraction val = new LongFraction(0, 0);
+      LongFraction val = new LongFraction(0, 1);
       for (int k = i + 1; k < col; k++) {
         val = val.add(rationnalTopology[i][k].multiply(vrb.get(k)));
       }
