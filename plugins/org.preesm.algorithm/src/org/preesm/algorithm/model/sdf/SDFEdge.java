@@ -45,13 +45,17 @@ import org.preesm.algorithm.model.types.LongEdgePropertyType;
 import org.preesm.algorithm.model.types.NumericalEdgePropertyTypeFactory;
 import org.preesm.algorithm.model.types.StringEdgePropertyType;
 import org.preesm.algorithm.model.types.TextualEdgePropertyTypeFactory;
+import org.preesm.model.pisdf.PiGraph;
 
 /**
  * Class representing an SDFEdge which is an edge with production and consuming rates and length of delay specified.
  *
  * @author jpiat
  * @author kdesnos
+ * @deprecated SDF model is deprecated and subject to removal any time. Please design your transformations on
+ *             {@link PiGraph} instead.
  */
+@Deprecated
 public class SDFEdge extends AbstractEdge<SDFGraph, SDFAbstractVertex> {
 
   /** Property name for property edge_cons. */
