@@ -57,7 +57,7 @@ import org.preesm.model.pisdf.ISetter;
 import org.preesm.model.pisdf.InterfaceActor;
 import org.preesm.model.pisdf.Parameter;
 import org.preesm.model.pisdf.PiGraph;
-import org.preesm.model.pisdf.expression.JEPFastExpressionResolver;
+import org.preesm.model.pisdf.expression.StringExpressionFastEvaluator;
 import org.preesm.model.pisdf.util.PiMMSwitch;
 
 /**
@@ -147,7 +147,7 @@ public class PiSDFParameterResolverVisitor extends PiMMSwitch<Boolean> {
    */
   private void resolveExpression(final ExpressionHolder holder, final JEP jep) {
     final Expression expression = holder.getExpression();
-    final long value = new JEPFastExpressionResolver(jep).doSwitch(expression);
+    final long value = new StringExpressionFastEvaluator(jep).doSwitch(expression);
     holder.setExpression(value);
   }
 

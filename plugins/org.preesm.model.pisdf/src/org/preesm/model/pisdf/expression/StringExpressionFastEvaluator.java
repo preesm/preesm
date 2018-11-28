@@ -14,11 +14,11 @@ import org.preesm.model.pisdf.util.PiMMSwitch;
  * @author anmorvan
  *
  */
-public final class JEPFastExpressionResolver extends PiMMSwitch<Long> {
+public final class StringExpressionFastEvaluator extends PiMMSwitch<Long> {
 
   private final JEP jep;
 
-  public JEPFastExpressionResolver(final JEP jep) {
+  public StringExpressionFastEvaluator(final JEP jep) {
     this.jep = jep;
   }
 
