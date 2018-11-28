@@ -60,11 +60,7 @@ import org.preesm.model.pisdf.PiGraph;
  *
  * @author farresti
  */
-public class LCMBasedBRV extends PiBRV {
-
-  public LCMBasedBRV(final PiMMHandler piHandler) {
-    super(piHandler);
-  }
+class LCMBasedBRV extends PiBRV {
 
   /*
    * (non-Javadoc)
@@ -74,13 +70,13 @@ public class LCMBasedBRV extends PiBRV {
   @Override
   public Map<AbstractVertex, Long> computeBRV(final PiGraph piGraph) {
     Map<AbstractVertex, Long> graphBRV = new LinkedHashMap<>();
-    if (this.piHandler.getReferenceGraph() == null) {
+    if (piGraph == null) {
       final String msg = "cannot compute BRV for null graph.";
       throw new PreesmException(msg);
     }
 
     // Get all sub graph composing the current graph
-    final List<List<AbstractActor>> subgraphsWOInterfaces = this.piHandler.getAllConnectedComponentsWOInterfaces();
+    final List<List<AbstractActor>> subgraphsWOInterfaces = PiMMHandler.getAllConnectedComponentsWOInterfaces(piGraph);
 
     for (final List<AbstractActor> subgraph : subgraphsWOInterfaces) {
       final HashMap<String, LongFraction> reps = new HashMap<>();
@@ -90,7 +86,7 @@ public class LCMBasedBRV extends PiBRV {
       }
 
       // Construct the list of Edges without interfaces
-      final List<Fifo> listFifos = this.piHandler.getFifosFromCC(subgraph);
+      final List<Fifo> listFifos = PiMMHandler.getFifosFromCC(subgraph);
       // We have only one actor connected to Interface Actor
       // The graph is consistent
       // We just have to update the BRV
@@ -119,7 +115,7 @@ public class LCMBasedBRV extends PiBRV {
         checkConsistency(subgraph, fifoProperties, graphBRV);
       }
       // Update BRV values with interfaces
-      updateRVWithInterfaces(this.piHandler.getReferenceGraph(), subgraph, graphBRV);
+      updateRVWithInterfaces(piGraph, subgraph, graphBRV);
     }
 
     // Recursively compute BRV of sub-graphs
@@ -141,7 +137,7 @@ public class LCMBasedBRV extends PiBRV {
    */
   private void checkConsistency(final List<AbstractActor> subgraph, final Map<Fifo, List<Long>> fifoProperties,
       final Map<AbstractVertex, Long> graphBRV) {
-    for (final Fifo f : this.piHandler.getFifosFromCC(subgraph)) {
+    for (final Fifo f : PiMMHandler.getFifosFromCC(subgraph)) {
       final AbstractActor sourceActor = f.getSourcePort().getContainingActor();
       final AbstractActor targetActor = f.getTargetPort().getContainingActor();
       if ((targetActor instanceof InterfaceActor) || (sourceActor instanceof InterfaceActor)) {

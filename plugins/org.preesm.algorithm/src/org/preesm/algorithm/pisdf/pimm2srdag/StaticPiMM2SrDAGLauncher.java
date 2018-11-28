@@ -46,15 +46,12 @@ import org.preesm.algorithm.model.dag.DAGEdge;
 import org.preesm.algorithm.model.dag.DAGVertex;
 import org.preesm.algorithm.model.types.LongEdgePropertyType;
 import org.preesm.algorithm.pisdf.helper.BRVMethod;
-import org.preesm.algorithm.pisdf.helper.LCMBasedBRV;
 import org.preesm.algorithm.pisdf.helper.PiBRV;
 import org.preesm.algorithm.pisdf.helper.PiMMHandler;
-import org.preesm.algorithm.pisdf.helper.TopologyBasedBRV;
 import org.preesm.algorithm.pisdf.pimm2srdag.visitor.StaticPiMM2ASrPiMMVisitor;
 import org.preesm.algorithm.pisdf.pimm2srdag.visitor.StaticPiMM2MapperDAGVisitor;
 import org.preesm.algorithm.pisdf.pimmoptims.BroadcastRoundBufferOptimization;
 import org.preesm.algorithm.pisdf.pimmoptims.ForkJoinOptimization;
-import org.preesm.commons.exceptions.PreesmException;
 import org.preesm.commons.logger.PreesmLogger;
 import org.preesm.model.pisdf.AbstractVertex;
 import org.preesm.model.pisdf.Parameter;
@@ -73,9 +70,6 @@ public class StaticPiMM2SrDAGLauncher extends PiMMSwitch<Boolean> {
   /** The graph. */
   private final PiGraph graph;
 
-  /** The graph. */
-  private final PiMMHandler piHandler;
-
   /** Map from Pi actors to their Repetition Vector value. */
   protected Map<AbstractVertex, Long> graphBRV = new LinkedHashMap<>();
 
@@ -93,7 +87,6 @@ public class StaticPiMM2SrDAGLauncher extends PiMMSwitch<Boolean> {
   public StaticPiMM2SrDAGLauncher(final PreesmScenario scenario, final PiGraph graph) {
     this.scenario = scenario;
     this.graph = graph;
-    this.piHandler = new PiMMHandler(graph);
   }
 
   /**
@@ -104,11 +97,11 @@ public class StaticPiMM2SrDAGLauncher extends PiMMSwitch<Boolean> {
   public PiGraph launch(final BRVMethod method) {
     // 1. First we resolve all parameters.
     // It must be done first because, when removing persistence, local parameters have to be known at upper level
-    this.piHandler.resolveAllParameters();
+    PiMMHandler.resolveAllParameters(this.graph);
     // 2. We perform the delay transformation step that deals with persistence
-    this.piHandler.removePersistence();
+    PiMMHandler.removePersistence(this.graph);
     // 3. Compute BRV following the chosen method
-    computeBRV(method);
+    this.graphBRV = PiBRV.compute(graph, method);
     // 4. Print the RV values
     // 4.5 Check periods with BRV
     PiMMHandler.checkPeriodicity(this.graphBRV);
@@ -136,27 +129,6 @@ public class StaticPiMM2SrDAGLauncher extends PiMMSwitch<Boolean> {
     brRbOptimization.optimize(acyclicSRPiMM);
 
     return acyclicSRPiMM;
-  }
-
-  /**
-   * Computes the BRV of a PiSDF graph using either LCM method or Topology Matrix.
-   *
-   * @param method
-   *          the method to use for computing the BRV
-   */
-  private void computeBRV(final BRVMethod method) {
-    final PiBRV piBRVAlgo;
-    switch (method) {
-      case LCM:
-        piBRVAlgo = new LCMBasedBRV(this.piHandler);
-        break;
-      case TOPOLOGY:
-        piBRVAlgo = new TopologyBasedBRV(this.piHandler);
-        break;
-      default:
-        throw new PreesmException("unexpected value for BRV method: [" + method + "]");
-    }
-    this.graphBRV = piBRVAlgo.computeBRV(this.piHandler.getReferenceGraph());
   }
 
   /**

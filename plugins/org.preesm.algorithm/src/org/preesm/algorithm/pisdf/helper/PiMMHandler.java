@@ -74,11 +74,6 @@ import org.preesm.model.pisdf.statictools.PiSDFParameterResolverVisitor;
  *
  */
 public class PiMMHandler {
-  /** The graph. */
-  private PiGraph graph;
-
-  /** List of children graph */
-  private List<PiMMHandler> childrenList;
 
   /**
    * List of connectedComponents contained in a graph
@@ -100,66 +95,6 @@ public class PiMMHandler {
    * |______________________________________|
    *  }
    */
-  private List<List<AbstractActor>> listConnectedComponents;
-
-  /** List of connectedComponents without interface actors contained in the PiGraph graph */
-  private List<List<AbstractActor>> listCCWOInterfaces;
-
-  private static void generateChildren(final PiGraph graph, final List<PiMMHandler> childrenList) {
-    for (final PiGraph g : graph.getChildrenGraphs()) {
-      childrenList.add(new PiMMHandler(g));
-    }
-  }
-
-  /**
-   * Instantiates a new PiMMHAndler object
-   *
-   * @param graph
-   *          graph on which we are working
-   */
-  public PiMMHandler(final PiGraph graph) {
-    this.graph = graph;
-    this.childrenList = new ArrayList<>();
-    this.listConnectedComponents = new ArrayList<>();
-    this.listCCWOInterfaces = new ArrayList<>();
-    PiMMHandler.generateChildren(this.graph, this.childrenList);
-  }
-
-  /*
-   * Void constructor to access the PiMMHandlerException
-   */
-  public PiMMHandler() {
-
-  }
-
-  /**
-   *
-   * @return associated PiGraph
-   */
-  public PiGraph getReferenceGraph() {
-    return this.graph;
-  }
-
-  /**
-   *
-   * @return List of children PiMMHandler (read only access)
-   */
-  public List<PiMMHandler> getChildrenGraphsHandler() {
-    return Collections.unmodifiableList(this.childrenList);
-  }
-
-  /**
-   * Add an abstract actor to the associated graph and updates all properties of the handler.
-   *
-   * @param actor
-   *          the actor to add
-   */
-  public void addAbstractActor(final AbstractActor actor) {
-    // Special case of delay
-    this.graph.addActor(actor);
-    // TODO
-    // Update properties
-  }
 
   /**
    * Test if a given CC contains an interface actor or not.
@@ -192,7 +127,7 @@ public class PiMMHandler {
    * @return all FIFOs contained in the connectedComponent, null if the connectedComponent is empty @ the
    *         PiMMHandlerException exception
    */
-  public List<Fifo> getFifosFromCC(final List<AbstractActor> cc) {
+  public static List<Fifo> getFifosFromCC(final List<AbstractActor> cc) {
     if (cc.isEmpty()) {
       PreesmLogger.getLogger().log(Level.INFO, "No FIFOs to extrac, empty connectedComponent.");
       return Collections.emptyList();
@@ -215,7 +150,7 @@ public class PiMMHandler {
    * @param fifos
    *          list of Fifo to update @ the PiMMHandlerException exception
    */
-  private void extractFifosFromActor(final boolean containsInterfaceActors, final AbstractActor actor,
+  private static void extractFifosFromActor(final boolean containsInterfaceActors, final AbstractActor actor,
       final List<Fifo> fifos) {
     for (final DataPort port : actor.getAllDataPorts()) {
       final Fifo fifo = port.getFifo();
@@ -243,7 +178,7 @@ public class PiMMHandler {
    * @return all FIFOs contained in the connectedComponent, null if the subgraph is empty @ the PiMMHandlerException
    *         exception
    */
-  public List<Fifo> getFifosFromCCWOSelfLoop(final List<AbstractActor> cc) {
+  public static List<Fifo> getFifosFromCCWOSelfLoop(final List<AbstractActor> cc) {
     final List<Fifo> fifos = getFifosFromCC(cc);
     fifos.removeIf(fifo -> (fifo.getSourcePort().getContainingActor() == fifo.getTargetPort().getContainingActor()));
     return fifos;
@@ -259,11 +194,8 @@ public class PiMMHandler {
    *
    * @return all CCs contained in the reference graph (read only access) @ the PiMMHandlerException exception
    */
-  public List<List<AbstractActor>> getAllConnectedComponents() {
-    if (this.listConnectedComponents.isEmpty()) {
-      PiMMHandler.ccsFetcher(this.graph, this.listConnectedComponents);
-    }
-    return Collections.unmodifiableList(this.listConnectedComponents);
+  public static List<List<AbstractActor>> getAllConnectedComponents(final PiGraph graph) {
+    return PiMMHandler.ccsFetcher(graph);
   }
 
   /**
@@ -276,16 +208,11 @@ public class PiMMHandler {
    *
    * @return all CCs contained in the associated graph (read only access) @ the PiMMHandlerException exception
    */
-  public List<List<AbstractActor>> getAllConnectedComponentsWOInterfaces() {
+  public static List<List<AbstractActor>> getAllConnectedComponentsWOInterfaces(final PiGraph graph) {
     // First fetch all subgraphs
-    if (this.listConnectedComponents.isEmpty()) {
-      PiMMHandler.ccsFetcher(this.graph, this.listConnectedComponents);
-    }
+    final List<List<AbstractActor>> ccsFetcher = PiMMHandler.ccsFetcher(graph);
     // Now remove interfaces from subgraphs
-    if (this.listCCWOInterfaces.isEmpty()) {
-      PiMMHandler.ccsWOInterfacesFetcher(this.listConnectedComponents, this.listCCWOInterfaces);
-    }
-    return Collections.unmodifiableList(this.listCCWOInterfaces);
+    return PiMMHandler.ccsWOInterfacesFetcher(ccsFetcher);
   }
 
   /**
@@ -297,11 +224,8 @@ public class PiMMHandler {
    * @param listCCsWOInterfaces
    *          list of subgraphs without interface actors to be updated
    */
-  private static void ccsWOInterfacesFetcher(final List<List<AbstractActor>> listCCs,
-      final List<List<AbstractActor>> listCCsWOInterfaces) {
-    if (listCCs.isEmpty()) {
-      return;
-    }
+  private static List<List<AbstractActor>> ccsWOInterfacesFetcher(final List<List<AbstractActor>> listCCs) {
+    final List<List<AbstractActor>> listCCsWOInterfaces = new ArrayList<>();
     for (final List<AbstractActor> cc : listCCs) {
       final List<AbstractActor> ccWOInterfaces = new ArrayList<>(cc);
       ccWOInterfaces.removeIf(actor -> actor instanceof InterfaceActor);
@@ -309,6 +233,7 @@ public class PiMMHandler {
         listCCsWOInterfaces.add(ccWOInterfaces);
       }
     }
+    return listCCsWOInterfaces;
   }
 
   /**
@@ -319,8 +244,9 @@ public class PiMMHandler {
    * @param listCCs
    *          list of subgraphs to be updated @ the PiMMHandlerException exception
    */
-  private static void ccsFetcher(final PiGraph graph, final List<List<AbstractActor>> listCCs) {
+  private static List<List<AbstractActor>> ccsFetcher(final PiGraph graph) {
     // Fetch all actors without interfaces in the PiGraph
+    final List<List<AbstractActor>> listCCs = new ArrayList<>();
     final List<AbstractActor> fullActorList = new ArrayList<>();
     fullActorList.addAll(graph.getActors());
     for (final AbstractActor actor : fullActorList) {
@@ -342,6 +268,7 @@ public class PiMMHandler {
         listCCs.add(cc);
       }
     }
+    return listCCs;
   }
 
   /**
@@ -384,9 +311,9 @@ public class PiMMHandler {
    *
    * @ the PiMMHandlerException exception
    */
-  public void resolveAllParameters() {
+  public static void resolveAllParameters(final PiGraph piGraph) {
     final PiSDFParameterResolverVisitor piMMResolverVisitor = new PiSDFParameterResolverVisitor();
-    piMMResolverVisitor.doSwitch(this.graph);
+    piMMResolverVisitor.doSwitch(piGraph);
   }
 
   /**
@@ -394,8 +321,8 @@ public class PiMMHandler {
    *
    * @ the PiMMHandlerException exception
    */
-  public void removePersistence() {
-    for (final Fifo fifo : this.graph.getFifosWithDelay()) {
+  public static void removePersistence(final PiGraph piGraph) {
+    for (final Fifo fifo : piGraph.getFifosWithDelay()) {
       final Delay delay = fifo.getDelay();
       // 0. Rename all the data ports of delay actors
       delay.getActor().getDataInputPort().setName(fifo.getTargetPort().getName());
@@ -406,12 +333,12 @@ public class PiMMHandler {
       }
     }
     // 2. We deal with hierarchical stuff
-    for (final PiGraph g : graph.getChildrenGraphs()) {
+    for (final PiGraph g : piGraph.getChildrenGraphs()) {
       recursiveRemovePersistence(g);
     }
   }
 
-  private void recursiveRemovePersistence(final PiGraph graph) {
+  private static void recursiveRemovePersistence(final PiGraph graph) {
     // We assume that if the user want to make a delay persist across multiple levels,
     // he did it explicitly.
     for (final Fifo fifo : graph.getFifosWithDelay()) {
@@ -463,7 +390,7 @@ public class PiMMHandler {
    *          the delay
    * @return newly created delay in the upper graph
    */
-  private Delay replaceLocalDelay(final PiGraph graph, final Delay delay) {
+  private static Delay replaceLocalDelay(final PiGraph graph, final Delay delay) {
     final Fifo containingFifo = delay.getContainingFifo();
     final String type = containingFifo.getType();
     final String delayExpression = delay.getSizeExpression().getExpressionAsString();

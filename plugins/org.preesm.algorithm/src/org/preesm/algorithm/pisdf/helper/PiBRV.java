@@ -41,7 +41,9 @@ package org.preesm.algorithm.pisdf.helper;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Level;
 import org.preesm.commons.exceptions.PreesmException;
+import org.preesm.commons.logger.PreesmLogger;
 import org.preesm.model.pisdf.AbstractActor;
 import org.preesm.model.pisdf.AbstractVertex;
 import org.preesm.model.pisdf.DataInputInterface;
@@ -58,30 +60,38 @@ import org.preesm.model.pisdf.PiGraph;
  *
  */
 public abstract class PiBRV {
-  /*
-   * Repetition Vector value fully linked to an AbstractVertex
-   */
-  /** The graph handler structure. */
-  protected PiMMHandler piHandler;
-
-  /**
-   * Instantiates a new PiBRV object
-   *
-   * @param piHandler
-   *          PiSDF graph handler on which we are working
-   */
-  public PiBRV(final PiMMHandler piHandler) {
-    this.piHandler = piHandler;
-  }
 
   /**
    * Compute the BRV of the associated graph given a method. This also checks for consistency at the same time.
    *
-   * @return true if no error were found, false else
-   * @throws PiMMHelperException
-   *           the PiMMHandlerException exception
+   * @return the BRV as a Map that associates a long value (the repetition value) for every AbstractVertex
    */
-  public abstract Map<AbstractVertex, Long> computeBRV(final PiGraph piGraph);
+  public static final Map<AbstractVertex, Long> compute(final PiGraph piGraph, final BRVMethod method) {
+    final PiBRV piBRVAlgo;
+    switch (method) {
+      case LCM:
+        piBRVAlgo = new LCMBasedBRV();
+        break;
+      case TOPOLOGY:
+        piBRVAlgo = new TopologyBasedBRV();
+        break;
+      default:
+        throw new PreesmException("unexpected value for BRV method: [" + method + "]");
+    }
+    return piBRVAlgo.computeBRV(piGraph);
+  }
+
+  /**
+   * Print the BRV values of every vertex. For debug purposes.
+   */
+  public static final void printRV(final Map<AbstractVertex, Long> brv) {
+    for (final Map.Entry<AbstractVertex, Long> rv : brv.entrySet()) {
+      final String msg = rv.getKey().getVertexPath() + " x" + Long.toString(rv.getValue());
+      PreesmLogger.getLogger().log(Level.INFO, msg);
+    }
+  }
+
+  protected abstract Map<AbstractVertex, Long> computeBRV(final PiGraph piGraph);
 
   protected Map<AbstractVertex, Long> computeChildrenBRV(final PiGraph parentGraph) {
     final Map<AbstractVertex, Long> resultBrv = new LinkedHashMap<>();

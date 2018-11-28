@@ -58,24 +58,20 @@ import org.preesm.model.pisdf.PiGraph;
  *
  * @author farresti
  */
-public class TopologyBasedBRV extends PiBRV {
-
-  public TopologyBasedBRV(final PiMMHandler piHandler) {
-    super(piHandler);
-  }
+class TopologyBasedBRV extends PiBRV {
 
   @Override
   public Map<AbstractVertex, Long> computeBRV(final PiGraph piGraph) {
     Map<AbstractVertex, Long> graphBRV = new LinkedHashMap<>();
-    if (this.piHandler.getReferenceGraph() == null) {
+    if (piGraph == null) {
       final String msg = "cannot compute BRV for null graph.";
       throw new PreesmException(msg);
     }
     // Get all sub graph composing the current graph
-    final List<List<AbstractActor>> subgraphsWOInterfaces = this.piHandler.getAllConnectedComponentsWOInterfaces();
+    final List<List<AbstractActor>> subgraphsWOInterfaces = PiMMHandler.getAllConnectedComponentsWOInterfaces(piGraph);
     for (final List<AbstractActor> subgraph : subgraphsWOInterfaces) {
       // Construct the list of Edges without interfaces
-      final List<Fifo> listFifo = this.piHandler.getFifosFromCCWOSelfLoop(subgraph);
+      final List<Fifo> listFifo = PiMMHandler.getFifosFromCCWOSelfLoop(subgraph);
 
       // Get the topology matrix
       if (subgraph.isEmpty()) {
@@ -102,7 +98,7 @@ public class TopologyBasedBRV extends PiBRV {
       }
 
       // Update BRV values with interfaces
-      updateRVWithInterfaces(this.piHandler.getReferenceGraph(), subgraph, graphBRV);
+      updateRVWithInterfaces(piGraph, subgraph, graphBRV);
     }
     computeChildrenBRV(piGraph);
     return graphBRV;
