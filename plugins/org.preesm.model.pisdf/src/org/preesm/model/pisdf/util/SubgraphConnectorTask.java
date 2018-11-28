@@ -33,17 +33,13 @@
  * The fact that you are presently reading this means that you have had
  * knowledge of the CeCILL license and that you accept its terms.
  */
-package org.preesm.algorithm.pisdf.checker.task;
+package org.preesm.model.pisdf.util;
 
 import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.Map;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import org.eclipse.core.runtime.IProgressMonitor;
-import org.preesm.algorithm.pisdf.checker.PiMMAlgorithmChecker;
 import org.preesm.commons.exceptions.PreesmException;
-import org.preesm.commons.logger.PreesmLogger;
 import org.preesm.model.pisdf.PiGraph;
 import org.preesm.workflow.elements.Workflow;
 import org.preesm.workflow.implement.AbstractTaskImplementation;
@@ -51,15 +47,9 @@ import org.preesm.workflow.implement.AbstractWorkflowNodeImplementation;
 
 // TODO: Auto-generated Javadoc
 /**
- * Head class to launch check on a PiGraph.
- *
- * @author cguy
+ * The Class SubgraphConnectorTask.
  */
-public class PiMMAlgorithmCheckerTask extends AbstractTaskImplementation {
-
-  /** The logger. */
-  // Rem: Logger is used to display messages in the console
-  protected Logger logger = PreesmLogger.getLogger();
+public class SubgraphConnectorTask extends AbstractTaskImplementation {
 
   /*
    * (non-Javadoc)
@@ -71,24 +61,16 @@ public class PiMMAlgorithmCheckerTask extends AbstractTaskImplementation {
   public Map<String, Object> execute(final Map<String, Object> inputs, final Map<String, String> parameters,
       final IProgressMonitor monitor, final String nodeName, final Workflow workflow) throws PreesmException {
 
-    // Get the PiGraph to check
-    final PiGraph graph = (PiGraph) inputs.get(AbstractWorkflowNodeImplementation.KEY_PI_GRAPH);
-    // Check the graph and display corresponding messages
-    final PiMMAlgorithmChecker checker = new PiMMAlgorithmChecker();
-    if (checker.checkGraph(graph)) {
-      this.logger.log(Level.FINE, checker.getOkMsg().toString());
-    } else {
-      if (checker.isErrors()) {
-        this.logger.log(Level.SEVERE, checker.getErrorMsg().toString());
-      }
-      if (checker.isWarnings()) {
-        this.logger.log(Level.WARNING, checker.getWarningMsg().toString());
-      }
-    }
+    // Get the input
+    final PiGraph pg = (PiGraph) inputs.get(AbstractWorkflowNodeImplementation.KEY_PI_GRAPH);
 
-    // Return the checked graph
+    // Visit it with the subgraph connector
+    final SubgraphConnectorVisitor connector = new SubgraphConnectorVisitor();
+    connector.connectSubgraphs(pg);
+
+    // Return pg
     final Map<String, Object> outputs = new LinkedHashMap<>();
-    outputs.put(AbstractWorkflowNodeImplementation.KEY_PI_GRAPH, graph);
+    outputs.put(AbstractWorkflowNodeImplementation.KEY_PI_GRAPH, pg);
     return outputs;
   }
 
@@ -109,7 +91,7 @@ public class PiMMAlgorithmCheckerTask extends AbstractTaskImplementation {
    */
   @Override
   public String monitorMessage() {
-    return "Starting checking of PiGraph";
+    return "Connecting subgraphs";
   }
 
 }

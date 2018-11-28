@@ -37,7 +37,7 @@
 /**
  *
  */
-package org.preesm.algorithm.pisdf.pimm2flat.visitor;
+package org.preesm.algorithm.pisdf.pimm2flat;
 
 import java.util.ArrayList;
 import java.util.LinkedHashMap;

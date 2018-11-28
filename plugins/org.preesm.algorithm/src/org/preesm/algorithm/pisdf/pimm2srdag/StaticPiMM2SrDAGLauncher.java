@@ -45,8 +45,6 @@ import org.preesm.algorithm.mapper.model.MapperDAG;
 import org.preesm.algorithm.model.dag.DAGEdge;
 import org.preesm.algorithm.model.dag.DAGVertex;
 import org.preesm.algorithm.model.types.LongEdgePropertyType;
-import org.preesm.algorithm.pisdf.pimm2srdag.visitor.StaticPiMM2ASrPiMMVisitor;
-import org.preesm.algorithm.pisdf.pimm2srdag.visitor.StaticPiMM2MapperDAGVisitor;
 import org.preesm.algorithm.pisdf.pimmoptims.BroadcastRoundBufferOptimization;
 import org.preesm.algorithm.pisdf.pimmoptims.ForkJoinOptimization;
 import org.preesm.commons.logger.PreesmLogger;

@@ -40,8 +40,6 @@ package org.preesm.algorithm.pisdf.checker;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import org.eclipse.emf.ecore.EObject;
-import org.preesm.algorithm.pisdf.checker.structure.FifoChecker;
-import org.preesm.algorithm.pisdf.checker.structure.RefinementChecker;
 import org.preesm.model.pisdf.AbstractVertex;
 import org.preesm.model.pisdf.Actor;
 import org.preesm.model.pisdf.Fifo;

@@ -38,7 +38,7 @@
 /**
  *
  */
-package org.preesm.algorithm.pisdf.pimm2srdag.visitor;
+package org.preesm.algorithm.pisdf.pimm2srdag;
 
 import java.util.logging.Level;
 import org.apache.commons.lang3.time.StopWatch;

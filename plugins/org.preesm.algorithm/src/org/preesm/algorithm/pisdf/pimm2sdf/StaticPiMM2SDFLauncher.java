@@ -41,7 +41,6 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Set;
 import org.preesm.algorithm.model.sdf.SDFGraph;
-import org.preesm.algorithm.pisdf.pimm2sdf.visitor.StaticPiMM2SDFVisitor;
 import org.preesm.commons.exceptions.PreesmException;
 import org.preesm.model.pisdf.Parameter;
 import org.preesm.model.pisdf.PiGraph;
