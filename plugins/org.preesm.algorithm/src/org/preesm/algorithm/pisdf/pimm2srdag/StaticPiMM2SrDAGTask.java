@@ -53,8 +53,13 @@ import org.preesm.algorithm.model.types.LongEdgePropertyType;
 import org.preesm.algorithm.model.visitors.VisitorOutput;
 import org.preesm.commons.exceptions.PreesmException;
 import org.preesm.commons.logger.PreesmLogger;
+import org.preesm.model.pisdf.AbstractVertex;
 import org.preesm.model.pisdf.PiGraph;
 import org.preesm.model.pisdf.brv.BRVMethod;
+import org.preesm.model.pisdf.brv.PiBRV;
+import org.preesm.model.pisdf.statictools.PiMMHelper;
+import org.preesm.model.pisdf.statictools.optims.BroadcastRoundBufferOptimization;
+import org.preesm.model.pisdf.statictools.optims.ForkJoinOptimization;
 import org.preesm.model.scenario.PreesmScenario;
 import org.preesm.model.slam.Design;
 import org.preesm.workflow.elements.Workflow;
@@ -76,10 +81,7 @@ public class StaticPiMM2SrDAGTask extends AbstractTaskImplementation {
     final PreesmScenario scenario = (PreesmScenario) inputs.get(AbstractWorkflowNodeImplementation.KEY_SCENARIO);
     final PiGraph graph = (PiGraph) inputs.get(AbstractWorkflowNodeImplementation.KEY_PI_GRAPH);
 
-    final StaticPiMM2SrDAGLauncher launcher = new StaticPiMM2SrDAGLauncher(scenario, graph);
-
     final MapperDAG result;
-    final PiGraph resultPi;
     final Logger logger = PreesmLogger.getLogger();
     VisitorOutput.setLogger(logger);
     logger.log(Level.INFO, "Computing Repetition Vector for graph [" + graph.getName() + "]");
@@ -93,7 +95,7 @@ public class StaticPiMM2SrDAGTask extends AbstractTaskImplementation {
     }
 
     // Convert the PiGraph to the Single-Rate Directed Acyclic Graph
-    resultPi = launcher.launch(method);
+    final PiGraph resultPi = launch(scenario, graph, method);
 
     result = covnertToMapperDAG(resultPi, scenario);
 
@@ -179,4 +181,46 @@ public class StaticPiMM2SrDAGTask extends AbstractTaskImplementation {
     }
   }
 
+  /**
+   * Precondition: All.
+   *
+   * @return the SDFGraph obtained by visiting graph
+   */
+  public PiGraph launch(PreesmScenario scenario, PiGraph graph, final BRVMethod method) {
+    // 1. First we resolve all parameters.
+    // It must be done first because, when removing persistence, local parameters have to be known at upper level
+    PiMMHelper.resolveAllParameters(graph);
+    // 2. We perform the delay transformation step that deals with persistence
+    PiMMHelper.removePersistence(graph);
+    // 3. Compute BRV following the chosen method
+    final Map<AbstractVertex, Long> graphBRV = PiBRV.compute(graph, method);
+    // 4. Print the RV values
+    // 4.5 Check periods with BRV
+    PiMMHelper.checkPeriodicity(graphBRV);
+    // 5. Convert to SR-DAG
+    return convert2SRDAG(scenario, graph, graphBRV);
+  }
+
+  /**
+   * Convert the PiSDF graph to SRDAG
+   *
+   * @param graphBRV
+   *
+   * @return the resulting SR DAG
+   */
+  private PiGraph convert2SRDAG(PreesmScenario scenario, PiGraph graph, Map<AbstractVertex, Long> graphBRV) {
+
+    // 1- Convert to acyclic single rate
+    final StaticPiMM2ASrPiMMVisitor visitorPiMM2ASRPiMM = new StaticPiMM2ASrPiMMVisitor(graph, graphBRV, scenario);
+    visitorPiMM2ASRPiMM.doSwitch(graph);
+    final PiGraph acyclicSRPiMM = visitorPiMM2ASRPiMM.getResult();
+
+    // 2- do some optimization on the graph
+    final ForkJoinOptimization forkJoinOptimization = new ForkJoinOptimization();
+    forkJoinOptimization.optimize(acyclicSRPiMM);
+    final BroadcastRoundBufferOptimization brRbOptimization = new BroadcastRoundBufferOptimization();
+    brRbOptimization.optimize(acyclicSRPiMM);
+
+    return acyclicSRPiMM;
+  }
 }
