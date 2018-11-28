@@ -36,6 +36,7 @@
  */
 package org.preesm.model.pisdf.expression;
 
+import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -49,37 +50,68 @@ import org.preesm.model.pisdf.Delay;
 import org.preesm.model.pisdf.DelayActor;
 import org.preesm.model.pisdf.Expression;
 import org.preesm.model.pisdf.ExpressionHolder;
+import org.preesm.model.pisdf.ExpressionProxy;
 import org.preesm.model.pisdf.InterfaceActor;
+import org.preesm.model.pisdf.LongExpression;
 import org.preesm.model.pisdf.Parameter;
 import org.preesm.model.pisdf.PeriodicElement;
 import org.preesm.model.pisdf.StringExpression;
+import org.preesm.model.pisdf.util.PiMMSwitch;
 
 /**
  *
  * @author anmorvan
  *
  */
-public class StringExpressionEvaluator {
+public class ExpressionEvaluator extends PiMMSwitch<Long> {
 
-  private StringExpressionEvaluator() {
-    // use static methods only
+  private final Map<String, ? extends Number> parameterValues;
+
+  public ExpressionEvaluator() {
+    this(Collections.emptyMap());
   }
 
   /**
-   * Take an {@link Expression}, use its eContainers to lookup parameters and finally evaluates the expression to a long
-   * value representing the result
-   *
+   * Initialize the Expression evaluator with pre-computed parameter values. This can speedup evaluation as there will
+   * be no parameter value lookup.
    */
-  public static final long evaluate(final StringExpression expression) {
+  public ExpressionEvaluator(final Map<String, ? extends Number> parameterValues) {
+    this.parameterValues = parameterValues;
+  }
+
+  @Override
+  public Long caseLongExpression(final LongExpression longExpr) {
+    return longExpr.getValue();
+  }
+
+  @Override
+  public Long caseExpressionProxy(final ExpressionProxy proxyExpr) {
+    return doSwitch(proxyExpr.getProxy().getExpression());
+  }
+
+  @Override
+  public Long caseStringExpression(final StringExpression stringExpr) {
+    final String expressionString = stringExpr.getExpressionString();
     try {
-      return Long.parseLong(expression.getExpressionString());
+      // try to parse a long value stored as String
+      // NumberFormatException is thrown if the expression String does not represent a long value
+      return Long.parseLong(expressionString);
     } catch (final NumberFormatException e) {
-      final Map<String, Number> addInputParameterValues = StringExpressionEvaluator.addInputParameterValues(expression);
-      return JEPWrapper.evaluate(expression.getExpressionAsString(), addInputParameterValues);
+      try {
+        // try to evaluate the expression without collecting variables, but only the one given in the parameterValue
+        // Map. ExpressionEvaluationException is thrown if the evaluation encounter unknown parameters.
+        // This can speedup even with empty Map in case expression only involves constant values.
+        return JEPWrapper.evaluate(expressionString, this.parameterValues);
+      } catch (final ExpressionEvaluationException ex) {
+        // gather Expression parameters and evaluate the expression.
+        // ExpressionEvaluationException will still be thrown if something goes wrong.
+        final Map<String, Number> addInputParameterValues = ExpressionEvaluator.lookupParameterValues(stringExpr);
+        return JEPWrapper.evaluate(expressionString, addInputParameterValues);
+      }
     }
   }
 
-  private static Map<String, Number> addInputParameterValues(final Expression expression) {
+  private static Map<String, Number> lookupParameterValues(final Expression expression) {
     final Map<String, Number> result = new LinkedHashMap<>();
     final ExpressionHolder holder = expression.getHolder();
     if (holder != null) {

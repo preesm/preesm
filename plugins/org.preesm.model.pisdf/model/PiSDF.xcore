@@ -27,7 +27,7 @@ package org.preesm.model.pisdf
 import java.util.Optional
 import org.preesm.commons.exceptions.PreesmException
 import org.preesm.model.pisdf.util.RefinementResolver
-import org.preesm.model.pisdf.expression.StringExpressionEvaluator
+import org.preesm.model.pisdf.expression.ExpressionEvaluator
 import org.preesm.model.pisdf.factory.PiMMUserFactory
 
 type IPath wraps org.eclipse.core.runtime.IPath
@@ -94,7 +94,7 @@ class StringExpression extends Expression {
 		return getExpressionString()
 	}
 	op long evaluate() {
-		return StringExpressionEvaluator.evaluate(this)
+		return new ExpressionEvaluator().doSwitch(this)
 	}
 }
 

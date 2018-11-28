@@ -56,7 +56,7 @@ import org.preesm.model.pisdf.ISetter;
 import org.preesm.model.pisdf.InterfaceActor;
 import org.preesm.model.pisdf.Parameter;
 import org.preesm.model.pisdf.PiGraph;
-import org.preesm.model.pisdf.expression.StringExpressionFastEvaluator;
+import org.preesm.model.pisdf.expression.ExpressionEvaluator;
 import org.preesm.model.pisdf.util.PiMMSwitch;
 
 /**
@@ -134,7 +134,7 @@ public class PiSDFParameterResolverVisitor extends PiMMSwitch<Boolean> {
    */
   private void resolveExpression(final ExpressionHolder holder, final Map<String, Long> paramValues) {
     final Expression expression = holder.getExpression();
-    final long value = new StringExpressionFastEvaluator(paramValues).doSwitch(expression);
+    final long value = new ExpressionEvaluator(paramValues).doSwitch(expression);
     holder.setExpression(value);
   }
 
