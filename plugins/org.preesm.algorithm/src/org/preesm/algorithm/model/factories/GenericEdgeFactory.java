@@ -1,10 +1,9 @@
 /**
- * Copyright or © or Copr. IETR/INSA - Rennes (2008 - 2018) :
+ * Copyright or © or Copr. IETR/INSA - Rennes (2011 - 2018) :
  *
  * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017 - 2018)
  * Clément Guy <clement.guy@insa-rennes.fr> (2014)
- * Matthieu Wipliez <matthieu.wipliez@insa-rennes.fr> (2008)
- * Maxime Pelcat <maxime.pelcat@insa-rennes.fr> (2008 - 2012)
+ * Maxime Pelcat <maxime.pelcat@insa-rennes.fr> (2011)
  *
  * This software is a computer program whose purpose is to help prototyping
  * parallel applications using dataflow formalism.
@@ -35,49 +34,25 @@
  * The fact that you are presently reading this means that you have had
  * knowledge of the CeCILL license and that you accept its terms.
  */
-package org.preesm.algorithm.factories;
+package org.preesm.algorithm.model.factories;
 
-import java.util.LinkedHashMap;
-import java.util.Map;
-import org.preesm.algorithm.model.AbstractGraph;
-import org.preesm.algorithm.model.dag.DirectedAcyclicGraph;
-import org.preesm.algorithm.model.generic.GenericGraph;
-import org.preesm.algorithm.model.sdf.SDFGraph;
+import org.jgrapht.EdgeFactory;
+import org.preesm.algorithm.model.generic.GenericEdge;
+import org.preesm.algorithm.model.generic.GenericVertex;
 
 /**
- * A factory for creating ModelGraph objects.
+ * A factory for creating GenericEdge objects.
  */
-public class ModelGraphFactory {
+public class GenericEdgeFactory implements EdgeFactory<GenericVertex, GenericEdge> {
 
-  private ModelGraphFactory() {
-    // prevent instantiation
-  }
-
-  /** The models. */
-  private static Map<String, Class<?>> models = new LinkedHashMap<>();
-
-  static {
-    ModelGraphFactory.models.put("sdf", SDFGraph.class);
-    ModelGraphFactory.models.put("dag", DirectedAcyclicGraph.class);
-  }
-
-  /**
-   * Gets the model.
+  /*
+   * (non-Javadoc)
    *
-   * @param model
-   *          the model
-   * @return the model
-   * @throws InstantiationException
-   *           the instantiation exception
-   * @throws IllegalAccessException
-   *           the illegal access exception
+   * @see org.jgrapht.EdgeFactory#createEdge(java.lang.Object, java.lang.Object)
    */
-  @SuppressWarnings("rawtypes")
-  public static AbstractGraph getModel(final String model) throws InstantiationException, IllegalAccessException {
-    Class modelClass = ModelGraphFactory.models.get(model);
-    if (modelClass == null) {
-      modelClass = GenericGraph.class;
-    }
-    return (AbstractGraph) modelClass.newInstance();
+  @Override
+  public GenericEdge createEdge(final GenericVertex arg0, final GenericVertex arg1) {
+    return new GenericEdge();
   }
+
 }

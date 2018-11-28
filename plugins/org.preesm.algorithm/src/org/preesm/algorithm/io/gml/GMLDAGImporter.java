@@ -37,10 +37,10 @@
  */
 package org.preesm.algorithm.io.gml;
 
-import org.preesm.algorithm.factories.DAGEdgeFactory;
 import org.preesm.algorithm.model.dag.DAGEdge;
 import org.preesm.algorithm.model.dag.DAGVertex;
 import org.preesm.algorithm.model.dag.DirectedAcyclicGraph;
+import org.preesm.algorithm.model.factories.DAGEdgeFactory;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
 

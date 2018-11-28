@@ -1,9 +1,10 @@
 /**
- * Copyright or © or Copr. IETR/INSA - Rennes (2011 - 2018) :
+ * Copyright or © or Copr. IETR/INSA - Rennes (2008 - 2018) :
  *
  * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017 - 2018)
  * Clément Guy <clement.guy@insa-rennes.fr> (2014)
- * Maxime Pelcat <maxime.pelcat@insa-rennes.fr> (2011)
+ * Matthieu Wipliez <matthieu.wipliez@insa-rennes.fr> (2008)
+ * Maxime Pelcat <maxime.pelcat@insa-rennes.fr> (2008 - 2012)
  *
  * This software is a computer program whose purpose is to help prototyping
  * parallel applications using dataflow formalism.
@@ -34,27 +35,49 @@
  * The fact that you are presently reading this means that you have had
  * knowledge of the CeCILL license and that you accept its terms.
  */
-package org.preesm.algorithm.factories;
+package org.preesm.algorithm.model.factories;
 
-import org.jgrapht.EdgeFactory;
-import org.preesm.algorithm.model.dag.DAGEdge;
-import org.preesm.algorithm.model.dag.DAGVertex;
+import java.util.LinkedHashMap;
+import java.util.Map;
+import org.preesm.algorithm.model.AbstractGraph;
+import org.preesm.algorithm.model.dag.DirectedAcyclicGraph;
+import org.preesm.algorithm.model.generic.GenericGraph;
+import org.preesm.algorithm.model.sdf.SDFGraph;
 
 /**
- * Factory to create DAG edges.
- *
- * @author jpiat
+ * A factory for creating ModelGraph objects.
  */
-public class DAGEdgeFactory implements EdgeFactory<DAGVertex, DAGEdge> {
+public class ModelGraphFactory {
 
-  /*
-   * (non-Javadoc)
-   *
-   * @see org.jgrapht.EdgeFactory#createEdge(java.lang.Object, java.lang.Object)
-   */
-  @Override
-  public DAGEdge createEdge(final DAGVertex arg0, final DAGVertex arg1) {
-    return new DAGEdge();
+  private ModelGraphFactory() {
+    // prevent instantiation
   }
 
+  /** The models. */
+  private static Map<String, Class<?>> models = new LinkedHashMap<>();
+
+  static {
+    ModelGraphFactory.models.put("sdf", SDFGraph.class);
+    ModelGraphFactory.models.put("dag", DirectedAcyclicGraph.class);
+  }
+
+  /**
+   * Gets the model.
+   *
+   * @param model
+   *          the model
+   * @return the model
+   * @throws InstantiationException
+   *           the instantiation exception
+   * @throws IllegalAccessException
+   *           the illegal access exception
+   */
+  @SuppressWarnings("rawtypes")
+  public static AbstractGraph getModel(final String model) throws InstantiationException, IllegalAccessException {
+    Class modelClass = ModelGraphFactory.models.get(model);
+    if (modelClass == null) {
+      modelClass = GenericGraph.class;
+    }
+    return (AbstractGraph) modelClass.newInstance();
+  }
 }

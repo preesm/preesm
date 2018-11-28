@@ -34,16 +34,18 @@
  * The fact that you are presently reading this means that you have had
  * knowledge of the CeCILL license and that you accept its terms.
  */
-package org.preesm.algorithm.factories;
+package org.preesm.algorithm.model.factories;
 
 import org.jgrapht.EdgeFactory;
-import org.preesm.algorithm.model.generic.GenericEdge;
-import org.preesm.algorithm.model.generic.GenericVertex;
+import org.preesm.algorithm.model.dag.DAGEdge;
+import org.preesm.algorithm.model.dag.DAGVertex;
 
 /**
- * A factory for creating GenericEdge objects.
+ * Factory to create DAG edges.
+ *
+ * @author jpiat
  */
-public class GenericEdgeFactory implements EdgeFactory<GenericVertex, GenericEdge> {
+public class DAGEdgeFactory implements EdgeFactory<DAGVertex, DAGEdge> {
 
   /*
    * (non-Javadoc)
@@ -51,8 +53,8 @@ public class GenericEdgeFactory implements EdgeFactory<GenericVertex, GenericEdg
    * @see org.jgrapht.EdgeFactory#createEdge(java.lang.Object, java.lang.Object)
    */
   @Override
-  public GenericEdge createEdge(final GenericVertex arg0, final GenericVertex arg1) {
-    return new GenericEdge();
+  public DAGEdge createEdge(final DAGVertex arg0, final DAGVertex arg1) {
+    return new DAGEdge();
   }
 
 }

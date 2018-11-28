@@ -72,7 +72,7 @@ public interface SDFMath {
     int i = 0;
 
     final double[][] topology = graph.getTopologyMatrix(subgraph);
-    final List<LongFraction> vrb = SDFMath.computeRationnalNullSpace(topology);
+    final List<LongFraction> vrb = MathFunctionsHelper.computeRationnalNullSpace(topology);
     try {
       final List<Long> result = MathFunctionsHelper.toNatural(vrb);
       for (final SDFAbstractVertex vertex : subgraph) {
@@ -83,98 +83,6 @@ public interface SDFMath {
     } catch (Exception e) {
       throw new PreesmException("Could not compute LongFraction VRB", e);
     }
-  }
-
-  /**
-   * Compute rationnal null space.
-   *
-   * @param matrix
-   *          the matrix
-   * @return the vector
-   */
-  public static List<LongFraction> computeRationnalNullSpace(final double[][] matrix) {
-    final List<LongFraction> vrb = new ArrayList<>();
-    final int li = matrix.length;
-    int col = 1;
-
-    if (li != 0) {
-      col = matrix[0].length;
-    }
-
-    if ((li == 0) || (col == 1)) {
-      for (int i = 0; i < col; i++) {
-        vrb.add(new LongFraction(1, 1));
-      }
-      return vrb;
-    }
-
-    final LongFraction[][] rationnalTopology = new LongFraction[li][col];
-
-    for (int i = 0; i < li; i++) {
-      for (int j = 0; j < col; j++) {
-        rationnalTopology[i][j] = new LongFraction(((Double) matrix[i][j]).longValue(), 1);
-      }
-    }
-    int switchIndices = 1;
-    while (rationnalTopology[0][0].isZero()) {
-      final LongFraction[] buffer = rationnalTopology[0];
-      rationnalTopology[0] = rationnalTopology[switchIndices];
-      rationnalTopology[switchIndices] = buffer;
-      switchIndices++;
-    }
-    int pivot = 0;
-    for (int i = 0; i < col; i++) {
-      double pivotMax = 0;
-      int maxIndex = i;
-      for (int t = i; t < li; t++) {
-        if (Math.abs(rationnalTopology[t][i].doubleValue()) > pivotMax) {
-          maxIndex = t;
-          pivotMax = Math.abs(rationnalTopology[t][i].doubleValue());
-        }
-      }
-      if ((pivotMax != 0) && (maxIndex != i)) {
-        final LongFraction[] buffer = rationnalTopology[i];
-        rationnalTopology[i] = rationnalTopology[maxIndex];
-        rationnalTopology[maxIndex] = buffer;
-        pivot = i;
-      } else if ((maxIndex == i) && (pivotMax != 0)) {
-        pivot = i;
-      } else {
-        break;
-      }
-      final LongFraction odlPivot = new LongFraction(rationnalTopology[i][i]);
-      for (int t = i; t < col; t++) {
-        rationnalTopology[i][t] = rationnalTopology[i][t].divide(odlPivot);
-      }
-      for (int j = i + 1; j < li; j++) {
-        if (!rationnalTopology[j][i].isZero()) {
-          final LongFraction oldji = new LongFraction(rationnalTopology[j][i].getNumerator(),
-              rationnalTopology[j][i].getDenominator());
-          for (int k = 0; k < col; k++) {
-            rationnalTopology[j][k] = rationnalTopology[j][k]
-                .subtract(rationnalTopology[i][k].multiply(oldji.divide(rationnalTopology[pivot][pivot])));
-          }
-        }
-      }
-    }
-    for (int i = 0; i < col; i++) {
-      vrb.add(new LongFraction(1, 1));
-    }
-    int i = li - 1;
-    while (i >= 0) {
-      LongFraction val = new LongFraction(0, 1);
-      for (int k = i + 1; k < col; k++) {
-        val = val.add(rationnalTopology[i][k].multiply(vrb.get(k)));
-      }
-      if (!val.isZero()) {
-        if (rationnalTopology[i][i].isZero()) {
-          throw new PreesmException("Should have zero elements in the diagonal");
-        }
-        vrb.set(i, val.abs().divide(rationnalTopology[i][i]));
-      }
-      i--;
-    }
-    return vrb;
   }
 
   /**
@@ -252,7 +160,7 @@ public interface SDFMath {
       }
     }
 
-    final List<LongFraction> nullSpace = SDFMath.computeRationnalNullSpace(interfaceArrayTopology);
+    final List<LongFraction> nullSpace = MathFunctionsHelper.computeRationnalNullSpace(interfaceArrayTopology);
     final List<Long> result = MathFunctionsHelper.toNatural(nullSpace);
     for (Entry<SDFAbstractVertex, Long> e : vrb.entrySet()) {
       vrb.put(e.getKey(), e.getValue() * result.get(result.size() - 1));

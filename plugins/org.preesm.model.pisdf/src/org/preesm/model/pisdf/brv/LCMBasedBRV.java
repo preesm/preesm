@@ -83,7 +83,7 @@ class LCMBasedBRV extends PiBRV {
       final HashMap<String, LongFraction> reps = new HashMap<>();
       // Initializes all reps to 0
       for (final AbstractActor actor : subgraph) {
-        reps.put(actor.getName(), new LongFraction(0L, 1L));
+        reps.put(actor.getName(), new LongFraction(0));
       }
 
       // Construct the list of Edges without interfaces
@@ -101,7 +101,7 @@ class LCMBasedBRV extends PiBRV {
         initFifoProperties(listFifos, fifoProperties);
 
         // Pick the first non interface actor and do a Depth First Search to compute RV
-        LCMBasedBRV.setReps(subgraph.get(0), new LongFraction(1, 1), reps, fifoProperties);
+        LCMBasedBRV.setReps(subgraph.get(0), new LongFraction(1), reps, fifoProperties);
 
         // Computes the LCM of the denominators
         long lcm = 1;

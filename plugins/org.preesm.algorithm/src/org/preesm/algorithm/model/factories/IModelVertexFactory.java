@@ -1,9 +1,11 @@
 /**
- * Copyright or © or Copr. IETR/INSA - Rennes (2011 - 2018) :
+ * Copyright or © or Copr. IETR/INSA - Rennes (2008 - 2018) :
  *
  * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017 - 2018)
  * Clément Guy <clement.guy@insa-rennes.fr> (2014)
- * Maxime Pelcat <maxime.pelcat@insa-rennes.fr> (2011)
+ * Jonathan Piat <jpiat@laas.fr> (2011)
+ * Matthieu Wipliez <matthieu.wipliez@insa-rennes.fr> (2008)
+ * Maxime Pelcat <maxime.pelcat@insa-rennes.fr> (2008 - 2012)
  *
  * This software is a computer program whose purpose is to help prototyping
  * parallel applications using dataflow formalism.
@@ -34,34 +36,69 @@
  * The fact that you are presently reading this means that you have had
  * knowledge of the CeCILL license and that you accept its terms.
  */
-package org.preesm.algorithm.factories;
+package org.preesm.algorithm.model.factories;
 
-import org.jgrapht.EdgeFactory;
-import org.preesm.algorithm.model.sdf.SDFAbstractVertex;
-import org.preesm.algorithm.model.sdf.SDFEdge;
-import org.preesm.algorithm.model.types.LongEdgePropertyType;
-import org.preesm.algorithm.model.types.StringEdgePropertyType;
+import org.preesm.algorithm.model.AbstractVertex;
+import org.preesm.algorithm.model.IInterface;
+import org.w3c.dom.Element;
+import org.w3c.dom.NodeList;
 
 /**
- * Class used as an EdgeFactory to provides SDFAbstractGraph with convenient method to create Edges.
+ * Interface to create vertex in the given model.
  *
  * @author jpiat
+ * @param <V>
+ *          The model of vertex to create
  */
-public class SDFEdgeFactory implements EdgeFactory<SDFAbstractVertex, SDFEdge> {
+public interface IModelVertexFactory<V extends AbstractVertex<?>> {
 
   /**
-   * Create a new SDEdge.
+   * Creates a vertex with the given parameters.
    *
-   * @param arg0
-   *          the arg 0
-   * @param arg1
-   *          the arg 1
-   * @return the SDF edge
+   * @param vertexElt
+   *          The DOM element from which to create the vertex
+   * @return The created vertex
    */
-  @Override
-  public SDFEdge createEdge(final SDFAbstractVertex arg0, final SDFAbstractVertex arg1) {
-    return new SDFEdge(new LongEdgePropertyType(1), new LongEdgePropertyType(1), new LongEdgePropertyType(0),
-        new StringEdgePropertyType("char"));
+  public V createVertex(Element vertexElt);
+
+  /**
+   * Creates a new ModelVertex object.
+   *
+   * @param kind
+   *          the kind
+   * @return the v
+   */
+  public V createVertex(String kind);
+
+  /**
+   * Creates a new ModelVertex object.
+   *
+   * @param name
+   *          the name
+   * @param dir
+   *          the dir
+   * @return the i interface
+   */
+  public IInterface createInterface(String name, int dir);
+
+  /**
+   * Gets the property.
+   *
+   * @param elt
+   *          the elt
+   * @param propertyName
+   *          the property name
+   * @return the property
+   */
+  public default String getProperty(final Element elt, final String propertyName) {
+    final NodeList childList = elt.getChildNodes();
+    for (int i = 0; i < childList.getLength(); i++) {
+      if (childList.item(i).getNodeName().equals("data")
+          && ((Element) childList.item(i)).getAttribute("key").equals(propertyName)) {
+        return childList.item(i).getTextContent();
+      }
+    }
+    return null;
   }
 
 }

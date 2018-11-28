@@ -91,7 +91,7 @@ class TopologyBasedBRV extends PiBRV {
               + Integer.toString(subgraph.size() - 1));
         }
         // Compute BRV
-        final List<LongFraction> vrb = TopologyBasedBRV.computeRationnalNullSpace(topologyMatrix);
+        final List<LongFraction> vrb = MathFunctionsHelper.computeRationnalNullSpace(topologyMatrix);
         // final List<Long> result = Rational.toNatural(new Vector<>(vrb))
         final List<Long> result = new ArrayList<>();
         MathFunctionsHelper.toNatural(vrb).forEach(rv -> result.add((long) rv));
@@ -134,98 +134,6 @@ class TopologyBasedBRV extends PiBRV {
 
   public static <K, V> Map<K, V> zipToMap(final List<K> keys, final List<V> values) {
     return IntStream.range(0, keys.size()).boxed().collect(Collectors.toMap(keys::get, values::get));
-  }
-
-  /**
-   * Compute rationnal null space.
-   *
-   * @param matrix
-   *          the matrix
-   * @return the vector
-   */
-  private static List<LongFraction> computeRationnalNullSpace(final double[][] matrix) {
-    final List<LongFraction> vrb = new ArrayList<>();
-    final int numberOfRows = matrix.length;
-    int numberOfColumns = 1;
-
-    if (numberOfRows != 0) {
-      numberOfColumns = matrix[0].length;
-    }
-
-    if ((numberOfRows == 0) || (numberOfColumns == 1)) {
-      for (int i = 0; i < numberOfColumns; i++) {
-        vrb.add(new LongFraction(1, 1));
-      }
-      return vrb;
-    }
-
-    final LongFraction[][] rationnalTopology = new LongFraction[numberOfRows][numberOfColumns];
-
-    for (int i = 0; i < numberOfRows; i++) {
-      for (int j = 0; j < numberOfColumns; j++) {
-        rationnalTopology[i][j] = new LongFraction(((Double) matrix[i][j]).longValue(), 1);
-      }
-    }
-    int switchIndices = 1;
-    while (rationnalTopology[0][0].isZero()) {
-      final LongFraction[] buffer = rationnalTopology[0];
-      rationnalTopology[0] = rationnalTopology[switchIndices];
-      rationnalTopology[switchIndices] = buffer;
-      switchIndices++;
-    }
-    int pivot = 0;
-    for (int i = 0; i < numberOfColumns; i++) {
-      double pivotMax = 0;
-      int maxIndex = i;
-      for (int t = i; t < numberOfRows; t++) {
-        if (Math.abs(rationnalTopology[t][i].doubleValue()) > pivotMax) {
-          maxIndex = t;
-          pivotMax = Math.abs(rationnalTopology[t][i].doubleValue());
-        }
-      }
-      if ((pivotMax != 0) && (maxIndex != i)) {
-        final LongFraction[] buffer = rationnalTopology[i];
-        rationnalTopology[i] = rationnalTopology[maxIndex];
-        rationnalTopology[maxIndex] = buffer;
-        pivot = i;
-      } else if ((maxIndex == i) && (pivotMax != 0)) {
-        pivot = i;
-      } else {
-        break;
-      }
-      final LongFraction odlPivot = new LongFraction(rationnalTopology[i][i]);
-      for (int t = i; t < numberOfColumns; t++) {
-        rationnalTopology[i][t] = rationnalTopology[i][t].divide(odlPivot);
-      }
-      for (int j = i + 1; j < numberOfRows; j++) {
-        if (!rationnalTopology[j][i].isZero()) {
-          final LongFraction oldji = new LongFraction(rationnalTopology[j][i].getNumerator(),
-              rationnalTopology[j][i].getDenominator());
-          for (int k = 0; k < numberOfColumns; k++) {
-            rationnalTopology[j][k] = rationnalTopology[j][k]
-                .subtract(rationnalTopology[i][k].multiply(oldji.divide(rationnalTopology[pivot][pivot])));
-          }
-        }
-      }
-    }
-    for (int i = 0; i < numberOfColumns; i++) {
-      vrb.add(new LongFraction(1, 1));
-    }
-    int i = numberOfRows - 1;
-    while (i >= 0) {
-      LongFraction val = new LongFraction(0, 0);
-      for (int k = i + 1; k < numberOfColumns; k++) {
-        val = val.add(rationnalTopology[i][k].multiply(vrb.get(k)));
-      }
-      if (!val.isZero()) {
-        if (rationnalTopology[i][i].isZero()) {
-          System.out.println("elt diagonal zero");
-        }
-        vrb.set(i, val.abs().divide(rationnalTopology[i][i]));
-      }
-      i--;
-    }
-    return vrb;
   }
 
 }

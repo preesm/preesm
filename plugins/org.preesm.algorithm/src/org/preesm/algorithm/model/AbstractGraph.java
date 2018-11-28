@@ -42,7 +42,7 @@ import org.jgrapht.EdgeFactory;
 import org.jgrapht.graph.DirectedPseudograph;
 import org.nfunk.jep.JEP;
 import org.nfunk.jep.Node;
-import org.preesm.algorithm.factories.IModelVertexFactory;
+import org.preesm.algorithm.model.factories.IModelVertexFactory;
 import org.preesm.algorithm.model.parameters.IExpressionSolver;
 import org.preesm.algorithm.model.parameters.Parameter;
 import org.preesm.algorithm.model.parameters.ParameterSet;

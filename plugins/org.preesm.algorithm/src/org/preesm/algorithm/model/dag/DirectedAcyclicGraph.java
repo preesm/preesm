@@ -40,11 +40,11 @@ import java.util.List;
 import java.util.Set;
 import org.jgrapht.EdgeFactory;
 import org.jgrapht.alg.cycle.CycleDetector;
-import org.preesm.algorithm.factories.DAGEdgeFactory;
-import org.preesm.algorithm.factories.DAGVertexFactory;
-import org.preesm.algorithm.factories.IModelVertexFactory;
 import org.preesm.algorithm.model.AbstractGraph;
 import org.preesm.algorithm.model.PropertyFactory;
+import org.preesm.algorithm.model.factories.DAGEdgeFactory;
+import org.preesm.algorithm.model.factories.DAGVertexFactory;
+import org.preesm.algorithm.model.factories.IModelVertexFactory;
 import org.preesm.algorithm.model.sdf.SDFGraph;
 import org.preesm.commons.exceptions.PreesmException;
 

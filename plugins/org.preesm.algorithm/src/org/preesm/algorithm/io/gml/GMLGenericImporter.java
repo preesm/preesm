@@ -35,11 +35,11 @@
 package org.preesm.algorithm.io.gml;
 
 import java.util.List;
-import org.preesm.algorithm.factories.ModelGraphFactory;
 import org.preesm.algorithm.model.AbstractEdge;
 import org.preesm.algorithm.model.AbstractGraph;
 import org.preesm.algorithm.model.AbstractVertex;
 import org.preesm.algorithm.model.IInterface;
+import org.preesm.algorithm.model.factories.ModelGraphFactory;
 import org.preesm.commons.exceptions.PreesmException;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
