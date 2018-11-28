@@ -36,7 +36,7 @@
  */
 package org.preesm.algorithm.model.parameters;
 
-import org.preesm.model.pisdf.expression.ExpressionEvaluationException;
+import org.preesm.commons.math.ExpressionEvaluationException;
 
 /**
  * Interface for expression solver.

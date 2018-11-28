@@ -54,7 +54,7 @@ import org.preesm.algorithm.model.parameters.factories.ParameterFactory;
 import org.preesm.algorithm.model.visitors.IGraphVisitor;
 import org.preesm.commons.CloneableProperty;
 import org.preesm.commons.exceptions.PreesmException;
-import org.preesm.model.pisdf.expression.ExpressionEvaluationException;
+import org.preesm.commons.math.ExpressionEvaluationException;
 
 /**
  * Abstract class common to all graphs.

@@ -1,20 +1,24 @@
-package org.preesm.model.pisdf.expression;
+package org.preesm.commons.math;
 
 import java.util.Map;
 import org.nfunk.jep.JEP;
 import org.nfunk.jep.Node;
 import org.nfunk.jep.ParseException;
-import org.preesm.model.pisdf.expression.functions.CeilFunction;
-import org.preesm.model.pisdf.expression.functions.FloorFunction;
-import org.preesm.model.pisdf.expression.functions.GeometricSum;
-import org.preesm.model.pisdf.expression.functions.MaxFunction;
-import org.preesm.model.pisdf.expression.functions.MaxPowerDivisibility;
-import org.preesm.model.pisdf.expression.functions.MinFunction;
+import org.preesm.commons.math.functions.CeilFunction;
+import org.preesm.commons.math.functions.FloorFunction;
+import org.preesm.commons.math.functions.GeometricSum;
+import org.preesm.commons.math.functions.MaxFunction;
+import org.preesm.commons.math.functions.MaxPowerDivisibility;
+import org.preesm.commons.math.functions.MinFunction;
 
 /**
  *
  */
 public class JEPWrapper {
+
+  private JEPWrapper() {
+    // forbid instantiation
+  }
 
   /**
    *

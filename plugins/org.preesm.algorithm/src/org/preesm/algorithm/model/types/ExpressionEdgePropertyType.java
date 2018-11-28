@@ -39,7 +39,7 @@ import org.preesm.algorithm.model.AbstractEdgePropertyType;
 import org.preesm.algorithm.model.parameters.IExpressionSolver;
 import org.preesm.algorithm.model.parameters.Value;
 import org.preesm.commons.exceptions.PreesmException;
-import org.preesm.model.pisdf.expression.ExpressionEvaluationException;
+import org.preesm.commons.math.ExpressionEvaluationException;
 
 /**
  * Class used to represent the integer edge property type in a SDF.

@@ -37,7 +37,7 @@ package org.preesm.algorithm.model.parameters;
 import org.nfunk.jep.JEP;
 import org.nfunk.jep.Node;
 import org.nfunk.jep.ParseException;
-import org.preesm.model.pisdf.expression.ExpressionEvaluationException;
+import org.preesm.commons.math.ExpressionEvaluationException;
 
 /**
  * Represents an numerical expression.

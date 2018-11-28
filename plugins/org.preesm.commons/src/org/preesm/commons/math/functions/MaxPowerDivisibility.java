@@ -1,4 +1,4 @@
-package org.preesm.model.pisdf.expression.functions;
+package org.preesm.commons.math.functions;
 
 import org.nfunk.jep.ParseException;
 

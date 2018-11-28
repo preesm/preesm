@@ -1,6 +1,7 @@
 package org.preesm.model.pisdf.expression;
 
 import java.util.Map;
+import org.preesm.commons.math.JEPWrapper;
 import org.preesm.model.pisdf.ExpressionProxy;
 import org.preesm.model.pisdf.LongExpression;
 import org.preesm.model.pisdf.StringExpression;

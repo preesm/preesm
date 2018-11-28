@@ -1,8 +1,10 @@
 /**
- * Copyright or © or Copr. IETR/INSA - Rennes (2018) :
+ * Copyright or © or Copr. IETR/INSA - Rennes (2008 - 2018) :
  *
  * Alexandre Honorat <ahonorat@insa-rennes.fr> (2018)
- * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2018)
+ * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017 - 2018)
+ * Matthieu Wipliez <matthieu.wipliez@insa-rennes.fr> (2008)
+ * Maxime Pelcat <maxime.pelcat@insa-rennes.fr> (2008 - 2012)
  *
  * This software is a computer program whose purpose is to help prototyping
  * parallel applications using dataflow formalism.
@@ -33,58 +35,26 @@
  * The fact that you are presently reading this means that you have had
  * knowledge of the CeCILL license and that you accept its terms.
  */
-package org.preesm.model.pisdf.expression.functions;
-
-import java.util.Stack;
-import org.nfunk.jep.JEP;
-import org.nfunk.jep.ParseException;
-import org.nfunk.jep.function.PostfixMathCommand;
+package org.preesm.commons.math.functions;
 
 /**
- * Abstract class to wrap simple postfix math functions for JEP.
+ * The Class FloorFunction.
  */
-public abstract class AbstractPreesmMathFunction extends PostfixMathCommand {
+public class FloorFunction extends AbstractPreesmMathFunction {
 
-  /**
-   * Properly initialize number of argument with abstract method
-   */
-  public AbstractPreesmMathFunction() {
-    super();
-    this.numberOfParameters = getArgCount();
-  }
-
-  public final void integrateWithin(final JEP jep) {
-    jep.addFunction(getName(), this);
-  }
-
-  /**
-   * Gets the {@link #getArgCount()} peek elements of the stack and put them in order in an array of double, then call
-   * the {@link #compute(double...)} method to compute the result.
-   */
-  @SuppressWarnings({ "rawtypes", "unchecked" })
   @Override
-  public void run(final Stack stack) throws ParseException {
-
-    final double[] args = new double[getArgCount()];
-    for (int i = 0; i < getArgCount(); i++) {
-      final Object arg = stack.pop();
-      if (!(arg instanceof Double)) {
-        throw new ParseException(
-            "Argument must be a number, whereas it is " + arg + "(" + arg.getClass().getName() + ")");
-      }
-      args[i] = (double) arg;
-    }
-    final double result = compute(args);
-    stack.push(result);
+  protected String getName() {
+    return "floor";
   }
 
-  /**
-   * returns the name of the function that will be used in the math expressions
-   */
-  protected abstract String getName();
+  @Override
+  protected int getArgCount() {
+    return 1;
+  }
 
-  protected abstract int getArgCount();
-
-  protected abstract double compute(double... args) throws ParseException;
+  @Override
+  protected double compute(final double... args) {
+    return Math.floor(args[0]);
+  }
 
 }

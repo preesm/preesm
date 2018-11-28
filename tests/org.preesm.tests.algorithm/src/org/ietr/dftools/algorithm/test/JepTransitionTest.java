@@ -38,7 +38,7 @@ import org.junit.Assert;
 import org.junit.Test;
 import org.preesm.algorithm.model.parameters.ExpressionValue;
 import org.preesm.commons.exceptions.PreesmException;
-import org.preesm.model.pisdf.expression.ExpressionEvaluationException;
+import org.preesm.commons.math.ExpressionEvaluationException;
 
 /**
  * The Class JepTransitionTest.

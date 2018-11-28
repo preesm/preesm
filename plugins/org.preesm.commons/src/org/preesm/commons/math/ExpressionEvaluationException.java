@@ -1,10 +1,7 @@
 /**
- * Copyright or © or Copr. IETR/INSA - Rennes (2008 - 2018) :
+ * Copyright or © or Copr. IETR/INSA - Rennes (2017 - 2018) :
  *
- * Alexandre Honorat <ahonorat@insa-rennes.fr> (2018)
  * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017 - 2018)
- * Matthieu Wipliez <matthieu.wipliez@insa-rennes.fr> (2008)
- * Maxime Pelcat <maxime.pelcat@insa-rennes.fr> (2008 - 2012)
  *
  * This software is a computer program whose purpose is to help prototyping
  * parallel applications using dataflow formalism.
@@ -35,26 +32,29 @@
  * The fact that you are presently reading this means that you have had
  * knowledge of the CeCILL license and that you accept its terms.
  */
-package org.preesm.model.pisdf.expression.functions;
+package org.preesm.commons.math;
+
+import org.nfunk.jep.ParseException;
+import org.preesm.commons.exceptions.PreesmException;
 
 /**
- * The Class CeilFunction.
+ *
+ * @author anmorvan
+ *
  */
-public class CeilFunction extends AbstractPreesmMathFunction {
+public class ExpressionEvaluationException extends PreesmException {
 
-  @Override
-  protected String getName() {
-    return "ceil";
+  public ExpressionEvaluationException(final String msg) {
+    super(msg);
   }
 
-  @Override
-  protected int getArgCount() {
-    return 1;
+  public ExpressionEvaluationException(final String msg, final ParseException cause) {
+    super(msg, cause);
   }
 
-  @Override
-  protected double compute(final double... args) {
-    return Math.ceil(args[0]);
-  }
+  /**
+   *
+   */
+  private static final long serialVersionUID = 6317019195219546436L;
 
 }

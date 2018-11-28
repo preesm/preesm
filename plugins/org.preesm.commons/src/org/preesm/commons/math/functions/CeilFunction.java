@@ -1,8 +1,10 @@
 /**
- * Copyright or © or Copr. IETR/INSA - Rennes (2018) :
+ * Copyright or © or Copr. IETR/INSA - Rennes (2008 - 2018) :
  *
  * Alexandre Honorat <ahonorat@insa-rennes.fr> (2018)
- * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2018)
+ * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017 - 2018)
+ * Matthieu Wipliez <matthieu.wipliez@insa-rennes.fr> (2008)
+ * Maxime Pelcat <maxime.pelcat@insa-rennes.fr> (2008 - 2012)
  *
  * This software is a computer program whose purpose is to help prototyping
  * parallel applications using dataflow formalism.
@@ -33,28 +35,26 @@
  * The fact that you are presently reading this means that you have had
  * knowledge of the CeCILL license and that you accept its terms.
  */
-package org.preesm.model.pisdf.expression.functions;
+package org.preesm.commons.math.functions;
 
 /**
- * Min function (for two double numbers)
- *
- * @author ahonorat
+ * The Class CeilFunction.
  */
-public class MinFunction extends AbstractPreesmMathFunction {
+public class CeilFunction extends AbstractPreesmMathFunction {
 
   @Override
   protected String getName() {
-    return "min";
+    return "ceil";
   }
 
   @Override
   protected int getArgCount() {
-    return 2;
+    return 1;
   }
 
   @Override
   protected double compute(final double... args) {
-    return Math.min(args[0], args[1]);
+    return Math.ceil(args[0]);
   }
 
 }

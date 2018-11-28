@@ -46,7 +46,7 @@ import org.preesm.algorithm.model.parameters.Argument;
 import org.preesm.algorithm.model.sdf.SDFAbstractVertex;
 import org.preesm.algorithm.model.sdf.SDFInterfaceVertex;
 import org.preesm.commons.exceptions.PreesmException;
-import org.preesm.model.pisdf.expression.ExpressionEvaluationException;
+import org.preesm.commons.math.ExpressionEvaluationException;
 
 /**
  * HierarchyFlattening for a given depth.

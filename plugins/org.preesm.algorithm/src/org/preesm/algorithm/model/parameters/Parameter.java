@@ -38,7 +38,7 @@
 package org.preesm.algorithm.model.parameters;
 
 import org.preesm.commons.CloneableProperty;
-import org.preesm.model.pisdf.expression.ExpressionEvaluationException;
+import org.preesm.commons.math.ExpressionEvaluationException;
 
 /**
  * Class representing parameters that can be used to configure a graph ...
