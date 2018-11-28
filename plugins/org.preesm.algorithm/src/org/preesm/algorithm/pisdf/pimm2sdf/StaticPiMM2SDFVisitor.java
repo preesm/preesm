@@ -100,6 +100,7 @@ import org.preesm.model.pisdf.PiSDFRefinement;
 import org.preesm.model.pisdf.Port;
 import org.preesm.model.pisdf.Refinement;
 import org.preesm.model.pisdf.RoundBufferActor;
+import org.preesm.model.pisdf.statictools.PiGraphExecution;
 import org.preesm.model.pisdf.util.PiMMSwitch;
 
 /**

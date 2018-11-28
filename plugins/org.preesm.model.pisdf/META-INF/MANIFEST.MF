@@ -25,6 +25,7 @@ Export-Package: org.preesm.model.pisdf,
  org.preesm.model.pisdf.impl,
  org.preesm.model.pisdf.serialize,
  org.preesm.model.pisdf.statictools,
+ org.preesm.model.pisdf.statictools.optims,
  org.preesm.model.pisdf.util
 Bundle-ActivationPolicy: lazy
 Bundle-ClassPath: .,

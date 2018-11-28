@@ -34,59 +34,58 @@
  * knowledge of the CeCILL license and that you accept its terms.
  */
 /**
- * 
+ *
  */
-package org.preesm.algorithm.pisdf.pimmoptims;
+package org.preesm.model.pisdf.statictools.optims;
 
-import org.preesm.model.pisdf.AbstractActor;
-import org.preesm.model.pisdf.DataInputPort;
-import org.preesm.model.pisdf.DataOutputPort;
-import org.preesm.model.pisdf.Fifo;
 import org.preesm.model.pisdf.ForkActor;
+import org.preesm.model.pisdf.JoinActor;
 import org.preesm.model.pisdf.PiGraph;
+import org.preesm.model.pisdf.util.PiMMSwitch;
 
 /**
  * @author farresti
  *
  */
-public class ForkOptimization extends AbstractPiGraphSpecialActorRemover<DataOutputPort> {
+public class ForkJoinOptimization extends PiMMSwitch<Boolean> implements PiMMOptimization {
 
-  /**
-   * Remove the Broadcast or Fork -> Fork connections
-   * 
-   * <pre>
-   *               | F | -> out_0 
-   * | BR | -> out |   | -> out_1
-   * 
-   * becomes  | BR | -> out_0
-   *          |    | -> out_1
-   * </pre>
-   * 
-   * @param graph
-   *          the graph
-   * @param actor
-   *          the broadcast or fork actor to evaluate
-   * 
-   * @return true if at least one ForkActor has been removed, false else
+  boolean keepGoing = false;
+
+  /*
+   * (non-Javadoc)
+   *
+   * @see
+   * org.ietr.preesm.pimm.algorithm.pimmoptims.PiMMOptimization#optimize(org.ietr.preesm.experiment.model.pimm.PiGraph)
    */
   @Override
-  public final boolean remove(final PiGraph graph, final AbstractActor actor) {
-    if (graph == null) {
-      return false;
-    }
-    for (final DataOutputPort dop : actor.getDataOutputPorts()) {
-      final Fifo outgoingFifo = dop.getOutgoingFifo();
-      final DataInputPort targetPort = outgoingFifo.getTargetPort();
-      final AbstractActor targetActor = targetPort.getContainingActor();
-      if (targetActor instanceof ForkActor) {
-        fillRemoveAndReplace(actor.getDataOutputPorts(), targetActor.getDataOutputPorts(), dop);
-        removeActorAndFifo(graph, outgoingFifo, targetActor);
-      }
-    }
-    if (!removeAndReplace(actor.getDataOutputPorts())) {
-      return removeUnused(graph, actor);
-    }
+  public boolean optimize(PiGraph graph) {
+    do {
+      this.keepGoing = false;
+      final Boolean doSwitch = doSwitch(graph);
+      this.keepGoing = (doSwitch == null);
+    } while (this.keepGoing);
+
     return true;
   }
 
+  @Override
+  public Boolean casePiGraph(PiGraph graph) {
+    graph.getActors().forEach(this::doSwitch);
+    return true;
+  }
+
+  @Override
+  public Boolean caseForkActor(ForkActor actor) {
+    final ForkOptimization forkOptimization = new ForkOptimization();
+    this.keepGoing |= forkOptimization.remove(actor.getContainingPiGraph(), actor);
+    return true;
+  }
+
+  @Override
+  public Boolean caseJoinActor(JoinActor actor) {
+    final JoinOptimization joinOptimization = new JoinOptimization();
+    this.keepGoing |= joinOptimization.remove(actor.getContainingPiGraph(), actor);
+    this.keepGoing |= joinOptimization.removeJoinFork(actor.getContainingPiGraph(), actor);
+    return true;
+  }
 }

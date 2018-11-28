@@ -36,11 +36,8 @@
 /**
  *
  */
-package org.preesm.algorithm.pisdf.pimmoptims;
+package org.preesm.model.pisdf.statictools.optims;
 
-import java.util.logging.Level;
-import org.apache.commons.lang3.time.StopWatch;
-import org.preesm.commons.logger.PreesmLogger;
 import org.preesm.model.pisdf.BroadcastActor;
 import org.preesm.model.pisdf.PiGraph;
 import org.preesm.model.pisdf.RoundBufferActor;
@@ -62,18 +59,11 @@ public class BroadcastRoundBufferOptimization extends PiMMSwitch<Boolean> implem
    */
   @Override
   public boolean optimize(PiGraph graph) {
-    final StopWatch timer = new StopWatch();
-    timer.start();
-
     do {
       this.keepGoing = false;
       final Boolean doSwitch = doSwitch(graph);
       this.keepGoing = (doSwitch == null);
     } while (this.keepGoing);
-    timer.stop();
-    final String msgOptimsGraphs = "BroadcastRoundBuffer optimizations: " + timer + "s.";
-    PreesmLogger.getLogger().log(Level.INFO, msgOptimsGraphs);
-
     return true;
   }
 

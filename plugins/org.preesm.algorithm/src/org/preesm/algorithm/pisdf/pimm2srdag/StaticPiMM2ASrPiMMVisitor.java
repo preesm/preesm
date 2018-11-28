@@ -78,6 +78,7 @@ import org.preesm.model.pisdf.PiGraph;
 import org.preesm.model.pisdf.Port;
 import org.preesm.model.pisdf.RoundBufferActor;
 import org.preesm.model.pisdf.factory.PiMMUserFactory;
+import org.preesm.model.pisdf.statictools.PiMMSRVerticesLinker;
 import org.preesm.model.pisdf.util.PiMMSwitch;
 import org.preesm.model.scenario.ConstraintGroup;
 import org.preesm.model.scenario.ConstraintGroupManager;

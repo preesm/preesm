@@ -36,7 +36,7 @@
 /**
  * 
  */
-package org.preesm.algorithm.pisdf.pimmoptims;
+package org.preesm.model.pisdf.statictools.optims;
 
 import org.preesm.model.pisdf.PiGraph;
 

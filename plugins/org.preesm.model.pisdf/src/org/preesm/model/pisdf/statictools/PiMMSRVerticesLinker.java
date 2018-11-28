@@ -37,7 +37,7 @@
 /**
  *
  */
-package org.preesm.algorithm.pisdf.pimm2srdag;
+package org.preesm.model.pisdf.statictools;
 
 import java.util.ArrayList;
 import java.util.List;

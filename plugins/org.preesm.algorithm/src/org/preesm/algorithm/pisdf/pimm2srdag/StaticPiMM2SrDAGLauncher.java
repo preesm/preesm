@@ -38,14 +38,14 @@ package org.preesm.algorithm.pisdf.pimm2srdag;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
-import org.preesm.algorithm.pisdf.pimmoptims.BroadcastRoundBufferOptimization;
-import org.preesm.algorithm.pisdf.pimmoptims.ForkJoinOptimization;
 import org.preesm.model.pisdf.AbstractVertex;
 import org.preesm.model.pisdf.Parameter;
 import org.preesm.model.pisdf.PiGraph;
 import org.preesm.model.pisdf.brv.BRVMethod;
 import org.preesm.model.pisdf.brv.PiBRV;
 import org.preesm.model.pisdf.statictools.PiMMHandler;
+import org.preesm.model.pisdf.statictools.optims.BroadcastRoundBufferOptimization;
+import org.preesm.model.pisdf.statictools.optims.ForkJoinOptimization;
 import org.preesm.model.pisdf.util.PiMMSwitch;
 import org.preesm.model.scenario.PreesmScenario;
 

@@ -44,6 +44,7 @@ import org.preesm.algorithm.model.sdf.SDFGraph;
 import org.preesm.commons.exceptions.PreesmException;
 import org.preesm.model.pisdf.Parameter;
 import org.preesm.model.pisdf.PiGraph;
+import org.preesm.model.pisdf.statictools.PiGraphExecution;
 import org.preesm.model.scenario.ParameterValue;
 import org.preesm.model.scenario.ParameterValueManager;
 import org.preesm.model.scenario.PreesmScenario;
