@@ -134,7 +134,7 @@ public class PiSDFParameterResolverVisitor extends PiMMSwitch<Boolean> {
    */
   private void resolveExpression(final ExpressionHolder holder, final Map<String, Long> paramValues) {
     final Expression expression = holder.getExpression();
-    final long value = new ExpressionEvaluator(paramValues).doSwitch(expression);
+    final long value = ExpressionEvaluator.evaluate(expression, paramValues);
     holder.setExpression(value);
   }
 

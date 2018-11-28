@@ -94,7 +94,7 @@ class StringExpression extends Expression {
 		return getExpressionString()
 	}
 	op long evaluate() {
-		return new ExpressionEvaluator().doSwitch(this)
+		return ExpressionEvaluator.evaluate(this)
 	}
 }
 

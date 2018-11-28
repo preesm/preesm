@@ -65,17 +65,22 @@ import org.preesm.model.pisdf.util.PiMMSwitch;
  */
 public class ExpressionEvaluator extends PiMMSwitch<Long> {
 
-  private final Map<String, ? extends Number> parameterValues;
-
-  public ExpressionEvaluator() {
-    this(Collections.emptyMap());
+  public static final long evaluate(final Expression expression) {
+    return evaluate(expression, Collections.emptyMap());
   }
+
+  public static final long evaluate(final Expression expression, final Map<String, ? extends Number> paramValues) {
+    return new ExpressionEvaluator(paramValues).doSwitch(expression);
+
+  }
+
+  private final Map<String, ? extends Number> parameterValues;
 
   /**
    * Initialize the Expression evaluator with pre-computed parameter values. This can speedup evaluation as there will
    * be no parameter value lookup.
    */
-  public ExpressionEvaluator(final Map<String, ? extends Number> parameterValues) {
+  private ExpressionEvaluator(final Map<String, ? extends Number> parameterValues) {
     this.parameterValues = parameterValues;
   }
 
