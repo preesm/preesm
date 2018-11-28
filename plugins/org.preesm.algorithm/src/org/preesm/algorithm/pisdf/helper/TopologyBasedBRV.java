@@ -51,6 +51,7 @@ import org.preesm.commons.math.MathFunctionsHelper;
 import org.preesm.model.pisdf.AbstractActor;
 import org.preesm.model.pisdf.AbstractVertex;
 import org.preesm.model.pisdf.Fifo;
+import org.preesm.model.pisdf.PiGraph;
 
 /**
  * This class is used to compute the basic repetition vector of a static PiSDF graph using topology matrix method.
@@ -64,7 +65,7 @@ public class TopologyBasedBRV extends PiBRV {
   }
 
   @Override
-  public Map<AbstractVertex, Long> computeBRV() {
+  public Map<AbstractVertex, Long> computeBRV(final PiGraph piGraph) {
     Map<AbstractVertex, Long> graphBRV = new LinkedHashMap<>();
     if (this.piHandler.getReferenceGraph() == null) {
       final String msg = "cannot compute BRV for null graph.";
@@ -103,11 +104,7 @@ public class TopologyBasedBRV extends PiBRV {
       // Update BRV values with interfaces
       updateRVWithInterfaces(this.piHandler.getReferenceGraph(), subgraph, graphBRV);
     }
-    for (final PiMMHandler g : this.piHandler.getChildrenGraphsHandler()) {
-      final TopologyBasedBRV topologyBRV = new TopologyBasedBRV(g);
-      topologyBRV.computeBRV();
-      graphBRV.putAll(topologyBRV.computeBRV());
-    }
+    computeChildrenBRV(piGraph);
     return graphBRV;
   }
 

@@ -53,6 +53,7 @@ import org.preesm.model.pisdf.DataOutputPort;
 import org.preesm.model.pisdf.Expression;
 import org.preesm.model.pisdf.Fifo;
 import org.preesm.model.pisdf.InterfaceActor;
+import org.preesm.model.pisdf.PiGraph;
 
 /**
  * This class is used to compute the basic repetition vector of a static PiSDF graph using LCM method.
@@ -71,7 +72,7 @@ public class LCMBasedBRV extends PiBRV {
    * @see org.ietr.preesm.pimm.algorithm.math.PiBRV#execute()
    */
   @Override
-  public Map<AbstractVertex, Long> computeBRV() {
+  public Map<AbstractVertex, Long> computeBRV(final PiGraph piGraph) {
     Map<AbstractVertex, Long> graphBRV = new LinkedHashMap<>();
     if (this.piHandler.getReferenceGraph() == null) {
       final String msg = "cannot compute BRV for null graph.";
@@ -124,12 +125,7 @@ public class LCMBasedBRV extends PiBRV {
     // Recursively compute BRV of sub-graphs
     // TODO maybe optimize this a recursive call to a secondary recursive method executeRec(final PiGraph graph)
     // or use visitor pattern
-    for (final PiMMHandler g : this.piHandler.getChildrenGraphsHandler()) {
-      final LCMBasedBRV lcmBRV = new LCMBasedBRV(g);
-      lcmBRV.computeBRV();
-      graphBRV.putAll(lcmBRV.computeBRV());
-    }
-
+    graphBRV.putAll(computeChildrenBRV(piGraph));
     return graphBRV;
   }
 

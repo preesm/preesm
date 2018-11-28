@@ -38,6 +38,7 @@
  */
 package org.preesm.algorithm.pisdf.helper;
 
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import org.preesm.commons.exceptions.PreesmException;
@@ -80,7 +81,13 @@ public abstract class PiBRV {
    * @throws PiMMHelperException
    *           the PiMMHandlerException exception
    */
-  public abstract Map<AbstractVertex, Long> computeBRV();
+  public abstract Map<AbstractVertex, Long> computeBRV(final PiGraph piGraph);
+
+  protected Map<AbstractVertex, Long> computeChildrenBRV(final PiGraph parentGraph) {
+    final Map<AbstractVertex, Long> resultBrv = new LinkedHashMap<>();
+    parentGraph.getChildrenGraphs().forEach(childGraph -> resultBrv.putAll(this.computeBRV(childGraph)));
+    return resultBrv;
+  }
 
   protected void updateRVWithInterfaces(final PiGraph graph, final List<AbstractActor> subgraph,
       final Map<AbstractVertex, Long> graphBRV) {

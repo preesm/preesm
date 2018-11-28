@@ -143,7 +143,7 @@ public class StaticPiMMFlatPiMMLauncher extends PiMMSwitch<Boolean> {
     final PiBRV piBRVAlgo = new LCMBasedBRV(this.piHandler);
     final StopWatch timer = new StopWatch();
     timer.start();
-    this.graphBRV = piBRVAlgo.computeBRV();
+    this.graphBRV = piBRVAlgo.computeBRV(this.piHandler.getReferenceGraph());
     timer.stop();
     final String msg = "Repetition vector computed in" + timer + "s.";
     PreesmLogger.getLogger().log(Level.INFO, msg);
