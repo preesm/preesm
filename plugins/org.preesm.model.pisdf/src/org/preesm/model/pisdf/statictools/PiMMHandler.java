@@ -37,7 +37,7 @@
 /**
  *
  */
-package org.preesm.algorithm.pisdf.helper;
+package org.preesm.model.pisdf.statictools;
 
 import java.util.ArrayList;
 import java.util.Collections;

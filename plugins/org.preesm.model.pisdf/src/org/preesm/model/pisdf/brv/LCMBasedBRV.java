@@ -36,7 +36,7 @@
 /**
  *
  */
-package org.preesm.algorithm.pisdf.helper;
+package org.preesm.model.pisdf.brv;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -54,6 +54,7 @@ import org.preesm.model.pisdf.Expression;
 import org.preesm.model.pisdf.Fifo;
 import org.preesm.model.pisdf.InterfaceActor;
 import org.preesm.model.pisdf.PiGraph;
+import org.preesm.model.pisdf.statictools.PiMMHandler;
 
 /**
  * This class is used to compute the basic repetition vector of a static PiSDF graph using LCM method.

@@ -1,4 +1,4 @@
-package org.preesm.algorithm.pisdf.helper;
+package org.preesm.model.pisdf.brv;
 
 /**
  *

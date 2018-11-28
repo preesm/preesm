@@ -12,11 +12,13 @@ Require-Bundle: org.eclipse.core.runtime,
  org.eclipse.emf.ecore.xmi;bundle-version="2.7.0",
  org.apache.commons.io;bundle-version="2.2.0",
  jep;bundle-version="2.40.0";visibility:=reexport,
+ com.github.yannrichet.JMathArray;bundle-version="1.0.0",
  org.preesm.commons;visibility:=reexport,
  org.preesm.workflow
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Export-Package: org.preesm.model.pisdf,
  org.preesm.model.pisdf.adapter,
+ org.preesm.model.pisdf.brv,
  org.preesm.model.pisdf.expression,
  org.preesm.model.pisdf.factory,
  org.preesm.model.pisdf.header.parser,
