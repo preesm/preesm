@@ -61,7 +61,6 @@ import org.preesm.model.pisdf.PiGraph;
 import org.preesm.model.pisdf.PortMemoryAnnotation;
 import org.preesm.model.pisdf.RoundBufferActor;
 import org.preesm.model.pisdf.factory.PiMMUserFactory;
-import org.preesm.model.scenario.PreesmScenario;
 
 /**
  *
@@ -131,11 +130,8 @@ public class PiMMSRVerticesLinker {
    *          the fifo to link
    * @param dag
    *          the dag in which we operate
-   * @param scenario
-   *          the scenario. Used to retrieve data size of the fifo
    */
-  public PiMMSRVerticesLinker(final Fifo fifo, final PiGraph dag, final PreesmScenario scenario,
-      final String graphPrefixe) {
+  public PiMMSRVerticesLinker(final Fifo fifo, final PiGraph dag, final String graphPrefixe) {
     this.fifo = fifo;
     this.fifoType = fifo.getType();
     this.delays = PiMMSRVerticesLinker.getNDelays(fifo);

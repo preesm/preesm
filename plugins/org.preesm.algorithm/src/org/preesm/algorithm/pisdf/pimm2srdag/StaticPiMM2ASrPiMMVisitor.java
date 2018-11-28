@@ -411,8 +411,7 @@ public class StaticPiMM2ASrPiMMVisitor extends PiMMSwitch<Boolean> {
     }
 
     // 4. Do the Single-Rate connections
-    final PiMMSRVerticesLinker srVerticesLinker = new PiMMSRVerticesLinker(fifo, this.result, this.scenario,
-        this.graphPrefix);
+    final PiMMSRVerticesLinker srVerticesLinker = new PiMMSRVerticesLinker(fifo, this.result, this.graphPrefix);
     srVerticesLinker.execute(this.brv, sourceSet, sinkSet);
 
     // In the case of Interfaces we might have disconnected the FIFO so let's reconnect it

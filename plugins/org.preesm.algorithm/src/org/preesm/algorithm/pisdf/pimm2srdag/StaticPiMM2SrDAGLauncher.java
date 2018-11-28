@@ -36,18 +36,10 @@
  */
 package org.preesm.algorithm.pisdf.pimm2srdag;
 
-import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.Map;
-import java.util.logging.Level;
-import org.apache.commons.lang3.time.StopWatch;
-import org.preesm.algorithm.mapper.model.MapperDAG;
-import org.preesm.algorithm.model.dag.DAGEdge;
-import org.preesm.algorithm.model.dag.DAGVertex;
-import org.preesm.algorithm.model.types.LongEdgePropertyType;
 import org.preesm.algorithm.pisdf.pimmoptims.BroadcastRoundBufferOptimization;
 import org.preesm.algorithm.pisdf.pimmoptims.ForkJoinOptimization;
-import org.preesm.commons.logger.PreesmLogger;
 import org.preesm.model.pisdf.AbstractVertex;
 import org.preesm.model.pisdf.Parameter;
 import org.preesm.model.pisdf.PiGraph;
@@ -127,64 +119,6 @@ public class StaticPiMM2SrDAGLauncher extends PiMMSwitch<Boolean> {
     brRbOptimization.optimize(acyclicSRPiMM);
 
     return acyclicSRPiMM;
-  }
-
-  /**
-   * Creates edge aggregate for all multi connection between two vertices.
-   *
-   * @param dag
-   *          the dag on which to perform
-   */
-  private void aggregateEdges(final MapperDAG dag) {
-    for (final DAGVertex vertex : dag.vertexSet()) {
-      // List of extra edges to remove
-      final ArrayList<DAGEdge> toRemove = new ArrayList<>();
-      for (final DAGEdge edge : vertex.incomingEdges()) {
-        final DAGVertex source = edge.getSource();
-        // Maybe doing the copy is not optimal
-        final ArrayList<DAGEdge> allEdges = new ArrayList<>(dag.getAllEdges(source, vertex));
-        // if there is only one connection no need to modify anything
-        if (allEdges.size() == 1 || toRemove.contains(allEdges.get(1))) {
-          continue;
-        }
-        // Get the first edge
-        final DAGEdge firstEdge = allEdges.remove(0);
-        for (final DAGEdge extraEdge : allEdges) {
-          // Update the weight
-          firstEdge.setWeight(
-              new LongEdgePropertyType(firstEdge.getWeight().longValue() + extraEdge.getWeight().longValue()));
-          // Add the aggregate edge
-          firstEdge.getAggregate().add(extraEdge.getAggregate().get(0));
-          toRemove.add(extraEdge);
-        }
-      }
-      // Removes the extra edges
-      toRemove.forEach(dag::removeEdge);
-    }
-  }
-
-  /**
-   * Converts the single rate acyclic PiSDF to {@link MapperDAG} and aggregate edges
-   */
-  public MapperDAG covnertToMapperDAG(PiGraph resultPi) {
-    // Convert the PiMM vertices to DAG vertices
-    final StaticPiMM2MapperDAGVisitor visitor = new StaticPiMM2MapperDAGVisitor(resultPi, this.scenario);
-    visitor.doSwitch(resultPi);
-    MapperDAG result = visitor.getResult();
-
-    // 6. Aggregate edges
-    final StopWatch timer = new StopWatch();
-    timer.start();
-    // This is needed as the memory allocator does not yet handle multiple edges
-    // There is a potential TODO for someone with a brave heart here
-    // if you're doing this, remember to check for addAggregate in TAGDag.java and for createEdge in
-    // SRVerticesLinker.java.
-    // also in ScriptRunner.xtend, there is a part where the aggregate list is flatten, check that also
-    aggregateEdges(result);
-    timer.stop();
-    final String msg = "Edge aggregation: " + timer + "s.";
-    PreesmLogger.getLogger().log(Level.INFO, msg);
-    return result;
   }
 
 }
