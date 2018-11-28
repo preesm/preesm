@@ -41,7 +41,6 @@ package org.preesm.model.pisdf.statictools;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import org.eclipse.emf.common.util.EList;
-import org.nfunk.jep.JEP;
 import org.preesm.commons.exceptions.PreesmException;
 import org.preesm.model.pisdf.AbstractActor;
 import org.preesm.model.pisdf.ConfigInputInterface;
@@ -106,29 +105,17 @@ public class PiSDFParameterResolverVisitor extends PiMMSwitch<Boolean> {
     }
   }
 
-  private JEP initJep(final Map<String, Long> portValues) {
-    final JEP jep = new JEP();
-    if (portValues != null) {
-      portValues.forEach(jep::addVariable);
-    }
-    // TODO move to JEP 3 and get rid of these
-    jep.addStandardConstants();
-    jep.addStandardFunctions();
-    return jep;
-  }
-
-  private void parseJEP(final AbstractActor actor, final Map<String, Long> portValues) {
+  private void resolveActorPorts(final AbstractActor actor, final Map<String, Long> paramValues) {
     // Init the JEP parser associated with the actor
-    final JEP jepParser = initJep(portValues);
     // Iterate over all data ports of the actor and resolve their rates
     for (final DataPort dp : actor.getAllDataPorts()) {
-      resolveExpression(dp, jepParser);
+      resolveExpression(dp, paramValues);
     }
 
     // Parse delays as well
     if (actor instanceof PiGraph) {
       for (final Delay d : ((PiGraph) actor).getDelays()) {
-        resolveExpression(d, jepParser);
+        resolveExpression(d, paramValues);
       }
     }
   }
@@ -145,9 +132,9 @@ public class PiSDFParameterResolverVisitor extends PiMMSwitch<Boolean> {
    * @throws PiMMHelperException
    *           the PiMMHandlerException exception
    */
-  private void resolveExpression(final ExpressionHolder holder, final JEP jep) {
+  private void resolveExpression(final ExpressionHolder holder, final Map<String, Long> paramValues) {
     final Expression expression = holder.getExpression();
-    final long value = new StringExpressionFastEvaluator(jep).doSwitch(expression);
+    final long value = new StringExpressionFastEvaluator(paramValues).doSwitch(expression);
     holder.setExpression(value);
   }
 
@@ -160,12 +147,6 @@ public class PiSDFParameterResolverVisitor extends PiMMSwitch<Boolean> {
    */
   @Override
   public Boolean caseParameter(final Parameter p) {
-    if (!p.isLocallyStatic()) {
-      throw new PreesmException(
-          "Parameter " + p.getName() + " is depends on a configuration actor. It is thus impossible to use the"
-              + " Static PiMM 2 SDF transformation. Try instead the Dynamic PiMM 2 SDF"
-              + " transformation (id: org.ietr.preesm.experiment.pimm2sdf.PiMM2SDFTask)");
-    }
     if (!this.parameterValues.containsKey(p)) {
       // Evaluate the expression wrt. the current values of the
       // parameters and set the result as new expression
@@ -213,7 +194,7 @@ public class PiSDFParameterResolverVisitor extends PiMMSwitch<Boolean> {
         portValues.put(port.getName(), this.parameterValues.get(p));
       }
     }
-    parseJEP(actor, portValues);
+    resolveActorPorts(actor, portValues);
     return true;
   }
 
@@ -234,12 +215,19 @@ public class PiSDFParameterResolverVisitor extends PiMMSwitch<Boolean> {
     for (final Parameter p : actor.getInputParameters()) {
       portValues.put(p.getName(), this.parameterValues.get(p));
     }
-    parseJEP(actor, portValues);
+    resolveActorPorts(actor, portValues);
     return true;
   }
 
   @Override
   public Boolean casePiGraph(final PiGraph graph) {
+    if (!graph.isLocallyStatic()) {
+      throw new PreesmException(
+          "PiGraph " + graph.getName() + " has configuration actors. It is thus impossible to use the"
+              + " Static PiMM 2 SDF transformation. Try instead the Dynamic PiMM 2 SDF"
+              + " transformation (id: org.ietr.preesm.experiment.pimm2sdf.PiMM2SDFTask)");
+    }
+
     // Resolve input interfaces
     for (final ConfigInputInterface p : graph.getConfigInputInterfaces()) {
       doSwitch(p);
@@ -268,7 +256,7 @@ public class PiSDFParameterResolverVisitor extends PiMMSwitch<Boolean> {
         portValues.put(port.getName(), this.parameterValues.get(p));
       }
     }
-    parseJEP(graph, portValues);
+    resolveActorPorts(graph, portValues);
 
     // Switch on child subgraphs
     for (final PiGraph g : graph.getChildrenGraphs()) {

@@ -40,9 +40,6 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import org.eclipse.emf.common.util.EList;
-import org.nfunk.jep.JEP;
-import org.nfunk.jep.Node;
-import org.nfunk.jep.ParseException;
 import org.preesm.model.pisdf.AbstractActor;
 import org.preesm.model.pisdf.ConfigInputPort;
 import org.preesm.model.pisdf.DataPort;
@@ -54,12 +51,6 @@ import org.preesm.model.pisdf.InterfaceActor;
 import org.preesm.model.pisdf.Parameter;
 import org.preesm.model.pisdf.PeriodicElement;
 import org.preesm.model.pisdf.StringExpression;
-import org.preesm.model.pisdf.expression.functions.CeilFunction;
-import org.preesm.model.pisdf.expression.functions.FloorFunction;
-import org.preesm.model.pisdf.expression.functions.GeometricSum;
-import org.preesm.model.pisdf.expression.functions.MaxFunction;
-import org.preesm.model.pisdf.expression.functions.MaxPowerDivisibility;
-import org.preesm.model.pisdf.expression.functions.MinFunction;
 
 /**
  *
@@ -82,53 +73,8 @@ public class StringExpressionEvaluator {
       return Long.parseLong(expression.getExpressionString());
     } catch (final NumberFormatException e) {
       final Map<String, Number> addInputParameterValues = StringExpressionEvaluator.addInputParameterValues(expression);
-      return StringExpressionEvaluator.evaluate(expression.getExpressionAsString(), addInputParameterValues);
+      return JEPWrapper.evaluate(expression.getExpressionAsString(), addInputParameterValues);
     }
-  }
-
-  private static final long evaluate(final String expression, final Map<String, Number> addInputParameterValues) {
-    final JEP jep = StringExpressionEvaluator.initJep(addInputParameterValues);
-    long result;
-    try {
-      result = StringExpressionEvaluator.parse(expression, jep);
-    } catch (final ParseException e) {
-      final String msg = "Could not evaluate " + expression + ":\n" + e.getMessage();
-      throw new ExpressionEvaluationException(msg, e);
-    }
-    return result;
-  }
-
-  private static JEP initJep(final Map<String, Number> addInputParameterValues) {
-    final JEP jep = new JEP();
-
-    if (addInputParameterValues != null) {
-      addInputParameterValues.forEach(jep::addVariable);
-    }
-
-    jep.addStandardConstants();
-    jep.addStandardFunctions();
-
-    new FloorFunction().integrateWithin(jep);
-    new CeilFunction().integrateWithin(jep);
-    new MinFunction().integrateWithin(jep);
-    new MaxFunction().integrateWithin(jep);
-    new GeometricSum().integrateWithin(jep);
-    new MaxPowerDivisibility().integrateWithin(jep);
-
-    return jep;
-  }
-
-  private static long parse(final String allExpression, final JEP jep) throws ParseException {
-    final Node parse = jep.parse(allExpression);
-    final Object result = jep.evaluate(parse);
-    if (!(result instanceof Double)) {
-      throw new UnsupportedOperationException("Unsupported result type " + result.getClass().getSimpleName());
-    }
-    final Double dResult = (Double) result;
-    if (Double.isInfinite(dResult)) {
-      throw new ExpressionEvaluationException("Expression '" + allExpression + "' evaluated to infinity.");
-    }
-    return Math.round(dResult);
   }
 
   private static Map<String, Number> addInputParameterValues(final Expression expression) {
@@ -163,4 +109,5 @@ public class StringExpressionEvaluator {
     }
     return result;
   }
+
 }
