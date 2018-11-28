@@ -73,7 +73,7 @@ import org.preesm.model.pisdf.statictools.PiSDFParameterResolverVisitor;
  *         special properties of a PiGraph rapidly
  *
  */
-public class PiMMHandler {
+public class PiMMHelper {
 
   /**
    * List of connectedComponents contained in a graph
@@ -132,7 +132,7 @@ public class PiMMHandler {
       PreesmLogger.getLogger().log(Level.INFO, "No FIFOs to extrac, empty connectedComponent.");
       return Collections.emptyList();
     }
-    final boolean containsInterfaceActors = PiMMHandler.containsInterfaceActors(cc);
+    final boolean containsInterfaceActors = PiMMHelper.containsInterfaceActors(cc);
     final List<Fifo> fifos = new ArrayList<>();
     for (final AbstractActor actor : cc) {
       extractFifosFromActor(containsInterfaceActors, actor, fifos);
@@ -195,7 +195,7 @@ public class PiMMHandler {
    * @return all CCs contained in the reference graph (read only access) @ the PiMMHandlerException exception
    */
   public static List<List<AbstractActor>> getAllConnectedComponents(final PiGraph graph) {
-    return PiMMHandler.ccsFetcher(graph);
+    return PiMMHelper.ccsFetcher(graph);
   }
 
   /**
@@ -210,9 +210,9 @@ public class PiMMHandler {
    */
   public static List<List<AbstractActor>> getAllConnectedComponentsWOInterfaces(final PiGraph graph) {
     // First fetch all subgraphs
-    final List<List<AbstractActor>> ccsFetcher = PiMMHandler.ccsFetcher(graph);
+    final List<List<AbstractActor>> ccsFetcher = PiMMHelper.ccsFetcher(graph);
     // Now remove interfaces from subgraphs
-    return PiMMHandler.ccsWOInterfacesFetcher(ccsFetcher);
+    return PiMMHelper.ccsWOInterfacesFetcher(ccsFetcher);
   }
 
   /**
@@ -264,7 +264,7 @@ public class PiMMHandler {
       if (!alreadyContained) {
         final List<AbstractActor> cc = new ArrayList<>();
         cc.add(actor);
-        PiMMHandler.iterativeCCFetcher(actor, cc);
+        PiMMHelper.iterativeCCFetcher(actor, cc);
         listCCs.add(cc);
       }
     }
@@ -289,7 +289,7 @@ public class PiMMHandler {
       final AbstractActor targetActor = fifo.getTargetPort().getContainingActor();
       if (!cc.contains(targetActor)) {
         cc.add(targetActor);
-        PiMMHandler.iterativeCCFetcher(targetActor, cc);
+        PiMMHelper.iterativeCCFetcher(targetActor, cc);
       }
     }
     for (final DataInputPort input : actor.getDataInputPorts()) {
@@ -301,7 +301,7 @@ public class PiMMHandler {
       final AbstractActor sourceActor = fifo.getSourcePort().getContainingActor();
       if (!cc.contains(sourceActor)) {
         cc.add(sourceActor);
-        PiMMHandler.iterativeCCFetcher(sourceActor, cc);
+        PiMMHelper.iterativeCCFetcher(sourceActor, cc);
       }
     }
   }

@@ -47,7 +47,7 @@ import org.preesm.model.pisdf.Parameter;
 import org.preesm.model.pisdf.PiGraph;
 import org.preesm.model.pisdf.brv.BRVMethod;
 import org.preesm.model.pisdf.brv.PiBRV;
-import org.preesm.model.pisdf.statictools.PiMMHandler;
+import org.preesm.model.pisdf.statictools.PiMMHelper;
 import org.preesm.model.pisdf.util.PiMMSwitch;
 import org.preesm.model.scenario.PreesmScenario;
 
@@ -91,14 +91,14 @@ public class StaticPiMMFlatPiMMLauncher extends PiMMSwitch<Boolean> {
     timer.start();
     // 1. First we resolve all parameters.
     // It must be done first because, when removing persistence, local parameters have to be known at upper level
-    PiMMHandler.resolveAllParameters(this.graph);
+    PiMMHelper.resolveAllParameters(this.graph);
     timer.stop();
     String msg = "Parameters and rates evaluations: " + timer + "s.";
     PreesmLogger.getLogger().log(Level.INFO, msg);
     // 2. We perform the delay transformation step that deals with persistence
     timer.reset();
     timer.start();
-    PiMMHandler.removePersistence(this.graph);
+    PiMMHelper.removePersistence(this.graph);
     timer.stop();
     String msg2 = "Persistence removal: " + timer + "s.";
     PreesmLogger.getLogger().log(Level.INFO, msg2);
@@ -107,7 +107,7 @@ public class StaticPiMMFlatPiMMLauncher extends PiMMSwitch<Boolean> {
     // 4. Print the RV values
     PiBRV.printRV(graphBRV);
     // 4.5 Check periods with BRV
-    PiMMHandler.checkPeriodicity(this.graphBRV);
+    PiMMHelper.checkPeriodicity(this.graphBRV);
     // 5. Now, flatten the graph
     return convert2FlatPiMM();
   }

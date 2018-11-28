@@ -77,7 +77,7 @@ import org.preesm.model.pisdf.Port;
 import org.preesm.model.pisdf.PortMemoryAnnotation;
 import org.preesm.model.pisdf.RoundBufferActor;
 import org.preesm.model.pisdf.factory.PiMMUserFactory;
-import org.preesm.model.pisdf.statictools.PiMMHandler;
+import org.preesm.model.pisdf.statictools.PiMMHelper;
 import org.preesm.model.pisdf.util.PiMMSwitch;
 import org.preesm.model.scenario.ConstraintGroup;
 import org.preesm.model.scenario.ConstraintGroupManager;
@@ -518,7 +518,7 @@ public class StaticPiMM2FlatPiMMVisitor extends PiMMSwitch<Boolean> {
     // Add the input port and the output port
     final DataInputPort in = PiMMUserFactory.instance.createDataInputPort();
     in.setName(actor.getName());
-    final Long graphRV = PiMMHandler.getHierarchichalRV(graph, this.brv);
+    final Long graphRV = PiMMHelper.getHierarchichalRV(graph, this.brv);
     final long inRate = interfaceRateExpression.evaluate() * graphRV;
     in.setExpression(inRate);
     in.setAnnotation(PortMemoryAnnotation.READ_ONLY);
@@ -557,7 +557,7 @@ public class StaticPiMM2FlatPiMMVisitor extends PiMMSwitch<Boolean> {
     // Add the input port and the output port
     final DataOutputPort out = PiMMUserFactory.instance.createDataOutputPort();
     out.setName(actor.getName());
-    final Long graphRV = PiMMHandler.getHierarchichalRV(graph, this.brv);
+    final Long graphRV = PiMMHelper.getHierarchichalRV(graph, this.brv);
     final long outRate = interfaceRateExpression.evaluate() * graphRV;
     out.setExpression(outRate);
     out.setAnnotation(PortMemoryAnnotation.WRITE_ONLY);
@@ -641,7 +641,7 @@ public class StaticPiMM2FlatPiMMVisitor extends PiMMSwitch<Boolean> {
   private void quasiSRTransformation(final PiGraph graph) {
     final String backupPrefix = this.graphPrefix;
     // We need to get the repetition vector of the graph
-    Long graphRV = PiMMHandler.getHierarchichalRV(graph, this.brv);
+    Long graphRV = PiMMHelper.getHierarchichalRV(graph, this.brv);
     for (long i = 0; i < graphRV; ++i) {
       if (!backupPrefix.isEmpty()) {
         this.graphPrefix = backupPrefix + Long.toString(i) + "_";

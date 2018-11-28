@@ -43,7 +43,7 @@ import org.preesm.model.pisdf.Parameter;
 import org.preesm.model.pisdf.PiGraph;
 import org.preesm.model.pisdf.brv.BRVMethod;
 import org.preesm.model.pisdf.brv.PiBRV;
-import org.preesm.model.pisdf.statictools.PiMMHandler;
+import org.preesm.model.pisdf.statictools.PiMMHelper;
 import org.preesm.model.pisdf.statictools.optims.BroadcastRoundBufferOptimization;
 import org.preesm.model.pisdf.statictools.optims.ForkJoinOptimization;
 import org.preesm.model.pisdf.util.PiMMSwitch;
@@ -87,14 +87,14 @@ public class StaticPiMM2SrDAGLauncher extends PiMMSwitch<Boolean> {
   public PiGraph launch(final BRVMethod method) {
     // 1. First we resolve all parameters.
     // It must be done first because, when removing persistence, local parameters have to be known at upper level
-    PiMMHandler.resolveAllParameters(this.graph);
+    PiMMHelper.resolveAllParameters(this.graph);
     // 2. We perform the delay transformation step that deals with persistence
-    PiMMHandler.removePersistence(this.graph);
+    PiMMHelper.removePersistence(this.graph);
     // 3. Compute BRV following the chosen method
     this.graphBRV = PiBRV.compute(graph, method);
     // 4. Print the RV values
     // 4.5 Check periods with BRV
-    PiMMHandler.checkPeriodicity(this.graphBRV);
+    PiMMHelper.checkPeriodicity(this.graphBRV);
     // 5. Convert to SR-DAG
     return convert2SRDAG();
   }

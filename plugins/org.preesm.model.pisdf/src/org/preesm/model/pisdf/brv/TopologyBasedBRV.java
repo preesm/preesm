@@ -52,7 +52,7 @@ import org.preesm.model.pisdf.AbstractActor;
 import org.preesm.model.pisdf.AbstractVertex;
 import org.preesm.model.pisdf.Fifo;
 import org.preesm.model.pisdf.PiGraph;
-import org.preesm.model.pisdf.statictools.PiMMHandler;
+import org.preesm.model.pisdf.statictools.PiMMHelper;
 
 /**
  * This class is used to compute the basic repetition vector of a static PiSDF graph using topology matrix method.
@@ -69,10 +69,10 @@ class TopologyBasedBRV extends PiBRV {
       throw new PreesmException(msg);
     }
     // Get all sub graph composing the current graph
-    final List<List<AbstractActor>> subgraphsWOInterfaces = PiMMHandler.getAllConnectedComponentsWOInterfaces(piGraph);
+    final List<List<AbstractActor>> subgraphsWOInterfaces = PiMMHelper.getAllConnectedComponentsWOInterfaces(piGraph);
     for (final List<AbstractActor> subgraph : subgraphsWOInterfaces) {
       // Construct the list of Edges without interfaces
-      final List<Fifo> listFifo = PiMMHandler.getFifosFromCCWOSelfLoop(subgraph);
+      final List<Fifo> listFifo = PiMMHelper.getFifosFromCCWOSelfLoop(subgraph);
 
       // Get the topology matrix
       if (subgraph.isEmpty()) {
