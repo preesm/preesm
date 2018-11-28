@@ -34,7 +34,7 @@
  * The fact that you are presently reading this means that you have had
  * knowledge of the CeCILL license and that you accept its terms.
  */
-package org.preesm.algorithm.pisdf.checker;
+package org.preesm.model.pisdf.check;
 
 import java.util.LinkedHashSet;
 import java.util.Set;
@@ -46,7 +46,6 @@ import org.preesm.model.pisdf.Actor;
 import org.preesm.model.pisdf.PiGraph;
 import org.preesm.model.pisdf.Refinement;
 
-// TODO: Auto-generated Javadoc
 /**
  * Class to check different properties of the Refinements of the Actors of a PiGraph. Entry point is the
  * checkRefinements method. Actors with invalid refinements are kept in several sets

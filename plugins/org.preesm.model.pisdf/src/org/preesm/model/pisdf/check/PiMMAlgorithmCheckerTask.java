@@ -33,7 +33,7 @@
  * The fact that you are presently reading this means that you have had
  * knowledge of the CeCILL license and that you accept its terms.
  */
-package org.preesm.algorithm.pisdf.checker;
+package org.preesm.model.pisdf.check;
 
 import java.util.Collections;
 import java.util.LinkedHashMap;
@@ -41,14 +41,12 @@ import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.eclipse.core.runtime.IProgressMonitor;
-import org.preesm.commons.exceptions.PreesmException;
 import org.preesm.commons.logger.PreesmLogger;
 import org.preesm.model.pisdf.PiGraph;
 import org.preesm.workflow.elements.Workflow;
 import org.preesm.workflow.implement.AbstractTaskImplementation;
 import org.preesm.workflow.implement.AbstractWorkflowNodeImplementation;
 
-// TODO: Auto-generated Javadoc
 /**
  * Head class to launch check on a PiGraph.
  *
@@ -68,20 +66,20 @@ public class PiMMAlgorithmCheckerTask extends AbstractTaskImplementation {
    */
   @Override
   public Map<String, Object> execute(final Map<String, Object> inputs, final Map<String, String> parameters,
-      final IProgressMonitor monitor, final String nodeName, final Workflow workflow) throws PreesmException {
+      final IProgressMonitor monitor, final String nodeName, final Workflow workflow) {
 
     // Get the PiGraph to check
     final PiGraph graph = (PiGraph) inputs.get(AbstractWorkflowNodeImplementation.KEY_PI_GRAPH);
     // Check the graph and display corresponding messages
     final PiMMAlgorithmChecker checker = new PiMMAlgorithmChecker();
     if (checker.checkGraph(graph)) {
-      this.logger.log(Level.FINE, checker.getOkMsg().toString());
+      this.logger.log(Level.FINE, checker.getOkMsg());
     } else {
       if (checker.isErrors()) {
-        this.logger.log(Level.SEVERE, checker.getErrorMsg().toString());
+        this.logger.log(Level.SEVERE, checker.getErrorMsg());
       }
       if (checker.isWarnings()) {
-        this.logger.log(Level.WARNING, checker.getWarningMsg().toString());
+        this.logger.log(Level.WARNING, checker.getWarningMsg());
       }
     }
 

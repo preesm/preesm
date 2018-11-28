@@ -33,14 +33,13 @@
  * The fact that you are presently reading this means that you have had
  * knowledge of the CeCILL license and that you accept its terms.
  */
-package org.preesm.algorithm.pisdf.checker;
+package org.preesm.model.pisdf.check;
 
 import java.util.LinkedHashSet;
 import java.util.Set;
 import org.preesm.model.pisdf.Fifo;
 import org.preesm.model.pisdf.PiGraph;
 
-// TODO: Auto-generated Javadoc
 /**
  * Class to check different properties of the Fifos of a PiGraph. Entry point is the checkFifos method. Invalid Fifos
  * are kept in several sets.

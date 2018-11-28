@@ -44,8 +44,8 @@ import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.viewers.TreeSelection;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.ui.IWorkbenchPage;
-import org.preesm.algorithm.pisdf.checker.PiMMAlgorithmChecker;
 import org.preesm.model.pisdf.PiGraph;
+import org.preesm.model.pisdf.check.PiMMAlgorithmChecker;
 import org.preesm.model.pisdf.serialize.PiParser;
 import org.preesm.ui.PreesmUIPlugin;
 

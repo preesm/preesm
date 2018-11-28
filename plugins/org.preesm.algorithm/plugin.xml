@@ -233,23 +233,6 @@
          </outputs>
       </task>
       <task
-            id="org.ietr.preesm.pimm.checker.task.PiMMAlgorithmCheckerTask"
-            name="PiMM Checker"
-            type="org.preesm.algorithm.pisdf.checker.task.PiMMAlgorithmCheckerTask">
-         <inputs>
-            <input
-                  id="PiMM"
-                  object="org.preesm.model.pisdf.PiGraph">
-            </input>
-         </inputs>
-         <outputs>
-            <output
-                  id="PiMM"
-                  object="org.preesm.model.pisdf.PiGraph">
-            </output>
-         </outputs>
-      </task>
-      <task
             id="org.ietr.preesm.experiment.pimm2srdag.StaticPiMM2SrDAGTask"
             name="Static PiMM to Single-Rate DAG transformation"
             type="org.preesm.algorithm.pisdf.pimm2srdag.StaticPiMM2SrDAGTask">

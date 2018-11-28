@@ -35,7 +35,7 @@
  * The fact that you are presently reading this means that you have had
  * knowledge of the CeCILL license and that you accept its terms.
  */
-package org.preesm.algorithm.pisdf.checker;
+package org.preesm.model.pisdf.check;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -45,7 +45,6 @@ import org.preesm.model.pisdf.Actor;
 import org.preesm.model.pisdf.Fifo;
 import org.preesm.model.pisdf.PiGraph;
 
-// TODO: Auto-generated Javadoc
 /**
  * Main class of the checker. Call all the independent checkers and create error messages from their result.
  *
