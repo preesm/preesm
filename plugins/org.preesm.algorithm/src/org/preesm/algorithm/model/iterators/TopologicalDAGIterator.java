@@ -34,7 +34,7 @@
  * The fact that you are presently reading this means that you have had
  * knowledge of the CeCILL license and that you accept its terms.
  */
-package org.preesm.algorithm.iterators;
+package org.preesm.algorithm.model.iterators;
 
 import org.jgrapht.Graph;
 import org.jgrapht.traverse.TopologicalOrderIterator;

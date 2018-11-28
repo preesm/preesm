@@ -43,13 +43,13 @@ import java.util.List;
 import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.Set;
-import org.preesm.algorithm.iterators.TopologicalDAGIterator;
 import org.preesm.algorithm.mapper.model.MapperDAG;
 import org.preesm.algorithm.mapper.model.MapperDAGEdge;
 import org.preesm.algorithm.mapper.model.MapperDAGVertex;
 import org.preesm.algorithm.mapper.model.property.EdgeTiming;
 import org.preesm.algorithm.mapper.model.property.VertexTiming;
 import org.preesm.algorithm.model.dag.DAGVertex;
+import org.preesm.algorithm.model.iterators.TopologicalDAGIterator;
 import org.preesm.algorithm.model.visitors.IGraphVisitor;
 import org.preesm.commons.exceptions.PreesmException;
 
