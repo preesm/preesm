@@ -38,10 +38,10 @@ package fi.abo.preesm.dataparallel.fifo
 
 import java.util.logging.Logger
 import org.jgrapht.EdgeFactory
-import org.preesm.algorithm.factories.SDFEdgeFactory
 import org.preesm.algorithm.model.AbstractEdgePropertyType
 import org.preesm.algorithm.model.AbstractGraph
 import org.preesm.algorithm.model.IInterface
+import org.preesm.algorithm.model.factories.SDFEdgeFactory
 import org.preesm.algorithm.model.sdf.SDFAbstractVertex
 import org.preesm.algorithm.model.sdf.SDFEdge
 import org.preesm.algorithm.model.sdf.SDFGraph
