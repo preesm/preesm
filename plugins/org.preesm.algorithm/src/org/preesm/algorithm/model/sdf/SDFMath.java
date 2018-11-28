@@ -32,7 +32,7 @@
  * The fact that you are presently reading this means that you have had
  * knowledge of the CeCILL license and that you accept its terms.
  */
-package org.preesm.algorithm;
+package org.preesm.algorithm.model.sdf;
 
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
@@ -40,10 +40,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import org.math.array.DoubleArray;
-import org.preesm.algorithm.model.sdf.SDFAbstractVertex;
-import org.preesm.algorithm.model.sdf.SDFEdge;
-import org.preesm.algorithm.model.sdf.SDFGraph;
-import org.preesm.algorithm.model.sdf.SDFInterfaceVertex;
 import org.preesm.algorithm.model.sdf.esdf.SDFSinkInterfaceVertex;
 import org.preesm.algorithm.model.sdf.esdf.SDFSourceInterfaceVertex;
 import org.preesm.commons.exceptions.PreesmException;

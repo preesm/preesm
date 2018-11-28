@@ -47,7 +47,6 @@ import java.util.stream.Collectors;
 import org.jgrapht.EdgeFactory;
 import org.math.array.DoubleArray;
 import org.math.array.LinearAlgebra;
-import org.preesm.algorithm.SDFMath;
 import org.preesm.algorithm.model.AbstractEdge;
 import org.preesm.algorithm.model.AbstractEdgePropertyType;
 import org.preesm.algorithm.model.AbstractGraph;
