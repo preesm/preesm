@@ -20,5 +20,6 @@ Export-Package: org.preesm.commons,
  org.preesm.commons.files,
  org.preesm.commons.logger,
  org.preesm.commons.math,
- org.preesm.commons.messages
+ org.preesm.commons.messages,
+ org.preesm.commons.model
 
