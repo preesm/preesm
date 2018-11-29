@@ -71,7 +71,7 @@ import org.eclipse.ui.forms.widgets.ExpandableComposite;
 import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.eclipse.ui.forms.widgets.ScrolledForm;
 import org.eclipse.ui.forms.widgets.Section;
-import org.preesm.algorithm.io.gml.InvalidModelException;
+import org.preesm.commons.exceptions.PreesmException;
 import org.preesm.commons.files.WorkspaceUtils;
 import org.preesm.model.scenario.PreesmScenario;
 import org.preesm.model.scenario.papi.PapiComponent;
@@ -380,14 +380,14 @@ public class PapifyPage extends FormPage implements IPropertyListener {
    *
    * @param text
    *          the text
-   * @throws InvalidModelException
+   * @throws PreesmException
    *           the invalid model exception
    * @throws FileNotFoundException
    *           the file not found exception
    * @throws CoreException
    *           the core exception
    */
-  private void importData(final Text text) throws InvalidModelException, FileNotFoundException, CoreException {
+  private void importData(final Text text) throws PreesmException, FileNotFoundException, CoreException {
 
     final IWorkspace workspace = ResourcesPlugin.getWorkspace();
 

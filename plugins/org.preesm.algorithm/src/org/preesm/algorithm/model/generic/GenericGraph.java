@@ -37,10 +37,10 @@
  */
 package org.preesm.algorithm.model.generic;
 
-import org.preesm.algorithm.factories.GenericEdgeFactory;
-import org.preesm.algorithm.factories.IModelVertexFactory;
 import org.preesm.algorithm.model.AbstractGraph;
 import org.preesm.algorithm.model.PropertyFactory;
+import org.preesm.algorithm.model.factories.GenericEdgeFactory;
+import org.preesm.algorithm.model.factories.IModelVertexFactory;
 
 /**
  * The Class GenericGraph.

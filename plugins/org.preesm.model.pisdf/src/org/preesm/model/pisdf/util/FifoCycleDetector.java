@@ -48,7 +48,6 @@ import org.preesm.model.pisdf.DataOutputPort;
 import org.preesm.model.pisdf.Dependency;
 import org.preesm.model.pisdf.Fifo;
 import org.preesm.model.pisdf.PiGraph;
-import org.preesm.model.pisdf.util.PiMMSwitch;
 
 // TODO: Auto-generated Javadoc
 /**

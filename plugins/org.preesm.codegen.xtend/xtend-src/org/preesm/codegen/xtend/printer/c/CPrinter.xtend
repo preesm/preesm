@@ -51,7 +51,6 @@ import java.util.Date
 import java.util.List
 import org.apache.velocity.VelocityContext
 import org.apache.velocity.app.VelocityEngine
-import org.preesm.codegen.CodegenException
 import org.preesm.codegen.model.Block
 import org.preesm.codegen.model.Buffer
 import org.preesm.codegen.model.BufferIterator
@@ -76,6 +75,7 @@ import org.preesm.codegen.model.SubBuffer
 import org.preesm.codegen.model.Variable
 import org.preesm.codegen.printer.DefaultPrinter
 import org.preesm.codegen.xtend.CodegenPlugin
+import org.preesm.commons.exceptions.PreesmException
 import org.preesm.commons.files.URLResolver
 import org.preesm.model.pisdf.util.CHeaderUsedLocator
 
@@ -278,7 +278,7 @@ class CPrinter extends DefaultPrinter {
 		 	inputIdx = inputIdx - call.inputBuffers.get(i).size
 		 	lastInputs.add(0,call.inputBuffers.get(i))
 			if (i < 0) {
-				throw new CodegenException("Invalid RoundBuffer sizes: output size is greater than cumulative input size.")
+				throw new PreesmException("Invalid RoundBuffer sizes: output size is greater than cumulative input size.")
 			}
 		 	i=i-1
 		 }
@@ -367,7 +367,7 @@ class CPrinter extends DefaultPrinter {
 		if(communication.nodes.forall[type == "SHARED_MEM"]) {
 			return super.caseCommunication(communication)
 		} else {
-			throw new CodegenException("Communication "+ communication.name +
+			throw new PreesmException("Communication "+ communication.name +
 				 " has at least one unsupported communication node"+
 				 " for the " + this.class.name + " printer")
 		}
@@ -398,7 +398,7 @@ class CPrinter extends DefaultPrinter {
 	    try {
 	      reader = new InputStreamReader(mainTemplate.openStream());
 	    } catch (IOException e) {
-	      throw new CodegenException("Could not locate main template [" + templateLocalURL + "].", e);
+	      throw new PreesmException("Could not locate main template [" + templateLocalURL + "].", e);
 	    }
 
 	    // 4- init output writer
@@ -428,7 +428,7 @@ class CPrinter extends DefaultPrinter {
 		files.forEach[it | try {
 			result.put(it, URLResolver.readURLInBundleList(stdFilesFolder + it, CodegenPlugin.BUNDLE_ID))
 		} catch (IOException exc) {
-			throw new CodegenException("Could not generated content for " + it, exc)
+			throw new PreesmException("Could not generated content for " + it, exc)
 		}]
 		result.put("preesm_gen.h",generatePreesmHeader())
 		return result

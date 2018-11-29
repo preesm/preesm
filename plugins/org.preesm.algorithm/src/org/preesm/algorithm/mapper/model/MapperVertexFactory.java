@@ -38,10 +38,10 @@
  */
 package org.preesm.algorithm.mapper.model;
 
-import org.preesm.algorithm.factories.IModelVertexFactory;
 import org.preesm.algorithm.model.AbstractVertex;
 import org.preesm.algorithm.model.IInterface;
 import org.preesm.algorithm.model.dag.DAGVertex;
+import org.preesm.algorithm.model.factories.IModelVertexFactory;
 import org.w3c.dom.Element;
 
 /**

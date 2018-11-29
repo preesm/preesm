@@ -44,7 +44,7 @@ import org.junit.Test
 import org.junit.runner.RunWith
 import org.junit.runners.Parameterized
 import org.preesm.algorithm.model.sdf.SDFGraph
-import org.preesm.algorithm.model.visitors.SDF4JException
+import org.preesm.commons.exceptions.PreesmException
 
 /**
  * Property based test to verify {@link DataParallelCheckOperations} works as expected
@@ -88,7 +88,7 @@ class DataParallelCheckOperationsTest {
 	 * <p>
 	 * <i>Strong Test</i>
 	 */
-	@Test(expected = SDF4JException)
+	@Test(expected = PreesmException)
 	def void exceptionHierGraph() {
 		val isolatedSubgraphsVisitor = new DataParallelCheckOperations
 		ExampleGraphs.acyclicHierarchicalTwoActors.accept(isolatedSubgraphsVisitor)

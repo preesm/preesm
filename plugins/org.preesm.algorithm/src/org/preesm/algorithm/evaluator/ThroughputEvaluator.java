@@ -35,7 +35,6 @@
  */
 package org.preesm.algorithm.evaluator;
 
-import org.preesm.algorithm.model.parameters.InvalidExpressionException;
 import org.preesm.algorithm.model.sdf.SDFAbstractVertex;
 import org.preesm.algorithm.model.sdf.SDFEdge;
 import org.preesm.algorithm.model.sdf.SDFGraph;
@@ -59,10 +58,8 @@ public abstract class ThroughputEvaluator {
    * @param inputGraph
    *          the graph to evaluate
    * @return the double
-   * @throws InvalidExpressionException
-   *           the invalid expression exception
    */
-  public abstract double launch(SDFGraph inputGraph) throws InvalidExpressionException;
+  public abstract double launch(SDFGraph inputGraph);
 
   /**
    * Returns the throughput of the graph given its optimal normalized period, the throughput is the minimal throughput

@@ -45,10 +45,10 @@ import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.Path;
 import org.preesm.algorithm.model.dag.DirectedAcyclicGraph;
+import org.preesm.commons.exceptions.PreesmException;
 import org.preesm.commons.files.ContainersManager;
 import org.preesm.commons.files.PathTools;
 import org.preesm.commons.files.WorkspaceUtils;
-import org.preesm.workflow.WorkflowException;
 import org.preesm.workflow.elements.Workflow;
 import org.preesm.workflow.implement.AbstractTaskImplementation;
 
@@ -67,7 +67,7 @@ public class DAGExportTransform extends AbstractTaskImplementation {
    */
   @Override
   public Map<String, Object> execute(final Map<String, Object> inputs, final Map<String, String> parameters,
-      final IProgressMonitor monitor, final String nodeName, final Workflow workflow) throws WorkflowException {
+      final IProgressMonitor monitor, final String nodeName, final Workflow workflow) throws PreesmException {
 
     final DirectedAcyclicGraph dag = (DirectedAcyclicGraph) inputs.get("DAG");
 
@@ -82,7 +82,7 @@ public class DAGExportTransform extends AbstractTaskImplementation {
         graphmlPath = graphmlPath.append(dag.getName() + ".graphml");
       }
     } catch (CoreException | IllegalArgumentException e) {
-      throw new WorkflowException("Path " + sGraphmlPath + " is not a valid path for export.\n" + e.getMessage());
+      throw new PreesmException("Path " + sGraphmlPath + " is not a valid path for export.\n" + e.getMessage());
     }
     // Exporting the DAG in a GraphML
     if (graphmlPath != null) {

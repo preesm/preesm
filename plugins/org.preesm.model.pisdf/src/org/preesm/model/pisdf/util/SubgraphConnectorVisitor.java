@@ -57,7 +57,6 @@ import org.preesm.model.pisdf.DelayActor;
 import org.preesm.model.pisdf.ExecutableActor;
 import org.preesm.model.pisdf.Parameter;
 import org.preesm.model.pisdf.PiGraph;
-import org.preesm.model.pisdf.util.PiMMSwitch;
 
 /**
  * Parse and connect hierarchical sub-{@link PiGraph} to a top level {@link PiGraph}.

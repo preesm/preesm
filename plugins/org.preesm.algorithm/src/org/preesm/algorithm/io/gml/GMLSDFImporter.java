@@ -41,6 +41,7 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.InputStream;
 import org.preesm.algorithm.model.sdf.SDFGraph;
+import org.preesm.commons.exceptions.PreesmException;
 
 /**
  * wrapper for different versions.
@@ -73,7 +74,7 @@ public class GMLSDFImporter implements GMLModelParserWrapper<SDFGraph> {
       try {
         return (SDFGraph) this.trueImporter.parse(f);
       } catch (final Exception ex) {
-        throw new InvalidModelException("Cannot parse file. Parsing failed with exception " + ex.getMessage(), ex);
+        throw new PreesmException("Cannot parse file. Parsing failed with exception " + ex.getMessage(), ex);
       }
     }
   }
@@ -93,7 +94,7 @@ public class GMLSDFImporter implements GMLModelParserWrapper<SDFGraph> {
         this.trueImporter = new GMLSDFImporterV1();
         return (SDFGraph) this.trueImporter.parse(input, path);
       } catch (final Exception ex) {
-        throw new InvalidModelException("Cannot parse file. Parsing failed with exception " + ex.getMessage());
+        throw new PreesmException("Cannot parse file. Parsing failed with exception " + ex.getMessage());
       }
     }
   }

@@ -42,9 +42,9 @@ import org.junit.Test;
 import org.preesm.algorithm.model.sdf.SDFAbstractVertex;
 import org.preesm.algorithm.model.sdf.SDFGraph;
 import org.preesm.algorithm.randomsdf.RandomSDF;
+import org.preesm.commons.exceptions.PreesmException;
 import org.preesm.model.scenario.PreesmScenario;
 import org.preesm.model.slam.SlamFactory;
-import org.preesm.workflow.WorkflowException;
 
 /**
  */
@@ -74,7 +74,7 @@ public class RandomSDFTest {
     Map<String, Object> outputs = null;
     try {
       outputs = task.execute(inputs, params, null, null, null);
-    } catch (final WorkflowException e) {
+    } catch (final PreesmException e) {
       Assert.fail(e.getLocalizedMessage());
     }
 

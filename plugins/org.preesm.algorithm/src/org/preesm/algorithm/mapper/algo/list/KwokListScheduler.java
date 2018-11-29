@@ -47,7 +47,6 @@ import org.preesm.algorithm.mapper.model.MapperDAGVertex;
 import org.preesm.commons.exceptions.PreesmException;
 import org.preesm.commons.logger.PreesmLogger;
 import org.preesm.model.slam.ComponentInstance;
-import org.preesm.workflow.WorkflowException;
 
 /**
  * List scheduler from Yu Kwong Kwok PhD thesis.
@@ -72,7 +71,7 @@ public class KwokListScheduler {
    *          If true, we minimize the starting date of the vertex; if false, we minimize the current scheduling length
    *          on the considered operator
    * @return the long
-   * @throws WorkflowException
+   * @throws PreesmException
    *           the workflow exception
    */
   private long listImplementationCost(final MapperDAG dag, MapperDAGVertex vertex, final ComponentInstance operator,
@@ -108,7 +107,7 @@ public class KwokListScheduler {
    * @param fcpvertex
    *          the fcpvertex
    * @return : Implemented MapperDAG
-   * @throws WorkflowException
+   * @throws PreesmException
    *           the workflow exception
    */
 

@@ -46,8 +46,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.logging.Level;
-import org.preesm.algorithm.iterators.TopologicalDAGIterator;
-import org.preesm.algorithm.mapper.PreesmMapperException;
 import org.preesm.algorithm.mapper.abc.AbcType;
 import org.preesm.algorithm.mapper.abc.SpecialVertexManager;
 import org.preesm.algorithm.mapper.abc.edgescheduling.AbstractEdgeSched;
@@ -75,12 +73,13 @@ import org.preesm.algorithm.mapper.tools.SchedulingOrderIterator;
 import org.preesm.algorithm.model.dag.DAGEdge;
 import org.preesm.algorithm.model.dag.DAGVertex;
 import org.preesm.algorithm.model.dag.edag.DAGInitVertex;
+import org.preesm.algorithm.model.iterators.TopologicalDAGIterator;
+import org.preesm.commons.exceptions.PreesmException;
 import org.preesm.commons.logger.PreesmLogger;
 import org.preesm.model.scenario.PreesmScenario;
 import org.preesm.model.slam.ComponentInstance;
 import org.preesm.model.slam.Design;
 import org.preesm.model.slam.utils.DesignTools;
-import org.preesm.workflow.WorkflowException;
 
 /**
  * Abc that minimizes latency.
@@ -140,7 +139,7 @@ public abstract class LatencyAbc {
    * @param scenario
    *          the scenario
    * @return single instance of AbstractAbc
-   * @throws WorkflowException
+   * @throws PreesmException
    *           the workflow exception
    */
   public static LatencyAbc getInstance(final AbcParameters params, final MapperDAG dag, final Design archi,
@@ -290,7 +289,7 @@ public abstract class LatencyAbc {
    *          the operator
    * @param updateRank
    *          the update rank
-   * @throws WorkflowException
+   * @throws PreesmException
    *           the workflow exception
    */
   private final void mapSingleVertex(final MapperDAGVertex dagvertex, final ComponentInstance operator,
@@ -333,7 +332,7 @@ public abstract class LatencyAbc {
    *          the update rank
    * @param remapGroup
    *          the remap group
-   * @throws WorkflowException
+   * @throws PreesmException
    *           the workflow exception
    */
   private final void mapVertexWithGroup(final MapperDAGVertex dagvertex, final ComponentInstance operator,
@@ -428,7 +427,7 @@ public abstract class LatencyAbc {
    *          the update rank
    * @param remapGroup
    *          the remap group
-   * @throws WorkflowException
+   * @throws PreesmException
    *           the workflow exception
    */
   public final void map(final MapperDAGVertex dagvertex, final ComponentInstance operator, final boolean updateRank,
@@ -464,7 +463,7 @@ public abstract class LatencyAbc {
    * @param operator
    *          the operator
    * @return true, if successful
-   * @throws WorkflowException
+   * @throws PreesmException
    *           the workflow exception
    */
   public final boolean mapAllVerticesOnOperator(final ComponentInstance operator) {
@@ -510,7 +509,7 @@ public abstract class LatencyAbc {
    * @param protectGroupMapping
    *          the protect group mapping
    * @return the candidate operators
-   * @throws WorkflowException
+   * @throws PreesmException
    *           the workflow exception
    */
   public List<ComponentInstance> getCandidateOperators(MapperDAGVertex vertex, final boolean protectGroupMapping) {
@@ -533,7 +532,7 @@ public abstract class LatencyAbc {
       final String message = "Empty operator set for a vertex: " + vertex.getName()
           + ". Consider relaxing constraints in scenario.";
       PreesmLogger.getLogger().log(Level.SEVERE, message);
-      throw new WorkflowException(message);
+      throw new PreesmException(message);
     }
 
     return initOperators;
@@ -552,7 +551,7 @@ public abstract class LatencyAbc {
    * @param protectGroupMapping
    *          the protect group mapping
    * @return the component instance
-   * @throws WorkflowException
+   * @throws PreesmException
    *           the workflow exception
    */
 
@@ -594,7 +593,7 @@ public abstract class LatencyAbc {
    * @param protectGroupMapping
    *          the protect group mapping
    * @return true, if is mapable
-   * @throws WorkflowException
+   * @throws PreesmException
    *           the workflow exception
    */
 
@@ -639,7 +638,7 @@ public abstract class LatencyAbc {
 
     if (internalVertex == null) {
       final String message = "No simulator internal vertex with id " + vertex.getName();
-      throw new PreesmMapperException(message, new NullPointerException());
+      throw new PreesmException(message, new NullPointerException());
     }
     return internalVertex;
   }
@@ -857,7 +856,7 @@ public abstract class LatencyAbc {
    *
    * @param dag
    *          the new dag
-   * @throws WorkflowException
+   * @throws PreesmException
    *           the workflow exception
    */
   public void setDAG(final MapperDAG dag) {

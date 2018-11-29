@@ -44,11 +44,9 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.preesm.algorithm.model.visitors.VisitorOutput;
-import org.preesm.algorithm.pisdf.pimm2flat.StaticPiMMFlatPiMMLauncher.StaticPiMMFlatPiMMException;
 import org.preesm.commons.logger.PreesmLogger;
 import org.preesm.model.pisdf.PiGraph;
 import org.preesm.model.scenario.PreesmScenario;
-import org.preesm.workflow.WorkflowException;
 import org.preesm.workflow.elements.Workflow;
 import org.preesm.workflow.implement.AbstractTaskImplementation;
 import org.preesm.workflow.implement.AbstractWorkflowNodeImplementation;
@@ -76,13 +74,9 @@ public class StaticPiMM2FlatPiMMTask extends AbstractTaskImplementation {
     PiGraph result = null;
     final Logger logger = PreesmLogger.getLogger();
     VisitorOutput.setLogger(logger);
-    try {
-      logger.log(Level.INFO, "Computing Repetition Vector for graph [" + graph.getName() + "]");
-      // Flatten the graph
-      result = launcher.launch();
-    } catch (final StaticPiMMFlatPiMMException e) {
-      throw new WorkflowException(e.getMessage());
-    }
+    logger.log(Level.INFO, "Computing Repetition Vector for graph [" + graph.getName() + "]");
+    // Flatten the graph
+    result = launcher.launch();
 
     final Map<String, Object> output = new LinkedHashMap<>();
     output.put(AbstractWorkflowNodeImplementation.KEY_PI_GRAPH, result);

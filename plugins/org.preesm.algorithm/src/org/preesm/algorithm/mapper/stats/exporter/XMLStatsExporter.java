@@ -39,15 +39,14 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.Set;
-import org.preesm.algorithm.mapper.PreesmMapperException;
 import org.preesm.algorithm.mapper.abc.impl.latency.LatencyAbc;
 import org.preesm.algorithm.mapper.gantt.GanttComponent;
 import org.preesm.algorithm.mapper.gantt.GanttData;
 import org.preesm.algorithm.mapper.gantt.GanttTask;
 import org.preesm.algorithm.mapper.ui.stats.StatGenerator;
+import org.preesm.commons.exceptions.PreesmException;
 import org.preesm.model.slam.ComponentInstance;
 import org.preesm.model.slam.utils.DesignTools;
-import org.preesm.workflow.WorkflowException;
 
 /**
  * This class exports stats from an IAbc (architecture benchmark computer) in XML format.
@@ -96,7 +95,7 @@ public class XMLStatsExporter {
     try (FileWriter out = new FileWriter(file)) {
       out.write(content);
     } catch (final IOException e) {
-      throw new PreesmMapperException("Could not export stats", e);
+      throw new PreesmException("Could not export stats", e);
     }
   }
 
@@ -134,8 +133,8 @@ public class XMLStatsExporter {
     append(XMLStatsExporter.NLT + XMLStatsExporter.TAB + "work=\"");
     try {
       append(statGen.getDAGWorkLength());
-    } catch (final WorkflowException e) {
-      throw new PreesmMapperException("Could not generate perf stats.", e);
+    } catch (final PreesmException e) {
+      throw new PreesmException("Could not generate perf stats.", e);
     }
     append("\"");
     // Span length

@@ -47,8 +47,8 @@ import org.eclipse.core.runtime.IProgressMonitor;
 import org.preesm.algorithm.memory.allocation.OrderedAllocator.Order;
 import org.preesm.algorithm.memory.allocation.OrderedAllocator.Policy;
 import org.preesm.algorithm.memory.exclusiongraph.MemoryExclusionGraph;
+import org.preesm.commons.exceptions.PreesmException;
 import org.preesm.commons.logger.PreesmLogger;
-import org.preesm.workflow.WorkflowException;
 import org.preesm.workflow.elements.Workflow;
 import org.preesm.workflow.implement.AbstractTaskImplementation;
 
@@ -303,10 +303,10 @@ public abstract class AbstractMemoryAllocatorTask extends AbstractTaskImplementa
    *
    * @param allocator
    *          the allocator
-   * @throws WorkflowException
+   * @throws PreesmException
    *           the workflow exception
    */
-  protected void allocateWith(final MemoryAllocator allocator) throws WorkflowException {
+  protected void allocateWith(final MemoryAllocator allocator) throws PreesmException {
     long tStart;
     String sAllocator = allocator.getClass().getSimpleName();
     if (allocator instanceof OrderedAllocator) {
@@ -328,16 +328,16 @@ public abstract class AbstractMemoryAllocatorTask extends AbstractTaskImplementa
     // Check the correct allocation
     try {
       if (!allocator.checkAllocation().isEmpty()) {
-        throw new WorkflowException("The obtained allocation was not valid because mutually"
+        throw new PreesmException("The obtained allocation was not valid because mutually"
             + " exclusive memory objects have overlapping address ranges." + " The allocator is not working.\n"
             + allocator.checkAllocation());
       }
     } catch (final RuntimeException e) {
-      throw new WorkflowException(e.getMessage());
+      throw new PreesmException(e.getMessage());
     }
 
     if (!allocator.checkAlignment().isEmpty()) {
-      throw new WorkflowException("The obtained allocation was not valid because there were"
+      throw new PreesmException("The obtained allocation was not valid because there were"
           + " unaligned memory objects. The allocator is not working.\n" + allocator.checkAlignment());
     }
 

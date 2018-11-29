@@ -48,7 +48,7 @@ import org.eclipse.core.runtime.Platform;
 import org.ietr.dftools.graphiti.model.Graph;
 import org.ietr.dftools.graphiti.model.IValidator;
 import org.ietr.dftools.graphiti.model.Vertex;
-import org.preesm.workflow.WorkflowException;
+import org.preesm.commons.exceptions.PreesmException;
 
 /**
  * This class implements a Workflow model validator. This validator checks that the workflow is executable.
@@ -162,7 +162,7 @@ public class WorkflowValidator implements IValidator {
         parameterDefaults = (Map<String, String>) obj;
       }
     } catch (final Exception e) {
-      throw new WorkflowException("Could not add default parameters", e);
+      throw new PreesmException("Could not add default parameters", e);
     }
 
     if (parameterDefaults != null) {
@@ -207,7 +207,7 @@ public class WorkflowValidator implements IValidator {
       marker.setAttribute(IMarker.SEVERITY, severity);
       marker.setAttribute(IMarker.MESSAGE, message);
     } catch (final CoreException e) {
-      throw new WorkflowException("Coule not create marker", e);
+      throw new PreesmException("Coule not create marker", e);
     }
   }
 

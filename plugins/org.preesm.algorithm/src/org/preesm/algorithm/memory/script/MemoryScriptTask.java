@@ -43,9 +43,9 @@ import org.eclipse.core.runtime.IProgressMonitor;
 import org.preesm.algorithm.memory.allocation.AbstractMemoryAllocatorTask;
 import org.preesm.algorithm.memory.exclusiongraph.MemoryExclusionGraph;
 import org.preesm.algorithm.model.dag.DirectedAcyclicGraph;
+import org.preesm.commons.exceptions.PreesmException;
 import org.preesm.model.scenario.PreesmScenario;
 import org.preesm.model.scenario.types.DataType;
-import org.preesm.workflow.WorkflowException;
 import org.preesm.workflow.elements.Workflow;
 
 // TODO: Auto-generated Javadoc
@@ -62,7 +62,7 @@ public class MemoryScriptTask extends AbstractMemoryScriptTask {
    */
   @Override
   public Map<String, Object> execute(final Map<String, Object> inputs, final Map<String, String> parameters,
-      final IProgressMonitor monitor, final String nodeName, final Workflow workflow) throws WorkflowException {
+      final IProgressMonitor monitor, final String nodeName, final Workflow workflow) throws PreesmException {
     // Get verbose parameter
     boolean verbose = false;
     verbose = parameters.get(AbstractMemoryScriptTask.PARAM_VERBOSE).equals(AbstractMemoryScriptTask.VALUE_TRUE);
@@ -91,7 +91,7 @@ public class MemoryScriptTask extends AbstractMemoryScriptTask {
       engine.runScripts(dag, dataTypes, checkString);
     } catch (final EvalError e) {
       final String message = "An error occurred during memory scripts execution";
-      throw new WorkflowException(message, e);
+      throw new PreesmException(message, e);
     }
     engine.updateMemEx(meg);
 

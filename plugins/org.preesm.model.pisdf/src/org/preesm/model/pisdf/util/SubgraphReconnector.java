@@ -34,6 +34,7 @@
  */
 package org.preesm.model.pisdf.util;
 
+import org.preesm.commons.exceptions.PreesmException;
 import org.preesm.model.pisdf.Actor;
 import org.preesm.model.pisdf.ConfigInputPort;
 import org.preesm.model.pisdf.ConfigOutputPort;
@@ -42,7 +43,6 @@ import org.preesm.model.pisdf.DataOutputPort;
 import org.preesm.model.pisdf.Dependency;
 import org.preesm.model.pisdf.Fifo;
 import org.preesm.model.pisdf.PiGraph;
-import org.preesm.model.pisdf.PiGraphException;
 import org.preesm.model.pisdf.Port;
 
 /**
@@ -162,7 +162,7 @@ public class SubgraphReconnector {
   }
 
   private static void error(final Actor hierarchicalActor, final PiGraph subGraph, final Port port) {
-    throw new PiGraphException("PiGraph '" + subGraph.getName() + "' does not have a corresponding "
+    throw new PreesmException("PiGraph '" + subGraph.getName() + "' does not have a corresponding "
         + port.getClass().getSimpleName() + " named '" + port.getName() + "' for Actor " + hierarchicalActor.getName());
   }
 

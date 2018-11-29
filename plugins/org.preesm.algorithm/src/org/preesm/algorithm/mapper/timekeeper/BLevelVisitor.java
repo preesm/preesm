@@ -47,7 +47,7 @@ import org.preesm.algorithm.mapper.model.property.VertexTiming;
 import org.preesm.algorithm.mapper.tools.CustomTopologicalIterator;
 import org.preesm.algorithm.model.dag.DAGVertex;
 import org.preesm.algorithm.model.visitors.IGraphVisitor;
-import org.preesm.algorithm.model.visitors.SDF4JException;
+import org.preesm.commons.exceptions.PreesmException;
 
 // TODO: Auto-generated Javadoc
 /**
@@ -72,7 +72,7 @@ public class BLevelVisitor implements IGraphVisitor<MapperDAG, MapperDAGVertex, 
       final DAGVertex vertex = iterator.next();
       try {
         vertex.accept(this);
-      } catch (final SDF4JException e) {
+      } catch (final PreesmException e) {
         e.printStackTrace();
       }
     }

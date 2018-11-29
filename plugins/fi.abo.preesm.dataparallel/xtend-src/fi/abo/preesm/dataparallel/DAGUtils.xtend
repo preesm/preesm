@@ -39,7 +39,7 @@ package fi.abo.preesm.dataparallel
 import org.preesm.algorithm.model.AbstractGraph
 import org.preesm.algorithm.model.sdf.SDFAbstractVertex
 import org.preesm.algorithm.model.sdf.SDFEdge
-import org.preesm.algorithm.model.visitors.SDF4JException
+import org.preesm.commons.exceptions.PreesmException
 
 /**
  * Static class that has various utility functions related
@@ -61,9 +61,9 @@ class DAGUtils {
 	static def SDFAbstractVertex findVertex(SDFAbstractVertex vertex
 											, AbstractGraph<SDFAbstractVertex, SDFEdge> source
 											, AbstractGraph<SDFAbstractVertex, SDFEdge> dest)
-											throws SDF4JException {
+											 {
 		if(!source.vertexSet.contains(vertex)) {
-			throw new SDF4JException("The given vertex is not in source graph. Check the order")
+			throw new PreesmException("The given vertex is not in source graph. Check the order")
 		}
 
 		// We define when two normal vertices are equal to each other
@@ -94,7 +94,7 @@ class DAGUtils {
 		]
 
 		if(destVertices.size > 1) {
-			throw new SDF4JException("The vertex " + vertex + " matches more than two nodes:\n" +
+			throw new PreesmException("The vertex " + vertex + " matches more than two nodes:\n" +
 				destVertices)
 		}
 

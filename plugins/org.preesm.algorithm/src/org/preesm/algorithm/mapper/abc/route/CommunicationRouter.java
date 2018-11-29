@@ -46,7 +46,6 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import org.preesm.algorithm.mapper.PreesmMapperException;
 import org.preesm.algorithm.mapper.abc.edgescheduling.IEdgeSched;
 import org.preesm.algorithm.mapper.abc.order.OrderManager;
 import org.preesm.algorithm.mapper.abc.order.Schedule;
@@ -229,7 +228,7 @@ public class CommunicationRouter {
     final int outEdgesCount = edgesInPrecedenceOrder.size();
     if (outEdgesCount != dagEdgeCount) {
       // If this happens, this means that not all edges are covered by the previous while loop.
-      throw new PreesmMapperException("Some DAG edges are not covered. Input DAG has " + dagEdgeCount
+      throw new PreesmException("Some DAG edges are not covered. Input DAG has " + dagEdgeCount
           + " edges whereas there are " + outEdgesCount + " edges connected to vertices.");
     }
 

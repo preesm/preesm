@@ -52,7 +52,7 @@ import org.preesm.algorithm.model.sdf.SDFEdge
 import org.preesm.algorithm.model.sdf.SDFGraph
 import org.preesm.algorithm.model.sdf.visitors.ToHSDFVisitor
 import org.preesm.algorithm.model.visitors.IGraphVisitor
-import org.preesm.algorithm.model.visitors.SDF4JException
+import org.preesm.commons.exceptions.PreesmException
 
 /**
  * Isolate strongly connected components of the original
@@ -162,15 +162,15 @@ class DataParallelCheckOperations implements IGraphVisitor<SDFGraph, SDFAbstract
 	 * Perform data-parallel check and re-timing transformation on the {@link SDFGraph} given by the
 	 * user.
 	 */
-	override visit(SDFGraph sdf) throws SDF4JException {
+	override visit(SDFGraph sdf) throws PreesmException {
 		if(!sdf.isSchedulable) {
-			throw new SDF4JException("Graph " + sdf + " not schedulable")
+			throw new PreesmException("Graph " + sdf + " not schedulable")
 		}
 
 		// Check if DAG is flattened
 		for(vertex: sdf.vertexSet) {
 			if( (vertex.graphDescription !== null) && (vertex.graphDescription instanceof SDFGraph)) {
-				throw new SDF4JException("The graph " + sdf.name + " must be flattened.")
+				throw new PreesmException("The graph " + sdf.name + " must be flattened.")
 			}
 		}
 
@@ -330,7 +330,7 @@ class DataParallelCheckOperations implements IGraphVisitor<SDFGraph, SDFAbstract
 		throw new UnsupportedOperationException("TODO: auto-generated method stub")
 	}
 
-	override visit(SDFAbstractVertex sdfVertex) throws SDF4JException {
+	override visit(SDFAbstractVertex sdfVertex) throws PreesmException {
 		throw new UnsupportedOperationException("TODO: auto-generated method stub")
 	}
 

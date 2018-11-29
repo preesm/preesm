@@ -59,6 +59,7 @@ import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.views.properties.tabbed.ITabbedPropertyConstants;
 import org.eclipse.ui.views.properties.tabbed.TabbedPropertySheetPage;
 import org.eclipse.ui.views.properties.tabbed.TabbedPropertySheetWidgetFactory;
+import org.preesm.commons.math.ExpressionEvaluationException;
 import org.preesm.model.pisdf.DataPort;
 import org.preesm.model.pisdf.Delay;
 import org.preesm.model.pisdf.Expression;
@@ -68,7 +69,6 @@ import org.preesm.model.pisdf.Parameter;
 import org.preesm.model.pisdf.PersistenceLevel;
 import org.preesm.model.pisdf.Port;
 import org.preesm.model.pisdf.PortMemoryAnnotation;
-import org.preesm.model.pisdf.expression.ExpressionEvaluationException;
 import org.preesm.ui.pisdf.features.SetPersistenceLevelFeature;
 import org.preesm.ui.pisdf.features.SetPortMemoryAnnotationFeature;
 

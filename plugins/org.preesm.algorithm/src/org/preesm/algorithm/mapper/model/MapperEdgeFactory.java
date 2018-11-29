@@ -38,9 +38,9 @@
  */
 package org.preesm.algorithm.mapper.model;
 
-import org.preesm.algorithm.factories.DAGEdgeFactory;
 import org.preesm.algorithm.model.dag.DAGEdge;
 import org.preesm.algorithm.model.dag.DAGVertex;
+import org.preesm.algorithm.model.factories.DAGEdgeFactory;
 
 // TODO: Auto-generated Javadoc
 /**

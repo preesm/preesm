@@ -56,7 +56,6 @@ import org.preesm.algorithm.model.AbstractEdge;
 import org.preesm.algorithm.model.PropertyBean;
 import org.preesm.algorithm.model.dag.DAGEdge;
 import org.preesm.algorithm.model.dag.DAGVertex;
-import org.preesm.algorithm.model.parameters.InvalidExpressionException;
 import org.preesm.algorithm.model.sdf.SDFAbstractVertex;
 import org.preesm.algorithm.model.sdf.SDFEdge;
 import org.preesm.algorithm.model.sdf.SDFGraph;
@@ -99,8 +98,6 @@ public class TagDAG {
    *          the simu
    * @param edgeSchedType
    *          the edge sched type
-   * @throws InvalidExpressionException
-   *           the invalid expression exception
    */
   public void tag(final MapperDAG dag, final Design architecture, final PreesmScenario scenario, final LatencyAbc simu,
       final EdgeSchedType edgeSchedType) {
@@ -256,8 +253,6 @@ public class TagDAG {
    *          the dag
    * @param scenario
    *          the scenario
-   * @throws InvalidExpressionException
-   *           the invalid expression exception
    */
   public void addAllAggregates(final MapperDAG dag, final PreesmScenario scenario) {
 
@@ -280,8 +275,6 @@ public class TagDAG {
    *          the edge
    * @param scenario
    *          the scenario
-   * @throws InvalidExpressionException
-   *           the invalid expression exception
    */
   @SuppressWarnings("unchecked")
   public void addAggregateFromSDF(final MapperDAGEdge edge, final PreesmScenario scenario) {
@@ -309,8 +302,6 @@ public class TagDAG {
    *          the edge
    * @param scenario
    *          the scenario
-   * @throws InvalidExpressionException
-   *           the invalid expression exception
    */
   public void addAggregate(final MapperDAGEdge edge, final PreesmScenario scenario) {
     final BufferAggregate agg = new BufferAggregate();

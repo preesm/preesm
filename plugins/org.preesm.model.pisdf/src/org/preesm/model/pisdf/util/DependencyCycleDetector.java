@@ -46,7 +46,6 @@ import org.preesm.model.pisdf.Dependency;
 import org.preesm.model.pisdf.ISetter;
 import org.preesm.model.pisdf.Parameter;
 import org.preesm.model.pisdf.PiGraph;
-import org.preesm.model.pisdf.util.PiMMSwitch;
 
 // TODO: Auto-generated Javadoc
 /**

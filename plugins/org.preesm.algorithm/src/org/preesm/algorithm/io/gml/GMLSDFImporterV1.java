@@ -39,18 +39,18 @@ import java.io.FileNotFoundException;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import org.eclipse.core.runtime.Path;
-import org.preesm.algorithm.DFToolsAlgoException;
-import org.preesm.algorithm.factories.SDFEdgeFactory;
-import org.preesm.algorithm.factories.SDFVertexFactory;
 import org.preesm.algorithm.model.AbstractVertex;
 import org.preesm.algorithm.model.CodeRefinement;
 import org.preesm.algorithm.model.InterfaceDirection;
+import org.preesm.algorithm.model.factories.SDFEdgeFactory;
+import org.preesm.algorithm.model.factories.SDFVertexFactory;
 import org.preesm.algorithm.model.sdf.SDFAbstractVertex;
 import org.preesm.algorithm.model.sdf.SDFEdge;
 import org.preesm.algorithm.model.sdf.SDFGraph;
 import org.preesm.algorithm.model.sdf.SDFInterfaceVertex;
 import org.preesm.algorithm.model.sdf.esdf.SDFSinkInterfaceVertex;
 import org.preesm.algorithm.model.sdf.esdf.SDFSourceInterfaceVertex;
+import org.preesm.commons.exceptions.PreesmException;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
 
@@ -75,7 +75,7 @@ public class GMLSDFImporterV1 extends GMLImporter<SDFGraph, SDFAbstractVertex, S
    *          The DOM Element
    * @param parentGraph
    *          The parent Graph of this Edge
-   * @throws InvalidModelException
+   * @throws PreesmException
    *           the invalid model exception
    */
   @Override
@@ -122,7 +122,7 @@ public class GMLSDFImporterV1 extends GMLImporter<SDFGraph, SDFAbstractVertex, S
    * @param graphElt
    *          The graph Element in the DOM document
    * @return The parsed graph
-   * @throws InvalidModelException
+   * @throws PreesmException
    *           the invalid model exception
    */
   @Override
@@ -154,7 +154,7 @@ public class GMLSDFImporterV1 extends GMLImporter<SDFGraph, SDFAbstractVertex, S
    *          the vertex
    * @param parentElt
    *          the parent elt
-   * @throws InvalidModelException
+   * @throws PreesmException
    *           the invalid model exception
    */
   protected void parseGraphDescription(final SDFAbstractVertex vertex, final Element parentElt) {
@@ -175,7 +175,7 @@ public class GMLSDFImporterV1 extends GMLImporter<SDFGraph, SDFAbstractVertex, S
               SDFGraph refine;
               try {
                 refine = importer.parse(refinementFile);
-              } catch (FileNotFoundException | InvalidModelException e) {
+              } catch (FileNotFoundException | PreesmException e) {
                 final GMLGenericImporter genericImporter = new GMLGenericImporter();
                 refine = (SDFGraph) genericImporter.parse(refinementFile);
               }
@@ -191,7 +191,7 @@ public class GMLSDFImporterV1 extends GMLImporter<SDFGraph, SDFAbstractVertex, S
                 }
               }
             } catch (final FileNotFoundException e) {
-              throw new DFToolsAlgoException("Could not parse graph description", e);
+              throw new PreesmException("Could not parse graph description", e);
             }
           }
         } else if (path.length() > 0) {
@@ -209,7 +209,7 @@ public class GMLSDFImporterV1 extends GMLImporter<SDFGraph, SDFAbstractVertex, S
    * @param parentGraph
    *          the parent graph
    * @return The parsed node
-   * @throws InvalidModelException
+   * @throws PreesmException
    *           the invalid model exception
    */
   @Override

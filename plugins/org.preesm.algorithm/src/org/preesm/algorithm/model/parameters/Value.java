@@ -36,6 +36,8 @@
  */
 package org.preesm.algorithm.model.parameters;
 
+import org.preesm.commons.math.ExpressionEvaluationException;
+
 /**
  * The Interface Value.
  */
@@ -47,7 +49,7 @@ public interface Value {
    * @return The integer value of the expression
    * @throws InvalidExpressionException
    *           When expression can't be solved
-   * @throws NoIntegerValueException
+   * @throws ExpressionEvaluationException
    *           the no integer value exception
    */
   public long longValue();

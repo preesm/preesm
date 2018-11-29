@@ -49,7 +49,6 @@ import org.preesm.algorithm.memory.distributed.Distributor;
 import org.preesm.algorithm.memory.exclusiongraph.MemoryExclusionGraph;
 import org.preesm.algorithm.memory.exclusiongraph.MemoryExclusionVertex;
 import org.preesm.commons.exceptions.PreesmException;
-import org.preesm.workflow.WorkflowException;
 import org.preesm.workflow.elements.Workflow;
 
 // TODO: Auto-generated Javadoc
@@ -66,7 +65,7 @@ public class MemoryAllocatorTask extends AbstractMemoryAllocatorTask {
    */
   @Override
   public Map<String, Object> execute(final Map<String, Object> inputs, final Map<String, String> parameters,
-      final IProgressMonitor monitor, final String nodeName, final Workflow workflow) throws WorkflowException {
+      final IProgressMonitor monitor, final String nodeName, final Workflow workflow) throws PreesmException {
     init(parameters);
 
     // Retrieve the input of the task

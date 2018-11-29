@@ -45,9 +45,9 @@ import org.junit.Assert;
 import org.junit.Test;
 import org.preesm.algorithm.io.gml.GMLDAGExporter;
 import org.preesm.algorithm.io.gml.GMLDAGImporter;
-import org.preesm.algorithm.io.gml.InvalidModelException;
 import org.preesm.algorithm.model.dag.DirectedAcyclicGraph;
 import org.preesm.commons.GMLKey;
+import org.preesm.commons.exceptions.PreesmException;
 
 /**
  */
@@ -60,7 +60,7 @@ public class GMLDAGImporterTest {
    *
    */
   @Test
-  public void testImport() throws InvalidModelException, IOException {
+  public void testImport() throws PreesmException, IOException {
     final String inputDagXMLPath = "./resources/outDAG.xml";
 
     final GMLDAGImporter importer = new GMLDAGImporter();

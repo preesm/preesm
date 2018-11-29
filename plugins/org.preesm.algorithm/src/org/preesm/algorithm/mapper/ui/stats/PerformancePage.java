@@ -49,7 +49,7 @@ import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.eclipse.ui.forms.widgets.ScrolledForm;
 import org.eclipse.ui.forms.widgets.Section;
 import org.preesm.algorithm.mapper.ui.Messages;
-import org.preesm.workflow.WorkflowException;
+import org.preesm.commons.exceptions.PreesmException;
 
 // TODO: Auto-generated Javadoc
 /**
@@ -107,7 +107,7 @@ public class PerformancePage extends FormPage {
     try {
       createChartSection(managedForm, Messages.getString("Performance.Chart.title"),
           Messages.getString("Performance.Chart.description"));
-    } catch (final WorkflowException e) {
+    } catch (final PreesmException e) {
       e.printStackTrace();
     }
 
@@ -189,7 +189,7 @@ public class PerformancePage extends FormPage {
    *          description of the section
    */
   private void createChartSection(final IManagedForm mform, final String title, final String desc)
-      throws WorkflowException {
+      throws PreesmException {
 
     final long workLength = this.statGen.getDAGWorkLength();
     final long spanLength = this.statGen.getDAGSpanLength();

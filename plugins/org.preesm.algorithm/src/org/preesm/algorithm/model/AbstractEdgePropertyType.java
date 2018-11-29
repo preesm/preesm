@@ -37,7 +37,6 @@
  */
 package org.preesm.algorithm.model;
 
-import org.preesm.algorithm.model.parameters.InvalidExpressionException;
 import org.preesm.commons.CloneableProperty;
 
 /**
@@ -90,8 +89,6 @@ public abstract class AbstractEdgePropertyType<T> implements CloneableProperty<A
    * Gives the Long representation of this AbstractEdgePropertyType.
    *
    * @return The Long value of this AbstractEdgePropertyType
-   * @throws InvalidExpressionException
-   *           the invalid expression exception
    */
   public abstract long longValue();
 

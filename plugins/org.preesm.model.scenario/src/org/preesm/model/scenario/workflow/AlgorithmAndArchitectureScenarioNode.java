@@ -53,7 +53,6 @@ import org.preesm.model.scenario.ParameterValue;
 import org.preesm.model.scenario.PreesmScenario;
 import org.preesm.model.scenario.serialize.ScenarioParser;
 import org.preesm.model.slam.Design;
-import org.preesm.workflow.WorkflowException;
 import org.preesm.workflow.implement.AbstractScenarioImplementation;
 import org.preesm.workflow.implement.AbstractWorkflowNodeImplementation;
 
@@ -73,7 +72,7 @@ public class AlgorithmAndArchitectureScenarioNode extends AbstractScenarioImplem
    * @param path
    *          the path
    * @return the map
-   * @throws WorkflowException
+   * @throws PreesmException
    *           the workflow exception
    */
   @Override
@@ -101,7 +100,7 @@ public class AlgorithmAndArchitectureScenarioNode extends AbstractScenarioImplem
         applyScenarioParameterValues(scenario, piAlgorithm);
       }
     } catch (FileNotFoundException | CoreException e) {
-      throw new WorkflowException(e.getMessage());
+      throw new PreesmException(e.getMessage());
     }
 
     // Retrieving the architecture

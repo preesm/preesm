@@ -38,7 +38,7 @@ import java.io.File;
 import java.io.IOException;
 import org.eclipse.core.expressions.PropertyTester;
 import org.eclipse.core.resources.IFile;
-import org.preesm.workflow.WorkflowException;
+import org.preesm.commons.exceptions.PreesmException;
 import org.preesm.workflow.converter.WorkflowConverter;
 
 /**
@@ -54,7 +54,7 @@ public class OldWorkflowPropertyTester extends PropertyTester {
       final boolean newWorkflow = WorkflowConverter.isNewWorkflow(file2);
       return !newWorkflow;
     } catch (final IOException e) {
-      throw new WorkflowException("Could not access file", e);
+      throw new PreesmException("Could not access file", e);
     }
   }
 

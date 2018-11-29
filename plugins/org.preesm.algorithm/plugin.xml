@@ -233,50 +233,6 @@
          </outputs>
       </task>
       <task
-            id="org.ietr.preesm.experiment.pimm.subgraph.connector.SubgraphConnectorTask"
-            name="PiMM Subgraph Connector Task"
-            type="org.preesm.algorithm.pisdf.subgraph.connector.SubgraphConnectorTask">
-         <inputs>
-            <input
-                  id="PiMM"
-                  object="org.preesm.model.pisdf.PiGraph">
-            </input>
-         </inputs>
-         <outputs>
-            <output
-                  id="PiMM"
-                  object="org.preesm.model.pisdf.PiGraph"></output>
-         </outputs>
-      </task>
-      <task
-            id="org.ietr.preesm.experiment.model.transformation.taskExpression"
-            name="PREESM PiSDF Stats Printer"
-            type="org.preesm.algorithm.pisdf.stats.printer.PrintPISDFStats">
-         <inputs>
-            <input
-                  id="PiMM"
-                  object="org.preesm.model.pisdf.PiGraph">
-            </input>
-         </inputs>
-      </task>
-      <task
-            id="org.ietr.preesm.pimm.checker.task.PiMMAlgorithmCheckerTask"
-            name="PiMM Checker"
-            type="org.preesm.algorithm.pisdf.checker.task.PiMMAlgorithmCheckerTask">
-         <inputs>
-            <input
-                  id="PiMM"
-                  object="org.preesm.model.pisdf.PiGraph">
-            </input>
-         </inputs>
-         <outputs>
-            <output
-                  id="PiMM"
-                  object="org.preesm.model.pisdf.PiGraph">
-            </output>
-         </outputs>
-      </task>
-      <task
             id="org.ietr.preesm.experiment.pimm2srdag.StaticPiMM2SrDAGTask"
             name="Static PiMM to Single-Rate DAG transformation"
             type="org.preesm.algorithm.pisdf.pimm2srdag.StaticPiMM2SrDAGTask">
@@ -298,6 +254,10 @@
             <output
                   id="DAG"
                   object="org.preesm.algorithm.model.dag.DirectedAcyclicGraph">
+            </output>
+            <output
+                  id="PiMM"
+                  object="org.preesm.model.pisdf.PiGraph">
             </output>
          </outputs>
       </task>

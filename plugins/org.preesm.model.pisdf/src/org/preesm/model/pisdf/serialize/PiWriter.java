@@ -56,6 +56,7 @@ import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.EObject;
 import org.preesm.commons.DomUtil;
 import org.preesm.commons.GMLKey;
+import org.preesm.commons.exceptions.PreesmException;
 import org.preesm.model.pisdf.AbstractActor;
 import org.preesm.model.pisdf.AbstractVertex;
 import org.preesm.model.pisdf.Actor;
@@ -80,7 +81,6 @@ import org.preesm.model.pisdf.NonExecutableActor;
 import org.preesm.model.pisdf.Parameter;
 import org.preesm.model.pisdf.Parameterizable;
 import org.preesm.model.pisdf.PiGraph;
-import org.preesm.model.pisdf.PiGraphException;
 import org.preesm.model.pisdf.PiSDFRefinement;
 import org.preesm.model.pisdf.Port;
 import org.preesm.model.pisdf.Refinement;
@@ -283,7 +283,7 @@ public class PiWriter {
     try {
       PiSDFXSDValidator.validate(toto.toString());
     } catch (final IOException e) {
-      throw new PiGraphException("Fatal Error: the wirtten PiSDF does not comply to the XSD Schema", e);
+      throw new PreesmException("Fatal Error: the wirtten PiSDF does not comply to the XSD Schema", e);
     }
 
   }

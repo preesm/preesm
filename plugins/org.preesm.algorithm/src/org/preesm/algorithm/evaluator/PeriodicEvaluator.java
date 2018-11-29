@@ -39,13 +39,11 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.logging.Level;
 import org.eclipse.core.runtime.IProgressMonitor;
-import org.preesm.algorithm.model.parameters.InvalidExpressionException;
 import org.preesm.algorithm.model.sdf.SDFAbstractVertex;
 import org.preesm.algorithm.model.sdf.SDFGraph;
-import org.preesm.algorithm.model.visitors.SDF4JException;
+import org.preesm.commons.exceptions.PreesmException;
 import org.preesm.commons.logger.PreesmLogger;
 import org.preesm.model.scenario.PreesmScenario;
-import org.preesm.workflow.WorkflowException;
 import org.preesm.workflow.elements.Workflow;
 import org.preesm.workflow.implement.AbstractTaskImplementation;
 
@@ -66,10 +64,7 @@ public class PeriodicEvaluator extends AbstractTaskImplementation {
    */
   @Override
   public Map<String, Object> execute(final Map<String, Object> inputs, final Map<String, String> parameters,
-      final IProgressMonitor monitor, final String nodeName, final Workflow workflow) throws WorkflowException {
-
-    double period;
-    double throughput = 0;
+      final IProgressMonitor monitor, final String nodeName, final Workflow workflow) throws PreesmException {
 
     // Retrieve the input dataflow and the scenario
     final SDFGraph inputGraph = (SDFGraph) inputs.get("SDF");
@@ -80,8 +75,8 @@ public class PeriodicEvaluator extends AbstractTaskImplementation {
     final NormalizeVisitor normalize = new NormalizeVisitor();
     try {
       inputGraph.accept(normalize);
-    } catch (final SDF4JException e) {
-      throw (new WorkflowException("The graph cannot be normalized"));
+    } catch (final PreesmException e) {
+      throw (new PreesmException("The graph cannot be normalized"));
     }
     final SDFGraph NormSDF = normalize.getOutput();
     PreesmLogger.getLogger().log(Level.INFO, "Normalization finished");
@@ -93,22 +88,18 @@ public class PeriodicEvaluator extends AbstractTaskImplementation {
           || ((vertex.getGraphDescription() != null) && (vertex.getGraphDescription() instanceof SDFGraph));
     }
 
-    try {
-      // if IBSDF -> hierarchical algorithm
-      ThroughputEvaluator scheduler;
-      if (hierarchical) {
-        scheduler = new IBSDFThroughputEvaluator();
-      } else {
-        // if SDF -> linear program for periodic schedule
-        scheduler = new SDFThroughputEvaluator();
-      }
-      PreesmLogger.getLogger().log(Level.INFO, "Computation of the optimal periodic schedule");
-      scheduler.scenar = scenario;
-      period = scheduler.launch(NormSDF);
-      throughput = scheduler.throughput_computation(period, inputGraph);
-    } catch (final InvalidExpressionException e) {
-      e.printStackTrace();
+    // if IBSDF -> hierarchical algorithm
+    ThroughputEvaluator scheduler;
+    if (hierarchical) {
+      scheduler = new IBSDFThroughputEvaluator();
+    } else {
+      // if SDF -> linear program for periodic schedule
+      scheduler = new SDFThroughputEvaluator();
     }
+    PreesmLogger.getLogger().log(Level.INFO, "Computation of the optimal periodic schedule");
+    scheduler.scenar = scenario;
+    double period = scheduler.launch(NormSDF);
+    double throughput = scheduler.throughput_computation(period, inputGraph);
 
     final Map<String, Object> outputs = new LinkedHashMap<>();
     // Normalized graph in the outputs

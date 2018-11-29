@@ -41,13 +41,13 @@ package org.preesm.algorithm.mapper.algo.dynamic;
 import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
-import org.preesm.algorithm.iterators.TopologicalDAGIterator;
 import org.preesm.algorithm.mapper.abc.impl.latency.LatencyAbc;
 import org.preesm.algorithm.mapper.abc.order.VertexOrderList;
 import org.preesm.algorithm.mapper.model.MapperDAGVertex;
+import org.preesm.algorithm.model.iterators.TopologicalDAGIterator;
+import org.preesm.commons.exceptions.PreesmException;
 import org.preesm.commons.logger.PreesmLogger;
 import org.preesm.model.slam.ComponentInstance;
-import org.preesm.workflow.WorkflowException;
 
 /**
  * Scheduler that simulates a dynamic queuing system.
@@ -81,10 +81,10 @@ public class DynamicQueuingScheduler {
    *
    * @param abc
    *          the abc
-   * @throws WorkflowException
+   * @throws PreesmException
    *           the workflow exception
    */
-  public void mapVertices(final LatencyAbc abc) throws WorkflowException {
+  public void mapVertices(final LatencyAbc abc) throws PreesmException {
 
     // Type of order to use while mapping/scheduling
     String listType = this.textParameters.get("listType");
@@ -121,10 +121,10 @@ public class DynamicQueuingScheduler {
    *          the abc
    * @param currentvertex
    *          the currentvertex
-   * @throws WorkflowException
+   * @throws PreesmException
    *           the workflow exception
    */
-  public void mapOnBestOp(final LatencyAbc abc, final MapperDAGVertex currentvertex) throws WorkflowException {
+  public void mapOnBestOp(final LatencyAbc abc, final MapperDAGVertex currentvertex) throws PreesmException {
 
     final List<ComponentInstance> adequateOps = abc.getCandidateOperators(currentvertex, true);
     long currentMinCost = Long.MAX_VALUE;

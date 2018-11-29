@@ -45,6 +45,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
 import org.eclipse.emf.common.util.EList;
+import org.preesm.commons.exceptions.PreesmException;
 import org.preesm.model.slam.ComponentInstance;
 import org.preesm.model.slam.Design;
 import org.preesm.model.slam.SlamFactory;
@@ -57,7 +58,6 @@ import org.preesm.model.slam.link.ControlLink;
 import org.preesm.model.slam.link.DataLink;
 import org.preesm.model.slam.link.Link;
 import org.preesm.model.slam.link.LinkFactory;
-import org.preesm.model.slam.utils.SlamException;
 
 /**
  * Methods to flatten the hierarchy of a System-Level Architecture Model. If multiple refinements are available for a
@@ -264,7 +264,7 @@ public class SlamFlattener {
       link.setSourceComponentInstance(instanceToConnect);
       link.setSourceInterface(itf);
     } else {
-      throw new SlamException("Could not find port");
+      throw new PreesmException("Could not find port");
     }
   }
 
@@ -300,7 +300,7 @@ public class SlamFlattener {
       link.setDestinationComponentInstance(instanceToConnect);
       link.setDestinationInterface(itf);
     } else {
-      throw new SlamException("Could not find port");
+      throw new PreesmException("Could not find port");
     }
   }
 
@@ -359,7 +359,7 @@ public class SlamFlattener {
       } else if (originalLink instanceof ControlLink) {
         newLink = LinkFactory.eINSTANCE.createControlLink();
       } else {
-        throw new SlamException("Unsupported link type");
+        throw new PreesmException("Unsupported link type");
       }
 
       newLink.setDirected(originalLink.isDirected());

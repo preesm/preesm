@@ -41,15 +41,13 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.logging.Level;
 import org.apache.commons.lang3.time.StopWatch;
-import org.preesm.algorithm.pisdf.helper.LCMBasedBRV;
-import org.preesm.algorithm.pisdf.helper.PiBRV;
-import org.preesm.algorithm.pisdf.helper.PiMMHandler;
-import org.preesm.algorithm.pisdf.helper.PiMMHelperException;
-import org.preesm.algorithm.pisdf.pimm2flat.visitor.StaticPiMM2FlatPiMMVisitor;
 import org.preesm.commons.logger.PreesmLogger;
 import org.preesm.model.pisdf.AbstractVertex;
 import org.preesm.model.pisdf.Parameter;
 import org.preesm.model.pisdf.PiGraph;
+import org.preesm.model.pisdf.brv.BRVMethod;
+import org.preesm.model.pisdf.brv.PiBRV;
+import org.preesm.model.pisdf.statictools.PiMMHelper;
 import org.preesm.model.pisdf.util.PiMMSwitch;
 import org.preesm.model.scenario.PreesmScenario;
 
@@ -63,9 +61,6 @@ public class StaticPiMMFlatPiMMLauncher extends PiMMSwitch<Boolean> {
 
   /** The graph. */
   private final PiGraph graph;
-
-  /** The graph. */
-  private final PiMMHandler piHandler;
 
   /** Map from Pi actors to their Repetition Vector value. */
   protected Map<AbstractVertex, Long> graphBRV = new LinkedHashMap<>();
@@ -84,42 +79,35 @@ public class StaticPiMMFlatPiMMLauncher extends PiMMSwitch<Boolean> {
   public StaticPiMMFlatPiMMLauncher(final PreesmScenario scenario, final PiGraph graph) {
     this.scenario = scenario;
     this.graph = graph;
-    this.piHandler = new PiMMHandler(graph);
   }
 
   /**
    * Precondition: All.
    *
    * @return the SDFGraph obtained by visiting graph
-   * @throws StaticPiMMFlatPiMMException
-   *           the static pi MM 2 SDF exception
    */
-  public PiGraph launch() throws StaticPiMMFlatPiMMException {
+  public PiGraph launch() {
     final StopWatch timer = new StopWatch();
-    try {
-      timer.start();
-      // 1. First we resolve all parameters.
-      // It must be done first because, when removing persistence, local parameters have to be known at upper level
-      this.piHandler.resolveAllParameters();
-      timer.stop();
-      String msg = "Parameters and rates evaluations: " + timer + "s.";
-      PreesmLogger.getLogger().log(Level.INFO, msg);
-      // 2. We perform the delay transformation step that deals with persistence
-      timer.reset();
-      timer.start();
-      this.piHandler.removePersistence();
-      timer.stop();
-      String msg2 = "Persistence removal: " + timer + "s.";
-      PreesmLogger.getLogger().log(Level.INFO, msg2);
-    } catch (PiMMHelperException e) {
-      throw new StaticPiMMFlatPiMMException(e.getMessage());
-    }
+    timer.start();
+    // 1. First we resolve all parameters.
+    // It must be done first because, when removing persistence, local parameters have to be known at upper level
+    PiMMHelper.resolveAllParameters(this.graph);
+    timer.stop();
+    String msg = "Parameters and rates evaluations: " + timer + "s.";
+    PreesmLogger.getLogger().log(Level.INFO, msg);
+    // 2. We perform the delay transformation step that deals with persistence
+    timer.reset();
+    timer.start();
+    PiMMHelper.removePersistence(this.graph);
+    timer.stop();
+    String msg2 = "Persistence removal: " + timer + "s.";
+    PreesmLogger.getLogger().log(Level.INFO, msg2);
     // 3. Compute BRV following the chosen method
-    computeBRV();
+    this.graphBRV = PiBRV.compute(graph, BRVMethod.LCM);
     // 4. Print the RV values
-    printRV();
+    PiBRV.printRV(graphBRV);
     // 4.5 Check periods with BRV
-    PiMMHandler.checkPeriodicity(this.graphBRV);
+    PiMMHelper.checkPeriodicity(this.graphBRV);
     // 5. Now, flatten the graph
     return convert2FlatPiMM();
   }
@@ -140,56 +128,6 @@ public class StaticPiMMFlatPiMMLauncher extends PiMMSwitch<Boolean> {
     PreesmLogger.getLogger().log(Level.INFO, msgPiMM2ASRPiMM);
     final PiGraph result = visitor.getResult();
     return result;
-  }
-
-  /**
-   * Computes the BRV of a PiSDF graph using either LCM method.
-   *
-   * @throws StaticPiMMFlatPiMMException
-   *           the StaticPiMM2SrDAGException exception
-   */
-  private void computeBRV() throws StaticPiMMFlatPiMMException {
-    final PiBRV piBRVAlgo = new LCMBasedBRV(this.piHandler);
-    try {
-      final StopWatch timer = new StopWatch();
-      timer.start();
-      piBRVAlgo.execute();
-      this.graphBRV = piBRVAlgo.getBRV();
-      timer.stop();
-      final String msg = "Repetition vector computed in" + timer + "s.";
-      PreesmLogger.getLogger().log(Level.INFO, msg);
-    } catch (final PiMMHelperException e) {
-      throw new StaticPiMMFlatPiMMException(e.getMessage());
-    }
-  }
-
-  /**
-   * Print the BRV values of every vertex.
-   */
-  private void printRV() {
-    for (final Map.Entry<AbstractVertex, Long> rv : this.graphBRV.entrySet()) {
-      final String msg = rv.getKey().getVertexPath() + " x" + Long.toString(rv.getValue());
-      PreesmLogger.getLogger().log(Level.INFO, msg);
-    }
-  }
-
-  /**
-   * The Class StaticPiMMFlatPiMMException.
-   */
-  public class StaticPiMMFlatPiMMException extends Exception {
-
-    /** The Constant serialVersionUID. */
-    private static final long serialVersionUID = 8272147472427685537L;
-
-    /**
-     * Instantiates a new static pi MM 2 SDF exception.
-     *
-     * @param message
-     *          the message
-     */
-    public StaticPiMMFlatPiMMException(final String message) {
-      super(message);
-    }
   }
 
 }

@@ -43,13 +43,12 @@ import org.eclipse.core.runtime.IProgressMonitor;
 import org.preesm.algorithm.generator.SDFRandomGraph;
 import org.preesm.algorithm.model.sdf.SDFAbstractVertex;
 import org.preesm.algorithm.model.sdf.SDFGraph;
-import org.preesm.algorithm.model.visitors.SDF4JException;
+import org.preesm.commons.exceptions.PreesmException;
 import org.preesm.model.scenario.ConstraintGroupManager;
 import org.preesm.model.scenario.PreesmScenario;
 import org.preesm.model.scenario.Timing;
 import org.preesm.model.slam.ComponentInstance;
 import org.preesm.model.slam.Design;
-import org.preesm.workflow.WorkflowException;
 import org.preesm.workflow.elements.Workflow;
 import org.preesm.workflow.implement.AbstractTaskImplementation;
 
@@ -128,8 +127,8 @@ public class RandomSDF extends AbstractTaskImplementation {
     try {
       generatedGraph = graphGenerator.createRandomGraph(this.nbVertex, this.minInDegree, this.maxInDegree,
           this.minOutDegree, this.maxOutDegree, this.minRate, this.maxRate, this.rateMultiplier);
-    } catch (final SDF4JException ex) {
-      throw new WorkflowException(ex.getMessage(), ex);
+    } catch (final PreesmException ex) {
+      throw new PreesmException(ex.getMessage(), ex);
     }
 
     if (generatedGraph != null) {

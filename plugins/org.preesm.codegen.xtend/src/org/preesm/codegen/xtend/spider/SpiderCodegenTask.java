@@ -56,7 +56,6 @@ import org.preesm.commons.exceptions.PreesmException;
 import org.preesm.model.pisdf.PiGraph;
 import org.preesm.model.scenario.PreesmScenario;
 import org.preesm.model.slam.Design;
-import org.preesm.workflow.WorkflowException;
 import org.preesm.workflow.elements.Workflow;
 import org.preesm.workflow.implement.AbstractTaskImplementation;
 import org.preesm.workflow.implement.AbstractWorkflowNodeImplementation;
@@ -78,7 +77,7 @@ public class SpiderCodegenTask extends AbstractTaskImplementation {
    */
   @Override
   public Map<String, Object> execute(final Map<String, Object> inputs, final Map<String, String> parameters,
-      final IProgressMonitor monitor, final String nodeName, final Workflow workflow) throws WorkflowException {
+      final IProgressMonitor monitor, final String nodeName, final Workflow workflow) {
 
     // Retrieve inputs
     final Design architecture = (Design) inputs.get(AbstractWorkflowNodeImplementation.KEY_ARCHITECTURE);
@@ -118,7 +117,7 @@ public class SpiderCodegenTask extends AbstractTaskImplementation {
     final IFolder f = workspace.getRoot().getFolder(new Path(codegenPath));
     final IPath rawLocation = f.getRawLocation();
     if (rawLocation == null) {
-      throw new WorkflowException("Could not find target project for given path [" + codegenPath
+      throw new PreesmException("Could not find target project for given path [" + codegenPath
           + "]. Please change path in the scenario editor.");
     }
     final File folder = new File(rawLocation.toOSString());

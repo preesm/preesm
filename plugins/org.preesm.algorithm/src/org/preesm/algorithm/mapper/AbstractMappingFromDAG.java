@@ -57,11 +57,9 @@ import org.preesm.algorithm.mapper.model.MapperDAG;
 import org.preesm.algorithm.mapper.optimizer.RedundantSynchronizationCleaner;
 import org.preesm.algorithm.mapper.params.AbcParameters;
 import org.preesm.algorithm.model.dag.DirectedAcyclicGraph;
-import org.preesm.algorithm.model.parameters.InvalidExpressionException;
 import org.preesm.commons.exceptions.PreesmException;
 import org.preesm.model.scenario.PreesmScenario;
 import org.preesm.model.slam.Design;
-import org.preesm.workflow.WorkflowException;
 import org.preesm.workflow.elements.Workflow;
 import org.preesm.workflow.implement.AbstractTaskImplementation;
 import org.preesm.workflow.implement.AbstractWorkflowNodeImplementation;
@@ -106,7 +104,7 @@ public abstract class AbstractMappingFromDAG extends AbstractTaskImplementation 
     RouteCalculator.recalculate(architecture, scenario);
 
     if (dag == null) {
-      throw (new WorkflowException(" graph can't be scheduled, check console messages"));
+      throw (new PreesmException(" graph can't be scheduled, check console messages"));
     }
 
     final AbcParameters abcParams = new AbcParameters(parameters);
@@ -139,11 +137,7 @@ public abstract class AbstractMappingFromDAG extends AbstractTaskImplementation 
       final MapperDAG resDag = resSimu.getDAG();
       final TagDAG tagSDF = new TagDAG();
 
-      try {
-        tagSDF.tag(dag, architecture, scenario, resSimu, abcParams.getEdgeSchedType());
-      } catch (final InvalidExpressionException e) {
-        throw new WorkflowException(e.getMessage());
-      }
+      tagSDF.tag(dag, architecture, scenario, resSimu, abcParams.getEdgeSchedType());
 
       outputs.put(AbstractWorkflowNodeImplementation.KEY_SDF_ABC, resSimu);
       outputs.put(AbstractWorkflowNodeImplementation.KEY_SDF_DAG, dag);
@@ -241,7 +235,7 @@ public abstract class AbstractMappingFromDAG extends AbstractTaskImplementation 
    *          the scenario
    * @param parameters
    *          the parameters
-   * @throws WorkflowException
+   * @throws PreesmException
    *           the workflow exception
    */
   protected void calculateSpan(final MapperDAG dag, final Design archi, final PreesmScenario scenario,

@@ -37,8 +37,8 @@ package org.preesm.model.pisdf.test;
 
 import org.junit.Assert;
 import org.junit.Test;
+import org.preesm.commons.math.ExpressionEvaluationException;
 import org.preesm.model.pisdf.Expression;
-import org.preesm.model.pisdf.expression.ExpressionEvaluationException;
 import org.preesm.model.pisdf.factory.PiMMUserFactory;
 
 /**

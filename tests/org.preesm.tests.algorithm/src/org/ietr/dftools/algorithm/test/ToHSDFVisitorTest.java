@@ -35,7 +35,6 @@
 package org.ietr.dftools.algorithm.test;
 
 import org.junit.Test;
-import org.preesm.algorithm.DFToolsAlgoException;
 import org.preesm.algorithm.model.parameters.ConstantValue;
 import org.preesm.algorithm.model.parameters.ExpressionValue;
 import org.preesm.algorithm.model.parameters.Variable;
@@ -45,7 +44,7 @@ import org.preesm.algorithm.model.sdf.SDFVertex;
 import org.preesm.algorithm.model.sdf.visitors.ToHSDFVisitor;
 import org.preesm.algorithm.model.types.ExpressionEdgePropertyType;
 import org.preesm.algorithm.model.types.LongEdgePropertyType;
-import org.preesm.algorithm.model.visitors.SDF4JException;
+import org.preesm.commons.exceptions.PreesmException;
 
 /**
  */
@@ -60,8 +59,8 @@ public class ToHSDFVisitorTest {
     final ToHSDFVisitor visitor = new ToHSDFVisitor();
     try {
       demoGraph.accept(visitor);
-    } catch (final SDF4JException e) {
-      throw new DFToolsAlgoException("Could not convert to HSDF", e);
+    } catch (final PreesmException e) {
+      throw new PreesmException("Could not convert to HSDF", e);
     }
   }
 

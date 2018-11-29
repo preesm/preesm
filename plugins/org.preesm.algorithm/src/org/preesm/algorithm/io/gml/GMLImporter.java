@@ -46,18 +46,18 @@ import java.util.List;
 import java.util.Map;
 import org.eclipse.core.runtime.Path;
 import org.jgrapht.EdgeFactory;
-import org.preesm.algorithm.DFToolsAlgoException;
-import org.preesm.algorithm.factories.IModelVertexFactory;
 import org.preesm.algorithm.model.AbstractEdge;
 import org.preesm.algorithm.model.AbstractGraph;
 import org.preesm.algorithm.model.AbstractVertex;
 import org.preesm.algorithm.model.CodeRefinement;
 import org.preesm.algorithm.model.PropertyFactory;
 import org.preesm.algorithm.model.PropertySource;
+import org.preesm.algorithm.model.factories.IModelVertexFactory;
 import org.preesm.algorithm.model.parameters.Argument;
 import org.preesm.algorithm.model.parameters.Parameter;
 import org.preesm.algorithm.model.parameters.Variable;
 import org.preesm.commons.GMLKey;
+import org.preesm.commons.exceptions.PreesmException;
 import org.w3c.dom.DOMConfiguration;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -132,7 +132,7 @@ public abstract class GMLImporter<G extends AbstractGraph<?, ?>, V extends Abstr
    * @param f
    *          The file to parse
    * @return The parsed graph
-   * @throws InvalidModelException
+   * @throws PreesmException
    *           the invalid model exception
    * @throws FileNotFoundException
    *           the file not found exception
@@ -150,7 +150,7 @@ public abstract class GMLImporter<G extends AbstractGraph<?, ?>, V extends Abstr
    * @param path
    *          The of the file to parse
    * @return The parsed graph
-   * @throws InvalidModelException
+   * @throws PreesmException
    *           the invalid model exception
    * @throws FileNotFoundException
    *           the file not found exception
@@ -166,7 +166,7 @@ public abstract class GMLImporter<G extends AbstractGraph<?, ?>, V extends Abstr
    * @param input
    *          The InputStream to parse
    * @return The graph parsed from the document
-   * @throws InvalidModelException
+   * @throws PreesmException
    *           the invalid model exception
    */
   private G parse(final InputStream input) {
@@ -179,7 +179,7 @@ public abstract class GMLImporter<G extends AbstractGraph<?, ?>, V extends Abstr
       registry = DOMImplementationRegistry.newInstance();
       impl = (DOMImplementationLS) registry.getDOMImplementation("Core 3.0 XML 3.0 LS");
     } catch (ClassCastException | ClassNotFoundException | InstantiationException | IllegalAccessException e) {
-      throw new DFToolsAlgoException("Could not import graph", e);
+      throw new PreesmException("Could not import graph", e);
     }
 
     final LSInput lsInput = impl.createLSInput();
@@ -195,7 +195,7 @@ public abstract class GMLImporter<G extends AbstractGraph<?, ?>, V extends Abstr
 
     final Element rootElt = (Element) doc.getFirstChild();
     if (!rootElt.getNodeName().equals("graphml")) {
-      throw (new InvalidModelException("Root element is not graphml"));
+      throw (new PreesmException("Root element is not graphml"));
     }
     recoverKeys(rootElt);
     final NodeList childList = rootElt.getChildNodes();
@@ -218,7 +218,7 @@ public abstract class GMLImporter<G extends AbstractGraph<?, ?>, V extends Abstr
    *          The DOM Element
    * @param parentGraph
    *          The parent Graph of this Edge
-   * @throws InvalidModelException
+   * @throws PreesmException
    *           the invalid model exception
    */
   protected abstract void parseEdge(Element edgeElt, G parentGraph);
@@ -229,7 +229,7 @@ public abstract class GMLImporter<G extends AbstractGraph<?, ?>, V extends Abstr
    * @param graphElt
    *          The graph Element in the DOM document
    * @return The parsed Graph
-   * @throws InvalidModelException
+   * @throws PreesmException
    *           the invalid model exception
    */
   protected abstract G parseGraph(Element graphElt);
@@ -294,7 +294,7 @@ public abstract class GMLImporter<G extends AbstractGraph<?, ?>, V extends Abstr
 
           return result;
         } catch (final Exception e) {
-          throw new DFToolsAlgoException("Could not parse key", e);
+          throw new PreesmException("Could not parse key", e);
         }
 
       }
@@ -337,7 +337,7 @@ public abstract class GMLImporter<G extends AbstractGraph<?, ?>, V extends Abstr
    * @param parentGraph
    *          the parent graph
    * @return The parsed node
-   * @throws InvalidModelException
+   * @throws PreesmException
    *           the invalid model exception
    */
   protected abstract V parseNode(Element vertexElt, G parentGraph);
@@ -350,7 +350,7 @@ public abstract class GMLImporter<G extends AbstractGraph<?, ?>, V extends Abstr
    * @param parentGraph
    *          the parent graph
    * @return The ineterface parsed from the DOM document
-   * @throws InvalidModelException
+   * @throws PreesmException
    *           the invalid model exception
    */
   protected abstract V parsePort(Element portElt, G parentGraph);
@@ -492,7 +492,7 @@ public abstract class GMLImporter<G extends AbstractGraph<?, ?>, V extends Abstr
    *          the vertex
    * @param parentElt
    *          the parent elt
-   * @throws InvalidModelException
+   * @throws PreesmException
    *           the invalid model exception
    */
   protected void parseGraphDescription(final AbstractVertex<?> vertex, final Element parentElt) {
@@ -509,8 +509,8 @@ public abstract class GMLImporter<G extends AbstractGraph<?, ?>, V extends Abstr
             try {
               final AbstractGraph<?, ?> refine = importer.parse(new File(directoryPath + refinementPath));
               vertex.setGraphDescription(refine);
-            } catch (FileNotFoundException | InvalidModelException e) {
-              throw new DFToolsAlgoException("Could not parse gaph description", e);
+            } catch (FileNotFoundException | PreesmException e) {
+              throw new PreesmException("Could not parse gaph description", e);
             }
           }
         } else if (refinementPath.length() > 0) {

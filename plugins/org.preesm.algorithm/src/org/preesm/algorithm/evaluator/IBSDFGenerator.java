@@ -44,14 +44,12 @@ import java.util.Random;
 import org.preesm.algorithm.io.gml.GMLSDFExporter;
 import org.preesm.algorithm.io.sdf3.Sdf3XmlParser;
 import org.preesm.algorithm.model.AbstractEdgePropertyType;
-import org.preesm.algorithm.model.parameters.InvalidExpressionException;
 import org.preesm.algorithm.model.sdf.SDFAbstractVertex;
 import org.preesm.algorithm.model.sdf.SDFEdge;
 import org.preesm.algorithm.model.sdf.SDFGraph;
 import org.preesm.algorithm.model.sdf.SDFInterfaceVertex;
 import org.preesm.algorithm.model.sdf.esdf.SDFSinkInterfaceVertex;
 import org.preesm.algorithm.model.sdf.esdf.SDFSourceInterfaceVertex;
-import org.preesm.algorithm.model.visitors.SDF4JException;
 
 // TODO: Auto-generated Javadoc
 /**
@@ -235,12 +233,8 @@ public class IBSDFGenerator {
    *           Signals that an I/O exception has occurred.
    * @throws InterruptedException
    *           the interrupted exception
-   * @throws SDF4JException
-   *           the SDF 4 J exception
-   * @throws InvalidExpressionException
-   *           the invalid expression exception
    */
-  public boolean hierarchize() throws IOException, InterruptedException, SDF4JException, InvalidExpressionException {
+  public boolean hierarchize() throws IOException, InterruptedException {
     int remaining_graphs;
     int current;
     int r;

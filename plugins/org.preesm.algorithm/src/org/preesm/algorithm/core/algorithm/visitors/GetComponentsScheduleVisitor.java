@@ -45,7 +45,7 @@ import org.preesm.algorithm.model.dag.DAGEdge;
 import org.preesm.algorithm.model.dag.DAGVertex;
 import org.preesm.algorithm.model.dag.DirectedAcyclicGraph;
 import org.preesm.algorithm.model.visitors.IGraphVisitor;
-import org.preesm.algorithm.model.visitors.SDF4JException;
+import org.preesm.commons.exceptions.PreesmException;
 import org.preesm.model.scenario.types.ImplementationPropertyNames;
 import org.preesm.model.scenario.types.VertexType;
 import org.preesm.model.slam.ComponentInstance;
@@ -92,7 +92,7 @@ public class GetComponentsScheduleVisitor implements IGraphVisitor<DirectedAcycl
    * @see org.ietr.dftools.algorithm.model.visitors.IGraphVisitor#visit(org.ietr.dftools.algorithm.model.AbstractGraph)
    */
   @Override
-  public void visit(final DirectedAcyclicGraph dag) throws SDF4JException {
+  public void visit(final DirectedAcyclicGraph dag) throws PreesmException {
     // Iterate the vertices of the DirectedAcyclicGraph in their
     // total scheduling order
     final Iterator<DAGVertex> iterator = dag.vertexSet().iterator();
@@ -108,7 +108,7 @@ public class GetComponentsScheduleVisitor implements IGraphVisitor<DirectedAcycl
    * @see org.ietr.dftools.algorithm.model.visitors.IGraphVisitor#visit(org.ietr.dftools.algorithm.model.AbstractVertex)
    */
   @Override
-  public void visit(final DAGVertex dagVertex) throws SDF4JException {
+  public void visit(final DAGVertex dagVertex) throws PreesmException {
     // We only add "task" vertices to schedules
     final PropertyBean vertexBeans = dagVertex.getPropertyBean();
     final String vtxType = vertexBeans.getValue(ImplementationPropertyNames.Vertex_vertexType).toString();

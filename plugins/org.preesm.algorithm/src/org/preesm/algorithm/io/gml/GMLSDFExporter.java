@@ -37,12 +37,12 @@ package org.preesm.algorithm.io.gml;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import org.preesm.algorithm.DFToolsAlgoException;
 import org.preesm.algorithm.model.AbstractGraph;
 import org.preesm.algorithm.model.sdf.SDFAbstractVertex;
 import org.preesm.algorithm.model.sdf.SDFEdge;
 import org.preesm.algorithm.model.sdf.SDFGraph;
 import org.preesm.algorithm.model.sdf.SDFInterfaceVertex;
+import org.preesm.commons.exceptions.PreesmException;
 import org.w3c.dom.Element;
 
 /**
@@ -75,7 +75,7 @@ public class GMLSDFExporter extends GMLExporter<SDFAbstractVertex, SDFEdge> {
       exportGraph(graph);
       transform(out);
     } catch (final IOException e) {
-      throw new DFToolsAlgoException("Could not export graph", e);
+      throw new PreesmException("Could not export graph", e);
     }
   }
 

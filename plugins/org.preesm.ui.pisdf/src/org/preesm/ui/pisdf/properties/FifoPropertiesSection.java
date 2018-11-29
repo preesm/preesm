@@ -50,10 +50,10 @@ import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.views.properties.tabbed.ITabbedPropertyConstants;
 import org.eclipse.ui.views.properties.tabbed.TabbedPropertySheetPage;
 import org.eclipse.ui.views.properties.tabbed.TabbedPropertySheetWidgetFactory;
+import org.preesm.commons.math.ExpressionEvaluationException;
 import org.preesm.model.pisdf.DataPort;
 import org.preesm.model.pisdf.Expression;
 import org.preesm.model.pisdf.Fifo;
-import org.preesm.model.pisdf.expression.ExpressionEvaluationException;
 
 // TODO: Auto-generated Javadoc
 /**

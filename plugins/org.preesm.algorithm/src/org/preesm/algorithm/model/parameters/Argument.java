@@ -34,6 +34,8 @@
  */
 package org.preesm.algorithm.model.parameters;
 
+import org.preesm.commons.math.ExpressionEvaluationException;
+
 /**
  * Class used to represent Argument.
  *
@@ -125,7 +127,7 @@ public class Argument {
    * @return the int
    * @throws InvalidExpressionException
    *           the invalid expression exception
-   * @throws NoIntegerValueException
+   * @throws ExpressionEvaluationException
    *           the no integer value exception
    */
   public long longValue() {

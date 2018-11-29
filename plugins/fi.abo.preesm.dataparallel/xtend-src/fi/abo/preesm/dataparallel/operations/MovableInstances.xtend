@@ -51,7 +51,7 @@ import org.eclipse.xtend.lib.annotations.Accessors
 import org.preesm.algorithm.model.sdf.SDFAbstractVertex
 import org.preesm.algorithm.model.sdf.esdf.SDFForkVertex
 import org.preesm.algorithm.model.sdf.esdf.SDFJoinVertex
-import org.preesm.algorithm.model.visitors.SDF4JException
+import org.preesm.commons.exceptions.PreesmException
 
 /**
  * DAG operation that finds the instances that needs to be moved in the
@@ -126,13 +126,13 @@ class MovableInstances implements DAGOperations {
 	 * @param dagGen A {@link PureDAGConstructor} instance
 	 * @throws SDF4JException If the DAG is not instance independent
 	 */
-	private def void findMovableInstances(PureDAGConstructor dagGen) throws SDF4JException , CannotRearrange {
+	private def void findMovableInstances(PureDAGConstructor dagGen) throws PreesmException , CannotRearrange {
 		val parallelVisitor = new DependencyAnalysisOperations
 		dagGen.accept(parallelVisitor)
 
 		val isDAGInd = parallelVisitor.isIndependent
 		if(!isDAGInd) {
-			throw new SDF4JException("DAG is not instance independent. Getting movable instance" +
+			throw new PreesmException("DAG is not instance independent. Getting movable instance" +
 				" is meaningless.")
 		}
 

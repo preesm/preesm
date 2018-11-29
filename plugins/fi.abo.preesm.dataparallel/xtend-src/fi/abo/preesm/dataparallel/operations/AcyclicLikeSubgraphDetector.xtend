@@ -44,7 +44,7 @@ import org.preesm.algorithm.model.sdf.SDFAbstractVertex
 import org.preesm.algorithm.model.sdf.SDFEdge
 import org.preesm.algorithm.model.sdf.SDFGraph
 import org.preesm.algorithm.model.visitors.IGraphVisitor
-import org.preesm.algorithm.model.visitors.SDF4JException
+import org.preesm.commons.exceptions.PreesmException
 
 /**
  * Class that detects Acyclic-like patterns from a given subgraph.
@@ -93,7 +93,7 @@ class AcyclicLikeSubgraphDetector implements IGraphVisitor<SDFGraph, SDFAbstract
 	 *
 	 * @param sdf A {@link SDFGraph} instance that has to be checked
 	 */
-	override visit(SDFGraph sdf) throws SDF4JException {
+	override visit(SDFGraph sdf) throws PreesmException {
 		processedSDF = sdf.copy
 		val removableEdges = newArrayList
 		processedSDF.edgeSet.forEach[edge |
@@ -158,7 +158,7 @@ class AcyclicLikeSubgraphDetector implements IGraphVisitor<SDFGraph, SDFAbstract
 		return sdfSubgraphs
 	}
 
-	override visit(SDFAbstractVertex sdfVertex) throws SDF4JException {
+	override visit(SDFAbstractVertex sdfVertex) throws PreesmException {
 		throw new UnsupportedOperationException("TODO: auto-generated method stub")
 	}
 

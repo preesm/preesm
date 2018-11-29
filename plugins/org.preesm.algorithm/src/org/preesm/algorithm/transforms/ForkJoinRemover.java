@@ -44,23 +44,23 @@ import java.util.ArrayList;
 import java.util.LinkedHashSet;
 import java.util.Set;
 import java.util.logging.Level;
-import org.preesm.algorithm.iterators.SDFIterator;
-import org.preesm.algorithm.iterators.TopologicalDAGIterator;
 import org.preesm.algorithm.model.dag.DAGEdge;
 import org.preesm.algorithm.model.dag.DAGVertex;
 import org.preesm.algorithm.model.dag.DirectedAcyclicGraph;
 import org.preesm.algorithm.model.dag.edag.DAGForkVertex;
 import org.preesm.algorithm.model.dag.edag.DAGJoinVertex;
+import org.preesm.algorithm.model.iterators.SDFIterator;
+import org.preesm.algorithm.model.iterators.TopologicalDAGIterator;
 import org.preesm.algorithm.model.sdf.SDFAbstractVertex;
 import org.preesm.algorithm.model.sdf.SDFEdge;
 import org.preesm.algorithm.model.sdf.SDFGraph;
 import org.preesm.algorithm.model.sdf.esdf.SDFBroadcastVertex;
 import org.preesm.algorithm.model.sdf.esdf.SDFJoinVertex;
 import org.preesm.algorithm.model.sdf.esdf.SDFRoundBufferVertex;
+import org.preesm.commons.exceptions.PreesmException;
 import org.preesm.commons.logger.PreesmLogger;
 import org.preesm.model.scenario.types.ImplementationPropertyNames;
 import org.preesm.model.scenario.types.VertexType;
-import org.preesm.workflow.WorkflowException;
 
 /**
  * Utility class created to gather all static methods used to remove fork/join nodes from a graph.
@@ -89,7 +89,7 @@ public class ForkJoinRemover {
     try {
       iterSDFVertices = new SDFIterator(hsdf);
     } catch (final RuntimeException e) {
-      throw new WorkflowException(e.getMessage(), e);
+      throw new PreesmException(e.getMessage(), e);
     }
 
     // Keep track of the initial number of edge to check if the right number

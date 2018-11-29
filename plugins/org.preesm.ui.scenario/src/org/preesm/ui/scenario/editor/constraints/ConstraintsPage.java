@@ -61,7 +61,7 @@ import org.eclipse.ui.forms.widgets.ExpandableComposite;
 import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.eclipse.ui.forms.widgets.ScrolledForm;
 import org.eclipse.ui.forms.widgets.Section;
-import org.preesm.algorithm.io.gml.InvalidModelException;
+import org.preesm.commons.exceptions.PreesmException;
 import org.preesm.model.scenario.PreesmScenario;
 import org.preesm.ui.scenario.editor.FileSelectionAdapter;
 import org.preesm.ui.scenario.editor.Messages;
@@ -320,14 +320,14 @@ public class ConstraintsPage extends FormPage implements IPropertyListener {
    *
    * @param text
    *          the text
-   * @throws InvalidModelException
+   * @throws PreesmException
    *           the invalid model exception
    * @throws FileNotFoundException
    *           the file not found exception
    * @throws CoreException
    *           the core exception
    */
-  private void importData(final Text text) throws InvalidModelException, FileNotFoundException, CoreException {
+  private void importData(final Text text) throws PreesmException, FileNotFoundException, CoreException {
 
     this.scenario.getConstraintGroupManager().setExcelFileURL(text.getText());
     this.scenario.getConstraintGroupManager().importConstraints(this.scenario);

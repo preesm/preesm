@@ -36,6 +36,8 @@
  */
 package org.preesm.algorithm.model.parameters;
 
+import org.preesm.commons.math.ExpressionEvaluationException;
+
 /**
  * Interface for expression solver.
  *
@@ -53,7 +55,7 @@ public interface IExpressionSolver {
    * @return The long value of the solved expression
    * @throws InvalidExpressionException
    *           the invalid expression exception
-   * @throws NoIntegerValueException
+   * @throws ExpressionEvaluationException
    *           the no integer value exception
    */
   public long solveExpression(String expression, Value caller);

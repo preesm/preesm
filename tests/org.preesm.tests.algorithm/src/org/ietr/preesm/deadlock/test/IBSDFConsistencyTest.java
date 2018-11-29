@@ -38,12 +38,12 @@ package org.ietr.preesm.deadlock.test;
 import org.junit.Assert;
 import org.junit.Test;
 import org.preesm.algorithm.deadlock.IBSDFConsistency;
-import org.preesm.algorithm.evaluator.EvaluationException;
 import org.preesm.algorithm.model.sdf.SDFAbstractVertex;
 import org.preesm.algorithm.model.sdf.SDFEdge;
 import org.preesm.algorithm.model.sdf.SDFGraph;
 import org.preesm.algorithm.model.types.LongEdgePropertyType;
 import org.preesm.algorithm.throughput.tools.helpers.GraphStructureHelper;
+import org.preesm.commons.exceptions.PreesmException;
 
 /**
  *
@@ -98,7 +98,7 @@ public class IBSDFConsistencyTest {
     try {
       IBSDFConsistency.computeRV(ibsdf);
       Assert.fail();
-    } catch (EvaluationException e) {
+    } catch (PreesmException e) {
       // success
     }
 

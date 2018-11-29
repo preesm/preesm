@@ -46,6 +46,7 @@ import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.IWorkspace;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.IProgressMonitor;
+import org.preesm.commons.exceptions.PreesmException;
 import org.preesm.commons.logger.PreesmLogger;
 import org.preesm.commons.messages.PreesmMessages;
 import org.preesm.workflow.elements.AbstractWorkflowNode;
@@ -306,7 +307,7 @@ public abstract class AbstractWorkflowExecutor {
             if (monitor != null) {
               monitor.worked(1);
             }
-          } catch (final WorkflowException e) {
+          } catch (final PreesmException e) {
             error(e, e.getMessage());
             return false;
           }
@@ -380,7 +381,7 @@ public abstract class AbstractWorkflowExecutor {
             if (monitor != null) {
               monitor.worked(1);
             }
-          } catch (final WorkflowException e) {
+          } catch (final PreesmException e) {
             error(e, e.getMessage());
             return false;
           } catch (final Exception e) {
@@ -439,7 +440,7 @@ public abstract class AbstractWorkflowExecutor {
    *          the outputs
    * @param currentTaskNode
    *          the task
-   * @throws WorkflowException
+   * @throws PreesmException
    *           the workflow exception
    */
   private void checkOutputType(final Map<String, Object> outputs,
@@ -452,7 +453,7 @@ public abstract class AbstractWorkflowExecutor {
 
       final String expectedOutputType = currentTaskNode.getOutputType(outputName);
       if (expectedOutputType == null) {
-        throw new WorkflowException(
+        throw new PreesmException(
             "The task node " + currentTaskNode + " has an unspecified output with name " + outputName);
       }
       try {
@@ -462,7 +463,7 @@ public abstract class AbstractWorkflowExecutor {
           if (!currentOutputType.isInstance(outputValue)) {
             // Type is wrong !
             final String givenType = outputValue.getClass().getName();
-            throw new WorkflowException("\nOutput \"" + outputName + "\" of workflow task \""
+            throw new PreesmException("\nOutput \"" + outputName + "\" of workflow task \""
                 + currentTaskNode.getClass() + "\" is null or has an invalid type.\n(expected: \"" + expectedOutputType
                 + "\" given: \"" + givenType + "\")");
           }
@@ -470,7 +471,7 @@ public abstract class AbstractWorkflowExecutor {
       } catch (final Exception ex) {
         final String message = "Could not check output type for [" + outputEntry + "] of task [" + currentTaskNode
             + "] with expected type [" + expectedOutputType + "].";
-        throw new WorkflowException(message, ex);
+        throw new PreesmException(message, ex);
       }
     }
   }

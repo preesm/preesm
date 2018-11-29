@@ -44,9 +44,9 @@ import org.preesm.algorithm.mapper.ScheduledDAGIterator;
 import org.preesm.algorithm.model.dag.DAGEdge;
 import org.preesm.algorithm.model.dag.DAGVertex;
 import org.preesm.algorithm.model.dag.DirectedAcyclicGraph;
+import org.preesm.commons.exceptions.PreesmException;
 import org.preesm.model.scenario.types.ImplementationPropertyNames;
 import org.preesm.model.slam.ComponentInstance;
-import org.preesm.workflow.WorkflowException;
 
 /**
  * The purpose of the {@link CommunicationOrderChecker} is to verify the order of communications resulting from a
@@ -79,7 +79,7 @@ public class CommunicationOrderChecker {
    * @param dag
    *          The {@link DirectedAcyclicGraph} whose schedule is verified.
    *
-   * @throws WorkflowException
+   * @throws PreesmException
    *           if the schedule is incorrect.
    */
   public static void checkCommunicationOrder(final DirectedAcyclicGraph dag) {
@@ -145,7 +145,7 @@ public class CommunicationOrderChecker {
 
         // Throws an exception if the schedule is incorrect.
         if (!senderDagEdges.equals(receiverDagEdges)) {
-          throw new WorkflowException(
+          throw new PreesmException(
               "Order of communication primitives (Send/Receive) is not preserved between components " + sendComponent
                   + " and " + recvComponent + ". Contact Preesm developers for more information.");
         }
