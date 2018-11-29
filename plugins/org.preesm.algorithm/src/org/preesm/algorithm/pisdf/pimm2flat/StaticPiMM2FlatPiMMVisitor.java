@@ -45,7 +45,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import org.eclipse.emf.common.util.EList;
-import org.eclipse.emf.ecore.util.EcoreUtil;
 import org.preesm.commons.exceptions.PreesmException;
 import org.preesm.model.pisdf.AbstractActor;
 import org.preesm.model.pisdf.AbstractVertex;
@@ -99,9 +98,6 @@ public class StaticPiMM2FlatPiMMVisitor extends PiMMSwitch<Boolean> {
 
   /** The scenario. */
   private final PreesmScenario scenario;
-
-  /** Ecore copier utility */
-  private static final EcoreUtil.Copier copier = new EcoreUtil.Copier(true);
 
   /** Map from original PiMM vertices to generated DAG vertices */
   private final Map<AbstractActor, AbstractActor> actor2actor = new LinkedHashMap<>();
@@ -158,7 +154,7 @@ public class StaticPiMM2FlatPiMMVisitor extends PiMMSwitch<Boolean> {
       for (ConfigInputPort port : ports) {
         final ConfigInputPort cip = (ConfigInputPort) copyActor.lookupPort(port.getName());
         if (cip != null) {
-          final Parameter copy = (Parameter) copier.copy(p);
+          final Parameter copy = PiMMUserFactory.instance.copy(p);
           final Dependency dep = PiMMUserFactory.instance.createDependency();
           dep.setSetter(copy);
           cip.setIncomingDependency(dep);
@@ -211,7 +207,7 @@ public class StaticPiMM2FlatPiMMVisitor extends PiMMSwitch<Boolean> {
     if (actor instanceof PiGraph) {
       // Here we handle the replacement of the interfaces by what should be
       // Copy the actor
-      final PiGraph copyActor = (PiGraph) copier.copy(actor);
+      final PiGraph copyActor = PiMMUserFactory.instance.copy((PiGraph) actor);
       setPropertiesToCopyActor(actor, copyActor);
     } else {
       doSwitch(actor);
@@ -227,7 +223,7 @@ public class StaticPiMM2FlatPiMMVisitor extends PiMMSwitch<Boolean> {
   @Override
   public Boolean caseActor(final Actor actor) {
     // Copy the actor
-    final Actor copyActor = (Actor) copier.copy(actor);
+    final Actor copyActor = PiMMUserFactory.instance.copy(actor);
 
     // Set the properties
     setPropertiesToCopyActor(actor, copyActor);
@@ -252,7 +248,7 @@ public class StaticPiMM2FlatPiMMVisitor extends PiMMSwitch<Boolean> {
   @Override
   public Boolean caseBroadcastActor(final BroadcastActor actor) {
     // Copy the BroadCast actor
-    final BroadcastActor copyActor = (BroadcastActor) copier.copy(actor);
+    final BroadcastActor copyActor = PiMMUserFactory.instance.copy(actor);
 
     // Set the properties
     setPropertiesToCopyActor(actor, copyActor);
@@ -262,7 +258,7 @@ public class StaticPiMM2FlatPiMMVisitor extends PiMMSwitch<Boolean> {
   @Override
   public Boolean caseRoundBufferActor(final RoundBufferActor actor) {
     // Copy the RoundBuffer actor
-    final RoundBufferActor copyActor = (RoundBufferActor) copier.copy(actor);
+    final RoundBufferActor copyActor = PiMMUserFactory.instance.copy(actor);
 
     // Set the properties
     setPropertiesToCopyActor(actor, copyActor);
@@ -272,7 +268,7 @@ public class StaticPiMM2FlatPiMMVisitor extends PiMMSwitch<Boolean> {
   @Override
   public Boolean caseJoinActor(final JoinActor actor) {
     // Copy the Join actor
-    final JoinActor copyActor = (JoinActor) copier.copy(actor);
+    final JoinActor copyActor = PiMMUserFactory.instance.copy(actor);
 
     // Set the properties
     setPropertiesToCopyActor(actor, copyActor);
@@ -282,7 +278,7 @@ public class StaticPiMM2FlatPiMMVisitor extends PiMMSwitch<Boolean> {
   @Override
   public Boolean caseForkActor(final ForkActor actor) {
     // Copyt the Fork actor
-    final ForkActor copyActor = (ForkActor) copier.copy(actor);
+    final ForkActor copyActor = PiMMUserFactory.instance.copy(actor);
 
     // Set the properties
     setPropertiesToCopyActor(actor, copyActor);
