@@ -51,7 +51,6 @@ import org.preesm.commons.exceptions.PreesmException;
 import org.preesm.commons.logger.PreesmLogger;
 import org.preesm.model.pisdf.AbstractActor;
 import org.preesm.model.pisdf.AbstractVertex;
-import org.preesm.model.pisdf.Actor;
 import org.preesm.model.pisdf.BroadcastActor;
 import org.preesm.model.pisdf.ConfigInputPort;
 import org.preesm.model.pisdf.ConfigOutputPort;
@@ -67,11 +66,9 @@ import org.preesm.model.pisdf.EndActor;
 import org.preesm.model.pisdf.ExecutableActor;
 import org.preesm.model.pisdf.Expression;
 import org.preesm.model.pisdf.Fifo;
-import org.preesm.model.pisdf.ForkActor;
 import org.preesm.model.pisdf.ISetter;
 import org.preesm.model.pisdf.InitActor;
 import org.preesm.model.pisdf.InterfaceActor;
-import org.preesm.model.pisdf.JoinActor;
 import org.preesm.model.pisdf.Parameter;
 import org.preesm.model.pisdf.PiGraph;
 import org.preesm.model.pisdf.Port;
@@ -232,21 +229,6 @@ public class StaticPiMM2ASrPiMMVisitor extends PiMMSwitch<Boolean> {
     return true;
   }
 
-  /*
-   * (non-Javadoc)
-   *
-   * @see org.ietr.preesm.experiment.model.pimm.util.PiMMVisitor#visitActor(org.ietr.preesm.experiment.model.pimm.Actor)
-   */
-  @Override
-  public Boolean caseActor(final Actor actor) {
-    // Copy the actor
-    final Actor copyActor = PiMMUserFactory.instance.copy(actor);
-
-    // Set the properties
-    setPropertiesToCopyActor(actor, copyActor);
-    return true;
-  }
-
   @Override
   public Boolean caseInitActor(final InitActor actor) {
     // Fetch the actor
@@ -338,39 +320,9 @@ public class StaticPiMM2ASrPiMMVisitor extends PiMMSwitch<Boolean> {
   }
 
   @Override
-  public Boolean caseBroadcastActor(final BroadcastActor actor) {
+  public Boolean caseExecutableActor(final ExecutableActor actor) {
     // Copy the BroadCast actor
-    final BroadcastActor copyActor = PiMMUserFactory.instance.copy(actor);
-
-    // Set the properties
-    setPropertiesToCopyActor(actor, copyActor);
-    return true;
-  }
-
-  @Override
-  public Boolean caseRoundBufferActor(final RoundBufferActor actor) {
-    // Copy the RoundBuffer actor
-    final RoundBufferActor copyActor = PiMMUserFactory.instance.copy(actor);
-
-    // Set the properties
-    setPropertiesToCopyActor(actor, copyActor);
-    return true;
-  }
-
-  @Override
-  public Boolean caseJoinActor(final JoinActor actor) {
-    // Copy the Join actor
-    final JoinActor copyActor = PiMMUserFactory.instance.copy(actor);
-
-    // Set the properties
-    setPropertiesToCopyActor(actor, copyActor);
-    return true;
-  }
-
-  @Override
-  public Boolean caseForkActor(final ForkActor actor) {
-    // Copyt the Fork actor
-    final ForkActor copyActor = PiMMUserFactory.instance.copy(actor);
+    final ExecutableActor copyActor = PiMMUserFactory.instance.copy(actor);
 
     // Set the properties
     setPropertiesToCopyActor(actor, copyActor);
@@ -752,11 +704,6 @@ public class StaticPiMM2ASrPiMMVisitor extends PiMMSwitch<Boolean> {
 
   @Override
   public Boolean caseDataPort(final DataPort p) {
-    throw new UnsupportedOperationException();
-  }
-
-  @Override
-  public Boolean caseExecutableActor(final ExecutableActor ea) {
     throw new UnsupportedOperationException();
   }
 

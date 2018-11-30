@@ -64,7 +64,6 @@ import org.preesm.model.pisdf.PersistenceLevel;
 import org.preesm.model.pisdf.PiGraph;
 import org.preesm.model.pisdf.PortMemoryAnnotation;
 import org.preesm.model.pisdf.factory.PiMMUserFactory;
-import org.preesm.model.pisdf.statictools.PiSDFParameterResolverVisitor;
 
 /**
  * @author farresti
@@ -533,14 +532,14 @@ public class PiMMHelper {
    *          zerze
    * @return rggr
    */
-  public static Long getHierarchichalRV(final PiGraph graph, final Map<AbstractVertex, Long> graphBRV) {
+  public static long getHierarchichalRV(final PiGraph graph, final Map<AbstractVertex, Long> graphBRV) {
     // We need to get the repetition vector of the graph
-    final Long graphRV = graphBRV.get(graph) == null ? 1 : graphBRV.get(graph);
+    final long graphRV = graphBRV.get(graph) == null ? 1 : graphBRV.get(graph);
     // We also need to get the total repetition vector of the hierarchy to correctly flatten the hierarchy
-    Long graphHierarchicallRV = (long) (1);
+    long graphHierarchicallRV = 1L;
     PiGraph containingGraph = graph.getContainingPiGraph();
     while (containingGraph != null) {
-      final Long currentGraphRV = graphBRV.get(containingGraph) == null ? 1 : graphBRV.get(containingGraph);
+      final long currentGraphRV = graphBRV.get(containingGraph) == null ? 1L : graphBRV.get(containingGraph);
       graphHierarchicallRV = graphHierarchicallRV * currentGraphRV;
       containingGraph = containingGraph.getContainingPiGraph();
     }
