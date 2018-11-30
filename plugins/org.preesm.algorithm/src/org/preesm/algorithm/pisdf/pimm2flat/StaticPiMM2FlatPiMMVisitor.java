@@ -71,6 +71,8 @@ import org.preesm.model.pisdf.PiGraph;
 import org.preesm.model.pisdf.Port;
 import org.preesm.model.pisdf.PortMemoryAnnotation;
 import org.preesm.model.pisdf.RoundBufferActor;
+import org.preesm.model.pisdf.brv.BRVMethod;
+import org.preesm.model.pisdf.brv.PiBRV;
 import org.preesm.model.pisdf.factory.PiMMUserFactory;
 import org.preesm.model.pisdf.statictools.PiMMHelper;
 import org.preesm.model.pisdf.util.PiMMSwitch;
@@ -86,7 +88,7 @@ public class StaticPiMM2FlatPiMMVisitor extends PiMMSwitch<Boolean> {
   private final PiGraph result;
 
   /** Basic repetition vector of the graph */
-  private final Map<AbstractVertex, Long> brv;
+  private Map<AbstractVertex, Long> brv;
 
   /** The scenario. */
   private final PreesmScenario scenario;
@@ -100,25 +102,46 @@ public class StaticPiMM2FlatPiMMVisitor extends PiMMSwitch<Boolean> {
   /** Current graph prefix */
   private String graphPrefix;
 
+  private PiGraph graph;
+
   /**
    * Instantiates a new abstract StaticPiMM2ASrPiMMVisitor.
    *
    * @param graph
    *          The original PiGraph to be converted
-   * @param brv
-   *          the Basic Repetition Vector Map
    * @param scenario
    *          the scenario
    *
    */
-  public StaticPiMM2FlatPiMMVisitor(final PiGraph graph, final Map<AbstractVertex, Long> brv,
-      final PreesmScenario scenario) {
+  public StaticPiMM2FlatPiMMVisitor(final PiGraph graph, final PreesmScenario scenario) {
+    this.graph = graph;
     this.result = PiMMUserFactory.instance.createPiGraph();
     this.result.setName(graph.getName());
-    this.brv = brv;
     this.scenario = scenario;
     this.graphName = "";
     this.graphPrefix = "";
+  }
+
+  /**
+   * Precondition: All.
+   *
+   * @return the SDFGraph obtained by visiting graph
+   */
+  public PiGraph launch() {
+    // 1. First we resolve all parameters.
+    // It must be done first because, when removing persistence, local parameters have to be known at upper level
+    PiMMHelper.resolveAllParameters(this.graph);
+    // 2. We perform the delay transformation step that deals with persistence
+    PiMMHelper.removePersistence(this.graph);
+    // 3. Compute BRV following the chosen method
+    this.brv = PiBRV.compute(graph, BRVMethod.LCM);
+    // 4. Print the RV values
+    PiBRV.printRV(brv);
+    // 4.5 Check periods with BRV
+    PiMMHelper.checkPeriodicity(this.brv);
+    // 5. Now, flatten the graph
+    doSwitch(this.graph);
+    return getResult();
   }
 
   /*

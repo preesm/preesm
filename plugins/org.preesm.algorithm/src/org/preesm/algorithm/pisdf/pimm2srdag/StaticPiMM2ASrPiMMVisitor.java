@@ -68,8 +68,13 @@ import org.preesm.model.pisdf.InterfaceActor;
 import org.preesm.model.pisdf.PiGraph;
 import org.preesm.model.pisdf.Port;
 import org.preesm.model.pisdf.RoundBufferActor;
+import org.preesm.model.pisdf.brv.BRVMethod;
+import org.preesm.model.pisdf.brv.PiBRV;
 import org.preesm.model.pisdf.factory.PiMMUserFactory;
+import org.preesm.model.pisdf.statictools.PiMMHelper;
 import org.preesm.model.pisdf.statictools.PiMMSRVerticesLinker;
+import org.preesm.model.pisdf.statictools.optims.BroadcastRoundBufferOptimization;
+import org.preesm.model.pisdf.statictools.optims.ForkJoinOptimization;
 import org.preesm.model.pisdf.util.PiMMSwitch;
 import org.preesm.model.scenario.PreesmScenario;
 
@@ -83,7 +88,7 @@ public class StaticPiMM2ASrPiMMVisitor extends PiMMSwitch<Boolean> {
   private final PiGraph result;
 
   /** Basic repetition vector of the graph */
-  private final Map<AbstractVertex, Long> brv;
+  private Map<AbstractVertex, Long> brv;
 
   /** The scenario. */
   private final PreesmScenario scenario;
@@ -112,25 +117,53 @@ public class StaticPiMM2ASrPiMMVisitor extends PiMMSwitch<Boolean> {
   /** Current FIFO */
   private Fifo currentFifo;
 
+  private PiGraph graph;
+
   /**
    * Instantiates a new abstract StaticPiMM2ASrPiMMVisitor.
    *
    * @param graph
    *          The original PiGraph to be converted
-   * @param brv
-   *          the Basic Repetition Vector Map
    * @param scenario
    *          the scenario
    *
    */
-  public StaticPiMM2ASrPiMMVisitor(final PiGraph graph, final Map<AbstractVertex, Long> brv,
-      final PreesmScenario scenario) {
+  public StaticPiMM2ASrPiMMVisitor(final PiGraph graph, final PreesmScenario scenario) {
+    this.graph = graph;
     this.result = PiMMUserFactory.instance.createPiGraph();
     this.result.setName(graph.getName());
-    this.brv = brv;
     this.scenario = scenario;
     this.graphName = "";
     this.graphPrefix = "";
+  }
+
+  /**
+   * Precondition: All.
+   *
+   * @return the SDFGraph obtained by visiting graph
+   */
+  public PiGraph launch(final BRVMethod method) {
+    // 1. First we resolve all parameters.
+    // It must be done first because, when removing persistence, local parameters have to be known at upper level
+    PiMMHelper.resolveAllParameters(graph);
+    // 2. We perform the delay transformation step that deals with persistence
+    PiMMHelper.removePersistence(graph);
+    // 3. Compute BRV following the chosen method
+    brv = PiBRV.compute(graph, method);
+    // 4. Print the RV values
+    // 4.5 Check periods with BRV
+    PiMMHelper.checkPeriodicity(brv);
+    // 5. Convert to SR-DAG
+    doSwitch(graph);
+    final PiGraph acyclicSRPiMM = getResult();
+
+    // 6- do some optimization on the graph
+    final ForkJoinOptimization forkJoinOptimization = new ForkJoinOptimization();
+    forkJoinOptimization.optimize(acyclicSRPiMM);
+    final BroadcastRoundBufferOptimization brRbOptimization = new BroadcastRoundBufferOptimization();
+    brRbOptimization.optimize(acyclicSRPiMM);
+
+    return acyclicSRPiMM;
   }
 
   /*
