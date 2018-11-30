@@ -84,7 +84,7 @@ public class StaticPiMM2SrDAGTask extends AbstractTaskImplementation {
     }
 
     // Convert the PiGraph to the Single-Rate Directed Acyclic Graph
-    final PiGraph resultPi = new StaticPiMM2ASrPiMMVisitor(graph, scenario).launch(method);
+    final PiGraph resultPi = new StaticPiMM2ASrPiMMVisitor(graph).launch(method);
 
     result = covnertToMapperDAG(resultPi, architecture, scenario);
 

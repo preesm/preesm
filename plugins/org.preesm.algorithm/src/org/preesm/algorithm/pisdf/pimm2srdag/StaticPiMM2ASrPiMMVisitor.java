@@ -76,7 +76,6 @@ import org.preesm.model.pisdf.statictools.PiMMSRVerticesLinker;
 import org.preesm.model.pisdf.statictools.optims.BroadcastRoundBufferOptimization;
 import org.preesm.model.pisdf.statictools.optims.ForkJoinOptimization;
 import org.preesm.model.pisdf.util.PiMMSwitch;
-import org.preesm.model.scenario.PreesmScenario;
 
 /**
  * @author farresti
@@ -89,9 +88,6 @@ public class StaticPiMM2ASrPiMMVisitor extends PiMMSwitch<Boolean> {
 
   /** Basic repetition vector of the graph */
   private Map<AbstractVertex, Long> brv;
-
-  /** The scenario. */
-  private final PreesmScenario scenario;
 
   /** Map from original PiMM vertices to generated DAG vertices */
   private final Map<String, List<AbstractVertex>> actor2SRActors = new LinkedHashMap<>();
@@ -124,15 +120,12 @@ public class StaticPiMM2ASrPiMMVisitor extends PiMMSwitch<Boolean> {
    *
    * @param graph
    *          The original PiGraph to be converted
-   * @param scenario
-   *          the scenario
    *
    */
-  public StaticPiMM2ASrPiMMVisitor(final PiGraph graph, final PreesmScenario scenario) {
+  public StaticPiMM2ASrPiMMVisitor(final PiGraph graph) {
     this.graph = graph;
     this.result = PiMMUserFactory.instance.createPiGraph();
     this.result.setName(graph.getName());
-    this.scenario = scenario;
     this.graphName = "";
     this.graphPrefix = "";
   }
