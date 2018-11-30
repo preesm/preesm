@@ -519,6 +519,12 @@ public class SpiderCodegen {
       }
     }
 
+    if (!found) {
+      uniqueEventSets.put(eventNames, eventSetID);
+    }
+
+    System.out.println("uniqueEventSets lenght = " + uniqueEventSets.size());
+
     append("static PapifyConfig* " + "create" + actor.getName() + "PapifyConfig() {\n");
     append("\tPapifyConfig* config  = new PapifyConfig;\n\n");
     append("\t// Setting the PapifyConfig for actor: " + actor.getName() + "\n");
