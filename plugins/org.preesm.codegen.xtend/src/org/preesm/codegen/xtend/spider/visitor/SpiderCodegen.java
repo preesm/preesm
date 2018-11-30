@@ -470,6 +470,7 @@ public class SpiderCodegen {
     String compNames = "";
 
     for (String compName : configInfo.keySet()) {
+      // Build the eventNames and the Timing variables to be printed
       for (PapiEvent event : configInfo.get(compName)) {
         if (event.getName().equals(timingEvent.getName())) {
           timingMonitoring = true;
@@ -479,9 +480,7 @@ public class SpiderCodegen {
           eventNames.add(event.getName());
         }
       }
-    }
-
-    for (String compName : configInfo.keySet()) {
+      // Build the peType variable to be printed
       if (!compName.equals("Timing")) {
         if (compNames.equals("")) {
           compNames = compName;
@@ -500,9 +499,7 @@ public class SpiderCodegen {
       for (Map.Entry<ArrayList<String>, Integer> eventSet : uniqueEventSets.entrySet()) {
         final ArrayList<String> currentEventSetNames = eventSet.getKey();
         final Integer currentEventSetID = eventSet.getValue();
-        if (eventNames.size() != currentEventSetNames.size()) {
-          continue;
-        } else {
+        if (eventNames.size() == currentEventSetNames.size()) {
           found = eventNames.containsAll(currentEventSetNames) && currentEventSetNames.containsAll(eventNames);
           if (found) {
             realEventSetID = currentEventSetID;
