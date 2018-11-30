@@ -134,7 +134,7 @@ public class StaticPiMM2FlatPiMMVisitor extends PiMMSwitch<Boolean> {
     PiMMHelper.checkPeriodicity(this.brv);
     // 5. Now, flatten the graph
     doSwitch(this.graph);
-    return getResult();
+    return this.result;
   }
 
   /*
@@ -227,7 +227,6 @@ public class StaticPiMM2FlatPiMMVisitor extends PiMMSwitch<Boolean> {
     // Map the actor for linking latter
     this.actor2actor.put(actor, broadcastIn);
     instantiateParameters(actor, broadcastIn);
-    // setPropertiesToCopyActor(actor, broadcastIn, this.scenario);
     return true;
   }
 
@@ -261,13 +260,12 @@ public class StaticPiMM2FlatPiMMVisitor extends PiMMSwitch<Boolean> {
     // Map the actor for linking latter
     this.actor2actor.put(actor, roundbufferOut);
     instantiateParameters(actor, roundbufferOut);
-    // setPropertiesToCopyActor(actor, roundbufferOut, this.scenario);
     return true;
   }
 
   private void checkInterfaceRate(final InterfaceActor actor, final Expression interfaceRateExpression) {
-    final PiGraph graph = actor.getContainingPiGraph();
-    final DataPort correspondingPort = graph.lookupGraphDataPortForInterfaceActor(actor);
+    final PiGraph parentGraph = actor.getContainingPiGraph();
+    final DataPort correspondingPort = parentGraph.lookupGraphDataPortForInterfaceActor(actor);
     final Expression correspondingExpression = correspondingPort.getExpression();
     if (!correspondingExpression.getExpressionAsString().equals(interfaceRateExpression.getExpressionAsString())) {
       throw new PreesmException("Interface [" + actor.getName()
@@ -366,15 +364,6 @@ public class StaticPiMM2FlatPiMMVisitor extends PiMMSwitch<Boolean> {
       return this.actor2actor.get((AbstractActor) ifActor);
     }
     return this.actor2actor.get(actor);
-  }
-
-  /**
-   * Gets the result.
-   *
-   * @return the result
-   */
-  public PiGraph getResult() {
-    return this.result;
   }
 
   @Override

@@ -181,9 +181,9 @@ public class StaticPiMM2ASrPiMMVisitor extends PiMMSwitch<Boolean> {
       // Add the actor to the FIFO source/sink sets
       this.actor2SRActors.get(this.graphPrefix + actor.getName()).add(copyActor);
       StaticPiMM2FlatPiMMVisitor.instantiateParameters(actor, copyActor);
-      return true;
+    } else {
+      doSwitch(actor);
     }
-    doSwitch(actor);
     return true;
   }
 
@@ -775,13 +775,13 @@ public class StaticPiMM2ASrPiMMVisitor extends PiMMSwitch<Boolean> {
   private void splitDelayActors(final Fifo fifo) {
     final DelayActor delayActor = fifo.getDelay().getActor();
     final String delayExpression = fifo.getDelay().getExpression().getExpressionAsString();
-    final PiGraph graph = fifo.getContainingPiGraph();
+    final PiGraph parentGraph = fifo.getContainingPiGraph();
     // 0. Check if the DelayActor need to add Init / End
     if (delayActor.getSetterActor() == null) {
-      addInitActorAsSetter(fifo, delayActor, delayExpression, graph);
+      addInitActorAsSetter(fifo, delayActor, delayExpression, parentGraph);
     }
     if (delayActor.getGetterActor() == null) {
-      addEndActorAsGetter(fifo, delayActor, delayExpression, graph);
+      addEndActorAsGetter(fifo, delayActor, delayExpression, parentGraph);
     }
     // 1. We split the current actor in two for more convenience
     // 1.1 Let start by the setterActor
@@ -818,9 +818,9 @@ public class StaticPiMM2ASrPiMMVisitor extends PiMMSwitch<Boolean> {
     }
     this.brv.put(getterActor, brvGetter);
     // 2 We remove the old actor and add the new ones
-    graph.removeActor((AbstractActor) delayActor);
-    graph.addActor(setterActor);
-    graph.addActor(getterActor);
+    parentGraph.removeActor((AbstractActor) delayActor);
+    parentGraph.addActor(setterActor);
+    parentGraph.addActor(getterActor);
   }
 
   private void addInitActorAsSetter(final Fifo fifo, final DelayActor delayActor, final String delayExpression,
