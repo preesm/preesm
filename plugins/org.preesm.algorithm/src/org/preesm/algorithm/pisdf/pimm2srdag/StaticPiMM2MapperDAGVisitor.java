@@ -40,12 +40,12 @@
  */
 package org.preesm.algorithm.pisdf.pimm2srdag;
 
-import java.util.logging.Level;
-import org.apache.commons.lang3.time.StopWatch;
+import java.util.ArrayList;
 import org.preesm.algorithm.codegen.idl.ActorPrototypes;
 import org.preesm.algorithm.codegen.idl.Prototype;
 import org.preesm.algorithm.codegen.model.CodeGenArgument;
 import org.preesm.algorithm.codegen.model.CodeGenParameter;
+import org.preesm.algorithm.mapper.graphtransfo.SdfToDagConverter;
 import org.preesm.algorithm.mapper.model.MapperDAG;
 import org.preesm.algorithm.mapper.model.MapperDAGVertex;
 import org.preesm.algorithm.mapper.model.MapperEdgeFactory;
@@ -66,7 +66,6 @@ import org.preesm.algorithm.model.types.LongEdgePropertyType;
 import org.preesm.algorithm.model.types.LongVertexPropertyType;
 import org.preesm.algorithm.model.types.StringEdgePropertyType;
 import org.preesm.commons.exceptions.PreesmException;
-import org.preesm.commons.logger.PreesmLogger;
 import org.preesm.model.pisdf.AbstractActor;
 import org.preesm.model.pisdf.Actor;
 import org.preesm.model.pisdf.BroadcastActor;
@@ -99,6 +98,7 @@ import org.preesm.model.pisdf.Refinement;
 import org.preesm.model.pisdf.RoundBufferActor;
 import org.preesm.model.pisdf.util.PiMMSwitch;
 import org.preesm.model.scenario.PreesmScenario;
+import org.preesm.model.slam.Design;
 
 /**
  * @author farresti
@@ -118,6 +118,8 @@ public class StaticPiMM2MapperDAGVisitor extends PiMMSwitch<Boolean> {
   /** The scenario. */
   private final PreesmScenario scenario;
 
+  private final Design architecture;
+
   /**
    * Instantiates a new StaticPiMM2MapperDAGVisitor
    *
@@ -126,7 +128,8 @@ public class StaticPiMM2MapperDAGVisitor extends PiMMSwitch<Boolean> {
    * @param scenario
    *          The scenario
    */
-  public StaticPiMM2MapperDAGVisitor(final PiGraph piGraph, final PreesmScenario scenario) {
+  public StaticPiMM2MapperDAGVisitor(final PiGraph piGraph, final Design architecture, final PreesmScenario scenario) {
+    this.architecture = architecture;
     this.result = new MapperDAG(new MapperEdgeFactory(), piGraph);
     this.vertexFactory = MapperVertexFactory.getInstance();
     this.scenario = scenario;
@@ -604,8 +607,6 @@ public class StaticPiMM2MapperDAGVisitor extends PiMMSwitch<Boolean> {
 
   @Override
   public Boolean casePiGraph(final PiGraph graph) {
-    final StopWatch timer = new StopWatch();
-    timer.start();
     // If there is no actor we leave
     if (graph.getActors().isEmpty()) {
       throw new UnsupportedOperationException(
@@ -626,10 +627,45 @@ public class StaticPiMM2MapperDAGVisitor extends PiMMSwitch<Boolean> {
     for (final Fifo fifo : graph.getFifos()) {
       doSwitch(fifo);
     }
-    timer.stop();
-    final String msgPiMM2DAG = "Dag conversion: " + timer + "s.";
-    PreesmLogger.getLogger().log(Level.INFO, msgPiMM2DAG);
-    timer.reset();
+
+    // 6. Aggregate edges
+    aggregateEdges(result);
+
+    SdfToDagConverter.addInitialProperties(result, architecture, scenario);
     return true;
+  }
+
+  /**
+   * Creates edge aggregate for all multi connection between two vertices.
+   *
+   * @param dag
+   *          the dag on which to perform
+   */
+  private void aggregateEdges(final MapperDAG dag) {
+    for (final DAGVertex vertex : dag.vertexSet()) {
+      // List of extra edges to remove
+      final ArrayList<DAGEdge> toRemove = new ArrayList<>();
+      for (final DAGEdge edge : vertex.incomingEdges()) {
+        final DAGVertex source = edge.getSource();
+        // Maybe doing the copy is not optimal
+        final ArrayList<DAGEdge> allEdges = new ArrayList<>(dag.getAllEdges(source, vertex));
+        // if there is only one connection no need to modify anything
+        if (allEdges.size() == 1 || toRemove.contains(allEdges.get(1))) {
+          continue;
+        }
+        // Get the first edge
+        final DAGEdge firstEdge = allEdges.remove(0);
+        for (final DAGEdge extraEdge : allEdges) {
+          // Update the weight
+          firstEdge.setWeight(
+              new LongEdgePropertyType(firstEdge.getWeight().longValue() + extraEdge.getWeight().longValue()));
+          // Add the aggregate edge
+          firstEdge.getAggregate().add(extraEdge.getAggregate().get(0));
+          toRemove.add(extraEdge);
+        }
+      }
+      // Removes the extra edges
+      toRemove.forEach(dag::removeEdge);
+    }
   }
 }

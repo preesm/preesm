@@ -38,18 +38,12 @@
  */
 package org.preesm.algorithm.pisdf.pimm2srdag;
 
-import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import org.apache.commons.lang3.time.StopWatch;
 import org.eclipse.core.runtime.IProgressMonitor;
-import org.preesm.algorithm.mapper.graphtransfo.SdfToDagConverter;
 import org.preesm.algorithm.mapper.model.MapperDAG;
-import org.preesm.algorithm.model.dag.DAGEdge;
-import org.preesm.algorithm.model.dag.DAGVertex;
-import org.preesm.algorithm.model.types.LongEdgePropertyType;
 import org.preesm.algorithm.model.visitors.VisitorOutput;
 import org.preesm.commons.exceptions.PreesmException;
 import org.preesm.commons.logger.PreesmLogger;
@@ -97,9 +91,7 @@ public class StaticPiMM2SrDAGTask extends AbstractTaskImplementation {
     // Convert the PiGraph to the Single-Rate Directed Acyclic Graph
     final PiGraph resultPi = launch(scenario, graph, method);
 
-    result = covnertToMapperDAG(resultPi, scenario);
-
-    SdfToDagConverter.addInitialProperties(result, architecture, scenario);
+    result = covnertToMapperDAG(resultPi, architecture, scenario);
 
     final String message = "mapping a DAG with " + result.vertexSet().size() + " vertices and "
         + result.edgeSet().size() + " edges";
@@ -126,59 +118,12 @@ public class StaticPiMM2SrDAGTask extends AbstractTaskImplementation {
   /**
    * Converts the single rate acyclic PiSDF to {@link MapperDAG} and aggregate edges
    */
-  public MapperDAG covnertToMapperDAG(PiGraph resultPi, PreesmScenario scenario) {
+  public MapperDAG covnertToMapperDAG(final PiGraph resultPi, final Design architecture,
+      final PreesmScenario scenario) {
     // Convert the PiMM vertices to DAG vertices
-    final StaticPiMM2MapperDAGVisitor visitor = new StaticPiMM2MapperDAGVisitor(resultPi, scenario);
+    final StaticPiMM2MapperDAGVisitor visitor = new StaticPiMM2MapperDAGVisitor(resultPi, architecture, scenario);
     visitor.doSwitch(resultPi);
-    MapperDAG result = visitor.getResult();
-
-    // 6. Aggregate edges
-    final StopWatch timer = new StopWatch();
-    timer.start();
-    // This is needed as the memory allocator does not yet handle multiple edges
-    // There is a potential TODO for someone with a brave heart here
-    // if you're doing this, remember to check for addAggregate in TAGDag.java and for createEdge in
-    // SRVerticesLinker.java.
-    // also in ScriptRunner.xtend, there is a part where the aggregate list is flatten, check that also
-    aggregateEdges(result);
-    timer.stop();
-    final String msg = "Edge aggregation: " + timer + "s.";
-    PreesmLogger.getLogger().log(Level.INFO, msg);
-    return result;
-  }
-
-  /**
-   * Creates edge aggregate for all multi connection between two vertices.
-   *
-   * @param dag
-   *          the dag on which to perform
-   */
-  private void aggregateEdges(final MapperDAG dag) {
-    for (final DAGVertex vertex : dag.vertexSet()) {
-      // List of extra edges to remove
-      final ArrayList<DAGEdge> toRemove = new ArrayList<>();
-      for (final DAGEdge edge : vertex.incomingEdges()) {
-        final DAGVertex source = edge.getSource();
-        // Maybe doing the copy is not optimal
-        final ArrayList<DAGEdge> allEdges = new ArrayList<>(dag.getAllEdges(source, vertex));
-        // if there is only one connection no need to modify anything
-        if (allEdges.size() == 1 || toRemove.contains(allEdges.get(1))) {
-          continue;
-        }
-        // Get the first edge
-        final DAGEdge firstEdge = allEdges.remove(0);
-        for (final DAGEdge extraEdge : allEdges) {
-          // Update the weight
-          firstEdge.setWeight(
-              new LongEdgePropertyType(firstEdge.getWeight().longValue() + extraEdge.getWeight().longValue()));
-          // Add the aggregate edge
-          firstEdge.getAggregate().add(extraEdge.getAggregate().get(0));
-          toRemove.add(extraEdge);
-        }
-      }
-      // Removes the extra edges
-      toRemove.forEach(dag::removeEdge);
-    }
+    return visitor.getResult();
   }
 
   /**
