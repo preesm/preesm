@@ -143,14 +143,12 @@ public class StaticPiMM2MapperDAGVisitor extends PiMMSwitch<Boolean> {
    * @return the DAGVertex
    */
   private void setDAGVertexPropertiesFromPiMM(final AbstractActor actor, final DAGVertex vertex) {
-    // Handle vertex's name
-    vertex.setName(actor.getName());
-    // Handle vertex's path inside the graph hierarchy
-    vertex.setInfo(actor.getVertexPath());
-    // Handle ID
+
     vertex.setId(actor.getName());
-    // Set Repetition vector to 1 since it is a single rate vertex
+    vertex.setName(actor.getName());
+    vertex.setInfo(actor.getVertexPath());
     vertex.setNbRepeat(new LongVertexPropertyType(1));
+
     // Set default time property
     vertex.setTime(new LongVertexPropertyType(0));
     // Adds the list of source ports
@@ -320,10 +318,8 @@ public class StaticPiMM2MapperDAGVisitor extends PiMMSwitch<Boolean> {
 
     // Set the number of delay
     vertex.getPropertyBean().setValue(DAGInitVertex.INIT_SIZE, dataOutputPort.getPortRateExpression().evaluate());
-    vertex.setId(actor.getName());
-    vertex.setName(actor.getName());
-    vertex.setInfo(actor.getName());
-    vertex.setNbRepeat(new LongVertexPropertyType(1));
+
+    setDAGVertexPropertiesFromPiMM(actor, vertex);
 
     // Set the PERSISTENCE_LEVEL property
     vertex.setPropertyValue(DAGInitVertex.PERSISTENCE_LEVEL, actor.getLevel());
@@ -343,10 +339,7 @@ public class StaticPiMM2MapperDAGVisitor extends PiMMSwitch<Boolean> {
   public Boolean caseEndActor(final EndActor actor) {
     final DAGVertex vertex = vertexFactory.createVertex(DAGEndVertex.DAG_END_VERTEX);
 
-    vertex.setId(actor.getName());
-    vertex.setName(actor.getName());
-    vertex.setInfo(actor.getName());
-    vertex.setNbRepeat(new LongVertexPropertyType(1));
+    setDAGVertexPropertiesFromPiMM(actor, vertex);
 
     final String delayInitID = actor.getInitReference();
     // Handle the END_REFERENCE property
@@ -607,16 +600,7 @@ public class StaticPiMM2MapperDAGVisitor extends PiMMSwitch<Boolean> {
 
   @Override
   public Boolean casePiGraph(final PiGraph graph) {
-    // If there is no actor we leave
-    if (graph.getActors().isEmpty()) {
-      throw new UnsupportedOperationException(
-          "Can not convert an empty graph. Check the refinement for [" + graph.getVertexPath() + "].");
-    }
-
-    // Check that we are indeed in a flat graph
-    if (!graph.getChildrenGraphs().isEmpty()) {
-      throw new UnsupportedOperationException("This method is not applicable for non flatten PiMM Graphs.");
-    }
+    checkInput(graph);
 
     // Convert vertices
     for (final AbstractActor actor : graph.getActors()) {
@@ -633,6 +617,19 @@ public class StaticPiMM2MapperDAGVisitor extends PiMMSwitch<Boolean> {
 
     SdfToDagConverter.addInitialProperties(result, architecture, scenario);
     return true;
+  }
+
+  private void checkInput(final PiGraph graph) {
+    // If there is no actor we leave
+    if (graph.getActors().isEmpty()) {
+      throw new UnsupportedOperationException(
+          "Can not convert an empty graph. Check the refinement for [" + graph.getVertexPath() + "].");
+    }
+
+    // Check that we are indeed in a flat graph
+    if (!graph.getChildrenGraphs().isEmpty()) {
+      throw new UnsupportedOperationException("This method is not applicable for non flatten PiMM Graphs.");
+    }
   }
 
   /**
