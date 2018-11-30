@@ -43,7 +43,7 @@ import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import org.preesm.algorithm.pisdf.pimm2flat.StaticPiMM2FlatPiMMVisitor;
+import org.preesm.algorithm.pisdf.pimm2flat.PiSDFFlattener;
 import org.preesm.commons.exceptions.PreesmException;
 import org.preesm.model.pisdf.AbstractActor;
 import org.preesm.model.pisdf.AbstractVertex;
@@ -180,7 +180,7 @@ public class StaticPiMM2ASrPiMMVisitor extends PiMMSwitch<Boolean> {
 
       // Add the actor to the FIFO source/sink sets
       this.actor2SRActors.get(this.graphPrefix + actor.getName()).add(copyActor);
-      StaticPiMM2FlatPiMMVisitor.instantiateParameters(actor, copyActor);
+      PiSDFFlattener.instantiateParameters(actor, copyActor);
     } else {
       doSwitch(actor);
     }
@@ -291,7 +291,7 @@ public class StaticPiMM2ASrPiMMVisitor extends PiMMSwitch<Boolean> {
     this.actor2SRActors.get(this.graphPrefix + actor.getName()).add(copyActor);
 
     // Set the properties
-    StaticPiMM2FlatPiMMVisitor.instantiateParameters(actor, copyActor);
+    PiSDFFlattener.instantiateParameters(actor, copyActor);
     return true;
   }
 

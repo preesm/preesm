@@ -71,9 +71,7 @@ public class StaticPiMM2FlatPiMMTask extends AbstractTaskImplementation {
     VisitorOutput.setLogger(logger);
     logger.log(Level.INFO, "Computing Repetition Vector for graph [" + graph.getName() + "]");
     // Flatten the graph
-    final StaticPiMM2FlatPiMMVisitor visitor = new StaticPiMM2FlatPiMMVisitor(graph);
-    // Transform Multi-Rate PiMM to Acyclic Single-Rate PiMM
-    final PiGraph result = visitor.launch();
+    final PiGraph result = PiSDFFlattener.flatten(graph);
 
     final Map<String, Object> output = new LinkedHashMap<>();
     output.put(AbstractWorkflowNodeImplementation.KEY_PI_GRAPH, result);

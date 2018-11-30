@@ -81,13 +81,37 @@ import org.preesm.model.pisdf.util.PiMMSwitch;
  * @author farresti
  *
  */
-public class StaticPiMM2FlatPiMMVisitor extends PiMMSwitch<Boolean> {
+public class PiSDFFlattener extends PiMMSwitch<Boolean> {
+
+  /**
+   * Precondition: All.
+   *
+   * @return the SDFGraph obtained by visiting graph
+   */
+  public static final PiGraph flatten(final PiGraph graph) {
+    // 1. First we resolve all parameters.
+    // It must be done first because, when removing persistence, local parameters have to be known at upper level
+    PiMMHelper.resolveAllParameters(graph);
+    // 2. We perform the delay transformation step that deals with persistence
+    PiMMHelper.removePersistence(graph);
+    // 3. Compute BRV following the chosen method
+    Map<AbstractVertex, Long> brv = PiBRV.compute(graph, BRVMethod.LCM);
+    // 4. Print the RV values
+    PiBRV.printRV(brv);
+    // 4.5 Check periods with BRV
+    PiMMHelper.checkPeriodicity(brv);
+    // 5. Now, flatten the graph
+    PiSDFFlattener staticPiMM2FlatPiMMVisitor = new PiSDFFlattener(brv);
+    staticPiMM2FlatPiMMVisitor.doSwitch(graph);
+    return staticPiMM2FlatPiMMVisitor.result;
+  }
+
   /** The result. */
   // Flat graph created from the outer graph
   private final PiGraph result;
 
   /** Basic repetition vector of the graph */
-  private Map<AbstractVertex, Long> brv;
+  private final Map<AbstractVertex, Long> brv;
 
   /** Map from original PiMM vertices to generated DAG vertices */
   private final Map<AbstractActor, AbstractActor> actor2actor = new LinkedHashMap<>();
@@ -98,43 +122,16 @@ public class StaticPiMM2FlatPiMMVisitor extends PiMMSwitch<Boolean> {
   /** Current graph prefix */
   private String graphPrefix;
 
-  private PiGraph graph;
-
   /**
    * Instantiates a new abstract StaticPiMM2ASrPiMMVisitor.
    *
-   * @param graph
-   *          The original PiGraph to be converted
    *
    */
-  public StaticPiMM2FlatPiMMVisitor(final PiGraph graph) {
-    this.graph = graph;
+  public PiSDFFlattener(Map<AbstractVertex, Long> brv) {
     this.result = PiMMUserFactory.instance.createPiGraph();
-    this.result.setName(graph.getName());
+    this.brv = brv;
     this.graphName = "";
     this.graphPrefix = "";
-  }
-
-  /**
-   * Precondition: All.
-   *
-   * @return the SDFGraph obtained by visiting graph
-   */
-  public PiGraph launch() {
-    // 1. First we resolve all parameters.
-    // It must be done first because, when removing persistence, local parameters have to be known at upper level
-    PiMMHelper.resolveAllParameters(this.graph);
-    // 2. We perform the delay transformation step that deals with persistence
-    PiMMHelper.removePersistence(this.graph);
-    // 3. Compute BRV following the chosen method
-    this.brv = PiBRV.compute(graph, BRVMethod.LCM);
-    // 4. Print the RV values
-    PiBRV.printRV(brv);
-    // 4.5 Check periods with BRV
-    PiMMHelper.checkPeriodicity(this.brv);
-    // 5. Now, flatten the graph
-    doSwitch(this.graph);
-    return this.result;
   }
 
   /*
@@ -513,6 +510,7 @@ public class StaticPiMM2FlatPiMMVisitor extends PiMMSwitch<Boolean> {
 
   @Override
   public Boolean casePiGraph(final PiGraph graph) {
+    this.result.setName(graph.getName());
     // If there are no actors in the graph we leave
     if (graph.getActors().isEmpty()) {
       throw new UnsupportedOperationException(
