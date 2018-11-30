@@ -36,14 +36,13 @@
 /**
  *
  */
-package org.preesm.algorithm.pisdf.pimm2srdag;
+package org.preesm.model.pisdf.statictools;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import org.preesm.algorithm.pisdf.pimm2flat.PiSDFFlattener;
 import org.preesm.commons.exceptions.PreesmException;
 import org.preesm.model.pisdf.AbstractActor;
 import org.preesm.model.pisdf.AbstractVertex;
@@ -71,8 +70,6 @@ import org.preesm.model.pisdf.RoundBufferActor;
 import org.preesm.model.pisdf.brv.BRVMethod;
 import org.preesm.model.pisdf.brv.PiBRV;
 import org.preesm.model.pisdf.factory.PiMMUserFactory;
-import org.preesm.model.pisdf.statictools.PiMMHelper;
-import org.preesm.model.pisdf.statictools.PiMMSRVerticesLinker;
 import org.preesm.model.pisdf.statictools.optims.BroadcastRoundBufferOptimization;
 import org.preesm.model.pisdf.statictools.optims.ForkJoinOptimization;
 import org.preesm.model.pisdf.util.PiMMSwitch;

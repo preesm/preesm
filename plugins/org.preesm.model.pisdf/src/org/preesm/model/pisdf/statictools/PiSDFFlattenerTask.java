@@ -36,14 +36,13 @@
 /**
  *
  */
-package org.preesm.algorithm.pisdf.pimm2flat;
+package org.preesm.model.pisdf.statictools;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.eclipse.core.runtime.IProgressMonitor;
-import org.preesm.algorithm.model.visitors.VisitorOutput;
 import org.preesm.commons.logger.PreesmLogger;
 import org.preesm.model.pisdf.PiGraph;
 import org.preesm.workflow.elements.Workflow;
@@ -54,7 +53,9 @@ import org.preesm.workflow.implement.AbstractWorkflowNodeImplementation;
  * @author farresti
  *
  */
-public class StaticPiMM2FlatPiMMTask extends AbstractTaskImplementation {
+public class PiSDFFlattenerTask extends AbstractTaskImplementation {
+
+  final Logger logger = PreesmLogger.getLogger();
 
   /*
    * (non-Javadoc)
@@ -66,9 +67,6 @@ public class StaticPiMM2FlatPiMMTask extends AbstractTaskImplementation {
   public Map<String, Object> execute(final Map<String, Object> inputs, final Map<String, String> parameters,
       final IProgressMonitor monitor, final String nodeName, final Workflow workflow) {
     final PiGraph graph = (PiGraph) inputs.get(AbstractWorkflowNodeImplementation.KEY_PI_GRAPH);
-
-    final Logger logger = PreesmLogger.getLogger();
-    VisitorOutput.setLogger(logger);
     logger.log(Level.INFO, "Computing Repetition Vector for graph [" + graph.getName() + "]");
     // Flatten the graph
     final PiGraph result = PiSDFFlattener.flatten(graph);

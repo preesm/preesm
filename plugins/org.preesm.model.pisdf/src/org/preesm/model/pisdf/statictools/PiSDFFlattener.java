@@ -37,7 +37,7 @@
 /**
  *
  */
-package org.preesm.algorithm.pisdf.pimm2flat;
+package org.preesm.model.pisdf.statictools;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -74,7 +74,6 @@ import org.preesm.model.pisdf.RoundBufferActor;
 import org.preesm.model.pisdf.brv.BRVMethod;
 import org.preesm.model.pisdf.brv.PiBRV;
 import org.preesm.model.pisdf.factory.PiMMUserFactory;
-import org.preesm.model.pisdf.statictools.PiMMHelper;
 import org.preesm.model.pisdf.util.PiMMSwitch;
 
 /**

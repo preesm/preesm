@@ -49,6 +49,7 @@ import org.preesm.commons.exceptions.PreesmException;
 import org.preesm.commons.logger.PreesmLogger;
 import org.preesm.model.pisdf.PiGraph;
 import org.preesm.model.pisdf.brv.BRVMethod;
+import org.preesm.model.pisdf.statictools.PiSDFToSingleRate;
 import org.preesm.model.scenario.PreesmScenario;
 import org.preesm.model.slam.Design;
 import org.preesm.workflow.elements.Workflow;
