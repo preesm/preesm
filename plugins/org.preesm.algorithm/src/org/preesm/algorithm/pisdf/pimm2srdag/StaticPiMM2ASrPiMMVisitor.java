@@ -110,25 +110,25 @@ public class StaticPiMM2ASrPiMMVisitor extends PiMMSwitch<Boolean> {
   private final Map<String, List<AbstractVertex>> outPort2SRActors = new LinkedHashMap<>();
 
   /** List of the constraints operator ID of the current actor */
-  List<String> currentOperatorIDs;
+  private List<String> currentOperatorIDs;
 
   /** List of the timing constraints of the current actor */
-  List<Timing> currentTimings;
+  private List<Timing> currentTimings;
 
   /** PiMM Graph name */
-  String originalGraphName;
+  private String originalGraphName;
 
   /** Current Single-Rate Graph name */
-  String graphName;
+  private String graphName;
 
   /** Current graph prefix */
-  String graphPrefix;
+  private String graphPrefix;
 
   /** Current actor name */
-  String currentActorName;
+  private String currentActorName;
 
   /** Current FIFO */
-  Fifo currentFifo;
+  private Fifo currentFifo;
 
   /**
    * Instantiates a new abstract StaticPiMM2ASrPiMMVisitor.

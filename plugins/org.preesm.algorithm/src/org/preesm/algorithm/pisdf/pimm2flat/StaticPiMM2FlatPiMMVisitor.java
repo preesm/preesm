@@ -102,17 +102,14 @@ public class StaticPiMM2FlatPiMMVisitor extends PiMMSwitch<Boolean> {
   /** Map from original PiMM vertices to generated DAG vertices */
   private final Map<AbstractActor, AbstractActor> actor2actor = new LinkedHashMap<>();
 
-  /** PiMM Graph name */
-  String originalGraphName;
-
   /** Current Single-Rate Graph name */
-  String graphName;
+  private String graphName;
 
   /** Current graph prefix */
-  String graphPrefix;
+  private String graphPrefix;
 
   /** Current actor name */
-  String currentActorName;
+  private String currentActorName;
 
   /**
    * Instantiates a new abstract StaticPiMM2ASrPiMMVisitor.
