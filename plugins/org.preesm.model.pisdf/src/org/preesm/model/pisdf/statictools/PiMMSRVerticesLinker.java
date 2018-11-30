@@ -93,7 +93,7 @@ public class PiMMSRVerticesLinker {
   private final String fifoType;
 
   // Prefix name of the current graph
-  final String graphPrefixe;
+  private final String graphPrefixe;
 
   /**
    * Retrieve the number of delay tokens contain in a fifo, if any

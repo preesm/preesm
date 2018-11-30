@@ -79,8 +79,6 @@
             <dftools:variable name="Verbose" value="? C {True, False}"/>
         </dftools:data>
     </dftools:task>
-    <dftools:dataTransfer from="scenario" sourceport="scenario"
-        targetport="scenario" to="PiMM2FlatPiMM"/>
     <dftools:dataTransfer from="scenario" sourceport="PiMM"
         targetport="PiMM" to="PiMM2FlatPiMM"/>
     <dftools:dataTransfer from="PiMM2FlatPiMM" sourceport="PiMM"

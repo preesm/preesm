@@ -120,6 +120,23 @@
             </output>
          </outputs>
       </task>
+      <task
+            id="pisdf-srdag"
+            name="Static PiSDF to Flat PiSDF transformation"
+            type="org.preesm.model.pisdf.statictools.PiSDFToSingleRateTask">
+         <inputs>
+            <input
+                  id="PiMM"
+                  object="org.preesm.model.pisdf.PiGraph">
+            </input>
+         </inputs>
+         <outputs>
+            <output
+                  id="PiMM"
+                  object="org.preesm.model.pisdf.PiGraph">
+            </output>
+         </outputs>
+      </task>
    </extension>
 
 </plugin>
