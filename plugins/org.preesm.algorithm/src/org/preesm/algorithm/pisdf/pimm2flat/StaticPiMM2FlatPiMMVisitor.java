@@ -139,21 +139,6 @@ public class StaticPiMM2FlatPiMMVisitor extends PiMMSwitch<Boolean> {
   public static final void setPropertiesToCopyActor(final AbstractActor actor, final AbstractActor copyActor,
       final PreesmScenario scenario) {
 
-    // // Copy parameters
-    for (final Parameter p : actor.getInputParameters()) {
-
-      final EList<ConfigInputPort> ports = actor.lookupConfigInputPortsConnectedWithParameter(p);
-      for (ConfigInputPort port : ports) {
-        final ConfigInputPort cip = (ConfigInputPort) copyActor.lookupPort(port.getName());
-        if (cip != null) {
-          final Parameter copy = PiMMUserFactory.instance.copy(p);
-          final Dependency dep = PiMMUserFactory.instance.createDependency();
-          dep.setSetter(copy);
-          cip.setIncomingDependency(dep);
-        }
-      }
-    }
-
     // Add the scenario constraints
     final List<String> currentOperatorIDs = new ArrayList<>();
     final Set<ConstraintGroup> constraintGroups = scenario.getConstraintGroupManager().getConstraintGroups();
@@ -199,12 +184,33 @@ public class StaticPiMM2FlatPiMMVisitor extends PiMMSwitch<Boolean> {
       this.result.addActor(copyActor);
       // Map the actor for linking latter
       this.actor2actor.put(actor, copyActor);
+      instantiateParameters(actor, copyActor);
       setPropertiesToCopyActor(actor, copyActor, this.scenario);
 
     } else {
       doSwitch(actor);
     }
     return true;
+  }
+
+  /**
+   *
+   */
+  public static void instantiateParameters(final AbstractActor actor, final AbstractActor copyActor) {
+    // // Copy parameters
+    for (final Parameter p : actor.getInputParameters()) {
+
+      final EList<ConfigInputPort> ports = actor.lookupConfigInputPortsConnectedWithParameter(p);
+      for (ConfigInputPort port : ports) {
+        final ConfigInputPort cip = (ConfigInputPort) copyActor.lookupPort(port.getName());
+        if (cip != null) {
+          final Parameter copy = PiMMUserFactory.instance.copy(p);
+          final Dependency dep = PiMMUserFactory.instance.createDependency();
+          dep.setSetter(copy);
+          cip.setIncomingDependency(dep);
+        }
+      }
+    }
   }
 
   @Override
@@ -250,6 +256,7 @@ public class StaticPiMM2FlatPiMMVisitor extends PiMMSwitch<Boolean> {
 
     // Map the actor for linking latter
     this.actor2actor.put(actor, broadcastIn);
+    instantiateParameters(actor, broadcastIn);
     setPropertiesToCopyActor(actor, broadcastIn, this.scenario);
     return true;
   }
@@ -283,6 +290,7 @@ public class StaticPiMM2FlatPiMMVisitor extends PiMMSwitch<Boolean> {
 
     // Map the actor for linking latter
     this.actor2actor.put(actor, roundbufferOut);
+    instantiateParameters(actor, roundbufferOut);
     setPropertiesToCopyActor(actor, roundbufferOut, this.scenario);
     return true;
   }
@@ -450,19 +458,20 @@ public class StaticPiMM2FlatPiMMVisitor extends PiMMSwitch<Boolean> {
   }
 
   @Override
-  public Boolean caseExecutableActor(final ExecutableActor ea) {
+  public Boolean caseExecutableActor(final ExecutableActor actor) {
     // Copy the actor
-    final ExecutableActor copyActor = PiMMUserFactory.instance.copy(ea);
-    copyActor.setName(graphPrefix + ea.getName());
+    final ExecutableActor copyActor = PiMMUserFactory.instance.copy(actor);
+    copyActor.setName(graphPrefix + actor.getName());
 
     // Add the actor to the graph
     this.result.addActor(copyActor);
 
     // Map the actor for linking latter
-    this.actor2actor.put(ea, copyActor);
+    this.actor2actor.put(actor, copyActor);
 
     // Set the properties
-    setPropertiesToCopyActor(ea, copyActor, this.scenario);
+    instantiateParameters(actor, copyActor);
+    setPropertiesToCopyActor(actor, copyActor, this.scenario);
     return true;
   }
 

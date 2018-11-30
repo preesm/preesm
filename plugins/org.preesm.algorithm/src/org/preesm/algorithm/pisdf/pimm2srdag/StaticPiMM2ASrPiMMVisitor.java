@@ -154,6 +154,7 @@ public class StaticPiMM2ASrPiMMVisitor extends PiMMSwitch<Boolean> {
 
       // Add the actor to the FIFO source/sink sets
       this.actor2SRActors.get(this.graphPrefix + actor.getName()).add(copyActor);
+      StaticPiMM2FlatPiMMVisitor.instantiateParameters(actor, copyActor);
       StaticPiMM2FlatPiMMVisitor.setPropertiesToCopyActor(actor, copyActor, this.scenario);
       return true;
     }
@@ -265,6 +266,7 @@ public class StaticPiMM2ASrPiMMVisitor extends PiMMSwitch<Boolean> {
     this.actor2SRActors.get(this.graphPrefix + actor.getName()).add(copyActor);
 
     // Set the properties
+    StaticPiMM2FlatPiMMVisitor.instantiateParameters(actor, copyActor);
     StaticPiMM2FlatPiMMVisitor.setPropertiesToCopyActor(actor, copyActor, this.scenario);
     return true;
   }
