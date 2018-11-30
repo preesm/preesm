@@ -41,6 +41,8 @@
 package org.preesm.algorithm.pisdf.pimm2srdag;
 
 import java.util.ArrayList;
+import java.util.List;
+import java.util.Set;
 import org.preesm.algorithm.codegen.idl.ActorPrototypes;
 import org.preesm.algorithm.codegen.idl.Prototype;
 import org.preesm.algorithm.codegen.model.CodeGenArgument;
@@ -66,6 +68,7 @@ import org.preesm.algorithm.model.types.LongEdgePropertyType;
 import org.preesm.algorithm.model.types.LongVertexPropertyType;
 import org.preesm.algorithm.model.types.StringEdgePropertyType;
 import org.preesm.commons.exceptions.PreesmException;
+import org.preesm.commons.model.PreesmCopyTracker;
 import org.preesm.model.pisdf.AbstractActor;
 import org.preesm.model.pisdf.Actor;
 import org.preesm.model.pisdf.BroadcastActor;
@@ -97,7 +100,11 @@ import org.preesm.model.pisdf.Port;
 import org.preesm.model.pisdf.Refinement;
 import org.preesm.model.pisdf.RoundBufferActor;
 import org.preesm.model.pisdf.util.PiMMSwitch;
+import org.preesm.model.scenario.ConstraintGroup;
+import org.preesm.model.scenario.ConstraintGroupManager;
 import org.preesm.model.scenario.PreesmScenario;
+import org.preesm.model.scenario.Timing;
+import org.preesm.model.scenario.TimingManager;
 import org.preesm.model.slam.Design;
 
 /**
@@ -598,12 +605,45 @@ public class StaticPiMM2MapperDAGVisitor extends PiMMSwitch<Boolean> {
     throw new UnsupportedOperationException();
   }
 
+  /**
+   * Update the Scenario with timing/mapping constraints for copyActor.
+   */
+  public static final void updateScenarioData(final AbstractActor copyActor, final PreesmScenario scenario) {
+    final AbstractActor actor = PreesmCopyTracker.getOriginalSource(copyActor);
+    // Add the scenario constraints
+    final List<String> currentOperatorIDs = new ArrayList<>();
+    final Set<ConstraintGroup> constraintGroups = scenario.getConstraintGroupManager().getConstraintGroups();
+    for (final ConstraintGroup cg : constraintGroups) {
+      final Set<String> vertexPaths = cg.getVertexPaths();
+      final Set<String> operatorIds = cg.getOperatorIds();
+      if (vertexPaths.contains(actor.getVertexPath())) {
+        currentOperatorIDs.add((String) operatorIds.toArray()[0]);
+      }
+    }
+
+    final ConstraintGroupManager constraintGroupManager = scenario.getConstraintGroupManager();
+    currentOperatorIDs.forEach(s -> constraintGroupManager.addConstraint(s, copyActor));
+    // Add the scenario timings
+    final List<Timing> currentTimings = new ArrayList<>();
+    for (final String operatorDefinitionID : scenario.getOperatorDefinitionIds()) {
+      final Timing timing = scenario.getTimingManager().getTimingOrDefault(actor.getName(), operatorDefinitionID);
+      currentTimings.add(timing);
+    }
+    final TimingManager timingManager = scenario.getTimingManager();
+    for (final Timing t : currentTimings) {
+      final Timing addTiming = timingManager.addTiming(copyActor.getName(), t.getOperatorDefinitionId());
+      addTiming.setTime(t.getTime());
+      addTiming.setInputParameters(t.getInputParameters());
+    }
+  }
+
   @Override
   public Boolean casePiGraph(final PiGraph graph) {
     checkInput(graph);
 
     // Convert vertices
     for (final AbstractActor actor : graph.getActors()) {
+      updateScenarioData(actor, this.scenario);
       doSwitch(actor);
     }
 

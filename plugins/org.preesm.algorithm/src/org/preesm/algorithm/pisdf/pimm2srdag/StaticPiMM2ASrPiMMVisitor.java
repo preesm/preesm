@@ -145,7 +145,7 @@ public class StaticPiMM2ASrPiMMVisitor extends PiMMSwitch<Boolean> {
     if (actor instanceof PiGraph) {
       // Here we handle the replacement of the interfaces by what should be
       // Copy the actor
-      final PiGraph copyActor = PiMMUserFactory.instance.copy((PiGraph) actor);
+      final PiGraph copyActor = PiMMUserFactory.instance.copyWithHistory((PiGraph) actor);
       // Set the properties
       copyActor.setName(this.currentActorName);
 
@@ -155,7 +155,6 @@ public class StaticPiMM2ASrPiMMVisitor extends PiMMSwitch<Boolean> {
       // Add the actor to the FIFO source/sink sets
       this.actor2SRActors.get(this.graphPrefix + actor.getName()).add(copyActor);
       StaticPiMM2FlatPiMMVisitor.instantiateParameters(actor, copyActor);
-      StaticPiMM2FlatPiMMVisitor.setPropertiesToCopyActor(actor, copyActor, this.scenario);
       return true;
     }
     doSwitch(actor);
@@ -255,7 +254,7 @@ public class StaticPiMM2ASrPiMMVisitor extends PiMMSwitch<Boolean> {
   @Override
   public Boolean caseExecutableActor(final ExecutableActor actor) {
     // Copy the BroadCast actor
-    final ExecutableActor copyActor = PiMMUserFactory.instance.copy(actor);
+    final ExecutableActor copyActor = PiMMUserFactory.instance.copyWithHistory(actor);
     // Set the properties
     copyActor.setName(this.currentActorName);
 
@@ -267,7 +266,6 @@ public class StaticPiMM2ASrPiMMVisitor extends PiMMSwitch<Boolean> {
 
     // Set the properties
     StaticPiMM2FlatPiMMVisitor.instantiateParameters(actor, copyActor);
-    StaticPiMM2FlatPiMMVisitor.setPropertiesToCopyActor(actor, copyActor, this.scenario);
     return true;
   }
 
