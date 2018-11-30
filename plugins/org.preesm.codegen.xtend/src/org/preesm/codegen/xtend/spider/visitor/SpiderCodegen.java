@@ -517,7 +517,7 @@ public class SpiderCodegen {
     append("static PapifyConfig* " + "create" + actor.getName() + "PapifyConfig() {\n");
     append("\tPapifyConfig* config  = new PapifyConfig;\n\n");
     append("\t// Setting the PapifyConfig for actor: " + actor.getName() + "\n");
-    append("\tconfig->peID_            = 0;\n");
+    append("\tconfig->peID_            = \"\";\n");
     append("\tconfig->peType_          = \"" + compNames + "\";\n");
     append("\tconfig->actorName_       = \"" + actor.getName() + "\";\n");
     append("\tconfig->eventSize_       = " + Integer.toString(eventNames.size()) + ";\n");
