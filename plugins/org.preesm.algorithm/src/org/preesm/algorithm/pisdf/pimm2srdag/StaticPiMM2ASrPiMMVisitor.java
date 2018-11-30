@@ -43,12 +43,8 @@ import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
-import java.util.logging.Level;
-import org.apache.commons.lang3.time.StopWatch;
-import org.eclipse.emf.common.util.EList;
+import org.preesm.algorithm.pisdf.pimm2flat.StaticPiMM2FlatPiMMVisitor;
 import org.preesm.commons.exceptions.PreesmException;
-import org.preesm.commons.logger.PreesmLogger;
 import org.preesm.model.pisdf.AbstractActor;
 import org.preesm.model.pisdf.AbstractVertex;
 import org.preesm.model.pisdf.BroadcastActor;
@@ -69,23 +65,13 @@ import org.preesm.model.pisdf.Fifo;
 import org.preesm.model.pisdf.ISetter;
 import org.preesm.model.pisdf.InitActor;
 import org.preesm.model.pisdf.InterfaceActor;
-import org.preesm.model.pisdf.Parameter;
 import org.preesm.model.pisdf.PiGraph;
 import org.preesm.model.pisdf.Port;
 import org.preesm.model.pisdf.RoundBufferActor;
 import org.preesm.model.pisdf.factory.PiMMUserFactory;
 import org.preesm.model.pisdf.statictools.PiMMSRVerticesLinker;
 import org.preesm.model.pisdf.util.PiMMSwitch;
-import org.preesm.model.scenario.ConstraintGroup;
-//import org.preesm.model.scenario.ConstraintGroup;
-//import org.preesm.model.scenario.ConstraintGroupManager;
-//import org.preesm.model.scenario.PreesmScenario;
-//import org.preesm.model.scenario.Timing;
-//import org.preesm.model.scenario.TimingManager;
-import org.preesm.model.scenario.ConstraintGroupManager;
 import org.preesm.model.scenario.PreesmScenario;
-import org.preesm.model.scenario.Timing;
-import org.preesm.model.scenario.TimingManager;
 
 /**
  * @author farresti
@@ -147,68 +133,6 @@ public class StaticPiMM2ASrPiMMVisitor extends PiMMSwitch<Boolean> {
     this.graphPrefix = "";
   }
 
-  /**
-   * Set basic properties from a PiMM actor to the copied actor
-   *
-   * @param actor
-   *          original PiMM actor
-   * @param copyActor
-   *          copied PiMM actor
-   */
-  private void setPropertiesToCopyActor(final AbstractActor actor, final AbstractActor copyActor) {
-    // Set the properties
-    copyActor.setName(this.currentActorName);
-
-    // // Copy parameters
-    for (final Parameter p : actor.getInputParameters()) {
-
-      final EList<
-          ConfigInputPort> correspondingConfigInputPorts = actor.lookupConfigInputPortsConnectedWithParameter(p);
-      for (ConfigInputPort originalCIP : correspondingConfigInputPorts) {
-        final ConfigInputPort cip = (ConfigInputPort) copyActor.lookupPort(originalCIP.getName());
-        if (cip != null) {
-          final Parameter copy = PiMMUserFactory.instance.copy(p);
-          final Dependency dep = PiMMUserFactory.instance.createDependency();
-          dep.setSetter(copy);
-          cip.setIncomingDependency(dep);
-        }
-      }
-    }
-
-    // Add the actor to the graph
-    this.result.addActor(copyActor);
-
-    // Add the actor to the FIFO source/sink sets
-    this.actor2SRActors.get(this.graphPrefix + actor.getName()).add(copyActor);
-
-    // Add the scenario constraints
-    final List<String> currentOperatorIDs = new ArrayList<>();
-    final Set<ConstraintGroup> constraintGroups = this.scenario.getConstraintGroupManager().getConstraintGroups();
-    for (final ConstraintGroup cg : constraintGroups) {
-      final Set<String> vertexPaths = cg.getVertexPaths();
-      final Set<String> operatorIds = cg.getOperatorIds();
-      if (vertexPaths.contains(actor.getVertexPath())) {
-        currentOperatorIDs.add((String) operatorIds.toArray()[0]);
-      }
-    }
-
-    final ConstraintGroupManager constraintGroupManager = this.scenario.getConstraintGroupManager();
-    currentOperatorIDs.forEach(s -> constraintGroupManager.addConstraint(s, copyActor));
-    // Add the scenario timings
-    final List<Timing> currentTimings = new ArrayList<>();
-    for (final String operatorDefinitionID : this.scenario.getOperatorDefinitionIds()) {
-      final Timing timing = this.scenario.getTimingManager().getTimingOrDefault(actor.getName(), operatorDefinitionID);
-      currentTimings.add(timing);
-    }
-    final TimingManager timingManager = this.scenario.getTimingManager();
-    for (final Timing t : currentTimings) {
-      final Timing addTiming = timingManager.addTiming(copyActor.getName(), t.getOperatorDefinitionId());
-      addTiming.setTime(t.getTime());
-      addTiming.setInputParameters(t.getInputParameters());
-    }
-
-  }
-
   /*
    * (non-Javadoc)
    *
@@ -222,7 +146,15 @@ public class StaticPiMM2ASrPiMMVisitor extends PiMMSwitch<Boolean> {
       // Here we handle the replacement of the interfaces by what should be
       // Copy the actor
       final PiGraph copyActor = PiMMUserFactory.instance.copy((PiGraph) actor);
-      setPropertiesToCopyActor(actor, copyActor);
+      // Set the properties
+      copyActor.setName(this.currentActorName);
+
+      // Add the actor to the graph
+      this.result.addActor(copyActor);
+
+      // Add the actor to the FIFO source/sink sets
+      this.actor2SRActors.get(this.graphPrefix + actor.getName()).add(copyActor);
+      StaticPiMM2FlatPiMMVisitor.setPropertiesToCopyActor(actor, copyActor, this.scenario);
       return true;
     }
     doSwitch(actor);
@@ -323,9 +255,17 @@ public class StaticPiMM2ASrPiMMVisitor extends PiMMSwitch<Boolean> {
   public Boolean caseExecutableActor(final ExecutableActor actor) {
     // Copy the BroadCast actor
     final ExecutableActor copyActor = PiMMUserFactory.instance.copy(actor);
+    // Set the properties
+    copyActor.setName(this.currentActorName);
+
+    // Add the actor to the graph
+    this.result.addActor(copyActor);
+
+    // Add the actor to the FIFO source/sink sets
+    this.actor2SRActors.get(this.graphPrefix + actor.getName()).add(copyActor);
 
     // Set the properties
-    setPropertiesToCopyActor(actor, copyActor);
+    StaticPiMM2FlatPiMMVisitor.setPropertiesToCopyActor(actor, copyActor, this.scenario);
     return true;
   }
 
@@ -744,8 +684,6 @@ public class StaticPiMM2ASrPiMMVisitor extends PiMMSwitch<Boolean> {
 
   @Override
   public Boolean casePiGraph(final PiGraph graph) {
-    final StopWatch timer = new StopWatch();
-    timer.start();
 
     // If there are no actors in the graph we leave
     if (graph.getActors().isEmpty()) {
@@ -786,11 +724,6 @@ public class StaticPiMM2ASrPiMMVisitor extends PiMMSwitch<Boolean> {
       }
     }
 
-    timer.stop();
-    final String msgPiMM2ASRPiMM = "Acyclic Single-Rate transformation: " + timer + "s.";
-    PreesmLogger.getLogger().log(Level.INFO, msgPiMM2ASRPiMM);
-    // Do some optimization on the graph
-    timer.reset();
     return true;
   }
 
