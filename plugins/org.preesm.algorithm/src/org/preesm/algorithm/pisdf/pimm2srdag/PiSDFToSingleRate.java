@@ -81,13 +81,44 @@ import org.preesm.model.pisdf.util.PiMMSwitch;
  * @author farresti
  *
  */
-public class StaticPiMM2ASrPiMMVisitor extends PiMMSwitch<Boolean> {
+public class PiSDFToSingleRate extends PiMMSwitch<Boolean> {
+
+  /**
+   * Precondition: All.
+   *
+   * @return the SDFGraph obtained by visiting graph
+   */
+  public static final PiGraph compute(PiGraph graph, final BRVMethod method) {
+    // 1. First we resolve all parameters.
+    // It must be done first because, when removing persistence, local parameters have to be known at upper level
+    PiMMHelper.resolveAllParameters(graph);
+    // 2. We perform the delay transformation step that deals with persistence
+    PiMMHelper.removePersistence(graph);
+    // 3. Compute BRV following the chosen method
+    Map<AbstractVertex, Long> brv = PiBRV.compute(graph, method);
+    // 4. Print the RV values
+    // 4.5 Check periods with BRV
+    PiMMHelper.checkPeriodicity(brv);
+    // 5. Convert to SR-DAG
+    PiSDFToSingleRate staticPiMM2ASrPiMMVisitor = new PiSDFToSingleRate(brv);
+    staticPiMM2ASrPiMMVisitor.doSwitch(graph);
+    final PiGraph acyclicSRPiMM = staticPiMM2ASrPiMMVisitor.getResult();
+
+    // 6- do some optimization on the graph
+    final ForkJoinOptimization forkJoinOptimization = new ForkJoinOptimization();
+    forkJoinOptimization.optimize(acyclicSRPiMM);
+    final BroadcastRoundBufferOptimization brRbOptimization = new BroadcastRoundBufferOptimization();
+    brRbOptimization.optimize(acyclicSRPiMM);
+
+    return acyclicSRPiMM;
+  }
+
   /** The result. */
   // SRDAG graph created from the outer graph
   private final PiGraph result;
 
   /** Basic repetition vector of the graph */
-  private Map<AbstractVertex, Long> brv;
+  private final Map<AbstractVertex, Long> brv;
 
   /** Map from original PiMM vertices to generated DAG vertices */
   private final Map<String, List<AbstractVertex>> actor2SRActors = new LinkedHashMap<>();
@@ -113,50 +144,15 @@ public class StaticPiMM2ASrPiMMVisitor extends PiMMSwitch<Boolean> {
   /** Current FIFO */
   private Fifo currentFifo;
 
-  private PiGraph graph;
-
   /**
    * Instantiates a new abstract StaticPiMM2ASrPiMMVisitor.
    *
-   * @param graph
-   *          The original PiGraph to be converted
-   *
    */
-  public StaticPiMM2ASrPiMMVisitor(final PiGraph graph) {
-    this.graph = graph;
+  public PiSDFToSingleRate(Map<AbstractVertex, Long> brv) {
     this.result = PiMMUserFactory.instance.createPiGraph();
-    this.result.setName(graph.getName());
+    this.brv = brv;
     this.graphName = "";
     this.graphPrefix = "";
-  }
-
-  /**
-   * Precondition: All.
-   *
-   * @return the SDFGraph obtained by visiting graph
-   */
-  public PiGraph launch(final BRVMethod method) {
-    // 1. First we resolve all parameters.
-    // It must be done first because, when removing persistence, local parameters have to be known at upper level
-    PiMMHelper.resolveAllParameters(graph);
-    // 2. We perform the delay transformation step that deals with persistence
-    PiMMHelper.removePersistence(graph);
-    // 3. Compute BRV following the chosen method
-    brv = PiBRV.compute(graph, method);
-    // 4. Print the RV values
-    // 4.5 Check periods with BRV
-    PiMMHelper.checkPeriodicity(brv);
-    // 5. Convert to SR-DAG
-    doSwitch(graph);
-    final PiGraph acyclicSRPiMM = getResult();
-
-    // 6- do some optimization on the graph
-    final ForkJoinOptimization forkJoinOptimization = new ForkJoinOptimization();
-    forkJoinOptimization.optimize(acyclicSRPiMM);
-    final BroadcastRoundBufferOptimization brRbOptimization = new BroadcastRoundBufferOptimization();
-    brRbOptimization.optimize(acyclicSRPiMM);
-
-    return acyclicSRPiMM;
   }
 
   /*
@@ -716,6 +712,7 @@ public class StaticPiMM2ASrPiMMVisitor extends PiMMSwitch<Boolean> {
       throw new UnsupportedOperationException(
           "Can not convert an empty graph. Check the refinement for [" + graph.getVertexPath() + "].");
     }
+    this.result.setName(graph.getName());
     // Set the current graph name
     this.graphName = graph.getContainingPiGraph() == null ? "" : graph.getName();
     this.graphName = this.graphPrefix + this.graphName;
