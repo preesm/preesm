@@ -409,13 +409,13 @@ public class SpiderCodegen {
     final ArrayList<AbstractActor> papifiedActors = new ArrayList<>();
 
     for (final AbstractActor actor : this.functionMap.keySet()) {
-      PapifyConfigActor corePapifyConfigGroups = papifyConfigManager.getCorePapifyConfigGroupActor(actor.getName());
+      PapifyConfigActor corePapifyConfigGroups = papifyConfigManager
+          .getCorePapifyConfigGroupActor(actor.getVertexPath());
       if (corePapifyConfigGroups != null) {
         papifiedActors.add(actor);
         if (!generatePapifyConfig(corePapifyConfigGroups, actor, uniqueEventSets, eventSetID)) {
           eventSetID++;
         }
-
       }
     }
 
@@ -468,6 +468,9 @@ public class SpiderCodegen {
 
     final PapiEvent timingEvent = new PapiEvent();
     timingEvent.setName("Timing");
+
+    String compNames = "";
+
     /*
      * for (PapiEvent event : papiEvents) { if (event.getName().equals(timingEvent.getName())) { timingMonitoring =
      * true; } else if (papiComponent.containsEvent(event)) { includedEvents.add(event); eventMonitoring = true;
@@ -482,6 +485,16 @@ public class SpiderCodegen {
           includedEvents.add(event);
           eventMonitoring = true;
           eventNames.add(event.getName());
+        }
+      }
+    }
+
+    for (String compName : configInfo.keySet()) {
+      if (!compName.equals("Timing")) {
+        if (compNames.equals("")) {
+          compNames = compName;
+        } else {
+          compNames = compNames.concat("," + compName);
         }
       }
     }
@@ -512,7 +525,7 @@ public class SpiderCodegen {
     append("\tconfig->peID_            = 0;\n");
     // append("\tconfig->peType_ = \"" + papiComponent.getId() + "\";\n");
     // DM changed this to avoid errors
-    append("\tconfig->peType_          = \"" + configInfo.keySet() + "\";\n");
+    append("\tconfig->peType_          = \"" + compNames + "\";\n");
     append("\tconfig->actorName_       = \"" + actor.getName() + "\";\n");
     append("\tconfig->eventSize_       = " + Integer.toString(eventNames.size()) + ";\n");
     append("\tconfig->eventSetID_      = " + realEventSetID.toString() + ";\n");
