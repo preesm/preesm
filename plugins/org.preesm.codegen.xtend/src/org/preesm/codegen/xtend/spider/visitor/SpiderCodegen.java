@@ -457,8 +457,6 @@ public class SpiderCodegen {
   private boolean generatePapifyConfig(final PapifyConfigActor corePapifyConfigGroups, final AbstractActor actor,
       final HashMap<ArrayList<String>, Integer> uniqueEventSets, final Integer eventSetID) {
     Map<String, Set<PapiEvent>> configInfo = corePapifyConfigGroups.getPAPIEvents();
-    // PapiComponent papiComponent = corePapifyConfigGroups.getPAPIComponent();
-    // Set<PapiEvent> papiEvents = corePapifyConfigGroups.getPAPIEvents();
 
     Set<PapiEvent> includedEvents = new LinkedHashSet<>();
     ArrayList<String> eventNames = new ArrayList<>();
@@ -471,12 +469,6 @@ public class SpiderCodegen {
 
     String compNames = "";
 
-    /*
-     * for (PapiEvent event : papiEvents) { if (event.getName().equals(timingEvent.getName())) { timingMonitoring =
-     * true; } else if (papiComponent.containsEvent(event)) { includedEvents.add(event); eventMonitoring = true;
-     * eventNames.add(event.getName()); } }
-     */
-    // DM changed this to avoid errors
     for (String compName : configInfo.keySet()) {
       for (PapiEvent event : configInfo.get(compName)) {
         if (event.getName().equals(timingEvent.getName())) {
@@ -498,6 +490,7 @@ public class SpiderCodegen {
         }
       }
     }
+
     // Check if this set of ID already exists
     Integer realEventSetID = eventSetID;
     boolean found = false;
@@ -519,18 +512,15 @@ public class SpiderCodegen {
       }
     }
 
+    // If it does not already exist, add it to the set
     if (!found) {
       uniqueEventSets.put(eventNames, eventSetID);
     }
-
-    System.out.println("uniqueEventSets lenght = " + uniqueEventSets.size());
 
     append("static PapifyConfig* " + "create" + actor.getName() + "PapifyConfig() {\n");
     append("\tPapifyConfig* config  = new PapifyConfig;\n\n");
     append("\t// Setting the PapifyConfig for actor: " + actor.getName() + "\n");
     append("\tconfig->peID_            = 0;\n");
-    // append("\tconfig->peType_ = \"" + papiComponent.getId() + "\";\n");
-    // DM changed this to avoid errors
     append("\tconfig->peType_          = \"" + compNames + "\";\n");
     append("\tconfig->actorName_       = \"" + actor.getName() + "\";\n");
     append("\tconfig->eventSize_       = " + Integer.toString(eventNames.size()) + ";\n");
