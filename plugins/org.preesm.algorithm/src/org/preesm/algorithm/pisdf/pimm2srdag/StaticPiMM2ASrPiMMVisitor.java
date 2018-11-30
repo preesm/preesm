@@ -80,6 +80,11 @@ import org.preesm.model.pisdf.factory.PiMMUserFactory;
 import org.preesm.model.pisdf.statictools.PiMMSRVerticesLinker;
 import org.preesm.model.pisdf.util.PiMMSwitch;
 import org.preesm.model.scenario.ConstraintGroup;
+//import org.preesm.model.scenario.ConstraintGroup;
+//import org.preesm.model.scenario.ConstraintGroupManager;
+//import org.preesm.model.scenario.PreesmScenario;
+//import org.preesm.model.scenario.Timing;
+//import org.preesm.model.scenario.TimingManager;
 import org.preesm.model.scenario.ConstraintGroupManager;
 import org.preesm.model.scenario.PreesmScenario;
 import org.preesm.model.scenario.Timing;
@@ -108,12 +113,6 @@ public class StaticPiMM2ASrPiMMVisitor extends PiMMSwitch<Boolean> {
 
   /** Map of all DataOutputInterface to corresponding vertices */
   private final Map<String, List<AbstractVertex>> outPort2SRActors = new LinkedHashMap<>();
-
-  /** List of the constraints operator ID of the current actor */
-  private List<String> currentOperatorIDs;
-
-  /** List of the timing constraints of the current actor */
-  private List<Timing> currentTimings;
 
   /** PiMM Graph name */
   private String originalGraphName;
@@ -186,15 +185,31 @@ public class StaticPiMM2ASrPiMMVisitor extends PiMMSwitch<Boolean> {
     this.actor2SRActors.get(this.graphPrefix + actor.getName()).add(copyActor);
 
     // Add the scenario constraints
+    final List<String> currentOperatorIDs = new ArrayList<>();
+    final Set<ConstraintGroup> constraintGroups = this.scenario.getConstraintGroupManager().getConstraintGroups();
+    for (final ConstraintGroup cg : constraintGroups) {
+      final Set<String> vertexPaths = cg.getVertexPaths();
+      final Set<String> operatorIds = cg.getOperatorIds();
+      if (vertexPaths.contains(actor.getVertexPath())) {
+        currentOperatorIDs.add((String) operatorIds.toArray()[0]);
+      }
+    }
+
     final ConstraintGroupManager constraintGroupManager = this.scenario.getConstraintGroupManager();
-    this.currentOperatorIDs.forEach(s -> constraintGroupManager.addConstraint(s, copyActor));
+    currentOperatorIDs.forEach(s -> constraintGroupManager.addConstraint(s, copyActor));
     // Add the scenario timings
+    final List<Timing> currentTimings = new ArrayList<>();
+    for (final String operatorDefinitionID : this.scenario.getOperatorDefinitionIds()) {
+      final Timing timing = this.scenario.getTimingManager().getTimingOrDefault(actor.getName(), operatorDefinitionID);
+      currentTimings.add(timing);
+    }
     final TimingManager timingManager = this.scenario.getTimingManager();
-    for (final Timing t : this.currentTimings) {
+    for (final Timing t : currentTimings) {
       final Timing addTiming = timingManager.addTiming(copyActor.getName(), t.getOperatorDefinitionId());
       addTiming.setTime(t.getTime());
       addTiming.setInputParameters(t.getInputParameters());
     }
+
   }
 
   /*
@@ -764,24 +779,6 @@ public class StaticPiMM2ASrPiMMVisitor extends PiMMSwitch<Boolean> {
 
     // Creates the entry for the current PiMM Actor
     this.actor2SRActors.put(this.graphPrefix + actor.getName(), new ArrayList<>());
-
-    // Initialize the operator IDs list
-    this.currentOperatorIDs = new ArrayList<>();
-    final Set<ConstraintGroup> constraintGroups = this.scenario.getConstraintGroupManager().getConstraintGroups();
-    for (final ConstraintGroup cg : constraintGroups) {
-      final Set<String> vertexPaths = cg.getVertexPaths();
-      final Set<String> operatorIds = cg.getOperatorIds();
-      if (vertexPaths.contains(actor.getVertexPath())) {
-        this.currentOperatorIDs.add((String) operatorIds.toArray()[0]);
-      }
-    }
-
-    // Initialize Timing list
-    this.currentTimings = new ArrayList<>();
-    for (final String operatorDefinitionID : this.scenario.getOperatorDefinitionIds()) {
-      final Timing timing = this.scenario.getTimingManager().getTimingOrDefault(actor.getName(), operatorDefinitionID);
-      this.currentTimings.add(timing);
-    }
 
     // Populate the DAG with the appropriate number of instances of the actor
     final Long actorRV = this.brv.get(actor);
