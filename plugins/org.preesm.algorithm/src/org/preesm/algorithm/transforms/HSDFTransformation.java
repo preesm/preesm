@@ -49,7 +49,6 @@ import org.apache.commons.lang3.time.StopWatch;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.preesm.algorithm.model.sdf.SDFGraph;
 import org.preesm.algorithm.model.sdf.visitors.ToHSDFVisitor;
-import org.preesm.algorithm.model.visitors.VisitorOutput;
 import org.preesm.algorithm.optimization.clean.joinfork.JoinForkCleaner;
 import org.preesm.commons.exceptions.PreesmException;
 import org.preesm.commons.logger.PreesmLogger;
@@ -85,7 +84,6 @@ public class HSDFTransformation extends AbstractTaskImplementation {
     try {
 
       logger.log(Level.INFO, "Transforming application " + algorithm.getName() + " to HSDF");
-      VisitorOutput.setLogger(logger);
       algorithm.insertBroadcasts();
       if (algorithm.validateModel()) {
 

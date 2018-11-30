@@ -56,8 +56,8 @@ import org.preesm.algorithm.model.sdf.transformations.SpecialActorPortsIndexer;
 import org.preesm.algorithm.model.types.LongEdgePropertyType;
 import org.preesm.algorithm.model.types.StringEdgePropertyType;
 import org.preesm.algorithm.model.visitors.IGraphVisitor;
-import org.preesm.algorithm.model.visitors.VisitorOutput;
 import org.preesm.commons.exceptions.PreesmException;
+import org.preesm.commons.logger.PreesmLogger;
 
 /**
  * Visitor used to transform an SDF into a single-rate SDF (for all edges : prod = cons).
@@ -498,7 +498,7 @@ public class ToHSDFVisitor implements IGraphVisitor<SDFGraph, SDFAbstractVertex,
         } else {
           // If the vertex is not an interface, duplicate it as many
           // times as needed to obtain single rates edges
-          VisitorOutput.getLogger().log(Level.INFO, vertex.getName() + " x" + vertex.getNbRepeat());
+          PreesmLogger.getLogger().log(Level.INFO, vertex.getName() + " x" + vertex.getNbRepeat());
           // If the vertex does not need to be duplicated
           if (vertex.getNbRepeatAsLong() == 1) {
             final SDFAbstractVertex copy = vertex.copy();
@@ -522,7 +522,6 @@ public class ToHSDFVisitor implements IGraphVisitor<SDFGraph, SDFAbstractVertex,
       linkVerticesTop(graph, this.matchCopies, output);
       output.getPropertyBean().setValue("schedulable", true);
     } else {
-      VisitorOutput.getLogger().log(Level.SEVERE, "graph " + graph.getName() + " is not schedulable");
       throw (new PreesmException("Graph " + graph.getName() + " is not schedulable"));
     }
   }

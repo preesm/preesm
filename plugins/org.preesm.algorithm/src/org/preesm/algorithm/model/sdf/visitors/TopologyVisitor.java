@@ -42,8 +42,8 @@ import org.preesm.algorithm.model.sdf.SDFEdge;
 import org.preesm.algorithm.model.sdf.SDFGraph;
 import org.preesm.algorithm.model.sdf.SDFInterfaceVertex;
 import org.preesm.algorithm.model.visitors.IGraphVisitor;
-import org.preesm.algorithm.model.visitors.VisitorOutput;
 import org.preesm.commons.exceptions.PreesmException;
+import org.preesm.commons.logger.PreesmLogger;
 
 /**
  * Visitor used to determine whether a graph is schedulable or not.
@@ -84,7 +84,7 @@ public class TopologyVisitor implements IGraphVisitor<SDFGraph, SDFAbstractVerte
       this.schedulable &= true;
     } else {
       this.schedulable &= false;
-      VisitorOutput.getLogger().log(Level.SEVERE, "Graph " + sdf.getName() + " is not schedulable");
+      PreesmLogger.getLogger().log(Level.SEVERE, "Graph " + sdf.getName() + " is not schedulable");
     }
   }
 
