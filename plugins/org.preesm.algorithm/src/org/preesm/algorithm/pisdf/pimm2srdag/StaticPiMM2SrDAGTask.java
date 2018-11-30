@@ -143,7 +143,7 @@ public class StaticPiMM2SrDAGTask extends AbstractTaskImplementation {
     // 4.5 Check periods with BRV
     PiMMHelper.checkPeriodicity(graphBRV);
     // 5. Convert to SR-DAG
-    return convert2SRDAG(scenario, graph, graphBRV);
+    return convert2SRPiMM(scenario, graph, graphBRV);
   }
 
   /**
@@ -153,7 +153,7 @@ public class StaticPiMM2SrDAGTask extends AbstractTaskImplementation {
    *
    * @return the resulting SR DAG
    */
-  private PiGraph convert2SRDAG(PreesmScenario scenario, PiGraph graph, Map<AbstractVertex, Long> graphBRV) {
+  private PiGraph convert2SRPiMM(PreesmScenario scenario, PiGraph graph, Map<AbstractVertex, Long> graphBRV) {
 
     // 1- Convert to acyclic single rate
     final StaticPiMM2ASrPiMMVisitor visitorPiMM2ASRPiMM = new StaticPiMM2ASrPiMMVisitor(graph, graphBRV, scenario);
