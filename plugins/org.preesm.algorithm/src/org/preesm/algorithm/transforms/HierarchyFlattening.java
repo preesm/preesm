@@ -50,7 +50,6 @@ import org.eclipse.core.runtime.IProgressMonitor;
 import org.preesm.algorithm.model.sdf.SDFGraph;
 import org.preesm.algorithm.model.sdf.transformations.IbsdfFlattener;
 import org.preesm.algorithm.model.sdf.visitors.ConsistencyChecker;
-import org.preesm.algorithm.model.visitors.VisitorOutput;
 import org.preesm.commons.exceptions.PreesmException;
 import org.preesm.commons.logger.PreesmLogger;
 import org.preesm.workflow.elements.Workflow;
@@ -98,14 +97,12 @@ public class HierarchyFlattening extends AbstractTaskImplementation {
       depth = Integer.MAX_VALUE;
     }
 
-    VisitorOutput.setLogger(HierarchyFlattening.LOGGER);
     final ConsistencyChecker checkConsistent = new ConsistencyChecker();
     if (checkConsistent.verifyGraph(algorithm)) {
       HierarchyFlattening.LOGGER.log(Level.FINER,
           "flattening application " + algorithm.getName() + " at level " + depth);
 
       final IbsdfFlattener flattener = new IbsdfFlattener(algorithm, depth);
-      VisitorOutput.setLogger(HierarchyFlattening.LOGGER);
       algorithm.insertBroadcasts();
       try {
         final boolean validateModel = algorithm.validateModel();

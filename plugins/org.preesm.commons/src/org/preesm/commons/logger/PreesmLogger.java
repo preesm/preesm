@@ -97,10 +97,16 @@ public abstract class PreesmLogger extends Logger {
             }
           }
         }
-
+        // if no logger extension was found, use anonymous logger
+        if (PreesmLogger.logger == null) {
+          final Logger anonymousLogger = Logger.getAnonymousLogger();
+          anonymousLogger.log(Level.WARNING, "Could not initialize Preesm Logger; using anonymous logger.");
+          setLogger(anonymousLogger);
+        }
       } catch (final Exception e) {
+        // if something went wrong, use anonymous logger
         final Logger anonymousLogger = Logger.getAnonymousLogger();
-        anonymousLogger.log(Level.WARNING, "Could not initialize WorkflowLogger; using anonymous logger.");
+        anonymousLogger.log(Level.WARNING, "Could not initialize Preesm Logger; using anonymous logger.");
         setLogger(anonymousLogger);
       }
     }

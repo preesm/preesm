@@ -36,8 +36,7 @@
  */
 package org.preesm.model.pisdf.factory;
 
-import org.eclipse.emf.ecore.EObject;
-import org.eclipse.emf.ecore.util.EcoreUtil;
+import org.preesm.commons.model.PreesmUserFactory;
 import org.preesm.model.pisdf.Actor;
 import org.preesm.model.pisdf.ConfigInputInterface;
 import org.preesm.model.pisdf.ConfigInputPort;
@@ -69,23 +68,12 @@ import org.preesm.model.pisdf.impl.PiMMFactoryImpl;
  * @author anmorvan
  *
  */
-public final class PiMMUserFactory extends PiMMFactoryImpl {
+public final class PiMMUserFactory extends PiMMFactoryImpl implements PreesmUserFactory {
 
   public static final PiMMUserFactory instance = new PiMMUserFactory();
 
-  private static final EcoreUtil.Copier copier = new EcoreUtil.Copier(false);
-
   private PiMMUserFactory() {
-
-  }
-
-  /**
-   * Copy an existing PiMM node
-   */
-  public final <T extends EObject> T copy(final T vertex) {
-    @SuppressWarnings("unchecked")
-    final T copy = (T) PiMMUserFactory.copier.copy(vertex);
-    return copy;
+    // forbid instantiation
   }
 
   /**

@@ -68,7 +68,6 @@ import org.preesm.algorithm.model.sdf.esdf.SDFSourceInterfaceVertex;
 import org.preesm.algorithm.model.sdf.transformations.SpecialActorPortsIndexer;
 import org.preesm.algorithm.model.types.LongEdgePropertyType;
 import org.preesm.algorithm.model.types.StringEdgePropertyType;
-import org.preesm.algorithm.model.visitors.VisitorOutput;
 import org.preesm.commons.exceptions.PreesmException;
 import org.preesm.commons.logger.PreesmLogger;
 import org.preesm.model.pisdf.PiGraph;
@@ -655,7 +654,7 @@ public class SDFGraph extends AbstractGraph<SDFAbstractVertex, SDFEdge> {
           schedulable &= true;
         } else {
           schedulable &= false;
-          VisitorOutput.getLogger().log(Level.WARNING, "Graph " + getName() + " is not schedulable");
+          PreesmLogger.getLogger().log(Level.WARNING, "Graph " + getName() + " is not schedulable");
         }
       }
     }

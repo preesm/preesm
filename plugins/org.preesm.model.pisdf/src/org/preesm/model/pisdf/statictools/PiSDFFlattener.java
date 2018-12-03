@@ -37,19 +37,14 @@
 /**
  *
  */
-package org.preesm.algorithm.pisdf.pimm2flat;
+package org.preesm.model.pisdf.statictools;
 
-import java.util.ArrayList;
 import java.util.LinkedHashMap;
-import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import org.eclipse.emf.common.util.EList;
-import org.eclipse.emf.ecore.util.EcoreUtil;
 import org.preesm.commons.exceptions.PreesmException;
 import org.preesm.model.pisdf.AbstractActor;
 import org.preesm.model.pisdf.AbstractVertex;
-import org.preesm.model.pisdf.Actor;
 import org.preesm.model.pisdf.BroadcastActor;
 import org.preesm.model.pisdf.ConfigInputPort;
 import org.preesm.model.pisdf.ConfigOutputPort;
@@ -76,20 +71,40 @@ import org.preesm.model.pisdf.PiGraph;
 import org.preesm.model.pisdf.Port;
 import org.preesm.model.pisdf.PortMemoryAnnotation;
 import org.preesm.model.pisdf.RoundBufferActor;
+import org.preesm.model.pisdf.brv.BRVMethod;
+import org.preesm.model.pisdf.brv.PiBRV;
 import org.preesm.model.pisdf.factory.PiMMUserFactory;
-import org.preesm.model.pisdf.statictools.PiMMHelper;
 import org.preesm.model.pisdf.util.PiMMSwitch;
-import org.preesm.model.scenario.ConstraintGroup;
-import org.preesm.model.scenario.ConstraintGroupManager;
-import org.preesm.model.scenario.PreesmScenario;
-import org.preesm.model.scenario.Timing;
-import org.preesm.model.scenario.TimingManager;
 
 /**
  * @author farresti
  *
  */
-public class StaticPiMM2FlatPiMMVisitor extends PiMMSwitch<Boolean> {
+public class PiSDFFlattener extends PiMMSwitch<Boolean> {
+
+  /**
+   * Precondition: All.
+   *
+   * @return the SDFGraph obtained by visiting graph
+   */
+  public static final PiGraph flatten(final PiGraph graph) {
+    // 1. First we resolve all parameters.
+    // It must be done first because, when removing persistence, local parameters have to be known at upper level
+    PiMMHelper.resolveAllParameters(graph);
+    // 2. We perform the delay transformation step that deals with persistence
+    PiMMHelper.removePersistence(graph);
+    // 3. Compute BRV following the chosen method
+    Map<AbstractVertex, Long> brv = PiBRV.compute(graph, BRVMethod.LCM);
+    // 4. Print the RV values
+    PiBRV.printRV(brv);
+    // 4.5 Check periods with BRV
+    PiMMHelper.checkPeriodicity(brv);
+    // 5. Now, flatten the graph
+    PiSDFFlattener staticPiMM2FlatPiMMVisitor = new PiSDFFlattener(brv);
+    staticPiMM2FlatPiMMVisitor.doSwitch(graph);
+    return staticPiMM2FlatPiMMVisitor.result;
+  }
+
   /** The result. */
   // Flat graph created from the outer graph
   private final PiGraph result;
@@ -97,106 +112,25 @@ public class StaticPiMM2FlatPiMMVisitor extends PiMMSwitch<Boolean> {
   /** Basic repetition vector of the graph */
   private final Map<AbstractVertex, Long> brv;
 
-  /** The scenario. */
-  private final PreesmScenario scenario;
-
-  /** Ecore copier utility */
-  private static final EcoreUtil.Copier copier = new EcoreUtil.Copier(true);
-
   /** Map from original PiMM vertices to generated DAG vertices */
   private final Map<AbstractActor, AbstractActor> actor2actor = new LinkedHashMap<>();
 
-  /** PiMM Graph name */
-  String originalGraphName;
-
   /** Current Single-Rate Graph name */
-  String graphName;
+  private String graphName;
 
   /** Current graph prefix */
-  String graphPrefix;
-
-  /** Current actor name */
-  String currentActorName;
+  private String graphPrefix;
 
   /**
    * Instantiates a new abstract StaticPiMM2ASrPiMMVisitor.
    *
-   * @param graph
-   *          The original PiGraph to be converted
-   * @param brv
-   *          the Basic Repetition Vector Map
-   * @param scenario
-   *          the scenario
    *
    */
-  public StaticPiMM2FlatPiMMVisitor(final PiGraph graph, final Map<AbstractVertex, Long> brv,
-      final PreesmScenario scenario) {
+  public PiSDFFlattener(Map<AbstractVertex, Long> brv) {
     this.result = PiMMUserFactory.instance.createPiGraph();
-    this.result.setName(graph.getName());
     this.brv = brv;
-    this.scenario = scenario;
     this.graphName = "";
     this.graphPrefix = "";
-  }
-
-  /**
-   * Set basic properties from a PiMM actor to the copied actor
-   *
-   * @param actor
-   *          original PiMM actor
-   * @param copyActor
-   *          copied PiMM actor
-   */
-  private void setPropertiesToCopyActor(final AbstractActor actor, final AbstractActor copyActor) {
-    // Set the properties
-    copyActor.setName(this.currentActorName);
-
-    // // Copy parameters
-    for (final Parameter p : actor.getInputParameters()) {
-
-      final EList<ConfigInputPort> ports = actor.lookupConfigInputPortsConnectedWithParameter(p);
-      for (ConfigInputPort port : ports) {
-        final ConfigInputPort cip = (ConfigInputPort) copyActor.lookupPort(port.getName());
-        if (cip != null) {
-          final Parameter copy = (Parameter) copier.copy(p);
-          final Dependency dep = PiMMUserFactory.instance.createDependency();
-          dep.setSetter(copy);
-          cip.setIncomingDependency(dep);
-        }
-      }
-    }
-
-    // Add the actor to the graph
-    this.result.addActor(copyActor);
-
-    // Map the actor for linking latter
-    this.actor2actor.put(actor, copyActor);
-
-    // Add the scenario constraints
-    final List<String> currentOperatorIDs = new ArrayList<>();
-    final Set<ConstraintGroup> constraintGroups = this.scenario.getConstraintGroupManager().getConstraintGroups();
-    for (final ConstraintGroup cg : constraintGroups) {
-      final Set<String> vertexPaths = cg.getVertexPaths();
-      final Set<String> operatorIds = cg.getOperatorIds();
-      if (vertexPaths.contains(actor.getVertexPath())) {
-        currentOperatorIDs.add((String) operatorIds.toArray()[0]);
-      }
-    }
-
-    final ConstraintGroupManager constraintGroupManager = this.scenario.getConstraintGroupManager();
-    currentOperatorIDs.forEach(s -> constraintGroupManager.addConstraint(s, copyActor));
-    // Add the scenario timings
-    final List<Timing> currentTimings = new ArrayList<>();
-    for (final String operatorDefinitionID : this.scenario.getOperatorDefinitionIds()) {
-      final Timing timing = this.scenario.getTimingManager().getTimingOrDefault(actor.getName(), operatorDefinitionID);
-      currentTimings.add(timing);
-    }
-    final TimingManager timingManager = this.scenario.getTimingManager();
-    for (final Timing t : currentTimings) {
-      final Timing addTiming = timingManager.addTiming(copyActor.getName(), t.getOperatorDefinitionId());
-      addTiming.setTime(t.getTime());
-      addTiming.setInputParameters(t.getInputParameters());
-    }
   }
 
   /*
@@ -211,27 +145,38 @@ public class StaticPiMM2FlatPiMMVisitor extends PiMMSwitch<Boolean> {
     if (actor instanceof PiGraph) {
       // Here we handle the replacement of the interfaces by what should be
       // Copy the actor
-      final PiGraph copyActor = (PiGraph) copier.copy(actor);
-      setPropertiesToCopyActor(actor, copyActor);
+      final PiGraph copyActor = PiMMUserFactory.instance.copyWithHistory((PiGraph) actor);
+      copyActor.setName(graphPrefix + actor.getName());
+      // Add the actor to the graph
+      this.result.addActor(copyActor);
+      // Map the actor for linking latter
+      this.actor2actor.put(actor, copyActor);
+      instantiateParameters(actor, copyActor);
+
     } else {
       doSwitch(actor);
     }
     return true;
   }
 
-  /*
-   * (non-Javadoc)
+  /**
    *
-   * @see org.ietr.preesm.experiment.model.pimm.util.PiMMVisitor#visitActor(org.ietr.preesm.experiment.model.pimm.Actor)
    */
-  @Override
-  public Boolean caseActor(final Actor actor) {
-    // Copy the actor
-    final Actor copyActor = (Actor) copier.copy(actor);
+  public static void instantiateParameters(final AbstractActor actor, final AbstractActor copyActor) {
+    // // Copy parameters
+    for (final Parameter p : actor.getInputParameters()) {
 
-    // Set the properties
-    setPropertiesToCopyActor(actor, copyActor);
-    return true;
+      final EList<ConfigInputPort> ports = actor.lookupConfigInputPortsConnectedWithParameter(p);
+      for (ConfigInputPort port : ports) {
+        final ConfigInputPort cip = (ConfigInputPort) copyActor.lookupPort(port.getName());
+        if (cip != null) {
+          final Parameter copy = PiMMUserFactory.instance.copyWithHistory(p);
+          final Dependency dep = PiMMUserFactory.instance.createDependency();
+          dep.setSetter(copy);
+          cip.setIncomingDependency(dep);
+        }
+      }
+    }
   }
 
   @Override
@@ -250,48 +195,9 @@ public class StaticPiMM2FlatPiMMVisitor extends PiMMSwitch<Boolean> {
   }
 
   @Override
-  public Boolean caseBroadcastActor(final BroadcastActor actor) {
-    // Copy the BroadCast actor
-    final BroadcastActor copyActor = (BroadcastActor) copier.copy(actor);
-
-    // Set the properties
-    setPropertiesToCopyActor(actor, copyActor);
-    return true;
-  }
-
-  @Override
-  public Boolean caseRoundBufferActor(final RoundBufferActor actor) {
-    // Copy the RoundBuffer actor
-    final RoundBufferActor copyActor = (RoundBufferActor) copier.copy(actor);
-
-    // Set the properties
-    setPropertiesToCopyActor(actor, copyActor);
-    return true;
-  }
-
-  @Override
-  public Boolean caseJoinActor(final JoinActor actor) {
-    // Copy the Join actor
-    final JoinActor copyActor = (JoinActor) copier.copy(actor);
-
-    // Set the properties
-    setPropertiesToCopyActor(actor, copyActor);
-    return true;
-  }
-
-  @Override
-  public Boolean caseForkActor(final ForkActor actor) {
-    // Copyt the Fork actor
-    final ForkActor copyActor = (ForkActor) copier.copy(actor);
-
-    // Set the properties
-    setPropertiesToCopyActor(actor, copyActor);
-    return true;
-  }
-
-  @Override
   public Boolean caseDataInputInterface(final DataInputInterface actor) {
     final BroadcastActor broadcastIn = PiMMUserFactory.instance.createBroadcastActor();
+    broadcastIn.setName(graphPrefix + actor.getName());
     final DataPort dataPort = actor.getDataPort();
     final Expression interfaceRateExpression = dataPort.getPortRateExpression();
     // Little check on the rate values
@@ -311,13 +217,19 @@ public class StaticPiMM2FlatPiMMVisitor extends PiMMSwitch<Boolean> {
     final long targetRate = targetRateExpression.evaluate() * this.brv.get(target);
     out.setExpression(targetRate);
     broadcastIn.getDataOutputPorts().add(out);
-    setPropertiesToCopyActor(actor, broadcastIn);
+    // Add the actor to the graph
+    this.result.addActor(broadcastIn);
+
+    // Map the actor for linking latter
+    this.actor2actor.put(actor, broadcastIn);
+    instantiateParameters(actor, broadcastIn);
     return true;
   }
 
   @Override
   public Boolean caseDataOutputInterface(final DataOutputInterface actor) {
     final RoundBufferActor roundbufferOut = PiMMUserFactory.instance.createRoundBufferActor();
+    roundbufferOut.setName(graphPrefix + actor.getName());
     final DataPort dataPort = actor.getDataPort();
     final Expression interfaceRateExpression = dataPort.getPortRateExpression();
     // Little check on the rate values
@@ -337,13 +249,19 @@ public class StaticPiMM2FlatPiMMVisitor extends PiMMSwitch<Boolean> {
     final long sourceRate = sourceRateExpression.evaluate() * this.brv.get(source);
     in.setExpression(sourceRate);
     roundbufferOut.getDataInputPorts().add(in);
-    setPropertiesToCopyActor(actor, roundbufferOut);
+
+    // Add the actor to the graph
+    this.result.addActor(roundbufferOut);
+
+    // Map the actor for linking latter
+    this.actor2actor.put(actor, roundbufferOut);
+    instantiateParameters(actor, roundbufferOut);
     return true;
   }
 
   private void checkInterfaceRate(final InterfaceActor actor, final Expression interfaceRateExpression) {
-    final PiGraph graph = actor.getContainingPiGraph();
-    final DataPort correspondingPort = graph.lookupGraphDataPortForInterfaceActor(actor);
+    final PiGraph parentGraph = actor.getContainingPiGraph();
+    final DataPort correspondingPort = parentGraph.lookupGraphDataPortForInterfaceActor(actor);
     final Expression correspondingExpression = correspondingPort.getExpression();
     if (!correspondingExpression.getExpressionAsString().equals(interfaceRateExpression.getExpressionAsString())) {
       throw new PreesmException("Interface [" + actor.getName()
@@ -444,15 +362,6 @@ public class StaticPiMM2FlatPiMMVisitor extends PiMMSwitch<Boolean> {
     return this.actor2actor.get(actor);
   }
 
-  /**
-   * Gets the result.
-   *
-   * @return the result
-   */
-  public PiGraph getResult() {
-    return this.result;
-  }
-
   @Override
   public Boolean caseDataOutputPort(final DataOutputPort dop) {
     throw new UnsupportedOperationException();
@@ -504,8 +413,20 @@ public class StaticPiMM2FlatPiMMVisitor extends PiMMSwitch<Boolean> {
   }
 
   @Override
-  public Boolean caseExecutableActor(final ExecutableActor ea) {
-    throw new UnsupportedOperationException();
+  public Boolean caseExecutableActor(final ExecutableActor actor) {
+    // Copy the actor
+    final ExecutableActor copyActor = PiMMUserFactory.instance.copyWithHistory(actor);
+    copyActor.setName(graphPrefix + actor.getName());
+
+    // Add the actor to the graph
+    this.result.addActor(copyActor);
+
+    // Map the actor for linking latter
+    this.actor2actor.put(actor, copyActor);
+
+    // Set the properties
+    instantiateParameters(actor, copyActor);
+    return true;
   }
 
   private void forkInputInterface(final DataInputInterface actor, final PiGraph graph) {
@@ -588,6 +509,7 @@ public class StaticPiMM2FlatPiMMVisitor extends PiMMSwitch<Boolean> {
 
   @Override
   public Boolean casePiGraph(final PiGraph graph) {
+    this.result.setName(graph.getName());
     // If there are no actors in the graph we leave
     if (graph.getActors().isEmpty()) {
       throw new UnsupportedOperationException(
@@ -627,7 +549,6 @@ public class StaticPiMM2FlatPiMMVisitor extends PiMMSwitch<Boolean> {
 
   private void flatteningTransformation(final PiGraph graph) {
     for (final AbstractActor actor : graph.getActors()) {
-      this.currentActorName = this.graphPrefix + actor.getName();
       doSwitch(actor);
     }
     for (final Fifo f : graph.getFifosWithDelay()) {
@@ -641,7 +562,7 @@ public class StaticPiMM2FlatPiMMVisitor extends PiMMSwitch<Boolean> {
   private void quasiSRTransformation(final PiGraph graph) {
     final String backupPrefix = this.graphPrefix;
     // We need to get the repetition vector of the graph
-    Long graphRV = PiMMHelper.getHierarchichalRV(graph, this.brv);
+    final long graphRV = PiMMHelper.getHierarchichalRV(graph, this.brv);
     for (long i = 0; i < graphRV; ++i) {
       if (!backupPrefix.isEmpty()) {
         this.graphPrefix = backupPrefix + Long.toString(i) + "_";

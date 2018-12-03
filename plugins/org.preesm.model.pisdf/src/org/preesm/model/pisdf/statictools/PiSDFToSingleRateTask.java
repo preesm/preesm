@@ -36,21 +36,17 @@
 /**
  *
  */
-package org.preesm.algorithm.pisdf.pimm2srdag;
+package org.preesm.model.pisdf.statictools;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.eclipse.core.runtime.IProgressMonitor;
-import org.preesm.algorithm.mapper.model.MapperDAG;
 import org.preesm.commons.exceptions.PreesmException;
 import org.preesm.commons.logger.PreesmLogger;
 import org.preesm.model.pisdf.PiGraph;
 import org.preesm.model.pisdf.brv.BRVMethod;
-import org.preesm.model.pisdf.statictools.PiSDFToSingleRate;
-import org.preesm.model.scenario.PreesmScenario;
-import org.preesm.model.slam.Design;
 import org.preesm.workflow.elements.Workflow;
 import org.preesm.workflow.implement.AbstractTaskImplementation;
 import org.preesm.workflow.implement.AbstractWorkflowNodeImplementation;
@@ -59,41 +55,35 @@ import org.preesm.workflow.implement.AbstractWorkflowNodeImplementation;
  * @author farresti
  *
  */
-public class StaticPiMM2SrDAGTask extends AbstractTaskImplementation {
+public class PiSDFToSingleRateTask extends AbstractTaskImplementation {
 
   public static final String CONSISTENCY_METHOD = "Consistency_Method";
 
+  final Logger logger = PreesmLogger.getLogger();
+
+  /*
+   * (non-Javadoc)
+   *
+   * @see org.ietr.dftools.workflow.implement.AbstractTaskImplementation#execute(java.util.Map, java.util.Map,
+   * org.eclipse.core.runtime.IProgressMonitor, java.lang.String, org.ietr.dftools.workflow.elements.Workflow)
+   */
   @Override
   public Map<String, Object> execute(final Map<String, Object> inputs, final Map<String, String> parameters,
       final IProgressMonitor monitor, final String nodeName, final Workflow workflow) {
-    final Design architecture = (Design) inputs.get(AbstractWorkflowNodeImplementation.KEY_ARCHITECTURE);
-    final PreesmScenario scenario = (PreesmScenario) inputs.get(AbstractWorkflowNodeImplementation.KEY_SCENARIO);
     final PiGraph graph = (PiGraph) inputs.get(AbstractWorkflowNodeImplementation.KEY_PI_GRAPH);
-
-    final MapperDAG result;
-    final Logger logger = PreesmLogger.getLogger();
     logger.log(Level.INFO, "Computing Repetition Vector for graph [" + graph.getName() + "]");
-    // Check the consistency of the PiGraph and compute the associated Basic Repetition Vector
-    // We use Topology-Matrix based method by default
-    final String consistencyMethod = parameters.get(StaticPiMM2SrDAGTask.CONSISTENCY_METHOD);
-    final BRVMethod method = BRVMethod.getByName(consistencyMethod);
 
+    final String consistencyMethod = parameters.get(CONSISTENCY_METHOD);
+    final BRVMethod method = BRVMethod.getByName(consistencyMethod);
     if (method == null) {
       throw new PreesmException("Unsupported method for checking consistency [" + consistencyMethod + "]");
     }
 
-    // Convert the PiGraph to the Single-Rate Directed Acyclic Graph
-    final PiGraph resultPi = PiSDFToSingleRate.compute(graph, method);
-
-    result = covnertToMapperDAG(resultPi, architecture, scenario);
-
-    final String message = "mapping a DAG with " + result.vertexSet().size() + " vertices and "
-        + result.edgeSet().size() + " edges";
-    PreesmLogger.getLogger().log(Level.INFO, message);
+    // Flatten the graph
+    final PiGraph result = PiSDFToSingleRate.compute(graph, method);
 
     final Map<String, Object> output = new LinkedHashMap<>();
-    output.put(AbstractWorkflowNodeImplementation.KEY_SDF_DAG, result);
-    output.put(AbstractWorkflowNodeImplementation.KEY_PI_GRAPH, resultPi);
+    output.put(AbstractWorkflowNodeImplementation.KEY_PI_GRAPH, result);
     return output;
   }
 
@@ -109,14 +99,4 @@ public class StaticPiMM2SrDAGTask extends AbstractTaskImplementation {
     return "Transforming PiGraph to Single-Rate Directed Acyclic Graph.";
   }
 
-  /**
-   * Converts the single rate acyclic PiSDF to {@link MapperDAG} and aggregate edges
-   */
-  public MapperDAG covnertToMapperDAG(final PiGraph resultPi, final Design architecture,
-      final PreesmScenario scenario) {
-    // Convert the PiMM vertices to DAG vertices
-    final StaticPiMM2MapperDAGVisitor visitor = new StaticPiMM2MapperDAGVisitor(resultPi, architecture, scenario);
-    visitor.doSwitch(resultPi);
-    return visitor.getResult();
-  }
 }

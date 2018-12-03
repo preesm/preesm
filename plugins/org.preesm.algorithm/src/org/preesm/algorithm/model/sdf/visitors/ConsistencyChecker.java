@@ -39,8 +39,8 @@ import org.preesm.algorithm.model.sdf.SDFAbstractVertex;
 import org.preesm.algorithm.model.sdf.SDFEdge;
 import org.preesm.algorithm.model.sdf.SDFGraph;
 import org.preesm.algorithm.model.visitors.IGraphVisitor;
-import org.preesm.algorithm.model.visitors.VisitorOutput;
 import org.preesm.commons.exceptions.PreesmException;
+import org.preesm.commons.logger.PreesmLogger;
 
 /**
  * Verifies that graph doesn't contains mistakes (port mismatch, case sensitivity).
@@ -77,13 +77,13 @@ public class ConsistencyChecker implements IGraphVisitor<SDFGraph, SDFAbstractVe
     if (graphDescription != null) {
       for (final SDFEdge edge : base.incomingEdgesOf(sdfVertex)) {
         if (graphDescription.getVertex(edge.getTargetInterface().getName()) == null) {
-          VisitorOutput.getLogger().log(Level.SEVERE, "Interface " + edge.getTargetInterface().getName()
+          PreesmLogger.getLogger().log(Level.SEVERE, "Interface " + edge.getTargetInterface().getName()
               + " does not exist in vertex " + sdfVertex.getName() + " hierarchy");
           this.isConsistent &= false;
         } else if (graphDescription.getVertex(edge.getTargetInterface().getName()) != null) {
           final SDFAbstractVertex sourceNode = graphDescription.getVertex(edge.getTargetInterface().getName());
           if (graphDescription.outgoingEdgesOf(sourceNode).isEmpty()) {
-            VisitorOutput.getLogger().log(Level.SEVERE, "Interface " + edge.getTargetInterface().getName()
+            PreesmLogger.getLogger().log(Level.SEVERE, "Interface " + edge.getTargetInterface().getName()
                 + " does not exist, or is not connect in vertex " + sdfVertex.getName() + " hierarchy");
             this.isConsistent &= false;
           }
@@ -91,13 +91,13 @@ public class ConsistencyChecker implements IGraphVisitor<SDFGraph, SDFAbstractVe
       }
       for (final SDFEdge edge : base.outgoingEdgesOf(sdfVertex)) {
         if (graphDescription.getVertex(edge.getSourceInterface().getName()) == null) {
-          VisitorOutput.getLogger().log(Level.SEVERE, "Interface " + edge.getSourceInterface().getName()
+          PreesmLogger.getLogger().log(Level.SEVERE, "Interface " + edge.getSourceInterface().getName()
               + " does not exist in vertex " + sdfVertex.getName() + " hierarchy");
           this.isConsistent &= false;
         } else if (graphDescription.getVertex(edge.getSourceInterface().getName()) != null) {
           final SDFAbstractVertex sinkNode = graphDescription.getVertex(edge.getSourceInterface().getName());
           if (graphDescription.incomingEdgesOf(sinkNode).isEmpty()) {
-            VisitorOutput.getLogger().log(Level.SEVERE, "Interface " + edge.getSourceInterface().getName()
+            PreesmLogger.getLogger().log(Level.SEVERE, "Interface " + edge.getSourceInterface().getName()
                 + " does not exist, or is not connect in vertex " + sdfVertex.getName() + " hierarchy");
             this.isConsistent &= false;
           }

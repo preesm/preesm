@@ -40,12 +40,14 @@
  */
 package org.preesm.algorithm.pisdf.pimm2srdag;
 
-import java.util.logging.Level;
-import org.apache.commons.lang3.time.StopWatch;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Set;
 import org.preesm.algorithm.codegen.idl.ActorPrototypes;
 import org.preesm.algorithm.codegen.idl.Prototype;
 import org.preesm.algorithm.codegen.model.CodeGenArgument;
 import org.preesm.algorithm.codegen.model.CodeGenParameter;
+import org.preesm.algorithm.mapper.graphtransfo.SdfToDagConverter;
 import org.preesm.algorithm.mapper.model.MapperDAG;
 import org.preesm.algorithm.mapper.model.MapperDAGVertex;
 import org.preesm.algorithm.mapper.model.MapperEdgeFactory;
@@ -66,7 +68,7 @@ import org.preesm.algorithm.model.types.LongEdgePropertyType;
 import org.preesm.algorithm.model.types.LongVertexPropertyType;
 import org.preesm.algorithm.model.types.StringEdgePropertyType;
 import org.preesm.commons.exceptions.PreesmException;
-import org.preesm.commons.logger.PreesmLogger;
+import org.preesm.commons.model.PreesmCopyTracker;
 import org.preesm.model.pisdf.AbstractActor;
 import org.preesm.model.pisdf.Actor;
 import org.preesm.model.pisdf.BroadcastActor;
@@ -98,7 +100,12 @@ import org.preesm.model.pisdf.Port;
 import org.preesm.model.pisdf.Refinement;
 import org.preesm.model.pisdf.RoundBufferActor;
 import org.preesm.model.pisdf.util.PiMMSwitch;
+import org.preesm.model.scenario.ConstraintGroup;
+import org.preesm.model.scenario.ConstraintGroupManager;
 import org.preesm.model.scenario.PreesmScenario;
+import org.preesm.model.scenario.Timing;
+import org.preesm.model.scenario.TimingManager;
+import org.preesm.model.slam.Design;
 
 /**
  * @author farresti
@@ -118,6 +125,8 @@ public class StaticPiMM2MapperDAGVisitor extends PiMMSwitch<Boolean> {
   /** The scenario. */
   private final PreesmScenario scenario;
 
+  private final Design architecture;
+
   /**
    * Instantiates a new StaticPiMM2MapperDAGVisitor
    *
@@ -126,7 +135,8 @@ public class StaticPiMM2MapperDAGVisitor extends PiMMSwitch<Boolean> {
    * @param scenario
    *          The scenario
    */
-  public StaticPiMM2MapperDAGVisitor(final PiGraph piGraph, final PreesmScenario scenario) {
+  public StaticPiMM2MapperDAGVisitor(final PiGraph piGraph, final Design architecture, final PreesmScenario scenario) {
+    this.architecture = architecture;
     this.result = new MapperDAG(new MapperEdgeFactory(), piGraph);
     this.vertexFactory = MapperVertexFactory.getInstance();
     this.scenario = scenario;
@@ -140,14 +150,12 @@ public class StaticPiMM2MapperDAGVisitor extends PiMMSwitch<Boolean> {
    * @return the DAGVertex
    */
   private void setDAGVertexPropertiesFromPiMM(final AbstractActor actor, final DAGVertex vertex) {
-    // Handle vertex's name
-    vertex.setName(actor.getName());
-    // Handle vertex's path inside the graph hierarchy
-    vertex.setInfo(actor.getVertexPath());
-    // Handle ID
+
     vertex.setId(actor.getName());
-    // Set Repetition vector to 1 since it is a single rate vertex
+    vertex.setName(actor.getName());
+    vertex.setInfo(actor.getVertexPath());
     vertex.setNbRepeat(new LongVertexPropertyType(1));
+
     // Set default time property
     vertex.setTime(new LongVertexPropertyType(0));
     // Adds the list of source ports
@@ -317,10 +325,8 @@ public class StaticPiMM2MapperDAGVisitor extends PiMMSwitch<Boolean> {
 
     // Set the number of delay
     vertex.getPropertyBean().setValue(DAGInitVertex.INIT_SIZE, dataOutputPort.getPortRateExpression().evaluate());
-    vertex.setId(actor.getName());
-    vertex.setName(actor.getName());
-    vertex.setInfo(actor.getName());
-    vertex.setNbRepeat(new LongVertexPropertyType(1));
+
+    setDAGVertexPropertiesFromPiMM(actor, vertex);
 
     // Set the PERSISTENCE_LEVEL property
     vertex.setPropertyValue(DAGInitVertex.PERSISTENCE_LEVEL, actor.getLevel());
@@ -340,10 +346,7 @@ public class StaticPiMM2MapperDAGVisitor extends PiMMSwitch<Boolean> {
   public Boolean caseEndActor(final EndActor actor) {
     final DAGVertex vertex = vertexFactory.createVertex(DAGEndVertex.DAG_END_VERTEX);
 
-    vertex.setId(actor.getName());
-    vertex.setName(actor.getName());
-    vertex.setInfo(actor.getName());
-    vertex.setNbRepeat(new LongVertexPropertyType(1));
+    setDAGVertexPropertiesFromPiMM(actor, vertex);
 
     final String delayInitID = actor.getInitReference();
     // Handle the END_REFERENCE property
@@ -602,10 +605,61 @@ public class StaticPiMM2MapperDAGVisitor extends PiMMSwitch<Boolean> {
     throw new UnsupportedOperationException();
   }
 
+  /**
+   * Update the Scenario with timing/mapping constraints for copyActor.
+   */
+  public static final void updateScenarioData(final AbstractActor copyActor, final PreesmScenario scenario) {
+    final AbstractActor actor = PreesmCopyTracker.getOriginalSource(copyActor);
+    // Add the scenario constraints
+    final List<String> currentOperatorIDs = new ArrayList<>();
+    final Set<ConstraintGroup> constraintGroups = scenario.getConstraintGroupManager().getConstraintGroups();
+    for (final ConstraintGroup cg : constraintGroups) {
+      final Set<String> vertexPaths = cg.getVertexPaths();
+      final Set<String> operatorIds = cg.getOperatorIds();
+      if (vertexPaths.contains(actor.getVertexPath())) {
+        currentOperatorIDs.add((String) operatorIds.toArray()[0]);
+      }
+    }
+
+    final ConstraintGroupManager constraintGroupManager = scenario.getConstraintGroupManager();
+    currentOperatorIDs.forEach(s -> constraintGroupManager.addConstraint(s, copyActor));
+    // Add the scenario timings
+    final List<Timing> currentTimings = new ArrayList<>();
+    for (final String operatorDefinitionID : scenario.getOperatorDefinitionIds()) {
+      final Timing timing = scenario.getTimingManager().getTimingOrDefault(actor.getName(), operatorDefinitionID);
+      currentTimings.add(timing);
+    }
+    final TimingManager timingManager = scenario.getTimingManager();
+    for (final Timing t : currentTimings) {
+      final Timing addTiming = timingManager.addTiming(copyActor.getName(), t.getOperatorDefinitionId());
+      addTiming.setTime(t.getTime());
+      addTiming.setInputParameters(t.getInputParameters());
+    }
+  }
+
   @Override
   public Boolean casePiGraph(final PiGraph graph) {
-    final StopWatch timer = new StopWatch();
-    timer.start();
+    checkInput(graph);
+
+    // Convert vertices
+    for (final AbstractActor actor : graph.getActors()) {
+      updateScenarioData(actor, this.scenario);
+      doSwitch(actor);
+    }
+
+    // Convert FIFOs
+    for (final Fifo fifo : graph.getFifos()) {
+      doSwitch(fifo);
+    }
+
+    // 6. Aggregate edges
+    aggregateEdges(result);
+
+    SdfToDagConverter.addInitialProperties(result, architecture, scenario);
+    return true;
+  }
+
+  private void checkInput(final PiGraph graph) {
     // If there is no actor we leave
     if (graph.getActors().isEmpty()) {
       throw new UnsupportedOperationException(
@@ -616,20 +670,39 @@ public class StaticPiMM2MapperDAGVisitor extends PiMMSwitch<Boolean> {
     if (!graph.getChildrenGraphs().isEmpty()) {
       throw new UnsupportedOperationException("This method is not applicable for non flatten PiMM Graphs.");
     }
+  }
 
-    // Convert vertices
-    for (final AbstractActor actor : graph.getActors()) {
-      doSwitch(actor);
+  /**
+   * Creates edge aggregate for all multi connection between two vertices.
+   *
+   * @param dag
+   *          the dag on which to perform
+   */
+  private void aggregateEdges(final MapperDAG dag) {
+    for (final DAGVertex vertex : dag.vertexSet()) {
+      // List of extra edges to remove
+      final ArrayList<DAGEdge> toRemove = new ArrayList<>();
+      for (final DAGEdge edge : vertex.incomingEdges()) {
+        final DAGVertex source = edge.getSource();
+        // Maybe doing the copy is not optimal
+        final ArrayList<DAGEdge> allEdges = new ArrayList<>(dag.getAllEdges(source, vertex));
+        // if there is only one connection no need to modify anything
+        if (allEdges.size() == 1 || toRemove.contains(allEdges.get(1))) {
+          continue;
+        }
+        // Get the first edge
+        final DAGEdge firstEdge = allEdges.remove(0);
+        for (final DAGEdge extraEdge : allEdges) {
+          // Update the weight
+          firstEdge.setWeight(
+              new LongEdgePropertyType(firstEdge.getWeight().longValue() + extraEdge.getWeight().longValue()));
+          // Add the aggregate edge
+          firstEdge.getAggregate().add(extraEdge.getAggregate().get(0));
+          toRemove.add(extraEdge);
+        }
+      }
+      // Removes the extra edges
+      toRemove.forEach(dag::removeEdge);
     }
-
-    // Convert FIFOs
-    for (final Fifo fifo : graph.getFifos()) {
-      doSwitch(fifo);
-    }
-    timer.stop();
-    final String msgPiMM2DAG = "Dag conversion: " + timer + "s.";
-    PreesmLogger.getLogger().log(Level.INFO, msgPiMM2DAG);
-    timer.reset();
-    return true;
   }
 }

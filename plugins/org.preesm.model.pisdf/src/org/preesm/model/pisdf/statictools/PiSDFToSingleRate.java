@@ -36,23 +36,16 @@
 /**
  *
  */
-package org.preesm.algorithm.pisdf.pimm2srdag;
+package org.preesm.model.pisdf.statictools;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
-import java.util.logging.Level;
-import org.apache.commons.lang3.time.StopWatch;
-import org.eclipse.emf.common.util.EList;
-import org.eclipse.emf.ecore.util.EcoreUtil;
 import org.preesm.commons.exceptions.PreesmException;
-import org.preesm.commons.logger.PreesmLogger;
 import org.preesm.model.pisdf.AbstractActor;
 import org.preesm.model.pisdf.AbstractVertex;
-import org.preesm.model.pisdf.Actor;
 import org.preesm.model.pisdf.BroadcastActor;
 import org.preesm.model.pisdf.ConfigInputPort;
 import org.preesm.model.pisdf.ConfigOutputPort;
@@ -68,41 +61,61 @@ import org.preesm.model.pisdf.EndActor;
 import org.preesm.model.pisdf.ExecutableActor;
 import org.preesm.model.pisdf.Expression;
 import org.preesm.model.pisdf.Fifo;
-import org.preesm.model.pisdf.ForkActor;
 import org.preesm.model.pisdf.ISetter;
 import org.preesm.model.pisdf.InitActor;
 import org.preesm.model.pisdf.InterfaceActor;
-import org.preesm.model.pisdf.JoinActor;
-import org.preesm.model.pisdf.Parameter;
 import org.preesm.model.pisdf.PiGraph;
 import org.preesm.model.pisdf.Port;
 import org.preesm.model.pisdf.RoundBufferActor;
+import org.preesm.model.pisdf.brv.BRVMethod;
+import org.preesm.model.pisdf.brv.PiBRV;
 import org.preesm.model.pisdf.factory.PiMMUserFactory;
-import org.preesm.model.pisdf.statictools.PiMMSRVerticesLinker;
+import org.preesm.model.pisdf.statictools.optims.BroadcastRoundBufferOptimization;
+import org.preesm.model.pisdf.statictools.optims.ForkJoinOptimization;
 import org.preesm.model.pisdf.util.PiMMSwitch;
-import org.preesm.model.scenario.ConstraintGroup;
-import org.preesm.model.scenario.ConstraintGroupManager;
-import org.preesm.model.scenario.PreesmScenario;
-import org.preesm.model.scenario.Timing;
-import org.preesm.model.scenario.TimingManager;
 
 /**
  * @author farresti
  *
  */
-public class StaticPiMM2ASrPiMMVisitor extends PiMMSwitch<Boolean> {
+public class PiSDFToSingleRate extends PiMMSwitch<Boolean> {
+
+  /**
+   * Precondition: All.
+   *
+   * @return the SDFGraph obtained by visiting graph
+   */
+  public static final PiGraph compute(PiGraph graph, final BRVMethod method) {
+    // 1. First we resolve all parameters.
+    // It must be done first because, when removing persistence, local parameters have to be known at upper level
+    PiMMHelper.resolveAllParameters(graph);
+    // 2. We perform the delay transformation step that deals with persistence
+    PiMMHelper.removePersistence(graph);
+    // 3. Compute BRV following the chosen method
+    Map<AbstractVertex, Long> brv = PiBRV.compute(graph, method);
+    // 4. Print the RV values
+    // 4.5 Check periods with BRV
+    PiMMHelper.checkPeriodicity(brv);
+    // 5. Convert to SR-DAG
+    PiSDFToSingleRate staticPiMM2ASrPiMMVisitor = new PiSDFToSingleRate(brv);
+    staticPiMM2ASrPiMMVisitor.doSwitch(graph);
+    final PiGraph acyclicSRPiMM = staticPiMM2ASrPiMMVisitor.getResult();
+
+    // 6- do some optimization on the graph
+    final ForkJoinOptimization forkJoinOptimization = new ForkJoinOptimization();
+    forkJoinOptimization.optimize(acyclicSRPiMM);
+    final BroadcastRoundBufferOptimization brRbOptimization = new BroadcastRoundBufferOptimization();
+    brRbOptimization.optimize(acyclicSRPiMM);
+
+    return acyclicSRPiMM;
+  }
+
   /** The result. */
   // SRDAG graph created from the outer graph
   private final PiGraph result;
 
   /** Basic repetition vector of the graph */
   private final Map<AbstractVertex, Long> brv;
-
-  /** The scenario. */
-  private final PreesmScenario scenario;
-
-  /** Ecore copier utility */
-  private static final EcoreUtil.Copier copier = new EcoreUtil.Copier(true);
 
   /** Map from original PiMM vertices to generated DAG vertices */
   private final Map<String, List<AbstractVertex>> actor2SRActors = new LinkedHashMap<>();
@@ -113,92 +126,30 @@ public class StaticPiMM2ASrPiMMVisitor extends PiMMSwitch<Boolean> {
   /** Map of all DataOutputInterface to corresponding vertices */
   private final Map<String, List<AbstractVertex>> outPort2SRActors = new LinkedHashMap<>();
 
-  /** List of the constraints operator ID of the current actor */
-  List<String> currentOperatorIDs;
-
-  /** List of the timing constraints of the current actor */
-  List<Timing> currentTimings;
-
   /** PiMM Graph name */
-  String originalGraphName;
+  private String originalGraphName;
 
   /** Current Single-Rate Graph name */
-  String graphName;
+  private String graphName;
 
   /** Current graph prefix */
-  String graphPrefix;
+  private String graphPrefix;
 
   /** Current actor name */
-  String currentActorName;
+  private String currentActorName;
 
   /** Current FIFO */
-  Fifo currentFifo;
+  private Fifo currentFifo;
 
   /**
    * Instantiates a new abstract StaticPiMM2ASrPiMMVisitor.
    *
-   * @param graph
-   *          The original PiGraph to be converted
-   * @param brv
-   *          the Basic Repetition Vector Map
-   * @param scenario
-   *          the scenario
-   *
    */
-  public StaticPiMM2ASrPiMMVisitor(final PiGraph graph, final Map<AbstractVertex, Long> brv,
-      final PreesmScenario scenario) {
+  public PiSDFToSingleRate(Map<AbstractVertex, Long> brv) {
     this.result = PiMMUserFactory.instance.createPiGraph();
-    this.result.setName(graph.getName());
     this.brv = brv;
-    this.scenario = scenario;
     this.graphName = "";
     this.graphPrefix = "";
-  }
-
-  /**
-   * Set basic properties from a PiMM actor to the copied actor
-   *
-   * @param actor
-   *          original PiMM actor
-   * @param copyActor
-   *          copied PiMM actor
-   */
-  private void setPropertiesToCopyActor(final AbstractActor actor, final AbstractActor copyActor) {
-    // Set the properties
-    copyActor.setName(this.currentActorName);
-
-    // // Copy parameters
-    for (final Parameter p : actor.getInputParameters()) {
-
-      final EList<
-          ConfigInputPort> correspondingConfigInputPorts = actor.lookupConfigInputPortsConnectedWithParameter(p);
-      for (ConfigInputPort originalCIP : correspondingConfigInputPorts) {
-        final ConfigInputPort cip = (ConfigInputPort) copyActor.lookupPort(originalCIP.getName());
-        if (cip != null) {
-          final Parameter copy = (Parameter) copier.copy(p);
-          final Dependency dep = PiMMUserFactory.instance.createDependency();
-          dep.setSetter(copy);
-          cip.setIncomingDependency(dep);
-        }
-      }
-    }
-
-    // Add the actor to the graph
-    this.result.addActor(copyActor);
-
-    // Add the actor to the FIFO source/sink sets
-    this.actor2SRActors.get(this.graphPrefix + actor.getName()).add(copyActor);
-
-    // Add the scenario constraints
-    final ConstraintGroupManager constraintGroupManager = this.scenario.getConstraintGroupManager();
-    this.currentOperatorIDs.forEach(s -> constraintGroupManager.addConstraint(s, copyActor));
-    // Add the scenario timings
-    final TimingManager timingManager = this.scenario.getTimingManager();
-    for (final Timing t : this.currentTimings) {
-      final Timing addTiming = timingManager.addTiming(copyActor.getName(), t.getOperatorDefinitionId());
-      addTiming.setTime(t.getTime());
-      addTiming.setInputParameters(t.getInputParameters());
-    }
   }
 
   /*
@@ -213,26 +164,19 @@ public class StaticPiMM2ASrPiMMVisitor extends PiMMSwitch<Boolean> {
     if (actor instanceof PiGraph) {
       // Here we handle the replacement of the interfaces by what should be
       // Copy the actor
-      final PiGraph copyActor = (PiGraph) copier.copy(actor);
-      setPropertiesToCopyActor(actor, copyActor);
-      return true;
+      final PiGraph copyActor = PiMMUserFactory.instance.copyWithHistory((PiGraph) actor);
+      // Set the properties
+      copyActor.setName(this.currentActorName);
+
+      // Add the actor to the graph
+      this.result.addActor(copyActor);
+
+      // Add the actor to the FIFO source/sink sets
+      this.actor2SRActors.get(this.graphPrefix + actor.getName()).add(copyActor);
+      PiSDFFlattener.instantiateParameters(actor, copyActor);
+    } else {
+      doSwitch(actor);
     }
-    doSwitch(actor);
-    return true;
-  }
-
-  /*
-   * (non-Javadoc)
-   *
-   * @see org.ietr.preesm.experiment.model.pimm.util.PiMMVisitor#visitActor(org.ietr.preesm.experiment.model.pimm.Actor)
-   */
-  @Override
-  public Boolean caseActor(final Actor actor) {
-    // Copy the actor
-    final Actor copyActor = (Actor) copier.copy(actor);
-
-    // Set the properties
-    setPropertiesToCopyActor(actor, copyActor);
     return true;
   }
 
@@ -327,42 +271,20 @@ public class StaticPiMM2ASrPiMMVisitor extends PiMMSwitch<Boolean> {
   }
 
   @Override
-  public Boolean caseBroadcastActor(final BroadcastActor actor) {
+  public Boolean caseExecutableActor(final ExecutableActor actor) {
     // Copy the BroadCast actor
-    final BroadcastActor copyActor = (BroadcastActor) copier.copy(actor);
+    final ExecutableActor copyActor = PiMMUserFactory.instance.copyWithHistory(actor);
+    // Set the properties
+    copyActor.setName(this.currentActorName);
+
+    // Add the actor to the graph
+    this.result.addActor(copyActor);
+
+    // Add the actor to the FIFO source/sink sets
+    this.actor2SRActors.get(this.graphPrefix + actor.getName()).add(copyActor);
 
     // Set the properties
-    setPropertiesToCopyActor(actor, copyActor);
-    return true;
-  }
-
-  @Override
-  public Boolean caseRoundBufferActor(final RoundBufferActor actor) {
-    // Copy the RoundBuffer actor
-    final RoundBufferActor copyActor = (RoundBufferActor) copier.copy(actor);
-
-    // Set the properties
-    setPropertiesToCopyActor(actor, copyActor);
-    return true;
-  }
-
-  @Override
-  public Boolean caseJoinActor(final JoinActor actor) {
-    // Copy the Join actor
-    final JoinActor copyActor = (JoinActor) copier.copy(actor);
-
-    // Set the properties
-    setPropertiesToCopyActor(actor, copyActor);
-    return true;
-  }
-
-  @Override
-  public Boolean caseForkActor(final ForkActor actor) {
-    // Copyt the Fork actor
-    final ForkActor copyActor = (ForkActor) copier.copy(actor);
-
-    // Set the properties
-    setPropertiesToCopyActor(actor, copyActor);
+    PiSDFFlattener.instantiateParameters(actor, copyActor);
     return true;
   }
 
@@ -744,11 +666,6 @@ public class StaticPiMM2ASrPiMMVisitor extends PiMMSwitch<Boolean> {
     throw new UnsupportedOperationException();
   }
 
-  @Override
-  public Boolean caseExecutableActor(final ExecutableActor ea) {
-    throw new UnsupportedOperationException();
-  }
-
   /**
    * Populate the new graph with the N instances of each actor w.r.t the BRV
    *
@@ -769,24 +686,6 @@ public class StaticPiMM2ASrPiMMVisitor extends PiMMSwitch<Boolean> {
     // Creates the entry for the current PiMM Actor
     this.actor2SRActors.put(this.graphPrefix + actor.getName(), new ArrayList<>());
 
-    // Initialize the operator IDs list
-    this.currentOperatorIDs = new ArrayList<>();
-    final Set<ConstraintGroup> constraintGroups = this.scenario.getConstraintGroupManager().getConstraintGroups();
-    for (final ConstraintGroup cg : constraintGroups) {
-      final Set<String> vertexPaths = cg.getVertexPaths();
-      final Set<String> operatorIds = cg.getOperatorIds();
-      if (vertexPaths.contains(actor.getVertexPath())) {
-        this.currentOperatorIDs.add((String) operatorIds.toArray()[0]);
-      }
-    }
-
-    // Initialize Timing list
-    this.currentTimings = new ArrayList<>();
-    for (final String operatorDefinitionID : this.scenario.getOperatorDefinitionIds()) {
-      final Timing timing = this.scenario.getTimingManager().getTimingOrDefault(actor.getName(), operatorDefinitionID);
-      this.currentTimings.add(timing);
-    }
-
     // Populate the DAG with the appropriate number of instances of the actor
     final Long actorRV = this.brv.get(actor);
 
@@ -804,14 +703,13 @@ public class StaticPiMM2ASrPiMMVisitor extends PiMMSwitch<Boolean> {
 
   @Override
   public Boolean casePiGraph(final PiGraph graph) {
-    final StopWatch timer = new StopWatch();
-    timer.start();
 
     // If there are no actors in the graph we leave
     if (graph.getActors().isEmpty()) {
       throw new UnsupportedOperationException(
           "Can not convert an empty graph. Check the refinement for [" + graph.getVertexPath() + "].");
     }
+    this.result.setName(graph.getName());
     // Set the current graph name
     this.graphName = graph.getContainingPiGraph() == null ? "" : graph.getName();
     this.graphName = this.graphPrefix + this.graphName;
@@ -846,11 +744,6 @@ public class StaticPiMM2ASrPiMMVisitor extends PiMMSwitch<Boolean> {
       }
     }
 
-    timer.stop();
-    final String msgPiMM2ASRPiMM = "Acyclic Single-Rate transformation: " + timer + "s.";
-    PreesmLogger.getLogger().log(Level.INFO, msgPiMM2ASRPiMM);
-    // Do some optimization on the graph
-    timer.reset();
     return true;
   }
 
@@ -876,13 +769,13 @@ public class StaticPiMM2ASrPiMMVisitor extends PiMMSwitch<Boolean> {
   private void splitDelayActors(final Fifo fifo) {
     final DelayActor delayActor = fifo.getDelay().getActor();
     final String delayExpression = fifo.getDelay().getExpression().getExpressionAsString();
-    final PiGraph graph = fifo.getContainingPiGraph();
+    final PiGraph parentGraph = fifo.getContainingPiGraph();
     // 0. Check if the DelayActor need to add Init / End
     if (delayActor.getSetterActor() == null) {
-      addInitActorAsSetter(fifo, delayActor, delayExpression, graph);
+      addInitActorAsSetter(fifo, delayActor, delayExpression, parentGraph);
     }
     if (delayActor.getGetterActor() == null) {
-      addEndActorAsGetter(fifo, delayActor, delayExpression, graph);
+      addEndActorAsGetter(fifo, delayActor, delayExpression, parentGraph);
     }
     // 1. We split the current actor in two for more convenience
     // 1.1 Let start by the setterActor
@@ -919,9 +812,9 @@ public class StaticPiMM2ASrPiMMVisitor extends PiMMSwitch<Boolean> {
     }
     this.brv.put(getterActor, brvGetter);
     // 2 We remove the old actor and add the new ones
-    graph.removeActor((AbstractActor) delayActor);
-    graph.addActor(setterActor);
-    graph.addActor(getterActor);
+    parentGraph.removeActor((AbstractActor) delayActor);
+    parentGraph.addActor(setterActor);
+    parentGraph.addActor(getterActor);
   }
 
   private void addInitActorAsSetter(final Fifo fifo, final DelayActor delayActor, final String delayExpression,

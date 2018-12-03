@@ -10,7 +10,9 @@ PREESM Changelog
 * Adding a new function to jep, in order to compute i for max divisibility by 2**i;
 * Add Snapshot releases repository;
 * Refactor (method/class/package move/rename/delete);
+  * have the flatten and single-rate transformations independant from scenarios;
 * Remove IBSDF support in scenario;
+
 
 ### Bug fix
 
