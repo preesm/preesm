@@ -64,6 +64,7 @@ import org.preesm.model.pisdf.Fifo;
 import org.preesm.model.pisdf.ISetter;
 import org.preesm.model.pisdf.InitActor;
 import org.preesm.model.pisdf.InterfaceActor;
+import org.preesm.model.pisdf.NonExecutableActor;
 import org.preesm.model.pisdf.PiGraph;
 import org.preesm.model.pisdf.Port;
 import org.preesm.model.pisdf.RoundBufferActor;
@@ -178,24 +179,42 @@ public class PiSDFToSingleRate extends PiMMSwitch<Boolean> {
   }
 
   @Override
-  public Boolean caseInitActor(final InitActor actor) {
-    // Fetch the actor
-    final InitActor initActor = (InitActor) this.result.lookupVertex(actor.getName());
-    // Update name
-    initActor.setName(this.graphPrefix + initActor.getName());
+  public Boolean caseNonExecutableActor(final NonExecutableActor actor) {
+    // Copy the BroadCast actor
+    final NonExecutableActor copyActor = PiMMUserFactory.instance.copyWithHistory(actor);
+    // Set the properties
+    copyActor.setName(this.currentActorName);
+
+    // Add the actor to the graph
+    this.result.addActor(copyActor);
+
+    // Add the actor to the FIFO source/sink sets
+    this.actor2SRActors.get(this.graphPrefix + actor.getName()).add(copyActor);
+
+    // Set the properties
+    // PiSDFFlattener.instantiateParameters(actor, copyActor);
     return true;
   }
 
-  @Override
-  public Boolean caseEndActor(final EndActor actor) {
-    // Fetch the actor
-    final EndActor endActor = (EndActor) this.result.lookupVertex(actor.getName());
-    // Update name
-    endActor.setName(this.graphPrefix + endActor.getName());
-    // Update END_REFERENCE
-    endActor.setInitReference(this.graphPrefix + endActor.getInitReference());
-    return true;
-  }
+  // @Override
+  // public Boolean caseInitActor(final InitActor actor) {
+  // // Fetch the actor
+  // final InitActor initActor = (InitActor) this.result.lookupVertex(actor.getName());
+  // // Update name
+  // initActor.setName(this.graphPrefix + initActor.getName());
+  // return true;
+  // }
+  //
+  // @Override
+  // public Boolean caseEndActor(final EndActor actor) {
+  // // Fetch the actor
+  // final EndActor endActor = (EndActor) this.result.lookupVertex(actor.getName());
+  // // Update name
+  // endActor.setName(this.graphPrefix + endActor.getName());
+  // // Update END_REFERENCE
+  // endActor.setInitReference(this.graphPrefix + endActor.getInitReference());
+  // return true;
+  // }
 
   @Override
   public Boolean caseDelayActor(final DelayActor actor) {
