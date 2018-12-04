@@ -60,22 +60,6 @@
    <extension
          point="org.preesm.workflow.tasks">
       <task
-            id="org.ietr.preesm.experiment.pimm.subgraph.connector.SubgraphConnectorTask"
-            name="PiMM Subgraph Connector Task"
-            type="org.preesm.algorithm.pisdf.subgraph.connector.SubgraphConnectorTask">
-         <inputs>
-            <input
-                  id="PiMM"
-                  object="org.preesm.model.pisdf.PiGraph">
-            </input>
-         </inputs>
-         <outputs>
-            <output
-                  id="PiMM"
-                  object="org.preesm.model.pisdf.PiGraph"></output>
-         </outputs>
-      </task>
-      <task
             id="org.ietr.preesm.pimm.checker.task.PiMMAlgorithmCheckerTask"
             name="PiMM Checker"
             type="org.preesm.algorithm.pisdf.checker.task.PiMMAlgorithmCheckerTask">

@@ -95,7 +95,7 @@ import org.preesm.model.pisdf.RefinementContainer;
 import org.preesm.model.pisdf.factory.PiMMUserFactory;
 import org.preesm.model.pisdf.util.PiIdentifiers;
 import org.preesm.model.pisdf.util.PiSDFXSDValidator;
-import org.preesm.model.pisdf.util.SubgraphConnectorVisitor;
+import org.preesm.model.pisdf.util.SubgraphReconnector;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -131,7 +131,7 @@ public class PiParser {
       ressource = resourceSet.getResource(uri, true);
       pigraph = (PiGraph) (ressource.getContents().get(0));
 
-      final SubgraphConnectorVisitor connector = new SubgraphConnectorVisitor();
+      final SubgraphReconnector connector = new SubgraphReconnector();
       connector.connectSubgraphs(pigraph);
     } catch (final WrappedException e) {
       final String message = "The algorithm file \"" + uri + "\" specified by the scenario does not exist any more.";

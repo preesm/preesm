@@ -56,15 +56,14 @@ import org.preesm.model.pisdf.DataPort;
 import org.preesm.model.pisdf.Delay;
 import org.preesm.model.pisdf.DelayActor;
 import org.preesm.model.pisdf.Dependency;
-import org.preesm.model.pisdf.EndActor;
 import org.preesm.model.pisdf.ExecutableActor;
 import org.preesm.model.pisdf.Expression;
 import org.preesm.model.pisdf.Fifo;
 import org.preesm.model.pisdf.ForkActor;
 import org.preesm.model.pisdf.ISetter;
-import org.preesm.model.pisdf.InitActor;
 import org.preesm.model.pisdf.InterfaceActor;
 import org.preesm.model.pisdf.JoinActor;
+import org.preesm.model.pisdf.NonExecutableActor;
 import org.preesm.model.pisdf.Parameter;
 import org.preesm.model.pisdf.PersistenceLevel;
 import org.preesm.model.pisdf.PiGraph;
@@ -177,16 +176,6 @@ public class PiSDFFlattener extends PiMMSwitch<Boolean> {
         }
       }
     }
-  }
-
-  @Override
-  public Boolean caseInitActor(final InitActor actor) {
-    throw new UnsupportedOperationException();
-  }
-
-  @Override
-  public Boolean caseEndActor(final EndActor actor) {
-    throw new UnsupportedOperationException();
   }
 
   @Override
@@ -410,6 +399,20 @@ public class PiSDFFlattener extends PiMMSwitch<Boolean> {
   @Override
   public Boolean caseDataPort(final DataPort p) {
     throw new UnsupportedOperationException();
+  }
+
+  @Override
+  public Boolean caseNonExecutableActor(NonExecutableActor actor) {
+    // Copy the actor
+    final NonExecutableActor copyActor = PiMMUserFactory.instance.copyWithHistory(actor);
+    copyActor.setName(graphPrefix + actor.getName());
+
+    // Add the actor to the graph
+    this.result.addActor(copyActor);
+
+    // Map the actor for linking latter
+    this.actor2actor.put(actor, copyActor);
+    return true;
   }
 
   @Override

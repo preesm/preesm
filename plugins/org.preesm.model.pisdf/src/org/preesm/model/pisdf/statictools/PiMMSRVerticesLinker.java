@@ -616,6 +616,7 @@ public class PiMMSRVerticesLinker {
         final InitActor init = PiMMUserFactory.instance.createInitActor();
         init.setName(this.graphPrefixe + setterName);
         init.getDataOutputPort().setName(this.sinkPort.getName());
+        init.getDataOutputPort().setExpression(setterRate);
         init.setLevel(((InitActor) setterActor).getLevel());
         init.getDataOutputPort().setExpression(setterRate);
         resultGraph.addActor(init);
@@ -626,6 +627,7 @@ public class PiMMSRVerticesLinker {
           final String name = setterName + "_init_" + Integer.toString(i);
           init.setName(name);
           init.getDataOutputPort().setName(this.sinkPort.getName());
+          init.getDataOutputPort().setExpression(setterRate);
           resultGraph.addActor(init);
           sourceSet.add(new SourceConnection(init, setterRate, this.sinkPort.getName()));
         }
@@ -700,6 +702,7 @@ public class PiMMSRVerticesLinker {
         final EndActor end = PiMMUserFactory.instance.createEndActor();
         end.setName(this.graphPrefixe + getterName);
         end.getDataInputPort().setName(this.sourcePort.getName());
+        end.getDataInputPort().setExpression(getterRate);
         end.setLevel(((EndActor) getterActor).getLevel());
         end.setInitReference(this.graphPrefixe + ((EndActor) getterActor).getInitReference());
         resultGraph.addActor(end);
@@ -710,6 +713,7 @@ public class PiMMSRVerticesLinker {
           final String name = getterName + "_end_" + Integer.toString(i);
           end.setName(name);
           end.getDataInputPort().setName(this.sourcePort.getName());
+          end.getDataInputPort().setExpression(getterRate);
           resultGraph.addActor(end);
           sinkSet.add(new SinkConnection(end, getterRate, this.sourcePort.getName()));
         }
