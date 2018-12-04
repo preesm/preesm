@@ -72,7 +72,7 @@
             class="org.ietr.dftools.graphiti.ui.editors.GraphEditor"
             contributorClass="org.ietr.dftools.graphiti.ui.editors.GraphActionBarContributor"
             default="true"
-            extensions="graphml, design, component"
+            extensions="graphml, design, component, pi"
             icon="icons/graphiti.gif"
             id="org.ietr.preesm.ui.editor.graph"
             name="Preesm Network Editor">
@@ -127,6 +127,315 @@
       <!-- GraphML Algo Editor specs -->
       <configuration
             extension="graphml"
+            name="GraphML"
+            type="text/xml"
+            validator="org.preesm.ui.sdf.editor.graph.validators.SDFValidator">
+         <graphType
+               name="Dataflow Graph">
+            <parameter
+                  default="sdf"
+                  name="kind"
+                  type="java.lang.String">
+            </parameter>
+            <parameter
+                  name="name"
+                  type="java.lang.String">
+            </parameter>
+            <parameter
+                  name="graph parameter"
+                  type="java.util.List">
+            </parameter>
+            <parameter
+                  name="graph variable"
+                  type="java.util.Map">
+            </parameter>
+         </graphType>
+         <vertexType
+               name="Input port">
+            <parameter
+                  name="id"
+                  type="java.lang.String">
+            </parameter>
+            <parameter
+                  default="port"
+                  name="kind"
+                  type="java.lang.String">
+            </parameter>
+            <parameter
+                  name="refinement"
+                  type="java.lang.String">
+            </parameter>
+            <parameter
+                  name="instance argument"
+                  type="java.util.Map">
+            </parameter>
+            <color
+                  blue="100"
+                  green="60"
+                  red="0">
+            </color>
+            <size
+                  height="30"
+                  width="30">
+            </size>
+            <shape
+                  type="triangle">
+            </shape>
+         </vertexType>
+         <vertexType
+               name="Output port">
+            <parameter
+                  name="id"
+                  type="java.lang.String">
+            </parameter>
+            <parameter
+                  default="port"
+                  name="kind"
+                  type="java.lang.String">
+            </parameter>
+            <parameter
+                  name="refinement"
+                  type="java.lang.String">
+            </parameter>
+            <parameter
+                  name="instance argument"
+                  type="java.util.Map">
+            </parameter>
+            <color
+                  blue="100"
+                  green="0"
+                  red="60">
+            </color>
+            <shape
+                  type="triangle">
+            </shape>
+            <size
+                  height="30"
+                  width="30">
+            </size>
+         </vertexType>
+         <vertexType
+               name="Vertex">
+            <parameter
+                  name="id"
+                  type="java.lang.String">
+            </parameter>
+            <parameter
+                  default="vertex"
+                  name="kind"
+                  type="java.lang.String">
+            </parameter>
+            <parameter
+                  name="instance argument"
+                  type="java.util.Map">
+            </parameter>
+            <parameter
+                  name="refinement"
+                  type="java.lang.String">
+            </parameter>
+            <parameter
+                  name="memory script"
+                  type="java.lang.String">
+            </parameter>
+            <color
+                  blue="17"
+                  green="188"
+                  red="238">
+            </color>
+            <size
+                  height="40"
+                  width="40">
+            </size>
+            <shape
+                  type="roundedBox">
+            </shape>
+         </vertexType>
+         <edgeType
+               directed="true"
+               name="Dataflow edge">
+            <parameter
+                  name="source port"
+                  type="java.lang.String">
+            </parameter>
+            <parameter
+                  name="target port"
+                  type="java.lang.String">
+            </parameter>
+            <parameter
+                  default="1"
+                  name="source production"
+                  type="java.lang.String">
+            </parameter>
+            <parameter
+                  default="1"
+                  name="target consumption"
+                  type="java.lang.String">
+            </parameter>
+            <parameter
+                  name="source port modifier"
+                  type="java.lang.String">
+            </parameter>
+            <parameter
+                  name="target port modifier"
+                  type="java.lang.String">
+            </parameter>
+            <parameter
+                  default="0"
+                  name="delay"
+                  type="java.lang.String">
+            </parameter>
+            <parameter
+                  default="char"
+                  name="data type"
+                  type="java.lang.String">
+            </parameter>
+         </edgeType>
+         <import>
+            <xslt
+                  name="xslt/org/ietr/preesm/sdf4j/input_sdf4j.xslt">
+            </xslt>
+         </import>
+         <export>
+            <xslt
+                  name="xslt/org/ietr/preesm/sdf4j/output_sdf4j.xslt">
+            </xslt>
+         </export>
+         <vertexType
+               name="Broadcast">
+            <parameter
+                  name="id"
+                  type="java.lang.String">
+            </parameter>
+            <parameter
+                  default="Broadcast"
+                  name="kind"
+                  type="java.lang.String">
+            </parameter>
+            <parameter
+                  name="refinement"
+                  type="java.lang.String">
+            </parameter>
+            <parameter
+                  name="instance argument"
+                  type="java.util.Map">
+            </parameter>
+            <color
+                  blue="10"
+                  green="120"
+                  red="0">
+            </color>
+            <size
+                  height="30"
+                  width="30">
+            </size>
+            <shape
+                  type="circle">
+            </shape>
+         </vertexType>
+         <vertexType
+               name="fork">
+            <parameter
+                  name="id"
+                  type="java.lang.String">
+            </parameter>
+            <parameter
+                  default="fork"
+                  name="kind"
+                  type="java.lang.String">
+            </parameter>
+            <parameter
+                  name="refinement"
+                  type="java.lang.String">
+            </parameter>
+            <parameter
+                  name="instance argument"
+                  type="java.util.Map">
+            </parameter>
+            <color
+                  blue="0"
+                  green="10"
+                  red="120">
+            </color>
+            <size
+                  height="30"
+                  width="30">
+            </size>
+            <shape
+                  type="circle">
+            </shape>
+         </vertexType>
+         <vertexType
+               name="join">
+            <parameter
+                  name="id"
+                  type="java.lang.String">
+            </parameter>
+            <parameter
+                  default="join"
+                  name="kind"
+                  type="java.lang.String">
+            </parameter>
+            <parameter
+                  name="refinement"
+                  type="java.lang.String">
+            </parameter>
+            <parameter
+                  name="instance argument"
+                  type="java.util.Map">
+            </parameter>
+            <color
+                  blue="120"
+                  green="0"
+                  red="10">
+            </color>
+            <size
+                  height="30"
+                  width="30">
+            </size>
+            <shape
+                  type="circle">
+            </shape>
+         </vertexType>
+         <vertexType
+               name="SpecificType">
+            <parameter
+                  name="id"
+                  type="java.lang.String">
+            </parameter>
+            <parameter
+                  name="kind"
+                  type="java.lang.String">
+            </parameter>
+            <parameter
+                  name="refinement"
+                  type="java.lang.String">
+            </parameter>
+            <parameter
+                  name="instance argument"
+                  type="java.util.Map">
+            </parameter>
+            <color
+                  blue="211"
+                  green="211"
+                  red="211">
+            </color>
+            <size
+                  height="30"
+                  width="30">
+            </size>
+            <shape
+                  type="circle">
+            </shape>
+         </vertexType>
+      </configuration>
+   </extension>
+
+
+   <extension
+         point="graphiti.definition">
+      <!-- GraphML Algo Editor specs -->
+      <configuration
+            extension="pi"
             name="GraphML"
             type="text/xml"
             validator="org.preesm.ui.sdf.editor.graph.validators.SDFValidator">
