@@ -68,16 +68,17 @@ import org.preesm.model.pisdf.DataPort;
 import org.preesm.model.pisdf.Delay;
 import org.preesm.model.pisdf.DelayActor;
 import org.preesm.model.pisdf.Dependency;
+import org.preesm.model.pisdf.EndActor;
 import org.preesm.model.pisdf.ExecutableActor;
 import org.preesm.model.pisdf.Fifo;
 import org.preesm.model.pisdf.ForkActor;
 import org.preesm.model.pisdf.FunctionParameter;
 import org.preesm.model.pisdf.FunctionPrototype;
 import org.preesm.model.pisdf.ISetter;
+import org.preesm.model.pisdf.InitActor;
 import org.preesm.model.pisdf.InterfaceActor;
 import org.preesm.model.pisdf.InterfaceKind;
 import org.preesm.model.pisdf.JoinActor;
-import org.preesm.model.pisdf.NonExecutableActor;
 import org.preesm.model.pisdf.Parameter;
 import org.preesm.model.pisdf.Parameterizable;
 import org.preesm.model.pisdf.PiGraph;
@@ -308,7 +309,8 @@ public class PiWriter {
 
     if (abstractActor instanceof Actor) {
       writeActor(vertexElt, (Actor) abstractActor);
-    } else if (abstractActor instanceof ExecutableActor) {
+    } else if (abstractActor instanceof ExecutableActor || abstractActor instanceof InitActor
+        || abstractActor instanceof EndActor) {
       writeSpecialActor(vertexElt, abstractActor);
     } else if (abstractActor instanceof InterfaceActor) {
       writeInterfaceVertex(vertexElt, (InterfaceActor) abstractActor);
@@ -377,7 +379,7 @@ public class PiWriter {
     final Element vertexElt = appendChild(graphElt, PiIdentifiers.NODE);
 
     // Set the unique ID of the node (equal to the vertex name)
-    vertexElt.setAttribute(PiIdentifiers.DELAY_NAME, delay.getId());
+    vertexElt.setAttribute(PiIdentifiers.DELAY_NAME, delay.getActor().getName());
 
     // Set the delay attribute to the node
     vertexElt.setAttribute(PiIdentifiers.NODE_KIND, PiIdentifiers.DELAY);
@@ -396,7 +398,7 @@ public class PiWriter {
     // Checks if the delay has refinement in case of no setter is provided
     if (!delay.hasSetterActor()) {
       final Refinement refinement = actor.getRefinement();
-      if ((refinement != null) && (refinement instanceof CHeaderRefinement)) {
+      if (refinement instanceof CHeaderRefinement) {
         writeRefinement(vertexElt, refinement);
       }
     }
@@ -462,7 +464,7 @@ public class PiWriter {
 
     if (target instanceof Delay) {
       final Delay d = (Delay) target;
-      dependencyElt.setAttribute(PiIdentifiers.DEPENDENCY_TARGET, d.getContainingFifo().getId());
+      dependencyElt.setAttribute(PiIdentifiers.DEPENDENCY_TARGET, d.getActor().getName());
     }
   }
 
@@ -490,7 +492,7 @@ public class PiWriter {
     fifoElt.setAttribute(PiIdentifiers.FIFO_TARGET_PORT, fifo.getTargetPort().getName());
 
     if (fifo.getDelay() != null) {
-      writeDataElt(fifoElt, PiIdentifiers.DELAY, fifo.getDelay().getId());
+      writeDataElt(fifoElt, PiIdentifiers.DELAY, fifo.getDelay().getActor().getName());
       fifoElt.setAttribute(PiIdentifiers.DELAY_EXPRESSION, fifo.getDelay().getSizeExpression().getExpressionAsString());
     }
     // TODO other Fifo properties (if any)
@@ -518,7 +520,7 @@ public class PiWriter {
     // Write the vertices of the graph
     for (final AbstractActor actor : graph.getActors()) {
       // ignore all non executable actors
-      if (actor instanceof NonExecutableActor) {
+      if (actor instanceof DelayActor) {
         continue;
       }
       writeAbstractActor(graphElt, actor);
@@ -775,6 +777,10 @@ public class PiWriter {
       kind = PiIdentifiers.FORK;
     } else if (actor instanceof RoundBufferActor) {
       kind = PiIdentifiers.ROUND_BUFFER;
+    } else if (actor instanceof EndActor) {
+      kind = PiIdentifiers.END;
+    } else if (actor instanceof InitActor) {
+      kind = PiIdentifiers.INIT;
     }
     vertexElt.setAttribute(PiIdentifiers.NODE_KIND, kind);
 

@@ -444,6 +444,10 @@ public class PiParser {
       dependency.setGetter(iPort);
     }
 
+    if (target instanceof DelayActor) {
+      target = ((DelayActor) target).getLinkedDelay();
+    }
+
     if ((target instanceof Parameter) || (target instanceof InterfaceActor) || (target instanceof Delay)) {
       final ConfigInputPort iCfgPort = PiMMUserFactory.instance.createConfigInputPort();
       ((Configurable) target).getConfigInputPorts().add(iCfgPort);
@@ -716,6 +720,8 @@ public class PiParser {
         case PiIdentifiers.FORK:
         case PiIdentifiers.JOIN:
         case PiIdentifiers.ROUND_BUFFER:
+        case PiIdentifiers.END:
+        case PiIdentifiers.INIT:
           vertex = parseSpecialActor(nodeElt, graph);
           break;
         case PiIdentifiers.PARAMETER:
@@ -975,6 +981,12 @@ public class PiParser {
         break;
       case PiIdentifiers.ROUND_BUFFER:
         actor = PiMMUserFactory.instance.createRoundBufferActor();
+        break;
+      case PiIdentifiers.INIT:
+        actor = PiMMUserFactory.instance.createEndActor();
+        break;
+      case PiIdentifiers.END:
+        actor = PiMMUserFactory.instance.createInitActor();
         break;
       default:
         throw new IllegalArgumentException("Given node element has an unknown kind");
