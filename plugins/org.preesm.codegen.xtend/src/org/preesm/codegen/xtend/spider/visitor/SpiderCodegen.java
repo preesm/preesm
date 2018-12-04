@@ -70,6 +70,7 @@ import org.preesm.model.scenario.Timing;
 import org.preesm.model.scenario.papi.PapiEvent;
 import org.preesm.model.scenario.papi.PapifyConfigActor;
 import org.preesm.model.scenario.papi.PapifyConfigManager;
+import org.preesm.model.scenario.papi.PapifyConfigPE;
 import org.preesm.model.slam.ComponentInstance;
 import org.preesm.model.slam.Design;
 import org.preesm.model.slam.component.Component;
@@ -292,8 +293,9 @@ public class SpiderCodegen {
     append(");\n");
 
     append("void free_" + pg.getName() + "();\n");
-    append("std::map<lrtFct, PapifyConfig*> get_" + pg.getName() + "_papifyConfigs();\n");
-    append("void free_" + pg.getName() + "_papifyConfigs(std::map<lrtFct, PapifyConfig*>& map);\n");
+    append("std::map<lrtFct, std::map<const char *, PapifyConfig*>> get_" + pg.getName() + "_papifyConfigs();\n");
+    append("void free_" + pg.getName()
+        + "_papifyConfigs(std::map<lrtFct, std::map<const char *, PapifyConfig*>>& map);\n");
     append("\n");
 
     /* Core */
@@ -413,14 +415,14 @@ public class SpiderCodegen {
           .getCorePapifyConfigGroupActor(actor.getVertexPath());
       if (corePapifyConfigGroups != null) {
         papifiedActors.add(actor);
-        if (!generatePapifyConfig(corePapifyConfigGroups, actor, uniqueEventSets, eventSetID)) {
+        if (!generatePapifyConfig(corePapifyConfigGroups, papifyConfigManager, actor, uniqueEventSets, eventSetID)) {
           eventSetID++;
         }
       }
     }
 
-    append("std::map<lrtFct, PapifyConfig*> get_" + pg.getName() + "_papifyConfigs() {\n");
-    append("\tstd::map<lrtFct, PapifyConfig*> map;\n");
+    append("std::map<lrtFct, std::map<const char *, PapifyConfig*>> get_" + pg.getName() + "_papifyConfigs() {\n");
+    append("\tstd::map<lrtFct, std::map<const char *, PapifyConfig*>> map;\n");
     append("\t// Initializing the map\n");
     for (final AbstractActor actor : papifiedActors) {
       append("\tmap.insert(std::make_pair(" + pg.getName() + "_fcts["
@@ -430,11 +432,12 @@ public class SpiderCodegen {
     append("\treturn map;\n");
     append("}\n\n");
 
-    append("void free_" + pg.getName() + "_papifyConfigs(std::map<lrtFct, PapifyConfig*>& map) {\n");
-    append("\tstd::map<lrtFct, PapifyConfig*>::iterator it;\n");
+    append("void free_" + pg.getName()
+        + "_papifyConfigs(std::map<lrtFct, std::map<const char *, PapifyConfig*>>& map) {\n");
+    append("\tstd::map<lrtFct, std::map<const char *, PapifyConfig*>>::iterator it;\n");
     append("\t// Freeing memory of the map \n");
     append("\tfor(it = map.begin(); it != map.end(); ++it) { \n");
-    append("\t\tdelete it->second;\n");
+    append("\t\tdelete it->second.begin()->second;\n");
     append("\t}\n");
     append("}\n");
     // Returns the final C++ code
@@ -454,12 +457,10 @@ public class SpiderCodegen {
    *          The current event set ID
    * @return true if the actor has the same event set as an existing one, false else
    */
-  private boolean generatePapifyConfig(final PapifyConfigActor corePapifyConfigGroups, final AbstractActor actor,
+  private boolean generatePapifyConfig(final PapifyConfigActor corePapifyConfigGroups,
+      PapifyConfigManager papifyConfigManager, final AbstractActor actor,
       final HashMap<ArrayList<String>, Integer> uniqueEventSets, final Integer eventSetID) {
     Map<String, Set<PapiEvent>> configInfo = corePapifyConfigGroups.getPAPIEvents();
-
-    Set<PapiEvent> includedEvents = new LinkedHashSet<>();
-    ArrayList<String> eventNames = new ArrayList<>();
 
     boolean eventMonitoring = false;
     boolean timingMonitoring = false;
@@ -483,9 +484,7 @@ public class SpiderCodegen {
           } else {
             associatedEvents.get(compName).add(event.getName());
           }
-          // includedEvents.add(event);
           eventMonitoring = true;
-          // eventNames.add(event.getName());
         }
       }
       // Build the peType variable to be printed
@@ -522,39 +521,57 @@ public class SpiderCodegen {
       }
     }
 
-    append("static std::map<lrtFct, PapifyConfig*> " + "create" + actor.getName() + "PapifyConfig() {\n");
-    append("\tPapifyConfig* config  = new PapifyConfig;\n\n");
-    append("\tstd::map<lrtFct, PapifyConfig*> configMap;\n\n");
+    append("static std::map<const char *, PapifyConfig*> " + "create" + actor.getName() + "PapifyConfig() {\n");
+    append("\t// Setting the PapifyConfig for actor: " + actor.getName() + "\n");
+    append("\tstd::map<const char *, PapifyConfig*> configMap;\n");
     for (String compNameGen : compNames) {
-      append("\t// Setting the PapifyConfig for actor: " + actor.getName() + "\n");
-      append("\tconfig->peID_            = \"\";\n");
-      append("\tconfig->peType_          = \"" + compNameGen + "\";\n");
-      append("\tconfig->actorName_       = \"" + actor.getName() + "\";\n");
-      append("\tconfig->eventSize_       = " + Integer.toString(associatedEvents.get(compNameGen).size()) + ";\n");
-      append("\tconfig->eventSetID_      = " + realEventSetID.toString() + ";\n");
+      append("\n\tPapifyConfig* config_" + compNameGen + "  = new PapifyConfig;\n");
+      append("\tconfig_" + compNameGen + "->peID_            = \"\";\n");
+      append("\tconfig_" + compNameGen + "->peType_          = \"" + compNameGen + "\";\n");
+      append("\tconfig_" + compNameGen + "->actorName_       = \"" + actor.getName() + "\";\n");
+      append("\tconfig_" + compNameGen + "->eventSize_       = "
+          + Integer.toString(associatedEvents.get(compNameGen).size()) + ";\n");
+      append("\tconfig_" + compNameGen + "->eventSetID_      = " + realEventSetID.toString() + ";\n");
       final String timing = timingMonitoring ? "true" : "false";
-      append("\tconfig->isTiming_        = " + timing + ";\n");
+      append("\tconfig_" + compNameGen + "->isTiming_        = " + timing + ";\n");
       if (eventMonitoring) {
-        append("\tconfig->monitoredEvents_ = std::vector<const char*>("
+        append("\tconfig_" + compNameGen + "->monitoredEvents_ = std::vector<const char*>("
             + Integer.toString(associatedEvents.get(compNameGen).size()) + ");\n");
         int i = 0;
         for (String name : associatedEvents.get(compNameGen)) {
-          append("\tconfig->monitoredEvents_[" + Integer.toString(i++) + "] = \"" + name + "\";\n");
+          append("\tconfig_" + compNameGen + "->monitoredEvents_[" + Integer.toString(i++) + "] = \"" + name + "\";\n");
         }
       }
     }
 
-    if (timingMonitoring && !eventMonitoring) {
+    if (timingMonitoring && (compNames.size() < this.coresFromCoreType.keySet().size())) {
       append("\t// Setting the PapifyConfig for actor: " + actor.getName() + "\n");
-      append("\tconfig->peID_            = \"\";\n");
-      append("\tconfig->peType_          = \"\";\n");
-      append("\tconfig->actorName_       = \"" + actor.getName() + "\";\n");
-      append("\tconfig->eventSize_       = 0;\n");
-      append("\tconfig->eventSetID_      = " + realEventSetID.toString() + ";\n");
+      append("\n\tPapifyConfig* config_Timing  = new PapifyConfig;\n");
+      append("\tconfig_Timing->peID_            = \"\";\n");
+      append("\tconfig_Timing->peType_          = \"\";\n");
+      append("\tconfig_Timing->actorName_       = \"" + actor.getName() + "\";\n");
+      append("\tconfig_Timing->eventSize_       = 0;\n");
+      append("\tconfig_Timing->eventSetID_      = " + realEventSetID.toString() + ";\n");
       final String timing = timingMonitoring ? "true" : "false";
-      append("\tconfig->isTiming_        = " + timing + ";\n");
+      append("\tconfig_Timing->isTiming_        = " + timing + ";\n");
     }
-    append("\treturn config;\n");
+
+    append("\n\t// Mapping actor to LRT PAPIFY configuration: " + actor.getName() + "\n");
+    for (String coreType : this.coresFromCoreType.keySet()) {
+      for (ComponentInstance compInst : this.coresFromCoreType.get(coreType)) {
+        PapifyConfigPE configType = papifyConfigManager.getCorePapifyConfigGroupPE(coreType);
+        for (String compType : configType.getPAPIComponentIDs()) {
+          if (!compType.equals("Timing") && compNames.contains(compType)) {
+            append("\tconfigMap.insert(std::make_pair(\"LRT_" + this.coreIds.get(compInst.getInstanceName())
+                + "\", config_" + compType + "));\n");
+          } else if (timingMonitoring && (compNames.size() < this.coresFromCoreType.keySet().size())) {
+            append("\tconfigMap.insert(std::make_pair(\"LRT_" + this.coreIds.get(compInst.getInstanceName())
+                + "\", config_Timing));\n");
+          }
+        }
+      }
+    }
+    append("\treturn configMap;\n");
     append("}\n\n");
     return found;
   }
