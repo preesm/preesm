@@ -12,7 +12,7 @@ PREESM Changelog
 * Refactor (method/class/package move/rename/delete);
   * have the flatten and single-rate transformations independant from scenarios;
 * Remove IBSDF support in scenario;
-
+* Fix PiSDF flattener and srdag transformations to output a consistent model;
 
 ### Bug fix
 
