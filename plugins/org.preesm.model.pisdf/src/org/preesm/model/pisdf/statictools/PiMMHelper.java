@@ -342,7 +342,7 @@ public class PiMMHelper {
     // he did it explicitly.
     for (final Fifo fifo : graph.getFifosWithDelay()) {
       final Delay delay = fifo.getDelay();
-      String delayShortID = delay.getShortId();
+      String delayShortID = delay.getId();
       delay.getActor().getDataInputPort().setName(fifo.getTargetPort().getName());
       delay.getActor().getDataOutputPort().setName(fifo.getSourcePort().getName());
       if (delay.getLevel().equals(PersistenceLevel.LOCAL)) {
