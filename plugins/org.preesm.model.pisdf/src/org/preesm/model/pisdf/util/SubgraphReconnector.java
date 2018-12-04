@@ -42,7 +42,6 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
-import org.eclipse.emf.ecore.EObject;
 import org.preesm.commons.exceptions.PreesmException;
 import org.preesm.model.pisdf.AbstractActor;
 import org.preesm.model.pisdf.Actor;
@@ -257,11 +256,6 @@ public class SubgraphReconnector extends PiMMSwitch<Boolean> {
   @Override
   public Boolean caseDelayActor(final DelayActor da) {
     return true;
-  }
-
-  @Override
-  public Boolean defaultCase(EObject object) {
-    throw new UnsupportedOperationException();
   }
 
   @Override
