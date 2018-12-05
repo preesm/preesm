@@ -614,6 +614,7 @@ public class PiMMSRVerticesLinker {
       final long setterRate = setterRateExpression.evaluate();
       if (setterActor instanceof InitActor) {
         final InitActor init = PiMMUserFactory.instance.createInitActor();
+        init.getDataOutputPorts().add(PiMMUserFactory.instance.createDataOutputPort());
         init.setName(this.graphPrefixe + setterName);
         init.getDataOutputPort().setName(this.sinkPort.getName());
         init.getDataOutputPort().setExpression(setterRate);
@@ -624,6 +625,7 @@ public class PiMMSRVerticesLinker {
       } else {
         for (int i = 0; i < setterRV; ++i) {
           final InitActor init = PiMMUserFactory.instance.createInitActor();
+          init.getDataOutputPorts().add(PiMMUserFactory.instance.createDataOutputPort());
           final String name = setterName + "_init_" + Integer.toString(i);
           init.setName(name);
           init.getDataOutputPort().setName(this.sinkPort.getName());
@@ -701,6 +703,7 @@ public class PiMMSRVerticesLinker {
       if (getterActor instanceof EndActor) {
         final EndActor end = PiMMUserFactory.instance.createEndActor();
         end.setName(this.graphPrefixe + getterName);
+        end.getDataInputPorts().add(PiMMUserFactory.instance.createDataInputPort());
         end.getDataInputPort().setName(this.sourcePort.getName());
         end.getDataInputPort().setExpression(getterRate);
         end.setLevel(((EndActor) getterActor).getLevel());
@@ -710,6 +713,7 @@ public class PiMMSRVerticesLinker {
       } else {
         for (int i = 0; i < brvGetter; ++i) {
           final EndActor end = PiMMUserFactory.instance.createEndActor();
+          end.getDataInputPorts().add(PiMMUserFactory.instance.createDataInputPort());
           final String name = getterName + "_end_" + Integer.toString(i);
           end.setName(name);
           end.getDataInputPort().setName(this.sourcePort.getName());
