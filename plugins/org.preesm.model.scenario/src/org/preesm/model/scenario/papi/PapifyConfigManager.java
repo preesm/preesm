@@ -92,7 +92,9 @@ public class PapifyConfigManager {
    */
   public void addPapifyConfigActorGroup(final PapifyConfigActor pg) {
 
-    this.papifyConfigGroupsActors.add(pg);
+    if (!this.papifyConfigGroupsActors.contains(pg)) {
+      this.papifyConfigGroupsActors.add(pg);
+    }
   }
 
   /**
@@ -103,7 +105,9 @@ public class PapifyConfigManager {
    */
   public void addPapifyConfigPEGroup(final PapifyConfigPE pg) {
 
-    this.papifyConfigGroupsPEs.add(pg);
+    if (!this.papifyConfigGroupsActors.contains(pg)) {
+      this.papifyConfigGroupsPEs.add(pg);
+    }
   }
 
   /**

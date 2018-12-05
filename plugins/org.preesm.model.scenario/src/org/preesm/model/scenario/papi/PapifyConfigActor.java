@@ -244,6 +244,25 @@ public class PapifyConfigActor {
     return false;
   }
 
+  @Override
+  public boolean equals(final Object comparer) {
+
+    boolean decision = false;
+
+    if (comparer instanceof PapifyConfigActor) {
+      final PapifyConfigActor tester = (PapifyConfigActor) comparer;
+      if (this.actorPath.equals(tester.getActorPath())) {
+        decision = true;
+      }
+    }
+    return decision;
+  }
+
+  @Override
+  public int hashCode() {
+    return this.actorPath.hashCode();
+  }
+
   /*
    * (non-Javadoc)
    *

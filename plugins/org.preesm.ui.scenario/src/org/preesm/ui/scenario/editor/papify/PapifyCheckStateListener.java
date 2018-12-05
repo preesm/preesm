@@ -289,9 +289,6 @@ public class PapifyCheckStateListener implements ISDFCheckStateListener {
         }
       }
       if (found) {
-        System.out.println("Found!");
-        System.out.println(papiConfig.toString());
-
         if (!timing) {
           papiConfig.addPAPIEvent(compName, event);
         } else {
