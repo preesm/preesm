@@ -5,6 +5,8 @@ PREESM Changelog
 *XXXX.XX.XX*
 
 ### New Feature
+* Add exporting task for flatten and single rate PiSDF;
+  * also update generate diagram feature to support init / end actors;
 
 ### Changes
 * Adding a new function to jep, in order to compute i for max divisibility by 2**i;
