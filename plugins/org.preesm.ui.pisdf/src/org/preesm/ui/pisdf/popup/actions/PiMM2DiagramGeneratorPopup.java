@@ -134,7 +134,7 @@ public class PiMM2DiagramGeneratorPopup extends AbstractHandler {
       if (!diagramAlreadyExists || (userDecision == SWT.OK)) {
         closeEditorIfOpen(diagramFilePath);
         // Get PiGraph, init empty Diagram, and link them together
-        final PiGraph graph = PiParser.getPiGraph(fullPath.toString());
+        final PiGraph graph = PiParser.getPiGraphWithReconnection(fullPath.toString());
         final Diagram diagram = Graphiti.getPeCreateService().createDiagram("PiMM", graph.getName(), true);
         linkPiGraphAndDiagram(graph, diagram);
 

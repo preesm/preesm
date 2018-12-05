@@ -246,7 +246,7 @@ public class ScenariosGenerator {
   private void fillPiScenario(final PreesmScenario scenario, final Design archi, final String algoURL) {
     // Get com nodes and cores names
     scenario.setAlgorithmURL(algoURL);
-    final PiGraph algo = PiParser.getPiGraph(algoURL);
+    final PiGraph algo = PiParser.getPiGraphWithReconnection(algoURL);
     final List<String> coreIds = new ArrayList<>(DesignTools.getOperatorInstanceIds(archi));
 
     // for all different type of cores

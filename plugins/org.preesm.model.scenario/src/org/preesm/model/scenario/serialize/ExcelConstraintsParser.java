@@ -115,7 +115,7 @@ public class ExcelConstraintsParser {
       if (this.scenario.isIBSDFScenario()) {
         throw new PreesmException("IBSDF is not supported anymore");
       } else if (this.scenario.isPISDFScenario()) {
-        final PiGraph currentPiGraph = PiParser.getPiGraph(this.scenario.getAlgorithmURL());
+        final PiGraph currentPiGraph = PiParser.getPiGraphWithReconnection(this.scenario.getAlgorithmURL());
         for (final AbstractActor vertex : currentPiGraph.getAllActors()) {
           if (vertex instanceof Actor) {
             for (final String operatorId : allOperatorIds) {

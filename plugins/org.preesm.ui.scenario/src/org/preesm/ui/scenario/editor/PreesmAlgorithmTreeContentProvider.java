@@ -156,7 +156,7 @@ public class PreesmAlgorithmTreeContentProvider implements ITreeContentProvider 
         throw new PreesmException("IBSDF is not supported anymore");
       } else if (this.scenario.isPISDFScenario()) {
         try {
-          this.currentPISDFGraph = PiParser.getPiGraph(this.scenario.getAlgorithmURL());
+          this.currentPISDFGraph = PiParser.getPiGraphWithReconnection(this.scenario.getAlgorithmURL());
         } catch (final Exception e) {
           e.printStackTrace();
         }

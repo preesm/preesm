@@ -135,7 +135,7 @@ public class ExcelTimingParser {
     if (this.scenario.isIBSDFScenario()) {
       throw new PreesmException("IBSDF is not supported anymore");
     } else if (this.scenario.isPISDFScenario()) {
-      final PiGraph currentGraph = PiParser.getPiGraph(this.scenario.getAlgorithmURL());
+      final PiGraph currentGraph = PiParser.getPiGraphWithReconnection(this.scenario.getAlgorithmURL());
       parseTimingsForPISDFGraph(w, currentGraph, opDefIds, missingVertices, missingOperatorTypes);
     }
 

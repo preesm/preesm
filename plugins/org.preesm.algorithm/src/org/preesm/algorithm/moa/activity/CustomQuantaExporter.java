@@ -332,7 +332,7 @@ class CustomQuantaExporter extends AbstractTaskImplementation {
         Workbook w = Workbook.getWorkbook(iFile.getContents());
 
         if (scenario.isPISDFScenario()) {
-          PiGraph currentGraph = PiParser.getPiGraph(scenario.getAlgorithmURL());
+          PiGraph currentGraph = PiParser.getPiGraphWithReconnection(scenario.getAlgorithmURL());
           Set<String> operators = scenario.getOperatorDefinitionIds();
           parseQuantaForPISDFGraph(w, currentGraph, operators);
         } else {

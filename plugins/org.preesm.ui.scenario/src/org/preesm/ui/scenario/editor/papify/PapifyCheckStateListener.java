@@ -409,7 +409,7 @@ public class PapifyCheckStateListener implements ISDFCheckStateListener {
     final Set<String> result = new LinkedHashSet<>();
     String finalName;
     if (this.scenario.isPISDFScenario()) {
-      final PiGraph graph = PiParser.getPiGraph(this.scenario.getAlgorithmURL());
+      final PiGraph graph = PiParser.getPiGraphWithReconnection(this.scenario.getAlgorithmURL());
       for (final AbstractActor vertex : graph.getAllActors()) {
         if (!(vertex instanceof PiGraph) && !(vertex instanceof DataInputInterface)
             && !(vertex instanceof DataOutputInterface)) {

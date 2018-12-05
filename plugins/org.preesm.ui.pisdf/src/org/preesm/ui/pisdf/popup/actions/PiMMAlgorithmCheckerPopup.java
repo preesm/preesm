@@ -79,7 +79,7 @@ public class PiMMAlgorithmCheckerPopup extends AbstractHandler {
       final IWorkbenchPage page = PreesmUIPlugin.getDefault().getWorkbench().getActiveWorkbenchWindow().getActivePage();
       final TreeSelection selection = (TreeSelection) page.getSelection();
       final IFile file = (IFile) selection.getFirstElement();
-      final PiGraph graph = PiParser.getPiGraph(file.getFullPath().toString());
+      final PiGraph graph = PiParser.getPiGraphWithReconnection(file.getFullPath().toString());
 
       final StringBuffer message = new StringBuffer();
       if (checker.checkGraph(graph)) {

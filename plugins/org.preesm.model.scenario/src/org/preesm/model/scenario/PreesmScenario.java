@@ -168,7 +168,7 @@ public class PreesmScenario {
    */
   private Set<String> getPiActorNames() {
     final Set<String> result = new LinkedHashSet<>();
-    final PiGraph graph = PiParser.getPiGraph(this.algorithmURL);
+    final PiGraph graph = PiParser.getPiGraphWithReconnection(this.algorithmURL);
     for (final AbstractActor vertex : graph.getActors()) {
       result.add(vertex.getName());
     }
@@ -437,7 +437,7 @@ public class PreesmScenario {
     // (they are set in the algorithm)
     if (algorithmChange) {
       if (isPISDFScenario()) {
-        this.parameterValueManager.updateWith(PiParser.getPiGraph(this.algorithmURL));
+        this.parameterValueManager.updateWith(PiParser.getPiGraphWithReconnection(this.algorithmURL));
       } else if (isIBSDFScenario()) {
         throw new PreesmException("IBSDF is not supported anymore");
       }
