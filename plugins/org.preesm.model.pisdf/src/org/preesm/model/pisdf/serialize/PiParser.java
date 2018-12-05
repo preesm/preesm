@@ -983,10 +983,10 @@ public class PiParser {
         actor = PiMMUserFactory.instance.createRoundBufferActor();
         break;
       case PiIdentifiers.INIT:
-        actor = PiMMUserFactory.instance.createEndActor();
+        actor = PiMMUserFactory.instance.createInitActor();
         break;
       case PiIdentifiers.END:
-        actor = PiMMUserFactory.instance.createInitActor();
+        actor = PiMMUserFactory.instance.createEndActor();
         break;
       default:
         throw new IllegalArgumentException("Given node element has an unknown kind");
