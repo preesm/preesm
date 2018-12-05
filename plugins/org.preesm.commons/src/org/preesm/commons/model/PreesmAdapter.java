@@ -14,7 +14,7 @@ import org.eclipse.emf.ecore.util.EcoreUtil;
  * @author anmorvan
  *
  */
-public class PreesmAdapter extends EContentAdapter {
+public abstract class PreesmAdapter extends EContentAdapter {
 
   public static final <T extends PreesmAdapter> T adapt(final Notifier notifier, final Class<T> target) {
     return adapt(notifier.eAdapters(), target);
