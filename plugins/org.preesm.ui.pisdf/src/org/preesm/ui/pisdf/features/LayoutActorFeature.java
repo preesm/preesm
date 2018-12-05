@@ -61,6 +61,7 @@ import org.eclipse.graphiti.services.Graphiti;
 import org.eclipse.graphiti.services.IGaService;
 import org.eclipse.graphiti.ui.services.GraphitiUi;
 import org.eclipse.graphiti.util.IColorConstant;
+import org.preesm.model.pisdf.AbstractActor;
 import org.preesm.model.pisdf.Actor;
 import org.preesm.model.pisdf.BroadcastActor;
 import org.preesm.model.pisdf.ConfigInputPort;
@@ -120,7 +121,9 @@ public class LayoutActorFeature extends AbstractLayoutFeature {
     }
 
     final EList<EObject> businessObjects = pe.getLink().getBusinessObjects();
-    return (businessObjects.size() == 1) && (businessObjects.get(0) instanceof ExecutableActor);
+    final EObject bo = businessObjects.get(0);
+    return (businessObjects.size() == 1)
+        && (bo instanceof ExecutableActor || bo instanceof EndActor || bo instanceof InitActor);
   }
 
   /**
@@ -354,7 +357,7 @@ public class LayoutActorFeature extends AbstractLayoutFeature {
       final Actor actor = (Actor) bo;
       layoutActor(actor, childrenShapes, containerGa);
     } else if (bo instanceof ExecutableActor || bo instanceof EndActor || bo instanceof InitActor) {
-      layoutSpecialActor((ExecutableActor) bo, childrenShapes, containerGa);
+      layoutSpecialActor((AbstractActor) bo, childrenShapes, containerGa);
     }
 
     // If Anything changed, call the move feature to layout connections
@@ -381,7 +384,7 @@ public class LayoutActorFeature extends AbstractLayoutFeature {
    * @param containerGa
    *          the container ga
    */
-  private void layoutSpecialActor(final ExecutableActor ea, final EList<Shape> childrenShapes,
+  private void layoutSpecialActor(final AbstractActor ea, final EList<Shape> childrenShapes,
       final GraphicsAlgorithm containerGa) {
     final IColorConstant backgroundColor;
     final IColorConstant foregroundColor;
