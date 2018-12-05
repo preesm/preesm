@@ -52,7 +52,10 @@ import org.eclipse.graphiti.services.IGaService;
 import org.eclipse.graphiti.services.IPeCreateService;
 import org.eclipse.graphiti.ui.services.GraphitiUi;
 import org.eclipse.graphiti.util.IColorConstant;
+import org.preesm.model.pisdf.AbstractActor;
+import org.preesm.model.pisdf.EndActor;
 import org.preesm.model.pisdf.ExecutableActor;
+import org.preesm.model.pisdf.InitActor;
 import org.preesm.model.pisdf.Port;
 import org.preesm.ui.pisdf.PiMMUtil;
 import org.preesm.ui.pisdf.util.PortNameValidator;
@@ -154,7 +157,7 @@ public abstract class AbstractAddActorPortFeature extends AbstractCustomFeature 
     final PictogramElement[] pes = context.getPictogramElements();
     if ((pes != null) && (pes.length == 1)) {
       final Object bo = getBusinessObjectForPictogramElement(pes[0]);
-      if (bo instanceof ExecutableActor) {
+      if (bo instanceof ExecutableActor || bo instanceof InitActor || bo instanceof EndActor) {
         ret = true;
       }
     }
@@ -186,7 +189,7 @@ public abstract class AbstractAddActorPortFeature extends AbstractCustomFeature 
     if ((pes != null) && (pes.length == 1)) {
       final PictogramElement pe = pes[0];
       // Get the actor
-      final ExecutableActor actor = (ExecutableActor) getBusinessObjectForPictogramElement(pe);
+      final AbstractActor actor = (AbstractActor) getBusinessObjectForPictogramElement(pe);
 
       final String portName = computePortName(context, defaultPortName, actor);
       if (portName == null) {
@@ -249,7 +252,7 @@ public abstract class AbstractAddActorPortFeature extends AbstractCustomFeature 
   }
 
   private String computePortName(final ICustomContext context, final String defaultPortName,
-      final ExecutableActor actor) {
+      final AbstractActor actor) {
     // If a name was given in the property, bypass the dialog box
     final Object nameProperty = context.getProperty(AbstractAddActorPortFeature.NAME_PROPERTY);
     final String portName;
@@ -292,13 +295,13 @@ public abstract class AbstractAddActorPortFeature extends AbstractCustomFeature 
    *          the actor to which we add a port
    * @return the new port, or <code>null</code> if something went wrong
    */
-  private Port getNewPortW(final String portName, final ExecutableActor actor) {
+  private Port getNewPortW(final String portName, final AbstractActor actor) {
     final Port newPort = getNewPort(portName, actor);
     this.createdPort = newPort;
     return newPort;
   }
 
-  public abstract Port getNewPort(String portName, ExecutableActor actor);
+  public abstract Port getNewPort(String portName, AbstractActor actor);
 
   /**
    * Get the font of the port.

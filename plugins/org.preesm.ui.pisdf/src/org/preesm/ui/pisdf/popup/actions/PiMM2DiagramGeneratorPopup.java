@@ -79,9 +79,9 @@ import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.part.FileEditorInput;
 import org.preesm.model.pisdf.AbstractVertex;
 import org.preesm.model.pisdf.Delay;
+import org.preesm.model.pisdf.DelayActor;
 import org.preesm.model.pisdf.Dependency;
 import org.preesm.model.pisdf.Fifo;
-import org.preesm.model.pisdf.NonExecutableActor;
 import org.preesm.model.pisdf.Parameter;
 import org.preesm.model.pisdf.PiGraph;
 import org.preesm.model.pisdf.serialize.PiParser;
@@ -210,7 +210,7 @@ public class PiMM2DiagramGeneratorPopup extends AbstractHandler {
         pasteFeature.addGraphicalRepresentationForVertex(p, 0, 0);
       }
       for (final AbstractVertex v : this.graph.getActors()) {
-        if (v instanceof NonExecutableActor) {
+        if (v instanceof DelayActor) {
           continue;
         }
         pasteFeature.addGraphicalRepresentationForVertex(v, 0, 0);

@@ -67,8 +67,10 @@ import org.preesm.model.pisdf.ConfigInputPort;
 import org.preesm.model.pisdf.ConfigOutputPort;
 import org.preesm.model.pisdf.DataInputPort;
 import org.preesm.model.pisdf.DataOutputPort;
+import org.preesm.model.pisdf.EndActor;
 import org.preesm.model.pisdf.ExecutableActor;
 import org.preesm.model.pisdf.ForkActor;
+import org.preesm.model.pisdf.InitActor;
 import org.preesm.model.pisdf.JoinActor;
 import org.preesm.model.pisdf.PiMMPackage;
 import org.preesm.model.pisdf.Refinement;
@@ -259,7 +261,6 @@ public class LayoutActorFeature extends AbstractLayoutFeature {
           // (+30 to add space and lighten the actor representation)
           // And allow the addition of a decorator
           nameWidth = size.getWidth() + 30;
-
         }
       }
     }
@@ -352,7 +353,7 @@ public class LayoutActorFeature extends AbstractLayoutFeature {
     if (bo instanceof Actor) {
       final Actor actor = (Actor) bo;
       layoutActor(actor, childrenShapes, containerGa);
-    } else if (bo instanceof ExecutableActor) {
+    } else if (bo instanceof ExecutableActor || bo instanceof EndActor || bo instanceof InitActor) {
       layoutSpecialActor((ExecutableActor) bo, childrenShapes, containerGa);
     }
 
@@ -396,6 +397,12 @@ public class LayoutActorFeature extends AbstractLayoutFeature {
     } else if (ea instanceof RoundBufferActor) {
       backgroundColor = AddRoundBufferActorFeature.ROUND_BUFFER_ACTOR_BACKGROUND;
       foregroundColor = AddRoundBufferActorFeature.ROUND_BUFFER_ACTOR_FOREGROUND;
+    } else if (ea instanceof EndActor) {
+      backgroundColor = AddEndActorFeature.END_ACTOR_BACKGROUND;
+      foregroundColor = AddEndActorFeature.END_ACTOR_FOREGROUND;
+    } else if (ea instanceof InitActor) {
+      backgroundColor = AddInitActorFeature.INIT_ACTOR_BACKGROUND;
+      foregroundColor = AddInitActorFeature.INIT_ACTOR_FOREGROUND;
     } else {
       backgroundColor = IColorConstant.WHITE;
       foregroundColor = IColorConstant.BLACK;

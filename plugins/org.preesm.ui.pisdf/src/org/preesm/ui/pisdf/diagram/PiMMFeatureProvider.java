@@ -91,9 +91,11 @@ import org.preesm.model.pisdf.DataPort;
 import org.preesm.model.pisdf.Delay;
 import org.preesm.model.pisdf.DelayActor;
 import org.preesm.model.pisdf.Dependency;
+import org.preesm.model.pisdf.EndActor;
 import org.preesm.model.pisdf.ExecutableActor;
 import org.preesm.model.pisdf.Fifo;
 import org.preesm.model.pisdf.ForkActor;
+import org.preesm.model.pisdf.InitActor;
 import org.preesm.model.pisdf.InterfaceActor;
 import org.preesm.model.pisdf.JoinActor;
 import org.preesm.model.pisdf.Parameter;
@@ -114,8 +116,10 @@ import org.preesm.ui.pisdf.features.AddDataOutputInterfaceFeature;
 import org.preesm.ui.pisdf.features.AddDataOutputPortFeature;
 import org.preesm.ui.pisdf.features.AddDelayFeature;
 import org.preesm.ui.pisdf.features.AddDependencyFeature;
+import org.preesm.ui.pisdf.features.AddEndActorFeature;
 import org.preesm.ui.pisdf.features.AddFifoFeature;
 import org.preesm.ui.pisdf.features.AddForkActorFeature;
+import org.preesm.ui.pisdf.features.AddInitActorFeature;
 import org.preesm.ui.pisdf.features.AddJoinActorFeature;
 import org.preesm.ui.pisdf.features.AddParameterFeature;
 import org.preesm.ui.pisdf.features.AddRefinementFeature;
@@ -215,6 +219,16 @@ public class PiMMFeatureProvider extends DefaultFeatureProvider {
     @Override
     public IAddFeature caseBroadcastActor(final BroadcastActor object) {
       return new AddBroadcastActorFeature(PiMMFeatureProvider.this);
+    }
+
+    @Override
+    public IAddFeature caseInitActor(InitActor object) {
+      return new AddInitActorFeature(PiMMFeatureProvider.this);
+    }
+
+    @Override
+    public IAddFeature caseEndActor(EndActor object) {
+      return new AddEndActorFeature(PiMMFeatureProvider.this);
     }
 
     @Override

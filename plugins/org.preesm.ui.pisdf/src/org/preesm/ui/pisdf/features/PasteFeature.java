@@ -60,6 +60,7 @@ import org.eclipse.graphiti.services.IPeService;
 import org.eclipse.graphiti.ui.features.AbstractPasteFeature;
 import org.eclipse.graphiti.ui.services.GraphitiUi;
 import org.eclipse.xtext.xbase.lib.Pair;
+import org.preesm.commons.exceptions.PreesmException;
 import org.preesm.model.pisdf.AbstractActor;
 import org.preesm.model.pisdf.AbstractVertex;
 import org.preesm.model.pisdf.ConfigInputInterface;
@@ -72,9 +73,11 @@ import org.preesm.model.pisdf.DataPort;
 import org.preesm.model.pisdf.Delay;
 import org.preesm.model.pisdf.DelayActor;
 import org.preesm.model.pisdf.Dependency;
+import org.preesm.model.pisdf.EndActor;
 import org.preesm.model.pisdf.ExecutableActor;
 import org.preesm.model.pisdf.Fifo;
 import org.preesm.model.pisdf.ISetter;
+import org.preesm.model.pisdf.InitActor;
 import org.preesm.model.pisdf.InterfaceActor;
 import org.preesm.model.pisdf.Parameter;
 import org.preesm.model.pisdf.Parameterizable;
@@ -202,7 +205,7 @@ public class PasteFeature extends AbstractPasteFeature {
   public void postProcess() {
     for (final Entry<Configurable, Configurable> e : this.copiedObjects.entrySet()) {
       final Configurable value = e.getValue();
-      if (value instanceof ExecutableActor) {
+      if (value instanceof ExecutableActor || value instanceof InitActor || value instanceof EndActor) {
         // continue
       } else {
         final EList<ConfigInputPort> configInputPorts = value.getConfigInputPorts();
@@ -318,8 +321,14 @@ public class PasteFeature extends AbstractPasteFeature {
    *
    */
   public FreeFormConnection addGraphicalRepresentationForFifo(final Fifo copiedFifo) {
-    final Anchor sourceAnchor = (Anchor) findPE(copiedFifo.getSourcePort());
-    final Anchor targetAnchor = (Anchor) findPE(copiedFifo.getTargetPort());
+    final DataOutputPort sourcePort = copiedFifo.getSourcePort();
+    final DataInputPort targetPort = copiedFifo.getTargetPort();
+    if (targetPort == null || sourcePort == null) {
+      throw new PreesmException("The fifo [" + copiedFifo + "] is inconsistent");
+    }
+
+    final Anchor sourceAnchor = (Anchor) findPE(sourcePort);
+    final Anchor targetAnchor = (Anchor) findPE(targetPort);
     final AddConnectionContext context = new AddConnectionContext(sourceAnchor, targetAnchor);
     context.setNewObject(copiedFifo);
 
@@ -478,14 +487,17 @@ public class PasteFeature extends AbstractPasteFeature {
   }
 
   private PictogramElement findPE(final EObject businessObject) {
+    if (businessObject == null) {
+      throw new NullPointerException();
+    }
     if (this.links.containsKey(businessObject)) {
       return this.links.get(businessObject);
     }
 
     final PictogramElement boPEs = getFeatureProvider().getPictogramElementForBusinessObject(businessObject);
     if (boPEs == null) {
-      final String message = "Business objcet [" + businessObject
-          + "] has no graphical representations (several PictogramElements) : \n";
+      final String message = "Business object [" + businessObject
+          + "] has no graphical representations (several PictogramElements) -- " + businessObject.eContainer();
       throw new IllegalStateException(message);
     }
     return boPEs;
@@ -619,7 +631,8 @@ public class PasteFeature extends AbstractPasteFeature {
       final PictogramElement pe;
       if (childElement instanceof Port) {
         final Port copiedPort = (Port) childElement;
-        if (vertexModelCopy instanceof ExecutableActor) {
+        if (vertexModelCopy instanceof ExecutableActor || vertexModelCopy instanceof EndActor
+            || vertexModelCopy instanceof InitActor) {
           final AbstractAddActorPortFeature addPortFeature;
           switch (copiedPort.getKind()) {
             case DATA_INPUT:
