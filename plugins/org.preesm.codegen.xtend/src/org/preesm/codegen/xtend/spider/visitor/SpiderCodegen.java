@@ -525,7 +525,7 @@ public class SpiderCodegen {
     }
 
     append("static std::map<const char *, PapifyConfig*> " + "create" + actor.getName() + "PapifyConfig() {\n");
-    append("\t// Setting the PapifyConfig for actor: " + actor.getName() + "\n");
+    append("\t// Setting the PapifyConfigs for actor: " + actor.getName() + "\n");
     append("\tstd::map<const char *, PapifyConfig*> configMap;\n");
     for (String compNameGen : compNames) {
       append("\n\tPapifyConfig* config_" + compNameGen + "  = new PapifyConfig;\n");
@@ -548,7 +548,6 @@ public class SpiderCodegen {
     }
 
     if (timingMonitoring) {
-      append("\t// Setting the PapifyConfig for actor: " + actor.getName() + "\n");
       append("\n\tPapifyConfig* config_Timing  = new PapifyConfig;\n");
       append("\tconfig_Timing->peID_            = \"\";\n");
       append("\tconfig_Timing->peType_          = \"\";\n");
