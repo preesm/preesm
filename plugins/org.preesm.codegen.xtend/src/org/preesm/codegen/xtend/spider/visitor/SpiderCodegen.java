@@ -423,11 +423,14 @@ public class SpiderCodegen {
 
     append("std::map<lrtFct, std::map<const char *, PapifyConfig*>> get_" + pg.getName() + "_papifyConfigs() {\n");
     append("\tstd::map<lrtFct, std::map<const char *, PapifyConfig*>> map;\n");
+    append("\tstd::map<const char *, PapifyConfig*> mapPapifyConfigs;\n");
     append("\t// Initializing the map\n");
     for (final AbstractActor actor : papifiedActors) {
-      append("\tmap.insert(std::make_pair(" + pg.getName() + "_fcts["
-          + SpiderNameGenerator.getFunctionName(actor).toUpperCase() + "_FCT" + "], create" + actor.getName()
-          + "PapifyConfig()));\n");
+      append("\tmapPapifyConfigs = create" + actor.getName() + "PapifyConfig();\n");
+      append("\tif(!mapPapifyConfigs.empty()) {\n");
+      append("\t\tmap.insert(std::make_pair(" + pg.getName() + "_fcts["
+          + SpiderNameGenerator.getFunctionName(actor).toUpperCase() + "_FCT" + "], mapPapifyConfigs));\n");
+      append("\t}\n");
     }
     append("\treturn map;\n");
     append("}\n\n");
@@ -544,7 +547,7 @@ public class SpiderCodegen {
       }
     }
 
-    if (timingMonitoring && (compNames.size() < this.coresFromCoreType.keySet().size())) {
+    if (timingMonitoring) {
       append("\t// Setting the PapifyConfig for actor: " + actor.getName() + "\n");
       append("\n\tPapifyConfig* config_Timing  = new PapifyConfig;\n");
       append("\tconfig_Timing->peID_            = \"\";\n");
@@ -556,18 +559,22 @@ public class SpiderCodegen {
       append("\tconfig_Timing->isTiming_        = " + timing + ";\n");
     }
 
+    boolean configAssociated = false;
     append("\n\t// Mapping actor to LRT PAPIFY configuration: " + actor.getName() + "\n");
     for (String coreType : this.coresFromCoreType.keySet()) {
       for (ComponentInstance compInst : this.coresFromCoreType.get(coreType)) {
+        configAssociated = false;
         PapifyConfigPE configType = papifyConfigManager.getCorePapifyConfigGroupPE(coreType);
         for (String compType : configType.getPAPIComponentIDs()) {
           if (!compType.equals("Timing") && compNames.contains(compType)) {
+            configAssociated = true;
             append("\tconfigMap.insert(std::make_pair(\"LRT_" + this.coreIds.get(compInst.getInstanceName())
                 + "\", config_" + compType + "));\n");
-          } else if (timingMonitoring && (compNames.size() < this.coresFromCoreType.keySet().size())) {
-            append("\tconfigMap.insert(std::make_pair(\"LRT_" + this.coreIds.get(compInst.getInstanceName())
-                + "\", config_Timing));\n");
           }
+        }
+        if (!configAssociated && timingMonitoring) {
+          append("\tconfigMap.insert(std::make_pair(\"LRT_" + this.coreIds.get(compInst.getInstanceName())
+              + "\", config_Timing));\n");
         }
       }
     }
