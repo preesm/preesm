@@ -65,11 +65,14 @@ import org.eclipse.ui.views.properties.tabbed.ITabbedPropertyConstants;
 import org.eclipse.ui.views.properties.tabbed.TabbedPropertySheetPage;
 import org.eclipse.ui.views.properties.tabbed.TabbedPropertySheetWidgetFactory;
 import org.preesm.commons.math.ExpressionEvaluationException;
+import org.preesm.model.pisdf.AbstractActor;
 import org.preesm.model.pisdf.Actor;
 import org.preesm.model.pisdf.CHeaderRefinement;
+import org.preesm.model.pisdf.EndActor;
 import org.preesm.model.pisdf.ExecutableActor;
 import org.preesm.model.pisdf.Expression;
 import org.preesm.model.pisdf.ExpressionHolder;
+import org.preesm.model.pisdf.InitActor;
 import org.preesm.model.pisdf.PeriodicElement;
 import org.preesm.model.pisdf.Refinement;
 import org.preesm.model.pisdf.util.PrototypeFormatter;
@@ -184,8 +187,8 @@ public class ActorPropertiesSection extends GFPropertySection implements ITabbed
           return;
         }
 
-        if (bo instanceof ExecutableActor) {
-          final ExecutableActor actor = (ExecutableActor) bo;
+        if (bo instanceof ExecutableActor || bo instanceof EndActor || bo instanceof InitActor) {
+          final AbstractActor actor = (AbstractActor) bo;
           if (ActorPropertiesSection.this.txtNameObj.getText().compareTo(actor.getName()) != 0) {
             setNewName(actor, ActorPropertiesSection.this.txtNameObj.getText());
             getDiagramTypeProvider().getFeatureProvider().updateIfPossible(new UpdateContext(pe));
@@ -581,7 +584,7 @@ public class ActorPropertiesSection extends GFPropertySection implements ITabbed
    * @param value
    *          String value
    */
-  private void setNewName(final ExecutableActor actor, final String value) {
+  private void setNewName(final AbstractActor actor, final String value) {
     final TransactionalEditingDomain editingDomain = getDiagramTypeProvider().getDiagramBehavior().getEditingDomain();
     editingDomain.getCommandStack().execute(new RecordingCommand(editingDomain) {
 
@@ -610,8 +613,8 @@ public class ActorPropertiesSection extends GFPropertySection implements ITabbed
       final Point selelection = this.txtPeriod.getSelection();
       final boolean expressionHasFocus = this.txtPeriod.isFocusControl();
 
-      if (bo instanceof ExecutableActor) {
-        final ExecutableActor exexcutableActor = (ExecutableActor) bo;
+      if (bo instanceof ExecutableActor || bo instanceof EndActor || bo instanceof InitActor) {
+        final AbstractActor exexcutableActor = (AbstractActor) bo;
         this.txtNameObj.setEnabled(false);
         if ((exexcutableActor.getName() == null) && (!this.txtNameObj.getText().isEmpty())) {
           this.txtNameObj.setText("");

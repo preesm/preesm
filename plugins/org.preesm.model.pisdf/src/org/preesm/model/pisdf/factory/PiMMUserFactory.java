@@ -216,16 +216,12 @@ public final class PiMMUserFactory extends PiMMFactoryImpl implements PreesmUser
   @Override
   public InitActor createInitActor() {
     final InitActor res = super.createInitActor();
-    final DataOutputPort port = PiMMUserFactory.instance.createDataOutputPort();
-    res.getDataOutputPorts().add(port);
     return res;
   }
 
   @Override
   public EndActor createEndActor() {
     final EndActor res = super.createEndActor();
-    final DataInputPort port = PiMMUserFactory.instance.createDataInputPort();
-    res.getDataInputPorts().add(port);
     return res;
   }
 

@@ -833,6 +833,7 @@ public class PiSDFToSingleRate extends PiMMSwitch<Boolean> {
   private void addInitActorAsSetter(final Fifo fifo, final DelayActor delayActor, final String delayExpression,
       final PiGraph graph) {
     final InitActor init = PiMMUserFactory.instance.createInitActor();
+    init.getDataOutputPorts().add(PiMMUserFactory.instance.createDataOutputPort());
     final DataInputPort targetPort = fifo.getTargetPort();
     init.getDataOutputPort().setName(targetPort.getName());
     init.getDataOutputPort().setExpression(delayExpression);
@@ -854,6 +855,7 @@ public class PiSDFToSingleRate extends PiMMSwitch<Boolean> {
   private void addEndActorAsGetter(final Fifo fifo, final DelayActor delayActor, final String delayExpression,
       final PiGraph graph) {
     final EndActor end = PiMMUserFactory.instance.createEndActor();
+    end.getDataInputPorts().add(PiMMUserFactory.instance.createDataInputPort());
     final DataOutputPort sourcePort = fifo.getSourcePort();
     end.getDataInputPort().setName(sourcePort.getName());
     end.getDataInputPort().setExpression(delayExpression);

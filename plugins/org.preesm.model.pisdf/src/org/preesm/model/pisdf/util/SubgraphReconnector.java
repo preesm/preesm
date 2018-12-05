@@ -42,7 +42,6 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
-import org.eclipse.emf.ecore.EObject;
 import org.preesm.commons.exceptions.PreesmException;
 import org.preesm.model.pisdf.AbstractActor;
 import org.preesm.model.pisdf.Actor;
@@ -223,8 +222,10 @@ public class SubgraphReconnector extends PiMMSwitch<Boolean> {
           break;
         }
       }
+
       if (correspondingPort != null) {
         cii.setGraphPort(correspondingPort);
+
       }
     }
     return true;
@@ -260,11 +261,6 @@ public class SubgraphReconnector extends PiMMSwitch<Boolean> {
   }
 
   @Override
-  public Boolean defaultCase(EObject object) {
-    throw new UnsupportedOperationException();
-  }
-
-  @Override
   public Boolean caseExecutableActor(final ExecutableActor ea) {
     return true;
   }
@@ -278,6 +274,7 @@ public class SubgraphReconnector extends PiMMSwitch<Boolean> {
    *          the subgraph linked to the hierarchical actor
    */
   public static void reconnectPiGraph(final Actor hierarchicalActor, final PiGraph subGraph) {
+    SubgraphOriginalActorTracker.trackOriginalActor(hierarchicalActor, subGraph);
     SubgraphReconnector.reconnectDataInputPorts(hierarchicalActor, subGraph);
     SubgraphReconnector.reconnectDataOutputPorts(hierarchicalActor, subGraph);
     SubgraphReconnector.reconnectConfigInputPorts(hierarchicalActor, subGraph);
@@ -335,7 +332,7 @@ public class SubgraphReconnector extends PiMMSwitch<Boolean> {
             dop2.setOutgoingFifo(fifo);
             fifo.setSourcePort(dop2);
 
-            dop2.setExpression(dop1.getPortRateExpression());
+            dop2.setExpression(dop1.getPortRateExpression().getExpressionAsString());
             dop2.setAnnotation(dop1.getAnnotation());
           }
           found = true;
@@ -359,7 +356,7 @@ public class SubgraphReconnector extends PiMMSwitch<Boolean> {
             dip2.setIncomingFifo(fifo);
             fifo.setTargetPort(dip2);
 
-            dip2.setExpression(dip1.getPortRateExpression());
+            dip2.setExpression(dip1.getPortRateExpression().getExpressionAsString());
             dip2.setAnnotation(dip1.getAnnotation());
           }
           found = true;

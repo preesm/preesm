@@ -96,7 +96,7 @@ public class AlgorithmAndArchitectureScenarioNode extends AbstractScenarioImplem
       if (scenario.isIBSDFScenario()) {
         throw new PreesmException("IBSDF is not supported anymore");
       } else if (scenario.isPISDFScenario()) {
-        piAlgorithm = PiParser.getPiGraph(url);
+        piAlgorithm = PiParser.getPiGraphWithReconnection(url);
         applyScenarioParameterValues(scenario, piAlgorithm);
       }
     } catch (FileNotFoundException | CoreException e) {

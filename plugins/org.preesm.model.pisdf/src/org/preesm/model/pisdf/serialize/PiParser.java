@@ -131,14 +131,22 @@ public class PiParser {
       ressource = resourceSet.getResource(uri, true);
       pigraph = (PiGraph) (ressource.getContents().get(0));
 
-      final SubgraphReconnector connector = new SubgraphReconnector();
-      connector.connectSubgraphs(pigraph);
     } catch (final WrappedException e) {
       final String message = "The algorithm file \"" + uri + "\" specified by the scenario does not exist any more.";
       throw new PreesmException(message, e);
     }
 
     return pigraph;
+  }
+
+  /**
+   *
+   */
+  public static PiGraph getPiGraphWithReconnection(final String algorithmURL) {
+    final PiGraph graph = getPiGraph(algorithmURL);
+    final SubgraphReconnector connector = new SubgraphReconnector();
+    connector.connectSubgraphs(graph);
+    return graph;
   }
 
   /**
@@ -444,6 +452,10 @@ public class PiParser {
       dependency.setGetter(iPort);
     }
 
+    if (target instanceof DelayActor) {
+      target = ((DelayActor) target).getLinkedDelay();
+    }
+
     if ((target instanceof Parameter) || (target instanceof InterfaceActor) || (target instanceof Delay)) {
       final ConfigInputPort iCfgPort = PiMMUserFactory.instance.createConfigInputPort();
       ((Configurable) target).getConfigInputPorts().add(iCfgPort);
@@ -716,6 +728,8 @@ public class PiParser {
         case PiIdentifiers.FORK:
         case PiIdentifiers.JOIN:
         case PiIdentifiers.ROUND_BUFFER:
+        case PiIdentifiers.END:
+        case PiIdentifiers.INIT:
           vertex = parseSpecialActor(nodeElt, graph);
           break;
         case PiIdentifiers.PARAMETER:
@@ -975,6 +989,12 @@ public class PiParser {
         break;
       case PiIdentifiers.ROUND_BUFFER:
         actor = PiMMUserFactory.instance.createRoundBufferActor();
+        break;
+      case PiIdentifiers.INIT:
+        actor = PiMMUserFactory.instance.createInitActor();
+        break;
+      case PiIdentifiers.END:
+        actor = PiMMUserFactory.instance.createEndActor();
         break;
       default:
         throw new IllegalArgumentException("Given node element has an unknown kind");

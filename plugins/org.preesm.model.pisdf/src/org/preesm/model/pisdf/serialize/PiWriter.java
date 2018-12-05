@@ -53,7 +53,6 @@ import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.emf.common.util.EList;
 import org.eclipse.emf.common.util.URI;
-import org.eclipse.emf.ecore.EObject;
 import org.preesm.commons.DomUtil;
 import org.preesm.commons.GMLKey;
 import org.preesm.commons.exceptions.PreesmException;
@@ -68,16 +67,18 @@ import org.preesm.model.pisdf.DataPort;
 import org.preesm.model.pisdf.Delay;
 import org.preesm.model.pisdf.DelayActor;
 import org.preesm.model.pisdf.Dependency;
+import org.preesm.model.pisdf.EndActor;
 import org.preesm.model.pisdf.ExecutableActor;
+import org.preesm.model.pisdf.Expression;
 import org.preesm.model.pisdf.Fifo;
 import org.preesm.model.pisdf.ForkActor;
 import org.preesm.model.pisdf.FunctionParameter;
 import org.preesm.model.pisdf.FunctionPrototype;
 import org.preesm.model.pisdf.ISetter;
+import org.preesm.model.pisdf.InitActor;
 import org.preesm.model.pisdf.InterfaceActor;
 import org.preesm.model.pisdf.InterfaceKind;
 import org.preesm.model.pisdf.JoinActor;
-import org.preesm.model.pisdf.NonExecutableActor;
 import org.preesm.model.pisdf.Parameter;
 import org.preesm.model.pisdf.Parameterizable;
 import org.preesm.model.pisdf.PiGraph;
@@ -87,6 +88,7 @@ import org.preesm.model.pisdf.Refinement;
 import org.preesm.model.pisdf.RoundBufferActor;
 import org.preesm.model.pisdf.util.PiIdentifiers;
 import org.preesm.model.pisdf.util.PiSDFXSDValidator;
+import org.preesm.model.pisdf.util.SubgraphOriginalActorTracker;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -306,14 +308,40 @@ public class PiWriter {
 
     // Add the name in the data of the node
 
-    if (abstractActor instanceof Actor) {
+    if (abstractActor instanceof PiGraph) {
+      writePiGraphAsHActor(vertexElt, (PiGraph) abstractActor);
+    } else if (abstractActor instanceof Actor) {
       writeActor(vertexElt, (Actor) abstractActor);
-    } else if (abstractActor instanceof ExecutableActor) {
+    } else if (abstractActor instanceof ExecutableActor || abstractActor instanceof InitActor
+        || abstractActor instanceof EndActor) {
       writeSpecialActor(vertexElt, abstractActor);
     } else if (abstractActor instanceof InterfaceActor) {
       writeInterfaceVertex(vertexElt, (InterfaceActor) abstractActor);
     }
     // TODO addProperties() of the vertex
+  }
+
+  private void writePiGraphAsHActor(Element vertexElt, PiGraph abstractActor) {
+    final Actor originalActor = SubgraphOriginalActorTracker.getOriginalActor(abstractActor);
+
+    // Set the kind of the Actor
+    vertexElt.setAttribute(PiIdentifiers.NODE_KIND, PiIdentifiers.ACTOR);
+    vertexElt.setAttribute(PiIdentifiers.ACTOR_PERIOD, originalActor.getPeriod().getExpressionAsString());
+    final Refinement refinement = originalActor.getRefinement();
+    if (refinement != null) {
+      writeRefinement(vertexElt, refinement);
+    }
+    final IPath memoryScriptPath = originalActor.getMemoryScriptPath();
+    if (memoryScriptPath != null) {
+      writeMemoryScript(vertexElt, getProjectRelativePathFrom(memoryScriptPath));
+    }
+    // writeDataElt(vertexElt, "kind", "actor");
+    // Write ports of the actor
+    writePorts(vertexElt, abstractActor.getConfigInputPorts());
+    writePorts(vertexElt, abstractActor.getConfigOutputPorts());
+    writePorts(vertexElt, abstractActor.getDataInputPorts());
+    writePorts(vertexElt, abstractActor.getDataOutputPorts());
+
   }
 
   /**
@@ -377,7 +405,7 @@ public class PiWriter {
     final Element vertexElt = appendChild(graphElt, PiIdentifiers.NODE);
 
     // Set the unique ID of the node (equal to the vertex name)
-    vertexElt.setAttribute(PiIdentifiers.DELAY_NAME, delay.getId());
+    vertexElt.setAttribute(PiIdentifiers.DELAY_NAME, delay.getActor().getName());
 
     // Set the delay attribute to the node
     vertexElt.setAttribute(PiIdentifiers.NODE_KIND, PiIdentifiers.DELAY);
@@ -396,7 +424,7 @@ public class PiWriter {
     // Checks if the delay has refinement in case of no setter is provided
     if (!delay.hasSetterActor()) {
       final Refinement refinement = actor.getRefinement();
-      if ((refinement != null) && (refinement instanceof CHeaderRefinement)) {
+      if (refinement instanceof CHeaderRefinement) {
         writeRefinement(vertexElt, refinement);
       }
     }
@@ -458,11 +486,15 @@ public class PiWriter {
       if (target instanceof ExecutableActor) {
         dependencyElt.setAttribute(PiIdentifiers.DEPENDENCY_TARGET_PORT, getter.getName());
       }
+
+      if (target instanceof PiGraph) {
+        dependencyElt.setAttribute(PiIdentifiers.DEPENDENCY_TARGET_PORT, getter.getName());
+      }
     }
 
     if (target instanceof Delay) {
       final Delay d = (Delay) target;
-      dependencyElt.setAttribute(PiIdentifiers.DEPENDENCY_TARGET, d.getContainingFifo().getId());
+      dependencyElt.setAttribute(PiIdentifiers.DEPENDENCY_TARGET, d.getActor().getName());
     }
   }
 
@@ -490,7 +522,7 @@ public class PiWriter {
     fifoElt.setAttribute(PiIdentifiers.FIFO_TARGET_PORT, fifo.getTargetPort().getName());
 
     if (fifo.getDelay() != null) {
-      writeDataElt(fifoElt, PiIdentifiers.DELAY, fifo.getDelay().getId());
+      writeDataElt(fifoElt, PiIdentifiers.DELAY, fifo.getDelay().getActor().getName());
       fifoElt.setAttribute(PiIdentifiers.DELAY_EXPRESSION, fifo.getDelay().getSizeExpression().getExpressionAsString());
     }
     // TODO other Fifo properties (if any)
@@ -518,7 +550,7 @@ public class PiWriter {
     // Write the vertices of the graph
     for (final AbstractActor actor : graph.getActors()) {
       // ignore all non executable actors
-      if (actor instanceof NonExecutableActor) {
+      if (actor instanceof DelayActor) {
         continue;
       }
       writeAbstractActor(graphElt, actor);
@@ -632,18 +664,9 @@ public class PiWriter {
    * @param ports
    *          the ports
    */
-  protected void writePorts(final Element vertexElt, final EList<?> ports) {
-    for (final Object portObj : ports) {
-      final Port port = (Port) portObj;
+  protected void writePorts(final Element vertexElt, final EList<? extends Port> ports) {
+    for (final Port port : ports) {
       final Element portElt = appendChild(vertexElt, PiIdentifiers.PORT);
-
-      String name = port.getName();
-      if ((name == null) || name.isEmpty()) {
-        final EObject container = port.eContainer();
-        if (container instanceof AbstractVertex) {
-          name = ((AbstractVertex) container).getName();
-        }
-      }
 
       portElt.setAttribute(PiIdentifiers.PORT_NAME, port.getName());
       portElt.setAttribute(PiIdentifiers.PORT_KIND, port.getKind().getLiteral());
@@ -651,8 +674,9 @@ public class PiWriter {
       switch (port.getKind()) {
         case DATA_INPUT:
         case DATA_OUTPUT:
-          portElt.setAttribute(PiIdentifiers.PORT_EXPRESSION,
-              ((DataPort) port).getPortRateExpression().getExpressionAsString());
+          final Expression portRateExpression = ((DataPort) port).getPortRateExpression();
+          final String expressionAsString = portRateExpression.getExpressionAsString();
+          portElt.setAttribute(PiIdentifiers.PORT_EXPRESSION, expressionAsString);
           break;
         case CFG_INPUT:
         case CFG_OUTPUT:
@@ -775,6 +799,10 @@ public class PiWriter {
       kind = PiIdentifiers.FORK;
     } else if (actor instanceof RoundBufferActor) {
       kind = PiIdentifiers.ROUND_BUFFER;
+    } else if (actor instanceof EndActor) {
+      kind = PiIdentifiers.END;
+    } else if (actor instanceof InitActor) {
+      kind = PiIdentifiers.INIT;
     }
     vertexElt.setAttribute(PiIdentifiers.NODE_KIND, kind);
 

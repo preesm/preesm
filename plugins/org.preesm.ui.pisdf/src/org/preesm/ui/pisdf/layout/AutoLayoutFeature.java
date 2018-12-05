@@ -1233,13 +1233,16 @@ public class AutoLayoutFeature extends AbstractCustomFeature {
 
       AbstractActor containingActor = fifo.getTargetPort().getContainingActor();
 
+      final EList<Point> bendpoints = ffc.getBendpoints();
       if (containingActor instanceof DelayActor) {
-        final int currentX = ffc.getBendpoints().get(0).getX();
-        final int currentY = ffc.getBendpoints().get(0).getY();
+        final int currentX = bendpoints.get(0).getX();
+        final int currentY = bendpoints.get(0).getY();
         layoutFifoToDelay(diagram, currentY, currentX, ffc, ((DelayActor) containingActor).getLinkedDelay());
       }
 
-      final Point penultimate = ffc.getBendpoints().get(ffc.getBendpoints().size() - 2);
+      final int index = bendpoints.size() < 2 ? 0 : bendpoints.size() - 2;
+
+      final Point penultimate = bendpoints.get(index);
 
       // Check Gaps one by one
       Range matchedRange = null;
@@ -1254,7 +1257,7 @@ public class AutoLayoutFeature extends AbstractCustomFeature {
       if (matchedRange != null) {
         // Create bendpoint
         iter.remove();
-        ffc.getBendpoints().add(ffc.getBendpoints().size() - 1, Graphiti.getGaCreateService()
+        bendpoints.add(bendpoints.size() - 1, Graphiti.getGaCreateService()
             .createPoint(width.end + AutoLayoutFeature.BENDPOINT_SPACE, penultimate.getY()));
         // Update ranges of gaps
         updateGaps(gaps, penultimate.getY(), matchedRange);
@@ -1266,8 +1269,11 @@ public class AutoLayoutFeature extends AbstractCustomFeature {
       final FreeFormConnection ffc = fifoFfcMap.get(fifo);
       // Get last 2 bendpoints (Since all FIFOs where layouted when actors
       // were moved, all FIFO have at least 2 bendpoints.)
-      final Point last = ffc.getBendpoints().get(ffc.getBendpoints().size() - 1);
-      final Point penultimate = ffc.getBendpoints().get(ffc.getBendpoints().size() - 2);
+      final EList<Point> bendpoints = ffc.getBendpoints();
+      final Point last = bendpoints.get(bendpoints.size() - 1);
+      final int index = bendpoints.size() < 2 ? 0 : bendpoints.size() - 2;
+
+      final Point penultimate = bendpoints.get(index);
 
       // Find the optimal place of added bendpoints (not considering
       // actors)
@@ -1282,8 +1288,8 @@ public class AutoLayoutFeature extends AbstractCustomFeature {
       // Make the Fifo go through this gap
       final int keptY = (isTop) ? closestGap.start + AutoLayoutFeature.FIFO_SPACE
           : closestGap.end - AutoLayoutFeature.FIFO_SPACE;
-      ffc.getBendpoints().add(ffc.getBendpoints().size() - 1, Graphiti.getGaCreateService().createPoint(optimX, keptY));
-      ffc.getBendpoints().add(ffc.getBendpoints().size() - 1,
+      bendpoints.add(bendpoints.size() - 1, Graphiti.getGaCreateService().createPoint(optimX, keptY));
+      bendpoints.add(bendpoints.size() - 1,
           Graphiti.getGaCreateService().createPoint(width.end + AutoLayoutFeature.BENDPOINT_SPACE, keptY));
 
       // Update Gaps

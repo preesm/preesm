@@ -245,7 +245,7 @@ public class ScenarioParser {
         piGraph = null;
       } else {
         final String algorithmURL = this.scenario.getAlgorithmURL();
-        piGraph = PiParser.getPiGraph(algorithmURL);
+        piGraph = PiParser.getPiGraphWithReconnection(algorithmURL);
       }
     }
     return piGraph;

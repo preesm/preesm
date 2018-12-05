@@ -40,7 +40,9 @@ package org.preesm.ui.pisdf.features;
 import org.eclipse.graphiti.features.IFeatureProvider;
 import org.eclipse.graphiti.features.IReason;
 import org.eclipse.graphiti.features.context.IUpdateContext;
+import org.preesm.model.pisdf.EndActor;
 import org.preesm.model.pisdf.ExecutableActor;
+import org.preesm.model.pisdf.InitActor;
 
 // TODO: Auto-generated Javadoc
 /**
@@ -67,7 +69,7 @@ public class UpdateActorFeature extends UpdateAbstractVertexFeature {
   @Override
   public boolean canUpdate(final IUpdateContext context) {
     final Object bo = getBusinessObjectForPictogramElement(context.getPictogramElement());
-    return (bo instanceof ExecutableActor);
+    return (bo instanceof ExecutableActor || bo instanceof EndActor || bo instanceof InitActor);
   }
 
   /*

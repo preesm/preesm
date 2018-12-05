@@ -76,6 +76,7 @@ import org.preesm.model.pisdf.DataInputInterface;
 import org.preesm.model.pisdf.DataInputPort;
 import org.preesm.model.pisdf.DataOutputInterface;
 import org.preesm.model.pisdf.DataOutputPort;
+import org.preesm.model.pisdf.DelayActor;
 import org.preesm.model.pisdf.Dependency;
 import org.preesm.model.pisdf.ExecutableActor;
 import org.preesm.model.pisdf.Fifo;
@@ -495,15 +496,20 @@ public class SVGExporterSwitch extends PiMMSwitch<Integer> {
     return 0;
   }
 
-  /*
-   * (non-Javadoc)
-   *
-   * @see
-   * org.ietr.preesm.experiment.model.pimm.util.PiMMSwitch#caseExecutableActor(org.ietr.preesm.experiment.model.pimm.
-   * ExecutableActor)
-   */
   @Override
-  public Integer caseExecutableActor(final ExecutableActor ea) {
+  public Integer caseDelayActor(DelayActor object) {
+    // skip
+    return 0;
+  }
+
+  @Override
+  public Integer casePiGraph(PiGraph object) {
+    // skip
+    return 0;
+  }
+
+  @Override
+  public Integer caseAbstractActor(final AbstractActor ea) {
     int x = 0;
     int y = 0;
     final PictogramElement[] actorPes = this.exportSVGFeature.getFeatureProvider()
@@ -639,7 +645,7 @@ public class SVGExporterSwitch extends PiMMSwitch<Integer> {
       final DataOutputPort dop = ea.getDataOutputPorts().get(i);
       final BoxRelativeAnchor bra = getPortBra(dop);
 
-      final int portX = (int) (bra.getRelativeWidth() * width);
+      final int portX = (int) (bra.getRelativeWidth() * width - 8);
       final int portY = (int) (bra.getRelativeHeight() * height);
       Text portText = null;
 
@@ -676,7 +682,7 @@ public class SVGExporterSwitch extends PiMMSwitch<Integer> {
     return 1;
   }
 
-  private Element drawActor(final ExecutableActor ea, int x, int y, final PictogramElement[] actorPes, final int width,
+  private Element drawActor(final AbstractActor ea, int x, int y, final PictogramElement[] actorPes, final int width,
       final int height) {
     final Element actorNode = this.doc.createElement("g");
     this.svg.appendChild(actorNode);
