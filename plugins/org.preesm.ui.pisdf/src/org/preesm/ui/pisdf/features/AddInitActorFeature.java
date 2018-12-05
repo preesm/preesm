@@ -69,7 +69,7 @@ public class AddInitActorFeature extends AbstractAddFeature {
   // 98, 131, 167); // Blue
 
   /** The Constant BROADCAST_ACTOR_BACKGROUND. */
-  public static final IColorConstant INIT_ACTOR_BACKGROUND = new ColorConstant(238, 130, 238);
+  public static final IColorConstant INIT_ACTOR_BACKGROUND = new ColorConstant(215, 228, 189);
 
   /**
    * Instantiates a new adds the broadcast actor feature.

@@ -69,7 +69,7 @@ public class AddEndActorFeature extends AbstractAddFeature {
   // 98, 131, 167); // Blue
 
   /** The Constant BROADCAST_ACTOR_BACKGROUND. */
-  public static final IColorConstant END_ACTOR_BACKGROUND = new ColorConstant(238, 130, 238); // violet
+  public static final IColorConstant END_ACTOR_BACKGROUND = new ColorConstant(230, 185, 184);
 
   /**
    * Instantiates a new adds the broadcast actor feature.
