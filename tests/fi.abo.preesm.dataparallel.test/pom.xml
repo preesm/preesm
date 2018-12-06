@@ -35,65 +35,66 @@
     knowledge of the CeCILL license and that you accept its terms.
 
 -->
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-	<modelVersion>4.0.0</modelVersion>
-	<artifactId>fi.abo.preesm.dataparallel.test</artifactId>
-	<packaging>eclipse-test-plugin</packaging>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+   xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+   <modelVersion>4.0.0</modelVersion>
+   <artifactId>fi.abo.preesm.dataparallel.test</artifactId>
+   <packaging>eclipse-test-plugin</packaging>
 
-	<parent>
-		<groupId>org.preesm</groupId>
-		<artifactId>org.preesm.tests</artifactId>
-		<version>3.0.1-SNAPSHOT</version>
-		<relativePath>..</relativePath>
-	</parent>
+   <parent>
+      <groupId>org.preesm</groupId>
+      <artifactId>org.preesm.tests</artifactId>
+      <version>3.0.1-SNAPSHOT</version>
+      <relativePath>..</relativePath>
+   </parent>
 
    <build>
       <plugins>
          <plugin>
-           <groupId>org.eclipse.xtend</groupId>
-           <artifactId>xtend-maven-plugin</artifactId>
-        </plugin>
-      <plugin>
-        <groupId>com.mycila</groupId>
-        <artifactId>license-maven-plugin</artifactId>
-        <configuration>
-          <!-- Indicate the path to a file containing the license header -->
-          <header>copyright_template_fi_abo.txt</header>
-          <!-- List of default excludes -->
-          <useDefaultExcludes>true</useDefaultExcludes>
-          <!-- Custom excludes -->
-          <excludes>
-            <exclude>LICENSE</exclude>
-            <exclude>**/README.md</exclude>
-            <exclude>**/resources/**</exclude>
-            <exclude>**/ecore-gen/**</exclude>
-            <exclude>**/xtend-gen/**</exclude>
-            <exclude>**/target/**</exclude>
-            <exclude>**/bin/**</exclude>
-            <exclude>libs/**</exclude>
-            <exclude>doc/**</exclude>
-            <exclude>**/*.sh</exclude>
-            <exclude>**/*.css</exclude>
-            <exclude>**/*.xsl</exclude>
-            <exclude>**/rcptt.properties</exclude>
-          </excludes>
-          <!-- Additional extensions to support -->
-          <mapping>
-            <ecore>XML_STYLE</ecore>
-            <genmodel>XML_STYLE</genmodel>
-            <xtend>JAVADOC_STYLE</xtend>
-            <bsh>JAVADOC_STYLE</bsh>
-          </mapping>
-        </configuration>
-        <executions>
-          <execution>
-            <goals>
-              <goal>format</goal>
-            </goals>
-          </execution>
-        </executions>
-      </plugin>
-    </plugins>
-  </build>
+            <groupId>org.eclipse.xtend</groupId>
+            <artifactId>xtend-maven-plugin</artifactId>
+         </plugin>
+         <plugin>
+            <groupId>com.mycila</groupId>
+            <artifactId>license-maven-plugin</artifactId>
+            <configuration>
+               <!-- Indicate the path to a file containing the license header -->
+               <header>copyright_template_fi_abo.txt</header>
+               <!-- List of default excludes -->
+               <useDefaultExcludes>true</useDefaultExcludes>
+               <!-- Custom excludes -->
+               <excludes>
+                  <exclude>LICENSE</exclude>
+                  <exclude>**/README.md</exclude>
+                  <exclude>**/resources/**</exclude>
+                  <exclude>**/ecore-gen/**</exclude>
+                  <exclude>**/xtend-gen/**</exclude>
+                  <exclude>**/target/**</exclude>
+                  <exclude>**/bin/**</exclude>
+                  <exclude>libs/**</exclude>
+                  <exclude>doc/**</exclude>
+                  <exclude>**/*.sh</exclude>
+                  <exclude>**/*.css</exclude>
+                  <exclude>**/*.xsl</exclude>
+                  <exclude>**/rcptt.properties</exclude>
+               </excludes>
+               <!-- Additional extensions to support -->
+               <mapping>
+                  <ecore>XML_STYLE</ecore>
+                  <genmodel>XML_STYLE</genmodel>
+                  <xtend>JAVADOC_STYLE</xtend>
+                  <bsh>JAVADOC_STYLE</bsh>
+               </mapping>
+            </configuration>
+            <executions>
+               <execution>
+                  <goals>
+                     <goal>format</goal>
+                  </goals>
+               </execution>
+            </executions>
+         </plugin>
+      </plugins>
+   </build>
 </project>
