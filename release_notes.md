@@ -16,6 +16,7 @@ PREESM Changelog
   * have the flatten and single-rate transformations independant from scenarios;
 * Remove IBSDF support in scenario;
 * Fix PiSDF flattener and srdag transformations to output a consistent model;
+* Centralize Xtend and XCore config on parent pom file:
 
 ### Bug fix
 
