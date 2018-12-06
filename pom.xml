@@ -37,641 +37,797 @@
     knowledge of the CeCILL license and that you accept its terms.
 
 -->
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-  <modelVersion>4.0.0</modelVersion>
-  <groupId>org.preesm</groupId>
-  <artifactId>org.preesm.parent</artifactId>
-  <version>3.0.1-SNAPSHOT</version>
-  <packaging>pom</packaging>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+   xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+   <modelVersion>4.0.0</modelVersion>
+   <groupId>org.preesm</groupId>
+   <artifactId>org.preesm.parent</artifactId>
+   <version>3.0.1-SNAPSHOT</version>
+   <packaging>pom</packaging>
 
-  <!-- More Project Information -->
-  <name>PREESM :: Parent</name>
-  <description>PREESM is an open source rapid prototyping tool targetting heterogeneous multi/many-core embedded systems from and using dataflow language.</description>
-  <url>http://preesm.org/</url>
+   <!-- More Project Information -->
+   <name>PREESM :: Parent</name>
+   <description>PREESM is an open source rapid prototyping tool targetting heterogeneous multi/many-core embedded systems from and using dataflow language.</description>
+   <url>http://preesm.org/</url>
 
-  <licenses>
-    <license>
-      <name>CeCILL-C License, Version 1.0</name>
-      <url>http://www.cecill.info/licences/Licence_CeCILL-C_V1-en.txt</url>
-      <distribution>repo</distribution>
-      <comments>CeCILL is a free software license adapted to both international and French legal matters, in the spirit of and retaining compatibility with the GNU General Public License.</comments>
-    </license>
-  </licenses>
-  <organization>
-    <name>IETR / INSA Rennes - VAADER</name>
-    <url>https://www.ietr.fr/spip.php?article1619&amp;lang=en</url>
-  </organization>
+   <licenses>
+      <license>
+         <name>CeCILL-C License, Version 1.0</name>
+         <url>http://www.cecill.info/licences/Licence_CeCILL-C_V1-en.txt</url>
+         <distribution>repo</distribution>
+         <comments>CeCILL is a free software license adapted to both international and French legal matters, in the spirit of and retaining compatibility with the GNU General Public License.</comments>
+      </license>
+   </licenses>
+   <organization>
+      <name>IETR / INSA Rennes - VAADER</name>
+      <url>https://www.ietr.fr/spip.php?article1619&amp;lang=en</url>
+   </organization>
 
-  <!-- Environment Settings -->
-  <issueManagement>
-    <url>https://github.com/preesm/preesm/issues</url>
-    <system>GitHub Issues</system>
-  </issueManagement>
+   <!-- Environment Settings -->
+   <issueManagement>
+      <url>https://github.com/preesm/preesm/issues</url>
+      <system>GitHub Issues</system>
+   </issueManagement>
 
-  <scm>
-    <url>https://github.com/preesm/preesm</url>
-  </scm>
+   <scm>
+      <url>https://github.com/preesm/preesm</url>
+   </scm>
 
-  <properties>
-    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+   <properties>
+      <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 
-    <jacoco-version>0.8.1</jacoco-version>
-    <tycho-version>1.2.0</tycho-version>
-    <findbugs-version>3.0.5</findbugs-version>
-    <sonar-version>3.4.1.1168</sonar-version>
-    <checkstyle-version>8.10</checkstyle-version>
-    <rcptt-version>2.3.0</rcptt-version>
-    <preesm.coding.policy.version>1.3.0</preesm.coding.policy.version>
+      <jacoco-version>0.8.1</jacoco-version>
+      <tycho-version>1.2.0</tycho-version>
+      <findbugs-version>3.0.5</findbugs-version>
+      <sonar-version>3.4.1.1168</sonar-version>
+      <checkstyle-version>8.10</checkstyle-version>
+      <rcptt-version>2.3.0</rcptt-version>
+      <preesm.coding.policy.version>1.3.0</preesm.coding.policy.version>
 
-    <!-- ############## -->
-    <!--  XCORE CONFIG  -->
-    <!-- ############## -->
-    <maven.compiler.fork>true</maven.compiler.fork>
-    <emf-version>2.15.0</emf-version>
-    <emf-common-version>2.15.0</emf-common-version>
-    <emf-codegen-version>2.15.0</emf-codegen-version>
-    <xtext-version>2.15.0</xtext-version>
-    <ecore-xtext-version>1.4.0</ecore-xtext-version>
-    <ecore-xcore-version>1.7.0</ecore-xcore-version>
-    <ecore-xcore-lib-version>1.3.0</ecore-xcore-lib-version>
+      <!-- ############## -->
+      <!-- XCORE CONFIG -->
+      <!-- ############## -->
+      <maven.compiler.fork>true</maven.compiler.fork>
+      <emf-version>2.15.0</emf-version>
+      <emf-common-version>2.15.0</emf-common-version>
+      <emf-codegen-version>2.15.0</emf-codegen-version>
+      <xtext-version>2.15.0</xtext-version>
+      <ecore-xtext-version>1.4.0</ecore-xtext-version>
+      <ecore-xcore-version>1.7.0</ecore-xcore-version>
+      <ecore-xcore-lib-version>1.3.0</ecore-xcore-lib-version>
 
-    <!-- ############### -->
-    <!-- ECLIPSE MIRRORS -->
-    <!-- ############### -->
-    <!-- ## Main (mostly down ...) : -->
-    <!-- http://download.eclipse.org -->
-    <!-- ## Mirrors : -->
-    <!-- http://ftp.fau.de/eclipse/ -->
-    <!-- http://mirror.ibcp.fr/pub/eclipse/ -->
-    <!-- http://ftp.halifax.rwth-aachen.de/eclipse/ -->
-    <!-- http://eclipse.mirror.wearetriple.com/ -->
-    <!-- http://artfiles.org/eclipse.org/ -->
-    <!-- http://mirror.switch.ch/eclipse/ -->
-    <eclipse.mirror>http://mirror.ibcp.fr/pub/eclipse/</eclipse.mirror>
+      <!-- ############### -->
+      <!-- ECLIPSE MIRRORS -->
+      <!-- ############### -->
+      <!-- ## Main (mostly down ...) : -->
+      <!-- http://download.eclipse.org -->
+      <!-- ## Mirrors : -->
+      <!-- http://ftp.fau.de/eclipse/ -->
+      <!-- http://mirror.ibcp.fr/pub/eclipse/ -->
+      <!-- http://ftp.halifax.rwth-aachen.de/eclipse/ -->
+      <!-- http://eclipse.mirror.wearetriple.com/ -->
+      <!-- http://artfiles.org/eclipse.org/ -->
+      <!-- http://mirror.switch.ch/eclipse/ -->
+      <eclipse.mirror>http://mirror.ibcp.fr/pub/eclipse/</eclipse.mirror>
 
-    <!-- ############### -->
-    <!-- P2 REPOS CONFIG -->
-    <!-- ############### -->
-    <updatesite.preesm>http://preesm.insa-rennes.fr/repo/</updatesite.preesm>
-    <updatesite.preesm.externaldeps>${updatesite.preesm}/org.preesm.externaldeps/</updatesite.preesm.externaldeps>
-    <updatesite.preesm.graphiti>${updatesite.preesm}/org.ietr.graphiti/</updatesite.preesm.graphiti>
-    <updatesite.eclipse>${eclipse.mirror}/releases/photon/</updatesite.eclipse>
-    <updatesite.eclipse.updates>${eclipse.mirror}/eclipse/updates/4.8</updatesite.eclipse.updates>
-    <updatesite.tmf>${eclipse.mirror}/modeling/tmf/xtext/updates/releases/${xtext-version}</updatesite.tmf>
+      <!-- ############### -->
+      <!-- P2 REPOS CONFIG -->
+      <!-- ############### -->
+      <updatesite.preesm>http://preesm.insa-rennes.fr/repo/</updatesite.preesm>
+      <updatesite.preesm.externaldeps>${updatesite.preesm}/org.preesm.externaldeps/</updatesite.preesm.externaldeps>
+      <updatesite.preesm.graphiti>${updatesite.preesm}/org.ietr.graphiti/</updatesite.preesm.graphiti>
+      <updatesite.eclipse>${eclipse.mirror}/releases/photon/</updatesite.eclipse>
+      <updatesite.eclipse.updates>${eclipse.mirror}/eclipse/updates/4.8</updatesite.eclipse.updates>
+      <updatesite.tmf>${eclipse.mirror}/modeling/tmf/xtext/updates/releases/${xtext-version}</updatesite.tmf>
 
-    <!-- ############## -->
-    <!--  SONAR CONFIG  -->
-    <!-- ############## -->
-    <sonar.core.codeCoveragePlugin>jacoco</sonar.core.codeCoveragePlugin>
-    <sonar.dynamicAnalysis>reuseReports</sonar.dynamicAnalysis>
-    <sonar.jacoco.reportPaths>../../target/jacoco.exec</sonar.jacoco.reportPaths>
-    <sonar.exclusions>**/tests/**, **/releng/**, **/ecore-gen/**</sonar.exclusions>
+      <!-- ############## -->
+      <!-- SONAR CONFIG -->
+      <!-- ############## -->
+      <sonar.core.codeCoveragePlugin>jacoco</sonar.core.codeCoveragePlugin>
+      <sonar.dynamicAnalysis>reuseReports</sonar.dynamicAnalysis>
+      <sonar.jacoco.reportPaths>../../target/jacoco.exec</sonar.jacoco.reportPaths>
+      <sonar.exclusions>**/tests/**, **/releng/**, **/ecore-gen/**</sonar.exclusions>
 
-  </properties>
+   </properties>
 
-  <repositories>
-    <!-- Official Maven Central repo hosted in UK -->
-    <repository>
-      <id>UK Central</id>
-      <url>http://uk.maven.org/maven2</url>
-    </repository>
-    <!-- add Eclipse repository to resolve dependencies -->
-    <repository>
-      <id>Eclipse</id>
-      <layout>p2</layout>
-      <url>${updatesite.eclipse}</url>
-    </repository>
-    <!-- add Eclipse updates for latest releases -->
-    <repository>
-      <id>Eclipse Updates</id>
-      <layout>p2</layout>
-      <url>${updatesite.eclipse.updates}</url>
-    </repository>
-    <!-- add Preesm repository to resolve dependencies -->
-    <repository>
-      <id>Preesm External Dependencies Repo</id>
-      <layout>p2</layout>
-      <url>${updatesite.preesm.externaldeps}</url>
-    </repository>
-    <repository>
-      <id>Graphiti Repo</id>
-      <layout>p2</layout>
-      <url>${updatesite.preesm.graphiti}</url>
-    </repository>
-    <!-- add TMF repository for latest Xtend -->
-    <repository>
-      <id>TMF Repo</id>
-      <layout>p2</layout>
-      <url>${updatesite.tmf}</url>
-    </repository>
-  </repositories>
+   <repositories>
+      <!-- Official Maven Central repo hosted in UK -->
+      <repository>
+         <id>UK Central</id>
+         <url>http://uk.maven.org/maven2</url>
+      </repository>
+      <!-- add Eclipse repository to resolve dependencies -->
+      <repository>
+         <id>Eclipse</id>
+         <layout>p2</layout>
+         <url>${updatesite.eclipse}</url>
+      </repository>
+      <!-- add Eclipse updates for latest releases -->
+      <repository>
+         <id>Eclipse Updates</id>
+         <layout>p2</layout>
+         <url>${updatesite.eclipse.updates}</url>
+      </repository>
+      <!-- add Preesm repository to resolve dependencies -->
+      <repository>
+         <id>Preesm External Dependencies Repo</id>
+         <layout>p2</layout>
+         <url>${updatesite.preesm.externaldeps}</url>
+      </repository>
+      <repository>
+         <id>Graphiti Repo</id>
+         <layout>p2</layout>
+         <url>${updatesite.preesm.graphiti}</url>
+      </repository>
+      <!-- add TMF repository for latest Xtend -->
+      <repository>
+         <id>TMF Repo</id>
+         <layout>p2</layout>
+         <url>${updatesite.tmf}</url>
+      </repository>
+   </repositories>
 
-  <build>
-    <pluginManagement>
+   <build>
+      <sourceDirectory>src</sourceDirectory>
+      <pluginManagement>
+         <plugins>
+            <plugin>
+               <groupId>org.apache.maven.plugins</groupId>
+               <artifactId>maven-install-plugin</artifactId>
+               <version>2.5.2</version>
+            </plugin>
+            <!-- configure Xtend compiler -->
+            <plugin>
+               <groupId>org.eclipse.xtend</groupId>
+               <artifactId>xtend-maven-plugin</artifactId>
+               <version>${xtext-version}</version>
+               <executions>
+                  <execution>
+                     <goals>
+                        <goal>compile</goal>
+                     </goals>
+                     <configuration>
+                        <outputDirectory>xtend-gen</outputDirectory>
+                        <generateGeneratedAnnotation>true</generateGeneratedAnnotation>
+                        <includeDateInGeneratedAnnotation>true</includeDateInGeneratedAnnotation>
+                        <writeTraceFiles>false</writeTraceFiles>
+                     </configuration>
+                  </execution>
+               </executions>
+            </plugin>
+            <!-- configure XCore compiler -->
+            <plugin>
+               <groupId>org.eclipse.xtext</groupId>
+               <artifactId>xtext-maven-plugin</artifactId>
+               <version>${xtext-version}</version>
+               <executions>
+                  <execution>
+                     <phase>generate-sources</phase>
+                     <goals>
+                        <goal>generate</goal>
+                     </goals>
+                  </execution>
+               </executions>
+               <configuration>
+                  <languages>
+                     <language>
+                        <setup>org.eclipse.xtext.ecore.EcoreSupport</setup>
+                     </language>
+                     <language>
+                        <setup>org.eclipse.emf.codegen.ecore.xtext.GenModelSupport</setup>
+                     </language>
+                     <language>
+                        <setup>org.eclipse.emf.ecore.xcore.XcoreStandaloneSetup</setup>
+                        <outputConfigurations>
+                           <outputConfiguration>
+                              <outputDirectory>${project.basedir}/ecore-gen</outputDirectory>
+                           </outputConfiguration>
+                        </outputConfigurations>
+                     </language>
+                  </languages>
+                  <sourceRoots>
+                     <root>${basedir}/model</root>
+                  </sourceRoots>
+                  <failOnValidationError>false</failOnValidationError>
+               </configuration>
+               <dependencies>
+                  <dependency>
+                     <groupId>org.eclipse.platform</groupId>
+                     <artifactId>org.eclipse.text</artifactId>
+                     <version>3.6.100</version>
+                  </dependency>
+                  <dependency>
+                     <groupId>org.eclipse.platform</groupId>
+                     <artifactId>org.eclipse.core.resources</artifactId>
+                     <version>3.12.0</version>
+                  </dependency>
+                  <dependency>
+                     <groupId>org.eclipse.xtext</groupId>
+                     <artifactId>org.eclipse.xtext.ecore</artifactId>
+                     <version>${xtext-version}</version>
+                  </dependency>
+                  <dependency>
+                     <groupId>org.eclipse.xtext</groupId>
+                     <artifactId>org.eclipse.xtext.generator</artifactId>
+                     <version>${xtext-version}</version>
+                  </dependency>
+                  <dependency>
+                     <groupId>org.eclipse.xtext</groupId>
+                     <artifactId>org.eclipse.xtext.builder.standalone</artifactId>
+                     <version>${xtext-version}</version>
+                  </dependency>
+                  <dependency>
+                     <groupId>org.eclipse.emf</groupId>
+                     <artifactId>org.eclipse.emf.codegen.ecore.xtext</artifactId>
+                     <version>${ecore-xtext-version}</version>
+                  </dependency>
+                  <dependency>
+                     <groupId>org.eclipse.emf</groupId>
+                     <artifactId>org.eclipse.emf.common</artifactId>
+                     <version>${emf-common-version}</version>
+                  </dependency>
+                  <dependency>
+                     <groupId>org.eclipse.emf</groupId>
+                     <artifactId>org.eclipse.emf.ecore</artifactId>
+                     <version>${emf-version}</version>
+                  </dependency>
+                  <dependency>
+                     <groupId>org.eclipse.emf</groupId>
+                     <artifactId>org.eclipse.emf.ecore.xmi</artifactId>
+                     <version>${emf-version}</version>
+                  </dependency>
+                  <dependency>
+                     <groupId>org.eclipse.emf</groupId>
+                     <artifactId>org.eclipse.emf.codegen</artifactId>
+                     <version>2.13.0</version>
+                  </dependency>
+                  <dependency>
+                     <groupId>org.eclipse.emf</groupId>
+                     <artifactId>org.eclipse.emf.codegen.ecore</artifactId>
+                     <version>${emf-codegen-version}</version>
+                  </dependency>
+                  <dependency>
+                     <groupId>org.eclipse.emf</groupId>
+                     <artifactId>org.eclipse.emf.ecore.xcore</artifactId>
+                     <version>${ecore-xcore-version}</version>
+                  </dependency>
+                  <dependency>
+                     <groupId>org.eclipse.emf</groupId>
+                     <artifactId>org.eclipse.emf.ecore.xcore.lib</artifactId>
+                     <version>${ecore-xcore-lib-version}</version>
+                  </dependency>
+                  <dependency>
+                     <groupId>org.antlr</groupId>
+                     <artifactId>antlr-runtime</artifactId>
+                     <version>[3.2.0,3.3.0)</version>
+                  </dependency>
+               </dependencies>
+            </plugin>
+         </plugins>
+      </pluginManagement>
+
       <plugins>
-        <plugin>
-          <groupId>org.apache.maven.plugins</groupId>
-          <artifactId>maven-install-plugin</artifactId>
-          <version>2.5.2</version>
-        </plugin>
-      </plugins>
-    </pluginManagement>
-
-    <sourceDirectory>src</sourceDirectory>
-    <plugins>
-      <!-- Directory plugin to find parent root directory absolute path -->
-      <plugin>
-        <groupId>org.commonjava.maven.plugins</groupId>
-        <artifactId>directory-maven-plugin</artifactId>
-        <version>0.3.1</version>
-        <executions>
-          <execution>
-            <id>directories</id>
-            <goals>
-              <goal>highest-basedir</goal>
-            </goals>
-            <phase>initialize</phase>
+         <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-compiler-plugin</artifactId>
+            <version>3.8</version>
             <configuration>
-              <property>main.basedir</property>
+               <source>1.8</source>
+               <target>1.8</target>
             </configuration>
-          </execution>
-        </executions>
-      </plugin>
-      <plugin>
-        <!-- enable tycho build extension -->
-        <groupId>org.eclipse.tycho</groupId>
-        <artifactId>tycho-maven-plugin</artifactId>
-        <version>${tycho-version}</version>
-        <extensions>true</extensions>
-      </plugin>
-      <plugin>
-        <groupId>org.jacoco</groupId>
-        <artifactId>jacoco-maven-plugin</artifactId>
-        <version>${jacoco-version}</version>
-        <executions>
-          <execution>
-            <goals>
-              <goal>prepare-agent</goal>
-            </goals>
+         </plugin>
+         <!-- Directory plugin to find parent root directory absolute path -->
+         <plugin>
+            <groupId>org.commonjava.maven.plugins</groupId>
+            <artifactId>directory-maven-plugin</artifactId>
+            <version>0.3.1</version>
+            <executions>
+               <execution>
+                  <id>directories</id>
+                  <goals>
+                     <goal>highest-basedir</goal>
+                  </goals>
+                  <phase>initialize</phase>
+                  <configuration>
+                     <property>main.basedir</property>
+                  </configuration>
+               </execution>
+            </executions>
+         </plugin>
+         <plugin>
+            <!-- enable tycho build extension -->
+            <groupId>org.eclipse.tycho</groupId>
+            <artifactId>tycho-maven-plugin</artifactId>
+            <version>${tycho-version}</version>
+            <extensions>true</extensions>
+         </plugin>
+         <plugin>
+            <groupId>org.jacoco</groupId>
+            <artifactId>jacoco-maven-plugin</artifactId>
+            <version>${jacoco-version}</version>
+            <executions>
+               <execution>
+                  <goals>
+                     <goal>prepare-agent</goal>
+                  </goals>
+                  <configuration>
+                     <!-- Where to put jacoco coverage report -->
+                     <destFile>${main.basedir}/target/jacoco.exec</destFile>
+                     <append>true</append>
+                     <excludes>
+                        <exclude>**/tests/**</exclude>
+                        <exclude>**/releng/**</exclude>
+                     </excludes>
+                  </configuration>
+               </execution>
+            </executions>
+         </plugin>
+         <!-- Configure tycho compiler to ignore user project preferences
+            files generated by Eclipse. -->
+         <plugin>
+            <groupId>org.eclipse.tycho</groupId>
+            <artifactId>tycho-compiler-plugin</artifactId>
+            <version>${tycho-version}</version>
             <configuration>
-              <!-- Where to put jacoco coverage report -->
-              <destFile>${main.basedir}/target/jacoco.exec</destFile>
-              <append>true</append>
-              <excludes>
-                <exclude>**/tests/**</exclude>
-                <exclude>**/releng/**</exclude>
-              </excludes>
+               <useProjectSettings>false</useProjectSettings>
             </configuration>
-          </execution>
-        </executions>
-      </plugin>
-      <!-- Configure tycho compiler to ignore user project preferences files
-        generated by Eclipse. -->
-      <plugin>
-        <groupId>org.eclipse.tycho</groupId>
-        <artifactId>tycho-compiler-plugin</artifactId>
-        <version>${tycho-version}</version>
-        <configuration>
-          <useProjectSettings>false</useProjectSettings>
-        </configuration>
-      </plugin>
-      <!-- Define supported target platforms -->
-      <plugin>
-        <groupId>org.eclipse.tycho</groupId>
-        <artifactId>target-platform-configuration</artifactId>
-        <version>${tycho-version}</version>
-        <configuration>
-          <environments>
-            <!-- Linux -->
-            <environment>
-              <os>linux</os>
-              <ws>gtk</ws>
-              <arch>x86_64</arch>
-            </environment>
-            <environment>
-              <os>linux</os>
-              <ws>gtk</ws>
-              <arch>x86</arch>
-            </environment>
-            <!-- Win 32 -->
-            <environment>
-              <os>win32</os>
-              <ws>win32</ws>
-              <arch>x86_64</arch>
-            </environment>
-            <environment>
-              <os>win32</os>
-              <ws>win32</ws>
-              <arch>x86</arch>
-            </environment>
-            <!-- Mac -->
-            <environment>
-              <os>macosx</os>
-              <ws>cocoa</ws>
-              <arch>x86_64</arch>
-            </environment>
-          </environments>
-        </configuration>
-      </plugin>
-      <!-- Enable Xtend compiler -->
-      <plugin>
-        <groupId>org.eclipse.xtend</groupId>
-        <artifactId>xtend-maven-plugin</artifactId>
-        <version>${xtext-version}</version>
-        <executions>
-          <execution>
-            <goals>
-              <goal>compile</goal>
-            </goals>
+         </plugin>
+         <!-- Define supported target platforms -->
+         <plugin>
+            <groupId>org.eclipse.tycho</groupId>
+            <artifactId>target-platform-configuration</artifactId>
+            <version>${tycho-version}</version>
             <configuration>
-              <outputDirectory>xtend-gen</outputDirectory>
-              <generateGeneratedAnnotation>true</generateGeneratedAnnotation>
-              <includeDateInGeneratedAnnotation>true</includeDateInGeneratedAnnotation>
-              <writeTraceFiles>false</writeTraceFiles>
+               <environments>
+                  <!-- Linux -->
+                  <environment>
+                     <os>linux</os>
+                     <ws>gtk</ws>
+                     <arch>x86_64</arch>
+                  </environment>
+                  <environment>
+                     <os>linux</os>
+                     <ws>gtk</ws>
+                     <arch>x86</arch>
+                  </environment>
+                  <!-- Win 32 -->
+                  <environment>
+                     <os>win32</os>
+                     <ws>win32</ws>
+                     <arch>x86_64</arch>
+                  </environment>
+                  <environment>
+                     <os>win32</os>
+                     <ws>win32</ws>
+                     <arch>x86</arch>
+                  </environment>
+                  <!-- Mac -->
+                  <environment>
+                     <os>macosx</os>
+                     <ws>cocoa</ws>
+                     <arch>x86_64</arch>
+                  </environment>
+               </environments>
             </configuration>
-          </execution>
-        </executions>
-      </plugin>
-      <!-- Make sure clean goal removes xtend generated files -->
-      <plugin>
-        <artifactId>maven-clean-plugin</artifactId>
-        <version>3.1.0</version>
-        <configuration>
-          <filesets>
-            <fileset>
-              <directory>xtend-gen</directory>
-              <includes>
-                <include>**</include>
-              </includes>
-            </fileset>
-          </filesets>
-        </configuration>
-      </plugin>
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-antrun-plugin</artifactId>
-        <version>1.8</version>
-      </plugin>
-      <plugin>
-        <artifactId>exec-maven-plugin</artifactId>
-        <groupId>org.codehaus.mojo</groupId>
-        <version>1.6.0</version>
-      </plugin>
-      <!-- Enable checkstyle and specify custom configuration file -->
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-checkstyle-plugin</artifactId>
-        <version>3.0.0</version>
-        <configuration>
-          <configLocation>/VAADER_checkstyle.xml</configLocation>
-          <failsOnError>true</failsOnError>
-          <includes>**/*.java</includes>
-          <sourceDirectories>src/</sourceDirectories>
-          <consoleOutput>true</consoleOutput>
-        </configuration>
-        <dependencies>
-          <!-- get settings -->
-          <dependency>
-            <groupId>org.preesm.maven</groupId>
-            <artifactId>coding-policy</artifactId>
-            <version>${preesm.coding.policy.version}</version>
-          </dependency>
-          <!-- Override checkstyle version -->
-          <dependency>
-            <groupId>com.puppycrawl.tools</groupId>
-            <artifactId>checkstyle</artifactId>
-            <version>${checkstyle-version}</version>
-          </dependency>
-        </dependencies>
-        <executions>
-          <execution>
-            <id>check-checkstyle</id>
-            <phase>process-sources</phase>
-            <goals>
-              <goal>check</goal>
-            </goals>
-          </execution>
-        </executions>
-      </plugin>
-      <!-- Disable maven deploy plugin: since generated artifacts will be
-        deployed in a P2 repository, there is no need to deploy them in an artifactory/nexus
-        repo. -->
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-deploy-plugin</artifactId>
-        <version>2.8.2</version>
-        <configuration>
-          <skip>true</skip>
-        </configuration>
-      </plugin>
+         </plugin>
+         <!-- Make sure clean goal removes xtend generated files -->
+         <plugin>
+            <artifactId>maven-clean-plugin</artifactId>
+            <version>3.1.0</version>
+            <configuration>
+               <filesets>
+                  <fileset>
+                     <directory>ecore-gen</directory>
+                  </fileset>
+                  <fileset>
+                     <directory>xtend-gen</directory>
+                     <includes>
+                        <include>**</include>
+                     </includes>
+                  </fileset>
+               </filesets>
+            </configuration>
+         </plugin>
+         <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-antrun-plugin</artifactId>
+            <version>1.8</version>
+         </plugin>
+         <plugin>
+            <artifactId>exec-maven-plugin</artifactId>
+            <groupId>org.codehaus.mojo</groupId>
+            <version>1.6.0</version>
+         </plugin>
+         <!-- Enable checkstyle and specify custom configuration file -->
+         <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-checkstyle-plugin</artifactId>
+            <version>3.0.0</version>
+            <configuration>
+               <configLocation>/VAADER_checkstyle.xml</configLocation>
+               <failsOnError>true</failsOnError>
+               <includes>**/*.java</includes>
+               <sourceDirectories>src/</sourceDirectories>
+               <consoleOutput>true</consoleOutput>
+            </configuration>
+            <dependencies>
+               <!-- get settings -->
+               <dependency>
+                  <groupId>org.preesm.maven</groupId>
+                  <artifactId>coding-policy</artifactId>
+                  <version>${preesm.coding.policy.version}</version>
+               </dependency>
+               <!-- Override checkstyle version -->
+               <dependency>
+                  <groupId>com.puppycrawl.tools</groupId>
+                  <artifactId>checkstyle</artifactId>
+                  <version>${checkstyle-version}</version>
+               </dependency>
+            </dependencies>
+            <executions>
+               <execution>
+                  <id>check-checkstyle</id>
+                  <phase>process-sources</phase>
+                  <goals>
+                     <goal>check</goal>
+                  </goals>
+               </execution>
+            </executions>
+         </plugin>
+         <!-- Disable maven deploy plugin: since generated artifacts will
+            be deployed in a P2 repository, there is no need to deploy them in an artifactory/nexus
+            repo. -->
+         <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-deploy-plugin</artifactId>
+            <version>2.8.2</version>
+            <configuration>
+               <skip>true</skip>
+            </configuration>
+         </plugin>
 
-      <plugin>
-        <groupId>com.mycila</groupId>
-        <artifactId>license-maven-plugin</artifactId>
-        <version>3.0</version>
-        <configuration>
-          <!-- Indicate the path to a file containing the license header -->
-          <header>releng/copyright_template.txt</header>
-          <!-- List of default excludes -->
-          <useDefaultExcludes>true</useDefaultExcludes>
-          <!-- Custom excludes -->
-          <excludes>
-            <exclude>**/fi.abo*/**</exclude>
-            <exclude>LICENSE</exclude>
-            <exclude>**/README.md</exclude>
-            <exclude>**/resources/**</exclude>
-            <exclude>**/ecore-gen/**</exclude>
-            <exclude>**/xtend-gen/**</exclude>
-            <exclude>**/target/**</exclude>
-            <exclude>**/bin/**</exclude>
-            <exclude>libs/**</exclude>
-            <exclude>doc/**</exclude>
-            <exclude>**/*.sh</exclude>
-            <exclude>**/*.css</exclude>
-            <exclude>**/*.xsl</exclude>
-            <exclude>**/rcptt.properties</exclude>
-          </excludes>
-          <!-- Additional extensions to support -->
-          <mapping>
-            <ecore>XML_STYLE</ecore>
-            <genmodel>XML_STYLE</genmodel>
-            <xtend>JAVADOC_STYLE</xtend>
-            <bsh>JAVADOC_STYLE</bsh>
-          </mapping>
-        </configuration>
-        <executions>
-          <execution>
-            <goals>
-              <goal>format</goal>
-            </goals>
-          </execution>
-        </executions>
-      </plugin>
+         <plugin>
+            <groupId>com.mycila</groupId>
+            <artifactId>license-maven-plugin</artifactId>
+            <version>3.0</version>
+            <configuration>
+               <!-- Indicate the path to a file containing the license header -->
+               <header>releng/copyright_template.txt</header>
+               <!-- List of default excludes -->
+               <useDefaultExcludes>true</useDefaultExcludes>
+               <!-- Custom excludes -->
+               <excludes>
+                  <exclude>**/fi.abo*/**</exclude>
+                  <exclude>LICENSE</exclude>
+                  <exclude>**/README.md</exclude>
+                  <exclude>**/resources/**</exclude>
+                  <exclude>**/ecore-gen/**</exclude>
+                  <exclude>**/xtend-gen/**</exclude>
+                  <exclude>**/target/**</exclude>
+                  <exclude>**/bin/**</exclude>
+                  <exclude>libs/**</exclude>
+                  <exclude>doc/**</exclude>
+                  <exclude>**/*.sh</exclude>
+                  <exclude>**/*.css</exclude>
+                  <exclude>**/*.xsl</exclude>
+                  <exclude>**/rcptt.properties</exclude>
+               </excludes>
+               <!-- Additional extensions to support -->
+               <mapping>
+                  <ecore>XML_STYLE</ecore>
+                  <genmodel>XML_STYLE</genmodel>
+                  <xtend>JAVADOC_STYLE</xtend>
+                  <bsh>JAVADOC_STYLE</bsh>
+               </mapping>
+            </configuration>
+            <executions>
+               <execution>
+                  <goals>
+                     <goal>format</goal>
+                  </goals>
+               </execution>
+            </executions>
+         </plugin>
 
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-dependency-plugin</artifactId>
-        <version>3.1.1</version>
-      </plugin>
-      <plugin>
-        <groupId>org.codehaus.mojo</groupId>
-        <artifactId>findbugs-maven-plugin</artifactId>
-        <version>${findbugs-version}</version>
-      </plugin>
-      <plugin>
-        <groupId>org.sonarsource.scanner.maven</groupId>
-        <artifactId>sonar-maven-plugin</artifactId>
-        <version>${sonar-version}</version>
-      </plugin>
+         <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-dependency-plugin</artifactId>
+            <version>3.1.1</version>
+         </plugin>
+         <plugin>
+            <groupId>org.codehaus.mojo</groupId>
+            <artifactId>findbugs-maven-plugin</artifactId>
+            <version>${findbugs-version}</version>
+         </plugin>
+         <plugin>
+            <groupId>org.sonarsource.scanner.maven</groupId>
+            <artifactId>sonar-maven-plugin</artifactId>
+            <version>${sonar-version}</version>
+         </plugin>
 
-      <plugin>
-          <groupId>org.apache.maven.plugins</groupId>
-          <artifactId>maven-enforcer-plugin</artifactId>
-          <version>3.0.0-M2</version>
-          <configuration>
-            <rules>
-              <bannedPlugins>
-                <excludes>
-                  <exclude>org.apache.maven.plugins:maven-verifier-plugin</exclude>
-                </excludes>
-                <message>Please consider using the maven-invoker-plugin (http://maven.apache.org/plugins/maven-invoker-plugin/)!</message>
-              </bannedPlugins>
-              <requireMavenVersion>
-                <version>3.3.9</version>
-              </requireMavenVersion>
-              <requireJavaVersion>
-                <version>1.8</version>
-              </requireJavaVersion>
-              <!--<dependencyConvergence/>-->
-            </rules>
-          </configuration>
-        </plugin>
-        
-          <plugin>
+         <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-enforcer-plugin</artifactId>
+            <version>3.0.0-M2</version>
+            <configuration>
+               <rules>
+                  <bannedPlugins>
+                     <excludes>
+                        <exclude>org.apache.maven.plugins:maven-verifier-plugin</exclude>
+                     </excludes>
+                     <message>Please consider using the
+                        maven-invoker-plugin
+                        (http://maven.apache.org/plugins/maven-invoker-plugin/)!</message>
+                  </bannedPlugins>
+                  <requireMavenVersion>
+                     <version>3.3.9</version>
+                  </requireMavenVersion>
+                  <requireJavaVersion>
+                     <version>1.8</version>
+                  </requireJavaVersion>
+                  <!--<dependencyConvergence/> -->
+               </rules>
+            </configuration>
+         </plugin>
+
+         <plugin>
             <groupId>org.eclipse.tycho.extras</groupId>
             <artifactId>tycho-source-feature-plugin</artifactId>
             <version>${tycho-version}</version>
             <executions>
-              <execution>
-                <id>source-feature</id>
-                <phase>package</phase>
-                <goals>
-                  <goal>source-feature</goal>
-                </goals>
-                <configuration>
-                  <labelSuffix>&nbsp;Sources</labelSuffix>
-                </configuration>
-              </execution>
+               <execution>
+                  <id>source-feature</id>
+                  <phase>package</phase>
+                  <goals>
+                     <goal>source-feature</goal>
+                  </goals>
+                  <configuration>
+                     <labelSuffix>&nbsp;Sources
+                     </labelSuffix>
+                  </configuration>
+               </execution>
             </executions>
-          </plugin>
+         </plugin>
 
-          <plugin>
+         <plugin>
             <groupId>org.eclipse.tycho</groupId>
             <artifactId>tycho-source-plugin</artifactId>
             <version>${tycho-version}</version>
             <executions>
-              <execution>
-                <id>plugin-source</id>
-                <goals>
-                  <goal>plugin-source</goal>
-                </goals>
-              </execution>
+               <execution>
+                  <id>plugin-source</id>
+                  <goals>
+                     <goal>plugin-source</goal>
+                  </goals>
+               </execution>
             </executions>
-          </plugin>
+         </plugin>
 
-          <plugin>
+         <plugin>
             <groupId>org.eclipse.tycho</groupId>
             <artifactId>tycho-p2-plugin</artifactId>
             <version>${tycho-version}</version>
             <executions>
-              <execution>
-                <id>attached-p2-metadata</id>
-                <phase>package</phase>
-                <goals>
-                  <goal>p2-metadata</goal>
-                </goals>
-              </execution>
+               <execution>
+                  <id>attached-p2-metadata</id>
+                  <phase>package</phase>
+                  <goals>
+                     <goal>p2-metadata</goal>
+                  </goals>
+               </execution>
             </executions>
-          </plugin>
-    </plugins>
-  </build>
+         </plugin>
+      </plugins>
+   </build>
 
-  <!-- following dependencies are declared here for safe offline mode -->
-  <dependencies>
-    <dependency>
-      <!-- Override checkstyle version -->
-      <groupId>com.puppycrawl.tools</groupId>
-      <artifactId>checkstyle</artifactId>
-      <version>${checkstyle-version}</version>
-    </dependency>
-    <!-- https://mvnrepository.com/artifact/org.codehaus.mojo/findbugs-maven-plugin -->
-    <dependency>
-      <groupId>org.codehaus.mojo</groupId>
-      <artifactId>findbugs-maven-plugin</artifactId>
-      <version>${findbugs-version}</version>
-    </dependency>
-    <!-- https://mvnrepository.com/artifact/org.sonarsource.scanner.maven/sonar-maven-plugin -->
-    <dependency>
-      <groupId>org.sonarsource.scanner.maven</groupId>
-      <artifactId>sonar-maven-plugin</artifactId>
-      <version>${sonar-version}</version>
-    </dependency>
-    <!-- get settings -->
-    <dependency>
-      <groupId>org.preesm.maven</groupId>
-      <artifactId>coding-policy</artifactId>
-      <version>${preesm.coding.policy.version}</version>
-    </dependency>
-  </dependencies>
+   <!-- following dependencies are declared here for safe offline mode -->
+   <dependencies>
+      <dependency>
+         <!-- Override checkstyle version -->
+         <groupId>com.puppycrawl.tools</groupId>
+         <artifactId>checkstyle</artifactId>
+         <version>${checkstyle-version}</version>
+      </dependency>
+      <!-- https://mvnrepository.com/artifact/org.codehaus.mojo/findbugs-maven-plugin -->
+      <dependency>
+         <groupId>org.codehaus.mojo</groupId>
+         <artifactId>findbugs-maven-plugin</artifactId>
+         <version>${findbugs-version}</version>
+      </dependency>
+      <!-- https://mvnrepository.com/artifact/org.sonarsource.scanner.maven/sonar-maven-plugin -->
+      <dependency>
+         <groupId>org.sonarsource.scanner.maven</groupId>
+         <artifactId>sonar-maven-plugin</artifactId>
+         <version>${sonar-version}</version>
+      </dependency>
+      <!-- get settings -->
+      <dependency>
+         <groupId>org.preesm.maven</groupId>
+         <artifactId>coding-policy</artifactId>
+         <version>${preesm.coding.policy.version}</version>
+      </dependency>
+      <dependency>
+         <groupId>org.eclipse.emf</groupId>
+         <artifactId>org.eclipse.emf.common</artifactId>
+         <version>${emf-common-version}</version>
+      </dependency>
 
-  <modules>
-    <module>plugins</module>
-    <module>tests</module>
-    <module>releng</module>
-  </modules>
+      <dependency>
+         <groupId>org.eclipse.emf</groupId>
+         <artifactId>org.eclipse.emf.ecore</artifactId>
+         <version>${emf-version}</version>
+      </dependency>
 
-  <profiles>
-    <profile>
-      <id>java8-doclint-disabled</id>
-      <activation>
-        <jdk>[1.8,)</jdk>
-      </activation>
-      <properties>
-        <javadoc.opts>-Xdoclint:none</javadoc.opts>
-      </properties>
-    </profile>
-    <!-- Specific arguments for tests on MacOSX platform -->
-    <profile>
-      <id>os-macosx</id>
-      <activation>
-        <os>
-          <family>mac</family>
-        </os>
-      </activation>
-      <properties>
-        <tycho.surefire.extra.vmargs>-XstartOnFirstThread</tycho.surefire.extra.vmargs>
-      </properties>
-    </profile>
+      <dependency>
+         <groupId>org.eclipse.emf</groupId>
+         <artifactId>org.eclipse.emf.ecore.xcore.lib</artifactId>
+         <version>${ecore-xcore-lib-version}</version>
+      </dependency>
 
-    <!-- Specific profile for Eclipse related configuration -->
-    <profile>
-      <id>only-eclipse</id>
-      <activation>
-        <property>
-          <name>m2e.version</name>
-        </property>
-      </activation>
-      <build>
-        <plugins>
-          <plugin>
-            <groupId>org.preesm.maven</groupId>
-            <artifactId>m2e-settings-maven-plugin</artifactId>
-            <version>1.0.0</version>
-            <dependencies>
-              <dependency>
-                <groupId>org.preesm.maven</groupId>
-                <artifactId>coding-policy</artifactId>
-                <version>${preesm.coding.policy.version}</version>
-              </dependency>
-            </dependencies>
-            <executions>
-              <execution>
-                <id>load-eclipse-settings</id>
-                <phase>initialize</phase>
-                <goals>
-                  <goal>m2e-settings</goal>
-                </goals>
-              </execution>
-            </executions>
-            <configuration>
-              <additionalConfig>
-                <file>
-                  <name>.settings/org.eclipse.core.resources.prefs</name>
-                  <location>/org.eclipse.core.resources.prefs</location>
-                </file>
-                <file>
-                  <name>.settings/org.eclipse.core.runtime.prefs</name>
-                  <location>/org.eclipse.core.runtime.prefs</location>
-                </file>
-                <file>
-                  <name>.settings/org.eclipse.jdt.core.prefs</name>
-                  <location>/org.eclipse.jdt.core.prefs</location>
-                </file>
-                <file>
-                  <name>.settings/org.eclipse.jdt.ui.prefs</name>
-                  <location>/org.eclipse.jdt.ui.prefs</location>
-                </file>
-                <file>
-                  <name>.settings/org.eclipse.xtend.core.Xtend.prefs</name>
-                  <location>/org.eclipse.xtend.core.Xtend.prefs</location>
-                </file>
-              </additionalConfig>
- 	           </configuration>
-          </plugin>
-        </plugins>
-        <!-- Disable m2e lifecycle mapping to avoid errors showing in Eclipse -->
-        <pluginManagement>
-          <plugins>
-            <plugin>
-              <groupId>org.eclipse.m2e</groupId>
-              <artifactId>lifecycle-mapping</artifactId>
-              <version>1.0.0</version>
-              <configuration>
-                <lifecycleMappingMetadata>
-                  <pluginExecutions>
-                    <!-- Disable directory maven plugin (unsupported and
-                      unused -->
-                    <pluginExecution>
-                      <pluginExecutionFilter>
-                        <groupId>org.commonjava.maven.plugins</groupId>
-                        <artifactId>directory-maven-plugin</artifactId>
-                        <versionRange>[0.0.0,)</versionRange>
+      <dependency>
+         <groupId>org.eclipse.xtext</groupId>
+         <artifactId>org.eclipse.xtext.xbase.lib</artifactId>
+         <version>${xtext-version}</version>
+      </dependency>
+
+      <dependency>
+         <groupId>junit</groupId>
+         <artifactId>junit</artifactId>
+         <version>4.12</version>
+         <scope>test</scope>
+      </dependency>
+
+   </dependencies>
+
+   <modules>
+      <module>plugins</module>
+      <module>tests</module>
+      <module>releng</module>
+   </modules>
+
+   <profiles>
+      <profile>
+         <id>java8-doclint-disabled</id>
+         <activation>
+            <jdk>[1.8,)</jdk>
+         </activation>
+         <properties>
+            <javadoc.opts>-Xdoclint:none</javadoc.opts>
+         </properties>
+      </profile>
+      <!-- Specific arguments for tests on MacOSX platform -->
+      <profile>
+         <id>os-macosx</id>
+         <activation>
+            <os>
+               <family>mac</family>
+            </os>
+         </activation>
+         <properties>
+            <tycho.surefire.extra.vmargs>-XstartOnFirstThread</tycho.surefire.extra.vmargs>
+         </properties>
+      </profile>
+
+      <!-- Specific profile for Eclipse related configuration -->
+      <profile>
+         <id>only-eclipse</id>
+         <activation>
+            <property>
+               <name>m2e.version</name>
+            </property>
+         </activation>
+         <build>
+            <plugins>
+               <plugin>
+                  <groupId>org.preesm.maven</groupId>
+                  <artifactId>m2e-settings-maven-plugin</artifactId>
+                  <version>1.0.0</version>
+                  <dependencies>
+                     <dependency>
+                        <groupId>org.preesm.maven</groupId>
+                        <artifactId>coding-policy</artifactId>
+                        <version>${preesm.coding.policy.version}</version>
+                     </dependency>
+                  </dependencies>
+                  <executions>
+                     <execution>
+                        <id>load-eclipse-settings</id>
+                        <phase>initialize</phase>
                         <goals>
-                          <goal>highest-basedir</goal>
+                           <goal>m2e-settings</goal>
                         </goals>
-                      </pluginExecutionFilter>
-                      <action>
-                        <ignore />
-                      </action>
-                    </pluginExecution>
-                    <!-- Disable RCPTT maven plugin (unsupported) -->
-                    <pluginExecution>
-                      <pluginExecutionFilter>
-                        <groupId>org.eclipse.rcptt</groupId>
-                        <artifactId>rcptt-maven-plugin</artifactId>
-                        <versionRange>[0.0.0,)</versionRange>
-                        <goals>
-                          <goal>execute</goal>
-                          <goal>resources</goal>
-                        </goals>
-                      </pluginExecutionFilter>
-                      <action>
-                        <ignore />
-                      </action>
-                    </pluginExecution>
-                    <!-- Disable XText maven plugin (unsupported) -->
-                    <pluginExecution>
-                      <pluginExecutionFilter>
-                        <groupId>org.eclipse.xtext</groupId>
-                        <artifactId>xtext-maven-plugin</artifactId>
-                        <versionRange>[0.0.0,)</versionRange>
-                        <goals>
-                          <goal>generate</goal>
-                        </goals>
-                      </pluginExecutionFilter>
-                      <action>
-                        <ignore />
-                      </action>
-                    </pluginExecution>
+                     </execution>
+                  </executions>
+                  <configuration>
+                     <additionalConfig>
+                        <file>
+                           <name>.settings/org.eclipse.core.resources.prefs</name>
+                           <location>/org.eclipse.core.resources.prefs</location>
+                        </file>
+                        <file>
+                           <name>.settings/org.eclipse.core.runtime.prefs</name>
+                           <location>/org.eclipse.core.runtime.prefs</location>
+                        </file>
+                        <file>
+                           <name>.settings/org.eclipse.jdt.core.prefs</name>
+                           <location>/org.eclipse.jdt.core.prefs</location>
+                        </file>
+                        <file>
+                           <name>.settings/org.eclipse.jdt.ui.prefs</name>
+                           <location>/org.eclipse.jdt.ui.prefs</location>
+                        </file>
+                        <file>
+                           <name>.settings/org.eclipse.xtend.core.Xtend.prefs</name>
+                           <location>/org.eclipse.xtend.core.Xtend.prefs</location>
+                        </file>
+                     </additionalConfig>
+                  </configuration>
+               </plugin>
+            </plugins>
+            <!-- Disable m2e lifecycle mapping to avoid errors showing in
+               Eclipse -->
+            <pluginManagement>
+               <plugins>
+                  <plugin>
+                     <groupId>org.eclipse.m2e</groupId>
+                     <artifactId>lifecycle-mapping</artifactId>
+                     <version>1.0.0</version>
+                     <configuration>
+                        <lifecycleMappingMetadata>
+                           <pluginExecutions>
+                              <!-- Disable directory maven plugin (unsupported
+                                 and unused -->
+                              <pluginExecution>
+                                 <pluginExecutionFilter>
+                                    <groupId>org.commonjava.maven.plugins</groupId>
+                                    <artifactId>directory-maven-plugin</artifactId>
+                                    <versionRange>[0.0.0,)</versionRange>
+                                    <goals>
+                                       <goal>highest-basedir</goal>
+                                    </goals>
+                                 </pluginExecutionFilter>
+                                 <action>
+                                    <ignore />
+                                 </action>
+                              </pluginExecution>
+                              <!-- Disable RCPTT maven plugin (unsupported) -->
+                              <pluginExecution>
+                                 <pluginExecutionFilter>
+                                    <groupId>org.eclipse.rcptt</groupId>
+                                    <artifactId>rcptt-maven-plugin</artifactId>
+                                    <versionRange>[0.0.0,)</versionRange>
+                                    <goals>
+                                       <goal>execute</goal>
+                                       <goal>resources</goal>
+                                    </goals>
+                                 </pluginExecutionFilter>
+                                 <action>
+                                    <ignore />
+                                 </action>
+                              </pluginExecution>
+                              <!-- Disable XText maven plugin (unsupported) -->
+                              <pluginExecution>
+                                 <pluginExecutionFilter>
+                                    <groupId>org.eclipse.xtext</groupId>
+                                    <artifactId>xtext-maven-plugin</artifactId>
+                                    <versionRange>[0.0.0,)</versionRange>
+                                    <goals>
+                                       <goal>generate</goal>
+                                    </goals>
+                                 </pluginExecutionFilter>
+                                 <action>
+                                    <ignore />
+                                 </action>
+                              </pluginExecution>
 
-                  </pluginExecutions>
-                </lifecycleMappingMetadata>
-              </configuration>
-            </plugin>
-          </plugins>
-        </pluginManagement>
-      </build>
-    </profile>
-  </profiles>
+                           </pluginExecutions>
+                        </lifecycleMappingMetadata>
+                     </configuration>
+                  </plugin>
+               </plugins>
+            </pluginManagement>
+         </build>
+      </profile>
+   </profiles>
 </project>

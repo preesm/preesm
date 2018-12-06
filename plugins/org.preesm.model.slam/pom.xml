@@ -34,192 +34,26 @@
     knowledge of the CeCILL license and that you accept its terms.
 
 -->
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
    xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
    <modelVersion>4.0.0</modelVersion>
    <artifactId>org.preesm.model.slam</artifactId>
    <packaging>eclipse-plugin</packaging>
-    <name>PREESM :: Plugins :: Slam Model</name>
+   <name>PREESM :: Plugins :: Slam Model</name>
 
-	<parent>
-		<groupId>org.preesm</groupId>
-		<artifactId>org.preesm.plugins</artifactId>
-		<version>3.0.1-SNAPSHOT</version>
-		<relativePath>..</relativePath>
-	</parent>
-
-   <dependencies>
-      <dependency>
-         <groupId>org.eclipse.emf</groupId>
-         <artifactId>org.eclipse.emf.common</artifactId>
-         <version>${emf-common-version}</version>
-      </dependency>
-
-      <dependency>
-         <groupId>org.eclipse.emf</groupId>
-         <artifactId>org.eclipse.emf.ecore</artifactId>
-         <version>${emf-version}</version>
-      </dependency>
-
-      <dependency>
-         <groupId>org.eclipse.emf</groupId>
-         <artifactId>org.eclipse.emf.ecore.xcore.lib</artifactId>
-         <version>${ecore-xcore-lib-version}</version>
-      </dependency>
-
-      <dependency>
-         <groupId>org.eclipse.xtext</groupId>
-         <artifactId>org.eclipse.xtext.xbase.lib</artifactId>
-         <version>${xtext-version}</version>
-      </dependency>
-
-      <dependency>
-         <groupId>junit</groupId>
-         <artifactId>junit</artifactId>
-         <version>4.12</version>
-         <scope>test</scope>
-      </dependency>
-
-   </dependencies>
+   <parent>
+      <groupId>org.preesm</groupId>
+      <artifactId>org.preesm.plugins</artifactId>
+      <version>3.0.1-SNAPSHOT</version>
+      <relativePath>..</relativePath>
+   </parent>
 
    <build>
       <plugins>
          <plugin>
-            <!-- enable tycho build extension -->
-            <groupId>org.eclipse.tycho</groupId>
-            <artifactId>tycho-maven-plugin</artifactId>
-            <version>1.2.0</version>
-            <extensions>true</extensions>
-         </plugin>
-         <plugin>
-            <groupId>org.apache.maven.plugins</groupId>
-            <artifactId>maven-compiler-plugin</artifactId>
-            <version>3.1</version>
-            <configuration>
-               <source>1.8</source>
-               <target>1.8</target>
-            </configuration>
-         </plugin>
-
-         <plugin>
-            <groupId>org.apache.maven.plugins</groupId>
-            <artifactId>maven-clean-plugin</artifactId>
-            <version>3.1.0</version>
-            <configuration>
-               <filesets>
-                  <fileset>
-                     <directory>ecore-gen</directory>
-                  </fileset>
-               </filesets>
-            </configuration>
-         </plugin>
-
-         <plugin>
             <groupId>org.eclipse.xtext</groupId>
             <artifactId>xtext-maven-plugin</artifactId>
-            <version>${xtext-version}</version>
-            <executions>
-               <execution>
-                  <phase>generate-sources</phase>
-                  <goals>
-                     <goal>generate</goal>
-                  </goals>
-               </execution>
-            </executions>
-            <configuration>
-               <languages>
-                  <language>
-                     <setup>org.eclipse.xtext.ecore.EcoreSupport</setup>
-                  </language>
-                  <language>
-                     <setup>org.eclipse.emf.codegen.ecore.xtext.GenModelSupport</setup>
-                  </language>
-                  <language>
-                     <setup>org.eclipse.emf.ecore.xcore.XcoreStandaloneSetup</setup>
-                     <outputConfigurations>
-                        <outputConfiguration>
-                           <outputDirectory>${project.basedir}/ecore-gen</outputDirectory>
-                        </outputConfiguration>
-                     </outputConfigurations>
-                  </language>
-               </languages>
-               <sourceRoots>
-                  <root>${basedir}/model</root>
-               </sourceRoots>
-               <failOnValidationError>false</failOnValidationError>
-            </configuration>
-            <dependencies>
-               <dependency>
-                  <groupId>org.eclipse.platform</groupId>
-                  <artifactId>org.eclipse.text</artifactId>
-                  <version>3.6.100</version>
-               </dependency>
-               <dependency>
-                  <groupId>org.eclipse.platform</groupId>
-                  <artifactId>org.eclipse.core.resources</artifactId>
-                  <version>3.12.0</version>
-               </dependency>
-               <dependency>
-                  <groupId>org.eclipse.xtext</groupId>
-                  <artifactId>org.eclipse.xtext.ecore</artifactId>
-                  <version>${xtext-version}</version>
-               </dependency>
-               <dependency>
-                  <groupId>org.eclipse.xtext</groupId>
-                  <artifactId>org.eclipse.xtext.generator</artifactId>
-                  <version>${xtext-version}</version>
-               </dependency>
-               <dependency>
-                  <groupId>org.eclipse.xtext</groupId>
-                  <artifactId>org.eclipse.xtext.builder.standalone</artifactId>
-                  <version>${xtext-version}</version>
-               </dependency>
-               <dependency>
-                  <groupId>org.eclipse.emf</groupId>
-                  <artifactId>org.eclipse.emf.codegen.ecore.xtext</artifactId>
-                  <version>${ecore-xtext-version}</version>
-               </dependency>
-               <dependency>
-                  <groupId>org.eclipse.emf</groupId>
-                  <artifactId>org.eclipse.emf.common</artifactId>
-                  <version>${emf-common-version}</version>
-               </dependency>
-               <dependency>
-                  <groupId>org.eclipse.emf</groupId>
-                  <artifactId>org.eclipse.emf.ecore</artifactId>
-                  <version>${emf-version}</version>
-               </dependency>
-               <dependency>
-                  <groupId>org.eclipse.emf</groupId>
-                  <artifactId>org.eclipse.emf.ecore.xmi</artifactId>
-                  <version>${emf-version}</version>
-               </dependency>
-               <dependency>
-                  <groupId>org.eclipse.emf</groupId>
-                  <artifactId>org.eclipse.emf.codegen</artifactId>
-                  <version>2.13.0</version>
-               </dependency>
-               <dependency>
-                  <groupId>org.eclipse.emf</groupId>
-                  <artifactId>org.eclipse.emf.codegen.ecore</artifactId>
-                  <version>${emf-codegen-version}</version>
-               </dependency>
-               <dependency>
-                  <groupId>org.eclipse.emf</groupId>
-                  <artifactId>org.eclipse.emf.ecore.xcore</artifactId>
-                  <version>${ecore-xcore-version}</version>
-               </dependency>
-               <dependency>
-                  <groupId>org.eclipse.emf</groupId>
-                  <artifactId>org.eclipse.emf.ecore.xcore.lib</artifactId>
-                  <version>${ecore-xcore-lib-version}</version>
-               </dependency>
-               <dependency>
-                  <groupId>org.antlr</groupId>
-                  <artifactId>antlr-runtime</artifactId>
-                  <version>[3.2.0,3.3.0)</version>
-               </dependency>
-            </dependencies>
          </plugin>
       </plugins>
    </build>
