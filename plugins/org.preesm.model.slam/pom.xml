@@ -34,19 +34,20 @@
     knowledge of the CeCILL license and that you accept its terms.
 
 -->
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
    xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
    <modelVersion>4.0.0</modelVersion>
    <artifactId>org.preesm.model.slam</artifactId>
    <packaging>eclipse-plugin</packaging>
-    <name>PREESM :: Plugins :: Slam Model</name>
+   <name>PREESM :: Plugins :: Slam Model</name>
 
-	<parent>
-		<groupId>org.preesm</groupId>
-		<artifactId>org.preesm.plugins</artifactId>
-		<version>3.0.1-SNAPSHOT</version>
-		<relativePath>..</relativePath>
-	</parent>
+   <parent>
+      <groupId>org.preesm</groupId>
+      <artifactId>org.preesm.plugins</artifactId>
+      <version>3.0.1-SNAPSHOT</version>
+      <relativePath>..</relativePath>
+   </parent>
 
    <dependencies>
       <dependency>
@@ -84,36 +85,6 @@
 
    <build>
       <plugins>
-         <plugin>
-            <!-- enable tycho build extension -->
-            <groupId>org.eclipse.tycho</groupId>
-            <artifactId>tycho-maven-plugin</artifactId>
-            <version>1.2.0</version>
-            <extensions>true</extensions>
-         </plugin>
-         <plugin>
-            <groupId>org.apache.maven.plugins</groupId>
-            <artifactId>maven-compiler-plugin</artifactId>
-            <version>3.1</version>
-            <configuration>
-               <source>1.8</source>
-               <target>1.8</target>
-            </configuration>
-         </plugin>
-
-         <plugin>
-            <groupId>org.apache.maven.plugins</groupId>
-            <artifactId>maven-clean-plugin</artifactId>
-            <version>3.1.0</version>
-            <configuration>
-               <filesets>
-                  <fileset>
-                     <directory>ecore-gen</directory>
-                  </fileset>
-               </filesets>
-            </configuration>
-         </plugin>
-
          <plugin>
             <groupId>org.eclipse.xtext</groupId>
             <artifactId>xtext-maven-plugin</artifactId>
