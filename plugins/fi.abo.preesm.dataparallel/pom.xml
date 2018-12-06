@@ -46,8 +46,12 @@
 		<relativePath>..</relativePath>
 	</parent>
 
-  <build>
-    <plugins>
+   <build>
+      <plugins>
+         <plugin>
+           <groupId>org.eclipse.xtend</groupId>
+           <artifactId>xtend-maven-plugin</artifactId>
+           </plugin>
       <plugin>
         <groupId>com.mycila</groupId>
         <artifactId>license-maven-plugin</artifactId>

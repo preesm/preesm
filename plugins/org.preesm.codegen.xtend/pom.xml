@@ -48,4 +48,13 @@
 		<version>3.0.1-SNAPSHOT</version>
 		<relativePath>..</relativePath>
 	</parent>
+
+   <build>
+      <plugins>
+         <plugin>
+           <groupId>org.eclipse.xtend</groupId>
+           <artifactId>xtend-maven-plugin</artifactId>
+           </plugin>
+      </plugins>
+   </build>
 </project>
