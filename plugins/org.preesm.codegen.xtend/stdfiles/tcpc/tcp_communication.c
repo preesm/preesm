@@ -99,27 +99,56 @@ void preesm_receive_ack(int socket) {
  * Send a packet. Non-blocking.
  */
 void preesm_send_start(int from, int to, int * socketRegistry, char* buffer, int size, const char* bufferName) {
+#ifdef _PREESM_TCP_DEBUG_
+  printf("[TCP-DEBUG] sending %d bytes from %d to %d -- (%s)\n", size, from, to, bufferName); fflush(stdout);
+#endif
   int socket = socketRegistry[to];
-  send(socket, buffer, size, 0);
+  int chunkID = 0;
+  for (int offset = 0; offset < size; offset += _PREESM_SOCKET_BUFFER_SIZE) {
+	  char* newAddress = buffer+offset;
+	  chunkID++;
+	  int newSize = min(size-offset, _PREESM_SOCKET_BUFFER_SIZE);
+#ifdef _PREESM_TCP_DEBUG_
+  printf("[TCP-DEBUG]    > chunk %6d of [%s] (total size: %d)\n", chunkID, bufferName, newSize); fflush(stdout);
+#endif
+	  send(socket, newAddress, newSize, 0);
+  }
 }
 void preesm_send_end(int from, int to, int * socketRegistry, char* buffer, int size, const char* bufferName) {
+#ifdef _PREESM_TCP_DEBUG_
+  printf("[TCP-DEBUG] DONE - Send of %d bytes from %d to %d -- (%s)\n", size, from, to, bufferName); fflush(stdout);
+#endif
 }
 
 /**
  * Receive a packet. Blocking.
  */
 void preesm_receive_start(int from, int to, int * socketRegistry, char* buffer, int size, const char* bufferName) {
+#ifdef _PREESM_TCP_DEBUG_
+  printf("[TCP-DEBUG]                       receiving %d bytes from %d to %d -- (%s)\n", size, from, to, bufferName); fflush(stdout);
+#endif
   int socket = socketRegistry[from];
-
-  int count = 0;
-  // check how many bytes are available for read on the socket;
-  ioctl(socket, FIONREAD, &count);
-  // if not enough bytes are available, block until data arrive, then recheck
-  while (count < size) {
-    preesm_poll_socket_read_available(socket);
-    ioctl(socket, FIONREAD, &count);
+  int chunkID = 0;
+  for (int offset = 0; offset < size; offset += _PREESM_SOCKET_BUFFER_SIZE) {
+	  char* newAddress = buffer+offset;
+	  chunkID++;
+	  int newSize = min(size-offset, _PREESM_SOCKET_BUFFER_SIZE);
+	  int count = 0;
+#ifdef _PREESM_TCP_DEBUG_
+  printf("[TCP-DEBUG]                                    < chunk %6d of [%s] (total size: %d)\n", chunkID, bufferName, newSize); fflush(stdout);
+#endif
+	  // check how many bytes are available for read on the socket;
+	  ioctl(socket, FIONREAD, &count);
+	  // if not enough bytes are available, block until data arrive, then recheck
+	  while (count < newSize) {
+		preesm_poll_socket_read_available(socket);
+#ifdef _PREESM_TCP_DEBUG_
+  printf("[TCP-DEBUG]   pollin. Size was %d; expecting %d\n",count, newSize); fflush(stdout);
+#endif
+		ioctl(socket, FIONREAD, &count);
+	  }
+	  recv(socket, newAddress, newSize, 0);
   }
-  recv(socket, buffer, size, 0);
 }
 void preesm_receive_end(int from, int to, int * socketRegistry, char* buffer, int size, const char* bufferName) {
 }
