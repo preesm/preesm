@@ -76,11 +76,9 @@ public class PrecedenceEdge extends MapperDAGEdge {
    *
    * @param source
    *          the source
-   * @param destination
-   *          the destination
    */
-  public PrecedenceEdge(final MapperDAGVertex source, final MapperDAGVertex destination) {
-    super(source, destination);
+  public PrecedenceEdge(final MapperDAGVertex source) {
+    super();
     setBase((DirectedAcyclicGraph) source.getBase());
     getTiming().setCost(0);
   }

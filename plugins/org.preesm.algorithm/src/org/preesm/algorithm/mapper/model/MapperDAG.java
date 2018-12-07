@@ -89,8 +89,8 @@ public class MapperDAG extends DirectedAcyclicGraph {
   /**
    *
    */
-  public MapperDAG(final MapperEdgeFactory factory, final PiGraph piGraph) {
-    super(factory);
+  public MapperDAG(final PiGraph piGraph) {
+    super(() -> new MapperDAGEdge());
     this.piSDFGraph = piGraph;
     setScheduleCost(0L);
 
@@ -99,8 +99,8 @@ public class MapperDAG extends DirectedAcyclicGraph {
 
   }
 
-  public MapperDAG(final MapperEdgeFactory factory) {
-    this(factory, null);
+  public MapperDAG() {
+    this(null);
   }
 
   /**
@@ -141,7 +141,7 @@ public class MapperDAG extends DirectedAcyclicGraph {
   public MapperDAG copy() {
 
     // create clone
-    final MapperDAG newDAG = new MapperDAG(new MapperEdgeFactory(), getReferencePiMMGraph());
+    final MapperDAG newDAG = new MapperDAG(getReferencePiMMGraph());
     newDAG.setScheduleCost(getScheduleCost());
 
     // add vertex

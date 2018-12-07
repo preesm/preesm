@@ -38,11 +38,10 @@ import java.util.ArrayList;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
-import org.jgrapht.EdgeFactory;
+import java.util.function.Supplier;
 import org.jgrapht.alg.cycle.CycleDetector;
 import org.preesm.algorithm.model.AbstractGraph;
 import org.preesm.algorithm.model.PropertyFactory;
-import org.preesm.algorithm.model.factories.DAGEdgeFactory;
 import org.preesm.algorithm.model.factories.DAGVertexFactory;
 import org.preesm.algorithm.model.factories.IModelVertexFactory;
 import org.preesm.algorithm.model.sdf.SDFGraph;
@@ -66,18 +65,15 @@ public class DirectedAcyclicGraph extends AbstractGraph<DAGVertex, DAGEdge> {
    * Constructs a new DAG graph with the default Dag edge factory.
    */
   public DirectedAcyclicGraph() {
-    super(new DAGEdgeFactory());
-    getPropertyBean().setValue(AbstractGraph.MODEL, "dag");
+    this(() -> new DAGEdge());
   }
 
   /**
    * Creates a new DirectedAcyclicGraph with the given Edge factory.
    *
-   * @param arg0
-   *          The factory to use to create Edge in this graph
    */
-  public DirectedAcyclicGraph(final EdgeFactory<DAGVertex, DAGEdge> arg0) {
-    super(arg0);
+  protected DirectedAcyclicGraph(final Supplier<DAGEdge> edgeSupplier) {
+    super(edgeSupplier);
     getPropertyBean().setValue(AbstractGraph.MODEL, "dag");
   }
 

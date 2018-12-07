@@ -51,13 +51,6 @@ import org.w3c.dom.NodeList;
 public class GMLGenericImporter extends GMLImporter<AbstractGraph, AbstractVertex, AbstractEdge> {
 
   /**
-   * COnstructs a new importer for SDF graphs.
-   */
-  public GMLGenericImporter() {
-    super(null);
-  }
-
-  /**
    * Parses an Edge in the DOM document.
    *
    * @param edgeElt
@@ -114,7 +107,6 @@ public class GMLGenericImporter extends GMLImporter<AbstractGraph, AbstractVerte
     AbstractGraph graph;
     try {
       graph = ModelGraphFactory.getModel(parseModel);
-      this.edgeFactory = graph.getEdgeFactory();
       this.vertexFactory = graph.getVertexFactory();
       final NodeList childList = graphElt.getChildNodes();
       parseParameters(graph, graphElt);

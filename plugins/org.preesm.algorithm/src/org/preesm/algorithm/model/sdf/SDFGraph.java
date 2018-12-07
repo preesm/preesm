@@ -44,7 +44,6 @@ import java.util.Map;
 import java.util.Set;
 import java.util.logging.Level;
 import java.util.stream.Collectors;
-import org.jgrapht.EdgeFactory;
 import org.math.array.DoubleArray;
 import org.math.array.LinearAlgebra;
 import org.preesm.algorithm.model.AbstractEdge;
@@ -57,7 +56,6 @@ import org.preesm.algorithm.model.PropertyFactory;
 import org.preesm.algorithm.model.dag.DAGEdge;
 import org.preesm.algorithm.model.dag.DAGVertex;
 import org.preesm.algorithm.model.factories.IModelVertexFactory;
-import org.preesm.algorithm.model.factories.SDFEdgeFactory;
 import org.preesm.algorithm.model.factories.SDFVertexFactory;
 import org.preesm.algorithm.model.sdf.esdf.SDFBroadcastVertex;
 import org.preesm.algorithm.model.sdf.esdf.SDFForkVertex;
@@ -104,30 +102,7 @@ public class SDFGraph extends AbstractGraph<SDFAbstractVertex, SDFEdge> {
    * Construct a new SDFGraph with the default edge factory.
    */
   public SDFGraph() {
-    super(new SDFEdgeFactory());
-    getPropertyBean().setValue(AbstractGraph.MODEL, "sdf");
-  }
-
-  /**
-   * COnstruct a new SDFAbstractGraph using the given EdgeFactory ef.
-   *
-   * @param ef
-   *          the ef
-   */
-  public SDFGraph(final EdgeFactory<SDFAbstractVertex, SDFEdge> ef) {
-    super(ef);
-    setName("");
-    getPropertyBean().setValue(AbstractGraph.MODEL, "sdf");
-  }
-
-  /**
-   * Creates a new SDFAbstractGraph with the given factory.
-   *
-   * @param factory
-   *          The factory used to create edges
-   */
-  public SDFGraph(final SDFEdgeFactory factory) {
-    super(factory);
+    super(() -> new SDFEdge());
     setName("");
     getPropertyBean().setValue(AbstractGraph.MODEL, "sdf");
   }

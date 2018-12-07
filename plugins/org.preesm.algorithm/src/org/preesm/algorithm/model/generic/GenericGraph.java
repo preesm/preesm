@@ -37,9 +37,9 @@
  */
 package org.preesm.algorithm.model.generic;
 
+import java.util.function.Supplier;
 import org.preesm.algorithm.model.AbstractGraph;
 import org.preesm.algorithm.model.PropertyFactory;
-import org.preesm.algorithm.model.factories.GenericEdgeFactory;
 import org.preesm.algorithm.model.factories.IModelVertexFactory;
 
 /**
@@ -56,7 +56,7 @@ public class GenericGraph extends AbstractGraph<GenericVertex, GenericEdge> {
    * @param factory
    *          the factory
    */
-  public GenericGraph(final GenericEdgeFactory factory) {
+  public GenericGraph(final Supplier<GenericEdge> factory) {
     super(factory);
   }
 

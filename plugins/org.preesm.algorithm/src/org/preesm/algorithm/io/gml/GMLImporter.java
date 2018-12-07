@@ -45,7 +45,6 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import org.eclipse.core.runtime.Path;
-import org.jgrapht.EdgeFactory;
 import org.preesm.algorithm.model.AbstractEdge;
 import org.preesm.algorithm.model.AbstractGraph;
 import org.preesm.algorithm.model.AbstractVertex;
@@ -91,9 +90,6 @@ public abstract class GMLImporter<G extends AbstractGraph<?, ?>, V extends Abstr
   /** The class key set. */
   protected Map<String, List<GMLKey>> classKeySet;
 
-  /** The edge factory. */
-  protected EdgeFactory<V, E> edgeFactory;
-
   /** The vertex factory. */
   protected IModelVertexFactory<V> vertexFactory;
 
@@ -109,11 +105,8 @@ public abstract class GMLImporter<G extends AbstractGraph<?, ?>, V extends Abstr
   /**
    * Creates a new GMLImporter.
    *
-   * @param edgeFactory
-   *          The edge factory to create Edges
    */
-  public GMLImporter(final EdgeFactory<V, E> edgeFactory) {
-    this.edgeFactory = edgeFactory;
+  public GMLImporter() {
     this.classKeySet = new LinkedHashMap<>();
   }
 

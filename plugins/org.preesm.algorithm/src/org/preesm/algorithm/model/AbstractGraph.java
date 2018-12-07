@@ -38,7 +38,7 @@ import java.util.ArrayList;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
-import org.jgrapht.EdgeFactory;
+import java.util.function.Supplier;
 import org.jgrapht.graph.DirectedPseudograph;
 import org.nfunk.jep.JEP;
 import org.nfunk.jep.Node;
@@ -115,11 +115,9 @@ public abstract class AbstractGraph<V extends AbstractVertex, E extends Abstract
   /**
    * Creates a new Instance of Abstract graph with the given factory.
    *
-   * @param factory
-   *          the factory
    */
-  public AbstractGraph(final EdgeFactory<V, E> factory) {
-    super(factory);
+  public AbstractGraph(final Supplier<E> edgeSupplier) {
+    super(null, edgeSupplier, false);
     this.properties = new PropertyBean();
     this.observers = new ArrayList<>();
     this.hasChanged = false;
@@ -133,7 +131,7 @@ public abstract class AbstractGraph<V extends AbstractVertex, E extends Abstract
    * @throws PreesmException
    *           the SDF 4 J exception
    */
-  public void accept(final IGraphVisitor visitor) throws PreesmException {
+  public void accept(final IGraphVisitor visitor) {
     visitor.visit(this);
   }
 

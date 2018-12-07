@@ -40,7 +40,6 @@ package org.preesm.algorithm.io.gml;
 import org.preesm.algorithm.model.dag.DAGEdge;
 import org.preesm.algorithm.model.dag.DAGVertex;
 import org.preesm.algorithm.model.dag.DirectedAcyclicGraph;
-import org.preesm.algorithm.model.factories.DAGEdgeFactory;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
 
@@ -50,13 +49,6 @@ import org.w3c.dom.NodeList;
  * @author jpiat
  */
 public class GMLDAGImporter extends GMLImporter<DirectedAcyclicGraph, DAGVertex, DAGEdge> {
-
-  /**
-   * Constructs a new DAG importer with the specified factories.
-   */
-  public GMLDAGImporter() {
-    super(new DAGEdgeFactory());
-  }
 
   /*
    * (non-Javadoc)
@@ -83,7 +75,7 @@ public class GMLDAGImporter extends GMLImporter<DirectedAcyclicGraph, DAGVertex,
    */
   @Override
   public DirectedAcyclicGraph parseGraph(final Element graphElt) {
-    final DirectedAcyclicGraph graph = new DirectedAcyclicGraph(this.edgeFactory);
+    final DirectedAcyclicGraph graph = new DirectedAcyclicGraph();
     parseKeys(graphElt, graph);
     final NodeList childList = graphElt.getChildNodes();
     parseParameters(graph, graphElt);

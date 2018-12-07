@@ -57,13 +57,8 @@ public class MapperDAGEdge extends DAGEdge {
 
   /**
    * Instantiates a new mapper DAG edge.
-   *
-   * @param source
-   *          the source
-   * @param destination
-   *          the destination
    */
-  public MapperDAGEdge(final MapperDAGVertex source, final MapperDAGVertex destination) {
+  public MapperDAGEdge() {
     this.initialEdgeProperty = new EdgeInit();
     this.timingEdgeProperty = new EdgeTiming();
   }

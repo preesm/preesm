@@ -53,7 +53,6 @@ import org.preesm.algorithm.mapper.abc.SpecialVertexManager;
 import org.preesm.algorithm.mapper.model.MapperDAG;
 import org.preesm.algorithm.mapper.model.MapperDAGEdge;
 import org.preesm.algorithm.mapper.model.MapperDAGVertex;
-import org.preesm.algorithm.mapper.model.MapperEdgeFactory;
 import org.preesm.algorithm.mapper.model.MapperVertexFactory;
 import org.preesm.algorithm.mapper.model.property.EdgeInit;
 import org.preesm.algorithm.mapper.model.property.VertexInit;
@@ -110,7 +109,7 @@ public class SdfToDagConverter {
     final PiGraph pisdGraph = (PiGraph) sdf.getPropertyBean().getValue(PiGraph.class.getCanonicalName());
 
     // Generates a dag
-    final MapperDAG dag = new MapperDAG(new MapperEdgeFactory(), pisdGraph);
+    final MapperDAG dag = new MapperDAG(pisdGraph);
 
     // Creates a visitor parameterized with the DAG
     final DAGTransformation<MapperDAG> visitor = new DAGTransformation<>(dag, MapperVertexFactory.getInstance());

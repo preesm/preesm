@@ -50,7 +50,6 @@ import org.preesm.algorithm.codegen.model.CodeGenParameter;
 import org.preesm.algorithm.mapper.graphtransfo.SdfToDagConverter;
 import org.preesm.algorithm.mapper.model.MapperDAG;
 import org.preesm.algorithm.mapper.model.MapperDAGVertex;
-import org.preesm.algorithm.mapper.model.MapperEdgeFactory;
 import org.preesm.algorithm.mapper.model.MapperVertexFactory;
 import org.preesm.algorithm.model.AbstractEdge;
 import org.preesm.algorithm.model.IRefinement;
@@ -137,7 +136,7 @@ public class StaticPiMM2MapperDAGVisitor extends PiMMSwitch<Boolean> {
    */
   public StaticPiMM2MapperDAGVisitor(final PiGraph piGraph, final Design architecture, final PreesmScenario scenario) {
     this.architecture = architecture;
-    this.result = new MapperDAG(new MapperEdgeFactory(), piGraph);
+    this.result = new MapperDAG(piGraph);
     this.vertexFactory = MapperVertexFactory.getInstance();
     this.scenario = scenario;
   }

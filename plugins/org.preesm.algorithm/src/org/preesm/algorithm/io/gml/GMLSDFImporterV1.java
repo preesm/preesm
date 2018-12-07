@@ -42,7 +42,6 @@ import org.eclipse.core.runtime.Path;
 import org.preesm.algorithm.model.AbstractVertex;
 import org.preesm.algorithm.model.CodeRefinement;
 import org.preesm.algorithm.model.InterfaceDirection;
-import org.preesm.algorithm.model.factories.SDFEdgeFactory;
 import org.preesm.algorithm.model.factories.SDFVertexFactory;
 import org.preesm.algorithm.model.sdf.SDFAbstractVertex;
 import org.preesm.algorithm.model.sdf.SDFEdge;
@@ -60,13 +59,6 @@ import org.w3c.dom.NodeList;
  * @author jpiat
  */
 public class GMLSDFImporterV1 extends GMLImporter<SDFGraph, SDFAbstractVertex, SDFEdge> {
-
-  /**
-   * COnstructs a new importer for SDF graphs.
-   */
-  public GMLSDFImporterV1() {
-    super(new SDFEdgeFactory());
-  }
 
   /**
    * Parses an Edge in the DOM document.
@@ -127,7 +119,7 @@ public class GMLSDFImporterV1 extends GMLImporter<SDFGraph, SDFAbstractVertex, S
    */
   @Override
   public SDFGraph parseGraph(final Element graphElt) {
-    final SDFGraph graph = new SDFGraph((SDFEdgeFactory) this.edgeFactory);
+    final SDFGraph graph = new SDFGraph();
     final NodeList childList = graphElt.getChildNodes();
     parseParameters(graph, graphElt);
     parseVariables(graph, graphElt);
