@@ -52,6 +52,9 @@
 #include <arpa/inet.h>
 #include <netinet/tcp.h>
 
+#include "communication.h"
+
+
 #ifndef max
     #define max(a,b) ((a) > (b) ? (a) : (b))
 #endif
