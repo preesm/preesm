@@ -67,6 +67,8 @@ public abstract class AbstractPiGraphSpecialActorRemover<T extends DataPort> {
   protected void fillRemoveAndReplace(final List<T> oldDataPorts, final List<T> newDataPorts, final T port) {
     final int index = oldDataPorts.indexOf(port) + this.portOffset;
     this.portOffset += newDataPorts.size() - 1;
+    // Adding short suffixe
+    newDataPorts.forEach(d -> d.setName(d.getName() + "_" + Integer.toString(this.portOffset)));
     this.dataPortsToRemove.add(port);
     this.dataPortsToReplace.put(index, newDataPorts);
   }

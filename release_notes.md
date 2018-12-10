@@ -22,6 +22,7 @@ PREESM Changelog
 * Fix spider codegen to handle latest papify config;
 
 ### Bug fix
+* Fix unicity of ports name when doing fork / join / broadcast / roundbuffer graph optimizations. 
 
 
 ## Release version 3.0.1
