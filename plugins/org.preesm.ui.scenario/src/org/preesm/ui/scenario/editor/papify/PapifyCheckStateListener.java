@@ -289,7 +289,6 @@ public class PapifyCheckStateListener implements ISDFCheckStateListener {
         }
       }
       if (found) {
-
         if (!timing) {
           papiConfig.addPAPIEvent(compName, event);
         } else {

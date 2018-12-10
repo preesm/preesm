@@ -179,6 +179,25 @@ public class PapifyConfigPE {
     return false;
   }
 
+  @Override
+  public boolean equals(final Object comparer) {
+
+    boolean decision = false;
+
+    if (comparer instanceof PapifyConfigPE) {
+      final PapifyConfigPE tester = (PapifyConfigPE) comparer;
+      if (this.peType.equals(tester.getpeType())) {
+        decision = true;
+      }
+    }
+    return decision;
+  }
+
+  @Override
+  public int hashCode() {
+    return this.peType.hashCode();
+  }
+
   /*
    * (non-Javadoc)
    *
