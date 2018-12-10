@@ -18,6 +18,7 @@ PREESM Changelog
 * Fix PiSDF flattener and srdag transformations to output a consistent model;
 * Centralize Xtend and XCore config on parent pom file;
 * Remove uses of deprecated EdgeFactories of JGrapht. Use Suppliers instead;
+* Fix Papify UI;
 
 ### Bug fix
 
