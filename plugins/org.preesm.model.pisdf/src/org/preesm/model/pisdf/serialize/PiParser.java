@@ -51,6 +51,7 @@ import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.Path;
+import org.eclipse.emf.common.util.EList;
 import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.common.util.WrappedException;
 import org.eclipse.emf.ecore.resource.Resource;
@@ -136,7 +137,30 @@ public class PiParser {
       throw new PreesmException(message, e);
     }
 
+    check(pigraph);
+
     return pigraph;
+  }
+
+  /**
+   *
+   */
+  public static void check(final PiGraph graph) {
+    final EList<Fifo> fifos = graph.getFifos();
+    for (Fifo f : fifos) {
+      if (f.getSourcePort() == null || f.getTargetPort() == null) {
+        throw new PreesmException();
+      }
+      if (f.getSourcePort().getName().equals("bias_out0_0")) {
+        System.out.println("found");
+      }
+    }
+    for (AbstractActor a : graph.getActors()) {
+      if (a.getName().equals("BroadcastBiasCritic_0")) {
+        System.out.println("found");
+      }
+    }
+
   }
 
   /**
@@ -506,7 +530,6 @@ public class PiParser {
    */
   protected void parseFifo(final Element edgeElt, final PiGraph graph) {
     // Instantiate the new FIFO
-    final Fifo fifo = PiMMUserFactory.instance.createFifo();
 
     // Find the source and target of the fifo
     final String sourceName = edgeElt.getAttribute(PiIdentifiers.FIFO_SOURCE);
@@ -526,7 +549,6 @@ public class PiParser {
     if ((type == null) || type.equals("")) {
       type = "void";
     }
-    fifo.setType(type);
     // Get the sourcePort and targetPort
     String sourcePortName = edgeElt.getAttribute(PiIdentifiers.FIFO_SOURCE_PORT);
     sourcePortName = (sourcePortName.isEmpty()) ? null : sourcePortName;
@@ -542,8 +564,7 @@ public class PiParser {
       throw new PreesmException("Edge target port " + targetPortName + " does not exist for vertex " + targetName);
     }
 
-    fifo.setSourcePort(oPort);
-    fifo.setTargetPort(iPort);
+    final Fifo fifo = PiMMUserFactory.instance.createFifo(oPort, iPort, type);
 
     // Check if the fifo has a delay
 

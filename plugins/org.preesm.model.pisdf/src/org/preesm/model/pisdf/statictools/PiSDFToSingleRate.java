@@ -70,6 +70,7 @@ import org.preesm.model.pisdf.RoundBufferActor;
 import org.preesm.model.pisdf.brv.BRVMethod;
 import org.preesm.model.pisdf.brv.PiBRV;
 import org.preesm.model.pisdf.factory.PiMMUserFactory;
+import org.preesm.model.pisdf.serialize.PiParser;
 import org.preesm.model.pisdf.statictools.optims.BroadcastRoundBufferOptimization;
 import org.preesm.model.pisdf.statictools.optims.ForkJoinOptimization;
 import org.preesm.model.pisdf.util.PiMMSwitch;
@@ -107,6 +108,7 @@ public class PiSDFToSingleRate extends PiMMSwitch<Boolean> {
     final BroadcastRoundBufferOptimization brRbOptimization = new BroadcastRoundBufferOptimization();
     brRbOptimization.optimize(acyclicSRPiMM);
 
+    PiParser.check(acyclicSRPiMM);
     return acyclicSRPiMM;
   }
 
@@ -194,26 +196,6 @@ public class PiSDFToSingleRate extends PiMMSwitch<Boolean> {
     // PiSDFFlattener.instantiateParameters(actor, copyActor);
     return true;
   }
-
-  // @Override
-  // public Boolean caseInitActor(final InitActor actor) {
-  // // Fetch the actor
-  // final InitActor initActor = (InitActor) this.result.lookupVertex(actor.getName());
-  // // Update name
-  // initActor.setName(this.graphPrefix + initActor.getName());
-  // return true;
-  // }
-  //
-  // @Override
-  // public Boolean caseEndActor(final EndActor actor) {
-  // // Fetch the actor
-  // final EndActor endActor = (EndActor) this.result.lookupVertex(actor.getName());
-  // // Update name
-  // endActor.setName(this.graphPrefix + endActor.getName());
-  // // Update END_REFERENCE
-  // endActor.setInitReference(this.graphPrefix + endActor.getInitReference());
-  // return true;
-  // }
 
   @Override
   public Boolean caseDelayActor(final DelayActor actor) {
@@ -842,10 +824,8 @@ public class PiSDFToSingleRate extends PiMMSwitch<Boolean> {
     // Set the persistence level of the delay
     init.setLevel(fifo.getDelay().getLevel());
     // Create the FIFO and connect it
-    final Fifo initFifo = PiMMUserFactory.instance.createFifo();
-    initFifo.setType(fifo.getType());
-    initFifo.setTargetPort(delayActor.getDataInputPort());
-    initFifo.setSourcePort(init.getDataOutputPort());
+    final Fifo initFifo = PiMMUserFactory.instance.createFifo(init.getDataOutputPort(), delayActor.getDataInputPort(),
+        fifo.getType());
     graph.addActor(init);
     graph.addFifo(initFifo);
     this.brv.put(init, (long) 1);
@@ -867,10 +847,8 @@ public class PiSDFToSingleRate extends PiMMSwitch<Boolean> {
     // TODO: handle asymetric configuration
     end.setInitReference(fifo.getDelay().getSetterActor().getName());
     // Create the FIFO and connect it
-    final Fifo endFifo = PiMMUserFactory.instance.createFifo();
-    endFifo.setType(fifo.getType());
-    endFifo.setTargetPort(end.getDataInputPort());
-    endFifo.setSourcePort(delayActor.getDataOutputPort());
+    final Fifo endFifo = PiMMUserFactory.instance.createFifo(delayActor.getDataOutputPort(), end.getDataInputPort(),
+        fifo.getType());
     graph.addActor(end);
     graph.addFifo(endFifo);
     this.brv.put(end, (long) 1);

@@ -420,24 +420,18 @@ public class PiMMHelper {
 
     // 3. Now we connect the newly created interfaces to the delay
     // Add the setter FIFO
-    final Fifo fifoSetter = PiMMUserFactory.instance.createFifo();
-    fifoSetter.setType(type);
     // Connect the setter interface to the delay
-    fifoSetter.setSourcePort((DataOutputPort) setterIn.getDataPort());
     final DelayActor originalDelayActor = delay.getActor();
-    fifoSetter.setTargetPort(originalDelayActor.getDataInputPort());
+    final Fifo fifoSetter = PiMMUserFactory.instance.createFifo((DataOutputPort) setterIn.getDataPort(),
+        originalDelayActor.getDataInputPort(), type);
     // Add the getter FIFO
-    final Fifo fifoGetter = PiMMUserFactory.instance.createFifo();
-    fifoGetter.setType(type);
     // Connect the delay interface to the getter
-    fifoGetter.setSourcePort(originalDelayActor.getDataOutputPort());
-    fifoGetter.setTargetPort((DataInputPort) getterOut.getDataPort());
+    final Fifo fifoGetter = PiMMUserFactory.instance.createFifo(originalDelayActor.getDataOutputPort(),
+        (DataInputPort) getterOut.getDataPort(), type);
     graph.addFifo(fifoSetter);
     graph.addFifo(fifoGetter);
 
     // 4. Now we create the feed back FIFO in the upper-level
-    final Fifo fifoPersistence = PiMMUserFactory.instance.createFifo();
-    fifoPersistence.setType(type);
     // 5. We set the expression of the corresponding ports on the graph
     final DataInputPort inPort = (DataInputPort) setterIn.getGraphPort();
     // Add the input port
@@ -448,8 +442,7 @@ public class PiMMHelper {
     outPort.setExpression(delayExpression);
     outPort.setAnnotation(PortMemoryAnnotation.READ_ONLY);
     // Now set the source / target port of the FIFO
-    fifoPersistence.setSourcePort(outPort);
-    fifoPersistence.setTargetPort(inPort);
+    final Fifo fifoPersistence = PiMMUserFactory.instance.createFifo(outPort, inPort, type);
     graph.getContainingPiGraph().addFifo(fifoPersistence);
 
     // 5. Finally we add a delay to this FIFO as well

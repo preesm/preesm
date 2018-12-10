@@ -377,7 +377,11 @@ public class PiMMSRVerticesLinker {
     final DataInputPort currentSinkPort = getOrCreateSinkPort(sink, rate, sinkVertex);
 
     // 3. Creates the FIFO and connect the ports
-    createFifo(sourceVertex.getContainingPiGraph(), currentSourcePort, currentSinkPort);
+    final PiGraph graph = sourceVertex.getContainingPiGraph();
+
+    final String type = findFifoType(currentSourcePort, currentSinkPort);
+    final Fifo newFifo = PiMMUserFactory.instance.createFifo(currentSourcePort, currentSinkPort, type);
+    graph.addFifo(newFifo);
   }
 
   /**
@@ -498,7 +502,9 @@ public class PiMMSRVerticesLinker {
     // Create the FIFO to connect the Join to the Sink
     final DataInputPort targetPort = getOrCreateSinkPort(currentSink, currentSink.getConsumption(), sinkVertex);
 
-    createFifo(graph, joinOutputPort, targetPort);
+    final String type = findFifoType(joinOutputPort, targetPort);
+    final Fifo newFifo = PiMMUserFactory.instance.createFifo(joinOutputPort, targetPort, type);
+    graph.addFifo(newFifo);
 
     // Add the join actor to the graph
     graph.addActor(joinActor);
@@ -535,7 +541,10 @@ public class PiMMSRVerticesLinker {
     final DataOutputPort currentSourcePort = getOrCreateSourcePort(currentSource, currentSource.getProduction(),
         sourceVertex);
 
-    createFifo(graph, currentSourcePort, forkInputPort);
+    final String type = findFifoType(currentSourcePort, forkInputPort);
+    final Fifo newFifo = PiMMUserFactory.instance.createFifo(currentSourcePort, forkInputPort, type);
+    // Add the fifo to the graph
+    graph.addFifo(newFifo);
 
     // Add the join actor to the graph
     graph.addActor(forkActor);
@@ -543,24 +552,13 @@ public class PiMMSRVerticesLinker {
     return forkActor;
   }
 
-  /**
-   * Creates a FIFO and connects it to the source / target ports. Finally, the FIFO is added to the graph
-   *
-   * @param graph
-   *          the graph in which the FIFO must be added
-   * @param sourcePort
-   *          the source port
-   * @param targetPort
-   *          the target port
-   */
-  private void createFifo(final PiGraph graph, final DataOutputPort sourcePort, final DataInputPort targetPort) {
-    final Fifo newFifo = PiMMUserFactory.instance.createFifo();
+  private String findFifoType(final DataOutputPort sourcePort, final DataInputPort targetPort) {
+    final String type;
     if (!this.fifoType.isEmpty()) {
-      newFifo.setType(this.fifoType);
+      type = this.fifoType;
     } else {
       // Try to check if one of the port already has a FIFO to get the type
       // Otherwise we infer "char" type by default
-      final String type;
       if (sourcePort.getFifo() != null) {
         type = sourcePort.getFifo().getType();
       } else if (targetPort.getFifo() != null) {
@@ -568,13 +566,8 @@ public class PiMMSRVerticesLinker {
       } else {
         type = "char";
       }
-      newFifo.setType(type);
     }
-    newFifo.setSourcePort(sourcePort);
-    newFifo.setTargetPort(targetPort);
-
-    // Add the fifo to the graph
-    graph.addFifo(newFifo);
+    return type;
   }
 
   /**
