@@ -19,6 +19,7 @@ PREESM Changelog
 * Centralize Xtend and XCore config on parent pom file;
 * Remove uses of deprecated EdgeFactories of JGrapht. Use Suppliers instead;
 * Fix Papify UI;
+* Fix spider codegen to handle latest papify config;
 
 ### Bug fix
 
