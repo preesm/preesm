@@ -446,6 +446,13 @@ class DelayActor extends NonExecutableActor, RefinementContainer {
 interface Port {
 	String name
 	op PortKind getKind()
+
+	op AbstractActor getContainingActor() {
+		if (eContainer() instanceof AbstractActor) {
+			return eContainer() as AbstractActor;
+		}
+		return null;
+	}
 }
 
 abstract class DataPort extends Port, ExpressionHolder {
@@ -453,12 +460,6 @@ abstract class DataPort extends Port, ExpressionHolder {
 		return getExpression
 	}
 	PortMemoryAnnotation ^annotation
-	op AbstractActor getContainingActor() {
-		if (eContainer() instanceof AbstractActor) {
-			return eContainer() as AbstractActor;
-		}
-		return null;
-	}
 	op Parameter[] getInputParameters() {
 		return containingActor.inputParameters.unmodifiableView
 	}
