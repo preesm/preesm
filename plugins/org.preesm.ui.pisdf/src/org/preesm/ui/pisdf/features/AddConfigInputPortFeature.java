@@ -45,12 +45,11 @@ import org.eclipse.graphiti.mm.algorithms.styles.Orientation;
 import org.eclipse.graphiti.services.Graphiti;
 import org.eclipse.graphiti.services.IGaService;
 import org.eclipse.graphiti.util.IColorConstant;
+import org.preesm.model.pisdf.AbstractActor;
 import org.preesm.model.pisdf.ConfigInputPort;
-import org.preesm.model.pisdf.ExecutableActor;
 import org.preesm.model.pisdf.Port;
 import org.preesm.model.pisdf.factory.PiMMUserFactory;
 
-// TODO: Auto-generated Javadoc
 /**
  * The Class AddConfigInputPortFeature.
  */
@@ -78,42 +77,21 @@ public class AddConfigInputPortFeature extends AbstractAddActorPortFeature {
     super(fp);
   }
 
-  /*
-   * (non-Javadoc)
-   *
-   * @see org.eclipse.graphiti.features.impl.AbstractFeature#getName()
-   */
   @Override
   public String getName() {
     return "Add Config. Input Port";
   }
 
-  /*
-   * (non-Javadoc)
-   *
-   * @see org.eclipse.graphiti.features.custom.AbstractCustomFeature#getDescription()
-   */
   @Override
   public String getDescription() {
     return "Add a configuration input port to the Actor";
   }
 
-  /*
-   * (non-Javadoc)
-   *
-   * @see org.ietr.preesm.ui.pimm.features.AbstractAddActorPortFeature#getPosition()
-   */
   @Override
   public PortPosition getPosition() {
     return AddConfigInputPortFeature.CFG_INPUT_PORT_POSITION;
   }
 
-  /*
-   * (non-Javadoc)
-   *
-   * @see org.ietr.preesm.ui.pimm.features.AbstractAddActorPortFeature#addPortGA(org.eclipse.graphiti.mm.algorithms.
-   * GraphicsAlgorithm)
-   */
   @Override
   public GraphicsAlgorithm addPortGA(final GraphicsAlgorithm containerShape) {
 
@@ -131,12 +109,6 @@ public class AddConfigInputPortFeature extends AbstractAddActorPortFeature {
     return triangle;
   }
 
-  /*
-   * (non-Javadoc)
-   *
-   * @see org.ietr.preesm.ui.pimm.features.AbstractAddActorPortFeature#addPortLabel(org.eclipse.graphiti.mm.algorithms.
-   * GraphicsAlgorithm, java.lang.String)
-   */
   @Override
   public GraphicsAlgorithm addPortLabel(final GraphicsAlgorithm containerShape, final String portName) {
     // Get the GaService
@@ -156,25 +128,14 @@ public class AddConfigInputPortFeature extends AbstractAddActorPortFeature {
     return text;
   }
 
-  /*
-   * (non-Javadoc)
-   *
-   * @see org.ietr.preesm.ui.pimm.features.AbstractAddActorPortFeature#getNewPort(java.lang.String,
-   * org.ietr.preesm.experiment.model.pimm.ExecutableActor)
-   */
   @Override
-  public Port getNewPort(final String portName, final ExecutableActor actor) {
+  public Port getNewPort(final String portName, final AbstractActor actor) {
     final ConfigInputPort newPort = PiMMUserFactory.instance.createConfigInputPort();
     newPort.setName(portName);
     actor.getConfigInputPorts().add(newPort);
     return newPort;
   }
 
-  /*
-   * (non-Javadoc)
-   *
-   * @see org.ietr.preesm.ui.pimm.features.AbstractAddActorPortFeature#getPortKind()
-   */
   @Override
   public String getPortKind() {
     return AddConfigInputPortFeature.CFG_INPUT_PORT_KIND;

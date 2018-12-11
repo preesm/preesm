@@ -43,8 +43,8 @@ import org.preesm.algorithm.model.sdf.SDFGraph;
 import org.preesm.algorithm.model.sdf.esdf.SDFSinkInterfaceVertex;
 import org.preesm.algorithm.model.sdf.esdf.SDFSourceInterfaceVertex;
 import org.preesm.algorithm.model.types.LongEdgePropertyType;
-import org.preesm.scenario.PreesmScenario;
-import org.preesm.scenario.RelativeConstraintManager;
+import org.preesm.model.scenario.PreesmScenario;
+import org.preesm.model.scenario.RelativeConstraintManager;
 import org.preesm.workflow.elements.Workflow;
 import org.preesm.workflow.implement.AbstractTaskImplementation;
 

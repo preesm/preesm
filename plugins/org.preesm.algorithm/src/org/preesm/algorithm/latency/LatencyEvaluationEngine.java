@@ -45,7 +45,7 @@ import org.preesm.algorithm.model.sdf.SDFGraph;
 import org.preesm.algorithm.throughput.tools.helpers.GraphStructureHelper;
 import org.preesm.algorithm.throughput.tools.helpers.Stopwatch;
 import org.preesm.algorithm.throughput.tools.transformers.SDFTransformer;
-import org.preesm.scenario.PreesmScenario;
+import org.preesm.model.scenario.PreesmScenario;
 
 /**
  * @author hderoui

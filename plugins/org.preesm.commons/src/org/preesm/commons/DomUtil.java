@@ -153,7 +153,8 @@ public class DomUtil {
 
     // serialize the document, close the stream
     final LSSerializer serializer = implLS.createLSSerializer();
-    serializer.getDomConfig().setParameter("format-pretty-print", true);
+    final DOMConfiguration domConfig = serializer.getDomConfig();
+    domConfig.setParameter("format-pretty-print", true);
     serializer.write(document, output);
   }
 

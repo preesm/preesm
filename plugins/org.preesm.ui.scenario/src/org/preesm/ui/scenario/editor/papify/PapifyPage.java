@@ -71,16 +71,16 @@ import org.eclipse.ui.forms.widgets.ExpandableComposite;
 import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.eclipse.ui.forms.widgets.ScrolledForm;
 import org.eclipse.ui.forms.widgets.Section;
-import org.preesm.algorithm.io.gml.InvalidModelException;
+import org.preesm.commons.exceptions.PreesmException;
 import org.preesm.commons.files.WorkspaceUtils;
-import org.preesm.scenario.PreesmScenario;
-import org.preesm.scenario.papi.PapiComponent;
-import org.preesm.scenario.papi.PapiConfigParser;
-import org.preesm.scenario.papi.PapiEvent;
-import org.preesm.scenario.papi.PapiEventInfo;
-import org.preesm.scenario.papi.PapiEventModifier;
-import org.preesm.scenario.papi.PapiEventSet;
-import org.preesm.scenario.papi.PapifyConfigManager;
+import org.preesm.model.scenario.PreesmScenario;
+import org.preesm.model.scenario.papi.PapiComponent;
+import org.preesm.model.scenario.papi.PapiConfigParser;
+import org.preesm.model.scenario.papi.PapiEvent;
+import org.preesm.model.scenario.papi.PapiEventInfo;
+import org.preesm.model.scenario.papi.PapiEventModifier;
+import org.preesm.model.scenario.papi.PapiEventSet;
+import org.preesm.model.scenario.papi.PapifyConfigManager;
 import org.preesm.ui.scenario.editor.FileSelectionAdapter;
 import org.preesm.ui.scenario.editor.Messages;
 import org.preesm.ui.scenario.editor.PreesmAlgorithmTreeLabelProvider;
@@ -380,14 +380,14 @@ public class PapifyPage extends FormPage implements IPropertyListener {
    *
    * @param text
    *          the text
-   * @throws InvalidModelException
+   * @throws PreesmException
    *           the invalid model exception
    * @throws FileNotFoundException
    *           the file not found exception
    * @throws CoreException
    *           the core exception
    */
-  private void importData(final Text text) throws InvalidModelException, FileNotFoundException, CoreException {
+  private void importData(final Text text) throws PreesmException, FileNotFoundException, CoreException {
 
     final IWorkspace workspace = ResourcesPlugin.getWorkspace();
 

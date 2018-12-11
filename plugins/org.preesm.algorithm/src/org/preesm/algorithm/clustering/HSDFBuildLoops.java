@@ -52,7 +52,6 @@ import org.preesm.algorithm.memory.exclusiongraph.MemoryExclusionGraph;
 import org.preesm.algorithm.memory.script.MemoryScriptEngine;
 import org.preesm.algorithm.model.AbstractGraph;
 import org.preesm.algorithm.model.AbstractVertex;
-import org.preesm.algorithm.model.parameters.InvalidExpressionException;
 import org.preesm.algorithm.model.sdf.SDFAbstractVertex;
 import org.preesm.algorithm.model.sdf.SDFEdge;
 import org.preesm.algorithm.model.sdf.SDFGraph;
@@ -64,13 +63,12 @@ import org.preesm.algorithm.model.sdf.esdf.SDFSinkInterfaceVertex;
 import org.preesm.algorithm.model.sdf.esdf.SDFSourceInterfaceVertex;
 import org.preesm.algorithm.model.sdf.transformations.IbsdfFlattener;
 import org.preesm.algorithm.model.types.LongEdgePropertyType;
-import org.preesm.algorithm.model.visitors.SDF4JException;
+import org.preesm.commons.exceptions.PreesmException;
 import org.preesm.commons.logger.PreesmLogger;
 import org.preesm.commons.math.MathFunctionsHelper;
+import org.preesm.model.scenario.PreesmScenario;
+import org.preesm.model.scenario.types.DataType;
 import org.preesm.model.slam.Design;
-import org.preesm.scenario.PreesmScenario;
-import org.preesm.scenario.types.DataType;
-import org.preesm.workflow.WorkflowException;
 
 /**
  * This class is used to perform the clusterization (loop IR builder and memory allocation). It is used to set the
@@ -185,7 +183,7 @@ public class HSDFBuildLoops {
         if (vv != v) {
           inV.add(vv);
         } else {
-          throw new WorkflowException("HSDFBuildLoops Delays not supported when generating clustering");
+          throw new PreesmException("HSDFBuildLoops Delays not supported when generating clustering");
         }
       }
     }
@@ -201,7 +199,7 @@ public class HSDFBuildLoops {
         if (vv != v) {
           outV.add(vv);
         } else {
-          throw new WorkflowException("HSDFBuildLoops Delays not supported when generating clustering");
+          throw new PreesmException("HSDFBuildLoops Delays not supported when generating clustering");
         }
       }
     }
@@ -212,7 +210,7 @@ public class HSDFBuildLoops {
 
   private List<SDFAbstractVertex> getClusteringVertexes(final List<SDFAbstractVertex> vertexes) {
     if (vertexes.isEmpty()) {
-      throw new WorkflowException("getClusteringVertexes failed vertexes is empty");
+      throw new PreesmException("getClusteringVertexes failed vertexes is empty");
     }
     final List<SDFAbstractVertex> r = new ArrayList<>();
     if (vertexes.size() == 1) {
@@ -251,14 +249,14 @@ public class HSDFBuildLoops {
       }
     }
     if (r.isEmpty()) {
-      throw new WorkflowException("Failed getClusteringVertexes");
+      throw new PreesmException("Failed getClusteringVertexes");
     }
     return r;
   }
 
   private int copyEdge(final SDFEdge dst, final SDFEdge src) {
     if ((dst == null) || (src == null)) {
-      throw new WorkflowException("Failed copy Edge");
+      throw new PreesmException("Failed copy Edge");
     }
     dst.setDataType(src.getDataType());
 
@@ -292,12 +290,8 @@ public class HSDFBuildLoops {
         inEdgeVertex.add(e);
         long cons = 0;
         long rvRight = 0;
-        try {
-          cons = e.getCons().longValue();
-          rvRight = right.getNbRepeatAsLong();
-        } catch (final InvalidExpressionException ex) {
-          throw new WorkflowException("generatePairedClusteredVertex failed", ex);
-        }
+        cons = e.getCons().longValue();
+        rvRight = right.getNbRepeatAsLong();
         e.setCons(new LongEdgePropertyType((rvRight * cons) / pgcm));
       }
     }
@@ -312,12 +306,8 @@ public class HSDFBuildLoops {
         outEdgeVertex.add(e);
         long prod = 0;
         long rvLeft = 0;
-        try {
-          prod = e.getProd().longValue();
-          rvLeft = left.getNbRepeatAsLong();
-        } catch (final InvalidExpressionException ex) {
-          throw new WorkflowException("generatePairedClusteredVertex failed", ex);
-        }
+        prod = e.getProd().longValue();
+        rvLeft = left.getNbRepeatAsLong();
         e.setProd(new LongEdgePropertyType((rvLeft * prod) / pgcm));
       }
     }
@@ -363,7 +353,7 @@ public class HSDFBuildLoops {
     this.graph.removeVertex(right);
 
     if (!this.graph.isSchedulable()) {
-      throw new WorkflowException("Graph not schedulable while clustering procedure (possible bug)");
+      throw new PreesmException("Graph not schedulable while clustering procedure (possible bug)");
     }
     return vertex;
   }
@@ -381,7 +371,7 @@ public class HSDFBuildLoops {
       }
       this.clustSchedString += ")";
     } else {
-      throw new WorkflowException("Error while printed clustering schedule");
+      throw new PreesmException("Error while printed clustering schedule");
     }
   }
 
@@ -408,7 +398,7 @@ public class HSDFBuildLoops {
         recursiveGetLoopClust(s, getLoopClusterList);
       }
     } else {
-      throw new WorkflowException("Error while printed clustering schedule");
+      throw new PreesmException("Error while printed clustering schedule");
     }
     return null;
   }
@@ -422,7 +412,7 @@ public class HSDFBuildLoops {
     getLoopClusterList.clear();
     recursiveGetLoopClust(a, getLoopClusterList);
     if (getLoopClusterList.isEmpty()) {
-      throw new WorkflowException("Finished !! Error while getting clustered schedule");
+      throw new PreesmException("Finished !! Error while getting clustered schedule");
     }
     return getLoopClusterList;
   }
@@ -499,13 +489,9 @@ public class HSDFBuildLoops {
     for (int i = 0; i < (nbActor - 1); i++) {
       // get actor
       final List<SDFAbstractVertex> current = getClusteringVertexes(vertexesCpy);
-      try {
-        pgcm = MathFunctionsHelper.gcd(current.get(0).getNbRepeatAsLong(), current.get(1).getNbRepeatAsLong());
-        repLeft = current.get(0).getNbRepeatAsLong() / pgcm;
-        repRight = current.get(1).getNbRepeatAsLong() / pgcm;
-      } catch (final InvalidExpressionException e) {
-        throw new WorkflowException("generateClustering failed", e);
-      }
+      pgcm = MathFunctionsHelper.gcd(current.get(0).getNbRepeatAsLong(), current.get(1).getNbRepeatAsLong());
+      repLeft = current.get(0).getNbRepeatAsLong() / pgcm;
+      repRight = current.get(1).getNbRepeatAsLong() / pgcm;
 
       // clusterized at graph level the choosen actors (graph transfo)
       final SDFAbstractVertex clusteredVertex = generatePairedClusteredVertex(pgcm, current.get(0)/* left */,
@@ -622,7 +608,7 @@ public class HSDFBuildLoops {
       engine.runScripts(dag, this.dataTypes, checkString);
     } catch (EvalError e) {
       final String message = "An error occurred during memory scripts execution";
-      throw new WorkflowException(message, e);
+      throw new PreesmException(message, e);
     }
     engine.updateMemEx(memEx);
 
@@ -663,19 +649,15 @@ public class HSDFBuildLoops {
             long nbRep = 0;
 
             try {
-              nbRep = (long) e.getTarget().getNbRepeat();
-            } catch (final NumberFormatException | InvalidExpressionException ex) {
-              throw new WorkflowException("Internal Memory allocation failed for actor " + v.getName(), ex);
+              nbRep = e.getTarget().getNbRepeat();
+            } catch (final NumberFormatException ex) {
+              throw new PreesmException("Internal Memory allocation failed for actor " + v.getName(), ex);
             }
-            try {
-              mem = nbRep * e.getCons().longValue();
-            } catch (final InvalidExpressionException ex) {
-              throw new WorkflowException("Internal Memory allocation failed for actor " + v.getName(), ex);
-            }
+            mem = nbRep * e.getCons().longValue();
           } else if ((v instanceof SDFBroadcastVertex) || (v instanceof SDFRoundBufferVertex)) {
             mem += e.getCons().longValue() * v.getNbRepeatAsLong();
           } else {
-            throw new WorkflowException(
+            throw new PreesmException(
                 "Internal Memory allocation failed for actor " + v.getName() + " unsupported special actor");
           }
 
@@ -706,25 +688,25 @@ public class HSDFBuildLoops {
       try {
         flattener.flattenGraph();
         resultGraph = flattener.getFlattenedGraph();
-      } catch (final SDF4JException e) {
-        throw (new WorkflowException(e.getMessage()));
+      } catch (final PreesmException e) {
+        throw (new PreesmException(e.getMessage()));
       }
       try {
         resultGraph.validateModel();
-      } catch (final SDF4JException e) {
-        throw new WorkflowException("execute failed", e);
+      } catch (final PreesmException e) {
+        throw new PreesmException("execute failed", e);
       } // compute repetition vectors
       try {
         if (!resultGraph.isSchedulable()) {
-          throw (new WorkflowException("HSDF Build Loops generate clustering: Graph not schedulable"));
+          throw (new PreesmException("HSDF Build Loops generate clustering: Graph not schedulable"));
         }
-      } catch (final SDF4JException e) {
-        throw new WorkflowException("execute failed", e);
+      } catch (final PreesmException e) {
+        throw new PreesmException("execute failed", e);
       }
 
       final AbstractClust clust = generateClustering(resultGraph);
       if (clust == null) {
-        throw (new WorkflowException(
+        throw (new PreesmException(
             "HSDF Build Loops generate clustering: Failed to cluster the hierarchical actor " + resultGraph.getName()));
       }
       g.getGraphDescription().getPropertyBean().setValue(MapperDAG.CLUSTERED_VERTEX, clust);

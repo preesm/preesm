@@ -41,10 +41,10 @@ import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.eclipse.core.runtime.IProgressMonitor;
+import org.preesm.commons.exceptions.PreesmException;
 import org.preesm.commons.logger.PreesmLogger;
 import org.preesm.model.slam.Design;
 import org.preesm.model.slam.process.SlamFlattener;
-import org.preesm.workflow.WorkflowException;
 import org.preesm.workflow.elements.Workflow;
 import org.preesm.workflow.implement.AbstractTaskImplementation;
 
@@ -63,7 +63,7 @@ public class SlamHierarchyFlattening extends AbstractTaskImplementation {
    */
   @Override
   public Map<String, Object> execute(final Map<String, Object> inputs, final Map<String, String> parameters,
-      final IProgressMonitor monitor, final String nodeName, final Workflow workflow) throws WorkflowException {
+      final IProgressMonitor monitor, final String nodeName, final Workflow workflow) throws PreesmException {
     final Map<String, Object> outputs = new LinkedHashMap<>();
     final Design design = (Design) inputs.get("architecture");
     final String depthS = parameters.get("depth");

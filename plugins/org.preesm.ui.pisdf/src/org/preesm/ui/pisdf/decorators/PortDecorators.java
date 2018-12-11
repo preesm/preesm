@@ -44,13 +44,13 @@ import org.eclipse.graphiti.mm.pictograms.PictogramElement;
 import org.eclipse.graphiti.platform.IPlatformImageConstants;
 import org.eclipse.graphiti.tb.IDecorator;
 import org.eclipse.graphiti.tb.ImageDecorator;
+import org.preesm.commons.math.ExpressionEvaluationException;
 import org.preesm.model.pisdf.ConfigOutputPort;
 import org.preesm.model.pisdf.DataInputPort;
 import org.preesm.model.pisdf.DataOutputPort;
 import org.preesm.model.pisdf.Expression;
 import org.preesm.model.pisdf.PiGraph;
 import org.preesm.model.pisdf.Port;
-import org.preesm.model.pisdf.expression.ExpressionEvaluationException;
 import org.preesm.model.pisdf.util.DependencyCycleDetector;
 
 // TODO: Auto-generated Javadoc

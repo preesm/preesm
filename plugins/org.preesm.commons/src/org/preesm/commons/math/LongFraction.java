@@ -36,6 +36,7 @@ package org.preesm.commons.math;
 
 import java.io.Serializable;
 import java.math.BigInteger;
+import org.apache.commons.lang3.math.Fraction;
 import org.apache.commons.math3.FieldElement;
 import org.apache.commons.math3.exception.MathArithmeticException;
 import org.apache.commons.math3.exception.NullArgumentException;
@@ -45,6 +46,7 @@ import org.apache.commons.math3.util.ArithmeticUtils;
 import org.apache.commons.math3.util.FastMath;
 
 /**
+ * This is a copy of the Apache {@link Fraction} with long numerator and denominator instead of integer.
  *
  * @author anmorvan
  *

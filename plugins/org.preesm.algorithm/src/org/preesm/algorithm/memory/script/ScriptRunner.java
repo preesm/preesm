@@ -56,7 +56,6 @@ import java.util.logging.Logger;
 import java.util.stream.Collectors;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.xtext.xbase.lib.Pair;
-import org.preesm.algorithm.memory.allocation.MemoryAllocationException;
 import org.preesm.algorithm.memory.exclusiongraph.MemoryExclusionGraph;
 import org.preesm.algorithm.memory.exclusiongraph.MemoryExclusionVertex;
 import org.preesm.algorithm.model.AbstractEdge;
@@ -73,10 +72,10 @@ import org.preesm.algorithm.model.sdf.SDFEdge;
 import org.preesm.algorithm.model.sdf.SDFGraph;
 import org.preesm.algorithm.model.sdf.SDFVertex;
 import org.preesm.algorithm.model.sdf.esdf.SDFRoundBufferVertex;
+import org.preesm.commons.exceptions.PreesmException;
 import org.preesm.commons.files.URLResolver;
 import org.preesm.commons.logger.PreesmLogger;
-import org.preesm.scenario.types.DataType;
-import org.preesm.workflow.WorkflowException;
+import org.preesm.model.scenario.types.DataType;
 
 /**
  *
@@ -526,7 +525,7 @@ public class ScriptRunner {
       it.matchTable.values().forEach(flatten::addAll);
       flatten.stream().forEach(match -> {
         if (result.getKey().contains(match.getRemoteBuffer())) {
-          throw new MemoryAllocationException("Inter-sibling matches are no longer allowed.");
+          throw new PreesmException("Inter-sibling matches are no longer allowed.");
         } else {
           match.setType(MatchType.FORWARD);
         }
@@ -538,7 +537,7 @@ public class ScriptRunner {
       it.matchTable.values().forEach(flatten::addAll);
       flatten.stream().forEach(match -> {
         if (result.getValue().contains(match.getRemoteBuffer())) {
-          throw new MemoryAllocationException("Inter-sibling matches are no longer allowed.");
+          throw new PreesmException("Inter-sibling matches are no longer allowed.");
         } else {
           match.setType(MatchType.BACKWARD);
         }
@@ -717,7 +716,7 @@ public class ScriptRunner {
           matchedBuffers = processGroupStep7(buffers);
           break;
         default:
-          throw new MemoryAllocationException("Unsupported step number " + step);
+          throw new PreesmException("Unsupported step number " + step);
       }
 
       if (!matchedBuffers.isEmpty()) {
@@ -1698,7 +1697,7 @@ public class ScriptRunner {
       try {
         return new Buffer(it, dagVertex, it.getTargetLabel(), nbTokens, dataSize, isMergeable);
       } catch (final NullPointerException exc) {
-        throw new WorkflowException("SDFEdge " + it.getSource().getName() + "_" + it.getSourceLabel() + "->"
+        throw new PreesmException("SDFEdge " + it.getSource().getName() + "_" + it.getSourceLabel() + "->"
             + it.getTarget().getName() + "_" + it.getTargetLabel() + " has unknows type " + dataType.toString()
             + ". Add the corresponding data type to the scenario.", exc);
       }
@@ -1726,7 +1725,7 @@ public class ScriptRunner {
       try {
         return new Buffer(it, dagVertex, it.getSourceLabel(), nbTokens, dataSize, isMergeable);
       } catch (final NullPointerException exc) {
-        throw new WorkflowException("SDFEdge " + it.getSource().getName() + "_" + it.getSourceLabel() + "->"
+        throw new PreesmException("SDFEdge " + it.getSource().getName() + "_" + it.getSourceLabel() + "->"
             + it.getTarget().getName() + "_" + it.getTargetLabel() + " has unknows type " + dataType.toString()
             + ". Add the corresponding data type to the scenario.", exc);
       }
@@ -1803,7 +1802,7 @@ public class ScriptRunner {
 
         final MemoryExclusionVertex mObj = meg.getVertex(mObjCopy);
         if (mObj == null) {
-          throw new WorkflowException(
+          throw new PreesmException(
               "Cannot find " + mObjCopy + " in the given MEG. Contact developers for more information.");
         }
 
@@ -1822,7 +1821,7 @@ public class ScriptRunner {
           //
           // Also we will need to make sure that the code generation
           // printerS are still functional
-          throw new WorkflowException(
+          throw new PreesmException(
               "Aggregated DAG Edge " + mObj + " not yet supported. Contact Preesm developers for more information.");
         }
         bufferAndMObjectMap.put(buffer, mObj);
@@ -1921,7 +1920,7 @@ public class ScriptRunner {
           final Range remoteRange = entry.getValue().getValue().intersection(translatedLocalRange);
           if (!remoteRange.equals(translatedLocalRange)) {
             // Should never be the case
-            throw new MemoryAllocationException("Unexpected error !");
+            throw new PreesmException("Unexpected error !");
           }
           mObjRoots.add(new Pair<>(rootMObj, new Pair<>(localRange, remoteRange)));
         });

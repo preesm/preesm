@@ -43,10 +43,10 @@ import org.eclipse.graphiti.mm.pictograms.PictogramElement;
 import org.eclipse.graphiti.platform.IPlatformImageConstants;
 import org.eclipse.graphiti.tb.IDecorator;
 import org.eclipse.graphiti.tb.ImageDecorator;
+import org.preesm.commons.math.ExpressionEvaluationException;
 import org.preesm.model.pisdf.Dependency;
 import org.preesm.model.pisdf.Expression;
 import org.preesm.model.pisdf.Parameter;
-import org.preesm.model.pisdf.expression.ExpressionEvaluationException;
 import org.preesm.model.pisdf.util.DependencyCycleDetector;
 import org.preesm.ui.pisdf.diagram.PiMMImageProvider;
 

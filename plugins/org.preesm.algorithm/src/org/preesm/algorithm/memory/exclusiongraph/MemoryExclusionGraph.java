@@ -53,9 +53,7 @@ import java.util.logging.Level;
 import org.eclipse.xtext.xbase.lib.Pair;
 import org.jgrapht.graph.DefaultEdge;
 import org.jgrapht.graph.SimpleGraph;
-import org.preesm.algorithm.iterators.TopologicalDAGIterator;
 import org.preesm.algorithm.mapper.ScheduledDAGIterator;
-import org.preesm.algorithm.memory.allocation.MemoryAllocationException;
 import org.preesm.algorithm.memory.script.Range;
 import org.preesm.algorithm.model.PropertyBean;
 import org.preesm.algorithm.model.PropertyFactory;
@@ -68,16 +66,16 @@ import org.preesm.algorithm.model.dag.edag.DAGEndVertex;
 import org.preesm.algorithm.model.dag.edag.DAGForkVertex;
 import org.preesm.algorithm.model.dag.edag.DAGInitVertex;
 import org.preesm.algorithm.model.dag.edag.DAGJoinVertex;
-import org.preesm.algorithm.model.parameters.InvalidExpressionException;
+import org.preesm.algorithm.model.iterators.TopologicalDAGIterator;
 import org.preesm.algorithm.model.sdf.esdf.SDFInitVertex;
 import org.preesm.commons.CloneableProperty;
+import org.preesm.commons.exceptions.PreesmException;
 import org.preesm.commons.logger.PreesmLogger;
+import org.preesm.model.scenario.types.BufferAggregate;
+import org.preesm.model.scenario.types.DataType;
+import org.preesm.model.scenario.types.ImplementationPropertyNames;
+import org.preesm.model.scenario.types.VertexType;
 import org.preesm.model.slam.ComponentInstance;
-import org.preesm.scenario.types.BufferAggregate;
-import org.preesm.scenario.types.DataType;
-import org.preesm.scenario.types.ImplementationPropertyNames;
-import org.preesm.scenario.types.VertexType;
-import org.preesm.workflow.WorkflowException;
 
 // TODO: Auto-generated Javadoc
 /**
@@ -386,12 +384,8 @@ public class MemoryExclusionGraph extends SimpleGraph<MemoryExclusionVertex, Def
    *          This DirectedAcyclicGraph is analyzed to create the nodes and edges of the MemoryExclusionGraph. The DAG
    *          used must be the output of a scheduling process. This property ensures that all preceding nodes of a
    *          "merge" node are treated before treating the "merge" node. The DAG will be modified by this function.
-   * @throws InvalidExpressionException
-   *           the invalid expression exception
-   * @throws WorkflowException
-   *           the workflow exception
    */
-  public void buildGraph(final DirectedAcyclicGraph dag) throws InvalidExpressionException, WorkflowException {
+  public void buildGraph(final DirectedAcyclicGraph dag) {
 
     final String localOrdering = "memExBuildingLocalOrdering";
 
@@ -560,7 +554,7 @@ public class MemoryExclusionGraph extends SimpleGraph<MemoryExclusionVertex, Def
         } else {
           // If the node was not added.
           // Should never happen
-          throw new WorkflowException(
+          throw new PreesmException(
               "The exclusion graph vertex corresponding to edge " + edge.toString() + " was not added to the graph.");
         }
       }
@@ -1652,7 +1646,7 @@ public class MemoryExclusionGraph extends SimpleGraph<MemoryExclusionVertex, Def
         final Integer schedulingOrder = (Integer) currentVertex.getPropertyBean()
             .getValue(ImplementationPropertyNames.Vertex_schedulingOrder);
         if (schedulingOrder == null) {
-          throw new MemoryAllocationException("Cannot build the memory exclusion graph of a non scheduled DAG",
+          throw new PreesmException("Cannot build the memory exclusion graph of a non scheduled DAG",
               new NullPointerException());
         }
         verticesMap.put(schedulingOrder, currentVertex);

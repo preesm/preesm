@@ -41,6 +41,7 @@ import java.io.FileNotFoundException;
 import java.io.InputStream;
 import org.preesm.algorithm.model.AbstractGraph;
 import org.preesm.algorithm.model.sdf.SDFGraph;
+import org.preesm.commons.exceptions.PreesmException;
 
 /**
  * The Class GMLModelParserWrapper.
@@ -56,7 +57,7 @@ public interface GMLModelParserWrapper<G extends AbstractGraph<?, ?>> {
    * @param f
    *          the f
    * @return the SDF graph
-   * @throws InvalidModelException
+   * @throws PreesmException
    *           the invalid model exception
    * @throws FileNotFoundException
    *           the file not found exception
@@ -71,7 +72,7 @@ public interface GMLModelParserWrapper<G extends AbstractGraph<?, ?>> {
    * @param path
    *          the path
    * @return the g
-   * @throws InvalidModelException
+   * @throws PreesmException
    *           the invalid model exception
    * @throws FileNotFoundException
    *           the file not found exception

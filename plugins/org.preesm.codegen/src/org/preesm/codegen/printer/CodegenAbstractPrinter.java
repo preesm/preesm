@@ -42,7 +42,6 @@ import java.util.Map.Entry;
 import org.eclipse.emf.common.util.EList;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.xtend2.lib.StringConcatenation;
-import org.preesm.codegen.CodegenException;
 import org.preesm.codegen.model.Block;
 import org.preesm.codegen.model.Buffer;
 import org.preesm.codegen.model.BufferIterator;
@@ -67,6 +66,7 @@ import org.preesm.codegen.model.SubBuffer;
 import org.preesm.codegen.model.Variable;
 import org.preesm.codegen.model.util.CodegenSwitch;
 import org.preesm.codegen.xtend.task.CodegenEngine;
+import org.preesm.commons.exceptions.PreesmException;
 
 /**
  * The {@link CodegenAbstractPrinter} is used to visit a {@link CodegenPackage Codegen model}. To use a printer, the
@@ -318,7 +318,7 @@ public abstract class CodegenAbstractPrinter extends CodegenSwitch<CharSequence>
 
   @Override
   public CharSequence defaultCase(final EObject object) {
-    throw new CodegenException("Object " + object + " is not supported by the printer " + this);
+    throw new PreesmException("Object " + object + " is not supported by the printer " + this);
   }
 
   /**

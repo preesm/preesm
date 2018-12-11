@@ -3,7 +3,7 @@ Bundle-ManifestVersion: 2
 Bundle-Name: %pluginName
 Automatic-Module-Name: org.preesm.codegen
 Bundle-SymbolicName: org.preesm.codegen;singleton:=true
-Bundle-Version: 3.0.1
+Bundle-Version: 3.1.0
 Require-Bundle: org.eclipse.core.runtime,
  org.eclipse.emf.ecore;visibility:=reexport,
  org.eclipse.core.resources,
@@ -18,8 +18,7 @@ Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Bundle-ClassPath: .
 Bundle-Vendor: %providerName
 Bundle-Localization: plugin
-Export-Package: org.preesm.codegen,
- org.preesm.codegen.model,
+Export-Package: org.preesm.codegen.model,
  org.preesm.codegen.model.impl,
  org.preesm.codegen.model.util,
  org.preesm.codegen.printer,

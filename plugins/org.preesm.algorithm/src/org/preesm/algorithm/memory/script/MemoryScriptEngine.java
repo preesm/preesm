@@ -54,12 +54,12 @@ import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.Path;
 import org.preesm.algorithm.memory.allocation.AbstractMemoryAllocatorTask;
-import org.preesm.algorithm.memory.allocation.MemoryAllocationException;
 import org.preesm.algorithm.memory.exclusiongraph.MemoryExclusionGraph;
 import org.preesm.algorithm.model.dag.DirectedAcyclicGraph;
+import org.preesm.commons.exceptions.PreesmException;
 import org.preesm.commons.logger.PreesmLogger;
-import org.preesm.scenario.PreesmScenario;
-import org.preesm.scenario.types.DataType;
+import org.preesm.model.scenario.PreesmScenario;
+import org.preesm.model.scenario.types.DataType;
 
 /**
  * The Class MemoryScriptEngine.
@@ -238,7 +238,7 @@ public class MemoryScriptEngine {
       iFile.setContents(new ByteArrayInputStream(this.sr.getLog().toString().getBytes()), true, false,
           new NullProgressMonitor());
     } catch (final CoreException e) {
-      throw new MemoryAllocationException("Could not write logs", e);
+      throw new PreesmException("Could not write logs", e);
     }
   }
 
@@ -263,7 +263,7 @@ public class MemoryScriptEngine {
       }
 
     } catch (final CoreException | IOException e) {
-      throw new MemoryAllocationException("Could not write logs", e);
+      throw new PreesmException("Could not write logs", e);
     }
   }
 }

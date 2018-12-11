@@ -43,7 +43,7 @@ import org.preesm.algorithm.mapper.model.MapperDAG;
 import org.preesm.algorithm.mapper.model.MapperDAGVertex;
 import org.preesm.algorithm.model.AbstractVertex;
 import org.preesm.algorithm.model.types.LongVertexPropertyType;
-import org.preesm.scenario.types.ImplementationPropertyNames;
+import org.preesm.model.scenario.types.ImplementationPropertyNames;
 
 // TODO: Auto-generated Javadoc
 /**

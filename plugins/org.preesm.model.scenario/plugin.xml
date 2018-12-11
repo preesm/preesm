@@ -38,4 +38,25 @@
 <?eclipse version="3.4"?>
 <plugin>
 
+   <extension
+         point="org.preesm.workflow.scenarios">
+      <scenario
+            id="org.ietr.preesm.scenario.task"
+            type="org.preesm.model.scenario.workflow.AlgorithmAndArchitectureScenarioNode">
+         <outputs>
+            <output
+                  id="scenario"
+                  object="org.preesm.model.scenario.PreesmScenario">
+            </output>
+            <output
+                  id="architecture"
+                  object="org.preesm.model.slam.Design">
+            </output>
+            <output
+                  id="PiMM"
+                  object="org.preesm.model.pisdf.PiGraph">
+            </output>
+         </outputs>
+      </scenario>
+   </extension>
 </plugin>

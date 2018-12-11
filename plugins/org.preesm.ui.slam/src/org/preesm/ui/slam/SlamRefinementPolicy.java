@@ -41,7 +41,7 @@ import org.eclipse.core.runtime.Path;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.ietr.dftools.graphiti.model.DefaultRefinementPolicy;
 import org.ietr.dftools.graphiti.model.Vertex;
-import org.preesm.ui.DFToolsUIException;
+import org.preesm.commons.exceptions.PreesmException;
 import org.preesm.ui.utils.FileUtils;
 
 /**
@@ -69,7 +69,7 @@ public class SlamRefinementPolicy extends DefaultRefinementPolicy {
     } else if (extension.equals("cdl")) {
       filePath = FileUtils.browseFiles("Please select an existing CDL file:", extension);
     } else {
-      throw new DFToolsUIException("Unsupported file extension " + extension);
+      throw new PreesmException("Unsupported file extension " + extension);
     }
 
     // Getting relative path

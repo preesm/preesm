@@ -42,7 +42,6 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.util.Iterator;
 import org.preesm.algorithm.io.gml.GMLExporter;
-import org.preesm.algorithm.mapper.PreesmMapperException;
 import org.preesm.algorithm.mapper.model.MapperDAG;
 import org.preesm.algorithm.mapper.model.MapperDAGVertex;
 import org.preesm.algorithm.mapper.model.property.VertexInit;
@@ -52,10 +51,11 @@ import org.preesm.algorithm.model.PropertyBean;
 import org.preesm.algorithm.model.dag.DAGEdge;
 import org.preesm.algorithm.model.dag.DAGVertex;
 import org.preesm.commons.GMLKey;
+import org.preesm.commons.exceptions.PreesmException;
+import org.preesm.model.scenario.types.ImplementationPropertyNames;
 import org.preesm.model.slam.attributes.Parameter;
 import org.preesm.model.slam.impl.ComponentInstanceImpl;
 import org.preesm.model.slam.route.AbstractRouteStep;
-import org.preesm.scenario.types.ImplementationPropertyNames;
 import org.w3c.dom.Element;
 
 /**
@@ -109,7 +109,7 @@ public class ImplementationExporter extends GMLExporter<DAGVertex, DAGEdge> {
       return graphElt;
 
     } catch (final Exception e) {
-      throw new PreesmMapperException("Could not export graph", e);
+      throw new PreesmException("Could not export graph", e);
     }
   }
 
@@ -205,7 +205,7 @@ public class ImplementationExporter extends GMLExporter<DAGVertex, DAGEdge> {
       exportGraph(graph);
       transform(new FileOutputStream(path));
     } catch (final FileNotFoundException e) {
-      throw new PreesmMapperException("could not export implementation", e);
+      throw new PreesmException("could not export implementation", e);
     }
   }
 

@@ -57,12 +57,12 @@ import org.eclipse.core.runtime.Path;
 import org.nfunk.jep.JEP;
 import org.nfunk.jep.Node;
 import org.nfunk.jep.ParseException;
-import org.preesm.algorithm.io.gml.InvalidModelException;
 import org.preesm.algorithm.mapper.abc.SpecialVertexManager;
 import org.preesm.algorithm.mapper.abc.impl.latency.LatencyAbc;
 import org.preesm.algorithm.mapper.model.MapperDAGEdge;
 import org.preesm.algorithm.mapper.model.MapperDAGVertex;
 import org.preesm.algorithm.model.sdf.SDFAbstractVertex;
+import org.preesm.commons.exceptions.PreesmException;
 import org.preesm.commons.files.ContainersManager;
 import org.preesm.commons.files.PathTools;
 import org.preesm.commons.logger.PreesmLogger;
@@ -71,15 +71,14 @@ import org.preesm.model.pisdf.Actor;
 import org.preesm.model.pisdf.PiGraph;
 import org.preesm.model.pisdf.Refinement;
 import org.preesm.model.pisdf.serialize.PiParser;
+import org.preesm.model.scenario.PreesmScenario;
+import org.preesm.model.scenario.types.ImplementationPropertyNames;
 import org.preesm.model.slam.ComponentInstance;
 import org.preesm.model.slam.Design;
 import org.preesm.model.slam.component.Component;
 import org.preesm.model.slam.route.AbstractRouteStep;
 import org.preesm.model.slam.route.MessageRouteStep;
 import org.preesm.model.slam.route.Route;
-import org.preesm.scenario.PreesmScenario;
-import org.preesm.scenario.types.ImplementationPropertyNames;
-import org.preesm.workflow.WorkflowException;
 import org.preesm.workflow.elements.Workflow;
 import org.preesm.workflow.implement.AbstractTaskImplementation;
 
@@ -300,7 +299,7 @@ class CustomQuantaExporter extends AbstractTaskImplementation {
         ContainersManager.createMissingFolders(path);
       }
     } catch (CoreException e) {
-      throw new WorkflowException("Path " + path + " is not a valid path for export.");
+      throw new PreesmException("Path " + path + " is not a valid path for export.");
     }
 
     IFile iFile = ResourcesPlugin.getWorkspace().getRoot().getFile(path);
@@ -333,7 +332,7 @@ class CustomQuantaExporter extends AbstractTaskImplementation {
         Workbook w = Workbook.getWorkbook(iFile.getContents());
 
         if (scenario.isPISDFScenario()) {
-          PiGraph currentGraph = PiParser.getPiGraph(scenario.getAlgorithmURL());
+          PiGraph currentGraph = PiParser.getPiGraphWithReconnection(scenario.getAlgorithmURL());
           Set<String> operators = scenario.getOperatorDefinitionIds();
           parseQuantaForPISDFGraph(w, currentGraph, operators);
         } else {
@@ -342,7 +341,7 @@ class CustomQuantaExporter extends AbstractTaskImplementation {
 
         // Warnings are displayed once for each missing operator or vertex
         // in the excel sheet
-      } catch (IOException | CoreException | InvalidModelException | BiffException e) {
+      } catch (IOException | CoreException | PreesmException | BiffException e) {
         e.printStackTrace();
       }
     }

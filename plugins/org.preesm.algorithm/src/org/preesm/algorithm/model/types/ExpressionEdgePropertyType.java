@@ -35,12 +35,11 @@
  */
 package org.preesm.algorithm.model.types;
 
-import org.preesm.algorithm.DFToolsAlgoException;
 import org.preesm.algorithm.model.AbstractEdgePropertyType;
 import org.preesm.algorithm.model.parameters.IExpressionSolver;
-import org.preesm.algorithm.model.parameters.InvalidExpressionException;
-import org.preesm.algorithm.model.parameters.NoIntegerValueException;
 import org.preesm.algorithm.model.parameters.Value;
+import org.preesm.commons.exceptions.PreesmException;
+import org.preesm.commons.math.ExpressionEvaluationException;
 
 /**
  * Class used to represent the integer edge property type in a SDF.
@@ -73,7 +72,7 @@ public class ExpressionEdgePropertyType extends AbstractEdgePropertyType<Value> 
     final ExpressionEdgePropertyType clone = new ExpressionEdgePropertyType(this.value);
     try {
       clone.computedValue = longValue();
-    } catch (final InvalidExpressionException e) {
+    } catch (final ExpressionEvaluationException e) {
       clone.computedValue = null;
     }
     return clone;
@@ -122,8 +121,8 @@ public class ExpressionEdgePropertyType extends AbstractEdgePropertyType<Value> 
       try {
         this.computedValue = this.value.longValue();
         return this.computedValue;
-      } catch (final NoIntegerValueException e) {
-        throw new DFToolsAlgoException("Could not evaluate expression", e);
+      } catch (final ExpressionEvaluationException e) {
+        throw new PreesmException("Could not evaluate expression", e);
       }
     }
     return this.computedValue;

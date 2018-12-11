@@ -150,7 +150,7 @@ public class PrecedenceEdgeAdder {
    * @return the precedence edge
    */
   public PrecedenceEdge addPrecedenceEdge(final MapperDAGVertex v1, final MapperDAGVertex v2) {
-    final PrecedenceEdge precedenceEdge = new PrecedenceEdge(v1, v2);
+    final PrecedenceEdge precedenceEdge = new PrecedenceEdge(v1);
     precedenceEdge.getTiming().setCost(0);
     this.implementation.addEdge(v1, v2, precedenceEdge);
     return precedenceEdge;

@@ -65,6 +65,7 @@ import org.eclipse.graphiti.mm.pictograms.PictogramElement;
 import org.eclipse.graphiti.mm.pictograms.Shape;
 import org.eclipse.graphiti.services.Graphiti;
 import org.eclipse.graphiti.ui.services.GraphitiUi;
+import org.preesm.commons.exceptions.PreesmException;
 import org.preesm.model.pisdf.AbstractActor;
 import org.preesm.model.pisdf.AbstractVertex;
 import org.preesm.model.pisdf.ConfigInputInterface;
@@ -75,6 +76,7 @@ import org.preesm.model.pisdf.DataInputInterface;
 import org.preesm.model.pisdf.DataInputPort;
 import org.preesm.model.pisdf.DataOutputInterface;
 import org.preesm.model.pisdf.DataOutputPort;
+import org.preesm.model.pisdf.DelayActor;
 import org.preesm.model.pisdf.Dependency;
 import org.preesm.model.pisdf.ExecutableActor;
 import org.preesm.model.pisdf.Fifo;
@@ -82,7 +84,6 @@ import org.preesm.model.pisdf.Parameter;
 import org.preesm.model.pisdf.PiGraph;
 import org.preesm.model.pisdf.Port;
 import org.preesm.model.pisdf.util.PiMMSwitch;
-import org.preesm.ui.PreesmUIException;
 import org.preesm.ui.utils.ErrorWithExceptionDialog;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -155,7 +156,7 @@ public class SVGExporterSwitch extends PiMMSwitch<Integer> {
     } catch (final ParserConfigurationException e) {
       final String message = "Could not create new document";
       ErrorWithExceptionDialog.errorDialogWithStackTrace(message, e);
-      throw new PreesmUIException(message, e);
+      throw new PreesmException(message, e);
     }
     this.doc = builder.newDocument();
 
@@ -230,7 +231,7 @@ public class SVGExporterSwitch extends PiMMSwitch<Integer> {
     } catch (TransformerFactoryConfigurationError | TransformerException e) {
       final String message = "Could not transform SVG to String";
       ErrorWithExceptionDialog.errorDialogWithStackTrace(message, e);
-      throw new PreesmUIException(message, e);
+      throw new PreesmException(message, e);
     }
   }
 
@@ -495,15 +496,20 @@ public class SVGExporterSwitch extends PiMMSwitch<Integer> {
     return 0;
   }
 
-  /*
-   * (non-Javadoc)
-   *
-   * @see
-   * org.ietr.preesm.experiment.model.pimm.util.PiMMSwitch#caseExecutableActor(org.ietr.preesm.experiment.model.pimm.
-   * ExecutableActor)
-   */
   @Override
-  public Integer caseExecutableActor(final ExecutableActor ea) {
+  public Integer caseDelayActor(DelayActor object) {
+    // skip
+    return 0;
+  }
+
+  @Override
+  public Integer casePiGraph(PiGraph object) {
+    // skip
+    return 0;
+  }
+
+  @Override
+  public Integer caseAbstractActor(final AbstractActor ea) {
     int x = 0;
     int y = 0;
     final PictogramElement[] actorPes = this.exportSVGFeature.getFeatureProvider()
@@ -639,7 +645,7 @@ public class SVGExporterSwitch extends PiMMSwitch<Integer> {
       final DataOutputPort dop = ea.getDataOutputPorts().get(i);
       final BoxRelativeAnchor bra = getPortBra(dop);
 
-      final int portX = (int) (bra.getRelativeWidth() * width);
+      final int portX = (int) (bra.getRelativeWidth() * width - 8);
       final int portY = (int) (bra.getRelativeHeight() * height);
       Text portText = null;
 
@@ -676,7 +682,7 @@ public class SVGExporterSwitch extends PiMMSwitch<Integer> {
     return 1;
   }
 
-  private Element drawActor(final ExecutableActor ea, int x, int y, final PictogramElement[] actorPes, final int width,
+  private Element drawActor(final AbstractActor ea, int x, int y, final PictogramElement[] actorPes, final int width,
       final int height) {
     final Element actorNode = this.doc.createElement("g");
     this.svg.appendChild(actorNode);

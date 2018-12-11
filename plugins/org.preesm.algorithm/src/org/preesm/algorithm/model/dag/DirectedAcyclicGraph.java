@@ -38,16 +38,14 @@ import java.util.ArrayList;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
-import org.jgrapht.EdgeFactory;
+import java.util.function.Supplier;
 import org.jgrapht.alg.cycle.CycleDetector;
-import org.preesm.algorithm.exceptions.CreateCycleException;
-import org.preesm.algorithm.exceptions.CreateMultigraphException;
-import org.preesm.algorithm.factories.DAGEdgeFactory;
-import org.preesm.algorithm.factories.DAGVertexFactory;
-import org.preesm.algorithm.factories.IModelVertexFactory;
 import org.preesm.algorithm.model.AbstractGraph;
 import org.preesm.algorithm.model.PropertyFactory;
+import org.preesm.algorithm.model.factories.DAGVertexFactory;
+import org.preesm.algorithm.model.factories.IModelVertexFactory;
 import org.preesm.algorithm.model.sdf.SDFGraph;
+import org.preesm.commons.exceptions.PreesmException;
 
 /**
  * Class used to represent a Directed Acyclic Graph.
@@ -67,18 +65,15 @@ public class DirectedAcyclicGraph extends AbstractGraph<DAGVertex, DAGEdge> {
    * Constructs a new DAG graph with the default Dag edge factory.
    */
   public DirectedAcyclicGraph() {
-    super(new DAGEdgeFactory());
-    getPropertyBean().setValue(AbstractGraph.MODEL, "dag");
+    this(() -> new DAGEdge());
   }
 
   /**
    * Creates a new DirectedAcyclicGraph with the given Edge factory.
    *
-   * @param arg0
-   *          The factory to use to create Edge in this graph
    */
-  public DirectedAcyclicGraph(final EdgeFactory<DAGVertex, DAGEdge> arg0) {
-    super(arg0);
+  protected DirectedAcyclicGraph(final Supplier<DAGEdge> edgeSupplier) {
+    super(edgeSupplier);
     getPropertyBean().setValue(AbstractGraph.MODEL, "dag");
   }
 
@@ -101,15 +96,15 @@ public class DirectedAcyclicGraph extends AbstractGraph<DAGVertex, DAGEdge> {
    * @param target
    *          The target vertex of this edge
    * @return The created Edge
-   * @throws CreateMultigraphException
+   * @throws PreesmException
    *           This Edge creates a Multi-graph
-   * @throws CreateCycleException
+   * @throws PreesmException
    *           This Edge creates a cycle
    */
   public DAGEdge addDAGEdge(final DAGVertex source, final DAGVertex target) {
     Set<DAGEdge> allEdges = getAllEdges(source, target);
     if (!allEdges.isEmpty()) {
-      throw new CreateMultigraphException("There should be no edge existing.");
+      throw new PreesmException("There should be no edge existing.");
     } else {
       final DAGEdge newEdge = addEdge(source, target);
       final CycleDetector<DAGVertex, DAGEdge> detector = new CycleDetector<>(this);
@@ -122,7 +117,7 @@ public class DirectedAcyclicGraph extends AbstractGraph<DAGVertex, DAGEdge> {
         cycleString.append("}");
 
         this.removeEdge(newEdge);
-        throw new CreateCycleException(cycleString.toString());
+        throw new PreesmException(cycleString.toString());
       } else if (detector.detectCyclesContainingVertex(target)) {
         final Set<DAGVertex> cycle = detector.findCyclesContainingVertex(target);
         StringBuilder cycleString = new StringBuilder("Added edge forms a cycle: {");
@@ -132,7 +127,7 @@ public class DirectedAcyclicGraph extends AbstractGraph<DAGVertex, DAGEdge> {
         cycleString.append("}");
 
         this.removeEdge(newEdge);
-        throw new CreateCycleException(cycleString.toString());
+        throw new PreesmException(cycleString.toString());
       }
       return newEdge;
     }

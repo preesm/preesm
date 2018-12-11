@@ -67,10 +67,10 @@ import org.jacorb.idl.UnionType;
 import org.jacorb.idl.Value;
 import org.jacorb.idl.VectorType;
 import org.jacorb.idl.parser;
-import org.preesm.algorithm.DFToolsAlgoException;
 import org.preesm.algorithm.codegen.model.CodeGenArgument;
 import org.preesm.algorithm.codegen.model.CodeGenParameter;
 import org.preesm.algorithm.codegen.model.IFunctionFactory;
+import org.preesm.commons.exceptions.PreesmException;
 import org.preesm.commons.logger.PreesmLogger;
 
 // TODO: Auto-generated Javadoc
@@ -197,7 +197,7 @@ public class IDLPrototypeFactory implements IFunctionFactory, IDLTreeVisitor {
         }
       } catch (final NumberFormatException e) {
         final String message = "Badly formatted IDL interface, loop, init or init-i accepted : " + arg0.name();
-        throw new DFToolsAlgoException(message, e);
+        throw new PreesmException(message, e);
       }
     } else if (arg0.name().equals("loop")) {
       // loop phase prototype is in the interphase "loop"

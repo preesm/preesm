@@ -101,7 +101,7 @@ public class AddPrecedenceEdgeTransaction extends Transaction {
   public void execute(final List<Object> resultList) {
     super.execute(resultList);
 
-    this.precedenceEdge = new PrecedenceEdge(this.source, this.destination);
+    this.precedenceEdge = new PrecedenceEdge(this.source);
     this.precedenceEdge.getTiming().setCost(0);
     this.implementation.addEdge(this.source, this.destination, this.precedenceEdge);
   }

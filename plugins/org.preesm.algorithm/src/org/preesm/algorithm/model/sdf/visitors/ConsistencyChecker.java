@@ -35,13 +35,12 @@
 package org.preesm.algorithm.model.sdf.visitors;
 
 import java.util.logging.Level;
-import org.preesm.algorithm.DFToolsAlgoException;
 import org.preesm.algorithm.model.sdf.SDFAbstractVertex;
 import org.preesm.algorithm.model.sdf.SDFEdge;
 import org.preesm.algorithm.model.sdf.SDFGraph;
 import org.preesm.algorithm.model.visitors.IGraphVisitor;
-import org.preesm.algorithm.model.visitors.SDF4JException;
-import org.preesm.algorithm.model.visitors.VisitorOutput;
+import org.preesm.commons.exceptions.PreesmException;
+import org.preesm.commons.logger.PreesmLogger;
 
 /**
  * Verifies that graph doesn't contains mistakes (port mismatch, case sensitivity).
@@ -59,7 +58,7 @@ public class ConsistencyChecker implements IGraphVisitor<SDFGraph, SDFAbstractVe
    * @see org.ietr.dftools.algorithm.model.visitors.IGraphVisitor#visit(org.ietr.dftools.algorithm.model.AbstractGraph)
    */
   @Override
-  public void visit(final SDFGraph sdf) throws SDF4JException {
+  public void visit(final SDFGraph sdf) throws PreesmException {
     for (final SDFAbstractVertex vertex : sdf.vertexSet()) {
       vertex.accept(this);
     }
@@ -72,19 +71,19 @@ public class ConsistencyChecker implements IGraphVisitor<SDFGraph, SDFAbstractVe
    * @see org.ietr.dftools.algorithm.model.visitors.IGraphVisitor#visit(org.ietr.dftools.algorithm.model.AbstractVertex)
    */
   @Override
-  public void visit(final SDFAbstractVertex sdfVertex) throws SDF4JException {
+  public void visit(final SDFAbstractVertex sdfVertex) throws PreesmException {
     final SDFGraph graphDescription = (SDFGraph) sdfVertex.getGraphDescription();
     final SDFGraph base = (SDFGraph) sdfVertex.getBase();
     if (graphDescription != null) {
       for (final SDFEdge edge : base.incomingEdgesOf(sdfVertex)) {
         if (graphDescription.getVertex(edge.getTargetInterface().getName()) == null) {
-          VisitorOutput.getLogger().log(Level.SEVERE, "Interface " + edge.getTargetInterface().getName()
+          PreesmLogger.getLogger().log(Level.SEVERE, "Interface " + edge.getTargetInterface().getName()
               + " does not exist in vertex " + sdfVertex.getName() + " hierarchy");
           this.isConsistent &= false;
         } else if (graphDescription.getVertex(edge.getTargetInterface().getName()) != null) {
           final SDFAbstractVertex sourceNode = graphDescription.getVertex(edge.getTargetInterface().getName());
           if (graphDescription.outgoingEdgesOf(sourceNode).isEmpty()) {
-            VisitorOutput.getLogger().log(Level.SEVERE, "Interface " + edge.getTargetInterface().getName()
+            PreesmLogger.getLogger().log(Level.SEVERE, "Interface " + edge.getTargetInterface().getName()
                 + " does not exist, or is not connect in vertex " + sdfVertex.getName() + " hierarchy");
             this.isConsistent &= false;
           }
@@ -92,13 +91,13 @@ public class ConsistencyChecker implements IGraphVisitor<SDFGraph, SDFAbstractVe
       }
       for (final SDFEdge edge : base.outgoingEdgesOf(sdfVertex)) {
         if (graphDescription.getVertex(edge.getSourceInterface().getName()) == null) {
-          VisitorOutput.getLogger().log(Level.SEVERE, "Interface " + edge.getSourceInterface().getName()
+          PreesmLogger.getLogger().log(Level.SEVERE, "Interface " + edge.getSourceInterface().getName()
               + " does not exist in vertex " + sdfVertex.getName() + " hierarchy");
           this.isConsistent &= false;
         } else if (graphDescription.getVertex(edge.getSourceInterface().getName()) != null) {
           final SDFAbstractVertex sinkNode = graphDescription.getVertex(edge.getSourceInterface().getName());
           if (graphDescription.incomingEdgesOf(sinkNode).isEmpty()) {
-            VisitorOutput.getLogger().log(Level.SEVERE, "Interface " + edge.getSourceInterface().getName()
+            PreesmLogger.getLogger().log(Level.SEVERE, "Interface " + edge.getSourceInterface().getName()
                 + " does not exist, or is not connect in vertex " + sdfVertex.getName() + " hierarchy");
             this.isConsistent &= false;
           }
@@ -119,8 +118,8 @@ public class ConsistencyChecker implements IGraphVisitor<SDFGraph, SDFAbstractVe
     this.isConsistent = true;
     try {
       toVerify.accept(this);
-    } catch (final SDF4JException e) {
-      throw new DFToolsAlgoException("Could not verify graph", e);
+    } catch (final PreesmException e) {
+      throw new PreesmException("Could not verify graph", e);
     }
     return this.isConsistent;
   }

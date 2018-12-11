@@ -45,9 +45,9 @@ import javax.xml.transform.TransformerConfigurationException;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.Path;
 import org.preesm.algorithm.utils.xml.XsltTransformer;
+import org.preesm.commons.exceptions.PreesmException;
 import org.preesm.commons.files.PathTools;
 import org.preesm.commons.logger.PreesmLogger;
-import org.preesm.workflow.WorkflowException;
 import org.preesm.workflow.elements.Workflow;
 import org.preesm.workflow.implement.AbstractTaskImplementation;
 
@@ -68,7 +68,7 @@ public class XsltTransform extends AbstractTaskImplementation {
    */
   @Override
   public Map<String, Object> execute(final Map<String, Object> inputs, final Map<String, String> parameters,
-      final IProgressMonitor monitor, final String nodeName, final Workflow workflow) throws WorkflowException {
+      final IProgressMonitor monitor, final String nodeName, final Workflow workflow) throws PreesmException {
 
     String sInputPath = PathTools.getAbsolutePath(parameters.get("inputFile"), workflow.getProjectName());
     if (parameters.get("inputFile").equals("")) {

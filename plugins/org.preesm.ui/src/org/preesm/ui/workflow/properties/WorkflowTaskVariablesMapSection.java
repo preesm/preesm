@@ -40,7 +40,6 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.views.properties.tabbed.TabbedPropertySheetPage;
 import org.ietr.dftools.graphiti.ui.properties.MapSection;
 
-// TODO: Auto-generated Javadoc
 /**
  * This class defines a map section for workflow task variables.
  *

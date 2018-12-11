@@ -50,7 +50,6 @@ import org.preesm.algorithm.model.dag.DirectedAcyclicGraph;
 import org.preesm.commons.exceptions.PreesmException;
 import org.preesm.commons.files.PathTools;
 import org.preesm.commons.files.WorkspaceUtils;
-import org.preesm.workflow.WorkflowException;
 import org.preesm.workflow.elements.Workflow;
 import org.preesm.workflow.implement.AbstractTaskImplementation;
 
@@ -69,7 +68,7 @@ public class ImplExportTransform extends AbstractTaskImplementation {
    */
   @Override
   public Map<String, Object> execute(final Map<String, Object> inputs, final Map<String, String> parameters,
-      final IProgressMonitor monitor, final String nodeName, final Workflow workflow) throws WorkflowException {
+      final IProgressMonitor monitor, final String nodeName, final Workflow workflow) throws PreesmException {
 
     final DirectedAcyclicGraph dag = (DirectedAcyclicGraph) inputs.get("DAG");
 

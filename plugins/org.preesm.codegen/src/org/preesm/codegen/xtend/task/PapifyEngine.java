@@ -47,11 +47,11 @@ import org.preesm.codegen.model.CodegenFactory;
 import org.preesm.codegen.model.Constant;
 import org.preesm.codegen.model.ConstantString;
 import org.preesm.codegen.model.PapifyAction;
-import org.preesm.scenario.PreesmScenario;
-import org.preesm.scenario.papi.PapiEvent;
-import org.preesm.scenario.papi.PapiEventModifier;
-import org.preesm.scenario.papi.PapifyConfigActor;
-import org.preesm.scenario.papi.PapifyConfigManager;
+import org.preesm.model.scenario.PreesmScenario;
+import org.preesm.model.scenario.papi.PapiEvent;
+import org.preesm.model.scenario.papi.PapiEventModifier;
+import org.preesm.model.scenario.papi.PapifyConfigActor;
+import org.preesm.model.scenario.papi.PapifyConfigManager;
 
 /**
  * The Class PapifyEngine.

@@ -45,8 +45,8 @@ import org.eclipse.core.runtime.IProgressMonitor;
 import org.preesm.algorithm.mapper.graphtransfo.SdfToDagConverter;
 import org.preesm.algorithm.mapper.model.MapperDAG;
 import org.preesm.algorithm.model.sdf.SDFGraph;
+import org.preesm.model.scenario.PreesmScenario;
 import org.preesm.model.slam.Design;
-import org.preesm.scenario.PreesmScenario;
 import org.preesm.workflow.elements.Workflow;
 import org.preesm.workflow.implement.AbstractWorkflowNodeImplementation;
 

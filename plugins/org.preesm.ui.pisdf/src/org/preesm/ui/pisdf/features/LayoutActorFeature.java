@@ -61,14 +61,17 @@ import org.eclipse.graphiti.services.Graphiti;
 import org.eclipse.graphiti.services.IGaService;
 import org.eclipse.graphiti.ui.services.GraphitiUi;
 import org.eclipse.graphiti.util.IColorConstant;
+import org.preesm.model.pisdf.AbstractActor;
 import org.preesm.model.pisdf.Actor;
 import org.preesm.model.pisdf.BroadcastActor;
 import org.preesm.model.pisdf.ConfigInputPort;
 import org.preesm.model.pisdf.ConfigOutputPort;
 import org.preesm.model.pisdf.DataInputPort;
 import org.preesm.model.pisdf.DataOutputPort;
+import org.preesm.model.pisdf.EndActor;
 import org.preesm.model.pisdf.ExecutableActor;
 import org.preesm.model.pisdf.ForkActor;
+import org.preesm.model.pisdf.InitActor;
 import org.preesm.model.pisdf.JoinActor;
 import org.preesm.model.pisdf.PiMMPackage;
 import org.preesm.model.pisdf.Refinement;
@@ -118,7 +121,9 @@ public class LayoutActorFeature extends AbstractLayoutFeature {
     }
 
     final EList<EObject> businessObjects = pe.getLink().getBusinessObjects();
-    return (businessObjects.size() == 1) && (businessObjects.get(0) instanceof ExecutableActor);
+    final EObject bo = businessObjects.get(0);
+    return (businessObjects.size() == 1)
+        && (bo instanceof ExecutableActor || bo instanceof EndActor || bo instanceof InitActor);
   }
 
   /**
@@ -259,7 +264,6 @@ public class LayoutActorFeature extends AbstractLayoutFeature {
           // (+30 to add space and lighten the actor representation)
           // And allow the addition of a decorator
           nameWidth = size.getWidth() + 30;
-
         }
       }
     }
@@ -352,8 +356,8 @@ public class LayoutActorFeature extends AbstractLayoutFeature {
     if (bo instanceof Actor) {
       final Actor actor = (Actor) bo;
       layoutActor(actor, childrenShapes, containerGa);
-    } else if (bo instanceof ExecutableActor) {
-      layoutSpecialActor((ExecutableActor) bo, childrenShapes, containerGa);
+    } else if (bo instanceof ExecutableActor || bo instanceof EndActor || bo instanceof InitActor) {
+      layoutSpecialActor((AbstractActor) bo, childrenShapes, containerGa);
     }
 
     // If Anything changed, call the move feature to layout connections
@@ -380,7 +384,7 @@ public class LayoutActorFeature extends AbstractLayoutFeature {
    * @param containerGa
    *          the container ga
    */
-  private void layoutSpecialActor(final ExecutableActor ea, final EList<Shape> childrenShapes,
+  private void layoutSpecialActor(final AbstractActor ea, final EList<Shape> childrenShapes,
       final GraphicsAlgorithm containerGa) {
     final IColorConstant backgroundColor;
     final IColorConstant foregroundColor;
@@ -396,6 +400,12 @@ public class LayoutActorFeature extends AbstractLayoutFeature {
     } else if (ea instanceof RoundBufferActor) {
       backgroundColor = AddRoundBufferActorFeature.ROUND_BUFFER_ACTOR_BACKGROUND;
       foregroundColor = AddRoundBufferActorFeature.ROUND_BUFFER_ACTOR_FOREGROUND;
+    } else if (ea instanceof EndActor) {
+      backgroundColor = AddEndActorFeature.END_ACTOR_BACKGROUND;
+      foregroundColor = AddEndActorFeature.END_ACTOR_FOREGROUND;
+    } else if (ea instanceof InitActor) {
+      backgroundColor = AddInitActorFeature.INIT_ACTOR_BACKGROUND;
+      foregroundColor = AddInitActorFeature.INIT_ACTOR_FOREGROUND;
     } else {
       backgroundColor = IColorConstant.WHITE;
       foregroundColor = IColorConstant.BLACK;

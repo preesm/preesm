@@ -38,15 +38,12 @@ import java.util.ArrayList;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
-import org.jgrapht.EdgeFactory;
+import java.util.function.Supplier;
 import org.jgrapht.graph.DirectedPseudograph;
 import org.nfunk.jep.JEP;
 import org.nfunk.jep.Node;
-import org.preesm.algorithm.DFToolsAlgoException;
-import org.preesm.algorithm.factories.IModelVertexFactory;
+import org.preesm.algorithm.model.factories.IModelVertexFactory;
 import org.preesm.algorithm.model.parameters.IExpressionSolver;
-import org.preesm.algorithm.model.parameters.InvalidExpressionException;
-import org.preesm.algorithm.model.parameters.NoIntegerValueException;
 import org.preesm.algorithm.model.parameters.Parameter;
 import org.preesm.algorithm.model.parameters.ParameterSet;
 import org.preesm.algorithm.model.parameters.Value;
@@ -55,8 +52,9 @@ import org.preesm.algorithm.model.parameters.VariableSet;
 import org.preesm.algorithm.model.parameters.factories.ArgumentFactory;
 import org.preesm.algorithm.model.parameters.factories.ParameterFactory;
 import org.preesm.algorithm.model.visitors.IGraphVisitor;
-import org.preesm.algorithm.model.visitors.SDF4JException;
 import org.preesm.commons.CloneableProperty;
+import org.preesm.commons.exceptions.PreesmException;
+import org.preesm.commons.math.ExpressionEvaluationException;
 
 /**
  * Abstract class common to all graphs.
@@ -117,11 +115,9 @@ public abstract class AbstractGraph<V extends AbstractVertex, E extends Abstract
   /**
    * Creates a new Instance of Abstract graph with the given factory.
    *
-   * @param factory
-   *          the factory
    */
-  public AbstractGraph(final EdgeFactory<V, E> factory) {
-    super(factory);
+  public AbstractGraph(final Supplier<E> edgeSupplier) {
+    super(null, edgeSupplier, false);
     this.properties = new PropertyBean();
     this.observers = new ArrayList<>();
     this.hasChanged = false;
@@ -132,10 +128,10 @@ public abstract class AbstractGraph<V extends AbstractVertex, E extends Abstract
    *
    * @param visitor
    *          The visitor to accept
-   * @throws SDF4JException
+   * @throws PreesmException
    *           the SDF 4 J exception
    */
-  public void accept(final IGraphVisitor visitor) throws SDF4JException {
+  public void accept(final IGraphVisitor visitor) {
     visitor.visit(this);
   }
 
@@ -247,7 +243,7 @@ public abstract class AbstractGraph<V extends AbstractVertex, E extends Abstract
    */
   protected void checkMultipleEdges(final V source, final V target) {
     if (source != null && target != null && getAllEdges(source, target).size() > 1) {
-      throw new DFToolsAlgoException("removeEdge(source,target) cannot be used.\n" + "Reason: there are "
+      throw new PreesmException("removeEdge(source,target) cannot be used.\n" + "Reason: there are "
           + getAllEdges(source, target).size() + " edges between actors " + source + " and " + target);
     }
   }
@@ -749,10 +745,10 @@ public abstract class AbstractGraph<V extends AbstractVertex, E extends Abstract
       if (result instanceof Number) {
         resultValue = ((Number) result).longValue();
       } else {
-        throw (new InvalidExpressionException("Not a numerical expression"));
+        throw (new ExpressionEvaluationException("Not a numerical expression"));
       }
     } catch (final Exception e) {
-      throw (new InvalidExpressionException("Could not parse expresion:" + expression));
+      throw (new ExpressionEvaluationException("Could not parse expresion:" + expression));
     }
     return resultValue;
   }
@@ -766,8 +762,8 @@ public abstract class AbstractGraph<V extends AbstractVertex, E extends Abstract
           this.getParameters().get(arg).setValue(paramValue);
         }
         jep.addVariable(arg, paramValue);
-      } catch (final NoIntegerValueException e) {
-        throw new DFToolsAlgoException("Could not evaluate value", e);
+      } catch (final ExpressionEvaluationException e) {
+        throw new PreesmException("Could not evaluate value", e);
       }
     }
   }
@@ -776,7 +772,7 @@ public abstract class AbstractGraph<V extends AbstractVertex, E extends Abstract
    * Validate model.
    *
    * @return true, if successful
-   * @throws SDF4JException
+   * @throws PreesmException
    *           the SDF 4 J exception
    */
   public abstract boolean validateModel();

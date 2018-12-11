@@ -42,7 +42,7 @@ import java.util.List
 import org.preesm.algorithm.model.sdf.SDFAbstractVertex
 import org.preesm.algorithm.model.sdf.SDFGraph
 import org.preesm.algorithm.model.sdf.visitors.ToHSDFVisitor
-import org.preesm.algorithm.model.visitors.SDF4JException
+import org.preesm.commons.exceptions.PreesmException
 
 /**
  * Helper builder class for {@link SrSDFDAGCoIterator}
@@ -120,24 +120,24 @@ class SrSDFDAGCoIteratorBuilder {
 	 *
 	 * @return {@link SrSDFDAGCoIterator} instance
 	 */
-	def SrSDFDAGCoIterator build() throws SDF4JException {
+	def SrSDFDAGCoIterator build() throws PreesmException {
 		if(dag === null) {
-			throw new SDF4JException("Co-iterator builder needs a DAG. Use addDAG method.")
+			throw new PreesmException("Co-iterator builder needs a DAG. Use addDAG method.")
 		}
 
 		if(visitableNodes === null) {
-			throw new SDF4JException("Co-iterator builder needs visitable nodes.
+			throw new PreesmException("Co-iterator builder needs visitable nodes.
 									Use addVisitableNodes method.")
 		}
 
 		if(ncg === null) {
-			throw new SDF4JException("Co-iterator builder needs node chain graphs.
+			throw new PreesmException("Co-iterator builder needs node chain graphs.
 									Use addNodeChainGraphs method.")
 		}
 
 		visitableNodes.forEach[node |
 			if(!(dag.vertexSet.contains(node))) {
-				throw new SDF4JException("Node: " + node.name + " does not exist in source graph")
+				throw new PreesmException("Node: " + node.name + " does not exist in source graph")
 			}
 		]
 

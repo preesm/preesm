@@ -50,13 +50,13 @@ import java.util.logging.Logger;
 import java.util.stream.Collectors;
 import org.eclipse.xtext.xbase.lib.Pair;
 import org.preesm.algorithm.memory.allocation.AbstractMemoryAllocatorTask;
-import org.preesm.algorithm.memory.allocation.MemoryAllocationException;
 import org.preesm.algorithm.memory.exclusiongraph.MemoryExclusionGraph;
 import org.preesm.algorithm.memory.exclusiongraph.MemoryExclusionVertex;
 import org.preesm.algorithm.memory.script.Range;
 import org.preesm.algorithm.model.dag.DAGEdge;
 import org.preesm.algorithm.model.dag.DAGVertex;
 import org.preesm.algorithm.model.dag.DirectedAcyclicGraph;
+import org.preesm.commons.exceptions.PreesmException;
 import org.preesm.commons.logger.PreesmLogger;
 import org.preesm.model.slam.ComponentInstance;
 
@@ -133,7 +133,7 @@ public class Distributor {
         memExesVerticesSet = Distributor.distributeMegSharedOnly(memEx);
         break;
       default:
-        throw new MemoryAllocationException("Unexpected distribution policy: " + valuePolicy + ".\n Allowed values are "
+        throw new PreesmException("Unexpected distribution policy: " + valuePolicy + ".\n Allowed values are "
             + AbstractMemoryAllocatorTask.VALUE_DISTRIBUTION_DEFAULT);
     }
 
@@ -250,7 +250,7 @@ public class Distributor {
         // result of a call to distributeMegDistributedOnly method
         final String firstObj = mobjByBank.keySet().iterator().next();
         if (firstObj != memory) {
-          throw new MemoryAllocationException("Merged memory objects " + mobjByBank.values()
+          throw new PreesmException("Merged memory objects " + mobjByBank.values()
               + " should not be allocated in memory bank " + firstObj + " but in memory " + memory + " instead.");
         }
       }

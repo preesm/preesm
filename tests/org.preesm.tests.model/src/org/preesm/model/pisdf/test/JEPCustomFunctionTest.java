@@ -2,6 +2,7 @@
  * Copyright or © or Copr. IETR/INSA - Rennes (2017 - 2018) :
  *
  * Alexandre Honorat <ahonorat@insa-rennes.fr> (2018)
+ * Alexandre Honorat <alexandre.honorat@insa-rennes.fr> (2018)
  * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017 - 2018)
  *
  * This software is a computer program whose purpose is to help prototyping
@@ -37,8 +38,8 @@ package org.preesm.model.pisdf.test;
 
 import org.junit.Assert;
 import org.junit.Test;
+import org.preesm.commons.math.ExpressionEvaluationException;
 import org.preesm.model.pisdf.Expression;
-import org.preesm.model.pisdf.expression.ExpressionEvaluationException;
 import org.preesm.model.pisdf.factory.PiMMUserFactory;
 
 /**
@@ -135,6 +136,16 @@ public class JEPCustomFunctionTest {
   @Test
   public void jepGeoSumTest3() {
     testEvaluation("geo_sum(512000,0.25,7)", 682625);
+  }
+
+  @Test
+  public void jepPowDivMax1() {
+    testEvaluation("pow_div_max(2, 72)", 3);
+  }
+
+  @Test
+  public void jepPowDivMax2() {
+    testEvaluation("pow_div_max(2, 73)", 0);
   }
 
 }

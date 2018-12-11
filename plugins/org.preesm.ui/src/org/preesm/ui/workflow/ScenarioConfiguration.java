@@ -36,7 +36,6 @@
  */
 package org.preesm.ui.workflow;
 
-// TODO: Auto-generated Javadoc
 /**
  * Representing the configuration for the scenario retrieved from launch tab. It feeds a {@link ScenarioRetriever} to
  * create the input scenario.

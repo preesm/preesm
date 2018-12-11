@@ -34,13 +34,10 @@
  */
 package org.preesm.algorithm.model.sdf.visitors;
 
-import org.preesm.algorithm.DFToolsAlgoException;
-import org.preesm.algorithm.model.parameters.InvalidExpressionException;
 import org.preesm.algorithm.model.sdf.SDFAbstractVertex;
 import org.preesm.algorithm.model.sdf.SDFEdge;
 import org.preesm.algorithm.model.sdf.SDFGraph;
 import org.preesm.algorithm.model.visitors.IGraphVisitor;
-import org.preesm.algorithm.model.visitors.SDF4JException;
 
 /**
  * Checks whether a visited graph is single-rate.
@@ -75,14 +72,8 @@ public class SingleRateChecker implements IGraphVisitor<SDFGraph, SDFAbstractVer
    */
   @Override
   public void visit(final SDFEdge sdfEdge) {
-    try {
-      this.isSingleRate &= sdfEdge.getCons().longValue() == sdfEdge.getProd().longValue();
-      this.isSingleRate &= ((sdfEdge.getDelay().longValue() % sdfEdge.getCons().longValue()) == 0);
-    } catch (final InvalidExpressionException e) {
-      // Supposedly, will not happen, expressions were already parsed when
-      // verifying actors number of repetition.
-      throw new DFToolsAlgoException("Could not check rate", e);
-    }
+    this.isSingleRate &= sdfEdge.getCons().longValue() == sdfEdge.getProd().longValue();
+    this.isSingleRate &= ((sdfEdge.getDelay().longValue() % sdfEdge.getCons().longValue()) == 0);
   }
 
   /*
@@ -112,10 +103,6 @@ public class SingleRateChecker implements IGraphVisitor<SDFGraph, SDFAbstractVer
   @Override
   public void visit(final SDFAbstractVertex sdfVertex) {
     // Check number of repetitions
-    try {
-      this.isSingleRate &= (sdfVertex.getNbRepeatAsLong() == 1);
-    } catch (final InvalidExpressionException e) {
-      throw new SDF4JException(e.getMessage());
-    }
+    this.isSingleRate &= (sdfVertex.getNbRepeatAsLong() == 1);
   }
 }

@@ -44,8 +44,8 @@ import org.preesm.algorithm.mapper.model.MapperDAGVertex;
 import org.preesm.algorithm.model.AbstractVertex;
 import org.preesm.algorithm.model.dag.DAGEdge;
 import org.preesm.algorithm.model.dag.DirectedAcyclicGraph;
+import org.preesm.model.scenario.types.ImplementationPropertyNames;
 import org.preesm.model.slam.route.AbstractRouteStep;
-import org.preesm.scenario.types.ImplementationPropertyNames;
 
 // TODO: Auto-generated Javadoc
 /**

@@ -35,11 +35,12 @@
 package org.preesm.algorithm.io.gml;
 
 import java.util.List;
-import org.preesm.algorithm.factories.ModelGraphFactory;
 import org.preesm.algorithm.model.AbstractEdge;
 import org.preesm.algorithm.model.AbstractGraph;
 import org.preesm.algorithm.model.AbstractVertex;
 import org.preesm.algorithm.model.IInterface;
+import org.preesm.algorithm.model.factories.ModelGraphFactory;
+import org.preesm.commons.exceptions.PreesmException;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
 
@@ -50,20 +51,13 @@ import org.w3c.dom.NodeList;
 public class GMLGenericImporter extends GMLImporter<AbstractGraph, AbstractVertex, AbstractEdge> {
 
   /**
-   * COnstructs a new importer for SDF graphs.
-   */
-  public GMLGenericImporter() {
-    super(null);
-  }
-
-  /**
    * Parses an Edge in the DOM document.
    *
    * @param edgeElt
    *          The DOM Element
    * @param parentGraph
    *          The parent Graph of this Edge
-   * @throws InvalidModelException
+   * @throws PreesmException
    *           the invalid model exception
    */
   @Override
@@ -104,7 +98,7 @@ public class GMLGenericImporter extends GMLImporter<AbstractGraph, AbstractVerte
    * @param graphElt
    *          The graph Element in the DOM document
    * @return The parsed graph
-   * @throws InvalidModelException
+   * @throws PreesmException
    *           the invalid model exception
    */
   @Override
@@ -113,7 +107,6 @@ public class GMLGenericImporter extends GMLImporter<AbstractGraph, AbstractVerte
     AbstractGraph graph;
     try {
       graph = ModelGraphFactory.getModel(parseModel);
-      this.edgeFactory = graph.getEdgeFactory();
       this.vertexFactory = graph.getVertexFactory();
       final NodeList childList = graphElt.getChildNodes();
       parseParameters(graph, graphElt);
@@ -133,7 +126,7 @@ public class GMLGenericImporter extends GMLImporter<AbstractGraph, AbstractVerte
       parseKeys(graphElt, graph);
       return graph;
     } catch (final InstantiationException | IllegalAccessException e) {
-      throw new InvalidModelException("Failed to parse graph with message :" + e.getMessage());
+      throw new PreesmException("Failed to parse graph with message :" + e.getMessage());
     }
   }
 
@@ -145,7 +138,7 @@ public class GMLGenericImporter extends GMLImporter<AbstractGraph, AbstractVerte
    * @param parentGraph
    *          the parent graph
    * @return The parsed node
-   * @throws InvalidModelException
+   * @throws PreesmException
    *           the invalid model exception
    */
   @Override

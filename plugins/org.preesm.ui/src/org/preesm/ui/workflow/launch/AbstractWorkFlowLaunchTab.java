@@ -37,14 +37,13 @@
  */
 package org.preesm.ui.workflow.launch;
 
-import org.eclipse.core.resources.IFile;
-import org.eclipse.core.resources.ResourcesPlugin;
+import java.util.LinkedHashSet;
+import java.util.Set;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.debug.core.ILaunchConfiguration;
 import org.eclipse.debug.core.ILaunchConfigurationWorkingCopy;
 import org.eclipse.debug.ui.AbstractLaunchConfigurationTab;
-import org.eclipse.jface.window.Window;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
@@ -53,13 +52,10 @@ import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Label;
-import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
-import org.eclipse.ui.dialogs.ElementTreeSelectionDialog;
-import org.eclipse.ui.model.WorkbenchContentProvider;
-import org.eclipse.ui.model.WorkbenchLabelProvider;
+import org.preesm.commons.messages.PreesmMessages;
+import org.preesm.ui.utils.FileUtils;
 
-// TODO: Auto-generated Javadoc
 /**
  * Containing common funtionalities of launch tabs.
  *
@@ -73,33 +69,8 @@ public abstract class AbstractWorkFlowLaunchTab extends AbstractLaunchConfigurat
   /** file attribute name to save the entered file. */
   private String fileAttributeName = null;
 
-  /**
-   * file path of the current Tab. There can be only one file chooser for the moment
-   */
-  private IPath fileIPath = null;
-
   /** The file path. */
   private Text filePath = null;
-
-  /**
-   * Displays a file browser in a shell.
-   *
-   * @param shell
-   *          the shell
-   */
-  protected void browseFiles(final Shell shell) {
-    final ElementTreeSelectionDialog tree = new ElementTreeSelectionDialog(shell,
-        WorkbenchLabelProvider.getDecoratingWorkbenchLabelProvider(), new WorkbenchContentProvider());
-    tree.setAllowMultiple(false);
-    tree.setInput(ResourcesPlugin.getWorkspace().getRoot());
-    tree.setMessage("Please select an existing file:");
-    tree.setTitle("Choose an existing file");
-    // opens the dialog
-    if (tree.open() == Window.OK) {
-      this.fileIPath = ((IFile) tree.getFirstResult()).getFullPath();
-      this.filePath.setText(this.fileIPath.toString());
-    }
-  }
 
   /*
    * (non-Javadoc)
@@ -126,7 +97,7 @@ public abstract class AbstractWorkFlowLaunchTab extends AbstractLaunchConfigurat
    * @param attributeName
    *          The name of the attribute in which the property should be saved
    */
-  public void drawFileChooser(final String title, final String attributeName) {
+  public void drawFileChooser(final String title, final String attributeName, final String fileType) {
 
     final Label label2 = new Label(this.currentComposite, SWT.NONE);
     label2.setText(title);
@@ -139,7 +110,14 @@ public abstract class AbstractWorkFlowLaunchTab extends AbstractLaunchConfigurat
     buttonBrowse.addSelectionListener(new SelectionAdapter() {
       @Override
       public void widgetSelected(final SelectionEvent e) {
-        browseFiles(getCurrentComposite().getShell());
+        final Set<String> scenarioExtensions = new LinkedHashSet<>();
+        scenarioExtensions.add(fileType);
+        final String message = PreesmMessages
+            .getString("Workflow.browse" + Character.toUpperCase(fileType.charAt(0)) + fileType.substring(1) + "Title");
+        IPath browseFiles = FileUtils.browseFiles(message, scenarioExtensions);
+        if (browseFiles != null) {
+          filePath.setText(browseFiles.toString());
+        }
       }
     });
 
@@ -174,7 +152,6 @@ public abstract class AbstractWorkFlowLaunchTab extends AbstractLaunchConfigurat
     try {
       this.filePath.setText(configuration.getAttribute(this.fileAttributeName, ""));
     } catch (final CoreException e) {
-      // OcamlPlugin.logError("ocaml plugin error", e);
       this.filePath.setText("");
     }
 

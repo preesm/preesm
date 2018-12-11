@@ -46,10 +46,10 @@ import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.Path;
 import org.preesm.algorithm.model.sdf.SDFGraph;
+import org.preesm.commons.exceptions.PreesmException;
 import org.preesm.commons.files.ContainersManager;
 import org.preesm.commons.files.PathTools;
 import org.preesm.commons.files.WorkspaceUtils;
-import org.preesm.workflow.WorkflowException;
 import org.preesm.workflow.elements.Workflow;
 import org.preesm.workflow.implement.AbstractTaskImplementation;
 
@@ -80,7 +80,7 @@ public class SDFExporter extends AbstractTaskImplementation {
         xmlPath = xmlPath.append(algorithm.getName() + ".graphml");
       }
     } catch (CoreException | IllegalArgumentException e) {
-      throw new WorkflowException("Path " + sXmlPath + " is not a valid path for export.\n" + e.getMessage());
+      throw new PreesmException("Path " + sXmlPath + " is not a valid path for export.\n" + e.getMessage());
     }
 
     final SDF2GraphmlExporter exporter = new SDF2GraphmlExporter();

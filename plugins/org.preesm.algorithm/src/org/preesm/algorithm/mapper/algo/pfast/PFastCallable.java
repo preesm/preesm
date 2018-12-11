@@ -50,8 +50,8 @@ import org.preesm.algorithm.mapper.model.MapperDAG;
 import org.preesm.algorithm.mapper.model.MapperDAGVertex;
 import org.preesm.algorithm.mapper.params.AbcParameters;
 import org.preesm.algorithm.mapper.params.FastAlgoParameters;
+import org.preesm.model.scenario.PreesmScenario;
 import org.preesm.model.slam.Design;
-import org.preesm.scenario.PreesmScenario;
 
 /**
  * One thread of Task scheduling FAST algorithm multithread.

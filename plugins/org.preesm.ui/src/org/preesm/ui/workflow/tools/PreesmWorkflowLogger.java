@@ -45,9 +45,9 @@ import org.eclipse.ui.console.IConsole;
 import org.eclipse.ui.console.IConsoleManager;
 import org.eclipse.ui.console.MessageConsole;
 import org.eclipse.ui.console.MessageConsoleStream;
+import org.preesm.commons.exceptions.PreesmException;
 import org.preesm.commons.logger.DefaultPreesmFormatter;
 import org.preesm.ui.PreesmUIPlugin;
-import org.preesm.workflow.WorkflowException;
 
 /**
  * Displaying information or error messages through a console initialized by the initConsole method.
@@ -106,7 +106,7 @@ public class PreesmWorkflowLogger extends Logger {
             Logger.getAnonymousLogger().log(Level.SEVERE, record.getThrown().getMessage(), record.getThrown());
           }
         } catch (IOException e) {
-          throw new WorkflowException("Could not open console stream", e);
+          throw new PreesmException("Could not open console stream", e);
         }
       }
     }

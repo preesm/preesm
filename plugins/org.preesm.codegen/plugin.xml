@@ -62,7 +62,7 @@
                object="org.preesm.algorithm.model.dag.DirectedAcyclicGraph">
             </input>
             <input id="scenario"
-               object="org.preesm.scenario.PreesmScenario">
+               object="org.preesm.model.scenario.PreesmScenario">
             </input>
          </inputs>
       </task>
@@ -73,7 +73,7 @@
             <inputs>
             	<input
                   id="scenario"
-                  object="org.preesm.scenario.PreesmScenario">
+                  object="org.preesm.model.scenario.PreesmScenario">
             	</input>
 	            <input
 	                  id="DAG"

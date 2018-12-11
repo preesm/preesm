@@ -46,11 +46,11 @@ import org.eclipse.emf.ecore.resource.ResourceSet;
 import org.eclipse.emf.ecore.resource.impl.ResourceSetImpl;
 import org.junit.Assert;
 import org.junit.Test;
+import org.preesm.commons.exceptions.PreesmException;
 import org.preesm.model.slam.Design;
 import org.preesm.model.slam.SlamPackage;
 import org.preesm.model.slam.process.SlamFlattener;
 import org.preesm.model.slam.serialize.IPXACTResourceFactoryImpl;
-import org.preesm.model.slam.utils.SlamException;
 
 /**
  */
@@ -113,7 +113,7 @@ public class SlamTester2 {
     try {
       resource2.save(null);
     } catch (final IOException e) {
-      throw new SlamException("Could not save", e);
+      throw new PreesmException("Could not save", e);
     }
   }
 

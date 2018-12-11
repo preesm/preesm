@@ -56,20 +56,19 @@ import org.preesm.algorithm.model.AbstractEdge;
 import org.preesm.algorithm.model.PropertyBean;
 import org.preesm.algorithm.model.dag.DAGEdge;
 import org.preesm.algorithm.model.dag.DAGVertex;
-import org.preesm.algorithm.model.parameters.InvalidExpressionException;
 import org.preesm.algorithm.model.sdf.SDFAbstractVertex;
 import org.preesm.algorithm.model.sdf.SDFEdge;
 import org.preesm.algorithm.model.sdf.SDFGraph;
+import org.preesm.model.scenario.PreesmScenario;
+import org.preesm.model.scenario.types.BufferAggregate;
+import org.preesm.model.scenario.types.BufferProperties;
+import org.preesm.model.scenario.types.DataType;
+import org.preesm.model.scenario.types.ImplementationPropertyNames;
+import org.preesm.model.scenario.types.VertexType;
 import org.preesm.model.slam.ComponentInstance;
 import org.preesm.model.slam.Design;
 import org.preesm.model.slam.route.AbstractRouteStep;
 import org.preesm.model.slam.utils.DesignTools;
-import org.preesm.scenario.PreesmScenario;
-import org.preesm.scenario.types.BufferAggregate;
-import org.preesm.scenario.types.BufferProperties;
-import org.preesm.scenario.types.DataType;
-import org.preesm.scenario.types.ImplementationPropertyNames;
-import org.preesm.scenario.types.VertexType;
 
 /**
  * Tags an SDF with the implementation information necessary for code generation, and DAG exporting.
@@ -99,8 +98,6 @@ public class TagDAG {
    *          the simu
    * @param edgeSchedType
    *          the edge sched type
-   * @throws InvalidExpressionException
-   *           the invalid expression exception
    */
   public void tag(final MapperDAG dag, final Design architecture, final PreesmScenario scenario, final LatencyAbc simu,
       final EdgeSchedType edgeSchedType) {
@@ -256,8 +253,6 @@ public class TagDAG {
    *          the dag
    * @param scenario
    *          the scenario
-   * @throws InvalidExpressionException
-   *           the invalid expression exception
    */
   public void addAllAggregates(final MapperDAG dag, final PreesmScenario scenario) {
 
@@ -280,8 +275,6 @@ public class TagDAG {
    *          the edge
    * @param scenario
    *          the scenario
-   * @throws InvalidExpressionException
-   *           the invalid expression exception
    */
   @SuppressWarnings("unchecked")
   public void addAggregateFromSDF(final MapperDAGEdge edge, final PreesmScenario scenario) {
@@ -309,8 +302,6 @@ public class TagDAG {
    *          the edge
    * @param scenario
    *          the scenario
-   * @throws InvalidExpressionException
-   *           the invalid expression exception
    */
   public void addAggregate(final MapperDAGEdge edge, final PreesmScenario scenario) {
     final BufferAggregate agg = new BufferAggregate();

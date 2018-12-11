@@ -1,6 +1,31 @@
 PREESM Changelog
 ================
 
+## Release version 3.1.0
+*2018.12.11*
+
+### New Feature
+* Add exporting task for flatten and single rate PiSDF;
+  * also update generate diagram feature to support init / end actors;
+  * NOT working for flatten graphs yet;
+
+### Changes
+* Adding a new function to jep, in order to compute i for max divisibility by 2**i;
+* Add Snapshot releases repository;
+* Refactor (method/class/package move/rename/delete);
+  * have the flatten and single-rate transformations independant from scenarios;
+* Remove IBSDF support in scenario;
+* Fix PiSDF flattener and srdag transformations to output a consistent model;
+* Centralize Xtend and XCore config on parent pom file;
+* Remove uses of deprecated EdgeFactories of JGrapht. Use Suppliers instead;
+* Fix Papify UI;
+* Fix spider codegen to handle latest papify config;
+* Updated spider codegen to handle parameterization directly from the workflow task.
+
+### Bug fix
+* Fix unicity of ports name when doing fork / join / broadcast / roundbuffer graph optimizations. 
+
+
 ## Release version 3.0.1
 *2018.11.23*
 

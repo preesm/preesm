@@ -45,13 +45,13 @@ import org.preesm.algorithm.mapper.model.MapperDAGEdge;
 import org.preesm.algorithm.mapper.model.MapperDAGVertex;
 import org.preesm.algorithm.mapper.params.AbcParameters;
 import org.preesm.algorithm.mapper.tools.TLevelIterator;
+import org.preesm.commons.exceptions.PreesmException;
 import org.preesm.commons.logger.PreesmLogger;
+import org.preesm.model.scenario.PreesmScenario;
 import org.preesm.model.slam.ComponentInstance;
 import org.preesm.model.slam.Design;
 import org.preesm.model.slam.component.ComNode;
 import org.preesm.model.slam.utils.DesignTools;
-import org.preesm.scenario.PreesmScenario;
-import org.preesm.workflow.WorkflowException;
 
 /**
  * Simulates an architecture having as many cores as necessary to execute one operation on one core. All core have the
@@ -72,7 +72,7 @@ public class InfiniteHomogeneousAbc extends LatencyAbc {
    *          the archi
    * @param scenario
    *          the scenario
-   * @throws WorkflowException
+   * @throws PreesmException
    *           the workflow exception
    */
   public InfiniteHomogeneousAbc(final AbcParameters params, final MapperDAG dag, final Design archi,
@@ -93,7 +93,7 @@ public class InfiniteHomogeneousAbc extends LatencyAbc {
    *          the task sched type
    * @param scenario
    *          the scenario
-   * @throws WorkflowException
+   * @throws PreesmException
    *           the workflow exception
    */
   public InfiniteHomogeneousAbc(final AbcParameters params, final MapperDAG dag, final Design archi,

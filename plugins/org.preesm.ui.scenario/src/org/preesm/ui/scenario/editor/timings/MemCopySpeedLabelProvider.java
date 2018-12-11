@@ -47,8 +47,8 @@ import org.eclipse.swt.graphics.Image;
 import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.IPropertyListener;
 import org.eclipse.ui.PlatformUI;
-import org.preesm.scenario.MemCopySpeed;
-import org.preesm.scenario.PreesmScenario;
+import org.preesm.model.scenario.MemCopySpeed;
+import org.preesm.model.scenario.PreesmScenario;
 import org.preesm.ui.scenario.editor.Messages;
 
 // TODO: Auto-generated Javadoc

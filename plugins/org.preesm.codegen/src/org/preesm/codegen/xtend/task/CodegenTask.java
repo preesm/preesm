@@ -52,9 +52,9 @@ import org.preesm.algorithm.mapper.model.MapperDAG;
 import org.preesm.algorithm.memory.exclusiongraph.MemoryExclusionGraph;
 import org.preesm.algorithm.model.dag.DirectedAcyclicGraph;
 import org.preesm.codegen.model.Block;
+import org.preesm.commons.exceptions.PreesmException;
+import org.preesm.model.scenario.PreesmScenario;
 import org.preesm.model.slam.Design;
-import org.preesm.scenario.PreesmScenario;
-import org.preesm.workflow.WorkflowException;
 import org.preesm.workflow.elements.Workflow;
 import org.preesm.workflow.implement.AbstractTaskImplementation;
 
@@ -86,7 +86,7 @@ public class CodegenTask extends AbstractTaskImplementation {
     final Map<String, MemoryExclusionGraph> megs = (Map<String, MemoryExclusionGraph>) inputs.get("MEGs");
     final DirectedAcyclicGraph algoDAG = (DirectedAcyclicGraph) inputs.get("DAG");
     if (!(algoDAG instanceof MapperDAG)) {
-      throw new WorkflowException("The input DAG has not been scheduled");
+      throw new PreesmException("The input DAG has not been scheduled");
     }
     final MapperDAG algo = (MapperDAG) algoDAG;
 

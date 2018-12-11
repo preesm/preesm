@@ -45,7 +45,7 @@ import org.eclipse.core.runtime.CoreException;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.ITreeSelection;
 import org.eclipse.ui.handlers.HandlerUtil;
-import org.preesm.workflow.WorkflowException;
+import org.preesm.commons.exceptions.PreesmException;
 import org.preesm.workflow.converter.WorkflowConverter;
 
 /**
@@ -83,7 +83,7 @@ public class WorkflowConverterHandler extends AbstractHandler {
         workflowFile.getParent().refreshLocal(IResource.DEPTH_ONE, null);
       }
     } catch (final IOException | CoreException e) {
-      throw new WorkflowException("Could not convert workflow", e);
+      throw new PreesmException("Could not convert workflow", e);
     }
 
     return null;

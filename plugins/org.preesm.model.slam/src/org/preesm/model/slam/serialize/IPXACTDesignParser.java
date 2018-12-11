@@ -53,6 +53,7 @@ import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.EClass;
 import org.eclipse.emf.ecore.EPackage;
 import org.preesm.commons.DomUtil;
+import org.preesm.commons.exceptions.PreesmException;
 import org.preesm.model.slam.ComponentHolder;
 import org.preesm.model.slam.ComponentInstance;
 import org.preesm.model.slam.Design;
@@ -72,7 +73,6 @@ import org.preesm.model.slam.link.Link;
 import org.preesm.model.slam.link.LinkFactory;
 import org.preesm.model.slam.link.LinkPackage;
 import org.preesm.model.slam.serialize.IPXACTDesignVendorExtensionsParser.LinkDescription;
-import org.preesm.model.slam.utils.SlamException;
 import org.preesm.model.slam.utils.SlamUserFactory;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -149,7 +149,7 @@ public class IPXACTDesignParser extends IPXACTParser {
     try {
       inputStream.close();
     } catch (final IOException e) {
-      throw new SlamException("Could not parse IPXACT");
+      throw new PreesmException("Could not parse IPXACT");
     }
 
     return design;
@@ -262,7 +262,7 @@ public class IPXACTDesignParser extends IPXACTParser {
       node = node.getNextSibling();
     }
     if (vlnv == null) {
-      throw new SlamException("Could not parse VLNV");
+      throw new PreesmException("Could not parse VLNV");
     }
 
     // Component type is retrieved from vendor extensions if there are any.
@@ -285,7 +285,7 @@ public class IPXACTDesignParser extends IPXACTParser {
 
       instance.setComponent(component);
       if (description == null) {
-        throw new SlamException("Could not parse description");
+        throw new PreesmException("Could not parse description");
       }
       try {
         // Special component cases
@@ -299,7 +299,7 @@ public class IPXACTDesignParser extends IPXACTParser {
           ((Dma) component).setSetupTime(Integer.valueOf(description.getSpecificParameter("slam:setupTime")));
         }
       } catch (final NumberFormatException e) {
-        throw new SlamException("Could not parse component instance", e);
+        throw new PreesmException("Could not parse component instance", e);
       }
 
     }
@@ -337,7 +337,7 @@ public class IPXACTDesignParser extends IPXACTParser {
           try {
             stream = new FileInputStream(file.getPath());
           } catch (final FileNotFoundException e) {
-            throw new SlamException("Could not locate file", e);
+            throw new PreesmException("Could not locate file", e);
           }
 
           final Design subDesign = subParser.parse(stream, design.getComponentHolder(), component);

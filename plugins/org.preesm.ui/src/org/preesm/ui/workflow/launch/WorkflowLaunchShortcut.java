@@ -34,9 +34,7 @@
  */
 package org.preesm.ui.workflow.launch;
 
-import java.util.ArrayList;
 import java.util.LinkedHashSet;
-import java.util.List;
 import java.util.Set;
 import java.util.logging.Level;
 import org.eclipse.core.resources.IFile;
@@ -49,18 +47,13 @@ import org.eclipse.debug.core.ILaunchConfigurationWorkingCopy;
 import org.eclipse.debug.core.ILaunchManager;
 import org.eclipse.debug.ui.CommonTab;
 import org.eclipse.debug.ui.DebugUITools;
-import org.eclipse.debug.ui.IDebugModelPresentation;
 import org.eclipse.debug.ui.ILaunchShortcut;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.IStructuredSelection;
-import org.eclipse.jface.window.Window;
-import org.eclipse.swt.widgets.Shell;
 import org.eclipse.ui.IEditorPart;
-import org.eclipse.ui.dialogs.ElementListSelectionDialog;
 import org.eclipse.ui.part.FileEditorInput;
 import org.preesm.commons.logger.PreesmLogger;
 import org.preesm.commons.messages.PreesmMessages;
-import org.preesm.ui.PreesmUIPlugin;
 import org.preesm.ui.utils.FileUtils;
 import org.preesm.ui.workflow.ScenarioConfiguration;
 
@@ -124,7 +117,6 @@ public class WorkflowLaunchShortcut implements ILaunchShortcut {
     // We ask for the scenario to use with the selected workflow
     final Set<String> scenarioExtensions = new LinkedHashSet<>();
     scenarioExtensions.add("scenario");
-    scenarioExtensions.add("piscenario");
     final String message = PreesmMessages.getString("Workflow.browseScenarioTitle");
     return FileUtils.browseFiles(message, scenarioExtensions);
   }
@@ -148,100 +140,6 @@ public class WorkflowLaunchShortcut implements ILaunchShortcut {
   }
 
   /**
-   * Show a selection dialog that allows the user to choose one of the specified launch configurations. Return the
-   * chosen config, or <code>null</code> if the user canceled the dialog.
-   *
-   * @param configList
-   *          the config list
-   * @return the i launch configuration
-   */
-  protected ILaunchConfiguration chooseConfiguration(final List<ILaunchConfiguration> configList) {
-    final IDebugModelPresentation labelProvider = DebugUITools.newDebugModelPresentation();
-    final ElementListSelectionDialog dialog = new ElementListSelectionDialog(getShell(), labelProvider);
-    dialog.setElements(configList.toArray());
-    dialog.setTitle("Choose the workflow configuration");
-    dialog.setMessage("");
-    dialog.setMultipleSelection(false);
-    final int result = dialog.open();
-    labelProvider.dispose();
-    if (result == Window.OK) {
-      return (ILaunchConfiguration) dialog.getFirstResult();
-    }
-    return null;
-  }
-
-  /**
-   * Search for the existing launch configurations with the same executable, so as to not create a new configuration if
-   * there is already one for the same executable.
-   *
-   * @param file
-   *          the file
-   * @return the first matching configuration, or null if none was found
-   */
-  private ILaunchConfiguration findExistingLaunchConfiguration(final IFile file) {
-    final ILaunchManager manager = DebugPlugin.getDefault().getLaunchManager();
-    final ILaunchConfigurationType type = manager
-        .getLaunchConfigurationType(WorkflowLaunchConfigurationDelegate.WORKFLOW_LAUNCH_CONFIG_TYPE_ID);
-
-    if (type != null) {
-      final List<ILaunchConfiguration> candidateConfigs = new ArrayList<>();
-      try {
-        final ILaunchConfiguration[] configs = manager.getLaunchConfigurations(type);
-
-        if ((configs != null) && (configs.length > 0)) {
-          for (final ILaunchConfiguration configuration : configs) {
-            final String candidateFile = configuration
-                .getAttribute(WorkflowLaunchConfigurationDelegate.ATTR_WORKFLOW_FILE_NAME, "");
-
-            final String newFile = file.getFullPath().toString();
-            if (candidateFile.equals(newFile)) {
-              candidateConfigs.add(configuration);
-            }
-          }
-        }
-      } catch (final CoreException e) {
-        PreesmLogger.getLogger().log(Level.SEVERE, "Error while looking for existing ILaunchConfiguration", e);
-      }
-
-      // If there are no existing configs associated with the IFile,
-      // create one.
-      // If there is exactly one config associated with the IFile, return
-      // it.
-      // Otherwise, if there is more than one config associated with the
-      // IFile, prompt the
-      // user to choose one.
-      final int candidateCount = candidateConfigs.size();
-      if (candidateCount < 1) {
-
-        return WorkflowLaunchShortcut.createLaunchConfiguration(file);
-      } else if (candidateCount == 1) {
-        return candidateConfigs.get(0);
-      } else {
-        // Prompt the user to choose a config. A null result means the
-        // user
-        // canceled the dialog, in which case this method returns null,
-        // since canceling the dialog should also cancel launching
-        // anything.
-        final ILaunchConfiguration config = chooseConfiguration(candidateConfigs);
-        if (config != null) {
-          return config;
-        }
-      }
-    }
-
-    return null;
-  }
-
-  /**
-   * Gets the shell.
-   *
-   * @return the shell
-   */
-  private Shell getShell() {
-    return PreesmUIPlugin.getDefault().getWorkbench().getActiveWorkbenchWindow().getShell();
-  }
-
-  /**
    * From a workflow editor, tries to reexecute the preceding scenario.
    *
    * @param editor
@@ -251,12 +149,12 @@ public class WorkflowLaunchShortcut implements ILaunchShortcut {
    */
   @Override
   public void launch(final IEditorPart editor, final String mode) {
-    if ((editor.getEditorInput() != null) && (editor.getEditorInput() instanceof FileEditorInput)) {
+    if (editor.getEditorInput() instanceof FileEditorInput) {
       final FileEditorInput fileEditorInput = (FileEditorInput) editor.getEditorInput();
 
       final IFile file = fileEditorInput.getFile();
 
-      final ILaunchConfiguration configuration = findExistingLaunchConfiguration(file);
+      final ILaunchConfiguration configuration = WorkflowLaunchShortcut.createLaunchConfiguration(file);
       if (configuration != null) {
         DebugUITools.launch(configuration, mode);
       }
@@ -277,7 +175,7 @@ public class WorkflowLaunchShortcut implements ILaunchShortcut {
       final IStructuredSelection sel = (IStructuredSelection) selection;
 
       final Object first = sel.getFirstElement();
-      if ((first != null) && (first instanceof IFile)) {
+      if (first instanceof IFile) {
         final IFile file = (IFile) first;
 
         final ILaunchConfiguration configuration = WorkflowLaunchShortcut.createLaunchConfiguration(file);

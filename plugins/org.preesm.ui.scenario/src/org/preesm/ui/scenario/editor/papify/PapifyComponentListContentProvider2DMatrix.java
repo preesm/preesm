@@ -42,11 +42,11 @@ import java.util.Map;
 import java.util.Set;
 import org.eclipse.jface.viewers.ITreeContentProvider;
 import org.eclipse.jface.viewers.Viewer;
-import org.preesm.scenario.PreesmScenario;
-import org.preesm.scenario.papi.PapiComponent;
-import org.preesm.scenario.papi.PapiEventInfo;
-import org.preesm.scenario.papi.PapiEventSet;
-import org.preesm.scenario.papi.PapifyConfigPE;
+import org.preesm.model.scenario.PreesmScenario;
+import org.preesm.model.scenario.papi.PapiComponent;
+import org.preesm.model.scenario.papi.PapiEventInfo;
+import org.preesm.model.scenario.papi.PapiEventSet;
+import org.preesm.model.scenario.papi.PapifyConfigPE;
 import org.preesm.ui.scenario.editor.papify.PapifyListTreeElement.PAPIStatus;
 
 // TODO: Auto-generated Javadoc

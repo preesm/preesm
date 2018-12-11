@@ -51,7 +51,6 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.FutureTask;
 import java.util.concurrent.Semaphore;
 import java.util.logging.Level;
-import org.preesm.algorithm.mapper.PreesmMapperException;
 import org.preesm.algorithm.mapper.abc.impl.latency.LatencyAbc;
 import org.preesm.algorithm.mapper.abc.order.VertexOrderList;
 import org.preesm.algorithm.mapper.abc.taskscheduling.AbstractTaskSched;
@@ -65,10 +64,10 @@ import org.preesm.algorithm.mapper.params.FastAlgoParameters;
 import org.preesm.algorithm.mapper.params.PFastAlgoParameters;
 import org.preesm.algorithm.mapper.ui.BestCostPlotter;
 import org.preesm.algorithm.mapper.ui.bestcost.BestCostEditor;
+import org.preesm.commons.exceptions.PreesmException;
 import org.preesm.commons.logger.PreesmLogger;
+import org.preesm.model.scenario.PreesmScenario;
 import org.preesm.model.slam.Design;
-import org.preesm.scenario.PreesmScenario;
-import org.preesm.workflow.WorkflowException;
 
 /**
  * Task scheduling FAST algorithm multithread.
@@ -299,7 +298,7 @@ public class PFastAlgorithm extends Observable {
    * @param taskSched
    *          the task sched
    * @return MapperDAG
-   * @throws WorkflowException
+   * @throws PreesmException
    *           the workflow exception
    */
   public MapperDAG map(MapperDAG dag, final Design archi, final PreesmScenario scenario,
@@ -429,7 +428,7 @@ public class PFastAlgorithm extends Observable {
         es.shutdown();
 
       } catch (final InterruptedException | ExecutionException e) {
-        throw new PreesmMapperException("Error in PFast", e);
+        throw new PreesmException("Error in PFast", e);
       }
       // step 13
       totalsearchcount++;

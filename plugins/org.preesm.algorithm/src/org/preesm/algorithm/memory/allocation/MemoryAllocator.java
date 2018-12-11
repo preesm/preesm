@@ -54,14 +54,13 @@ import org.preesm.algorithm.memory.exclusiongraph.MemoryExclusionVertex;
 import org.preesm.algorithm.memory.script.Range;
 import org.preesm.algorithm.model.PropertyBean;
 import org.preesm.algorithm.model.dag.DAGEdge;
-import org.preesm.algorithm.model.parameters.InvalidExpressionException;
 import org.preesm.algorithm.model.sdf.SDFEdge;
 import org.preesm.algorithm.model.sdf.SDFGraph;
 import org.preesm.commons.exceptions.PreesmException;
 import org.preesm.commons.math.MathFunctionsHelper;
-import org.preesm.scenario.types.BufferAggregate;
-import org.preesm.scenario.types.BufferProperties;
-import org.preesm.scenario.types.DataType;
+import org.preesm.model.scenario.types.BufferAggregate;
+import org.preesm.model.scenario.types.BufferProperties;
+import org.preesm.model.scenario.types.DataType;
 
 // TODO: Auto-generated Javadoc
 /**
@@ -738,7 +737,7 @@ public abstract class MemoryAllocator {
    */
   public Map<MemoryExclusionVertex, Long> checkAllocation() {
     if (this.memExNodeAllocation == null) {
-      throw new MemoryAllocationException("Cannot check memory allocation because no allocation was performed.");
+      throw new PreesmException("Cannot check memory allocation because no allocation was performed.");
     }
 
     Map<MemoryExclusionVertex, Long> conflictingElements;
@@ -848,16 +847,12 @@ public abstract class MemoryAllocator {
     }
 
     if (!this.edgeAllocation.isEmpty()) {
-      try {
-        // Look for the maximum value of (offset + edge.size) in
-        // allocation map
-        for (final DAGEdge edge : this.edgeAllocation.keySet()) {
-          if ((this.edgeAllocation.get(edge) + edge.getWeight().longValue()) > memorySize) {
-            memorySize = this.edgeAllocation.get(edge) + edge.getWeight().longValue();
-          }
+      // Look for the maximum value of (offset + edge.size) in
+      // allocation map
+      for (final DAGEdge edge : this.edgeAllocation.keySet()) {
+        if ((this.edgeAllocation.get(edge) + edge.getWeight().longValue()) > memorySize) {
+          memorySize = this.edgeAllocation.get(edge) + edge.getWeight().longValue();
         }
-      } catch (final InvalidExpressionException e) {
-        e.printStackTrace();
       }
       return memorySize;
     }

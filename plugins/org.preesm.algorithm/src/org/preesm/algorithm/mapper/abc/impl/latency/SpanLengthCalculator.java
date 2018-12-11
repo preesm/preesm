@@ -40,9 +40,9 @@ import org.preesm.algorithm.mapper.abc.taskscheduling.TaskSchedType;
 import org.preesm.algorithm.mapper.model.MapperDAG;
 import org.preesm.algorithm.mapper.model.MapperDAGEdge;
 import org.preesm.algorithm.mapper.params.AbcParameters;
+import org.preesm.commons.exceptions.PreesmException;
+import org.preesm.model.scenario.PreesmScenario;
 import org.preesm.model.slam.Design;
-import org.preesm.scenario.PreesmScenario;
-import org.preesm.workflow.WorkflowException;
 
 /**
  * Using infinite homogeneous simulation to calculate the span length of a dag.
@@ -67,7 +67,7 @@ public class SpanLengthCalculator extends InfiniteHomogeneousAbc {
    *          the task sched type
    * @param scenario
    *          the scenario
-   * @throws WorkflowException
+   * @throws PreesmException
    *           the workflow exception
    */
   public SpanLengthCalculator(final AbcParameters params, final MapperDAG dag, final Design archi,

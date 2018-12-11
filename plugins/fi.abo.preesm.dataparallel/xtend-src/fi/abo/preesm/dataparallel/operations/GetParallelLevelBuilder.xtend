@@ -39,7 +39,7 @@ package fi.abo.preesm.dataparallel.operations
 import fi.abo.preesm.dataparallel.PureDAGConstructor
 import java.util.Map
 import org.preesm.algorithm.model.sdf.SDFAbstractVertex
-import org.preesm.algorithm.model.visitors.SDF4JException
+import org.preesm.commons.exceptions.PreesmException
 
 /**
  * Helper class to properly initialize and use {@link OperationsUtils#getParallelLevel}.
@@ -113,17 +113,17 @@ class GetParallelLevelBuilder {
 	 */
 	def Integer build() {
 		if(subsetLevels === null) {
-			throw new SDF4JException("Use addSubsetLevels method to initialize levels for which " +
+			throw new PreesmException("Use addSubsetLevels method to initialize levels for which " +
 				"maximum parallel level needs to be found")
 		}
 
 		if(origLevels === null) {
-			throw new SDF4JException("Use addOrigLevels method to initialize levels that " +
+			throw new PreesmException("Use addOrigLevels method to initialize levels that " +
 				"forms the superset of subsetLevels")
 		}
 
 		if(dagGen === null) {
-			throw new SDF4JException("Initialize the DAGConstructor instance using addDagGen method")
+			throw new PreesmException("Initialize the DAGConstructor instance using addDagGen method")
 		}
 
 		return OperationsUtils.getParallelLevel(dagGen, origLevels, subsetLevels)

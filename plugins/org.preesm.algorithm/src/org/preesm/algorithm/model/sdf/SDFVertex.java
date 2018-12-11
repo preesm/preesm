@@ -34,9 +34,7 @@
  */
 package org.preesm.algorithm.model.sdf;
 
-import org.preesm.algorithm.DFToolsAlgoException;
 import org.preesm.algorithm.model.AbstractVertex;
-import org.preesm.algorithm.model.parameters.InvalidExpressionException;
 import org.preesm.algorithm.model.sdf.esdf.SDFSinkInterfaceVertex;
 import org.preesm.algorithm.model.sdf.esdf.SDFSourceInterfaceVertex;
 
@@ -112,11 +110,7 @@ public class SDFVertex extends SDFAbstractVertex {
         newVertex.addSource((SDFSourceInterfaceVertex) source.copy());
       }
     }
-    try {
-      newVertex.setNbRepeat(getNbRepeat());
-    } catch (final InvalidExpressionException e) {
-      throw new DFToolsAlgoException("Could not clone vertex", e);
-    }
+    newVertex.setNbRepeat(getNbRepeat());
 
     return newVertex;
   }

@@ -36,16 +36,15 @@
  */
 package fi.abo.preesm.dataparallel.fifo
 
+import java.util.function.Supplier
 import java.util.logging.Logger
-import org.jgrapht.EdgeFactory
-import org.preesm.algorithm.factories.SDFEdgeFactory
 import org.preesm.algorithm.model.AbstractEdgePropertyType
 import org.preesm.algorithm.model.AbstractGraph
 import org.preesm.algorithm.model.IInterface
 import org.preesm.algorithm.model.sdf.SDFAbstractVertex
 import org.preesm.algorithm.model.sdf.SDFEdge
 import org.preesm.algorithm.model.sdf.SDFGraph
-import org.preesm.algorithm.model.visitors.SDF4JException
+import org.preesm.commons.exceptions.PreesmException
 
 /**
  * A special case of {@link SDFGraph} used to denote non-trivial initialization of FIFOs
@@ -60,16 +59,6 @@ class FifoActorGraph extends SDFGraph {
 
 	new (){
 		super()
-		this.propertyBean.setValue(AbstractGraph.MODEL, MODEL)
-	}
-
-	new(EdgeFactory<SDFAbstractVertex, SDFEdge> ef) {
-		super(ef)
-		this.propertyBean.setValue(AbstractGraph.MODEL, MODEL)
-	}
-
-	new(SDFEdgeFactory factory) {
-		super(factory)
 		this.propertyBean.setValue(AbstractGraph.MODEL, MODEL)
 	}
 
@@ -92,7 +81,7 @@ class FifoActorGraph extends SDFGraph {
 					 AbstractEdgePropertyType<?> cons,
 					 AbstractEdgePropertyType<?> delay) {
 		if(delay.longValue > 0) {
-			throw new SDF4JException("FIFO-Actor Graphs cannot have delay in their edges")
+			throw new PreesmException("FIFO-Actor Graphs cannot have delay in their edges")
 		}
 		return super.addEdge(source, sourcePort, sink, sinkPort, prod, cons, delay)
 	}
@@ -112,7 +101,7 @@ class FifoActorGraph extends SDFGraph {
 					 AbstractEdgePropertyType<?> cons,
 					 AbstractEdgePropertyType<?> delay) {
 		if(delay.longValue > 0) {
-			throw new SDF4JException("FIFO-Actor Graphs cannot have delay in their edges")
+			throw new PreesmException("FIFO-Actor Graphs cannot have delay in their edges")
 		}
 		return super.addEdge(source, sink, prod, cons, delay)
 	}
@@ -127,7 +116,7 @@ class FifoActorGraph extends SDFGraph {
 			edge.delay.longValue == 0
 		]) {
 			val message = "Edges of FIFO Actor cannot have delays in them."
-			throw new SDF4JException(message)
+			throw new PreesmException(message)
 		}
 		return super.validateModel()
 	}

@@ -34,12 +34,10 @@
  */
 package org.preesm.algorithm.model.sdf;
 
-import org.preesm.algorithm.DFToolsAlgoException;
 import org.preesm.algorithm.model.AbstractEdge;
 import org.preesm.algorithm.model.AbstractEdgePropertyType;
 import org.preesm.algorithm.model.InterfaceDirection;
 import org.preesm.algorithm.model.PropertyFactory;
-import org.preesm.algorithm.model.parameters.InvalidExpressionException;
 import org.preesm.algorithm.model.sdf.esdf.SDFSinkInterfaceVertex;
 import org.preesm.algorithm.model.sdf.esdf.SDFSourceInterfaceVertex;
 import org.preesm.algorithm.model.types.ExpressionEdgePropertyType;
@@ -47,13 +45,17 @@ import org.preesm.algorithm.model.types.LongEdgePropertyType;
 import org.preesm.algorithm.model.types.NumericalEdgePropertyTypeFactory;
 import org.preesm.algorithm.model.types.StringEdgePropertyType;
 import org.preesm.algorithm.model.types.TextualEdgePropertyTypeFactory;
+import org.preesm.model.pisdf.PiGraph;
 
 /**
  * Class representing an SDFEdge which is an edge with production and consuming rates and length of delay specified.
  *
  * @author jpiat
  * @author kdesnos
+ * @deprecated SDF model is deprecated and subject to removal any time. Please design your transformations on
+ *             {@link PiGraph} instead.
  */
+@Deprecated
 public class SDFEdge extends AbstractEdge<SDFGraph, SDFAbstractVertex> {
 
   /** Property name for property edge_cons. */
@@ -362,15 +364,11 @@ public class SDFEdge extends AbstractEdge<SDFGraph, SDFAbstractVertex> {
    */
   public boolean compare(final SDFEdge edge) {
 
-    try {
-      return super.compare(edge) && edge.getSourceInterface().getName().equals(getSourceInterface().getName())
-          && edge.getTargetInterface().getName().equals(getTargetInterface().getName())
-          && (getCons().longValue() == edge.getCons().longValue())
-          && (getProd().longValue() == edge.getProd().longValue())
-          && (getDelay().longValue() == edge.getDelay().longValue());
-    } catch (final InvalidExpressionException e) {
-      throw new DFToolsAlgoException("Could not compare edges", e);
-    }
+    return super.compare(edge) && edge.getSourceInterface().getName().equals(getSourceInterface().getName())
+        && edge.getTargetInterface().getName().equals(getTargetInterface().getName())
+        && (getCons().longValue() == edge.getCons().longValue())
+        && (getProd().longValue() == edge.getProd().longValue())
+        && (getDelay().longValue() == edge.getDelay().longValue());
   }
 
   /*

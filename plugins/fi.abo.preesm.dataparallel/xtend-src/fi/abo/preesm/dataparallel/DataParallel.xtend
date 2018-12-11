@@ -41,9 +41,8 @@ import java.util.Map
 import org.eclipse.core.runtime.IProgressMonitor
 import org.eclipse.xtend.lib.annotations.Accessors
 import org.preesm.algorithm.model.sdf.SDFGraph
-import org.preesm.algorithm.model.visitors.SDF4JException
+import org.preesm.commons.exceptions.PreesmException
 import org.preesm.commons.logger.PreesmLogger
-import org.preesm.workflow.WorkflowException
 import org.preesm.workflow.elements.Workflow
 import org.preesm.workflow.implement.AbstractTaskImplementation
 import org.preesm.workflow.implement.AbstractWorkflowNodeImplementation
@@ -65,11 +64,11 @@ class DataParallel extends AbstractTaskImplementation {
 	 * Execute data-parallel plugin and re-timing transformation. Actual work is carried out
 	 * by {@link DataParallelCheckOperations}
 	 */
-	override execute(Map<String, Object> inputs, Map<String, String> parameters, IProgressMonitor monitor, String nodeName, Workflow workflow) throws WorkflowException {
+	override execute(Map<String, Object> inputs, Map<String, String> parameters, IProgressMonitor monitor, String nodeName, Workflow workflow) throws PreesmException {
 		val sdf = inputs.get(AbstractWorkflowNodeImplementation.KEY_SDF_GRAPH) as SDFGraph
 		// Check if sdf is schedulable
 		if(!sdf.isSchedulable) {
-			throw new SDF4JException("Graph " + sdf + " not schedulable")
+			throw new PreesmException("Graph " + sdf + " not schedulable")
 		}
 
 		val logger = PreesmLogger.getLogger

@@ -3,7 +3,7 @@ Bundle-ManifestVersion: 2
 Bundle-Name: %pluginName
 Automatic-Module-Name: org.preesm.model.slam
 Bundle-SymbolicName: org.preesm.model.slam;singleton:=true
-Bundle-Version: 3.0.1
+Bundle-Version: 3.1.0
 Bundle-ClassPath: .
 Bundle-Localization: plugin
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8

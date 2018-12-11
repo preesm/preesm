@@ -43,8 +43,8 @@ import java.util.Observer;
 import org.preesm.algorithm.model.parameters.Argument;
 import org.preesm.algorithm.model.parameters.ArgumentSet;
 import org.preesm.algorithm.model.visitors.IGraphVisitor;
-import org.preesm.algorithm.model.visitors.SDF4JException;
 import org.preesm.commons.CloneableProperty;
+import org.preesm.commons.exceptions.PreesmException;
 
 /**
  * Abstract class for all vertex types.
@@ -118,11 +118,11 @@ public abstract class AbstractVertex<G> extends Observable
    *
    * @param visitor
    *          The visitor to accept
-   * @throws SDF4JException
+   * @throws PreesmException
    *           the SDF 4 J exception
    */
   @SuppressWarnings("rawtypes")
-  public void accept(final IGraphVisitor visitor) throws SDF4JException {
+  public void accept(final IGraphVisitor visitor) throws PreesmException {
     visitor.visit(this);
   }
 

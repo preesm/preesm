@@ -37,8 +37,6 @@ package org.preesm.algorithm.model.sdf.esdf;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import org.preesm.algorithm.DFToolsAlgoException;
-import org.preesm.algorithm.model.parameters.InvalidExpressionException;
 import org.preesm.algorithm.model.sdf.SDFEdge;
 import org.preesm.algorithm.model.sdf.SDFInterfaceVertex;
 
@@ -123,11 +121,7 @@ public class SDFRoundBufferVertex extends SDFBroadcastVertex {
   public SDFRoundBufferVertex copy() {
     final SDFRoundBufferVertex copy = new SDFRoundBufferVertex();
     copy.setName(getName());
-    try {
-      copy.setNbRepeat(getNbRepeat());
-    } catch (final InvalidExpressionException e) {
-      throw new DFToolsAlgoException("could not clone vertex", e);
-    }
+    copy.setNbRepeat(getNbRepeat());
 
     // Copy the ports
     for (final SDFInterfaceVertex sink : getSinks()) {

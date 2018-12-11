@@ -88,7 +88,7 @@ import org.preesm.model.pisdf.PiSDFRefinement;
 import org.preesm.model.pisdf.Port;
 import org.preesm.model.pisdf.RoundBufferActor;
 import org.preesm.model.pisdf.util.PiMMSwitch;
-import org.preesm.scenario.types.DataType;
+import org.preesm.model.scenario.types.DataType;
 
 // TODO: Find a cleaner way to setParentEdge in Interfaces
 /*

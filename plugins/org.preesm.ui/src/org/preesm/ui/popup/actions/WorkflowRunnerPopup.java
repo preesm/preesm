@@ -34,6 +34,7 @@
  */
 package org.preesm.ui.popup.actions;
 
+import java.util.logging.Level;
 import org.eclipse.core.commands.AbstractHandler;
 import org.eclipse.core.commands.ExecutionEvent;
 import org.eclipse.core.commands.ExecutionException;
@@ -51,6 +52,7 @@ import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.handlers.HandlerUtil;
 import org.eclipse.ui.ide.ResourceUtil;
 import org.eclipse.ui.views.properties.tabbed.ITabbedPropertySheetPageContributor;
+import org.preesm.commons.logger.PreesmLogger;
 import org.preesm.ui.PreesmUIPlugin;
 import org.preesm.ui.workflow.launch.WorkflowLaunchShortcut;
 
@@ -99,12 +101,14 @@ public class WorkflowRunnerPopup extends AbstractHandler {
           + activeSelection.getClass() + "]";
       throw new UnsupportedOperationException(message);
     }
-
-    final ILaunchConfiguration configuration = WorkflowLaunchShortcut.createLaunchConfiguration(workflowFile);
-    if (configuration != null) {
-      DebugUITools.launch(configuration, "run");
+    try {
+      final ILaunchConfiguration configuration = WorkflowLaunchShortcut.createLaunchConfiguration(workflowFile);
+      if (configuration != null) {
+        DebugUITools.launch(configuration, "run");
+      }
+    } catch (final Exception e) {
+      PreesmLogger.getLogger().log(Level.SEVERE, "Could not run workflow", e);
     }
-
     return null;
   }
 }

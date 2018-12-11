@@ -41,11 +41,6 @@ import java.util.Map;
 import java.util.Set;
 import org.apache.commons.math3.util.ArithmeticUtils;
 import org.jgrapht.alg.cycle.CycleDetector;
-import org.preesm.algorithm.DFToolsAlgoException;
-import org.preesm.algorithm.exceptions.CreateCycleException;
-import org.preesm.algorithm.exceptions.CreateMultigraphException;
-import org.preesm.algorithm.factories.IModelVertexFactory;
-import org.preesm.algorithm.iterators.SDFIterator;
 import org.preesm.algorithm.model.dag.DAGEdge;
 import org.preesm.algorithm.model.dag.DAGVertex;
 import org.preesm.algorithm.model.dag.DirectedAcyclicGraph;
@@ -54,7 +49,8 @@ import org.preesm.algorithm.model.dag.edag.DAGEndVertex;
 import org.preesm.algorithm.model.dag.edag.DAGForkVertex;
 import org.preesm.algorithm.model.dag.edag.DAGInitVertex;
 import org.preesm.algorithm.model.dag.edag.DAGJoinVertex;
-import org.preesm.algorithm.model.parameters.InvalidExpressionException;
+import org.preesm.algorithm.model.factories.IModelVertexFactory;
+import org.preesm.algorithm.model.iterators.SDFIterator;
 import org.preesm.algorithm.model.sdf.SDFAbstractVertex;
 import org.preesm.algorithm.model.sdf.SDFEdge;
 import org.preesm.algorithm.model.sdf.SDFGraph;
@@ -72,8 +68,7 @@ import org.preesm.algorithm.model.sdf.transformations.SpecialActorPortsIndexer;
 import org.preesm.algorithm.model.types.LongEdgePropertyType;
 import org.preesm.algorithm.model.types.LongVertexPropertyType;
 import org.preesm.algorithm.model.visitors.IGraphVisitor;
-import org.preesm.algorithm.model.visitors.SDF4JException;
-import org.preesm.workflow.WorkflowException;
+import org.preesm.commons.exceptions.PreesmException;
 
 /**
  * Visitor to use to transform a SDF Graph in a Directed Acyclic Graph.
@@ -252,32 +247,23 @@ public class DAGTransformation<T extends DirectedAcyclicGraph>
    *
    * @param graph
    *          the graph
-   * @throws SDF4JException
+   * @throws PreesmException
    *           the SDF 4 J exception
    */
   private void transformsTop(final SDFGraph graph) {
-    try {
-      if (graph.validateModel()) {
-        // insertImplodeExplodesVertices(graph)
-        this.outputGraph.copyProperties(graph);
-        this.outputGraph.setCorrespondingSDFGraph(graph);
-        for (final DAGVertex vertex : this.outputGraph.vertexSet()) {
-          vertex.setNbRepeat(new LongVertexPropertyType(graph.getVertex(vertex.getName()).getNbRepeatAsLong()));
-        }
+    if (graph.validateModel()) {
+      // insertImplodeExplodesVertices(graph)
+      this.outputGraph.copyProperties(graph);
+      this.outputGraph.setCorrespondingSDFGraph(graph);
+      for (final DAGVertex vertex : this.outputGraph.vertexSet()) {
+        vertex.setNbRepeat(new LongVertexPropertyType(graph.getVertex(vertex.getName()).getNbRepeatAsLong()));
+      }
 
-        for (final SDFEdge edge : graph.edgeSet()) {
-          if (edge.getDelay().longValue() == 0) {
-            try {
-              createEdge(edge);
-            } catch (final CreateMultigraphException | CreateCycleException e) {
-              throw new WorkflowException(
-                  "Error in the DAG creation. Check the single-rate SDF to identify where delays are missing", e);
-            }
-          }
+      for (final SDFEdge edge : graph.edgeSet()) {
+        if (edge.getDelay().longValue() == 0) {
+          createEdge(edge);
         }
       }
-    } catch (final InvalidExpressionException e) {
-      throw (new SDF4JException(e.getMessage()));
     }
   }
 
@@ -286,9 +272,9 @@ public class DAGTransformation<T extends DirectedAcyclicGraph>
    *
    * @param edge
    *          the SDF edge
-   * @throws CreateMultigraphException
+   * @throws PreesmException
    *           the CreateMultigraphException exception
-   * @throws CreateCycleException
+   * @throws PreesmException
    *           the CreateCycleException exception
    */
   private void createEdge(final SDFEdge edge) {
@@ -298,13 +284,11 @@ public class DAGTransformation<T extends DirectedAcyclicGraph>
     final DAGVertex target = this.outputGraph.getVertex(edgeTarget.getName());
 
     if (source == null) {
-      throw new DFToolsAlgoException(
-          "Output DAG does not contain edge source vertex '" + edgeSource + "' from input SDF.");
+      throw new PreesmException("Output DAG does not contain edge source vertex '" + edgeSource + "' from input SDF.");
     }
 
     if (target == null) {
-      throw new DFToolsAlgoException(
-          "Output DAG does not contain edge target vertex '" + edgeTarget + "' from input SDF.");
+      throw new PreesmException("Output DAG does not contain edge target vertex '" + edgeTarget + "' from input SDF.");
     }
 
     final DAGEdge dagEdge;
@@ -340,8 +324,6 @@ public class DAGTransformation<T extends DirectedAcyclicGraph>
    * @param edge
    *          the edge
    * @return the int
-   * @throws InvalidExpressionException
-   *           the invalid expression exception
    */
   long computeEdgeWeight(final SDFEdge edge) {
     final long weight = edge.getCons().longValue() * edge.getTarget().getNbRepeatAsLong();
@@ -354,8 +336,6 @@ public class DAGTransformation<T extends DirectedAcyclicGraph>
    *
    * @param graph
    *          The graph to treat
-   * @throws InvalidExpressionException
-   *           the invalid expression exception
    */
   private void treatCycles(final SDFGraph graph) {
     final List<Set<SDFAbstractVertex>> cycles = new ArrayList<>();
@@ -392,8 +372,6 @@ public class DAGTransformation<T extends DirectedAcyclicGraph>
    *          the graph
    * @param cycle
    *          the cycle
-   * @throws InvalidExpressionException
-   *           the invalid expression exception
    */
   protected void treatSDFCycles(final SDFGraph graph, final Set<SDFAbstractVertex> cycle) {
     final List<SDFEdge> loops = new ArrayList<>();
@@ -447,41 +425,37 @@ public class DAGTransformation<T extends DirectedAcyclicGraph>
     final ArrayList<SDFEdge> edges = new ArrayList<>(graph.edgeSet());
     while (!edges.isEmpty()) {
       final SDFEdge edge = edges.get(0);
-      try {
-        if (edge.getDelay().longValue() > 0) {
-          final SDFInitVertex initVertex = new SDFInitVertex();
-          initVertex.setName(edge.getTarget().getName() + "_init_" + edge.getTargetInterface().getName());
-          final SDFSinkInterfaceVertex sinkInit = new SDFSinkInterfaceVertex();
-          sinkInit.setName("init_out");
-          initVertex.addSink(sinkInit);
-          initVertex.setNbRepeat(1L);
-          graph.addVertex(initVertex);
+      if (edge.getDelay().longValue() > 0) {
+        final SDFInitVertex initVertex = new SDFInitVertex();
+        initVertex.setName(edge.getTarget().getName() + "_init_" + edge.getTargetInterface().getName());
+        final SDFSinkInterfaceVertex sinkInit = new SDFSinkInterfaceVertex();
+        sinkInit.setName("init_out");
+        initVertex.addSink(sinkInit);
+        initVertex.setNbRepeat(1L);
+        graph.addVertex(initVertex);
 
-          final SDFEndVertex endVertex = new SDFEndVertex();
-          endVertex.setName(edge.getSource().getName() + "_end_" + edge.getSourceInterface().getName());
-          final SDFSourceInterfaceVertex sourceEnd = new SDFSourceInterfaceVertex();
-          sourceEnd.setName("end_in");
-          endVertex.addSource(sourceEnd);
-          endVertex.setNbRepeat(1L);
-          initVertex.setEndReference(endVertex);
-          initVertex.setInitSize(edge.getDelay().longValue());
-          endVertex.setEndReference(initVertex);
-          graph.addVertex(endVertex);
+        final SDFEndVertex endVertex = new SDFEndVertex();
+        endVertex.setName(edge.getSource().getName() + "_end_" + edge.getSourceInterface().getName());
+        final SDFSourceInterfaceVertex sourceEnd = new SDFSourceInterfaceVertex();
+        sourceEnd.setName("end_in");
+        endVertex.addSource(sourceEnd);
+        endVertex.setNbRepeat(1L);
+        initVertex.setEndReference(endVertex);
+        initVertex.setInitSize(edge.getDelay().longValue());
+        endVertex.setEndReference(initVertex);
+        graph.addVertex(endVertex);
 
-          final SDFEdge initEdge = graph.addEdge(initVertex, edge.getTarget());
-          initEdge.copyProperties(edge);
-          initEdge.setSourceInterface(sinkInit);
-          initEdge.setDelay(new LongEdgePropertyType(0));
-          // initEdge.setProd(edge.getDelay())
+        final SDFEdge initEdge = graph.addEdge(initVertex, edge.getTarget());
+        initEdge.copyProperties(edge);
+        initEdge.setSourceInterface(sinkInit);
+        initEdge.setDelay(new LongEdgePropertyType(0));
+        // initEdge.setProd(edge.getDelay())
 
-          final SDFEdge endEdge = graph.addEdge(edge.getSource(), endVertex);
-          endEdge.copyProperties(edge);
-          endEdge.setTargetInterface(sourceEnd);
-          endEdge.setDelay(new LongEdgePropertyType(0));
-          graph.removeEdge(edge);
-        }
-      } catch (final InvalidExpressionException e) {
-        throw new DFToolsAlgoException("Could not treat delays", e);
+        final SDFEdge endEdge = graph.addEdge(edge.getSource(), endVertex);
+        endEdge.copyProperties(edge);
+        endEdge.setTargetInterface(sourceEnd);
+        endEdge.setDelay(new LongEdgePropertyType(0));
+        graph.removeEdge(edge);
       }
       edges.remove(0);
     }
@@ -505,28 +479,24 @@ public class DAGTransformation<T extends DirectedAcyclicGraph>
   @Override
   public void visit(final SDFGraph sdf) {
     sdf.insertBroadcasts();
-    try {
 
-      int k = 5;
-      while (k-- > 0) {
-        treatCycles(sdf);
-        treatDelays(sdf);
-      }
-
-      final ArrayList<SDFAbstractVertex> vertices = new ArrayList<>(sdf.vertexSet());
-      for (int i = 0; i < vertices.size(); i++) {
-        final SDFAbstractVertex sdfAbstractVertex = vertices.get(i);
-        sdfAbstractVertex.accept(this);
-      }
-      sdf.getPropertyBean().setValue("schedulable", true);
-      transformsTop(sdf);
-    } catch (final InvalidExpressionException e) {
-      throw (new SDF4JException(e.getMessage()));
+    int k = 5;
+    while (k-- > 0) {
+      treatCycles(sdf);
+      treatDelays(sdf);
     }
+
+    final ArrayList<SDFAbstractVertex> vertices = new ArrayList<>(sdf.vertexSet());
+    for (int i = 0; i < vertices.size(); i++) {
+      final SDFAbstractVertex sdfAbstractVertex = vertices.get(i);
+      sdfAbstractVertex.accept(this);
+    }
+    sdf.getPropertyBean().setValue("schedulable", true);
+    transformsTop(sdf);
 
     // Make sure all ports are in order
     if (!SpecialActorPortsIndexer.checkIndexes(sdf)) {
-      throw new SDF4JException("There are still special actors with non-indexed ports. Contact Preesm developers.");
+      throw new PreesmException("There are still special actors with non-indexed ports. Contact Preesm developers.");
     }
     SpecialActorPortsIndexer.sortIndexedPorts(sdf);
   }

@@ -48,7 +48,7 @@ import org.jgrapht.alg.cycle.CycleDetector
 import org.preesm.algorithm.model.sdf.SDFAbstractVertex
 import org.preesm.algorithm.model.sdf.SDFEdge
 import org.preesm.algorithm.model.sdf.SDFGraph
-import org.preesm.algorithm.model.visitors.SDF4JException
+import org.preesm.commons.exceptions.PreesmException
 
 /**
  * A subset of DAG is the set of all the instances that has a reachable path
@@ -99,14 +99,14 @@ final class DAGSubset extends AbstractDAGConstructor implements DAGSubsetConstru
 	 * @param logger Logger instance to log debug messages to output
 	 * @throws SDF4JException If the input graph is not valid
 	 */
-	new(PureDAGConstructor dagGen, SDFAbstractVertex rootNode, Logger logger) throws SDF4JException {
+	new(PureDAGConstructor dagGen, SDFAbstractVertex rootNode, Logger logger) throws PreesmException {
 		super(logger)
 
 		// Check if input is valid
 		try{
 			this.inputGraph = dagGen.getOutputGraph
 		} catch(OperationNotSupportedException o) {
-			throw new SDF4JException("The DAG should be original DAG, not an instance of DAGSubset")
+			throw new PreesmException("The DAG should be original DAG, not an instance of DAGSubset")
 		}
 
 		this.rootNode = rootNode
@@ -146,7 +146,7 @@ final class DAGSubset extends AbstractDAGConstructor implements DAGSubsetConstru
 	 * @param rootNode A root node that is used to construct subset of DAG
 	 * @throws SDF4JException If the input graph is not valid
 	 */
-	new(PureDAGConstructor dagGen, SDFAbstractVertex rootNode) throws SDF4JException {
+	new(PureDAGConstructor dagGen, SDFAbstractVertex rootNode)  {
 		this(dagGen, rootNode, null)
 	}
 
@@ -196,17 +196,17 @@ final class DAGSubset extends AbstractDAGConstructor implements DAGSubsetConstru
 	 * @return true if input is valid, or exception is thrown (false is never returned)
 	 * @throws SDF4JException if the input graph is not a valid DAG or if root node does not exist
 	 */
-	def boolean checkInputIsValid() throws SDF4JException {
+	def boolean checkInputIsValid() throws PreesmException {
 		// Check if there are cycles
 		val cycleDetector = new CycleDetector<SDFAbstractVertex, SDFEdge>(inputGraph)
 		if(cycleDetector.detectCycles) {
-			throw new SDF4JException("Cycles found in DAG. DAG can't have cycles!")
+			throw new PreesmException("Cycles found in DAG. DAG can't have cycles!")
 		}
 
 		// Check if there are any delays
 		for(edge: inputGraph.edgeSet) {
 			if(edge.delay.longValue != 0) {
-				throw new SDF4JException("Delay of " + edge.delay.longValue + " found at edge between "
+				throw new PreesmException("Delay of " + edge.delay.longValue + " found at edge between "
 					+ edge.source.name + " and " + edge.target.name + ". DAG must have no delays!" )
 			}
 		}
@@ -214,7 +214,7 @@ final class DAGSubset extends AbstractDAGConstructor implements DAGSubsetConstru
 		// Check that repetition vector is exactly one for all the vertices
 		for(node: inputGraph.vertexSet) {
 			if(node.nbRepeatAsLong != 1) {
-				throw new SDF4JException("Node " + node.name + " has repetition count of " + node.nbRepeatAsLong
+				throw new PreesmException("Node " + node.name + " has repetition count of " + node.nbRepeatAsLong
 					+ ". DAG must have all repetition counts as one.");
 			}
 		}
@@ -222,14 +222,14 @@ final class DAGSubset extends AbstractDAGConstructor implements DAGSubsetConstru
 		// Input graph can't be hierarchical as its already arriving from DAGConstructor
 
 		if(!inputGraph.vertexSet.contains(rootNode)) {
-			throw new SDF4JException("Root node " + rootNode.name + " does not exist in the DAG!")
+			throw new PreesmException("Root node " + rootNode.name + " does not exist in the DAG!")
 		}
 
 		val rootInstances = inputGraph.vertexSet
 			.filter[instance | inputGraph.incomingEdgesOf(instance).size == 0].toList
 
 		if(!rootInstances.contains(rootNode)) {
-			throw new SDF4JException("Node " + rootNode.name + " is not a root node of the graph")
+			throw new PreesmException("Node " + rootNode.name + " is not a root node of the graph")
 		}
 
 		return true

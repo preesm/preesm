@@ -37,6 +37,7 @@ package org.preesm.algorithm.model.parameters;
 import org.nfunk.jep.JEP;
 import org.nfunk.jep.Node;
 import org.nfunk.jep.ParseException;
+import org.preesm.commons.math.ExpressionEvaluationException;
 
 /**
  * Represents an numerical expression.
@@ -71,7 +72,7 @@ public class ExpressionValue implements Value {
    * @return The long value of the expression
    * @throws InvalidExpressionException
    *           When expression can't be solved
-   * @throws NoIntegerValueException
+   * @throws ExpressionEvaluationException
    *           the no integer value exception
    */
   @Override
@@ -88,10 +89,10 @@ public class ExpressionValue implements Value {
           if (result instanceof Number) {
             this.value = ((Number) result).longValue();
           } else {
-            throw (new InvalidExpressionException("Not a numeric expression"));
+            throw (new ExpressionEvaluationException("Not a numeric expression"));
           }
         } catch (final ParseException e) {
-          throw (new InvalidExpressionException("Can't parse expresion :" + this.expression));
+          throw (new ExpressionEvaluationException("Can't parse expresion :" + this.expression));
         }
       }
     }

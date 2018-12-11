@@ -58,7 +58,7 @@ import org.preesm.algorithm.model.sdf.esdf.SDFSourceInterfaceVertex;
 import org.preesm.algorithm.model.types.ExpressionEdgePropertyType;
 import org.preesm.algorithm.model.types.LongEdgePropertyType;
 import org.preesm.algorithm.model.types.StringEdgePropertyType;
-import org.preesm.algorithm.model.visitors.SDF4JException;
+import org.preesm.commons.exceptions.PreesmException;
 
 /**
  *
@@ -203,7 +203,7 @@ public class IbsdfFlattener {
    *          the method. The schedulability of this subgraph must have been tested before being given to this method.
    *
    *
-   * @throws SDF4JException
+   * @throws PreesmException
    *           if an interface is connected to several FIFOs.
    */
   static void addInterfaceSubstitutes(final SDFGraph subgraph) {
@@ -215,7 +215,7 @@ public class IbsdfFlattener {
         // Get successors
         final Set<SDFEdge> outEdges = subgraph.outgoingEdgesOf(iface);
         if (outEdges.size() > 1) {
-          throw new SDF4JException("Input interface " + iface.getName() + " in subgraph " + subgraph.getName()
+          throw new PreesmException("Input interface " + iface.getName() + " in subgraph " + subgraph.getName()
               + " is connected to multiple FIFOs although this is strictly forbidden.");
         }
 
@@ -232,7 +232,7 @@ public class IbsdfFlattener {
         try {
           nbConsumedTokens = Math.multiplyExact(consRate, nbRepeatCons);
         } catch (ArithmeticException e) {
-          throw new SDF4JException(
+          throw new PreesmException(
               "Number of repetitions of actor " + outEdge.getTarget() + " (x " + nbRepeatCons + ") or number"
                   + "of consumed tokens on edge " + outEdge + " is too big and causes an overflow in the tool.",
               e);
@@ -269,7 +269,7 @@ public class IbsdfFlattener {
         // Get predecessor
         final Set<SDFEdge> inEdges = subgraph.incomingEdgesOf(iface);
         if (inEdges.size() > 1) {
-          throw new SDF4JException("Output interface " + iface.getName() + " in subgraph " + subgraph.getName()
+          throw new PreesmException("Output interface " + iface.getName() + " in subgraph " + subgraph.getName()
               + " is connected to multiple FIFOs although this is strictly forbidden.");
         }
 
@@ -286,7 +286,7 @@ public class IbsdfFlattener {
         try {
           nbProducedTokens = Math.multiplyExact(prodRate, nbRepeatProd);
         } catch (ArithmeticException e) {
-          throw new SDF4JException("Number of repetitions of actor " + inEdge.getSource() + " (x " + nbRepeatProd
+          throw new PreesmException("Number of repetitions of actor " + inEdge.getSource() + " (x " + nbRepeatProd
               + ") or number of consumed tokens on edge " + inEdge + " is too big and causes an overflow in the tool.",
               e);
         }
@@ -342,7 +342,7 @@ public class IbsdfFlattener {
       // Check the schedulability of the top level graph (this will also
       // set the repetition vector for each actor).
       if (!getFlattenedGraph().isSchedulable()) {
-        throw new SDF4JException("Graph " + getFlattenedGraph().getName() + " is not schedulable");
+        throw new PreesmException("Graph " + getFlattenedGraph().getName() + " is not schedulable");
       }
 
       // Check if there is anything to flatten
@@ -378,7 +378,7 @@ public class IbsdfFlattener {
       // Check its schedulability (this will also
       // set the repetition vector for each actor).
       if (!subgraph.isSchedulable()) {
-        throw new SDF4JException("Subgraph " + subgraph.getName() + " at level " + level + " is not schedulable");
+        throw new PreesmException("Subgraph " + subgraph.getName() + " at level " + level + " is not schedulable");
       }
 
       final long nbRepeat = hierActor.getNbRepeatAsLong();

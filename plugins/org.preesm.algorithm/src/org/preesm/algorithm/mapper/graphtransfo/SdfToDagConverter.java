@@ -49,35 +49,32 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.logging.Level;
-import org.preesm.algorithm.iterators.TopologicalDAGIterator;
-import org.preesm.algorithm.mapper.PreesmMapperException;
 import org.preesm.algorithm.mapper.abc.SpecialVertexManager;
 import org.preesm.algorithm.mapper.model.MapperDAG;
 import org.preesm.algorithm.mapper.model.MapperDAGEdge;
 import org.preesm.algorithm.mapper.model.MapperDAGVertex;
-import org.preesm.algorithm.mapper.model.MapperEdgeFactory;
 import org.preesm.algorithm.mapper.model.MapperVertexFactory;
 import org.preesm.algorithm.mapper.model.property.EdgeInit;
 import org.preesm.algorithm.mapper.model.property.VertexInit;
 import org.preesm.algorithm.mapper.model.special.TransferVertex;
 import org.preesm.algorithm.model.dag.DAGEdge;
 import org.preesm.algorithm.model.dag.DAGVertex;
+import org.preesm.algorithm.model.iterators.TopologicalDAGIterator;
 import org.preesm.algorithm.model.sdf.SDFEdge;
 import org.preesm.algorithm.model.sdf.SDFGraph;
 import org.preesm.algorithm.model.sdf.visitors.DAGTransformation;
 import org.preesm.algorithm.model.types.LongEdgePropertyType;
-import org.preesm.algorithm.model.visitors.SDF4JException;
 import org.preesm.commons.exceptions.PreesmException;
 import org.preesm.commons.logger.PreesmLogger;
 import org.preesm.model.pisdf.PiGraph;
+import org.preesm.model.scenario.ConstraintGroup;
+import org.preesm.model.scenario.PreesmScenario;
+import org.preesm.model.scenario.RelativeConstraintManager;
+import org.preesm.model.scenario.Timing;
 import org.preesm.model.slam.ComponentInstance;
 import org.preesm.model.slam.Design;
 import org.preesm.model.slam.component.Operator;
 import org.preesm.model.slam.utils.DesignTools;
-import org.preesm.scenario.ConstraintGroup;
-import org.preesm.scenario.PreesmScenario;
-import org.preesm.scenario.RelativeConstraintManager;
-import org.preesm.scenario.Timing;
 
 /**
  * Uses the SDF4J library to convert the input SDF into a DAG before scheduling.
@@ -112,7 +109,7 @@ public class SdfToDagConverter {
     final PiGraph pisdGraph = (PiGraph) sdf.getPropertyBean().getValue(PiGraph.class.getCanonicalName());
 
     // Generates a dag
-    final MapperDAG dag = new MapperDAG(new MapperEdgeFactory(), pisdGraph);
+    final MapperDAG dag = new MapperDAG(pisdGraph);
 
     // Creates a visitor parameterized with the DAG
     final DAGTransformation<MapperDAG> visitor = new DAGTransformation<>(dag, MapperVertexFactory.getInstance());
@@ -120,8 +117,8 @@ public class SdfToDagConverter {
     // visits the SDF to generate the DAG
     try {
       sdf.accept(visitor);
-    } catch (final SDF4JException e) {
-      throw new PreesmMapperException("Error", e);
+    } catch (final PreesmException e) {
+      throw new PreesmException("Error", e);
     }
 
     // Adds the necessary properties to vertices and edges
@@ -136,8 +133,6 @@ public class SdfToDagConverter {
           + " edges.";
       PreesmLogger.getLogger().log(Level.INFO, msg);
     }
-
-    scenario.getDAGs2SDFs().put(dag.getName(), sdfIn);
 
     return dag;
   }
@@ -302,32 +297,14 @@ public class SdfToDagConverter {
       final long nbRepeat = currentVertex.getNbRepeat().longValue();
       currentVertexInit.setNbRepeat(nbRepeat);
 
-      // The SDF vertex id is used to reference the timings
-      final List<Timing> timelist = scenario.getTimingManager().getGraphTimings(currentVertex,
-          DesignTools.getOperatorComponentIds(architecture));
-
-      // Iterating over timings for each DAG vertex
-      final Iterator<Timing> listiterator = timelist.iterator();
-
       // Special vertices time computation is delayed until edge sizes are initialized
       final boolean special = SpecialVertexManager.isSpecial(currentVertex);
       if (!special) {
-        if (!timelist.isEmpty()) {
-          // If there is no time defined
-          while (listiterator.hasNext()) {
-            final Timing timing = listiterator.next();
-
-            // Importing timings from scenario
-            currentVertexInit.addTiming(timing);
-          }
-          // If the vertex is not special and has no defined timings
-        } else {
-          // Default timings are given
-          for (final ComponentInstance op : DesignTools.getOperatorInstances(architecture)) {
-            final Timing time = new Timing(op.getComponent().getVlnv().getName(), currentVertex.getId(),
-                Timing.DEFAULT_TASK_TIME);
-            currentVertexInit.addTiming(time);
-          }
+        // Default timings are given
+        for (final ComponentInstance op : DesignTools.getOperatorInstances(architecture)) {
+          final Timing time = new Timing(op.getComponent().getVlnv().getName(), currentVertex.getId(),
+              Timing.DEFAULT_TASK_TIME);
+          currentVertexInit.addTiming(time);
         }
       }
     }

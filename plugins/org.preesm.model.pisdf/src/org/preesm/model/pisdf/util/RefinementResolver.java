@@ -56,7 +56,6 @@ import org.preesm.model.pisdf.PiGraph;
 import org.preesm.model.pisdf.PiSDFRefinement;
 import org.preesm.model.pisdf.Refinement;
 import org.preesm.model.pisdf.factory.PiMMUserFactory;
-import org.preesm.model.pisdf.util.PiMMSwitch;
 
 /**
  *

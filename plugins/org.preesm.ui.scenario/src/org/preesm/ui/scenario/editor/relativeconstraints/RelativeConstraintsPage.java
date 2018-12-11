@@ -70,8 +70,8 @@ import org.eclipse.ui.forms.widgets.ExpandableComposite;
 import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.eclipse.ui.forms.widgets.ScrolledForm;
 import org.eclipse.ui.forms.widgets.Section;
-import org.preesm.scenario.PreesmScenario;
-import org.preesm.scenario.serialize.PreesmAlgorithmListContentProvider;
+import org.preesm.model.scenario.PreesmScenario;
+import org.preesm.model.scenario.serialize.PreesmAlgorithmListContentProvider;
 import org.preesm.ui.scenario.editor.FileSelectionAdapter;
 import org.preesm.ui.scenario.editor.Messages;
 

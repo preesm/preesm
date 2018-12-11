@@ -45,7 +45,7 @@ import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.preesm.algorithm.io.gml.GMLSDFExporter;
 import org.preesm.algorithm.model.sdf.SDFGraph;
-import org.preesm.workflow.WorkflowException;
+import org.preesm.commons.exceptions.PreesmException;
 
 /**
  * The Class SDF2GraphmlExporter.
@@ -75,7 +75,7 @@ public class SDF2GraphmlExporter {
       }
       exporter.export(algorithm, iFile.getRawLocation().toOSString());
     } catch (final CoreException ex) {
-      throw new WorkflowException("Could not export SDF graph", ex);
+      throw new PreesmException("Could not export SDF graph", ex);
     }
   }
 }

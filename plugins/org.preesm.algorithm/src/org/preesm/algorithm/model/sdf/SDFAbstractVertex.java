@@ -38,26 +38,28 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 import java.util.logging.Level;
-import org.preesm.algorithm.DFToolsAlgoException;
 import org.preesm.algorithm.model.AbstractVertex;
 import org.preesm.algorithm.model.IInterface;
 import org.preesm.algorithm.model.InterfaceDirection;
 import org.preesm.algorithm.model.PropertyBean;
 import org.preesm.algorithm.model.PropertyFactory;
 import org.preesm.algorithm.model.parameters.Argument;
-import org.preesm.algorithm.model.parameters.InvalidExpressionException;
-import org.preesm.algorithm.model.parameters.NoIntegerValueException;
 import org.preesm.algorithm.model.sdf.esdf.SDFSinkInterfaceVertex;
 import org.preesm.algorithm.model.sdf.esdf.SDFSourceInterfaceVertex;
-import org.preesm.algorithm.model.visitors.SDF4JException;
+import org.preesm.commons.exceptions.PreesmException;
 import org.preesm.commons.logger.PreesmLogger;
+import org.preesm.commons.math.ExpressionEvaluationException;
+import org.preesm.model.pisdf.PiGraph;
 
 /**
  * Abstract class representing SDF Vertices.
  *
  * @author jpiat
  * @author kdesnos
+ * @deprecated SDF model is deprecated and subject to removal any time. Please design your transformations on
+ *             {@link PiGraph} instead.
  */
+@Deprecated
 public abstract class SDFAbstractVertex extends AbstractVertex<SDFGraph> {
 
   /** Property nb repeat of the node. */
@@ -338,8 +340,6 @@ public abstract class SDFAbstractVertex extends AbstractVertex<SDFGraph> {
    * Gives this vertex Nb repeat.
    *
    * @return The number of time to repeat this vertex
-   * @throws InvalidExpressionException
-   *           the invalid expression exception
    */
   public long getNbRepeat() {
     if (getPropertyBean().getValue(SDFAbstractVertex.NB_REPEAT) == null) {
@@ -352,8 +352,6 @@ public abstract class SDFAbstractVertex extends AbstractVertex<SDFGraph> {
    * Gives this vertex Nb repeat.
    *
    * @return The number of time to repeat this vertex
-   * @throws InvalidExpressionException
-   *           the invalid expression exception
    */
   public long getNbRepeatAsLong() {
     if (getPropertyBean().getValue(SDFAbstractVertex.NB_REPEAT) == null) {
@@ -390,7 +388,7 @@ public abstract class SDFAbstractVertex extends AbstractVertex<SDFGraph> {
    * Validate model.
    *
    * @return true, if successful
-   * @throws SDF4JException
+   * @throws PreesmException
    *           the SDF 4 J exception
    * @throws InvalidExpressionException
    *           the invalid expression exception
@@ -426,7 +424,7 @@ public abstract class SDFAbstractVertex extends AbstractVertex<SDFGraph> {
         if (getGraphDescription().incomingEdgesOf(truePort).isEmpty()) {
           PreesmLogger.getLogger().log(Level.INFO,
               "interface " + sink.getName() + " has no inside connection, consider removing this interface if unused");
-          throw (new DFToolsAlgoException(
+          throw (new PreesmException(
               "interface " + sink.getName() + " has no inside connection, consider removing this interface if unused"));
         }
       }
@@ -435,8 +433,8 @@ public abstract class SDFAbstractVertex extends AbstractVertex<SDFGraph> {
       for (final Argument arg : getArguments().values()) {
         try {
           arg.longValue();
-        } catch (final NoIntegerValueException e) {
-          throw new DFToolsAlgoException("Could not evaluate argument value", e);
+        } catch (final ExpressionEvaluationException e) {
+          throw new PreesmException("Could not evaluate argument value", e);
         }
       }
     }

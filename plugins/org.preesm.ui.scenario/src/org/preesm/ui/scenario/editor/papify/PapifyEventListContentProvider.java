@@ -41,11 +41,11 @@ import java.util.ArrayList;
 import java.util.List;
 import org.eclipse.jface.viewers.IStructuredContentProvider;
 import org.eclipse.jface.viewers.Viewer;
-import org.preesm.scenario.papi.PapiComponent;
-import org.preesm.scenario.papi.PapiEvent;
-import org.preesm.scenario.papi.PapiEventInfo;
-import org.preesm.scenario.papi.PapiEventModifier;
-import org.preesm.scenario.papi.PapiEventSet;
+import org.preesm.model.scenario.papi.PapiComponent;
+import org.preesm.model.scenario.papi.PapiEvent;
+import org.preesm.model.scenario.papi.PapiEventInfo;
+import org.preesm.model.scenario.papi.PapiEventModifier;
+import org.preesm.model.scenario.papi.PapiEventSet;
 
 // TODO: Auto-generated Javadoc
 /**

@@ -60,6 +60,23 @@
    <extension
          point="org.preesm.workflow.tasks">
       <task
+            id="org.ietr.preesm.pimm.checker.task.PiMMAlgorithmCheckerTask"
+            name="PiMM Checker"
+            type="org.preesm.algorithm.pisdf.checker.task.PiMMAlgorithmCheckerTask">
+         <inputs>
+            <input
+                  id="PiMM"
+                  object="org.preesm.model.pisdf.PiGraph">
+            </input>
+         </inputs>
+         <outputs>
+            <output
+                  id="PiMM"
+                  object="org.preesm.model.pisdf.PiGraph">
+            </output>
+         </outputs>
+      </task>
+      <task
             id="org.ietr.preesm.algorithm.exportXml.pimm2xml"
             name="PiSDFExporter"
             type="org.preesm.model.pisdf.serialize.PiSDFExporterTask">
@@ -69,6 +86,40 @@
                   object="org.preesm.model.pisdf.PiGraph">
             </input>
          </inputs>
+      </task>
+      <task
+            id="org.ietr.preesm.pimm.algorithm.pimm2flat.StaticPiMM2FlatPiMMTask"
+            name="Static PiMM to Flat PiMM transformation"
+            type="org.preesm.model.pisdf.statictools.PiSDFFlattenerTask">
+         <inputs>
+            <input
+                  id="PiMM"
+                  object="org.preesm.model.pisdf.PiGraph">
+            </input>
+         </inputs>
+         <outputs>
+            <output
+                  id="PiMM"
+                  object="org.preesm.model.pisdf.PiGraph">
+            </output>
+         </outputs>
+      </task>
+      <task
+            id="pisdf-srdag"
+            name="Static PiSDF to Flat PiSDF transformation"
+            type="org.preesm.model.pisdf.statictools.PiSDFToSingleRateTask">
+         <inputs>
+            <input
+                  id="PiMM"
+                  object="org.preesm.model.pisdf.PiGraph">
+            </input>
+         </inputs>
+         <outputs>
+            <output
+                  id="PiMM"
+                  object="org.preesm.model.pisdf.PiGraph">
+            </output>
+         </outputs>
       </task>
    </extension>
 

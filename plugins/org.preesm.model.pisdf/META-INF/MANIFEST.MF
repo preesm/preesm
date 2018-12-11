@@ -3,7 +3,7 @@ Bundle-ManifestVersion: 2
 Bundle-Name: %pluginName
 Automatic-Module-Name: org.preesm.model.pisdf
 Bundle-SymbolicName: org.preesm.model.pisdf;singleton:=true
-Bundle-Version: 3.0.1
+Bundle-Version: 3.1.0
 Require-Bundle: org.eclipse.core.runtime,
  org.eclipse.emf.ecore;visibility:=reexport,
  org.eclipse.xtext.xbase.lib,
@@ -11,17 +11,21 @@ Require-Bundle: org.eclipse.core.runtime,
  org.eclipse.core.resources;bundle-version="3.7.100",
  org.eclipse.emf.ecore.xmi;bundle-version="2.7.0",
  org.apache.commons.io;bundle-version="2.2.0",
- jep;bundle-version="2.40.0";visibility:=reexport,
+ com.github.yannrichet.JMathArray;bundle-version="1.0.0",
  org.preesm.commons;visibility:=reexport,
  org.preesm.workflow
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Export-Package: org.preesm.model.pisdf,
  org.preesm.model.pisdf.adapter,
+ org.preesm.model.pisdf.brv,
+ org.preesm.model.pisdf.check,
  org.preesm.model.pisdf.expression,
  org.preesm.model.pisdf.factory,
  org.preesm.model.pisdf.header.parser,
  org.preesm.model.pisdf.impl,
  org.preesm.model.pisdf.serialize,
+ org.preesm.model.pisdf.statictools,
+ org.preesm.model.pisdf.statictools.optims,
  org.preesm.model.pisdf.util
 Bundle-ActivationPolicy: lazy
 Bundle-ClassPath: .,
