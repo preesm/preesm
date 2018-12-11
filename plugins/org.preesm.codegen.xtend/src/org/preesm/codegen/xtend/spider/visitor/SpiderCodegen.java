@@ -53,6 +53,7 @@ import java.util.Map.Entry;
 import java.util.Set;
 import org.eclipse.emf.common.util.EList;
 import org.preesm.codegen.xtend.spider.SpiderMainFilePrinter;
+import org.preesm.codegen.xtend.spider.utils.SpiderConfig;
 import org.preesm.codegen.xtend.spider.utils.SpiderNameGenerator;
 import org.preesm.commons.logger.PreesmLogger;
 import org.preesm.model.pisdf.AbstractActor;
@@ -126,6 +127,9 @@ public class SpiderCodegen {
 
   /** The constraints. */
   private Map<AbstractActor, Set<String>> constraints;
+
+  /** **/
+  private final List<String> coreTypeName = new LinkedList<>();
 
   /**
    * Instantiates a new spider codegen.
@@ -262,8 +266,9 @@ public class SpiderCodegen {
 
     append("#define N_PE_TYPE " + Integer.toString(this.coreTypesIds.keySet().size()) + "\n");
     for (final String coreType : this.coreTypesIds.keySet()) {
-      append("#define N_" + SpiderNameGenerator.getCoreTypeName(coreType) + " "
-          + Integer.toString(this.coresPerCoreType.get(coreType)) + "\n");
+      final String name = "N_" + SpiderNameGenerator.getCoreTypeName(coreType);
+      this.coreTypeName.add(name);
+      append("#define " + name + " " + Integer.toString(this.coresPerCoreType.get(coreType)) + "\n");
     }
 
     append("int init_archi_infos(PlatformConfig *config);\n");
@@ -333,9 +338,9 @@ public class SpiderCodegen {
     return this.cppString.toString();
   }
 
-  public String generateMainCode(final PiGraph pg, final boolean usingPapify) {
+  public String generateMainCode(final PiGraph pg, final SpiderConfig spiderConfig) {
     final SpiderMainFilePrinter spiderMainFilePrinter = new SpiderMainFilePrinter();
-    return spiderMainFilePrinter.print(pg, this.coreIds.size(), usingPapify);
+    return spiderMainFilePrinter.print(pg, this.coreTypeName, spiderConfig);
   }
 
   /**
