@@ -137,8 +137,6 @@ public class PiParser {
       throw new PreesmException(message, e);
     }
 
-    PiGraphConsistenceChecker.checkOrFail(pigraph);
-
     return pigraph;
   }
 
@@ -149,6 +147,7 @@ public class PiParser {
     final PiGraph graph = getPiGraph(algorithmURL);
     final SubgraphReconnector connector = new SubgraphReconnector();
     connector.connectSubgraphs(graph);
+    PiGraphConsistenceChecker.check(graph);
     return graph;
   }
 

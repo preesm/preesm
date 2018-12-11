@@ -87,7 +87,7 @@ public class PiSDFToSingleRate extends PiMMSwitch<Boolean> {
    * @return the SDFGraph obtained by visiting graph
    */
   public static final PiGraph compute(PiGraph graph, final BRVMethod method) {
-    PiGraphConsistenceChecker.checkOrFail(graph);
+    PiGraphConsistenceChecker.check(graph);
     // 1. First we resolve all parameters.
     // It must be done first because, when removing persistence, local parameters have to be known at upper level
     PiMMHelper.resolveAllParameters(graph);
@@ -103,14 +103,14 @@ public class PiSDFToSingleRate extends PiMMSwitch<Boolean> {
     staticPiMM2ASrPiMMVisitor.doSwitch(graph);
     final PiGraph acyclicSRPiMM = staticPiMM2ASrPiMMVisitor.getResult();
 
-    PiGraphConsistenceChecker.checkOrFail(acyclicSRPiMM);
+    PiGraphConsistenceChecker.check(acyclicSRPiMM);
     // 6- do some optimization on the graph
     final ForkJoinOptimization forkJoinOptimization = new ForkJoinOptimization();
     forkJoinOptimization.optimize(acyclicSRPiMM);
     final BroadcastRoundBufferOptimization brRbOptimization = new BroadcastRoundBufferOptimization();
     brRbOptimization.optimize(acyclicSRPiMM);
 
-    PiGraphConsistenceChecker.checkOrFail(acyclicSRPiMM);
+    PiGraphConsistenceChecker.check(acyclicSRPiMM);
     return acyclicSRPiMM;
   }
 

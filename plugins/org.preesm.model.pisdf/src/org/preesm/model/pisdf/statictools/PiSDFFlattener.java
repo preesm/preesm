@@ -88,7 +88,7 @@ public class PiSDFFlattener extends PiMMSwitch<Boolean> {
    * @return the SDFGraph obtained by visiting graph
    */
   public static final PiGraph flatten(final PiGraph graph) {
-    PiGraphConsistenceChecker.checkOrFail(graph);
+    PiGraphConsistenceChecker.check(graph);
     // 1. First we resolve all parameters.
     // It must be done first because, when removing persistence, local parameters have to be known at upper level
     PiMMHelper.resolveAllParameters(graph);
@@ -103,7 +103,7 @@ public class PiSDFFlattener extends PiMMSwitch<Boolean> {
     // 5. Now, flatten the graph
     PiSDFFlattener staticPiMM2FlatPiMMVisitor = new PiSDFFlattener(brv);
     staticPiMM2FlatPiMMVisitor.doSwitch(graph);
-    PiGraphConsistenceChecker.checkOrFail(staticPiMM2FlatPiMMVisitor.result);
+    PiGraphConsistenceChecker.check(staticPiMM2FlatPiMMVisitor.result);
     return staticPiMM2FlatPiMMVisitor.result;
   }
 
