@@ -51,6 +51,7 @@ import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.Path;
+import org.preesm.codegen.xtend.spider.utils.SpiderConfig;
 import org.preesm.codegen.xtend.spider.visitor.SpiderCodegen;
 import org.preesm.commons.exceptions.PreesmException;
 import org.preesm.model.pisdf.PiGraph;
@@ -66,8 +67,22 @@ import org.preesm.workflow.implement.AbstractWorkflowNodeImplementation;
  */
 public class SpiderCodegenTask extends AbstractTaskImplementation {
 
-  /** The Constant PARAM_PRINTER. */
-  public static final String PARAM_PAPIFY = "Papify";
+  /** The Constant PARAM_PAPIFY. */
+  public static final String PARAM_PAPIFY        = "papify";
+  /** The Constant PARAM_VERBOSE. */
+  public static final String PARAM_VERBOSE       = "verbose";
+  /** The Constant PARAM_TRACE. */
+  public static final String PARAM_TRACE         = "trace";
+  /** The Constant PARAM_MEMALLOC. */
+  public static final String PARAM_MEMALLOC      = "memory-alloc";
+  /** The Constant PARAM_SHMEMORY_SIZE. */
+  public static final String PARAM_SHMEMORY_SIZE = "shared-memory-size";
+  /** The Constant PARAM_STACK_TYPE. */
+  public static final String PARAM_STACK_TYPE    = "stack-type";
+  /** The Constant PARAM_SCHEDULER. */
+  public static final String PARAM_SCHEDULER     = "scheduler";
+  /** The Constant PARAM_GRAPH_OPTIMS. */
+  public static final String PARAM_GRAPH_OPTIMS  = "graph-optims";
 
   /*
    * (non-Javadoc)
@@ -93,13 +108,14 @@ public class SpiderCodegenTask extends AbstractTaskImplementation {
     }
 
     final SpiderCodegen launcher = new SpiderCodegen(scenario, architecture);
+    final SpiderConfig spiderConfig = new SpiderConfig(parameters);
 
     launcher.initGenerator(pg);
     final String graphCode = launcher.generateGraphCode(pg);
     final String fctCode = launcher.generateFunctionCode(pg);
     final String hCode = launcher.generateHeaderCode(pg);
     // TODO: add config as parameters from workflow
-    final String mCode = launcher.generateMainCode(pg, usingPapify);
+    final String mCode = launcher.generateMainCode(pg, spiderConfig);
     final String papifyCode = launcher.generatePapifyCode(pg, scenario);
     final String archiCode = launcher.generateArchiCode(pg, scenario);
 
