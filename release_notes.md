@@ -20,6 +20,7 @@ PREESM Changelog
 * Remove uses of deprecated EdgeFactories of JGrapht. Use Suppliers instead;
 * Fix Papify UI;
 * Fix spider codegen to handle latest papify config;
+* Updated spider codegen to handle parameterization directly from the workflow task.
 
 ### Bug fix
 * Fix unicity of ports name when doing fork / join / broadcast / roundbuffer graph optimizations. 
