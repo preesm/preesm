@@ -1,8 +1,8 @@
 PREESM Changelog
 ================
 
-## Release version X.Y.Z
-*XXXX.XX.XX*
+## Release version 3.1.0
+*2018.12.11*
 
 ### New Feature
 * Add exporting task for flatten and single rate PiSDF;
