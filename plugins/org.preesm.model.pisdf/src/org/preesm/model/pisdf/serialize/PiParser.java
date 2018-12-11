@@ -51,7 +51,6 @@ import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.Path;
-import org.eclipse.emf.common.util.EList;
 import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.common.util.WrappedException;
 import org.eclipse.emf.ecore.resource.Resource;
@@ -94,6 +93,7 @@ import org.preesm.model.pisdf.PortKind;
 import org.preesm.model.pisdf.PortMemoryAnnotation;
 import org.preesm.model.pisdf.RefinementContainer;
 import org.preesm.model.pisdf.factory.PiMMUserFactory;
+import org.preesm.model.pisdf.util.PiGraphConsistenceChecker;
 import org.preesm.model.pisdf.util.PiIdentifiers;
 import org.preesm.model.pisdf.util.PiSDFXSDValidator;
 import org.preesm.model.pisdf.util.SubgraphReconnector;
@@ -137,30 +137,9 @@ public class PiParser {
       throw new PreesmException(message, e);
     }
 
-    check(pigraph);
+    PiGraphConsistenceChecker.checkOrFail(pigraph);
 
     return pigraph;
-  }
-
-  /**
-   *
-   */
-  public static void check(final PiGraph graph) {
-    final EList<Fifo> fifos = graph.getFifos();
-    for (Fifo f : fifos) {
-      if (f.getSourcePort() == null || f.getTargetPort() == null) {
-        throw new PreesmException();
-      }
-      if (f.getSourcePort().getName().equals("bias_out0_0")) {
-        System.out.println("found");
-      }
-    }
-    for (AbstractActor a : graph.getActors()) {
-      if (a.getName().equals("BroadcastBiasCritic_0")) {
-        System.out.println("found");
-      }
-    }
-
   }
 
   /**
