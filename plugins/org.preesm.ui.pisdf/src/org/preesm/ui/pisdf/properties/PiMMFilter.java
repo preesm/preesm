@@ -48,9 +48,7 @@ import org.preesm.model.pisdf.DataInputPort;
 import org.preesm.model.pisdf.DataOutputInterface;
 import org.preesm.model.pisdf.DataOutputPort;
 import org.preesm.model.pisdf.Delay;
-import org.preesm.model.pisdf.EndActor;
 import org.preesm.model.pisdf.ExecutableActor;
-import org.preesm.model.pisdf.InitActor;
 import org.preesm.model.pisdf.Parameter;
 
 // TODO: Auto-generated Javadoc
@@ -95,7 +93,7 @@ public class PiMMFilter extends AbstractPropertySectionFilter {
       if (container instanceof DataInputInterface) {
         return true;
       }
-      if (container instanceof ExecutableActor || container instanceof EndActor || container instanceof InitActor) {
+      if (container instanceof ExecutableActor) {
         return true;
       }
     }
@@ -105,7 +103,7 @@ public class PiMMFilter extends AbstractPropertySectionFilter {
       if (container instanceof DataOutputInterface) {
         return true;
       }
-      if (container instanceof ExecutableActor || container instanceof EndActor || container instanceof InitActor) {
+      if (container instanceof ExecutableActor) {
         return true;
       }
     }

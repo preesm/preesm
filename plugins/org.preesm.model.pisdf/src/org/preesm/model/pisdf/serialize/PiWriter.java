@@ -316,8 +316,7 @@ public class PiWriter {
       writePiGraphAsHActor(vertexElt, (PiGraph) abstractActor);
     } else if (abstractActor instanceof Actor) {
       writeActor(vertexElt, (Actor) abstractActor);
-    } else if (abstractActor instanceof ExecutableActor || abstractActor instanceof InitActor
-        || abstractActor instanceof EndActor) {
+    } else if (abstractActor instanceof ExecutableActor) {
       writeSpecialActor(vertexElt, abstractActor);
     } else if (abstractActor instanceof InterfaceActor) {
       writeInterfaceVertex(vertexElt, (InterfaceActor) abstractActor);
