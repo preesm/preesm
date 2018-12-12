@@ -254,7 +254,8 @@ public class PiIdentifiers {
   /** The Constant DEPENDENCY_TARGET_PORT. */
   public static final String DEPENDENCY_TARGET_PORT = PiIdentifiers.TARGET_PORT;
 
-  public static final String END = "end";
-
-  public static final String INIT = "init";
+  // PiIdentifiers for init/end ref
+  public static final String END          = "end";
+  public static final String INIT         = "init";
+  public static final String INIT_END_REF = "init_end_ref";
 }

@@ -612,6 +612,15 @@ public class PiMMSRVerticesLinker {
         init.getDataOutputPort().setExpression(setterRate);
         init.setLevel(((InitActor) setterActor).getLevel());
         init.getDataOutputPort().setExpression(setterRate);
+
+        final AbstractActor endReference = ((InitActor) setterActor).getEndReference();
+        final AbstractVertex lookupVertex = resultGraph.lookupVertex(this.graphPrefixe + endReference.getName());
+        if (lookupVertex instanceof AbstractActor) {
+          init.setEndReference((AbstractActor) lookupVertex);
+          if (lookupVertex instanceof EndActor) {
+            ((EndActor) lookupVertex).setInitReference(init);
+          }
+        }
         resultGraph.addActor(init);
         sourceSet.add(new SourceConnection(init, setterRate, this.sinkPort.getName()));
       } else {
@@ -699,7 +708,14 @@ public class PiMMSRVerticesLinker {
         end.getDataInputPort().setName(this.sourcePort.getName());
         end.getDataInputPort().setExpression(getterRate);
         end.setLevel(((EndActor) getterActor).getLevel());
-        end.setInitReference(this.graphPrefixe + ((EndActor) getterActor).getInitReference());
+        final AbstractActor initReference = ((EndActor) getterActor).getInitReference();
+        final AbstractVertex lookupVertex = resultGraph.lookupVertex(this.graphPrefixe + initReference.getName());
+        if (lookupVertex instanceof AbstractActor) {
+          end.setInitReference((AbstractActor) lookupVertex);
+          if (lookupVertex instanceof InitActor) {
+            ((InitActor) lookupVertex).setEndReference(end);
+          }
+        }
         resultGraph.addActor(end);
         sinkSet.add(new SinkConnection(end, getterRate, this.sourcePort.getName()));
       } else {

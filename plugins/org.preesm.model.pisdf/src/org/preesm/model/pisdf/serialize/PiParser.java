@@ -77,12 +77,14 @@ import org.preesm.model.pisdf.Delay;
 import org.preesm.model.pisdf.DelayActor;
 import org.preesm.model.pisdf.Dependency;
 import org.preesm.model.pisdf.Direction;
+import org.preesm.model.pisdf.EndActor;
 import org.preesm.model.pisdf.ExecutableActor;
 import org.preesm.model.pisdf.Fifo;
 import org.preesm.model.pisdf.ForkActor;
 import org.preesm.model.pisdf.FunctionParameter;
 import org.preesm.model.pisdf.FunctionPrototype;
 import org.preesm.model.pisdf.ISetter;
+import org.preesm.model.pisdf.InitActor;
 import org.preesm.model.pisdf.InterfaceActor;
 import org.preesm.model.pisdf.InterfaceKind;
 import org.preesm.model.pisdf.Parameter;
@@ -991,9 +993,29 @@ public class PiParser {
         break;
       case PiIdentifiers.INIT:
         actor = PiMMUserFactory.instance.createInitActor();
+        final String endRef = nodeElt.getAttribute(PiIdentifiers.INIT_END_REF);
+        if (endRef != null) {
+          final AbstractVertex lookupVertex = graph.lookupVertex(endRef);
+          if (lookupVertex != null) {
+            ((InitActor) actor).setEndReference((AbstractActor) lookupVertex);
+            if (lookupVertex instanceof EndActor) {
+              ((EndActor) lookupVertex).setInitReference(actor);
+            }
+          }
+        }
         break;
       case PiIdentifiers.END:
         actor = PiMMUserFactory.instance.createEndActor();
+        final String initRef = nodeElt.getAttribute(PiIdentifiers.INIT_END_REF);
+        if (initRef != null) {
+          final AbstractVertex lookupVertex = graph.lookupVertex(initRef);
+          if (lookupVertex != null) {
+            ((EndActor) actor).setInitReference((AbstractActor) lookupVertex);
+            if (lookupVertex instanceof InitActor) {
+              ((InitActor) lookupVertex).setEndReference(actor);
+            }
+          }
+        }
         break;
       default:
         throw new IllegalArgumentException("Given node element has an unknown kind");

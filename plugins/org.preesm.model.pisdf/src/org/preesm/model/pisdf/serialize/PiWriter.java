@@ -804,8 +804,10 @@ public class PiWriter {
       kind = PiIdentifiers.ROUND_BUFFER;
     } else if (actor instanceof EndActor) {
       kind = PiIdentifiers.END;
+      vertexElt.setAttribute(PiIdentifiers.INIT_END_REF, ((EndActor) actor).getInitReference().getName());
     } else if (actor instanceof InitActor) {
       kind = PiIdentifiers.INIT;
+      vertexElt.setAttribute(PiIdentifiers.INIT_END_REF, ((InitActor) actor).getEndReference().getName());
     }
     vertexElt.setAttribute(PiIdentifiers.NODE_KIND, kind);
 

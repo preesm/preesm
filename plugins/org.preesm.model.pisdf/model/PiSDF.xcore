@@ -383,7 +383,7 @@ class RoundBufferActor extends SpecialActor {
 
 class InitActor extends SpecialActor {
 	PersistenceLevel level
-	String endReference = ""
+	refers AbstractActor endReference
 	op DataOutputPort getDataOutputPort() {
 		// Init actors only have one output port
 		return dataOutputPorts.get(0)
@@ -392,7 +392,7 @@ class InitActor extends SpecialActor {
 
 class EndActor extends SpecialActor {
 	PersistenceLevel level
-	String initReference = ""
+	refers AbstractActor initReference
 	op DataInputPort getDataInputPort() {
 		// End actors only have one input port
 		return dataInputPorts.get(0)
