@@ -142,8 +142,11 @@ public class PiGraphConsistenceChecker extends PiMMSwitch<Boolean> {
         final Port port2 = allPorts.get(j);
         final String name = port1.getName();
         final String name2 = port2.getName();
-        actorValid = actorValid && !(Strings.nullToEmpty(name).equals(name2));
-
+        final boolean redundantPorts = !(Strings.nullToEmpty(name).equals(name2));
+        actorValid = actorValid && redundantPorts;
+        if (!redundantPorts) {
+          error("Actor [%s] has several ports with same name [%s]", actor, name);
+        }
       }
     }
 
