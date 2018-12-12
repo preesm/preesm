@@ -381,10 +381,7 @@ class ForkActor extends SpecialActor {
 class RoundBufferActor extends SpecialActor {
 }
 
-abstract class NonExecutableActor extends AbstractActor {
-}
-
-class InitActor extends NonExecutableActor {
+class InitActor extends SpecialActor {
 	PersistenceLevel level
 	String endReference = ""
 	op DataOutputPort getDataOutputPort() {
@@ -393,13 +390,16 @@ class InitActor extends NonExecutableActor {
 	}
 }
 
-class EndActor extends NonExecutableActor {
+class EndActor extends SpecialActor {
 	PersistenceLevel level
 	String initReference = ""
 	op DataInputPort getDataInputPort() {
 		// End actors only have one input port
 		return dataInputPorts.get(0)
 	}
+}
+
+abstract class NonExecutableActor extends AbstractActor {
 }
 
 class DelayActor extends NonExecutableActor, RefinementContainer {
