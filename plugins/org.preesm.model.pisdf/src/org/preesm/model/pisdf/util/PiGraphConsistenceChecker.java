@@ -15,6 +15,7 @@ import org.preesm.model.pisdf.DataPort;
 import org.preesm.model.pisdf.DelayActor;
 import org.preesm.model.pisdf.Dependency;
 import org.preesm.model.pisdf.Fifo;
+import org.preesm.model.pisdf.Graph;
 import org.preesm.model.pisdf.ISetter;
 import org.preesm.model.pisdf.Parameter;
 import org.preesm.model.pisdf.PiGraph;
@@ -29,7 +30,7 @@ public class PiGraphConsistenceChecker extends PiMMSwitch<Boolean> {
    *
    */
   public static final void check(final PiGraph graph) {
-    check(graph, true);
+    PiGraphConsistenceChecker.check(graph, true);
   }
 
   /**
@@ -54,22 +55,22 @@ public class PiGraphConsistenceChecker extends PiMMSwitch<Boolean> {
 
   @Override
   public Boolean casePiGraph(final PiGraph graph) {
-    graphStack.push(graph);
+    this.graphStack.push(graph);
     // visit children & references
     boolean graphValid = graph.getActors().stream().allMatch(this::doSwitch);
     graphValid = graphValid && graph.getFifos().stream().allMatch(this::doSwitch);
     graphValid = graphValid && graph.getDependencies().stream().allMatch(this::doSwitch);
     graphValid = graphValid && graph.getChildrenGraphs().stream().allMatch(this::doSwitch);
-    graphStack.pop();
+    this.graphStack.pop();
     return graphValid;
   }
 
-  private void error(String messageFormat, Object... args) {
+  private void error(final String messageFormat, final Object... args) {
     final String msg = String.format(messageFormat, args);
-    if (throwExceptions) {
+    if (this.throwExceptions) {
       throw new PreesmException(msg);
     } else {
-      messages.add(msg);
+      this.messages.add(msg);
     }
   }
 
@@ -94,15 +95,15 @@ public class PiGraphConsistenceChecker extends PiMMSwitch<Boolean> {
   }
 
   @Override
-  public Boolean caseParameter(Parameter param) {
-    boolean containOK = param.getContainingPiGraph() == graphStack.peek();
-    boolean depsOk = param.getOutgoingDependencies().stream()
-        .allMatch(d -> d.getContainingGraph() == graphStack.peek());
+  public Boolean caseParameter(final Parameter param) {
+    final boolean containOK = param.getContainingPiGraph() == this.graphStack.peek();
+    final boolean depsOk = param.getOutgoingDependencies().stream()
+        .allMatch(d -> d.getContainingGraph() == this.graphStack.peek());
     return containOK && depsOk;
   }
 
   @Override
-  public Boolean defaultCase(EObject object) {
+  public Boolean defaultCase(final EObject object) {
     error("Object [%s] has not been assessed as valid.", object);
     return false;
   }
@@ -122,7 +123,7 @@ public class PiGraphConsistenceChecker extends PiMMSwitch<Boolean> {
 
     boolean properTarget = true;
     if (!(containingConfigurable instanceof PiGraph)) {
-      properTarget = containingConfigurable.getContainingPiGraph() == graphStack.peek();
+      properTarget = containingConfigurable.getContainingPiGraph() == this.graphStack.peek();
     }
 
     return setterok && properTarget;
@@ -135,7 +136,7 @@ public class PiGraphConsistenceChecker extends PiMMSwitch<Boolean> {
 
     final List<Port> allPorts = actor.getAllPorts();
     final int nbPorts = allPorts.size();
-    for (int i = 0; i < nbPorts - 1; i++) {
+    for (int i = 0; i < (nbPorts - 1); i++) {
       for (int j = i + 1; j < nbPorts; j++) {
         final Port port1 = allPorts.get(i);
         final Port port2 = allPorts.get(j);
@@ -162,14 +163,24 @@ public class PiGraphConsistenceChecker extends PiMMSwitch<Boolean> {
   }
 
   @Override
-  public Boolean caseConfigInputPort(ConfigInputPort cfgInPort) {
-    final boolean containedInProperGraph = cfgInPort.getConfigurable().getContainingPiGraph() == graphStack.peek();
-    final boolean depInGraph = cfgInPort.getIncomingDependency().getContainingGraph() == graphStack.peek();
+  public Boolean caseConfigInputPort(final ConfigInputPort cfgInPort) {
+    final PiGraph peek = this.graphStack.peek();
+    final boolean containedInProperGraph = cfgInPort.getConfigurable().getContainingPiGraph() == peek;
+    if (!containedInProperGraph) {
+      error("Config input port [%s] is not contained in graph.", cfgInPort);
+    }
+    final Dependency incomingDependency = cfgInPort.getIncomingDependency();
+    final boolean portConnected = incomingDependency != null;
+    if (!portConnected) {
+      error("Port [%s] is not connected to a dependency.", cfgInPort);
+    }
+    final Graph containingGraph = incomingDependency.getContainingGraph();
+    final boolean depInGraph = containingGraph == peek;
     return depInGraph && containedInProperGraph;
   }
 
   @Override
-  public Boolean caseConfigOutputPort(ConfigOutputPort object) {
+  public Boolean caseConfigOutputPort(final ConfigOutputPort object) {
     // TODO Auto-generated method stub
     return true;
   }
@@ -177,28 +188,28 @@ public class PiGraphConsistenceChecker extends PiMMSwitch<Boolean> {
   @Override
   public Boolean caseDataPort(final DataPort port) {
     final AbstractActor containingActor = port.getContainingActor();
-    boolean isContained = containingActor != null;
+    final boolean isContained = containingActor != null;
     if (!isContained) {
       error("port [%s] has not containing actor", port);
     }
     final PiGraph containingPiGraph = containingActor.getContainingPiGraph();
-    final PiGraph peek = graphStack.peek();
-    boolean wellContained = isContained && containingPiGraph == peek;
+    final PiGraph peek = this.graphStack.peek();
+    final boolean wellContained = isContained && (containingPiGraph == peek);
     if (!wellContained) {
       error("port [%s] containing actor graph [%s] differs from peek graph [%s]", port, containingPiGraph, peek);
     }
     final Fifo fifo = port.getFifo();
-    boolean hasFifo = fifo != null;
+    final boolean hasFifo = fifo != null;
     if (!hasFifo) {
       error("port [%s] is not connected to a fifo", port);
     }
     final PiGraph containingPiGraph2 = fifo.getContainingPiGraph();
-    boolean fifoWellContained = hasFifo && containingPiGraph2 == peek;
+    final boolean fifoWellContained = hasFifo && (containingPiGraph2 == peek);
     if (!fifoWellContained) {
       error("port [%s] fifo graph [%s] differs from peek graph [%s]", port, containingPiGraph2, peek);
     }
 
-    boolean portValid = wellContained && fifoWellContained;
+    final boolean portValid = wellContained && fifoWellContained;
 
     if (!portValid) {
       final String message = "Port [" + port + "] is not valid.";
