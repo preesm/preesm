@@ -49,19 +49,19 @@ type double wraps double
  *
  **************************************/
 
-class Vertex {
+interface Vertex {
 	container Graph containingGraph opposite vertices
-	refers Edge[] outEdges opposite source
-	refers Edge[] inEdges opposite target
+	op Edge[] getOutgoingEdges()
+	op Edge[] getIncomingEdges()
 }
 
-class Edge {
+interface Edge {
 	container Graph containingGraph opposite edges
-	refers Vertex source opposite outEdges
-	refers Vertex target opposite inEdges
+	op Vertex getSource()
+	op Vertex getTarget()
 }
 
-class Graph {
+interface Graph {
 	contains Vertex[] vertices opposite containingGraph
 	contains Edge[] edges opposite containingGraph
 }
@@ -144,7 +144,7 @@ class DelayLinkedExpression extends ExpressionProxy {
 interface AbstractVertex extends Vertex {
 	String name
 	op PiGraph getContainingPiGraph() {
-		return super.containingGraph as PiGraph
+		return containingGraph as PiGraph
 	}
 	op unique Port[] getAllPorts()
 	op Port lookupPort(String portName) {
