@@ -362,16 +362,19 @@ interface PeriodicElement extends ExpressionHolder {
 	}
 }
 
-class BroadcastActor extends ExecutableActor {
+abstract class SpecialActor extends ExecutableActor {
 }
 
-class JoinActor extends ExecutableActor {
+class BroadcastActor extends SpecialActor {
 }
 
-class ForkActor extends ExecutableActor {
+class JoinActor extends SpecialActor {
 }
 
-class RoundBufferActor extends ExecutableActor {
+class ForkActor extends SpecialActor {
+}
+
+class RoundBufferActor extends SpecialActor {
 }
 
 abstract class NonExecutableActor extends AbstractActor {
