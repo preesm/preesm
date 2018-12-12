@@ -95,6 +95,12 @@ public class PiGraphConsistenceChecker extends PiMMSwitch<Boolean> {
   }
 
   @Override
+  public Boolean caseDelayActor(DelayActor object) {
+    // TODO handle properly
+    return true;
+  }
+
+  @Override
   public Boolean caseParameter(final Parameter param) {
     final boolean containOK = param.getContainingPiGraph() == this.graphStack.peek();
     final boolean depsOk = param.getOutgoingDependencies().stream()
