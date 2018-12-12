@@ -51,8 +51,12 @@ type double wraps double
 
 interface Vertex {
 	container Graph containingGraph opposite vertices
-	op Edge[] getOutgoingEdges()
-	op Edge[] getIncomingEdges()
+	op Edge[] getOutgoingEdges() {
+		return containingGraph.edges.filter[it.source === this].toEList.unmodifiableEList
+	}
+	op Edge[] getIncomingEdges() {
+		return containingGraph.edges.filter[it.target === this].toEList.unmodifiableEList
+	}
 }
 
 interface Edge {
@@ -519,6 +523,14 @@ class Fifo extends Edge {
 	refers Delay delay opposite containingFifo
 	String ^type = "void"
 
+	op Vertex getSource() {
+		sourcePort.containingActor
+	}
+
+	op Vertex getTarget() {
+		targetPort.containingActor
+	}
+
 	op PiGraph getContainingPiGraph() {
 		return containingGraph as PiGraph
 	}
@@ -621,6 +633,20 @@ class Parameter extends Vertex, Configurable, ISetter, ExpressionHolder {
 class Dependency extends Edge {
 	refers ISetter setter opposite outgoingDependencies
 	refers ConfigInputPort getter opposite incomingDependency
+
+	op Vertex getSource() {
+		if (setter instanceof Parameter) {
+			return setter as Parameter;
+		} else  if (setter instanceof ConfigOutputPort) {
+			return (setter as ConfigOutputPort).containingActor
+		} else {
+			return null
+		}
+	}
+
+	op Vertex getTarget() {
+		return getter.configurable
+	}
 }
 
 interface ISetter {
