@@ -45,7 +45,7 @@ import org.eclipse.graphiti.mm.pictograms.Diagram;
 import org.eclipse.graphiti.mm.pictograms.Shape;
 import org.eclipse.graphiti.services.Graphiti;
 import org.preesm.model.pisdf.Actor;
-import org.preesm.model.pisdf.ExecutableActor;
+import org.preesm.model.pisdf.SpecialActor;
 
 // TODO: Auto-generated Javadoc
 /**
@@ -218,8 +218,8 @@ public class UpdateDiagramFeature extends DefaultUpdateDiagramFeature {
     for (final Shape s : diagram.getChildren()) {
       if (s instanceof ContainerShape) {
         final Object o = getBusinessObjectForPictogramElement(s);
-        if ((o instanceof ExecutableActor) && !(o instanceof Actor)) {
-          final ExecutableActor actor = (ExecutableActor) o;
+        if (o instanceof SpecialActor) {
+          final SpecialActor actor = (SpecialActor) o;
           final ChopboxAnchor cba = Graphiti.getPeCreateService().createChopboxAnchor(s);
           link(cba, actor);
         }

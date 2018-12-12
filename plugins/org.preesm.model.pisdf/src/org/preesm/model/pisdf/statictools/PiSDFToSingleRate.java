@@ -72,6 +72,7 @@ import org.preesm.model.pisdf.brv.PiBRV;
 import org.preesm.model.pisdf.factory.PiMMUserFactory;
 import org.preesm.model.pisdf.statictools.optims.BroadcastRoundBufferOptimization;
 import org.preesm.model.pisdf.statictools.optims.ForkJoinOptimization;
+import org.preesm.model.pisdf.util.PiGraphConsistenceChecker;
 import org.preesm.model.pisdf.util.PiMMSwitch;
 
 /**
@@ -85,7 +86,8 @@ public class PiSDFToSingleRate extends PiMMSwitch<Boolean> {
    *
    * @return the SDFGraph obtained by visiting graph
    */
-  public static final PiGraph compute(PiGraph graph, final BRVMethod method) {
+  public static final PiGraph compute(final PiGraph graph, final BRVMethod method) {
+    PiGraphConsistenceChecker.check(graph);
     // 1. First we resolve all parameters.
     // It must be done first because, when removing persistence, local parameters have to be known at upper level
     PiMMHelper.resolveAllParameters(graph);
@@ -97,17 +99,40 @@ public class PiSDFToSingleRate extends PiMMSwitch<Boolean> {
     // 4.5 Check periods with BRV
     PiMMHelper.checkPeriodicity(brv);
     // 5. Convert to SR-DAG
-    PiSDFToSingleRate staticPiMM2ASrPiMMVisitor = new PiSDFToSingleRate(brv);
+    PiSDFToSingleRate staticPiMM2ASrPiMMVisitor = new PiSDFToSingleRate(graph, brv);
     staticPiMM2ASrPiMMVisitor.doSwitch(graph);
     final PiGraph acyclicSRPiMM = staticPiMM2ASrPiMMVisitor.getResult();
 
+    PiGraphConsistenceChecker.check(acyclicSRPiMM);
     // 6- do some optimization on the graph
     final ForkJoinOptimization forkJoinOptimization = new ForkJoinOptimization();
     forkJoinOptimization.optimize(acyclicSRPiMM);
     final BroadcastRoundBufferOptimization brRbOptimization = new BroadcastRoundBufferOptimization();
     brRbOptimization.optimize(acyclicSRPiMM);
 
+    PiGraphConsistenceChecker.check(acyclicSRPiMM);
+
+    srCheck(acyclicSRPiMM);
+
     return acyclicSRPiMM;
+  }
+
+  /**
+   *
+   */
+  private static final void srCheck(final PiGraph graph) {
+    final List<AbstractActor> actors = graph.getActors();
+    for (final AbstractActor a : actors) {
+      if (a instanceof PiGraph) {
+        throw new PreesmException("Flatten graph should have no children graph");
+      }
+      if (a instanceof InterfaceActor) {
+        throw new PreesmException("Flatten graph should have no interface");
+      }
+      if (a.getContainingPiGraph() != graph) {
+        throw new PreesmException();
+      }
+    }
   }
 
   /** The result. */
@@ -138,12 +163,16 @@ public class PiSDFToSingleRate extends PiMMSwitch<Boolean> {
   /** Current FIFO */
   private Fifo currentFifo;
 
+  private final PiGraph inputGraph;
+
   /**
    * Instantiates a new abstract StaticPiMM2ASrPiMMVisitor.
    *
    */
-  public PiSDFToSingleRate(Map<AbstractVertex, Long> brv) {
+  public PiSDFToSingleRate(final PiGraph inputGraph, final Map<AbstractVertex, Long> brv) {
+    this.inputGraph = inputGraph;
     this.result = PiMMUserFactory.instance.createPiGraph();
+    this.result.setName(this.inputGraph.getName());
     this.brv = brv;
     this.graphName = "";
     this.graphPrefix = "";
@@ -170,7 +199,7 @@ public class PiSDFToSingleRate extends PiMMSwitch<Boolean> {
 
       // Add the actor to the FIFO source/sink sets
       this.actor2SRActors.get(this.graphPrefix + actor.getName()).add(copyActor);
-      PiSDFFlattener.instantiateParameters(actor, copyActor);
+      PiSDFFlattener.instantiateParameters(actor, copyActor, this.result);
     } else {
       doSwitch(actor);
     }
@@ -194,26 +223,6 @@ public class PiSDFToSingleRate extends PiMMSwitch<Boolean> {
     // PiSDFFlattener.instantiateParameters(actor, copyActor);
     return true;
   }
-
-  // @Override
-  // public Boolean caseInitActor(final InitActor actor) {
-  // // Fetch the actor
-  // final InitActor initActor = (InitActor) this.result.lookupVertex(actor.getName());
-  // // Update name
-  // initActor.setName(this.graphPrefix + initActor.getName());
-  // return true;
-  // }
-  //
-  // @Override
-  // public Boolean caseEndActor(final EndActor actor) {
-  // // Fetch the actor
-  // final EndActor endActor = (EndActor) this.result.lookupVertex(actor.getName());
-  // // Update name
-  // endActor.setName(this.graphPrefix + endActor.getName());
-  // // Update END_REFERENCE
-  // endActor.setInitReference(this.graphPrefix + endActor.getInitReference());
-  // return true;
-  // }
 
   @Override
   public Boolean caseDelayActor(final DelayActor actor) {
@@ -299,7 +308,7 @@ public class PiSDFToSingleRate extends PiMMSwitch<Boolean> {
     this.actor2SRActors.get(this.graphPrefix + actor.getName()).add(copyActor);
 
     // Set the properties
-    PiSDFFlattener.instantiateParameters(actor, copyActor);
+    PiSDFFlattener.instantiateParameters(actor, copyActor, this.result);
     return true;
   }
 
@@ -722,7 +731,6 @@ public class PiSDFToSingleRate extends PiMMSwitch<Boolean> {
       throw new UnsupportedOperationException(
           "Can not convert an empty graph. Check the refinement for [" + graph.getVertexPath() + "].");
     }
-    this.result.setName(graph.getName());
     // Set the current graph name
     this.graphName = graph.getContainingPiGraph() == null ? "" : graph.getName();
     this.graphName = this.graphPrefix + this.graphName;
@@ -841,11 +849,21 @@ public class PiSDFToSingleRate extends PiMMSwitch<Boolean> {
     init.setName(initName);
     // Set the persistence level of the delay
     init.setLevel(fifo.getDelay().getLevel());
+    // Set the END_REFERENCE
+    // TODO: handle asymetric configuration
+    final AbstractActor getterActor = fifo.getDelay().getGetterActor();
+    if (getterActor != null) {
+      final AbstractVertex lookupVertex = graph.lookupVertex(getterActor.getName());
+      if (lookupVertex instanceof AbstractActor) {
+        init.setEndReference((AbstractActor) lookupVertex);
+        if (lookupVertex instanceof EndActor) {
+          ((EndActor) lookupVertex).setInitReference(init);
+        }
+      }
+    }
     // Create the FIFO and connect it
-    final Fifo initFifo = PiMMUserFactory.instance.createFifo();
-    initFifo.setType(fifo.getType());
-    initFifo.setTargetPort(delayActor.getDataInputPort());
-    initFifo.setSourcePort(init.getDataOutputPort());
+    final Fifo initFifo = PiMMUserFactory.instance.createFifo(init.getDataOutputPort(), delayActor.getDataInputPort(),
+        fifo.getType());
     graph.addActor(init);
     graph.addFifo(initFifo);
     this.brv.put(init, (long) 1);
@@ -863,14 +881,21 @@ public class PiSDFToSingleRate extends PiMMSwitch<Boolean> {
     end.setName(endName);
     // Set the persistence level of the delay
     end.setLevel(fifo.getDelay().getLevel());
-    // Set the END_REFERENCE
+    // Set the INIT_REFERENCE
     // TODO: handle asymetric configuration
-    end.setInitReference(fifo.getDelay().getSetterActor().getName());
+    final AbstractActor setterActor = fifo.getDelay().getSetterActor();
+    if (setterActor != null) {
+      final AbstractVertex lookupVertex = graph.lookupVertex(setterActor.getName());
+      if (lookupVertex instanceof AbstractActor) {
+        end.setInitReference((AbstractActor) lookupVertex);
+        if (lookupVertex instanceof InitActor) {
+          ((InitActor) lookupVertex).setEndReference(end);
+        }
+      }
+    }
     // Create the FIFO and connect it
-    final Fifo endFifo = PiMMUserFactory.instance.createFifo();
-    endFifo.setType(fifo.getType());
-    endFifo.setTargetPort(end.getDataInputPort());
-    endFifo.setSourcePort(delayActor.getDataOutputPort());
+    final Fifo endFifo = PiMMUserFactory.instance.createFifo(delayActor.getDataOutputPort(), end.getDataInputPort(),
+        fifo.getType());
     graph.addActor(end);
     graph.addFifo(endFifo);
     this.brv.put(end, (long) 1);

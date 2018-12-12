@@ -68,11 +68,9 @@ import org.preesm.commons.math.ExpressionEvaluationException;
 import org.preesm.model.pisdf.AbstractActor;
 import org.preesm.model.pisdf.Actor;
 import org.preesm.model.pisdf.CHeaderRefinement;
-import org.preesm.model.pisdf.EndActor;
 import org.preesm.model.pisdf.ExecutableActor;
 import org.preesm.model.pisdf.Expression;
 import org.preesm.model.pisdf.ExpressionHolder;
-import org.preesm.model.pisdf.InitActor;
 import org.preesm.model.pisdf.PeriodicElement;
 import org.preesm.model.pisdf.Refinement;
 import org.preesm.model.pisdf.util.PrototypeFormatter;
@@ -187,7 +185,7 @@ public class ActorPropertiesSection extends GFPropertySection implements ITabbed
           return;
         }
 
-        if (bo instanceof ExecutableActor || bo instanceof EndActor || bo instanceof InitActor) {
+        if (bo instanceof ExecutableActor) {
           final AbstractActor actor = (AbstractActor) bo;
           if (ActorPropertiesSection.this.txtNameObj.getText().compareTo(actor.getName()) != 0) {
             setNewName(actor, ActorPropertiesSection.this.txtNameObj.getText());
@@ -613,7 +611,7 @@ public class ActorPropertiesSection extends GFPropertySection implements ITabbed
       final Point selelection = this.txtPeriod.getSelection();
       final boolean expressionHasFocus = this.txtPeriod.isFocusControl();
 
-      if (bo instanceof ExecutableActor || bo instanceof EndActor || bo instanceof InitActor) {
+      if (bo instanceof ExecutableActor) {
         final AbstractActor exexcutableActor = (AbstractActor) bo;
         this.txtNameObj.setEnabled(false);
         if ((exexcutableActor.getName() == null) && (!this.txtNameObj.getText().isEmpty())) {

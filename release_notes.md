@@ -7,6 +7,11 @@ PREESM Changelog
 ### New Feature
 
 ### Changes
+* Refactor PiSDF:
+  * replace init/end String references with Object references;
+  * Make Init/End actors special actors;
+  * Update graph abstraction and implement high level operations;
+  * Add structure checkers;
 
 ### Bug fix
 

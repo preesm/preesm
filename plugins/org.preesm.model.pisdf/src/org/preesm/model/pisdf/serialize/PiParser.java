@@ -77,12 +77,14 @@ import org.preesm.model.pisdf.Delay;
 import org.preesm.model.pisdf.DelayActor;
 import org.preesm.model.pisdf.Dependency;
 import org.preesm.model.pisdf.Direction;
+import org.preesm.model.pisdf.EndActor;
 import org.preesm.model.pisdf.ExecutableActor;
 import org.preesm.model.pisdf.Fifo;
 import org.preesm.model.pisdf.ForkActor;
 import org.preesm.model.pisdf.FunctionParameter;
 import org.preesm.model.pisdf.FunctionPrototype;
 import org.preesm.model.pisdf.ISetter;
+import org.preesm.model.pisdf.InitActor;
 import org.preesm.model.pisdf.InterfaceActor;
 import org.preesm.model.pisdf.InterfaceKind;
 import org.preesm.model.pisdf.Parameter;
@@ -93,6 +95,7 @@ import org.preesm.model.pisdf.PortKind;
 import org.preesm.model.pisdf.PortMemoryAnnotation;
 import org.preesm.model.pisdf.RefinementContainer;
 import org.preesm.model.pisdf.factory.PiMMUserFactory;
+import org.preesm.model.pisdf.util.PiGraphConsistenceChecker;
 import org.preesm.model.pisdf.util.PiIdentifiers;
 import org.preesm.model.pisdf.util.PiSDFXSDValidator;
 import org.preesm.model.pisdf.util.SubgraphReconnector;
@@ -146,6 +149,7 @@ public class PiParser {
     final PiGraph graph = getPiGraph(algorithmURL);
     final SubgraphReconnector connector = new SubgraphReconnector();
     connector.connectSubgraphs(graph);
+    PiGraphConsistenceChecker.check(graph);
     return graph;
   }
 
@@ -506,7 +510,6 @@ public class PiParser {
    */
   protected void parseFifo(final Element edgeElt, final PiGraph graph) {
     // Instantiate the new FIFO
-    final Fifo fifo = PiMMUserFactory.instance.createFifo();
 
     // Find the source and target of the fifo
     final String sourceName = edgeElt.getAttribute(PiIdentifiers.FIFO_SOURCE);
@@ -526,7 +529,6 @@ public class PiParser {
     if ((type == null) || type.equals("")) {
       type = "void";
     }
-    fifo.setType(type);
     // Get the sourcePort and targetPort
     String sourcePortName = edgeElt.getAttribute(PiIdentifiers.FIFO_SOURCE_PORT);
     sourcePortName = (sourcePortName.isEmpty()) ? null : sourcePortName;
@@ -542,8 +544,7 @@ public class PiParser {
       throw new PreesmException("Edge target port " + targetPortName + " does not exist for vertex " + targetName);
     }
 
-    fifo.setSourcePort(oPort);
-    fifo.setTargetPort(iPort);
+    final Fifo fifo = PiMMUserFactory.instance.createFifo(oPort, iPort, type);
 
     // Check if the fifo has a delay
 
@@ -992,9 +993,29 @@ public class PiParser {
         break;
       case PiIdentifiers.INIT:
         actor = PiMMUserFactory.instance.createInitActor();
+        final String endRef = nodeElt.getAttribute(PiIdentifiers.INIT_END_REF);
+        if (endRef != null) {
+          final AbstractVertex lookupVertex = graph.lookupVertex(endRef);
+          if (lookupVertex != null) {
+            ((InitActor) actor).setEndReference((AbstractActor) lookupVertex);
+            if (lookupVertex instanceof EndActor) {
+              ((EndActor) lookupVertex).setInitReference(actor);
+            }
+          }
+        }
         break;
       case PiIdentifiers.END:
         actor = PiMMUserFactory.instance.createEndActor();
+        final String initRef = nodeElt.getAttribute(PiIdentifiers.INIT_END_REF);
+        if (initRef != null) {
+          final AbstractVertex lookupVertex = graph.lookupVertex(initRef);
+          if (lookupVertex != null) {
+            ((EndActor) actor).setInitReference((AbstractActor) lookupVertex);
+            if (lookupVertex instanceof InitActor) {
+              ((InitActor) lookupVertex).setEndReference(actor);
+            }
+          }
+        }
         break;
       default:
         throw new IllegalArgumentException("Given node element has an unknown kind");

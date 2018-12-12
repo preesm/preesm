@@ -166,6 +166,9 @@ public class PiSDFParameterResolverVisitor extends PiMMSwitch<Boolean> {
   public Boolean caseConfigInputInterface(final ConfigInputInterface cii) {
     final ConfigInputPort graphPort = cii.getGraphPort();
     final Dependency incomingDependency = graphPort.getIncomingDependency();
+    if (incomingDependency == null) {
+      throw new PreesmException(cii.eContainer() + " has a config input port without incoming dependency");
+    }
     final ISetter setter = incomingDependency.getSetter();
     // Setter of an incoming dependency into a ConfigInputInterface must be
     // a parameter

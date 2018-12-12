@@ -73,11 +73,9 @@ import org.preesm.model.pisdf.DataPort;
 import org.preesm.model.pisdf.Delay;
 import org.preesm.model.pisdf.DelayActor;
 import org.preesm.model.pisdf.Dependency;
-import org.preesm.model.pisdf.EndActor;
 import org.preesm.model.pisdf.ExecutableActor;
 import org.preesm.model.pisdf.Fifo;
 import org.preesm.model.pisdf.ISetter;
-import org.preesm.model.pisdf.InitActor;
 import org.preesm.model.pisdf.InterfaceActor;
 import org.preesm.model.pisdf.Parameter;
 import org.preesm.model.pisdf.Parameterizable;
@@ -205,7 +203,7 @@ public class PasteFeature extends AbstractPasteFeature {
   public void postProcess() {
     for (final Entry<Configurable, Configurable> e : this.copiedObjects.entrySet()) {
       final Configurable value = e.getValue();
-      if (value instanceof ExecutableActor || value instanceof InitActor || value instanceof EndActor) {
+      if (value instanceof ExecutableActor) {
         // continue
       } else {
         final EList<ConfigInputPort> configInputPorts = value.getConfigInputPorts();
@@ -631,8 +629,7 @@ public class PasteFeature extends AbstractPasteFeature {
       final PictogramElement pe;
       if (childElement instanceof Port) {
         final Port copiedPort = (Port) childElement;
-        if (vertexModelCopy instanceof ExecutableActor || vertexModelCopy instanceof EndActor
-            || vertexModelCopy instanceof InitActor) {
+        if (vertexModelCopy instanceof ExecutableActor) {
           final AbstractAddActorPortFeature addPortFeature;
           switch (copiedPort.getKind()) {
             case DATA_INPUT:
