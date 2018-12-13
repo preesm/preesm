@@ -37,6 +37,8 @@
 
 #define _GNU_SOURCE
 
+//#define _PREESM_TCP_DEBUG_ 1
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
@@ -50,11 +52,21 @@
 #include <arpa/inet.h>
 #include <netinet/tcp.h>
 
-// during opening sequence, wait time between each client to server connection fail: 50 ms
-#define _PREESM_WAIT_SERVER_START_US (50*1000)
+#include "communication.h"
 
-// set TCP socket buffers to 2MB
-#define _PREESM_SOCKET_BUFFER_SIZE (2*1024*1024)
+
+#ifndef max
+    #define max(a,b) ((a) > (b) ? (a) : (b))
+#endif
+#ifndef min
+    #define min(a,b) ((a) < (b) ? (a) : (b))
+#endif
+
+// during opening sequence, wait time between each client to server connection fail: 5 ms
+#define _PREESM_WAIT_SERVER_START_US (5*1000)
+
+// set TCP socket buffers to 208 KB
+#define _PREESM_SOCKET_BUFFER_SIZE (208*1024)
 
 // Error codes
 #define _PREESM_ERROR_ACK 1
