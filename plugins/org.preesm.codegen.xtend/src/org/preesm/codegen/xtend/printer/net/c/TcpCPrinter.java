@@ -66,7 +66,7 @@ import org.preesm.commons.files.URLResolver;
  */
 public class TcpCPrinter extends CPrinter {
 
-  private final List<List<String>> receivingCalls;
+  private final List<List<List<String>>> receivingCalls;
 
   public TcpCPrinter() {
     super();
@@ -104,12 +104,17 @@ public class TcpCPrinter extends CPrinter {
     final int coreID = ((CoreBlock) callBlock.eContainer()).getCoreID();
     StringBuilder ff = new StringBuilder();
 
-    receivingCalls.add(coreID, new ArrayList<>());
-    ff.append("struct rk_sema receiveCore" + coreID + "Sync;\n");
+    final int nbCores = getEngine().getCodeBlocks().size();
+    receivingCalls.add(coreID, new ArrayList<>(nbCores));
+    for (int i = 0; i < nbCores; i++) {
+      receivingCalls.get(coreID).add(i, new ArrayList<>());
+      if (i == coreID) {
+        continue;
+      }
+      ff.append("struct rk_sema receiveCore" + coreID + "_" + i + "Sync;\n");
+    }
     ff.append("pthread_barrier_t receiveCore" + coreID + "Barrier;\n");
-    ff.append("void *receiveThread_Core");
-    ff.append(coreID);
-    ff.append("(void *arg);\n");
+    ff.append("void init_receiving_threads_" + coreID + "(void *arg);\n");
 
     ff.append("\n");
 
@@ -118,15 +123,7 @@ public class TcpCPrinter extends CPrinter {
     ff.append("(void *arg) {\n");
 
     ff.append("  int* socketFileDescriptors = (int*)arg;\n");
-
-    ff.append("  pthread_t receiving_thread;\n");
-    ff.append("  rk_sema_init(&receiveCore" + coreID + "Sync, 0);\n");
-
-    ff.append("   pthread_barrier_init(&receiveCore" + coreID + "Barrier, NULL, 2);\n");
-    // ff.append(" rk_sema_init(&receiveCore" + coreID + "Barrier, 0);\n");
-
-    ff.append("  pthread_create(&receiving_thread, NULL, &receiveThread_Core" + coreID + ", arg);\n");
-
+    ff.append("  init_receiving_threads_" + coreID + "(arg);\n");
     ff.append("  \n" + "#ifdef _PREESM_TCP_DEBUG_\n" + "  printf(\"[TCP-DEBUG] Core" + coreID + " READY\\n\");\n"
         + "#endif\n\n");
     return ff.toString();
@@ -134,22 +131,63 @@ public class TcpCPrinter extends CPrinter {
 
   @Override
   public CharSequence printCoreBlockFooter(CoreBlock block) {
+    final int coreID = block.getCoreID();
     final CharSequence printCoreBlockFooter = super.printCoreBlockFooter(block);
 
-    StringBuilder ff = new StringBuilder(printCoreBlockFooter);
-    ff.append("void *receiveThread_Core");
-    ff.append(block.getCoreID());
-    ff.append("(void *arg) {\n");
+    final StringBuilder ff = new StringBuilder(printCoreBlockFooter);
 
-    ff.append("int* socketFileDescriptors = (int*)arg;\n");
-    ff.append("  while (1) {\n");
-    ff.append("    pthread_barrier_wait(&receiveCore" + block.getCoreID() + "Barrier);\n");
+    int nbCores = 1;
+    final List<List<String>> receivingCallsForCurrentCore = receivingCalls.get(coreID);
+    final int size = receivingCallsForCurrentCore.size();
+    for (int from = 0; from < size; from++) {
+      final List<String> l = receivingCallsForCurrentCore.get(from);
+      if (from == coreID || l.isEmpty()) {
+        continue;
+      }
+      ff.append("void *receiveThread_Core");
+      ff.append(coreID + "_" + from);
+      ff.append("(void *arg);\n");
+      nbCores++;
+    }
+    ff.append("\n");
+    ff.append("void init_receiving_threads_" + coreID + "(void *arg) {\n");
+    ff.append("  pthread_barrier_init(&receiveCore" + coreID + "Barrier, NULL, " + nbCores + ");\n");
 
-    for (String s : receivingCalls.get(block.getCoreID())) {
-      ff.append(s);
+    for (int from = 0; from < size; from++) {
+      final List<String> l = receivingCallsForCurrentCore.get(from);
+      if (from == coreID || l.isEmpty()) {
+        continue;
+      }
+      ff.append("  pthread_t receiving_thread" + from + ";\n");
+      ff.append("  rk_sema_init(&receiveCore" + coreID + "_" + from + "Sync, 0);\n");
+      ff.append("  pthread_create(&receiving_thread" + from + ", NULL, &receiveThread_Core" + coreID + "_" + from
+          + ", arg);\n");
+    }
+    ff.append("}\n");
+    ff.append("\n");
+
+    for (int from = 0; from < size; from++) {
+      if (from == coreID) {
+        continue;
+      }
+      final List<String> l = receivingCallsForCurrentCore.get(from);
+      if (l.isEmpty()) {
+        continue;
+      }
+      ff.append("void *receiveThread_Core");
+      ff.append(coreID + "_" + from);
+      ff.append("(void *arg) {\n");
+
+      ff.append("int* socketFileDescriptors = (int*)arg;\n");
+      ff.append("  while (1) {\n");
+      ff.append("    pthread_barrier_wait(&receiveCore" + coreID + "Barrier);\n");
+      for (String s : l) {
+        ff.append("    " + s);
+      }
+      ff.append("  }\n" + "  return NULL;\n" + "}\n\n");
+
     }
 
-    ff.append("  }\n" + "  return NULL;\n" + "}");
     return ff.toString();
   }
 
@@ -161,15 +199,17 @@ public class TcpCPrinter extends CPrinter {
     StringBuilder res = new StringBuilder();
     res.append("  int iterationCount = 0;\n");
     res.append("  while(1){\n");
+    res.append("    /* START OF LOOP HEADER */\n");
     res.append("    iterationCount++;\n");
     res.append("#ifdef _PREESM_TCP_DEBUG_\n" + "    printf(\"[TCP-DEBUG] Core" + coreID
         + " iteration #%d - at barrier\\n\",iterationCount);\n" + "#endif\n");
     res.append("    preesm_barrier(socketFileDescriptors, " + coreID + ", " + this.getEngine().getCodeBlocks().size()
         + ");\n");
     res.append("#ifdef _PREESM_TCP_DEBUG_\n" + "    printf(\"[TCP-DEBUG] Core" + coreID
-        + " iteration #%d - barrier passed\\n\",iterationCount);\n" + "#endif\n    \n    ");
+        + " iteration #%d - barrier passed\\n\",iterationCount);\n" + "#endif\n");
 
-    res.append("    pthread_barrier_wait(&receiveCore" + coreID + "Barrier);\n   ");
+    res.append("    pthread_barrier_wait(&receiveCore" + coreID + "Barrier);\n");
+    res.append("    /* END OF LOOP HEADER */\n\n");
 
     return res.toString();
   }
@@ -211,9 +251,9 @@ public class TcpCPrinter extends CPrinter {
         + dataAddress + " " + size + "\"" + ");\n");
 
     if (direction == Direction.RECEIVE && delimiter == Delimiter.START) {
-      receivingCalls.get(to).add(functionCallBuilder.toString());
-      receivingCalls.get(to).add("rk_sema_post(&receiveCore" + to + "Sync);\n");
-      return "rk_sema_wait(&receiveCore" + to + "Sync);\n";
+      receivingCalls.get(to).get(from).add(functionCallBuilder.toString());
+      receivingCalls.get(to).get(from).add("rk_sema_post(&receiveCore" + to + "_" + from + "Sync);\n");
+      return "rk_sema_wait(&receiveCore" + to + "_" + from + "Sync);\n";
     }
     return functionCallBuilder.toString();
   }
