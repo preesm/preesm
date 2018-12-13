@@ -121,7 +121,7 @@ public class TagDAG {
    * @param scenario
    *          the scenario
    */
-  public void addSendReceive(final MapperDAG dag, final Design architecture, final PreesmScenario scenario) {
+  private void addSendReceive(final MapperDAG dag, final Design architecture, final PreesmScenario scenario) {
 
     final OrderManager orderMgr = new OrderManager(architecture);
     orderMgr.reconstructTotalOrderFromDAG(dag);
@@ -140,7 +140,7 @@ public class TagDAG {
    * @param simu
    *          the simu
    */
-  public void addProperties(final MapperDAG dag, final LatencyAbc simu) {
+  private void addProperties(final MapperDAG dag, final LatencyAbc simu) {
 
     MapperDAGVertex currentVertex;
 
@@ -254,7 +254,7 @@ public class TagDAG {
    * @param scenario
    *          the scenario
    */
-  public void addAllAggregates(final MapperDAG dag, final PreesmScenario scenario) {
+  private void addAllAggregates(final MapperDAG dag, final PreesmScenario scenario) {
 
     MapperDAGEdge edge;
 
@@ -303,7 +303,7 @@ public class TagDAG {
    * @param scenario
    *          the scenario
    */
-  public void addAggregate(final MapperDAGEdge edge, final PreesmScenario scenario) {
+  private void addAggregate(final MapperDAGEdge edge, final PreesmScenario scenario) {
     final BufferAggregate agg = new BufferAggregate();
     for (final AbstractEdge<?, ?> aggMember : edge.getAggregate()) {
       final DAGEdge dagEdge = (DAGEdge) aggMember;

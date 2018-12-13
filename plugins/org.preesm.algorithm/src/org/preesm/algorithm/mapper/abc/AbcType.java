@@ -79,7 +79,7 @@ public class AbcType {
    * @param name
    *          the name
    */
-  protected AbcType(final String name) {
+  private AbcType(final String name) {
     super();
     this.name = name;
     this.taskSchedType = TaskSchedType.SIMPLE;

@@ -76,7 +76,7 @@ public class EdgeTiming implements CloneableProperty<EdgeTiming> {
   /**
    * Reset.
    */
-  public void reset() {
+  private void reset() {
     this.cost = EdgeTiming.UNAVAILABLE;
   }
 

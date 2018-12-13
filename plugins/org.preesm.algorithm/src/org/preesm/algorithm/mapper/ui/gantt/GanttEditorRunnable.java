@@ -58,7 +58,7 @@ public class GanttEditorRunnable implements Runnable {
    * @param input
    *          the input
    */
-  public GanttEditorRunnable(final IEditorInput input) {
+  private GanttEditorRunnable(final IEditorInput input) {
     super();
     this.input = input;
   }

@@ -424,7 +424,7 @@ public class FastAlgorithm extends Observable {
    * @throws PreesmException
    *           the workflow exception
    */
-  public void launchEditor(final GanttData ganttData, final String name) throws PreesmException {
+  private void launchEditor(final GanttData ganttData, final String name) throws PreesmException {
 
     GanttEditorRunnable.run(ganttData, name);
 

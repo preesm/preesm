@@ -188,7 +188,7 @@ public abstract class AbstractMappingFromDAG extends AbstractTaskImplementation 
    * @param scenario
    *          the scenario
    */
-  protected void clean(final Design architecture) {
+  private void clean(final Design architecture) {
     // Asking to delete route
     RouteCalculator.deleteRoutes(architecture);
   }
@@ -202,7 +202,7 @@ public abstract class AbstractMappingFromDAG extends AbstractTaskImplementation 
    * @param dag
    *          Scheduled {@link DirectedAcyclicGraph}.
    */
-  protected void checkSchedulingResult(final Map<String, String> parameters, final DirectedAcyclicGraph dag) {
+  private void checkSchedulingResult(final Map<String, String> parameters, final DirectedAcyclicGraph dag) {
     if (parameters.get(AbstractMappingFromDAG.PARAM_CHECK).equals(AbstractMappingFromDAG.VALUE_TRUE)) {
       CommunicationOrderChecker.checkCommunicationOrder(dag);
     }
@@ -216,7 +216,7 @@ public abstract class AbstractMappingFromDAG extends AbstractTaskImplementation 
    * @param dag
    *          Scheduled {@link DirectedAcyclicGraph}.
    */
-  protected void removeRedundantSynchronization(final Map<String, String> parameters, final DirectedAcyclicGraph dag) {
+  private void removeRedundantSynchronization(final Map<String, String> parameters, final DirectedAcyclicGraph dag) {
     final String paramValue = parameters.get(AbstractMappingFromDAG.PARAM_OPTIMIZE);
     if (paramValue.equals(AbstractMappingFromDAG.VALUE_TRUE)) {
       RedundantSynchronizationCleaner.cleanRedundantSynchronization(dag);
@@ -238,7 +238,7 @@ public abstract class AbstractMappingFromDAG extends AbstractTaskImplementation 
    * @throws PreesmException
    *           the workflow exception
    */
-  protected void calculateSpan(final MapperDAG dag, final Design archi, final PreesmScenario scenario,
+  private void calculateSpan(final MapperDAG dag, final Design archi, final PreesmScenario scenario,
       final AbcParameters parameters) {
     final TaskSchedType taskSchedType = parameters.getSimulatorType().getTaskSchedType();
     final SpanLengthCalculator spanCalc = new SpanLengthCalculator(parameters, dag, archi, taskSchedType, scenario);

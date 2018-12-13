@@ -150,7 +150,7 @@ public class IntervalFinder {
    *          the size
    * @return the interval
    */
-  public Interval findEarliestBigEnoughInterval(final ComponentInstance component, final MapperDAGVertex minVertex,
+  private Interval findEarliestBigEnoughInterval(final ComponentInstance component, final MapperDAGVertex minVertex,
       final MapperDAGVertex maxVertex, final long size) {
 
     return findInterval(component, minVertex, maxVertex, FindType.earliestBigEnoughInterval, size);
@@ -172,7 +172,7 @@ public class IntervalFinder {
    *          the data
    * @return the interval
    */
-  public Interval findInterval(final ComponentInstance component, final MapperDAGVertex minVertex,
+  private Interval findInterval(final ComponentInstance component, final MapperDAGVertex minVertex,
       final MapperDAGVertex maxVertex, final FindType type, final long data) {
 
     final List<MapperDAGVertex> schedule = this.orderManager.getVertexList(component);

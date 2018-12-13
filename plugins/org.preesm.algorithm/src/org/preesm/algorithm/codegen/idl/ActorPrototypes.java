@@ -89,7 +89,7 @@ public class ActorPrototypes implements IRefinement {
    *          the i
    * @return the inits the prototype
    */
-  public Prototype getInitPrototype(final int i) {
+  private Prototype getInitPrototype(final int i) {
     if (this.initPrototypes.keySet().contains(0)) {
       return this.initPrototypes.get(i);
     } else {
@@ -150,7 +150,7 @@ public class ActorPrototypes implements IRefinement {
    *          the section type
    * @return the prototype
    */
-  public Prototype getPrototype(final CodeSectionType sectionType) {
+  private Prototype getPrototype(final CodeSectionType sectionType) {
     if (sectionType.getMajor().equals(CodeSectionType.MajorType.INIT)) {
       return getInitPrototype(sectionType.getMinor());
     } else if (sectionType.getMajor().equals(CodeSectionType.MajorType.LOOP)) {

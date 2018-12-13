@@ -142,7 +142,7 @@ public class SDFJoinVertex extends SDFAbstractSpecialVertex {
    *          The edge to get the connection index
    * @return The connection index of the edge
    */
-  public Long getEdgeIndex(final SDFEdge edge) {
+  private Long getEdgeIndex(final SDFEdge edge) {
     for (final Long connIndex : getConnections().keySet()) {
       if (getConnections().get(connIndex).equals(edge)) {
         return connIndex;
@@ -211,7 +211,7 @@ public class SDFJoinVertex extends SDFAbstractSpecialVertex {
    *
    * @return the connections
    */
-  protected Map<Long, SDFEdge> getConnections() {
+  private Map<Long, SDFEdge> getConnections() {
     Map<Long, SDFEdge> connections = getPropertyBean().getValue(SDFJoinVertex.EDGES_ORDER);
     if (connections == null) {
       connections = new LinkedHashMap<>();

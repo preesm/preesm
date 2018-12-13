@@ -693,7 +693,7 @@ public abstract class LatencyAbc {
    * @param dagvertex
    *          the dagvertex
    */
-  public final void unmap(final MapperDAGVertex dagvertex) {
+  private final void unmap(final MapperDAGVertex dagvertex) {
 
     final MapperDAGVertex impvertex = translateInImplementationVertex(dagvertex);
 
@@ -1096,7 +1096,7 @@ public abstract class LatencyAbc {
    *
    * @return the long
    */
-  public long evaluateLoadBalancing() {
+  private long evaluateLoadBalancing() {
 
     final List<Long> taskSums = new ArrayList<>();
     long totalTaskSum = 0L;

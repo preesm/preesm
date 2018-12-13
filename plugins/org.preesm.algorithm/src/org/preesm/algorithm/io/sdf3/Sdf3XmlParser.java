@@ -92,7 +92,7 @@ public class Sdf3XmlParser {
    *           if the given {@link Element} has no child Element with the appropriate name or has more than one child
    *           with this name.
    */
-  protected Element findElement(final Element elt, final String elementName) {
+  private Element findElement(final Element elt, final String elementName) {
     final NodeList nodes = elt.getElementsByTagName(elementName);
     if (nodes.getLength() == 0) {
       throw new RuntimeException("Parsed " + elt.getLocalName() + " does not contain any " + elementName + " element");
@@ -165,7 +165,7 @@ public class Sdf3XmlParser {
    * @param graph
    *          the parsed {@link SDFGraph}
    */
-  protected void parseActor(final Element actorElt, final SDFGraph graph) {
+  private void parseActor(final Element actorElt, final SDFGraph graph) {
     final SDFVertex actor = new SDFVertex(graph);
     final String name = actorElt.getAttribute("name");
     if (name.isEmpty()) {
@@ -191,7 +191,7 @@ public class Sdf3XmlParser {
    * @param graph
    *          the parsed graph
    */
-  protected void parseActorProperties(final Element actorPtyElt, final SDFGraph graph) {
+  private void parseActorProperties(final Element actorPtyElt, final SDFGraph graph) {
     // Get the actor whose properties are parsed
     final String actorName = actorPtyElt.getAttribute("actor");
     if (actorName.isEmpty()) {
@@ -239,7 +239,7 @@ public class Sdf3XmlParser {
    * @param graph
    *          the parsed {@link SDFGraph}.
    */
-  protected void parseApplicationGraph(final Element elt, final SDFGraph graph) {
+  private void parseApplicationGraph(final Element elt, final SDFGraph graph) {
 
     final Element sdfElt = findElement(elt, "sdf");
     parseSDF(sdfElt, graph);
@@ -256,7 +256,7 @@ public class Sdf3XmlParser {
    * @param graph
    *          the parsed {@link SDFGraph}
    */
-  protected void parseChannel(final Element channelElt, final SDFGraph graph) {
+  private void parseChannel(final Element channelElt, final SDFGraph graph) {
     // Get Source actor and port
     final String srcActorName = channelElt.getAttribute("srcActor");
     if (srcActorName.isEmpty()) {
@@ -327,7 +327,7 @@ public class Sdf3XmlParser {
    * @param graph
    *          the parsed {@link SDFGraph}
    */
-  protected void parseChannelProperties(final Element channelPtyElt, final SDFGraph graph) {
+  private void parseChannelProperties(final Element channelPtyElt, final SDFGraph graph) {
     // Get the edge whose properties are parsed
     final String channelName = channelPtyElt.getAttribute("channel");
     if (channelName.isEmpty()) {
@@ -364,7 +364,7 @@ public class Sdf3XmlParser {
    * @param actor
    *          the parsed {@link SDFVertex actor}
    */
-  protected void parsePort(final Element portElt, final SDFVertex actor) {
+  private void parsePort(final Element portElt, final SDFVertex actor) {
     SDFInterfaceVertex port;
     final String direction = portElt.getAttribute("type");
     switch (direction) {
@@ -401,7 +401,7 @@ public class Sdf3XmlParser {
    * @param graph
    *          the parsed {@link SDFGraph}.
    */
-  protected void parseSDF(final Element sdfElt, final SDFGraph graph) {
+  private void parseSDF(final Element sdfElt, final SDFGraph graph) {
     // Retrieve the Name of the graph
     final String name = sdfElt.getAttribute("name");
     if (name.isEmpty()) {
@@ -432,7 +432,7 @@ public class Sdf3XmlParser {
    * @param graph
    *          the parsed {@link SDFGraph}.
    */
-  protected void parseSdf3Xml(final Element rootElt, final SDFGraph graph) {
+  private void parseSdf3Xml(final Element rootElt, final SDFGraph graph) {
     // Check if the file contains a graph of appropriate type and version
     final String rootName = rootElt.getLocalName();
     if (!rootName.equals("sdf3")) {
@@ -460,7 +460,7 @@ public class Sdf3XmlParser {
    * @param graph
    *          the parsed {@link SDFGraph}.
    */
-  protected void parseSDFProperties(final Element sdfPropElt, final SDFGraph graph) {
+  private void parseSDFProperties(final Element sdfPropElt, final SDFGraph graph) {
     // Parse actorProperties
     {
       final NodeList actorPtyElts = sdfPropElt.getElementsByTagName("actorProperties");

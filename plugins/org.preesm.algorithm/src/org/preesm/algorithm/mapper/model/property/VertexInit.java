@@ -242,7 +242,7 @@ public class VertexInit implements CloneableProperty<VertexInit> {
    *          the operatordef id
    * @return the timing
    */
-  public Timing getTiming(final String operatordefId) {
+  private Timing getTiming(final String operatordefId) {
 
     Timing returntiming = Timing.UNAVAILABLE;
 

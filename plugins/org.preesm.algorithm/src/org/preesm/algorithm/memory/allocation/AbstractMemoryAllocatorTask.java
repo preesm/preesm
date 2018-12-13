@@ -67,7 +67,7 @@ public abstract class AbstractMemoryAllocatorTask extends AbstractTaskImplementa
   private static final String VALUE_TRUE = "True";
 
   /** The Constant PARAM_ALLOCATORS. */
-  public static final String PARAM_ALLOCATORS = "Allocator(s)";
+  private static final String PARAM_ALLOCATORS = "Allocator(s)";
 
   /** The Constant VALUE_ALLOCATORS_DEFAULT. */
   private static final String VALUE_ALLOCATORS_DEFAULT = "{?,?,...} C {Basic, BestFit, FirstFit, DeGreef}";
@@ -107,7 +107,7 @@ public abstract class AbstractMemoryAllocatorTask extends AbstractTaskImplementa
   private static final String VALUE_XFIT_ORDER_SCHEDULING = "Scheduling";
 
   /** The Constant PARAM_NB_SHUFFLE. */
-  public static final String PARAM_NB_SHUFFLE = "Nb of Shuffling Tested";
+  private static final String PARAM_NB_SHUFFLE = "Nb of Shuffling Tested";
 
   /** The Constant VALUE_NB_SHUFFLE_DEFAULT. */
   private static final String VALUE_NB_SHUFFLE_DEFAULT = "10";

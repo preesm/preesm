@@ -167,7 +167,7 @@ public abstract class OrderedAllocator extends MemoryAllocator {
    * Perform the allocation with the vertex ordered according to largest first order. If the policy of the allocator is
    * changed, the resulting allocation will be lost.
    */
-  public void allocateLargestFirst() {
+  private void allocateLargestFirst() {
 
     final ArrayList<MemoryExclusionVertex> list = new ArrayList<>(this.inputExclusionGraph.vertexSet());
     Collections.sort(list, Collections.reverseOrder());
@@ -178,7 +178,7 @@ public abstract class OrderedAllocator extends MemoryAllocator {
    * Perform the allocation with the vertex ordered according to the scheduling order. If the policy of the allocator is
    * changed, the resulting allocation will be lost.
    */
-  public void allocateSchedulingOrder() {
+  private void allocateSchedulingOrder() {
     // If the exclusion graph is not built, it means that is does not come
     // from the MemEx Updater, and we can do nothing
     if (this.inputExclusionGraph == null) {
@@ -203,7 +203,7 @@ public abstract class OrderedAllocator extends MemoryAllocator {
   /**
    * Perform the allocation with the vertex ordered randomly. The allocation will be performet {@link #nbShuffle} times.
    */
-  protected void allocateShuffledOrder() {
+  private void allocateShuffledOrder() {
 
     // Backup the policy. At the end of the allocation list computation, the
     // policy will be reset in order to select the allocation in the list
@@ -240,7 +240,7 @@ public abstract class OrderedAllocator extends MemoryAllocator {
    * the allocator is changed, the resulting allocation will be lost.
    *
    */
-  public void allocateStableSetOrder() {
+  private void allocateStableSetOrder() {
     allocateStableSetOrder(true);
   }
 
@@ -251,7 +251,7 @@ public abstract class OrderedAllocator extends MemoryAllocator {
    * @param exactStableSet
    *          the exact stable set
    */
-  public void allocateStableSetOrder(final boolean exactStableSet) {
+  private void allocateStableSetOrder(final boolean exactStableSet) {
     final ArrayList<MemoryExclusionVertex> list = getStableSetOrderedList(exactStableSet);
     allocateInOrder(list);
   }
@@ -310,7 +310,7 @@ public abstract class OrderedAllocator extends MemoryAllocator {
    *          the exact stable set
    * @return The ordered vertices list
    */
-  protected ArrayList<MemoryExclusionVertex> getStableSetOrderedList(final boolean exactStableSet) {
+  private ArrayList<MemoryExclusionVertex> getStableSetOrderedList(final boolean exactStableSet) {
     ArrayList<MemoryExclusionVertex> orderedList;
     orderedList = new ArrayList<>();
 

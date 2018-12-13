@@ -83,7 +83,7 @@ public class SDFRandomGraph {
    *          is the number of vertices of the graph
    * @return the repetition vector
    */
-  public static Map<SDFAbstractVertex, Long> calcRepetitionVector(final SDFGraph graph, final int nbVertexgraph) {
+  private static Map<SDFAbstractVertex, Long> calcRepetitionVector(final SDFGraph graph, final int nbVertexgraph) {
 
     final Map<SDFAbstractVertex, Long> vrb = new LinkedHashMap<>(nbVertexgraph);
     long l = 1;
@@ -120,7 +120,7 @@ public class SDFRandomGraph {
    * @param rateMultiplier
    *          the rate multiplier
    */
-  public static void makeConsistentConnectedActors(final SDFGraph graph, final int rateMultiplier) {
+  private static void makeConsistentConnectedActors(final SDFGraph graph, final int rateMultiplier) {
     LongFraction ratioSrcDst;
     for (final SDFAbstractVertex Src : graph.vertexSet()) {
       for (final SDFAbstractVertex Dst : graph.vertexSet()) {
@@ -144,7 +144,7 @@ public class SDFRandomGraph {
    *          The input vertices of the Graph
    */
   @SuppressWarnings({ "rawtypes", "unchecked" })
-  public static void placeDelay(final SDFGraph graph, final int nbVertexgraph, final List<SDFAbstractVertex> sensors) {
+  private static void placeDelay(final SDFGraph graph, final int nbVertexgraph, final List<SDFAbstractVertex> sensors) {
     final SDFGraph newgraph = graph.copy();// new graph is created to
     // reduce execution time of
     // cycle detection
@@ -264,7 +264,7 @@ public class SDFRandomGraph {
    *          Exact number of input vertices in the graph
    * @return The created random graph
    */
-  public SDFGraph createRandomGraph(final int nbVertex, final int minInDegree, final int maxInDegree,
+  private SDFGraph createRandomGraph(final int nbVertex, final int minInDegree, final int maxInDegree,
       final int minOutDegree, final int maxOutDegree, final int minRate, final int maxRate, final int rateMultiplier,
       final int nbSensors) {
 

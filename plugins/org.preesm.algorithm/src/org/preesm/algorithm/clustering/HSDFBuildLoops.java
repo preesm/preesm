@@ -378,7 +378,7 @@ public class HSDFBuildLoops {
   /**
    * Giving a clustered sequence, it prints the factorized from of the sequence of loops with associated actors.
    */
-  public void printClusteringSchedule(final AbstractClust seq) {
+  private void printClusteringSchedule(final AbstractClust seq) {
     recursivePrintClustSched(seq);
     p(this.clustSchedString);
     this.clustSchedString = "";
@@ -461,7 +461,7 @@ public class HSDFBuildLoops {
    * Generate the clustered IR. It takes as input the hierarchical actor (graph) and returns the sequence of loops to
    * generate.
    */
-  public AbstractClust generateClustering(final SDFGraph inGraph) {
+  private AbstractClust generateClustering(final SDFGraph inGraph) {
 
     // deep clone of graph SDF
     this.graph = inGraph.copy();

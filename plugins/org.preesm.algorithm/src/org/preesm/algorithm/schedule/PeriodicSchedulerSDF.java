@@ -83,7 +83,7 @@ public class PeriodicSchedulerSDF {
    *          SDF graph
    * @return true if periodic schedule exists
    */
-  public boolean isPeriodic(final SDFGraph graph) {
+  private boolean isPeriodic(final SDFGraph graph) {
     // set edges value : v = h (use the normalized version of the graph)
     // h = (out - M0 - gcd)* alpha(e)
     final Map<String, Double> edgeValue = new LinkedHashMap<>(graph.edgeSet().size());
@@ -307,7 +307,7 @@ public class PeriodicSchedulerSDF {
    *          SDF graph
    * @return the maximum throughput of the periodic schedule
    */
-  public double computeActorsPeriod(final SDFGraph graph) {
+  private double computeActorsPeriod(final SDFGraph graph) {
     // get the normalized period of the graph
     final Fraction k = (Fraction) graph.getPropertyBean().getValue("normalizedPeriod");
 
@@ -381,7 +381,7 @@ public class PeriodicSchedulerSDF {
    * @param graph
    *          SDF graph
    */
-  public void computeActorsStartingTime(final SDFGraph graph) {
+  private void computeActorsStartingTime(final SDFGraph graph) {
     /*
      * see Ben Abid paper : step 1: add a dummy vertex to the graph step 2: connect the new actor to every actor of the
      * graph with a null value step 3: use the bellman ford algorithm to compute the starting times as the longest path

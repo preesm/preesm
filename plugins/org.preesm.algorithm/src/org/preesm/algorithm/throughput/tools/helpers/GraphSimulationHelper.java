@@ -124,7 +124,7 @@ public class GraphSimulationHelper {
    * @return executions number
    */
 
-  public long maxNbOfExecutions(final SDFAbstractVertex actor) {
+  private long maxNbOfExecutions(final SDFAbstractVertex actor) {
     long maxExecutions = Long.MAX_VALUE; // initialize the counter with a max value
     for (final SDFInterfaceVertex input : actor.getSources()) {
       final SDFEdge edge = actor.getAssociatedEdge(input);
@@ -349,7 +349,7 @@ public class GraphSimulationHelper {
   /**
    * restore the edges delay to the initial marking
    */
-  public void restoreInitialMarking() {
+  private void restoreInitialMarking() {
     for (final SDFEdge edge : this.graph.edgeSet()) {
       edge.setDelay(this.initialMarking.get(edge));
     }
@@ -367,7 +367,7 @@ public class GraphSimulationHelper {
   /**
    * prepare actors info
    */
-  public void prepareActors() {
+  private void prepareActors() {
     for (final SDFAbstractVertex actor : this.graph.vertexSet()) {
       actor.setPropertyValue(START_DATE_PROPERTY, 0.);
       actor.setPropertyValue(FINISH_DATE_PROPERTY, 0.);
@@ -379,7 +379,7 @@ public class GraphSimulationHelper {
   /**
    * Save the initial marking of the graph
    */
-  public void saveInitialMarking() {
+  private void saveInitialMarking() {
     this.initialMarking = new Hashtable<>(this.graph.edgeSet().size());
     for (final SDFEdge edge : this.graph.edgeSet()) {
       this.initialMarking.put(edge, edge.getDelay());

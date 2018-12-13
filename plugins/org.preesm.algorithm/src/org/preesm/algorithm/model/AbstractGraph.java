@@ -252,7 +252,7 @@ public abstract class AbstractGraph<V extends AbstractVertex, E extends Abstract
    * Indicates that this object has no longer changed, or that it has already notified all of its observers of its most
    * recent change, so that the hasChanged method will now return false.
    */
-  public void clearChanged() {
+  private void clearChanged() {
     this.hasChanged = true;
   }
 
@@ -623,7 +623,7 @@ public abstract class AbstractGraph<V extends AbstractVertex, E extends Abstract
    * @param arg
    *          Arguments to be passe to the update method
    */
-  public void notifyObservers(final Object arg) {
+  private void notifyObservers(final Object arg) {
     if (this.hasChanged) {
       for (final IModelObserver o : this.observers) {
         o.update(this, arg);
@@ -661,7 +661,7 @@ public abstract class AbstractGraph<V extends AbstractVertex, E extends Abstract
   /**
    * Marks this Observable object as having been changed the hasChanged method will now return true.
    */
-  public void setChanged() {
+  private void setChanged() {
     this.hasChanged = true;
   }
 

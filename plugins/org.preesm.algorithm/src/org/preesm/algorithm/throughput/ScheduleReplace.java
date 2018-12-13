@@ -112,7 +112,7 @@ public class ScheduleReplace {
    *          subgraph of a hierarchical actor
    * @return the duration of the subgraph
    */
-  public double setHierarchicalActorsDuration(final SDFGraph subgraph) {
+  private double setHierarchicalActorsDuration(final SDFGraph subgraph) {
     // recursive function
     for (final SDFAbstractVertex actor : subgraph.vertexSet()) {
       if (actor.getGraphDescription() != null) {

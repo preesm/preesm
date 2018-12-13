@@ -401,7 +401,7 @@ public abstract class MemoryAllocator {
    * @param offset
    *          the offset of the hostVertex
    */
-  protected void allocateHostMemoryObject(final MemoryExclusionVertex hostVertex,
+  private void allocateHostMemoryObject(final MemoryExclusionVertex hostVertex,
       final Set<MemoryExclusionVertex> vertices, final long offset) {
     // 1 - Put back all hosted mobj in the meg (with their exclusions)
     // 2 - Put the host Mobj back to its original size and exclusions
@@ -610,7 +610,7 @@ public abstract class MemoryAllocator {
    * @param neighbor
    *          The {@link MemoryExclusionVertex} that is not yet in the {@link #inputExclusionGraph}.
    */
-  protected void excludeWithHostedNeighbor(final MemoryExclusionVertex vertex, final MemoryExclusionVertex neighbor) {
+  private void excludeWithHostedNeighbor(final MemoryExclusionVertex vertex, final MemoryExclusionVertex neighbor) {
     // The neighbor is not in the graph, it must be
     // hosted by another mObject or divided.
     // Find the host(s)

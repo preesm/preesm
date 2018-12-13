@@ -48,7 +48,7 @@ public class ConsecutiveTransfersMap extends LinkedHashMap<ComponentInstance, Co
 
   private static final long serialVersionUID = -8987927834037340036L;
 
-  static final ComponentInstance findComponent(final DAGVertex vertex) {
+  private static final ComponentInstance findComponent(final DAGVertex vertex) {
     return (ComponentInstance) vertex.getPropertyBean().getValue("Operator");
   }
 

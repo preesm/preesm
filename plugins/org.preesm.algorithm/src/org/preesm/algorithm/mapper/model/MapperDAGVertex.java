@@ -112,7 +112,7 @@ public class MapperDAGVertex extends DAGVertex {
    * @param base
    *          the base
    */
-  public MapperDAGVertex(final String id, final String name, final MapperDAG base) {
+  private MapperDAGVertex(final String id, final String name, final MapperDAG base) {
 
     super();
 

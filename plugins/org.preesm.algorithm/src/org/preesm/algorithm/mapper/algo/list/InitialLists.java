@@ -248,7 +248,7 @@ public class InitialLists implements Cloneable {
    *          the abc
    * @return true, if successful
    */
-  public boolean constructCPN(final MapperDAG dag, final List<MapperDAGVertex> cpnDominant,
+  private boolean constructCPN(final MapperDAG dag, final List<MapperDAGVertex> cpnDominant,
       final List<MapperDAGVertex> criticalPath, final LatencyAbc abc) {
 
     PreesmLogger.getLogger().log(Level.INFO, "Starting to build CPN list");
@@ -416,7 +416,7 @@ public class InitialLists implements Cloneable {
    * @param tempset
    *          the tempset
    */
-  public void orderlistdisplay(final String threadName, final List<MapperDAGVertex> tempset) {
+  private void orderlistdisplay(final String threadName, final List<MapperDAGVertex> tempset) {
 
     // Variables
     final Iterator<MapperDAGVertex> iter = tempset.iterator();

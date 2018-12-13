@@ -312,7 +312,7 @@ public class Range implements CloneableProperty<Range> {
     return StreamSupport.stream(ranges.spliterator(), false).map(Range::getEnd).reduce(Long.MIN_VALUE, Math::max);
   }
 
-  public static boolean isContiguous(final Range range1, final Range range2) {
+  private static boolean isContiguous(final Range range1, final Range range2) {
     return (range1.getStart() == range2.getEnd()) || (range2.getStart() == range1.getEnd());
   }
 
@@ -346,7 +346,7 @@ public class Range implements CloneableProperty<Range> {
     return this.end;
   }
 
-  public Range(final Range original) {
+  private Range(final Range original) {
     this.start = original.getStart();
     this.end = original.getEnd();
   }

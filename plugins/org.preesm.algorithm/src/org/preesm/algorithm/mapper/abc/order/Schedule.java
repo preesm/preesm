@@ -178,7 +178,7 @@ public class Schedule {
   /**
    * Reset busy time.
    */
-  public void resetBusyTime() {
+  private void resetBusyTime() {
     this.busyTime = 0;
   }
 

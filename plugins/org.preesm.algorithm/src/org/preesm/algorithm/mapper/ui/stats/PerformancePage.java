@@ -129,7 +129,7 @@ public class PerformancePage extends FormPage {
    *          the grid data
    * @return the composite
    */
-  public Composite createSection(final IManagedForm mform, final String title, final String desc, final int numColumns,
+  private Composite createSection(final IManagedForm mform, final String title, final String desc, final int numColumns,
       final GridData gridData) {
 
     final ScrolledForm form = mform.getForm();

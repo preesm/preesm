@@ -145,7 +145,7 @@ public class CommunicationRouter {
    * @param implementer
    *          the implementer
    */
-  protected void addImplementer(final String name, final CommunicationRouterImplementer implementer) {
+  private void addImplementer(final String name, final CommunicationRouterImplementer implementer) {
     this.implementers.put(name, implementer);
   }
 
@@ -156,7 +156,7 @@ public class CommunicationRouter {
    *          the name
    * @return the implementer
    */
-  protected CommunicationRouterImplementer getImplementer(final String name) {
+  private CommunicationRouterImplementer getImplementer(final String name) {
     return this.implementers.get(name);
   }
 
@@ -291,7 +291,7 @@ public class CommunicationRouter {
    *          the new vertex
    * @return the route map
    */
-  public Map<MapperDAGEdge, Route> getRouteMap(final MapperDAGVertex newVertex) {
+  private Map<MapperDAGEdge, Route> getRouteMap(final MapperDAGVertex newVertex) {
     final Map<MapperDAGEdge, Route> transferEdges = new LinkedHashMap<>();
 
     final Set<DAGEdge> edges = new LinkedHashSet<>();
@@ -329,7 +329,7 @@ public class CommunicationRouter {
    * @param createdVertices
    *          the created vertices
    */
-  public void addVertices(final Map<MapperDAGEdge, Route> transferEdges, final int type,
+  private void addVertices(final Map<MapperDAGEdge, Route> transferEdges, final int type,
       final List<Object> createdVertices) {
     final TransactionManager localTransactionManager = new TransactionManager(createdVertices);
 

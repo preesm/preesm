@@ -103,7 +103,7 @@ public class LatencyEvaluationEngine {
    *
    * @return subgraph latency
    */
-  public long getSubgraphMinLatencySinlgeCore(final SDFAbstractVertex hierarchicalActor,
+  private long getSubgraphMinLatencySinlgeCore(final SDFAbstractVertex hierarchicalActor,
       final PreesmScenario scenario) {
     // sum l(a)*rv_global(a) -- not the local RV
     long subgraphLatency = 0;

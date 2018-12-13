@@ -149,7 +149,7 @@ public class GMLSDFImporterV1 extends GMLImporter<SDFGraph, SDFAbstractVertex, S
    * @throws PreesmException
    *           the invalid model exception
    */
-  protected void parseGraphDescription(final SDFAbstractVertex vertex, final Element parentElt) {
+  private void parseGraphDescription(final SDFAbstractVertex vertex, final Element parentElt) {
     final NodeList childList = parentElt.getChildNodes();
     for (int i = 0; i < childList.getLength(); i++) {
       if (childList.item(i).getNodeName().equals("data")

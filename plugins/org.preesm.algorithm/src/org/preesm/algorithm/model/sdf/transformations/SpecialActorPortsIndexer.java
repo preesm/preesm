@@ -206,7 +206,7 @@ public class SpecialActorPortsIndexer {
    * @return <code>true</code> if the actor is a special actor and its ports are already indexed, <code>false</code>
    *         otherwise.
    */
-  public static boolean checkIndexes(SDFAbstractVertex actor) {
+  private static boolean checkIndexes(SDFAbstractVertex actor) {
     boolean isSource = true;
 
     final List<SDFEdge> fifos;
@@ -235,7 +235,7 @@ public class SpecialActorPortsIndexer {
    * @return <code>true</code> if the list of SDFEdge is not empty and if its ports are already indexed,
    *         <code>false</code> otherwise.
    */
-  protected static boolean checkIndexes(List<SDFEdge> fifos, boolean valIsSource) {
+  private static boolean checkIndexes(List<SDFEdge> fifos, boolean valIsSource) {
     return fifos.stream().allMatch(it -> {
       final String name = (valIsSource) ? it.getSourceInterface().getName() : it.getTargetInterface().getName();
       return name.matches(INDEX_REGEX);

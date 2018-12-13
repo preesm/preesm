@@ -155,7 +155,7 @@ public class PFastAlgorithm extends Observable {
    *          // Set with the partial BlockingNodesLists
    * @return integer
    */
-  public int chooseNbCores(final InitialLists initialLists, final int nboperator, final int nodesmin,
+  private int chooseNbCores(final InitialLists initialLists, final int nboperator, final int nodesmin,
       final Set<Set<String>> subSet) {
 
     // initialization
@@ -205,7 +205,7 @@ public class PFastAlgorithm extends Observable {
    * @return integer
    */
 
-  public int setThreadNumber(final List<MapperDAGVertex> bLlist, int nboperator, final int nodesmin) {
+  private int setThreadNumber(final List<MapperDAGVertex> bLlist, int nboperator, final int nodesmin) {
 
     final int nbnodes = bLlist.size();
     int nbsubsets;
@@ -232,7 +232,7 @@ public class PFastAlgorithm extends Observable {
    *          // Number of nodes per thread
    * @return integer
    */
-  public int nbnodes(final List<MapperDAGVertex> bLlist, int nbsubsets, final int nodesmin) {
+  private int nbnodes(final List<MapperDAGVertex> bLlist, int nbsubsets, final int nodesmin) {
 
     final int nbnodes = bLlist.size();
     if (nbsubsets == 0) {

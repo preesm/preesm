@@ -99,7 +99,7 @@ public class HeuristicSolver<V extends IWeightedVertex<Long> & Comparable<V>, E 
      *
      * @return the nbEdges
      */
-    public long getNbEdges() {
+    private long getNbEdges() {
       return this.nbEdges;
     }
 

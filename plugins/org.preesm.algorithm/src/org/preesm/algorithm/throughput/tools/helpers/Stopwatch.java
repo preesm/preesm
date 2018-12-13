@@ -73,7 +73,7 @@ public class Stopwatch {
   /**
    * reset the stopwatch
    */
-  public void reset() {
+  private void reset() {
     this.accumulatedTime = 0;
     this.isRunning = false;
   }
@@ -165,7 +165,7 @@ public class Stopwatch {
   /**
    * set the seconds as the time unit of the stopwatch
    */
-  public void setTimeSconds() {
+  private void setTimeSconds() {
     this.timeConverterFactor = (double) 1 / (1000);
     this.format = "Seconds";
   }

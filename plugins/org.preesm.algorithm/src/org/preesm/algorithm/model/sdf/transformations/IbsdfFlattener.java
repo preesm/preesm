@@ -103,7 +103,7 @@ public class IbsdfFlattener {
    * application.</li>
    * </ul>
    */
-  protected void addDelaySubstitutes(final SDFGraph subgraph, final long nbRepeat) {
+  private void addDelaySubstitutes(final SDFGraph subgraph, final long nbRepeat) {
     // Scan the fifos with delays in the subgraph
     final List<SDFEdge> fifoList = subgraph.edgeSet().stream()
         .filter(e -> e.getDelay() != null && e.getDelay().longValue() != 0).collect(Collectors.toList());
@@ -206,7 +206,7 @@ public class IbsdfFlattener {
    * @throws PreesmException
    *           if an interface is connected to several FIFOs.
    */
-  static void addInterfaceSubstitutes(final SDFGraph subgraph) {
+  private static void addInterfaceSubstitutes(final SDFGraph subgraph) {
 
     final List<SDFInterfaceVertex> ifaceList = subgraph.vertexSet().stream()
         .filter(v -> v instanceof SDFInterfaceVertex).map(SDFInterfaceVertex.class::cast).collect(Collectors.toList());
@@ -357,7 +357,7 @@ public class IbsdfFlattener {
     flattenedGraph.insertBroadcasts();
   }
 
-  protected void flattenOneLevel(int level) {
+  private void flattenOneLevel(int level) {
     // Get the list of hierarchical actors
     final List<SDFAbstractVertex> hierActors = new ArrayList<>(getFlattenedGraph().vertexSet().stream()
         .filter(it -> (it.getGraphDescription() instanceof SDFGraph)).collect(Collectors.toList()));
@@ -415,7 +415,7 @@ public class IbsdfFlattener {
    * @param subgraph
    *          The subgraph whose expressions are substituted.
    */
-  protected void substituteSubgraphParameters(SDFAbstractVertex hierActor, SDFGraph subgraph) {
+  private void substituteSubgraphParameters(SDFAbstractVertex hierActor, SDFGraph subgraph) {
 
     if (subgraph.getParameters() != null) {
       // Get list of subgraph parameters, except those masked with subgraph variables
@@ -441,7 +441,7 @@ public class IbsdfFlattener {
    * @param variable
    *          The variable that is in conflict with a variable from the parent graph.
    */
-  protected void renameSubgraphVariable(SDFGraph subgraph, Variable variable) {
+  private void renameSubgraphVariable(SDFGraph subgraph, Variable variable) {
     // Create the new variable name
     final String oldName = variable.getName();
     String newName = subgraph.getName() + "_" + variable.getName();
@@ -477,7 +477,7 @@ public class IbsdfFlattener {
    * @param replacementString
    *          The replacement.
    */
-  protected void replaceInExpressions(SDFGraph subgraph, String oldName, String replacementString) {
+  private void replaceInExpressions(SDFGraph subgraph, String oldName, String replacementString) {
     // Regular expression used when replacing oldName in expressions
     // Ensure that only the exact variable name will be replaced
     // but not variables "containing" the variable names
@@ -524,7 +524,7 @@ public class IbsdfFlattener {
    * @param subgraph
    *          the {@link SDFGraph subgraph} associated to the hierarchical actor.
    */
-  protected void instantiateSubgraph(SDFAbstractVertex hierActor, SDFGraph subgraph) {
+  private void instantiateSubgraph(SDFAbstractVertex hierActor, SDFGraph subgraph) {
     // Rename actors of the subgraph
     renameSubgraphActors(hierActor, subgraph);
 
@@ -614,7 +614,7 @@ public class IbsdfFlattener {
    * Rename all actors (except interfaces) of the subgraph such that their name is prefixed with the name of the
    * hierarchical actor.
    */
-  protected void renameSubgraphActors(SDFAbstractVertex hierActor, SDFGraph subgraph) {
+  private void renameSubgraphActors(SDFAbstractVertex hierActor, SDFGraph subgraph) {
     for (SDFAbstractVertex actor : subgraph.vertexSet().stream().filter(it -> !(it instanceof SDFInterfaceVertex))
         .collect(Collectors.toList())) {
       actor.setName(hierActor.getName() + "_" + actor.getName());

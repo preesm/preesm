@@ -140,7 +140,7 @@ public class StaticPiMM2SDFVisitor extends PiMMSwitch<Boolean> {
    * @return the value
    */
   /* Create An IBSDF value depending of the expression */
-  protected Value createValue(final String str) {
+  private Value createValue(final String str) {
     try {
       final long l = Long.parseLong(str);
       return new ConstantValue(l);
@@ -167,7 +167,7 @@ public class StaticPiMM2SDFVisitor extends PiMMSwitch<Boolean> {
    * @param sdf
    *          the SDFGraph to which we add the graph variables
    */
-  protected void parameters2GraphVariables(final PiGraph pg, final SDFGraph sdf) {
+  private void parameters2GraphVariables(final PiGraph pg, final SDFGraph sdf) {
     for (final Parameter p : pg.getParameters()) {
       final String evaluate = Long.toString(p.getValueExpression().evaluate());
       final Variable var = new Variable(p.getName(), evaluate);
@@ -235,7 +235,7 @@ public class StaticPiMM2SDFVisitor extends PiMMSwitch<Boolean> {
    * @param execution
    *          the list of available values for each parameter
    */
-  protected void computeDerivedParameterValues(final PiGraph graph, final PiGraphExecution execution) {
+  private void computeDerivedParameterValues(final PiGraph graph, final PiGraphExecution execution) {
     // If there is no value or list of valuse for one Parameter, the value
     // of the parameter is derived (i.e., computed from other parameters
     // values), we can evaluate it (after the values of other parameters

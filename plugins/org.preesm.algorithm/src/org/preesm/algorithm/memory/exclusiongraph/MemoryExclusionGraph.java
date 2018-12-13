@@ -213,7 +213,7 @@ public class MemoryExclusionGraph extends SimpleGraph<MemoryExclusionVertex, Def
    *          The memory transfer to add.
    * @return the exclusion graph node created (or null)
    */
-  public MemoryExclusionVertex addNode(final DAGEdge edge) {
+  private MemoryExclusionVertex addNode(final DAGEdge edge) {
     // If the target and source vertices are tasks,
     // add a node corresponding to the memory transfer
     // to the exclusion graph. Else, nothing
@@ -250,7 +250,7 @@ public class MemoryExclusionGraph extends SimpleGraph<MemoryExclusionVertex, Def
    * @param dag
    *          the dag containing the fifos.
    */
-  protected void buildFifoMemoryObjects(final DirectedAcyclicGraph dag) {
+  private void buildFifoMemoryObjects(final DirectedAcyclicGraph dag) {
     // Scan the dag vertices
     for (final DAGVertex vertex : dag.vertexSet()) {
       final String vertKind = vertex.getKind();
@@ -737,7 +737,7 @@ public class MemoryExclusionGraph extends SimpleGraph<MemoryExclusionVertex, Def
    *          <code>Map&lt;MemoryExclusionVertex,MemoryExclusionVertex&gt;</code> associating original
    *          {@link MemoryExclusionVertex} of the current {@link MemoryExclusionGraph} to their clone.
    */
-  protected void deepCloneMegProperties(final MemoryExclusionGraph result,
+  private void deepCloneMegProperties(final MemoryExclusionGraph result,
       final Map<MemoryExclusionVertex, MemoryExclusionVertex> mObjMap) {
     // DAG_EDGE_ALLOCATION
     @SuppressWarnings("unchecked")
@@ -824,7 +824,7 @@ public class MemoryExclusionGraph extends SimpleGraph<MemoryExclusionVertex, Def
    *          <code>Map&lt;MemoryExclusionVertex,MemoryExclusionVertex&gt;</code> associating original
    *          {@link MemoryExclusionVertex} of the current {@link MemoryExclusionGraph} to their clone.
    */
-  protected void deepCloneVerticesProperties(final Map<MemoryExclusionVertex, MemoryExclusionVertex> mObjMap) {
+  private void deepCloneVerticesProperties(final Map<MemoryExclusionVertex, MemoryExclusionVertex> mObjMap) {
     for (final Entry<MemoryExclusionVertex, MemoryExclusionVertex> entry : mObjMap.entrySet()) {
       final MemoryExclusionVertex vertex = entry.getKey();
       final MemoryExclusionVertex vertexClone = entry.getValue();
@@ -1132,7 +1132,7 @@ public class MemoryExclusionGraph extends SimpleGraph<MemoryExclusionVertex, Def
    *           if the {@link MemoryExclusionVertex} is not derived from the given {@link DirectedAcyclicGraph DAG} or if
    *           the {@link DirectedAcyclicGraph DAG} was not scheduled.
    */
-  protected Entry<Long, Long> getLifeTime(final MemoryExclusionVertex vertex, final DirectedAcyclicGraph dag) {
+  private Entry<Long, Long> getLifeTime(final MemoryExclusionVertex vertex, final DirectedAcyclicGraph dag) {
 
     // If the MemObject corresponds to an edge, its lifetime spans from the
     // execution start of its source until the execution end of its target
@@ -1395,7 +1395,7 @@ public class MemoryExclusionGraph extends SimpleGraph<MemoryExclusionVertex, Def
    * @param inputDAG
    *          the input DAG
    */
-  protected void updateFIFOMemObjectWithSchedule(final DirectedAcyclicGraph inputDAG) {
+  private void updateFIFOMemObjectWithSchedule(final DirectedAcyclicGraph inputDAG) {
 
     // Create a DAG with new edges from scheduling info
     final DirectedAcyclicGraph scheduledDAG = (DirectedAcyclicGraph) inputDAG.copy();

@@ -270,7 +270,7 @@ public class ExternalMappingFromDAG extends AbstractMappingFromDAG {
 
     private final Map<DAGVertex, ScheduleEntry> entries;
 
-    public ScheduleComparator(Map<DAGVertex, ScheduleEntry> entries) {
+    private ScheduleComparator(Map<DAGVertex, ScheduleEntry> entries) {
       this.entries = entries;
     }
 

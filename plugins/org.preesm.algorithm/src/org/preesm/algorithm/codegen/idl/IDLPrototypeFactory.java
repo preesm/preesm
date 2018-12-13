@@ -109,7 +109,7 @@ public class IDLPrototypeFactory implements IFunctionFactory, IDLTreeVisitor {
   /**
    * Reset prototypes.
    */
-  public void resetPrototypes() {
+  private void resetPrototypes() {
     this.createdIdls = new LinkedHashMap<>();
     this.maxInitIndex = -1;
   }

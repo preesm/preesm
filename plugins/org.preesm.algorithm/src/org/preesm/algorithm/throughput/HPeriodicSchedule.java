@@ -102,7 +102,7 @@ public class HPeriodicSchedule {
    *          subgraph of a hierarchical actor
    * @return the duration of the subgraph
    */
-  public double setHierarchicalActorsDuration(final SDFGraph subgraph) {
+  private double setHierarchicalActorsDuration(final SDFGraph subgraph) {
 
     // add the name property for each edge of the graph
     for (final SDFEdge e : subgraph.edgeSet()) {

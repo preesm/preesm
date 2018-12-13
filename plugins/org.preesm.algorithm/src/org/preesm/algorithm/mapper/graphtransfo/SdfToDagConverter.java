@@ -182,7 +182,7 @@ public class SdfToDagConverter {
    * @param scenario
    *          the scenario
    */
-  public static void addInitialRelativeConstraintsProperties(final MapperDAG dag, final PreesmScenario scenario) {
+  private static void addInitialRelativeConstraintsProperties(final MapperDAG dag, final PreesmScenario scenario) {
 
     // Initial relative constraints are stored in the scenario
     final RelativeConstraintManager manager = scenario.getRelativeconstraintManager();
@@ -222,7 +222,7 @@ public class SdfToDagConverter {
    * @param dag
    *          the dag
    */
-  public static void addInitialTimingProperties(final MapperDAG dag) {
+  private static void addInitialTimingProperties(final MapperDAG dag) {
     // New timing objects are created they are not initialized here
     for (final DAGVertex v : dag.vertexSet()) {
       dag.getTimings().dedicate((MapperDAGVertex) v);
@@ -280,7 +280,7 @@ public class SdfToDagConverter {
    * @param scenario
    *          the scenario
    */
-  public static void addInitialVertexProperties(final MapperDAG dag, final Design architecture,
+  private static void addInitialVertexProperties(final MapperDAG dag, final Design architecture,
       final PreesmScenario scenario) {
 
     /**
@@ -318,7 +318,7 @@ public class SdfToDagConverter {
    * @param scenario
    *          the scenario
    */
-  public static void addInitialSpecialVertexProperties(final MapperDAG dag, final PreesmScenario scenario) {
+  private static void addInitialSpecialVertexProperties(final MapperDAG dag, final PreesmScenario scenario) {
 
     // Iterating over dag vertices
     final TopologicalDAGIterator dagiterator = new TopologicalDAGIterator(dag);
@@ -355,7 +355,7 @@ public class SdfToDagConverter {
    * @param dag
    *          the dag
    */
-  public static void addInitialEdgeProperties(final MapperDAG dag) {
+  private static void addInitialEdgeProperties(final MapperDAG dag) {
     /**
      * Importing data edge weights and multiplying by type size when available
      */
@@ -378,7 +378,7 @@ public class SdfToDagConverter {
    * @param scenario
    *          the scenario
    */
-  public static void addInitialConstraintsProperties(final MapperDAG dag, final Design architecture,
+  private static void addInitialConstraintsProperties(final MapperDAG dag, final Design architecture,
       final PreesmScenario scenario) {
     /**
      * Importing scenario: Only the timings to allowed mappings are set.

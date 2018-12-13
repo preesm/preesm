@@ -608,7 +608,7 @@ public class StaticPiMM2MapperDAGVisitor extends PiMMSwitch<Boolean> {
   /**
    * Update the Scenario with timing/mapping constraints for copyActor.
    */
-  public static final void updateScenarioData(final AbstractActor copyActor, final PreesmScenario scenario) {
+  private static final void updateScenarioData(final AbstractActor copyActor, final PreesmScenario scenario) {
     final AbstractActor actor = PreesmCopyTracker.getOriginalSource(copyActor);
     // Add the scenario constraints
     final List<String> currentOperatorIDs = new ArrayList<>();

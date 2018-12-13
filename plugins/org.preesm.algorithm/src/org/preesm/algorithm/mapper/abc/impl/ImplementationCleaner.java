@@ -190,7 +190,7 @@ public class ImplementationCleaner {
    *          the vertex
    * @return the all transfers
    */
-  public static Set<DAGVertex> getAllTransfers(final MapperDAGVertex vertex) {
+  private static Set<DAGVertex> getAllTransfers(final MapperDAGVertex vertex) {
 
     final Set<DAGVertex> transfers = new LinkedHashSet<>();
 
@@ -207,7 +207,7 @@ public class ImplementationCleaner {
    *          the vertex
    * @return the preceding transfers
    */
-  public static Set<DAGVertex> getPrecedingTransfers(final MapperDAGVertex vertex) {
+  private static Set<DAGVertex> getPrecedingTransfers(final MapperDAGVertex vertex) {
 
     final Set<DAGVertex> transfers = new LinkedHashSet<>();
 
@@ -228,7 +228,7 @@ public class ImplementationCleaner {
    *          the vertex
    * @return the following transfers
    */
-  public static Set<DAGVertex> getFollowingTransfers(final MapperDAGVertex vertex) {
+  private static Set<DAGVertex> getFollowingTransfers(final MapperDAGVertex vertex) {
 
     final Set<DAGVertex> transfers = new LinkedHashSet<>();
 

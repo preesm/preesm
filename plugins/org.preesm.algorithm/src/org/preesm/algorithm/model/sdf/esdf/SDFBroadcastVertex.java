@@ -100,7 +100,7 @@ public class SDFBroadcastVertex extends SDFAbstractSpecialVertex {
    * @param newEdge
    *          the new edge
    */
-  protected void addConnection(final SDFEdge newEdge) {
+  private void addConnection(final SDFEdge newEdge) {
     getConnections().put((long) getConnections().size(), newEdge);
   }
 

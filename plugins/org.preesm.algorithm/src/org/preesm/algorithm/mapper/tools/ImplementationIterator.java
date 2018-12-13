@@ -103,7 +103,7 @@ public abstract class ImplementationIterator extends AbstractGraphIterator<DAGVe
    * @param implementation
    *          the implementation
    */
-  public void createOrderedList(final MapperDAG implementation) {
+  private void createOrderedList(final MapperDAG implementation) {
     // Creating a sorted list using the current class as a comparator
     this.orderedlist = new ArrayList<>();
     for (final DAGVertex dv : implementation.vertexSet()) {

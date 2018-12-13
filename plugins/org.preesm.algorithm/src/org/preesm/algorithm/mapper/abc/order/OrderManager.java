@@ -96,7 +96,7 @@ public class OrderManager extends Observable {
    *          the ref index
    * @return the int
    */
-  public int findLastestPredIndexForOp(final ComponentInstance cmp, final int refIndex) {
+  private int findLastestPredIndexForOp(final ComponentInstance cmp, final int refIndex) {
 
     // Retrieves the schedule corresponding to the component
     final Schedule currentSched = getSchedule(cmp);
