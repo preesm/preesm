@@ -64,10 +64,10 @@ public class IBSDFGenerator {
 
   /** The nbactors. */
   // Parameters
-  private int nbactors;
+  private final int nbactors;
 
   /** The rand. */
-  private Random rand;
+  private final Random rand;
 
   /** The path. */
   // change the path according to where Turbine is placed, and create folders IBgen and IBSDF in this directory
@@ -75,7 +75,7 @@ public class IBSDFGenerator {
 
   /** The graph set. */
   // Set of graphs
-  private ArrayList<SDFGraph> graphSet;
+  private final ArrayList<SDFGraph> graphSet;
 
   /**
    * Instantiates a new IBSDF generator.

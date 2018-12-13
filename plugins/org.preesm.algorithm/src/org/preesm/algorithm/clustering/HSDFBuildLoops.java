@@ -76,10 +76,6 @@ public class HSDFBuildLoops {
 
   private final Map<String, DataType> dataTypes;
 
-  private final PreesmScenario scenario;
-
-  private final Design architecture;
-
   /**
    * Build loops.
    *
@@ -90,8 +86,6 @@ public class HSDFBuildLoops {
    */
   public HSDFBuildLoops(final PreesmScenario scenario, final Design architecture) {
     this.dataTypes = scenario.getSimulationManager().getDataTypes();
-    this.architecture = architecture;
-    this.scenario = scenario;
   }
 
   private void p(final String s) {
@@ -374,25 +368,6 @@ public class HSDFBuildLoops {
     recursivePrintClustSched(seq);
     p(this.clustSchedString);
     this.clustSchedString = "";
-  }
-
-  private AbstractClust recursiveGetLoopClust(final AbstractClust seq, final List<AbstractClust> getLoopClusterList) {
-    if (seq instanceof ClustVertex) {
-      if (!getLoopClusterList.contains(seq)) {
-        getLoopClusterList.add(seq);
-        return seq;
-      }
-    } else if (seq instanceof ClustSequence) {
-      if (!getLoopClusterList.contains(seq)) {
-        getLoopClusterList.add(seq);
-      }
-      for (final AbstractClust s : ((ClustSequence) seq).getSeq()) {
-        recursiveGetLoopClust(s, getLoopClusterList);
-      }
-    } else {
-      throw new PreesmException("Error while printed clustering schedule");
-    }
-    return null;
   }
 
   private List<AbstractClust> getLoopClusterListV2 = null;

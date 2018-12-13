@@ -206,10 +206,10 @@ public class DeGreefAllocator extends MemoryAllocator {
   private class IntegerAndVertex implements Comparable<IntegerAndVertex> {
 
     /** The first. */
-    private long first;
+    private final long first;
 
     /** The second. */
-    private MemoryExclusionVertex second;
+    private final MemoryExclusionVertex second;
 
     /**
      * Instantiates a new integer and vertex.
@@ -274,32 +274,12 @@ public class DeGreefAllocator extends MemoryAllocator {
     }
 
     /**
-     * Sets the first.
-     *
-     * @param first
-     *          the new first
-     */
-    public void setFirst(final long first) {
-      this.first = first;
-    }
-
-    /**
      * Gets the second.
      *
      * @return the second
      */
     public MemoryExclusionVertex getSecond() {
       return this.second;
-    }
-
-    /**
-     * Sets the second.
-     *
-     * @param second
-     *          the new second
-     */
-    public void setSecond(final MemoryExclusionVertex second) {
-      this.second = second;
     }
 
     /*

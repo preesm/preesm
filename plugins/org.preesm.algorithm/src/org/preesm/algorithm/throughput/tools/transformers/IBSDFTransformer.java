@@ -73,7 +73,7 @@ public abstract class IBSDFTransformer {
     // Step 3: Replace each instance of a hierarchical actor by its srSDF subgraph version
     final Map<String, SDFAbstractVertex> actorsToReplace = GraphStructureHelper.getHierarchicalActors(flatSrSDF);
     final List<SDFAbstractVertex> list = new ArrayList<>(actorsToReplace.values());
-    for (SDFAbstractVertex h : list) {
+    for (final SDFAbstractVertex h : list) {
       final SDFGraph srSubgraph = srSDFsubgraphList
           .get(((SDFAbstractVertex) h.getPropertyBean().getValue("baseActor")).getName());
       GraphStructureHelper.replaceHierarchicalActor(flatSrSDF, h, srSubgraph);

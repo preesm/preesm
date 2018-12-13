@@ -319,7 +319,7 @@ public class StaticPiMM2MapperDAGVisitor extends PiMMSwitch<Boolean> {
    */
   @Override
   public Boolean caseInitActor(final InitActor actor) {
-    final DAGVertex vertex = vertexFactory.createVertex(DAGInitVertex.DAG_INIT_VERTEX);
+    final DAGVertex vertex = this.vertexFactory.createVertex(DAGInitVertex.DAG_INIT_VERTEX);
     final DataOutputPort dataOutputPort = actor.getDataOutputPorts().get(0);
 
     // Set the number of delay
@@ -343,7 +343,7 @@ public class StaticPiMM2MapperDAGVisitor extends PiMMSwitch<Boolean> {
    */
   @Override
   public Boolean caseEndActor(final EndActor actor) {
-    final DAGVertex vertex = vertexFactory.createVertex(DAGEndVertex.DAG_END_VERTEX);
+    final DAGVertex vertex = this.vertexFactory.createVertex(DAGEndVertex.DAG_END_VERTEX);
 
     setDAGVertexPropertiesFromPiMM(actor, vertex);
 
@@ -643,7 +643,7 @@ public class StaticPiMM2MapperDAGVisitor extends PiMMSwitch<Boolean> {
 
     // Convert vertices
     for (final AbstractActor actor : graph.getActors()) {
-      updateScenarioData(actor, this.scenario);
+      StaticPiMM2MapperDAGVisitor.updateScenarioData(actor, this.scenario);
       doSwitch(actor);
     }
 
@@ -653,9 +653,9 @@ public class StaticPiMM2MapperDAGVisitor extends PiMMSwitch<Boolean> {
     }
 
     // 6. Aggregate edges
-    aggregateEdges(result);
+    aggregateEdges(this.result);
 
-    SdfToDagConverter.addInitialProperties(result, architecture, scenario);
+    SdfToDagConverter.addInitialProperties(this.result, this.architecture, this.scenario);
     return true;
   }
 
@@ -687,7 +687,7 @@ public class StaticPiMM2MapperDAGVisitor extends PiMMSwitch<Boolean> {
         // Maybe doing the copy is not optimal
         final ArrayList<DAGEdge> allEdges = new ArrayList<>(dag.getAllEdges(source, vertex));
         // if there is only one connection no need to modify anything
-        if (allEdges.size() == 1 || toRemove.contains(allEdges.get(1))) {
+        if ((allEdges.size() == 1) || toRemove.contains(allEdges.get(1))) {
           continue;
         }
         // Get the first edge

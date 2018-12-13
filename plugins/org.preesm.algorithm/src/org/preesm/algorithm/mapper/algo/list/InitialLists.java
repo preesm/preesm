@@ -44,7 +44,6 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.logging.Level;
-import java.util.logging.Logger;
 import org.jgrapht.Graph;
 import org.jgrapht.alg.util.NeighborCache;
 import org.preesm.algorithm.mapper.abc.impl.latency.LatencyAbc;
@@ -406,29 +405,6 @@ public class InitialLists implements Cloneable {
     simu.resetImplementation();
 
     return true;
-  }
-
-  /**
-   * orderlistdisplay: Display a List with the logger.
-   *
-   * @param threadName
-   *          the thread name
-   * @param tempset
-   *          the tempset
-   */
-  private void orderlistdisplay(final String threadName, final List<MapperDAGVertex> tempset) {
-
-    // Variables
-    final Iterator<MapperDAGVertex> iter = tempset.iterator();
-    MapperDAGVertex currentvertex;
-    final Logger logger = PreesmLogger.getLogger();
-    // check all the list
-    while (iter.hasNext()) {
-      currentvertex = iter.next();
-
-      logger.log(Level.FINEST, threadName + "Vertex " + currentvertex.getName());
-
-    }
   }
 
   /**

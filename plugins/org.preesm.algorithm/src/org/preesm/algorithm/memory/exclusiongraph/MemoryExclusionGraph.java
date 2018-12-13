@@ -176,7 +176,7 @@ public class MemoryExclusionGraph extends SimpleGraph<MemoryExclusionVertex, Def
   /**
    * The {@link PropertyBean} that stores the properties of the {@link MemoryExclusionGraph}.
    */
-  private PropertyBean properties;
+  private final PropertyBean properties;
 
   /**
    * Default constructor.
@@ -844,7 +844,7 @@ public class MemoryExclusionGraph extends SimpleGraph<MemoryExclusionVertex, Def
         final List<Pair<MemoryExclusionVertex, Pair<Range, Range>>> realTokenRangeCopy = new ArrayList<>();
         for (final Pair<MemoryExclusionVertex, Pair<Range, Range>> pair : realTokenRange) {
           realTokenRangeCopy.add(Pair.of(mObjMap.get(pair.getKey()),
-              Pair.of((Range) pair.getValue().getKey().copy(), (Range) pair.getValue().getValue().copy())));
+              Pair.of(pair.getValue().getKey().copy(), pair.getValue().getValue().copy())));
         }
         vertexClone.setPropertyValue(MemoryExclusionVertex.REAL_TOKEN_RANGE_PROPERTY, realTokenRangeCopy);
       }
@@ -1127,7 +1127,7 @@ public class MemoryExclusionGraph extends SimpleGraph<MemoryExclusionVertex, Def
 
       final long duration = (long) target.getPropertyBean().getValue(ImplementationPropertyNames.Task_duration);
 
-      return new AbstractMap.SimpleEntry<>((Long) birth, (Long) death + (Long) duration);
+      return new AbstractMap.SimpleEntry<>(birth, death + duration);
     }
 
     // Else the memEx vertex corresponds to a working memory
@@ -1326,7 +1326,7 @@ public class MemoryExclusionGraph extends SimpleGraph<MemoryExclusionVertex, Def
   private void updateFIFOMemObjectWithSchedule(final DirectedAcyclicGraph inputDAG) {
 
     // Create a DAG with new edges from scheduling info
-    final DirectedAcyclicGraph scheduledDAG = (DirectedAcyclicGraph) inputDAG.copy();
+    final DirectedAcyclicGraph scheduledDAG = inputDAG.copy();
 
     // Create an List of the DAGVertices, in scheduling order.
     final List<DAGVertex> verticesMap = new ArrayList<>();

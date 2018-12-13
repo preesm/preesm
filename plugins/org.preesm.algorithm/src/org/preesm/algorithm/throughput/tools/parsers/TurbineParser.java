@@ -215,7 +215,7 @@ public interface TurbineParser {
           for (final SDFInterfaceVertex input : hierarchicalActor.getSources()) {
             if (hierarchicalActor.getAssociatedEdge(input).getSource().getName().equals(srcActorId)) {
               inputPort = input.getName();
-              cons = (double) hierarchicalActor.getAssociatedEdge(input).getCons().longValue();
+              cons = hierarchicalActor.getAssociatedEdge(input).getCons().longValue();
               break;
             }
           }
@@ -243,7 +243,7 @@ public interface TurbineParser {
           for (final SDFInterfaceVertex output : hierarchicalActor.getSinks()) {
             if (hierarchicalActor.getAssociatedEdge(output).getTarget().getName().equals(trgActorId)) {
               outputPort = output.getName();
-              prod = (double) hierarchicalActor.getAssociatedEdge(output).getProd().longValue();
+              prod = hierarchicalActor.getAssociatedEdge(output).getProd().longValue();
               break;
             }
           }

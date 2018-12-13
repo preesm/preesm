@@ -54,10 +54,10 @@ import org.preesm.algorithm.model.dag.DAGVertex;
 public class CustomTopologicalIterator extends AbstractGraphIterator<DAGVertex, DAGEdge> {
 
   /** The direct order. */
-  private boolean directOrder;
+  private final boolean directOrder;
 
   /** The dag. */
-  private MapperDAG dag;
+  private final MapperDAG dag;
 
   /** The visited vertices. */
   private Set<MapperDAGVertex> visitedVertices = null;

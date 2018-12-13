@@ -58,14 +58,14 @@ public interface PropertySource {
    * @param props
    *          The properties to be copied
    */
-  public default void copyProperties(PropertySource props) {
+  public default void copyProperties(final PropertySource props) {
     final List<String> keys = new ArrayList<>(props.getPropertyBean().keys());
     for (final String key : keys) {
       if (!key.equals(AbstractVertex.BASE_LITERAL)) {
         if (props.getPropertyBean().getValue(key) instanceof CloneableProperty) {
-          this.getPropertyBean().setValue(key, props.getPropertyBean().<CloneableProperty<?>>getValue(key).copy());
+          getPropertyBean().setValue(key, props.getPropertyBean().<CloneableProperty<?>>getValue(key).copy());
         } else {
-          this.getPropertyBean().setValue(key, props.getPropertyBean().getValue(key));
+          getPropertyBean().setValue(key, props.getPropertyBean().getValue(key));
         }
       }
     }
@@ -94,9 +94,9 @@ public interface PropertySource {
    *          the property name
    * @return the property string value
    */
-  public default String getPropertyStringValue(String propertyName) {
-    if (this.getPropertyBean().getValue(propertyName) != null) {
-      return this.getPropertyBean().getValue(propertyName).toString();
+  public default String getPropertyStringValue(final String propertyName) {
+    if (getPropertyBean().getValue(propertyName) != null) {
+      return getPropertyBean().getValue(propertyName).toString();
     }
     return null;
   }
@@ -109,7 +109,7 @@ public interface PropertySource {
    * @param value
    *          the value
    */
-  public default void setPropertyValue(String propertyName, Object value) {
-    this.getPropertyBean().setValue(propertyName, value);
+  public default void setPropertyValue(final String propertyName, final Object value) {
+    getPropertyBean().setValue(propertyName, value);
   }
 }

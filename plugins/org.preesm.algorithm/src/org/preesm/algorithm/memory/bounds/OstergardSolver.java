@@ -345,7 +345,7 @@ public class OstergardSolver<V extends IWeightedVertex<Long> & Comparable<V>, E 
       for (int j = this.numberVertices - 1; j >= Math.ceil(this.numberVertices / 2.0); j--) {
 
         // wclique(S'i inter N(vi), w(i))
-        final List<V> vertexSet = getSi((int) j); // Get S'i
+        final List<V> vertexSet = getSi(j); // Get S'i
         final V fixedVertex = vertexSet.get(0);
         vertexSet.retainAll(adjacentVerticesOf(fixedVertex));
 

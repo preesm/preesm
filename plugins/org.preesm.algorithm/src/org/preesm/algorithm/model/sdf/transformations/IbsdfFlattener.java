@@ -85,10 +85,10 @@ public class IbsdfFlattener {
   }
 
   public SDFGraph getFlattenedGraph() {
-    return flattenedGraph;
+    return this.flattenedGraph;
   }
 
-  public void setFlattenedGraph(SDFGraph flattenedGraph) {
+  public void setFlattenedGraph(final SDFGraph flattenedGraph) {
     this.flattenedGraph = flattenedGraph;
   }
 
@@ -106,7 +106,7 @@ public class IbsdfFlattener {
   private void addDelaySubstitutes(final SDFGraph subgraph, final long nbRepeat) {
     // Scan the fifos with delays in the subgraph
     final List<SDFEdge> fifoList = subgraph.edgeSet().stream()
-        .filter(e -> e.getDelay() != null && e.getDelay().longValue() != 0).collect(Collectors.toList());
+        .filter(e -> (e.getDelay() != null) && (e.getDelay().longValue() != 0)).collect(Collectors.toList());
     for (final SDFEdge fifo : fifoList) {
       // Get the number of tokens produced and consumed during each
       // subgraph iteration for this fifo
@@ -231,7 +231,7 @@ public class IbsdfFlattener {
         final long nbConsumedTokens;
         try {
           nbConsumedTokens = Math.multiplyExact(consRate, nbRepeatCons);
-        } catch (ArithmeticException e) {
+        } catch (final ArithmeticException e) {
           throw new PreesmException(
               "Number of repetitions of actor " + outEdge.getTarget() + " (x " + nbRepeatCons + ") or number"
                   + "of consumed tokens on edge " + outEdge + " is too big and causes an overflow in the tool.",
@@ -285,7 +285,7 @@ public class IbsdfFlattener {
         final long nbProducedTokens;
         try {
           nbProducedTokens = Math.multiplyExact(prodRate, nbRepeatProd);
-        } catch (ArithmeticException e) {
+        } catch (final ArithmeticException e) {
           throw new PreesmException("Number of repetitions of actor " + inEdge.getSource() + " (x " + nbRepeatProd
               + ") or number of consumed tokens on edge " + inEdge + " is too big and causes an overflow in the tool.",
               e);
@@ -328,10 +328,10 @@ public class IbsdfFlattener {
    */
   public void flattenGraph() {
     // Copy the original graph
-    setFlattenedGraph(originalGraph.copy());
+    setFlattenedGraph(this.originalGraph.copy());
 
     // Flatten depth times one hierarchy level of the graph
-    for (int i = 1; i <= depth; i++) {
+    for (int i = 1; i <= this.depth; i++) {
       // Check the schedulability of the top level graph (this will also
       // set the repetition vector for each actor).
       if (!getFlattenedGraph().isSchedulable()) {
@@ -354,16 +354,16 @@ public class IbsdfFlattener {
     // Make sure the fifos of special actors are in order (according to
     // their indices)
     SpecialActorPortsIndexer.sortIndexedPorts(getFlattenedGraph());
-    flattenedGraph.insertBroadcasts();
+    this.flattenedGraph.insertBroadcasts();
   }
 
-  private void flattenOneLevel(int level) {
+  private void flattenOneLevel(final int level) {
     // Get the list of hierarchical actors
     final List<SDFAbstractVertex> hierActors = new ArrayList<>(getFlattenedGraph().vertexSet().stream()
         .filter(it -> (it.getGraphDescription() instanceof SDFGraph)).collect(Collectors.toList()));
 
     // Process actors to flatten one by one
-    for (SDFAbstractVertex hierActor : hierActors) {
+    for (final SDFAbstractVertex hierActor : hierActors) {
       // Copy the orginal subgraph
       final AbstractGraph<?, ?> graphDescription = hierActor.getGraphDescription();
       final SDFGraph subgraph = ((SDFGraph) graphDescription).copy();
@@ -376,13 +376,13 @@ public class IbsdfFlattener {
 
       final long nbRepeat = hierActor.getNbRepeatAsLong();
       final boolean containsNoDelay = subgraph.edgeSet().stream()
-          .allMatch(it -> it.getDelay() == null || it.getDelay().longValue() == 0);
+          .allMatch(it -> (it.getDelay() == null) || (it.getDelay().longValue() == 0));
 
       // Prepare the subgraph for instantiation:
       // - Add roundbuffers and broadcast actors next to interfaces
       // - fork/join delays if needed
-      addInterfaceSubstitutes(subgraph);
-      if (!containsNoDelay && nbRepeat > 1) {
+      IbsdfFlattener.addInterfaceSubstitutes(subgraph);
+      if (!containsNoDelay && (nbRepeat > 1)) {
         addDelaySubstitutes(subgraph, nbRepeat);
       }
 
@@ -415,7 +415,7 @@ public class IbsdfFlattener {
    * @param subgraph
    *          The subgraph whose expressions are substituted.
    */
-  private void substituteSubgraphParameters(SDFAbstractVertex hierActor, SDFGraph subgraph) {
+  private void substituteSubgraphParameters(final SDFAbstractVertex hierActor, final SDFGraph subgraph) {
 
     if (subgraph.getParameters() != null) {
       // Get list of subgraph parameters, except those masked with subgraph variables
@@ -441,7 +441,7 @@ public class IbsdfFlattener {
    * @param variable
    *          The variable that is in conflict with a variable from the parent graph.
    */
-  private void renameSubgraphVariable(SDFGraph subgraph, Variable variable) {
+  private void renameSubgraphVariable(final SDFGraph subgraph, final Variable variable) {
     // Create the new variable name
     final String oldName = variable.getName();
     String newName = subgraph.getName() + "_" + variable.getName();
@@ -477,7 +477,7 @@ public class IbsdfFlattener {
    * @param replacementString
    *          The replacement.
    */
-  private void replaceInExpressions(SDFGraph subgraph, String oldName, String replacementString) {
+  private void replaceInExpressions(final SDFGraph subgraph, final String oldName, final String replacementString) {
     // Regular expression used when replacing oldName in expressions
     // Ensure that only the exact variable name will be replaced
     // but not variables "containing" the variable names
@@ -490,7 +490,7 @@ public class IbsdfFlattener {
     }
 
     // In fifo prod/cons rates (expressions)
-    for (SDFEdge fifo : subgraph.edgeSet()) {
+    for (final SDFEdge fifo : subgraph.edgeSet()) {
       if (fifo.getCons() instanceof ExpressionEdgePropertyType) {
         ((ExpressionEdgePropertyType) fifo.getCons()).getValue().setValue(((ExpressionEdgePropertyType) fifo.getCons())
             .getValue().getValue().replaceAll(oldNameRegex, replacementString));
@@ -503,8 +503,8 @@ public class IbsdfFlattener {
     }
 
     // In instance arguments
-    for (SDFAbstractVertex actor : subgraph.vertexSet()) {
-      for (Argument argument : actor.getArguments().values()) {
+    for (final SDFAbstractVertex actor : subgraph.vertexSet()) {
+      for (final Argument argument : actor.getArguments().values()) {
         if (argument.getValue().contains(oldName)) {
           argument.setValue(argument.getValue().replaceAll(oldNameRegex, replacementString));
         }
@@ -524,7 +524,7 @@ public class IbsdfFlattener {
    * @param subgraph
    *          the {@link SDFGraph subgraph} associated to the hierarchical actor.
    */
-  private void instantiateSubgraph(SDFAbstractVertex hierActor, SDFGraph subgraph) {
+  private void instantiateSubgraph(final SDFAbstractVertex hierActor, final SDFGraph subgraph) {
     // Rename actors of the subgraph
     renameSubgraphActors(hierActor, subgraph);
 
@@ -534,19 +534,20 @@ public class IbsdfFlattener {
     // Clone all subgraph actors in the flattened graph (except interfaces)
     final Map<SDFAbstractVertex, SDFAbstractVertex> clones = new LinkedHashMap<>();
     subgraph.vertexSet().stream().filter(it -> !(it instanceof SDFInterfaceVertex)).forEach(it -> {
-      SDFAbstractVertex clone = it.copy();
+      final SDFAbstractVertex clone = it.copy();
       getFlattenedGraph().addVertex(clone);
       clones.put(it, clone);
     });
 
     // Now, copy all fifos, except those connected to interfaces
     final Map<SDFEdge, SDFEdge> fifoClones = new LinkedHashMap<>();
-    for (SDFEdge fifo : subgraph.edgeSet().stream()
-        .filter(it -> !(it.getSource() instanceof SDFInterfaceVertex || it.getTarget() instanceof SDFInterfaceVertex))
+    for (final SDFEdge fifo : subgraph.edgeSet().stream()
+        .filter(
+            it -> !((it.getSource() instanceof SDFInterfaceVertex) || (it.getTarget() instanceof SDFInterfaceVertex)))
         .collect(Collectors.toList())) {
-      SDFAbstractVertex src = clones.get(fifo.getSource());
-      SDFAbstractVertex tgt = clones.get(fifo.getTarget());
-      SDFEdge cloneFifo = getFlattenedGraph().addEdge(src, tgt);
+      final SDFAbstractVertex src = clones.get(fifo.getSource());
+      final SDFAbstractVertex tgt = clones.get(fifo.getTarget());
+      final SDFEdge cloneFifo = getFlattenedGraph().addEdge(src, tgt);
       cloneFifo.copyProperties(fifo);
 
       fifoClones.put(fifo, cloneFifo);
@@ -554,16 +555,16 @@ public class IbsdfFlattener {
 
     // Connect FIFO that were connected to ports of the flattened actor
     // and those connected to interfaces in the subgraph
-    for (SDFAbstractVertex iface : subgraph.vertexSet().stream().filter(it -> it instanceof SDFInterfaceVertex)
+    for (final SDFAbstractVertex iface : subgraph.vertexSet().stream().filter(it -> it instanceof SDFInterfaceVertex)
         .collect(Collectors.toList())) {
       // Get the actor port
-      SDFInterfaceVertex port = hierActor.getInterface(iface.getName());
-      SDFEdge externalFifo = hierActor.getAssociatedEdge(port);
+      final SDFInterfaceVertex port = hierActor.getInterface(iface.getName());
+      final SDFEdge externalFifo = hierActor.getAssociatedEdge(port);
 
       // Connect the new FIFO
       final SDFEdge newFifo;
       if (iface instanceof SDFSourceInterfaceVertex) {
-        SDFEdge internalFifo = subgraph.outgoingEdgesOf(iface).iterator().next();
+        final SDFEdge internalFifo = subgraph.outgoingEdgesOf(iface).iterator().next();
         newFifo = getFlattenedGraph().addEdge(externalFifo.getSource(), clones.get(internalFifo.getTarget()));
         newFifo.copyProperties(externalFifo);
         newFifo.setCons(internalFifo.getCons());
@@ -574,7 +575,7 @@ public class IbsdfFlattener {
         newFifo.setTargetPortModifier(internalFifo.getTargetPortModifier());
       } else {
         // iface is instance of SDFSinkInterfaceVertex
-        SDFEdge internalFifo = subgraph.incomingEdgesOf(iface).iterator().next();
+        final SDFEdge internalFifo = subgraph.incomingEdgesOf(iface).iterator().next();
         // if the edge loops on hierActor
         if (externalFifo.getTarget() == hierActor) {
           newFifo = getFlattenedGraph().addEdge(clones.get(internalFifo.getSource()),
@@ -614,8 +615,8 @@ public class IbsdfFlattener {
    * Rename all actors (except interfaces) of the subgraph such that their name is prefixed with the name of the
    * hierarchical actor.
    */
-  private void renameSubgraphActors(SDFAbstractVertex hierActor, SDFGraph subgraph) {
-    for (SDFAbstractVertex actor : subgraph.vertexSet().stream().filter(it -> !(it instanceof SDFInterfaceVertex))
+  private void renameSubgraphActors(final SDFAbstractVertex hierActor, final SDFGraph subgraph) {
+    for (final SDFAbstractVertex actor : subgraph.vertexSet().stream().filter(it -> !(it instanceof SDFInterfaceVertex))
         .collect(Collectors.toList())) {
       actor.setName(hierActor.getName() + "_" + actor.getName());
     }

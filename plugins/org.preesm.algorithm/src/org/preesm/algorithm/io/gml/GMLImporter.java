@@ -86,7 +86,7 @@ public abstract class GMLImporter<G extends AbstractGraph<?, ?>, V extends Abstr
   private static final String PARAMETERS_LITERAL = "parameters";
 
   /** The class key set. */
-  private Map<String, List<GMLKey>> classKeySet;
+  private final Map<String, List<GMLKey>> classKeySet;
 
   /** The vertex factory. */
   protected IModelVertexFactory<V> vertexFactory;
@@ -234,8 +234,8 @@ public abstract class GMLImporter<G extends AbstractGraph<?, ?>, V extends Abstr
     for (int i = 0; i < childList.getLength(); i++) {
       if (childList.item(i).getNodeName().equals("data")) {
         final String key = ((Element) childList.item(i)).getAttribute("key");
-        if ((!(key.equals(ARGUMENTS_LITERAL) || key.equals(PARAMETERS_LITERAL) || key.equals(VARIABLES_LITERAL)))
-            && src.getPublicProperties().contains(key)) {
+        if ((!(key.equals(GMLImporter.ARGUMENTS_LITERAL) || key.equals(GMLImporter.PARAMETERS_LITERAL)
+            || key.equals(GMLImporter.VARIABLES_LITERAL))) && src.getPublicProperties().contains(key)) {
           final String propertyName = ((Element) childList.item(i)).getAttribute("key");
           final PropertyFactory factory = src.getFactoryForProperty(propertyName);
           if (factory != null) {
@@ -323,7 +323,7 @@ public abstract class GMLImporter<G extends AbstractGraph<?, ?>, V extends Abstr
     final NodeList childList = parentElt.getChildNodes();
     for (int i = 0; i < childList.getLength(); i++) {
       if (childList.item(i).getNodeName().equals("data")
-          && ((Element) childList.item(i)).getAttribute("key").equals(ARGUMENTS_LITERAL)) {
+          && ((Element) childList.item(i)).getAttribute("key").equals(GMLImporter.ARGUMENTS_LITERAL)) {
         final NodeList argsList = childList.item(i).getChildNodes();
         for (int j = 0; j < argsList.getLength(); j++) {
           if (argsList.item(j).getNodeName().equals("argument")) {
@@ -349,7 +349,7 @@ public abstract class GMLImporter<G extends AbstractGraph<?, ?>, V extends Abstr
     final NodeList childList = parentElt.getChildNodes();
     for (int i = 0; i < childList.getLength(); i++) {
       if (childList.item(i).getNodeName().equals("data")
-          && ((Element) childList.item(i)).getAttribute("key").equals(PARAMETERS_LITERAL)) {
+          && ((Element) childList.item(i)).getAttribute("key").equals(GMLImporter.PARAMETERS_LITERAL)) {
         final NodeList argsList = childList.item(i).getChildNodes();
         for (int j = 0; j < argsList.getLength(); j++) {
           if (argsList.item(j).getNodeName().equals("parameter")) {
@@ -392,7 +392,7 @@ public abstract class GMLImporter<G extends AbstractGraph<?, ?>, V extends Abstr
     final NodeList childList = parentElt.getChildNodes();
     for (int i = 0; i < childList.getLength(); i++) {
       if (childList.item(i).getNodeName().equals("data")
-          && ((Element) childList.item(i)).getAttribute("key").equals(VARIABLES_LITERAL)) {
+          && ((Element) childList.item(i)).getAttribute("key").equals(GMLImporter.VARIABLES_LITERAL)) {
         final NodeList argsList = childList.item(i).getChildNodes();
         for (int j = 0; j < argsList.getLength(); j++) {
           if (argsList.item(j).getNodeName().equals("variable")) {

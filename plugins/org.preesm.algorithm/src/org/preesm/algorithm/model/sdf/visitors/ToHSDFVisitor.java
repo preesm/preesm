@@ -329,15 +329,16 @@ public class ToHSDFVisitor implements IGraphVisitor<SDFGraph, SDFAbstractVertex,
         }
 
         // Associate the interfaces to the new edge
-        if (targetCopies.get((int) targetIndex) instanceof SDFVertex
-            && ((SDFVertex) targetCopies.get((int) targetIndex))
-                .getSource(edge.getTargetInterface().getName()) != null) {
+        if ((targetCopies.get((int) targetIndex) instanceof SDFVertex)
+            && (((SDFVertex) targetCopies.get((int) targetIndex))
+                .getSource(edge.getTargetInterface().getName()) != null)) {
           inputVertex = ((SDFVertex) targetCopies.get((int) targetIndex))
               .getSource(edge.getTargetInterface().getName());
           ((SDFVertex) targetCopies.get((int) targetIndex)).setInterfaceVertexExternalLink(newEdge, inputVertex);
         }
-        if (sourceCopies.get((int) sourceIndex) instanceof SDFVertex
-            && ((SDFVertex) sourceCopies.get((int) sourceIndex)).getSink(edge.getSourceInterface().getName()) != null) {
+        if ((sourceCopies.get((int) sourceIndex) instanceof SDFVertex)
+            && (((SDFVertex) sourceCopies.get((int) sourceIndex))
+                .getSink(edge.getSourceInterface().getName()) != null)) {
           outputVertex = ((SDFVertex) sourceCopies.get((int) sourceIndex)).getSink(edge.getSourceInterface().getName());
           ((SDFVertex) sourceCopies.get((int) sourceIndex)).setInterfaceVertexExternalLink(newEdge, outputVertex);
         }
@@ -563,7 +564,6 @@ public class ToHSDFVisitor implements IGraphVisitor<SDFGraph, SDFAbstractVertex,
     }
 
     if (!isHSDF) {
-      this.hasChanged = true;
       this.outputGraph.clean();
 
       final ArrayList<SDFAbstractVertex> vertices = new ArrayList<>(sdf.vertexSet());
@@ -576,9 +576,5 @@ public class ToHSDFVisitor implements IGraphVisitor<SDFGraph, SDFAbstractVertex,
     }
 
   }
-
-  /** The has changed. */
-  // Indicates whether the visited SDFGraph has been changed or not
-  private boolean hasChanged = false;
 
 }

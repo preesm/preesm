@@ -137,7 +137,7 @@ public interface GraphStructureHelper {
     edge.setProd(new LongEdgePropertyType(prodRate));
     edge.setCons(new LongEdgePropertyType(consRate));
     edge.setDelay(new LongEdgePropertyType(delay));
-    edge.setPropertyValue(BASE_EDGE_PROPERTY, baseEdge);
+    edge.setPropertyValue(GraphStructureHelper.BASE_EDGE_PROPERTY, baseEdge);
 
     return edge;
   }
@@ -178,16 +178,16 @@ public interface GraphStructureHelper {
     actor.setNbRepeat(repititionFactor);
 
     // set the execution duration
-    actor.setPropertyValue(DURATION_PROPERTY, latency);
+    actor.setPropertyValue(GraphStructureHelper.DURATION_PROPERTY, latency);
 
     // set the normalized consumption/production rate
-    actor.setPropertyValue(NORMALIZED_RATE_PROPERTY, normalizedPortsRate);
+    actor.setPropertyValue(GraphStructureHelper.NORMALIZED_RATE_PROPERTY, normalizedPortsRate);
 
     // set the base actor
     if (baseActor != null) {
-      actor.setPropertyValue(BASE_ACTOR_PROPERTY, baseActor);
+      actor.setPropertyValue(GraphStructureHelper.BASE_ACTOR_PROPERTY, baseActor);
     } else {
-      actor.setPropertyValue(BASE_ACTOR_PROPERTY, actor);
+      actor.setPropertyValue(GraphStructureHelper.BASE_ACTOR_PROPERTY, actor);
     }
 
     graph.addVertex(actor);
@@ -228,16 +228,16 @@ public interface GraphStructureHelper {
     in.setNbRepeat(rv);
 
     // set the execution duration
-    in.setPropertyValue(DURATION_PROPERTY, l);
+    in.setPropertyValue(GraphStructureHelper.DURATION_PROPERTY, l);
 
     // set the normalized consumption/production rate
-    in.setPropertyValue(NORMALIZED_RATE_PROPERTY, z);
+    in.setPropertyValue(GraphStructureHelper.NORMALIZED_RATE_PROPERTY, z);
 
     // set the base actor
     if (base != null) {
-      in.setPropertyValue(BASE_ACTOR_PROPERTY, base);
+      in.setPropertyValue(GraphStructureHelper.BASE_ACTOR_PROPERTY, base);
     } else {
-      in.setPropertyValue(BASE_ACTOR_PROPERTY, in);
+      in.setPropertyValue(GraphStructureHelper.BASE_ACTOR_PROPERTY, in);
     }
 
     graph.addVertex(in);
@@ -279,16 +279,16 @@ public interface GraphStructureHelper {
     out.setNbRepeat(rv);
 
     // set the execution duration
-    out.setPropertyValue(DURATION_PROPERTY, l);
+    out.setPropertyValue(GraphStructureHelper.DURATION_PROPERTY, l);
 
     // set the normalized consumption/production rate
-    out.setPropertyValue(NORMALIZED_RATE_PROPERTY, z);
+    out.setPropertyValue(GraphStructureHelper.NORMALIZED_RATE_PROPERTY, z);
 
     // set the base actor
     if (base != null) {
-      out.setPropertyValue(BASE_ACTOR_PROPERTY, base);
+      out.setPropertyValue(GraphStructureHelper.BASE_ACTOR_PROPERTY, base);
     } else {
-      out.setPropertyValue(BASE_ACTOR_PROPERTY, out);
+      out.setPropertyValue(GraphStructureHelper.BASE_ACTOR_PROPERTY, out);
     }
 
     graph.addVertex(out);
@@ -311,7 +311,7 @@ public interface GraphStructureHelper {
     final SDFSourceInterfaceVertex port = new SDFSourceInterfaceVertex();
     port.setId(portName);
     port.setName(portName);
-    port.setPropertyValue(PORT_RATE_PROPERTY, portRate);
+    port.setPropertyValue(GraphStructureHelper.PORT_RATE_PROPERTY, portRate);
     actor.addInterface(port);
     return port;
   }
@@ -332,7 +332,7 @@ public interface GraphStructureHelper {
     final SDFSinkInterfaceVertex port = new SDFSinkInterfaceVertex();
     port.setId(portName);
     port.setName(portName);
-    port.setPropertyValue(PORT_RATE_PROPERTY, portRate);
+    port.setPropertyValue(GraphStructureHelper.PORT_RATE_PROPERTY, portRate);
     actor.addInterface(port);
     return port;
   }
@@ -405,8 +405,8 @@ public interface GraphStructureHelper {
     // Step 1: add the replacement subgraph into the parent graph
     for (final SDFAbstractVertex a : replacementGraph.vertexSet()) {
       GraphStructureHelper.addActor(parentGraph, h.getName() + "_" + a.getName(), (SDFGraph) a.getGraphDescription(),
-          1L, (Double) a.getPropertyBean().getValue(DURATION_PROPERTY), 0,
-          (SDFAbstractVertex) a.getPropertyBean().getValue(BASE_ACTOR_PROPERTY));
+          1L, (Double) a.getPropertyBean().getValue(GraphStructureHelper.DURATION_PROPERTY), 0,
+          (SDFAbstractVertex) a.getPropertyBean().getValue(GraphStructureHelper.BASE_ACTOR_PROPERTY));
     }
     for (final SDFEdge e : replacementGraph.edgeSet()) {
       final String cloneEdgeSrcName = h.getName() + "_" + e.getSource().getName();
@@ -416,8 +416,9 @@ public interface GraphStructureHelper {
           (SDFEdge) e.getPropertyBean().getValue("baseedge"));
 
       // copy properties
-      if (e.getPropertyBean().getValue(WEIGHT_LP_PROPERTY) != null) {
-        edgeClone.setPropertyValue(WEIGHT_LP_PROPERTY, (double) e.getPropertyBean().getValue(WEIGHT_LP_PROPERTY));
+      if (e.getPropertyBean().getValue(GraphStructureHelper.WEIGHT_LP_PROPERTY) != null) {
+        edgeClone.setPropertyValue(GraphStructureHelper.WEIGHT_LP_PROPERTY,
+            (double) e.getPropertyBean().getValue(GraphStructureHelper.WEIGHT_LP_PROPERTY));
       }
     }
 
@@ -428,8 +429,8 @@ public interface GraphStructureHelper {
       edges.add(h.getAssociatedEdge(input));
     }
     for (final SDFEdge edge : edges) {
-      final String hierarchicalPortName = ((SDFEdge) edge.getPropertyBean().getValue(BASE_EDGE_PROPERTY))
-          .getTargetInterface().getName();
+      final String hierarchicalPortName = ((SDFEdge) edge.getPropertyBean()
+          .getValue(GraphStructureHelper.BASE_EDGE_PROPERTY)).getTargetInterface().getName();
       final String subgraphInterfaceName = h.getName() + "_" + hierarchicalPortName + "_1";
       GraphStructureHelper.replaceEdgeTargetActor(parentGraph, edge, subgraphInterfaceName, null);
     }
@@ -440,8 +441,8 @@ public interface GraphStructureHelper {
       edges.add(h.getAssociatedEdge(output));
     }
     for (final SDFEdge edge : edges) {
-      final String hierarchicalPortName = ((SDFEdge) edge.getPropertyBean().getValue(BASE_EDGE_PROPERTY))
-          .getSourceInterface().getName();
+      final String hierarchicalPortName = ((SDFEdge) edge.getPropertyBean()
+          .getValue(GraphStructureHelper.BASE_EDGE_PROPERTY)).getSourceInterface().getName();
       final String subgraphInterfaceName = h.getName() + "_" + hierarchicalPortName + "_1";
       GraphStructureHelper.replaceEdgeSourceActor(parentGraph, edge, subgraphInterfaceName, null);
     }
@@ -468,7 +469,7 @@ public interface GraphStructureHelper {
     final SDFEdge nweEdge = GraphStructureHelper.addEdge(graph, newSourceActor, newSourcePort,
         edge.getTarget().getName(), edge.getTargetInterface().getName(), edge.getProd().longValue(),
         edge.getCons().longValue(), edge.getDelay().longValue(),
-        (SDFEdge) edge.getPropertyBean().getValue(BASE_EDGE_PROPERTY));
+        (SDFEdge) edge.getPropertyBean().getValue(GraphStructureHelper.BASE_EDGE_PROPERTY));
     // remove the old edge
     graph.removeEdge(edge);
     return nweEdge;
@@ -492,7 +493,7 @@ public interface GraphStructureHelper {
     final SDFEdge nweEdge = GraphStructureHelper.addEdge(graph, edge.getSource().getName(),
         edge.getSourceInterface().getName(), newTargetActor, newTargetPort, edge.getProd().longValue(),
         edge.getCons().longValue(), edge.getDelay().longValue(),
-        (SDFEdge) edge.getPropertyBean().getValue(BASE_EDGE_PROPERTY));
+        (SDFEdge) edge.getPropertyBean().getValue(GraphStructureHelper.BASE_EDGE_PROPERTY));
     // remove the old edge
     graph.removeEdge(edge);
     return nweEdge;
@@ -681,7 +682,7 @@ public interface GraphStructureHelper {
       if (scenario != null) {
         actorDuration = scenario.getTimingManager().getTimingOrDefault(currentSource.getId(), "x86").getTime();
       } else {
-        actorDuration = (double) currentSource.getPropertyBean().getValue(DURATION_PROPERTY);
+        actorDuration = (double) currentSource.getPropertyBean().getValue(GraphStructureHelper.DURATION_PROPERTY);
       }
 
       // update the distances
@@ -689,8 +690,8 @@ public interface GraphStructureHelper {
         double edgeWeight = actorDuration;
         // get the associated output edge and its weight if defined
         final SDFEdge outputEdge = currentSource.getAssociatedEdge(output);
-        if (outputEdge.getPropertyBean().getValue(WEIGHT_LP_PROPERTY) != null) {
-          edgeWeight = (double) outputEdge.getPropertyBean().getValue(WEIGHT_LP_PROPERTY);
+        if (outputEdge.getPropertyBean().getValue(GraphStructureHelper.WEIGHT_LP_PROPERTY) != null) {
+          edgeWeight = (double) outputEdge.getPropertyBean().getValue(GraphStructureHelper.WEIGHT_LP_PROPERTY);
         }
 
         // get the target actor of the associated output edge

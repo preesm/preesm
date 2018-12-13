@@ -219,7 +219,7 @@ public abstract class MemoryAllocator {
    * </tr>
    * </table>
    */
-  private Map<DAGEdge, Long> edgeAllocation;
+  private final Map<DAGEdge, Long> edgeAllocation;
 
   /**
    * An allocation is a map of fifo associated to an integer which represents their offset in a monolithic memory.<br>
@@ -239,7 +239,7 @@ public abstract class MemoryAllocator {
    * </tr>
    * </table>
    */
-  private Map<MemoryExclusionVertex, Long> fifoAllocation;
+  private final Map<MemoryExclusionVertex, Long> fifoAllocation;
 
   /**
    * An allocation is a map of actor working memory associated to an integer which represents their offset in a
@@ -260,7 +260,7 @@ public abstract class MemoryAllocator {
    * </tr>
    * </table>
    */
-  private Map<MemoryExclusionVertex, Long> workingMemAllocation;
+  private final Map<MemoryExclusionVertex, Long> workingMemAllocation;
 
   /**
    * An allocation is a map of {@link MemoryExclusionVertex memory objects} associated to an integer which represents

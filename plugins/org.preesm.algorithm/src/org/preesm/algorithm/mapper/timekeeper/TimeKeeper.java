@@ -60,7 +60,7 @@ public class TimeKeeper implements Observer {
   /**
    * Current implementation: the same as in the ABC
    */
-  private MapperDAG implementation;
+  private final MapperDAG implementation;
 
   /** Manager of the vertices ordering. */
   private final OrderManager orderManager;

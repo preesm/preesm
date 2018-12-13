@@ -229,7 +229,7 @@ public class SDFGraph extends AbstractGraph<SDFAbstractVertex, SDFEdge> {
   @Override
   public boolean addVertex(final SDFAbstractVertex vertex) {
     if (super.addVertex(vertex)) {
-      getPropertyBean().setValue(TOPOLOGY_LITERAL, null);
+      getPropertyBean().setValue(SDFGraph.TOPOLOGY_LITERAL, null);
       return true;
     }
     return false;
@@ -284,7 +284,7 @@ public class SDFGraph extends AbstractGraph<SDFAbstractVertex, SDFEdge> {
     SpecialActorPortsIndexer.sortIndexedPorts(newGraph);
 
     newGraph.copyProperties(this);
-    newGraph.getPropertyBean().setValue(TOPOLOGY_LITERAL, null);
+    newGraph.getPropertyBean().setValue(SDFGraph.TOPOLOGY_LITERAL, null);
     newGraph.getPropertyBean().setValue("vrb", null);
     return newGraph;
   }
@@ -563,7 +563,7 @@ public class SDFGraph extends AbstractGraph<SDFAbstractVertex, SDFEdge> {
   public boolean isSchedulable() throws PreesmException {
     boolean schedulable = true;
     for (final SDFAbstractVertex vertex : vertexSet()) {
-      if (!(vertex instanceof SDFInterfaceVertex) && vertex.getGraphDescription() instanceof SDFGraph) {
+      if (!(vertex instanceof SDFInterfaceVertex) && (vertex.getGraphDescription() instanceof SDFGraph)) {
         schedulable &= ((SDFGraph) vertex.getGraphDescription()).isSchedulable();
       }
 
@@ -765,8 +765,7 @@ public class SDFGraph extends AbstractGraph<SDFAbstractVertex, SDFEdge> {
     final List<SDFAbstractVertex> validatedOutInterfaces = new ArrayList<>();
     final Set<SDFEdge> actorOutgoingEdges = outgoingEdgesOf(hierarchicalActor);
     for (final SDFEdge actorOutgoingEdge : actorOutgoingEdges) {
-      final SDFSinkInterfaceVertex subGraphSinkInterface = (SDFSinkInterfaceVertex) actorOutgoingEdge
-          .getSourceInterface();
+      final SDFSinkInterfaceVertex subGraphSinkInterface = actorOutgoingEdge.getSourceInterface();
       final String subGraphSinkInterfaceName = subGraphSinkInterface.getName();
       if (validatedOutInterfaces.contains(subGraphSinkInterface)) {
         throw new PreesmException(subGraphSinkInterfaceName + " is multiply connected, consider using broadcast ");
@@ -799,8 +798,7 @@ public class SDFGraph extends AbstractGraph<SDFAbstractVertex, SDFEdge> {
     final List<SDFAbstractVertex> validatedInInterfaces = new ArrayList<>();
     final Set<SDFEdge> actorIncomingEdges = incomingEdgesOf(hierarchicalActor);
     for (final SDFEdge actorIncomingEdge : actorIncomingEdges) {
-      final SDFSourceInterfaceVertex subGraphSourceInterface = (SDFSourceInterfaceVertex) actorIncomingEdge
-          .getTargetInterface();
+      final SDFSourceInterfaceVertex subGraphSourceInterface = actorIncomingEdge.getTargetInterface();
       final String subGraphSourceInterfaceName = subGraphSourceInterface.getName();
       if (validatedInInterfaces.contains(subGraphSourceInterface)) {
         throw new PreesmException(subGraphSourceInterfaceName + " is multiply connected, consider using broadcast ");
@@ -855,7 +853,7 @@ public class SDFGraph extends AbstractGraph<SDFAbstractVertex, SDFEdge> {
    */
   public void insertBroadcasts() {
     final Set<SDFAbstractVertex> vertexSet = vertexSet();
-    List<SDFAbstractVertex> array = new ArrayList<>(vertexSet);
+    final List<SDFAbstractVertex> array = new ArrayList<>(vertexSet);
     for (final SDFAbstractVertex child : array) {
       if (child.getGraphDescription() != null) {
         // validate child graph

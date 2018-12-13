@@ -165,7 +165,7 @@ public class PrecedenceEdgeAdder {
    *          the v 2
    */
   public void removePrecedenceEdge(final MapperDAGVertex v1, final MapperDAGVertex v2) {
-    if (v1 != null && v2 != null) {
+    if ((v1 != null) && (v2 != null)) {
       final Set<DAGEdge> edges = this.implementation.getAllEdges(v1, v2);
 
       if (edges != null) {

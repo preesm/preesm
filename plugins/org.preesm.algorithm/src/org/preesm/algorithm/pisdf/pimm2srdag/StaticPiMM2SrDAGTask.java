@@ -100,7 +100,7 @@ public class StaticPiMM2SrDAGTask extends AbstractTaskImplementation {
   @Override
   public Map<String, String> getDefaultParameters() {
     final LinkedHashMap<String, String> res = new LinkedHashMap<>();
-    res.put(CONSISTENCY_METHOD, BRVMethod.LCM.getLiteral());
+    res.put(StaticPiMM2SrDAGTask.CONSISTENCY_METHOD, BRVMethod.LCM.getLiteral());
     return res;
   }
 

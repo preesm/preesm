@@ -76,7 +76,7 @@ public interface SDFMath {
         i++;
       }
       return trueVrb;
-    } catch (Exception e) {
+    } catch (final Exception e) {
       throw new PreesmException("Could not compute LongFraction VRB", e);
     }
   }
@@ -158,7 +158,7 @@ public interface SDFMath {
 
     final List<LongFraction> nullSpace = MathFunctionsHelper.computeRationnalNullSpace(interfaceArrayTopology);
     final List<Long> result = MathFunctionsHelper.toNatural(nullSpace);
-    for (Entry<SDFAbstractVertex, Long> e : vrb.entrySet()) {
+    for (final Entry<SDFAbstractVertex, Long> e : vrb.entrySet()) {
       vrb.put(e.getKey(), e.getValue() * result.get(result.size() - 1));
     }
 

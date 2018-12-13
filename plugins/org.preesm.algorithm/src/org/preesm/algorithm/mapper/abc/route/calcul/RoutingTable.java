@@ -60,7 +60,7 @@ public class RoutingTable {
   private class OperatorCouple extends MutablePair<ComponentInstance, ComponentInstance> {
     private static final long serialVersionUID = -451571160460519876L;
 
-    public OperatorCouple(ComponentInstance op1, ComponentInstance op2) {
+    public OperatorCouple(final ComponentInstance op1, final ComponentInstance op2) {
       super(op1, op2);
     }
 
@@ -71,7 +71,7 @@ public class RoutingTable {
      */
     @Override
     public String toString() {
-      return "(" + this.getOp1() + "," + this.getOp2() + ")";
+      return "(" + getOp1() + "," + getOp2() + ")";
     }
 
     /**
@@ -80,7 +80,7 @@ public class RoutingTable {
      * @return the op 1
      */
     public ComponentInstance getOp1() {
-      return this.getLeft();
+      return getLeft();
     }
 
     /**
@@ -89,7 +89,7 @@ public class RoutingTable {
      * @return the op 2
      */
     public ComponentInstance getOp2() {
-      return this.getRight();
+      return getRight();
     }
   }
 
@@ -118,7 +118,7 @@ public class RoutingTable {
      */
     @Override
     public int compare(final Route o1, final Route o2) {
-      long difference = o1.evaluateTransferCost(this.transferSize) - o2.evaluateTransferCost(this.transferSize);
+      final long difference = o1.evaluateTransferCost(this.transferSize) - o2.evaluateTransferCost(this.transferSize);
       return (int) difference;
     }
 

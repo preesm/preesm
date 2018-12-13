@@ -113,7 +113,7 @@ public class ExternalMappingFromDAG extends AbstractMappingFromDAG {
         orderedVertices.add(new ArrayList<>());
       }
     }
-    for (ScheduleEntry e : schedule.getScheduleEntries()) {
+    for (final ScheduleEntry e : schedule.getScheduleEntries()) {
       final Integer coreID = e.getCore();
       final String srActorName = e.getTaskName() + "_" + e.getSingleRateInstanceNumber();
       if (coreID == null) {
@@ -125,11 +125,11 @@ public class ExternalMappingFromDAG extends AbstractMappingFromDAG {
     }
     // 5.2 - insert missing nodes in the lists (for instance implode/explode nodes if schedule has been done on flatten
     // graph)
-    for (DAGVertex vtx : dag.vertexSet()) {
+    for (final DAGVertex vtx : dag.vertexSet()) {
       if (!entries.containsKey(vtx)) {
         DAGVertex associateVtx = vtx;
         do {
-          associateVtx = getAssociateVertex(associateVtx);
+          associateVtx = ExternalMappingFromDAG.getAssociateVertex(associateVtx);
         } while (!entries.containsKey(associateVtx));
         orderedVertices.get(entries.get(associateVtx).getCore().intValue()).add(vtx);
       }
@@ -141,7 +141,7 @@ public class ExternalMappingFromDAG extends AbstractMappingFromDAG {
       final ComponentInstance componentInstance = componentInstances.get(i);
       final List<DAGVertex> list = orderedVertices.get(i);
       list.sort(new ScheduleComparator(entries));
-      for (DAGVertex v : list) {
+      for (final DAGVertex v : list) {
         mapVertex(abc, componentInstance, v);
       }
     }
@@ -149,8 +149,8 @@ public class ExternalMappingFromDAG extends AbstractMappingFromDAG {
     return abc;
   }
 
-  private void mapVertex(final LatencyAbc abc, ComponentInstance componentInstance, final DAGVertex v) {
-    MapperDAGVertex vertex = (MapperDAGVertex) v;
+  private void mapVertex(final LatencyAbc abc, final ComponentInstance componentInstance, final DAGVertex v) {
+    final MapperDAGVertex vertex = (MapperDAGVertex) v;
     if (abc.isMapable(vertex, componentInstance, false)) {
       abc.map(vertex, componentInstance, true, false);
     } else {
@@ -188,8 +188,8 @@ public class ExternalMappingFromDAG extends AbstractMappingFromDAG {
 
   private Map<DAGVertex, ScheduleEntry> initEntryMap(final MapperDAG dag, final Schedule schedule) {
     final Map<DAGVertex, ScheduleEntry> entries = new LinkedHashMap<>();
-    for (ScheduleEntry e : schedule.getScheduleEntries()) {
-      String s = e.getTaskName() + "_" + e.getSingleRateInstanceNumber();
+    for (final ScheduleEntry e : schedule.getScheduleEntries()) {
+      final String s = e.getTaskName() + "_" + e.getSingleRateInstanceNumber();
       final DAGVertex vertex = dag.getVertex(s);
       if (vertex == null) {
         final String message = "The schedule entry for single rate actor [" + s + "] "
@@ -270,7 +270,7 @@ public class ExternalMappingFromDAG extends AbstractMappingFromDAG {
 
     private final Map<DAGVertex, ScheduleEntry> entries;
 
-    private ScheduleComparator(Map<DAGVertex, ScheduleEntry> entries) {
+    private ScheduleComparator(final Map<DAGVertex, ScheduleEntry> entries) {
       this.entries = entries;
     }
 
@@ -282,8 +282,8 @@ public class ExternalMappingFromDAG extends AbstractMappingFromDAG {
       final DAGVertex lhs;
       final DAGVertex rhs;
       int modifier = 0;
-      if (!entries.containsKey(o1)) {
-        lhs = getAssociateVertex(o1);
+      if (!this.entries.containsKey(o1)) {
+        lhs = ExternalMappingFromDAG.getAssociateVertex(o1);
         final String kind = o1.getPropertyStringValue(PiIdentifiers.NODE_KIND);
         switch (kind) {
           case DAGJoinVertex.DAG_JOIN_VERTEX:
@@ -297,8 +297,8 @@ public class ExternalMappingFromDAG extends AbstractMappingFromDAG {
       } else {
         lhs = o1;
       }
-      if (!entries.containsKey(o2)) {
-        rhs = getAssociateVertex(o2);
+      if (!this.entries.containsKey(o2)) {
+        rhs = ExternalMappingFromDAG.getAssociateVertex(o2);
         final String kind = o2.getPropertyStringValue(PiIdentifiers.NODE_KIND);
         switch (kind) {
           case DAGJoinVertex.DAG_JOIN_VERTEX:
@@ -315,9 +315,9 @@ public class ExternalMappingFromDAG extends AbstractMappingFromDAG {
       if (rhs != lhs) {
         modifier = 0;
       }
-      final ScheduleEntry scheduleEntry1 = entries.get(lhs);
-      final ScheduleEntry scheduleEntry2 = entries.get(rhs);
-      return scheduleEntry1.getTopologicalStart() - scheduleEntry2.getTopologicalStart() + modifier;
+      final ScheduleEntry scheduleEntry1 = this.entries.get(lhs);
+      final ScheduleEntry scheduleEntry2 = this.entries.get(rhs);
+      return (scheduleEntry1.getTopologicalStart() - scheduleEntry2.getTopologicalStart()) + modifier;
     }
 
   }

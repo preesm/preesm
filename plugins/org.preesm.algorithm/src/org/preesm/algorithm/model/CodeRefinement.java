@@ -51,23 +51,23 @@ public class CodeRefinement implements IRefinement, CloneableProperty<CodeRefine
    */
   public enum Language {
 
-  /** CAL Actor Language. */
-  CAL,
+    /** CAL Actor Language. */
+    CAL,
 
-  /** C Language. */
-  C,
+    /** C Language. */
+    C,
 
-  /** C++ Language. */
-  CPP,
+    /** C++ Language. */
+    CPP,
 
-  /** Java Language. */
-  JAVA,
+    /** Java Language. */
+    JAVA,
 
-  /** Interface Description Language. */
-  IDL,
+    /** Interface Description Language. */
+    IDL,
 
-  /** Text refinement, not a path. */
-  TEXT;
+    /** Text refinement, not a path. */
+    TEXT;
 
     /**
      * Gives a Language corresponding to the given extension.

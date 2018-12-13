@@ -243,7 +243,7 @@ public abstract class LatencyAbc {
    *          the vertex
    * @return the effective component
    */
-  public final ComponentInstance getEffectiveComponent(MapperDAGVertex vertex) {
+  public final ComponentInstance getEffectiveComponent(final MapperDAGVertex vertex) {
     final MapperDAGVertex vertex2 = translateInImplementationVertex(vertex);
     return vertex2.getEffectiveComponent();
   }
@@ -759,7 +759,7 @@ public abstract class LatencyAbc {
   protected IEdgeSched edgeScheduler;
 
   /** Current abc parameters. */
-  private AbcParameters params;
+  private final AbcParameters params;
 
   /**
    * Constructor of the simulator from a "blank" implementation where every vertex has not been mapped yet.

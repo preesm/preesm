@@ -61,62 +61,62 @@ public class Activity {
   private Map<String, Long> quanta = null;
 
   public Activity() {
-    tokens = new HashMap<String, Long>();
-    quanta = new HashMap<String, Long>();
+    this.tokens = new HashMap<>();
+    this.quanta = new HashMap<>();
   }
 
   /**
    *
    */
-  public void addTokenNumber(String archiEltName, long tokenNr) {
-    if (tokens.keySet().contains(archiEltName)) {
-      tokens.put(archiEltName, tokens.get(archiEltName) + tokenNr);
+  public void addTokenNumber(final String archiEltName, final long tokenNr) {
+    if (this.tokens.keySet().contains(archiEltName)) {
+      this.tokens.put(archiEltName, this.tokens.get(archiEltName) + tokenNr);
     } else {
-      tokens.put(archiEltName, tokenNr);
+      this.tokens.put(archiEltName, tokenNr);
     }
   }
 
   /**
    *
    */
-  public void addQuantaNumber(String archiEltName, long quantaNr) {
-    if (quanta.keySet().contains(archiEltName)) {
-      quanta.put(archiEltName, quanta.get(archiEltName) + quantaNr);
+  public void addQuantaNumber(final String archiEltName, final long quantaNr) {
+    if (this.quanta.keySet().contains(archiEltName)) {
+      this.quanta.put(archiEltName, this.quanta.get(archiEltName) + quantaNr);
     } else {
-      quanta.put(archiEltName, quantaNr);
+      this.quanta.put(archiEltName, quantaNr);
     }
   }
 
   @Override
   public String toString() {
-    return "tokens " + tokens + "\n" + " quanta " + quanta;
+    return "tokens " + this.tokens + "\n" + " quanta " + this.quanta;
   }
 
   public void clear() {
-    tokens.clear();
-    quanta.clear();
+    this.tokens.clear();
+    this.quanta.clear();
   }
 
   /**
    * Generating a string in CSV format from token information If human_readable=true, the names of the architecture
    * components are displayed.
    */
-  public String tokensString(boolean human_readable) {
+  public String tokensString(final boolean human_readable) {
     String str = "";
 
-    List<String> sortedNames = new ArrayList<>(tokens.keySet());
+    final List<String> sortedNames = new ArrayList<>(this.tokens.keySet());
     Collections.sort(sortedNames);
 
     if (human_readable) {
-      for (String name : sortedNames) {
+      for (final String name : sortedNames) {
         str += name + ",";
       }
       str = str.substring(0, str.length() - 1);
       str = str + "\n";
     }
 
-    for (String name : sortedNames) {
-      str += tokens.get(name) + ",";
+    for (final String name : sortedNames) {
+      str += this.tokens.get(name) + ",";
     }
     str = str.substring(0, str.length() - 1);
     str = str + "\n";
@@ -128,21 +128,21 @@ public class Activity {
    * Generating a string in CSV format from quanta information If human_readable=true, the names of the architecture
    * components are displayed.
    */
-  public String quantaString(boolean human_readable) {
+  public String quantaString(final boolean human_readable) {
     String str = "";
-    List<String> sortedNames = new ArrayList<>(quanta.keySet());
+    final List<String> sortedNames = new ArrayList<>(this.quanta.keySet());
     Collections.sort(sortedNames);
 
     if (human_readable) {
-      for (String name : sortedNames) {
+      for (final String name : sortedNames) {
         str += name + ",";
       }
       str = str.substring(0, str.length() - 1);
       str = str + "\n";
     }
 
-    for (String name : sortedNames) {
-      str += quanta.get(name) + ",";
+    for (final String name : sortedNames) {
+      str += this.quanta.get(name) + ",";
     }
     str = str.substring(0, str.length() - 1);
     str = str + "\n";

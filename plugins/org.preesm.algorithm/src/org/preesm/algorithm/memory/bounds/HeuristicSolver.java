@@ -36,8 +36,6 @@
  */
 package org.preesm.algorithm.memory.bounds;
 
-import java.util.ArrayList;
-import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.Map;
@@ -134,121 +132,6 @@ public class HeuristicSolver<V extends IWeightedVertex<Long> & Comparable<V>, E 
   }
 
   /**
-   * This SubClass is used to represent a pair of vertices.
-   *
-   * @author kdesnos
-   * @deprecated Not used anymore in the HeuristicSolver algorithm
-   */
-  @Deprecated
-  private class VerticesPair {
-
-    /** The first. */
-    private V first;
-
-    /** The second. */
-    private V second;
-
-    /**
-     * Instantiates a new vertices pair.
-     *
-     * @param first
-     *          the first
-     * @param second
-     *          the second
-     */
-    private VerticesPair(final V first, final V second) {
-      this.first = first;
-      this.second = second;
-    }
-
-    /*
-     * (non-Javadoc)
-     *
-     * @see java.lang.Object#equals(java.lang.Object)
-     */
-    @Override
-    public boolean equals(final Object other) {
-      if (other instanceof HeuristicSolver.VerticesPair) {
-        if (other.getClass() == this.getClass()) {
-          @SuppressWarnings("unchecked")
-          final VerticesPair otherPair = (VerticesPair) other;
-          return ((((this.first == otherPair.first)
-              || ((this.first != null) && (otherPair.first != null) && this.first.equals(otherPair.first)))
-              && ((this.second == otherPair.second)
-                  || ((this.second != null) && (otherPair.second != null) && this.second.equals(otherPair.second))))
-              || (((this.first == otherPair.second)
-                  || ((this.first != null) && (otherPair.second != null) && this.first.equals(otherPair.second)))
-                  && ((this.second == otherPair.first)
-                      || ((this.second != null) && (otherPair.first != null) && this.second.equals(otherPair.first)))));
-        }
-      }
-
-      return false;
-    }
-
-    /**
-     * Gets the first.
-     *
-     * @return the first
-     */
-    public V getFirst() {
-      return this.first;
-    }
-
-    /**
-     * Gets the second.
-     *
-     * @return the second
-     */
-    public V getSecond() {
-      return this.second;
-    }
-
-    /*
-     * (non-Javadoc)
-     *
-     * @see java.lang.Object#hashCode()
-     */
-    @Override
-    public int hashCode() {
-      final int hashFirst = this.first != null ? this.first.hashCode() : 0;
-      final int hashSecond = this.second != null ? this.second.hashCode() : 0;
-
-      return ((hashFirst + hashSecond) * hashSecond) + hashFirst;
-    }
-
-    /**
-     * Sets the first.
-     *
-     * @param first
-     *          the new first
-     */
-    public void setFirst(final V first) {
-      this.first = first;
-    }
-
-    /**
-     * Sets the second.
-     *
-     * @param second
-     *          the new second
-     */
-    public void setSecond(final V second) {
-      this.second = second;
-    }
-
-    /*
-     * (non-Javadoc)
-     *
-     * @see java.lang.Object#toString()
-     */
-    @Override
-    public String toString() {
-      return "(" + this.first + ", " + this.second + ")";
-    }
-  }
-
-  /**
    * Instantiates a new heuristic solver.
    *
    * @param graph
@@ -294,64 +177,6 @@ public class HeuristicSolver<V extends IWeightedVertex<Long> & Comparable<V>, E 
     result.addAll(toAdd);
 
     return result;
-  }
-
-  /**
-   * This method merge two "Similar" nodes A and B of the graph if:<br>
-   * - Node A and node B are linked by an edge.<br>
-   * - Node A and B have ALL their neighbors in common.<br>
-   * The node resulting from the merge keep the name of one of the two nodes, and its weight is equal to the sum of the
-   * merged nodes weight.
-   *
-   * @param vertices
-   *          The list of vertices of the graph where similar vertices are to merge.
-   *
-   *          This method does NOT clear the adjacentverticesBackup lists. They might be corrupted.
-   *
-   * @return A list of merged vertices
-   * @deprecated Not used anymore in the HeuristicSolver algorithm
-   */
-  @Deprecated
-  private Set<VerticesPair> mergeSimilarVertices(final Collection<? extends V> vertices) {
-    final Set<V> mergedVertices = new LinkedHashSet<>();
-    final Set<VerticesPair> mergeList = new LinkedHashSet<>();
-    final ArrayList<V> list = new ArrayList<>(vertices);
-
-    // For each vertex, check all its neighbors
-    for (final V vertex : list) {
-      // If the node was already merged, skip the node
-      if (!mergedVertices.contains(vertex)) {
-        // Retrieve the neighbors
-        final Set<V> neighbors = this.adjacentVerticesOf(vertex);
-        neighbors.add(vertex);
-
-        // For each neighbor, check if all neighbors of the two nodes
-        // are in common
-        for (final V neighbor : neighbors) {
-          // If the neighbor is the vertex itself.. skip it !
-          if (!neighbor.equals(vertex)) {
-            // Retrieves the neighbors of the neighbor
-            final Set<V> nextNeighbors = this.adjacentVerticesOf(neighbor);
-            nextNeighbors.add(neighbor);
-
-            // Check the desired property (cf function comments)
-            if (neighbors.size() == nextNeighbors.size()) {
-              if (neighbors.containsAll(nextNeighbors)) {
-                // Merge
-                vertex.setWeight(vertex.getWeight() + neighbor.getWeight());
-                mergedVertices.add(neighbor);
-                mergeList.add(new VerticesPair(vertex, neighbor));
-              }
-            }
-          }
-        }
-        // Remove from the graph the merged node.
-        // (The node might still exists in the adjacentVerticesBackup
-        // list of the graph)
-        this.graph.removeAllVertices(mergedVertices);
-      }
-    }
-    return mergeList;
   }
 
   /*

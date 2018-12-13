@@ -135,26 +135,6 @@ public class IntervalFinder {
   }
 
   /**
-   * Find earliest big enough interval.
-   *
-   * @param component
-   *          the component
-   * @param minVertex
-   *          the min vertex
-   * @param maxVertex
-   *          the max vertex
-   * @param size
-   *          the size
-   * @return the interval
-   */
-  private Interval findEarliestBigEnoughInterval(final ComponentInstance component, final MapperDAGVertex minVertex,
-      final MapperDAGVertex maxVertex, final long size) {
-
-    return findInterval(component, minVertex, maxVertex, FindType.earliestBigEnoughInterval, size);
-
-  }
-
-  /**
    * Finds the largest free interval in a schedule between a minVertex and a maxVertex.
    *
    * @param component

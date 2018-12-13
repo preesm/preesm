@@ -95,7 +95,7 @@ public class StatGenerator {
       this.abc = abc;
 
       this.abc.updateFinalCosts();
-      this.finalTime = ((LatencyAbc) this.abc).getFinalLatency();
+      this.finalTime = this.abc.getFinalLatency();
     } else {
       this.abc = abc;
       this.abc.updateFinalCosts();
@@ -159,7 +159,7 @@ public class StatGenerator {
    */
   public long getResultTime() {
     if (this.abc instanceof LatencyAbc) {
-      return ((LatencyAbc) this.abc).getFinalLatency();
+      return this.abc.getFinalLatency();
     } else {
       return 0L;
     }
@@ -203,7 +203,7 @@ public class StatGenerator {
   public long getLoad(final ComponentInstance operator) {
 
     if (this.abc instanceof LatencyAbc) {
-      return ((LatencyAbc) this.abc).getLoad(operator);
+      return this.abc.getLoad(operator);
     } else {
       return 0L;
     }

@@ -227,6 +227,7 @@ public class SDFForkVertex extends SDFAbstractSpecialVertex {
    *          the new index for the {@link SDFEdge}
    * @return <code>true</code> if the edge was found and moved at an existing index, <code>false</code> otherwise.
    */
+  @Override
   public boolean setEdgeIndex(final SDFEdge edge, long index) {
     final Map<Long, SDFEdge> connections = getConnections();
     if ((index < connections.size()) && connections.containsValue(edge)) {

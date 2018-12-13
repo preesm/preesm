@@ -41,6 +41,7 @@ import java.util.Map;
 import java.util.Set;
 import org.apache.commons.math3.util.ArithmeticUtils;
 import org.jgrapht.alg.cycle.CycleDetector;
+import org.preesm.algorithm.model.AbstractEdge;
 import org.preesm.algorithm.model.dag.DAGEdge;
 import org.preesm.algorithm.model.dag.DAGVertex;
 import org.preesm.algorithm.model.dag.DirectedAcyclicGraph;
@@ -312,7 +313,7 @@ public class DAGTransformation<T extends DirectedAcyclicGraph>
     newEdge.setWeight(new LongEdgePropertyType(weight / edge.getDataSize().longValue()));
     newEdge.setSourceLabel(edge.getSourceLabel());
     newEdge.setTargetLabel(edge.getTargetLabel());
-    newEdge.setPropertyValue(SDFEdge.BASE, this.outputGraph);
+    newEdge.setPropertyValue(AbstractEdge.BASE, this.outputGraph);
     newEdge.setContainingEdge(dagEdge);
 
     dagEdge.getAggregate().add(newEdge);

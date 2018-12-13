@@ -129,6 +129,7 @@ public class VertexInit implements CloneableProperty<VertexInit> {
    *
    * @return the vertex init
    */
+  @Override
   public VertexInit copy() {
 
     final VertexInit property = new VertexInit();

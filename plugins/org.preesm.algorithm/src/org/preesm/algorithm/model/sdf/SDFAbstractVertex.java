@@ -246,7 +246,7 @@ public abstract class SDFAbstractVertex extends AbstractVertex<SDFGraph> {
    */
   public void removeSink(final SDFEdge edge) {
     // Check if the interface is still used before removing it
-    final SDFSinkInterfaceVertex sinkInterface = (SDFSinkInterfaceVertex) edge.getSourceInterface();
+    final SDFSinkInterfaceVertex sinkInterface = edge.getSourceInterface();
     if (this.getAssociatedEdge(sinkInterface) == null) {
       this.sinks.remove(sinkInterface);
     }
@@ -262,7 +262,7 @@ public abstract class SDFAbstractVertex extends AbstractVertex<SDFGraph> {
    */
   public void removeSource(final SDFEdge edge) {
     // Check if the interface is still used before removing it
-    final SDFSourceInterfaceVertex sourceInterface = (SDFSourceInterfaceVertex) edge.getTargetInterface();
+    final SDFSourceInterfaceVertex sourceInterface = edge.getTargetInterface();
     if (this.getAssociatedEdge(sourceInterface) == null) {
       this.sources.remove(sourceInterface);
     }

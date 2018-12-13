@@ -78,7 +78,7 @@ public class HSDFTransformation extends AbstractTaskImplementation {
     final SDFGraph algorithm = (SDFGraph) inputs.get("SDF");
 
     final Logger logger = PreesmLogger.getLogger();
-    StopWatch timer = new StopWatch();
+    final StopWatch timer = new StopWatch();
     timer.start();
 
     try {
@@ -104,7 +104,7 @@ public class HSDFTransformation extends AbstractTaskImplementation {
             "HSDF with " + hsdf.vertexSet().size() + " vertices and " + hsdf.edgeSet().size() + " edges.");
 
         final String explImplSuppr = parameters.get("ExplodeImplodeSuppr");
-        if (explImplSuppr != null && explImplSuppr.equals("true")) {
+        if ((explImplSuppr != null) && explImplSuppr.equals("true")) {
           logger.log(Level.INFO, "Removing implode/explode ");
           ForkJoinRemover.supprImplodeExplode(hsdf);
         }

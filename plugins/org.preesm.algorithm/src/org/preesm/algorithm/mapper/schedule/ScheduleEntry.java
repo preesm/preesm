@@ -173,18 +173,18 @@ public class ScheduleEntry {
   }
 
   public Integer getTopologicalEnd() {
-    return topologicalEnd;
+    return this.topologicalEnd;
   }
 
-  public void setTopologicalEnd(Integer topologicalEnd) {
+  public void setTopologicalEnd(final Integer topologicalEnd) {
     this.topologicalEnd = topologicalEnd;
   }
 
   public Integer getTopologicalStart() {
-    return topologicalStart;
+    return this.topologicalStart;
   }
 
-  public void setTopologicalStart(Integer topologicalStart) {
+  public void setTopologicalStart(final Integer topologicalStart) {
     this.topologicalStart = topologicalStart;
   }
 

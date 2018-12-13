@@ -99,15 +99,15 @@ public class SpecialActorPortsIndexer {
    *          {@link SDFGraph} whose special actor ports are renamed. Subgraph associated to actors of this graph will
    *          also be processed.
    */
-  public static void addIndexes(SDFGraph sdfGraph) {
+  public static void addIndexes(final SDFGraph sdfGraph) {
     // Initialize the list of processed graph with the given one.
     final List<SDFGraph> processedGraphs = new ArrayList<>();
     processedGraphs.add(sdfGraph);
 
     for (int i = 0; i < processedGraphs.size(); i++) {
-      SDFGraph graph = processedGraphs.get(i);
+      final SDFGraph graph = processedGraphs.get(i);
 
-      for (SDFAbstractVertex actor : graph.vertexSet()) {
+      for (final SDFAbstractVertex actor : graph.vertexSet()) {
         final AbstractGraph<?, ?> actorGraphDesc = actor.getGraphDescription();
         // If the actor is hierarchical, add its subgraph to the list of graphs to process
         if (actorGraphDesc != null) {
@@ -118,7 +118,7 @@ public class SpecialActorPortsIndexer {
         // In such a case, index names are assumed to be valid and will
         // be used to sort the ports of the actor.
         // This should be documented somewhere (in a tutorial)
-        final boolean alreadyIndexed = checkIndexes(actor);
+        final boolean alreadyIndexed = SpecialActorPortsIndexer.checkIndexes(actor);
 
         // Add an index to the ports only if they are not already present
         if (!alreadyIndexed) {
@@ -145,9 +145,9 @@ public class SpecialActorPortsIndexer {
           long indexX = 0L;
           long indexY = 0L;
 
-          for (IInterface iface : actor.getInterfaces()) {
-            for (SDFEdge fifo : fifos) {
-              if (fifo.getSourceInterface() == iface || fifo.getTargetInterface() == iface) {
+          for (final IInterface iface : actor.getInterfaces()) {
+            for (final SDFEdge fifo : fifos) {
+              if ((fifo.getSourceInterface() == iface) || (fifo.getTargetInterface() == iface)) {
                 final String indexString = ((modulo > 0) ? indexY + "_" : "") + indexX;
                 if (isSource) {
                   fifo.getSourceInterface().setName(fifo.getSourceInterface().getName() + "_" + indexString);
@@ -169,7 +169,7 @@ public class SpecialActorPortsIndexer {
    * Calls the checkIndexes(SDFAbstractVertex actor) method for all special actors of this graph and all actors of its
    * subgraphs
    */
-  public static boolean checkIndexes(SDFGraph sdfGraph) {
+  public static boolean checkIndexes(final SDFGraph sdfGraph) {
     // Initialize the list of processed graph with the given one.
     final List<SDFGraph> processedGraphs = new ArrayList<>();
     processedGraphs.add(sdfGraph);
@@ -177,7 +177,7 @@ public class SpecialActorPortsIndexer {
     for (int i = 0; i < processedGraphs.size(); i++) {
       final SDFGraph graph = processedGraphs.get(i);
 
-      for (SDFAbstractVertex actor : graph.vertexSet()) {
+      for (final SDFAbstractVertex actor : graph.vertexSet()) {
         final AbstractGraph<?, ?> actorGraphDesc = actor.getGraphDescription();
         // If the actor is hierarchical, add its subgraph to the list of graphs to process
         if (actorGraphDesc != null) {
@@ -185,7 +185,7 @@ public class SpecialActorPortsIndexer {
         }
 
         // Check only special actors
-        if (actor instanceof SDFAbstractSpecialVertex && !checkIndexes(actor)) {
+        if ((actor instanceof SDFAbstractSpecialVertex) && !SpecialActorPortsIndexer.checkIndexes(actor)) {
           return false;
         }
 
@@ -200,7 +200,7 @@ public class SpecialActorPortsIndexer {
    * @return <code>true</code> if the actor is a special actor and its ports are already indexed, <code>false</code>
    *         otherwise.
    */
-  private static boolean checkIndexes(SDFAbstractVertex actor) {
+  private static boolean checkIndexes(final SDFAbstractVertex actor) {
     boolean isSource = true;
 
     final List<SDFEdge> fifos;
@@ -217,7 +217,7 @@ public class SpecialActorPortsIndexer {
     } else {
       fifos = new ArrayList<>();
     }
-    return checkIndexes(fifos, isSource);
+    return SpecialActorPortsIndexer.checkIndexes(fifos, isSource);
   }
 
   /**
@@ -229,17 +229,17 @@ public class SpecialActorPortsIndexer {
    * @return <code>true</code> if the list of SDFEdge is not empty and if its ports are already indexed,
    *         <code>false</code> otherwise.
    */
-  private static boolean checkIndexes(List<SDFEdge> fifos, boolean valIsSource) {
+  private static boolean checkIndexes(final List<SDFEdge> fifos, final boolean valIsSource) {
     return fifos.stream().allMatch(it -> {
       final String name = (valIsSource) ? it.getSourceInterface().getName() : it.getTargetInterface().getName();
-      return name.matches(INDEX_REGEX);
+      return name.matches(SpecialActorPortsIndexer.INDEX_REGEX);
     }) && !fifos.isEmpty();
   }
 
   /**
    * Sort all indexed ports of the special actors of the graph.
    */
-  public static void sortIndexedPorts(SDFGraph sdfGraph) {
+  public static void sortIndexedPorts(final SDFGraph sdfGraph) {
 
     // Initialize the list of processed graph with the given one.
     final List<SDFGraph> processedGraphs = new ArrayList<>();
@@ -248,14 +248,14 @@ public class SpecialActorPortsIndexer {
     for (int i = 0; i < processedGraphs.size(); i++) {
       final SDFGraph graph = processedGraphs.get(i);
 
-      for (SDFAbstractVertex actor : graph.vertexSet()) {
+      for (final SDFAbstractVertex actor : graph.vertexSet()) {
         final AbstractGraph<?, ?> actorGraphDesc = actor.getGraphDescription();
         // If the actor is hierarchical, add its subgraph to the list of graphs to process
         if (actorGraphDesc != null) {
           processedGraphs.add((SDFGraph) actorGraphDesc);
         }
 
-        final boolean alreadyIndexed = checkIndexes(actor);
+        final boolean alreadyIndexed = SpecialActorPortsIndexer.checkIndexes(actor);
 
         // If the actor is special, and its ports are indexed
         if (alreadyIndexed) {
@@ -279,13 +279,13 @@ public class SpecialActorPortsIndexer {
 
           final boolean valIsSource = isSource;
           // Sort the FIFOs according to their indexes
-          sortFifoList(fifos, valIsSource);
+          SpecialActorPortsIndexer.sortFifoList(fifos, valIsSource);
 
           // Apply this new order to the edges
           long order = 0;
-          for (IInterface iface : actor.getInterfaces()) {
-            for (SDFEdge fifo : fifos) {
-              if (fifo.getSourceInterface() == iface || fifo.getTargetInterface() == iface) {
+          for (final IInterface iface : actor.getInterfaces()) {
+            for (final SDFEdge fifo : fifos) {
+              if ((fifo.getSourceInterface() == iface) || (fifo.getTargetInterface() == iface)) {
                 // Switch and implicit cast for each type
                 if (actor instanceof SDFAbstractSpecialVertex) {
                   ((SDFAbstractSpecialVertex) actor).setEdgeIndex(fifo, order);
@@ -304,9 +304,9 @@ public class SpecialActorPortsIndexer {
    * Sort a {@link List} of {@link SDFEdge} according to their port index. The source or target ports will be considered
    * depending on the valIsSource boolean.
    */
-  public static void sortFifoList(List<SDFEdge> fifos, boolean valIsSource) {
+  public static void sortFifoList(final List<SDFEdge> fifos, final boolean valIsSource) {
     // Check that all fifos have an index
-    if (checkIndexes(fifos, valIsSource)) {
+    if (SpecialActorPortsIndexer.checkIndexes(fifos, valIsSource)) {
       // If indexes are valid, do the sort
       fifos.sort((fifo0, fifo1) -> {
         // Get the port names
@@ -316,17 +316,21 @@ public class SpecialActorPortsIndexer {
             : fifo1.getTargetInterface().getName();
 
         // Compile and apply the pattern
-        final Pattern pattern = Pattern.compile(INDEX_REGEX);
+        final Pattern pattern = Pattern.compile(SpecialActorPortsIndexer.INDEX_REGEX);
         final Matcher m0 = pattern.matcher(p0Name);
         final Matcher m1 = pattern.matcher(p1Name);
         m0.find();
         m1.find();
 
         // Retrieve the indexes
-        final long yy0 = (m0.group(GROUP_YY) != null) ? Long.parseLong(m0.group(GROUP_YY)) : 0L;
-        final long yy1 = (m1.group(GROUP_YY) != null) ? Long.parseLong(m1.group(GROUP_YY)) : 0L;
-        final long xx0 = Long.parseLong(m0.group(GROUP_XX));
-        final long xx1 = Long.parseLong(m1.group(GROUP_XX));
+        final long yy0 = (m0.group(SpecialActorPortsIndexer.GROUP_YY) != null)
+            ? Long.parseLong(m0.group(SpecialActorPortsIndexer.GROUP_YY))
+            : 0L;
+        final long yy1 = (m1.group(SpecialActorPortsIndexer.GROUP_YY) != null)
+            ? Long.parseLong(m1.group(SpecialActorPortsIndexer.GROUP_YY))
+            : 0L;
+        final long xx0 = Long.parseLong(m0.group(SpecialActorPortsIndexer.GROUP_XX));
+        final long xx1 = Long.parseLong(m1.group(SpecialActorPortsIndexer.GROUP_XX));
 
         // Sort according to yy indexes if they are different,
         // and according to xx indexes otherwise

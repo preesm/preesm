@@ -97,17 +97,17 @@ public abstract class AbstractGraph<V extends AbstractVertex, E extends Abstract
   protected static final List<String> PUBLIC_PROPERTIES = new ArrayList<>();
 
   static {
-    PUBLIC_PROPERTIES.add(AbstractGraph.NAME);
-    PUBLIC_PROPERTIES.add(AbstractGraph.PARAMETERS);
-    PUBLIC_PROPERTIES.add(AbstractGraph.VARIABLES);
-    PUBLIC_PROPERTIES.add(AbstractGraph.MODEL);
+    AbstractGraph.PUBLIC_PROPERTIES.add(AbstractGraph.NAME);
+    AbstractGraph.PUBLIC_PROPERTIES.add(AbstractGraph.PARAMETERS);
+    AbstractGraph.PUBLIC_PROPERTIES.add(AbstractGraph.VARIABLES);
+    AbstractGraph.PUBLIC_PROPERTIES.add(AbstractGraph.MODEL);
   }
 
   /** The properties. */
-  private PropertyBean properties;
+  private final PropertyBean properties;
 
   /** The observers. */
-  private ArrayList<IModelObserver> observers;
+  private final ArrayList<IModelObserver> observers;
 
   /** The has changed. */
   private boolean hasChanged;
@@ -237,36 +237,6 @@ public abstract class AbstractGraph<V extends AbstractVertex, E extends Abstract
    */
   public ArgumentFactory getArgumentFactory(final V v) {
     return new ArgumentFactory();
-  }
-
-  /**
-   * Gives the path of a given vertex.
-   *
-   * @param vertex
-   *          The vertex
-   * @param currentPath
-   *          the current path
-   * @return The vertex path in the graph hierarchy
-   */
-  private String getHierarchicalPath(final V vertex, final String currentPath) {
-
-    for (final Object v : vertexSet()) {
-      final V castV = (V) v;
-      String newPath = currentPath + castV.getName();
-
-      if (castV == vertex) {
-        return newPath;
-      }
-      newPath += "/";
-      if (vertex.getGraphDescription() != null) {
-        newPath = vertex.getGraphDescription().getHierarchicalPath(vertex, newPath);
-        if (newPath != null) {
-          return newPath;
-        }
-      }
-    }
-
-    return null;
   }
 
   /**

@@ -58,7 +58,7 @@ public class SingleRateChecker implements IGraphVisitor<SDFGraph, SDFAbstractVer
   private boolean isSingleRate;
 
   public SingleRateChecker() {
-    isSingleRate = true;
+    this.isSingleRate = true;
   }
 
   public final boolean isSingleRate() {

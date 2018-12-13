@@ -87,7 +87,7 @@ public abstract class AbstractVertex<G> extends Observable
           AbstractVertex.REFINEMENT_LITERAL, AbstractVertex.NAME_LITERAL, AbstractVertex.KIND_LITERAL));
 
   /** The interfaces. */
-  private List<IInterface> interfaces;
+  private final List<IInterface> interfaces;
 
   /**
    * Creates a new Instance of Abstract vertex.
@@ -387,7 +387,7 @@ public abstract class AbstractVertex<G> extends Observable
    * @param e
    *          the e
    */
-  public void connectionAdded(AbstractEdge<?, ?> e) {
+  public void connectionAdded(final AbstractEdge<?, ?> e) {
     // nothing by default
   }
 
@@ -397,7 +397,7 @@ public abstract class AbstractVertex<G> extends Observable
    * @param e
    *          the e
    */
-  public void connectionRemoved(AbstractEdge<?, ?> e) {
+  public void connectionRemoved(final AbstractEdge<?, ?> e) {
     // nothing by default
   }
 

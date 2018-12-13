@@ -68,17 +68,17 @@ public class Sdf3XmlParser {
   /**
    * This {@link Map} associates each data type of the graph {@link SDFEdge} to their size.
    */
-  private Map<String, Integer> dataTypes = new LinkedHashMap<>();
+  private final Map<String, Integer> dataTypes = new LinkedHashMap<>();
 
   /**
    * This {@link Map} associates the name of an edge from the SDF3 file to its corresponding {@link SDFEdge}.
    */
-  private Map<String, SDFEdge> edges = new LinkedHashMap<>();
+  private final Map<String, SDFEdge> edges = new LinkedHashMap<>();
 
   /**
    * This {@link Map} associates the actors of the parsed graph to their execution time.
    */
-  private Map<SDFAbstractVertex, Integer> actorExecTimes = new LinkedHashMap<>();
+  private final Map<SDFAbstractVertex, Integer> actorExecTimes = new LinkedHashMap<>();
 
   /**
    * Find the unique {@link Element} with the specified name in the children of the given {@link Element}.

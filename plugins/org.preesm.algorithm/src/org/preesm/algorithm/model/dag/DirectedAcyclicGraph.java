@@ -78,7 +78,7 @@ public class DirectedAcyclicGraph extends AbstractGraph<DAGVertex, DAGEdge> {
   }
 
   @Override
-  public Set<DAGEdge> getAllEdges(DAGVertex sourceVertex, DAGVertex targetVertex) {
+  public Set<DAGEdge> getAllEdges(final DAGVertex sourceVertex, final DAGVertex targetVertex) {
     if (!containsVertex(sourceVertex)) {
       throw new IllegalArgumentException("Graph does not contain source vertex '" + sourceVertex + "'");
     }
@@ -102,7 +102,7 @@ public class DirectedAcyclicGraph extends AbstractGraph<DAGVertex, DAGEdge> {
    *           This Edge creates a cycle
    */
   public DAGEdge addDAGEdge(final DAGVertex source, final DAGVertex target) {
-    Set<DAGEdge> allEdges = getAllEdges(source, target);
+    final Set<DAGEdge> allEdges = getAllEdges(source, target);
     if (!allEdges.isEmpty()) {
       throw new PreesmException("There should be no edge existing.");
     } else {
@@ -110,7 +110,7 @@ public class DirectedAcyclicGraph extends AbstractGraph<DAGVertex, DAGEdge> {
       final CycleDetector<DAGVertex, DAGEdge> detector = new CycleDetector<>(this);
       if (detector.detectCyclesContainingVertex(source)) {
         final Set<DAGVertex> cycle = detector.findCyclesContainingVertex(source);
-        StringBuilder cycleString = new StringBuilder("Added edge forms a cycle: {");
+        final StringBuilder cycleString = new StringBuilder("Added edge forms a cycle: {");
         for (final DAGVertex vertex : cycle) {
           cycleString.append(vertex.getName() + " ");
         }
@@ -120,7 +120,7 @@ public class DirectedAcyclicGraph extends AbstractGraph<DAGVertex, DAGEdge> {
         throw new PreesmException(cycleString.toString());
       } else if (detector.detectCyclesContainingVertex(target)) {
         final Set<DAGVertex> cycle = detector.findCyclesContainingVertex(target);
-        StringBuilder cycleString = new StringBuilder("Added edge forms a cycle: {");
+        final StringBuilder cycleString = new StringBuilder("Added edge forms a cycle: {");
         for (final DAGVertex vertex : cycle) {
           cycleString.append(vertex.getName() + " ");
         }

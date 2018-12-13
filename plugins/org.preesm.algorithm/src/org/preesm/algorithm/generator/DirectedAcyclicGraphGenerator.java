@@ -119,17 +119,17 @@ public class DirectedAcyclicGraphGenerator {
       // Choose a random number of sinks for the new vertex
       int max = Math.min(maxOutDegree, nbVertex - nbVertexgraph - 1);
       int min = Math.min(max, minOutDegree);
-      nbSourcesVertex[nbVertexgraph] = (max - min == 0) ? min : min + new SecureRandom().nextInt(max - min);
+      nbSourcesVertex[nbVertexgraph] = ((max - min) == 0) ? min : min + new SecureRandom().nextInt(max - min);
 
       // Choose a random number of sources for the new vertex
       max = Math.min(maxInDegree, nbVertexgraph);
       min = Math.min(max, minInDegree);
-      nbSinksVertex[nbVertexgraph] = (max - min == 0) ? min : min + new SecureRandom().nextInt(max - min);
+      nbSinksVertex[nbVertexgraph] = ((max - min) == 0) ? min : min + new SecureRandom().nextInt(max - min);
 
       nbSinks += nbSinksVertex[nbVertexgraph];
       nbSources += nbSourcesVertex[nbVertexgraph];
       // If Not the first
-      if ((nbVertexgraph >= nbSensors) && (nbSinks != 0) && (nbSources != 0) && nbSinksVertex[nbVertexgraph] > 0) {
+      if ((nbVertexgraph >= nbSensors) && (nbSinks != 0) && (nbSources != 0) && (nbSinksVertex[nbVertexgraph] > 0)) {
         int randout;
         do {
           randout = (new SecureRandom().nextInt(nbVertexgraph));

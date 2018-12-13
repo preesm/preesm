@@ -34,7 +34,7 @@
  * knowledge of the CeCILL license and that you accept its terms.
  */
 /**
- * 
+ *
  */
 package org.preesm.algorithm.mapper.graphtransfo;
 
@@ -52,7 +52,7 @@ import org.preesm.workflow.implement.AbstractWorkflowNodeImplementation;
 
 /**
  * Class used to transform a Single-Rate SDF graph to a Directed Acyclic Graph
- * 
+ *
  * @author farresti
  *
  */
@@ -60,13 +60,13 @@ public class SDF2DAGTransformation extends AbstractTaskImplementation {
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see org.ietr.dftools.workflow.implement.AbstractTaskImplementation#execute(java.util.Map, java.util.Map,
    * org.eclipse.core.runtime.IProgressMonitor, java.lang.String, org.ietr.dftools.workflow.elements.Workflow)
    */
   @Override
-  public Map<String, Object> execute(Map<String, Object> inputs, Map<String, String> parameters,
-      IProgressMonitor monitor, String nodeName, Workflow workflow) throws PreesmException {
+  public Map<String, Object> execute(final Map<String, Object> inputs, final Map<String, String> parameters,
+      final IProgressMonitor monitor, final String nodeName, final Workflow workflow) throws PreesmException {
     final SDFGraph algorithm = (SDFGraph) inputs.get(AbstractWorkflowNodeImplementation.KEY_SDF_GRAPH);
     final PreesmScenario scenario = (PreesmScenario) inputs.get(AbstractWorkflowNodeImplementation.KEY_SCENARIO);
     final Design architecture = (Design) inputs.get(AbstractWorkflowNodeImplementation.KEY_ARCHITECTURE);
@@ -74,7 +74,7 @@ public class SDF2DAGTransformation extends AbstractTaskImplementation {
     final MapperDAG dag;
     try {
       dag = SdfToDagConverter.convert(algorithm, architecture, scenario);
-    } catch (PreesmException e) {
+    } catch (final PreesmException e) {
       throw (new PreesmException(e.getMessage()));
     }
     // TODO Auto-generated method stub
@@ -85,7 +85,7 @@ public class SDF2DAGTransformation extends AbstractTaskImplementation {
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see org.ietr.dftools.workflow.implement.AbstractTaskImplementation#getDefaultParameters()
    */
   @Override
@@ -96,7 +96,7 @@ public class SDF2DAGTransformation extends AbstractTaskImplementation {
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see org.ietr.dftools.workflow.implement.AbstractWorkflowNodeImplementation#monitorMessage()
    */
   @Override

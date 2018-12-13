@@ -178,8 +178,8 @@ public class MapperDAG extends DirectedAcyclicGraph {
     }
     newDAG.copyProperties(this);
 
-    newDAG.setMappings((DAGMappings) getMappings().copy());
-    newDAG.setTimings((DAGTimings) getTimings().copy());
+    newDAG.setMappings(getMappings().copy());
+    newDAG.setTimings(getTimings().copy());
 
     return newDAG;
   }
@@ -236,7 +236,7 @@ public class MapperDAG extends DirectedAcyclicGraph {
 
     while (iterator.hasNext()) {
       final String name = iterator.next();
-      final MapperDAGVertex v = (MapperDAGVertex) this.getVertex(name);
+      final MapperDAGVertex v = (MapperDAGVertex) getVertex(name);
       vSet.add(v);
 
     }

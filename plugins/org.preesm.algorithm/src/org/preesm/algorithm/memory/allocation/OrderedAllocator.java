@@ -368,7 +368,7 @@ public abstract class OrderedAllocator extends MemoryAllocator {
           break;
 
         case mediane:
-          final List<Long> listCopy = new ArrayList<>(listsSize);
+          final List<Long> listCopy = new ArrayList<>(this.listsSize);
           Collections.sort(listCopy);
           final long mediane = listCopy.get(this.listsSize.size() / 2);
           index = this.listsSize.indexOf(mediane);

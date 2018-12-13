@@ -61,7 +61,7 @@ public interface IGraphVisitor<G extends AbstractGraph, V extends AbstractVertex
    * @param sdfEdge
    *          the sdf edge
    */
-  public default void visit(E sdfEdge) {
+  public default void visit(final E sdfEdge) {
     // nothing by default
   }
 
@@ -73,7 +73,7 @@ public interface IGraphVisitor<G extends AbstractGraph, V extends AbstractVertex
    * @throws PreesmException
    *           the SDF 4 J exception
    */
-  public default void visit(G sdf) {
+  public default void visit(final G sdf) {
     // nothing by default
   }
 
@@ -85,7 +85,7 @@ public interface IGraphVisitor<G extends AbstractGraph, V extends AbstractVertex
    * @throws PreesmException
    *           the SDF 4 J exception
    */
-  public default void visit(V sdfVertex) {
+  public default void visit(final V sdfVertex) {
     // nothing by default
   }
 

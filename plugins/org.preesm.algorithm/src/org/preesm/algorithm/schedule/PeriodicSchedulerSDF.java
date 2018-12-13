@@ -197,7 +197,7 @@ public class PeriodicSchedulerSDF {
       }
 
       // Step 3: compute actors period and define the maximum throughput of the computed periodic schedule
-      double throughput = computeActorsPeriod(graph);
+      final double throughput = computeActorsPeriod(graph);
 
       // Step 4: compute the start date of the first execution of each actor
       computeActorsStartingTime(graph);

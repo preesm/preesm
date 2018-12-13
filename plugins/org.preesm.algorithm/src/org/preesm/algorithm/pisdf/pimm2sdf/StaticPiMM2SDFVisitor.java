@@ -114,19 +114,19 @@ public class StaticPiMM2SDFVisitor extends PiMMSwitch<Boolean> {
 
   /** The execution. */
   // Original list of fixed values for all the parameters of the graph
-  private PiGraphExecution execution;
+  private final PiGraphExecution execution;
 
   /** The pi vx 2 SDF vx. */
   // Map from original PiMM vertices to generated SDF vertices
-  private Map<AbstractVertex, SDFAbstractVertex> piVx2SDFVx = new LinkedHashMap<>();
+  private final Map<AbstractVertex, SDFAbstractVertex> piVx2SDFVx = new LinkedHashMap<>();
 
   /** The pi port 2 vx. */
   // Map from PiMM ports to their vertex (used for SDFEdge creation)
-  private Map<Port, Configurable> piPort2Vx = new LinkedHashMap<>();
+  private final Map<Port, Configurable> piPort2Vx = new LinkedHashMap<>();
   // Map from original PiMM ports to generated SDF ports (used for SDFEdge
   /** The pi port 2 SDF port. */
   // creation)
-  private Map<Port, SDFInterfaceVertex> piPort2SDFPort = new LinkedHashMap<>();
+  private final Map<Port, SDFInterfaceVertex> piPort2SDFPort = new LinkedHashMap<>();
 
   /** The current SDF refinement. */
   // Current SDF Refinement
