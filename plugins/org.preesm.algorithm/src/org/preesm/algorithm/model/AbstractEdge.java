@@ -213,15 +213,4 @@ public abstract class AbstractEdge<G, V extends AbstractVertex> extends Observab
     }
   }
 
-  /**
-   * Test if the given edge has the same properties than this edge.
-   *
-   * @param edge
-   *          The edge to compare with
-   * @return True if the given edge has the same properties, false otherwise
-   */
-  public boolean compare(final AbstractEdge edge) {
-    return edge.getSource().getName().equals(this.getSource().getName())
-        && edge.getTarget().getName().equals(this.getTarget().getName());
-  }
 }

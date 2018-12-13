@@ -34,7 +34,6 @@
  */
 package org.preesm.algorithm.model;
 
-import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
 import java.io.Serializable;
 import java.util.HashMap;
@@ -82,41 +81,12 @@ public class PropertyBean extends Observable implements Cloneable, Serializable 
   }
 
   /**
-   * Gives the value of the property whose name is <code>propertyName</code> if the value is an instance of the
-   * specified class <code>propertyClass</code>.
-   *
-   * @param propertyName
-   *          The property name
-   * @param propertyClass
-   *          The Class of the property
-   * @return The value of the given propertyName if the value belongs to the given propertyClass,
-   */
-  public <T> T getValue(final String propertyName, final Class<T> propertyClass) {
-    if (propertyClass.isInstance(this.properties.get(propertyName))) {
-      @SuppressWarnings("unchecked")
-      final T res = (T) this.properties.get(propertyName);
-      return res;
-    }
-    return null;
-  }
-
-  /**
    * Gives all the keys used to store properties.
    *
    * @return A set of String representing the keys
    */
   public Set<String> keys() {
     return this.properties.keySet();
-  }
-
-  /**
-   * Remove the listener listener from the registered listeners.
-   *
-   * @param listener
-   *          The listener to remove.
-   */
-  public void removePropertyChangeListener(final PropertyChangeListener listener) {
-    this.propertyChange.removePropertyChangeListener(listener);
   }
 
   /**

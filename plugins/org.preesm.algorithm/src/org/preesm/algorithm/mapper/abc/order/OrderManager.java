@@ -303,26 +303,6 @@ public class OrderManager extends Observable {
   }
 
   /**
-   * Gets the local scheduling order, -1 if not present.
-   *
-   * @param vertex
-   *          the vertex
-   * @return the int
-   */
-  public int localIndexOf(final MapperDAGVertex vertex) {
-
-    if (vertex.hasEffectiveComponent()) {
-
-      final Schedule sch = getSchedule(vertex.getEffectiveComponent());
-      if (sch != null) {
-        return sch.indexOf(vertex);
-      }
-    }
-
-    return -1;
-  }
-
-  /**
    * Gets the total scheduling order.
    *
    * @param vertex

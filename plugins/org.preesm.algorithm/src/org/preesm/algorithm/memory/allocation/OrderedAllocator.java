@@ -48,7 +48,6 @@ import org.preesm.algorithm.memory.bounds.OstergardSolver;
 import org.preesm.algorithm.memory.exclusiongraph.MemoryExclusionGraph;
 import org.preesm.algorithm.memory.exclusiongraph.MemoryExclusionVertex;
 
-// TODO: Auto-generated Javadoc
 /**
  * The Class OrderedAllocator.
  */
@@ -57,7 +56,7 @@ public abstract class OrderedAllocator extends MemoryAllocator {
   /**
    * The Enum Order.
    */
-  public static enum Order {
+  enum Order {
 
     /** The shuffle. */
     SHUFFLE,
@@ -74,7 +73,7 @@ public abstract class OrderedAllocator extends MemoryAllocator {
   /**
    * The Enum Policy.
    */
-  public static enum Policy {
+  enum Policy {
 
     /** The average. */
     average,
@@ -82,8 +81,6 @@ public abstract class OrderedAllocator extends MemoryAllocator {
     best,
     /** The mediane. */
     mediane,
-    /** The none. */
-    none,
     /** The worst. */
     worst
   }
