@@ -78,13 +78,13 @@ public abstract class GMLExporter<V extends AbstractVertex<?>, E extends Abstrac
   protected String path;
 
   /** The class key set. */
-  protected Map<String, List<GMLKey>> classKeySet;
+  private Map<String, List<GMLKey>> classKeySet;
 
   /** The root elt. */
   protected Element rootElt;
 
   /** The graph elt. */
-  protected Element graphElt;
+  private Element graphElt;
 
   /**
    * Creates a new Instance of GMLExporter.

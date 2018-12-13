@@ -55,7 +55,7 @@ public class SDFForkVertex extends SDFAbstractSpecialVertex {
   public static final String FORK = "fork";
 
   /** String to access the property edges order. */
-  public static final String EDGES_ORDER = "edges_order";
+  private static final String EDGES_ORDER = "edges_order";
 
   /**
    * Creates a new SDFInterfaceVertex with the default direction (SINK).

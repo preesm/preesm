@@ -63,7 +63,7 @@ public class PerformancePage extends FormPage {
   private StatGenerator statGen = null;
 
   /** The class plotting the performance data. */
-  PerformancePlotter plotter = null;
+  private PerformancePlotter plotter = null;
 
   /**
    * Instantiates a new performance page.

@@ -129,13 +129,13 @@ public class CommunicationRouter {
   private final Map<String, CommunicationRouterImplementer> implementers;
 
   /** DAG with communication vertices. */
-  protected MapperDAG implementation = null;
+  private MapperDAG implementation = null;
 
   /** manager of the generated transfers scheduling. */
-  protected IEdgeSched edgeScheduler = null;
+  private IEdgeSched edgeScheduler = null;
 
   /** manager of the vertices order in general. */
-  protected OrderManager orderManager = null;
+  private OrderManager orderManager = null;
 
   /**
    * Adds the implementer.

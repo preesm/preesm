@@ -59,13 +59,13 @@ import org.preesm.model.pisdf.PiGraph;
 public class SDFEdge extends AbstractEdge<SDFGraph, SDFAbstractVertex> {
 
   /** Property name for property edge_cons. */
-  public static final String EDGE_CONS = "edge_cons";
+  private static final String EDGE_CONS = "edge_cons";
 
   /** Property name for property edge_delay. */
   public static final String EDGE_DELAY = "edge_delay";
 
   /** Property name for property edge_prod. */
-  public static final String EDGE_PROD = "edge_prod";
+  private static final String EDGE_PROD = "edge_prod";
 
   /** Property name for data type. */
   public static final String DATA_TYPE = "data_type";
@@ -74,10 +74,10 @@ public class SDFEdge extends AbstractEdge<SDFGraph, SDFAbstractVertex> {
   public static final String DATA_SIZE = "data_size";
 
   /** Property name for property source_port. */
-  public static final String SOURCE_PORT = "source_port";
+  private static final String SOURCE_PORT = "source_port";
 
   /** Property name for property target_port. */
-  public static final String TARGET_PORT = "target_port";
+  private static final String TARGET_PORT = "target_port";
 
   /** Property name for property target_port_modifier. */
   public static final String TARGET_PORT_MODIFIER = "target_port_modifier";

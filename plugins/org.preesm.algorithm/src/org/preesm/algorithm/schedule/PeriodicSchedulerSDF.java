@@ -71,10 +71,10 @@ public class PeriodicSchedulerSDF {
    *
    */
   public enum Method {
-  ALGORITHM, LINEAR_PROGRAMMING_GUROBI, LINEAR_PROGRAMMING_GLPK, LINEAR_PROGRAMMING_OJALGO
+    ALGORITHM, LINEAR_PROGRAMMING_GUROBI, LINEAR_PROGRAMMING_GLPK, LINEAR_PROGRAMMING_OJALGO
   }
 
-  public static final Method METHOD_DEFAULT_VALUE = Method.LINEAR_PROGRAMMING_OJALGO;
+  private static final Method METHOD_DEFAULT_VALUE = Method.LINEAR_PROGRAMMING_OJALGO;
 
   /**
    * tests if a periodic schedule exists for an SDF graph using the same sufficient condition of liveness of SDF graphs.

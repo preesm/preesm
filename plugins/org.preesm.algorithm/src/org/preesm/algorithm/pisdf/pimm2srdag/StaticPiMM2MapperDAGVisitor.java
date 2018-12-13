@@ -119,7 +119,7 @@ public class StaticPiMM2MapperDAGVisitor extends PiMMSwitch<Boolean> {
   private final MapperVertexFactory vertexFactory;
 
   /** The current SDF refinement. */
-  protected IRefinement currentRefinement;
+  private IRefinement currentRefinement;
 
   /** The scenario. */
   private final PreesmScenario scenario;
@@ -462,13 +462,13 @@ public class StaticPiMM2MapperDAGVisitor extends PiMMSwitch<Boolean> {
   }
 
   /** The current prototype. */
-  protected Prototype currentPrototype;
+  private Prototype currentPrototype;
 
   /** The current Argument and Parameter. */
-  protected CodeGenArgument currentArgument;
+  private CodeGenArgument currentArgument;
 
   /** The current parameter. */
-  protected CodeGenParameter currentParameter;
+  private CodeGenParameter currentParameter;
 
   @Override
   public Boolean caseCHeaderRefinement(final CHeaderRefinement h) {

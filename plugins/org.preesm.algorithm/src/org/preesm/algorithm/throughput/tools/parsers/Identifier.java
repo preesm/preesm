@@ -42,14 +42,14 @@ package org.preesm.algorithm.throughput.tools.parsers;
  */
 public abstract class Identifier {
 
-  public static int SDFGraphId          = 0;
-  public static int actorId             = 0;
-  public static int InputPortId         = 0;
-  public static int OutputPortId        = 0;
-  public static int edgeId              = 0;
-  public static int HierarchicalActorId = 0;
-  public static int InputInterfaceId    = 0;
-  public static int OutputInterfaceId   = 0;
+  private static int SDFGraphId          = 0;
+  private static int actorId             = 0;
+  private static int InputPortId         = 0;
+  private static int OutputPortId        = 0;
+  private static int edgeId              = 0;
+  private static int HierarchicalActorId = 0;
+  private static int InputInterfaceId    = 0;
+  private static int OutputInterfaceId   = 0;
 
   /**
    * generates an Id for a graph

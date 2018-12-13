@@ -59,10 +59,10 @@ public abstract class AbstractEdge<G, V extends AbstractVertex> extends Observab
   public static final String BASE = "base";
 
   /** Property name for property source_port. */
-  public static final String SOURCE_PORT = "source_port";
+  private static final String SOURCE_PORT = "source_port";
 
   /** Property name for property target_port. */
-  public static final String TARGET_PORT = "target_port";
+  private static final String TARGET_PORT = "target_port";
 
   /** The public properties. */
   protected static final List<String> PUBLIC_PROPERTIES = new ArrayList<String>() {

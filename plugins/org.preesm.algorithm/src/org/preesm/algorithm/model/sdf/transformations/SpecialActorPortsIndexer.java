@@ -85,9 +85,9 @@ public class SpecialActorPortsIndexer {
   /**
    * Group of the YY index in the {@link #INDEX_REGEX}
    */
-  public static final int GROUP_YY = 2;
+  private static final int GROUP_YY = 2;
   @Deprecated
-  public static final int groupYY  = GROUP_YY;
+  public static final int  groupYY  = GROUP_YY;
 
   /**
    * This method rename all ordered ports of special actors in the following fashion:

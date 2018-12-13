@@ -63,7 +63,7 @@ import org.preesm.model.pisdf.PiGraph;
 public abstract class SDFAbstractVertex extends AbstractVertex<SDFGraph> {
 
   /** Property nb repeat of the node. */
-  public static final String NB_REPEAT = "nbRepeat";
+  private static final String NB_REPEAT = "nbRepeat";
 
   static {
     AbstractVertex.public_properties.add(SDFAbstractVertex.NB_REPEAT);

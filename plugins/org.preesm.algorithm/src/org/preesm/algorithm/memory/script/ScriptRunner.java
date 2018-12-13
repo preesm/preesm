@@ -92,7 +92,7 @@ public class ScriptRunner {
   private static final String BROADCAST_SCRIPT   = "broadcast.bsh";
 
   // Name of bundle where to look for files (allow not to search into all projects)
-  public static final String BUNDLE_ID = "org.preesm.algorithm";
+  private static final String BUNDLE_ID = "org.preesm.algorithm";
 
   // Paths to the special scripts files
   private static final String JOIN        = ScriptRunner.SCRIPT_FOLDER + IPath.SEPARATOR + ScriptRunner.JOIN_SCRIPT;

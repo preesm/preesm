@@ -358,7 +358,7 @@ public class HSDFBuildLoops {
     return vertex;
   }
 
-  String clustSchedString;
+  private String clustSchedString;
 
   private void recursivePrintClustSched(final AbstractClust seq) {
     if (seq instanceof ClustVertex) {

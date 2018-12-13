@@ -54,22 +54,22 @@ import org.preesm.algorithm.model.sdf.SDFAbstractVertex;
 public class DAGVertex extends AbstractVertex<DirectedAcyclicGraph> {
 
   /** Key to access to property time. */
-  public static final String TIME = "time";
+  private static final String TIME = "time";
 
   /** Key to access to property nb repeat. */
-  public static final String NB_REPEAT = "nb_repeat";
+  private static final String NB_REPEAT = "nb_repeat";
 
   /** The string representing the kind of this vertex. */
   public static final String DAG_VERTEX = "dag_vertex";
 
   /** Key to access to property sdf_vertex. */
-  public static final String SDF_VERTEX = "sdf_vertex";
+  private static final String SDF_VERTEX = "sdf_vertex";
 
   /** Key to access to property vertex_sinks. */
-  public static final String SINKS = "vertex_sinks";
+  private static final String SINKS = "vertex_sinks";
 
   /** Key to access to property vertex_sources. */
-  public static final String SOURCES = "vertex_sources";
+  private static final String SOURCES = "vertex_sources";
 
   static {
     AbstractVertex.public_properties.add(DAGVertex.TIME);

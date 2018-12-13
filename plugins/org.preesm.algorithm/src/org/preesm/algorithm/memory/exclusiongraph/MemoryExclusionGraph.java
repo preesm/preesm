@@ -131,7 +131,7 @@ public class MemoryExclusionGraph extends SimpleGraph<MemoryExclusionVertex, Def
   public static final String ALLOCATED_MEMORY_SIZE = "allocated_memory_size";
 
   /** The public properties. */
-  protected static List<String> public_properties = new ArrayList<String>() {
+  private static List<String> public_properties = new ArrayList<String>() {
     /**
      *
      */
@@ -171,12 +171,12 @@ public class MemoryExclusionGraph extends SimpleGraph<MemoryExclusionVertex, Def
    * {@link MemoryExclusionVertex} of the {@link MemoryExclusionGraph} in the scheduling order retrieved in the
    * {@link #updateWithSchedule(DirectedAcyclicGraph)} method.
    */
-  protected List<MemoryExclusionVertex> memExVerticesInSchedulingOrder = null;
+  private List<MemoryExclusionVertex> memExVerticesInSchedulingOrder = null;
 
   /**
    * The {@link PropertyBean} that stores the properties of the {@link MemoryExclusionGraph}.
    */
-  protected PropertyBean properties;
+  private PropertyBean properties;
 
   /**
    * Default constructor.

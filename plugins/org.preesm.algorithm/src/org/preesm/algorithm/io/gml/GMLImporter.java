@@ -88,7 +88,7 @@ public abstract class GMLImporter<G extends AbstractGraph<?, ?>, V extends Abstr
   private static final String PARAMETERS_LITERAL = "parameters";
 
   /** The class key set. */
-  protected Map<String, List<GMLKey>> classKeySet;
+  private Map<String, List<GMLKey>> classKeySet;
 
   /** The vertex factory. */
   protected IModelVertexFactory<V> vertexFactory;

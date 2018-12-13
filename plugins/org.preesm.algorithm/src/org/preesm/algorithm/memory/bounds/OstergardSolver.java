@@ -70,7 +70,7 @@ public class OstergardSolver<V extends IWeightedVertex<Long> & Comparable<V>, E 
    * It stores the weight of the heaviest clique found for the Subset S<sub>i</sub>.
    * </p>
    */
-  protected List<Long> cost;
+  private List<Long> cost;
 
   /**
    * dcost corresponds to the d(i) function in
@@ -80,26 +80,26 @@ public class OstergardSolver<V extends IWeightedVertex<Long> & Comparable<V>, E 
    * It stores the weight of the heaviest clique found for the Subset S'<sub>i</sub>.
    * </p>
    */
-  protected List<Long> dcost;
+  private List<Long> dcost;
 
   /**
    * This boolean is set to true if a clique with weight c(i+1) + w(vi) is found during an iteration of the wnew. This
    * clique is maximum for Si.
    */
-  protected boolean found;
+  private boolean found;
 
   /**
    * This vertex set will be used as the iteration base of the algorithm.
    */
-  protected List<V> orderedVertexSet;
+  private List<V> orderedVertexSet;
 
   /** Specify if the speed-up technique is used or not (May not be efficient for graphs with high edge density). */
-  protected final boolean speedup;
+  private final boolean speedup;
 
   /**
    * This vertex set is the current set of fixed vertices of the algorithm.
    */
-  protected List<V> workingSet;
+  private List<V> workingSet;
 
   /**
    ** Initialize the MaximumWeightCliqueSolver with a graph instance.

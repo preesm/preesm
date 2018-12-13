@@ -67,13 +67,13 @@ import org.preesm.model.scenario.types.DataType;
 public class MemoryScriptEngine {
 
   /** The Constant VALUE_CHECK_NONE. */
-  public static final String VALUE_CHECK_NONE = "None";
+  private static final String VALUE_CHECK_NONE = "None";
 
   /** The Constant VALUE_CHECK_FAST. */
-  public static final String VALUE_CHECK_FAST = "Fast";
+  private static final String VALUE_CHECK_FAST = "Fast";
 
   /** The Constant VALUE_CHECK_THOROUGH. */
-  public static final String VALUE_CHECK_THOROUGH = "Thorough";
+  private static final String VALUE_CHECK_THOROUGH = "Thorough";
 
   /** The sr. */
   private final ScriptRunner sr;

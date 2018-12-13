@@ -88,7 +88,7 @@ public class GanttPlotter extends ApplicationFrame {
   private static final long serialVersionUID = 1L;
 
   /** The chart panel. */
-  ChartPanel chartPanel = null;
+  private ChartPanel chartPanel = null;
 
   /**
    * Creates a chart.

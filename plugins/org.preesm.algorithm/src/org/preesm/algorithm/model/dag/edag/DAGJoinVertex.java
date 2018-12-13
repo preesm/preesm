@@ -52,7 +52,7 @@ public class DAGJoinVertex extends DAGVertex {
   public static final String DAG_JOIN_VERTEX = "dag_join_vertex";
 
   /** String to access the property edges order. */
-  public static final String EDGES_ORDER = "edges_order";
+  private static final String EDGES_ORDER = "edges_order";
 
   /**
    * Creates a new DAGVertex.

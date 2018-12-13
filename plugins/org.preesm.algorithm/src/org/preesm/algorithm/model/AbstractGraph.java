@@ -74,7 +74,7 @@ public abstract class AbstractGraph<V extends AbstractVertex, E extends Abstract
   private static final long serialVersionUID = 1381565218127310945L;
 
   /** Property name for property name. */
-  public static final String NAME = "name";
+  private static final String NAME = "name";
 
   /** Property name for property parameters. */
   public static final String PARAMETERS = "parameters";
@@ -91,7 +91,7 @@ public abstract class AbstractGraph<V extends AbstractVertex, E extends Abstract
   public static final String PATH = "path";
 
   /** This graph parent vertex if it exist. */
-  public static final String PARENT_VERTEX = "parent_vertex";
+  private static final String PARENT_VERTEX = "parent_vertex";
 
   /** The public properties. */
   protected static final List<String> PUBLIC_PROPERTIES = new ArrayList<>();
@@ -104,13 +104,13 @@ public abstract class AbstractGraph<V extends AbstractVertex, E extends Abstract
   }
 
   /** The properties. */
-  protected PropertyBean properties;
+  private PropertyBean properties;
 
   /** The observers. */
-  protected ArrayList<IModelObserver> observers;
+  private ArrayList<IModelObserver> observers;
 
   /** The has changed. */
-  protected boolean hasChanged;
+  private boolean hasChanged;
 
   /**
    * Creates a new Instance of Abstract graph with the given factory.

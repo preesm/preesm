@@ -54,7 +54,7 @@ public class DAGMappings implements CloneableProperty<DAGMappings> {
   /**
    * A mapping is associated to IDs of the vertices belonging to it (for fast access).
    */
-  Map<String, VertexMapping> mappings = null;
+  private Map<String, VertexMapping> mappings = null;
 
   /**
    * Instantiates a new DAG mappings.

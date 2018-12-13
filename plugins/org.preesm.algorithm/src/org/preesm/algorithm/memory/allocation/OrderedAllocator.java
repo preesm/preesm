@@ -59,16 +59,16 @@ public abstract class OrderedAllocator extends MemoryAllocator {
    */
   public static enum Order {
 
-  /** The shuffle. */
-  SHUFFLE,
-  /** The largest first. */
-  LARGEST_FIRST,
-  /** The stable set. */
-  STABLE_SET,
-  /** The exact stable set. */
-  EXACT_STABLE_SET,
-  /** The scheduling. */
-  SCHEDULING
+    /** The shuffle. */
+    SHUFFLE,
+    /** The largest first. */
+    LARGEST_FIRST,
+    /** The stable set. */
+    STABLE_SET,
+    /** The exact stable set. */
+    EXACT_STABLE_SET,
+    /** The scheduling. */
+    SCHEDULING
   }
 
   /**
@@ -92,25 +92,25 @@ public abstract class OrderedAllocator extends MemoryAllocator {
    * Ordered list of {@link MemoryExclusionVertex} used to perform the shuffled allocations. These lists are memorized
    * in order to retrieve the one that corresponds best to the Policy after all "shuffled" allocations were performed
    */
-  protected List<List<MemoryExclusionVertex>> lists;
+  private List<List<MemoryExclusionVertex>> lists;
   /**
    * For each {@link #allocateInOrder(ArrayList)} resulting from an ordered list in {@link #lists}, this list store the
    * size of the allocated memory.
    */
-  public List<Long>                           listsSize;
+  private List<Long>                        listsSize;
   /**
    * The number of allocation do perform with randomly ordered vertices list.
    */
-  protected int                               nbShuffle;
+  private int                               nbShuffle;
   /**
    * The current policy when asking for an allocation with getAllocation.
    */
-  protected Policy                            policy;
+  private Policy                            policy;
 
   /**
    * The current {@link Order} used to {@link #allocate()} vertices of the {@link MemoryExclusionGraph}.
    */
-  protected Order order;
+  private Order order;
 
   /**
    * Constructor of the allocator.

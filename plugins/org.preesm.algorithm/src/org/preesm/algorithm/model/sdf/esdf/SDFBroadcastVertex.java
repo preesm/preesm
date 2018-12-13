@@ -53,7 +53,7 @@ public class SDFBroadcastVertex extends SDFAbstractSpecialVertex {
   public static final String BROADCAST = "Broadcast";
 
   /** String to access the property edges order. */
-  public static final String EDGES_ORDER = "edges_order";
+  private static final String EDGES_ORDER = "edges_order";
 
   /**
    * Creates a new SDFInterfaceVertex with the default direction (SINK).

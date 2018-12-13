@@ -67,7 +67,7 @@ public class OrderManager extends Observable {
   private Map<ComponentInstance, Schedule> schedules = null;
 
   /** total order of the vertices in the implementation. */
-  Schedule totalOrder = null;
+  private Schedule totalOrder = null;
 
   /**
    * Instantiates a new order manager.

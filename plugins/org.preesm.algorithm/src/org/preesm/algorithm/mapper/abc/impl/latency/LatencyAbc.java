@@ -97,7 +97,7 @@ public abstract class LatencyAbc {
   /**
    * Current directed acyclic graph. It is the external dag graph
    */
-  protected MapperDAG dag;
+  private MapperDAG dag;
 
   /**
    * Current implementation: the internal model that will be used to add edges/vertices and calculate times.
@@ -105,7 +105,7 @@ public abstract class LatencyAbc {
   protected MapperDAG implementation;
 
   /** Current Abc type. */
-  protected AbcType abcType = null;
+  private AbcType abcType = null;
 
   /** Task scheduler. */
   protected AbstractTaskSched taskScheduler = null;
@@ -804,7 +804,7 @@ public abstract class LatencyAbc {
   protected IEdgeSched edgeScheduler;
 
   /** Current abc parameters. */
-  protected AbcParameters params;
+  private AbcParameters params;
 
   /**
    * Constructor of the simulator from a "blank" implementation where every vertex has not been mapped yet.

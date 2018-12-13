@@ -52,7 +52,6 @@ import org.preesm.commons.logger.PreesmLogger;
 import org.preesm.workflow.elements.Workflow;
 import org.preesm.workflow.implement.AbstractTaskImplementation;
 
-// TODO: Auto-generated Javadoc
 /**
  * The Class AbstractMemoryAllocatorTask.
  */
@@ -62,56 +61,56 @@ public abstract class AbstractMemoryAllocatorTask extends AbstractTaskImplementa
   public static final String PARAM_VERBOSE = "Verbose";
 
   /** The Constant VALUE_TRUE_FALSE_DEFAULT. */
-  public static final String VALUE_TRUE_FALSE_DEFAULT = "? C {True, False}";
+  private static final String VALUE_TRUE_FALSE_DEFAULT = "? C {True, False}";
 
   /** The Constant VALUE_TRUE. */
-  public static final String VALUE_TRUE = "True";
+  private static final String VALUE_TRUE = "True";
 
   /** The Constant PARAM_ALLOCATORS. */
   public static final String PARAM_ALLOCATORS = "Allocator(s)";
 
   /** The Constant VALUE_ALLOCATORS_DEFAULT. */
-  public static final String VALUE_ALLOCATORS_DEFAULT = "{?,?,...} C {Basic, BestFit, FirstFit, DeGreef}";
+  private static final String VALUE_ALLOCATORS_DEFAULT = "{?,?,...} C {Basic, BestFit, FirstFit, DeGreef}";
 
   /** The Constant VALUE_ALLOCATORS_BASIC. */
-  public static final String VALUE_ALLOCATORS_BASIC = "Basic";
+  private static final String VALUE_ALLOCATORS_BASIC = "Basic";
 
   /** The Constant VALUE_ALLOCATORS_BEST_FIT. */
-  public static final String VALUE_ALLOCATORS_BEST_FIT = "BestFit";
+  private static final String VALUE_ALLOCATORS_BEST_FIT = "BestFit";
 
   /** The Constant VALUE_ALLOCATORS_FIRST_FIT. */
-  public static final String VALUE_ALLOCATORS_FIRST_FIT = "FirstFit";
+  private static final String VALUE_ALLOCATORS_FIRST_FIT = "FirstFit";
 
   /** The Constant VALUE_ALLOCATORS_DE_GREEF. */
-  public static final String VALUE_ALLOCATORS_DE_GREEF = "DeGreef";
+  private static final String VALUE_ALLOCATORS_DE_GREEF = "DeGreef";
 
   /** The Constant PARAM_XFIT_ORDER. */
-  public static final String PARAM_XFIT_ORDER = "Best/First Fit order";
+  private static final String PARAM_XFIT_ORDER = "Best/First Fit order";
 
   /** The Constant VALUE_XFIT_ORDER_DEFAULT. */
-  public static final String VALUE_XFIT_ORDER_DEFAULT = "{?,?,...} C "
+  private static final String VALUE_XFIT_ORDER_DEFAULT = "{?,?,...} C "
       + "{ApproxStableSet, ExactStableSet, LargestFirst, Shuffle, Scheduling}";
 
   /** The Constant VALUE_XFIT_ORDER_APPROX_STABLE_SET. */
-  public static final String VALUE_XFIT_ORDER_APPROX_STABLE_SET = "ApproxStableSet";
+  private static final String VALUE_XFIT_ORDER_APPROX_STABLE_SET = "ApproxStableSet";
 
   /** The Constant VALUE_XFIT_ORDER_LARGEST_FIRST. */
-  public static final String VALUE_XFIT_ORDER_LARGEST_FIRST = "LargestFirst";
+  private static final String VALUE_XFIT_ORDER_LARGEST_FIRST = "LargestFirst";
 
   /** The Constant VALUE_XFIT_ORDER_SHUFFLE. */
-  public static final String VALUE_XFIT_ORDER_SHUFFLE = "Shuffle";
+  private static final String VALUE_XFIT_ORDER_SHUFFLE = "Shuffle";
 
   /** The Constant VALUE_XFIT_ORDER_EXACT_STABLE_SET. */
-  public static final String VALUE_XFIT_ORDER_EXACT_STABLE_SET = "ExactStableSet";
+  private static final String VALUE_XFIT_ORDER_EXACT_STABLE_SET = "ExactStableSet";
 
   /** The Constant VALUE_XFIT_ORDER_SCHEDULING. */
-  public static final String VALUE_XFIT_ORDER_SCHEDULING = "Scheduling";
+  private static final String VALUE_XFIT_ORDER_SCHEDULING = "Scheduling";
 
   /** The Constant PARAM_NB_SHUFFLE. */
   public static final String PARAM_NB_SHUFFLE = "Nb of Shuffling Tested";
 
   /** The Constant VALUE_NB_SHUFFLE_DEFAULT. */
-  public static final String VALUE_NB_SHUFFLE_DEFAULT = "10";
+  private static final String VALUE_NB_SHUFFLE_DEFAULT = "10";
 
   /** The Constant PARAM_ALIGNMENT. */
   public static final String PARAM_ALIGNMENT = "Data alignment";
@@ -157,16 +156,16 @@ public abstract class AbstractMemoryAllocatorTask extends AbstractTaskImplementa
 
   /** The value verbose. */
   // Shared attributes
-  protected String valueVerbose;
+  private String valueVerbose;
 
   /** The value allocators. */
-  protected String valueAllocators;
+  private String valueAllocators;
 
   /** The value X fit order. */
-  protected String valueXFitOrder;
+  private String valueXFitOrder;
 
   /** The value nb shuffle. */
-  protected String valueNbShuffle;
+  private String valueNbShuffle;
 
   /** The value distribution. */
   protected String valueDistribution;
@@ -175,16 +174,16 @@ public abstract class AbstractMemoryAllocatorTask extends AbstractTaskImplementa
   protected boolean verbose;
 
   /** The value alignment. */
-  protected String valueAlignment;
+  private String valueAlignment;
 
   /** The alignment. */
   protected int alignment;
 
   /** The nb shuffle. */
-  protected int nbShuffle;
+  private int nbShuffle;
 
   /** The ordering. */
-  protected List<Order> ordering;
+  private List<Order> ordering;
 
   /** The allocators. */
   protected List<MemoryAllocator> allocators;

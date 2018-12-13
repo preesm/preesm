@@ -70,13 +70,13 @@ public abstract class AbstractVertex<G> extends Observable
   public static final String ARGUMENTS_LITERAL = "arguments";
 
   /** Property name for property id. */
-  public static final String ID_LITERAL = "id";
+  private static final String ID_LITERAL = "id";
 
   /** Property name for property name. */
-  public static final String NAME_LITERAL = "name";
+  private static final String NAME_LITERAL = "name";
 
   /** Property name for property name. */
-  public static final String INFO_LITERAL = "info";
+  private static final String INFO_LITERAL = "info";
 
   /** Property kind for property name. */
   public static final String KIND_LITERAL = "kind";
@@ -87,7 +87,7 @@ public abstract class AbstractVertex<G> extends Observable
           AbstractVertex.REFINEMENT_LITERAL, AbstractVertex.NAME_LITERAL, AbstractVertex.KIND_LITERAL));
 
   /** The interfaces. */
-  protected List<IInterface> interfaces;
+  private List<IInterface> interfaces;
 
   /**
    * Creates a new Instance of Abstract vertex.

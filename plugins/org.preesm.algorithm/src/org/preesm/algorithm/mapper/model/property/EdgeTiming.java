@@ -48,7 +48,7 @@ import org.preesm.commons.CloneableProperty;
 public class EdgeTiming implements CloneableProperty<EdgeTiming> {
 
   /** The Constant UNAVAILABLE. */
-  public static final long UNAVAILABLE = -1;
+  private static final long UNAVAILABLE = -1;
 
   /** time to execute the edge. */
   private long cost;

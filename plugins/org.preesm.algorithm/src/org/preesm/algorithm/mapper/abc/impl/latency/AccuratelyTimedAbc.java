@@ -61,7 +61,7 @@ import org.preesm.model.slam.utils.DesignTools;
 public class AccuratelyTimedAbc extends LatencyAbc {
 
   /** The types. */
-  List<Integer> types = null;
+  private List<Integer> types = null;
 
   /**
    * Constructor of the simulator from a "blank" implementation where every vertex has not been mapped yet.

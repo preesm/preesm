@@ -66,7 +66,7 @@ public class AddOverheadVertexTransaction extends Transaction {
   private AbstractRouteStep step = null;
 
   /** time of this overhead. */
-  long overheadTime = 0;
+  private long overheadTime = 0;
 
   /** Original edge corresponding to this overhead. */
   private MapperDAGEdge edge = null;

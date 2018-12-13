@@ -51,7 +51,7 @@ import org.preesm.algorithm.schedule.PeriodicSchedulerSDF.Method;
 public class PreesmAlgorithmPlugin extends AbstractUIPlugin {
 
   /** The Constant PLUGIN_ID. */
-  public static final String PLUGIN_ID = "org.preesm.algorithm";
+  private static final String PLUGIN_ID = "org.preesm.algorithm";
 
   public final Map<Method, SolverMethod> solverMethodRegistry = new LinkedHashMap<>();
 

@@ -64,10 +64,10 @@ public class SDFRandomGraph {
 
   /** Static field containing all the instances of this class. */
 
-  protected static final List<SDFRandomGraph> ADAPTERS = new ArrayList<>();
+  private static final List<SDFRandomGraph> ADAPTERS = new ArrayList<>();
 
   /** Instance fractions is the fraction of each vertex. */
-  protected static final Map<SDFAbstractVertex, LongFraction> FRACTIONS = new LinkedHashMap<>();
+  private static final Map<SDFAbstractVertex, LongFraction> FRACTIONS = new LinkedHashMap<>();
 
   /** The Constant CLUSTER. */
   private static final String CLUSTER = "cluster";

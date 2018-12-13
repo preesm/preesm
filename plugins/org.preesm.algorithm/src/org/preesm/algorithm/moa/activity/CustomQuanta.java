@@ -53,7 +53,7 @@ public class CustomQuanta {
     String actor;
     String operator;
 
-    MapKeyPair(String actor, String operator) {
+    private MapKeyPair(String actor, String operator) {
       this.actor = actor;
       this.operator = operator;
     }

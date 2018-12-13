@@ -53,7 +53,7 @@ import org.preesm.commons.logger.PreesmLogger;
 public class AbcParameters {
 
   /** The text parameters. */
-  protected Map<String, String> textParameters = null;
+  private Map<String, String> textParameters = null;
 
   /** Simulator type. */
   private AbcType simulatorType = null;

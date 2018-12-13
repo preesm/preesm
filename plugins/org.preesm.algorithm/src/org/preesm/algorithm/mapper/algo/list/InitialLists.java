@@ -67,15 +67,15 @@ public class InitialLists implements Cloneable {
 
   /** The blocking nodes. */
   // List of the nodes with a link with the critical path
-  protected List<MapperDAGVertex> blockingNodes;
+  private List<MapperDAGVertex> blockingNodes;
 
   /** The cpn dominant. */
   // List of the nodes which are ordered by the CPNDominant Sequence List
-  protected List<MapperDAGVertex> cpnDominant;
+  private List<MapperDAGVertex> cpnDominant;
 
   /** The critical path. */
   // List of the nodes of the critical path
-  protected List<MapperDAGVertex> criticalPath;
+  private List<MapperDAGVertex> criticalPath;
 
   /**
    * constructors.

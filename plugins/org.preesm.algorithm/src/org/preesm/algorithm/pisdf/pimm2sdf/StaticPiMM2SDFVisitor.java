@@ -110,27 +110,27 @@ public class StaticPiMM2SDFVisitor extends PiMMSwitch<Boolean> {
 
   /** The result. */
   // SDFGraph created from the outer graph
-  protected SDFGraph result;
+  private SDFGraph result;
 
   /** The execution. */
   // Original list of fixed values for all the parameters of the graph
-  protected PiGraphExecution execution;
+  private PiGraphExecution execution;
 
   /** The pi vx 2 SDF vx. */
   // Map from original PiMM vertices to generated SDF vertices
-  protected Map<AbstractVertex, SDFAbstractVertex> piVx2SDFVx = new LinkedHashMap<>();
+  private Map<AbstractVertex, SDFAbstractVertex> piVx2SDFVx = new LinkedHashMap<>();
 
   /** The pi port 2 vx. */
   // Map from PiMM ports to their vertex (used for SDFEdge creation)
-  protected Map<Port, Configurable> piPort2Vx = new LinkedHashMap<>();
+  private Map<Port, Configurable> piPort2Vx = new LinkedHashMap<>();
   // Map from original PiMM ports to generated SDF ports (used for SDFEdge
   /** The pi port 2 SDF port. */
   // creation)
-  protected Map<Port, SDFInterfaceVertex> piPort2SDFPort = new LinkedHashMap<>();
+  private Map<Port, SDFInterfaceVertex> piPort2SDFPort = new LinkedHashMap<>();
 
   /** The current SDF refinement. */
   // Current SDF Refinement
-  protected IRefinement currentSDFRefinement;
+  private IRefinement currentSDFRefinement;
 
   /**
    * Creates the value.
@@ -492,13 +492,13 @@ public class StaticPiMM2SDFVisitor extends PiMMSwitch<Boolean> {
   }
 
   /** The current prototype. */
-  protected Prototype currentPrototype;
+  private Prototype currentPrototype;
 
   /** The current Argument and Parameter. */
-  protected CodeGenArgument currentArgument;
+  private CodeGenArgument currentArgument;
 
   /** The current parameter. */
-  protected CodeGenParameter currentParameter;
+  private CodeGenParameter currentParameter;
 
   @Override
   public Boolean caseCHeaderRefinement(final CHeaderRefinement h) {
