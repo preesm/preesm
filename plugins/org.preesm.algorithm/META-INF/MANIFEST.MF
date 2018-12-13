@@ -51,7 +51,6 @@ Export-Package: org.preesm.algorithm,
  org.preesm.algorithm.mapper.abc.taskscheduling,
  org.preesm.algorithm.mapper.abc.transaction,
  org.preesm.algorithm.mapper.algo,
- org.preesm.algorithm.mapper.checker,
  org.preesm.algorithm.mapper.exporter,
  org.preesm.algorithm.mapper.gantt,
  org.preesm.algorithm.mapper.graphtransfo,
@@ -60,7 +59,6 @@ Export-Package: org.preesm.algorithm,
  org.preesm.algorithm.mapper.model.special,
  org.preesm.algorithm.mapper.optimizer,
  org.preesm.algorithm.mapper.params,
- org.preesm.algorithm.mapper.scenariogen,
  org.preesm.algorithm.mapper.schedule,
  org.preesm.algorithm.mapper.stats.exporter,
  org.preesm.algorithm.mapper.timekeeper,
@@ -96,8 +94,7 @@ Export-Package: org.preesm.algorithm,
  org.preesm.algorithm.schedule,
  org.preesm.algorithm.throughput,
  org.preesm.algorithm.throughput.tools,
- org.preesm.algorithm.transforms,
- org.preesm.algorithm.utils.xml
+ org.preesm.algorithm.transforms
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Bundle-ActivationPolicy: lazy
 Bundle-Activator: org.preesm.algorithm.PreesmAlgorithmPlugin

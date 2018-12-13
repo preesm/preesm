@@ -35,9 +35,8 @@
  * The fact that you are presently reading this means that you have had
  * knowledge of the CeCILL license and that you accept its terms.
  */
-package org.preesm.algorithm.mapper.scenariogen;
+package org.preesm.algorithm.io.gml;
 
-import org.preesm.algorithm.io.gml.GMLImporter;
 import org.preesm.algorithm.model.factories.SDFVertexFactory;
 import org.preesm.algorithm.model.sdf.SDFAbstractVertex;
 import org.preesm.algorithm.model.sdf.SDFEdge;
