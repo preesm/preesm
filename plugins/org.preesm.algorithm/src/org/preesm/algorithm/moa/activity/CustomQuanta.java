@@ -50,8 +50,8 @@ public class CustomQuanta {
    * Key for storing the number of custom quanta in a 2D map
    */
   static class MapKeyPair {
-    String actor;
-    String operator;
+    String         actor;
+    private String operator;
 
     private MapKeyPair(String actor, String operator) {
       this.actor = actor;
@@ -81,7 +81,7 @@ public class CustomQuanta {
   private Map<MapKeyPair, String> customQuanta = null;
 
   public CustomQuanta() {
-    customQuanta = new HashMap<MapKeyPair, String>();
+    customQuanta = new HashMap<>();
   }
 
   public void addQuantaExpression(String actor, String operator, String expression) {

@@ -99,11 +99,11 @@ public class ThroughputEvaluationTask extends AbstractTaskImplementation {
    *
    *         The supported methods
    */
-  public static enum ThroughputMethod {
-  SR, // Schedule-Replace technique
-  ESR, // Evaluate-Schedule-Replace method
-  HPeriodic, // Hierarchical Periodic Schedule method
-  Classical, // Based on Flattening the hierarchy
+  private enum ThroughputMethod {
+    SR, // Schedule-Replace technique
+    ESR, // Evaluate-Schedule-Replace method
+    HPeriodic, // Hierarchical Periodic Schedule method
+    Classical, // Based on Flattening the hierarchy
   }
 
   // Plug-in parameters

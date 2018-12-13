@@ -156,7 +156,7 @@ public class HeuristicSolver<V extends IWeightedVertex<Long> & Comparable<V>, E 
      * @param second
      *          the second
      */
-    public VerticesPair(final V first, final V second) {
+    private VerticesPair(final V first, final V second) {
       this.first = first;
       this.second = second;
     }
@@ -337,7 +337,7 @@ public class HeuristicSolver<V extends IWeightedVertex<Long> & Comparable<V>, E 
    * @deprecated Not used anymore in the HeuristicSolver algorithm
    */
   @Deprecated
-  public Set<VerticesPair> mergeSimilarVertices(final Collection<? extends V> vertices) {
+  private Set<VerticesPair> mergeSimilarVertices(final Collection<? extends V> vertices) {
     final Set<V> mergedVertices = new LinkedHashSet<>();
     final Set<VerticesPair> mergeList = new LinkedHashSet<>();
     final ArrayList<V> list = new ArrayList<>(vertices);

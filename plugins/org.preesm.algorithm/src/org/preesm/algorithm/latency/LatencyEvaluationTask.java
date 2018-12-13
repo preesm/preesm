@@ -65,10 +65,10 @@ public class LatencyEvaluationTask extends AbstractTaskImplementation {
    *
    *         The supported methods
    */
-  public static enum LatencyMethod {
-  FAST, // Hierarchical method
-  FLAT_LP, // Based on Flattening the hierarchy
-  FLAT_SE, // Based on Flattening the hierarchy
+  private enum LatencyMethod {
+    FAST, // Hierarchical method
+    FLAT_LP, // Based on Flattening the hierarchy
+    FLAT_SE, // Based on Flattening the hierarchy
   }
 
   // Plug-in parameters

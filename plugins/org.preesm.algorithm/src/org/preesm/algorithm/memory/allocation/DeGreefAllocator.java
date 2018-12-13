@@ -219,7 +219,7 @@ public class DeGreefAllocator extends MemoryAllocator {
      * @param second
      *          the second
      */
-    public IntegerAndVertex(final long first, final MemoryExclusionVertex second) {
+    private IntegerAndVertex(final long first, final MemoryExclusionVertex second) {
       super();
       this.first = first;
       this.second = second;
