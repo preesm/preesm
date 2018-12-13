@@ -34,10 +34,10 @@
  */
 package org.preesm.algorithm.model.sdf.visitors;
 
+import org.preesm.algorithm.model.IGraphVisitor;
 import org.preesm.algorithm.model.sdf.SDFAbstractVertex;
 import org.preesm.algorithm.model.sdf.SDFEdge;
 import org.preesm.algorithm.model.sdf.SDFGraph;
-import org.preesm.algorithm.model.visitors.IGraphVisitor;
 
 /**
  * Checks whether a visited graph is single-rate.

@@ -45,8 +45,8 @@ import org.preesm.algorithm.mapper.model.MapperDAGVertex;
 import org.preesm.algorithm.mapper.model.property.EdgeTiming;
 import org.preesm.algorithm.mapper.model.property.VertexTiming;
 import org.preesm.algorithm.mapper.tools.CustomTopologicalIterator;
+import org.preesm.algorithm.model.IGraphVisitor;
 import org.preesm.algorithm.model.dag.DAGVertex;
-import org.preesm.algorithm.model.visitors.IGraphVisitor;
 import org.preesm.commons.exceptions.PreesmException;
 
 // TODO: Auto-generated Javadoc

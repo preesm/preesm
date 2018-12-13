@@ -33,7 +33,7 @@
  * The fact that you are presently reading this means that you have had
  * knowledge of the CeCILL license and that you accept its terms.
  */
-package org.preesm.algorithm.throughput.tools.helpers;
+package org.preesm.algorithm.throughput.tools;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -50,7 +50,6 @@ import org.preesm.algorithm.model.sdf.SDFVertex;
 import org.preesm.algorithm.model.sdf.esdf.SDFSinkInterfaceVertex;
 import org.preesm.algorithm.model.sdf.esdf.SDFSourceInterfaceVertex;
 import org.preesm.algorithm.model.types.LongEdgePropertyType;
-import org.preesm.algorithm.throughput.tools.parsers.Identifier;
 import org.preesm.model.scenario.PreesmScenario;
 
 /**

@@ -45,7 +45,7 @@ import java.util.Set;
 import java.util.logging.Level;
 import org.preesm.algorithm.mapper.abc.impl.latency.LatencyAbc;
 import org.preesm.algorithm.mapper.abc.taskscheduling.AbstractTaskSched;
-import org.preesm.algorithm.mapper.algo.list.InitialLists;
+import org.preesm.algorithm.mapper.algo.InitialLists;
 import org.preesm.algorithm.mapper.model.MapperDAG;
 import org.preesm.algorithm.mapper.model.MapperDAGVertex;
 import org.preesm.algorithm.mapper.params.AbcParameters;

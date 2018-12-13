@@ -42,7 +42,6 @@ import java.util.Observable;
 import java.util.Observer;
 import org.preesm.algorithm.model.parameters.Argument;
 import org.preesm.algorithm.model.parameters.ArgumentSet;
-import org.preesm.algorithm.model.visitors.IGraphVisitor;
 import org.preesm.commons.CloneableProperty;
 import org.preesm.commons.exceptions.PreesmException;
 

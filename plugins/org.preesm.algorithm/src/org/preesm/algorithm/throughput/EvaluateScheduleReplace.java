@@ -48,11 +48,11 @@ import org.preesm.algorithm.model.sdf.esdf.SDFSourceInterfaceVertex;
 import org.preesm.algorithm.schedule.ALAPSchedulerDAG;
 import org.preesm.algorithm.schedule.ASAPSchedulerDAG;
 import org.preesm.algorithm.schedule.PeriodicSchedulerSDF;
-import org.preesm.algorithm.throughput.tools.helpers.GraphStructureHelper;
-import org.preesm.algorithm.throughput.tools.helpers.Stopwatch;
-import org.preesm.algorithm.throughput.tools.parsers.Identifier;
-import org.preesm.algorithm.throughput.tools.transformers.SDFTransformer;
-import org.preesm.algorithm.throughput.tools.transformers.SrSDFTransformer;
+import org.preesm.algorithm.throughput.tools.GraphStructureHelper;
+import org.preesm.algorithm.throughput.tools.Identifier;
+import org.preesm.algorithm.throughput.tools.SDFTransformer;
+import org.preesm.algorithm.throughput.tools.SrSDFTransformer;
+import org.preesm.algorithm.throughput.tools.Stopwatch;
 
 /**
  * @author hderoui

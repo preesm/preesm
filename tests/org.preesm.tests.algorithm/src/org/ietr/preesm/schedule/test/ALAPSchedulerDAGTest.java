@@ -40,7 +40,7 @@ import org.junit.Test;
 import org.preesm.algorithm.model.sdf.SDFGraph;
 import org.preesm.algorithm.schedule.ALAPSchedulerDAG;
 import org.preesm.algorithm.schedule.ASAPSchedulerDAG;
-import org.preesm.algorithm.throughput.tools.helpers.GraphStructureHelper;
+import org.preesm.algorithm.throughput.tools.GraphStructureHelper;
 
 /**
  * Unit test of ALAPScheduler_DAG class

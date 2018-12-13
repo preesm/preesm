@@ -38,7 +38,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Observable;
 import java.util.Observer;
-import org.preesm.algorithm.model.visitors.IGraphVisitor;
 
 /**
  * Abstract class common to all edges.

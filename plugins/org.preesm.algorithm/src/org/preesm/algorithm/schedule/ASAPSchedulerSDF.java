@@ -42,8 +42,8 @@ import java.util.Map.Entry;
 import org.preesm.algorithm.model.sdf.SDFAbstractVertex;
 import org.preesm.algorithm.model.sdf.SDFGraph;
 import org.preesm.algorithm.model.sdf.SDFInterfaceVertex;
-import org.preesm.algorithm.throughput.tools.helpers.GraphSimulationHelper;
-import org.preesm.algorithm.throughput.tools.helpers.Stopwatch;
+import org.preesm.algorithm.throughput.tools.GraphSimulationHelper;
+import org.preesm.algorithm.throughput.tools.Stopwatch;
 
 /**
  * @author hderoui

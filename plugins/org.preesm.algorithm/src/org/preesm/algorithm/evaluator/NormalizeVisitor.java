@@ -35,12 +35,12 @@
  */
 package org.preesm.algorithm.evaluator;
 
+import org.preesm.algorithm.model.IGraphVisitor;
 import org.preesm.algorithm.model.IInterface;
 import org.preesm.algorithm.model.sdf.SDFAbstractVertex;
 import org.preesm.algorithm.model.sdf.SDFEdge;
 import org.preesm.algorithm.model.sdf.SDFGraph;
 import org.preesm.algorithm.model.sdf.SDFInterfaceVertex;
-import org.preesm.algorithm.model.visitors.IGraphVisitor;
 import org.preesm.commons.exceptions.PreesmException;
 
 /**

@@ -38,9 +38,9 @@ package org.preesm.algorithm.throughput;
 import org.apache.commons.lang3.math.Fraction;
 import org.preesm.algorithm.model.sdf.SDFGraph;
 import org.preesm.algorithm.schedule.PeriodicSchedulerSDF;
-import org.preesm.algorithm.throughput.tools.helpers.Stopwatch;
-import org.preesm.algorithm.throughput.tools.transformers.IBSDFTransformer;
-import org.preesm.algorithm.throughput.tools.transformers.SDFTransformer;
+import org.preesm.algorithm.throughput.tools.IBSDFTransformer;
+import org.preesm.algorithm.throughput.tools.SDFTransformer;
+import org.preesm.algorithm.throughput.tools.Stopwatch;
 
 /**
  * @author hderoui

@@ -47,11 +47,11 @@ import org.eclipse.xtend.lib.annotations.Accessors
 import org.jgrapht.alg.connectivity.KosarajuStrongConnectivityInspector
 import org.jgrapht.alg.cycle.CycleDetector
 import org.jgrapht.graph.AsSubgraph
+import org.preesm.algorithm.model.IGraphVisitor
 import org.preesm.algorithm.model.sdf.SDFAbstractVertex
 import org.preesm.algorithm.model.sdf.SDFEdge
 import org.preesm.algorithm.model.sdf.SDFGraph
 import org.preesm.algorithm.model.sdf.visitors.ToHSDFVisitor
-import org.preesm.algorithm.model.visitors.IGraphVisitor
 import org.preesm.commons.exceptions.PreesmException
 
 /**

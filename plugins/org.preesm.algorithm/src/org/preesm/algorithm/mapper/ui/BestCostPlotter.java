@@ -69,8 +69,8 @@ import org.jfree.data.time.Millisecond;
 import org.jfree.data.time.TimeSeries;
 import org.jfree.data.time.TimeSeriesCollection;
 import org.jfree.ui.ApplicationFrame;
-import org.preesm.algorithm.mapper.algo.fast.FastAlgorithm;
-import org.preesm.algorithm.mapper.algo.pfast.PFastAlgorithm;
+import org.preesm.algorithm.mapper.algo.FastAlgorithm;
+import org.preesm.algorithm.mapper.algo.PFastAlgorithm;
 
 // TODO: Auto-generated Javadoc
 /**

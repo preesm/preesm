@@ -34,16 +34,13 @@
  * The fact that you are presently reading this means that you have had
  * knowledge of the CeCILL license and that you accept its terms.
  */
-package org.preesm.algorithm.mapper.abc.route.impl;
+package org.preesm.algorithm.mapper.abc.route;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.logging.Level;
 import org.preesm.algorithm.mapper.abc.edgescheduling.IEdgeSched;
 import org.preesm.algorithm.mapper.abc.edgescheduling.SimpleEdgeSched;
-import org.preesm.algorithm.mapper.abc.route.CommunicationRouter;
-import org.preesm.algorithm.mapper.abc.route.CommunicationRouterImplementer;
-import org.preesm.algorithm.mapper.abc.transaction.AddOverheadVertexTransaction;
+import org.preesm.algorithm.mapper.abc.transaction.AddInvolvementVertexTransaction;
 import org.preesm.algorithm.mapper.abc.transaction.AddSendReceiveTransaction;
 import org.preesm.algorithm.mapper.abc.transaction.AddTransferVertexTransaction;
 import org.preesm.algorithm.mapper.abc.transaction.Transaction;
@@ -51,26 +48,24 @@ import org.preesm.algorithm.mapper.abc.transaction.TransactionManager;
 import org.preesm.algorithm.mapper.model.MapperDAGEdge;
 import org.preesm.algorithm.mapper.model.MapperDAGVertex;
 import org.preesm.algorithm.mapper.model.special.TransferVertex;
-import org.preesm.commons.logger.PreesmLogger;
 import org.preesm.model.slam.ComponentInstance;
-import org.preesm.model.slam.component.Dma;
 import org.preesm.model.slam.route.AbstractRouteStep;
-import org.preesm.model.slam.route.DmaRouteStep;
+import org.preesm.model.slam.route.MemRouteStep;
 
 /**
- * Class responsible to generate the suited vertices while simulating a dma communication.
+ * Class responsible to generate the suited vertices while simulating a shared ram communication.
  *
  * @author mpelcat
  */
-public class DmaComRouterImplementer extends CommunicationRouterImplementer {
+public class SharedRamRouterImplementer extends CommunicationRouterImplementer {
 
   /**
-   * Instantiates a new dma com router implementer.
+   * Instantiates a new shared ram router implementer.
    *
    * @param user
    *          the user
    */
-  public DmaComRouterImplementer(final CommunicationRouter user) {
+  public SharedRamRouterImplementer(final CommunicationRouter user) {
     super(user);
   }
 
@@ -96,7 +91,7 @@ public class DmaComRouterImplementer extends CommunicationRouterImplementer {
   }
 
   /**
-   * Adds the simulation vertices for a given edge and a given route step.
+   * Adds the simulation vertices.
    *
    * @param routeStep
    *          the route step
@@ -116,53 +111,73 @@ public class DmaComRouterImplementer extends CommunicationRouterImplementer {
    */
   @Override
   public Transaction addVertices(final AbstractRouteStep routeStep, final MapperDAGEdge edge,
-      final TransactionManager transactions, final int type, final int routeStepIndex,
-      final Transaction lastTransaction, final List<Object> alreadyCreatedVertices) {
+      final TransactionManager transactions, final int type, final int routeStepIndex, Transaction lastTransaction,
+      final List<Object> alreadyCreatedVertices) {
 
-    if (routeStep instanceof DmaRouteStep) {
+    if (routeStep instanceof MemRouteStep) {
       // Adding the transfers
-      final DmaRouteStep dmaStep = ((DmaRouteStep) routeStep);
+      final MemRouteStep ramStep = ((MemRouteStep) routeStep);
+      // All the transfers along the path have the same time: the time
+      // to transfer the data on the slowest contention node
+      final long senderTransferTime = ramStep.getSenderSideWorstTransferTime(edge.getInit().getDataSize());
+      final long receiverTransferTime = ramStep.getReceiverSideWorstTransferTime(edge.getInit().getDataSize());
 
-      // Adding the transfers of a dma route step
+      // Adding the transfers of a ram route step
       if (type == CommunicationRouter.TRANSFER_TYPE) {
-        // All the transfers along the path have the same time: the time
-        // to transfer the data on the slowest contention node
-        final long transferTime = dmaStep.getWorstTransferTime(edge.getInit().getDataSize());
-        final List<ComponentInstance> nodes = dmaStep.getContentionNodes();
+        List<ComponentInstance> nodes = ramStep.getSenderSideContentionNodes();
         AddTransferVertexTransaction transaction = null;
 
         for (final ComponentInstance node : nodes) {
           final int nodeIndex = nodes.indexOf(node);
-          transaction = new AddTransferVertexTransaction("transfer", lastTransaction, getEdgeScheduler(), edge,
-              getImplementation(), getOrderManager(), routeStepIndex, nodeIndex, routeStep, transferTime, node, true);
+          transaction = new AddTransferVertexTransaction("write", lastTransaction, getEdgeScheduler(), edge,
+              getImplementation(), getOrderManager(), routeStepIndex, nodeIndex, routeStep, senderTransferTime, node,
+              true);
+          transactions.add(transaction);
+        }
+
+        lastTransaction = transaction;
+
+        nodes = ramStep.getReceiverSideContentionNodes();
+        for (final ComponentInstance node : nodes) {
+          final int nodeIndex = nodes.indexOf(node);
+          transaction = new AddTransferVertexTransaction("read", lastTransaction, getEdgeScheduler(), edge,
+              getImplementation(), getOrderManager(), routeStepIndex, nodeIndex, routeStep, receiverTransferTime, node,
+              true);
           transactions.add(transaction);
         }
 
         return transaction;
-      } else if (type == CommunicationRouter.OVERHEAD_TYPE) {
-        // Adding the overhead
+      } else if (type == CommunicationRouter.INVOLVEMENT_TYPE) {
+        // Adding the involvements
         MapperDAGEdge incomingEdge = null;
+        MapperDAGEdge outgoingEdge = null;
+        int currentNodeIndex = -1;
 
         for (final Object o : alreadyCreatedVertices) {
           if (o instanceof TransferVertex) {
             final TransferVertex v = (TransferVertex) o;
             if (v.getSource().equals(edge.getSource()) && v.getTarget().equals(edge.getTarget())
                 && (v.getRouteStep() == routeStep) && (v.getNodeIndex() == 0)) {
-              // Finding the edge where to add an overhead
+              // Finding the edge where to add an involvement
               incomingEdge = (MapperDAGEdge) v.incomingEdges().toArray()[0];
+            } else if (v.getTarget().equals(edge.getTarget()) && v.getSource().equals(edge.getSource())
+                && (v.getRouteStep() == routeStep) && (v.getNodeIndex() > currentNodeIndex)) {
+              // Finding the edge where to add an involvement
+              outgoingEdge = (MapperDAGEdge) v.outgoingEdges().toArray()[0];
+              currentNodeIndex = v.getNodeIndex();
             }
 
           }
         }
 
-        final Dma dmaDef = dmaStep.getDma();
-        final long overheadTime = dmaDef.getSetupTime();
         if (incomingEdge != null) {
-          transactions.add(new AddOverheadVertexTransaction(incomingEdge, getImplementation(), routeStep, overheadTime,
-              getOrderManager()));
-        } else {
-          PreesmLogger.getLogger().log(Level.FINE,
-              "The transfer following vertex" + edge.getSource() + "was not found. We could not add overhead.");
+          transactions.add(new AddInvolvementVertexTransaction(true, incomingEdge, getImplementation(), routeStep,
+              senderTransferTime, getOrderManager()));
+        }
+
+        if (outgoingEdge != null) {
+          transactions.add(new AddInvolvementVertexTransaction(false, outgoingEdge, getImplementation(), routeStep,
+              receiverTransferTime, getOrderManager()));
         }
 
       } else if (type == CommunicationRouter.SYNCHRO_TYPE) {
@@ -176,11 +191,14 @@ public class DmaComRouterImplementer extends CommunicationRouterImplementer {
             if (v.getSource().equals(edge.getSource()) && v.getTarget().equals(edge.getTarget())
                 && (v.getRouteStep() == routeStep)) {
               toSynchronize.add(v);
+
+              if (v.getInvolvementVertex() != null) {
+                toSynchronize.add(v.getInvolvementVertex());
+              }
             }
 
           }
         }
-
       } else if (type == CommunicationRouter.SEND_RECEIVE_TYPE) {
 
         final Transaction transaction = new AddSendReceiveTransaction(lastTransaction, edge, getImplementation(),
@@ -190,6 +208,7 @@ public class DmaComRouterImplementer extends CommunicationRouterImplementer {
         return transaction;
       }
     }
+
     return null;
   }
 

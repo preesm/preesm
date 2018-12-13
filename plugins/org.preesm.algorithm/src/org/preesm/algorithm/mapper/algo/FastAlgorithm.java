@@ -35,7 +35,7 @@
  * The fact that you are presently reading this means that you have had
  * knowledge of the CeCILL license and that you accept its terms.
  */
-package org.preesm.algorithm.mapper.algo.fast;
+package org.preesm.algorithm.mapper.algo;
 
 import java.util.Iterator;
 import java.util.List;
@@ -49,8 +49,6 @@ import org.preesm.algorithm.mapper.abc.impl.latency.LatencyAbc;
 import org.preesm.algorithm.mapper.abc.order.VertexOrderList;
 import org.preesm.algorithm.mapper.abc.taskscheduling.AbstractTaskSched;
 import org.preesm.algorithm.mapper.abc.taskscheduling.TaskSwitcher;
-import org.preesm.algorithm.mapper.algo.list.InitialLists;
-import org.preesm.algorithm.mapper.algo.list.KwokListScheduler;
 import org.preesm.algorithm.mapper.gantt.GanttData;
 import org.preesm.algorithm.mapper.model.MapperDAG;
 import org.preesm.algorithm.mapper.model.MapperDAGVertex;

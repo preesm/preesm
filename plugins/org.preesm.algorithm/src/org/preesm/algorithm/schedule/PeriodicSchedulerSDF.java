@@ -45,9 +45,9 @@ import org.preesm.algorithm.mathematicalModels.SolverMethod;
 import org.preesm.algorithm.model.sdf.SDFAbstractVertex;
 import org.preesm.algorithm.model.sdf.SDFEdge;
 import org.preesm.algorithm.model.sdf.SDFGraph;
-import org.preesm.algorithm.throughput.tools.helpers.GraphStructureHelper;
-import org.preesm.algorithm.throughput.tools.helpers.Stopwatch;
-import org.preesm.algorithm.throughput.tools.transformers.SDFTransformer;
+import org.preesm.algorithm.throughput.tools.GraphStructureHelper;
+import org.preesm.algorithm.throughput.tools.SDFTransformer;
+import org.preesm.algorithm.throughput.tools.Stopwatch;
 import org.preesm.commons.exceptions.PreesmException;
 import org.preesm.commons.math.MathFunctionsHelper;
 
