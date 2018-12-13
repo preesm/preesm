@@ -72,22 +72,16 @@ public class SpecialActorPortsIndexer {
    * </ul>
    */
   public static final String INDEX_REGEX = ".*?(_([0-9]*))?_([0-9]*)\\z";
-  @Deprecated
-  public static final String indexRegex  = INDEX_REGEX;
 
   /**
    * Group of the XX index in the {@link #INDEX_REGEX}
    */
   public static final int GROUP_XX = 3;
-  @Deprecated
-  public static final int groupXX  = GROUP_XX;
 
   /**
    * Group of the YY index in the {@link #INDEX_REGEX}
    */
   private static final int GROUP_YY = 2;
-  @Deprecated
-  public static final int  groupYY  = GROUP_YY;
 
   /**
    * This method rename all ordered ports of special actors in the following fashion:

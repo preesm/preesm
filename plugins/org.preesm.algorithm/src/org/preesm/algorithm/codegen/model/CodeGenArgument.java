@@ -36,7 +36,6 @@
  */
 package org.preesm.algorithm.codegen.model;
 
-// TODO: Auto-generated Javadoc
 /**
  * Representation of a buffer in a prototype.
  *
@@ -53,9 +52,6 @@ public class CodeGenArgument extends CodeGenCallElement {
 
   /** The Constant OUTPUT. */
   public static final String OUTPUT = "OUTPUT";
-
-  /** The Constant INOUT. */
-  public static final String INOUT = "INOUT";
 
   /** The direction. */
   private final String direction;

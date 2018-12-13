@@ -88,12 +88,6 @@ public class SDFGraph extends AbstractGraph<SDFAbstractVertex, SDFEdge> {
   /** The Constant serialVersionUID. */
   private static final long serialVersionUID = 1L;
 
-  /** The Constant TOPOLOGY. */
-  protected static final String TOPOLOGY = TOPOLOGY_LITERAL;
-
-  /** The Constant VALID_MODEL. */
-  protected static final String VALID_MODEL = "valid_model";
-
   /** The old ref. */
   // use HashMap for inheriting serializable
   private final HashMap<SDFEdge, SDFEdge> oldRef = new LinkedHashMap<>();

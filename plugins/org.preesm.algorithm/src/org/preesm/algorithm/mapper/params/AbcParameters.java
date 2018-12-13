@@ -38,7 +38,6 @@
  */
 package org.preesm.algorithm.mapper.params;
 
-import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.logging.Level;
 import org.preesm.algorithm.mapper.abc.AbcType;
@@ -52,9 +51,6 @@ import org.preesm.commons.logger.PreesmLogger;
  */
 public class AbcParameters {
 
-  /** The text parameters. */
-  private Map<String, String> textParameters = null;
-
   /** Simulator type. */
   private AbcType simulatorType = null;
 
@@ -65,34 +61,12 @@ public class AbcParameters {
   private boolean balanceLoads = false;
 
   /**
-   * Constructor creating a new text parameter.
-   *
-   * @param simulatorType
-   *          the simulator type
-   * @param edgeSchedType
-   *          the edge sched type
-   * @param balanceLoads
-   *          the balance loads
-   */
-  public AbcParameters(final AbcType simulatorType, final EdgeSchedType edgeSchedType, final boolean balanceLoads) {
-    this.textParameters = new LinkedHashMap<>();
-    this.simulatorType = simulatorType;
-    this.edgeSchedType = edgeSchedType;
-    this.balanceLoads = balanceLoads;
-
-    this.textParameters.put("simulatorType", simulatorType.toString());
-    this.textParameters.put("edgeSchedType", edgeSchedType.toString());
-    this.textParameters.put("balanceLoads", Boolean.toString(balanceLoads));
-  }
-
-  /**
    * Constructor from textual parameters.
    *
    * @param textParameters
    *          the text parameters
    */
   public AbcParameters(final Map<String, String> textParameters) {
-    this.textParameters = textParameters;
     this.simulatorType = AbcType.fromString(textParameters.get("simulatorType"));
     this.edgeSchedType = EdgeSchedType.fromString(textParameters.get("edgeSchedType"));
     this.balanceLoads = Boolean.valueOf(textParameters.get("balanceLoads"));
