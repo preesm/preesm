@@ -49,8 +49,8 @@ public class CustomQuanta {
   /**
    * Key for storing the number of custom quanta in a 2D map
    */
-  static class MapKeyPair {
-    String         actor;
+  private static class MapKeyPair {
+    private String actor;
     private String operator;
 
     private MapKeyPair(String actor, String operator) {

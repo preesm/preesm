@@ -58,7 +58,7 @@ import org.preesm.workflow.implement.AbstractTaskImplementation;
 public abstract class AbstractMemoryAllocatorTask extends AbstractTaskImplementation {
 
   /** The Constant PARAM_VERBOSE. */
-  public static final String PARAM_VERBOSE = "Verbose";
+  private static final String PARAM_VERBOSE = "Verbose";
 
   /** The Constant VALUE_TRUE_FALSE_DEFAULT. */
   private static final String VALUE_TRUE_FALSE_DEFAULT = "? C {True, False}";

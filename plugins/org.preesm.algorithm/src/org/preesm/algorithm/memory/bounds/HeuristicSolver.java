@@ -72,7 +72,7 @@ public class HeuristicSolver<V extends IWeightedVertex<Long> & Comparable<V>, E 
    * @author kdesnos
    *
    */
-  public class VertexCost {
+  private class VertexCost {
     /**
      * Number of edges of a vertex.
      */
@@ -89,7 +89,7 @@ public class HeuristicSolver<V extends IWeightedVertex<Long> & Comparable<V>, E 
      * @param nbEdges
      *          the number of edges
      */
-    public VertexCost(final long weight, final long nbEdges) {
+    private VertexCost(final long weight, final long nbEdges) {
       this.neighborsWeight = weight;
       this.nbEdges = nbEdges;
     }
@@ -140,7 +140,7 @@ public class HeuristicSolver<V extends IWeightedVertex<Long> & Comparable<V>, E 
    * @deprecated Not used anymore in the HeuristicSolver algorithm
    */
   @Deprecated
-  public class VerticesPair {
+  private class VerticesPair {
 
     /** The first. */
     private V first;

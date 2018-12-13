@@ -203,7 +203,7 @@ public class DeGreefAllocator extends MemoryAllocator {
   /**
    * The Class IntegerAndVertex.
    */
-  protected class IntegerAndVertex implements Comparable<IntegerAndVertex> {
+  private class IntegerAndVertex implements Comparable<IntegerAndVertex> {
 
     /** The first. */
     private long first;

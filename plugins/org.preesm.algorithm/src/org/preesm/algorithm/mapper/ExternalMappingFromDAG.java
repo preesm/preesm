@@ -266,7 +266,7 @@ public class ExternalMappingFromDAG extends AbstractMappingFromDAG {
    * @author anmorvan
    *
    */
-  class ScheduleComparator implements Comparator<DAGVertex> {
+  private class ScheduleComparator implements Comparator<DAGVertex> {
 
     private final Map<DAGVertex, ScheduleEntry> entries;
 
