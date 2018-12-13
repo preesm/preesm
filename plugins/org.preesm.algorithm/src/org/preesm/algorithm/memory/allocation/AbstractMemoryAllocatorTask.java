@@ -67,9 +67,6 @@ public abstract class AbstractMemoryAllocatorTask extends AbstractTaskImplementa
   /** The Constant VALUE_TRUE. */
   public static final String VALUE_TRUE = "True";
 
-  /** The Constant VALUE_FALSE. */
-  public static final String VALUE_FALSE = "False";
-
   /** The Constant PARAM_ALLOCATORS. */
   public static final String PARAM_ALLOCATORS = "Allocator(s)";
 

@@ -80,9 +80,6 @@ public abstract class GMLExporter<V extends AbstractVertex<?>, E extends Abstrac
   /** The class key set. */
   protected Map<String, List<GMLKey>> classKeySet;
 
-  /** The index. */
-  protected int index = 0;
-
   /** The root elt. */
   protected Element rootElt;
 

@@ -36,26 +36,12 @@
  */
 package org.preesm.algorithm.model.parameters.factories;
 
-import org.preesm.algorithm.model.AbstractVertex;
 import org.preesm.algorithm.model.parameters.Argument;
 
 /**
  * A factory for creating Argument objects.
  */
 public class ArgumentFactory {
-
-  /** The p vertex. */
-  protected AbstractVertex<?> pVertex;
-
-  /**
-   * Instantiates a new argument factory.
-   *
-   * @param vertex
-   *          the vertex
-   */
-  public ArgumentFactory(final AbstractVertex<?> vertex) {
-    this.pVertex = vertex;
-  }
 
   /**
    * Creates the.

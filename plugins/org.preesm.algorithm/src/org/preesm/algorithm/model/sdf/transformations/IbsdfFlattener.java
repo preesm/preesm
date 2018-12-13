@@ -323,13 +323,6 @@ public class IbsdfFlattener {
   }
 
   /**
-   *
-   */
-  enum Side {
-    SRC, TGT, BOTH
-  }
-
-  /**
    * Flatten the graph up to the {@link #depth} specified in the {@link IbsdfFlattener} attributes. Result of the
    * flattening can be obtained through the {@link #getFlattenedGraph()} method.
    */

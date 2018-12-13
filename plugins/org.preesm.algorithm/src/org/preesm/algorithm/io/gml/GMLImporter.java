@@ -93,9 +93,6 @@ public abstract class GMLImporter<G extends AbstractGraph<?, ?>, V extends Abstr
   /** The vertex factory. */
   protected IModelVertexFactory<V> vertexFactory;
 
-  /** The input stream. */
-  protected InputStream inputStream;
-
   /** The path. */
   protected String path;
 
@@ -163,7 +160,6 @@ public abstract class GMLImporter<G extends AbstractGraph<?, ?>, V extends Abstr
    *           the invalid model exception
    */
   private G parse(final InputStream input) {
-    this.inputStream = input;
 
     // using DOM3
     DOMImplementationRegistry registry = null;

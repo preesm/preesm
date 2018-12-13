@@ -281,7 +281,7 @@ public abstract class AbstractGraph<V extends AbstractVertex, E extends Abstract
    * @return the argument factory
    */
   public ArgumentFactory getArgumentFactory(final V v) {
-    return new ArgumentFactory(v);
+    return new ArgumentFactory();
   }
 
   /**
@@ -487,7 +487,7 @@ public abstract class AbstractGraph<V extends AbstractVertex, E extends Abstract
    * @return the parameter factory
    */
   public ParameterFactory getParameterFactory() {
-    return new ParameterFactory(this);
+    return new ParameterFactory();
   }
 
   /**

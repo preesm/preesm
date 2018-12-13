@@ -44,14 +44,10 @@ import org.preesm.algorithm.memory.exclusiongraph.MemoryExclusionGraph;
 import org.preesm.algorithm.memory.exclusiongraph.MemoryExclusionVertex;
 import org.preesm.commons.logger.PreesmLogger;
 
-// TODO: Auto-generated Javadoc
 /**
  * The Class MemoryBoundsEstimatorEngine.
  */
 public class MemoryBoundsEstimatorEngine {
-
-  /** The Constant PARAM_SOLVER. */
-  public static final String PARAM_SOLVER = "Solver";
 
   /** The Constant VALUE_SOLVER_DEFAULT. */
   public static final String VALUE_SOLVER_DEFAULT = "? C {Heuristic, Ostergard, Yamaguchi}";

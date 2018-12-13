@@ -102,34 +102,6 @@ public class AddSendReceiveTransaction extends Transaction {
   /**
    * Instantiates a new adds the send receive transaction.
    *
-   * @param edge
-   *          the edge
-   * @param implementation
-   *          the implementation
-   * @param orderManager
-   *          the order manager
-   * @param routeIndex
-   *          the route index
-   * @param step
-   *          the step
-   * @param transferCost
-   *          the transfer cost
-   */
-  public AddSendReceiveTransaction(final MapperDAGEdge edge, final MapperDAG implementation,
-      final OrderManager orderManager, final int routeIndex, final AbstractRouteStep step, final long transferCost) {
-    super();
-    this.precedingTransaction = null;
-    this.edge = edge;
-    this.implementation = implementation;
-    this.orderManager = orderManager;
-    this.routeIndex = routeIndex;
-    this.step = step;
-    this.transferCost = transferCost;
-  }
-
-  /**
-   * Instantiates a new adds the send receive transaction.
-   *
    * @param precedingTransaction
    *          the preceding transaction
    * @param edge

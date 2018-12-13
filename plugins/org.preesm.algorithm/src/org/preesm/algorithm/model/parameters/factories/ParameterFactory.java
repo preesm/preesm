@@ -36,26 +36,12 @@
  */
 package org.preesm.algorithm.model.parameters.factories;
 
-import org.preesm.algorithm.model.AbstractGraph;
 import org.preesm.algorithm.model.parameters.Parameter;
 
 /**
  * A factory for creating Parameter objects.
  */
 public class ParameterFactory {
-
-  /** The p graph. */
-  protected AbstractGraph<?, ?> pGraph;
-
-  /**
-   * Instantiates a new parameter factory.
-   *
-   * @param graph
-   *          the graph
-   */
-  public ParameterFactory(final AbstractGraph<?, ?> graph) {
-    this.pGraph = graph;
-  }
 
   /**
    * Creates the.

@@ -62,13 +62,9 @@ public abstract class AbstractVertex<G> extends Observable
 
   /** Property name for property base. */
   public static final String BASE_LITERAL = "base";
-  @Deprecated
-  public static final String BASE         = BASE_LITERAL;
 
   /** Property name for property graph_desc. */
   public static final String REFINEMENT_LITERAL = "graph_desc";
-  @Deprecated
-  public static final String REFINEMENT         = REFINEMENT_LITERAL;
 
   /** Property name for property arguments. */
   public static final String ARGUMENTS_LITERAL = "arguments";
@@ -84,8 +80,6 @@ public abstract class AbstractVertex<G> extends Observable
 
   /** Property kind for property name. */
   public static final String KIND_LITERAL = "kind";
-  @Deprecated
-  public static final String KIND         = KIND_LITERAL;
 
   /** The public properties. */
   protected static final List<
