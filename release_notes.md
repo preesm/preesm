@@ -12,6 +12,7 @@ PREESM Changelog
   * Make Init/End actors special actors;
   * Update graph abstraction and implement high level operations;
   * Add structure checkers;
+* Update TCP Codegen: add threads dedicated to receive operations in order to free the TCP buffers ASAP and avoid deadlocks;
 
 ### Bug fix
 
