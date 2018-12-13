@@ -141,6 +141,10 @@ void preesm_receive_start(int from, int to, int * socketRegistry, char* buffer, 
 	  ioctl(socket, FIONREAD, &count);
 	  // if not enough bytes are available, block until data arrive, then recheck
 	  while (count < newSize) {
+		// we can afford to sleep 50 us since if the socket does not have enough
+		// data available, it's not likely to have enough ready right away. Indeed
+		// even on LAN the latency is around 1 ms.
+		usleep(50);
 		preesm_poll_socket_read_available(socket);
 #ifdef _PREESM_TCP_DEBUG_
   printf("[TCP-DEBUG]   pollin. Size was %d; expecting %d\n",count, newSize); fflush(stdout);
