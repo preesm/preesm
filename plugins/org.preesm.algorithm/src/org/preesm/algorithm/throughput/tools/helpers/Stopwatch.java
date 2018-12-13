@@ -50,18 +50,6 @@ public class Stopwatch {
   private double       timeConverterFactor;
 
   /**
-   * a class constructor with a name for the stopwatch
-   *
-   * @param label
-   *          a name for the stopwatch
-   */
-  public Stopwatch(final String label) {
-    this.label = label;
-    this.accumulatedTime = 0;
-    setTimeSconds();
-  }
-
-  /**
    * Default constructor
    */
   public Stopwatch() {
@@ -99,50 +87,12 @@ public class Stopwatch {
   }
 
   /**
-   * pause the stopwatch
-   */
-  public void pause() {
-    if (this.isRunning) {
-      this.accumulatedTime += currentTime() - this.startTime;
-    }
-  }
-
-  /**
-   * resume the stopwatch
-   */
-  public void resume() {
-    this.startTime = currentTime();
-  }
-
-  /**
    * get the current time of the system
    *
    * @return current time
    */
   private double currentTime() {
     return (System.currentTimeMillis() * this.timeConverterFactor);
-  }
-
-  /**
-   * get the value of the stopwacth
-   *
-   * @return time value of the stopwatch
-   */
-  public double value() {
-    return this.accumulatedTime;
-  }
-
-  /**
-   * get the current value of the stopwatch
-   *
-   * @return time
-   */
-  public double watch() {
-    if (this.isRunning) {
-      return (currentTime() - this.startTime) + this.accumulatedTime;
-    } else {
-      return 0;
-    }
   }
 
   /**
@@ -155,27 +105,11 @@ public class Stopwatch {
   }
 
   /**
-   * set the milliseconds as the time unit of the stopwatch
-   */
-  public void setTimeMillis() {
-    this.timeConverterFactor = 1;
-    this.format = "Millis";
-  }
-
-  /**
    * set the seconds as the time unit of the stopwatch
    */
   private void setTimeSconds() {
     this.timeConverterFactor = (double) 1 / (1000);
     this.format = "Seconds";
-  }
-
-  /**
-   * set the minutes as the time unit of the stopwatch
-   */
-  public void setTimeMinutes() {
-    this.timeConverterFactor = (double) 1 / (1000 * 60);
-    this.format = "Minutes";
   }
 
   /**

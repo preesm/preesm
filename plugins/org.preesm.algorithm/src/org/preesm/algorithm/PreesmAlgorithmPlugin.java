@@ -87,25 +87,6 @@ public class PreesmAlgorithmPlugin extends AbstractUIPlugin {
   }
 
   /**
-   * Returns an image for the image file at the given plug-in relative path.
-   *
-   * @param path
-   *          the path
-   * @return the image
-   */
-  public Image getImage(final String path) {
-    final ImageRegistry ir = getImageRegistry();
-    Image image = ir.get(path);
-    if (image == null) {
-      final ImageDescriptor id = AbstractUIPlugin.imageDescriptorFromPlugin(PLUGIN_ID, path);
-      image = id.createImage();
-      ir.put(path, image);
-    }
-
-    return image;
-  }
-
-  /**
    *
    */
   public ImageDescriptor getImageDescriptor(final String path) {

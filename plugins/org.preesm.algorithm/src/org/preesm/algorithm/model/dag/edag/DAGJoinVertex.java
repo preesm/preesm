@@ -37,7 +37,6 @@ package org.preesm.algorithm.model.dag.edag;
 import java.util.ArrayList;
 import java.util.List;
 import org.preesm.algorithm.model.AbstractEdge;
-import org.preesm.algorithm.model.AbstractVertexPropertyType;
 import org.preesm.algorithm.model.dag.DAGEdge;
 import org.preesm.algorithm.model.dag.DAGVertex;
 
@@ -59,21 +58,6 @@ public class DAGJoinVertex extends DAGVertex {
    */
   public DAGJoinVertex() {
     super();
-    setKind(DAGJoinVertex.DAG_JOIN_VERTEX);
-  }
-
-  /**
-   * Creates a new DAGJoinVertex with the name "n", the execution time "t" and the number of repetition "nb".
-   *
-   * @param n
-   *          This Vertex name
-   * @param t
-   *          This Vertex execution time
-   * @param nb
-   *          This Vertex number of repetition
-   */
-  public DAGJoinVertex(final String n, final AbstractVertexPropertyType<?> t, final AbstractVertexPropertyType<?> nb) {
-    super(n, t, nb);
     setKind(DAGJoinVertex.DAG_JOIN_VERTEX);
   }
 
@@ -103,27 +87,6 @@ public class DAGJoinVertex extends DAGVertex {
       getPropertyBean().setValue(DAGJoinVertex.EDGES_ORDER, connections);
     }
     getPropertyBean().<List<DAGEdge>>getValue(DAGJoinVertex.EDGES_ORDER).remove(newEdge);
-  }
-
-  /**
-   * Gives the edge connection index.
-   *
-   * @param edge
-   *          The edge to get the connection index
-   * @return The connection index of the edge
-   */
-  public Long getEdgeIndex(final DAGEdge edge) {
-    if (getPropertyBean().<List<DAGEdge>>getValue(DAGJoinVertex.EDGES_ORDER) != null) {
-      long i = 0;
-      final List<DAGEdge> connections = getPropertyBean().getValue(DAGJoinVertex.EDGES_ORDER);
-      for (final DAGEdge eqEdge : connections) {
-        if (eqEdge.compare(edge)) {
-          return i;
-        }
-        i++;
-      }
-    }
-    return 0L;
   }
 
   /*

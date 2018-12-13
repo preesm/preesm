@@ -38,7 +38,6 @@
  */
 package org.preesm.algorithm.model.dag.edag;
 
-import org.preesm.algorithm.model.AbstractVertexPropertyType;
 import org.preesm.algorithm.model.dag.DAGVertex;
 
 /**
@@ -65,21 +64,6 @@ public class DAGInitVertex extends DAGVertex {
    */
   public DAGInitVertex() {
     super();
-    setKind(DAGInitVertex.DAG_INIT_VERTEX);
-  }
-
-  /**
-   * Creates a new DAGForkVertex with the name "n", the execution time "t" and the number of repetition "nb".
-   *
-   * @param n
-   *          This Vertex name
-   * @param t
-   *          This Vertex execution time
-   * @param nb
-   *          This Vertex number of repetition
-   */
-  public DAGInitVertex(final String n, final AbstractVertexPropertyType<?> t, final AbstractVertexPropertyType<?> nb) {
-    super(n, t, nb);
     setKind(DAGInitVertex.DAG_INIT_VERTEX);
   }
 

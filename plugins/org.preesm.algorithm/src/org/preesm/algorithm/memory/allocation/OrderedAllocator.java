@@ -266,23 +266,6 @@ public abstract class OrderedAllocator extends MemoryAllocator {
   }
 
   /**
-   * Return the number of allocation that have a size lower or equal to the reference.
-   *
-   * @param reference
-   *          the number to compare with
-   * @return the number of allocation that give a better memory size
-   */
-  public int getNumberBetter(final long reference) {
-    int result = 0;
-    for (final long size : this.listsSize) {
-      if (size < reference) {
-        result++;
-      }
-    }
-    return result;
-  }
-
-  /**
    * Gets the order.
    *
    * @return the order

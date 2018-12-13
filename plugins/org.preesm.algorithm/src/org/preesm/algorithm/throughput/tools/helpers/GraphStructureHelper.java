@@ -707,69 +707,6 @@ public interface GraphStructureHelper {
   }
 
   /**
-   * @param source
-   *          actor
-   * @param target
-   *          actor
-   * @return value of the longest path between the source and the target
-   */
-  public static double getLongestPathToTarget(final SDFAbstractVertex source, final SDFAbstractVertex target,
-      final PreesmScenario scenario, List<SDFAbstractVertex> topoSortList) {
-
-    // get the topological sorting of the graph
-    if (topoSortList == null) {
-      topoSortList = GraphStructureHelper.partialTopologicalSorting(source);
-    }
-
-    // table of distances
-    final Map<String, Double> distance = new LinkedHashMap<>();
-    for (final SDFAbstractVertex actor : topoSortList) {
-      distance.put(actor.getName(), Double.NEGATIVE_INFINITY);
-    }
-    distance.replace(source.getName(), 0.);
-
-    for (int i = 0; i < topoSortList.size(); i++) {
-      // get the current source actor
-      final SDFAbstractVertex currentSource = topoSortList.get(i);
-
-      // check if the target actor is reached
-      if (currentSource.getName().equals(target.getName())) {
-        return distance.get(target.getName());
-      } else {
-
-        // define the edge weight as the duration of the current source actor
-        double actorDuration;
-        if (scenario != null) {
-          actorDuration = scenario.getTimingManager().getTimingOrDefault(currentSource.getId(), "x86").getTime();
-        } else {
-          actorDuration = (double) currentSource.getPropertyBean().getValue(DURATION_PROPERTY);
-        }
-
-        // update the distances
-        for (final SDFInterfaceVertex output : currentSource.getSinks()) {
-          double edgeWeight = actorDuration;
-          // get the associated output edge and its weight if defined
-          final SDFEdge outputEdge = currentSource.getAssociatedEdge(output);
-          if (outputEdge.getPropertyBean().getValue(WEIGHT_LP_PROPERTY) != null) {
-            edgeWeight = (double) outputEdge.getPropertyBean().getValue(WEIGHT_LP_PROPERTY);
-          }
-
-          // get the target actor of the associated output edge
-          final SDFAbstractVertex currentTarget = outputEdge.getTarget();
-
-          // update the distance of the current target
-          if (distance.get(currentTarget.getName()) < (distance.get(currentSource.getName()) + edgeWeight)) {
-            distance.replace(currentTarget.getName(), distance.get(currentSource.getName()) + edgeWeight);
-          }
-        }
-      }
-    }
-
-    // return the distance from the source to the target
-    return distance.get(target.getName());
-  }
-
-  /**
    * @param dag
    *          graph
    * @return value of the longest path in the graph

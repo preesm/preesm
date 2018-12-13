@@ -132,11 +132,6 @@ public abstract class AbstractVertex<G> extends Observable
     return true;
   }
 
-  @Deprecated
-  public void addInterfaces(List<IInterface> list) {
-    throw new UnsupportedOperationException("This method is deprecated and subject to removal soon.");
-  }
-
   /**
    * Gets the interfaces.
    *

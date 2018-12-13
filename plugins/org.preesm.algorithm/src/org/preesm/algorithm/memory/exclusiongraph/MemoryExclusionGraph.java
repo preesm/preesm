@@ -976,31 +976,6 @@ public class MemoryExclusionGraph extends SimpleGraph<MemoryExclusionVertex, Def
   }
 
   /**
-   * Remove a {@link MemoryExclusionVertex} from the {@link MemoryExclusionGraph}. Contrary to
-   * {@link #removeVertex(MemoryExclusionVertex)}, this method scans the properties and attributes of the
-   * {@link MemoryExclusionGraph} to remove all reference to the removed {@link MemoryExclusionVertex}.<br>
-   * <br>
-   * Properties and attributes affected by this method are:
-   * <ul>
-   * <li>List of vertices</li>
-   * <li>List of edges</li>
-   * <li>{@link #adjacentVerticesBackup}</li>
-   * <li>{@link #memExVerticesInSchedulingOrder}</li>
-   * <li>{@link #HOST_MEMORY_OBJECT_PROPERTY} property}</li>
-   * <li>{@link MemoryExclusionVertex#ADJACENT_VERTICES_BACKUP} property of {@link MemoryExclusionVertex vertices}</li>
-   * </ul>
-   *
-   * @param vertex
-   *          the {@link MemoryExclusionVertex} removed from the graph.
-   */
-  public void deepRemoveVertex(final MemoryExclusionVertex vertex) {
-    final List<MemoryExclusionVertex> list = new ArrayList<>();
-    list.add(vertex);
-    // Calls the list removing code to avoid duplicating the method code.
-    deepRemoveAllVertices(list);
-  }
-
-  /**
    * This method is used to access all the neighbors of a given vertex.
    *
    * @param vertex
@@ -1338,53 +1313,6 @@ public class MemoryExclusionGraph extends SimpleGraph<MemoryExclusionVertex, Def
     }
 
     return result;
-  }
-
-  /**
-   * This method remove node A from the graph if:<br>
-   * - Node A and node B are <b>NOT</b> linked by an edge.<br>
-   * - Nodes A and B have ALL their neighbors in common.<br>
-   * - Nodes A has a lighter weight than node B.<br>
-   * Applying this method to an exclusion graph before a MaximumWeightCliqueSolver is executed remove nodes that will
-   * never be part of the maximum weight clique.<br>
-   * <br>
-   * This method also clears the adjacentverticesBackup lists.
-   *
-   * @deprecated Not used anywhere
-   */
-  @Deprecated
-  public void removeLightestEquivalentNodes() {
-
-    // Retrieve the list of nodes of the gaph
-    final ArrayList<MemoryExclusionVertex> nodes = new ArrayList<>(vertexSet());
-
-    // Sort it in descending order of weights
-    Collections.sort(nodes, Collections.reverseOrder());
-
-    final Set<MemoryExclusionVertex> fusionned = new LinkedHashSet<>();
-
-    // Look for a pair of nodes with the properties exposed in method
-    // comments
-    for (final MemoryExclusionVertex node : nodes) {
-      if (!fusionned.contains(node)) {
-        final Set<MemoryExclusionVertex> nonAdjacentSet = new LinkedHashSet<>(vertexSet());
-        nonAdjacentSet.removeAll(getAdjacentVertexOf(node));
-        nonAdjacentSet.remove(node);
-
-        for (final MemoryExclusionVertex notNeighbor : nonAdjacentSet) {
-          if (getAdjacentVertexOf(notNeighbor).size() == getAdjacentVertexOf(node).size()) {
-            if (getAdjacentVertexOf(notNeighbor).containsAll(getAdjacentVertexOf(node))) {
-
-              // Keep only the one with the max weight
-              fusionned.add(notNeighbor);
-
-            }
-          }
-        }
-        removeAllVertices(fusionned);
-      }
-    }
-    this.adjacentVerticesBackup = new LinkedHashMap<>();
   }
 
   /**

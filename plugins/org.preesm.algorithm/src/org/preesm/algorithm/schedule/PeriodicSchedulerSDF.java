@@ -331,37 +331,6 @@ public class PeriodicSchedulerSDF {
   }
 
   /**
-   * Computes the duration of the first iteration of the graph
-   *
-   * @param graph
-   *          SDF graph
-   * @return latency
-   */
-  public double computeGraphLatency(final SDFGraph graph) {
-    // formule : S(t) = S(t0) + w*t
-    // finish date = S(t) + L
-    // for each actor computes the finish date of its last execution (RV)
-    // latency = the max finish date
-    double maxFinishDate = 0;
-
-    // compute the finish time for every actor
-    for (final SDFAbstractVertex actor : graph.vertexSet()) {
-      final double s0 = (double) actor.getPropertyBean().getValue("firstExecutionStartDate");
-      final double w = (double) actor.getPropertyBean().getValue("executionPeriod");
-      final double l = (double) actor.getPropertyBean().getValue("duration"); // or use the scenario
-
-      // finish date
-      final double finishDateOfLastExecution = s0 + (w * actor.getNbRepeatAsLong()) + l;
-
-      if (finishDateOfLastExecution > maxFinishDate) {
-        maxFinishDate = finishDateOfLastExecution;
-      }
-    }
-
-    return maxFinishDate;
-  }
-
-  /**
    * compute the duration of the graph period as RV(a)*W(a) where a is an arbitrary actor of the graph
    *
    * @param graph

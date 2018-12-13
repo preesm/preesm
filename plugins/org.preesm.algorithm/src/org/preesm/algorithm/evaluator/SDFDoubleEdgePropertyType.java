@@ -55,16 +55,6 @@ public class SDFDoubleEdgePropertyType extends AbstractEdgePropertyType<Double> 
     super(val);
   }
 
-  /**
-   * Creates a new SDFDefaultEdgePropertyType with the given String value.
-   *
-   * @param val
-   *          The String value of this SDFDefaultEdgePropertyType
-   */
-  public SDFDoubleEdgePropertyType(final String val) {
-    super(new Double(val));
-  }
-
   /*
    * (non-Javadoc)
    *

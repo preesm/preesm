@@ -35,21 +35,13 @@
  */
 package org.preesm.algorithm.clustering;
 
-import bsh.EvalError;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import org.preesm.algorithm.mapper.graphtransfo.SdfToDagConverter;
 import org.preesm.algorithm.mapper.model.MapperDAG;
-import org.preesm.algorithm.memory.allocation.BestFitAllocator;
-import org.preesm.algorithm.memory.allocation.MemoryAllocator;
-import org.preesm.algorithm.memory.allocation.OrderedAllocator;
-import org.preesm.algorithm.memory.allocation.OrderedAllocator.Order;
-import org.preesm.algorithm.memory.exclusiongraph.MemoryExclusionGraph;
-import org.preesm.algorithm.memory.script.MemoryScriptEngine;
 import org.preesm.algorithm.model.AbstractGraph;
 import org.preesm.algorithm.model.AbstractVertex;
 import org.preesm.algorithm.model.sdf.SDFAbstractVertex;
@@ -403,20 +395,6 @@ public class HSDFBuildLoops {
     return null;
   }
 
-  /**
-   * Used to print the clustered sequence.
-   */
-  public List<AbstractClust> getLoopClust(final AbstractClust a) {
-    List<AbstractClust> getLoopClusterList = null;
-    getLoopClusterList = new ArrayList<>();
-    getLoopClusterList.clear();
-    recursiveGetLoopClust(a, getLoopClusterList);
-    if (getLoopClusterList.isEmpty()) {
-      throw new PreesmException("Finished !! Error while getting clustered schedule");
-    }
-    return getLoopClusterList;
-  }
-
   private List<AbstractClust> getLoopClusterListV2 = null;
 
   /**
@@ -589,41 +567,6 @@ public class HSDFBuildLoops {
       }
     }
     return l;
-  }
-
-  MemoryExclusionGraph getMemEx(final SDFGraph srGraph) {
-    // Build DAG
-    final MapperDAG dag = SdfToDagConverter.convert(srGraph, this.architecture, this.scenario);
-
-    // Build MEG
-    final MemoryExclusionGraph memEx = new MemoryExclusionGraph();
-    memEx.buildGraph(dag);
-
-    // BUffer Merging
-    final String valueAlignment = "0";
-    final String log = "";
-    final String checkString = "";
-    final MemoryScriptEngine engine = new MemoryScriptEngine(valueAlignment, log, false);
-    try {
-      engine.runScripts(dag, this.dataTypes, checkString);
-    } catch (EvalError e) {
-      final String message = "An error occurred during memory scripts execution";
-      throw new PreesmException(message, e);
-    }
-    engine.updateMemEx(memEx);
-
-    if (!log.equals("")) {
-      // generate
-      engine.generateCode(this.scenario, log);
-    }
-
-    // Alloc
-    final OrderedAllocator alloc = new BestFitAllocator(memEx);
-    alloc.setOrder(Order.LARGEST_FIRST);
-
-    MemoryAllocator.alignSubBuffers(memEx, 64);
-    alloc.allocate();
-    return memEx;
   }
 
   private long getNaiveWorkingMemAlloc(final SDFGraph resultGraph) {

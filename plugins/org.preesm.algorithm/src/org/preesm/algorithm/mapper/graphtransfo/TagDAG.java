@@ -56,9 +56,7 @@ import org.preesm.algorithm.model.AbstractEdge;
 import org.preesm.algorithm.model.PropertyBean;
 import org.preesm.algorithm.model.dag.DAGEdge;
 import org.preesm.algorithm.model.dag.DAGVertex;
-import org.preesm.algorithm.model.sdf.SDFAbstractVertex;
 import org.preesm.algorithm.model.sdf.SDFEdge;
-import org.preesm.algorithm.model.sdf.SDFGraph;
 import org.preesm.model.scenario.PreesmScenario;
 import org.preesm.model.scenario.types.BufferAggregate;
 import org.preesm.model.scenario.types.BufferProperties;
@@ -265,33 +263,6 @@ public class TagDAG {
       edge = (MapperDAGEdge) iter.next();
       addAggregate(edge, scenario);
     }
-  }
-
-  /**
-   * Aggregate is imported from the SDF edge. An aggregate in SDF is a set of sdf edges that were merged into one DAG
-   * edge.
-   *
-   * @param edge
-   *          the edge
-   * @param scenario
-   *          the scenario
-   */
-  @SuppressWarnings("unchecked")
-  public void addAggregateFromSDF(final MapperDAGEdge edge, final PreesmScenario scenario) {
-
-    final BufferAggregate agg = new BufferAggregate();
-
-    // Iterating the SDF aggregates
-    for (final AbstractEdge<SDFGraph, SDFAbstractVertex> aggMember : edge.getAggregate()) {
-      final SDFEdge sdfAggMember = (SDFEdge) aggMember;
-      final DataType dataType = scenario.getSimulationManager().getDataType(sdfAggMember.getDataType().toString());
-      final BufferProperties props = new BufferProperties(dataType, sdfAggMember.getSourceInterface().getName(),
-          sdfAggMember.getTargetInterface().getName(), (int) sdfAggMember.getProd().longValue());
-
-      agg.add(props);
-    }
-
-    edge.getPropertyBean().setValue(BufferAggregate.propertyBeanName, agg);
   }
 
   /**

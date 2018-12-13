@@ -51,7 +51,6 @@ import org.preesm.algorithm.model.dag.DAGEdge;
 import org.preesm.algorithm.model.dag.DAGVertex;
 import org.preesm.algorithm.model.dag.DirectedAcyclicGraph;
 import org.preesm.algorithm.model.dag.EdgeAggregate;
-import org.preesm.algorithm.model.sdf.SDFAbstractVertex;
 import org.preesm.model.pisdf.PiGraph;
 
 /**
@@ -221,26 +220,6 @@ public class MapperDAG extends DirectedAcyclicGraph {
    */
   private void setTimings(final DAGTimings timingVertexProperty) {
     getPropertyBean().setValue(MapperDAG.TIMING_PROPERTY, timingVertexProperty);
-  }
-
-  /**
-   * Gets the vertex with the given reference graph.
-   *
-   * @param sdfvertex
-   *          the sdfvertex
-   * @return the vertex
-   */
-  public MapperDAGVertex getVertex(final SDFAbstractVertex sdfvertex) {
-
-    final Iterator<DAGVertex> iter = vertexSet().iterator();
-    MapperDAGVertex currentvertex = null;
-    while (iter.hasNext()) {
-      currentvertex = (MapperDAGVertex) iter.next();
-      if (currentvertex.getName().equals(sdfvertex.getName())) {
-        return currentvertex;
-      }
-    }
-    return null;
   }
 
   /**

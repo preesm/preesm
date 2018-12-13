@@ -249,15 +249,6 @@ public abstract class LatencyAbc {
   }
 
   /**
-   * Gets the rank of the given vertex on its operator. -1 if the vertex has no rank
-   */
-  public final int getSchedulingOrder(MapperDAGVertex vertex) {
-    vertex = translateInImplementationVertex(vertex);
-
-    return this.orderManager.localIndexOf(vertex);
-  }
-
-  /**
    * Gets the total rank of the given vertex. -1 if the vertex has no rank
    *
    * @param vertex
@@ -702,42 +693,6 @@ public abstract class LatencyAbc {
     dagvertex.setEffectiveOperator(DesignTools.NO_COMPONENT_INSTANCE);
 
     impvertex.setEffectiveOperator(DesignTools.NO_COMPONENT_INSTANCE);
-  }
-
-  /**
-   * Removes the vertex implementation of a group of vertices that share the same mapping. In silent mode, does not
-   * update implementation timings
-   *
-   * @param dagvertices
-   *          the dagvertices
-   */
-  public final void unmap(final List<MapperDAGVertex> dagvertices) {
-
-    MapperDAGVertex cImpVertex = null;
-    MapperDAGVertex cDagVertex = null;
-    for (final MapperDAGVertex dagvertex : dagvertices) {
-      final MapperDAGVertex impvertex = translateInImplementationVertex(dagvertex);
-
-      fireNewUnmappedVertex(impvertex);
-      cDagVertex = dagvertex;
-      cImpVertex = impvertex;
-    }
-    if (cDagVertex != null) {
-      cDagVertex.setEffectiveOperator(DesignTools.NO_COMPONENT_INSTANCE);
-      cImpVertex.setEffectiveOperator(DesignTools.NO_COMPONENT_INSTANCE);
-    }
-  }
-
-  /**
-   * Gets the cost of the given vertex.
-   *
-   * @param vertex
-   *          the vertex
-   * @return the cost
-   */
-  public final long getCost(MapperDAGVertex vertex) {
-    vertex = translateInImplementationVertex(vertex);
-    return vertex.getTiming().getCost();
   }
 
   /**

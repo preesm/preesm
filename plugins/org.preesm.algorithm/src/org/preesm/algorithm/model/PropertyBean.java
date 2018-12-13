@@ -69,16 +69,6 @@ public class PropertyBean extends Observable implements Cloneable, Serializable 
   }
 
   /**
-   * Add the listener <code>listener</code> to the registered listeners.
-   *
-   * @param listener
-   *          The PropertyChangeListener to add.
-   */
-  public void addPropertyChangeListener(final PropertyChangeListener listener) {
-    this.propertyChange.addPropertyChangeListener(listener);
-  }
-
-  /**
    * Returns the value of the property whose name is <code>propertyName</code> .
    *
    * @param propertyName

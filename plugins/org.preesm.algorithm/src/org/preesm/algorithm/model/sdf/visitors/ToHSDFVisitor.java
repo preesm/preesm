@@ -581,13 +581,4 @@ public class ToHSDFVisitor implements IGraphVisitor<SDFGraph, SDFAbstractVertex,
   // Indicates whether the visited SDFGraph has been changed or not
   private boolean hasChanged = false;
 
-  /**
-   * Checks for changed.
-   *
-   * @return false if the visited SDFGraph was already in single rate, true otherwise
-   */
-  public boolean hasChanged() {
-    return this.hasChanged;
-  }
-
 }

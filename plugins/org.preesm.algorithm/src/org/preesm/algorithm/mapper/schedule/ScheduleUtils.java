@@ -34,7 +34,6 @@
  */
 package org.preesm.algorithm.mapper.schedule;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.BufferedReader;
 import java.io.File;
@@ -76,11 +75,4 @@ public class ScheduleUtils {
     return mapper.readValue(inputJsonString, Schedule.class);
   }
 
-  /**
-   *
-   */
-  public static final String unparseSchedule(final Schedule schedule) throws JsonProcessingException {
-    final ObjectMapper mapper = new ObjectMapper();
-    return mapper.writerWithDefaultPrettyPrinter().writeValueAsString(schedule);
-  }
 }

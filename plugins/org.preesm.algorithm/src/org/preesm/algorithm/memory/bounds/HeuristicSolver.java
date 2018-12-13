@@ -301,31 +301,6 @@ public class HeuristicSolver<V extends IWeightedVertex<Long> & Comparable<V>, E 
    * - Node A and node B are linked by an edge.<br>
    * - Node A and B have ALL their neighbors in common.<br>
    * The node resulting from the merge keep the name of one of the two nodes, and its weight is equal to the sum of the
-   * merged nodes weight.<br>
-   * <br>
-   * This method also clears the adjacentverticesBackup lists.
-   *
-   * @return A list of merged vertices
-   * @deprecated Not used anymore in the HeuristicSolver algorithm
-   */
-  @Deprecated
-  public Set<VerticesPair> mergeSimilarVertices() {
-    final ArrayList<V> vertices = new ArrayList<>(this.graph.vertexSet());
-
-    final Set<VerticesPair> result = mergeSimilarVertices(vertices);
-
-    // Clear all adjacent vertices backup list (as they may still contains
-    // merged nodes)
-    clearAdjacentVerticesBackup();
-
-    return result;
-  }
-
-  /**
-   * This method merge two "Similar" nodes A and B of the graph if:<br>
-   * - Node A and node B are linked by an edge.<br>
-   * - Node A and B have ALL their neighbors in common.<br>
-   * The node resulting from the merge keep the name of one of the two nodes, and its weight is equal to the sum of the
    * merged nodes weight.
    *
    * @param vertices

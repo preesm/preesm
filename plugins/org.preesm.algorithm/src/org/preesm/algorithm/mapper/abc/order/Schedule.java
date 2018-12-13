@@ -126,26 +126,6 @@ public class Schedule {
   }
 
   /**
-   * Inserts a vertex at the given index.
-   *
-   * @param vertex
-   *          the vertex
-   * @param index
-   *          the index
-   */
-  public void insertAtIndex(final MapperDAGVertex vertex, final int index) {
-    if (!contains(vertex)) {
-      if (vertex.getTiming().hasCost()) {
-        this.busyTime += vertex.getTiming().getCost();
-      }
-
-      if (index >= 0) {
-        this.elementList.add(index, vertex);
-      }
-    }
-  }
-
-  /**
    * Inserts a vertex before the given one.
    *
    * @param next

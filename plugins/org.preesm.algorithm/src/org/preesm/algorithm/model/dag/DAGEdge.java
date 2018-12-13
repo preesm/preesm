@@ -73,17 +73,6 @@ public class DAGEdge extends AbstractEdge<DirectedAcyclicGraph, DAGVertex> {
   }
 
   /**
-   * Creates a new DAGEdge with the given property.
-   *
-   * @param w
-   *          the w
-   */
-  public DAGEdge(final AbstractEdgePropertyType<?> w) {
-    super();
-    setWeight(w);
-  }
-
-  /**
    * Gives this DAGEdge weight.
    *
    * @return This DAGEdge weight

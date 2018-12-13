@@ -72,31 +72,6 @@ public class DirectedAcyclicGraphGenerator {
 
   /**
    * Creates an acyclic random graph with a number of vertices fix by the parameter nbVertex. The number of sources and
-   * sinks of each vertex and the production and consumption are randomly set. The number of minimum input vertices is
-   * set to 1
-   *
-   * @param nbVertex
-   *          is the number of vertices to create in the graph
-   * @param minInDegree
-   *          is the minimum sinks of each vertex
-   * @param maxInDegree
-   *          is the maximum sinks of each vertex
-   * @param minOutDegree
-   *          is the minimum sources of each vertex
-   * @param maxOutDegree
-   *          is the maximum sources of each vertex
-   *
-   *
-   * @return the created graph
-   *
-   */
-  public SDFGraph createAcyclicRandomGraph(final int nbVertex, final int minInDegree, final int maxInDegree,
-      final int minOutDegree, final int maxOutDegree) {
-    return createAcyclicRandomGraph(nbVertex, minInDegree, maxInDegree, minOutDegree, maxOutDegree, 1);
-  }
-
-  /**
-   * Creates an acyclic random graph with a number of vertices fix by the parameter nbVertex. The number of sources and
    * sinks of each vertex and the production and consumption are randomly set.
    *
    * @param nbVertex

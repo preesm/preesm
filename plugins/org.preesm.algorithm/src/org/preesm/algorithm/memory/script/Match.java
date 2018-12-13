@@ -215,10 +215,6 @@ public class Match {
     this.applied = applied;
   }
 
-  public Match get_reciprocate() {
-    return this._reciprocate;
-  }
-
   public void set_reciprocate(final Match _reciprocate) {
     this._reciprocate = _reciprocate;
   }

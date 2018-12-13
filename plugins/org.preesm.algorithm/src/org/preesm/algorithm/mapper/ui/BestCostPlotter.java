@@ -69,7 +69,6 @@ import org.jfree.data.time.Millisecond;
 import org.jfree.data.time.TimeSeries;
 import org.jfree.data.time.TimeSeriesCollection;
 import org.jfree.ui.ApplicationFrame;
-import org.jfree.ui.RefineryUtilities;
 import org.preesm.algorithm.mapper.algo.fast.FastAlgorithm;
 import org.preesm.algorithm.mapper.algo.pfast.PFastAlgorithm;
 
@@ -344,16 +343,6 @@ public class BestCostPlotter extends ApplicationFrame implements ActionListener,
     this.chartPanel.addChartMouseListener(listener);
     this.chartPanel.addMouseMotionListener(listener);
     this.chartPanel.addMouseListener(listener);
-  }
-
-  /**
-   * Display.
-   */
-  public void display() {
-
-    pack();
-    RefineryUtilities.centerFrameOnScreen(this);
-    setVisible(true);
   }
 
 }

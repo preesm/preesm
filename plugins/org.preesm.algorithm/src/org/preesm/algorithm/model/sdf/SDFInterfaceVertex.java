@@ -69,18 +69,6 @@ public abstract class SDFInterfaceVertex extends SDFAbstractVertex implements II
     setDirection(InterfaceDirection.OUTPUT);
   }
 
-  /**
-   * Construct a new SDFInterfaceVertex using the String dir to specifiy the direction Input=Source, Output=Sink.
-   *
-   * @param dir
-   *          the dir
-   */
-  public SDFInterfaceVertex(final String dir) {
-    super();
-    setKind(SDFInterfaceVertex.PORT);
-    setDirection(dir);
-  }
-
   /*
    * (non-Javadoc)
    *

@@ -63,17 +63,6 @@ public abstract class Identifier {
   }
 
   /**
-   * generates an Id for an actor
-   *
-   * @return id
-   */
-  public static String generateActorId() {
-    final String id = "a" + Identifier.actorId;
-    Identifier.actorId++;
-    return id;
-  }
-
-  /**
    * generates an Id for an edge
    *
    * @return id
@@ -81,39 +70,6 @@ public abstract class Identifier {
   public static String generateEdgeId() {
     final String id = "e" + Identifier.edgeId;
     Identifier.edgeId++;
-    return id;
-  }
-
-  /**
-   * generates an Id for a hierarchical actor
-   *
-   * @return id
-   */
-  public static String generateHierarchicalActorId() {
-    final String id = "H" + Identifier.HierarchicalActorId;
-    Identifier.HierarchicalActorId++;
-    return id;
-  }
-
-  /**
-   * generates an Id for an input interface
-   *
-   * @return id
-   */
-  public static String generateInputInterfaceId() {
-    final String id = "inI" + Identifier.InputInterfaceId;
-    Identifier.InputInterfaceId++;
-    return id;
-  }
-
-  /**
-   * generates an Id for an output interface
-   *
-   * @return id
-   */
-  public static String generateOutputInterfaceId() {
-    final String id = "outI" + Identifier.OutputInterfaceId;
-    Identifier.OutputInterfaceId++;
     return id;
   }
 
@@ -139,17 +95,4 @@ public abstract class Identifier {
     return id;
   }
 
-  /**
-   * reset the Id generator
-   */
-  public static void reset() {
-    Identifier.SDFGraphId = 0;
-    Identifier.actorId = 0;
-    Identifier.InputPortId = 0;
-    Identifier.OutputPortId = 0;
-    Identifier.edgeId = 0;
-    Identifier.HierarchicalActorId = 0;
-    Identifier.InputInterfaceId = 0;
-    Identifier.OutputInterfaceId = 0;
-  }
 }

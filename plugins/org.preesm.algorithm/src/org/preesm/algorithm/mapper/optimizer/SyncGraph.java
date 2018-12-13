@@ -34,20 +34,16 @@
  */
 package org.preesm.algorithm.mapper.optimizer;
 
-import java.io.IOException;
-import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map.Entry;
 import java.util.Set;
 import org.jgrapht.alg.TransitiveReduction;
 import org.jgrapht.io.ComponentNameProvider;
-import org.jgrapht.io.DOTExporter;
 import org.preesm.algorithm.mapper.AbstractMappingFromDAG;
 import org.preesm.algorithm.mapper.model.special.SendVertex;
 import org.preesm.algorithm.mapper.model.special.TransferVertex;
 import org.preesm.algorithm.model.dag.DAGVertex;
-import org.preesm.commons.exceptions.PreesmException;
 import org.preesm.model.slam.ComponentInstance;
 import org.preesm.model.slam.attributes.Parameter;
 import org.preesm.model.slam.route.MessageRouteStep;
@@ -172,22 +168,6 @@ public class SyncGraph extends org.jgrapht.graph.SimpleDirectedWeightedGraph<Con
     public String getName(final String str) {
       return str;
     }
-  }
-
-  /**
-   *
-   */
-  public String toDotty() {
-    final DOTExporter<ConsecutiveTransfersGroup, String> exporter = new DOTExporter<>(new VertexNameProvider(),
-        new VertexNameProvider(), new EdgeNameProvider());
-    final StringWriter writer = new StringWriter();
-    exporter.exportGraph(this, writer);
-    try {
-      writer.close();
-    } catch (final IOException e) {
-      throw new PreesmException("Could not close string writer", e);
-    }
-    return writer.toString();
   }
 
 }

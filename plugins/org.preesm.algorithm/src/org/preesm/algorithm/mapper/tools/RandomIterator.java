@@ -36,11 +36,9 @@
  */
 package org.preesm.algorithm.mapper.tools;
 
-import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Random;
-import java.util.Set;
 
 // TODO: Auto-generated Javadoc
 /**
@@ -88,23 +86,6 @@ public class RandomIterator<E> implements Iterator<E> {
 
     this.list = list;
     this.listSize = list.size();
-    final long seed = System.nanoTime();
-    rand.setSeed(seed);
-    this.rand = rand;
-  }
-
-  /**
-   * RandomIterator constructor.
-   *
-   * @param set
-   *          the set
-   * @param rand
-   *          the rand
-   */
-  public RandomIterator(final Set<E> set, final Random rand) {
-
-    this.list = new ArrayList<>(set);
-    this.listSize = set.size();
     final long seed = System.nanoTime();
     rand.setSeed(seed);
     this.rand = rand;

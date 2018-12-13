@@ -57,7 +57,6 @@ import org.jfree.chart.plot.XYPlot;
 import org.jfree.chart.renderer.xy.XYSplineRenderer;
 import org.jfree.data.xy.DefaultXYDataset;
 import org.jfree.ui.ApplicationFrame;
-import org.jfree.ui.RefineryUtilities;
 import org.preesm.algorithm.mapper.ui.MouseClickedListener;
 
 // TODO: Auto-generated Javadoc
@@ -228,16 +227,6 @@ public class PerformancePlotter extends ApplicationFrame {
     this.chartPanel.addChartMouseListener(listener);
     this.chartPanel.addMouseMotionListener(listener);
     this.chartPanel.addMouseListener(listener);
-  }
-
-  /**
-   * Display.
-   */
-  public void display() {
-
-    pack();
-    RefineryUtilities.centerFrameOnScreen(this);
-    setVisible(true);
   }
 
 }

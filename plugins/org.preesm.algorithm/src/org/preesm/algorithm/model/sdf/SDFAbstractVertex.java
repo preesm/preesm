@@ -41,7 +41,6 @@ import java.util.logging.Level;
 import org.preesm.algorithm.model.AbstractVertex;
 import org.preesm.algorithm.model.IInterface;
 import org.preesm.algorithm.model.InterfaceDirection;
-import org.preesm.algorithm.model.PropertyBean;
 import org.preesm.algorithm.model.PropertyFactory;
 import org.preesm.algorithm.model.parameters.Argument;
 import org.preesm.algorithm.model.sdf.esdf.SDFSinkInterfaceVertex;
@@ -143,15 +142,6 @@ public abstract class SDFAbstractVertex extends AbstractVertex<SDFGraph> {
   }
 
   /**
-   * Cleans the vertex by removing all its properties.
-   */
-  public void clean() {
-    this.sinks.clear();
-    this.sources.clear();
-    this.properties = new PropertyBean();
-  }
-
-  /**
    * Gives the edge associated with the given interface.
    *
    * @param graphInterface
@@ -167,27 +157,6 @@ public abstract class SDFAbstractVertex extends AbstractVertex<SDFGraph> {
     for (final SDFEdge edge : ((SDFGraph) getBase()).outgoingEdgesOf(this)) {
       if ((edge.getSourceInterface() != null) && edge.getSourceInterface().equals(graphInterface)) {
         return edge;
-      }
-    }
-    return null;
-  }
-
-  /**
-   * Gives the interface vertex associated with the given edge.
-   *
-   * @param edge
-   *          The which is connected to the interface
-   * @return The Interface the given edge is connected to
-   */
-  public SDFInterfaceVertex getAssociatedInterface(final SDFEdge edge) {
-    for (final SDFInterfaceVertex source : this.sources) {
-      if (source.equals(edge.getTargetInterface())) {
-        return source;
-      }
-    }
-    for (final SDFInterfaceVertex sink : this.sinks) {
-      if (sink.equals(edge.getSourceInterface())) {
-        return sink;
       }
     }
     return null;

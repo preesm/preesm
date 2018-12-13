@@ -247,28 +247,6 @@ public class PFastAlgorithm extends Observable {
   }
 
   /**
-   * mapcontain = verify if the vertex is already in the other partial lists.
-   *
-   * @param subSet
-   *          the sub set
-   * @param vertex
-   *          the vertex
-   * @return boolean
-   */
-  public boolean mapcontain(final Set<Set<MapperDAGVertex>> subSet, final MapperDAGVertex vertex) {
-
-    final Iterator<Set<MapperDAGVertex>> itera = subSet.iterator();
-    // Verify if the vertex is already in the subset
-    while (itera.hasNext()) {
-      final Set<MapperDAGVertex> temp = itera.next();
-      if (temp.contains(vertex)) {
-        return true;
-      }
-    }
-    return false;
-  }
-
-  /**
    * map = perform the Pfast Algo (it is the main thread)
    *
    * <p>

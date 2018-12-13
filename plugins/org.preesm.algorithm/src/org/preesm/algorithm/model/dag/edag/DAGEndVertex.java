@@ -36,7 +36,6 @@
  */
 package org.preesm.algorithm.model.dag.edag;
 
-import org.preesm.algorithm.model.AbstractVertexPropertyType;
 import org.preesm.algorithm.model.dag.DAGVertex;
 
 /**
@@ -54,21 +53,6 @@ public class DAGEndVertex extends DAGVertex {
    */
   public DAGEndVertex() {
     super();
-    setKind(DAGEndVertex.DAG_END_VERTEX);
-  }
-
-  /**
-   * Creates a new DAGForkVertex with the name "n", the execution time "t" and the number of repetition "nb".
-   *
-   * @param n
-   *          This Vertex name
-   * @param t
-   *          This Vertex execution time
-   * @param nb
-   *          This Vertex number of repetition
-   */
-  public DAGEndVertex(final String n, final AbstractVertexPropertyType<?> t, final AbstractVertexPropertyType<?> nb) {
-    super(n, t, nb);
     setKind(DAGEndVertex.DAG_END_VERTEX);
   }
 

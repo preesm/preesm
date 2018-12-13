@@ -432,17 +432,6 @@ public class InitialLists implements Cloneable {
   }
 
   /**
-   * orderlistdisplay: Display a List with the logger.
-   *
-   * @param tempset
-   *          the tempset
-   */
-  public void orderlistdisplay(final List<MapperDAGVertex> tempset) {
-
-    orderlistdisplay("", tempset);
-  }
-
-  /**
    * getters and setters.
    *
    * @return the blocking nodes

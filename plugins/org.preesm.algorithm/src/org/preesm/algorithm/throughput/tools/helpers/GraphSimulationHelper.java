@@ -165,21 +165,6 @@ public class GraphSimulationHelper {
   }
 
   /**
-   * Executes an actor as much as the data tokens in its input edges allow.
-   *
-   * @param actor
-   *          SDF actor
-   * @return the number of executions
-   */
-  public long executeMax(final SDFAbstractVertex actor) {
-    // determine the max executions number
-    final long n = maxNbOfExecutions(actor);
-    // execute the actor n times
-    execute(actor, n);
-    return n;
-  }
-
-  /**
    *
    * @param actor
    *          SDF actor
@@ -320,18 +305,6 @@ public class GraphSimulationHelper {
   }
 
   /**
-   * Set the execution counters
-   *
-   * @param actor
-   *          actor
-   * @param n
-   *          number of execution to set
-   */
-  public void setExecutionCounter(final SDFAbstractVertex actor, final long n) {
-    actor.setPropertyValue(EXECUTION_COUNTER_PROPERTY, n);
-  }
-
-  /**
    * check if the graph has completed an iteration
    *
    * @return true if the graph iteration is complete
@@ -353,15 +326,6 @@ public class GraphSimulationHelper {
     for (final SDFEdge edge : this.graph.edgeSet()) {
       edge.setDelay(this.initialMarking.get(edge));
     }
-  }
-
-  /**
-   * Resets the simulation by restoring the initial marking and reseting the actors execution counter.
-   *
-   */
-  public void resetSimulation() {
-    restoreInitialMarking();
-    prepareActors();
   }
 
   /**

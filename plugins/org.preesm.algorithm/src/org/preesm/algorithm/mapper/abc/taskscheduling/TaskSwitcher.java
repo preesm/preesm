@@ -39,7 +39,6 @@ import org.preesm.algorithm.mapper.abc.edgescheduling.IntervalFinder;
 import org.preesm.algorithm.mapper.abc.order.OrderManager;
 import org.preesm.algorithm.mapper.model.MapperDAGVertex;
 
-// TODO: Auto-generated Javadoc
 /**
  * The task switcher adds a processing to the mapping algorithm. When a vertex is mapped, it looks for the best place to
  * schedule it.
@@ -68,29 +67,6 @@ public class TaskSwitcher extends AbstractTaskSched {
   public void setOrderManager(final OrderManager orderManager) {
     super.setOrderManager(orderManager);
     this.intervalFinder = new IntervalFinder(orderManager);
-  }
-
-  /**
-   * Insert vertex before.
-   *
-   * @param successor
-   *          the successor
-   * @param vertex
-   *          the vertex
-   */
-  public void insertVertexBefore(final MapperDAGVertex successor, final MapperDAGVertex vertex) {
-
-    // Removing the vertex if necessary before inserting it
-    if (this.orderManager.totalIndexOf(vertex) != -1) {
-      this.orderManager.remove(vertex, true);
-    }
-
-    final int newIndex = this.intervalFinder.getBestIndex(vertex, 0);
-    if (newIndex >= 0) {
-      this.orderManager.insertAtIndex(newIndex, vertex);
-    } else {
-      this.orderManager.insertBefore(successor, vertex);
-    }
   }
 
   /*

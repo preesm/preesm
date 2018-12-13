@@ -100,21 +100,9 @@ public class CustomQuanta {
     return "";
   }
 
-  boolean hasQuanta(String actor, String operator) {
-    MapKeyPair mkp = new MapKeyPair(actor, operator);
-    if (customQuanta.containsKey(mkp)) {
-      return true;
-    }
-    return false;
-  }
-
   @Override
   public String toString() {
     return customQuanta.toString();
-  }
-
-  public void clear() {
-    customQuanta.clear();
   }
 
 }

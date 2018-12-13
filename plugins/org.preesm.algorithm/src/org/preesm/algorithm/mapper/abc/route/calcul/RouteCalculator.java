@@ -264,20 +264,6 @@ public class RouteCalculator {
   }
 
   /**
-   * Returns true if route1 better than route2.
-   *
-   * @param route1
-   *          the route 1
-   * @param route2
-   *          the route 2
-   * @return true, if successful
-   */
-  public boolean compareRoutes(final Route route1, final Route route2) {
-
-    return route1.size() < route2.size();
-  }
-
-  /**
    * Choosing a route between 2 operators.
    *
    * @param op1

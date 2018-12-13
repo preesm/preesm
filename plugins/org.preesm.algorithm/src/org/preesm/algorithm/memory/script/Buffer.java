@@ -333,33 +333,6 @@ public class Buffer {
     this.divisibilityRequiredMatches = new ArrayList<>();
   }
 
-  void setMaxIndex(final int newValue) {
-
-    // if the buffer was originally mergeable
-    if (this.originallyMergeable) {
-      // Add a new mergeable range corresponding to the new virtual tokens
-      Range.union(this.mergeableRanges, new Range(this.maxIndex, newValue));
-    }
-    this.maxIndex = newValue;
-  }
-
-  void setMinIndex(final int newValue) {
-
-    // if the buffer was originally mergeable
-    if (this.originallyMergeable) {
-      // Add a new mergeable range corresponding to the new virtual tokens
-      Range.union(this.mergeableRanges, new Range(newValue, this.minIndex));
-    }
-    this.minIndex = newValue;
-  }
-
-  /**
-   * Cf. {@link Buffer#matchWith(int, Buffer, int, int)} with size = 1
-   */
-  public Match matchWith(final long localIdx, final Buffer buffer, final long remoteIdx) {
-    return matchWith(localIdx, buffer, remoteIdx, 1);
-  }
-
   /**
    * {@link Match} part of the current {@link Buffer} with part of another {@link Buffer}. Example:
    * <code>a.matchWith(3,b,7,5)</code> matches a[3..7] with b[7..11]. Matching two {@link Buffer buffers} means that the

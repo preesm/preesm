@@ -127,29 +127,6 @@ public class SDFEdge extends AbstractEdge<SDFGraph, SDFAbstractVertex> {
   }
 
   /**
-   * Constructs a new SDFEdge with its consuming and producing rates with a delay.
-   *
-   * @param prod
-   *          the prod
-   * @param cons
-   *          the cons
-   * @param delay
-   *          the delay
-   * @param dataType
-   *          the data type
-   */
-  public SDFEdge(final AbstractEdgePropertyType<?> prod, final AbstractEdgePropertyType<?> cons,
-      final AbstractEdgePropertyType<?> delay, final AbstractEdgePropertyType<?> dataType) {
-    super();
-    setProd(prod);
-    setCons(cons);
-    setDelay(delay);
-    setDataType(dataType);
-    // Data size will have to be resolved later
-    setDataSize(new LongEdgePropertyType(1));
-  }
-
-  /**
    * Getter of the property <tt>cons</tt>.
    *
    * @return Returns the cons.
@@ -353,22 +330,6 @@ public class SDFEdge extends AbstractEdge<SDFGraph, SDFAbstractVertex> {
     if (target != null) {
       target.setDirection(InterfaceDirection.INPUT);
     }
-  }
-
-  /**
-   * Test if the given edge has the same properties than this edge.
-   *
-   * @param edge
-   *          The edge to compare with
-   * @return True if the given edge has the same properties, false otherwise
-   */
-  public boolean compare(final SDFEdge edge) {
-
-    return super.compare(edge) && edge.getSourceInterface().getName().equals(getSourceInterface().getName())
-        && edge.getTargetInterface().getName().equals(getTargetInterface().getName())
-        && (getCons().longValue() == edge.getCons().longValue())
-        && (getProd().longValue() == edge.getProd().longValue())
-        && (getDelay().longValue() == edge.getDelay().longValue());
   }
 
   /*

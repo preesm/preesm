@@ -51,7 +51,6 @@ import org.preesm.algorithm.model.AbstractEdgePropertyType;
 import org.preesm.algorithm.model.AbstractGraph;
 import org.preesm.algorithm.model.AbstractVertex;
 import org.preesm.algorithm.model.IInterface;
-import org.preesm.algorithm.model.PropertyBean;
 import org.preesm.algorithm.model.PropertyFactory;
 import org.preesm.algorithm.model.dag.DAGEdge;
 import org.preesm.algorithm.model.dag.DAGVertex;
@@ -315,39 +314,6 @@ public class SDFGraph extends AbstractGraph<SDFAbstractVertex, SDFEdge> {
       vertex.setNbRepeat(vrb.get(vertex));
     }
     return true;
-  }
-
-  /**
-   * Fill this graph object with the given graph content.
-   *
-   * @param content
-   *          The content to fill in this graph
-   */
-  public void fill(final SDFGraph content) {
-    final SDFGraph cleanGraph = content.copy();
-    for (final SDFAbstractVertex vertex : cleanGraph.vertexSet()) {
-      addVertex(vertex);
-    }
-    for (final SDFEdge edge : cleanGraph.edgeSet()) {
-      final SDFAbstractVertex source = cleanGraph.getEdgeSource(edge);
-      final SDFAbstractVertex target = cleanGraph.getEdgeTarget(edge);
-      final SDFEdge newEdge = this.addEdge(source, target);
-      newEdge.setSourceInterface(edge.getSourceInterface());
-      newEdge.setTargetInterface(edge.getTargetInterface());
-      target.setInterfaceVertexExternalLink(newEdge, edge.getTargetInterface());
-      source.setInterfaceVertexExternalLink(newEdge, edge.getSourceInterface());
-
-      newEdge.setCons(edge.getCons().copy());
-      newEdge.setProd(edge.getProd().copy());
-      newEdge.setDelay(edge.getDelay().copy());
-
-    }
-
-    for (final String propertyKey : cleanGraph.getPropertyBean().keys()) {
-      final Object property = cleanGraph.getPropertyBean().getValue(propertyKey);
-      getPropertyBean().setValue(propertyKey, property);
-    }
-
   }
 
   /*
@@ -628,19 +594,6 @@ public class SDFGraph extends AbstractGraph<SDFAbstractVertex, SDFEdge> {
       }
     }
     return schedulable;
-  }
-
-  /**
-   * Gives a Set of all this graph child property beans.
-   *
-   * @return The properties Set
-   */
-  public List<PropertyBean> propertiesSet() {
-    final List<PropertyBean> properties = new ArrayList<>();
-    for (final SDFAbstractVertex child : vertexSet()) {
-      properties.add(child.getPropertyBean());
-    }
-    return properties;
   }
 
   /**
