@@ -82,7 +82,6 @@ import org.preesm.ui.scenario.editor.Messages;
 import org.preesm.ui.scenario.editor.PreesmAlgorithmTreeContentProvider;
 import org.preesm.ui.scenario.editor.papify.PapifyEventListTreeElement.PAPIEventStatus;
 
-// TODO: Auto-generated Javadoc
 /**
  * Listener of the check state of both the PAPI component and the PAPI event tables but also of the selection
  * modification of the current core definition. It updates the check Papify configuration depending on the PapifyConf
@@ -108,7 +107,7 @@ public class PapifyCheckStateListener implements ISDFCheckStateListener {
    * @param scenario
    *          the scenario
    */
-  public PapifyCheckStateListener(final Composite container, final PreesmScenario scenario) {
+  public PapifyCheckStateListener(final PreesmScenario scenario) {
     super();
     this.scenario = scenario;
     this.elementList = new LinkedHashSet<>();
@@ -358,7 +357,7 @@ public class PapifyCheckStateListener implements ISDFCheckStateListener {
    */
   @Override
   public void widgetDefaultSelected(final SelectionEvent e) {
-    // TODO Auto-generated method stub
+    // nothing
 
   }
 
@@ -528,32 +527,27 @@ public class PapifyCheckStateListener implements ISDFCheckStateListener {
 
   public void setTableViewer(final CheckboxTableViewer tableviewer,
       final PreesmAlgorithmTreeContentProvider contentProvider2, final IPropertyListener listener) {
-    // TODO Auto-generated method stub
-
+    // nothing
   }
 
   @Override
   public void setTreeViewer(final CheckboxTreeViewer treeViewer,
       final PreesmAlgorithmTreeContentProvider contentProvider, final IPropertyListener propertyListener) {
-    // TODO Auto-generated method stub
-
+    // nothing
   }
 
   @Override
   public void widgetSelected(SelectionEvent e) {
-    // TODO Auto-generated method stub
-
+    // nothing
   }
 
   @Override
   public void checkStateChanged(CheckStateChangedEvent event) {
-    // TODO Auto-generated method stub
-
+    // nothing
   }
 
   @Override
   public void paintControl(PaintEvent e) {
-    // TODO Auto-generated method stub
-
+    // nothing
   }
 }

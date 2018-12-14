@@ -92,7 +92,7 @@ public class SDFGraph extends AbstractGraph<SDFAbstractVertex, SDFEdge> {
    * Construct a new SDFGraph with the default edge factory.
    */
   public SDFGraph() {
-    super(() -> new SDFEdge());
+    super(SDFEdge::new);
     setName("");
     getPropertyBean().setValue(AbstractGraph.MODEL, "sdf");
   }
@@ -558,7 +558,7 @@ public class SDFGraph extends AbstractGraph<SDFAbstractVertex, SDFEdge> {
    * @throws PreesmException
    *           the SDF 4 J exception
    */
-  public boolean isSchedulable() throws PreesmException {
+  public boolean isSchedulable() {
     boolean schedulable = true;
     for (final SDFAbstractVertex vertex : vertexSet()) {
       if (!(vertex instanceof SDFInterfaceVertex) && (vertex.getGraphDescription() instanceof SDFGraph)) {
@@ -758,7 +758,7 @@ public class SDFGraph extends AbstractGraph<SDFAbstractVertex, SDFEdge> {
     }
   }
 
-  private List<SDFAbstractVertex> validateOutputs(final SDFAbstractVertex hierarchicalActor) throws PreesmException {
+  private List<SDFAbstractVertex> validateOutputs(final SDFAbstractVertex hierarchicalActor) {
     final SDFGraph subGraph = ((SDFGraph) hierarchicalActor.getGraphDescription());
     final List<SDFAbstractVertex> validatedOutInterfaces = new ArrayList<>();
     final Set<SDFEdge> actorOutgoingEdges = outgoingEdgesOf(hierarchicalActor);
@@ -791,7 +791,7 @@ public class SDFGraph extends AbstractGraph<SDFAbstractVertex, SDFEdge> {
     return validatedOutInterfaces;
   }
 
-  private List<SDFAbstractVertex> validateInputs(final SDFAbstractVertex hierarchicalActor) throws PreesmException {
+  private List<SDFAbstractVertex> validateInputs(final SDFAbstractVertex hierarchicalActor) {
     final SDFGraph subGraph = ((SDFGraph) hierarchicalActor.getGraphDescription());
     final List<SDFAbstractVertex> validatedInInterfaces = new ArrayList<>();
     final Set<SDFEdge> actorIncomingEdges = incomingEdgesOf(hierarchicalActor);

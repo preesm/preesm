@@ -52,7 +52,6 @@ import org.preesm.algorithm.model.sdf.SDFVertex;
 import org.preesm.model.scenario.PreesmScenario;
 import org.preesm.ui.scenario.editor.Messages;
 
-// TODO: Auto-generated Javadoc
 /**
  * Displays the labels for tasks timings. These labels are the time of each task
  *
@@ -94,7 +93,6 @@ public class SDFTableLabelProvider implements ITableLabelProvider {
    */
   @Override
   public Image getColumnImage(final Object element, final int columnIndex) {
-    // TODO Auto-generated method stub
     return null;
   }
 
@@ -122,48 +120,24 @@ public class SDFTableLabelProvider implements ITableLabelProvider {
     return text;
   }
 
-  /*
-   * (non-Javadoc)
-   *
-   * @see org.eclipse.jface.viewers.IBaseLabelProvider#addListener(org.eclipse.jface.viewers.ILabelProviderListener)
-   */
   @Override
   public void addListener(final ILabelProviderListener listener) {
-    // TODO Auto-generated method stub
-
+    // nothing
   }
 
-  /*
-   * (non-Javadoc)
-   *
-   * @see org.eclipse.jface.viewers.IBaseLabelProvider#dispose()
-   */
   @Override
   public void dispose() {
-    // TODO Auto-generated method stub
-
+    // nothing
   }
 
-  /*
-   * (non-Javadoc)
-   *
-   * @see org.eclipse.jface.viewers.IBaseLabelProvider#isLabelProperty(java.lang.Object, java.lang.String)
-   */
   @Override
   public boolean isLabelProperty(final Object element, final String property) {
-    // TODO Auto-generated method stub
     return false;
   }
 
-  /*
-   * (non-Javadoc)
-   *
-   * @see org.eclipse.jface.viewers.IBaseLabelProvider#removeListener(org.eclipse.jface.viewers.ILabelProviderListener)
-   */
   @Override
   public void removeListener(final ILabelProviderListener listener) {
-    // TODO Auto-generated method stub
-
+    // nothing
   }
 
   /**

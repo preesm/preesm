@@ -75,7 +75,6 @@ import org.preesm.model.scenario.serialize.PreesmAlgorithmListContentProvider;
 import org.preesm.ui.scenario.editor.FileSelectionAdapter;
 import org.preesm.ui.scenario.editor.Messages;
 
-// TODO: Auto-generated Javadoc
 /**
  * Relative constraints editor within the scenario editor.
  *
@@ -117,11 +116,9 @@ public class RelativeConstraintsPage extends FormPage implements IPropertyListen
    */
   @Override
   protected void createFormContent(final IManagedForm managedForm) {
-    // TODO Auto-generated method stub
     super.createFormContent(managedForm);
 
     final ScrolledForm form = managedForm.getForm();
-    // FormToolkit toolkit = managedForm.getToolkit();
     form.setText(Messages.getString("RelativeConstraints.title"));
 
     final GridLayout layout = new GridLayout();

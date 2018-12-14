@@ -44,7 +44,6 @@ import org.eclipse.jface.viewers.ColumnViewer;
 import org.eclipse.jface.viewers.EditingSupport;
 import org.preesm.ui.scenario.editor.papify.PapifyEventListTreeElement.PAPIEventStatus;
 
-// TODO: Auto-generated Javadoc
 /**
  * Provides the elements contained in the papify editor.
  *

@@ -749,12 +749,8 @@ public class PiParser {
       final Node elt = childList.item(i);
       final String eltName = elt.getNodeName();
 
-      switch (eltName) {
-        case PiIdentifiers.PORT:
-          parsePort((Element) elt, vertex);
-          break;
-        default:
-          // ignore #text and unknown children
+      if (PiIdentifiers.PORT.equals(eltName)) {
+        parsePort((Element) elt, vertex);
       }
     }
     // Sanity check for special actors

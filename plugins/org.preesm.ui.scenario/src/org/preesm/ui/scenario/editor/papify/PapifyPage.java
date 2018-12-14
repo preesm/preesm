@@ -250,7 +250,7 @@ public class PapifyPage extends FormPage implements IPropertyListener {
     final Composite container = createSection(managedForm, title, desc, 1,
         new GridData(GridData.FILL_HORIZONTAL | GridData.FILL_VERTICAL));
 
-    this.checkStateListener = new PapifyCheckStateListener(container, this.scenario);
+    this.checkStateListener = new PapifyCheckStateListener(this.scenario);
     container.addPaintListener(this.checkStateListener);
 
     final FormToolkit toolkit = managedForm.getToolkit();

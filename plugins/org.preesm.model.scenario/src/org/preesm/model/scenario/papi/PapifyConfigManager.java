@@ -38,7 +38,6 @@ package org.preesm.model.scenario.papi;
 import java.util.LinkedHashSet;
 import java.util.Set;
 
-// TODO: Auto-generated Javadoc
 /**
  * container and manager of PapifyConfig groups. It can load and store PapifyConfig groups
  *
@@ -46,7 +45,7 @@ import java.util.Set;
  */
 public class PapifyConfigManager {
 
-  private PapiEventInfo PAPIData = null;
+  private PapiEventInfo papiData = null;
 
   /** List of all PapifyConfig groups for Actors. */
   private final Set<PapifyConfigActor> papifyConfigGroupsActors;
@@ -72,7 +71,7 @@ public class PapifyConfigManager {
    */
   public void addPapifyData(final PapiEventInfo data) {
 
-    this.PAPIData = data;
+    this.papiData = data;
   }
 
   /**
@@ -81,7 +80,7 @@ public class PapifyConfigManager {
    */
   public PapiEventInfo getPapifyData() {
 
-    return this.PAPIData;
+    return this.papiData;
   }
 
   /**
