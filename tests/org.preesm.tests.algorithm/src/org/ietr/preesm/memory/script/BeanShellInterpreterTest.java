@@ -60,6 +60,7 @@ import org.junit.Test;
 import org.preesm.algorithm.memory.script.Buffer;
 import org.preesm.algorithm.memory.script.Match;
 import org.preesm.algorithm.model.dag.DAGVertex;
+import org.preesm.commons.exceptions.PreesmException;
 
 /**
  * Non regression tests for the BeanShell2 third party dependency.
@@ -162,7 +163,7 @@ public class BeanShellInterpreterTest {
       try {
         interpreter.set(k, v.intValue());
       } catch (final EvalError e) {
-        e.printStackTrace();
+        throw new PreesmException(e);
       }
     });
     final Buffer i = new Buffer(null, new DAGVertex("v1", null, null), "i", 1024, 4, true);
@@ -200,7 +201,7 @@ public class BeanShellInterpreterTest {
       try {
         interpreter.set(k, v.intValue());
       } catch (final EvalError e) {
-        e.printStackTrace();
+        throw new PreesmException(e);
       }
     });
     final Buffer i = new Buffer(null, new DAGVertex("v1", null, null), "i", 1024 * 1024 * 1024, 1, true);
@@ -238,7 +239,7 @@ public class BeanShellInterpreterTest {
       try {
         interpreter.set(k, v.intValue());
       } catch (final EvalError e) {
-        e.printStackTrace();
+        throw new PreesmException(e);
       }
     });
     final Buffer i = new Buffer(null, new DAGVertex("v1", null, null), "i", 1024 * 1024 * 1024, 1, true);
@@ -271,7 +272,7 @@ public class BeanShellInterpreterTest {
       try {
         interpreter.set(k, v.intValue());
       } catch (final EvalError e) {
-        e.printStackTrace();
+        throw new PreesmException(e);
       }
     });
     final Buffer i = new Buffer(null, new DAGVertex("v1", null, null), "i", 10, 1, true);

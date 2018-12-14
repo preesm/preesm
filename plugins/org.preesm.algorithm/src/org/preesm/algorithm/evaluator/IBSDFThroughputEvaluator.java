@@ -135,7 +135,7 @@ public class IBSDFThroughputEvaluator extends ThroughputEvaluator {
     // compute the optimal period of this graph with the method for SDF
     if (!hierarchical) {
       final ThroughputEvaluator eval = new SDFThroughputEvaluator();
-      eval.scenar = this.scenar;
+      eval.setScenar(this.getScenar());
       Kmax = eval.launch(inputGraph);
     }
     return Kmax;
@@ -194,7 +194,7 @@ public class IBSDFThroughputEvaluator extends ThroughputEvaluator {
           && (edge.getSource().getGraphDescription() instanceof SDFGraph))) {
         L = 0;
       } else {
-        L = this.scenar.getTimingManager().getTimingOrDefault(edge.getSource().getId(), "x86").getTime();
+        L = this.getScenar().getTimingManager().getTimingOrDefault(edge.getSource().getId(), "x86").getTime();
       }
 
       H = ((double) (edge.getDelay().getValue())

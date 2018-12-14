@@ -97,9 +97,9 @@ public class PeriodicEvaluator extends AbstractTaskImplementation {
       scheduler = new SDFThroughputEvaluator();
     }
     PreesmLogger.getLogger().log(Level.INFO, "Computation of the optimal periodic schedule");
-    scheduler.scenar = scenario;
+    scheduler.setScenar(scenario);
     final double period = scheduler.launch(NormSDF);
-    final double throughput = scheduler.throughput_computation(period, inputGraph);
+    final double throughput = scheduler.throughputComputation(period, inputGraph);
 
     final Map<String, Object> outputs = new LinkedHashMap<>();
     // Normalized graph in the outputs
