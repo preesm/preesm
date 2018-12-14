@@ -61,23 +61,23 @@ public class ALAPSchedulerDAGTest {
     // check the throughput constraint
     Assert.assertEquals(12.0, ThConstraint, 0);
     // check the start date of each actor
-    Assert.assertEquals(0.0, asap.simulator.getStartDate(dag.getVertex("A")), 0);
-    Assert.assertEquals(0.0, asap.simulator.getStartDate(dag.getVertex("B")), 0);
-    Assert.assertEquals(5.0, asap.simulator.getStartDate(dag.getVertex("C")), 0);
+    Assert.assertEquals(0.0, asap.getSimulator().getStartDate(dag.getVertex("A")), 0);
+    Assert.assertEquals(0.0, asap.getSimulator().getStartDate(dag.getVertex("B")), 0);
+    Assert.assertEquals(5.0, asap.getSimulator().getStartDate(dag.getVertex("C")), 0);
 
-    asap.simulator.resetExecutionCounter();
+    asap.getSimulator().resetExecutionCounter();
 
     // ALAP schedule the DAG
     final ALAPSchedulerDAG alap = new ALAPSchedulerDAG();
-    final double durationOf1Iteration = alap.schedule(dag, asap.simulator, ThConstraint);
+    final double durationOf1Iteration = alap.schedule(dag, asap.getSimulator(), ThConstraint);
 
     // check the value of the duration
     Assert.assertEquals(12.0, durationOf1Iteration, 0);
 
     // check the start date of each actor
-    Assert.assertEquals(0.0, alap.simulator.getStartDate(dag.getVertex("A")), 0);
-    Assert.assertEquals(3.0, alap.simulator.getStartDate(dag.getVertex("B")), 0);
-    Assert.assertEquals(5.0, alap.simulator.getStartDate(dag.getVertex("C")), 0);
+    Assert.assertEquals(0.0, alap.getSimulator().getStartDate(dag.getVertex("A")), 0);
+    Assert.assertEquals(3.0, alap.getSimulator().getStartDate(dag.getVertex("B")), 0);
+    Assert.assertEquals(5.0, alap.getSimulator().getStartDate(dag.getVertex("C")), 0);
   }
 
   /**

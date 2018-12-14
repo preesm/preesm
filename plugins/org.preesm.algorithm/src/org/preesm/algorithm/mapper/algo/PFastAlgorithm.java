@@ -403,6 +403,7 @@ public class PFastAlgorithm extends Observable {
         es.shutdown();
 
       } catch (final InterruptedException | ExecutionException e) {
+        Thread.currentThread().interrupt();
         throw new PreesmException("Error in PFast", e);
       }
       // step 13

@@ -144,7 +144,7 @@ public class MoveAbstractActorFeature extends DefaultMoveShapeFeature {
       }
 
       for (final FreeFormConnection conn : connectionList) {
-        moveAllBendpointsOnFFConnection(conn, deltaX, deltaY);
+        moveAllBendpointsOnFFConnectionLocal(conn, deltaX, deltaY);
       }
 
       // Move implicitlyMovedDelays
@@ -206,7 +206,7 @@ public class MoveAbstractActorFeature extends DefaultMoveShapeFeature {
 
         for (final PictogramElement fifoPE : fifoPEs) {
           if (fifoPE instanceof FreeFormConnection) {
-            moveAllBendpointsOnFFConnection((FreeFormConnection) fifoPE, context.getDeltaX(), context.getDeltaY());
+            moveAllBendpointsOnFFConnectionLocal((FreeFormConnection) fifoPE, context.getDeltaX(), context.getDeltaY());
           }
         }
       }
@@ -323,7 +323,7 @@ public class MoveAbstractActorFeature extends DefaultMoveShapeFeature {
    * @param deltaY
    *          the delta Y
    */
-  private void moveAllBendpointsOnFFConnection(final FreeFormConnection connection, final int deltaX,
+  private void moveAllBendpointsOnFFConnectionLocal(final FreeFormConnection connection, final int deltaX,
       final int deltaY) {
     final List<Point> points = connection.getBendpoints();
     for (int i = 0; i < points.size(); i++) {

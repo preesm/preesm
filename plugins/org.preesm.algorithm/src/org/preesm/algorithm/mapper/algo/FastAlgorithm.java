@@ -239,7 +239,6 @@ public class FastAlgorithm extends Observable {
     final String msg2 = "InitialSP " + initial;
     logger.log(Level.FINE, msg2);
 
-    long SL = initial;
     dag.setScheduleCost(initial);
     if (blockingNodesList.size() < 2) {
       return simulator.getDAG().copy();
@@ -290,6 +289,7 @@ public class FastAlgorithm extends Observable {
             pauseSemaphore.acquire();
             pauseSemaphore.release();
           } catch (final InterruptedException e) {
+            Thread.currentThread().interrupt();
             throw new PreesmException("Semaphore issue", e);
           }
         }
@@ -305,7 +305,7 @@ public class FastAlgorithm extends Observable {
           operatorList = simulator.getCandidateOperators(currentvertex, false);
         } while ((operatorList.size() < 2) && (nonBlockingIndex < 100));
 
-        SL = simulator.getFinalCost();
+        final long sl = simulator.getFinalCost();
 
         // step 8
 
@@ -316,24 +316,23 @@ public class FastAlgorithm extends Observable {
 
         operatorprec = simulator.getEffectiveComponent(currentvertex);
 
+        final String msg3 = "FAST algorithm has difficulties to find a valid component for vertex: " + currentvertex;
         if (operatortest == null) {
-          PreesmLogger.getLogger().log(Level.SEVERE,
-              "FAST algorithm has difficulties to find a valid component for vertex: " + currentvertex);
+          PreesmLogger.getLogger().log(Level.SEVERE, msg3);
         }
 
         // step 9
         simulator.map(currentvertex, operatortest, false, true);
 
         if (!currentvertex.hasEffectiveComponent()) {
-          PreesmLogger.getLogger().log(Level.SEVERE,
-              "FAST algorithm has difficulties to find a valid component for vertex: " + currentvertex);
+          PreesmLogger.getLogger().log(Level.SEVERE, msg3);
         }
 
         // step 10
         simulator.updateFinalCosts();
         final long newSL = simulator.getFinalCost();
 
-        if (newSL >= SL) {
+        if (newSL >= sl) {
           // TODO: check if ok to use mapWithGroup
           // simulator.map(currentvertex, operatorprec, false);
           simulator.map(currentvertex, operatorprec, false, true);
@@ -341,7 +340,6 @@ public class FastAlgorithm extends Observable {
           localCounter++;
         } else {
           localCounter = 0;
-          SL = newSL;
         }
 
         searchStep++;
@@ -368,7 +366,8 @@ public class FastAlgorithm extends Observable {
           launchEditor(ganttData, "Cost:" + bestSL + " Fast");
         }
 
-        PreesmLogger.getLogger().log(Level.INFO, "Found Fast solution; Cost:" + bestSL);
+        final String msg3 = "Found Fast solution; Cost:" + bestSL;
+        PreesmLogger.getLogger().log(Level.INFO, msg3);
 
         dagfinal.setScheduleCost(bestSL);
       }
@@ -422,10 +421,8 @@ public class FastAlgorithm extends Observable {
    * @throws PreesmException
    *           the workflow exception
    */
-  private void launchEditor(final GanttData ganttData, final String name) throws PreesmException {
-
+  private void launchEditor(final GanttData ganttData, final String name) {
     GanttEditorRunnable.run(ganttData, name);
-
   }
 
 }

@@ -42,14 +42,13 @@ import org.preesm.algorithm.model.sdf.SDFGraph;
 import org.preesm.algorithm.model.sdf.SDFInterfaceVertex;
 import org.preesm.algorithm.model.sdf.esdf.SDFSinkInterfaceVertex;
 import org.preesm.algorithm.throughput.tools.GraphSimulationHelper;
-import org.preesm.algorithm.throughput.tools.Stopwatch;
 
 /**
  * @author hderoui
  *
  */
 public class ALAPSchedulerDAG {
-  public GraphSimulationHelper         simulator;       // simulator helper
+  private GraphSimulationHelper        simulator;       // simulator helper
   private Double                       maxDate;         // throughput constraint
   private ArrayList<SDFAbstractVertex> actorsToExecute; // list of actors to execute
 
@@ -65,11 +64,9 @@ public class ALAPSchedulerDAG {
    * @return the duration of a graph iteration
    */
   public double schedule(final SDFGraph graph, final GraphSimulationHelper simulator, final double ThConstDate) {
-    final Stopwatch timer = new Stopwatch();
-    timer.start();
 
     // initialize the simulator and the list of actor to execute
-    this.simulator = simulator;
+    this.setSimulator(simulator);
     this.maxDate = ThConstDate;
     this.actorsToExecute = new ArrayList<>();
     initialzeList(graph);
@@ -77,7 +74,7 @@ public class ALAPSchedulerDAG {
     while (!this.actorsToExecute.isEmpty()) {
       // execute the first actor of the list
       final SDFAbstractVertex currentActor = this.actorsToExecute.get(0);
-      this.simulator.consume(currentActor, -1);
+      this.getSimulator().consume(currentActor, -1);
 
       // verify the target actors of the executed actor if they are ready to be executed
       for (final SDFInterfaceVertex input : currentActor.getSources()) {
@@ -86,12 +83,12 @@ public class ALAPSchedulerDAG {
         final SDFAbstractVertex sourceActor = currentActor.getAssociatedEdge(input).getSource();
         if (isReady(sourceActor)) {
           // consume 1 time
-          this.simulator.produce(sourceActor, -1);
+          this.getSimulator().produce(sourceActor, -1);
 
           // set the finish date
-          final double startDate = this.simulator.getFinishDate(sourceActor)
-              - this.simulator.getActorDuration(sourceActor);
-          this.simulator.setStartDate(sourceActor, startDate);
+          final double startDate = this.getSimulator().getFinishDate(sourceActor)
+              - this.getSimulator().getActorDuration(sourceActor);
+          this.getSimulator().setStartDate(sourceActor, startDate);
 
           // add the execution to the list
           this.actorsToExecute.add(sourceActor);
@@ -102,15 +99,6 @@ public class ALAPSchedulerDAG {
       this.actorsToExecute.remove(0);
     }
 
-    // check if the simulation is completed
-    // if (this.simulator.isIterationCompleted()) {
-    // System.out.println("Iteration complete !!");
-    // } else {
-    // System.err.println("Iteration not complete !!");
-    // }
-
-    timer.stop();
-    System.out.println("SDF Graph Scheduled in " + timer.toString());
     return this.maxDate;
   }
 
@@ -126,10 +114,10 @@ public class ALAPSchedulerDAG {
       // if ready
       if (isReady(actor)) {
         // consume N data tokens
-        this.simulator.produce(actor, -1);
+        this.getSimulator().produce(actor, -1);
         // set the finish date
-        final double startDate = this.simulator.getFinishDate(actor) - this.simulator.getActorDuration(actor);
-        this.simulator.setStartDate(actor, startDate);
+        final double startDate = this.getSimulator().getFinishDate(actor) - this.getSimulator().getActorDuration(actor);
+        this.getSimulator().setStartDate(actor, startDate);
         // add the execution to the list
         this.actorsToExecute.add(actor);
       }
@@ -145,7 +133,7 @@ public class ALAPSchedulerDAG {
    */
   private boolean isReady(final SDFAbstractVertex actor) {
     double maxFinishDate = this.maxDate;
-    if (this.simulator.getExecutionCounter(actor) > 0) {
+    if (this.getSimulator().getExecutionCounter(actor) > 0) {
       return false;
     } else {
       boolean ready = true;
@@ -155,17 +143,25 @@ public class ALAPSchedulerDAG {
           ready = false;
           break;
         } else {
-          if (this.simulator.getStartDate(edge.getTarget()) < maxFinishDate) {
-            maxFinishDate = this.simulator.getStartDate(edge.getTarget());
+          if (this.getSimulator().getStartDate(edge.getTarget()) < maxFinishDate) {
+            maxFinishDate = this.getSimulator().getStartDate(edge.getTarget());
           }
         }
       }
-      final SDFAbstractVertex baseActor = (SDFAbstractVertex) actor.getPropertyBean().getValue("baseActor");
+      final SDFAbstractVertex baseActor = actor.getPropertyBean().getValue("baseActor");
       if (!(baseActor instanceof SDFSinkInterfaceVertex)) {
-        this.simulator.setfinishDate(actor, maxFinishDate);
+        this.getSimulator().setfinishDate(actor, maxFinishDate);
       }
       return ready;
     }
+  }
+
+  public GraphSimulationHelper getSimulator() {
+    return simulator;
+  }
+
+  public void setSimulator(GraphSimulationHelper simulator) {
+    this.simulator = simulator;
   }
 
 }

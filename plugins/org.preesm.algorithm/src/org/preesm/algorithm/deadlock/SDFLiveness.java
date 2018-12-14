@@ -172,6 +172,6 @@ public interface SDFLiveness {
     scheduler.schedule(sdf);
 
     // the live attribute of the scheduler will indicate if the schedule has succeeded to schedule a complete iteration
-    return scheduler.live;
+    return scheduler.isLive();
   }
 }

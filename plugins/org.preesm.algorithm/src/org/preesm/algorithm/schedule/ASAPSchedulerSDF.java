@@ -39,11 +39,12 @@ import java.util.Hashtable;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.logging.Level;
 import org.preesm.algorithm.model.sdf.SDFAbstractVertex;
 import org.preesm.algorithm.model.sdf.SDFGraph;
 import org.preesm.algorithm.model.sdf.SDFInterfaceVertex;
 import org.preesm.algorithm.throughput.tools.GraphSimulationHelper;
-import org.preesm.algorithm.throughput.tools.Stopwatch;
+import org.preesm.commons.logger.PreesmLogger;
 
 /**
  * @author hderoui
@@ -53,9 +54,8 @@ import org.preesm.algorithm.throughput.tools.Stopwatch;
  */
 public class ASAPSchedulerSDF {
   private GraphSimulationHelper                     simulator;  // simulator helper
-  private Double                                    dur1Iter;   // duration of one iteration of a graph
   private Map<Double, Map<SDFAbstractVertex, Long>> executions; // list of ready executions to finish
-  public boolean                                    live;
+  private boolean                                   live;
 
   /**
    * Schedule the graph using an ASAP schedule and return the duration of the graph iteration
@@ -65,12 +65,10 @@ public class ASAPSchedulerSDF {
    * @return the duration of a graph iteration
    */
   public double schedule(final SDFGraph graph) {
-    final Stopwatch timer = new Stopwatch();
-    timer.start();
 
     // initialize the simulator
     this.simulator = new GraphSimulationHelper(graph);
-    this.dur1Iter = 0.;
+    double dur1Iter = 0.;
 
     // initialize the 1st elements of the list
     this.executions = new Hashtable<>();
@@ -86,8 +84,8 @@ public class ASAPSchedulerSDF {
       }
 
       // update the duration of the iteration
-      if (this.dur1Iter < t) {
-        this.dur1Iter = t;
+      if (dur1Iter < t) {
+        dur1Iter = t;
       }
 
       // execute the list of executions
@@ -136,19 +134,16 @@ public class ASAPSchedulerSDF {
       }
     }
 
-    timer.stop();
-
     // check if the simulation is completed
     if (this.simulator.isIterationCompleted()) {
-      this.live = true;
-      System.out.println("Iteration complete !!");
+      this.setLive(true);
+      PreesmLogger.getLogger().log(Level.FINEST, "Iteration complete !!");
     } else {
-      this.live = false;
-      System.err.println("Iteration not complete !!");
+      this.setLive(false);
+      PreesmLogger.getLogger().log(Level.WARNING, "Iteration not complete !!");
     }
 
-    System.out.println("SDF Graph Scheduled in " + timer.toString());
-    return this.dur1Iter;
+    return dur1Iter;
   }
 
   /**
@@ -180,6 +175,14 @@ public class ASAPSchedulerSDF {
         }
       }
     }
+  }
+
+  public boolean isLive() {
+    return live;
+  }
+
+  public void setLive(boolean live) {
+    this.live = live;
   }
 
 }
