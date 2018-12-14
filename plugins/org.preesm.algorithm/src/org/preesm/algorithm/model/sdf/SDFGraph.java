@@ -67,7 +67,6 @@ import org.preesm.algorithm.model.types.LongEdgePropertyType;
 import org.preesm.algorithm.model.types.StringEdgePropertyType;
 import org.preesm.commons.exceptions.PreesmException;
 import org.preesm.commons.logger.PreesmLogger;
-import org.preesm.model.pisdf.PiGraph;
 
 /**
  * Abstract Class representing an SDF graph.
@@ -76,10 +75,7 @@ import org.preesm.model.pisdf.PiGraph;
  * @author kdesnos
  * @author jheulot
  *
- * @deprecated SDF model is deprecated and subject to removal any time. Please design your transformations on
- *             {@link PiGraph} instead.
  */
-@Deprecated
 public class SDFGraph extends AbstractGraph<SDFAbstractVertex, SDFEdge> {
 
   private static final String TOPOLOGY_LITERAL = "topology";

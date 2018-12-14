@@ -48,17 +48,13 @@ import org.preesm.algorithm.model.sdf.esdf.SDFSourceInterfaceVertex;
 import org.preesm.commons.exceptions.PreesmException;
 import org.preesm.commons.logger.PreesmLogger;
 import org.preesm.commons.math.ExpressionEvaluationException;
-import org.preesm.model.pisdf.PiGraph;
 
 /**
  * Abstract class representing SDF Vertices.
  *
  * @author jpiat
  * @author kdesnos
- * @deprecated SDF model is deprecated and subject to removal any time. Please design your transformations on
- *             {@link PiGraph} instead.
  */
-@Deprecated
 public abstract class SDFAbstractVertex extends AbstractVertex<SDFGraph> {
 
   /** Property nb repeat of the node. */
