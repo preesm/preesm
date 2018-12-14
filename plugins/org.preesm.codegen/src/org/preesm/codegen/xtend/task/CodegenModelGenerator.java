@@ -54,7 +54,6 @@ import java.util.Set;
 import java.util.TreeMap;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.logging.Level;
-import java.util.logging.Logger;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IWorkspace;
@@ -543,11 +542,6 @@ public class CodegenModelGenerator {
     return Collections.unmodifiableList(resultList);
   }
 
-  private void p(final String s) {
-    final Logger logger = PreesmLogger.getLogger();
-    logger.log(Level.INFO, s);
-  }
-
   /**
    * Generate the {@link CodegenPackage Codegen Model} for an actor firing. This method will create an {@link ActorCall}
    * or a {@link FunctionCall} and place it in the {@link LoopBlock} of the {@link CoreBlock} passed as a parameter. If
@@ -567,14 +561,15 @@ public class CodegenModelGenerator {
     // If the actor is hierarchical
     if (refinement instanceof AbstractGraph) {
       // try to generate for loop on a hierarchical actor
-      p("tryGenerateRepeatActorFiring " + dagVertex.getName());
+      PreesmLogger.getLogger().log(Level.FINE, "tryGenerateRepeatActorFiring " + dagVertex.getName());
       try {
         final CodegenHierarchicalModelGenerator h = new CodegenHierarchicalModelGenerator(this.scenario, this.algo,
             this.linkHSDFVertexBuffer, this.srSDFEdgeBuffers, this.dagVertexCalls);
         if (h.execute(operatorBlock, dagVertex) == 0) {
-          p("Hierarchical actor " + dagVertex.getName() + " generation Successed");
+          PreesmLogger.getLogger().log(Level.FINE,
+              "Hierarchical actor " + dagVertex.getName() + " generation Successed");
         } else {
-          p("Hierarchical actor " + dagVertex.getName() + " printing Failed");
+          PreesmLogger.getLogger().log(Level.FINE, "Hierarchical actor " + dagVertex.getName() + " printing Failed");
           throw new PreesmException("Unflattened hierarchical actors (" + dagVertex
               + ") are not yet supported by the Xtend Code Generation.\n"
               + "Flatten the graph completely before using this code-generation.");
