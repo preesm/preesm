@@ -46,6 +46,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.PrintStream;
+import java.net.MalformedURLException;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
@@ -304,29 +305,22 @@ public class BeanShellInterpreterTest {
 
     final StringBuffer content = new StringBuffer();
     final File scriptFile = new File("../../plugins/" + plugin_name + "/" + script_path);
-    final BufferedReader in;
-    if (scriptFile.exists()) {
-      in = new BufferedReader(new FileReader(scriptFile));
-    } else {
-      final URL url = new URL("platform:/plugin/" + plugin_name + "/" + script_path);
-      final InputStream inputStream = url.openConnection().getInputStream();
-      in = new BufferedReader(new InputStreamReader(inputStream));
-    }
-    String inputLine;
-    // instrument code to return the list of matches
-    while ((inputLine = in.readLine()) != null) {
-      final boolean contains = inputLine.contains("matchWith");
-      if (contains) {
-        content.append("match = ");
-      }
-      content.append(inputLine + "\n");
-      if (contains) {
-        content.append("resList.add(match);\n");
-      }
-    }
-    content.append("resList;");
 
-    in.close();
+    try (final BufferedReader in = open(plugin_name, script_path, scriptFile);) {
+      String inputLine;
+      // instrument code to return the list of matches
+      while ((inputLine = in.readLine()) != null) {
+        final boolean contains = inputLine.contains("matchWith");
+        if (contains) {
+          content.append("match = ");
+        }
+        content.append(inputLine + "\n");
+        if (contains) {
+          content.append("resList.add(match);\n");
+        }
+      }
+      content.append("resList;");
+    }
     Assert.assertTrue(content.toString().contains("inputs.get(0).matchWith(inIdx,output,0,outSize);"));
 
     final int bufferToSplitSize = 1024 * 1024 * 8; // 8MB
@@ -357,6 +351,19 @@ public class BeanShellInterpreterTest {
     Assert.assertEquals(numberOfForks, size);
   }
 
+  private BufferedReader open(final String plugin_name, final String script_path, final File scriptFile)
+      throws FileNotFoundException, MalformedURLException, IOException {
+    final BufferedReader in;
+    if (scriptFile.exists()) {
+      in = new BufferedReader(new FileReader(scriptFile));
+    } else {
+      final URL url = new URL("platform:/plugin/" + plugin_name + "/" + script_path);
+      final InputStream inputStream = url.openConnection().getInputStream();
+      in = new BufferedReader(new InputStreamReader(inputStream));
+    }
+    return in;
+  }
+
   /**
    * Requires Plugin testing
    *
@@ -368,29 +375,21 @@ public class BeanShellInterpreterTest {
 
     final StringBuffer content = new StringBuffer();
     final File scriptFile = new File("../../plugins/" + plugin_name + "/" + script_path);
-    final BufferedReader in;
-    if (scriptFile.exists()) {
-      in = new BufferedReader(new FileReader(scriptFile));
-    } else {
-      final URL url = new URL("platform:/plugin/" + plugin_name + "/" + script_path);
-      final InputStream inputStream = url.openConnection().getInputStream();
-      in = new BufferedReader(new InputStreamReader(inputStream));
-    }
-    String inputLine;
-    // instrument code to return the list of matches
-    while ((inputLine = in.readLine()) != null) {
-      final boolean contains = inputLine.contains("matchWith");
-      if (contains) {
-        content.append("match = ");
+    try (final BufferedReader in = open(plugin_name, script_path, scriptFile)) {
+      String inputLine;
+      // instrument code to return the list of matches
+      while ((inputLine = in.readLine()) != null) {
+        final boolean contains = inputLine.contains("matchWith");
+        if (contains) {
+          content.append("match = ");
+        }
+        content.append(inputLine + "\n");
+        if (contains) {
+          content.append("resList.add(match);\n");
+        }
       }
-      content.append(inputLine + "\n");
-      if (contains) {
-        content.append("resList.add(match);\n");
-      }
+      content.append("resList;");
     }
-    content.append("resList;");
-
-    in.close();
     Assert.assertTrue(content.toString().contains("outputs.get(0).matchWith(outIdx,input,0,inSize);"));
 
     final int bufferToSplitSize = 1024 * 1024 * 8; // 8MB
@@ -432,21 +431,14 @@ public class BeanShellInterpreterTest {
 
     final StringBuffer content = new StringBuffer();
     final File scriptFile = new File("../../plugins/" + plugin_name + "/" + script_path);
-    final BufferedReader in;
-    if (scriptFile.exists()) {
-      in = new BufferedReader(new FileReader(scriptFile));
-    } else {
-      final URL url = new URL("platform:/plugin/" + plugin_name + "/" + script_path);
-      final InputStream inputStream = url.openConnection().getInputStream();
-      in = new BufferedReader(new InputStreamReader(inputStream));
-    }
 
-    String inputLine;
-    // instrument code to return the list of matches
-    while ((inputLine = in.readLine()) != null) {
-      content.append(inputLine + "\n");
+    try (final BufferedReader in = open(plugin_name, script_path, scriptFile)) {
+      String inputLine;
+      // instrument code to return the list of matches
+      while ((inputLine = in.readLine()) != null) {
+        content.append(inputLine + "\n");
+      }
     }
-    in.close();
     Assert.assertTrue(content.toString().contains("RuntimeException"));
 
     final int bufferToBroadcastSize = 1024 * 1024 * 8; // 8MB
@@ -490,35 +482,34 @@ public class BeanShellInterpreterTest {
       final InputStream inputStream = url.openConnection().getInputStream();
       streamReader = new InputStreamReader(inputStream);
     }
-    final BufferedReader in = new BufferedReader(streamReader);
-    String inputLine;
+    try (final BufferedReader in = new BufferedReader(streamReader)) {
+      String inputLine;
 
-    // instrument code to return the list of matches
-    while ((inputLine = in.readLine()) != null) {
-      final boolean contains = inputLine.contains("inputs.get(0).matchWith(inIdx,output,outIdx,matchSize);");
-      if (contains) {
-        content.append("match = ");
-      }
-      content.append(inputLine + "\n");
-      if (contains) {
-        content.append("resList.add(match);\n");
+      // instrument code to return the list of matches
+      while ((inputLine = in.readLine()) != null) {
+        final boolean contains = inputLine.contains("inputs.get(0).matchWith(inIdx,output,outIdx,matchSize);");
+        if (contains) {
+          content.append("match = ");
+        }
+        content.append(inputLine + "\n");
+        if (contains) {
+          content.append("resList.add(match);\n");
+        }
       }
     }
-
     streamReader.close();
-    in.close();
 
     content.append("resList;");
     Assert.assertTrue(content.toString().contains("inputs.get(0).matchWith(inIdx,output,outIdx,matchSize);"));
 
-    final int nbOutputBuffers = 2;
-    final int bufferToBroadcastSize = 1024 * 1024 * 8; // 8MB
-    final int ratio = 4;
-    final int inputBuffersSize = bufferToBroadcastSize / ratio;
+    final long nbOutputBuffers = 2;
+    final long bufferToBroadcastSize = 1024 * 1024 * 8; // 8MB
+    final long ratio = 4;
+    final long inputBuffersSize = bufferToBroadcastSize / ratio;
 
     final List<Buffer> inputs = new ArrayList<>(1);
     inputs.add(new Buffer(null, new DAGVertex("v1", null, null), "inputBuffer", inputBuffersSize, 1, true));
-    final List<Buffer> outputs = new ArrayList<>(nbOutputBuffers);
+    final List<Buffer> outputs = new ArrayList<>((int) nbOutputBuffers);
     for (int i = 0; i < nbOutputBuffers; i++) {
       outputs
           .add(new Buffer(null, new DAGVertex("v1", null, null), "outputBuffer" + i, bufferToBroadcastSize, 1, true));
