@@ -61,7 +61,6 @@ import org.preesm.algorithm.mapper.abc.SpecialVertexManager;
 import org.preesm.algorithm.mapper.abc.impl.latency.LatencyAbc;
 import org.preesm.algorithm.mapper.model.MapperDAGEdge;
 import org.preesm.algorithm.mapper.model.MapperDAGVertex;
-import org.preesm.algorithm.model.sdf.SDFAbstractVertex;
 import org.preesm.commons.exceptions.PreesmException;
 import org.preesm.commons.files.ContainersManager;
 import org.preesm.commons.files.PathTools;
@@ -227,8 +226,7 @@ class CustomQuantaExporter extends AbstractTaskImplementation {
   private void visitVertex(final MapperDAGVertex vertex) {
     final String duration = vertex.getPropertyStringValue(ImplementationPropertyNames.Task_duration);
     final Component operator = vertex.getEffectiveComponent().getComponent();
-    final SDFAbstractVertex actor = vertex.getCorrespondingSDFVertex();
-    final String cquanta = this.customQuanta.getQuanta(actor.getId(), operator.getVlnv().getName());
+    final String cquanta = this.customQuanta.getQuanta(vertex.getName(), operator.getVlnv().getName());
 
     if (!cquanta.isEmpty()) {
       // Resolving the value as a String expression of t

@@ -255,7 +255,6 @@ public class DAGTransformation<T extends DirectedAcyclicGraph>
     if (graph.validateModel()) {
       // insertImplodeExplodesVertices(graph)
       this.outputGraph.copyProperties(graph);
-      this.outputGraph.setCorrespondingSDFGraph(graph);
       for (final DAGVertex vertex : this.outputGraph.vertexSet()) {
         vertex.setNbRepeat(new LongVertexPropertyType(graph.getVertex(vertex.getName()).getNbRepeatAsLong()));
       }

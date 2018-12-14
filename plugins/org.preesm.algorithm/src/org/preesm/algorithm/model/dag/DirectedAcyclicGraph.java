@@ -44,7 +44,6 @@ import org.preesm.algorithm.model.AbstractGraph;
 import org.preesm.algorithm.model.PropertyFactory;
 import org.preesm.algorithm.model.factories.DAGVertexFactory;
 import org.preesm.algorithm.model.factories.IModelVertexFactory;
-import org.preesm.algorithm.model.sdf.SDFGraph;
 import org.preesm.commons.exceptions.PreesmException;
 
 /**
@@ -58,14 +57,11 @@ public class DirectedAcyclicGraph extends AbstractGraph<DAGVertex, DAGEdge> {
   /** The Constant serialVersionUID. */
   private static final long serialVersionUID = -3860891539321306793L;
 
-  /** The Constant SDF. */
-  private static final String SDF = "sdf";
-
   /**
    * Constructs a new DAG graph with the default Dag edge factory.
    */
   public DirectedAcyclicGraph() {
-    this(() -> new DAGEdge());
+    this(DAGEdge::new);
   }
 
   /**
@@ -178,25 +174,6 @@ public class DirectedAcyclicGraph extends AbstractGraph<DAGVertex, DAGEdge> {
   @Override
   public boolean validateModel() {
     return true;
-  }
-
-  /**
-   * Gets the corresponding SDF graph.
-   *
-   * @return the corresponding SDF graph
-   */
-  public SDFGraph getCorrespondingSDFGraph() {
-    return getPropertyBean().getValue(DirectedAcyclicGraph.SDF);
-  }
-
-  /**
-   * Sets the corresponding SDF graph.
-   *
-   * @param graph
-   *          the new corresponding SDF graph
-   */
-  public void setCorrespondingSDFGraph(final SDFGraph graph) {
-    getPropertyBean().setValue(DirectedAcyclicGraph.SDF, graph);
   }
 
   /*
