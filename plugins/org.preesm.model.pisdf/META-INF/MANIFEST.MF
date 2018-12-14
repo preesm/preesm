@@ -10,7 +10,7 @@ Require-Bundle: org.eclipse.core.runtime,
  org.eclipse.emf.ecore.xcore.lib,
  org.eclipse.core.resources;bundle-version="3.7.100",
  org.eclipse.emf.ecore.xmi;bundle-version="2.7.0",
- org.apache.commons.io;bundle-version="2.2.0",
+ org.apache.commons.io;bundle-version="2.6.0",
  com.github.yannrichet.JMathArray;bundle-version="1.0.0",
  org.preesm.commons;visibility:=reexport,
  org.preesm.workflow
