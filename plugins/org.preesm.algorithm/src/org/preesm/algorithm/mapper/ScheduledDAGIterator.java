@@ -38,6 +38,7 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.NoSuchElementException;
 import java.util.TreeMap;
 import org.preesm.algorithm.mapper.model.MapperDAGVertex;
 import org.preesm.algorithm.model.dag.DirectedAcyclicGraph;
@@ -63,8 +64,7 @@ public class ScheduledDAGIterator implements Iterator<MapperDAGVertex> {
     final Map<Integer, MapperDAGVertex> orderedDAGVertexMap = new TreeMap<>();
     while (iter.hasNext()) {
       final MapperDAGVertex vertex = (MapperDAGVertex) iter.next();
-      final Integer order = (Integer) vertex.getPropertyBean()
-          .getValue(ImplementationPropertyNames.Vertex_schedulingOrder);
+      final Integer order = vertex.getPropertyBean().getValue(ImplementationPropertyNames.Vertex_schedulingOrder);
       orderedDAGVertexMap.put(order, vertex);
     }
     this.vertexInSchedulingOrder.addAll(orderedDAGVertexMap.values());
@@ -78,7 +78,11 @@ public class ScheduledDAGIterator implements Iterator<MapperDAGVertex> {
 
   @Override
   public MapperDAGVertex next() {
-    return this.vertexInSchedulingOrder.get(this.iterator++);
+    final int index = this.iterator++;
+    if (index > vertexInSchedulingOrder.size() - 1) {
+      throw new NoSuchElementException();
+    }
+    return this.vertexInSchedulingOrder.get(index);
   }
 
 }

@@ -388,7 +388,7 @@ public class Sdf3XmlParser {
     if (name.isEmpty()) {
       throw new RuntimeException("Port " + actor.getId() + "." + port.getId() + " has no rate");
     }
-    port.setPropertyValue("port_rate", Integer.decode(rate).intValue());
+    port.setPropertyValue("port_rate", Integer.valueOf(rate));
 
     actor.addInterface(port);
   }
