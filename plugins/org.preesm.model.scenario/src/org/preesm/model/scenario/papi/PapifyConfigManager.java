@@ -105,7 +105,7 @@ public class PapifyConfigManager {
    */
   public void addPapifyConfigPEGroup(final PapifyConfigPE pg) {
 
-    if (!this.papifyConfigGroupsActors.contains(pg)) {
+    if (!this.papifyConfigGroupsPEs.contains(pg)) {
       this.papifyConfigGroupsPEs.add(pg);
     }
   }
