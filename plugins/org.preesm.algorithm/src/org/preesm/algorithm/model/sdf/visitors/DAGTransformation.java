@@ -581,8 +581,6 @@ public class DAGTransformation<T extends DirectedAcyclicGraph>
       // Setting the init size property
       dagVertex.getPropertyBean().setValue(DAGInitVertex.INIT_SIZE, sdfInitVertex.getInitSize());
     }
-
-    dagVertex.setCorrespondingSDFVertex(sdfVertex);
   }
 
 }
