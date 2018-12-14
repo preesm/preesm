@@ -41,6 +41,7 @@ import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
 import java.util.logging.Level;
 import java.util.stream.Collectors;
@@ -306,8 +307,8 @@ public class SDFGraph extends AbstractGraph<SDFAbstractVertex, SDFEdge> {
         vrb.putAll(SDFMath.computeRationnalVRB(subgraph, this));
       }
     }
-    for (final SDFAbstractVertex vertex : vrb.keySet()) {
-      vertex.setNbRepeat(vrb.get(vertex));
+    for (final Entry<SDFAbstractVertex, Long> entry : vrb.entrySet()) {
+      entry.getKey().setNbRepeat(entry.getValue());
     }
     return true;
   }
@@ -500,7 +501,8 @@ public class SDFGraph extends AbstractGraph<SDFAbstractVertex, SDFEdge> {
       }
       connections.get(edge.getSourceInterface()).add(edge);
     }
-    for (final SDFInterfaceVertex port : connections.keySet()) {
+    for (final Entry<SDFInterfaceVertex, ArrayList<SDFEdge>> entry : connections.entrySet()) {
+      final SDFInterfaceVertex port = entry.getKey();
       if (connections.get(port).size() > 1) {
         final String message = "Warning: Implicit Broadcast added in graph " + getName() + " at port " + vertex + "."
             + port.getName();

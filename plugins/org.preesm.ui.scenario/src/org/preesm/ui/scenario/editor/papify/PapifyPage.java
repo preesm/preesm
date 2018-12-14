@@ -387,7 +387,7 @@ public class PapifyPage extends FormPage implements IPropertyListener {
    * @throws CoreException
    *           the core exception
    */
-  private void importData(final Text text) throws PreesmException, FileNotFoundException, CoreException {
+  private void importData(final Text text) {
 
     final IWorkspace workspace = ResourcesPlugin.getWorkspace();
 

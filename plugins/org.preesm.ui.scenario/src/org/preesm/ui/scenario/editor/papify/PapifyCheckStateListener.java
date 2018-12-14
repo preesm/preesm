@@ -41,6 +41,7 @@ import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
 import org.eclipse.emf.common.util.EList;
 import org.eclipse.jface.viewers.CheckStateChangedEvent;
@@ -438,7 +439,9 @@ public class PapifyCheckStateListener implements ISDFCheckStateListener {
 
       for (PapifyEventListTreeElement treeElement : this.elementList) {
         if (treeElement.actorPath.equals(actorPath)) {
-          for (String comp : actorEventMap.keySet()) {
+
+          for (final Entry<String, Set<PapiEvent>> entry : actorEventMap.entrySet()) {
+            final String comp = entry.getKey();
             for (PapiEvent oneEvent : actorEventMap.get(comp)) {
               treeElement.PAPIStatuses.put(oneEvent.getName(), PAPIEventStatus.YES);
               updateView(oneEvent.getName());

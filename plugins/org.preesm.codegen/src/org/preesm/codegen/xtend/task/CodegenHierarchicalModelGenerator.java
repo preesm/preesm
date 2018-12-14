@@ -598,7 +598,8 @@ public class CodegenHierarchicalModelGenerator {
     for (final SDFInterfaceVertex port : repVertexInterfaces) {
       boolean isInputActorTmp = isInputActor;
       boolean isOutputActorTmp = isOutputActor;
-      final SDFEdge currentEdge = repVertex.getAssociatedEdge(port);
+      final SDFEdge associatedEdge = repVertex.getAssociatedEdge(port);
+      final SDFEdge currentEdge = associatedEdge;
       if ((isInputActor) && (!(currentEdge.getSource() instanceof SDFInterfaceVertex))) {
         isInputActorTmp = false;
       }
@@ -617,24 +618,19 @@ public class CodegenHierarchicalModelGenerator {
         for (final DAGEdge edge : edges) {
           final BufferAggregate bufferAggregate = edge.getPropertyBean().getValue(BufferAggregate.propertyBeanName);
           for (final BufferProperties buffProperty : bufferAggregate) {
-            if (isInputActorTmp) {
-              final String portHsdfName = repVertex.getAssociatedEdge(port).getSourceLabel();
-              // check that this edge is not connected to a receive vertex
-              if (buffProperty.getDestInputPortID().equals(portHsdfName) && edge.getTarget().getKind() != null) {
+
+            if (isInputActorTmp || isOutputActorTmp) {
+              final String portHsdfName = isInputActorTmp ? associatedEdge.getSourceLabel()
+                  : associatedEdge.getTargetLabel();
+              final String destPortID = isInputActorTmp ? buffProperty.getDestInputPortID()
+                  : buffProperty.getSourceOutputPortID();
+              if (destPortID.equals(portHsdfName) && edge.getTarget().getKind() != null) {
                 subBufferProperties = buffProperty;
                 edgeEarlyExit = true;
                 break;
               }
             }
-            if (isOutputActorTmp) {
-              final String portHsdfName = repVertex.getAssociatedEdge(port).getTargetLabel();
-              // check that this edge is not connected to a receive vertex
-              if (buffProperty.getSourceOutputPortID().equals(portHsdfName) && edge.getTarget().getKind() != null) {
-                subBufferProperties = buffProperty;
-                edgeEarlyExit = true;
-                break;
-              }
-            }
+
           }
           if (edgeEarlyExit) {
             break;
