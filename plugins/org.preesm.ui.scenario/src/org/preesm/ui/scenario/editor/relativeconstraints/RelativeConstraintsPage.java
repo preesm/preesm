@@ -353,7 +353,7 @@ public class RelativeConstraintsPage extends FormPage implements IPropertyListen
 
       @Override
       public void keyReleased(final KeyEvent e) {
-
+        // nothing
       }
     });
 
@@ -378,6 +378,7 @@ public class RelativeConstraintsPage extends FormPage implements IPropertyListen
 
       @Override
       public void widgetDefaultSelected(final SelectionEvent arg0) {
+        // nothing
       }
     });
 

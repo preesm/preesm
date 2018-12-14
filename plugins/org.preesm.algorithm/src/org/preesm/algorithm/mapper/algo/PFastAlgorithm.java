@@ -420,7 +420,7 @@ public class PFastAlgorithm extends Observable {
 
     }
 
-    this.bestTotalOrder = (VertexOrderList) mappedDAGSet.first().getPropertyBean().getValue("bestTotalOrder");
+    this.bestTotalOrder = mappedDAGSet.first().getPropertyBean().getValue("bestTotalOrder");
     dagfinal = mappedDAGSet.first().copy();
 
     return dagfinal;

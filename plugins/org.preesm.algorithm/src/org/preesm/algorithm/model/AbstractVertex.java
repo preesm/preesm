@@ -115,7 +115,7 @@ public abstract class AbstractVertex<G> extends Observable
    *           the SDF 4 J exception
    */
   @SuppressWarnings("rawtypes")
-  public void accept(final IGraphVisitor visitor) throws PreesmException {
+  public void accept(final IGraphVisitor visitor) {
     visitor.visit(this);
   }
 

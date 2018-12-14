@@ -1947,8 +1947,8 @@ public class ScriptRunner {
               .collect(Collectors.toList()));
 
           // Find corresponding mObjects
-          final List<MemoryExclusionVertex> srcAndDestMObj = sourceAndDestBuffers.stream()
-              .map(it -> bufferAndMObjectMap.get(it)).collect(Collectors.toList());
+          final List<MemoryExclusionVertex> srcAndDestMObj = sourceAndDestBuffers.stream().map(bufferAndMObjectMap::get)
+              .collect(Collectors.toList());
 
           // Save this list in the attributes of the divided buffer
           mObj.setPropertyValue(MemoryExclusionVertex.DIVIDED_PARTS_HOSTS, srcAndDestMObj);

@@ -360,7 +360,7 @@ public class PapifyPage extends FormPage implements IPropertyListener {
 
       @Override
       public void keyReleased(final KeyEvent e) {
-
+        // nothing
       }
 
     });

@@ -388,6 +388,7 @@ public class PapifyCheckStateListener implements ISDFCheckStateListener {
 
       @Override
       public void focusLost(final FocusEvent e) {
+        // nothing
       }
 
     });

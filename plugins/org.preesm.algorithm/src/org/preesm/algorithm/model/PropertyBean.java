@@ -47,7 +47,7 @@ import java.util.Set;
  * @author Matthieu Wipliez
  * @author kdesnos
  */
-public class PropertyBean extends Observable implements Cloneable, Serializable {
+public class PropertyBean extends Observable implements Serializable {
 
   /** The Constant serialVersionUID. */
   static final long serialVersionUID = 1;
