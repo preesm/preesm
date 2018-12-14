@@ -118,7 +118,8 @@ class MonoActivityExporter extends AbstractTaskImplementation {
       logger.log(Level.SEVERE, "Not a valid set of ABCs for ActivityExporter.");
     }
 
-    logger.log(Level.INFO, "Activity: " + this.activity);
+    final String msg = "Activity: " + this.activity;
+    logger.log(Level.INFO, msg);
 
     return new HashMap<>();
   }
@@ -243,7 +244,7 @@ class MonoActivityExporter extends AbstractTaskImplementation {
         iFile.setContents(new ByteArrayInputStream(text.getBytes()), true, false, new NullProgressMonitor());
       }
     } catch (final CoreException ex) {
-      ex.printStackTrace();
+      throw new PreesmException(ex);
     }
   }
 }

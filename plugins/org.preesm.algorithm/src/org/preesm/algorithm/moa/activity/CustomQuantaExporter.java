@@ -157,7 +157,8 @@ class CustomQuantaExporter extends AbstractTaskImplementation {
       logger.log(Level.SEVERE, "Not a valid set of ABCs for ActivityExporter.");
     }
 
-    logger.log(Level.INFO, "Activity: " + this.activity);
+    final String msg = "Activity: " + this.activity;
+    logger.log(Level.INFO, msg);
 
     return new HashMap<>();
   }
@@ -239,19 +240,21 @@ class CustomQuantaExporter extends AbstractTaskImplementation {
 
         this.activity.addQuantaNumber(vertex.getEffectiveComponent().getInstanceName(), result.longValue());
 
-        PreesmLogger.getLogger().log(Level.INFO, "Custom quanta set to " + result.longValue() + " by solving " + cquanta
-            + " with t=" + duration + " for " + vertex.getName());
+        final String msg = "Custom quanta set to " + result.longValue() + " by solving " + cquanta + " with t="
+            + duration + " for " + vertex.getName();
+        PreesmLogger.getLogger().log(Level.INFO, msg);
       } catch (final ParseException exc) {
-        throw new RuntimeException(exc);
+        throw new PreesmException(exc);
       }
     } else if (SpecialVertexManager.isBroadCast(vertex)) {
       // Broadcasts have a fix ponderation of their custom quanta compared to timing
-      double correctedDuration = Double.valueOf(duration);
+      double correctedDuration = Double.parseDouble(duration);
       correctedDuration = correctedDuration * 0.720;
       this.activity.addQuantaNumber(vertex.getEffectiveComponent().getInstanceName(), (long) correctedDuration);
 
-      PreesmLogger.getLogger().log(Level.INFO, "Broadcast custom quanta set to " + ((long) correctedDuration)
-          + " by applying constant factor 0.72 to " + duration + " for " + vertex.getName());
+      final String msg = "Broadcast custom quanta set to " + ((long) correctedDuration)
+          + " by applying constant factor 0.72 to " + duration + " for " + vertex.getName();
+      PreesmLogger.getLogger().log(Level.INFO, msg);
 
     } else {
       this.activity.addQuantaNumber(vertex.getEffectiveComponent().getInstanceName(), Long.valueOf(duration));
@@ -311,7 +314,7 @@ class CustomQuantaExporter extends AbstractTaskImplementation {
         iFile.setContents(new ByteArrayInputStream(text.getBytes()), true, false, new NullProgressMonitor());
       }
     } catch (final CoreException ex) {
-      ex.printStackTrace();
+      throw new PreesmException(ex);
     }
 
   }
@@ -325,9 +328,11 @@ class CustomQuantaExporter extends AbstractTaskImplementation {
     final IFile iFile = ResourcesPlugin.getWorkspace().getRoot().getFile(path);
 
     if (!iFile.exists()) {
-      PreesmLogger.getLogger().log(Level.SEVERE, "The custom quanta input file " + fileName + " does not exist.");
+      final String msg = "The custom quanta input file " + fileName + " does not exist.";
+      PreesmLogger.getLogger().log(Level.SEVERE, msg);
     } else {
-      PreesmLogger.getLogger().log(Level.INFO, "Reading custom quanta from file " + fileName + ".");
+      final String msg = "Reading custom quanta from file " + fileName + ".";
+      PreesmLogger.getLogger().log(Level.INFO, msg);
       try {
         final Workbook w = Workbook.getWorkbook(iFile.getContents());
 
@@ -342,7 +347,7 @@ class CustomQuantaExporter extends AbstractTaskImplementation {
         // Warnings are displayed once for each missing operator or vertex
         // in the excel sheet
       } catch (IOException | CoreException | PreesmException | BiffException e) {
-        e.printStackTrace();
+        throw new PreesmException(e);
       }
     }
 
@@ -353,7 +358,7 @@ class CustomQuantaExporter extends AbstractTaskImplementation {
    */
   void parseQuantaForPISDFGraph(final Workbook w, final PiGraph appli, final Set<String> operators) {
     // Each of the vertices of the graph is either itself a graph
-    // (hierarchical vertex), in which case we call recursively this method;
+    // (hierarchical vertex), in which case we call recursively this method
     // we parse quanta for standard and special vertices
     for (final AbstractActor vertex : appli.getActors()) {
       // Handle connected graphs from hierarchical vertices
@@ -367,7 +372,7 @@ class CustomQuantaExporter extends AbstractTaskImplementation {
         if (refinement != null) {
           final AbstractActor subgraph = refinement.getAbstractActor();
 
-          if ((subgraph != null) && (subgraph instanceof PiGraph)) {
+          if (subgraph instanceof PiGraph) {
             parseQuantaForPISDFGraph(w, (PiGraph) subgraph, operators);
           } else {
             // If the actor is not hierarchical, parse its timing
@@ -404,10 +409,10 @@ class CustomQuantaExporter extends AbstractTaskImplementation {
 
           try {
             // Testing the validity of the value as a Long number.
-            final long quantaValue = Long.valueOf(timingCell.getContents());
+            final long quantaValue = Long.parseLong(timingCell.getContents());
 
-            PreesmLogger.getLogger().log(Level.INFO,
-                "Importing custom quantum: " + vertexName + " on " + opDefId + ": " + quantaValue);
+            final String msg = "Importing custom quantum: " + vertexName + " on " + opDefId + ": " + quantaValue;
+            PreesmLogger.getLogger().log(Level.INFO, msg);
             this.customQuanta.addQuantaExpression(vertexName, opDefId, timingCell.getContents());
 
           } catch (final NumberFormatException e) {
@@ -418,8 +423,9 @@ class CustomQuantaExporter extends AbstractTaskImplementation {
 
           try {
             // Case of a string formula
-            PreesmLogger.getLogger().log(Level.INFO,
-                "Detected formula: " + timingCell.getContents() + " for " + vertexName + " on " + opDefId);
+            final String msg = "Detected formula: " + timingCell.getContents() + " for " + vertexName + " on "
+                + opDefId;
+            PreesmLogger.getLogger().log(Level.INFO, msg);
 
             // Testing the validity of the value as a String expression of t
             final JEP jep = new JEP();
@@ -436,11 +442,11 @@ class CustomQuantaExporter extends AbstractTaskImplementation {
         }
       } else {
         if (vertexCell == null) {
-          PreesmLogger.getLogger().log(Level.WARNING,
-              "No line found in custom quanta excel sheet for vertex: " + vertexName);
+          final String msg = "No line found in custom quanta excel sheet for vertex: " + vertexName;
+          PreesmLogger.getLogger().log(Level.WARNING, msg);
         } else if (operatorCell == null) {
-          PreesmLogger.getLogger().log(Level.WARNING,
-              "No column found in custom quanta excel sheet for operator type: " + opDefId);
+          final String msg = "No column found in custom quanta excel sheet for operator type: " + opDefId;
+          PreesmLogger.getLogger().log(Level.WARNING, msg);
         }
       }
     }
