@@ -56,8 +56,8 @@ import org.eclipse.ui.IPropertyListener;
 import org.eclipse.ui.PlatformUI;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.FrameworkUtil;
-import org.preesm.algorithm.model.sdf.SDFAbstractVertex;
 import org.preesm.algorithm.model.sdf.SDFVertex;
+import org.preesm.commons.exceptions.PreesmException;
 import org.preesm.model.pisdf.AbstractActor;
 import org.preesm.model.scenario.PreesmScenario;
 import org.preesm.model.scenario.Timing;
@@ -175,40 +175,10 @@ public class TimingsTableLabelProvider implements ITableLabelProvider, Selection
     if (this.scenario.isPISDFScenario()) {
       return getPISDFColumnText(element, columnIndex);
     } else if (this.scenario.isIBSDFScenario()) {
-      return getIBSDFColumnText(element, columnIndex);
+      throw new PreesmException("ibsdf not supproted anymore");
     } else {
       return null;
     }
-  }
-
-  /**
-   * Gets the IBSDF column text.
-   *
-   * @param element
-   *          the element
-   * @param columnIndex
-   *          the column index
-   * @return the IBSDF column text
-   */
-  private String getIBSDFColumnText(final Object element, final int columnIndex) {
-    String text = "";
-    if ((element instanceof SDFAbstractVertex) && (this.currentOpDefId != null)) {
-      final SDFAbstractVertex vertex = (SDFAbstractVertex) element;
-
-      final Timing timing = this.scenario.getTimingManager().getTimingOrDefault(vertex.getName(), this.currentOpDefId);
-      switch (columnIndex) {
-        case 0:
-          return vertex.getName();
-        case 1: // Expression Column
-          if (timing != null) {
-            text = timing.getStringValue();
-          }
-          break;
-        default:// Others
-          break;
-      }
-    }
-    return text;
   }
 
   /**

@@ -524,7 +524,7 @@ public class PapifyPage extends FormPage implements IPropertyListener {
       column.setWidth(150);
 
       PapifyComponentListContentProvider2DMatrixES editingSupport = new PapifyComponentListContentProvider2DMatrixES(
-          this.scenario, peTreeViewer, columnLabel, this.peContentProvider);
+          peTreeViewer, columnLabel, this.peContentProvider);
 
       viewerColumn.setLabelProvider(new PapifyComponentListContentProvider2DMatrixCLP(this.scenario, columnLabel));
       viewerColumn.setEditingSupport(editingSupport);
@@ -625,7 +625,7 @@ public class PapifyPage extends FormPage implements IPropertyListener {
     columnTiming.setWidth(150);
 
     PapifyEventListContentProvider2DMatrixES editingSupportTiming = new PapifyEventListContentProvider2DMatrixES(
-        this.scenario, this.actorTreeViewer, timingEvent.getName(), this.checkStateListener);
+        this.actorTreeViewer, timingEvent.getName(), this.checkStateListener);
 
     viewerColumnTiming.setLabelProvider(
         new PapifyEventListContentProvider2DMatrixCLP(this.scenario, timingEvent.getName(), this.checkStateListener));
@@ -645,7 +645,7 @@ public class PapifyPage extends FormPage implements IPropertyListener {
               column.setWidth(150);
 
               PapifyEventListContentProvider2DMatrixES editingSupport = new PapifyEventListContentProvider2DMatrixES(
-                  this.scenario, this.actorTreeViewer, oneEvent.getName(), this.checkStateListener);
+                  this.actorTreeViewer, oneEvent.getName(), this.checkStateListener);
 
               viewerColumn.setLabelProvider(new PapifyEventListContentProvider2DMatrixCLP(this.scenario,
                   oneEvent.getName(), this.checkStateListener));

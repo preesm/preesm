@@ -42,7 +42,6 @@ import org.eclipse.emf.common.util.EList;
 import org.eclipse.jface.viewers.CheckboxTreeViewer;
 import org.eclipse.jface.viewers.ITreeContentProvider;
 import org.eclipse.jface.viewers.Viewer;
-import org.preesm.algorithm.model.sdf.SDFGraph;
 import org.preesm.commons.exceptions.PreesmException;
 import org.preesm.model.pisdf.AbstractActor;
 import org.preesm.model.pisdf.Actor;
@@ -50,7 +49,6 @@ import org.preesm.model.pisdf.PiGraph;
 import org.preesm.model.pisdf.serialize.PiParser;
 import org.preesm.model.scenario.PreesmScenario;
 
-// TODO: Auto-generated Javadoc
 /**
  * This class provides the elements displayed in {@link SDFTreeSection}. Each element is a vertex. This tree is used in
  * scenario editor to edit the constraints
@@ -58,9 +56,6 @@ import org.preesm.model.scenario.PreesmScenario;
  * @author mpelcat
  */
 public class PreesmAlgorithmTreeContentProvider implements ITreeContentProvider {
-
-  /** The current IBSDF graph. */
-  private SDFGraph currentIBSDFGraph = null;
 
   /** The current PISDF graph. */
   private PiGraph currentPISDFGraph = null;
@@ -164,15 +159,6 @@ public class PreesmAlgorithmTreeContentProvider implements ITreeContentProvider 
       }
     }
     return table;
-  }
-
-  /**
-   * Gets the IBSDF current graph.
-   *
-   * @return the IBSDF current graph
-   */
-  public SDFGraph getIBSDFCurrentGraph() {
-    return this.currentIBSDFGraph;
   }
 
   /**

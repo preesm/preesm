@@ -42,7 +42,6 @@ import org.eclipse.jface.viewers.CellEditor;
 import org.eclipse.jface.viewers.CheckboxCellEditor;
 import org.eclipse.jface.viewers.ColumnViewer;
 import org.eclipse.jface.viewers.EditingSupport;
-import org.preesm.model.scenario.PreesmScenario;
 import org.preesm.ui.scenario.editor.papify.PapifyEventListTreeElement.PAPIEventStatus;
 
 // TODO: Auto-generated Javadoc
@@ -58,17 +57,14 @@ import org.preesm.ui.scenario.editor.papify.PapifyEventListTreeElement.PAPIEvent
  */
 class PapifyEventListContentProvider2DMatrixES extends EditingSupport {
 
-  /** Currently edited scenario. */
-  private PreesmScenario   scenario = null;
   String                   eventName;
-  CellEditor               editor   = new CheckboxCellEditor();
+  CellEditor               editor = new CheckboxCellEditor();
   PapifyCheckStateListener actorProvider;
 
-  public PapifyEventListContentProvider2DMatrixES(final PreesmScenario scenario, final ColumnViewer viewer,
-      final String name, PapifyCheckStateListener checkStateListener) {
+  public PapifyEventListContentProvider2DMatrixES(final ColumnViewer viewer, final String name,
+      PapifyCheckStateListener checkStateListener) {
     super(viewer);
     this.eventName = name;
-    this.scenario = scenario;
     this.actorProvider = checkStateListener;
   }
 

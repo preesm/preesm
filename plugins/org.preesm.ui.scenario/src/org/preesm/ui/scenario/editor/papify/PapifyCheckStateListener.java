@@ -57,7 +57,6 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.IPropertyListener;
 import org.eclipse.ui.forms.widgets.FormToolkit;
-import org.preesm.algorithm.model.sdf.SDFAbstractVertex;
 import org.preesm.commons.exceptions.PreesmException;
 import org.preesm.model.pisdf.AbstractActor;
 import org.preesm.model.pisdf.Actor;
@@ -512,26 +511,6 @@ public class PapifyCheckStateListener implements ISDFCheckStateListener {
 
       }
     }
-    return actorPaths;
-  }
-
-  /**
-   * Filter IBSDF children.
-   *
-   * @param children
-   *          the children
-   * @return the sets the
-   */
-  public Set<String> filterIBSDFChildren(final Set<SDFAbstractVertex> children) {
-
-    final Set<String> actorPaths = new LinkedHashSet<>();
-
-    for (final SDFAbstractVertex v : children) {
-      if (v.getKind().equalsIgnoreCase("vertex")) {
-        actorPaths.add(v.getName());
-      }
-    }
-
     return actorPaths;
   }
 
