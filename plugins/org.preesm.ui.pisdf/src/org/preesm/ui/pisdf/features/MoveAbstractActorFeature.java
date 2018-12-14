@@ -67,7 +67,6 @@ import org.preesm.model.pisdf.Dependency;
 import org.preesm.model.pisdf.Fifo;
 import org.preesm.model.pisdf.Port;
 
-// TODO: Auto-generated Javadoc
 /**
  * The Move Feature for {@link AbstractActor}.
  *
@@ -120,7 +119,7 @@ public class MoveAbstractActorFeature extends DefaultMoveShapeFeature {
     if ((deltaX != 0) || (deltaY != 0)) {
       final List<FreeFormConnection> connectionList = new ArrayList<>();
 
-      final FreeFormConnection[] containerConnections = calculateContainerConnections(context);
+      final FreeFormConnection[] containerConnections = calculateContainerConnectionsLocal(context);
       for (final FreeFormConnection containerConnection : containerConnections) {
         final FreeFormConnection cc = containerConnection;
         if (!connectionList.contains(cc)) {
@@ -128,7 +127,7 @@ public class MoveAbstractActorFeature extends DefaultMoveShapeFeature {
         }
       }
 
-      final FreeFormConnection[] connectedConnections = calculateConnectedConnections(context);
+      final FreeFormConnection[] connectedConnections = calculateConnectedConnectionsLocal(context);
       for (final FreeFormConnection connectedConnection : connectedConnections) {
         final FreeFormConnection cc = connectedConnection;
         if (!connectionList.contains(cc)) {
@@ -182,35 +181,32 @@ public class MoveAbstractActorFeature extends DefaultMoveShapeFeature {
       // Check that the pe is associated to the right delay (in
       // the java Object sense, not equals() one)
       final Object delay = getBusinessObjectForPictogramElement(pe);
-      if (delay == del) {
+      if (delay == del && pe.getGraphicsAlgorithm() != null) {
+        final int oldX = pe.getGraphicsAlgorithm().getX();
+        final int oldY = pe.getGraphicsAlgorithm().getY();
+        // Unless the delay is selected, move it
+        if (!selectedPEs.contains(pe)) {
+          pe.getGraphicsAlgorithm().setX(oldX + context.getDeltaX());
+          pe.getGraphicsAlgorithm().setY(oldY + context.getDeltaY());
+        }
 
-        if (pe.getGraphicsAlgorithm() != null) {
-          final int oldX = pe.getGraphicsAlgorithm().getX();
-          final int oldY = pe.getGraphicsAlgorithm().getY();
-          // Unless the delay is selected, move it
+        // Move all bendpoints of the FIFO as well
+        final List<PictogramElement> fifoPEs = new ArrayList<>();
+        final List<Anchor> anchors = getAnchorsLocal((Shape) pe);
+        for (final Anchor anchor : anchors) {
+          // Always move the incoming connection of the delay
+          // (even if the delay is selected.
+          fifoPEs.addAll(anchor.getIncomingConnections());
+          // Move the outgoing connection of the delay only if the
+          // delay itself is not selected
           if (!selectedPEs.contains(pe)) {
-            pe.getGraphicsAlgorithm().setX(oldX + context.getDeltaX());
-            pe.getGraphicsAlgorithm().setY(oldY + context.getDeltaY());
+            fifoPEs.addAll(anchor.getOutgoingConnections());
           }
+        }
 
-          // Move all bendpoints of the FIFO as well
-          final List<PictogramElement> fifoPEs = new ArrayList<>();
-          final List<Anchor> anchors = getAnchors((Shape) pe);
-          for (final Anchor anchor : anchors) {
-            // Always move the incoming connection of the delay
-            // (even if the delay is selected.
-            fifoPEs.addAll(anchor.getIncomingConnections());
-            // Move the outgoing connection of the delay only if the
-            // delay itself is not selected
-            if (!selectedPEs.contains(pe)) {
-              fifoPEs.addAll(anchor.getOutgoingConnections());
-            }
-          }
-
-          for (final PictogramElement fifoPE : fifoPEs) {
-            if (fifoPE instanceof FreeFormConnection) {
-              moveAllBendpointsOnFFConnection((FreeFormConnection) fifoPE, context.getDeltaX(), context.getDeltaY());
-            }
+        for (final PictogramElement fifoPE : fifoPEs) {
+          if (fifoPE instanceof FreeFormConnection) {
+            moveAllBendpointsOnFFConnection((FreeFormConnection) fifoPE, context.getDeltaX(), context.getDeltaY());
           }
         }
       }
@@ -236,7 +232,7 @@ public class MoveAbstractActorFeature extends DefaultMoveShapeFeature {
     final int deltaY = y - shapeToMove.getGraphicsAlgorithm().getY();
 
     if ((deltaX != 0) || (deltaY != 0)) {
-      final List<Anchor> anchors = getAnchors(shapeToMove);
+      final List<Anchor> anchors = getAnchorsLocal(shapeToMove);
 
       // Create a list of the corresponding Ports
       final List<Port> ports = new ArrayList<>();
@@ -254,7 +250,7 @@ public class MoveAbstractActorFeature extends DefaultMoveShapeFeature {
           final PictogramElement selPe = selectedPictogramElement;
           if ((selPe instanceof Shape) && !(selPe instanceof Diagram)) {
             final Shape selShape = (Shape) selPe;
-            for (final Anchor toAnchor : getAnchors(selShape)) {
+            for (final Anchor toAnchor : getAnchorsLocal(selShape)) {
               final EList<Connection> incomingConnections = toAnchor.getIncomingConnections();
               for (final Connection inConn : incomingConnections) {
                 if (inConn instanceof FreeFormConnection) {
@@ -267,7 +263,7 @@ public class MoveAbstractActorFeature extends DefaultMoveShapeFeature {
                       this.implicitlyMovedDelay.add(del);
                       // Add all the connection to the
                       // double connections lists
-                      final Fifo fifo = (Fifo) del.getContainingFifo();
+                      final Fifo fifo = del.getContainingFifo();
                       final List<PictogramElement> fifoPEs = Graphiti.getLinkService()
                           .getPictogramElements(getDiagram(), fifo);
                       for (final PictogramElement fifoPE : fifoPEs) {
@@ -280,7 +276,7 @@ public class MoveAbstractActorFeature extends DefaultMoveShapeFeature {
                 }
               }
             }
-            for (final Anchor fromAnchor : getAnchors(selShape)) {
+            for (final Anchor fromAnchor : getAnchorsLocal(selShape)) {
               final EList<Connection> outgoingConnections = fromAnchor.getOutgoingConnections();
               for (final Connection outConn : outgoingConnections) {
                 if (outConn instanceof FreeFormConnection) {
@@ -297,7 +293,7 @@ public class MoveAbstractActorFeature extends DefaultMoveShapeFeature {
                       // Add all the connection to the
                       // double connections lists
                       final Delay del = ((Fifo) bo).getDelay();
-                      final Fifo fifo = (Fifo) del.getContainingFifo();
+                      final Fifo fifo = del.getContainingFifo();
                       final List<PictogramElement> fifoPEs = Graphiti.getLinkService()
                           .getPictogramElements(getDiagram(), fifo);
                       for (final PictogramElement fifoPE : fifoPEs) {
@@ -345,7 +341,7 @@ public class MoveAbstractActorFeature extends DefaultMoveShapeFeature {
    *          the context
    * @return the free form connection[]
    */
-  private FreeFormConnection[] calculateContainerConnections(final IMoveShapeContext context) {
+  private FreeFormConnection[] calculateContainerConnectionsLocal(final IMoveShapeContext context) {
     final FreeFormConnection[] ret = new FreeFormConnection[0];
 
     if (!(context.getShape() instanceof ContainerShape)) {
@@ -364,7 +360,7 @@ public class MoveAbstractActorFeature extends DefaultMoveShapeFeature {
 
     if ((deltaX != 0) || (deltaY != 0)) {
 
-      final List<Anchor> anchorsFrom = getAnchors(shapeToMove);
+      final List<Anchor> anchorsFrom = getAnchorsLocal(shapeToMove);
       final List<Anchor> anchorsTo = new ArrayList<>(anchorsFrom);
 
       for (final Anchor anchorFrom : anchorsFrom) {
@@ -375,10 +371,8 @@ public class MoveAbstractActorFeature extends DefaultMoveShapeFeature {
           for (final Anchor anchorTo : anchorsTo) {
 
             final Collection<Connection> incomingConnections = anchorTo.getIncomingConnections();
-            if (incomingConnections.contains(connection)) {
-              if (connection instanceof FreeFormConnection) {
-                retList.add((FreeFormConnection) connection);
-              }
+            if (incomingConnections.contains(connection) && connection instanceof FreeFormConnection) {
+              retList.add((FreeFormConnection) connection);
             }
           }
         }
@@ -394,7 +388,7 @@ public class MoveAbstractActorFeature extends DefaultMoveShapeFeature {
    *          the context
    * @return the free form connection[]
    */
-  private FreeFormConnection[] calculateConnectedConnections(final IMoveShapeContext context) {
+  private FreeFormConnection[] calculateConnectedConnectionsLocal(final IMoveShapeContext context) {
     final List<FreeFormConnection> retList = new ArrayList<>();
     final Shape shapeToMove = context.getShape();
 
@@ -405,7 +399,7 @@ public class MoveAbstractActorFeature extends DefaultMoveShapeFeature {
     final int deltaY = y - shapeToMove.getGraphicsAlgorithm().getY();
 
     if ((deltaX != 0) || (deltaY != 0)) {
-      final List<Anchor> anchors = getAnchors(shapeToMove);
+      final List<Anchor> anchors = getAnchorsLocal(shapeToMove);
 
       final PictogramElement[] selectedPictogramElements = getDiagramBehavior().getDiagramContainer()
           .getSelectedPictogramElements();
@@ -414,7 +408,7 @@ public class MoveAbstractActorFeature extends DefaultMoveShapeFeature {
           final PictogramElement selPe = selectedPictogramElement;
           if ((selPe instanceof Shape) && !(selPe instanceof Diagram)) {
             final Shape selShape = (Shape) selPe;
-            for (final Anchor toAnchor : getAnchors(selShape)) {
+            for (final Anchor toAnchor : getAnchorsLocal(selShape)) {
               final EList<Connection> incomingConnections = toAnchor.getIncomingConnections();
               for (final Connection inConn : incomingConnections) {
                 if (inConn instanceof FreeFormConnection) {
@@ -428,7 +422,7 @@ public class MoveAbstractActorFeature extends DefaultMoveShapeFeature {
             // Kdesnos addition : detect also connectedConnections
             // ending at the current shape to avoid moving them
             // twice in postMoveShape
-            for (final Anchor toAnchor : getAnchors(selShape)) {
+            for (final Anchor toAnchor : getAnchorsLocal(selShape)) {
               final EList<Connection> outgoingConnections = toAnchor.getOutgoingConnections();
               for (final Connection outConn : outgoingConnections) {
                 if (outConn instanceof FreeFormConnection) {
@@ -446,23 +440,16 @@ public class MoveAbstractActorFeature extends DefaultMoveShapeFeature {
     return retList.toArray(new FreeFormConnection[0]);
   }
 
-  /**
-   * This code is a copy from the private method in {@link DefaultMoveShapeFeature}.
-   *
-   * @param theShape
-   *          the the shape
-   * @return the anchors
-   */
-  private List<Anchor> getAnchors(final Shape theShape) {
-    final List<Anchor> ret = new ArrayList<>();
+  private List<Anchor> getAnchorsLocal(Shape theShape) {
+    List<Anchor> ret = new ArrayList<>();
     ret.addAll(theShape.getAnchors());
 
     if (theShape instanceof ContainerShape) {
-      final ContainerShape containerShape = (ContainerShape) theShape;
-      final List<Shape> children = containerShape.getChildren();
-      for (final Shape shape : children) {
+      ContainerShape containerShape = (ContainerShape) theShape;
+      List<Shape> children = containerShape.getChildren();
+      for (Shape shape : children) {
         if (shape instanceof ContainerShape) {
-          ret.addAll(getAnchors(shape));
+          ret.addAll(getAnchorsLocal((ContainerShape) shape));
         } else {
           ret.addAll(shape.getAnchors());
         }
@@ -579,7 +566,5 @@ public class MoveAbstractActorFeature extends DefaultMoveShapeFeature {
         }
       }
     }
-
-    return;
   }
 }

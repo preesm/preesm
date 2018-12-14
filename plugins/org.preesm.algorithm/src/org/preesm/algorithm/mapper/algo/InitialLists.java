@@ -150,7 +150,7 @@ public class InitialLists implements Cloneable {
    *          the abc
    * @return : true if a vertex was found
    */
-  private boolean choosePredecessor(final MapperDAG dag, final MapperDAGVertex currentvertex,
+  private void choosePredecessor(final MapperDAG dag, final MapperDAGVertex currentvertex,
       final List<MapperDAGVertex> orderlist, final LatencyAbc abc) {
 
     MapperDAGVertex cpnvertex = null;
@@ -167,7 +167,7 @@ public class InitialLists implements Cloneable {
     // Run backward in the DAG to find the node with its parents in the
     // CPNdominantlist and with the maximum b-level
     while (!(orderlist.containsAll(predset))) {
-      cpnvertex = ibnChoice(dag, predset, orderlist, abc);
+      cpnvertex = ibnChoice(predset, orderlist, abc);
       predset.clear();
 
       if (cpnvertex != null) {
@@ -180,15 +180,11 @@ public class InitialLists implements Cloneable {
     }
 
     orderlist.add(cpnvertex);
-    return true;
-
   }
 
   /**
    * ibnChoice: Chooses among the node's predecessors, the vertex necessary to continue the algorithm.
    *
-   * @param dag
-   *          the dag
    * @param predset
    *          the predset
    * @param orderlist
@@ -197,8 +193,8 @@ public class InitialLists implements Cloneable {
    *          the archi
    * @return : MapperDAGVertex
    */
-  private MapperDAGVertex ibnChoice(final MapperDAG dag, final Set<DAGVertex> predset,
-      final List<MapperDAGVertex> orderlist, final LatencyAbc archi) {
+  private MapperDAGVertex ibnChoice(final Set<DAGVertex> predset, final List<MapperDAGVertex> orderlist,
+      final LatencyAbc archi) {
 
     final Iterator<DAGVertex> iter = predset.iterator();
     MapperDAGVertex currentvertex = null;
@@ -247,7 +243,7 @@ public class InitialLists implements Cloneable {
    *          the abc
    * @return true, if successful
    */
-  private boolean constructCPN(final MapperDAG dag, final List<MapperDAGVertex> cpnDominant,
+  private void constructCPN(final MapperDAG dag, final List<MapperDAGVertex> cpnDominant,
       final List<MapperDAGVertex> criticalPath, final LatencyAbc abc) {
 
     PreesmLogger.getLogger().log(Level.INFO, "Starting to build CPN list");
@@ -303,10 +299,9 @@ public class InitialLists implements Cloneable {
         if (edgeCost > commax) {
           commax = edgeCost;
           tempvertex = currentvertex;
-        } else if (edgeCost == commax) {
-          if ((tempvertex == null) || (abc.getTLevel(currentvertex, false) < abc.getTLevel(tempvertex, false))) {
-            tempvertex = currentvertex;
-          }
+        } else if (edgeCost == commax
+            && ((tempvertex == null) || (abc.getTLevel(currentvertex, false) < abc.getTLevel(tempvertex, false)))) {
+          tempvertex = currentvertex;
         }
       }
 
@@ -320,15 +315,10 @@ public class InitialLists implements Cloneable {
        */
       while (!(cpnDominant.contains(currentvertex))) {
         // If no predecessor was found
-        if (!choosePredecessor(dag, currentvertex, cpnDominant, abc)) {
-          final String msg = "No predecessor was found for vertex: " + currentvertex.getName();
-          throw new PreesmException(msg);
-        }
+        choosePredecessor(dag, currentvertex, cpnDominant, abc);
       }
 
     }
-
-    return true;
 
   }
 
@@ -384,10 +374,7 @@ public class InitialLists implements Cloneable {
     if (simu != null) {
       // construction of critical path and CPN dominant list with CPN and
       // IBN actors
-      if (!constructCPN(dag, this.cpnDominant, this.criticalPath, simu)) {
-        final String msg = "Problem with initial list construction";
-        throw new PreesmException(msg);
-      }
+      constructCPN(dag, this.cpnDominant, this.criticalPath, simu);
     } else {
       final String msg = "To construct initial lists, a latency ABC is needed.";
       throw new PreesmException(msg);

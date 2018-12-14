@@ -283,10 +283,11 @@ public interface TurbineParser {
    */
   static String jumpToLine(final BufferedReader br, final int n) {
     try {
+      String buf = br.readLine();
       for (int i = 1; i < n; i++) {
-        br.readLine();
+        buf = br.readLine();
       }
-      return br.readLine();
+      return buf;
 
     } catch (final IOException e) {
       throw new PreesmException("Could not read line " + n, e);

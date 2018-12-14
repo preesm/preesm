@@ -38,9 +38,9 @@ package org.preesm.algorithm.mapper.tools;
 
 import java.util.Iterator;
 import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.Random;
 
-// TODO: Auto-generated Javadoc
 /**
  * This iterator iterates any list of objects with type E.
  *
@@ -57,10 +57,6 @@ import java.util.Random;
 public class RandomIterator<E> implements Iterator<E> {
 
   // variables
-
-  /** The index. */
-  // the index of the chosen element
-  private int index;
 
   /** The list. */
   // the list which is iterated
@@ -108,10 +104,11 @@ public class RandomIterator<E> implements Iterator<E> {
    */
   @Override
   public E next() {
-
-    this.index = this.rand.nextInt(this.listSize);
-
-    return this.list.get(this.index);
+    final int index = this.rand.nextInt(this.listSize);
+    if (index > this.list.size() - 1) {
+      throw new NoSuchElementException();
+    }
+    return this.list.get(index);
   }
 
   /**

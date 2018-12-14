@@ -44,6 +44,7 @@ import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Observable;
 import java.util.Set;
 import org.preesm.algorithm.mapper.model.MapperDAG;
@@ -245,10 +246,8 @@ public class OrderManager extends Observable {
 
       if (previous.hasEffectiveComponent() && vertex.hasEffectiveComponent()) {
 
-        if (!this.totalOrder.contains(vertex)) {
-          if (this.totalOrder.indexOf(previous) >= 0) {
-            this.totalOrder.insertAfter(previous, vertex);
-          }
+        if (!this.totalOrder.contains(vertex) && this.totalOrder.indexOf(previous) >= 0) {
+          this.totalOrder.insertAfter(previous, vertex);
         }
         insertGivenTotalOrder(vertex);
 
@@ -272,10 +271,8 @@ public class OrderManager extends Observable {
 
       if (next.hasEffectiveComponent() && vertex.hasEffectiveComponent()) {
 
-        if (!this.totalOrder.contains(vertex)) {
-          if (this.totalOrder.indexOf(next) >= 0) {
-            this.totalOrder.insertBefore(next, vertex);
-          }
+        if (!this.totalOrder.contains(vertex) && this.totalOrder.indexOf(next) >= 0) {
+          this.totalOrder.insertBefore(next, vertex);
         }
         insertGivenTotalOrder(vertex);
 
@@ -322,8 +319,7 @@ public class OrderManager extends Observable {
    * @return the mapper DAG vertex
    */
   public MapperDAGVertex get(final int totalOrderIndex) {
-    final MapperDAGVertex elt = this.totalOrder.get(totalOrderIndex);
-    return elt;
+    return this.totalOrder.get(totalOrderIndex);
   }
 
   /**
@@ -374,10 +370,8 @@ public class OrderManager extends Observable {
 
     if (sch != null) {
       final MapperDAGVertex elt = sch.getScheduleElt(vertex);
-      if (elt != null) {
-        if (elt.equals(vertex)) {
-          sch.remove(elt);
-        }
+      if (elt != null && elt.equals(vertex)) {
+        sch.remove(elt);
       }
     }
 
@@ -525,12 +519,12 @@ public class OrderManager extends Observable {
   private Schedule getSchedule(final ComponentInstance cmp) {
 
     // Preventing from creating several schedules with same name
-    for (final ComponentInstance o : this.schedules.keySet()) {
-      if (o.getInstanceName().equals(cmp.getInstanceName())) {
-        return this.schedules.get(o);
+    for (final Entry<ComponentInstance, Schedule> entry : this.schedules.entrySet()) {
+      if (entry.getKey().getInstanceName().equals(cmp.getInstanceName())) {
+        return entry.getValue();
       }
     }
-    return null;
+    throw new PreesmException("No schedule found for component " + cmp);
   }
 
   /**

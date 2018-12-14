@@ -50,7 +50,6 @@ import org.preesm.model.pisdf.Parameter;
 import org.preesm.model.pisdf.util.DependencyCycleDetector;
 import org.preesm.ui.pisdf.diagram.PiMMImageProvider;
 
-// TODO: Auto-generated Javadoc
 /**
  * Class providing methods to retrieve the {@link IDecorator} of an {@link Parameter}.<br>
  * <b> This decorators only works for Parameters and not for configuration input interfaces.</b>
@@ -60,6 +59,10 @@ import org.preesm.ui.pisdf.diagram.PiMMImageProvider;
  *
  */
 public class ParameterDecorators {
+
+  private ParameterDecorators() {
+    // forbid instantiation
+  }
 
   /**
    * Methods that returns all the {@link IDecorator} for a given {@link Parameter}.
@@ -139,29 +142,29 @@ public class ParameterDecorators {
         if (cycle.contains(parameter)) {
           final ImageDecorator imageRenderingDecorator = new ImageDecorator(
               IPlatformImageConstants.IMG_ECLIPSE_ERROR_TSK);
-          String message = "Parameter belongs to a cycle: ";
+          final StringBuilder message = new StringBuilder("Parameter belongs to a cycle: ");
           for (final Parameter param : cycle) {
-            message += param.getName() + ">";
+            message.append(param.getName() + ">");
           }
-          message += parameter.getName();
-          imageRenderingDecorator.setMessage(message);
+          message.append(parameter.getName());
+          imageRenderingDecorator.setMessage(message.toString());
+          imageRenderingDecorator.setX((pe.getGraphicsAlgorithm().getWidth() / 2) - 8);
+          imageRenderingDecorator.setY(8);
+
+          return imageRenderingDecorator;
+        } else {
+          // If the parameter is not contained in a detected cycle but
+          // cycles were detected
+          // its locally static status cannot be determined
+          final ImageDecorator imageRenderingDecorator = new ImageDecorator(
+              IPlatformImageConstants.IMG_ECLIPSE_WARNING_TSK);
+
+          imageRenderingDecorator.setMessage("Parameter depends on parameters contained in a cycle.");
           imageRenderingDecorator.setX((pe.getGraphicsAlgorithm().getWidth() / 2) - 8);
           imageRenderingDecorator.setY(8);
 
           return imageRenderingDecorator;
         }
-
-        // If the parameter is not contained in a detected cycle but
-        // cycles were detected
-        // its locally static status cannot be determined
-        final ImageDecorator imageRenderingDecorator = new ImageDecorator(
-            IPlatformImageConstants.IMG_ECLIPSE_WARNING_TSK);
-
-        imageRenderingDecorator.setMessage("Parameter depends on parameters contained in a cycle.");
-        imageRenderingDecorator.setX((pe.getGraphicsAlgorithm().getWidth() / 2) - 8);
-        imageRenderingDecorator.setY(8);
-
-        return imageRenderingDecorator;
       }
     }
     return null;

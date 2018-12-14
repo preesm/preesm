@@ -502,9 +502,9 @@ public class BeanShellInterpreterTest {
     content.append("resList;");
     Assert.assertTrue(content.toString().contains("inputs.get(0).matchWith(inIdx,output,outIdx,matchSize);"));
 
-    final long nbOutputBuffers = 2;
-    final long bufferToBroadcastSize = 1024 * 1024 * 8; // 8MB
-    final long ratio = 4;
+    final long nbOutputBuffers = 2L;
+    final long bufferToBroadcastSize = 1024L * 1024L * 8L; // 8MB
+    final long ratio = 4L;
     final long inputBuffersSize = bufferToBroadcastSize / ratio;
 
     final List<Buffer> inputs = new ArrayList<>(1);

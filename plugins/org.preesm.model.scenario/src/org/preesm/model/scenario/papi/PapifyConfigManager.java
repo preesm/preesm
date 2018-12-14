@@ -283,16 +283,16 @@ public class PapifyConfigManager {
    */
   @Override
   public String toString() {
-    String s = "";
+    final StringBuilder s = new StringBuilder();
 
     for (final PapifyConfigActor pg : this.papifyConfigGroupsActors) {
-      s += pg.toString();
+      s.append(pg.toString());
     }
     for (final PapifyConfigPE pg : this.papifyConfigGroupsPEs) {
-      s += pg.toString();
+      s.append(pg.toString());
     }
 
-    return s;
+    return s.toString();
   }
 
   /**

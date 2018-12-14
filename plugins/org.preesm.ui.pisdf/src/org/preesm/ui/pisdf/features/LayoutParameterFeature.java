@@ -54,9 +54,9 @@ import org.eclipse.graphiti.mm.pictograms.ContainerShape;
 import org.eclipse.graphiti.mm.pictograms.PictogramElement;
 import org.eclipse.graphiti.mm.pictograms.Shape;
 import org.eclipse.graphiti.ui.services.GraphitiUi;
+import org.preesm.commons.exceptions.PreesmException;
 import org.preesm.model.pisdf.Parameter;
 
-// TODO: Auto-generated Javadoc
 /**
  * Layout Feature for {@link Parameter}s.
  *
@@ -108,21 +108,21 @@ public class LayoutParameterFeature extends AbstractLayoutFeature {
   protected int getNewWidth(final EList<Shape> childrenShapes) {
     // RETRIEVE THE NAME WIDTH
     IDimension nameSize = null;
-    {
-      // Scan the children shape looking for the parameter name
-      for (final Shape shape : childrenShapes) {
-        final GraphicsAlgorithm child = shape.getGraphicsAlgorithm();
-        // The name should be the only children with type text
-        if (child instanceof Text) {
-          final String text = ((Text) child).getValue();
-          final Font font = ((Text) child).getFont();
+    // Scan the children shape looking for the parameter name
+    for (final Shape shape : childrenShapes) {
+      final GraphicsAlgorithm child = shape.getGraphicsAlgorithm();
+      // The name should be the only children with type text
+      if (child instanceof Text) {
+        final String text = ((Text) child).getValue();
+        final Font font = ((Text) child).getFont();
 
-          // Retrieve the size of the text
-          nameSize = GraphitiUi.getUiLayoutService().calculateTextSize(text, font);
-        }
+        // Retrieve the size of the text
+        nameSize = GraphitiUi.getUiLayoutService().calculateTextSize(text, font);
       }
     }
-
+    if (nameSize == null) {
+      throw new PreesmException("No shape does contain Text");
+    }
     // Set a minimal width of a parameter
     return Math.max(nameSize.getWidth() + 6, 33);
   }
@@ -183,19 +183,17 @@ public class LayoutParameterFeature extends AbstractLayoutFeature {
 
     // Treat the container GA
     // Resize the house-shaped polygon
-    {
-      containerGa.setWidth(newWidth);
-      final int height = containerGa.getHeight(); // The height is constant
-      final int[] coord = new int[] { newWidth / 2, 0, newWidth, height - 14, newWidth, height, 0, height, 0,
-          height - 14 };
+    containerGa.setWidth(newWidth);
+    final int height = containerGa.getHeight(); // The height is constant
+    final int[] coord = new int[] { newWidth / 2, 0, newWidth, height - 14, newWidth, height, 0, height, 0,
+        height - 14 };
 
-      final List<Point> points = ((Polygon) containerGa).getPoints();
-      int i = 0;
-      for (final Point p : points) {
-        p.setX(coord[i]);
-        p.setY(coord[i + 1]);
-        i += 2;
-      }
+    final List<Point> points = ((Polygon) containerGa).getPoints();
+    int i = 0;
+    for (final Point p : points) {
+      p.setX(coord[i]);
+      p.setY(coord[i + 1]);
+      i += 2;
     }
   }
 }
