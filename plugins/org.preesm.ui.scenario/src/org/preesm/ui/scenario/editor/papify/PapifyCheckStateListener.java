@@ -336,17 +336,7 @@ public class PapifyCheckStateListener implements ISDFCheckStateListener {
    * @param propertyListener
    *          the property listener
    */
-  public void setComponentTreeViewer(final IPropertyListener propertyListener) {
-    this.propertyListener = propertyListener;
-  }
-
-  /**
-   * Sets the different necessary attributes.
-   *
-   * @param propertyListener
-   *          the property listener
-   */
-  public void setEventTreeViewer(final IPropertyListener propertyListener) {
+  public void setPropertyListener(final IPropertyListener propertyListener) {
     this.propertyListener = propertyListener;
   }
 

@@ -511,7 +511,7 @@ public class PapifyPage extends FormPage implements IPropertyListener {
     peColumn.setWidth(200);
     peViewerColumn.setLabelProvider(new ColumnLabelProvider());
 
-    this.checkStateListener.setComponentTreeViewer(this);
+    this.checkStateListener.setPropertyListener(this);
     this.peContentProvider.addCheckStateListener(this.checkStateListener);
 
     for (final String columnLabel : this.scenario.getOperatorDefinitionIds()) {
@@ -571,7 +571,7 @@ public class PapifyPage extends FormPage implements IPropertyListener {
 
     this.actorTreeViewer.setLabelProvider(new PreesmAlgorithmTreeLabelProvider());
 
-    this.checkStateListener.setEventTreeViewer(this);
+    this.checkStateListener.setPropertyListener(this);
     this.actorTreeViewer.addCheckStateListener(this.checkStateListener);
 
     this.actorTreeViewer.setUseHashlookup(true);
