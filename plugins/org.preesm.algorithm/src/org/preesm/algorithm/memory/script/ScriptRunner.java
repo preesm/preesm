@@ -1567,7 +1567,7 @@ public class ScriptRunner {
                   bufferCandidates.addAll(pair.getKey());
                   bufferCandidates.addAll(pair.getValue());
                 }
-                for (final AbstractEdge aggEdge : dagEdge.getAggregate()) {
+                for (final AbstractEdge<?, ?> aggEdge : dagEdge.getAggregate()) {
 
                   // Find the 2 buffers corresponding to this sdfEdge
                   final List<Buffer> buffers = bufferCandidates.stream().filter(it -> it.dagEdge == aggEdge)
