@@ -130,7 +130,7 @@ public abstract class MemoryAllocator {
           while (iter.hasNext()) {
             final BufferProperties properties = iter.next();
             final String dataType = properties.getDataType();
-            final DataType type = MemoryExclusionVertex._dataTypes.get(dataType);
+            final DataType type = MemoryExclusionVertex.NAME_TO_DATATYPES.get(dataType);
             long typeSize;
             // A proper type was not set for the considered edge
             if (type == null) {
@@ -681,7 +681,7 @@ public abstract class MemoryAllocator {
           while (iter.hasNext()) {
             final BufferProperties properties = iter.next();
             final String dataType = properties.getDataType();
-            final DataType type = MemoryExclusionVertex._dataTypes.get(dataType);
+            final DataType type = MemoryExclusionVertex.NAME_TO_DATATYPES.get(dataType);
             final long typeSize = type.getSize();
 
             if (interBufferSpaces != null) {

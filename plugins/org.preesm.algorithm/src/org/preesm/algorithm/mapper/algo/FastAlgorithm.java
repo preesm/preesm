@@ -185,7 +185,7 @@ public class FastAlgorithm extends Observable {
     // initialing the data window if this is necessary
     if (!pfastused) {
 
-      costPlotter.setSUBPLOT_COUNT(1);
+      costPlotter.setSubplotCount(1);
       BestCostEditor.createEditor(costPlotter);
 
       addObserver(costPlotter);

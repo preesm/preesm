@@ -296,7 +296,7 @@ public class MemoryExclusionGraph extends SimpleGraph<MemoryExclusionVertex, Def
             throw new RuntimeException("DAGEdge " + outgoingEdge + " is equivalent to several SDFEdges.\n"
                 + "This is not supported by the MemEx builder.\n" + "Please contact Preesm developers.");
           }
-          final DataType type = MemoryExclusionVertex._dataTypes.get(buffers.get(0).getDataType());
+          final DataType type = MemoryExclusionVertex.NAME_TO_DATATYPES.get(buffers.get(0).getDataType());
           if (type != null) {
             typeSize = type.getSize();
           }

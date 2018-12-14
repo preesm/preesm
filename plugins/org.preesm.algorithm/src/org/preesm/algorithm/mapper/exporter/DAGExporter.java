@@ -65,7 +65,6 @@ import org.preesm.algorithm.model.sdf.esdf.SDFJoinVertex;
 import org.preesm.commons.exceptions.PreesmException;
 import org.w3c.dom.Element;
 
-// TODO: Auto-generated Javadoc
 /**
  * Exporter for the DAG graph that enters the mapping process. This DAG can be opened in Graphiti.
  *
@@ -73,6 +72,8 @@ import org.w3c.dom.Element;
  *
  */
 public class DAGExporter extends GMLExporter<DAGVertex, DAGEdge> {
+
+  private static final String VERTEX_LITTERAL = "vertex";
 
   /** The in port nb. */
   // Map to keep the number of ports for each DAGVertex
@@ -100,11 +101,11 @@ public class DAGExporter extends GMLExporter<DAGVertex, DAGEdge> {
     final Element vertexElt = createNode(parentELement, vertex.getName());
     String kind;
     if (vertex.getKind() == null) {
-      kind = "vertex";
+      kind = VERTEX_LITTERAL;
     } else {
       switch (vertex.getKind()) {
         case DAGVertex.DAG_VERTEX:
-          kind = "vertex";
+          kind = VERTEX_LITTERAL;
           break;
         case DAGBroadcastVertex.DAG_BROADCAST_VERTEX:
           kind = SDFBroadcastVertex.BROADCAST;
@@ -122,7 +123,7 @@ public class DAGExporter extends GMLExporter<DAGVertex, DAGEdge> {
           kind = SDFJoinVertex.JOIN;
           break;
         default:
-          kind = "vertex";
+          kind = VERTEX_LITTERAL;
       }
     }
     vertexElt.setAttribute(AbstractVertex.KIND_LITERAL, kind);
@@ -225,7 +226,7 @@ public class DAGExporter extends GMLExporter<DAGVertex, DAGEdge> {
       exportGraph(graph);
       transform(out);
     } catch (final IOException e) {
-      e.printStackTrace();
+      throw new PreesmException(e);
     }
   }
 

@@ -312,7 +312,7 @@ public class PFastAlgorithm extends Observable {
     final BestCostPlotter costPlotter = new BestCostPlotter("PFast Algorithm", pauseSemaphore);
 
     if (!population) {
-      costPlotter.setSUBPLOT_COUNT(1);
+      costPlotter.setSubplotCount(1);
       BestCostEditor.createEditor(costPlotter);
 
       addObserver(costPlotter);
