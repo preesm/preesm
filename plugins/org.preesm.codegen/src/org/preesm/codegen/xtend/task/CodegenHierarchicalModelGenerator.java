@@ -165,7 +165,7 @@ public class CodegenHierarchicalModelGenerator {
   /**
    *
    */
-  public int execute(final CoreBlock operatorBlock, final DAGVertex dagVertex) throws PreesmException {
+  public void execute(final CoreBlock operatorBlock, final DAGVertex dagVertex) throws PreesmException {
     // Check whether the ActorCall is a call to a hierarchical actor or not.
     final SDFAbstractVertex sdfVertex = dagVertex.getCorrespondingSDFVertex();
     final Object refinement = sdfVertex.getPropertyBean().getValue(AbstractVertex.REFINEMENT_LITERAL);
@@ -324,7 +324,6 @@ public class CodegenHierarchicalModelGenerator {
       this.linkHSDFEdgeBuffer.clear();
       this.currentWorkingMemOffset = 0;
     }
-    return 0;
   }
 
   /**
