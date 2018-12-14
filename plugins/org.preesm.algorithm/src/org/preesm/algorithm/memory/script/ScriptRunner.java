@@ -67,11 +67,9 @@ import org.preesm.algorithm.model.dag.edag.DAGBroadcastVertex;
 import org.preesm.algorithm.model.dag.edag.DAGForkVertex;
 import org.preesm.algorithm.model.dag.edag.DAGJoinVertex;
 import org.preesm.algorithm.model.parameters.Argument;
-import org.preesm.algorithm.model.sdf.SDFAbstractVertex;
 import org.preesm.algorithm.model.sdf.SDFEdge;
 import org.preesm.algorithm.model.sdf.SDFGraph;
 import org.preesm.algorithm.model.sdf.SDFVertex;
-import org.preesm.algorithm.model.sdf.esdf.SDFRoundBufferVertex;
 import org.preesm.commons.exceptions.PreesmException;
 import org.preesm.commons.files.URLResolver;
 import org.preesm.commons.logger.PreesmLogger;
@@ -348,12 +346,17 @@ public class ScriptRunner {
             associateScriptToSpecialVertex(dagVertex, "join", specialScriptFiles.get(ScriptRunner.JOIN));
             break;
           case DAGBroadcastVertex.DAG_BROADCAST_VERTEX:
-            final SDFAbstractVertex sdfVertex = dagVertex.getCorrespondingSDFVertex();
-            if (sdfVertex instanceof SDFRoundBufferVertex) {
-              associateScriptToSpecialVertex(dagVertex, "roundbuffer",
-                  specialScriptFiles.get(ScriptRunner.ROUNDBUFFER));
-            } else {
-              associateScriptToSpecialVertex(dagVertex, "broadcast", specialScriptFiles.get(ScriptRunner.BROADCAST));
+            final String specialType = dagVertex.getPropertyBean().getValue(DAGBroadcastVertex.SPECIAL_TYPE);
+            switch (specialType) {
+              case DAGBroadcastVertex.SPECIAL_TYPE_BROADCAST:
+                associateScriptToSpecialVertex(dagVertex, "broadcast", specialScriptFiles.get(ScriptRunner.BROADCAST));
+                break;
+              case DAGBroadcastVertex.SPECIAL_TYPE_ROUNDBUFFER:
+                associateScriptToSpecialVertex(dagVertex, "roundbuffer",
+                    specialScriptFiles.get(ScriptRunner.ROUNDBUFFER));
+                break;
+              default:
+                throw new PreesmException();
             }
             break;
           default:
