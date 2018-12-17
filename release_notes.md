@@ -16,7 +16,7 @@ PREESM Changelog
 * Update TCP Codegen: add threads dedicated to receive operations in order to free the TCP buffers ASAP and avoid deadlocks;
 
 ### Bug fix
-
+* Fix issue 90: include missing xslt file and icons in the produced binaries;
 
 ## Release version 3.1.0
 *2018.12.11*
