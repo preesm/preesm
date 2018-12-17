@@ -35,7 +35,6 @@
 package org.preesm.algorithm.mapper.schedule;
 
 import com.fasterxml.jackson.annotation.JsonAnyGetter;
-import com.fasterxml.jackson.annotation.JsonAnySetter;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -173,24 +172,19 @@ public class ScheduleEntry {
     return this.additionalProperties;
   }
 
-  @JsonAnySetter
-  public void setAdditionalProperty(final String name, final Object value) {
-    this.additionalProperties.put(name, value);
-  }
-
   public Integer getTopologicalEnd() {
-    return topologicalEnd;
+    return this.topologicalEnd;
   }
 
-  public void setTopologicalEnd(Integer topologicalEnd) {
+  public void setTopologicalEnd(final Integer topologicalEnd) {
     this.topologicalEnd = topologicalEnd;
   }
 
   public Integer getTopologicalStart() {
-    return topologicalStart;
+    return this.topologicalStart;
   }
 
-  public void setTopologicalStart(Integer topologicalStart) {
+  public void setTopologicalStart(final Integer topologicalStart) {
     this.topologicalStart = topologicalStart;
   }
 

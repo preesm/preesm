@@ -74,7 +74,7 @@ public class NumericalEdgePropertyTypeFactory implements PropertyFactory {
    *          The expression
    * @return The created SDFExpressionEdgePropertyType
    */
-  public AbstractEdgePropertyType<?> getSDFEdgePropertyType(final String expr) {
+  private AbstractEdgePropertyType<?> getSDFEdgePropertyType(final String expr) {
     try {
       final long value = Long.parseLong(expr);
       return new LongEdgePropertyType(value);
@@ -90,7 +90,7 @@ public class NumericalEdgePropertyTypeFactory implements PropertyFactory {
    *          The integer value
    * @return The created SDFIntEdgePropertyType
    */
-  public AbstractEdgePropertyType<?> getSDFEdgePropertyType(final long val) {
+  private AbstractEdgePropertyType<?> getSDFEdgePropertyType(final long val) {
     return new LongEdgePropertyType(val);
   }
 

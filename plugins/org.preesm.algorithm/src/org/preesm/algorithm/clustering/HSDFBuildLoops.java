@@ -35,21 +35,13 @@
  */
 package org.preesm.algorithm.clustering;
 
-import bsh.EvalError;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import org.preesm.algorithm.mapper.graphtransfo.SdfToDagConverter;
 import org.preesm.algorithm.mapper.model.MapperDAG;
-import org.preesm.algorithm.memory.allocation.BestFitAllocator;
-import org.preesm.algorithm.memory.allocation.MemoryAllocator;
-import org.preesm.algorithm.memory.allocation.OrderedAllocator;
-import org.preesm.algorithm.memory.allocation.OrderedAllocator.Order;
-import org.preesm.algorithm.memory.exclusiongraph.MemoryExclusionGraph;
-import org.preesm.algorithm.memory.script.MemoryScriptEngine;
 import org.preesm.algorithm.model.AbstractGraph;
 import org.preesm.algorithm.model.AbstractVertex;
 import org.preesm.algorithm.model.sdf.SDFAbstractVertex;
@@ -84,10 +76,6 @@ public class HSDFBuildLoops {
 
   private final Map<String, DataType> dataTypes;
 
-  private final PreesmScenario scenario;
-
-  private final Design architecture;
-
   /**
    * Build loops.
    *
@@ -98,8 +86,6 @@ public class HSDFBuildLoops {
    */
   public HSDFBuildLoops(final PreesmScenario scenario, final Design architecture) {
     this.dataTypes = scenario.getSimulationManager().getDataTypes();
-    this.architecture = architecture;
-    this.scenario = scenario;
   }
 
   private void p(final String s) {
@@ -358,7 +344,7 @@ public class HSDFBuildLoops {
     return vertex;
   }
 
-  String clustSchedString;
+  private String clustSchedString;
 
   private void recursivePrintClustSched(final AbstractClust seq) {
     if (seq instanceof ClustVertex) {
@@ -378,43 +364,10 @@ public class HSDFBuildLoops {
   /**
    * Giving a clustered sequence, it prints the factorized from of the sequence of loops with associated actors.
    */
-  public void printClusteringSchedule(final AbstractClust seq) {
+  private void printClusteringSchedule(final AbstractClust seq) {
     recursivePrintClustSched(seq);
     p(this.clustSchedString);
     this.clustSchedString = "";
-  }
-
-  private AbstractClust recursiveGetLoopClust(final AbstractClust seq, final List<AbstractClust> getLoopClusterList) {
-    if (seq instanceof ClustVertex) {
-      if (!getLoopClusterList.contains(seq)) {
-        getLoopClusterList.add(seq);
-        return seq;
-      }
-    } else if (seq instanceof ClustSequence) {
-      if (!getLoopClusterList.contains(seq)) {
-        getLoopClusterList.add(seq);
-      }
-      for (final AbstractClust s : ((ClustSequence) seq).getSeq()) {
-        recursiveGetLoopClust(s, getLoopClusterList);
-      }
-    } else {
-      throw new PreesmException("Error while printed clustering schedule");
-    }
-    return null;
-  }
-
-  /**
-   * Used to print the clustered sequence.
-   */
-  public List<AbstractClust> getLoopClust(final AbstractClust a) {
-    List<AbstractClust> getLoopClusterList = null;
-    getLoopClusterList = new ArrayList<>();
-    getLoopClusterList.clear();
-    recursiveGetLoopClust(a, getLoopClusterList);
-    if (getLoopClusterList.isEmpty()) {
-      throw new PreesmException("Finished !! Error while getting clustered schedule");
-    }
-    return getLoopClusterList;
   }
 
   private List<AbstractClust> getLoopClusterListV2 = null;
@@ -461,7 +414,7 @@ public class HSDFBuildLoops {
    * Generate the clustered IR. It takes as input the hierarchical actor (graph) and returns the sequence of loops to
    * generate.
    */
-  public AbstractClust generateClustering(final SDFGraph inGraph) {
+  private AbstractClust generateClustering(final SDFGraph inGraph) {
 
     // deep clone of graph SDF
     this.graph = inGraph.copy();
@@ -589,41 +542,6 @@ public class HSDFBuildLoops {
       }
     }
     return l;
-  }
-
-  MemoryExclusionGraph getMemEx(final SDFGraph srGraph) {
-    // Build DAG
-    final MapperDAG dag = SdfToDagConverter.convert(srGraph, this.architecture, this.scenario);
-
-    // Build MEG
-    final MemoryExclusionGraph memEx = new MemoryExclusionGraph();
-    memEx.buildGraph(dag);
-
-    // BUffer Merging
-    final String valueAlignment = "0";
-    final String log = "";
-    final String checkString = "";
-    final MemoryScriptEngine engine = new MemoryScriptEngine(valueAlignment, log, false);
-    try {
-      engine.runScripts(dag, this.dataTypes, checkString);
-    } catch (EvalError e) {
-      final String message = "An error occurred during memory scripts execution";
-      throw new PreesmException(message, e);
-    }
-    engine.updateMemEx(memEx);
-
-    if (!log.equals("")) {
-      // generate
-      engine.generateCode(this.scenario, log);
-    }
-
-    // Alloc
-    final OrderedAllocator alloc = new BestFitAllocator(memEx);
-    alloc.setOrder(Order.LARGEST_FIRST);
-
-    MemoryAllocator.alignSubBuffers(memEx, 64);
-    alloc.allocate();
-    return memEx;
   }
 
   private long getNaiveWorkingMemAlloc(final SDFGraph resultGraph) {

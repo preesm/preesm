@@ -49,9 +49,7 @@ import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.eclipse.ui.forms.widgets.ScrolledForm;
 import org.eclipse.ui.forms.widgets.Section;
 import org.preesm.algorithm.mapper.ui.Messages;
-import org.preesm.commons.exceptions.PreesmException;
 
-// TODO: Auto-generated Javadoc
 /**
  * This page displays the quality of the current implementation compared to the theoretic achievable time.
  *
@@ -63,7 +61,7 @@ public class PerformancePage extends FormPage {
   private StatGenerator statGen = null;
 
   /** The class plotting the performance data. */
-  PerformancePlotter plotter = null;
+  private PerformancePlotter plotter = null;
 
   /**
    * Instantiates a new performance page.
@@ -98,18 +96,8 @@ public class PerformancePage extends FormPage {
     form.getBody().setLayout(layout);
 
     this.plotter = new PerformancePlotter("Comparing the obtained speedup to ideal speedups");
-
-    // Explanation on how to read the chart
-    /*
-     * createExplanationSection(managedForm, Messages.getString("Performance.Explanation.title"),
-     * Messages.getString("Performance.Explanation.description"));
-     */
-    try {
-      createChartSection(managedForm, Messages.getString("Performance.Chart.title"),
-          Messages.getString("Performance.Chart.description"));
-    } catch (final PreesmException e) {
-      e.printStackTrace();
-    }
+    createChartSection(managedForm, Messages.getString("Performance.Chart.title"),
+        Messages.getString("Performance.Chart.description"));
 
     managedForm.refresh();
   }
@@ -129,7 +117,7 @@ public class PerformancePage extends FormPage {
    *          the grid data
    * @return the composite
    */
-  public Composite createSection(final IManagedForm mform, final String title, final String desc, final int numColumns,
+  private Composite createSection(final IManagedForm mform, final String title, final String desc, final int numColumns,
       final GridData gridData) {
 
     final ScrolledForm form = mform.getForm();
@@ -156,29 +144,6 @@ public class PerformancePage extends FormPage {
   }
 
   /**
-   * Creates a section to explain the performances.
-   *
-   * @param mform
-   *          form containing the section
-   * @param title
-   *          section title
-   * @param desc
-   *          description of the section
-   * @throws WorkflowException
-   *           the workflow exception
-   */
-  /*
-   * private void createExplanationSection(IManagedForm mform, String title, String desc) {
-   *
-   * GridData gridData = new GridData(GridData.FILL_HORIZONTAL | GridData.VERTICAL_ALIGN_BEGINNING); gridData.heightHint
-   * = 500;
-   *
-   * Composite client = createSection(mform, title, desc, 1, gridData);
-   *
-   * FormToolkit toolkit = mform.getToolkit(); toolkit.paintBordersFor(client); }
-   */
-
-  /**
    * Creates a section for the chart
    *
    * @param mform
@@ -188,8 +153,7 @@ public class PerformancePage extends FormPage {
    * @param desc
    *          description of the section
    */
-  private void createChartSection(final IManagedForm mform, final String title, final String desc)
-      throws PreesmException {
+  private void createChartSection(final IManagedForm mform, final String title, final String desc) {
 
     final long workLength = this.statGen.getDAGWorkLength();
     final long spanLength = this.statGen.getDAGSpanLength();
@@ -202,12 +166,9 @@ public class PerformancePage extends FormPage {
             + "implementation number of main type operators: %d.",
         workLength, spanLength, resultTime, resultNbMainCores);
 
-    // GridData gridData = new GridData(GridData.FILL_HORIZONTAL | GridData.FILL_VERTICAL);
     final GridData gridData = new GridData();
     gridData.widthHint = 800;
     gridData.heightHint = 500;
-
-    // mform.getForm().setLayout(new FillLayout());
 
     final Composite client = createSection(mform, title, desc + currentValuesDisplay, 1, gridData);
 

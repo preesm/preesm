@@ -73,7 +73,6 @@ import org.preesm.algorithm.codegen.model.IFunctionFactory;
 import org.preesm.commons.exceptions.PreesmException;
 import org.preesm.commons.logger.PreesmLogger;
 
-// TODO: Auto-generated Javadoc
 /**
  * Retrieving prototype data from an idl file.
  *
@@ -109,7 +108,7 @@ public class IDLPrototypeFactory implements IFunctionFactory, IDLTreeVisitor {
   /**
    * Reset prototypes.
    */
-  public void resetPrototypes() {
+  private void resetPrototypes() {
     this.createdIdls = new LinkedHashMap<>();
     this.maxInitIndex = -1;
   }
@@ -131,7 +130,7 @@ public class IDLPrototypeFactory implements IFunctionFactory, IDLTreeVisitor {
         IDLParser.parse(idlPath, this);
         this.createdIdls.put(idlPath, this.finalPrototypes);
       } catch (final Exception e) {
-        e.printStackTrace();
+        throw new PreesmException(e);
       }
     }
     return this.createdIdls.get(idlPath);
@@ -205,8 +204,9 @@ public class IDLPrototypeFactory implements IFunctionFactory, IDLTreeVisitor {
       this.finalPrototypes.setLoopPrototype(this.currentPrototype);
       arg0.body.accept(this);
     } else {
-      PreesmLogger.getLogger().log(Level.WARNING,
-          "Ignored badly formatted IDL interface, loop, init or init-i accepted : " + arg0.name());
+      final String mesage = String.format("Ignored badly formatted IDL interface, loop, init or init-i accepted : %s",
+          arg0.name());
+      PreesmLogger.getLogger().log(Level.WARNING, mesage);
     }
   }
 
@@ -241,8 +241,6 @@ public class IDLPrototypeFactory implements IFunctionFactory, IDLTreeVisitor {
    */
   @Override
   public void visitModule(final Module arg0) {
-    System.out.println(arg0.toString());
-
     arg0.getDefinitions().accept(this);
   }
 
@@ -253,7 +251,7 @@ public class IDLPrototypeFactory implements IFunctionFactory, IDLTreeVisitor {
    */
   @Override
   public void visitNative(final NativeType arg0) {
-    System.out.println(arg0.toString());
+    // nothing
   }
 
   /*
@@ -327,6 +325,7 @@ public class IDLPrototypeFactory implements IFunctionFactory, IDLTreeVisitor {
    */
   @Override
   public void visitSimpleTypeSpec(final SimpleTypeSpec arg0) {
+    // nothing
   }
 
   /*
@@ -336,6 +335,7 @@ public class IDLPrototypeFactory implements IFunctionFactory, IDLTreeVisitor {
    */
   @Override
   public void visitStruct(final StructType arg0) {
+    // nothing
   }
 
   /*
@@ -345,6 +345,7 @@ public class IDLPrototypeFactory implements IFunctionFactory, IDLTreeVisitor {
    */
   @Override
   public void visitTypeDeclaration(final TypeDeclaration arg0) {
+    // nothing
   }
 
   /*
@@ -354,6 +355,7 @@ public class IDLPrototypeFactory implements IFunctionFactory, IDLTreeVisitor {
    */
   @Override
   public void visitTypeDef(final TypeDef arg0) {
+    // nothing
   }
 
   /*
@@ -363,6 +365,7 @@ public class IDLPrototypeFactory implements IFunctionFactory, IDLTreeVisitor {
    */
   @Override
   public void visitUnion(final UnionType arg0) {
+    // nothing
   }
 
   /*
@@ -372,6 +375,7 @@ public class IDLPrototypeFactory implements IFunctionFactory, IDLTreeVisitor {
    */
   @Override
   public void visitValue(final Value arg0) {
+    // nothing
   }
 
   /*
@@ -381,6 +385,7 @@ public class IDLPrototypeFactory implements IFunctionFactory, IDLTreeVisitor {
    */
   @Override
   public void visitVectorType(final VectorType arg0) {
+    // nothing
   }
 
   /*
@@ -390,6 +395,7 @@ public class IDLPrototypeFactory implements IFunctionFactory, IDLTreeVisitor {
    */
   @Override
   public void visitAlias(final AliasTypeSpec arg0) {
+    // nothing
   }
 
   /*
@@ -399,6 +405,7 @@ public class IDLPrototypeFactory implements IFunctionFactory, IDLTreeVisitor {
    */
   @Override
   public void visitConstrTypeSpec(final ConstrTypeSpec arg0) {
+    // nothing
   }
 
   /*
@@ -408,6 +415,7 @@ public class IDLPrototypeFactory implements IFunctionFactory, IDLTreeVisitor {
    */
   @Override
   public void visitDeclaration(final Declaration arg0) {
+    // nothing
   }
 
   /*
@@ -417,6 +425,7 @@ public class IDLPrototypeFactory implements IFunctionFactory, IDLTreeVisitor {
    */
   @Override
   public void visitEnum(final EnumType arg0) {
+    // nothing
   }
 
   /**

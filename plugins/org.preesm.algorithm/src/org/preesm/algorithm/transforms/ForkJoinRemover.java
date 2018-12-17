@@ -127,8 +127,7 @@ public class ForkJoinRemover {
       if (vertKind.equals("fork") || vertKind.equals("join")) {
 
         if (vertKind.equals("fork") && (vert.getBase().incomingEdgesOf(vert).size() > 1)) {
-          PreesmLogger.getLogger().log(Level.SEVERE,
-              "Skipped Fork vertex with multiple inputs (" + vert.getId() + ")");
+          PreesmLogger.getLogger().log(Level.SEVERE, "Skipped Fork vertex with multiple inputs (" + vert.getId() + ")");
           continue;
         }
 

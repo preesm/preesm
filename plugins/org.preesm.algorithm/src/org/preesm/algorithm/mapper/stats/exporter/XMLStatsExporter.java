@@ -106,7 +106,7 @@ public class XMLStatsExporter {
    *          the IAbc containing the scheduling of each task
    * @return a String containing the stats at an xml format
    */
-  public String generateXMLStats(final LatencyAbc abc) {
+  private String generateXMLStats(final LatencyAbc abc) {
     append(XMLStatsExporter.NL + "<data>");
     // Generate scheduling stats (when and on which core a given task is
     // executed)

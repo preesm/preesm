@@ -43,7 +43,7 @@ import org.preesm.commons.exceptions.PreesmException;
 public class ConstantValue implements Value {
 
   /** The value. */
-  long value;
+  private long value;
 
   /**
    * Instantiates a new constant value.

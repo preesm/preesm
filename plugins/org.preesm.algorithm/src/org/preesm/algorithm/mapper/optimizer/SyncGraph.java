@@ -34,20 +34,15 @@
  */
 package org.preesm.algorithm.mapper.optimizer;
 
-import java.io.IOException;
-import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map.Entry;
 import java.util.Set;
 import org.jgrapht.alg.TransitiveReduction;
-import org.jgrapht.io.ComponentNameProvider;
-import org.jgrapht.io.DOTExporter;
 import org.preesm.algorithm.mapper.AbstractMappingFromDAG;
 import org.preesm.algorithm.mapper.model.special.SendVertex;
 import org.preesm.algorithm.mapper.model.special.TransferVertex;
 import org.preesm.algorithm.model.dag.DAGVertex;
-import org.preesm.commons.exceptions.PreesmException;
 import org.preesm.model.slam.ComponentInstance;
 import org.preesm.model.slam.attributes.Parameter;
 import org.preesm.model.slam.route.MessageRouteStep;
@@ -83,8 +78,8 @@ public class SyncGraph extends org.jgrapht.graph.SimpleDirectedWeightedGraph<Con
    */
   public static final SyncGraph buildEdges(final ConsecutiveTransfersMap groupMap) {
     final SyncGraph graph = new SyncGraph();
-    buildSeqSyncEdges(groupMap, graph);
-    buildDagSyncEdges(groupMap, graph);
+    SyncGraph.buildSeqSyncEdges(groupMap, graph);
+    SyncGraph.buildDagSyncEdges(groupMap, graph);
     return graph;
   }
 
@@ -93,7 +88,7 @@ public class SyncGraph extends org.jgrapht.graph.SimpleDirectedWeightedGraph<Con
       final ConsecutiveTransfersList groupList = e.getValue();
       for (final ConsecutiveTransfersGroup sourceGroup : groupList) {
         for (final TransferVertex vertex : sourceGroup) {
-          if (vertex instanceof SendVertex && isSynchronizationTransfer(vertex)) {
+          if ((vertex instanceof SendVertex) && SyncGraph.isSynchronizationTransfer(vertex)) {
             final DAGVertex receiver = vertex.outgoingEdges().iterator().next().getTarget();
             final ConsecutiveTransfersGroup targetGroup = groupMap.findGroup(receiver);
             final String comName = "com_" + SyncGraph.getName(sourceGroup) + "_" + SyncGraph.getName(targetGroup);
@@ -125,10 +120,10 @@ public class SyncGraph extends org.jgrapht.graph.SimpleDirectedWeightedGraph<Con
    *
    */
   public final List<String> getSeqSyncEdges() {
-    final Set<String> edgeSet = this.edgeSet();
+    final Set<String> edgeSet = edgeSet();
     final List<String> seqSyncEdges = new ArrayList<>();
     edgeSet.forEach(s -> {
-      if (this.getEdgeWeight(s) < 0) {
+      if (getEdgeWeight(s) < 0) {
         seqSyncEdges.add(s);
       }
     });
@@ -139,9 +134,9 @@ public class SyncGraph extends org.jgrapht.graph.SimpleDirectedWeightedGraph<Con
    *
    */
   public final SyncGraph computeRedundantEdges() {
-    final SyncGraph reducedGraph = (SyncGraph) this.clone();
+    final SyncGraph reducedGraph = (SyncGraph) clone();
     TransitiveReduction.INSTANCE.reduce(reducedGraph);
-    final SyncGraph graph = (SyncGraph) this.clone();
+    final SyncGraph graph = (SyncGraph) clone();
     graph.removeAllEdges(reducedGraph.edgeSet());
     graph.removeAllEdges(getSeqSyncEdges());
     return graph;
@@ -152,42 +147,6 @@ public class SyncGraph extends org.jgrapht.graph.SimpleDirectedWeightedGraph<Con
     final String instanceName = findComponent.getInstanceName();
     final int indexOf = group.getList().indexOf(group);
     return instanceName + "_" + indexOf;
-  }
-
-  /**
-   *
-   */
-  private static class VertexNameProvider implements ComponentNameProvider<ConsecutiveTransfersGroup> {
-    @Override
-    public String getName(final ConsecutiveTransfersGroup group) {
-      return SyncGraph.getName(group);
-    }
-  }
-
-  /**
-   *
-   */
-  private static class EdgeNameProvider implements ComponentNameProvider<String> {
-    @Override
-    public String getName(final String str) {
-      return str;
-    }
-  }
-
-  /**
-   *
-   */
-  public String toDotty() {
-    final DOTExporter<ConsecutiveTransfersGroup, String> exporter = new DOTExporter<>(new VertexNameProvider(),
-        new VertexNameProvider(), new EdgeNameProvider());
-    final StringWriter writer = new StringWriter();
-    exporter.exportGraph(this, writer);
-    try {
-      writer.close();
-    } catch (final IOException e) {
-      throw new PreesmException("Could not close string writer", e);
-    }
-    return writer.toString();
   }
 
 }

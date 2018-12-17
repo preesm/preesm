@@ -36,13 +36,11 @@
  */
 package org.preesm.algorithm.mapper.tools;
 
-import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.Random;
-import java.util.Set;
 
-// TODO: Auto-generated Javadoc
 /**
  * This iterator iterates any list of objects with type E.
  *
@@ -59,10 +57,6 @@ import java.util.Set;
 public class RandomIterator<E> implements Iterator<E> {
 
   // variables
-
-  /** The index. */
-  // the index of the chosen element
-  private int index;
 
   /** The list. */
   // the list which is iterated
@@ -94,23 +88,6 @@ public class RandomIterator<E> implements Iterator<E> {
   }
 
   /**
-   * RandomIterator constructor.
-   *
-   * @param set
-   *          the set
-   * @param rand
-   *          the rand
-   */
-  public RandomIterator(final Set<E> set, final Random rand) {
-
-    this.list = new ArrayList<>(set);
-    this.listSize = set.size();
-    final long seed = System.nanoTime();
-    rand.setSeed(seed);
-    this.rand = rand;
-  }
-
-  /**
    * Impossible to know because there is a next always.
    *
    * @return true, if successful
@@ -127,10 +104,11 @@ public class RandomIterator<E> implements Iterator<E> {
    */
   @Override
   public E next() {
-
-    this.index = this.rand.nextInt(this.listSize);
-
-    return this.list.get(this.index);
+    final int index = this.rand.nextInt(this.listSize);
+    if (index > this.list.size() - 1) {
+      throw new NoSuchElementException();
+    }
+    return this.list.get(index);
   }
 
   /**

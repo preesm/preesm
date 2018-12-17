@@ -43,8 +43,8 @@ import org.junit.Test;
 import org.preesm.algorithm.deadlock.IBSDFConsistency;
 import org.preesm.algorithm.model.sdf.SDFAbstractVertex;
 import org.preesm.algorithm.model.sdf.SDFGraph;
-import org.preesm.algorithm.throughput.tools.helpers.GraphStructureHelper;
-import org.preesm.algorithm.throughput.tools.helpers.Stopwatch;
+import org.preesm.algorithm.throughput.tools.GraphStructureHelper;
+import org.preesm.algorithm.throughput.tools.Stopwatch;
 
 /**
  * Unit test of GraphStrucutureHelper class

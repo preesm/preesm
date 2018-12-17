@@ -102,33 +102,6 @@ public class PFastAlgoParameters {
   }
 
   /**
-   * Instantiates a new p fast algo parameters.
-   *
-   * @param fastNumber
-   *          the fast number
-   * @param fastTime
-   *          the fast time
-   * @param fastLocalSearchTime
-   *          the fast local search time
-   * @param displaySolutions
-   *          the display solutions
-   * @param nodesmin
-   *          the nodesmin
-   * @param procNumber
-   *          the proc number
-   */
-  public PFastAlgoParameters(final int fastNumber, final int fastTime, final int fastLocalSearchTime,
-      final boolean displaySolutions, final int nodesmin, final int procNumber) {
-
-    this.nodesMin = nodesmin;
-    this.procNumber = procNumber;
-    this.displaySolutions = displaySolutions;
-    this.fastTime = fastTime;
-    this.fastLocalSearchTime = fastLocalSearchTime;
-    this.fastNumber = fastNumber;
-  }
-
-  /**
    * Getters and Setters.
    *
    * @return the proc number

@@ -49,6 +49,7 @@ import org.eclipse.graphiti.features.context.ICustomContext;
 import org.eclipse.graphiti.features.custom.AbstractCustomFeature;
 import org.eclipse.graphiti.mm.pictograms.PictogramElement;
 import org.eclipse.ui.PlatformUI;
+import org.preesm.commons.exceptions.PreesmException;
 import org.preesm.model.pisdf.Actor;
 import org.preesm.model.pisdf.CHeaderRefinement;
 import org.preesm.model.pisdf.Delay;
@@ -316,10 +317,12 @@ public class SetActorRefinementFeature extends AbstractCustomFeature {
           result = HeaderParser.filterInitPrototypes(result);
           break;
         case NONE:
-          // result = result;
           break;
         default:
       }
+    }
+    if (result == null) {
+      throw new PreesmException();
     }
     return result;
   }

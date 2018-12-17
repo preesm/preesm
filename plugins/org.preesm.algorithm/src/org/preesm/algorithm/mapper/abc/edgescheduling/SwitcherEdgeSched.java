@@ -51,7 +51,8 @@ import org.preesm.model.slam.ComponentInstance;
 public class SwitcherEdgeSched extends AbstractEdgeSched {
 
   /** The interval finder. */
-  private IntervalFinder intervalFinder = null;
+  private IntervalFinder      intervalFinder = null;
+  private static final Random r              = new Random();
 
   /**
    * Instantiates a new switcher edge sched.
@@ -84,7 +85,6 @@ public class SwitcherEdgeSched extends AbstractEdgeSched {
       final int targetIndex = this.intervalFinder.getOrderManager().totalIndexOf(target);
 
       if ((targetIndex - sourceIndex) > 0) {
-        final Random r = new Random();
         final int nextInt = r.nextInt(Integer.MAX_VALUE);
         int randomVal = Math.abs(nextInt);
         randomVal = randomVal % (targetIndex - sourceIndex);

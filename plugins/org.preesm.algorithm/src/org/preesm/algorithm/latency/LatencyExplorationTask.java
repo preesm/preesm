@@ -40,7 +40,7 @@ import java.util.HashMap;
 import java.util.Map;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.preesm.algorithm.model.sdf.SDFGraph;
-import org.preesm.algorithm.throughput.tools.helpers.GraphStructureHelper;
+import org.preesm.algorithm.throughput.tools.GraphStructureHelper;
 import org.preesm.commons.exceptions.PreesmException;
 import org.preesm.model.scenario.PreesmScenario;
 import org.preesm.workflow.elements.Workflow;

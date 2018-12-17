@@ -51,11 +51,11 @@ import org.preesm.algorithm.model.sdf.esdf.SDFSourceInterfaceVertex;
 import org.preesm.algorithm.model.types.LongEdgePropertyType;
 import org.preesm.algorithm.model.types.StringEdgePropertyType;
 import org.preesm.commons.DomUtil;
+import org.preesm.commons.exceptions.PreesmException;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
 
-// TODO: Auto-generated Javadoc
 /**
  * This class is used to parse a {@link File} in the SDF3 (SDF For Free) Xml format indo the corresponding
  * {@link SDFGraph}.
@@ -65,20 +65,22 @@ import org.w3c.dom.NodeList;
  */
 public class Sdf3XmlParser {
 
+  private static final String PORT_RATE_LITTERAL = "port_rate";
+
   /**
    * This {@link Map} associates each data type of the graph {@link SDFEdge} to their size.
    */
-  protected Map<String, Integer> dataTypes = new LinkedHashMap<>();
+  private final Map<String, Integer> dataTypes = new LinkedHashMap<>();
 
   /**
    * This {@link Map} associates the name of an edge from the SDF3 file to its corresponding {@link SDFEdge}.
    */
-  protected Map<String, SDFEdge> edges = new LinkedHashMap<>();
+  private final Map<String, SDFEdge> edges = new LinkedHashMap<>();
 
   /**
    * This {@link Map} associates the actors of the parsed graph to their execution time.
    */
-  protected Map<SDFAbstractVertex, Integer> actorExecTimes = new LinkedHashMap<>();
+  private final Map<SDFAbstractVertex, Integer> actorExecTimes = new LinkedHashMap<>();
 
   /**
    * Find the unique {@link Element} with the specified name in the children of the given {@link Element}.
@@ -92,13 +94,13 @@ public class Sdf3XmlParser {
    *           if the given {@link Element} has no child Element with the appropriate name or has more than one child
    *           with this name.
    */
-  protected Element findElement(final Element elt, final String elementName) {
+  private Element findElement(final Element elt, final String elementName) {
     final NodeList nodes = elt.getElementsByTagName(elementName);
     if (nodes.getLength() == 0) {
-      throw new RuntimeException("Parsed " + elt.getLocalName() + " does not contain any " + elementName + " element");
+      throw new PreesmException("Parsed " + elt.getLocalName() + " does not contain any " + elementName + " element");
     }
     if (nodes.getLength() > 1) {
-      throw new RuntimeException("Parsed " + elt.getLocalName() + " contains too many " + elementName
+      throw new PreesmException("Parsed " + elt.getLocalName() + " contains too many " + elementName
           + " elements (expected 1, found " + nodes.getLength() + ")");
     }
     return (Element) nodes.item(0);
@@ -135,7 +137,7 @@ public class Sdf3XmlParser {
    * @throws RuntimeException
    *           the runtime exception
    */
-  public SDFGraph parse(final InputStream inputStream) throws RuntimeException {
+  public SDFGraph parse(final InputStream inputStream) {
     // Instantiate the new graph
     final SDFGraph graph = new SDFGraph();
 
@@ -150,8 +152,7 @@ public class Sdf3XmlParser {
       parseSdf3Xml(rootElt, graph);
 
     } catch (final RuntimeException e) {
-      e.printStackTrace();
-      throw e;
+      throw new PreesmException(e);
     }
 
     return graph;
@@ -165,11 +166,11 @@ public class Sdf3XmlParser {
    * @param graph
    *          the parsed {@link SDFGraph}
    */
-  protected void parseActor(final Element actorElt, final SDFGraph graph) {
+  private void parseActor(final Element actorElt, final SDFGraph graph) {
     final SDFVertex actor = new SDFVertex(graph);
     final String name = actorElt.getAttribute("name");
     if (name.isEmpty()) {
-      throw new RuntimeException("Unnamed actor was found.");
+      throw new PreesmException("Unnamed actor was found.");
     }
     actor.setId(name);
     actor.setName(name);
@@ -191,15 +192,15 @@ public class Sdf3XmlParser {
    * @param graph
    *          the parsed graph
    */
-  protected void parseActorProperties(final Element actorPtyElt, final SDFGraph graph) {
+  private void parseActorProperties(final Element actorPtyElt, final SDFGraph graph) {
     // Get the actor whose properties are parsed
     final String actorName = actorPtyElt.getAttribute("actor");
     if (actorName.isEmpty()) {
-      throw new RuntimeException("Cannot parse properties of an unspecified actor");
+      throw new PreesmException("Cannot parse properties of an unspecified actor");
     }
     final SDFAbstractVertex actor = graph.getVertex(actorName);
     if (actor == null) {
-      throw new RuntimeException("Parsing properties of a non-existing actor: " + actorName);
+      throw new PreesmException("Parsing properties of a non-existing actor: " + actorName);
     }
 
     // Parse the properties
@@ -221,11 +222,10 @@ public class Sdf3XmlParser {
     } catch (final RuntimeException e) {
       if (e.getMessage().contains("does not contain any")) {
         // do nothing
-        e.printStackTrace();
       } else if (e.getMessage().contains("too many processor")) {
-        throw new RuntimeException("Multiproc architecture are not supported yet.");
+        throw new PreesmException("Multiproc architecture are not supported yet.");
       } else {
-        throw e;
+        throw new PreesmException(e);
       }
     }
 
@@ -239,7 +239,7 @@ public class Sdf3XmlParser {
    * @param graph
    *          the parsed {@link SDFGraph}.
    */
-  protected void parseApplicationGraph(final Element elt, final SDFGraph graph) {
+  private void parseApplicationGraph(final Element elt, final SDFGraph graph) {
 
     final Element sdfElt = findElement(elt, "sdf");
     parseSDF(sdfElt, graph);
@@ -256,55 +256,55 @@ public class Sdf3XmlParser {
    * @param graph
    *          the parsed {@link SDFGraph}
    */
-  protected void parseChannel(final Element channelElt, final SDFGraph graph) {
+  private void parseChannel(final Element channelElt, final SDFGraph graph) {
     // Get Source actor and port
     final String srcActorName = channelElt.getAttribute("srcActor");
     if (srcActorName.isEmpty()) {
-      throw new RuntimeException("Edges must have a source actor.");
+      throw new PreesmException("Edges must have a source actor.");
     }
     final SDFAbstractVertex srcActor = graph.getVertex(srcActorName);
     if (srcActor == null) {
-      throw new RuntimeException("Edge source actor " + srcActorName + " does not exist.");
+      throw new PreesmException("Edge source actor " + srcActorName + " does not exist.");
     }
     final String srcPortName = channelElt.getAttribute("srcPort");
     if (srcPortName.isEmpty()) {
-      throw new RuntimeException("Edges must have a source port.");
+      throw new PreesmException("Edges must have a source port.");
     }
     final SDFInterfaceVertex srcPort = srcActor.getInterface(srcPortName);
-    if ((srcPort == null) || !(srcPort instanceof SDFSinkInterfaceVertex)) {
-      throw new RuntimeException("Source port " + srcPortName + " does not exists for actor " + srcActorName);
+    if (!(srcPort instanceof SDFSinkInterfaceVertex)) {
+      throw new PreesmException("Source port " + srcPortName + " does not exists for actor " + srcActorName);
     }
 
     // Get Target actor and port
     final String tgtActorName = channelElt.getAttribute("dstActor");
     if (tgtActorName.isEmpty()) {
-      throw new RuntimeException("Edges must have a destination actor.");
+      throw new PreesmException("Edges must have a destination actor.");
     }
     final SDFAbstractVertex tgtActor = graph.getVertex(tgtActorName);
     if (tgtActor == null) {
-      throw new RuntimeException("Edge destination actor " + tgtActorName + " does not exist.");
+      throw new PreesmException("Edge destination actor " + tgtActorName + " does not exist.");
     }
     final String tgtPortName = channelElt.getAttribute("dstPort");
     if (tgtPortName.isEmpty()) {
-      throw new RuntimeException("Edges must have a destination port.");
+      throw new PreesmException("Edges must have a destination port.");
     }
     final SDFInterfaceVertex tgtPort = tgtActor.getInterface(tgtPortName);
-    if ((tgtPort == null) || !(tgtPort instanceof SDFSourceInterfaceVertex)) {
-      throw new RuntimeException("Destination port " + tgtPortName + " does not exists for actor " + tgtActorName);
+    if (!(tgtPort instanceof SDFSourceInterfaceVertex)) {
+      throw new PreesmException("Destination port " + tgtPortName + " does not exists for actor " + tgtActorName);
     }
 
     // Create the edge
     final SDFEdge edge = graph.addEdge(srcActor, srcPort, tgtActor, tgtPort);
 
     // Set the prod/consumption rates
-    edge.setProd(new LongEdgePropertyType((Integer) srcPort.getPropertyBean().getValue("port_rate")));
-    edge.setCons(new LongEdgePropertyType((Integer) tgtPort.getPropertyBean().getValue("port_rate")));
+    edge.setProd(new LongEdgePropertyType((Integer) srcPort.getPropertyBean().getValue(PORT_RATE_LITTERAL)));
+    edge.setCons(new LongEdgePropertyType((Integer) tgtPort.getPropertyBean().getValue(PORT_RATE_LITTERAL)));
 
     // Give a name to the edge (not really usefull in SDFGraphs but since
     // the name exists in SDF3, we might as well keep track of it
     final String edgeName = channelElt.getAttribute("name");
     if (edgeName.isEmpty()) {
-      throw new RuntimeException("Edges must have a name.");
+      throw new PreesmException("Edges must have a name.");
     }
     edge.setPropertyValue("sdf3_edge_name", edgeName);
     // Keep a map of the edge names and edges
@@ -327,31 +327,28 @@ public class Sdf3XmlParser {
    * @param graph
    *          the parsed {@link SDFGraph}
    */
-  protected void parseChannelProperties(final Element channelPtyElt, final SDFGraph graph) {
+  private void parseChannelProperties(final Element channelPtyElt) {
     // Get the edge whose properties are parsed
     final String channelName = channelPtyElt.getAttribute("channel");
     if (channelName.isEmpty()) {
-      throw new RuntimeException("Cannot parse properties of an unspecified channel");
+      throw new PreesmException("Cannot parse properties of an unspecified channel");
     }
     final SDFEdge edge = this.edges.get(channelName);
     if (edge == null) {
-      throw new RuntimeException("Parsing properties of a non-existing edge: " + channelName);
+      throw new PreesmException("Parsing properties of a non-existing edge: " + channelName);
     }
-
-    // The bufferSIze element exist but is not used (yet)
-    // findElement(channelPtyElt, "bufferSize");
 
     try {
       final Element tokenSize = findElement(channelPtyElt, "tokenSize");
       final String tokenSz = tokenSize.getAttribute("sz");
       if (tokenSz.isEmpty()) {
-        throw new RuntimeException("Channel " + channelName + " token size is not set properly.");
+        throw new PreesmException("Channel " + channelName + " token size is not set properly.");
       }
       final String dataType = "t" + tokenSz;
       edge.setDataType(new StringEdgePropertyType(dataType));
       this.dataTypes.put(dataType, new Integer(tokenSz));
     } catch (final RuntimeException e) {
-      e.printStackTrace();
+      throw new PreesmException(e);
     }
 
   }
@@ -364,7 +361,7 @@ public class Sdf3XmlParser {
    * @param actor
    *          the parsed {@link SDFVertex actor}
    */
-  protected void parsePort(final Element portElt, final SDFVertex actor) {
+  private void parsePort(final Element portElt, final SDFVertex actor) {
     SDFInterfaceVertex port;
     final String direction = portElt.getAttribute("type");
     switch (direction) {
@@ -375,20 +372,20 @@ public class Sdf3XmlParser {
         port = new SDFSinkInterfaceVertex();
         break;
       default:
-        throw new RuntimeException("Unknown port direction: " + direction);
+        throw new PreesmException("Unknown port direction: " + direction);
     }
     final String name = portElt.getAttribute("name");
     if (name.isEmpty()) {
-      throw new RuntimeException("Unnamed ports found in actor " + actor.getId());
+      throw new PreesmException("Unnamed ports found in actor " + actor.getId());
     }
     port.setId(name);
     port.setName(name);
 
     final String rate = portElt.getAttribute("rate");
     if (name.isEmpty()) {
-      throw new RuntimeException("Port " + actor.getId() + "." + port.getId() + " has no rate");
+      throw new PreesmException("Port " + actor.getId() + "." + port.getId() + " has no rate");
     }
-    port.setPropertyValue("port_rate", Integer.decode(rate).intValue());
+    port.setPropertyValue(PORT_RATE_LITTERAL, Integer.valueOf(rate));
 
     actor.addInterface(port);
   }
@@ -401,11 +398,11 @@ public class Sdf3XmlParser {
    * @param graph
    *          the parsed {@link SDFGraph}.
    */
-  protected void parseSDF(final Element sdfElt, final SDFGraph graph) {
+  private void parseSDF(final Element sdfElt, final SDFGraph graph) {
     // Retrieve the Name of the graph
     final String name = sdfElt.getAttribute("name");
     if (name.isEmpty()) {
-      throw new RuntimeException("Parsed graph have no name.");
+      throw new PreesmException("Parsed graph have no name.");
     }
     graph.setName(name);
 
@@ -432,19 +429,19 @@ public class Sdf3XmlParser {
    * @param graph
    *          the parsed {@link SDFGraph}.
    */
-  protected void parseSdf3Xml(final Element rootElt, final SDFGraph graph) {
+  private void parseSdf3Xml(final Element rootElt, final SDFGraph graph) {
     // Check if the file contains a graph of appropriate type and version
     final String rootName = rootElt.getLocalName();
     if (!rootName.equals("sdf3")) {
-      throw new RuntimeException("XML file does not contain a SDF3 graph.");
+      throw new PreesmException("XML file does not contain a SDF3 graph.");
     }
     final String type = rootElt.getAttribute("type");
     if (!type.equals("sdf")) {
-      throw new RuntimeException("SDF3 graph type not supported (only sdf is supported)");
+      throw new PreesmException("SDF3 graph type not supported (only sdf is supported)");
     }
     final String version = rootElt.getAttribute("version");
     if (!version.equals("1.0")) {
-      throw new RuntimeException("Graph version " + version + " is not supported (only version 1.0 is)");
+      throw new PreesmException("Graph version " + version + " is not supported (only version 1.0 is)");
     }
 
     final Element appGraphElt = findElement(rootElt, "applicationGraph");
@@ -460,21 +457,18 @@ public class Sdf3XmlParser {
    * @param graph
    *          the parsed {@link SDFGraph}.
    */
-  protected void parseSDFProperties(final Element sdfPropElt, final SDFGraph graph) {
+  private void parseSDFProperties(final Element sdfPropElt, final SDFGraph graph) {
     // Parse actorProperties
-    {
-      final NodeList actorPtyElts = sdfPropElt.getElementsByTagName("actorProperties");
-      for (int i = 0; i < actorPtyElts.getLength(); i++) {
-        final Element actorPtyElt = (Element) actorPtyElts.item(i);
-        parseActorProperties(actorPtyElt, graph);
-      }
+    final NodeList actorPtyElts = sdfPropElt.getElementsByTagName("actorProperties");
+    for (int i = 0; i < actorPtyElts.getLength(); i++) {
+      final Element actorPtyElt = (Element) actorPtyElts.item(i);
+      parseActorProperties(actorPtyElt, graph);
     }
-
     // Parse actorProperties
     final NodeList channelPtyElts = sdfPropElt.getElementsByTagName("channelProperties");
     for (int i = 0; i < channelPtyElts.getLength(); i++) {
       final Element channelPtyElt = (Element) channelPtyElts.item(i);
-      parseChannelProperties(channelPtyElt, graph);
+      parseChannelProperties(channelPtyElt);
     }
 
     // There are some graphProperties that are not parsed.

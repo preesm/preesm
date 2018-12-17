@@ -43,15 +43,14 @@ import org.jgrapht.graph.DirectedPseudograph;
 import org.nfunk.jep.JEP;
 import org.nfunk.jep.Node;
 import org.preesm.algorithm.model.factories.IModelVertexFactory;
+import org.preesm.algorithm.model.parameters.ArgumentFactory;
 import org.preesm.algorithm.model.parameters.IExpressionSolver;
 import org.preesm.algorithm.model.parameters.Parameter;
+import org.preesm.algorithm.model.parameters.ParameterFactory;
 import org.preesm.algorithm.model.parameters.ParameterSet;
 import org.preesm.algorithm.model.parameters.Value;
 import org.preesm.algorithm.model.parameters.Variable;
 import org.preesm.algorithm.model.parameters.VariableSet;
-import org.preesm.algorithm.model.parameters.factories.ArgumentFactory;
-import org.preesm.algorithm.model.parameters.factories.ParameterFactory;
-import org.preesm.algorithm.model.visitors.IGraphVisitor;
 import org.preesm.commons.CloneableProperty;
 import org.preesm.commons.exceptions.PreesmException;
 import org.preesm.commons.math.ExpressionEvaluationException;
@@ -74,7 +73,7 @@ public abstract class AbstractGraph<V extends AbstractVertex, E extends Abstract
   private static final long serialVersionUID = 1381565218127310945L;
 
   /** Property name for property name. */
-  public static final String NAME = "name";
+  private static final String NAME = "name";
 
   /** Property name for property parameters. */
   public static final String PARAMETERS = "parameters";
@@ -91,26 +90,26 @@ public abstract class AbstractGraph<V extends AbstractVertex, E extends Abstract
   public static final String PATH = "path";
 
   /** This graph parent vertex if it exist. */
-  public static final String PARENT_VERTEX = "parent_vertex";
+  private static final String PARENT_VERTEX = "parent_vertex";
 
   /** The public properties. */
   protected static final List<String> PUBLIC_PROPERTIES = new ArrayList<>();
 
   static {
-    PUBLIC_PROPERTIES.add(AbstractGraph.NAME);
-    PUBLIC_PROPERTIES.add(AbstractGraph.PARAMETERS);
-    PUBLIC_PROPERTIES.add(AbstractGraph.VARIABLES);
-    PUBLIC_PROPERTIES.add(AbstractGraph.MODEL);
+    AbstractGraph.PUBLIC_PROPERTIES.add(AbstractGraph.NAME);
+    AbstractGraph.PUBLIC_PROPERTIES.add(AbstractGraph.PARAMETERS);
+    AbstractGraph.PUBLIC_PROPERTIES.add(AbstractGraph.VARIABLES);
+    AbstractGraph.PUBLIC_PROPERTIES.add(AbstractGraph.MODEL);
   }
 
   /** The properties. */
-  protected PropertyBean properties;
+  private final PropertyBean properties;
 
   /** The observers. */
-  protected ArrayList<IModelObserver> observers;
+  private final ArrayList<IModelObserver> observers;
 
   /** The has changed. */
-  protected boolean hasChanged;
+  private boolean hasChanged;
 
   /**
    * Creates a new Instance of Abstract graph with the given factory.
@@ -173,16 +172,6 @@ public abstract class AbstractGraph<V extends AbstractVertex, E extends Abstract
   }
 
   /**
-   * Add an observer to this graph model.
-   *
-   * @param o
-   *          Te observer to be added
-   */
-  public void addObserver(final IModelObserver o) {
-    this.observers.add(o);
-  }
-
-  /**
    * Add the given parameter to his graph parameter set.
    *
    * @param param
@@ -231,46 +220,11 @@ public abstract class AbstractGraph<V extends AbstractVertex, E extends Abstract
   }
 
   /**
-   * This method check whether the source and target {@link AbstractVertex vertices} passed as parameter are linked by a
-   * unique edge. If several edges link the two vertices, a {@link RuntimeException} is thrown.
-   *
-   * @param source
-   *          the source {@link AbstractVertex} of the {@link AbstractEdge}
-   * @param target
-   *          the target {@link AbstractVertex} of the {@link AbstractEdge}
-   * @throws RuntimeException
-   *           if there are several {@link AbstractEdge} between the source and the target
-   */
-  protected void checkMultipleEdges(final V source, final V target) {
-    if (source != null && target != null && getAllEdges(source, target).size() > 1) {
-      throw new PreesmException("removeEdge(source,target) cannot be used.\n" + "Reason: there are "
-          + getAllEdges(source, target).size() + " edges between actors " + source + " and " + target);
-    }
-  }
-
-  /**
    * Indicates that this object has no longer changed, or that it has already notified all of its observers of its most
    * recent change, so that the hasChanged method will now return false.
    */
-  public void clearChanged() {
+  private void clearChanged() {
     this.hasChanged = true;
-  }
-
-  /**
-   * Clear the list of observers.
-   */
-  public void clearObservers() {
-    this.observers.clear();
-  }
-
-  /**
-   * Delete the given observer from the observers list.
-   *
-   * @param o
-   *          the o
-   */
-  public void deleteObserver(final IModelObserver o) {
-    this.observers.remove(o);
   }
 
   /**
@@ -281,164 +235,7 @@ public abstract class AbstractGraph<V extends AbstractVertex, E extends Abstract
    * @return the argument factory
    */
   public ArgumentFactory getArgumentFactory(final V v) {
-    return new ArgumentFactory(v);
-  }
-
-  /**
-   * Gives the path of a given vertex.
-   *
-   * @param vertex
-   *          The vertex
-   * @return The vertex path in the graph hierarchy
-   */
-  public String getHierarchicalPath(final V vertex) {
-    return getHierarchicalPath(vertex, "");
-  }
-
-  /**
-   * Gives the path of a given vertex.
-   *
-   * @param vertex
-   *          The vertex
-   * @param currentPath
-   *          the current path
-   * @return The vertex path in the graph hierarchy
-   */
-  private String getHierarchicalPath(final V vertex, final String currentPath) {
-
-    for (final Object v : vertexSet()) {
-      final V castV = (V) v;
-      String newPath = currentPath + castV.getName();
-
-      if (castV == vertex) {
-        return newPath;
-      }
-      newPath += "/";
-      if (vertex.getGraphDescription() != null) {
-        newPath = vertex.getGraphDescription().getHierarchicalPath(vertex, newPath);
-        if (newPath != null) {
-          return newPath;
-        }
-      }
-    }
-
-    return null;
-  }
-
-  /**
-   * Gives the vertex with the given name.
-   *
-   * @param name
-   *          The vertex name
-   * @return The vertex with the given name, null, if the vertex does not exist
-   */
-  public V getHierarchicalVertex(final String name) {
-    for (final V vertex : vertexSet()) {
-      if (vertex.getName().equals(name)) {
-        return vertex;
-      } else if (vertex.getGraphDescription() != null) {
-        final AbstractVertex result = vertex.getGraphDescription().getHierarchicalVertex(name);
-        if (result != null) {
-          return (V) result;
-        }
-      }
-    }
-    return null;
-  }
-
-  /**
-   * Gives the vertex with the given path.
-   *
-   * @param path
-   *          The vertex path in format MyGrandParentVertex/MyParentVertex/Myself
-   * @return The vertex with the given name, null, if the vertex does not exist
-   */
-  public V getHierarchicalVertexFromPath(final String path) {
-
-    final String[] splitPath = path.split("/");
-    int index = 0;
-    // Get the first segment of the path, this is the name of the first
-    // actor we will look for
-    String currentName = splitPath[index];
-    index++;
-    final StringBuilder currentPath = new StringBuilder();
-    // Handle the case where the first segment of path == name
-    if (this.getName().equals(currentName)) {
-      currentName = splitPath[index];
-      index++;
-    }
-    // Compute the path for the next search (path minus currentName)
-    for (int i = index; i < splitPath.length; i++) {
-      if (i > index) {
-        currentPath.append("/");
-      }
-      currentPath.append(splitPath[i]);
-    }
-    // Look for an actor named currentName
-    for (final V a : vertexSet()) {
-      if (a.getName().equals(currentName)) {
-        // If currentPath is empty, then we are at the last hierarchy
-        // level
-        if ("".equals(currentPath.toString())) {
-          // We found the actor
-          return a;
-          // Otherwise, we need to go deeper in the hierarchy
-        } else {
-          final IRefinement refinement = a.getRefinement();
-          if (refinement instanceof AbstractGraph) {
-            final AbstractGraph subgraph = (AbstractGraph) refinement;
-            return (V) subgraph.getHierarchicalVertexFromPath(currentPath.toString());
-          }
-        }
-      }
-    }
-    // If we reach this point, no actor was found, return null
-    return null;
-  }
-
-  /**
-   * Gives the vertex with the given path.
-   *
-   * @param path
-   *          The vertex path in format MyGrandParentVertex/MyParentVertex/Myself
-   * @param pathAlreadyRead
-   *          The path that we are already in. For example, if we are in the MyParentVertex refinement,
-   *          pathAlreadyRead=MyGrandParentVertex/MyParentVertex.
-   * @return The vertex with the given name, null, if the vertex does not exist
-   */
-  public V getHierarchicalVertexFromPath(final String path, String pathAlreadyRead) {
-
-    String vertexToFind = path; // The name of the vertex to find in the
-    // current level of hierarchy
-    boolean isPathRead = true; // true if we have already read the hierarchy
-    // and we are looking for a vertex here
-
-    // Removing the path already read from the path
-    if (!pathAlreadyRead.isEmpty()) {
-      vertexToFind = vertexToFind.replaceFirst(pathAlreadyRead + "/", "");
-      pathAlreadyRead += "/";
-    }
-
-    // Selecting the first vertex name to find
-    if (vertexToFind.indexOf('/') != -1) {
-      vertexToFind = vertexToFind.substring(0, vertexToFind.indexOf('/'));
-      isPathRead = false;
-    }
-
-    if (vertexToFind.equals(this.getName())) {
-      this.getHierarchicalVertexFromPath(path, pathAlreadyRead + vertexToFind);
-    }
-
-    final V vertex = getVertex(vertexToFind);
-    if (vertex != null) {
-      if (isPathRead) {
-        return vertex;
-      } else if (vertex.getGraphDescription() != null) {
-        return (V) vertex.getGraphDescription().getHierarchicalVertexFromPath(path, pathAlreadyRead + vertexToFind);
-      }
-    }
-
-    return null;
+    return new ArgumentFactory();
   }
 
   /**
@@ -468,26 +265,12 @@ public abstract class AbstractGraph<V extends AbstractVertex, E extends Abstract
   }
 
   /**
-   * Gives the parameter of this graph with the given name.
-   *
-   * @param name
-   *          The name of the parameter to get
-   * @return The parameter with the given name
-   */
-  public Parameter getParameter(final String name) {
-    if (this.properties.getValue(AbstractGraph.PARAMETERS) != null) {
-      return this.properties.<ParameterSet>getValue(AbstractGraph.PARAMETERS).getParameter(name);
-    }
-    return null;
-  }
-
-  /**
    * Gets the parameter factory.
    *
    * @return the parameter factory
    */
   public ParameterFactory getParameterFactory() {
-    return new ParameterFactory(this);
+    return new ParameterFactory();
   }
 
   /**
@@ -595,35 +378,13 @@ public abstract class AbstractGraph<V extends AbstractVertex, E extends Abstract
   public abstract IModelVertexFactory<V> getVertexFactory();
 
   /**
-   * Tests if this object has changed.
-   *
-   * @return True if the object has changed, false otherwise
-   */
-  public boolean hasChanged() {
-    return this.hasChanged;
-  }
-
-  /**
-   * If this object has changed, as indicated by the hasChanged method, then notify all of its observers and then call
-   * the clearChanged method to indicate that this object has no longer changed.
-   */
-  public void notifyObservers() {
-    if (this.hasChanged) {
-      for (final IModelObserver o : this.observers) {
-        o.update(this, null);
-      }
-      clearChanged();
-    }
-  }
-
-  /**
    * If this object has changed, as indicated by the hasChanged method, then notify all of its observers and then call
    * the clearChanged method to indicate that this object has no longer changed.
    *
    * @param arg
    *          Arguments to be passe to the update method
    */
-  public void notifyObservers(final Object arg) {
+  private void notifyObservers(final Object arg) {
     if (this.hasChanged) {
       for (final IModelObserver o : this.observers) {
         o.update(this, arg);
@@ -661,7 +422,7 @@ public abstract class AbstractGraph<V extends AbstractVertex, E extends Abstract
   /**
    * Marks this Observable object as having been changed the hasChanged method will now return true.
    */
-  public void setChanged() {
+  private void setChanged() {
     this.hasChanged = true;
   }
 

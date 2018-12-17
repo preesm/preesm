@@ -56,9 +56,7 @@ import org.preesm.algorithm.model.AbstractEdge;
 import org.preesm.algorithm.model.PropertyBean;
 import org.preesm.algorithm.model.dag.DAGEdge;
 import org.preesm.algorithm.model.dag.DAGVertex;
-import org.preesm.algorithm.model.sdf.SDFAbstractVertex;
 import org.preesm.algorithm.model.sdf.SDFEdge;
-import org.preesm.algorithm.model.sdf.SDFGraph;
 import org.preesm.model.scenario.PreesmScenario;
 import org.preesm.model.scenario.types.BufferAggregate;
 import org.preesm.model.scenario.types.BufferProperties;
@@ -121,7 +119,7 @@ public class TagDAG {
    * @param scenario
    *          the scenario
    */
-  public void addSendReceive(final MapperDAG dag, final Design architecture, final PreesmScenario scenario) {
+  private void addSendReceive(final MapperDAG dag, final Design architecture, final PreesmScenario scenario) {
 
     final OrderManager orderMgr = new OrderManager(architecture);
     orderMgr.reconstructTotalOrderFromDAG(dag);
@@ -140,7 +138,7 @@ public class TagDAG {
    * @param simu
    *          the simu
    */
-  public void addProperties(final MapperDAG dag, final LatencyAbc simu) {
+  private void addProperties(final MapperDAG dag, final LatencyAbc simu) {
 
     MapperDAGVertex currentVertex;
 
@@ -254,7 +252,7 @@ public class TagDAG {
    * @param scenario
    *          the scenario
    */
-  public void addAllAggregates(final MapperDAG dag, final PreesmScenario scenario) {
+  private void addAllAggregates(final MapperDAG dag, final PreesmScenario scenario) {
 
     MapperDAGEdge edge;
 
@@ -276,34 +274,7 @@ public class TagDAG {
    * @param scenario
    *          the scenario
    */
-  @SuppressWarnings("unchecked")
-  public void addAggregateFromSDF(final MapperDAGEdge edge, final PreesmScenario scenario) {
-
-    final BufferAggregate agg = new BufferAggregate();
-
-    // Iterating the SDF aggregates
-    for (final AbstractEdge<SDFGraph, SDFAbstractVertex> aggMember : edge.getAggregate()) {
-      final SDFEdge sdfAggMember = (SDFEdge) aggMember;
-      final DataType dataType = scenario.getSimulationManager().getDataType(sdfAggMember.getDataType().toString());
-      final BufferProperties props = new BufferProperties(dataType, sdfAggMember.getSourceInterface().getName(),
-          sdfAggMember.getTargetInterface().getName(), (int) sdfAggMember.getProd().longValue());
-
-      agg.add(props);
-    }
-
-    edge.getPropertyBean().setValue(BufferAggregate.propertyBeanName, agg);
-  }
-
-  /**
-   * Aggregate is imported from the SDF edge. An aggregate in SDF is a set of sdf edges that were merged into one DAG
-   * edge.
-   *
-   * @param edge
-   *          the edge
-   * @param scenario
-   *          the scenario
-   */
-  public void addAggregate(final MapperDAGEdge edge, final PreesmScenario scenario) {
+  private void addAggregate(final MapperDAGEdge edge, final PreesmScenario scenario) {
     final BufferAggregate agg = new BufferAggregate();
     for (final AbstractEdge<?, ?> aggMember : edge.getAggregate()) {
       final DAGEdge dagEdge = (DAGEdge) aggMember;

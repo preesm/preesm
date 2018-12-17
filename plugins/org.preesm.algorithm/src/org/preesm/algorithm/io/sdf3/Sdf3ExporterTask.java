@@ -85,7 +85,7 @@ public class Sdf3ExporterTask extends AbstractTaskImplementation {
     final String sPath = PathTools.getAbsolutePath(parameters.get("path"), workflow.getProjectName());
     final IPath path = new Path(sPath);
 
-    printSDFGraphToSDF3File(sdf, scenario, archi, path);
+    Sdf3ExporterTask.printSDFGraphToSDF3File(sdf, scenario, archi, path);
 
     return new LinkedHashMap<>();
   }

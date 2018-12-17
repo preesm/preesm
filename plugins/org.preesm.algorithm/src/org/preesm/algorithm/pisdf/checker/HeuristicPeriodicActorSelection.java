@@ -54,14 +54,14 @@ import org.preesm.model.scenario.PreesmScenario;
 
 /**
  * This class aims to select periodic actors on which execute the period checkers (nbff and nblf).
- * 
+ *
  * @author ahonorat
  */
 class HeuristicPeriodicActorSelection {
 
   static Map<Actor, Long> selectActors(final Map<Actor, Long> periodicActors, final List<Actor> originActors,
-      final int rate, final PiGraph graph, final PreesmScenario scenario, boolean reverse) {
-    if (rate == 100 || periodicActors.isEmpty()) {
+      final int rate, final PiGraph graph, final PreesmScenario scenario, final boolean reverse) {
+    if ((rate == 100) || periodicActors.isEmpty()) {
       return periodicActors;
     }
     if (rate == 0) {
@@ -70,17 +70,17 @@ class HeuristicPeriodicActorSelection {
 
     Map<AbstractActor, ActorVisit> topoRanks = null;
     if (reverse) {
-      topoRanks = topologicalASAPrankingT(originActors, graph);
+      topoRanks = HeuristicPeriodicActorSelection.topologicalASAPrankingT(originActors, graph);
     } else {
-      topoRanks = topologicalASAPranking(originActors, graph);
+      topoRanks = HeuristicPeriodicActorSelection.topologicalASAPranking(originActors, graph);
     }
     final Map<Actor, Double> topoRanksPeriodic = new HashMap<>();
-    for (Entry<Actor, Long> e : periodicActors.entrySet()) {
+    for (final Entry<Actor, Long> e : periodicActors.entrySet()) {
       final Actor actor = e.getKey();
       final long rank = topoRanks.get(actor).rank;
       final long period = e.getValue();
       long wcetMin = Long.MAX_VALUE;
-      for (String operatorDefinitionID : scenario.getOperatorDefinitionIds()) {
+      for (final String operatorDefinitionID : scenario.getOperatorDefinitionIds()) {
         final long timing = scenario.getTimingManager().getTimingOrDefault(actor.getName(), operatorDefinitionID)
             .getTime();
         if (timing < wcetMin) {
@@ -93,16 +93,16 @@ class HeuristicPeriodicActorSelection {
     topoRanksPeriodic.entrySet().forEach(a -> sb.append(a.getKey().getName() + "(" + a.getValue() + ") / "));
     PreesmLogger.getLogger().log(Level.WARNING, "Periodic actor ranks: " + sb.toString());
 
-    return selectFromRate(periodicActors, topoRanksPeriodic, rate);
+    return HeuristicPeriodicActorSelection.selectFromRate(periodicActors, topoRanksPeriodic, rate);
   }
 
-  private static Map<Actor, Long> selectFromRate(Map<Actor, Long> periodicActors, Map<Actor, Double> topoRanksPeriodic,
-      int rate) {
+  private static Map<Actor, Long> selectFromRate(final Map<Actor, Long> periodicActors,
+      final Map<Actor, Double> topoRanksPeriodic, final int rate) {
     final int nbPeriodicActors = periodicActors.size();
-    final double nActorsToSelect = nbPeriodicActors * (rate / (double) 100.0);
+    final double nActorsToSelect = nbPeriodicActors * (rate / 100.0);
     final int nbActorsToSelect = Math.max((int) Math.ceil(nActorsToSelect), 1);
 
-    Map<Actor,
+    final Map<Actor,
         Long> selectedActors = periodicActors.entrySet().stream().sorted(Map.Entry.comparingByValue())
             .limit(nbActorsToSelect).collect(
                 Collectors.toMap(Map.Entry::getKey, e -> periodicActors.get(e.getKey()), (e1, e2) -> e1, HashMap::new));
@@ -119,7 +119,7 @@ class HeuristicPeriodicActorSelection {
 
   /**
    * This class helps to create the topological rank.
-   * 
+   *
    * @author ahonorat
    */
   private static class ActorVisit {
@@ -127,7 +127,7 @@ class HeuristicPeriodicActorSelection {
     int       nbVisit = 0;
     long      rank    = 0;
 
-    ActorVisit(int nbMaxVisit, long rank) {
+    ActorVisit(final int nbMaxVisit, final long rank) {
       this.nbMaxVisit = nbMaxVisit;
       this.rank = rank;
     }
@@ -137,7 +137,7 @@ class HeuristicPeriodicActorSelection {
   private static Map<AbstractActor, ActorVisit> topologicalASAPranking(final List<Actor> sourceActors,
       final PiGraph graph) {
     final Map<AbstractActor, ActorVisit> topoRanks = new HashMap<>();
-    for (Actor actor : sourceActors) {
+    for (final Actor actor : sourceActors) {
       topoRanks.put(actor, new ActorVisit(0, 1L));
     }
 
@@ -145,15 +145,15 @@ class HeuristicPeriodicActorSelection {
     while (!toVisit.isEmpty()) {
       final AbstractActor actor = toVisit.removeFirst();
       final long rank = topoRanks.get(actor).rank;
-      for (DataOutputPort sport : actor.getDataOutputPorts()) {
+      for (final DataOutputPort sport : actor.getDataOutputPorts()) {
         final Fifo fifo = sport.getOutgoingFifo();
         final DataInputPort tport = fifo.getTargetPort();
         final AbstractActor dest = tport.getContainingActor();
         if (!topoRanks.containsKey(dest)) {
-          ActorVisit av = new ActorVisit(dest.getDataInputPorts().size(), rank);
+          final ActorVisit av = new ActorVisit(dest.getDataInputPorts().size(), rank);
           topoRanks.put(dest, av);
         }
-        ActorVisit av = topoRanks.get(dest);
+        final ActorVisit av = topoRanks.get(dest);
         av.nbVisit++;
         if (av.nbVisit == av.nbMaxVisit) {
           toVisit.addLast(dest);
@@ -168,7 +168,7 @@ class HeuristicPeriodicActorSelection {
   private static Map<AbstractActor, ActorVisit> topologicalASAPrankingT(final List<Actor> sinkActors,
       final PiGraph graph) {
     final Map<AbstractActor, ActorVisit> topoRanks = new HashMap<>();
-    for (Actor actor : sinkActors) {
+    for (final Actor actor : sinkActors) {
       topoRanks.put(actor, new ActorVisit(0, 1L));
     }
 
@@ -176,15 +176,15 @@ class HeuristicPeriodicActorSelection {
     while (!toVisit.isEmpty()) {
       final AbstractActor actor = toVisit.removeFirst();
       final long rank = topoRanks.get(actor).rank;
-      for (DataInputPort tport : actor.getDataInputPorts()) {
+      for (final DataInputPort tport : actor.getDataInputPorts()) {
         final Fifo fifo = tport.getIncomingFifo();
         final DataOutputPort sport = fifo.getSourcePort();
         final AbstractActor dest = sport.getContainingActor();
         if (!topoRanks.containsKey(dest)) {
-          ActorVisit av = new ActorVisit(dest.getDataOutputPorts().size(), rank);
+          final ActorVisit av = new ActorVisit(dest.getDataOutputPorts().size(), rank);
           topoRanks.put(dest, av);
         }
-        ActorVisit av = topoRanks.get(dest);
+        final ActorVisit av = topoRanks.get(dest);
         av.nbVisit++;
         av.rank = Math.max(av.rank, rank + 1L);
         if (av.nbVisit == av.nbMaxVisit) {

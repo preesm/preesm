@@ -79,8 +79,7 @@ import org.preesm.algorithm.deadlock.IBSDFConsistency;
 import org.preesm.algorithm.deadlock.IBSDFLiveness;
 import org.preesm.algorithm.model.sdf.SDFAbstractVertex;
 import org.preesm.algorithm.model.sdf.SDFGraph;
-import org.preesm.algorithm.throughput.tools.helpers.GraphStructureHelper;
-import org.preesm.algorithm.throughput.tools.helpers.Stopwatch;
+import org.preesm.algorithm.throughput.tools.GraphStructureHelper;
 import org.preesm.commons.exceptions.PreesmException;
 import org.preesm.commons.logger.PreesmLogger;
 import org.preesm.model.scenario.PreesmScenario;
@@ -99,17 +98,16 @@ public class ThroughputEvaluationTask extends AbstractTaskImplementation {
    *
    *         The supported methods
    */
-  public static enum ThroughputMethod {
-  SR, // Schedule-Replace technique
-  ESR, // Evaluate-Schedule-Replace method
-  HPeriodic, // Hierarchical Periodic Schedule method
-  Classical, // Based on Flattening the hierarchy
+  private enum ThroughputMethod {
+    SR, // Schedule-Replace technique
+    ESR, // Evaluate-Schedule-Replace method
+    HPeriodic, // Hierarchical Periodic Schedule method
+    Classical, // Based on Flattening the hierarchy
   }
 
   // Plug-in parameters
   public static final String PARAM_METHOD               = "method";
   public static final String PARAM_METHOD_DEFAULT_VALUE = "SR";
-  public Stopwatch           timer;
 
   @Override
   public Map<String, Object> execute(final Map<String, Object> inputs, final Map<String, String> parameters,
@@ -131,28 +129,24 @@ public class ThroughputEvaluationTask extends AbstractTaskImplementation {
           // Schedule-Replace technique
           final ScheduleReplace sr = new ScheduleReplace();
           throughput = sr.evaluate(inputGraph);
-          this.timer = sr.timer;
           break;
 
         case ESR:
           // Evaluate-Schedule-Replace method
           final EvaluateScheduleReplace esr = new EvaluateScheduleReplace();
           throughput = esr.evaluate(inputGraph);
-          this.timer = esr.timer;
           break;
 
         case HPeriodic:
           // Hierarchical Periodic Schedule method
           final HPeriodicSchedule HPeriodic = new HPeriodicSchedule();
           throughput = HPeriodic.evaluate(inputGraph);
-          this.timer = HPeriodic.timer;
           break;
 
         case Classical:
           // Based on flattening the hierarchy into a Flat srSDF graph
           final ClassicalMethod classicalMethod = new ClassicalMethod();
           throughput = classicalMethod.evaluate(inputGraph, false);
-          this.timer = classicalMethod.timer;
           break;
 
         default:
@@ -161,8 +155,7 @@ public class ThroughputEvaluationTask extends AbstractTaskImplementation {
       }
 
       // print the computed throughput
-      PreesmLogger.getLogger().log(Level.INFO,
-          "Throughput value = " + throughput + " nbIter/clockCycle, Computed in : " + this.timer.toString());
+      PreesmLogger.getLogger().log(Level.INFO, "Throughput value = " + throughput + " nbIter/clockCycle");
 
     } else {
       // print an error message

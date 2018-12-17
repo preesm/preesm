@@ -45,7 +45,6 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.IPropertyListener;
 import org.eclipse.ui.forms.widgets.FormToolkit;
 
-// TODO: Auto-generated Javadoc
 /**
  * Interface allowing code generation page and constraint page to share the same class for sdf tree edition.
  *

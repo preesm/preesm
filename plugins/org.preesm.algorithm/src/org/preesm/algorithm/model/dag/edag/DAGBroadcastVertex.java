@@ -36,7 +36,6 @@
  */
 package org.preesm.algorithm.model.dag.edag;
 
-import org.preesm.algorithm.model.AbstractVertexPropertyType;
 import org.preesm.algorithm.model.dag.DAGVertex;
 
 /**
@@ -63,22 +62,6 @@ public class DAGBroadcastVertex extends DAGVertex {
    */
   public DAGBroadcastVertex() {
     super();
-    setKind(DAGBroadcastVertex.DAG_BROADCAST_VERTEX);
-  }
-
-  /**
-   * Creates a new DAGBroadcastVertex with the name "n", the execution time "t" and the number of repetition "nb".
-   *
-   * @param n
-   *          This Vertex name
-   * @param t
-   *          This Vertex execution time
-   * @param nb
-   *          This Vertex number of repetition
-   */
-  public DAGBroadcastVertex(final String n, final AbstractVertexPropertyType<?> t,
-      final AbstractVertexPropertyType<?> nb) {
-    super(n, t, nb);
     setKind(DAGBroadcastVertex.DAG_BROADCAST_VERTEX);
   }
 

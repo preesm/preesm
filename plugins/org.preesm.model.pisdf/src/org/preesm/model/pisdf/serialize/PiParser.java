@@ -42,6 +42,7 @@ package org.preesm.model.pisdf.serialize;
 import java.io.BufferedInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.charset.Charset;
 import java.util.logging.Level;
 import org.apache.commons.io.IOUtils;
 import org.eclipse.core.resources.IFile;
@@ -210,7 +211,7 @@ public class PiParser {
 
     try {
       bis.mark(Integer.MAX_VALUE);
-      final String pisdfContent = IOUtils.toString(bis);
+      final String pisdfContent = IOUtils.toString(bis, Charset.forName("UTF-8"));
       PiSDFXSDValidator.validate(pisdfContent);
       bis.reset();
     } catch (final IOException ex) {
@@ -343,12 +344,8 @@ public class PiParser {
     for (int i = 0; i < childList.getLength(); i++) {
       final Node elt = childList.item(i);
       final String eltName = elt.getNodeName();
-      switch (eltName) {
-        case PiIdentifiers.REFINEMENT_PARAMETER:
-          proto.getParameters().add(parseFunctionParameter((Element) elt));
-          break;
-        default:
-          // ignore #text and other children
+      if (eltName == PiIdentifiers.REFINEMENT_PARAMETER) {
+        proto.getParameters().add(parseFunctionParameter((Element) elt));
       }
     }
     return proto;
@@ -737,7 +734,7 @@ public class PiParser {
           vertex = parseParameter(nodeElt, graph);
           break;
         case PiIdentifiers.DELAY:
-          vertex = parseDelay(nodeElt, graph);
+          parseDelay(nodeElt, graph);
           // Ignore parsing of ports
           // Delays have pre-defined ports created at delay actor instantiation
           return;
@@ -752,12 +749,8 @@ public class PiParser {
       final Node elt = childList.item(i);
       final String eltName = elt.getNodeName();
 
-      switch (eltName) {
-        case PiIdentifiers.PORT:
-          parsePort((Element) elt, vertex);
-          break;
-        default:
-          // ignore #text and unknown children
+      if (PiIdentifiers.PORT.equals(eltName)) {
+        parsePort((Element) elt, vertex);
       }
     }
     // Sanity check for special actors

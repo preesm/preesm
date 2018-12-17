@@ -38,9 +38,7 @@
  */
 package org.preesm.algorithm.mapper.ui.stats;
 
-import java.util.LinkedHashSet;
 import java.util.Map;
-import java.util.Set;
 import org.preesm.algorithm.mapper.abc.impl.latency.LatencyAbc;
 import org.preesm.algorithm.mapper.abc.impl.latency.SpanLengthCalculator;
 import org.preesm.algorithm.mapper.model.MapperDAG;
@@ -49,8 +47,6 @@ import org.preesm.algorithm.mapper.model.MapperDAGVertex;
 import org.preesm.algorithm.mapper.model.special.InvolvementVertex;
 import org.preesm.algorithm.mapper.model.special.OverheadVertex;
 import org.preesm.algorithm.mapper.model.special.PrecedenceEdge;
-import org.preesm.algorithm.mapper.model.special.ReceiveVertex;
-import org.preesm.algorithm.mapper.model.special.SendVertex;
 import org.preesm.algorithm.mapper.model.special.TransferVertex;
 import org.preesm.algorithm.model.PropertyBean;
 import org.preesm.algorithm.model.dag.DAGEdge;
@@ -99,7 +95,7 @@ public class StatGenerator {
       this.abc = abc;
 
       this.abc.updateFinalCosts();
-      this.finalTime = ((LatencyAbc) this.abc).getFinalLatency();
+      this.finalTime = this.abc.getFinalLatency();
     } else {
       this.abc = abc;
       this.abc.updateFinalCosts();
@@ -163,7 +159,7 @@ public class StatGenerator {
    */
   public long getResultTime() {
     if (this.abc instanceof LatencyAbc) {
-      return ((LatencyAbc) this.abc).getFinalLatency();
+      return this.abc.getFinalLatency();
     } else {
       return 0L;
     }
@@ -207,7 +203,7 @@ public class StatGenerator {
   public long getLoad(final ComponentInstance operator) {
 
     if (this.abc instanceof LatencyAbc) {
-      return ((LatencyAbc) this.abc).getLoad(operator);
+      return this.abc.getLoad(operator);
     } else {
       return 0L;
     }
@@ -296,21 +292,4 @@ public class StatGenerator {
     return this.abc;
   }
 
-  /**
-   * Removes the send receive.
-   *
-   * @param localDag
-   *          the local dag
-   */
-  public static void removeSendReceive(final MapperDAG localDag) {
-
-    // Every send and receive vertices are removed
-    final Set<DAGVertex> vset = new LinkedHashSet<>(localDag.vertexSet());
-    for (final DAGVertex v : vset) {
-      if ((v instanceof SendVertex) || (v instanceof ReceiveVertex)) {
-        localDag.removeVertex(v);
-      }
-    }
-
-  }
 }

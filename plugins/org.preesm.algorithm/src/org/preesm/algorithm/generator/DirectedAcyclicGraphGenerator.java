@@ -72,31 +72,6 @@ public class DirectedAcyclicGraphGenerator {
 
   /**
    * Creates an acyclic random graph with a number of vertices fix by the parameter nbVertex. The number of sources and
-   * sinks of each vertex and the production and consumption are randomly set. The number of minimum input vertices is
-   * set to 1
-   *
-   * @param nbVertex
-   *          is the number of vertices to create in the graph
-   * @param minInDegree
-   *          is the minimum sinks of each vertex
-   * @param maxInDegree
-   *          is the maximum sinks of each vertex
-   * @param minOutDegree
-   *          is the minimum sources of each vertex
-   * @param maxOutDegree
-   *          is the maximum sources of each vertex
-   *
-   *
-   * @return the created graph
-   *
-   */
-  public SDFGraph createAcyclicRandomGraph(final int nbVertex, final int minInDegree, final int maxInDegree,
-      final int minOutDegree, final int maxOutDegree) {
-    return createAcyclicRandomGraph(nbVertex, minInDegree, maxInDegree, minOutDegree, maxOutDegree, 1);
-  }
-
-  /**
-   * Creates an acyclic random graph with a number of vertices fix by the parameter nbVertex. The number of sources and
    * sinks of each vertex and the production and consumption are randomly set.
    *
    * @param nbVertex
@@ -144,17 +119,17 @@ public class DirectedAcyclicGraphGenerator {
       // Choose a random number of sinks for the new vertex
       int max = Math.min(maxOutDegree, nbVertex - nbVertexgraph - 1);
       int min = Math.min(max, minOutDegree);
-      nbSourcesVertex[nbVertexgraph] = (max - min == 0) ? min : min + new SecureRandom().nextInt(max - min);
+      nbSourcesVertex[nbVertexgraph] = ((max - min) == 0) ? min : min + new SecureRandom().nextInt(max - min);
 
       // Choose a random number of sources for the new vertex
       max = Math.min(maxInDegree, nbVertexgraph);
       min = Math.min(max, minInDegree);
-      nbSinksVertex[nbVertexgraph] = (max - min == 0) ? min : min + new SecureRandom().nextInt(max - min);
+      nbSinksVertex[nbVertexgraph] = ((max - min) == 0) ? min : min + new SecureRandom().nextInt(max - min);
 
       nbSinks += nbSinksVertex[nbVertexgraph];
       nbSources += nbSourcesVertex[nbVertexgraph];
       // If Not the first
-      if ((nbVertexgraph >= nbSensors) && (nbSinks != 0) && (nbSources != 0) && nbSinksVertex[nbVertexgraph] > 0) {
+      if ((nbVertexgraph >= nbSensors) && (nbSinks != 0) && (nbSources != 0) && (nbSinksVertex[nbVertexgraph] > 0)) {
         int randout;
         do {
           randout = (new SecureRandom().nextInt(nbVertexgraph));

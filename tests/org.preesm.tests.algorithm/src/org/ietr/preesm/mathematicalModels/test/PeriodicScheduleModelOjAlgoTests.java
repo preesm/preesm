@@ -39,8 +39,8 @@ import org.junit.Assert;
 import org.junit.Test;
 import org.preesm.algorithm.mathematicalModels.PeriodicScheduleModelOjAlgo;
 import org.preesm.algorithm.model.sdf.SDFGraph;
-import org.preesm.algorithm.throughput.tools.helpers.GraphStructureHelper;
-import org.preesm.algorithm.throughput.tools.transformers.SDFTransformer;
+import org.preesm.algorithm.throughput.tools.GraphStructureHelper;
+import org.preesm.algorithm.throughput.tools.SDFTransformer;
 
 /**
  * Unit test of PeriodicScheduleModel_GLPK class

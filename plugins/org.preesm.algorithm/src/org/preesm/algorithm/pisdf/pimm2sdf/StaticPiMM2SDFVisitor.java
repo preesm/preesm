@@ -110,27 +110,27 @@ public class StaticPiMM2SDFVisitor extends PiMMSwitch<Boolean> {
 
   /** The result. */
   // SDFGraph created from the outer graph
-  protected SDFGraph result;
+  private SDFGraph result;
 
   /** The execution. */
   // Original list of fixed values for all the parameters of the graph
-  protected PiGraphExecution execution;
+  private final PiGraphExecution execution;
 
   /** The pi vx 2 SDF vx. */
   // Map from original PiMM vertices to generated SDF vertices
-  protected Map<AbstractVertex, SDFAbstractVertex> piVx2SDFVx = new LinkedHashMap<>();
+  private final Map<AbstractVertex, SDFAbstractVertex> piVx2SDFVx = new LinkedHashMap<>();
 
   /** The pi port 2 vx. */
   // Map from PiMM ports to their vertex (used for SDFEdge creation)
-  protected Map<Port, Configurable> piPort2Vx = new LinkedHashMap<>();
+  private final Map<Port, Configurable> piPort2Vx = new LinkedHashMap<>();
   // Map from original PiMM ports to generated SDF ports (used for SDFEdge
   /** The pi port 2 SDF port. */
   // creation)
-  protected Map<Port, SDFInterfaceVertex> piPort2SDFPort = new LinkedHashMap<>();
+  private final Map<Port, SDFInterfaceVertex> piPort2SDFPort = new LinkedHashMap<>();
 
   /** The current SDF refinement. */
   // Current SDF Refinement
-  protected IRefinement currentSDFRefinement;
+  private IRefinement currentSDFRefinement;
 
   /**
    * Creates the value.
@@ -140,7 +140,7 @@ public class StaticPiMM2SDFVisitor extends PiMMSwitch<Boolean> {
    * @return the value
    */
   /* Create An IBSDF value depending of the expression */
-  protected Value createValue(final String str) {
+  private Value createValue(final String str) {
     try {
       final long l = Long.parseLong(str);
       return new ConstantValue(l);
@@ -167,7 +167,7 @@ public class StaticPiMM2SDFVisitor extends PiMMSwitch<Boolean> {
    * @param sdf
    *          the SDFGraph to which we add the graph variables
    */
-  protected void parameters2GraphVariables(final PiGraph pg, final SDFGraph sdf) {
+  private void parameters2GraphVariables(final PiGraph pg, final SDFGraph sdf) {
     for (final Parameter p : pg.getParameters()) {
       final String evaluate = Long.toString(p.getValueExpression().evaluate());
       final Variable var = new Variable(p.getName(), evaluate);
@@ -235,7 +235,7 @@ public class StaticPiMM2SDFVisitor extends PiMMSwitch<Boolean> {
    * @param execution
    *          the list of available values for each parameter
    */
-  protected void computeDerivedParameterValues(final PiGraph graph, final PiGraphExecution execution) {
+  private void computeDerivedParameterValues(final PiGraph graph, final PiGraphExecution execution) {
     // If there is no value or list of valuse for one Parameter, the value
     // of the parameter is derived (i.e., computed from other parameters
     // values), we can evaluate it (after the values of other parameters
@@ -492,13 +492,13 @@ public class StaticPiMM2SDFVisitor extends PiMMSwitch<Boolean> {
   }
 
   /** The current prototype. */
-  protected Prototype currentPrototype;
+  private Prototype currentPrototype;
 
   /** The current Argument and Parameter. */
-  protected CodeGenArgument currentArgument;
+  private CodeGenArgument currentArgument;
 
   /** The current parameter. */
-  protected CodeGenParameter currentParameter;
+  private CodeGenParameter currentParameter;
 
   @Override
   public Boolean caseCHeaderRefinement(final CHeaderRefinement h) {

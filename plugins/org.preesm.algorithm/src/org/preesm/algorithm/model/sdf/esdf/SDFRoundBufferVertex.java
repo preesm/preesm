@@ -36,7 +36,6 @@ package org.preesm.algorithm.model.sdf.esdf;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 import org.preesm.algorithm.model.sdf.SDFEdge;
 import org.preesm.algorithm.model.sdf.SDFInterfaceVertex;
 
@@ -97,19 +96,6 @@ public class SDFRoundBufferVertex extends SDFBroadcastVertex {
   @Override
   public List<SDFEdge> getOutgoingConnections() {
     return new ArrayList<>(getBase().outgoingEdgesOf(this));
-  }
-
-  /**
-   * Sets this edge connection index.
-   *
-   * @param edge
-   *          The edge connected to the vertex
-   * @param index
-   *          The index in the connections
-   */
-  public void setConnectionIndex(final SDFEdge edge, final long index) {
-    final Map<Long, SDFEdge> connections = getConnections();
-    connections.put(index, edge);
   }
 
   /*

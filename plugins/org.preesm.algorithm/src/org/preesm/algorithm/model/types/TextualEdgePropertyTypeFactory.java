@@ -74,7 +74,7 @@ public class TextualEdgePropertyTypeFactory implements PropertyFactory {
    *          The value
    * @return The created SDFStringEdgePropertyType
    */
-  public StringEdgePropertyType getSDFEdgePropertyType(final String val) {
+  private StringEdgePropertyType getSDFEdgePropertyType(final String val) {
     return new StringEdgePropertyType(val);
   }
 

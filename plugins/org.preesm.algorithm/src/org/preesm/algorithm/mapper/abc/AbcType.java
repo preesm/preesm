@@ -59,10 +59,10 @@ public class AbcType {
   public static final AbcType AccuratelyTimed = new AbcType("AccuratelyTimed");
 
   /** The Constant CommConten. */
-  public static final AbcType CommConten = new AbcType("CommConten");
+  private static final AbcType CommConten = new AbcType("CommConten");
 
   /** The Constant DynamicQueuing. */
-  public static final AbcType DynamicQueuing = new AbcType("DynamicQueuing");
+  private static final AbcType DynamicQueuing = new AbcType("DynamicQueuing");
 
   /** Name of the current type. */
   private String name = null;
@@ -79,7 +79,7 @@ public class AbcType {
    * @param name
    *          the name
    */
-  protected AbcType(final String name) {
+  private AbcType(final String name) {
     super();
     this.name = name;
     this.taskSchedType = TaskSchedType.SIMPLE;

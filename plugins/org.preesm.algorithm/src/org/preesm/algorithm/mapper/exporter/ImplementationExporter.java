@@ -123,7 +123,7 @@ public class ImplementationExporter extends GMLExporter<DAGVertex, DAGEdge> {
   protected Element exportNode(final DAGVertex vertex, final Element parentELement) {
     // Pre modification for xml export
     final PropertyBean vtxBeans = vertex.getPropertyBean();
-    if (vtxBeans.getValue("originalId") != null && vertex instanceof MapperDAGVertex) {
+    if ((vtxBeans.getValue("originalId") != null) && (vertex instanceof MapperDAGVertex)) {
       final MapperDAGVertex mapperDagVtx = (MapperDAGVertex) vertex;
       final VertexInit init = mapperDagVtx.getInit();
       final MapperDAGVertex parentVertex = init.getParentVertex();

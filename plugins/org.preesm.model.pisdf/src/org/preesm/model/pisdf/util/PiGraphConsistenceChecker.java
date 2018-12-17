@@ -89,14 +89,12 @@ public class PiGraphConsistenceChecker extends PiMMSwitch<Boolean> {
 
     final Boolean doSwitch = doSwitch(fifo.getSourcePort());
     final Boolean doSwitch2 = doSwitch(fifo.getTargetPort());
-    // visit children & references
-    // TODO : delays
     return fifoValid && doSwitch && doSwitch2;
   }
 
   @Override
   public Boolean caseDelayActor(DelayActor object) {
-    // TODO handle properly
+    // no check
     return true;
   }
 
@@ -123,16 +121,16 @@ public class PiGraphConsistenceChecker extends PiMMSwitch<Boolean> {
     final Configurable containingConfigurable = getter.getConfigurable();
 
     final boolean getterContained = containingConfigurable != null;
+    boolean properTarget = true;
     if (!getterContained) {
       error("Dependency [%s] getter [%s] is not contained.", dependency, getter);
-    }
+    } else {
 
-    boolean properTarget = true;
-    if (!(containingConfigurable instanceof PiGraph)) {
-      properTarget = containingConfigurable.getContainingPiGraph() == this.graphStack.peek();
+      if (!(containingConfigurable instanceof PiGraph)) {
+        properTarget = containingConfigurable.getContainingPiGraph() == this.graphStack.peek();
+      }
     }
-
-    return setterok && properTarget;
+    return setterok && getterContained && properTarget;
   }
 
   @Override
@@ -180,44 +178,49 @@ public class PiGraphConsistenceChecker extends PiMMSwitch<Boolean> {
     }
     final Dependency incomingDependency = cfgInPort.getIncomingDependency();
     final boolean portConnected = incomingDependency != null;
+    boolean depInGraph = true;
     if (!portConnected) {
       error("Port [%s] is not connected to a dependency.", cfgInPort);
+    } else {
+      final Graph containingGraph = incomingDependency.getContainingGraph();
+      depInGraph = containingGraph == peek;
     }
-    final Graph containingGraph = incomingDependency.getContainingGraph();
-    final boolean depInGraph = containingGraph == peek;
-    return depInGraph && containedInProperGraph;
+    return depInGraph && portConnected && containedInProperGraph;
   }
 
   @Override
   public Boolean caseConfigOutputPort(final ConfigOutputPort object) {
-    // TODO Auto-generated method stub
+    // no check
     return true;
   }
 
   @Override
   public Boolean caseDataPort(final DataPort port) {
+    final PiGraph peek = this.graphStack.peek();
     final AbstractActor containingActor = port.getContainingActor();
     final boolean isContained = containingActor != null;
+    boolean wellContained = true;
     if (!isContained) {
       error("port [%s] has not containing actor", port);
-    }
-    final PiGraph containingPiGraph = containingActor.getContainingPiGraph();
-    final PiGraph peek = this.graphStack.peek();
-    final boolean wellContained = isContained && (containingPiGraph == peek);
-    if (!wellContained) {
-      error("port [%s] containing actor graph [%s] differs from peek graph [%s]", port, containingPiGraph, peek);
+    } else {
+      final PiGraph containingPiGraph = containingActor.getContainingPiGraph();
+      wellContained = (containingPiGraph == peek);
+      if (!wellContained) {
+        error("port [%s] containing actor graph [%s] differs from peek graph [%s]", port, containingPiGraph, peek);
+      }
     }
     final Fifo fifo = port.getFifo();
     final boolean hasFifo = fifo != null;
+    boolean fifoWellContained = true;
     if (!hasFifo) {
       error("port [%s] is not connected to a fifo", port);
+    } else {
+      final PiGraph containingPiGraph2 = fifo.getContainingPiGraph();
+      fifoWellContained = (containingPiGraph2 == peek);
+      if (!fifoWellContained) {
+        error("port [%s] fifo graph [%s] differs from peek graph [%s]", port, containingPiGraph2, peek);
+      }
     }
-    final PiGraph containingPiGraph2 = fifo.getContainingPiGraph();
-    final boolean fifoWellContained = hasFifo && (containingPiGraph2 == peek);
-    if (!fifoWellContained) {
-      error("port [%s] fifo graph [%s] differs from peek graph [%s]", port, containingPiGraph2, peek);
-    }
-
     final boolean portValid = wellContained && fifoWellContained;
 
     if (!portValid) {

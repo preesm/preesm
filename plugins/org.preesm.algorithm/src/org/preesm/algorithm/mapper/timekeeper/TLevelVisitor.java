@@ -41,6 +41,7 @@ package org.preesm.algorithm.mapper.timekeeper;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.NoSuchElementException;
 import java.util.Set;
 import org.preesm.algorithm.mapper.model.MapperDAG;
@@ -48,9 +49,9 @@ import org.preesm.algorithm.mapper.model.MapperDAGEdge;
 import org.preesm.algorithm.mapper.model.MapperDAGVertex;
 import org.preesm.algorithm.mapper.model.property.EdgeTiming;
 import org.preesm.algorithm.mapper.model.property.VertexTiming;
+import org.preesm.algorithm.model.IGraphVisitor;
 import org.preesm.algorithm.model.dag.DAGVertex;
 import org.preesm.algorithm.model.iterators.TopologicalDAGIterator;
-import org.preesm.algorithm.model.visitors.IGraphVisitor;
 import org.preesm.commons.exceptions.PreesmException;
 
 /**
@@ -86,19 +87,12 @@ public class TLevelVisitor implements IGraphVisitor<MapperDAG, MapperDAGVertex, 
     // starting from vertices without predecessors
     final TopologicalDAGIterator iterator = new TopologicalDAGIterator(dag);
 
-    // Activate to detect problems
-    // detectCycle(dag);
-
     try {
       // Recomputing all TLevels
       if (this.dirtyVertices.isEmpty()) {
         while (iterator.hasNext()) {
           final DAGVertex next = iterator.next();
-          try {
-            next.accept(this);
-          } catch (final PreesmException e) {
-            e.printStackTrace();
-          }
+          next.accept(this);
         }
       } else {
         boolean dirty = false;
@@ -112,10 +106,8 @@ public class TLevelVisitor implements IGraphVisitor<MapperDAG, MapperDAGVertex, 
           }
         }
       }
-    } catch (final PreesmException e) {
-      e.printStackTrace();
     } catch (final NoSuchElementException e) {
-      e.printStackTrace();
+      throw new PreesmException(e);
     }
   }
 
@@ -128,7 +120,7 @@ public class TLevelVisitor implements IGraphVisitor<MapperDAG, MapperDAGVertex, 
    *           the SDF 4 J exception
    */
   @Override
-  public void visit(final MapperDAGVertex dagVertex) throws PreesmException {
+  public void visit(final MapperDAGVertex dagVertex) {
     long maxTLevel = -1;
     final VertexTiming timing = dagVertex.getTiming();
 
@@ -147,7 +139,8 @@ public class TLevelVisitor implements IGraphVisitor<MapperDAG, MapperDAGVertex, 
 
       // From predecessors, computing the earliest time that the
       // vertex can start
-      for (final MapperDAGVertex pred : predecessors.keySet()) {
+      for (final Entry<MapperDAGVertex, MapperDAGEdge> entry : predecessors.entrySet()) {
+        final MapperDAGVertex pred = entry.getKey();
         final VertexTiming predTiming = pred.getTiming();
         final EdgeTiming edgeTiming = predecessors.get(pred).getTiming();
         if (predTiming.hasTLevel() && predTiming.hasCost() && edgeTiming.hasCost()) {
@@ -164,16 +157,6 @@ public class TLevelVisitor implements IGraphVisitor<MapperDAG, MapperDAGVertex, 
         timing.setTLevel(maxTLevel);
       }
     }
-  }
-
-  /*
-   * (non-Javadoc)
-   *
-   * @see org.ietr.dftools.algorithm.model.visitors.IGraphVisitor#visit(org.ietr.dftools.algorithm.model. AbstractEdge)
-   */
-  @Override
-  public void visit(final MapperDAGEdge dagEdge) {
-
   }
 
 }

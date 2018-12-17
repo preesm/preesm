@@ -47,11 +47,11 @@ import java.util.Map;
 import java.util.Set;
 import java.util.logging.Level;
 import org.preesm.algorithm.mapper.abc.AbcType;
+import org.preesm.algorithm.mapper.abc.ImplementationCleaner;
 import org.preesm.algorithm.mapper.abc.SpecialVertexManager;
 import org.preesm.algorithm.mapper.abc.edgescheduling.AbstractEdgeSched;
 import org.preesm.algorithm.mapper.abc.edgescheduling.EdgeSchedType;
 import org.preesm.algorithm.mapper.abc.edgescheduling.IEdgeSched;
-import org.preesm.algorithm.mapper.abc.impl.ImplementationCleaner;
 import org.preesm.algorithm.mapper.abc.order.OrderManager;
 import org.preesm.algorithm.mapper.abc.order.VertexOrderList;
 import org.preesm.algorithm.mapper.abc.route.CommunicationRouter;
@@ -97,7 +97,7 @@ public abstract class LatencyAbc {
   /**
    * Current directed acyclic graph. It is the external dag graph
    */
-  protected MapperDAG dag;
+  private MapperDAG dag;
 
   /**
    * Current implementation: the internal model that will be used to add edges/vertices and calculate times.
@@ -105,7 +105,7 @@ public abstract class LatencyAbc {
   protected MapperDAG implementation;
 
   /** Current Abc type. */
-  protected AbcType abcType = null;
+  private AbcType abcType = null;
 
   /** Task scheduler. */
   protected AbstractTaskSched taskScheduler = null;
@@ -243,18 +243,9 @@ public abstract class LatencyAbc {
    *          the vertex
    * @return the effective component
    */
-  public final ComponentInstance getEffectiveComponent(MapperDAGVertex vertex) {
+  public final ComponentInstance getEffectiveComponent(final MapperDAGVertex vertex) {
     final MapperDAGVertex vertex2 = translateInImplementationVertex(vertex);
     return vertex2.getEffectiveComponent();
-  }
-
-  /**
-   * Gets the rank of the given vertex on its operator. -1 if the vertex has no rank
-   */
-  public final int getSchedulingOrder(MapperDAGVertex vertex) {
-    vertex = translateInImplementationVertex(vertex);
-
-    return this.orderManager.localIndexOf(vertex);
   }
 
   /**
@@ -693,7 +684,7 @@ public abstract class LatencyAbc {
    * @param dagvertex
    *          the dagvertex
    */
-  public final void unmap(final MapperDAGVertex dagvertex) {
+  private final void unmap(final MapperDAGVertex dagvertex) {
 
     final MapperDAGVertex impvertex = translateInImplementationVertex(dagvertex);
 
@@ -702,42 +693,6 @@ public abstract class LatencyAbc {
     dagvertex.setEffectiveOperator(DesignTools.NO_COMPONENT_INSTANCE);
 
     impvertex.setEffectiveOperator(DesignTools.NO_COMPONENT_INSTANCE);
-  }
-
-  /**
-   * Removes the vertex implementation of a group of vertices that share the same mapping. In silent mode, does not
-   * update implementation timings
-   *
-   * @param dagvertices
-   *          the dagvertices
-   */
-  public final void unmap(final List<MapperDAGVertex> dagvertices) {
-
-    MapperDAGVertex cImpVertex = null;
-    MapperDAGVertex cDagVertex = null;
-    for (final MapperDAGVertex dagvertex : dagvertices) {
-      final MapperDAGVertex impvertex = translateInImplementationVertex(dagvertex);
-
-      fireNewUnmappedVertex(impvertex);
-      cDagVertex = dagvertex;
-      cImpVertex = impvertex;
-    }
-    if (cDagVertex != null) {
-      cDagVertex.setEffectiveOperator(DesignTools.NO_COMPONENT_INSTANCE);
-      cImpVertex.setEffectiveOperator(DesignTools.NO_COMPONENT_INSTANCE);
-    }
-  }
-
-  /**
-   * Gets the cost of the given vertex.
-   *
-   * @param vertex
-   *          the vertex
-   * @return the cost
-   */
-  public final long getCost(MapperDAGVertex vertex) {
-    vertex = translateInImplementationVertex(vertex);
-    return vertex.getTiming().getCost();
   }
 
   /**
@@ -804,7 +759,7 @@ public abstract class LatencyAbc {
   protected IEdgeSched edgeScheduler;
 
   /** Current abc parameters. */
-  protected AbcParameters params;
+  private final AbcParameters params;
 
   /**
    * Constructor of the simulator from a "blank" implementation where every vertex has not been mapped yet.
@@ -1096,7 +1051,7 @@ public abstract class LatencyAbc {
    *
    * @return the long
    */
-  public long evaluateLoadBalancing() {
+  private long evaluateLoadBalancing() {
 
     final List<Long> taskSums = new ArrayList<>();
     long totalTaskSum = 0L;

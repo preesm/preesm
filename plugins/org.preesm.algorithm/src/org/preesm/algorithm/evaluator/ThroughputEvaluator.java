@@ -41,7 +41,6 @@ import org.preesm.algorithm.model.sdf.SDFGraph;
 import org.preesm.algorithm.model.sdf.esdf.SDFSourceInterfaceVertex;
 import org.preesm.model.scenario.PreesmScenario;
 
-// TODO: Auto-generated Javadoc
 /**
  * Class used to evaluate the throughput of a SDF or IBSDF graph on its optimal periodic schedule.
  *
@@ -50,7 +49,7 @@ import org.preesm.model.scenario.PreesmScenario;
 public abstract class ThroughputEvaluator {
 
   /** The scenar. */
-  public PreesmScenario scenar;
+  private PreesmScenario scenar;
 
   /**
    * Launches the evaluation of the throughput.
@@ -71,14 +70,14 @@ public abstract class ThroughputEvaluator {
    *          the sdf
    * @return the double
    */
-  protected double throughput_computation(final double period, final SDFGraph sdf) {
-    double min_throughput = Double.MAX_VALUE;
+  protected double throughputComputation(final double period, final SDFGraph sdf) {
+    double minThroughput = Double.MAX_VALUE;
     double tmp;
     // use the normalized value Z of every actor
     for (final SDFAbstractVertex vertex : sdf.vertexSet()) {
       // Hierarchical vertex, go look for its internal actors
-      if ((vertex.getGraphDescription() != null) && (vertex.getGraphDescription() instanceof SDFGraph)) {
-        tmp = throughput_computation(period, (SDFGraph) vertex.getGraphDescription());
+      if (vertex.getGraphDescription() instanceof SDFGraph) {
+        tmp = throughputComputation(period, (SDFGraph) vertex.getGraphDescription());
       } else {
         // throughput actor = 1/(K*Z)
         if (vertex.getInterfaces().get(0) instanceof SDFSourceInterfaceVertex) {
@@ -90,10 +89,18 @@ public abstract class ThroughputEvaluator {
         }
       }
       // We are looking for the actor with the smallest throughput
-      if (tmp < min_throughput) {
-        min_throughput = tmp;
+      if (tmp < minThroughput) {
+        minThroughput = tmp;
       }
     }
-    return min_throughput;
+    return minThroughput;
+  }
+
+  public PreesmScenario getScenar() {
+    return scenar;
+  }
+
+  public void setScenar(PreesmScenario scenar) {
+    this.scenar = scenar;
   }
 }

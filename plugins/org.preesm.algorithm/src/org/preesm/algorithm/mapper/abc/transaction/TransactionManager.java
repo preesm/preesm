@@ -49,10 +49,10 @@ import java.util.List;
 public class TransactionManager {
 
   /** The transaction list. */
-  LinkedList<Transaction> transactionList = null;
+  private LinkedList<Transaction> transactionList = null;
 
   /** The result list. */
-  List<Object> resultList = null;
+  private List<Object> resultList = null;
 
   /**
    * Instantiates a new transaction manager.

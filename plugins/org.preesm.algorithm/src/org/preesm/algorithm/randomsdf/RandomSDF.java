@@ -70,6 +70,8 @@ import org.preesm.workflow.implement.AbstractTaskImplementation;
  */
 public class RandomSDF extends AbstractTaskImplementation {
 
+  private static final Random generator = new Random();
+
   /** The nb vertex. */
   private int nbVertex;
 
@@ -132,7 +134,6 @@ public class RandomSDF extends AbstractTaskImplementation {
     }
 
     if (generatedGraph != null) {
-      final Random generator = new Random();
 
       sdf = generatedGraph;
 

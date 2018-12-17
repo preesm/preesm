@@ -51,7 +51,7 @@ import org.preesm.algorithm.schedule.PeriodicSchedulerSDF.Method;
 public class PreesmAlgorithmPlugin extends AbstractUIPlugin {
 
   /** The Constant PLUGIN_ID. */
-  public static final String PLUGIN_ID = "org.preesm.algorithm";
+  private static final String PLUGIN_ID = "org.preesm.algorithm";
 
   public final Map<Method, SolverMethod> solverMethodRegistry = new LinkedHashMap<>();
 
@@ -61,11 +61,11 @@ public class PreesmAlgorithmPlugin extends AbstractUIPlugin {
    *
    */
   public static final PreesmAlgorithmPlugin getInstance() {
-    if (instance == null) {
+    if (PreesmAlgorithmPlugin.instance == null) {
       // special case when calling as plain java (outside eclipse framework)
-      instance = new PreesmAlgorithmPlugin();
+      PreesmAlgorithmPlugin.instance = new PreesmAlgorithmPlugin();
     }
-    return instance;
+    return PreesmAlgorithmPlugin.instance;
   }
 
   public PreesmAlgorithmPlugin() {
@@ -73,36 +73,17 @@ public class PreesmAlgorithmPlugin extends AbstractUIPlugin {
   }
 
   @Override
-  public void start(BundleContext context) throws Exception {
+  public void start(final BundleContext context) throws Exception {
     super.start(context);
-    instance = this;
-    solverMethodRegistry.put(Method.LINEAR_PROGRAMMING_OJALGO, new PeriodicScheduleModelOjAlgo());
+    PreesmAlgorithmPlugin.instance = this;
+    this.solverMethodRegistry.put(Method.LINEAR_PROGRAMMING_OJALGO, new PeriodicScheduleModelOjAlgo());
   }
 
   @Override
   public void stop(final BundleContext context) throws Exception {
     super.stop(context);
-    instance = null;
-    solverMethodRegistry.clear();
-  }
-
-  /**
-   * Returns an image for the image file at the given plug-in relative path.
-   *
-   * @param path
-   *          the path
-   * @return the image
-   */
-  public Image getImage(final String path) {
-    final ImageRegistry ir = getImageRegistry();
-    Image image = ir.get(path);
-    if (image == null) {
-      final ImageDescriptor id = AbstractUIPlugin.imageDescriptorFromPlugin(PLUGIN_ID, path);
-      image = id.createImage();
-      ir.put(path, image);
-    }
-
-    return image;
+    PreesmAlgorithmPlugin.instance = null;
+    this.solverMethodRegistry.clear();
   }
 
   /**
@@ -113,7 +94,7 @@ public class PreesmAlgorithmPlugin extends AbstractUIPlugin {
     Image image = ir.get(path);
     ImageDescriptor id = null;
     if (image == null) {
-      id = AbstractUIPlugin.imageDescriptorFromPlugin(PLUGIN_ID, path);
+      id = AbstractUIPlugin.imageDescriptorFromPlugin(PreesmAlgorithmPlugin.PLUGIN_ID, path);
       image = id.createImage();
       ir.put(path, image);
     }

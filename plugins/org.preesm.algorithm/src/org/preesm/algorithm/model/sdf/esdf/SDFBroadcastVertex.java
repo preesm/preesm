@@ -53,7 +53,7 @@ public class SDFBroadcastVertex extends SDFAbstractSpecialVertex {
   public static final String BROADCAST = "Broadcast";
 
   /** String to access the property edges order. */
-  public static final String EDGES_ORDER = "edges_order";
+  private static final String EDGES_ORDER = "edges_order";
 
   /**
    * Creates a new SDFInterfaceVertex with the default direction (SINK).
@@ -100,7 +100,7 @@ public class SDFBroadcastVertex extends SDFAbstractSpecialVertex {
    * @param newEdge
    *          the new edge
    */
-  protected void addConnection(final SDFEdge newEdge) {
+  private void addConnection(final SDFEdge newEdge) {
     getConnections().put((long) getConnections().size(), newEdge);
   }
 
@@ -122,27 +122,6 @@ public class SDFBroadcastVertex extends SDFAbstractSpecialVertex {
   }
 
   /**
-   * Swap two {@link SDFEdge} with given indexes in the ordered connection map.
-   *
-   * @param index0
-   *          the index 0
-   * @param index1
-   *          the index 1
-   * @return <code>true</code> if both indices were valid and could be swapped, <code>false</code> otherwise.
-   */
-  public boolean swapEdges(final long index0, final long index1) {
-    final Map<Long, SDFEdge> connections = getConnections();
-    if (connections.containsKey(index0) && connections.containsKey(index1)) {
-      final SDFEdge buffer = connections.get(index0);
-      connections.replace(index0, connections.get(index1));
-      connections.replace(index1, buffer);
-      return true;
-    }
-
-    return false;
-  }
-
-  /**
    * Remove the given {@link SDFEdge} from its current index and insert it just before the {@link SDFEdge} currently at
    * the given index (or at the end of the list if index == connections.size).
    *
@@ -152,6 +131,7 @@ public class SDFBroadcastVertex extends SDFAbstractSpecialVertex {
    *          the new index for the {@link SDFEdge}
    * @return <code>true</code> if the edge was found and moved at an existing index, <code>false</code> otherwise.
    */
+  @Override
   public boolean setEdgeIndex(final SDFEdge edge, long index) {
     final Map<Long, SDFEdge> connections = getConnections();
     if ((index < connections.size()) && connections.containsValue(edge)) {

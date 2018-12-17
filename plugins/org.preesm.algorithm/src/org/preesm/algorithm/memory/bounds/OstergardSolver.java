@@ -70,7 +70,7 @@ public class OstergardSolver<V extends IWeightedVertex<Long> & Comparable<V>, E 
    * It stores the weight of the heaviest clique found for the Subset S<sub>i</sub>.
    * </p>
    */
-  protected List<Long> cost;
+  private List<Long> cost;
 
   /**
    * dcost corresponds to the d(i) function in
@@ -80,26 +80,26 @@ public class OstergardSolver<V extends IWeightedVertex<Long> & Comparable<V>, E 
    * It stores the weight of the heaviest clique found for the Subset S'<sub>i</sub>.
    * </p>
    */
-  protected List<Long> dcost;
+  private List<Long> dcost;
 
   /**
    * This boolean is set to true if a clique with weight c(i+1) + w(vi) is found during an iteration of the wnew. This
    * clique is maximum for Si.
    */
-  protected boolean found;
+  private boolean found;
 
   /**
    * This vertex set will be used as the iteration base of the algorithm.
    */
-  protected List<V> orderedVertexSet;
+  private List<V> orderedVertexSet;
 
   /** Specify if the speed-up technique is used or not (May not be efficient for graphs with high edge density). */
-  protected final boolean speedup;
+  private final boolean speedup;
 
   /**
    * This vertex set is the current set of fixed vertices of the algorithm.
    */
-  protected List<V> workingSet;
+  private List<V> workingSet;
 
   /**
    ** Initialize the MaximumWeightCliqueSolver with a graph instance.
@@ -123,7 +123,7 @@ public class OstergardSolver<V extends IWeightedVertex<Long> & Comparable<V>, E 
    * @param speedUp
    *          true if the computation of D(i) must be performed to speed-up the algorithm
    */
-  public OstergardSolver(final SimpleGraph<V, E> graph, final boolean speedUp) {
+  private OstergardSolver(final SimpleGraph<V, E> graph, final boolean speedUp) {
     super(graph);
     this.orderedVertexSet = new ArrayList<>(this.numberVertices);
     this.workingSet = new ArrayList<>();
@@ -153,7 +153,7 @@ public class OstergardSolver<V extends IWeightedVertex<Long> & Comparable<V>, E 
    *          the vertex index of the desired subset
    * @return the subset S<sub>i</sub>
    */
-  protected List<V> getSi(int i) {
+  private List<V> getSi(int i) {
     final List<V> si = new ArrayList<>();
     for (; i < this.orderedVertexSet.size(); i++) {
       si.add(this.orderedVertexSet.get(i));
@@ -170,7 +170,7 @@ public class OstergardSolver<V extends IWeightedVertex<Long> & Comparable<V>, E 
    * </ul>
    * .
    */
-  public void orderVertexSet() {
+  private void orderVertexSet() {
     // Retrieve the vertices of the graph
     final List<V> unorderedSet = new ArrayList<>(this.numberVertices);
     unorderedSet.addAll(this.graph.vertexSet());
@@ -254,7 +254,7 @@ public class OstergardSolver<V extends IWeightedVertex<Long> & Comparable<V>, E 
    * @param weight
    *          of the vertices fixed so far
    */
-  public void wClique(final List<V> vertexSet, final long weight) {
+  private void wClique(final List<V> vertexSet, final long weight) {
     // if |U| = 0 then
     if (vertexSet.isEmpty()) {
       // if weight > max then
@@ -330,7 +330,7 @@ public class OstergardSolver<V extends IWeightedVertex<Long> & Comparable<V>, E 
    * This method corresponds to the wnew function in Algorithm 1 in
    * <a href = "http://citeseerx.ist.psu.edu/viewdoc/summary?doi=10.1.1.25.4408"> this paper </a>.
    */
-  public void wNew() {
+  private void wNew() {
     if (this.speedup) {
       /* Speed-Up 2 : Compute D(i) (i=1..n/2) */
       // Reverse the order of the list to treat it backward
@@ -345,7 +345,7 @@ public class OstergardSolver<V extends IWeightedVertex<Long> & Comparable<V>, E 
       for (int j = this.numberVertices - 1; j >= Math.ceil(this.numberVertices / 2.0); j--) {
 
         // wclique(S'i inter N(vi), w(i))
-        final List<V> vertexSet = getSi((int) j); // Get S'i
+        final List<V> vertexSet = getSi(j); // Get S'i
         final V fixedVertex = vertexSet.get(0);
         vertexSet.retainAll(adjacentVerticesOf(fixedVertex));
 

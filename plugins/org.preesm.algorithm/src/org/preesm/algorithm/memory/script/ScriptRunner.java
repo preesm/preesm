@@ -67,11 +67,9 @@ import org.preesm.algorithm.model.dag.edag.DAGBroadcastVertex;
 import org.preesm.algorithm.model.dag.edag.DAGForkVertex;
 import org.preesm.algorithm.model.dag.edag.DAGJoinVertex;
 import org.preesm.algorithm.model.parameters.Argument;
-import org.preesm.algorithm.model.sdf.SDFAbstractVertex;
 import org.preesm.algorithm.model.sdf.SDFEdge;
 import org.preesm.algorithm.model.sdf.SDFGraph;
 import org.preesm.algorithm.model.sdf.SDFVertex;
-import org.preesm.algorithm.model.sdf.esdf.SDFRoundBufferVertex;
 import org.preesm.commons.exceptions.PreesmException;
 import org.preesm.commons.files.URLResolver;
 import org.preesm.commons.logger.PreesmLogger;
@@ -92,7 +90,7 @@ public class ScriptRunner {
   private static final String BROADCAST_SCRIPT   = "broadcast.bsh";
 
   // Name of bundle where to look for files (allow not to search into all projects)
-  public static final String BUNDLE_ID = "org.preesm.algorithm";
+  private static final String BUNDLE_ID = "org.preesm.algorithm";
 
   // Paths to the special scripts files
   private static final String JOIN        = ScriptRunner.SCRIPT_FOLDER + IPath.SEPARATOR + ScriptRunner.JOIN_SCRIPT;
@@ -348,12 +346,17 @@ public class ScriptRunner {
             associateScriptToSpecialVertex(dagVertex, "join", specialScriptFiles.get(ScriptRunner.JOIN));
             break;
           case DAGBroadcastVertex.DAG_BROADCAST_VERTEX:
-            final SDFAbstractVertex sdfVertex = dagVertex.getCorrespondingSDFVertex();
-            if (sdfVertex instanceof SDFRoundBufferVertex) {
-              associateScriptToSpecialVertex(dagVertex, "roundbuffer",
-                  specialScriptFiles.get(ScriptRunner.ROUNDBUFFER));
-            } else {
-              associateScriptToSpecialVertex(dagVertex, "broadcast", specialScriptFiles.get(ScriptRunner.BROADCAST));
+            final String specialType = dagVertex.getPropertyBean().getValue(DAGBroadcastVertex.SPECIAL_TYPE);
+            switch (specialType) {
+              case DAGBroadcastVertex.SPECIAL_TYPE_BROADCAST:
+                associateScriptToSpecialVertex(dagVertex, "broadcast", specialScriptFiles.get(ScriptRunner.BROADCAST));
+                break;
+              case DAGBroadcastVertex.SPECIAL_TYPE_ROUNDBUFFER:
+                associateScriptToSpecialVertex(dagVertex, "roundbuffer",
+                    specialScriptFiles.get(ScriptRunner.ROUNDBUFFER));
+                break;
+              default:
+                throw new PreesmException();
             }
             break;
           default:
@@ -1564,7 +1567,7 @@ public class ScriptRunner {
                   bufferCandidates.addAll(pair.getKey());
                   bufferCandidates.addAll(pair.getValue());
                 }
-                for (final AbstractEdge aggEdge : dagEdge.getAggregate()) {
+                for (final AbstractEdge<?, ?> aggEdge : dagEdge.getAggregate()) {
 
                   // Find the 2 buffers corresponding to this sdfEdge
                   final List<Buffer> buffers = bufferCandidates.stream().filter(it -> it.dagEdge == aggEdge)
@@ -1944,8 +1947,8 @@ public class ScriptRunner {
               .collect(Collectors.toList()));
 
           // Find corresponding mObjects
-          final List<MemoryExclusionVertex> srcAndDestMObj = sourceAndDestBuffers.stream()
-              .map(it -> bufferAndMObjectMap.get(it)).collect(Collectors.toList());
+          final List<MemoryExclusionVertex> srcAndDestMObj = sourceAndDestBuffers.stream().map(bufferAndMObjectMap::get)
+              .collect(Collectors.toList());
 
           // Save this list in the attributes of the divided buffer
           mObj.setPropertyValue(MemoryExclusionVertex.DIVIDED_PARTS_HOSTS, srcAndDestMObj);

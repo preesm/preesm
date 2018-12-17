@@ -45,9 +45,9 @@ import org.preesm.algorithm.mathematicalModels.SolverMethod;
 import org.preesm.algorithm.model.sdf.SDFAbstractVertex;
 import org.preesm.algorithm.model.sdf.SDFEdge;
 import org.preesm.algorithm.model.sdf.SDFGraph;
-import org.preesm.algorithm.throughput.tools.helpers.GraphStructureHelper;
-import org.preesm.algorithm.throughput.tools.helpers.Stopwatch;
-import org.preesm.algorithm.throughput.tools.transformers.SDFTransformer;
+import org.preesm.algorithm.throughput.tools.GraphStructureHelper;
+import org.preesm.algorithm.throughput.tools.SDFTransformer;
+import org.preesm.algorithm.throughput.tools.Stopwatch;
 import org.preesm.commons.exceptions.PreesmException;
 import org.preesm.commons.math.MathFunctionsHelper;
 
@@ -71,10 +71,10 @@ public class PeriodicSchedulerSDF {
    *
    */
   public enum Method {
-  ALGORITHM, LINEAR_PROGRAMMING_GUROBI, LINEAR_PROGRAMMING_GLPK, LINEAR_PROGRAMMING_OJALGO
+    ALGORITHM, LINEAR_PROGRAMMING_GUROBI, LINEAR_PROGRAMMING_GLPK, LINEAR_PROGRAMMING_OJALGO
   }
 
-  public static final Method METHOD_DEFAULT_VALUE = Method.LINEAR_PROGRAMMING_OJALGO;
+  private static final Method METHOD_DEFAULT_VALUE = Method.LINEAR_PROGRAMMING_OJALGO;
 
   /**
    * tests if a periodic schedule exists for an SDF graph using the same sufficient condition of liveness of SDF graphs.
@@ -83,7 +83,7 @@ public class PeriodicSchedulerSDF {
    *          SDF graph
    * @return true if periodic schedule exists
    */
-  public boolean isPeriodic(final SDFGraph graph) {
+  private boolean isPeriodic(final SDFGraph graph) {
     // set edges value : v = h (use the normalized version of the graph)
     // h = (out - M0 - gcd)* alpha(e)
     final Map<String, Double> edgeValue = new LinkedHashMap<>(graph.edgeSet().size());
@@ -197,7 +197,7 @@ public class PeriodicSchedulerSDF {
       }
 
       // Step 3: compute actors period and define the maximum throughput of the computed periodic schedule
-      double throughput = computeActorsPeriod(graph);
+      final double throughput = computeActorsPeriod(graph);
 
       // Step 4: compute the start date of the first execution of each actor
       computeActorsStartingTime(graph);
@@ -307,7 +307,7 @@ public class PeriodicSchedulerSDF {
    *          SDF graph
    * @return the maximum throughput of the periodic schedule
    */
-  public double computeActorsPeriod(final SDFGraph graph) {
+  private double computeActorsPeriod(final SDFGraph graph) {
     // get the normalized period of the graph
     final Fraction k = (Fraction) graph.getPropertyBean().getValue("normalizedPeriod");
 
@@ -331,37 +331,6 @@ public class PeriodicSchedulerSDF {
   }
 
   /**
-   * Computes the duration of the first iteration of the graph
-   *
-   * @param graph
-   *          SDF graph
-   * @return latency
-   */
-  public double computeGraphLatency(final SDFGraph graph) {
-    // formule : S(t) = S(t0) + w*t
-    // finish date = S(t) + L
-    // for each actor computes the finish date of its last execution (RV)
-    // latency = the max finish date
-    double maxFinishDate = 0;
-
-    // compute the finish time for every actor
-    for (final SDFAbstractVertex actor : graph.vertexSet()) {
-      final double s0 = (double) actor.getPropertyBean().getValue("firstExecutionStartDate");
-      final double w = (double) actor.getPropertyBean().getValue("executionPeriod");
-      final double l = (double) actor.getPropertyBean().getValue("duration"); // or use the scenario
-
-      // finish date
-      final double finishDateOfLastExecution = s0 + (w * actor.getNbRepeatAsLong()) + l;
-
-      if (finishDateOfLastExecution > maxFinishDate) {
-        maxFinishDate = finishDateOfLastExecution;
-      }
-    }
-
-    return maxFinishDate;
-  }
-
-  /**
    * compute the duration of the graph period as RV(a)*W(a) where a is an arbitrary actor of the graph
    *
    * @param graph
@@ -381,7 +350,7 @@ public class PeriodicSchedulerSDF {
    * @param graph
    *          SDF graph
    */
-  public void computeActorsStartingTime(final SDFGraph graph) {
+  private void computeActorsStartingTime(final SDFGraph graph) {
     /*
      * see Ben Abid paper : step 1: add a dummy vertex to the graph step 2: connect the new actor to every actor of the
      * graph with a null value step 3: use the bellman ford algorithm to compute the starting times as the longest path

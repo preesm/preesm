@@ -80,19 +80,6 @@ public class Argument {
   }
 
   /**
-   * Builds a new argument with the given name and value.
-   *
-   * @param name
-   *          The name of the argument
-   * @param value
-   *          The value of the argument
-   */
-  public Argument(final String name, final Value value) {
-    this.name = name;
-    this.value = value;
-  }
-
-  /**
    * Gives the name of the argument.
    *
    * @return The name of the argument

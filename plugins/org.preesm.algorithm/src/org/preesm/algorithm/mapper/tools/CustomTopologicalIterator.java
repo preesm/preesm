@@ -38,6 +38,7 @@
 package org.preesm.algorithm.mapper.tools;
 
 import java.util.LinkedHashSet;
+import java.util.NoSuchElementException;
 import java.util.Set;
 import org.jgrapht.traverse.AbstractGraphIterator;
 import org.preesm.algorithm.mapper.model.MapperDAG;
@@ -45,7 +46,6 @@ import org.preesm.algorithm.mapper.model.MapperDAGVertex;
 import org.preesm.algorithm.model.dag.DAGEdge;
 import org.preesm.algorithm.model.dag.DAGVertex;
 
-// TODO: Auto-generated Javadoc
 /**
  * Iterates the graph in ascending or descending topological order.
  *
@@ -54,10 +54,10 @@ import org.preesm.algorithm.model.dag.DAGVertex;
 public class CustomTopologicalIterator extends AbstractGraphIterator<DAGVertex, DAGEdge> {
 
   /** The direct order. */
-  protected boolean directOrder;
+  private final boolean directOrder;
 
   /** The dag. */
-  MapperDAG dag;
+  private final MapperDAG dag;
 
   /** The visited vertices. */
   private Set<MapperDAGVertex> visitedVertices = null;
@@ -123,7 +123,7 @@ public class CustomTopologicalIterator extends AbstractGraphIterator<DAGVertex, 
         }
       }
     }
-    return null;
+    throw new NoSuchElementException();
   }
 
 }

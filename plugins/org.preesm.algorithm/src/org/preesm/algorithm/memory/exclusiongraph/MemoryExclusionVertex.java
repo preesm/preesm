@@ -45,7 +45,6 @@ import java.util.Map;
 import java.util.logging.Level;
 import org.eclipse.xtext.util.Pair;
 import org.preesm.algorithm.memory.script.Range;
-import org.preesm.algorithm.model.AbstractEdge;
 import org.preesm.algorithm.model.AbstractVertex;
 import org.preesm.algorithm.model.PropertyBean;
 import org.preesm.algorithm.model.PropertyFactory;
@@ -56,7 +55,6 @@ import org.preesm.model.scenario.types.BufferAggregate;
 import org.preesm.model.scenario.types.BufferProperties;
 import org.preesm.model.scenario.types.DataType;
 
-// TODO: Auto-generated Javadoc
 /**
  * MemoryExclusionVertex is used to represent vertices in the Exclusion graph.
  *
@@ -132,7 +130,7 @@ public class MemoryExclusionVertex extends AbstractVertex<MemoryExclusionGraph>
   public static final String DIVIDED_PARTS_HOSTS = "divided_parts_hosts";
 
   /** This Map is used as a reference of dataTypes size when creating an vertex from a DAGEdge. */
-  public static Map<String, DataType> _dataTypes = new LinkedHashMap<>();
+  public static Map<String, DataType> NAME_TO_DATATYPES = new LinkedHashMap<>();
 
   /**
    * This method is used to associate a map of data types to the MemoryExclusionVertex class. This map will be used when
@@ -143,7 +141,7 @@ public class MemoryExclusionVertex extends AbstractVertex<MemoryExclusionGraph>
    */
   public static void setDataTypes(final Map<String, DataType> dataTypes) {
     if (dataTypes != null) {
-      MemoryExclusionVertex._dataTypes = dataTypes;
+      MemoryExclusionVertex.NAME_TO_DATATYPES = dataTypes;
     }
   }
 
@@ -205,21 +203,15 @@ public class MemoryExclusionVertex extends AbstractVertex<MemoryExclusionGraph>
       this.explodeImplode = "";
     }
 
-    // try {
-    // size = inputEdge.getWeight().intValue();
-    // } catch (InvalidExpressionException e) {
-    // e.printStackTrace();
-    // }
     // if datatype is defined, correct the vertex weight
-    final BufferAggregate buffers = (BufferAggregate) inputEdge.getPropertyBean()
-        .getValue(BufferAggregate.propertyBeanName);
+    final BufferAggregate buffers = inputEdge.getPropertyBean().getValue(BufferAggregate.propertyBeanName);
     final Iterator<BufferProperties> iter = buffers.iterator();
     int vertexWeight = 0;
     while (iter.hasNext()) {
       final BufferProperties properties = iter.next();
 
       final String dataType = properties.getDataType();
-      final DataType type = MemoryExclusionVertex._dataTypes.get(dataType);
+      final DataType type = MemoryExclusionVertex.NAME_TO_DATATYPES.get(dataType);
 
       if (type != null) {
         vertexWeight += type.getSize() * properties.getSize();
@@ -261,7 +253,6 @@ public class MemoryExclusionVertex extends AbstractVertex<MemoryExclusionGraph>
    */
   @Override
   public MemoryExclusionVertex copy() {
-    // TODO Auto-generated method stub
     return null;
   }
 
@@ -275,29 +266,6 @@ public class MemoryExclusionVertex extends AbstractVertex<MemoryExclusionGraph>
   @Override
   public int compareTo(final MemoryExclusionVertex o) {
     return (int) (this.size - o.size);
-  }
-
-  /*
-   * (non-Javadoc)
-   *
-   * @see org.ietr.dftools.algorithm.model.AbstractVertex#connectionAdded(org.ietr.dftools.algorithm.model.AbstractEdge)
-   */
-  @Override
-  public void connectionAdded(final AbstractEdge<?, ?> e) {
-    // TODO Auto-generated method stub
-
-  }
-
-  /*
-   * (non-Javadoc)
-   *
-   * @see
-   * org.ietr.dftools.algorithm.model.AbstractVertex#connectionRemoved(org.ietr.dftools.algorithm.model.AbstractEdge)
-   */
-  @Override
-  public void connectionRemoved(final AbstractEdge<?, ?> e) {
-    // TODO Auto-generated method stub
-
   }
 
   /**
@@ -384,7 +352,6 @@ public class MemoryExclusionVertex extends AbstractVertex<MemoryExclusionGraph>
    */
   @Override
   public PropertyFactory getFactoryForProperty(final String propertyName) {
-    // TODO Auto-generated method stub
     return null;
   }
 
@@ -435,7 +402,7 @@ public class MemoryExclusionVertex extends AbstractVertex<MemoryExclusionGraph>
    */
   @Override
   public int hashCode() {
-    return (new String(this.sink + "=>" + this.source)).hashCode();
+    return (this.sink + "=>" + this.source).hashCode();
   }
 
   /**

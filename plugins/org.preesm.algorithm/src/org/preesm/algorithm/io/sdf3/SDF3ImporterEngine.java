@@ -54,7 +54,6 @@ import org.preesm.model.scenario.types.DataType;
 import org.preesm.model.slam.ComponentInstance;
 import org.preesm.model.slam.Design;
 
-// TODO: Auto-generated Javadoc
 /**
  * The Class SDF3ImporterEngine.
  */
@@ -86,7 +85,7 @@ public class SDF3ImporterEngine {
    *           the workflow exception
    */
   public SDFGraph importFrom(final IPath path, final PreesmScenario scenario, final Design architecture,
-      final Logger logger) throws PreesmException {
+      final Logger logger) {
     final IWorkspace workspace = ResourcesPlugin.getWorkspace();
     final IFile iFile = workspace.getRoot().getFile(path);
 
@@ -100,7 +99,7 @@ public class SDF3ImporterEngine {
     try {
       iStream = new FileInputStream(file);
     } catch (final FileNotFoundException e) {
-      e.printStackTrace();
+      throw new PreesmException(e);
     }
 
     // Parse the input SDF3 graph

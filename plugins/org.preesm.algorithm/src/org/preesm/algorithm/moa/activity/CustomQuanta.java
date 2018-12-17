@@ -49,72 +49,60 @@ public class CustomQuanta {
   /**
    * Key for storing the number of custom quanta in a 2D map
    */
-  static class MapKeyPair {
-    String actor;
-    String operator;
+  private static class MapKeyPair {
+    private final String actor;
+    private final String operator;
 
-    MapKeyPair(String actor, String operator) {
+    private MapKeyPair(final String actor, final String operator) {
       this.actor = actor;
       this.operator = operator;
     }
 
     @Override
-    public boolean equals(Object o) {
+    public boolean equals(final Object o) {
       if (o instanceof MapKeyPair) {
-        MapKeyPair m = (MapKeyPair) o;
-        return m.actor.equals(actor) && m.operator.equals(operator);
+        final MapKeyPair m = (MapKeyPair) o;
+        return m.actor.equals(this.actor) && m.operator.equals(this.operator);
       }
       return false;
     }
 
     @Override
     public int hashCode() {
-      return actor.hashCode();
+      return this.actor.hashCode();
     }
 
     @Override
     public String toString() {
-      return "(" + actor + "," + operator + ")";
+      return "(" + this.actor + "," + this.operator + ")";
     }
   }
 
   private Map<MapKeyPair, String> customQuanta = null;
 
   public CustomQuanta() {
-    customQuanta = new HashMap<MapKeyPair, String>();
+    this.customQuanta = new HashMap<>();
   }
 
-  public void addQuantaExpression(String actor, String operator, String expression) {
-    MapKeyPair mkp = new MapKeyPair(actor, operator);
-    customQuanta.put(mkp, expression);
+  public void addQuantaExpression(final String actor, final String operator, final String expression) {
+    final MapKeyPair mkp = new MapKeyPair(actor, operator);
+    this.customQuanta.put(mkp, expression);
   }
 
   /**
    *
    */
-  public String getQuanta(String actor, String operator) {
-    MapKeyPair mkp = new MapKeyPair(actor, operator);
-    if (customQuanta.containsKey(mkp)) {
-      return customQuanta.get(mkp);
+  public String getQuanta(final String actor, final String operator) {
+    final MapKeyPair mkp = new MapKeyPair(actor, operator);
+    if (this.customQuanta.containsKey(mkp)) {
+      return this.customQuanta.get(mkp);
     }
     return "";
   }
 
-  boolean hasQuanta(String actor, String operator) {
-    MapKeyPair mkp = new MapKeyPair(actor, operator);
-    if (customQuanta.containsKey(mkp)) {
-      return true;
-    }
-    return false;
-  }
-
   @Override
   public String toString() {
-    return customQuanta.toString();
-  }
-
-  public void clear() {
-    customQuanta.clear();
+    return this.customQuanta.toString();
   }
 
 }

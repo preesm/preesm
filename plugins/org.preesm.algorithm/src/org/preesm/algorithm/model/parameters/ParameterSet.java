@@ -58,15 +58,4 @@ public class ParameterSet extends LinkedHashMap<String, Parameter> {
     put(p.getName(), p);
   }
 
-  /**
-   * Gives the parameter with the given name.
-   *
-   * @param n
-   *          The name of the parameter to return
-   * @return The parameter with the given name
-   */
-  public Parameter getParameter(final String n) {
-    return get(n);
-  }
-
 }

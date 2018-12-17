@@ -56,17 +56,6 @@ public class EdgeInit implements CloneableProperty<EdgeInit> {
     super();
   }
 
-  /**
-   * Instantiates a new edge init.
-   *
-   * @param dataSize
-   *          the data size
-   */
-  public EdgeInit(final int dataSize) {
-    super();
-    this.dataSize = dataSize;
-  }
-
   /*
    * (non-Javadoc)
    *

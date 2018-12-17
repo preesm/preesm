@@ -129,6 +129,7 @@ public class VertexInit implements CloneableProperty<VertexInit> {
    *
    * @return the vertex init
    */
+  @Override
   public VertexInit copy() {
 
     final VertexInit property = new VertexInit();
@@ -242,7 +243,7 @@ public class VertexInit implements CloneableProperty<VertexInit> {
    *          the operatordef id
    * @return the timing
    */
-  public Timing getTiming(final String operatordefId) {
+  private Timing getTiming(final String operatordefId) {
 
     Timing returntiming = Timing.UNAVAILABLE;
 
@@ -267,54 +268,6 @@ public class VertexInit implements CloneableProperty<VertexInit> {
    */
   public List<Timing> getTimings() {
     return Collections.unmodifiableList(this.timings);
-  }
-
-  /**
-   * Checks if the vertex first non special predecessors can be mapped on the given operator.
-   *
-   * @param operator
-   *          the operator
-   * @return true, if is pred mapable
-   */
-  public boolean isPredMapable(final ComponentInstance operator) {
-
-    boolean predMapable = false;
-
-    for (final MapperDAGVertex pred : this.parentVertex.getPredecessors(true).keySet()) {
-      if (pred == null) {
-        return false;
-      } else if (SpecialVertexManager.isSpecial(pred)) {
-        predMapable |= pred.getInit().isPredMapable(operator);
-      } else {
-        predMapable |= pred.getInit().isMapable(operator);
-      }
-    }
-
-    return predMapable;
-  }
-
-  /**
-   * Checks if the vertex first non special successor can be mapped on the given operator.
-   *
-   * @param operator
-   *          the operator
-   * @return true, if is succ mapable
-   */
-  public boolean isSuccMapable(final ComponentInstance operator) {
-
-    boolean succMapable = false;
-
-    for (final MapperDAGVertex succ : this.parentVertex.getSuccessors(true).keySet()) {
-      if (succ == null) {
-        return false;
-      } else if (SpecialVertexManager.isSpecial(succ)) {
-        succMapable |= succ.getInit().isSuccMapable(operator);
-      } else {
-        succMapable |= succ.getInit().isMapable(operator);
-      }
-    }
-
-    return succMapable;
   }
 
   /**

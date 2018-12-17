@@ -55,10 +55,6 @@ public class SpecialVertexManager {
     // forbid instantiation
   }
 
-  /** The Constant dissuasiveCost. */
-  // Not ready to use. Needs some improvements on scheduling before
-  public static final long DISSUASIVE_COST = 10000000000L;
-
   /**
    * Tests if a vertex is of type broadcast.
    *

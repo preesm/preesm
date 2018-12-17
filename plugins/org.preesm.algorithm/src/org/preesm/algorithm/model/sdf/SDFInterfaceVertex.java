@@ -50,7 +50,7 @@ public abstract class SDFInterfaceVertex extends SDFAbstractVertex implements II
   public static final String PORT_DIRECTION = "port_direction";
 
   /** String representation of the type of data carried by this port. */
-  public static final String DATA_TYPE = "data_type";
+  private static final String DATA_TYPE = "data_type";
 
   /** Kind of node. */
   public static final String PORT = "port";
@@ -67,18 +67,6 @@ public abstract class SDFInterfaceVertex extends SDFAbstractVertex implements II
     super();
     setKind(SDFInterfaceVertex.PORT);
     setDirection(InterfaceDirection.OUTPUT);
-  }
-
-  /**
-   * Construct a new SDFInterfaceVertex using the String dir to specifiy the direction Input=Source, Output=Sink.
-   *
-   * @param dir
-   *          the dir
-   */
-  public SDFInterfaceVertex(final String dir) {
-    super();
-    setKind(SDFInterfaceVertex.PORT);
-    setDirection(dir);
   }
 
   /*

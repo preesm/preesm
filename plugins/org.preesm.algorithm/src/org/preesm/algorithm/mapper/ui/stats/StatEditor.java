@@ -44,6 +44,7 @@ import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.forms.editor.IFormPage;
 import org.eclipse.ui.forms.editor.SharedHeaderFormEditor;
 import org.preesm.algorithm.mapper.ui.stats.overview.OverviewPage;
+import org.preesm.commons.exceptions.PreesmException;
 
 /**
  * The statistic editor displays statistics on the generated implementation.
@@ -102,7 +103,7 @@ public class StatEditor extends SharedHeaderFormEditor implements IPropertyListe
       addPage(overviewPage);
       addPage(performancePage);
     } catch (final PartInitException e) {
-      e.printStackTrace();
+      throw new PreesmException(e);
     }
   }
 

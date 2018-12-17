@@ -41,6 +41,7 @@ import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
 import org.eclipse.emf.common.util.EList;
 import org.eclipse.jface.viewers.CheckStateChangedEvent;
@@ -57,7 +58,6 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.IPropertyListener;
 import org.eclipse.ui.forms.widgets.FormToolkit;
-import org.preesm.algorithm.model.sdf.SDFAbstractVertex;
 import org.preesm.commons.exceptions.PreesmException;
 import org.preesm.model.pisdf.AbstractActor;
 import org.preesm.model.pisdf.Actor;
@@ -82,7 +82,6 @@ import org.preesm.ui.scenario.editor.Messages;
 import org.preesm.ui.scenario.editor.PreesmAlgorithmTreeContentProvider;
 import org.preesm.ui.scenario.editor.papify.PapifyEventListTreeElement.PAPIEventStatus;
 
-// TODO: Auto-generated Javadoc
 /**
  * Listener of the check state of both the PAPI component and the PAPI event tables but also of the selection
  * modification of the current core definition. It updates the check Papify configuration depending on the PapifyConf
@@ -108,7 +107,7 @@ public class PapifyCheckStateListener implements ISDFCheckStateListener {
    * @param scenario
    *          the scenario
    */
-  public PapifyCheckStateListener(final Composite container, final PreesmScenario scenario) {
+  public PapifyCheckStateListener(final PreesmScenario scenario) {
     super();
     this.scenario = scenario;
     this.elementList = new LinkedHashSet<>();
@@ -337,17 +336,7 @@ public class PapifyCheckStateListener implements ISDFCheckStateListener {
    * @param propertyListener
    *          the property listener
    */
-  public void setComponentTreeViewer(final IPropertyListener propertyListener) {
-    this.propertyListener = propertyListener;
-  }
-
-  /**
-   * Sets the different necessary attributes.
-   *
-   * @param propertyListener
-   *          the property listener
-   */
-  public void setEventTreeViewer(final IPropertyListener propertyListener) {
+  public void setPropertyListener(final IPropertyListener propertyListener) {
     this.propertyListener = propertyListener;
   }
 
@@ -358,7 +347,7 @@ public class PapifyCheckStateListener implements ISDFCheckStateListener {
    */
   @Override
   public void widgetDefaultSelected(final SelectionEvent e) {
-    // TODO Auto-generated method stub
+    // nothing
 
   }
 
@@ -389,6 +378,7 @@ public class PapifyCheckStateListener implements ISDFCheckStateListener {
 
       @Override
       public void focusLost(final FocusEvent e) {
+        // nothing
       }
 
     });
@@ -438,7 +428,9 @@ public class PapifyCheckStateListener implements ISDFCheckStateListener {
 
       for (PapifyEventListTreeElement treeElement : this.elementList) {
         if (treeElement.actorPath.equals(actorPath)) {
-          for (String comp : actorEventMap.keySet()) {
+
+          for (final Entry<String, Set<PapiEvent>> entry : actorEventMap.entrySet()) {
+            final String comp = entry.getKey();
             for (PapiEvent oneEvent : actorEventMap.get(comp)) {
               treeElement.PAPIStatuses.put(oneEvent.getName(), PAPIEventStatus.YES);
               updateView(oneEvent.getName());
@@ -516,26 +508,6 @@ public class PapifyCheckStateListener implements ISDFCheckStateListener {
   }
 
   /**
-   * Filter IBSDF children.
-   *
-   * @param children
-   *          the children
-   * @return the sets the
-   */
-  public Set<String> filterIBSDFChildren(final Set<SDFAbstractVertex> children) {
-
-    final Set<String> actorPaths = new LinkedHashSet<>();
-
-    for (final SDFAbstractVertex v : children) {
-      if (v.getKind().equalsIgnoreCase("vertex")) {
-        actorPaths.add(v.getName());
-      }
-    }
-
-    return actorPaths;
-  }
-
-  /**
    *
    **/
 
@@ -545,32 +517,27 @@ public class PapifyCheckStateListener implements ISDFCheckStateListener {
 
   public void setTableViewer(final CheckboxTableViewer tableviewer,
       final PreesmAlgorithmTreeContentProvider contentProvider2, final IPropertyListener listener) {
-    // TODO Auto-generated method stub
-
+    // nothing
   }
 
   @Override
   public void setTreeViewer(final CheckboxTreeViewer treeViewer,
       final PreesmAlgorithmTreeContentProvider contentProvider, final IPropertyListener propertyListener) {
-    // TODO Auto-generated method stub
-
+    // nothing
   }
 
   @Override
   public void widgetSelected(SelectionEvent e) {
-    // TODO Auto-generated method stub
-
+    // nothing
   }
 
   @Override
   public void checkStateChanged(CheckStateChangedEvent event) {
-    // TODO Auto-generated method stub
-
+    // nothing
   }
 
   @Override
   public void paintControl(PaintEvent e) {
-    // TODO Auto-generated method stub
-
+    // nothing
   }
 }

@@ -124,11 +124,9 @@ public class AddDelayFeature extends AbstractCustomFeature {
     final PictogramElement[] pes = context.getPictogramElements();
     if ((pes != null) && (pes.length == 1)) {
       final Object bo = getBusinessObjectForPictogramElement(pes[0]);
-      if (bo instanceof Fifo) {
+      if (bo instanceof Fifo && ((Fifo) bo).getDelay() == null) {
         // Check that the Fifo has no existing delay
-        if (((Fifo) bo).getDelay() == null) {
-          ret = true;
-        }
+        ret = true;
       }
     }
     return ret;
@@ -171,15 +169,13 @@ public class AddDelayFeature extends AbstractCustomFeature {
 
     // Create a graphical representation for the Delay
     Ellipse ellipse;
-    {
-      ellipse = gaService.createEllipse(containerShape);
-      ellipse.setBackground(manageColor(AddActorFeature.ACTOR_FOREGROUND));
-      ellipse.setForeground(manageColor(AddActorFeature.ACTOR_FOREGROUND));
-      ellipse.setLineWidth(1);
-      ellipse.setLineVisible(false);
-      gaService.setLocationAndSize(ellipse, context.getX() - (AddDelayFeature.DELAY_SIZE / 2),
-          context.getY() - (AddDelayFeature.DELAY_SIZE / 2), AddDelayFeature.DELAY_SIZE, AddDelayFeature.DELAY_SIZE);
-    }
+    ellipse = gaService.createEllipse(containerShape);
+    ellipse.setBackground(manageColor(AddActorFeature.ACTOR_FOREGROUND));
+    ellipse.setForeground(manageColor(AddActorFeature.ACTOR_FOREGROUND));
+    ellipse.setLineWidth(1);
+    ellipse.setLineVisible(false);
+    gaService.setLocationAndSize(ellipse, context.getX() - (AddDelayFeature.DELAY_SIZE / 2),
+        context.getY() - (AddDelayFeature.DELAY_SIZE / 2), AddDelayFeature.DELAY_SIZE, AddDelayFeature.DELAY_SIZE);
     link(containerShape, delay);
     this.createdPEs.add(containerShape);
 
@@ -223,30 +219,30 @@ public class AddDelayFeature extends AbstractCustomFeature {
     // Create a list of all points of the connection (including source
     // and target anchor)
     List<Point> points;
-    {
-      final IPeLayoutService peLayoutService = Graphiti.getPeLayoutService();
+    final IPeLayoutService peLayoutService = Graphiti.getPeLayoutService();
 
-      final ILocation srcLoc = peLayoutService.getLocationRelativeToDiagram(connection.getStart());
-      final Point pSrc = gaService.createPoint(srcLoc.getX(), srcLoc.getY());
-      final ILocation tgtLoc = peLayoutService.getLocationRelativeToDiagram(connection.getEnd());
-      final Point pTgt = gaService.createPoint(tgtLoc.getX(), tgtLoc.getY());
-      points = new ArrayList<>(connection.getBendpoints());
-      points.add(0, pSrc);
-      points.add(pTgt);
-    }
+    final ILocation srcLoc = peLayoutService.getLocationRelativeToDiagram(connection.getStart());
+    final Point pSrc = gaService.createPoint(srcLoc.getX(), srcLoc.getY());
+    final ILocation tgtLoc = peLayoutService.getLocationRelativeToDiagram(connection.getEnd());
+    final Point pTgt = gaService.createPoint(tgtLoc.getX(), tgtLoc.getY());
+    points = new ArrayList<>(connection.getBendpoints());
+    points.add(0, pSrc);
+    points.add(pTgt);
 
     // Identify between which pair of points the delay was created
     double smallestDist = Double.MAX_VALUE;
-    // Point pBefore = points.get(0);
     Point pAfter = points.get(points.size() - 1);
     for (int i = 0; i < (points.size() - 1); i++) {
       final Point p1 = points.get(i);
       final Point p2 = points.get(i + 1);
 
       // Distance of the point to the line
-      final double distP1 = Math.sqrt(Math.pow(posX - p1.getX(), 2) + Math.pow(posY - p1.getY(), 2));
-      final double distP2 = Math.sqrt(Math.pow(posX - p2.getX(), 2) + Math.pow(posY - p2.getY(), 2));
-      final double distP1P2 = Math.sqrt(Math.pow(p2.getX() - p1.getX(), 2) + Math.pow(p2.getY() - p1.getY(), 2));
+      final double distP1 = Math
+          .sqrt(Math.pow((double) posX - (double) p1.getX(), 2) + Math.pow((double) posY - (double) p1.getY(), 2));
+      final double distP2 = Math
+          .sqrt(Math.pow((double) posX - (double) p2.getX(), 2) + Math.pow((double) posY - (double) p2.getY(), 2));
+      final double distP1P2 = Math.sqrt(
+          Math.pow((double) p2.getX() - (double) p1.getX(), 2) + Math.pow((double) p2.getY() - (double) p1.getY(), 2));
 
       if ((distP1 <= distP1P2) && (distP2 <= distP1P2)) {
         // line equation ax+by+c=0
@@ -259,7 +255,6 @@ public class AddDelayFeature extends AbstractCustomFeature {
 
         if (dist < smallestDist) {
           smallestDist = dist;
-          // pBefore = p1;
           pAfter = p2;
         }
       }

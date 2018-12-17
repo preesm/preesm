@@ -41,6 +41,8 @@ import java.util.Map;
 import java.util.Set;
 import org.apache.commons.math3.util.ArithmeticUtils;
 import org.jgrapht.alg.cycle.CycleDetector;
+import org.preesm.algorithm.model.AbstractEdge;
+import org.preesm.algorithm.model.IGraphVisitor;
 import org.preesm.algorithm.model.dag.DAGEdge;
 import org.preesm.algorithm.model.dag.DAGVertex;
 import org.preesm.algorithm.model.dag.DirectedAcyclicGraph;
@@ -67,7 +69,6 @@ import org.preesm.algorithm.model.sdf.esdf.SDFSourceInterfaceVertex;
 import org.preesm.algorithm.model.sdf.transformations.SpecialActorPortsIndexer;
 import org.preesm.algorithm.model.types.LongEdgePropertyType;
 import org.preesm.algorithm.model.types.LongVertexPropertyType;
-import org.preesm.algorithm.model.visitors.IGraphVisitor;
 import org.preesm.commons.exceptions.PreesmException;
 
 /**
@@ -254,7 +255,6 @@ public class DAGTransformation<T extends DirectedAcyclicGraph>
     if (graph.validateModel()) {
       // insertImplodeExplodesVertices(graph)
       this.outputGraph.copyProperties(graph);
-      this.outputGraph.setCorrespondingSDFGraph(graph);
       for (final DAGVertex vertex : this.outputGraph.vertexSet()) {
         vertex.setNbRepeat(new LongVertexPropertyType(graph.getVertex(vertex.getName()).getNbRepeatAsLong()));
       }
@@ -312,7 +312,7 @@ public class DAGTransformation<T extends DirectedAcyclicGraph>
     newEdge.setWeight(new LongEdgePropertyType(weight / edge.getDataSize().longValue()));
     newEdge.setSourceLabel(edge.getSourceLabel());
     newEdge.setTargetLabel(edge.getTargetLabel());
-    newEdge.setPropertyValue(SDFEdge.BASE, this.outputGraph);
+    newEdge.setPropertyValue(AbstractEdge.BASE, this.outputGraph);
     newEdge.setContainingEdge(dagEdge);
 
     dagEdge.getAggregate().add(newEdge);
@@ -325,7 +325,7 @@ public class DAGTransformation<T extends DirectedAcyclicGraph>
    *          the edge
    * @return the int
    */
-  long computeEdgeWeight(final SDFEdge edge) {
+  private long computeEdgeWeight(final SDFEdge edge) {
     final long weight = edge.getCons().longValue() * edge.getTarget().getNbRepeatAsLong();
     final long dataSize = edge.getDataSize().longValue();
     return weight * dataSize;
@@ -373,7 +373,7 @@ public class DAGTransformation<T extends DirectedAcyclicGraph>
    * @param cycle
    *          the cycle
    */
-  protected void treatSDFCycles(final SDFGraph graph, final Set<SDFAbstractVertex> cycle) {
+  private void treatSDFCycles(final SDFGraph graph, final Set<SDFAbstractVertex> cycle) {
     final List<SDFEdge> loops = new ArrayList<>();
     for (final SDFAbstractVertex vertex : cycle) {
       for (final SDFEdge edge : graph.incomingEdgesOf(vertex)) {
@@ -421,7 +421,7 @@ public class DAGTransformation<T extends DirectedAcyclicGraph>
    * @param graph
    *          the graph
    */
-  public void treatDelays(final SDFGraph graph) {
+  private void treatDelays(final SDFGraph graph) {
     final ArrayList<SDFEdge> edges = new ArrayList<>(graph.edgeSet());
     while (!edges.isEmpty()) {
       final SDFEdge edge = edges.get(0);
@@ -581,8 +581,6 @@ public class DAGTransformation<T extends DirectedAcyclicGraph>
       // Setting the init size property
       dagVertex.getPropertyBean().setValue(DAGInitVertex.INIT_SIZE, sdfInitVertex.getInitSize());
     }
-
-    dagVertex.setCorrespondingSDFVertex(sdfVertex);
   }
 
 }

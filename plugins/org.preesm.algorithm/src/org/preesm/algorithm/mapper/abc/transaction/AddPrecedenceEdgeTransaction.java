@@ -59,17 +59,6 @@ public class AddPrecedenceEdgeTransaction extends Transaction {
   /** Destination of the added edge. */
   private MapperDAGVertex destination = null;
 
-  /** Boolean precising which one between the source and the target created this transaction. */
-  public static final int simpleDelete = 0; // Removing the edge only
-
-  /** The Constant compensateSourceRemoval. */
-  public static final int compensateSourceRemoval = 1; // Removing the edge
-
-  /** The Constant compensateTargetRemoval. */
-  // and adding a new edge between the target and its predecessor
-  public static final int compensateTargetRemoval = 2; // Removing the edge
-  // and adding a new edge between the source and its successor
-
   // Generated objects
   /** edges added. */
   private PrecedenceEdge precedenceEdge = null;

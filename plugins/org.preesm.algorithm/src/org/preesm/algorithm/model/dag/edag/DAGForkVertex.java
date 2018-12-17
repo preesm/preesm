@@ -37,7 +37,6 @@ package org.preesm.algorithm.model.dag.edag;
 import java.util.ArrayList;
 import java.util.List;
 import org.preesm.algorithm.model.AbstractEdge;
-import org.preesm.algorithm.model.AbstractVertexPropertyType;
 import org.preesm.algorithm.model.dag.DAGEdge;
 import org.preesm.algorithm.model.dag.DAGVertex;
 
@@ -52,28 +51,13 @@ public class DAGForkVertex extends DAGVertex {
   public static final String DAG_FORK_VERTEX = "dag_fork_vertex";
 
   /** String to access the property edges order. */
-  public static final String EDGES_ORDER = "edges_order";
+  private static final String EDGES_ORDER = "edges_order";
 
   /**
    * Creates a new DAGVertex.
    */
   public DAGForkVertex() {
     super();
-    setKind(DAGForkVertex.DAG_FORK_VERTEX);
-  }
-
-  /**
-   * Creates a new DAGForkVertex with the name "n", the execution time "t" and the number of repetition "nb".
-   *
-   * @param n
-   *          This Vertex name
-   * @param t
-   *          This Vertex execution time
-   * @param nb
-   *          This Vertex number of repetition
-   */
-  public DAGForkVertex(final String n, final AbstractVertexPropertyType<?> t, final AbstractVertexPropertyType<?> nb) {
-    super(n, t, nb);
     setKind(DAGForkVertex.DAG_FORK_VERTEX);
   }
 
@@ -105,28 +89,6 @@ public class DAGForkVertex extends DAGVertex {
       getPropertyBean().setValue(DAGForkVertex.EDGES_ORDER, connections);
     }
     ((List<DAGEdge>) getPropertyBean().getValue(DAGForkVertex.EDGES_ORDER)).remove(newEdge);
-  }
-
-  /**
-   * Gives the edge connection index.
-   *
-   * @param edge
-   *          The edge to get the connection index
-   * @return The connection index of the edge
-   */
-  @SuppressWarnings("unchecked")
-  public Long getEdgeIndex(final DAGEdge edge) {
-    if (((List<DAGEdge>) getPropertyBean().getValue(DAGForkVertex.EDGES_ORDER)) != null) {
-      long i = 0;
-      final List<DAGEdge> connections = ((List<DAGEdge>) getPropertyBean().getValue(DAGForkVertex.EDGES_ORDER));
-      for (final DAGEdge eqEdge : connections) {
-        if (eqEdge.compare(edge)) {
-          return i;
-        }
-        i++;
-      }
-    }
-    return 0L;
   }
 
   /*

@@ -333,33 +333,6 @@ public class Buffer {
     this.divisibilityRequiredMatches = new ArrayList<>();
   }
 
-  void setMaxIndex(final int newValue) {
-
-    // if the buffer was originally mergeable
-    if (this.originallyMergeable) {
-      // Add a new mergeable range corresponding to the new virtual tokens
-      Range.union(this.mergeableRanges, new Range(this.maxIndex, newValue));
-    }
-    this.maxIndex = newValue;
-  }
-
-  void setMinIndex(final int newValue) {
-
-    // if the buffer was originally mergeable
-    if (this.originallyMergeable) {
-      // Add a new mergeable range corresponding to the new virtual tokens
-      Range.union(this.mergeableRanges, new Range(newValue, this.minIndex));
-    }
-    this.minIndex = newValue;
-  }
-
-  /**
-   * Cf. {@link Buffer#matchWith(int, Buffer, int, int)} with size = 1
-   */
-  public Match matchWith(final long localIdx, final Buffer buffer, final long remoteIdx) {
-    return matchWith(localIdx, buffer, remoteIdx, 1);
-  }
-
   /**
    * {@link Match} part of the current {@link Buffer} with part of another {@link Buffer}. Example:
    * <code>a.matchWith(3,b,7,5)</code> matches a[3..7] with b[7..11]. Matching two {@link Buffer buffers} means that the
@@ -436,7 +409,7 @@ public class Buffer {
   /**
    * Cf. {@link Buffer#byteMatchWith(int, Buffer, int, int, boolean)} with check = true
    */
-  public Match byteMatchWith(final long localByteIdx, final Buffer buffer, final long remoteByteIdx,
+  private Match byteMatchWith(final long localByteIdx, final Buffer buffer, final long remoteByteIdx,
       final long byteSize) {
     return byteMatchWith(localByteIdx, buffer, remoteByteIdx, byteSize, true);
   }
@@ -456,7 +429,7 @@ public class Buffer {
    *          whether or not the match feasibility (e.g. with virtual ranges) must be checked
    * @return the created local {@link Match}
    */
-  public Match byteMatchWith(final long localByteIdx, final Buffer buffer, final long remoteByteIdx,
+  private Match byteMatchWith(final long localByteIdx, final Buffer buffer, final long remoteByteIdx,
       final long byteSize, final boolean check) {
     final long byteLMax = (localByteIdx + byteSize) - 1;
     final long byteRMax = (remoteByteIdx + byteSize) - 1;
@@ -583,7 +556,7 @@ public class Buffer {
    * <b> An {@link Buffer} that is not {@link #isIndivisible() indivisible} is not necessarily {@link #isDivisible()
    * divisible}. Indeed, it might fulfill parts of the conditions to be divisible.</b>
    */
-  boolean isIndivisible() {
+  private boolean isIndivisible() {
     return (this.indivisibleRanges.size() == 1) && (this.indivisibleRanges.get(0).getStart() == this.minIndex)
         && (this.indivisibleRanges.get(0).getEnd() == this.maxIndex);
   }
@@ -774,7 +747,7 @@ public class Buffer {
     }
   }
 
-  void updateForbiddenAndMergeableLocalRanges(final Match match) {
+  private void updateForbiddenAndMergeableLocalRanges(final Match match) {
 
     // For the forward match, simply fill the forbidden ranges
     Match forwardMatch = match;
@@ -992,7 +965,7 @@ public class Buffer {
    * Must be called before {@link ScriptRunner#updateConflictingMatches() updating conflicting matches}.
    */
 
-  void updateConflictCandidates(final Match match) {
+  private void updateConflictCandidates(final Match match) {
 
     // 1. Conflict candidates of the applied local->remote match are
     // added to all remote->other matches (except inter siblings and
@@ -1092,7 +1065,7 @@ public class Buffer {
    * @return true of the indexes were updated, false otherwise
    */
 
-  boolean updateRemoteIndexes(final Match match) {
+  private boolean updateRemoteIndexes(final Match match) {
     boolean res = false;
 
     // Get the local indivisible ranges involved in the match
@@ -1121,7 +1094,7 @@ public class Buffer {
    *
    */
 
-  void updateDivisibleRanges(final Match match) {
+  private void updateDivisibleRanges(final Match match) {
     final Range localRange = match.getLocalRange();
 
     // Get the local indivisible ranges involved in the match
@@ -1155,7 +1128,7 @@ public class Buffer {
    * Must be called after updateRemoteIndexesAndDivisibleRanges
    */
 
-  void updateRemoteMergeableRange(final Match match) {
+  private void updateRemoteMergeableRange(final Match match) {
 
     // 1 - Get the mergeable ranges that are involved in the match
     // Get the local involved Range
@@ -1194,7 +1167,7 @@ public class Buffer {
    * reference equality (===) from XTend is used. Indeed, several matches might be {@link Match#equals(Object) equals}
    * which would result in removing the wrong match.
    */
-  static void unmatch(final Match match) {
+  private static void unmatch(final Match match) {
     // Local unmatch
     final List<Match> localList = match.getLocalBuffer().matchTable.get(match.getLocalIndex());
     Iterator<Match> iter = localList.iterator();

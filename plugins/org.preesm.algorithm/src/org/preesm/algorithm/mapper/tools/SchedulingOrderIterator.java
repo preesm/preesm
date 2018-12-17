@@ -51,7 +51,7 @@ import org.preesm.commons.exceptions.PreesmException;
 public class SchedulingOrderIterator extends ImplementationIterator {
 
   /** The abc. */
-  LatencyAbc abc = null;
+  private LatencyAbc abc = null;
 
   /**
    * Instantiates a new scheduling order iterator.

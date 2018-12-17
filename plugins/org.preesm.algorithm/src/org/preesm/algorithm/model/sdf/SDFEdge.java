@@ -45,27 +45,23 @@ import org.preesm.algorithm.model.types.LongEdgePropertyType;
 import org.preesm.algorithm.model.types.NumericalEdgePropertyTypeFactory;
 import org.preesm.algorithm.model.types.StringEdgePropertyType;
 import org.preesm.algorithm.model.types.TextualEdgePropertyTypeFactory;
-import org.preesm.model.pisdf.PiGraph;
 
 /**
  * Class representing an SDFEdge which is an edge with production and consuming rates and length of delay specified.
  *
  * @author jpiat
  * @author kdesnos
- * @deprecated SDF model is deprecated and subject to removal any time. Please design your transformations on
- *             {@link PiGraph} instead.
  */
-@Deprecated
 public class SDFEdge extends AbstractEdge<SDFGraph, SDFAbstractVertex> {
 
   /** Property name for property edge_cons. */
-  public static final String EDGE_CONS = "edge_cons";
+  private static final String EDGE_CONS = "edge_cons";
 
   /** Property name for property edge_delay. */
   public static final String EDGE_DELAY = "edge_delay";
 
   /** Property name for property edge_prod. */
-  public static final String EDGE_PROD = "edge_prod";
+  private static final String EDGE_PROD = "edge_prod";
 
   /** Property name for data type. */
   public static final String DATA_TYPE = "data_type";
@@ -74,10 +70,10 @@ public class SDFEdge extends AbstractEdge<SDFGraph, SDFAbstractVertex> {
   public static final String DATA_SIZE = "data_size";
 
   /** Property name for property source_port. */
-  public static final String SOURCE_PORT = "source_port";
+  private static final String SOURCE_PORT = "source_port";
 
   /** Property name for property target_port. */
-  public static final String TARGET_PORT = "target_port";
+  private static final String TARGET_PORT = "target_port";
 
   /** Property name for property target_port_modifier. */
   public static final String TARGET_PORT_MODIFIER = "target_port_modifier";
@@ -124,29 +120,6 @@ public class SDFEdge extends AbstractEdge<SDFGraph, SDFAbstractVertex> {
     setDelay(new LongEdgePropertyType(0));
     setDataSize(new LongEdgePropertyType(1));
     setDataType(new StringEdgePropertyType("char"));
-  }
-
-  /**
-   * Constructs a new SDFEdge with its consuming and producing rates with a delay.
-   *
-   * @param prod
-   *          the prod
-   * @param cons
-   *          the cons
-   * @param delay
-   *          the delay
-   * @param dataType
-   *          the data type
-   */
-  public SDFEdge(final AbstractEdgePropertyType<?> prod, final AbstractEdgePropertyType<?> cons,
-      final AbstractEdgePropertyType<?> delay, final AbstractEdgePropertyType<?> dataType) {
-    super();
-    setProd(prod);
-    setCons(cons);
-    setDelay(delay);
-    setDataType(dataType);
-    // Data size will have to be resolved later
-    setDataSize(new LongEdgePropertyType(1));
   }
 
   /**
@@ -353,22 +326,6 @@ public class SDFEdge extends AbstractEdge<SDFGraph, SDFAbstractVertex> {
     if (target != null) {
       target.setDirection(InterfaceDirection.INPUT);
     }
-  }
-
-  /**
-   * Test if the given edge has the same properties than this edge.
-   *
-   * @param edge
-   *          The edge to compare with
-   * @return True if the given edge has the same properties, false otherwise
-   */
-  public boolean compare(final SDFEdge edge) {
-
-    return super.compare(edge) && edge.getSourceInterface().getName().equals(getSourceInterface().getName())
-        && edge.getTargetInterface().getName().equals(getTargetInterface().getName())
-        && (getCons().longValue() == edge.getCons().longValue())
-        && (getProd().longValue() == edge.getProd().longValue())
-        && (getDelay().longValue() == edge.getDelay().longValue());
   }
 
   /*
