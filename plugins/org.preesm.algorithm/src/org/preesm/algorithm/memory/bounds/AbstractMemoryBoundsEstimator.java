@@ -37,28 +37,21 @@ package org.preesm.algorithm.memory.bounds;
 
 import org.preesm.workflow.implement.AbstractTaskImplementation;
 
-// TODO: Auto-generated Javadoc
 /**
  * The Class AbstractMemoryBoundsEstimator.
  */
 public abstract class AbstractMemoryBoundsEstimator extends AbstractTaskImplementation {
 
   /** The Constant PARAM_SOLVER. */
-  public static final String PARAM_SOLVER = "Solver";
+  static final String PARAM_SOLVER = "Solver";
 
   /** The Constant VALUE_SOLVER_DEFAULT. */
-  public static final String VALUE_SOLVER_DEFAULT = "? C {Heuristic, Ostergard, Yamaguchi}";
+  static final String VALUE_SOLVER_DEFAULT = "? C {Heuristic, Ostergard, Yamaguchi}";
 
   /** The Constant PARAM_VERBOSE. */
-  public static final String PARAM_VERBOSE = "Verbose";
+  static final String PARAM_VERBOSE = "Verbose";
 
   /** The Constant VALUE_VERBOSE_DEFAULT. */
-  public static final String VALUE_VERBOSE_DEFAULT = "? C {True, False}";
-
-  /** The Constant VALUE_VERBOSE_TRUE. */
-  public static final String VALUE_VERBOSE_TRUE = "True";
-
-  /** The Constant VALUE_VERBOSE_FALSE. */
-  public static final String VALUE_VERBOSE_FALSE = "False";
+  static final String VALUE_VERBOSE_DEFAULT = "? C {True, False}";
 
 }

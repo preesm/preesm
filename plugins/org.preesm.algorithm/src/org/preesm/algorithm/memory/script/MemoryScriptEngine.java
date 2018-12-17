@@ -48,7 +48,6 @@ import java.util.logging.Logger;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IFolder;
 import org.eclipse.core.resources.IResource;
-import org.eclipse.core.resources.IWorkspace;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.NullProgressMonitor;
@@ -67,13 +66,13 @@ import org.preesm.model.scenario.types.DataType;
 public class MemoryScriptEngine {
 
   /** The Constant VALUE_CHECK_NONE. */
-  public static final String VALUE_CHECK_NONE = "None";
+  private static final String VALUE_CHECK_NONE = "None";
 
   /** The Constant VALUE_CHECK_FAST. */
-  public static final String VALUE_CHECK_FAST = "Fast";
+  private static final String VALUE_CHECK_FAST = "Fast";
 
   /** The Constant VALUE_CHECK_THOROUGH. */
-  public static final String VALUE_CHECK_THOROUGH = "Thorough";
+  private static final String VALUE_CHECK_THOROUGH = "Thorough";
 
   /** The sr. */
   private final ScriptRunner sr;
@@ -208,38 +207,6 @@ public class MemoryScriptEngine {
     }
 
     this.sr.updateMEG(meg);
-  }
-
-  /**
-   * Generate code.
-   *
-   * @param scenario
-   *          the scenario
-   * @param log
-   *          the log
-   */
-  public void generateCodee(final PreesmScenario scenario, final String log) {
-    final IWorkspace workspace = ResourcesPlugin.getWorkspace();
-    final String codegenPath = scenario.getCodegenManager().getCodegenDirectory() + "/";
-
-    // Create a resource
-    scenario.getCodegenManager().getCodegenDirectory();
-
-    final IFile iFile = workspace.getRoot().getFile(new Path(codegenPath + log + ".txt"));
-    try {
-      if (!iFile.exists()) {
-        final IFolder iFolder = workspace.getRoot().getFolder(new Path(codegenPath));
-        if (!iFolder.exists() && !iFolder.getRawLocation().toFile().exists()) {
-          iFolder.create(false, true, new NullProgressMonitor());
-        }
-
-        iFile.create(new ByteArrayInputStream("".getBytes()), false, new NullProgressMonitor());
-      }
-      iFile.setContents(new ByteArrayInputStream(this.sr.getLog().toString().getBytes()), true, false,
-          new NullProgressMonitor());
-    } catch (final CoreException e) {
-      throw new PreesmException("Could not write logs", e);
-    }
   }
 
   /**

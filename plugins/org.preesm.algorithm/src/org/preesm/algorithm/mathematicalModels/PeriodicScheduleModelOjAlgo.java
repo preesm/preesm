@@ -53,7 +53,7 @@ import org.preesm.commons.math.MathFunctionsHelper;
  *
  */
 public class PeriodicScheduleModelOjAlgo implements SolverMethod {
-  public Map<String, Variable> edgeVariables;
+  private Map<String, Variable> edgeVariables;
 
   /**
    * @param SDF

@@ -46,16 +46,16 @@ import org.eclipse.core.runtime.IProgressMonitor;
 import org.preesm.algorithm.mapper.abc.impl.latency.InfiniteHomogeneousAbc;
 import org.preesm.algorithm.mapper.abc.impl.latency.LatencyAbc;
 import org.preesm.algorithm.mapper.abc.impl.latency.SpanLengthCalculator;
-import org.preesm.algorithm.mapper.abc.route.calcul.RouteCalculator;
+import org.preesm.algorithm.mapper.abc.route.RouteCalculator;
 import org.preesm.algorithm.mapper.abc.taskscheduling.AbstractTaskSched;
 import org.preesm.algorithm.mapper.abc.taskscheduling.TaskSchedType;
 import org.preesm.algorithm.mapper.abc.taskscheduling.TopologicalTaskSched;
-import org.preesm.algorithm.mapper.algo.list.InitialLists;
-import org.preesm.algorithm.mapper.checker.CommunicationOrderChecker;
+import org.preesm.algorithm.mapper.algo.InitialLists;
 import org.preesm.algorithm.mapper.graphtransfo.TagDAG;
 import org.preesm.algorithm.mapper.model.MapperDAG;
 import org.preesm.algorithm.mapper.optimizer.RedundantSynchronizationCleaner;
 import org.preesm.algorithm.mapper.params.AbcParameters;
+import org.preesm.algorithm.mapper.tools.CommunicationOrderChecker;
 import org.preesm.algorithm.model.dag.DirectedAcyclicGraph;
 import org.preesm.commons.exceptions.PreesmException;
 import org.preesm.model.scenario.PreesmScenario;
@@ -74,13 +74,13 @@ import org.preesm.workflow.implement.AbstractWorkflowNodeImplementation;
 public abstract class AbstractMappingFromDAG extends AbstractTaskImplementation {
 
   /** The Constant PARAM_CHECK. */
-  public static final String PARAM_CHECK = "Check";
+  private static final String PARAM_CHECK = "Check";
 
   /** The Constant PARAM_OPTIMIZE. */
-  public static final String PARAM_OPTIMIZE = "Optimize synchronization";
+  private static final String PARAM_OPTIMIZE = "Optimize synchronization";
 
   /** The Constant VALUE_CHECK_FALSE. */
-  public static final String VALUE_FALSE = "False";
+  private static final String VALUE_FALSE = "False";
 
   /** The Constant VALUE_CHECK_TRUE. */
   public static final String VALUE_TRUE = "True";
@@ -188,7 +188,7 @@ public abstract class AbstractMappingFromDAG extends AbstractTaskImplementation 
    * @param scenario
    *          the scenario
    */
-  protected void clean(final Design architecture) {
+  private void clean(final Design architecture) {
     // Asking to delete route
     RouteCalculator.deleteRoutes(architecture);
   }
@@ -202,7 +202,7 @@ public abstract class AbstractMappingFromDAG extends AbstractTaskImplementation 
    * @param dag
    *          Scheduled {@link DirectedAcyclicGraph}.
    */
-  protected void checkSchedulingResult(final Map<String, String> parameters, final DirectedAcyclicGraph dag) {
+  private void checkSchedulingResult(final Map<String, String> parameters, final DirectedAcyclicGraph dag) {
     if (parameters.get(AbstractMappingFromDAG.PARAM_CHECK).equals(AbstractMappingFromDAG.VALUE_TRUE)) {
       CommunicationOrderChecker.checkCommunicationOrder(dag);
     }
@@ -216,7 +216,7 @@ public abstract class AbstractMappingFromDAG extends AbstractTaskImplementation 
    * @param dag
    *          Scheduled {@link DirectedAcyclicGraph}.
    */
-  protected void removeRedundantSynchronization(final Map<String, String> parameters, final DirectedAcyclicGraph dag) {
+  private void removeRedundantSynchronization(final Map<String, String> parameters, final DirectedAcyclicGraph dag) {
     final String paramValue = parameters.get(AbstractMappingFromDAG.PARAM_OPTIMIZE);
     if (paramValue.equals(AbstractMappingFromDAG.VALUE_TRUE)) {
       RedundantSynchronizationCleaner.cleanRedundantSynchronization(dag);
@@ -238,7 +238,7 @@ public abstract class AbstractMappingFromDAG extends AbstractTaskImplementation 
    * @throws PreesmException
    *           the workflow exception
    */
-  protected void calculateSpan(final MapperDAG dag, final Design archi, final PreesmScenario scenario,
+  private void calculateSpan(final MapperDAG dag, final Design archi, final PreesmScenario scenario,
       final AbcParameters parameters) {
     final TaskSchedType taskSchedType = parameters.getSimulatorType().getTaskSchedType();
     final SpanLengthCalculator spanCalc = new SpanLengthCalculator(parameters, dag, archi, taskSchedType, scenario);

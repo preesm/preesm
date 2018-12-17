@@ -41,6 +41,7 @@ import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
 import java.util.logging.Level;
 import java.util.stream.Collectors;
@@ -51,7 +52,6 @@ import org.preesm.algorithm.model.AbstractEdgePropertyType;
 import org.preesm.algorithm.model.AbstractGraph;
 import org.preesm.algorithm.model.AbstractVertex;
 import org.preesm.algorithm.model.IInterface;
-import org.preesm.algorithm.model.PropertyBean;
 import org.preesm.algorithm.model.PropertyFactory;
 import org.preesm.algorithm.model.dag.DAGEdge;
 import org.preesm.algorithm.model.dag.DAGVertex;
@@ -68,7 +68,6 @@ import org.preesm.algorithm.model.types.LongEdgePropertyType;
 import org.preesm.algorithm.model.types.StringEdgePropertyType;
 import org.preesm.commons.exceptions.PreesmException;
 import org.preesm.commons.logger.PreesmLogger;
-import org.preesm.model.pisdf.PiGraph;
 
 /**
  * Abstract Class representing an SDF graph.
@@ -77,22 +76,13 @@ import org.preesm.model.pisdf.PiGraph;
  * @author kdesnos
  * @author jheulot
  *
- * @deprecated SDF model is deprecated and subject to removal any time. Please design your transformations on
- *             {@link PiGraph} instead.
  */
-@Deprecated
 public class SDFGraph extends AbstractGraph<SDFAbstractVertex, SDFEdge> {
 
   private static final String TOPOLOGY_LITERAL = "topology";
 
   /** The Constant serialVersionUID. */
   private static final long serialVersionUID = 1L;
-
-  /** The Constant TOPOLOGY. */
-  protected static final String TOPOLOGY = TOPOLOGY_LITERAL;
-
-  /** The Constant VALID_MODEL. */
-  protected static final String VALID_MODEL = "valid_model";
 
   /** The old ref. */
   // use HashMap for inheriting serializable
@@ -102,7 +92,7 @@ public class SDFGraph extends AbstractGraph<SDFAbstractVertex, SDFEdge> {
    * Construct a new SDFGraph with the default edge factory.
    */
   public SDFGraph() {
-    super(() -> new SDFEdge());
+    super(SDFEdge::new);
     setName("");
     getPropertyBean().setValue(AbstractGraph.MODEL, "sdf");
   }
@@ -236,7 +226,7 @@ public class SDFGraph extends AbstractGraph<SDFAbstractVertex, SDFEdge> {
   @Override
   public boolean addVertex(final SDFAbstractVertex vertex) {
     if (super.addVertex(vertex)) {
-      getPropertyBean().setValue(TOPOLOGY_LITERAL, null);
+      getPropertyBean().setValue(SDFGraph.TOPOLOGY_LITERAL, null);
       return true;
     }
     return false;
@@ -291,7 +281,7 @@ public class SDFGraph extends AbstractGraph<SDFAbstractVertex, SDFEdge> {
     SpecialActorPortsIndexer.sortIndexedPorts(newGraph);
 
     newGraph.copyProperties(this);
-    newGraph.getPropertyBean().setValue(TOPOLOGY_LITERAL, null);
+    newGraph.getPropertyBean().setValue(SDFGraph.TOPOLOGY_LITERAL, null);
     newGraph.getPropertyBean().setValue("vrb", null);
     return newGraph;
   }
@@ -317,43 +307,10 @@ public class SDFGraph extends AbstractGraph<SDFAbstractVertex, SDFEdge> {
         vrb.putAll(SDFMath.computeRationnalVRB(subgraph, this));
       }
     }
-    for (final SDFAbstractVertex vertex : vrb.keySet()) {
-      vertex.setNbRepeat(vrb.get(vertex));
+    for (final Entry<SDFAbstractVertex, Long> entry : vrb.entrySet()) {
+      entry.getKey().setNbRepeat(entry.getValue());
     }
     return true;
-  }
-
-  /**
-   * Fill this graph object with the given graph content.
-   *
-   * @param content
-   *          The content to fill in this graph
-   */
-  public void fill(final SDFGraph content) {
-    final SDFGraph cleanGraph = content.copy();
-    for (final SDFAbstractVertex vertex : cleanGraph.vertexSet()) {
-      addVertex(vertex);
-    }
-    for (final SDFEdge edge : cleanGraph.edgeSet()) {
-      final SDFAbstractVertex source = cleanGraph.getEdgeSource(edge);
-      final SDFAbstractVertex target = cleanGraph.getEdgeTarget(edge);
-      final SDFEdge newEdge = this.addEdge(source, target);
-      newEdge.setSourceInterface(edge.getSourceInterface());
-      newEdge.setTargetInterface(edge.getTargetInterface());
-      target.setInterfaceVertexExternalLink(newEdge, edge.getTargetInterface());
-      source.setInterfaceVertexExternalLink(newEdge, edge.getSourceInterface());
-
-      newEdge.setCons(edge.getCons().copy());
-      newEdge.setProd(edge.getProd().copy());
-      newEdge.setDelay(edge.getDelay().copy());
-
-    }
-
-    for (final String propertyKey : cleanGraph.getPropertyBean().keys()) {
-      final Object property = cleanGraph.getPropertyBean().getValue(propertyKey);
-      getPropertyBean().setValue(propertyKey, property);
-    }
-
   }
 
   /*
@@ -544,7 +501,8 @@ public class SDFGraph extends AbstractGraph<SDFAbstractVertex, SDFEdge> {
       }
       connections.get(edge.getSourceInterface()).add(edge);
     }
-    for (final SDFInterfaceVertex port : connections.keySet()) {
+    for (final Entry<SDFInterfaceVertex, ArrayList<SDFEdge>> entry : connections.entrySet()) {
+      final SDFInterfaceVertex port = entry.getKey();
       if (connections.get(port).size() > 1) {
         final String message = "Warning: Implicit Broadcast added in graph " + getName() + " at port " + vertex + "."
             + port.getName();
@@ -600,10 +558,10 @@ public class SDFGraph extends AbstractGraph<SDFAbstractVertex, SDFEdge> {
    * @throws PreesmException
    *           the SDF 4 J exception
    */
-  public boolean isSchedulable() throws PreesmException {
+  public boolean isSchedulable() {
     boolean schedulable = true;
     for (final SDFAbstractVertex vertex : vertexSet()) {
-      if (!(vertex instanceof SDFInterfaceVertex) && vertex.getGraphDescription() instanceof SDFGraph) {
+      if (!(vertex instanceof SDFInterfaceVertex) && (vertex.getGraphDescription() instanceof SDFGraph)) {
         schedulable &= ((SDFGraph) vertex.getGraphDescription()).isSchedulable();
       }
 
@@ -634,19 +592,6 @@ public class SDFGraph extends AbstractGraph<SDFAbstractVertex, SDFEdge> {
       }
     }
     return schedulable;
-  }
-
-  /**
-   * Gives a Set of all this graph child property beans.
-   *
-   * @return The properties Set
-   */
-  public List<PropertyBean> propertiesSet() {
-    final List<PropertyBean> properties = new ArrayList<>();
-    for (final SDFAbstractVertex child : vertexSet()) {
-      properties.add(child.getPropertyBean());
-    }
-    return properties;
   }
 
   /**
@@ -813,13 +758,12 @@ public class SDFGraph extends AbstractGraph<SDFAbstractVertex, SDFEdge> {
     }
   }
 
-  private List<SDFAbstractVertex> validateOutputs(final SDFAbstractVertex hierarchicalActor) throws PreesmException {
+  private List<SDFAbstractVertex> validateOutputs(final SDFAbstractVertex hierarchicalActor) {
     final SDFGraph subGraph = ((SDFGraph) hierarchicalActor.getGraphDescription());
     final List<SDFAbstractVertex> validatedOutInterfaces = new ArrayList<>();
     final Set<SDFEdge> actorOutgoingEdges = outgoingEdgesOf(hierarchicalActor);
     for (final SDFEdge actorOutgoingEdge : actorOutgoingEdges) {
-      final SDFSinkInterfaceVertex subGraphSinkInterface = (SDFSinkInterfaceVertex) actorOutgoingEdge
-          .getSourceInterface();
+      final SDFSinkInterfaceVertex subGraphSinkInterface = actorOutgoingEdge.getSourceInterface();
       final String subGraphSinkInterfaceName = subGraphSinkInterface.getName();
       if (validatedOutInterfaces.contains(subGraphSinkInterface)) {
         throw new PreesmException(subGraphSinkInterfaceName + " is multiply connected, consider using broadcast ");
@@ -847,13 +791,12 @@ public class SDFGraph extends AbstractGraph<SDFAbstractVertex, SDFEdge> {
     return validatedOutInterfaces;
   }
 
-  private List<SDFAbstractVertex> validateInputs(final SDFAbstractVertex hierarchicalActor) throws PreesmException {
+  private List<SDFAbstractVertex> validateInputs(final SDFAbstractVertex hierarchicalActor) {
     final SDFGraph subGraph = ((SDFGraph) hierarchicalActor.getGraphDescription());
     final List<SDFAbstractVertex> validatedInInterfaces = new ArrayList<>();
     final Set<SDFEdge> actorIncomingEdges = incomingEdgesOf(hierarchicalActor);
     for (final SDFEdge actorIncomingEdge : actorIncomingEdges) {
-      final SDFSourceInterfaceVertex subGraphSourceInterface = (SDFSourceInterfaceVertex) actorIncomingEdge
-          .getTargetInterface();
+      final SDFSourceInterfaceVertex subGraphSourceInterface = actorIncomingEdge.getTargetInterface();
       final String subGraphSourceInterfaceName = subGraphSourceInterface.getName();
       if (validatedInInterfaces.contains(subGraphSourceInterface)) {
         throw new PreesmException(subGraphSourceInterfaceName + " is multiply connected, consider using broadcast ");
@@ -908,7 +851,7 @@ public class SDFGraph extends AbstractGraph<SDFAbstractVertex, SDFEdge> {
    */
   public void insertBroadcasts() {
     final Set<SDFAbstractVertex> vertexSet = vertexSet();
-    List<SDFAbstractVertex> array = new ArrayList<>(vertexSet);
+    final List<SDFAbstractVertex> array = new ArrayList<>(vertexSet);
     for (final SDFAbstractVertex child : array) {
       if (child.getGraphDescription() != null) {
         // validate child graph

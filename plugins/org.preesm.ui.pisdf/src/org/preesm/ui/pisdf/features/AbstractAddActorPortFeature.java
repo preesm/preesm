@@ -53,9 +53,7 @@ import org.eclipse.graphiti.services.IPeCreateService;
 import org.eclipse.graphiti.ui.services.GraphitiUi;
 import org.eclipse.graphiti.util.IColorConstant;
 import org.preesm.model.pisdf.AbstractActor;
-import org.preesm.model.pisdf.EndActor;
 import org.preesm.model.pisdf.ExecutableActor;
-import org.preesm.model.pisdf.InitActor;
 import org.preesm.model.pisdf.Port;
 import org.preesm.ui.pisdf.PiMMUtil;
 import org.preesm.ui.pisdf.util.PortNameValidator;
@@ -157,7 +155,7 @@ public abstract class AbstractAddActorPortFeature extends AbstractCustomFeature 
     final PictogramElement[] pes = context.getPictogramElements();
     if ((pes != null) && (pes.length == 1)) {
       final Object bo = getBusinessObjectForPictogramElement(pes[0]);
-      if (bo instanceof ExecutableActor || bo instanceof InitActor || bo instanceof EndActor) {
+      if (bo instanceof ExecutableActor) {
         ret = true;
       }
     }

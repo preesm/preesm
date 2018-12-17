@@ -54,7 +54,7 @@ public class MouseClickedListener implements MouseMotionListener, ChartMouseList
   private final Frame frame;
 
   /** The dragged. */
-  boolean dragged = false;
+  private boolean dragged = false;
 
   /**
    * Instantiates a new mouse clicked listener.

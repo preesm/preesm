@@ -44,29 +44,25 @@ import org.preesm.algorithm.memory.exclusiongraph.MemoryExclusionGraph;
 import org.preesm.algorithm.memory.exclusiongraph.MemoryExclusionVertex;
 import org.preesm.commons.logger.PreesmLogger;
 
-// TODO: Auto-generated Javadoc
 /**
  * The Class MemoryBoundsEstimatorEngine.
  */
 public class MemoryBoundsEstimatorEngine {
 
-  /** The Constant PARAM_SOLVER. */
-  public static final String PARAM_SOLVER = "Solver";
-
   /** The Constant VALUE_SOLVER_DEFAULT. */
-  public static final String VALUE_SOLVER_DEFAULT = "? C {Heuristic, Ostergard, Yamaguchi}";
+  private static final String VALUE_SOLVER_DEFAULT = "? C {Heuristic, Ostergard, Yamaguchi}";
 
   /** The Constant VALUE_SOLVER_OSTERGARD. */
-  public static final String VALUE_SOLVER_OSTERGARD = "Ostergard";
+  private static final String VALUE_SOLVER_OSTERGARD = "Ostergard";
 
   /** The Constant VALUE_SOLVER_YAMAGUCHI. */
-  public static final String VALUE_SOLVER_YAMAGUCHI = "Yamaguchi";
+  private static final String VALUE_SOLVER_YAMAGUCHI = "Yamaguchi";
 
   /** The Constant VALUE_SOLVER_HEURISTIC. */
-  public static final String VALUE_SOLVER_HEURISTIC = "Heuristic";
+  private static final String VALUE_SOLVER_HEURISTIC = "Heuristic";
 
   /** The Constant VALUE_VERBOSE_TRUE. */
-  public static final String VALUE_VERBOSE_TRUE = "True";
+  private static final String VALUE_VERBOSE_TRUE = "True";
 
   /** The logger. */
   // Rem: Logger is used to display messages in the console

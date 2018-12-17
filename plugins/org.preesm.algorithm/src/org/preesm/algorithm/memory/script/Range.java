@@ -298,30 +298,8 @@ public class Range implements CloneableProperty<Range> {
     return newRange;
   }
 
-  /**
-   * Return the minimum start value of the ranges
-   */
-  public static long minStart(final Iterable<Range> ranges) {
-    return StreamSupport.stream(ranges.spliterator(), false).map(Range::getStart).reduce(Long.MAX_VALUE, Math::min);
-  }
-
-  /**
-   * Return the minimum start value of the ranges
-   */
-  public static long maxEnd(final Iterable<Range> ranges) {
-    return StreamSupport.stream(ranges.spliterator(), false).map(Range::getEnd).reduce(Long.MIN_VALUE, Math::max);
-  }
-
-  public static boolean isContiguous(final Range range1, final Range range2) {
+  private static boolean isContiguous(final Range range1, final Range range2) {
     return (range1.getStart() == range2.getEnd()) || (range2.getStart() == range1.getEnd());
-  }
-
-  /**
-   *
-   */
-  public static boolean hasOverlap(final List<Range> ranges, final Range range) {
-    return !(ranges.stream().allMatch(r -> !Range.hasOverlap(r, range)));
-
   }
 
   public static boolean hasOverlap(final Range range1, final Range range2) {
@@ -346,7 +324,7 @@ public class Range implements CloneableProperty<Range> {
     return this.end;
   }
 
-  public Range(final Range original) {
+  private Range(final Range original) {
     this.start = original.getStart();
     this.end = original.getEnd();
   }

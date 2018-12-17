@@ -400,7 +400,7 @@ public class PiMMFeatureProvider extends DefaultFeatureProvider {
       features.add(new RenameAbstractVertexFeature(this));
     }
 
-    if (obj instanceof ExecutableActor || obj instanceof EndActor || obj instanceof InitActor) {
+    if (obj instanceof ExecutableActor) {
       final ICustomFeature[] actorFeatures = new ICustomFeature[] { new AddDataOutputPortFeature(this),
           new AddDataInputPortFeature(this), new AddConfigInputPortFeature(this),
           new AddConfigOutputPortFeature(this) };
@@ -456,7 +456,7 @@ public class PiMMFeatureProvider extends DefaultFeatureProvider {
     public IDeleteFeature casePort(final Port object) {
 
       final EObject eContainer = object.eContainer();
-      if (eContainer instanceof ExecutableActor || eContainer instanceof EndActor || eContainer instanceof InitActor) {
+      if (eContainer instanceof ExecutableActor) {
         return new DeleteActorPortFeature(PiMMFeatureProvider.this);
       } else if (eContainer instanceof InterfaceActor) {
         // We do not allow deletion of the port of an InterfaceVertex
@@ -563,7 +563,7 @@ public class PiMMFeatureProvider extends DefaultFeatureProvider {
     }
     final PictogramElement pictogramElement = context.getPictogramElement();
     final Object bo = getBusinessObjectForPictogramElement(pictogramElement);
-    if (bo instanceof ExecutableActor || bo instanceof EndActor || bo instanceof InitActor) {
+    if (bo instanceof ExecutableActor) {
       return new LayoutActorFeature(this);
     }
     if (bo instanceof Port) {
@@ -694,7 +694,7 @@ public class PiMMFeatureProvider extends DefaultFeatureProvider {
     final PictogramElement pictogramElement = context.getPictogramElement();
     if (pictogramElement instanceof ContainerShape) {
       final Object bo = getBusinessObjectForPictogramElement(pictogramElement);
-      if (bo instanceof ExecutableActor || bo instanceof EndActor || bo instanceof InitActor) {
+      if (bo instanceof ExecutableActor) {
         // We do not allow manual resize of Actor's pictogram elements.
         // The size of these elements will be computed automatically
         // to fit the content of the shape
@@ -745,7 +745,7 @@ public class PiMMFeatureProvider extends DefaultFeatureProvider {
     }
     if (pictogramElement instanceof ContainerShape) {
       final Object bo = getBusinessObjectForPictogramElement(pictogramElement);
-      if (bo instanceof ExecutableActor || bo instanceof EndActor || bo instanceof InitActor) {
+      if (bo instanceof ExecutableActor) {
         return new UpdateActorFeature(this);
       } else if (bo instanceof AbstractVertex) {
         return new UpdateAbstractVertexFeature(this);

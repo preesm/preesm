@@ -146,13 +146,6 @@ public class VertexTiming extends GroupProperty {
   }
 
   /**
-   * Reset cost.
-   */
-  public void resetCost() {
-    setCost(VertexTiming.UNAVAILABLE);
-  }
-
-  /**
    * Gets the b level.
    *
    * @return the b level

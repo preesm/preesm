@@ -149,7 +149,7 @@ public class GMLSDFImporterV1 extends GMLImporter<SDFGraph, SDFAbstractVertex, S
    * @throws PreesmException
    *           the invalid model exception
    */
-  protected void parseGraphDescription(final SDFAbstractVertex vertex, final Element parentElt) {
+  private void parseGraphDescription(final SDFAbstractVertex vertex, final Element parentElt) {
     final NodeList childList = parentElt.getChildNodes();
     for (int i = 0; i < childList.getLength(); i++) {
       if (childList.item(i).getNodeName().equals("data")
@@ -165,12 +165,7 @@ public class GMLSDFImporterV1 extends GMLImporter<SDFGraph, SDFAbstractVertex, S
               String fileName = refinementFile.getName();
               fileName = fileName.substring(0, fileName.indexOf('.'));
               SDFGraph refine;
-              try {
-                refine = importer.parse(refinementFile);
-              } catch (FileNotFoundException | PreesmException e) {
-                final GMLGenericImporter genericImporter = new GMLGenericImporter();
-                refine = (SDFGraph) genericImporter.parse(refinementFile);
-              }
+              refine = parse(importer, refinementFile);
               refine.setName(fileName);
               vertex.setGraphDescription(refine);
               for (final SDFAbstractVertex refineVertex : refine.vertexSet()) {
@@ -191,6 +186,17 @@ public class GMLSDFImporterV1 extends GMLImporter<SDFGraph, SDFAbstractVertex, S
         }
       }
     }
+  }
+
+  private SDFGraph parse(final GMLSDFImporter importer, final File refinementFile) throws FileNotFoundException {
+    SDFGraph refine;
+    try {
+      refine = importer.parse(refinementFile);
+    } catch (FileNotFoundException | PreesmException e) {
+      final GMLGenericImporter genericImporter = new GMLGenericImporter();
+      refine = (SDFGraph) genericImporter.parse(refinementFile);
+    }
+    return refine;
   }
 
   /**

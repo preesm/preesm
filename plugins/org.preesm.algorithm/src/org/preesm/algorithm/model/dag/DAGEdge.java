@@ -47,19 +47,19 @@ import org.preesm.algorithm.model.types.StringEdgePropertyType;
 public class DAGEdge extends AbstractEdge<DirectedAcyclicGraph, DAGVertex> {
 
   /** Key to access to property weight. */
-  public static final String WEIGHT = "Weight";
+  private static final String WEIGHT = "Weight";
 
   /** Key to access to property aggregate. */
-  public static final String AGGREGATE = "aggregate";
+  private static final String AGGREGATE = "aggregate";
 
   /** Key to access to property containing_edge. */
-  public static final String CONTAINING_EDGE = "containing_edge";
+  private static final String CONTAINING_EDGE = "containing_edge";
 
   /** Property name for property target_port_modifier. */
-  public static final String TARGET_PORT_MODIFIER = "target_port_modifier";
+  private static final String TARGET_PORT_MODIFIER = "target_port_modifier";
 
   /** Property name for property source_port_modifier. */
-  public static final String SOURCE_PORT_MODIFIER = "source_port_modifier";
+  private static final String SOURCE_PORT_MODIFIER = "source_port_modifier";
 
   static {
     AbstractEdge.PUBLIC_PROPERTIES.add(DAGEdge.WEIGHT);
@@ -70,17 +70,6 @@ public class DAGEdge extends AbstractEdge<DirectedAcyclicGraph, DAGVertex> {
    */
   public DAGEdge() {
     super();
-  }
-
-  /**
-   * Creates a new DAGEdge with the given property.
-   *
-   * @param w
-   *          the w
-   */
-  public DAGEdge(final AbstractEdgePropertyType<?> w) {
-    super();
-    setWeight(w);
   }
 
   /**

@@ -38,7 +38,6 @@ package org.preesm.model.scenario.papi;
 import java.util.LinkedHashSet;
 import java.util.Set;
 
-// TODO: Auto-generated Javadoc
 /**
  * container and manager of PapifyConfig groups. It can load and store PapifyConfig groups
  *
@@ -46,7 +45,7 @@ import java.util.Set;
  */
 public class PapifyConfigManager {
 
-  private PapiEventInfo PAPIData = null;
+  private PapiEventInfo papiData = null;
 
   /** List of all PapifyConfig groups for Actors. */
   private final Set<PapifyConfigActor> papifyConfigGroupsActors;
@@ -72,7 +71,7 @@ public class PapifyConfigManager {
    */
   public void addPapifyData(final PapiEventInfo data) {
 
-    this.PAPIData = data;
+    this.papiData = data;
   }
 
   /**
@@ -81,7 +80,7 @@ public class PapifyConfigManager {
    */
   public PapiEventInfo getPapifyData() {
 
-    return this.PAPIData;
+    return this.papiData;
   }
 
   /**
@@ -105,7 +104,7 @@ public class PapifyConfigManager {
    */
   public void addPapifyConfigPEGroup(final PapifyConfigPE pg) {
 
-    if (!this.papifyConfigGroupsActors.contains(pg)) {
+    if (!this.papifyConfigGroupsPEs.contains(pg)) {
       this.papifyConfigGroupsPEs.add(pg);
     }
   }
@@ -284,16 +283,16 @@ public class PapifyConfigManager {
    */
   @Override
   public String toString() {
-    String s = "";
+    final StringBuilder s = new StringBuilder();
 
     for (final PapifyConfigActor pg : this.papifyConfigGroupsActors) {
-      s += pg.toString();
+      s.append(pg.toString());
     }
     for (final PapifyConfigPE pg : this.papifyConfigGroupsPEs) {
-      s += pg.toString();
+      s.append(pg.toString());
     }
 
-    return s;
+    return s.toString();
   }
 
   /**

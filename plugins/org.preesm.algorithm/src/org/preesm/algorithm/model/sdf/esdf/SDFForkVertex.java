@@ -55,7 +55,7 @@ public class SDFForkVertex extends SDFAbstractSpecialVertex {
   public static final String FORK = "fork";
 
   /** String to access the property edges order. */
-  public static final String EDGES_ORDER = "edges_order";
+  private static final String EDGES_ORDER = "edges_order";
 
   /**
    * Creates a new SDFInterfaceVertex with the default direction (SINK).
@@ -100,7 +100,7 @@ public class SDFForkVertex extends SDFAbstractSpecialVertex {
    *          The edge to get the connection index
    * @return The connection index of the edge
    */
-  public Long getEdgeIndex(final SDFEdge edge) {
+  private Long getEdgeIndex(final SDFEdge edge) {
     for (final Long connIndex : getConnections().keySet()) {
       if (getConnections().get(connIndex).equals(edge)) {
         return connIndex;
@@ -114,7 +114,7 @@ public class SDFForkVertex extends SDFAbstractSpecialVertex {
    *
    * @return the connections
    */
-  protected Map<Long, SDFEdge> getConnections() {
+  private Map<Long, SDFEdge> getConnections() {
     Map<Long, SDFEdge> connections = getPropertyBean().getValue(SDFForkVertex.EDGES_ORDER);
     if (connections == null) {
       connections = new LinkedHashMap<>();
@@ -218,27 +218,6 @@ public class SDFForkVertex extends SDFAbstractSpecialVertex {
   }
 
   /**
-   * Swap two {@link SDFEdge} with given indexes in the ordered connection map.
-   *
-   * @param index0
-   *          the index 0
-   * @param index1
-   *          the index 1
-   * @return <code>true</code> if both indices were valid and could be swapped, <code>false</code> otherwise.
-   */
-  public boolean swapEdges(final long index0, final long index1) {
-    final Map<Long, SDFEdge> connections = getConnections();
-    if (connections.containsKey(index0) && connections.containsKey(index1)) {
-      final SDFEdge buffer = connections.get(index0);
-      connections.replace(index0, connections.get(index1));
-      connections.replace(index1, buffer);
-      return true;
-    }
-
-    return false;
-  }
-
-  /**
    * Remove the given {@link SDFEdge} from its current index and insert it just before the {@link SDFEdge} currently at
    * the given index (or at the end of the list if index == connections.size).
    *
@@ -248,6 +227,7 @@ public class SDFForkVertex extends SDFAbstractSpecialVertex {
    *          the new index for the {@link SDFEdge}
    * @return <code>true</code> if the edge was found and moved at an existing index, <code>false</code> otherwise.
    */
+  @Override
   public boolean setEdgeIndex(final SDFEdge edge, long index) {
     final Map<Long, SDFEdge> connections = getConnections();
     if ((index < connections.size()) && connections.containsValue(edge)) {

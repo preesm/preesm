@@ -40,8 +40,8 @@
 package org.preesm.model.pisdf.statictools;
 
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
-import org.eclipse.emf.common.util.EList;
 import org.preesm.commons.exceptions.PreesmException;
 import org.preesm.model.pisdf.AbstractActor;
 import org.preesm.model.pisdf.AbstractVertex;
@@ -73,6 +73,7 @@ import org.preesm.model.pisdf.RoundBufferActor;
 import org.preesm.model.pisdf.brv.BRVMethod;
 import org.preesm.model.pisdf.brv.PiBRV;
 import org.preesm.model.pisdf.factory.PiMMUserFactory;
+import org.preesm.model.pisdf.util.PiGraphConsistenceChecker;
 import org.preesm.model.pisdf.util.PiMMSwitch;
 
 /**
@@ -87,6 +88,7 @@ public class PiSDFFlattener extends PiMMSwitch<Boolean> {
    * @return the SDFGraph obtained by visiting graph
    */
   public static final PiGraph flatten(final PiGraph graph) {
+    PiGraphConsistenceChecker.check(graph);
     // 1. First we resolve all parameters.
     // It must be done first because, when removing persistence, local parameters have to be known at upper level
     PiMMHelper.resolveAllParameters(graph);
@@ -101,7 +103,27 @@ public class PiSDFFlattener extends PiMMSwitch<Boolean> {
     // 5. Now, flatten the graph
     PiSDFFlattener staticPiMM2FlatPiMMVisitor = new PiSDFFlattener(brv);
     staticPiMM2FlatPiMMVisitor.doSwitch(graph);
+
+    // checks
+    PiGraphConsistenceChecker.check(staticPiMM2FlatPiMMVisitor.result);
+    flattenCheck(staticPiMM2FlatPiMMVisitor.result);
+
     return staticPiMM2FlatPiMMVisitor.result;
+  }
+
+  /**
+   *
+   */
+  private static final void flattenCheck(final PiGraph graph) {
+    final List<AbstractActor> actors = graph.getActors();
+    for (final AbstractActor a : actors) {
+      if (a instanceof PiGraph) {
+        throw new PreesmException("Flatten graph should have no children graph");
+      }
+      if (a instanceof InterfaceActor) {
+        throw new PreesmException("Flatten graph should have no interface");
+      }
+    }
   }
 
   /** The result. */
@@ -119,6 +141,8 @@ public class PiSDFFlattener extends PiMMSwitch<Boolean> {
 
   /** Current graph prefix */
   private String graphPrefix;
+
+  private final Map<Parameter, Parameter> param2param = new LinkedHashMap<>();
 
   /**
    * Instantiates a new abstract StaticPiMM2ASrPiMMVisitor.
@@ -150,7 +174,7 @@ public class PiSDFFlattener extends PiMMSwitch<Boolean> {
       this.result.addActor(copyActor);
       // Map the actor for linking latter
       this.actor2actor.put(actor, copyActor);
-      instantiateParameters(actor, copyActor);
+      instantiateDependencies(actor, copyActor);
 
     } else {
       doSwitch(actor);
@@ -161,11 +185,12 @@ public class PiSDFFlattener extends PiMMSwitch<Boolean> {
   /**
    *
    */
-  public static void instantiateParameters(final AbstractActor actor, final AbstractActor copyActor) {
+  public static void instantiateParameters(final AbstractActor actor, final AbstractActor copyActor,
+      final PiGraph resultPiGraph) {
     // // Copy parameters
     for (final Parameter p : actor.getInputParameters()) {
 
-      final EList<ConfigInputPort> ports = actor.lookupConfigInputPortsConnectedWithParameter(p);
+      final List<ConfigInputPort> ports = actor.lookupConfigInputPortsConnectedWithParameter(p);
       for (ConfigInputPort port : ports) {
         final ConfigInputPort cip = (ConfigInputPort) copyActor.lookupPort(port.getName());
         if (cip != null) {
@@ -173,9 +198,49 @@ public class PiSDFFlattener extends PiMMSwitch<Boolean> {
           final Dependency dep = PiMMUserFactory.instance.createDependency();
           dep.setSetter(copy);
           cip.setIncomingDependency(dep);
+          resultPiGraph.addDependency(dep);
+          resultPiGraph.addParameter(copy);
         }
       }
     }
+  }
+
+  /**
+   *
+   */
+  private void instantiateDependencies(final AbstractActor actor, final AbstractActor copyActor) {
+    // // Copy parameters
+
+    for (final ConfigInputPort port : copyActor.getConfigInputPorts()) {
+      final Port lookupPort = actor.lookupPort(port.getName());
+      if (lookupPort instanceof ConfigInputPort) {
+        final Dependency incomingDependency = ((ConfigInputPort) lookupPort).getIncomingDependency();
+        final ISetter setter = incomingDependency.getSetter();
+        final Parameter parameter = param2param.get(setter);
+        if (parameter == null) {
+          throw new PreesmException();
+        } else {
+          final Dependency dep = PiMMUserFactory.instance.createDependency(parameter, port);
+          this.result.addDependency(dep);
+        }
+      } else {
+        throw new PreesmException();
+      }
+    }
+
+    // for (final Parameter p : actor.getInputParameters()) {
+    //
+    // final EList<ConfigInputPort> ports = actor.lookupConfigInputPortsConnectedWithParameter(p);
+    // for (ConfigInputPort port : ports) {
+    // final ConfigInputPort cip = (ConfigInputPort) copyActor.lookupPort(port.getName());
+    // if (cip != null) {
+    // final Parameter parameter = this.param2param.get(p);
+    // final Dependency dep = PiMMUserFactory.instance.createDependency();
+    // dep.setSetter(parameter);
+    // cip.setIncomingDependency(dep);
+    // }
+    // }
+    // }
   }
 
   @Override
@@ -211,7 +276,7 @@ public class PiSDFFlattener extends PiMMSwitch<Boolean> {
 
     // Map the actor for linking latter
     this.actor2actor.put(actor, broadcastIn);
-    instantiateParameters(actor, broadcastIn);
+    instantiateDependencies(actor, broadcastIn);
     return true;
   }
 
@@ -244,7 +309,7 @@ public class PiSDFFlattener extends PiMMSwitch<Boolean> {
 
     // Map the actor for linking latter
     this.actor2actor.put(actor, roundbufferOut);
-    instantiateParameters(actor, roundbufferOut);
+    instantiateDependencies(actor, roundbufferOut);
     return true;
   }
 
@@ -416,6 +481,18 @@ public class PiSDFFlattener extends PiMMSwitch<Boolean> {
   }
 
   @Override
+  public Boolean caseParameter(final Parameter param) {
+    // make sure config input interfaces are made into Parameter (since their expressions have been evaluated);
+    final Parameter copy = PiMMUserFactory.instance.createParameter();
+    copy.setExpression(param.getValueExpression().evaluate());
+    copy.setName(param.getName());
+    // copy.setName(graphPrefix + param.getName());
+    this.result.addParameter(copy);
+    this.param2param.put(param, copy);
+    return true;
+  }
+
+  @Override
   public Boolean caseExecutableActor(final ExecutableActor actor) {
     // Copy the actor
     final ExecutableActor copyActor = PiMMUserFactory.instance.copyWithHistory(actor);
@@ -428,7 +505,7 @@ public class PiSDFFlattener extends PiMMSwitch<Boolean> {
     this.actor2actor.put(actor, copyActor);
 
     // Set the properties
-    instantiateParameters(actor, copyActor);
+    instantiateDependencies(actor, copyActor);
     return true;
   }
 
@@ -530,6 +607,11 @@ public class PiSDFFlattener extends PiMMSwitch<Boolean> {
     // Check if the graph can be flattened
     boolean containsNonPersistent = false;
     boolean containsPersistent = false;
+
+    for (final Parameter p : graph.getParameters()) {
+      doSwitch(p);
+    }
+
     for (final Fifo f : graph.getFifosWithDelay()) {
       final Delay delay = f.getDelay();
       if (delay.getLevel() == PersistenceLevel.PERMANENT || delay.getLevel() == PersistenceLevel.LOCAL) {

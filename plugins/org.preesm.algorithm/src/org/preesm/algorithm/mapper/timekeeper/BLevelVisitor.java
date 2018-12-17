@@ -39,17 +39,16 @@ package org.preesm.algorithm.mapper.timekeeper;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import org.preesm.algorithm.mapper.model.MapperDAG;
 import org.preesm.algorithm.mapper.model.MapperDAGEdge;
 import org.preesm.algorithm.mapper.model.MapperDAGVertex;
 import org.preesm.algorithm.mapper.model.property.EdgeTiming;
 import org.preesm.algorithm.mapper.model.property.VertexTiming;
 import org.preesm.algorithm.mapper.tools.CustomTopologicalIterator;
+import org.preesm.algorithm.model.IGraphVisitor;
 import org.preesm.algorithm.model.dag.DAGVertex;
-import org.preesm.algorithm.model.visitors.IGraphVisitor;
-import org.preesm.commons.exceptions.PreesmException;
 
-// TODO: Auto-generated Javadoc
 /**
  * Visitor computing the BLevel of each actor firing. T levels are considered to be valid.
  *
@@ -70,11 +69,7 @@ public class BLevelVisitor implements IGraphVisitor<MapperDAG, MapperDAGVertex, 
     final CustomTopologicalIterator iterator = new CustomTopologicalIterator(dag, false);
     while (iterator.hasNext()) {
       final DAGVertex vertex = iterator.next();
-      try {
-        vertex.accept(this);
-      } catch (final PreesmException e) {
-        e.printStackTrace();
-      }
+      vertex.accept(this);
     }
   }
 
@@ -104,7 +99,9 @@ public class BLevelVisitor implements IGraphVisitor<MapperDAG, MapperDAGVertex, 
     }
 
     // From successors, computing the b-level
-    for (final MapperDAGVertex succ : successors.keySet()) {
+
+    for (final Entry<MapperDAGVertex, MapperDAGEdge> entry : successors.entrySet()) {
+      final MapperDAGVertex succ = entry.getKey();
       final VertexTiming succTiming = succ.getTiming();
       final EdgeTiming edgeTiming = successors.get(succ).getTiming();
       if (succTiming.hasBLevel() && timing.hasCost() && edgeTiming.hasCost()) {
@@ -121,15 +118,4 @@ public class BLevelVisitor implements IGraphVisitor<MapperDAG, MapperDAGVertex, 
       timing.setBLevel(maxBLevel);
     }
   }
-
-  /*
-   * (non-Javadoc)
-   *
-   * @see org.ietr.dftools.algorithm.model.visitors.IGraphVisitor#visit(org.ietr.dftools.algorithm.model. AbstractEdge)
-   */
-  @Override
-  public void visit(final MapperDAGEdge dagEdge) {
-
-  }
-
 }

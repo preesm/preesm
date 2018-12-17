@@ -38,7 +38,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Observable;
 import java.util.Observer;
-import org.preesm.algorithm.model.visitors.IGraphVisitor;
 
 /**
  * Abstract class common to all edges.
@@ -59,10 +58,10 @@ public abstract class AbstractEdge<G, V extends AbstractVertex> extends Observab
   public static final String BASE = "base";
 
   /** Property name for property source_port. */
-  public static final String SOURCE_PORT = "source_port";
+  private static final String SOURCE_PORT = "source_port";
 
   /** Property name for property target_port. */
-  public static final String TARGET_PORT = "target_port";
+  private static final String TARGET_PORT = "target_port";
 
   /** The public properties. */
   protected static final List<String> PUBLIC_PROPERTIES = new ArrayList<String>() {
@@ -213,15 +212,4 @@ public abstract class AbstractEdge<G, V extends AbstractVertex> extends Observab
     }
   }
 
-  /**
-   * Test if the given edge has the same properties than this edge.
-   *
-   * @param edge
-   *          The edge to compare with
-   * @return True if the given edge has the same properties, false otherwise
-   */
-  public boolean compare(final AbstractEdge edge) {
-    return edge.getSource().getName().equals(this.getSource().getName())
-        && edge.getTarget().getName().equals(this.getTarget().getName());
-  }
 }

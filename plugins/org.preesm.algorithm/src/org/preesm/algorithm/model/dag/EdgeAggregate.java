@@ -57,14 +57,4 @@ public class EdgeAggregate extends ArrayList<AbstractEdge> {
     super();
   }
 
-  /**
-   * Add an edge to this aggregate.
-   *
-   * @param edge
-   *          the edge
-   */
-  public void addEdge(final AbstractEdge edge) {
-    super.add(edge);
-  }
-
 }

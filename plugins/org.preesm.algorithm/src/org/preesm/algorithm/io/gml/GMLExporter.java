@@ -78,16 +78,13 @@ public abstract class GMLExporter<V extends AbstractVertex<?>, E extends Abstrac
   protected String path;
 
   /** The class key set. */
-  protected Map<String, List<GMLKey>> classKeySet;
-
-  /** The index. */
-  protected int index = 0;
+  private Map<String, List<GMLKey>> classKeySet;
 
   /** The root elt. */
   protected Element rootElt;
 
   /** The graph elt. */
-  protected Element graphElt;
+  private Element graphElt;
 
   /**
    * Creates a new Instance of GMLExporter.
@@ -340,7 +337,7 @@ public abstract class GMLExporter<V extends AbstractVertex<?>, E extends Abstrac
   protected void exportKeys(final PropertySource source, final String forElt, final Element parentElt) {
     for (final String key : source.getPublicProperties()) {
       if (!(key.equals("parameters") || key.equals("variables") || key.equals("arguments"))
-          && source.getPropertyStringValue(key) != null) {
+          && (source.getPropertyStringValue(key) != null)) {
         final Element dataElt = appendChild(parentElt, "data");
         dataElt.setAttribute("key", key);
         dataElt.setTextContent(source.getPropertyStringValue(key));

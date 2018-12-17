@@ -38,9 +38,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.InputStream;
-import java.lang.reflect.Method;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -88,13 +86,10 @@ public abstract class GMLImporter<G extends AbstractGraph<?, ?>, V extends Abstr
   private static final String PARAMETERS_LITERAL = "parameters";
 
   /** The class key set. */
-  protected Map<String, List<GMLKey>> classKeySet;
+  private final Map<String, List<GMLKey>> classKeySet;
 
   /** The vertex factory. */
   protected IModelVertexFactory<V> vertexFactory;
-
-  /** The input stream. */
-  protected InputStream inputStream;
 
   /** The path. */
   protected String path;
@@ -163,7 +158,6 @@ public abstract class GMLImporter<G extends AbstractGraph<?, ?>, V extends Abstr
    *           the invalid model exception
    */
   private G parse(final InputStream input) {
-    this.inputStream = input;
 
     // using DOM3
     DOMImplementationRegistry registry = null;
@@ -228,74 +222,6 @@ public abstract class GMLImporter<G extends AbstractGraph<?, ?>, V extends Abstr
   protected abstract G parseGraph(Element graphElt);
 
   /**
-   * Parses a key instance in the document.
-   *
-   * @param dataElt
-   *          The DOM instance of the key
-   * @param eltType
-   *          The Type of the element this jkey belong to (node, port, edge ...)
-   * @return a set where index 0 is the name of the attribute and index 1 is the value of the attribute
-   */
-  protected List<Object> parseKey(final Element dataElt, final String eltType) {
-    final List<Object> result = new ArrayList<>();
-    final List<GMLKey> keySet = this.classKeySet.get(eltType);
-    if (keySet == null) {
-      return Collections.emptyList();
-    }
-    final String key = dataElt.getAttribute("key");
-    for (final GMLKey oneKey : keySet) {
-      // Ignoring special keys
-      if (oneKey.getId().equals(key) && (oneKey.getType() != null)
-          && !oneKey.getId().equalsIgnoreCase(ARGUMENTS_LITERAL) && !oneKey.getId().equalsIgnoreCase(PARAMETERS_LITERAL)
-          && !oneKey.getId().equalsIgnoreCase(VARIABLES_LITERAL)) {
-        try {
-          Method[] availableFactories = null;
-          if (oneKey.getTypeClass() != null) {
-            availableFactories = oneKey.getTypeClass().getDeclaredMethods();
-          }
-          Method toUse = null;
-          Class<?> constParam;
-          Object param;
-          if (oneKey.getType().equals("int")) {
-            constParam = int.class;
-            param = Long.parseLong(dataElt.getTextContent());
-          } else if (oneKey.getType().equals("double")) {
-            constParam = double.class;
-            param = Double.parseDouble(dataElt.getTextContent());
-          } else {
-            // includes type == "string"
-            constParam = String.class;
-            param = dataElt.getTextContent();
-          }
-          if (availableFactories != null) {
-            for (final Method method : availableFactories) {
-              if ((method.getGenericParameterTypes().length == 1)
-                  && method.getGenericParameterTypes()[0].equals(constParam)) {
-                toUse = method;
-              }
-            }
-            if (toUse == null) {
-              return Collections.emptyList();
-            }
-            final Object value = toUse.invoke(null, param);
-            result.add(oneKey.getName());
-            result.add(value);
-          } else {
-            result.add(oneKey.getName());
-            result.add(param);
-          }
-
-          return result;
-        } catch (final Exception e) {
-          throw new PreesmException("Could not parse key", e);
-        }
-
-      }
-    }
-    return Collections.emptyList();
-  }
-
-  /**
    * Parse an element keys.
    *
    * @param elt
@@ -308,8 +234,8 @@ public abstract class GMLImporter<G extends AbstractGraph<?, ?>, V extends Abstr
     for (int i = 0; i < childList.getLength(); i++) {
       if (childList.item(i).getNodeName().equals("data")) {
         final String key = ((Element) childList.item(i)).getAttribute("key");
-        if ((!(key.equals(ARGUMENTS_LITERAL) || key.equals(PARAMETERS_LITERAL) || key.equals(VARIABLES_LITERAL)))
-            && src.getPublicProperties().contains(key)) {
+        if ((!(key.equals(GMLImporter.ARGUMENTS_LITERAL) || key.equals(GMLImporter.PARAMETERS_LITERAL)
+            || key.equals(GMLImporter.VARIABLES_LITERAL))) && src.getPublicProperties().contains(key)) {
           final String propertyName = ((Element) childList.item(i)).getAttribute("key");
           final PropertyFactory factory = src.getFactoryForProperty(propertyName);
           if (factory != null) {
@@ -397,7 +323,7 @@ public abstract class GMLImporter<G extends AbstractGraph<?, ?>, V extends Abstr
     final NodeList childList = parentElt.getChildNodes();
     for (int i = 0; i < childList.getLength(); i++) {
       if (childList.item(i).getNodeName().equals("data")
-          && ((Element) childList.item(i)).getAttribute("key").equals(ARGUMENTS_LITERAL)) {
+          && ((Element) childList.item(i)).getAttribute("key").equals(GMLImporter.ARGUMENTS_LITERAL)) {
         final NodeList argsList = childList.item(i).getChildNodes();
         for (int j = 0; j < argsList.getLength(); j++) {
           if (argsList.item(j).getNodeName().equals("argument")) {
@@ -423,7 +349,7 @@ public abstract class GMLImporter<G extends AbstractGraph<?, ?>, V extends Abstr
     final NodeList childList = parentElt.getChildNodes();
     for (int i = 0; i < childList.getLength(); i++) {
       if (childList.item(i).getNodeName().equals("data")
-          && ((Element) childList.item(i)).getAttribute("key").equals(PARAMETERS_LITERAL)) {
+          && ((Element) childList.item(i)).getAttribute("key").equals(GMLImporter.PARAMETERS_LITERAL)) {
         final NodeList argsList = childList.item(i).getChildNodes();
         for (int j = 0; j < argsList.getLength(); j++) {
           if (argsList.item(j).getNodeName().equals("parameter")) {
@@ -466,7 +392,7 @@ public abstract class GMLImporter<G extends AbstractGraph<?, ?>, V extends Abstr
     final NodeList childList = parentElt.getChildNodes();
     for (int i = 0; i < childList.getLength(); i++) {
       if (childList.item(i).getNodeName().equals("data")
-          && ((Element) childList.item(i)).getAttribute("key").equals(VARIABLES_LITERAL)) {
+          && ((Element) childList.item(i)).getAttribute("key").equals(GMLImporter.VARIABLES_LITERAL)) {
         final NodeList argsList = childList.item(i).getChildNodes();
         for (int j = 0; j < argsList.getLength(); j++) {
           if (argsList.item(j).getNodeName().equals("variable")) {
@@ -511,16 +437,6 @@ public abstract class GMLImporter<G extends AbstractGraph<?, ?>, V extends Abstr
         }
       }
     }
-  }
-
-  /**
-   * Sets thi Importer key set.
-   *
-   * @param keys
-   *          the keys
-   */
-  protected void setKeySet(final Map<String, List<GMLKey>> keys) {
-    this.classKeySet = keys;
   }
 
 }

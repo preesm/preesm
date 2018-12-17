@@ -165,13 +165,12 @@ public class CodegenHierarchicalModelGenerator {
   /**
    *
    */
-  public int execute(final CoreBlock operatorBlock, final DAGVertex dagVertex) throws PreesmException {
+  public void execute(final CoreBlock operatorBlock, final DAGVertex dagVertex) {
     // Check whether the ActorCall is a call to a hierarchical actor or not.
-    final SDFAbstractVertex sdfVertex = dagVertex.getCorrespondingSDFVertex();
-    final Object refinement = sdfVertex.getPropertyBean().getValue(AbstractVertex.REFINEMENT_LITERAL);
+    final Object refinement = dagVertex.getPropertyBean().getValue(AbstractVertex.REFINEMENT_LITERAL);
 
     if (refinement instanceof AbstractGraph) {
-      final SDFGraph graph = (SDFGraph) sdfVertex.getGraphDescription();
+      final SDFGraph graph = (SDFGraph) dagVertex.getGraphDescription();
       final List<SDFAbstractVertex> repVertexs = new ArrayList<>();
       final List<SDFInterfaceVertex> interfaces = new ArrayList<>();
 
@@ -201,7 +200,7 @@ public class CodegenHierarchicalModelGenerator {
       }
 
       final HSDFBuildLoops loopBuilder = new HSDFBuildLoops(this.scenario, null);
-      final AbstractClust clust = (AbstractClust) graph.getPropertyBean().getValue(MapperDAG.CLUSTERED_VERTEX);
+      final AbstractClust clust = graph.getPropertyBean().getValue(MapperDAG.CLUSTERED_VERTEX);
       if (clust == null) {
         throw (new PreesmException("Loop Codegen failed. Please make sure the clustering workflow is run."));
       }
@@ -324,7 +323,6 @@ public class CodegenHierarchicalModelGenerator {
       this.linkHSDFEdgeBuffer.clear();
       this.currentWorkingMemOffset = 0;
     }
-    return 0;
   }
 
   /**
@@ -416,8 +414,7 @@ public class CodegenHierarchicalModelGenerator {
           case CodeGenArgument.OUTPUT:
             final Set<DAGEdge> outEdges = this.dag.outgoingEdgesOf(dagVertex);
             for (final DAGEdge edge : outEdges) {
-              final BufferAggregate bufferAggregate = (BufferAggregate) edge.getPropertyBean()
-                  .getValue(BufferAggregate.propertyBeanName);
+              final BufferAggregate bufferAggregate = edge.getPropertyBean().getValue(BufferAggregate.propertyBeanName);
               for (final BufferProperties buffProperty : bufferAggregate) {
                 final String portHsdfName = sdfVertex.getAssociatedEdge(port).getTargetLabel();
                 if (buffProperty.getSourceOutputPortID().equals(portHsdfName) && edge.getTarget().getKind() != null) {
@@ -430,8 +427,7 @@ public class CodegenHierarchicalModelGenerator {
           case CodeGenArgument.INPUT:
             final Set<DAGEdge> inEdges = this.dag.incomingEdgesOf(dagVertex);
             for (final DAGEdge edge : inEdges) {
-              final BufferAggregate bufferAggregate = (BufferAggregate) edge.getPropertyBean()
-                  .getValue(BufferAggregate.propertyBeanName);
+              final BufferAggregate bufferAggregate = edge.getPropertyBean().getValue(BufferAggregate.propertyBeanName);
               for (final BufferProperties buffProperty : bufferAggregate) {
                 final String portHsdfName = sdfVertex.getAssociatedEdge(port).getSourceLabel();
                 if (buffProperty.getDestInputPortID().equals(portHsdfName) && edge.getSource().getKind() != null) {
@@ -602,7 +598,8 @@ public class CodegenHierarchicalModelGenerator {
     for (final SDFInterfaceVertex port : repVertexInterfaces) {
       boolean isInputActorTmp = isInputActor;
       boolean isOutputActorTmp = isOutputActor;
-      final SDFEdge currentEdge = repVertex.getAssociatedEdge(port);
+      final SDFEdge associatedEdge = repVertex.getAssociatedEdge(port);
+      final SDFEdge currentEdge = associatedEdge;
       if ((isInputActor) && (!(currentEdge.getSource() instanceof SDFInterfaceVertex))) {
         isInputActorTmp = false;
       }
@@ -619,27 +616,21 @@ public class CodegenHierarchicalModelGenerator {
         }
         boolean edgeEarlyExit = false;
         for (final DAGEdge edge : edges) {
-          final BufferAggregate bufferAggregate = (BufferAggregate) edge.getPropertyBean()
-              .getValue(BufferAggregate.propertyBeanName);
+          final BufferAggregate bufferAggregate = edge.getPropertyBean().getValue(BufferAggregate.propertyBeanName);
           for (final BufferProperties buffProperty : bufferAggregate) {
-            if (isInputActorTmp) {
-              final String portHsdfName = repVertex.getAssociatedEdge(port).getSourceLabel();
-              // check that this edge is not connected to a receive vertex
-              if (buffProperty.getDestInputPortID().equals(portHsdfName) && edge.getTarget().getKind() != null) {
+
+            if (isInputActorTmp || isOutputActorTmp) {
+              final String portHsdfName = isInputActorTmp ? associatedEdge.getSourceLabel()
+                  : associatedEdge.getTargetLabel();
+              final String destPortID = isInputActorTmp ? buffProperty.getDestInputPortID()
+                  : buffProperty.getSourceOutputPortID();
+              if (destPortID.equals(portHsdfName) && edge.getTarget().getKind() != null) {
                 subBufferProperties = buffProperty;
                 edgeEarlyExit = true;
                 break;
               }
             }
-            if (isOutputActorTmp) {
-              final String portHsdfName = repVertex.getAssociatedEdge(port).getTargetLabel();
-              // check that this edge is not connected to a receive vertex
-              if (buffProperty.getSourceOutputPortID().equals(portHsdfName) && edge.getTarget().getKind() != null) {
-                subBufferProperties = buffProperty;
-                edgeEarlyExit = true;
-                break;
-              }
-            }
+
           }
           if (edgeEarlyExit) {
             break;

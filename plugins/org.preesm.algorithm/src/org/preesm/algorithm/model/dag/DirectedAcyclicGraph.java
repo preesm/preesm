@@ -44,7 +44,6 @@ import org.preesm.algorithm.model.AbstractGraph;
 import org.preesm.algorithm.model.PropertyFactory;
 import org.preesm.algorithm.model.factories.DAGVertexFactory;
 import org.preesm.algorithm.model.factories.IModelVertexFactory;
-import org.preesm.algorithm.model.sdf.SDFGraph;
 import org.preesm.commons.exceptions.PreesmException;
 
 /**
@@ -58,14 +57,11 @@ public class DirectedAcyclicGraph extends AbstractGraph<DAGVertex, DAGEdge> {
   /** The Constant serialVersionUID. */
   private static final long serialVersionUID = -3860891539321306793L;
 
-  /** The Constant SDF. */
-  private static final String SDF = "sdf";
-
   /**
    * Constructs a new DAG graph with the default Dag edge factory.
    */
   public DirectedAcyclicGraph() {
-    this(() -> new DAGEdge());
+    this(DAGEdge::new);
   }
 
   /**
@@ -78,7 +74,7 @@ public class DirectedAcyclicGraph extends AbstractGraph<DAGVertex, DAGEdge> {
   }
 
   @Override
-  public Set<DAGEdge> getAllEdges(DAGVertex sourceVertex, DAGVertex targetVertex) {
+  public Set<DAGEdge> getAllEdges(final DAGVertex sourceVertex, final DAGVertex targetVertex) {
     if (!containsVertex(sourceVertex)) {
       throw new IllegalArgumentException("Graph does not contain source vertex '" + sourceVertex + "'");
     }
@@ -102,7 +98,7 @@ public class DirectedAcyclicGraph extends AbstractGraph<DAGVertex, DAGEdge> {
    *           This Edge creates a cycle
    */
   public DAGEdge addDAGEdge(final DAGVertex source, final DAGVertex target) {
-    Set<DAGEdge> allEdges = getAllEdges(source, target);
+    final Set<DAGEdge> allEdges = getAllEdges(source, target);
     if (!allEdges.isEmpty()) {
       throw new PreesmException("There should be no edge existing.");
     } else {
@@ -110,7 +106,7 @@ public class DirectedAcyclicGraph extends AbstractGraph<DAGVertex, DAGEdge> {
       final CycleDetector<DAGVertex, DAGEdge> detector = new CycleDetector<>(this);
       if (detector.detectCyclesContainingVertex(source)) {
         final Set<DAGVertex> cycle = detector.findCyclesContainingVertex(source);
-        StringBuilder cycleString = new StringBuilder("Added edge forms a cycle: {");
+        final StringBuilder cycleString = new StringBuilder("Added edge forms a cycle: {");
         for (final DAGVertex vertex : cycle) {
           cycleString.append(vertex.getName() + " ");
         }
@@ -120,7 +116,7 @@ public class DirectedAcyclicGraph extends AbstractGraph<DAGVertex, DAGEdge> {
         throw new PreesmException(cycleString.toString());
       } else if (detector.detectCyclesContainingVertex(target)) {
         final Set<DAGVertex> cycle = detector.findCyclesContainingVertex(target);
-        StringBuilder cycleString = new StringBuilder("Added edge forms a cycle: {");
+        final StringBuilder cycleString = new StringBuilder("Added edge forms a cycle: {");
         for (final DAGVertex vertex : cycle) {
           cycleString.append(vertex.getName() + " ");
         }
@@ -178,25 +174,6 @@ public class DirectedAcyclicGraph extends AbstractGraph<DAGVertex, DAGEdge> {
   @Override
   public boolean validateModel() {
     return true;
-  }
-
-  /**
-   * Gets the corresponding SDF graph.
-   *
-   * @return the corresponding SDF graph
-   */
-  public SDFGraph getCorrespondingSDFGraph() {
-    return getPropertyBean().getValue(DirectedAcyclicGraph.SDF);
-  }
-
-  /**
-   * Sets the corresponding SDF graph.
-   *
-   * @param graph
-   *          the new corresponding SDF graph
-   */
-  public void setCorrespondingSDFGraph(final SDFGraph graph) {
-    getPropertyBean().setValue(DirectedAcyclicGraph.SDF, graph);
   }
 
   /*

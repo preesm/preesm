@@ -40,7 +40,6 @@ package org.preesm.algorithm.codegen.idl;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.logging.Level;
-import org.preesm.algorithm.codegen.model.containers.CodeSectionType;
 import org.preesm.algorithm.model.IRefinement;
 import org.preesm.commons.logger.PreesmLogger;
 
@@ -89,7 +88,7 @@ public class ActorPrototypes implements IRefinement {
    *          the i
    * @return the inits the prototype
    */
-  public Prototype getInitPrototype(final int i) {
+  private Prototype getInitPrototype(final int i) {
     if (this.initPrototypes.keySet().contains(0)) {
       return this.initPrototypes.get(i);
     } else {
@@ -143,30 +142,4 @@ public class ActorPrototypes implements IRefinement {
     this.loopPrototype = init;
   }
 
-  /**
-   * Gets the prototype.
-   *
-   * @param sectionType
-   *          the section type
-   * @return the prototype
-   */
-  public Prototype getPrototype(final CodeSectionType sectionType) {
-    if (sectionType.getMajor().equals(CodeSectionType.MajorType.INIT)) {
-      return getInitPrototype(sectionType.getMinor());
-    } else if (sectionType.getMajor().equals(CodeSectionType.MajorType.LOOP)) {
-      return getLoopPrototype();
-    }
-    return null;
-  }
-
-  /**
-   * Checks for prototype.
-   *
-   * @param sectionType
-   *          the section type
-   * @return true, if successful
-   */
-  public boolean hasPrototype(final CodeSectionType sectionType) {
-    return getPrototype(sectionType) != null;
-  }
 }

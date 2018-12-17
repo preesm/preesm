@@ -41,8 +41,6 @@ import java.util.Set;
 import org.eclipse.emf.common.util.EList;
 import org.eclipse.jface.viewers.CheckboxTreeViewer;
 import org.eclipse.jface.viewers.ITreeContentProvider;
-import org.eclipse.jface.viewers.Viewer;
-import org.preesm.algorithm.model.sdf.SDFGraph;
 import org.preesm.commons.exceptions.PreesmException;
 import org.preesm.model.pisdf.AbstractActor;
 import org.preesm.model.pisdf.Actor;
@@ -50,7 +48,6 @@ import org.preesm.model.pisdf.PiGraph;
 import org.preesm.model.pisdf.serialize.PiParser;
 import org.preesm.model.scenario.PreesmScenario;
 
-// TODO: Auto-generated Javadoc
 /**
  * This class provides the elements displayed in {@link SDFTreeSection}. Each element is a vertex. This tree is used in
  * scenario editor to edit the constraints
@@ -58,9 +55,6 @@ import org.preesm.model.scenario.PreesmScenario;
  * @author mpelcat
  */
 public class PreesmAlgorithmTreeContentProvider implements ITreeContentProvider {
-
-  /** The current IBSDF graph. */
-  private SDFGraph currentIBSDFGraph = null;
 
   /** The current PISDF graph. */
   private PiGraph currentPISDFGraph = null;
@@ -167,43 +161,12 @@ public class PreesmAlgorithmTreeContentProvider implements ITreeContentProvider 
   }
 
   /**
-   * Gets the IBSDF current graph.
-   *
-   * @return the IBSDF current graph
-   */
-  public SDFGraph getIBSDFCurrentGraph() {
-    return this.currentIBSDFGraph;
-  }
-
-  /**
    * Gets the PISDF current graph.
    *
    * @return the PISDF current graph
    */
   public PiGraph getPISDFCurrentGraph() {
     return this.currentPISDFGraph;
-  }
-
-  /*
-   * (non-Javadoc)
-   *
-   * @see org.eclipse.jface.viewers.IContentProvider#dispose()
-   */
-  @Override
-  public void dispose() {
-    // TODO Auto-generated method stub
-
-  }
-
-  /*
-   * (non-Javadoc)
-   *
-   * @see org.eclipse.jface.viewers.IContentProvider#inputChanged(org.eclipse.jface.viewers.Viewer, java.lang.Object,
-   * java.lang.Object)
-   */
-  @Override
-  public void inputChanged(final Viewer viewer, final Object oldInput, final Object newInput) {
-
   }
 
   /**

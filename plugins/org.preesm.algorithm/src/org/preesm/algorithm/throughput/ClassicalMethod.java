@@ -35,19 +35,19 @@
  */
 package org.preesm.algorithm.throughput;
 
+import java.util.logging.Level;
 import org.apache.commons.lang3.math.Fraction;
 import org.preesm.algorithm.model.sdf.SDFGraph;
 import org.preesm.algorithm.schedule.PeriodicSchedulerSDF;
-import org.preesm.algorithm.throughput.tools.helpers.Stopwatch;
-import org.preesm.algorithm.throughput.tools.transformers.IBSDFTransformer;
-import org.preesm.algorithm.throughput.tools.transformers.SDFTransformer;
+import org.preesm.algorithm.throughput.tools.IBSDFTransformer;
+import org.preesm.algorithm.throughput.tools.SDFTransformer;
+import org.preesm.commons.logger.PreesmLogger;
 
 /**
  * @author hderoui
  *
  */
 public class ClassicalMethod {
-  public Stopwatch timer;
 
   /**
    * Compute the throughput of the graph using the classical method base on flattening the hierarchy into a srSDF graph
@@ -57,16 +57,15 @@ public class ClassicalMethod {
    * @return throughput of the graph
    */
   public double evaluate(final SDFGraph inputGraph, final boolean withExecRulres) {
-    System.out.println("Computing the throughput of the graph using classical method ...");
-    this.timer = new Stopwatch();
-    this.timer.start();
+    PreesmLogger.getLogger().log(Level.FINEST, "Computing the throughput of the graph using classical method ...");
 
     // Phase 1: convert the IBSDF graph to a flat srSDF graph
-    System.out.println("Phase 1: convert the IBSDF graph to a flat srSDF graph");
+    PreesmLogger.getLogger().log(Level.FINEST, "Phase 1: convert the IBSDF graph to a flat srSDF graph");
     final SDFGraph srSDF = IBSDFTransformer.convertToSrSDF(inputGraph, withExecRulres);
 
     // Phase 2: compute the throughput of the flat srSDF graph using the periodic schedule
-    System.out.println("Phase 2: compute the throughput of the flat srSDF graph using the periodic schedule");
+    PreesmLogger.getLogger().log(Level.FINEST,
+        "Phase 2: compute the throughput of the flat srSDF graph using the periodic schedule");
     // -> Step 1: normalize the graph
     SDFTransformer.normalize(srSDF);
 
@@ -76,8 +75,7 @@ public class ClassicalMethod {
 
     // -> Step 3: compute the throughput as 1/k
     final double throughput = 1 / k.doubleValue();
-    this.timer.stop();
-    System.out.println("Throughput of the graph = " + throughput + " computed in " + this.timer.toString());
+    PreesmLogger.getLogger().log(Level.FINEST, "Throughput of the graph = " + throughput);
 
     return throughput;
   }

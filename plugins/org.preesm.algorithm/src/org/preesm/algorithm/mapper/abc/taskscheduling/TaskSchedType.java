@@ -70,23 +70,4 @@ public enum TaskSchedType {
     }
   }
 
-  /**
-   * From string.
-   *
-   * @param type
-   *          the type
-   * @return the task sched type
-   */
-  public static TaskSchedType fromString(final String type) {
-
-    if (type.equalsIgnoreCase("Simple")) {
-      return SIMPLE;
-    } else if (type.equalsIgnoreCase("Switcher")) {
-      return SWITCHER;
-    } else if (type.equalsIgnoreCase("Topological")) {
-      return TOPOLOGICAL;
-    }
-
-    return null;
-  }
 }

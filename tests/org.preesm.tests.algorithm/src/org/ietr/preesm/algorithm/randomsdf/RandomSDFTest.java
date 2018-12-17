@@ -71,7 +71,7 @@ public class RandomSDFTest {
     inputs.put("architecture", SlamFactory.eINSTANCE.createDesign());
     inputs.put("scenario", new PreesmScenario());
 
-    Map<String, Object> outputs = null;
+    Map<String, Object> outputs = new LinkedHashMap<>();
     try {
       outputs = task.execute(inputs, params, null, null, null);
     } catch (final PreesmException e) {

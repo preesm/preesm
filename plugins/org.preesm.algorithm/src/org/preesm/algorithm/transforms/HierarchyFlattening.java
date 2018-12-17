@@ -78,7 +78,7 @@ public class HierarchyFlattening extends AbstractTaskImplementation {
     final Map<String, Object> outputs = new LinkedHashMap<>();
     final SDFGraph algorithm = (SDFGraph) inputs.get("SDF");
     final String depthS = parameters.get("depth");
-    StopWatch timer = new StopWatch();
+    final StopWatch timer = new StopWatch();
     timer.start();
 
     int depth;

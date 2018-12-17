@@ -122,8 +122,7 @@ public class LayoutActorFeature extends AbstractLayoutFeature {
 
     final EList<EObject> businessObjects = pe.getLink().getBusinessObjects();
     final EObject bo = businessObjects.get(0);
-    return (businessObjects.size() == 1)
-        && (bo instanceof ExecutableActor || bo instanceof EndActor || bo instanceof InitActor);
+    return (businessObjects.size() == 1) && (bo instanceof ExecutableActor);
   }
 
   /**
@@ -356,7 +355,7 @@ public class LayoutActorFeature extends AbstractLayoutFeature {
     if (bo instanceof Actor) {
       final Actor actor = (Actor) bo;
       layoutActor(actor, childrenShapes, containerGa);
-    } else if (bo instanceof ExecutableActor || bo instanceof EndActor || bo instanceof InitActor) {
+    } else if (bo instanceof ExecutableActor) {
       layoutSpecialActor((AbstractActor) bo, childrenShapes, containerGa);
     }
 

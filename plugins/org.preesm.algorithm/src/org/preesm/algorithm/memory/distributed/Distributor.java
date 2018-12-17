@@ -76,7 +76,7 @@ public class Distributor {
   /**
    * {@link Logger} used to provide feedback on the distribution to the developer.
    */
-  protected static Logger logger = PreesmLogger.getLogger();
+  private static Logger logger = PreesmLogger.getLogger();
 
   /**
    * This method analyzes a {@link MemoryExclusionGraph} and divides it into several {@link MemoryExclusionGraph}, each

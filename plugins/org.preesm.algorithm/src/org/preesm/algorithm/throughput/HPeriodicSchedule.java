@@ -35,14 +35,15 @@
  */
 package org.preesm.algorithm.throughput;
 
+import java.util.logging.Level;
 import org.preesm.algorithm.model.sdf.SDFAbstractVertex;
 import org.preesm.algorithm.model.sdf.SDFEdge;
 import org.preesm.algorithm.model.sdf.SDFGraph;
 import org.preesm.algorithm.schedule.PeriodicSchedulerSDF;
-import org.preesm.algorithm.throughput.tools.helpers.GraphStructureHelper;
-import org.preesm.algorithm.throughput.tools.helpers.Stopwatch;
-import org.preesm.algorithm.throughput.tools.parsers.Identifier;
-import org.preesm.algorithm.throughput.tools.transformers.SDFTransformer;
+import org.preesm.algorithm.throughput.tools.GraphStructureHelper;
+import org.preesm.algorithm.throughput.tools.Identifier;
+import org.preesm.algorithm.throughput.tools.SDFTransformer;
+import org.preesm.commons.logger.PreesmLogger;
 
 /**
  * @author hderoui
@@ -50,47 +51,39 @@ import org.preesm.algorithm.throughput.tools.transformers.SDFTransformer;
  */
 public class HPeriodicSchedule {
 
-  public Stopwatch timer;
-  // private PreesmScenario preesmScenario;
-
   /**
    * @param inputGraph
    *          IBSDF graph
    * @return throughput of the graph
    */
   public double evaluate(final SDFGraph inputGraph) {
-    // this.preesmScenario = scenario;
 
     // add the name property for each edge of the graph
     for (final SDFEdge e : inputGraph.edgeSet()) {
       e.setPropertyValue("edgeName", Identifier.generateEdgeId());
     }
 
-    System.out.println("Computing the throughput of the graph using Hierarchical Periodic Schedule ...");
-    this.timer = new Stopwatch();
-    this.timer.start();
+    PreesmLogger.getLogger().log(Level.FINEST,
+        "Computing the throughput of the graph using Hierarchical Periodic Schedule ...");
 
     // Step 1: define the execution duration of each hierarchical actor and add a self loop to it
-    System.out.println("Step 1: define the execution duration of each hierarchical actor");
+    PreesmLogger.getLogger().log(Level.FINEST, "Step 1: define the execution duration of each hierarchical actor");
     for (final SDFAbstractVertex actor : inputGraph.vertexSet()) {
       if (actor.getGraphDescription() != null) {
         // set the duration of the hierarchical actor
         final Double duration = setHierarchicalActorsDuration((SDFGraph) actor.getGraphDescription());
         actor.setPropertyValue("duration", duration);
-        // if (this.preesmScenario != null) {
-        // this.preesmScenario.getTimingManager().setTiming(actor.getId(), "x86", duration.longValue());
-        // }
         // add the self loop
         GraphStructureHelper.addEdge(inputGraph, actor.getName(), null, actor.getName(), null, 1, 1, 1, null);
       }
     }
 
     // Step 3: compute the throughput with the Periodic Schedule
-    System.out.println("Step 4: compute the throughput using the Periodic Schedule");
+    PreesmLogger.getLogger().log(Level.FINEST, "Step 4: compute the throughput using the Periodic Schedule");
     final PeriodicSchedulerSDF periodic = new PeriodicSchedulerSDF();
     final double throughput = periodic.computeGraphThroughput(inputGraph, null, false);
-    this.timer.stop();
-    System.out.println("Throughput of the graph = " + throughput + " computed in " + this.timer.toString());
+    final String msg = "Throughput of the graph = " + throughput;
+    PreesmLogger.getLogger().log(Level.FINEST, msg);
 
     return throughput;
   }
@@ -102,7 +95,7 @@ public class HPeriodicSchedule {
    *          subgraph of a hierarchical actor
    * @return the duration of the subgraph
    */
-  public double setHierarchicalActorsDuration(final SDFGraph subgraph) {
+  private double setHierarchicalActorsDuration(final SDFGraph subgraph) {
 
     // add the name property for each edge of the graph
     for (final SDFEdge e : subgraph.edgeSet()) {
@@ -115,7 +108,6 @@ public class HPeriodicSchedule {
         // set the duration of the hierarchical actor
         final Double duration = setHierarchicalActorsDuration((SDFGraph) actor.getGraphDescription());
         actor.setPropertyValue("duration", duration);
-        // this.preesmScenario.getTimingManager().setTiming(actor.getId(), "x86", duration.longValue());
         // add the self loop
         GraphStructureHelper.addEdge(subgraph, actor.getName(), null, actor.getName(), null, 1, 1, 1, null);
       }
@@ -123,10 +115,9 @@ public class HPeriodicSchedule {
 
     // compute the subgraph period using the periodic schedule
     // Step 4: compute the throughput with the Periodic Schedule
-    System.out.println("Step 4: compute the throughput using the Periodic Schedule");
+    PreesmLogger.getLogger().log(Level.FINEST, "Step 4: compute the throughput using the Periodic Schedule");
     // normalize the graph
     final SDFGraph g = subgraph;
-    // SDFGraph g = SDFTransformer.convertToSrSDF(subgraph);
     SDFTransformer.normalize(g);
     // compute its normalized period K
     final PeriodicSchedulerSDF periodic = new PeriodicSchedulerSDF();

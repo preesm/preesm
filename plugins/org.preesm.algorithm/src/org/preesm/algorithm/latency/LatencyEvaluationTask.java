@@ -36,6 +36,7 @@
 package org.preesm.algorithm.latency;
 
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.logging.Level;
 import org.eclipse.core.runtime.IProgressMonitor;
@@ -44,11 +45,9 @@ import org.preesm.algorithm.deadlock.IBSDFLiveness;
 import org.preesm.algorithm.model.sdf.SDFAbstractVertex;
 import org.preesm.algorithm.model.sdf.SDFGraph;
 import org.preesm.algorithm.schedule.ASAPSchedulerDAG;
-import org.preesm.algorithm.throughput.tools.helpers.GraphStructureHelper;
-import org.preesm.algorithm.throughput.tools.helpers.Stopwatch;
-import org.preesm.algorithm.throughput.tools.transformers.IBSDFTransformer;
-import org.preesm.algorithm.throughput.tools.transformers.SrSDFTransformer;
-import org.preesm.commons.exceptions.PreesmException;
+import org.preesm.algorithm.throughput.tools.GraphStructureHelper;
+import org.preesm.algorithm.throughput.tools.IBSDFTransformer;
+import org.preesm.algorithm.throughput.tools.SrSDFTransformer;
 import org.preesm.commons.logger.PreesmLogger;
 import org.preesm.model.scenario.PreesmScenario;
 import org.preesm.workflow.elements.Workflow;
@@ -60,36 +59,37 @@ import org.preesm.workflow.implement.AbstractTaskImplementation;
  */
 public class LatencyEvaluationTask extends AbstractTaskImplementation {
 
+  private static final String DURATION_LITTERAL = "duration";
+  private static final String METHOD_LITTERAL = "method";
+
   /**
    * @author hderoui
    *
    *         The supported methods
    */
-  public static enum LatencyMethod {
-  FAST, // Hierarchical method
-  FLAT_LP, // Based on Flattening the hierarchy
-  FLAT_SE, // Based on Flattening the hierarchy
+  private enum LatencyMethod {
+    FAST, // Hierarchical method
+    FLAT_LP, // Based on Flattening the hierarchy
+    FLAT_SE, // Based on Flattening the hierarchy
   }
 
   // Plug-in parameters
-  public static final String PARAM_METHOD               = "method";
+  public static final String PARAM_METHOD               = METHOD_LITTERAL;
   public static final String PARAM_METHOD_DEFAULT_VALUE = "FAST";
-  public Stopwatch           timer;
 
   @Override
   public Map<String, Object> execute(final Map<String, Object> inputs, final Map<String, String> parameters,
-      final IProgressMonitor monitor, final String nodeName, final Workflow workflow) throws PreesmException {
+      final IProgressMonitor monitor, final String nodeName, final Workflow workflow) {
 
     // get the input graph, the scenario for actors duration, and the total number of cores
     final SDFGraph inputGraph = GraphStructureHelper.cloneIBSDF((SDFGraph) inputs.get("SDF"));
     final PreesmScenario inputScenario = (PreesmScenario) inputs.get("scenario");
-    final boolean multicore = Boolean.valueOf(parameters.get("multicore"));
-    final LatencyMethod inputMethod = LatencyMethod.valueOf(parameters.get("method"));
+    final boolean multicore = Boolean.parseBoolean(parameters.get("multicore"));
+    final LatencyMethod inputMethod = LatencyMethod.valueOf(parameters.get(METHOD_LITTERAL));
 
     // init & test
     final boolean deadlockFree = init(inputGraph, inputScenario);
     double latency = 0;
-    this.timer = new Stopwatch();
 
     // Compute the latency of the graph if it is deadlock free
     if (deadlockFree) {
@@ -99,36 +99,31 @@ public class LatencyEvaluationTask extends AbstractTaskImplementation {
         switch (inputMethod) {
           case FLAT_LP:
             // Based on flattening the hierarchy into a Flat srSDF graph
-            this.timer.start();
 
             // convert the IBSDF graph to a flat srSDF graph then to a dag
-            final SDFGraph dag_lp = SrSDFTransformer.convertToDAG(IBSDFTransformer.convertToSrSDF(inputGraph, false));
+            final SDFGraph dagLp = SrSDFTransformer.convertToDAG(IBSDFTransformer.convertToSrSDF(inputGraph, false));
 
             // compute the value of the longest path in the dag
-            latency = GraphStructureHelper.getLongestPath(dag_lp, null, null);
+            latency = GraphStructureHelper.getLongestPath(dagLp, null, null);
 
-            this.timer.stop();
             break;
 
           case FLAT_SE:
             // Based on flattening the hierarchy into a Flat srSDF graph
-            this.timer.start();
 
             // convert the IBSDF graph to a flat srSDF graph then to a dag
-            final SDFGraph dag_simu = SrSDFTransformer.convertToDAG(IBSDFTransformer.convertToSrSDF(inputGraph, false));
+            final SDFGraph dagSimu = SrSDFTransformer.convertToDAG(IBSDFTransformer.convertToSrSDF(inputGraph, false));
 
             // Simulate an ASAP schedule
             final ASAPSchedulerDAG schedule = new ASAPSchedulerDAG();
-            latency = schedule.schedule(dag_simu);
+            latency = schedule.schedule(dagSimu);
 
-            this.timer.stop();
             break;
 
           case FAST:
             // Based on a hierarchical evaluation of the latency (evaluate-replace)
             final LatencyEvaluationEngine evaluator = new LatencyEvaluationEngine();
             latency = evaluator.getMinLatencyMultiCore(inputGraph, null, false);
-            this.timer = evaluator.timer;
             break;
 
           default:
@@ -138,18 +133,17 @@ public class LatencyEvaluationTask extends AbstractTaskImplementation {
         }
 
         // print a message with the latency value
-        PreesmLogger.getLogger().log(Level.INFO, "The minimum Latency value of a multicore execution = " + latency
-            + " Cycle, Computed in : " + this.timer.toString());
+        final String message = "The minimum Latency value of a multicore execution = " + latency + " Cycles";
+        PreesmLogger.getLogger().log(Level.INFO, message);
 
       } else {
         // single core execution
         final LatencyEvaluationEngine evaluator = new LatencyEvaluationEngine();
         latency = evaluator.getMinLatencySingleCore(inputGraph, inputScenario);
-        this.timer = evaluator.timer;
 
         // print a message with the latency value
-        PreesmLogger.getLogger().log(Level.INFO, "The minimum Latency value of a singlecore execution = " + latency
-            + " Cycle, Computed in : " + this.timer.toString());
+        final String message = "The minimum Latency value of a singlecore execution = " + latency + " Cycles";
+        PreesmLogger.getLogger().log(Level.INFO, message);
       }
 
     } else {
@@ -168,9 +162,7 @@ public class LatencyEvaluationTask extends AbstractTaskImplementation {
 
   @Override
   public Map<String, String> getDefaultParameters() {
-    final Map<String, String> parameters = new HashMap<>();
-    // parameters.put(,);
-    return parameters;
+    return new LinkedHashMap<>();
   }
 
   @Override
@@ -189,9 +181,6 @@ public class LatencyEvaluationTask extends AbstractTaskImplementation {
    * @return true if deadlock free, false if not
    */
   private boolean init(final SDFGraph inputGraph, final PreesmScenario scenario) {
-    // test the inputs
-    // TestPlugin.start(null, null);
-
     // check the consistency by computing the RV of the graph
     boolean deadlockFree = IBSDFConsistency.computeRV(inputGraph);
 
@@ -204,21 +193,18 @@ public class LatencyEvaluationTask extends AbstractTaskImplementation {
           if (actor.getGraphDescription() == null) {
             // if atomic actor then copy the duration indicated in the scenario
             final double duration = scenario.getTimingManager().getTimingOrDefault(actor.getId(), "x86").getTime();
-            actor.setPropertyValue("duration", duration);
+            actor.setPropertyValue(DURATION_LITTERAL, duration);
           } else {
             // if hierarchical actor then as default the duration is 1
             // the real duration of the hierarchical actor will be defined later by scheduling its subgraph
-            actor.setPropertyValue("duration", 1.);
+            actor.setPropertyValue(DURATION_LITTERAL, 1.);
             scenario.getTimingManager().setTiming(actor.getId(), "x86", 1); // to remove
           }
         } else {
           // keep the duration of input interfaces
           final double duration = scenario.getTimingManager().getTimingOrDefault(actor.getId(), "x86").getTime();
-          actor.setPropertyValue("duration", duration);
+          actor.setPropertyValue(DURATION_LITTERAL, duration);
 
-          // the duration of interfaces in neglected by setting their duration to 0
-          // actor.setPropertyValue("duration", 0.);
-          // scenario.getTimingManager().setTiming(actor.getId(), "x86", 0); // to remove
         }
       }
 

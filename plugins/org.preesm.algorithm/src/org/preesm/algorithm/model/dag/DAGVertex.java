@@ -44,7 +44,6 @@ import org.preesm.algorithm.model.AbstractVertex;
 import org.preesm.algorithm.model.AbstractVertexPropertyType;
 import org.preesm.algorithm.model.PropertyBean;
 import org.preesm.algorithm.model.PropertyFactory;
-import org.preesm.algorithm.model.sdf.SDFAbstractVertex;
 
 /**
  * Class used to represent a Vertex in a DIrected Acyclic Graph.
@@ -54,22 +53,19 @@ import org.preesm.algorithm.model.sdf.SDFAbstractVertex;
 public class DAGVertex extends AbstractVertex<DirectedAcyclicGraph> {
 
   /** Key to access to property time. */
-  public static final String TIME = "time";
+  private static final String TIME = "time";
 
   /** Key to access to property nb repeat. */
-  public static final String NB_REPEAT = "nb_repeat";
+  private static final String NB_REPEAT = "nb_repeat";
 
   /** The string representing the kind of this vertex. */
   public static final String DAG_VERTEX = "dag_vertex";
 
-  /** Key to access to property sdf_vertex. */
-  public static final String SDF_VERTEX = "sdf_vertex";
-
   /** Key to access to property vertex_sinks. */
-  public static final String SINKS = "vertex_sinks";
+  private static final String SINKS = "vertex_sinks";
 
   /** Key to access to property vertex_sources. */
-  public static final String SOURCES = "vertex_sources";
+  private static final String SOURCES = "vertex_sources";
 
   static {
     AbstractVertex.public_properties.add(DAGVertex.TIME);
@@ -104,19 +100,6 @@ public class DAGVertex extends AbstractVertex<DirectedAcyclicGraph> {
     setNbRepeat(nb);
     setTime(t);
     setName(n);
-  }
-
-  /**
-   * Gives the vertex corresponding to this dag vertex.
-   *
-   * @return The SDFVertex corresponding to this DAG vertex from the SDF2Dag translation
-   */
-  public SDFAbstractVertex getCorrespondingSDFVertex() {
-    final Object vertex = getPropertyBean().getValue(DAGVertex.SDF_VERTEX);
-    if (vertex != null) {
-      return (SDFAbstractVertex) vertex;
-    }
-    return null;
   }
 
   /**
@@ -167,16 +150,6 @@ public class DAGVertex extends AbstractVertex<DirectedAcyclicGraph> {
       return base.outgoingEdgesOf(this);
     }
     return new TreeSet<>();
-  }
-
-  /**
-   * Set the sdf vertex corresponding to this dag vertex.
-   *
-   * @param vertex
-   *          the new corresponding SDF vertex
-   */
-  public void setCorrespondingSDFVertex(final SDFAbstractVertex vertex) {
-    getPropertyBean().setValue(DAGVertex.SDF_VERTEX, vertex);
   }
 
   /**

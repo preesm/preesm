@@ -35,14 +35,15 @@
  */
 package org.preesm.algorithm.throughput;
 
+import java.util.logging.Level;
 import org.apache.commons.lang3.math.Fraction;
 import org.preesm.algorithm.model.sdf.SDFAbstractVertex;
 import org.preesm.algorithm.model.sdf.SDFGraph;
 import org.preesm.algorithm.schedule.ASAPSchedulerSDF;
 import org.preesm.algorithm.schedule.PeriodicSchedulerSDF;
-import org.preesm.algorithm.throughput.tools.helpers.GraphStructureHelper;
-import org.preesm.algorithm.throughput.tools.helpers.Stopwatch;
-import org.preesm.algorithm.throughput.tools.transformers.SDFTransformer;
+import org.preesm.algorithm.throughput.tools.GraphStructureHelper;
+import org.preesm.algorithm.throughput.tools.SDFTransformer;
+import org.preesm.commons.logger.PreesmLogger;
 
 /**
  * @author hderoui
@@ -50,48 +51,40 @@ import org.preesm.algorithm.throughput.tools.transformers.SDFTransformer;
  */
 public class ScheduleReplace {
 
-  public Stopwatch timer;
-  // private PreesmScenario preesmScenario;
-
   /**
    * @param inputGraph
    *          IBSDF graph contains actors duration
    * @return throughput of the graph
    */
   public double evaluate(final SDFGraph inputGraph) {
-    // this.preesmScenario = scenario;
-    System.out.println("Computing the throughput of the graph using Schedule-Replace technique ...");
-    this.timer = new Stopwatch();
-    this.timer.start();
+    PreesmLogger.getLogger().log(Level.FINEST,
+        "Computing the throughput of the graph using Schedule-Replace technique ...");
 
     // Step 1: define the execution duration of each hierarchical actor
-    System.out.println("Step 1: define the execution duration of each hierarchical actor");
+    PreesmLogger.getLogger().log(Level.FINEST, "Step 1: define the execution duration of each hierarchical actor");
     for (final SDFAbstractVertex actor : inputGraph.vertexSet()) {
       if (actor.getGraphDescription() != null) {
         // set the duration of the hierarchical actor
         final Double duration = setHierarchicalActorsDuration((SDFGraph) actor.getGraphDescription());
         actor.setPropertyValue("duration", duration);
-        // if (preesmScenario != null) {
-        // this.preesmScenario.getTimingManager().setTiming(actor.getId(), "x86", duration.longValue());
-        // }
       }
     }
 
     // Step 2: convert the topGraph to a srSDF graph
-    System.out.println("Step 2: convert the topGraph to a srSDF graph");
+    PreesmLogger.getLogger().log(Level.FINEST, "Step 2: convert the topGraph to a srSDF graph");
     final SDFGraph srSDF = SDFTransformer.convertToSrSDF(inputGraph);
 
     // Step 3: add a self loop edge to each hierarchical actor
-    System.out.println("Step 3: add a self loop edge to each hierarchical actor");
+    PreesmLogger.getLogger().log(Level.FINEST, "Step 3: add a self loop edge to each hierarchical actor");
     for (final SDFAbstractVertex actor : srSDF.vertexSet()) {
-      final SDFAbstractVertex baseActor = (SDFAbstractVertex) actor.getPropertyBean().getValue("baseActor");
+      final SDFAbstractVertex baseActor = actor.getPropertyBean().getValue("baseActor");
       if (baseActor.getGraphDescription() != null) {
         GraphStructureHelper.addEdge(srSDF, actor.getName(), null, actor.getName(), null, 1, 1, 1, null);
       }
     }
 
     // Step 4: compute the throughput with the Periodic Schedule
-    System.out.println("Step 4: compute the throughput using the Periodic Schedule");
+    PreesmLogger.getLogger().log(Level.FINEST, "Step 4: compute the throughput using the Periodic Schedule");
     // normalize the graph
     SDFTransformer.normalize(srSDF);
     // compute its normalized period K
@@ -99,8 +92,8 @@ public class ScheduleReplace {
     final Fraction k = periodic.computeNormalizedPeriod(srSDF, PeriodicSchedulerSDF.Method.LINEAR_PROGRAMMING_GUROBI);
     // compute its throughput as 1/K
     final double throughput = 1 / k.doubleValue();
-    this.timer.stop();
-    System.out.println("Throughput of the graph = " + throughput + " computed in " + this.timer.toString());
+    final String msg = "Throughput of the graph = " + throughput;
+    PreesmLogger.getLogger().log(Level.FINEST, msg);
 
     return throughput;
   }
@@ -112,14 +105,13 @@ public class ScheduleReplace {
    *          subgraph of a hierarchical actor
    * @return the duration of the subgraph
    */
-  public double setHierarchicalActorsDuration(final SDFGraph subgraph) {
+  private double setHierarchicalActorsDuration(final SDFGraph subgraph) {
     // recursive function
     for (final SDFAbstractVertex actor : subgraph.vertexSet()) {
       if (actor.getGraphDescription() != null) {
         // set the duration of the hierarchical actor
         final Double duration = setHierarchicalActorsDuration((SDFGraph) actor.getGraphDescription());
         actor.setPropertyValue("duration", duration);
-        // this.preesmScenario.getTimingManager().setTiming(actor.getId(), "x86", duration.longValue());
       }
     }
 

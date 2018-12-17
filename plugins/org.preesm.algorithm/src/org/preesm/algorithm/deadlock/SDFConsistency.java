@@ -46,7 +46,7 @@ import org.preesm.algorithm.model.sdf.SDFGraph;
 import org.preesm.algorithm.model.sdf.esdf.SDFSinkInterfaceVertex;
 import org.preesm.algorithm.model.sdf.esdf.SDFSourceInterfaceVertex;
 import org.preesm.algorithm.model.types.LongEdgePropertyType;
-import org.preesm.algorithm.throughput.tools.helpers.Stopwatch;
+import org.preesm.algorithm.throughput.tools.Stopwatch;
 import org.preesm.commons.exceptions.PreesmException;
 import org.preesm.commons.math.MathFunctionsHelper;
 

@@ -42,6 +42,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
+import java.util.NoSuchElementException;
 import org.jgrapht.traverse.AbstractGraphIterator;
 import org.preesm.algorithm.mapper.abc.impl.latency.LatencyAbc;
 import org.preesm.algorithm.mapper.model.MapperDAG;
@@ -49,7 +50,6 @@ import org.preesm.algorithm.mapper.model.MapperDAGVertex;
 import org.preesm.algorithm.model.dag.DAGEdge;
 import org.preesm.algorithm.model.dag.DAGVertex;
 
-// TODO: Auto-generated Javadoc
 /**
  * Iterates the graph in ascending or descending order using the given compare function that respects topological order.
  * If an ABC is given, the implementation iterator makes it available for the compare method
@@ -89,21 +89,13 @@ public abstract class ImplementationIterator extends AbstractGraphIterator<DAGVe
     this.currentIndex = 0;
   }
 
-  /*
-   * (non-Javadoc)
-   *
-   * @see java.util.Comparator#compare(java.lang.Object, java.lang.Object)
-   */
-  @Override
-  public abstract int compare(MapperDAGVertex arg0, MapperDAGVertex arg1);
-
   /**
    * Creates the ordered list.
    *
    * @param implementation
    *          the implementation
    */
-  public void createOrderedList(final MapperDAG implementation) {
+  private void createOrderedList(final MapperDAG implementation) {
     // Creating a sorted list using the current class as a comparator
     this.orderedlist = new ArrayList<>();
     for (final DAGVertex dv : implementation.vertexSet()) {
@@ -129,7 +121,6 @@ public abstract class ImplementationIterator extends AbstractGraphIterator<DAGVe
    */
   @Override
   public boolean hasNext() {
-    // TODO Auto-generated method stub
     return (this.currentIndex < this.orderedlist.size());
   }
 
@@ -140,8 +131,11 @@ public abstract class ImplementationIterator extends AbstractGraphIterator<DAGVe
    */
   @Override
   public MapperDAGVertex next() {
-    // TODO Auto-generated method stub
-    return this.orderedlist.get(this.currentIndex++);
+    final int index = this.currentIndex++;
+    if (index > this.orderedlist.size() - 1) {
+      throw new NoSuchElementException();
+    }
+    return this.orderedlist.get(index);
   }
 
 }

@@ -39,7 +39,7 @@ import org.junit.Assert;
 import org.junit.Test;
 import org.preesm.algorithm.model.sdf.SDFGraph;
 import org.preesm.algorithm.schedule.ASAPSchedulerDAG;
-import org.preesm.algorithm.throughput.tools.helpers.GraphStructureHelper;
+import org.preesm.algorithm.throughput.tools.GraphStructureHelper;
 
 /**
  * Unit test of ASAPScheduler_DAG class
@@ -62,17 +62,17 @@ public class ASAPSchedulerDAGTest {
     Assert.assertEquals(3.0, durationOf1Iteration, 0);
 
     // check the start date of each actor
-    Assert.assertEquals(0.0, scheduler.simulator.getStartDate(dag.getVertex("B1")), 0);
-    Assert.assertEquals(0.0, scheduler.simulator.getStartDate(dag.getVertex("B2")), 0);
-    Assert.assertEquals(1.0, scheduler.simulator.getStartDate(dag.getVertex("C1")), 0);
-    Assert.assertEquals(1.0, scheduler.simulator.getStartDate(dag.getVertex("C2")), 0);
-    Assert.assertEquals(1.0, scheduler.simulator.getStartDate(dag.getVertex("C3")), 0);
-    Assert.assertEquals(1.0, scheduler.simulator.getStartDate(dag.getVertex("C4")), 0);
-    Assert.assertEquals(1.0, scheduler.simulator.getStartDate(dag.getVertex("C5")), 0);
-    Assert.assertEquals(1.0, scheduler.simulator.getStartDate(dag.getVertex("C6")), 0);
-    Assert.assertEquals(2.0, scheduler.simulator.getStartDate(dag.getVertex("A1")), 0);
-    Assert.assertEquals(2.0, scheduler.simulator.getStartDate(dag.getVertex("A2")), 0);
-    Assert.assertEquals(2.0, scheduler.simulator.getStartDate(dag.getVertex("A3")), 0);
+    Assert.assertEquals(0.0, scheduler.getSimulator().getStartDate(dag.getVertex("B1")), 0);
+    Assert.assertEquals(0.0, scheduler.getSimulator().getStartDate(dag.getVertex("B2")), 0);
+    Assert.assertEquals(1.0, scheduler.getSimulator().getStartDate(dag.getVertex("C1")), 0);
+    Assert.assertEquals(1.0, scheduler.getSimulator().getStartDate(dag.getVertex("C2")), 0);
+    Assert.assertEquals(1.0, scheduler.getSimulator().getStartDate(dag.getVertex("C3")), 0);
+    Assert.assertEquals(1.0, scheduler.getSimulator().getStartDate(dag.getVertex("C4")), 0);
+    Assert.assertEquals(1.0, scheduler.getSimulator().getStartDate(dag.getVertex("C5")), 0);
+    Assert.assertEquals(1.0, scheduler.getSimulator().getStartDate(dag.getVertex("C6")), 0);
+    Assert.assertEquals(2.0, scheduler.getSimulator().getStartDate(dag.getVertex("A1")), 0);
+    Assert.assertEquals(2.0, scheduler.getSimulator().getStartDate(dag.getVertex("A2")), 0);
+    Assert.assertEquals(2.0, scheduler.getSimulator().getStartDate(dag.getVertex("A3")), 0);
 
   }
 

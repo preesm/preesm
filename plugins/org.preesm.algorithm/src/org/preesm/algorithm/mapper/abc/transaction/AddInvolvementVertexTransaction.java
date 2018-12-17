@@ -72,7 +72,7 @@ public class AddInvolvementVertexTransaction extends Transaction {
   private AbstractRouteStep step = null;
 
   /** time of this involvement. */
-  long involvementTime = 0;
+  private long involvementTime = 0;
 
   /** Original edge and transfer corresponding to this involvement. */
   private MapperDAGEdge edge = null;

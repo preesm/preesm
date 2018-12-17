@@ -53,25 +53,25 @@ public abstract class AbstractMemoryScriptTask extends AbstractTaskImplementatio
   public static final String VALUE_TRUE = "True";
 
   /** The Constant VALUE_FALSE. */
-  public static final String VALUE_FALSE = "False";
+  private static final String VALUE_FALSE = "False";
 
   /** The Constant PARAM_LOG. */
   public static final String PARAM_LOG = "Log Path";
 
   /** The Constant VALUE_LOG. */
-  public static final String VALUE_LOG = "log_memoryScripts";
+  private static final String VALUE_LOG = "log_memoryScripts";
 
   /** The Constant PARAM_CHECK. */
   public static final String PARAM_CHECK = "Check";
 
   /** The Constant VALUE_CHECK_NONE. */
-  public static final String VALUE_CHECK_NONE = "None";
+  private static final String VALUE_CHECK_NONE = "None";
 
   /** The Constant VALUE_CHECK_FAST. */
-  public static final String VALUE_CHECK_FAST = "Fast";
+  private static final String VALUE_CHECK_FAST = "Fast";
 
   /** The Constant VALUE_CHECK_THOROUGH. */
-  public static final String VALUE_CHECK_THOROUGH = "Thorough";
+  private static final String VALUE_CHECK_THOROUGH = "Thorough";
 
   /*
    * (non-Javadoc)

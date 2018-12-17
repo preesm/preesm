@@ -1,6 +1,24 @@
 PREESM Changelog
 ================
 
+## Release version 3.1.1
+*2018.12.17*
+
+### New Feature
+
+### Changes
+* Refactor code base;
+* Refactor PiSDF:
+  * replace init/end String references with Object references;
+  * Make Init/End actors special actors;
+  * Update graph abstraction and implement high level operations;
+  * Add structure checkers;  
+* Update TCP Codegen: add threads dedicated to receive operations in order to free the TCP buffers ASAP and avoid deadlocks;
+
+### Bug fix
+* Fix issue 89: Fix stdint includes for MSVC;
+* Fix issue 90: include missing xslt file and icons in the produced binaries;
+
 ## Release version 3.1.0
 *2018.12.11*
 

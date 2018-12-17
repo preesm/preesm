@@ -264,7 +264,7 @@
       <task
             id="org.ietr.preesm.pimm.algorithm.checker.periods.PeriodsPreschedulingChecker"
             name="Periods Prescheduling Checker"
-            type="org.preesm.algorithm.pisdf.checker.periods.PeriodsPreschedulingChecker">
+            type="org.preesm.algorithm.pisdf.checker.PeriodsPreschedulingChecker">
          <inputs>
             <input
                   id="PiMM"
@@ -550,23 +550,6 @@
             <input
                   id="architecture"
                   object="org.preesm.model.slam.Design">
-            </input>
-         </inputs>
-         <outputs>
-            <output
-                  id="xml"
-                  object="java.lang.String">
-            </output>
-         </outputs>
-      </task>
-      <task
-            id="org.ietr.preesm.XsltTransform"
-            name="Xslt file transformation"
-            type="org.preesm.algorithm.mapper.exporter.XsltTransform">
-         <inputs>
-            <input
-                  id="xml"
-                  object="java.lang.String">
             </input>
          </inputs>
          <outputs>

@@ -42,12 +42,6 @@ package org.preesm.algorithm.model;
  */
 public enum InterfaceDirection {
 
-  @Deprecated
-  Input,
-
-  @Deprecated
-  Output,
-
   /** The direction is Input. */
   INPUT,
 

@@ -50,10 +50,10 @@ import org.preesm.algorithm.model.dag.DAGEdge;
 public class MapperDAGEdge extends DAGEdge {
 
   /** The initial edge property. */
-  protected EdgeInit initialEdgeProperty;
+  private EdgeInit initialEdgeProperty;
 
   /** The timing edge property. */
-  protected EdgeTiming timingEdgeProperty;
+  private EdgeTiming timingEdgeProperty;
 
   /**
    * Instantiates a new mapper DAG edge.

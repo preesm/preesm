@@ -130,7 +130,7 @@ public abstract class MemoryAllocator {
           while (iter.hasNext()) {
             final BufferProperties properties = iter.next();
             final String dataType = properties.getDataType();
-            final DataType type = MemoryExclusionVertex._dataTypes.get(dataType);
+            final DataType type = MemoryExclusionVertex.NAME_TO_DATATYPES.get(dataType);
             long typeSize;
             // A proper type was not set for the considered edge
             if (type == null) {
@@ -219,7 +219,7 @@ public abstract class MemoryAllocator {
    * </tr>
    * </table>
    */
-  protected Map<DAGEdge, Long> edgeAllocation;
+  private final Map<DAGEdge, Long> edgeAllocation;
 
   /**
    * An allocation is a map of fifo associated to an integer which represents their offset in a monolithic memory.<br>
@@ -239,7 +239,7 @@ public abstract class MemoryAllocator {
    * </tr>
    * </table>
    */
-  protected Map<MemoryExclusionVertex, Long> fifoAllocation;
+  private final Map<MemoryExclusionVertex, Long> fifoAllocation;
 
   /**
    * An allocation is a map of actor working memory associated to an integer which represents their offset in a
@@ -260,7 +260,7 @@ public abstract class MemoryAllocator {
    * </tr>
    * </table>
    */
-  protected Map<MemoryExclusionVertex, Long> workingMemAllocation;
+  private final Map<MemoryExclusionVertex, Long> workingMemAllocation;
 
   /**
    * An allocation is a map of {@link MemoryExclusionVertex memory objects} associated to an integer which represents
@@ -401,7 +401,7 @@ public abstract class MemoryAllocator {
    * @param offset
    *          the offset of the hostVertex
    */
-  protected void allocateHostMemoryObject(final MemoryExclusionVertex hostVertex,
+  private void allocateHostMemoryObject(final MemoryExclusionVertex hostVertex,
       final Set<MemoryExclusionVertex> vertices, final long offset) {
     // 1 - Put back all hosted mobj in the meg (with their exclusions)
     // 2 - Put the host Mobj back to its original size and exclusions
@@ -610,7 +610,7 @@ public abstract class MemoryAllocator {
    * @param neighbor
    *          The {@link MemoryExclusionVertex} that is not yet in the {@link #inputExclusionGraph}.
    */
-  protected void excludeWithHostedNeighbor(final MemoryExclusionVertex vertex, final MemoryExclusionVertex neighbor) {
+  private void excludeWithHostedNeighbor(final MemoryExclusionVertex vertex, final MemoryExclusionVertex neighbor) {
     // The neighbor is not in the graph, it must be
     // hosted by another mObject or divided.
     // Find the host(s)
@@ -681,7 +681,7 @@ public abstract class MemoryAllocator {
           while (iter.hasNext()) {
             final BufferProperties properties = iter.next();
             final String dataType = properties.getDataType();
-            final DataType type = MemoryExclusionVertex._dataTypes.get(dataType);
+            final DataType type = MemoryExclusionVertex.NAME_TO_DATATYPES.get(dataType);
             final long typeSize = type.getSize();
 
             if (interBufferSpaces != null) {

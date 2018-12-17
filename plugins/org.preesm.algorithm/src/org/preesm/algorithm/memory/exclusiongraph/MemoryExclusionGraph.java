@@ -131,7 +131,7 @@ public class MemoryExclusionGraph extends SimpleGraph<MemoryExclusionVertex, Def
   public static final String ALLOCATED_MEMORY_SIZE = "allocated_memory_size";
 
   /** The public properties. */
-  protected static List<String> public_properties = new ArrayList<String>() {
+  private static List<String> public_properties = new ArrayList<String>() {
     /**
      *
      */
@@ -171,12 +171,12 @@ public class MemoryExclusionGraph extends SimpleGraph<MemoryExclusionVertex, Def
    * {@link MemoryExclusionVertex} of the {@link MemoryExclusionGraph} in the scheduling order retrieved in the
    * {@link #updateWithSchedule(DirectedAcyclicGraph)} method.
    */
-  protected List<MemoryExclusionVertex> memExVerticesInSchedulingOrder = null;
+  private List<MemoryExclusionVertex> memExVerticesInSchedulingOrder = null;
 
   /**
    * The {@link PropertyBean} that stores the properties of the {@link MemoryExclusionGraph}.
    */
-  protected PropertyBean properties;
+  private final PropertyBean properties;
 
   /**
    * Default constructor.
@@ -213,7 +213,7 @@ public class MemoryExclusionGraph extends SimpleGraph<MemoryExclusionVertex, Def
    *          The memory transfer to add.
    * @return the exclusion graph node created (or null)
    */
-  public MemoryExclusionVertex addNode(final DAGEdge edge) {
+  private MemoryExclusionVertex addNode(final DAGEdge edge) {
     // If the target and source vertices are tasks,
     // add a node corresponding to the memory transfer
     // to the exclusion graph. Else, nothing
@@ -250,7 +250,7 @@ public class MemoryExclusionGraph extends SimpleGraph<MemoryExclusionVertex, Def
    * @param dag
    *          the dag containing the fifos.
    */
-  protected void buildFifoMemoryObjects(final DirectedAcyclicGraph dag) {
+  private void buildFifoMemoryObjects(final DirectedAcyclicGraph dag) {
     // Scan the dag vertices
     for (final DAGVertex vertex : dag.vertexSet()) {
       final String vertKind = vertex.getKind();
@@ -296,7 +296,7 @@ public class MemoryExclusionGraph extends SimpleGraph<MemoryExclusionVertex, Def
             throw new RuntimeException("DAGEdge " + outgoingEdge + " is equivalent to several SDFEdges.\n"
                 + "This is not supported by the MemEx builder.\n" + "Please contact Preesm developers.");
           }
-          final DataType type = MemoryExclusionVertex._dataTypes.get(buffers.get(0).getDataType());
+          final DataType type = MemoryExclusionVertex.NAME_TO_DATATYPES.get(buffers.get(0).getDataType());
           if (type != null) {
             typeSize = type.getSize();
           }
@@ -737,7 +737,7 @@ public class MemoryExclusionGraph extends SimpleGraph<MemoryExclusionVertex, Def
    *          <code>Map&lt;MemoryExclusionVertex,MemoryExclusionVertex&gt;</code> associating original
    *          {@link MemoryExclusionVertex} of the current {@link MemoryExclusionGraph} to their clone.
    */
-  protected void deepCloneMegProperties(final MemoryExclusionGraph result,
+  private void deepCloneMegProperties(final MemoryExclusionGraph result,
       final Map<MemoryExclusionVertex, MemoryExclusionVertex> mObjMap) {
     // DAG_EDGE_ALLOCATION
     @SuppressWarnings("unchecked")
@@ -824,7 +824,7 @@ public class MemoryExclusionGraph extends SimpleGraph<MemoryExclusionVertex, Def
    *          <code>Map&lt;MemoryExclusionVertex,MemoryExclusionVertex&gt;</code> associating original
    *          {@link MemoryExclusionVertex} of the current {@link MemoryExclusionGraph} to their clone.
    */
-  protected void deepCloneVerticesProperties(final Map<MemoryExclusionVertex, MemoryExclusionVertex> mObjMap) {
+  private void deepCloneVerticesProperties(final Map<MemoryExclusionVertex, MemoryExclusionVertex> mObjMap) {
     for (final Entry<MemoryExclusionVertex, MemoryExclusionVertex> entry : mObjMap.entrySet()) {
       final MemoryExclusionVertex vertex = entry.getKey();
       final MemoryExclusionVertex vertexClone = entry.getValue();
@@ -844,7 +844,7 @@ public class MemoryExclusionGraph extends SimpleGraph<MemoryExclusionVertex, Def
         final List<Pair<MemoryExclusionVertex, Pair<Range, Range>>> realTokenRangeCopy = new ArrayList<>();
         for (final Pair<MemoryExclusionVertex, Pair<Range, Range>> pair : realTokenRange) {
           realTokenRangeCopy.add(Pair.of(mObjMap.get(pair.getKey()),
-              Pair.of((Range) pair.getValue().getKey().copy(), (Range) pair.getValue().getValue().copy())));
+              Pair.of(pair.getValue().getKey().copy(), pair.getValue().getValue().copy())));
         }
         vertexClone.setPropertyValue(MemoryExclusionVertex.REAL_TOKEN_RANGE_PROPERTY, realTokenRangeCopy);
       }
@@ -973,31 +973,6 @@ public class MemoryExclusionGraph extends SimpleGraph<MemoryExclusionVertex, Def
         adjacentVerticesBackup.removeAll(vertices);
       }
     }
-  }
-
-  /**
-   * Remove a {@link MemoryExclusionVertex} from the {@link MemoryExclusionGraph}. Contrary to
-   * {@link #removeVertex(MemoryExclusionVertex)}, this method scans the properties and attributes of the
-   * {@link MemoryExclusionGraph} to remove all reference to the removed {@link MemoryExclusionVertex}.<br>
-   * <br>
-   * Properties and attributes affected by this method are:
-   * <ul>
-   * <li>List of vertices</li>
-   * <li>List of edges</li>
-   * <li>{@link #adjacentVerticesBackup}</li>
-   * <li>{@link #memExVerticesInSchedulingOrder}</li>
-   * <li>{@link #HOST_MEMORY_OBJECT_PROPERTY} property}</li>
-   * <li>{@link MemoryExclusionVertex#ADJACENT_VERTICES_BACKUP} property of {@link MemoryExclusionVertex vertices}</li>
-   * </ul>
-   *
-   * @param vertex
-   *          the {@link MemoryExclusionVertex} removed from the graph.
-   */
-  public void deepRemoveVertex(final MemoryExclusionVertex vertex) {
-    final List<MemoryExclusionVertex> list = new ArrayList<>();
-    list.add(vertex);
-    // Calls the list removing code to avoid duplicating the method code.
-    deepRemoveAllVertices(list);
   }
 
   /**
@@ -1132,7 +1107,7 @@ public class MemoryExclusionGraph extends SimpleGraph<MemoryExclusionVertex, Def
    *           if the {@link MemoryExclusionVertex} is not derived from the given {@link DirectedAcyclicGraph DAG} or if
    *           the {@link DirectedAcyclicGraph DAG} was not scheduled.
    */
-  protected Entry<Long, Long> getLifeTime(final MemoryExclusionVertex vertex, final DirectedAcyclicGraph dag) {
+  private Entry<Long, Long> getLifeTime(final MemoryExclusionVertex vertex, final DirectedAcyclicGraph dag) {
 
     // If the MemObject corresponds to an edge, its lifetime spans from the
     // execution start of its source until the execution end of its target
@@ -1152,7 +1127,7 @@ public class MemoryExclusionGraph extends SimpleGraph<MemoryExclusionVertex, Def
 
       final long duration = (long) target.getPropertyBean().getValue(ImplementationPropertyNames.Task_duration);
 
-      return new AbstractMap.SimpleEntry<>((Long) birth, (Long) death + (Long) duration);
+      return new AbstractMap.SimpleEntry<>(birth, death + duration);
     }
 
     // Else the memEx vertex corresponds to a working memory
@@ -1341,53 +1316,6 @@ public class MemoryExclusionGraph extends SimpleGraph<MemoryExclusionVertex, Def
   }
 
   /**
-   * This method remove node A from the graph if:<br>
-   * - Node A and node B are <b>NOT</b> linked by an edge.<br>
-   * - Nodes A and B have ALL their neighbors in common.<br>
-   * - Nodes A has a lighter weight than node B.<br>
-   * Applying this method to an exclusion graph before a MaximumWeightCliqueSolver is executed remove nodes that will
-   * never be part of the maximum weight clique.<br>
-   * <br>
-   * This method also clears the adjacentverticesBackup lists.
-   *
-   * @deprecated Not used anywhere
-   */
-  @Deprecated
-  public void removeLightestEquivalentNodes() {
-
-    // Retrieve the list of nodes of the gaph
-    final ArrayList<MemoryExclusionVertex> nodes = new ArrayList<>(vertexSet());
-
-    // Sort it in descending order of weights
-    Collections.sort(nodes, Collections.reverseOrder());
-
-    final Set<MemoryExclusionVertex> fusionned = new LinkedHashSet<>();
-
-    // Look for a pair of nodes with the properties exposed in method
-    // comments
-    for (final MemoryExclusionVertex node : nodes) {
-      if (!fusionned.contains(node)) {
-        final Set<MemoryExclusionVertex> nonAdjacentSet = new LinkedHashSet<>(vertexSet());
-        nonAdjacentSet.removeAll(getAdjacentVertexOf(node));
-        nonAdjacentSet.remove(node);
-
-        for (final MemoryExclusionVertex notNeighbor : nonAdjacentSet) {
-          if (getAdjacentVertexOf(notNeighbor).size() == getAdjacentVertexOf(node).size()) {
-            if (getAdjacentVertexOf(notNeighbor).containsAll(getAdjacentVertexOf(node))) {
-
-              // Keep only the one with the max weight
-              fusionned.add(notNeighbor);
-
-            }
-          }
-        }
-        removeAllVertices(fusionned);
-      }
-    }
-    this.adjacentVerticesBackup = new LinkedHashMap<>();
-  }
-
-  /**
    * Method used to update the exclusions between memory objects corresponding to Fifo heads and other memory objects of
    * the {@link MemoryExclusionGraph}. Exclusions will be removed from the exclusion graph, but no exclusions will be
    * added.
@@ -1395,10 +1323,10 @@ public class MemoryExclusionGraph extends SimpleGraph<MemoryExclusionVertex, Def
    * @param inputDAG
    *          the input DAG
    */
-  protected void updateFIFOMemObjectWithSchedule(final DirectedAcyclicGraph inputDAG) {
+  private void updateFIFOMemObjectWithSchedule(final DirectedAcyclicGraph inputDAG) {
 
     // Create a DAG with new edges from scheduling info
-    final DirectedAcyclicGraph scheduledDAG = (DirectedAcyclicGraph) inputDAG.copy();
+    final DirectedAcyclicGraph scheduledDAG = inputDAG.copy();
 
     // Create an List of the DAGVertices, in scheduling order.
     final List<DAGVertex> verticesMap = new ArrayList<>();

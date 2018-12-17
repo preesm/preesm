@@ -63,6 +63,7 @@ import org.preesm.model.slam.route.MessageRouteStep;
 import org.preesm.model.slam.route.Route;
 import org.preesm.workflow.elements.Workflow;
 import org.preesm.workflow.implement.AbstractTaskImplementation;
+import org.preesm.workflow.implement.AbstractWorkflowNodeImplementation;
 
 /**
  * Exports activity information in terms of tokens and quanta based on LatencyAbc information in the CSV file. Mono
@@ -94,22 +95,22 @@ class MonoActivityExporter extends AbstractTaskImplementation {
   Activity activity = null;
 
   MonoActivityExporter() {
-    visited = new HashSet<MapperDAGVertex>();
-    activity = new Activity();
+    this.visited = new HashSet<>();
+    this.activity = new Activity();
   }
 
   /**
    * Exporting in a CSV file tokens and quanta information
    */
   @Override
-  public Map<String, Object> execute(Map<String, Object> inputs, Map<String, String> parameters,
-      IProgressMonitor monitor, String nodeName, Workflow workflow) {
-    Logger logger = PreesmLogger.getLogger();
+  public Map<String, Object> execute(final Map<String, Object> inputs, final Map<String, String> parameters,
+      final IProgressMonitor monitor, final String nodeName, final Workflow workflow) {
+    final Logger logger = PreesmLogger.getLogger();
 
-    String filePath = parameters.get(PATH);
-    boolean human_readable = (parameters.get(HUMAN_READABLE) == "Yes");
+    final String filePath = parameters.get(MonoActivityExporter.PATH);
+    final boolean human_readable = (parameters.get(MonoActivityExporter.HUMAN_READABLE) == "Yes");
     // The abc contains all information on the implemented system
-    LatencyAbc abc = (LatencyAbc) inputs.get(KEY_SDF_ABC);
+    final LatencyAbc abc = (LatencyAbc) inputs.get(AbstractWorkflowNodeImplementation.KEY_SDF_ABC);
 
     if (abc != null) {
       writeActivity(abc, filePath, workflow, human_readable);
@@ -117,16 +118,17 @@ class MonoActivityExporter extends AbstractTaskImplementation {
       logger.log(Level.SEVERE, "Not a valid set of ABCs for ActivityExporter.");
     }
 
-    logger.log(Level.INFO, "Activity: " + activity);
+    final String msg = "Activity: " + this.activity;
+    logger.log(Level.INFO, msg);
 
-    return new HashMap<String, Object>();
+    return new HashMap<>();
   }
 
   @Override
   public Map<String, String> getDefaultParameters() {
-    Map<String, String> defaultParams = new HashMap<String, String>();
-    defaultParams.put(PATH, "stats/mat/activity");
-    defaultParams.put(HUMAN_READABLE, "Yes");
+    final Map<String, String> defaultParams = new HashMap<>();
+    defaultParams.put(MonoActivityExporter.PATH, "stats/mat/activity");
+    defaultParams.put(MonoActivityExporter.HUMAN_READABLE, "Yes");
     return defaultParams;
   }
 
@@ -138,41 +140,42 @@ class MonoActivityExporter extends AbstractTaskImplementation {
   /**
    * Generating a class with activity information, then exporting it in a text file
    */
-  private void writeActivity(LatencyAbc abc, String path, Workflow workflow, boolean human_readable) {
+  private void writeActivity(final LatencyAbc abc, final String path, final Workflow workflow,
+      final boolean human_readable) {
 
     // Clearing the history
-    visited.clear();
-    activity.clear();
+    this.visited.clear();
+    this.activity.clear();
 
     // Initializing all PE and CN information to 0
-    Design architecture = abc.getArchitecture();
-    for (ComponentInstance vertex : architecture.getComponentInstances()) {
-      activity.addTokenNumber(vertex.getInstanceName(), 0);
-      activity.addQuantaNumber(vertex.getInstanceName(), 0);
+    final Design architecture = abc.getArchitecture();
+    for (final ComponentInstance vertex : architecture.getComponentInstances()) {
+      this.activity.addTokenNumber(vertex.getInstanceName(), 0);
+      this.activity.addQuantaNumber(vertex.getInstanceName(), 0);
     }
 
     // Generating activity information
-    for (MapperDAGVertex vertex : abc.getImplementation().getSources()) {
+    for (final MapperDAGVertex vertex : abc.getImplementation().getSources()) {
       addVertexAndSuccessors(vertex, abc);
       vertex.getSuccessors(true);
     }
 
     // Writing the activity csv file
-    writeString(activity.tokensString(human_readable), "tokens", path, workflow);
-    writeString(activity.quantaString(human_readable), "quanta", path, workflow);
+    MonoActivityExporter.writeString(this.activity.tokensString(human_readable), "tokens", path, workflow);
+    MonoActivityExporter.writeString(this.activity.quantaString(human_readable), "quanta", path, workflow);
   }
 
   /**
    * Recursive function to scan the whole application for extracting activity
    */
-  private void addVertexAndSuccessors(MapperDAGVertex vertex, LatencyAbc abc) {
+  private void addVertexAndSuccessors(final MapperDAGVertex vertex, final LatencyAbc abc) {
     // add a vertex and its successors to activity information
     visitVertex(vertex);
-    visited.add(vertex); // avoiding multiple visits of a vertex
-    for (MapperDAGVertex succ : vertex.getSuccessors(true).keySet()) {
-      MapperDAGEdge edge = vertex.getSuccessors(true).get(succ);
+    this.visited.add(vertex); // avoiding multiple visits of a vertex
+    for (final MapperDAGVertex succ : vertex.getSuccessors(true).keySet()) {
+      final MapperDAGEdge edge = vertex.getSuccessors(true).get(succ);
       visitEdge(edge, abc); // Visiting edge even if the successor vertex was already visited
-      if (!visited.contains(succ)) {
+      if (!this.visited.contains(succ)) {
         addVertexAndSuccessors(succ, abc);
       }
     }
@@ -181,30 +184,30 @@ class MonoActivityExporter extends AbstractTaskImplementation {
   /**
    * Visiting one vertex and extracting activity
    */
-  private void visitVertex(MapperDAGVertex vertex) {
-    activity.addTokenNumber(vertex.getEffectiveComponent().getInstanceName(), 1);
-    String duration = vertex.getPropertyStringValue(ImplementationPropertyNames.Task_duration);
-    activity.addQuantaNumber(vertex.getEffectiveComponent().getInstanceName(), Long.valueOf(duration));
+  private void visitVertex(final MapperDAGVertex vertex) {
+    this.activity.addTokenNumber(vertex.getEffectiveComponent().getInstanceName(), 1);
+    final String duration = vertex.getPropertyStringValue(ImplementationPropertyNames.Task_duration);
+    this.activity.addQuantaNumber(vertex.getEffectiveComponent().getInstanceName(), Long.valueOf(duration));
   }
 
   /**
    * Visiting one edge and extracting activity
    */
-  private void visitEdge(MapperDAGEdge edge, LatencyAbc abc) {
-    MapperDAGVertex source = (MapperDAGVertex) edge.getSource();
-    MapperDAGVertex target = (MapperDAGVertex) edge.getTarget();
+  private void visitEdge(final MapperDAGEdge edge, final LatencyAbc abc) {
+    final MapperDAGVertex source = (MapperDAGVertex) edge.getSource();
+    final MapperDAGVertex target = (MapperDAGVertex) edge.getTarget();
     if (!(source.getEffectiveComponent()).equals(target.getEffectiveComponent())) {
-      long size = edge.getInit().getDataSize();
-      Route route = abc.getComRouter().getRoute(edge);
+      final long size = edge.getInit().getDataSize();
+      final Route route = abc.getComRouter().getRoute(edge);
 
       // Counting tokens and quanta for each elements in the route between 2 processors for an edge
-      for (AbstractRouteStep step : route) {
+      for (final AbstractRouteStep step : route) {
         if (step instanceof MessageRouteStep) {
           // a step is internally composed of several communication nodes
-          MessageRouteStep mstep = (MessageRouteStep) step;
-          for (ComponentInstance node : mstep.getNodes()) {
-            activity.addTokenNumber(node.getInstanceName(), 1);
-            activity.addQuantaNumber(node.getInstanceName(), size);
+          final MessageRouteStep mstep = (MessageRouteStep) step;
+          for (final ComponentInstance node : mstep.getNodes()) {
+            this.activity.addTokenNumber(node.getInstanceName(), 1);
+            this.activity.addQuantaNumber(node.getInstanceName(), size);
           }
         }
       }
@@ -215,9 +218,9 @@ class MonoActivityExporter extends AbstractTaskImplementation {
   /**
    * Writing CSV text containing the activity description in fileName located in stringPath.
    */
-  static void writeString(String text, String fileName, String stringPath, Workflow workflow) {
+  static void writeString(final String text, final String fileName, final String stringPath, final Workflow workflow) {
 
-    String sPath = PathTools.getAbsolutePath(stringPath, workflow.getProjectName());
+    final String sPath = PathTools.getAbsolutePath(stringPath, workflow.getProjectName());
     IPath path = new Path(sPath);
     path = path.append(fileName + ".csv");
 
@@ -228,11 +231,11 @@ class MonoActivityExporter extends AbstractTaskImplementation {
       } else {
         ContainersManager.createMissingFolders(path);
       }
-    } catch (CoreException e) {
+    } catch (final CoreException e) {
       throw new PreesmException("Path " + path + " is not a valid path for export.");
     }
 
-    IFile iFile = ResourcesPlugin.getWorkspace().getRoot().getFile(path);
+    final IFile iFile = ResourcesPlugin.getWorkspace().getRoot().getFile(path);
     try {
       if (!iFile.exists()) {
         iFile.create(null, false, new NullProgressMonitor());
@@ -240,8 +243,8 @@ class MonoActivityExporter extends AbstractTaskImplementation {
       } else {
         iFile.setContents(new ByteArrayInputStream(text.getBytes()), true, false, new NullProgressMonitor());
       }
-    } catch (CoreException ex) {
-      ex.printStackTrace();
+    } catch (final CoreException ex) {
+      throw new PreesmException(ex);
     }
   }
 }

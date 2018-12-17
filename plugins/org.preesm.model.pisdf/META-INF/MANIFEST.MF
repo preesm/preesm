@@ -3,14 +3,14 @@ Bundle-ManifestVersion: 2
 Bundle-Name: %pluginName
 Automatic-Module-Name: org.preesm.model.pisdf
 Bundle-SymbolicName: org.preesm.model.pisdf;singleton:=true
-Bundle-Version: 3.1.0
+Bundle-Version: 3.1.1
 Require-Bundle: org.eclipse.core.runtime,
  org.eclipse.emf.ecore;visibility:=reexport,
  org.eclipse.xtext.xbase.lib,
  org.eclipse.emf.ecore.xcore.lib,
  org.eclipse.core.resources;bundle-version="3.7.100",
  org.eclipse.emf.ecore.xmi;bundle-version="2.7.0",
- org.apache.commons.io;bundle-version="2.2.0",
+ org.apache.commons.io;bundle-version="2.6.0",
  com.github.yannrichet.JMathArray;bundle-version="1.0.0",
  org.preesm.commons;visibility:=reexport,
  org.preesm.workflow

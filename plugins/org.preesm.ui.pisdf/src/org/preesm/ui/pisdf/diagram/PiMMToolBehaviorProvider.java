@@ -64,9 +64,7 @@ import org.preesm.model.pisdf.AbstractVertex;
 import org.preesm.model.pisdf.Actor;
 import org.preesm.model.pisdf.ConfigInputPort;
 import org.preesm.model.pisdf.Delay;
-import org.preesm.model.pisdf.EndActor;
 import org.preesm.model.pisdf.ExecutableActor;
-import org.preesm.model.pisdf.InitActor;
 import org.preesm.model.pisdf.Parameter;
 import org.preesm.model.pisdf.PiGraph;
 import org.preesm.model.pisdf.Port;
@@ -178,7 +176,7 @@ public class PiMMToolBehaviorProvider extends DefaultToolBehaviorProvider {
     } else {
       final Object bo = featureProvider.getBusinessObjectForPictogramElement(pe);
       IDecorator[] result = null;
-      if (bo instanceof ExecutableActor || bo instanceof EndActor || bo instanceof InitActor) {
+      if (bo instanceof ExecutableActor) {
         result = decorateActor(pe, bo);
       }
 

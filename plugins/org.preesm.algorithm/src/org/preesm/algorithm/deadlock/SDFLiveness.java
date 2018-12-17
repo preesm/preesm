@@ -41,9 +41,9 @@ import org.preesm.algorithm.model.sdf.SDFAbstractVertex;
 import org.preesm.algorithm.model.sdf.SDFEdge;
 import org.preesm.algorithm.model.sdf.SDFGraph;
 import org.preesm.algorithm.schedule.ASAPSchedulerSDF;
-import org.preesm.algorithm.throughput.tools.helpers.Stopwatch;
-import org.preesm.algorithm.throughput.tools.parsers.Identifier;
-import org.preesm.algorithm.throughput.tools.transformers.SDFTransformer;
+import org.preesm.algorithm.throughput.tools.Identifier;
+import org.preesm.algorithm.throughput.tools.SDFTransformer;
+import org.preesm.algorithm.throughput.tools.Stopwatch;
 import org.preesm.commons.exceptions.PreesmException;
 import org.preesm.commons.math.MathFunctionsHelper;
 
@@ -86,7 +86,7 @@ public interface SDFLiveness {
   public static boolean sufficientCondition(final SDFGraph graph) {
     // add the name property for each edge of the graph
     for (final SDFEdge e : graph.edgeSet()) {
-      e.setPropertyValue(EDGE_NAME_PROPERTY, Identifier.generateEdgeId());
+      e.setPropertyValue(SDFLiveness.EDGE_NAME_PROPERTY, Identifier.generateEdgeId());
     }
 
     // step 1: normalize the graph
@@ -101,7 +101,7 @@ public interface SDFLiveness {
       final long gcd = MathFunctionsHelper.gcd(e.getProd().longValue(), e.getCons().longValue());
       final double alpha = (double) e.getPropertyBean().getValue("normalizationFactor");
       final double h = ((e.getDelay().longValue() - e.getCons().longValue()) + gcd) * alpha;
-      edgeValue.put((String) e.getPropertyBean().getValue(EDGE_NAME_PROPERTY), h);
+      edgeValue.put((String) e.getPropertyBean().getValue(SDFLiveness.EDGE_NAME_PROPERTY), h);
     }
 
     // initialize the vertex distance
@@ -129,7 +129,7 @@ public interface SDFLiveness {
           for (final SDFEdge e : graph.edgeSet()) {
             // test the distance
             final double newDistance = vertexDistance.get(e.getSource().getName())
-                + edgeValue.get(e.getPropertyBean().getValue(EDGE_NAME_PROPERTY));
+                + edgeValue.get(e.getPropertyBean().getValue(SDFLiveness.EDGE_NAME_PROPERTY));
             if (vertexDistance.get(e.getTarget().getName()) > newDistance) {
               // update the distance
               vertexDistance.put(e.getTarget().getName(), newDistance);
@@ -146,7 +146,7 @@ public interface SDFLiveness {
           // relax all the edges
           for (final SDFEdge e : graph.edgeSet()) {
             if (vertexDistance.get(e.getTarget().getName()) > (vertexDistance.get(e.getSource().getName())
-                + edgeValue.get(e.getPropertyBean().getValue(EDGE_NAME_PROPERTY)))) {
+                + edgeValue.get(e.getPropertyBean().getValue(SDFLiveness.EDGE_NAME_PROPERTY)))) {
               // negative circuit detected if a part of the graph is not live the global graph is not too
               final String message = "Negative cycle detected !!";
               throw new PreesmException(message);
@@ -172,6 +172,6 @@ public interface SDFLiveness {
     scheduler.schedule(sdf);
 
     // the live attribute of the scheduler will indicate if the schedule has succeeded to schedule a complete iteration
-    return scheduler.live;
+    return scheduler.isLive();
   }
 }

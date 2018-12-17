@@ -88,7 +88,7 @@ public class GanttPlotter extends ApplicationFrame {
   private static final long serialVersionUID = 1L;
 
   /** The chart panel. */
-  ChartPanel chartPanel = null;
+  private ChartPanel chartPanel = null;
 
   /**
    * Creates a chart.
@@ -204,7 +204,7 @@ public class GanttPlotter extends ApplicationFrame {
   /**
    * Plot the Gantt chart in a standalone window.
    */
-  public void plot() {
+  private void plot() {
     pack();
     RefineryUtilities.centerFrameOnScreen(this);
     setVisible(true);
@@ -216,7 +216,7 @@ public class GanttPlotter extends ApplicationFrame {
    * @param parent
    *          the parent Composite Eclipse UI element
    */
-  public void plotInComposite(final Composite parent) {
+  private void plotInComposite(final Composite parent) {
 
     final Composite composite = new Composite(parent, SWT.EMBEDDED | SWT.FILL);
     parent.setLayout(new FillLayout());
@@ -237,7 +237,7 @@ public class GanttPlotter extends ApplicationFrame {
    * @param ganttData
    *          the gantt data
    */
-  public GanttPlotter(final String title, final GanttData ganttData) {
+  private GanttPlotter(final String title, final GanttData ganttData) {
     super(title);
 
     final JFreeChart chart = createChart(GanttPlotter.createDataset(ganttData));

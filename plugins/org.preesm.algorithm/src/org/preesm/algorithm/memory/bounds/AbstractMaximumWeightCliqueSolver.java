@@ -35,7 +35,6 @@
  */
 package org.preesm.algorithm.memory.bounds;
 
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
@@ -195,22 +194,4 @@ public abstract class AbstractMaximumWeightCliqueSolver<V extends IWeightedVerte
     }
   }
 
-  /**
-   * This method checks if a subset of vertices is a clique of the graph.
-   *
-   * @param subset
-   *          the subset to check
-   * @return true if the subset is a clique
-   */
-  public boolean checkClique(final Collection<? extends V> subset) {
-    final ArrayList<V> vertices = new ArrayList<>(subset);
-    boolean result = true;
-
-    for (int i = 0; result && (i < (vertices.size() - 1)); i++) {
-      for (int j = i + 1; result && (j < vertices.size()); j++) {
-        result |= this.graph.containsEdge(vertices.get(i), vertices.get(j));
-      }
-    }
-    return result;
-  }
 }

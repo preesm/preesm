@@ -35,10 +35,10 @@
 package org.preesm.algorithm.model.sdf.visitors;
 
 import java.util.logging.Level;
+import org.preesm.algorithm.model.IGraphVisitor;
 import org.preesm.algorithm.model.sdf.SDFAbstractVertex;
 import org.preesm.algorithm.model.sdf.SDFEdge;
 import org.preesm.algorithm.model.sdf.SDFGraph;
-import org.preesm.algorithm.model.visitors.IGraphVisitor;
 import org.preesm.commons.exceptions.PreesmException;
 import org.preesm.commons.logger.PreesmLogger;
 

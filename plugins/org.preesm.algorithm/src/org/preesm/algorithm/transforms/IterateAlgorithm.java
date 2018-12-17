@@ -70,13 +70,13 @@ class IterateAlgorithm extends AbstractTaskImplementation {
   /**
    * Inserting mergedGraph into refGraph and adding optionally state edges of weight 1
    */
-  SDFGraph merge(SDFGraph refGraph, SDFGraph mergedGraphIn, int index, boolean setStates) {
+  SDFGraph merge(final SDFGraph refGraph, final SDFGraph mergedGraphIn, final int index, final boolean setStates) {
 
     // Generating a graph clone to avoid concurrent modifications
-    SDFGraph mergedGraph = mergedGraphIn.copy();
+    final SDFGraph mergedGraph = mergedGraphIn.copy();
 
-    for (SDFAbstractVertex vertex : mergedGraph.vertexSet()) {
-      String mergedVertexName = vertex.getName();
+    for (final SDFAbstractVertex vertex : mergedGraph.vertexSet()) {
+      final String mergedVertexName = vertex.getName();
       // Id is identical to all iterations, same as for srSDF transformation
       vertex.setId(vertex.getId());
       vertex.setName(vertex.getName() + "_" + index);
@@ -84,20 +84,20 @@ class IterateAlgorithm extends AbstractTaskImplementation {
 
       // If a state is introduced, a synthetic edge is put between 2 iterations of each actor
       if (setStates) {
-        SDFAbstractVertex current = refGraph.getVertex(mergedVertexName + "_" + index);
-        SDFAbstractVertex previous = refGraph.getVertex(mergedVertexName + "_" + (index - 1));
-        if (previous != null && current != null) {
-          SDFEdge newEdge = refGraph.addEdge(previous, current);
+        final SDFAbstractVertex current = refGraph.getVertex(mergedVertexName + "_" + index);
+        final SDFAbstractVertex previous = refGraph.getVertex(mergedVertexName + "_" + (index - 1));
+        if ((previous != null) && (current != null)) {
+          final SDFEdge newEdge = refGraph.addEdge(previous, current);
           newEdge.setProd(new LongEdgePropertyType(1));
           newEdge.setCons(new LongEdgePropertyType(1));
 
           // Create a new source stateout port
-          SDFSourceInterfaceVertex statein = new SDFSourceInterfaceVertex();
+          final SDFSourceInterfaceVertex statein = new SDFSourceInterfaceVertex();
           statein.setName("statein");
           previous.addSource(statein);
 
           // Create a new sink statein port
-          SDFSinkInterfaceVertex stateout = new SDFSinkInterfaceVertex();
+          final SDFSinkInterfaceVertex stateout = new SDFSinkInterfaceVertex();
           stateout.setName("stateout");
           current.addSink(stateout);
           newEdge.setSourceInterface(stateout);
@@ -106,10 +106,10 @@ class IterateAlgorithm extends AbstractTaskImplementation {
       }
     }
 
-    for (SDFEdge edge : mergedGraph.edgeSet()) {
-      SDFAbstractVertex source = mergedGraph.getEdgeSource(edge);
-      SDFAbstractVertex target = mergedGraph.getEdgeTarget(edge);
-      SDFEdge newEdge = refGraph.addEdge(source, target);
+    for (final SDFEdge edge : mergedGraph.edgeSet()) {
+      final SDFAbstractVertex source = mergedGraph.getEdgeSource(edge);
+      final SDFAbstractVertex target = mergedGraph.getEdgeTarget(edge);
+      final SDFEdge newEdge = refGraph.addEdge(source, target);
       newEdge.setSourceInterface(edge.getSourceInterface());
       newEdge.setTargetInterface(edge.getTargetInterface());
       target.setInterfaceVertexExternalLink(newEdge, edge.getTargetInterface());
@@ -121,8 +121,8 @@ class IterateAlgorithm extends AbstractTaskImplementation {
 
     }
 
-    for (String propertyKey : mergedGraph.getPropertyBean().keys()) {
-      String property = mergedGraph.getPropertyBean().getValue(propertyKey);
+    for (final String propertyKey : mergedGraph.getPropertyBean().keys()) {
+      final String property = mergedGraph.getPropertyBean().getValue(propertyKey);
       refGraph.getPropertyBean().setValue(propertyKey, property);
     }
     return refGraph;
@@ -131,15 +131,16 @@ class IterateAlgorithm extends AbstractTaskImplementation {
   /**
    * Mixing nbIt iterations of a single graph, adding a state in case makeStates = true
    */
-  SDFGraph iterate(SDFGraph inputAlgorithm, int nbIt, boolean setStates, PreesmScenario scenario) {
+  SDFGraph iterate(final SDFGraph inputAlgorithm, final int nbIt, final boolean setStates,
+      final PreesmScenario scenario) {
 
     SDFGraph mainIteration = inputAlgorithm.copy();
 
     if (nbIt > 1) {
       int groupId = 0;
       // setting first iteration with name "_0"
-      for (SDFAbstractVertex vertex : mainIteration.vertexSet()) {
-        String id = vertex.getId();
+      for (final SDFAbstractVertex vertex : mainIteration.vertexSet()) {
+        final String id = vertex.getId();
         // Id is identical to all iterations, same as for srSDF transformation
         vertex.setId(id);
         vertex.setName(vertex.getName() + "_0");
@@ -167,17 +168,17 @@ class IterateAlgorithm extends AbstractTaskImplementation {
    * Executing the workflow element
    */
   @Override
-  public Map<String, Object> execute(Map<String, Object> inputs, Map<String, String> parameters,
-      IProgressMonitor monitor, String nodeName, Workflow workflow) {
-    final Map<String, Object> outMap = new LinkedHashMap<String, Object>();
+  public Map<String, Object> execute(final Map<String, Object> inputs, final Map<String, String> parameters,
+      final IProgressMonitor monitor, final String nodeName, final Workflow workflow) {
+    final Map<String, Object> outMap = new LinkedHashMap<>();
     final SDFGraph inputAlgorithm = (SDFGraph) inputs.get("SDF");
 
     // If we retrieve a scenario, relative constraints are added in the scenario
-    PreesmScenario scenario = (PreesmScenario) inputs.get("scenario");
+    final PreesmScenario scenario = (PreesmScenario) inputs.get("scenario");
 
-    final int nbIt = Integer.valueOf(parameters.get(NB_IT));
-    final boolean setStates = Boolean.valueOf(parameters.get(SET_STATES));
-    SDFGraph outputAlgorithm = iterate(inputAlgorithm, nbIt, setStates, scenario);
+    final int nbIt = Integer.valueOf(parameters.get(IterateAlgorithm.NB_IT));
+    final boolean setStates = Boolean.valueOf(parameters.get(IterateAlgorithm.SET_STATES));
+    final SDFGraph outputAlgorithm = iterate(inputAlgorithm, nbIt, setStates, scenario);
     outMap.put("SDF", outputAlgorithm);
     return outMap;
   }
@@ -187,9 +188,9 @@ class IterateAlgorithm extends AbstractTaskImplementation {
    */
   @Override
   public Map<String, String> getDefaultParameters() {
-    Map<String, String> defaultParameters = new LinkedHashMap<String, String>();
-    defaultParameters.put(NB_IT, "1");
-    defaultParameters.put(SET_STATES, "true");
+    final Map<String, String> defaultParameters = new LinkedHashMap<>();
+    defaultParameters.put(IterateAlgorithm.NB_IT, "1");
+    defaultParameters.put(IterateAlgorithm.SET_STATES, "true");
     return defaultParameters;
   }
 
@@ -199,6 +200,6 @@ class IterateAlgorithm extends AbstractTaskImplementation {
 
   @Override
   public String monitorMessage() {
-    return "Iterating a single rate IBSDF " + getDefaultParameters().get(NB_IT) + " time(s).";
+    return "Iterating a single rate IBSDF " + getDefaultParameters().get(IterateAlgorithm.NB_IT) + " time(s).";
   }
 }

@@ -37,7 +37,6 @@ package org.preesm.algorithm.memory.exclusiongraph;
 
 import org.preesm.workflow.implement.AbstractTaskImplementation;
 
-// TODO: Auto-generated Javadoc
 /**
  * The Class AbstractMemExUpdater.
  */
@@ -54,10 +53,4 @@ public abstract class AbstractMemExUpdater extends AbstractTaskImplementation {
 
   /** The Constant VALUE_TRUE_FALSE_DEFAULT. */
   public static final String VALUE_TRUE_FALSE_DEFAULT = "? C {True, False}";
-
-  /** The Constant VALUE_TRUE. */
-  public static final String VALUE_TRUE = "True";
-
-  /** The Constant VALUE_FALSE. */
-  public static final String VALUE_FALSE = "False";
 }

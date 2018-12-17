@@ -40,6 +40,7 @@ import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IWorkbenchPage;
 import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.PlatformUI;
+import org.preesm.commons.exceptions.PreesmException;
 
 /**
  * Class used by mapper editors. Useful to run editor in display thread.
@@ -78,7 +79,7 @@ public class EditorRunnable implements Runnable {
       try {
         page.openEditor(this.input, "org.ietr.preesm.plugin.mapper.plot.stats.StatEditor", false);
       } catch (final Exception e) {
-        e.printStackTrace();
+        throw new PreesmException(e);
       }
     }
 

@@ -56,7 +56,7 @@ public class Variable implements CloneableProperty<Variable> {
    * @param name
    *          The name of the variable
    */
-  public Variable(final String name) {
+  private Variable(final String name) {
     this.name = name;
     this.value = new ExpressionValue("");
   }

@@ -250,7 +250,7 @@ public class PapifyPage extends FormPage implements IPropertyListener {
     final Composite container = createSection(managedForm, title, desc, 1,
         new GridData(GridData.FILL_HORIZONTAL | GridData.FILL_VERTICAL));
 
-    this.checkStateListener = new PapifyCheckStateListener(container, this.scenario);
+    this.checkStateListener = new PapifyCheckStateListener(this.scenario);
     container.addPaintListener(this.checkStateListener);
 
     final FormToolkit toolkit = managedForm.getToolkit();
@@ -360,7 +360,7 @@ public class PapifyPage extends FormPage implements IPropertyListener {
 
       @Override
       public void keyReleased(final KeyEvent e) {
-
+        // nothing
       }
 
     });
@@ -387,7 +387,7 @@ public class PapifyPage extends FormPage implements IPropertyListener {
    * @throws CoreException
    *           the core exception
    */
-  private void importData(final Text text) throws PreesmException, FileNotFoundException, CoreException {
+  private void importData(final Text text) {
 
     final IWorkspace workspace = ResourcesPlugin.getWorkspace();
 
@@ -511,7 +511,7 @@ public class PapifyPage extends FormPage implements IPropertyListener {
     peColumn.setWidth(200);
     peViewerColumn.setLabelProvider(new ColumnLabelProvider());
 
-    this.checkStateListener.setComponentTreeViewer(this);
+    this.checkStateListener.setPropertyListener(this);
     this.peContentProvider.addCheckStateListener(this.checkStateListener);
 
     for (final String columnLabel : this.scenario.getOperatorDefinitionIds()) {
@@ -524,7 +524,7 @@ public class PapifyPage extends FormPage implements IPropertyListener {
       column.setWidth(150);
 
       PapifyComponentListContentProvider2DMatrixES editingSupport = new PapifyComponentListContentProvider2DMatrixES(
-          this.scenario, peTreeViewer, columnLabel, this.peContentProvider);
+          peTreeViewer, columnLabel, this.peContentProvider);
 
       viewerColumn.setLabelProvider(new PapifyComponentListContentProvider2DMatrixCLP(this.scenario, columnLabel));
       viewerColumn.setEditingSupport(editingSupport);
@@ -571,7 +571,7 @@ public class PapifyPage extends FormPage implements IPropertyListener {
 
     this.actorTreeViewer.setLabelProvider(new PreesmAlgorithmTreeLabelProvider());
 
-    this.checkStateListener.setEventTreeViewer(this);
+    this.checkStateListener.setPropertyListener(this);
     this.actorTreeViewer.addCheckStateListener(this.checkStateListener);
 
     this.actorTreeViewer.setUseHashlookup(true);
@@ -625,7 +625,7 @@ public class PapifyPage extends FormPage implements IPropertyListener {
     columnTiming.setWidth(150);
 
     PapifyEventListContentProvider2DMatrixES editingSupportTiming = new PapifyEventListContentProvider2DMatrixES(
-        this.scenario, this.actorTreeViewer, timingEvent.getName(), this.checkStateListener);
+        this.actorTreeViewer, timingEvent.getName(), this.checkStateListener);
 
     viewerColumnTiming.setLabelProvider(
         new PapifyEventListContentProvider2DMatrixCLP(this.scenario, timingEvent.getName(), this.checkStateListener));
@@ -645,7 +645,7 @@ public class PapifyPage extends FormPage implements IPropertyListener {
               column.setWidth(150);
 
               PapifyEventListContentProvider2DMatrixES editingSupport = new PapifyEventListContentProvider2DMatrixES(
-                  this.scenario, this.actorTreeViewer, oneEvent.getName(), this.checkStateListener);
+                  this.actorTreeViewer, oneEvent.getName(), this.checkStateListener);
 
               viewerColumn.setLabelProvider(new PapifyEventListContentProvider2DMatrixCLP(this.scenario,
                   oneEvent.getName(), this.checkStateListener));

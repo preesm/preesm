@@ -93,7 +93,7 @@ public class RedundantSynchronizationCleaner {
     return toBeRemoved;
   }
 
-  private static Set<DAGVertex> duplicateSyncVertices(SyncGraph syncGraph) {
+  private static Set<DAGVertex> duplicateSyncVertices(final SyncGraph syncGraph) {
     final Set<DAGVertex> toBeRemoved = new LinkedHashSet<>();
     final Set<String> edgeSet = syncGraph.edgeSet();
     for (final String edge : edgeSet) {

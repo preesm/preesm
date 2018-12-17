@@ -69,11 +69,10 @@ import org.jfree.data.time.Millisecond;
 import org.jfree.data.time.TimeSeries;
 import org.jfree.data.time.TimeSeriesCollection;
 import org.jfree.ui.ApplicationFrame;
-import org.jfree.ui.RefineryUtilities;
-import org.preesm.algorithm.mapper.algo.fast.FastAlgorithm;
-import org.preesm.algorithm.mapper.algo.pfast.PFastAlgorithm;
+import org.preesm.algorithm.mapper.algo.FastAlgorithm;
+import org.preesm.algorithm.mapper.algo.PFastAlgorithm;
+import org.preesm.commons.exceptions.PreesmException;
 
-// TODO: Auto-generated Javadoc
 /**
  * Plots the best cost found versus scheduling time. Can be latency or else
  *
@@ -174,7 +173,6 @@ public class BestCostPlotter extends ApplicationFrame implements ActionListener,
     final JFreeChart chart = new JFreeChart(title, plot);
 
     chart.removeLegend();
-    // chart.getLegend().setPosition(RectangleEdge.BOTTOM);
 
     chart.setBorderPaint(Color.lightGray);
     chart.setBorderVisible(true);
@@ -204,8 +202,6 @@ public class BestCostPlotter extends ApplicationFrame implements ActionListener,
 
     for (int i = 0; i < this.subplotCount; i++) {
       if (e.getActionCommand().endsWith(String.valueOf(i))) {
-        // final Millisecond now = new Millisecond();
-        // System.out.println("Now = " + now.toString());
         this.lastValue[i] = this.lastValue[i] * (0.90 + (0.2 * Math.random()));
         this.datasets[i].getSeries(0).add(new Millisecond(), this.lastValue[i]);
       }
@@ -242,8 +238,6 @@ public class BestCostPlotter extends ApplicationFrame implements ActionListener,
       if (arg instanceof Long) {
 
         final int i = 0;
-        // final Millisecond now = new Millisecond();
-        // System.out.println("Now = " + now.toString());
         this.lastValue[i] = ((Long) arg).doubleValue();
 
         final Millisecond milli = new Millisecond();
@@ -261,8 +255,6 @@ public class BestCostPlotter extends ApplicationFrame implements ActionListener,
       if (arg instanceof Long) {
 
         final int i = 0;
-        // final Millisecond now = new Millisecond();
-        // System.out.println("Now = " + now.toString());
         this.lastValue[i] = ((Long) arg).doubleValue();
         this.datasets[i].getSeries(0).addOrUpdate(new Millisecond(), this.lastValue[i]);
 
@@ -301,7 +293,14 @@ public class BestCostPlotter extends ApplicationFrame implements ActionListener,
 
     if (this.pauseSemaphore != null) {
       if (actionType == 2) {
-        this.pauseSemaphore.tryAcquire();
+        while (!this.pauseSemaphore.tryAcquire()) {
+          try {
+            Thread.sleep(500);
+          } catch (final InterruptedException e) {
+            Thread.currentThread().interrupt();
+            throw new PreesmException(e);
+          }
+        }
       } else {
         this.pauseSemaphore.release();
       }
@@ -311,11 +310,11 @@ public class BestCostPlotter extends ApplicationFrame implements ActionListener,
   /**
    * Sets the subplot count.
    *
-   * @param subplot_count
+   * @param subplotCount
    *          the new subplot count
    */
-  public void setSUBPLOT_COUNT(final int subplot_count) {
-    this.subplotCount = subplot_count;
+  public void setSubplotCount(final int subplotCount) {
+    this.subplotCount = subplotCount;
   }
 
   /*
@@ -325,6 +324,7 @@ public class BestCostPlotter extends ApplicationFrame implements ActionListener,
    */
   @Override
   public void windowClosing(final WindowEvent event) {
+    // nothing, especially no exit
   }
 
   /**
@@ -344,16 +344,6 @@ public class BestCostPlotter extends ApplicationFrame implements ActionListener,
     this.chartPanel.addChartMouseListener(listener);
     this.chartPanel.addMouseMotionListener(listener);
     this.chartPanel.addMouseListener(listener);
-  }
-
-  /**
-   * Display.
-   */
-  public void display() {
-
-    pack();
-    RefineryUtilities.centerFrameOnScreen(this);
-    setVisible(true);
   }
 
 }

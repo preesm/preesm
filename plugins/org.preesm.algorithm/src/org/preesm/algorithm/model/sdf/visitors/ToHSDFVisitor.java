@@ -43,6 +43,7 @@ import java.util.Set;
 import java.util.logging.Level;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import org.preesm.algorithm.model.IGraphVisitor;
 import org.preesm.algorithm.model.sdf.SDFAbstractVertex;
 import org.preesm.algorithm.model.sdf.SDFEdge;
 import org.preesm.algorithm.model.sdf.SDFGraph;
@@ -55,7 +56,6 @@ import org.preesm.algorithm.model.sdf.esdf.SDFRoundBufferVertex;
 import org.preesm.algorithm.model.sdf.transformations.SpecialActorPortsIndexer;
 import org.preesm.algorithm.model.types.LongEdgePropertyType;
 import org.preesm.algorithm.model.types.StringEdgePropertyType;
-import org.preesm.algorithm.model.visitors.IGraphVisitor;
 import org.preesm.commons.exceptions.PreesmException;
 import org.preesm.commons.logger.PreesmLogger;
 
@@ -329,15 +329,16 @@ public class ToHSDFVisitor implements IGraphVisitor<SDFGraph, SDFAbstractVertex,
         }
 
         // Associate the interfaces to the new edge
-        if (targetCopies.get((int) targetIndex) instanceof SDFVertex
-            && ((SDFVertex) targetCopies.get((int) targetIndex))
-                .getSource(edge.getTargetInterface().getName()) != null) {
+        if ((targetCopies.get((int) targetIndex) instanceof SDFVertex)
+            && (((SDFVertex) targetCopies.get((int) targetIndex))
+                .getSource(edge.getTargetInterface().getName()) != null)) {
           inputVertex = ((SDFVertex) targetCopies.get((int) targetIndex))
               .getSource(edge.getTargetInterface().getName());
           ((SDFVertex) targetCopies.get((int) targetIndex)).setInterfaceVertexExternalLink(newEdge, inputVertex);
         }
-        if (sourceCopies.get((int) sourceIndex) instanceof SDFVertex
-            && ((SDFVertex) sourceCopies.get((int) sourceIndex)).getSink(edge.getSourceInterface().getName()) != null) {
+        if ((sourceCopies.get((int) sourceIndex) instanceof SDFVertex)
+            && (((SDFVertex) sourceCopies.get((int) sourceIndex))
+                .getSink(edge.getSourceInterface().getName()) != null)) {
           outputVertex = ((SDFVertex) sourceCopies.get((int) sourceIndex)).getSink(edge.getSourceInterface().getName());
           ((SDFVertex) sourceCopies.get((int) sourceIndex)).setInterfaceVertexExternalLink(newEdge, outputVertex);
         }
@@ -563,7 +564,6 @@ public class ToHSDFVisitor implements IGraphVisitor<SDFGraph, SDFAbstractVertex,
     }
 
     if (!isHSDF) {
-      this.hasChanged = true;
       this.outputGraph.clean();
 
       final ArrayList<SDFAbstractVertex> vertices = new ArrayList<>(sdf.vertexSet());
@@ -575,19 +575,6 @@ public class ToHSDFVisitor implements IGraphVisitor<SDFGraph, SDFAbstractVertex,
       transformsTop(sdf, this.outputGraph);
     }
 
-  }
-
-  /** The has changed. */
-  // Indicates whether the visited SDFGraph has been changed or not
-  private boolean hasChanged = false;
-
-  /**
-   * Checks for changed.
-   *
-   * @return false if the visited SDFGraph was already in single rate, true otherwise
-   */
-  public boolean hasChanged() {
-    return this.hasChanged;
   }
 
 }

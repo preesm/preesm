@@ -119,7 +119,7 @@ public class YamaguchiSolver<V extends IWeightedVertex<Long> & Comparable<V>, E 
    *          The minimum weight of the clique to find
    * @return The Maximum-Weight Clique of the subgraph (if any)
    */
-  public Set<V> maxWeightClique(final Map<Long, V> subgraphVertices, long thresold) {
+  private Set<V> maxWeightClique(final Map<Long, V> subgraphVertices, long thresold) {
     // (1) let C <- 0
     Set<V> clique = new LinkedHashSet<>();
 
@@ -181,7 +181,7 @@ public class YamaguchiSolver<V extends IWeightedVertex<Long> & Comparable<V>, E 
    *          the list in which the resulting costs will be stored (in the order of the returned list)
    * @return the ordered list of vertices.
    */
-  public List<V> orderVertexSet(final Map<Long, V> subgraphVertices, final List<Long> cost) {
+  private List<V> orderVertexSet(final Map<Long, V> subgraphVertices, final List<Long> cost) {
     // (1) let PI be the empty sequence
     final List<V> orderedVertexSet = new ArrayList<>();
 

@@ -86,6 +86,7 @@ import org.preesm.model.pisdf.PiSDFRefinement;
 import org.preesm.model.pisdf.Port;
 import org.preesm.model.pisdf.Refinement;
 import org.preesm.model.pisdf.RoundBufferActor;
+import org.preesm.model.pisdf.util.PiGraphConsistenceChecker;
 import org.preesm.model.pisdf.util.PiIdentifiers;
 import org.preesm.model.pisdf.util.PiSDFXSDValidator;
 import org.preesm.model.pisdf.util.SubgraphOriginalActorTracker;
@@ -255,6 +256,9 @@ public class PiWriter {
    *          The written OutputStream
    */
   public void write(final PiGraph graph, final OutputStream outputStream) {
+
+    PiGraphConsistenceChecker.check(graph);
+
     // Create the domDocument
     this.domDocument = DomUtil.createDocument("http://graphml.graphdrawing.org/xmlns", "graphml");
 
@@ -312,8 +316,7 @@ public class PiWriter {
       writePiGraphAsHActor(vertexElt, (PiGraph) abstractActor);
     } else if (abstractActor instanceof Actor) {
       writeActor(vertexElt, (Actor) abstractActor);
-    } else if (abstractActor instanceof ExecutableActor || abstractActor instanceof InitActor
-        || abstractActor instanceof EndActor) {
+    } else if (abstractActor instanceof ExecutableActor) {
       writeSpecialActor(vertexElt, abstractActor);
     } else if (abstractActor instanceof InterfaceActor) {
       writeInterfaceVertex(vertexElt, (InterfaceActor) abstractActor);
@@ -801,8 +804,10 @@ public class PiWriter {
       kind = PiIdentifiers.ROUND_BUFFER;
     } else if (actor instanceof EndActor) {
       kind = PiIdentifiers.END;
+      vertexElt.setAttribute(PiIdentifiers.INIT_END_REF, ((EndActor) actor).getInitReference().getName());
     } else if (actor instanceof InitActor) {
       kind = PiIdentifiers.INIT;
+      vertexElt.setAttribute(PiIdentifiers.INIT_END_REF, ((InitActor) actor).getEndReference().getName());
     }
     vertexElt.setAttribute(PiIdentifiers.NODE_KIND, kind);
 

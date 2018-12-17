@@ -54,7 +54,6 @@ import java.util.Set;
 import java.util.TreeMap;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.logging.Level;
-import java.util.logging.Logger;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IWorkspace;
@@ -328,7 +327,7 @@ public class CodegenModelGenerator {
     // Check that the input DAG is scheduled and Mapped on the targeted
     // architecture
     for (final DAGVertex vertex : dag.vertexSet()) {
-      final ComponentInstance operator = (ComponentInstance) vertex.getPropertyBean().getValue("Operator");
+      final ComponentInstance operator = vertex.getPropertyBean().getValue("Operator");
       if (operator == null) {
         final String msg = "The DAG Actor " + vertex + " is not mapped on any operator.\n"
             + " All actors must be mapped before using the code generation.";
@@ -381,7 +380,7 @@ public class CodegenModelGenerator {
         }
 
         // Check that the MemEx graph is allocated.
-        final Long offset = (Long) memObj.getPropertyBean().getValue(MemoryExclusionVertex.MEMORY_OFFSET_PROPERTY);
+        final Long offset = memObj.getPropertyBean().getValue(MemoryExclusionVertex.MEMORY_OFFSET_PROPERTY);
         if (offset == null) {
           throw new PreesmException("MemEx graph memory object (" + memObj + ") was not allocated in memory. \n"
               + "Make sure that the MemEx is processed by an allocation task before entering the codegen.");
@@ -451,7 +450,7 @@ public class CodegenModelGenerator {
       CoreBlock operatorBlock = null;
       // This call can not fail as checks were already performed in
       // the constructor
-      operator = (ComponentInstance) vert.getPropertyBean().getValue(ImplementationPropertyNames.Vertex_Operator);
+      operator = vert.getPropertyBean().getValue(ImplementationPropertyNames.Vertex_Operator);
       // If this is the first time this operator is encountered,
       // Create a Block and store it.
       operatorBlock = this.coreBlocks.get(operator);
@@ -463,8 +462,8 @@ public class CodegenModelGenerator {
       }
 
       // 1.1 - Construct the "loop" of each core.
-      final String vertexType = ((VertexType) vert.getPropertyBean()
-          .getValue(ImplementationPropertyNames.Vertex_vertexType)).toString();
+      final String vertexType = vert.getPropertyBean().getValue(ImplementationPropertyNames.Vertex_vertexType)
+          .toString();
       switch (vertexType) {
 
         case VertexType.TYPE_TASK:
@@ -543,11 +542,6 @@ public class CodegenModelGenerator {
     return Collections.unmodifiableList(resultList);
   }
 
-  private void p(final String s) {
-    final Logger logger = PreesmLogger.getLogger();
-    logger.log(Level.INFO, s);
-  }
-
   /**
    * Generate the {@link CodegenPackage Codegen Model} for an actor firing. This method will create an {@link ActorCall}
    * or a {@link FunctionCall} and place it in the {@link LoopBlock} of the {@link CoreBlock} passed as a parameter. If
@@ -567,18 +561,11 @@ public class CodegenModelGenerator {
     // If the actor is hierarchical
     if (refinement instanceof AbstractGraph) {
       // try to generate for loop on a hierarchical actor
-      p("tryGenerateRepeatActorFiring " + dagVertex.getName());
+      PreesmLogger.getLogger().log(Level.FINE, "tryGenerateRepeatActorFiring " + dagVertex.getName());
       try {
-        final CodegenHierarchicalModelGenerator h = new CodegenHierarchicalModelGenerator(this.scenario, this.algo,
-            this.linkHSDFVertexBuffer, this.srSDFEdgeBuffers, this.dagVertexCalls);
-        if (h.execute(operatorBlock, dagVertex) == 0) {
-          p("Hierarchical actor " + dagVertex.getName() + " generation Successed");
-        } else {
-          p("Hierarchical actor " + dagVertex.getName() + " printing Failed");
-          throw new PreesmException("Unflattened hierarchical actors (" + dagVertex
-              + ") are not yet supported by the Xtend Code Generation.\n"
-              + "Flatten the graph completely before using this code-generation.");
-        }
+        final CodegenHierarchicalModelGenerator hiearchicalCodeGen = new CodegenHierarchicalModelGenerator(
+            this.scenario, this.algo, this.linkHSDFVertexBuffer, this.srSDFEdgeBuffers, this.dagVertexCalls);
+        hiearchicalCodeGen.execute(operatorBlock, dagVertex);
       } catch (final PreesmException e) {
         throw new PreesmException("Codegen for " + dagVertex.getName() + "failed.", e);
       }
@@ -602,7 +589,7 @@ public class CodegenModelGenerator {
         final FunctionCall functionCall = generateFunctionCall(dagVertex, loopPrototype, false);
 
         // Check for papify in the dagVertex
-        String papifying = (String) dagVertex.getPropertyBean().getValue(PapifyEngine.PAPIFY_CONFIGURATION);
+        String papifying = dagVertex.getPropertyBean().getValue(PapifyEngine.PAPIFY_CONFIGURATION);
         // In case there is any monitoring add start functions
         if (papifying != null && papifying.equals("Papifying")) {
           // Add the function to configure the monitoring in this PE (operatorBlock)
@@ -613,8 +600,8 @@ public class CodegenModelGenerator {
           }
           // Add the papify_action_s variable to the code
           Buffer papifyActionS = CodegenFactory.eINSTANCE.createBuffer();
-          papifyActionS.setName(
-              ((PapifyAction) dagVertex.getPropertyBean().getValue(PapifyEngine.PAPIFY_ACTION_NAME)).getName());
+          papifyActionS
+              .setName((dagVertex.getPropertyBean().<PapifyAction>getValue(PapifyEngine.PAPIFY_ACTION_NAME)).getName());
           papifyActionS.setSize(1);
           papifyActionS.setType("papify_action_s");
           papifyActionS.setComment("papify configuration variable");
@@ -624,16 +611,14 @@ public class CodegenModelGenerator {
           operatorBlock.getInitBlock().getCodeElts().add(functionCallPapifyConfigureActor);
 
           // Check for papify in the dagVertex
-          String papifyMonitoringEvents = (String) dagVertex.getPropertyBean()
-              .getValue(PapifyEngine.PAPIFY_MONITOR_EVENTS);
+          String papifyMonitoringEvents = dagVertex.getPropertyBean().getValue(PapifyEngine.PAPIFY_MONITOR_EVENTS);
           if (papifyMonitoringEvents != null && papifyMonitoringEvents.equals("Yes")) {
             // Generate Papify start function for events
             final FunctionCall functionCallPapifyStart = generatePapifyStartFunctionCall(dagVertex, operatorBlock);
             // Add the Papify start function for events to the loop
             operatorBlock.getLoopBlock().getCodeElts().add(functionCallPapifyStart);
           }
-          String papifyMonitoringTiming = (String) dagVertex.getPropertyBean()
-              .getValue(PapifyEngine.PAPIFY_MONITOR_TIMING);
+          String papifyMonitoringTiming = dagVertex.getPropertyBean().getValue(PapifyEngine.PAPIFY_MONITOR_TIMING);
           if (papifyMonitoringTiming != null && papifyMonitoringTiming.equals("Yes")) {
             // Generate Papify start timing function
             final FunctionCall functionCallPapifyTimingStart = generatePapifyStartTimingFunctionCall(dagVertex,
@@ -649,8 +634,7 @@ public class CodegenModelGenerator {
 
         // In case there is any monitoring add stop functions
         if (papifying != null && papifying.equals("Papifying")) {
-          String papifyMonitoringTiming = (String) dagVertex.getPropertyBean()
-              .getValue(PapifyEngine.PAPIFY_MONITOR_TIMING);
+          String papifyMonitoringTiming = dagVertex.getPropertyBean().getValue(PapifyEngine.PAPIFY_MONITOR_TIMING);
           if (papifyMonitoringTiming != null && papifyMonitoringTiming.equals("Yes")) {
             // Generate Papify stop timing function
             final FunctionCall functionCallPapifyTimingStop = generatePapifyStopTimingFunctionCall(dagVertex,
@@ -658,8 +642,7 @@ public class CodegenModelGenerator {
             // Add the Papify stop timing function to the loop
             operatorBlock.getLoopBlock().getCodeElts().add(functionCallPapifyTimingStop);
           }
-          String papifyMonitoringEvents = (String) dagVertex.getPropertyBean()
-              .getValue(PapifyEngine.PAPIFY_MONITOR_EVENTS);
+          String papifyMonitoringEvents = dagVertex.getPropertyBean().getValue(PapifyEngine.PAPIFY_MONITOR_EVENTS);
           if (papifyMonitoringEvents != null && papifyMonitoringEvents.equals("Yes")) {
             // Generate Papify stop function for events
             final FunctionCall functionCallPapifyStop = generatePapifyStopFunctionCall(dagVertex, operatorBlock);
@@ -806,7 +789,7 @@ public class CodegenModelGenerator {
       final MemoryExclusionGraph meg = entry.getValue();
 
       // Create the Main Shared buffer
-      final long size = (long) meg.getPropertyBean().getValue(MemoryExclusionGraph.ALLOCATED_MEMORY_SIZE);
+      final long size = meg.getPropertyBean().getValue(MemoryExclusionGraph.ALLOCATED_MEMORY_SIZE);
 
       final Buffer mainBuffer = CodegenFactory.eINSTANCE.createBuffer();
       mainBuffer.setSize(size);
@@ -815,9 +798,7 @@ public class CodegenModelGenerator {
       mainBuffer.setTypeSize(1); // char is 1 byte
       this.mainBuffers.put(memoryBank, mainBuffer);
 
-      @SuppressWarnings("unchecked")
-      final Map<DAGEdge, Long> allocation = (Map<DAGEdge, Long>) meg.getPropertyBean()
-          .getValue(MemoryExclusionGraph.DAG_EDGE_ALLOCATION);
+      final Map<DAGEdge, Long> allocation = meg.getPropertyBean().getValue(MemoryExclusionGraph.DAG_EDGE_ALLOCATION);
 
       // generate the subbuffer for each dagedge
       for (final Entry<DAGEdge, Long> dagAlloc : allocation.entrySet()) {
@@ -897,9 +878,8 @@ public class CodegenModelGenerator {
       }
 
       // Generate buffers for each fifo
-      @SuppressWarnings("unchecked")
-      final Map<MemoryExclusionVertex, Long> fifoAllocation = (Map<MemoryExclusionVertex, Long>) meg.getPropertyBean()
-          .getValue(MemoryExclusionGraph.DAG_FIFO_ALLOCATION);
+      final Map<MemoryExclusionVertex,
+          Long> fifoAllocation = meg.getPropertyBean().getValue(MemoryExclusionGraph.DAG_FIFO_ALLOCATION);
       for (final Entry<MemoryExclusionVertex, Long> fifoAlloc : fifoAllocation.entrySet()) {
         final SubBuffer fifoBuffer = CodegenFactory.eINSTANCE.createSubBuffer();
 
@@ -933,9 +913,8 @@ public class CodegenModelGenerator {
         }
       }
       // Generate subbuffers for each working mem.
-      @SuppressWarnings("unchecked")
-      final Map<MemoryExclusionVertex, Long> workingMemoryAllocation = (Map<MemoryExclusionVertex,
-          Long>) (meg.getPropertyBean().getValue(MemoryExclusionGraph.WORKING_MEM_ALLOCATION));
+      final Map<MemoryExclusionVertex,
+          Long> workingMemoryAllocation = (meg.getPropertyBean().getValue(MemoryExclusionGraph.WORKING_MEM_ALLOCATION));
       for (final Entry<MemoryExclusionVertex, Long> e : workingMemoryAllocation.entrySet()) {
         final SubBuffer workingMemBuffer = CodegenFactory.eINSTANCE.createSubBuffer();
         final MemoryExclusionVertex mObj = e.getKey();
@@ -1003,8 +982,7 @@ public class CodegenModelGenerator {
         case CodeGenArgument.OUTPUT:
           final Set<DAGEdge> outEdges = this.algo.outgoingEdgesOf(dagVertex);
           for (final DAGEdge edge : outEdges) {
-            final BufferAggregate bufferAggregate = (BufferAggregate) edge.getPropertyBean()
-                .getValue(BufferAggregate.propertyBeanName);
+            final BufferAggregate bufferAggregate = edge.getPropertyBean().getValue(BufferAggregate.propertyBeanName);
             for (final BufferProperties buffProperty : bufferAggregate) {
               // check that this edge is not connected to a receive vertex
               if (buffProperty.getSourceOutputPortID().equals(arg.getName()) && edge.getTarget().getKind() != null) {
@@ -1017,8 +995,7 @@ public class CodegenModelGenerator {
         case CodeGenArgument.INPUT:
           final Set<DAGEdge> inEdges = this.algo.incomingEdgesOf(dagVertex);
           for (final DAGEdge edge : inEdges) {
-            final BufferAggregate bufferAggregate = (BufferAggregate) edge.getPropertyBean()
-                .getValue(BufferAggregate.propertyBeanName);
+            final BufferAggregate bufferAggregate = edge.getPropertyBean().getValue(BufferAggregate.propertyBeanName);
             for (final BufferProperties buffProperty : bufferAggregate) {
               // check that this edge is not connected to a send vertex
               if (buffProperty.getDestInputPortID().equals(arg.getName()) && edge.getSource().getKind() != null) {
@@ -1116,7 +1093,7 @@ public class CodegenModelGenerator {
     final Delimiter delimiter = (direction.equals(VertexType.TYPE_SEND)) ? Delimiter.START : Delimiter.END;
     newComm.setDirection(dir);
     newComm.setDelimiter(delimiter);
-    final MessageRouteStep routeStep = (MessageRouteStep) dagVertex.getPropertyBean()
+    final MessageRouteStep routeStep = dagVertex.getPropertyBean()
         .getValue(ImplementationPropertyNames.SendReceive_routeStep);
     for (final ComponentInstance comp : routeStep.getNodes()) {
       final CommunicationNode comNode = CodegenFactory.eINSTANCE.createCommunicationNode();
@@ -1126,7 +1103,7 @@ public class CodegenModelGenerator {
     }
 
     // Find the corresponding DAGEdge buffer(s)
-    final DAGEdge dagEdge = (DAGEdge) dagVertex.getPropertyBean()
+    final DAGEdge dagEdge = dagVertex.getPropertyBean()
         .getValue(ImplementationPropertyNames.SendReceive_correspondingDagEdge);
     final Buffer buffer = this.dagEdgeBuffers.get(dagEdge);
     if (buffer == null) {
@@ -1180,12 +1157,12 @@ public class CodegenModelGenerator {
 
     // No semaphore here, semaphore are only for SS->RE and RE->SR
 
-    final Integer gid = (Integer) dagVertex.getPropertyBean().getValue("SYNC_GROUP");
+    final Integer gid = dagVertex.getPropertyBean().getValue("SYNC_GROUP");
     if (gid != null) {
       newComm.setComment("SyncComGroup = " + gid);
     }
     // Check if this is a redundant communication
-    final Boolean b = (Boolean) dagVertex.getPropertyBean().getValue("Redundant");
+    final Boolean b = dagVertex.getPropertyBean().getValue("Redundant");
     if (b != null && b.equals(Boolean.valueOf(true))) {
       // Mark communication are redundant.
       newComm.setRedundant(true);
@@ -1250,8 +1227,7 @@ public class CodegenModelGenerator {
           "DAGVertex " + dagVertex + " is not connected to any " + VertexType.TYPE_TASK + " vertex.");
     }
 
-    final BufferAggregate aggregate = (BufferAggregate) edge.getPropertyBean()
-        .getValue(BufferAggregate.propertyBeanName);
+    final BufferAggregate aggregate = edge.getPropertyBean().getValue(BufferAggregate.propertyBeanName);
     final BufferProperties bufferProperty = aggregate.get(0);
     buffer = this.srSDFEdgeBuffers.get(bufferProperty);
     if (buffer == null) {
@@ -1262,7 +1238,7 @@ public class CodegenModelGenerator {
     // Retrieve the internal buffer
     DAGVertex dagEndVertex;
     DAGVertex dagInitVertex;
-    final String endReferenceName = (String) dagVertex.getPropertyBean().getValue(SDFInitVertex.END_REFERENCE);
+    final String endReferenceName = dagVertex.getPropertyBean().getValue(SDFInitVertex.END_REFERENCE);
     if (fifoCall.getOperation().equals(FifoOperation.POP)) {
       dagInitVertex = dagVertex;
       dagEndVertex = (DAGVertex) dagInitVertex.getBase().getVertex(endReferenceName);
@@ -1304,8 +1280,7 @@ public class CodegenModelGenerator {
       fifoInitCall.setName(fifoCall.getName());
       fifoInitCall.setHeadBuffer(fifoCall.getHeadBuffer());
       fifoInitCall.setBodyBuffer(fifoCall.getBodyBuffer());
-      final PersistenceLevel level = (PersistenceLevel) dagInitVertex.getPropertyBean()
-          .getValue(DAGInitVertex.PERSISTENCE_LEVEL);
+      final PersistenceLevel level = dagInitVertex.getPropertyBean().getValue(DAGInitVertex.PERSISTENCE_LEVEL);
       if (level == null || PersistenceLevel.PERMANENT.equals(level)) {
         operatorBlock.getInitBlock().getCodeElts().add(fifoInitCall);
       } else {
@@ -1586,8 +1561,7 @@ public class CodegenModelGenerator {
 
       // Find the corresponding BufferProperty
       BufferProperties subBuffProperty = null;
-      final BufferAggregate buffers = (BufferAggregate) correspondingEdge.getPropertyBean()
-          .getValue(BufferAggregate.propertyBeanName);
+      final BufferAggregate buffers = correspondingEdge.getPropertyBean().getValue(BufferAggregate.propertyBeanName);
       for (final BufferProperties subBufferProperties : buffers) {
         // The source and target actor are the same, check that the
         // ports are corrects
@@ -1638,7 +1612,7 @@ public class CodegenModelGenerator {
         f.setType(SpecialType.JOIN);
         break;
       case DAGBroadcastVertex.DAG_BROADCAST_VERTEX:
-        final String specialKind = (String) dagVertex.getPropertyBean().getValue(DAGBroadcastVertex.SPECIAL_TYPE);
+        final String specialKind = dagVertex.getPropertyBean().getValue(DAGBroadcastVertex.SPECIAL_TYPE);
         if (specialKind == null) {
           throw new PreesmException("Broadcast DAGVertex " + dagVertex + " has null special type");
         }
@@ -1699,8 +1673,7 @@ public class CodegenModelGenerator {
       throw new PreesmException(f.getType().getName() + " vertex " + dagVertex + "is not properly connected.");
     }
 
-    final BufferAggregate bufferAggregate = (BufferAggregate) lastEdge.getPropertyBean()
-        .getValue(BufferAggregate.propertyBeanName);
+    final BufferAggregate bufferAggregate = lastEdge.getPropertyBean().getValue(BufferAggregate.propertyBeanName);
     // there should be only one buffer in the aggregate
     final BufferProperties lastBuffProperty = bufferAggregate.get(0);
     final Buffer lastBuffer = this.srSDFEdgeBuffers.get(lastBuffProperty);
@@ -1738,14 +1711,12 @@ public class CodegenModelGenerator {
 
     final Map<String, DataType> dataTypes = this.scenario.getSimulationManager().getDataTypes();
 
-    final BufferAggregate buffers = (BufferAggregate) dagEdge.getPropertyBean()
-        .getValue(BufferAggregate.propertyBeanName);
+    final BufferAggregate buffers = dagEdge.getPropertyBean().getValue(BufferAggregate.propertyBeanName);
 
     // Retrieve the corresponding memory object from the MEG
     final MemoryExclusionVertex memObject = findMObject(dagEdge);
-    @SuppressWarnings("unchecked")
-    final List<Long> interSubbufferSpace = (List<Long>) memObject.getPropertyBean()
-        .getValue(MemoryExclusionVertex.INTER_BUFFER_SPACES);
+    final List<
+        Long> interSubbufferSpace = memObject.getPropertyBean().getValue(MemoryExclusionVertex.INTER_BUFFER_SPACES);
 
     long aggregateOffset = 0;
     int idx = 0;
@@ -1935,10 +1906,8 @@ public class CodegenModelGenerator {
         // Get the real ranges from the memObject
         final MemoryExclusionVertex mObject = findMObject(dagEdge);
 
-        @SuppressWarnings("unchecked")
-        final List<Pair<MemoryExclusionVertex,
-            Pair<Range, Range>>> realRanges = (List<Pair<MemoryExclusionVertex, Pair<Range, Range>>>) mObject
-                .getPropertyBean().getValue(MemoryExclusionVertex.REAL_TOKEN_RANGE_PROPERTY);
+        final List<Pair<MemoryExclusionVertex, Pair<Range, Range>>> realRanges = mObject.getPropertyBean()
+            .getValue(MemoryExclusionVertex.REAL_TOKEN_RANGE_PROPERTY);
 
         // Find the actual allocation range of each real range.
         for (final Pair<MemoryExclusionVertex, Pair<Range, Range>> realRange : realRanges) {
@@ -2129,7 +2098,7 @@ public class CodegenModelGenerator {
     // In case of multi-step communication, this is the easiest
     // way to retrieve the target and source of the communication
     // corresponding to the current Send/ReceiveVertex
-    final MessageRouteStep routeStep = (MessageRouteStep) dagVertex.getPropertyBean()
+    final MessageRouteStep routeStep = dagVertex.getPropertyBean()
         .getValue(ImplementationPropertyNames.SendReceive_routeStep);
 
     String commID = routeStep.getSender().getInstanceName();
@@ -2194,9 +2163,8 @@ public class CodegenModelGenerator {
    */
   protected void restoreHostedVertices() {
     for (final MemoryExclusionGraph meg : this.megs.values()) {
-      @SuppressWarnings("unchecked")
-      final Map<MemoryExclusionVertex, Set<MemoryExclusionVertex>> hostBuffers = (Map<MemoryExclusionVertex,
-          Set<MemoryExclusionVertex>>) meg.getPropertyBean().getValue(MemoryExclusionGraph.HOST_MEMORY_OBJECT_PROPERTY);
+      final Map<MemoryExclusionVertex, Set<MemoryExclusionVertex>> hostBuffers = meg.getPropertyBean()
+          .getValue(MemoryExclusionGraph.HOST_MEMORY_OBJECT_PROPERTY);
       if (hostBuffers != null) {
         for (final Entry<MemoryExclusionVertex, Set<MemoryExclusionVertex>> entry : hostBuffers.entrySet()) {
           // Since host vertices are naturally aligned, no need to
@@ -2209,20 +2177,18 @@ public class CodegenModelGenerator {
           for (final MemoryExclusionVertex vertex : vertices) {
             // For non-divided vertices
             if (vertex.getWeight() != 0) {
-              final long emptySpace = (long) vertex.getPropertyBean()
-                  .getValue(MemoryExclusionVertex.EMPTY_SPACE_BEFORE);
+              final long emptySpace = vertex.getPropertyBean().getValue(MemoryExclusionVertex.EMPTY_SPACE_BEFORE);
 
               // Put the vertex back to its real size
               vertex.setWeight(vertex.getWeight() - emptySpace);
 
               // And set the allocated offset
-              final long allocatedOffset = (long) vertex.getPropertyBean()
+              final long allocatedOffset = vertex.getPropertyBean()
                   .getValue(MemoryExclusionVertex.MEMORY_OFFSET_PROPERTY);
 
               vertex.setPropertyValue(MemoryExclusionVertex.MEMORY_OFFSET_PROPERTY, allocatedOffset + emptySpace);
-              @SuppressWarnings("unchecked")
-              final Map<DAGEdge, Long> dagEdgeAllocation = (Map<DAGEdge, Long>) meg.getPropertyBean()
-                  .getValue(MemoryExclusionGraph.DAG_EDGE_ALLOCATION);
+              final Map<DAGEdge,
+                  Long> dagEdgeAllocation = meg.getPropertyBean().getValue(MemoryExclusionGraph.DAG_EDGE_ALLOCATION);
               dagEdgeAllocation.put(vertex.getEdge(), allocatedOffset + emptySpace);
             }
           }

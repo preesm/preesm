@@ -54,7 +54,7 @@ public class SDFJoinVertex extends SDFAbstractSpecialVertex {
   public static final String JOIN = "join";
 
   /** String to access the property edges order. */
-  public static final String EDGES_ORDER = "edges_order";
+  private static final String EDGES_ORDER = "edges_order";
 
   /**
    * Creates a new SDFInterfaceVertex with the default direction (SINK).
@@ -142,7 +142,7 @@ public class SDFJoinVertex extends SDFAbstractSpecialVertex {
    *          The edge to get the connection index
    * @return The connection index of the edge
    */
-  public Long getEdgeIndex(final SDFEdge edge) {
+  private Long getEdgeIndex(final SDFEdge edge) {
     for (final Long connIndex : getConnections().keySet()) {
       if (getConnections().get(connIndex).equals(edge)) {
         return connIndex;
@@ -182,6 +182,7 @@ public class SDFJoinVertex extends SDFAbstractSpecialVertex {
    *          the new index for the {@link SDFEdge}
    * @return <code>true</code> if the edge was found and moved at an existing index, <code>false</code> otherwise.
    */
+  @Override
   public boolean setEdgeIndex(final SDFEdge edge, long index) {
     final Map<Long, SDFEdge> connections = getConnections();
     if ((index < connections.size()) && connections.containsValue(edge)) {
@@ -211,7 +212,7 @@ public class SDFJoinVertex extends SDFAbstractSpecialVertex {
    *
    * @return the connections
    */
-  protected Map<Long, SDFEdge> getConnections() {
+  private Map<Long, SDFEdge> getConnections() {
     Map<Long, SDFEdge> connections = getPropertyBean().getValue(SDFJoinVertex.EDGES_ORDER);
     if (connections == null) {
       connections = new LinkedHashMap<>();

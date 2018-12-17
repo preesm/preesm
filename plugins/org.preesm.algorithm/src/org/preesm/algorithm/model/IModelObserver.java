@@ -51,7 +51,7 @@ public interface IModelObserver {
    * @param arg
    *          arguments to be passed
    */
-  public default void update(AbstractGraph<?, ?> observable, Object arg) {
+  public default void update(final AbstractGraph<?, ?> observable, final Object arg) {
 
   }
 

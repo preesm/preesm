@@ -50,14 +50,13 @@ import org.preesm.model.pisdf.Actor;
 import org.preesm.model.pisdf.PeriodicElement;
 import org.preesm.model.pisdf.PiGraph;
 import org.preesm.model.scenario.PreesmScenario;
-import org.preesm.model.slam.Design;
 import org.preesm.workflow.elements.Workflow;
 import org.preesm.workflow.implement.AbstractTaskImplementation;
 import org.preesm.workflow.implement.AbstractWorkflowNodeImplementation;
 
 /**
  * This class computes necessary conditions for the schedulability of graphs with periods.
- * 
+ *
  * @author ahonorat
  *
  */
@@ -77,10 +76,10 @@ public class PeriodsPreschedulingChecker extends AbstractTaskImplementation {
       + "must be an integer between 1 and 100 (%), instead of: ";
 
   @Override
-  public Map<String, Object> execute(Map<String, Object> inputs, Map<String, String> parameters,
-      IProgressMonitor monitor, String nodeName, Workflow workflow) throws PreesmException {
+  public Map<String, Object> execute(final Map<String, Object> inputs, final Map<String, String> parameters,
+      final IProgressMonitor monitor, final String nodeName, final Workflow workflow) throws PreesmException {
 
-    final Design architecture = (Design) inputs.get(AbstractWorkflowNodeImplementation.KEY_ARCHITECTURE);
+    inputs.get(AbstractWorkflowNodeImplementation.KEY_ARCHITECTURE);
     final PreesmScenario scenario = (PreesmScenario) inputs.get(AbstractWorkflowNodeImplementation.KEY_SCENARIO);
     final PiGraph graph = (PiGraph) inputs.get(AbstractWorkflowNodeImplementation.KEY_PI_GRAPH);
 
@@ -88,20 +87,20 @@ public class PeriodsPreschedulingChecker extends AbstractTaskImplementation {
       throw new PreesmException("This task must be called with a flatten PiMM graph, abandon.");
     }
 
-    final String rateStr = parameters.get(SELECTION_RATE);
+    final String rateStr = parameters.get(PeriodsPreschedulingChecker.SELECTION_RATE);
     int rate = 100;
     try {
       rate = Integer.parseInt(rateStr);
-      if (rate < 0 || rate > 100) {
-        throw new PreesmException(GENERIC_RATE_ERROR + rate + ".");
+      if ((rate < 0) || (rate > 100)) {
+        throw new PreesmException(PeriodsPreschedulingChecker.GENERIC_RATE_ERROR + rate + ".");
       }
-    } catch (NumberFormatException e) {
-      throw new PreesmException(GENERIC_RATE_ERROR + rateStr + ".", e);
+    } catch (final NumberFormatException e) {
+      throw new PreesmException(PeriodsPreschedulingChecker.GENERIC_RATE_ERROR + rateStr + ".", e);
     }
 
     final Map<Actor, Long> periodicActors = new HashMap<>();
     for (final AbstractActor absActor : graph.getActors()) {
-      if (absActor instanceof Actor && absActor instanceof PeriodicElement) {
+      if ((absActor instanceof Actor) && (absActor instanceof PeriodicElement)) {
         final Actor actor = (Actor) absActor;
         if (!actor.isHierarchical() && !actor.isConfigurationActor()) {
           final long period = actor.getPeriod().evaluate();
@@ -129,14 +128,14 @@ public class PeriodsPreschedulingChecker extends AbstractTaskImplementation {
 
     // 2. perform heuristic to select periodic nodes
     final StringBuilder sbNBFF = new StringBuilder();
-    Map<Actor, Long> actorsNBFF = HeuristicPeriodicActorSelection.selectActors(periodicActors, sourceActors, rate,
+    final Map<Actor, Long> actorsNBFF = HeuristicPeriodicActorSelection.selectActors(periodicActors, sourceActors, rate,
         graph, scenario, false);
     actorsNBFF.keySet().forEach(a -> sbNBFF.append(a.getName() + " / "));
     PreesmLogger.getLogger().log(Level.WARNING, "Periodic actor for NBFF: " + sbNBFF.toString());
 
     final StringBuilder sbNBLF = new StringBuilder();
-    Map<Actor, Long> actorsNBLF = HeuristicPeriodicActorSelection.selectActors(periodicActors, sinkActors, rate, graph,
-        scenario, true);
+    final Map<Actor, Long> actorsNBLF = HeuristicPeriodicActorSelection.selectActors(periodicActors, sinkActors, rate,
+        graph, scenario, true);
     actorsNBLF.keySet().forEach(a -> sbNBLF.append(a.getName() + " / "));
     PreesmLogger.getLogger().log(Level.WARNING, "Periodic actor for NBLF: " + sbNBLF.toString());
 
@@ -154,8 +153,8 @@ public class PeriodsPreschedulingChecker extends AbstractTaskImplementation {
 
   @Override
   public Map<String, String> getDefaultParameters() {
-    Map<String, String> parameters = new HashMap<>();
-    parameters.put(SELECTION_RATE, DEFAULT_SELECTION_RATE);
+    final Map<String, String> parameters = new HashMap<>();
+    parameters.put(PeriodsPreschedulingChecker.SELECTION_RATE, PeriodsPreschedulingChecker.DEFAULT_SELECTION_RATE);
     return parameters;
   }
 

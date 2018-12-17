@@ -42,7 +42,6 @@ import java.util.Observable;
 import java.util.Observer;
 import org.preesm.algorithm.model.parameters.Argument;
 import org.preesm.algorithm.model.parameters.ArgumentSet;
-import org.preesm.algorithm.model.visitors.IGraphVisitor;
 import org.preesm.commons.CloneableProperty;
 import org.preesm.commons.exceptions.PreesmException;
 
@@ -62,30 +61,24 @@ public abstract class AbstractVertex<G> extends Observable
 
   /** Property name for property base. */
   public static final String BASE_LITERAL = "base";
-  @Deprecated
-  public static final String BASE         = BASE_LITERAL;
 
   /** Property name for property graph_desc. */
   public static final String REFINEMENT_LITERAL = "graph_desc";
-  @Deprecated
-  public static final String REFINEMENT         = REFINEMENT_LITERAL;
 
   /** Property name for property arguments. */
   public static final String ARGUMENTS_LITERAL = "arguments";
 
   /** Property name for property id. */
-  public static final String ID_LITERAL = "id";
+  private static final String ID_LITERAL = "id";
 
   /** Property name for property name. */
-  public static final String NAME_LITERAL = "name";
+  private static final String NAME_LITERAL = "name";
 
   /** Property name for property name. */
-  public static final String INFO_LITERAL = "info";
+  private static final String INFO_LITERAL = "info";
 
   /** Property kind for property name. */
   public static final String KIND_LITERAL = "kind";
-  @Deprecated
-  public static final String KIND         = KIND_LITERAL;
 
   /** The public properties. */
   protected static final List<
@@ -93,7 +86,7 @@ public abstract class AbstractVertex<G> extends Observable
           AbstractVertex.REFINEMENT_LITERAL, AbstractVertex.NAME_LITERAL, AbstractVertex.KIND_LITERAL));
 
   /** The interfaces. */
-  protected List<IInterface> interfaces;
+  private final List<IInterface> interfaces;
 
   /**
    * Creates a new Instance of Abstract vertex.
@@ -122,7 +115,7 @@ public abstract class AbstractVertex<G> extends Observable
    *           the SDF 4 J exception
    */
   @SuppressWarnings("rawtypes")
-  public void accept(final IGraphVisitor visitor) throws PreesmException {
+  public void accept(final IGraphVisitor visitor) {
     visitor.visit(this);
   }
 
@@ -136,11 +129,6 @@ public abstract class AbstractVertex<G> extends Observable
   public boolean addInterface(final IInterface port) {
     this.interfaces.add(port);
     return true;
-  }
-
-  @Deprecated
-  public void addInterfaces(List<IInterface> list) {
-    throw new UnsupportedOperationException("This method is deprecated and subject to removal soon.");
   }
 
   /**
@@ -398,7 +386,7 @@ public abstract class AbstractVertex<G> extends Observable
    * @param e
    *          the e
    */
-  public void connectionAdded(AbstractEdge<?, ?> e) {
+  public void connectionAdded(final AbstractEdge<?, ?> e) {
     // nothing by default
   }
 
@@ -408,7 +396,7 @@ public abstract class AbstractVertex<G> extends Observable
    * @param e
    *          the e
    */
-  public void connectionRemoved(AbstractEdge<?, ?> e) {
+  public void connectionRemoved(final AbstractEdge<?, ?> e) {
     // nothing by default
   }
 

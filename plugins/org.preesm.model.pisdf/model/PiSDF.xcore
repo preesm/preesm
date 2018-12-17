@@ -49,19 +49,23 @@ type double wraps double
  *
  **************************************/
 
-class Vertex {
+interface Vertex {
 	container Graph containingGraph opposite vertices
-	refers Edge[] outEdges opposite source
-	refers Edge[] inEdges opposite target
+	op Edge[] getOutgoingEdges() {
+		return containingGraph.edges.filter[it.source === this].toEList.unmodifiableEList
+	}
+	op Edge[] getIncomingEdges() {
+		return containingGraph.edges.filter[it.target === this].toEList.unmodifiableEList
+	}
 }
 
-class Edge {
+interface Edge {
 	container Graph containingGraph opposite edges
-	refers Vertex source opposite outEdges
-	refers Vertex target opposite inEdges
+	op Vertex getSource()
+	op Vertex getTarget()
 }
 
-class Graph {
+interface Graph {
 	contains Vertex[] vertices opposite containingGraph
 	contains Edge[] edges opposite containingGraph
 }
@@ -144,7 +148,7 @@ class DelayLinkedExpression extends ExpressionProxy {
 interface AbstractVertex extends Vertex {
 	String name
 	op PiGraph getContainingPiGraph() {
-		return super.containingGraph as PiGraph
+		return containingGraph as PiGraph
 	}
 	op unique Port[] getAllPorts()
 	op Port lookupPort(String portName) {
@@ -362,37 +366,40 @@ interface PeriodicElement extends ExpressionHolder {
 	}
 }
 
-class BroadcastActor extends ExecutableActor {
+abstract class SpecialActor extends ExecutableActor {
 }
 
-class JoinActor extends ExecutableActor {
+class BroadcastActor extends SpecialActor {
 }
 
-class ForkActor extends ExecutableActor {
+class JoinActor extends SpecialActor {
 }
 
-class RoundBufferActor extends ExecutableActor {
+class ForkActor extends SpecialActor {
 }
 
-abstract class NonExecutableActor extends AbstractActor {
+class RoundBufferActor extends SpecialActor {
 }
 
-class InitActor extends NonExecutableActor {
+class InitActor extends SpecialActor {
 	PersistenceLevel level
-	String endReference = ""
+	refers AbstractActor endReference
 	op DataOutputPort getDataOutputPort() {
 		// Init actors only have one output port
 		return dataOutputPorts.get(0)
 	}
 }
 
-class EndActor extends NonExecutableActor {
+class EndActor extends SpecialActor {
 	PersistenceLevel level
-	String initReference = ""
+	refers AbstractActor initReference
 	op DataInputPort getDataInputPort() {
 		// End actors only have one input port
 		return dataInputPorts.get(0)
 	}
+}
+
+abstract class NonExecutableActor extends AbstractActor {
 }
 
 class DelayActor extends NonExecutableActor, RefinementContainer {
@@ -452,13 +459,13 @@ abstract class DataPort extends Port, ExpressionHolder {
 	op Expression getPortRateExpression() {
 		return getExpression
 	}
-	PortMemoryAnnotation ^annotation
 	op AbstractActor getContainingActor() {
 		if (eContainer() instanceof AbstractActor) {
 			return eContainer() as AbstractActor;
 		}
 		return null;
 	}
+	PortMemoryAnnotation ^annotation
 	op Parameter[] getInputParameters() {
 		return containingActor.inputParameters.unmodifiableView
 	}
@@ -515,6 +522,14 @@ class Fifo extends Edge {
 	refers DataInputPort targetPort opposite incomingFifo
 	refers Delay delay opposite containingFifo
 	String ^type = "void"
+
+	op Vertex getSource() {
+		sourcePort.containingActor
+	}
+
+	op Vertex getTarget() {
+		targetPort.containingActor
+	}
 
 	op PiGraph getContainingPiGraph() {
 		return containingGraph as PiGraph
@@ -618,6 +633,20 @@ class Parameter extends Vertex, Configurable, ISetter, ExpressionHolder {
 class Dependency extends Edge {
 	refers ISetter setter opposite outgoingDependencies
 	refers ConfigInputPort getter opposite incomingDependency
+
+	op Vertex getSource() {
+		if (setter instanceof Parameter) {
+			return setter as Parameter;
+		} else  if (setter instanceof ConfigOutputPort) {
+			return (setter as ConfigOutputPort).containingActor
+		} else {
+			return null
+		}
+	}
+
+	op Vertex getTarget() {
+		return getter.configurable
+	}
 }
 
 interface ISetter {

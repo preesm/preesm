@@ -41,7 +41,6 @@ import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import org.preesm.algorithm.mapper.model.MapperDAGVertex;
 import org.preesm.commons.exceptions.PreesmException;
 
 // TODO: Auto-generated Javadoc
@@ -95,17 +94,6 @@ public class VertexOrderList {
       return this.order;
     }
 
-    /**
-     * Corresponds to.
-     *
-     * @param v
-     *          the v
-     * @return true, if successful
-     */
-    public boolean correspondsTo(final MapperDAGVertex v) {
-      return v.getName().equals(this.name);
-    }
-
     /*
      * (non-Javadoc)
      *
@@ -133,17 +121,6 @@ public class VertexOrderList {
     super();
     this.orderedList = new ArrayList<>();
     this.nameMap = new LinkedHashMap<>();
-  }
-
-  /**
-   * Index of.
-   *
-   * @param p
-   *          the p
-   * @return the int
-   */
-  public int indexOf(final OrderProperty p) {
-    return this.orderedList.indexOf(p);
   }
 
   /**

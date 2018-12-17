@@ -42,7 +42,6 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.stream.Stream;
 import org.preesm.algorithm.mapper.abc.order.OrderManager;
-import org.preesm.algorithm.mapper.checker.CommunicationOrderChecker;
 import org.preesm.algorithm.mapper.model.MapperDAG;
 import org.preesm.algorithm.mapper.model.MapperDAGEdge;
 import org.preesm.algorithm.mapper.model.MapperDAGVertex;
@@ -50,6 +49,7 @@ import org.preesm.algorithm.mapper.model.special.PrecedenceEdge;
 import org.preesm.algorithm.mapper.model.special.ReceiveVertex;
 import org.preesm.algorithm.mapper.model.special.SendVertex;
 import org.preesm.algorithm.mapper.model.special.TransferVertex;
+import org.preesm.algorithm.mapper.tools.CommunicationOrderChecker;
 import org.preesm.commons.logger.PreesmLogger;
 import org.preesm.model.slam.ComponentInstance;
 import org.preesm.model.slam.route.AbstractRouteStep;
@@ -98,34 +98,6 @@ public class AddSendReceiveTransaction extends Transaction {
 
   /** The new edge 3. */
   private MapperDAGEdge newEdge3 = null;
-
-  /**
-   * Instantiates a new adds the send receive transaction.
-   *
-   * @param edge
-   *          the edge
-   * @param implementation
-   *          the implementation
-   * @param orderManager
-   *          the order manager
-   * @param routeIndex
-   *          the route index
-   * @param step
-   *          the step
-   * @param transferCost
-   *          the transfer cost
-   */
-  public AddSendReceiveTransaction(final MapperDAGEdge edge, final MapperDAG implementation,
-      final OrderManager orderManager, final int routeIndex, final AbstractRouteStep step, final long transferCost) {
-    super();
-    this.precedingTransaction = null;
-    this.edge = edge;
-    this.implementation = implementation;
-    this.orderManager = orderManager;
-    this.routeIndex = routeIndex;
-    this.step = step;
-    this.transferCost = transferCost;
-  }
 
   /**
    * Instantiates a new adds the send receive transaction.

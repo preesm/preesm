@@ -43,6 +43,7 @@ import java.nio.file.Files;
 import java.util.Comparator;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.stream.Stream;
 import org.eclipse.core.resources.IContainer;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IFolder;
@@ -94,8 +95,9 @@ public class WorkflowRunner {
 
     // clean
     project.close(null);
-    Files.walk(createTempDirectory, FileVisitOption.FOLLOW_LINKS).sorted(Comparator.reverseOrder())
-        .map(java.nio.file.Path::toFile).forEach(File::delete);
+    final Stream<java.nio.file.Path> walk = Files.walk(createTempDirectory, FileVisitOption.FOLLOW_LINKS);
+    walk.sorted(Comparator.reverseOrder()).map(java.nio.file.Path::toFile).forEach(File::delete);
+    walk.close();
     project.delete(true, null);
     return success;
   }

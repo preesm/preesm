@@ -42,11 +42,9 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.preesm.algorithm.model.dag.DirectedAcyclicGraph;
-import org.preesm.commons.exceptions.PreesmException;
 import org.preesm.workflow.elements.Workflow;
 import org.preesm.workflow.implement.AbstractWorkflowNodeImplementation;
 
-// TODO: Auto-generated Javadoc
 /**
  * Workflow element that takes a Scheduled DAG and a MemEx as inputs and update the MemEx according to the DAG Schedule.
  *
@@ -62,17 +60,17 @@ public class MemExUpdater extends AbstractMemExUpdater {
    */
   @Override
   public Map<String, Object> execute(final Map<String, Object> inputs, final Map<String, String> parameters,
-      final IProgressMonitor monitor, final String nodeName, final Workflow workflow) throws PreesmException {
+      final IProgressMonitor monitor, final String nodeName, final Workflow workflow) {
 
     // Check Workflow element parameters
     final String valueVerbose = parameters.get(AbstractMemExUpdater.PARAM_VERBOSE);
-    final boolean verbose = valueVerbose.equals(AbstractMemExUpdater.VALUE_TRUE);
+    final boolean verbose = valueVerbose.equalsIgnoreCase("true");
 
     final String valueLifetime = parameters.get(AbstractMemExUpdater.PARAM_LIFETIME);
-    final boolean lifetime = valueLifetime.equals(AbstractMemExUpdater.VALUE_TRUE);
+    final boolean lifetime = valueLifetime.equalsIgnoreCase("true");
 
     final String valueSupprForkJoin = parameters.get(AbstractMemExUpdater.PARAM_SUPPR_FORK_JOIN);
-    final boolean forkJoin = valueSupprForkJoin.equals(AbstractMemExUpdater.VALUE_TRUE);
+    final boolean forkJoin = valueSupprForkJoin.equalsIgnoreCase("true");
 
     // Retrieve inputs
     final DirectedAcyclicGraph dag = (DirectedAcyclicGraph) inputs.get("DAG");
