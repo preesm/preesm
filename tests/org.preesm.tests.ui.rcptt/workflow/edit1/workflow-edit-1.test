@@ -1,0 +1,169 @@
+--- RCPTT testcase ---
+Format-Version: 1.0
+Contexts: _ZEsW0Ob4EeeMlf4lWoX8aw
+Element-Name: workflow-edit-1
+Element-Type: testcase
+Element-Version: 3.0
+External-Reference: 
+Id: _mPu3wAILEem5ROe3sIoWRg
+Runtime-Version: 2.4.0.201812170013
+Save-Time: 12/17/18 4:04 PM
+Testcase-Type: ecl
+Verifications: _BioLwAINEem5ROe3sIoWRg
+
+------=_.content-0a7243a0-75d3-3d5f-9791-539de0e5b7ac
+Content-Type: text/ecl
+Entry-Name: .content
+
+get-view "Project Explorer" | get-tree | select "org.ietr.preesm.sobel/Workflows" | get-menu
+    -path "New/Preesm Workflow" | click
+with [get-window "New Workflow"] {
+    get-editbox -after [get-label "File name:"] | set-text "workflow-test"
+    get-button Finish | click
+}
+with [get-editor "workflow-test.workflow"] {
+    with [get-palette | get-palette-entry "Scenario source"] {
+        mouse-move 51 11 button1 -height 33 -width 125
+        mouse-press 51 11 button1 -height 33 -width 125
+        mouse-release 51 11 button1 524288 -height 33 -width 125
+    }
+    with [get-diagram -index 1] {
+        mouse-move 99 138 button1 -height 380 -width 624
+        mouse-press 99 138 button1 -height 380 -width 624
+        mouse-release 99 138 button1 524288 -height 380 -width 624
+    }
+    get-diagram -index 1 | get-edit-part -className GraphEditPart | get-edit-part -text scenario
+        | get-handle ResizeHandle -index 1 | mouse-hover 4 4 -height 7 -width 7
+    with [get-palette | get-palette-entry Task] {
+        mouse-move 51 13 button1 -height 23 -width 125
+        mouse-press 51 13 button1 -height 23 -width 125
+        mouse-release 51 13 button1 524288 -height 23 -width 125
+    }
+    with [get-diagram -index 1] {
+        mouse-move 256 146 button1 -height 380 -width 624
+        mouse-press 256 146 button1 -height 380 -width 624
+        mouse-release 256 146 button1 524288 -height 380 -width 624
+    }
+}
+with [get-window "New vertex"] {
+    get-editbox -after [get-label "Please enter a vertex identifier"] | set-text pimm2srdag
+    get-button OK | click
+}
+with [get-editor "workflow-test.workflow"] {
+    with [get-palette | get-palette-entry Task] {
+        mouse-move 27 12 button1 -height 23 -width 125
+        mouse-press 27 12 button1 -height 23 -width 125
+        mouse-release 27 12 button1 524288 -height 23 -width 125
+    }
+    with [get-diagram -index 1] {
+        mouse-move 487 159 button1 -height 380 -width 624
+        mouse-press 487 159 button1 -height 380 -width 624
+        mouse-release 487 159 button1 524288 -height 380 -width 624
+    }
+}
+with [get-window "New vertex"] {
+    get-editbox -after [get-label "Please enter a vertex identifier"] | set-text pimmexport
+    get-button OK | click
+}
+with [get-editor "workflow-test.workflow"] {
+    with [get-palette | get-palette-entry "Data transfer"] {
+        mouse-move 30 13 button1 -height 23 -width 125
+        mouse-press 30 13 button1 -height 23 -width 125
+        mouse-release 30 13 button1 524288 -height 23 -width 125
+        mouse-move 20 11 -height 23 -width 125
+    }
+    with [get-diagram -index 1 | get-edit-part -className GraphEditPart] {
+        with [get-edit-part -text scenario] {
+            mouse-move 42 9 button1 -height 23 -width 58
+            mouse-press 42 9 button1 -height 23 -width 58
+            mouse-release 42 9 button1 524288 -height 23 -width 58
+        }
+        with [get-edit-part -text pimm2srdag] {
+            mouse-move 33 18 button1 -height 23 -width 81
+            mouse-press 33 18 button1 -height 23 -width 81
+        }
+    }
+}
+with [get-window "Connection: scenario - pimm2srdag"] {
+    get-editbox -after [get-label "Please enter a source port name:"] | set-text PiMM
+    get-button OK | click
+}
+with [get-window "Connection: scenario - pimm2srdag"] {
+    get-editbox -after [get-label "Please enter a target port name:"] | set-text PiMM
+    get-button OK | click
+}
+with [get-editor "workflow-test.workflow" | get-diagram -index 1 | get-edit-part -className GraphEditPart] {
+    with [get-edit-part -text pimm2srdag] {
+        mouse-move 52 21 button1 -height 41 -width 81
+        mouse-press 52 21 button1 -height 41 -width 81
+        mouse-release 52 21 button1 524288 -height 41 -width 81
+    }
+    with [get-edit-part -text pimmexport] {
+        mouse-move 52 9 button1 -height 23 -width 79
+        mouse-press 52 9 button1 -height 23 -width 79
+    }
+}
+with [get-window "Connection: pimm2srdag - pimmexport"] {
+    get-editbox -after [get-label "Please enter a source port name:"] | set-text PiMM
+    get-button OK | click
+}
+with [get-window "Connection: pimm2srdag - pimmexport"] {
+    get-editbox -after [get-label "Please enter a target port name:"] | set-text PiMM
+    get-button OK | click
+}
+with [get-editor "workflow-test.workflow" | get-diagram -index 1] {
+    key-type "M1+s"
+}
+with [get-editor "workflow-test.workflow"] {
+    with [get-palette] {
+        get-palette-entry Marquee | mouse-move 45 0 -height 23 -width 125
+        with [get-palette-entry Select] {
+            mouse-move 59 11 button1 -height 23 -width 125
+            mouse-press 59 11 button1 -height 23 -width 125
+            mouse-release 59 11 button1 524288 -height 23 -width 125
+            mouse-hover 59 11 -height 23 -width 125
+            mouse-move 22 18 -height 23 -width 125
+        }
+    }
+    with [get-diagram -index 1 | get-edit-part -className GraphEditPart | get-edit-part -text pimm2srdag] {
+        mouse-move 66 15 button1 -height 41 -width 81
+        mouse-press 66 15 button1 -height 41 -width 81
+        mouse-release 66 15 button1 524288 -height 41 -width 81
+        mouse-hover 66 15 -height 41 -width 81
+    }
+}
+with [get-view Properties] {
+    click
+    get-property-tab Basic | click
+    with [get-tree] {
+        select "plugin identifier" | activate-cell-edit -column 1
+        with [get-editbox] {
+            set-text "pisdf-srdag"
+            key-type Enter
+        }
+        apply-cell-edit -deactivate
+    }
+}
+with [get-editor "workflow-test.workflow" | get-diagram -index 1 | get-edit-part -className GraphEditPart
+    | get-edit-part -text pimmexport] {
+    mouse-move 62 11 button1 -height 23 -width 79
+    mouse-press 62 11 button1 -height 23 -width 79
+    mouse-release 62 11 button1 524288 -height 23 -width 79
+    mouse-hover 62 11 -height 23 -width 79
+}
+with [get-view Properties | get-tree] {
+    select "plugin identifier" | activate-cell-edit -column 1
+    with [get-editbox] {
+        set-text "org.ietr.preesm.algorithm.exportXml.pimm2xml"
+        key-type Enter
+    }
+    apply-cell-edit -deactivate
+}
+get-editor "workflow-test.workflow" | get-diagram -index 1 | key-type "M1+s"
+get-view "Project Explorer" | get-tree | select "org.ietr.preesm.sobel/Workflows/workflow-test.workflow" | get-menu
+    -path "Preesm/Run Workflow" | click
+with [get-window "Select an existing scenario file."] {
+    get-tree | select "org.ietr.preesm.sobel/Scenarios/01-display_1core.scenario"
+    get-button OK | click
+}
+------=_.content-0a7243a0-75d3-3d5f-9791-539de0e5b7ac--
