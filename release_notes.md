@@ -8,6 +8,7 @@ PREESM Changelog
 
 ### Changes
 * Enable xtend maven plugin on XCore projects in order to automatically apply XText nature on the eclipse project;
+* Force Graphiti to 1.13.0+;
 
 ### Bug fix
 
