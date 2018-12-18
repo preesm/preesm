@@ -7,6 +7,7 @@ PREESM Changelog
 ### New Feature
 
 ### Changes
+* Enable xtend maven plugin on XCore projects in order to automatically apply XText nature on the eclipse project;
 
 ### Bug fix
 
