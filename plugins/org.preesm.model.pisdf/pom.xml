@@ -57,6 +57,15 @@
             <groupId>org.eclipse.xtext</groupId>
             <artifactId>xtext-maven-plugin</artifactId>
          </plugin>
+         <!-- 
+           Enable xtend maven plugin on XCore projects in order to 
+           automatically apply XText nature on the eclipse project 
+           via M2E plugins;
+           -->
+         <plugin>
+            <groupId>org.eclipse.xtend</groupId>
+            <artifactId>xtend-maven-plugin</artifactId>
+         </plugin>
       </plugins>
    </build>
 </project>
