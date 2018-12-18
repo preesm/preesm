@@ -9,7 +9,7 @@ PREESM Changelog
 ### Changes
 
 ### Bug fix
-
+*  Fix issue 89 reoppening: proposed solution on initial comment was not safe;
 
 ## Release version 3.1.1
 *2018.12.17*
