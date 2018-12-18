@@ -53,16 +53,30 @@
 #include <time.h>
 
 #ifdef _MSC_VER
+
+// override int32_t
+#ifdef int32_t
+#undef int32_t
+#endif
 typedef _int32 int32_t;
+
+// override uint32_t
+#ifdef uint32_t
+#undef uint32_t
+#endif
 typedef unsigned _int32 uint32_t;
+
+// override int64_t
 #ifdef int64_t
 #undef int64_t
-typedef _int64 int64_t;
 #endif
+typedef _int64 int64_t;
+
+// override uint64_t
 #ifdef uint64_t
 #undef uint64_t
-typedef  unsigned _int64 uint64_t;
 #endif
+typedef  unsigned _int64 uint64_t;
 
 #else
 #include <stdint.h>

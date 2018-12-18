@@ -3,7 +3,7 @@ Bundle-ManifestVersion: 2
 Bundle-Name: PREESM :: Tests :: Models
 Automatic-Module-Name: org.preesm.tests.model
 Bundle-SymbolicName: org.preesm.tests.model
-Bundle-Version: 3.1.1
+Bundle-Version: 3.1.2
 Bundle-Vendor: IETR / INSA Rennes - VAADER
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Require-Bundle: org.junit;bundle-version="4.12.0",

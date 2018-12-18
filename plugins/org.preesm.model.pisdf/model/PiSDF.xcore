@@ -341,7 +341,7 @@ class Actor extends ExecutableActor, RefinementContainer, PeriodicElement {
 		return configOutputPorts.map[outgoingDependencies].filter[!it.isEmpty].map[it.get(0)].map[getter].exists[true]
 	}
 	op boolean isHierarchical() {
-		return refinement.isHierarchical
+		return refinement !== null && refinement.isHierarchical
 	}
 	op AbstractActor getChildAbstractActor() {
 		if (refinement === null) {
