@@ -39,12 +39,8 @@
  */
 package org.preesm.model.scenario.serialize;
 
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
 import java.util.Map;
 import java.util.Set;
-import org.eclipse.core.resources.IFile;
-import org.eclipse.core.runtime.NullProgressMonitor;
 import org.preesm.model.scenario.ConstraintGroup;
 import org.preesm.model.scenario.ParameterValue;
 import org.preesm.model.scenario.ParameterValueManager;
@@ -64,9 +60,6 @@ import org.w3c.dom.DOMImplementation;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.bootstrap.DOMImplementationRegistry;
-import org.w3c.dom.ls.DOMImplementationLS;
-import org.w3c.dom.ls.LSOutput;
-import org.w3c.dom.ls.LSSerializer;
 
 // TODO: Auto-generated Javadoc
 /**
@@ -398,35 +391,6 @@ public class ScenarioWriter {
     final Element dataTypeElt = this.dom.createElement("specialVertexOperator");
     parent.appendChild(dataTypeElt);
     dataTypeElt.setAttribute("path", opId);
-  }
-
-  /**
-   * Write dom.
-   *
-   * @param file
-   *          the file
-   */
-  public void writeDom(final IFile file) {
-
-    try {
-      // Gets the DOM implementation of document
-      final DOMImplementation impl = this.dom.getImplementation();
-      final DOMImplementationLS implLS = (DOMImplementationLS) impl;
-
-      final LSOutput output = implLS.createLSOutput();
-      final ByteArrayOutputStream out = new ByteArrayOutputStream();
-      output.setByteStream(out);
-
-      final LSSerializer serializer = implLS.createLSSerializer();
-      serializer.getDomConfig().setParameter("format-pretty-print", true);
-      serializer.write(this.dom, output);
-
-      file.setContents(new ByteArrayInputStream(out.toByteArray()), true, false, new NullProgressMonitor());
-      out.close();
-
-    } catch (final Exception e) {
-      e.printStackTrace();
-    }
   }
 
   /**

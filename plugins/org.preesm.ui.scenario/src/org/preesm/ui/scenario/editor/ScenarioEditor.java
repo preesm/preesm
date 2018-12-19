@@ -37,8 +37,13 @@
  */
 package org.preesm.ui.scenario.editor;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import org.eclipse.core.resources.IFile;
+import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.IEditorSite;
@@ -47,6 +52,8 @@ import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.forms.editor.IFormPage;
 import org.eclipse.ui.forms.editor.SharedHeaderFormEditor;
 import org.eclipse.ui.part.FileEditorInput;
+import org.preesm.commons.DomUtil;
+import org.preesm.commons.exceptions.PreesmException;
 import org.preesm.model.scenario.PreesmScenario;
 import org.preesm.model.scenario.serialize.ScenarioParser;
 import org.preesm.model.scenario.serialize.ScenarioWriter;
@@ -58,6 +65,7 @@ import org.preesm.ui.scenario.editor.relativeconstraints.RelativeConstraintsPage
 import org.preesm.ui.scenario.editor.simulation.SimulationPage;
 import org.preesm.ui.scenario.editor.timings.TimingsPage;
 import org.preesm.ui.utils.ErrorWithExceptionDialog;
+import org.w3c.dom.Document;
 
 /**
  * The scenario editor allows to change all parameters in scenario; i.e. depending on both algorithm and architecture.
@@ -167,8 +175,14 @@ public class ScenarioEditor extends SharedHeaderFormEditor implements IPropertyL
   public void doSave(final IProgressMonitor monitor) {
 
     final ScenarioWriter writer = new ScenarioWriter(this.scenario);
-    writer.generateScenarioDOM();
-    writer.writeDom(this.scenarioFile);
+    final Document generateScenarioDOM = writer.generateScenarioDOM();
+    try (final ByteArrayOutputStream byteStream = new ByteArrayOutputStream()) {
+      DomUtil.writeDocument(generateScenarioDOM, byteStream);
+      scenarioFile.setContents(new ByteArrayInputStream(byteStream.toByteArray()), true, false,
+          new NullProgressMonitor());
+    } catch (final IOException | CoreException e) {
+      throw new PreesmException(e);
+    }
 
     this.isDirty = false;
     firePropertyChange(IEditorPart.PROP_DIRTY);
