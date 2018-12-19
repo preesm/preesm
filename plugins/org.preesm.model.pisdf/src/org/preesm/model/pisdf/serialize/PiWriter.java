@@ -257,7 +257,7 @@ public class PiWriter {
    */
   public void write(final PiGraph graph, final OutputStream outputStream) {
 
-    PiGraphConsistenceChecker.check(graph);
+    PiGraphConsistenceChecker.check(graph, false);
 
     // Create the domDocument
     this.domDocument = DomUtil.createDocument("http://graphml.graphdrawing.org/xmlns", "graphml");

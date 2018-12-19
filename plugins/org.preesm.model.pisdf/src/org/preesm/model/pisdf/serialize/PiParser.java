@@ -150,7 +150,7 @@ public class PiParser {
     final PiGraph graph = getPiGraph(algorithmURL);
     final SubgraphReconnector connector = new SubgraphReconnector();
     connector.connectSubgraphs(graph);
-    PiGraphConsistenceChecker.check(graph);
+    PiGraphConsistenceChecker.check(graph, false);
     return graph;
   }
 
