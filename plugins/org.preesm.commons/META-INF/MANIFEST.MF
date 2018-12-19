@@ -12,7 +12,7 @@ Require-Bundle: javax.annotation;bundle-version="1.2.0";visibility:=reexport,
  org.eclipse.emf.ecore,
  org.apache.commons.math3;bundle-version="3.6.1";visibility:=reexport,
  org.apache.commons.lang3;bundle-version="3.7.0",
- org.apache.xerces;bundle-version="2.9.0",
+ xerces.Impl;bundle-version="2.12.0",
  jep;bundle-version="2.40.0";visibility:=reexport
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Bundle-ActivationPolicy: lazy
