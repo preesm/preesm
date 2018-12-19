@@ -1,0 +1,39 @@
+--- RCPTT testcase ---
+Format-Version: 1.0
+Contexts: _ZEsW0Ob4EeeMlf4lWoX8aw
+Element-Name: scenario-edit-1
+Element-Type: testcase
+Element-Version: 3.0
+External-Reference: 
+Id: _5-HNIAObEem9q69sJFZzEg
+Runtime-Version: 2.4.0.201812190010
+Save-Time: 12/19/18 3:44 PM
+Testcase-Type: ecl
+Verifications: _o0bS4AOcEem9q69sJFZzEg
+
+------=_.content-0a7243a0-75d3-3d5f-9791-539de0e5b7ac
+Content-Type: text/ecl
+Entry-Name: .content
+
+get-view "Project Explorer" | get-tree | select "org.ietr.preesm.sobel/Scenarios/01-display_1core.scenario"
+    | double-click
+with [get-editor "01-display_1core.scenario"] {
+    with [get-tab-folder] {
+        get-tab-item Constraints | click
+        get-tab-item "Relative Constraints" | click
+        get-tab-item Timings | click
+        get-tab-item Simulation | click
+        get-tab-item Codegen | click
+        get-tab-item Parameters | click
+        get-tab-item PAPIFY | click
+        get-tab-item Codegen | click
+        get-tab-item Timings | click
+        get-tab-item Simulation | click
+        get-tab-item Codegen | click
+    }
+    with [get-section "Code generation directory" | get-editbox -after [get-label "Edit directory"]] {
+        set-text "/org.ietr.preesm.sobel/Code/generated-test"
+        key-type "M1+s"
+    }
+}
+------=_.content-0a7243a0-75d3-3d5f-9791-539de0e5b7ac--
