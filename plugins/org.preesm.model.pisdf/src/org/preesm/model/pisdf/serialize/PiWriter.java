@@ -268,7 +268,7 @@ public class PiWriter {
     // Fill the root Element with the Graph
     writePi(this.rootElement, graph);
 
-    final OutputStream toto = new OutputStream() {
+    final OutputStream tmpStream = new OutputStream() {
       StringBuilder buffer = new StringBuilder();
 
       @Override
@@ -284,10 +284,10 @@ public class PiWriter {
     };
 
     // Produce the output file
-    DomUtil.writeDocument(toto, this.domDocument);
+    DomUtil.writeDocument(this.domDocument, tmpStream);
 
     try {
-      PiSDFXSDValidator.validate(toto.toString());
+      PiSDFXSDValidator.validate(tmpStream.toString());
     } catch (final IOException e) {
       throw new PreesmException("Fatal Error: the wirtten PiSDF does not comply to the XSD Schema", e);
     }

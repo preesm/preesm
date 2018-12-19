@@ -88,7 +88,7 @@ public class IPXACTDesignWriter {
     IPXACTDesignVendorExtensionsWriter vendorExtensions = new IPXACTDesignVendorExtensionsWriter(design);
     vendorExtensions.write(root, document);
 
-    DomUtil.writeDocument(outputStream, document);
+    DomUtil.writeDocument(document, outputStream);
 
     try {
       outputStream.close();

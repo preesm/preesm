@@ -34,8 +34,11 @@
  */
 package org.preesm.commons;
 
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import org.apache.xml.serialize.OutputFormat;
+import org.apache.xml.serialize.XMLSerializer;
 import org.preesm.commons.exceptions.PreesmException;
 import org.w3c.dom.DOMConfiguration;
 import org.w3c.dom.DOMImplementation;
@@ -43,9 +46,7 @@ import org.w3c.dom.Document;
 import org.w3c.dom.bootstrap.DOMImplementationRegistry;
 import org.w3c.dom.ls.DOMImplementationLS;
 import org.w3c.dom.ls.LSInput;
-import org.w3c.dom.ls.LSOutput;
 import org.w3c.dom.ls.LSParser;
-import org.w3c.dom.ls.LSSerializer;
 
 /**
  * This class defines utility methods to create DOM documents and print them to an output stream using DOM 3 Load Save
@@ -138,24 +139,23 @@ public class DomUtil {
   /**
    * Writes the given document to the given output stream.
    *
-   * @param os
-   *          an output stream
    * @param document
-   *          a DOM document created by {@link #writeDocument(OutputStream, Document)} if something goes wrong
+   *          A DOM document.
+   * @param byteStream
+   *          The {@link OutputStream} to write to.
    */
-  public static void writeDocument(final OutputStream os, final Document document) {
-    DomUtil.getImplementation();
-    final DOMImplementationLS implLS = (DOMImplementationLS) DomUtil.impl;
+  public static void writeDocument(final Document document, final OutputStream byteStream) {
+    final OutputFormat format = new OutputFormat(document, "UTF-8", true);
+    format.setIndent(4);
+    format.setLineSeparator("\n");
+    format.setLineWidth(65);
 
-    // serialize to XML
-    final LSOutput output = implLS.createLSOutput();
-    output.setByteStream(os);
-
-    // serialize the document, close the stream
-    final LSSerializer serializer = implLS.createLSSerializer();
-    final DOMConfiguration domConfig = serializer.getDomConfig();
-    domConfig.setParameter("format-pretty-print", true);
-    serializer.write(document, output);
+    final XMLSerializer serializer = new XMLSerializer(byteStream, format);
+    try {
+      serializer.serialize(document);
+    } catch (final IOException e) {
+      throw new PreesmException("Could not write Graph", e);
+    }
   }
 
 }
