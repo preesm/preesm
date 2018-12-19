@@ -8,6 +8,8 @@ PREESM Changelog
 
 ### Changes
 * Update release system to support Eclipse 4.10;
+* Fix PiSDF UI:
+  * disable exception throwingat write/parse time when the PiSDF is not consistent in order to enable non-finished design to be saved;
 
 ### Bug fix
 
