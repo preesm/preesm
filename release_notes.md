@@ -12,7 +12,7 @@ PREESM Changelog
 * Use custom XML writer for slam, pisdf and scenarios;
 
 ### Bug fix
-
+* Fix issue 92: disable generation of std files for C6678 code generation;
 
 ## Release version 3.1.2
 *2018.12.18*

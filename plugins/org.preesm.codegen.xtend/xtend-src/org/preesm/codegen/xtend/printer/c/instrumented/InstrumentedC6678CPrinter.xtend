@@ -37,6 +37,7 @@ package org.preesm.codegen.xtend.printer.c.instrumented
 
 import java.util.Collection
 import java.util.Date
+import java.util.LinkedHashMap
 import java.util.LinkedHashSet
 import java.util.List
 import org.preesm.codegen.model.Block
@@ -64,6 +65,11 @@ class InstrumentedC6678CPrinter extends InstrumentedCPrinter {
 		// do not generate a main file
 		super(false)
 	}
+
+	override generateStandardLibFiles() {
+		return new LinkedHashMap()
+	}
+
 
 	/**
 	 * Set of CharSequence used to avoid calling the same cache operation
