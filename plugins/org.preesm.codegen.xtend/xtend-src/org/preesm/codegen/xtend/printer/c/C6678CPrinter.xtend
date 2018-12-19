@@ -36,6 +36,7 @@
 package org.preesm.codegen.xtend.printer.c
 
 import java.util.Date
+import java.util.LinkedHashMap
 import java.util.LinkedHashSet
 import java.util.List
 import org.preesm.codegen.model.Buffer
@@ -66,6 +67,10 @@ class C6678CPrinter extends CPrinter {
 	 * multiple times in a broadcast or roundbuffer call.
 	 */
 	var currentOperationMemcpy = new LinkedHashSet<CharSequence>();
+
+	override generateStandardLibFiles() {
+		return new LinkedHashMap()
+	}
 
 	override printCoreBlockHeader(CoreBlock block) '''
 		/**

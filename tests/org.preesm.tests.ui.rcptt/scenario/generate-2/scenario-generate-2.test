@@ -1,0 +1,20 @@
+--- RCPTT testcase ---
+Format-Version: 1.0
+Contexts: _ZEsW0Ob4EeeMlf4lWoX8aw
+Element-Name: scenario-generate-2
+Element-Type: testcase
+Element-Version: 3.0
+External-Reference: 
+Id: _3sUwsAObEem9q69sJFZzEg
+Runtime-Version: 2.4.0.201812190010
+Save-Time: 12/19/18 3:42 PM
+Testcase-Type: ecl
+Verifications: _TdLogAOcEem9q69sJFZzEg
+
+------=_.content-0a7243a0-75d3-3d5f-9791-539de0e5b7ac
+Content-Type: text/ecl
+Entry-Name: .content
+
+get-view "Project Explorer" | get-tree | select "org.ietr.preesm.sobel" | get-menu -path "Preesm/Generate Scenario"
+    | click
+------=_.content-0a7243a0-75d3-3d5f-9791-539de0e5b7ac--

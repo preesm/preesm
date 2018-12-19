@@ -1,0 +1,321 @@
+--- RCPTT testcase ---
+Format-Version: 1.0
+Contexts: _ZEsW0Ob4EeeMlf4lWoX8aw
+Element-Name: slam-create-1
+Element-Type: testcase
+Element-Version: 3.0
+External-Reference: 
+Id: _jBIQ8AIPEem5ROe3sIoWRg
+Runtime-Version: 2.4.0.201812170013
+Save-Time: 12/17/18 5:36 PM
+Testcase-Type: ecl
+Verifications: _0QDPgAIZEem_19ziQctLSg
+
+------=_.content-0a7243a0-75d3-3d5f-9791-539de0e5b7ac
+Content-Type: text/ecl
+Entry-Name: .content
+
+get-view "Project Explorer" | get-tree | select "org.ietr.preesm.sobel/Archi" | get-menu -path "New/S-LAM Architecture"
+    | click
+with [get-window "New Architecture (S-LAM)"] {
+    get-editbox -after [get-label "File name:"] | set-text "4CoresX86"
+    get-button Finish | click
+}
+with [get-editor "4CoresX86.slam"] {
+    with [get-palette] {
+        get-palette-entry hierConnection | mouse-move 11 2 -height 23 -width 125
+        get-palette-entry contentionComNode | mouse-move 34 0 -height 23 -width 125
+        with [get-palette-entry Operator] {
+            mouse-move 52 12 button1 -height 23 -width 125
+            mouse-press 52 12 button1 -height 23 -width 125
+            mouse-release 52 12 button1 524288 -height 23 -width 125
+        }
+    }
+    with [get-diagram -index 1] {
+        mouse-move 119 93 button1 -height 380 -width 624
+        mouse-press 119 93 button1 -height 380 -width 624
+        mouse-release 119 93 button1 524288 -height 380 -width 624
+    }
+}
+with [get-window "New vertex"] {
+    get-editbox -after [get-label "Please enter a vertex identifier"] | set-text Core0
+    get-button OK | click
+}
+with [get-editor "4CoresX86.slam"] {
+    with [get-palette] {
+        get-palette-entry contentionComNode | mouse-move 44 4 -height 23 -width 125
+        with [get-palette-entry Operator] {
+            mouse-move 82 10 button1 -height 23 -width 125
+            mouse-press 82 10 button1 -height 23 -width 125
+            mouse-release 82 10 button1 524288 -height 23 -width 125
+        }
+    }
+    with [get-diagram -index 1] {
+        mouse-move 327 94 button1 -height 380 -width 624
+        mouse-press 327 94 button1 -height 380 -width 624
+        mouse-release 327 94 button1 524288 -height 380 -width 624
+    }
+}
+with [get-window "New vertex"] {
+    get-editbox -after [get-label "Please enter a vertex identifier"] | set-text Core1
+    get-button OK | click
+}
+with [get-editor "4CoresX86.slam"] {
+    with [get-palette | get-palette-entry Operator] {
+        mouse-move 34 10 button1 -height 23 -width 125
+        mouse-press 34 10 button1 -height 23 -width 125
+        mouse-release 34 10 button1 524288 -height 23 -width 125
+    }
+    with [get-diagram -index 1] {
+        mouse-move 132 207 button1 -height 380 -width 624
+        mouse-press 132 207 button1 -height 380 -width 624
+        mouse-release 132 207 button1 524288 -height 380 -width 624
+    }
+}
+with [get-window "New vertex"] {
+    get-editbox -after [get-label "Please enter a vertex identifier"] | set-text Core2
+    get-button OK | click
+}
+with [get-editor "4CoresX86.slam"] {
+    with [get-palette | get-palette-entry Operator] {
+        mouse-move 37 13 button1 -height 23 -width 125
+        mouse-press 37 13 button1 -height 23 -width 125
+        mouse-release 37 13 button1 524288 -height 23 -width 125
+    }
+    with [get-diagram -index 1] {
+        mouse-move 336 202 button1 -height 380 -width 624
+        mouse-press 336 202 button1 -height 380 -width 624
+        mouse-release 336 202 button1 524288 -height 380 -width 624
+    }
+}
+with [get-window "New vertex"] {
+    get-editbox -after [get-label "Please enter a vertex identifier"] | set-text Core3
+    get-button OK | click
+}
+with [get-editor "4CoresX86.slam"] {
+    with [get-palette] {
+        with [get-palette-entry contentionComNode] {
+            mouse-move 41 10 -height 23 -width 125
+            mouse-hover 41 10 -height 23 -width 125
+            mouse-move 40 22 -height 23 -width 125
+        }
+        get-palette-entry hierConnection | mouse-move 40 22 -height 23 -width 125
+        with [get-palette-entry parallelComNode] {
+            mouse-move 41 4 button1 -height 23 -width 125
+            mouse-press 41 4 button1 -height 23 -width 125
+            mouse-release 41 4 button1 524288 -height 23 -width 125
+            mouse-hover 41 4 -height 23 -width 125
+        }
+    }
+    with [get-diagram -index 1] {
+        mouse-move 236 154 button1 -height 380 -width 624
+        mouse-press 236 154 button1 -height 380 -width 624
+        mouse-move 236 156 -mask 524288 -height 380 -width 624
+        mouse-drag 242 162 -mask 524288 -height 380 -width 624
+        with [get-edit-part -className GraphEditPart] {
+            mouse-drag 237 157 button1 524288 -height 380 -width 624
+            mouse-release 237 157 button1 524288 -height 380 -width 624
+        }
+    }
+}
+with [get-window "New vertex"] {
+    with [get-editbox -after [get-label "Please enter a vertex identifier"]] {
+        set-text "shared_mem"
+    }
+    get-button OK | click
+}
+with [get-editor "4CoresX86.slam"] {
+    with [get-palette] {
+        with [get-palette-entry undirectedDataLink] {
+            mouse-move 71 9 button1 -height 23 -width 125
+            mouse-press 71 9 button1 -height 23 -width 125
+            mouse-release 71 9 button1 524288 -height 23 -width 125
+            mouse-move 66 8 -height 23 -width 125
+        }
+        with [get-palette-entry hierConnection -index 1] {
+            mouse-move 36 16 -height 23 -width 125
+            mouse-hover 36 16 -height 23 -width 125
+            mouse-move 26 18 -height 23 -width 125
+        }
+    }
+    with [get-diagram -index 1 | get-edit-part -className GraphEditPart] {
+        with [get-edit-part -text Core0] {
+            mouse-move 30 11 button1 -height 23 -width 44
+            mouse-press 30 11 button1 -height 23 -width 44
+            mouse-release 30 11 button1 524288 -height 23 -width 44
+        }
+        with [get-edit-part -text "shared_mem"] {
+            mouse-move 49 15 button1 -height 23 -width 84
+            mouse-press 49 15 button1 -height 23 -width 84
+        }
+    }
+}
+with [get-window "Connection: Core0 - shared_mem"] {
+    get-editbox -after [get-label "Please enter a source port name:"] | set-text "shared_mem"
+    get-button OK | click
+}
+with [get-window "Connection: Core0 - shared_mem"] {
+    get-editbox -after [get-label "Please enter a target port name:"] | set-text "shared_mem"
+    get-button OK | click
+}
+with [get-editor "4CoresX86.slam" | get-diagram -index 1 | get-edit-part -className GraphEditPart] {
+    with [get-edit-part -text Core2] {
+        mouse-move 20 9 button1 -height 23 -width 44
+        mouse-press 20 9 button1 -height 23 -width 44
+        mouse-release 20 9 button1 524288 -height 23 -width 44
+    }
+    with [get-edit-part -text "shared_mem"] {
+        mouse-move 46 22 button1 -height 41 -width 84
+        mouse-press 46 22 button1 -height 41 -width 84
+    }
+}
+with [get-window "Connection: Core2 - shared_mem"] {
+    get-editbox -after [get-label "Please enter a source port name:"] | set-text "shared_mem"
+    get-button OK | click
+}
+with [get-window "Connection: Core2 - shared_mem"] {
+    get-editbox -after [get-label "Please enter a target port name:"] | set-text "shared_mem"
+    get-button OK | click
+}
+with [get-editor "4CoresX86.slam" | get-diagram -index 1] {
+    with [get-edit-part -className GraphEditPart | get-edit-part -text "shared_mem"] {
+        mouse-move 59 23 button1 -height 41 -width 84
+        mouse-press 59 23 button1 -height 41 -width 84
+        mouse-move 60 22 -mask 524288 -height 41 -width 84
+    }
+    mouse-drag 296 176 button1 524288 -height 380 -width 624
+    mouse-release 296 176 button1 524288 -height 380 -width 624
+    with [get-edit-part -className GraphEditPart | get-edit-part -text Core1] {
+        mouse-move 21 17 button1 -height 23 -width 44
+        mouse-press 21 17 button1 -height 23 -width 44
+    }
+}
+with [get-window "Connection: shared_mem - Core1"] {
+    get-editbox -after [get-label "Please enter a source port name:"] | set-text "shared_mem"
+    get-button OK | click
+}
+with [get-window "Connection: shared_mem - Core1"] {
+    get-editbox -after [get-label "Please enter a target port name:"] | set-text "shared_mem"
+    get-button OK | click
+}
+with [get-editor "4CoresX86.slam" | get-diagram -index 1 | get-edit-part -className GraphEditPart] {
+    with [get-edit-part -text "shared_mem"] {
+        mouse-move 18 9 button1 -height 41 -width 84
+        mouse-press 18 9 button1 -height 41 -width 84
+        mouse-release 18 9 button1 524288 -height 41 -width 84
+    }
+    with [get-edit-part -text Core3] {
+        mouse-move 23 9 button1 -height 23 -width 44
+        mouse-press 23 9 button1 -height 23 -width 44
+    }
+}
+with [get-window "Connection: shared_mem - Core3"] {
+    get-editbox -after [get-label "Please enter a source port name:"] | set-text "shared_mem"
+    get-button OK | click
+}
+with [get-window "Connection: shared_mem - Core3"] {
+    get-editbox -after [get-label "Please enter a target port name:"] | set-text "shared_mem"
+    get-button OK | click
+}
+get-eclipse-window | key-type "M1+s"
+with [get-editor "4CoresX86.slam"] {
+    with [get-palette | get-palette-entry Select] {
+        mouse-move 39 8 button1 -height 23 -width 125
+        mouse-press 39 8 button1 -height 23 -width 125
+        mouse-release 39 8 button1 524288 -height 23 -width 125
+        mouse-move 21 8 -height 23 -width 125
+    }
+    with [get-diagram -index 1 | get-edit-part -className GraphEditPart | get-edit-part -text Core0] {
+        mouse-move 34 27 button1 -height 41 -width 84
+        mouse-press 34 27 button1 -height 41 -width 84
+        mouse-release 34 27 button1 524288 -height 41 -width 84
+        mouse-hover 34 27 -height 41 -width 84
+    }
+}
+with [get-view Properties] {
+    click
+    get-property-tab Basic | click
+}
+get-view Problems | click
+with [get-view Properties] {
+    click
+    get-property-tab Basic | click
+    get-property-tab "Custom Parameters" | click
+    get-property-tab Basic | click
+    with [get-tree] {
+        select id | activate-cell-edit -column 1
+        apply-cell-edit -deactivate
+        select definition | activate-cell-edit -column 1
+        with [get-editbox] {
+            set-text x86
+            key-type "NUMPAD_ENTER" "\\u000D"
+        }
+        apply-cell-edit -deactivate
+    }
+}
+with [get-editor "4CoresX86.slam" | get-diagram -index 1 | get-edit-part -className GraphEditPart | get-edit-part
+    -text Core1] {
+    mouse-move 55 35 button1 -height 41 -width 84
+    mouse-press 55 35 button1 -height 41 -width 84
+    mouse-release 55 35 button1 524288 -height 41 -width 84
+    mouse-hover 55 35 -height 41 -width 84
+}
+with [get-view Properties | get-tree] {
+    select definition | activate-cell-edit -column 1
+    with [get-editbox] {
+        set-text x86
+        key-type "NUMPAD_ENTER" "\\u000D"
+    }
+    apply-cell-edit -deactivate
+}
+with [get-editor "4CoresX86.slam" | get-diagram -index 1 | get-edit-part -className GraphEditPart | get-edit-part
+    -text Core3] {
+    mouse-move 32 23 button1 -height 41 -width 84
+    mouse-press 32 23 button1 -height 41 -width 84
+    mouse-release 32 23 button1 524288 -height 41 -width 84
+}
+with [get-view Properties | get-tree] {
+    select definition | activate-cell-edit -column 1
+    with [get-editbox] {
+        set-text x86
+        key-type "NUMPAD_ENTER" "\\u000D"
+    }
+    apply-cell-edit -deactivate
+}
+with [get-editor "4CoresX86.slam" | get-diagram -index 1 | get-edit-part -className GraphEditPart | get-edit-part
+    -text Core2] {
+    mouse-move 21 19 button1 -height 41 -width 84
+    mouse-press 21 19 button1 -height 41 -width 84
+    mouse-release 21 19 button1 524288 -height 41 -width 84
+}
+with [get-view Properties | get-tree] {
+    select definition | activate-cell-edit -column 1
+    with [get-editbox] {
+        set-text x86
+        key-type "NUMPAD_ENTER" "\\u000D"
+    }
+    apply-cell-edit -deactivate
+}
+with [get-editor "4CoresX86.slam" | get-diagram -index 1] {
+    with [get-edit-part -className GraphEditPart | get-edit-part -text "shared_mem"] {
+        mouse-move 18 15 -mask 524288 -height 41 -width 84
+        mouse-press 18 15 button1 -height 41 -width 84
+        mouse-press 18 15 button1 -height 41 -width 84
+    }
+    mouse-drag 254 169 button1 524288 -height 380 -width 624
+    mouse-release 254 169 button1 524288 -height 380 -width 624
+}
+with [get-view Properties | get-tree] {
+    select speed | activate-cell-edit -column 1
+    with [get-editbox] {
+        set-text 100
+        key-type "NUMPAD_ENTER" "\\u000D"
+    }
+    apply-cell-edit -deactivate
+}
+get-editor "4CoresX86.slam" | get-diagram -index 1 | key-type "M1+s"
+get-view Problems | click
+get-editor "4CoresX86.slam" | get-diagram -index 1 | mouse-hover 108 376 -height 380 -width 624
+get-view "Project Explorer" | get-tree | select "org.ietr.preesm.sobel/Archi/4CoresX86.slam" | get-menu
+    -path "Open With/Text Editor" | click
+------=_.content-0a7243a0-75d3-3d5f-9791-539de0e5b7ac--

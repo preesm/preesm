@@ -35,7 +35,10 @@
  */
 package org.preesm.model.scenario.generator;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.LinkedHashSet;
 import java.util.List;
@@ -47,9 +50,11 @@ import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
+import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.emf.ecore.EPackage;
 import org.eclipse.emf.ecore.resource.Resource;
+import org.preesm.commons.DomUtil;
 import org.preesm.commons.exceptions.PreesmException;
 import org.preesm.model.pisdf.AbstractActor;
 import org.preesm.model.pisdf.PiGraph;
@@ -64,6 +69,7 @@ import org.preesm.model.slam.Design;
 import org.preesm.model.slam.SlamPackage;
 import org.preesm.model.slam.serialize.IPXACTResourceFactoryImpl;
 import org.preesm.model.slam.utils.DesignTools;
+import org.w3c.dom.Document;
 
 // TODO: Auto-generated Javadoc
 /**
@@ -338,7 +344,13 @@ public class ScenariosGenerator {
    */
   private void saveScenario(final PreesmScenario scenario, final IFile scenarioFile) {
     final ScenarioWriter writer = new ScenarioWriter(scenario);
-    writer.generateScenarioDOM();
-    writer.writeDom(scenarioFile);
+    final Document generateScenarioDOM = writer.generateScenarioDOM();
+    try (final ByteArrayOutputStream byteStream = new ByteArrayOutputStream()) {
+      DomUtil.writeDocument(generateScenarioDOM, byteStream);
+      scenarioFile.setContents(new ByteArrayInputStream(byteStream.toByteArray()), true, false,
+          new NullProgressMonitor());
+    } catch (final IOException | CoreException e) {
+      throw new PreesmException(e);
+    }
   }
 }
