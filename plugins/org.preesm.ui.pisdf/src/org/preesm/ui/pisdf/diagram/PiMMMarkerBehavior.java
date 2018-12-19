@@ -58,6 +58,7 @@ import org.eclipse.graphiti.ui.editor.DefaultMarkerBehavior;
 import org.eclipse.graphiti.ui.editor.DiagramBehavior;
 import org.eclipse.graphiti.ui.internal.T;
 import org.eclipse.swt.widgets.Display;
+import org.preesm.commons.exceptions.PreesmException;
 import org.preesm.model.pisdf.PiGraph;
 import org.preesm.model.pisdf.check.PiMMAlgorithmChecker;
 import org.preesm.model.pisdf.serialize.PiResourceImpl;
@@ -167,13 +168,20 @@ public class PiMMMarkerBehavior extends DefaultMarkerBehavior {
           // Errors
           for (final Entry<String, EObject> msgs : checker.getErrorMsgs().entrySet()) {
             final String msg = msgs.getKey();
-            final List<PictogramElement> pes = Graphiti.getLinkService().getPictogramElements(diagram, msgs.getValue());
-            final PictogramElement pictogramElement = pes.get(0);
-            final String uriFragment = pictogramElement.eResource().getURIFragment(pictogramElement);
-            final BasicDiagnostic d = new BasicDiagnostic(org.eclipse.emf.common.util.Diagnostic.ERROR,
-                PreesmUIPlugin.PLUGIN_ID, 0, msg, new Object[] { pictogramElement, uriFragment });
+            final EObject pisdfElement = msgs.getValue();
+            final List<PictogramElement> pes = Graphiti.getLinkService().getPictogramElements(diagram, pisdfElement);
+            if (pes.isEmpty()) {
+              final String errmsg = String.format("PiSDF element [%s] has not associated graphical element.",
+                  pisdfElement);
+              throw new PreesmException(errmsg);
+            } else {
+              final PictogramElement pictogramElement = pes.get(0);
+              final String uriFragment = pictogramElement.eResource().getURIFragment(pictogramElement);
+              final BasicDiagnostic d = new BasicDiagnostic(org.eclipse.emf.common.util.Diagnostic.ERROR,
+                  PreesmUIPlugin.PLUGIN_ID, 0, msg, new Object[] { pictogramElement, uriFragment });
 
-            result.add(d);
+              result.add(d);
+            }
           }
         }
       } catch (final Exception e) {
