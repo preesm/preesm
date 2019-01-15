@@ -770,10 +770,19 @@ public class SpiderCodegen {
     append("\tPiSDFGraph* topGraph = Spider::createGraph(\n" + "\t\t/*Edges*/    0,\n" + "\t\t/*Params*/   0,\n"
         + "\t\t/*InputIf*/  0,\n" + "\t\t/*OutputIf*/ 0,\n" + "\t\t/*Config*/   0,\n" + "\t\t/*Body*/     1);\n\n");
 
-    append("\tSpider::addHierVertex(\n" + "\t\t/*Graph*/    topGraph,\n" + "\t\t/*Name*/     \"top\",\n"
-        + "\t\t/*Graph*/    " + sgName + "(" + params.toString() + "),\n" + "\t\t/*InputIf*/  0,\n"
-        + "\t\t/*OutputIf*/ 0,\n" + "\t\t/*Params*/   0);\n\n");
+    append("\tPiSDFVertex* topVertex");
+    append(" = Spider::addBodyVertex(\n");
+    append("\t\t/*Graph*/   topGraph,\n");
+    append("\t\t/*Name*/    \"top\",\n");
+    append("\t\t/*FctId*/   -1,\n");
+    append("\t\t/*InData*/   0,\n");
+    append("\t\t/*OutData*/  0,\n");
+    append("\t\t/*InParam*/  0);\n");
 
+    append("\n\t/* Top graph definition */\n");
+    append("\t" + sgName + "(topVertex, " + params.toString() + ");\n");
+
+    append("\n\t/* Setting main application graph */\n");
     append("\tSpider::setGraph(topGraph);\n");
     append("}\n");
   }
