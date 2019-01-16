@@ -648,29 +648,21 @@ public class SpiderCodegenVisitor extends PiMMSwitch<Boolean> {
 
     final EList<ConfigInputPort> configInputPorts = p.getConfigInputPorts();
 
-    if (!p.isLocallyStatic()) {
-      if ((configInputPorts.size() == 1)
-          && !(configInputPorts.get(0).getIncomingDependency().getSetter() instanceof Parameter)) {
-        /* DYNAMIC */
-        // append(
-        append("\tPiSDFParam *" + paramName + " = Spider::addDynamicParam(graph, " + "\"" + p.getName() + "\");\n");
+    append("\tPiSDFParam *" + paramName + " = Spider::");
+    if (p.isFullyDynamic()) {
+      /* DYNAMIC */
+      append("addDynamicParam(graph, " + "\"" + p.getName() + "\");\n");
+    } else if (p.isDependent()) {
+      if (p.isLocallyStatic()) {
+        /* STATIC DEPENDANT */
+        append("addStaticDependentParam(graph, " + "\"" + p.getName() + "\", \""
+            + p.getValueExpression().getExpressionAsString() + "\", {");
       } else {
         /* DYNAMIC DEPENDANT */
-        append("\tPiSDFParam *" + paramName + " = Spider::addDynamicDependentParam(graph, " + "\"" + p.getName()
-            + "\", \"" + p.getValueExpression().getExpressionAsString() + "\"" + ");\n");
+        append("addDynamicDependentParam(graph, " + "\"" + p.getName() + "\", \""
+            + p.getValueExpression().getExpressionAsString() + "\", {");
       }
-    } else if (p.isConfigurationInterface() && (((ConfigInputInterface) p).getGraphPort() instanceof ConfigInputPort)) {
-      /* HERITED */
-      append("\tPiSDFParam *" + paramName + " = Spider::addHeritedParam(graph, " + "\"" + p.getName() + "\", "
-          + this.portMap.get(((ConfigInputInterface) p).getGraphPort()) + ");\n");
-    } else if (configInputPorts.isEmpty()) {
-      /* STATIC */
-      append("\tPiSDFParam *" + paramName + " = Spider::addStaticParam(graph, " + "\"" + p.getName() + "\", "
-          + p.getName() + ");\n");
-    } else {
-      /* STATIC DEPENDANT */
-      append("\tPiSDFParam *" + paramName + " = Spider::addStaticDependentParam(graph, " + "\"" + p.getName() + "\", \""
-          + p.getValueExpression().getExpressionAsString() + "\", {");
+      // Adding the different parameter dependencies
       for (final ConfigInputPort cip : configInputPorts) {
         final Parameter setter = (Parameter) cip.getIncomingDependency().getSetter();
         append(SpiderNameGenerator.getParameterName(setter));
@@ -680,7 +672,51 @@ public class SpiderCodegenVisitor extends PiMMSwitch<Boolean> {
         }
       }
       append("});\n");
+    } else {
+      if (p.isConfigurationInterface()) {
+        /* INHERITED */
+        append("addInheritedParam(graph, " + "\"" + p.getName() + "\", "
+            + this.portMap.get(((ConfigInputInterface) p).getGraphPort()) + ");\n");
+      } else {
+        /* STATIC */
+        append("addStaticParam(graph, " + "\"" + p.getName() + "\", " + p.getName() + ");\n");
+      }
     }
+
+    // if (!p.isLocallyStatic()) {
+    // if ((configInputPorts.size() == 1)
+    // && !(configInputPorts.get(0).getIncomingDependency().getSetter() instanceof Parameter)) {
+    // /* DYNAMIC */
+    // append("\tPiSDFParam *" + paramName + " = Spider::addDynamicParam(graph, " + "\"" + p.getName() + "\");\n");
+    // } else {
+    // /* DYNAMIC DEPENDANT */
+    // append("\tPiSDFParam *" + paramName + " = Spider::addDynamicDependentParam(graph, " + "\"" + p.getName()
+    // + "\", \"" + p.getValueExpression().getExpressionAsString() + "\"" + ");\n");
+    // }
+    // } else if (p.isConfigurationInterface() && (((ConfigInputInterface) p).getGraphPort() instanceof
+    // ConfigInputPort)) {
+    // /* HERITED */
+    // append("\tPiSDFParam *" + paramName + " = Spider::addInheritedParam(graph, " + "\"" + p.getName() + "\", "
+    // + this.portMap.get(((ConfigInputInterface) p).getGraphPort()) + ");\n");
+    // } else if (configInputPorts.isEmpty()) {
+    // /* STATIC */
+    // append("\tPiSDFParam *" + paramName + " = Spider::addStaticParam(graph, " + "\"" + p.getName() + "\", "
+    // + p.getName() + ");\n");
+    // } else {
+    // /* STATIC DEPENDANT */
+    // append("\tPiSDFParam *" + paramName + " = Spider::addStaticDependentParam(graph, " + "\"" + p.getName() + "\",
+    // \""
+    // + p.getValueExpression().getExpressionAsString() + "\", {");
+    // for (final ConfigInputPort cip : configInputPorts) {
+    // final Parameter setter = (Parameter) cip.getIncomingDependency().getSetter();
+    // append(SpiderNameGenerator.getParameterName(setter));
+    // // Adding trailing comma
+    // if (configInputPorts.indexOf(cip) != configInputPorts.size() - 1) {
+    // append(", ");
+    // }
+    // }
+    // append("});\n");
+    // }
     return true;
   }
 

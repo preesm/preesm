@@ -626,6 +626,9 @@ class Parameter extends Vertex, Configurable, ISetter, ExpressionHolder {
 		// a parameter is static if all its setters are static (or it has no setter)
 		return getConfigInputPorts().map[incomingDependency].filterNull.map[setter].filterNull.forall[isLocallyStatic]
 	}
+	op boolean isFullyDynamic() {
+		return !isLocallyStatic && isDependent && configInputPorts.get(0).incomingDependency.setter instanceof ConfigOutputPort;
+	}	
 	op boolean isDependent() {
 		return !(configInputPorts.empty)
 	}
