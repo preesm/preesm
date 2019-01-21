@@ -7,6 +7,7 @@ PREESM Changelog
 ### New Feature
 
 ### Changes
+* Update release system to support Eclipse 4.10;
 
 ### Bug fix
 
