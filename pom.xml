@@ -118,7 +118,7 @@
       <updatesite.preesm.externaldeps>${updatesite.preesm}/org.preesm.externaldeps/</updatesite.preesm.externaldeps>
       <updatesite.preesm.graphiti>${updatesite.preesm}/org.ietr.graphiti/</updatesite.preesm.graphiti>
       <updatesite.eclipse>${eclipse.mirror}/releases/2018-12/</updatesite.eclipse>
-      <updatesite.eclipse.updates>${eclipse.mirror}/eclipse/updates/4.9</updatesite.eclipse.updates>
+      <updatesite.eclipse.updates>${eclipse.mirror}/eclipse/updates/4.10</updatesite.eclipse.updates>
       <updatesite.tmf>${eclipse.mirror}/modeling/tmf/xtext/updates/releases/${xtext-version}</updatesite.tmf>
 
       <!-- ############## -->
