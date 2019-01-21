@@ -78,11 +78,12 @@
       <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 
       <jacoco-version>0.8.1</jacoco-version>
-      <tycho-version>1.2.0</tycho-version>
+      <tycho-version>1.3.0</tycho-version>
       <findbugs-version>3.0.5</findbugs-version>
       <sonar-version>3.4.1.1168</sonar-version>
       <checkstyle-version>8.10</checkstyle-version>
       <rcptt-version>2.3.0</rcptt-version>
+      <rcptt-runner-version>2.4.0-M2</rcptt-runner-version>
       <preesm.coding.policy.version>1.3.0</preesm.coding.policy.version>
 
       <!-- ############## -->
@@ -117,8 +118,8 @@
       <updatesite.preesm>http://preesm.insa-rennes.fr/repo/</updatesite.preesm>
       <updatesite.preesm.externaldeps>${updatesite.preesm}/org.preesm.externaldeps/</updatesite.preesm.externaldeps>
       <updatesite.preesm.graphiti>${updatesite.preesm}/org.ietr.graphiti/</updatesite.preesm.graphiti>
-      <updatesite.eclipse>${eclipse.mirror}/releases/photon/</updatesite.eclipse>
-      <updatesite.eclipse.updates>${eclipse.mirror}/eclipse/updates/4.8</updatesite.eclipse.updates>
+      <updatesite.eclipse>${eclipse.mirror}/releases/2018-12/</updatesite.eclipse>
+      <updatesite.eclipse.updates>${eclipse.mirror}/eclipse/updates/4.10</updatesite.eclipse.updates>
       <updatesite.tmf>${eclipse.mirror}/modeling/tmf/xtext/updates/releases/${xtext-version}</updatesite.tmf>
 
       <!-- ############## -->
@@ -302,6 +303,22 @@
                      <artifactId>antlr-runtime</artifactId>
                      <version>[3.2.0,3.3.0)</version>
                   </dependency>
+                  <!-- workaround for issue https://github.com/eclipse/xtext-xtend/issues/493  -->
+                  <dependency>
+                    <groupId>org.eclipse.jdt</groupId>
+                    <artifactId>org.eclipse.jdt.core</artifactId>
+                    <version>3.15.0</version>
+                  </dependency>
+                  <dependency>
+                    <groupId>org.eclipse.jdt</groupId>
+                    <artifactId>org.eclipse.jdt.compiler.apt</artifactId>
+                    <version>1.3.300</version>
+                  </dependency>
+                  <dependency>
+                    <groupId>org.eclipse.jdt</groupId>
+                    <artifactId>org.eclipse.jdt.compiler.tool</artifactId>
+                    <version>1.2.300</version>
+                  </dependency>
                </dependencies>
             </plugin>
          </plugins>
@@ -386,21 +403,11 @@
                      <ws>gtk</ws>
                      <arch>x86_64</arch>
                   </environment>
-                  <environment>
-                     <os>linux</os>
-                     <ws>gtk</ws>
-                     <arch>x86</arch>
-                  </environment>
                   <!-- Win 32 -->
                   <environment>
                      <os>win32</os>
                      <ws>win32</ws>
                      <arch>x86_64</arch>
-                  </environment>
-                  <environment>
-                     <os>win32</os>
-                     <ws>win32</ws>
-                     <arch>x86</arch>
                   </environment>
                   <!-- Mac -->
                   <environment>

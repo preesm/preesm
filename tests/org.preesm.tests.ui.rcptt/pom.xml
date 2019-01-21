@@ -100,7 +100,7 @@
         <dependency>
           <groupId>org.eclipse.rcptt.runner</groupId>
           <artifactId>rcptt.runner</artifactId>
-          <version>${rcptt-version}</version>
+          <version>${rcptt-runner-version}</version>
           <type>zip</type>
         </dependency>
       </dependencies>
@@ -117,7 +117,7 @@
           <extensions>true</extensions>
           <configuration>
             <runner>
-              <version>${rcptt-version}</version>
+              <version>${rcptt-runner-version}</version>
             </runner>
             <!-- The main configuration section goes here -->
             <aut>
