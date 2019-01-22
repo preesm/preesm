@@ -225,6 +225,10 @@
             id="org.ietr.preesm.ui.command.PiMM2Diagram"
             name="Generate Diagram file from PiMM Graph">
       </command>
+      <command
+            id="org.ietr.preesm.ui.command.PiSDFBRVCompute"
+            name="Compute the BRV of a PiSDF Graph">
+      </command>
    </extension>
 
    <!-- Preesm command handlers (for menus) -->
@@ -237,6 +241,10 @@
       <handler
             class="org.preesm.ui.pisdf.popup.actions.PiMM2DiagramGeneratorPopup"
             commandId="org.ietr.preesm.ui.command.PiMM2Diagram">
+      </handler>
+      <handler
+            class="org.preesm.ui.pisdf.popup.actions.PiSDFBRVComputePopup"
+            commandId="org.ietr.preesm.ui.command.PiSDFBRVCompute">
       </handler>
    </extension>
 
@@ -359,6 +367,7 @@
       <!-- TODO -->
    </extension>
 
+
    <!-- PiMM Editor context (extend all Graphiti Diagram Editors) -->
    <extension
          point="org.eclipse.ui.contexts">
@@ -372,14 +381,18 @@
    <!-- Preesm Menus -->
    <extension
          point="org.eclipse.ui.menus">
-      <!-- show properties view from any selected element in the PiMM Editor -->
+      <!-- ################################################################## -->
+      <!-- show properties view from any selected element in the PiSDF Editor -->
+      <!-- ################################################################## -->
       <menuContribution
             allPopups="false"
             locationURI="popup:org.eclipse.ui.popup.any?after=additions">
+        <!-- Show/open Eclipse properties view -->
         <command
               commandId="org.eclipse.ui.views.showView"
               icon="icons/pi.gif"
               label="Show in Properties View"
+              mnemonic="P"
               style="push">
            <parameter
                  name="org.eclipse.ui.views.showView.viewId"
@@ -393,8 +406,25 @@
 					</and>
 				</visibleWhen>
         </command>
+        <!-- Compute BRV -->
+        <command
+              commandId="org.ietr.preesm.ui.command.PiSDFBRVCompute"
+              icon="icons/pi.gif"
+              label="Compute PiSDF BRV (Basic Repetition Vector)"
+              mnemonic="B"
+              style="push">
+			<visibleWhen checkEnabled="true">
+				<and>
+				<with variable="activePartId">
+					<equals value="org.ietr.preesm.ui.pimm.editor.diagram"/>
+				</with>
+				</and>
+			</visibleWhen>
+        </command>
       </menuContribution>
+      <!-- ############################################################## -->
       <!-- actions available in the project navigator (not PiMM specific) -->
+      <!-- ############################################################## -->
       <menuContribution
             allPopups="false"
             locationURI="popup:org.eclipse.ui.popup.any?before=additions">
@@ -407,6 +437,7 @@
                   commandId="org.ietr.preesm.ui.command.PimmChecker"
                   icon="icons/pi.gif"
                   label="Check PiMM Model"
+                  mnemonic="C"
                   style="push">
                <visibleWhen
                      checkEnabled="true">
@@ -435,6 +466,7 @@
                   commandId="org.ietr.preesm.ui.command.PiMM2Diagram"
                   icon="icons/pi.gif"
                   label="Generate .diagram"
+                  mnemonic="G"
                   style="push">
                <visibleWhen
                      checkEnabled="true">
@@ -445,6 +477,39 @@
                            operator="and">
                         <adapt
                               type="org.eclipse.core.resources.IResource">
+                           <test
+                                 property="org.eclipse.core.resources.projectNature"
+                                 value="org.ietr.preesm.core.ui.wizards.nature">
+                           </test>
+                           <test
+                                 property="org.eclipse.core.resources.extension"
+                                 value="pi">
+                           </test>
+                        </adapt>
+                     </iterate>
+                  </with>
+               </visibleWhen>
+            </command>
+            <!-- Compute BRV of a PiGraph -->
+            <command
+                  commandId="org.ietr.preesm.ui.command.PiSDFBRVCompute"
+                  icon="icons/pi.gif"
+                  label="Compute PiSDF BRV (Basic Repetition Vector)"
+                  mnemonic="C"
+                  style="push">
+               <visibleWhen
+                     checkEnabled="true">
+                  <with
+                        variable="selection">
+                     <iterate
+                           ifEmpty="false"
+                           operator="and">
+                        <adapt
+                              type="org.eclipse.core.resources.IResource">
+                           <test
+                                 property="org.eclipse.core.resources.projectNature"
+                                 value="org.ietr.preesm.core.ui.wizards.nature">
+                           </test>
                            <test
                                  property="org.eclipse.core.resources.extension"
                                  value="pi">
