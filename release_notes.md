@@ -5,6 +5,7 @@ PREESM Changelog
 *XXXX.XX.XX*
 
 ### New Feature
+* Add context menu in PiSDF editor to compute the BRV;
 
 ### Changes
 * Update release system to support Eclipse 4.10;
