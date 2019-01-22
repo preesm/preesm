@@ -96,6 +96,7 @@ public class PiSDFToSingleRate extends PiMMSwitch<Boolean> {
     // 3. Compute BRV following the chosen method
     Map<AbstractVertex, Long> brv = PiBRV.compute(graph, method);
     // 4. Print the RV values
+    PiBRV.printRV(brv);
     // 4.5 Check periods with BRV
     PiMMHelper.checkPeriodicity(brv);
     // 5. Convert to SR-DAG
