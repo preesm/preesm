@@ -13,6 +13,7 @@ PREESM Changelog
   * Disable exception throwing at write/parse time when the PiSDF is not consistent in order to enable non-finished design to be saved;
   * Fix dependencies to enable copy/rename refactoring;
   * Fix filters/Add error handling to avoid exceptions when editing algos;
+* Fix Scenario parsing: do not fail when graph/archi is not valid;
 
 ### Bug fix
 
