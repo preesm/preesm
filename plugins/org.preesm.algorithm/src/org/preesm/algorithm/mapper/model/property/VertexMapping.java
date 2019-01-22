@@ -95,9 +95,8 @@ public class VertexMapping extends GroupProperty {
     // Gets all vertices corresponding to the relative constraint group
     final List<MapperDAGVertex> relatedVertices = getVertices(dag);
 
-    if (relatedVertices.size() < 1) {
+    if (relatedVertices.isEmpty()) {
       PreesmLogger.getLogger().log(Level.SEVERE, "Relative constraint with no vertex.");
-
       return operators;
     }
 
@@ -138,7 +137,6 @@ public class VertexMapping extends GroupProperty {
    */
   @Override
   public String toString() {
-    // TODO Auto-generated method stub
     return "<" + super.toString() + ">";
   }
 
