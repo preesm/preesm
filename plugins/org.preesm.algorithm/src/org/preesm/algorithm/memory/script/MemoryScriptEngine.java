@@ -214,8 +214,13 @@ public class MemoryScriptEngine {
    */
   public void generateCode(final PreesmScenario scenario, final String log) {
     final String codegenPath = scenario.getCodegenManager().getCodegenDirectory() + "/";
-
-    final IFile iFile = ResourcesPlugin.getWorkspace().getRoot().getFile(new Path(codegenPath + log + ".txt"));
+    final IFile iFile;
+    try {
+      iFile = ResourcesPlugin.getWorkspace().getRoot().getFile(new Path(codegenPath + log + ".txt"));
+    } catch (final Exception e) {
+      throw new PreesmException(
+          "Could not access code generation target path folder. Please check its value in the scenario.", e);
+    }
     try {
       ResourcesPlugin.getWorkspace().getRoot().refreshLocal(IResource.DEPTH_INFINITE, null);
       final IFolder iFolder = ResourcesPlugin.getWorkspace().getRoot().getFolder(new Path(codegenPath));

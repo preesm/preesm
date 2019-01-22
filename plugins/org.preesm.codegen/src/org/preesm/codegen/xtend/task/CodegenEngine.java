@@ -253,7 +253,13 @@ public class CodegenEngine {
       try {
         final IWorkspace workspace = ResourcesPlugin.getWorkspace();
         workspace.getRoot().refreshLocal(IResource.DEPTH_INFINITE, null);
-        final IFolder f = workspace.getRoot().getFolder(new Path(this.codegenPath));
+        final IFolder f;
+        try {
+          f = workspace.getRoot().getFolder(new Path(this.codegenPath));
+        } catch (final Exception e) {
+          throw new PreesmException(
+              "Could not access code generation target path folder. Please check its value in the scenario.", e);
+        }
         final IPath rawLocation = f.getRawLocation();
         if (rawLocation == null) {
           throw new PreesmException("Could not find target project for given path [" + this.codegenPath

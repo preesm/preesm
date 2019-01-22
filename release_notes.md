@@ -17,7 +17,7 @@ PREESM Changelog
 * Fix Scenario parsing: do not fail when graph/archi is not valid;
 
 ### Bug fix
-
+* Fix #99 : Add code generation path check;
 
 ## Release version 3.1.3
 *2018.12.19*
