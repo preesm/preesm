@@ -67,12 +67,12 @@ public class PiMMFilter extends AbstractPropertySectionFilter {
   @Override
   protected boolean accept(final PictogramElement pictogramElement) {
     final EObject eObject = Graphiti.getLinkService().getBusinessObjectForLinkedPictogramElement(pictogramElement);
-
+    if (eObject == null) {
+      return false;
+    }
     /**
      * Parameter, SourceInterface, SinkInterface and Delay are EObject has associated properties window.
      */
-
-    // System.out.println(eObject.toString()+" Container: "+eObject.eContainer());
 
     // Parameter and ConfigInputInterface.
     if (eObject instanceof Parameter) {
