@@ -199,25 +199,29 @@ public class PiSDFToSingleRate extends PiMMSwitch<Boolean> {
     this.graphPrefix = "";
   }
 
+  private final Map<Parameter, Parameter> param2param = new LinkedHashMap<>();
+
   /**
    *
    */
-  private void instantiateParameters(final AbstractActor actor, final AbstractActor copyActor,
-      final PiGraph resultPiGraph) {
-    // // Copy parameters
-    for (final Parameter p : actor.getInputParameters()) {
+  private void instantiateParameters(final AbstractActor actor, final AbstractActor copyActor) {
 
-      final List<ConfigInputPort> ports = actor.lookupConfigInputPortsConnectedWithParameter(p);
-      for (ConfigInputPort port : ports) {
-        final ConfigInputPort cip = (ConfigInputPort) copyActor.lookupPort(port.getName());
-        if (cip != null) {
-          final Parameter copy = PiMMUserFactory.instance.copyWithHistory(p);
-          final Dependency dep = PiMMUserFactory.instance.createDependency();
-          dep.setSetter(copy);
-          cip.setIncomingDependency(dep);
-          resultPiGraph.addDependency(dep);
-          resultPiGraph.addParameter(copy);
+    // // Copy parameters
+
+    for (final ConfigInputPort port : copyActor.getConfigInputPorts()) {
+      final Port lookupPort = actor.lookupPort(port.getName());
+      if (lookupPort instanceof ConfigInputPort) {
+        final Dependency incomingDependency = ((ConfigInputPort) lookupPort).getIncomingDependency();
+        final ISetter setter = incomingDependency.getSetter();
+        final Parameter parameter = param2param.get(setter);
+        if (parameter == null) {
+          throw new PreesmException();
+        } else {
+          final Dependency dep = PiMMUserFactory.instance.createDependency(parameter, port);
+          this.result.addDependency(dep);
         }
+      } else {
+        throw new PreesmException();
       }
     }
   }
@@ -243,7 +247,7 @@ public class PiSDFToSingleRate extends PiMMSwitch<Boolean> {
 
       // Add the actor to the FIFO source/sink sets
       this.actor2SRActors.get(this.graphPrefix + actor.getName()).add(copyActor);
-      instantiateParameters(actor, copyActor, this.result);
+      instantiateParameters(actor, copyActor);
     } else {
       doSwitch(actor);
     }
@@ -264,7 +268,7 @@ public class PiSDFToSingleRate extends PiMMSwitch<Boolean> {
     this.actor2SRActors.get(this.graphPrefix + actor.getName()).add(copyActor);
 
     // Set the properties
-    // PiSDFFlattener.instantiateParameters(actor, copyActor);
+    instantiateParameters(actor, copyActor);
     return true;
   }
 
@@ -352,7 +356,7 @@ public class PiSDFToSingleRate extends PiMMSwitch<Boolean> {
     this.actor2SRActors.get(this.graphPrefix + actor.getName()).add(copyActor);
 
     // Set the properties
-    instantiateParameters(actor, copyActor, this.result);
+    instantiateParameters(actor, copyActor);
     return true;
   }
 
@@ -768,6 +772,17 @@ public class PiSDFToSingleRate extends PiMMSwitch<Boolean> {
   }
 
   @Override
+  public Boolean caseParameter(final Parameter param) {
+    // make sure config input interfaces are made into Parameter (since their expressions have been evaluated);
+    final long paramValue = param.getValueExpression().evaluate();
+    final String paramName = this.graphPrefix + "_" + param.getName();
+    final Parameter copy = PiMMUserFactory.instance.createParameter(paramName, paramValue);
+    this.result.addParameter(copy);
+    this.param2param.put(param, copy);
+    return true;
+  }
+
+  @Override
   public Boolean casePiGraph(final PiGraph graph) {
 
     // If there are no actors in the graph we leave
@@ -781,6 +796,10 @@ public class PiSDFToSingleRate extends PiMMSwitch<Boolean> {
 
     // Set the prefix graph name
     this.graphPrefix = this.graphName.isEmpty() ? "" : this.graphName + "_";
+
+    for (final Parameter p : graph.getParameters()) {
+      doSwitch(p);
+    }
 
     // We need to split all delay actors before going in every iteration
     for (final Fifo f : graph.getFifosWithDelay()) {
