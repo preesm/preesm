@@ -66,6 +66,7 @@ import org.preesm.model.pisdf.ISetter;
 import org.preesm.model.pisdf.InitActor;
 import org.preesm.model.pisdf.InterfaceActor;
 import org.preesm.model.pisdf.NonExecutableActor;
+import org.preesm.model.pisdf.Parameter;
 import org.preesm.model.pisdf.PiGraph;
 import org.preesm.model.pisdf.Port;
 import org.preesm.model.pisdf.RoundBufferActor;
@@ -198,6 +199,29 @@ public class PiSDFToSingleRate extends PiMMSwitch<Boolean> {
     this.graphPrefix = "";
   }
 
+  /**
+   *
+   */
+  private void instantiateParameters(final AbstractActor actor, final AbstractActor copyActor,
+      final PiGraph resultPiGraph) {
+    // // Copy parameters
+    for (final Parameter p : actor.getInputParameters()) {
+
+      final List<ConfigInputPort> ports = actor.lookupConfigInputPortsConnectedWithParameter(p);
+      for (ConfigInputPort port : ports) {
+        final ConfigInputPort cip = (ConfigInputPort) copyActor.lookupPort(port.getName());
+        if (cip != null) {
+          final Parameter copy = PiMMUserFactory.instance.copyWithHistory(p);
+          final Dependency dep = PiMMUserFactory.instance.createDependency();
+          dep.setSetter(copy);
+          cip.setIncomingDependency(dep);
+          resultPiGraph.addDependency(dep);
+          resultPiGraph.addParameter(copy);
+        }
+      }
+    }
+  }
+
   /*
    * (non-Javadoc)
    *
@@ -219,7 +243,7 @@ public class PiSDFToSingleRate extends PiMMSwitch<Boolean> {
 
       // Add the actor to the FIFO source/sink sets
       this.actor2SRActors.get(this.graphPrefix + actor.getName()).add(copyActor);
-      PiSDFFlattener.instantiateParameters(actor, copyActor, this.result);
+      instantiateParameters(actor, copyActor, this.result);
     } else {
       doSwitch(actor);
     }
@@ -328,7 +352,7 @@ public class PiSDFToSingleRate extends PiMMSwitch<Boolean> {
     this.actor2SRActors.get(this.graphPrefix + actor.getName()).add(copyActor);
 
     // Set the properties
-    PiSDFFlattener.instantiateParameters(actor, copyActor, this.result);
+    instantiateParameters(actor, copyActor, this.result);
     return true;
   }
 
