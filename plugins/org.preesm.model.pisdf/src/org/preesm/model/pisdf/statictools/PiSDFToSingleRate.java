@@ -710,7 +710,7 @@ public class PiSDFToSingleRate extends PiMMSwitch<Boolean> {
     this.actor2SRActors.put(this.graphPrefix + actor.getName(), new ArrayList<>());
 
     // Populate the DAG with the appropriate number of instances of the actor
-    final Long actorRV = this.brv.get(actor);
+    final long actorRV = this.brv.get(actor);
 
     // Populate the graph with the number of instance of the current actor
     for (long i = 0; i < actorRV; ++i) {
@@ -743,7 +743,7 @@ public class PiSDFToSingleRate extends PiMMSwitch<Boolean> {
     for (final Fifo f : graph.getFifosWithDelay()) {
       splitDelayActors(f);
     }
-    final Long graphRV = this.brv.get(graph) == null ? 1 : this.brv.get(graph);
+    final long graphRV = this.brv.get(graph) == null ? 1 : this.brv.get(graph);
     final String currentPrefix = this.graphPrefix;
     for (long i = 0; i < graphRV; ++i) {
       if (!currentPrefix.isEmpty()) {
@@ -810,9 +810,12 @@ public class PiSDFToSingleRate extends PiMMSwitch<Boolean> {
     setterFifo.setTargetPort(setPort);
     setPort.setExpression(setterFifo.getSourcePort().getPortRateExpression().getExpressionAsString());
     // 1.1.2 Setting the BRV value
-    Long brvSetter = this.brv.get(setterFifo.getSourcePort().getContainingActor());
-    if (brvSetter == null) {
-      brvSetter = (long) 1;
+    final AbstractActor srcContainingActor = setterFifo.getSourcePort().getContainingActor();
+    final long brvSetter;
+    if (this.brv.containsKey(srcContainingActor)) {
+      brvSetter = this.brv.get(srcContainingActor);
+    } else {
+      brvSetter = 1L;
     }
     this.brv.put(setterActor, brvSetter);
     // 1.2 Now we do the getter actor
@@ -827,9 +830,12 @@ public class PiSDFToSingleRate extends PiMMSwitch<Boolean> {
     getterFifo.setSourcePort(getPort);
     getPort.setExpression(getterFifo.getTargetPort().getPortRateExpression().getExpressionAsString());
     // 1.2.2 Setting the BRV value
-    Long brvGetter = this.brv.get(getterFifo.getTargetPort().getContainingActor());
-    if (brvGetter == null) {
-      brvGetter = (long) 1;
+    final AbstractActor tgtContainingActor = getterFifo.getTargetPort().getContainingActor();
+    final long brvGetter;
+    if (this.brv.containsKey(tgtContainingActor)) {
+      brvGetter = this.brv.get(tgtContainingActor);
+    } else {
+      brvGetter = 1L;
     }
     this.brv.put(getterActor, brvGetter);
     // 2 We remove the old actor and add the new ones
