@@ -18,6 +18,7 @@ PREESM Changelog
 
 ### Bug fix
 * Fix #99 : Add code generation path check;
+* Fix #103: Remove inline directive to enforce comptatiblity with most C compilers;
 
 ## Release version 3.1.3
 *2018.12.19*
