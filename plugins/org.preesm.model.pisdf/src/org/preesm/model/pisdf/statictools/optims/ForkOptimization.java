@@ -34,11 +34,12 @@
  * knowledge of the CeCILL license and that you accept its terms.
  */
 /**
- * 
+ *
  */
 package org.preesm.model.pisdf.statictools.optims;
 
 import org.preesm.model.pisdf.AbstractActor;
+import org.preesm.model.pisdf.ConfigInputPort;
 import org.preesm.model.pisdf.DataInputPort;
 import org.preesm.model.pisdf.DataOutputPort;
 import org.preesm.model.pisdf.Fifo;
@@ -53,20 +54,20 @@ public class ForkOptimization extends AbstractPiGraphSpecialActorRemover<DataOut
 
   /**
    * Remove the Broadcast or Fork -> Fork connections
-   * 
+   *
    * <pre>
-   *               | F | -> out_0 
+   *               | F | -> out_0
    * | BR | -> out |   | -> out_1
-   * 
+   *
    * becomes  | BR | -> out_0
    *          |    | -> out_1
    * </pre>
-   * 
+   *
    * @param graph
    *          the graph
    * @param actor
    *          the broadcast or fork actor to evaluate
-   * 
+   *
    * @return true if at least one ForkActor has been removed, false else
    */
   @Override
@@ -82,6 +83,9 @@ public class ForkOptimization extends AbstractPiGraphSpecialActorRemover<DataOut
         fillRemoveAndReplace(actor.getDataOutputPorts(), targetActor.getDataOutputPorts(), dop);
         removeActorAndFifo(graph, outgoingFifo, targetActor);
       }
+    }
+    for (final ConfigInputPort cip : actor.getConfigInputPorts()) {
+      graph.getEdges().remove(cip.getIncomingDependency());
     }
     if (!removeAndReplace(actor.getDataOutputPorts())) {
       return removeUnused(graph, actor);

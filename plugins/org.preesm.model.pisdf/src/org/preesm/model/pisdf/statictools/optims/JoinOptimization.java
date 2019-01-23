@@ -44,6 +44,7 @@ import java.util.List;
 import java.util.Map;
 import org.preesm.model.pisdf.AbstractActor;
 import org.preesm.model.pisdf.AbstractVertex;
+import org.preesm.model.pisdf.ConfigInputPort;
 import org.preesm.model.pisdf.DataInputPort;
 import org.preesm.model.pisdf.DataOutputPort;
 import org.preesm.model.pisdf.Fifo;
@@ -88,6 +89,9 @@ public class JoinOptimization extends AbstractPiGraphSpecialActorRemover<DataInp
         fillRemoveAndReplace(actor.getDataInputPorts(), sourceActor.getDataInputPorts(), dip);
         removeActorAndFifo(graph, incomingFifo, sourceActor);
       }
+    }
+    for (final ConfigInputPort cip : actor.getConfigInputPorts()) {
+      graph.getEdges().remove(cip.getIncomingDependency());
     }
     if (!removeAndReplace(actor.getDataInputPorts())) {
       return removeUnused(graph, actor);
