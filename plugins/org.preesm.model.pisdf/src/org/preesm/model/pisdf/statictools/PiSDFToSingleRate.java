@@ -42,7 +42,9 @@ import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Level;
 import org.preesm.commons.exceptions.PreesmException;
+import org.preesm.commons.logger.PreesmLogger;
 import org.preesm.model.pisdf.AbstractActor;
 import org.preesm.model.pisdf.AbstractVertex;
 import org.preesm.model.pisdf.BroadcastActor;
@@ -87,34 +89,51 @@ public class PiSDFToSingleRate extends PiMMSwitch<Boolean> {
    * @return the SDFGraph obtained by visiting graph
    */
   public static final PiGraph compute(final PiGraph graph, final BRVMethod method) {
+
+    PreesmLogger.getLogger().log(Level.FINE, " >> Start srdag transfo");
+
+    PreesmLogger.getLogger().log(Level.FINE, " >>   - check");
     PiGraphConsistenceChecker.check(graph);
     // 1. First we resolve all parameters.
     // It must be done first because, when removing persistence, local parameters have to be known at upper level
+    PreesmLogger.getLogger().log(Level.FINE, " >>   - resolve params");
     PiMMHelper.resolveAllParameters(graph);
     // 2. We perform the delay transformation step that deals with persistence
+    PreesmLogger.getLogger().log(Level.FINE, " >>   - remove persistence");
     PiMMHelper.removePersistence(graph);
     // 3. Compute BRV following the chosen method
+    PreesmLogger.getLogger().log(Level.FINE, " >>   - compute brv");
     Map<AbstractVertex, Long> brv = PiBRV.compute(graph, method);
     // 4. Print the RV values
+    PreesmLogger.getLogger().log(Level.FINE, " >>   - print brv");
     PiBRV.printRV(brv);
     // 4.5 Check periods with BRV
+    PreesmLogger.getLogger().log(Level.FINE, " >>   - check periodicity");
     PiMMHelper.checkPeriodicity(brv);
     // 5. Convert to SR-DAG
+    PreesmLogger.getLogger().log(Level.FINE, " >>   - apply single rate transfo");
     PiSDFToSingleRate staticPiMM2ASrPiMMVisitor = new PiSDFToSingleRate(graph, brv);
     staticPiMM2ASrPiMMVisitor.doSwitch(graph);
     final PiGraph acyclicSRPiMM = staticPiMM2ASrPiMMVisitor.getResult();
 
+    PreesmLogger.getLogger().log(Level.FINE, " >>   - check");
     PiGraphConsistenceChecker.check(acyclicSRPiMM);
     // 6- do some optimization on the graph
+    PreesmLogger.getLogger().log(Level.FINE, " >>   - fork join optim");
     final ForkJoinOptimization forkJoinOptimization = new ForkJoinOptimization();
     forkJoinOptimization.optimize(acyclicSRPiMM);
+    PreesmLogger.getLogger().log(Level.FINE, " >>   - check");
+    PiGraphConsistenceChecker.check(acyclicSRPiMM);
+
+    PreesmLogger.getLogger().log(Level.FINE, " >>   - broadcast/rbuffers optim");
     final BroadcastRoundBufferOptimization brRbOptimization = new BroadcastRoundBufferOptimization();
     brRbOptimization.optimize(acyclicSRPiMM);
 
+    PreesmLogger.getLogger().log(Level.FINE, " >>   - check");
     PiGraphConsistenceChecker.check(acyclicSRPiMM);
 
     srCheck(acyclicSRPiMM);
-
+    PreesmLogger.getLogger().log(Level.FINE, " >> End srdag transfo");
     return acyclicSRPiMM;
   }
 
