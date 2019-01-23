@@ -161,7 +161,13 @@ public class PiGraphConsistenceChecker extends PiMMSwitch<Boolean> {
     } else {
 
       if (!(containingConfigurable instanceof PiGraph)) {
-        properTarget = containingConfigurable.getContainingPiGraph() == this.graphStack.peek();
+        final PiGraph peek = this.graphStack.peek();
+        final PiGraph containingPiGraph = containingConfigurable.getContainingPiGraph();
+        properTarget = containingPiGraph == peek;
+        if (!properTarget) {
+          error("Dependency [%s] getter [%s] is contained in an actor that is not part of the graph.", dependency,
+              getter);
+        }
       }
     }
     return setterok && getterContained && properTarget;
