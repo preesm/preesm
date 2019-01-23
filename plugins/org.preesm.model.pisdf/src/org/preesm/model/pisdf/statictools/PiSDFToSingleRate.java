@@ -217,6 +217,7 @@ public class PiSDFToSingleRate extends PiMMSwitch<Boolean> {
         if (parameter == null) {
           throw new PreesmException();
         } else {
+          this.result.addParameter(parameter);
           final Dependency dep = PiMMUserFactory.instance.createDependency(parameter, port);
           this.result.addDependency(dep);
         }
@@ -777,7 +778,6 @@ public class PiSDFToSingleRate extends PiMMSwitch<Boolean> {
     final long paramValue = param.getValueExpression().evaluate();
     final String paramName = this.graphPrefix + "_" + param.getName();
     final Parameter copy = PiMMUserFactory.instance.createParameter(paramName, paramValue);
-    this.result.addParameter(copy);
     this.param2param.put(param, copy);
     return true;
   }
