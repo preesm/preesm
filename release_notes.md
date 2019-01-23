@@ -15,6 +15,10 @@ PREESM Changelog
   * Fix dependencies to enable copy/rename refactoring;
   * Fix filters/Add error handling to avoid exceptions when editing algos;
 * Fix Scenario parsing: do not fail when graph/archi is not valid;
+* Fix PiSDF single rate transformation
+  * properly remove dependencies during optimizations;
+  * rename parameters with graph prefix;
+  * instantiate parameters only when used;
 
 ### Bug fix
 * Fix #99 : Add code generation path check;
