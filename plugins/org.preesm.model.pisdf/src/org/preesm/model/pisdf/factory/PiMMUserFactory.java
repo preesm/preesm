@@ -107,9 +107,17 @@ public final class PiMMUserFactory extends PiMMFactoryImpl implements PreesmUser
 
   @Override
   public Parameter createParameter() {
+    return createParameter(null, 0);
+  }
+
+  /**
+   *
+   */
+  public Parameter createParameter(final String name, final long evaluate) {
     final Parameter createParameter = super.createParameter();
-    final Expression createExpression = createExpression();
+    final Expression createExpression = createExpression(evaluate);
     createParameter.setExpression(createExpression);
+    createParameter.setName(name);
     return createParameter;
   }
 
