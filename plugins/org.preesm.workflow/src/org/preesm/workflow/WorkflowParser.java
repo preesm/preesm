@@ -37,11 +37,13 @@ package org.preesm.workflow;
 import java.io.IOException;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.logging.Level;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.Path;
 import org.preesm.commons.exceptions.PreesmException;
+import org.preesm.commons.logger.PreesmLogger;
 import org.preesm.workflow.elements.AbstractWorkflowNode;
 import org.preesm.workflow.elements.ScenarioNode;
 import org.preesm.workflow.elements.TaskNode;
@@ -122,7 +124,32 @@ public class WorkflowParser extends DefaultHandler2 {
   @Override
   public void startElement(final String uri, final String localName, final String qName, final Attributes attributes) {
 
-    if (qName.equals("dftools:scenario")) {
+    if (qName.equals("dftools:workflow")) {
+      final String eow = attributes.getValue("errorOnWarning");
+      boolean valueOfeow = true;
+      if (eow != null) {
+        try {
+          valueOfeow = Boolean.valueOf(eow);
+        } catch (final Exception e) {
+          PreesmLogger.getLogger().log(Level.WARNING,
+              "Could not parse vaule of 'Error on Warning', using defalt value ('true').", e);
+          valueOfeow = true;
+        }
+      }
+      final String verboseLevel = attributes.getValue("verboseLevel");
+      Level valueOfvl = Level.INFO;
+      if (verboseLevel != null) {
+        try {
+          valueOfvl = Level.parse(verboseLevel.toUpperCase());
+        } catch (final Exception e) {
+          PreesmLogger.getLogger().log(Level.WARNING,
+              "Could not parse vaule of 'Verbose Level', using defalt value ('INFO').", e);
+          valueOfvl = Level.INFO;
+        }
+      }
+      this.workflow.setErrorOnWarning(valueOfeow);
+      this.workflow.setOutputLevel(valueOfvl);
+    } else if (qName.equals("dftools:scenario")) {
       final String pluginId = attributes.getValue("pluginId");
       final AbstractWorkflowNode node = new ScenarioNode(pluginId);
       this.workflow.addVertex(node);
