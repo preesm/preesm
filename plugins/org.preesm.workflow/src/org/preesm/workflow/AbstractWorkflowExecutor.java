@@ -233,38 +233,18 @@ public abstract class AbstractWorkflowExecutor {
 
     final Workflow workflow = new WorkflowParser().parse(workflowPath);
 
+    // final Level oldLevel = this.logger.getLevel();
     this.logger.setLevel(workflow.getOutputLevel());
 
     refreshProject(workflow.getProjectName(), monitor, "Warning: Could not refresh project before workflow execution");
 
-    // Initializing the workflow console
-    log(Level.INFO, "Workflow.StartInfo", workflowPath);
-    if (monitor != null) {
-      monitor.beginTask("Executing workflow", workflow.vertexSet().size());
-    }
-
-    // Checking the existence of plugins and retrieving prototypess
-    final boolean check = check(workflow, monitor);
+    boolean check = initAndCheck(workflowPath, monitor, workflow);
     if (!check) {
-      if (monitor != null) {
-        monitor.setCanceled(true);
-      }
-      return false;
-    }
-
-    if (workflow.vertexSet().isEmpty()) {
-      log(Level.SEVERE, "Workflow.EmptyVertexSet");
-
-      return false;
-    }
-
-    if (!workflow.hasScenario()) {
-      log(Level.SEVERE, "Workflow.OneScenarioNeeded");
-
       return false;
     }
 
     for (final AbstractWorkflowNode node : workflow.vertexTopologicalList()) {
+      boolean nodeResult = true;
       if (workflow.edgesOf(node).isEmpty()) {
         log(Level.WARNING, "Workflow.IgnoredNonConnectedTask");
       } else {
@@ -283,39 +263,38 @@ public abstract class AbstractWorkflowExecutor {
           // Checks that the scenario node output edges fit the task
           // prototype
           if (!checkScenarioPrototype(scenarioNode, workflow)) {
-            return false;
-          }
+            nodeResult = false;
+          } else {
+            try {
+              // updating monitor
+              if (monitor != null) {
+                monitor.subTask(scenario.monitorMessage());
+              }
+              outputs = scenario.extractData(scenarioPath);
 
-          try {
-            // updating monitor
-            if (monitor != null) {
-              monitor.subTask(scenario.monitorMessage());
+              // Filter only outputs required in the workflow
+              final Map<String, Object> outs = outputs; // final
+              // reference
+              // for
+              // predicate
+              final Set<WorkflowEdge> edges = new LinkedHashSet<>(workflow.outgoingEdgesOf(scenarioNode));
+              edges.removeIf(edge -> !outs.containsKey(edge.getSourcePort()));
+
+              final Map<String, Object> checkedOutputs = new LinkedHashMap<>();
+              edges.forEach(edge -> checkedOutputs.put(edge.getSourcePort(), outs.get(edge.getSourcePort())));
+
+              // Check the outputs have the right type.
+              checkOutputType(checkedOutputs, scenario);
+
+              // Each node execution is equivalent for the monitor
+              if (monitor != null) {
+                monitor.worked(1);
+              }
+            } catch (final PreesmException e) {
+              error(e, e.getMessage());
+              nodeResult = false;
             }
-            outputs = scenario.extractData(scenarioPath);
-
-            // Filter only outputs required in the workflow
-            final Map<String, Object> outs = outputs; // final
-            // reference
-            // for
-            // predicate
-            final Set<WorkflowEdge> edges = new LinkedHashSet<>(workflow.outgoingEdgesOf(scenarioNode));
-            edges.removeIf(edge -> !outs.containsKey(edge.getSourcePort()));
-
-            final Map<String, Object> checkedOutputs = new LinkedHashMap<>();
-            edges.forEach(edge -> checkedOutputs.put(edge.getSourcePort(), outs.get(edge.getSourcePort())));
-
-            // Check the outputs have the right type.
-            checkOutputType(checkedOutputs, scenario);
-
-            // Each node execution is equivalent for the monitor
-            if (monitor != null) {
-              monitor.worked(1);
-            }
-          } catch (final PreesmException e) {
-            error(e, e.getMessage());
-            return false;
           }
-
         } else if (node.isTaskNode()) {
           final TaskNode taskNode = (TaskNode) node;
           final AbstractTaskImplementation task = taskNode.getTask();
@@ -324,74 +303,77 @@ public abstract class AbstractWorkflowExecutor {
           // Checks that the workflow task node edges fit the task
           // prototype
           if (!checkTaskPrototype(taskNode, workflow)) {
-            return false;
-          }
+            nodeResult = false;
+          } else {
 
-          // Preparing the input and output maps of the execute method
-          final Map<String, Object> inputs = new LinkedHashMap<>();
+            // Preparing the input and output maps of the execute method
+            final Map<String, Object> inputs = new LinkedHashMap<>();
 
-          // Retrieving the data from input edges
-          for (final WorkflowEdge edge : workflow.incomingEdgesOf(taskNode)) {
-            inputs.put(edge.getTargetPort(), edge.getData());
-          }
-
-          // Executing the workflow task
-          try {
-            // updating monitor and console
-            final StringBuilder monitorMessage = new StringBuilder();
-            if (this.debug) {
-              monitorMessage.append("[" + task.getClass().getSimpleName() + "] ");
-            }
-            monitorMessage.append(task.monitorMessage());
-
-            final String monitorMessageStr = monitorMessage.toString();
-            if (monitor != null) {
-              monitor.subTask(monitorMessageStr);
-            }
-            log(Level.INFO, "Workflow.Step", monitorMessageStr);
-
-            // Workflow cancellation was requested
-            if ((monitor != null) && monitor.isCanceled()) {
-
-              log(Level.SEVERE, "Workflow.CancellationRequested");
-              return false;
+            // Retrieving the data from input edges
+            for (final WorkflowEdge edge : workflow.incomingEdgesOf(taskNode)) {
+              inputs.put(edge.getTargetPort(), edge.getData());
             }
 
-            // Checks that the requested parameters are available
-            // for the task
-            final boolean checkParameters = checkParameters(taskNode, task);
-            if (!checkParameters) {
-              return false;
+            // Executing the workflow task
+            try {
+              // updating monitor and console
+              final StringBuilder monitorMessage = new StringBuilder();
+              if (this.debug) {
+                monitorMessage.append("[" + task.getClass().getSimpleName() + "] ");
+              }
+              monitorMessage.append(task.monitorMessage());
+
+              final String monitorMessageStr = monitorMessage.toString();
+              if (monitor != null) {
+                monitor.subTask(monitorMessageStr);
+              }
+              log(Level.INFO, "Workflow.Step", monitorMessageStr);
+
+              // Workflow cancellation was requested
+              if ((monitor != null) && monitor.isCanceled()) {
+
+                log(Level.SEVERE, "Workflow.CancellationRequested");
+                nodeResult = false;
+              } else {
+
+                // Checks that the requested parameters are available
+                // for the task
+                final boolean checkParameters = checkParameters(taskNode, task);
+                if (!checkParameters) {
+                  nodeResult = false;
+                } else {
+
+                  // execution
+                  outputs = task.execute(inputs, taskNode.getParameters(), monitor, nodeId, workflow);
+
+                  // Filter only outputs required in the workflow
+                  final Map<String, Object> outs = outputs; // final
+                  // reference
+                  // for
+                  // predicate
+                  final Set<WorkflowEdge> edges = new LinkedHashSet<>(workflow.outgoingEdgesOf(taskNode));
+                  edges.removeIf(edge -> !outs.containsKey(edge.getSourcePort()));
+
+                  final Map<String, Object> checkedOutputs = new LinkedHashMap<>();
+                  edges.forEach(edge -> checkedOutputs.put(edge.getSourcePort(), outs.get(edge.getSourcePort())));
+
+                  // Check the outputs have the right type.
+                  checkOutputType(outputs, task);
+
+                  // Each node execution is equivalent for the monitor
+                  if (monitor != null) {
+                    monitor.worked(1);
+                  }
+                }
+              }
+            } catch (final PreesmException e) {
+              error(e, e.getMessage());
+              nodeResult = false;
+            } catch (final Exception e) {
+              error(e, "Unexpected Exception: " + e.getClass().getCanonicalName() + ":" + e.getMessage()
+                  + "\n Contact Preesm developers if you cannot solve the problem.");
+              nodeResult = false;
             }
-
-            // execution
-            outputs = task.execute(inputs, taskNode.getParameters(), monitor, nodeId, workflow);
-
-            // Filter only outputs required in the workflow
-            final Map<String, Object> outs = outputs; // final
-            // reference
-            // for
-            // predicate
-            final Set<WorkflowEdge> edges = new LinkedHashSet<>(workflow.outgoingEdgesOf(taskNode));
-            edges.removeIf(edge -> !outs.containsKey(edge.getSourcePort()));
-
-            final Map<String, Object> checkedOutputs = new LinkedHashMap<>();
-            edges.forEach(edge -> checkedOutputs.put(edge.getSourcePort(), outs.get(edge.getSourcePort())));
-
-            // Check the outputs have the right type.
-            checkOutputType(outputs, task);
-
-            // Each node execution is equivalent for the monitor
-            if (monitor != null) {
-              monitor.worked(1);
-            }
-          } catch (final PreesmException e) {
-            error(e, e.getMessage());
-            return false;
-          } catch (final Exception e) {
-            error(e, "Unexpected Exception: " + e.getClass().getCanonicalName() + ":" + e.getMessage()
-                + "\n Contact Preesm developers if you cannot solve the problem.");
-            return false;
           }
         }
 
@@ -413,10 +395,13 @@ public abstract class AbstractWorkflowExecutor {
             } else {
               edge.setData(null);
               log(Level.SEVERE, "Workflow.IncorrectOutput", nodeId, type);
-              return false;
+              nodeResult = false;
             }
           }
         }
+      }
+      if (!nodeResult) {
+        return false;
       }
     }
 
@@ -424,6 +409,36 @@ public abstract class AbstractWorkflowExecutor {
     log(Level.INFO, "Workflow.EndInfo", workflowPath);
 
     return true;
+  }
+
+  private boolean initAndCheck(final String workflowPath, final IProgressMonitor monitor, final Workflow workflow) {
+    // Initializing the workflow console
+    log(Level.INFO, "Workflow.StartInfo", workflowPath);
+    if (monitor != null) {
+      monitor.beginTask("Executing workflow", workflow.vertexSet().size());
+    }
+
+    // Checking the existence of plugins and retrieving prototypess
+    boolean check = check(workflow, monitor);
+    if (!check) {
+      if (monitor != null) {
+        monitor.setCanceled(true);
+      }
+      check = false;
+    }
+
+    if (workflow.vertexSet().isEmpty()) {
+      log(Level.SEVERE, "Workflow.EmptyVertexSet");
+
+      check = false;
+    }
+
+    if (!workflow.hasScenario()) {
+      log(Level.SEVERE, "Workflow.OneScenarioNeeded");
+
+      check = false;
+    }
+    return check;
   }
 
   private final void refreshProject(final String projectName, final IProgressMonitor monitor,
