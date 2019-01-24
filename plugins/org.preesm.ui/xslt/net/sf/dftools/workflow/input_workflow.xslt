@@ -31,7 +31,16 @@
         <xsl:element name="graph">
             <xsl:attribute name="type">DFTools Workflow</xsl:attribute>
 
-            <xsl:element name="parameters"/>
+            <xsl:element name="parameters">
+                <xsl:element name="parameter">
+                    <xsl:attribute name="name">Verbose Level</xsl:attribute>
+                    <xsl:attribute name="value" select="@verboseLevel"/>
+                </xsl:element>
+                <xsl:element name="parameter">
+                    <xsl:attribute name="name">Error on Warning</xsl:attribute>
+                    <xsl:attribute name="value" select="@errorOnWarning"/>
+                </xsl:element>
+            </xsl:element>
 
             <xsl:element name="vertices">
                 <xsl:apply-templates select="dftools:scenario"/>
@@ -43,16 +52,16 @@
             </xsl:element>
         </xsl:element>
     </xsl:template>
-    
+
     <!-- scenario -->
     <xsl:template match="dftools:scenario">
         <xsl:element name="vertex">
             <xsl:attribute name="type" select="'Scenario source'"/>
-            
+
             <xsl:call-template name="getVertexLayoutAttributes">
                 <xsl:with-param name="vertexId" select="'scenario'"/>
             </xsl:call-template>
-            
+
             <xsl:element name="parameters">
                 <xsl:element name="parameter">
                     <xsl:attribute name="name" select="'id'"/>
@@ -65,7 +74,7 @@
             </xsl:element>
         </xsl:element>
     </xsl:template>
-    
+
     <!-- tasks -->
     <xsl:template match="dftools:task">
         <xsl:element name="vertex">
