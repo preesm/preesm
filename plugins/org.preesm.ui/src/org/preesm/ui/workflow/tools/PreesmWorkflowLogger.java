@@ -35,6 +35,7 @@
 package org.preesm.ui.workflow.tools;
 
 import java.io.IOException;
+import java.util.logging.Handler;
 import java.util.logging.Level;
 import java.util.logging.LogManager;
 import java.util.logging.LogRecord;
@@ -80,6 +81,10 @@ public class PreesmWorkflowLogger extends Logger {
    */
   @Override
   public void log(final LogRecord record) {
+    for (Handler h : this.getHandlers()) {
+      h.publish(record);
+    }
+
     final Level level = record.getLevel();
     final int levelVal = level.intValue();
     if ((getLevel() == null) || (levelVal >= getLevel().intValue())) {
