@@ -403,15 +403,7 @@ public class Buffer {
           + " size = " + buffer.nbTokens + ".");
     }
 
-    return byteMatchWith(localIdx * this.tokenSize, buffer, remoteIdx * this.tokenSize, size * this.tokenSize);
-  }
-
-  /**
-   * Cf. {@link Buffer#byteMatchWith(int, Buffer, int, int, boolean)} with check = true
-   */
-  private Match byteMatchWith(final long localByteIdx, final Buffer buffer, final long remoteByteIdx,
-      final long byteSize) {
-    return byteMatchWith(localByteIdx, buffer, remoteByteIdx, byteSize, true);
+    return byteMatchWith(localIdx * this.tokenSize, buffer, remoteIdx * this.tokenSize, size * this.tokenSize, false);
   }
 
   /**
@@ -425,9 +417,15 @@ public class Buffer {
    *          start index of the matched range for the remote {@link Buffer}
    * @param byteSize
    *          the size of the matched range
-   * @param check
-   *          whether or not the match feasibility (e.g. with virtual ranges) must be checked
    * @return the created local {@link Match}
+   */
+  public Match byteMatchWith(final long localByteIdx, final Buffer buffer, final long remoteByteIdx,
+      final long byteSize) {
+    return byteMatchWith(localByteIdx, buffer, remoteByteIdx, byteSize, true);
+  }
+
+  /**
+   * Cf. {@link Buffer#byteMatchWith(long, Buffer, long, long)} with possibility to disable the checking.
    */
   private Match byteMatchWith(final long localByteIdx, final Buffer buffer, final long remoteByteIdx,
       final long byteSize, final boolean check) {
