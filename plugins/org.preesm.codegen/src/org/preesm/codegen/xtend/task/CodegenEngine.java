@@ -1,7 +1,7 @@
 /**
- * Copyright or © or Copr. IETR/INSA - Rennes (2013 - 2018) :
+ * Copyright or © or Copr. IETR/INSA - Rennes (2013 - 2019) :
  *
- * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017 - 2018)
+ * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017 - 2019)
  * Clément Guy <clement.guy@insa-rennes.fr> (2014 - 2015)
  * Julien Hascoet <jhascoet@kalray.eu> (2016)
  * Julien Heulot <julien.heulot@insa-rennes.fr> (2015)
@@ -253,7 +253,13 @@ public class CodegenEngine {
       try {
         final IWorkspace workspace = ResourcesPlugin.getWorkspace();
         workspace.getRoot().refreshLocal(IResource.DEPTH_INFINITE, null);
-        final IFolder f = workspace.getRoot().getFolder(new Path(this.codegenPath));
+        final IFolder f;
+        try {
+          f = workspace.getRoot().getFolder(new Path(this.codegenPath));
+        } catch (final Exception e) {
+          throw new PreesmException(
+              "Could not access code generation target path folder. Please check its value in the scenario.", e);
+        }
         final IPath rawLocation = f.getRawLocation();
         if (rawLocation == null) {
           throw new PreesmException("Could not find target project for given path [" + this.codegenPath

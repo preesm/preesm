@@ -1,8 +1,8 @@
 <!--
 
-    Copyright or © or Copr. IETR/INSA - Rennes (2017 - 2018) :
+    Copyright or © or Copr. IETR/INSA - Rennes (2017 - 2019) :
 
-    Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017 - 2018)
+    Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017 - 2019)
 
     This software is a computer program whose purpose is to help prototyping
     parallel applications using dataflow formalism.
@@ -44,7 +44,7 @@
 	<parent>
 		<groupId>org.preesm</groupId>
 		<artifactId>org.preesm.tests</artifactId>
-		<version>3.1.3</version>
+		<version>3.1.3-SNAPSHOT</version>
 		<relativePath>..</relativePath>
 	</parent>
 
@@ -100,7 +100,7 @@
         <dependency>
           <groupId>org.eclipse.rcptt.runner</groupId>
           <artifactId>rcptt.runner</artifactId>
-          <version>${rcptt-version}</version>
+          <version>${rcptt-runner-version}</version>
           <type>zip</type>
         </dependency>
       </dependencies>
@@ -117,7 +117,7 @@
           <extensions>true</extensions>
           <configuration>
             <runner>
-              <version>${rcptt-version}</version>
+              <version>${rcptt-runner-version}</version>
             </runner>
             <!-- The main configuration section goes here -->
             <aut>

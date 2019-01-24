@@ -1,8 +1,8 @@
 /**
- * Copyright or © or Copr. IETR/INSA - Rennes (2012 - 2018) :
+ * Copyright or © or Copr. IETR/INSA - Rennes (2012 - 2019) :
  *
  * Alexandre Honorat <ahonorat@insa-rennes.fr> (2018)
- * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017 - 2018)
+ * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017 - 2019)
  * Clément Guy <clement.guy@insa-rennes.fr> (2014 - 2015)
  * Florian Arrestier <florian.arrestier@insa-rennes.fr> (2018)
  * Julien Heulot <julien.heulot@insa-rennes.fr> (2013)
@@ -130,14 +130,14 @@ public class PiParser {
     if ((uri.fileExtension() == null) || !uri.fileExtension().contentEquals("pi")) {
       return null;
     }
-    Resource ressource;
+    final Resource ressource;
     try {
       ressource = resourceSet.getResource(uri, true);
       pigraph = (PiGraph) (ressource.getContents().get(0));
 
     } catch (final WrappedException e) {
       final String message = "The algorithm file \"" + uri + "\" specified by the scenario does not exist any more.";
-      throw new PreesmException(message, e);
+      PreesmLogger.getLogger().log(Level.WARNING, message);
     }
 
     return pigraph;
@@ -148,9 +148,11 @@ public class PiParser {
    */
   public static PiGraph getPiGraphWithReconnection(final String algorithmURL) {
     final PiGraph graph = getPiGraph(algorithmURL);
-    final SubgraphReconnector connector = new SubgraphReconnector();
-    connector.connectSubgraphs(graph);
-    PiGraphConsistenceChecker.check(graph);
+    if (graph != null) {
+      final SubgraphReconnector connector = new SubgraphReconnector();
+      connector.connectSubgraphs(graph);
+      PiGraphConsistenceChecker.check(graph, false);
+    }
     return graph;
   }
 

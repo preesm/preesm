@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <?pde version="3.5"?>
 
-<product name="Preesm" uid="org.preesm.product" id="org.preesm.ui.product" application="org.eclipse.ui.ide.workbench" version="3.1.3" useFeatures="true" includeLaunchers="true">
+<product name="Preesm" uid="org.preesm.product" id="org.preesm.ui.product" application="org.eclipse.ui.ide.workbench" version="3.2.0" useFeatures="true" includeLaunchers="true">
 
    <aboutInfo>
       <image path="/org.preesm.ui/icons/preesmLogo_48x48.png"/>
@@ -37,7 +37,6 @@
          <bmp/>
       </win>
    </launcher>
-
 
    <vm>
    </vm>
@@ -604,9 +603,9 @@ Version 1.0 dated 2006-09-05.
    </features>
 
    <configurations>
+      <plugin id="org.apache.felix.scr" autoStart="true" startLevel="2" />
       <plugin id="org.eclipse.core.runtime" autoStart="true" startLevel="0" />
       <plugin id="org.eclipse.equinox.common" autoStart="true" startLevel="2" />
-      <plugin id="org.eclipse.equinox.ds" autoStart="true" startLevel="2" />
       <plugin id="org.eclipse.equinox.event" autoStart="true" startLevel="2" />
       <plugin id="org.eclipse.equinox.p2.reconciler.dropins" autoStart="true" startLevel="0" />
       <plugin id="org.eclipse.equinox.simpleconfigurator" autoStart="true" startLevel="1" />

@@ -1,7 +1,7 @@
 /**
- * Copyright or © or Copr. IETR/INSA - Rennes (2018) :
+ * Copyright or © or Copr. IETR/INSA - Rennes (2018 - 2019) :
  *
- * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2018)
+ * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2018 - 2019)
  *
  * This software is a computer program whose purpose is to help prototyping
  * parallel applications using dataflow formalism.
@@ -42,7 +42,9 @@ import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Level;
 import org.preesm.commons.exceptions.PreesmException;
+import org.preesm.commons.logger.PreesmLogger;
 import org.preesm.model.pisdf.AbstractActor;
 import org.preesm.model.pisdf.AbstractVertex;
 import org.preesm.model.pisdf.BroadcastActor;
@@ -64,6 +66,7 @@ import org.preesm.model.pisdf.ISetter;
 import org.preesm.model.pisdf.InitActor;
 import org.preesm.model.pisdf.InterfaceActor;
 import org.preesm.model.pisdf.NonExecutableActor;
+import org.preesm.model.pisdf.Parameter;
 import org.preesm.model.pisdf.PiGraph;
 import org.preesm.model.pisdf.Port;
 import org.preesm.model.pisdf.RoundBufferActor;
@@ -87,33 +90,51 @@ public class PiSDFToSingleRate extends PiMMSwitch<Boolean> {
    * @return the SDFGraph obtained by visiting graph
    */
   public static final PiGraph compute(final PiGraph graph, final BRVMethod method) {
+
+    PreesmLogger.getLogger().log(Level.FINE, " >> Start srdag transfo");
+
+    PreesmLogger.getLogger().log(Level.FINE, " >>   - check");
     PiGraphConsistenceChecker.check(graph);
     // 1. First we resolve all parameters.
     // It must be done first because, when removing persistence, local parameters have to be known at upper level
+    PreesmLogger.getLogger().log(Level.FINE, " >>   - resolve params");
     PiMMHelper.resolveAllParameters(graph);
     // 2. We perform the delay transformation step that deals with persistence
+    PreesmLogger.getLogger().log(Level.FINE, " >>   - remove persistence");
     PiMMHelper.removePersistence(graph);
     // 3. Compute BRV following the chosen method
+    PreesmLogger.getLogger().log(Level.FINE, " >>   - compute brv");
     Map<AbstractVertex, Long> brv = PiBRV.compute(graph, method);
     // 4. Print the RV values
+    PreesmLogger.getLogger().log(Level.FINE, " >>   - print brv");
+    PiBRV.printRV(brv);
     // 4.5 Check periods with BRV
+    PreesmLogger.getLogger().log(Level.FINE, " >>   - check periodicity");
     PiMMHelper.checkPeriodicity(brv);
     // 5. Convert to SR-DAG
+    PreesmLogger.getLogger().log(Level.FINE, " >>   - apply single rate transfo");
     PiSDFToSingleRate staticPiMM2ASrPiMMVisitor = new PiSDFToSingleRate(graph, brv);
     staticPiMM2ASrPiMMVisitor.doSwitch(graph);
     final PiGraph acyclicSRPiMM = staticPiMM2ASrPiMMVisitor.getResult();
 
+    PreesmLogger.getLogger().log(Level.FINE, " >>   - check");
     PiGraphConsistenceChecker.check(acyclicSRPiMM);
     // 6- do some optimization on the graph
+    PreesmLogger.getLogger().log(Level.FINE, " >>   - fork join optim");
     final ForkJoinOptimization forkJoinOptimization = new ForkJoinOptimization();
     forkJoinOptimization.optimize(acyclicSRPiMM);
+    PreesmLogger.getLogger().log(Level.FINE, " >>   - check");
+    PiGraphConsistenceChecker.check(acyclicSRPiMM);
+
+    PreesmLogger.getLogger().log(Level.FINE, " >>   - broadcast/rbuffers optim");
     final BroadcastRoundBufferOptimization brRbOptimization = new BroadcastRoundBufferOptimization();
     brRbOptimization.optimize(acyclicSRPiMM);
 
+    PreesmLogger.getLogger().log(Level.FINE, " >>   - check");
     PiGraphConsistenceChecker.check(acyclicSRPiMM);
 
     srCheck(acyclicSRPiMM);
-
+    PreesmLogger.getLogger().log(Level.FINE, " >> End srdag transfo");
     return acyclicSRPiMM;
   }
 
@@ -178,6 +199,34 @@ public class PiSDFToSingleRate extends PiMMSwitch<Boolean> {
     this.graphPrefix = "";
   }
 
+  private final Map<Parameter, Parameter> param2param = new LinkedHashMap<>();
+
+  /**
+   *
+   */
+  private void instantiateParameters(final AbstractActor actor, final AbstractActor copyActor) {
+
+    // // Copy parameters
+
+    for (final ConfigInputPort port : copyActor.getConfigInputPorts()) {
+      final Port lookupPort = actor.lookupPort(port.getName());
+      if (lookupPort instanceof ConfigInputPort) {
+        final Dependency incomingDependency = ((ConfigInputPort) lookupPort).getIncomingDependency();
+        final ISetter setter = incomingDependency.getSetter();
+        final Parameter parameter = param2param.get(setter);
+        if (parameter == null) {
+          throw new PreesmException();
+        } else {
+          this.result.addParameter(parameter);
+          final Dependency dep = PiMMUserFactory.instance.createDependency(parameter, port);
+          this.result.addDependency(dep);
+        }
+      } else {
+        throw new PreesmException();
+      }
+    }
+  }
+
   /*
    * (non-Javadoc)
    *
@@ -199,7 +248,7 @@ public class PiSDFToSingleRate extends PiMMSwitch<Boolean> {
 
       // Add the actor to the FIFO source/sink sets
       this.actor2SRActors.get(this.graphPrefix + actor.getName()).add(copyActor);
-      PiSDFFlattener.instantiateParameters(actor, copyActor, this.result);
+      instantiateParameters(actor, copyActor);
     } else {
       doSwitch(actor);
     }
@@ -220,7 +269,7 @@ public class PiSDFToSingleRate extends PiMMSwitch<Boolean> {
     this.actor2SRActors.get(this.graphPrefix + actor.getName()).add(copyActor);
 
     // Set the properties
-    // PiSDFFlattener.instantiateParameters(actor, copyActor);
+    instantiateParameters(actor, copyActor);
     return true;
   }
 
@@ -308,7 +357,7 @@ public class PiSDFToSingleRate extends PiMMSwitch<Boolean> {
     this.actor2SRActors.get(this.graphPrefix + actor.getName()).add(copyActor);
 
     // Set the properties
-    PiSDFFlattener.instantiateParameters(actor, copyActor, this.result);
+    instantiateParameters(actor, copyActor);
     return true;
   }
 
@@ -709,7 +758,7 @@ public class PiSDFToSingleRate extends PiMMSwitch<Boolean> {
     this.actor2SRActors.put(this.graphPrefix + actor.getName(), new ArrayList<>());
 
     // Populate the DAG with the appropriate number of instances of the actor
-    final Long actorRV = this.brv.get(actor);
+    final long actorRV = this.brv.get(actor);
 
     // Populate the graph with the number of instance of the current actor
     for (long i = 0; i < actorRV; ++i) {
@@ -721,6 +770,16 @@ public class PiSDFToSingleRate extends PiMMSwitch<Boolean> {
       this.currentActorName = this.graphPrefix + actor.getName() + "_" + Long.toString(i);
       caseAbstractActor((AbstractActor) actor);
     }
+  }
+
+  @Override
+  public Boolean caseParameter(final Parameter param) {
+    // make sure config input interfaces are made into Parameter (since their expressions have been evaluated);
+    final long paramValue = param.getValueExpression().evaluate();
+    final String paramName = this.graphPrefix + "_" + param.getName();
+    final Parameter copy = PiMMUserFactory.instance.createParameter(paramName, paramValue);
+    this.param2param.put(param, copy);
+    return true;
   }
 
   @Override
@@ -738,11 +797,15 @@ public class PiSDFToSingleRate extends PiMMSwitch<Boolean> {
     // Set the prefix graph name
     this.graphPrefix = this.graphName.isEmpty() ? "" : this.graphName + "_";
 
+    for (final Parameter p : graph.getParameters()) {
+      doSwitch(p);
+    }
+
     // We need to split all delay actors before going in every iteration
     for (final Fifo f : graph.getFifosWithDelay()) {
       splitDelayActors(f);
     }
-    final Long graphRV = this.brv.get(graph) == null ? 1 : this.brv.get(graph);
+    final long graphRV = this.brv.get(graph) == null ? 1 : this.brv.get(graph);
     final String currentPrefix = this.graphPrefix;
     for (long i = 0; i < graphRV; ++i) {
       if (!currentPrefix.isEmpty()) {
@@ -809,9 +872,12 @@ public class PiSDFToSingleRate extends PiMMSwitch<Boolean> {
     setterFifo.setTargetPort(setPort);
     setPort.setExpression(setterFifo.getSourcePort().getPortRateExpression().getExpressionAsString());
     // 1.1.2 Setting the BRV value
-    Long brvSetter = this.brv.get(setterFifo.getSourcePort().getContainingActor());
-    if (brvSetter == null) {
-      brvSetter = (long) 1;
+    final AbstractActor srcContainingActor = setterFifo.getSourcePort().getContainingActor();
+    final long brvSetter;
+    if (this.brv.containsKey(srcContainingActor)) {
+      brvSetter = this.brv.get(srcContainingActor);
+    } else {
+      brvSetter = 1L;
     }
     this.brv.put(setterActor, brvSetter);
     // 1.2 Now we do the getter actor
@@ -826,9 +892,12 @@ public class PiSDFToSingleRate extends PiMMSwitch<Boolean> {
     getterFifo.setSourcePort(getPort);
     getPort.setExpression(getterFifo.getTargetPort().getPortRateExpression().getExpressionAsString());
     // 1.2.2 Setting the BRV value
-    Long brvGetter = this.brv.get(getterFifo.getTargetPort().getContainingActor());
-    if (brvGetter == null) {
-      brvGetter = (long) 1;
+    final AbstractActor tgtContainingActor = getterFifo.getTargetPort().getContainingActor();
+    final long brvGetter;
+    if (this.brv.containsKey(tgtContainingActor)) {
+      brvGetter = this.brv.get(tgtContainingActor);
+    } else {
+      brvGetter = 1L;
     }
     this.brv.put(getterActor, brvGetter);
     // 2 We remove the old actor and add the new ones

@@ -1,7 +1,7 @@
 /**
- * Copyright or © or Copr. IETR/INSA - Rennes (2008 - 2018) :
+ * Copyright or © or Copr. IETR/INSA - Rennes (2008 - 2019) :
  *
- * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017 - 2018)
+ * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017 - 2019)
  * Clément Guy <clement.guy@insa-rennes.fr> (2014 - 2015)
  * Daniel Madroñal <daniel.madronal@upm.es> (2018)
  * Jonathan Piat <jpiat@laas.fr> (2008 - 2011)
@@ -145,7 +145,9 @@ public class ScenarioParser {
       // parse using builder to get DOM representation of the XML file
       this.dom = db.parse(file.getContents());
     } catch (final ParserConfigurationException | SAXException | IOException | CoreException e) {
-      e.printStackTrace();
+
+      PreesmLogger.getLogger().log(Level.WARNING, "Could not parse file: " + e.getMessage(), e);
+      return null;
     }
 
     if (this.dom != null) {
@@ -442,7 +444,7 @@ public class ScenarioParser {
    * @throws CoreException
    *           the core exception
    */
-  private void parseFileNames(final Element filesElt) throws CoreException {
+  private void parseFileNames(final Element filesElt) {
 
     Node node = filesElt.getFirstChild();
 
@@ -463,7 +465,7 @@ public class ScenarioParser {
                 this.algoPi = getPiGraph();
               }
             } catch (final Exception e) {
-              throw new PreesmException("Could not parse the algorithm: " + e.getMessage(), e);
+              PreesmLogger.getLogger().log(Level.WARNING, "Could not parse the algorithm: " + e.getMessage(), e);
             }
           } else if (type.equals("architecture")) {
             try {
@@ -522,7 +524,7 @@ public class ScenarioParser {
    */
   public static Design parseSlamDesign(final String url) {
 
-    final Design slamDesign;
+    Design slamDesign = null;
     final ResourceSet resourceSet = new ResourceSetImpl();
 
     final URI uri = URI.createPlatformResourceURI(url, true);
@@ -534,8 +536,8 @@ public class ScenarioParser {
       ressource = resourceSet.getResource(uri, true);
       slamDesign = (Design) (ressource.getContents().get(0));
     } catch (final WrappedException e) {
-      throw new PreesmException(
-          "The architecture file \"" + uri + "\" specified by the scenario does not exist any more.", e);
+      final String message = "The algorithm file \"" + uri + "\" specified by the scenario does not exist any more.";
+      PreesmLogger.getLogger().log(Level.WARNING, message);
     }
 
     return slamDesign;

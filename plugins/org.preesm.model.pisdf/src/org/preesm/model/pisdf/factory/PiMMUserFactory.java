@@ -1,8 +1,8 @@
 /**
- * Copyright or © or Copr. IETR/INSA - Rennes (2017 - 2018) :
+ * Copyright or © or Copr. IETR/INSA - Rennes (2017 - 2019) :
  *
  * Alexandre Honorat <ahonorat@insa-rennes.fr> (2018)
- * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017 - 2018)
+ * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017 - 2019)
  * Florian Arrestier <florian.arrestier@insa-rennes.fr> (2018)
  *
  * This software is a computer program whose purpose is to help prototyping
@@ -107,9 +107,17 @@ public final class PiMMUserFactory extends PiMMFactoryImpl implements PreesmUser
 
   @Override
   public Parameter createParameter() {
+    return createParameter(null, 0);
+  }
+
+  /**
+   *
+   */
+  public Parameter createParameter(final String name, final long evaluate) {
     final Parameter createParameter = super.createParameter();
-    final Expression createExpression = createExpression();
+    final Expression createExpression = createExpression(evaluate);
     createParameter.setExpression(createExpression);
+    createParameter.setName(name);
     return createParameter;
   }
 

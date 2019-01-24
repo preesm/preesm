@@ -1,7 +1,7 @@
 /**
- * Copyright or © or Copr. IETR/INSA - Rennes (2018) :
+ * Copyright or © or Copr. IETR/INSA - Rennes (2018 - 2019) :
  *
- * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2018)
+ * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2018 - 2019)
  *
  * This software is a computer program whose purpose is to help prototyping
  * parallel applications using dataflow formalism.
@@ -161,7 +161,13 @@ public class PiGraphConsistenceChecker extends PiMMSwitch<Boolean> {
     } else {
 
       if (!(containingConfigurable instanceof PiGraph)) {
-        properTarget = containingConfigurable.getContainingPiGraph() == this.graphStack.peek();
+        final PiGraph peek = this.graphStack.peek();
+        final PiGraph containingPiGraph = containingConfigurable.getContainingPiGraph();
+        properTarget = containingPiGraph == peek;
+        if (!properTarget) {
+          error("Dependency [%s] getter [%s] is contained in an actor that is not part of the graph.", dependency,
+              getter);
+        }
       }
     }
     return setterok && getterContained && properTarget;

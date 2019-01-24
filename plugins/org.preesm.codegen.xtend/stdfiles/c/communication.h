@@ -1,7 +1,7 @@
 /**
- * Copyright or © or Copr. IETR/INSA - Rennes (2017 - 2018) :
+ * Copyright or © or Copr. IETR/INSA - Rennes (2017 - 2019) :
  *
- * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017 - 2018)
+ * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017 - 2019)
  * Florian Arrestier <florian.arrestier@insa-rennes.fr> (2018)
  * Julien Hascoet <jhascoet@kalray.eu> (2017)
  *
@@ -67,7 +67,7 @@ struct rk_sema {
 };
 
 
-static inline void rk_sema_init(struct rk_sema *s, int value) {
+static void rk_sema_init(struct rk_sema *s, int value) {
 #ifdef __APPLE__
     dispatch_semaphore_t *sem = &s->sem;
     *sem = dispatch_semaphore_create(value);
@@ -76,7 +76,7 @@ static inline void rk_sema_init(struct rk_sema *s, int value) {
 #endif
 }
 
-static inline void rk_sema_wait(struct rk_sema *s) {
+static void rk_sema_wait(struct rk_sema *s) {
 #ifdef __APPLE__
     dispatch_semaphore_wait(s->sem, DISPATCH_TIME_FOREVER);
 #else
@@ -87,7 +87,7 @@ static inline void rk_sema_wait(struct rk_sema *s) {
 #endif
 }
 
-static inline void rk_sema_post(struct rk_sema *s) {
+static void rk_sema_post(struct rk_sema *s) {
 #ifdef __APPLE__
     dispatch_semaphore_signal(s->sem);
 #else

@@ -1,6 +1,30 @@
 PREESM Changelog
 ================
 
+## Release version 3.2.0
+*2019.01.24*
+
+### New Feature
+* Add context menu in PiSDF editor to compute the BRV;
+* Add context menu in PiSDF editor to compute the SRDAG;
+
+### Changes
+* Update release system to support Eclipse 4.10;
+  * Keep RCPTT disabled until new release supports 4.10+;
+* Fix PiSDF UI:
+  * Disable exception throwing at write/parse time when the PiSDF is not consistent in order to enable non-finished design to be saved;
+  * Fix dependencies to enable copy/rename refactoring;
+  * Fix filters/Add error handling to avoid exceptions when editing algos;
+* Fix Scenario parsing: do not fail when graph/archi is not valid;
+* Fix PiSDF single rate transformation
+  * properly remove dependencies during optimizations;
+  * rename parameters with graph prefix;
+  * instantiate parameters only when used;
+
+### Bug fix
+* Fix #99 : Add code generation path check;
+* Fix #103: Remove inline directive to enforce comptatiblity with most C compilers;
+
 ## Release version 3.1.3
 *2018.12.19*
 

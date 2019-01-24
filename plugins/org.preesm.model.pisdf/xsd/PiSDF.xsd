@@ -1,9 +1,9 @@
 <!--
 
-    Copyright or © or Copr. IETR/INSA - Rennes (2018) :
+    Copyright or © or Copr. IETR/INSA - Rennes (2018 - 2019) :
 
     Alexandre Honorat <ahonorat@insa-rennes.fr> (2018)
-Antoine Morvan <antoine.morvan@insa-rennes.fr> (2018)
+Antoine Morvan <antoine.morvan@insa-rennes.fr> (2018 - 2019)
 
     This software is a computer program whose purpose is to help prototyping
     parallel applications using dataflow formalism.
@@ -85,6 +85,7 @@ Antoine Morvan <antoine.morvan@insa-rennes.fr> (2018)
       <xs:attribute type="xs:string" name="setter" use="optional" />
       <xs:attribute type="xs:string" name="level" use="optional" />
       <xs:attribute type="xs:string" name="period" use="optional" />
+      <xs:attribute type="xs:string" name="init_end_ref" use="optional" />
    </xs:complexType>
 
    <xs:complexType name="Port">

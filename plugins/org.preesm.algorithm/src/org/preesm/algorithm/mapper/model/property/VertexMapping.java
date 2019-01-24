@@ -1,7 +1,7 @@
 /**
- * Copyright or © or Copr. IETR/INSA - Rennes (2008 - 2018) :
+ * Copyright or © or Copr. IETR/INSA - Rennes (2008 - 2019) :
  *
- * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017 - 2018)
+ * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017 - 2019)
  * Clément Guy <clement.guy@insa-rennes.fr> (2014)
  * Matthieu Wipliez <matthieu.wipliez@insa-rennes.fr> (2008)
  * Maxime Pelcat <maxime.pelcat@insa-rennes.fr> (2008 - 2014)
@@ -95,9 +95,8 @@ public class VertexMapping extends GroupProperty {
     // Gets all vertices corresponding to the relative constraint group
     final List<MapperDAGVertex> relatedVertices = getVertices(dag);
 
-    if (relatedVertices.size() < 1) {
+    if (relatedVertices.isEmpty()) {
       PreesmLogger.getLogger().log(Level.SEVERE, "Relative constraint with no vertex.");
-
       return operators;
     }
 
@@ -138,7 +137,6 @@ public class VertexMapping extends GroupProperty {
    */
   @Override
   public String toString() {
-    // TODO Auto-generated method stub
     return "<" + super.toString() + ">";
   }
 

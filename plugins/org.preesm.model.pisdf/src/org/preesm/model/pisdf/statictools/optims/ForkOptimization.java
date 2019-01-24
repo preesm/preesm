@@ -1,7 +1,7 @@
 /**
- * Copyright or © or Copr. IETR/INSA - Rennes (2018) :
+ * Copyright or © or Copr. IETR/INSA - Rennes (2018 - 2019) :
  *
- * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2018)
+ * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2018 - 2019)
  * Florian Arrestier <florian.arrestier@insa-rennes.fr> (2018)
  *
  * This software is a computer program whose purpose is to help prototyping
@@ -34,15 +34,19 @@
  * knowledge of the CeCILL license and that you accept its terms.
  */
 /**
- * 
+ *
  */
 package org.preesm.model.pisdf.statictools.optims;
 
 import org.preesm.model.pisdf.AbstractActor;
+import org.preesm.model.pisdf.ConfigInputPort;
 import org.preesm.model.pisdf.DataInputPort;
 import org.preesm.model.pisdf.DataOutputPort;
+import org.preesm.model.pisdf.Dependency;
 import org.preesm.model.pisdf.Fifo;
 import org.preesm.model.pisdf.ForkActor;
+import org.preesm.model.pisdf.ISetter;
+import org.preesm.model.pisdf.Parameter;
 import org.preesm.model.pisdf.PiGraph;
 
 /**
@@ -53,20 +57,20 @@ public class ForkOptimization extends AbstractPiGraphSpecialActorRemover<DataOut
 
   /**
    * Remove the Broadcast or Fork -> Fork connections
-   * 
+   *
    * <pre>
-   *               | F | -> out_0 
+   *               | F | -> out_0
    * | BR | -> out |   | -> out_1
-   * 
+   *
    * becomes  | BR | -> out_0
    *          |    | -> out_1
    * </pre>
-   * 
+   *
    * @param graph
    *          the graph
    * @param actor
    *          the broadcast or fork actor to evaluate
-   * 
+   *
    * @return true if at least one ForkActor has been removed, false else
    */
   @Override
@@ -81,6 +85,15 @@ public class ForkOptimization extends AbstractPiGraphSpecialActorRemover<DataOut
       if (targetActor instanceof ForkActor) {
         fillRemoveAndReplace(actor.getDataOutputPorts(), targetActor.getDataOutputPorts(), dop);
         removeActorAndFifo(graph, outgoingFifo, targetActor);
+      }
+    }
+    for (final ConfigInputPort cip : actor.getConfigInputPorts()) {
+      final Dependency incomingDependency = cip.getIncomingDependency();
+      graph.getEdges().remove(incomingDependency);
+      final ISetter setter = incomingDependency.getSetter();
+      setter.getOutgoingDependencies().remove(incomingDependency);
+      if (setter instanceof Parameter && setter.getOutgoingDependencies().isEmpty()) {
+        graph.getVertices().remove((Parameter) setter);
       }
     }
     if (!removeAndReplace(actor.getDataOutputPorts())) {

@@ -52,6 +52,7 @@ import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.ide.IDE;
 import org.preesm.model.pisdf.Actor;
+import org.preesm.model.pisdf.Refinement;
 
 // TODO: Auto-generated Javadoc
 /**
@@ -91,7 +92,8 @@ public class OpenRefinementFeature extends AbstractCustomFeature {
       final Object bo = getBusinessObjectForPictogramElement(pes[0]);
       if (bo instanceof Actor) {
         // Check if the actor has a valid refinement
-        if (((Actor) bo).getRefinement().getFilePath() != null) {
+        final Refinement refinement = ((Actor) bo).getRefinement();
+        if (refinement != null && refinement.getFilePath() != null) {
           return true;
         }
       }

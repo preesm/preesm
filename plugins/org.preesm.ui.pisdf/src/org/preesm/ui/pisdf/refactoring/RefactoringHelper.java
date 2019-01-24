@@ -46,6 +46,7 @@ import org.eclipse.core.runtime.CoreException;
 import org.eclipse.ltk.core.refactoring.TextFileChange;
 import org.eclipse.text.edits.MultiTextEdit;
 import org.eclipse.text.edits.ReplaceEdit;
+import org.preesm.commons.exceptions.PreesmException;
 
 /**
  * The Class RefactoringHelper.
@@ -86,7 +87,7 @@ public class RefactoringHelper {
       }
       reader.close();
     } catch (final IOException e) {
-      throw new RuntimeException(e);
+      throw new PreesmException(e);
     }
 
     final TextFileChange change = new TextFileChange(file.getName(), file);

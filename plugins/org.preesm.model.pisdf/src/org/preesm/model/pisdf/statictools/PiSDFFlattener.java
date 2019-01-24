@@ -1,8 +1,8 @@
 /**
- * Copyright or © or Copr. IETR/INSA - Rennes (2018) :
+ * Copyright or © or Copr. IETR/INSA - Rennes (2018 - 2019) :
  *
  * Alexandre Honorat <ahonorat@insa-rennes.fr> (2018)
- * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2018)
+ * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2018 - 2019)
  * Florian Arrestier <florian.arrestier@insa-rennes.fr> (2018)
  *
  * This software is a computer program whose purpose is to help prototyping
@@ -185,29 +185,6 @@ public class PiSDFFlattener extends PiMMSwitch<Boolean> {
   /**
    *
    */
-  public static void instantiateParameters(final AbstractActor actor, final AbstractActor copyActor,
-      final PiGraph resultPiGraph) {
-    // // Copy parameters
-    for (final Parameter p : actor.getInputParameters()) {
-
-      final List<ConfigInputPort> ports = actor.lookupConfigInputPortsConnectedWithParameter(p);
-      for (ConfigInputPort port : ports) {
-        final ConfigInputPort cip = (ConfigInputPort) copyActor.lookupPort(port.getName());
-        if (cip != null) {
-          final Parameter copy = PiMMUserFactory.instance.copyWithHistory(p);
-          final Dependency dep = PiMMUserFactory.instance.createDependency();
-          dep.setSetter(copy);
-          cip.setIncomingDependency(dep);
-          resultPiGraph.addDependency(dep);
-          resultPiGraph.addParameter(copy);
-        }
-      }
-    }
-  }
-
-  /**
-   *
-   */
   private void instantiateDependencies(final AbstractActor actor, final AbstractActor copyActor) {
     // // Copy parameters
 
@@ -228,19 +205,6 @@ public class PiSDFFlattener extends PiMMSwitch<Boolean> {
       }
     }
 
-    // for (final Parameter p : actor.getInputParameters()) {
-    //
-    // final EList<ConfigInputPort> ports = actor.lookupConfigInputPortsConnectedWithParameter(p);
-    // for (ConfigInputPort port : ports) {
-    // final ConfigInputPort cip = (ConfigInputPort) copyActor.lookupPort(port.getName());
-    // if (cip != null) {
-    // final Parameter parameter = this.param2param.get(p);
-    // final Dependency dep = PiMMUserFactory.instance.createDependency();
-    // dep.setSetter(parameter);
-    // cip.setIncomingDependency(dep);
-    // }
-    // }
-    // }
   }
 
   @Override
