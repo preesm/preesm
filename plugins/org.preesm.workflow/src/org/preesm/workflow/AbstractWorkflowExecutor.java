@@ -231,6 +231,9 @@ public abstract class AbstractWorkflowExecutor {
   public boolean execute(final String workflowPath, final String scenarioPath, final IProgressMonitor monitor) {
 
     final Workflow workflow = new WorkflowParser().parse(workflowPath);
+
+    this.logger.setLevel(workflow.getOutputLevel());
+
     refreshProject(workflow.getProjectName(), monitor, "Warning: Could not refresh project before workflow execution");
 
     // Initializing the workflow console
@@ -463,9 +466,9 @@ public abstract class AbstractWorkflowExecutor {
           if (!currentOutputType.isInstance(outputValue)) {
             // Type is wrong !
             final String givenType = outputValue.getClass().getName();
-            throw new PreesmException("\nOutput \"" + outputName + "\" of workflow task \""
-                + currentTaskNode.getClass() + "\" is null or has an invalid type.\n(expected: \"" + expectedOutputType
-                + "\" given: \"" + givenType + "\")");
+            throw new PreesmException("\nOutput \"" + outputName + "\" of workflow task \"" + currentTaskNode.getClass()
+                + "\" is null or has an invalid type.\n(expected: \"" + expectedOutputType + "\" given: \"" + givenType
+                + "\")");
           }
         }
       } catch (final Exception ex) {
