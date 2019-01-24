@@ -5,7 +5,8 @@ PREESM Changelog
 *XXXX.XX.XX*
 
 ### New Feature
-* Add workflow parameters to control log level;
+* Add workflow parameters 'Verbose Level' to control log level;
+* Add workflow parameters 'Error on Warning' to fail and stop execution on warning or severe log entry;
 
 ### Changes
 
