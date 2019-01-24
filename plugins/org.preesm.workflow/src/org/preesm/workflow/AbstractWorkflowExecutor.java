@@ -39,6 +39,7 @@ import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Optional;
 import java.util.Set;
 import java.util.logging.Handler;
 import java.util.logging.Level;
@@ -241,7 +242,7 @@ public abstract class AbstractWorkflowExecutor {
 
     // read and apply workflow parameters
     final Handler eowHandler = addEOWHandler(workflow);
-    final Level oldLevel = this.logger.getLevel();
+    final Level oldLevel = Optional.ofNullable(this.logger.getLevel()).orElse(Level.INFO);
     this.logger.setLevel(workflow.getOutputLevel());
     WorkspaceUtils.updateWorkspace();
 
