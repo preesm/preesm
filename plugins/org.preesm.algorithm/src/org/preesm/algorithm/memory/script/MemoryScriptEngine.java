@@ -200,7 +200,7 @@ public class MemoryScriptEngine {
           if ((buffer.matched != null) && (buffer.matched.size() > 1)) {
             final String message = "Buffer " + buffer
                 + " was divided and will be replaced by a NULL pointer in the generated code.";
-            this.logger.log(Level.WARNING, message);
+            this.logger.log(Level.INFO, message);
           }
         }
       }
