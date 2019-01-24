@@ -53,6 +53,16 @@
             name="Architecture Project"
             project="true">
       </wizard>
+      <wizard canFinishEarly="false"
+         category="org.ietr.preesm.category"
+         class="org.preesm.ui.slam.NewSlamFileWizard"
+         hasPages="true" icon="icons/graphiti.gif"
+         id="net.sf.dftools.ui.slam.NewSlamFileWizard"
+         name="S-LAM Architecture" project="false">
+         <description>
+            Create a new S-LAM architecture description file
+         </description>
+      </wizard>
    </extension>
 
 
@@ -69,6 +79,11 @@
             category="org.ietr.dftools.graphiti.ui.properties.category.graph"
             id="net.sf.dftools.ui.slam.design.parameters"
             label="Design Parameters">
+         </propertyTab>
+         <propertyTab
+               category="org.ietr.dftools.graphiti.ui.properties.category.vertex"
+               id="org.ietr.dftools.architecture.ui.properties.tab.vertex.parameters"
+               label="Component instance parameters">
          </propertyTab>
       </propertyTabs>
    </extension>
@@ -90,17 +105,6 @@
       </editor>
    </extension>
    <extension
-         point="org.eclipse.ui.views.properties.tabbed.propertyTabs">
-      <propertyTabs
-            contributorId="org.ietr.dftools.graphiti.ui.properties.contributor">
-         <propertyTab
-               category="org.ietr.dftools.graphiti.ui.properties.category.vertex"
-               id="org.ietr.dftools.architecture.ui.properties.tab.vertex.parameters"
-               label="Component instance parameters">
-         </propertyTab>
-      </propertyTabs>
-   </extension>
-   <extension
          point="org.eclipse.ui.views.properties.tabbed.propertySections">
       <propertySections
             contributorId="org.ietr.dftools.graphiti.ui.properties.contributor">
@@ -110,26 +114,6 @@
                id="org.ietr.dftools.architecture.ui.properties.section.vertex.parameters"
                tab="org.ietr.dftools.architecture.ui.properties.tab.vertex.parameters">
          </propertySection>
-      </propertySections>
-   </extension>
-
-   <extension point="org.eclipse.ui.newWizards">
-      <wizard canFinishEarly="false"
-         category="org.ietr.preesm.category"
-         class="org.preesm.ui.slam.NewSlamFileWizard"
-         hasPages="true" icon="icons/graphiti.gif"
-         id="net.sf.dftools.ui.slam.NewSlamFileWizard"
-         name="S-LAM Architecture" project="false">
-         <description>
-            Create a new S-LAM architecture description file
-         </description>
-      </wizard>
-   </extension>
-
-   <extension
-      point="org.eclipse.ui.views.properties.tabbed.propertySections">
-      <propertySections
-         contributorId="org.ietr.dftools.graphiti.ui.properties.contributor">
          <propertySection
             class="org.preesm.ui.slam.properties.SlamComponentVariablesMapSection"
             filter="org.preesm.ui.slam.filters.SlamComponentFilter"
@@ -144,7 +128,6 @@
          </propertySection>
       </propertySections>
    </extension>
-
 
    <extension point="graphiti.definition">
       <configuration extension="slam" name="S-LAM Design"
