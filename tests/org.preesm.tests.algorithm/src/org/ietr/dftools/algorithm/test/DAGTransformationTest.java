@@ -47,6 +47,7 @@ import org.preesm.algorithm.model.factories.DAGVertexFactory;
 import org.preesm.algorithm.model.sdf.SDFGraph;
 import org.preesm.algorithm.model.sdf.visitors.DAGTransformation;
 import org.preesm.commons.exceptions.PreesmException;
+import org.preesm.commons.exceptions.PreesmRuntimeException;
 
 /**
  */
@@ -63,14 +64,14 @@ public class DAGTransformationTest {
     try {
       demoGraph = importer.parse(new File("resources/flatten.graphml"));
     } catch (PreesmException | FileNotFoundException e) {
-      throw new PreesmException("Could not read test file", e);
+      throw new PreesmRuntimeException("Could not read test file", e);
     }
     final DAGTransformation<DirectedAcyclicGraph> dageur = new DAGTransformation<>(new DirectedAcyclicGraph(),
         DAGVertexFactory.getInstance());
     try {
       demoGraph.accept(dageur);
     } catch (final PreesmException e) {
-      throw new PreesmException("Could not transform sdf to dag", e);
+      throw new PreesmRuntimeException("Could not transform sdf to dag", e);
     }
     final DirectedAcyclicGraph dag = dageur.getOutput();
     final CycleDetector<DAGVertex, DAGEdge> detectCycles = new CycleDetector<>(dag);

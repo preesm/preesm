@@ -58,7 +58,7 @@ import org.eclipse.jface.viewers.TreeSelection;
 import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.IWorkbenchPage;
 import org.eclipse.ui.PlatformUI;
-import org.preesm.commons.exceptions.PreesmException;
+import org.preesm.commons.exceptions.PreesmRuntimeException;
 import org.preesm.commons.files.ContainersManager;
 import org.preesm.commons.files.PathTools;
 import org.preesm.commons.files.WorkspaceUtils;
@@ -151,7 +151,7 @@ public class PiSDFSRDAGComputePopup extends AbstractHandler {
         xmlPath = xmlPath.append(srdag.getName() + "_srdag.pi");
       }
     } catch (CoreException | IllegalArgumentException e) {
-      throw new PreesmException("Path " + sXmlPath + " is not a valid path for export.\n" + e.getMessage());
+      throw new PreesmRuntimeException("Path " + sXmlPath + " is not a valid path for export.\n" + e.getMessage());
     }
 
     final URI uri = URI.createPlatformResourceURI(xmlPath.toString(), true);
@@ -163,7 +163,7 @@ public class PiSDFSRDAGComputePopup extends AbstractHandler {
       // Write the Graph to the OutputStream using the Pi format
       new PiWriter(uri).write(srdag, outStream);
     } catch (IOException e) {
-      throw new PreesmException("Could not open outputstream file " + xmlPath.toString());
+      throw new PreesmRuntimeException("Could not open outputstream file " + xmlPath.toString());
     }
 
     WorkspaceUtils.updateWorkspace();

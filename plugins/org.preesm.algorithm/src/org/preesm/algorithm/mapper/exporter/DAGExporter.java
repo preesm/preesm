@@ -62,7 +62,7 @@ import org.preesm.algorithm.model.sdf.esdf.SDFEndVertex;
 import org.preesm.algorithm.model.sdf.esdf.SDFForkVertex;
 import org.preesm.algorithm.model.sdf.esdf.SDFInitVertex;
 import org.preesm.algorithm.model.sdf.esdf.SDFJoinVertex;
-import org.preesm.commons.exceptions.PreesmException;
+import org.preesm.commons.exceptions.PreesmRuntimeException;
 import org.w3c.dom.Element;
 
 /**
@@ -226,7 +226,7 @@ public class DAGExporter extends GMLExporter<DAGVertex, DAGEdge> {
       exportGraph(graph);
       transform(out);
     } catch (final IOException e) {
-      throw new PreesmException(e);
+      throw new PreesmRuntimeException(e);
     }
   }
 
@@ -262,7 +262,7 @@ public class DAGExporter extends GMLExporter<DAGVertex, DAGEdge> {
       export(clone, iGraphMLFile.getLocation().toOSString());
     } else {
       final String msg = "The output file " + path + " can not be written.";
-      throw new PreesmException(msg);
+      throw new PreesmRuntimeException(msg);
     }
   }
 

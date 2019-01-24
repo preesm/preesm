@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <xsl:stylesheet xmlns:dftools="http://net.sf.dftools"
     xmlns:xsl="http://www.w3.org/1999/XSL/Transform" version="2.0">
-    
+
     <xsl:import href="output_layout.xslt"/>
 
     <xsl:output indent="yes" method="xml"/>
@@ -15,13 +15,17 @@
 
     <!-- Top-level: graph -> preesm:workflow -->
     <xsl:template match="graph">
-        
+
         <!-- layout information -->
         <xsl:result-document href="file:///{$file}" method="xml" indent="yes">
             <xsl:call-template name="setLayout"/>
         </xsl:result-document>
 
         <dftools:workflow>
+
+            <xsl:attribute name="verboseLevel" select="parameters/parameter[@name = 'Verbose Level']/@value"/>
+            <xsl:attribute name="errorOnWarning" select="parameters/parameter[@name = 'Error on Warning']/@value"/>
+
             <xsl:if test="not(empty(vertices/vertex[@type = 'Algorithm source']))">
                 <dftools:algorithm/>
             </xsl:if>
@@ -29,7 +33,7 @@
             <xsl:if test="not(empty(vertices/vertex[@type = 'Architecture source']))">
                 <dftools:architecture/>
             </xsl:if>
-            
+
             <xsl:apply-templates select="vertices/vertex[@type = 'Scenario source']"/>
             <xsl:apply-templates select="vertices/vertex[@type = 'Task']"/>
             <xsl:apply-templates select="edges/edge"/>
@@ -43,7 +47,7 @@
                 select="parameters/parameter[@name = 'plugin identifier']/@value"/>
         </dftools:scenario>
     </xsl:template>
-    
+
     <!-- tasks -->
     <xsl:template match="vertex[@type = 'Task']">
         <dftools:task>
@@ -56,7 +60,7 @@
             </dftools:data>
         </dftools:task>
     </xsl:template>
-    
+
     <!-- variable -->
     <xsl:template match="entry">
         <xsl:element name="dftools:variable">

@@ -38,7 +38,7 @@ package org.preesm.algorithm.model.types;
 import org.preesm.algorithm.model.AbstractEdgePropertyType;
 import org.preesm.algorithm.model.parameters.IExpressionSolver;
 import org.preesm.algorithm.model.parameters.Value;
-import org.preesm.commons.exceptions.PreesmException;
+import org.preesm.commons.exceptions.PreesmRuntimeException;
 import org.preesm.commons.math.ExpressionEvaluationException;
 
 /**
@@ -122,7 +122,7 @@ public class ExpressionEdgePropertyType extends AbstractEdgePropertyType<Value> 
         this.computedValue = this.value.longValue();
         return this.computedValue;
       } catch (final ExpressionEvaluationException e) {
-        throw new PreesmException("Could not evaluate expression", e);
+        throw new PreesmRuntimeException("Could not evaluate expression", e);
       }
     }
     return this.computedValue;

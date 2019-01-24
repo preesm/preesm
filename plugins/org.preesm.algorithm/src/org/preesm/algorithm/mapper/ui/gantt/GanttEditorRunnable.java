@@ -41,7 +41,7 @@ import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.PlatformUI;
 import org.preesm.algorithm.mapper.gantt.GanttData;
-import org.preesm.commons.exceptions.PreesmException;
+import org.preesm.commons.exceptions.PreesmRuntimeException;
 
 /**
  * Class used by the editor displaying the gantt chart. Useful to run editor in display thread.
@@ -96,7 +96,7 @@ public class GanttEditorRunnable implements Runnable {
         page.openEditor(this.input, GanttEditor.ID, false);
 
       } catch (final PartInitException e) {
-        throw new PreesmException(e);
+        throw new PreesmRuntimeException(e);
       }
     }
   }

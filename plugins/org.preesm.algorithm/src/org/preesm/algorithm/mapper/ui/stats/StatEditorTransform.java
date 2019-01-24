@@ -76,8 +76,8 @@ public class StatEditorTransform extends AbstractTaskImplementation {
       // Run statistic editor
       PlatformUI.getWorkbench().getDisplay().asyncExec(new EditorRunnable(input));
     } catch (final IllegalStateException e) {
-      PreesmLogger.getLogger().log(Level.WARNING, "Gantt display is impossible in this context."
-          + " Ignore this warning if you are running the command line version of Preesm.");
+      PreesmLogger.getLogger().log(Level.INFO, "Gantt display is impossible in this context."
+          + " Ignore this log entry if you are running the command line version of Preesm.");
     }
 
     return new LinkedHashMap<>();

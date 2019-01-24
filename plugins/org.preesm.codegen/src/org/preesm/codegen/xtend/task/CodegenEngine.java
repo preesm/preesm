@@ -75,6 +75,7 @@ import org.preesm.codegen.model.Block;
 import org.preesm.codegen.model.CoreBlock;
 import org.preesm.codegen.printer.CodegenAbstractPrinter;
 import org.preesm.commons.exceptions.PreesmException;
+import org.preesm.commons.exceptions.PreesmRuntimeException;
 import org.preesm.commons.logger.PreesmLogger;
 import org.preesm.model.scenario.PreesmScenario;
 import org.preesm.model.slam.Design;
@@ -217,11 +218,11 @@ public class CodegenEngine {
           }
           blocks.add(b);
         } else {
-          throw new PreesmException(
+          throw new PreesmRuntimeException(
               "Could not find a printer for language \"" + selectedPrinter + "\" and core type \"" + coreType + "\".");
         }
       } else {
-        throw new PreesmException("Only CoreBlock CodeBlocks can be printed in the current version of Preesm.");
+        throw new PreesmRuntimeException("Only CoreBlock CodeBlocks can be printed in the current version of Preesm.");
       }
     }
   }
@@ -245,7 +246,7 @@ public class CodegenEngine {
       try {
         printer = (CodegenAbstractPrinter) printerAndBlocks.getKey().createExecutableExtension("class");
       } catch (final CoreException e) {
-        throw new PreesmException(e.getMessage(), e);
+        throw new PreesmRuntimeException(e.getMessage(), e);
       }
 
       // Erase previous files with extension
@@ -257,12 +258,12 @@ public class CodegenEngine {
         try {
           f = workspace.getRoot().getFolder(new Path(this.codegenPath));
         } catch (final Exception e) {
-          throw new PreesmException(
+          throw new PreesmRuntimeException(
               "Could not access code generation target path folder. Please check its value in the scenario.", e);
         }
         final IPath rawLocation = f.getRawLocation();
         if (rawLocation == null) {
-          throw new PreesmException("Could not find target project for given path [" + this.codegenPath
+          throw new PreesmRuntimeException("Could not find target project for given path [" + this.codegenPath
               + "]. Please change path in the scenario editor.");
         }
         final String osString = rawLocation.toOSString();
@@ -290,8 +291,8 @@ public class CodegenEngine {
           }
         }
       } catch (CoreException | FileNotFoundException e) {
-        throw new PreesmException("Could not access target directory [" + this.codegenPath + "] during code generation",
-            e);
+        throw new PreesmRuntimeException(
+            "Could not access target directory [" + this.codegenPath + "] during code generation", e);
       }
 
       // initialize printer engine
@@ -351,7 +352,7 @@ public class CodegenEngine {
           new NullProgressMonitor());
 
     } catch (final CoreException ex) {
-      throw new PreesmException("Could not generated source file for " + fileName, ex);
+      throw new PreesmRuntimeException("Could not generated source file for " + fileName, ex);
     }
   }
 }

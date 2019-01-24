@@ -58,12 +58,6 @@ import org.preesm.workflow.implement.AbstractWorkflowNodeImplementation;
  */
 public class SDF2DAGTransformation extends AbstractTaskImplementation {
 
-  /*
-   * (non-Javadoc)
-   *
-   * @see org.ietr.dftools.workflow.implement.AbstractTaskImplementation#execute(java.util.Map, java.util.Map,
-   * org.eclipse.core.runtime.IProgressMonitor, java.lang.String, org.ietr.dftools.workflow.elements.Workflow)
-   */
   @Override
   public Map<String, Object> execute(final Map<String, Object> inputs, final Map<String, String> parameters,
       final IProgressMonitor monitor, final String nodeName, final Workflow workflow) throws PreesmException {
@@ -71,37 +65,19 @@ public class SDF2DAGTransformation extends AbstractTaskImplementation {
     final PreesmScenario scenario = (PreesmScenario) inputs.get(AbstractWorkflowNodeImplementation.KEY_SCENARIO);
     final Design architecture = (Design) inputs.get(AbstractWorkflowNodeImplementation.KEY_ARCHITECTURE);
 
-    final MapperDAG dag;
-    try {
-      dag = SdfToDagConverter.convert(algorithm, architecture, scenario);
-    } catch (final PreesmException e) {
-      throw (new PreesmException(e.getMessage()));
-    }
-    // TODO Auto-generated method stub
+    final MapperDAG dag = SdfToDagConverter.convert(algorithm, architecture, scenario);
     final Map<String, Object> outputs = new LinkedHashMap<>();
     outputs.put(AbstractWorkflowNodeImplementation.KEY_SDF_DAG, dag);
     return outputs;
   }
 
-  /*
-   * (non-Javadoc)
-   *
-   * @see org.ietr.dftools.workflow.implement.AbstractTaskImplementation#getDefaultParameters()
-   */
   @Override
   public Map<String, String> getDefaultParameters() {
-    // TODO Auto-generated method stub
     return null;
   }
 
-  /*
-   * (non-Javadoc)
-   *
-   * @see org.ietr.dftools.workflow.implement.AbstractWorkflowNodeImplementation#monitorMessage()
-   */
   @Override
   public String monitorMessage() {
-    // TODO Auto-generated method stub
     return null;
   }
 

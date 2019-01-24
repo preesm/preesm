@@ -57,7 +57,7 @@ import org.preesm.algorithm.model.sdf.transformations.SpecialActorPortsIndexer;
 import org.preesm.algorithm.model.sdf.visitors.SingleRateChecker;
 import org.preesm.algorithm.model.types.LongEdgePropertyType;
 import org.preesm.algorithm.model.types.StringEdgePropertyType;
-import org.preesm.commons.exceptions.PreesmException;
+import org.preesm.commons.exceptions.PreesmRuntimeException;
 
 /**
  * Class cleaning the useless join-fork pairs of vertices which may have been introduced by hierarchy flattening and
@@ -89,7 +89,7 @@ public class JoinForkCleaner {
     final SingleRateChecker srChecker = new SingleRateChecker();
     graph.accept(srChecker);
     if (!srChecker.isSingleRate()) {
-      throw new PreesmException("Cannot clean fork/join pairs in a non-single-rate graph.");
+      throw new PreesmRuntimeException("Cannot clean fork/join pairs in a non-single-rate graph.");
     }
 
     // Set of edges to remove from graph
@@ -446,7 +446,7 @@ public class JoinForkCleaner {
         if (nbDelays < addedDelays) {
           // kdesnos: I added this check, but it will most
           // probably never happen
-          throw new PreesmException("Insufficient delays on edge " + replacedEdge.getSource().getName() + "."
+          throw new PreesmRuntimeException("Insufficient delays on edge " + replacedEdge.getSource().getName() + "."
               + replacedEdge.getSourceInterface().getName() + "=>" + replacedEdge.getTarget().getName() + "."
               + replacedEdge.getTargetInterface().getName() + ". At least " + addedDelays + " delays missing.");
         }
@@ -486,7 +486,8 @@ public class JoinForkCleaner {
 
     // Make sure all ports are in order
     if (!SpecialActorPortsIndexer.checkIndexes(graph)) {
-      throw new PreesmException("There are still special actors with non-indexed ports. Contact Preesm developers.");
+      throw new PreesmRuntimeException(
+          "There are still special actors with non-indexed ports. Contact Preesm developers.");
     }
 
     SpecialActorPortsIndexer.sortIndexedPorts(graph);

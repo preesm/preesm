@@ -75,6 +75,7 @@ import org.preesm.algorithm.model.dag.DAGVertex;
 import org.preesm.algorithm.model.dag.edag.DAGInitVertex;
 import org.preesm.algorithm.model.iterators.TopologicalDAGIterator;
 import org.preesm.commons.exceptions.PreesmException;
+import org.preesm.commons.exceptions.PreesmRuntimeException;
 import org.preesm.commons.logger.PreesmLogger;
 import org.preesm.model.scenario.PreesmScenario;
 import org.preesm.model.slam.ComponentInstance;
@@ -523,7 +524,7 @@ public abstract class LatencyAbc {
       final String message = "Empty operator set for a vertex: " + vertex.getName()
           + ". Consider relaxing constraints in scenario.";
       PreesmLogger.getLogger().log(Level.SEVERE, message);
-      throw new PreesmException(message);
+      throw new PreesmRuntimeException(message);
     }
 
     return initOperators;
@@ -629,7 +630,7 @@ public abstract class LatencyAbc {
 
     if (internalVertex == null) {
       final String message = "No simulator internal vertex with id " + vertex.getName();
-      throw new PreesmException(message, new NullPointerException());
+      throw new PreesmRuntimeException(message, new NullPointerException());
     }
     return internalVertex;
   }

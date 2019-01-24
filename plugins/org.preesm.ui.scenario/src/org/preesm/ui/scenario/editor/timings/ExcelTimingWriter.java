@@ -58,6 +58,7 @@ import org.eclipse.ui.IWorkbench;
 import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.PlatformUI;
 import org.preesm.commons.exceptions.PreesmException;
+import org.preesm.commons.exceptions.PreesmFrameworkException;
 import org.preesm.model.pisdf.AbstractActor;
 import org.preesm.model.scenario.PreesmScenario;
 import org.preesm.model.scenario.Timing;
@@ -148,8 +149,7 @@ public class ExcelTimingWriter extends ExcelWriter {
    *           the core exception
    */
   @Override
-  protected void addCells(final WritableSheet sheet)
-      throws PreesmException, FileNotFoundException, CoreException {
+  protected void addCells(final WritableSheet sheet) throws PreesmException, FileNotFoundException, CoreException {
     if (sheet != null) {
 
       Integer maxOpAbscissa = 1;
@@ -160,7 +160,7 @@ public class ExcelTimingWriter extends ExcelWriter {
       final Set<String> vertexNames = new LinkedHashSet<>();
 
       if (this.scenario.isIBSDFScenario()) {
-        throw new PreesmException("IBSDF is not supported anymore");
+        throw new PreesmFrameworkException("IBSDF is not supported anymore");
       } else if (this.scenario.isPISDFScenario()) {
         final Set<AbstractActor> vSet = provider.getSortedPISDFVertices(this.scenario);
         for (final AbstractActor vertex : vSet) {

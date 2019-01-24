@@ -45,7 +45,7 @@ import org.preesm.algorithm.mapper.abc.order.VertexOrderList;
 import org.preesm.algorithm.mapper.model.MapperDAG;
 import org.preesm.algorithm.mapper.model.MapperDAGVertex;
 import org.preesm.algorithm.model.dag.DAGVertex;
-import org.preesm.commons.exceptions.PreesmException;
+import org.preesm.commons.exceptions.PreesmRuntimeException;
 
 // TODO: Auto-generated Javadoc
 /**
@@ -122,7 +122,7 @@ public class TopologicalTaskSched extends AbstractTaskSched {
 
       if (!this.initList.contains(v.getName())) {
         final String msg = "problem with topological ordering.";
-        throw new PreesmException(msg);
+        throw new PreesmRuntimeException(msg);
       }
     }
 

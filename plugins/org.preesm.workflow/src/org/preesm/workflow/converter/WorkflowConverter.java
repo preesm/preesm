@@ -46,7 +46,7 @@ import java.nio.file.Files;
 import javax.xml.transform.TransformerConfigurationException;
 import org.eclipse.core.runtime.Platform;
 import org.osgi.framework.Bundle;
-import org.preesm.commons.exceptions.PreesmException;
+import org.preesm.commons.exceptions.PreesmRuntimeException;
 import org.preesm.workflow.Activator;
 
 /**
@@ -82,7 +82,7 @@ public class WorkflowConverter {
             xsltTransfo.transformFileToFile(inputPath, outputPath);
           }
         } catch (final TransformerConfigurationException e) {
-          throw new PreesmException("Could not covnert workflow", e);
+          throw new PreesmRuntimeException("Could not convert workflow", e);
         } finally {
           Files.delete(createTempFile.toPath());
         }

@@ -42,7 +42,7 @@ import org.preesm.algorithm.model.AbstractGraph
 import org.preesm.algorithm.model.IInterface
 import org.preesm.algorithm.model.sdf.SDFAbstractVertex
 import org.preesm.algorithm.model.sdf.SDFGraph
-import org.preesm.commons.exceptions.PreesmException
+import org.preesm.commons.exceptions.PreesmRuntimeException
 
 /**
  * A special case of {@link SDFGraph} used to denote non-trivial initialization of FIFOs
@@ -79,7 +79,7 @@ class FifoActorGraph extends SDFGraph {
 					 AbstractEdgePropertyType<?> cons,
 					 AbstractEdgePropertyType<?> delay) {
 		if(delay.longValue > 0) {
-			throw new PreesmException("FIFO-Actor Graphs cannot have delay in their edges")
+			throw new PreesmRuntimeException("FIFO-Actor Graphs cannot have delay in their edges")
 		}
 		return super.addEdge(source, sourcePort, sink, sinkPort, prod, cons, delay)
 	}
@@ -99,7 +99,7 @@ class FifoActorGraph extends SDFGraph {
 					 AbstractEdgePropertyType<?> cons,
 					 AbstractEdgePropertyType<?> delay) {
 		if(delay.longValue > 0) {
-			throw new PreesmException("FIFO-Actor Graphs cannot have delay in their edges")
+			throw new PreesmRuntimeException("FIFO-Actor Graphs cannot have delay in their edges")
 		}
 		return super.addEdge(source, sink, prod, cons, delay)
 	}
@@ -114,7 +114,7 @@ class FifoActorGraph extends SDFGraph {
 			edge.delay.longValue == 0
 		]) {
 			val message = "Edges of FIFO Actor cannot have delays in them."
-			throw new PreesmException(message)
+			throw new PreesmRuntimeException(message)
 		}
 		return super.validateModel()
 	}

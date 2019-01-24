@@ -52,6 +52,7 @@ import org.preesm.algorithm.model.sdf.SDFAbstractVertex
 import org.preesm.algorithm.model.sdf.esdf.SDFForkVertex
 import org.preesm.algorithm.model.sdf.esdf.SDFJoinVertex
 import org.preesm.commons.exceptions.PreesmException
+import org.preesm.commons.exceptions.PreesmRuntimeException
 
 /**
  * DAG operation that finds the instances that needs to be moved in the
@@ -132,7 +133,7 @@ class MovableInstances implements DAGOperations {
 
 		val isDAGInd = parallelVisitor.isIndependent
 		if(!isDAGInd) {
-			throw new PreesmException("DAG is not instance independent. Getting movable instance" +
+			throw new PreesmRuntimeException("DAG is not instance independent. Getting movable instance" +
 				" is meaningless.")
 		}
 

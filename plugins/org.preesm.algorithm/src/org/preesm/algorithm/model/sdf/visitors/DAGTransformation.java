@@ -70,6 +70,7 @@ import org.preesm.algorithm.model.sdf.transformations.SpecialActorPortsIndexer;
 import org.preesm.algorithm.model.types.LongEdgePropertyType;
 import org.preesm.algorithm.model.types.LongVertexPropertyType;
 import org.preesm.commons.exceptions.PreesmException;
+import org.preesm.commons.exceptions.PreesmRuntimeException;
 
 /**
  * Visitor to use to transform a SDF Graph in a Directed Acyclic Graph.
@@ -284,11 +285,13 @@ public class DAGTransformation<T extends DirectedAcyclicGraph>
     final DAGVertex target = this.outputGraph.getVertex(edgeTarget.getName());
 
     if (source == null) {
-      throw new PreesmException("Output DAG does not contain edge source vertex '" + edgeSource + "' from input SDF.");
+      throw new PreesmRuntimeException(
+          "Output DAG does not contain edge source vertex '" + edgeSource + "' from input SDF.");
     }
 
     if (target == null) {
-      throw new PreesmException("Output DAG does not contain edge target vertex '" + edgeTarget + "' from input SDF.");
+      throw new PreesmRuntimeException(
+          "Output DAG does not contain edge target vertex '" + edgeTarget + "' from input SDF.");
     }
 
     final DAGEdge dagEdge;
@@ -496,7 +499,8 @@ public class DAGTransformation<T extends DirectedAcyclicGraph>
 
     // Make sure all ports are in order
     if (!SpecialActorPortsIndexer.checkIndexes(sdf)) {
-      throw new PreesmException("There are still special actors with non-indexed ports. Contact Preesm developers.");
+      throw new PreesmRuntimeException(
+          "There are still special actors with non-indexed ports. Contact Preesm developers.");
     }
     SpecialActorPortsIndexer.sortIndexedPorts(sdf);
   }

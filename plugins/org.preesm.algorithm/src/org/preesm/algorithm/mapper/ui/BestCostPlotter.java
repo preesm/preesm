@@ -71,7 +71,7 @@ import org.jfree.data.time.TimeSeriesCollection;
 import org.jfree.ui.ApplicationFrame;
 import org.preesm.algorithm.mapper.algo.FastAlgorithm;
 import org.preesm.algorithm.mapper.algo.PFastAlgorithm;
-import org.preesm.commons.exceptions.PreesmException;
+import org.preesm.commons.exceptions.PreesmRuntimeException;
 
 /**
  * Plots the best cost found versus scheduling time. Can be latency or else
@@ -298,7 +298,7 @@ public class BestCostPlotter extends ApplicationFrame implements ActionListener,
             Thread.sleep(500);
           } catch (final InterruptedException e) {
             Thread.currentThread().interrupt();
-            throw new PreesmException(e);
+            throw new PreesmRuntimeException(e);
           }
         }
       } else {

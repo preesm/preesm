@@ -40,7 +40,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import org.apache.commons.math3.util.ArithmeticUtils;
-import org.preesm.commons.exceptions.PreesmException;
+import org.preesm.commons.exceptions.PreesmRuntimeException;
 
 /**
  *
@@ -235,7 +235,7 @@ public interface MathFunctionsHelper {
       }
       if (!val.isZero()) {
         if (rationnalTopology[i][i].isZero()) {
-          throw new PreesmException("Should have zero elements in the diagonal");
+          throw new PreesmRuntimeException("Should have zero elements in the diagonal");
         }
         vrb.set(i, val.abs().divide(rationnalTopology[i][i]));
       }

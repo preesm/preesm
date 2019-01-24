@@ -44,7 +44,7 @@ import java.util.Map;
 import org.preesm.algorithm.model.sdf.SDFAbstractVertex;
 import org.preesm.algorithm.model.sdf.SDFGraph;
 import org.preesm.algorithm.model.sdf.SDFInterfaceVertex;
-import org.preesm.commons.exceptions.PreesmException;
+import org.preesm.commons.exceptions.PreesmRuntimeException;
 
 /**
  * @author hderoui
@@ -268,7 +268,7 @@ public interface TurbineParser {
       return g;
 
     } catch (final IOException e) {
-      throw new PreesmException("Could not import IBSDF", e);
+      throw new PreesmRuntimeException("Could not import IBSDF", e);
     }
   }
 
@@ -290,7 +290,7 @@ public interface TurbineParser {
       return buf;
 
     } catch (final IOException e) {
-      throw new PreesmException("Could not read line " + n, e);
+      throw new PreesmRuntimeException("Could not read line " + n, e);
     }
   }
 }

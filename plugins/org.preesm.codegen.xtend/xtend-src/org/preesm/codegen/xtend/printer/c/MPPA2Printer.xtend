@@ -53,7 +53,7 @@ import org.preesm.codegen.model.SharedMemoryCommunication
 import org.preesm.codegen.model.SpecialCall
 import org.preesm.codegen.model.SubBuffer
 import org.preesm.codegen.model.Variable
-import org.preesm.commons.exceptions.PreesmException
+import org.preesm.commons.exceptions.PreesmRuntimeException
 
 class MPPA2Printer extends CPrinter {
 
@@ -313,7 +313,7 @@ class MPPA2Printer extends CPrinter {
 		if(communication.nodes.forall[type == "SHARED_MEM"]) {
 			return super.caseCommunication(communication)
 		} else {
-			throw new PreesmException("Communication "+ communication.name +
+			throw new PreesmRuntimeException("Communication "+ communication.name +
 				 " has at least one unsupported communication node"+
 				 " for the " + this.class.name + " printer")
 		}
@@ -321,7 +321,7 @@ class MPPA2Printer extends CPrinter {
 
 	override printSharedMemoryCommunication(SharedMemoryCommunication communication) {
 	  /*Since everything is already in shared memory, communications are simple synchronizations here*/
-	  throw new PreesmException("This method should be updated to comply with updates of the Kalray platform and the removal of Semaphore from code generation model.")
+	  throw new PreesmRuntimeException("This method should be updated to comply with updates of the Kalray platform and the removal of Semaphore from code generation model.")
 	}
 
 	override printFunctionCall(FunctionCall functionCall) '''

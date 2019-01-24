@@ -56,7 +56,7 @@ import org.preesm.algorithm.model.sdf.esdf.SDFRoundBufferVertex;
 import org.preesm.algorithm.model.sdf.transformations.SpecialActorPortsIndexer;
 import org.preesm.algorithm.model.types.LongEdgePropertyType;
 import org.preesm.algorithm.model.types.StringEdgePropertyType;
-import org.preesm.commons.exceptions.PreesmException;
+import org.preesm.commons.exceptions.PreesmRuntimeException;
 import org.preesm.commons.logger.PreesmLogger;
 
 /**
@@ -357,7 +357,7 @@ public class ToHSDFVisitor implements IGraphVisitor<SDFGraph, SDFAbstractVertex,
           if (nbDelays < addedDelays) {
             // kdesnos: I added this check, but it will most
             // probably never happen
-            throw new PreesmException("Insufficient delays on edge " + edge.getSource().getName() + "."
+            throw new PreesmRuntimeException("Insufficient delays on edge " + edge.getSource().getName() + "."
                 + edge.getSourceInterface().getName() + "=>" + edge.getTarget().getName() + "."
                 + edge.getTargetInterface().getName() + ". At least " + addedDelays + " delays missing.");
           }
@@ -449,7 +449,8 @@ public class ToHSDFVisitor implements IGraphVisitor<SDFGraph, SDFAbstractVertex,
 
     // Make sure all ports are in order
     if (!SpecialActorPortsIndexer.checkIndexes(output)) {
-      throw new PreesmException("There are still special actors with non-indexed ports. Contact Preesm developers.");
+      throw new PreesmRuntimeException(
+          "There are still special actors with non-indexed ports. Contact Preesm developers.");
     }
 
     SpecialActorPortsIndexer.sortIndexedPorts(output);
@@ -523,7 +524,7 @@ public class ToHSDFVisitor implements IGraphVisitor<SDFGraph, SDFAbstractVertex,
       linkVerticesTop(graph, this.matchCopies, output);
       output.getPropertyBean().setValue("schedulable", true);
     } else {
-      throw (new PreesmException("Graph " + graph.getName() + " is not schedulable"));
+      throw new PreesmRuntimeException("Graph " + graph.getName() + " is not schedulable");
     }
   }
 

@@ -48,7 +48,7 @@ import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.Path;
 import org.preesm.algorithm.model.sdf.SDFGraph;
-import org.preesm.commons.exceptions.PreesmException;
+import org.preesm.commons.exceptions.PreesmRuntimeException;
 import org.preesm.commons.files.PathTools;
 import org.preesm.model.scenario.PreesmScenario;
 import org.preesm.model.slam.Design;
@@ -146,7 +146,7 @@ public class Sdf3ExporterTask extends AbstractTaskImplementation {
       workspace.getRoot().touch(null);
 
     } catch (final CoreException e) {
-      throw new PreesmException("Could not export SDF", e);
+      throw new PreesmRuntimeException("Could not export SDF", e);
     }
   }
 }

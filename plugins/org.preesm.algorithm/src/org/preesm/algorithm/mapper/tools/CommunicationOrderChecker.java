@@ -45,6 +45,7 @@ import org.preesm.algorithm.model.dag.DAGEdge;
 import org.preesm.algorithm.model.dag.DAGVertex;
 import org.preesm.algorithm.model.dag.DirectedAcyclicGraph;
 import org.preesm.commons.exceptions.PreesmException;
+import org.preesm.commons.exceptions.PreesmRuntimeException;
 import org.preesm.model.scenario.types.ImplementationPropertyNames;
 import org.preesm.model.slam.ComponentInstance;
 
@@ -145,7 +146,7 @@ public class CommunicationOrderChecker {
 
         // Throws an exception if the schedule is incorrect.
         if (!senderDagEdges.equals(receiverDagEdges)) {
-          throw new PreesmException(
+          throw new PreesmRuntimeException(
               "Order of communication primitives (Send/Receive) is not preserved between components " + sendComponent
                   + " and " + recvComponent + ". Contact Preesm developers for more information.");
         }

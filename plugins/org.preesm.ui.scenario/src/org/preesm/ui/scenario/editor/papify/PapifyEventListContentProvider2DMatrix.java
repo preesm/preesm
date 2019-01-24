@@ -40,7 +40,7 @@ import java.util.Set;
 import org.eclipse.emf.common.util.EList;
 import org.eclipse.jface.viewers.ITreeContentProvider;
 import org.eclipse.jface.viewers.Viewer;
-import org.preesm.commons.exceptions.PreesmException;
+import org.preesm.commons.exceptions.PreesmFrameworkException;
 import org.preesm.model.pisdf.AbstractActor;
 import org.preesm.model.pisdf.Actor;
 import org.preesm.model.pisdf.BroadcastActor;
@@ -124,7 +124,7 @@ public class PapifyEventListContentProvider2DMatrix implements ITreeContentProvi
     if (parentElement instanceof PapifyEventListTreeElement) {
       Object algorithmElement = ((PapifyEventListTreeElement) parentElement).getAlgorithmElement();
       if (this.scenario.isIBSDFScenario()) {
-        throw new PreesmException("IBSDF is not supported anymore");
+        throw new PreesmFrameworkException("IBSDF is not supported anymore");
       } else if (this.scenario.isPISDFScenario()) {
         if (algorithmElement instanceof PiGraph) {
           final PiGraph graph = (PiGraph) algorithmElement;
@@ -166,7 +166,7 @@ public class PapifyEventListContentProvider2DMatrix implements ITreeContentProvi
     if (element instanceof PapifyEventListTreeElement) {
       Object algorithmElement = ((PapifyEventListTreeElement) element).getAlgorithmElement();
       if (this.scenario.isIBSDFScenario()) {
-        throw new PreesmException("IBSDF is not supported anymore");
+        throw new PreesmFrameworkException("IBSDF is not supported anymore");
       } else if (this.scenario.isPISDFScenario()) {
         if (algorithmElement instanceof PiGraph) {
           final PiGraph graph = (PiGraph) algorithmElement;
@@ -194,7 +194,7 @@ public class PapifyEventListContentProvider2DMatrix implements ITreeContentProvi
       this.scenario = (PreesmScenario) inputElement;
       // Opening algorithm from file
       if (this.scenario.isIBSDFScenario()) {
-        throw new PreesmException("IBSDF is not supported anymore");
+        throw new PreesmFrameworkException("IBSDF is not supported anymore");
       } else if (this.scenario.isPISDFScenario()) {
         try {
           this.currentPISDFGraph = PiParser.getPiGraphWithReconnection(this.scenario.getAlgorithmURL());

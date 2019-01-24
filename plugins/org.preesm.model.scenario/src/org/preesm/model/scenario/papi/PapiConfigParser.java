@@ -42,7 +42,7 @@ import java.util.Optional;
 import java.util.function.Consumer;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
-import org.preesm.commons.exceptions.PreesmException;
+import org.preesm.commons.exceptions.PreesmRuntimeException;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NamedNodeMap;
@@ -102,7 +102,7 @@ public class PapiConfigParser {
       final DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
       doc = dBuilder.parse(xmlConfigFile);
     } catch (final Exception e) {
-      throw new PreesmException("Could not open the PAPI config xml file", e);
+      throw new PreesmRuntimeException("Could not open the PAPI config xml file", e);
     }
     return doc;
   }

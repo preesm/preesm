@@ -34,19 +34,20 @@
  */
 package org.preesm.workflow;
 
+import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Optional;
 import java.util.Set;
+import java.util.logging.Handler;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import org.eclipse.core.resources.IProject;
-import org.eclipse.core.resources.IResource;
-import org.eclipse.core.resources.IWorkspace;
-import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.preesm.commons.exceptions.PreesmException;
+import org.preesm.commons.exceptions.PreesmFrameworkException;
+import org.preesm.commons.files.WorkspaceUtils;
 import org.preesm.commons.logger.PreesmLogger;
 import org.preesm.commons.messages.PreesmMessages;
 import org.preesm.workflow.elements.AbstractWorkflowNode;
@@ -54,6 +55,8 @@ import org.preesm.workflow.elements.ScenarioNode;
 import org.preesm.workflow.elements.TaskNode;
 import org.preesm.workflow.elements.Workflow;
 import org.preesm.workflow.elements.WorkflowEdge;
+import org.preesm.workflow.eow.ErrorOnWarningError;
+import org.preesm.workflow.eow.ErrorOnWarningLogHandler;
 import org.preesm.workflow.implement.AbstractScenarioImplementation;
 import org.preesm.workflow.implement.AbstractTaskImplementation;
 import org.preesm.workflow.implement.AbstractWorkflowNodeImplementation;
@@ -231,57 +234,76 @@ public abstract class AbstractWorkflowExecutor {
   public boolean execute(final String workflowPath, final String scenarioPath, final IProgressMonitor monitor) {
 
     final Workflow workflow = new WorkflowParser().parse(workflowPath);
-    refreshProject(workflow.getProjectName(), monitor, "Warning: Could not refresh project before workflow execution");
 
-    // Initializing the workflow console
-    log(Level.INFO, "Workflow.StartInfo", workflowPath);
-    if (monitor != null) {
-      monitor.beginTask("Executing workflow", workflow.vertexSet().size());
+    boolean result = initAndCheck(workflowPath, monitor, workflow);
+    if (!result) {
+      return false;
     }
 
-    // Checking the existence of plugins and retrieving prototypess
-    final boolean check = check(workflow, monitor);
-    if (!check) {
-      if (monitor != null) {
-        monitor.setCanceled(true);
+    // read and apply workflow parameters
+    final Handler eowHandler = addEOWHandler(workflow);
+    final Level oldLevel = Optional.ofNullable(this.logger.getLevel()).orElse(Level.INFO);
+    this.logger.setLevel(workflow.getOutputLevel());
+    WorkspaceUtils.updateWorkspace();
+
+    final Iterator<AbstractWorkflowNode> iterator = workflow.vertexTopologicalList().iterator();
+
+    while (result && iterator.hasNext()) {
+      AbstractWorkflowNode node = iterator.next();
+      try {
+        result = executeNode(scenarioPath, monitor, workflow, node);
+      } catch (final ErrorOnWarningError e) {
+        this.logger.log(e.getRecord());
+        result = false;
       }
-      return false;
     }
 
-    if (workflow.vertexSet().isEmpty()) {
-      log(Level.SEVERE, "Workflow.EmptyVertexSet");
-
-      return false;
+    if (result) {
+      log(Level.INFO, "Workflow.EndInfo", workflowPath);
     }
 
-    if (!workflow.hasScenario()) {
-      log(Level.SEVERE, "Workflow.OneScenarioNeeded");
+    WorkspaceUtils.updateWorkspace();
 
-      return false;
+    // set back default logger behavior
+    this.logger.removeHandler(eowHandler);
+    this.logger.setLevel(oldLevel);
+
+    return result;
+  }
+
+  private Handler addEOWHandler(final Workflow workflow) {
+    final boolean errorOnWarning = workflow.isErrorOnWarning();
+    Handler eowHandler = null;
+    if (errorOnWarning) {
+      eowHandler = new ErrorOnWarningLogHandler();
+      this.logger.addHandler(eowHandler);
     }
+    return eowHandler;
+  }
 
-    for (final AbstractWorkflowNode node : workflow.vertexTopologicalList()) {
-      if (workflow.edgesOf(node).isEmpty()) {
-        log(Level.WARNING, "Workflow.IgnoredNonConnectedTask");
-      } else {
-        // Data outputs of the node
-        Map<String, Object> outputs = null;
-        String nodeId = null;
+  private boolean executeNode(final String scenarioPath, final IProgressMonitor monitor, final Workflow workflow,
+      final AbstractWorkflowNode node) {
+    boolean nodeResult = true;
+    if (workflow.edgesOf(node).isEmpty()) {
+      log(Level.WARNING, "Workflow.IgnoredNonConnectedTask");
+    } else {
+      // Data outputs of the node
+      Map<String, Object> outputs = null;
+      String nodeId = null;
 
-        if (node.isScenarioNode()) {
-          // The scenario node is special because it gets a reference
-          // path and generates the inputs of the rapid prototyping
-          // process
-          final ScenarioNode scenarioNode = (ScenarioNode) node;
-          nodeId = scenarioNode.getScenarioId();
-          final AbstractScenarioImplementation scenario = scenarioNode.getScenario();
+      if (node.isScenarioNode()) {
+        // The scenario node is special because it gets a reference
+        // path and generates the inputs of the rapid prototyping
+        // process
+        final ScenarioNode scenarioNode = (ScenarioNode) node;
+        nodeId = scenarioNode.getScenarioId();
+        final AbstractScenarioImplementation scenario = scenarioNode.getScenario();
 
-          // Checks that the scenario node output edges fit the task
-          // prototype
-          if (!checkScenarioPrototype(scenarioNode, workflow)) {
-            return false;
-          }
-
+        // Checks that the scenario node output edges fit the task
+        // prototype
+        if (!checkScenarioPrototype(scenarioNode, workflow)) {
+          nodeResult = false;
+        } else {
           try {
             // updating monitor
             if (monitor != null) {
@@ -308,20 +330,20 @@ public abstract class AbstractWorkflowExecutor {
               monitor.worked(1);
             }
           } catch (final PreesmException e) {
-            error(e, e.getMessage());
-            return false;
+            getLogger().log(Level.SEVERE, e.getMessage(), e);
+            nodeResult = false;
           }
+        }
+      } else if (node.isTaskNode()) {
+        final TaskNode taskNode = (TaskNode) node;
+        final AbstractTaskImplementation task = taskNode.getTask();
+        nodeId = taskNode.getTaskId();
 
-        } else if (node.isTaskNode()) {
-          final TaskNode taskNode = (TaskNode) node;
-          final AbstractTaskImplementation task = taskNode.getTask();
-          nodeId = taskNode.getTaskId();
-
-          // Checks that the workflow task node edges fit the task
-          // prototype
-          if (!checkTaskPrototype(taskNode, workflow)) {
-            return false;
-          }
+        // Checks that the workflow task node edges fit the task
+        // prototype
+        if (!checkTaskPrototype(taskNode, workflow)) {
+          nodeResult = false;
+        } else {
 
           // Preparing the input and output maps of the execute method
           final Map<String, Object> inputs = new LinkedHashMap<>();
@@ -350,51 +372,55 @@ public abstract class AbstractWorkflowExecutor {
             if ((monitor != null) && monitor.isCanceled()) {
 
               log(Level.SEVERE, "Workflow.CancellationRequested");
-              return false;
-            }
+              nodeResult = false;
+            } else {
 
-            // Checks that the requested parameters are available
-            // for the task
-            final boolean checkParameters = checkParameters(taskNode, task);
-            if (!checkParameters) {
-              return false;
-            }
+              // Checks that the requested parameters are available
+              // for the task
+              final boolean checkParameters = checkParameters(taskNode, task);
+              if (!checkParameters) {
+                nodeResult = false;
+              } else {
 
-            // execution
-            outputs = task.execute(inputs, taskNode.getParameters(), monitor, nodeId, workflow);
+                // execution
+                outputs = task.execute(inputs, taskNode.getParameters(), monitor, nodeId, workflow);
 
-            // Filter only outputs required in the workflow
-            final Map<String, Object> outs = outputs; // final
-            // reference
-            // for
-            // predicate
-            final Set<WorkflowEdge> edges = new LinkedHashSet<>(workflow.outgoingEdgesOf(taskNode));
-            edges.removeIf(edge -> !outs.containsKey(edge.getSourcePort()));
+                // Filter only outputs required in the workflow
+                final Map<String, Object> outs = outputs; // final
+                // reference
+                // for
+                // predicate
+                final Set<WorkflowEdge> edges = new LinkedHashSet<>(workflow.outgoingEdgesOf(taskNode));
+                edges.removeIf(edge -> !outs.containsKey(edge.getSourcePort()));
 
-            final Map<String, Object> checkedOutputs = new LinkedHashMap<>();
-            edges.forEach(edge -> checkedOutputs.put(edge.getSourcePort(), outs.get(edge.getSourcePort())));
+                final Map<String, Object> checkedOutputs = new LinkedHashMap<>();
+                edges.forEach(edge -> checkedOutputs.put(edge.getSourcePort(), outs.get(edge.getSourcePort())));
 
-            // Check the outputs have the right type.
-            checkOutputType(outputs, task);
+                // Check the outputs have the right type.
+                checkOutputType(outputs, task);
 
-            // Each node execution is equivalent for the monitor
-            if (monitor != null) {
-              monitor.worked(1);
+                // Each node execution is equivalent for the monitor
+                if (monitor != null) {
+                  monitor.worked(1);
+                }
+              }
             }
           } catch (final PreesmException e) {
-            error(e, e.getMessage());
-            return false;
+            getLogger().log(Level.SEVERE, e.getMessage(), e);
+            nodeResult = false;
           } catch (final Exception e) {
-            error(e, "Unexpected Exception: " + e.getClass().getCanonicalName() + ":" + e.getMessage()
-                + "\n Contact Preesm developers if you cannot solve the problem.");
-            return false;
+            getLogger().log(Level.SEVERE, "Unexpected Exception: " + e.getClass().getCanonicalName() + ":"
+                + e.getMessage() + "\n Contact Preesm developers if you cannot solve the problem.", e);
+            nodeResult = false;
           }
         }
+      }
 
+      if (nodeResult) {
         // If the execution incorrectly initialized the outputs
         if (outputs == null) {
           log(Level.SEVERE, "Workflow.NullNodeOutput", nodeId);
-          return false;
+          nodeResult = false;
         } else {
           // Retrieving output of the current node
           // Putting the data in output edges
@@ -409,28 +435,43 @@ public abstract class AbstractWorkflowExecutor {
             } else {
               edge.setData(null);
               log(Level.SEVERE, "Workflow.IncorrectOutput", nodeId, type);
-              return false;
+              nodeResult = false;
             }
           }
         }
       }
     }
-
-    refreshProject(workflow.getProjectName(), monitor, "Warning: Could not refresh project after workflow execution");
-    log(Level.INFO, "Workflow.EndInfo", workflowPath);
-
-    return true;
+    return nodeResult;
   }
 
-  private final void refreshProject(final String projectName, final IProgressMonitor monitor,
-      final String warningMessage) {
-    try {
-      final IWorkspace workspace = ResourcesPlugin.getWorkspace();
-      final IProject project = workspace.getRoot().getProject(projectName);
-      project.refreshLocal(IResource.DEPTH_INFINITE, monitor);
-    } catch (final Exception e) {
-      PreesmLogger.getLogger().log(Level.WARNING, warningMessage, e);
+  private boolean initAndCheck(final String workflowPath, final IProgressMonitor monitor, final Workflow workflow) {
+    // Initializing the workflow console
+    log(Level.INFO, "Workflow.StartInfo", workflowPath);
+    if (monitor != null) {
+      monitor.beginTask("Executing workflow", workflow.vertexSet().size());
     }
+
+    // Checking the existence of plugins and retrieving prototypess
+    boolean check = check(workflow, monitor);
+    if (!check) {
+      if (monitor != null) {
+        monitor.setCanceled(true);
+      }
+      check = false;
+    }
+
+    if (workflow.vertexSet().isEmpty()) {
+      log(Level.SEVERE, "Workflow.EmptyVertexSet");
+
+      check = false;
+    }
+
+    if (!workflow.hasScenario()) {
+      log(Level.SEVERE, "Workflow.OneScenarioNeeded");
+
+      check = false;
+    }
+    return check;
   }
 
   /**
@@ -453,7 +494,7 @@ public abstract class AbstractWorkflowExecutor {
 
       final String expectedOutputType = currentTaskNode.getOutputType(outputName);
       if (expectedOutputType == null) {
-        throw new PreesmException(
+        throw new PreesmFrameworkException(
             "The task node " + currentTaskNode + " has an unspecified output with name " + outputName);
       }
       try {
@@ -463,7 +504,7 @@ public abstract class AbstractWorkflowExecutor {
           if (!currentOutputType.isInstance(outputValue)) {
             // Type is wrong !
             final String givenType = outputValue.getClass().getName();
-            throw new PreesmException("\nOutput \"" + outputName + "\" of workflow task \""
+            throw new PreesmFrameworkException("\nOutput \"" + outputName + "\" of workflow task \""
                 + currentTaskNode.getClass() + "\" is null or has an invalid type.\n(expected: \"" + expectedOutputType
                 + "\" given: \"" + givenType + "\")");
           }
@@ -471,7 +512,7 @@ public abstract class AbstractWorkflowExecutor {
       } catch (final Exception ex) {
         final String message = "Could not check output type for [" + outputEntry + "] of task [" + currentTaskNode
             + "] with expected type [" + expectedOutputType + "].";
-        throw new PreesmException(message, ex);
+        throw new PreesmFrameworkException(message, ex);
       }
     }
   }
@@ -527,12 +568,4 @@ public abstract class AbstractWorkflowExecutor {
     getLogger().log(level, PreesmMessages.getString(msgKey, variables));
   }
 
-  /**
-   * This special logging method is used for handling severe message with associated exception or error.
-   *
-   * TODO: add debug parameter to the application and handle it here to show (or not) the full stack trace/
-   */
-  protected void error(final Throwable cause, final String msg) {
-    getLogger().log(Level.SEVERE, msg, cause);
-  }
 }

@@ -46,7 +46,7 @@ import org.preesm.algorithm.model.sdf.SDFAbstractVertex
 import org.preesm.algorithm.model.sdf.SDFInterfaceVertex
 import org.preesm.algorithm.model.sdf.esdf.SDFSinkInterfaceVertex
 import org.preesm.algorithm.model.sdf.esdf.SDFSourceInterfaceVertex
-import org.preesm.commons.exceptions.PreesmException
+import org.preesm.commons.exceptions.PreesmRuntimeException
 import org.preesm.commons.logger.PreesmLogger
 
 /**
@@ -131,12 +131,12 @@ class FifoActor extends SDFAbstractVertex {
 		if((port instanceof SDFInterfaceVertex) &&
 			(port.direction == InterfaceDirection.INPUT)) {
 			if(this.sources.size >= 1) {
-				throw new PreesmException("FIFO-Actor cannot have more than one source")
+				throw new PreesmRuntimeException("FIFO-Actor cannot have more than one source")
 			}
 		} else if((port instanceof SDFInterfaceVertex) &&
 					(port.direction == InterfaceDirection.OUTPUT)) {
 			if(this.sinks.size >= 1) {
-				throw new PreesmException("FIFO-Actor cannot have more than one sink")
+				throw new PreesmRuntimeException("FIFO-Actor cannot have more than one sink")
 			}
 		}
 		return super.addInterface(port)
@@ -150,7 +150,7 @@ class FifoActor extends SDFAbstractVertex {
 	 */
 	override addSink(SDFSinkInterfaceVertex sink) {
 		if(this.sinks.size >= 1) {
-			throw new PreesmException("FIFO-Actor cannot have more than one sink")
+			throw new PreesmRuntimeException("FIFO-Actor cannot have more than one sink")
 		}
 		return super.addSink(sink)
 	}
@@ -163,7 +163,7 @@ class FifoActor extends SDFAbstractVertex {
 	 */
 	override addSource(SDFSourceInterfaceVertex source) {
 		if(this.sources.size >= 1) {
-			throw new PreesmException("FIFO-Actor cannot have more than one source")
+			throw new PreesmRuntimeException("FIFO-Actor cannot have more than one source")
 		}
 		return super.addSource(source)
 	}
@@ -176,7 +176,7 @@ class FifoActor extends SDFAbstractVertex {
 	 */
 	override setSinks(List<SDFSinkInterfaceVertex> sinks) {
 		if(sinks.size > 1) {
-			throw new PreesmException("FIFO-Actor cannot have more than one sink. Argument has " +
+			throw new PreesmRuntimeException("FIFO-Actor cannot have more than one sink. Argument has " +
 				sinks.size + " sink interfaces.")
 		}
 		super.sinks = sinks
@@ -190,7 +190,7 @@ class FifoActor extends SDFAbstractVertex {
 	 */
 	override setSources(List<SDFSourceInterfaceVertex> sources) {
 		if(sources.size > 1) {
-			throw new PreesmException("FIFO-Actor cannot have more than one source. Argument has " +
+			throw new PreesmRuntimeException("FIFO-Actor cannot have more than one source. Argument has " +
 				sources.size + " source interfaces.")
 		}
 	}
@@ -202,7 +202,7 @@ class FifoActor extends SDFAbstractVertex {
 	 */
 	override setNbRepeat(long nbRepeat) {
 		if(nbRepeat <= 0) {
-			throw new PreesmException("FIFO-Actor cannot have repetition vector less than 1 ")
+			throw new PreesmRuntimeException("FIFO-Actor cannot have repetition vector less than 1 ")
 		}
 		super.nbRepeat = nbRepeat
 	}

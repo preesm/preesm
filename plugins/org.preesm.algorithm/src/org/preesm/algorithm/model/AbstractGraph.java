@@ -53,6 +53,7 @@ import org.preesm.algorithm.model.parameters.Variable;
 import org.preesm.algorithm.model.parameters.VariableSet;
 import org.preesm.commons.CloneableProperty;
 import org.preesm.commons.exceptions.PreesmException;
+import org.preesm.commons.exceptions.PreesmRuntimeException;
 import org.preesm.commons.math.ExpressionEvaluationException;
 
 /**
@@ -524,7 +525,7 @@ public abstract class AbstractGraph<V extends AbstractVertex, E extends Abstract
         }
         jep.addVariable(arg, paramValue);
       } catch (final ExpressionEvaluationException e) {
-        throw new PreesmException("Could not evaluate value", e);
+        throw new PreesmRuntimeException("Could not evaluate value", e);
       }
     }
   }

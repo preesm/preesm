@@ -55,7 +55,7 @@ import org.eclipse.core.runtime.Path;
 import org.eclipse.emf.ecore.EPackage;
 import org.eclipse.emf.ecore.resource.Resource;
 import org.preesm.commons.DomUtil;
-import org.preesm.commons.exceptions.PreesmException;
+import org.preesm.commons.exceptions.PreesmFrameworkException;
 import org.preesm.model.pisdf.AbstractActor;
 import org.preesm.model.pisdf.PiGraph;
 import org.preesm.model.pisdf.serialize.PiParser;
@@ -224,7 +224,7 @@ public class ScenariosGenerator {
       fillPiScenario(scenario, archi, algoURL);
 
     } else if (algoURL.endsWith(ScenariosGenerator.sdfAlgoExt)) {
-      throw new PreesmException("IBSDF is not supported anymore");
+      throw new PreesmFrameworkException("IBSDF is not supported anymore");
     }
     // Add a main core (first of the list)
     scenario.getSimulationManager().setMainOperatorName(coreIds.get(0));
@@ -350,7 +350,7 @@ public class ScenariosGenerator {
       scenarioFile.setContents(new ByteArrayInputStream(byteStream.toByteArray()), true, false,
           new NullProgressMonitor());
     } catch (final IOException | CoreException e) {
-      throw new PreesmException(e);
+      throw new PreesmFrameworkException(e);
     }
   }
 }

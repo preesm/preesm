@@ -36,7 +36,7 @@ package org.preesm.commons.model;
 
 import org.eclipse.emf.common.notify.Notifier;
 import org.eclipse.emf.ecore.EObject;
-import org.preesm.commons.exceptions.PreesmException;
+import org.preesm.commons.exceptions.PreesmRuntimeException;
 
 /**
  *
@@ -96,7 +96,7 @@ public class PreesmCopyTracker<T extends Notifier> extends PreesmAdapter {
   public static final <V extends Notifier> void trackCopy(final V source, final V copy) {
     final V existingSource = getSource(copy);
     if (existingSource != null && existingSource != source) {
-      throw new PreesmException();
+      throw new PreesmRuntimeException();
     }
     final PreesmCopyTracker<V> e = new PreesmCopyTracker<>(source);
     copy.eAdapters().add(e);

@@ -92,7 +92,7 @@ import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.emf.common.util.URI;
-import org.preesm.commons.exceptions.PreesmException;
+import org.preesm.commons.exceptions.PreesmRuntimeException;
 import org.preesm.commons.files.ContainersManager;
 import org.preesm.commons.files.PathTools;
 import org.preesm.commons.files.WorkspaceUtils;
@@ -131,7 +131,7 @@ public class PiSDFExporterTask extends AbstractTaskImplementation {
         xmlPath = xmlPath.append(graph.getName() + ".pi");
       }
     } catch (CoreException | IllegalArgumentException e) {
-      throw new PreesmException("Path " + sXmlPath + " is not a valid path for export.\n" + e.getMessage());
+      throw new PreesmRuntimeException("Path " + sXmlPath + " is not a valid path for export.\n" + e.getMessage());
     }
 
     final URI uri = URI.createPlatformResourceURI(xmlPath.toString(), true);
@@ -143,7 +143,7 @@ public class PiSDFExporterTask extends AbstractTaskImplementation {
       // Write the Graph to the OutputStream using the Pi format
       new PiWriter(uri).write(graph, outStream);
     } catch (IOException e) {
-      throw new PreesmException("Could not open outputstream file " + xmlPath.toString());
+      throw new PreesmRuntimeException("Could not open outputstream file " + xmlPath.toString());
     }
 
     WorkspaceUtils.updateWorkspace();

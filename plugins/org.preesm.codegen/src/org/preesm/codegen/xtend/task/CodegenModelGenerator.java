@@ -123,6 +123,7 @@ import org.preesm.codegen.model.SubBuffer;
 import org.preesm.codegen.model.Variable;
 import org.preesm.codegen.model.util.CodegenModelUserFactory;
 import org.preesm.commons.exceptions.PreesmException;
+import org.preesm.commons.exceptions.PreesmRuntimeException;
 import org.preesm.commons.logger.PreesmLogger;
 import org.preesm.model.pisdf.PersistenceLevel;
 import org.preesm.model.scenario.PreesmScenario;
@@ -331,13 +332,13 @@ public class CodegenModelGenerator {
       if (operator == null) {
         final String msg = "The DAG Actor " + vertex + " is not mapped on any operator.\n"
             + " All actors must be mapped before using the code generation.";
-        throw new PreesmException(msg);
+        throw new PreesmRuntimeException(msg);
       }
 
       if (!archi.getComponentInstances().contains(operator)) {
         final String msg = "The DAG Actor " + vertex + " is not mapped on an operator " + operator
             + " that does not belong to the ipnut architecture.";
-        throw new PreesmException(msg);
+        throw new PreesmRuntimeException(msg);
       }
     }
 
@@ -362,11 +363,12 @@ public class CodegenModelGenerator {
         final boolean sourceVertexIsNull = sourceVertex == null;
         final boolean sinkVertexIsNull = sinkVertex == null;
         if (sourceVertexIsNull) {
-          throw new PreesmException(
+          throw new PreesmRuntimeException(
               String.format(CodegenModelGenerator.ERROR_PATTERN_1, memObj.toString(), sourceName));
         }
         if (sinkVertexIsNull) {
-          throw new PreesmException(String.format(CodegenModelGenerator.ERROR_PATTERN_1, memObj.toString(), sinkName));
+          throw new PreesmRuntimeException(
+              String.format(CodegenModelGenerator.ERROR_PATTERN_1, memObj.toString(), sinkName));
         }
 
         // Check that the edge is part of the memeExGraph
@@ -374,7 +376,7 @@ public class CodegenModelGenerator {
         final boolean memObjectIsAnEdge = sinkAndSourceNamesDiffer && !isFifo;
         final boolean memExGraphContainsEdge = dag.containsEdge(sourceVertex, sinkVertex);
         if (memObjectIsAnEdge && !memExGraphContainsEdge) {
-          throw new PreesmException("MemEx graph memory object (" + memObj + ") refers to a DAG Edge"
+          throw new PreesmRuntimeException("MemEx graph memory object (" + memObj + ") refers to a DAG Edge"
               + " that does not exist in the input DAG.\n"
               + "Make sure that the MemEx is derived from the input DAG of the codegen.");
         }
@@ -382,7 +384,7 @@ public class CodegenModelGenerator {
         // Check that the MemEx graph is allocated.
         final Long offset = memObj.getPropertyBean().getValue(MemoryExclusionVertex.MEMORY_OFFSET_PROPERTY);
         if (offset == null) {
-          throw new PreesmException("MemEx graph memory object (" + memObj + ") was not allocated in memory. \n"
+          throw new PreesmRuntimeException("MemEx graph memory object (" + memObj + ") was not allocated in memory. \n"
               + "Make sure that the MemEx is processed by an allocation task before entering the codegen.");
         }
       }
@@ -406,7 +408,7 @@ public class CodegenModelGenerator {
       }
     }
     if (mObject == null) {
-      throw new PreesmException(
+      throw new PreesmRuntimeException(
           "Memory Object associated to DAGEdge " + dagEdge + " could not be found in any memory exclusion graph.");
     }
 
@@ -485,7 +487,7 @@ public class CodegenModelGenerator {
               break;
             default:
               final String message = "DAG Vertex " + vert + " has an unknown kind: " + vertKind;
-              throw new PreesmException(message);
+              throw new PreesmRuntimeException(message);
           }
           break;
 
@@ -497,7 +499,7 @@ public class CodegenModelGenerator {
           generateCommunication(operatorBlock, vert, VertexType.TYPE_RECEIVE);
           break;
         default:
-          throw new PreesmException("Vertex " + vert + " has an unknown type: " + vert.getKind());
+          throw new PreesmRuntimeException("Vertex " + vert + " has an unknown type: " + vert.getKind());
       }
     });
 
@@ -567,7 +569,7 @@ public class CodegenModelGenerator {
             this.scenario, this.algo, this.linkHSDFVertexBuffer, this.srSDFEdgeBuffers, this.dagVertexCalls);
         hiearchicalCodeGen.execute(operatorBlock, dagVertex);
       } catch (final PreesmException e) {
-        throw new PreesmException("Codegen for " + dagVertex.getName() + "failed.", e);
+        throw new PreesmRuntimeException("Codegen for " + dagVertex.getName() + "failed.", e);
       }
     } else {
       ActorPrototypes prototypes = null;
@@ -584,7 +586,7 @@ public class CodegenModelGenerator {
         // Generate the loop functionCall
         final Prototype loopPrototype = prototypes.getLoopPrototype();
         if (loopPrototype == null) {
-          throw new PreesmException("Actor " + dagVertex + " has no loop interface in its IDL refinement.");
+          throw new PreesmRuntimeException("Actor " + dagVertex + " has no loop interface in its IDL refinement.");
         }
         final FunctionCall functionCall = generateFunctionCall(dagVertex, loopPrototype, false);
 
@@ -670,7 +672,7 @@ public class CodegenModelGenerator {
         }
       } else {
         // If the actor has no refinement
-        throw new PreesmException("Actor (" + dagVertex + ") has no valid refinement (.idl, .h or .graphml)."
+        throw new PreesmRuntimeException("Actor (" + dagVertex + ") has no valid refinement (.idl, .h or .graphml)."
             + " Associate a refinement to this actor before generating code.");
       }
     }
@@ -847,7 +849,7 @@ public class CodegenModelGenerator {
              * allocation, a new update of the MemEx has to be done, taking communication into account this time.
              *
              */
-            throw new PreesmException("\n" + AbstractMemoryAllocatorTask.VALUE_DISTRIBUTION_DISTRIBUTED_ONLY
+            throw new PreesmRuntimeException("\n" + AbstractMemoryAllocatorTask.VALUE_DISTRIBUTION_DISTRIBUTED_ONLY
                 + " distribution policy during memory allocation not yet supported in code generation.\n" + "DAGEdge "
                 + originalDagEdge + " is already associated to a Buffer and cannot be associated to a second one.");
           }
@@ -971,7 +973,7 @@ public class CodegenModelGenerator {
           containsPort = false;
       }
       if (!containsPort) {
-        throw new PreesmException(
+        throw new PreesmRuntimeException(
             "Mismatch between actor (" + dagVertex + ") ports and IDL loop prototype argument " + arg.getName());
       }
 
@@ -1010,7 +1012,7 @@ public class CodegenModelGenerator {
       }
 
       if ((dagEdge == null) || (subBufferProperties == null)) {
-        throw new PreesmException(
+        throw new PreesmRuntimeException(
             "The DAGEdge connected to the port  " + arg.getName() + " of Actor (" + dagVertex + ") does not exist.\n"
                 + "Possible cause is that the DAG" + " was altered before entering" + " the Code generation.\n"
                 + "This error may also happen if the port type " + "in the graph and in the IDL are not identical");
@@ -1021,7 +1023,7 @@ public class CodegenModelGenerator {
       // Get the corresponding Variable
       final Variable var = this.srSDFEdgeBuffers.get(subBufferProperties);
       if (var == null) {
-        throw new PreesmException(
+        throw new PreesmRuntimeException(
             "Edge connected to " + arg.getDirection() + " port " + arg.getName() + " of DAG Actor " + dagVertex
                 + " is not present in the input MemEx.\n" + "There is something wrong in the Memory Allocation task.");
       }
@@ -1047,7 +1049,7 @@ public class CodegenModelGenerator {
       final Argument actorParam = dagVertex.getArgument(param.getName());
 
       if (actorParam == null) {
-        throw new PreesmException(
+        throw new PreesmRuntimeException(
             "Actor " + dagVertex + " has no match for parameter " + param.getName() + " declared in the IDL.");
       }
 
@@ -1069,7 +1071,7 @@ public class CodegenModelGenerator {
         return true;
       }
     }
-    throw new PreesmException("SDF port \"" + portName + "\" of actor \"" + dagVertex
+    throw new PreesmRuntimeException("SDF port \"" + portName + "\" of actor \"" + dagVertex
         + "\" has no corresponding parameter in the associated IDL.");
   }
 
@@ -1107,7 +1109,7 @@ public class CodegenModelGenerator {
         .getValue(ImplementationPropertyNames.SendReceive_correspondingDagEdge);
     final Buffer buffer = this.dagEdgeBuffers.get(dagEdge);
     if (buffer == null) {
-      throw new PreesmException("No buffer found for edge" + dagEdge);
+      throw new PreesmRuntimeException("No buffer found for edge" + dagEdge);
     }
     newComm.setData(buffer);
     newComm.getParameters().clear();
@@ -1197,7 +1199,7 @@ public class CodegenModelGenerator {
         break;
       default:
         final String message = "DAGVertex " + dagVertex + " does not corresponds to a Fifo primitive.";
-        throw new PreesmException(message);
+        throw new PreesmRuntimeException(message);
     }
 
     // Get buffer used by the FifoCall (in/out)
@@ -1223,7 +1225,7 @@ public class CodegenModelGenerator {
       }
     }
     if (edge == null) {
-      throw new PreesmException(
+      throw new PreesmRuntimeException(
           "DAGVertex " + dagVertex + " is not connected to any " + VertexType.TYPE_TASK + " vertex.");
     }
 
@@ -1231,7 +1233,7 @@ public class CodegenModelGenerator {
     final BufferProperties bufferProperty = aggregate.get(0);
     buffer = this.srSDFEdgeBuffers.get(bufferProperty);
     if (buffer == null) {
-      throw new PreesmException("DAGEdge " + edge + " was not allocated in memory.");
+      throw new PreesmRuntimeException("DAGEdge " + edge + " was not allocated in memory.");
     }
     fifoCall.addParameter(buffer, dir);
 
@@ -1248,7 +1250,7 @@ public class CodegenModelGenerator {
     }
     final Pair<Buffer, Buffer> buffers = this.dagFifoBuffers.get(new Pair<>(dagEndVertex, dagInitVertex));
     if ((buffers == null) || (buffers.getKey() == null)) {
-      throw new PreesmException("No buffer was allocated for the the following pair of end/init vertices: "
+      throw new PreesmRuntimeException("No buffer was allocated for the the following pair of end/init vertices: "
           + dagEndVertex.getName() + " " + dagInitVertex.getName());
     }
     fifoCall.setHeadBuffer(buffers.getKey());
@@ -1556,7 +1558,7 @@ public class CodegenModelGenerator {
       // Corresponding edge
       final DAGEdge correspondingEdge = this.algo.getEdge(source, target);
       if (correspondingEdge == null) {
-        throw new PreesmException("DAGEdge corresponding to srSDFEdge " + edge + " was not found.");
+        throw new PreesmRuntimeException("DAGEdge corresponding to srSDFEdge " + edge + " was not found.");
       }
 
       // Find the corresponding BufferProperty
@@ -1572,14 +1574,14 @@ public class CodegenModelGenerator {
         }
       }
       if (subBuffProperty == null) {
-        throw new PreesmException("Buffer property with ports " + edge.getTargetLabel() + " and "
+        throw new PreesmRuntimeException("Buffer property with ports " + edge.getTargetLabel() + " and "
             + edge.getSourceLabel() + " was not found in DAGEdge aggregate " + correspondingEdge);
       }
 
       // Get the corresponding Buffer
       final Buffer buffer = this.srSDFEdgeBuffers.get(subBuffProperty);
       if (buffer == null) {
-        throw new PreesmException("Buffer corresponding to DAGEdge" + correspondingEdge + "was not allocated.");
+        throw new PreesmRuntimeException("Buffer corresponding to DAGEdge" + correspondingEdge + "was not allocated.");
       }
       // Add it to the specialCall
       if (f.getType().equals(SpecialType.FORK) || f.getType().equals(SpecialType.BROADCAST)) {
@@ -1614,19 +1616,19 @@ public class CodegenModelGenerator {
       case DAGBroadcastVertex.DAG_BROADCAST_VERTEX:
         final String specialKind = dagVertex.getPropertyBean().getValue(DAGBroadcastVertex.SPECIAL_TYPE);
         if (specialKind == null) {
-          throw new PreesmException("Broadcast DAGVertex " + dagVertex + " has null special type");
+          throw new PreesmRuntimeException("Broadcast DAGVertex " + dagVertex + " has null special type");
         }
         if (specialKind.equals(DAGBroadcastVertex.SPECIAL_TYPE_BROADCAST)) {
           f.setType(SpecialType.BROADCAST);
         } else if (specialKind.equals(DAGBroadcastVertex.SPECIAL_TYPE_ROUNDBUFFER)) {
           f.setType(SpecialType.ROUND_BUFFER);
         } else {
-          throw new PreesmException(
+          throw new PreesmRuntimeException(
               "Broadcast DAGVertex " + dagVertex + " has an unknown special type: " + specialKind);
         }
         break;
       default:
-        throw new PreesmException("DAGVertex " + dagVertex + " has an unknown type: " + vertexType);
+        throw new PreesmRuntimeException("DAGVertex " + dagVertex + " has an unknown type: " + vertexType);
     }
 
     if (f.getType().equals(SpecialType.FORK) || f.getType().equals(SpecialType.BROADCAST)) {
@@ -1655,7 +1657,7 @@ public class CodegenModelGenerator {
       } else {
         direction = "outgoing";
       }
-      throw new PreesmException(f.getType().getName() + " vertex " + dagVertex + " more than 1 " + direction
+      throw new PreesmRuntimeException(f.getType().getName() + " vertex " + dagVertex + " more than 1 " + direction
           + "edge. Check the exported DAG.");
     }
     for (final DAGEdge edge : candidates) {
@@ -1670,7 +1672,7 @@ public class CodegenModelGenerator {
       // This should never happen. It would mean that a
       // "special vertex" does receive data only from send/receive
       // vertices
-      throw new PreesmException(f.getType().getName() + " vertex " + dagVertex + "is not properly connected.");
+      throw new PreesmRuntimeException(f.getType().getName() + " vertex " + dagVertex + "is not properly connected.");
     }
 
     final BufferAggregate bufferAggregate = lastEdge.getPropertyBean().getValue(BufferAggregate.propertyBeanName);
@@ -1773,12 +1775,13 @@ public class CodegenModelGenerator {
       // Increment the aggregate offset with the size of the current
       // subBuffer multiplied by the size of the datatype
       if (subBufferProperties.getDataType().equals("typeNotFound")) {
-        throw new PreesmException("There is a problem with datatypes.\n"
+        throw new PreesmRuntimeException("There is a problem with datatypes.\n"
             + "Please make sure that all data types are defined in the Simulation tab of the scenario editor.");
       }
       final DataType subBuffDataType = dataTypes.get(subBufferProperties.getDataType());
       if (subBuffDataType == null) {
-        throw new PreesmException("Data type " + subBufferProperties.getDataType() + " is undefined in the scenario.");
+        throw new PreesmRuntimeException(
+            "Data type " + subBufferProperties.getDataType() + " is undefined in the scenario.");
       }
       buff.setTypeSize(subBuffDataType.getSize());
       aggregateOffset += (buff.getSize() * subBuffDataType.getSize());
@@ -1827,7 +1830,7 @@ public class CodegenModelGenerator {
 
     // Check that it has an IDL refinement.
     if (!(refinement instanceof CodeRefinement) || (((CodeRefinement) refinement).getLanguage() != Language.IDL)) {
-      throw new PreesmException("generateFunctionCall was called with a DAG Vertex withoud IDL");
+      throw new PreesmRuntimeException("generateFunctionCall was called with a DAG Vertex withoud IDL");
     }
 
     // Retrieve the IDL File

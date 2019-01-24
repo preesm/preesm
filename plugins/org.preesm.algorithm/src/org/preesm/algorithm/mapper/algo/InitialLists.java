@@ -53,7 +53,7 @@ import org.preesm.algorithm.mapper.model.MapperDAGVertex;
 import org.preesm.algorithm.mapper.tools.BLevelIterator;
 import org.preesm.algorithm.model.dag.DAGEdge;
 import org.preesm.algorithm.model.dag.DAGVertex;
-import org.preesm.commons.exceptions.PreesmException;
+import org.preesm.commons.exceptions.PreesmRuntimeException;
 import org.preesm.commons.logger.PreesmLogger;
 
 /**
@@ -174,7 +174,7 @@ public class InitialLists implements Cloneable {
         predset.addAll(neighborindex.predecessorsOf(cpnvertex));
       } else {
         final String msg = "Predecessor not found";
-        throw new PreesmException(msg);
+        throw new PreesmRuntimeException(msg);
       }
 
     }
@@ -220,7 +220,7 @@ public class InitialLists implements Cloneable {
         tlevelmax = tLevel;
       } else if (bLevel == -1) {
         final String msg = "CPN list construction: b-level can not be computed for vertex " + currentvertex;
-        throw new PreesmException(msg);
+        throw new PreesmRuntimeException(msg);
       }
 
     }
@@ -377,7 +377,7 @@ public class InitialLists implements Cloneable {
       constructCPN(dag, this.cpnDominant, this.criticalPath, simu);
     } else {
       final String msg = "To construct initial lists, a latency ABC is needed.";
-      throw new PreesmException(msg);
+      throw new PreesmRuntimeException(msg);
     }
 
     PreesmLogger.getLogger().log(Level.INFO, "Adding OBN actors to CPN and IBN actors in CPN dominant list");

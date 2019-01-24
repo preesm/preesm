@@ -44,7 +44,7 @@ import org.preesm.algorithm.schedule.ASAPSchedulerSDF;
 import org.preesm.algorithm.throughput.tools.Identifier;
 import org.preesm.algorithm.throughput.tools.SDFTransformer;
 import org.preesm.algorithm.throughput.tools.Stopwatch;
-import org.preesm.commons.exceptions.PreesmException;
+import org.preesm.commons.exceptions.PreesmRuntimeException;
 import org.preesm.commons.math.MathFunctionsHelper;
 
 /**
@@ -149,7 +149,7 @@ public interface SDFLiveness {
                 + edgeValue.get(e.getPropertyBean().getValue(SDFLiveness.EDGE_NAME_PROPERTY)))) {
               // negative circuit detected if a part of the graph is not live the global graph is not too
               final String message = "Negative cycle detected !!";
-              throw new PreesmException(message);
+              throw new PreesmRuntimeException(message);
             }
           }
         }

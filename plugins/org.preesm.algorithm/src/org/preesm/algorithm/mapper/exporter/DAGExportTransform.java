@@ -46,6 +46,7 @@ import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.Path;
 import org.preesm.algorithm.model.dag.DirectedAcyclicGraph;
 import org.preesm.commons.exceptions.PreesmException;
+import org.preesm.commons.exceptions.PreesmRuntimeException;
 import org.preesm.commons.files.ContainersManager;
 import org.preesm.commons.files.PathTools;
 import org.preesm.commons.files.WorkspaceUtils;
@@ -82,7 +83,7 @@ public class DAGExportTransform extends AbstractTaskImplementation {
         graphmlPath = graphmlPath.append(dag.getName() + ".graphml");
       }
     } catch (CoreException | IllegalArgumentException e) {
-      throw new PreesmException("Path " + sGraphmlPath + " is not a valid path for export.\n" + e.getMessage());
+      throw new PreesmRuntimeException("Path " + sGraphmlPath + " is not a valid path for export.\n" + e.getMessage());
     }
     // Exporting the DAG in a GraphML
     if (graphmlPath != null) {

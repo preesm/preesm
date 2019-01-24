@@ -40,7 +40,7 @@ import java.io.IOException;
 import org.preesm.algorithm.model.AbstractEdge;
 import org.preesm.algorithm.model.AbstractGraph;
 import org.preesm.algorithm.model.AbstractVertex;
-import org.preesm.commons.exceptions.PreesmException;
+import org.preesm.commons.exceptions.PreesmRuntimeException;
 import org.w3c.dom.Element;
 
 /**
@@ -63,7 +63,7 @@ public class GMLGenericExporter extends GMLExporter<AbstractVertex<?>, AbstractE
       transform(out);
       out.close();
     } catch (final IOException e) {
-      throw new PreesmException("Could not export graph", e);
+      throw new PreesmRuntimeException("Could not export graph", e);
     }
 
   }

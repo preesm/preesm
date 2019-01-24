@@ -44,6 +44,7 @@ import org.preesm.algorithm.memory.allocation.AbstractMemoryAllocatorTask;
 import org.preesm.algorithm.memory.exclusiongraph.MemoryExclusionGraph;
 import org.preesm.algorithm.model.dag.DirectedAcyclicGraph;
 import org.preesm.commons.exceptions.PreesmException;
+import org.preesm.commons.exceptions.PreesmRuntimeException;
 import org.preesm.model.scenario.PreesmScenario;
 import org.preesm.model.scenario.types.DataType;
 import org.preesm.workflow.elements.Workflow;
@@ -91,7 +92,7 @@ public class MemoryScriptTask extends AbstractMemoryScriptTask {
       engine.runScripts(dag, dataTypes, checkString);
     } catch (final EvalError e) {
       final String message = "An error occurred during memory scripts execution";
-      throw new PreesmException(message, e);
+      throw new PreesmRuntimeException(message, e);
     }
     engine.updateMemEx(meg);
 

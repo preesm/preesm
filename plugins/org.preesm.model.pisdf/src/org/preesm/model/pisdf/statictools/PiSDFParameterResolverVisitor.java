@@ -41,7 +41,7 @@ package org.preesm.model.pisdf.statictools;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import org.eclipse.emf.common.util.EList;
-import org.preesm.commons.exceptions.PreesmException;
+import org.preesm.commons.exceptions.PreesmRuntimeException;
 import org.preesm.model.pisdf.AbstractActor;
 import org.preesm.model.pisdf.ConfigInputInterface;
 import org.preesm.model.pisdf.ConfigInputPort;
@@ -167,7 +167,7 @@ public class PiSDFParameterResolverVisitor extends PiMMSwitch<Boolean> {
     final ConfigInputPort graphPort = cii.getGraphPort();
     final Dependency incomingDependency = graphPort.getIncomingDependency();
     if (incomingDependency == null) {
-      throw new PreesmException(cii.eContainer() + " has a config input port without incoming dependency");
+      throw new PreesmRuntimeException(cii.eContainer() + " has a config input port without incoming dependency");
     }
     final ISetter setter = incomingDependency.getSetter();
     // Setter of an incoming dependency into a ConfigInputInterface must be
@@ -225,7 +225,7 @@ public class PiSDFParameterResolverVisitor extends PiMMSwitch<Boolean> {
   @Override
   public Boolean casePiGraph(final PiGraph graph) {
     if (!graph.isLocallyStatic()) {
-      throw new PreesmException(
+      throw new PreesmRuntimeException(
           "PiGraph " + graph.getName() + " has configuration actors. It is thus impossible to use the"
               + " Static PiMM 2 SDF transformation. Try instead the Dynamic PiMM 2 SDF"
               + " transformation (id: org.ietr.preesm.experiment.pimm2sdf.PiMM2SDFTask)");

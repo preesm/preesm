@@ -40,7 +40,7 @@ package org.preesm.algorithm.mapper.tools;
 import org.preesm.algorithm.mapper.abc.impl.latency.LatencyAbc;
 import org.preesm.algorithm.mapper.model.MapperDAG;
 import org.preesm.algorithm.mapper.model.MapperDAGVertex;
-import org.preesm.commons.exceptions.PreesmException;
+import org.preesm.commons.exceptions.PreesmRuntimeException;
 
 // TODO: Auto-generated Javadoc
 /**
@@ -81,7 +81,7 @@ public class SchedulingOrderIterator extends ImplementationIterator {
     // Preventing equal scheduling order element discard
     if (dif == 0) {
       final String msg = "Found two vertices with the same total order";
-      throw new PreesmException(msg);
+      throw new PreesmRuntimeException(msg);
     }
     return (dif);
   }

@@ -66,7 +66,7 @@ import org.preesm.codegen.model.SubBuffer;
 import org.preesm.codegen.model.Variable;
 import org.preesm.codegen.model.util.CodegenSwitch;
 import org.preesm.codegen.xtend.task.CodegenEngine;
-import org.preesm.commons.exceptions.PreesmException;
+import org.preesm.commons.exceptions.PreesmRuntimeException;
 
 /**
  * The {@link CodegenAbstractPrinter} is used to visit a {@link CodegenPackage Codegen model}. To use a printer, the
@@ -318,7 +318,7 @@ public abstract class CodegenAbstractPrinter extends CodegenSwitch<CharSequence>
 
   @Override
   public CharSequence defaultCase(final EObject object) {
-    throw new PreesmException("Object " + object + " is not supported by the printer " + this);
+    throw new PreesmRuntimeException("Object " + object + " is not supported by the printer " + this);
   }
 
   /**

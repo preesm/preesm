@@ -57,7 +57,7 @@ import org.eclipse.ui.PlatformUI;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.FrameworkUtil;
 import org.preesm.algorithm.model.sdf.SDFVertex;
-import org.preesm.commons.exceptions.PreesmException;
+import org.preesm.commons.exceptions.PreesmFrameworkException;
 import org.preesm.model.pisdf.AbstractActor;
 import org.preesm.model.scenario.PreesmScenario;
 import org.preesm.model.scenario.Timing;
@@ -174,7 +174,7 @@ public class TimingsTableLabelProvider implements ITableLabelProvider, Selection
     if (this.scenario.isPISDFScenario()) {
       return getPISDFColumnText(element, columnIndex);
     } else if (this.scenario.isIBSDFScenario()) {
-      throw new PreesmException("ibsdf not supproted anymore");
+      throw new PreesmFrameworkException("ibsdf not supproted anymore");
     } else {
       return null;
     }

@@ -41,7 +41,7 @@ import org.eclipse.ui.IWorkbenchPage;
 import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.PlatformUI;
-import org.preesm.commons.exceptions.PreesmException;
+import org.preesm.commons.exceptions.PreesmRuntimeException;
 
 /**
  * Class used by the editor displaying the best latency found in time. Useful to run editor in display thread.
@@ -81,7 +81,7 @@ public class BestCostEditorRunnable implements Runnable {
         page.openEditor(this.input, "org.ietr.preesm.plugin.mapper.plot.TimeEditor");
 
       } catch (final PartInitException e) {
-        throw new PreesmException(e);
+        throw new PreesmRuntimeException(e);
       }
     }
 

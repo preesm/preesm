@@ -66,7 +66,7 @@ import org.preesm.algorithm.model.sdf.esdf.SDFSourceInterfaceVertex;
 import org.preesm.algorithm.model.sdf.transformations.SpecialActorPortsIndexer;
 import org.preesm.algorithm.model.types.ExpressionEdgePropertyType;
 import org.preesm.algorithm.model.types.StringEdgePropertyType;
-import org.preesm.commons.exceptions.PreesmException;
+import org.preesm.commons.exceptions.PreesmRuntimeException;
 import org.preesm.model.pisdf.AbstractActor;
 import org.preesm.model.pisdf.AbstractVertex;
 import org.preesm.model.pisdf.Actor;
@@ -344,7 +344,7 @@ public class StaticPiMM2SDFVisitor extends PiMMSwitch<Boolean> {
     for (final ConfigInputPort p : a.getConfigInputPorts()) {
       final Dependency incomingDependency = p.getIncomingDependency();
       if (incomingDependency == null) {
-        throw new PreesmException(
+        throw new PreesmRuntimeException(
             "Actor config input port '" + a.getVertexPath() + "." + p.getName() + "' is not connected.",
             new NullPointerException());
       }

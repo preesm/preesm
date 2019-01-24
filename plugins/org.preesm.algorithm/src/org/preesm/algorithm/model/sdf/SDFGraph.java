@@ -67,6 +67,7 @@ import org.preesm.algorithm.model.sdf.transformations.SpecialActorPortsIndexer;
 import org.preesm.algorithm.model.types.LongEdgePropertyType;
 import org.preesm.algorithm.model.types.StringEdgePropertyType;
 import org.preesm.commons.exceptions.PreesmException;
+import org.preesm.commons.exceptions.PreesmRuntimeException;
 import org.preesm.commons.logger.PreesmLogger;
 
 /**
@@ -513,7 +514,7 @@ public class SDFGraph extends AbstractGraph<SDFAbstractVertex, SDFEdge> {
         inPort.setName("in");
         broadcastPort.addSource(inPort);
         if (!addVertex(broadcastPort)) {
-          throw new PreesmException("Could not insert broadcast vertex");
+          throw new PreesmRuntimeException("Could not insert broadcast vertex");
         }
         final SDFEdge baseEdge = this.addEdge(vertex, broadcastPort);
         baseEdge.setSourceInterface(port);
@@ -731,7 +732,7 @@ public class SDFGraph extends AbstractGraph<SDFAbstractVertex, SDFEdge> {
 
     // validate vertex
     if (!child.validateModel()) {
-      throw new PreesmException(child.getName() + " is not a valid vertex, verify arguments");
+      throw new PreesmRuntimeException(child.getName() + " is not a valid vertex, verify arguments");
     }
 
     if (child.getGraphDescription() != null) {
@@ -739,7 +740,7 @@ public class SDFGraph extends AbstractGraph<SDFAbstractVertex, SDFEdge> {
       final String childGraphName = child.getGraphDescription().getName();
       final SDFGraph descritption = ((SDFGraph) child.getGraphDescription());
       if (!descritption.validateModel()) {
-        throw (new PreesmException(childGraphName + " is not schedulable"));
+        throw new PreesmRuntimeException(childGraphName + " is not schedulable");
       }
       // validate child graph I/Os w.r.t. actor I/Os
       final List<SDFAbstractVertex> validatedInputs = validateInputs(child);
@@ -750,7 +751,7 @@ public class SDFGraph extends AbstractGraph<SDFAbstractVertex, SDFEdge> {
         validatedInputs.retainAll(validatedOutputs);
         final List<SDFAbstractVertex> multiplyDefinedEdges = validatedInputs.stream().peek(AbstractVertex::getName)
             .collect(Collectors.toList());
-        throw new PreesmException(multiplyDefinedEdges + " are multiply connected, consider using broadcast ");
+        throw new PreesmRuntimeException(multiplyDefinedEdges + " are multiply connected, consider using broadcast ");
       }
     } else {
       // validate concrete actor implementation
@@ -766,7 +767,8 @@ public class SDFGraph extends AbstractGraph<SDFAbstractVertex, SDFEdge> {
       final SDFSinkInterfaceVertex subGraphSinkInterface = actorOutgoingEdge.getSourceInterface();
       final String subGraphSinkInterfaceName = subGraphSinkInterface.getName();
       if (validatedOutInterfaces.contains(subGraphSinkInterface)) {
-        throw new PreesmException(subGraphSinkInterfaceName + " is multiply connected, consider using broadcast ");
+        throw new PreesmRuntimeException(
+            subGraphSinkInterfaceName + " is multiply connected, consider using broadcast ");
       } else {
         validatedOutInterfaces.add(subGraphSinkInterface);
       }
@@ -778,7 +780,7 @@ public class SDFGraph extends AbstractGraph<SDFAbstractVertex, SDFEdge> {
           final AbstractEdgePropertyType<?> subInterfaceConsExpr = subGraphSinkInterfaceInEdge.getCons();
           final long sinkInterfaceConsrate = subInterfaceConsExpr.longValue();
           if (sinkInterfaceConsrate != actorOutEdgeProdRate) {
-            throw new PreesmException(
+            throw new PreesmRuntimeException(
                 "Sink [" + subGraphSinkInterfaceName + "] in actor [" + hierarchicalActor.getName()
                     + "] has incompatible outside actor production and inside sink vertex consumption "
                     + sinkInterfaceConsrate + " != " + actorOutEdgeProdRate
@@ -799,7 +801,8 @@ public class SDFGraph extends AbstractGraph<SDFAbstractVertex, SDFEdge> {
       final SDFSourceInterfaceVertex subGraphSourceInterface = actorIncomingEdge.getTargetInterface();
       final String subGraphSourceInterfaceName = subGraphSourceInterface.getName();
       if (validatedInInterfaces.contains(subGraphSourceInterface)) {
-        throw new PreesmException(subGraphSourceInterfaceName + " is multiply connected, consider using broadcast ");
+        throw new PreesmRuntimeException(
+            subGraphSourceInterfaceName + " is multiply connected, consider using broadcast ");
       } else {
         validatedInInterfaces.add(subGraphSourceInterface);
       }
@@ -812,7 +815,7 @@ public class SDFGraph extends AbstractGraph<SDFAbstractVertex, SDFEdge> {
           final AbstractEdgePropertyType<?> subInterfaceProdExpr = subGraphSourceInterfaceOutEdge.getProd();
           final long sourceInterfaceProdRate = subInterfaceProdExpr.longValue();
           if (sourceInterfaceProdRate != actorInEdgeConsRate) {
-            throw new PreesmException(
+            throw new PreesmRuntimeException(
                 "Source [" + subGraphSourceInterfaceName + "] in actor [" + hierarchicalActor.getName()
                     + "} has incompatible outside actor consumption and inside source vertex production "
                     + sourceInterfaceProdRate + " != " + actorInEdgeConsRate

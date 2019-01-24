@@ -41,7 +41,7 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Set;
 import org.preesm.algorithm.model.sdf.SDFGraph;
-import org.preesm.commons.exceptions.PreesmException;
+import org.preesm.commons.exceptions.PreesmRuntimeException;
 import org.preesm.model.pisdf.Parameter;
 import org.preesm.model.pisdf.PiGraph;
 import org.preesm.model.pisdf.statictools.PiGraphExecution;
@@ -106,7 +106,7 @@ public class StaticPiMM2SDFLauncher {
     for (final ParameterValue paramValue : parameterValues) {
       switch (paramValue.getType()) {
         case ACTOR_DEPENDENT:
-          throw new PreesmException("Parameter " + paramValue.getName()
+          throw new PreesmRuntimeException("Parameter " + paramValue.getName()
               + " is depends on a configuration actor. It is thus impossible to use the"
               + " Static PiMM 2 SDF transformation. Try instead the Dynamic PiMM 2 SDF"
               + " transformation (id: org.ietr.preesm.experiment.pimm2sdf.PiMM2SDFTask)");

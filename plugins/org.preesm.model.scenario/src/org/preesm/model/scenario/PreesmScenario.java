@@ -47,7 +47,7 @@ import java.util.Set;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.emf.ecore.EPackage;
 import org.eclipse.emf.ecore.resource.Resource;
-import org.preesm.commons.exceptions.PreesmException;
+import org.preesm.commons.exceptions.PreesmFrameworkException;
 import org.preesm.model.pisdf.AbstractActor;
 import org.preesm.model.pisdf.PiGraph;
 import org.preesm.model.pisdf.serialize.PiParser;
@@ -155,7 +155,7 @@ public class PreesmScenario {
     if (isPISDFScenario()) {
       return getPiActorNames();
     } else if (isIBSDFScenario()) {
-      throw new PreesmException("IBSDF is not supported anymore");
+      throw new PreesmFrameworkException("IBSDF is not supported anymore");
     } else {
       return Collections.emptySet();
     }
@@ -439,7 +439,7 @@ public class PreesmScenario {
       if (isPISDFScenario()) {
         this.parameterValueManager.updateWith(PiParser.getPiGraphWithReconnection(this.algorithmURL));
       } else if (isIBSDFScenario()) {
-        throw new PreesmException("IBSDF is not supported anymore");
+        throw new PreesmFrameworkException("IBSDF is not supported anymore");
       }
     }
     // If the algorithm or the architecture changes, timings and constraints
