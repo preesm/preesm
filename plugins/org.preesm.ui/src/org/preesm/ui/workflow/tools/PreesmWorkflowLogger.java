@@ -100,7 +100,8 @@ public class PreesmWorkflowLogger extends Logger {
               stream.setColor(new Color(null, 255, 0, 0));
             }
           });
-          stream.println(new DefaultPreesmFormatter(false).format(record));
+          final boolean printStack = this.getLevel().intValue() < Level.INFO.intValue();
+          stream.println(new DefaultPreesmFormatter(printStack).format(record));
           if (record.getThrown() != null) {
             // always log stack trace in the anonymous logger
             Logger.getAnonymousLogger().log(Level.SEVERE, record.getThrown().getMessage(), record.getThrown());
