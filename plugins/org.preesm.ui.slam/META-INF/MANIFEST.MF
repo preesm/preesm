@@ -3,7 +3,7 @@ Bundle-ManifestVersion: 2
 Bundle-Name: PREESM :: Plugins :: Salm UI
 Automatic-Module-Name: org.preesm.ui.slam
 Bundle-SymbolicName: org.preesm.ui.slam;singleton:=true
-Bundle-Version: 3.2.0
+Bundle-Version: 3.2.0.qualifier
 Require-Bundle: org.preesm.ui,
  org.preesm.model.slam
 Bundle-ActivationPolicy: lazy
