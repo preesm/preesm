@@ -238,177 +238,184 @@ public abstract class AbstractWorkflowExecutor {
 
     refreshProject(workflow.getProjectName(), monitor, "Warning: Could not refresh project before workflow execution");
 
-    boolean check = initAndCheck(workflowPath, monitor, workflow);
-    if (!check) {
+    boolean result = initAndCheck(workflowPath, monitor, workflow);
+    if (!result) {
       return false;
     }
+    if (result) {
+      for (final AbstractWorkflowNode node : workflow.vertexTopologicalList()) {
+        boolean nodeResult = true;
+        if (workflow.edgesOf(node).isEmpty()) {
+          log(Level.WARNING, "Workflow.IgnoredNonConnectedTask");
+        } else {
+          // Data outputs of the node
+          Map<String, Object> outputs = null;
+          String nodeId = null;
 
-    for (final AbstractWorkflowNode node : workflow.vertexTopologicalList()) {
-      boolean nodeResult = true;
-      if (workflow.edgesOf(node).isEmpty()) {
-        log(Level.WARNING, "Workflow.IgnoredNonConnectedTask");
-      } else {
-        // Data outputs of the node
-        Map<String, Object> outputs = null;
-        String nodeId = null;
+          if (node.isScenarioNode()) {
+            // The scenario node is special because it gets a reference
+            // path and generates the inputs of the rapid prototyping
+            // process
+            final ScenarioNode scenarioNode = (ScenarioNode) node;
+            nodeId = scenarioNode.getScenarioId();
+            final AbstractScenarioImplementation scenario = scenarioNode.getScenario();
 
-        if (node.isScenarioNode()) {
-          // The scenario node is special because it gets a reference
-          // path and generates the inputs of the rapid prototyping
-          // process
-          final ScenarioNode scenarioNode = (ScenarioNode) node;
-          nodeId = scenarioNode.getScenarioId();
-          final AbstractScenarioImplementation scenario = scenarioNode.getScenario();
-
-          // Checks that the scenario node output edges fit the task
-          // prototype
-          if (!checkScenarioPrototype(scenarioNode, workflow)) {
-            nodeResult = false;
-          } else {
-            try {
-              // updating monitor
-              if (monitor != null) {
-                monitor.subTask(scenario.monitorMessage());
-              }
-              outputs = scenario.extractData(scenarioPath);
-
-              // Filter only outputs required in the workflow
-              final Map<String, Object> outs = outputs; // final
-              // reference
-              // for
-              // predicate
-              final Set<WorkflowEdge> edges = new LinkedHashSet<>(workflow.outgoingEdgesOf(scenarioNode));
-              edges.removeIf(edge -> !outs.containsKey(edge.getSourcePort()));
-
-              final Map<String, Object> checkedOutputs = new LinkedHashMap<>();
-              edges.forEach(edge -> checkedOutputs.put(edge.getSourcePort(), outs.get(edge.getSourcePort())));
-
-              // Check the outputs have the right type.
-              checkOutputType(checkedOutputs, scenario);
-
-              // Each node execution is equivalent for the monitor
-              if (monitor != null) {
-                monitor.worked(1);
-              }
-            } catch (final PreesmException e) {
-              error(e, e.getMessage());
+            // Checks that the scenario node output edges fit the task
+            // prototype
+            if (!checkScenarioPrototype(scenarioNode, workflow)) {
               nodeResult = false;
-            }
-          }
-        } else if (node.isTaskNode()) {
-          final TaskNode taskNode = (TaskNode) node;
-          final AbstractTaskImplementation task = taskNode.getTask();
-          nodeId = taskNode.getTaskId();
+            } else {
+              try {
+                // updating monitor
+                if (monitor != null) {
+                  monitor.subTask(scenario.monitorMessage());
+                }
+                outputs = scenario.extractData(scenarioPath);
 
-          // Checks that the workflow task node edges fit the task
-          // prototype
-          if (!checkTaskPrototype(taskNode, workflow)) {
-            nodeResult = false;
-          } else {
+                // Filter only outputs required in the workflow
+                final Map<String, Object> outs = outputs; // final
+                // reference
+                // for
+                // predicate
+                final Set<WorkflowEdge> edges = new LinkedHashSet<>(workflow.outgoingEdgesOf(scenarioNode));
+                edges.removeIf(edge -> !outs.containsKey(edge.getSourcePort()));
 
-            // Preparing the input and output maps of the execute method
-            final Map<String, Object> inputs = new LinkedHashMap<>();
+                final Map<String, Object> checkedOutputs = new LinkedHashMap<>();
+                edges.forEach(edge -> checkedOutputs.put(edge.getSourcePort(), outs.get(edge.getSourcePort())));
 
-            // Retrieving the data from input edges
-            for (final WorkflowEdge edge : workflow.incomingEdgesOf(taskNode)) {
-              inputs.put(edge.getTargetPort(), edge.getData());
-            }
+                // Check the outputs have the right type.
+                checkOutputType(checkedOutputs, scenario);
 
-            // Executing the workflow task
-            try {
-              // updating monitor and console
-              final StringBuilder monitorMessage = new StringBuilder();
-              if (this.debug) {
-                monitorMessage.append("[" + task.getClass().getSimpleName() + "] ");
-              }
-              monitorMessage.append(task.monitorMessage());
-
-              final String monitorMessageStr = monitorMessage.toString();
-              if (monitor != null) {
-                monitor.subTask(monitorMessageStr);
-              }
-              log(Level.INFO, "Workflow.Step", monitorMessageStr);
-
-              // Workflow cancellation was requested
-              if ((monitor != null) && monitor.isCanceled()) {
-
-                log(Level.SEVERE, "Workflow.CancellationRequested");
+                // Each node execution is equivalent for the monitor
+                if (monitor != null) {
+                  monitor.worked(1);
+                }
+              } catch (final PreesmException e) {
+                error(e, e.getMessage());
                 nodeResult = false;
-              } else {
+              }
+            }
+          } else if (node.isTaskNode()) {
+            final TaskNode taskNode = (TaskNode) node;
+            final AbstractTaskImplementation task = taskNode.getTask();
+            nodeId = taskNode.getTaskId();
 
-                // Checks that the requested parameters are available
-                // for the task
-                final boolean checkParameters = checkParameters(taskNode, task);
-                if (!checkParameters) {
+            // Checks that the workflow task node edges fit the task
+            // prototype
+            if (!checkTaskPrototype(taskNode, workflow)) {
+              nodeResult = false;
+            } else {
+
+              // Preparing the input and output maps of the execute method
+              final Map<String, Object> inputs = new LinkedHashMap<>();
+
+              // Retrieving the data from input edges
+              for (final WorkflowEdge edge : workflow.incomingEdgesOf(taskNode)) {
+                inputs.put(edge.getTargetPort(), edge.getData());
+              }
+
+              // Executing the workflow task
+              try {
+                // updating monitor and console
+                final StringBuilder monitorMessage = new StringBuilder();
+                if (this.debug) {
+                  monitorMessage.append("[" + task.getClass().getSimpleName() + "] ");
+                }
+                monitorMessage.append(task.monitorMessage());
+
+                final String monitorMessageStr = monitorMessage.toString();
+                if (monitor != null) {
+                  monitor.subTask(monitorMessageStr);
+                }
+                log(Level.INFO, "Workflow.Step", monitorMessageStr);
+
+                // Workflow cancellation was requested
+                if ((monitor != null) && monitor.isCanceled()) {
+
+                  log(Level.SEVERE, "Workflow.CancellationRequested");
                   nodeResult = false;
                 } else {
 
-                  // execution
-                  outputs = task.execute(inputs, taskNode.getParameters(), monitor, nodeId, workflow);
+                  // Checks that the requested parameters are available
+                  // for the task
+                  final boolean checkParameters = checkParameters(taskNode, task);
+                  if (!checkParameters) {
+                    nodeResult = false;
+                  } else {
 
-                  // Filter only outputs required in the workflow
-                  final Map<String, Object> outs = outputs; // final
-                  // reference
-                  // for
-                  // predicate
-                  final Set<WorkflowEdge> edges = new LinkedHashSet<>(workflow.outgoingEdgesOf(taskNode));
-                  edges.removeIf(edge -> !outs.containsKey(edge.getSourcePort()));
+                    // execution
+                    outputs = task.execute(inputs, taskNode.getParameters(), monitor, nodeId, workflow);
 
-                  final Map<String, Object> checkedOutputs = new LinkedHashMap<>();
-                  edges.forEach(edge -> checkedOutputs.put(edge.getSourcePort(), outs.get(edge.getSourcePort())));
+                    // Filter only outputs required in the workflow
+                    final Map<String, Object> outs = outputs; // final
+                    // reference
+                    // for
+                    // predicate
+                    final Set<WorkflowEdge> edges = new LinkedHashSet<>(workflow.outgoingEdgesOf(taskNode));
+                    edges.removeIf(edge -> !outs.containsKey(edge.getSourcePort()));
 
-                  // Check the outputs have the right type.
-                  checkOutputType(outputs, task);
+                    final Map<String, Object> checkedOutputs = new LinkedHashMap<>();
+                    edges.forEach(edge -> checkedOutputs.put(edge.getSourcePort(), outs.get(edge.getSourcePort())));
 
-                  // Each node execution is equivalent for the monitor
-                  if (monitor != null) {
-                    monitor.worked(1);
+                    // Check the outputs have the right type.
+                    checkOutputType(outputs, task);
+
+                    // Each node execution is equivalent for the monitor
+                    if (monitor != null) {
+                      monitor.worked(1);
+                    }
                   }
                 }
+              } catch (final PreesmException e) {
+                error(e, e.getMessage());
+                nodeResult = false;
+              } catch (final Exception e) {
+                error(e, "Unexpected Exception: " + e.getClass().getCanonicalName() + ":" + e.getMessage()
+                    + "\n Contact Preesm developers if you cannot solve the problem.");
+                nodeResult = false;
               }
-            } catch (final PreesmException e) {
-              error(e, e.getMessage());
-              nodeResult = false;
-            } catch (final Exception e) {
-              error(e, "Unexpected Exception: " + e.getClass().getCanonicalName() + ":" + e.getMessage()
-                  + "\n Contact Preesm developers if you cannot solve the problem.");
-              nodeResult = false;
             }
           }
-        }
 
-        // If the execution incorrectly initialized the outputs
-        if (outputs == null) {
-          log(Level.SEVERE, "Workflow.NullNodeOutput", nodeId);
-          return false;
-        } else {
-          // Retrieving output of the current node
-          // Putting the data in output edges
-          for (final WorkflowEdge edge : workflow.outgoingEdgesOf(node)) {
-            final String type = edge.getSourcePort();
-            // The same data may be transferred to several
-            // successors
-            if (type.equals(AbstractWorkflowExecutor.IGNORE_PORT_NAME)) {
-              // Ignore data
-            } else if (outputs.containsKey(type)) {
-              edge.setData(outputs.get(type));
-            } else {
-              edge.setData(null);
-              log(Level.SEVERE, "Workflow.IncorrectOutput", nodeId, type);
+          if (nodeResult) {
+            // If the execution incorrectly initialized the outputs
+            if (outputs == null) {
+              log(Level.SEVERE, "Workflow.NullNodeOutput", nodeId);
               nodeResult = false;
+            } else {
+              // Retrieving output of the current node
+              // Putting the data in output edges
+              for (final WorkflowEdge edge : workflow.outgoingEdgesOf(node)) {
+                final String type = edge.getSourcePort();
+                // The same data may be transferred to several
+                // successors
+                if (type.equals(AbstractWorkflowExecutor.IGNORE_PORT_NAME)) {
+                  // Ignore data
+                } else if (outputs.containsKey(type)) {
+                  edge.setData(outputs.get(type));
+                } else {
+                  edge.setData(null);
+                  log(Level.SEVERE, "Workflow.IncorrectOutput", nodeId, type);
+                  nodeResult = false;
+                }
+              }
             }
           }
+          if (!nodeResult) {
+            result = false;
+            break;
+          }
         }
-      }
-      if (!nodeResult) {
-        return false;
       }
     }
 
-    refreshProject(workflow.getProjectName(), monitor, "Warning: Could not refresh project after workflow execution");
-    log(Level.INFO, "Workflow.EndInfo", workflowPath);
+    if (result) {
+      log(Level.INFO, "Workflow.EndInfo", workflowPath);
+    }
 
-    return true;
+    refreshProject(workflow.getProjectName(), monitor, "Warning: Could not refresh project after workflow execution");
+
+    return result;
   }
 
   private boolean initAndCheck(final String workflowPath, final IProgressMonitor monitor, final Workflow workflow) {
