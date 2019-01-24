@@ -131,6 +131,10 @@ public class PiSDFSRDAGComputePopup extends AbstractHandler {
 
     final PiGraph srdag = PiSDFToSingleRate.compute(pigraph, BRVMethod.LCM);
 
+    saveSrdagGraph(iProject, srdag);
+  }
+
+  private void saveSrdagGraph(final IProject iProject, final PiGraph srdag) {
     final IPath targetFolder = FileUtils.browseFiles(PlatformUI.getWorkbench().getActiveWorkbenchWindow().getShell(),
         "test", "select test", (Collection<String>) null);
     final IPath inProjectPath = targetFolder.removeFirstSegments(1);
@@ -144,7 +148,7 @@ public class PiSDFSRDAGComputePopup extends AbstractHandler {
         ContainersManager.createMissingFolders(xmlPath.removeFileExtension().removeLastSegments(1));
       } else {
         ContainersManager.createMissingFolders(xmlPath);
-        xmlPath = xmlPath.append(srdag.getName() + ".pi");
+        xmlPath = xmlPath.append(srdag.getName() + "_srdag.pi");
       }
     } catch (CoreException | IllegalArgumentException e) {
       throw new PreesmException("Path " + sXmlPath + " is not a valid path for export.\n" + e.getMessage());
