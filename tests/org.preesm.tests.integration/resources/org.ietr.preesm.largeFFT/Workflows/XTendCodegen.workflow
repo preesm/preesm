@@ -14,6 +14,7 @@
             <dftools:variable name="fastLocalSearchTime" value="10"/>
             <dftools:variable name="fastTime" value="100"/>
             <dftools:variable name="iterationNr" value="0"/>
+            <dftools:variable name="Optimize synchronization" value="false"/>
             <dftools:variable name="iterationPeriod" value="0"/>
             <dftools:variable name="listType" value="optimised"/>
             <dftools:variable name="simulatorType" value="LooselyTimed"/>
