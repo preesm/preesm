@@ -50,7 +50,7 @@ import org.preesm.algorithm.model.parameters.ParameterSet;
 import org.preesm.algorithm.model.parameters.Variable;
 import org.preesm.algorithm.model.parameters.VariableSet;
 import org.preesm.commons.GMLKey;
-import org.preesm.commons.exceptions.PreesmException;
+import org.preesm.commons.exceptions.PreesmRuntimeException;
 import org.w3c.dom.DOMImplementation;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -101,7 +101,7 @@ public abstract class GMLExporter<V extends AbstractVertex<?>, E extends Abstrac
       impl = registry.getDOMImplementation("Core 3.0 XML 3.0 LS");
       this.domDocument = impl.createDocument("http://graphml.graphdrawing.org/xmlns", "graphml", null);
     } catch (ClassCastException | ClassNotFoundException | InstantiationException | IllegalAccessException e) {
-      throw new PreesmException("Could not export graph", e);
+      throw new PreesmRuntimeException("Could not export graph", e);
     }
 
     this.rootElt = this.domDocument.getDocumentElement();

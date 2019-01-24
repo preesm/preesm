@@ -35,14 +35,14 @@
 package org.preesm.commons.math;
 
 import org.nfunk.jep.ParseException;
-import org.preesm.commons.exceptions.PreesmException;
+import org.preesm.commons.exceptions.PreesmRuntimeException;
 
 /**
  *
  * @author anmorvan
  *
  */
-public class ExpressionEvaluationException extends PreesmException {
+public class ExpressionEvaluationException extends PreesmRuntimeException {
 
   public ExpressionEvaluationException(final String msg) {
     super(msg);

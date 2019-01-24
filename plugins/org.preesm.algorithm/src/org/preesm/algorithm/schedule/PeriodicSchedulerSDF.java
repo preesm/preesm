@@ -48,7 +48,7 @@ import org.preesm.algorithm.model.sdf.SDFGraph;
 import org.preesm.algorithm.throughput.tools.GraphStructureHelper;
 import org.preesm.algorithm.throughput.tools.SDFTransformer;
 import org.preesm.algorithm.throughput.tools.Stopwatch;
-import org.preesm.commons.exceptions.PreesmException;
+import org.preesm.commons.exceptions.PreesmRuntimeException;
 import org.preesm.commons.math.MathFunctionsHelper;
 
 /**
@@ -139,7 +139,7 @@ public class PeriodicSchedulerSDF {
                 + edgeValue.get(e.getPropertyBean().getValue("edgeName")))) {
               // negative circuit detected if a part of the graph is not live the global graph is not too
               final String message = "Negativ cycle detected !!";
-              throw new PreesmException(message);
+              throw new PreesmRuntimeException(message);
             }
           }
         }
@@ -209,7 +209,7 @@ public class PeriodicSchedulerSDF {
 
       timer.stop();
       final String message = "A Periodic Schedule does not exist for this graph";
-      throw new PreesmException(message);
+      throw new PreesmRuntimeException(message);
     }
 
   }
@@ -260,7 +260,7 @@ public class PeriodicSchedulerSDF {
 
     } else {
       final String message = "A Periodic Schedule does not exist for this graph";
-      throw new PreesmException(message);
+      throw new PreesmRuntimeException(message);
     }
   }
 

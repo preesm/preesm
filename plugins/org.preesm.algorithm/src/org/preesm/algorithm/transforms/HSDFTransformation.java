@@ -50,6 +50,7 @@ import org.eclipse.core.runtime.IProgressMonitor;
 import org.preesm.algorithm.model.sdf.SDFGraph;
 import org.preesm.algorithm.model.sdf.visitors.ToHSDFVisitor;
 import org.preesm.commons.exceptions.PreesmException;
+import org.preesm.commons.exceptions.PreesmRuntimeException;
 import org.preesm.commons.logger.PreesmLogger;
 import org.preesm.workflow.elements.Workflow;
 import org.preesm.workflow.implement.AbstractTaskImplementation;
@@ -95,7 +96,7 @@ public class HSDFTransformation extends AbstractTaskImplementation {
           logger.log(Level.INFO, "Minimize special actors");
           JoinForkCleaner.cleanJoinForkPairsFrom(hsdf);
         } catch (final PreesmException e) {
-          throw new PreesmException(e.getMessage(), e);
+          throw new PreesmRuntimeException(e.getMessage(), e);
         }
         logger.log(Level.INFO, "HSDF transformation complete");
 
@@ -110,10 +111,10 @@ public class HSDFTransformation extends AbstractTaskImplementation {
 
         outputs.put("SDF", hsdf);
       } else {
-        throw (new PreesmException("Graph not valid, not schedulable"));
+        throw new PreesmRuntimeException("Graph not valid, not schedulable");
       }
     } catch (final PreesmException e) {
-      throw (new PreesmException(e.getMessage(), e));
+      throw new PreesmRuntimeException(e.getMessage(), e);
     }
 
     timer.stop();

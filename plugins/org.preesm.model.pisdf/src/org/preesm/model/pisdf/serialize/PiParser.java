@@ -58,7 +58,7 @@ import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.emf.ecore.resource.ResourceSet;
 import org.eclipse.emf.ecore.resource.impl.ResourceSetImpl;
 import org.preesm.commons.DomUtil;
-import org.preesm.commons.exceptions.PreesmException;
+import org.preesm.commons.exceptions.PreesmRuntimeException;
 import org.preesm.commons.logger.PreesmLogger;
 import org.preesm.model.pisdf.AbstractActor;
 import org.preesm.model.pisdf.AbstractVertex;
@@ -217,7 +217,7 @@ public class PiParser {
       PiSDFXSDValidator.validate(pisdfContent);
       bis.reset();
     } catch (final IOException ex) {
-      throw new PreesmException("Could not parse the input graph: \n" + ex.getMessage(), ex);
+      throw new PreesmRuntimeException("Could not parse the input graph: \n" + ex.getMessage(), ex);
     }
 
     // Parse the input stream
@@ -230,7 +230,7 @@ public class PiParser {
       // Fill the graph with parsed information
       parsePi(rootElt, graph);
     } catch (final RuntimeException e) {
-      throw new PreesmException("Could not parse the input graph: \n" + e.getMessage(), e);
+      throw new PreesmRuntimeException("Could not parse the input graph: \n" + e.getMessage(), e);
     }
 
     return graph;
@@ -412,18 +412,19 @@ public class PiParser {
     final AbstractVertex source = graph.lookupVertex(setterName);
     AbstractVertex target = graph.lookupVertex(getterName);
     if (source == null) {
-      throw new PreesmException("Dependency source vertex " + setterName + " does not exist.");
+      throw new PreesmRuntimeException("Dependency source vertex " + setterName + " does not exist.");
     }
     if (target == null) {
       // The target can also be a Delay associated to a Fifo
       final Fifo targetFifo = graph.lookupFifo(getterName);
 
       if (targetFifo == null) {
-        throw new PreesmException("Dependency target " + getterName + " does not exist.");
+        throw new PreesmRuntimeException("Dependency target " + getterName + " does not exist.");
       }
 
       if (targetFifo.getDelay() == null) {
-        throw new PreesmException("Dependency fifo target " + getterName + " has no delay to receive the dependency.");
+        throw new PreesmRuntimeException(
+            "Dependency fifo target " + getterName + " has no delay to receive the dependency.");
       } else {
         target = targetFifo.getDelay();
       }
@@ -436,7 +437,8 @@ public class PiParser {
       sourcePortName = (sourcePortName.isEmpty()) ? null : sourcePortName;
       final ConfigOutputPort oPort = (ConfigOutputPort) ((ExecutableActor) source).lookupPort(sourcePortName);
       if (oPort == null) {
-        throw new PreesmException("Edge source port " + sourcePortName + " does not exist for vertex " + setterName);
+        throw new PreesmRuntimeException(
+            "Edge source port " + sourcePortName + " does not exist for vertex " + setterName);
       }
       dependency.setSetter(oPort);
     }
@@ -449,7 +451,7 @@ public class PiParser {
       targetPortName = (targetPortName.isEmpty()) ? null : targetPortName;
       final ConfigInputPort iPort = (ConfigInputPort) target.lookupPort(targetPortName);
       if (iPort == null) {
-        throw new PreesmException(
+        throw new PreesmRuntimeException(
             "Dependency target port " + targetPortName + " does not exist for vertex " + getterName);
       }
       dependency.setGetter(iPort);
@@ -466,7 +468,7 @@ public class PiParser {
     }
 
     if ((dependency.getGetter() == null) || (dependency.getSetter() == null)) {
-      throw new PreesmException(
+      throw new PreesmRuntimeException(
           "There was a problem parsing the following dependency: " + setterName + "=>" + getterName);
     }
 
@@ -495,7 +497,7 @@ public class PiParser {
         parseDependencies(edgeElt, graph);
         break;
       default:
-        throw new PreesmException("Parsed edge has an unknown kind: " + edgeKind);
+        throw new PreesmRuntimeException("Parsed edge has an unknown kind: " + edgeKind);
     }
   }
 
@@ -517,10 +519,10 @@ public class PiParser {
     final AbstractActor target = (AbstractActor) graph.lookupVertex(targetName);
 
     if (source == null) {
-      throw new PreesmException("Edge source vertex " + sourceName + " does not exist.");
+      throw new PreesmRuntimeException("Edge source vertex " + sourceName + " does not exist.");
     }
     if (target == null) {
-      throw new PreesmException("Edge target vertex " + targetName + " does not exist.");
+      throw new PreesmRuntimeException("Edge target vertex " + targetName + " does not exist.");
     }
     // Get the type
     String type = edgeElt.getAttribute(PiIdentifiers.FIFO_TYPE);
@@ -537,10 +539,12 @@ public class PiParser {
     final DataInputPort iPort = (DataInputPort) target.lookupPort(targetPortName);
 
     if (oPort == null) {
-      throw new PreesmException("Edge source port " + sourcePortName + " does not exist for vertex " + sourceName);
+      throw new PreesmRuntimeException(
+          "Edge source port " + sourcePortName + " does not exist for vertex " + sourceName);
     }
     if (iPort == null) {
-      throw new PreesmException("Edge target port " + targetPortName + " does not exist for vertex " + targetName);
+      throw new PreesmRuntimeException(
+          "Edge target port " + targetPortName + " does not exist for vertex " + targetName);
     }
 
     final Fifo fifo = PiMMUserFactory.instance.createFifo(oPort, iPort, type);
@@ -560,7 +564,7 @@ public class PiParser {
         // Delays are seen as nodes so the delay is already created and parsed by now
         delay = graph.lookupDelay(fifoDelay);
         if (delay == null) {
-          throw new PreesmException("Edge delay " + fifoDelay + " does not exist.");
+          throw new PreesmRuntimeException("Edge delay " + fifoDelay + " does not exist.");
         }
       }
       // Adds the delay to the FIFO (and sets the FIFO of the delay at the same time)
@@ -603,10 +607,10 @@ public class PiParser {
     final String getterName = nodeElt.getAttribute(PiIdentifiers.DELAY_GETTER);
     final AbstractActor getter = (AbstractActor) graph.lookupVertex(getterName);
     if ((setter == null) && !setterName.isEmpty()) {
-      throw new PreesmException("Delay setter vertex " + setterName + " does not exist.");
+      throw new PreesmRuntimeException("Delay setter vertex " + setterName + " does not exist.");
     }
     if ((getter == null) && !getterName.isEmpty()) {
-      throw new PreesmException("Delay getter vertex " + getterName + " does not exist.");
+      throw new PreesmRuntimeException("Delay getter vertex " + getterName + " does not exist.");
     }
 
     // 7. Add the refinement for the INIT of the delay (if it exists)
@@ -617,7 +621,7 @@ public class PiParser {
       if (delayActor.getRefinement() instanceof CHeaderRefinement) {
         final CHeaderRefinement hrefinement = (CHeaderRefinement) delayActor.getRefinement();
         if (!delayActor.isValidRefinement(hrefinement)) {
-          throw new PreesmException(
+          throw new PreesmRuntimeException(
               "Delay INIT prototype must match following prototype: void init(IN int size, OUT <type>* fifo)");
         }
         final String delayInitPrototype = "Delay INIT function used: " + hrefinement.getLoopPrototype().getName();
@@ -643,10 +647,10 @@ public class PiParser {
     // Retrieve the Graph Element
     final NodeList graphElts = rootElt.getElementsByTagName(PiIdentifiers.GRAPH);
     if (graphElts.getLength() == 0) {
-      throw new PreesmException("No graph was found in the parsed document");
+      throw new PreesmRuntimeException("No graph was found in the parsed document");
     }
     if (graphElts.getLength() > 1) {
-      throw new PreesmException("More than one graph was found in the parsed document");
+      throw new PreesmRuntimeException("More than one graph was found in the parsed document");
     }
     // If this code is reached, a unique graph element was found in the
     // document
@@ -717,7 +721,8 @@ public class PiParser {
           break;
 
         default:
-          throw new PreesmException("Parsed node " + nodeElt.getNodeName() + " has an unknown kind: " + nodeKind);
+          throw new PreesmRuntimeException(
+              "Parsed node " + nodeElt.getNodeName() + " has an unknown kind: " + nodeKind);
       }
     } else {
       switch (nodeKind) {
@@ -741,7 +746,8 @@ public class PiParser {
           // Delays have pre-defined ports created at delay actor instantiation
           return;
         default:
-          throw new PreesmException("Parsed node " + nodeElt.getNodeName() + " has an unknown kind: " + nodeKind);
+          throw new PreesmRuntimeException(
+              "Parsed node " + nodeElt.getNodeName() + " has an unknown kind: " + nodeKind);
       }
     }
 
@@ -757,10 +763,10 @@ public class PiParser {
     }
     // Sanity check for special actors
     if ((vertex instanceof BroadcastActor) && (((AbstractActor) vertex).getDataInputPorts().size() > 1)) {
-      throw new PreesmException("Broadcast with multiple input detected [" + vertex.getName()
+      throw new PreesmRuntimeException("Broadcast with multiple input detected [" + vertex.getName()
           + "].\n Broadcast actors can only have one input!");
     } else if ((vertex instanceof ForkActor) && (((AbstractActor) vertex).getDataInputPorts().size() > 1)) {
-      throw new PreesmException(
+      throw new PreesmRuntimeException(
           "ForkActor with multiple input detected [" + vertex.getName() + "].\n Fork actors can only have one input!");
     }
   }
@@ -824,7 +830,7 @@ public class PiParser {
       case DATA_INPUT:
         // Throw an error if the parsed vertex is not an actor
         if (!(vertex instanceof AbstractActor)) {
-          throw new PreesmException(
+          throw new PreesmRuntimeException(
               "Parsed data port " + portName + " cannot belong to the non-actor vertex " + vertex.getName());
         }
 
@@ -846,7 +852,7 @@ public class PiParser {
       case DATA_OUTPUT:
         // Throw an error if the parsed vertex is not an actor
         if (!(vertex instanceof AbstractActor)) {
-          throw new PreesmException(
+          throw new PreesmRuntimeException(
               "Parsed data port " + portName + " cannot belong to the non-actor vertex " + vertex.getName());
         }
 
@@ -874,7 +880,7 @@ public class PiParser {
       case CFG_OUTPUT:
         // Throw an error if the parsed vertex is not an actor
         if (!(vertex instanceof AbstractActor)) {
-          throw new PreesmException(
+          throw new PreesmRuntimeException(
               "Parsed config. port " + portName + " cannot belong to the non-actor vertex " + vertex.getName());
         }
         final ConfigOutputPort oCfgPort = PiMMUserFactory.instance.createConfigOutputPort();
@@ -882,7 +888,7 @@ public class PiParser {
         ((AbstractActor) vertex).getConfigOutputPorts().add(oCfgPort);
         break;
       default:
-        throw new PreesmException("Parsed port " + portName + " has children of unknown kind: " + portKind);
+        throw new PreesmRuntimeException("Parsed port " + portName + " has children of unknown kind: " + portKind);
     }
   }
 

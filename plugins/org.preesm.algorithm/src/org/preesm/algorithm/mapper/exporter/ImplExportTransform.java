@@ -48,6 +48,7 @@ import org.eclipse.core.runtime.Path;
 import org.preesm.algorithm.mapper.model.MapperDAG;
 import org.preesm.algorithm.model.dag.DirectedAcyclicGraph;
 import org.preesm.commons.exceptions.PreesmException;
+import org.preesm.commons.exceptions.PreesmRuntimeException;
 import org.preesm.commons.files.PathTools;
 import org.preesm.commons.files.WorkspaceUtils;
 import org.preesm.workflow.elements.Workflow;
@@ -131,7 +132,7 @@ public class ImplExportTransform extends AbstractTaskImplementation {
       exporter.export(clone, iGraphMLFile.getLocation().toOSString());
     } else {
       final String msg = "The output file " + path + " can not be written.";
-      throw new PreesmException(msg);
+      throw new PreesmRuntimeException(msg);
     }
   }
 

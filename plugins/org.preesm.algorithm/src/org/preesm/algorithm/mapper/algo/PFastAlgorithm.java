@@ -62,6 +62,7 @@ import org.preesm.algorithm.mapper.params.PFastAlgoParameters;
 import org.preesm.algorithm.mapper.ui.BestCostPlotter;
 import org.preesm.algorithm.mapper.ui.bestcost.BestCostEditor;
 import org.preesm.commons.exceptions.PreesmException;
+import org.preesm.commons.exceptions.PreesmRuntimeException;
 import org.preesm.commons.logger.PreesmLogger;
 import org.preesm.model.scenario.PreesmScenario;
 import org.preesm.model.slam.Design;
@@ -404,7 +405,7 @@ public class PFastAlgorithm extends Observable {
 
       } catch (final InterruptedException | ExecutionException e) {
         Thread.currentThread().interrupt();
-        throw new PreesmException("Error in PFast", e);
+        throw new PreesmRuntimeException("Error in PFast", e);
       }
       // step 13
       totalsearchcount++;

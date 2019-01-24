@@ -42,7 +42,7 @@ import java.util.Map.Entry;
 import org.math.array.DoubleArray;
 import org.preesm.algorithm.model.sdf.esdf.SDFSinkInterfaceVertex;
 import org.preesm.algorithm.model.sdf.esdf.SDFSourceInterfaceVertex;
-import org.preesm.commons.exceptions.PreesmException;
+import org.preesm.commons.exceptions.PreesmRuntimeException;
 import org.preesm.commons.math.LongFraction;
 import org.preesm.commons.math.MathFunctionsHelper;
 
@@ -77,7 +77,7 @@ public interface SDFMath {
       }
       return trueVrb;
     } catch (final Exception e) {
-      throw new PreesmException("Could not compute LongFraction VRB", e);
+      throw new PreesmRuntimeException("Could not compute LongFraction VRB", e);
     }
   }
 

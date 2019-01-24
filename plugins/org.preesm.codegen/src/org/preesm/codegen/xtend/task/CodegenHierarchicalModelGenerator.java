@@ -87,6 +87,7 @@ import org.preesm.codegen.model.SpecialType;
 import org.preesm.codegen.model.SubBuffer;
 import org.preesm.codegen.model.Variable;
 import org.preesm.commons.exceptions.PreesmException;
+import org.preesm.commons.exceptions.PreesmRuntimeException;
 import org.preesm.commons.logger.PreesmLogger;
 import org.preesm.model.scenario.PreesmScenario;
 import org.preesm.model.scenario.types.BufferAggregate;
@@ -181,12 +182,12 @@ public class CodegenHierarchicalModelGenerator {
         flattener.flattenGraph();
         resultGraph = flattener.getFlattenedGraph();
       } catch (final PreesmException e) {
-        throw (new PreesmException(e.getMessage(), e));
+        throw new PreesmRuntimeException(e.getMessage(), e);
       }
       // compute repetition vectors
       resultGraph.validateModel();
       if (!resultGraph.isSchedulable()) {
-        throw (new PreesmException("HSDF Build Loops generate clustering: Graph not schedulable"));
+        throw new PreesmRuntimeException("HSDF Build Loops generate clustering: Graph not schedulable");
       }
 
       // Check nb actor for loop generation as only one actor in the
@@ -202,7 +203,7 @@ public class CodegenHierarchicalModelGenerator {
       final HSDFBuildLoops loopBuilder = new HSDFBuildLoops(this.scenario, null);
       final AbstractClust clust = graph.getPropertyBean().getValue(MapperDAG.CLUSTERED_VERTEX);
       if (clust == null) {
-        throw (new PreesmException("Loop Codegen failed. Please make sure the clustering workflow is run."));
+        throw new PreesmRuntimeException("Loop Codegen failed. Please make sure the clustering workflow is run.");
       }
 
       // check that hierarchical actor interfaces sinks or sources size is
@@ -278,8 +279,9 @@ public class CodegenHierarchicalModelGenerator {
               }
 
             } else {
-              throw new PreesmException("Actor (" + dagVertex + ") has no valid refinement (.idl, .h or .graphml)."
-                  + " Associate a refinement to this actor before generating code.");
+              throw new PreesmRuntimeException(
+                  "Actor (" + dagVertex + ") has no valid refinement (.idl, .h or .graphml)."
+                      + " Associate a refinement to this actor before generating code.");
             }
 
             // Special actors
@@ -301,7 +303,8 @@ public class CodegenHierarchicalModelGenerator {
             }
 
           } else {
-            throw new PreesmException("Unsupported codegen for Actor: " + dagVertex + " (Should be Fork or Join).");
+            throw new PreesmRuntimeException(
+                "Unsupported codegen for Actor: " + dagVertex + " (Should be Fork or Join).");
           }
 
           // clust Sequence ForLoop only
@@ -400,7 +403,7 @@ public class CodegenHierarchicalModelGenerator {
           port = null;
       }
       if (port == null) {
-        throw new PreesmException(
+        throw new PreesmRuntimeException(
             "Mismatch between actor (" + sdfVertex + ") ports and IDL loop prototype argument " + arg.getName());
       }
 
@@ -441,7 +444,7 @@ public class CodegenHierarchicalModelGenerator {
 
         }
         if ((dagEdge == null) || (subBufferProperties == null)) {
-          throw new PreesmException("The DAGEdge connected to the port  " + port + " of Hierarchical Actor ("
+          throw new PreesmRuntimeException("The DAGEdge connected to the port  " + port + " of Hierarchical Actor ("
               + dagVertex + ") does not exist for\nrepeated actor " + sdfVertex + ".\n" + "DagEdge " + dagEdge
               + " subBuffer " + subBufferProperties + ".\nPossible cause is that the DAG"
               + " was altered before entering" + " the Code generation.\n"
@@ -493,7 +496,7 @@ public class CodegenHierarchicalModelGenerator {
 
       final BufferIterator bufIter = CodegenFactory.eINSTANCE.createBufferIterator();
       if (var == null) {
-        throw new PreesmException(
+        throw new PreesmRuntimeException(
             "Edge connected to " + arg.getDirection() + " port " + arg.getName() + " of DAG Actor " + dagVertex
                 + " is not present in the input MemEx.\n" + "There is something wrong in the Memory Allocation task.");
       }
@@ -524,7 +527,7 @@ public class CodegenHierarchicalModelGenerator {
       } else if (arg.getDirection() == CodeGenArgument.OUTPUT) {
         loopBlock.getOutBuffers().add(bufIter);
       } else {
-        throw new PreesmException("Args INPUT / OUTPUT failed\n");
+        throw new PreesmRuntimeException("Args INPUT / OUTPUT failed\n");
       }
 
       /* register to call block */
@@ -545,7 +548,7 @@ public class CodegenHierarchicalModelGenerator {
       final Argument actorParam = sdfVertex.getArgument(param.getName());
 
       if (actorParam == null) {
-        throw new PreesmException(
+        throw new PreesmRuntimeException(
             "Actor " + sdfVertex + " has no match for parameter " + param.getName() + " declared in the IDL.");
       }
 
@@ -554,7 +557,7 @@ public class CodegenHierarchicalModelGenerator {
       try {
         constant.setValue(actorParam.longValue());
       } catch (final Exception e) {
-        throw new PreesmException("Could not evaluate parameter value", e);
+        throw new PreesmRuntimeException("Could not evaluate parameter value", e);
       }
       constant.setType("long");
       variableList.put(prototype.getParameters().get(param), constant);
@@ -589,7 +592,7 @@ public class CodegenHierarchicalModelGenerator {
     } else if (repVertex instanceof SDFBroadcastVertex) {
       f.setType(SpecialType.BROADCAST);
     } else {
-      throw new PreesmException("DAGVertex " + dagVertex + " has an unknown type: " + vertexType);
+      throw new PreesmRuntimeException("DAGVertex " + dagVertex + " has an unknown type: " + vertexType);
     }
 
     final List<SDFInterfaceVertex> repVertexInterfaces = new ArrayList<>();

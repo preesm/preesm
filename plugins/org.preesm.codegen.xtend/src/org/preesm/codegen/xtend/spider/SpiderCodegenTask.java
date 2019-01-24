@@ -52,7 +52,7 @@ import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.Path;
 import org.preesm.codegen.xtend.spider.utils.SpiderConfig;
 import org.preesm.codegen.xtend.spider.visitor.SpiderCodegen;
-import org.preesm.commons.exceptions.PreesmException;
+import org.preesm.commons.exceptions.PreesmRuntimeException;
 import org.preesm.model.pisdf.PiGraph;
 import org.preesm.model.scenario.PreesmScenario;
 import org.preesm.model.slam.Design;
@@ -126,13 +126,13 @@ public class SpiderCodegenTask extends AbstractTaskImplementation {
 
     if (codegenPath.equals("/")) {
       final String message = "Error: A Codegen folder must be specified in Scenario";
-      throw new PreesmException(message);
+      throw new PreesmRuntimeException(message);
     }
 
     final IFolder f = workspace.getRoot().getFolder(new Path(codegenPath));
     final IPath rawLocation = f.getRawLocation();
     if (rawLocation == null) {
-      throw new PreesmException("Could not find target project for given path [" + codegenPath
+      throw new PreesmRuntimeException("Could not find target project for given path [" + codegenPath
           + "]. Please change path in the scenario editor.");
     }
     final File folder = new File(rawLocation.toOSString());

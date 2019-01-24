@@ -42,7 +42,7 @@ import org.preesm.algorithm.model.sdf.SDFAbstractVertex;
 import org.preesm.algorithm.model.sdf.SDFEdge;
 import org.preesm.algorithm.model.sdf.SDFGraph;
 import org.preesm.algorithm.model.sdf.SDFInterfaceVertex;
-import org.preesm.commons.exceptions.PreesmException;
+import org.preesm.commons.exceptions.PreesmRuntimeException;
 import org.w3c.dom.Element;
 
 /**
@@ -75,7 +75,7 @@ public class GMLSDFExporter extends GMLExporter<SDFAbstractVertex, SDFEdge> {
       exportGraph(graph);
       transform(out);
     } catch (final IOException e) {
-      throw new PreesmException("Could not export graph", e);
+      throw new PreesmRuntimeException("Could not export graph", e);
     }
   }
 

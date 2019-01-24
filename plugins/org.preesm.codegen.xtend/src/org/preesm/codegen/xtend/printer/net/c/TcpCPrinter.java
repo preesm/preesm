@@ -56,7 +56,7 @@ import org.preesm.codegen.model.SharedMemoryCommunication;
 import org.preesm.codegen.model.Variable;
 import org.preesm.codegen.xtend.CodegenPlugin;
 import org.preesm.codegen.xtend.printer.c.CPrinter;
-import org.preesm.commons.exceptions.PreesmException;
+import org.preesm.commons.exceptions.PreesmRuntimeException;
 import org.preesm.commons.files.URLResolver;
 
 /**
@@ -89,7 +89,7 @@ public class TcpCPrinter extends CPrinter {
       generateStandardLibFiles.put("preesm_gen_tcp.h",
           URLResolver.readURLInBundleList("/stdfiles/tcpc/" + "preesm_gen_tcp.h", CodegenPlugin.BUNDLE_ID));
     } catch (IOException e) {
-      throw new PreesmException("Could not override communication files", e);
+      throw new PreesmRuntimeException("Could not override communication files", e);
     }
     return generateStandardLibFiles;
   }
@@ -295,7 +295,7 @@ public class TcpCPrinter extends CPrinter {
     try {
       reader = new InputStreamReader(mainTemplate.openStream());
     } catch (IOException e) {
-      throw new PreesmException("Could not locate main template [" + templateLocalURL + "].", e);
+      throw new PreesmRuntimeException("Could not locate main template [" + templateLocalURL + "].", e);
     }
 
     // 4- init output writer

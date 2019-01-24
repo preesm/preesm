@@ -44,7 +44,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.preesm.algorithm.mapper.model.MapperDAG;
-import org.preesm.commons.exceptions.PreesmException;
+import org.preesm.commons.exceptions.PreesmRuntimeException;
 import org.preesm.commons.logger.PreesmLogger;
 import org.preesm.model.pisdf.PiGraph;
 import org.preesm.model.pisdf.brv.BRVMethod;
@@ -79,7 +79,7 @@ public class StaticPiMM2SrDAGTask extends AbstractTaskImplementation {
     final BRVMethod method = BRVMethod.getByName(consistencyMethod);
 
     if (method == null) {
-      throw new PreesmException("Unsupported method for checking consistency [" + consistencyMethod + "]");
+      throw new PreesmRuntimeException("Unsupported method for checking consistency [" + consistencyMethod + "]");
     }
 
     // Convert the PiGraph to the Single-Rate Directed Acyclic Graph

@@ -53,6 +53,7 @@ import org.preesm.algorithm.model.IGraphVisitor;
 import org.preesm.algorithm.model.dag.DAGVertex;
 import org.preesm.algorithm.model.iterators.TopologicalDAGIterator;
 import org.preesm.commons.exceptions.PreesmException;
+import org.preesm.commons.exceptions.PreesmRuntimeException;
 
 /**
  * Visitor computing the TLevel of each actor firing.
@@ -107,7 +108,7 @@ public class TLevelVisitor implements IGraphVisitor<MapperDAG, MapperDAGVertex, 
         }
       }
     } catch (final NoSuchElementException e) {
-      throw new PreesmException(e);
+      throw new PreesmRuntimeException(e);
     }
   }
 

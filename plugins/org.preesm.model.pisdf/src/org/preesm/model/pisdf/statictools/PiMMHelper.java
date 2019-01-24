@@ -46,7 +46,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.logging.Level;
-import org.preesm.commons.exceptions.PreesmException;
+import org.preesm.commons.exceptions.PreesmRuntimeException;
 import org.preesm.commons.logger.PreesmLogger;
 import org.preesm.model.pisdf.AbstractActor;
 import org.preesm.model.pisdf.AbstractVertex;
@@ -154,7 +154,7 @@ public class PiMMHelper {
     for (final DataPort port : actor.getAllDataPorts()) {
       final Fifo fifo = port.getFifo();
       if (fifo == null) {
-        throw new PreesmException(
+        throw new PreesmRuntimeException(
             "Actor [" + actor.getName() + "] data port [" + port.getName() + "] is not connected to a FIFO.");
       }
       final AbstractActor sourceActor = fifo.getSourcePort().getContainingActor();
@@ -282,7 +282,7 @@ public class PiMMHelper {
     for (final DataOutputPort output : actor.getDataOutputPorts()) {
       final Fifo fifo = output.getOutgoingFifo();
       if (fifo == null) {
-        throw new PreesmException(
+        throw new PreesmRuntimeException(
             "Actor [" + actor.getName() + "] data port [" + output.getName() + "] is not connected to a FIFO.");
       }
       final AbstractActor targetActor = fifo.getTargetPort().getContainingActor();
@@ -294,7 +294,7 @@ public class PiMMHelper {
     for (final DataInputPort input : actor.getDataInputPorts()) {
       final Fifo fifo = input.getIncomingFifo();
       if (fifo == null) {
-        throw new PreesmException(
+        throw new PreesmRuntimeException(
             "Actor [" + actor.getName() + "] data port [" + input.getName() + "] is not connected to a FIFO.");
       }
       final AbstractActor sourceActor = fifo.getSourcePort().getContainingActor();
@@ -347,14 +347,14 @@ public class PiMMHelper {
       delay.getActor().getDataOutputPort().setName(fifo.getSourcePort().getName());
       if (delay.getLevel().equals(PersistenceLevel.LOCAL)) {
         if (delay.hasGetterActor() || delay.hasSetterActor()) {
-          throw new PreesmException(
+          throw new PreesmRuntimeException(
               "Delay with local persistence can not be connected to a setter nor a getter actor.");
         }
         delay.setName(delayShortID);
         replaceLocalDelay(graph, delay);
       } else if (delay.getLevel().equals(PersistenceLevel.PERMANENT)) {
         if (delay.hasGetterActor() || delay.hasSetterActor()) {
-          throw new PreesmException(
+          throw new PreesmRuntimeException(
               "Delay with global persistence can not be connected to a setter nor a getter actor.");
         }
         // In the case of a permanent delay we have to make it go up to the top.
@@ -370,8 +370,9 @@ public class PiMMHelper {
       } else {
         if (((delay.hasSetterActor()) && !(delay.hasGetterActor()))
             || ((delay.hasGetterActor()) && (!delay.hasSetterActor()))) {
-          throw new PreesmException("Asymetric configuration for delay setter / getter actor is not yet supported.\n"
-              + "Please Contact PREESM developers.");
+          throw new PreesmRuntimeException(
+              "Asymetric configuration for delay setter / getter actor is not yet supported.\n"
+                  + "Please Contact PREESM developers.");
         }
       }
     }
@@ -504,7 +505,7 @@ public class PiMMHelper {
       }
       sb.append("\n");
       PreesmLogger.getLogger().log(Level.SEVERE, sb.toString());
-      throw new PreesmException("Periods are not consistent, abandon.");
+      throw new PreesmRuntimeException("Periods are not consistent, abandon.");
     } else if (mapGraphPeriods.size() == 1) {
       long period = 0;
       for (Long p : mapGraphPeriods.keySet()) {

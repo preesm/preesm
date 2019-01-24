@@ -45,6 +45,7 @@ import org.preesm.algorithm.model.sdf.visitors.ToHSDFVisitor;
 import org.preesm.algorithm.model.types.ExpressionEdgePropertyType;
 import org.preesm.algorithm.model.types.LongEdgePropertyType;
 import org.preesm.commons.exceptions.PreesmException;
+import org.preesm.commons.exceptions.PreesmRuntimeException;
 
 /**
  */
@@ -60,7 +61,7 @@ public class ToHSDFVisitorTest {
     try {
       demoGraph.accept(visitor);
     } catch (final PreesmException e) {
-      throw new PreesmException("Could not convert to HSDF", e);
+      throw new PreesmRuntimeException("Could not convert to HSDF", e);
     }
   }
 

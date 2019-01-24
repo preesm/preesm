@@ -48,6 +48,7 @@ import org.eclipse.core.runtime.IPath;
 import org.preesm.algorithm.model.sdf.SDFAbstractVertex;
 import org.preesm.algorithm.model.sdf.SDFGraph;
 import org.preesm.commons.exceptions.PreesmException;
+import org.preesm.commons.exceptions.PreesmRuntimeException;
 import org.preesm.model.scenario.PreesmScenario;
 import org.preesm.model.scenario.Timing;
 import org.preesm.model.scenario.types.DataType;
@@ -91,7 +92,7 @@ public class SDF3ImporterEngine {
 
     if (!iFile.exists()) {
       final String message = "The parsed xml file does not exists: " + path.toOSString();
-      throw new PreesmException(message);
+      throw new PreesmRuntimeException(message);
     }
 
     final File file = new File(iFile.getRawLocation().toOSString());
@@ -99,7 +100,7 @@ public class SDF3ImporterEngine {
     try {
       iStream = new FileInputStream(file);
     } catch (final FileNotFoundException e) {
-      throw new PreesmException(e);
+      throw new PreesmRuntimeException(e);
     }
 
     // Parse the input SDF3 graph
@@ -108,7 +109,7 @@ public class SDF3ImporterEngine {
       graph = (this.sdf3Parser.parse(iStream));
     } catch (final RuntimeException e) {
       final String msg = "SDF3 Parser Error: " + e.getMessage();
-      throw new PreesmException(msg, e);
+      throw new PreesmRuntimeException(msg, e);
     }
 
     if (graph != null) {

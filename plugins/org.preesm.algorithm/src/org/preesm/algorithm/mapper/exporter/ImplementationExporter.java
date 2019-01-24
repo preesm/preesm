@@ -51,7 +51,7 @@ import org.preesm.algorithm.model.PropertyBean;
 import org.preesm.algorithm.model.dag.DAGEdge;
 import org.preesm.algorithm.model.dag.DAGVertex;
 import org.preesm.commons.GMLKey;
-import org.preesm.commons.exceptions.PreesmException;
+import org.preesm.commons.exceptions.PreesmRuntimeException;
 import org.preesm.model.scenario.types.ImplementationPropertyNames;
 import org.preesm.model.slam.attributes.Parameter;
 import org.preesm.model.slam.impl.ComponentInstanceImpl;
@@ -109,7 +109,7 @@ public class ImplementationExporter extends GMLExporter<DAGVertex, DAGEdge> {
       return graphElt;
 
     } catch (final Exception e) {
-      throw new PreesmException("Could not export graph", e);
+      throw new PreesmRuntimeException("Could not export graph", e);
     }
   }
 
@@ -205,7 +205,7 @@ public class ImplementationExporter extends GMLExporter<DAGVertex, DAGEdge> {
       exportGraph(graph);
       transform(new FileOutputStream(path));
     } catch (final FileNotFoundException e) {
-      throw new PreesmException("could not export implementation", e);
+      throw new PreesmRuntimeException("could not export implementation", e);
     }
   }
 

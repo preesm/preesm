@@ -53,7 +53,7 @@ import org.eclipse.ui.forms.editor.IFormPage;
 import org.eclipse.ui.forms.editor.SharedHeaderFormEditor;
 import org.eclipse.ui.part.FileEditorInput;
 import org.preesm.commons.DomUtil;
-import org.preesm.commons.exceptions.PreesmException;
+import org.preesm.commons.exceptions.PreesmRuntimeException;
 import org.preesm.model.scenario.PreesmScenario;
 import org.preesm.model.scenario.serialize.ScenarioParser;
 import org.preesm.model.scenario.serialize.ScenarioWriter;
@@ -181,7 +181,7 @@ public class ScenarioEditor extends SharedHeaderFormEditor implements IPropertyL
       scenarioFile.setContents(new ByteArrayInputStream(byteStream.toByteArray()), true, false,
           new NullProgressMonitor());
     } catch (final IOException | CoreException e) {
-      throw new PreesmException(e);
+      throw new PreesmRuntimeException(e);
     }
 
     this.isDirty = false;

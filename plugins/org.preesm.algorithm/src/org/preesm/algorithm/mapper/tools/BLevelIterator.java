@@ -40,7 +40,7 @@ package org.preesm.algorithm.mapper.tools;
 import org.preesm.algorithm.mapper.abc.impl.latency.LatencyAbc;
 import org.preesm.algorithm.mapper.model.MapperDAG;
 import org.preesm.algorithm.mapper.model.MapperDAGVertex;
-import org.preesm.commons.exceptions.PreesmException;
+import org.preesm.commons.exceptions.PreesmRuntimeException;
 
 // TODO: Auto-generated Javadoc
 /**
@@ -80,7 +80,7 @@ public class BLevelIterator extends ImplementationIterator {
 
     if (!arg0.getTiming().hasBLevel() || !arg1.getTiming().hasBLevel()) {
       final String msg = "B Level Iterator problem";
-      throw new PreesmException(msg);
+      throw new PreesmRuntimeException(msg);
     }
 
     long bLevelDifference = (arg0.getTiming().getBLevel() - arg1.getTiming().getBLevel());

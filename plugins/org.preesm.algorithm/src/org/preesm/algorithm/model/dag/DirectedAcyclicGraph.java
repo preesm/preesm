@@ -45,6 +45,7 @@ import org.preesm.algorithm.model.PropertyFactory;
 import org.preesm.algorithm.model.factories.DAGVertexFactory;
 import org.preesm.algorithm.model.factories.IModelVertexFactory;
 import org.preesm.commons.exceptions.PreesmException;
+import org.preesm.commons.exceptions.PreesmRuntimeException;
 
 /**
  * Class used to represent a Directed Acyclic Graph.
@@ -100,7 +101,7 @@ public class DirectedAcyclicGraph extends AbstractGraph<DAGVertex, DAGEdge> {
   public DAGEdge addDAGEdge(final DAGVertex source, final DAGVertex target) {
     final Set<DAGEdge> allEdges = getAllEdges(source, target);
     if (!allEdges.isEmpty()) {
-      throw new PreesmException("There should be no edge existing.");
+      throw new PreesmRuntimeException("There should be no edge existing.");
     } else {
       final DAGEdge newEdge = addEdge(source, target);
       final CycleDetector<DAGVertex, DAGEdge> detector = new CycleDetector<>(this);
@@ -113,7 +114,7 @@ public class DirectedAcyclicGraph extends AbstractGraph<DAGVertex, DAGEdge> {
         cycleString.append("}");
 
         this.removeEdge(newEdge);
-        throw new PreesmException(cycleString.toString());
+        throw new PreesmRuntimeException(cycleString.toString());
       } else if (detector.detectCyclesContainingVertex(target)) {
         final Set<DAGVertex> cycle = detector.findCyclesContainingVertex(target);
         final StringBuilder cycleString = new StringBuilder("Added edge forms a cycle: {");
@@ -123,7 +124,7 @@ public class DirectedAcyclicGraph extends AbstractGraph<DAGVertex, DAGEdge> {
         cycleString.append("}");
 
         this.removeEdge(newEdge);
-        throw new PreesmException(cycleString.toString());
+        throw new PreesmRuntimeException(cycleString.toString());
       }
       return newEdge;
     }

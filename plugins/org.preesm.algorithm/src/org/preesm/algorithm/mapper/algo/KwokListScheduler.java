@@ -45,6 +45,7 @@ import org.preesm.algorithm.mapper.abc.impl.latency.LatencyAbc;
 import org.preesm.algorithm.mapper.model.MapperDAG;
 import org.preesm.algorithm.mapper.model.MapperDAGVertex;
 import org.preesm.commons.exceptions.PreesmException;
+import org.preesm.commons.exceptions.PreesmRuntimeException;
 import org.preesm.commons.logger.PreesmLogger;
 import org.preesm.model.slam.ComponentInstance;
 
@@ -136,7 +137,7 @@ public class KwokListScheduler {
             archisimu.map(currentvertex, groupOperators.get(0), true, false);
           } else {
             final String msg = "Found no operator for: " + currentvertex + ". Certainly a relative constraint problem.";
-            throw new PreesmException(msg);
+            throw new PreesmRuntimeException(msg);
           }
         }
       } else {

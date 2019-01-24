@@ -40,6 +40,7 @@ import org.preesm.algorithm.model.sdf.SDFAbstractVertex;
 import org.preesm.algorithm.model.sdf.SDFEdge;
 import org.preesm.algorithm.model.sdf.SDFGraph;
 import org.preesm.commons.exceptions.PreesmException;
+import org.preesm.commons.exceptions.PreesmRuntimeException;
 import org.preesm.commons.logger.PreesmLogger;
 
 /**
@@ -119,7 +120,7 @@ public class ConsistencyChecker implements IGraphVisitor<SDFGraph, SDFAbstractVe
     try {
       toVerify.accept(this);
     } catch (final PreesmException e) {
-      throw new PreesmException("Could not verify graph", e);
+      throw new PreesmRuntimeException("Could not verify graph", e);
     }
     return this.isConsistent;
   }

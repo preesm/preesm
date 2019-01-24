@@ -41,7 +41,7 @@ package org.preesm.model.pisdf.statictools;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import org.preesm.commons.exceptions.PreesmException;
+import org.preesm.commons.exceptions.PreesmRuntimeException;
 import org.preesm.model.pisdf.AbstractActor;
 import org.preesm.model.pisdf.AbstractVertex;
 import org.preesm.model.pisdf.BroadcastActor;
@@ -114,9 +114,10 @@ public class PiMMSRVerticesLinker {
     final Expression portRateExpression = targetPort.getPortRateExpression();
     final long targetRate = portRateExpression.evaluate();
     if (nDelays < 0) {
-      throw new PreesmException("Invalid number of delays on fifo[" + fifo.getId() + "]: " + Long.toString(nDelays));
+      throw new PreesmRuntimeException(
+          "Invalid number of delays on fifo[" + fifo.getId() + "]: " + Long.toString(nDelays));
     } else if (nDelays < targetRate) {
-      throw new PreesmException("Not enough delays on fifo[" + fifo.getId() + "]: number of delays: "
+      throw new PreesmRuntimeException("Not enough delays on fifo[" + fifo.getId() + "]: number of delays: "
           + Long.toString(nDelays) + ", consumption: " + Long.toString(targetRate));
     }
     return nDelays;
@@ -595,7 +596,7 @@ public class PiMMSRVerticesLinker {
       // 1.1 Now get the DelayActor associated to the setter of the delay
       final DelayActor setterDelayActor = (DelayActor) originalGraph.lookupVertex(delayActor.getName() + "_setter");
       if (setterDelayActor == null) {
-        throw new PreesmException("Setter actor [" + delayActor.getName() + "_setter] not found.");
+        throw new PreesmRuntimeException("Setter actor [" + delayActor.getName() + "_setter] not found.");
       }
       final Long setterRV = brv.get(setterDelayActor);
 
@@ -648,7 +649,7 @@ public class PiMMSRVerticesLinker {
       vertexSourceSet
           .forEach(v -> sourceSet.add(new SourceConnection(v, this.sourceProduction, this.sourcePort.getName())));
     } else {
-      throw new PreesmException("Unhandled type of actor: " + realSource.getClass().toString());
+      throw new PreesmRuntimeException("Unhandled type of actor: " + realSource.getClass().toString());
     }
 
     return sourceSet;
@@ -678,7 +679,7 @@ public class PiMMSRVerticesLinker {
       // Add the list of the SR-DAG vertex associated with the source
       vertexSinkSet.forEach(v -> sinkSet.add(new SinkConnection(v, this.sinkConsumption, this.sinkPort.getName())));
     } else {
-      throw new PreesmException("Unhandled type of actor: " + realSink.getClass().toString());
+      throw new PreesmRuntimeException("Unhandled type of actor: " + realSink.getClass().toString());
     }
 
     // Deals delays
@@ -692,7 +693,7 @@ public class PiMMSRVerticesLinker {
       final PiGraph originalGraph = this.fifo.getContainingPiGraph();
       final DelayActor getterDelayActor = (DelayActor) originalGraph.lookupVertex(delayActor.getName() + "_getter");
       if (getterDelayActor == null) {
-        throw new PreesmException("Getter actor [" + delayActor.getName() + "_setter] not found.");
+        throw new PreesmRuntimeException("Getter actor [" + delayActor.getName() + "_setter] not found.");
       }
       final Long brvGetter = brv.get(getterDelayActor);
 

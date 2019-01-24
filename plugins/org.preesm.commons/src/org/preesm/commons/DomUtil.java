@@ -39,7 +39,8 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import org.apache.xml.serialize.OutputFormat;
 import org.apache.xml.serialize.XMLSerializer;
-import org.preesm.commons.exceptions.PreesmException;
+import org.preesm.commons.exceptions.PreesmFrameworkException;
+import org.preesm.commons.exceptions.PreesmRuntimeException;
 import org.w3c.dom.DOMConfiguration;
 import org.w3c.dom.DOMImplementation;
 import org.w3c.dom.Document;
@@ -103,7 +104,7 @@ public class DomUtil {
       try {
         DomUtil.registry = DOMImplementationRegistry.newInstance();
       } catch (ClassCastException | ClassNotFoundException | InstantiationException | IllegalAccessException e) {
-        throw new PreesmException("Could not instantiate DOM", e);
+        throw new PreesmFrameworkException("Could not instantiate DOM", e);
       }
     }
 
@@ -155,7 +156,7 @@ public class DomUtil {
     try {
       serializer.serialize(document);
     } catch (final IOException e) {
-      throw new PreesmException("Could not write Graph", e);
+      throw new PreesmRuntimeException("Could not write Graph", e);
     }
   }
 

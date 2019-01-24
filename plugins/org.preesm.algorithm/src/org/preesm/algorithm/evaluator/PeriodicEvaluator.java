@@ -42,6 +42,7 @@ import org.eclipse.core.runtime.IProgressMonitor;
 import org.preesm.algorithm.model.sdf.SDFAbstractVertex;
 import org.preesm.algorithm.model.sdf.SDFGraph;
 import org.preesm.commons.exceptions.PreesmException;
+import org.preesm.commons.exceptions.PreesmRuntimeException;
 import org.preesm.commons.logger.PreesmLogger;
 import org.preesm.model.scenario.PreesmScenario;
 import org.preesm.workflow.elements.Workflow;
@@ -76,7 +77,7 @@ public class PeriodicEvaluator extends AbstractTaskImplementation {
     try {
       inputGraph.accept(normalize);
     } catch (final PreesmException e) {
-      throw (new PreesmException("The graph cannot be normalized"));
+      throw new PreesmRuntimeException("The graph cannot be normalized");
     }
     final SDFGraph NormSDF = normalize.getOutput();
     PreesmLogger.getLogger().log(Level.INFO, "Normalization finished");

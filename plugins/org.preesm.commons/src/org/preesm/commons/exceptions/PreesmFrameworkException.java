@@ -1,7 +1,7 @@
 /**
- * Copyright or © or Copr. IETR/INSA - Rennes (2017 - 2018) :
+ * Copyright or © or Copr. IETR/INSA - Rennes (2018) :
  *
- * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017 - 2018)
+ * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2018)
  *
  * This software is a computer program whose purpose is to help prototyping
  * parallel applications using dataflow formalism.
@@ -32,30 +32,37 @@
  * The fact that you are presently reading this means that you have had
  * knowledge of the CeCILL license and that you accept its terms.
  */
-package org.preesm.ui.workflow.command;
-
-import java.io.File;
-import java.io.IOException;
-import org.eclipse.core.expressions.PropertyTester;
-import org.eclipse.core.resources.IFile;
-import org.preesm.commons.exceptions.PreesmRuntimeException;
-import org.preesm.workflow.converter.WorkflowConverter;
+package org.preesm.commons.exceptions;
 
 /**
+ *
+ * Exception thrown by Preesm framework
+ *
+ * @author anmorvan
+ *
  */
-public class OldWorkflowPropertyTester extends PropertyTester {
+public class PreesmFrameworkException extends PreesmException {
 
-  @Override
-  public boolean test(final Object receiver, final String property, final Object[] args, final Object expectedValue) {
+  private static final long serialVersionUID = 5217534952694040044L;
 
-    final IFile file = (IFile) receiver;
-    final File file2 = file.getLocation().toFile();
-    try {
-      final boolean newWorkflow = WorkflowConverter.isNewWorkflow(file2);
-      return !newWorkflow;
-    } catch (final IOException e) {
-      throw new PreesmRuntimeException("Could not access file", e);
-    }
+  public PreesmFrameworkException() {
+    this(null, null);
   }
 
+  public PreesmFrameworkException(final String message) {
+    this(message, null);
+  }
+
+  public PreesmFrameworkException(final String message, final Throwable cause) {
+    super(message, cause);
+  }
+
+  public PreesmFrameworkException(final Throwable cause) {
+    this(null, cause);
+  }
+
+  @Override
+  public boolean isFatal() {
+    return true;
+  }
 }

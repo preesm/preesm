@@ -41,7 +41,7 @@ import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import org.preesm.commons.exceptions.PreesmException;
+import org.preesm.commons.exceptions.PreesmRuntimeException;
 
 // TODO: Auto-generated Javadoc
 /**
@@ -142,7 +142,7 @@ public class VertexOrderList {
   public int orderOf(final String name) {
     if (this.nameMap.get(name) == null) {
       final String msg = "Vertex could not be scheduled, check constraints: " + name;
-      throw new PreesmException(msg);
+      throw new PreesmRuntimeException(msg);
     } else {
       return this.nameMap.get(name).getOrder();
     }

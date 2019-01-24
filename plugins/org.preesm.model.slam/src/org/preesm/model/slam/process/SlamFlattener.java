@@ -45,7 +45,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
 import org.eclipse.emf.common.util.EList;
-import org.preesm.commons.exceptions.PreesmException;
+import org.preesm.commons.exceptions.PreesmRuntimeException;
 import org.preesm.model.slam.ComponentInstance;
 import org.preesm.model.slam.Design;
 import org.preesm.model.slam.SlamFactory;
@@ -264,7 +264,7 @@ public class SlamFlattener {
       link.setSourceComponentInstance(instanceToConnect);
       link.setSourceInterface(itf);
     } else {
-      throw new PreesmException("Could not find port");
+      throw new PreesmRuntimeException("Could not find port");
     }
   }
 
@@ -300,7 +300,7 @@ public class SlamFlattener {
       link.setDestinationComponentInstance(instanceToConnect);
       link.setDestinationInterface(itf);
     } else {
-      throw new PreesmException("Could not find port");
+      throw new PreesmRuntimeException("Could not find port");
     }
   }
 
@@ -359,7 +359,7 @@ public class SlamFlattener {
       } else if (originalLink instanceof ControlLink) {
         newLink = LinkFactory.eINSTANCE.createControlLink();
       } else {
-        throw new PreesmException("Unsupported link type");
+        throw new PreesmRuntimeException("Unsupported link type");
       }
 
       newLink.setDirected(originalLink.isDirected());

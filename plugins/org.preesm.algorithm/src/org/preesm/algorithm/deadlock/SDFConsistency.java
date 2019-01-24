@@ -47,7 +47,7 @@ import org.preesm.algorithm.model.sdf.esdf.SDFSinkInterfaceVertex;
 import org.preesm.algorithm.model.sdf.esdf.SDFSourceInterfaceVertex;
 import org.preesm.algorithm.model.types.LongEdgePropertyType;
 import org.preesm.algorithm.throughput.tools.Stopwatch;
-import org.preesm.commons.exceptions.PreesmException;
+import org.preesm.commons.exceptions.PreesmRuntimeException;
 import org.preesm.commons.math.MathFunctionsHelper;
 
 /**
@@ -98,7 +98,7 @@ public abstract class SDFConsistency {
           * e.getCons().longValue())) {
         timer.stop();
         final String message = "Graph not consistent !! evaluated in " + timer.toString();
-        throw new PreesmException(message);
+        throw new PreesmRuntimeException(message);
       }
     }
 

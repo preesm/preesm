@@ -57,7 +57,6 @@ import org.preesm.algorithm.model.sdf.SDFGraph;
 import org.preesm.algorithm.model.sdf.esdf.SDFBroadcastVertex;
 import org.preesm.algorithm.model.sdf.esdf.SDFJoinVertex;
 import org.preesm.algorithm.model.sdf.esdf.SDFRoundBufferVertex;
-import org.preesm.commons.exceptions.PreesmException;
 import org.preesm.commons.logger.PreesmLogger;
 import org.preesm.model.scenario.types.ImplementationPropertyNames;
 import org.preesm.model.scenario.types.VertexType;
@@ -85,12 +84,7 @@ public class ForkJoinRemover {
     /*
      * Declarations & initializations
      */
-    SDFIterator iterSDFVertices;
-    try {
-      iterSDFVertices = new SDFIterator(hsdf);
-    } catch (final RuntimeException e) {
-      throw new PreesmException(e.getMessage(), e);
-    }
+    SDFIterator iterSDFVertices = new SDFIterator(hsdf);
 
     // Keep track of the initial number of edge to check if the right number
     // of edges were removed

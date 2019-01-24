@@ -56,7 +56,7 @@ import org.preesm.algorithm.model.PropertyBean;
 import org.preesm.algorithm.model.dag.DAGEdge;
 import org.preesm.algorithm.model.sdf.SDFEdge;
 import org.preesm.algorithm.model.sdf.SDFGraph;
-import org.preesm.commons.exceptions.PreesmException;
+import org.preesm.commons.exceptions.PreesmRuntimeException;
 import org.preesm.commons.math.MathFunctionsHelper;
 import org.preesm.model.scenario.types.BufferAggregate;
 import org.preesm.model.scenario.types.BufferProperties;
@@ -137,7 +137,7 @@ public abstract class MemoryAllocator {
               final String msg = "No valid data type was found on an edge between actors " + edge.getSource().getName()
                   + " and " + edge.getTarget().getName()
                   + ".\nCheck the edge in the graph editor and the declared types in the scenario.";
-              throw new PreesmException(msg);
+              throw new PreesmRuntimeException(msg);
             } else {
               typeSize = type.getSize();
             }
@@ -737,7 +737,7 @@ public abstract class MemoryAllocator {
    */
   public Map<MemoryExclusionVertex, Long> checkAllocation() {
     if (this.memExNodeAllocation == null) {
-      throw new PreesmException("Cannot check memory allocation because no allocation was performed.");
+      throw new PreesmRuntimeException("Cannot check memory allocation because no allocation was performed.");
     }
 
     Map<MemoryExclusionVertex, Long> conflictingElements;

@@ -40,7 +40,7 @@ import org.eclipse.xtend.lib.annotations.Accessors
 import org.jgrapht.alg.shortestpath.DijkstraShortestPath
 import org.preesm.algorithm.model.sdf.SDFGraph
 import org.preesm.algorithm.model.types.LongEdgePropertyType
-import org.preesm.commons.exceptions.PreesmException
+import org.preesm.commons.exceptions.PreesmRuntimeException
 
 /**
  * Helper class to represent delays present in an SrSDF graph back in its original SDF graph
@@ -104,7 +104,7 @@ class SrSDFToSDF {
 		if(!srsdf.vertexSet.forall[vertex |
 			vertex.nbRepeatAsLong == 1
 		]) {
-			throw new PreesmException("SrSDF graph has instances with repeat count greater than 1.
+			throw new PreesmRuntimeException("SrSDF graph has instances with repeat count greater than 1.
 						\nCheck that argument order is not reversed")
 		}
 
@@ -125,7 +125,7 @@ class SrSDFToSDF {
 		if(!nodeChainGraph.nodechains.keySet.forall[node |
 			srsdf.vertexSet.contains(node)
 		]) {
-			throw new PreesmException("The single rate graph passed during construction is not
+			throw new PreesmRuntimeException("The single rate graph passed during construction is not
 						same as the single rate graph passed for re-timing purposes")
 		}
 

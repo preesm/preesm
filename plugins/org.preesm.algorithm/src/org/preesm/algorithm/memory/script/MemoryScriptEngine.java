@@ -55,7 +55,7 @@ import org.eclipse.core.runtime.Path;
 import org.preesm.algorithm.memory.allocation.AbstractMemoryAllocatorTask;
 import org.preesm.algorithm.memory.exclusiongraph.MemoryExclusionGraph;
 import org.preesm.algorithm.model.dag.DirectedAcyclicGraph;
-import org.preesm.commons.exceptions.PreesmException;
+import org.preesm.commons.exceptions.PreesmRuntimeException;
 import org.preesm.commons.logger.PreesmLogger;
 import org.preesm.model.scenario.PreesmScenario;
 import org.preesm.model.scenario.types.DataType;
@@ -218,7 +218,7 @@ public class MemoryScriptEngine {
     try {
       iFile = ResourcesPlugin.getWorkspace().getRoot().getFile(new Path(codegenPath + log + ".txt"));
     } catch (final Exception e) {
-      throw new PreesmException(
+      throw new PreesmRuntimeException(
           "Could not access code generation target path folder. Please check its value in the scenario.", e);
     }
     try {
@@ -235,7 +235,7 @@ public class MemoryScriptEngine {
       }
 
     } catch (final CoreException | IOException e) {
-      throw new PreesmException("Could not write logs", e);
+      throw new PreesmRuntimeException("Could not write logs", e);
     }
   }
 }

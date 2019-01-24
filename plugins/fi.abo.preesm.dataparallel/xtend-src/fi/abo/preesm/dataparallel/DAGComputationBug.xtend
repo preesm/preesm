@@ -103,4 +103,9 @@ class DAGComputationBug extends PreesmException {
 		exporter.export(dag.outputGraph, bug_dag_abs_path)
 		exporter.export(graph, bug_graph_abs_path)
 	}
+
+	override isFatal() {
+		return true
+	}
+
 }
