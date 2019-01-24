@@ -260,15 +260,15 @@ class SpiderMainFilePrinter {
 		«IF !g.actorsWithRefinement.isEmpty()»
 			«FOR actor : g.actorsWithRefinement»
 				«IF actor.refinement instanceof CHeaderRefinement && (actor.refinement as CHeaderRefinement).getInitPrototype !== null»
-					«IF !this.initRefinementDone.contains(printInitCall(actor))»
+					«val refinement = printInitCall(actor)»
+					«IF !this.initRefinementDone.contains(refinement)»
 						«"\t\t// Actor initializations of vertex " + actor.vertexPath»
-						«"\t\t"+ printInitCall(actor)+"\n"»
-						«{this.initRefinementDone.add(printInitCall(actor)) ""}»
+						«"\t\t"+ refinement + "\n"»
+						«{this.initRefinementDone.add(refinement) ""}»
 			        «ENDIF»
 				«ENDIF»
 			«ENDFOR»
   		«ENDIF»
-
 		«FOR cg : g.childrenGraphs»
 			«printInitCallRec(cg)»
 		«ENDFOR»
