@@ -3,7 +3,7 @@ Bundle-ManifestVersion: 2
 Bundle-Name: Dataparallel
 Automatic-Module-Name: fi.abo.preesm.dataparallel
 Bundle-SymbolicName: fi.abo.preesm.dataparallel;singleton:=true
-Bundle-Version: 3.1.3.qualifier
+Bundle-Version: 3.2.0
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Require-Bundle: org.eclipse.core.runtime,
  org.eclipse.xtend.lib,

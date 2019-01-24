@@ -1,8 +1,8 @@
 PREESM Changelog
 ================
 
-## Release version X.Y.Z
-*XXXX.XX.XX*
+## Release version 3.2.0
+*2019.01.24*
 
 ### New Feature
 * Add context menu in PiSDF editor to compute the BRV;
