@@ -6,6 +6,7 @@ PREESM Changelog
 
 ### New Feature
 * Add context menu in PiSDF editor to compute the BRV;
+* Add context menu in PiSDF editor to compute the SRDAG;
 
 ### Changes
 * Update release system to support Eclipse 4.10;
@@ -15,6 +16,10 @@ PREESM Changelog
   * Fix dependencies to enable copy/rename refactoring;
   * Fix filters/Add error handling to avoid exceptions when editing algos;
 * Fix Scenario parsing: do not fail when graph/archi is not valid;
+* Fix PiSDF single rate transformation
+  * properly remove dependencies during optimizations;
+  * rename parameters with graph prefix;
+  * instantiate parameters only when used;
 
 ### Bug fix
 * Fix #99 : Add code generation path check;
