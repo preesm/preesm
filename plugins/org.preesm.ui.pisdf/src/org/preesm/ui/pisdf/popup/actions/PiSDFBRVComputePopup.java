@@ -74,11 +74,18 @@ public class PiSDFBRVComputePopup extends AbstractHandler {
     final EList<ConfigInputPort> configInputPorts = pigraph.getConfigInputPorts();
     if (!configInputPorts.isEmpty()) {
       PreesmLogger.getLogger().log(Level.WARNING, "Cannot compute the BRV of a subgraph");
-    } else {
-      new PiSDFParameterResolverVisitor().doSwitch(pigraph);
-      final Map<AbstractVertex, Long> brv = PiBRV.compute(pigraph, BRVMethod.LCM);
-      PiBRV.printRV(brv);
+      return;
     }
+
+    final boolean locallyStatic = pigraph.isLocallyStatic();
+    if (!locallyStatic) {
+      PreesmLogger.getLogger().log(Level.WARNING, "Cannot compute the BRV of a dynamic graph");
+      return;
+    }
+
+    new PiSDFParameterResolverVisitor().doSwitch(pigraph);
+    final Map<AbstractVertex, Long> brv = PiBRV.compute(pigraph, BRVMethod.LCM);
+    PiBRV.printRV(brv);
   }
 
 }
