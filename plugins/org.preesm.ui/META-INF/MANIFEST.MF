@@ -3,7 +3,7 @@ Bundle-ManifestVersion: 2
 Bundle-Name: PREESM :: Plugins :: UI
 Automatic-Module-Name: org.preesm.ui
 Bundle-SymbolicName: org.preesm.ui;singleton:=true
-Bundle-Version: 3.3.0
+Bundle-Version: 3.3.0.qualifier
 Bundle-Activator: org.preesm.ui.PreesmUIPlugin
 Require-Bundle: org.eclipse.core.runtime;visibility:=reexport,
  org.eclipse.core.resources,
