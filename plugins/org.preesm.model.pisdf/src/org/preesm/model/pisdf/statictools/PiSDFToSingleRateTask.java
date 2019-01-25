@@ -96,7 +96,7 @@ public class PiSDFToSingleRateTask extends AbstractTaskImplementation {
 
   @Override
   public String monitorMessage() {
-    return "Transforming PiGraph to Single-Rate Directed Acyclic Graph.";
+    return "Transforming PiGraph to Single-Rate Directed Acyclic PiGraph.";
   }
 
 }
