@@ -1,7 +1,7 @@
 /**
- * Copyright or © or Copr. IETR/INSA - Rennes (2008 - 2018) :
+ * Copyright or © or Copr. IETR/INSA - Rennes (2008 - 2019) :
  *
- * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017 - 2018)
+ * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017 - 2019)
  * Clément Guy <clement.guy@insa-rennes.fr> (2014 - 2015)
  * Jonathan Piat <jpiat@laas.fr> (2011)
  * Maxime Pelcat <maxime.pelcat@insa-rennes.fr> (2008 - 2012)
@@ -47,7 +47,7 @@ import javax.xml.transform.TransformerException;
 import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.stream.StreamResult;
 import javax.xml.transform.stream.StreamSource;
-import org.preesm.commons.exceptions.PreesmException;
+import org.preesm.commons.exceptions.PreesmFrameworkException;
 
 /**
  * This class provides methods to transform an XML file via XSLT
@@ -87,11 +87,11 @@ public class XsltTransformer {
     try {
       this.transformer = factory.newTransformer(source);
     } catch (final Exception e) {
-      throw new PreesmException("Could not transform Xslt", e);
+      throw new PreesmFrameworkException("Could not transform Xslt", e);
     }
 
     if (this.transformer == null) {
-      throw new PreesmException("XSL sheet not found or not valid: " + xslFileLoc);
+      throw new PreesmFrameworkException("XSL sheet not found or not valid: " + xslFileLoc);
     }
     this.transformer.setOutputProperty(OutputKeys.INDENT, "yes");
     return true;
@@ -109,9 +109,9 @@ public class XsltTransformer {
             new StreamResult(new FileOutputStream(destFileLoc)));
       } catch (final FileNotFoundException ex) {
         final String message = "Problem finding files for XSL transfo (" + sourceFileLoc + "," + destFileLoc + ")";
-        throw new PreesmException(message, ex);
+        throw new PreesmFrameworkException(message, ex);
       } catch (final TransformerException ex) {
-        throw new PreesmException("Could not transform file", ex);
+        throw new PreesmFrameworkException("Could not transform file", ex);
       }
     }
 

@@ -1,7 +1,7 @@
 /**
- * Copyright or © or Copr. IETR/INSA - Rennes (2009 - 2018) :
+ * Copyright or © or Copr. IETR/INSA - Rennes (2009 - 2019) :
  *
- * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017 - 2018)
+ * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017 - 2019)
  * Clément Guy <clement.guy@insa-rennes.fr> (2014)
  * Jonathan Piat <jpiat@laas.fr> (2009 - 2013)
  * Karol Desnos <karol.desnos@insa-rennes.fr> (2013)
@@ -70,7 +70,7 @@ import org.jacorb.idl.parser;
 import org.preesm.algorithm.codegen.model.CodeGenArgument;
 import org.preesm.algorithm.codegen.model.CodeGenParameter;
 import org.preesm.algorithm.codegen.model.IFunctionFactory;
-import org.preesm.commons.exceptions.PreesmException;
+import org.preesm.commons.exceptions.PreesmRuntimeException;
 import org.preesm.commons.logger.PreesmLogger;
 
 /**
@@ -130,7 +130,7 @@ public class IDLPrototypeFactory implements IFunctionFactory, IDLTreeVisitor {
         IDLParser.parse(idlPath, this);
         this.createdIdls.put(idlPath, this.finalPrototypes);
       } catch (final Exception e) {
-        throw new PreesmException(e);
+        throw new PreesmRuntimeException(e);
       }
     }
     return this.createdIdls.get(idlPath);
@@ -196,7 +196,7 @@ public class IDLPrototypeFactory implements IFunctionFactory, IDLTreeVisitor {
         }
       } catch (final NumberFormatException e) {
         final String message = "Badly formatted IDL interface, loop, init or init-i accepted : " + arg0.name();
-        throw new PreesmException(message, e);
+        throw new PreesmRuntimeException(message, e);
       }
     } else if (arg0.name().equals("loop")) {
       // loop phase prototype is in the interphase "loop"

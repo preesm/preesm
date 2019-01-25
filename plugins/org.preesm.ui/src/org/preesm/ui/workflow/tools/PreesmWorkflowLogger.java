@@ -1,7 +1,7 @@
 /**
- * Copyright or © or Copr. IETR/INSA - Rennes (2018) :
+ * Copyright or © or Copr. IETR/INSA - Rennes (2018 - 2019) :
  *
- * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2018)
+ * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2018 - 2019)
  *
  * This software is a computer program whose purpose is to help prototyping
  * parallel applications using dataflow formalism.
@@ -35,6 +35,7 @@
 package org.preesm.ui.workflow.tools;
 
 import java.io.IOException;
+import java.util.logging.Handler;
 import java.util.logging.Level;
 import java.util.logging.LogManager;
 import java.util.logging.LogRecord;
@@ -45,7 +46,7 @@ import org.eclipse.ui.console.IConsole;
 import org.eclipse.ui.console.IConsoleManager;
 import org.eclipse.ui.console.MessageConsole;
 import org.eclipse.ui.console.MessageConsoleStream;
-import org.preesm.commons.exceptions.PreesmException;
+import org.preesm.commons.exceptions.PreesmFrameworkException;
 import org.preesm.commons.logger.DefaultPreesmFormatter;
 import org.preesm.ui.PreesmUIPlugin;
 
@@ -80,6 +81,10 @@ public class PreesmWorkflowLogger extends Logger {
    */
   @Override
   public void log(final LogRecord record) {
+    for (Handler h : this.getHandlers()) {
+      h.publish(record);
+    }
+
     final Level level = record.getLevel();
     final int levelVal = level.intValue();
     if ((getLevel() == null) || (levelVal >= getLevel().intValue())) {
@@ -100,13 +105,14 @@ public class PreesmWorkflowLogger extends Logger {
               stream.setColor(new Color(null, 255, 0, 0));
             }
           });
-          stream.println(new DefaultPreesmFormatter(false).format(record));
+          final boolean printStack = this.getLevel().intValue() < Level.INFO.intValue();
+          stream.println(new DefaultPreesmFormatter(printStack).format(record));
           if (record.getThrown() != null) {
             // always log stack trace in the anonymous logger
             Logger.getAnonymousLogger().log(Level.SEVERE, record.getThrown().getMessage(), record.getThrown());
           }
         } catch (IOException e) {
-          throw new PreesmException("Could not open console stream", e);
+          throw new PreesmFrameworkException("Could not open console stream", e);
         }
       }
     }

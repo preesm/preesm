@@ -1,8 +1,8 @@
 /**
- * Copyright or © or Copr. Åbo Akademi University (2017 - 2018),
- * IETR/INSA - Rennes (2017 - 2018) :
+ * Copyright or © or Copr. Åbo Akademi University (2017 - 2019),
+ * IETR/INSA - Rennes (2017 - 2019) :
  *
- * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017 - 2018)
+ * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017 - 2019)
  * Sudeep Kanur <skanur@abo.fi> (2017 - 2018)
  *
  * This software is a computer program whose purpose is to help prototyping
@@ -39,7 +39,7 @@ package fi.abo.preesm.dataparallel
 import org.preesm.algorithm.model.AbstractGraph
 import org.preesm.algorithm.model.sdf.SDFAbstractVertex
 import org.preesm.algorithm.model.sdf.SDFEdge
-import org.preesm.commons.exceptions.PreesmException
+import org.preesm.commons.exceptions.PreesmRuntimeException
 
 /**
  * Static class that has various utility functions related
@@ -63,7 +63,7 @@ class DAGUtils {
 											, AbstractGraph<SDFAbstractVertex, SDFEdge> dest)
 											 {
 		if(!source.vertexSet.contains(vertex)) {
-			throw new PreesmException("The given vertex is not in source graph. Check the order")
+			throw new PreesmRuntimeException("The given vertex is not in source graph. Check the order")
 		}
 
 		// We define when two normal vertices are equal to each other
@@ -94,7 +94,7 @@ class DAGUtils {
 		]
 
 		if(destVertices.size > 1) {
-			throw new PreesmException("The vertex " + vertex + " matches more than two nodes:\n" +
+			throw new PreesmRuntimeException("The vertex " + vertex + " matches more than two nodes:\n" +
 				destVertices)
 		}
 

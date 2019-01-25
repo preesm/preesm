@@ -1,7 +1,7 @@
 /**
- * Copyright or © or Copr. IETR/INSA - Rennes (2008 - 2018) :
+ * Copyright or © or Copr. IETR/INSA - Rennes (2008 - 2019) :
  *
- * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017 - 2018)
+ * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017 - 2019)
  * Clément Guy <clement.guy@insa-rennes.fr> (2014 - 2015)
  * Daniel Madroñal <daniel.madronal@upm.es> (2018)
  * Maxime Pelcat <maxime.pelcat@insa-rennes.fr> (2008 - 2014)
@@ -53,7 +53,7 @@ import org.eclipse.ui.forms.editor.IFormPage;
 import org.eclipse.ui.forms.editor.SharedHeaderFormEditor;
 import org.eclipse.ui.part.FileEditorInput;
 import org.preesm.commons.DomUtil;
-import org.preesm.commons.exceptions.PreesmException;
+import org.preesm.commons.exceptions.PreesmRuntimeException;
 import org.preesm.model.scenario.PreesmScenario;
 import org.preesm.model.scenario.serialize.ScenarioParser;
 import org.preesm.model.scenario.serialize.ScenarioWriter;
@@ -181,7 +181,7 @@ public class ScenarioEditor extends SharedHeaderFormEditor implements IPropertyL
       scenarioFile.setContents(new ByteArrayInputStream(byteStream.toByteArray()), true, false,
           new NullProgressMonitor());
     } catch (final IOException | CoreException e) {
-      throw new PreesmException(e);
+      throw new PreesmRuntimeException(e);
     }
 
     this.isDirty = false;

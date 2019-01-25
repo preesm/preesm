@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
 
-    Copyright or © or Copr. IETR/INSA - Rennes (2018) :
+    Copyright or © or Copr. IETR/INSA - Rennes (2018 - 2019) :
 
-    Antoine Morvan <antoine.morvan@insa-rennes.fr> (2018)
+    Antoine Morvan <antoine.morvan@insa-rennes.fr> (2018 - 2019)
 
     This software is a computer program whose purpose is to help prototyping
     parallel applications using dataflow formalism.
@@ -75,6 +75,8 @@
          </description>
       </wizard>
    </extension>
+
+   <!-- Workflow editor property tab -->
    <extension
       point="org.eclipse.ui.views.properties.tabbed.propertySections">
       <propertySections
@@ -87,6 +89,7 @@
          </propertySection>
       </propertySections>
    </extension>
+   <!-- Property tab contribution -->
    <extension
       point="org.eclipse.ui.views.properties.tabbed.propertyTabs">
       <propertyTabs
@@ -98,6 +101,8 @@
          </propertyTab>
       </propertyTabs>
    </extension>
+
+   <!-- launch configurations -->
    <extension
       point="org.eclipse.debug.ui.launchConfigurationTabGroups">
       <launchConfigurationTabGroup
@@ -122,16 +127,24 @@
          modes="run" name="DFTools Workflow" public="true">
       </launchConfigurationType>
    </extension>
+
+   <!-- Loggers -->
    <extension point="org.preesm.workflow.loggers">
       <logger id="net.sf.dftools.ui.workflow.logger"
          type="org.preesm.ui.workflow.tools.PreesmWorkflowLogger">
       </logger>
    </extension>
+
+   <!-- Workflow Editor Graphiti definition -->
    <extension point="graphiti.definition">
       <configuration extension="workflow" name="Workflow"
          type="text/xml"
          validator="org.preesm.ui.workflow.WorkflowValidator">
          <graphType name="DFTools Workflow">
+            <parameter name="Verbose Level" type="java.lang.String" default="INFO">
+            </parameter>
+            <parameter name="Error on Warning" type="java.lang.String" default="true">
+            </parameter>
          </graphType>
          <import>
             <xslt

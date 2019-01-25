@@ -1,7 +1,7 @@
 /**
- * Copyright or © or Copr. IETR/INSA - Rennes (2018) :
+ * Copyright or © or Copr. IETR/INSA - Rennes (2018 - 2019) :
  *
- * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2018)
+ * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2018 - 2019)
  *
  * This software is a computer program whose purpose is to help prototyping
  * parallel applications using dataflow formalism.
@@ -53,7 +53,7 @@ import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.EClass;
 import org.eclipse.emf.ecore.EPackage;
 import org.preesm.commons.DomUtil;
-import org.preesm.commons.exceptions.PreesmException;
+import org.preesm.commons.exceptions.PreesmRuntimeException;
 import org.preesm.model.slam.ComponentHolder;
 import org.preesm.model.slam.ComponentInstance;
 import org.preesm.model.slam.Design;
@@ -149,7 +149,7 @@ public class IPXACTDesignParser extends IPXACTParser {
     try {
       inputStream.close();
     } catch (final IOException e) {
-      throw new PreesmException("Could not parse IPXACT");
+      throw new PreesmRuntimeException("Could not parse IPXACT");
     }
 
     return design;
@@ -262,7 +262,7 @@ public class IPXACTDesignParser extends IPXACTParser {
       node = node.getNextSibling();
     }
     if (vlnv == null) {
-      throw new PreesmException("Could not parse VLNV");
+      throw new PreesmRuntimeException("Could not parse VLNV");
     }
 
     // Component type is retrieved from vendor extensions if there are any.
@@ -285,7 +285,7 @@ public class IPXACTDesignParser extends IPXACTParser {
 
       instance.setComponent(component);
       if (description == null) {
-        throw new PreesmException("Could not parse description");
+        throw new PreesmRuntimeException("Could not parse description");
       }
       try {
         // Special component cases
@@ -299,7 +299,7 @@ public class IPXACTDesignParser extends IPXACTParser {
           ((Dma) component).setSetupTime(Integer.valueOf(description.getSpecificParameter("slam:setupTime")));
         }
       } catch (final NumberFormatException e) {
-        throw new PreesmException("Could not parse component instance", e);
+        throw new PreesmRuntimeException("Could not parse component instance", e);
       }
 
     }
@@ -337,7 +337,7 @@ public class IPXACTDesignParser extends IPXACTParser {
           try {
             stream = new FileInputStream(file.getPath());
           } catch (final FileNotFoundException e) {
-            throw new PreesmException("Could not locate file", e);
+            throw new PreesmRuntimeException("Could not locate file", e);
           }
 
           final Design subDesign = subParser.parse(stream, design.getComponentHolder(), component);

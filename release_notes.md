@@ -1,6 +1,19 @@
 PREESM Changelog
 ================
 
+## Release version 3.3.0
+*2019.01.25*
+
+### New Feature
+* Add workflow parameters 'Verbose Level' to control log level;
+* Add workflow parameters 'Error on Warning' to fail and stop execution on warning or severe log entry;
+
+### Changes
+* Fix PiSDF single rate export: add suffix to the exported file name to avoid overriding the original graph;
+
+### Bug fix
+
+
 ## Release version 3.2.0
 *2019.01.24*
 

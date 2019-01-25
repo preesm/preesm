@@ -1,8 +1,8 @@
 /**
- * Copyright or © or Copr. Åbo Akademi University (2017 - 2018),
- * IETR/INSA - Rennes (2017 - 2018) :
+ * Copyright or © or Copr. Åbo Akademi University (2017 - 2019),
+ * IETR/INSA - Rennes (2017 - 2019) :
  *
- * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017 - 2018)
+ * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017 - 2019)
  * Sudeep Kanur <skanur@abo.fi> (2017 - 2018)
  *
  * This software is a computer program whose purpose is to help prototyping
@@ -43,6 +43,7 @@ import org.preesm.algorithm.model.sdf.SDFAbstractVertex
 import org.preesm.algorithm.model.sdf.SDFGraph
 import org.preesm.algorithm.model.sdf.visitors.ToHSDFVisitor
 import org.preesm.commons.exceptions.PreesmException
+import org.preesm.commons.exceptions.PreesmRuntimeException
 
 /**
  * Helper builder class for {@link SrSDFDAGCoIterator}
@@ -122,22 +123,22 @@ class SrSDFDAGCoIteratorBuilder {
 	 */
 	def SrSDFDAGCoIterator build() throws PreesmException {
 		if(dag === null) {
-			throw new PreesmException("Co-iterator builder needs a DAG. Use addDAG method.")
+			throw new PreesmRuntimeException("Co-iterator builder needs a DAG. Use addDAG method.")
 		}
 
 		if(visitableNodes === null) {
-			throw new PreesmException("Co-iterator builder needs visitable nodes.
+			throw new PreesmRuntimeException("Co-iterator builder needs visitable nodes.
 									Use addVisitableNodes method.")
 		}
 
 		if(ncg === null) {
-			throw new PreesmException("Co-iterator builder needs node chain graphs.
+			throw new PreesmRuntimeException("Co-iterator builder needs node chain graphs.
 									Use addNodeChainGraphs method.")
 		}
 
 		visitableNodes.forEach[node |
 			if(!(dag.vertexSet.contains(node))) {
-				throw new PreesmException("Node: " + node.name + " does not exist in source graph")
+				throw new PreesmRuntimeException("Node: " + node.name + " does not exist in source graph")
 			}
 		]
 

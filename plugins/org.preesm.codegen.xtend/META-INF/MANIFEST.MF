@@ -15,7 +15,7 @@ Require-Bundle: org.apache.velocity;bundle-version="1.7.0",
  org.preesm.codegen;visibility:=reexport
 Bundle-ActivationPolicy: lazy
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
-Bundle-Version: 3.2.0
+Bundle-Version: 3.3.0
 Export-Package: org.preesm.codegen.xtend.spider,
  org.preesm.codegen.xtend.spider.utils,
  org.preesm.codegen.xtend.spider.visitor

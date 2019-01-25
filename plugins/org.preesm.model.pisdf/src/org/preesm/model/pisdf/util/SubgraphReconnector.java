@@ -1,7 +1,7 @@
 /**
- * Copyright or © or Copr. IETR/INSA - Rennes (2017 - 2018) :
+ * Copyright or © or Copr. IETR/INSA - Rennes (2017 - 2019) :
  *
- * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017 - 2018)
+ * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017 - 2019)
  *
  * This software is a computer program whose purpose is to help prototyping
  * parallel applications using dataflow formalism.
@@ -39,7 +39,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
-import org.preesm.commons.exceptions.PreesmException;
+import org.preesm.commons.exceptions.PreesmRuntimeException;
 import org.preesm.model.pisdf.AbstractActor;
 import org.preesm.model.pisdf.Actor;
 import org.preesm.model.pisdf.ConfigInputInterface;
@@ -367,7 +367,7 @@ public class SubgraphReconnector extends PiMMSwitch<Boolean> {
   }
 
   private static void error(final Actor hierarchicalActor, final PiGraph subGraph, final Port port) {
-    throw new PreesmException("PiGraph '" + subGraph.getName() + "' does not have a corresponding "
+    throw new PreesmRuntimeException("PiGraph '" + subGraph.getName() + "' does not have a corresponding "
         + port.getClass().getSimpleName() + " named '" + port.getName() + "' for Actor " + hierarchicalActor.getName());
   }
 }

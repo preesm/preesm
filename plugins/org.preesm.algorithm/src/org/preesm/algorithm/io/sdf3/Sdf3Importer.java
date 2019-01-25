@@ -43,7 +43,7 @@ import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.Path;
 import org.preesm.algorithm.model.sdf.SDFGraph;
-import org.preesm.commons.exceptions.PreesmException;
+import org.preesm.commons.exceptions.PreesmRuntimeException;
 import org.preesm.commons.files.PathTools;
 import org.preesm.commons.logger.PreesmLogger;
 import org.preesm.model.scenario.PreesmScenario;
@@ -85,7 +85,7 @@ public class Sdf3Importer extends AbstractTaskImplementation {
     final PreesmScenario scenario = (PreesmScenario) inputs.get(AbstractWorkflowNodeImplementation.KEY_SCENARIO);
 
     if (architecture == null) {
-      throw new PreesmException("Architecture is not properly initialized, cannot execute SDF3 import task");
+      throw new PreesmRuntimeException("Architecture is not properly initialized, cannot execute SDF3 import task");
     }
 
     // Locate the intput file

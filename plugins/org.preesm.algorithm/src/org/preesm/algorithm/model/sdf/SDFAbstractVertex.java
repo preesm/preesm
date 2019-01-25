@@ -1,7 +1,7 @@
 /**
- * Copyright or © or Copr. IETR/INSA - Rennes (2018) :
+ * Copyright or © or Copr. IETR/INSA - Rennes (2018 - 2019) :
  *
- * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2018)
+ * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2018 - 2019)
  *
  * This software is a computer program whose purpose is to help prototyping
  * parallel applications using dataflow formalism.
@@ -46,6 +46,7 @@ import org.preesm.algorithm.model.parameters.Argument;
 import org.preesm.algorithm.model.sdf.esdf.SDFSinkInterfaceVertex;
 import org.preesm.algorithm.model.sdf.esdf.SDFSourceInterfaceVertex;
 import org.preesm.commons.exceptions.PreesmException;
+import org.preesm.commons.exceptions.PreesmRuntimeException;
 import org.preesm.commons.logger.PreesmLogger;
 import org.preesm.commons.math.ExpressionEvaluationException;
 
@@ -387,10 +388,8 @@ public abstract class SDFAbstractVertex extends AbstractVertex<SDFGraph> {
       if (getGraphDescription() != null) {
         final AbstractVertex truePort = getGraphDescription().getVertex(sink.getName());
         if (getGraphDescription().incomingEdgesOf(truePort).isEmpty()) {
-          PreesmLogger.getLogger().log(Level.INFO,
+          throw new PreesmRuntimeException(
               "interface " + sink.getName() + " has no inside connection, consider removing this interface if unused");
-          throw (new PreesmException(
-              "interface " + sink.getName() + " has no inside connection, consider removing this interface if unused"));
         }
       }
     }
@@ -399,7 +398,7 @@ public abstract class SDFAbstractVertex extends AbstractVertex<SDFGraph> {
         try {
           arg.longValue();
         } catch (final ExpressionEvaluationException e) {
-          throw new PreesmException("Could not evaluate argument value", e);
+          throw new PreesmRuntimeException("Could not evaluate argument value", e);
         }
       }
     }

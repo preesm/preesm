@@ -1,7 +1,7 @@
 /**
- * Copyright or © or Copr. IETR/INSA - Rennes (2018) :
+ * Copyright or © or Copr. IETR/INSA - Rennes (2018 - 2019) :
  *
- * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2018)
+ * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2018 - 2019)
  *
  * This software is a computer program whose purpose is to help prototyping
  * parallel applications using dataflow formalism.
@@ -57,7 +57,7 @@ import org.preesm.algorithm.model.dag.DAGEdge;
 import org.preesm.algorithm.model.dag.DAGVertex;
 import org.preesm.algorithm.model.dag.edag.DAGForkVertex;
 import org.preesm.algorithm.model.dag.edag.DAGJoinVertex;
-import org.preesm.commons.exceptions.PreesmException;
+import org.preesm.commons.exceptions.PreesmRuntimeException;
 import org.preesm.commons.files.URLResolver;
 import org.preesm.commons.logger.PreesmLogger;
 import org.preesm.model.pisdf.AbstractActor;
@@ -118,7 +118,7 @@ public class ExternalMappingFromDAG extends AbstractMappingFromDAG {
       final String srActorName = e.getTaskName() + "_" + e.getSingleRateInstanceNumber();
       if (coreID == null) {
         final String message = "Schedule does not specify core ID for actor " + srActorName;
-        throw new PreesmException(message);
+        throw new PreesmRuntimeException(message);
       }
       final List<DAGVertex> list = orderedVertices.get(coreID);
       list.add(dag.getVertex(srActorName));
@@ -156,7 +156,7 @@ public class ExternalMappingFromDAG extends AbstractMappingFromDAG {
     } else {
       final String message = "The schedule is invalid: vertex [" + vertex.getName()
           + "] cannot be mapped on component [" + componentInstance.getInstanceName() + "].";
-      throw new PreesmException(message);
+      throw new PreesmRuntimeException(message);
     }
   }
 
@@ -167,7 +167,7 @@ public class ExternalMappingFromDAG extends AbstractMappingFromDAG {
       case DAGForkVertex.DAG_FORK_VERTEX:
         final Set<DAGEdge> incomingEdges = vtx.incomingEdges();
         if (incomingEdges.size() != 1) {
-          throw new PreesmException("Fork node should have only one incomming edge");
+          throw new PreesmRuntimeException("Fork node should have only one incomming edge");
         }
         final DAGEdge inEdge = incomingEdges.iterator().next();
         associateVtx = inEdge.getSource();
@@ -175,13 +175,13 @@ public class ExternalMappingFromDAG extends AbstractMappingFromDAG {
       case DAGJoinVertex.DAG_JOIN_VERTEX:
         final Set<DAGEdge> outgoingEdges = vtx.outgoingEdges();
         if (outgoingEdges.size() != 1) {
-          throw new PreesmException("Join node should have only one outgoing edge");
+          throw new PreesmRuntimeException("Join node should have only one outgoing edge");
         }
         final DAGEdge outEdge = outgoingEdges.iterator().next();
         associateVtx = outEdge.getTarget();
         break;
       default:
-        throw new PreesmException("");
+        throw new PreesmRuntimeException("");
     }
     return associateVtx;
   }
@@ -194,7 +194,7 @@ public class ExternalMappingFromDAG extends AbstractMappingFromDAG {
       if (vertex == null) {
         final String message = "The schedule entry for single rate actor [" + s + "] "
             + "has no corresponding actor in the single rate graph.";
-        throw new PreesmException(message);
+        throw new PreesmRuntimeException(message);
       }
       entries.put(vertex, e);
     }
@@ -213,7 +213,7 @@ public class ExternalMappingFromDAG extends AbstractMappingFromDAG {
     if (!sameArchiName || !sameArchiVersion) {
       final String message = "The input schedule architecture is not compatible with "
           + "the architecture specified in the scenario.";
-      throw new PreesmException(message);
+      throw new PreesmRuntimeException(message);
     }
 
     // basic application comparison
@@ -224,7 +224,7 @@ public class ExternalMappingFromDAG extends AbstractMappingFromDAG {
     if (!sameAppName) {
       final String message = "The input schedule application is not compatible with "
           + "the application specified in the scenario.";
-      throw new PreesmException(message);
+      throw new PreesmRuntimeException(message);
     }
 
     final List<ScheduleEntry> scheduleEntries = schedule.getScheduleEntries();
@@ -236,7 +236,7 @@ public class ExternalMappingFromDAG extends AbstractMappingFromDAG {
       if (vertex == null) {
         final String message = "The schedule entry for single rate actor [" + srActorName + "] "
             + "has no corresponding actor in the single rate graph.";
-        throw new PreesmException(message);
+        throw new PreesmRuntimeException(message);
       } else {
         actorNameToScheduleEntry.put(srActorName, scheduleEntry);
       }
@@ -257,7 +257,7 @@ public class ExternalMappingFromDAG extends AbstractMappingFromDAG {
       return ScheduleUtils.parseJsonString(readURL);
     } catch (final IOException e) {
       final String message = "Could not read schedule file [" + jsonScheduleProjectRelativeFilePath + "]";
-      throw new PreesmException(message, e);
+      throw new PreesmRuntimeException(message, e);
     }
   }
 

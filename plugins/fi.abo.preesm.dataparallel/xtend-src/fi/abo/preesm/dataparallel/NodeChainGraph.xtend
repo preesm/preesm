@@ -1,8 +1,8 @@
 /**
- * Copyright or © or Copr. Åbo Akademi University (2017 - 2018),
- * IETR/INSA - Rennes (2017 - 2018) :
+ * Copyright or © or Copr. Åbo Akademi University (2017 - 2019),
+ * IETR/INSA - Rennes (2017 - 2019) :
  *
- * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017 - 2018)
+ * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017 - 2019)
  * Sudeep Kanur <skanur@abo.fi> (2017 - 2018)
  *
  * This software is a computer program whose purpose is to help prototyping
@@ -50,7 +50,7 @@ import org.preesm.algorithm.model.sdf.esdf.SDFForkVertex
 import org.preesm.algorithm.model.sdf.esdf.SDFJoinVertex
 import org.preesm.algorithm.model.sdf.visitors.ToHSDFVisitor
 import org.preesm.algorithm.model.types.LongEdgePropertyType
-import org.preesm.commons.exceptions.PreesmException
+import org.preesm.commons.exceptions.PreesmRuntimeException
 
 /**
  * Apart from the poor choice of name for this class ;) , this class groups the vertices of
@@ -235,7 +235,7 @@ class NodeChainGraph {
 	def List<NodeChain> getPreviousNodes(SDFAbstractVertex vertex) {
 		val node = nodechains.get(vertex)
 		if(node === null) {
-			throw new PreesmException("The vertex is not part of the SrSDF graph used to " +
+			throw new PreesmRuntimeException("The vertex is not part of the SrSDF graph used to " +
 				"construct this node-chain.")
 		}
 
@@ -324,7 +324,7 @@ class NodeChainGraph {
 	def Map<SDFEdge, Long> getEdgewiseInputDelays(SDFAbstractVertex vertex) {
 		val node = nodechains.get(vertex)
 		if(node === null) {
-			throw new PreesmException("The vertex is not part of the SrSDF graph used to " +
+			throw new PreesmRuntimeException("The vertex is not part of the SrSDF graph used to " +
 				"construct this node-chain.")
 		}
 
@@ -361,7 +361,7 @@ class NodeChainGraph {
 	def Map<SDFEdge, Long> getEdgewiseOutputDelays(SDFAbstractVertex vertex) {
 		val node = nodechains.get(vertex)
 		if(node === null) {
-			throw new PreesmException("The vertex is not part of the SrSDF graph used to " +
+			throw new PreesmRuntimeException("The vertex is not part of the SrSDF graph used to " +
 				"construct this node-chain.")
 		}
 
@@ -469,7 +469,7 @@ class NodeChainGraph {
 	private def void setEdgewiseDelays(SDFAbstractVertex vertex, Map<SDFEdge, Long> delays, boolean isInput) {
 		val node = nodechains.get(vertex)
 		if(node === null) {
-			throw new PreesmException("The vertex is not part of the SrSDF graph used to " +
+			throw new PreesmRuntimeException("The vertex is not part of the SrSDF graph used to " +
 				"construct this node-chain.")
 		}
 
@@ -481,7 +481,7 @@ class NodeChainGraph {
 		}
 
 		if(delays.size != edgeSet.size) {
-			throw new PreesmException("The number of delays in the list: " + delays.size
+			throw new PreesmRuntimeException("The number of delays in the list: " + delays.size
 				+ " is not equal to the edges (" + graph.incomingEdgesOf(node.vertex).size
 				+ ") of the vertex " + node.vertex)
 		}

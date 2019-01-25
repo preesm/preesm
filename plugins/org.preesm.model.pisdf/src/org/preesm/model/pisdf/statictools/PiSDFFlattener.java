@@ -42,7 +42,7 @@ package org.preesm.model.pisdf.statictools;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import org.preesm.commons.exceptions.PreesmException;
+import org.preesm.commons.exceptions.PreesmRuntimeException;
 import org.preesm.model.pisdf.AbstractActor;
 import org.preesm.model.pisdf.AbstractVertex;
 import org.preesm.model.pisdf.BroadcastActor;
@@ -118,10 +118,10 @@ public class PiSDFFlattener extends PiMMSwitch<Boolean> {
     final List<AbstractActor> actors = graph.getActors();
     for (final AbstractActor a : actors) {
       if (a instanceof PiGraph) {
-        throw new PreesmException("Flatten graph should have no children graph");
+        throw new PreesmRuntimeException("Flatten graph should have no children graph");
       }
       if (a instanceof InterfaceActor) {
-        throw new PreesmException("Flatten graph should have no interface");
+        throw new PreesmRuntimeException("Flatten graph should have no interface");
       }
     }
   }
@@ -195,13 +195,13 @@ public class PiSDFFlattener extends PiMMSwitch<Boolean> {
         final ISetter setter = incomingDependency.getSetter();
         final Parameter parameter = param2param.get(setter);
         if (parameter == null) {
-          throw new PreesmException();
+          throw new PreesmRuntimeException();
         } else {
           final Dependency dep = PiMMUserFactory.instance.createDependency(parameter, port);
           this.result.addDependency(dep);
         }
       } else {
-        throw new PreesmException();
+        throw new PreesmRuntimeException();
       }
     }
 
@@ -282,7 +282,7 @@ public class PiSDFFlattener extends PiMMSwitch<Boolean> {
     final DataPort correspondingPort = parentGraph.lookupGraphDataPortForInterfaceActor(actor);
     final Expression correspondingExpression = correspondingPort.getExpression();
     if (!correspondingExpression.getExpressionAsString().equals(interfaceRateExpression.getExpressionAsString())) {
-      throw new PreesmException("Interface [" + actor.getName()
+      throw new PreesmRuntimeException("Interface [" + actor.getName()
           + "] should have same rate as its definition. Graph rate [" + correspondingExpression.getExpressionAsString()
           + "] vs interface rate [" + interfaceRateExpression.getExpressionAsString() + "]");
     }
@@ -585,8 +585,8 @@ public class PiSDFFlattener extends PiMMSwitch<Boolean> {
       }
     }
     if (containsNonPersistent && containsPersistent) {
-      throw new PreesmException("We have detected persistent and non-persistent delays in graph [" + graph.getName()
-          + "]. This is not supported by the flattening transformation for now.");
+      throw new PreesmRuntimeException("We have detected persistent and non-persistent delays in graph ["
+          + graph.getName() + "]. This is not supported by the flattening transformation for now.");
     } else if (containsNonPersistent) {
       quasiSRTransformation(graph);
     } else {

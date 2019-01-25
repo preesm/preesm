@@ -1,8 +1,8 @@
 /**
- * Copyright or © or Copr. Åbo Akademi University (2017 - 2018),
- * IETR/INSA - Rennes (2017 - 2018) :
+ * Copyright or © or Copr. Åbo Akademi University (2017 - 2019),
+ * IETR/INSA - Rennes (2017 - 2019) :
  *
- * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017 - 2018)
+ * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017 - 2019)
  * Sudeep Kanur <skanur@abo.fi> (2017 - 2018)
  *
  * This software is a computer program whose purpose is to help prototyping
@@ -52,6 +52,7 @@ import org.preesm.algorithm.model.sdf.SDFAbstractVertex
 import org.preesm.algorithm.model.sdf.esdf.SDFForkVertex
 import org.preesm.algorithm.model.sdf.esdf.SDFJoinVertex
 import org.preesm.commons.exceptions.PreesmException
+import org.preesm.commons.exceptions.PreesmRuntimeException
 
 /**
  * DAG operation that finds the instances that needs to be moved in the
@@ -132,7 +133,7 @@ class MovableInstances implements DAGOperations {
 
 		val isDAGInd = parallelVisitor.isIndependent
 		if(!isDAGInd) {
-			throw new PreesmException("DAG is not instance independent. Getting movable instance" +
+			throw new PreesmRuntimeException("DAG is not instance independent. Getting movable instance" +
 				" is meaningless.")
 		}
 

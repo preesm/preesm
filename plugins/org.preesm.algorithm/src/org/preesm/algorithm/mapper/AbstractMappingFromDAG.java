@@ -1,7 +1,7 @@
 /**
- * Copyright or © or Copr. IETR/INSA - Rennes (2008 - 2018) :
+ * Copyright or © or Copr. IETR/INSA - Rennes (2008 - 2019) :
  *
- * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017 - 2018)
+ * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017 - 2019)
  * Clément Guy <clement.guy@insa-rennes.fr> (2014)
  * Julien Hascoet <jhascoet@kalray.eu> (2017)
  * Jonathan Piat <jpiat@laas.fr> (2009)
@@ -58,6 +58,7 @@ import org.preesm.algorithm.mapper.params.AbcParameters;
 import org.preesm.algorithm.mapper.tools.CommunicationOrderChecker;
 import org.preesm.algorithm.model.dag.DirectedAcyclicGraph;
 import org.preesm.commons.exceptions.PreesmException;
+import org.preesm.commons.exceptions.PreesmRuntimeException;
 import org.preesm.model.scenario.PreesmScenario;
 import org.preesm.model.slam.Design;
 import org.preesm.workflow.elements.Workflow;
@@ -104,7 +105,7 @@ public abstract class AbstractMappingFromDAG extends AbstractTaskImplementation 
     RouteCalculator.recalculate(architecture, scenario);
 
     if (dag == null) {
-      throw (new PreesmException(" graph can't be scheduled, check console messages"));
+      throw new PreesmRuntimeException(" graph can't be scheduled, check console messages");
     }
 
     final AbcParameters abcParams = new AbcParameters(parameters);
@@ -123,7 +124,7 @@ public abstract class AbstractMappingFromDAG extends AbstractTaskImplementation 
     final boolean couldConstructInitialLists = initial.constructInitialLists(dag, simu);
     if (!couldConstructInitialLists) {
       final String msg = "Error in scheduling";
-      throw new PreesmException(msg);
+      throw new PreesmRuntimeException(msg);
     } else {
 
       // Using topological task scheduling in list scheduling: the t-level

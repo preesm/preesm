@@ -1,7 +1,7 @@
 /**
- * Copyright or © or Copr. IETR/INSA - Rennes (2012 - 2018) :
+ * Copyright or © or Copr. IETR/INSA - Rennes (2012 - 2019) :
  *
- * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017 - 2018)
+ * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017 - 2019)
  * Clément Guy <clement.guy@insa-rennes.fr> (2014 - 2015)
  * Karol Desnos <karol.desnos@insa-rennes.fr> (2012)
  *
@@ -44,6 +44,7 @@ import org.preesm.algorithm.generator.SDFRandomGraph;
 import org.preesm.algorithm.model.sdf.SDFAbstractVertex;
 import org.preesm.algorithm.model.sdf.SDFGraph;
 import org.preesm.commons.exceptions.PreesmException;
+import org.preesm.commons.exceptions.PreesmRuntimeException;
 import org.preesm.model.scenario.ConstraintGroupManager;
 import org.preesm.model.scenario.PreesmScenario;
 import org.preesm.model.scenario.Timing;
@@ -130,7 +131,7 @@ public class RandomSDF extends AbstractTaskImplementation {
       generatedGraph = graphGenerator.createRandomGraph(this.nbVertex, this.minInDegree, this.maxInDegree,
           this.minOutDegree, this.maxOutDegree, this.minRate, this.maxRate, this.rateMultiplier);
     } catch (final PreesmException ex) {
-      throw new PreesmException(ex.getMessage(), ex);
+      throw new PreesmRuntimeException(ex.getMessage(), ex);
     }
 
     if (generatedGraph != null) {

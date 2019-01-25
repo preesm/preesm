@@ -1,7 +1,7 @@
 /**
- * Copyright or © or Copr. IETR/INSA - Rennes (2008 - 2018) :
+ * Copyright or © or Copr. IETR/INSA - Rennes (2008 - 2019) :
  *
- * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017 - 2018)
+ * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017 - 2019)
  * Clément Guy <clement.guy@insa-rennes.fr> (2015)
  * Jonathan Piat <jpiat@laas.fr> (2008)
  * Karol Desnos <karol.desnos@insa-rennes.fr> (2011)
@@ -71,7 +71,7 @@ import org.jfree.data.time.TimeSeriesCollection;
 import org.jfree.ui.ApplicationFrame;
 import org.preesm.algorithm.mapper.algo.FastAlgorithm;
 import org.preesm.algorithm.mapper.algo.PFastAlgorithm;
-import org.preesm.commons.exceptions.PreesmException;
+import org.preesm.commons.exceptions.PreesmRuntimeException;
 
 /**
  * Plots the best cost found versus scheduling time. Can be latency or else
@@ -298,7 +298,7 @@ public class BestCostPlotter extends ApplicationFrame implements ActionListener,
             Thread.sleep(500);
           } catch (final InterruptedException e) {
             Thread.currentThread().interrupt();
-            throw new PreesmException(e);
+            throw new PreesmRuntimeException(e);
           }
         }
       } else {

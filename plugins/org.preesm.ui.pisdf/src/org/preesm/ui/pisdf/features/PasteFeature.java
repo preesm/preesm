@@ -1,7 +1,7 @@
 /**
- * Copyright or © or Copr. IETR/INSA - Rennes (2017 - 2018) :
+ * Copyright or © or Copr. IETR/INSA - Rennes (2017 - 2019) :
  *
- * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017 - 2018)
+ * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017 - 2019)
  * Florian Arrestier <florian.arrestier@insa-rennes.fr> (2018)
  *
  * This software is a computer program whose purpose is to help prototyping
@@ -60,7 +60,7 @@ import org.eclipse.graphiti.services.IPeService;
 import org.eclipse.graphiti.ui.features.AbstractPasteFeature;
 import org.eclipse.graphiti.ui.services.GraphitiUi;
 import org.eclipse.xtext.xbase.lib.Pair;
-import org.preesm.commons.exceptions.PreesmException;
+import org.preesm.commons.exceptions.PreesmRuntimeException;
 import org.preesm.model.pisdf.AbstractActor;
 import org.preesm.model.pisdf.AbstractVertex;
 import org.preesm.model.pisdf.ConfigInputInterface;
@@ -322,7 +322,7 @@ public class PasteFeature extends AbstractPasteFeature {
     final DataOutputPort sourcePort = copiedFifo.getSourcePort();
     final DataInputPort targetPort = copiedFifo.getTargetPort();
     if (targetPort == null || sourcePort == null) {
-      throw new PreesmException("The fifo [" + copiedFifo + "] is inconsistent");
+      throw new PreesmRuntimeException("The fifo [" + copiedFifo + "] is inconsistent");
     }
 
     final Anchor sourceAnchor = (Anchor) findPE(sourcePort);

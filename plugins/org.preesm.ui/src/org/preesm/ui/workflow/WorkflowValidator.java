@@ -1,7 +1,7 @@
 /**
- * Copyright or © or Copr. IETR/INSA - Rennes (2018) :
+ * Copyright or © or Copr. IETR/INSA - Rennes (2018 - 2019) :
  *
- * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2018)
+ * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2018 - 2019)
  *
  * This software is a computer program whose purpose is to help prototyping
  * parallel applications using dataflow formalism.
@@ -48,7 +48,7 @@ import org.eclipse.core.runtime.Platform;
 import org.ietr.dftools.graphiti.model.Graph;
 import org.ietr.dftools.graphiti.model.IValidator;
 import org.ietr.dftools.graphiti.model.Vertex;
-import org.preesm.commons.exceptions.PreesmException;
+import org.preesm.commons.exceptions.PreesmFrameworkException;
 
 /**
  * This class implements a Workflow model validator. This validator checks that the workflow is executable.
@@ -162,7 +162,7 @@ public class WorkflowValidator implements IValidator {
         parameterDefaults = (Map<String, String>) obj;
       }
     } catch (final Exception e) {
-      throw new PreesmException("Could not add default parameters", e);
+      throw new PreesmFrameworkException("Could not add default parameters", e);
     }
 
     if (parameterDefaults != null) {
@@ -207,7 +207,7 @@ public class WorkflowValidator implements IValidator {
       marker.setAttribute(IMarker.SEVERITY, severity);
       marker.setAttribute(IMarker.MESSAGE, message);
     } catch (final CoreException e) {
-      throw new PreesmException("Coule not create marker", e);
+      throw new PreesmFrameworkException("Coule not create marker", e);
     }
   }
 

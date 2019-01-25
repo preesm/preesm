@@ -1,7 +1,7 @@
 /**
- * Copyright or © or Copr. IETR/INSA - Rennes (2014 - 2018) :
+ * Copyright or © or Copr. IETR/INSA - Rennes (2014 - 2019) :
  *
- * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017 - 2018)
+ * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017 - 2019)
  * Clément Guy <clement.guy@insa-rennes.fr> (2014 - 2015)
  * Karol Desnos <karol.desnos@insa-rennes.fr> (2015)
  * Maxime Pelcat <maxime.pelcat@insa-rennes.fr> (2015)
@@ -48,6 +48,7 @@ import org.preesm.algorithm.memory.allocation.OrderedAllocator.Order;
 import org.preesm.algorithm.memory.allocation.OrderedAllocator.Policy;
 import org.preesm.algorithm.memory.exclusiongraph.MemoryExclusionGraph;
 import org.preesm.commons.exceptions.PreesmException;
+import org.preesm.commons.exceptions.PreesmRuntimeException;
 import org.preesm.commons.logger.PreesmLogger;
 import org.preesm.workflow.elements.Workflow;
 import org.preesm.workflow.implement.AbstractTaskImplementation;
@@ -324,16 +325,16 @@ public abstract class AbstractMemoryAllocatorTask extends AbstractTaskImplementa
     // Check the correct allocation
     try {
       if (!allocator.checkAllocation().isEmpty()) {
-        throw new PreesmException("The obtained allocation was not valid because mutually"
+        throw new PreesmRuntimeException("The obtained allocation was not valid because mutually"
             + " exclusive memory objects have overlapping address ranges." + " The allocator is not working.\n"
             + allocator.checkAllocation());
       }
     } catch (final RuntimeException e) {
-      throw new PreesmException(e.getMessage());
+      throw new PreesmRuntimeException(e.getMessage());
     }
 
     if (!allocator.checkAlignment().isEmpty()) {
-      throw new PreesmException("The obtained allocation was not valid because there were"
+      throw new PreesmRuntimeException("The obtained allocation was not valid because there were"
           + " unaligned memory objects. The allocator is not working.\n" + allocator.checkAlignment());
     }
 

@@ -1,7 +1,7 @@
 /**
- * Copyright or © or Copr. IETR/INSA - Rennes (2018) :
+ * Copyright or © or Copr. IETR/INSA - Rennes (2018 - 2019) :
  *
- * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2018)
+ * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2018 - 2019)
  *
  * This software is a computer program whose purpose is to help prototyping
  * parallel applications using dataflow formalism.
@@ -65,7 +65,7 @@ import org.eclipse.graphiti.mm.pictograms.PictogramElement;
 import org.eclipse.graphiti.mm.pictograms.Shape;
 import org.eclipse.graphiti.services.Graphiti;
 import org.eclipse.graphiti.ui.services.GraphitiUi;
-import org.preesm.commons.exceptions.PreesmException;
+import org.preesm.commons.exceptions.PreesmRuntimeException;
 import org.preesm.model.pisdf.AbstractActor;
 import org.preesm.model.pisdf.AbstractVertex;
 import org.preesm.model.pisdf.ConfigInputInterface;
@@ -172,7 +172,7 @@ public class SVGExporterSwitch extends PiMMSwitch<Integer> {
     } catch (final ParserConfigurationException e) {
       final String message = "Could not create new document";
       ErrorWithExceptionDialog.errorDialogWithStackTrace(message, e);
-      throw new PreesmException(message, e);
+      throw new PreesmRuntimeException(message, e);
     }
     this.doc = builder.newDocument();
 
@@ -243,7 +243,7 @@ public class SVGExporterSwitch extends PiMMSwitch<Integer> {
     } catch (TransformerFactoryConfigurationError | TransformerException e) {
       final String message = "Could not transform SVG to String";
       ErrorWithExceptionDialog.errorDialogWithStackTrace(message, e);
-      throw new PreesmException(message, e);
+      throw new PreesmRuntimeException(message, e);
     }
   }
 
@@ -928,7 +928,7 @@ public class SVGExporterSwitch extends PiMMSwitch<Integer> {
     final PictogramElement[] pes = this.exportSVGFeature.getFeatureProvider()
         .getAllPictogramElementsForBusinessObject(d);
     if (pes == null) {
-      throw new PreesmException();
+      throw new PreesmRuntimeException();
     }
 
     int id = -1;
@@ -953,7 +953,7 @@ public class SVGExporterSwitch extends PiMMSwitch<Integer> {
     final PictogramElement[] pes = this.exportSVGFeature.getFeatureProvider()
         .getAllPictogramElementsForBusinessObject(p);
     if (pes == null) {
-      throw new PreesmException();
+      throw new PreesmRuntimeException();
     }
 
     int id = -1;

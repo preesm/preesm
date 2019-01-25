@@ -1,7 +1,7 @@
 /**
- * Copyright or © or Copr. IETR/INSA - Rennes (2018) :
+ * Copyright or © or Copr. IETR/INSA - Rennes (2018 - 2019) :
  *
- * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2018)
+ * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2018 - 2019)
  *
  * This software is a computer program whose purpose is to help prototyping
  * parallel applications using dataflow formalism.
@@ -41,16 +41,16 @@ package org.preesm.commons.exceptions;
  * @author anmorvan
  *
  */
-public class PreesmException extends RuntimeException {
+public abstract class PreesmException extends RuntimeException {
 
   private static final long serialVersionUID = -8790240310563615206L;
 
   public PreesmException() {
-    super();
+    this(null, null);
   }
 
   public PreesmException(final String message) {
-    super(message);
+    this(message, null);
   }
 
   public PreesmException(final String message, final Throwable cause) {
@@ -58,7 +58,8 @@ public class PreesmException extends RuntimeException {
   }
 
   public PreesmException(final Throwable cause) {
-    super(cause);
+    this(null, cause);
   }
 
+  public abstract boolean isFatal();
 }

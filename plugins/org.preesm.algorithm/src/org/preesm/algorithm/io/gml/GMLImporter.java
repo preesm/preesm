@@ -1,7 +1,7 @@
 /**
- * Copyright or © or Copr. IETR/INSA - Rennes (2018) :
+ * Copyright or © or Copr. IETR/INSA - Rennes (2018 - 2019) :
  *
- * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2018)
+ * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2018 - 2019)
  *
  * This software is a computer program whose purpose is to help prototyping
  * parallel applications using dataflow formalism.
@@ -55,6 +55,7 @@ import org.preesm.algorithm.model.parameters.Parameter;
 import org.preesm.algorithm.model.parameters.Variable;
 import org.preesm.commons.GMLKey;
 import org.preesm.commons.exceptions.PreesmException;
+import org.preesm.commons.exceptions.PreesmRuntimeException;
 import org.w3c.dom.DOMConfiguration;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -166,7 +167,7 @@ public abstract class GMLImporter<G extends AbstractGraph<?, ?>, V extends Abstr
       registry = DOMImplementationRegistry.newInstance();
       impl = (DOMImplementationLS) registry.getDOMImplementation("Core 3.0 XML 3.0 LS");
     } catch (ClassCastException | ClassNotFoundException | InstantiationException | IllegalAccessException e) {
-      throw new PreesmException("Could not import graph", e);
+      throw new PreesmRuntimeException("Could not import graph", e);
     }
 
     final LSInput lsInput = impl.createLSInput();
@@ -182,7 +183,7 @@ public abstract class GMLImporter<G extends AbstractGraph<?, ?>, V extends Abstr
 
     final Element rootElt = (Element) doc.getFirstChild();
     if (!rootElt.getNodeName().equals("graphml")) {
-      throw (new PreesmException("Root element is not graphml"));
+      throw new PreesmRuntimeException("Root element is not graphml");
     }
     recoverKeys(rootElt);
     final NodeList childList = rootElt.getChildNodes();
@@ -429,7 +430,7 @@ public abstract class GMLImporter<G extends AbstractGraph<?, ?>, V extends Abstr
               final AbstractGraph<?, ?> refine = importer.parse(new File(directoryPath + refinementPath));
               vertex.setGraphDescription(refine);
             } catch (FileNotFoundException | PreesmException e) {
-              throw new PreesmException("Could not parse gaph description", e);
+              throw new PreesmRuntimeException("Could not parse gaph description", e);
             }
           }
         } else if (refinementPath.length() > 0) {

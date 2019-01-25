@@ -1,7 +1,7 @@
 /**
- * Copyright or © or Copr. IETR/INSA - Rennes (2009 - 2018) :
+ * Copyright or © or Copr. IETR/INSA - Rennes (2009 - 2019) :
  *
- * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017 - 2018)
+ * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017 - 2019)
  * Clément Guy <clement.guy@insa-rennes.fr> (2014 - 2015)
  * Jonathan Piat <jpiat@laas.fr> (2011)
  * Maxime Pelcat <maxime.pelcat@insa-rennes.fr> (2009 - 2016)
@@ -75,6 +75,7 @@ import org.preesm.algorithm.model.dag.DAGVertex;
 import org.preesm.algorithm.model.dag.edag.DAGInitVertex;
 import org.preesm.algorithm.model.iterators.TopologicalDAGIterator;
 import org.preesm.commons.exceptions.PreesmException;
+import org.preesm.commons.exceptions.PreesmRuntimeException;
 import org.preesm.commons.logger.PreesmLogger;
 import org.preesm.model.scenario.PreesmScenario;
 import org.preesm.model.slam.ComponentInstance;
@@ -523,7 +524,7 @@ public abstract class LatencyAbc {
       final String message = "Empty operator set for a vertex: " + vertex.getName()
           + ". Consider relaxing constraints in scenario.";
       PreesmLogger.getLogger().log(Level.SEVERE, message);
-      throw new PreesmException(message);
+      throw new PreesmRuntimeException(message);
     }
 
     return initOperators;
@@ -629,7 +630,7 @@ public abstract class LatencyAbc {
 
     if (internalVertex == null) {
       final String message = "No simulator internal vertex with id " + vertex.getName();
-      throw new PreesmException(message, new NullPointerException());
+      throw new PreesmRuntimeException(message, new NullPointerException());
     }
     return internalVertex;
   }

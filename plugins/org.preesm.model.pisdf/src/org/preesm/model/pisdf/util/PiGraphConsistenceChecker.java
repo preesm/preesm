@@ -40,7 +40,7 @@ import java.util.ArrayList;
 import java.util.Deque;
 import java.util.List;
 import org.eclipse.emf.ecore.EObject;
-import org.preesm.commons.exceptions.PreesmException;
+import org.preesm.commons.exceptions.PreesmRuntimeException;
 import org.preesm.model.pisdf.AbstractActor;
 import org.preesm.model.pisdf.ConfigInputPort;
 import org.preesm.model.pisdf.ConfigOutputPort;
@@ -102,7 +102,7 @@ public class PiGraphConsistenceChecker extends PiMMSwitch<Boolean> {
   private void error(final String messageFormat, final Object... args) {
     final String msg = String.format(messageFormat, args);
     if (this.throwExceptions) {
-      throw new PreesmException(msg);
+      throw new PreesmRuntimeException(msg);
     } else {
       this.messages.add(msg);
     }

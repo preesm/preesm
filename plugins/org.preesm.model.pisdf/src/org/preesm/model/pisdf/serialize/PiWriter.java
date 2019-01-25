@@ -1,8 +1,8 @@
 /**
- * Copyright or © or Copr. IETR/INSA - Rennes (2012 - 2018) :
+ * Copyright or © or Copr. IETR/INSA - Rennes (2012 - 2019) :
  *
  * Alexandre Honorat <ahonorat@insa-rennes.fr> (2018)
- * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017 - 2018)
+ * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017 - 2019)
  * Clément Guy <clement.guy@insa-rennes.fr> (2014)
  * Florian Arrestier <florian.arrestier@insa-rennes.fr> (2018)
  * Julien Heulot <julien.heulot@insa-rennes.fr> (2013)
@@ -55,7 +55,7 @@ import org.eclipse.emf.common.util.EList;
 import org.eclipse.emf.common.util.URI;
 import org.preesm.commons.DomUtil;
 import org.preesm.commons.GMLKey;
-import org.preesm.commons.exceptions.PreesmException;
+import org.preesm.commons.exceptions.PreesmRuntimeException;
 import org.preesm.model.pisdf.AbstractActor;
 import org.preesm.model.pisdf.AbstractVertex;
 import org.preesm.model.pisdf.Actor;
@@ -289,7 +289,7 @@ public class PiWriter {
     try {
       PiSDFXSDValidator.validate(tmpStream.toString());
     } catch (final IOException e) {
-      throw new PreesmException("Fatal Error: the wirtten PiSDF does not comply to the XSD Schema", e);
+      throw new PreesmRuntimeException("Fatal Error: the wirtten PiSDF does not comply to the XSD Schema", e);
     }
 
   }

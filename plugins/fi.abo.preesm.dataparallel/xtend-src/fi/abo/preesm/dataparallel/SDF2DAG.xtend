@@ -1,8 +1,8 @@
 /**
- * Copyright or © or Copr. Åbo Akademi University (2017 - 2018),
- * IETR/INSA - Rennes (2017 - 2018) :
+ * Copyright or © or Copr. Åbo Akademi University (2017 - 2019),
+ * IETR/INSA - Rennes (2017 - 2019) :
  *
- * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017 - 2018)
+ * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017 - 2019)
  * Sudeep Kanur <skanur@abo.fi> (2017 - 2018)
  *
  * This software is a computer program whose purpose is to help prototyping
@@ -59,7 +59,7 @@ import org.preesm.algorithm.model.sdf.esdf.SDFRoundBufferVertex
 import org.preesm.algorithm.model.sdf.transformations.SpecialActorPortsIndexer
 import org.preesm.algorithm.model.types.LongEdgePropertyType
 import org.preesm.algorithm.model.types.StringEdgePropertyType
-import org.preesm.commons.exceptions.PreesmException
+import org.preesm.commons.exceptions.PreesmRuntimeException
 
 /**
  * Construct DAG from a SDF Graph
@@ -319,7 +319,7 @@ final class SDF2DAG extends AbstractDAGConstructor implements PureDAGConstructor
 		        // Warning, this integer division is not factorable
 		        val iterationDiff = (absoluteTarget / bufferSize) - (absoluteSource / bufferSize);
 		        if (iterationDiff > 0) {
-		        	throw new PreesmException("iterationDiff is greater than 0.")
+		        	throw new PreesmRuntimeException("iterationDiff is greater than 0.")
 		        }
 
 		        // For inserting explode and implode when boolean is true
@@ -498,7 +498,7 @@ final class SDF2DAG extends AbstractDAGConstructor implements PureDAGConstructor
 		        // Below code although in ToHSDFVisitor class, does not occur in my case
 		        if ((currentBufferSize == bufferSize) && (targetInstances.get(0) instanceof SDFInterfaceVertex)
 		            && ((absoluteSource / edge.getProd().longValue()) < sourceInstances.size())) {
-		          throw new PreesmException("CurrentBuffersize never needs to be reset. There is a bug, so contact" + " Sudeep Kanur (skanur@abo.fi) with the SDF graph that caused this.")
+		          throw new PreesmRuntimeException("CurrentBuffersize never needs to be reset. There is a bug, so contact" + " Sudeep Kanur (skanur@abo.fi) with the SDF graph that caused this.")
 		          // currentBufferSize = 0;
 		        }
 			}
@@ -533,7 +533,7 @@ final class SDF2DAG extends AbstractDAGConstructor implements PureDAGConstructor
 					var SDFAbstractVertex trueSource = null
 					// TODO Again, this code does not make sense. The size of incomingEdges will always be one!
 					if (outputGraph.incomingEdgesOf(sourceInstances.get(ii)).size > 1) {
-					    throw new PreesmException("Explode instance has more than one edge from its source instance! "
+					    throw new PreesmRuntimeException("Explode instance has more than one edge from its source instance! "
 							+ "Something is wrong in understanding and could be a potential bug! Please contact "
 							+ "Sudeep Kanur (skanur@abo.fi) with the SDF that caused this." + "Number of outgoing edges for explode instance ("
 							+ sourceInstances.get(ii).name + ") is: " + outputGraph.incomingEdgesOf(sourceInstances.get(ii)).size);
@@ -550,7 +550,7 @@ final class SDF2DAG extends AbstractDAGConstructor implements PureDAGConstructor
 					var SDFAbstractVertex trueTarget = null
 					// TODO Again, this code does not make sense. The size of incomingEdges will always be one!
 					if (outputGraph.outgoingEdgesOf(targetInstances.get(ii)).size > 1) {
-					    throw new PreesmException("Implode instance has more than one edge from its target instance! "
+					    throw new PreesmRuntimeException("Implode instance has more than one edge from its target instance! "
 							+ "Something is wrong in understanding and could be a potential bug! Please contact "
 							+ "Sudeep Kanur (skanur@abo.fi) with the SDF that caused this." + "Number of incoming edges for implode instance ("
 							+ targetInstances.get(ii).name + ") is: " + outputGraph.outgoingEdgesOf(targetInstances.get(ii)).size);
@@ -586,7 +586,7 @@ final class SDF2DAG extends AbstractDAGConstructor implements PureDAGConstructor
 
 		// Make sure all the ports are in order
 		if(isInputSDFGraph && !SpecialActorPortsIndexer.checkIndexes(outputGraph)) {
-			throw new PreesmException("There are still special actors with non-indexed ports. Contact PREESM developers")
+			throw new PreesmRuntimeException("There are still special actors with non-indexed ports. Contact PREESM developers")
 		}
 		SpecialActorPortsIndexer.sortIndexedPorts(outputGraph)
 	}

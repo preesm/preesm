@@ -1,7 +1,7 @@
 /**
- * Copyright or © or Copr. IETR/INSA - Rennes (2018) :
+ * Copyright or © or Copr. IETR/INSA - Rennes (2018 - 2019) :
  *
- * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2018)
+ * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2018 - 2019)
  *
  * This software is a computer program whose purpose is to help prototyping
  * parallel applications using dataflow formalism.
@@ -41,7 +41,7 @@ import org.eclipse.core.runtime.Path;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.ietr.dftools.graphiti.model.DefaultRefinementPolicy;
 import org.ietr.dftools.graphiti.model.Vertex;
-import org.preesm.commons.exceptions.PreesmException;
+import org.preesm.commons.exceptions.PreesmRuntimeException;
 import org.preesm.ui.utils.FileUtils;
 
 /**
@@ -69,7 +69,7 @@ public class SlamRefinementPolicy extends DefaultRefinementPolicy {
     } else if (extension.equals("cdl")) {
       filePath = FileUtils.browseFiles("Please select an existing CDL file:", extension);
     } else {
-      throw new PreesmException("Unsupported file extension " + extension);
+      throw new PreesmRuntimeException("Unsupported file extension " + extension);
     }
 
     // Getting relative path

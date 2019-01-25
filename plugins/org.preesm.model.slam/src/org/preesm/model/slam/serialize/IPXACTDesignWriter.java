@@ -1,7 +1,7 @@
 /**
- * Copyright or © or Copr. IETR/INSA - Rennes (2018) :
+ * Copyright or © or Copr. IETR/INSA - Rennes (2018 - 2019) :
  *
- * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2018)
+ * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2018 - 2019)
  *
  * This software is a computer program whose purpose is to help prototyping
  * parallel applications using dataflow formalism.
@@ -42,7 +42,7 @@ import java.io.OutputStream;
 import java.util.UUID;
 import org.eclipse.emf.common.util.EList;
 import org.preesm.commons.DomUtil;
-import org.preesm.commons.exceptions.PreesmException;
+import org.preesm.commons.exceptions.PreesmRuntimeException;
 import org.preesm.model.slam.ComponentInstance;
 import org.preesm.model.slam.Design;
 import org.preesm.model.slam.VLNVedElement;
@@ -93,7 +93,7 @@ public class IPXACTDesignWriter {
     try {
       outputStream.close();
     } catch (final IOException e) {
-      throw new PreesmException("Could not close stream", e);
+      throw new PreesmRuntimeException("Could not close stream", e);
     }
 
   }

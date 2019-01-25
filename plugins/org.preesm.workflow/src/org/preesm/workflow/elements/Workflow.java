@@ -1,7 +1,7 @@
 /**
- * Copyright or © or Copr. IETR/INSA - Rennes (2011 - 2018) :
+ * Copyright or © or Copr. IETR/INSA - Rennes (2011 - 2019) :
  *
- * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017 - 2018)
+ * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017 - 2019)
  * Clément Guy <clement.guy@insa-rennes.fr> (2014 - 2015)
  * Maxime Pelcat <maxime.pelcat@insa-rennes.fr> (2011)
  *
@@ -38,6 +38,7 @@ package org.preesm.workflow.elements;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Level;
 import org.eclipse.core.runtime.IPath;
 import org.jgrapht.graph.DirectedMultigraph;
 import org.jgrapht.traverse.TopologicalOrderIterator;
@@ -55,11 +56,30 @@ public class Workflow extends DirectedMultigraph<AbstractWorkflowNode, WorkflowE
   /** Path of the file that contains the workflow. */
   private IPath path = null;
 
+  private boolean errorOnWarning = true;
+  private Level   outputLevel    = Level.INFO;
+
   /**
    * Instantiates a new workflow.
    */
   public Workflow() {
     super(WorkflowEdge.class);
+  }
+
+  public boolean isErrorOnWarning() {
+    return errorOnWarning;
+  }
+
+  public void setErrorOnWarning(boolean errorOnWarning) {
+    this.errorOnWarning = errorOnWarning;
+  }
+
+  public Level getOutputLevel() {
+    return outputLevel;
+  }
+
+  public void setOutputLevel(Level outputLevel) {
+    this.outputLevel = outputLevel;
   }
 
   /**

@@ -1,7 +1,7 @@
 /**
- * Copyright or © or Copr. IETR/INSA - Rennes (2018) :
+ * Copyright or © or Copr. IETR/INSA - Rennes (2018 - 2019) :
  *
- * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2018)
+ * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2018 - 2019)
  *
  * This software is a computer program whose purpose is to help prototyping
  * parallel applications using dataflow formalism.
@@ -41,6 +41,7 @@ import org.preesm.algorithm.model.AbstractVertex;
 import org.preesm.algorithm.model.IInterface;
 import org.preesm.algorithm.model.factories.ModelGraphFactory;
 import org.preesm.commons.exceptions.PreesmException;
+import org.preesm.commons.exceptions.PreesmRuntimeException;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
 
@@ -126,7 +127,7 @@ public class GMLGenericImporter extends GMLImporter<AbstractGraph, AbstractVerte
       parseKeys(graphElt, graph);
       return graph;
     } catch (final InstantiationException | IllegalAccessException e) {
-      throw new PreesmException("Failed to parse graph with message :" + e.getMessage());
+      throw new PreesmRuntimeException("Failed to parse graph with message :" + e.getMessage());
     }
   }
 

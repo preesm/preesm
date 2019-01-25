@@ -1,7 +1,7 @@
 /**
- * Copyright or © or Copr. IETR/INSA - Rennes (2008 - 2018) :
+ * Copyright or © or Copr. IETR/INSA - Rennes (2008 - 2019) :
  *
- * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017 - 2018)
+ * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017 - 2019)
  * Clément Guy <clement.guy@insa-rennes.fr> (2015)
  * Jonathan Piat <jpiat@laas.fr> (2008)
  * Matthieu Wipliez <matthieu.wipliez@insa-rennes.fr> (2008)
@@ -75,7 +75,7 @@ import org.jfree.ui.RefineryUtilities;
 import org.preesm.algorithm.mapper.gantt.GanttComponent;
 import org.preesm.algorithm.mapper.gantt.GanttData;
 import org.preesm.algorithm.mapper.gantt.GanttTask;
-import org.preesm.commons.exceptions.PreesmException;
+import org.preesm.commons.exceptions.PreesmRuntimeException;
 
 /**
  * Gantt plotter of a mapperdagvertex using JFreeChart.
@@ -262,7 +262,7 @@ public class GanttPlotter extends ApplicationFrame {
       final JEditorPane comp = new JEditorPane(resource);
       helpFrame.getContentPane().add(comp, BorderLayout.PAGE_START);
     } catch (final IOException ex) {
-      throw new PreesmException("Could not load Gantt Help file", ex);
+      throw new PreesmRuntimeException("Could not load Gantt Help file", ex);
     }
     menuItem.addActionListener(e -> helpFrame.setVisible(true));
   }

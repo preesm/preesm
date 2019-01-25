@@ -1,7 +1,7 @@
 /**
- * Copyright or © or Copr. IETR/INSA - Rennes (2017 - 2018) :
+ * Copyright or © or Copr. IETR/INSA - Rennes (2017 - 2019) :
  *
- * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017 - 2018)
+ * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017 - 2019)
  *
  * This software is a computer program whose purpose is to help prototyping
  * parallel applications using dataflow formalism.
@@ -45,7 +45,7 @@ import org.eclipse.core.runtime.CoreException;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.ITreeSelection;
 import org.eclipse.ui.handlers.HandlerUtil;
-import org.preesm.commons.exceptions.PreesmException;
+import org.preesm.commons.exceptions.PreesmRuntimeException;
 import org.preesm.workflow.converter.WorkflowConverter;
 
 /**
@@ -83,7 +83,7 @@ public class WorkflowConverterHandler extends AbstractHandler {
         workflowFile.getParent().refreshLocal(IResource.DEPTH_ONE, null);
       }
     } catch (final IOException | CoreException e) {
-      throw new PreesmException("Could not convert workflow", e);
+      throw new PreesmRuntimeException("Could not convert workflow", e);
     }
 
     return null;

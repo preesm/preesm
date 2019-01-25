@@ -1,7 +1,7 @@
 /**
- * Copyright or © or Copr. IETR/INSA - Rennes (2017 - 2018) :
+ * Copyright or © or Copr. IETR/INSA - Rennes (2017 - 2019) :
  *
- * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2018)
+ * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2018 - 2019)
  * Hamza Deroui <hamza.deroui@insa-rennes.fr> (2017 - 2018)
  *
  * This software is a computer program whose purpose is to help prototyping
@@ -48,7 +48,7 @@ import org.preesm.algorithm.model.sdf.SDFGraph;
 import org.preesm.algorithm.throughput.tools.GraphStructureHelper;
 import org.preesm.algorithm.throughput.tools.SDFTransformer;
 import org.preesm.algorithm.throughput.tools.Stopwatch;
-import org.preesm.commons.exceptions.PreesmException;
+import org.preesm.commons.exceptions.PreesmRuntimeException;
 import org.preesm.commons.math.MathFunctionsHelper;
 
 /**
@@ -139,7 +139,7 @@ public class PeriodicSchedulerSDF {
                 + edgeValue.get(e.getPropertyBean().getValue("edgeName")))) {
               // negative circuit detected if a part of the graph is not live the global graph is not too
               final String message = "Negativ cycle detected !!";
-              throw new PreesmException(message);
+              throw new PreesmRuntimeException(message);
             }
           }
         }
@@ -209,7 +209,7 @@ public class PeriodicSchedulerSDF {
 
       timer.stop();
       final String message = "A Periodic Schedule does not exist for this graph";
-      throw new PreesmException(message);
+      throw new PreesmRuntimeException(message);
     }
 
   }
@@ -260,7 +260,7 @@ public class PeriodicSchedulerSDF {
 
     } else {
       final String message = "A Periodic Schedule does not exist for this graph";
-      throw new PreesmException(message);
+      throw new PreesmRuntimeException(message);
     }
   }
 

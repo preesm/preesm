@@ -1,7 +1,7 @@
 /**
- * Copyright or © or Copr. IETR/INSA - Rennes (2008 - 2018) :
+ * Copyright or © or Copr. IETR/INSA - Rennes (2008 - 2019) :
  *
- * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017 - 2018)
+ * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017 - 2019)
  * Clément Guy <clement.guy@insa-rennes.fr> (2014)
  * Matthieu Wipliez <matthieu.wipliez@insa-rennes.fr> (2008)
  * Maxime Pelcat <maxime.pelcat@insa-rennes.fr> (2008 - 2016)
@@ -40,7 +40,7 @@ package org.preesm.algorithm.mapper.tools;
 import org.preesm.algorithm.mapper.abc.impl.latency.LatencyAbc;
 import org.preesm.algorithm.mapper.model.MapperDAG;
 import org.preesm.algorithm.mapper.model.MapperDAGVertex;
-import org.preesm.commons.exceptions.PreesmException;
+import org.preesm.commons.exceptions.PreesmRuntimeException;
 
 // TODO: Auto-generated Javadoc
 /**
@@ -80,7 +80,7 @@ public class BLevelIterator extends ImplementationIterator {
 
     if (!arg0.getTiming().hasBLevel() || !arg1.getTiming().hasBLevel()) {
       final String msg = "B Level Iterator problem";
-      throw new PreesmException(msg);
+      throw new PreesmRuntimeException(msg);
     }
 
     long bLevelDifference = (arg0.getTiming().getBLevel() - arg1.getTiming().getBLevel());

@@ -1,7 +1,7 @@
 /**
- * Copyright or © or Copr. IETR/INSA - Rennes (2008 - 2018) :
+ * Copyright or © or Copr. IETR/INSA - Rennes (2008 - 2019) :
  *
- * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017 - 2018)
+ * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017 - 2019)
  * Clément Guy <clement.guy@insa-rennes.fr> (2015)
  * Maxime Pelcat <maxime.pelcat@insa-rennes.fr> (2008 - 2012)
  *
@@ -44,7 +44,7 @@ import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.forms.editor.IFormPage;
 import org.eclipse.ui.forms.editor.SharedHeaderFormEditor;
 import org.preesm.algorithm.mapper.ui.stats.overview.OverviewPage;
-import org.preesm.commons.exceptions.PreesmException;
+import org.preesm.commons.exceptions.PreesmRuntimeException;
 
 /**
  * The statistic editor displays statistics on the generated implementation.
@@ -103,7 +103,7 @@ public class StatEditor extends SharedHeaderFormEditor implements IPropertyListe
       addPage(overviewPage);
       addPage(performancePage);
     } catch (final PartInitException e) {
-      throw new PreesmException(e);
+      throw new PreesmRuntimeException(e);
     }
   }
 

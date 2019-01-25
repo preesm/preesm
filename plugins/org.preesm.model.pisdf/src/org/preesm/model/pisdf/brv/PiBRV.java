@@ -1,7 +1,7 @@
 /**
- * Copyright or © or Copr. IETR/INSA - Rennes (2018) :
+ * Copyright or © or Copr. IETR/INSA - Rennes (2018 - 2019) :
  *
- * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2018)
+ * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2018 - 2019)
  * Florian Arrestier <florian.arrestier@insa-rennes.fr> (2018)
  *
  * This software is a computer program whose purpose is to help prototyping
@@ -42,7 +42,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
-import org.preesm.commons.exceptions.PreesmException;
+import org.preesm.commons.exceptions.PreesmRuntimeException;
 import org.preesm.commons.logger.PreesmLogger;
 import org.preesm.model.pisdf.AbstractActor;
 import org.preesm.model.pisdf.AbstractVertex;
@@ -76,7 +76,7 @@ public abstract class PiBRV {
         piBRVAlgo = new TopologyBasedBRV();
         break;
       default:
-        throw new PreesmException("unexpected value for BRV method: [" + method + "]");
+        throw new PreesmRuntimeException("unexpected value for BRV method: [" + method + "]");
     }
     return piBRVAlgo.computeBRV(piGraph);
   }
@@ -115,7 +115,7 @@ public abstract class PiBRV {
       final long newRV = graphBRV.get(actor) * scaleFactor;
       graphBRV.put(actor, newRV);
       if ((actor instanceof DelayActor) && (newRV != 1)) {
-        throw new PreesmException("Inconsistent graph. DelayActor [" + actor.getName()
+        throw new PreesmRuntimeException("Inconsistent graph. DelayActor [" + actor.getName()
             + "] with a repetition vector of " + Long.toString(newRV));
       }
     }

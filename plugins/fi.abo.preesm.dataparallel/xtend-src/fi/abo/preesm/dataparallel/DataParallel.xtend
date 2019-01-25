@@ -1,8 +1,8 @@
 /**
- * Copyright or © or Copr. Åbo Akademi University (2017 - 2018),
- * IETR/INSA - Rennes (2017 - 2018) :
+ * Copyright or © or Copr. Åbo Akademi University (2017 - 2019),
+ * IETR/INSA - Rennes (2017 - 2019) :
  *
- * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017 - 2018)
+ * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017 - 2019)
  * Sudeep Kanur <skanur@abo.fi> (2017 - 2018)
  *
  * This software is a computer program whose purpose is to help prototyping
@@ -42,6 +42,7 @@ import org.eclipse.core.runtime.IProgressMonitor
 import org.eclipse.xtend.lib.annotations.Accessors
 import org.preesm.algorithm.model.sdf.SDFGraph
 import org.preesm.commons.exceptions.PreesmException
+import org.preesm.commons.exceptions.PreesmRuntimeException
 import org.preesm.commons.logger.PreesmLogger
 import org.preesm.workflow.elements.Workflow
 import org.preesm.workflow.implement.AbstractTaskImplementation
@@ -68,7 +69,7 @@ class DataParallel extends AbstractTaskImplementation {
 		val sdf = inputs.get(AbstractWorkflowNodeImplementation.KEY_SDF_GRAPH) as SDFGraph
 		// Check if sdf is schedulable
 		if(!sdf.isSchedulable) {
-			throw new PreesmException("Graph " + sdf + " not schedulable")
+			throw new PreesmRuntimeException("Graph " + sdf + " not schedulable")
 		}
 
 		val logger = PreesmLogger.getLogger

@@ -1,7 +1,7 @@
 /**
- * Copyright or © or Copr. IETR/INSA - Rennes (2013 - 2018) :
+ * Copyright or © or Copr. IETR/INSA - Rennes (2013 - 2019) :
  *
- * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017 - 2018)
+ * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017 - 2019)
  * Julien Hascoet <jhascoet@kalray.eu> (2016 - 2017)
  * Karol Desnos <karol.desnos@insa-rennes.fr> (2013 - 2017)
  *
@@ -56,7 +56,7 @@ import org.preesm.codegen.model.SharedMemoryCommunication
 import org.preesm.codegen.model.SpecialCall
 import org.preesm.codegen.model.SubBuffer
 import org.preesm.codegen.model.Variable
-import org.preesm.commons.exceptions.PreesmException
+import org.preesm.commons.exceptions.PreesmRuntimeException
 
 class MPPA2ExplicitPrinter extends CPrinter {
 
@@ -523,7 +523,7 @@ class MPPA2ExplicitPrinter extends CPrinter {
 		if(communication.nodes.forall[type == "SHARED_MEM"]) {
 			return super.caseCommunication(communication)
 		} else {
-			throw new PreesmException("Communication "+ communication.name +
+			throw new PreesmRuntimeException("Communication "+ communication.name +
 				 " has at least one unsupported communication node"+
 				 " for the " + this.class.name + " printer")
 		}

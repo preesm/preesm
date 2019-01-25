@@ -1,7 +1,7 @@
 /**
- * Copyright or © or Copr. IETR/INSA - Rennes (2017 - 2018) :
+ * Copyright or © or Copr. IETR/INSA - Rennes (2017 - 2019) :
  *
- * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2018)
+ * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2018 - 2019)
  * Florian Arrestier <florian.arrestier@insa-rennes.fr> (2018)
  * Hamza Deroui <hamza.deroui@insa-rennes.fr> (2017)
  *
@@ -40,7 +40,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import org.apache.commons.math3.util.ArithmeticUtils;
-import org.preesm.commons.exceptions.PreesmException;
+import org.preesm.commons.exceptions.PreesmRuntimeException;
 
 /**
  *
@@ -235,7 +235,7 @@ public interface MathFunctionsHelper {
       }
       if (!val.isZero()) {
         if (rationnalTopology[i][i].isZero()) {
-          throw new PreesmException("Should have zero elements in the diagonal");
+          throw new PreesmRuntimeException("Should have zero elements in the diagonal");
         }
         vrb.set(i, val.abs().divide(rationnalTopology[i][i]));
       }

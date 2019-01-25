@@ -1,9 +1,9 @@
 /**
- * Copyright or © or Copr. IETR/INSA - Rennes (2018) :
+ * Copyright or © or Copr. IETR/INSA - Rennes (2018 - 2019) :
  *
  * Alexandre Honorat <ahonorat@insa-rennes.fr> (2018)
  * Alexandre Honorat <alexandre.honorat@insa-rennes.fr> (2018)
- * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2018)
+ * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2018 - 2019)
  *
  * This software is a computer program whose purpose is to help prototyping
  * parallel applications using dataflow formalism.
@@ -44,6 +44,7 @@ import java.util.Map;
 import java.util.logging.Level;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.preesm.commons.exceptions.PreesmException;
+import org.preesm.commons.exceptions.PreesmRuntimeException;
 import org.preesm.commons.logger.PreesmLogger;
 import org.preesm.model.pisdf.AbstractActor;
 import org.preesm.model.pisdf.Actor;
@@ -84,7 +85,7 @@ public class PeriodsPreschedulingChecker extends AbstractTaskImplementation {
     final PiGraph graph = (PiGraph) inputs.get(AbstractWorkflowNodeImplementation.KEY_PI_GRAPH);
 
     if (!graph.getChildrenGraphs().isEmpty()) {
-      throw new PreesmException("This task must be called with a flatten PiMM graph, abandon.");
+      throw new PreesmRuntimeException("This task must be called with a flatten PiMM graph, abandon.");
     }
 
     final String rateStr = parameters.get(PeriodsPreschedulingChecker.SELECTION_RATE);
@@ -92,10 +93,10 @@ public class PeriodsPreschedulingChecker extends AbstractTaskImplementation {
     try {
       rate = Integer.parseInt(rateStr);
       if ((rate < 0) || (rate > 100)) {
-        throw new PreesmException(PeriodsPreschedulingChecker.GENERIC_RATE_ERROR + rate + ".");
+        throw new PreesmRuntimeException(PeriodsPreschedulingChecker.GENERIC_RATE_ERROR + rate + ".");
       }
     } catch (final NumberFormatException e) {
-      throw new PreesmException(PeriodsPreschedulingChecker.GENERIC_RATE_ERROR + rateStr + ".", e);
+      throw new PreesmRuntimeException(PeriodsPreschedulingChecker.GENERIC_RATE_ERROR + rateStr + ".", e);
     }
 
     final Map<Actor, Long> periodicActors = new HashMap<>();

@@ -1,7 +1,7 @@
 /**
- * Copyright or © or Copr. IETR/INSA - Rennes (2018) :
+ * Copyright or © or Copr. IETR/INSA - Rennes (2018 - 2019) :
  *
- * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2018)
+ * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2018 - 2019)
  *
  * This software is a computer program whose purpose is to help prototyping
  * parallel applications using dataflow formalism.
@@ -45,6 +45,7 @@ import org.preesm.algorithm.model.sdf.visitors.ToHSDFVisitor;
 import org.preesm.algorithm.model.types.ExpressionEdgePropertyType;
 import org.preesm.algorithm.model.types.LongEdgePropertyType;
 import org.preesm.commons.exceptions.PreesmException;
+import org.preesm.commons.exceptions.PreesmRuntimeException;
 
 /**
  */
@@ -60,7 +61,7 @@ public class ToHSDFVisitorTest {
     try {
       demoGraph.accept(visitor);
     } catch (final PreesmException e) {
-      throw new PreesmException("Could not convert to HSDF", e);
+      throw new PreesmRuntimeException("Could not convert to HSDF", e);
     }
   }
 

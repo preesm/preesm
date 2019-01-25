@@ -1,7 +1,7 @@
 /**
- * Copyright or © or Copr. IETR/INSA - Rennes (2008 - 2018) :
+ * Copyright or © or Copr. IETR/INSA - Rennes (2008 - 2019) :
  *
- * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017 - 2018)
+ * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017 - 2019)
  * Clément Guy <clement.guy@insa-rennes.fr> (2014 - 2015)
  * Jonathan Piat <jpiat@laas.fr> (2011)
  * Karol Desnos <karol.desnos@insa-rennes.fr> (2017)
@@ -57,7 +57,7 @@ import org.preesm.algorithm.mapper.model.MapperDAGVertex;
 import org.preesm.algorithm.mapper.model.special.PrecedenceEdge;
 import org.preesm.algorithm.model.dag.DAGEdge;
 import org.preesm.algorithm.model.dag.DAGVertex;
-import org.preesm.commons.exceptions.PreesmException;
+import org.preesm.commons.exceptions.PreesmRuntimeException;
 import org.preesm.model.scenario.PreesmScenario;
 import org.preesm.model.slam.ComponentInstance;
 import org.preesm.model.slam.Design;
@@ -224,7 +224,7 @@ public class CommunicationRouter {
     final int outEdgesCount = edgesInPrecedenceOrder.size();
     if (outEdgesCount != dagEdgeCount) {
       // If this happens, this means that not all edges are covered by the previous while loop.
-      throw new PreesmException("Some DAG edges are not covered. Input DAG has " + dagEdgeCount
+      throw new PreesmRuntimeException("Some DAG edges are not covered. Input DAG has " + dagEdgeCount
           + " edges whereas there are " + outEdgesCount + " edges connected to vertices.");
     }
 
@@ -367,7 +367,7 @@ public class CommunicationRouter {
       cost = route.evaluateTransferCost(edge.getInit().getDataSize());
     } else {
       final String msg = "trying to evaluate a transfer between non mapped operators.";
-      throw new PreesmException(msg);
+      throw new PreesmRuntimeException(msg);
     }
 
     return cost;

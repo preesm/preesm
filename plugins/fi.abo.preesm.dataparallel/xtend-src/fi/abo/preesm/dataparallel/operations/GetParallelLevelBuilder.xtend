@@ -1,8 +1,8 @@
 /**
- * Copyright or © or Copr. Åbo Akademi University (2017 - 2018),
- * IETR/INSA - Rennes (2017 - 2018) :
+ * Copyright or © or Copr. Åbo Akademi University (2017 - 2019),
+ * IETR/INSA - Rennes (2017 - 2019) :
  *
- * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017 - 2018)
+ * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017 - 2019)
  * Sudeep Kanur <skanur@abo.fi> (2017 - 2018)
  *
  * This software is a computer program whose purpose is to help prototyping
@@ -39,7 +39,7 @@ package fi.abo.preesm.dataparallel.operations
 import fi.abo.preesm.dataparallel.PureDAGConstructor
 import java.util.Map
 import org.preesm.algorithm.model.sdf.SDFAbstractVertex
-import org.preesm.commons.exceptions.PreesmException
+import org.preesm.commons.exceptions.PreesmRuntimeException
 
 /**
  * Helper class to properly initialize and use {@link OperationsUtils#getParallelLevel}.
@@ -113,17 +113,17 @@ class GetParallelLevelBuilder {
 	 */
 	def Integer build() {
 		if(subsetLevels === null) {
-			throw new PreesmException("Use addSubsetLevels method to initialize levels for which " +
+			throw new PreesmRuntimeException("Use addSubsetLevels method to initialize levels for which " +
 				"maximum parallel level needs to be found")
 		}
 
 		if(origLevels === null) {
-			throw new PreesmException("Use addOrigLevels method to initialize levels that " +
+			throw new PreesmRuntimeException("Use addOrigLevels method to initialize levels that " +
 				"forms the superset of subsetLevels")
 		}
 
 		if(dagGen === null) {
-			throw new PreesmException("Initialize the DAGConstructor instance using addDagGen method")
+			throw new PreesmRuntimeException("Initialize the DAGConstructor instance using addDagGen method")
 		}
 
 		return OperationsUtils.getParallelLevel(dagGen, origLevels, subsetLevels)

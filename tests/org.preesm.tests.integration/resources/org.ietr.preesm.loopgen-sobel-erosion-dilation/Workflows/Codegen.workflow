@@ -11,6 +11,8 @@
             <dftools:variable name="displaySolutions" value="true"/>
             <dftools:variable name="edgeSchedType" value="Simple"/>
             <dftools:variable name="fastLocalSearchTime" value="10"/>
+            <dftools:variable name="Optimize synchronization" value="false"/>
+            <dftools:variable name="Check" value="True"/>
             <dftools:variable name="fastTime" value="100"/>
             <dftools:variable name="iterationNr" value="0"/>
             <dftools:variable name="iterationPeriod" value="0"/>

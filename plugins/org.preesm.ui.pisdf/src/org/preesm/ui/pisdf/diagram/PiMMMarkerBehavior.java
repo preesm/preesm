@@ -1,7 +1,7 @@
 /**
- * Copyright or © or Copr. IETR/INSA - Rennes (2012 - 2018) :
+ * Copyright or © or Copr. IETR/INSA - Rennes (2012 - 2019) :
  *
- * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017 - 2018)
+ * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017 - 2019)
  * Julien Heulot <julien.heulot@insa-rennes.fr> (2013)
  * Karol Desnos <karol.desnos@insa-rennes.fr> (2012 - 2015)
  *
@@ -58,7 +58,7 @@ import org.eclipse.graphiti.ui.editor.DefaultMarkerBehavior;
 import org.eclipse.graphiti.ui.editor.DiagramBehavior;
 import org.eclipse.graphiti.ui.internal.T;
 import org.eclipse.swt.widgets.Display;
-import org.preesm.commons.exceptions.PreesmException;
+import org.preesm.commons.exceptions.PreesmRuntimeException;
 import org.preesm.model.pisdf.PiGraph;
 import org.preesm.model.pisdf.check.PiMMAlgorithmChecker;
 import org.preesm.model.pisdf.serialize.PiResourceImpl;
@@ -173,7 +173,7 @@ public class PiMMMarkerBehavior extends DefaultMarkerBehavior {
             if (pes.isEmpty()) {
               final String errmsg = String.format("PiSDF element [%s] has not associated graphical element.",
                   pisdfElement);
-              throw new PreesmException(errmsg);
+              throw new PreesmRuntimeException(errmsg);
             } else {
               final PictogramElement pictogramElement = pes.get(0);
               final String uriFragment = pictogramElement.eResource().getURIFragment(pictogramElement);

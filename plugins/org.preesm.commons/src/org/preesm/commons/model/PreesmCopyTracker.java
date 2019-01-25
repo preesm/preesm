@@ -1,7 +1,7 @@
 /**
- * Copyright or © or Copr. IETR/INSA - Rennes (2018) :
+ * Copyright or © or Copr. IETR/INSA - Rennes (2018 - 2019) :
  *
- * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2018)
+ * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2018 - 2019)
  *
  * This software is a computer program whose purpose is to help prototyping
  * parallel applications using dataflow formalism.
@@ -36,7 +36,7 @@ package org.preesm.commons.model;
 
 import org.eclipse.emf.common.notify.Notifier;
 import org.eclipse.emf.ecore.EObject;
-import org.preesm.commons.exceptions.PreesmException;
+import org.preesm.commons.exceptions.PreesmRuntimeException;
 
 /**
  *
@@ -96,7 +96,7 @@ public class PreesmCopyTracker<T extends Notifier> extends PreesmAdapter {
   public static final <V extends Notifier> void trackCopy(final V source, final V copy) {
     final V existingSource = getSource(copy);
     if (existingSource != null && existingSource != source) {
-      throw new PreesmException();
+      throw new PreesmRuntimeException();
     }
     final PreesmCopyTracker<V> e = new PreesmCopyTracker<>(source);
     copy.eAdapters().add(e);

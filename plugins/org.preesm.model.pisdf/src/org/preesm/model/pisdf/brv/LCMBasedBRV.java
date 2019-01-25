@@ -1,7 +1,7 @@
 /**
- * Copyright or © or Copr. IETR/INSA - Rennes (2018) :
+ * Copyright or © or Copr. IETR/INSA - Rennes (2018 - 2019) :
  *
- * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2018)
+ * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2018 - 2019)
  * Florian Arrestier <florian.arrestier@insa-rennes.fr> (2018)
  *
  * This software is a computer program whose purpose is to help prototyping
@@ -43,7 +43,7 @@ import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import org.preesm.commons.exceptions.PreesmException;
+import org.preesm.commons.exceptions.PreesmRuntimeException;
 import org.preesm.commons.math.LongFraction;
 import org.preesm.commons.math.MathFunctionsHelper;
 import org.preesm.model.pisdf.AbstractActor;
@@ -73,7 +73,7 @@ class LCMBasedBRV extends PiBRV {
     Map<AbstractVertex, Long> graphBRV = new LinkedHashMap<>();
     if (piGraph == null) {
       final String msg = "cannot compute BRV for null graph.";
-      throw new PreesmException(msg);
+      throw new PreesmRuntimeException(msg);
     }
 
     // Get all sub graph composing the current graph
@@ -150,7 +150,7 @@ class LCMBasedBRV extends PiBRV {
       final long targetRV = graphBRV.get(targetActor);
 
       if (prod * sourceRV != cons * targetRV) {
-        throw new PreesmException(
+        throw new PreesmRuntimeException(
             "Graph non consistent: edge source production " + sourceActor.getName() + " with rate [" + (prod * sourceRV)
                 + "] != edge target consumption " + targetActor.getName() + "with rate [" + (cons * targetRV) + "]");
       }
@@ -221,7 +221,7 @@ class LCMBasedBRV extends PiBRV {
     for (final DataOutputPort output : actor.getDataOutputPorts()) {
       final Fifo fifo = output.getOutgoingFifo();
       if (fifo == null) {
-        throw new PreesmException(
+        throw new PreesmRuntimeException(
             "Actor [" + actor.getName() + "] has output port [" + output.getName() + "] not connected to any FIFO.");
       }
       final AbstractActor targetActor = fifo.getTargetPort().getContainingActor();
@@ -242,7 +242,7 @@ class LCMBasedBRV extends PiBRV {
     for (final DataInputPort input : actor.getDataInputPorts()) {
       final Fifo fifo = input.getIncomingFifo();
       if (fifo == null) {
-        throw new PreesmException(
+        throw new PreesmRuntimeException(
             "Actor [" + actor.getName() + "] has input port [" + input.getName() + "] not connected to any FIFO.");
       }
       final AbstractActor sourceActor = fifo.getSourcePort().getContainingActor();

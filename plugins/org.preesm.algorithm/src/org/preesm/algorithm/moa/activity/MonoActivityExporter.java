@@ -1,7 +1,7 @@
 /**
- * Copyright or © or Copr. IETR/INSA - Rennes (2018) :
+ * Copyright or © or Copr. IETR/INSA - Rennes (2018 - 2019) :
  *
- * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2018)
+ * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2018 - 2019)
  *
  * This software is a computer program whose purpose is to help prototyping
  * parallel applications using dataflow formalism.
@@ -51,7 +51,7 @@ import org.eclipse.core.runtime.Path;
 import org.preesm.algorithm.mapper.abc.impl.latency.LatencyAbc;
 import org.preesm.algorithm.mapper.model.MapperDAGEdge;
 import org.preesm.algorithm.mapper.model.MapperDAGVertex;
-import org.preesm.commons.exceptions.PreesmException;
+import org.preesm.commons.exceptions.PreesmRuntimeException;
 import org.preesm.commons.files.ContainersManager;
 import org.preesm.commons.files.PathTools;
 import org.preesm.commons.logger.PreesmLogger;
@@ -232,7 +232,7 @@ class MonoActivityExporter extends AbstractTaskImplementation {
         ContainersManager.createMissingFolders(path);
       }
     } catch (final CoreException e) {
-      throw new PreesmException("Path " + path + " is not a valid path for export.");
+      throw new PreesmRuntimeException("Path " + path + " is not a valid path for export.");
     }
 
     final IFile iFile = ResourcesPlugin.getWorkspace().getRoot().getFile(path);
@@ -244,7 +244,7 @@ class MonoActivityExporter extends AbstractTaskImplementation {
         iFile.setContents(new ByteArrayInputStream(text.getBytes()), true, false, new NullProgressMonitor());
       }
     } catch (final CoreException ex) {
-      throw new PreesmException(ex);
+      throw new PreesmRuntimeException(ex);
     }
   }
 }

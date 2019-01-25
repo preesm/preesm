@@ -1,7 +1,7 @@
 /**
- * Copyright or © or Copr. IETR/INSA - Rennes (2017 - 2018) :
+ * Copyright or © or Copr. IETR/INSA - Rennes (2017 - 2019) :
  *
- * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017 - 2018)
+ * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017 - 2019)
  *
  * This software is a computer program whose purpose is to help prototyping
  * parallel applications using dataflow formalism.
@@ -37,7 +37,7 @@ package org.ietr.dftools.algorithm.test;
 import org.junit.Assert;
 import org.junit.Test;
 import org.preesm.algorithm.model.parameters.ExpressionValue;
-import org.preesm.commons.exceptions.PreesmException;
+import org.preesm.commons.exceptions.PreesmRuntimeException;
 import org.preesm.commons.math.ExpressionEvaluationException;
 
 /**
@@ -57,7 +57,7 @@ public class JepTransitionTest {
       Assert.assertEquals((int) expected, intValue);
     } catch (final ExpressionEvaluationException e) {
       final String message = "Expression should be valid, but failed with " + e.getMessage();
-      throw new PreesmException(message, e);
+      throw new PreesmRuntimeException(message, e);
     }
   }
 }

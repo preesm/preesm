@@ -1,7 +1,7 @@
 /**
- * Copyright or © or Copr. IETR/INSA - Rennes (2008 - 2018) :
+ * Copyright or © or Copr. IETR/INSA - Rennes (2008 - 2019) :
  *
- * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017 - 2018)
+ * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017 - 2019)
  * Clément Guy <clement.guy@insa-rennes.fr> (2014 - 2015)
  * Florian Arrestier <florian.arrestier@insa-rennes.fr> (2018)
  * Jonathan Piat <jpiat@laas.fr> (2008 - 2011)
@@ -64,7 +64,7 @@ import org.preesm.algorithm.model.sdf.SDFEdge;
 import org.preesm.algorithm.model.sdf.SDFGraph;
 import org.preesm.algorithm.model.sdf.visitors.DAGTransformation;
 import org.preesm.algorithm.model.types.LongEdgePropertyType;
-import org.preesm.commons.exceptions.PreesmException;
+import org.preesm.commons.exceptions.PreesmRuntimeException;
 import org.preesm.commons.logger.PreesmLogger;
 import org.preesm.model.pisdf.PiGraph;
 import org.preesm.model.scenario.ConstraintGroup;
@@ -106,7 +106,7 @@ public class SdfToDagConverter {
     final SDFGraph sdf = sdfIn.copy();
     SdfToDagConverter.setDataSizeForSDF(sdf, scenario);
 
-    final PiGraph pisdGraph = (PiGraph) sdf.getPropertyBean().getValue(PiGraph.class.getCanonicalName());
+    final PiGraph pisdGraph = sdf.getPropertyBean().getValue(PiGraph.class.getCanonicalName());
 
     // Generates a dag
     final MapperDAG dag = new MapperDAG(pisdGraph);
@@ -115,18 +115,14 @@ public class SdfToDagConverter {
     final DAGTransformation<MapperDAG> visitor = new DAGTransformation<>(dag, MapperVertexFactory.getInstance());
 
     // visits the SDF to generate the DAG
-    try {
-      sdf.accept(visitor);
-    } catch (final PreesmException e) {
-      throw new PreesmException("Error", e);
-    }
+    sdf.accept(visitor);
 
     // Adds the necessary properties to vertices and edges
     SdfToDagConverter.addInitialProperties(dag, architecture, scenario);
 
     if (dag.vertexSet().isEmpty()) {
       final String msg = "Can not map a DAG with no vertex.";
-      throw new PreesmException(msg);
+      throw new PreesmRuntimeException(msg);
     } else {
       PreesmLogger.getLogger().log(Level.INFO, "Conversion finished.");
       final String msg = "mapping a DAG with " + dag.vertexSet().size() + " vertices and " + dag.edgeSet().size()

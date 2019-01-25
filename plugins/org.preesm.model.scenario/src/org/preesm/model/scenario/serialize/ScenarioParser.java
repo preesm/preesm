@@ -60,7 +60,8 @@ import org.eclipse.emf.ecore.EPackage;
 import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.emf.ecore.resource.ResourceSet;
 import org.eclipse.emf.ecore.resource.impl.ResourceSetImpl;
-import org.preesm.commons.exceptions.PreesmException;
+import org.preesm.commons.exceptions.PreesmFrameworkException;
+import org.preesm.commons.exceptions.PreesmRuntimeException;
 import org.preesm.commons.logger.PreesmLogger;
 import org.preesm.model.pisdf.AbstractActor;
 import org.preesm.model.pisdf.Parameter;
@@ -460,7 +461,7 @@ public class ScenarioParser {
             this.algoPi = null;
             try {
               if (url.endsWith(".graphml")) {
-                throw new PreesmException("IBSDF is not supported anymore.");
+                throw new PreesmFrameworkException("IBSDF is not supported anymore.");
               } else if (url.endsWith(".pi")) {
                 this.algoPi = getPiGraph();
               }
@@ -472,7 +473,7 @@ public class ScenarioParser {
               this.scenario.setArchitectureURL(url);
               initializeArchitectureInformation(url);
             } catch (final Exception e) {
-              throw new PreesmException("Could not parse the architecture: " + e.getMessage(), e);
+              throw new PreesmRuntimeException("Could not parse the architecture: " + e.getMessage(), e);
             }
           } else if (type.equals("codegenDirectory")) {
             this.scenario.getCodegenManager().setCodegenDirectory(url);
@@ -492,7 +493,7 @@ public class ScenarioParser {
    */
   private void initializeArchitectureInformation(final String url) {
     if (url.contains(".design")) {
-      throw new PreesmException("SLAM architecture 1.0 is no more supported. Use .slam architecture files.");
+      throw new PreesmFrameworkException("SLAM architecture 1.0 is no more supported. Use .slam architecture files.");
     } else if (url.contains(".slam")) {
 
       final Map<String, Object> extToFactoryMap = Resource.Factory.Registry.INSTANCE.getExtensionToFactoryMap();
@@ -529,7 +530,7 @@ public class ScenarioParser {
 
     final URI uri = URI.createPlatformResourceURI(url, true);
     if ((uri.fileExtension() == null) || !uri.fileExtension().contentEquals("slam")) {
-      throw new PreesmException("Expecting .slam file");
+      throw new PreesmRuntimeException("Expecting .slam file");
     }
     final Resource ressource;
     try {

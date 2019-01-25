@@ -72,6 +72,7 @@
         pluginId="org.ietr.preesm.plugin.mapper.listschedulingfromdag" taskId="SchedulingFromDAG">
         <dftools:data key="variables">
             <dftools:variable name="Check" value="True"/>
+            <dftools:variable name="Optimize synchronization" value="false"/>
             <dftools:variable name="balanceLoads" value="true"/>
             <dftools:variable name="displaySolutions" value="true"/>
             <dftools:variable name="edgeSchedType" value="Simple"/>

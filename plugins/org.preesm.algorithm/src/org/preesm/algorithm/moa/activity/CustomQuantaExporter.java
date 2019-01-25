@@ -1,7 +1,7 @@
 /**
- * Copyright or © or Copr. IETR/INSA - Rennes (2018) :
+ * Copyright or © or Copr. IETR/INSA - Rennes (2018 - 2019) :
  *
- * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2018)
+ * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2018 - 2019)
  *
  * This software is a computer program whose purpose is to help prototyping
  * parallel applications using dataflow formalism.
@@ -62,6 +62,7 @@ import org.preesm.algorithm.mapper.abc.impl.latency.LatencyAbc;
 import org.preesm.algorithm.mapper.model.MapperDAGEdge;
 import org.preesm.algorithm.mapper.model.MapperDAGVertex;
 import org.preesm.commons.exceptions.PreesmException;
+import org.preesm.commons.exceptions.PreesmRuntimeException;
 import org.preesm.commons.files.ContainersManager;
 import org.preesm.commons.files.PathTools;
 import org.preesm.commons.logger.PreesmLogger;
@@ -244,7 +245,7 @@ class CustomQuantaExporter extends AbstractTaskImplementation {
             + duration + " for " + vertex.getName();
         PreesmLogger.getLogger().log(Level.INFO, msg);
       } catch (final ParseException exc) {
-        throw new PreesmException(exc);
+        throw new PreesmRuntimeException(exc);
       }
     } else if (SpecialVertexManager.isBroadCast(vertex)) {
       // Broadcasts have a fix ponderation of their custom quanta compared to timing
@@ -302,7 +303,7 @@ class CustomQuantaExporter extends AbstractTaskImplementation {
         ContainersManager.createMissingFolders(path);
       }
     } catch (final CoreException e) {
-      throw new PreesmException("Path " + path + " is not a valid path for export.");
+      throw new PreesmRuntimeException("Path " + path + " is not a valid path for export.");
     }
 
     final IFile iFile = ResourcesPlugin.getWorkspace().getRoot().getFile(path);
@@ -314,7 +315,7 @@ class CustomQuantaExporter extends AbstractTaskImplementation {
         iFile.setContents(new ByteArrayInputStream(text.getBytes()), true, false, new NullProgressMonitor());
       }
     } catch (final CoreException ex) {
-      throw new PreesmException(ex);
+      throw new PreesmRuntimeException(ex);
     }
 
   }
@@ -347,7 +348,7 @@ class CustomQuantaExporter extends AbstractTaskImplementation {
         // Warnings are displayed once for each missing operator or vertex
         // in the excel sheet
       } catch (IOException | CoreException | PreesmException | BiffException e) {
-        throw new PreesmException(e);
+        throw new PreesmRuntimeException(e);
       }
     }
 

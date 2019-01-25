@@ -1,7 +1,7 @@
 /**
- * Copyright or © or Copr. IETR/INSA - Rennes (2008 - 2018) :
+ * Copyright or © or Copr. IETR/INSA - Rennes (2008 - 2019) :
  *
- * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017 - 2018)
+ * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017 - 2019)
  * Clément Guy <clement.guy@insa-rennes.fr> (2014 - 2015)
  * Jonathan Piat <jpiat@laas.fr> (2011)
  * Maxime Pelcat <maxime.pelcat@insa-rennes.fr> (2008 - 2015)
@@ -50,7 +50,8 @@ import org.eclipse.core.resources.IWorkspace;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.Path;
-import org.preesm.commons.exceptions.PreesmException;
+import org.preesm.commons.exceptions.PreesmFrameworkException;
+import org.preesm.commons.exceptions.PreesmRuntimeException;
 import org.preesm.commons.files.WorkspaceUtils;
 import org.preesm.commons.logger.PreesmLogger;
 import org.preesm.model.pisdf.AbstractActor;
@@ -113,7 +114,7 @@ public class ExcelConstraintsParser {
       final Set<String> missingOperators = new LinkedHashSet<>();
 
       if (this.scenario.isIBSDFScenario()) {
-        throw new PreesmException("IBSDF is not supported anymore");
+        throw new PreesmFrameworkException("IBSDF is not supported anymore");
       } else if (this.scenario.isPISDFScenario()) {
         final PiGraph currentPiGraph = PiParser.getPiGraphWithReconnection(this.scenario.getAlgorithmURL());
         for (final AbstractActor vertex : currentPiGraph.getAllActors()) {
@@ -171,12 +172,12 @@ public class ExcelConstraintsParser {
                 "No line found in excel sheet for hierarchical vertex: " + vertexName);
           } else {
             final String message = "No line found in excel sheet for atomic vertex: " + vertexName;
-            throw new PreesmException(message);
+            throw new PreesmRuntimeException(message);
           }
           missingVertices.add(vertexName);
         } else if ((operatorCell == null) && !missingOperators.contains(operatorId)) {
           final String message = "No column found in excel sheet for operator: " + operatorId;
-          throw new PreesmException(message);
+          throw new PreesmRuntimeException(message);
         }
       }
     }

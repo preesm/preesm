@@ -1,7 +1,7 @@
 /**
- * Copyright or © or Copr. IETR/INSA - Rennes (2008 - 2018) :
+ * Copyright or © or Copr. IETR/INSA - Rennes (2008 - 2019) :
  *
- * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017 - 2018)
+ * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017 - 2019)
  * Clément Guy <clement.guy@insa-rennes.fr> (2014 - 2015)
  * Jonathan Piat <jpiat@laas.fr> (2011)
  * Matthieu Wipliez <matthieu.wipliez@insa-rennes.fr> (2008)
@@ -50,7 +50,7 @@ import java.util.Set;
 import org.preesm.algorithm.mapper.model.MapperDAG;
 import org.preesm.algorithm.mapper.model.MapperDAGVertex;
 import org.preesm.algorithm.model.dag.DAGVertex;
-import org.preesm.commons.exceptions.PreesmException;
+import org.preesm.commons.exceptions.PreesmRuntimeException;
 import org.preesm.model.slam.ComponentInstance;
 import org.preesm.model.slam.Design;
 import org.preesm.model.slam.utils.DesignTools;
@@ -102,7 +102,7 @@ public class OrderManager extends Observable {
     // Retrieves the schedule corresponding to the component
     final Schedule currentSched = getSchedule(cmp);
     if (currentSched == null) {
-      throw new PreesmException("Schedule should not be null", new NullPointerException());
+      throw new PreesmRuntimeException("Schedule should not be null", new NullPointerException());
     }
     // Iterates the schedule to find the latest predecessor
     int maxPrec = -1;
@@ -140,13 +140,13 @@ public class OrderManager extends Observable {
         elt = vertex;
       } else {
         final String msg = "Error in sched order!!";
-        throw new PreesmException(msg);
+        throw new PreesmRuntimeException(msg);
       }
 
       // Adds vertex or synchro vertices after its chosen predecessor
       final Schedule schedule = getSchedule(cmp);
       if (schedule == null) {
-        throw new PreesmException("Schedule should not be null", new NullPointerException());
+        throw new PreesmRuntimeException("Schedule should not be null", new NullPointerException());
       }
       if (maxPrec >= 0) {
         final MapperDAGVertex previous = this.totalOrder.get(maxPrec);
@@ -184,7 +184,7 @@ public class OrderManager extends Observable {
         // Gets the schedule of vertex
         final Schedule currentSchedule = getSchedule(effectiveCmp);
         if (currentSchedule == null) {
-          throw new PreesmException("Schedule should not be null", new NullPointerException());
+          throw new PreesmRuntimeException("Schedule should not be null", new NullPointerException());
         }
 
         currentSchedule.addLast(vertex);
@@ -524,7 +524,7 @@ public class OrderManager extends Observable {
         return entry.getValue();
       }
     }
-    throw new PreesmException("No schedule found for component " + cmp);
+    throw new PreesmRuntimeException("No schedule found for component " + cmp);
   }
 
   /**

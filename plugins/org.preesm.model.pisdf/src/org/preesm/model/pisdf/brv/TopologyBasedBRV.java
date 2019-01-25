@@ -1,7 +1,7 @@
 /**
- * Copyright or © or Copr. IETR/INSA - Rennes (2018) :
+ * Copyright or © or Copr. IETR/INSA - Rennes (2018 - 2019) :
  *
- * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2018)
+ * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2018 - 2019)
  * Florian Arrestier <florian.arrestier@insa-rennes.fr> (2018)
  *
  * This software is a computer program whose purpose is to help prototyping
@@ -45,7 +45,7 @@ import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import org.math.array.LinearAlgebra;
-import org.preesm.commons.exceptions.PreesmException;
+import org.preesm.commons.exceptions.PreesmRuntimeException;
 import org.preesm.commons.math.LongFraction;
 import org.preesm.commons.math.MathFunctionsHelper;
 import org.preesm.model.pisdf.AbstractActor;
@@ -66,7 +66,7 @@ class TopologyBasedBRV extends PiBRV {
     Map<AbstractVertex, Long> graphBRV = new LinkedHashMap<>();
     if (piGraph == null) {
       final String msg = "cannot compute BRV for null graph.";
-      throw new PreesmException(msg);
+      throw new PreesmRuntimeException(msg);
     }
     // Get all sub graph composing the current graph
     final List<List<AbstractActor>> subgraphsWOInterfaces = PiMMHelper.getAllConnectedComponentsWOInterfaces(piGraph);
@@ -76,7 +76,7 @@ class TopologyBasedBRV extends PiBRV {
 
       // Get the topology matrix
       if (subgraph.isEmpty()) {
-        throw new PreesmException("Impossible to compute consistency. Empty graph.");
+        throw new PreesmRuntimeException("Impossible to compute consistency. Empty graph.");
       }
       // We have only one actor connected to Interface Actor
       // The graph is consistent
@@ -87,7 +87,7 @@ class TopologyBasedBRV extends PiBRV {
         final double[][] topologyMatrix = getTopologyMatrix(listFifo, subgraph);
         final long rank = LinearAlgebra.rank(topologyMatrix);
         if (rank != (subgraph.size() - 1)) {
-          throw new PreesmException("Graph not consitent. rank: " + Long.toString(rank) + ", expected: "
+          throw new PreesmRuntimeException("Graph not consitent. rank: " + Long.toString(rank) + ", expected: "
               + Integer.toString(subgraph.size() - 1));
         }
         // Compute BRV
@@ -116,12 +116,12 @@ class TopologyBasedBRV extends PiBRV {
         final String prodString = "Prod: " + Long.toString(prod) + "\n";
         final String consString = "Cons: " + Long.toString(cons) + "\n";
         final String errorString = "Bad production / consumption rates\n";
-        throw new PreesmException("Fifo [" + fifo.getId() + "]\n" + prodString + consString + errorString);
+        throw new PreesmRuntimeException("Fifo [" + fifo.getId() + "]\n" + prodString + consString + errorString);
       }
       final int sourceIndex = subgraph.indexOf(sourceActor);
       final int targetIndex = subgraph.indexOf(targetActor);
       if ((sourceIndex < 0) || (targetIndex < 0)) {
-        throw new PreesmException(
+        throw new PreesmRuntimeException(
             "Bad index error:\nSource actor index [" + sourceActor.getName() + "]: " + Integer.toString(sourceIndex)
                 + "\nTarget actor index [" + targetActor.getName() + "]: " + Integer.toString(targetIndex));
       }

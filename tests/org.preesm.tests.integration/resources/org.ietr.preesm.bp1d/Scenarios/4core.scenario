@@ -61,7 +61,7 @@
     </timings>
     <simuParams>
         <mainCore>Core0</mainCore>
-        <mainComNode/>
+        <mainComNode>shared_mem</mainComNode>
         <averageDataSize>1000</averageDataSize>
         <dataTypes>
             <dataType name="uchar" size="1"/>

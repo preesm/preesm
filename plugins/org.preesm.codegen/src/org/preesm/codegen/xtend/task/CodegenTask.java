@@ -1,7 +1,7 @@
 /**
- * Copyright or © or Copr. IETR/INSA - Rennes (2013 - 2018) :
+ * Copyright or © or Copr. IETR/INSA - Rennes (2013 - 2019) :
  *
- * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017 - 2018)
+ * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017 - 2019)
  * Clément Guy <clement.guy@insa-rennes.fr> (2014 - 2015)
  * Julien Hascoet <jhascoet@kalray.eu> (2016)
  * Karol Desnos <karol.desnos@insa-rennes.fr> (2013 - 2015)
@@ -52,7 +52,7 @@ import org.preesm.algorithm.mapper.model.MapperDAG;
 import org.preesm.algorithm.memory.exclusiongraph.MemoryExclusionGraph;
 import org.preesm.algorithm.model.dag.DirectedAcyclicGraph;
 import org.preesm.codegen.model.Block;
-import org.preesm.commons.exceptions.PreesmException;
+import org.preesm.commons.exceptions.PreesmRuntimeException;
 import org.preesm.model.scenario.PreesmScenario;
 import org.preesm.model.slam.Design;
 import org.preesm.workflow.elements.Workflow;
@@ -86,7 +86,7 @@ public class CodegenTask extends AbstractTaskImplementation {
     final Map<String, MemoryExclusionGraph> megs = (Map<String, MemoryExclusionGraph>) inputs.get("MEGs");
     final DirectedAcyclicGraph algoDAG = (DirectedAcyclicGraph) inputs.get("DAG");
     if (!(algoDAG instanceof MapperDAG)) {
-      throw new PreesmException("The input DAG has not been scheduled");
+      throw new PreesmRuntimeException("The input DAG has not been scheduled");
     }
     final MapperDAG algo = (MapperDAG) algoDAG;
 

@@ -1,8 +1,8 @@
 /**
- * Copyright or © or Copr. Åbo Akademi University (2017 - 2018),
- * IETR/INSA - Rennes (2017 - 2018) :
+ * Copyright or © or Copr. Åbo Akademi University (2017 - 2019),
+ * IETR/INSA - Rennes (2017 - 2019) :
  *
- * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017 - 2018)
+ * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017 - 2019)
  * Sudeep Kanur <skanur@abo.fi> (2017 - 2018)
  *
  * This software is a computer program whose purpose is to help prototyping
@@ -53,6 +53,7 @@ import org.preesm.algorithm.model.sdf.SDFEdge
 import org.preesm.algorithm.model.sdf.SDFGraph
 import org.preesm.algorithm.model.sdf.visitors.ToHSDFVisitor
 import org.preesm.commons.exceptions.PreesmException
+import org.preesm.commons.exceptions.PreesmRuntimeException
 
 /**
  * Isolate strongly connected components of the original
@@ -164,13 +165,13 @@ class DataParallelCheckOperations implements IGraphVisitor<SDFGraph, SDFAbstract
 	 */
 	override visit(SDFGraph sdf) throws PreesmException {
 		if(!sdf.isSchedulable) {
-			throw new PreesmException("Graph " + sdf + " not schedulable")
+			throw new PreesmRuntimeException("Graph " + sdf + " not schedulable")
 		}
 
 		// Check if DAG is flattened
 		for(vertex: sdf.vertexSet) {
 			if( (vertex.graphDescription !== null) && (vertex.graphDescription instanceof SDFGraph)) {
-				throw new PreesmException("The graph " + sdf.name + " must be flattened.")
+				throw new PreesmRuntimeException("The graph " + sdf.name + " must be flattened.")
 			}
 		}
 

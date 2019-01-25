@@ -43,7 +43,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
-import org.preesm.commons.exceptions.PreesmException;
+import org.preesm.commons.exceptions.PreesmRuntimeException;
 import org.preesm.commons.logger.PreesmLogger;
 import org.preesm.model.pisdf.AbstractActor;
 import org.preesm.model.pisdf.AbstractVertex;
@@ -145,13 +145,13 @@ public class PiSDFToSingleRate extends PiMMSwitch<Boolean> {
     final List<AbstractActor> actors = graph.getActors();
     for (final AbstractActor a : actors) {
       if (a instanceof PiGraph) {
-        throw new PreesmException("Flatten graph should have no children graph");
+        throw new PreesmRuntimeException("Flatten graph should have no children graph");
       }
       if (a instanceof InterfaceActor) {
-        throw new PreesmException("Flatten graph should have no interface");
+        throw new PreesmRuntimeException("Flatten graph should have no interface");
       }
       if (a.getContainingPiGraph() != graph) {
-        throw new PreesmException();
+        throw new PreesmRuntimeException();
       }
     }
   }
@@ -215,14 +215,14 @@ public class PiSDFToSingleRate extends PiMMSwitch<Boolean> {
         final ISetter setter = incomingDependency.getSetter();
         final Parameter parameter = param2param.get(setter);
         if (parameter == null) {
-          throw new PreesmException();
+          throw new PreesmRuntimeException();
         } else {
           this.result.addParameter(parameter);
           final Dependency dep = PiMMUserFactory.instance.createDependency(parameter, port);
           this.result.addDependency(dep);
         }
       } else {
-        throw new PreesmException();
+        throw new PreesmRuntimeException();
       }
     }
   }
@@ -440,7 +440,7 @@ public class PiSDFToSingleRate extends PiMMSwitch<Boolean> {
     } else if (sourceActor instanceof PiGraph) {
       // We should retrieve the correct source set
       if (!this.outPort2SRActors.containsKey(sourcePort)) {
-        throw new PreesmException("No replacement found for DataOutputPort [" + sourcePort.getName()
+        throw new PreesmRuntimeException("No replacement found for DataOutputPort [" + sourcePort.getName()
             + "] of hierarchical actor [" + sourceActor.getName() + "].");
       }
       final List<AbstractVertex> sourceSet = this.outPort2SRActors.remove(sourcePort);
@@ -571,7 +571,7 @@ public class PiSDFToSingleRate extends PiMMSwitch<Boolean> {
     } else if (sinkActor instanceof PiGraph) {
       // We should retrieve the correct source set
       if (!this.inPort2SRActors.containsKey(targetPort)) {
-        throw new PreesmException("No replacement found for DataInputPort [" + targetPort.getName()
+        throw new PreesmRuntimeException("No replacement found for DataInputPort [" + targetPort.getName()
             + "] of hierarchical actor [" + sinkActor.getName() + "].");
       }
       final List<AbstractVertex> sinkSet = this.inPort2SRActors.remove(targetPort);

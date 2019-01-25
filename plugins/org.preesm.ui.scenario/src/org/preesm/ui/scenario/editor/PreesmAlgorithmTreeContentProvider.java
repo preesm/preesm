@@ -1,7 +1,7 @@
 /**
- * Copyright or © or Copr. IETR/INSA - Rennes (2011 - 2018) :
+ * Copyright or © or Copr. IETR/INSA - Rennes (2011 - 2019) :
  *
- * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017 - 2018)
+ * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017 - 2019)
  * Clément Guy <clement.guy@insa-rennes.fr> (2014)
  * Maxime Pelcat <maxime.pelcat@insa-rennes.fr> (2011 - 2012)
  *
@@ -41,7 +41,7 @@ import java.util.Set;
 import org.eclipse.emf.common.util.EList;
 import org.eclipse.jface.viewers.CheckboxTreeViewer;
 import org.eclipse.jface.viewers.ITreeContentProvider;
-import org.preesm.commons.exceptions.PreesmException;
+import org.preesm.commons.exceptions.PreesmFrameworkException;
 import org.preesm.model.pisdf.AbstractActor;
 import org.preesm.model.pisdf.Actor;
 import org.preesm.model.pisdf.PiGraph;
@@ -82,7 +82,7 @@ public class PreesmAlgorithmTreeContentProvider implements ITreeContentProvider 
     Object[] table = null;
 
     if (this.scenario.isIBSDFScenario()) {
-      throw new PreesmException("IBSDF is not supported anymore");
+      throw new PreesmFrameworkException("IBSDF is not supported anymore");
     } else if (this.scenario.isPISDFScenario()) {
       if (parentElement instanceof PiGraph) {
         final PiGraph graph = (PiGraph) parentElement;
@@ -120,7 +120,7 @@ public class PreesmAlgorithmTreeContentProvider implements ITreeContentProvider 
     boolean hasChildren = false;
 
     if (this.scenario.isIBSDFScenario()) {
-      throw new PreesmException("IBSDF is not supported anymore");
+      throw new PreesmFrameworkException("IBSDF is not supported anymore");
     } else if (this.scenario.isPISDFScenario()) {
       if (element instanceof PiGraph) {
         final PiGraph graph = (PiGraph) element;
@@ -147,7 +147,7 @@ public class PreesmAlgorithmTreeContentProvider implements ITreeContentProvider 
       this.scenario = (PreesmScenario) inputElement;
       // Opening algorithm from file
       if (this.scenario.isIBSDFScenario()) {
-        throw new PreesmException("IBSDF is not supported anymore");
+        throw new PreesmFrameworkException("IBSDF is not supported anymore");
       } else if (this.scenario.isPISDFScenario()) {
         try {
           this.currentPISDFGraph = PiParser.getPiGraphWithReconnection(this.scenario.getAlgorithmURL());

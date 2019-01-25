@@ -1,7 +1,7 @@
 /**
- * Copyright or © or Copr. IETR/INSA - Rennes (2008 - 2018) :
+ * Copyright or © or Copr. IETR/INSA - Rennes (2008 - 2019) :
  *
- * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017 - 2018)
+ * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017 - 2019)
  * Clément Guy <clement.guy@insa-rennes.fr> (2014 - 2015)
  * Florian Arrestier <florian.arrestier@insa-rennes.fr> (2018)
  * Julien Hascoet <jhascoet@kalray.eu> (2016 - 2017)
@@ -51,6 +51,7 @@ import org.preesm.algorithm.model.sdf.SDFGraph;
 import org.preesm.algorithm.model.sdf.transformations.IbsdfFlattener;
 import org.preesm.algorithm.model.sdf.visitors.ConsistencyChecker;
 import org.preesm.commons.exceptions.PreesmException;
+import org.preesm.commons.exceptions.PreesmRuntimeException;
 import org.preesm.commons.logger.PreesmLogger;
 import org.preesm.workflow.elements.Workflow;
 import org.preesm.workflow.implement.AbstractTaskImplementation;
@@ -110,7 +111,7 @@ public class HierarchyFlattening extends AbstractTaskImplementation {
           try {
             flattener.flattenGraph();
           } catch (final PreesmException e) {
-            throw (new PreesmException(e.getMessage(), e));
+            throw new PreesmRuntimeException(e.getMessage(), e);
           }
           HierarchyFlattening.LOGGER.log(Level.INFO, "Flattening complete with depth " + depth);
           final SDFGraph resultGraph = flattener.getFlattenedGraph();
@@ -118,13 +119,13 @@ public class HierarchyFlattening extends AbstractTaskImplementation {
           outputs.put("SDF", resultGraph);
         } else {
           final String message = "Could not compute a schedule, graph can't be flattened";
-          throw (new PreesmException(message));
+          throw new PreesmRuntimeException(message);
         }
       } catch (final PreesmException e) {
-        throw (new PreesmException(e.getMessage(), e));
+        throw new PreesmRuntimeException(e.getMessage(), e);
       }
     } else {
-      throw new PreesmException("Inconsistent Hierarchy, graph can't be flattened");
+      throw new PreesmRuntimeException("Inconsistent Hierarchy, graph can't be flattened");
     }
 
     timer.stop();

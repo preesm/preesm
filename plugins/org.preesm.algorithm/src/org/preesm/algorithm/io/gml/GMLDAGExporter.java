@@ -1,7 +1,7 @@
 /**
- * Copyright or © or Copr. IETR/INSA - Rennes (2018) :
+ * Copyright or © or Copr. IETR/INSA - Rennes (2018 - 2019) :
  *
- * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2018)
+ * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2018 - 2019)
  *
  * This software is a computer program whose purpose is to help prototyping
  * parallel applications using dataflow formalism.
@@ -40,7 +40,7 @@ import org.preesm.algorithm.model.AbstractGraph;
 import org.preesm.algorithm.model.dag.DAGEdge;
 import org.preesm.algorithm.model.dag.DAGVertex;
 import org.preesm.algorithm.model.dag.DirectedAcyclicGraph;
-import org.preesm.commons.exceptions.PreesmException;
+import org.preesm.commons.exceptions.PreesmRuntimeException;
 import org.w3c.dom.Element;
 
 /**
@@ -70,7 +70,7 @@ public class GMLDAGExporter extends GMLExporter<DAGVertex, DAGEdge> {
       exportGraph(graph);
       transform(new FileOutputStream(path));
     } catch (final FileNotFoundException e) {
-      throw new PreesmException("Could not export graph", e);
+      throw new PreesmRuntimeException("Could not export graph", e);
     }
   }
 
@@ -115,7 +115,7 @@ public class GMLDAGExporter extends GMLExporter<DAGVertex, DAGEdge> {
       }
       return graphElt;
     } catch (final Exception e) {
-      throw new PreesmException("Could not export graph", e);
+      throw new PreesmRuntimeException("Could not export graph", e);
     }
   }
 

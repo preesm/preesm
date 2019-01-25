@@ -1,7 +1,7 @@
 /**
- * Copyright or © or Copr. IETR/INSA - Rennes (2008 - 2018) :
+ * Copyright or © or Copr. IETR/INSA - Rennes (2008 - 2019) :
  *
- * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017 - 2018)
+ * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017 - 2019)
  * Clément Guy <clement.guy@insa-rennes.fr> (2014 - 2015)
  * Jonathan Piat <jpiat@laas.fr> (2009 - 2011)
  * Karol Desnos <karol.desnos@insa-rennes.fr> (2012)
@@ -51,7 +51,7 @@ import org.preesm.algorithm.model.PropertyBean;
 import org.preesm.algorithm.model.dag.DAGEdge;
 import org.preesm.algorithm.model.dag.DAGVertex;
 import org.preesm.commons.GMLKey;
-import org.preesm.commons.exceptions.PreesmException;
+import org.preesm.commons.exceptions.PreesmRuntimeException;
 import org.preesm.model.scenario.types.ImplementationPropertyNames;
 import org.preesm.model.slam.attributes.Parameter;
 import org.preesm.model.slam.impl.ComponentInstanceImpl;
@@ -109,7 +109,7 @@ public class ImplementationExporter extends GMLExporter<DAGVertex, DAGEdge> {
       return graphElt;
 
     } catch (final Exception e) {
-      throw new PreesmException("Could not export graph", e);
+      throw new PreesmRuntimeException("Could not export graph", e);
     }
   }
 
@@ -205,7 +205,7 @@ public class ImplementationExporter extends GMLExporter<DAGVertex, DAGEdge> {
       exportGraph(graph);
       transform(new FileOutputStream(path));
     } catch (final FileNotFoundException e) {
-      throw new PreesmException("could not export implementation", e);
+      throw new PreesmRuntimeException("could not export implementation", e);
     }
   }
 

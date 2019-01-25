@@ -1,7 +1,7 @@
 /**
- * Copyright or © or Copr. IETR/INSA - Rennes (2011 - 2018) :
+ * Copyright or © or Copr. IETR/INSA - Rennes (2011 - 2019) :
  *
- * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017 - 2018)
+ * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017 - 2019)
  * Clément Guy <clement.guy@insa-rennes.fr> (2014 - 2015)
  * Jonathan Piat <jpiat@laas.fr> (2011)
  * Karol Desnos <karol.desnos@insa-rennes.fr> (2012 - 2015)
@@ -46,6 +46,8 @@ import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.Path;
 import org.preesm.commons.exceptions.PreesmException;
+import org.preesm.commons.exceptions.PreesmFrameworkException;
+import org.preesm.commons.exceptions.PreesmRuntimeException;
 import org.preesm.model.pisdf.Parameter;
 import org.preesm.model.pisdf.PiGraph;
 import org.preesm.model.pisdf.serialize.PiParser;
@@ -94,13 +96,13 @@ public class AlgorithmAndArchitectureScenarioNode extends AbstractScenarioImplem
       scenario = scenarioParser.parseXmlFile(file);
       final String url = scenario.getAlgorithmURL();
       if (scenario.isIBSDFScenario()) {
-        throw new PreesmException("IBSDF is not supported anymore");
+        throw new PreesmFrameworkException("IBSDF is not supported anymore");
       } else if (scenario.isPISDFScenario()) {
         piAlgorithm = PiParser.getPiGraphWithReconnection(url);
         applyScenarioParameterValues(scenario, piAlgorithm);
       }
     } catch (FileNotFoundException | CoreException e) {
-      throw new PreesmException(e.getMessage());
+      throw new PreesmRuntimeException(e.getMessage());
     }
 
     // Retrieving the architecture

@@ -1,7 +1,7 @@
 /**
- * Copyright or © or Copr. IETR/INSA - Rennes (2017 - 2018) :
+ * Copyright or © or Copr. IETR/INSA - Rennes (2017 - 2019) :
  *
- * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017 - 2018)
+ * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017 - 2019)
  *
  * This software is a computer program whose purpose is to help prototyping
  * parallel applications using dataflow formalism.
@@ -60,7 +60,7 @@ import org.junit.Test;
 import org.preesm.algorithm.memory.script.Buffer;
 import org.preesm.algorithm.memory.script.Match;
 import org.preesm.algorithm.model.dag.DAGVertex;
-import org.preesm.commons.exceptions.PreesmException;
+import org.preesm.commons.exceptions.PreesmRuntimeException;
 
 /**
  * Non regression tests for the BeanShell2 third party dependency.
@@ -163,7 +163,7 @@ public class BeanShellInterpreterTest {
       try {
         interpreter.set(k, v.intValue());
       } catch (final EvalError e) {
-        throw new PreesmException(e);
+        throw new PreesmRuntimeException(e);
       }
     });
     final Buffer i = new Buffer(null, new DAGVertex("v1", null, null), "i", 1024, 4, true);
@@ -201,7 +201,7 @@ public class BeanShellInterpreterTest {
       try {
         interpreter.set(k, v.intValue());
       } catch (final EvalError e) {
-        throw new PreesmException(e);
+        throw new PreesmRuntimeException(e);
       }
     });
     final Buffer i = new Buffer(null, new DAGVertex("v1", null, null), "i", 1024 * 1024 * 1024, 1, true);
@@ -239,7 +239,7 @@ public class BeanShellInterpreterTest {
       try {
         interpreter.set(k, v.intValue());
       } catch (final EvalError e) {
-        throw new PreesmException(e);
+        throw new PreesmRuntimeException(e);
       }
     });
     final Buffer i = new Buffer(null, new DAGVertex("v1", null, null), "i", 1024 * 1024 * 1024, 1, true);
@@ -272,7 +272,7 @@ public class BeanShellInterpreterTest {
       try {
         interpreter.set(k, v.intValue());
       } catch (final EvalError e) {
-        throw new PreesmException(e);
+        throw new PreesmRuntimeException(e);
       }
     });
     final Buffer i = new Buffer(null, new DAGVertex("v1", null, null), "i", 10, 1, true);

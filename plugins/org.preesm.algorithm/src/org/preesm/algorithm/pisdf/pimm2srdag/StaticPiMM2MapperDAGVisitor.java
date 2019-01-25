@@ -1,7 +1,7 @@
 /**
- * Copyright or © or Copr. IETR/INSA - Rennes (2014 - 2018) :
+ * Copyright or © or Copr. IETR/INSA - Rennes (2014 - 2019) :
  *
- * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017 - 2018)
+ * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017 - 2019)
  * Clément Guy <clement.guy@insa-rennes.fr> (2014 - 2015)
  * Florian Arrestier <florian.arrestier@insa-rennes.fr> (2018)
  * Karol Desnos <karol.desnos@insa-rennes.fr> (2015)
@@ -66,7 +66,7 @@ import org.preesm.algorithm.model.sdf.SDFVertex;
 import org.preesm.algorithm.model.types.LongEdgePropertyType;
 import org.preesm.algorithm.model.types.LongVertexPropertyType;
 import org.preesm.algorithm.model.types.StringEdgePropertyType;
-import org.preesm.commons.exceptions.PreesmException;
+import org.preesm.commons.exceptions.PreesmRuntimeException;
 import org.preesm.commons.model.PreesmCopyTracker;
 import org.preesm.model.pisdf.AbstractActor;
 import org.preesm.model.pisdf.Actor;
@@ -268,7 +268,7 @@ public class StaticPiMM2MapperDAGVisitor extends PiMMSwitch<Boolean> {
     // Check Join use
     if (actor.getDataOutputPorts().size() > 1) {
       final String message = "Join actors should have only one output. Bad use on [" + actor.getVertexPath() + "]";
-      throw new PreesmException(message);
+      throw new PreesmRuntimeException(message);
     }
     // Handle input parameters as instance arguments
     setArguments(actor, vertex);
@@ -291,7 +291,7 @@ public class StaticPiMM2MapperDAGVisitor extends PiMMSwitch<Boolean> {
     // Check Fork use
     if (actor.getDataInputPorts().size() > 1) {
       final String message = "Fork actors should have only one input. Bad use on [" + actor.getVertexPath() + "]";
-      throw new PreesmException(message);
+      throw new PreesmRuntimeException(message);
     }
     // Handle input parameters as instance arguments
     setArguments(actor, vertex);

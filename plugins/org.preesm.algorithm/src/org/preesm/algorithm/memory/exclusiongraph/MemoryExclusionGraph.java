@@ -1,7 +1,7 @@
 /**
- * Copyright or © or Copr. IETR/INSA - Rennes (2012 - 2018) :
+ * Copyright or © or Copr. IETR/INSA - Rennes (2012 - 2019) :
  *
- * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017 - 2018)
+ * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017 - 2019)
  * Clément Guy <clement.guy@insa-rennes.fr> (2014 - 2015)
  * Florian Arrestier <florian.arrestier@insa-rennes.fr> (2018)
  * Julien Hascoet <jhascoet@kalray.eu> (2017)
@@ -69,7 +69,7 @@ import org.preesm.algorithm.model.dag.edag.DAGJoinVertex;
 import org.preesm.algorithm.model.iterators.TopologicalDAGIterator;
 import org.preesm.algorithm.model.sdf.esdf.SDFInitVertex;
 import org.preesm.commons.CloneableProperty;
-import org.preesm.commons.exceptions.PreesmException;
+import org.preesm.commons.exceptions.PreesmRuntimeException;
 import org.preesm.commons.logger.PreesmLogger;
 import org.preesm.model.scenario.types.BufferAggregate;
 import org.preesm.model.scenario.types.DataType;
@@ -554,7 +554,7 @@ public class MemoryExclusionGraph extends SimpleGraph<MemoryExclusionVertex, Def
         } else {
           // If the node was not added.
           // Should never happen
-          throw new PreesmException(
+          throw new PreesmRuntimeException(
               "The exclusion graph vertex corresponding to edge " + edge.toString() + " was not added to the graph.");
         }
       }
@@ -1574,7 +1574,7 @@ public class MemoryExclusionGraph extends SimpleGraph<MemoryExclusionVertex, Def
         final Integer schedulingOrder = (Integer) currentVertex.getPropertyBean()
             .getValue(ImplementationPropertyNames.Vertex_schedulingOrder);
         if (schedulingOrder == null) {
-          throw new PreesmException("Cannot build the memory exclusion graph of a non scheduled DAG",
+          throw new PreesmRuntimeException("Cannot build the memory exclusion graph of a non scheduled DAG",
               new NullPointerException());
         }
         verticesMap.put(schedulingOrder, currentVertex);

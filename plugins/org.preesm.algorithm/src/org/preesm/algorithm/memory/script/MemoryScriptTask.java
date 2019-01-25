@@ -1,7 +1,7 @@
 /**
- * Copyright or © or Copr. IETR/INSA - Rennes (2014 - 2018) :
+ * Copyright or © or Copr. IETR/INSA - Rennes (2014 - 2019) :
  *
- * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017 - 2018)
+ * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017 - 2019)
  * Clément Guy <clement.guy@insa-rennes.fr> (2014 - 2015)
  * Karol Desnos <karol.desnos@insa-rennes.fr> (2014 - 2015)
  *
@@ -44,6 +44,7 @@ import org.preesm.algorithm.memory.allocation.AbstractMemoryAllocatorTask;
 import org.preesm.algorithm.memory.exclusiongraph.MemoryExclusionGraph;
 import org.preesm.algorithm.model.dag.DirectedAcyclicGraph;
 import org.preesm.commons.exceptions.PreesmException;
+import org.preesm.commons.exceptions.PreesmRuntimeException;
 import org.preesm.model.scenario.PreesmScenario;
 import org.preesm.model.scenario.types.DataType;
 import org.preesm.workflow.elements.Workflow;
@@ -91,7 +92,7 @@ public class MemoryScriptTask extends AbstractMemoryScriptTask {
       engine.runScripts(dag, dataTypes, checkString);
     } catch (final EvalError e) {
       final String message = "An error occurred during memory scripts execution";
-      throw new PreesmException(message, e);
+      throw new PreesmRuntimeException(message, e);
     }
     engine.updateMemEx(meg);
 
