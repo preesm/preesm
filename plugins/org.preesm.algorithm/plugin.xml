@@ -892,6 +892,74 @@
             </output>
          </outputs>
       </task>
+
+
+
+      <task id="pisdf-mapper.simple"
+            name="Main Core Simple Mapping (PiSDF)"
+            type="org.preesm.algorithm.mapper.MainCoreMappingFromPiMM">
+         <inputs>
+            <input id="architecture" object="org.preesm.model.slam.Design"/>
+            <input id="scenario" object="org.preesm.model.scenario.PreesmScenario"/>
+            <input id="PiMM" object="org.preesm.model.pisdf.PiGraph"/>
+         </inputs>
+         <outputs>
+            <output id="DAG" object="org.preesm.algorithm.model.dag.DirectedAcyclicGraph"/>
+            <output id="ABC" object="org.preesm.algorithm.mapper.abc.impl.latency.LatencyAbc"/>
+         </outputs>
+      </task>
+      <task id="pisdf-mapper.list"
+            name="List Scheduling (PiSDF)"
+            type="org.preesm.algorithm.mapper.ListSchedulingMappingFromPiMM">
+         <inputs>
+            <input id="architecture" object="org.preesm.model.slam.Design"/>
+            <input id="scenario" object="org.preesm.model.scenario.PreesmScenario"/>
+            <input id="PiMM" object="org.preesm.model.pisdf.PiGraph"/>
+         </inputs>
+         <outputs>
+            <output id="DAG" object="org.preesm.algorithm.model.dag.DirectedAcyclicGraph"/>
+            <output id="ABC" object="org.preesm.algorithm.mapper.abc.impl.latency.LatencyAbc"/>
+         </outputs>
+      </task>
+      <task id="pisdf-mapper.fast"
+            name="Fast Scheduling (PiSDF)"
+            type="org.preesm.algorithm.mapper.FASTMappingFromPiMM">
+         <inputs>
+            <input id="architecture" object="org.preesm.model.slam.Design"/>
+            <input id="scenario" object="org.preesm.model.scenario.PreesmScenario"/>
+            <input id="PiMM" object="org.preesm.model.pisdf.PiGraph"/>
+         </inputs>
+         <outputs>
+            <output id="DAG" object="org.preesm.algorithm.model.dag.DirectedAcyclicGraph"/>
+            <output id="ABC" object="org.preesm.algorithm.mapper.abc.impl.latency.LatencyAbc"/>
+         </outputs>
+      </task>
+      <task id="pisdf-mapper.pfast"
+            name="PFast Scheduling (PiSDF)"
+            type="org.preesm.algorithm.mapper.PFASTMappingFromPiMM">
+         <inputs>
+            <input id="architecture" object="org.preesm.model.slam.Design"/>
+            <input id="scenario" object="org.preesm.model.scenario.PreesmScenario"/>
+            <input id="PiMM" object="org.preesm.model.pisdf.PiGraph"/>
+         </inputs>
+         <outputs>
+            <output id="DAG" object="org.preesm.algorithm.model.dag.DirectedAcyclicGraph"/>
+            <output id="ABC" object="org.preesm.algorithm.mapper.abc.impl.latency.LatencyAbc"/>
+         </outputs>
+      </task>
+      <task id="pisdf-mapper.external"
+            name="External Scheduling (PiSDF)"
+            type="org.preesm.algorithm.mapper.ExternalMappingFromPiMM">
+         <inputs>
+            <input id="architecture" object="org.preesm.model.slam.Design"/>
+            <input id="scenario" object="org.preesm.model.scenario.PreesmScenario"/>
+            <input id="PiMM" object="org.preesm.model.pisdf.PiGraph"/>
+         </inputs>
+         <outputs>
+            <output id="DAG" object="org.preesm.algorithm.model.dag.DirectedAcyclicGraph"/>
+            <output id="ABC" object="org.preesm.algorithm.mapper.abc.impl.latency.LatencyAbc"/>
+         </outputs>
+      </task>
    </extension>
 
 

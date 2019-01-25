@@ -5,7 +5,7 @@
  * Clément Guy <clement.guy@insa-rennes.fr> (2014)
  * Florian Arrestier <florian.arrestier@insa-rennes.fr> (2018)
  * Jonathan Piat <jpiat@laas.fr> (2008 - 2011)
- * Karol Desnos <karol.desnos@insa-rennes.fr> (2017)
+ * Karol Desnos <karol.desnos@insa-rennes.fr> (2017 - 2018)
  * Matthieu Wipliez <matthieu.wipliez@insa-rennes.fr> (2008)
  * Maxime Pelcat <maxime.pelcat@insa-rennes.fr> (2008 - 2012)
  *
@@ -53,7 +53,7 @@ import org.preesm.workflow.implement.AbstractWorkflowNodeImplementation;
 /**
  *
  */
-public class PFASTMappingFromPiMM extends PFASTMappingFromDAG {
+public class MainCoreMappingFromPiMM extends MainCoreMappingFromDAG {
 
   @Override
   public Map<String, Object> execute(final Map<String, Object> inputs, final Map<String, String> parameters,
