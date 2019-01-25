@@ -85,7 +85,7 @@ public class StaticPiMM2SrDAGTask extends AbstractTaskImplementation {
     // Convert the PiGraph to the Single-Rate Directed Acyclic Graph
     final PiGraph resultPi = PiSDFToSingleRate.compute(graph, method);
 
-    result = covnertToMapperDAG(resultPi, architecture, scenario);
+    result = StaticPiMM2MapperDAGVisitor.convert(resultPi, architecture, scenario);
 
     final String message = "mapping a DAG with " + result.vertexSet().size() + " vertices and "
         + result.edgeSet().size() + " edges";
@@ -109,14 +109,4 @@ public class StaticPiMM2SrDAGTask extends AbstractTaskImplementation {
     return "Transforming PiGraph to Single-Rate Directed Acyclic Graph.";
   }
 
-  /**
-   * Converts the single rate acyclic PiSDF to {@link MapperDAG} and aggregate edges
-   */
-  public MapperDAG covnertToMapperDAG(final PiGraph resultPi, final Design architecture,
-      final PreesmScenario scenario) {
-    // Convert the PiMM vertices to DAG vertices
-    final StaticPiMM2MapperDAGVisitor visitor = new StaticPiMM2MapperDAGVisitor(resultPi, architecture, scenario);
-    visitor.doSwitch(resultPi);
-    return visitor.getResult();
-  }
 }
