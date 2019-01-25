@@ -1,8 +1,8 @@
 PREESM Changelog
 ================
 
-## Release version X.Y.Z
-*XXXX.XX.XX*
+## Release version 3.3.0
+*2019.01.25*
 
 ### New Feature
 * Add workflow parameters 'Verbose Level' to control log level;
