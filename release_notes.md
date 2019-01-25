@@ -5,9 +5,12 @@ PREESM Changelog
 *XXXX.XX.XX*
 
 ### New Feature
+* Add tasks to schedule PiSDF objects;
 
 ### Changes
 * Properly throw exception with message;
+* Minor refactor;
+* Disable graphml editor association for .pi files;
 
 ### Bug fix
 
