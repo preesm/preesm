@@ -49,6 +49,7 @@ import org.preesm.commons.logger.PreesmLogger;
 import org.preesm.model.pisdf.PiGraph;
 import org.preesm.model.pisdf.brv.BRVMethod;
 import org.preesm.model.pisdf.statictools.PiSDFToSingleRate;
+import org.preesm.model.pisdf.statictools.PiSDFToSingleRateTask;
 import org.preesm.model.scenario.PreesmScenario;
 import org.preesm.model.slam.Design;
 import org.preesm.workflow.elements.Workflow;
@@ -58,7 +59,9 @@ import org.preesm.workflow.implement.AbstractWorkflowNodeImplementation;
 /**
  * @author farresti
  *
+ * @deprecated use {@link PiSDFToSingleRateTask} instead
  */
+@Deprecated
 public class StaticPiMM2SrDAGTask extends AbstractTaskImplementation {
 
   public static final String CONSISTENCY_METHOD = "Consistency_Method";
@@ -106,7 +109,7 @@ public class StaticPiMM2SrDAGTask extends AbstractTaskImplementation {
 
   @Override
   public String monitorMessage() {
-    return "Transforming PiGraph to Single-Rate Directed Acyclic Graph.";
+    return "Transforming PiGraph to Single-Rate Directed Acyclic Graph (MapperDAG).";
   }
 
 }
