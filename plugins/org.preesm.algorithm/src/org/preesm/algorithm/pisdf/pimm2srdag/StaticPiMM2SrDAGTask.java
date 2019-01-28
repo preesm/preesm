@@ -49,6 +49,7 @@ import org.preesm.commons.logger.PreesmLogger;
 import org.preesm.model.pisdf.PiGraph;
 import org.preesm.model.pisdf.brv.BRVMethod;
 import org.preesm.model.pisdf.statictools.PiSDFToSingleRate;
+import org.preesm.model.pisdf.statictools.PiSDFToSingleRateTask;
 import org.preesm.model.scenario.PreesmScenario;
 import org.preesm.model.slam.Design;
 import org.preesm.workflow.elements.Workflow;
@@ -58,7 +59,9 @@ import org.preesm.workflow.implement.AbstractWorkflowNodeImplementation;
 /**
  * @author farresti
  *
+ * @deprecated use {@link PiSDFToSingleRateTask} instead
  */
+@Deprecated
 public class StaticPiMM2SrDAGTask extends AbstractTaskImplementation {
 
   public static final String CONSISTENCY_METHOD = "Consistency_Method";
@@ -85,7 +88,7 @@ public class StaticPiMM2SrDAGTask extends AbstractTaskImplementation {
     // Convert the PiGraph to the Single-Rate Directed Acyclic Graph
     final PiGraph resultPi = PiSDFToSingleRate.compute(graph, method);
 
-    result = covnertToMapperDAG(resultPi, architecture, scenario);
+    result = StaticPiMM2MapperDAGVisitor.convert(resultPi, architecture, scenario);
 
     final String message = "mapping a DAG with " + result.vertexSet().size() + " vertices and "
         + result.edgeSet().size() + " edges";
@@ -106,17 +109,7 @@ public class StaticPiMM2SrDAGTask extends AbstractTaskImplementation {
 
   @Override
   public String monitorMessage() {
-    return "Transforming PiGraph to Single-Rate Directed Acyclic Graph.";
+    return "Transforming PiGraph to Single-Rate Directed Acyclic Graph (MapperDAG).";
   }
 
-  /**
-   * Converts the single rate acyclic PiSDF to {@link MapperDAG} and aggregate edges
-   */
-  public MapperDAG covnertToMapperDAG(final PiGraph resultPi, final Design architecture,
-      final PreesmScenario scenario) {
-    // Convert the PiMM vertices to DAG vertices
-    final StaticPiMM2MapperDAGVisitor visitor = new StaticPiMM2MapperDAGVisitor(resultPi, architecture, scenario);
-    visitor.doSwitch(resultPi);
-    return visitor.getResult();
-  }
 }

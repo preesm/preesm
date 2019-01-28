@@ -226,7 +226,7 @@ public class DAGExporter extends GMLExporter<DAGVertex, DAGEdge> {
       exportGraph(graph);
       transform(out);
     } catch (final IOException e) {
-      throw new PreesmRuntimeException(e);
+      throw new PreesmRuntimeException(e.getMessage(), e);
     }
   }
 

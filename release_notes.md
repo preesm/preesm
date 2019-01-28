@@ -1,6 +1,21 @@
 PREESM Changelog
 ================
 
+## Release version 3.4.0
+*2019.01.28*
+
+### New Feature
+* Add tasks to schedule PiSDF objects;
+  * Mark old tasks as deprecated;
+
+### Changes
+* Properly throw exception with message;
+* Minor refactor;
+* Disable graphml editor association for .pi files;
+
+### Bug fix
+
+
 ## Release version 3.3.1
 *2019.01.28*
 

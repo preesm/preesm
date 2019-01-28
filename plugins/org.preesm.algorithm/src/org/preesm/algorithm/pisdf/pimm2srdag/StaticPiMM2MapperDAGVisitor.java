@@ -111,6 +111,17 @@ import org.preesm.model.slam.Design;
  *
  */
 public class StaticPiMM2MapperDAGVisitor extends PiMMSwitch<Boolean> {
+
+  /**
+   *
+   */
+  public static final MapperDAG convert(final PiGraph piGraph, final Design architecture,
+      final PreesmScenario scenario) {
+    final StaticPiMM2MapperDAGVisitor visitor = new StaticPiMM2MapperDAGVisitor(piGraph, architecture, scenario);
+    visitor.doSwitch(piGraph);
+    return visitor.getResult();
+  }
+
   /** The result. */
   // SRDAG graph created from the outer graph
   private final MapperDAG result;
@@ -134,7 +145,7 @@ public class StaticPiMM2MapperDAGVisitor extends PiMMSwitch<Boolean> {
    * @param scenario
    *          The scenario
    */
-  public StaticPiMM2MapperDAGVisitor(final PiGraph piGraph, final Design architecture, final PreesmScenario scenario) {
+  private StaticPiMM2MapperDAGVisitor(final PiGraph piGraph, final Design architecture, final PreesmScenario scenario) {
     this.architecture = architecture;
     this.result = new MapperDAG(piGraph);
     this.vertexFactory = MapperVertexFactory.getInstance();

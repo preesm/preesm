@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
 
-    Copyright or © or Copr. IETR/INSA - Rennes (2012 - 2018) :
+    Copyright or © or Copr. IETR/INSA - Rennes (2012 - 2019) :
 
-    Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017 - 2018)
+    Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017 - 2019)
     Karol Desnos <karol.desnos@insa-rennes.fr> (2012)
 
     This software is a computer program whose purpose is to help prototyping
@@ -60,7 +60,7 @@
    <extension
          point="org.preesm.workflow.tasks">
       <task
-            id="org.ietr.preesm.algorithm.exportXml.pimm2xml"
+            id="pisdf-export"
             name="PiSDFExporter"
             type="org.preesm.model.pisdf.serialize.PiSDFExporterTask">
          <inputs>

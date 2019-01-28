@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
 
-    Copyright or © or Copr. IETR/INSA - Rennes (2017 - 2018) :
+    Copyright or © or Copr. IETR/INSA - Rennes (2017 - 2019) :
 
-    Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017 - 2018)
+    Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017 - 2019)
 
     This software is a computer program whose purpose is to help prototyping
     parallel applications using dataflow formalism.
@@ -72,7 +72,7 @@
             class="org.ietr.dftools.graphiti.ui.editors.GraphEditor"
             contributorClass="org.ietr.dftools.graphiti.ui.editors.GraphActionBarContributor"
             default="true"
-            extensions="graphml, design, component, pi"
+            extensions="graphml, design, component"
             icon="icons/graphiti.gif"
             id="org.ietr.preesm.ui.editor.graph"
             name="Preesm Network Editor">
