@@ -1,7 +1,7 @@
 /**
- * Copyright or © or Copr. IETR/INSA - Rennes (2018) :
+ * Copyright or © or Copr. IETR/INSA - Rennes (2018 - 2019) :
  *
- * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2018)
+ * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2018 - 2019)
  * Florian Arrestier <florian.arrestier@insa-rennes.fr> (2018)
  *
  * This software is a computer program whose purpose is to help prototyping
@@ -38,6 +38,7 @@
  */
 package org.preesm.model.pisdf.statictools;
 
+import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.logging.Level;
@@ -78,7 +79,7 @@ public class PiSDFFlattenerTask extends AbstractTaskImplementation {
 
   @Override
   public Map<String, String> getDefaultParameters() {
-    return new LinkedHashMap<>();
+    return Collections.emptyMap();
   }
 
   /*

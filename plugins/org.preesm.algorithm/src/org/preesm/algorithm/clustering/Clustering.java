@@ -1,7 +1,7 @@
 /**
- * Copyright or © or Copr. IETR/INSA - Rennes (2016 - 2018) :
+ * Copyright or © or Copr. IETR/INSA - Rennes (2016 - 2019) :
  *
- * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017 - 2018)
+ * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017 - 2019)
  * Julien Hascoet <jhascoet@kalray.eu> (2016 - 2017)
  *
  * This software is a computer program whose purpose is to help prototyping
@@ -35,6 +35,7 @@
  */
 package org.preesm.algorithm.clustering;
 
+import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import org.eclipse.core.runtime.IProgressMonitor;
@@ -65,14 +66,12 @@ public class Clustering extends AbstractTaskImplementation {
 
   @Override
   public Map<String, String> getDefaultParameters() {
-    // TODO Auto-generated method stub
-    return null;
+    return Collections.emptyMap();
   }
 
   @Override
   public String monitorMessage() {
-    // TODO Auto-generated method stub
-    return null;
+    return "Clustering";
   }
 
 }

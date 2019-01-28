@@ -1,7 +1,7 @@
 /**
- * Copyright or © or Copr. IETR/INSA - Rennes (2018) :
+ * Copyright or © or Copr. IETR/INSA - Rennes (2018 - 2019) :
  *
- * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2018)
+ * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2018 - 2019)
  * Hamza Deroui <hamza.deroui@insa-rennes.fr> (2018)
  *
  * This software is a computer program whose purpose is to help prototyping
@@ -36,12 +36,11 @@
 package org.preesm.algorithm.latency;
 
 import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.preesm.algorithm.model.sdf.SDFGraph;
 import org.preesm.algorithm.throughput.tools.GraphStructureHelper;
-import org.preesm.commons.exceptions.PreesmException;
 import org.preesm.model.scenario.PreesmScenario;
 import org.preesm.workflow.elements.Workflow;
 import org.preesm.workflow.implement.AbstractTaskImplementation;
@@ -54,7 +53,7 @@ public class LatencyExplorationTask extends AbstractTaskImplementation {
 
   @Override
   public Map<String, Object> execute(final Map<String, Object> inputs, final Map<String, String> parameters,
-      final IProgressMonitor monitor, final String nodeName, final Workflow workflow) throws PreesmException {
+      final IProgressMonitor monitor, final String nodeName, final Workflow workflow) {
 
     // get the input graph, the scenario for actors duration, and the total number of cores
     final SDFGraph inputGraph = GraphStructureHelper.cloneIBSDF((SDFGraph) inputs.get("SDF"));
@@ -86,7 +85,7 @@ public class LatencyExplorationTask extends AbstractTaskImplementation {
     // WorkflowLogger.getLogger().log(Level.WARNING, "ERROR : The graph is deadlock !!");
 
     // set the outputs
-    final Map<String, Object> outputs = new HashMap<>();
+    final Map<String, Object> outputs = new LinkedHashMap<>();
     // outputs.put("SDF", inputGraph);
     // outputs.put("scenario", inputScenario);
 
@@ -95,7 +94,7 @@ public class LatencyExplorationTask extends AbstractTaskImplementation {
 
   @Override
   public Map<String, String> getDefaultParameters() {
-    final Map<String, String> parameters = new HashMap<>();
+    final Map<String, String> parameters = new LinkedHashMap<>();
     // parameters.put(,);
     return parameters;
   }

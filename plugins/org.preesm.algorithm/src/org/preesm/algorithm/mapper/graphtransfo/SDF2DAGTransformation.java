@@ -38,6 +38,7 @@
  */
 package org.preesm.algorithm.mapper.graphtransfo;
 
+import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import org.eclipse.core.runtime.IProgressMonitor;
@@ -73,12 +74,12 @@ public class SDF2DAGTransformation extends AbstractTaskImplementation {
 
   @Override
   public Map<String, String> getDefaultParameters() {
-    return null;
+    return Collections.emptyMap();
   }
 
   @Override
   public String monitorMessage() {
-    return null;
+    return "SDF2DAGTransformation";
   }
 
 }

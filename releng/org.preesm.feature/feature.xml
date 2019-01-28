@@ -41,7 +41,7 @@
 <feature
       id="org.preesm.feature"
       label="PREESM"
-      version="3.3.0"
+      version="3.3.1"
       provider-name="IETR / INSA Rennes - VAADER">
 
    <description url="http://preesm.org/">
@@ -581,104 +581,104 @@ Version 1.0 dated 2006-09-05.]]>
          id="org.preesm.codegen"
          download-size="0"
          install-size="0"
-         version="3.3.0"
+         version="3.3.1"
          unpack="false"/>
 
    <plugin
          id="org.preesm.codegen.xtend"
          download-size="0"
          install-size="0"
-         version="3.3.0"
+         version="3.3.1"
          unpack="false"/>
 
    <plugin
          id="org.preesm.algorithm"
          download-size="0"
          install-size="0"
-         version="3.3.0"
+         version="3.3.1"
          unpack="false"/>
 
    <plugin
          id="org.preesm.model.pisdf"
          download-size="0"
          install-size="0"
-         version="3.3.0"
+         version="3.3.1"
          unpack="false"/>
 
    <plugin
          id="org.preesm.ui.pisdf"
          download-size="0"
          install-size="0"
-         version="3.3.0"
+         version="3.3.1"
          unpack="false"/>
 
    <plugin
          id="org.preesm.ui.scenario"
          download-size="0"
          install-size="0"
-         version="3.3.0"
+         version="3.3.1"
          unpack="false"/>
 
    <plugin
          id="org.preesm.ui.sdf"
          download-size="0"
          install-size="0"
-         version="3.3.0"
+         version="3.3.1"
          unpack="false"/>
 
    <plugin
          id="org.preesm.commons"
          download-size="0"
          install-size="0"
-         version="3.3.0"
+         version="3.3.1"
          unpack="false"/>
 
    <plugin
          id="org.preesm.cli"
          download-size="0"
          install-size="0"
-         version="3.3.0"
+         version="3.3.1"
          unpack="false"/>
 
    <plugin
          id="fi.abo.preesm.dataparallel"
          download-size="0"
          install-size="0"
-         version="3.3.0"
+         version="3.3.1"
          unpack="false"/>
 
    <plugin
          id="org.preesm.model.slam"
          download-size="0"
          install-size="0"
-         version="3.3.0"
+         version="3.3.1"
          unpack="false"/>
 
    <plugin
          id="org.preesm.model.scenario"
          download-size="0"
          install-size="0"
-         version="3.3.0"
+         version="3.3.1"
          unpack="false"/>
 
    <plugin
          id="org.preesm.ui.slam"
          download-size="0"
          install-size="0"
-         version="3.3.0"
+         version="3.3.1"
          unpack="false"/>
 
    <plugin
          id="org.preesm.ui"
          download-size="0"
          install-size="0"
-         version="3.3.0"
+         version="3.3.1"
          unpack="false"/>
 
    <plugin
          id="org.preesm.workflow"
          download-size="0"
          install-size="0"
-         version="3.3.0"
+         version="3.3.1"
          unpack="false"/>
 </feature>

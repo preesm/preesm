@@ -1,7 +1,7 @@
 /**
- * Copyright or © or Copr. IETR/INSA - Rennes (2018) :
+ * Copyright or © or Copr. IETR/INSA - Rennes (2018 - 2019) :
  *
- * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2018)
+ * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2018 - 2019)
  * Hamza Deroui <hamza.deroui@insa-rennes.fr> (2018)
  *
  * This software is a computer program whose purpose is to help prototyping
@@ -36,6 +36,7 @@
 package org.preesm.algorithm.mapper.algo;
 
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.logging.Level;
 import org.eclipse.core.runtime.IProgressMonitor;
@@ -74,7 +75,7 @@ public class HScheduleTask extends AbstractTaskImplementation {
 
   @Override
   public Map<String, String> getDefaultParameters() {
-    final Map<String, String> parameters = new HashMap<>();
+    final Map<String, String> parameters = new LinkedHashMap<>();
     // parameters.put(,);
     return parameters;
   }

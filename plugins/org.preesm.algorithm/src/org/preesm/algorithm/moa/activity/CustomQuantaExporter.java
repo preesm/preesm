@@ -38,7 +38,7 @@ import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.nio.file.Paths;
 import java.util.HashMap;
-import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.Set;
 import java.util.logging.Level;
@@ -89,7 +89,7 @@ import org.preesm.workflow.implement.AbstractWorkflowNodeImplementation;
  * @author mpelcat
  *
  */
-class CustomQuantaExporter extends AbstractTaskImplementation {
+public class CustomQuantaExporter extends AbstractTaskImplementation {
 
   /**
    * Tag for storing the path of the input file with individual quanta information
@@ -109,23 +109,17 @@ class CustomQuantaExporter extends AbstractTaskImplementation {
   /**
    * Storing the graph vertices already explored
    */
-  Set<MapperDAGVertex> visited = null;
+  private Set<MapperDAGVertex> visited = new LinkedHashSet<>();
 
   /**
    * Currently retrieved activity
    */
-  Activity activity = null;
+  private Activity activity = new Activity();
 
   /**
    * Number of custom quanta per actor and operator
    */
-  CustomQuanta customQuanta = null;
-
-  CustomQuantaExporter() {
-    this.visited = new HashSet<>();
-    this.activity = new Activity();
-    this.customQuanta = new CustomQuanta();
-  }
+  private CustomQuanta customQuanta = new CustomQuanta();
 
   /**
    * Exporting in a CSV file custom quanta information

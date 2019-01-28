@@ -1,6 +1,17 @@
 PREESM Changelog
 ================
 
+## Release version 3.3.1
+*2019.01.28*
+
+### New Feature
+
+### Changes
+
+### Bug fix
+* Fix #105: make sure visibility of tasks is public;
+
+
 ## Release version 3.3.0
 *2019.01.25*
 

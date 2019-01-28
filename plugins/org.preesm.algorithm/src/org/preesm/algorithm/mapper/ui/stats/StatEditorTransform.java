@@ -37,6 +37,7 @@
  */
 package org.preesm.algorithm.mapper.ui.stats;
 
+import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.logging.Level;
@@ -90,7 +91,7 @@ public class StatEditorTransform extends AbstractTaskImplementation {
    */
   @Override
   public Map<String, String> getDefaultParameters() {
-    return null;
+    return Collections.emptyMap();
   }
 
   /*
