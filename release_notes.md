@@ -1,8 +1,8 @@
 PREESM Changelog
 ================
 
-## Release version X.Y.Z
-*XXXX.XX.XX*
+## Release version 3.4.0
+*2019.01.28*
 
 ### New Feature
 * Add tasks to schedule PiSDF objects;
