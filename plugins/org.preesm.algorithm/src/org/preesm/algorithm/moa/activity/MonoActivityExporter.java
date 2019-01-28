@@ -36,7 +36,7 @@ package org.preesm.algorithm.moa.activity;
 
 import java.io.ByteArrayInputStream;
 import java.util.HashMap;
-import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.Set;
 import java.util.logging.Level;
@@ -72,7 +72,7 @@ import org.preesm.workflow.implement.AbstractWorkflowNodeImplementation;
  * @author mpelcat
  *
  */
-class MonoActivityExporter extends AbstractTaskImplementation {
+public class MonoActivityExporter extends AbstractTaskImplementation {
 
   /**
    * Tag for storing the path of the file to store data
@@ -87,17 +87,12 @@ class MonoActivityExporter extends AbstractTaskImplementation {
   /**
    * Storing the graph vertices already explored
    */
-  Set<MapperDAGVertex> visited = null;
+  private Set<MapperDAGVertex> visited = new LinkedHashSet<>();
 
   /**
    * Currently retrieved activity
    */
-  Activity activity = null;
-
-  MonoActivityExporter() {
-    this.visited = new HashSet<>();
-    this.activity = new Activity();
-  }
+  private Activity activity = new Activity();
 
   /**
    * Exporting in a CSV file tokens and quanta information

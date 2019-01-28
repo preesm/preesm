@@ -9,6 +9,7 @@ PREESM Changelog
 ### Changes
 
 ### Bug fix
+* Fix #105: make sure visibility of tasks is public;
 
 
 ## Release version 3.3.0

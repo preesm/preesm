@@ -35,6 +35,7 @@
  */
 package org.preesm.algorithm.clustering;
 
+import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import org.eclipse.core.runtime.IProgressMonitor;
@@ -65,14 +66,12 @@ public class Clustering extends AbstractTaskImplementation {
 
   @Override
   public Map<String, String> getDefaultParameters() {
-    // TODO Auto-generated method stub
-    return null;
+    return Collections.emptyMap();
   }
 
   @Override
   public String monitorMessage() {
-    // TODO Auto-generated method stub
-    return null;
+    return "Clustering";
   }
 
 }

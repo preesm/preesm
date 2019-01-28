@@ -38,6 +38,7 @@
  */
 package org.preesm.model.pisdf.statictools;
 
+import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.logging.Level;
@@ -78,7 +79,7 @@ public class PiSDFFlattenerTask extends AbstractTaskImplementation {
 
   @Override
   public Map<String, String> getDefaultParameters() {
-    return new LinkedHashMap<>();
+    return Collections.emptyMap();
   }
 
   /*

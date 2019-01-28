@@ -55,7 +55,7 @@ import org.preesm.workflow.implement.AbstractTaskImplementation;
  * @author mpelcat
  *
  */
-class IterateAlgorithm extends AbstractTaskImplementation {
+public class IterateAlgorithm extends AbstractTaskImplementation {
 
   /**
    * Tag for storing the requested number of iterations

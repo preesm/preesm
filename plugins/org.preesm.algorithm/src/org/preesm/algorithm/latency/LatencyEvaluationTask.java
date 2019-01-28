@@ -35,8 +35,8 @@
  */
 package org.preesm.algorithm.latency;
 
+import java.util.Collections;
 import java.util.HashMap;
-import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.logging.Level;
 import org.eclipse.core.runtime.IProgressMonitor;
@@ -60,7 +60,7 @@ import org.preesm.workflow.implement.AbstractTaskImplementation;
 public class LatencyEvaluationTask extends AbstractTaskImplementation {
 
   private static final String DURATION_LITTERAL = "duration";
-  private static final String METHOD_LITTERAL = "method";
+  private static final String METHOD_LITTERAL   = "method";
 
   /**
    * @author hderoui
@@ -162,7 +162,7 @@ public class LatencyEvaluationTask extends AbstractTaskImplementation {
 
   @Override
   public Map<String, String> getDefaultParameters() {
-    return new LinkedHashMap<>();
+    return Collections.emptyMap();
   }
 
   @Override
