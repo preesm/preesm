@@ -72,7 +72,7 @@
             class="org.ietr.dftools.graphiti.ui.editors.GraphEditor"
             contributorClass="org.ietr.dftools.graphiti.ui.editors.GraphActionBarContributor"
             default="true"
-            extensions="graphml, design, component, pi"
+            extensions="graphml, design, component"
             icon="icons/graphiti.gif"
             id="org.ietr.preesm.ui.editor.graph"
             name="Preesm Network Editor">

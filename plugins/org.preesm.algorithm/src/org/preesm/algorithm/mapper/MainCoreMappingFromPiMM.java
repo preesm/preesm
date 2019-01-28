@@ -1,8 +1,13 @@
 /**
- * Copyright or © or Copr. IETR/INSA - Rennes (2018 - 2019) :
+ * Copyright or © or Copr. IETR/INSA - Rennes (2008 - 2018) :
  *
- * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2018 - 2019)
+ * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017 - 2018)
+ * Clément Guy <clement.guy@insa-rennes.fr> (2014)
  * Florian Arrestier <florian.arrestier@insa-rennes.fr> (2018)
+ * Jonathan Piat <jpiat@laas.fr> (2008 - 2011)
+ * Karol Desnos <karol.desnos@insa-rennes.fr> (2017 - 2018)
+ * Matthieu Wipliez <matthieu.wipliez@insa-rennes.fr> (2008)
+ * Maxime Pelcat <maxime.pelcat@insa-rennes.fr> (2008 - 2012)
  *
  * This software is a computer program whose purpose is to help prototyping
  * parallel applications using dataflow formalism.
@@ -33,70 +38,35 @@
  * The fact that you are presently reading this means that you have had
  * knowledge of the CeCILL license and that you accept its terms.
  */
-/**
- *
- */
-package org.preesm.model.pisdf.statictools;
+package org.preesm.algorithm.mapper;
 
-import java.util.LinkedHashMap;
 import java.util.Map;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import org.eclipse.core.runtime.IProgressMonitor;
-import org.preesm.commons.exceptions.PreesmRuntimeException;
-import org.preesm.commons.logger.PreesmLogger;
+import org.preesm.algorithm.mapper.model.MapperDAG;
+import org.preesm.algorithm.pisdf.pimm2srdag.StaticPiMM2MapperDAGVisitor;
 import org.preesm.model.pisdf.PiGraph;
-import org.preesm.model.pisdf.brv.BRVMethod;
+import org.preesm.model.scenario.PreesmScenario;
+import org.preesm.model.slam.Design;
 import org.preesm.workflow.elements.Workflow;
-import org.preesm.workflow.implement.AbstractTaskImplementation;
 import org.preesm.workflow.implement.AbstractWorkflowNodeImplementation;
 
 /**
- * @author farresti
  *
  */
-public class PiSDFToSingleRateTask extends AbstractTaskImplementation {
+public class MainCoreMappingFromPiMM extends MainCoreMappingFromDAG {
 
-  public static final String CONSISTENCY_METHOD = "Consistency_Method";
-
-  final Logger logger = PreesmLogger.getLogger();
-
-  /*
-   * (non-Javadoc)
-   *
-   * @see org.ietr.dftools.workflow.implement.AbstractTaskImplementation#execute(java.util.Map, java.util.Map,
-   * org.eclipse.core.runtime.IProgressMonitor, java.lang.String, org.ietr.dftools.workflow.elements.Workflow)
-   */
   @Override
   public Map<String, Object> execute(final Map<String, Object> inputs, final Map<String, String> parameters,
       final IProgressMonitor monitor, final String nodeName, final Workflow workflow) {
-    final PiGraph graph = (PiGraph) inputs.get(AbstractWorkflowNodeImplementation.KEY_PI_GRAPH);
-    logger.log(Level.INFO, "Computing Repetition Vector for graph [" + graph.getName() + "]");
 
-    final String consistencyMethod = parameters.get(CONSISTENCY_METHOD);
-    final BRVMethod method = BRVMethod.getByName(consistencyMethod);
-    if (method == null) {
-      throw new PreesmRuntimeException("Unsupported method for checking consistency [" + consistencyMethod + "]");
-    }
+    final PiGraph algorithm = (PiGraph) inputs.get(AbstractWorkflowNodeImplementation.KEY_PI_GRAPH);
+    final Design architecture = (Design) inputs.get(AbstractWorkflowNodeImplementation.KEY_ARCHITECTURE);
+    final PreesmScenario scenario = (PreesmScenario) inputs.get(AbstractWorkflowNodeImplementation.KEY_SCENARIO);
 
-    // Flatten the graph
-    final PiGraph result = PiSDFToSingleRate.compute(graph, method);
+    final MapperDAG dag = StaticPiMM2MapperDAGVisitor.convert(algorithm, architecture, scenario);
+    inputs.put(AbstractWorkflowNodeImplementation.KEY_SDF_DAG, dag);
 
-    final Map<String, Object> output = new LinkedHashMap<>();
-    output.put(AbstractWorkflowNodeImplementation.KEY_PI_GRAPH, result);
-    return output;
-  }
-
-  @Override
-  public Map<String, String> getDefaultParameters() {
-    final LinkedHashMap<String, String> res = new LinkedHashMap<>();
-    res.put(CONSISTENCY_METHOD, BRVMethod.LCM.getLiteral());
-    return res;
-  }
-
-  @Override
-  public String monitorMessage() {
-    return "Transforming PiGraph to Single-Rate Directed Acyclic PiGraph.";
+    return super.execute(inputs, parameters, monitor, nodeName, workflow);
   }
 
 }
