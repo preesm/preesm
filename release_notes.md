@@ -7,6 +7,7 @@ PREESM Changelog
 ### New Feature
 
 ### Changes
+* Properly throw exception with message;
 
 ### Bug fix
 
