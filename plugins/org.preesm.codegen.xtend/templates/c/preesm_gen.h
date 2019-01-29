@@ -81,6 +81,8 @@
 
 #[[#]]#include "preesm.h"
 
+#[[#]]#include <stdio.h>
+
 $USER_INCLUDES
 
 #[[#]]#endif
