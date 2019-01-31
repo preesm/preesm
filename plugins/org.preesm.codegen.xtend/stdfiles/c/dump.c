@@ -114,7 +114,7 @@ void writeTime(uint64_t* dumpBuffer, int nbDump, int* nbExec) {
         double res;
         nbEx = (nbEx != 0) ? 1/nbEx : 0;
         res = getElapsedNanoSec(dumpBuffer+i-1, dumpBuffer+i) * nbEx;
-        fprintf(ptfile, "%.0f;", res);
+        fprintf(ptfile, "%.0lf;", res);
     }
     fprintf(ptfile, "\n");
     fflush(ptfile);

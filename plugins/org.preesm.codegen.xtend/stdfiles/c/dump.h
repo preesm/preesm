@@ -80,15 +80,16 @@ static inline double getElapsedNanoSec(uint64_t *start, uint64_t *end) {
 #include <stdint.h>
 
 #include <mach/mach_time.h>
-#include <osfmk/kern/clock.h>
 
 static inline void dumpTime(int id, uint64_t * dumpBuffer) {
 	dumpBuffer[id] = mach_absolute_time();
 }
 
 static inline double getElapsedNanoSec(uint64_t *start, uint64_t *end) {
-	uint64_t res;
-	absolutetime_to_nanoseconds((*end) - (*start), &res)
+	mach_timebase_info_data_t timeBase;
+	mach_timebase_info(&timeBase);
+	double res = (double) timeBase.numer /	timeBase.denom;
+	res *= ((*end) - (*start));
 	return res;
 }
 
