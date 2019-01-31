@@ -70,7 +70,13 @@ public class ScenarioNode extends AbstractWorkflowNode<AbstractScenarioImplement
    *
    * @return the scenario id
    */
-  public String getScenarioId() {
+  @Override
+  public String getName() {
+    return "Scenario Node";
+  }
+
+  @Override
+  public String getID() {
     return this.scenarioId;
   }
 
@@ -144,7 +150,7 @@ public class ScenarioNode extends AbstractWorkflowNode<AbstractScenarioImplement
             this.implementation = (AbstractScenarioImplementation) obj;
 
             // Initializes the prototype of the scenario
-            initPrototype((AbstractScenarioImplementation) this.implementation, element);
+            init((AbstractScenarioImplementation) this.implementation, element);
             return true;
           }
         }

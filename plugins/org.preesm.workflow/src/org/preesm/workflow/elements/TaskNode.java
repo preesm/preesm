@@ -193,7 +193,7 @@ public class TaskNode extends AbstractWorkflowNode<AbstractTaskImplementation> {
             this.implementation = (AbstractTaskImplementation) obj;
 
             // Initializes the prototype of the workflow task
-            initPrototype((AbstractTaskImplementation) this.implementation, element);
+            init((AbstractTaskImplementation) this.implementation, element);
 
             return true;
           }
@@ -214,7 +214,8 @@ public class TaskNode extends AbstractWorkflowNode<AbstractTaskImplementation> {
    *
    * @return the plugin id
    */
-  public String getPluginId() {
+  @Override
+  public String getID() {
     return this.pluginId;
   }
 
@@ -223,7 +224,8 @@ public class TaskNode extends AbstractWorkflowNode<AbstractTaskImplementation> {
    *
    * @return the task id
    */
-  public String getTaskId() {
+  @Override
+  public String getName() {
     return this.taskId;
   }
 

@@ -82,4 +82,8 @@ public abstract class AbstractWorkflowNode<T extends AbstractWorkflowNodeImpleme
    */
   public abstract boolean isTaskNode();
 
+  public abstract String getID();
+
+  public abstract String getName();
+
 }
