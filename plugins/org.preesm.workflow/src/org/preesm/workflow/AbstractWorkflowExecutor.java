@@ -232,42 +232,41 @@ public abstract class AbstractWorkflowExecutor {
    * @return true, if successful
    */
   public boolean execute(final String workflowPath, final String scenarioPath, final IProgressMonitor monitor) {
-
     final Workflow workflow = new WorkflowParser().parse(workflowPath);
 
     boolean result = initAndCheck(workflowPath, monitor, workflow);
     if (!result) {
       return false;
     }
-
-    // read and apply workflow parameters
     final Handler eowHandler = addEOWHandler(workflow);
     final Level oldLevel = Optional.ofNullable(this.logger.getLevel()).orElse(Level.INFO);
-    this.logger.setLevel(workflow.getOutputLevel());
-    WorkspaceUtils.updateWorkspace();
+    try {
+      // read and apply workflow parameters
+      this.logger.setLevel(workflow.getOutputLevel());
+      WorkspaceUtils.updateWorkspace();
 
-    final Iterator<AbstractWorkflowNode<?>> iterator = workflow.vertexTopologicalList().iterator();
+      final Iterator<AbstractWorkflowNode<?>> iterator = workflow.vertexTopologicalList().iterator();
 
-    while (result && iterator.hasNext()) {
-      AbstractWorkflowNode<?> node = iterator.next();
-      try {
+      while (result && iterator.hasNext()) {
+        AbstractWorkflowNode<?> node = iterator.next();
         result = executeNode(scenarioPath, monitor, workflow, node);
-      } catch (final ErrorOnWarningError e) {
-        this.logger.log(e.getRecord());
-        result = false;
       }
+
+      if (result) {
+        log(Level.INFO, "Workflow.EndInfo", workflowPath);
+      }
+
+      WorkspaceUtils.updateWorkspace();
+
+      // set back default logger behavior
+
+    } catch (final ErrorOnWarningError e) {
+      this.logger.log(e.getRecord());
+      result = false;
+    } finally {
+      this.logger.removeHandler(eowHandler);
+      this.logger.setLevel(oldLevel);
     }
-
-    if (result) {
-      log(Level.INFO, "Workflow.EndInfo", workflowPath);
-    }
-
-    WorkspaceUtils.updateWorkspace();
-
-    // set back default logger behavior
-    this.logger.removeHandler(eowHandler);
-    this.logger.setLevel(oldLevel);
-
     return result;
   }
 
