@@ -85,22 +85,24 @@ public abstract class AbstractTaskImplementation extends AbstractWorkflowNodeImp
 
     for (final String protoInputPortName : this.inputPrototype.keySet()) {
       if (!graphInputPorts.keySet().contains(protoInputPortName)) {
-        PreesmLogger.logFromProperty(Level.SEVERE, "Workflow.FalseInputEdge", protoInputPortName);
+        PreesmLogger.logFromProperty(Level.SEVERE, "Workflow.FalseInputEdge", protoInputPortName,
+            this.getWorkflowNode().getName(), this.getWorkflowNode().getID());
         return false;
       } else {
         final String protoType = this.inputPrototype.get(protoInputPortName);
         final String graphType = graphInputPorts.get(protoInputPortName);
         if (!protoType.equals(graphType)) {
-          PreesmLogger.logFromProperty(Level.SEVERE, "Workflow.FalseInputType", protoInputPortName, graphType,
-              protoType);
+          PreesmLogger.logFromProperty(Level.SEVERE, "Workflow.FalseInputType", protoInputPortName,
+              this.getWorkflowNode().getName(), this.getWorkflowNode().getID(), graphType, protoType);
           return false;
         }
       }
     }
 
     if (graphInputPorts.keySet().size() > this.inputPrototype.keySet().size()) {
-      PreesmLogger.logFromProperty(Level.SEVERE, "Workflow.TooManyInputEdges",
-          String.valueOf(graphInputPorts.keySet().size()), String.valueOf(this.inputPrototype.keySet().size()));
+      PreesmLogger.logFromProperty(Level.SEVERE, "Workflow.TooManyInputEdges", this.getWorkflowNode().getName(),
+          this.getWorkflowNode().getID(), String.valueOf(graphInputPorts.keySet().size()),
+          String.valueOf(this.inputPrototype.keySet().size()));
       return false;
     }
 

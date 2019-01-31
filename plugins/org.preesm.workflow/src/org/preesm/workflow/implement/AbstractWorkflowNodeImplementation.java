@@ -198,7 +198,7 @@ public abstract class AbstractWorkflowNodeImplementation {
     for (final String outputPortName : outputPortNames) {
       if (!this.outputPrototype.keySet().contains(outputPortName)) {
         PreesmLogger.logFromProperty(Level.SEVERE, "Workflow.FalseOutputEdge", outputPortName,
-            WorkflowManager.IGNORE_PORT_NAME);
+            this.getWorkflowNode().getName(), this.getWorkflowNode().getID(), WorkflowManager.IGNORE_PORT_NAME);
         return false;
       }
     }

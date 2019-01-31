@@ -117,7 +117,7 @@ public abstract class AbstractWorkflowExecutor {
 
         // The plugin declaring the scenario class was not found
         if (!workflowOk) {
-          log(Level.SEVERE, "Workflow.FailedFindScenarioPlugin", ((ScenarioNode) node).getID());
+          log(Level.SEVERE, "Workflow.FailedFindScenarioPlugin", node.getName());
           return false;
         }
       } else if (node.isTaskNode() && !workflow.edgesOf(node).isEmpty()) {
@@ -125,7 +125,7 @@ public abstract class AbstractWorkflowExecutor {
 
         // The plugin declaring the task class was not found
         if (!workflowOk) {
-          log(Level.SEVERE, "Workflow.FailedFindTaskPlugin", ((TaskNode) node).getID());
+          log(Level.SEVERE, "Workflow.FailedFindTaskPlugin", node.getName());
           return false;
         }
       }
@@ -163,7 +163,7 @@ public abstract class AbstractWorkflowExecutor {
 
     // The scenario node prototype is compared to the output port names
     if (!scenario.acceptOutputs(outputPorts)) {
-      log(Level.SEVERE, "Workflow.WrongScenarioPrototype", scenarioNode.getID(), scenario.displayPrototype());
+      log(Level.SEVERE, "Workflow.WrongScenarioPrototype", scenarioNode.getName(), scenario.displayPrototype());
 
       return false;
     }
@@ -205,14 +205,14 @@ public abstract class AbstractWorkflowExecutor {
     }
 
     if (!task.acceptInputs(inputs)) {
-      log(Level.SEVERE, "Workflow.WrongTaskPrototype", taskNode.getID(), task.displayPrototype());
+      log(Level.SEVERE, "Workflow.WrongTaskPrototype", taskNode.getName(), taskNode.getID(), task.displayPrototype());
 
       return false;
     }
 
     // The task prototype is compared to the output port names
     if (!task.acceptOutputs(outputs)) {
-      log(Level.SEVERE, "Workflow.WrongTaskPrototype", taskNode.getID(), task.displayPrototype());
+      log(Level.SEVERE, "Workflow.WrongTaskPrototype", taskNode.getName(), task.displayPrototype());
 
       return false;
     }
@@ -295,7 +295,7 @@ public abstract class AbstractWorkflowExecutor {
         // path and generates the inputs of the rapid prototyping
         // process
         final ScenarioNode scenarioNode = (ScenarioNode) node;
-        nodeId = scenarioNode.getID();
+        nodeId = scenarioNode.getName();
         final AbstractScenarioImplementation scenario = scenarioNode.getScenario();
 
         // Checks that the scenario node output edges fit the task
@@ -336,7 +336,7 @@ public abstract class AbstractWorkflowExecutor {
       } else if (node.isTaskNode()) {
         final TaskNode taskNode = (TaskNode) node;
         final AbstractTaskImplementation task = taskNode.getTask();
-        nodeId = taskNode.getID();
+        nodeId = taskNode.getName();
 
         // Checks that the workflow task node edges fit the task
         // prototype
@@ -365,7 +365,7 @@ public abstract class AbstractWorkflowExecutor {
             if (monitor != null) {
               monitor.subTask(monitorMessageStr);
             }
-            log(Level.INFO, "Workflow.Step", monitorMessageStr);
+            log(Level.INFO, "Workflow.Step", node.getName(), node.getID(), monitorMessageStr);
 
             // Workflow cancellation was requested
             if ((monitor != null) && monitor.isCanceled()) {
@@ -418,7 +418,7 @@ public abstract class AbstractWorkflowExecutor {
       if (nodeResult) {
         // If the execution incorrectly initialized the outputs
         if (outputs == null) {
-          log(Level.SEVERE, "Workflow.NullNodeOutput", nodeId);
+          log(Level.SEVERE, "Workflow.NullNodeOutput", node.getName(), node.getID());
           nodeResult = false;
         } else {
           // Retrieving output of the current node
@@ -433,12 +433,16 @@ public abstract class AbstractWorkflowExecutor {
               edge.setData(outputs.get(type));
             } else {
               edge.setData(null);
-              log(Level.SEVERE, "Workflow.IncorrectOutput", nodeId, type);
+              log(Level.SEVERE, "Workflow.IncorrectOutput", node.getName(), node.getID(), type);
               nodeResult = false;
             }
           }
+          if (nodeResult) {
+            log(Level.FINE, "Workflow.Step", node.getName(), node.getID(), "Terminate without error.");
+          }
         }
       }
+
     }
     return nodeResult;
   }
@@ -532,7 +536,8 @@ public abstract class AbstractWorkflowExecutor {
     if (defaultParameters != null) {
       if (parameters == null) {
         if (defaultParameters.size() > 0) {
-          log(Level.SEVERE, "Workflow.MissingAllParameters", taskNode.getID(), defaultParameters.keySet().toString());
+          log(Level.SEVERE, "Workflow.MissingAllParameters", taskNode.getName(), taskNode.getID(),
+              defaultParameters.keySet().toString());
           return false;
         }
       } else {
@@ -542,7 +547,7 @@ public abstract class AbstractWorkflowExecutor {
             // https://github.com/preesm/dftools/issues/2
             // Instead of failing when a parameter is not specified, simply log a warning and
             // use value from defaultParameters.
-            log(Level.WARNING, "Workflow.MissingParameter", taskNode.getID(), p.getKey());
+            log(Level.WARNING, "Workflow.MissingParameter", taskNode.getName(), taskNode.getID(), p.getKey());
             parameters.put(p.getKey(), p.getValue());
           }
         }
