@@ -9,7 +9,7 @@ PREESM Changelog
 ### Changes
 
 ### Bug fix
-
+* Fix #108: Update log messages to display the faulty task name and id, when relevant;
 
 ## Release version 3.4.0
 *2019.01.28*
