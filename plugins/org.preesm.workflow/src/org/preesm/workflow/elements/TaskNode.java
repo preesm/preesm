@@ -52,7 +52,7 @@ import org.preesm.workflow.implement.AbstractTaskImplementation;
  * @author mpelcat
  *
  */
-public class TaskNode extends AbstractWorkflowNode {
+public class TaskNode extends AbstractWorkflowNode<AbstractTaskImplementation> {
 
   /**
    * Transformation Id.
@@ -156,7 +156,8 @@ public class TaskNode extends AbstractWorkflowNode {
    *          the element
    * @return True if the prototype was correctly set.
    */
-  private boolean initPrototype(final AbstractTaskImplementation task, final IConfigurationElement element) {
+  @Override
+  protected boolean initPrototype(final AbstractTaskImplementation task, final IConfigurationElement element) {
 
     for (final IConfigurationElement child : element.getChildren()) {
       if (child.getName().equals("inputs")) {
@@ -181,27 +182,25 @@ public class TaskNode extends AbstractWorkflowNode {
     try {
       final IExtensionRegistry registry = Platform.getExtensionRegistry();
 
-      boolean found = false;
       final IConfigurationElement[] elements = registry.getConfigurationElementsFor("org.preesm.workflow.tasks");
-      for (int i = 0; (i < elements.length) && !found; i++) {
-        final IConfigurationElement element = elements[i];
-        final String attribute = element.getAttribute("id");
-        if (attribute.equals(this.pluginId)) {
+      for (final IConfigurationElement element : elements) {
+        if (element.getAttribute("id").equals(this.pluginId)) {
           // Tries to create the transformation
           final Object obj = element.createExecutableExtension("type");
 
           // and checks it actually is a TaskImplementation.
           if (obj instanceof AbstractTaskImplementation) {
             this.implementation = (AbstractTaskImplementation) obj;
-            found = true;
 
             // Initializes the prototype of the workflow task
             initPrototype((AbstractTaskImplementation) this.implementation, element);
+
+            return true;
           }
         }
       }
 
-      return found;
+      return false;
     } catch (final CoreException e) {
       final String message = "Failed to find plugins from workflow for pluginID = [" + pluginId + "] and taskID = ["
           + taskId + "]: " + e.getMessage();

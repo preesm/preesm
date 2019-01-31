@@ -47,7 +47,7 @@ import org.preesm.workflow.implement.AbstractScenarioImplementation;
  *
  * @author mpelcat
  */
-public class ScenarioNode extends AbstractWorkflowNode {
+public class ScenarioNode extends AbstractWorkflowNode<AbstractScenarioImplementation> {
 
   /**
    * The identifier of this scenario node. It is needed to retrieve the implementation of this node
@@ -112,8 +112,8 @@ public class ScenarioNode extends AbstractWorkflowNode {
    *          the element
    * @return True if the prototype was correctly set.
    */
-  private boolean initPrototype(final AbstractScenarioImplementation scenario, final IConfigurationElement element) {
-
+  @Override
+  protected boolean initPrototype(final AbstractScenarioImplementation scenario, final IConfigurationElement element) {
     for (final IConfigurationElement child : element.getChildren()) {
       if (child.getName().equals("outputs")) {
         for (final IConfigurationElement output : child.getChildren()) {

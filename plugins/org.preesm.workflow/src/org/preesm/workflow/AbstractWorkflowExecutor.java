@@ -111,7 +111,7 @@ public abstract class AbstractWorkflowExecutor {
     }
 
     boolean workflowOk = true;
-    for (final AbstractWorkflowNode node : workflow.vertexSet()) {
+    for (final AbstractWorkflowNode<?> node : workflow.vertexSet()) {
       if (node.isScenarioNode()) {
         workflowOk = ((ScenarioNode) node).getExtensionInformation();
 
@@ -188,7 +188,7 @@ public abstract class AbstractWorkflowExecutor {
     // input ports are retrieved as well as the data type
     // of the corresponding output port in the connected node
     for (final WorkflowEdge edge : workflow.incomingEdgesOf(taskNode)) {
-      final AbstractWorkflowNode predecessor = workflow.getEdgeSource(edge);
+      final AbstractWorkflowNode<?> predecessor = workflow.getEdgeSource(edge);
       final String type = predecessor.getImplementation().getOutputType(edge.getSourcePort());
       if (!edge.getSourcePort().equals(AbstractWorkflowExecutor.IGNORE_PORT_NAME)) {
         inputs.put(edge.getTargetPort(), type);
@@ -246,10 +246,10 @@ public abstract class AbstractWorkflowExecutor {
     this.logger.setLevel(workflow.getOutputLevel());
     WorkspaceUtils.updateWorkspace();
 
-    final Iterator<AbstractWorkflowNode> iterator = workflow.vertexTopologicalList().iterator();
+    final Iterator<AbstractWorkflowNode<?>> iterator = workflow.vertexTopologicalList().iterator();
 
     while (result && iterator.hasNext()) {
-      AbstractWorkflowNode node = iterator.next();
+      AbstractWorkflowNode<?> node = iterator.next();
       try {
         result = executeNode(scenarioPath, monitor, workflow, node);
       } catch (final ErrorOnWarningError e) {
@@ -282,7 +282,7 @@ public abstract class AbstractWorkflowExecutor {
   }
 
   private boolean executeNode(final String scenarioPath, final IProgressMonitor monitor, final Workflow workflow,
-      final AbstractWorkflowNode node) {
+      final AbstractWorkflowNode<?> node) {
     boolean nodeResult = true;
     if (workflow.edgesOf(node).isEmpty()) {
       log(Level.WARNING, "Workflow.IgnoredNonConnectedTask");

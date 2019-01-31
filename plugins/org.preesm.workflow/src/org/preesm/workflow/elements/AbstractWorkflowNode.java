@@ -36,6 +36,7 @@
  */
 package org.preesm.workflow.elements;
 
+import org.eclipse.core.runtime.IConfigurationElement;
 import org.preesm.workflow.implement.AbstractWorkflowNodeImplementation;
 
 /**
@@ -43,8 +44,10 @@ import org.preesm.workflow.implement.AbstractWorkflowNodeImplementation;
  *
  * @author mpelcat
  *
+ * @param <T>
+ *          the top class of the implementation
  */
-public abstract class AbstractWorkflowNode {
+public abstract class AbstractWorkflowNode<T extends AbstractWorkflowNodeImplementation> {
 
   /** Implementation of this node. */
   protected AbstractWorkflowNodeImplementation implementation = null;
@@ -57,6 +60,13 @@ public abstract class AbstractWorkflowNode {
   public final AbstractWorkflowNodeImplementation getImplementation() {
     return this.implementation;
   }
+
+  public void init(final T implem, final IConfigurationElement element) {
+    implem.setWorkflowNode(this);
+    initPrototype(implem, element);
+  }
+
+  protected abstract boolean initPrototype(final T implem, final IConfigurationElement element);
 
   /**
    * Checks if is scenario node.
