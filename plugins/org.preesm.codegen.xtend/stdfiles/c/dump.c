@@ -93,10 +93,10 @@ void writeTime(uint64_t* dumpBuffer, int nbDump, int* nbExec) {
             if (time < (double) 0) {
             	nbExec[i] = 0;
             	fprintf(stderr, "Error taking timing %d\n.", i);
-            } else if (time < (double) (5e5)) {
+            } else if (time < (double) (MIN_TIME_MEASURE)) {
                 nbExec[i] = nbExecBefore * 2;
-                if (nbExec[i] > 10000) {
-                	nbExec[i] = 10000;
+                if (nbExec[i] > MAX_ITER_MEASURE) {
+                	nbExec[i] = MAX_ITER_MEASURE;
                 }
             }
             if (nbExecBefore != nbExec[i]) {

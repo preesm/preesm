@@ -51,6 +51,8 @@
 */
 #define DUMP_FILE "analysis.csv"
 
+#define MIN_TIME_MEASURE 5e5
+#define MAX_ITER_MEASURE 10000
 
 #ifdef _WIN32
 
