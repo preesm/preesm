@@ -7,6 +7,7 @@ PREESM Changelog
 ### New Feature
 
 ### Changes
+* Delete unused resources;
 
 ### Bug fix
 * Fix #108: Update log messages to display the faulty task name and id, when relevant;
