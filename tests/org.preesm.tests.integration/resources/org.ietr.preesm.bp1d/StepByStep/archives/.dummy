@@ -1,2 +1,0 @@
-This file makes git keep its containing directory in repository. This directory is
-necessary to successful compilation but is not tracked as such.
