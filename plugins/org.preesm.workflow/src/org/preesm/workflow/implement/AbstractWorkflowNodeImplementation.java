@@ -43,6 +43,7 @@ import java.util.Set;
 import java.util.logging.Level;
 import org.preesm.commons.logger.PreesmLogger;
 import org.preesm.workflow.WorkflowManager;
+import org.preesm.workflow.elements.AbstractWorkflowNode;
 
 /**
  * Node implementation is the superclass of both scenario and task implementation. Their outputs are handled the same
@@ -153,6 +154,8 @@ public abstract class AbstractWorkflowNodeImplementation {
    */
   private final Map<String, String> outputPrototype;
 
+  private AbstractWorkflowNode<?> workflowNode;
+
   /**
    * Instantiates a new abstract workflow node implementation.
    */
@@ -195,7 +198,7 @@ public abstract class AbstractWorkflowNodeImplementation {
     for (final String outputPortName : outputPortNames) {
       if (!this.outputPrototype.keySet().contains(outputPortName)) {
         PreesmLogger.logFromProperty(Level.SEVERE, "Workflow.FalseOutputEdge", outputPortName,
-            WorkflowManager.IGNORE_PORT_NAME);
+            this.getWorkflowNode().getName(), this.getWorkflowNode().getID(), WorkflowManager.IGNORE_PORT_NAME);
         return false;
       }
     }
@@ -217,4 +220,12 @@ public abstract class AbstractWorkflowNodeImplementation {
    * @return the string
    */
   public abstract String monitorMessage();
+
+  public AbstractWorkflowNode<?> getWorkflowNode() {
+    return workflowNode;
+  }
+
+  public void setWorkflowNode(final AbstractWorkflowNode<?> workflowNode) {
+    this.workflowNode = workflowNode;
+  }
 }
