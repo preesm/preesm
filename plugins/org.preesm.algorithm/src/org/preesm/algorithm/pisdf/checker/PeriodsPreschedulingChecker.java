@@ -112,12 +112,17 @@ public class PeriodsPreschedulingChecker extends AbstractTaskImplementation {
       }
     }
 
-    // 1. find all actor w/o incoming edges and all other with incoming edges
+    // 0. find all cycles and retrieve actors placed after delays.
+    HeuristicLoopBreakingDelays heurFifoBreaks = new HeuristicLoopBreakingDelays();
+    heurFifoBreaks.performAnalysis(graph);
+
+    // 1. find all actor w/o incoming edges and all others w/o outgoing edge
     final List<Actor> sourceActors = new ArrayList<>();
     final List<Actor> sinkActors = new ArrayList<>();
     for (final AbstractActor absActor : graph.getActors()) {
       if (absActor instanceof PeriodicElement) {
         final Actor actor = (Actor) absActor;
+        // lacks actors whose all incoming edges have delay on it
         if (actor.getDataOutputPorts().isEmpty()) {
           sinkActors.add(actor);
         }
@@ -127,18 +132,25 @@ public class PeriodsPreschedulingChecker extends AbstractTaskImplementation {
       }
     }
 
+    StringBuilder sources = new StringBuilder();
+    sourceActors.stream().forEach(a -> sources.append(a.getName() + " / "));
+    PreesmLogger.getLogger().log(Level.FINE, "Sources: " + sources.toString());
+    StringBuilder sinks = new StringBuilder();
+    sinkActors.stream().forEach(a -> sinks.append(a.getName() + " / "));
+    PreesmLogger.getLogger().log(Level.FINE, "Sinks: " + sinks.toString());
+
     // 2. perform heuristic to select periodic nodes
     final StringBuilder sbNBFF = new StringBuilder();
     final Map<Actor, Long> actorsNBFF = HeuristicPeriodicActorSelection.selectActors(periodicActors, sourceActors, rate,
         graph, scenario, false);
     actorsNBFF.keySet().forEach(a -> sbNBFF.append(a.getName() + " / "));
-    PreesmLogger.getLogger().log(Level.WARNING, "Periodic actor for NBFF: " + sbNBFF.toString());
+    PreesmLogger.getLogger().log(Level.INFO, "Periodic actor for NBFF: " + sbNBFF.toString());
 
     final StringBuilder sbNBLF = new StringBuilder();
     final Map<Actor, Long> actorsNBLF = HeuristicPeriodicActorSelection.selectActors(periodicActors, sinkActors, rate,
         graph, scenario, true);
     actorsNBLF.keySet().forEach(a -> sbNBLF.append(a.getName() + " / "));
-    PreesmLogger.getLogger().log(Level.WARNING, "Periodic actor for NBLF: " + sbNBLF.toString());
+    PreesmLogger.getLogger().log(Level.INFO, "Periodic actor for NBLF: " + sbNBLF.toString());
 
     // 3. for each selected periodic node for nblf:
     // _a compute subgraph

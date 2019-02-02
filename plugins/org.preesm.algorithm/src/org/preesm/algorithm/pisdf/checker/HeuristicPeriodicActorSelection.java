@@ -77,6 +77,10 @@ class HeuristicPeriodicActorSelection {
     final Map<Actor, Double> topoRanksPeriodic = new HashMap<>();
     for (final Entry<Actor, Long> e : periodicActors.entrySet()) {
       final Actor actor = e.getKey();
+      if (!topoRanks.containsKey(actor)) {
+        System.err.println("Actor <" + actor.getName() + "> not ranked");
+        continue;
+      }
       final long rank = topoRanks.get(actor).rank;
       final long period = e.getValue();
       long wcetMin = Long.MAX_VALUE;
@@ -125,9 +129,9 @@ class HeuristicPeriodicActorSelection {
   private static class ActorVisit {
     final int nbMaxVisit;
     int       nbVisit = 0;
-    long      rank    = 0;
+    int       rank    = 0;
 
-    ActorVisit(final int nbMaxVisit, final long rank) {
+    ActorVisit(final int nbMaxVisit, final int rank) {
       this.nbMaxVisit = nbMaxVisit;
       this.rank = rank;
     }
@@ -138,13 +142,13 @@ class HeuristicPeriodicActorSelection {
       final PiGraph graph) {
     final Map<AbstractActor, ActorVisit> topoRanks = new HashMap<>();
     for (final Actor actor : sourceActors) {
-      topoRanks.put(actor, new ActorVisit(0, 1L));
+      topoRanks.put(actor, new ActorVisit(0, 1));
     }
 
     final Deque<AbstractActor> toVisit = new ArrayDeque<>(sourceActors);
     while (!toVisit.isEmpty()) {
       final AbstractActor actor = toVisit.removeFirst();
-      final long rank = topoRanks.get(actor).rank;
+      final int rank = topoRanks.get(actor).rank;
       for (final DataOutputPort sport : actor.getDataOutputPorts()) {
         final Fifo fifo = sport.getOutgoingFifo();
         final DataInputPort tport = fifo.getTargetPort();
@@ -155,12 +159,19 @@ class HeuristicPeriodicActorSelection {
         }
         final ActorVisit av = topoRanks.get(dest);
         av.nbVisit++;
+        av.rank = Math.max(av.rank, rank + 1);
         if (av.nbVisit == av.nbMaxVisit) {
           toVisit.addLast(dest);
         }
-        System.err.println("Rank: " + rank + " (" + dest.getName() + ")");
       }
     }
+
+    StringBuilder sb = new StringBuilder();
+    topoRanks.entrySet().stream().forEach(e -> {
+      ActorVisit v = e.getValue();
+      sb.append("\n\t" + e.getKey().getName() + ": " + v.rank + " (" + v.nbVisit + " visits on " + v.nbMaxVisit + ")");
+    });
+    PreesmLogger.getLogger().log(Level.INFO, "Ranks: " + sb.toString());
 
     return topoRanks;
   }
@@ -169,13 +180,13 @@ class HeuristicPeriodicActorSelection {
       final PiGraph graph) {
     final Map<AbstractActor, ActorVisit> topoRanks = new HashMap<>();
     for (final Actor actor : sinkActors) {
-      topoRanks.put(actor, new ActorVisit(0, 1L));
+      topoRanks.put(actor, new ActorVisit(0, 1));
     }
 
     final Deque<AbstractActor> toVisit = new ArrayDeque<>(sinkActors);
     while (!toVisit.isEmpty()) {
       final AbstractActor actor = toVisit.removeFirst();
-      final long rank = topoRanks.get(actor).rank;
+      final int rank = topoRanks.get(actor).rank;
       for (final DataInputPort tport : actor.getDataInputPorts()) {
         final Fifo fifo = tport.getIncomingFifo();
         final DataOutputPort sport = fifo.getSourcePort();
@@ -186,13 +197,19 @@ class HeuristicPeriodicActorSelection {
         }
         final ActorVisit av = topoRanks.get(dest);
         av.nbVisit++;
-        av.rank = Math.max(av.rank, rank + 1L);
+        av.rank = Math.max(av.rank, rank + 1);
         if (av.nbVisit == av.nbMaxVisit) {
           toVisit.addLast(dest);
         }
-        System.err.println("RankT: " + rank + " (" + dest.getName() + ")");
       }
     }
+
+    StringBuilder sb = new StringBuilder();
+    topoRanks.entrySet().stream().forEach(e -> {
+      ActorVisit v = e.getValue();
+      sb.append("\n\t" + e.getKey().getName() + ": " + v.rank + " (" + v.nbVisit + " visits on " + v.nbMaxVisit + ")");
+    });
+    PreesmLogger.getLogger().log(Level.INFO, "RanksT: " + sb.toString());
 
     return topoRanks;
   }
