@@ -171,7 +171,7 @@ class HeuristicPeriodicActorSelection {
       ActorVisit v = e.getValue();
       sb.append("\n\t" + e.getKey().getName() + ": " + v.rank + " (" + v.nbVisit + " visits on " + v.nbMaxVisit + ")");
     });
-    PreesmLogger.getLogger().log(Level.INFO, "Ranks: " + sb.toString());
+    PreesmLogger.getLogger().log(Level.FINE, "Ranks: " + sb.toString());
 
     return topoRanks;
   }
@@ -209,7 +209,7 @@ class HeuristicPeriodicActorSelection {
       ActorVisit v = e.getValue();
       sb.append("\n\t" + e.getKey().getName() + ": " + v.rank + " (" + v.nbVisit + " visits on " + v.nbMaxVisit + ")");
     });
-    PreesmLogger.getLogger().log(Level.INFO, "RanksT: " + sb.toString());
+    PreesmLogger.getLogger().log(Level.FINE, "RanksT: " + sb.toString());
 
     return topoRanks;
   }
