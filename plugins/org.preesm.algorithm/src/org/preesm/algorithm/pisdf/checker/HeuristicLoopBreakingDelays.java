@@ -1,8 +1,12 @@
 package org.preesm.algorithm.pisdf.checker;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import java.util.logging.Level;
 import java.util.regex.Pattern;
 import org.jgrapht.alg.cycle.JohnsonSimpleCycles;
@@ -21,6 +25,20 @@ import org.preesm.model.pisdf.PiGraph;
  * @author ahonorat
  */
 public class HeuristicLoopBreakingDelays {
+
+  protected Map<AbstractActor, Integer> actorsNbVisitsTopoRank  = null;
+  protected Map<AbstractActor, Integer> actorsNbVisitsTopoRankT = null;
+
+  protected Set<AbstractActor> additionalSourceActors = null;
+  protected Set<AbstractActor> additionalSinkActors   = null;
+
+  protected HeuristicLoopBreakingDelays() {
+    actorsNbVisitsTopoRank = new HashMap<>();
+    actorsNbVisitsTopoRankT = new HashMap<>();
+
+    additionalSourceActors = new HashSet<>();
+    additionalSinkActors = new HashSet<>();
+  }
 
   /**
    * Fifo abstraction to get used in the analysis of this package.
@@ -45,14 +63,43 @@ public class HeuristicLoopBreakingDelays {
     List<List<AbstractActor>> cycles = cycleFinder.findSimpleCycles();
 
     // 3 categorize actors in cycle and retrieve fifo with delays breaking loop
+    // it is a set since the same fifo can break several cycles if they have some paths in common
+    Set<FifoAbstraction> breakingFifos = new HashSet<>();
     for (List<AbstractActor> cycle : cycles) {
       FifoAbstraction breakingFifo = retrieveBreakingFifo(graph, absGraph, cycle);
+      breakingFifos.add(breakingFifo);
       AbstractActor src = absGraph.getEdgeSource(breakingFifo);
       AbstractActor tgt = absGraph.getEdgeTarget(breakingFifo);
 
-      StringBuilder sb = new StringBuilder(src.getName() + " =>" + tgt.getName() + " breaks cycle: ");
+      StringBuilder sb = new StringBuilder(src.getName() + " => " + tgt.getName() + " breaks cycle: ");
       cycle.stream().forEach(a -> sb.append(" -> " + a.getName()));
       PreesmLogger.getLogger().log(Level.INFO, sb.toString());
+    }
+
+    // 4 Compute actors nbVistis for topoRanking
+    for (AbstractActor aa : graph.getActors()) {
+      if (aa instanceof ExecutableActor) {
+        actorsNbVisitsTopoRank.put(aa, aa.getDataInputPorts().size());
+        actorsNbVisitsTopoRankT.put(aa, aa.getDataOutputPorts().size());
+      }
+    }
+    for (FifoAbstraction breakingFifo : breakingFifos) {
+      AbstractActor src = absGraph.getEdgeSource(breakingFifo);
+      AbstractActor tgt = absGraph.getEdgeTarget(breakingFifo);
+      int newNbVisitsT = actorsNbVisitsTopoRankT.get(src) - breakingFifo.delays.size();
+      int newNbVisits = actorsNbVisitsTopoRank.get(tgt) - breakingFifo.delays.size();
+      if (newNbVisits < 0 || newNbVisitsT < 0) {
+        throw new PreesmRuntimeException("A loop breaking fifo gave wrong I/O ports number between <" + src.getName()
+            + "> and <" + tgt.getName() + ">, leaving.");
+      }
+      if (newNbVisits == 0) {
+        additionalSourceActors.add(tgt);
+      }
+      if (newNbVisitsT == 0) {
+        additionalSinkActors.add(src);
+      }
+      actorsNbVisitsTopoRankT.put(src, newNbVisitsT);
+      actorsNbVisitsTopoRank.put(tgt, newNbVisits);
     }
 
   }

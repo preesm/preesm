@@ -38,9 +38,9 @@ package org.preesm.algorithm.pisdf.checker;
 import java.util.ArrayDeque;
 import java.util.Deque;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Set;
 import java.util.logging.Level;
 import java.util.stream.Collectors;
 import org.preesm.commons.logger.PreesmLogger;
@@ -59,8 +59,9 @@ import org.preesm.model.scenario.PreesmScenario;
  */
 class HeuristicPeriodicActorSelection {
 
-  static Map<Actor, Long> selectActors(final Map<Actor, Long> periodicActors, final List<Actor> originActors,
-      final int rate, final PiGraph graph, final PreesmScenario scenario, final boolean reverse) {
+  static Map<Actor, Long> selectActors(final Map<Actor, Long> periodicActors, final Set<AbstractActor> originActors,
+      final Map<AbstractActor, Integer> actorsNbVisits, final int rate, final PiGraph graph,
+      final PreesmScenario scenario, final boolean reverse) {
     if ((rate == 100) || periodicActors.isEmpty()) {
       return periodicActors;
     }
@@ -70,15 +71,14 @@ class HeuristicPeriodicActorSelection {
 
     Map<AbstractActor, ActorVisit> topoRanks = null;
     if (reverse) {
-      topoRanks = HeuristicPeriodicActorSelection.topologicalASAPrankingT(originActors, graph);
+      topoRanks = HeuristicPeriodicActorSelection.topologicalASAPrankingT(originActors, actorsNbVisits, graph);
     } else {
-      topoRanks = HeuristicPeriodicActorSelection.topologicalASAPranking(originActors, graph);
+      topoRanks = HeuristicPeriodicActorSelection.topologicalASAPranking(originActors, actorsNbVisits, graph);
     }
     final Map<Actor, Double> topoRanksPeriodic = new HashMap<>();
     for (final Entry<Actor, Long> e : periodicActors.entrySet()) {
       final Actor actor = e.getKey();
       if (!topoRanks.containsKey(actor)) {
-        System.err.println("Actor <" + actor.getName() + "> not ranked");
         continue;
       }
       final long rank = topoRanks.get(actor).rank;
@@ -138,10 +138,10 @@ class HeuristicPeriodicActorSelection {
 
   }
 
-  private static Map<AbstractActor, ActorVisit> topologicalASAPranking(final List<Actor> sourceActors,
-      final PiGraph graph) {
+  private static Map<AbstractActor, ActorVisit> topologicalASAPranking(final Set<AbstractActor> sourceActors,
+      final Map<AbstractActor, Integer> actorsNbVisits, final PiGraph graph) {
     final Map<AbstractActor, ActorVisit> topoRanks = new HashMap<>();
-    for (final Actor actor : sourceActors) {
+    for (final AbstractActor actor : sourceActors) {
       topoRanks.put(actor, new ActorVisit(0, 1));
     }
 
@@ -154,14 +154,16 @@ class HeuristicPeriodicActorSelection {
         final DataInputPort tport = fifo.getTargetPort();
         final AbstractActor dest = tport.getContainingActor();
         if (!topoRanks.containsKey(dest)) {
-          final ActorVisit av = new ActorVisit(dest.getDataInputPorts().size(), rank);
+          final ActorVisit av = new ActorVisit(actorsNbVisits.get(dest), rank);
           topoRanks.put(dest, av);
         }
         final ActorVisit av = topoRanks.get(dest);
         av.nbVisit++;
-        av.rank = Math.max(av.rank, rank + 1);
-        if (av.nbVisit == av.nbMaxVisit) {
-          toVisit.addLast(dest);
+        if (av.nbVisit <= av.nbMaxVisit) {
+          av.rank = Math.max(av.rank, rank + 1);
+          if (av.nbVisit == av.nbMaxVisit) {
+            toVisit.addLast(dest);
+          }
         }
       }
     }
@@ -176,10 +178,10 @@ class HeuristicPeriodicActorSelection {
     return topoRanks;
   }
 
-  private static Map<AbstractActor, ActorVisit> topologicalASAPrankingT(final List<Actor> sinkActors,
-      final PiGraph graph) {
+  private static Map<AbstractActor, ActorVisit> topologicalASAPrankingT(final Set<AbstractActor> sinkActors,
+      final Map<AbstractActor, Integer> actorsNbVisits, final PiGraph graph) {
     final Map<AbstractActor, ActorVisit> topoRanks = new HashMap<>();
-    for (final Actor actor : sinkActors) {
+    for (final AbstractActor actor : sinkActors) {
       topoRanks.put(actor, new ActorVisit(0, 1));
     }
 
@@ -192,14 +194,16 @@ class HeuristicPeriodicActorSelection {
         final DataOutputPort sport = fifo.getSourcePort();
         final AbstractActor dest = sport.getContainingActor();
         if (!topoRanks.containsKey(dest)) {
-          final ActorVisit av = new ActorVisit(dest.getDataOutputPorts().size(), rank);
+          final ActorVisit av = new ActorVisit(actorsNbVisits.get(dest), rank);
           topoRanks.put(dest, av);
         }
         final ActorVisit av = topoRanks.get(dest);
         av.nbVisit++;
-        av.rank = Math.max(av.rank, rank + 1);
-        if (av.nbVisit == av.nbMaxVisit) {
-          toVisit.addLast(dest);
+        if (av.nbVisit <= av.nbMaxVisit) {
+          av.rank = Math.max(av.rank, rank + 1);
+          if (av.nbVisit == av.nbMaxVisit) {
+            toVisit.addLast(dest);
+          }
         }
       }
     }
