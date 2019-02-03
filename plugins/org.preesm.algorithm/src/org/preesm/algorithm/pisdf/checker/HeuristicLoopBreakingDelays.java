@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.logging.Level;
+import java.util.regex.Pattern;
 import org.jgrapht.alg.cycle.JohnsonSimpleCycles;
 import org.jgrapht.graph.DefaultDirectedGraph;
 import org.preesm.commons.exceptions.PreesmRuntimeException;
@@ -39,7 +40,6 @@ public class HeuristicLoopBreakingDelays {
   protected void performAnalysis(final PiGraph graph) {
     // 1. perform flat PiMM to simple JGraphT structure transition.
     DefaultDirectedGraph<AbstractActor, FifoAbstraction> absGraph = createAbsGraph(graph);
-    System.err.println("edges: " + absGraph.edgeSet().size());
     // 2. look for cycles
     JohnsonSimpleCycles<AbstractActor, FifoAbstraction> cycleFinder = new JohnsonSimpleCycles<>(absGraph);
     List<List<AbstractActor>> cycles = cycleFinder.findSimpleCycles();
@@ -119,7 +119,7 @@ public class HeuristicLoopBreakingDelays {
       actorsWithEntries.add(current);
     }
 
-    int index = buildCycleNodeTypeList(cycle, actorsWithEntries, actorsWithExits);
+    int index = retrieveBreakingFifoWhenDifficult(cycle, actorsWithEntries, actorsWithExits);
 
     return absGraph.getEdge(cycle.get(index), cycle.get((index + 1) % cycle.size()));
   }
@@ -130,10 +130,28 @@ public class HeuristicLoopBreakingDelays {
    * @author ahonorat
    */
   protected enum CycleNodeType {
-    NONE, ENTRY, EXIT, BOTH,
+    NONE('n'), ENTRY('i'), EXIT('o'), BOTH('b');
+
+    public final char abbr;
+
+    CycleNodeType(char abbr) {
+      this.abbr = abbr;
+    }
+
   }
 
-  protected int buildCycleNodeTypeList(List<AbstractActor> cycle, List<AbstractActor> actorsWithEntries,
+  /**
+   * This method needs a research paper to be explicated. Do not try to modify it.
+   * 
+   * @param cycle
+   *          Cycle to consider.
+   * @param actorsWithEntries
+   *          Actors in the cycle having also inputs from actors not being the cycle.
+   * @param actorsWithExits
+   *          Actors in the cycle having also outputs to actors not being the cycle.
+   * @return index of the actor after whom the cycle can be broken.
+   */
+  protected int retrieveBreakingFifoWhenDifficult(List<AbstractActor> cycle, List<AbstractActor> actorsWithEntries,
       List<AbstractActor> actorsWithExits) {
     List<CycleNodeType> types = new ArrayList<>();
     Iterator<AbstractActor> itEntries = actorsWithEntries.iterator();
@@ -141,18 +159,22 @@ public class HeuristicLoopBreakingDelays {
     AbstractActor nextEntry = itEntries.hasNext() ? itEntries.next() : null;
     AbstractActor nextExit = itExits.hasNext() ? itExits.next() : null;
     int nbBoth = 0;
+    StringBuilder sb = new StringBuilder();
     for (AbstractActor aa : cycle) {
       if (aa == nextEntry && aa == nextExit) {
         types.add(CycleNodeType.BOTH);
         nextEntry = itEntries.hasNext() ? itEntries.next() : null;
         nextExit = itExits.hasNext() ? itExits.next() : null;
         nbBoth += 1;
+        sb.append(CycleNodeType.BOTH.abbr);
       } else if (aa == nextEntry) {
         types.add(CycleNodeType.ENTRY);
         nextEntry = itEntries.hasNext() ? itEntries.next() : null;
+        sb.append(CycleNodeType.ENTRY.abbr);
       } else if (aa == nextExit) {
         types.add(CycleNodeType.EXIT);
         nextExit = itExits.hasNext() ? itExits.next() : null;
+        sb.append(CycleNodeType.EXIT.abbr);
       } else {
         types.add(CycleNodeType.NONE);
       }
@@ -161,8 +183,28 @@ public class HeuristicLoopBreakingDelays {
     if (nbBoth > 1) {
       return types.lastIndexOf(CycleNodeType.BOTH) - 1;
     }
-    // test all cases
-
+    // test correct cases
+    String str = sb.toString();
+    if (str.isEmpty()) {
+      return 0;
+    }
+    // this uses the enum abbr without telling it!
+    if (Pattern.matches("i*b?i*", str) || Pattern.matches("o*b?o*", str)) {
+      if (nbBoth == 1) {
+        int index = types.indexOf(CycleNodeType.BOTH);
+        return index == 0 ? types.size() - 1 : index - 1;
+      }
+    } else if (Pattern.matches("i*b?o+i*", str)) {
+      return types.lastIndexOf(CycleNodeType.EXIT);
+    } else if (Pattern.matches("o*i+b?o*", str)) {
+      int index = types.indexOf(CycleNodeType.ENTRY);
+      return index == 0 ? types.size() - 1 : index - 1;
+    }
+    // for all other hazardous cases
+    int index = types.indexOf(CycleNodeType.ENTRY);
+    if (index >= 0) {
+      return index == 0 ? types.size() - 1 : index - 1;
+    }
     return 0;
   }
 
