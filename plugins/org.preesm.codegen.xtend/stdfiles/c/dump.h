@@ -118,7 +118,7 @@ static inline double getElapsedNanoSec(uint64_t *start, uint64_t *end) {
 	return ((*end) - (*start)) / (freq / ((double) 1e9));
 }
 
-#elif defined(__GNUC__)
+#elif defined(__gnu_linux__)
 
 #include <stdint.h>
 #include <time.h>
