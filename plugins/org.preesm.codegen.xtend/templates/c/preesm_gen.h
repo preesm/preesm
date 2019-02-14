@@ -46,6 +46,10 @@
 #[[#]]#ifndef _PREESM_PREESM_GEN_H
 #[[#]]#define _PREESM_PREESM_GEN_H
 
+#[[#]]#include <stdio.h>
+#[[#]]#include <string.h>
+
+
 #[[#]]#define _GNU_SOURCE
 #[[#]]#ifdef _WIN32
 #[[#]]#include <windows.h>
@@ -80,8 +84,6 @@
 #[[#]]#include "fifo.h"
 
 #[[#]]#include "preesm.h"
-
-#[[#]]#include <stdio.h>
 
 $USER_INCLUDES
 

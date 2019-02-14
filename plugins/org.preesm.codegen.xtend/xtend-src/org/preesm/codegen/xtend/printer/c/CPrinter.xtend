@@ -450,19 +450,11 @@ class CPrinter extends DefaultPrinter {
 		 *
 		 */
 		// no monitoring by default
-		#define _GNU_SOURCE
-		#ifdef _WIN32
-		#include <windows.h>
-		#else
-		#include <unistd.h>
-		#endif
 
 		#ifdef __APPLE__
 		#include "TargetConditionals.h"
 		#endif
 
-		#include <pthread.h>
-		#include <stdio.h>
 
 		#define _PREESM_NBTHREADS_ «engine.codeBlocks.size»
 		#define _PREESM_MAIN_THREAD_ «mainOperatorId»

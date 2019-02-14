@@ -51,6 +51,39 @@
 
 #include "dump.h"
 
+
+#ifdef _WIN32
+
+static double getElapsedMicroSec(uint64_t *start, uint64_t *end) {
+    return getElapsedNanoSec(start, end) / ((double) 1e3);
+}
+
+static double getElapsedMilliSec(uint64_t *start, uint64_t *end) {
+    return getElapsedNanoSec(start, end) / ((double) 1e6);
+}
+
+static double getElapsedSec(uint64_t *start, uint64_t *end) {
+    return getElapsedNanoSec(start, end) / ((double) 1e9);
+}
+
+#else
+
+static inline double getElapsedMicroSec(uint64_t *start, uint64_t *end) {
+    return getElapsedNanoSec(start, end) / ((double) 1e3);
+}
+
+static inline double getElapsedMilliSec(uint64_t *start, uint64_t *end) {
+    return getElapsedNanoSec(start, end) / ((double) 1e6);
+}
+
+static inline double getElapsedSec(uint64_t *start, uint64_t *end) {
+    return getElapsedNanoSec(start, end) / ((double) 1e9);
+}
+
+#endif
+
+
+
 static FILE *ptfile;
 
 void initNbExec(int* nbExec, int nbDump) {
