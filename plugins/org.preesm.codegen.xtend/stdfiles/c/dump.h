@@ -118,7 +118,7 @@ static inline double getElapsedNanoSec(uint64_t *start, uint64_t *end) {
 	return ((*end) - (*start)) / (freq / ((double) 1e9));
 }
 
-#elif defined(__gnu_linux__)
+#elif defined(__gnu_linux__) && _POSIX_C_SOURCE >= 199309L // should be compiled with -std=gnu99 at least
 
 #include <stdint.h>
 #include <time.h>
@@ -135,12 +135,16 @@ static inline double getElapsedNanoSec(uint64_t *start, uint64_t *end) {
 
 #else // Undefined or Unsupported platform, thus no assumption is made on available hardware
 
+#include <stdint.h>
+#include <time.h>
+
+
 static inline void dumpTime(int id, uint64_t * dumpBuffer) {
-    dumpBuffer[id] = 0;
+    dumpBuffer[id] = clock();
 }
 
 static inline double getElapsedNanoSec(uint64_t *start, uint64_t *end) {
-    return 0;
+    return ((*end) - (*start));
 }
 #endif
 
