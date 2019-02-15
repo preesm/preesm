@@ -194,7 +194,7 @@ static inline double getElapsedNanoSec(uint64_t *start, uint64_t *end) {
     return ((*end) - (*start));
 }
 
-#else // Undefined or Unsupported platform, thus no assumption is made on available hardware
+#else // Undefined or Unsupported platform, use clock as defined by C standard
 
 #include <time.h>
 
@@ -203,8 +203,11 @@ static inline void dumpTime(int id, uint64_t * dumpBuffer) {
     dumpBuffer[id] = clock();
 }
 
+
+// clock diffs normally must be divided by CLOCKS_PER_SEC to have time in s
+// however this macro always holds the value 1 000 000 thus clock() is in µs.
 static inline double getElapsedNanoSec(uint64_t *start, uint64_t *end) {
-    return ((*end) - (*start));
+    return ((*end) - (*start))*1e3;
 }
 #endif
 

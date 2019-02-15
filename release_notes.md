@@ -26,6 +26,7 @@ PREESM Changelog
 * Properly throw exception with message;
 * Minor refactor;
 * Disable graphml editor association for .pi files;
+* InstrumentedC now dumps timings in nanosecond and is cross platform
 
 ### Bug fix
 
