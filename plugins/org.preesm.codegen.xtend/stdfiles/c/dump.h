@@ -129,13 +129,13 @@ void initNbExec(int* nbExec, int nbDump);
 #ifdef _WIN32
 
 
-void dumpTime(int id, uint64_t * dumpBuffer) {
+static void dumpTime(int id, uint64_t * dumpBuffer) {
     LARGE_INTEGER now;
     QueryPerformanceCounter(&now);
     dumpBuffer[id] = now.QuadPart;
 }
 
-double getElapsedNanoSec(uint64_t *start, uint64_t *end) {
+static double getElapsedNanoSec(uint64_t *start, uint64_t *end) {
     LARGE_INTEGER frequency;
     QueryPerformanceFrequency(&frequency);
     double elapsed = ((*end) - (*start)) * ((double) 1e9);
@@ -147,11 +147,11 @@ double getElapsedNanoSec(uint64_t *start, uint64_t *end) {
 
 #include <mach/mach_time.h>
 
-inline void dumpTime(int id, uint64_t * dumpBuffer) {
+static inline void dumpTime(int id, uint64_t * dumpBuffer) {
 	dumpBuffer[id] = mach_absolute_time();
 }
 
-inline double getElapsedNanoSec(uint64_t *start, uint64_t *end) {
+static inline double getElapsedNanoSec(uint64_t *start, uint64_t *end) {
 	mach_timebase_info_data_t timeBase;
 	mach_timebase_info(&timeBase);
 	double res = (double) timeBase.numer /	timeBase.denom;
@@ -167,14 +167,14 @@ inline double getElapsedNanoSec(uint64_t *start, uint64_t *end) {
 #include <xdc/runtime/Timestamp.h>
 
 // needs xdc.useModule('xdc.runtime.Types') and xdc.useModule("xdc.runtime.Timestamp") in the .cfg file
-inline void dumpTime(int id, uint64_t * dumpBuffer) {
+static inline void dumpTime(int id, uint64_t * dumpBuffer) {
 	// check if C6678 supports Timestamp64, otherwise, only the lo bits are set
 	dumpBuffer[id] = Timestamp_get64(); // real type: Types_Timestamp64 being a struct of two Bits32 (hi and then lo)
 	CACHE_wbInvL2(dumpBuffer+id, sizeof(uint64_t), CACHE_WAIT);
 }
 
 // Frequency of C6678 is 1,0 GHz or 1.25 GHz or 1.4 GHz
-inline double getElapsedNanoSec(uint64_t *start, uint64_t *end) {
+static inline double getElapsedNanoSec(uint64_t *start, uint64_t *end) {
 	unit64_t freqHz; // real type: Types_FreqHz being a struct of two Bits32 (hi and then lo)
 	Timestamp_getFreq(&freq);
 	return ((*end) - (*start)) / (freq / ((double) 1e9));
@@ -184,13 +184,13 @@ inline double getElapsedNanoSec(uint64_t *start, uint64_t *end) {
 
 #include <time.h>
 
-inline void dumpTime(int id, uint64_t * dumpBuffer) {
+static inline void dumpTime(int id, uint64_t * dumpBuffer) {
     struct timespec clock;
     clock_gettime(CLOCK_MONOTONIC, &clock);
     dumpBuffer[id] = (uint64_t) (clock.tv_sec * 1e9) + clock.tv_nsec;
 }
 
-inline double getElapsedNanoSec(uint64_t *start, uint64_t *end) {
+static inline double getElapsedNanoSec(uint64_t *start, uint64_t *end) {
     return ((*end) - (*start));
 }
 
@@ -199,11 +199,11 @@ inline double getElapsedNanoSec(uint64_t *start, uint64_t *end) {
 #include <time.h>
 
 
-inline void dumpTime(int id, uint64_t * dumpBuffer) {
+static inline void dumpTime(int id, uint64_t * dumpBuffer) {
     dumpBuffer[id] = clock();
 }
 
-inline double getElapsedNanoSec(uint64_t *start, uint64_t *end) {
+static inline double getElapsedNanoSec(uint64_t *start, uint64_t *end) {
     return ((*end) - (*start));
 }
 #endif

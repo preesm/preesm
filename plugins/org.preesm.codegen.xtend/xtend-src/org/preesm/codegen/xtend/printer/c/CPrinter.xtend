@@ -451,11 +451,6 @@ class CPrinter extends DefaultPrinter {
 		 */
 		// no monitoring by default
 
-		#ifdef __APPLE__
-		#include "TargetConditionals.h"
-		#endif
-
-
 		#define _PREESM_NBTHREADS_ «engine.codeBlocks.size»
 		#define _PREESM_MAIN_THREAD_ «mainOperatorId»
 
