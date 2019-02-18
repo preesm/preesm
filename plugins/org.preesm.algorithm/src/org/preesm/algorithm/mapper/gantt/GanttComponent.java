@@ -36,8 +36,8 @@
  */
 package org.preesm.algorithm.mapper.gantt;
 
-import java.util.LinkedList;
-import java.util.List;
+import java.util.Collection;
+import java.util.TreeSet;
 import java.util.logging.Level;
 import org.preesm.commons.logger.PreesmLogger;
 
@@ -56,7 +56,7 @@ public class GanttComponent {
   /**
    * List of the tasks in the order of their start times.
    */
-  private final LinkedList<GanttTask> tasks;
+  private final TreeSet<GanttTask> tasks;
 
   /**
    * Instantiates a new gantt component.
@@ -67,7 +67,7 @@ public class GanttComponent {
   public GanttComponent(final String id) {
     super();
     this.id = id;
-    this.tasks = new LinkedList<>();
+    this.tasks = new TreeSet<>();
   }
 
   /**
@@ -79,48 +79,25 @@ public class GanttComponent {
    */
   public boolean insertTask(final GanttTask task) {
 
-    if (!this.tasks.isEmpty()) {
-      int index = this.tasks.size();
-      // Looking where to insert the new task element
-      for (int i = 0; i < this.tasks.size(); i++) {
-        final GanttTask t = this.tasks.get(i);
-        // If t is after task, need to insert task
-        if (t.getStartTime() > (task.getStartTime() + task.getDuration())) {
-          index = i;
-        }
-        // Checking for multiple concurrent insertions
-        if (t.equals(task)) {
-          final String message = "Gantt: Trying to add to the Gantt chart several identical tasks: " + t + " and "
-              + task;
-          PreesmLogger.getLogger().log(Level.SEVERE, message);
-          return false;
-        }
-      }
-
-      if (index == this.tasks.size()) {
-        // task is added last
-        this.tasks.addLast(task);
-      } else {
-
-        // Looking for overlaps with existing tasks
-        // new task is added just before taskList.get(index), it should
-        // not overlap with the previous taskList.get(index-1)
-        if (index > 0) {
-          final GanttTask precedingTask = this.tasks.get(index - 1);
-          if ((precedingTask.getStartTime() + precedingTask.getDuration()) > task.getStartTime()) {
-            final String message = "Gantt: Two tasks are overlapping: " + precedingTask + " and " + task;
-            PreesmLogger.getLogger().log(Level.SEVERE, message);
-            return false;
-          }
-        }
-
-        this.tasks.add(index, task);
-      }
-
-    } else {
-      this.tasks.add(task);
+    boolean inserted = tasks.add(task);
+    if (!inserted) {
+      final String message = "Gantt: Trying to add to the Gantt chart several identical tasks: " + task;
+      PreesmLogger.getLogger().log(Level.SEVERE, message);
+      return false;
     }
 
+    GanttTask prev = tasks.lower(task);
+    GanttTask next = tasks.higher(task);
+    long tss = task.getStartTime();
+    long dur = task.getDuration();
+
+    if ((prev != null && (prev.getStartTime() + prev.getDuration() > tss || prev.getStartTime() == tss))
+        || (next != null && (tss + dur > next.getStartTime() || next.getStartTime() == tss))) {
+      final String message = "Gantt: task " + task + " is overlapping after being inserted between tasks " + prev
+          + " and " + next;
+      PreesmLogger.getLogger().log(Level.SEVERE, message);
+      return false;
+    }
     return true;
   }
 
@@ -161,8 +138,8 @@ public class GanttComponent {
    * @return the end time
    */
   public long getEndTime() {
-    if (this.tasks.getLast() != null) {
-      final GanttTask last = this.tasks.getLast();
+    GanttTask last = tasks.last();
+    if (last != null) {
       return last.getStartTime() + last.getDuration();
     }
     return 0L;
@@ -174,8 +151,9 @@ public class GanttComponent {
    * @return the start time
    */
   public long getStartTime() {
-    if (this.tasks.getFirst() != null) {
-      return this.tasks.getFirst().getStartTime();
+    GanttTask first = tasks.first();
+    if (first != null) {
+      return first.getStartTime();
     }
     return 0L;
   }
@@ -185,7 +163,7 @@ public class GanttComponent {
    *
    * @return the tasks
    */
-  public List<GanttTask> getTasks() {
-    return this.tasks;
+  public Collection<GanttTask> getTasks() {
+    return tasks;
   }
 }
