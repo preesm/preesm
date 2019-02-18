@@ -42,6 +42,7 @@ package org.preesm.algorithm.mapper;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.logging.Level;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.preesm.algorithm.mapper.abc.impl.latency.InfiniteHomogeneousAbc;
 import org.preesm.algorithm.mapper.abc.impl.latency.LatencyAbc;
@@ -59,6 +60,7 @@ import org.preesm.algorithm.mapper.tools.CommunicationOrderChecker;
 import org.preesm.algorithm.model.dag.DirectedAcyclicGraph;
 import org.preesm.commons.exceptions.PreesmException;
 import org.preesm.commons.exceptions.PreesmRuntimeException;
+import org.preesm.commons.logger.PreesmLogger;
 import org.preesm.model.scenario.PreesmScenario;
 import org.preesm.model.slam.Design;
 import org.preesm.workflow.elements.Workflow;
@@ -132,18 +134,19 @@ public abstract class AbstractMappingFromDAG extends AbstractTaskImplementation 
       final TopologicalTaskSched taskSched = new TopologicalTaskSched(simu.getTotalOrder());
       simu.resetDAG();
 
+      PreesmLogger.getLogger().log(Level.INFO, "Mapping");
       final LatencyAbc resSimu = schedule(outputs, parameters, initial, scenario, abcParams, dag, architecture,
           taskSched);
+      PreesmLogger.getLogger().log(Level.INFO, "Mapping finished, now add communications tasks.");
 
       final MapperDAG resDag = resSimu.getDAG();
       final TagDAG tagSDF = new TagDAG();
-
       tagSDF.tag(dag, architecture, scenario, resSimu, abcParams.getEdgeSchedType());
-
       outputs.put(AbstractWorkflowNodeImplementation.KEY_SDF_ABC, resSimu);
       outputs.put(AbstractWorkflowNodeImplementation.KEY_SDF_DAG, dag);
 
       clean(architecture);
+      PreesmLogger.getLogger().log(Level.INFO, "DAG fully mapped, now removes useless sync and check schedules.");
       removeRedundantSynchronization(parameters, dag);
       checkSchedulingResult(parameters, resDag);
     }

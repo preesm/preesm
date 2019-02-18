@@ -41,7 +41,6 @@
 package org.preesm.algorithm.mapper;
 
 import java.util.Map;
-import java.util.logging.Level;
 import org.preesm.algorithm.mapper.abc.impl.latency.LatencyAbc;
 import org.preesm.algorithm.mapper.abc.taskscheduling.AbstractTaskSched;
 import org.preesm.algorithm.mapper.algo.InitialLists;
@@ -49,7 +48,6 @@ import org.preesm.algorithm.mapper.algo.PFastAlgorithm;
 import org.preesm.algorithm.mapper.model.MapperDAG;
 import org.preesm.algorithm.mapper.params.AbcParameters;
 import org.preesm.algorithm.mapper.params.PFastAlgoParameters;
-import org.preesm.commons.logger.PreesmLogger;
 import org.preesm.model.scenario.PreesmScenario;
 import org.preesm.model.slam.Design;
 
@@ -88,15 +86,12 @@ public class PFASTMappingFromDAG extends AbstractMappingFromDAG {
 
     final LatencyAbc simu2 = LatencyAbc.getInstance(abcParameters, dag, architecture, scenario);
 
-    PreesmLogger.getLogger().log(Level.INFO, "Mapping");
-
     final PFastAlgorithm pfastAlgorithm = new PFastAlgorithm();
     final PFastAlgoParameters pFastParams = new PFastAlgoParameters(parameters);
     final MapperDAG resdag = pfastAlgorithm.map(dag, architecture, scenario, initial, abcParameters, pFastParams, false,
         0, pFastParams.isDisplaySolutions(), null, taskSched);
 
     simu2.setDAG(resdag);
-    PreesmLogger.getLogger().log(Level.INFO, "Mapping finished");
 
     // The transfers are reordered using the best found order during
     // scheduling

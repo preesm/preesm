@@ -41,7 +41,6 @@
 package org.preesm.algorithm.mapper;
 
 import java.util.Map;
-import java.util.logging.Level;
 import org.preesm.algorithm.mapper.abc.impl.latency.LatencyAbc;
 import org.preesm.algorithm.mapper.abc.taskscheduling.AbstractTaskSched;
 import org.preesm.algorithm.mapper.abc.taskscheduling.SimpleTaskSched;
@@ -50,7 +49,6 @@ import org.preesm.algorithm.mapper.algo.InitialLists;
 import org.preesm.algorithm.mapper.model.MapperDAG;
 import org.preesm.algorithm.mapper.params.AbcParameters;
 import org.preesm.algorithm.mapper.params.FastAlgoParameters;
-import org.preesm.commons.logger.PreesmLogger;
 import org.preesm.model.scenario.PreesmScenario;
 import org.preesm.model.slam.Design;
 
@@ -83,14 +81,10 @@ public class FASTMappingFromDAG extends AbstractMappingFromDAG {
       final InitialLists initial, final PreesmScenario scenario, final AbcParameters abcParams, final MapperDAG dag,
       final Design architecture, final AbstractTaskSched taskSched) {
 
-    PreesmLogger.getLogger().log(Level.INFO, "Mapping");
-
     final FastAlgoParameters fastParams = new FastAlgoParameters(parameters);
     final FastAlgorithm fastAlgorithm = new FastAlgorithm(initial, scenario);
     final MapperDAG resDag = fastAlgorithm.map("test", abcParams, fastParams, dag, architecture, false, false,
         fastParams.isDisplaySolutions(), null, taskSched);
-
-    PreesmLogger.getLogger().log(Level.INFO, "Mapping finished");
 
     final LatencyAbc simu2 = LatencyAbc.getInstance(abcParams, resDag, architecture, scenario);
     // Transfer vertices are automatically regenerated
