@@ -464,14 +464,14 @@ class CPrinter extends DefaultPrinter {
 		#include <pthread.h>
 		#include <stdio.h>
 
-		#define _PREESM_NBTHREADS_ «printerBlocks.size»
+		#define _PREESM_NBTHREADS_ «engine.codeBlocks.size»
 		#define _PREESM_MAIN_THREAD_ «mainOperatorId»
 
 		// application dependent includes
 		#include "preesm_gen.h"
 
 		// Declare computation thread functions
-		«FOR coreBlock : printerBlocks»
+		«FOR coreBlock : engine.codeBlocks»
 		void *computationThread_Core«(coreBlock as CoreBlock).coreID»(void *arg);
 		«ENDFOR»
 
@@ -525,7 +525,7 @@ class CPrinter extends DefaultPrinter {
 			// Declaring thread pointers
 			pthread_t coreThreads[_PREESM_NBTHREADS_];
 			void *(*coreThreadComputations[_PREESM_NBTHREADS_])(void *) = {
-				«FOR coreBlock : printerBlocks»&computationThread_Core«(coreBlock as CoreBlock).coreID»«if(printerBlocks.last == coreBlock) {""} else {", "}»«ENDFOR»
+				«FOR coreBlock : engine.codeBlocks»&computationThread_Core«(coreBlock as CoreBlock).coreID»«if(engine.codeBlocks.last == coreBlock) {""} else {", "}»«ENDFOR»
 			};
 
 		#ifdef VERBOSE
