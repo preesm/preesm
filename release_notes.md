@@ -12,6 +12,7 @@ PREESM Changelog
 
 ### Bug fix
 * Fix #108: Update log messages to display the faulty task name and id, when relevant;
+* Fix #113: Use different counter for setting thread count in code generation;
 
 ## Release version 3.4.0
 *2019.01.28*
