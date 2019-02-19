@@ -8,6 +8,7 @@ PREESM Changelog
 
 ### Changes
 * Delete unused resources;
+* Disable sonar cloud on pull requests and other repos;
 
 ### Bug fix
 * Fix #108: Update log messages to display the faulty task name and id, when relevant;
