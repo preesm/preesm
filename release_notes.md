@@ -7,6 +7,7 @@ PREESM Changelog
 ### New Feature
 
 ### Changes
+* Update workflow related messages;
 * Delete unused resources;
 * Disable sonar cloud on pull requests and other repos;
 
