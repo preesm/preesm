@@ -73,6 +73,8 @@ import org.preesm.model.pisdf.RoundBufferActor;
 import org.preesm.model.pisdf.brv.BRVMethod;
 import org.preesm.model.pisdf.brv.PiBRV;
 import org.preesm.model.pisdf.factory.PiMMUserFactory;
+import org.preesm.model.pisdf.statictools.optims.BroadcastRoundBufferOptimization;
+import org.preesm.model.pisdf.statictools.optims.ForkJoinOptimization;
 import org.preesm.model.pisdf.util.PiGraphConsistenceChecker;
 import org.preesm.model.pisdf.util.PiMMSwitch;
 
@@ -87,7 +89,7 @@ public class PiSDFFlattener extends PiMMSwitch<Boolean> {
    *
    * @return the SDFGraph obtained by visiting graph
    */
-  public static final PiGraph flatten(final PiGraph graph) {
+  public static final PiGraph flatten(final PiGraph graph, boolean performOptim) {
     PiGraphConsistenceChecker.check(graph);
     // 1. First we resolve all parameters.
     // It must be done first because, when removing persistence, local parameters have to be known at upper level
@@ -103,10 +105,20 @@ public class PiSDFFlattener extends PiMMSwitch<Boolean> {
     // 5. Now, flatten the graph
     PiSDFFlattener staticPiMM2FlatPiMMVisitor = new PiSDFFlattener(brv);
     staticPiMM2FlatPiMMVisitor.doSwitch(graph);
+    PiGraph result = staticPiMM2FlatPiMMVisitor.result;
+    PiGraphConsistenceChecker.check(result);
+    flattenCheck(result);
 
-    // checks
-    PiGraphConsistenceChecker.check(staticPiMM2FlatPiMMVisitor.result);
-    flattenCheck(staticPiMM2FlatPiMMVisitor.result);
+    if (performOptim) {
+      // 6- do some optimization on the graph
+      final ForkJoinOptimization forkJoinOptimization = new ForkJoinOptimization();
+      forkJoinOptimization.optimize(result);
+      PiGraphConsistenceChecker.check(result);
+      final BroadcastRoundBufferOptimization brRbOptimization = new BroadcastRoundBufferOptimization();
+      brRbOptimization.optimize(result);
+      PiGraphConsistenceChecker.check(result);
+      flattenCheck(result);
+    }
 
     return staticPiMM2FlatPiMMVisitor.result;
   }
