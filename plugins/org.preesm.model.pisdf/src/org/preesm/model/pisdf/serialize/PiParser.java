@@ -43,6 +43,7 @@ import java.io.BufferedInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.Charset;
+import java.util.List;
 import java.util.logging.Level;
 import org.apache.commons.io.IOUtils;
 import org.eclipse.core.resources.IFile;
@@ -74,6 +75,7 @@ import org.preesm.model.pisdf.DataInputInterface;
 import org.preesm.model.pisdf.DataInputPort;
 import org.preesm.model.pisdf.DataOutputInterface;
 import org.preesm.model.pisdf.DataOutputPort;
+import org.preesm.model.pisdf.DataPort;
 import org.preesm.model.pisdf.Delay;
 import org.preesm.model.pisdf.DelayActor;
 import org.preesm.model.pisdf.Dependency;
@@ -502,6 +504,24 @@ public class PiParser {
   }
 
   /**
+   * Search for a DataPort with name "name" in a given list of DataPort
+   *
+   * @param ports
+   *          List of DataPort
+   * @param name
+   *          Name of the DataPort to find
+   * @return Found DataPort if any, null else
+   */
+  private static DataPort lookForPort(final List<? extends DataPort> ports, final String name) {
+    for (final DataPort dp : ports) {
+      if (dp.getName().equals(name)) {
+        return dp;
+      }
+    }
+    return null;
+  }
+
+  /**
    * Parse a node {@link Element} with kind "fifo".
    *
    * @param edgeElt
@@ -535,8 +555,8 @@ public class PiParser {
     sourcePortName = (sourcePortName.isEmpty()) ? null : sourcePortName;
     String targetPortName = edgeElt.getAttribute(PiIdentifiers.FIFO_TARGET_PORT);
     targetPortName = (targetPortName.isEmpty()) ? null : targetPortName;
-    final DataOutputPort oPort = (DataOutputPort) source.lookupPort(sourcePortName);
-    final DataInputPort iPort = (DataInputPort) target.lookupPort(targetPortName);
+    final DataOutputPort oPort = (DataOutputPort) lookForPort(source.getDataOutputPorts(), sourcePortName);
+    final DataInputPort iPort = (DataInputPort) lookForPort(target.getDataInputPorts(), targetPortName);
 
     if (oPort == null) {
       throw new PreesmRuntimeException(
@@ -600,6 +620,24 @@ public class PiParser {
 
     // 5. Setting properties of the non executable actor associated with the delay
     final DelayActor delayActor = delay.getActor();
+
+    // 5.1 Setting name of input port
+    final NodeList childList = nodeElt.getChildNodes();
+    for (int i = 0; i < childList.getLength(); i++) {
+      final Node elt = childList.item(i);
+      final String eltName = elt.getNodeName();
+
+      if (PiIdentifiers.PORT.equals(eltName)) {
+        final Element element = (Element) elt;
+        final String portName = element.getAttribute(PiIdentifiers.PORT_NAME);
+        final String portKind = element.getAttribute(PiIdentifiers.PORT_KIND);
+        if (PortKind.get(portKind).equals(PortKind.DATA_INPUT)) {
+          delayActor.getDataInputPort().setName(portName);
+        } else if (PortKind.get(portKind).equals(PortKind.DATA_OUTPUT)) {
+          delayActor.getDataOutputPort().setName(portName);
+        }
+      }
+    }
 
     // 6. Adds Setter / Getter actors to the delay (if any)
     final String setterName = nodeElt.getAttribute(PiIdentifiers.DELAY_SETTER);

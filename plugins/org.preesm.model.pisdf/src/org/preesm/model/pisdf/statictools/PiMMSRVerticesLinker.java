@@ -466,7 +466,7 @@ public class PiMMSRVerticesLinker {
    *          Name of the DataPort to find
    * @return Found DataPort if any, null else
    */
-  private DataPort lookForPort(final List<? extends DataPort> ports, final String name) {
+  private static DataPort lookForPort(final List<? extends DataPort> ports, final String name) {
     for (final DataPort dp : ports) {
       if (dp.getName().equals(name)) {
         return dp;

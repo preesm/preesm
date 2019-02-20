@@ -120,7 +120,7 @@ public class PiSDFFlattener extends PiMMSwitch<Boolean> {
       flattenCheck(result);
     }
 
-    return staticPiMM2FlatPiMMVisitor.result;
+    return result;
   }
 
   /**
