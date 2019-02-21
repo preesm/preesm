@@ -97,6 +97,7 @@ import org.preesm.model.pisdf.Port;
 import org.preesm.model.pisdf.PortKind;
 import org.preesm.model.pisdf.PortMemoryAnnotation;
 import org.preesm.model.pisdf.RefinementContainer;
+import org.preesm.model.pisdf.check.NameCheckerC;
 import org.preesm.model.pisdf.factory.PiMMUserFactory;
 import org.preesm.model.pisdf.util.PiGraphConsistenceChecker;
 import org.preesm.model.pisdf.util.PiIdentifiers;
@@ -252,7 +253,14 @@ public class PiParser {
     final Actor actor = PiMMUserFactory.instance.createActor();
 
     // Get the actor properties
-    actor.setName(nodeElt.getAttribute(PiIdentifiers.ACTOR_NAME));
+    final String name = nodeElt.getAttribute(PiIdentifiers.ACTOR_NAME);
+
+    if (!NameCheckerC.isValidName(name)) {
+      throw new PreesmRuntimeException(
+          "Parsed actor " + name + " has an invalide name (should meet " + NameCheckerC.REGEX_C + ")");
+    }
+
+    actor.setName(name);
 
     final String attribute = nodeElt.getAttribute(PiIdentifiers.ACTOR_PERIOD);
     if (attribute != null && !attribute.isEmpty()) {
@@ -364,7 +372,6 @@ public class PiParser {
    */
   private FunctionParameter parseFunctionParameter(final Element elt) {
     final FunctionParameter param = PiMMUserFactory.instance.createFunctionParameter();
-
     param.setName(elt.getAttribute(PiIdentifiers.REFINEMENT_PARAMETER_NAME));
     param.setType(elt.getAttribute(PiIdentifiers.REFINEMENT_PARAMETER_TYPE));
     param.setDirection(Direction.valueOf(elt.getAttribute(PiIdentifiers.REFINEMENT_PARAMETER_DIRECTION)));
@@ -388,6 +395,10 @@ public class PiParser {
 
     // Get the actor properties
     final String attribute = nodeElt.getAttribute(PiIdentifiers.PARAMETER_NAME);
+    if (!NameCheckerC.isValidName(attribute)) {
+      throw new PreesmRuntimeException("Parsed ConfigInputInterface " + attribute
+          + " has an invalide name (should meet " + NameCheckerC.REGEX_C + ")");
+    }
     param.setName(attribute);
 
     // Add the actor to the parsed graph
@@ -738,6 +749,7 @@ public class PiParser {
    *          The deserialized {@link PiGraph}
    */
   protected void parseNode(final Element nodeElt, final PiGraph graph) {
+    String nodeName = nodeElt.getNodeName();
     // Identify if the node is an actor or a parameter
     final String nodeKind = nodeElt.getAttribute(PiIdentifiers.NODE_KIND);
     Configurable vertex;
@@ -759,8 +771,7 @@ public class PiParser {
           break;
 
         default:
-          throw new PreesmRuntimeException(
-              "Parsed node " + nodeElt.getNodeName() + " has an unknown kind: " + nodeKind);
+          throw new PreesmRuntimeException("Parsed node " + nodeName + " has an unknown kind: " + nodeKind);
       }
     } else {
       switch (nodeKind) {
@@ -784,8 +795,7 @@ public class PiParser {
           // Delays have pre-defined ports created at delay actor instantiation
           return;
         default:
-          throw new PreesmRuntimeException(
-              "Parsed node " + nodeElt.getNodeName() + " has an unknown kind: " + nodeKind);
+          throw new PreesmRuntimeException("Parsed node " + nodeName + " has an unknown kind: " + nodeKind);
       }
     }
 
@@ -824,7 +834,12 @@ public class PiParser {
     param.setExpression(nodeElt.getAttribute(PiIdentifiers.PARAMETER_EXPRESSION));
 
     // Get the actor properties
-    param.setName(nodeElt.getAttribute(PiIdentifiers.PARAMETER_NAME));
+    String name = nodeElt.getAttribute(PiIdentifiers.PARAMETER_NAME);
+    if (!NameCheckerC.isValidName(name)) {
+      throw new PreesmRuntimeException(
+          "Parsed parameter " + name + " has an invalide name (should meet " + NameCheckerC.REGEX_C + ")");
+    }
+    param.setName(name);
 
     // Add the actor to the parsed graph
     graph.addParameter(param);
@@ -858,6 +873,11 @@ public class PiParser {
    */
   protected void parsePort(final Element elt, final Configurable vertex) {
     final String portName = elt.getAttribute(PiIdentifiers.PORT_NAME);
+    if (!NameCheckerC.isValidName(portName)) {
+      throw new PreesmRuntimeException(
+          "Parsed port " + portName + " has an invalide name (should meet " + NameCheckerC.REGEX_C + ")");
+    }
+
     final String portKind = elt.getAttribute(PiIdentifiers.PORT_KIND);
 
     final String attribute = elt.getAttribute(PiIdentifiers.PORT_EXPRESSION);
@@ -945,6 +965,11 @@ public class PiParser {
 
     // Set the Interface properties
     final String name = nodeElt.getAttribute(PiIdentifiers.CONFIGURATION_OUTPUT_INTERFACE_NAME);
+    if (!NameCheckerC.isValidName(name)) {
+      throw new PreesmRuntimeException(
+          "Parsed ConfigOutputInterface " + name + " has an invalide name (should meet " + NameCheckerC.REGEX_C + ")");
+    }
+
     cfgOutIf.setName(name);
     cfgOutIf.getDataPort().setName(name);
 
@@ -969,6 +994,11 @@ public class PiParser {
 
     // Set the sourceInterface properties
     final String name = nodeElt.getAttribute(PiIdentifiers.DATA_OUTPUT_INTERFACE_NAME);
+    if (!NameCheckerC.isValidName(name)) {
+      throw new PreesmRuntimeException(
+          "Parsed SinkInterface " + name + " has an invalide name (should meet " + NameCheckerC.REGEX_C + ")");
+    }
+
     snkInterface.setName(name);
     snkInterface.getDataPort().setName(name);
 
@@ -993,6 +1023,11 @@ public class PiParser {
 
     // Set the sourceInterface properties
     final String name = nodeElt.getAttribute(PiIdentifiers.DATA_INPUT_INTERFACE_NAME);
+    if (!NameCheckerC.isValidName(name)) {
+      throw new PreesmRuntimeException(
+          "Parsed SourceInterface " + name + " has an invalide name (should meet " + NameCheckerC.REGEX_C + ")");
+    }
+
     srcInterface.setName(name);
     srcInterface.getDataPort().setName(name);
 
@@ -1015,6 +1050,12 @@ public class PiParser {
     // Identify if the node is an actor or a parameter
     final String nodeKind = nodeElt.getAttribute(PiIdentifiers.NODE_KIND);
     AbstractActor actor = null;
+
+    String name = nodeElt.getAttribute(PiIdentifiers.ACTOR_NAME);
+    if (!NameCheckerC.isValidName(name)) {
+      throw new PreesmRuntimeException(
+          "Parsed special actor " + name + " has an invalide name (should meet " + NameCheckerC.REGEX_C + ")");
+    }
 
     // Instantiate the actor.
     switch (nodeKind) {
@@ -1061,7 +1102,7 @@ public class PiParser {
     }
 
     // Get the actor properties
-    actor.setName(nodeElt.getAttribute(PiIdentifiers.ACTOR_NAME));
+    actor.setName(name);
 
     // Add the actor to the parsed graph
     graph.addActor(actor);

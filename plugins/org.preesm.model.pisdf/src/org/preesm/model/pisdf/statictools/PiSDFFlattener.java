@@ -42,6 +42,7 @@ package org.preesm.model.pisdf.statictools;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import org.preesm.commons.IntegerName;
 import org.preesm.commons.exceptions.PreesmRuntimeException;
 import org.preesm.model.pisdf.AbstractActor;
 import org.preesm.model.pisdf.AbstractVertex;
@@ -501,14 +502,15 @@ public class PiSDFFlattener extends PiMMSwitch<Boolean> {
     in.setAnnotation(PortMemoryAnnotation.READ_ONLY);
     fork.getDataInputPorts().add(in);
     // Set the DataOutputPorts and connect them
+    IntegerName iN = new IntegerName(graphRV - 1);
     for (long i = 0; i < graphRV; ++i) {
-      final String graphPrexix = this.graphPrefix + Long.toString(i) + "_";
+      final String graphPrexix = this.graphPrefix + iN.toString(i) + "_";
       final String actorName = graphPrexix + actor.getName();
       // 1. Retrieve the BroadcastActor
       final BroadcastActor currentBR = (BroadcastActor) this.result.lookupVertex(actorName);
       // 2. Create the output port
       final DataOutputPort out = PiMMUserFactory.instance.createDataOutputPort();
-      out.setName(actor.getName() + "_" + Long.toString(i));
+      out.setName(actor.getName() + "_" + iN.toString(i));
       out.setExpression(interfaceRateExpression.getExpressionAsString());
       out.setAnnotation(PortMemoryAnnotation.WRITE_ONLY);
       fork.getDataOutputPorts().add(out);
@@ -540,14 +542,15 @@ public class PiSDFFlattener extends PiMMSwitch<Boolean> {
     out.setAnnotation(PortMemoryAnnotation.WRITE_ONLY);
     join.getDataOutputPorts().add(out);
     // Set the DataOutputPorts and connect them
+    IntegerName iN = new IntegerName(graphRV - 1);
     for (long i = 0; i < graphRV; ++i) {
-      final String graphPrexix = this.graphPrefix + Long.toString(i) + "_";
+      final String graphPrexix = this.graphPrefix + iN.toString(i) + "_";
       final String actorName = graphPrexix + actor.getName();
       // 1. Retrieve the BroadcastActor
       final RoundBufferActor currentRB = (RoundBufferActor) this.result.lookupVertex(actorName);
       // 2. Create the output port
       final DataInputPort in = PiMMUserFactory.instance.createDataInputPort();
-      in.setName(actor.getName() + "_" + Long.toString(i));
+      in.setName(actor.getName() + "_" + iN.toString(i));
       in.setExpression(interfaceRateExpression.getExpressionAsString());
       in.setAnnotation(PortMemoryAnnotation.READ_ONLY);
       join.getDataInputPorts().add(in);
@@ -624,9 +627,10 @@ public class PiSDFFlattener extends PiMMSwitch<Boolean> {
     final String backupPrefix = this.graphPrefix;
     // We need to get the repetition vector of the graph
     final long graphRV = PiMMHelper.getHierarchichalRV(graph, this.brv);
+    IntegerName iN = new IntegerName(graphRV - 1);
     for (long i = 0; i < graphRV; ++i) {
       if (!backupPrefix.isEmpty()) {
-        this.graphPrefix = backupPrefix + Long.toString(i) + "_";
+        this.graphPrefix = backupPrefix + iN.toString(i) + "_";
       }
       flatteningTransformation(graph);
     }

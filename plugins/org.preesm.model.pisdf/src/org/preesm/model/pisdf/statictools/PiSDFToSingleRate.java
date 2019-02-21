@@ -43,6 +43,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
+import org.preesm.commons.IntegerName;
 import org.preesm.commons.exceptions.PreesmRuntimeException;
 import org.preesm.commons.logger.PreesmLogger;
 import org.preesm.model.pisdf.AbstractActor;
@@ -323,8 +324,9 @@ public class PiSDFToSingleRate extends PiMMSwitch<Boolean> {
     // 0. Get RV value of the Actor
     final long actorRV = actor instanceof InterfaceActor ? 1 : this.brv.get(actor);
     // 1. Find matched actors
+    IntegerName iN = new IntegerName(actorRV - 1);
     for (long i = 0; i < actorRV; ++i) {
-      final String name = actor.getName() + suffixe + Long.toString(i);
+      final String name = actor.getName() + suffixe + iN.toString(i);
       final AbstractActor foundActor = (AbstractActor) this.result.lookupVertex(name);
       final DataPort dataPort = foundActor.getAllDataPorts().get(0);
       final Fifo fifo = dataPort.getFifo();
@@ -761,13 +763,14 @@ public class PiSDFToSingleRate extends PiMMSwitch<Boolean> {
     final long actorRV = this.brv.get(actor);
 
     // Populate the graph with the number of instance of the current actor
+    IntegerName iN = new IntegerName(actorRV - 1);
     for (long i = 0; i < actorRV; ++i) {
       // Setting the correct name
       // We fix the RV to be always > 1 for actors, this way we can not have a problem of naming as such
       // actor_#i, whose name is actor and we're at instance #i and a secondary actor named actor_x_#i with x an integer
       // In some cases it could happen that actor_x has a BRV of 1 resulting in a name of "actor_x" and
       // actor has a BRV value >= to x resulting of two actors named the same
-      this.currentActorName = this.graphPrefix + actor.getName() + "_" + Long.toString(i);
+      this.currentActorName = this.graphPrefix + actor.getName() + "_" + iN.toString(i);
       caseAbstractActor((AbstractActor) actor);
     }
   }
@@ -807,9 +810,10 @@ public class PiSDFToSingleRate extends PiMMSwitch<Boolean> {
     }
     final long graphRV = this.brv.get(graph) == null ? 1 : this.brv.get(graph);
     final String currentPrefix = this.graphPrefix;
+    IntegerName iN = new IntegerName(graphRV - 1);
     for (long i = 0; i < graphRV; ++i) {
       if (!currentPrefix.isEmpty()) {
-        this.graphPrefix = currentPrefix + Long.toString(i) + "_";
+        this.graphPrefix = currentPrefix + iN.toString(i) + "_";
       }
       final String backupPrefix = this.graphPrefix;
       final String backupName = this.graphName;
