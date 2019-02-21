@@ -38,11 +38,11 @@
  */
 package org.preesm.model.pisdf.brv;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import org.eclipse.xtext.xbase.lib.Pair;
 import org.preesm.commons.exceptions.PreesmRuntimeException;
 import org.preesm.commons.math.LongFraction;
 import org.preesm.commons.math.MathFunctionsHelper;
@@ -94,8 +94,7 @@ class LCMBasedBRV extends PiBRV {
       if (listFifos.isEmpty()) {
         graphBRV.put(subgraph.get(0), (long) 1);
       } else {
-        // TODO not optimal to use List ?
-        final Map<Fifo, List<Long>> fifoProperties = new LinkedHashMap<>();
+        final Map<Fifo, Pair<Long, Long>> fifoProperties = new HashMap<>();
 
         // Evaluate prod / cons of FIFOs only once
         initFifoProperties(listFifos, fifoProperties);
@@ -136,7 +135,7 @@ class LCMBasedBRV extends PiBRV {
    * @throws PiMMHelperException
    *           the exception
    */
-  private void checkConsistency(final List<AbstractActor> subgraph, final Map<Fifo, List<Long>> fifoProperties,
+  private void checkConsistency(final List<AbstractActor> subgraph, final Map<Fifo, Pair<Long, Long>> fifoProperties,
       final Map<AbstractVertex, Long> graphBRV) {
     for (final Fifo f : PiMMHelper.getFifosFromCC(subgraph)) {
       final AbstractActor sourceActor = f.getSourcePort().getContainingActor();
@@ -144,8 +143,9 @@ class LCMBasedBRV extends PiBRV {
       if ((targetActor instanceof InterfaceActor) || (sourceActor instanceof InterfaceActor)) {
         continue;
       }
-      final long prod = fifoProperties.get(f).get(0);
-      final long cons = fifoProperties.get(f).get(1);
+      final Pair<Long, Long> pair = fifoProperties.get(f);
+      final long prod = pair.getKey();
+      final long cons = pair.getValue();
       final long sourceRV = graphBRV.get(sourceActor);
       final long targetRV = graphBRV.get(targetActor);
 
@@ -170,8 +170,9 @@ class LCMBasedBRV extends PiBRV {
   private void computeAndSetRV(final List<AbstractActor> subgraph, final HashMap<String, LongFraction> reps, long lcm,
       final Map<AbstractVertex, Long> graphBRV) {
     for (final AbstractActor actor : subgraph) {
-      final long num = reps.get(actor.getName()).getNumerator();
-      final long denom = reps.get(actor.getName()).getDenominator();
+      final LongFraction ratio = reps.get(actor.getName());
+      final long num = ratio.getNumerator();
+      final long denom = ratio.getDenominator();
       final long rv = (num * (lcm / denom));
       graphBRV.put(actor, rv);
     }
@@ -185,17 +186,15 @@ class LCMBasedBRV extends PiBRV {
    * @param fifoProperties
    *          fifos properties map
    */
-  private void initFifoProperties(final List<Fifo> listFifos, final Map<Fifo, List<Long>> fifoProperties) {
+  private void initFifoProperties(final List<Fifo> listFifos, final Map<Fifo, Pair<Long, Long>> fifoProperties) {
     for (final Fifo f : listFifos) {
-      final List<Long> fifoProp = new ArrayList<>();
       final DataOutputPort sourcePort = f.getSourcePort();
       final Expression sourcePortRateExpression = sourcePort.getPortRateExpression();
       final long prod = sourcePortRateExpression.evaluate();
       final DataInputPort targetPort = f.getTargetPort();
       final Expression targetPortRateExpression = targetPort.getPortRateExpression();
       final long cons = targetPortRateExpression.evaluate();
-      fifoProp.add(prod);
-      fifoProp.add(cons);
+      final Pair<Long, Long> fifoProp = new Pair<>(prod, cons);
       fifoProperties.put(f, fifoProp);
     }
   }
@@ -213,7 +212,7 @@ class LCMBasedBRV extends PiBRV {
    *           the PiBRV exception
    */
   private static void setReps(final AbstractActor actor, final LongFraction n, final HashMap<String, LongFraction> reps,
-      final Map<Fifo, List<Long>> fifoProperties) {
+      final Map<Fifo, Pair<Long, Long>> fifoProperties) {
     // Update value in the HashMap
     reps.put(actor.getName(), n);
 
@@ -230,8 +229,9 @@ class LCMBasedBRV extends PiBRV {
       }
       final LongFraction fa = reps.get(targetActor.getName());
       if (fa.getNumerator() == 0) {
-        final long prod = fifoProperties.get(fifo).get(0);
-        final long cons = fifoProperties.get(fifo).get(1);
+        final Pair<Long, Long> pair = fifoProperties.get(fifo);
+        final long prod = pair.getKey();
+        final long cons = pair.getValue();
         final LongFraction edge = new LongFraction(prod, cons);
         final LongFraction r = n.multiply(edge);
         LCMBasedBRV.setReps(targetActor, r, reps, fifoProperties);
@@ -251,8 +251,9 @@ class LCMBasedBRV extends PiBRV {
       }
       final LongFraction fa = reps.get(sourceActor.getName());
       if (fa.getNumerator() == 0) {
-        final long prod = fifoProperties.get(fifo).get(0);
-        final long cons = fifoProperties.get(fifo).get(1);
+        final Pair<Long, Long> pair = fifoProperties.get(fifo);
+        final long prod = pair.getKey();
+        final long cons = pair.getValue();
         final LongFraction edge = new LongFraction(cons, prod);
         final LongFraction r = n.multiply(edge);
         LCMBasedBRV.setReps(sourceActor, r, reps, fifoProperties);
