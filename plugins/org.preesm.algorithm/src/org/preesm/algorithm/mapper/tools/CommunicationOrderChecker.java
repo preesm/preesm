@@ -51,22 +51,7 @@ import org.preesm.model.slam.ComponentInstance;
 
 /**
  * The purpose of the {@link CommunicationOrderChecker} is to verify the order of communications resulting from a
- * scheduling. In particular, the checker verifies if the Send and Receive communication primitives for each pair of
- * core is always scheduled with the exact same order on both sides. For example:<br>
- * <ul>
- * <li>Correct schedule:
- * <ul>
- * <li>Core0 schedule : SendA, ..., SendB</li>
- * <li>Core1 schedule : RecvA, ..., RecvB</li>
- * </ul>
- * </li>
- * <li>Invalid schedule:
- * <ul>
- * <li>Core0 schedule : SendA, ..., SendB</li>
- * <li>Core1 schedule : RecvB, ..., RecvA</li>
- * </ul>
- * </li>
- * </ul>
+ * scheduling.
  *
  *
  * @author kdesnos
@@ -74,8 +59,29 @@ import org.preesm.model.slam.ComponentInstance;
  */
 public class CommunicationOrderChecker {
 
+  private CommunicationOrderChecker() {
+    // Private empty constructor for a static-member-only class
+  }
+
   /**
-   * Function responsible for checking the validity of the schedule as specified in {@link CommunicationOrderChecker}.
+   * Function responsible for checking the validity of the schedule as specified Hereafter.
+   * 
+   * In particular, the checker verifies if the Send and Receive communication primitives for each pair of core is
+   * always scheduled with the exact same order on both sides. For example:<br>
+   * <ul>
+   * <li>Correct schedule:
+   * <ul>
+   * <li>Core0 schedule : SendA, ..., SendB</li>
+   * <li>Core1 schedule : RecvA, ..., RecvB</li>
+   * </ul>
+   * </li>
+   * <li>Invalid schedule:
+   * <ul>
+   * <li>Core0 schedule : SendA, ..., SendB</li>
+   * <li>Core1 schedule : RecvB, ..., RecvA</li>
+   * </ul>
+   * </li>
+   * </ul>
    *
    * @param dag
    *          The {@link DirectedAcyclicGraph} whose schedule is verified.
