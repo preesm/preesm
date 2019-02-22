@@ -131,7 +131,7 @@ public class PiMMHelper {
       PreesmLogger.getLogger().log(Level.INFO, "No FIFOs to extrac, empty connectedComponent.");
       return Collections.emptyList();
     }
-    final boolean containsInterfaceActors = PiMMHelper.containsInterfaceActors(cc);
+    final boolean containsInterfaceActors = containsInterfaceActors(cc);
     final List<Fifo> fifos = new ArrayList<>();
     for (final AbstractActor actor : cc) {
       extractFifosFromActor(containsInterfaceActors, actor, fifos);
