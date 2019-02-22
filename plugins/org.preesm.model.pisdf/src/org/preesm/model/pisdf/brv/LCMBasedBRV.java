@@ -43,8 +43,10 @@ import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Level;
 import org.eclipse.xtext.xbase.lib.Pair;
 import org.preesm.commons.exceptions.PreesmRuntimeException;
+import org.preesm.commons.logger.PreesmLogger;
 import org.preesm.commons.math.LongFraction;
 import org.preesm.commons.math.MathFunctionsHelper;
 import org.preesm.model.pisdf.AbstractActor;
@@ -170,8 +172,10 @@ class LCMBasedBRV extends PiBRV {
       DataInputPort dip = fifo.getTargetPort();
       AbstractActor src = dop.getContainingActor();
       AbstractActor tgt = dip.getContainingActor();
-      throw new PreesmRuntimeException("Non valid edge prod / cons from actor " + src.getName() + "[" + dop.getName()
-          + "] to " + tgt.getName() + "[" + dip.getName() + "].");
+      String message = "Non valid edge prod / cons from actor " + src.getName() + "[" + dop.getName() + "] to "
+          + tgt.getName() + "[" + dip.getName() + "].";
+      PreesmLogger.getLogger().log(Level.SEVERE, message);
+      throw new PreesmRuntimeException(message);
     }
   }
 
@@ -199,8 +203,10 @@ class LCMBasedBRV extends PiBRV {
       for (final DataOutputPort output : actor.getDataOutputPorts()) {
         final Fifo fifo = output.getOutgoingFifo();
         if (fifo == null) {
-          throw new PreesmRuntimeException(
-              "Actor [" + actor.getName() + "] has output port [" + output.getName() + "] not connected to any FIFO.");
+          String message = "Actor [" + actor.getName() + "] has output port [" + output.getName()
+              + "] not connected to any FIFO.";
+          PreesmLogger.getLogger().log(Level.SEVERE, message);
+          throw new PreesmRuntimeException(message);
         }
         Pair<Long, Long> pair = fifoProperties.getOrDefault(fifo, computeFifoProperties(fifo));
         checkValidFifo(fifo, pair);
@@ -224,8 +230,10 @@ class LCMBasedBRV extends PiBRV {
       for (final DataInputPort input : actor.getDataInputPorts()) {
         final Fifo fifo = input.getIncomingFifo();
         if (fifo == null) {
-          throw new PreesmRuntimeException(
-              "Actor [" + actor.getName() + "] has input port [" + input.getName() + "] not connected to any FIFO.");
+          String message = "Actor [" + actor.getName() + "] has input port [" + input.getName()
+              + "] not connected to any FIFO.";
+          PreesmLogger.getLogger().log(Level.SEVERE, message);
+          throw new PreesmRuntimeException(message);
         }
         final Pair<Long, Long> pair = fifoProperties.getOrDefault(fifo, computeFifoProperties(fifo));
         checkValidFifo(fifo, pair);
@@ -273,9 +281,11 @@ class LCMBasedBRV extends PiBRV {
       final long targetRV = graphBRV.get(targetActor);
 
       if (prod * sourceRV != cons * targetRV) {
-        throw new PreesmRuntimeException(
-            "Graph non consistent: edge source production " + sourceActor.getName() + " with rate [" + (prod * sourceRV)
-                + "] != edge target consumption " + targetActor.getName() + "with rate [" + (cons * targetRV) + "]");
+        String message = "Graph non consistent: edge source production " + sourceActor.getName() + " with rate ["
+            + (prod * sourceRV) + "] != edge target consumption " + targetActor.getName() + " with rate ["
+            + (cons * targetRV) + "]";
+        PreesmLogger.getLogger().log(Level.SEVERE, message);
+        throw new PreesmRuntimeException(message);
       }
     }
   }

@@ -464,7 +464,7 @@ public class PiMMHelper {
   }
 
   /**
-   * azmokfaze
+   * Check if periods on actors are consistent.
    *
    * @param graphBRV
    *          Repetition Vector as a map.
@@ -518,20 +518,20 @@ public class PiMMHelper {
   }
 
   /**
-   * zerze
+   * Compute the full repetition vector (among all hierarchies) of an actor.
    *
-   * @param graph
-   *          zerz
+   * @param aa
+   *          Actor to consider.
    * @param graphBRV
-   *          zerze
-   * @return rggr
+   *          Repetition vector map of the whole graph.
+   * @return Full repetition vector of the actor according to the hierarchy.
    */
-  public static long getHierarchichalRV(final PiGraph graph, final Map<AbstractVertex, Long> graphBRV) {
+  public static long getHierarchichalRV(final AbstractActor aa, final Map<AbstractVertex, Long> graphBRV) {
     // We need to get the repetition vector of the graph
-    final long graphRV = graphBRV.get(graph) == null ? 1 : graphBRV.get(graph);
+    final long graphRV = graphBRV.getOrDefault(aa, 1L);
     // We also need to get the total repetition vector of the hierarchy to correctly flatten the hierarchy
     long graphHierarchicallRV = 1L;
-    PiGraph containingGraph = graph.getContainingPiGraph();
+    PiGraph containingGraph = aa.getContainingPiGraph();
     while (containingGraph != null) {
       final long currentGraphRV = graphBRV.get(containingGraph) == null ? 1L : graphBRV.get(containingGraph);
       graphHierarchicallRV = graphHierarchicallRV * currentGraphRV;
