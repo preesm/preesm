@@ -206,6 +206,7 @@ public abstract class AbstractMappingFromDAG extends AbstractTaskImplementation 
   private void checkSchedulingResult(final Map<String, String> parameters, final DirectedAcyclicGraph dag) {
     if (parameters.get(AbstractMappingFromDAG.PARAM_CHECK).equals(AbstractMappingFromDAG.VALUE_TRUE)) {
       CommunicationOrderChecker.checkCommunicationOrder(dag);
+      CommunicationOrderChecker.checkMultiStepSendReceiveValidity(dag);
     }
   }
 

@@ -41,6 +41,8 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
 import org.preesm.algorithm.mapper.ScheduledDAGIterator;
+import org.preesm.algorithm.mapper.model.special.ReceiveVertex;
+import org.preesm.algorithm.mapper.model.special.TransferVertex;
 import org.preesm.algorithm.model.dag.DAGEdge;
 import org.preesm.algorithm.model.dag.DAGVertex;
 import org.preesm.algorithm.model.dag.DirectedAcyclicGraph;
@@ -128,6 +130,11 @@ public class CommunicationOrderChecker {
       for (final ComponentInstance recvComponent : recvComponents) {
         // For each pair of sender/receiver
 
+        // Skip self-send/receive
+        if (sendComponent.equals(recvComponent)) {
+          continue;
+        }
+
         // Collect sender and receivers DAGVertices for this pair (in scheduling order)
         final List<DAGVertex> senders = new ArrayList<>(sendVerticesMap);
         senders.removeIf(vertex -> !((ComponentInstance) vertex.getPropertyBean()
@@ -160,4 +167,87 @@ public class CommunicationOrderChecker {
     }
   }
 
+  /**
+   * The purpose of this method is to check if pairs of Send/Receive vertex generated on an intermediate processing
+   * element when a multi-step route is taken are correctly ordered.
+   * 
+   * In particular, this method checks that for any given multi-step communication passing through a processing element,
+   * the Receive operation always preceeds the corresponding Send operation.
+   * 
+   * This issue may arise if an improper re-ordering of send/receive operation is performed on such a multi-step route.
+   * 
+   * @param dag
+   *          The {@link DirectedAcyclicGraph} whose scheduling is verified.
+   * 
+   * @throws PreesmException
+   *           if the schedule is incorrect.
+   */
+  public static void checkMultiStepSendReceiveValidity(DirectedAcyclicGraph dag) {
+    // Iterator on DAG vertices in scheduling order
+    final ScheduledDAGIterator iterDAGVertices = new ScheduledDAGIterator(dag);
+
+    // Create an array list of the Send/Receive DAGVertices, in scheduling order.
+    final List<DAGVertex> sendReceiveVertices = new ArrayList<>();
+
+    // Store all used processing elements
+    final Set<ComponentInstance> components = new LinkedHashSet<>();
+
+    while (iterDAGVertices.hasNext()) {
+      final DAGVertex currentVertex = iterDAGVertices.next();
+
+      final String vertexType = currentVertex.getPropertyBean().getValue(ImplementationPropertyNames.Vertex_vertexType)
+          .toString();
+      final boolean isSend = vertexType.equals("send");
+      final boolean isReceive = vertexType.equals("receive");
+
+      // get component
+      final ComponentInstance comp = (ComponentInstance) currentVertex.getPropertyBean().getValue("Operator");
+
+      // Get scheduling order
+      if (isSend || isReceive) {
+        sendReceiveVertices.add(currentVertex);
+        components.add(comp);
+      }
+    }
+
+    // Check that Send-Receive corresponding to multi-step intermediate step are correctly ordered.
+    for (final ComponentInstance component : components) {
+      // For each component
+
+      // Collect sender and receivers DAGVertices for this component (in scheduling order)
+      final List<DAGVertex> sendersReceivers = new ArrayList<>(sendReceiveVertices);
+      sendersReceivers.removeIf(vertex -> !((ComponentInstance) vertex.getPropertyBean()
+          .getValue(ImplementationPropertyNames.Vertex_Operator)).equals(component));
+
+      // Keep only senderReceivers that corresponds to intermediate steps
+      sendersReceivers.removeIf(vertex -> ((vertex instanceof ReceiveVertex) ? ((TransferVertex) vertex).getTarget()
+          : ((TransferVertex) vertex).getSource()).getPropertyBean().getValue("Operator").equals(component));
+
+      // For each receive, check that the corresponding send if in the rest of the list
+      // Create the list of corresponding dagEdge
+      List<DAGEdge> senderReceiverEdges = new ArrayList<DAGEdge>(sendersReceivers.size());
+      sendersReceivers.forEach(vertex -> senderReceiverEdges
+          .add(vertex.getPropertyBean().getValue(ImplementationPropertyNames.SendReceive_correspondingDagEdge)));
+      int i;
+      for (i = 0; i < sendersReceivers.size() - 1; i++) {
+        DAGVertex vertex = sendersReceivers.get(i);
+        if (vertex instanceof ReceiveVertex) {
+          if (i == sendersReceivers.size()) {
+            // This should not happen, if a receive is the last of the list, its corresponding send cannot be after it
+            // in the list.
+            throw new PreesmRuntimeException("On operator: " + component
+                + ", a Receive vertex of an intermediate step of a multi-step communication"
+                + " is scheduled after its corresponding Send." + " Contact Preesm developers for more information.");
+          }
+
+          DAGEdge edge = senderReceiverEdges.get(i);
+          if (!senderReceiverEdges.subList(i + 1, sendersReceivers.size()).contains(edge)) {
+            throw new PreesmRuntimeException("On operator: " + component
+                + ", a Receive vertex of an intermediate step of a multi-step communication"
+                + " is scheduled after its corresponding Send." + " Contact Preesm developers for more information.");
+          }
+        }
+      }
+    }
+  }
 }
