@@ -113,12 +113,18 @@ public class PiSDFFlattener extends PiMMSwitch<Boolean> {
     if (performOptim) {
       // 6- do some optimization on the graph
       final ForkJoinOptimization forkJoinOptimization = new ForkJoinOptimization();
-      forkJoinOptimization.optimize(result);
+      forkJoinOptimization.optimize(result, false);
       PiGraphConsistenceChecker.check(result);
       final BroadcastRoundBufferOptimization brRbOptimization = new BroadcastRoundBufferOptimization();
-      brRbOptimization.optimize(result);
+      brRbOptimization.optimize(result, false);
       PiGraphConsistenceChecker.check(result);
       flattenCheck(result);
+    }
+
+    for (final Parameter p : result.getParameters()) {
+      if (p.getOutgoingDependencies().isEmpty()) {
+        result.getVertices().remove(p);
+      }
     }
 
     return result;
@@ -462,7 +468,7 @@ public class PiSDFFlattener extends PiMMSwitch<Boolean> {
     // make sure config input interfaces are made into Parameter (since their expressions have been evaluated);
     final Parameter copy = PiMMUserFactory.instance.createParameter();
     copy.setExpression(param.getValueExpression().evaluate());
-    copy.setName(param.getName());
+    copy.setName(graphPrefix + param.getName());
     // copy.setName(graphPrefix + param.getName());
     this.result.addParameter(copy);
     this.param2param.put(param, copy);
@@ -568,7 +574,9 @@ public class PiSDFFlattener extends PiMMSwitch<Boolean> {
 
   @Override
   public Boolean casePiGraph(final PiGraph graph) {
-    this.result.setName(graph.getName());
+    if (graph.getContainingPiGraph() == null) {
+      result.setName(graph.getName() + "_flat");
+    }
     // If there are no actors in the graph we leave
     if (graph.getActors().isEmpty()) {
       throw new UnsupportedOperationException(

@@ -39,11 +39,16 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import org.preesm.model.pisdf.AbstractActor;
+import org.preesm.model.pisdf.ConfigInputPort;
 import org.preesm.model.pisdf.DataInputPort;
 import org.preesm.model.pisdf.DataOutputPort;
 import org.preesm.model.pisdf.DataPort;
+import org.preesm.model.pisdf.DelayActor;
+import org.preesm.model.pisdf.Dependency;
 import org.preesm.model.pisdf.Expression;
 import org.preesm.model.pisdf.Fifo;
+import org.preesm.model.pisdf.ISetter;
+import org.preesm.model.pisdf.Parameter;
 import org.preesm.model.pisdf.PiGraph;
 
 /**
@@ -72,12 +77,25 @@ public abstract class AbstractPiGraphSpecialActorRemover<T extends DataPort> {
     this.dataPortsToReplace.put(index, newDataPorts);
   }
 
+  protected void removeActorDependencies(final PiGraph graph, final AbstractActor actor) {
+    for (final ConfigInputPort cip : actor.getConfigInputPorts()) {
+      final Dependency incomingDependency = cip.getIncomingDependency();
+      graph.getEdges().remove(incomingDependency);
+      final ISetter setter = incomingDependency.getSetter();
+      setter.getOutgoingDependencies().remove(incomingDependency);
+      if (setter instanceof Parameter && setter.getOutgoingDependencies().isEmpty()) {
+        graph.getVertices().remove((Parameter) setter);
+      }
+    }
+  }
+
   protected void removeActorAndFifo(final PiGraph graph, final Fifo fifo, final AbstractActor actor) {
+    removeActorDependencies(graph, actor);
     graph.removeActor(actor);
     graph.removeFifo(fifo);
   }
 
-  protected boolean removeAndReplace(final List<T> dataPorts) {
+  protected boolean removeAndReplaceDataPorts(final List<T> dataPorts) {
     this.dataPortsToRemove.forEach(dataPorts::remove);
     this.dataPortsToReplace.forEach(dataPorts::addAll);
     final boolean retValue = !this.dataPortsToReplace.isEmpty();
@@ -95,22 +113,39 @@ public abstract class AbstractPiGraphSpecialActorRemover<T extends DataPort> {
    *          The actor to analyze
    * @return true if the actor was removed, false else
    */
-  protected boolean removeUnused(final PiGraph graph, final AbstractActor actor) {
+  public boolean removeUnused(final PiGraph graph, final AbstractActor actor) {
     if (actor.getDataInputPorts().size() == 1 && actor.getDataOutputPorts().size() == 1) {
       // 0. Get input rate
       final DataInputPort dataInputPort = actor.getDataInputPorts().get(0);
+      final Fifo dipFifo = dataInputPort.getFifo();
+
+      // to debug and remove ...
+      if (dipFifo == null || dipFifo.getSourcePort().getContainingActor() instanceof DelayActor) {
+        return false;
+      }
       final Expression inputRateExpression = dataInputPort.getPortRateExpression();
       final long inputRate = inputRateExpression.evaluate();
       // 1. Get output rate
       final DataOutputPort dataOutputPort = actor.getDataOutputPorts().get(0);
+      final Fifo dopFifo = dataOutputPort.getFifo();
+      if (dopFifo == null || dopFifo.getTargetPort().getContainingActor() instanceof DelayActor) {
+        return false;
+      }
       final Expression outputRateExpression = dataOutputPort.getPortRateExpression();
       final long outputRate = outputRateExpression.evaluate();
       if (inputRate == outputRate) {
+        System.err.println("Removing: " + actor.getName());
         // 2. We can remove one of the FIFO and the actor
-        final Fifo outgoingFifo = dataOutputPort.getOutgoingFifo();
-        final Fifo incomingFifo = dataInputPort.getIncomingFifo();
-        outgoingFifo.setSourcePort(incomingFifo.getSourcePort());
-        graph.removeFifo(incomingFifo);
+        if (dipFifo.getDelay() == null) {
+          dopFifo.setSourcePort(dipFifo.getSourcePort());
+          graph.removeFifo(dipFifo);
+        } else if (dopFifo.getDelay() == null) {
+          dipFifo.setTargetPort(dopFifo.getTargetPort());
+          graph.removeFifo(dopFifo);
+        } else {
+          return false;
+        }
+        removeActorDependencies(graph, actor);
         graph.removeActor(actor);
         return true;
       }

@@ -328,6 +328,14 @@ public class PiSDFToSingleRate extends PiMMSwitch<Boolean> {
     for (long i = 0; i < actorRV; ++i) {
       final String name = actor.getName() + suffixe + iN.toString(i);
       final AbstractActor foundActor = (AbstractActor) this.result.lookupVertex(name);
+      if (foundActor == null) {
+        System.err.println("null ... " + name);
+        // continue;
+      }
+      if (foundActor.getAllDataPorts().isEmpty()) {
+        System.err.println(foundActor.getName());
+        continue;
+      }
       final DataPort dataPort = foundActor.getAllDataPorts().get(0);
       final Fifo fifo = dataPort.getFifo();
       // Retrieve the opposite port of the FIFO
@@ -779,7 +787,7 @@ public class PiSDFToSingleRate extends PiMMSwitch<Boolean> {
   public Boolean caseParameter(final Parameter param) {
     // make sure config input interfaces are made into Parameter (since their expressions have been evaluated);
     final long paramValue = param.getValueExpression().evaluate();
-    final String paramName = this.graphPrefix + "_" + param.getName();
+    final String paramName = this.graphPrefix + param.getName();
     final Parameter copy = PiMMUserFactory.instance.createParameter(paramName, paramValue);
     this.param2param.put(param, copy);
     return true;

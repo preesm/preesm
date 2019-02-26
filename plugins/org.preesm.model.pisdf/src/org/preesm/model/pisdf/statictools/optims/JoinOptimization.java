@@ -44,15 +44,11 @@ import java.util.List;
 import java.util.Map;
 import org.preesm.model.pisdf.AbstractActor;
 import org.preesm.model.pisdf.AbstractVertex;
-import org.preesm.model.pisdf.ConfigInputPort;
 import org.preesm.model.pisdf.DataInputPort;
 import org.preesm.model.pisdf.DataOutputPort;
-import org.preesm.model.pisdf.Dependency;
 import org.preesm.model.pisdf.Fifo;
 import org.preesm.model.pisdf.ForkActor;
-import org.preesm.model.pisdf.ISetter;
 import org.preesm.model.pisdf.JoinActor;
-import org.preesm.model.pisdf.Parameter;
 import org.preesm.model.pisdf.PiGraph;
 import org.preesm.model.pisdf.statictools.PiMMSRVerticesLinker;
 
@@ -93,16 +89,8 @@ public class JoinOptimization extends AbstractPiGraphSpecialActorRemover<DataInp
         removeActorAndFifo(graph, incomingFifo, sourceActor);
       }
     }
-    for (final ConfigInputPort cip : actor.getConfigInputPorts()) {
-      final Dependency incomingDependency = cip.getIncomingDependency();
-      graph.getEdges().remove(incomingDependency);
-      final ISetter setter = incomingDependency.getSetter();
-      setter.getOutgoingDependencies().remove(incomingDependency);
-      if (setter instanceof Parameter && setter.getOutgoingDependencies().isEmpty()) {
-        graph.getVertices().remove((Parameter) setter);
-      }
-    }
-    if (!removeAndReplace(actor.getDataInputPorts())) {
+
+    if (!removeAndReplaceDataPorts(actor.getDataInputPorts())) {
       return removeUnused(graph, actor);
     }
     return true;
@@ -145,6 +133,8 @@ public class JoinOptimization extends AbstractPiGraphSpecialActorRemover<DataInp
       final PiMMSRVerticesLinker srLinker = new PiMMSRVerticesLinker();
       srLinker.execute(sourceSet, sinkSet);
       fifoToRemove.forEach(graph::removeFifo);
+      removeActorDependencies(graph, actor);
+      removeActorDependencies(graph, target);
       graph.removeActor(actor);
       graph.removeActor(target);
       graph.removeFifo(fifo);
