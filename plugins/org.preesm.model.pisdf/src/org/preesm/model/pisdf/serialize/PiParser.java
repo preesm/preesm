@@ -654,14 +654,14 @@ public class PiParser {
     // 6. Adds Setter / Getter actors to the delay (if any)
     final String setterName = nodeElt.getAttribute(PiIdentifiers.DELAY_SETTER);
     final AbstractActor setter = (AbstractActor) graph.lookupVertex(setterName);
-    final String getterName = nodeElt.getAttribute(PiIdentifiers.DELAY_GETTER);
-    final AbstractActor getter = (AbstractActor) graph.lookupVertex(getterName);
-    if ((setter == null) && !setterName.isEmpty()) {
-      throw new PreesmRuntimeException("Delay setter vertex " + setterName + " does not exist.");
-    }
-    if ((getter == null) && !getterName.isEmpty()) {
-      throw new PreesmRuntimeException("Delay getter vertex " + getterName + " does not exist.");
-    }
+    // final String getterName = nodeElt.getAttribute(PiIdentifiers.DELAY_GETTER);
+    // final AbstractActor getter = (AbstractActor) graph.lookupVertex(getterName);
+    // if ((setter == null) && !setterName.isEmpty()) {
+    // throw new PreesmRuntimeException("Delay setter vertex " + setterName + " does not exist.");
+    // }
+    // if ((getter == null) && !getterName.isEmpty()) {
+    // throw new PreesmRuntimeException("Delay getter vertex " + getterName + " does not exist.");
+    // }
 
     // 7. Add the refinement for the INIT of the delay (if it exists)
     // Any refinement is ignored if the delay is already connected to a setter actor

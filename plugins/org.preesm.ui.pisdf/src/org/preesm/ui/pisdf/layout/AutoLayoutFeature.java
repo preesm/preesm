@@ -47,6 +47,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.emf.common.util.EList;
@@ -293,7 +294,7 @@ public class AutoLayoutFeature extends AbstractCustomFeature {
     System.err.println("createActorStage1");
     do {
       iterate(feedbackFifos, processedActors, nextStage, currentStage, dataOutputInterfaces);
-      System.err.println(nextStage.stream().map(e -> e.getName()).reduce(" ; ", String::concat));
+      System.err.println(nextStage.stream().map(AbstractActor::getName).collect(Collectors.joining("; ")));
       // Prepare next iteration
       currentStage = new ArrayList<>(nextStage);
       stages.add(currentStage);

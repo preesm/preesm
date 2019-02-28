@@ -42,8 +42,10 @@ package org.preesm.model.pisdf.statictools;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Level;
 import org.preesm.commons.IntegerName;
 import org.preesm.commons.exceptions.PreesmRuntimeException;
+import org.preesm.commons.logger.PreesmLogger;
 import org.preesm.model.pisdf.AbstractActor;
 import org.preesm.model.pisdf.AbstractVertex;
 import org.preesm.model.pisdf.BroadcastActor;
@@ -114,20 +116,66 @@ public class PiSDFFlattener extends PiMMSwitch<Boolean> {
       // 6- do some optimization on the graph
       final ForkJoinOptimization forkJoinOptimization = new ForkJoinOptimization();
       forkJoinOptimization.optimize(result, false);
-      PiGraphConsistenceChecker.check(result);
       final BroadcastRoundBufferOptimization brRbOptimization = new BroadcastRoundBufferOptimization();
       brRbOptimization.optimize(result, false);
+
+      removeUselessStuffAfterOptim(result);
       PiGraphConsistenceChecker.check(result);
       flattenCheck(result);
     }
 
-    for (final Parameter p : result.getParameters()) {
+    return result;
+  }
+
+  private static final void removeUselessStuffAfterOptim(final PiGraph graph) {
+    // remove params that are not anymore connected to anything
+    for (final Parameter p : graph.getParameters()) {
       if (p.getOutgoingDependencies().isEmpty()) {
-        result.getVertices().remove(p);
+        graph.getVertices().remove(p);
       }
     }
+    // remove loops on DelayActor
+    for (AbstractActor da : graph.getDelayActors()) {
+      removeLoopOnDelayActor(graph, (DelayActor) da);
+    }
+  }
 
-    return result;
+  private static final PersistenceLevel removeLoopOnDelayActor(final PiGraph graph, final DelayActor da) {
+    if (!graph.getDelayActors().contains(da)) {
+      return PersistenceLevel.NONE;
+    }
+    Delay d = da.getLinkedDelay();
+    long value = d.getExpression().evaluate();
+    PersistenceLevel plInt = d.getLevel();
+    AbstractActor setter = da.getSetterActor();
+    AbstractActor getter = da.getGetterActor();
+    if (setter == null || getter == null || (setter != da && getter != da)) {
+      return plInt;
+    }
+    Fifo f1 = da.getDataOutputPort().getFifo();
+    Fifo f2 = da.getDataInputPort().getFifo();
+    if (f1 != f2) {
+      throw new PreesmRuntimeException(
+          "Loop detected on delay actor <" + da.getName() + "> but input and output fifos are different !");
+    }
+    Delay dExt = f1.getDelay();
+    if (dExt == null) {
+      graph.removeFifo(f1);
+      return plInt;
+    }
+    DelayActor daExt = dExt.getActor();
+    if (daExt == null) {
+      if (dExt.getExpression().evaluate() != value) {
+        PreesmLogger.getLogger().log(Level.WARNING,
+            "A delay actor loop  on <" + da.getName() + "had a wrong delay size, it is removed anyway.");
+      }
+      graph.removeFifo(f1);
+      return plInt;
+    }
+    PersistenceLevel plExt = removeLoopOnDelayActor(graph, daExt);
+    graph.removeActor(daExt);
+    d.setLevel(plExt);
+    return plExt;
   }
 
   /**

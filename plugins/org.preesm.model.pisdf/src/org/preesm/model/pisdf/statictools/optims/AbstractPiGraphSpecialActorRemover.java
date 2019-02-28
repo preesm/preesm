@@ -120,27 +120,52 @@ public abstract class AbstractPiGraphSpecialActorRemover<T extends DataPort> {
       final Fifo dipFifo = dataInputPort.getFifo();
 
       // to debug and remove ...
-      if (dipFifo == null || dipFifo.getSourcePort().getContainingActor() instanceof DelayActor) {
-        return false;
-      }
+      // if (dipFifo == null || dipFifo.getSourcePort().getContainingActor() instanceof DelayActor) {
+      // return false;
+      // }
       final Expression inputRateExpression = dataInputPort.getPortRateExpression();
       final long inputRate = inputRateExpression.evaluate();
       // 1. Get output rate
       final DataOutputPort dataOutputPort = actor.getDataOutputPorts().get(0);
       final Fifo dopFifo = dataOutputPort.getFifo();
-      if (dopFifo == null || dopFifo.getTargetPort().getContainingActor() instanceof DelayActor) {
+      // if (dopFifo == null || dopFifo.getTargetPort().getContainingActor() instanceof DelayActor) {
+      // return false;
+      // }
+      if (dopFifo == null || dipFifo == null) {
+        String dp = dopFifo == null ? " DOP NULL " : "";
+        dp += dipFifo == null ? " DIP NULL " : "";
+        System.err.println("Actor [" + actor.getName() + "]: " + dp);
         return false;
       }
+
       final Expression outputRateExpression = dataOutputPort.getPortRateExpression();
       final long outputRate = outputRateExpression.evaluate();
       if (inputRate == outputRate) {
         System.err.println("Removing: " + actor.getName());
         // 2. We can remove one of the FIFO and the actor
         if (dipFifo.getDelay() == null) {
+          if (dipFifo.getSourcePort() == null) {
+            System.err.println("Actor [" + actor.getName() + "]: having null source port");
+            return false;
+          }
+          AbstractActor cA = dipFifo.getSourcePort().getContainingActor();
           dopFifo.setSourcePort(dipFifo.getSourcePort());
+          if (cA instanceof DelayActor) {
+            String newName = ((DelayActor) cA).getGetterActor().getName();
+            System.err.println("GETTRE/PrevName: " + actor.getName() + " NewName: " + newName);
+          }
           graph.removeFifo(dipFifo);
         } else if (dopFifo.getDelay() == null) {
+          if (dopFifo.getTargetPort() == null) {
+            System.err.println("Actor [" + actor.getName() + "]: having null target port");
+            return false;
+          }
+          AbstractActor cA = dopFifo.getTargetPort().getContainingActor();
           dipFifo.setTargetPort(dopFifo.getTargetPort());
+          if (cA instanceof DelayActor) {
+            String newName = ((DelayActor) cA).getSetterActor().getName();
+            System.err.println("SETTER/PrevName: " + actor.getName() + " NewName: " + newName);
+          }
           graph.removeFifo(dopFifo);
         } else {
           return false;
