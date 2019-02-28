@@ -118,11 +118,18 @@ public class CreateFifoFeature extends AbstractCreateConnectionFeature {
       final DataInputPort targetPort = (DataInputPort) target;
       final AbstractActor targetActor = targetPort.getContainingActor();
       if (targetActor instanceof DelayActor) {
+        final DataOutputPort source = (DataOutputPort) getSourcePort(context, context.getSourceAnchor());
+        final AbstractActor sourceActor = source.getContainingActor();
+        if (sourceActor instanceof DelayActor && sourceActor.getName() == targetActor.getName()) {
+          PiMMUtil.setToolTip(getFeatureProvider(), context.getTargetAnchor().getGraphicsAlgorithm(),
+              getDiagramBehavior(), "A delay cannot be connected to itself.");
+          return false;
+        }
         final Delay delay = ((DelayActor) targetActor).getLinkedDelay();
         if (delay.getLevel().equals(PersistenceLevel.LOCAL) || delay.getLevel().equals(PersistenceLevel.PERMANENT)) {
           PiMMUtil.setToolTip(getFeatureProvider(), context.getTargetAnchor().getGraphicsAlgorithm(),
               getDiagramBehavior(),
-              "A delay with permanent data tokens persistence can not be connected to a getter actor.");
+              "A delay with local or permanent data tokens persistence can not have a setter actor.");
           return false;
         }
       }
@@ -332,10 +339,10 @@ public class CreateFifoFeature extends AbstractCreateConnectionFeature {
         final AbstractActor sourceActor = sourcePort.getContainingActor();
         if (sourceActor instanceof DelayActor) {
           final Delay delay = ((DelayActor) sourceActor).getLinkedDelay();
-          if (delay.getLevel().equals(PersistenceLevel.PERMANENT) || delay.getLevel().equals(PersistenceLevel.LOCAL)) {
+          if (delay.getLevel().equals(PersistenceLevel.LOCAL) || delay.getLevel().equals(PersistenceLevel.PERMANENT)) {
             PiMMUtil.setToolTip(getFeatureProvider(), context.getSourceAnchor().getGraphicsAlgorithm(),
                 getDiagramBehavior(),
-                "A delay with permanent data tokens persistence can not be connected to a setter actor.");
+                "A delay with local or permanent data tokens persistence can not have a getter actor.");
             return false;
           }
         }
