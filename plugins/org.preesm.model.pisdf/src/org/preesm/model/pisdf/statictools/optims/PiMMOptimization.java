@@ -48,16 +48,6 @@ public interface PiMMOptimization {
 
   /**
    * Perform graph optimizations on a given PiGraph
-   * 
-   * @param graph
-   *          the graph to optimize
-   * @param full
-   *          If true perform all optims, otherwise only remove trivially useless special actors.
-   */
-  boolean optimize(final PiGraph graph, boolean full);
-
-  /**
-   * Perform graph optimizations on a given PiGraph
    * <p>
    * Calls {@link optimize} with {@code full} set to true.
    * 

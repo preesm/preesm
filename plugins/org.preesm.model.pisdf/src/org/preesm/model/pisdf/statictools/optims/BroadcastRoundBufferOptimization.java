@@ -50,7 +50,6 @@ import org.preesm.model.pisdf.util.PiMMSwitch;
 public class BroadcastRoundBufferOptimization extends PiMMSwitch<Boolean> implements PiMMOptimization {
 
   boolean keepGoing = false;
-  boolean full      = true;
 
   /*
    * (non-Javadoc)
@@ -60,20 +59,8 @@ public class BroadcastRoundBufferOptimization extends PiMMSwitch<Boolean> implem
    */
   @Override
   public boolean optimize(PiGraph graph) {
-    return optimize(graph, true);
-  }
-
-  /*
-   * (non-Javadoc)
-   *
-   * @see
-   * org.ietr.preesm.pimm.algorithm.pimmoptims.PiMMOptimization#optimize(org.ietr.preesm.experiment.model.pimm.PiGraph)
-   */
-  @Override
-  public boolean optimize(PiGraph graph, boolean full) {
     do {
       this.keepGoing = false;
-      this.full = full;
       final Boolean doSwitch = doSwitch(graph);
       this.keepGoing = (doSwitch == null);
     } while (this.keepGoing);
@@ -89,22 +76,14 @@ public class BroadcastRoundBufferOptimization extends PiMMSwitch<Boolean> implem
   @Override
   public Boolean caseBroadcastActor(BroadcastActor actor) {
     final ForkOptimization forkOptimization = new ForkOptimization();
-    if (full) {
-      this.keepGoing |= forkOptimization.remove(actor.getContainingPiGraph(), actor);
-    } else {
-      this.keepGoing |= forkOptimization.removeUnused(actor.getContainingPiGraph(), actor);
-    }
+    this.keepGoing |= forkOptimization.remove(actor.getContainingPiGraph(), actor);
     return true;
   }
 
   @Override
   public Boolean caseRoundBufferActor(RoundBufferActor actor) {
     final JoinOptimization joinOptimization = new JoinOptimization();
-    if (full) {
-      this.keepGoing |= joinOptimization.remove(actor.getContainingPiGraph(), actor);
-    } else {
-      this.keepGoing |= joinOptimization.removeUnused(actor.getContainingPiGraph(), actor);
-    }
+    this.keepGoing |= joinOptimization.remove(actor.getContainingPiGraph(), actor);
     return true;
   }
 }

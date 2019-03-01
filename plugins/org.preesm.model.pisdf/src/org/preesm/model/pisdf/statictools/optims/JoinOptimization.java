@@ -50,6 +50,7 @@ import org.preesm.model.pisdf.Fifo;
 import org.preesm.model.pisdf.ForkActor;
 import org.preesm.model.pisdf.JoinActor;
 import org.preesm.model.pisdf.PiGraph;
+import org.preesm.model.pisdf.statictools.PiMMHelper;
 import org.preesm.model.pisdf.statictools.PiMMSRVerticesLinker;
 
 /**
@@ -77,8 +78,14 @@ public class JoinOptimization extends AbstractPiGraphSpecialActorRemover<DataInp
    */
   @Override
   public final boolean remove(final PiGraph graph, final AbstractActor actor) {
-    if (graph == null) {
+    if (graph == null || actor == null) {
       return false;
+    }
+    for (final DataInputPort dip : actor.getDataInputPorts()) {
+      final Fifo incomingFifo = dip.getIncomingFifo();
+      if (incomingFifo.getDelay() != null) {
+        return false;
+      }
     }
     for (final DataInputPort dip : actor.getDataInputPorts()) {
       final Fifo incomingFifo = dip.getIncomingFifo();
@@ -86,7 +93,7 @@ public class JoinOptimization extends AbstractPiGraphSpecialActorRemover<DataInp
       final AbstractActor sourceActor = sourcePort.getContainingActor();
       if (sourceActor instanceof JoinActor) {
         fillRemoveAndReplace(actor.getDataInputPorts(), sourceActor.getDataInputPorts(), dip);
-        removeActorAndFifo(graph, incomingFifo, sourceActor);
+        PiMMHelper.removeActorAndFifo(graph, incomingFifo, sourceActor);
       }
     }
 
@@ -109,11 +116,14 @@ public class JoinOptimization extends AbstractPiGraphSpecialActorRemover<DataInp
    * @return true if join is followed by a fork, false else
    */
   public final boolean removeJoinFork(final PiGraph graph, final JoinActor actor) {
-    if (graph == null) {
+    if (graph == null || actor == null) {
       return false;
     }
     final DataOutputPort out = actor.getDataOutputPorts().get(0);
     final Fifo fifo = out.getFifo();
+    if (fifo.getDelay() != null) {
+      return false;
+    }
     final AbstractActor target = fifo.getTargetPort().getContainingActor();
     if (target instanceof ForkActor) {
       // We build the list of source and sink set
@@ -133,10 +143,8 @@ public class JoinOptimization extends AbstractPiGraphSpecialActorRemover<DataInp
       final PiMMSRVerticesLinker srLinker = new PiMMSRVerticesLinker();
       srLinker.execute(sourceSet, sinkSet);
       fifoToRemove.forEach(graph::removeFifo);
-      removeActorDependencies(graph, actor);
-      removeActorDependencies(graph, target);
-      graph.removeActor(actor);
-      graph.removeActor(target);
+      PiMMHelper.removeActorAndDependencies(graph, actor);
+      PiMMHelper.removeActorAndDependencies(graph, target);
       graph.removeFifo(fifo);
       return true;
     }

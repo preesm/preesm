@@ -115,9 +115,9 @@ public class PiSDFFlattener extends PiMMSwitch<Boolean> {
     if (performOptim) {
       // 6- do some optimization on the graph
       final ForkJoinOptimization forkJoinOptimization = new ForkJoinOptimization();
-      forkJoinOptimization.optimize(result, false);
+      forkJoinOptimization.optimize(result);
       final BroadcastRoundBufferOptimization brRbOptimization = new BroadcastRoundBufferOptimization();
-      brRbOptimization.optimize(result, false);
+      brRbOptimization.optimize(result);
 
       removeUselessStuffAfterOptim(result);
       PiGraphConsistenceChecker.check(result);
@@ -140,17 +140,11 @@ public class PiSDFFlattener extends PiMMSwitch<Boolean> {
     }
   }
 
-  private static final PersistenceLevel removeLoopOnDelayActor(final PiGraph graph, final DelayActor da) {
-    if (!graph.getDelayActors().contains(da)) {
-      return PersistenceLevel.NONE;
-    }
-    Delay d = da.getLinkedDelay();
-    long value = d.getExpression().evaluate();
-    PersistenceLevel plInt = d.getLevel();
+  private static final void removeLoopOnDelayActor(final PiGraph graph, final DelayActor da) {
     AbstractActor setter = da.getSetterActor();
     AbstractActor getter = da.getGetterActor();
     if (setter == null || getter == null || (setter != da && getter != da)) {
-      return plInt;
+      return;
     }
     Fifo f1 = da.getDataOutputPort().getFifo();
     Fifo f2 = da.getDataInputPort().getFifo();
@@ -161,21 +155,26 @@ public class PiSDFFlattener extends PiMMSwitch<Boolean> {
     Delay dExt = f1.getDelay();
     if (dExt == null) {
       graph.removeFifo(f1);
-      return plInt;
+      return;
     }
+    Delay d = da.getLinkedDelay();
+    long value = d.getExpression().evaluate();
     DelayActor daExt = dExt.getActor();
     if (daExt == null) {
       if (dExt.getExpression().evaluate() != value) {
         PreesmLogger.getLogger().log(Level.WARNING,
             "A delay actor loop  on <" + da.getName() + "had a wrong delay size, it is removed anyway.");
       }
+      PersistenceLevel plExt = dExt.getLevel();
+      graph.removeDelay(dExt);
       graph.removeFifo(f1);
-      return plInt;
+      d.setLevel(plExt);
+      return;
     }
-    PersistenceLevel plExt = removeLoopOnDelayActor(graph, daExt);
-    graph.removeActor(daExt);
-    d.setLevel(plExt);
-    return plExt;
+    graph.removeDelay(dExt);
+    graph.removeFifo(f1);
+    PiMMHelper.removeActorAndDependencies(graph, da);
+    d.setActor(daExt);
   }
 
   /**

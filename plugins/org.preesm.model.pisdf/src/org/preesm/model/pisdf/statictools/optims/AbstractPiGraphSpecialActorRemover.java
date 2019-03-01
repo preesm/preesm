@@ -39,17 +39,13 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import org.preesm.model.pisdf.AbstractActor;
-import org.preesm.model.pisdf.ConfigInputPort;
 import org.preesm.model.pisdf.DataInputPort;
 import org.preesm.model.pisdf.DataOutputPort;
 import org.preesm.model.pisdf.DataPort;
-import org.preesm.model.pisdf.DelayActor;
-import org.preesm.model.pisdf.Dependency;
 import org.preesm.model.pisdf.Expression;
 import org.preesm.model.pisdf.Fifo;
-import org.preesm.model.pisdf.ISetter;
-import org.preesm.model.pisdf.Parameter;
 import org.preesm.model.pisdf.PiGraph;
+import org.preesm.model.pisdf.statictools.PiMMHelper;
 
 /**
  *
@@ -77,28 +73,10 @@ public abstract class AbstractPiGraphSpecialActorRemover<T extends DataPort> {
     this.dataPortsToReplace.put(index, newDataPorts);
   }
 
-  protected void removeActorDependencies(final PiGraph graph, final AbstractActor actor) {
-    for (final ConfigInputPort cip : actor.getConfigInputPorts()) {
-      final Dependency incomingDependency = cip.getIncomingDependency();
-      graph.getEdges().remove(incomingDependency);
-      final ISetter setter = incomingDependency.getSetter();
-      setter.getOutgoingDependencies().remove(incomingDependency);
-      if (setter instanceof Parameter && setter.getOutgoingDependencies().isEmpty()) {
-        graph.getVertices().remove((Parameter) setter);
-      }
-    }
-  }
-
-  protected void removeActorAndFifo(final PiGraph graph, final Fifo fifo, final AbstractActor actor) {
-    removeActorDependencies(graph, actor);
-    graph.removeActor(actor);
-    graph.removeFifo(fifo);
-  }
-
   protected boolean removeAndReplaceDataPorts(final List<T> dataPorts) {
     this.dataPortsToRemove.forEach(dataPorts::remove);
     this.dataPortsToReplace.forEach(dataPorts::addAll);
-    final boolean retValue = !this.dataPortsToReplace.isEmpty();
+    final boolean retValue = !dataPortsToReplace.isEmpty();
     this.dataPortsToRemove.clear();
     this.dataPortsToReplace.clear();
     return retValue;
@@ -113,65 +91,36 @@ public abstract class AbstractPiGraphSpecialActorRemover<T extends DataPort> {
    *          The actor to analyze
    * @return true if the actor was removed, false else
    */
-  public boolean removeUnused(final PiGraph graph, final AbstractActor actor) {
+  public static boolean removeUnused(final PiGraph graph, final AbstractActor actor) {
     if (actor.getDataInputPorts().size() == 1 && actor.getDataOutputPorts().size() == 1) {
       // 0. Get input rate
       final DataInputPort dataInputPort = actor.getDataInputPorts().get(0);
       final Fifo dipFifo = dataInputPort.getFifo();
-
-      // to debug and remove ...
-      // if (dipFifo == null || dipFifo.getSourcePort().getContainingActor() instanceof DelayActor) {
-      // return false;
-      // }
+      if (dipFifo == null) {
+        return false;
+      }
       final Expression inputRateExpression = dataInputPort.getPortRateExpression();
       final long inputRate = inputRateExpression.evaluate();
       // 1. Get output rate
       final DataOutputPort dataOutputPort = actor.getDataOutputPorts().get(0);
       final Fifo dopFifo = dataOutputPort.getFifo();
-      // if (dopFifo == null || dopFifo.getTargetPort().getContainingActor() instanceof DelayActor) {
-      // return false;
-      // }
-      if (dopFifo == null || dipFifo == null) {
-        String dp = dopFifo == null ? " DOP NULL " : "";
-        dp += dipFifo == null ? " DIP NULL " : "";
-        System.err.println("Actor [" + actor.getName() + "]: " + dp);
+      if (dopFifo == null) {
         return false;
       }
-
       final Expression outputRateExpression = dataOutputPort.getPortRateExpression();
       final long outputRate = outputRateExpression.evaluate();
       if (inputRate == outputRate) {
-        System.err.println("Removing: " + actor.getName());
         // 2. We can remove one of the FIFO and the actor
         if (dipFifo.getDelay() == null) {
-          if (dipFifo.getSourcePort() == null) {
-            System.err.println("Actor [" + actor.getName() + "]: having null source port");
-            return false;
-          }
-          AbstractActor cA = dipFifo.getSourcePort().getContainingActor();
           dopFifo.setSourcePort(dipFifo.getSourcePort());
-          if (cA instanceof DelayActor) {
-            String newName = ((DelayActor) cA).getGetterActor().getName();
-            System.err.println("GETTRE/PrevName: " + actor.getName() + " NewName: " + newName);
-          }
           graph.removeFifo(dipFifo);
         } else if (dopFifo.getDelay() == null) {
-          if (dopFifo.getTargetPort() == null) {
-            System.err.println("Actor [" + actor.getName() + "]: having null target port");
-            return false;
-          }
-          AbstractActor cA = dopFifo.getTargetPort().getContainingActor();
           dipFifo.setTargetPort(dopFifo.getTargetPort());
-          if (cA instanceof DelayActor) {
-            String newName = ((DelayActor) cA).getSetterActor().getName();
-            System.err.println("SETTER/PrevName: " + actor.getName() + " NewName: " + newName);
-          }
           graph.removeFifo(dopFifo);
         } else {
           return false;
         }
-        removeActorDependencies(graph, actor);
-        graph.removeActor(actor);
+        PiMMHelper.removeActorAndDependencies(graph, actor);
         return true;
       }
     }

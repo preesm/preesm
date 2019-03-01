@@ -51,6 +51,7 @@ import org.preesm.commons.logger.PreesmLogger;
 import org.preesm.model.pisdf.AbstractActor;
 import org.preesm.model.pisdf.AbstractVertex;
 import org.preesm.model.pisdf.Actor;
+import org.preesm.model.pisdf.ConfigInputPort;
 import org.preesm.model.pisdf.DataInputInterface;
 import org.preesm.model.pisdf.DataInputPort;
 import org.preesm.model.pisdf.DataOutputInterface;
@@ -58,8 +59,11 @@ import org.preesm.model.pisdf.DataOutputPort;
 import org.preesm.model.pisdf.DataPort;
 import org.preesm.model.pisdf.Delay;
 import org.preesm.model.pisdf.DelayActor;
+import org.preesm.model.pisdf.Dependency;
 import org.preesm.model.pisdf.Fifo;
+import org.preesm.model.pisdf.ISetter;
 import org.preesm.model.pisdf.InterfaceActor;
+import org.preesm.model.pisdf.Parameter;
 import org.preesm.model.pisdf.PersistenceLevel;
 import org.preesm.model.pisdf.PiGraph;
 import org.preesm.model.pisdf.PortMemoryAnnotation;
@@ -539,6 +543,43 @@ public class PiMMHelper {
     }
     // We update the value of the graphRV accordingly
     return graphRV * graphHierarchicallRV;
+  }
+
+  /**
+   * Remove dependencies of an actor, the configure input port if not used anymore, and also the actor itself from
+   * graph.
+   * 
+   * @param graph
+   *          Container of elements to remove.
+   * @param actor
+   *          To remove from graph.
+   */
+  public static void removeActorAndDependencies(final PiGraph graph, final AbstractActor actor) {
+    for (final ConfigInputPort cip : actor.getConfigInputPorts()) {
+      final Dependency incomingDependency = cip.getIncomingDependency();
+      graph.getEdges().remove(incomingDependency);
+      final ISetter setter = incomingDependency.getSetter();
+      setter.getOutgoingDependencies().remove(incomingDependency);
+      if (setter instanceof Parameter && setter.getOutgoingDependencies().isEmpty()) {
+        graph.getVertices().remove((Parameter) setter);
+      }
+    }
+    graph.removeActor(actor);
+  }
+
+  /**
+   * Remove dependencies, actor and fifo from graph.
+   * 
+   * @param graph
+   *          Container of elements to remove.
+   * @param fifo
+   *          To remove from graph.
+   * @param actor
+   *          To remove from graph.
+   */
+  public static void removeActorAndFifo(final PiGraph graph, final Fifo fifo, final AbstractActor actor) {
+    removeActorAndDependencies(graph, actor);
+    graph.removeFifo(fifo);
   }
 
 }

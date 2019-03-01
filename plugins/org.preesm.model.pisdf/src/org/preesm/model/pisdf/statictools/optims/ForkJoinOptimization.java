@@ -50,7 +50,6 @@ import org.preesm.model.pisdf.util.PiMMSwitch;
 public class ForkJoinOptimization extends PiMMSwitch<Boolean> implements PiMMOptimization {
 
   boolean keepGoing = false;
-  boolean full      = true;
 
   /*
    * (non-Javadoc)
@@ -60,20 +59,8 @@ public class ForkJoinOptimization extends PiMMSwitch<Boolean> implements PiMMOpt
    */
   @Override
   public boolean optimize(PiGraph graph) {
-    return optimize(graph, true);
-  }
-
-  /*
-   * (non-Javadoc)
-   *
-   * @see
-   * org.ietr.preesm.pimm.algorithm.pimmoptims.PiMMOptimization#optimize(org.ietr.preesm.experiment.model.pimm.PiGraph)
-   */
-  @Override
-  public boolean optimize(PiGraph graph, boolean full) {
     do {
       this.keepGoing = false;
-      this.full = full;
       final Boolean doSwitch = doSwitch(graph);
       this.keepGoing = (doSwitch == null);
     } while (this.keepGoing);
@@ -90,23 +77,15 @@ public class ForkJoinOptimization extends PiMMSwitch<Boolean> implements PiMMOpt
   @Override
   public Boolean caseForkActor(ForkActor actor) {
     final ForkOptimization forkOptimization = new ForkOptimization();
-    if (full) {
-      this.keepGoing |= forkOptimization.remove(actor.getContainingPiGraph(), actor);
-    } else {
-      this.keepGoing |= forkOptimization.removeUnused(actor.getContainingPiGraph(), actor);
-    }
+    this.keepGoing |= forkOptimization.remove(actor.getContainingPiGraph(), actor);
     return true;
   }
 
   @Override
   public Boolean caseJoinActor(JoinActor actor) {
     final JoinOptimization joinOptimization = new JoinOptimization();
-    if (full) {
-      this.keepGoing |= joinOptimization.remove(actor.getContainingPiGraph(), actor);
-      this.keepGoing |= joinOptimization.removeJoinFork(actor.getContainingPiGraph(), actor);
-    } else {
-      this.keepGoing |= joinOptimization.removeUnused(actor.getContainingPiGraph(), actor);
-    }
+    this.keepGoing |= joinOptimization.remove(actor.getContainingPiGraph(), actor);
+    this.keepGoing |= joinOptimization.removeJoinFork(actor.getContainingPiGraph(), actor);
     return true;
   }
 }
