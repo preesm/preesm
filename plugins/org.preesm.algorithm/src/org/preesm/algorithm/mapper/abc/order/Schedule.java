@@ -260,7 +260,7 @@ public class Schedule {
    * @return the int
    */
   public int indexOf(final MapperDAGVertex v) {
-    return this.elementList.indexOf(getScheduleElt(v));
+    return this.elementList.indexOf(v);
   }
 
   /**

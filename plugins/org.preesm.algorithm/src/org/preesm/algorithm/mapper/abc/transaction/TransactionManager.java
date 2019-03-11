@@ -36,8 +36,7 @@
  */
 package org.preesm.algorithm.mapper.abc.transaction;
 
-import java.util.Iterator;
-import java.util.LinkedList;
+import java.util.ArrayList;
 import java.util.List;
 
 // TODO: Auto-generated Javadoc
@@ -49,10 +48,10 @@ import java.util.List;
 public class TransactionManager {
 
   /** The transaction list. */
-  private LinkedList<Transaction> transactionList = null;
+  private final ArrayList<Transaction> transactionList;
 
   /** The result list. */
-  private List<Object> resultList = null;
+  private final List<Object> resultList;
 
   /**
    * Instantiates a new transaction manager.
@@ -69,7 +68,7 @@ public class TransactionManager {
    */
   public TransactionManager(final List<Object> resultList) {
     super();
-    this.transactionList = new LinkedList<>();
+    this.transactionList = new ArrayList<>();
     this.resultList = resultList;
   }
 
@@ -77,11 +76,8 @@ public class TransactionManager {
    * Execute.
    */
   public void execute() {
-    final Iterator<Transaction> it = this.transactionList.iterator();
-
-    while (it.hasNext()) {
-      final Transaction currentT = it.next();
-      currentT.execute(this.resultList);
+    for (final Transaction t : transactionList) {
+      t.execute(resultList);
     }
   }
 
@@ -92,14 +88,14 @@ public class TransactionManager {
    *          the transaction
    */
   public void add(final Transaction transaction) {
-    this.transactionList.add(transaction);
+    transactionList.add(transaction);
   }
 
   /**
    * Clear.
    */
   public void clear() {
-    this.transactionList.clear();
+    transactionList.clear();
   }
 
   /*
@@ -109,13 +105,12 @@ public class TransactionManager {
    */
   @Override
   public String toString() {
-    String s = "{";
+    StringBuilder sb = new StringBuilder("{");
 
-    for (final Transaction t : this.transactionList) {
-      s += t.toString() + ",";
+    for (final Transaction t : transactionList) {
+      sb.append(t.toString() + ",");
     }
-
-    s = s.substring(0, s.length() - 1);
+    String s = sb.substring(0, sb.length() - 1);
     s += "}";
 
     return s;

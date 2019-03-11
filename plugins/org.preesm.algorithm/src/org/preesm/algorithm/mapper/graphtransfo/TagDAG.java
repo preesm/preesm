@@ -122,11 +122,11 @@ public class TagDAG {
   private void addSendReceive(final MapperDAG dag, final Design architecture, final PreesmScenario scenario) {
 
     final OrderManager orderMgr = new OrderManager(architecture);
-    orderMgr.reconstructTotalOrderFromDAG(dag);
+    orderMgr.reconstructTotalOrderFromDAG(dag); // could be avoided?
 
     final IEdgeSched instance = AbstractEdgeSched.getInstance(EdgeSchedType.Simple, orderMgr);
     final CommunicationRouter comRouter = new CommunicationRouter(architecture, scenario, dag, instance, orderMgr);
-    comRouter.routeAll(CommunicationRouter.SEND_RECEIVE_TYPE);
+    comRouter.routeAll(CommunicationRouter.SEND_RECEIVE_TYPE); // takes a lot of time, should be optimized
     orderMgr.tagDAG(dag);
   }
 
