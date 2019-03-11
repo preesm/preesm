@@ -285,7 +285,7 @@ class InstrumentedCPrinter extends CPrinter {
 
 	def String printAnalysisCsvFile()'''
 	«FOR entry : actorIDs.entrySet»
-	«entry.key»;"=AVERAGE(«FOR id : entry.value SEPARATOR ';'»«(id).intToColumn»«actorIDs.size + 3»:«(id).intToColumn»65536«ENDFOR»)"
+	«entry.key»;"=MROUND(AVERAGE(«FOR id : entry.value SEPARATOR ';'»«(id).intToColumn»«actorIDs.size + 3»:«(id).intToColumn»65536«ENDFOR»);10)"
 	«ENDFOR»
 	'''
 

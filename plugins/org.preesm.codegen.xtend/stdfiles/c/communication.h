@@ -49,51 +49,6 @@ communications.
 #ifndef _PREESM_COMMUNICATION_H
 #define _PREESM_COMMUNICATION_H
 
-#ifdef __APPLE__
-#include <dispatch/dispatch.h>
-#else
-#include <semaphore.h>
-#endif
-
-// note: rk_ struct and functions comes from
-// https://stackoverflow.com/questions/27736618/why-are-sem-init-sem-getvalue-sem-destroy-deprecated-on-mac-os-x-and-w
-
-struct rk_sema {
-#ifdef __APPLE__
-    dispatch_semaphore_t    sem;
-#else
-    sem_t                   sem;
-#endif
-};
-
-
-static void rk_sema_init(struct rk_sema *s, int value) {
-#ifdef __APPLE__
-    dispatch_semaphore_t *sem = &s->sem;
-    *sem = dispatch_semaphore_create(value);
-#else
-    sem_init(&s->sem, 0, value);
-#endif
-}
-
-static void rk_sema_wait(struct rk_sema *s) {
-#ifdef __APPLE__
-    dispatch_semaphore_wait(s->sem, DISPATCH_TIME_FOREVER);
-#else
-    int r;
-    do {
-            r = sem_wait(&s->sem);
-    } while (r == -1);
-#endif
-}
-
-static void rk_sema_post(struct rk_sema *s) {
-#ifdef __APPLE__
-    dispatch_semaphore_signal(s->sem);
-#else
-    sem_post(&s->sem);
-#endif
-}
 
 /**
 * Maximum number of core supported by the communication library.
