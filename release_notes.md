@@ -11,6 +11,7 @@ PREESM Changelog
 * Update workflow related messages;
 * Delete unused resources;
 * Disable sonar cloud on pull requests and other repos;
+* Implements graph optimisations for graph flattening and provide rates warnings;
 
 ### Bug fix
 * Fix #108: Update log messages to display the faulty task name and id, when relevant;
