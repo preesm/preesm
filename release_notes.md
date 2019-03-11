@@ -12,6 +12,7 @@ PREESM Changelog
 * Delete unused resources;
 * Disable sonar cloud on pull requests and other repos;
 * Implements graph optimisations for graph flattening and provide rates warnings;
+* Improve the periodic schedulability test by automatically computing the fifo breaking cycles;
 
 ### Bug fix
 * Fix #108: Update log messages to display the faulty task name and id, when relevant;
