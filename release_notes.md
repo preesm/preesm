@@ -5,6 +5,7 @@ PREESM Changelog
 *XXXX.XX.XX*
 
 ### New Feature
+* Add a sanity check on communication order in intermediate PE for multi-step communication.
 
 ### Changes
 * Update workflow related messages;
