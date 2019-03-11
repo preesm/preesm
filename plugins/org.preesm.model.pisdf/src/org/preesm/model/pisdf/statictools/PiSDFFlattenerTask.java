@@ -38,7 +38,7 @@
  */
 package org.preesm.model.pisdf.statictools;
 
-import java.util.Collections;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.logging.Level;
@@ -58,6 +58,13 @@ public class PiSDFFlattenerTask extends AbstractTaskImplementation {
 
   final Logger logger = PreesmLogger.getLogger();
 
+  /**
+   * This option should be set to true when not reusing the generated graph to work on the model. Indeed it breaks the
+   * repetition vector independence between previously hierarchical components.
+   */
+  public static final String  OPTIM_CHOICE  = "Perform optimizations";
+  public static final Boolean DEFAULT_OPTIM = true;
+
   /*
    * (non-Javadoc)
    *
@@ -69,8 +76,10 @@ public class PiSDFFlattenerTask extends AbstractTaskImplementation {
       final IProgressMonitor monitor, final String nodeName, final Workflow workflow) {
     final PiGraph graph = (PiGraph) inputs.get(AbstractWorkflowNodeImplementation.KEY_PI_GRAPH);
     logger.log(Level.INFO, "Computing Repetition Vector for graph [" + graph.getName() + "]");
+    String paramOptim = parameters.getOrDefault(OPTIM_CHOICE, Boolean.toString(DEFAULT_OPTIM));
+
     // Flatten the graph
-    final PiGraph result = PiSDFFlattener.flatten(graph);
+    final PiGraph result = PiSDFFlattener.flatten(graph, Boolean.parseBoolean(paramOptim));
 
     final Map<String, Object> output = new LinkedHashMap<>();
     output.put(AbstractWorkflowNodeImplementation.KEY_PI_GRAPH, result);
@@ -79,7 +88,9 @@ public class PiSDFFlattenerTask extends AbstractTaskImplementation {
 
   @Override
   public Map<String, String> getDefaultParameters() {
-    return Collections.emptyMap();
+    Map<String, String> defaultParams = new HashMap<>();
+    defaultParams.put(OPTIM_CHOICE, Boolean.toString(DEFAULT_OPTIM));
+    return defaultParams;
   }
 
   /*

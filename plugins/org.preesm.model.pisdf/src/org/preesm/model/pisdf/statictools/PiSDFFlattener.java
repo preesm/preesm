@@ -42,7 +42,10 @@ package org.preesm.model.pisdf.statictools;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Level;
+import org.preesm.commons.IntegerName;
 import org.preesm.commons.exceptions.PreesmRuntimeException;
+import org.preesm.commons.logger.PreesmLogger;
 import org.preesm.model.pisdf.AbstractActor;
 import org.preesm.model.pisdf.AbstractVertex;
 import org.preesm.model.pisdf.BroadcastActor;
@@ -73,6 +76,8 @@ import org.preesm.model.pisdf.RoundBufferActor;
 import org.preesm.model.pisdf.brv.BRVMethod;
 import org.preesm.model.pisdf.brv.PiBRV;
 import org.preesm.model.pisdf.factory.PiMMUserFactory;
+import org.preesm.model.pisdf.statictools.optims.BroadcastRoundBufferOptimization;
+import org.preesm.model.pisdf.statictools.optims.ForkJoinOptimization;
 import org.preesm.model.pisdf.util.PiGraphConsistenceChecker;
 import org.preesm.model.pisdf.util.PiMMSwitch;
 
@@ -87,7 +92,7 @@ public class PiSDFFlattener extends PiMMSwitch<Boolean> {
    *
    * @return the SDFGraph obtained by visiting graph
    */
-  public static final PiGraph flatten(final PiGraph graph) {
+  public static final PiGraph flatten(final PiGraph graph, boolean performOptim) {
     PiGraphConsistenceChecker.check(graph);
     // 1. First we resolve all parameters.
     // It must be done first because, when removing persistence, local parameters have to be known at upper level
@@ -103,12 +108,73 @@ public class PiSDFFlattener extends PiMMSwitch<Boolean> {
     // 5. Now, flatten the graph
     PiSDFFlattener staticPiMM2FlatPiMMVisitor = new PiSDFFlattener(brv);
     staticPiMM2FlatPiMMVisitor.doSwitch(graph);
+    PiGraph result = staticPiMM2FlatPiMMVisitor.result;
+    PiGraphConsistenceChecker.check(result);
+    flattenCheck(result);
 
-    // checks
-    PiGraphConsistenceChecker.check(staticPiMM2FlatPiMMVisitor.result);
-    flattenCheck(staticPiMM2FlatPiMMVisitor.result);
+    if (performOptim) {
+      // 6- do some optimization on the graph
+      final ForkJoinOptimization forkJoinOptimization = new ForkJoinOptimization();
+      forkJoinOptimization.optimize(result);
+      final BroadcastRoundBufferOptimization brRbOptimization = new BroadcastRoundBufferOptimization();
+      brRbOptimization.optimize(result);
 
-    return staticPiMM2FlatPiMMVisitor.result;
+      removeUselessStuffAfterOptim(result);
+      PiGraphConsistenceChecker.check(result);
+      flattenCheck(result);
+    }
+
+    return result;
+  }
+
+  private static final void removeUselessStuffAfterOptim(final PiGraph graph) {
+    // remove params that are not anymore connected to anything
+    for (final Parameter p : graph.getParameters()) {
+      if (p.getOutgoingDependencies().isEmpty()) {
+        graph.getVertices().remove(p);
+      }
+    }
+    // remove loops on DelayActor
+    for (AbstractActor da : graph.getDelayActors()) {
+      removeLoopOnDelayActor(graph, (DelayActor) da);
+    }
+  }
+
+  private static final void removeLoopOnDelayActor(final PiGraph graph, final DelayActor da) {
+    AbstractActor setter = da.getSetterActor();
+    AbstractActor getter = da.getGetterActor();
+    if (setter == null || getter == null || (setter != da && getter != da)) {
+      return;
+    }
+    Fifo f1 = da.getDataOutputPort().getFifo();
+    Fifo f2 = da.getDataInputPort().getFifo();
+    if (f1 != f2) {
+      throw new PreesmRuntimeException(
+          "Loop detected on delay actor <" + da.getName() + "> but input and output fifos are different !");
+    }
+    Delay dExt = f1.getDelay();
+    if (dExt == null) {
+      graph.removeFifo(f1);
+      return;
+    }
+    Delay d = da.getLinkedDelay();
+    long value = d.getExpression().evaluate();
+    DelayActor daExt = dExt.getActor();
+    if (daExt == null) {
+      if (dExt.getExpression().evaluate() != value) {
+        PreesmLogger.getLogger().log(Level.WARNING,
+            "A delay actor loop  on <" + da.getName() + "had a wrong delay size, it is removed anyway.");
+      }
+      PersistenceLevel plExt = dExt.getLevel();
+      graph.removeDelay(dExt);
+      graph.removeFifo(f1);
+      d.setLevel(plExt);
+      return;
+    }
+    graph.removeDelay(dExt);
+    graph.removeFifo(f1);
+    PiMMHelper.removeActorAndDependencies(graph, da);
+    d.setActor(daExt);
   }
 
   /**
@@ -449,7 +515,7 @@ public class PiSDFFlattener extends PiMMSwitch<Boolean> {
     // make sure config input interfaces are made into Parameter (since their expressions have been evaluated);
     final Parameter copy = PiMMUserFactory.instance.createParameter();
     copy.setExpression(param.getValueExpression().evaluate());
-    copy.setName(param.getName());
+    copy.setName(graphPrefix + param.getName());
     // copy.setName(graphPrefix + param.getName());
     this.result.addParameter(copy);
     this.param2param.put(param, copy);
@@ -489,14 +555,15 @@ public class PiSDFFlattener extends PiMMSwitch<Boolean> {
     in.setAnnotation(PortMemoryAnnotation.READ_ONLY);
     fork.getDataInputPorts().add(in);
     // Set the DataOutputPorts and connect them
+    IntegerName iN = new IntegerName(graphRV - 1);
     for (long i = 0; i < graphRV; ++i) {
-      final String graphPrexix = this.graphPrefix + Long.toString(i) + "_";
+      final String graphPrexix = this.graphPrefix + iN.toString(i) + "_";
       final String actorName = graphPrexix + actor.getName();
       // 1. Retrieve the BroadcastActor
       final BroadcastActor currentBR = (BroadcastActor) this.result.lookupVertex(actorName);
       // 2. Create the output port
       final DataOutputPort out = PiMMUserFactory.instance.createDataOutputPort();
-      out.setName(actor.getName() + "_" + Long.toString(i));
+      out.setName(actor.getName() + "_" + iN.toString(i));
       out.setExpression(interfaceRateExpression.getExpressionAsString());
       out.setAnnotation(PortMemoryAnnotation.WRITE_ONLY);
       fork.getDataOutputPorts().add(out);
@@ -528,14 +595,15 @@ public class PiSDFFlattener extends PiMMSwitch<Boolean> {
     out.setAnnotation(PortMemoryAnnotation.WRITE_ONLY);
     join.getDataOutputPorts().add(out);
     // Set the DataOutputPorts and connect them
+    IntegerName iN = new IntegerName(graphRV - 1);
     for (long i = 0; i < graphRV; ++i) {
-      final String graphPrexix = this.graphPrefix + Long.toString(i) + "_";
+      final String graphPrexix = this.graphPrefix + iN.toString(i) + "_";
       final String actorName = graphPrexix + actor.getName();
       // 1. Retrieve the BroadcastActor
       final RoundBufferActor currentRB = (RoundBufferActor) this.result.lookupVertex(actorName);
       // 2. Create the output port
       final DataInputPort in = PiMMUserFactory.instance.createDataInputPort();
-      in.setName(actor.getName() + "_" + Long.toString(i));
+      in.setName(actor.getName() + "_" + iN.toString(i));
       in.setExpression(interfaceRateExpression.getExpressionAsString());
       in.setAnnotation(PortMemoryAnnotation.READ_ONLY);
       join.getDataInputPorts().add(in);
@@ -553,7 +621,9 @@ public class PiSDFFlattener extends PiMMSwitch<Boolean> {
 
   @Override
   public Boolean casePiGraph(final PiGraph graph) {
-    this.result.setName(graph.getName());
+    if (graph.getContainingPiGraph() == null) {
+      result.setName(graph.getName() + "_flat");
+    }
     // If there are no actors in the graph we leave
     if (graph.getActors().isEmpty()) {
       throw new UnsupportedOperationException(
@@ -612,9 +682,10 @@ public class PiSDFFlattener extends PiMMSwitch<Boolean> {
     final String backupPrefix = this.graphPrefix;
     // We need to get the repetition vector of the graph
     final long graphRV = PiMMHelper.getHierarchichalRV(graph, this.brv);
+    IntegerName iN = new IntegerName(graphRV - 1);
     for (long i = 0; i < graphRV; ++i) {
       if (!backupPrefix.isEmpty()) {
-        this.graphPrefix = backupPrefix + Long.toString(i) + "_";
+        this.graphPrefix = backupPrefix + iN.toString(i) + "_";
       }
       flatteningTransformation(graph);
     }

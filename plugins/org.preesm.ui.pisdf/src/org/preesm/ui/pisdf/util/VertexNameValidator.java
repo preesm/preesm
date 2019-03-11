@@ -41,6 +41,7 @@ import java.util.Collection;
 import org.eclipse.jface.dialogs.IInputValidator;
 import org.preesm.model.pisdf.AbstractVertex;
 import org.preesm.model.pisdf.PiGraph;
+import org.preesm.model.pisdf.check.NameCheckerC;
 
 // TODO: Auto-generated Javadoc
 /**
@@ -90,9 +91,9 @@ public class VertexNameValidator implements IInputValidator {
       return message;
     }
 
-    // Check if the name contains a space
-    if (newVertexName.contains(" ")) {
-      message = "/!\\ Name must not contain spaces /!\\";
+    // Check if the name meets the model regex
+    if (!NameCheckerC.isValidName(newVertexName)) {
+      message = "/!\\ Name must match the regex " + NameCheckerC.REGEX_C + " and not be a C keyword /!\\";
       return message;
     }
 

@@ -41,6 +41,7 @@ import java.util.Set;
 import org.eclipse.jface.dialogs.IInputValidator;
 import org.preesm.model.pisdf.AbstractActor;
 import org.preesm.model.pisdf.Port;
+import org.preesm.model.pisdf.check.NameCheckerC;
 
 // TODO: Auto-generated Javadoc
 /**
@@ -111,8 +112,9 @@ public class PortNameValidator implements IInputValidator {
     }
 
     // Check if the name contains a space
-    if (newPortName.contains(" ")) {
-      message = "/!\\ Port name must not contain spaces /!\\";
+    // Check if the name meets the model regex
+    if (!NameCheckerC.isValidName(newPortName)) {
+      message = "/!\\ Name must match the regex " + NameCheckerC.REGEX_C + " and not be a C keyword /!\\";
       return message;
     }
 

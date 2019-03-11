@@ -45,6 +45,7 @@ import org.preesm.model.pisdf.DataPort;
 import org.preesm.model.pisdf.Expression;
 import org.preesm.model.pisdf.Fifo;
 import org.preesm.model.pisdf.PiGraph;
+import org.preesm.model.pisdf.statictools.PiMMHelper;
 
 /**
  *
@@ -72,15 +73,10 @@ public abstract class AbstractPiGraphSpecialActorRemover<T extends DataPort> {
     this.dataPortsToReplace.put(index, newDataPorts);
   }
 
-  protected void removeActorAndFifo(final PiGraph graph, final Fifo fifo, final AbstractActor actor) {
-    graph.removeActor(actor);
-    graph.removeFifo(fifo);
-  }
-
-  protected boolean removeAndReplace(final List<T> dataPorts) {
+  protected boolean removeAndReplaceDataPorts(final List<T> dataPorts) {
     this.dataPortsToRemove.forEach(dataPorts::remove);
     this.dataPortsToReplace.forEach(dataPorts::addAll);
-    final boolean retValue = !this.dataPortsToReplace.isEmpty();
+    final boolean retValue = !dataPortsToReplace.isEmpty();
     this.dataPortsToRemove.clear();
     this.dataPortsToReplace.clear();
     return retValue;
@@ -95,23 +91,36 @@ public abstract class AbstractPiGraphSpecialActorRemover<T extends DataPort> {
    *          The actor to analyze
    * @return true if the actor was removed, false else
    */
-  protected boolean removeUnused(final PiGraph graph, final AbstractActor actor) {
+  public static boolean removeUnused(final PiGraph graph, final AbstractActor actor) {
     if (actor.getDataInputPorts().size() == 1 && actor.getDataOutputPorts().size() == 1) {
       // 0. Get input rate
       final DataInputPort dataInputPort = actor.getDataInputPorts().get(0);
+      final Fifo dipFifo = dataInputPort.getFifo();
+      if (dipFifo == null) {
+        return false;
+      }
       final Expression inputRateExpression = dataInputPort.getPortRateExpression();
       final long inputRate = inputRateExpression.evaluate();
       // 1. Get output rate
       final DataOutputPort dataOutputPort = actor.getDataOutputPorts().get(0);
+      final Fifo dopFifo = dataOutputPort.getFifo();
+      if (dopFifo == null) {
+        return false;
+      }
       final Expression outputRateExpression = dataOutputPort.getPortRateExpression();
       final long outputRate = outputRateExpression.evaluate();
       if (inputRate == outputRate) {
         // 2. We can remove one of the FIFO and the actor
-        final Fifo outgoingFifo = dataOutputPort.getOutgoingFifo();
-        final Fifo incomingFifo = dataInputPort.getIncomingFifo();
-        outgoingFifo.setSourcePort(incomingFifo.getSourcePort());
-        graph.removeFifo(incomingFifo);
-        graph.removeActor(actor);
+        if (dipFifo.getDelay() == null) {
+          dopFifo.setSourcePort(dipFifo.getSourcePort());
+          graph.removeFifo(dipFifo);
+        } else if (dopFifo.getDelay() == null) {
+          dipFifo.setTargetPort(dopFifo.getTargetPort());
+          graph.removeFifo(dopFifo);
+        } else {
+          return false;
+        }
+        PiMMHelper.removeActorAndDependencies(graph, actor);
         return true;
       }
     }

@@ -48,6 +48,8 @@ public interface PiMMOptimization {
 
   /**
    * Perform graph optimizations on a given PiGraph
+   * <p>
+   * Calls {@link optimize} with {@code full} set to true.
    * 
    * @param graph
    *          the graph to optimize

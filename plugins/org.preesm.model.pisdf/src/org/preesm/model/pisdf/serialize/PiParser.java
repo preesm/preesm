@@ -43,6 +43,7 @@ import java.io.BufferedInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.Charset;
+import java.util.List;
 import java.util.logging.Level;
 import org.apache.commons.io.IOUtils;
 import org.eclipse.core.resources.IFile;
@@ -74,6 +75,7 @@ import org.preesm.model.pisdf.DataInputInterface;
 import org.preesm.model.pisdf.DataInputPort;
 import org.preesm.model.pisdf.DataOutputInterface;
 import org.preesm.model.pisdf.DataOutputPort;
+import org.preesm.model.pisdf.DataPort;
 import org.preesm.model.pisdf.Delay;
 import org.preesm.model.pisdf.DelayActor;
 import org.preesm.model.pisdf.Dependency;
@@ -95,6 +97,7 @@ import org.preesm.model.pisdf.Port;
 import org.preesm.model.pisdf.PortKind;
 import org.preesm.model.pisdf.PortMemoryAnnotation;
 import org.preesm.model.pisdf.RefinementContainer;
+import org.preesm.model.pisdf.check.NameCheckerC;
 import org.preesm.model.pisdf.factory.PiMMUserFactory;
 import org.preesm.model.pisdf.util.PiGraphConsistenceChecker;
 import org.preesm.model.pisdf.util.PiIdentifiers;
@@ -233,6 +236,7 @@ public class PiParser {
       throw new PreesmRuntimeException("Could not parse the input graph: \n" + e.getMessage(), e);
     }
 
+    System.err.println("No error in parse");
     return graph;
   }
 
@@ -250,7 +254,14 @@ public class PiParser {
     final Actor actor = PiMMUserFactory.instance.createActor();
 
     // Get the actor properties
-    actor.setName(nodeElt.getAttribute(PiIdentifiers.ACTOR_NAME));
+    final String name = nodeElt.getAttribute(PiIdentifiers.ACTOR_NAME);
+
+    if (!NameCheckerC.isValidName(name)) {
+      throw new PreesmRuntimeException(
+          "Parsed actor " + name + " has an invalide name (should meet " + NameCheckerC.REGEX_C + ")");
+    }
+
+    actor.setName(name);
 
     final String attribute = nodeElt.getAttribute(PiIdentifiers.ACTOR_PERIOD);
     if (attribute != null && !attribute.isEmpty()) {
@@ -362,7 +373,6 @@ public class PiParser {
    */
   private FunctionParameter parseFunctionParameter(final Element elt) {
     final FunctionParameter param = PiMMUserFactory.instance.createFunctionParameter();
-
     param.setName(elt.getAttribute(PiIdentifiers.REFINEMENT_PARAMETER_NAME));
     param.setType(elt.getAttribute(PiIdentifiers.REFINEMENT_PARAMETER_TYPE));
     param.setDirection(Direction.valueOf(elt.getAttribute(PiIdentifiers.REFINEMENT_PARAMETER_DIRECTION)));
@@ -386,6 +396,10 @@ public class PiParser {
 
     // Get the actor properties
     final String attribute = nodeElt.getAttribute(PiIdentifiers.PARAMETER_NAME);
+    if (!NameCheckerC.isValidName(attribute)) {
+      throw new PreesmRuntimeException("Parsed ConfigInputInterface " + attribute
+          + " has an invalide name (should meet " + NameCheckerC.REGEX_C + ")");
+    }
     param.setName(attribute);
 
     // Add the actor to the parsed graph
@@ -502,6 +516,24 @@ public class PiParser {
   }
 
   /**
+   * Search for a DataPort with name "name" in a given list of DataPort
+   *
+   * @param ports
+   *          List of DataPort
+   * @param name
+   *          Name of the DataPort to find
+   * @return Found DataPort if any, null else
+   */
+  private static DataPort lookForPort(final List<? extends DataPort> ports, final String name) {
+    for (final DataPort dp : ports) {
+      if (dp.getName().equals(name)) {
+        return dp;
+      }
+    }
+    return null;
+  }
+
+  /**
    * Parse a node {@link Element} with kind "fifo".
    *
    * @param edgeElt
@@ -535,8 +567,8 @@ public class PiParser {
     sourcePortName = (sourcePortName.isEmpty()) ? null : sourcePortName;
     String targetPortName = edgeElt.getAttribute(PiIdentifiers.FIFO_TARGET_PORT);
     targetPortName = (targetPortName.isEmpty()) ? null : targetPortName;
-    final DataOutputPort oPort = (DataOutputPort) source.lookupPort(sourcePortName);
-    final DataInputPort iPort = (DataInputPort) target.lookupPort(targetPortName);
+    final DataOutputPort oPort = (DataOutputPort) lookForPort(source.getDataOutputPorts(), sourcePortName);
+    final DataInputPort iPort = (DataInputPort) lookForPort(target.getDataInputPorts(), targetPortName);
 
     if (oPort == null) {
       throw new PreesmRuntimeException(
@@ -601,17 +633,35 @@ public class PiParser {
     // 5. Setting properties of the non executable actor associated with the delay
     final DelayActor delayActor = delay.getActor();
 
+    // 5.1 Setting name of input port
+    final NodeList childList = nodeElt.getChildNodes();
+    for (int i = 0; i < childList.getLength(); i++) {
+      final Node elt = childList.item(i);
+      final String eltName = elt.getNodeName();
+
+      if (PiIdentifiers.PORT.equals(eltName)) {
+        final Element element = (Element) elt;
+        final String portName = element.getAttribute(PiIdentifiers.PORT_NAME);
+        final String portKind = element.getAttribute(PiIdentifiers.PORT_KIND);
+        if (PortKind.get(portKind).equals(PortKind.DATA_INPUT)) {
+          delayActor.getDataInputPort().setName(portName);
+        } else if (PortKind.get(portKind).equals(PortKind.DATA_OUTPUT)) {
+          delayActor.getDataOutputPort().setName(portName);
+        }
+      }
+    }
+
     // 6. Adds Setter / Getter actors to the delay (if any)
     final String setterName = nodeElt.getAttribute(PiIdentifiers.DELAY_SETTER);
     final AbstractActor setter = (AbstractActor) graph.lookupVertex(setterName);
-    final String getterName = nodeElt.getAttribute(PiIdentifiers.DELAY_GETTER);
-    final AbstractActor getter = (AbstractActor) graph.lookupVertex(getterName);
-    if ((setter == null) && !setterName.isEmpty()) {
-      throw new PreesmRuntimeException("Delay setter vertex " + setterName + " does not exist.");
-    }
-    if ((getter == null) && !getterName.isEmpty()) {
-      throw new PreesmRuntimeException("Delay getter vertex " + getterName + " does not exist.");
-    }
+    // final String getterName = nodeElt.getAttribute(PiIdentifiers.DELAY_GETTER);
+    // final AbstractActor getter = (AbstractActor) graph.lookupVertex(getterName);
+    // if ((setter == null) && !setterName.isEmpty()) {
+    // throw new PreesmRuntimeException("Delay setter vertex " + setterName + " does not exist.");
+    // }
+    // if ((getter == null) && !getterName.isEmpty()) {
+    // throw new PreesmRuntimeException("Delay getter vertex " + getterName + " does not exist.");
+    // }
 
     // 7. Add the refinement for the INIT of the delay (if it exists)
     // Any refinement is ignored if the delay is already connected to a setter actor
@@ -700,6 +750,7 @@ public class PiParser {
    *          The deserialized {@link PiGraph}
    */
   protected void parseNode(final Element nodeElt, final PiGraph graph) {
+    String nodeName = nodeElt.getNodeName();
     // Identify if the node is an actor or a parameter
     final String nodeKind = nodeElt.getAttribute(PiIdentifiers.NODE_KIND);
     Configurable vertex;
@@ -721,8 +772,7 @@ public class PiParser {
           break;
 
         default:
-          throw new PreesmRuntimeException(
-              "Parsed node " + nodeElt.getNodeName() + " has an unknown kind: " + nodeKind);
+          throw new PreesmRuntimeException("Parsed node " + nodeName + " has an unknown kind: " + nodeKind);
       }
     } else {
       switch (nodeKind) {
@@ -746,8 +796,7 @@ public class PiParser {
           // Delays have pre-defined ports created at delay actor instantiation
           return;
         default:
-          throw new PreesmRuntimeException(
-              "Parsed node " + nodeElt.getNodeName() + " has an unknown kind: " + nodeKind);
+          throw new PreesmRuntimeException("Parsed node " + nodeName + " has an unknown kind: " + nodeKind);
       }
     }
 
@@ -786,7 +835,12 @@ public class PiParser {
     param.setExpression(nodeElt.getAttribute(PiIdentifiers.PARAMETER_EXPRESSION));
 
     // Get the actor properties
-    param.setName(nodeElt.getAttribute(PiIdentifiers.PARAMETER_NAME));
+    String name = nodeElt.getAttribute(PiIdentifiers.PARAMETER_NAME);
+    if (!NameCheckerC.isValidName(name)) {
+      throw new PreesmRuntimeException(
+          "Parsed parameter " + name + " has an invalide name (should meet " + NameCheckerC.REGEX_C + ")");
+    }
+    param.setName(name);
 
     // Add the actor to the parsed graph
     graph.addParameter(param);
@@ -820,6 +874,11 @@ public class PiParser {
    */
   protected void parsePort(final Element elt, final Configurable vertex) {
     final String portName = elt.getAttribute(PiIdentifiers.PORT_NAME);
+    if (!NameCheckerC.isValidName(portName)) {
+      throw new PreesmRuntimeException(
+          "Parsed port " + portName + " has an invalide name (should meet " + NameCheckerC.REGEX_C + ")");
+    }
+
     final String portKind = elt.getAttribute(PiIdentifiers.PORT_KIND);
 
     final String attribute = elt.getAttribute(PiIdentifiers.PORT_EXPRESSION);
@@ -907,6 +966,11 @@ public class PiParser {
 
     // Set the Interface properties
     final String name = nodeElt.getAttribute(PiIdentifiers.CONFIGURATION_OUTPUT_INTERFACE_NAME);
+    if (!NameCheckerC.isValidName(name)) {
+      throw new PreesmRuntimeException(
+          "Parsed ConfigOutputInterface " + name + " has an invalide name (should meet " + NameCheckerC.REGEX_C + ")");
+    }
+
     cfgOutIf.setName(name);
     cfgOutIf.getDataPort().setName(name);
 
@@ -931,6 +995,11 @@ public class PiParser {
 
     // Set the sourceInterface properties
     final String name = nodeElt.getAttribute(PiIdentifiers.DATA_OUTPUT_INTERFACE_NAME);
+    if (!NameCheckerC.isValidName(name)) {
+      throw new PreesmRuntimeException(
+          "Parsed SinkInterface " + name + " has an invalide name (should meet " + NameCheckerC.REGEX_C + ")");
+    }
+
     snkInterface.setName(name);
     snkInterface.getDataPort().setName(name);
 
@@ -955,6 +1024,11 @@ public class PiParser {
 
     // Set the sourceInterface properties
     final String name = nodeElt.getAttribute(PiIdentifiers.DATA_INPUT_INTERFACE_NAME);
+    if (!NameCheckerC.isValidName(name)) {
+      throw new PreesmRuntimeException(
+          "Parsed SourceInterface " + name + " has an invalide name (should meet " + NameCheckerC.REGEX_C + ")");
+    }
+
     srcInterface.setName(name);
     srcInterface.getDataPort().setName(name);
 
@@ -977,6 +1051,12 @@ public class PiParser {
     // Identify if the node is an actor or a parameter
     final String nodeKind = nodeElt.getAttribute(PiIdentifiers.NODE_KIND);
     AbstractActor actor = null;
+
+    String name = nodeElt.getAttribute(PiIdentifiers.ACTOR_NAME);
+    if (!NameCheckerC.isValidName(name)) {
+      throw new PreesmRuntimeException(
+          "Parsed special actor " + name + " has an invalide name (should meet " + NameCheckerC.REGEX_C + ")");
+    }
 
     // Instantiate the actor.
     switch (nodeKind) {
@@ -1023,7 +1103,7 @@ public class PiParser {
     }
 
     // Get the actor properties
-    actor.setName(nodeElt.getAttribute(PiIdentifiers.ACTOR_NAME));
+    actor.setName(name);
 
     // Add the actor to the parsed graph
     graph.addActor(actor);

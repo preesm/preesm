@@ -51,6 +51,7 @@ import org.preesm.commons.logger.PreesmLogger;
 import org.preesm.model.pisdf.AbstractActor;
 import org.preesm.model.pisdf.AbstractVertex;
 import org.preesm.model.pisdf.Actor;
+import org.preesm.model.pisdf.ConfigInputPort;
 import org.preesm.model.pisdf.DataInputInterface;
 import org.preesm.model.pisdf.DataInputPort;
 import org.preesm.model.pisdf.DataOutputInterface;
@@ -58,8 +59,11 @@ import org.preesm.model.pisdf.DataOutputPort;
 import org.preesm.model.pisdf.DataPort;
 import org.preesm.model.pisdf.Delay;
 import org.preesm.model.pisdf.DelayActor;
+import org.preesm.model.pisdf.Dependency;
 import org.preesm.model.pisdf.Fifo;
+import org.preesm.model.pisdf.ISetter;
 import org.preesm.model.pisdf.InterfaceActor;
+import org.preesm.model.pisdf.Parameter;
 import org.preesm.model.pisdf.PersistenceLevel;
 import org.preesm.model.pisdf.PiGraph;
 import org.preesm.model.pisdf.PortMemoryAnnotation;
@@ -131,7 +135,7 @@ public class PiMMHelper {
       PreesmLogger.getLogger().log(Level.INFO, "No FIFOs to extrac, empty connectedComponent.");
       return Collections.emptyList();
     }
-    final boolean containsInterfaceActors = PiMMHelper.containsInterfaceActors(cc);
+    final boolean containsInterfaceActors = containsInterfaceActors(cc);
     final List<Fifo> fifos = new ArrayList<>();
     for (final AbstractActor actor : cc) {
       extractFifosFromActor(containsInterfaceActors, actor, fifos);
@@ -464,7 +468,7 @@ public class PiMMHelper {
   }
 
   /**
-   * azmokfaze
+   * Check if periods on actors are consistent.
    *
    * @param graphBRV
    *          Repetition Vector as a map.
@@ -518,20 +522,20 @@ public class PiMMHelper {
   }
 
   /**
-   * zerze
+   * Compute the full repetition vector (among all hierarchies) of an actor.
    *
-   * @param graph
-   *          zerz
+   * @param aa
+   *          Actor to consider.
    * @param graphBRV
-   *          zerze
-   * @return rggr
+   *          Repetition vector map of the whole graph.
+   * @return Full repetition vector of the actor according to the hierarchy.
    */
-  public static long getHierarchichalRV(final PiGraph graph, final Map<AbstractVertex, Long> graphBRV) {
+  public static long getHierarchichalRV(final AbstractActor aa, final Map<AbstractVertex, Long> graphBRV) {
     // We need to get the repetition vector of the graph
-    final long graphRV = graphBRV.get(graph) == null ? 1 : graphBRV.get(graph);
+    final long graphRV = graphBRV.getOrDefault(aa, 1L);
     // We also need to get the total repetition vector of the hierarchy to correctly flatten the hierarchy
     long graphHierarchicallRV = 1L;
-    PiGraph containingGraph = graph.getContainingPiGraph();
+    PiGraph containingGraph = aa.getContainingPiGraph();
     while (containingGraph != null) {
       final long currentGraphRV = graphBRV.get(containingGraph) == null ? 1L : graphBRV.get(containingGraph);
       graphHierarchicallRV = graphHierarchicallRV * currentGraphRV;
@@ -539,6 +543,43 @@ public class PiMMHelper {
     }
     // We update the value of the graphRV accordingly
     return graphRV * graphHierarchicallRV;
+  }
+
+  /**
+   * Remove dependencies of an actor, the configure input port if not used anymore, and also the actor itself from
+   * graph.
+   * 
+   * @param graph
+   *          Container of elements to remove.
+   * @param actor
+   *          To remove from graph.
+   */
+  public static void removeActorAndDependencies(final PiGraph graph, final AbstractActor actor) {
+    for (final ConfigInputPort cip : actor.getConfigInputPorts()) {
+      final Dependency incomingDependency = cip.getIncomingDependency();
+      graph.getEdges().remove(incomingDependency);
+      final ISetter setter = incomingDependency.getSetter();
+      setter.getOutgoingDependencies().remove(incomingDependency);
+      if (setter instanceof Parameter && setter.getOutgoingDependencies().isEmpty()) {
+        graph.getVertices().remove((Parameter) setter);
+      }
+    }
+    graph.removeActor(actor);
+  }
+
+  /**
+   * Remove dependencies, actor and fifo from graph.
+   * 
+   * @param graph
+   *          Container of elements to remove.
+   * @param fifo
+   *          To remove from graph.
+   * @param actor
+   *          To remove from graph.
+   */
+  public static void removeActorAndFifo(final PiGraph graph, final Fifo fifo, final AbstractActor actor) {
+    removeActorAndDependencies(graph, actor);
+    graph.removeFifo(fifo);
   }
 
 }

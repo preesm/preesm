@@ -237,6 +237,9 @@ class PiGraph extends AbstractActor, Graph {
 	op unique Delay[] getDelays() {
 		return vertices.filter(Delay).toEList.unmodifiableView
 	}
+	op unique AbstractActor[] getDelayActors(){
+		return (actors.filter(it|(it instanceof DelayActor))).toEList.unmodifiableView
+	}
 	op unique Fifo[] getFifos() {
 		return edges.filter(Fifo).toEList.unmodifiableView
 	}

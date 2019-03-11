@@ -41,6 +41,7 @@ package org.preesm.model.pisdf.statictools;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import org.preesm.commons.IntegerName;
 import org.preesm.commons.exceptions.PreesmRuntimeException;
 import org.preesm.model.pisdf.AbstractActor;
 import org.preesm.model.pisdf.AbstractVertex;
@@ -397,8 +398,8 @@ public class PiMMSRVerticesLinker {
    * @return the data source port
    */
   private DataOutputPort getOrCreateSourcePort(final SourceConnection src, long rate, AbstractActor sourceVertex) {
-    DataOutputPort currentSourcePort = (DataOutputPort) lookForPort(sourceVertex.getDataOutputPorts(),
-        src.getSourceLabel());
+    final List<DataOutputPort> srcDOP = sourceVertex.getDataOutputPorts();
+    DataOutputPort currentSourcePort = (DataOutputPort) lookForPort(srcDOP, src.getSourceLabel());
     if (currentSourcePort == null) {
       currentSourcePort = PiMMUserFactory.instance.createDataOutputPort();
       currentSourcePort.setName(src.getSourceLabel());
@@ -415,8 +416,9 @@ public class PiMMSRVerticesLinker {
     final boolean isSourceForkOrBroadcast = sourceVertex instanceof ForkActor || sourceVertex instanceof BroadcastActor;
     if (isSourceForkOrBroadcast) {
       // Update name and source port modifier
-      final int index = sourceVertex.getDataOutputPorts().indexOf(currentSourcePort);
-      currentSourcePort.setName(currentSourcePort.getName() + "_" + Integer.toString(index));
+      IntegerName iN = new IntegerName(srcDOP.size());
+      final int index = srcDOP.indexOf(currentSourcePort);
+      currentSourcePort.setName(currentSourcePort.getName() + "_" + iN.toString(index));
       currentSourcePort.setAnnotation(PortMemoryAnnotation.WRITE_ONLY);
     }
     return currentSourcePort;
@@ -434,7 +436,8 @@ public class PiMMSRVerticesLinker {
    * @return The sink data port
    */
   private DataInputPort getOrCreateSinkPort(final SinkConnection snk, long rate, final AbstractActor sinkVertex) {
-    DataInputPort currentSinkPort = (DataInputPort) lookForPort(sinkVertex.getDataInputPorts(), snk.getTargetLabel());
+    final List<DataInputPort> snkDOP = sinkVertex.getDataInputPorts();
+    DataInputPort currentSinkPort = (DataInputPort) lookForPort(snkDOP, snk.getTargetLabel());
     if (currentSinkPort == null) {
       currentSinkPort = PiMMUserFactory.instance.createDataInputPort();
       currentSinkPort.setName(snk.getTargetLabel());
@@ -450,8 +453,9 @@ public class PiMMSRVerticesLinker {
     final boolean isSinkJoinOrRoundBuffer = sinkVertex instanceof JoinActor || sinkVertex instanceof RoundBufferActor;
     if (isSinkJoinOrRoundBuffer) {
       // Update name and sink port modifier
-      final int index = sinkVertex.getDataInputPorts().indexOf(currentSinkPort);
-      currentSinkPort.setName(currentSinkPort.getName() + "_" + Integer.toString(index));
+      IntegerName iN = new IntegerName(snkDOP.size());
+      final int index = snkDOP.indexOf(currentSinkPort);
+      currentSinkPort.setName(currentSinkPort.getName() + "_" + iN.toString(index));
       currentSinkPort.setAnnotation(PortMemoryAnnotation.READ_ONLY);
     }
     return currentSinkPort;
@@ -466,7 +470,7 @@ public class PiMMSRVerticesLinker {
    *          Name of the DataPort to find
    * @return Found DataPort if any, null else
    */
-  private DataPort lookForPort(final List<? extends DataPort> ports, final String name) {
+  private static DataPort lookForPort(final List<? extends DataPort> ports, final String name) {
     for (final DataPort dp : ports) {
       if (dp.getName().equals(name)) {
         return dp;
@@ -625,10 +629,11 @@ public class PiMMSRVerticesLinker {
         resultGraph.addActor(init);
         sourceSet.add(new SourceConnection(init, setterRate, this.sinkPort.getName()));
       } else {
-        for (int i = 0; i < setterRV; ++i) {
+        IntegerName iN = new IntegerName(setterRV - 1);
+        for (long i = 0; i < setterRV; ++i) {
           final InitActor init = PiMMUserFactory.instance.createInitActor();
           init.getDataOutputPorts().add(PiMMUserFactory.instance.createDataOutputPort());
-          final String name = setterName + "_init_" + Integer.toString(i);
+          final String name = setterName + "_init_" + iN.toString(i);
           init.setName(name);
           init.getDataOutputPort().setName(this.sinkPort.getName());
           init.getDataOutputPort().setExpression(setterRate);
@@ -720,10 +725,11 @@ public class PiMMSRVerticesLinker {
         resultGraph.addActor(end);
         sinkSet.add(new SinkConnection(end, getterRate, this.sourcePort.getName()));
       } else {
-        for (int i = 0; i < brvGetter; ++i) {
+        IntegerName iN = new IntegerName(brvGetter);
+        for (long i = 0; i < brvGetter; ++i) {
           final EndActor end = PiMMUserFactory.instance.createEndActor();
           end.getDataInputPorts().add(PiMMUserFactory.instance.createDataInputPort());
-          final String name = getterName + "_end_" + Integer.toString(i);
+          final String name = getterName + "_end_" + iN.toString(i);
           end.setName(name);
           end.getDataInputPort().setName(this.sourcePort.getName());
           end.getDataInputPort().setExpression(getterRate);

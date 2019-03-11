@@ -38,12 +38,15 @@
  */
 package org.preesm.model.pisdf.brv;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Level;
+import org.eclipse.xtext.xbase.lib.Pair;
 import org.preesm.commons.exceptions.PreesmRuntimeException;
+import org.preesm.commons.logger.PreesmLogger;
 import org.preesm.commons.math.LongFraction;
 import org.preesm.commons.math.MathFunctionsHelper;
 import org.preesm.model.pisdf.AbstractActor;
@@ -83,7 +86,7 @@ class LCMBasedBRV extends PiBRV {
       final HashMap<String, LongFraction> reps = new HashMap<>();
       // Initializes all reps to 0
       for (final AbstractActor actor : subgraph) {
-        reps.put(actor.getName(), new LongFraction(0));
+        reps.put(actor.getName(), new LongFraction(0L));
       }
 
       // Construct the list of Edges without interfaces
@@ -92,16 +95,14 @@ class LCMBasedBRV extends PiBRV {
       // The graph is consistent
       // We just have to update the BRV
       if (listFifos.isEmpty()) {
-        graphBRV.put(subgraph.get(0), (long) 1);
+        graphBRV.put(subgraph.get(0), 1L);
       } else {
-        // TODO not optimal to use List ?
-        final Map<Fifo, List<Long>> fifoProperties = new LinkedHashMap<>();
+        final Map<Fifo, Pair<Long, Long>> fifoProperties = new HashMap<>();
 
         // Evaluate prod / cons of FIFOs only once
         initFifoProperties(listFifos, fifoProperties);
 
-        // Pick the first non interface actor and do a Depth First Search to compute RV
-        LCMBasedBRV.setReps(subgraph.get(0), new LongFraction(1), reps, fifoProperties);
+        setRepsDFS(subgraph, fifoProperties, reps);
 
         // Computes the LCM of the denominators
         long lcm = 1;
@@ -127,6 +128,135 @@ class LCMBasedBRV extends PiBRV {
   }
 
   /**
+   * Initialize FIFO properties map to avoid multiple access to same information
+   *
+   * @param listFifos
+   *          list of all a fifos
+   * @param fifoProperties
+   *          fifos properties map
+   */
+  private void initFifoProperties(final List<Fifo> listFifos, final Map<Fifo, Pair<Long, Long>> fifoProperties) {
+    for (final Fifo f : listFifos) {
+      fifoProperties.put(f, computeFifoProperties(f));
+    }
+  }
+
+  /**
+   * Get fifo properties.
+   * 
+   * @param f
+   *          Fifo to analyze.
+   * @return Pair of the production rate as key, and the consumption rate as value.
+   */
+  private Pair<Long, Long> computeFifoProperties(Fifo f) {
+    final DataOutputPort sourcePort = f.getSourcePort();
+    final Expression sourcePortRateExpression = sourcePort.getPortRateExpression();
+    final long prod = sourcePortRateExpression.evaluate();
+    final DataInputPort targetPort = f.getTargetPort();
+    final Expression targetPortRateExpression = targetPort.getPortRateExpression();
+    final long cons = targetPortRateExpression.evaluate();
+    return new Pair<>(prod, cons);
+  }
+
+  /**
+   * Check if both rates are different from 0 or both equal to 0. Otherwise it throws a {@link PreesmRuntimeException}.
+   * 
+   * @param fifo
+   *          Fifo to check.
+   * @param rates
+   *          Properties of the fifo (prod and cons).
+   */
+  private void checkValidFifo(Fifo fifo, Pair<Long, Long> rates) {
+    if ((rates.getKey() == 0 && rates.getValue() != 0) || (rates.getKey() != 0 && rates.getValue() == 0)) {
+      DataOutputPort dop = fifo.getSourcePort();
+      DataInputPort dip = fifo.getTargetPort();
+      AbstractActor src = dop.getContainingActor();
+      AbstractActor tgt = dip.getContainingActor();
+      String message = "Non valid edge prod / cons from actor " + src.getName() + "[" + dop.getName() + "] to "
+          + tgt.getName() + "[" + dip.getName() + "].";
+      PreesmLogger.getLogger().log(Level.SEVERE, message);
+      throw new PreesmRuntimeException(message);
+    }
+  }
+
+  /**
+   * Perform Depth First Search and return fifos in the same order as visited.
+   * 
+   * @param subgraph
+   *          On which to perform DFS.
+   * @param reps
+   *          Repetition fraction to be computed (initially all equal to 0).
+   * @param fifoProperties
+   *          Production and consumption of Fifos.
+   * @return Ordered Fifos regarding the DFS traversal. Only fifos going to not yet visited actors are present in the
+   *         list.
+   */
+  private void setRepsDFS(List<AbstractActor> subgraph, Map<Fifo, Pair<Long, Long>> fifoProperties,
+      HashMap<String, LongFraction> reps) {
+    LinkedList<AbstractActor> toVisit = new LinkedList<>();
+    AbstractActor root = subgraph.get(0);
+    reps.put(root.getName(), new LongFraction(1L));
+    toVisit.addFirst(root);
+    while (!toVisit.isEmpty()) {
+      AbstractActor actor = toVisit.removeFirst();
+      LongFraction n = reps.get(actor.getName());
+      for (final DataOutputPort output : actor.getDataOutputPorts()) {
+        final Fifo fifo = output.getOutgoingFifo();
+        if (fifo == null) {
+          String message = "Actor [" + actor.getName() + "] has output port [" + output.getName()
+              + "] not connected to any FIFO.";
+          PreesmLogger.getLogger().log(Level.SEVERE, message);
+          throw new PreesmRuntimeException(message);
+        }
+        Pair<Long, Long> pair = fifoProperties.getOrDefault(fifo, computeFifoProperties(fifo));
+        checkValidFifo(fifo, pair);
+        final AbstractActor targetActor = fifo.getTargetPort().getContainingActor();
+        if (targetActor instanceof InterfaceActor) {
+          continue;
+        }
+        final LongFraction fa = reps.get(targetActor.getName());
+        final long prod = pair.getKey();
+        final long cons = pair.getValue();
+        if (fa.getNumerator() == 0 && cons != 0 && n.getNumerator() != 0) {
+          final LongFraction edge = new LongFraction(prod, cons);
+          final LongFraction r = n.multiply(edge);
+          if (!toVisit.contains(targetActor)) {
+            reps.put(targetActor.getName(), r);
+            toVisit.addFirst(targetActor);
+          }
+
+        }
+      }
+      for (final DataInputPort input : actor.getDataInputPorts()) {
+        final Fifo fifo = input.getIncomingFifo();
+        if (fifo == null) {
+          String message = "Actor [" + actor.getName() + "] has input port [" + input.getName()
+              + "] not connected to any FIFO.";
+          PreesmLogger.getLogger().log(Level.SEVERE, message);
+          throw new PreesmRuntimeException(message);
+        }
+        final Pair<Long, Long> pair = fifoProperties.getOrDefault(fifo, computeFifoProperties(fifo));
+        checkValidFifo(fifo, pair);
+        final AbstractActor sourceActor = fifo.getSourcePort().getContainingActor();
+        if (sourceActor instanceof InterfaceActor) {
+          continue;
+        }
+        final LongFraction sa = reps.get(sourceActor.getName());
+        final long prod = pair.getKey();
+        final long cons = pair.getValue();
+        if (sa.getNumerator() == 0 && prod != 0 && n.getNumerator() != 0) {
+          final LongFraction edge = new LongFraction(cons, prod);
+          final LongFraction r = n.multiply(edge);
+          if (!toVisit.contains(sourceActor)) {
+            reps.put(sourceActor.getName(), r);
+            toVisit.addFirst(sourceActor);
+          }
+        }
+      }
+    }
+  }
+
+  /**
    * Check consistency.
    *
    * @param subgraph
@@ -136,7 +266,7 @@ class LCMBasedBRV extends PiBRV {
    * @throws PiMMHelperException
    *           the exception
    */
-  private void checkConsistency(final List<AbstractActor> subgraph, final Map<Fifo, List<Long>> fifoProperties,
+  private void checkConsistency(final List<AbstractActor> subgraph, final Map<Fifo, Pair<Long, Long>> fifoProperties,
       final Map<AbstractVertex, Long> graphBRV) {
     for (final Fifo f : PiMMHelper.getFifosFromCC(subgraph)) {
       final AbstractActor sourceActor = f.getSourcePort().getContainingActor();
@@ -144,15 +274,18 @@ class LCMBasedBRV extends PiBRV {
       if ((targetActor instanceof InterfaceActor) || (sourceActor instanceof InterfaceActor)) {
         continue;
       }
-      final long prod = fifoProperties.get(f).get(0);
-      final long cons = fifoProperties.get(f).get(1);
+      final Pair<Long, Long> pair = fifoProperties.get(f);
+      final long prod = pair.getKey();
+      final long cons = pair.getValue();
       final long sourceRV = graphBRV.get(sourceActor);
       final long targetRV = graphBRV.get(targetActor);
 
       if (prod * sourceRV != cons * targetRV) {
-        throw new PreesmRuntimeException(
-            "Graph non consistent: edge source production " + sourceActor.getName() + " with rate [" + (prod * sourceRV)
-                + "] != edge target consumption " + targetActor.getName() + "with rate [" + (cons * targetRV) + "]");
+        String message = "Graph non consistent: edge source production " + sourceActor.getName() + " with rate ["
+            + (prod * sourceRV) + "] != edge target consumption " + targetActor.getName() + " with rate ["
+            + (cons * targetRV) + "]";
+        PreesmLogger.getLogger().log(Level.SEVERE, message);
+        throw new PreesmRuntimeException(message);
       }
     }
   }
@@ -170,93 +303,11 @@ class LCMBasedBRV extends PiBRV {
   private void computeAndSetRV(final List<AbstractActor> subgraph, final HashMap<String, LongFraction> reps, long lcm,
       final Map<AbstractVertex, Long> graphBRV) {
     for (final AbstractActor actor : subgraph) {
-      final long num = reps.get(actor.getName()).getNumerator();
-      final long denom = reps.get(actor.getName()).getDenominator();
+      final LongFraction ratio = reps.get(actor.getName());
+      final long num = ratio.getNumerator();
+      final long denom = ratio.getDenominator();
       final long rv = (num * (lcm / denom));
       graphBRV.put(actor, rv);
-    }
-  }
-
-  /**
-   * Initialize FIFO properties map to avoid multiple access to same information
-   *
-   * @param listFifos
-   *          list of all a fifos
-   * @param fifoProperties
-   *          fifos properties map
-   */
-  private void initFifoProperties(final List<Fifo> listFifos, final Map<Fifo, List<Long>> fifoProperties) {
-    for (final Fifo f : listFifos) {
-      final List<Long> fifoProp = new ArrayList<>();
-      final DataOutputPort sourcePort = f.getSourcePort();
-      final Expression sourcePortRateExpression = sourcePort.getPortRateExpression();
-      final long prod = sourcePortRateExpression.evaluate();
-      final DataInputPort targetPort = f.getTargetPort();
-      final Expression targetPortRateExpression = targetPort.getPortRateExpression();
-      final long cons = targetPortRateExpression.evaluate();
-      fifoProp.add(prod);
-      fifoProp.add(cons);
-      fifoProperties.put(f, fifoProp);
-    }
-  }
-
-  /**
-   * Iterative function of execute.
-   *
-   * @param actor
-   *          the current actor
-   * @param n
-   *          the current fraction
-   * @param reps
-   *          current reduced fractions of the actors
-   * @throws PiMMHelperException
-   *           the PiBRV exception
-   */
-  private static void setReps(final AbstractActor actor, final LongFraction n, final HashMap<String, LongFraction> reps,
-      final Map<Fifo, List<Long>> fifoProperties) {
-    // Update value in the HashMap
-    reps.put(actor.getName(), n);
-
-    // DFS forward
-    for (final DataOutputPort output : actor.getDataOutputPorts()) {
-      final Fifo fifo = output.getOutgoingFifo();
-      if (fifo == null) {
-        throw new PreesmRuntimeException(
-            "Actor [" + actor.getName() + "] has output port [" + output.getName() + "] not connected to any FIFO.");
-      }
-      final AbstractActor targetActor = fifo.getTargetPort().getContainingActor();
-      if (targetActor instanceof InterfaceActor) {
-        continue;
-      }
-      final LongFraction fa = reps.get(targetActor.getName());
-      if (fa.getNumerator() == 0) {
-        final long prod = fifoProperties.get(fifo).get(0);
-        final long cons = fifoProperties.get(fifo).get(1);
-        final LongFraction edge = new LongFraction(prod, cons);
-        final LongFraction r = n.multiply(edge);
-        LCMBasedBRV.setReps(targetActor, r, reps, fifoProperties);
-      }
-    }
-
-    // DFS backward
-    for (final DataInputPort input : actor.getDataInputPorts()) {
-      final Fifo fifo = input.getIncomingFifo();
-      if (fifo == null) {
-        throw new PreesmRuntimeException(
-            "Actor [" + actor.getName() + "] has input port [" + input.getName() + "] not connected to any FIFO.");
-      }
-      final AbstractActor sourceActor = fifo.getSourcePort().getContainingActor();
-      if (sourceActor instanceof InterfaceActor) {
-        continue;
-      }
-      final LongFraction fa = reps.get(sourceActor.getName());
-      if (fa.getNumerator() == 0) {
-        final long prod = fifoProperties.get(fifo).get(0);
-        final long cons = fifoProperties.get(fifo).get(1);
-        final LongFraction edge = new LongFraction(cons, prod);
-        final LongFraction r = n.multiply(edge);
-        LCMBasedBRV.setReps(sourceActor, r, reps, fifoProperties);
-      }
     }
   }
 }

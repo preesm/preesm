@@ -47,6 +47,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.emf.common.util.EList;
@@ -290,17 +291,19 @@ public class AutoLayoutFeature extends AbstractCustomFeature {
     // Register first stage
     stages.add(currentStage);
     boolean test;
+    System.err.println("createActorStage1");
     do {
       iterate(feedbackFifos, processedActors, nextStage, currentStage, dataOutputInterfaces);
-
+      System.err.println(nextStage.stream().map(AbstractActor::getName).collect(Collectors.joining("; ")));
       // Prepare next iteration
       currentStage = new ArrayList<>(nextStage);
       stages.add(currentStage);
       processedActors.addAll(currentStage);
       nextStage = new LinkedHashSet<>();
 
-      test = processedActors.size() < actors.size();
+      test = processedActors.size() < actors.size() && !currentStage.isEmpty();
     } while (test);
+    System.err.println("createActorStage2");
 
     // If the last stage is empty (if there were only dataOutputInterface)
     // remove it
@@ -329,15 +332,24 @@ public class AutoLayoutFeature extends AbstractCustomFeature {
   private void findCandidates(final List<Fifo> feedbackFifos, final Set<AbstractActor> nextStage,
       final List<AbstractActor> currentStage) {
     for (final AbstractActor actor : currentStage) {
-      // if (actor instanceof DelayActor) {
-      // final Delay delay = ((DelayActor) actor).getLinkedDelay();
-      // final Fifo fifo = delay.getContainingFifo();
-      // if (!feedbackFifos.contains(fifo) && (fifo != null)) {
-      // final DataInputPort targetPort = fifo.getTargetPort();
-      // final AbstractActor targetActor = targetPort.getContainingActor();
-      // nextStage.add(targetActor);
-      // }
-      // } else {
+      if (actor instanceof DelayActor) {
+        final Delay delay = ((DelayActor) actor).getLinkedDelay();
+        final Fifo fifo = delay.getContainingFifo();
+        if (!feedbackFifos.contains(fifo) && (fifo != null)) {
+          final DataInputPort targetPort = fifo.getTargetPort();
+          final AbstractActor targetActor = targetPort.getContainingActor();
+          nextStage.add(targetActor);
+        }
+      }
+      for (final DataOutputPort port : actor.getDataOutputPorts()) {
+        final Fifo outgoingFifo = port.getOutgoingFifo();
+        if (!feedbackFifos.contains(outgoingFifo) && (outgoingFifo != null)) {
+          final DataInputPort targetPort = outgoingFifo.getTargetPort();
+          final AbstractActor targetActor = targetPort.getContainingActor();
+          nextStage.add(targetActor);
+        }
+      }
+
       // for (final DataOutputPort port : actor.getDataOutputPorts()) {
       // final Fifo outgoingFifo = port.getOutgoingFifo();
       // if (!feedbackFifos.contains(outgoingFifo) && (outgoingFifo != null)) {
@@ -350,19 +362,6 @@ public class AutoLayoutFeature extends AbstractCustomFeature {
       // nextStage.add(targetActor);
       // }
       // }
-      // }
-      for (final DataOutputPort port : actor.getDataOutputPorts()) {
-        final Fifo outgoingFifo = port.getOutgoingFifo();
-        if (!feedbackFifos.contains(outgoingFifo) && (outgoingFifo != null)) {
-          final DataInputPort targetPort = outgoingFifo.getTargetPort();
-          final AbstractActor targetActor = targetPort.getContainingActor();
-          // We skip the delay actors for now
-          if (targetActor instanceof DelayActor) {
-            continue;
-          }
-          nextStage.add(targetActor);
-        }
-      }
     }
   }
 
@@ -390,14 +389,15 @@ public class AutoLayoutFeature extends AbstractCustomFeature {
         hasUnstagedPredecessor |= !isFeedbackFifo && !containedInProcessedActor;
 
         // For delay with setter/getter, the delay Actor must always be in the previous stage
-        // if ((incomingFifo != null) && (incomingFifo.getDelay() != null)) {
-        // if (incomingFifo.getDelay().hasSetterActor()) {
-        // hasUnstagedPredecessor |= !processedActors.contains(incomingFifo.getDelay().getActor());
-        // hasUnstagedPredecessor |= !processedActors.contains(incomingFifo.getDelay().getSetterActor());
-        // } else if (incomingFifo.getDelay().hasGetterActor()) {
-        // hasUnstagedPredecessor |= !processedActors.contains(incomingFifo.getDelay().getActor());
-        // }
-        // }
+        if ((incomingFifo != null) && (incomingFifo.getDelay() != null)) {
+          if (incomingFifo.getDelay().hasSetterActor()) {
+            hasUnstagedPredecessor |= !processedActors.contains(incomingFifo.getDelay().getActor());
+            hasUnstagedPredecessor |= !processedActors.contains(incomingFifo.getDelay().getSetterActor());
+          } else if (incomingFifo.getDelay().hasGetterActor()) {
+            hasUnstagedPredecessor |= !processedActors.contains(incomingFifo.getDelay().getActor());
+            hasUnstagedPredecessor |= !processedActors.contains(incomingFifo.getDelay().getGetterActor());
+          }
+        }
       }
       if (hasUnstagedPredecessor) {
         iter.remove();
@@ -503,6 +503,8 @@ public class AutoLayoutFeature extends AbstractCustomFeature {
 
     // Step 2 - Clear all bendpoints
     DiagramPiGraphLinkHelper.clearBendpoints(diagram);
+
+    System.err.println("Error in autolayout (before actors)");
 
     // Step 3 - Layout actors in precedence order
     // (ignoring cycles / delayed FIFOs in cycles)
@@ -1414,7 +1416,7 @@ public class AutoLayoutFeature extends AbstractCustomFeature {
     final List<AbstractActor> actors = new ArrayList<>(graph.getActors());
 
     // 2. Remove Delay Actors that are not connected to avoid weird delay placement
-    actors.removeIf(a -> (a instanceof DelayActor));
+    // actors.removeIf(a -> (a instanceof DelayActor));
 
     actors.sort((a1, a2) -> a1.getName().compareTo(a2.getName()));
 
