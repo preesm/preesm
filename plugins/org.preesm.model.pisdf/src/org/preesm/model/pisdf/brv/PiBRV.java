@@ -144,12 +144,10 @@ public abstract class PiBRV {
    *          Current inner graph.
    * @param ia
    *          Interface to check (from inner graph).
-   * @param dp
-   *          DataPort of the interface to check.
    * @param rate
    *          Rate of the interface to check.
    */
-  private static void checkOppositeInterfaceRate(PiGraph graph, InterfaceActor ia, DataPort dp, long rate) {
+  private static void checkOppositeInterfaceRate(PiGraph graph, InterfaceActor ia, long rate) {
     PiGraph motherGraph = graph.getContainingPiGraph();
     if (motherGraph != null) {
       // otherwise it means that we compute a local BRV (from GUI)
@@ -198,7 +196,7 @@ public abstract class PiBRV {
     for (final DataOutputInterface out : graph.getDataOutputInterfaces()) {
       final DataInputPort dataInputPort = (DataInputPort) out.getDataPort();
       final long cons = dataInputPort.getPortRateExpression().evaluate();
-      checkOppositeInterfaceRate(graph, out, dataInputPort, cons);
+      checkOppositeInterfaceRate(graph, out, cons);
       final Fifo fifo = dataInputPort.getIncomingFifo();
       final DataOutputPort sourcePort = fifo.getSourcePort();
       final AbstractActor sourceActor = sourcePort.getContainingActor();
@@ -250,7 +248,7 @@ public abstract class PiBRV {
     for (final DataInputInterface in : graph.getDataInputInterfaces()) {
       final DataOutputPort dataOutputPort = (DataOutputPort) in.getDataPort();
       final long prod = dataOutputPort.getPortRateExpression().evaluate();
-      checkOppositeInterfaceRate(graph, in, dataOutputPort, prod);
+      checkOppositeInterfaceRate(graph, in, prod);
       final Fifo fifo = dataOutputPort.getOutgoingFifo();
       final DataInputPort targetPort = fifo.getTargetPort();
       final AbstractActor targetActor = targetPort.getContainingActor();
