@@ -236,7 +236,6 @@ public class PiParser {
       throw new PreesmRuntimeException("Could not parse the input graph: \n" + e.getMessage(), e);
     }
 
-    System.err.println("No error in parse");
     return graph;
   }
 

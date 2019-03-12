@@ -132,7 +132,6 @@ public abstract class PiBRV {
       if ((actor instanceof DelayActor) && (newRV != 1)) {
         String message = "Inconsistent graph. DelayActor [" + actor.getName() + "] with a repetition vector of "
             + Long.toString(newRV);
-        PreesmLogger.getLogger().log(Level.SEVERE, message);
         throw new PreesmRuntimeException(message);
       }
     }
@@ -145,20 +144,21 @@ public abstract class PiBRV {
    *          Current inner graph.
    * @param ia
    *          Interface to check (from inner graph).
+   * @param dp
+   *          DataPort of the interface to check.
    * @param rate
    *          Rate of the interface to check.
    */
-  private static void checkOppositeInterfaceRate(PiGraph graph, InterfaceActor ia, long rate) {
+  private static void checkOppositeInterfaceRate(PiGraph graph, InterfaceActor ia, DataPort dp, long rate) {
     PiGraph motherGraph = graph.getContainingPiGraph();
     if (motherGraph != null) {
       // otherwise it means that we compute a local BRV (from GUI)
       DataPort opposite = graph.lookupGraphDataPortForInterfaceActor(ia);
       long oppositeRate = opposite.getExpression().evaluate();
       if (/* motherGraph != graph && */oppositeRate != rate) {
-        String message = "Opposite interface of " + ia.getName() + " in graph " + motherGraph.getName()
-            + " has different rates: " + rate + " <> " + oppositeRate;
-        PreesmLogger.getLogger().log(Level.SEVERE, message);
-        throw new PreesmRuntimeException(message);
+        String msg = "DataPort [" + opposite.getName() + "] of actor [" + opposite.getContainingActor().getName()
+            + "] has different rates from inner interface definition: inner " + rate + " -- outer " + oppositeRate;
+        throw new PreesmRuntimeException(msg);
       }
     }
   }
@@ -198,7 +198,7 @@ public abstract class PiBRV {
     for (final DataOutputInterface out : graph.getDataOutputInterfaces()) {
       final DataInputPort dataInputPort = (DataInputPort) out.getDataPort();
       final long cons = dataInputPort.getPortRateExpression().evaluate();
-      checkOppositeInterfaceRate(graph, out, cons);
+      checkOppositeInterfaceRate(graph, out, dataInputPort, cons);
       final Fifo fifo = dataInputPort.getIncomingFifo();
       final DataOutputPort sourcePort = fifo.getSourcePort();
       final AbstractActor sourceActor = sourcePort.getContainingActor();
@@ -209,7 +209,6 @@ public abstract class PiBRV {
         final long tmp = inscaleFactor * prod * sourceRV;
         if (tmp > cons || (tmp < cons && cons % tmp != 0)) {
           emitScaleWarning = true;
-          // System.err.println("Output: " + inscaleFactor + "/" + sourceRV + "/" + prod + "/" + cons);
           // we emit a warning only if producing too much, or not enough but with a wrong multiplicity
           // note that it is not allowed to produce less than the consumed tokens on the output interface
           // at the opposite, if more are produced, a roundbuffer is added.
@@ -251,7 +250,7 @@ public abstract class PiBRV {
     for (final DataInputInterface in : graph.getDataInputInterfaces()) {
       final DataOutputPort dataOutputPort = (DataOutputPort) in.getDataPort();
       final long prod = dataOutputPort.getPortRateExpression().evaluate();
-      checkOppositeInterfaceRate(graph, in, prod);
+      checkOppositeInterfaceRate(graph, in, dataOutputPort, prod);
       final Fifo fifo = dataOutputPort.getOutgoingFifo();
       final DataInputPort targetPort = fifo.getTargetPort();
       final AbstractActor targetActor = targetPort.getContainingActor();
@@ -261,7 +260,6 @@ public abstract class PiBRV {
         final long tmp = inscaleFactor * cons * targetRV;
         if (tmp > prod || (tmp < prod && prod % tmp != 0)) {
           emitScaleWarning = true;
-          // System.err.println("Input: " + inscaleFactor + "/" + targetRV + "/" + prod + "/" + cons);
           // we emit a warning only if consuming too much, or not enough but with a wrong multiplicity
           // note that it is not allowed to leave unconsumed tokens on the input interface
           // at the opposite, if more are consumed, a broadcast is added.

@@ -329,11 +329,9 @@ public class PiSDFToSingleRate extends PiMMSwitch<Boolean> {
       final String name = actor.getName() + suffixe + iN.toString(i);
       final AbstractActor foundActor = (AbstractActor) this.result.lookupVertex(name);
       if (foundActor == null) {
-        System.err.println("null ... " + name);
-        // continue;
+        throw new PreesmRuntimeException("Unable to find actor [" + name + "] in generated DAG.");
       }
       if (foundActor.getAllDataPorts().isEmpty()) {
-        System.err.println(foundActor.getName());
         continue;
       }
       final DataPort dataPort = foundActor.getAllDataPorts().get(0);

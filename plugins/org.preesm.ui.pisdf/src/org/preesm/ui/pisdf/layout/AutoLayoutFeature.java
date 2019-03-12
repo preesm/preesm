@@ -47,7 +47,6 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.stream.Collectors;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.emf.common.util.EList;
@@ -291,10 +290,10 @@ public class AutoLayoutFeature extends AbstractCustomFeature {
     // Register first stage
     stages.add(currentStage);
     boolean test;
-    System.err.println("createActorStage1");
+    // System.err.println("createActorStage1");
     do {
       iterate(feedbackFifos, processedActors, nextStage, currentStage, dataOutputInterfaces);
-      System.err.println(nextStage.stream().map(AbstractActor::getName).collect(Collectors.joining("; ")));
+      // System.err.println(nextStage.stream().map(AbstractActor::getName).collect(Collectors.joining("; ")));
       // Prepare next iteration
       currentStage = new ArrayList<>(nextStage);
       stages.add(currentStage);
@@ -303,7 +302,7 @@ public class AutoLayoutFeature extends AbstractCustomFeature {
 
       test = processedActors.size() < actors.size() && !currentStage.isEmpty();
     } while (test);
-    System.err.println("createActorStage2");
+    // System.err.println("createActorStage2");
 
     // If the last stage is empty (if there were only dataOutputInterface)
     // remove it
@@ -504,7 +503,7 @@ public class AutoLayoutFeature extends AbstractCustomFeature {
     // Step 2 - Clear all bendpoints
     DiagramPiGraphLinkHelper.clearBendpoints(diagram);
 
-    System.err.println("Error in autolayout (before actors)");
+    // System.err.println("Error in autolayout (before actors)");
 
     // Step 3 - Layout actors in precedence order
     // (ignoring cycles / delayed FIFOs in cycles)

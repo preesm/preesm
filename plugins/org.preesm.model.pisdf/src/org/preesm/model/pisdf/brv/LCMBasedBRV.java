@@ -3,6 +3,7 @@
  *
  * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2018 - 2019)
  * Florian Arrestier <florian.arrestier@insa-rennes.fr> (2018)
+ * Alexandre Honorat <alexandre.honorat@insa-rennes.fr> (2019)
  *
  * This software is a computer program whose purpose is to help prototyping
  * parallel applications using dataflow formalism.
@@ -174,7 +175,6 @@ class LCMBasedBRV extends PiBRV {
       AbstractActor tgt = dip.getContainingActor();
       String message = "Non valid edge prod / cons from actor " + src.getName() + "[" + dop.getName() + "] to "
           + tgt.getName() + "[" + dip.getName() + "].";
-      PreesmLogger.getLogger().log(Level.SEVERE, message);
       throw new PreesmRuntimeException(message);
     }
   }
@@ -232,7 +232,6 @@ class LCMBasedBRV extends PiBRV {
         if (fifo == null) {
           String message = "Actor [" + actor.getName() + "] has input port [" + input.getName()
               + "] not connected to any FIFO.";
-          PreesmLogger.getLogger().log(Level.SEVERE, message);
           throw new PreesmRuntimeException(message);
         }
         final Pair<Long, Long> pair = fifoProperties.getOrDefault(fifo, computeFifoProperties(fifo));
@@ -281,10 +280,9 @@ class LCMBasedBRV extends PiBRV {
       final long targetRV = graphBRV.get(targetActor);
 
       if (prod * sourceRV != cons * targetRV) {
-        String message = "Graph non consistent: edge source production " + sourceActor.getName() + " with rate ["
-            + (prod * sourceRV) + "] != edge target consumption " + targetActor.getName() + " with rate ["
+        String message = "Graph non consistent: edge source production [" + sourceActor.getName() + "] with rate ["
+            + (prod * sourceRV) + "] != edge target consumption [" + targetActor.getName() + "] with rate ["
             + (cons * targetRV) + "]";
-        PreesmLogger.getLogger().log(Level.SEVERE, message);
         throw new PreesmRuntimeException(message);
       }
     }
