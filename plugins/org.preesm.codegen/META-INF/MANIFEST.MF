@@ -12,7 +12,13 @@ Require-Bundle: org.eclipse.core.runtime,
  org.eclipse.xtext.xbase.lib,
  org.eclipse.xtend.lib,
  org.eclipse.emf.ecore.xcore.lib,
- org.preesm.algorithm;visibility:=reexport
+ org.jgrapht.core;bundle-version="1.3.0",
+ org.preesm.algorithm,
+ org.preesm.commons,
+ org.preesm.model.scenario,
+ org.preesm.model.slam,
+ org.preesm.workflow,
+ org.preesm.model.pisdf
 Bundle-ActivationPolicy: lazy
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Bundle-ClassPath: .

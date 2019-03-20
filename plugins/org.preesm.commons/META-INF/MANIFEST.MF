@@ -5,15 +5,15 @@ Automatic-Module-Name: org.preesm.commons
 Bundle-SymbolicName: org.preesm.commons
 Bundle-Version: 3.5.0.qualifier
 Bundle-Vendor: IETR / INSA Rennes - VAADER
-Require-Bundle: javax.annotation;bundle-version="1.2.0";visibility:=reexport,
+Require-Bundle: javax.annotation;bundle-version="1.2.0",
  org.eclipse.core.runtime,
  org.eclipse.core.resources,
  org.eclipse.xtend.lib,
  org.eclipse.emf.ecore,
- org.apache.commons.math3;bundle-version="3.6.1";visibility:=reexport,
+ org.apache.commons.math3;bundle-version="3.6.1",
  org.apache.commons.lang3;bundle-version="3.7.0",
  xerces.Impl;bundle-version="2.12.0",
- jep;bundle-version="2.40.0";visibility:=reexport
+ jep;bundle-version="2.40.0"
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Bundle-ActivationPolicy: lazy
 Export-Package: org.preesm.commons,

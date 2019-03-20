@@ -17,4 +17,5 @@ Require-Bundle: org.junit;bundle-version="4.12.0",
  org.preesm.model.pisdf,
  org.preesm.commons,
  fi.abo.preesm.dataparallel,
- org.preesm.ui
+ org.preesm.ui,
+ org.preesm.workflow

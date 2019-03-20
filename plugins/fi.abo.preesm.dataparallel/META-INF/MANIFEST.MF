@@ -8,7 +8,10 @@ Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Require-Bundle: org.eclipse.core.runtime,
  org.eclipse.xtend.lib,
  org.jgrapht.core,
- org.preesm.algorithm
+ jep;bundle-version="2.40.0",
+ org.preesm.algorithm,
+ org.preesm.commons,
+ org.preesm.workflow
 Bundle-Vendor: ABO.fi
 Export-Package: fi.abo.preesm.dataparallel,
  fi.abo.preesm.dataparallel.fifo,
