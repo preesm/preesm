@@ -35,9 +35,11 @@
  */
 package org.preesm.algorithm.deadlock;
 
+import java.util.logging.Level;
 import org.preesm.algorithm.model.sdf.SDFAbstractVertex;
 import org.preesm.algorithm.model.sdf.SDFGraph;
 import org.preesm.algorithm.throughput.tools.Stopwatch;
+import org.preesm.commons.logger.PreesmLogger;
 
 /**
  * @author hderoui
@@ -59,7 +61,7 @@ public abstract class IBSDFConsistency {
     // step 1: compute the RV of the top graph
     if (!SDFConsistency.computeRV(graph)) {
       timer.stop();
-      System.err.println(
+      PreesmLogger.getLogger().log(Level.SEVERE,
           "IBSDF RV computation : " + graph.getName() + " is not consistent !! evaluated in " + timer.toString());
       return false;
     } else {
@@ -73,8 +75,8 @@ public abstract class IBSDFConsistency {
         }
       }
       timer.stop();
-      System.out
-          .println("IBSDF RV computation : " + graph.getName() + " is consistent !! evaluated in " + timer.toString());
+      PreesmLogger.getLogger().log(Level.INFO,
+          "IBSDF RV computation : " + graph.getName() + " is consistent !! evaluated in " + timer.toString());
       return true;
     }
   }

@@ -132,7 +132,6 @@ public abstract class PiBRV {
       if ((actor instanceof DelayActor) && (newRV != 1)) {
         String message = "Inconsistent graph. DelayActor [" + actor.getName() + "] with a repetition vector of "
             + Long.toString(newRV);
-        PreesmLogger.getLogger().log(Level.SEVERE, message);
         throw new PreesmRuntimeException(message);
       }
     }
@@ -155,10 +154,9 @@ public abstract class PiBRV {
       DataPort opposite = graph.lookupGraphDataPortForInterfaceActor(ia);
       long oppositeRate = opposite.getExpression().evaluate();
       if (/* motherGraph != graph && */oppositeRate != rate) {
-        String message = "Opposite interface of " + ia.getName() + " in graph " + motherGraph.getName()
-            + " has different rates: " + rate + " <> " + oppositeRate;
-        PreesmLogger.getLogger().log(Level.SEVERE, message);
-        throw new PreesmRuntimeException(message);
+        String msg = "DataPort [" + opposite.getName() + "] of actor [" + opposite.getContainingActor().getName()
+            + "] has different rates from inner interface definition: inner " + rate + " -- outer " + oppositeRate;
+        throw new PreesmRuntimeException(msg);
       }
     }
   }
@@ -209,7 +207,6 @@ public abstract class PiBRV {
         final long tmp = inscaleFactor * prod * sourceRV;
         if (tmp > cons || (tmp < cons && cons % tmp != 0)) {
           emitScaleWarning = true;
-          // System.err.println("Output: " + inscaleFactor + "/" + sourceRV + "/" + prod + "/" + cons);
           // we emit a warning only if producing too much, or not enough but with a wrong multiplicity
           // note that it is not allowed to produce less than the consumed tokens on the output interface
           // at the opposite, if more are produced, a roundbuffer is added.
@@ -261,7 +258,6 @@ public abstract class PiBRV {
         final long tmp = inscaleFactor * cons * targetRV;
         if (tmp > prod || (tmp < prod && prod % tmp != 0)) {
           emitScaleWarning = true;
-          // System.err.println("Input: " + inscaleFactor + "/" + targetRV + "/" + prod + "/" + cons);
           // we emit a warning only if consuming too much, or not enough but with a wrong multiplicity
           // note that it is not allowed to leave unconsumed tokens on the input interface
           // at the opposite, if more are consumed, a broadcast is added.

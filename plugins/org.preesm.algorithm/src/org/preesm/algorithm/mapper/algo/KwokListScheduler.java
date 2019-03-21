@@ -147,7 +147,7 @@ public class KwokListScheduler {
 
         final List<ComponentInstance> opList = archisimu.getCandidateOperators(currentvertex, true);
         if (opList.size() == 1) {
-          chosenoperator = (ComponentInstance) opList.toArray()[0];
+          chosenoperator = opList.get(0);
         } else {
           for (final ComponentInstance currentoperator : opList) {
             final long test = listImplementationCost(dag, currentvertex, currentoperator, archisimu,

@@ -51,6 +51,7 @@ import org.eclipse.jface.viewers.StructuredSelection;
 import org.eclipse.jface.viewers.TreeSelection;
 import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.IWorkbenchPage;
+import org.preesm.commons.exceptions.PreesmRuntimeException;
 import org.preesm.commons.logger.PreesmLogger;
 import org.preesm.model.pisdf.AbstractVertex;
 import org.preesm.model.pisdf.ConfigInputPort;
@@ -71,33 +72,36 @@ public class PiSDFBRVComputePopup extends AbstractHandler {
   public Object execute(ExecutionEvent event) throws ExecutionException {
     final IWorkbenchPage page = PreesmUIPlugin.getDefault().getWorkbench().getActiveWorkbenchWindow().getActivePage();
     final ISelection activeSelection = page.getSelection();
-
-    if (activeSelection instanceof TreeSelection) {
-      // in the resource explorer, compute for all selected .pi files
-      final TreeSelection selection = (TreeSelection) activeSelection;
-      final Iterator<?> iterator = selection.iterator();
-      while (iterator.hasNext()) {
-        final Object next = iterator.next();
-        if (next instanceof IFile) {
-          final IFile file = (IFile) next;
-          final PiGraph piGraphWithReconnection = PiParser.getPiGraphWithReconnection(file.getFullPath().toString());
-          processPiSDF(piGraphWithReconnection);
+    try {
+      if (activeSelection instanceof TreeSelection) {
+        // in the resource explorer, compute for all selected .pi files
+        final TreeSelection selection = (TreeSelection) activeSelection;
+        final Iterator<?> iterator = selection.iterator();
+        while (iterator.hasNext()) {
+          final Object next = iterator.next();
+          if (next instanceof IFile) {
+            final IFile file = (IFile) next;
+            final PiGraph piGraphWithReconnection = PiParser.getPiGraphWithReconnection(file.getFullPath().toString());
+            processPiSDF(piGraphWithReconnection);
+          }
         }
-      }
-    } else if (activeSelection instanceof StructuredSelection) {
-      // in the PiSDF editor, compute for active graph
-      final IEditorPart editor = page.getActiveEditor();
-      final DiagramEditorInput input = (DiagramEditorInput) editor.getEditorInput();
-      final String uriString = input.getUri().path().replace("/resource", "").replace(".diagram", ".pi");
-      final IPath fromPortableString = Path.fromPortableString(uriString);
-      final IFile file = ResourcesPlugin.getWorkspace().getRoot().getFile(fromPortableString);
+      } else if (activeSelection instanceof StructuredSelection) {
+        // in the PiSDF editor, compute for active graph
+        final IEditorPart editor = page.getActiveEditor();
+        final DiagramEditorInput input = (DiagramEditorInput) editor.getEditorInput();
+        final String uriString = input.getUri().path().replace("/resource", "").replace(".diagram", ".pi");
+        final IPath fromPortableString = Path.fromPortableString(uriString);
+        final IFile file = ResourcesPlugin.getWorkspace().getRoot().getFile(fromPortableString);
 
-      final String string = file.getFullPath().toString();
-      final PiGraph piGraphWithReconnection = PiParser.getPiGraphWithReconnection(string);
-      processPiSDF(piGraphWithReconnection);
-    } else {
-      ErrorWithExceptionDialog.errorDialogWithStackTrace("unsupported selection : " + activeSelection.getClass(),
-          new UnsupportedOperationException());
+        final String string = file.getFullPath().toString();
+        final PiGraph piGraphWithReconnection = PiParser.getPiGraphWithReconnection(string);
+        processPiSDF(piGraphWithReconnection);
+      } else {
+        ErrorWithExceptionDialog.errorDialogWithStackTrace("unsupported selection : " + activeSelection.getClass(),
+            new UnsupportedOperationException());
+      }
+    } catch (PreesmRuntimeException e) {
+      ErrorWithExceptionDialog.errorDialogWithStackTrace("Error during operation.", e);
     }
     return null;
   }
