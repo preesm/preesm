@@ -1,6 +1,7 @@
 /**
- * Copyright or © or Copr. IETR/INSA - Rennes (2012 - 2018) :
+ * Copyright or © or Copr. IETR/INSA - Rennes (2012 - 2019) :
  *
+ * Alexandre Honorat <alexandre.honorat@insa-rennes.fr> (2019)
  * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017 - 2018)
  * Julien Heulot <julien.heulot@insa-rennes.fr> (2013)
  * Karol Desnos <karol.desnos@insa-rennes.fr> (2012)
