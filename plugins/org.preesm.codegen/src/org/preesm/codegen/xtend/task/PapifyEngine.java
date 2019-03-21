@@ -121,14 +121,19 @@ public class PapifyEngine {
 
       String message = "Papifying";
       String finalName;
+      String finalNameWithoutUnderScroll;
 
       // For each vertex, check the monitoring
       for (final DAGVertex vertex : this.dag.vertexSet()) {
         finalName = vertex.getInfo();
-        System.out.println(finalName);
         if (finalName != null) {
+          finalNameWithoutUnderScroll = vertex.getInfo().substring(0, vertex.getInfo().lastIndexOf('_'));
+          config = papifyConfig.getCorePapifyConfigGroupActor(finalName);
+          if (config == null) {
+            config = papifyConfig.getCorePapifyConfigGroupActor(finalNameWithoutUnderScroll);
+            finalName = finalNameWithoutUnderScroll;
+          }
           finalName = vertex.getInfo().substring(vertex.getInfo().indexOf('/') + 1).replace('/', '_');
-          config = papifyConfig.getCorePapifyConfigGroupActor(vertex.getInfo());
           if (config != null && !config.getPAPIEvents().keySet().isEmpty()) {
             configPosition = "";
             this.dag.getVertex(vertex.getName()).getPropertyBean().setValue(PAPIFY_MONITOR_TIMING, "No");
