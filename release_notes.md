@@ -14,6 +14,10 @@ PREESM Changelog
 * Implements graph optimisations for graph flattening and provide rates warnings;
 * Improve the periodic schedulability test by automatically computing the fifo breaking cycles;
 * Improve the implementation of the tasks sorter for the Gantt display;
+* Update Maven config:
+  * Update Jacoco to 0.8.3
+  * Update Checkstyle to 8.18
+  * Update Xtext to 2.17.0
 
 ### Bug fix
 * Fix #108: Update log messages to display the faulty task name and id, when relevant;
