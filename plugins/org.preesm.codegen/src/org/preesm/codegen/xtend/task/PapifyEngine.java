@@ -125,6 +125,7 @@ public class PapifyEngine {
       // For each vertex, check the monitoring
       for (final DAGVertex vertex : this.dag.vertexSet()) {
         finalName = vertex.getInfo();
+        System.out.println(finalName);
         if (finalName != null) {
           finalName = vertex.getInfo().substring(vertex.getInfo().indexOf('/') + 1).replace('/', '_');
           config = papifyConfig.getCorePapifyConfigGroupActor(vertex.getInfo());
