@@ -1,8 +1,8 @@
 PREESM Changelog
 ================
 
-## Release version X.Y.Z
-*XXXX.XX.XX*
+## Release version 3.5.0
+*2019.03.21*
 
 ### New Feature
 * Add a sanity check on communication order in intermediate PE for multi-step communication.
