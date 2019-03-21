@@ -17,8 +17,8 @@ if [ ! -z ${1+x} ]; then
   fi
 fi
 
-# enable Sonar on Travis
-if [ ! -z ${TRAVIS+x} ]; then
+# enable Sonar on Travis, from preesm/preesm only
+if [ ! -z ${TRAVIS+x} ] && [ ! -z ${TRAVIS_REPO_SLUG+x} ] && [ "${TRAVIS_REPO_SLUG}" == "preesm/preesm" ] && [ ! -z ${TRAVIS_PULL_REQUEST+x} ] && [ "${TRAVIS_PULL_REQUEST}" == "false" ]; then
   SONAR="sonar:sonar"
 else
   SONAR=

@@ -1,6 +1,7 @@
 /**
  * Copyright or © or Copr. IETR/INSA - Rennes (2008 - 2019) :
  *
+ * Alexandre Honorat <alexandre.honorat@insa-rennes.fr> (2019)
  * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017 - 2019)
  * Clément Guy <clement.guy@insa-rennes.fr> (2014 - 2015)
  * Karol Desnos <karol.desnos@insa-rennes.fr> (2012)
@@ -147,7 +148,7 @@ public class KwokListScheduler {
 
         final List<ComponentInstance> opList = archisimu.getCandidateOperators(currentvertex, true);
         if (opList.size() == 1) {
-          chosenoperator = (ComponentInstance) opList.toArray()[0];
+          chosenoperator = opList.get(0);
         } else {
           for (final ComponentInstance currentoperator : opList) {
             final long test = listImplementationCost(dag, currentvertex, currentoperator, archisimu,

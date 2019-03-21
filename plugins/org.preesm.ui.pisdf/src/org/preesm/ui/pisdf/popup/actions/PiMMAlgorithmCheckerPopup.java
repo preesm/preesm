@@ -1,6 +1,7 @@
 /**
- * Copyright or © or Copr. IETR/INSA - Rennes (2014 - 2018) :
+ * Copyright or © or Copr. IETR/INSA - Rennes (2014 - 2019) :
  *
+ * Alexandre Honorat <alexandre.honorat@insa-rennes.fr> (2019)
  * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017 - 2018)
  * Clément Guy <clement.guy@insa-rennes.fr> (2014 - 2015)
  * Karol Desnos <karol.desnos@insa-rennes.fr> (2015)
@@ -44,10 +45,12 @@ import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.viewers.TreeSelection;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.ui.IWorkbenchPage;
+import org.preesm.commons.exceptions.PreesmRuntimeException;
 import org.preesm.model.pisdf.PiGraph;
 import org.preesm.model.pisdf.check.PiMMAlgorithmChecker;
 import org.preesm.model.pisdf.serialize.PiParser;
 import org.preesm.ui.PreesmUIPlugin;
+import org.preesm.ui.utils.ErrorWithExceptionDialog;
 
 /**
  * Class to launch a PiGraph check through pop-up menu.
@@ -79,7 +82,13 @@ public class PiMMAlgorithmCheckerPopup extends AbstractHandler {
       final IWorkbenchPage page = PreesmUIPlugin.getDefault().getWorkbench().getActiveWorkbenchWindow().getActivePage();
       final TreeSelection selection = (TreeSelection) page.getSelection();
       final IFile file = (IFile) selection.getFirstElement();
-      final PiGraph graph = PiParser.getPiGraphWithReconnection(file.getFullPath().toString());
+      PiGraph graph;
+      try {
+        graph = PiParser.getPiGraphWithReconnection(file.getFullPath().toString());
+      } catch (PreesmRuntimeException e) {
+        ErrorWithExceptionDialog.errorDialogWithStackTrace("Error during operation.", e);
+        return null;
+      }
 
       final StringBuffer message = new StringBuffer();
       if (checker.checkGraph(graph)) {

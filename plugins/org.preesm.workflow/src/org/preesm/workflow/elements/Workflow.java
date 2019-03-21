@@ -48,7 +48,7 @@ import org.jgrapht.traverse.TopologicalOrderIterator;
  *
  * @author mpelcat
  */
-public class Workflow extends DirectedMultigraph<AbstractWorkflowNode, WorkflowEdge> {
+public class Workflow extends DirectedMultigraph<AbstractWorkflowNode<?>, WorkflowEdge> {
 
   /** The Constant serialVersionUID. */
   private static final long serialVersionUID = -908014142930559238L;
@@ -87,12 +87,12 @@ public class Workflow extends DirectedMultigraph<AbstractWorkflowNode, WorkflowE
    *
    * @return the list
    */
-  public List<AbstractWorkflowNode> vertexTopologicalList() {
-    final List<AbstractWorkflowNode> nodeList = new ArrayList<>();
-    final TopologicalOrderIterator<AbstractWorkflowNode, WorkflowEdge> it = new TopologicalOrderIterator<>(this);
+  public List<AbstractWorkflowNode<?>> vertexTopologicalList() {
+    final List<AbstractWorkflowNode<?>> nodeList = new ArrayList<>();
+    final TopologicalOrderIterator<AbstractWorkflowNode<?>, WorkflowEdge> it = new TopologicalOrderIterator<>(this);
 
     while (it.hasNext()) {
-      final AbstractWorkflowNode node = it.next();
+      final AbstractWorkflowNode<?> node = it.next();
       nodeList.add(node);
     }
 
@@ -125,7 +125,7 @@ public class Workflow extends DirectedMultigraph<AbstractWorkflowNode, WorkflowE
    */
   public boolean hasScenario() {
     int nbScenarios = 0;
-    for (final AbstractWorkflowNode node : vertexSet()) {
+    for (final AbstractWorkflowNode<?> node : vertexSet()) {
       if (node.isScenarioNode()) {
         nbScenarios++;
       }

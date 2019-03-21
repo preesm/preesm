@@ -1,9 +1,7 @@
 /**
- * Copyright or © or Copr. IETR/INSA - Rennes (2011 - 2019) :
+ * Copyright or © or Copr. IETR/INSA - Rennes (2019) :
  *
- * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017 - 2019)
- * Clément Guy <clement.guy@insa-rennes.fr> (2014)
- * Maxime Pelcat <maxime.pelcat@insa-rennes.fr> (2011)
+ * Alexandre Honorat <alexandre.honorat@insa-rennes.fr> (2019)
  *
  * This software is a computer program whose purpose is to help prototyping
  * parallel applications using dataflow formalism.
@@ -34,56 +32,48 @@
  * The fact that you are presently reading this means that you have had
  * knowledge of the CeCILL license and that you accept its terms.
  */
-package org.preesm.workflow.elements;
+package org.preesm.model.pisdf.check;
 
-import org.eclipse.core.runtime.IConfigurationElement;
-import org.preesm.workflow.implement.AbstractWorkflowNodeImplementation;
+import java.util.Arrays;
+import java.util.SortedSet;
+import java.util.TreeSet;
 
 /**
- * This class provides methods to manipulate workflow nodes.
- *
- * @author mpelcat
- *
- * @param <T>
- *          the top class of the implementation
+ * This class enables to check if an actor or port name is compliant with our policy.
+ * 
+ * @author ahonorat
  */
-public abstract class AbstractWorkflowNode<T extends AbstractWorkflowNodeImplementation> {
-
-  /** Implementation of this node. */
-  protected AbstractWorkflowNodeImplementation implementation = null;
+public class NameCheckerC {
 
   /**
-   * Gets the implementation.
-   *
-   * @return the implementation
+   * Valid names correspond to this regex, close to the C variables name policy.
    */
-  public final AbstractWorkflowNodeImplementation getImplementation() {
-    return this.implementation;
+  public static final String REGEX_C = "[a-zA-Z][a-zA-Z0-9_]*";
+
+  /**
+   * Only C for now, but it could be extended to C++ keywords also.
+   */
+  private static final String[] restrictedKeywordsArr = { "auto", "break", "case", "char", "const", "continue",
+      "default", "do", "int", "long", "register", "return", "short", "signed", "sizeof", "static", "struct", "switch",
+      "typedef", "union", "unsigned", "void", "volatile", "while", "double", "else", "enum", "extern", "float", "for",
+      "goto", "if", "inline", "restrict" };
+
+  /**
+   * Set of reserved keyworkds for C, that are not allowed.
+   */
+  public static final SortedSet<String> restrictedKeywords = new TreeSet<>(Arrays.asList(restrictedKeywordsArr));
+
+  /**
+   * Check if the given actor or port name meets the policy.
+   * <p>
+   * Ideally this method should be called by all {@code setName} methods. It is not the case yet.
+   * 
+   * @param name
+   *          Name to check.
+   * @return True if valid, false otherwise.
+   */
+  public static boolean isValidName(String name) {
+    return name.matches(REGEX_C) && !restrictedKeywords.contains(name);
   }
-
-  public void init(final T implem, final IConfigurationElement element) {
-    implem.setWorkflowNode(this);
-    initPrototype(implem, element);
-  }
-
-  protected abstract boolean initPrototype(final T implem, final IConfigurationElement element);
-
-  /**
-   * Checks if is scenario node.
-   *
-   * @return True if this node is a scenario node, false otherwise.
-   */
-  public abstract boolean isScenarioNode();
-
-  /**
-   * Checks if is task node.
-   *
-   * @return True if this node is a transformation node, false otherwise.
-   */
-  public abstract boolean isTaskNode();
-
-  public abstract String getID();
-
-  public abstract String getName();
 
 }

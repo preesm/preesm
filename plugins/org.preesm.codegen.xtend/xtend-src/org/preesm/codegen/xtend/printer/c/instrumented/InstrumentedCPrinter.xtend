@@ -1,6 +1,7 @@
 /**
- * Copyright or © or Copr. IETR/INSA - Rennes (2013 - 2018) :
+ * Copyright or © or Copr. IETR/INSA - Rennes (2013 - 2019) :
  *
+ * Alexandre Honorat <alexandre.honorat@insa-rennes.fr> (2019)
  * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017 - 2018)
  * Clément Guy <clement.guy@insa-rennes.fr> (2015)
  * Florian Arrestier <florian.arrestier@insa-rennes.fr> (2018)
@@ -285,7 +286,7 @@ class InstrumentedCPrinter extends CPrinter {
 
 	def String printAnalysisCsvFile()'''
 	«FOR entry : actorIDs.entrySet»
-	«entry.key»;"=AVERAGE(«FOR id : entry.value SEPARATOR ';'»«(id).intToColumn»«actorIDs.size + 3»:«(id).intToColumn»65536«ENDFOR»)"
+	«entry.key»;"=MROUND(AVERAGE(«FOR id : entry.value SEPARATOR ';'»«(id).intToColumn»«actorIDs.size + 3»:«(id).intToColumn»65536«ENDFOR»);10)"
 	«ENDFOR»
 	'''
 

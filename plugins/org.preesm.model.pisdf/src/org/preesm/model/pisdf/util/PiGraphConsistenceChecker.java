@@ -1,6 +1,7 @@
 /**
  * Copyright or © or Copr. IETR/INSA - Rennes (2018 - 2019) :
  *
+ * Alexandre Honorat <alexandre.honorat@insa-rennes.fr> (2019)
  * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2018 - 2019)
  *
  * This software is a computer program whose purpose is to help prototyping
@@ -220,7 +221,7 @@ public class PiGraphConsistenceChecker extends PiMMSwitch<Boolean> {
     final boolean portConnected = incomingDependency != null;
     boolean depInGraph = true;
     if (!portConnected) {
-      error("Port [%s] is not connected to a dependency.", cfgInPort);
+      error("Config input port [%s] is not connected to a dependency.", cfgInPort);
     } else {
       final Graph containingGraph = incomingDependency.getContainingGraph();
       depInGraph = containingGraph == peek;
@@ -239,33 +240,36 @@ public class PiGraphConsistenceChecker extends PiMMSwitch<Boolean> {
     final PiGraph peek = this.graphStack.peek();
     final AbstractActor containingActor = port.getContainingActor();
     final boolean isContained = containingActor != null;
+    String portName = port.getName();
+    String actorName = isContained ? containingActor.getName() : "unknown";
     boolean wellContained = true;
     if (!isContained) {
-      error("port [%s] has not containing actor", port);
+      error("port [%s] has not containing actor", portName);
     } else {
       final PiGraph containingPiGraph = containingActor.getContainingPiGraph();
       wellContained = (containingPiGraph == peek);
       if (!wellContained) {
-        error("port [%s] containing actor graph [%s] differs from peek graph [%s]", port, containingPiGraph, peek);
+        error("port [<%s>:%s] containing actor graph [%s] differs from peek graph [%s]", actorName, portName,
+            containingPiGraph, peek);
       }
     }
     final Fifo fifo = port.getFifo();
     final boolean hasFifo = fifo != null;
     boolean fifoWellContained = true;
     if (!hasFifo) {
-      error("port [%s] is not connected to a fifo", port);
+      error("port [<%s>:%s] is not connected to a fifo", actorName, portName);
     } else {
       final PiGraph containingPiGraph2 = fifo.getContainingPiGraph();
       fifoWellContained = (containingPiGraph2 == peek);
       if (!fifoWellContained) {
-        error("port [%s] fifo graph [%s] differs from peek graph [%s]", port, containingPiGraph2, peek);
+        error("port [<%s>:%s] fifo graph [%s] differs from peek graph [%s]", actorName, portName, containingPiGraph2,
+            peek);
       }
     }
     final boolean portValid = wellContained && fifoWellContained;
 
     if (!portValid) {
-      final String message = "Port [" + port + "] is not valid.";
-      error(message);
+      error("Port [<%s>:%s] is not valid.", actorName, portName);
     }
 
     return portValid;

@@ -1,6 +1,7 @@
 /**
- * Copyright or © or Copr. IETR/INSA - Rennes (2008 - 2018) :
+ * Copyright or © or Copr. IETR/INSA - Rennes (2008 - 2019) :
  *
+ * Alexandre Honorat <alexandre.honorat@insa-rennes.fr> (2019)
  * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017 - 2018)
  * Matthieu Wipliez <matthieu.wipliez@insa-rennes.fr> (2008)
  * Maxime Pelcat <maxime.pelcat@insa-rennes.fr> (2008 - 2012)
@@ -44,25 +45,20 @@ import org.preesm.algorithm.mapper.abc.taskscheduling.TaskSchedType;
  *
  * @author mpelcat
  */
-public class AbcType {
+public enum AbcType {
 
   /** Available Abc types. */
-  public static final AbcType InfiniteHomogeneous = new AbcType("InfiniteHomogeneous");
-
+  InfiniteHomogeneous("InfiniteHomogeneous"),
   /** The Constant LooselyTimed. */
-  public static final AbcType LooselyTimed = new AbcType("LooselyTimed");
-
+  LooselyTimed("LooselyTimed"),
   /** The Constant ApproximatelyTimed. */
-  public static final AbcType ApproximatelyTimed = new AbcType("ApproximatelyTimed");
-
+  ApproximatelyTimed("ApproximatelyTimed"),
   /** The Constant AccuratelyTimed. */
-  public static final AbcType AccuratelyTimed = new AbcType("AccuratelyTimed");
-
+  AccuratelyTimed("AccuratelyTimed"),
   /** The Constant CommConten. */
-  private static final AbcType CommConten = new AbcType("CommConten");
-
+  CommConten("CommConten"),
   /** The Constant DynamicQueuing. */
-  private static final AbcType DynamicQueuing = new AbcType("DynamicQueuing");
+  DynamicQueuing("DynamicQueuing");
 
   /** Name of the current type. */
   private String name = null;
@@ -79,8 +75,7 @@ public class AbcType {
    * @param name
    *          the name
    */
-  private AbcType(final String name) {
-    super();
+  AbcType(final String name) {
     this.name = name;
     this.taskSchedType = TaskSchedType.SIMPLE;
   }
@@ -105,18 +100,18 @@ public class AbcType {
    */
   public static AbcType fromString(final String type) {
 
-    if (type.equalsIgnoreCase("InfiniteHomogeneous")) {
-      return AbcType.InfiniteHomogeneous;
-    } else if (type.equalsIgnoreCase("LooselyTimed")) {
-      return AbcType.LooselyTimed;
-    } else if (type.equalsIgnoreCase("ApproximatelyTimed")) {
-      return AbcType.ApproximatelyTimed;
-    } else if (type.equalsIgnoreCase("AccuratelyTimed")) {
-      return AbcType.AccuratelyTimed;
-    } else if (type.equalsIgnoreCase("CommConten")) {
-      return AbcType.CommConten;
-    } else if (type.equalsIgnoreCase("DynamicQueuing")) {
-      return AbcType.DynamicQueuing;
+    if (InfiniteHomogeneous.name.equalsIgnoreCase(type)) {
+      return InfiniteHomogeneous;
+    } else if (LooselyTimed.name.equalsIgnoreCase(type)) {
+      return LooselyTimed;
+    } else if (ApproximatelyTimed.name.equalsIgnoreCase(type)) {
+      return ApproximatelyTimed;
+    } else if (AccuratelyTimed.name.equalsIgnoreCase(type)) {
+      return AccuratelyTimed;
+    } else if (CommConten.name.equalsIgnoreCase(type)) {
+      return CommConten;
+    } else if (DynamicQueuing.name.equalsIgnoreCase(type)) {
+      return DynamicQueuing;
     }
 
     return null;

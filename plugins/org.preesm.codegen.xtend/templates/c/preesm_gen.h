@@ -1,6 +1,7 @@
 /**
- * Copyright or © or Copr. IETR/INSA - Rennes (2017 - 2018) :
+ * Copyright or © or Copr. IETR/INSA - Rennes (2017 - 2019) :
  *
+ * Alexandre Honorat <alexandre.honorat@insa-rennes.fr> (2019)
  * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017 - 2018)
  * Julien Hascoet <jhascoet@kalray.eu> (2017)
  *
@@ -47,9 +48,13 @@
 #[[#]]#define _PREESM_PREESM_GEN_H
 
 #[[#]]#define _GNU_SOURCE
+
+#[[#]]#include <stdio.h>
+#[[#]]#include <string.h>
+#[[#]]#include <pthread.h>
+
 #[[#]]#ifdef _WIN32
 #[[#]]#include <windows.h>
-#[[#]]#include <pthread.h>
 #[[#]]#else
 // For Linux
 // Pthread barriers are defined in POSIX 2001 version
@@ -66,7 +71,6 @@
 
 #[[#]]#define _POSIX_C_SOURCE 200112L
 #[[#]]#define _XOPEN_SOURCE 600
-#[[#]]#include <pthread.h>
 #[[#]]#include <unistd.h>
 #[[#]]#endif
 

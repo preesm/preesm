@@ -1,6 +1,7 @@
 /**
- * Copyright or © or Copr. IETR/INSA - Rennes (2008 - 2018) :
+ * Copyright or © or Copr. IETR/INSA - Rennes (2008 - 2019) :
  *
+ * Alexandre Honorat <alexandre.honorat@insa-rennes.fr> (2019)
  * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017 - 2018)
  * Clément Guy <clement.guy@insa-rennes.fr> (2014)
  * Florian Arrestier <florian.arrestier@insa-rennes.fr> (2018)
@@ -41,14 +42,12 @@
 package org.preesm.algorithm.mapper;
 
 import java.util.Map;
-import java.util.logging.Level;
 import org.preesm.algorithm.mapper.abc.impl.latency.LatencyAbc;
 import org.preesm.algorithm.mapper.abc.taskscheduling.AbstractTaskSched;
 import org.preesm.algorithm.mapper.algo.InitialLists;
 import org.preesm.algorithm.mapper.algo.KwokListScheduler;
 import org.preesm.algorithm.mapper.model.MapperDAG;
 import org.preesm.algorithm.mapper.params.AbcParameters;
-import org.preesm.commons.logger.PreesmLogger;
 import org.preesm.model.scenario.PreesmScenario;
 import org.preesm.model.slam.Design;
 
@@ -65,15 +64,11 @@ public class ListSchedulingMappingFromDAG extends AbstractMappingFromDAG {
       final InitialLists initial, final PreesmScenario scenario, final AbcParameters abcParameters, final MapperDAG dag,
       final Design architecture, final AbstractTaskSched taskSched) {
 
-    PreesmLogger.getLogger().log(Level.INFO, "Mapping");
-
     final LatencyAbc simu2 = LatencyAbc.getInstance(abcParameters, dag, architecture, scenario);
     simu2.setTaskScheduler(taskSched);
 
     final KwokListScheduler scheduler = new KwokListScheduler();
     scheduler.schedule(dag, initial.getCpnDominant(), simu2, null, null);
-
-    PreesmLogger.getLogger().log(Level.INFO, "Mapping finished");
 
     return simu2;
 

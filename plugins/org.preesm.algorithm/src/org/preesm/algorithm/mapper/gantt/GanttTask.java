@@ -1,6 +1,7 @@
 /**
- * Copyright or © or Copr. IETR/INSA - Rennes (2012 - 2018) :
+ * Copyright or © or Copr. IETR/INSA - Rennes (2012 - 2019) :
  *
+ * Alexandre Honorat <alexandre.honorat@insa-rennes.fr> (2019)
  * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017 - 2018)
  * Maxime Pelcat <maxime.pelcat@insa-rennes.fr> (2012)
  *
@@ -40,19 +41,19 @@ package org.preesm.algorithm.mapper.gantt;
  *
  * @author mpelcat
  */
-public class GanttTask {
+public class GanttTask implements Comparable<GanttTask> {
 
   /** Start time of the task in the Gantt. */
-  private long startTime = 0;
+  private final long startTime;
 
   /** Duration of the task in the Gantt. */
-  private long duration = 0;
+  private final long duration;
 
   /** ID displayed in the Gantt. */
-  private String id = "";
+  private final String id;
 
   /** Component in which the task is displayed. */
-  private GanttComponent component = null;
+  private final GanttComponent component;
 
   /**
    * Instantiates a new gantt task.
@@ -128,6 +129,17 @@ public class GanttTask {
   @Override
   public String toString() {
     return "(" + this.id + "," + this.component + "," + this.startTime + "," + this.duration + ")";
+  }
+
+  @Override
+  public int compareTo(GanttTask o) {
+    if (startTime < o.startTime) {
+      return -1;
+    }
+    if (o.startTime < startTime) {
+      return 1;
+    }
+    return 0;
   }
 
 }

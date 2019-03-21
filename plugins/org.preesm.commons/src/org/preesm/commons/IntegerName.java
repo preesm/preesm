@@ -1,9 +1,7 @@
 /**
- * Copyright or © or Copr. IETR/INSA - Rennes (2011 - 2019) :
+ * Copyright or © or Copr. IETR/INSA - Rennes (2019) :
  *
- * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017 - 2019)
- * Clément Guy <clement.guy@insa-rennes.fr> (2014)
- * Maxime Pelcat <maxime.pelcat@insa-rennes.fr> (2011)
+ * Alexandre Honorat <alexandre.honorat@insa-rennes.fr> (2019)
  *
  * This software is a computer program whose purpose is to help prototyping
  * parallel applications using dataflow formalism.
@@ -34,56 +32,49 @@
  * The fact that you are presently reading this means that you have had
  * knowledge of the CeCILL license and that you accept its terms.
  */
-package org.preesm.workflow.elements;
+package org.preesm.commons;
 
-import org.eclipse.core.runtime.IConfigurationElement;
-import org.preesm.workflow.implement.AbstractWorkflowNodeImplementation;
+import org.preesm.commons.exceptions.PreesmRuntimeException;
 
 /**
- * This class provides methods to manipulate workflow nodes.
+ * This class provides normalized integer Strings : it appends it with leading 0;
+ * 
+ * @author ahonorat
  *
- * @author mpelcat
- *
- * @param <T>
- *          the top class of the implementation
  */
-public abstract class AbstractWorkflowNode<T extends AbstractWorkflowNodeImplementation> {
-
-  /** Implementation of this node. */
-  protected AbstractWorkflowNodeImplementation implementation = null;
+public class IntegerName {
 
   /**
-   * Gets the implementation.
-   *
-   * @return the implementation
+   * Conversion format with leading zero.
    */
-  public final AbstractWorkflowNodeImplementation getImplementation() {
-    return this.implementation;
+  private final String format;
+
+  /**
+   * Builds IntegerName.
+   * 
+   * @param maxValue
+   *          Maximum expected value, used to compute the maximum number of digits. It has to be positive (if 0,
+   *          processed as 1), otherwise {@link PreesmRuntimeException} is thrown.
+   */
+  public IntegerName(long maxValue) {
+    if (maxValue == 0) {
+      maxValue = 1;
+    } else if (maxValue < 0) {
+      throw new PreesmRuntimeException("Attempting to convert a negative number into a printable index.");
+    }
+    int nbDigits = 1 + (int) Math.log10(maxValue); // performs floor automatically
+    format = "%0" + nbDigits + "d";
   }
 
-  public void init(final T implem, final IConfigurationElement element) {
-    implem.setWorkflowNode(this);
-    initPrototype(implem, element);
+  /**
+   * Format a number with the correct number of leading zero (depends on this instance maximum value).
+   * 
+   * @param value
+   *          The number to be formatted.
+   * @return The number as a String with leading zeros according to the maximum value.
+   */
+  public String toString(long value) {
+    return String.format(format, value);
   }
-
-  protected abstract boolean initPrototype(final T implem, final IConfigurationElement element);
-
-  /**
-   * Checks if is scenario node.
-   *
-   * @return True if this node is a scenario node, false otherwise.
-   */
-  public abstract boolean isScenarioNode();
-
-  /**
-   * Checks if is task node.
-   *
-   * @return True if this node is a transformation node, false otherwise.
-   */
-  public abstract boolean isTaskNode();
-
-  public abstract String getID();
-
-  public abstract String getName();
 
 }

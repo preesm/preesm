@@ -1,6 +1,29 @@
 PREESM Changelog
 ================
 
+## Release version 3.5.0
+*2019.03.21*
+
+### New Feature
+* Add a sanity check on communication order in intermediate PE for multi-step communication.
+
+### Changes
+* Update workflow related messages;
+* Delete unused resources;
+* Disable sonar cloud on pull requests and other repos;
+* Implements graph optimisations for graph flattening and provide rates warnings;
+* Improve the periodic schedulability test by automatically computing the fifo breaking cycles;
+* Improve the implementation of the tasks sorter for the Gantt display;
+* Update Maven config:
+  * Update Jacoco to 0.8.3
+  * Update Checkstyle to 8.18
+  * Update Xtext to 2.17.0
+
+### Bug fix
+* Fix #108: Update log messages to display the faulty task name and id, when relevant;
+* Fix #113: Use different counter for setting thread count in code generation;
+* Fix #118
+
 ## Release version 3.4.0
 *2019.01.28*
 
@@ -12,6 +35,7 @@ PREESM Changelog
 * Properly throw exception with message;
 * Minor refactor;
 * Disable graphml editor association for .pi files;
+* InstrumentedC now dumps timings in nanosecond and is cross platform
 
 ### Bug fix
 

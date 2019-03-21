@@ -1,6 +1,7 @@
 /**
  * Copyright or © or Copr. IETR/INSA - Rennes (2018 - 2019) :
  *
+ * Alexandre Honorat <alexandre.honorat@insa-rennes.fr> (2019)
  * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2018 - 2019)
  * Florian Arrestier <florian.arrestier@insa-rennes.fr> (2018)
  *
@@ -39,15 +40,12 @@
 package org.preesm.model.pisdf.statictools.optims;
 
 import org.preesm.model.pisdf.AbstractActor;
-import org.preesm.model.pisdf.ConfigInputPort;
 import org.preesm.model.pisdf.DataInputPort;
 import org.preesm.model.pisdf.DataOutputPort;
-import org.preesm.model.pisdf.Dependency;
 import org.preesm.model.pisdf.Fifo;
 import org.preesm.model.pisdf.ForkActor;
-import org.preesm.model.pisdf.ISetter;
-import org.preesm.model.pisdf.Parameter;
 import org.preesm.model.pisdf.PiGraph;
+import org.preesm.model.pisdf.statictools.PiMMHelper;
 
 /**
  * @author farresti
@@ -75,8 +73,14 @@ public class ForkOptimization extends AbstractPiGraphSpecialActorRemover<DataOut
    */
   @Override
   public final boolean remove(final PiGraph graph, final AbstractActor actor) {
-    if (graph == null) {
+    if (graph == null || actor == null) {
       return false;
+    }
+    for (final DataOutputPort dop : actor.getDataOutputPorts()) {
+      final Fifo outgoingFifo = dop.getOutgoingFifo();
+      if (outgoingFifo.getDelay() != null) {
+        return false;
+      }
     }
     for (final DataOutputPort dop : actor.getDataOutputPorts()) {
       final Fifo outgoingFifo = dop.getOutgoingFifo();
@@ -84,19 +88,10 @@ public class ForkOptimization extends AbstractPiGraphSpecialActorRemover<DataOut
       final AbstractActor targetActor = targetPort.getContainingActor();
       if (targetActor instanceof ForkActor) {
         fillRemoveAndReplace(actor.getDataOutputPorts(), targetActor.getDataOutputPorts(), dop);
-        removeActorAndFifo(graph, outgoingFifo, targetActor);
+        PiMMHelper.removeActorAndFifo(graph, outgoingFifo, targetActor);
       }
     }
-    for (final ConfigInputPort cip : actor.getConfigInputPorts()) {
-      final Dependency incomingDependency = cip.getIncomingDependency();
-      graph.getEdges().remove(incomingDependency);
-      final ISetter setter = incomingDependency.getSetter();
-      setter.getOutgoingDependencies().remove(incomingDependency);
-      if (setter instanceof Parameter && setter.getOutgoingDependencies().isEmpty()) {
-        graph.getVertices().remove((Parameter) setter);
-      }
-    }
-    if (!removeAndReplace(actor.getDataOutputPorts())) {
+    if (!removeAndReplaceDataPorts(actor.getDataOutputPorts())) {
       return removeUnused(graph, actor);
     }
     return true;

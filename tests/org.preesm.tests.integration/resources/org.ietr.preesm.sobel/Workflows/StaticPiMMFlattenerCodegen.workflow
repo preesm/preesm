@@ -3,7 +3,9 @@
     <dftools:scenario pluginId="org.ietr.preesm.scenario.task"/>
     <dftools:task
         pluginId="org.ietr.preesm.pimm.algorithm.pimm2flat.StaticPiMM2FlatPiMMTask" taskId="PiMM2FlatPiMM">
-        <dftools:data key="variables"/>
+        <dftools:data key="variables">
+            <dftools:variable name="Perform optimizations" value="true"/>
+        </dftools:data>
     </dftools:task>
     <dftools:task
         pluginId="org.ietr.preesm.experiment.pimm2srdag.StaticPiMM2SrDAGTask" taskId="PiMM2SrDaGTask">

@@ -1,6 +1,7 @@
 /**
- * Copyright or © or Copr. IETR/INSA - Rennes (2008 - 2018) :
+ * Copyright or © or Copr. IETR/INSA - Rennes (2008 - 2019) :
  *
+ * Alexandre Honorat <alexandre.honorat@insa-rennes.fr> (2019)
  * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017 - 2018)
  * Clément Guy <clement.guy@insa-rennes.fr> (2014)
  * Florian Arrestier <florian.arrestier@insa-rennes.fr> (2018)
@@ -122,11 +123,11 @@ public class TagDAG {
   private void addSendReceive(final MapperDAG dag, final Design architecture, final PreesmScenario scenario) {
 
     final OrderManager orderMgr = new OrderManager(architecture);
-    orderMgr.reconstructTotalOrderFromDAG(dag);
+    orderMgr.reconstructTotalOrderFromDAG(dag); // could be avoided?
 
     final IEdgeSched instance = AbstractEdgeSched.getInstance(EdgeSchedType.Simple, orderMgr);
     final CommunicationRouter comRouter = new CommunicationRouter(architecture, scenario, dag, instance, orderMgr);
-    comRouter.routeAll(CommunicationRouter.SEND_RECEIVE_TYPE);
+    comRouter.routeAll(CommunicationRouter.SEND_RECEIVE_TYPE); // takes a lot of time, should be optimized
     orderMgr.tagDAG(dag);
   }
 

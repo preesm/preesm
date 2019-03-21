@@ -1,12 +1,14 @@
 /**
  * Copyright or © or Copr. IETR/INSA - Rennes (2013 - 2019) :
  *
+ * Alexandre Honorat <alexandre.honorat@insa-rennes.fr> (2019)
  * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017 - 2019)
  * Clément Guy <clement.guy@insa-rennes.fr> (2015)
  * Daniel Madroñal <daniel.madronal@upm.es> (2018)
  * Florian Arrestier <florian.arrestier@insa-rennes.fr> (2018)
  * Julien Hascoet <jhascoet@kalray.eu> (2016)
  * Karol Desnos <karol.desnos@insa-rennes.fr> (2013 - 2018)
+ * leo <leonardo.suriano@upm.es> (2019)
  * Maxime Pelcat <maxime.pelcat@insa-rennes.fr> (2013 - 2016)
  *
  * This software is a computer program whose purpose is to help prototyping
@@ -450,28 +452,15 @@ class CPrinter extends DefaultPrinter {
 		 *
 		 */
 		// no monitoring by default
-		#define _GNU_SOURCE
-		#ifdef _WIN32
-		#include <windows.h>
-		#else
-		#include <unistd.h>
-		#endif
 
-		#ifdef __APPLE__
-		#include "TargetConditionals.h"
-		#endif
-
-		#include <pthread.h>
-		#include <stdio.h>
-
-		#define _PREESM_NBTHREADS_ «printerBlocks.size»
+		#define _PREESM_NBTHREADS_ «engine.codeBlocks.size»
 		#define _PREESM_MAIN_THREAD_ «mainOperatorId»
 
 		// application dependent includes
 		#include "preesm_gen.h"
 
 		// Declare computation thread functions
-		«FOR coreBlock : printerBlocks»
+		«FOR coreBlock : engine.codeBlocks»
 		void *computationThread_Core«(coreBlock as CoreBlock).coreID»(void *arg);
 		«ENDFOR»
 
@@ -525,7 +514,7 @@ class CPrinter extends DefaultPrinter {
 			// Declaring thread pointers
 			pthread_t coreThreads[_PREESM_NBTHREADS_];
 			void *(*coreThreadComputations[_PREESM_NBTHREADS_])(void *) = {
-				«FOR coreBlock : printerBlocks»&computationThread_Core«(coreBlock as CoreBlock).coreID»«if(printerBlocks.last == coreBlock) {""} else {", "}»«ENDFOR»
+				«FOR coreBlock : engine.codeBlocks»&computationThread_Core«(coreBlock as CoreBlock).coreID»«if(engine.codeBlocks.last == coreBlock) {""} else {", "}»«ENDFOR»
 			};
 
 		#ifdef VERBOSE

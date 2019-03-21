@@ -1,7 +1,7 @@
 /**
- * Copyright or © or Copr. IETR/INSA - Rennes (2018) :
+ * Copyright or © or Copr. IETR/INSA - Rennes (2018 - 2019) :
  *
- * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2018)
+ * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2018 - 2019)
  *
  * This software is a computer program whose purpose is to help prototyping
  * parallel applications using dataflow formalism.
@@ -47,7 +47,7 @@ import org.preesm.workflow.implement.AbstractScenarioImplementation;
  *
  * @author mpelcat
  */
-public class ScenarioNode extends AbstractWorkflowNode {
+public class ScenarioNode extends AbstractWorkflowNode<AbstractScenarioImplementation> {
 
   /**
    * The identifier of this scenario node. It is needed to retrieve the implementation of this node
@@ -70,7 +70,13 @@ public class ScenarioNode extends AbstractWorkflowNode {
    *
    * @return the scenario id
    */
-  public String getScenarioId() {
+  @Override
+  public String getName() {
+    return "Scenario Node";
+  }
+
+  @Override
+  public String getID() {
     return this.scenarioId;
   }
 
@@ -112,8 +118,8 @@ public class ScenarioNode extends AbstractWorkflowNode {
    *          the element
    * @return True if the prototype was correctly set.
    */
-  private boolean initPrototype(final AbstractScenarioImplementation scenario, final IConfigurationElement element) {
-
+  @Override
+  protected boolean initPrototype(final AbstractScenarioImplementation scenario, final IConfigurationElement element) {
     for (final IConfigurationElement child : element.getChildren()) {
       if (child.getName().equals("outputs")) {
         for (final IConfigurationElement output : child.getChildren()) {
@@ -144,7 +150,7 @@ public class ScenarioNode extends AbstractWorkflowNode {
             this.implementation = (AbstractScenarioImplementation) obj;
 
             // Initializes the prototype of the scenario
-            initPrototype((AbstractScenarioImplementation) this.implementation, element);
+            init((AbstractScenarioImplementation) this.implementation, element);
             return true;
           }
         }
