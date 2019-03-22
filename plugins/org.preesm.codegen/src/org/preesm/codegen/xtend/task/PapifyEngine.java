@@ -125,16 +125,15 @@ public class PapifyEngine {
 
       // For each vertex, check the monitoring
       for (final DAGVertex vertex : this.dag.vertexSet()) {
-        System.out.println(vertex.getName());
-        System.out.println(vertex.getId());
-        System.out.println(vertex.getInfo());
         finalName = vertex.getInfo();
         if (finalName != null) {
           finalNameWithoutUnderScroll = vertex.getInfo().substring(0, vertex.getInfo().lastIndexOf('_'));
           config = papifyConfig.getCorePapifyConfigGroupActor(finalName);
+          int configMode = 1;
           if (config == null) {
             config = papifyConfig.getCorePapifyConfigGroupActor(finalNameWithoutUnderScroll);
             finalName = finalNameWithoutUnderScroll;
+            configMode = 2;
           }
           finalName = vertex.getInfo().substring(vertex.getInfo().indexOf('/') + 1).replace('/', '_');
           if (config != null && !config.getPAPIEvents().keySet().isEmpty()) {
@@ -236,7 +235,12 @@ public class PapifyEngine {
 
             // Add the actor name
             ConstantString actorName = CodegenFactory.eINSTANCE.createConstantString();
-            String actorNameGeneric = vertex.getId().substring(0, vertex.getId().lastIndexOf('_'));
+            String actorNameGeneric;
+            if (configMode == 2) {
+              actorNameGeneric = vertex.getId().substring(0, vertex.getId().lastIndexOf('_'));
+            } else {
+              actorNameGeneric = vertex.getId();
+            }
             actorName.setName("actor_name".concat(actorNameGeneric));
             actorName.setValue(actorNameGeneric);
             actorName.setComment("Actor name");
