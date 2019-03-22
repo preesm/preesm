@@ -125,6 +125,9 @@ public class PapifyEngine {
 
       // For each vertex, check the monitoring
       for (final DAGVertex vertex : this.dag.vertexSet()) {
+        System.out.println(vertex.getName());
+        System.out.println(vertex.getId());
+        System.out.println(vertex.getInfo());
         finalName = vertex.getInfo();
         if (finalName != null) {
           finalNameWithoutUnderScroll = vertex.getInfo().substring(0, vertex.getInfo().lastIndexOf('_'));
@@ -233,8 +236,9 @@ public class PapifyEngine {
 
             // Add the actor name
             ConstantString actorName = CodegenFactory.eINSTANCE.createConstantString();
-            actorName.setName("actor_name".concat(vertex.getId()));
-            actorName.setValue(vertex.getId());
+            String actorNameGeneric = vertex.getId().substring(0, vertex.getId().lastIndexOf('_'));
+            actorName.setName("actor_name".concat(actorNameGeneric));
+            actorName.setValue(actorNameGeneric);
             actorName.setComment("Actor name");
 
             // Add the size of the CodeSet
