@@ -7,6 +7,7 @@ Bundle-Version: 3.5.0.qualifier
 Bundle-Vendor: IETR / INSA Rennes - VAADER
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Require-Bundle: org.junit;bundle-version="4.12.0",
+ javax.annotation;bundle-version="1.2.0",
  org.apache.commons.lang3;bundle-version="3.7.0",
  org.eclipse.core.runtime;bundle-version="3.14.0",
  org.beanshell.bsh;bundle-version="2.1.8",

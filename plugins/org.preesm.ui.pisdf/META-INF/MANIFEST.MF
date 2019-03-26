@@ -19,9 +19,9 @@ Require-Bundle: org.eclipse.ui.console;bundle-version="3.5.100",
  org.preesm.model.pisdf,
  org.preesm.algorithm,
  org.preesm.commons,
- org.eclipse.ui.ide;bundle-version="3.14.200",
- org.eclipse.gef;bundle-version="3.11.0",
- org.eclipse.ui.views.properties.tabbed;bundle-version="3.8.300"
+ org.eclipse.ui.ide,
+ org.eclipse.gef,
+ org.eclipse.ui.views.properties.tabbed
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Bundle-ActivationPolicy: lazy
 Eclipse-BuddyPolicy: global
