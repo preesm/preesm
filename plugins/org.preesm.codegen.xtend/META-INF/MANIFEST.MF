@@ -6,7 +6,8 @@ Bundle-SymbolicName: org.preesm.codegen.xtend;singleton:=true
 Bundle-ClassPath: .
 Bundle-Vendor: IETR / INSA Rennes - VAADER
 Bundle-Localization: plugin
-Require-Bundle: org.apache.velocity;bundle-version="1.7.0",
+Require-Bundle: javax.annotation;bundle-version="1.2.0",
+ org.apache.velocity;bundle-version="1.7.0",
  org.eclipse.emf.ecore,
  org.eclipse.core.runtime,
  org.eclipse.core.resources,
