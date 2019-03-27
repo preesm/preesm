@@ -52,13 +52,18 @@
 
   <modules>
     <module>org.preesm.commons</module>
+    <module>org.preesm.workflow</module>
+    <module>org.preesm.cli</module>
+    <module>org.preesm.ui</module>
+    
+    <!--
     <module>org.preesm.model.pisdf</module>
+    <module>org.preesm.model.slam</module>
     <module>org.preesm.model.scenario</module>
 
 
     <module>org.preesm.algorithm</module>
 
-    <module>org.preesm.cli</module>
     <module>org.preesm.codegen</module>
     <module>org.preesm.codegen.xtend</module>
 
@@ -67,12 +72,8 @@
     <module>org.preesm.ui.pisdf</module>
     <module>org.preesm.ui.scenario</module>
     <module>org.preesm.ui.sdf</module>
-
-    <module>org.preesm.model.slam</module>
-    <module>org.preesm.workflow</module>
     <module>org.preesm.ui.slam</module>
-    <module>org.preesm.ui</module>
-
+	-->
   </modules>
 
 </project>

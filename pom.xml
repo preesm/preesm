@@ -688,8 +688,8 @@
 
    <modules>
       <module>plugins</module>
-      <module>tests</module>
-      <module>releng</module>
+      <!--<module>tests</module>
+      <module>releng</module> -->
    </modules>
 
    <profiles>
