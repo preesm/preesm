@@ -152,23 +152,18 @@ public class WorkflowParser extends DefaultHandler2 {
     } else if (qName.equals("dftools:scenario")) {
       final String pluginId = attributes.getValue("pluginId");
       final ScenarioNode node = new ScenarioNode(pluginId);
-      this.workflow.addVertex(node);
       this.nodes.put("scenario", node);
     } else if (qName.equals("dftools:task")) {
       final String taskId = attributes.getValue("taskId");
       final String pluginId = attributes.getValue("pluginId");
       this.lastTransformationNode = new TaskNode(pluginId, taskId);
       final AbstractWorkflowNode<?> node = this.lastTransformationNode;
-      this.workflow.addVertex(node);
       this.nodes.put(taskId, node);
     } else if (qName.equals("dftools:dataTransfer")) {
       final AbstractWorkflowNode<?> source = this.nodes.get(attributes.getValue("from"));
       final AbstractWorkflowNode<?> target = this.nodes.get(attributes.getValue("to"));
       final String sourcePort = attributes.getValue("sourceport");
       final String targetPort = attributes.getValue("targetport");
-      final WorkflowEdge edge = this.workflow.addEdge(source, target);
-      edge.setSourcePort(sourcePort);
-      edge.setTargetPort(targetPort);
     } else if (qName.equals("dftools:variable") && this.lastTransformationNode != null) {
       this.lastTransformationNode.addParameter(attributes.getValue("name"), attributes.getValue("value"));
     }

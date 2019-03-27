@@ -45,9 +45,6 @@ import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IConfigurationElement;
 import org.eclipse.core.runtime.IExtensionRegistry;
 import org.eclipse.core.runtime.Platform;
-import org.ietr.dftools.graphiti.model.Graph;
-import org.ietr.dftools.graphiti.model.IValidator;
-import org.ietr.dftools.graphiti.model.Vertex;
 import org.preesm.commons.exceptions.PreesmFrameworkException;
 
 /**
@@ -56,39 +53,24 @@ import org.preesm.commons.exceptions.PreesmFrameworkException;
  * @author mpelcat
  *
  */
-public class WorkflowValidator implements IValidator {
+public class WorkflowValidator  {
 
   /**
    * Validates the workflow by checking that every tasks are declared in loaded plug-ins. Each task implementation must
    * additionally accept the textual input and output edges connected to it.
-   *
-   * @param graph
-   *          the graph
    * @param file
    *          the file
    * @return true, if successful
    */
-  @Override
-  public boolean validate(final Graph graph, final IFile file) {
+  public boolean validate(final IFile file) {
 
-    /**
-     * Testing each task independently.
-     */
-    final Set<Vertex> vertices = graph.vertexSet();
-    for (final Vertex vertex : vertices) {
-      if ("Task".equals(vertex.getType().getName())) {
-        if (!validateTaskVertex(file, vertex)) {
-          return false;
-        }
-      }
-    }
 
     return true;
   }
 
-  private boolean validateTaskVertex(final IFile file, final Vertex vertex) {
+  private boolean validateTaskVertex(final IFile file) {
     // Getting the plugin ID and the associated class name.
-    final String pluginId = (String) vertex.getValue("plugin identifier");
+    final String pluginId = "id";
 
     if (pluginId == null) {
       createMarker(file, "Enter a plugin identifier for each plugin.", "Any plugin", IMarker.PROBLEM,
@@ -119,7 +101,7 @@ public class WorkflowValidator implements IValidator {
           final Object vertexTaskObj = vertexTaskClass.newInstance();
 
           // Adding the default parameters if necessary
-          addDefaultParameters(vertex, vertexTaskObj, file);
+          addDefaultParameters(null, vertexTaskObj, file);
 
           foundClass = true;
 
@@ -153,7 +135,7 @@ public class WorkflowValidator implements IValidator {
    *          the file
    */
   @SuppressWarnings("unchecked")
-  private void addDefaultParameters(final Vertex vertex, final Object object, final IFile file) {
+  private void addDefaultParameters(final String vertex, final Object object, final IFile file) {
     Map<String, String> parameterDefaults = null;
     try {
       final Method prototypeMethod = object.getClass().getMethod("getDefaultParameters");
@@ -167,7 +149,7 @@ public class WorkflowValidator implements IValidator {
 
     if (parameterDefaults != null) {
 
-      final Object var = vertex.getValue("variable declaration");
+      final Object var = vertex;
       final Class<?> clasz = var.getClass();
       if (clasz == TreeMap.class) {
         final TreeMap<String, String> varMap = (TreeMap<String, String>) var;
@@ -178,7 +160,7 @@ public class WorkflowValidator implements IValidator {
             varMap.put(key, parameterDefaults.get(key));
 
             createMarker(file, "Added default parameter value: " + key + ", " + parameterDefaults.get(key),
-                (String) vertex.getValue("id"), IMarker.MESSAGE, IMarker.SEVERITY_INFO);
+                (String) vertex, IMarker.MESSAGE, IMarker.SEVERITY_INFO);
           }
         }
       }

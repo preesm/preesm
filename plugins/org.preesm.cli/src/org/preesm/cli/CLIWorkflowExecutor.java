@@ -41,13 +41,6 @@ import java.text.ParseException;
 import java.util.LinkedHashSet;
 import java.util.Set;
 import java.util.logging.Level;
-import org.apache.commons.cli.CommandLine;
-import org.apache.commons.cli.CommandLineParser;
-import org.apache.commons.cli.HelpFormatter;
-import org.apache.commons.cli.Option;
-import org.apache.commons.cli.Options;
-import org.apache.commons.cli.PosixParser;
-import org.apache.commons.cli.UnrecognizedOptionException;
 import org.apache.commons.lang.StringUtils;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IFolder;
@@ -98,99 +91,6 @@ public class CLIWorkflowExecutor extends AbstractWorkflowExecutor implements IAp
   @Override
   public Object start(final IApplicationContext context) throws Exception {
 
-    // avoid printing whole JVM status when failing
-    System.setProperty(IApplicationContext.EXIT_DATA_PROPERTY, "");
-    final Options options = getCommandLineOptions();
-
-    try {
-      final CommandLineParser parser = new PosixParser();
-
-      final String cliOpts = StringUtils
-          .join((Object[]) context.getArguments().get(IApplicationContext.APPLICATION_ARGS), " ");
-
-      // parse the command line arguments
-      final CommandLine line = parser.parse(options,
-          (String[]) context.getArguments().get(IApplicationContext.APPLICATION_ARGS));
-      final boolean isDebug = line.hasOption('d');
-      this.setDebug(isDebug);
-      this.setLogger(new CLIWorkflowLogger(isDebug));
-
-      getLogger().log(Level.FINE, "Starting workflows execution");
-      getLogger().log(Level.FINE, "Command line arguments: " + cliOpts);
-
-      if (line.getArgs().length != 1) {
-        throw new ParseException("Expected project name as first argument", 0);
-      }
-      // Get the project containing the scenarios and workflows to execute
-      final String projectName = line.getArgs()[0];
-      final IWorkspace workspace = ResourcesPlugin.getWorkspace();
-      final IWorkspaceRoot root = workspace.getRoot();
-      this.project = root.getProject(new Path(projectName).lastSegment());
-
-      // Refresh the project
-      this.project.refreshLocal(IResource.DEPTH_INFINITE, null);
-
-      // Handle options
-
-      // Set of workflows to execute
-      Set<String> workflowPaths = new LinkedHashSet<>();
-      // Set of scenarios to execute
-      Set<String> scenarioPaths = new LinkedHashSet<>();
-
-      String workflowPath = line.getOptionValue('w');
-      String scenarioPath = line.getOptionValue('s');
-      // If paths to workflow and scenario are not specified using
-      // options, find them in the project given as arguments
-      if (workflowPath == null) {
-        // If there is no workflow path specified, execute all the
-        // workflows (files with workflowExt) found in workflowDir of
-        // the project
-        workflowPaths = getAllFilePathsIn(CLIWorkflowExecutor.workflowExt, this.project,
-            CLIWorkflowExecutor.workflowDir);
-      } else {
-        // Otherwise, format the workflowPath and execute it
-        if (!workflowPath.contains(projectName)) {
-          workflowPath = projectName + CLIWorkflowExecutor.workflowDir + "/" + workflowPath;
-        }
-        if (!workflowPath.endsWith(CLIWorkflowExecutor.workflowExt)) {
-          workflowPath = workflowPath + "." + CLIWorkflowExecutor.workflowExt;
-        }
-        workflowPaths.add(workflowPath);
-      }
-
-      if (scenarioPath == null) {
-        // If there is no scenario path specified, execute all the
-        // scenarios (files with scenarioExt) found in scenarioDir of
-        // the project
-        scenarioPaths = getAllFilePathsIn(CLIWorkflowExecutor.scenarioExt, this.project,
-            CLIWorkflowExecutor.scenarioDir);
-      } else {
-        // Otherwise, format the scenarioPath and execute it
-        scenarioPath = this.project.getName() + CLIWorkflowExecutor.scenarioDir + "/" + scenarioPath;
-        if (!scenarioPath.endsWith(CLIWorkflowExecutor.scenarioExt)) {
-          scenarioPath = scenarioPath + "." + CLIWorkflowExecutor.scenarioExt;
-        }
-        scenarioPaths.add(scenarioPath);
-      }
-
-      getLogger().log(Level.FINE, "Launching workflows execution");
-      // Launch the execution of the workflos with the scenarios
-      for (final String wPath : workflowPaths) {
-        for (final String sPath : scenarioPaths) {
-          if (!execute(wPath, sPath, null)) {
-            final String message = "Workflow " + wPath + " did not complete its execution normally with scenario "
-                + sPath + ".";
-            getLogger().log(Level.SEVERE, message);
-            return EXIT_ERROR;
-          }
-        }
-      }
-
-    } catch (final UnrecognizedOptionException uoe) {
-      printUsage(options, uoe.getLocalizedMessage());
-    } catch (final ParseException exp) {
-      printUsage(options, exp.getLocalizedMessage());
-    }
     return IApplication.EXIT_OK;
   }
 
@@ -235,44 +135,5 @@ public class CLIWorkflowExecutor extends AbstractWorkflowExecutor implements IAp
   public void stop() {
   }
 
-  /**
-   * Set and return the command line options to follow the application.
-   *
-   * @return the command line options
-   */
-  private Options getCommandLineOptions() {
-    final Options options = new Options();
-    Option opt;
-
-    opt = new Option("w", "workflow", true, "Workflow path");
-    options.addOption(opt);
-
-    opt = new Option("s", "scenario", true, "Scenario path");
-    options.addOption(opt);
-
-    opt = new Option("d", "debug", false, "Debug mode: print stack traces when failing");
-    options.addOption(opt);
-    return options;
-  }
-
-  /**
-   * Print command line documentation on options.
-   *
-   * @param options
-   *          options to print
-   * @param parserMsg
-   *          message to print
-   */
-  private void printUsage(final Options options, final String parserMsg) {
-
-    String footer = "";
-    if ((parserMsg != null) && !parserMsg.isEmpty()) {
-      footer = "\nMessage of the command line parser :\n" + parserMsg;
-    }
-
-    final HelpFormatter helpFormatter = new HelpFormatter();
-    helpFormatter.setWidth(80);
-    helpFormatter.printHelp(getClass().getSimpleName() + " [options] ", "Valid options are :", options, footer);
-  }
 
 }

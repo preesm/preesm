@@ -39,7 +39,6 @@ import java.util.Date;
 import java.util.logging.Formatter;
 import java.util.logging.Level;
 import java.util.logging.LogRecord;
-import org.apache.commons.lang3.exception.ExceptionUtils;
 
 /**
  * Define how text must be printed to logger (Eclipse or System console).
@@ -84,12 +83,6 @@ public class DefaultPreesmFormatter extends Formatter {
 
     output.append(record.getMessage());
 
-    final Throwable thrown = record.getThrown();
-    if (thrown != null) {
-      if (debugMode) {
-        output.append("\n" + ExceptionUtils.getStackTrace(thrown));
-      }
-    }
 
     return output.toString();
   }

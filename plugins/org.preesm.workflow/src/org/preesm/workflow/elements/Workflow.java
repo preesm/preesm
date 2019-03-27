@@ -40,15 +40,13 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
 import org.eclipse.core.runtime.IPath;
-import org.jgrapht.graph.DirectedMultigraph;
-import org.jgrapht.traverse.TopologicalOrderIterator;
 
 /**
  * Workflow graph.
  *
  * @author mpelcat
  */
-public class Workflow extends DirectedMultigraph<AbstractWorkflowNode<?>, WorkflowEdge> {
+public class Workflow  {
 
   /** The Constant serialVersionUID. */
   private static final long serialVersionUID = -908014142930559238L;
@@ -59,12 +57,6 @@ public class Workflow extends DirectedMultigraph<AbstractWorkflowNode<?>, Workfl
   private boolean errorOnWarning = true;
   private Level   outputLevel    = Level.INFO;
 
-  /**
-   * Instantiates a new workflow.
-   */
-  public Workflow() {
-    super(WorkflowEdge.class);
-  }
 
   public boolean isErrorOnWarning() {
     return errorOnWarning;
@@ -89,13 +81,6 @@ public class Workflow extends DirectedMultigraph<AbstractWorkflowNode<?>, Workfl
    */
   public List<AbstractWorkflowNode<?>> vertexTopologicalList() {
     final List<AbstractWorkflowNode<?>> nodeList = new ArrayList<>();
-    final TopologicalOrderIterator<AbstractWorkflowNode<?>, WorkflowEdge> it = new TopologicalOrderIterator<>(this);
-
-    while (it.hasNext()) {
-      final AbstractWorkflowNode<?> node = it.next();
-      nodeList.add(node);
-    }
-
     return nodeList;
   }
 
@@ -125,11 +110,6 @@ public class Workflow extends DirectedMultigraph<AbstractWorkflowNode<?>, Workfl
    */
   public boolean hasScenario() {
     int nbScenarios = 0;
-    for (final AbstractWorkflowNode<?> node : vertexSet()) {
-      if (node.isScenarioNode()) {
-        nbScenarios++;
-      }
-    }
     return nbScenarios == 1;
   }
 }

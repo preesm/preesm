@@ -51,11 +51,6 @@ import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.ide.IDE;
 import org.eclipse.ui.wizards.newresource.BasicNewResourceWizard;
-import org.ietr.dftools.graphiti.GraphitiModelPlugin;
-import org.ietr.dftools.graphiti.model.Configuration;
-import org.ietr.dftools.graphiti.model.Graph;
-import org.ietr.dftools.graphiti.model.ObjectType;
-import org.ietr.dftools.graphiti.ui.wizards.WizardSaveGraphPage;
 
 // TODO: Auto-generated Javadoc
 /**
@@ -88,14 +83,6 @@ public class NewWorkflowFileWizard extends Wizard implements INewWizard {
    */
   @Override
   public void addPages() {
-    final WizardSaveGraphPage page = new WizardSaveGraphPage(this.selection);
-
-    final Configuration configuration = GraphitiModelPlugin.getDefault().getConfiguration("Workflow");
-    final ObjectType type = configuration.getGraphType("DFTools Workflow");
-
-    page.setGraph(new Graph(configuration, type, true));
-    page.setDescription("Create a new Workflow.");
-    addPage(page);
   }
 
   /*
@@ -117,25 +104,6 @@ public class NewWorkflowFileWizard extends Wizard implements INewWizard {
    */
   @Override
   public boolean performFinish() {
-    final WizardSaveGraphPage page = (WizardSaveGraphPage) getPage("saveGraph");
-    final IFile file = page.createNewFile();
-    if (file == null) {
-      return false;
-    }
-
-    // Open editor on new file.
-    final IWorkbenchWindow dw = this.workbench.getActiveWorkbenchWindow();
-    try {
-      if (dw != null) {
-        BasicNewResourceWizard.selectAndReveal(file, dw);
-        final IWorkbenchPage activePage = dw.getActivePage();
-        if (activePage != null) {
-          IDE.openEditor(activePage, file, true);
-        }
-      }
-    } catch (final PartInitException e) {
-      MessageDialog.openError(dw.getShell(), "Problem opening editor", e.getMessage());
-    }
 
     return true;
   }

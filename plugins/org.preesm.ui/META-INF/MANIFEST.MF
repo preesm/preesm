@@ -14,15 +14,12 @@ Require-Bundle: org.eclipse.core.runtime,
  org.eclipse.ui.views.properties.tabbed,
  org.eclipse.ltk.ui.refactoring,
  org.eclipse.ltk.core.refactoring,
- org.eclipse.gef,
- org.ietr.graphiti.ui;bundle-version="[1.13.0,2.0.0)",
  org.preesm.workflow,
  org.preesm.commons
 Bundle-ActivationPolicy: lazy
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Export-Package: org.preesm.ui,
  org.preesm.ui.console,
- org.preesm.ui.editor.graph.validators,
  org.preesm.ui.fields,
  org.preesm.ui.perspective,
  org.preesm.ui.popup.actions,
@@ -33,7 +30,6 @@ Export-Package: org.preesm.ui,
  org.preesm.ui.workflow.command,
  org.preesm.ui.workflow.filters,
  org.preesm.ui.workflow.launch,
- org.preesm.ui.workflow.properties,
  org.preesm.ui.workflow.tools
 Eclipse-BuddyPolicy: global
 Bundle-Vendor: IETR / INSA Rennes - VAADER

@@ -724,53 +724,6 @@
             </property>
          </activation>
          <build>
-            <plugins>
-               <plugin>
-                  <groupId>org.preesm.maven</groupId>
-                  <artifactId>m2e-settings-maven-plugin</artifactId>
-                  <version>1.0.0</version>
-                  <dependencies>
-                     <dependency>
-                        <groupId>org.preesm.maven</groupId>
-                        <artifactId>coding-policy</artifactId>
-                        <version>${preesm.coding.policy.version}</version>
-                     </dependency>
-                  </dependencies>
-                  <executions>
-                     <execution>
-                        <id>load-eclipse-settings</id>
-                        <phase>initialize</phase>
-                        <goals>
-                           <goal>m2e-settings</goal>
-                        </goals>
-                     </execution>
-                  </executions>
-                  <configuration>
-                     <additionalConfig>
-                        <file>
-                           <name>.settings/org.eclipse.core.resources.prefs</name>
-                           <location>/org.eclipse.core.resources.prefs</location>
-                        </file>
-                        <file>
-                           <name>.settings/org.eclipse.core.runtime.prefs</name>
-                           <location>/org.eclipse.core.runtime.prefs</location>
-                        </file>
-                        <file>
-                           <name>.settings/org.eclipse.jdt.core.prefs</name>
-                           <location>/org.eclipse.jdt.core.prefs</location>
-                        </file>
-                        <file>
-                           <name>.settings/org.eclipse.jdt.ui.prefs</name>
-                           <location>/org.eclipse.jdt.ui.prefs</location>
-                        </file>
-                        <file>
-                           <name>.settings/org.eclipse.xtend.core.Xtend.prefs</name>
-                           <location>/org.eclipse.xtend.core.Xtend.prefs</location>
-                        </file>
-                     </additionalConfig>
-                  </configuration>
-               </plugin>
-            </plugins>
             <!-- Disable m2e lifecycle mapping to avoid errors showing in
                Eclipse -->
             <pluginManagement>

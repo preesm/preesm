@@ -37,8 +37,6 @@ package org.preesm.commons;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import org.apache.xml.serialize.OutputFormat;
-import org.apache.xml.serialize.XMLSerializer;
 import org.preesm.commons.exceptions.PreesmFrameworkException;
 import org.preesm.commons.exceptions.PreesmRuntimeException;
 import org.w3c.dom.DOMConfiguration;
@@ -146,18 +144,6 @@ public class DomUtil {
    *          The {@link OutputStream} to write to.
    */
   public static void writeDocument(final Document document, final OutputStream byteStream) {
-    final OutputFormat format = new OutputFormat(document, "UTF-8", true);
-    format.setIndent(4);
-    format.setLineSeparator("\n");
-    format.setLineWidth(65);
-
-    final XMLSerializer serializer = new XMLSerializer(byteStream, format);
-    serializer.setNamespaces(true);
-    try {
-      serializer.serialize(document);
-    } catch (final IOException e) {
-      throw new PreesmRuntimeException("Could not write Graph", e);
-    }
   }
 
 }
