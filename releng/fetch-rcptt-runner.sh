@@ -18,7 +18,7 @@ RCPTTVER=$(cd ${DIR} && cat pom.xml | grep -o "<rcptt-runner-version>\(.*\)</rcp
 if [ ! -e "${HOME}/.m2/repository/org/eclipse/rcptt/runner/rcptt.runner/${RCPTTVER}/rcptt.runner-${RCPTTVER}.zip" ]; then
 
   URLVER=$(echo ${RCPTTVER} | sed -e 's#-#/#g')
-  wget ${MIRROR}/rcptt/milestone/${URLVER}/runner/rcptt.runner-${RCPTTVER}.zip -O rcptt.runner-${RCPTTVER}.zip
+  wget ${MIRROR}/rcptt/release/${URLVER}/runner/rcptt.runner-${RCPTTVER}.zip -O rcptt.runner-${RCPTTVER}.zip
   mvn -Dtycho.mode=maven install:install-file -Dfile=rcptt.runner-${RCPTTVER}.zip -DgroupId=org.eclipse.rcptt.runner -DartifactId=rcptt.runner -Dversion=${RCPTTVER} -Dpackaging=zip
   rm rcptt.runner-${RCPTTVER}.zip
 fi
