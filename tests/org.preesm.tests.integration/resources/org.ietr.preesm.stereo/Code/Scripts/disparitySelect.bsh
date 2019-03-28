@@ -1,2 +1,0 @@
-// DisparitySelect script
-o_backBestCost.matchWith(0,i_bestCostFeed,0,height*width+1);

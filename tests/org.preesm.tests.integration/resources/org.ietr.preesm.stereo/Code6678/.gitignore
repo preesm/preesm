@@ -1,7 +1,0 @@
-# Temporary files and generated files #
-#######################################
-Debug/
-Release/
-.settings/
-TMS320C6678.ccxml
-generated

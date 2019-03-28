@@ -1,3 +1,0 @@
-
-
-void read(char* out);
