@@ -41,7 +41,6 @@ import java.text.ParseException;
 import java.util.LinkedHashSet;
 import java.util.Set;
 import java.util.logging.Level;
-import org.apache.commons.lang.StringUtils;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IFolder;
 import org.eclipse.core.resources.IProject;
