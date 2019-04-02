@@ -86,8 +86,7 @@ public class StatsExporterTask extends AbstractTaskImplementation {
     final String filePath = ScenarioUtils.getScenarioName(scenario) + "_stats.pgantt";
     final File file = new File(parent, filePath);
     // Generate the stats from the abc and write them in a file at xmlPath
-    final XMLStatsExporter exporter = new XMLStatsExporter();
-    exporter.exportXMLStats(abc, file);
+    XMLStatsExporter.exportXMLStats(abc, file);
 
     return new LinkedHashMap<>();
   }

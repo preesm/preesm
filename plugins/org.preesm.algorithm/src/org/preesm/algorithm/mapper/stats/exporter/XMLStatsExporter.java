@@ -36,9 +36,16 @@
 package org.preesm.algorithm.mapper.stats.exporter;
 
 import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
 import java.util.Set;
+import java.util.logging.Level;
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.transform.OutputKeys;
+import javax.xml.transform.Transformer;
+import javax.xml.transform.TransformerFactory;
+import javax.xml.transform.dom.DOMSource;
+import javax.xml.transform.stream.StreamResult;
 import org.preesm.algorithm.mapper.abc.impl.latency.LatencyAbc;
 import org.preesm.algorithm.mapper.gantt.GanttComponent;
 import org.preesm.algorithm.mapper.gantt.GanttData;
@@ -46,8 +53,11 @@ import org.preesm.algorithm.mapper.gantt.GanttTask;
 import org.preesm.algorithm.mapper.ui.stats.StatGenerator;
 import org.preesm.commons.exceptions.PreesmException;
 import org.preesm.commons.exceptions.PreesmRuntimeException;
+import org.preesm.commons.logger.PreesmLogger;
 import org.preesm.model.slam.ComponentInstance;
 import org.preesm.model.slam.utils.DesignTools;
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
 
 /**
  * This class exports stats from an IAbc (architecture benchmark computer) in XML format.
@@ -59,28 +69,6 @@ public class XMLStatsExporter {
   /** The Constant TASKCOLOR. */
   private static final String TASKCOLOR = "#c896fa";
 
-  /** The Constant NL. */
-  private static final String NL = "\n";
-
-  /** The Constant TAB. */
-  private static final String TAB = "\t";
-
-  /** The Constant NLT. */
-  private static final String NLT = "\n\t";
-
-  /** The result. */
-  private final StringBuilder result = new StringBuilder();
-
-  /**
-   * Append.
-   *
-   * @param s
-   *          the s
-   */
-  private void append(final Object s) {
-    this.result.append(s);
-  }
-
   /**
    * Export generated stats from an IAbc to an xml file.
    *
@@ -89,15 +77,32 @@ public class XMLStatsExporter {
    * @param file
    *          the file
    */
-  public void exportXMLStats(final LatencyAbc abc, final File file) {
+  public static void exportXMLStats(final LatencyAbc abc, final File file) {
+    DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
+    DocumentBuilder dBuilder;
+    try {
+      dBuilder = dbFactory.newDocumentBuilder();
+    } catch (ParserConfigurationException e) {
+      throw new PreesmRuntimeException(e);
+    }
+    Document content = dBuilder.newDocument();
+
     // Generate the stats to write in an xml file
-    final String content = generateXMLStats(abc);
+    generateXMLStats(content, abc);
+
     // Write the file
-    try (FileWriter out = new FileWriter(file)) {
-      out.write(content);
-    } catch (final IOException e) {
+    TransformerFactory transformerFactory = TransformerFactory.newInstance();
+    try {
+      Transformer transformer = transformerFactory.newTransformer();
+      DOMSource source = new DOMSource(content);
+      StreamResult result = new StreamResult(file);
+      transformer.setOutputProperty(OutputKeys.ENCODING, "UTF-8");
+      transformer.setOutputProperty(OutputKeys.INDENT, "yes");
+      transformer.transform(source, result);
+    } catch (final Exception e) {
       throw new PreesmRuntimeException("Could not export stats", e);
     }
+
   }
 
   /**
@@ -107,17 +112,17 @@ public class XMLStatsExporter {
    *          the IAbc containing the scheduling of each task
    * @return a String containing the stats at an xml format
    */
-  private String generateXMLStats(final LatencyAbc abc) {
-    append(XMLStatsExporter.NL + "<data>");
+  private static void generateXMLStats(Document doc, final LatencyAbc abc) {
+    Element root = doc.createElement("data");
+    doc.appendChild(root);
+
     // Generate scheduling stats (when and on which core a given task is
     // executed)
-    generateSchedulingStats(abc.getGanttData());
+    generateSchedulingStats(doc, root, abc.getGanttData());
     // Generate performance stats (loads of the core; work, span and
     // implementation length; number of cores used over total number of
     // cores)
-    generatePerformanceStats(abc);
-    append(XMLStatsExporter.NL + "</data>");
-    return this.result.toString();
+    generatePerformanceStats(doc, root, abc);
   }
 
   /**
@@ -126,40 +131,33 @@ public class XMLStatsExporter {
    * @param abc
    *          the abc
    */
-  private void generatePerformanceStats(final LatencyAbc abc) {
+  private static void generatePerformanceStats(final Document doc, final Element root, final LatencyAbc abc) {
     // Starting the performace stats
     final StatGenerator statGen = new StatGenerator(abc, abc.getScenario(), null);
-    append(XMLStatsExporter.NLT + "<perfs>");
+
+    Element perfs = doc.createElement("perfs");
+    root.appendChild(perfs);
     // Work length
-    append(XMLStatsExporter.NLT + XMLStatsExporter.TAB + "work=\"");
+    long work = -1;
     try {
-      append(statGen.getDAGWorkLength());
+      work = statGen.getDAGWorkLength();
     } catch (final PreesmException e) {
-      throw new PreesmRuntimeException("Could not generate perf stats.", e);
+      PreesmLogger.getLogger().log(Level.WARNING, "Could not generate work length perf stats.\n" + e.toString());
     }
-    append("\"");
+    perfs.setAttribute("work", Long.toString(work));
     // Span length
-    append(XMLStatsExporter.NLT + XMLStatsExporter.TAB + "span=\"");
-    append(statGen.getDAGSpanLength());
-    append("\"");
+    perfs.setAttribute("span", Long.toString(statGen.getDAGSpanLength()));
     // Implementation length
-    append(XMLStatsExporter.NLT + XMLStatsExporter.TAB + "impl_length=\"");
-    append(statGen.getResultTime());
-    append("\"");
+    perfs.setAttribute("impl_length", Long.toString(statGen.getResultTime()));
     // Implementation number of cores
-    append(XMLStatsExporter.NLT + "impl_nbCores=\"");
-    append(statGen.getNbMainTypeOperators());
-    append("\"");
+    perfs.setAttribute("impl_nbCores", Integer.toString(statGen.getNbMainTypeOperators()));
     // Implementation number of used cores
-    append(XMLStatsExporter.NLT + XMLStatsExporter.TAB + "impl_nbUsedCores=\"");
-    append(statGen.getNbUsedOperators());
-    append("\"");
+    perfs.setAttribute("impl_nbUsedCores", Integer.toString(statGen.getNbUsedOperators()));
     final Set<ComponentInstance> opSet = DesignTools.getOperatorInstances(abc.getArchitecture());
     for (final ComponentInstance op : opSet) {
-      generateCoreLoad(op, statGen);
+      generateCoreLoad(doc, perfs, op, statGen);
     }
     // Ending the performance stats
-    append(XMLStatsExporter.NLT + "</perfs>");
   }
 
   /**
@@ -170,27 +168,20 @@ public class XMLStatsExporter {
    * @param statGen
    *          the stat gen
    */
-  private void generateCoreLoad(final ComponentInstance op, final StatGenerator statGen) {
+  private static void generateCoreLoad(final Document doc, final Element root, final ComponentInstance op,
+      final StatGenerator statGen) {
     // Starting core load stat
-    append(XMLStatsExporter.NLT + XMLStatsExporter.TAB + "<core");
+    Element core = doc.createElement("core");
+    root.appendChild(core);
     // Id of the core
-    append(XMLStatsExporter.NLT + XMLStatsExporter.TAB + XMLStatsExporter.TAB + "id=\"");
-    append(op.getInstanceName());
-    append("\"");
+    core.setAttribute("id", op.getInstanceName());
     // Load of the core
-    append(XMLStatsExporter.NLT + XMLStatsExporter.TAB + XMLStatsExporter.TAB + "load=\"");
-    append(statGen.getLoad(op));
-    append("\"");
+    core.setAttribute("load", Long.toString(statGen.getLoad(op)));
     // Memory used of the core
-    append(XMLStatsExporter.NLT + XMLStatsExporter.TAB + XMLStatsExporter.TAB + "used_mem=\"");
-    append(statGen.getMem(op));
-    append("\"");
+    core.setAttribute("used_mem", Long.toString(statGen.getMem(op)));
     // ID for the plotter
-    append(XMLStatsExporter.NLT + XMLStatsExporter.TAB + XMLStatsExporter.TAB + ">Core_");
-    append(op.getInstanceName().replace(" ", "_"));
-    append(".");
+    core.setTextContent("Core_" + op.getInstanceName().replace(" ", "_") + ".");
     // Ending core load stat
-    append("</core>");
   }
 
   /**
@@ -199,11 +190,11 @@ public class XMLStatsExporter {
    * @param data
    *          the data
    */
-  private void generateSchedulingStats(final GanttData data) {
+  private static void generateSchedulingStats(final Document doc, final Element root, final GanttData data) {
     // Print the scheduling stats for each core
     for (final GanttComponent component : data.getComponents()) {
       for (final GanttTask task : component.getTasks()) {
-        generateTaskStats(task);
+        generateTaskStats(doc, root, task);
       }
     }
   }
@@ -214,35 +205,23 @@ public class XMLStatsExporter {
    * @param task
    *          the task
    */
-  private void generateTaskStats(final GanttTask task) {
+  private static void generateTaskStats(final Document doc, final Element root, final GanttTask task) {
     // Starting task
-    append(XMLStatsExporter.NLT + "<event");
+    Element event = doc.createElement("event");
+    root.appendChild(event);
     // Start time
-    append(XMLStatsExporter.NLT + XMLStatsExporter.TAB + "start=\"");
-    append(task.getStartTime());
-    append("\"");
+    event.setAttribute("start", Long.toString(task.getStartTime()));
     // End time
-    append(XMLStatsExporter.NLT + XMLStatsExporter.TAB + "end=\"");
-    append(task.getStartTime() + task.getDuration());
-    append("\"");
+    event.setAttribute("end", Long.toString(task.getStartTime() + task.getDuration()));
     // Task name
-    append(XMLStatsExporter.NLT + XMLStatsExporter.TAB + "title=\"");
-    append(task.getId());
-    append("\"");
+    event.setAttribute("title", task.getId());
     // Core
-    append(XMLStatsExporter.NLT + XMLStatsExporter.TAB + "mapping=\"");
-    append(task.getComponent().getId());
-    append("\"");
+    event.setAttribute("mapping", task.getComponent().getId());
     // Color
-    append(XMLStatsExporter.NLT + XMLStatsExporter.TAB + "color=\"");
-    append(XMLStatsExporter.TASKCOLOR);
-    append("\"");
+    event.setAttribute("color", XMLStatsExporter.TASKCOLOR);
     // Gantt ID for the task
-    append(XMLStatsExporter.NLT + XMLStatsExporter.TAB + ">Step_");
-    append(task.getId().replace(" ", "_"));
-    append(".");
+    event.setTextContent("Step_" + task.getId().replace(" ", "_") + ".");
     // Ending task
-    append("</event>");
   }
 
 }
