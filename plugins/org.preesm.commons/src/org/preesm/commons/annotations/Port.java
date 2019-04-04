@@ -5,7 +5,7 @@ package org.preesm.commons.annotations;
  * @author anmorvan
  *
  */
-public @interface Input {
+public @interface Port {
   String name();
 
   Class<?> type();

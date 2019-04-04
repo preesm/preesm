@@ -23,9 +23,9 @@ public @interface PreesmTask {
 
   String description() default "";
 
-  Input[] inputs() default {};
+  Port[] inputs() default {};
 
-  Output[] outputs() default {};
+  Port[] outputs() default {};
 
   Parameter[] parameters() default {};
 

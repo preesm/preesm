@@ -49,9 +49,8 @@ import org.preesm.algorithm.memory.distributed.Distributor;
 import org.preesm.algorithm.memory.exclusiongraph.MemoryExclusionGraph;
 import org.preesm.algorithm.memory.exclusiongraph.MemoryExclusionVertex;
 import org.preesm.commons.annotations.DocumentedError;
-import org.preesm.commons.annotations.Input;
-import org.preesm.commons.annotations.Output;
 import org.preesm.commons.annotations.Parameter;
+import org.preesm.commons.annotations.Port;
 import org.preesm.commons.annotations.PreesmTask;
 import org.preesm.commons.annotations.Value;
 import org.preesm.commons.exceptions.PreesmException;
@@ -66,10 +65,9 @@ import org.preesm.workflow.elements.Workflow;
 
     description = "Workflow task responsible for allocating the memory objects of the given MEG.",
 
-    inputs = {
-        @Input(type = MemoryExclusionGraph.class, name = "MemEx", description = "Input Memory Exclusion Graph") },
+    inputs = { @Port(type = MemoryExclusionGraph.class, name = "MemEx", description = "Input Memory Exclusion Graph") },
 
-    outputs = { @Output(type = Map.class, name = "MEGs", description = "??????????? karol ?") },
+    outputs = { @Port(type = Map.class, name = "MEGs", description = "??????????? karol ?") },
 
     parameters = {
         @Parameter(name = "Verbose", description = "Verbosity of the task.",
