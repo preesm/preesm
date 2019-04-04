@@ -15,6 +15,8 @@ import java.lang.annotation.Target;
 public @interface PreesmTask {
   String id();
 
+  String name();
+
   String category() default "Other";
 
   String shortDescription() default "";

@@ -61,8 +61,8 @@ import org.preesm.workflow.elements.Workflow;
 /**
  * The Class MemoryAllocatorTask.
  */
-@PreesmTask(id = "org.ietr.preesm.memory.allocation.MemoryAllocatorTask", category = "Memory Optimization",
-    shortDescription = "Perform the memory allocation for the given MEG.",
+@PreesmTask(id = "org.ietr.preesm.memory.allocation.MemoryAllocatorTask", name = "Memory Allocation",
+    category = "Memory Optimization", shortDescription = "Perform the memory allocation for the given MEG.",
 
     description = "Workflow task responsible for allocating the memory objects of the given MEG.",
 
