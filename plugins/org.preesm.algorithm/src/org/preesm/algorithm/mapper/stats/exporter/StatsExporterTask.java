@@ -44,6 +44,7 @@ import org.eclipse.core.resources.IWorkspaceRoot;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.preesm.algorithm.mapper.abc.impl.latency.LatencyAbc;
+import org.preesm.model.pisdf.brv.BRVExporter;
 import org.preesm.model.scenario.PreesmScenario;
 import org.preesm.model.scenario.ScenarioUtils;
 import org.preesm.workflow.elements.Workflow;
@@ -57,6 +58,13 @@ import org.preesm.workflow.implement.AbstractWorkflowNodeImplementation;
  */
 public class StatsExporterTask extends AbstractTaskImplementation {
 
+  /**
+   * @see BRVExporter
+   */
+  public static final String DEFAULT_PATH = "/stats/xml/";
+
+  public static final String PARAM_PATH = "path";
+
   /*
    * (non-Javadoc)
    *
@@ -69,7 +77,7 @@ public class StatsExporterTask extends AbstractTaskImplementation {
 
     final LatencyAbc abc = (LatencyAbc) inputs.get(AbstractWorkflowNodeImplementation.KEY_SDF_ABC);
     final PreesmScenario scenario = (PreesmScenario) inputs.get(AbstractWorkflowNodeImplementation.KEY_SCENARIO);
-    String folderPath = parameters.get("path");
+    String folderPath = parameters.get(PARAM_PATH);
 
     // Get the root of the workspace
     final IWorkspace workspace = ResourcesPlugin.getWorkspace();
@@ -83,7 +91,7 @@ public class StatsExporterTask extends AbstractTaskImplementation {
     final File parent = new File(folderPath);
     parent.mkdirs();
 
-    final String filePath = ScenarioUtils.getScenarioName(scenario) + "_stats.pgantt";
+    final String filePath = ScenarioUtils.getScenarioName(scenario) + "_stats_pgantt.xml";
     final File file = new File(parent, filePath);
     // Generate the stats from the abc and write them in a file at xmlPath
     XMLStatsExporter.exportXMLStats(abc, file);
@@ -99,7 +107,7 @@ public class StatsExporterTask extends AbstractTaskImplementation {
   @Override
   public Map<String, String> getDefaultParameters() {
     final Map<String, String> parameters = new LinkedHashMap<>();
-    parameters.put("path", "/stats/xml/");
+    parameters.put(PARAM_PATH, DEFAULT_PATH);
     return parameters;
   }
 
@@ -110,7 +118,7 @@ public class StatsExporterTask extends AbstractTaskImplementation {
    */
   @Override
   public String monitorMessage() {
-    return "Generate the stats";
+    return "Generate the stats of the scheduling.";
   }
 
 }

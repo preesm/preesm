@@ -102,7 +102,7 @@ public abstract class PiBRV {
       }
       final long actorRV = en.getValue();
       final long actorFullRV = actorRV * levelRV.get(container);
-      final String msg = en.getKey().getVertexPath() + " x" + actorRV + " (total: x" + actorFullRV + ")";
+      final String msg = av.getVertexPath() + " x" + actorRV + " (total: x" + actorFullRV + ")";
       PreesmLogger.getLogger().log(Level.INFO, msg);
     }
   }
