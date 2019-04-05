@@ -78,7 +78,10 @@ public class BRVExporter extends AbstractTaskImplementation {
 
     generateXML(brv, file);
 
-    return null;
+    Map<String, Object> res = new LinkedHashMap<>();
+    res.put(AbstractWorkflowNodeImplementation.KEY_PI_GRAPH, graph);
+
+    return res;
   }
 
   @Override
