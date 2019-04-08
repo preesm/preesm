@@ -18,17 +18,12 @@ public class MarkdownPrinter {
 
     sb.append("\n### " + name + "\n\n");
 
-    sb.append("{% graphviz %}\n");
-    sb.append("digraph structs {\n");
-    sb.append("node[shape=record]\n");
-    sb.append("rankdir=LR;\n");
-    sb.append("\"" + id + "\" [label=\"" + name + "|{ " + generatePorts(annotation.inputs()) + " |  |"
-        + generatePorts(annotation.outputs()) + "}\" shape=record];\n");
-    sb.append("}\n");
-    sb.append("{% endgraphviz %}\n\n");
-
+    sb.append("  * **Identifier**: `" + id + "`\n");
     sb.append("  * **Short description**: " + annotation.shortDescription() + "\n");
-    sb.append("  * **Identifier**: " + id + "\n");
+
+    sb.append("\n#### Inputs\n" + generatePorts(annotation.inputs()));
+
+    sb.append("\n#### Outputs\n" + generatePorts(annotation.outputs()));
 
     sb.append("\n#### Description\n");
     sb.append(annotation.description() + "\n");
@@ -59,7 +54,7 @@ public class MarkdownPrinter {
       if (values.length > 0) {
         sb.append("\n| Value | Effect |\n| --- | --- |\n");
         for (final Value val : values) {
-          sb.append("| " + val.name() + " | " + val.effect() + " |\n");
+          sb.append("| _" + val.name() + "_ | " + val.effect() + " |\n");
         }
       }
     }
@@ -75,17 +70,10 @@ public class MarkdownPrinter {
   }
 
   private static final String generatePorts(final Port[] ports) {
-    final StringBuilder sb = new StringBuilder("{ ");
-    boolean first = true;
+    final StringBuilder sb = new StringBuilder("");
     for (Port p : ports) {
-      if (first) {
-        first = false;
-      } else {
-        sb.append(" | ");
-      }
-      sb.append(p.name());
+      sb.append("  * **" + p.name() + "**:" + p.type().getSimpleName() + " : _" + p.description() + "_\n");
     }
-    sb.append(" }");
     return sb.toString();
   }
 
