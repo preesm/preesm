@@ -1,4 +1,4 @@
-package org.preesm.commons.annotations;
+package org.preesm.commons.doc.annotations;
 
 /**
  *

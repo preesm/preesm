@@ -17,7 +17,7 @@ Require-Bundle: javax.annotation;bundle-version="1.2.0";visibility:=reexport,
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Bundle-ActivationPolicy: lazy
 Export-Package: org.preesm.commons,
- org.preesm.commons.annotations,
+ org.preesm.commons.doc.annotations,
  org.preesm.commons.exceptions,
  org.preesm.commons.files,
  org.preesm.commons.logger,

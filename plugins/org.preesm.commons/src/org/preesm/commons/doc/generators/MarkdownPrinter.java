@@ -1,4 +1,10 @@
-package org.preesm.commons.annotations;
+package org.preesm.commons.doc.generators;
+
+import org.preesm.commons.doc.annotations.DocumentedError;
+import org.preesm.commons.doc.annotations.Parameter;
+import org.preesm.commons.doc.annotations.Port;
+import org.preesm.commons.doc.annotations.PreesmTask;
+import org.preesm.commons.doc.annotations.Value;
 
 /**
  *
