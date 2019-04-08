@@ -134,12 +134,12 @@ import org.preesm.workflow.elements.Workflow;
                     effect = "All buffers are aligned on addresses that are multiples of their size. For example, a 4 "
                         + "bytes integer is aligned on 4 bytes address."),
                 @Value(name = "Fixed:=n",
-                    effect = "Where $n\\in \\mathbb{N}^*$. This forces the allocation algorithm to align all buffers on"
-                        + " addresses that are multiples of n bytes.") }),
+                    effect = "Where $$n\\in \\mathbb{N}^*$$. This forces the allocation algorithm to align all buffers"
+                        + " on addresses that are multiples of n bytes.") }),
         @Parameter(name = "Nb of Shuffling Tested",
             description = "Number of random order tested when using the Shuffle value for the Best/First Fit order"
                 + " parameter.",
-            values = { @Value(name = "$n\\in \\mathbb{N}^*$", effect = "Number of random order.") }),
+            values = { @Value(name = "$$n\\in \\mathbb{N}^*$$", effect = "Number of random order.") }),
         @Parameter(name = "Merge broadcasts",
             description = "(Deprecated) Merge memory objects corresponding to outputs of Broadcast actors. This feature"
                 + " was replaced by the more generic Memory Scripts.") },
