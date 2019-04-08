@@ -37,6 +37,16 @@ public class MarkdownPrinter {
 
     sb.append("\n#### Documented Errors\n" + generateDocumentedErrors(annotation.documentedErrors()));
 
+    sb.append("\n#### See Also\n" + generateSeeAlso(annotation.seeAlso()));
+
+    return sb.toString();
+  }
+
+  private static String generateSeeAlso(final String[] seeAlso) {
+    final StringBuilder sb = new StringBuilder("\n");
+    for (final String s : seeAlso) {
+      sb.append("  * " + s + "\n");
+    }
     return sb.toString();
   }
 
