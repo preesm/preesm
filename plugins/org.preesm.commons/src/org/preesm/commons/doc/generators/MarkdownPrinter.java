@@ -1,10 +1,23 @@
 package org.preesm.commons.doc.generators;
 
+import com.google.common.io.Files;
+import java.io.File;
+import java.io.IOException;
+import java.nio.charset.Charset;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Set;
+import java.util.logging.Level;
+import org.preesm.commons.ReflectionUtil;
 import org.preesm.commons.doc.annotations.DocumentedError;
 import org.preesm.commons.doc.annotations.Parameter;
 import org.preesm.commons.doc.annotations.Port;
 import org.preesm.commons.doc.annotations.PreesmTask;
 import org.preesm.commons.doc.annotations.Value;
+import org.preesm.commons.logger.PreesmLogger;
 
 /**
  *
@@ -12,6 +25,58 @@ import org.preesm.commons.doc.annotations.Value;
  *
  */
 public class MarkdownPrinter {
+
+  /**
+   *
+   */
+  public static final void prettyPrintTo(final String filePath) {
+    final String prettyPrint = prettyPrint();
+    final File f = new File(filePath);
+    try {
+      Files.append(prettyPrint, f, Charset.forName("UTF8"));
+    } catch (IOException e) {
+      PreesmLogger.getLogger().log(Level.SEVERE, "Could not output MarkDown task reference to " + filePath, e);
+    }
+
+  }
+
+  /**
+   *
+   */
+  public static final String prettyPrint() {
+    final Collection<Class<?>> lookupChildClassesOf = ReflectionUtil.lookupAnnotatedClasses("org.preesm.workflow.tasks",
+        PreesmTask.class);
+    final Map<String, Set<String>> outputsPerCategory = new HashMap<>();
+    for (final Class<?> t : lookupChildClassesOf) {
+      final PreesmTask annotation = t.getAnnotation(PreesmTask.class);
+      final String category = annotation.category();
+      final Set<String> categoryContent = outputsPerCategory.getOrDefault(category, new HashSet<>());
+
+      final String output = MarkdownPrinter.prettyPrint(annotation);
+      categoryContent.add(output);
+
+      outputsPerCategory.put(category, categoryContent);
+    }
+
+    final StringBuilder sb = new StringBuilder();
+    // get default category, listed in the end of doc
+    final Set<String> otherCategoryContent = outputsPerCategory.remove("Other");
+    for (final Entry<String, Set<String>> category : outputsPerCategory.entrySet()) {
+      final String categoryName = category.getKey();
+      final Set<String> categoryContent = category.getValue();
+      sb.append("## " + categoryName + "\n");
+      for (final String content : categoryContent) {
+        sb.append(content + "\n");
+      }
+    }
+    if (otherCategoryContent != null) {
+      sb.append("## Other\n");
+      for (final String content : otherCategoryContent) {
+        sb.append(content + "\n");
+      }
+    }
+    return sb.toString();
+  }
 
   /**
    *

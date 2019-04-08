@@ -18,6 +18,7 @@ Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Bundle-ActivationPolicy: lazy
 Export-Package: org.preesm.commons,
  org.preesm.commons.doc.annotations,
+ org.preesm.commons.doc.generators,
  org.preesm.commons.exceptions,
  org.preesm.commons.files,
  org.preesm.commons.logger,
