@@ -60,7 +60,6 @@ import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.equinox.app.IApplication;
 import org.eclipse.equinox.app.IApplicationContext;
-import org.preesm.commons.doc.generators.MarkdownPrinter;
 import org.preesm.commons.logger.CLIWorkflowLogger;
 import org.preesm.workflow.AbstractWorkflowExecutor;
 
@@ -115,11 +114,6 @@ public class CLIWorkflowExecutor extends AbstractWorkflowExecutor implements IAp
       final boolean isDebug = line.hasOption('d');
       this.setDebug(isDebug);
       this.setLogger(new CLIWorkflowLogger(isDebug));
-
-      if (line.hasOption("mdd")) {
-        final String mdFilePath = line.getOptionValue("mdd");
-        MarkdownPrinter.prettyPrintTo(mdFilePath);
-      }
 
       return executeWorkflow(cliOpts, line);
 
