@@ -3,7 +3,7 @@ package org.preesm.commons.doc.generators;
 import com.google.common.io.Files;
 import java.io.File;
 import java.io.IOException;
-import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -27,13 +27,13 @@ import org.preesm.commons.logger.PreesmLogger;
 public class MarkdownPrinter {
 
   /**
-   *
+   * Append documentation to File associated to given file path
    */
   public static final void prettyPrintTo(final String filePath) {
     final String prettyPrint = prettyPrint();
     final File f = new File(filePath);
     try {
-      Files.append(prettyPrint, f, Charset.forName("UTF8"));
+      Files.append(prettyPrint, f, StandardCharsets.UTF_8);
     } catch (IOException e) {
       PreesmLogger.getLogger().log(Level.SEVERE, "Could not output MarkDown task reference to " + filePath, e);
     }
