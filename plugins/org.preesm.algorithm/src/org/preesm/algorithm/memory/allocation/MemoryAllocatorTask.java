@@ -67,7 +67,10 @@ import org.preesm.workflow.elements.Workflow;
 
     inputs = { @Port(type = MemoryExclusionGraph.class, name = "MemEx", description = "Input Memory Exclusion Graph") },
 
-    outputs = { @Port(type = Map.class, name = "MEGs", description = "??????????? karol ?") },
+    outputs = { @Port(type = Map.class, name = "MEGs",
+        description = " associating, for each memory element in the architecture, "
+            + "according to the chosen _Distribution_ parameter value, a Memory Exclusion Graph annotated with "
+            + "allocation information (i.e. buffer addresses, etc.).") },
 
     parameters = {
         @Parameter(name = "Verbose", description = "Verbosity of the task.",
@@ -139,10 +142,7 @@ import org.preesm.workflow.elements.Workflow;
         @Parameter(name = "Nb of Shuffling Tested",
             description = "Number of random order tested when using the Shuffle value for the Best/First Fit order"
                 + " parameter.",
-            values = { @Value(name = "$$n\\in \\mathbb{N}^*$$", effect = "Number of random order.") }),
-        @Parameter(name = "Merge broadcasts",
-            description = "(Deprecated) Merge memory objects corresponding to outputs of Broadcast actors. This feature"
-                + " was replaced by the more generic Memory Scripts.") },
+            values = { @Value(name = "$$n\\in \\mathbb{N}^*$$", effect = "Number of random order.") }) },
 
     documentedErrors = {
         @DocumentedError(
