@@ -201,4 +201,25 @@ for PRODUCT in $(ls ./releng/org.preesm.product/target/products/*.zip); do
   curl -H "Authorization: token $OAUTH_TOKEN" -H "Content-Type: $(file -b --mime-type $FILE)" -X POST "$UPLOAD_URL?name=$(basename $FILE)" --upload-file $FILE > /dev/null
 done
 
+echo ""
+echo "Update task reference"
+
+git clone git@github.com:preesm/preesm.github.io.git -b master site
+
+cat > site/_docs/05-workflow-tasks-ref.md << EOF
+---
+title: "Workflow Tasks Reference"
+permalink: /docs/workflowtasksref/
+toc: true
+---
+
+_Last update : ${TODAY_DATE}; for version ${NEW_VERSION}_
+
+EOF
+echo -e "\n\n\n" >> site/_docs/05-workflow-tasks-ref.md
+./releng/org.preesm.product/target/products/org.preesm.product/linux/gtk/x86_64/eclipse  --launcher.suppressErrors -nosplash -consolelog -application org.preesm.cli.docgen -mdd site/_docs/05-workflow-tasks-ref.md
+
+(cd site && git add -A && git commit -m "(TaskRef) Update to match version ${NEW_VERSION}" && git push)
+rm -rf site
+
 exit 0
