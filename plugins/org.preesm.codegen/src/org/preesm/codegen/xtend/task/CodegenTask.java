@@ -52,6 +52,10 @@ import org.preesm.algorithm.mapper.model.MapperDAG;
 import org.preesm.algorithm.memory.exclusiongraph.MemoryExclusionGraph;
 import org.preesm.algorithm.model.dag.DirectedAcyclicGraph;
 import org.preesm.codegen.model.Block;
+import org.preesm.commons.doc.annotations.Parameter;
+import org.preesm.commons.doc.annotations.Port;
+import org.preesm.commons.doc.annotations.PreesmTask;
+import org.preesm.commons.doc.annotations.Value;
 import org.preesm.commons.exceptions.PreesmRuntimeException;
 import org.preesm.model.scenario.PreesmScenario;
 import org.preesm.model.slam.Design;
@@ -61,6 +65,31 @@ import org.preesm.workflow.implement.AbstractTaskImplementation;
 /**
  * The Class CodegenTask.
  */
+@PreesmTask(id = "org.ietr.preesm.codegen.xtend.task.CodegenTask", name = "Code Generation",
+    category = "Code Generation",
+
+    inputs = { @Port(name = "MEGs", type = Map.class), @Port(name = "DAG", type = DirectedAcyclicGraph.class),
+        @Port(name = "scenario", type = PreesmScenario.class), @Port(name = "architecture", type = Design.class) },
+
+    shortDescription = "Generate code for the application deployment resulting from the workflow execution.",
+
+    description = "This workflow task is responsible for generating code for the application deployment resulting "
+        + "from the workflow execution.",
+
+    parameters = { @Parameter(name = "Printer",
+        description = "Specify which printer should be used to generate code. Printers are defined in Preesm source"
+            + " code using an extension mechanism that make it possible to define a single printer name for several "
+            + "targeted architecture. Hence, depending on the type of PEs declared in the architecture model, Preesm "
+            + "will automatically select the associated printer class, if it exists.",
+        values = {
+            @Value(name = "C",
+                effect = "Print C code and shared-memory based communications. Currently compatible with x86, c6678, "
+                    + "and arm architectures."),
+            @Value(name = "InstrumentedC",
+                effect = "Print C code instrumented with profiling code, and shared-memory based communications. "
+                    + "Currently compatible with x86, c6678 architectures.."),
+            @Value(name = "XML", effect = "Print XML code with all informations used by other printers to print code. "
+                + "Compatible with x86, c6678.") }) })
 public class CodegenTask extends AbstractTaskImplementation {
 
   /** The Constant PARAM_PRINTER. */

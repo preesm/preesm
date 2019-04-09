@@ -46,6 +46,8 @@ import org.preesm.algorithm.mapper.model.MapperDAG;
 import org.preesm.algorithm.mapper.model.MapperDAGVertex;
 import org.preesm.algorithm.mapper.params.AbcParameters;
 import org.preesm.algorithm.model.iterators.TopologicalDAGIterator;
+import org.preesm.commons.doc.annotations.Port;
+import org.preesm.commons.doc.annotations.PreesmTask;
 import org.preesm.model.scenario.PreesmScenario;
 import org.preesm.model.slam.ComponentInstance;
 import org.preesm.model.slam.Design;
@@ -56,6 +58,13 @@ import org.preesm.model.slam.utils.DesignTools.ComponentInstanceComparator;
  * @author anmorvan
  *
  */
+@PreesmTask(id = "org.ietr.preesm.plugin.mapper.simple", name = "Simple Scheduling from DAG", category = "Schedulers",
+
+    inputs = { @Port(name = "DAG", type = MapperDAG.class), @Port(name = "architecture", type = Design.class),
+        @Port(name = "scenario", type = PreesmScenario.class) },
+
+    outputs = { @Port(name = "DAG", type = MapperDAG.class), @Port(name = "ABC", type = LatencyAbc.class) })
+@Deprecated
 public class MainCoreMappingFromDAG extends AbstractMappingFromDAG {
 
   @Override

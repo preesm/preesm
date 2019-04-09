@@ -424,31 +424,6 @@
          </outputs>
       </task>
       <task
-            id="org.ietr.preesm.evaluator.PeriodicEvaluator"
-            name="Periodic Schedule Evaluation"
-            type="org.preesm.algorithm.evaluator.PeriodicEvaluator">
-         <inputs>
-            <input
-                  id="SDF"
-                  object="org.preesm.algorithm.model.sdf.SDFGraph">
-            </input>
-            <input
-                  id="scenario"
-                  object="org.preesm.model.scenario.PreesmScenario">
-            </input>
-         </inputs>
-         <outputs>
-            <output
-                  id="SDF"
-                  object="org.preesm.algorithm.model.sdf.SDFGraph">
-            </output>
-            <output
-                  id="Throughput"
-                  object="java.lang.Double">
-            </output>
-         </outputs>
-      </task>
-      <task
             id="org.ietr.preesm.throughput.ThroughputPlugin"
             name="Throughput Evaluation"
             type="org.preesm.algorithm.throughput.ThroughputEvaluationTask">
@@ -505,11 +480,6 @@
                   object="java.lang.Double">
             </output>
          </outputs>
-      </task>
-      <task
-            id="org.ietr.preesm.latency.LatencyExplorationPlugin"
-            name="Latency Exploration"
-            type="org.preesm.algorithm.latency.LatencyExplorationTask">
       </task>
 
 

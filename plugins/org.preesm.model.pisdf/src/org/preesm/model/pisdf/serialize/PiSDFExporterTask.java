@@ -92,6 +92,10 @@ import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.emf.common.util.URI;
+import org.preesm.commons.doc.annotations.Parameter;
+import org.preesm.commons.doc.annotations.Port;
+import org.preesm.commons.doc.annotations.PreesmTask;
+import org.preesm.commons.doc.annotations.Value;
 import org.preesm.commons.exceptions.PreesmRuntimeException;
 import org.preesm.commons.files.ContainersManager;
 import org.preesm.commons.files.PathTools;
@@ -102,8 +106,14 @@ import org.preesm.workflow.implement.AbstractTaskImplementation;
 import org.preesm.workflow.implement.AbstractWorkflowNodeImplementation;
 
 /**
- * The Class SDFExporter.
+ *
  */
+@PreesmTask(id = "pisdf-export", name = "PiSDF Exporter",
+
+    inputs = { @Port(name = "PiSDF", type = PiGraph.class) },
+
+    parameters = {
+        @Parameter(name = "path", values = { @Value(name = "/Algo/generated/pisdf/", effect = "default path") }) })
 public class PiSDFExporterTask extends AbstractTaskImplementation {
 
   /*

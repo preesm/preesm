@@ -43,21 +43,23 @@ import org.preesm.algorithm.model.sdf.SDFGraph;
 import org.preesm.algorithm.throughput.tools.GraphStructureHelper;
 import org.preesm.model.scenario.PreesmScenario;
 import org.preesm.workflow.elements.Workflow;
-import org.preesm.workflow.implement.AbstractTaskImplementation;
 
 /**
  * @author hderoui
  *
  */
-public class LatencyExplorationTask extends AbstractTaskImplementation {
+public class LatencyExplorationTask {
 
-  @Override
+  /**
+   *
+   */
   public Map<String, Object> execute(final Map<String, Object> inputs, final Map<String, String> parameters,
       final IProgressMonitor monitor, final String nodeName, final Workflow workflow) {
 
     // get the input graph, the scenario for actors duration, and the total number of cores
     final SDFGraph inputGraph = GraphStructureHelper.cloneIBSDF((SDFGraph) inputs.get("SDF"));
     final PreesmScenario inputScenario = (PreesmScenario) inputs.get("scenario");
+
     final Integer nbCores = Integer.parseInt(parameters.get("nbCores"));
 
     // list of latency in function of cores number
@@ -92,14 +94,15 @@ public class LatencyExplorationTask extends AbstractTaskImplementation {
     return outputs;
   }
 
-  @Override
+  /**
+   *
+   */
   public Map<String, String> getDefaultParameters() {
     final Map<String, String> parameters = new LinkedHashMap<>();
     // parameters.put(,);
     return parameters;
   }
 
-  @Override
   public String monitorMessage() {
     return "Exploring graph latency ...";
   }

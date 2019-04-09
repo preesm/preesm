@@ -45,6 +45,10 @@ import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.eclipse.core.runtime.IProgressMonitor;
+import org.preesm.commons.doc.annotations.Parameter;
+import org.preesm.commons.doc.annotations.Port;
+import org.preesm.commons.doc.annotations.PreesmTask;
+import org.preesm.commons.doc.annotations.Value;
 import org.preesm.commons.logger.PreesmLogger;
 import org.preesm.model.pisdf.PiGraph;
 import org.preesm.workflow.elements.Workflow;
@@ -55,6 +59,12 @@ import org.preesm.workflow.implement.AbstractWorkflowNodeImplementation;
  * @author farresti
  *
  */
+@PreesmTask(id = "org.ietr.preesm.pimm.algorithm.pimm2flat.StaticPiMM2FlatPiMMTask", name = "PiSDF Flattener",
+
+    inputs = { @Port(name = "PiSDF", type = PiGraph.class) }, outputs = { @Port(name = "PiSDF", type = PiGraph.class) },
+
+    parameters = {
+        @Parameter(name = "Perform optimizations", values = { @Value(name = "true / false", effect = "") }) })
 public class PiSDFFlattenerTask extends AbstractTaskImplementation {
 
   final Logger logger = PreesmLogger.getLogger();

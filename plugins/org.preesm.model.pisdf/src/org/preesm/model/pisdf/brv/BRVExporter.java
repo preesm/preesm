@@ -19,6 +19,10 @@ import org.eclipse.core.resources.IWorkspace;
 import org.eclipse.core.resources.IWorkspaceRoot;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.IProgressMonitor;
+import org.preesm.commons.doc.annotations.Parameter;
+import org.preesm.commons.doc.annotations.Port;
+import org.preesm.commons.doc.annotations.PreesmTask;
+import org.preesm.commons.doc.annotations.Value;
 import org.preesm.commons.exceptions.PreesmRuntimeException;
 import org.preesm.commons.logger.PreesmLogger;
 import org.preesm.model.pisdf.AbstractVertex;
@@ -33,9 +37,15 @@ import org.w3c.dom.Element;
 
 /**
  * This task computes and exports BRV of a PiSDF graph, as a CSV file.
- * 
+ *
  * @author ahonorat
  */
+
+@PreesmTask(id = "pisdf-brv-export", name = "PiSDF BRV Exporter",
+
+    inputs = { @Port(name = "PiSDF", type = PiGraph.class) }, outputs = { @Port(name = "PiSDF", type = PiGraph.class) },
+
+    parameters = { @Parameter(name = "path", values = { @Value(name = "/stats/xml/", effect = "default value") }) })
 public class BRVExporter extends AbstractTaskImplementation {
 
   /**
@@ -80,7 +90,6 @@ public class BRVExporter extends AbstractTaskImplementation {
 
     Map<String, Object> res = new LinkedHashMap<>();
     res.put(AbstractWorkflowNodeImplementation.KEY_PI_GRAPH, graph);
-
     return res;
   }
 
