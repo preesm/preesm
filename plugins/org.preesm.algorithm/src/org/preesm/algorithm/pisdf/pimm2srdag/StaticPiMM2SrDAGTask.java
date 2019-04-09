@@ -44,6 +44,12 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.preesm.algorithm.mapper.model.MapperDAG;
+import org.preesm.algorithm.model.sdf.SDFGraph;
+import org.preesm.commons.doc.annotations.DocumentedError;
+import org.preesm.commons.doc.annotations.Parameter;
+import org.preesm.commons.doc.annotations.Port;
+import org.preesm.commons.doc.annotations.PreesmTask;
+import org.preesm.commons.doc.annotations.Value;
 import org.preesm.commons.exceptions.PreesmRuntimeException;
 import org.preesm.commons.logger.PreesmLogger;
 import org.preesm.model.pisdf.PiGraph;
@@ -61,6 +67,50 @@ import org.preesm.workflow.implement.AbstractWorkflowNodeImplementation;
  *
  * @deprecated use {@link PiSDFToSingleRateTask} instead
  */
+@PreesmTask(id = "org.ietr.preesm.plugin.transforms.sdf2hsdf", name = "Single-Rate Transformation",
+    category = "Graph Transformation",
+
+    inputs = { @Port(name = "SDF", type = SDFGraph.class) }, outputs = { @Port(name = "SDF", type = SDFGraph.class) },
+
+    shortDescription = "Transforms an SDF graph into an equivalent single-rate SDF graph.",
+
+    description = "In Preesm, since version 2.0.0, the Parameterized and Interfaced SDF (PiSDF) "
+        + "model of computa tion is used as the frontend model in the graphical editor of dataflow"
+        + " graphs. This model makes it possible to design dynamically reconfigurable dataflow graphs"
+        + " where the value of parameters, and production/consumption rates depending on them, might"
+        + " change during the execution of the application. In former versions, the Interface Based "
+        + "SDF (IBSDF) model of computation was used as the front end model for application design. "
+        + "Contrary to the PiSDF, the IBSDF is a static model of computation where production and "
+        + "consumption rates of actors is fixed at compile-time.\n" + "\n"
+        + "The purpose of this workflow task is to transform a static PiSDF graph into an equivalent "
+        + "IBSDF graph. A static PiSDF graph is a PiSDF graph where dynamic reconfiguration "
+        + "features of the PiSDF model of computation are not used.",
+
+    parameters = { @Parameter(name = "ExplodeImploreSuppr",
+        description = "_(Deprecated: use at your own risks)_\n" + "\n"
+            + "This parameter makes it possible to remove most of the explode and implode actors that are inserted in "
+            + "the graph during the single-rate transformation. The resulting SDF graph is an ill-constructed graph "
+            + "where a single data input/output port of an actor may be connected to several First-In, First-Out "
+            + "queues (Fifos).",
+        values = {
+            @Value(name = "false",
+                effect = "(default) The suppression of explode/implode special actors is not activated."),
+            @Value(name = "true", effect = "The suppression of explode/implode special actors is activated.") }) },
+
+    documentedErrors = { @DocumentedError(message = "Graph not valid, not schedulable",
+        explanation = "Single-rate transformation of the SDF graph was aborted because the top level was not "
+            + "consistent, or it was consistent but did not contained enough delays — i.e. initial data "
+            + "tokens — to make it schedulable.") },
+
+    seeAlso = {
+        "**Single-rate transformation**: J.L. Pino, S.S. Bhattacharyya, and E.A. Lee. A hierarchical multiprocessor "
+            + "scheduling framework for synchronous dataflow graphs. Electronics Research Laboratory, College of "
+            + "Engineering, University of California, 1995.",
+        "**Special actors**: Karol Desnos, Maxime Pelcat, Jean-François Nezan, and Slaheddine Aridhi. On memory "
+            + "reuse between inputs and outputs of dataflow actors. ACM Transactions on Embedded Computing Systems, "
+            + "15(30):25, January 2016.",
+        "**Graph consistency**: E.A. Lee and D.G. Messerschmitt. Synchronous data flow. Proceedings of the IEEE, 75(9):"
+            + "1235 – 1245, sept. 1987." })
 @Deprecated
 public class StaticPiMM2SrDAGTask extends AbstractTaskImplementation {
 

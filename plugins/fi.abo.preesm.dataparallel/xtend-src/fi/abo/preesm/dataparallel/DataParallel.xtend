@@ -37,10 +37,14 @@
 package fi.abo.preesm.dataparallel
 
 import fi.abo.preesm.dataparallel.operations.DataParallelCheckOperations
+import fi.abo.preesm.dataparallel.pojo.RetimingInfo
 import java.util.Map
 import org.eclipse.core.runtime.IProgressMonitor
 import org.eclipse.xtend.lib.annotations.Accessors
 import org.preesm.algorithm.model.sdf.SDFGraph
+import org.preesm.commons.doc.annotations.DocumentedError
+import org.preesm.commons.doc.annotations.Port
+import org.preesm.commons.doc.annotations.PreesmTask
 import org.preesm.commons.exceptions.PreesmException
 import org.preesm.commons.exceptions.PreesmRuntimeException
 import org.preesm.commons.logger.PreesmLogger
@@ -53,6 +57,26 @@ import org.preesm.workflow.implement.AbstractWorkflowNodeImplementation
  *
  * @author Sudeep Kanur
  */
+@PreesmTask(id = "fi.abo.preesm.dataparallel.DataParallel", name = "Data-parallel Transformation",
+    category = "Graph Transformation",
+
+    inputs = #[@Port(type = SDFGraph, name = "SDF")],
+    outputs = #[@Port(type = SDFGraph, name = "SDF"), @Port(type = RetimingInfo, name = "INFO")],
+
+    shortDescription = "Detect whether an SDF graph is data-parallel and provide its data-parallel equivalent Single-Rate SDF and its re-timing information.",
+
+    description = "An SDF graph is data-parallel when for each actor of the SDF graph, all of its instances can be executed at the same time. For instance, all strictly acyclic SDF graphs are data-parallel. This task increases the scope of this analysis to generic SDF graphs.
+
+The task analyses an input SDF graph and reports if it is data-parallel by analysing each strongly connected component of the graph. If a strongly connected component requires a re-timing transformation for it to be data-parallel, then the transformation is carried out such that the corresponding strongly connected component in the output single-rate SDF is data-parallel. The re-timing transformation modifies the delays in the original SDF graph such that the final single-rate SDF output is data-parallel.
+
+However, if a strongly connected component of the SDF is not data-parallel, then the plugin reports the actors of this strongly connected component. In this case, the strongly connected component at the output single-rate SDF graph is same as that of the single-rate transformation on the original SDF.
+
+The data-structure INFO describes mapping of delays in original FIFO to delays in the transformed SDF. This non-trivial initialization of delays in FIFOs is represented using SDF-like graphs where FIFO initialization function is represented as an actor. The data-structure INFO is provided for sake of completion and is not being used by other plugins. The data-structure INFO can change in future based on the design of the initialization of the FIFOs.",
+
+	documentedErrors = @DocumentedError(message = "DAGComputationBug", explanation = "There is a bug in implementation due to incorrect assumption. Report the bug by opening an issue and attaching the graph that caused it."),
+
+    seeAlso = "**Implementation details**: Sudeep Kanur, Johan Lilius, and Johan Ersfolk. Detecting data-parallel synchronous dataflow graphs. Technical Report 1184, 2017."
+    )
 class DataParallel extends AbstractTaskImplementation {
 
 	@Accessors(PUBLIC_GETTER, PRIVATE_SETTER)

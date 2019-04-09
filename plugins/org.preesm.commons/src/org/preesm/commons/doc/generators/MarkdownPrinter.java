@@ -176,9 +176,9 @@ public class MarkdownPrinter {
     final StringBuilder sb = new StringBuilder("\n#### " + direction + "\n");
     if (ports.length > 0) {
       for (Port p : ports) {
-        sb.append("  * **" + p.name() + "**:" + p.type().getSimpleName());
+        sb.append("  * **" + p.name() + "** (of _" + p.type().getSimpleName() + "_)");
         if (!p.description().isEmpty()) {
-          sb.append(" : _" + p.description() + "_");
+          sb.append(" : " + p.description());
         }
         sb.append("\n");
       }
