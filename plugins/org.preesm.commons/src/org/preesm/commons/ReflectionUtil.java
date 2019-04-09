@@ -54,9 +54,9 @@ public class ReflectionUtil {
   /**
    *
    */
-  public static final Collection<Class<?>> lookupChildClassesOf(final String extensionPointID,
-      final Class<?> parentClassOrInterface) {
-    final Set<Class<?>> res = new LinkedHashSet<>();
+  public static final <T> Collection<Class<? extends T>> lookupChildClassesOf(final String extensionPointID,
+      final Class<T> parentClassOrInterface) {
+    final Set<Class<? extends T>> res = new LinkedHashSet<>();
 
     final Set<BundleWiring> bundleWirings = getContributorBundleWirings(extensionPointID);
     for (final BundleWiring bundleWiring : bundleWirings) {
@@ -69,7 +69,8 @@ public class ReflectionUtil {
           final Class<?> loadClass = classLoader.loadClass(resource);
           if (!loadClass.isInterface() && !Modifier.isAbstract(loadClass.getModifiers())) {
             if (parentClassOrInterface.isAssignableFrom(loadClass)) {
-              res.add(loadClass);
+              final Class<? extends T> asSubclass = loadClass.asSubclass(parentClassOrInterface);
+              res.add(asSubclass);
             }
           }
         } catch (final ClassNotFoundException | NoClassDefFoundError e) {
