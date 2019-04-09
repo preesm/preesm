@@ -8,5 +8,5 @@ package org.preesm.commons.doc.annotations;
 public @interface DocumentedError {
   String message();
 
-  String explanation() default "";
+  String explanation();
 }

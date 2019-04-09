@@ -8,5 +8,5 @@ package org.preesm.commons.doc.annotations;
 public @interface Value {
   String name();
 
-  String effect() default "";
+  String effect() default "Undocumented";
 }

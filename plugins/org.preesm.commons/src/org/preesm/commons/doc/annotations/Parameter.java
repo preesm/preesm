@@ -9,8 +9,8 @@ public @interface Parameter {
 
   String name();
 
-  String description() default "";
+  String description() default "Undocumented";
 
-  Value[] values() default {};
+  Value[] values();
 
 }

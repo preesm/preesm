@@ -19,7 +19,7 @@ public @interface PreesmTask {
 
   String category() default "Other";
 
-  String shortDescription() default "";
+  String shortDescription() default "Undocumented";
 
   String description() default "";
 

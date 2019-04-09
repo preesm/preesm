@@ -84,66 +84,97 @@ public class MarkdownPrinter {
   public static final String prettyPrint(final PreesmTask annotation) {
     final StringBuilder sb = new StringBuilder();
 
-    final String name = annotation.name();
-    final String id = annotation.id();
-
-    sb.append("\n### " + name + "\n\n");
-
-    sb.append("  * **Identifier**: `" + id + "`\n");
-    sb.append("  * **Short description**: " + annotation.shortDescription() + "\n");
-
-    sb.append("\n#### Inputs\n" + generatePorts(annotation.inputs()));
-
-    sb.append("\n#### Outputs\n" + generatePorts(annotation.outputs()));
-
-    sb.append("\n#### Description\n");
-    sb.append(annotation.description() + "\n");
-
-    sb.append("\n#### Parameters\n" + generateParameters(annotation.parameters()));
-
-    sb.append("\n#### Documented Errors\n" + generateDocumentedErrors(annotation.documentedErrors()));
-
-    sb.append("\n#### See Also\n" + generateSeeAlso(annotation.seeAlso()));
+    sb.append(generateHeader(annotation));
+    sb.append(generatePorts("Inputs", annotation.inputs()));
+    sb.append(generatePorts("Outputs", annotation.outputs()));
+    sb.append(generateDescription(annotation));
+    sb.append(generateParameters(annotation.parameters()));
+    sb.append(generateDocumentedErrors(annotation.documentedErrors()));
+    sb.append(generateSeeAlso(annotation.seeAlso()));
 
     return sb.toString();
   }
 
-  private static String generateSeeAlso(final String[] seeAlso) {
-    final StringBuilder sb = new StringBuilder("\n");
-    for (final String s : seeAlso) {
-      sb.append("  * " + s + "\n");
+  private static final String generateHeader(PreesmTask annotation) {
+    final String name = annotation.name();
+    final String id = annotation.id();
+    final String shortDescription = annotation.shortDescription();
+    final StringBuilder sb = new StringBuilder();
+
+    sb.append("\n### " + name + "\n\n");
+    sb.append("  * **Identifier**: `" + id + "`\n");
+    sb.append("  * **Short description**: " + shortDescription + "\n");
+
+    return sb.toString();
+  }
+
+  private static Object generateDescription(PreesmTask annotation) {
+    StringBuilder sb = new StringBuilder("\n#### Description\n");
+    if (annotation.description().isEmpty()) {
+      sb.append(annotation.shortDescription() + "\n");
+    } else {
+      sb.append(annotation.description() + "\n");
     }
     return sb.toString();
   }
 
+  private static String generateSeeAlso(final String[] seeAlso) {
+    if (seeAlso.length > 0) {
+      final StringBuilder sb = new StringBuilder("\n#### See Also\n\n");
+      for (final String s : seeAlso) {
+        sb.append("  * " + s + "\n");
+      }
+      return sb.toString();
+    } else {
+      return "";
+    }
+  }
+
   private static final String generateParameters(final Parameter[] parameters) {
-    final StringBuilder sb = new StringBuilder("");
-    for (final Parameter param : parameters) {
-      sb.append("\n##### " + param.name() + "\n");
-      sb.append(param.description() + "\n");
-      final Value[] values = param.values();
-      if (values.length > 0) {
-        sb.append("\n| Value | Effect |\n| --- | --- |\n");
-        for (final Value val : values) {
-          sb.append("| _" + val.name() + "_ | " + val.effect() + " |\n");
+    final StringBuilder sb = new StringBuilder("\n#### Parameters\n");
+    if (parameters.length > 0) {
+      for (final Parameter param : parameters) {
+        sb.append("\n##### " + param.name() + "\n");
+        sb.append(param.description() + "\n");
+        final Value[] values = param.values();
+        if (values.length > 0) {
+          sb.append("\n| Value | Effect |\n| --- | --- |\n");
+          for (final Value val : values) {
+            sb.append("| _" + val.name() + "_ | " + val.effect() + " |\n");
+          }
         }
       }
+    } else {
+      sb.append("None.\n");
     }
     return sb.toString();
   }
 
   private static final String generateDocumentedErrors(final DocumentedError[] documentedErrors) {
-    final StringBuilder sb = new StringBuilder("\n| Message | Explanation |\n| --- | --- |\n");
-    for (final DocumentedError error : documentedErrors) {
-      sb.append("| **" + error.message() + "** | " + error.explanation() + " |\n");
+    if (documentedErrors.length > 0) {
+      final StringBuilder sb = new StringBuilder("\n#### Documented Errors\n");
+      sb.append("\n| Message | Explanation |\n| --- | --- |\n");
+      for (final DocumentedError error : documentedErrors) {
+        sb.append("| **" + error.message() + "** | " + error.explanation() + " |\n");
+      }
+      return sb.toString();
+    } else {
+      return "";
     }
-    return sb.toString();
   }
 
-  private static final String generatePorts(final Port[] ports) {
-    final StringBuilder sb = new StringBuilder("");
-    for (Port p : ports) {
-      sb.append("  * **" + p.name() + "**:" + p.type().getSimpleName() + " : _" + p.description() + "_\n");
+  private static final String generatePorts(final String direction, final Port[] ports) {
+    final StringBuilder sb = new StringBuilder("\n#### " + direction + "\n");
+    if (ports.length > 0) {
+      for (Port p : ports) {
+        sb.append("  * **" + p.name() + "**:" + p.type().getSimpleName());
+        if (!p.description().isEmpty()) {
+          sb.append(" : _" + p.description() + "_");
+        }
+        sb.append("\n");
+      }
+    } else {
+      sb.append("None.\n");
     }
     return sb.toString();
   }
