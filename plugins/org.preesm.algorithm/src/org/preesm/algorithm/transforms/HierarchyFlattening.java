@@ -72,8 +72,7 @@ import org.preesm.workflow.implement.AbstractTaskImplementation;
 
     shortDescription = "Transforms a hierarchical IBSDF graph into an equivalent SDF graph.",
 
-    description = "**Deprecated**\n" + "\n"
-        + "The purpose of this workflow task is to flatten several levels of the hierarchy of an IBSDF graph"
+    description = "The purpose of this workflow task is to flatten several levels of the hierarchy of an IBSDF graph"
         + " and produce an equivalent SDF graph. A hierarchical IBSDF graph is a graph where the internal behavior "
         + "of some actors is described using another IBSDF subgraph instead of a C header file. When applying this"
         + " transformation, hierarchical IBSDF actors of the first n levels of hierarchy are replaced with the actors "
@@ -88,6 +87,7 @@ import org.preesm.workflow.implement.AbstractTaskImplementation;
             + "data-flow graphs. In SiPS Proceedings, 2009.",
         "**Graph consistency**: E.A. Lee and D.G. Messerschmitt. Synchronous data flow. Proceedings of the IEEE, 75(9):"
             + "1235 – 1245, sept. 1987." })
+@Deprecated
 public class HierarchyFlattening extends AbstractTaskImplementation {
 
   private static final Logger LOGGER = PreesmLogger.getLogger();

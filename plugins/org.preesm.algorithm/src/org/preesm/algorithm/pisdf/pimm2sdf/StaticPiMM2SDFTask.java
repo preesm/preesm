@@ -64,8 +64,7 @@ import org.preesm.workflow.implement.AbstractWorkflowNodeImplementation;
 
     shortDescription = "Transforms a static PiSDF Graph into an equivalent IBSDF graph.",
 
-    description = "**Deprecated**\n" + "\n"
-        + "In Preesm, since version 2.0.0, the Parameterized and Interfaced SDF (PiSDF) "
+    description = "In Preesm, since version 2.0.0, the Parameterized and Interfaced SDF (PiSDF) "
         + "model of computa tion is used as the frontend model in the graphical editor of dataflow"
         + " graphs. This model makes it possible to design dynamically reconfigurable dataflow graphs"
         + " where the value of parameters, and production/consumption rates depending on them, might"
@@ -84,6 +83,7 @@ import org.preesm.workflow.implement.AbstractWorkflowNodeImplementation;
             + "and interfaced dataflow meta-model for MPSoCs runtime reconfiguration. In Embedded Computer "
             + "Systems: Architectures, Modeling, and Simulation (SAMOS XIII), 2013 International Conference "
             + "on, pages 41–48. IEEE, 2013." })
+@Deprecated
 public class StaticPiMM2SDFTask extends AbstractTaskImplementation {
 
   /*

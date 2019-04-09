@@ -47,12 +47,12 @@ public class MarkdownPrinter {
     final Collection<Class<?>> lookupChildClassesOf = ReflectionUtil.lookupAnnotatedClasses("org.preesm.workflow.tasks",
         PreesmTask.class);
     final Map<String, Set<String>> outputsPerCategory = new HashMap<>();
-    for (final Class<?> t : lookupChildClassesOf) {
-      final PreesmTask annotation = t.getAnnotation(PreesmTask.class);
+    for (final Class<?> preesmTask : lookupChildClassesOf) {
+      final PreesmTask annotation = preesmTask.getAnnotation(PreesmTask.class);
       final String category = annotation.category();
       final Set<String> categoryContent = outputsPerCategory.getOrDefault(category, new HashSet<>());
 
-      final String output = MarkdownPrinter.prettyPrint(annotation);
+      final String output = MarkdownPrinter.prettyPrint(preesmTask);
       categoryContent.add(output);
 
       outputsPerCategory.put(category, categoryContent);
@@ -81,10 +81,11 @@ public class MarkdownPrinter {
   /**
    *
    */
-  public static final String prettyPrint(final PreesmTask annotation) {
+  public static final String prettyPrint(final Class<?> preesmTask) {
     final StringBuilder sb = new StringBuilder();
+    final PreesmTask annotation = preesmTask.getAnnotation(PreesmTask.class);
 
-    sb.append(generateHeader(annotation));
+    sb.append(generateHeader(preesmTask));
     sb.append(generatePorts("Inputs", annotation.inputs()));
     sb.append(generatePorts("Outputs", annotation.outputs()));
     sb.append(generateDescription(annotation));
@@ -95,8 +96,15 @@ public class MarkdownPrinter {
     return sb.toString();
   }
 
-  private static final String generateHeader(PreesmTask annotation) {
-    final String name = annotation.name();
+  private static final String generateHeader(final Class<?> preesmTask) {
+    final PreesmTask annotation = preesmTask.getAnnotation(PreesmTask.class);
+
+    final String name;
+    if (preesmTask.isAnnotationPresent(Deprecated.class)) {
+      name = annotation.name() + " - _Deprecated_";
+    } else {
+      name = annotation.name();
+    }
     final String id = annotation.id();
     final String shortDescription = annotation.shortDescription();
     final StringBuilder sb = new StringBuilder();
@@ -108,7 +116,7 @@ public class MarkdownPrinter {
     return sb.toString();
   }
 
-  private static Object generateDescription(PreesmTask annotation) {
+  private static Object generateDescription(final PreesmTask annotation) {
     StringBuilder sb = new StringBuilder("\n#### Description\n");
     if (annotation.description().isEmpty()) {
       sb.append(annotation.shortDescription() + "\n");
