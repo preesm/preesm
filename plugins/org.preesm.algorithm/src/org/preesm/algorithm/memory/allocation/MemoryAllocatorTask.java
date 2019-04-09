@@ -68,7 +68,7 @@ import org.preesm.workflow.elements.Workflow;
     inputs = { @Port(type = MemoryExclusionGraph.class, name = "MemEx", description = "Input Memory Exclusion Graph") },
 
     outputs = { @Port(type = Map.class, name = "MEGs",
-        description = " associating, for each memory element in the architecture, "
+        description = "Map associating, for each memory element in the architecture, "
             + "according to the chosen _Distribution_ parameter value, a Memory Exclusion Graph annotated with "
             + "allocation information (i.e. buffer addresses, etc.).") },
 
