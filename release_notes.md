@@ -5,12 +5,14 @@ PREESM Changelog
 *XXXX.XX.XX*
 
 ### New Feature
+* XML exporter of repetition vector (workflow task id: pisdf-brv-export)
 
 ### Changes
 * Make sure XCore generated code is 1.8 compliant;
 
 ### Bug fix
 * Fix #106
+* Fix #109
 
 ## Release version 3.5.0
 *2019.03.21*
