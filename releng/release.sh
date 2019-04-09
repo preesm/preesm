@@ -215,6 +215,8 @@ toc: true
 
 _Last update : ${TODAY_DATE}; for version ${NEW_VERSION}_
 
+This page references the available workflow tasks.
+
 EOF
 echo -e "\n\n\n" >> site/_docs/05-workflow-tasks-ref.md
 ./releng/org.preesm.product/target/products/org.preesm.product/linux/gtk/x86_64/eclipse  --launcher.suppressErrors -nosplash -consolelog -application org.preesm.cli.docgen -mdd site/_docs/05-workflow-tasks-ref.md
