@@ -159,14 +159,14 @@ import org.preesm.workflow.elements.Workflow;
                 + "allocation algorithm and should be corrected in the source code.") },
 
     seeAlso = {
-        "Memory Allocation Algorithms : K. Desnos, M. Pelcat, J.-F. Nezan, and S. Aridhi. Pre-and "
+        "**Memory Allocation Algorithms**: K. Desnos, M. Pelcat, J.-F. Nezan, and S. Aridhi. Pre-and "
             + "post-scheduling memory allocation strategies on MPSoCs. In Electronic System Level Synthesis "
             + "Conference (ESLsyn), 2013.",
-        "Distributed Memory Allocation : Karol Desnos, Maxime Pelcat, "
+        "**Distributed Memory Allocation**: Karol Desnos, Maxime Pelcat, "
             + "Jean-François Nezan, and Slaheddine Aridhi. Distributed memory allocation technique for "
             + "synchronous dataflow graphs. In Signal Processing System (SiPS), Workshop on, pages 1–6. "
             + "IEEE, 2016.",
-        "Broadcast Merging : K. Desnos, M. Pelcat, J.-F. Nezan, and S. Aridhi. "
+        "**Broadcast Merging**: K. Desnos, M. Pelcat, J.-F. Nezan, and S. Aridhi. "
             + "Memory analysis and optimized allocation of dataflow applications on shared-memory "
             + "MPSoCs. Journal of Signal Processing Systems, Springer, 2014." })
 public class MemoryAllocatorTask extends AbstractMemoryAllocatorTask {
