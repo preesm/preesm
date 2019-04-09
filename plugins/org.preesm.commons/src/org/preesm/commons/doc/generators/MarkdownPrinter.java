@@ -111,6 +111,7 @@ public class MarkdownPrinter {
 
     sb.append("\n### " + name + "\n\n");
     sb.append("  * **Identifier**: `" + id + "`\n");
+    sb.append("  * **Implementing Class**: `" + preesmTask.getCanonicalName() + "`\n");
     sb.append("  * **Short description**: " + shortDescription + "\n");
 
     return sb.toString();
