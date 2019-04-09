@@ -216,7 +216,7 @@ public class StatGenerator {
    *          the operator
    * @return the mem
    */
-  public Integer getMem(final ComponentInstance operator) {
+  public long getMem(final ComponentInstance operator) {
 
     int mem = 0;
 

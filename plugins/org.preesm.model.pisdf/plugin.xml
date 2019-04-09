@@ -71,6 +71,23 @@
          </inputs>
       </task>
       <task
+            id="pisdf-brv-export"
+            name="Static PiMM repetition computation and export"
+            type="org.preesm.model.pisdf.brv.BRVExporter">
+         <inputs>
+            <input
+                  id="PiMM"
+                  object="org.preesm.model.pisdf.PiGraph">
+            </input>
+         </inputs>
+         <outputs>
+            <output
+                  id="PiMM"
+                  object="org.preesm.model.pisdf.PiGraph">
+            </output>
+         </outputs>
+      </task>
+      <task
             id="org.ietr.preesm.pimm.algorithm.pimm2flat.StaticPiMM2FlatPiMMTask"
             name="Static PiMM to Flat PiMM transformation"
             type="org.preesm.model.pisdf.statictools.PiSDFFlattenerTask">
