@@ -21,7 +21,8 @@
 	creationCommands="false",
 	creationIcons="false",
 	dataTypeConverters="false",
-	operationReflection="false"
+	operationReflection="false",
+	complianceLevel="8.0"
 )
 
 @Ecore(nsURI="http://org.preesm/model/slam/link")

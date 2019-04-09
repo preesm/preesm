@@ -7,6 +7,7 @@ PREESM Changelog
 ### New Feature
 
 ### Changes
+* Make sure XCore generated code is 1.8 compliant;
 
 ### Bug fix
 * Fix #106
