@@ -38,6 +38,9 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.preesm.algorithm.mapper.model.MapperDAG;
+import org.preesm.algorithm.model.dag.DirectedAcyclicGraph;
+import org.preesm.commons.doc.annotations.Port;
+import org.preesm.commons.doc.annotations.PreesmTask;
 import org.preesm.model.pisdf.PiGraph;
 import org.preesm.workflow.elements.Workflow;
 import org.preesm.workflow.implement.AbstractTaskImplementation;
@@ -45,6 +48,13 @@ import org.preesm.workflow.implement.AbstractWorkflowNodeImplementation;
 
 /**
  */
+@PreesmTask(id = "org.ietr.preesm.mapper.getpimm", name = "GetPiMM",
+
+    inputs = { @Port(name = "DAG", type = DirectedAcyclicGraph.class) },
+
+    outputs = { @Port(name = "PiMM", type = PiGraph.class) }
+
+)
 public class GetPiMMFromDAGTask extends AbstractTaskImplementation {
 
   /*

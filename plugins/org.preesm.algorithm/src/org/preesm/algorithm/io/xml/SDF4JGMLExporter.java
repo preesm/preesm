@@ -44,12 +44,24 @@ import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.Path;
 import org.preesm.algorithm.model.sdf.SDFGraph;
+import org.preesm.commons.doc.annotations.Parameter;
+import org.preesm.commons.doc.annotations.Port;
+import org.preesm.commons.doc.annotations.PreesmTask;
+import org.preesm.commons.doc.annotations.Value;
 import org.preesm.workflow.elements.Workflow;
 import org.preesm.workflow.implement.AbstractTaskImplementation;
 
 /**
  * The Class SDF4JGMLExporter.
  */
+@PreesmTask(id = "sdf4j-export", name = "SDF4J Exporter",
+
+    inputs = { @Port(name = "SDF", type = SDFGraph.class) },
+
+    parameters = { @Parameter(name = "path", values = { @Value(name = "") }) }
+
+)
+@Deprecated
 public class SDF4JGMLExporter extends AbstractTaskImplementation {
 
   /*

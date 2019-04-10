@@ -40,7 +40,5 @@
 <?eclipse version="3.4"?>
 
 <plugin>
-   <extension-point id="scenarios" name="%scenariosName" schema="schema/scenarios.exsd"/>
-   <extension-point id="tasks" name="%tasksName" schema="schema/tasks.exsd"/>
    <extension-point id="loggers" name="%loggersName" schema="schema/loggers.exsd"/>
 </plugin>

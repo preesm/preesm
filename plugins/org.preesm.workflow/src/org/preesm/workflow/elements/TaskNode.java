@@ -36,12 +36,8 @@ package org.preesm.workflow.elements;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
-import java.util.logging.Level;
-import org.eclipse.core.runtime.CoreException;
-import org.eclipse.core.runtime.IConfigurationElement;
-import org.eclipse.core.runtime.IExtensionRegistry;
-import org.eclipse.core.runtime.Platform;
-import org.preesm.commons.logger.PreesmLogger;
+import org.preesm.commons.doc.annotations.Port;
+import org.preesm.commons.doc.annotations.PreesmTask;
 import org.preesm.workflow.WorkflowParser;
 import org.preesm.workflow.implement.AbstractTaskImplementation;
 
@@ -157,56 +153,15 @@ public class TaskNode extends AbstractWorkflowNode<AbstractTaskImplementation> {
    * @return True if the prototype was correctly set.
    */
   @Override
-  protected boolean initPrototype(final AbstractTaskImplementation task, final IConfigurationElement element) {
-
-    for (final IConfigurationElement child : element.getChildren()) {
-      if (child.getName().equals("inputs")) {
-        for (final IConfigurationElement input : child.getChildren()) {
-          task.addInput(input.getAttribute("id"), input.getAttribute("object"));
-        }
-      } else if (child.getName().equals("outputs")) {
-        for (final IConfigurationElement output : child.getChildren()) {
-          task.addOutput(output.getAttribute("id"), output.getAttribute("object"));
-        }
-      }
+  protected boolean initPrototype(final AbstractTaskImplementation task) {
+    final PreesmTask annotation = task.getClass().getAnnotation(PreesmTask.class);
+    for (final Port input : annotation.inputs()) {
+      task.addInput(input.name(), input.type().getCanonicalName());
+    }
+    for (final Port output : annotation.outputs()) {
+      task.addOutput(output.name(), output.type().getCanonicalName());
     }
     return true;
-  }
-
-  /**
-   * Checks if this task exists based on its ID.
-   *
-   * @return True if this task exists, false otherwise.
-   */
-  public boolean getExtensionInformation() {
-    try {
-      final IExtensionRegistry registry = Platform.getExtensionRegistry();
-
-      final IConfigurationElement[] elements = registry.getConfigurationElementsFor("org.preesm.workflow.tasks");
-      for (final IConfigurationElement element : elements) {
-        if (element.getAttribute("id").equals(this.pluginId)) {
-          // Tries to create the transformation
-          final Object obj = element.createExecutableExtension("type");
-
-          // and checks it actually is a TaskImplementation.
-          if (obj instanceof AbstractTaskImplementation) {
-            this.implementation = (AbstractTaskImplementation) obj;
-
-            // Initializes the prototype of the workflow task
-            init((AbstractTaskImplementation) this.implementation, element);
-
-            return true;
-          }
-        }
-      }
-
-      return false;
-    } catch (final CoreException e) {
-      final String message = "Failed to find plugins from workflow for pluginID = [" + pluginId + "] and taskID = ["
-          + taskId + "]: " + e.getMessage();
-      PreesmLogger.getLogger().log(Level.SEVERE, message);
-      return false;
-    }
   }
 
   /**

@@ -44,29 +44,6 @@
 <?eclipse version="3.4"?>
 
 <plugin>
-   <extension
-         point="org.preesm.workflow.tasks">
-
-      <task
-            id="org.ietr.preesm.pimm.algorithm.spider.codegen.SpiderCodegenTask"
-            name="Spider Codegen from PiMM Models Task"
-            type="org.preesm.codegen.xtend.spider.SpiderCodegenTask">
-         <inputs>
-            <input
-                  id="PiMM"
-                  object="org.preesm.model.pisdf.PiGraph">
-            </input>
-            <input
-                  id="scenario"
-                  object="org.preesm.model.scenario.PreesmScenario">
-            </input>
-            <input
-                  id="architecture"
-                  object="org.preesm.model.slam.Design">
-            </input>
-         </inputs>
-      </task>
-   </extension>
    <extension point="org.preesm.codegen.printers">
       <printers language="XML">
          <printer
@@ -152,5 +129,8 @@
             </core_type>
          </printer>
       </printers>
+   </extension>
+   <extension
+         point="org.preesm.commons.plugin">
    </extension>
 </plugin>

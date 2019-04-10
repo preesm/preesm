@@ -42,9 +42,15 @@ package org.preesm.algorithm.mapper;
 
 import java.util.Map;
 import org.eclipse.core.runtime.IProgressMonitor;
+import org.preesm.algorithm.mapper.abc.impl.latency.LatencyAbc;
 import org.preesm.algorithm.mapper.graphtransfo.SdfToDagConverter;
 import org.preesm.algorithm.mapper.model.MapperDAG;
+import org.preesm.algorithm.model.dag.DirectedAcyclicGraph;
 import org.preesm.algorithm.model.sdf.SDFGraph;
+import org.preesm.commons.doc.annotations.Parameter;
+import org.preesm.commons.doc.annotations.Port;
+import org.preesm.commons.doc.annotations.PreesmTask;
+import org.preesm.commons.doc.annotations.Value;
 import org.preesm.model.scenario.PreesmScenario;
 import org.preesm.model.slam.Design;
 import org.preesm.workflow.elements.Workflow;
@@ -57,6 +63,26 @@ import org.preesm.workflow.implement.AbstractWorkflowNodeImplementation;
  * @author mwipliez
  * @author pmenuet
  */
+@PreesmTask(id = "org.ietr.preesm.plugin.mapper.pfast", name = "PFast Scheduling from SDF", category = "Schedulers",
+
+    inputs = { @Port(name = "SDF", type = SDFGraph.class), @Port(name = "architecture", type = Design.class),
+        @Port(name = "scenario", type = PreesmScenario.class) },
+
+    outputs = { @Port(name = "DAG", type = DirectedAcyclicGraph.class), @Port(name = "ABC", type = LatencyAbc.class) },
+
+    parameters = { @Parameter(name = "edgeSchedType", values = { @Value(name = "Simple") }),
+        @Parameter(name = "simulatorType", values = { @Value(name = "LooselyTimed") }),
+        @Parameter(name = "Check", values = { @Value(name = "True") }),
+        @Parameter(name = "Optimize synchronization", values = { @Value(name = "False") }),
+        @Parameter(name = "balanceLoads", values = { @Value(name = "false") }),
+        @Parameter(name = "displaySolutions", values = { @Value(name = "false") }),
+        @Parameter(name = "fastTime", values = { @Value(name = "100") }),
+        @Parameter(name = "fastLocalSearchTime", values = { @Value(name = "10") }),
+        @Parameter(name = "nodesMin", values = { @Value(name = "5") }),
+        @Parameter(name = "procNumber", values = { @Value(name = "1") }),
+        @Parameter(name = "fastNumber", values = { @Value(name = "100") })
+
+    })
 @Deprecated
 public class PFASTMapping extends PFASTMappingFromDAG {
 

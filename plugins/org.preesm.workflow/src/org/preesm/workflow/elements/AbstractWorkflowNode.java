@@ -36,7 +36,9 @@
  */
 package org.preesm.workflow.elements;
 
-import org.eclipse.core.runtime.IConfigurationElement;
+import java.util.logging.Level;
+import org.preesm.commons.PreesmPlugin;
+import org.preesm.commons.logger.PreesmLogger;
 import org.preesm.workflow.implement.AbstractWorkflowNodeImplementation;
 
 /**
@@ -50,7 +52,7 @@ import org.preesm.workflow.implement.AbstractWorkflowNodeImplementation;
 public abstract class AbstractWorkflowNode<T extends AbstractWorkflowNodeImplementation> {
 
   /** Implementation of this node. */
-  protected AbstractWorkflowNodeImplementation implementation = null;
+  protected T implementation = null;
 
   /**
    * Gets the implementation.
@@ -61,12 +63,12 @@ public abstract class AbstractWorkflowNode<T extends AbstractWorkflowNodeImpleme
     return this.implementation;
   }
 
-  public void init(final T implem, final IConfigurationElement element) {
+  public void init(final T implem) {
     implem.setWorkflowNode(this);
-    initPrototype(implem, element);
+    initPrototype(implem);
   }
 
-  protected abstract boolean initPrototype(final T implem, final IConfigurationElement element);
+  protected abstract boolean initPrototype(final T implem);
 
   /**
    * Checks if is scenario node.
@@ -85,5 +87,29 @@ public abstract class AbstractWorkflowNode<T extends AbstractWorkflowNodeImpleme
   public abstract String getID();
 
   public abstract String getName();
+
+  /**
+   *
+   */
+  public boolean getExtensionInformation() {
+    try {
+      final Class<?> task = PreesmPlugin.getInstance().getTask(this.getID());
+      if (task != null) {
+        @SuppressWarnings("unchecked")
+        final T obj = (T) task.newInstance();
+        this.implementation = obj;
+
+        // Initializes the prototype of the scenario
+        init(this.implementation);
+        return true;
+      }
+
+      return false;
+    } catch (final InstantiationException | IllegalAccessException e) {
+      PreesmLogger.getLogger().log(Level.SEVERE,
+          "Failed to load '" + getID() + "' (" + getName() + ") node from workflow", e);
+      return false;
+    }
+  }
 
 }

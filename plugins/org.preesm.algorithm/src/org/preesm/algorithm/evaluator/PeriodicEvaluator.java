@@ -46,26 +46,22 @@ import org.preesm.commons.exceptions.PreesmRuntimeException;
 import org.preesm.commons.logger.PreesmLogger;
 import org.preesm.model.scenario.PreesmScenario;
 import org.preesm.workflow.elements.Workflow;
-import org.preesm.workflow.implement.AbstractTaskImplementation;
 
-// TODO: Auto-generated Javadoc
 /**
  * Main class used to compute the optimal periodic schedule and its throughput for a given SDF or IBSDF, returns the
  * throughput and the graph normalized (such that for each actor, prod and cons rates are the same).
  *
  * @author blaunay
+ *
  */
-public class PeriodicEvaluator extends AbstractTaskImplementation {
+@Deprecated
+public class PeriodicEvaluator {
 
-  /*
-   * (non-Javadoc)
+  /**
    *
-   * @see org.ietr.dftools.workflow.implement.AbstractTaskImplementation#execute(java.util.Map, java.util.Map,
-   * org.eclipse.core.runtime.IProgressMonitor, java.lang.String, org.ietr.dftools.workflow.elements.Workflow)
    */
-  @Override
   public Map<String, Object> execute(final Map<String, Object> inputs, final Map<String, String> parameters,
-      final IProgressMonitor monitor, final String nodeName, final Workflow workflow) throws PreesmException {
+      final IProgressMonitor monitor, final String nodeName, final Workflow workflow) {
 
     // Retrieve the input dataflow and the scenario
     final SDFGraph inputGraph = (SDFGraph) inputs.get("SDF");
@@ -111,23 +107,17 @@ public class PeriodicEvaluator extends AbstractTaskImplementation {
     return outputs;
   }
 
-  /*
-   * (non-Javadoc)
+  /**
    *
-   * @see org.ietr.dftools.workflow.implement.AbstractTaskImplementation#getDefaultParameters()
    */
-  @Override
   public Map<String, String> getDefaultParameters() {
     final Map<String, String> parameters = new LinkedHashMap<>();
     return parameters;
   }
 
-  /*
-   * (non-Javadoc)
+  /**
    *
-   * @see org.ietr.dftools.workflow.implement.AbstractWorkflowNodeImplementation#monitorMessage()
    */
-  @Override
   public String monitorMessage() {
     return "Evaluation of the throughput with a periodic schedule ";
   }

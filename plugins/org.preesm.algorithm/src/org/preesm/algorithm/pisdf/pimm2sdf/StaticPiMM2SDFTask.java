@@ -43,6 +43,8 @@ import java.util.logging.Level;
 import org.apache.commons.lang3.time.StopWatch;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.preesm.algorithm.model.sdf.SDFGraph;
+import org.preesm.commons.doc.annotations.Port;
+import org.preesm.commons.doc.annotations.PreesmTask;
 import org.preesm.commons.exceptions.PreesmException;
 import org.preesm.commons.logger.PreesmLogger;
 import org.preesm.model.pisdf.PiGraph;
@@ -51,10 +53,37 @@ import org.preesm.workflow.elements.Workflow;
 import org.preesm.workflow.implement.AbstractTaskImplementation;
 import org.preesm.workflow.implement.AbstractWorkflowNodeImplementation;
 
-// TODO: Auto-generated Javadoc
 /**
  * The Class StaticPiMM2SDFTask.
  */
+@PreesmTask(id = "org.ietr.preesm.experiment.pimm2sdf.StaticPiMM2SDFTask", name = "Static PiMM to IBSDF",
+    category = "Graph Transformation",
+
+    inputs = { @Port(name = "PiMM", type = PiGraph.class), @Port(name = "scenario", type = PreesmScenario.class) },
+    outputs = { @Port(name = "SDF", type = SDFGraph.class) },
+
+    shortDescription = "Transforms a static PiSDF Graph into an equivalent IBSDF graph.",
+
+    description = "In Preesm, since version 2.0.0, the Parameterized and Interfaced SDF (PiSDF) "
+        + "model of computa tion is used as the frontend model in the graphical editor of dataflow"
+        + " graphs. This model makes it possible to design dynamically reconfigurable dataflow graphs"
+        + " where the value of parameters, and production/consumption rates depending on them, might"
+        + " change during the execution of the application. In former versions, the Interface Based "
+        + "SDF (IBSDF) model of computation was used as the front end model for application design. "
+        + "Contrary to the PiSDF, the IBSDF is a static model of computation where production and "
+        + "consumption rates of actors is fixed at compile-time.\n" + "\n"
+        + "The purpose of this workflow task is to transform a static PiSDF graph into an equivalent "
+        + "IBSDF graph. A static PiSDF graph is a PiSDF graph where dynamic reconfiguration "
+        + "features of the PiSDF model of computation are not used.",
+
+    seeAlso = {
+        "**IBSDF**: J. Piat, S.S. Bhattacharyya, and M. Raulet. Interface-based hierarchy for synchronous "
+            + "data-flow graphs. In SiPS Proceedings, 2009.",
+        "**PiSDF**: K. Desnos, M. Pelcat, J.-F. Nezan, S.S. Bhattacharyya, and S. Aridhi. PiMM: Parameterized "
+            + "and interfaced dataflow meta-model for MPSoCs runtime reconfiguration. In Embedded Computer "
+            + "Systems: Architectures, Modeling, and Simulation (SAMOS XIII), 2013 International Conference "
+            + "on, pages 41–48. IEEE, 2013." })
+@Deprecated
 public class StaticPiMM2SDFTask extends AbstractTaskImplementation {
 
   /*

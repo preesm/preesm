@@ -48,6 +48,10 @@ import org.preesm.algorithm.schedule.ASAPSchedulerDAG;
 import org.preesm.algorithm.throughput.tools.GraphStructureHelper;
 import org.preesm.algorithm.throughput.tools.IBSDFTransformer;
 import org.preesm.algorithm.throughput.tools.SrSDFTransformer;
+import org.preesm.commons.doc.annotations.Parameter;
+import org.preesm.commons.doc.annotations.Port;
+import org.preesm.commons.doc.annotations.PreesmTask;
+import org.preesm.commons.doc.annotations.Value;
 import org.preesm.commons.logger.PreesmLogger;
 import org.preesm.model.scenario.PreesmScenario;
 import org.preesm.workflow.elements.Workflow;
@@ -57,6 +61,25 @@ import org.preesm.workflow.implement.AbstractTaskImplementation;
  * @author hderoui
  *
  */
+@PreesmTask(id = "org.ietr.preesm.latency.LatencyEvaluationPlugin", name = "Latency Evaluation",
+
+    inputs = { @Port(name = "SDF", type = SDFGraph.class), @Port(name = "scenario", type = PreesmScenario.class) },
+
+    outputs = { @Port(name = "SDF", type = SDFGraph.class), @Port(name = "scenario", type = PreesmScenario.class),
+        @Port(name = "latency", type = Double.class) },
+
+    parameters = {
+
+        @Parameter(name = "multicore", values = { @Value(name = "true/false", effect = "") }),
+
+        @Parameter(name = "method",
+            values = { @Value(name = "FAST", effect = "(default) Hierarchical method"),
+                @Value(name = "FLAT_LP", effect = "Based on Flattening the hierarchy"),
+                @Value(name = "FLAT_SE", effect = "Based on Flattening the hierarchy")
+
+            })
+
+    })
 public class LatencyEvaluationTask extends AbstractTaskImplementation {
 
   private static final String DURATION_LITTERAL = "duration";
@@ -67,8 +90,9 @@ public class LatencyEvaluationTask extends AbstractTaskImplementation {
    *
    *         The supported methods
    */
+
   private enum LatencyMethod {
-    FAST, // Hierarchical method
+    FAST, // default: Hierarchical method
     FLAT_LP, // Based on Flattening the hierarchy
     FLAT_SE, // Based on Flattening the hierarchy
   }

@@ -75,6 +75,7 @@ import org.preesm.workflow.implement.AbstractWorkflowNodeImplementation;
  * @author mpelcat
  * @author kdesnos
  */
+@Deprecated
 public abstract class AbstractMappingFromDAG extends AbstractTaskImplementation {
 
   /** The Constant PARAM_CHECK. */

@@ -51,5 +51,17 @@
          </run>
       </application>
    </extension>
+   <extension
+         id="docgen"
+         point="org.eclipse.core.runtime.applications">
+      <application
+            cardinality="singleton-global"
+            thread="main"
+            visible="true">
+         <run
+               class="org.preesm.cli.DocGenApplicationr">
+         </run>
+      </application>
+   </extension>
 
 </plugin>

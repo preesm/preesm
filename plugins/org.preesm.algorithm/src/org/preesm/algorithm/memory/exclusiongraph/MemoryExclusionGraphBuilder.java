@@ -45,7 +45,10 @@ import java.util.logging.Logger;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.preesm.algorithm.model.dag.DirectedAcyclicGraph;
 import org.preesm.algorithm.transforms.ForkJoinRemover;
-import org.preesm.commons.exceptions.PreesmException;
+import org.preesm.commons.doc.annotations.Parameter;
+import org.preesm.commons.doc.annotations.Port;
+import org.preesm.commons.doc.annotations.PreesmTask;
+import org.preesm.commons.doc.annotations.Value;
 import org.preesm.commons.logger.PreesmLogger;
 import org.preesm.model.scenario.PreesmScenario;
 import org.preesm.model.scenario.types.DataType;
@@ -53,13 +56,39 @@ import org.preesm.workflow.elements.Workflow;
 import org.preesm.workflow.implement.AbstractTaskImplementation;
 import org.preesm.workflow.implement.AbstractWorkflowNodeImplementation;
 
-// TODO: Auto-generated Javadoc
 /**
  * Workflow element that takes a DAG as input and Create its Memory Exclusion Graph.
  *
  * @author kdesnos
  *
  */
+@PreesmTask(id = "org.ietr.preesm.memory.exclusiongraph.MemoryExclusionGraphBuilder", name = "MEG Builder",
+    category = "Memory Optimization",
+
+    inputs = { @Port(name = "DAG", type = DirectedAcyclicGraph.class),
+        @Port(name = "scenario", type = PreesmScenario.class) },
+    outputs = { @Port(name = "MemEx", type = MemoryExclusionGraph.class) },
+
+    shortDescription = "Builds the Memory Exclusion Graph (MEG) modeling the memory allocation constraints.",
+
+    description = "The memory allocation technique used in Preesm is based on a Memory Exclusion Graph (MEG). "
+        + "A MEG is a graph whose vertices model the memory objects that must be allocated in memory in order "
+        + "to run the generated code. In the current version of Preesm, each of these memory objects "
+        + "corresponds either to an edge of the Directed Acyclic Graph (DAG) or to a buffer corresponding "
+        + "to ”delays” of the graph that store data between executions of a schedule. In the MEG, two memory "
+        + "objects are linked by an edge (called an exclusion) if they can not be allocated in overlapping "
+        + "memory spaces.",
+
+    parameters = { @Parameter(name = "Verbose",
+        description = "How verbose will this task be during its execution. In verbose mode, the task will"
+            + " log the start and completion time of the build, as well as characteristics (number of memory"
+            + " objects, density of exclusions) of the produced MEG.",
+        values = { @Value(name = "false", effect = "(Default) The task will not log information."),
+            @Value(name = "true", effect = "The task will log build and MEG information.") }) },
+
+    seeAlso = { "**MEG**: K. Desnos, M. Pelcat, J.-F. Nezan, and S. Aridhi. Memory bounds for the distributed "
+        + "execution of a hierarchical synchronous data-flow graph. In Embedded Computer Systems: "
+        + "Architectures, Modeling, and Simulation (SAMOS XII), 2012 International Conference on, 2012." })
 public class MemoryExclusionGraphBuilder extends AbstractTaskImplementation {
 
   /** The Constant PARAM_VERBOSE. */
@@ -85,7 +114,7 @@ public class MemoryExclusionGraphBuilder extends AbstractTaskImplementation {
    */
   @Override
   public Map<String, Object> execute(final Map<String, Object> inputs, final Map<String, String> parameters,
-      final IProgressMonitor monitor, final String nodeName, final Workflow workflow) throws PreesmException {
+      final IProgressMonitor monitor, final String nodeName, final Workflow workflow) {
 
     // Rem: Logger is used to display messages in the console
     final Logger logger = PreesmLogger.getLogger();

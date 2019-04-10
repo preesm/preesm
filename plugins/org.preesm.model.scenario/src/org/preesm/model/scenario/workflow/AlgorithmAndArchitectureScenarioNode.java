@@ -45,6 +45,8 @@ import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.Path;
+import org.preesm.commons.doc.annotations.Port;
+import org.preesm.commons.doc.annotations.PreesmTask;
 import org.preesm.commons.exceptions.PreesmException;
 import org.preesm.commons.exceptions.PreesmFrameworkException;
 import org.preesm.commons.exceptions.PreesmRuntimeException;
@@ -64,8 +66,13 @@ import org.preesm.workflow.implement.AbstractWorkflowNodeImplementation;
  *
  * @author mpelcat
  * @author kdesnos
- *
  */
+@PreesmTask(id = "org.ietr.preesm.scenario.task", name = "scenario",
+
+    outputs = { @Port(name = "scenario", type = PreesmScenario.class),
+        @Port(name = "architecture", type = Design.class), @Port(name = "PiMM", type = PiGraph.class) }
+
+)
 public class AlgorithmAndArchitectureScenarioNode extends AbstractScenarioImplementation {
 
   /**

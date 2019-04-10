@@ -46,6 +46,11 @@ import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.Path;
 import org.preesm.algorithm.model.sdf.SDFGraph;
+import org.preesm.commons.doc.annotations.DocumentedError;
+import org.preesm.commons.doc.annotations.Parameter;
+import org.preesm.commons.doc.annotations.Port;
+import org.preesm.commons.doc.annotations.PreesmTask;
+import org.preesm.commons.doc.annotations.Value;
 import org.preesm.commons.exceptions.PreesmRuntimeException;
 import org.preesm.commons.files.ContainersManager;
 import org.preesm.commons.files.PathTools;
@@ -56,6 +61,43 @@ import org.preesm.workflow.implement.AbstractTaskImplementation;
 /**
  * The Class SDFExporter.
  */
+@PreesmTask(id = "org.ietr.preesm.plugin.exportXml.sdf4jgml", name = "SDF Exporter", category = "Graph Exporters",
+
+    inputs = { @Port(name = "SDF", type = SDFGraph.class) },
+
+    shortDescription = "Create a new __*.graphml__ file containing the exported SDF graph.",
+
+    description = "The purpose of this task is to create a new __*.graphml__ file containing where the exported "
+        + "IBSDF graph will be written. The exported graph can then be visualized and exported using the former "
+        + "Preesm graph editor for IBSDF graph, which was replaced with the PiSDF graph editor since version "
+        + "2.0.0. This task is generally used to export intermediary graphs generated at different step of a "
+        + "workflow execution. For example, to visualize the SDF graph resulting from the flattening of an IBSDF "
+        + "graph, or to understand the parallelism that was exposed by the single-rate transformation.",
+
+    parameters = { @Parameter(name = "path",
+        description = "Path of the directory within which the exported *.graphml file will be created. If the "
+            + "specified directory does not exist, it will be created.",
+        values = {
+            @Value(name = "path/in/proj",
+                effect = "Path within the Preesm project containing the workflow where the ”SDF Exporter” task is "
+                    + "instantiated. Even if the workflow of a Preesm project A is executed with a scenario from "
+                    + "a different project B, the __*.graphml__ file will be generated within the specified directory"
+                    + " of project A.\n" + "\n"
+                    + "Exported SDF graphs will be named automatically, usually using the same name as the original "
+                    + "SDF graph processed by the workflow. If a graph with this name already exists in the given "
+                    + "path, it will be overwritten.\n" + "\n" + "Example: **Algo/generated/singlerate**"),
+            @Value(name = "path/in/proj/name.graphml",
+                effect = "Path within the Preesm project containing the workflow where the ”SDF Exporter” task "
+                    + "is instantiated. Even if the workflow of a Preesm project A is executed with a scenario "
+                    + "from a different project B, the __*.graphml__ file will be generated within the specified "
+                    + "directory of project A.\n" + "\n"
+                    + "Exported SDF graph will be named using the string with the graphml extension at the end of "
+                    + "the given path. If a graph with this name already exists in the given path, it will be"
+                    + " overwritten.\n" + "\n" + "Example: **Algo/generated/singlerate/myexport.graphml**") }) },
+
+    documentedErrors = { @DocumentedError(message = "Path <given path> is not a valid path for export. <reason>",
+        explanation = "The value set for parameter path is not a valid path in the project.") })
+@Deprecated
 public class SDFExporter extends AbstractTaskImplementation {
 
   /*

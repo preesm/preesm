@@ -44,6 +44,10 @@ import org.eclipse.core.resources.IWorkspaceRoot;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.preesm.algorithm.mapper.abc.impl.latency.LatencyAbc;
+import org.preesm.commons.doc.annotations.Parameter;
+import org.preesm.commons.doc.annotations.Port;
+import org.preesm.commons.doc.annotations.PreesmTask;
+import org.preesm.commons.doc.annotations.Value;
 import org.preesm.model.pisdf.brv.BRVExporter;
 import org.preesm.model.scenario.PreesmScenario;
 import org.preesm.model.scenario.ScenarioUtils;
@@ -56,6 +60,26 @@ import org.preesm.workflow.implement.AbstractWorkflowNodeImplementation;
  *
  * @author cguy
  */
+@PreesmTask(id = "org.ietr.preesm.stats.exporter.StatsExporterTask", name = "Gantt Exporter", category = "Analysis",
+
+    inputs = { @Port(name = "ABC", type = LatencyAbc.class), @Port(name = "scenario", type = PreesmScenario.class) },
+
+    shortDescription = "This task exports scheduling results as a *.pgantt file that can be "
+        + "viewed using the ganttDisplay viewer [1].",
+
+    parameters = { @Parameter(name = "path",
+        description = "Path of the exported *.pgantt file. If the specified directory does not exist, it will "
+            + "not be created.",
+        values = { @Value(name = "/path/in/proj",
+            effect = "Path within the Preesm project containing the workflow where the ”Gantt Exporter” task is "
+                + "instantiated. Exported Gantt will be named as follows: "
+                + "**/path/in/proj/<scenario name> stats.pgantt**. If a graph with this name already exists in "
+                + "the given path, it will be overwritten.") }) },
+
+    description = "This task exports scheduling results as a *.pgantt file that can be viewed using the ganttDisplay"
+        + " viewer [1]. The exported *.pgantt file uses the XML syntax.",
+
+    seeAlso = { "**[1]**: https://github.com/preesm/gantt-display" })
 public class StatsExporterTask extends AbstractTaskImplementation {
 
   /**

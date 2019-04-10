@@ -49,6 +49,10 @@ import org.apache.commons.lang3.time.StopWatch;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.preesm.algorithm.model.sdf.SDFGraph;
 import org.preesm.algorithm.model.sdf.visitors.ToHSDFVisitor;
+import org.preesm.commons.doc.annotations.Parameter;
+import org.preesm.commons.doc.annotations.Port;
+import org.preesm.commons.doc.annotations.PreesmTask;
+import org.preesm.commons.doc.annotations.Value;
 import org.preesm.commons.exceptions.PreesmException;
 import org.preesm.commons.exceptions.PreesmRuntimeException;
 import org.preesm.commons.logger.PreesmLogger;
@@ -62,6 +66,13 @@ import org.preesm.workflow.implement.AbstractTaskImplementation;
  * @author mpelcat
  *
  */
+@PreesmTask(id = "org.ietr.preesm.plugin.transforms.sdf2hsdf", name = "SDF2HSDF",
+
+    inputs = { @Port(name = "SDF", type = SDFGraph.class) },
+
+    outputs = { @Port(name = "SDF", type = SDFGraph.class) },
+
+    parameters = { @Parameter(name = "ExplodeImplodeSuppr", values = { @Value(name = "false", effect = "") }) })
 public class HSDFTransformation extends AbstractTaskImplementation {
 
   /*

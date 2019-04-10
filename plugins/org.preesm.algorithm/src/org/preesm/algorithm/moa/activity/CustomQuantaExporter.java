@@ -61,6 +61,10 @@ import org.preesm.algorithm.mapper.abc.SpecialVertexManager;
 import org.preesm.algorithm.mapper.abc.impl.latency.LatencyAbc;
 import org.preesm.algorithm.mapper.model.MapperDAGEdge;
 import org.preesm.algorithm.mapper.model.MapperDAGVertex;
+import org.preesm.commons.doc.annotations.Parameter;
+import org.preesm.commons.doc.annotations.Port;
+import org.preesm.commons.doc.annotations.PreesmTask;
+import org.preesm.commons.doc.annotations.Value;
 import org.preesm.commons.exceptions.PreesmException;
 import org.preesm.commons.exceptions.PreesmRuntimeException;
 import org.preesm.commons.files.ContainersManager;
@@ -89,6 +93,21 @@ import org.preesm.workflow.implement.AbstractWorkflowNodeImplementation;
  * @author mpelcat
  *
  */
+@PreesmTask(id = "org.ietr.preesm.algorithm.moa.activity.CustomQuantaExporter",
+    name = "Activity Exporter of Custom Quanta",
+
+    inputs = { @Port(name = "ABC", type = LatencyAbc.class) },
+
+    parameters = {
+
+        @Parameter(name = "xls_file",
+            values = { @Value(name = "stats/mat/custom_quanta_in/quanta_in_$SCENARIO$.xls", effect = "") }),
+        @Parameter(name = "path", values = { @Value(name = "stats/mat/activity", effect = "") }),
+        @Parameter(name = "human_readable", values = { @Value(name = "Yes", effect = "") })
+
+    }
+
+)
 public class CustomQuantaExporter extends AbstractTaskImplementation {
 
   /**

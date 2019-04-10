@@ -40,6 +40,8 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.preesm.algorithm.model.sdf.SDFGraph;
+import org.preesm.commons.doc.annotations.Port;
+import org.preesm.commons.doc.annotations.PreesmTask;
 import org.preesm.commons.exceptions.PreesmException;
 import org.preesm.model.scenario.PreesmScenario;
 import org.preesm.model.slam.Design;
@@ -50,6 +52,14 @@ import org.preesm.workflow.implement.AbstractTaskImplementation;
  *
  *
  */
+@PreesmTask(id = "org.ietr.preesm.Clustering", name = "Clustering",
+
+    inputs = { @Port(name = "SDF", type = SDFGraph.class), @Port(name = "scenario", type = PreesmScenario.class),
+        @Port(name = "architecture", type = Design.class) },
+
+    outputs = { @Port(name = "SDF", type = SDFGraph.class) }
+
+)
 public class Clustering extends AbstractTaskImplementation {
 
   @Override

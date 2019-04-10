@@ -41,6 +41,8 @@ import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.eclipse.core.runtime.IProgressMonitor;
+import org.preesm.commons.doc.annotations.Port;
+import org.preesm.commons.doc.annotations.PreesmTask;
 import org.preesm.commons.logger.PreesmLogger;
 import org.preesm.model.pisdf.PiGraph;
 import org.preesm.workflow.elements.Workflow;
@@ -52,6 +54,9 @@ import org.preesm.workflow.implement.AbstractWorkflowNodeImplementation;
  *
  * @author cguy
  */
+@PreesmTask(id = "pisdf-checker", name = "PiSDF Checker",
+
+    inputs = { @Port(name = "PiMM", type = PiGraph.class) }, outputs = { @Port(name = "PiMM", type = PiGraph.class) })
 public class PiMMAlgorithmCheckerTask extends AbstractTaskImplementation {
 
   /** The logger. */
