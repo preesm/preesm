@@ -34,12 +34,8 @@
  */
 package org.preesm.workflow.elements;
 
-import java.util.logging.Level;
-import org.eclipse.core.runtime.CoreException;
-import org.eclipse.core.runtime.IConfigurationElement;
-import org.eclipse.core.runtime.IExtensionRegistry;
-import org.eclipse.core.runtime.Platform;
-import org.preesm.commons.logger.PreesmLogger;
+import org.preesm.commons.doc.annotations.Port;
+import org.preesm.commons.doc.annotations.PreesmTask;
 import org.preesm.workflow.implement.AbstractScenarioImplementation;
 
 /**
@@ -119,47 +115,12 @@ public class ScenarioNode extends AbstractWorkflowNode<AbstractScenarioImplement
    * @return True if the prototype was correctly set.
    */
   @Override
-  protected boolean initPrototype(final AbstractScenarioImplementation scenario, final IConfigurationElement element) {
-    for (final IConfigurationElement child : element.getChildren()) {
-      if (child.getName().equals("outputs")) {
-        for (final IConfigurationElement output : child.getChildren()) {
-          scenario.addOutput(output.getAttribute("id"), output.getAttribute("object"));
-        }
-      }
+  protected boolean initPrototype(final AbstractScenarioImplementation scenario) {
+    final PreesmTask annotation = scenario.getClass().getAnnotation(PreesmTask.class);
+    for (final Port output : annotation.outputs()) {
+      scenario.addOutput(output.name(), output.type().getCanonicalName());
     }
     return true;
   }
 
-  /**
-   * Checks if this scenario exists based on its ID.
-   *
-   * @return True if this scenario exists, false otherwise.
-   */
-  public boolean getExtensionInformation() {
-    try {
-      final IExtensionRegistry registry = Platform.getExtensionRegistry();
-
-      final IConfigurationElement[] elements = registry.getConfigurationElementsFor("org.preesm.workflow.scenarios");
-      for (final IConfigurationElement element : elements) {
-        if (element.getAttribute("id").equals(this.scenarioId)) {
-          // Tries to create the transformation
-          final Object obj = element.createExecutableExtension("type");
-
-          // and checks it actually is an ITransformation.
-          if (obj instanceof AbstractScenarioImplementation) {
-            this.implementation = (AbstractScenarioImplementation) obj;
-
-            // Initializes the prototype of the scenario
-            init((AbstractScenarioImplementation) this.implementation, element);
-            return true;
-          }
-        }
-      }
-
-      return false;
-    } catch (final CoreException e) {
-      PreesmLogger.getLogger().log(Level.SEVERE, "Failed to find the scenario from workflow");
-      return false;
-    }
-  }
 }
