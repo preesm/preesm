@@ -50,6 +50,7 @@ import org.preesm.algorithm.mapper.algo.InitialLists;
 import org.preesm.algorithm.mapper.model.MapperDAG;
 import org.preesm.algorithm.mapper.params.AbcParameters;
 import org.preesm.algorithm.mapper.params.FastAlgoParameters;
+import org.preesm.algorithm.model.dag.DirectedAcyclicGraph;
 import org.preesm.commons.doc.annotations.Parameter;
 import org.preesm.commons.doc.annotations.Port;
 import org.preesm.commons.doc.annotations.PreesmTask;
@@ -66,10 +67,10 @@ import org.preesm.model.slam.Design;
  */
 @PreesmTask(id = "org.ietr.preesm.plugin.mapper.fastdag", name = "Fast Scheduling from DAG", category = "Schedulers",
 
-    inputs = { @Port(name = "DAG", type = MapperDAG.class), @Port(name = "architecture", type = Design.class),
-        @Port(name = "scenario", type = PreesmScenario.class) },
+    inputs = { @Port(name = "DAG", type = DirectedAcyclicGraph.class),
+        @Port(name = "architecture", type = Design.class), @Port(name = "scenario", type = PreesmScenario.class) },
 
-    outputs = { @Port(name = "DAG", type = MapperDAG.class), @Port(name = "ABC", type = LatencyAbc.class) },
+    outputs = { @Port(name = "DAG", type = DirectedAcyclicGraph.class), @Port(name = "ABC", type = LatencyAbc.class) },
 
     parameters = { @Parameter(name = "edgeSchedType", values = { @Value(name = "Simple") }),
         @Parameter(name = "simulatorType", values = { @Value(name = "LooselyTimed") }),

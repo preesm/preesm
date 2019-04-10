@@ -61,7 +61,7 @@ import org.preesm.workflow.implement.AbstractWorkflowNodeImplementation
     category = "Graph Transformation",
 
     inputs = #[@Port(type = SDFGraph, name = "SDF")],
-    outputs = #[@Port(type = SDFGraph, name = "SDF"), @Port(type = RetimingInfo, name = "INFO")],
+    outputs = #[@Port(type = SDFGraph, name = "CySDF"), @Port(type = RetimingInfo, name = "Info")],
 
     shortDescription = "Detect whether an SDF graph is data-parallel and provide its data-parallel equivalent Single-Rate SDF and its re-timing information.",
 

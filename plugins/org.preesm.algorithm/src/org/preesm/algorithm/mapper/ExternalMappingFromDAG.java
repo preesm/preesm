@@ -55,6 +55,7 @@ import org.preesm.algorithm.mapper.schedule.ScheduleEntry;
 import org.preesm.algorithm.mapper.schedule.ScheduleUtils;
 import org.preesm.algorithm.model.dag.DAGEdge;
 import org.preesm.algorithm.model.dag.DAGVertex;
+import org.preesm.algorithm.model.dag.DirectedAcyclicGraph;
 import org.preesm.algorithm.model.dag.edag.DAGForkVertex;
 import org.preesm.algorithm.model.dag.edag.DAGJoinVertex;
 import org.preesm.commons.doc.annotations.Parameter;
@@ -82,10 +83,10 @@ import org.preesm.model.slam.utils.DesignTools.ComponentInstanceComparator;
 @PreesmTask(id = "org.ietr.preesm.plugin.mapper.external", name = "External Scheduling from DAG",
     category = "Schedulers",
 
-    inputs = { @Port(name = "DAG", type = MapperDAG.class), @Port(name = "architecture", type = Design.class),
-        @Port(name = "scenario", type = PreesmScenario.class) },
+    inputs = { @Port(name = "DAG", type = DirectedAcyclicGraph.class),
+        @Port(name = "architecture", type = Design.class), @Port(name = "scenario", type = PreesmScenario.class) },
 
-    outputs = { @Port(name = "DAG", type = MapperDAG.class), @Port(name = "ABC", type = LatencyAbc.class) },
+    outputs = { @Port(name = "DAG", type = DirectedAcyclicGraph.class), @Port(name = "ABC", type = LatencyAbc.class) },
 
     parameters = {
         @Parameter(name = "SCHEDULE_FILE", values = { @Value(name = "/schedule.json", effect = "default value") })

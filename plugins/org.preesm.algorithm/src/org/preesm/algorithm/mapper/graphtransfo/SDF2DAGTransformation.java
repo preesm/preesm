@@ -43,6 +43,7 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.preesm.algorithm.mapper.model.MapperDAG;
+import org.preesm.algorithm.model.dag.DirectedAcyclicGraph;
 import org.preesm.algorithm.model.sdf.SDFGraph;
 import org.preesm.commons.doc.annotations.Port;
 import org.preesm.commons.doc.annotations.PreesmTask;
@@ -68,7 +69,7 @@ import org.preesm.workflow.implement.AbstractWorkflowNodeImplementation;
 
     },
 
-    outputs = { @Port(name = "DAG", type = MapperDAG.class) }
+    outputs = { @Port(name = "DAG", type = DirectedAcyclicGraph.class) }
 
 )
 public class SDF2DAGTransformation extends AbstractTaskImplementation {

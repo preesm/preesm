@@ -63,6 +63,9 @@ import org.preesm.workflow.implement.AbstractWorkflowNodeImplementation;
 
     inputs = { @Port(name = "MemEx", type = MemoryExclusionGraph.class) },
 
+    outputs = { @Port(name = "MemEx", type = MemoryExclusionGraph.class), @Port(name = "BoundMin", type = Long.class),
+        @Port(name = "BoundMax", type = Long.class) },
+
     shortDescription = "Compute bounds of the amount of memory needed to allocate the MEG",
 
     description = "The analysis technique presented in [1] can be used in Preesm to derive "

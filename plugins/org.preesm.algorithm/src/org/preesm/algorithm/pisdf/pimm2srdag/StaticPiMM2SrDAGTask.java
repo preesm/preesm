@@ -44,7 +44,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.preesm.algorithm.mapper.model.MapperDAG;
-import org.preesm.algorithm.model.sdf.SDFGraph;
+import org.preesm.algorithm.model.dag.DirectedAcyclicGraph;
 import org.preesm.commons.doc.annotations.DocumentedError;
 import org.preesm.commons.doc.annotations.Parameter;
 import org.preesm.commons.doc.annotations.Port;
@@ -66,11 +66,15 @@ import org.preesm.workflow.implement.AbstractWorkflowNodeImplementation;
  * @author farresti
  *
  * @deprecated use {@link PiSDFToSingleRateTask} instead
+ *
  */
-@PreesmTask(id = "org.ietr.preesm.plugin.transforms.sdf2hsdf", name = "Single-Rate Transformation",
+@PreesmTask(id = "org.ietr.preesm.experiment.pimm2srdag.StaticPiMM2SrDAGTask", name = "Single-Rate Transformation",
     category = "Graph Transformation",
 
-    inputs = { @Port(name = "SDF", type = SDFGraph.class) }, outputs = { @Port(name = "SDF", type = SDFGraph.class) },
+    inputs = { @Port(name = "PiMM", type = PiGraph.class), @Port(name = "scenario", type = PreesmScenario.class),
+        @Port(name = "architecture", type = Design.class) },
+
+    outputs = { @Port(name = "DAG", type = DirectedAcyclicGraph.class), @Port(name = "PiMM", type = PiGraph.class) },
 
     shortDescription = "Transforms an SDF graph into an equivalent single-rate SDF graph.",
 
