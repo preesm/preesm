@@ -106,7 +106,8 @@ public abstract class AbstractWorkflowNode<T extends AbstractWorkflowNodeImpleme
 
       return false;
     } catch (final InstantiationException | IllegalAccessException e) {
-      PreesmLogger.getLogger().log(Level.SEVERE, "Failed to find the scenario from workflow");
+      PreesmLogger.getLogger().log(Level.SEVERE,
+          "Failed to load '" + getID() + "' (" + getName() + ") node from workflow", e);
       return false;
     }
   }

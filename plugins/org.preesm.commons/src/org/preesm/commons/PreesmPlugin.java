@@ -11,6 +11,7 @@ import org.eclipse.emf.common.EMFPlugin.EclipsePlugin;
 import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
 import org.preesm.commons.doc.annotations.PreesmTask;
+import org.preesm.commons.logger.PreesmLogger;
 
 /**
  *
@@ -48,6 +49,9 @@ public class PreesmPlugin extends EclipsePlugin implements BundleActivator {
         .lookupAnnotatedClasses(PreesmPlugin.PREESM_PLUGIN_EXTENSION_POINT_ID, PreesmTask.class);
     for (final Class<?> task : allTasks) {
       final String id = task.getAnnotation(PreesmTask.class).id();
+      if (taskRegistry.containsKey(id)) {
+        PreesmLogger.getLogger().warning("Several tasks have the same id '" + id + "'.");
+      }
       taskRegistry.put(id, task);
     }
   }
