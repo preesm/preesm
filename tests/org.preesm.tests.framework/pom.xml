@@ -43,7 +43,7 @@
 	<parent>
 		<groupId>org.preesm</groupId>
 		<artifactId>org.preesm.tests</artifactId>
-		<version>3.5.0-SNAPSHOT</version>
+		<version>3.6.0</version>
 		<relativePath>..</relativePath>
 	</parent>
 </project>

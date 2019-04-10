@@ -1,8 +1,8 @@
 PREESM Changelog
 ================
 
-## Release version X.Y.Z
-*XXXX.XX.XX*
+## Release version 3.6.0
+*2019.04.10*
 
 ### New Feature
 * XML exporter of repetition vector (workflow task id: pisdf-brv-export)
