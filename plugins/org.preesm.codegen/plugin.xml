@@ -96,5 +96,8 @@
             class="org.preesm.codegen.model.CodegenPackage"
             genModel="model/Codegen.xcore"/>
    </extension>
+   <extension
+         point="org.preesm.commons.plugin">
+   </extension>
 
 </plugin>

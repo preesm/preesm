@@ -59,4 +59,7 @@
          </outputs>
       </scenario>
    </extension>
+   <extension
+         point="org.preesm.commons.plugin">
+   </extension>
 </plugin>

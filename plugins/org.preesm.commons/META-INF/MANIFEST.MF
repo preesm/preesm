@@ -1,10 +1,10 @@
 Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
-Bundle-Name: PREESM :: Plugins :: Commons
+Bundle-Name: %pluginName
 Automatic-Module-Name: org.preesm.commons
 Bundle-SymbolicName: org.preesm.commons;singleton:=true
 Bundle-Version: 3.5.0.qualifier
-Bundle-Vendor: IETR / INSA Rennes - VAADER
+Bundle-Vendor: %providerName
 Require-Bundle: javax.annotation;bundle-version="1.2.0";visibility:=reexport,
  org.eclipse.core.runtime,
  org.eclipse.core.resources,
@@ -23,6 +23,7 @@ Export-Package: org.preesm.commons,
  org.preesm.commons.files,
  org.preesm.commons.logger,
  org.preesm.commons.math,
+ org.preesm.commons.math.functions,
  org.preesm.commons.messages,
  org.preesm.commons.model
 Bundle-Activator: org.preesm.commons.PreesmPlugin

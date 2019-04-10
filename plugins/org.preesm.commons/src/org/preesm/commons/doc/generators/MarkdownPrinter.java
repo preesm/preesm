@@ -11,6 +11,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 import java.util.logging.Level;
+import org.preesm.commons.PreesmPlugin;
 import org.preesm.commons.ReflectionUtil;
 import org.preesm.commons.doc.annotations.DocumentedError;
 import org.preesm.commons.doc.annotations.Parameter;
@@ -44,8 +45,8 @@ public class MarkdownPrinter {
    *
    */
   public static final String prettyPrint() {
-    final Collection<Class<?>> lookupChildClassesOf = ReflectionUtil.lookupAnnotatedClasses("org.preesm.workflow.tasks",
-        PreesmTask.class);
+    final Collection<Class<?>> lookupChildClassesOf = ReflectionUtil
+        .lookupAnnotatedClasses(PreesmPlugin.PREESM_PLUGIN_EXTENSION_POINT_ID, PreesmTask.class);
     final Map<String, Set<String>> outputsPerCategory = new HashMap<>();
     for (final Class<?> preesmTask : lookupChildClassesOf) {
       final PreesmTask annotation = preesmTask.getAnnotation(PreesmTask.class);

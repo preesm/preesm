@@ -65,5 +65,8 @@
 
       <!-- Duplicate the task with old ID for compatibility -->
    </extension>
+   <extension
+         point="org.preesm.commons.plugin">
+   </extension>
 
 </plugin>

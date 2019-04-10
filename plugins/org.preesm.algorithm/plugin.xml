@@ -957,5 +957,8 @@
             name="GanttEditor">
       </editor>
    </extension>
+   <extension
+         point="org.preesm.commons.plugin">
+   </extension>
 
 </plugin>
