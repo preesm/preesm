@@ -213,7 +213,7 @@ permalink: /docs/workflowtasksref/
 toc: true
 ---
 
-_Last update : ${TODAY_DATE}; for version ${NEW_VERSION}_
+_This page has been generated. Last update : ${TODAY_DATE}; for Preesm version ${NEW_VERSION}_
 
 This page references the available workflow tasks.
 
