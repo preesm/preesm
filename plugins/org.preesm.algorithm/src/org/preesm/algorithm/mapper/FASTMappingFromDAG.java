@@ -2,7 +2,6 @@
  * Copyright or © or Copr. IETR/INSA - Rennes (2008 - 2019) :
  *
  * Alexandre Honorat <alexandre.honorat@insa-rennes.fr> (2019)
- * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017 - 2018)
  * Clément Guy <clement.guy@insa-rennes.fr> (2014)
  * Florian Arrestier <florian.arrestier@insa-rennes.fr> (2018)
  * Jonathan Piat <jpiat@laas.fr> (2008 - 2011)
@@ -50,6 +49,11 @@ import org.preesm.algorithm.mapper.algo.InitialLists;
 import org.preesm.algorithm.mapper.model.MapperDAG;
 import org.preesm.algorithm.mapper.params.AbcParameters;
 import org.preesm.algorithm.mapper.params.FastAlgoParameters;
+import org.preesm.algorithm.model.dag.DirectedAcyclicGraph;
+import org.preesm.commons.doc.annotations.Parameter;
+import org.preesm.commons.doc.annotations.Port;
+import org.preesm.commons.doc.annotations.PreesmTask;
+import org.preesm.commons.doc.annotations.Value;
 import org.preesm.model.scenario.PreesmScenario;
 import org.preesm.model.slam.Design;
 
@@ -60,6 +64,24 @@ import org.preesm.model.slam.Design;
  * @author pmenuet
  * @author mpelcat
  */
+@PreesmTask(id = "org.ietr.preesm.plugin.mapper.fastdag", name = "Fast Scheduling from DAG", category = "Schedulers",
+
+    inputs = { @Port(name = "DAG", type = DirectedAcyclicGraph.class),
+        @Port(name = "architecture", type = Design.class), @Port(name = "scenario", type = PreesmScenario.class) },
+
+    outputs = { @Port(name = "DAG", type = DirectedAcyclicGraph.class), @Port(name = "ABC", type = LatencyAbc.class) },
+
+    parameters = { @Parameter(name = "edgeSchedType", values = { @Value(name = "Simple") }),
+        @Parameter(name = "simulatorType", values = { @Value(name = "LooselyTimed") }),
+        @Parameter(name = "Check", values = { @Value(name = "True") }),
+        @Parameter(name = "Optimize synchronization", values = { @Value(name = "False") }),
+        @Parameter(name = "balanceLoads", values = { @Value(name = "false") }),
+        @Parameter(name = "displaySolutions", values = { @Value(name = "false") }),
+        @Parameter(name = "fastTime", values = { @Value(name = "100") }),
+        @Parameter(name = "fastLocalSearchTime", values = { @Value(name = "10") })
+
+    })
+@Deprecated
 public class FASTMappingFromDAG extends AbstractMappingFromDAG {
 
   /*

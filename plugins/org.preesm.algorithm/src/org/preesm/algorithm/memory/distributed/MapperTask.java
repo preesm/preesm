@@ -1,7 +1,6 @@
 /**
- * Copyright or © or Copr. IETR/INSA - Rennes (2015 - 2018) :
+ * Copyright or © or Copr. IETR/INSA - Rennes (2015 - 2019) :
  *
- * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017 - 2018)
  * Karol Desnos <karol.desnos@insa-rennes.fr> (2015)
  *
  * This software is a computer program whose purpose is to help prototyping
@@ -43,6 +42,10 @@ import java.util.logging.Logger;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.preesm.algorithm.memory.allocation.AbstractMemoryAllocatorTask;
 import org.preesm.algorithm.memory.exclusiongraph.MemoryExclusionGraph;
+import org.preesm.commons.doc.annotations.Parameter;
+import org.preesm.commons.doc.annotations.Port;
+import org.preesm.commons.doc.annotations.PreesmTask;
+import org.preesm.commons.doc.annotations.Value;
 import org.preesm.commons.exceptions.PreesmException;
 import org.preesm.commons.logger.PreesmLogger;
 import org.preesm.workflow.elements.Workflow;
@@ -56,6 +59,31 @@ import org.preesm.workflow.implement.AbstractTaskImplementation;
  * @author kdesnos
  *
  */
+@PreesmTask(id = "org.ietr.preesm.memory.distributed.MapperTask", name = "Memory Exclusion Graph Mapper",
+
+    inputs = { @Port(name = "MemEx", type = MemoryExclusionGraph.class) },
+
+    outputs = { @Port(name = "MemExes", type = Map.class) },
+
+    parameters = {
+
+        @Parameter(name = "Verbose", values = { @Value(name = "? C {True, False}", effect = "") }),
+        @Parameter(name = "Distribution",
+            description = "Specify which memory architecture should be used to allocate the memory.",
+            values = { @Value(name = "SharedOnly",
+                effect = "(Default) All memory objects are allocated in a single memory bank accessible to all PE."),
+                @Value(name = "DistributedOnly",
+                    effect = "Each PE is associated to a private memory bank that no other PE can access. "
+                        + "(Currently not supported by code generation.)"),
+                @Value(name = "Mixed",
+                    effect = "Both private memory banks and a shared memory can be used for allocating memory."),
+                @Value(name = "MixedMerged",
+                    effect = "Same as mixed, but the memory allocation algorithm favors buffer merging over"
+                        + " memory distribution.") })
+
+    }
+
+)
 public class MapperTask extends AbstractTaskImplementation {
 
   /** The Constant PARAM_VERBOSE. */

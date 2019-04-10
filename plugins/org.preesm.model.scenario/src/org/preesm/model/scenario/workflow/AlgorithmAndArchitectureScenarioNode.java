@@ -1,7 +1,6 @@
 /**
  * Copyright or © or Copr. IETR/INSA - Rennes (2011 - 2019) :
  *
- * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017 - 2019)
  * Clément Guy <clement.guy@insa-rennes.fr> (2014 - 2015)
  * Jonathan Piat <jpiat@laas.fr> (2011)
  * Karol Desnos <karol.desnos@insa-rennes.fr> (2012 - 2015)
@@ -45,6 +44,8 @@ import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.Path;
+import org.preesm.commons.doc.annotations.Port;
+import org.preesm.commons.doc.annotations.PreesmTask;
 import org.preesm.commons.exceptions.PreesmException;
 import org.preesm.commons.exceptions.PreesmFrameworkException;
 import org.preesm.commons.exceptions.PreesmRuntimeException;
@@ -64,8 +65,13 @@ import org.preesm.workflow.implement.AbstractWorkflowNodeImplementation;
  *
  * @author mpelcat
  * @author kdesnos
- *
  */
+@PreesmTask(id = "org.ietr.preesm.scenario.task", name = "scenario",
+
+    outputs = { @Port(name = "scenario", type = PreesmScenario.class),
+        @Port(name = "architecture", type = Design.class), @Port(name = "PiMM", type = PiGraph.class) }
+
+)
 public class AlgorithmAndArchitectureScenarioNode extends AbstractScenarioImplementation {
 
   /**

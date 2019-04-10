@@ -1,7 +1,6 @@
 /**
  * Copyright or © or Copr. IETR/INSA - Rennes (2008 - 2019) :
  *
- * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017 - 2019)
  * Clément Guy <clement.guy@insa-rennes.fr> (2014 - 2015)
  * Jonathan Piat <jpiat@laas.fr> (2011)
  * Karol Desnos <karol.desnos@insa-rennes.fr> (2012)
@@ -47,7 +46,10 @@ import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.Path;
 import org.preesm.algorithm.mapper.model.MapperDAG;
 import org.preesm.algorithm.model.dag.DirectedAcyclicGraph;
-import org.preesm.commons.exceptions.PreesmException;
+import org.preesm.commons.doc.annotations.Parameter;
+import org.preesm.commons.doc.annotations.Port;
+import org.preesm.commons.doc.annotations.PreesmTask;
+import org.preesm.commons.doc.annotations.Value;
 import org.preesm.commons.exceptions.PreesmRuntimeException;
 import org.preesm.commons.files.PathTools;
 import org.preesm.commons.files.WorkspaceUtils;
@@ -59,6 +61,15 @@ import org.preesm.workflow.implement.AbstractTaskImplementation;
  *
  * @author mpelcat
  */
+@PreesmTask(id = "org.ietr.preesm.plugin.mapper.exporter.ImplExportTransform", name = "Implementation Exporter",
+
+    inputs = { @Port(name = "DAG", type = DirectedAcyclicGraph.class) },
+
+    outputs = { @Port(name = "xml", type = String.class) },
+
+    parameters = { @Parameter(name = "path", values = { @Value(name = "") }) }
+
+)
 public class ImplExportTransform extends AbstractTaskImplementation {
 
   /*
@@ -69,7 +80,7 @@ public class ImplExportTransform extends AbstractTaskImplementation {
    */
   @Override
   public Map<String, Object> execute(final Map<String, Object> inputs, final Map<String, String> parameters,
-      final IProgressMonitor monitor, final String nodeName, final Workflow workflow) throws PreesmException {
+      final IProgressMonitor monitor, final String nodeName, final Workflow workflow) {
 
     final DirectedAcyclicGraph dag = (DirectedAcyclicGraph) inputs.get("DAG");
 

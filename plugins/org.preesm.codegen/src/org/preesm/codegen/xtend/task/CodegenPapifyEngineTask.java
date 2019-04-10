@@ -1,7 +1,6 @@
 /**
- * Copyright or © or Copr. IETR/INSA - Rennes (2014 - 2018) :
+ * Copyright or © or Copr. IETR/INSA - Rennes (2014 - 2019) :
  *
- * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017 - 2018)
  * Clément Guy <clement.guy@insa-rennes.fr> (2014 - 2015)
  * Daniel Madroñal <daniel.madronal@upm.es> (2018)
  *
@@ -41,6 +40,8 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.preesm.algorithm.model.dag.DirectedAcyclicGraph;
+import org.preesm.commons.doc.annotations.Port;
+import org.preesm.commons.doc.annotations.PreesmTask;
 import org.preesm.model.scenario.PreesmScenario;
 import org.preesm.workflow.elements.Workflow;
 import org.preesm.workflow.implement.AbstractTaskImplementation;
@@ -49,6 +50,13 @@ import org.preesm.workflow.implement.AbstractWorkflowNodeImplementation;
 /**
  * The Class CodegenTask.
  */
+@PreesmTask(id = "org.ietr.preesm.codegen.xtend.task.CodegenPapifyEngineTask", name = "Papify Engine",
+
+    inputs = { @Port(name = "scenario", type = PreesmScenario.class),
+        @Port(name = "DAG", type = DirectedAcyclicGraph.class) },
+    outputs = { @Port(name = "DAG", type = DirectedAcyclicGraph.class) }
+
+)
 public class CodegenPapifyEngineTask extends AbstractTaskImplementation {
   /*
    * (non-Javadoc)

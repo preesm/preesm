@@ -1,7 +1,6 @@
 /**
  * Copyright or © or Copr. IETR/INSA - Rennes (2018 - 2019) :
  *
- * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2018 - 2019)
  * Hamza Deroui <hamza.deroui@insa-rennes.fr> (2018)
  *
  * This software is a computer program whose purpose is to help prototyping
@@ -42,6 +41,7 @@ import java.util.logging.Level;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.preesm.algorithm.model.sdf.SDFGraph;
 import org.preesm.algorithm.throughput.tools.GraphStructureHelper;
+import org.preesm.commons.doc.annotations.PreesmTask;
 import org.preesm.commons.exceptions.PreesmException;
 import org.preesm.commons.logger.PreesmLogger;
 import org.preesm.workflow.elements.Workflow;
@@ -51,6 +51,8 @@ import org.preesm.workflow.implement.AbstractTaskImplementation;
  * @author hderoui
  *
  */
+@PreesmTask(id = "hsceduler", name = "Hierarchical Scheduler")
+@Deprecated
 public class HScheduleTask extends AbstractTaskImplementation {
 
   @Override

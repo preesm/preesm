@@ -2,7 +2,6 @@
  * Copyright or © or Copr. IETR/INSA - Rennes (2008 - 2019) :
  *
  * Alexandre Honorat <alexandre.honorat@insa-rennes.fr> (2019)
- * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017 - 2019)
  * Clément Guy <clement.guy@insa-rennes.fr> (2014)
  * Julien Hascoet <jhascoet@kalray.eu> (2017)
  * Jonathan Piat <jpiat@laas.fr> (2009)
@@ -75,6 +74,7 @@ import org.preesm.workflow.implement.AbstractWorkflowNodeImplementation;
  * @author mpelcat
  * @author kdesnos
  */
+@Deprecated
 public abstract class AbstractMappingFromDAG extends AbstractTaskImplementation {
 
   /** The Constant PARAM_CHECK. */

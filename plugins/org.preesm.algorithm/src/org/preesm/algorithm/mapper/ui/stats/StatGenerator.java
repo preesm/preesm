@@ -1,6 +1,7 @@
 /**
- * Copyright or © or Copr. IETR/INSA - Rennes (2008 - 2018) :
+ * Copyright or © or Copr. IETR/INSA - Rennes (2008 - 2019) :
  *
+ * Alexandre Honorat <alexandre.honorat@insa-rennes.fr> (2019)
  * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017 - 2018)
  * Clément Guy <clement.guy@insa-rennes.fr> (2014)
  * Jonathan Piat <jpiat@laas.fr> (2011)
@@ -216,7 +217,7 @@ public class StatGenerator {
    *          the operator
    * @return the mem
    */
-  public Integer getMem(final ComponentInstance operator) {
+  public long getMem(final ComponentInstance operator) {
 
     int mem = 0;
 

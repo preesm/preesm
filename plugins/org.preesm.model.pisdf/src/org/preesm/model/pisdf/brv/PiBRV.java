@@ -2,7 +2,6 @@
  * Copyright or © or Copr. IETR/INSA - Rennes (2018 - 2019) :
  *
  * Alexandre Honorat <alexandre.honorat@insa-rennes.fr> (2019)
- * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2018 - 2019)
  * Florian Arrestier <florian.arrestier@insa-rennes.fr> (2018)
  *
  * This software is a computer program whose purpose is to help prototyping
@@ -102,7 +101,7 @@ public abstract class PiBRV {
       }
       final long actorRV = en.getValue();
       final long actorFullRV = actorRV * levelRV.get(container);
-      final String msg = en.getKey().getVertexPath() + " x" + actorRV + " (total: x" + actorFullRV + ")";
+      final String msg = av.getVertexPath() + " x" + actorRV + " (total: x" + actorFullRV + ")";
       PreesmLogger.getLogger().log(Level.INFO, msg);
     }
   }

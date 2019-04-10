@@ -42,7 +42,7 @@
    <modelVersion>4.0.0</modelVersion>
    <groupId>org.preesm</groupId>
    <artifactId>org.preesm.parent</artifactId>
-   <version>3.5.0</version>
+   <version>3.6.0</version>
    <packaging>pom</packaging>
 
    <!-- More Project Information -->
@@ -81,9 +81,11 @@
       <findbugs-version>3.0.5</findbugs-version>
       <sonar-version>3.4.1.1168</sonar-version>
       <checkstyle-version>8.18</checkstyle-version>
-      <rcptt-version>2.3.0</rcptt-version>
-      <rcptt-runner-version>2.4.0-M2</rcptt-runner-version>
+      <rcptt-version>2.4.1</rcptt-version>
+      <rcptt-runner-version>2.4.1</rcptt-runner-version>
       <preesm.coding.policy.version>1.3.0</preesm.coding.policy.version>
+      <maven.compiler.source>1.8</maven.compiler.source>
+      <maven.compiler.target>1.8</maven.compiler.target>
 
       <!-- ############## -->
       <!-- XCORE CONFIG -->
@@ -230,6 +232,7 @@
                      <root>${basedir}/model</root>
                   </sourceRoots>
                   <failOnValidationError>false</failOnValidationError>
+                  <javasourceversion>1.8</javasourceversion>
                </configuration>
                <dependencies>
                   <dependency>

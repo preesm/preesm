@@ -1,7 +1,6 @@
 /**
  * Copyright or © or Copr. IETR/INSA - Rennes (2008 - 2019) :
  *
- * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017 - 2019)
  * Clément Guy <clement.guy@insa-rennes.fr> (2014 - 2015)
  * Florian Arrestier <florian.arrestier@insa-rennes.fr> (2018)
  * Julien Hascoet <jhascoet@kalray.eu> (2016 - 2017)
@@ -50,6 +49,9 @@ import org.eclipse.core.runtime.IProgressMonitor;
 import org.preesm.algorithm.model.sdf.SDFGraph;
 import org.preesm.algorithm.model.sdf.transformations.IbsdfFlattener;
 import org.preesm.algorithm.model.sdf.visitors.ConsistencyChecker;
+import org.preesm.commons.doc.annotations.DocumentedError;
+import org.preesm.commons.doc.annotations.Port;
+import org.preesm.commons.doc.annotations.PreesmTask;
 import org.preesm.commons.exceptions.PreesmException;
 import org.preesm.commons.exceptions.PreesmRuntimeException;
 import org.preesm.commons.logger.PreesmLogger;
@@ -62,6 +64,29 @@ import org.preesm.workflow.implement.AbstractTaskImplementation;
  * @author jpiat
  * @author mpelcat
  */
+@PreesmTask(id = "org.ietr.preesm.plugin.transforms.flathierarchy", name = "Hierarchy Flattening",
+    category = "Graph Transformation",
+
+    inputs = { @Port(name = "SDF", type = SDFGraph.class) }, outputs = { @Port(name = "SDF", type = SDFGraph.class) },
+
+    shortDescription = "Transforms a hierarchical IBSDF graph into an equivalent SDF graph.",
+
+    description = "The purpose of this workflow task is to flatten several levels of the hierarchy of an IBSDF graph"
+        + " and produce an equivalent SDF graph. A hierarchical IBSDF graph is a graph where the internal behavior "
+        + "of some actors is described using another IBSDF subgraph instead of a C header file. When applying this"
+        + " transformation, hierarchical IBSDF actors of the first n levels of hierarchy are replaced with the actors "
+        + "of the IBSDF subgraph with which these hierarchical actors are associated.",
+
+    documentedErrors = { @DocumentedError(message = "Inconsistent Hierarchy, graph can’t be flattened",
+        explanation = "Flattening of the IBSDF graph was aborted because one of the graph composing the application,"
+            + " at the top level or deeper in the hierarchy, was not consistent.") },
+
+    seeAlso = {
+        "**IBSDF**: J. Piat, S.S. Bhattacharyya, and M. Raulet. Interface-based hierarchy for synchronous "
+            + "data-flow graphs. In SiPS Proceedings, 2009.",
+        "**Graph consistency**: E.A. Lee and D.G. Messerschmitt. Synchronous data flow. Proceedings of the IEEE, 75(9):"
+            + "1235 – 1245, sept. 1987." })
+@Deprecated
 public class HierarchyFlattening extends AbstractTaskImplementation {
 
   private static final Logger LOGGER = PreesmLogger.getLogger();

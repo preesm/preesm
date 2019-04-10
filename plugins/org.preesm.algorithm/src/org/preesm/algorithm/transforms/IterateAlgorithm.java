@@ -1,7 +1,6 @@
 /**
  * Copyright or © or Copr. IETR/INSA - Rennes (2018 - 2019) :
  *
- * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2018 - 2019)
  *
  * This software is a computer program whose purpose is to help prototyping
  * parallel applications using dataflow formalism.
@@ -43,6 +42,10 @@ import org.preesm.algorithm.model.sdf.SDFGraph;
 import org.preesm.algorithm.model.sdf.esdf.SDFSinkInterfaceVertex;
 import org.preesm.algorithm.model.sdf.esdf.SDFSourceInterfaceVertex;
 import org.preesm.algorithm.model.types.LongEdgePropertyType;
+import org.preesm.commons.doc.annotations.Parameter;
+import org.preesm.commons.doc.annotations.Port;
+import org.preesm.commons.doc.annotations.PreesmTask;
+import org.preesm.commons.doc.annotations.Value;
 import org.preesm.model.scenario.PreesmScenario;
 import org.preesm.model.scenario.RelativeConstraintManager;
 import org.preesm.workflow.elements.Workflow;
@@ -54,7 +57,23 @@ import org.preesm.workflow.implement.AbstractTaskImplementation;
  *
  * @author mpelcat
  *
+ *
+ *         defaultParameters.put(IterateAlgorithm.NB_IT, "1");
+ *
+ *         defaultParameters.put(IterateAlgorithm.SET_STATES, "true");
  */
+@PreesmTask(id = "org.ietr.preesm.algorithm.transforms.IterateAlgorithm", name = "Algorithm Iterator",
+
+    inputs = { @Port(name = "SDF", type = SDFGraph.class) },
+
+    outputs = { @Port(name = "SDF", type = SDFGraph.class) },
+
+    parameters = {
+
+        @Parameter(name = "nbIt", values = { @Value(name = "1", effect = "") }),
+        @Parameter(name = "setStates", values = { @Value(name = "true", effect = "") })
+
+    })
 public class IterateAlgorithm extends AbstractTaskImplementation {
 
   /**

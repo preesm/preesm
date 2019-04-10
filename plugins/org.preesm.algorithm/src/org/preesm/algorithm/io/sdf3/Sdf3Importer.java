@@ -1,7 +1,6 @@
 /**
  * Copyright or © or Copr. IETR/INSA - Rennes (2013 - 2019) :
  *
- * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017 - 2019)
  * Clément Guy <clement.guy@insa-rennes.fr> (2014 - 2015)
  * Karol Desnos <karol.desnos@insa-rennes.fr> (2013)
  *
@@ -43,6 +42,10 @@ import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.Path;
 import org.preesm.algorithm.model.sdf.SDFGraph;
+import org.preesm.commons.doc.annotations.Parameter;
+import org.preesm.commons.doc.annotations.Port;
+import org.preesm.commons.doc.annotations.PreesmTask;
+import org.preesm.commons.doc.annotations.Value;
 import org.preesm.commons.exceptions.PreesmRuntimeException;
 import org.preesm.commons.files.PathTools;
 import org.preesm.commons.logger.PreesmLogger;
@@ -57,8 +60,14 @@ import org.preesm.workflow.implement.AbstractWorkflowNodeImplementation;
  * {@link SDFGraph}.
  *
  * @author kdesnos
- *
  */
+@PreesmTask(id = "org.ietr.preesm.algorithm.importSdf3Xml.Sdf3Importer", name = "SDF3 Importer",
+
+    inputs = { @Port(name = "architecture", type = Design.class),
+        @Port(name = "scenario", type = PreesmScenario.class) },
+    outputs = { @Port(name = "SDF", type = SDFGraph.class), @Port(name = "scenario", type = PreesmScenario.class) },
+
+    parameters = { @Parameter(name = "path", values = { @Value(name = "./Code/SDF3/graph.xml", effect = "") }) })
 public class Sdf3Importer extends AbstractTaskImplementation {
 
   /** The Constant PARAM_PATH. */

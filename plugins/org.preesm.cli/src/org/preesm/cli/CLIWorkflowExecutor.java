@@ -1,7 +1,6 @@
 /**
- * Copyright or © or Copr. IETR/INSA - Rennes (2014 - 2018) :
+ * Copyright or © or Copr. IETR/INSA - Rennes (2014 - 2019) :
  *
- * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017 - 2018)
  * Clément Guy <clement.guy@insa-rennes.fr> (2014 - 2015)
  * Julien Heulot <julien.heulot@insa-rennes.fr> (2018)
  * Karol Desnos <karol.desnos@insa-rennes.fr> (2015)
@@ -79,16 +78,16 @@ public class CLIWorkflowExecutor extends AbstractWorkflowExecutor implements IAp
   protected IProject project;
 
   /** The Constant workflowDir. */
-  private static final String workflowDir = "/Workflows";
+  private static final String WORKFLOW_DIR = "/Workflows";
 
   /** The Constant workflowExt. */
-  private static final String workflowExt = "workflow";
+  private static final String WORKFLOW_EXT = "workflow";
 
   /** The Constant scenarioDir. */
-  private static final String scenarioDir = "/Scenarios";
+  private static final String SCENARIO_DIR = "/Scenarios";
 
   /** The Constant scenarioExt. */
-  private static final String scenarioExt = "scenario";
+  private static final String SCENARIO_EXT = "scenario";
 
   /*
    * (non-Javadoc)
@@ -115,81 +114,86 @@ public class CLIWorkflowExecutor extends AbstractWorkflowExecutor implements IAp
       this.setDebug(isDebug);
       this.setLogger(new CLIWorkflowLogger(isDebug));
 
-      getLogger().log(Level.FINE, "Starting workflows execution");
-      getLogger().log(Level.FINE, "Command line arguments: " + cliOpts);
-
-      if (line.getArgs().length != 1) {
-        throw new ParseException("Expected project name as first argument", 0);
-      }
-      // Get the project containing the scenarios and workflows to execute
-      final String projectName = line.getArgs()[0];
-      final IWorkspace workspace = ResourcesPlugin.getWorkspace();
-      final IWorkspaceRoot root = workspace.getRoot();
-      this.project = root.getProject(new Path(projectName).lastSegment());
-
-      // Refresh the project
-      this.project.refreshLocal(IResource.DEPTH_INFINITE, null);
-
-      // Handle options
-
-      // Set of workflows to execute
-      Set<String> workflowPaths = new LinkedHashSet<>();
-      // Set of scenarios to execute
-      Set<String> scenarioPaths = new LinkedHashSet<>();
-
-      String workflowPath = line.getOptionValue('w');
-      String scenarioPath = line.getOptionValue('s');
-      // If paths to workflow and scenario are not specified using
-      // options, find them in the project given as arguments
-      if (workflowPath == null) {
-        // If there is no workflow path specified, execute all the
-        // workflows (files with workflowExt) found in workflowDir of
-        // the project
-        workflowPaths = getAllFilePathsIn(CLIWorkflowExecutor.workflowExt, this.project,
-            CLIWorkflowExecutor.workflowDir);
-      } else {
-        // Otherwise, format the workflowPath and execute it
-        if (!workflowPath.contains(projectName)) {
-          workflowPath = projectName + CLIWorkflowExecutor.workflowDir + "/" + workflowPath;
-        }
-        if (!workflowPath.endsWith(CLIWorkflowExecutor.workflowExt)) {
-          workflowPath = workflowPath + "." + CLIWorkflowExecutor.workflowExt;
-        }
-        workflowPaths.add(workflowPath);
-      }
-
-      if (scenarioPath == null) {
-        // If there is no scenario path specified, execute all the
-        // scenarios (files with scenarioExt) found in scenarioDir of
-        // the project
-        scenarioPaths = getAllFilePathsIn(CLIWorkflowExecutor.scenarioExt, this.project,
-            CLIWorkflowExecutor.scenarioDir);
-      } else {
-        // Otherwise, format the scenarioPath and execute it
-        scenarioPath = this.project.getName() + CLIWorkflowExecutor.scenarioDir + "/" + scenarioPath;
-        if (!scenarioPath.endsWith(CLIWorkflowExecutor.scenarioExt)) {
-          scenarioPath = scenarioPath + "." + CLIWorkflowExecutor.scenarioExt;
-        }
-        scenarioPaths.add(scenarioPath);
-      }
-
-      getLogger().log(Level.FINE, "Launching workflows execution");
-      // Launch the execution of the workflos with the scenarios
-      for (final String wPath : workflowPaths) {
-        for (final String sPath : scenarioPaths) {
-          if (!execute(wPath, sPath, null)) {
-            final String message = "Workflow " + wPath + " did not complete its execution normally with scenario "
-                + sPath + ".";
-            getLogger().log(Level.SEVERE, message);
-            return EXIT_ERROR;
-          }
-        }
-      }
+      return executeWorkflow(cliOpts, line);
 
     } catch (final UnrecognizedOptionException uoe) {
       printUsage(options, uoe.getLocalizedMessage());
     } catch (final ParseException exp) {
       printUsage(options, exp.getLocalizedMessage());
+    }
+    return IApplication.EXIT_OK;
+  }
+
+  private Object executeWorkflow(final String cliOpts, final CommandLine line) throws ParseException, CoreException {
+    getLogger().log(Level.FINE, "Starting workflows execution");
+    getLogger().log(Level.FINE, "Command line arguments: " + cliOpts);
+
+    if (line.getArgs().length != 1) {
+      throw new ParseException("Expected project name as first argument", 0);
+    }
+    // Get the project containing the scenarios and workflows to execute
+    final String projectName = line.getArgs()[0];
+    final IWorkspace workspace = ResourcesPlugin.getWorkspace();
+    final IWorkspaceRoot root = workspace.getRoot();
+    this.project = root.getProject(new Path(projectName).lastSegment());
+
+    // Refresh the project
+    this.project.refreshLocal(IResource.DEPTH_INFINITE, null);
+
+    // Handle options
+
+    // Set of workflows to execute
+    Set<String> workflowPaths = new LinkedHashSet<>();
+    // Set of scenarios to execute
+    Set<String> scenarioPaths = new LinkedHashSet<>();
+
+    String workflowPath = line.getOptionValue('w');
+    String scenarioPath = line.getOptionValue('s');
+    // If paths to workflow and scenario are not specified using
+    // options, find them in the project given as arguments
+    if (workflowPath == null) {
+      // If there is no workflow path specified, execute all the
+      // workflows (files with workflowExt) found in workflowDir of
+      // the project
+      workflowPaths = getAllFilePathsIn(CLIWorkflowExecutor.WORKFLOW_EXT, this.project,
+          CLIWorkflowExecutor.WORKFLOW_DIR);
+    } else {
+      // Otherwise, format the workflowPath and execute it
+      if (!workflowPath.contains(projectName)) {
+        workflowPath = projectName + CLIWorkflowExecutor.WORKFLOW_DIR + "/" + workflowPath;
+      }
+      if (!workflowPath.endsWith(CLIWorkflowExecutor.WORKFLOW_EXT)) {
+        workflowPath = workflowPath + "." + CLIWorkflowExecutor.WORKFLOW_EXT;
+      }
+      workflowPaths.add(workflowPath);
+    }
+
+    if (scenarioPath == null) {
+      // If there is no scenario path specified, execute all the
+      // scenarios (files with scenarioExt) found in scenarioDir of
+      // the project
+      scenarioPaths = getAllFilePathsIn(CLIWorkflowExecutor.SCENARIO_EXT, this.project,
+          CLIWorkflowExecutor.SCENARIO_DIR);
+    } else {
+      // Otherwise, format the scenarioPath and execute it
+      scenarioPath = this.project.getName() + CLIWorkflowExecutor.SCENARIO_DIR + "/" + scenarioPath;
+      if (!scenarioPath.endsWith(CLIWorkflowExecutor.SCENARIO_EXT)) {
+        scenarioPath = scenarioPath + "." + CLIWorkflowExecutor.SCENARIO_EXT;
+      }
+      scenarioPaths.add(scenarioPath);
+    }
+
+    getLogger().log(Level.FINE, "Launching workflows execution");
+    // Launch the execution of the workflos with the scenarios
+    for (final String wPath : workflowPaths) {
+      for (final String sPath : scenarioPaths) {
+        if (!execute(wPath, sPath, null)) {
+          final String message = "Workflow " + wPath + " did not complete its execution normally with scenario " + sPath
+              + ".";
+          getLogger().log(Level.SEVERE, message);
+          return EXIT_ERROR;
+        }
+      }
     }
     return IApplication.EXIT_OK;
   }
@@ -252,6 +256,10 @@ public class CLIWorkflowExecutor extends AbstractWorkflowExecutor implements IAp
 
     opt = new Option("d", "debug", false, "Debug mode: print stack traces when failing");
     options.addOption(opt);
+
+    opt = new Option("mdd", "markdowndoc", true, "outputs MarkDown task reference to file given as argument");
+    options.addOption(opt);
+
     return options;
   }
 

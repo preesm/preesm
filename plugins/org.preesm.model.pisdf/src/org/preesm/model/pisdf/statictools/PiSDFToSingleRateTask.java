@@ -1,7 +1,6 @@
 /**
  * Copyright or © or Copr. IETR/INSA - Rennes (2018 - 2019) :
  *
- * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2018 - 2019)
  * Florian Arrestier <florian.arrestier@insa-rennes.fr> (2018)
  *
  * This software is a computer program whose purpose is to help prototyping
@@ -43,6 +42,10 @@ import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.eclipse.core.runtime.IProgressMonitor;
+import org.preesm.commons.doc.annotations.Parameter;
+import org.preesm.commons.doc.annotations.Port;
+import org.preesm.commons.doc.annotations.PreesmTask;
+import org.preesm.commons.doc.annotations.Value;
 import org.preesm.commons.exceptions.PreesmRuntimeException;
 import org.preesm.commons.logger.PreesmLogger;
 import org.preesm.model.pisdf.PiGraph;
@@ -55,6 +58,12 @@ import org.preesm.workflow.implement.AbstractWorkflowNodeImplementation;
  * @author farresti
  *
  */
+@PreesmTask(id = "pisdf-srdag", name = "PiSDF Single-Rate Transformation",
+
+    inputs = { @Port(name = "PiMM", type = PiGraph.class) }, outputs = { @Port(name = "PiMM", type = PiGraph.class) },
+
+    parameters = { @Parameter(name = "Consistency_Method",
+        values = { @Value(name = "LCM", effect = ""), @Value(name = "Topology", effect = "") }) })
 public class PiSDFToSingleRateTask extends AbstractTaskImplementation {
 
   public static final String CONSISTENCY_METHOD = "Consistency_Method";

@@ -1,9 +1,9 @@
 /**
- * Copyright or © or Copr. IETR/INSA - Rennes (2008 - 2018) :
+ * Copyright or © or Copr. IETR/INSA - Rennes (2008 - 2019) :
  *
  * Alexandre Honorat <ahonorat@insa-rennes.fr> (2018)
  * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017 - 2018)
- * Daniel Madroñal <daniel.madronal@upm.es> (2018)
+ * Daniel Madroñal <daniel.madronal@upm.es> (2018 - 2019)
  * Matthieu Wipliez <matthieu.wipliez@insa-rennes.fr> (2008)
  * Maxime Pelcat <maxime.pelcat@insa-rennes.fr> (2008 - 2012)
  *
@@ -121,13 +121,21 @@ public class PapifyEngine {
 
       String message = "Papifying";
       String finalName;
+      String finalNameWithoutUnderScroll;
 
       // For each vertex, check the monitoring
       for (final DAGVertex vertex : this.dag.vertexSet()) {
         finalName = vertex.getInfo();
         if (finalName != null) {
+          finalNameWithoutUnderScroll = vertex.getInfo().substring(0, vertex.getInfo().lastIndexOf('_'));
+          config = papifyConfig.getCorePapifyConfigGroupActor(finalName);
+          int configMode = 1;
+          if (config == null) {
+            config = papifyConfig.getCorePapifyConfigGroupActor(finalNameWithoutUnderScroll);
+            finalName = finalNameWithoutUnderScroll;
+            configMode = 2;
+          }
           finalName = vertex.getInfo().substring(vertex.getInfo().indexOf('/') + 1).replace('/', '_');
-          config = papifyConfig.getCorePapifyConfigGroupActor(vertex.getInfo());
           if (config != null && !config.getPAPIEvents().keySet().isEmpty()) {
             configPosition = "";
             this.dag.getVertex(vertex.getName()).getPropertyBean().setValue(PAPIFY_MONITOR_TIMING, "No");
@@ -227,8 +235,14 @@ public class PapifyEngine {
 
             // Add the actor name
             ConstantString actorName = CodegenFactory.eINSTANCE.createConstantString();
-            actorName.setName("actor_name".concat(vertex.getId()));
-            actorName.setValue(vertex.getId());
+            String actorNameGeneric;
+            if (configMode == 2) {
+              actorNameGeneric = vertex.getId().substring(0, vertex.getId().lastIndexOf('_'));
+            } else {
+              actorNameGeneric = vertex.getId();
+            }
+            actorName.setName("actor_name".concat(actorNameGeneric));
+            actorName.setValue(actorNameGeneric);
             actorName.setComment("Actor name");
 
             // Add the size of the CodeSet

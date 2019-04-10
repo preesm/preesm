@@ -1,7 +1,6 @@
 /**
  * Copyright or © or Copr. IETR/INSA - Rennes (2008 - 2019) :
  *
- * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017 - 2019)
  * Clément Guy <clement.guy@insa-rennes.fr> (2014)
  * Florian Arrestier <florian.arrestier@insa-rennes.fr> (2018)
  * Jonathan Piat <jpiat@laas.fr> (2008 - 2011)
@@ -42,8 +41,12 @@ package org.preesm.algorithm.mapper;
 
 import java.util.Map;
 import org.eclipse.core.runtime.IProgressMonitor;
+import org.preesm.algorithm.mapper.abc.impl.latency.LatencyAbc;
 import org.preesm.algorithm.mapper.model.MapperDAG;
+import org.preesm.algorithm.model.dag.DirectedAcyclicGraph;
 import org.preesm.algorithm.pisdf.pimm2srdag.StaticPiMM2MapperDAGVisitor;
+import org.preesm.commons.doc.annotations.Port;
+import org.preesm.commons.doc.annotations.PreesmTask;
 import org.preesm.model.pisdf.PiGraph;
 import org.preesm.model.scenario.PreesmScenario;
 import org.preesm.model.slam.Design;
@@ -53,6 +56,12 @@ import org.preesm.workflow.implement.AbstractWorkflowNodeImplementation;
 /**
  *
  */
+@PreesmTask(id = "pisdf-mapper.simple", name = "Simple Scheduling from PiSDF", category = "Schedulers",
+
+    inputs = { @Port(name = "PiMM", type = PiGraph.class), @Port(name = "architecture", type = Design.class),
+        @Port(name = "scenario", type = PreesmScenario.class) },
+
+    outputs = { @Port(name = "DAG", type = DirectedAcyclicGraph.class), @Port(name = "ABC", type = LatencyAbc.class) })
 public class MainCoreMappingFromPiMM extends MainCoreMappingFromDAG {
 
   @Override

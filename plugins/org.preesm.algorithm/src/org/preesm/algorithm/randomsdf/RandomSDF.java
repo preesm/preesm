@@ -1,7 +1,6 @@
 /**
  * Copyright or © or Copr. IETR/INSA - Rennes (2012 - 2019) :
  *
- * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017 - 2019)
  * Clément Guy <clement.guy@insa-rennes.fr> (2014 - 2015)
  * Karol Desnos <karol.desnos@insa-rennes.fr> (2012)
  *
@@ -43,6 +42,10 @@ import org.eclipse.core.runtime.IProgressMonitor;
 import org.preesm.algorithm.generator.SDFRandomGraph;
 import org.preesm.algorithm.model.sdf.SDFAbstractVertex;
 import org.preesm.algorithm.model.sdf.SDFGraph;
+import org.preesm.commons.doc.annotations.Parameter;
+import org.preesm.commons.doc.annotations.Port;
+import org.preesm.commons.doc.annotations.PreesmTask;
+import org.preesm.commons.doc.annotations.Value;
 import org.preesm.commons.exceptions.PreesmException;
 import org.preesm.commons.exceptions.PreesmRuntimeException;
 import org.preesm.model.scenario.ConstraintGroupManager;
@@ -67,8 +70,31 @@ import org.preesm.workflow.implement.AbstractTaskImplementation;
  * </p>
  *
  * @author kdesnos
- *
  */
+@PreesmTask(id = "org.ietr.preesm.algorithm.randomsdf.RandomSDF", name = "Random SDF Generator",
+
+    inputs = { @Port(name = "SDF", type = SDFGraph.class), @Port(name = "scenario", type = PreesmScenario.class),
+        @Port(name = "architecture", type = Design.class) },
+
+    outputs = { @Port(name = "SDF", type = SDFGraph.class), @Port(name = "scenario", type = PreesmScenario.class) },
+
+    parameters = {
+
+        @Parameter(name = "nbVertex", values = { @Value(name = "10") }),
+        @Parameter(name = "minInDegree", values = { @Value(name = "1") }),
+        @Parameter(name = "maxInDegree", values = { @Value(name = "5") }),
+        @Parameter(name = "minOutDegree", values = { @Value(name = "1") }),
+        @Parameter(name = "maxOutDegree", values = { @Value(name = "5") }),
+        @Parameter(name = "minRate", values = { @Value(name = "1") }),
+        @Parameter(name = "maxRate", values = { @Value(name = "4") }),
+        @Parameter(name = "minTime", values = { @Value(name = "100") }),
+        @Parameter(name = "maxTime", values = { @Value(name = "1000") }),
+        @Parameter(name = "rateMultiplier", values = { @Value(name = "1000") })
+
+    }
+
+)
+@Deprecated
 public class RandomSDF extends AbstractTaskImplementation {
 
   private static final Random generator = new Random();

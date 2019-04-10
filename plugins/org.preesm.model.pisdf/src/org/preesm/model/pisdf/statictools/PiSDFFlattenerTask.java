@@ -2,7 +2,6 @@
  * Copyright or © or Copr. IETR/INSA - Rennes (2018 - 2019) :
  *
  * Alexandre Honorat <alexandre.honorat@insa-rennes.fr> (2019)
- * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2018 - 2019)
  * Florian Arrestier <florian.arrestier@insa-rennes.fr> (2018)
  *
  * This software is a computer program whose purpose is to help prototyping
@@ -45,6 +44,10 @@ import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.eclipse.core.runtime.IProgressMonitor;
+import org.preesm.commons.doc.annotations.Parameter;
+import org.preesm.commons.doc.annotations.Port;
+import org.preesm.commons.doc.annotations.PreesmTask;
+import org.preesm.commons.doc.annotations.Value;
 import org.preesm.commons.logger.PreesmLogger;
 import org.preesm.model.pisdf.PiGraph;
 import org.preesm.workflow.elements.Workflow;
@@ -55,6 +58,12 @@ import org.preesm.workflow.implement.AbstractWorkflowNodeImplementation;
  * @author farresti
  *
  */
+@PreesmTask(id = "org.ietr.preesm.pimm.algorithm.pimm2flat.StaticPiMM2FlatPiMMTask", name = "PiSDF Flattener",
+
+    inputs = { @Port(name = "PiMM", type = PiGraph.class) }, outputs = { @Port(name = "PiMM", type = PiGraph.class) },
+
+    parameters = {
+        @Parameter(name = "Perform optimizations", values = { @Value(name = "true / false", effect = "") }) })
 public class PiSDFFlattenerTask extends AbstractTaskImplementation {
 
   final Logger logger = PreesmLogger.getLogger();

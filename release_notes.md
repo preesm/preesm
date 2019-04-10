@@ -1,6 +1,23 @@
 PREESM Changelog
 ================
 
+## Release version 3.6.0
+*2019.04.10*
+
+### New Feature
+* XML exporter of repetition vector (workflow task id: pisdf-brv-export)
+* Use annotations for declaring the tasks;
+  * Incidentally, the task reference is now generated and available online;
+* Add new CLI application to generate documentation: '-application org.preesm.cli.docgen -mdd <markdown file path>'
+
+### Changes
+* Make sure XCore generated code is 1.8 compliant;
+* Remove org.preesm.workflows.{scenarios|tasks} extensions, replaced with annotation and global plugin declaration;
+
+### Bug fix
+* Fix #106
+* Fix #109
+
 ## Release version 3.5.0
 *2019.03.21*
 

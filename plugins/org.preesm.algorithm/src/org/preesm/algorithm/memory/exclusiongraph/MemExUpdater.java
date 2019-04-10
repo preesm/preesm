@@ -1,7 +1,6 @@
 /**
- * Copyright or © or Copr. IETR/INSA - Rennes (2008 - 2018) :
+ * Copyright or © or Copr. IETR/INSA - Rennes (2008 - 2019) :
  *
- * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017 - 2018)
  * Clément Guy <clement.guy@insa-rennes.fr> (2014)
  * Jonathan Piat <jpiat@laas.fr> (2011)
  * Karol Desnos <karol.desnos@insa-rennes.fr> (2012 - 2013)
@@ -42,6 +41,10 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.preesm.algorithm.model.dag.DirectedAcyclicGraph;
+import org.preesm.commons.doc.annotations.Parameter;
+import org.preesm.commons.doc.annotations.Port;
+import org.preesm.commons.doc.annotations.PreesmTask;
+import org.preesm.commons.doc.annotations.Value;
 import org.preesm.workflow.elements.Workflow;
 import org.preesm.workflow.implement.AbstractWorkflowNodeImplementation;
 
@@ -50,6 +53,27 @@ import org.preesm.workflow.implement.AbstractWorkflowNodeImplementation;
  *
  * @author kdesnos
  */
+@PreesmTask(id = "org.ietr.preesm.memory.exclusiongraph.MemExUpdater", name = "MEG Updater",
+    category = "Memory Optimization",
+
+    inputs = { @Port(name = "DAG", type = DirectedAcyclicGraph.class),
+        @Port(name = "MemEx", type = MemoryExclusionGraph.class) },
+    outputs = { @Port(name = "MemEx", type = MemoryExclusionGraph.class) },
+
+    shortDescription = "Relax memory allocation constraints of the MEG using scheduling information.",
+
+    description = "The MEG used in Preesm can be updated with scheduling information to remove exclusions between "
+        + "memory objects and make better allocations possible.",
+
+    parameters = { @Parameter(name = "Verbose",
+        description = "How verbose will this task be during its execution. In verbose mode, the task will log "
+            + "the start and completion time of the update, as well as characteristics (number of memory objects,"
+            + " density of exclusions) of the MEGs both before and after the update.",
+        values = { @Value(name = "false", effect = "(Default) The task will not log information."),
+            @Value(name = "true", effect = "The task will log build and MEG information.") }) },
+
+    seeAlso = { "**MEG update**: K. Desnos, M. Pelcat, J.-F. Nezan, and S. Aridhi. Pre-and post-scheduling memory"
+        + " allocation strategies on MPSoCs. In Electronic System Level Synthesis Conference (ESLsyn), 2013." })
 public class MemExUpdater extends AbstractMemExUpdater {
 
   /*

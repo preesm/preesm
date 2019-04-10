@@ -1,7 +1,6 @@
 /**
  * Copyright or © or Copr. IETR/INSA - Rennes (2014 - 2019) :
  *
- * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017 - 2019)
  * Clément Guy <clement.guy@insa-rennes.fr> (2014 - 2015)
  * Julien Heulot <julien.heulot@insa-rennes.fr> (2015 - 2016)
  * Karol Desnos <karol.desnos@insa-rennes.fr> (2017)
@@ -52,6 +51,10 @@ import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.Path;
 import org.preesm.codegen.xtend.spider.utils.SpiderConfig;
 import org.preesm.codegen.xtend.spider.visitor.SpiderCodegen;
+import org.preesm.commons.doc.annotations.Parameter;
+import org.preesm.commons.doc.annotations.Port;
+import org.preesm.commons.doc.annotations.PreesmTask;
+import org.preesm.commons.doc.annotations.Value;
 import org.preesm.commons.exceptions.PreesmRuntimeException;
 import org.preesm.model.pisdf.PiGraph;
 import org.preesm.model.scenario.PreesmScenario;
@@ -60,10 +63,40 @@ import org.preesm.workflow.elements.Workflow;
 import org.preesm.workflow.implement.AbstractTaskImplementation;
 import org.preesm.workflow.implement.AbstractWorkflowNodeImplementation;
 
-// TODO: Auto-generated Javadoc
 /**
  * The Class SpiderCodegenTask.
  */
+@PreesmTask(id = "org.ietr.preesm.pimm.algorithm.spider.codegen.SpiderCodegenTask", name = "Spider Codegen",
+    category = "Code Generation",
+
+    inputs = { @Port(name = "PiMM", type = PiGraph.class), @Port(name = "scenario", type = PreesmScenario.class),
+        @Port(name = "architecture", type = Design.class) },
+
+    shortDescription = "Generate Spider code for dynamic PiSDF.",
+
+    parameters = {
+        @Parameter(name = "scheduler", description = "Runtime scheduler to use.",
+            values = { @Value(name = "list_on_the_go"), @Value(name = "round_robin"),
+                @Value(name = "round_robin_scattered"), @Value(name = "list", effect = "(Default)") }),
+        @Parameter(name = "memory-alloc", description = "Runtime memory allocation to use.",
+            values = { @Value(name = "special-actors"), @Value(name = "dummy", effect = "(Default)") }),
+        @Parameter(name = "shared-memory-size", description = "Size of the shared memory allocated by Spider.",
+            values = { @Value(name = "$$n$$", effect = "$$n > 0$$ bytes. (Default = 67108864)") }),
+        @Parameter(name = "papify", description = "Wether to use Papify.",
+            values = { @Value(name = "true / false", effect = "") }),
+        @Parameter(name = "verbose", description = "Wether to log.",
+            values = { @Value(name = "true / false", effect = "") }),
+        @Parameter(name = "trace", description = "Wether to trace what is happening at runtime.",
+            values = { @Value(name = "true / false", effect = "") }),
+        @Parameter(name = "stack-type", description = "Type of stack to use",
+            values = { @Value(name = "static", effect = "Use static stack"),
+                @Value(name = "dynamic", effect = "Use dynamic stack") }),
+        @Parameter(name = "graph-optims", description = "Wether to optimize the graph at runtime or not",
+            values = { @Value(name = "true / false", effect = "") }) },
+
+    seeAlso = { "**Spider**: Heulot, Julien; Pelcat, Maxime; Desnos, Karol; Nezan, Jean-François; Aridhi, Slaheddine "
+        + "(2014) “SPIDER: A Synchronous Parameterized and Interfaced Dataflow-Based RTOS for Multicore DSPs”. "
+        + "EDERC 2014, Milan, Italy." })
 public class SpiderCodegenTask extends AbstractTaskImplementation {
 
   /** The Constant PARAM_PAPIFY. */

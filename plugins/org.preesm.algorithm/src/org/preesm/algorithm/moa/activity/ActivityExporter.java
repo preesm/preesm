@@ -1,7 +1,6 @@
 /**
  * Copyright or © or Copr. IETR/INSA - Rennes (2018 - 2019) :
  *
- * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2018 - 2019)
  *
  * This software is a computer program whose purpose is to help prototyping
  * parallel applications using dataflow formalism.
@@ -51,6 +50,10 @@ import org.eclipse.core.runtime.Path;
 import org.preesm.algorithm.mapper.abc.impl.latency.LatencyAbc;
 import org.preesm.algorithm.mapper.model.MapperDAGEdge;
 import org.preesm.algorithm.mapper.model.MapperDAGVertex;
+import org.preesm.commons.doc.annotations.Parameter;
+import org.preesm.commons.doc.annotations.Port;
+import org.preesm.commons.doc.annotations.PreesmTask;
+import org.preesm.commons.doc.annotations.Value;
 import org.preesm.commons.exceptions.PreesmRuntimeException;
 import org.preesm.commons.files.ContainersManager;
 import org.preesm.commons.files.PathTools;
@@ -71,6 +74,19 @@ import org.preesm.workflow.implement.AbstractWorkflowNodeImplementation;
  * @author mpelcat
  *
  */
+@PreesmTask(id = "org.ietr.preesm.algorithm.moa.activity.ActivityExporter",
+    name = "Activity Exporter of Tokens and Quanta",
+
+    inputs = { @Port(name = "ABC", type = LatencyAbc.class) },
+
+    parameters = {
+
+        @Parameter(name = "path", values = { @Value(name = "stats/mat/activity") }),
+        @Parameter(name = "human_readable", values = { @Value(name = "Yes") })
+
+    }
+
+)
 public class ActivityExporter extends AbstractTaskImplementation {
 
   /**

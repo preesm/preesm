@@ -1,7 +1,6 @@
 /**
  * Copyright or © or Copr. IETR/INSA - Rennes (2018 - 2019) :
  *
- * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2018 - 2019)
  *
  * This software is a computer program whose purpose is to help prototyping
  * parallel applications using dataflow formalism.
@@ -55,8 +54,13 @@ import org.preesm.algorithm.mapper.schedule.ScheduleEntry;
 import org.preesm.algorithm.mapper.schedule.ScheduleUtils;
 import org.preesm.algorithm.model.dag.DAGEdge;
 import org.preesm.algorithm.model.dag.DAGVertex;
+import org.preesm.algorithm.model.dag.DirectedAcyclicGraph;
 import org.preesm.algorithm.model.dag.edag.DAGForkVertex;
 import org.preesm.algorithm.model.dag.edag.DAGJoinVertex;
+import org.preesm.commons.doc.annotations.Parameter;
+import org.preesm.commons.doc.annotations.Port;
+import org.preesm.commons.doc.annotations.PreesmTask;
+import org.preesm.commons.doc.annotations.Value;
 import org.preesm.commons.exceptions.PreesmRuntimeException;
 import org.preesm.commons.files.URLResolver;
 import org.preesm.commons.logger.PreesmLogger;
@@ -75,6 +79,19 @@ import org.preesm.model.slam.utils.DesignTools.ComponentInstanceComparator;
  * @author anmorvan
  *
  */
+@PreesmTask(id = "org.ietr.preesm.plugin.mapper.external", name = "External Scheduling from DAG",
+    category = "Schedulers",
+
+    inputs = { @Port(name = "DAG", type = DirectedAcyclicGraph.class),
+        @Port(name = "architecture", type = Design.class), @Port(name = "scenario", type = PreesmScenario.class) },
+
+    outputs = { @Port(name = "DAG", type = DirectedAcyclicGraph.class), @Port(name = "ABC", type = LatencyAbc.class) },
+
+    parameters = {
+        @Parameter(name = "SCHEDULE_FILE", values = { @Value(name = "/schedule.json", effect = "default value") })
+
+    })
+@Deprecated
 public class ExternalMappingFromDAG extends AbstractMappingFromDAG {
 
   public static final String SCHEDULE_FILE = "SCHEDULE_FILE";

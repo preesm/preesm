@@ -1,7 +1,7 @@
 /**
- * Copyright or © or Copr. IETR/INSA - Rennes (2014 - 2018) :
+ * Copyright or © or Copr. IETR/INSA - Rennes (2014 - 2019) :
  *
- * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017 - 2018)
+ * Alexandre Honorat <alexandre.honorat@insa-rennes.fr> (2019)
  * Clément Guy <clement.guy@insa-rennes.fr> (2014 - 2015)
  *
  * This software is a computer program whose purpose is to help prototyping
@@ -44,6 +44,11 @@ import org.eclipse.core.resources.IWorkspaceRoot;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.preesm.algorithm.mapper.abc.impl.latency.LatencyAbc;
+import org.preesm.commons.doc.annotations.Parameter;
+import org.preesm.commons.doc.annotations.Port;
+import org.preesm.commons.doc.annotations.PreesmTask;
+import org.preesm.commons.doc.annotations.Value;
+import org.preesm.model.pisdf.brv.BRVExporter;
 import org.preesm.model.scenario.PreesmScenario;
 import org.preesm.model.scenario.ScenarioUtils;
 import org.preesm.workflow.elements.Workflow;
@@ -55,7 +60,34 @@ import org.preesm.workflow.implement.AbstractWorkflowNodeImplementation;
  *
  * @author cguy
  */
+@PreesmTask(id = "org.ietr.preesm.stats.exporter.StatsExporterTask", name = "Gantt Exporter", category = "Analysis",
+
+    inputs = { @Port(name = "ABC", type = LatencyAbc.class), @Port(name = "scenario", type = PreesmScenario.class) },
+
+    shortDescription = "This task exports scheduling results as a *.pgantt file that can be "
+        + "viewed using the ganttDisplay viewer [1].",
+
+    parameters = { @Parameter(name = "path",
+        description = "Path of the exported *.pgantt file. If the specified directory does not exist, it will "
+            + "not be created.",
+        values = { @Value(name = "/path/in/proj",
+            effect = "Path within the Preesm project containing the workflow where the ”Gantt Exporter” task is "
+                + "instantiated. Exported Gantt will be named as follows: "
+                + "**/path/in/proj/<scenario name> stats.pgantt**. If a graph with this name already exists in "
+                + "the given path, it will be overwritten.") }) },
+
+    description = "This task exports scheduling results as a *.pgantt file that can be viewed using the ganttDisplay"
+        + " viewer [1]. The exported *.pgantt file uses the XML syntax.",
+
+    seeAlso = { "**[1]**: https://github.com/preesm/gantt-display" })
 public class StatsExporterTask extends AbstractTaskImplementation {
+
+  /**
+   * @see BRVExporter
+   */
+  public static final String DEFAULT_PATH = "/stats/xml/";
+
+  public static final String PARAM_PATH = "path";
 
   /*
    * (non-Javadoc)
@@ -69,7 +101,7 @@ public class StatsExporterTask extends AbstractTaskImplementation {
 
     final LatencyAbc abc = (LatencyAbc) inputs.get(AbstractWorkflowNodeImplementation.KEY_SDF_ABC);
     final PreesmScenario scenario = (PreesmScenario) inputs.get(AbstractWorkflowNodeImplementation.KEY_SCENARIO);
-    String folderPath = parameters.get("path");
+    String folderPath = parameters.get(PARAM_PATH);
 
     // Get the root of the workspace
     final IWorkspace workspace = ResourcesPlugin.getWorkspace();
@@ -83,11 +115,10 @@ public class StatsExporterTask extends AbstractTaskImplementation {
     final File parent = new File(folderPath);
     parent.mkdirs();
 
-    final String filePath = ScenarioUtils.getScenarioName(scenario) + "_stats.pgantt";
+    final String filePath = ScenarioUtils.getScenarioName(scenario) + "_stats_pgantt.xml";
     final File file = new File(parent, filePath);
     // Generate the stats from the abc and write them in a file at xmlPath
-    final XMLStatsExporter exporter = new XMLStatsExporter();
-    exporter.exportXMLStats(abc, file);
+    XMLStatsExporter.exportXMLStats(abc, file);
 
     return new LinkedHashMap<>();
   }
@@ -100,7 +131,7 @@ public class StatsExporterTask extends AbstractTaskImplementation {
   @Override
   public Map<String, String> getDefaultParameters() {
     final Map<String, String> parameters = new LinkedHashMap<>();
-    parameters.put("path", "/stats/xml/");
+    parameters.put(PARAM_PATH, DEFAULT_PATH);
     return parameters;
   }
 
@@ -111,7 +142,7 @@ public class StatsExporterTask extends AbstractTaskImplementation {
    */
   @Override
   public String monitorMessage() {
-    return "Generate the stats";
+    return "Generate the stats of the scheduling.";
   }
 
 }

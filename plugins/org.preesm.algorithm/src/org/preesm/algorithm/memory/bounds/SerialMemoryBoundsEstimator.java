@@ -1,7 +1,6 @@
 /**
- * Copyright or © or Copr. IETR/INSA - Rennes (2012 - 2018) :
+ * Copyright or © or Copr. IETR/INSA - Rennes (2012 - 2019) :
  *
- * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017 - 2018)
  * Clément Guy <clement.guy@insa-rennes.fr> (2014)
  * Karol Desnos <karol.desnos@insa-rennes.fr> (2012 - 2016)
  *
@@ -44,17 +43,61 @@ import org.eclipse.core.runtime.IProgressMonitor;
 import org.jgrapht.graph.DefaultEdge;
 import org.preesm.algorithm.memory.exclusiongraph.MemoryExclusionGraph;
 import org.preesm.algorithm.memory.exclusiongraph.MemoryExclusionVertex;
+import org.preesm.commons.doc.annotations.Parameter;
+import org.preesm.commons.doc.annotations.Port;
+import org.preesm.commons.doc.annotations.PreesmTask;
+import org.preesm.commons.doc.annotations.Value;
 import org.preesm.commons.logger.PreesmLogger;
 import org.preesm.workflow.elements.Workflow;
 import org.preesm.workflow.implement.AbstractTaskImplementation;
 
-// TODO: Auto-generated Javadoc
 /**
  * Workflow element that takes several memexes as input and computes their memory bounds.
  *
  * @author kdesnos
  *
  */
+@PreesmTask(id = "org.ietr.preesm.memory.bounds.SerialMemoryBoundsEstimator", name = "Serial Memory Bounds",
+    category = "Memory Optimization",
+
+    inputs = { @Port(name = "MEGs", type = Map.class) },
+
+    shortDescription = "Compute bounds of the amount of memory needed to allocate the MEGs.",
+
+    description = "This task computes the memory bounds (see Memory Bound Estimator Task) for several MEGs, "
+        + "like the one produced by the Memory Allocation task.",
+
+    parameters = {
+        @Parameter(name = "Verbose",
+            description = "How verbose will this task be during its execution. In verbose mode, the task "
+                + "will log the name of the used solver, the start and completion time of the bound "
+                + "estimation algorithm. Computed bounds are always logged, even if the verbose parameter "
+                + "is set to false.",
+            values = { @Value(name = "false", effect = "(Default) The task will not log information."),
+                @Value(name = "true", effect = "The task will log build and MEG information.") }),
+        @Parameter(name = "Solver", description = "Specify which algorithm is used to compute the lower bound.",
+            values = {
+                @Value(name = "Heuristic",
+                    effect = "(Default) Heuristic algorithm described in [1] is used. This technique find an"
+                        + " approximate solution."),
+                @Value(name = "Ostergard",
+                    effect = "Östergård’s algorithm [2] is used. This technique finds an optimal solution, "
+                        + "but has a potentially exponential complexity."),
+                @Value(name = "Yamaguchi",
+                    effect = "Yamaguchi et al.’s algorithm [3] is used. This technique finds an optimal"
+                        + " solution, but has a potentially exponential complexity.") }) },
+
+    seeAlso = {
+        "**[1]**: K. Desnos, M. Pelcat, J.-F. Nezan, and S. Aridhi. Memory bounds for the distributed "
+            + "execution of a hierarchical synchronous data-flow graph. In Embedded Computer Systems: "
+            + "Architectures, Modeling, and Simulation (SAMOS XII), 2012 International Conference on, 2012.",
+        "**[2]**: Patric R. J. Östergård. A new algorithm for the maximum-weight clique problem. Nordic"
+            + " J. of Computing, 8(4):424–436, December 2001.",
+        "**[3]**: K. Yamaguchi and S. Masuda. A new exact algorithm for the maximum weight clique problem."
+            + " In 23rd International Conference on Circuit/Systems, Computers and Communications (ITC-CSCC’08),"
+            + " 2008.",
+        "**Memory Bounds**: K. Desnos, M. Pelcat, J.-F. Nezan, and S. Aridhi. Pre-and post-scheduling memory"
+            + " allocation strategies on MPSoCs. In Electronic System Level Synthesis Conference (ESLsyn), 2013." })
 public class SerialMemoryBoundsEstimator extends AbstractTaskImplementation {
 
   /** The Constant PARAM_SOLVER. */

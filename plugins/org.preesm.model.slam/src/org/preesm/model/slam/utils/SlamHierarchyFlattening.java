@@ -1,7 +1,6 @@
 /**
- * Copyright or © or Copr. IETR/INSA - Rennes (2008 - 2018) :
+ * Copyright or © or Copr. IETR/INSA - Rennes (2008 - 2019) :
  *
- * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017 - 2018)
  * Clément Guy <clement.guy@insa-rennes.fr> (2014)
  * Maxime Pelcat <maxime.pelcat@insa-rennes.fr> (2008 - 2012)
  *
@@ -41,6 +40,10 @@ import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.eclipse.core.runtime.IProgressMonitor;
+import org.preesm.commons.doc.annotations.Parameter;
+import org.preesm.commons.doc.annotations.Port;
+import org.preesm.commons.doc.annotations.PreesmTask;
+import org.preesm.commons.doc.annotations.Value;
 import org.preesm.commons.exceptions.PreesmException;
 import org.preesm.commons.logger.PreesmLogger;
 import org.preesm.model.slam.Design;
@@ -53,6 +56,14 @@ import org.preesm.workflow.implement.AbstractTaskImplementation;
  *
  * @author mpelcat
  */
+
+@PreesmTask(id = "org.ietr.preesm.archi.slam.flattening", name = "Slam Flattener",
+
+    inputs = { @Port(name = "architecture", type = Design.class) },
+    outputs = { @Port(name = "architecture", type = Design.class) },
+
+    parameters = { @Parameter(name = "depth", values = { @Value(name = "n > 0", effect = "default = 1") }) })
+
 public class SlamHierarchyFlattening extends AbstractTaskImplementation {
 
   /*

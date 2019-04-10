@@ -1,6 +1,7 @@
 /**
- * Copyright or © or Copr. IETR/INSA - Rennes (2008 - 2018) :
+ * Copyright or © or Copr. IETR/INSA - Rennes (2008 - 2019) :
  *
+ * Alexandre Honorat <alexandre.honorat@insa-rennes.fr> (2019)
  * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017 - 2018)
  * Clément Guy <clement.guy@insa-rennes.fr> (2014 - 2015)
  * Maxime Pelcat <maxime.pelcat@insa-rennes.fr> (2008 - 2012)
@@ -71,7 +72,7 @@ public class DeploymentProperties implements IStructuredContentProvider, ITableL
   private final Map<ComponentInstance, Long> loads;
 
   /** The memory needs. */
-  private final Map<ComponentInstance, Integer> memoryNeeds;
+  private final Map<ComponentInstance, Long> memoryNeeds;
 
   /** The repetition period. */
   private long repetitionPeriod;
@@ -132,11 +133,28 @@ public class DeploymentProperties implements IStructuredContentProvider, ITableL
     if (this.columnOrder.equals(Messages.getString("Overview.properties.opColumn"))) {
       comparator = (o1, o2) -> o1.getInstanceName().compareTo(o2.getInstanceName());
     } else if (this.columnOrder.equals(Messages.getString("Overview.properties.loadColumn"))) {
-      comparator = (o1,
-          o2) -> (int) (DeploymentProperties.this.loads.get(o1) - DeploymentProperties.this.loads.get(o2));
+      comparator = (o1, o2) -> {
+        long l1 = loads.get(o1);
+        long l2 = loads.get(o2);
+        if (l1 > l2) {
+          return 1;
+        } else if (l1 < l2) {
+          return -1;
+        }
+        return 0;
+      };
+
     } else if (this.columnOrder.equals(Messages.getString("Overview.properties.memColumn"))) {
-      comparator = (o1, o2) -> DeploymentProperties.this.memoryNeeds.get(o1)
-          - DeploymentProperties.this.memoryNeeds.get(o2);
+      comparator = (o1, o2) -> {
+        long l1 = memoryNeeds.get(o1);
+        long l2 = memoryNeeds.get(o2);
+        if (l1 > l2) {
+          return 1;
+        } else if (l1 < l2) {
+          return -1;
+        }
+        return 0;
+      };
     }
 
     Collections.sort(elements, comparator);
