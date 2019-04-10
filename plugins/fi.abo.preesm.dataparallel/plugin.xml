@@ -40,32 +40,6 @@
 <?eclipse version="3.4"?>
 <plugin>
    <extension
-         point="org.preesm.workflow.tasks">
-      <task
-            id="fi.abo.preesm.dataparallel.DataParallel"
-            name="Data-Parallel"
-            type="fi.abo.preesm.dataparallel.DataParallel">
-         <inputs>
-            <input
-                  id="SDF"
-                  object="org.preesm.algorithm.model.sdf.SDFGraph">
-            </input>
-         </inputs>
-         <outputs>
-            <output
-                  id="CySDF"
-                  object="org.preesm.algorithm.model.sdf.SDFGraph">
-            </output>
-            <output
-                  id="Info"
-                  object="fi.abo.preesm.dataparallel.pojo.RetimingInfo">
-            </output>
-         </outputs>
-      </task>
-
-      <!-- Duplicate the task with old ID for compatibility -->
-   </extension>
-   <extension
          point="org.preesm.commons.plugin">
    </extension>
 
