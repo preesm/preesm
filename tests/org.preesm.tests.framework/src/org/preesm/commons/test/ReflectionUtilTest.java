@@ -15,7 +15,7 @@ public class ReflectionUtilTest {
   @Test
   public void testRefelctionClasses() {
     final Collection<Class<? extends AbstractTaskImplementation>> lookupChildClassesOf = ReflectionUtil
-        .lookupChildClassesOf("org.preesm.workflow.tasks", AbstractTaskImplementation.class);
+        .lookupChildClassesOf("org.preesm.commons.plugin", AbstractTaskImplementation.class);
     for (final Class<?> t : lookupChildClassesOf) {
       System.out.println(t);
     }
