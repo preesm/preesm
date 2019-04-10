@@ -4,15 +4,12 @@ import com.google.common.io.Files;
 import java.io.File;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
-import java.util.Collection;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 import java.util.logging.Level;
 import org.preesm.commons.PreesmPlugin;
-import org.preesm.commons.ReflectionUtil;
 import org.preesm.commons.doc.annotations.DocumentedError;
 import org.preesm.commons.doc.annotations.Parameter;
 import org.preesm.commons.doc.annotations.Port;
@@ -38,42 +35,30 @@ public class MarkdownPrinter {
     } catch (IOException e) {
       PreesmLogger.getLogger().log(Level.SEVERE, "Could not output MarkDown task reference to " + filePath, e);
     }
-
   }
 
   /**
    *
    */
   public static final String prettyPrint() {
-    final Collection<Class<?>> lookupChildClassesOf = ReflectionUtil
-        .lookupAnnotatedClasses(PreesmPlugin.PREESM_PLUGIN_EXTENSION_POINT_ID, PreesmTask.class);
-    final Map<String, Set<String>> outputsPerCategory = new HashMap<>();
-    for (final Class<?> preesmTask : lookupChildClassesOf) {
-      final PreesmTask annotation = preesmTask.getAnnotation(PreesmTask.class);
-      final String category = annotation.category();
-      final Set<String> categoryContent = outputsPerCategory.getOrDefault(category, new HashSet<>());
-
-      final String output = MarkdownPrinter.prettyPrint(preesmTask);
-      categoryContent.add(output);
-
-      outputsPerCategory.put(category, categoryContent);
-    }
+    final Map<String,
+        Set<Class<?>>> outputsPerCategory = new HashMap<>(PreesmPlugin.getInstance().getTasksByCategory());
 
     final StringBuilder sb = new StringBuilder();
     // get default category, listed in the end of doc
-    final Set<String> otherCategoryContent = outputsPerCategory.remove("Other");
-    for (final Entry<String, Set<String>> category : outputsPerCategory.entrySet()) {
+    final Set<Class<?>> otherCategoryContent = outputsPerCategory.remove("Other");
+    for (final Entry<String, Set<Class<?>>> category : outputsPerCategory.entrySet()) {
       final String categoryName = category.getKey();
-      final Set<String> categoryContent = category.getValue();
+      final Set<Class<?>> categoryContent = category.getValue();
       sb.append("## " + categoryName + "\n");
-      for (final String content : categoryContent) {
-        sb.append(content + "\n");
+      for (final Class<?> content : categoryContent) {
+        sb.append(MarkdownPrinter.prettyPrint(content) + "\n");
       }
     }
     if (otherCategoryContent != null) {
       sb.append("## Other\n");
-      for (final String content : otherCategoryContent) {
-        sb.append(content + "\n");
+      for (final Class<?> content : otherCategoryContent) {
+        sb.append(MarkdownPrinter.prettyPrint(content) + "\n");
       }
     }
     return sb.toString();
