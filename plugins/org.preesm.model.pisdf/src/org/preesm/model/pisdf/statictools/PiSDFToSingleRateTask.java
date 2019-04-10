@@ -61,7 +61,7 @@ import org.preesm.workflow.implement.AbstractWorkflowNodeImplementation;
  */
 @PreesmTask(id = "pisdf-srdag", name = "PiSDF Single-Rate Transformation",
 
-    inputs = { @Port(name = "PiSDF", type = PiGraph.class) }, outputs = { @Port(name = "PiSDF", type = PiGraph.class) },
+    inputs = { @Port(name = "PiMM", type = PiGraph.class) }, outputs = { @Port(name = "PiMM", type = PiGraph.class) },
 
     parameters = { @Parameter(name = "Consistency_Method",
         values = { @Value(name = "LCM", effect = ""), @Value(name = "Topology", effect = "") }) })

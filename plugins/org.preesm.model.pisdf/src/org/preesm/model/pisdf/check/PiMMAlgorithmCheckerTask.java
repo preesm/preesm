@@ -56,7 +56,7 @@ import org.preesm.workflow.implement.AbstractWorkflowNodeImplementation;
  */
 @PreesmTask(id = "pisdf-checker", name = "PiSDF Checker",
 
-    inputs = { @Port(name = "PiSDF", type = PiGraph.class) }, outputs = { @Port(name = "PiSDF", type = PiGraph.class) })
+    inputs = { @Port(name = "PiMM", type = PiGraph.class) }, outputs = { @Port(name = "PiMM", type = PiGraph.class) })
 public class PiMMAlgorithmCheckerTask extends AbstractTaskImplementation {
 
   /** The logger. */

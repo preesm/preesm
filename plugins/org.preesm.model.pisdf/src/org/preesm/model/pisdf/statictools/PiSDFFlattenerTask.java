@@ -61,7 +61,7 @@ import org.preesm.workflow.implement.AbstractWorkflowNodeImplementation;
  */
 @PreesmTask(id = "org.ietr.preesm.pimm.algorithm.pimm2flat.StaticPiMM2FlatPiMMTask", name = "PiSDF Flattener",
 
-    inputs = { @Port(name = "PiSDF", type = PiGraph.class) }, outputs = { @Port(name = "PiSDF", type = PiGraph.class) },
+    inputs = { @Port(name = "PiMM", type = PiGraph.class) }, outputs = { @Port(name = "PiMM", type = PiGraph.class) },
 
     parameters = {
         @Parameter(name = "Perform optimizations", values = { @Value(name = "true / false", effect = "") }) })
