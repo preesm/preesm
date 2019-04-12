@@ -46,13 +46,19 @@ import org.preesm.codegen.model.Communication;
 import org.preesm.codegen.model.Constant;
 import org.preesm.codegen.model.ConstantString;
 import org.preesm.codegen.model.CoreBlock;
+import org.preesm.codegen.model.DataTransferAction;
 import org.preesm.codegen.model.FifoCall;
 import org.preesm.codegen.model.FiniteLoopBlock;
+import org.preesm.codegen.model.FpgaLoadAction;
+import org.preesm.codegen.model.FreeDataTransferBuffer;
 import org.preesm.codegen.model.FunctionCall;
+import org.preesm.codegen.model.GlobalBufferDeclaration;
 import org.preesm.codegen.model.IntVar;
 import org.preesm.codegen.model.LoopBlock;
 import org.preesm.codegen.model.NullBuffer;
+import org.preesm.codegen.model.OutputDataTransfer;
 import org.preesm.codegen.model.PapifyAction;
+import org.preesm.codegen.model.RegisterSetUpAction;
 import org.preesm.codegen.model.SharedMemoryCommunication;
 import org.preesm.codegen.model.SpecialCall;
 import org.preesm.codegen.model.SubBuffer;
@@ -270,4 +276,27 @@ public class DefaultPrinter extends CodegenAbstractPrinter {
     return "";
   }
 
+  public CharSequence printDataTansfer(DataTransferAction action) {
+    return "";
+  }
+
+  public CharSequence printRegisterSetUp(RegisterSetUpAction action) {
+    return "";
+  }
+
+  public CharSequence printFpgaLoad(FpgaLoadAction action) {
+    return "";
+  }
+
+  public CharSequence printFreeDataTransferBuffer(FreeDataTransferBuffer action) {
+    return "";
+  }
+
+  public CharSequence printGlobalBufferDeclaration(GlobalBufferDeclaration action) {
+    return "";
+  }
+
+  public CharSequence printOutputDataTransfer(OutputDataTransfer action) {
+    return "";
+  }
 }

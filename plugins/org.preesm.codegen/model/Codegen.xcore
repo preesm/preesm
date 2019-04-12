@@ -54,6 +54,7 @@ abstract class Call extends CodeElt {
 	    parameterDirections.add(direction);
 	}
 	op void removeParameter(Variable variable)
+	long factorNumber
 }
 
 abstract class Variable extends Commentable {
@@ -255,4 +256,42 @@ class BufferIterator extends SubBuffer {
 }
 
 class PapifyAction extends Variable {
+}
+
+class DataTransferAction extends FunctionCall {
+	refers readonly Buffer[] buffers
+	op void addBuffer(Buffer buffer , PortDirection direction) {
+	    buffers.add(buffer);
+	    parameterDirections.add(direction);
+	}
+}
+
+class FreeDataTransferBuffer extends FunctionCall {
+	refers readonly Buffer[] buffers
+	op void addBuffer(Buffer buffer , PortDirection direction) {
+	    buffers.add(buffer);
+	    parameterDirections.add(direction);
+	}
+}
+
+class RegisterSetUpAction extends FunctionCall {
+}
+
+class FpgaLoadAction extends FunctionCall {
+}
+
+class GlobalBufferDeclaration extends FunctionCall {
+	refers readonly Buffer[] buffers
+	op void addBuffer(Buffer buffer , PortDirection direction) {
+	    buffers.add(buffer);
+	    parameterDirections.add(direction);
+	}
+}
+
+class OutputDataTransfer extends FunctionCall {
+	refers readonly Buffer[] buffers
+	op void addBuffer(Buffer buffer , PortDirection direction) {
+	    buffers.add(buffer);
+	    parameterDirections.add(direction);
+	}
 }

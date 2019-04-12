@@ -50,11 +50,17 @@ import org.preesm.codegen.model.ConstantString
 import org.preesm.codegen.model.CoreBlock
 import org.preesm.codegen.model.FifoCall
 import org.preesm.codegen.model.FiniteLoopBlock
+import org.preesm.codegen.model.FreeDataTransferBuffer
+import org.preesm.codegen.model.FpgaLoadAction
 import org.preesm.codegen.model.FunctionCall
 import org.preesm.codegen.model.IntVar
+import org.preesm.codegen.model.GlobalBufferDeclaration
 import org.preesm.codegen.model.LoopBlock
 import org.preesm.codegen.model.NullBuffer
+import org.preesm.codegen.model.OutputDataTransfer
 import org.preesm.codegen.model.PapifyAction
+import org.preesm.codegen.model.DataTransferAction
+import org.preesm.codegen.model.RegisterSetUpAction
 import org.preesm.codegen.model.SharedMemoryCommunication
 import org.preesm.codegen.model.SpecialCall
 import org.preesm.codegen.model.SubBuffer
@@ -190,5 +196,16 @@ class DevelopperPrinter extends CodegenAbstractPrinter {
 	override printBufferIteratorDeclaration(BufferIterator bufferIterator) '''<BufferIterator_Declaration>'''
 
 	override printBufferIteratorDefinition(BufferIterator bufferIterator) '''<BufferIterator_Definition>'''
+	
+	override printDataTansfer(DataTransferAction action) '''<Data_Transfer>'''
+	
+	override printRegisterSetUp(RegisterSetUpAction action) '''<Register_SetUp>'''
+	
+	override printFpgaLoad(FpgaLoadAction action) '''<Fpga_Load>'''
+	
+	override printFreeDataTransferBuffer(FreeDataTransferBuffer action) '''<Free_Buffer_Data_transfer>'''
 
+	override printGlobalBufferDeclaration(GlobalBufferDeclaration action) '''<Global_Buffer_Declaration>'''
+	
+	override printOutputDataTransfer(OutputDataTransfer action) '''<Output_Data_Transfer>'''
 }

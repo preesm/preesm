@@ -1,13 +1,12 @@
 /**
- * Copyright or © or Copr. IETR/INSA - Rennes (2013 - 2019) :
+ * Copyright or © or Copr. IETR/INSA - Rennes (2013 - 2018) :
  *
- * Alexandre Honorat <alexandre.honorat@insa-rennes.fr> (2019)
+ * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017 - 2018)
  * Clément Guy <clement.guy@insa-rennes.fr> (2015)
  * Daniel Madroñal <daniel.madronal@upm.es> (2018)
  * Florian Arrestier <florian.arrestier@insa-rennes.fr> (2018)
  * Julien Hascoet <jhascoet@kalray.eu> (2016)
  * Karol Desnos <karol.desnos@insa-rennes.fr> (2013 - 2018)
- * leo <leonardo.suriano@upm.es> (2019)
  * Maxime Pelcat <maxime.pelcat@insa-rennes.fr> (2013 - 2016)
  *
  * This software is a computer program whose purpose is to help prototyping
@@ -65,22 +64,30 @@ import org.preesm.codegen.model.Direction
 import org.preesm.codegen.model.FifoCall
 import org.preesm.codegen.model.FifoOperation
 import org.preesm.codegen.model.FiniteLoopBlock
+import org.preesm.codegen.model.FreeDataTransferBuffer
+import org.preesm.codegen.model.FpgaLoadAction
 import org.preesm.codegen.model.FunctionCall
+import org.preesm.codegen.model.GlobalBufferDeclaration
 import org.preesm.codegen.model.IntVar
 import org.preesm.codegen.model.LoopBlock
 import org.preesm.codegen.model.NullBuffer
-import org.preesm.codegen.model.RegisterSetUpAction
+import org.preesm.codegen.model.OutputDataTransfer
 import org.preesm.codegen.model.PapifyAction
 import org.preesm.codegen.model.DataTransferAction
+import org.preesm.codegen.model.RegisterSetUpAction
 import org.preesm.codegen.model.SharedMemoryCommunication
 import org.preesm.codegen.model.SpecialCall
 import org.preesm.codegen.model.SubBuffer
 import org.preesm.codegen.model.Variable
 import org.preesm.codegen.printer.DefaultPrinter
 import org.preesm.codegen.xtend.CodegenPlugin
+import org.preesm.commons.exceptions.PreesmException
 import org.preesm.commons.exceptions.PreesmRuntimeException
 import org.preesm.commons.files.URLResolver
 import org.preesm.model.pisdf.util.CHeaderUsedLocator
+import org.preesm.commons.logger.PreesmLogger
+import java.util.logging.Level
+import java.lang.reflect.Parameter
 
 /**
  * This printer is currently used to print C code only for GPP processors
@@ -89,7 +96,7 @@ import org.preesm.model.pisdf.util.CHeaderUsedLocator
  * @author kdesnos
  * @author mpelcat
  */
-class CPrinter extends DefaultPrinter {
+class CHardwarePrinter extends DefaultPrinter {
 
 	/**
 	 * Set to true if a main file should be generated. Set at object creation in constructor.
@@ -114,6 +121,19 @@ class CPrinter extends DefaultPrinter {
 	 * whose target and destination are identical.
 	 */
 	protected var boolean IGNORE_USELESS_MEMCPY = true
+	
+	/**
+	 * Variable that store the number or iteration in hardware. Using it, it will be possible to 
+	 * compress all the function calls in just one.
+	 */
+	protected var factorNumber = 0;
+	protected var functionCallNumber = 0;
+	protected var dataTransferCallNumber = 0;
+	protected var dataOutputTransferCallNumber = 0;
+	
+//	int getFactorNumber(){
+//		return this.factorNunber;
+//	}
 
 	override printCoreBlockHeader(CoreBlock block) '''
 			/**
@@ -125,6 +145,8 @@ class CPrinter extends DefaultPrinter {
 			 */
 
 			#include "preesm_gen.h"
+			#include "hardware.h"
+			#include "hardware_accelerator_setup.h"
 
 	'''
 
@@ -136,7 +158,7 @@ class CPrinter extends DefaultPrinter {
 	'''
 
 	override printBufferDefinition(Buffer buffer) '''
-	«buffer.type» «buffer.name»[«buffer.size»]; // «buffer.comment» size:= «buffer.size»*«buffer.type»
+	«buffer.type» «buffer.name»[«buffer.size»]; // «buffer.comment» size:= «buffer.size»*«buffer.type» ([LEO] printBufferDefinition)
 	'''
 
 	override printSubBufferDefinition(SubBuffer buffer) '''
@@ -182,15 +204,18 @@ class CPrinter extends DefaultPrinter {
 		if (arg != NULL) {
 			printf("Warning: expecting NULL arguments\n");
 		}
+		// Initialize Hardware infrastructure
+		hardware_init();
+		
 		«IF !callBlock.codeElts.empty»// Initialisation(s)«"\n\n"»«ENDIF»
 	'''
 
 	override printCoreLoopBlockHeader(LoopBlock block2) '''
 
 		«"\t"»// Begin the execution loop
-#ifdef PREESM_LOOP_SIZE // Case of a finite loop
+#ifdef LOOP_SIZE // Case of a finite loop
 			int index;
-			for(index=0;index<PREESM_LOOP_SIZE;index++){
+			for(index=0;index<LOOP_SIZE;index++){
 #else // Default case of an infinite loop
 			while(1){
 #endif
@@ -202,6 +227,12 @@ class CPrinter extends DefaultPrinter {
 
 	override printCoreLoopBlockFooter(LoopBlock block2) '''
 		}
+		// Release kernel instance
+		hardware_kernel_release("matmul");
+		
+		// Clean Hardware setup
+		hardware_exit();
+		
 		return NULL;
 	}
 
@@ -394,9 +425,6 @@ class CPrinter extends DefaultPrinter {
 	    val findAllCHeaderFileNamesUsed = CHeaderUsedLocator.findAllCHeaderFileNamesUsed(getEngine.algo.referencePiMMGraph)
 	    context.put("USER_INCLUDES", findAllCHeaderFileNamesUsed.map["#include \""+ it +"\""].join("\n"));
 
-
-	    context.put("CONSTANTS", "#define NB_DESIGN_ELTS "+getEngine.archi.componentInstances.size+"\n#define NB_CORES "+getEngine.codeBlocks.size);
-
 	    // 3- init template reader
 	    val String templateLocalURL = "templates/c/preesm_gen.h";
 	    val URL mainTemplate = URLResolver.findFirstInBundleList(templateLocalURL, CodegenPlugin.BUNDLE_ID);
@@ -420,16 +448,22 @@ class CPrinter extends DefaultPrinter {
 
 	override generateStandardLibFiles() {
 		val result = super.generateStandardLibFiles();
-		val String stdFilesFolder = "/stdfiles/c/"
+		val String stdFilesFolder = "/stdfiles/hardware/"
 		val files = Arrays.asList(#[
-						"communication.c",
-						"communication.h",
+						"hardware.c",
+						"hardware.h",
+						"hardware_hw.c",
+						"hardware_hw.h",
+						"hardware_rcfg.c",
+						"hardware_rcfg.h",
+						"hardware_dbg.h",
+						"dmaproxy.h",
 						"dump.c",
 						"dump.h",
 						"fifo.c",
 						"fifo.h",
-						"mac_barrier.c",
-						"mac_barrier.h"
+						"communication.c",
+						"communication.h"
 					]);
 		files.forEach[it | try {
 			result.put(it, URLResolver.readURLInBundleList(stdFilesFolder + it, CodegenPlugin.BUNDLE_ID))
@@ -451,11 +485,25 @@ class CPrinter extends DefaultPrinter {
 	def String printMain(List<Block> printerBlocks) '''
 		/**
 		 * @file main.c
+		 * a new version for Hardware
 		 * @generated by «this.class.simpleName»
 		 * @date «new Date»
 		 *
 		 */
 		// no monitoring by default
+		#define _GNU_SOURCE
+		#ifdef _WIN32
+		#include <windows.h>
+		#else
+		#include <unistd.h>
+		#endif
+
+		#ifdef __APPLE__
+		#include "TargetConditionals.h"
+		#endif
+
+		#include <pthread.h>
+		#include <stdio.h>
 
 		#define _PREESM_NBTHREADS_ «engine.codeBlocks.size»
 		#define _PREESM_MAIN_THREAD_ «mainOperatorId»
@@ -521,7 +569,7 @@ class CPrinter extends DefaultPrinter {
 				«FOR coreBlock : engine.codeBlocks»&computationThread_Core«(coreBlock as CoreBlock).coreID»«if(engine.codeBlocks.last == coreBlock) {""} else {", "}»«ENDFOR»
 			};
 
-		#ifdef PREESM_VERBOSE
+		#ifdef VERBOSE
 			printf("Launched main\n");
 		#endif
 
@@ -573,7 +621,8 @@ class CPrinter extends DefaultPrinter {
 	'''
 
 	override printFunctionCall(FunctionCall functionCall) '''
-	«functionCall.name»(«FOR param : functionCall.parameters SEPARATOR ','»«param.doSwitch»«ENDFOR»); // «functionCall.actorName»
+	hardware_kernel_execute("«functionCall.name»",gsize_TO_BE_CHANGED«IF (functionCall.factorNumber > 0)» * «functionCall.factorNumber»«ENDIF», lsize_TO_BE_CHANGED); // executing hardware kernel
+	hardware_kernel_wait("«functionCall.name»");
 	'''
 
 	override printConstant(Constant constant) '''«constant.value»«IF !constant.name.nullOrEmpty»/*«constant.name»*/«ENDIF»'''
@@ -601,9 +650,256 @@ class CPrinter extends DefaultPrinter {
 	override printIntVarDefinition(IntVar intVar) '''
 	int «intVar.name»;
 	'''
+
+	override printDataTansfer(DataTransferAction action) '''
+	// Hardware³ data transfer token into Global Buffer
+	«var count = 0»
+	«FOR buffer : action.buffers»
+	«IF (action.parameterDirections.get(count).toString == 'INPUT')»
+		memcpy((void *) global_hardware_«count» + («buffer.size» * «this.dataTransferCallNumber» * sizeof(a3data_t)), (void *)«buffer.name», «buffer.size»*sizeof(a3data_t)); // input «count++»
+	«ELSE»
+	    // output «count++»
+	«ENDIF»
+	«ENDFOR»
+	//«this.dataTransferCallNumber++»
+	'''
 	
-	override printDataTansfer(DataTransferAction action) ''''''
+	override printOutputDataTransfer(OutputDataTransfer action) '''
+	// Hardware³ data transfer token output
+	«var count = 0»
+	«FOR buffer : action.buffers»
+	«IF (action.parameterDirections.get(count).toString == 'INPUT')»
+		// input «count++»
+	«ELSE»
+		memcpy((void *)«buffer.name», (void *) global_hardware_«count» + («buffer.size» * «this.dataOutputTransferCallNumber» * sizeof(a3data_t)), «buffer.size»*sizeof(a3data_t)); // output «count++»
+	«ENDIF»
+	«ENDFOR»
+	//«this.dataOutputTransferCallNumber++»
+	'''
 	
-	override printRegisterSetUp(RegisterSetUpAction action) ''''''
+	override printRegisterSetUp(RegisterSetUpAction action) '''
+	«var count = 0»
+	«FOR param : action.parameters»
+		for (int i = 0; i < MAX_NACCS; i++) {
+			wcfg_temp[i] = «param.doSwitch»;
+		}
+		hardware_kernel_wcfg("«action.name»", A3_ACCELERATOR_REG_«(count++).toString()», wcfg_temp);
+	«ENDFOR»
+	'''
+	
+	override printFpgaLoad(FpgaLoadAction action) '''
+			
+		// Create kernel instance
+		hardware_kernel_create("«action.name»", SIZE_MEM_HW, N_MEMORY_BANKS, N_REGISTERS);
+		
+		a3data_t wcfg_temp[MAX_NACCS];
+		
+		for (int i = 0; i < MAX_NACCS; i++) {
+			hardware_load("«action.name»", i, 0, 0, 1);
+		}
+	'''
+	
+	override printFreeDataTransferBuffer(FreeDataTransferBuffer action) ''''''
+	
+	override printGlobalBufferDeclaration(GlobalBufferDeclaration action) '''
+	// Hardware³ global data buffer declaration
+	«var count = 0»
+	«FOR buffer : action.buffers»
+		a3data_t *global_hardware_«count» = NULL;
+		global_hardware_«count» = hardware_alloc(«buffer.size»«IF (this.factorNumber > 0)» * «this.factorNumber»«ENDIF» * sizeof *«buffer.name», "«action.name»", "«buffer.doSwitch»",  «action.parameterDirections.get(count++)»);
+	«ENDFOR»
+	'''
+	
+	override preProcessing(List<Block> printerBlocks, Collection<Block> allBlocks) {
+		PreesmLogger.getLogger().info("[LEO] preProcessing for Hardware³");
+		//var functionCallNumber = 0;
+		var DataTransferActionNumber = 0;
+		var FreeDataTransferBufferNumber = 0;
+		var RegisterSetUpNumber = 0;
+		//var firstRegisterSetUp = 0;
+		var firstFunctionCallIndex = 0;
+		var lastFunctionCallIndex = 0;
+		var currentFunctionPosition = 0;
+		//var firstDataTransferIndex = 0;
+		//var firstFreeDataIndex = 0;
+		for (Block block : printerBlocks) {
+			
+			/*
+			 * to delete all the FunctionCallImpl and to keep just the fist one where the input data buffer
+			 * is the set of all data buffers together.
+			 * Keep in mind that this is just the first integration that needs to be modified.
+			 * 
+			 */
+			
+			var coreLoop = (block as CoreBlock).loopBlock
+			var i = 0;
+			
+			// This Loop just locate where the function are and how many they are.
+			while (i < coreLoop.codeElts.size) {
+				// Retrieve the function ID
+				val elt = coreLoop.codeElts.get(i)
+				if (elt.getClass().getSimpleName().equals("FunctionCallImpl") && this.functionCallNumber == 0) {
+					this.functionCallNumber++;
+					firstFunctionCallIndex = i;
+					lastFunctionCallIndex = i;
+				}
+				else if (elt.getClass().getSimpleName().equals("FunctionCallImpl") && this.functionCallNumber > 0) {
+					this.functionCallNumber++;
+					lastFunctionCallIndex = i;
+					//coreLoop.codeElts.remove(i);
+				}
+				i++;
+			}
+			
+			// This loop adds the new information on the on the class to be printed and substitute the old with the new one
+			// Note that the function to keep is the last one!
+			if (this.functionCallNumber > 0) {
+				currentFunctionPosition = lastFunctionCallIndex;
+				var functionCallImplOld = (block as CoreBlock).loopBlock.codeElts.get(lastFunctionCallIndex);
+				// checking that the function to be changed is the right one
+				 if (!functionCallImplOld.class.getSimpleName().equals("FunctionCallImpl")){
+				 	PreesmLogger.getLogger().log(Level.SEVERE, "Hardware³ Codegen ERROR in the preProcessing function. The functionCall to be modified was NOT found");
+				 } else {
+				 	// create a new function identical to the Old one
+					var functionCallImplNew = (functionCallImplOld as FunctionCall);
+					// set the new value in the new version of the element of the list
+					functionCallImplNew.factorNumber = this.functionCallNumber;
+					// replace the old element with the new one
+					(block as CoreBlock).loopBlock.codeElts.set(lastFunctionCallIndex,functionCallImplNew);	
+				 } 
+				PreesmLogger.getLogger().info("[LEO] number of FunctionCallImpl " + this.functionCallNumber);
+			}
+			
+			// this loop is to delete all the functions but not the last one (the new one!)
+			i = coreLoop.codeElts.size-1;
+			var flagFirstFunctionFound = 0;
+			while (i > 0) {
+				// Retrieve the function ID
+				val elt = coreLoop.codeElts.get(i)
+				if (elt.getClass().getSimpleName().equals("FunctionCallImpl") && flagFirstFunctionFound == 0) {
+					flagFirstFunctionFound++;
+					
+				}
+				else if (elt.getClass().getSimpleName().equals("FunctionCallImpl") && flagFirstFunctionFound > 0) {
+					coreLoop.codeElts.remove(i);
+					currentFunctionPosition--;
+				}
+				i--;
+			}
+			
+			// this loop is for the data transfer. A new DataTrasfer (a replica) is added AFTER the FunctionCall,
+			// one for every buffer used!
+			
+			i=0;
+			var positionOfNewDataTransfer = currentFunctionPosition;
+			while (i < coreLoop.codeElts.size) {
+				// Retrieve the function ID
+				val elt = coreLoop.codeElts.get(i)
+				if (elt.getClass().getSimpleName().equals("DataTransferActionImpl") && DataTransferActionNumber == 0) {
+					DataTransferActionNumber++;
+					positionOfNewDataTransfer++;
+				}
+				else if (elt.getClass().getSimpleName().equals("DataTransferActionImpl") && DataTransferActionNumber > 0) {
+					DataTransferActionNumber++;
+					positionOfNewDataTransfer++;
+					//coreLoop.codeElts.remove(i);
+				}
+				i++;
+			}
+			//the last loop is for the Free data transfer (that actually does nothing)
+			i=0;
+			while (i < coreLoop.codeElts.size) {
+				// Retrieve the function ID
+				val elt = coreLoop.codeElts.get(i)
+				if (elt.getClass().getSimpleName().equals("FreeDataTransferBufferImpl") && FreeDataTransferBufferNumber == 0) {
+					FreeDataTransferBufferNumber++;
+					//firstFreeDataIndex = i;
+				}
+				else if (elt.getClass().getSimpleName().equals("FreeDataTransferBufferImpl") && FreeDataTransferBufferNumber > 0) {
+					FreeDataTransferBufferNumber++;
+					//coreLoop.codeElts.remove(i);
+				}
+				i++;
+			}
+			
+			// this loop is for the OutputDataTransfer. All the OUTPUT DataTransfer will be deleted 
+			// and inserted after the function execution
+			
+			i=0;
+			var positionOfNewOutputDataTransfer = currentFunctionPosition;
+			var OutputDataTransferActionNumber = 0;
+			val cloneCoreLoop = coreLoop.codeElts.clone
+			while (i < coreLoop.codeElts.size) {
+				// Retrieve the function ID
+				val elt = coreLoop.codeElts.get(i)
+				if (elt.getClass().getSimpleName().equals("OutputDataTransferImpl") && OutputDataTransferActionNumber == 0) {
+					OutputDataTransferActionNumber++;
+					currentFunctionPosition--
+					coreLoop.codeElts.remove(i);
+				}
+				else if (elt.getClass().getSimpleName().equals("OutputDataTransferImpl") && OutputDataTransferActionNumber > 0) {
+					OutputDataTransferActionNumber++;
+					currentFunctionPosition--
+					coreLoop.codeElts.remove(i);
+				}
+				i++;
+			}
+			// the last one is deleted after the function execution and does not count
+			currentFunctionPosition++
+			
+			// all the OutputDataTransfer should be inserted again but AFTER the function call
+			var countOutputDataTransferInserted = 0
+			i=0
+			while (i < cloneCoreLoop.size){
+				// Retrieve the function ID
+				val elt = cloneCoreLoop.get(i)
+				if (elt.getClass().getSimpleName().equals("OutputDataTransferImpl")){
+					countOutputDataTransferInserted++
+					coreLoop.codeElts.add(currentFunctionPosition+countOutputDataTransferInserted,elt)
+				}
+				i++
+			}
+			PreesmLogger.getLogger().info("[LEO] number of OutputDataTransfer inserted is " + countOutputDataTransferInserted);
+			
+			
+			
+			
+			
+			
+			
+			// it is enough to set up the register just once at the beginning.
+			i=0;
+			RegisterSetUpNumber = 0;
+			while (i < coreLoop.codeElts.size) {
+				// Retrieve the function ID
+				val elt = coreLoop.codeElts.get(i)
+				if (elt.getClass().getSimpleName().equals("RegisterSetUpActionImpl") && RegisterSetUpNumber == 0) {
+					RegisterSetUpNumber++;
+					//firstRegisterSetUp = i;
+				}
+				else if (elt.getClass().getSimpleName().equals("RegisterSetUpActionImpl") && RegisterSetUpNumber > 0) {
+					RegisterSetUpNumber++;
+					coreLoop.codeElts.remove(i);
+				}
+				i++;
+			}
+
+			// storing the functionCallNumber that may be used by other printers
+			if (this.functionCallNumber == DataTransferActionNumber && this.functionCallNumber == FreeDataTransferBufferNumber){
+				this.factorNumber = this.functionCallNumber;
+			} else {
+				PreesmLogger.getLogger().log(Level.SEVERE, "Hardware³ Codegen ERROR in the preProcessing function. Different number of function calls and data transfers were detected");
+			}
+			
+		}
+		
+		 
+		
+		
+	}
+
 
 }
+
+
+
