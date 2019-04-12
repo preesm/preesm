@@ -9,7 +9,7 @@ PREESM Changelog
 ### Changes
 
 ### Bug fix
-
+*  Fix codegen: semaphore primitives are note static anymore to be visible during TCP codegen;
 
 ## Release version 3.6.0
 *2019.04.10*

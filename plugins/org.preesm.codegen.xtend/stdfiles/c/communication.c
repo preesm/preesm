@@ -44,28 +44,14 @@
 
 #include "communication.h"
 
-
-#ifdef __APPLE__
-#include <dispatch/dispatch.h>
-#else
-#include <semaphore.h>
-#endif
-
 // note: rk_ struct and functions comes from
 // https://stackoverflow.com/questions/27736618/why-are-sem-init-sem-getvalue-sem-destroy-deprecated-on-mac-os-x-and-w
 
-struct rk_sema {
-#ifdef __APPLE__
-    dispatch_semaphore_t    sem;
-#else
-    sem_t                   sem;
-#endif
-};
 
 #ifdef _WIN32
-static void rk_sema_init(struct rk_sema *s, int value) {
+ void rk_sema_init(struct rk_sema *s, int value) {
 #else
-static inline void rk_sema_init(struct rk_sema *s, int value) {
+ inline void rk_sema_init(struct rk_sema *s, int value) {
 #endif
 #ifdef __APPLE__
     dispatch_semaphore_t *sem = &s->sem;
@@ -76,9 +62,9 @@ static inline void rk_sema_init(struct rk_sema *s, int value) {
 }
 
 #ifdef _WIN32
-static void rk_sema_wait(struct rk_sema *s) {
+ void rk_sema_wait(struct rk_sema *s) {
 #else
-static inline void rk_sema_wait(struct rk_sema *s) {
+ inline void rk_sema_wait(struct rk_sema *s) {
 #endif
 #ifdef __APPLE__
     dispatch_semaphore_wait(s->sem, DISPATCH_TIME_FOREVER);
@@ -91,9 +77,9 @@ static inline void rk_sema_wait(struct rk_sema *s) {
 }
 
 #ifdef _WIN32
-static void rk_sema_post(struct rk_sema *s) {
+ void rk_sema_post(struct rk_sema *s) {
 #else
-static inline void rk_sema_post(struct rk_sema *s) {
+ inline void rk_sema_post(struct rk_sema *s) {
 #endif
 #ifdef __APPLE__
     dispatch_semaphore_signal(s->sem);
