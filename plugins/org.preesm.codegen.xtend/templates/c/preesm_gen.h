@@ -86,4 +86,6 @@
 
 $USER_INCLUDES
 
+$CONSTANTS
+
 #[[#]]#endif

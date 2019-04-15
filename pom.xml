@@ -42,7 +42,7 @@
    <modelVersion>4.0.0</modelVersion>
    <groupId>org.preesm</groupId>
    <artifactId>org.preesm.parent</artifactId>
-   <version>3.6.0</version>
+   <version>3.6.1</version>
    <packaging>pom</packaging>
 
    <!-- More Project Information -->
@@ -119,8 +119,8 @@
       <updatesite.preesm>http://preesm.insa-rennes.fr/repo/</updatesite.preesm>
       <updatesite.preesm.externaldeps>${updatesite.preesm}/org.preesm.externaldeps/</updatesite.preesm.externaldeps>
       <updatesite.preesm.graphiti>${updatesite.preesm}/org.ietr.graphiti/</updatesite.preesm.graphiti>
-      <updatesite.eclipse>${eclipse.mirror}/releases/2018-12/</updatesite.eclipse>
-      <updatesite.eclipse.updates>${eclipse.mirror}/eclipse/updates/4.10</updatesite.eclipse.updates>
+      <updatesite.eclipse>${eclipse.mirror}/releases/2019-03/</updatesite.eclipse>
+      <updatesite.eclipse.updates>${eclipse.mirror}/eclipse/updates/4.11</updatesite.eclipse.updates>
       <updatesite.tmf>${eclipse.mirror}/modeling/tmf/xtext/updates/releases/${xtext-version}</updatesite.tmf>
 
       <!-- ############## -->

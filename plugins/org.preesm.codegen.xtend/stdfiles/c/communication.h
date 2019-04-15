@@ -49,13 +49,47 @@ communications.
 #ifndef _PREESM_COMMUNICATION_H
 #define _PREESM_COMMUNICATION_H
 
+#include <preesm_gen.h>
+
+#ifdef __APPLE__
+#include <dispatch/dispatch.h>
+#else
+#include <semaphore.h>
+#endif
+
+struct rk_sema {
+#ifdef __APPLE__
+    dispatch_semaphore_t    sem;
+#else
+    sem_t                   sem;
+#endif
+};
+
+#ifdef _WIN32
+void rk_sema_init(struct rk_sema *s, int value);
+#else
+void rk_sema_init(struct rk_sema *s, int value);
+#endif
+
+#ifdef _WIN32
+void rk_sema_wait(struct rk_sema *s);
+#else
+void rk_sema_wait(struct rk_sema *s);
+#endif
+
+#ifdef _WIN32
+void rk_sema_post(struct rk_sema *s);
+#else
+void rk_sema_post(struct rk_sema *s);
+#endif
+
 
 /**
 * Maximum number of core supported by the communication library.
 * This number is used to allocate the table of semaphores used for intercore
 * synchronization.
 */
-#define MAX_NB_CORES 16
+#define MAX_NB_CORES NB_CORES
 
 /**
 * Initialize the semaphores used for inter-core synchronization.
