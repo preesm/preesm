@@ -186,9 +186,9 @@ class CPrinter extends DefaultPrinter {
 	override printCoreLoopBlockHeader(LoopBlock block2) '''
 
 		«"\t"»// Begin the execution loop
-#ifdef LOOP_SIZE // Case of a finite loop
+#ifdef PREESM_LOOP_SIZE // Case of a finite loop
 			int index;
-			for(index=0;index<LOOP_SIZE;index++){
+			for(index=0;index<PREESM_LOOP_SIZE;index++){
 #else // Default case of an infinite loop
 			while(1){
 #endif
@@ -519,7 +519,7 @@ class CPrinter extends DefaultPrinter {
 				«FOR coreBlock : engine.codeBlocks»&computationThread_Core«(coreBlock as CoreBlock).coreID»«if(engine.codeBlocks.last == coreBlock) {""} else {", "}»«ENDFOR»
 			};
 
-		#ifdef VERBOSE
+		#ifdef PREESM_VERBOSE
 			printf("Launched main\n");
 		#endif
 

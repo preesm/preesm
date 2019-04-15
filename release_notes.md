@@ -7,6 +7,7 @@ PREESM Changelog
 ### New Feature
 
 ### Changes
+*  Codegen: LOOP_SIZE and VERBOSE macros have been prefixed with PREESM_ to avoid conflicts with application macros;
 
 ### Bug fix
 
