@@ -357,7 +357,7 @@ class MPPA2ExplicitPrinter extends CPrinter {
 
 	override printCoreInitBlockHeader(CallBlock callBlock) '''
 	void *computationTask_«(callBlock.eContainer as CoreBlock).name»(void *arg){
-	#ifdef VERBOSE
+	#ifdef PREESM_VERBOSE
 		//printf("Cluster %d runs on task «(callBlock.eContainer as CoreBlock).name»\n", __k1_get_cluster_id());
 	#endif
 		«IF !callBlock.codeElts.empty»
@@ -381,7 +381,7 @@ class MPPA2ExplicitPrinter extends CPrinter {
 
 
 	override printCoreLoopBlockFooter(LoopBlock block2) '''
-		#ifdef VERBOSE
+		#ifdef PREESM_VERBOSE
 				mppa_rpc_barrier_all(); /* sync all PE0 of all Clusters */
 				if(__k1_get_cpu_id() == 0 && __k1_get_cluster_id() == 0){
 					//printf("C0->%d Graph Iteration %d / %d Done !\n", NB_CLUSTER, __iii+1, GRAPH_ITERATION);

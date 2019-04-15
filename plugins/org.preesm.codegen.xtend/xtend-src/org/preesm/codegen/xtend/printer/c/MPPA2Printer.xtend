@@ -176,7 +176,7 @@ class MPPA2Printer extends CPrinter {
 
 
 	override printCoreLoopBlockFooter(LoopBlock block2) '''
-		#ifdef VERBOSE
+		#ifdef PREESM_VERBOSE
 				if(__k1_get_cpu_id() == 0){
 					printf("Cluster %d Graph Iteration %d / %d Done !\n", __k1_get_cluster_id(), __iii+1, GRAPH_ITERATION);
 				}

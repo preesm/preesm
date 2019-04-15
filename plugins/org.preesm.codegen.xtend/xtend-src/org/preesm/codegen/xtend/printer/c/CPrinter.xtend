@@ -519,7 +519,7 @@ class CPrinter extends DefaultPrinter {
 				«FOR coreBlock : engine.codeBlocks»&computationThread_Core«(coreBlock as CoreBlock).coreID»«if(engine.codeBlocks.last == coreBlock) {""} else {", "}»«ENDFOR»
 			};
 
-		#ifdef VERBOSE
+		#ifdef PREESM_VERBOSE
 			printf("Launched main\n");
 		#endif
 
