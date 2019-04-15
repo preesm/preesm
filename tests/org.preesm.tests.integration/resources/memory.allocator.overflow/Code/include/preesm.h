@@ -1,7 +1,7 @@
 #ifndef PREESM_H
 #define PREESM_H
 
-#define LOOP_SIZE 200
+#define PREESM_LOOP_SIZE 200
 
 
 #include "communication.h"
