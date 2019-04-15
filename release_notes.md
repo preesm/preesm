@@ -1,6 +1,17 @@
 PREESM Changelog
 ================
 
+## Release version 3.6.2
+*2019.04.15*
+
+### New Feature
+
+### Changes
+*  Codegen: LOOP_SIZE and VERBOSE macros have been prefixed with PREESM_ to avoid conflicts with application macros;
+
+### Bug fix
+
+
 ## Release version 3.6.1
 *2019.04.15*
 

@@ -1,7 +1,6 @@
 /**
  * Copyright or © or Copr. IETR/INSA - Rennes (2013 - 2019) :
  *
- * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017 - 2019)
  * Julien Hascoet <jhascoet@kalray.eu> (2016 - 2017)
  * Karol Desnos <karol.desnos@insa-rennes.fr> (2013 - 2017)
  *
@@ -176,7 +175,7 @@ class MPPA2Printer extends CPrinter {
 
 
 	override printCoreLoopBlockFooter(LoopBlock block2) '''
-		#ifdef VERBOSE
+		#ifdef PREESM_VERBOSE
 				if(__k1_get_cpu_id() == 0){
 					printf("Cluster %d Graph Iteration %d / %d Done !\n", __k1_get_cluster_id(), __iii+1, GRAPH_ITERATION);
 				}
