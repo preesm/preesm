@@ -126,6 +126,18 @@ class C6678CPrinter extends CPrinter {
 
 	'''
 
+	override printCoreLoopBlockFooter(LoopBlock block2) '''
+			}
+		}
+
+		«IF block2.codeElts.empty»
+		// This call may inform the compiler that the main loop of the thread does not call any function.
+		void emptyLoop_«(block2.eContainer as CoreBlock).name»(){
+
+		}
+		«ENDIF»
+		'''
+
 	override printFifoCall(FifoCall fifoCall) '''
 		«IF fifoCall.operation == FifoOperation::POP»
 			cache_inv(«fifoCall.headBuffer.doSwitch», «fifoCall.headBuffer.size»*sizeof(«fifoCall.headBuffer.type»));
