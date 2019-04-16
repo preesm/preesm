@@ -608,24 +608,6 @@ public class CodegenModelGenerator {
           final GlobalBufferDeclaration globalBufferDeclarationCall = generateGlobalBufferDeclaration(dagVertex,
               loopPrototype, false);
           operatorBlock.getInitBlock().getCodeElts().add(globalBufferDeclarationCall);
-        } else {
-          int indexLoop = codeElts.size() - 1;
-          for (final CodeElt codeElt : codeElts) {
-            // This for loop controlls if FpgaLoadActionImpl already exists. If so, then it does
-            // nothing otherwise it adds the function FpgaLoadActionImpl just at the beginning.
-            // Modify below for adding new features such as execution of different kernels at the same time
-            if (!(codeElt instanceof FpgaLoadAction)) {
-              if (indexLoop == 0) {
-                final FpgaLoadAction fpgaLoadActionFunctionCalls = generateFpgaLoadFunctionCalls(dagVertex,
-                    loopPrototype, false);
-                // Add the function call to load the hardware accelerators into the FPGA (when needed)
-                operatorBlock.getInitBlock().getCodeElts().add(fpgaLoadActionFunctionCalls);
-              }
-              indexLoop--;
-            } else {
-              break;
-            }
-          }
         }
         final RegisterSetUpAction registerSetUpActionFunctionCall = generateRegisterSetUpFunctionCall(dagVertex,
             loopPrototype, false);
