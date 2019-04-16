@@ -34,6 +34,7 @@
  */
 package org.preesm.ui.workflow;
 
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -42,12 +43,10 @@ import java.util.TreeMap;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IMarker;
 import org.eclipse.core.runtime.CoreException;
-import org.eclipse.core.runtime.IConfigurationElement;
-import org.eclipse.core.runtime.IExtensionRegistry;
-import org.eclipse.core.runtime.Platform;
 import org.ietr.dftools.graphiti.model.Graph;
 import org.ietr.dftools.graphiti.model.IValidator;
 import org.ietr.dftools.graphiti.model.Vertex;
+import org.preesm.commons.PreesmPlugin;
 import org.preesm.commons.exceptions.PreesmFrameworkException;
 
 /**
@@ -96,46 +95,24 @@ public class WorkflowValidator implements IValidator {
       return false;
     }
 
-    final IExtensionRegistry registry = Platform.getExtensionRegistry();
-    final IConfigurationElement[] elements = registry.getConfigurationElementsFor("org.preesm.workflow.tasks");
+    final Class<?> preesmWorkflowTask = PreesmPlugin.getInstance().getTask(pluginId);
 
-    boolean foundClass = false;
-
-    // Looking for the Id of the workflow task among the registry
-    // elements
-    for (final IConfigurationElement element : elements) {
-      final String taskId = element.getAttribute("id");
-      if (pluginId.equals(taskId)) {
-        try {
-          final String taskType = element.getAttribute("type");
-          /**
-           * Getting the class corresponding to the taskType string. This is only possible because of
-           * "Eclipse-BuddyPolicy: global" in the manifest: the Graphiti configuration class loader has a global
-           * knowledge of classes
-           */
-
-          final Class<?> vertexTaskClass = Class.forName(taskType);
-
-          final Object vertexTaskObj = vertexTaskClass.newInstance();
-
-          // Adding the default parameters if necessary
-          addDefaultParameters(vertex, vertexTaskObj, file);
-
-          foundClass = true;
-
-        } catch (final Exception e) {
-          createMarker(file, "Class associated to the workflow task not found. Is the class path exported?", pluginId,
-              IMarker.PROBLEM, IMarker.SEVERITY_ERROR);
-          return true;
-        }
-      }
-    }
-
-    if (!foundClass) {
-      createMarker(file, "Plugin associated to the workflow task not found.", pluginId, IMarker.PROBLEM,
+    if (preesmWorkflowTask == null) {
+      createMarker(file, "Plugin or Class associated to the workflow task not found.", pluginId, IMarker.PROBLEM,
           IMarker.SEVERITY_ERROR);
       return false;
     }
+
+    try {
+      final Object vertexTaskObj = preesmWorkflowTask.getConstructor().newInstance();
+      // Adding the default parameters if necessary
+      addDefaultParameters(vertex, vertexTaskObj, file);
+    } catch (final InstantiationException | IllegalAccessException | IllegalArgumentException
+        | InvocationTargetException | NoSuchMethodException | SecurityException e) {
+      createMarker(file, "Class could not be instantiated", pluginId, IMarker.PROBLEM, IMarker.SEVERITY_ERROR);
+      return false;
+    }
+
     return true;
   }
 
