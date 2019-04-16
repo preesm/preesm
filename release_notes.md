@@ -5,6 +5,8 @@ PREESM Changelog
 *XXXX.XX.XX*
 
 ### New Feature
+*  Codegen: enabled the code generation for offloading computation on the FPGA Prgrammable logic (hardware accelerators)
+*  Codegen: core type "Hardware" is allowed
 
 ### Changes
 
@@ -16,8 +18,6 @@ PREESM Changelog
 *2019.04.15*
 
 ### New Feature
-*  Codegen: enabled the code generation for offloading computation on the FPGA Prgrammable logic (hardware accelerators)
-*  Codegen: core type "Hardware" is allowed
 
 ### Changes
 *  Codegen: LOOP_SIZE and VERBOSE macros have been prefixed with PREESM_ to avoid conflicts with application macros;
