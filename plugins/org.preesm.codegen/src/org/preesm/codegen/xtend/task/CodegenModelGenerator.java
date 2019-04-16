@@ -615,7 +615,7 @@ public class CodegenModelGenerator {
             // nothing otherwise it adds the function FpgaLoadActionImpl just at the beginning.
             // Now it is possible to load just one type of accelerator into the FPGA.
             // Modify below for adding new features such as execution of different kernels at the same time
-            if (!codeElt.getClass().getSimpleName().equals("FpgaLoadActionImpl")) {
+            if (codeElt instanceof FpgaLoadAction) {
               if (indexLoop == 0) {
                 final FpgaLoadAction fpgaLoadActionFunctionCalls = generateFpgaLoadFunctionCalls(dagVertex,
                     loopPrototype, false);
