@@ -114,17 +114,15 @@ class C6678CPrinter extends CPrinter {
 	override printCoreInitBlockHeader(CallBlock callBlock) '''
 	void «(callBlock.eContainer as CoreBlock).name.toLowerCase»(void){
 		// Initialisation(s)
-		communicationInit();
-
-	'''
+		communicationInit();«"\n\n"»
+		'''
 
 	override printCoreLoopBlockHeader(LoopBlock block2) '''
 
 		«"\t"»// Begin the execution loop
 			while(1){
-				busy_barrier();
-
-	'''
+				busy_barrier();«"\n\n"»
+				'''
 
 	override printCoreLoopBlockFooter(LoopBlock block2) '''
 			}
