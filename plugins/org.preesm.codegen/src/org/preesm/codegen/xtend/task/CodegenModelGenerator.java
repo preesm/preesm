@@ -100,6 +100,7 @@ import org.preesm.codegen.model.ActorCall;
 import org.preesm.codegen.model.Block;
 import org.preesm.codegen.model.Buffer;
 import org.preesm.codegen.model.Call;
+import org.preesm.codegen.model.CodeElt;
 import org.preesm.codegen.model.CodegenFactory;
 import org.preesm.codegen.model.CodegenPackage;
 import org.preesm.codegen.model.Communication;
@@ -107,15 +108,21 @@ import org.preesm.codegen.model.CommunicationNode;
 import org.preesm.codegen.model.Constant;
 import org.preesm.codegen.model.ConstantString;
 import org.preesm.codegen.model.CoreBlock;
+import org.preesm.codegen.model.DataTransferAction;
 import org.preesm.codegen.model.Delimiter;
 import org.preesm.codegen.model.Direction;
 import org.preesm.codegen.model.FifoCall;
 import org.preesm.codegen.model.FifoOperation;
+import org.preesm.codegen.model.FpgaLoadAction;
+import org.preesm.codegen.model.FreeDataTransferBuffer;
 import org.preesm.codegen.model.FunctionCall;
+import org.preesm.codegen.model.GlobalBufferDeclaration;
 import org.preesm.codegen.model.LoopBlock;
 import org.preesm.codegen.model.NullBuffer;
+import org.preesm.codegen.model.OutputDataTransfer;
 import org.preesm.codegen.model.PapifyAction;
 import org.preesm.codegen.model.PortDirection;
+import org.preesm.codegen.model.RegisterSetUpAction;
 import org.preesm.codegen.model.SharedMemoryCommunication;
 import org.preesm.codegen.model.SpecialCall;
 import org.preesm.codegen.model.SpecialType;
@@ -588,6 +595,28 @@ public class CodegenModelGenerator {
         if (loopPrototype == null) {
           throw new PreesmRuntimeException("Actor " + dagVertex + " has no loop interface in its IDL refinement.");
         }
+        // adding the call to the FPGA load functions only once. The printFpgaLoad will
+        // return a no-null string only with the right printer and nothing for the others
+        // Visit all codeElements already present in the InitBlock
+        final EList<CodeElt> codeElts = operatorBlock.getInitBlock().getCodeElts();
+        if (codeElts.isEmpty()) {
+          final FpgaLoadAction fpgaLoadActionFunctionCalls = generateFpgaLoadFunctionCalls(dagVertex, loopPrototype,
+              false);
+          // Add the function call to load the hardware accelerators into the FPGA (when needed)
+          operatorBlock.getInitBlock().getCodeElts().add(fpgaLoadActionFunctionCalls);
+          // Add also the GlobalBufferDeclaration just after the fpga load, before the loop
+          final GlobalBufferDeclaration globalBufferDeclarationCall = generateGlobalBufferDeclaration(dagVertex,
+              loopPrototype, false);
+          operatorBlock.getInitBlock().getCodeElts().add(globalBufferDeclarationCall);
+        }
+        final RegisterSetUpAction registerSetUpActionFunctionCall = generateRegisterSetUpFunctionCall(dagVertex,
+            loopPrototype, false);
+        final FreeDataTransferBuffer freeDataTransferBufferFunctionCall = generateFreeDataTransferBuffer(dagVertex,
+            loopPrototype, false);
+        final DataTransferAction dataTransferActionFunctionCall = generateDataTransferFunctionCall(dagVertex,
+            loopPrototype, false);
+        final OutputDataTransfer outputDataTransferFunctionCall = generateOutputDataTransferFunctionCall(dagVertex,
+            loopPrototype, false);
         final FunctionCall functionCall = generateFunctionCall(dagVertex, loopPrototype, false);
 
         // Check for papify in the dagVertex
@@ -628,11 +657,21 @@ public class CodegenModelGenerator {
             // Add the Papify start timing function to the loop
             operatorBlock.getLoopBlock().getCodeElts().add(functionCallPapifyTimingStart);
           }
+
         }
+
+        // Add the function call for RegisterSetUp to the loopBlock just before the function call
+        operatorBlock.getLoopBlock().getCodeElts().add(registerSetUpActionFunctionCall);
+        // Add the function call for DataTransfer to the loopBlock just before the function call
+        operatorBlock.getLoopBlock().getCodeElts().add(dataTransferActionFunctionCall);
 
         registerCallVariableToCoreBlock(operatorBlock, functionCall);
         // Add the function call to the operatorBlock
         operatorBlock.getLoopBlock().getCodeElts().add(functionCall);
+        // Free buffer data transfer that may be used freeDataTransferBufferFunctionCall
+        operatorBlock.getLoopBlock().getCodeElts().add(freeDataTransferBufferFunctionCall);
+        // Add the function call for OutputDataTransfer to the loopBlock just after the function call
+        operatorBlock.getLoopBlock().getCodeElts().add(outputDataTransferFunctionCall);
 
         // In case there is any monitoring add stop functions
         if (papifying != null && papifying.equals("Papifying")) {
@@ -1065,6 +1104,155 @@ public class CodegenModelGenerator {
         new ArrayList<>(directionList.values()));
   }
 
+  /**
+   * This method generates the list of SubBuffer corresponding to a prototype of the {@link DAGVertex} firing. The
+   * {@link Prototype} passed as a parameter must belong to the processed {@link DAGVertex}. These SubBuffer are going
+   * to be used by the DataTransfer function (when needed).
+   *
+   * @param dagVertex
+   *          the {@link DAGVertex} corresponding to the {@link FunctionCall}.
+   * @param prototype
+   *          the prototype whose {@link Variable variables} are retrieved
+   * @param isInit
+   *          Whethet the given prototype is an Init or a loop call. (We do not check missing arguments in the IDL for
+   *          init Calls)
+   * @return the entry
+   */
+  protected Entry<List<Buffer>, List<PortDirection>> generateBufferList(final DAGVertex dagVertex,
+      final Prototype prototype, final boolean isInit) {
+    // Sorted list of the variables used by the prototype.
+    // The integer is only used to order the variable and is retrieved
+    // from the prototype
+    final Map<Integer, Buffer> bufferList = new TreeMap<>();
+    final Map<Integer, PortDirection> directionList = new TreeMap<>();
+    // Retrieve the Variable corresponding to the arguments of the prototype
+    for (final CodeGenArgument arg : prototype.getArguments().keySet()) {
+      PortDirection dir = null;
+
+      // Check that the Actor has the right ports
+      boolean containsPort;
+      switch (arg.getDirection()) {
+        case CodeGenArgument.OUTPUT:
+          containsPort = dagVertex.getSinkNameList().contains(arg.getName());
+          dir = PortDirection.OUTPUT;
+          break;
+        case CodeGenArgument.INPUT:
+          containsPort = dagVertex.getSourceNameList().contains(arg.getName());
+          dir = PortDirection.INPUT;
+          break;
+        default:
+          containsPort = false;
+      }
+      if (!containsPort) {
+        throw new PreesmRuntimeException(
+            "Mismatch between actor (" + dagVertex + ") ports and IDL loop prototype argument " + arg.getName());
+      }
+
+      // Retrieve the Edge corresponding to the current Argument
+      DAGEdge dagEdge = null;
+      BufferProperties subBufferProperties = null;
+      switch (arg.getDirection()) {
+        case CodeGenArgument.OUTPUT:
+          final Set<DAGEdge> outEdges = this.algo.outgoingEdgesOf(dagVertex);
+          for (final DAGEdge edge : outEdges) {
+            final BufferAggregate bufferAggregate = edge.getPropertyBean().getValue(BufferAggregate.propertyBeanName);
+            for (final BufferProperties buffProperty : bufferAggregate) {
+              // check that this edge is not connected to a receive vertex
+              if (buffProperty.getSourceOutputPortID().equals(arg.getName()) && edge.getTarget().getKind() != null) {
+                dagEdge = edge;
+                subBufferProperties = buffProperty;
+              }
+            }
+          }
+          break;
+        case CodeGenArgument.INPUT:
+          final Set<DAGEdge> inEdges = this.algo.incomingEdgesOf(dagVertex);
+          for (final DAGEdge edge : inEdges) {
+            final BufferAggregate bufferAggregate = edge.getPropertyBean().getValue(BufferAggregate.propertyBeanName);
+            for (final BufferProperties buffProperty : bufferAggregate) {
+              // check that this edge is not connected to a send vertex
+              if (buffProperty.getDestInputPortID().equals(arg.getName()) && edge.getSource().getKind() != null) {
+                dagEdge = edge;
+                subBufferProperties = buffProperty;
+              }
+            }
+          }
+
+          break;
+        default:
+      }
+
+      if ((dagEdge == null) || (subBufferProperties == null)) {
+        throw new PreesmRuntimeException(
+            "The DAGEdge connected to the port  " + arg.getName() + " of Actor (" + dagVertex + ") does not exist.\n"
+                + "Possible cause is that the DAG" + " was altered before entering" + " the Code generation.\n"
+                + "This error may also happen if the port type " + "in the graph and in the IDL are not identical");
+      }
+
+      // At this point, the dagEdge, srsdfEdge corresponding to the
+      // current argument were identified
+      // Get the corresponding Variable
+      final Buffer buffer = this.srSDFEdgeBuffers.get(subBufferProperties);
+      if (buffer == null) {
+        throw new PreesmRuntimeException(
+            "Edge connected to " + arg.getDirection() + " port " + arg.getName() + " of DAG Actor " + dagVertex
+                + " is not present in the input MemEx.\n" + "There is something wrong in the Memory Allocation task.");
+      }
+
+      bufferList.put(prototype.getArguments().get(arg), buffer);
+      directionList.put(prototype.getArguments().get(arg), dir);
+    }
+
+    return new AbstractMap.SimpleEntry<>(new ArrayList<>(bufferList.values()), new ArrayList<>(directionList.values()));
+
+  }
+
+  /**
+   * This method generates the list of constant variable (no buffers involved) corresponding to a prototype of the
+   * {@link DAGVertex} firing. The {@link Prototype} passed as a parameter must belong to the processed
+   * {@link DAGVertex}.
+   *
+   * @param dagVertex
+   *          the {@link DAGVertex} corresponding to the {@link FunctionCall}.
+   * @param prototype
+   *          the prototype whose {@link Variable variables} are retrieved
+   * @param isInit
+   *          Whethet the given prototype is an Init or a loop call. (We do not check missing arguments in the IDL for
+   *          init Calls)
+   * @return the entry
+   */
+  protected Entry<List<Variable>, List<PortDirection>> generateVariableList(final DAGVertex dagVertex,
+      final Prototype prototype, final boolean isInit) {
+
+    // Sorted list of the variables used by the prototype.
+    // The integer is only used to order the variable and is retrieved
+    // from the prototype
+    final Map<Integer, Variable> variableList = new TreeMap<>();
+    final Map<Integer, PortDirection> directionList = new TreeMap<>();
+
+    // Retrieve the Variables corresponding to the Parameters of the
+    // prototype
+    for (final CodeGenParameter param : prototype.getParameters().keySet()) {
+      // Check that the actor has the right parameter
+      final Argument actorParam = dagVertex.getArgument(param.getName());
+
+      if (actorParam == null) {
+        throw new PreesmRuntimeException(
+            "Actor " + dagVertex + " has no match for parameter " + param.getName() + " declared in the IDL.");
+      }
+
+      final Constant constant = CodegenFactory.eINSTANCE.createConstant();
+      constant.setName(param.getName());
+      constant.setValue(actorParam.longValue());
+      constant.setType("long");
+      variableList.put(prototype.getParameters().get(param), constant);
+      directionList.put(prototype.getParameters().get(param), PortDirection.NONE);
+    }
+
+    return new AbstractMap.SimpleEntry<>(new ArrayList<>(variableList.values()),
+        new ArrayList<>(directionList.values()));
+  }
+
   private boolean checkEdgesExist(final String portName, final DAGVertex dagVertex, final Prototype prototype) {
     for (final CodeGenArgument arguments : prototype.getArguments().keySet()) {
       if (portName.equals(arguments.getName())) {
@@ -1341,6 +1529,142 @@ public class CodegenModelGenerator {
 
     identifyMergedInputRange(callVars);
 
+    return func;
+  }
+
+  /**
+   * This method creates the function call for the Output Data Transfer (when needed)
+   *
+   * @param dagVertex
+   *          the {@link DAGVertex} corresponding to the {@link OutputDataTransfer}.
+   * @return The {@link OutputDataTransfer} corresponding to the {@link DAGVertex actor} firing.
+   */
+  protected OutputDataTransfer generateOutputDataTransferFunctionCall(final DAGVertex dagVertex,
+      final Prototype prototype, final boolean isInit) {
+    // Creating a new action for DataTransfer
+    final OutputDataTransfer func = CodegenFactory.eINSTANCE.createOutputDataTransfer();
+    func.setName(prototype.getFunctionName());
+    func.setActorName(dagVertex.getName());
+    // Retrieve the Arguments that must correspond to the incoming data
+    // fifos
+    final Entry<List<Buffer>, List<PortDirection>> callBuffer = generateBufferList(dagVertex, prototype, isInit);
+    // Put Buffer in the DataTransfer function call
+    for (int idx = 0; idx < callBuffer.getKey().size(); idx++) {
+      func.addBuffer(callBuffer.getKey().get(idx), callBuffer.getValue().get(idx));
+    }
+    return func;
+  }
+
+  /**
+   * This method creates the function call for the Output Data Transfer (when needed)
+   *
+   * @param dagVertex
+   *          the {@link DAGVertex} corresponding to the {@link DataTransferAction}.
+   * @return The {@link DataTransferAction} corresponding to the {@link DAGVertex actor} firing.
+   */
+  protected DataTransferAction generateDataTransferFunctionCall(final DAGVertex dagVertex, final Prototype prototype,
+      final boolean isInit) {
+    // Creating a new action for DataTransfer
+    final DataTransferAction func = CodegenFactory.eINSTANCE.createDataTransferAction();
+    func.setName(prototype.getFunctionName());
+    func.setActorName(dagVertex.getName());
+    // Retrieve the Arguments that must correspond to the incoming data
+    // fifos
+    final Entry<List<Buffer>, List<PortDirection>> callBuffer = generateBufferList(dagVertex, prototype, isInit);
+    // Put Buffer in the DataTransfer function call
+    for (int idx = 0; idx < callBuffer.getKey().size(); idx++) {
+      func.addBuffer(callBuffer.getKey().get(idx), callBuffer.getValue().get(idx));
+    }
+    return func;
+  }
+
+  /**
+   * This method creates the function call for the Registers set up (when needed)
+   *
+   * @param dagVertex
+   *          the {@link DAGVertex} corresponding to the {@link FunctionCall}.
+   * @return The {@link FunctionCall} corresponding to the {@link DAGVertex actor} firing.
+   */
+  protected RegisterSetUpAction generateRegisterSetUpFunctionCall(final DAGVertex dagVertex, final Prototype prototype,
+      final boolean isInit) {
+    // Creating a new action for DataTransfer
+    final RegisterSetUpAction func = CodegenFactory.eINSTANCE.createRegisterSetUpAction();
+    func.setName(prototype.getFunctionName());
+    func.setActorName(dagVertex.getName());
+    // Retrieve the Arguments that must correspond to the incoming data
+    // fifos
+    final Entry<List<Variable>, List<PortDirection>> callVariable = generateVariableList(dagVertex, prototype, isInit);
+    // Put Buffer in the DataTransfer function call
+    for (int idx = 0; idx < callVariable.getKey().size(); idx++) {
+      func.addParameter(callVariable.getKey().get(idx), callVariable.getValue().get(idx));
+    }
+    return func;
+  }
+
+  /**
+   * This method creates the function calls for the FPGA Load. One each accelerator
+   *
+   * @param dagVertex
+   *          the {@link DAGVertex} corresponding to the {@link FunctionCall}.
+   * @return The {@link FunctionCall} corresponding to the {@link DAGVertex actor} firing.
+   */
+  protected FpgaLoadAction generateFpgaLoadFunctionCalls(final DAGVertex dagVertex, final Prototype prototype,
+      final boolean isInit) {
+    // Creating a new action for FpgaLoad
+
+    /**
+     * TODO: in order to load the bitstream just once per function, a check of the already loaded "kernel" should be
+     * performed
+     */
+
+    final FpgaLoadAction func = CodegenFactory.eINSTANCE.createFpgaLoadAction();
+    func.setName(prototype.getFunctionName());
+    return func;
+  }
+
+  /**
+   * This method creates the function calls for FreeDataTransferBuffer.
+   *
+   * @param dagVertex
+   *          the {@link DAGVertex} corresponding to the {@link FunctionCall}.
+   * @return The {@link FunctionCall} corresponding to the {@link DAGVertex actor} firing.
+   */
+  protected FreeDataTransferBuffer generateFreeDataTransferBuffer(final DAGVertex dagVertex, final Prototype prototype,
+      final boolean isInit) {
+    // Creating a new action for FreeDataTransferBuffer
+    final FreeDataTransferBuffer func = CodegenFactory.eINSTANCE.createFreeDataTransferBuffer();
+    func.setName(prototype.getFunctionName());
+    func.setActorName(dagVertex.getName());
+    // Retrieve the Arguments
+    // fifos
+    final Entry<List<Buffer>, List<PortDirection>> callBuffer = generateBufferList(dagVertex, prototype, isInit);
+    // Put Buffer in the FreeDataTransferBuffer function call
+    for (int idx = 0; idx < callBuffer.getKey().size(); idx++) {
+      func.addBuffer(callBuffer.getKey().get(idx), callBuffer.getValue().get(idx));
+    }
+    return func;
+  }
+
+  /**
+   * This method creates the function call for the GlobalBufferDeclaration (when needed)
+   *
+   * @param dagVertex
+   *          the {@link DAGVertex} corresponding to the {@link FunctionCall}.
+   * @return The {@link FunctionCall} corresponding to the {@link DAGVertex actor} firing.
+   */
+  protected GlobalBufferDeclaration generateGlobalBufferDeclaration(final DAGVertex dagVertex,
+      final Prototype prototype, final boolean isInit) {
+    // Creating a new action for DataTransfer
+    final GlobalBufferDeclaration func = CodegenFactory.eINSTANCE.createGlobalBufferDeclaration();
+    func.setName(prototype.getFunctionName());
+    func.setActorName(dagVertex.getName());
+    // Retrieve the Arguments that must correspond to the incoming data
+    // fifos
+    final Entry<List<Buffer>, List<PortDirection>> callBuffer = generateBufferList(dagVertex, prototype, isInit);
+    // Put Buffer in the DataTransfer function call
+    for (int idx = 0; idx < callBuffer.getKey().size(); idx++) {
+      func.addBuffer(callBuffer.getKey().get(idx), callBuffer.getValue().get(idx));
+    }
     return func;
   }
 

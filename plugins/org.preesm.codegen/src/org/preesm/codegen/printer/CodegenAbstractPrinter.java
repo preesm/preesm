@@ -52,13 +52,19 @@ import org.preesm.codegen.model.Communication;
 import org.preesm.codegen.model.Constant;
 import org.preesm.codegen.model.ConstantString;
 import org.preesm.codegen.model.CoreBlock;
+import org.preesm.codegen.model.DataTransferAction;
 import org.preesm.codegen.model.FifoCall;
 import org.preesm.codegen.model.FiniteLoopBlock;
+import org.preesm.codegen.model.FpgaLoadAction;
+import org.preesm.codegen.model.FreeDataTransferBuffer;
 import org.preesm.codegen.model.FunctionCall;
+import org.preesm.codegen.model.GlobalBufferDeclaration;
 import org.preesm.codegen.model.IntVar;
 import org.preesm.codegen.model.LoopBlock;
 import org.preesm.codegen.model.NullBuffer;
+import org.preesm.codegen.model.OutputDataTransfer;
 import org.preesm.codegen.model.PapifyAction;
+import org.preesm.codegen.model.RegisterSetUpAction;
 import org.preesm.codegen.model.SharedMemoryCommunication;
 import org.preesm.codegen.model.SpecialCall;
 import org.preesm.codegen.model.SpecialType;
@@ -695,6 +701,36 @@ public abstract class CodegenAbstractPrinter extends CodegenSwitch<CharSequence>
     return printBufferIterator(bufferIterator);
   }
 
+  @Override
+  public CharSequence caseDataTransferAction(DataTransferAction object) {
+    return printDataTansfer(object);
+  }
+
+  @Override
+  public CharSequence caseOutputDataTransfer(OutputDataTransfer object) {
+    return printOutputDataTransfer(object);
+  }
+
+  @Override
+  public CharSequence caseRegisterSetUpAction(RegisterSetUpAction object) {
+    return printRegisterSetUp(object);
+  }
+
+  @Override
+  public CharSequence caseFpgaLoadAction(FpgaLoadAction object) {
+    return printFpgaLoad(object);
+  }
+
+  @Override
+  public CharSequence caseFreeDataTransferBuffer(FreeDataTransferBuffer object) {
+    return printFreeDataTransferBuffer(object);
+  }
+
+  @Override
+  public CharSequence caseGlobalBufferDeclaration(GlobalBufferDeclaration object) {
+    return printGlobalBufferDeclaration(object);
+  }
+
   /**
    * Method called to print a {@link SpecialCall} with {@link SpecialCall#getType() type} {@link SpecialType#BROADCAST}.
    * If this method returns <code>null</code>, the result of {@link #printSpecialCall(SpecialCall) } will be used
@@ -1155,4 +1191,64 @@ public abstract class CodegenAbstractPrinter extends CodegenSwitch<CharSequence>
    * @return the printed {@link CharSequence}
    */
   public abstract CharSequence printBufferIteratorDefinition(BufferIterator bufferIterator);
+
+  /**
+   * Method called to print a {@link DataTansferAction} within the {@link CoreBlock#getDefinitions() definition}
+   * {@link LoopBlock} of a {@link CoreBlock}
+   *
+   * @param action
+   *          the {@link DataTransferAction} to print.
+   * @return the printed {@link CharSequence}
+   */
+  public abstract CharSequence printDataTansfer(final DataTransferAction action);
+
+  /**
+   * Method called to print a {@link OutputDataTransfer} within the {@link CoreBlock#getDefinitions() definition}
+   * {@link LoopBlock} of a {@link CoreBlock}
+   *
+   * @param action
+   *          the {@link OutputDataTransfer} to print.
+   * @return the printed {@link CharSequence}
+   */
+  public abstract CharSequence printOutputDataTransfer(final OutputDataTransfer action);
+
+  /**
+   * Method called to print a {@link RegisterSetUpAction} within the {@link CoreBlock#getDefinitions() definition}
+   * {@link LoopBlock} of a {@link CoreBlock}
+   *
+   * @param action
+   *          the {@link RegisterSetUpAction} to print.
+   * @return the printed {@link CharSequence}
+   */
+  public abstract CharSequence printRegisterSetUp(final RegisterSetUpAction action);
+
+  /**
+   * Method called to print a {@link FpgaLoadAction} within the {@link CoreBlock#getDefinitions() definition}
+   * {@link CallBlock} of a {@link CoreBlock}
+   *
+   * @param action
+   *          the {@link FpgaLoadAction} to print.
+   * @return the printed {@link CharSequence}
+   */
+  public abstract CharSequence printFpgaLoad(final FpgaLoadAction action);
+
+  /**
+   * Method called to print a {@link FreeDataTransferBuffer} within the {@link CoreBlock#getDefinitions() definition}
+   * {@link CallBlock} of a {@link CoreBlock}
+   *
+   * @param action
+   *          the {@link FreeDataTransferBuffer} to print.
+   * @return the printed {@link CharSequence}
+   */
+  public abstract CharSequence printFreeDataTransferBuffer(final FreeDataTransferBuffer action);
+
+  /**
+   * Method called to print a {@link GlobalBufferDeclaration} within the {@link InitBlock#getDefinitions() definition}
+   * {@link InitBlock} of a {@link InitBlock}
+   *
+   * @param action
+   *          the {@link GlobalBufferDeclaration} to print.
+   * @return the printed {@link CharSequence}
+   */
+  public abstract CharSequence printGlobalBufferDeclaration(final GlobalBufferDeclaration action);
 }
