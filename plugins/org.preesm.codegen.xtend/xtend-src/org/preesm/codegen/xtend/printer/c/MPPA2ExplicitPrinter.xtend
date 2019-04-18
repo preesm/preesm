@@ -61,6 +61,12 @@ import java.util.Arrays
 import org.preesm.commons.files.URLResolver
 import org.preesm.codegen.xtend.CodegenPlugin
 import java.io.IOException
+import org.apache.velocity.app.VelocityEngine
+import org.preesm.model.pisdf.util.CHeaderUsedLocator
+import org.apache.velocity.VelocityContext
+import java.net.URL
+import java.io.InputStreamReader
+import java.io.StringWriter
 
 class MPPA2ExplicitPrinter extends CPrinter {
 
@@ -568,6 +574,47 @@ class MPPA2ExplicitPrinter extends CPrinter {
 		return printBuffer(buffer)
 	}
 	
+	override CharSequence generatePreesmHeader() {
+	    // 0- without the following class loader initialization, I get the following exception when running as Eclipse
+	    // plugin:
+	    // org.apache.velocity.exception.VelocityException: The specified class for ResourceManager
+	    // (org.apache.velocity.runtime.resource.ResourceManagerImpl) does not implement
+	    // org.apache.velocity.runtime.resource.ResourceManager; Velocity is not initialized correctly.
+	    val ClassLoader oldContextClassLoader = Thread.currentThread().getContextClassLoader();
+	    Thread.currentThread().setContextClassLoader(CPrinter.classLoader);
+
+	    // 1- init engine
+	    val VelocityEngine engine = new VelocityEngine();
+	    engine.init();
+
+	    // 2- init context
+	    val VelocityContext context = new VelocityContext();
+	    val findAllCHeaderFileNamesUsed = CHeaderUsedLocator.findAllCHeaderFileNamesUsed(getEngine.algo.referencePiMMGraph)
+	    context.put("USER_INCLUDES", findAllCHeaderFileNamesUsed.map["#include \""+ it +"\""].join("\n"));
+
+
+	    context.put("CONSTANTS", "#define NB_DESIGN_ELTS "+getEngine.archi.componentInstances.size+"\n#define NB_CLUSTERS "+getEngine.codeBlocks.size);
+
+	    // 3- init template reader
+	    val String templateLocalURL = "templates/c/preesm_gen.h";
+	    val URL mainTemplate = URLResolver.findFirstInBundleList(templateLocalURL, CodegenPlugin.BUNDLE_ID);
+	    var InputStreamReader reader = null;
+	    try {
+	      reader = new InputStreamReader(mainTemplate.openStream());
+	    } catch (IOException e) {
+	      throw new PreesmRuntimeException("Could not locate main template [" + templateLocalURL + "].", e);
+	    }
+
+	    // 4- init output writer
+	    val StringWriter writer = new StringWriter();
+
+	    engine.evaluate(context, writer, "org.apache.velocity", reader);
+
+	    // 99- set back default class loader
+	    Thread.currentThread().setContextClassLoader(oldContextClassLoader);
+
+	    return writer.getBuffer().toString();
+	}
 	override generateStandardLibFiles() {
 		val result = super.generateStandardLibFiles();
 		val String stdFilesFolder = "/stdfiles/mppa2Explicit/"
