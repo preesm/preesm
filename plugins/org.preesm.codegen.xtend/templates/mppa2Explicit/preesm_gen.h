@@ -85,8 +85,8 @@
 
 #[[#]]#include "preesm.h"
 
-#[[#]]#ifndef NB_CORE
-#[[#]]#define NB_CORE 1
+#[[#]]#ifndef PREESM_NB_CORES
+#[[#]]#define PREESM_NB_CORES 1
 #[[#]]#endif
 
 $USER_INCLUDES

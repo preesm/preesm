@@ -120,18 +120,6 @@ class MPPA2ExplicitPrinter extends CPrinter {
 		#define memset __wrap_memset
 		#define memcpy __wrap_memcpy
 		
-		/* local Core variables */
-		#ifdef PROFILE
-		#define DUMP_MAX_TIME 128
-		static uint64_t timestamp[NB_CORE][DUMP_MAX_TIME]; /* 4KB of data */
-		static int current_dump[NB_CORE] = { 0 };
-		#define getTimeProfile() if(current_dump[__k1_get_cpu_id()] < DUMP_MAX_TIME) \
-								timestamp[__k1_get_cpu_id()][current_dump[__k1_get_cpu_id()]] = __k1_read_dsu_timestamp(); \
-								current_dump[__k1_get_cpu_id()]++;
-		#endif
-
-		extern long long total_get_cycles[];
-		extern long long total_put_cycles[];
 		extern mppa_async_segment_t shared_segment;
 
 		/* Scratchpad buffer ptr (will be malloced) */
@@ -200,14 +188,12 @@ class MPPA2ExplicitPrinter extends CPrinter {
 				if(b.name == "Shared"){
 					gets += "void *" + param.name + " = local_buffer+" + local_offset +";\n";
 					gets += "{\n"
-					gets += "	uint64_t start = __k1_read_dsu_timestamp();\n"
 					gets += "	mppa_async_get(local_buffer + " + local_offset + ",\n";
 					gets += "	&shared_segment,\n";
 					//gets += "	" + b.name + " + " + offset + ",\n";
 					gets += "	/* Shared + */ " + offset + ",\n";
 					gets += "	" + param.typeSize * param.size + ",\n";
 					gets += "	NULL);\n";
-					gets += "	__builtin_k1_afdau(&total_get_cycles[__k1_get_cpu_id()], (__k1_read_dsu_timestamp() - start));\n"
 					gets += "}\n"
 					local_offset += param.typeSize * param.size;
 					//System.out.print("==> " + b.name + " " + param.name + " size " + param.size + " port_name "+ port.getName + "\n");
@@ -241,13 +227,11 @@ class MPPA2ExplicitPrinter extends CPrinter {
 					//System.out.print("===> " + b.name + "\n");
 					if(b.name == "Shared"){
 						puts += "{\n"
-						puts += "	uint64_t start = __k1_read_dsu_timestamp();\n"
 						puts += "	mppa_async_put(local_buffer + " + local_offset + ",\n";
 						puts += "	&shared_segment,\n";
 						puts += "	/* Shared + */" + offset + ",\n";
 						puts += "	" + param.typeSize * param.size + ",\n";
 						puts += "	NULL);\n";
-						puts += "	__builtin_k1_afdau(&total_put_cycles[__k1_get_cpu_id()], __k1_read_dsu_timestamp() - start);\n"
 						puts += "	}\n"
 						local_offset += param.typeSize * param.size;
 						//System.out.print("==> " + b.name + " " + param.name + " size " + param.size + " port_name "+ port.getName + "\n");
@@ -284,9 +268,7 @@ class MPPA2ExplicitPrinter extends CPrinter {
 						gets += "	void *" + param.name + " = local_buffer+" + local_offset +";\n";
 						if(port.getName == "INPUT"){ /* we get data from DDR -> cluster only when INPUT */
 							gets += "	{\n"
-							gets += "		uint64_t start = __k1_read_dsu_timestamp();\n"
 							gets += "		mppa_async_get(local_buffer+" + local_offset + ", &shared_segment, /* Shared + */ " + offset + ", " + param.typeSize * param.size + ", NULL);\n";
-							gets += "		__builtin_k1_afdau(&total_get_cycles[__k1_get_cpu_id()], __k1_read_dsu_timestamp() - start);\n"
 							gets += "	}\n"
 						}
 						local_offset += param.typeSize * param.size;
@@ -320,9 +302,7 @@ class MPPA2ExplicitPrinter extends CPrinter {
 					if(b.name == "Shared"){
 						if(port.getName == "OUTPUT"){ /* we put data from cluster -> DDR only when OUTPUT */
 							puts += "	{\n"
-							puts += "		uint64_t start = __k1_read_dsu_timestamp();\n"
 							puts += "		mppa_async_put(local_buffer+" + local_offset + ", &shared_segment, /* Shared + */ " + offset + ", " + param.typeSize * param.size + ", NULL);\n";
-							puts += "		__builtin_k1_afdau(&total_put_cycles[__k1_get_cpu_id()], __k1_read_dsu_timestamp() - start);\n"
 							puts += "	}\n"
 						}
 						local_offset += param.typeSize * param.size;
@@ -374,9 +354,9 @@ class MPPA2ExplicitPrinter extends CPrinter {
 
 	override printCoreInitBlockHeader(CallBlock callBlock) '''
 	void *computationTask_«(callBlock.eContainer as CoreBlock).name»(void *arg){
-	#ifdef PREESM_VERBOSE
+«/*	#ifdef PREESM_VERBOSE
 		//printf("Cluster %d runs on task «(callBlock.eContainer as CoreBlock).name»\n", __k1_get_cluster_id());
-	#endif
+	#endif*/»
 		«IF !callBlock.codeElts.empty»
 			// Initialisation(s)
 
@@ -385,7 +365,7 @@ class MPPA2ExplicitPrinter extends CPrinter {
 
 	override printCoreLoopBlockHeader(LoopBlock block2) '''
 
-		«"\t"»// Begin the execution loop
+		«"\t"»// Begin the execution loop // YEEEEEEEEAH
 		#ifdef PREESM_LOOP_SIZE // Case of a finite loop
 			int __iii __attribute__((unused));
 			for(__iii=0;__iii<PREESM_LOOP_SIZE;__iii++){
@@ -394,48 +374,14 @@ class MPPA2ExplicitPrinter extends CPrinter {
 		#endif
 
 				//pthread_barrier_wait(&pthread_barrier);
-		#ifdef PROFILE
-				getTimeProfile();
-		#endif
 
 	'''
 
 
 	override printCoreLoopBlockFooter(LoopBlock block2) '''
-		#ifdef PREESM_VERBOSE
-				mppa_rpc_barrier_all(); /* sync all PE0 of all Clusters */
-				if(__k1_get_cpu_id() == 0 && __k1_get_cluster_id() == 0){
-					//printf("C0->%d Graph Iteration %d / %d Done !\n", PREESM_NB_CLUSTERS, __iii+1, PREESM_LOOP_SIZE);
-				}
-				mppa_rpc_barrier_all(); /* sync all PE0 of all Clusters */
-		#endif
+
 				/* commit local changes to the global memory */
 				//pthread_barrier_wait(&pthread_barrier); /* barrier to make sure all threads have commited data in smem */
-				if(__k1_get_cpu_id() == 0){
-		#ifdef PROFILE
-					int iii;
-					for(iii=0;iii<__k1_get_cluster_id();iii++)
-						mppa_rpc_barrier_all();
-					int ii, jj;
-					for(jj=0;jj<NB_CORE;jj++){
-						if(current_dump[jj] != 0){
-							printf("C%d PE%d : Number of actors %d\n", __k1_get_cluster_id(), jj, current_dump[jj]);
-							printf("\t# Profile %d Timestamp %lld\n", 0, (long long)timestamp[jj][0]);
-							for(ii=1;ii<current_dump[jj];ii++){
-								printf("\t# C%d Profile %d Timestamp %lld Cycle %lld Time %.4f ms\n",
-										__k1_get_cluster_id(),
-										ii,
-										(long long)timestamp[jj][ii],
-										(long long)timestamp[jj][ii]-(long long)timestamp[jj][ii-1],
-										((float)timestamp[jj][ii]-(float)timestamp[jj][ii-1])/400000.0f /* chip freq */);
-							}
-						}
-					}
-					for(iii=__k1_get_cluster_id();iii<PREESM_NB_CLUSTERS;iii++)
-						mppa_rpc_barrier_all();
-		#endif
-				}
-
 			}
 			return NULL;
 		}
@@ -700,7 +646,7 @@ class MPPA2ExplicitPrinter extends CPrinter {
 		typedef void* (*mppa_preesm_task_t)(void *args);
 		
 		/* pthread_t declaration */
-		static pthread_t threads[NB_CORE-1] __attribute__((__unused__));
+		static pthread_t threads[PREESM_NB_CORES-1] __attribute__((__unused__));
 		
 		/* thread function pointers declaration */
 		static mppa_preesm_task_t mppa_preesm_task[PREESM_NB_CLUSTERS] __attribute__((__unused__)); 
@@ -725,11 +671,7 @@ class MPPA2ExplicitPrinter extends CPrinter {
 		extern void *computationTask_Cluster13(void *arg) __attribute__((__unused__, weak));
 		extern void *computationTask_Cluster14(void *arg) __attribute__((__unused__, weak));
 		extern void *computationTask_Cluster15(void *arg) __attribute__((__unused__, weak));
-		
-		/* Total number of cycles spent in async put/get */
-		long long total_get_cycles[NB_CORE] = {0};
-		long long total_put_cycles[NB_CORE] = {0};
-		
+				
 		/* Main executed on PE0 */
 		int
 		main(void)
@@ -743,9 +685,6 @@ class MPPA2ExplicitPrinter extends CPrinter {
 			// init comm
 			communicationInit();
 		
-		#ifdef VERBOSE
-			printf("Hello cluster %d\n", __k1_get_cluster_id());
-		#endif
 			/* Dirty generated threads wrapper to function pointers */ 
 		#if (CLUSTER_ID==0)
 			mppa_preesm_task[0] = computationTask_Cluster00;
@@ -810,34 +749,13 @@ class MPPA2ExplicitPrinter extends CPrinter {
 		#endif // CLUSTER 2
 		#endif // CLUSTER 1
 		#endif // CLUSTER 0
-		
-		#ifdef VERBOSE
-			printf("Cluster %d Booted with PREESM_NB_CLUSTERS %d\n", __k1_get_cluster_id(), PREESM_NB_CLUSTERS);
-		#if 0
-			{
-				int i;
-				for (i = 0; i < PREESM_NB_CLUSTERS; i++) {
-					printf("Cluster %d PE %d Thread Address %x\n", __k1_get_cluster_id(), __k1_get_cpu_id(), mppa_preesm_task[i]);
-				}
-			}
-		#endif
-		#endif
-		
-			pthread_barrier_init(&pthread_barrier, NULL, NB_CORE);
+
+			pthread_barrier_init(&pthread_barrier, NULL, PREESM_NB_CORES);
 			__builtin_k1_wpurge();
 			__builtin_k1_fence();
 			mOS_dinval();
 		
-		#if 0	
-			/* create threads if any */
-			for (i = 0; i < PREESM_NB_CLUSTERS-1; i++) {
-				printf("Start thread %d\n", i);
-				pthread_create(&threads[i], NULL, mppa_preesm_task[i+1], NULL);
-			}
-		#endif
-		
 			mppa_rpc_barrier_all();
-			uint64_t start = __k1_read_dsu_timestamp(); /* read clock cycle */
 		
 			/* PE0 work */	
 			if(mppa_preesm_task[__k1_get_cluster_id()] != 0){
@@ -846,61 +764,11 @@ class MPPA2ExplicitPrinter extends CPrinter {
 			}else{
 				printf("Cluster %d Error on code generator wrapper\n", __k1_get_cluster_id());
 			}
-		#if 0
-			/* join other threads if any */
-			for (i = 0; i < PREESM_NB_CLUSTERS-1; i++) {
-				printf("Join thread %d\n", i);
-				pthread_join(threads[i], NULL);
-			}
-		#endif
-			mppa_rpc_barrier_all();
-			uint64_t end = __k1_read_dsu_timestamp(); /* read clock cycle */
-		
-		#ifdef VERBOSE
-			mOS_dinval();
-			long long max_total_get_cycles = 0;
-			long long max_total_put_cycles = 0;
-			for(int i=0;i<NB_CORE;i++)
-			{
-				if(max_total_get_cycles < total_get_cycles[i])
-					max_total_get_cycles = total_get_cycles[i];
-				if(max_total_put_cycles < total_put_cycles[i])
-					max_total_put_cycles = total_put_cycles[i];
-			}
-			printf("Cluster %d Cycles: Total %llu Get %llu Put %llu GetPut %llu Ratio Communication/Total %.2f %%\n", __k1_get_cluster_id(),
-				end - start,
-				max_total_get_cycles,
-				max_total_put_cycles,
-				max_total_get_cycles+max_total_put_cycles,
-				(float)(max_total_get_cycles+max_total_put_cycles) / (float)(end-start) * 100.0f);
-				
-				printf("Cluster %d Total %.3f ms Graph Step %.3f ms FPS %.2f\n", 
-				__k1_get_cluster_id(), 
-				((double)(end - start))/((float)(__bsp_frequency/1000)),
-				((double)(end - start))/((float)(__bsp_frequency/1000))/PREESM_LOOP_SIZE, 
-				1/((((double)(end - start))/((float)(__bsp_frequency/1000))/PREESM_LOOP_SIZE)/1000.0f));
-		#endif
-		
-			mppa_rpc_barrier_all();
-			#ifdef VERBOSE
-			if(__k1_get_cluster_id() == 0)
-			{
-				float bw = (float)((float)(max_total_get_cycles+max_total_put_cycles) / ((float)(end-start)) * 100.0f);
-				float fps = 1/((((double)(end - start))/((float)(__bsp_frequency/1000))/PREESM_LOOP_SIZE)/1000.0f);
-				float time_ms = ((double)(end - start))/((float)(__bsp_frequency/1000));
-				
-				#ifdef __nodeos__
-				printf("\n\t PREESM_NB_CLUSTERS %d NB_CORE %d FPS %.2f BW %.2f %% Total run time %.2f ms\n\n", PREESM_NB_CLUSTERS, NB_CORE, fps, bw, time_ms);
-				#else
-				printf("\n\t PREESM_NB_CLUSTERS %d FPS %.2f BW %.2f %% Total run time %.2f ms\n\n", PREESM_NB_CLUSTERS, fps, bw, time_ms);
-				#endif
-			}
-			#endif
+
 			mppa_rpc_barrier_all();
 			mppa_async_final();
 			return 0;
 		}
-
 	'''
 
 	def String printMainIO(List<Block> printerBlocks) '''
@@ -961,7 +829,7 @@ class MPPA2ExplicitPrinter extends CPrinter {
 				assert(ret == 0);
 			}
 		
-		#ifdef VERBOSE	
+		#ifdef PREESM_VERBOSE	
 			printf("Hello IO\n");
 		#endif
 		
@@ -976,7 +844,7 @@ class MPPA2ExplicitPrinter extends CPrinter {
 		
 				char elf_name[30];
 				sprintf(elf_name, "cluster%d_bin", j);
-		#ifdef VERBOSE
+		#ifdef PREESM_VERBOSE
 				printf("Load cluster %d with elf %s\n", j, elf_name);
 		#endif
 				id = mppa_power_base_spawn(j, elf_name, NULL, NULL, MPPA_POWER_SHUFFLING_ENABLED);
@@ -989,7 +857,7 @@ class MPPA2ExplicitPrinter extends CPrinter {
 			mppa_async_segment_t shared_segment;
 			mppa_async_segment_create(&shared_segment, SHARED_SEGMENT_ID, (void*)(uintptr_t)Shared, 1024*1024*1024, 0, 0, NULL);
 		
-		#ifdef VERBOSE
+		#ifdef PREESM_VERBOSE
 			printf("Waiting for cluster exit \n");
 		#endif
 		
@@ -1021,7 +889,7 @@ class MPPA2ExplicitPrinter extends CPrinter {
 		 */
 		#include <pcie.h>
 		
-		//#define VERBOSE
+		//#define PREESM_VERBOSE
 		
 		int
 		main(int argc, char **argv)
@@ -1033,9 +901,7 @@ class MPPA2ExplicitPrinter extends CPrinter {
 				printf("Error, no multibinary provided to host executatble\n");
 				return -1;
 			}
-		#ifdef VERBOSE
-			printf("# [HOST] %s : load %s file\n", __func__, argv[1]);
-		#endif
+
 			/* load on the MPPA the k1 multi-binary */
 			pcie_load_io_exec_args_mb(fd, argv[1], argv[2], NULL, 0, PCIE_LOAD_FULL);
 		
@@ -1048,9 +914,7 @@ class MPPA2ExplicitPrinter extends CPrinter {
 			pcie_queue_barrier(fd, 0, &status);
 		
 			pcie_queue_exit(fd, 0, &status);
-		#ifdef VERBOSE
-			printf("# [HOST] MPPA exited with status %d\n", status);
-		#endif
+
 			return status;
 		}
 

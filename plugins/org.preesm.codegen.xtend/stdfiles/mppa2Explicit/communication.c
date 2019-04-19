@@ -33,8 +33,6 @@ extern int local_buffer_size __attribute__((weak));
 #define SYNC_SHARED_ADDRESS (0x3000000ULL)
 
 extern char *local_buffer __attribute__((weak));
-extern long long total_get_cycles[];
-extern long long total_put_cycles[];
 
 void sendStart(int cluster)
 {
@@ -165,11 +163,9 @@ void *__real_memset(void *s, int c, size_t n){
 	mOS_dinval();
 
 	if(addr >= DDR_START){
-		uint64_t start = __k1_read_dsu_timestamp();
 		off64_t offset = 0;
 		mppa_async_offset(&shared_segment, s, &offset);
 		mppa_async_get(l, &shared_segment, offset, n, NULL);
-		__builtin_k1_afdau(&total_get_cycles[__k1_get_cpu_id()], __k1_read_dsu_timestamp() - start);
 	}
 	
 	int i;
@@ -178,11 +174,9 @@ void *__real_memset(void *s, int c, size_t n){
 		l[i] = (char)c;
 	
 	if(addr >= DDR_START){
-		uint64_t start = __k1_read_dsu_timestamp();
 		off64_t offset = 0;
 		mppa_async_offset(&shared_segment, s, &offset);
 		mppa_async_put(l, &shared_segment, offset, n, NULL);
-		__builtin_k1_afdau(&total_put_cycles[__k1_get_cpu_id()], __k1_read_dsu_timestamp() - start);
 	}
 	__builtin_k1_wpurge();
 	__builtin_k1_fence();
@@ -228,34 +222,26 @@ void *__real_memcpy(void *dest, const void *src, size_t n){
 
 	/* cluster -> ddr */
 	if(dst_addr >= DDR_START && src_addr < DDR_START){
-		uint64_t start = __k1_read_dsu_timestamp();
 		off64_t offset = 0;
 		mppa_async_offset(&shared_segment, dest, &offset);
 		mppa_async_put(src, &shared_segment, offset, n, NULL);
-		__builtin_k1_afdau(&total_put_cycles[__k1_get_cpu_id()], __k1_read_dsu_timestamp() - start);
 	}
 
 	/* ddr -> cluster */
 	if(dst_addr < DDR_START && src_addr >= DDR_START){
-		uint64_t start = __k1_read_dsu_timestamp();
 		off64_t offset = 0;
 		mppa_async_offset(&shared_segment, dest, &offset);
 		mppa_async_get(dest, &shared_segment, offset, n, NULL);
-		__builtin_k1_afdau(&total_get_cycles[__k1_get_cpu_id()], __k1_read_dsu_timestamp() - start);
 	}
 
 	/* ddr -> ddr */
 	if(dst_addr >= DDR_START && src_addr >= DDR_START){
-		uint64_t startg = __k1_read_dsu_timestamp();
 		//printf("=====> local_buffer %llx src %llx dst %llx\n", (uint64_t)(uintptr_t)local_buffer, (uint64_t)(uintptr_t)src, (uint64_t)(uintptr_t)dest );		
 		off64_t offset = 0;
 		mppa_async_offset(&shared_segment, (void*)src, &offset);
 		mppa_async_get(local_buffer, &shared_segment, offset, n, NULL);
-		uint64_t startp = __k1_read_dsu_timestamp();
-		__builtin_k1_afdau(&total_get_cycles[__k1_get_cpu_id()], __k1_read_dsu_timestamp() - startg);
 		mppa_async_offset(&shared_segment, dest, &offset);
 		mppa_async_put(local_buffer, &shared_segment, offset, n, NULL);
-		__builtin_k1_afdau(&total_put_cycles[__k1_get_cpu_id()], __k1_read_dsu_timestamp() - startp);
 	}
 
 #if 0
