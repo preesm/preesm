@@ -559,7 +559,7 @@ class MPPA2ExplicitPrinter extends CPrinter {
 				} else {
 					communication.sendStart.coreContainer.name
 				}
-			var ret = coreName.substring(4, coreName.length)
+			var ret = coreName.substring(coreName.length - 2, coreName.length)
 			ret
 		}»«ENDIF»); // «communication.sendStart.coreContainer.name» > «communication.receiveStart.coreContainer.name»: «communication.
 			data.doSwitch»
@@ -709,33 +709,26 @@ class MPPA2ExplicitPrinter extends CPrinter {
 		pthread_barrier_t pthread_barrier __attribute__((__unused__)); 
 		
 		/* extern reference of generated code */
-		extern void *computationTask_Core00(void *arg) __attribute__((__unused__, weak));
-		extern void *computationTask_Core01(void *arg) __attribute__((__unused__, weak));
-		extern void *computationTask_Core02(void *arg) __attribute__((__unused__, weak));
-		extern void *computationTask_Core03(void *arg) __attribute__((__unused__, weak));
-		extern void *computationTask_Core04(void *arg) __attribute__((__unused__, weak));
-		extern void *computationTask_Core05(void *arg) __attribute__((__unused__, weak));
-		extern void *computationTask_Core06(void *arg) __attribute__((__unused__, weak));
-		extern void *computationTask_Core07(void *arg) __attribute__((__unused__, weak));
-		extern void *computationTask_Core08(void *arg) __attribute__((__unused__, weak));
-		extern void *computationTask_Core09(void *arg) __attribute__((__unused__, weak));
-		extern void *computationTask_Core10(void *arg) __attribute__((__unused__, weak));
-		extern void *computationTask_Core11(void *arg) __attribute__((__unused__, weak));
-		extern void *computationTask_Core12(void *arg) __attribute__((__unused__, weak));
-		extern void *computationTask_Core13(void *arg) __attribute__((__unused__, weak));
-		extern void *computationTask_Core14(void *arg) __attribute__((__unused__, weak));
-		extern void *computationTask_Core15(void *arg) __attribute__((__unused__, weak));
+		extern void *computationTask_Cluster00(void *arg) __attribute__((__unused__, weak));
+		extern void *computationTask_Cluster01(void *arg) __attribute__((__unused__, weak));
+		extern void *computationTask_Cluster02(void *arg) __attribute__((__unused__, weak));
+		extern void *computationTask_Cluster03(void *arg) __attribute__((__unused__, weak));
+		extern void *computationTask_Cluster04(void *arg) __attribute__((__unused__, weak));
+		extern void *computationTask_Cluster05(void *arg) __attribute__((__unused__, weak));
+		extern void *computationTask_Cluster06(void *arg) __attribute__((__unused__, weak));
+		extern void *computationTask_Cluster07(void *arg) __attribute__((__unused__, weak));
+		extern void *computationTask_Cluster08(void *arg) __attribute__((__unused__, weak));
+		extern void *computationTask_Cluster09(void *arg) __attribute__((__unused__, weak));
+		extern void *computationTask_Cluster10(void *arg) __attribute__((__unused__, weak));
+		extern void *computationTask_Cluster11(void *arg) __attribute__((__unused__, weak));
+		extern void *computationTask_Cluster12(void *arg) __attribute__((__unused__, weak));
+		extern void *computationTask_Cluster13(void *arg) __attribute__((__unused__, weak));
+		extern void *computationTask_Cluster14(void *arg) __attribute__((__unused__, weak));
+		extern void *computationTask_Cluster15(void *arg) __attribute__((__unused__, weak));
 		
 		/* Total number of cycles spent in async put/get */
 		long long total_get_cycles[NB_OMP_CORE] = {0};
 		long long total_put_cycles[NB_OMP_CORE] = {0};
-		
-		/*extern char *Core0 __attribute__((__unused__, weak));
-		extern char *Core0 __attribute__((__unused__, weak));
-		extern char *Core0 __attribute__((__unused__, weak));
-		extern char *Core0 __attribute__((__unused__, weak));
-		extern char *Core0 __attribute__((__unused__, weak));
-		extern char *Core0 __attribute__((__unused__, weak));*/
 		
 		/* Main executed on PE0 */
 		int
@@ -746,9 +739,7 @@ class MPPA2ExplicitPrinter extends CPrinter {
 			mppa_remote_client_init();
 		
 			mppa_async_segment_clone(&shared_segment, SHARED_SEGMENT_ID, NULL, 0, NULL);
-		
-			//mppa_async_segment_create(&seg, id, Cor)
-		
+				
 			// init comm
 			communicationInit();
 		
@@ -757,52 +748,52 @@ class MPPA2ExplicitPrinter extends CPrinter {
 		#endif
 			/* Dirty generated threads wrapper to function pointers */ 
 		#if (CLUSTER_ID==0)
-			mppa_preesm_task[0] = computationTask_Core00;
+			mppa_preesm_task[0] = computationTask_Cluster00;
 		#else
 		#if (CLUSTER_ID==1)
-			mppa_preesm_task[1] = computationTask_Core01;
+			mppa_preesm_task[1] = computationTask_Cluster01;
 		#else
 		#if (CLUSTER_ID==2)
-			mppa_preesm_task[2] = computationTask_Core02;
+			mppa_preesm_task[2] = computationTask_Cluster02;
 		#else
 		#if (CLUSTER_ID==3)
-			mppa_preesm_task[3] = computationTask_Core03;
+			mppa_preesm_task[3] = computationTask_Cluster03;
 		#else
 		#if (CLUSTER_ID==4)
-			mppa_preesm_task[4] = computationTask_Core04;
+			mppa_preesm_task[4] = computationTask_Cluster04;
 		#else
 		#if (CLUSTER_ID==5)
-			mppa_preesm_task[5] = computationTask_Core05;
+			mppa_preesm_task[5] = computationTask_Cluster05;
 		#else
 		#if (CLUSTER_ID==6)
-			mppa_preesm_task[6] = computationTask_Core06;
+			mppa_preesm_task[6] = computationTask_Cluster06;
 		#else
 		#if (CLUSTER_ID==7)
-			mppa_preesm_task[7] = computationTask_Core07;
+			mppa_preesm_task[7] = computationTask_Cluster07;
 		#else
 		#if (CLUSTER_ID==8)
-			mppa_preesm_task[8] = computationTask_Core08;
+			mppa_preesm_task[8] = computationTask_Cluster08;
 		#else
 		#if (CLUSTER_ID==9)
-			mppa_preesm_task[9] = computationTask_Core09;
+			mppa_preesm_task[9] = computationTask_Cluster09;
 		#else
 		#if (CLUSTER_ID==10)
-			mppa_preesm_task[10] = computationTask_Core10;
+			mppa_preesm_task[10] = computationTask_Cluster10;
 		#else
 		#if (CLUSTER_ID==11)
-			mppa_preesm_task[11] = computationTask_Core11;
+			mppa_preesm_task[11] = computationTask_Cluster11;
 		#else
 		#if (CLUSTER_ID==12)
-			mppa_preesm_task[12] = computationTask_Core12;
+			mppa_preesm_task[12] = computationTask_Cluster12;
 		#else
 		#if (CLUSTER_ID==13)
-			mppa_preesm_task[13] = computationTask_Core13;
+			mppa_preesm_task[13] = computationTask_Cluster13;
 		#else
 		#if (CLUSTER_ID==14)
-			mppa_preesm_task[14] = computationTask_Core14;
+			mppa_preesm_task[14] = computationTask_Cluster14;
 		#else
 		#if (CLUSTER_ID==15)
-			mppa_preesm_task[15] = computationTask_Core15;
+			mppa_preesm_task[15] = computationTask_Cluster15;
 		#endif // CLUSTER 15
 		#endif // CLUSTER 14
 		#endif // CLUSTER 13
@@ -937,7 +928,7 @@ class MPPA2ExplicitPrinter extends CPrinter {
 		#include <mppa_remote.h>
 		#include <mppa_async.h>
 		#include <HAL/hal/board/boot_args.h>
-		#include <cluster/preesm.h>
+		#include "preesm.h"
 		
 		static utask_t t;
 		static mppadesc_t pcie_fd = 0;
