@@ -112,7 +112,7 @@ class MPPA2ExplicitPrinter extends CPrinter {
 		#endif
 
 		/* user includes */
-		#include "preesm.h"
+		#include "preesm_gen.h"
 
 		extern void *__wrap_memset (void *s, int c, size_t n);
 		extern void *__wrap_memcpy(void *dest, const void *src, size_t n);
@@ -405,7 +405,7 @@ class MPPA2ExplicitPrinter extends CPrinter {
 		#ifdef PREESM_VERBOSE
 				mppa_rpc_barrier_all(); /* sync all PE0 of all Clusters */
 				if(__k1_get_cpu_id() == 0 && __k1_get_cluster_id() == 0){
-					//printf("C0->%d Graph Iteration %d / %d Done !\n", NB_CLUSTER, __iii+1, PREESM_LOOP_SIZE);
+					//printf("C0->%d Graph Iteration %d / %d Done !\n", PREESM_NB_CLUSTERS, __iii+1, PREESM_LOOP_SIZE);
 				}
 				mppa_rpc_barrier_all(); /* sync all PE0 of all Clusters */
 		#endif
@@ -431,7 +431,7 @@ class MPPA2ExplicitPrinter extends CPrinter {
 							}
 						}
 					}
-					for(iii=__k1_get_cluster_id();iii<NB_CLUSTER;iii++)
+					for(iii=__k1_get_cluster_id();iii<PREESM_NB_CLUSTERS;iii++)
 						mppa_rpc_barrier_all();
 		#endif
 				}
@@ -594,10 +594,10 @@ class MPPA2ExplicitPrinter extends CPrinter {
 	    context.put("USER_INCLUDES", findAllCHeaderFileNamesUsed.map["#include \""+ it +"\""].join("\n"));
 
 
-	    context.put("CONSTANTS", "#define NB_DESIGN_ELTS "+getEngine.archi.componentInstances.size+"\n#define NB_CLUSTERS "+getEngine.codeBlocks.size);
+	    context.put("CONSTANTS", "#define NB_DESIGN_ELTS "+getEngine.archi.componentInstances.size+"\n#define PREESM_NB_CLUSTERS "+getEngine.codeBlocks.size);
 
 	    // 3- init template reader
-	    val String templateLocalURL = "templates/c/preesm_gen.h";
+	    val String templateLocalURL = "templates/mppa2Explicit/preesm_gen.h";
 	    val URL mainTemplate = URLResolver.findFirstInBundleList(templateLocalURL, CodegenPlugin.BUNDLE_ID);
 	    var InputStreamReader reader = null;
 	    try {
@@ -618,7 +618,8 @@ class MPPA2ExplicitPrinter extends CPrinter {
 	}
 	override generateStandardLibFiles() {
 		val result = super.generateStandardLibFiles();
-		result.clear();
+		result.remove("mac_barrier.c");
+		result.remove("mac_barrier.h");
 		val String stdFilesFolder = "/stdfiles/mppa2Explicit/"
 		val files = Arrays.asList(#[
 						"communication.c",
@@ -643,7 +644,6 @@ class MPPA2ExplicitPrinter extends CPrinter {
 	override createSecondaryFiles(List<Block> printerBlocks, Collection<Block> allBlocks) {
 		val result = super.createSecondaryFiles(printerBlocks, allBlocks);
 		result.remove("main.c");
-		//result.clear();
 		if (generateMainFile()) {
 			result.put("cluster_main.c", printMainCluster(printerBlocks));
 			result.put("io_main.c", printMainIO(printerBlocks));
@@ -690,7 +690,7 @@ class MPPA2ExplicitPrinter extends CPrinter {
 		
 		#include <assert.h>
 		
-		#include "preesm.h"
+		#include "preesm_gen.h"
 		#include "communication.h"
 		
 		/* Shared Segment ID */
@@ -703,7 +703,7 @@ class MPPA2ExplicitPrinter extends CPrinter {
 		static pthread_t threads[NB_CORE-1] __attribute__((__unused__));
 		
 		/* thread function pointers declaration */
-		static mppa_preesm_task_t mppa_preesm_task[NB_CLUSTER] __attribute__((__unused__)); 
+		static mppa_preesm_task_t mppa_preesm_task[PREESM_NB_CLUSTERS] __attribute__((__unused__)); 
 		
 		/* global barrier called at each execution of ALL of the dataflow graph */
 		pthread_barrier_t pthread_barrier __attribute__((__unused__)); 
@@ -727,8 +727,8 @@ class MPPA2ExplicitPrinter extends CPrinter {
 		extern void *computationTask_Cluster15(void *arg) __attribute__((__unused__, weak));
 		
 		/* Total number of cycles spent in async put/get */
-		long long total_get_cycles[NB_OMP_CORE] = {0};
-		long long total_put_cycles[NB_OMP_CORE] = {0};
+		long long total_get_cycles[NB_CORE] = {0};
+		long long total_put_cycles[NB_CORE] = {0};
 		
 		/* Main executed on PE0 */
 		int
@@ -812,11 +812,11 @@ class MPPA2ExplicitPrinter extends CPrinter {
 		#endif // CLUSTER 0
 		
 		#ifdef VERBOSE
-			printf("Cluster %d Booted with NB_CLUSTER %d\n", __k1_get_cluster_id(), NB_CLUSTER);
+			printf("Cluster %d Booted with PREESM_NB_CLUSTERS %d\n", __k1_get_cluster_id(), PREESM_NB_CLUSTERS);
 		#if 0
 			{
 				int i;
-				for (i = 0; i < NB_CLUSTER; i++) {
+				for (i = 0; i < PREESM_NB_CLUSTERS; i++) {
 					printf("Cluster %d PE %d Thread Address %x\n", __k1_get_cluster_id(), __k1_get_cpu_id(), mppa_preesm_task[i]);
 				}
 			}
@@ -830,7 +830,7 @@ class MPPA2ExplicitPrinter extends CPrinter {
 		
 		#if 0	
 			/* create threads if any */
-			for (i = 0; i < NB_CLUSTER-1; i++) {
+			for (i = 0; i < PREESM_NB_CLUSTERS-1; i++) {
 				printf("Start thread %d\n", i);
 				pthread_create(&threads[i], NULL, mppa_preesm_task[i+1], NULL);
 			}
@@ -848,7 +848,7 @@ class MPPA2ExplicitPrinter extends CPrinter {
 			}
 		#if 0
 			/* join other threads if any */
-			for (i = 0; i < NB_CLUSTER-1; i++) {
+			for (i = 0; i < PREESM_NB_CLUSTERS-1; i++) {
 				printf("Join thread %d\n", i);
 				pthread_join(threads[i], NULL);
 			}
@@ -860,7 +860,7 @@ class MPPA2ExplicitPrinter extends CPrinter {
 			mOS_dinval();
 			long long max_total_get_cycles = 0;
 			long long max_total_put_cycles = 0;
-			for(int i=0;i<NB_OMP_CORE;i++)
+			for(int i=0;i<NB_CORE;i++)
 			{
 				if(max_total_get_cycles < total_get_cycles[i])
 					max_total_get_cycles = total_get_cycles[i];
@@ -890,9 +890,9 @@ class MPPA2ExplicitPrinter extends CPrinter {
 				float time_ms = ((double)(end - start))/((float)(__bsp_frequency/1000));
 				
 				#ifdef __nodeos__
-				printf("\n\t NB_CLUSTER %d NB_OMP_CORE %d FPS %.2f BW %.2f %% Total run time %.2f ms\n\n", NB_CLUSTER, NB_OMP_CORE, fps, bw, time_ms);
+				printf("\n\t PREESM_NB_CLUSTERS %d NB_CORE %d FPS %.2f BW %.2f %% Total run time %.2f ms\n\n", PREESM_NB_CLUSTERS, NB_CORE, fps, bw, time_ms);
 				#else
-				printf("\n\t NB_CLUSTER %d FPS %.2f BW %.2f %% Total run time %.2f ms\n\n", NB_CLUSTER, fps, bw, time_ms);
+				printf("\n\t PREESM_NB_CLUSTERS %d FPS %.2f BW %.2f %% Total run time %.2f ms\n\n", PREESM_NB_CLUSTERS, fps, bw, time_ms);
 				#endif
 			}
 			#endif
@@ -928,7 +928,7 @@ class MPPA2ExplicitPrinter extends CPrinter {
 		#include <mppa_remote.h>
 		#include <mppa_async.h>
 		#include <HAL/hal/board/boot_args.h>
-		#include "preesm.h"
+		#include "preesm_gen.h"
 		
 		static utask_t t;
 		static mppadesc_t pcie_fd = 0;
@@ -967,12 +967,12 @@ class MPPA2ExplicitPrinter extends CPrinter {
 		
 			mppa_rpc_server_init(	1 /* rm where to run server */, 
 									0 /* offset ddr */, 
-									NB_CLUSTER /* nb_cluster to serve*/);
+									PREESM_NB_CLUSTERS /* nb_cluster to serve*/);
 			mppa_async_server_init();
-			mppa_remote_server_init(pcie_fd, NB_CLUSTER);
+			mppa_remote_server_init(pcie_fd, PREESM_NB_CLUSTERS);
 			
 			
-			for( j = 0 ; j < NB_CLUSTER ; j++ ) {
+			for( j = 0 ; j < PREESM_NB_CLUSTERS ; j++ ) {
 		
 				char elf_name[30];
 				sprintf(elf_name, "cluster%d_bin", j);
@@ -994,7 +994,7 @@ class MPPA2ExplicitPrinter extends CPrinter {
 		#endif
 		
 			int err;
-			for( j = 0 ; j < NB_CLUSTER ; j++ ) {
+			for( j = 0 ; j < PREESM_NB_CLUSTERS ; j++ ) {
 			    mppa_power_base_waitpid (j, &err, 0);
 			}
 		
