@@ -327,7 +327,8 @@ class MPPA2ExplicitPrinter extends CPrinter {
 
 	override printDeclarationsHeader(List<Variable> list) '''
 	// Core Global Declaration
-	extern pthread_barrier_t pthread_barrier;
+	extern pthread_barrier_t iter_barrier;
+	extern int stopThreads;
 
 	'''
 
@@ -370,10 +371,10 @@ class MPPA2ExplicitPrinter extends CPrinter {
 			int __iii __attribute__((unused));
 			for(__iii=0;__iii<PREESM_LOOP_SIZE;__iii++){
 		#else // Default case of an infinite loop
-			while(1){
+			while(!stopThreads){
 		#endif
 
-				//pthread_barrier_wait(&pthread_barrier);
+				//pthread_barrier_wait(&iter_barrier);
 
 	'''
 
@@ -381,7 +382,7 @@ class MPPA2ExplicitPrinter extends CPrinter {
 	override printCoreLoopBlockFooter(LoopBlock block2) '''
 
 				/* commit local changes to the global memory */
-				//pthread_barrier_wait(&pthread_barrier); /* barrier to make sure all threads have commited data in smem */
+				//pthread_barrier_wait(&iter_barrier); /* barrier to make sure all threads have commited data in smem */
 			}
 			return NULL;
 		}
@@ -652,7 +653,8 @@ class MPPA2ExplicitPrinter extends CPrinter {
 		static mppa_preesm_task_t mppa_preesm_task[PREESM_NB_CLUSTERS] __attribute__((__unused__)); 
 		
 		/* global barrier called at each execution of ALL of the dataflow graph */
-		pthread_barrier_t pthread_barrier __attribute__((__unused__)); 
+		pthread_barrier_t iter_barrier __attribute__((__unused__)); 
+		int stopThreads __attribute__((__unused__)); 
 		
 		/* extern reference of generated code */
 		extern void *computationTask_Cluster00(void *arg) __attribute__((__unused__, weak));
@@ -686,71 +688,72 @@ class MPPA2ExplicitPrinter extends CPrinter {
 			communicationInit();
 		
 			/* Dirty generated threads wrapper to function pointers */ 
-		#if (CLUSTER_ID==0)
-			mppa_preesm_task[0] = computationTask_Cluster00;
-		#else
-		#if (CLUSTER_ID==1)
-			mppa_preesm_task[1] = computationTask_Cluster01;
-		#else
-		#if (CLUSTER_ID==2)
-			mppa_preesm_task[2] = computationTask_Cluster02;
-		#else
-		#if (CLUSTER_ID==3)
-			mppa_preesm_task[3] = computationTask_Cluster03;
-		#else
-		#if (CLUSTER_ID==4)
-			mppa_preesm_task[4] = computationTask_Cluster04;
-		#else
-		#if (CLUSTER_ID==5)
-			mppa_preesm_task[5] = computationTask_Cluster05;
-		#else
-		#if (CLUSTER_ID==6)
-			mppa_preesm_task[6] = computationTask_Cluster06;
-		#else
-		#if (CLUSTER_ID==7)
-			mppa_preesm_task[7] = computationTask_Cluster07;
-		#else
-		#if (CLUSTER_ID==8)
-			mppa_preesm_task[8] = computationTask_Cluster08;
-		#else
-		#if (CLUSTER_ID==9)
-			mppa_preesm_task[9] = computationTask_Cluster09;
-		#else
-		#if (CLUSTER_ID==10)
-			mppa_preesm_task[10] = computationTask_Cluster10;
-		#else
-		#if (CLUSTER_ID==11)
-			mppa_preesm_task[11] = computationTask_Cluster11;
-		#else
-		#if (CLUSTER_ID==12)
-			mppa_preesm_task[12] = computationTask_Cluster12;
-		#else
-		#if (CLUSTER_ID==13)
-			mppa_preesm_task[13] = computationTask_Cluster13;
-		#else
-		#if (CLUSTER_ID==14)
-			mppa_preesm_task[14] = computationTask_Cluster14;
-		#else
-		#if (CLUSTER_ID==15)
-			mppa_preesm_task[15] = computationTask_Cluster15;
-		#endif // CLUSTER 15
-		#endif // CLUSTER 14
-		#endif // CLUSTER 13
-		#endif // CLUSTER 12
-		#endif // CLUSTER 11
-		#endif // CLUSTER 10
-		#endif // CLUSTER 9
-		#endif // CLUSTER 8
-		#endif // CLUSTER 7
-		#endif // CLUSTER 6
-		#endif // CLUSTER 5
-		#endif // CLUSTER 4
-		#endif // CLUSTER 3
-		#endif // CLUSTER 2
-		#endif // CLUSTER 1
-		#endif // CLUSTER 0
+			#if (CLUSTER_ID==0)
+				mppa_preesm_task[0] = computationTask_Cluster00;
+			#else
+			#if (CLUSTER_ID==1)
+				mppa_preesm_task[1] = computationTask_Cluster01;
+			#else
+			#if (CLUSTER_ID==2)
+				mppa_preesm_task[2] = computationTask_Cluster02;
+			#else
+			#if (CLUSTER_ID==3)
+				mppa_preesm_task[3] = computationTask_Cluster03;
+			#else
+			#if (CLUSTER_ID==4)
+				mppa_preesm_task[4] = computationTask_Cluster04;
+			#else
+			#if (CLUSTER_ID==5)
+				mppa_preesm_task[5] = computationTask_Cluster05;
+			#else
+			#if (CLUSTER_ID==6)
+				mppa_preesm_task[6] = computationTask_Cluster06;
+			#else
+			#if (CLUSTER_ID==7)
+				mppa_preesm_task[7] = computationTask_Cluster07;
+			#else
+			#if (CLUSTER_ID==8)
+				mppa_preesm_task[8] = computationTask_Cluster08;
+			#else
+			#if (CLUSTER_ID==9)
+				mppa_preesm_task[9] = computationTask_Cluster09;
+			#else
+			#if (CLUSTER_ID==10)
+				mppa_preesm_task[10] = computationTask_Cluster10;
+			#else
+			#if (CLUSTER_ID==11)
+				mppa_preesm_task[11] = computationTask_Cluster11;
+			#else
+			#if (CLUSTER_ID==12)
+				mppa_preesm_task[12] = computationTask_Cluster12;
+			#else
+			#if (CLUSTER_ID==13)
+				mppa_preesm_task[13] = computationTask_Cluster13;
+			#else
+			#if (CLUSTER_ID==14)
+				mppa_preesm_task[14] = computationTask_Cluster14;
+			#else
+			#if (CLUSTER_ID==15)
+				mppa_preesm_task[15] = computationTask_Cluster15;
+			#endif // CLUSTER 15
+			#endif // CLUSTER 14
+			#endif // CLUSTER 13
+			#endif // CLUSTER 12
+			#endif // CLUSTER 11
+			#endif // CLUSTER 10
+			#endif // CLUSTER 9
+			#endif // CLUSTER 8
+			#endif // CLUSTER 7
+			#endif // CLUSTER 6
+			#endif // CLUSTER 5
+			#endif // CLUSTER 4
+			#endif // CLUSTER 3
+			#endif // CLUSTER 2
+			#endif // CLUSTER 1
+			#endif // CLUSTER 0
 
-			pthread_barrier_init(&pthread_barrier, NULL, PREESM_NB_CORES);
+			stopThreads = 0;
+			pthread_barrier_init(&iter_barrier, NULL, PREESM_NB_CORES);
 			__builtin_k1_wpurge();
 			__builtin_k1_fence();
 			mOS_dinval();
@@ -829,10 +832,6 @@ class MPPA2ExplicitPrinter extends CPrinter {
 				assert(ret == 0);
 			}
 		
-		#ifdef PREESM_VERBOSE	
-			printf("Hello IO\n");
-		#endif
-		
 			mppa_rpc_server_init(	1 /* rm where to run server */, 
 									0 /* offset ddr */, 
 									PREESM_NB_CLUSTERS /* nb_cluster to serve*/);
@@ -844,9 +843,6 @@ class MPPA2ExplicitPrinter extends CPrinter {
 		
 				char elf_name[30];
 				sprintf(elf_name, "cluster%d_bin", j);
-		#ifdef PREESM_VERBOSE
-				printf("Load cluster %d with elf %s\n", j, elf_name);
-		#endif
 				id = mppa_power_base_spawn(j, elf_name, NULL, NULL, MPPA_POWER_SHUFFLING_ENABLED);
 				if (id < 0)
 					return -2;
@@ -856,11 +852,7 @@ class MPPA2ExplicitPrinter extends CPrinter {
 		
 			mppa_async_segment_t shared_segment;
 			mppa_async_segment_create(&shared_segment, SHARED_SEGMENT_ID, (void*)(uintptr_t)Shared, 1024*1024*1024, 0, 0, NULL);
-		
-		#ifdef PREESM_VERBOSE
-			printf("Waiting for cluster exit \n");
-		#endif
-		
+				
 			int err;
 			for( j = 0 ; j < PREESM_NB_CLUSTERS ; j++ ) {
 			    mppa_power_base_waitpid (j, &err, 0);
@@ -888,9 +880,7 @@ class MPPA2ExplicitPrinter extends CPrinter {
 		 * All rights reserved.
 		 */
 		#include <pcie.h>
-		
-		//#define PREESM_VERBOSE
-		
+				
 		int
 		main(int argc, char **argv)
 		{
