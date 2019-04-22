@@ -49,7 +49,7 @@ communications.
 #ifndef _PREESM_COMMUNICATION_H
 #define _PREESM_COMMUNICATION_H
 
-#include <preesm_gen.h>
+#include "preesm_gen.h"
 
 #ifdef __APPLE__
 #include <dispatch/dispatch.h>
