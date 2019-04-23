@@ -657,22 +657,11 @@ class MPPA2ExplicitPrinter extends CPrinter {
 		int stopThreads __attribute__((__unused__)); 
 		
 		/* extern reference of generated code */
-		extern void *computationTask_Cluster00(void *arg) __attribute__((__unused__, weak));
-		extern void *computationTask_Cluster01(void *arg) __attribute__((__unused__, weak));
-		extern void *computationTask_Cluster02(void *arg) __attribute__((__unused__, weak));
-		extern void *computationTask_Cluster03(void *arg) __attribute__((__unused__, weak));
-		extern void *computationTask_Cluster04(void *arg) __attribute__((__unused__, weak));
-		extern void *computationTask_Cluster05(void *arg) __attribute__((__unused__, weak));
-		extern void *computationTask_Cluster06(void *arg) __attribute__((__unused__, weak));
-		extern void *computationTask_Cluster07(void *arg) __attribute__((__unused__, weak));
-		extern void *computationTask_Cluster08(void *arg) __attribute__((__unused__, weak));
-		extern void *computationTask_Cluster09(void *arg) __attribute__((__unused__, weak));
-		extern void *computationTask_Cluster10(void *arg) __attribute__((__unused__, weak));
-		extern void *computationTask_Cluster11(void *arg) __attribute__((__unused__, weak));
-		extern void *computationTask_Cluster12(void *arg) __attribute__((__unused__, weak));
-		extern void *computationTask_Cluster13(void *arg) __attribute__((__unused__, weak));
-		extern void *computationTask_Cluster14(void *arg) __attribute__((__unused__, weak));
-		extern void *computationTask_Cluster15(void *arg) __attribute__((__unused__, weak));
+		«FOR clusters : printerBlocks.toSet»
+			«IF (clusters instanceof CoreBlock)»
+				extern void *computationTask_«clusters.name»(void *arg) __attribute__((__unused__, weak));
+			«ENDIF»
+		«ENDFOR»
 				
 		/* Main executed on PE0 */
 		int
@@ -686,71 +675,14 @@ class MPPA2ExplicitPrinter extends CPrinter {
 				
 			// init comm
 			communicationInit();
-		
-			/* Dirty generated threads wrapper to function pointers */ 
-			#if (CLUSTER_ID==0)
-				mppa_preesm_task[0] = computationTask_Cluster00;
-			#else
-			#if (CLUSTER_ID==1)
-				mppa_preesm_task[1] = computationTask_Cluster01;
-			#else
-			#if (CLUSTER_ID==2)
-				mppa_preesm_task[2] = computationTask_Cluster02;
-			#else
-			#if (CLUSTER_ID==3)
-				mppa_preesm_task[3] = computationTask_Cluster03;
-			#else
-			#if (CLUSTER_ID==4)
-				mppa_preesm_task[4] = computationTask_Cluster04;
-			#else
-			#if (CLUSTER_ID==5)
-				mppa_preesm_task[5] = computationTask_Cluster05;
-			#else
-			#if (CLUSTER_ID==6)
-				mppa_preesm_task[6] = computationTask_Cluster06;
-			#else
-			#if (CLUSTER_ID==7)
-				mppa_preesm_task[7] = computationTask_Cluster07;
-			#else
-			#if (CLUSTER_ID==8)
-				mppa_preesm_task[8] = computationTask_Cluster08;
-			#else
-			#if (CLUSTER_ID==9)
-				mppa_preesm_task[9] = computationTask_Cluster09;
-			#else
-			#if (CLUSTER_ID==10)
-				mppa_preesm_task[10] = computationTask_Cluster10;
-			#else
-			#if (CLUSTER_ID==11)
-				mppa_preesm_task[11] = computationTask_Cluster11;
-			#else
-			#if (CLUSTER_ID==12)
-				mppa_preesm_task[12] = computationTask_Cluster12;
-			#else
-			#if (CLUSTER_ID==13)
-				mppa_preesm_task[13] = computationTask_Cluster13;
-			#else
-			#if (CLUSTER_ID==14)
-				mppa_preesm_task[14] = computationTask_Cluster14;
-			#else
-			#if (CLUSTER_ID==15)
-				mppa_preesm_task[15] = computationTask_Cluster15;
-			#endif // CLUSTER 15
-			#endif // CLUSTER 14
-			#endif // CLUSTER 13
-			#endif // CLUSTER 12
-			#endif // CLUSTER 11
-			#endif // CLUSTER 10
-			#endif // CLUSTER 9
-			#endif // CLUSTER 8
-			#endif // CLUSTER 7
-			#endif // CLUSTER 6
-			#endif // CLUSTER 5
-			#endif // CLUSTER 4
-			#endif // CLUSTER 3
-			#endif // CLUSTER 2
-			#endif // CLUSTER 1
-			#endif // CLUSTER 0
+			/* Threads wrapper to function pointers */ 
+		«FOR clusters : printerBlocks.toSet»
+			«IF (clusters instanceof CoreBlock)»
+				#if (CLUSTER_ID==«clusters.coreID»)
+				mppa_preesm_task[«clusters.coreID»] = computationTask_«clusters.name»;
+				#endif // Cluster «clusters.coreID»
+			«ENDIF»
+		«ENDFOR»
 
 			stopThreads = 0;
 			pthread_barrier_init(&iter_barrier, NULL, PREESM_NB_CORES);
