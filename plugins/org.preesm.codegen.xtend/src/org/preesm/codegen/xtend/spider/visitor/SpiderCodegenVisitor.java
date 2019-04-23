@@ -725,6 +725,7 @@ public class SpiderCodegenVisitor extends PiMMSwitch<Boolean> {
     append("\tPiSDFVertex* " + SpiderNameGenerator.getVertexName(ba));
     append(" = Spider::addSpecialVertex(\n");
     append("\t\t/*Graph*/   graph,\n");
+    append("\t\t/*Name*/    \"" + ba.getName() + "\",\n");
     append("\t\t/*Type*/    " + "PISDF_SUBTYPE_BROADCAST" + ",\n");
     append("\t\t/*InData*/  " + ba.getDataInputPorts().size() + ",\n");
     append("\t\t/*OutData*/ " + ba.getDataOutputPorts().size() + ",\n");
@@ -749,6 +750,7 @@ public class SpiderCodegenVisitor extends PiMMSwitch<Boolean> {
     append("\tPiSDFVertex* " + SpiderNameGenerator.getVertexName(aa));
     append(" = Spider::addSpecialVertex(\n");
     append("\t\t/*Graph*/   graph,\n");
+    append("\t\t/*Name*/    \"" + aa.getName() + "\",\n");
     append("\t\t/*Type*/    " + "PISDF_SUBTYPE_END" + ",\n");
     append("\t\t/*InData*/  " + aa.getDataInputPorts().size() + ",\n");
     append("\t\t/*OutData*/ " + aa.getDataOutputPorts().size() + ",\n");
@@ -771,6 +773,7 @@ public class SpiderCodegenVisitor extends PiMMSwitch<Boolean> {
     append("\tPiSDFVertex* " + SpiderNameGenerator.getVertexName(ja));
     append(" = Spider::addSpecialVertex(\n");
     append("\t\t/*Graph*/   graph,\n");
+    append("\t\t/*Name*/    \"" + ja.getName() + "\",\n");
     append("\t\t/*Type*/    " + "PISDF_SUBTYPE_JOIN" + ",\n");
     append("\t\t/*InData*/  " + ja.getDataInputPorts().size() + ",\n");
     append("\t\t/*OutData*/ " + ja.getDataOutputPorts().size() + ",\n");
@@ -793,6 +796,7 @@ public class SpiderCodegenVisitor extends PiMMSwitch<Boolean> {
     append("\tPiSDFVertex* " + SpiderNameGenerator.getVertexName(fa));
     append(" = Spider::addSpecialVertex(\n");
     append("\t\t/*Graph*/   graph,\n");
+    append("\t\t/*Name*/    \"" + fa.getName() + "\",\n");
     append("\t\t/*Type*/    " + "PISDF_SUBTYPE_FORK" + ",\n");
     append("\t\t/*InData*/  " + fa.getDataInputPorts().size() + ",\n");
     append("\t\t/*OutData*/ " + fa.getDataOutputPorts().size() + ",\n");
@@ -815,6 +819,7 @@ public class SpiderCodegenVisitor extends PiMMSwitch<Boolean> {
     append("\tPiSDFVertex* " + SpiderNameGenerator.getVertexName(rba));
     append(" = Spider::addSpecialVertex(\n");
     append("\t\t/*Graph*/   graph,\n");
+    append("\t\t/*Name*/    \"" + rba.getName() + "\",\n");
     append("\t\t/*Type*/    " + "PISDF_SUBTYPE_ROUNDBUFFER" + ",\n");
     append("\t\t/*InData*/  " + rba.getDataInputPorts().size() + ",\n");
     append("\t\t/*OutData*/ " + rba.getDataOutputPorts().size() + ",\n");
