@@ -501,12 +501,12 @@ class MPPA2ExplicitPrinter extends CPrinter {
 		«communication.direction.toString.toLowerCase»«communication.delimiter.toString.toLowerCase.toFirstUpper»(«IF (communication.
 			direction == Direction::SEND && communication.delimiter == Delimiter::START) ||
 			(communication.direction == Direction::RECEIVE && communication.delimiter == Delimiter::END)»«{
-			var coreName = if (communication.direction == Direction::SEND) {
-					communication.receiveStart.coreContainer.name
+			var coreID = if (communication.direction == Direction::SEND) {
+					communication.receiveStart.coreContainer.coreID
 				} else {
-					communication.sendStart.coreContainer.name
+					communication.sendStart.coreContainer.coreID
 				}
-			var ret = coreName.substring(coreName.length - 2, coreName.length)
+			var ret = coreID
 			ret
 		}»«ENDIF»); // «communication.sendStart.coreContainer.name» > «communication.receiveStart.coreContainer.name»: «communication.
 			data.doSwitch»

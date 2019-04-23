@@ -31,5 +31,7 @@ void fifoPush(void * inputBuffer, void* headBuffer, int headSize, void* bodyBuff
 }
 
 void fifoPop(void * outputBuffer, void* headBuffer, int headSize, void* bodyBuffer, int bodySize){
+	(void) bodyBuffer;
+	(void) bodySize;
     memcpy(outputBuffer, headBuffer, headSize);
 }
