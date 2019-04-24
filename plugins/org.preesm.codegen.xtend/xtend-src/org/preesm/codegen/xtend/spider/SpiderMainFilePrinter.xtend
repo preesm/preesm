@@ -64,15 +64,12 @@ class SpiderMainFilePrinter {
 	#include <stdio.h>
 	#include <stdlib.h>
 	#include <stdexcept>
+	#include <string.h>
 
 	/* Include your files here */
 	«printRefinementRec(pg)»
 
 	#include "../generated/«pg.name».h"
-
-	#define SH_MEM_SIZE «String.format("0x%08X", spiderConfig.sharedMemorySize)»
-
-	#define NB_LRT «printNLRT(coreTypeNameList)»
 
 	#define NB_ITERATION 10000
 
@@ -112,85 +109,59 @@ class SpiderMainFilePrinter {
 		SpiderConfig cfg;
 		ExecutionStat stat;
 
-		// Setting memory info
+		/* == Setting memory info == */
 		cfg.memAllocType = «spiderConfig.memoryAllocType»;
 		cfg.memAllocStart = 0;
 		cfg.memAllocSize = SH_MEM_SIZE;
 
-
-		// Setting scheduler
+		/* == Setting scheduler == */
 		cfg.schedulerType = «spiderConfig.schedulerType»;
 
-
-		// Declaring stacks
-		cfg.archiStack.name = "ArchiStack";
-		cfg.archiStack.start = archiStack;
-
-		cfg.lrtStack.name = "LrtStack";
-		cfg.lrtStack.start = lrtStack;
-
-		cfg.pisdfStack.name = "PiSDFStack";
-		cfg.pisdfStack.start = pisdfStack;
-
-		cfg.srdagStack.name = "SrdagStack";
-		cfg.srdagStack.start = srdagStack;
-
-		cfg.transfoStack.name = "TransfoStack";
-		cfg.transfoStack.start = transfoStack;
+		/* == Declaring stacks == */
+		SpiderStackConfig stackConfig;
+		stackConfig.archiStack.name = "ArchiStack";
+		stackConfig.archiStack.start = archiStack;
+		stackConfig.lrtStack.name = "LrtStack";
+		stackConfig.lrtStack.start = lrtStack;
+		stackConfig.pisdfStack.name = "PiSDFStack";
+		stackConfig.pisdfStack.start = pisdfStack;
+		stackConfig.srdagStack.name = "SrdagStack";
+		stackConfig.srdagStack.start = srdagStack;
+		stackConfig.transfoStack.name = "TransfoStack";
+		stackConfig.transfoStack.start = transfoStack;
 
 
 	#if STACK_IS_DYNAMIC == 1
-
-		cfg.archiStack.type = STACK_DYNAMIC;
-
-		cfg.lrtStack.type = STACK_DYNAMIC;
-
-		cfg.pisdfStack.type = STACK_DYNAMIC;
-
-		cfg.srdagStack.type = STACK_DYNAMIC;
-
-		cfg.transfoStack.type = STACK_DYNAMIC;
-
+		stackConfig.archiStack.type = StackType::DYNAMIC;
+		stackConfig.lrtStack.type = StackType::DYNAMIC;
+		stackConfig.pisdfStack.type = StackType::DYNAMIC;
+		stackConfig.srdagStack.type = StackType::DYNAMIC;
+		stackConfig.transfoStack.type = StackType::DYNAMIC;
 	#else
-		cfg.archiStack.type = STACK_STATIC;
-		cfg.archiStack.size = ARCHI_SIZE;
-
-		cfg.lrtStack.type = STACK_STATIC;
-		cfg.lrtStack.size = LRT_SIZE;
-
-		cfg.pisdfStack.type = STACK_STATIC;
-		cfg.pisdfStack.size = PISDF_SIZE;
-
-		cfg.srdagStack.type = STACK_STATIC;
-		cfg.srdagStack.size = SRDAG_SIZE;
-
-		cfg.transfoStack.type = STACK_STATIC;
-		cfg.transfoStack.size = TRANSFO_SIZE;
+		stackConfig.archiStack.type = StackType::STATIC;
+		stackConfig.archiStack.size = ARCHI_SIZE;
+		stackConfig.lrtStack.type = StackType::STATIC;
+		stackConfig.lrtStack.size = LRT_SIZE;
+		stackConfig.pisdfStack.type = StackType::STATIC;
+		stackConfig.pisdfStack.size = PISDF_SIZE;
+		stackConfig.srdagStack.type = StackType::STATIC;
+		stackConfig.srdagStack.size = SRDAG_SIZE;
+		stackConfig.transfoStack.type = StackType::STATIC;
+		stackConfig.transfoStack.size = TRANSFO_SIZE;
 	#endif
 
-		// Setting desired number of LRT/thread
-		cfg.platform.nLrt = NB_LRT;
+		/* == Setting graph PiSDF graph == */
+		cfg.fcts = «pg.name»_fcts;
+		cfg.nLrtFcts = N_FCT_«pg.name.toUpperCase»;
 
-		// Setting size of shared mem
-		cfg.platform.shMemSize = SH_MEM_SIZE;
-
-		// Setting graph PiSDF graph
-		cfg.platform.fcts = «pg.name»_fcts;
-		cfg.platform.nLrtFcts = N_FCT_«pg.name.toUpperCase»;
-
-		// Initialize the architecture information
-		if (init_archi_infos(&cfg.platform) < 0) {
-			fprintf(stderr, "ERROR: Failed to initialize the architecture.\n");
-			return -1;
-		}
-
-		// Verbosity of spider output
+		/* == Verbosity of spider output == */
 		cfg.verbose = «spiderConfig.useOfVerbose»;
-		// Enables output trace of spider
+		/* == Enables output trace of spider == */
 		cfg.traceEnabled = «spiderConfig.useOfTrace»;
-		// Enables graph optimizations (may impact performance)
+		/* == Enables graph optimizations (may impact performance) == */
 		cfg.useGraphOptim = «spiderConfig.useOfGraphOptims»;
-		// Papify instrumentation
+		
+		/* == Papify instrumentation == */
 		«IF spiderConfig.useOfPapify»
 			cfg.usePapify = true;
 			cfg.papifyJobInfo = get_«pg.name»_papifyConfigs();
@@ -199,24 +170,30 @@ class SpiderMainFilePrinter {
 		«ENDIF»
 
 		try {
-			// Spider initialisation
-			Spider::init(cfg);
+			/* == Spider stacks init == */
+			Spider::initStacks(stackConfig);
+			
+			/* == Spider Archi init == */
+			initArchi();
+			
+			/* == Spider initialisation == */
+			Spider::init(cfg, stackConfig);
 
 «printInitCallRec(pg)»
-			// PiSDF graph construction
+			/* == PiSDF graph construction == */
 			init_«pg.name»();
 
-			// Reserving memory for persistent delays
+			/* == Reserving memory for persistent delays == */
 			Spider::initReservedMemory();
 
 			fprintf(stderr, "INFO: Application execution -- START\n");
 
-			// Main loop, exception handling can be removed to increase performance
+			/* == Main loop, exception handling can be removed to increase performance == */
 			for(int i=0; i<NB_ITERATION && !stopThreads; i++){
-				// Compute the SR-DAG, scheduling and executing the main graph
+				/* == Compute the SR-DAG, scheduling and executing the main graph == */
 				Spider::iterate();
 
-				// Printing Gantt
+				/* == Printing Gantt == */
 				if (cfg.traceEnabled) {
 					Spider::printGantt("gantt.pgantt", "gantt_tex.dat", &stat);
 					fprintf(stderr, "INFO: Total execution time:       %lf ms\n",  (stat.execTime + stat.schedTime) / 1000000.);
@@ -227,18 +204,15 @@ class SpiderMainFilePrinter {
 
 			fprintf(stderr, "INFO: Application execution -- FINISHED\n");
 
-			// PiSDF graph destruction
-			free_«pg.name»();
-
+			/* == Cleaning everything spider related == */
 			Spider::clean();
-
 			«IF spiderConfig.useOfPapify»
 					 // Freeing PapifyConfigs
 					free_«pg.name»_papifyConfigs(cfg.papifyJobInfo);
 			«ENDIF»
 
-			// Free the information linked to the architecture
-			free_archi_infos(&cfg.platform);
+			/* == Free memory buffer(s) of the Archi == */
+			freeArchi();
 
 		} catch(std::exception &e) {
 			fprintf(stderr, "%s\n", e.what());
@@ -262,7 +236,7 @@ class SpiderMainFilePrinter {
 				«IF actor.refinement instanceof CHeaderRefinement && (actor.refinement as CHeaderRefinement).getInitPrototype !== null»
 					«val refinement = printInitCall(actor)»
 					«IF !this.initRefinementDone.contains(refinement)»
-						«"\t\t// Actor initializations of vertex " + actor.vertexPath»
+						«"\t\t/* == Actor initializations of vertex " + actor.vertexPath + " == */"»
 						«"\t\t"+ refinement + "\n"»
 						«{this.initRefinementDone.add(refinement) ""}»
 			        «ENDIF»
@@ -287,11 +261,4 @@ class SpiderMainFilePrinter {
 			«printRefinementRec(cg)»
 		«ENDFOR»
 	'''
-	
-	
-	def static String printNLRT(List<String> nameList) '''
-		«val finalValue = ""»
-		«finalValue»(«FOR name : nameList SEPARATOR " + "»«name»«ENDFOR»)
-	'''
-
 }

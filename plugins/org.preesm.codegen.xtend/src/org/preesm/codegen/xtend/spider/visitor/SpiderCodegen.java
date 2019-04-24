@@ -251,7 +251,7 @@ public class SpiderCodegen {
    *          the pg
    * @return the string
    */
-  public String generateHeaderCode(final PiGraph pg) {
+  public String generateHeaderCode(final PiGraph pg, final SpiderConfig spiderConfig) {
     this.cppString.setLength(0);
 
     /* Put license */
@@ -270,9 +270,11 @@ public class SpiderCodegen {
       this.coreTypeName.add(name);
       append("#define " + name + " " + Integer.toString(this.coresPerCoreType.get(coreType)) + "\n");
     }
+    append("#define N_PE (" + String.join(" + ", this.coreTypeName) + ")\n");
+    append("#define SH_MEM_SIZE (" + String.format("0x%08X", spiderConfig.getSharedMemorySize()) + ")\n\n");
 
-    append("int init_archi_infos(PlatformConfig *config);\n");
-    append("void free_archi_infos(PlatformConfig *config);\n");
+    append("void initArchi();\n");
+    append("void freeArchi();\n");
     append("\n");
 
     /* Declare the addGraph method */
@@ -304,7 +306,7 @@ public class SpiderCodegen {
     append("\n");
 
     /* Core */
-    append("typedef enum{\n");
+    append("enum class PEVirtID : std::uint32_t {\n");
     final List<String> sortedCores = new ArrayList<>(this.coreIds.keySet());
     Collections.sort(sortedCores);
     for (int i = 0; i < this.coreIds.size(); i++) {
@@ -315,14 +317,26 @@ public class SpiderCodegen {
         }
       }
     }
-    append("} PE;\n\n");
+    append("}; \n\n");
+
+    /* Hardware ID */
+    append("enum class PEHardwareID : std::uint32_t {\n");
+    for (int i = 0; i < this.coreIds.size(); i++) {
+      for (final Entry<String, Integer> entry : this.coreIds.entrySet()) {
+        if (entry.getValue() == i) {
+          final String core = entry.getKey();
+          append("\t" + SpiderNameGenerator.getCoreName(core) + " = " + this.coreIds.get(core) + ",\n");
+        }
+      }
+    }
+    append("}; \n\n");
 
     /* Core Type */
-    append("typedef enum{\n");
+    append("enum class PEType : std::uint32_t {\n");
     for (final String coreType : this.coreTypesIds.keySet()) {
       append("\t" + SpiderNameGenerator.getCoreTypeName(coreType) + " = " + this.coreTypesIds.get(coreType) + ",\n");
     }
-    append("} PEType;\n\n");
+    append("};\n\n");
 
     /* Fct Ix */
     append("typedef enum{\n");
@@ -378,13 +392,6 @@ public class SpiderCodegen {
     for (final StringBuilder m : codeGenerator.getMethods()) {
       this.cppString.append(m);
     }
-
-    // Add free fct
-    append("\n");
-    append("void free_" + pg.getName() + "(){\n");
-    append("\tSpider::cleanPiSDF();\n");
-    append("}\n");
-
     // Returns the final C++ code
     return this.cppString.toString();
   }
@@ -604,74 +611,53 @@ public class SpiderCodegen {
     append("#include <spider.h>\n");
     append("#include <stdlib.h>\n");
     append("#include <stdio.h>\n");
+    append("#include <cstring>\n");
     append("#include \"" + pg.getName() + ".h\"\n\n");
 
-    append("static int nPEPerType[N_PE_TYPE] = { \n");
-    for (final String coreType : this.coreTypesIds.keySet()) {
-      append("\tN_" + SpiderNameGenerator.getCoreTypeName(coreType) + ", \n");
-    }
-    append("};\n\n");
+    append("static char *shMemBuffer = nullptr;\n\n");
 
-    append("int init_archi_infos(PlatformConfig *config) {\n");
-    append("\t// Setting the number of PE types\n");
-    append("\tconfig->nPeType = N_PE_TYPE;\n");
-    append("\t// Setting the number of PE per PEType\n");
-    append("\tconfig->pesPerPeType = (int *) malloc(N_PE_TYPE * sizeof(int));\n");
-    append("\tif (!config->pesPerPeType) {\n");
-    append("\t\tfprintf(stderr, \"Could not init pesPerPeType \\n\");\n");
-    append("\t\treturn -1;\n");
+    append("void initArchi() {\n\n");
+    append("\t/* === Init SpiderArchiConfig structure === */\n\n");
+    append("\tSpiderArchiConfig config;\n");
+    append("\tconfig.nPE = N_PE;\n");
+    append("\tconfig.nPEType = N_PE_TYPE;\n");
+    append("\tconfig.nMemoryUnit = 1;\n\n");
+    append("\t/* === Create Archi === */\n\n");
+    append("\tauto *archi = Spider::createArchi(config);\n\n");
+    append("\t/* === Create the different MemoryUnit(s) === */\n\n");
+    append("\tshMemBuffer = (char *) std::malloc(SH_MEM_SIZE);\n");
+    append("\tif (!shMemBuffer) {\n");
+    append("\t\tfprintf(stderr, \"ERROR: failed to allocate [%X] bytes for MemoryUnit [%s]\\n\", "
+        + "SH_MEM_SIZE, \"shared-memory\");\n");
+    append("\t\texit(-1);\n");
     append("\t}\n");
+    append("\tauto *shMem = Spider::createMemoryUnit(shMemBuffer, SH_MEM_SIZE);\n");
+    append("\tmemset(shMemBuffer, 0, SH_MEM_SIZE);\n\n");
+    append("\t/* === Create the different PE(s) === */\n");
     for (final String coreType : this.coreTypesIds.keySet()) {
       final String coreTypeName = SpiderNameGenerator.getCoreTypeName(coreType);
-      append("\t// " + coreTypeName + "\n");
-      append("\tconfig->pesPerPeType[" + coreTypeName + "]" + " = N_" + coreTypeName + ";\n");
-    }
-    append("\t// Setting the core affinity for each PE\n");
-    append("\tconfig->coreAffinities = (int **) malloc(N_PE_TYPE * sizeof(int*));\n");
-    append("\tif (!config->coreAffinities) {\n");
-    append("\t\tfree_archi_infos(config);\n");
-    append("\t\tfprintf(stderr, \"Could not init coreAffinities\\n\");\n");
-    append("\t\treturn -1;\n");
-    append("\t}\n");
-    append("\tfor (int i = 0; i < N_PE_TYPE; ++i) {\n");
-    append("\t\tconfig->coreAffinities[i] = (int *) malloc(nPEPerType[i] * sizeof(int));\n");
-    append("\t\tif (!config->coreAffinities[i]) {\n");
-    append("\t\t\tfree_archi_infos(config);\n");
-    append("\t\t\tfprintf(stderr, \"Could not coreAffinities # %d \\n\",i);\n");
-    append("\t\t\treturn -1;\n");
-    append("\t\t}\n");
-    append("\t}\n");
-    for (final String coreType : this.coreTypesIds.keySet()) {
-      int coreIndex = 0;
-      final String coreTypeName = SpiderNameGenerator.getCoreTypeName(coreType);
-      append("\t// " + coreTypeName + "\n");
+      append("\n\t/* == " + coreTypeName + " == */");
       for (final ComponentInstance c : this.coresFromCoreType.get(coreType)) {
         final String coreName = SpiderNameGenerator.getCoreName(c.getInstanceName());
-        append("\tconfig->coreAffinities[" + coreTypeName + "][" + Integer.toString(coreIndex) + "] = " + coreName
-            + ";\n");
-        coreIndex++;
+        final String peName = "pe" + coreType.toUpperCase() + c.getInstanceName();
+        append("\n\tauto *" + peName + " = Spider::createPE(\n" + "\t\tstatic_cast<std::uint32_t>(PEType::"
+            + coreTypeName + "),\n" + "\t\tstatic_cast<std::uint32_t>(PEHardwareID::" + coreName + "),\n"
+            + "\t\tstatic_cast<std::uint32_t>(PEVirtID::" + coreName + "),\n" + "\t\t\"" + coreType + "-"
+            + c.getInstanceName() + "\",\n" + "\t\tSpiderPEType::LRT_PE,\n" + "\t\tSpiderHWType::PHYS_PE);\n");
+        append("\tSpider::setPEMemoryUnit(" + peName + ", shMem);\n");
       }
+      append("\n\t/* === Set Spider GRT core === */\n\n");
+      append("\tSpider::setSpiderGRTVirtualID(archi, static_cast<std::uint32_t>(PEVirtID::"
+          + SpiderNameGenerator.getCoreName(scenario.getSimulationManager().getMainOperatorName()) + "));\n");
     }
-    append("\treturn 0;\n");
-    append("}\n");
-    append("\n");
-
-    append("void free_archi_infos(PlatformConfig *config) {\n");
-    append("\tif(config->pesPerPeType) {\n");
-    append("\t\tfree(config->pesPerPeType);\n");
-    append("\t\tconfig->pesPerPeType = NULL;\n");
-    append("\t}\n");
-    append("\tif(config->coreAffinities) {\n");
-    append("\t\tfor (int i = 0; i < N_PE_TYPE; ++i) {\n");
-    append("\t\t\tif (config->coreAffinities[i]) {\n");
-    append("\t\t\t\tfree(config->coreAffinities[i]);\n");
-    append("\t\t\t}\n");
-    append("\t\t}\n");
-    append("\t\tfree(config->coreAffinities);\n");
-    append("\t\tconfig->coreAffinities = NULL;\n");
+    append("}\n\n");
+    append("void freeArchi() {\n\n");
+    append("\t/* === Freeing memory buffer allocated for MemoryUnit(s) === */\n\n");
+    append("\tif (shMemBuffer) {\n");
+    append("\t\tstd::free(shMemBuffer);\n");
+    append("\t\tshMemBuffer = nullptr;\n");
     append("\t}\n");
     append("}\n");
-    append("\n");
     // Returns the final C++ code
     return this.cppString.toString();
   }
