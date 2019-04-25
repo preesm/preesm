@@ -94,6 +94,13 @@
                   type="Hardware">
             </core_type>
          </printer>
+         <printer
+               class="org.preesm.codegen.xtend.printer.c.MPPA2IOExplicitPrinter"
+               extension=".c">
+            <core_type
+                  type="MPPA2IOExplicit">
+            </core_type>
+         </printer>
       </printers>
       <printers language="InstrumentedC">
          <printer

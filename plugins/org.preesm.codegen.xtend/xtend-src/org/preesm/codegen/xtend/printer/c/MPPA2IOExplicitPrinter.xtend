@@ -68,33 +68,13 @@ import java.net.URL
 import java.io.InputStreamReader
 import java.io.StringWriter
 import java.util.Collection
-import java.util.LinkedHashMap
 
-class MPPA2ExplicitPrinter extends CPrinter {
-
-	/**
-	 * Set to true if a main file should be generated. Set at object creation in constructor.
-	 */
-	final boolean generateMainFile;
-
-	override boolean generateMainFile() {
-		return this.generateMainFile;
-	}
+class MPPA2IOExplicitPrinter extends MPPA2ExplicitPrinter {
 
 	new() {
-		// generate a main file by default
-		this(true);
+		// do not generate a main file
+		super(true)
 	}
-
-	new(boolean generateMainFile) {
-		this.generateMainFile = generateMainFile;
-	}
-	/**
-	 * Preprocessing configuration
-	 */
-	protected int numClusters = 0;
-	protected int clusterToSync = 0;
-	protected boolean io_used = false;
 
 	/**
 	 * Temporary global var to ignore the automatic suppression of memcpy
@@ -109,7 +89,7 @@ class MPPA2ExplicitPrinter extends CPrinter {
 	protected String scratch_pad_buffer = ""
 
 	protected long local_buffer_size = 0
-
+	
 	override printCoreBlockHeader(CoreBlock block) '''
 		/**
 		 * @file «block.name».c
@@ -143,8 +123,6 @@ class MPPA2ExplicitPrinter extends CPrinter {
 		extern mppa_async_segment_t shared_segment;
 		«IF (io_used)»
 			extern mppa_async_segment_t local_segment[PREESM_NB_CLUSTERS + 1];
-		«ELSE»	
-			extern mppa_async_segment_t local_segment[PREESM_NB_CLUSTERS];
 		«ENDIF»
 
 		/* Scratchpad buffer ptr (will be malloced) */
@@ -380,7 +358,7 @@ class MPPA2ExplicitPrinter extends CPrinter {
 	'''
 
 	override printCoreInitBlockHeader(CallBlock callBlock) '''
-	void *computationTask_«(callBlock.eContainer as CoreBlock).name»(void *arg){
+	void *computationTask_«(callBlock.eContainer as CoreBlock).name»(void *arg __attribute__ ((unused))){
 «/*	#ifdef PREESM_VERBOSE
 		//printf("Cluster %d runs on task «(callBlock.eContainer as CoreBlock).name»\n", __k1_get_cluster_id());
 	#endif*/»
@@ -548,241 +526,17 @@ class MPPA2ExplicitPrinter extends CPrinter {
 		return printBuffer(buffer)
 	}
 	
-	override CharSequence generatePreesmHeader() {
-	    // 0- without the following class loader initialization, I get the following exception when running as Eclipse
-	    // plugin:
-	    // org.apache.velocity.exception.VelocityException: The specified class for ResourceManager
-	    // (org.apache.velocity.runtime.resource.ResourceManagerImpl) does not implement
-	    // org.apache.velocity.runtime.resource.ResourceManager; Velocity is not initialized correctly.
-	    val ClassLoader oldContextClassLoader = Thread.currentThread().getContextClassLoader();
-	    Thread.currentThread().setContextClassLoader(CPrinter.classLoader);
-
-	    // 1- init engine
-	    val VelocityEngine engine = new VelocityEngine();
-	    engine.init();
-
-	    // 2- init context
-	    val VelocityContext context = new VelocityContext();
-	    val findAllCHeaderFileNamesUsed = CHeaderUsedLocator.findAllCHeaderFileNamesUsed(getEngine.algo.referencePiMMGraph)
-	    context.put("USER_INCLUDES", findAllCHeaderFileNamesUsed.map["#include \""+ it +"\""].join("\n"));
-		
-		var String constants = "#define NB_DESIGN_ELTS "+getEngine.archi.componentInstances.size+"\n";
-		constants = constants.concat("#define PREESM_NB_CLUSTERS "+numClusters+"\n");
-		if(io_used){
-			constants = constants.concat("#define PREESM_IO_USED \n");
-		}
-	    context.put("CONSTANTS", constants);
-
-	    // 3- init template reader
-	    val String templateLocalURL = "templates/mppa2Explicit/preesm_gen.h";
-	    val URL mainTemplate = URLResolver.findFirstInBundleList(templateLocalURL, CodegenPlugin.BUNDLE_ID);
-	    var InputStreamReader reader = null;
-	    try {
-	      reader = new InputStreamReader(mainTemplate.openStream());
-	    } catch (IOException e) {
-	      throw new PreesmRuntimeException("Could not locate main template [" + templateLocalURL + "].", e);
-	    }
-
-	    // 4- init output writer
-	    val StringWriter writer = new StringWriter();
-
-	    engine.evaluate(context, writer, "org.apache.velocity", reader);
-
-	    // 99- set back default class loader
-	    Thread.currentThread().setContextClassLoader(oldContextClassLoader);
-
-	    return writer.getBuffer().toString();
-	}
-	override generateStandardLibFiles() {
-		val result = new LinkedHashMap<String, CharSequence>()
-		val String stdFilesFolder = "/stdfiles/mppa2Explicit/"
-		val files = Arrays.asList(#[
-						"communication.c",
-						"communication.h",
-						"dump.c",
-						"dump.h",
-						"fifo.c",
-						"fifo.h",
-						"memory.c",
-						"memory.h",
-						"clock.c",
-						"clock.h"
-					]);
-		files.forEach[it | try {
-			result.put(it, URLResolver.readURLInBundleList(stdFilesFolder + it, CodegenPlugin.BUNDLE_ID))
-		} catch (IOException exc) {
-			throw new PreesmRuntimeException("Could not generated content for " + it, exc)
-		}]
-		result.put("preesm_gen.h",generatePreesmHeader())
-		return result
-	}
 	override createSecondaryFiles(List<Block> printerBlocks, Collection<Block> allBlocks) {
-		val result = new LinkedHashMap<String, CharSequence>()
+		val result = super.createSecondaryFiles(printerBlocks, allBlocks);
+		result.remove("cluster_main.c");
+		result.remove("host_main.c");
 		if (generateMainFile()) {
-			result.put("cluster_main.c", printMainCluster(printerBlocks));
-			if(io_used == false){
-				result.put("io_main.c", printMainIO(printerBlocks));
-			}				
-			result.put("host_main.c", printMainHost(printerBlocks));
+			result.put("io_main.c", printMainIO(printerBlocks));
 		}
 		return result
 	}
-	def String printMainCluster(List<Block> printerBlocks) '''
-		/**
-		 * @file cluster_main.c
-		 * @generated by «this.class.simpleName»
-		 * @date «new Date»
-		 *
-		 */
-		/*
-		 * Copyright (C) 2016 Kalray SA.
-		 *
-		 * All rights reserved.
-		 */
-		#include "mOS_common_types_c.h"
-		#include "mOS_constants_c.h"
-		#include "mOS_vcore_u.h"
-		#include "mOS_segment_manager_u.h"
-		#include "stdlib.h"
-		#include "stdio.h"
-		#include "vbsp.h"
-		#include <mppa_rpc.h>
-		#include <mppa_remote.h>
-		#include <mppa_async.h>
-		#include "HAL/hal/hal_ext.h"
-		#include <math.h>
-		#include <stdlib.h>
-		
-		#ifdef __nodeos__
-		#define CONFIGURE_DEFAULT_TASK_STACK_SIZE (1U<<12)
-		#define CONFIGURE_AMP_MAIN_STACK_SIZE (1U<<12)
-		#include <mppa/osconfig.h>
-		#include <omp.h>
-		#else
-		#include <utask.h>
-		#endif
-		
-		#include <pthread.h>
-		
-		#include <assert.h>
-		
-		#include "preesm_gen.h"
-		#include "communication.h"
-		
-		/* Shared Segment ID */
-		mppa_async_segment_t shared_segment;
-		«IF (io_used)»
-			mppa_async_segment_t local_segment[PREESM_NB_CLUSTERS + 1];
-		«ELSE»	
-			mppa_async_segment_t local_segment[PREESM_NB_CLUSTERS];
-		«ENDIF»
-		extern int local_memory_size  __attribute__((__unused__));
-		
-		/* MPPA PREESM Thread definition */
-		typedef void* (*mppa_preesm_task_t)(void *args);
-		
-		/* pthread_t declaration */
-		static pthread_t threads[PREESM_NB_CORES-1] __attribute__((__unused__));
-		
-		/* thread function pointers declaration */
-		static mppa_preesm_task_t mppa_preesm_task[PREESM_NB_CLUSTERS]; 
-		
-		/* global barrier called at each execution of ALL of the dataflow graph */ 
-		pthread_barrier_t iter_barrier; 
-		int stopThreads __attribute__((weak)); 
-		
-		/* extern reference of generated code */
-		«FOR clusters : printerBlocks.toSet»
-			«IF (clusters instanceof CoreBlock)»
-				extern void *computationTask_«clusters.name»(void *arg) __attribute__((weak));
-			«ENDIF»
-		«ENDFOR»
-		/* extern reference of shared memories */
-		«FOR clusters : printerBlocks.toSet»
-			«IF (clusters instanceof CoreBlock)»
-				extern char *«clusters.name» __attribute__((weak));
-			«ENDIF»
-		«ENDFOR»
-				  
-		/* Main executed on PE0 */
-		int
-		main(void)
-		{
-			mppa_rpc_client_init();
-			mppa_async_init();
-			mppa_remote_client_init();
-		
-			mppa_async_segment_clone(&shared_segment, SHARED_SEGMENT_ID, NULL, 0, NULL);
-			
-			/* Inter cluster communication support */
-			int cc_id = __k1_get_cluster_id();
-			switch (cc_id){
-				«FOR clusters : printerBlocks.toSet»
-					«IF (clusters instanceof CoreBlock)»
-						case «clusters.coreID»: 
-							mppa_async_segment_create(&local_segment[cc_id], cc_id, (void*)(uintptr_t)«clusters.name», local_memory_size, 0, 0, NULL);
-							break;
-					«ENDIF»
-				«ENDFOR»
-				default: 
-					break;
-			} 
 
-			// init comm
-			communicationInit();
-			/* Threads wrapper to function pointers */ 
-		«FOR clusters : printerBlocks.toSet»
-			«IF (clusters instanceof CoreBlock)»
-				#if (CLUSTER_ID==«clusters.coreID»)
-				mppa_preesm_task[«clusters.coreID»] = computationTask_«clusters.name»;
-				#endif // Cluster «clusters.coreID»
-			«ENDIF»
-		«ENDFOR»
-
-			stopThreads = 0; 
-			pthread_barrier_init(&iter_barrier, NULL, PREESM_NB_CORES);
-			__builtin_k1_wpurge();
-			__builtin_k1_fence();
-			mOS_dinval();		
-			mppa_rpc_barrier_all();
-			«IF (io_used)»
-				if(__k1_get_cluster_id() == «clusterToSync»){
-					mppa_rpc_barrier(1, 2);
-				}
-				mppa_rpc_barrier_all();
-			«ENDIF»
-			int i;
-			for(i = 0; i < PREESM_NB_CLUSTERS; i++){
-				if(cc_id != i){
-					mppa_async_segment_clone(&local_segment[i], i, NULL, 0, NULL);
-				}
-			}	
-			«IF (io_used)»
-				mppa_async_segment_clone(&local_segment[PREESM_NB_CLUSTERS], PREESM_NB_CLUSTERS, NULL, 0, NULL);
-			«ENDIF»
-			mppa_rpc_barrier_all();					
-			«IF (io_used)»
-				if(__k1_get_cluster_id() == «clusterToSync»){
-					mppa_rpc_barrier(1, 2);
-				}
-				mppa_rpc_barrier_all();
-			«ENDIF»
-		
-			/* PE0 work */	
-			if(mppa_preesm_task[__k1_get_cluster_id()] != 0){
-				//printf("Cluster %d starts task\n", __k1_get_cluster_id());
-				mppa_preesm_task[__k1_get_cluster_id()](NULL);
-			}else{
-				printf("Cluster %d Error on code generator wrapper\n", __k1_get_cluster_id());
-			}
-
-			mppa_rpc_barrier_all();
-			mppa_async_final();
-			return 0;
-		}
-	'''
-
-	def String printMainIO(List<Block> printerBlocks) '''
+	override String printMainIO(List<Block> printerBlocks) '''
 		/**
 		 * @file io_main.c
 		 * @generated by «this.class.simpleName»
@@ -808,9 +562,29 @@ class MPPA2ExplicitPrinter extends CPrinter {
 		#include <mppa_async.h>
 		#include <HAL/hal/board/boot_args.h>
 		#include "preesm_gen.h"
+		#include "communication.h"
 		
+		/* Shared Segment ID */
+		mppa_async_segment_t shared_segment;
+		«IF (io_used)»
+			mppa_async_segment_t local_segment[PREESM_NB_CLUSTERS + 1];
+		«ENDIF»
+		extern int local_memory_size;
+				
 		static utask_t t;
 		static mppadesc_t pcie_fd = 0;
+		/* extern reference of generated code */
+		«FOR io : printerBlocks.toSet»
+			«IF (io instanceof CoreBlock)»
+				extern void *computationTask_«io.name»(void *arg);
+			«ENDIF»
+		«ENDFOR»
+		/* extern reference of shared memories */ 
+		«FOR io : printerBlocks.toSet»
+			«IF (io instanceof CoreBlock)»
+				extern char *«io.name»;
+			«ENDIF»					
+		«ENDFOR»
 		
 		int
 		main(int argc __attribute__ ((unused)), char *argv[] __attribute__ ((unused)))
@@ -845,8 +619,6 @@ class MPPA2ExplicitPrinter extends CPrinter {
 									PREESM_NB_CLUSTERS /* nb_cluster to serve*/);
 			mppa_async_server_init();
 			mppa_remote_server_init(pcie_fd, PREESM_NB_CLUSTERS);
-			
-			
 			for( j = 0 ; j < PREESM_NB_CLUSTERS ; j++ ) {
 		
 				char elf_name[30];
@@ -854,13 +626,26 @@ class MPPA2ExplicitPrinter extends CPrinter {
 				id = mppa_power_base_spawn(j, elf_name, NULL, NULL, MPPA_POWER_SHUFFLING_ENABLED);
 				if (id < 0)
 					return -2;
-			}
-		
+			}				
 			utask_create(&t, NULL, (void*)mppa_rpc_server_start, NULL);
 		
 			mppa_async_segment_t shared_segment;
 			mppa_async_segment_create(&shared_segment, SHARED_SEGMENT_ID, (void*)(uintptr_t)Shared, 1024*1024*1024, 0, 0, NULL);
-				
+			
+			«FOR io : printerBlocks.toSet»
+				«IF (io instanceof CoreBlock)»
+					mppa_async_segment_create(&local_segment[PREESM_NB_CLUSTERS], PREESM_NB_CLUSTERS, (void*)(uintptr_t)«io.name», local_memory_size, 0, 0, NULL);
+				«ENDIF»
+			«ENDFOR»		
+			// init comm
+			communicationInit();	
+			mppa_rpc_barrier(1, 2);
+			int i;
+			for(i = 0; i < PREESM_NB_CLUSTERS; i++){
+				mppa_async_segment_clone(&local_segment[i], i, NULL, 0, NULL);
+			}
+			mppa_rpc_barrier(1, 2);
+			computationTask_IO(NULL);
 			int err;
 			for( j = 0 ; j < PREESM_NB_CLUSTERS ; j++ ) {
 			    mppa_power_base_waitpid (j, &err, 0);
@@ -875,62 +660,6 @@ class MPPA2ExplicitPrinter extends CPrinter {
 
 	'''
 	
-	def String printMainHost(List<Block> printerBlocks) '''
-		/**
-		 * @file host_main.c
-		 * @generated by «this.class.simpleName»
-		 * @date «new Date»
-		 *
-		 */
-		/*
-		 * Copyright (C) 2016 Kalray SA.
-		 *
-		 * All rights reserved.
-		 */
-		#include <pcie.h>
-				
-		int
-		main(int argc, char **argv)
-		{
-		
-			mppadesc_t fd = pcie_open_device(0);
-			/* check for correct number of arguments */
-			if (argc < 3) {
-				printf("Error, no multibinary provided to host executatble\n");
-				return -1;
-			}
-
-			/* load on the MPPA the k1 multi-binary */
-			pcie_load_io_exec_args_mb(fd, argv[1], argv[2], NULL, 0, PCIE_LOAD_FULL);
-		
-			//pcie_load_io_exec(fd, "ddr_paging");
-		
-			pcie_queue_init(fd);
-			pcie_register_console(fd, stdin, stdout); 
-		
-			int status;
-			pcie_queue_barrier(fd, 0, &status);
-		
-			pcie_queue_exit(fd, 0, &status);
-
-			return status;
-		}
-
-	'''
-	override preProcessing(List<Block> printerBlocks, Collection<Block> allBlocks){
-		for (cluster : allBlocks){
-			if (cluster instanceof CoreBlock) {
-				if(cluster.coreType.equals("MPPA2Explicit")){
-					numClusters = numClusters + 1;
-					clusterToSync = cluster.coreID;
-				}
-				else if(cluster.coreType.equals("MPPA2IOExplicit")){
-					io_used = true;
-				}
-			}
-		}	
-		local_buffer_size = 0;
-	}
 	override postProcessing(CharSequence charSequence){
 		var ret = charSequence.toString.replace("int local_buffer_size = 0;", "int local_buffer_size = " + local_buffer_size + ";");
 		return ret;

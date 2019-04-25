@@ -73,7 +73,7 @@
 #[[#]]#include <unistd.h>
 #[[#]]#endif
 
-#[[#]]#define SHARED_SEGMENT_ID (10)
+#[[#]]#define SHARED_SEGMENT_ID (20)
 #[[#]]#ifdef __bare__
 #[[#]]#include "utask.h"
 #[[#]]#else
@@ -92,5 +92,7 @@
 $USER_INCLUDES
 
 $CONSTANTS
+
+#[[#]]#define Shared (0x90000000ULL) 	/* Shared buffer in DDR */
 
 #[[#]]#endif
