@@ -94,7 +94,7 @@ class MPPA2ExplicitPrinter extends CPrinter {
 	 */
 	protected int numClusters = 0;
 	protected int clusterToSync = 0;
-	protected boolean io_used = false;
+	protected int io_used = 0;
 
 	/**
 	 * Temporary global var to ignore the automatic suppression of memcpy
@@ -141,7 +141,7 @@ class MPPA2ExplicitPrinter extends CPrinter {
 		#define memcpy __wrap_memcpy
 		
 		extern mppa_async_segment_t shared_segment;
-		«IF (io_used)»
+		«IF (io_used == 1)»
 			extern mppa_async_segment_t local_segment[PREESM_NB_CLUSTERS + 1];
 		«ELSE»	
 			extern mppa_async_segment_t local_segment[PREESM_NB_CLUSTERS];
@@ -568,9 +568,7 @@ class MPPA2ExplicitPrinter extends CPrinter {
 		
 		var String constants = "#define NB_DESIGN_ELTS "+getEngine.archi.componentInstances.size+"\n";
 		constants = constants.concat("#define PREESM_NB_CLUSTERS "+numClusters+"\n");
-		if(io_used){
-			constants = constants.concat("#define PREESM_IO_USED \n");
-		}
+		constants = constants.concat("#define PREESM_IO_USED " + io_used + " \n");
 	    context.put("CONSTANTS", constants);
 
 	    // 3- init template reader
@@ -620,7 +618,7 @@ class MPPA2ExplicitPrinter extends CPrinter {
 		val result = new LinkedHashMap<String, CharSequence>()
 		if (generateMainFile()) {
 			result.put("cluster_main.c", printMainCluster(printerBlocks));
-			if(io_used == false){
+			if(io_used == 0){
 				result.put("io_main.c", printMainIO(printerBlocks));
 			}				
 			result.put("host_main.c", printMainHost(printerBlocks));
@@ -671,7 +669,7 @@ class MPPA2ExplicitPrinter extends CPrinter {
 		
 		/* Shared Segment ID */
 		mppa_async_segment_t shared_segment;
-		«IF (io_used)»
+		«IF (io_used == 1)»
 			mppa_async_segment_t local_segment[PREESM_NB_CLUSTERS + 1];
 		«ELSE»	
 			mppa_async_segment_t local_segment[PREESM_NB_CLUSTERS];
@@ -745,7 +743,7 @@ class MPPA2ExplicitPrinter extends CPrinter {
 			__builtin_k1_fence();
 			mOS_dinval();		
 			mppa_rpc_barrier_all();
-			«IF (io_used)»
+			«IF (io_used == 1)»
 				if(__k1_get_cluster_id() == «clusterToSync»){
 					mppa_rpc_barrier(1, 2);
 				}
@@ -757,11 +755,11 @@ class MPPA2ExplicitPrinter extends CPrinter {
 					mppa_async_segment_clone(&local_segment[i], i, NULL, 0, NULL);
 				}
 			}	
-			«IF (io_used)»
+			«IF (io_used == 1)»
 				mppa_async_segment_clone(&local_segment[PREESM_NB_CLUSTERS], PREESM_NB_CLUSTERS, NULL, 0, NULL);
 			«ENDIF»
 			mppa_rpc_barrier_all();					
-			«IF (io_used)»
+			«IF (io_used == 1)»
 				if(__k1_get_cluster_id() == «clusterToSync»){
 					mppa_rpc_barrier(1, 2);
 				}
@@ -925,7 +923,7 @@ class MPPA2ExplicitPrinter extends CPrinter {
 					clusterToSync = cluster.coreID;
 				}
 				else if(cluster.coreType.equals("MPPA2IOExplicit")){
-					io_used = true;
+					io_used = 1;
 				}
 			}
 		}	

@@ -121,9 +121,7 @@ class MPPA2IOExplicitPrinter extends MPPA2ExplicitPrinter {
 		#define memcpy __wrap_memcpy
 		
 		extern mppa_async_segment_t shared_segment;
-		«IF (io_used)»
-			extern mppa_async_segment_t local_segment[PREESM_NB_CLUSTERS + 1];
-		«ENDIF»
+		extern mppa_async_segment_t local_segment[PREESM_NB_CLUSTERS + PREESM_IO_USED];
 
 		/* Scratchpad buffer ptr (will be malloced) */
 		char *local_buffer = NULL;
@@ -566,9 +564,7 @@ class MPPA2IOExplicitPrinter extends MPPA2ExplicitPrinter {
 		
 		/* Shared Segment ID */
 		mppa_async_segment_t shared_segment;
-		«IF (io_used)»
-			mppa_async_segment_t local_segment[PREESM_NB_CLUSTERS + 1];
-		«ENDIF»
+		mppa_async_segment_t local_segment[PREESM_NB_CLUSTERS + PREESM_IO_USED];
 		extern int local_memory_size;
 				
 		static utask_t t;

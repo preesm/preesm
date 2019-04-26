@@ -15,17 +15,19 @@
 #include <HAL/hal/hal_ext.h>
 #include <mOS_vcore_u.h>
 
+#include "communication.h"
+
 extern mppa_async_segment_t shared_segment;
 
 extern pthread_barrier_t pthread_barrier __attribute__((__unused__)); 
 
 /* value to test */
-static long long sync[NB_CLUSTER];
+static long long sync[PREESM_NB_CLUSTERS + PREESM_IO_USED];
 
 /* event */
-static mppa_async_event_t sync_evt[NB_CLUSTER];
+static mppa_async_event_t sync_evt[PREESM_NB_CLUSTERS + PREESM_IO_USED];
 
-static uintptr_t sync_remote_ptr[NB_CLUSTER];
+static uintptr_t sync_remote_ptr[PREESM_NB_CLUSTERS + PREESM_IO_USED];
 
 extern int local_buffer_size __attribute__((weak));
 
@@ -36,12 +38,22 @@ extern char *local_buffer __attribute__((weak));
 
 void sendStart(int cluster)
 {
-	if(cluster == __k1_get_cluster_id())
+
+	int sender = __k1_get_cluster_id();
+	int receiver = cluster;
+	int receiverID = cluster;
+	if(receiverID == PREESM_NB_CLUSTERS){
+		receiverID = MPPA_ASYNC_SERVER_IO0;
+	}
+	#ifdef __k1io__
+		sender = PREESM_NB_CLUSTERS;
+	#endif
+	if(receiver == sender)
 	{
 		__builtin_k1_afdau(&sync[cluster], 1); 	/* post locally */
 	}else{
-		//printf("Cluster %d post to cluster %d addr %llx\n", __k1_get_cluster_id(), cluster, (uint64_t)(uintptr_t)(sync_remote_ptr[cluster]+__k1_get_cluster_id()));
-		mppa_async_postadd(mppa_async_default_segment(cluster), sync_remote_ptr[cluster]+__k1_get_cluster_id()*sizeof(long long), 1); /* atomic remote increment of sync[cluster] value */
+		printf("Cluster %d post to cluster %d addr %llx\n", sender, receiver, (uint64_t)(uintptr_t)(sync_remote_ptr[cluster]+sender));
+		mppa_async_postadd(mppa_async_default_segment(receiverID), sync_remote_ptr[receiver]+sender*sizeof(long long), 1); /* atomic remote increment of sync[cluster] value */
 	}
 }
 
@@ -103,7 +115,7 @@ void communicationInit() {
 
 	/* init token */
 	int i;
-	for(i=0; i<NB_CLUSTER;i++){
+	for(i=0; i<PREESM_NB_CLUSTERS + PREESM_IO_USED;i++){
 		/* event &sync_evt[i] unlocks when sync[i] is GT 0 (kind of remote semaphore emulation) */
 		//printf("Cluster %d evalcond addr %llx\n", __k1_get_cluster_id(), (uint64_t)(uintptr_t) &sync[i]);
 		mppa_async_evalcond(&sync[i], 0, MPPA_ASYNC_COND_GT, &sync_evt[i]); /* GT = Greater Than */
@@ -111,34 +123,61 @@ void communicationInit() {
 	extern int _start_async_copy;
 	uintptr_t addr = (uintptr_t)&sync[0] - (uintptr_t)&_start_async_copy;
 	//printf("Cluster %d send at %llx the addr %x\n", __k1_get_cluster_id(), (uint64_t) (uintptr_t) (SYNC_SHARED_ADDRESS+__k1_get_cluster_id()*sizeof(void*)), addr );
-	mppa_async_put((void*)&addr, MPPA_ASYNC_DDR_0, SYNC_SHARED_ADDRESS+__k1_get_cluster_id()*sizeof(void*), sizeof(uintptr_t), NULL);
-	mppa_async_fence(MPPA_ASYNC_DDR_0, NULL);
-	#ifndef __k1io__
-	mppa_rpc_barrier_all();
-	#endif
-	mppa_async_get(sync_remote_ptr, MPPA_ASYNC_DDR_0, SYNC_SHARED_ADDRESS, NB_CLUSTER*sizeof(uintptr_t), NULL);
-	#ifndef __k1io__
-	mppa_rpc_barrier_all();
-	#endif
-#if 0
 
+	int sender;
+	#ifndef __k1io__
+		sender = __k1_get_cluster_id();
+	#else
+		sender = PREESM_NB_CLUSTERS;
+	#endif
+
+	mppa_async_put((void*)&addr, MPPA_ASYNC_DDR_0, SYNC_SHARED_ADDRESS+sender*sizeof(void*), sizeof(uintptr_t), NULL);
+	mppa_async_fence(MPPA_ASYNC_DDR_0, NULL);
+
+	#ifndef __k1io__
+		#if PREESM_IO_USED == 1
+		if(sender == 0){
+			mppa_rpc_barrier(1,2);
+		}
+		#endif
+		mppa_rpc_barrier_all();
+		#if PREESM_IO_USED == 1
+		if(sender == 0){
+			mppa_rpc_barrier(1,2);
+		}
+		#endif
+	#else
+		mppa_rpc_barrier(1,2);
+		mppa_rpc_barrier(1,2);
+	#endif
+
+	mppa_async_get(sync_remote_ptr, MPPA_ASYNC_DDR_0, SYNC_SHARED_ADDRESS, (PREESM_NB_CLUSTERS + PREESM_IO_USED)*sizeof(uintptr_t), NULL);
+	#ifndef __k1io__
+	mppa_rpc_barrier_all();
+	#endif
+#if 1
+
+	#ifndef __k1io__
 	for(i=0;i<__k1_get_cluster_id();i++)
 		mppa_rpc_barrier_all();
+	#endif
 
-	for(i=0;i<NB_CLUSTER;i++){
-		printf("Cluster %d got %d addr %llx\n", __k1_get_cluster_id(), i, (uint64_t)(uintptr_t)sync_remote_ptr[i]);
+	for(i=0;i<PREESM_NB_CLUSTERS + PREESM_IO_USED;i++){
+		printf("Cluster %d got %d addr %llx\n", sender, i, (uint64_t)(uintptr_t)sync_remote_ptr[i]);
 	}
 
-	for(i=__k1_get_cluster_id();i<NB_CLUSTER;i++)
+	#ifndef __k1io__
+	for(i=__k1_get_cluster_id();i<PREESM_NB_CLUSTERS + PREESM_IO_USED;i++)
 		mppa_rpc_barrier_all();
+	#endif
 #endif
 #if 0
-	for(i=0; i<NB_CLUSTER;i++){
+	for(i=0; i<PREESM_NB_CLUSTERS + PREESM_IO_USED;i++){
 		sendStart(i);
 	}
 
 	printf("done send %d\n", __k1_get_cluster_id());
-	for(i=0; i<NB_CLUSTER;i++){
+	for(i=0; i<PREESM_NB_CLUSTERS + PREESM_IO_USED;i++){
 		receiveEnd(i);
 	}
 

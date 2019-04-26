@@ -13,6 +13,8 @@
 #ifndef COMMUNICATION_H
 #define COMMUNICATION_H
 
+#include <preesm_gen.h>
+
 /**
 * Communication Initialization (archi dependent)
 */
