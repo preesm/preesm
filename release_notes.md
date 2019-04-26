@@ -9,6 +9,7 @@ PREESM Changelog
 *  Codegen: core type "Hardware" is allowed
 
 ### Changes
+* SpiderCodegen: updated spider codegeneration to follow up changes of spider develop branch.
 
 ### Bug fix
 *  Fix #94
