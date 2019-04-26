@@ -649,7 +649,7 @@ public class SpiderCodegenVisitor extends PiMMSwitch<Boolean> {
     final EList<ConfigInputPort> configInputPorts = p.getConfigInputPorts();
 
     append("\tPiSDFParam *" + paramName + " = Spider::");
-    if (p.isFullyDynamic()) {
+    if (p.isConfigurable()) {
       /* DYNAMIC */
       append("addDynamicParam(graph, " + "\"" + p.getName() + "\");\n");
     } else if (p.isDependent()) {
