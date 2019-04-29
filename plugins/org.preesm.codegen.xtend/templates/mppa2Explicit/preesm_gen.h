@@ -74,6 +74,7 @@
 #[[#]]#endif
 
 #[[#]]#define SHARED_SEGMENT_ID (20)
+#[[#]]#define SYNC_BASE_SEGMENT_ID (21)
 #[[#]]#ifdef __bare__
 #[[#]]#include "utask.h"
 #[[#]]#else
