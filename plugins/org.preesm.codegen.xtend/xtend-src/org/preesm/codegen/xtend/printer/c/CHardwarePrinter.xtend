@@ -2,6 +2,7 @@
  * Copyright or © or Copr. IETR/INSA - Rennes (2013 - 2018) :
  *
  * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017 - 2018)
+ * Leonardo Suriano <leonardo.suriano@upm.es> (2019)
  * Clément Guy <clement.guy@insa-rennes.fr> (2015)
  * Daniel Madroñal <daniel.madronal@upm.es> (2018)
  * Florian Arrestier <florian.arrestier@insa-rennes.fr> (2018)
@@ -91,6 +92,8 @@ import java.lang.reflect.Parameter
 import org.preesm.codegen.model.DistributedMemoryCommunication
 import org.preesm.codegen.model.PapifyFunctionCall
 import org.eclipse.emf.common.util.EList
+import java.util.Collections
+import org.preesm.codegen.model.util.CodegenModelUserFactory
 import org.preesm.codegen.model.CodeElt
 
 /**
@@ -816,29 +819,58 @@ class CHardwarePrinter extends DefaultPrinter {
 		return usingPapify;
 	}
 	override preProcessing(List<Block> printerBlocks, Collection<Block> allBlocks) {
-		PreesmLogger.getLogger().info("[LEO] preProcessing for Hardware³");
-		//var functionCallNumber = 0;
+		PreesmLogger.getLogger().info("[LEO] preProcessing for Hardware³. The elements to be processed are " + printerBlocks.size());
 		var DataTransferActionNumber = 0;
 		var FreeDataTransferBufferNumber = 0;
 		var RegisterSetUpNumber = 0;
-		//var firstRegisterSetUp = 0;
 		var firstFunctionCallIndex = 0;
 		var lastFunctionCallIndex = 0;
-		var currentFunctionPosition = 0;
-		//var firstDataTransferIndex = 0;
-		//var firstFreeDataIndex = 0;
+		var currentFunctionPosition = 0; 
+
+		var Block coreLoopMerged = CodegenModelUserFactory.createCoreBlock();
+		
+		/*
+		 * To insert all the elements of loopBlock of every instance of printerBlocks in a Unique Block
+		 * called blockMerged
+		 */
+
+		 for (Block block : printerBlocks) {
+		 	var coreLoop = (block as CoreBlock).loopBlock
+		 	var blockMerged = (coreLoopMerged as CoreBlock)
+		 	var clonedElts = coreLoop.codeElts.clone()
+		 	blockMerged.loopBlock.codeElts.addAll(clonedElts)
+		 }
+		 /* to add al the elements of the blockMerged.loopBlock.codeElts inside
+		  * the first block of the printersBlock */
+         var Block firstBlock = printerBlocks.get(0)
+		 var coreLoopFinal = (firstBlock as CoreBlock).loopBlock
+		 var blockMerged = (coreLoopMerged as CoreBlock).loopBlock
+		 var clonedElts = blockMerged.codeElts.clone()
+		 coreLoopFinal.codeElts.addAll(clonedElts)
+		 	
+		 
+		
+		
 		for (Block block : printerBlocks) {
 			
-			/*
-			 * to delete all the FunctionCallImpl and to keep just the fist one where the input data buffer
-			 * is the set of all data buffers together.
-			 * Keep in mind that this is just the first integration that needs to be modified.
+			/* 
+			 * The strategy is:
+			 * to delete all the FunctionCallImpl and to keep just the LAST one. All the other FunctionCallImpl are
+			 * replaced with the "Data Motion".
 			 * 
 			 */
+			 
+			 /* 
+			  * In order to have a unique file calling all the PEs of the Hardware (many SLOTs can be used), the
+			  * operation described above MUST continued to be performed for every element of the printerBlocks. 
+			  * Additionally, only one element should be kept in the list (that MUST be created to reflect the actors firing
+			  * of the original set of files).
+			  * 
+			  */
 			
 			var coreLoop = (block as CoreBlock).loopBlock
 			var i = 0;
-			
+			this.functionCallNumber = 0;
 			// This Loop just locate where the function are and how many they are.
 			while (i < coreLoop.codeElts.size) {
 				// Retrieve the function ID
@@ -896,6 +928,7 @@ class CHardwarePrinter extends DefaultPrinter {
 			// one for every buffer used!
 			
 			i=0;
+			DataTransferActionNumber = 0;
 			var positionOfNewDataTransfer = currentFunctionPosition;
 			while (i < coreLoop.codeElts.size) {
 				// Retrieve the function ID
@@ -913,6 +946,7 @@ class CHardwarePrinter extends DefaultPrinter {
 			}
 			//the last loop is for the Free data transfer (that actually does nothing)
 			i=0;
+			FreeDataTransferBufferNumber = 0;
 			while (i < coreLoop.codeElts.size) {
 				// Retrieve the function ID
 				val elt = coreLoop.codeElts.get(i)
@@ -965,13 +999,6 @@ class CHardwarePrinter extends DefaultPrinter {
 				i++
 			}
 			PreesmLogger.getLogger().info("[LEO] number of OutputDataTransfer inserted is " + countOutputDataTransferInserted);
-			
-			
-			
-			
-			
-			
-			
 			// it is enough to set up the register just once at the beginning.
 			i=0;
 			RegisterSetUpNumber = 0;
@@ -997,8 +1024,7 @@ class CHardwarePrinter extends DefaultPrinter {
 			}
 			
 		}
-		
-		 
+		PreesmLogger.getLogger().info("[LEO] End of the Hardware preProcessing.");
 		/*
 		 * Preprocessing for Papify
 		 */
@@ -1012,7 +1038,7 @@ class CHardwarePrinter extends DefaultPrinter {
 			}			
 		}
 	}
-
+	
 }
 
 
