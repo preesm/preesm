@@ -849,37 +849,50 @@ class CHardwarePrinter extends DefaultPrinter {
 		var clonedElts = blockLoopMerged.codeElts.clone()
 		coreLoopFinal.codeElts.addAll(clonedElts)
 		
-		/* to repeate the same operation for the initBlock (only the buffers declarations) */	
+		/* The following commented lines are going to be VERY important for possible future modification where
+		 * multiple GlobalBufferDeclaration should be used in the same file.
+		  */
 		
-		var List bufferCopyList = new ArrayList();
-		var List parameterDirectionsCopyList = new ArrayList();
+//		/* to repeat the same operation for the initBlock (only the buffers declarations) */	
+//		
+//		var List bufferCopyList = new ArrayList();
+//		var List parameterDirectionsCopyList = new ArrayList();
+//		for (Block block : printerBlocks) {
+//			var coreInit = (block as CoreBlock).initBlock
+//			var iteratorInit = coreInit.codeElts.size
+//			for (var i = 0; i < iteratorInit; i++){
+//				var elementInit = coreInit.codeElts.get(i)
+//				if (elementInit.class.simpleName.equals("GlobalBufferDeclarationImpl")){
+//					var buffersCopy = (elementInit as GlobalBufferDeclarationImpl).getBuffers
+//					var parameterDirectionCopy = (elementInit as GlobalBufferDeclarationImpl).getParameterDirections
+//					bufferCopyList.addAll(buffersCopy)
+//					parameterDirectionsCopyList.addAll(parameterDirectionCopy)
+//					
+//					//PreesmLogger.getLogger().info("[LEO] try to copy the buffers and subbuffers.");
+//				}
+//			}
+//		}
+//		// inserting all the buffers found in the first element of the printersBlock
+//		var coreInitFinal = (firstBlock as CoreBlock).initBlock
+//		var iteratorInit = coreInitFinal.codeElts.size
+//		for (var i = 0; i < iteratorInit; i++){
+//			var elementInit = coreInitFinal.codeElts.get(i)
+//			if (elementInit.class.simpleName.equals("GlobalBufferDeclarationImpl")){
+//				(elementInit as GlobalBufferDeclarationImpl).getBuffers.addAll(bufferCopyList)
+//				(elementInit as GlobalBufferDeclarationImpl).getParameterDirections.addAll(parameterDirectionsCopyList)
+//			}
+//		}
+		
+		/* the same operation MUST be done with the global declaration as well. The declaration and definition can be found directly inside the codeBlock */
+		
+		var List bufferCopyDeclarationList = new ArrayList();
 		for (Block block : printerBlocks) {
-			var coreInit = (block as CoreBlock).initBlock
-			var iteratorInit = coreInit.codeElts.size
-			for (var i = 0; i < iteratorInit; i++){
-				var elementInit = coreInit.codeElts.get(i)
-				if (elementInit.class.simpleName.equals("GlobalBufferDeclarationImpl")){
-					var buffersCopy = (elementInit as GlobalBufferDeclarationImpl).getBuffers
-					var parameterDirectionCopy = (elementInit as GlobalBufferDeclarationImpl).getParameterDirections
-					bufferCopyList.addAll(buffersCopy)
-					parameterDirectionsCopyList.addAll(parameterDirectionCopy)
-					
-					//PreesmLogger.getLogger().info("[LEO] try to copy the buffers and subbuffers.");
-				}
-			}
+			bufferCopyDeclarationList.addAll((block as CoreBlock).declarations)
+			PreesmLogger.getLogger().info("[LEO] try to copy the buffers and subbuffers.");
 		}
-		// inserting all the buffers found in the first element of the printersBlock
-		var coreInitFinal = (firstBlock as CoreBlock).initBlock
-		var iteratorInit = coreInitFinal.codeElts.size
-		for (var i = 0; i < iteratorInit; i++){
-			var elementInit = coreInitFinal.codeElts.get(i)
-			if (elementInit.class.simpleName.equals("GlobalBufferDeclarationImpl")){
-				(elementInit as GlobalBufferDeclarationImpl).getBuffers.addAll(bufferCopyList)
-				(elementInit as GlobalBufferDeclarationImpl).getParameterDirections.addAll(parameterDirectionsCopyList)
-			}
-		}
+		(firstBlock as CoreBlock).declarations.addAll(bufferCopyDeclarationList)
 		
-		/* the same operation MUST be done with the global declaration as well*/
+		
 		
 		
 		for (Block block : printerBlocks) {
@@ -1055,6 +1068,13 @@ class CHardwarePrinter extends DefaultPrinter {
 			}
 			
 		}
+		
+		/* Removing unuseful elements in the list of printersBlock. To keep just the fist one */
+		var numberOfSlotDetected = printerBlocks.size
+		for(var j = numberOfSlotDetected-1; j >= 1; j--){
+			printerBlocks.remove(j)
+		}
+		
 		PreesmLogger.getLogger().info("[LEO] End of the Hardware preProcessing.");
 		/*
 		 * Preprocessing for Papify
