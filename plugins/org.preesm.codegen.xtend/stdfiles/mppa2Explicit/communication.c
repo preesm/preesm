@@ -53,11 +53,8 @@ void sendStart(int cluster)
 	{
 		__builtin_k1_afdau(&sync[cluster], 1); 	/* post locally */
 	}else{
-		void *pointerInRemote = (void*)((uintptr_t)(sync_remote_ptr[cluster]+(uint64_t)(sender * sizeof(long long))));
-		off64_t receiverOffset = NULL;
-		mppa_async_offset(&sync_segments[receiver], pointerInRemote, &receiverOffset);
-		//printf("Cluster %d post to cluster %d addr %llx\n", sender, receiver, (uint64_t)(uintptr_t)(sync_remote_ptr[cluster]+sender));
-		mppa_async_postadd(&sync_segments[receiver], receiverOffset, 1); /* atomic remote increment of sync[cluster] value */
+		//printf("Cluster %d post to cluster %d offset %llu\n", sender, receiver, (off64_t)(sender * sizeof(long long)));
+		mppa_async_postadd(&sync_segments[receiver], (off64_t)(sender * sizeof(long long)), 1); /* atomic remote increment of sync[cluster] value */
 	}
 }
 
