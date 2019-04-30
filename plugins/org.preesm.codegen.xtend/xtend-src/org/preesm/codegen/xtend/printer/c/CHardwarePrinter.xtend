@@ -95,6 +95,7 @@ import org.eclipse.emf.common.util.EList
 import java.util.Collections
 import org.preesm.codegen.model.util.CodegenModelUserFactory
 import org.preesm.codegen.model.CodeElt
+import org.preesm.codegen.model.impl.GlobalBufferDeclarationImpl
 
 /**
  * This printer is currently used to print C code only for GPP processors
@@ -833,22 +834,52 @@ class CHardwarePrinter extends DefaultPrinter {
 		 * To insert all the elements of loopBlock of every instance of printerBlocks in a Unique Block
 		 * called blockMerged
 		 */
-
-		 for (Block block : printerBlocks) {
-		 	var coreLoop = (block as CoreBlock).loopBlock
-		 	var blockMerged = (coreLoopMerged as CoreBlock)
-		 	var clonedElts = coreLoop.codeElts.clone()
-		 	blockMerged.loopBlock.codeElts.addAll(clonedElts)
-		 }
-		 /* to add al the elements of the blockMerged.loopBlock.codeElts inside
-		  * the first block of the printersBlock */
-         var Block firstBlock = printerBlocks.get(0)
-		 var coreLoopFinal = (firstBlock as CoreBlock).loopBlock
-		 var blockMerged = (coreLoopMerged as CoreBlock).loopBlock
-		 var clonedElts = blockMerged.codeElts.clone()
-		 coreLoopFinal.codeElts.addAll(clonedElts)
-		 	
+		for (Block block : printerBlocks) {
+			var coreLoop = (block as CoreBlock).loopBlock
+			var blockMerged = (coreLoopMerged as CoreBlock)
+			var clonedElts = coreLoop.codeElts.clone()
+			blockMerged.loopBlock.codeElts.addAll(clonedElts)
+		}
+		/* to add al the elements of the blockMerged.loopBlock.codeElts inside
+		 * the first block of the printersBlock */
 		 
+        var Block firstBlock = printerBlocks.get(0)
+		var coreLoopFinal = (firstBlock as CoreBlock).loopBlock
+		var blockLoopMerged = (coreLoopMerged as CoreBlock).loopBlock
+		var clonedElts = blockLoopMerged.codeElts.clone()
+		coreLoopFinal.codeElts.addAll(clonedElts)
+		
+		/* to repeate the same operation for the initBlock (only the buffers declarations) */	
+		
+		var List bufferCopyList = new ArrayList();
+		var List parameterDirectionsCopyList = new ArrayList();
+		for (Block block : printerBlocks) {
+			var coreInit = (block as CoreBlock).initBlock
+			var iteratorInit = coreInit.codeElts.size
+			for (var i = 0; i < iteratorInit; i++){
+				var elementInit = coreInit.codeElts.get(i)
+				if (elementInit.class.simpleName.equals("GlobalBufferDeclarationImpl")){
+					var buffersCopy = (elementInit as GlobalBufferDeclarationImpl).getBuffers
+					var parameterDirectionCopy = (elementInit as GlobalBufferDeclarationImpl).getParameterDirections
+					bufferCopyList.addAll(buffersCopy)
+					parameterDirectionsCopyList.addAll(parameterDirectionCopy)
+					
+					//PreesmLogger.getLogger().info("[LEO] try to copy the buffers and subbuffers.");
+				}
+			}
+		}
+		// inserting all the buffers found in the first element of the printersBlock
+		var coreInitFinal = (firstBlock as CoreBlock).initBlock
+		var iteratorInit = coreInitFinal.codeElts.size
+		for (var i = 0; i < iteratorInit; i++){
+			var elementInit = coreInitFinal.codeElts.get(i)
+			if (elementInit.class.simpleName.equals("GlobalBufferDeclarationImpl")){
+				(elementInit as GlobalBufferDeclarationImpl).getBuffers.addAll(bufferCopyList)
+				(elementInit as GlobalBufferDeclarationImpl).getParameterDirections.addAll(parameterDirectionsCopyList)
+			}
+		}
+		
+		/* the same operation MUST be done with the global declaration as well*/
 		
 		
 		for (Block block : printerBlocks) {
