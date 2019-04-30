@@ -95,6 +95,7 @@ class MPPA2ExplicitPrinter extends CPrinter {
 	protected int numClusters = 0;
 	protected int clusterToSync = 0;
 	protected int io_used = 0;
+	protected int sharedOnly = 1;
 
 	/**
 	 * Temporary global var to ignore the automatic suppression of memcpy
@@ -141,11 +142,7 @@ class MPPA2ExplicitPrinter extends CPrinter {
 		#define memcpy __wrap_memcpy
 		
 		extern mppa_async_segment_t shared_segment;
-		«IF (io_used == 1)»
-			extern mppa_async_segment_t local_segment[PREESM_NB_CLUSTERS + 1];
-		«ELSE»	
-			extern mppa_async_segment_t local_segment[PREESM_NB_CLUSTERS];
-		«ENDIF»
+		extern mppa_async_segment_t distributed_segment[PREESM_NB_CLUSTERS + PREESM_IO_USED];
 
 		/* Scratchpad buffer ptr (will be malloced) */
 		char *local_buffer = NULL;
@@ -154,15 +151,23 @@ class MPPA2ExplicitPrinter extends CPrinter {
 
 	'''
 
-	override printBufferDefinition(Buffer buffer) '''
+	override printBufferDefinition(Buffer buffer) {
+		
+		if(!buffer.name.equals("Shared")){
+			this.sharedOnly = 0;
+		}
+	
+		var result = '''
 		«IF buffer.name == "Shared"»
 		//#define Shared ((char*)0x10000000ULL) 	/* Shared buffer in DDR */
 		«ELSE»
 		«buffer.type» «buffer.name»[«buffer.size»] __attribute__ ((aligned(64))); // «buffer.comment» size:= «buffer.size»*«buffer.type» aligned on data cache line
 		int local_memory_size = «buffer.size»;
 		«ENDIF»
-	'''
-
+		'''
+		return result;
+	}
+	
 	override printDefinitionsHeader(List<Variable> list) '''
 	«IF !list.empty»
 		// Core Global Definitions
@@ -299,7 +304,10 @@ class MPPA2ExplicitPrinter extends CPrinter {
 						}
 						local_offset += param.typeSize * param.size;
 						//System.out.print("==> " + b.name + " " + param.name + " size " + param.size + " port_name "+ port.getName + "\n");
-					}
+					}					
+					/*else{
+						System.out.print("A==> " + b.name + " " + param.name + " size " + param.size + " port_name "+ port.getName + "\n");
+					}*/
 				}
 			}
 			gets += "\t"
@@ -333,7 +341,10 @@ class MPPA2ExplicitPrinter extends CPrinter {
 						}
 						local_offset += param.typeSize * param.size;
 						//System.out.print("==> " + b.name + " " + param.name + " size " + param.size + " port_name "+ port.getName + "\n");
-					}
+					}				
+					/*else{
+						System.out.print("B==> " + b.name + " " + param.name + " size " + param.size + " port_name "+ port.getName + "\n");
+					}*/
 				}
 			}
 			puts += "}\n"
@@ -669,12 +680,10 @@ class MPPA2ExplicitPrinter extends CPrinter {
 		
 		/* Shared Segment ID */
 		mppa_async_segment_t shared_segment;
-		«IF (io_used == 1)»
-			mppa_async_segment_t local_segment[PREESM_NB_CLUSTERS + 1];
-		«ELSE»	
-			mppa_async_segment_t local_segment[PREESM_NB_CLUSTERS];
+		«IF (this.sharedOnly == 0)»
+		mppa_async_segment_t distributed_segment[PREESM_NB_CLUSTERS + PREESM_IO_USED];
+		extern int local_memory_size;
 		«ENDIF»
-		extern int local_memory_size  __attribute__((__unused__));
 		
 		/* MPPA PREESM Thread definition */
 		typedef void* (*mppa_preesm_task_t)(void *args);
@@ -712,19 +721,21 @@ class MPPA2ExplicitPrinter extends CPrinter {
 		
 			mppa_async_segment_clone(&shared_segment, SHARED_SEGMENT_ID, NULL, 0, NULL);
 			
-			/* Inter cluster communication support */
-			int cc_id = __k1_get_cluster_id();
-			switch (cc_id){
-				«FOR clusters : printerBlocks.toSet»
-					«IF (clusters instanceof CoreBlock)»
-						case «clusters.coreID»: 
-							mppa_async_segment_create(&local_segment[cc_id], cc_id, (void*)(uintptr_t)«clusters.name», local_memory_size, 0, 0, NULL);
-							break;
-					«ENDIF»
-				«ENDFOR»
-				default: 
-					break;
-			} 
+			«IF (this.sharedOnly == 0)»
+				/* Inter cluster communication support */
+				int cc_id = __k1_get_cluster_id();
+				switch (cc_id){
+					«FOR clusters : printerBlocks.toSet»
+						«IF (clusters instanceof CoreBlock)»
+							case «clusters.coreID»: 
+								mppa_async_segment_create(&distributed_segment[cc_id], INTERCC_BASE_SEGMENT_ID+cc_id, (void*)(uintptr_t)«clusters.name», local_memory_size, 0, 0, NULL);
+								break;
+						«ENDIF»
+					«ENDFOR»
+					default: 
+						break;
+				} 
+			«ENDIF»
 
 			// init comm
 			communicationInit();
@@ -749,21 +760,20 @@ class MPPA2ExplicitPrinter extends CPrinter {
 				}
 				mppa_rpc_barrier_all();
 			«ENDIF»
-			int i;
-			for(i = 0; i < PREESM_NB_CLUSTERS; i++){
-				if(cc_id != i){
-					mppa_async_segment_clone(&local_segment[i], i, NULL, 0, NULL);
-				}
-			}	
-			«IF (io_used == 1)»
-				mppa_async_segment_clone(&local_segment[PREESM_NB_CLUSTERS], PREESM_NB_CLUSTERS, NULL, 0, NULL);
-			«ENDIF»
-			mppa_rpc_barrier_all();					
-			«IF (io_used == 1)»
-				if(__k1_get_cluster_id() == «clusterToSync»){
-					mppa_rpc_barrier(1, 2);
-				}
-				mppa_rpc_barrier_all();
+			«IF (this.sharedOnly == 0)»
+				int i;
+				for(i = 0; i < PREESM_NB_CLUSTERS + PREESM_IO_USED; i++){
+					if(cc_id != i){
+						mppa_async_segment_clone(&distributed_segment[i], INTERCC_BASE_SEGMENT_ID+i, NULL, 0, NULL);
+					}
+				}	
+				mppa_rpc_barrier_all();					
+				«IF (io_used == 1)»
+					if(__k1_get_cluster_id() == «clusterToSync»){
+						mppa_rpc_barrier(1, 2);
+					}
+					mppa_rpc_barrier_all();
+				«ENDIF»
 			«ENDIF»
 		
 			/* PE0 work */	
@@ -925,7 +935,7 @@ class MPPA2ExplicitPrinter extends CPrinter {
 				else if(cluster.coreType.equals("MPPA2IOExplicit")){
 					io_used = 1;
 				}
-			}
+			}				
 		}	
 		local_buffer_size = 0;
 	}

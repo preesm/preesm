@@ -73,8 +73,9 @@
 #[[#]]#include <unistd.h>
 #[[#]]#endif
 
-#[[#]]#define SHARED_SEGMENT_ID (20)
-#[[#]]#define SYNC_BASE_SEGMENT_ID (21)
+#[[#]]#define SHARED_SEGMENT_ID (10)
+#[[#]]#define SYNC_BASE_SEGMENT_ID (11)
+#[[#]]#define INTERCC_BASE_SEGMENT_ID (30)
 #[[#]]#ifdef __bare__
 #[[#]]#include "utask.h"
 #[[#]]#else

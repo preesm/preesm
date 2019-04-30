@@ -76,6 +76,7 @@ class MPPA2IOExplicitPrinter extends MPPA2ExplicitPrinter {
 		super(true)
 	}
 
+	protected int sharedOnly = 1;
 	/**
 	 * Temporary global var to ignore the automatic suppression of memcpy
 	 * whose target and destination are identical.
@@ -121,7 +122,7 @@ class MPPA2IOExplicitPrinter extends MPPA2ExplicitPrinter {
 		#define memcpy __wrap_memcpy
 		
 		extern mppa_async_segment_t shared_segment;
-		extern mppa_async_segment_t local_segment[PREESM_NB_CLUSTERS + PREESM_IO_USED];
+		extern mppa_async_segment_t distributed_segment[PREESM_NB_CLUSTERS + PREESM_IO_USED];
 
 		/* Scratchpad buffer ptr (will be malloced) */
 		char *local_buffer = NULL;
@@ -130,14 +131,22 @@ class MPPA2IOExplicitPrinter extends MPPA2ExplicitPrinter {
 
 	'''
 
-	override printBufferDefinition(Buffer buffer) '''
+	override printBufferDefinition(Buffer buffer) {
+		
+		if(!buffer.name.equals("Shared")){
+			this.sharedOnly = 0;
+		}
+	
+		var result = '''
 		«IF buffer.name == "Shared"»
 		//#define Shared ((char*)0x10000000ULL) 	/* Shared buffer in DDR */
 		«ELSE»
 		«buffer.type» «buffer.name»[«buffer.size»] __attribute__ ((aligned(64))); // «buffer.comment» size:= «buffer.size»*«buffer.type» aligned on data cache line
 		int local_memory_size = «buffer.size»;
 		«ENDIF»
-	'''
+		'''
+		return result;
+	}
 
 	override printDefinitionsHeader(List<Variable> list) '''
 	«IF !list.empty»
@@ -276,6 +285,9 @@ class MPPA2IOExplicitPrinter extends MPPA2ExplicitPrinter {
 						local_offset += param.typeSize * param.size;
 						//System.out.print("==> " + b.name + " " + param.name + " size " + param.size + " port_name "+ port.getName + "\n");
 					}
+					/*else{
+						System.out.print("A==> " + b.name + " " + param.name + " size " + param.size + " port_name "+ port.getName + "\n");
+					}*/
 				}
 			}
 			gets += "\t"
@@ -309,7 +321,10 @@ class MPPA2IOExplicitPrinter extends MPPA2ExplicitPrinter {
 						}
 						local_offset += param.typeSize * param.size;
 						//System.out.print("==> " + b.name + " " + param.name + " size " + param.size + " port_name "+ port.getName + "\n");
-					}
+					}			
+					/*else{
+						System.out.print("B==> " + b.name + " " + param.name + " size " + param.size + " port_name "+ port.getName + "\n");
+					}*/
 				}
 			}
 			puts += "}\n"
@@ -564,8 +579,10 @@ class MPPA2IOExplicitPrinter extends MPPA2ExplicitPrinter {
 		
 		/* Shared Segment ID */
 		mppa_async_segment_t shared_segment;
-		mppa_async_segment_t local_segment[PREESM_NB_CLUSTERS + PREESM_IO_USED];
+		«IF (this.sharedOnly == 0)»
+		mppa_async_segment_t distributed_segment[PREESM_NB_CLUSTERS + PREESM_IO_USED];
 		extern int local_memory_size;
+		«ENDIF»
 				
 		static utask_t t;
 		static mppadesc_t pcie_fd = 0;
@@ -628,19 +645,23 @@ class MPPA2IOExplicitPrinter extends MPPA2ExplicitPrinter {
 			mppa_async_segment_t shared_segment;
 			mppa_async_segment_create(&shared_segment, SHARED_SEGMENT_ID, (void*)(uintptr_t)Shared, 1024*1024*1024, 0, 0, NULL);
 			
-			«FOR io : printerBlocks.toSet»
-				«IF (io instanceof CoreBlock)»
-					mppa_async_segment_create(&local_segment[PREESM_NB_CLUSTERS], PREESM_NB_CLUSTERS, (void*)(uintptr_t)«io.name», local_memory_size, 0, 0, NULL);
-				«ENDIF»
-			«ENDFOR»		
+			«IF (this.sharedOnly == 0)»
+				«FOR io : printerBlocks.toSet»
+					«IF (io instanceof CoreBlock)»
+						mppa_async_segment_create(&distributed_segment[PREESM_NB_CLUSTERS], INTERCC_BASE_SEGMENT_ID+PREESM_NB_CLUSTERS, (void*)(uintptr_t)«io.name», local_memory_size, 0, 0, NULL);
+					«ENDIF»
+				«ENDFOR»	
+			«ENDIF»	
 			// init comm
 			communicationInit();	
 			mppa_rpc_barrier(1, 2);
-			int i;
-			for(i = 0; i < PREESM_NB_CLUSTERS; i++){
-				mppa_async_segment_clone(&local_segment[i], i, NULL, 0, NULL);
-			}
-			mppa_rpc_barrier(1, 2);
+			«IF (this.sharedOnly == 0)»
+				int i;
+				for(i = 0; i < PREESM_NB_CLUSTERS; i++){
+					mppa_async_segment_clone(&distributed_segment[i], INTERCC_BASE_SEGMENT_ID+i, NULL, 0, NULL);
+				}
+				mppa_rpc_barrier(1, 2);
+			«ENDIF»
 			computationTask_IO(NULL);
 			int err;
 			for( j = 0 ; j < PREESM_NB_CLUSTERS ; j++ ) {
