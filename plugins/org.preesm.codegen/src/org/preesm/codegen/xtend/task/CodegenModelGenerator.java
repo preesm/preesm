@@ -884,6 +884,13 @@ public class CodegenModelGenerator {
                       + "Please take a look at Issue #142 in PREESM github");
               showWarningOnce = true;
             }
+            // Generate subsubbuffers. Each subsubbuffer corresponds to
+            // an edge of the single rate SDF Graph
+            // TODO: generateTwinSubBuffers
+            final Long dagEdgeSize = generateSubBuffers(dagEdgeBuffer, edge);
+
+            // also accessible with dagAlloc.getKey().getWeight()
+            dagEdgeBuffer.setSize(dagEdgeSize);
             TwinBuffer duplicatedBuffer = generateTwinBuffer(this.dagEdgeBuffers.get(originalDagEdge), dagEdgeBuffer);
             this.dagEdgeBuffers.put(originalDagEdge, duplicatedBuffer);
             /**
