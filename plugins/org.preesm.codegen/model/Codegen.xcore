@@ -92,6 +92,10 @@ class SubBuffer extends Buffer {
 	    }
     }
 }
+class TwinBuffer extends Buffer{
+	contains Buffer original
+	contains Buffer twin
+}
 
 class Constant extends Variable {
 	long value
