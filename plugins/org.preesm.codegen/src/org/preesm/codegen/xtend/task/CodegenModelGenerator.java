@@ -882,7 +882,7 @@ public class CodegenModelGenerator {
             if (!showWarningOnce) {
               PreesmLogger.getLogger().info(
                   "Using DistributedOnly memory distribution. This method is not optimized and it's not stable yet.\n"
-                      + "Please take a look at Issue #XXX in PREESM website");
+                      + "Please take a look at Issue #142 in PREESM github");
               showWarningOnce = true;
             }
             TwinBuffer duplicatedBuffer = generateTwinBuffer(this.dagEdgeBuffers.get(originalDagEdge), dagEdgeBuffer);
