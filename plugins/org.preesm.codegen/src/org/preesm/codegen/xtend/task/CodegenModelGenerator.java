@@ -864,18 +864,17 @@ public class CodegenModelGenerator {
           dagEdgeBuffer.setType("char");
           dagEdgeBuffer.setTypeSize(1);
 
-          // Generate subsubbuffers. Each subsubbuffer corresponds to
-          // an edge of the single rate SDF Graph
-          final Long dagEdgeSize = generateSubBuffers(dagEdgeBuffer, edge);
-
-          // also accessible with dagAlloc.getKey().getWeight()
-          dagEdgeBuffer.setSize(dagEdgeSize);
-
           // Save the DAGEdgeBuffer
           final DAGVertex originalSource = this.algo.getVertex(source.getName());
           final DAGVertex originalTarget = this.algo.getVertex(target.getName());
           final DAGEdge originalDagEdge = this.algo.getEdge(originalSource, originalTarget);
           if (!this.dagEdgeBuffers.containsKey(originalDagEdge)) {
+            // Generate subsubbuffers. Each subsubbuffer corresponds to
+            // an edge of the single rate SDF Graph
+            final Long dagEdgeSize = generateSubBuffers(dagEdgeBuffer, edge);
+
+            // also accessible with dagAlloc.getKey().getWeight()
+            dagEdgeBuffer.setSize(dagEdgeSize);
             this.dagEdgeBuffers.put(originalDagEdge, dagEdgeBuffer);
             System.out.println("A --> " + originalDagEdge.toString());
           } else {
