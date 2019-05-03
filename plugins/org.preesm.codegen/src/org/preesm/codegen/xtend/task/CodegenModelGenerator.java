@@ -72,7 +72,6 @@ import org.preesm.algorithm.codegen.model.CodeGenArgument;
 import org.preesm.algorithm.codegen.model.CodeGenParameter;
 import org.preesm.algorithm.mapper.ScheduledDAGIterator;
 import org.preesm.algorithm.mapper.model.MapperDAG;
-import org.preesm.algorithm.memory.allocation.AbstractMemoryAllocatorTask;
 import org.preesm.algorithm.memory.allocation.MemoryAllocator;
 import org.preesm.algorithm.memory.exclusiongraph.MemoryExclusionGraph;
 import org.preesm.algorithm.memory.exclusiongraph.MemoryExclusionVertex;
@@ -127,6 +126,7 @@ import org.preesm.codegen.model.SharedMemoryCommunication;
 import org.preesm.codegen.model.SpecialCall;
 import org.preesm.codegen.model.SpecialType;
 import org.preesm.codegen.model.SubBuffer;
+import org.preesm.codegen.model.TwinBuffer;
 import org.preesm.codegen.model.Variable;
 import org.preesm.codegen.model.util.CodegenModelUserFactory;
 import org.preesm.commons.exceptions.PreesmException;
@@ -824,6 +824,7 @@ public class CodegenModelGenerator {
    */
   protected void generateBuffers() {
     // Create a main Buffer for each MEG
+    boolean showWarningOnce = false;
     for (final Entry<String, MemoryExclusionGraph> entry : this.megs.entrySet()) {
 
       final String memoryBank = entry.getKey();
@@ -876,7 +877,16 @@ public class CodegenModelGenerator {
           final DAGEdge originalDagEdge = this.algo.getEdge(originalSource, originalTarget);
           if (!this.dagEdgeBuffers.containsKey(originalDagEdge)) {
             this.dagEdgeBuffers.put(originalDagEdge, dagEdgeBuffer);
+            System.out.println("A --> " + originalDagEdge.toString());
           } else {
+            if (!showWarningOnce) {
+              PreesmLogger.getLogger().info(
+                  "Using DistributedOnly memory distribution. This method is not optimized and it's not stable yet.\n"
+                      + "Please take a look at Issue #XXX in PREESM website");
+              showWarningOnce = true;
+            }
+            TwinBuffer duplicatedBuffer = generateTwinBuffer(this.dagEdgeBuffers.get(originalDagEdge), dagEdgeBuffer);
+            this.dagEdgeBuffers.put(originalDagEdge, duplicatedBuffer);
             /**
              * Notes for future development of this feature If you are reading this because you want to adapt the code
              * generation for distributed only memory allocation, here is a TODO for you: The updateWithSchedule method
@@ -888,9 +898,11 @@ public class CodegenModelGenerator {
              * allocation, a new update of the MemEx has to be done, taking communication into account this time.
              *
              */
-            throw new PreesmRuntimeException("\n" + AbstractMemoryAllocatorTask.VALUE_DISTRIBUTION_DISTRIBUTED_ONLY
-                + " distribution policy during memory allocation not yet supported in code generation.\n" + "DAGEdge "
-                + originalDagEdge + " is already associated to a Buffer and cannot be associated to a second one.");
+            /*
+             * throw new PreesmRuntimeException("\n" + AbstractMemoryAllocatorTask.VALUE_DISTRIBUTION_DISTRIBUTED_ONLY +
+             * " distribution policy during memory allocation not yet supported in code generation.\n" + "DAGEdge " +
+             * originalDagEdge + " is already associated to a Buffer and cannot be associated to a second one.");
+             */
           }
         } else {
           // the buffer is a null buffer
@@ -2112,6 +2124,28 @@ public class CodegenModelGenerator {
     }
 
     return aggregateOffset;
+  }
+
+  /**
+   * This method create a {@link TwinBuffer} aggregated in the given original {@link Buffer}.
+   *
+   * @param originalBuffer
+   *          the {@link Buffer} containing the originalBuffer
+   * @param twinBuffer
+   *          the {@link Buffer} twinBuffer
+   * @return the twin buffer
+   *
+   */
+  protected TwinBuffer generateTwinBuffer(final Buffer originalBuffer, final Buffer twinBuffer) {
+    TwinBuffer duplicatedBuffer = CodegenFactory.eINSTANCE.createTwinBuffer();
+    if (originalBuffer instanceof TwinBuffer) {
+      duplicatedBuffer.setOriginal(((TwinBuffer) originalBuffer).getOriginal());
+      duplicatedBuffer.getTwins().addAll(((TwinBuffer) originalBuffer).getTwins());
+    } else {
+      duplicatedBuffer.setOriginal(originalBuffer);
+    }
+    duplicatedBuffer.getTwins().add(twinBuffer);
+    return duplicatedBuffer;
   }
 
   /**

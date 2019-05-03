@@ -94,7 +94,7 @@ class SubBuffer extends Buffer {
 }
 class TwinBuffer extends Buffer{
 	contains Buffer original
-	contains Buffer twin
+	contains Buffer[] twins
 }
 
 class Constant extends Variable {
