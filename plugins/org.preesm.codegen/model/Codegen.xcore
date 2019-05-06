@@ -229,6 +229,9 @@ class CommunicationNode extends Commentable {
 class SharedMemoryCommunication extends Communication {
 }
 
+class DistributedMemoryCommunication extends Communication {
+}
+
 enum PortDirection {
 	INPUT
 	OUTPUT = 1

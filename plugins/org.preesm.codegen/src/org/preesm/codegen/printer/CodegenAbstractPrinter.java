@@ -53,6 +53,7 @@ import org.preesm.codegen.model.Constant;
 import org.preesm.codegen.model.ConstantString;
 import org.preesm.codegen.model.CoreBlock;
 import org.preesm.codegen.model.DataTransferAction;
+import org.preesm.codegen.model.DistributedMemoryCommunication;
 import org.preesm.codegen.model.FifoCall;
 import org.preesm.codegen.model.FiniteLoopBlock;
 import org.preesm.codegen.model.FpgaLoadAction;
@@ -69,6 +70,7 @@ import org.preesm.codegen.model.SharedMemoryCommunication;
 import org.preesm.codegen.model.SpecialCall;
 import org.preesm.codegen.model.SpecialType;
 import org.preesm.codegen.model.SubBuffer;
+import org.preesm.codegen.model.TwinBuffer;
 import org.preesm.codegen.model.Variable;
 import org.preesm.codegen.model.util.CodegenSwitch;
 import org.preesm.codegen.xtend.task.CodegenEngine;
@@ -345,6 +347,11 @@ public abstract class CodegenAbstractPrinter extends CodegenSwitch<CharSequence>
   }
 
   @Override
+  public CharSequence caseDistributedMemoryCommunication(final DistributedMemoryCommunication communication) {
+    return printDistributedMemoryCommunication(communication);
+  }
+
+  @Override
   public CharSequence caseCoreBlock(final CoreBlock coreBlock) {
 
     // The coreBlock is composed of Blocks
@@ -513,6 +520,36 @@ public abstract class CodegenAbstractPrinter extends CodegenSwitch<CharSequence>
     }
 
     return printBuffer(buffer);
+  }
+
+  @Override
+  public CharSequence caseTwinBuffer(final TwinBuffer buffer) {
+
+    if (this.state.equals(PrinterState.PRINTING_DEFINITIONS)) {
+      System.out.println("ZZZZ --- 1 " + buffer.toString());
+      if (!buffer.getTwins().isEmpty()) {
+        System.out.println("Original 1: " + buffer.getOriginal().toString());
+      }
+      // return printBufferDefinition(buffer);
+      return "1";
+    }
+
+    if (this.state.equals(PrinterState.PRINTING_DECLARATIONS)) {
+      System.out.println("ZZZZ --- 2 " + buffer.toString());
+      if (!buffer.getTwins().isEmpty()) {
+        System.out.println("Original 2: " + buffer.getOriginal().toString());
+      }
+      // return printBufferDeclaration(buffer);
+      return "2";
+    }
+
+    System.out.println("ZZZZ --- 3 " + buffer.toString());
+    if (!buffer.getTwins().isEmpty()) {
+      System.out.println("Original 3: " + buffer.getOriginal().toString());
+    }
+    // return printBuffer(buffer);
+    return "3";
+
   }
 
   @Override
@@ -1115,13 +1152,22 @@ public abstract class CodegenAbstractPrinter extends CodegenSwitch<CharSequence>
   public abstract CharSequence printRoundBuffer(SpecialCall call);
 
   /**
-   * ethod called to print a {@link SharedMemoryCommunication}.
+   * Method called to print a {@link SharedMemoryCommunication}.
    *
    * @param communication
    *          the printed {@link SharedMemoryCommunication}.
    * @return the printed {@link CharSequence}
    */
   public abstract CharSequence printSharedMemoryCommunication(SharedMemoryCommunication communication);
+
+  /**
+   * ethod called to print a {@link DistributedMemoryCommunication}.
+   *
+   * @param communication
+   *          the printed {@link DistributedMemoryCommunication}.
+   * @return the printed {@link CharSequence}
+   */
+  public abstract CharSequence printDistributedMemoryCommunication(DistributedMemoryCommunication communication);
 
   /**
    * Method called to print a {@link SpecialCall}.

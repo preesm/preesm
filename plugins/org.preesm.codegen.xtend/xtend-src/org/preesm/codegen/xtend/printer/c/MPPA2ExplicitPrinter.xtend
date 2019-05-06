@@ -69,6 +69,8 @@ import java.io.InputStreamReader
 import java.io.StringWriter
 import java.util.Collection
 import java.util.LinkedHashMap
+import org.preesm.codegen.model.TwinBuffer
+import org.preesm.codegen.model.DistributedMemoryCommunication
 
 class MPPA2ExplicitPrinter extends CPrinter {
 
@@ -160,7 +162,13 @@ class MPPA2ExplicitPrinter extends CPrinter {
 	}
 
 	override printBufferDefinition(Buffer buffer) {
-		
+		System.out.println("AAAAAAA "  + buffer.toString());
+		/*var TwinBuffer twinBuffer = (buffer as TwinBuffer);
+		if(twinBuffer.original !== null){
+			System.out.println("BBBB " + twinBuffer.original.toString());
+		} else if(!twinBuffer.twins.empty){
+			System.out.println("CCCC " + twinBuffer.twins.toString());			
+		}*/
 		if(!buffer.name.equals("Shared")){
 			this.sharedOnly = 0;
 		}else{
@@ -536,7 +544,7 @@ class MPPA2ExplicitPrinter extends CPrinter {
 			output instanceof NullBuffer || input instanceof NullBuffer){
 			return ""
 		} else {
-			return '''memcpy(«output.doSwitch»+«outOffset», «input.doSwitch»+«inOffset», «size»*sizeof(«type»));'''
+			return '''memcpy(«output.doSwitch»+«outOffset», «input.doSwitch»+«inOffset», «size»*sizeof(«type»)); '''
 		}
 	}
 
@@ -553,6 +561,12 @@ class MPPA2ExplicitPrinter extends CPrinter {
 				 " has at least one unsupported communication node"+
 				 " for the " + this.class.name + " printer")
 		}
+	}
+
+	override CharSequence caseDistributedMemoryCommunication(DistributedMemoryCommunication communication) {
+
+		return printDistributedMemoryCommunication(communication)
+			
 	}
 
 	override printSharedMemoryCommunication(SharedMemoryCommunication communication) '''

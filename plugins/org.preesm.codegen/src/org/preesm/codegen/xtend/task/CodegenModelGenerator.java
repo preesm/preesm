@@ -110,6 +110,7 @@ import org.preesm.codegen.model.CoreBlock;
 import org.preesm.codegen.model.DataTransferAction;
 import org.preesm.codegen.model.Delimiter;
 import org.preesm.codegen.model.Direction;
+import org.preesm.codegen.model.DistributedMemoryCommunication;
 import org.preesm.codegen.model.FifoCall;
 import org.preesm.codegen.model.FifoOperation;
 import org.preesm.codegen.model.FpgaLoadAction;
@@ -450,6 +451,27 @@ public class CodegenModelGenerator {
     // 0 - Create the Buffers of the MemEx
     generateBuffers();
 
+    for (DAGEdge dagEdge : this.dagEdgeBuffers.keySet()) {
+      Buffer buffer = this.dagEdgeBuffers.get(dagEdge);
+      System.out.println("1.- " + buffer.toString());
+      if (buffer instanceof TwinBuffer) {
+        System.out.println("1.1- " + ((TwinBuffer) buffer).getOriginal().toString());
+        for (Buffer buffer2 : ((TwinBuffer) buffer).getTwins()) {
+          System.out.println("1.2- " + buffer2.toString());
+        }
+      }
+    }
+    for (BufferProperties bufferProperties : this.srSDFEdgeBuffers.keySet()) {
+      Buffer buffer = this.srSDFEdgeBuffers.get(bufferProperties);
+      System.out.println("2.- " + buffer.toString());
+      if (buffer instanceof TwinBuffer) {
+        System.out.println("2.1- " + ((TwinBuffer) buffer).getOriginal().toString());
+        for (Buffer buffer2 : ((TwinBuffer) buffer).getTwins()) {
+          System.out.println("2.2- " + buffer2.toString());
+        }
+      }
+    }
+
     // 1 - iterate over dag vertices in SCHEDULING Order !
     final ScheduledDAGIterator scheduledDAGIterator = new ScheduledDAGIterator(algo);
     scheduledDAGIterator.forEachRemaining(vert -> {
@@ -473,6 +495,9 @@ public class CodegenModelGenerator {
       // 1.1 - Construct the "loop" of each core.
       final String vertexType = vert.getPropertyBean().getValue(ImplementationPropertyNames.Vertex_vertexType)
           .toString();
+      final DAGEdge dagEdge = vert.getPropertyBean()
+          .getValue(ImplementationPropertyNames.SendReceive_correspondingDagEdge);
+      final Buffer buffer = this.dagEdgeBuffers.get(dagEdge);
       switch (vertexType) {
 
         case VertexType.TYPE_TASK:
@@ -499,11 +524,19 @@ public class CodegenModelGenerator {
           break;
 
         case VertexType.TYPE_SEND:
-          generateCommunication(operatorBlock, vert, VertexType.TYPE_SEND);
+          if (buffer instanceof TwinBuffer) {
+            generateDistributedCommunication(operatorBlock, vert, VertexType.TYPE_SEND);
+          } else {
+            generateCommunication(operatorBlock, vert, VertexType.TYPE_SEND);
+          }
           break;
 
         case VertexType.TYPE_RECEIVE:
-          generateCommunication(operatorBlock, vert, VertexType.TYPE_RECEIVE);
+          if (buffer instanceof TwinBuffer) {
+            generateDistributedCommunication(operatorBlock, vert, VertexType.TYPE_SEND);
+          } else {
+            generateCommunication(operatorBlock, vert, VertexType.TYPE_RECEIVE);
+          }
           break;
         default:
           throw new PreesmRuntimeException("Vertex " + vert + " has an unknown type: " + vert.getKind());
@@ -773,10 +806,16 @@ public class CodegenModelGenerator {
           correspondingOperatorBlock = componentEntry.getValue();
         }
       }
-
       // Recursively set the creator for the current Buffer and all its
       // subBuffer
-      recusriveSetBufferCreator(mainBuffer, correspondingOperatorBlock, isLocal);
+      recursiveSetBufferCreator(mainBuffer, correspondingOperatorBlock, isLocal);
+
+      for (Variable cosa : correspondingOperatorBlock.getDeclarations()) {
+        System.out.println("Declaration " + mainBuffer.getName() + " --- " + cosa.toString());
+      }
+      for (Variable cosa : correspondingOperatorBlock.getDefinitions()) {
+        System.out.println("Definition " + mainBuffer.getName() + " --- " + cosa.toString());
+      }
       if (correspondingOperatorBlock != null) {
         final EList<Variable> definitions = correspondingOperatorBlock.getDefinitions();
         ECollections.sort(definitions, (o1, o2) -> {
@@ -876,7 +915,6 @@ public class CodegenModelGenerator {
             // also accessible with dagAlloc.getKey().getWeight()
             dagEdgeBuffer.setSize(dagEdgeSize);
             this.dagEdgeBuffers.put(originalDagEdge, dagEdgeBuffer);
-            System.out.println("A --> " + originalDagEdge.toString());
           } else {
             if (!showWarningOnce) {
               PreesmLogger.getLogger().info(
@@ -886,8 +924,7 @@ public class CodegenModelGenerator {
             }
             // Generate subsubbuffers. Each subsubbuffer corresponds to
             // an edge of the single rate SDF Graph
-            // TODO: generateTwinSubBuffers
-            final Long dagEdgeSize = generateSubBuffers(dagEdgeBuffer, edge);
+            final Long dagEdgeSize = generateTwinSubBuffers(dagEdgeBuffer, edge);
 
             // also accessible with dagAlloc.getKey().getWeight()
             dagEdgeBuffer.setSize(dagEdgeSize);
@@ -1210,13 +1247,18 @@ public class CodegenModelGenerator {
       // At this point, the dagEdge, srsdfEdge corresponding to the
       // current argument were identified
       // Get the corresponding Variable
-      final Buffer buffer = this.srSDFEdgeBuffers.get(subBufferProperties);
+      final Buffer firstFound = this.srSDFEdgeBuffers.get(subBufferProperties);
+      Buffer buffer = null;
+      if (firstFound instanceof TwinBuffer) {
+        buffer = ((TwinBuffer) firstFound).getOriginal();
+      } else {
+        buffer = firstFound;
+      }
       if (buffer == null) {
         throw new PreesmRuntimeException(
             "Edge connected to " + arg.getDirection() + " port " + arg.getName() + " of DAG Actor " + dagVertex
                 + " is not present in the input MemEx.\n" + "There is something wrong in the Memory Allocation task.");
       }
-
       bufferList.put(prototype.getArguments().get(arg), buffer);
       directionList.put(prototype.getArguments().get(arg), dir);
     }
@@ -1341,6 +1383,122 @@ public class CodegenModelGenerator {
 
     // Create the corresponding SE or RS
     final SharedMemoryCommunication newCommZoneComplement = CodegenFactory.eINSTANCE.createSharedMemoryCommunication();
+    newCommZoneComplement.setDirection(dir);
+    newCommZoneComplement.setDelimiter((delimiter.equals(Delimiter.START)) ? Delimiter.END : Delimiter.START);
+    newCommZoneComplement.setData(buffer);
+    newCommZoneComplement.getParameters().clear();
+    if (buffer != null) {
+      newCommZoneComplement.addParameter(buffer, PortDirection.NONE);
+    }
+
+    newCommZoneComplement.setName(((newComm.getDirection().equals(Direction.SEND)) ? "SE" : "RS") + commName);
+    for (final ComponentInstance comp : routeStep.getNodes()) {
+      final CommunicationNode comNode = CodegenFactory.eINSTANCE.createCommunicationNode();
+      comNode.setName(comp.getInstanceName());
+      comNode.setType(comp.getComponent().getVlnv().getName());
+      newCommZoneComplement.getNodes().add(comNode);
+    }
+
+    // Find corresponding communications (SS/SE/RS/RE)
+    registerCommunication(newCommZoneComplement, dagEdge, dagVertex);
+
+    // Insert the new communication to the loop of the codeblock
+    insertCommunication(operatorBlock, dagVertex, newCommZoneComplement);
+
+    // No semaphore here, semaphore are only for SS->RE and RE->SR
+
+    final Integer gid = dagVertex.getPropertyBean().getValue("SYNC_GROUP");
+    if (gid != null) {
+      newComm.setComment("SyncComGroup = " + gid);
+    }
+    // Check if this is a redundant communication
+    final Boolean b = dagVertex.getPropertyBean().getValue("Redundant");
+    if (b != null && b.equals(Boolean.valueOf(true))) {
+      // Mark communication are redundant.
+      newComm.setRedundant(true);
+      newCommZoneComplement.setRedundant(true);
+    }
+  }
+
+  /**
+   * Generate the {@link CodegenPackage Codegen Model} for communication "firing". This method will create an
+   * {@link Communication} and place it in the {@link LoopBlock} of the {@link CoreBlock} passed as a parameter.
+   *
+   * @param operatorBlock
+   *          the {@link CoreBlock} where the actor {@link Communication} is performed.
+   * @param dagVertex
+   *          the {@link DAGVertex} corresponding to the actor firing.
+   * @param direction
+   *          the Type of communication ({@link VertexType#TYPE_SEND} or {@link VertexType#TYPE_RECEIVE}).
+   *
+   */
+  protected void generateDistributedCommunication(final CoreBlock operatorBlock, final DAGVertex dagVertex,
+      final String direction) {
+    // Create the communication
+    final DistributedMemoryCommunication newComm = CodegenFactory.eINSTANCE.createDistributedMemoryCommunication();
+    final Direction dir = (direction.equals(VertexType.TYPE_SEND)) ? Direction.SEND : Direction.RECEIVE;
+    final Delimiter delimiter = (direction.equals(VertexType.TYPE_SEND)) ? Delimiter.START : Delimiter.END;
+    newComm.setDirection(dir);
+    newComm.setDelimiter(delimiter);
+    final MessageRouteStep routeStep = dagVertex.getPropertyBean()
+        .getValue(ImplementationPropertyNames.SendReceive_routeStep);
+    for (final ComponentInstance comp : routeStep.getNodes()) {
+      final CommunicationNode comNode = CodegenFactory.eINSTANCE.createCommunicationNode();
+      comNode.setName(comp.getInstanceName());
+      comNode.setType(comp.getComponent().getVlnv().getName());
+      newComm.getNodes().add(comNode);
+    }
+
+    // Find the corresponding DAGEdge buffer(s)
+    final DAGEdge dagEdge = dagVertex.getPropertyBean()
+        .getValue(ImplementationPropertyNames.SendReceive_correspondingDagEdge);
+    final TwinBuffer twinBuffer = (TwinBuffer) this.dagEdgeBuffers.get(dagEdge);
+    final String coreBlockName = operatorBlock.getName();
+
+    final SubBuffer original = (SubBuffer) twinBuffer.getOriginal();
+    final List<Buffer> twins = twinBuffer.getTwins();
+    Buffer buffer = null;
+
+    if (original.getContainer().getName().equals(coreBlockName)) {
+      buffer = original;
+    } else {
+      for (Buffer bufferTwinChecker : twins) {
+        SubBuffer subBufferChecker = (SubBuffer) bufferTwinChecker;
+        if (subBufferChecker.getContainer().getName().equals(coreBlockName)) {
+          buffer = subBufferChecker;
+          break;
+        }
+      }
+    }
+    if (buffer == null) {
+      throw new PreesmRuntimeException("No buffer found for edge" + dagEdge);
+    }
+
+    newComm.setData(buffer);
+    newComm.getParameters().clear();
+    if (buffer != null) {
+      newComm.addParameter(buffer, PortDirection.NONE);
+    }
+
+    // Set the name of the communication
+    // SS <=> Start Send
+    // RE <=> Receive End
+    String commName = "__" + buffer.getName();
+    commName += "__" + operatorBlock.getName();
+    newComm.setName(((newComm.getDirection().equals(Direction.SEND)) ? "SS" : "RE") + commName);
+
+    // Find corresponding communications (SS/SE/RS/RE)
+    registerCommunication(newComm, dagEdge, dagVertex);
+
+    // Insert the new communication to the loop of the codeblock
+    insertCommunication(operatorBlock, dagVertex, newComm);
+
+    // Register the dag buffer to the core
+    registerCallVariableToCoreBlock(operatorBlock, newComm);
+
+    // Create the corresponding SE or RS
+    final DistributedMemoryCommunication newCommZoneComplement = CodegenFactory.eINSTANCE
+        .createDistributedMemoryCommunication();
     newCommZoneComplement.setDirection(dir);
     newCommZoneComplement.setDelimiter((delimiter.equals(Delimiter.START)) ? Delimiter.END : Delimiter.START);
     newCommZoneComplement.setData(buffer);
@@ -1681,6 +1839,7 @@ public class CodegenModelGenerator {
     final Entry<List<Buffer>, List<PortDirection>> callBuffer = generateBufferList(dagVertex, prototype, isInit);
     // Put Buffer in the DataTransfer function call
     for (int idx = 0; idx < callBuffer.getKey().size(); idx++) {
+      System.out.println("99999999 - " + callBuffer.getKey().get(idx).toString());
       func.addBuffer(callBuffer.getKey().get(idx), callBuffer.getValue().get(idx));
     }
     return func;
@@ -2133,6 +2292,54 @@ public class CodegenModelGenerator {
   }
 
   /**
+   * This method create a {@link TwinBuffer} for each {@link SubBuffer}. {@link SubBuffer} information are retrieved
+   * from the {@link #megs} of the {@link CodegenModelGenerator} . All created {@link SubBuffer} are referenced in the
+   * {@link #srSDFEdgeBuffers} map.
+   *
+   * @param parentBuffer
+   *          the {@link Buffer} containing the generated {@link SubBuffer}
+   * @param dagEdge
+   *          the {@link DAGEdge} whose {@link Buffer} is generated.
+   * @return the total size of the subbuffers
+   *
+   */
+  protected long generateTwinSubBuffers(final Buffer twinParentBuffer, final DAGEdge dagEdge) {
+
+    /*
+     * Backup original
+     */
+    Map<BufferProperties, Buffer> backUpOriginal = new LinkedHashMap<>();
+
+    BufferAggregate buffers = dagEdge.getPropertyBean().getValue(BufferAggregate.propertyBeanName);
+    for (final BufferProperties subBufferProperties : buffers) {
+      final Buffer buff = this.srSDFEdgeBuffers.get(subBufferProperties);
+      backUpOriginal.put(subBufferProperties, buff);
+    }
+    /*
+     * Generate subbuffers for the twin buffer
+     */
+    final long aggregateOffset = generateSubBuffers(twinParentBuffer, dagEdge);
+
+    /*
+     * Get new buffers
+     */
+    Map<BufferProperties, Buffer> newBuffers = new LinkedHashMap<>();
+    for (final BufferProperties subBufferProperties : buffers) {
+      final Buffer buff = this.srSDFEdgeBuffers.get(subBufferProperties);
+      newBuffers.put(subBufferProperties, buff);
+    }
+    /*
+     * Generate and store twin buffers
+     */
+    for (final BufferProperties subBufferProperties : buffers) {
+      TwinBuffer duplicatedBuffer = generateTwinBuffer(backUpOriginal.get(subBufferProperties),
+          newBuffers.get(subBufferProperties));
+      this.srSDFEdgeBuffers.put(subBufferProperties, duplicatedBuffer);
+    }
+    return aggregateOffset;
+  }
+
+  /**
    * This method create a {@link TwinBuffer} aggregated in the given original {@link Buffer}.
    *
    * @param originalBuffer
@@ -2143,6 +2350,7 @@ public class CodegenModelGenerator {
    *
    */
   protected TwinBuffer generateTwinBuffer(final Buffer originalBuffer, final Buffer twinBuffer) {
+
     TwinBuffer duplicatedBuffer = CodegenFactory.eINSTANCE.createTwinBuffer();
     if (originalBuffer instanceof TwinBuffer) {
       duplicatedBuffer.setOriginal(((TwinBuffer) originalBuffer).getOriginal());
@@ -2409,15 +2617,14 @@ public class CodegenModelGenerator {
    * @param isLocal
    *          boolean used to set the {@link Buffer#isLocal()} property of all {@link Buffer}
    */
-  private void recusriveSetBufferCreator(final Buffer buffer, final CoreBlock correspondingOperatorBlock,
+  private void recursiveSetBufferCreator(final Buffer buffer, final CoreBlock correspondingOperatorBlock,
       final boolean isLocal) {
     // Set the creator for the current buffer
     buffer.reaffectCreator(correspondingOperatorBlock);
     buffer.setLocal(isLocal);
-
     // Do the same recursively for all its children subbuffers
     for (final SubBuffer subBuffer : buffer.getChildrens()) {
-      recusriveSetBufferCreator(subBuffer, correspondingOperatorBlock, isLocal);
+      recursiveSetBufferCreator(subBuffer, correspondingOperatorBlock, isLocal);
     }
   }
 
