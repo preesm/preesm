@@ -17,7 +17,8 @@
 
 #include "communication.h"
 
-extern mppa_async_segment_t shared_segment;
+extern mppa_async_segment_t shared_segment __attribute__((weak));
+extern mppa_async_segment_t distributed_segment[PREESM_NB_CLUSTERS + PREESM_IO_USED] __attribute__((weak));
 
 extern pthread_barrier_t pthread_barrier __attribute__((__unused__)); 
 
@@ -39,7 +40,6 @@ extern char *local_buffer __attribute__((weak));
 
 void sendStart(int cluster)
 {
-
 	int sender = __k1_get_cluster_id();
 	int receiver = cluster;
 	int receiverID = cluster;
@@ -67,6 +67,61 @@ void receiveEnd(int cluster)
 	mppa_async_event_wait(&sync_evt[cluster]);	/* unlock when sync[cluster] is GT than 0 */
 	__builtin_k1_afdau(&sync[cluster], -1); 	/* rearm condition (consume token) */
 	//pthread_barrier_wait(&pthread_barrier);
+}
+
+void sendDistributedStart(int cluster)
+{
+	int sender = __k1_get_cluster_id();
+	int receiver = cluster;
+	int receiverID = cluster;
+	if(receiverID == PREESM_NB_CLUSTERS){
+		receiverID = MPPA_ASYNC_SERVER_IO0;
+	}
+	#ifdef __k1io__
+		sender = PREESM_NB_CLUSTERS;
+	#endif
+	if(receiver == sender)
+	{
+		__builtin_k1_afdau(&sync[cluster], 1); 	/* post locally */
+	}else{
+		//printf("Cluster %d post to cluster %d offset %llu\n", sender, receiver, (off64_t)(sender * sizeof(long long)));
+		mppa_async_postadd(&sync_segments[receiver], (off64_t)(sender * sizeof(long long)), 1); /* atomic remote increment of sync[cluster] value */
+	}
+}
+
+void sendDistributedEnd(int cluster)
+{
+	mppa_async_event_wait(&sync_evt[cluster]);	/* unlock when sync[cluster] is GT than 0 */
+	__builtin_k1_afdau(&sync[cluster], -1); 	/* rearm condition (consume token) */
+	//pthread_barrier_wait(&pthread_barrier);
+}
+
+void receiveDistributedStart(int remotePE, off64_t remoteOffset, void* localAddress, size_t transmissionSize)
+{
+	mppa_async_event_wait(&sync_evt[remotePE]);	/* unlock when sync[cluster] is GT than 0 */
+	__builtin_k1_afdau(&sync[remotePE], -1); 	/* rearm condition (consume token) */
+	mppa_async_get(localAddress, &distributed_segment[remotePE], remoteOffset, transmissionSize, NULL);
+	//pthread_barrier_wait(&pthread_barrier);
+}
+
+void receiveDistributedEnd(int cluster)
+{
+	int sender = __k1_get_cluster_id();
+	int receiver = cluster;
+	int receiverID = cluster;
+	if(receiverID == PREESM_NB_CLUSTERS){
+		receiverID = MPPA_ASYNC_SERVER_IO0;
+	}
+	#ifdef __k1io__
+		sender = PREESM_NB_CLUSTERS;
+	#endif
+	if(receiver == sender)
+	{
+		__builtin_k1_afdau(&sync[cluster], 1); 	/* post locally */
+	}else{
+		//printf("Cluster %d post to cluster %d offset %llu\n", sender, receiver, (off64_t)(sender * sizeof(long long)));
+		mppa_async_postadd(&sync_segments[receiver], (off64_t)(sender * sizeof(long long)), 1); /* atomic remote increment of sync[cluster] value */
+	}
 }
 
 #ifdef __nodeos__

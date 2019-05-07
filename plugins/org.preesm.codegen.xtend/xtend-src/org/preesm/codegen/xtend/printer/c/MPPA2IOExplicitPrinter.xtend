@@ -634,15 +634,26 @@ class MPPA2IOExplicitPrinter extends MPPA2ExplicitPrinter {
 			if (__k1_spawn_type() == __MPPA_PCI_SPAWN) {
 				pcie_fd = pcie_open(0);
 					ret = pcie_queue_init(pcie_fd);
+					assert(ret == 0);
 					pcie_register_console(pcie_fd, stdin, stdout);
-				assert(ret == 0);
 			}
-		
-			mppa_rpc_server_init(	1 /* rm where to run server */, 
+					
+			if(mppa_rpc_server_init(	1 /* rm where to run server */, 
 									0 /* offset ddr */, 
-									PREESM_NB_CLUSTERS /* nb_cluster to serve*/);
-			mppa_async_server_init();
-			mppa_remote_server_init(pcie_fd, PREESM_NB_CLUSTERS);
+									PREESM_NB_CLUSTERS /* nb_cluster to serve*/) != 0){
+				assert(0 && "mppa_rpc_server_init\n");
+			}
+			if(mppa_async_server_init() != 0){
+				assert(0 && "mppa_async_server_init\n");
+			}
+			if(mppa_remote_server_init(pcie_fd, PREESM_NB_CLUSTERS) != 0){
+				assert(0 && "mppa_remote_server_init\n");
+			}
+			
+			if(utask_create(&t, NULL, (void*)mppa_rpc_server_start, NULL) != 0){
+				assert(0 && "utask_create\n");
+			}
+						
 			for( j = 0 ; j < PREESM_NB_CLUSTERS ; j++ ) {
 		
 				char elf_name[30];
@@ -651,15 +662,17 @@ class MPPA2IOExplicitPrinter extends MPPA2ExplicitPrinter {
 				if (id < 0)
 					return -2;
 			}				
-			utask_create(&t, NULL, (void*)mppa_rpc_server_start, NULL);
 		
 			mppa_async_segment_t shared_segment;
-			mppa_async_segment_create(&shared_segment, SHARED_SEGMENT_ID, (void*)(uintptr_t)Shared, 1024*1024*1024, 0, 0, NULL);
-			
+			if(mppa_async_segment_create(&shared_segment, SHARED_SEGMENT_ID, (void*)(uintptr_t)Shared, 1024*1024*1024, 0, 0, NULL) != 0)
+				assert(0 && "mppa_async_segment_create\n");
+			}
 			«IF (this.sharedOnly == 0)»
 				«FOR io : printerBlocks.toSet»
 					«IF (io instanceof CoreBlock)»
-						mppa_async_segment_create(&distributed_segment[PREESM_NB_CLUSTERS], INTERCC_BASE_SEGMENT_ID+PREESM_NB_CLUSTERS, (void*)(uintptr_t)«io.name», local_memory_size, 0, 0, NULL);
+						if(mppa_async_segment_create(&distributed_segment[PREESM_NB_CLUSTERS], INTERCC_BASE_SEGMENT_ID+PREESM_NB_CLUSTERS, (void*)(uintptr_t)«io.name», local_memory_size, 0, 0, NULL) != 0){
+							assert(0 && "mppa_async_segment_create\n");
+						}
 					«ENDIF»
 				«ENDFOR»	
 			«ENDIF»	
@@ -669,7 +682,9 @@ class MPPA2IOExplicitPrinter extends MPPA2ExplicitPrinter {
 			«IF (this.sharedOnly == 0)»
 				int i;
 				for(i = 0; i < PREESM_NB_CLUSTERS; i++){
-					mppa_async_segment_clone(&distributed_segment[i], INTERCC_BASE_SEGMENT_ID+i, NULL, 0, NULL);
+					if(mppa_async_segment_clone(&distributed_segment[i], INTERCC_BASE_SEGMENT_ID+i, NULL, 0, NULL) != 0){
+						assert(0 && "mppa_async_segment_clone\n");
+					}
 				}
 				mppa_rpc_barrier(1, 2);
 			«ENDIF»

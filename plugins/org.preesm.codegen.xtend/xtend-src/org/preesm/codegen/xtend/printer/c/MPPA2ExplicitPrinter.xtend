@@ -578,21 +578,37 @@ class MPPA2ExplicitPrinter extends CPrinter {
 		if(sendBuffer != null){
 			System.out.println("receive " + receiveBuffer.toString);
 		}*/
-		
-	var String printing = '''
-		«communication.direction.toString.toLowerCase»«communication.delimiter.toString.toLowerCase.toFirstUpper»(«IF (communication.
-			direction == Direction::SEND && communication.delimiter == Delimiter::START) ||
-			(communication.direction == Direction::RECEIVE && communication.delimiter == Delimiter::END)»«{
-			var coreID = if (communication.direction == Direction::SEND) {
-					communication.receiveStart.coreContainer.coreID
-				} else {
-					communication.sendStart.coreContainer.coreID
-				}
-			var ret = coreID
-			ret
-		}»«ENDIF»);  // «communication.sendStart.coreContainer.name» > «communication.receiveStart.coreContainer.name»: «communication.
-			data.doSwitch»
-	'''
+		var boolean receiveStartOrNot = false; // false is RE, SS, SE --- True is RS
+		if(communication.direction.toString.toLowerCase.equals("receive") && communication.delimiter.toString.toLowerCase.equals("start")){
+			receiveStartOrNot = true;
+		}
+		var int receiverCoreID;
+		if(communication.direction == Direction::SEND){
+			receiverCoreID = communication.receiveStart.coreContainer.coreID
+		} else{
+			receiverCoreID = communication.sendStart.coreContainer.coreID
+		}
+		var String printing = ""
+		if(!receiveStartOrNot){
+			printing = '''
+				«communication.direction.toString.toLowerCase»Distributed«communication.delimiter.toString.toLowerCase.toFirstUpper»(/*Remote PE id*/«
+				receiverCoreID»);  // «communication.sendStart.coreContainer.name» > «
+				communication.receiveStart.coreContainer.name»: «communication.data.doSwitch»
+		'''
+		} else{
+			var SubBuffer sendBuffer = (communication.sendStart.data as SubBuffer);
+			var SubBuffer receiveBuffer = (communication.receiveStart.data as SubBuffer);
+			printing = '''
+				«communication.direction.toString.toLowerCase»Distributed«communication.delimiter.toString.toLowerCase.toFirstUpper
+				»(/*Remote PE id*/ «receiverCoreID
+				»,/*Remote offset*/ «sendBuffer.offset
+				»,/*Local address*/ «receiveBuffer.name
+				»,/*Transmission Size*/ «receiveBuffer.size
+				»);  // «communication.sendStart.coreContainer.name» > «
+				communication.receiveStart.coreContainer.name»: «communication.data.doSwitch»
+		'''
+		}
+	
 	return printing;
 	}
 
@@ -723,6 +739,7 @@ class MPPA2ExplicitPrinter extends CPrinter {
 		#include "HAL/hal/hal_ext.h"
 		#include <math.h>
 		#include <stdlib.h>
+		#include <assert.h>
 		
 		#ifdef __nodeos__
 		#define CONFIGURE_DEFAULT_TASK_STACK_SIZE (1U<<12)
@@ -780,28 +797,40 @@ class MPPA2ExplicitPrinter extends CPrinter {
 		int
 		main(void)
 		{
-			mppa_rpc_client_init();
-			mppa_async_init();
-			mppa_remote_client_init();
+			if (mppa_rpc_client_init() != 0){
+				assert(0 && "mppa_rpc_client_init\n");
+			}
+			if (mppa_async_init() != 0){
+				assert(0 && "mppa_async_init\n");
+			}
+			if (mppa_remote_client_init() != 0){
+				assert(0 && "mppa_remote_client_init\n");
+			}
 		
 			«IF (this.distributedOnly == 0)»
-			mppa_async_segment_clone(&shared_segment, SHARED_SEGMENT_ID, NULL, 0, NULL);
+			if(mppa_async_segment_clone(&shared_segment, SHARED_SEGMENT_ID, NULL, 0, NULL) != 0){
+				assert(0 && "mppa_async_segment_clone\n");
+			}
 			«ENDIF»
 			
 			«IF (this.sharedOnly == 0)»
 				/* Inter cluster communication support */
 				int cc_id = __k1_get_cluster_id();
+				void *cc_ptr = NULL;
 				switch (cc_id){
 					«FOR clusters : printerBlocks.toSet»
 						«IF (clusters instanceof CoreBlock)»
-							case «clusters.coreID»: 
-								mppa_async_segment_create(&distributed_segment[cc_id], INTERCC_BASE_SEGMENT_ID+cc_id, (void*)(uintptr_t)«clusters.name», local_memory_size, 0, 0, NULL);
+							case «clusters.coreID»:
+								cc_ptr = (void*)&«clusters.name»;
 								break;
 						«ENDIF»
 					«ENDFOR»
 					default: 
 						break;
 				} 
+				if (mppa_async_segment_create(&distributed_segment[cc_id], INTERCC_BASE_SEGMENT_ID+cc_id, (void*)cc_ptr, local_memory_size, 0, 0, NULL) != 0) {
+					assert(0 && "mppa_async_segment_create\n");
+				}								
 			«ENDIF»
 
 			// init comm
@@ -831,7 +860,9 @@ class MPPA2ExplicitPrinter extends CPrinter {
 				int i;
 				for(i = 0; i < PREESM_NB_CLUSTERS + PREESM_IO_USED; i++){
 					if(cc_id != i){
-						mppa_async_segment_clone(&distributed_segment[i], INTERCC_BASE_SEGMENT_ID+i, NULL, 0, NULL);
+						if (mppa_async_segment_clone(&distributed_segment[i], INTERCC_BASE_SEGMENT_ID+i, NULL, 0, NULL) != 0){
+							assert(0 && "mppa_async_segment_clone\n");
+						}
 					}
 				}	
 				mppa_rpc_barrier_all();					
@@ -887,6 +918,11 @@ class MPPA2ExplicitPrinter extends CPrinter {
 		static utask_t t;
 		static mppadesc_t pcie_fd = 0;
 		
+		«IF (this.sharedOnly == 0)»
+		/* Distributed Segments ID */
+		mppa_async_segment_t distributed_segment[PREESM_NB_CLUSTERS + PREESM_IO_USED] __attribute__ ((unused));
+		«ENDIF»
+		
 		int
 		main(int argc __attribute__ ((unused)), char *argv[] __attribute__ ((unused)))
 		{
@@ -911,16 +947,25 @@ class MPPA2ExplicitPrinter extends CPrinter {
 			if (__k1_spawn_type() == __MPPA_PCI_SPAWN) {
 				pcie_fd = pcie_open(0);
 					ret = pcie_queue_init(pcie_fd);
-					pcie_register_console(pcie_fd, stdin, stdout);
-				assert(ret == 0);
+					assert(ret == 0);
+					pcie_register_console(pcie_fd, stdin, stdout);				
 			}
 		
-			mppa_rpc_server_init(	1 /* rm where to run server */, 
+			if(mppa_rpc_server_init(	1 /* rm where to run server */, 
 									0 /* offset ddr */, 
-									PREESM_NB_CLUSTERS /* nb_cluster to serve*/);
-			mppa_async_server_init();
-			mppa_remote_server_init(pcie_fd, PREESM_NB_CLUSTERS);
+									PREESM_NB_CLUSTERS /* nb_cluster to serve*/) != 0){
+				assert(0 && "mppa_rpc_server_init\n");
+			}
+			if(mppa_async_server_init() != 0){
+				assert(0 && "mppa_async_server_init\n");
+			}
+			if(mppa_remote_server_init(pcie_fd, PREESM_NB_CLUSTERS) != 0){
+				assert(0 && "mppa_remote_server_init\n");
+			}
 			
+			if(utask_create(&t, NULL, (void*)mppa_rpc_server_start, NULL) != 0){
+				assert(0 && "utask_create\n");
+			}
 			
 			for( j = 0 ; j < PREESM_NB_CLUSTERS ; j++ ) {
 		
@@ -931,10 +976,11 @@ class MPPA2ExplicitPrinter extends CPrinter {
 					return -2;
 			}
 		
-			utask_create(&t, NULL, (void*)mppa_rpc_server_start, NULL);
 		
 			mppa_async_segment_t shared_segment;
-			mppa_async_segment_create(&shared_segment, SHARED_SEGMENT_ID, (void*)(uintptr_t)Shared, 1024*1024*1024, 0, 0, NULL);
+			if(mppa_async_segment_create(&shared_segment, SHARED_SEGMENT_ID, (void*)(uintptr_t)Shared, 1024*1024*1024, 0, 0, NULL) != 0){
+				assert(0 && "mppa_async_segment_create\n");
+			}
 				
 			int err;
 			for( j = 0 ; j < PREESM_NB_CLUSTERS ; j++ ) {
