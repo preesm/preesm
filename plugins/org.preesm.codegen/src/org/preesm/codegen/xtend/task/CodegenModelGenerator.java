@@ -451,27 +451,6 @@ public class CodegenModelGenerator {
     // 0 - Create the Buffers of the MemEx
     generateBuffers();
 
-    for (DAGEdge dagEdge : this.dagEdgeBuffers.keySet()) {
-      Buffer buffer = this.dagEdgeBuffers.get(dagEdge);
-      System.out.println("1.- " + buffer.toString());
-      if (buffer instanceof TwinBuffer) {
-        System.out.println("1.1- " + ((TwinBuffer) buffer).getOriginal().toString());
-        for (Buffer buffer2 : ((TwinBuffer) buffer).getTwins()) {
-          System.out.println("1.2- " + buffer2.toString());
-        }
-      }
-    }
-    for (BufferProperties bufferProperties : this.srSDFEdgeBuffers.keySet()) {
-      Buffer buffer = this.srSDFEdgeBuffers.get(bufferProperties);
-      System.out.println("2.- " + buffer.toString());
-      if (buffer instanceof TwinBuffer) {
-        System.out.println("2.1- " + ((TwinBuffer) buffer).getOriginal().toString());
-        for (Buffer buffer2 : ((TwinBuffer) buffer).getTwins()) {
-          System.out.println("2.2- " + buffer2.toString());
-        }
-      }
-    }
-
     // 1 - iterate over dag vertices in SCHEDULING Order !
     final ScheduledDAGIterator scheduledDAGIterator = new ScheduledDAGIterator(algo);
     scheduledDAGIterator.forEachRemaining(vert -> {
@@ -810,12 +789,6 @@ public class CodegenModelGenerator {
       // subBuffer
       recursiveSetBufferCreator(mainBuffer, correspondingOperatorBlock, isLocal);
 
-      for (Variable cosa : correspondingOperatorBlock.getDeclarations()) {
-        System.out.println("Declaration " + mainBuffer.getName() + " --- " + cosa.toString());
-      }
-      for (Variable cosa : correspondingOperatorBlock.getDefinitions()) {
-        System.out.println("Definition " + mainBuffer.getName() + " --- " + cosa.toString());
-      }
       if (correspondingOperatorBlock != null) {
         final EList<Variable> definitions = correspondingOperatorBlock.getDefinitions();
         ECollections.sort(definitions, (o1, o2) -> {
@@ -1115,7 +1088,29 @@ public class CodegenModelGenerator {
       // At this point, the dagEdge, srsdfEdge corresponding to the
       // current argument were identified
       // Get the corresponding Variable
-      final Variable var = this.srSDFEdgeBuffers.get(subBufferProperties);
+      final Variable varFirstFound = this.srSDFEdgeBuffers.get(subBufferProperties);
+      Variable var = null;
+      if (varFirstFound instanceof TwinBuffer) {
+        TwinBuffer twinBuffer = (TwinBuffer) varFirstFound;
+        SubBuffer original = (SubBuffer) twinBuffer.getOriginal();
+        EList<Buffer> twins = twinBuffer.getTwins();
+        SubBuffer originalContainer = (SubBuffer) original.getContainer();
+        String coreBlockName = dagVertex.getPropertyStringValue("Operator");
+        if (originalContainer.getContainer().getName().equals(coreBlockName)) {
+          var = original;
+        } else {
+          for (Buffer bufferTwinChecker : twins) {
+            SubBuffer subBufferChecker = (SubBuffer) bufferTwinChecker;
+            SubBuffer twinContainer = (SubBuffer) subBufferChecker.getContainer();
+            if (twinContainer.getContainer().getName().equals(coreBlockName)) {
+              var = subBufferChecker;
+              break;
+            }
+          }
+        }
+      } else {
+        var = varFirstFound;
+      }
       if (var == null) {
         throw new PreesmRuntimeException(
             "Edge connected to " + arg.getDirection() + " port " + arg.getName() + " of DAG Actor " + dagVertex
@@ -1249,8 +1244,24 @@ public class CodegenModelGenerator {
       // Get the corresponding Variable
       final Buffer firstFound = this.srSDFEdgeBuffers.get(subBufferProperties);
       Buffer buffer = null;
+      String coreBlockName = dagVertex.getPropertyStringValue("Operator");
       if (firstFound instanceof TwinBuffer) {
-        buffer = ((TwinBuffer) firstFound).getOriginal();
+        TwinBuffer twinBuffer = (TwinBuffer) firstFound;
+        SubBuffer original = (SubBuffer) twinBuffer.getOriginal();
+        SubBuffer originalContainer = (SubBuffer) original.getContainer();
+        EList<Buffer> twins = twinBuffer.getTwins();
+        if (originalContainer.getContainer().getName().equals(coreBlockName)) {
+          buffer = original;
+        } else {
+          for (Buffer twinChecker : twins) {
+            SubBuffer twinSubBuffer = (SubBuffer) twinChecker;
+            SubBuffer twinContainer = (SubBuffer) twinSubBuffer.getContainer();
+            if (twinContainer.getContainer().getName().equals(coreBlockName)) {
+              buffer = twinSubBuffer;
+              break;
+            }
+          }
+        }
       } else {
         buffer = firstFound;
       }
@@ -1596,6 +1607,9 @@ public class CodegenModelGenerator {
     final BufferAggregate aggregate = edge.getPropertyBean().getValue(BufferAggregate.propertyBeanName);
     final BufferProperties bufferProperty = aggregate.get(0);
     buffer = this.srSDFEdgeBuffers.get(bufferProperty);
+    if (buffer instanceof TwinBuffer) {
+      System.out.println("Let's do this");
+    }
     if (buffer == null) {
       throw new PreesmRuntimeException("DAGEdge " + edge + " was not allocated in memory.");
     }
@@ -1839,7 +1853,6 @@ public class CodegenModelGenerator {
     final Entry<List<Buffer>, List<PortDirection>> callBuffer = generateBufferList(dagVertex, prototype, isInit);
     // Put Buffer in the DataTransfer function call
     for (int idx = 0; idx < callBuffer.getKey().size(); idx++) {
-      System.out.println("99999999 - " + callBuffer.getKey().get(idx).toString());
       func.addBuffer(callBuffer.getKey().get(idx), callBuffer.getValue().get(idx));
     }
     return func;
@@ -2080,7 +2093,35 @@ public class CodegenModelGenerator {
       }
 
       // Get the corresponding Buffer
-      final Buffer buffer = this.srSDFEdgeBuffers.get(subBuffProperty);
+      final Buffer firstFound = this.srSDFEdgeBuffers.get(subBuffProperty);
+      Buffer buffer = null;
+      if (firstFound instanceof TwinBuffer) {
+        String coreBlockName = "";
+        if (f.getType().equals(SpecialType.FORK) || f.getType().equals(SpecialType.BROADCAST)) {
+          coreBlockName = source.getPropertyStringValue("Operator");
+        } else {
+          coreBlockName = target.getPropertyStringValue("Operator");
+        }
+        TwinBuffer twinBuffer = (TwinBuffer) firstFound;
+        SubBuffer original = (SubBuffer) twinBuffer.getOriginal();
+        EList<Buffer> twins = twinBuffer.getTwins();
+        SubBuffer originalContainer = (SubBuffer) original.getContainer();
+        if (originalContainer.getContainer().getName().equals(coreBlockName)) {
+          buffer = original;
+        } else {
+          for (Buffer bufferTwinChecker : twins) {
+            SubBuffer subBufferChecker = (SubBuffer) bufferTwinChecker;
+            SubBuffer twinContainer = (SubBuffer) subBufferChecker.getContainer();
+            if (twinContainer.getContainer().getName().equals(coreBlockName)) {
+              buffer = subBufferChecker;
+              break;
+            }
+          }
+        }
+      } else {
+        buffer = firstFound;
+      }
+
       if (buffer == null) {
         throw new PreesmRuntimeException("Buffer corresponding to DAGEdge" + correspondingEdge + "was not allocated.");
       }
@@ -2179,7 +2220,29 @@ public class CodegenModelGenerator {
     final BufferAggregate bufferAggregate = lastEdge.getPropertyBean().getValue(BufferAggregate.propertyBeanName);
     // there should be only one buffer in the aggregate
     final BufferProperties lastBuffProperty = bufferAggregate.get(0);
-    final Buffer lastBuffer = this.srSDFEdgeBuffers.get(lastBuffProperty);
+    final Buffer lastBufferFirstFound = this.srSDFEdgeBuffers.get(lastBuffProperty);
+    Buffer lastBuffer = null;
+    if (lastBufferFirstFound instanceof TwinBuffer) {
+      String coreBlockName = operatorBlock.getName();
+      TwinBuffer twinBuffer = (TwinBuffer) lastBufferFirstFound;
+      SubBuffer original = (SubBuffer) twinBuffer.getOriginal();
+      EList<Buffer> twins = twinBuffer.getTwins();
+      SubBuffer originalContainer = (SubBuffer) original.getContainer();
+      if (originalContainer.getContainer().getName().equals(coreBlockName)) {
+        lastBuffer = original;
+      } else {
+        for (Buffer bufferTwinChecker : twins) {
+          SubBuffer subBufferChecker = (SubBuffer) bufferTwinChecker;
+          SubBuffer twinContainer = (SubBuffer) subBufferChecker.getContainer();
+          if (twinContainer.getContainer().getName().equals(coreBlockName)) {
+            lastBuffer = subBufferChecker;
+            break;
+          }
+        }
+      }
+    } else {
+      lastBuffer = lastBufferFirstFound;
+    }
 
     // Add it to the specialCall
     if (f.getType().equals(SpecialType.FORK) || f.getType().equals(SpecialType.BROADCAST)) {

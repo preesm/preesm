@@ -162,13 +162,6 @@ class MPPA2ExplicitPrinter extends CPrinter {
 	}
 
 	override printBufferDefinition(Buffer buffer) {
-		System.out.println("AAAAAAA "  + buffer.toString());
-		/*var TwinBuffer twinBuffer = (buffer as TwinBuffer);
-		if(twinBuffer.original !== null){
-			System.out.println("BBBB " + twinBuffer.original.toString());
-		} else if(!twinBuffer.twins.empty){
-			System.out.println("CCCC " + twinBuffer.twins.toString());			
-		}*/
 		if(!buffer.name.equals("Shared")){
 			this.sharedOnly = 0;
 		}else{
