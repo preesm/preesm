@@ -558,8 +558,42 @@ class MPPA2ExplicitPrinter extends CPrinter {
 
 	override CharSequence caseDistributedMemoryCommunication(DistributedMemoryCommunication communication) {
 
-		return printDistributedMemoryCommunication(communication)
+		return printDistributedMemoryCommunication(communication);
 			
+	}
+	override CharSequence printDistributedMemoryCommunication(DistributedMemoryCommunication communication) {
+		/*System.out.println("A " + communication.toString());
+		System.out.println("D " + communication.sendStart.toString());
+		System.out.println("E " + communication.sendStart.coreContainer.toString());
+		System.out.println("F " + communication.sendStart.coreContainer.coreID);
+		System.out.println("G " + communication.receiveStart.toString());
+		System.out.println("H " + communication.receiveStart.coreContainer.toString());
+		System.out.println("I " + communication.receiveStart.coreContainer.coreID);*/
+		/*System.out.println("A " + communication.toString());
+		var SubBuffer sendBuffer = (communication.sendStart.data as SubBuffer);
+		if(sendBuffer != null){
+			System.out.println("send " + sendBuffer.toString);
+		}
+		var SubBuffer receiveBuffer = (communication.receiveStart.data as SubBuffer);
+		if(sendBuffer != null){
+			System.out.println("receive " + receiveBuffer.toString);
+		}*/
+		
+	var String printing = '''
+		«communication.direction.toString.toLowerCase»«communication.delimiter.toString.toLowerCase.toFirstUpper»(«IF (communication.
+			direction == Direction::SEND && communication.delimiter == Delimiter::START) ||
+			(communication.direction == Direction::RECEIVE && communication.delimiter == Delimiter::END)»«{
+			var coreID = if (communication.direction == Direction::SEND) {
+					communication.receiveStart.coreContainer.coreID
+				} else {
+					communication.sendStart.coreContainer.coreID
+				}
+			var ret = coreID
+			ret
+		}»«ENDIF»);  // «communication.sendStart.coreContainer.name» > «communication.receiveStart.coreContainer.name»: «communication.
+			data.doSwitch»
+	'''
+	return printing;
 	}
 
 	override printSharedMemoryCommunication(SharedMemoryCommunication communication) '''

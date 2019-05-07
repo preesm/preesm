@@ -470,7 +470,6 @@ public class CodegenModelGenerator {
         operatorBlock.setCoreType(operator.getComponent().getVlnv().getName());
         this.coreBlocks.put(operator, operatorBlock);
       }
-
       // 1.1 - Construct the "loop" of each core.
       final String vertexType = vert.getPropertyBean().getValue(ImplementationPropertyNames.Vertex_vertexType)
           .toString();
@@ -512,7 +511,7 @@ public class CodegenModelGenerator {
 
         case VertexType.TYPE_RECEIVE:
           if (buffer instanceof TwinBuffer) {
-            generateDistributedCommunication(operatorBlock, vert, VertexType.TYPE_SEND);
+            generateDistributedCommunication(operatorBlock, vert, VertexType.TYPE_RECEIVE);
           } else {
             generateCommunication(operatorBlock, vert, VertexType.TYPE_RECEIVE);
           }
@@ -1469,7 +1468,6 @@ public class CodegenModelGenerator {
     final SubBuffer original = (SubBuffer) twinBuffer.getOriginal();
     final List<Buffer> twins = twinBuffer.getTwins();
     Buffer buffer = null;
-
     if (original.getContainer().getName().equals(coreBlockName)) {
       buffer = original;
     } else {
@@ -1607,9 +1605,6 @@ public class CodegenModelGenerator {
     final BufferAggregate aggregate = edge.getPropertyBean().getValue(BufferAggregate.propertyBeanName);
     final BufferProperties bufferProperty = aggregate.get(0);
     buffer = this.srSDFEdgeBuffers.get(bufferProperty);
-    if (buffer instanceof TwinBuffer) {
-      System.out.println("Let's do this");
-    }
     if (buffer == null) {
       throw new PreesmRuntimeException("DAGEdge " + edge + " was not allocated in memory.");
     }

@@ -70,7 +70,6 @@ import org.preesm.codegen.model.SharedMemoryCommunication;
 import org.preesm.codegen.model.SpecialCall;
 import org.preesm.codegen.model.SpecialType;
 import org.preesm.codegen.model.SubBuffer;
-import org.preesm.codegen.model.TwinBuffer;
 import org.preesm.codegen.model.Variable;
 import org.preesm.codegen.model.util.CodegenSwitch;
 import org.preesm.codegen.xtend.task.CodegenEngine;
@@ -520,36 +519,6 @@ public abstract class CodegenAbstractPrinter extends CodegenSwitch<CharSequence>
     }
 
     return printBuffer(buffer);
-  }
-
-  @Override
-  public CharSequence caseTwinBuffer(final TwinBuffer buffer) {
-
-    if (this.state.equals(PrinterState.PRINTING_DEFINITIONS)) {
-      System.out.println("ZZZZ --- 1 " + buffer.toString());
-      if (!buffer.getTwins().isEmpty()) {
-        System.out.println("Original 1: " + buffer.getOriginal().toString());
-      }
-      // return printBufferDefinition(buffer);
-      return "1";
-    }
-
-    if (this.state.equals(PrinterState.PRINTING_DECLARATIONS)) {
-      System.out.println("ZZZZ --- 2 " + buffer.toString());
-      if (!buffer.getTwins().isEmpty()) {
-        System.out.println("Original 2: " + buffer.getOriginal().toString());
-      }
-      // return printBufferDeclaration(buffer);
-      return "2";
-    }
-
-    System.out.println("ZZZZ --- 3 " + buffer.toString());
-    if (!buffer.getTwins().isEmpty()) {
-      System.out.println("Original 3: " + buffer.getOriginal().toString());
-    }
-    // return printBuffer(buffer);
-    return "3";
-
   }
 
   @Override
