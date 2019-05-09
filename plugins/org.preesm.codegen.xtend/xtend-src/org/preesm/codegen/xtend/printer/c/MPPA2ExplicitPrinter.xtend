@@ -71,6 +71,8 @@ import java.util.Collection
 import java.util.LinkedHashMap
 import org.preesm.codegen.model.TwinBuffer
 import org.preesm.codegen.model.DistributedMemoryCommunication
+import org.preesm.codegen.model.PapifyFunctionCall
+import org.preesm.codegen.model.CodeElt
 
 class MPPA2ExplicitPrinter extends CPrinter {
 
@@ -169,11 +171,15 @@ class MPPA2ExplicitPrinter extends CPrinter {
 		}
 	
 		var result = '''
-		«IF buffer.name == "Shared"»
-		//#define Shared ((char*)0x10000000ULL) 	/* Shared buffer in DDR */
+		«IF buffer.type == "papify_action_s"»
+			«buffer.type» «buffer.name»[«buffer.size»]; // «buffer.comment» size:= «buffer.size»*«buffer.type»
 		«ELSE»
-		«buffer.type» «buffer.name»[«buffer.size»] __attribute__ ((aligned(64))); // «buffer.comment» size:= «buffer.size»*«buffer.type» aligned on data cache line
-		int local_memory_size = «buffer.size»;
+			«IF buffer.name == "Shared"»
+			//#define Shared ((char*)0x10000000ULL) 	/* Shared buffer in DDR */
+			«ELSE»
+			«buffer.type» «buffer.name»[«buffer.size»] __attribute__ ((aligned(64))); // «buffer.comment» size:= «buffer.size»*«buffer.type» aligned on data cache line
+			int local_memory_size = «buffer.size»;
+			«ENDIF»
 		«ENDIF»
 		'''
 		return result;
@@ -287,7 +293,9 @@ class MPPA2ExplicitPrinter extends CPrinter {
 			 	IS_HIERARCHICAL = false
 			""}»
 	'''
-
+	override printPapifyFunctionCall(PapifyFunctionCall papifyFunctionCall) '''
+		«papifyFunctionCall.name»(«FOR param : papifyFunctionCall.parameters SEPARATOR ', '»«param.doSwitch»«ENDFOR»); // «papifyFunctionCall.actorName»
+	'''
 	override printFunctionCall(FunctionCall functionCall) '''
 	«{
 		var gets = ""
@@ -384,14 +392,7 @@ class MPPA2ExplicitPrinter extends CPrinter {
 	extern «printBufferDefinition(buffer)»
 	'''
 
-	override printSubBufferDeclaration(SubBuffer buffer) {
-		/*var bChecker = buffer.container;
-		while(bChecker instanceof SubBuffer){
-	  		bChecker = bChecker.container
-	  	}*/
-	  	var printing = "";
-	  //	if(bChecker.name.equals("Shared")){
-	  		printing = '''
+	override printSubBufferDeclaration(SubBuffer buffer) '''
 			«buffer.type» *const «buffer.name» = («buffer.type»*) («var offset = 0L»«
 			{offset = buffer.offset
 			 var b = buffer.container;
@@ -401,10 +402,6 @@ class MPPA2ExplicitPrinter extends CPrinter {
 			  }
 			 b}.name»+«offset»);  // «buffer.comment» size:= «buffer.size»*«buffer.type»
 			'''
-	  //	}
-	
-	return printing;
-	}
 
 	override printDeclarationsFooter(List<Variable> list) '''
 	«IF !list.empty»
@@ -562,22 +559,6 @@ class MPPA2ExplicitPrinter extends CPrinter {
 			
 	}
 	override CharSequence printDistributedMemoryCommunication(DistributedMemoryCommunication communication) {
-		/*System.out.println("A " + communication.toString());
-		System.out.println("D " + communication.sendStart.toString());
-		System.out.println("E " + communication.sendStart.coreContainer.toString());
-		System.out.println("F " + communication.sendStart.coreContainer.coreID);
-		System.out.println("G " + communication.receiveStart.toString());
-		System.out.println("H " + communication.receiveStart.coreContainer.toString());
-		System.out.println("I " + communication.receiveStart.coreContainer.coreID);*/
-		/*System.out.println("A " + communication.toString());
-		var SubBuffer sendBuffer = (communication.sendStart.data as SubBuffer);
-		if(sendBuffer != null){
-			System.out.println("send " + sendBuffer.toString);
-		}
-		var SubBuffer receiveBuffer = (communication.receiveStart.data as SubBuffer);
-		if(sendBuffer != null){
-			System.out.println("receive " + receiveBuffer.toString);
-		}*/
 		var boolean receiveStartOrNot = false; // false is RE, SS, SE --- True is RS
 		if(communication.direction.toString.toLowerCase.equals("receive") && communication.delimiter.toString.toLowerCase.equals("start")){
 			receiveStartOrNot = true;
@@ -1014,6 +995,9 @@ class MPPA2ExplicitPrinter extends CPrinter {
 		main(int argc, char **argv)
 		{
 		
+			#ifdef _PREESM_MONITOR_INIT
+			mkdir("papify-output", 0777);
+			#endif
 			mppadesc_t fd = pcie_open_device(0);
 			/* check for correct number of arguments */
 			if (argc < 3) {
@@ -1049,6 +1033,11 @@ class MPPA2ExplicitPrinter extends CPrinter {
 					io_used = 1;
 				}
 			}				
+			for(CodeElt codeElt : cluster.codeElts){
+				if(codeElt instanceof PapifyFunctionCall){
+					System.out.println("Found!");
+				}
+			}
 		}	
 		local_buffer_size = 0;
 	}
