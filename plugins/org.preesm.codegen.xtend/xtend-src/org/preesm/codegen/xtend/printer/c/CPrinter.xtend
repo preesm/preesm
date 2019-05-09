@@ -81,6 +81,7 @@ import org.preesm.codegen.xtend.CodegenPlugin
 import org.preesm.commons.exceptions.PreesmRuntimeException
 import org.preesm.commons.files.URLResolver
 import org.preesm.model.pisdf.util.CHeaderUsedLocator
+import org.preesm.codegen.model.PapifyFunctionCall
 
 /**
  * This printer is currently used to print C code only for GPP processors
@@ -574,6 +575,10 @@ class CPrinter extends DefaultPrinter {
 
 	override printFunctionCall(FunctionCall functionCall) '''
 	«functionCall.name»(«FOR param : functionCall.parameters SEPARATOR ','»«param.doSwitch»«ENDFOR»); // «functionCall.actorName»
+	'''
+	
+	override printPapifyFunctionCall(PapifyFunctionCall papifyFunctionCall) '''
+	«printFunctionCall(papifyFunctionCall)»
 	'''
 
 	override printConstant(Constant constant) '''«constant.value»«IF !constant.name.nullOrEmpty»/*«constant.name»*/«ENDIF»'''

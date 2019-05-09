@@ -67,6 +67,7 @@ import org.preesm.codegen.model.SubBuffer
 import org.preesm.codegen.model.Variable
 import org.preesm.codegen.printer.CodegenAbstractPrinter
 import org.preesm.codegen.model.DistributedMemoryCommunication
+import org.preesm.codegen.model.PapifyFunctionCall
 
 /**
  * This {@link DevelopperPrinter} is a dummy implementation of the
@@ -157,6 +158,8 @@ class DevelopperPrinter extends CodegenAbstractPrinter {
 	override printFork(SpecialCall call) '''<Fork>'''
 
 	override printFunctionCall(FunctionCall functionCall) '''<Function_Call>'''
+
+	override printPapifyFunctionCall(PapifyFunctionCall papifyFunctionCall) '''<Papify_Function_Call>'''
 
 	override printJoin(SpecialCall call) '''<Join>'''
 
