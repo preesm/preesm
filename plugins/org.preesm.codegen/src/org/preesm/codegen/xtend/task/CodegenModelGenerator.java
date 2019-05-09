@@ -1874,13 +1874,18 @@ public class CodegenModelGenerator {
     // Create the variable associated to the PAPI component
     String compsSupported = "";
     ConstantString papifyComponentName = CodegenFactory.eINSTANCE.createConstantString();
-    for (String compType : this.getScenario().getPapifyConfigManager()
-        .getCorePapifyConfigGroupPE(operatorBlock.getCoreType()).getPAPIComponentIDs()) {
-      if (compsSupported.equals("")) {
-        compsSupported = compType;
-      } else {
-        compsSupported = compsSupported.concat(",").concat(compType);
+    if (this.getScenario().getPapifyConfigManager().getCorePapifyConfigGroupPE(operatorBlock.getCoreType()) != null) {
+      for (String compType : this.getScenario().getPapifyConfigManager()
+          .getCorePapifyConfigGroupPE(operatorBlock.getCoreType()).getPAPIComponentIDs()) {
+        if (compsSupported.equals("")) {
+          compsSupported = compType;
+        } else {
+          compsSupported = compsSupported.concat(",").concat(compType);
+        }
       }
+    } else {
+      throw new PreesmRuntimeException("There is no PE type of type " + operatorBlock.getCoreType()
+          + " in the PAPIFY information. Probably the PAPIFY tab is out of date in the PREESM scenario.");
     }
     papifyComponentName.setValue(compsSupported);
     // Create the variable associated to the PE id
