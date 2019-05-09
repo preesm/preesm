@@ -149,7 +149,7 @@ public class PapifyEngine {
               if (!compNewConfig.equals("Timing")) {
                 Set<PapiEvent> eventSetNew = config.getPAPIEvents().get(compNewConfig);
                 configAdded = false;
-                configToAdd = "";
+                configToAdd = finalName.concat("-").concat(compNewConfig);
                 for (PapifyConfigActor tmp : configSet) {
                   for (String compConfigTmp : tmp.getPAPIEvents().keySet()) {
                     if (!compConfigTmp.equals("Timing")) {
@@ -162,7 +162,6 @@ public class PapifyEngine {
                         } else {
                           configPosition = configPosition.concat(",").concat(Integer.toString(configSet.indexOf(tmp)));
                         }
-                        configToAdd = finalName.concat(compNewConfig);
                       }
                     }
                   }
