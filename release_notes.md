@@ -11,6 +11,7 @@ PREESM Changelog
 *  Codegen: enabled IO usage on the MPPA code generation
 *  Codegen: enabled the use of DistributedOnly through the use of TwinBuffers for the repeated memory transmissions
 *  Codegen: DistributedOnly memory distribution --> Support from CodeGen for each architecture needs to be done (DistributedMemoryCommunication printer has been included) Issue #134
+*  Codegen: Inter cluster communication supported on the MPPA when DistributedOnly memory distribution is used
 
 ### Changes
 * SpiderCodegen: updated spider codegeneration to follow up changes of spider develop branch.
