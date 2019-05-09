@@ -42,24 +42,7 @@ import java.util.List
 import java.util.Map
 import org.preesm.codegen.model.Block
 import org.preesm.codegen.model.Buffer
-import org.preesm.codegen.model.CallBlock
-import org.preesm.codegen.model.Communication
-import org.preesm.codegen.model.Constant
-import org.preesm.codegen.model.ConstantString
 import org.preesm.codegen.model.CoreBlock
-import org.preesm.codegen.model.Delimiter
-import org.preesm.codegen.model.Direction
-import org.preesm.codegen.model.FifoCall
-import org.preesm.codegen.model.FifoOperation
-import org.preesm.codegen.model.FiniteLoopBlock
-import org.preesm.codegen.model.FunctionCall
-import org.preesm.codegen.model.LoopBlock
-import org.preesm.codegen.model.NullBuffer
-import org.preesm.codegen.model.SharedMemoryCommunication
-import org.preesm.codegen.model.SpecialCall
-import org.preesm.codegen.model.SubBuffer
-import org.preesm.codegen.model.Variable
-import org.preesm.commons.exceptions.PreesmRuntimeException
 
 class MPPA2IOExplicitPrinter extends MPPA2ExplicitPrinter {
 

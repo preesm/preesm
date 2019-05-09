@@ -101,6 +101,7 @@ class MPPA2ExplicitPrinter extends CPrinter {
 	protected int io_used = 0;
 	protected int sharedOnly = 1;
 	protected int distributedOnly = 1;
+	protected int usingPapify = 0;
 	protected String peName = "";
 
 	/**
@@ -301,7 +302,6 @@ class MPPA2ExplicitPrinter extends CPrinter {
 		var gets = ""
 		var local_offset = 0L;
 		if(IS_HIERARCHICAL == false){
-			gets += "{\n"
 			for(param : functionCall.parameters){
 
 				if(param instanceof SubBuffer){
@@ -317,9 +317,7 @@ class MPPA2ExplicitPrinter extends CPrinter {
 					if(b.name == "Shared"){
 						gets += "	void *" + param.name + " = local_buffer+" + local_offset +";\n";
 						if(port.getName == "INPUT"){ /* we get data from DDR -> cluster only when INPUT */
-							gets += "	{\n"
-							gets += "		mppa_async_get(local_buffer+" + local_offset + ", &shared_segment, /* Shared + */ " + offset + ", " + param.typeSize * param.size + ", NULL);\n";
-							gets += "	}\n"
+							gets += "	mppa_async_get(local_buffer+" + local_offset + ", &shared_segment, /* Shared + */ " + offset + ", " + param.typeSize * param.size + ", NULL);\n";
 						}
 						local_offset += param.typeSize * param.size;
 						//System.out.print("==> " + b.name + " " + param.name + " size " + param.size + " port_name "+ port.getName + "\n");
@@ -354,9 +352,7 @@ class MPPA2ExplicitPrinter extends CPrinter {
 					//System.out.print("===> " + b.name + "\n");
 					if(b.name == "Shared"){
 						if(port.getName == "OUTPUT"){ /* we put data from cluster -> DDR only when OUTPUT */
-							puts += "	{\n"
-							puts += "		mppa_async_put(local_buffer+" + local_offset + ", &shared_segment, /* Shared + */ " + offset + ", " + param.typeSize * param.size + ", NULL);\n";
-							puts += "	}\n"
+							puts += "	mppa_async_put(local_buffer+" + local_offset + ", &shared_segment, /* Shared + */ " + offset + ", " + param.typeSize * param.size + ", NULL);\n";
 						}
 						local_offset += param.typeSize * param.size;
 						//System.out.print("==> " + b.name + " " + param.name + " size " + param.size + " port_name "+ port.getName + "\n");
@@ -366,7 +362,6 @@ class MPPA2ExplicitPrinter extends CPrinter {
 					}*/
 				}
 			}
-			puts += "}\n"
 		}else{
 			puts += " /* puts are normaly generated before */ \n"
 		}
@@ -994,10 +989,9 @@ class MPPA2ExplicitPrinter extends CPrinter {
 		int
 		main(int argc, char **argv)
 		{
-		
-			#ifdef _PREESM_MONITOR_INIT
+			«IF this.usingPapify == 1»
 			mkdir("papify-output", 0777);
-			#endif
+			«ENDIF»
 			mppadesc_t fd = pcie_open_device(0);
 			/* check for correct number of arguments */
 			if (argc < 3) {
@@ -1031,11 +1025,11 @@ class MPPA2ExplicitPrinter extends CPrinter {
 				}
 				else if(cluster.coreType.equals("MPPA2IOExplicit")){
 					io_used = 1;
-				}
-			}				
-			for(CodeElt codeElt : cluster.codeElts){
-				if(codeElt instanceof PapifyFunctionCall){
-					System.out.println("Found!");
+				}				
+				for(CodeElt codeElt : cluster.loopBlock.codeElts){
+					if(codeElt instanceof PapifyFunctionCall){
+						this.usingPapify = 1;
+					}
 				}
 			}
 		}	
