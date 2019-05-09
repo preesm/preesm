@@ -105,6 +105,18 @@ class FunctionCall extends Call {
 	String actorName
 }
 
+class PapifyFunctionCall extends FunctionCall {
+	PapifyType papifyType
+}
+
+enum PapifyType {
+	EVENTSTART
+	EVENTSTOP = 1
+	TIMINGSTART = 2
+	TIMINGSTOP = 3
+	WRITE = 4
+}
+
 class Communication extends Call {
 	Direction direction
 	Delimiter delimiter

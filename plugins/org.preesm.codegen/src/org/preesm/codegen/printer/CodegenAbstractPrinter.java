@@ -65,6 +65,7 @@ import org.preesm.codegen.model.LoopBlock;
 import org.preesm.codegen.model.NullBuffer;
 import org.preesm.codegen.model.OutputDataTransfer;
 import org.preesm.codegen.model.PapifyAction;
+import org.preesm.codegen.model.PapifyFunctionCall;
 import org.preesm.codegen.model.RegisterSetUpAction;
 import org.preesm.codegen.model.SharedMemoryCommunication;
 import org.preesm.codegen.model.SpecialCall;
@@ -594,6 +595,11 @@ public abstract class CodegenAbstractPrinter extends CodegenSwitch<CharSequence>
   }
 
   @Override
+  public CharSequence casePapifyFunctionCall(final PapifyFunctionCall functionCall) {
+    return printPapifyFunctionCall(functionCall);
+  }
+
+  @Override
   public CharSequence caseLoopBlock(final LoopBlock loopBlock) {
     final StringConcatenation result = new StringConcatenation();
 
@@ -1031,6 +1037,15 @@ public abstract class CodegenAbstractPrinter extends CodegenSwitch<CharSequence>
    * @return the printed {@link CharSequence}
    */
   public abstract CharSequence printFunctionCall(FunctionCall functionCall);
+
+  /**
+   * Method called to print a {@link PapifyFunctionCall}.
+   *
+   * @param papifyFunctionCall
+   *          the printed {@link PapifyFunctionCall}.
+   * @return the printed {@link CharSequence}
+   */
+  public abstract CharSequence printPapifyFunctionCall(PapifyFunctionCall papifyFunctionCall);
 
   /**
    * Method called to print a {@link SpecialCall} with {@link SpecialCall#getType() type} {@link SpecialType#JOIN}. If

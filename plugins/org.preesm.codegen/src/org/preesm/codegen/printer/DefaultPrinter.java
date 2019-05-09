@@ -59,6 +59,7 @@ import org.preesm.codegen.model.LoopBlock;
 import org.preesm.codegen.model.NullBuffer;
 import org.preesm.codegen.model.OutputDataTransfer;
 import org.preesm.codegen.model.PapifyAction;
+import org.preesm.codegen.model.PapifyFunctionCall;
 import org.preesm.codegen.model.RegisterSetUpAction;
 import org.preesm.codegen.model.SharedMemoryCommunication;
 import org.preesm.codegen.model.SpecialCall;
@@ -206,6 +207,10 @@ public class DefaultPrinter extends CodegenAbstractPrinter {
   }
 
   public CharSequence printFunctionCall(FunctionCall functionCall) {
+    return "";
+  }
+
+  public CharSequence printPapifyFunctionCall(PapifyFunctionCall papifyFunctionCall) {
     return "";
   }
 
