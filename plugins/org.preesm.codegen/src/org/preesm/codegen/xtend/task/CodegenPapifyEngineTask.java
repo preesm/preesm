@@ -54,7 +54,16 @@ import org.preesm.workflow.implement.AbstractWorkflowNodeImplementation;
 
     inputs = { @Port(name = "scenario", type = PreesmScenario.class),
         @Port(name = "DAG", type = DirectedAcyclicGraph.class) },
-    outputs = { @Port(name = "DAG", type = DirectedAcyclicGraph.class) }
+    outputs = { @Port(name = "DAG", type = DirectedAcyclicGraph.class) },
+
+    shortDescription = "Generate the required instrumentation code for the application"
+        + " based on the PAPIFY tab information.",
+
+    description = "This workflow task is responsible for generating the instrumentation "
+        + "of the code for the application based on the PAPIFY tab information.\n\n"
+        + "The generated code makes use of 1 macro that enables/disables the monitoring"
+        + " in the **preesm.h** user header file:\n"
+        + "*  **_PREESM_MONITOR_INIT** : if defined, the code monitoring will take place;\n"
 
 )
 public class CodegenPapifyEngineTask extends AbstractTaskImplementation {
