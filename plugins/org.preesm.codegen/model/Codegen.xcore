@@ -115,6 +115,8 @@ enum PapifyType {
 	TIMINGSTART = 2
 	TIMINGSTOP = 3
 	WRITE = 4
+	CONFIGACTOR = 5
+	CONFIGPE = 6
 }
 
 class Communication extends Call {

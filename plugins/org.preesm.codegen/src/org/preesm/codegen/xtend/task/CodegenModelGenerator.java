@@ -122,6 +122,7 @@ import org.preesm.codegen.model.NullBuffer;
 import org.preesm.codegen.model.OutputDataTransfer;
 import org.preesm.codegen.model.PapifyAction;
 import org.preesm.codegen.model.PapifyFunctionCall;
+import org.preesm.codegen.model.PapifyType;
 import org.preesm.codegen.model.PortDirection;
 import org.preesm.codegen.model.RegisterSetUpAction;
 import org.preesm.codegen.model.SharedMemoryCommunication;
@@ -1899,6 +1900,9 @@ public class CodegenModelGenerator {
     // Add the function comment
     configurePapifyPE.setActorName("Papify --> configure papification of ".concat(operatorBlock.getName()));
 
+    // Add type of Papify function
+    configurePapifyPE.setPapifyType(PapifyType.CONFIGPE);
+
     return configurePapifyPE;
   }
 
@@ -1931,6 +1935,9 @@ public class CodegenModelGenerator {
     // Add the function comment
     func.setActorName("Papify --> configure papification of ".concat(dagVertex.getName()));
 
+    // Add type of Papify function
+    func.setPapifyType(PapifyType.CONFIGACTOR);
+
     return func;
   }
 
@@ -1957,6 +1964,9 @@ public class CodegenModelGenerator {
     // Add the function actor name
     func.setActorName(dagVertex.getName());
 
+    // Add type of Papify function
+    func.setPapifyType(PapifyType.EVENTSTART);
+
     return func;
   }
 
@@ -1982,6 +1992,10 @@ public class CodegenModelGenerator {
     func.addParameter(papifyPEId, PortDirection.INPUT);
     // Add the function actor name
     func.setActorName(dagVertex.getName());
+
+    // Add type of Papify function
+    func.setPapifyType(PapifyType.TIMINGSTART);
+
     return func;
   }
 
@@ -2007,6 +2021,10 @@ public class CodegenModelGenerator {
     func.addParameter(papifyPEId, PortDirection.INPUT);
     // Add the function actor name
     func.setActorName(dagVertex.getName());
+
+    // Add type of Papify function
+    func.setPapifyType(PapifyType.EVENTSTOP);
+
     return func;
   }
 
@@ -2032,6 +2050,10 @@ public class CodegenModelGenerator {
     func.addParameter(papifyPEId, PortDirection.INPUT);
     // Add the function actor name
     func.setActorName(dagVertex.getName());
+
+    // Add type of Papify function
+    func.setPapifyType(PapifyType.TIMINGSTOP);
+
     return func;
   }
 
@@ -2057,6 +2079,10 @@ public class CodegenModelGenerator {
     func.addParameter(papifyPEId, PortDirection.INPUT);
     // Add the function actor name
     func.setActorName(dagVertex.getName());
+
+    // Add type of Papify function
+    func.setPapifyType(PapifyType.WRITE);
+
     return func;
   }
 
