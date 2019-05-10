@@ -639,7 +639,7 @@ class CPrinter extends DefaultPrinter {
 	
 	override printRegisterSetUp(RegisterSetUpAction action) ''''''
 	
-	override preProcessing(List<Block> printerBlocks, Collection<Block> allBlocks){
+	def void compactPapifyUsage(Collection<Block> allBlocks){
 		for (cluster : allBlocks){
 			if (cluster instanceof CoreBlock) {
 				var EList<Variable> definitions = cluster.definitions;
@@ -710,6 +710,10 @@ class CPrinter extends DefaultPrinter {
 				} 
 			}
 		}	
+	}
+	
+	override preProcessing(List<Block> printerBlocks, Collection<Block> allBlocks){
+		compactPapifyUsage(allBlocks);
 	}
 
 }
