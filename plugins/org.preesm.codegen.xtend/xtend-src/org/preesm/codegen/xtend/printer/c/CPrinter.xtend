@@ -396,7 +396,7 @@ class CPrinter extends DefaultPrinter {
 	    context.put("USER_INCLUDES", findAllCHeaderFileNamesUsed.map["#include \""+ it +"\""].join("\n"));
 
 
-	    context.put("CONSTANTS", "#define NB_DESIGN_ELTS "+getEngine.archi.componentInstances.size+"\n#define NB_CORES "+getEngine.codeBlocks.size);
+	    context.put("CONSTANTS", "#define NB_DESIGN_ELTS "+getEngine.archi.componentInstances.size+"\n#define NB_CORES "+getEngine.codeBlocks.size + "\n#ifdef _PREESM_MONITOR_INIT\n#include \"eventLib.h\"\n#endif");
 
 	    // 3- init template reader
 	    val String templateLocalURL = "templates/c/preesm_gen.h";
@@ -578,7 +578,9 @@ class CPrinter extends DefaultPrinter {
 	'''
 	
 	override printPapifyFunctionCall(PapifyFunctionCall papifyFunctionCall) '''
+	#ifdef _PREESM_MONITOR_INIT
 	«printFunctionCall(papifyFunctionCall)»
+	#endif
 	'''
 
 	override printConstant(Constant constant) '''«constant.value»«IF !constant.name.nullOrEmpty»/*«constant.name»*/«ENDIF»'''
@@ -586,7 +588,9 @@ class CPrinter extends DefaultPrinter {
 	override printConstantString(ConstantString constant) '''"«constant.value»"'''
 
 	override printPapifyActionDefinition(PapifyAction action) '''
+	#ifdef _PREESM_MONITOR_INIT
 	«action.type» «action.name»; // «action.comment»
+	#endif
 	'''
 	override printPapifyActionParam(PapifyAction action) '''&«action.name»'''
 
