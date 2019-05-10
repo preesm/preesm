@@ -570,10 +570,12 @@ class CHardwarePrinter extends DefaultPrinter {
 
 
 		int main(void) {
-			#ifdef _PREESM_MONITOR_INIT
-			mkdir("papify-output", 0777);
-			event_init_multiplex();
-			#endif
+			«IF this.usingPapify == 1»
+				#ifdef _PREESM_MONITOR_INIT
+				mkdir("papify-output", 0777);
+				event_init_multiplex();
+				#endif
+			«ENDIF»
 			// Declaring thread pointers
 			pthread_t coreThreads[_PREESM_NBTHREADS_];
 			void *(*coreThreadComputations[_PREESM_NBTHREADS_])(void *) = {
@@ -609,10 +611,11 @@ class CHardwarePrinter extends DefaultPrinter {
 					pthread_join(coreThreads[i], NULL);
 				}
 			}
-			#ifdef _PREESM_MONITOR_INIT
-			event_destroy();
-			#endif
-
+			«IF this.usingPapify == 1»
+				#ifdef _PREESM_MONITOR_INIT
+				event_destroy();
+				#endif
+			«ENDIF»
 			return 0;
 		}
 
