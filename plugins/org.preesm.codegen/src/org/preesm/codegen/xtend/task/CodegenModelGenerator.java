@@ -561,7 +561,89 @@ public class CodegenModelGenerator {
     // 3 - Put the buffer definition in their right place
     generateBufferDefinitions();
 
+    // 4 - Set enough info to compact instrumentation code
+    compactPapifyUsage(resultList);
+
     return Collections.unmodifiableList(resultList);
+  }
+
+  void compactPapifyUsage(List<Block> allBlocks) {
+    for (Block cluster : allBlocks) {
+      if (cluster instanceof CoreBlock) {
+        int usingPapify = 0;
+        EList<Variable> definitions = cluster.getDefinitions();
+        EList<CodeElt> loopBlockElts = ((CoreBlock) cluster).getLoopBlock().getCodeElts();
+        EList<CodeElt> initBlockElts = ((CoreBlock) cluster).getInitBlock().getCodeElts();
+        int iterator = 0;
+        boolean closed = false;
+        /*
+         * Only one #ifdef _PREESM_MONITORING_INIT in the definition code Assumption: All the PapifyActions are printed
+         * consecutively (AS CONSTANTS ARE NOT PRINTED THIS USUALLY TRUE)
+         */
+        if (!definitions.isEmpty()) {
+          for (iterator = 0; iterator < definitions.size(); iterator++) {
+            if (definitions.get(iterator) instanceof PapifyAction && usingPapify == 0) {
+              usingPapify = 1;
+              ((PapifyAction) definitions.get(iterator)).setOpening(true);
+            }
+          }
+          for (iterator = definitions.size() - 1; iterator >= 0; iterator--) {
+            if (definitions.get(iterator) instanceof PapifyAction && !closed) {
+              closed = true;
+              ((PapifyAction) definitions.get(iterator)).setClosing(true);
+            }
+          }
+        }
+        /*
+         * Minimizing the number of #ifdef _PREESM_MONITORING_INIT in the loop
+         */
+        if (!loopBlockElts.isEmpty()) {
+          if (loopBlockElts.get(0) instanceof PapifyFunctionCall) {
+            ((PapifyFunctionCall) loopBlockElts.get(0)).setOpening(true);
+            if (!(loopBlockElts.get(1) instanceof PapifyAction)) {
+              ((PapifyFunctionCall) loopBlockElts.get(0)).setClosing(true);
+            }
+          }
+          for (iterator = 1; iterator < loopBlockElts.size() - 1; iterator++) {
+            if (loopBlockElts.get(iterator) instanceof PapifyFunctionCall
+                && !(loopBlockElts.get(iterator - 1) instanceof PapifyFunctionCall)) {
+              ((PapifyFunctionCall) loopBlockElts.get(iterator)).setOpening(true);
+            }
+            if (loopBlockElts.get(iterator) instanceof PapifyFunctionCall
+                && !(loopBlockElts.get(iterator + 1) instanceof PapifyFunctionCall)) {
+              ((PapifyFunctionCall) loopBlockElts.get(iterator)).setClosing(true);
+            }
+          }
+          if (loopBlockElts.get(loopBlockElts.size() - 1) instanceof PapifyFunctionCall) {
+            ((PapifyFunctionCall) loopBlockElts.get(loopBlockElts.size() - 1)).setClosing(true);
+          }
+        }
+        /*
+         * Minimizing the number of #ifdef _PREESM_MONITORING_INIT in the init
+         */
+        if (!initBlockElts.isEmpty()) {
+          if (initBlockElts.get(0) instanceof PapifyFunctionCall) {
+            ((PapifyFunctionCall) initBlockElts.get(0)).setOpening(true);
+            if (!(initBlockElts.get(1) instanceof PapifyAction)) {
+              ((PapifyFunctionCall) initBlockElts.get(0)).setClosing(true);
+            }
+          }
+          for (iterator = 1; iterator < initBlockElts.size() - 1; iterator++) {
+            if (initBlockElts.get(iterator) instanceof PapifyFunctionCall
+                && !(initBlockElts.get(iterator - 1) instanceof PapifyFunctionCall)) {
+              ((PapifyFunctionCall) initBlockElts.get(iterator)).setOpening(true);
+            }
+            if (initBlockElts.get(iterator) instanceof PapifyFunctionCall
+                && !(initBlockElts.get(iterator + 1) instanceof PapifyFunctionCall)) {
+              ((PapifyFunctionCall) initBlockElts.get(iterator)).setClosing(true);
+            }
+          }
+          if (initBlockElts.get(initBlockElts.size() - 1) instanceof PapifyFunctionCall) {
+            ((PapifyFunctionCall) initBlockElts.get(initBlockElts.size() - 1)).setClosing(true);
+          }
+        }
+      }
+    }
   }
 
   /**

@@ -1006,9 +1006,16 @@ class CHardwarePrinter extends DefaultPrinter {
 		/*
 		 * Preprocessing for Papify
 		 */
-		this.usingPapify = compactPapifyUsage(allBlocks);
+		for (cluster : allBlocks){		
+			if (cluster instanceof CoreBlock) {					
+				for(CodeElt codeElt : cluster.loopBlock.codeElts){
+					if(codeElt instanceof PapifyFunctionCall){
+						this.usingPapify = 1;
+					}
+				}		
+			}			
+		}
 	}
-
 
 }
 

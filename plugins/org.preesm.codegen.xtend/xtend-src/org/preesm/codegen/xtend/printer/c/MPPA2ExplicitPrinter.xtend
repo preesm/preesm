@@ -781,8 +781,13 @@ class MPPA2ExplicitPrinter extends CPrinter {
 			}
 			if (mppa_remote_client_init() != 0){
 				assert(0 && "mppa_remote_client_init\n");
-			}
-		
+			}		
+			«IF this.usingPapify == 1»
+				#ifdef _PREESM_MONITOR_INIT
+				mkdir("papify-output", 0777);
+				event_init_multiplex();
+				#endif
+			«ENDIF»
 			«IF (this.distributedOnly == 0)»
 			if(mppa_async_segment_clone(&shared_segment, SHARED_SEGMENT_ID, NULL, 0, NULL) != 0){
 				assert(0 && "mppa_async_segment_clone\n");
@@ -858,7 +863,12 @@ class MPPA2ExplicitPrinter extends CPrinter {
 				printf("Cluster %d Error on code generator wrapper\n", __k1_get_cluster_id());
 			}
 
-			mppa_rpc_barrier_all();
+			mppa_rpc_barrier_all();			
+			«IF this.usingPapify == 1»
+				#ifdef _PREESM_MONITOR_INIT
+				event_destroy();
+				#endif
+			«ENDIF»
 			mppa_async_final();
 			return 0;
 		}
@@ -1025,7 +1035,7 @@ class MPPA2ExplicitPrinter extends CPrinter {
 				}
 				else if(cluster.coreType.equals("MPPA2IOExplicit")){
 					io_used = 1;
-				}				
+				}												
 				for(CodeElt codeElt : cluster.loopBlock.codeElts){
 					if(codeElt instanceof PapifyFunctionCall){
 						this.usingPapify = 1;
