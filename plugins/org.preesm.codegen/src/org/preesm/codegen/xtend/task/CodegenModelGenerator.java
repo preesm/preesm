@@ -643,10 +643,10 @@ public class CodegenModelGenerator {
             operatorBlock.getInitBlock().getCodeElts().add(functionCallPapifyConfigurePE);
           }
           // Add the papify_action_s variable to the code
-          Buffer papifyActionS = CodegenFactory.eINSTANCE.createBuffer();
+          PapifyAction papifyActionS = CodegenFactory.eINSTANCE.createPapifyAction();
           papifyActionS
               .setName((dagVertex.getPropertyBean().<PapifyAction>getValue(PapifyEngine.PAPIFY_ACTION_NAME)).getName());
-          papifyActionS.setSize(1);
+          // papifyActionS.setSize(1);
           papifyActionS.setType("papify_action_s");
           papifyActionS.setComment("papify configuration variable");
           operatorBlock.getDefinitions().add(papifyActionS);

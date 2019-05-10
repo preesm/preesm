@@ -637,7 +637,10 @@ class CHardwarePrinter extends DefaultPrinter {
 
 	override printConstantString(ConstantString constant) '''"«constant.value»"'''
 
-	override printPapifyAction(PapifyAction action) '''«action.name»'''
+	override printPapifyActionDefinition(PapifyAction action) '''
+	«action.type» «action.name»; // «action.comment»
+	'''
+	override printPapifyActionParam(PapifyAction action) '''&«action.name»'''
 
 	override printBuffer(Buffer buffer) '''«buffer.name»'''
 

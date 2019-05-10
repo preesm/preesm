@@ -555,7 +555,12 @@ public abstract class CodegenAbstractPrinter extends CodegenSwitch<CharSequence>
 
   @Override
   public CharSequence casePapifyAction(final PapifyAction action) {
-    return printPapifyAction(action);
+    if (this.state.equals(PrinterState.PRINTING_DEFINITIONS)) {
+      return printPapifyActionDefinition(action);
+    } else {
+      return printPapifyActionParam(action);
+    }
+
   }
 
   @Override
@@ -822,6 +827,15 @@ public abstract class CodegenAbstractPrinter extends CodegenSwitch<CharSequence>
   public abstract CharSequence printConstant(Constant constant);
 
   /**
+   * Method called to print a {@link PapifyAction} in the {@link CoreBlock#getDefinitions() definition}
+   *
+   * @param action
+   *          the {@link PapifyAction} to print.
+   * @return the printed {@link CharSequence}
+   */
+  public abstract CharSequence printPapifyActionDefinition(PapifyAction action);
+
+  /**
    * Method called to print a {@link PapifyAction} outside the {@link CoreBlock#getDefinitions() definition} or the
    * {@link CoreBlock#getDeclarations() declaration} of a {@link CoreBlock}
    *
@@ -829,7 +843,7 @@ public abstract class CodegenAbstractPrinter extends CodegenSwitch<CharSequence>
    *          the {@link PapifyAction} to print.
    * @return the printed {@link CharSequence}
    */
-  public abstract CharSequence printPapifyAction(PapifyAction action);
+  public abstract CharSequence printPapifyActionParam(PapifyAction action);
 
   /**
    * Method called to print a {@link Constant} within the {@link CoreBlock#getDeclarations() declaration}

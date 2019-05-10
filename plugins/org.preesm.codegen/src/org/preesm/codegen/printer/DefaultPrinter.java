@@ -122,10 +122,6 @@ public class DefaultPrinter extends CodegenAbstractPrinter {
     return "";
   }
 
-  public CharSequence printPapifyAction(PapifyAction action) {
-    return "";
-  }
-
   public CharSequence printConstantDeclaration(Constant constant) {
     return "";
   }
@@ -307,6 +303,16 @@ public class DefaultPrinter extends CodegenAbstractPrinter {
   }
 
   public CharSequence printOutputDataTransfer(OutputDataTransfer action) {
+    return "";
+  }
+
+  @Override
+  public CharSequence printPapifyActionDefinition(PapifyAction action) {
+    return "";
+  }
+
+  @Override
+  public CharSequence printPapifyActionParam(PapifyAction action) {
     return "";
   }
 }

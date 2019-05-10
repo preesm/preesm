@@ -295,7 +295,7 @@ class MPPA2ExplicitPrinter extends CPrinter {
 			""}»
 	'''
 	override printPapifyFunctionCall(PapifyFunctionCall papifyFunctionCall) '''
-		«papifyFunctionCall.name»(«FOR param : papifyFunctionCall.parameters SEPARATOR ', '»«param.doSwitch»«ENDFOR»); // «papifyFunctionCall.actorName»
+	«papifyFunctionCall.name»(«FOR param : papifyFunctionCall.parameters SEPARATOR ', '»«param.doSwitch»«ENDFOR»); // «papifyFunctionCall.actorName»
 	'''
 	override printFunctionCall(FunctionCall functionCall) '''
 	«{

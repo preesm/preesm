@@ -121,8 +121,6 @@ class DevelopperPrinter extends CodegenAbstractPrinter {
 
 	override printConstant(Constant constant) '''<Constant>'''
 
-	override printPapifyAction(PapifyAction action) '''<PapifyAction>'''
-
 	override printConstantDeclaration(Constant constant) '''<Constant_Declaration>'''
 
 	override printConstantDefinition(Constant constant) '''<Consant_Definition>'''
@@ -214,4 +212,9 @@ class DevelopperPrinter extends CodegenAbstractPrinter {
 	override printGlobalBufferDeclaration(GlobalBufferDeclaration action) '''<Global_Buffer_Declaration>'''
 	
 	override printOutputDataTransfer(OutputDataTransfer action) '''<Output_Data_Transfer>'''
+	
+	override printPapifyActionDefinition(PapifyAction action) '''<Papify_Action_Definition>'''
+	
+	override printPapifyActionParam(PapifyAction action) '''<Papify_Action_Param>'''
+	
 }
