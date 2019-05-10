@@ -745,7 +745,8 @@ class CHardwarePrinter extends DefaultPrinter {
 	«ENDFOR»
 	'''
 		
-	def void compactPapifyUsage(Collection<Block> allBlocks){
+	def int compactPapifyUsage(Collection<Block> allBlocks){
+		var int usingPapify = 0;
 		for (cluster : allBlocks){
 			if (cluster instanceof CoreBlock) {
 				var EList<Variable> definitions = cluster.definitions;
@@ -758,8 +759,8 @@ class CHardwarePrinter extends DefaultPrinter {
 				 */
 				if(!definitions.isEmpty){
 					for(iterator = 0; iterator < definitions.size; iterator++){
-						if(definitions.get(iterator) instanceof PapifyAction && this.usingPapify == 0){
-							this.usingPapify = 1;
+						if(definitions.get(iterator) instanceof PapifyAction && usingPapify == 0){
+							usingPapify = 1;
 							(definitions.get(iterator) as PapifyAction).opening = true;
 						}
 					}
@@ -816,6 +817,7 @@ class CHardwarePrinter extends DefaultPrinter {
 				} 
 			}
 		}	
+		return usingPapify;
 	}
 	override preProcessing(List<Block> printerBlocks, Collection<Block> allBlocks) {
 		PreesmLogger.getLogger().info("[LEO] preProcessing for Hardware³");
@@ -1004,7 +1006,7 @@ class CHardwarePrinter extends DefaultPrinter {
 		/*
 		 * Preprocessing for Papify
 		 */
-		compactPapifyUsage(allBlocks);
+		this.usingPapify = compactPapifyUsage(allBlocks);
 	}
 
 

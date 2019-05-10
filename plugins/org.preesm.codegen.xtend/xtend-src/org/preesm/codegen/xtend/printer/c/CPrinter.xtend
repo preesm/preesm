@@ -639,7 +639,8 @@ class CPrinter extends DefaultPrinter {
 	
 	override printRegisterSetUp(RegisterSetUpAction action) ''''''
 	
-	def void compactPapifyUsage(Collection<Block> allBlocks){
+	def int compactPapifyUsage(Collection<Block> allBlocks){
+		var int usingPapify = 0;
 		for (cluster : allBlocks){
 			if (cluster instanceof CoreBlock) {
 				var EList<Variable> definitions = cluster.definitions;
@@ -652,8 +653,8 @@ class CPrinter extends DefaultPrinter {
 				 */
 				if(!definitions.isEmpty){
 					for(iterator = 0; iterator < definitions.size; iterator++){
-						if(definitions.get(iterator) instanceof PapifyAction && this.usingPapify == 0){
-							this.usingPapify = 1;
+						if(definitions.get(iterator) instanceof PapifyAction && usingPapify == 0){
+							usingPapify = 1;
 							(definitions.get(iterator) as PapifyAction).opening = true;
 						}
 					}
@@ -710,10 +711,11 @@ class CPrinter extends DefaultPrinter {
 				} 
 			}
 		}	
+		return usingPapify;
 	}
 	
 	override preProcessing(List<Block> printerBlocks, Collection<Block> allBlocks){
-		compactPapifyUsage(allBlocks);
+		this.usingPapify = compactPapifyUsage(allBlocks);
 	}
 
 }
