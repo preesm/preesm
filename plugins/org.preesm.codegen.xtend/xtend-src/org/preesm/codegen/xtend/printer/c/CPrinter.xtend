@@ -83,6 +83,7 @@ import org.preesm.commons.files.URLResolver
 import org.preesm.model.pisdf.util.CHeaderUsedLocator
 import org.preesm.codegen.model.PapifyFunctionCall
 import org.preesm.codegen.model.CodeElt
+import org.eclipse.emf.common.util.EList
 
 /**
  * This printer is currently used to print C code only for GPP processors
@@ -590,9 +591,13 @@ class CPrinter extends DefaultPrinter {
 	'''
 	
 	override printPapifyFunctionCall(PapifyFunctionCall papifyFunctionCall) '''
-	#ifdef _PREESM_MONITOR_INIT
+	«IF papifyFunctionCall.opening == true»
+		#ifdef _PREESM_MONITOR_INIT
+	«ENDIF»
 	«printFunctionCall(papifyFunctionCall)»
-	#endif
+	«IF papifyFunctionCall.closing == true»
+		#endif
+	«ENDIF»
 	'''
 
 	override printConstant(Constant constant) '''«constant.value»«IF !constant.name.nullOrEmpty»/*«constant.name»*/«ENDIF»'''
@@ -600,9 +605,13 @@ class CPrinter extends DefaultPrinter {
 	override printConstantString(ConstantString constant) '''"«constant.value»"'''
 
 	override printPapifyActionDefinition(PapifyAction action) '''
-	#ifdef _PREESM_MONITOR_INIT
+	«IF action.opening == true»
+		#ifdef _PREESM_MONITOR_INIT
+	«ENDIF»
 	«action.type» «action.name»; // «action.comment»
-	#endif
+	«IF action.closing == true»
+		#endif
+	«ENDIF»
 	'''
 	override printPapifyActionParam(PapifyAction action) '''&«action.name»'''
 
@@ -633,11 +642,72 @@ class CPrinter extends DefaultPrinter {
 	override preProcessing(List<Block> printerBlocks, Collection<Block> allBlocks){
 		for (cluster : allBlocks){
 			if (cluster instanceof CoreBlock) {
-				for(CodeElt codeElt : cluster.loopBlock.codeElts){
-					if(codeElt instanceof PapifyFunctionCall){
-						this.usingPapify = 1;
+				var EList<Variable> definitions = cluster.definitions;
+				var EList<CodeElt> loopBlockElts = cluster.loopBlock.codeElts;
+				var EList<CodeElt> initBlockElts = cluster.initBlock.codeElts;
+				var int iterator = 0;
+				var boolean closed = false;
+				/*
+				 * Only one #ifdef _PREESM_MONITORING_INIT in the definition code 
+				 */
+				if(!definitions.isEmpty){
+					for(iterator = 0; iterator < definitions.size; iterator++){
+						if(definitions.get(iterator) instanceof PapifyAction && this.usingPapify == 0){
+							this.usingPapify = 1;
+							(definitions.get(iterator) as PapifyAction).opening = true;
+						}
 					}
-				}
+					for(iterator = definitions.size-1; iterator >= 0; iterator--){
+						if(definitions.get(iterator) instanceof PapifyAction && closed == false){
+							closed = true;
+							(definitions.get(iterator) as PapifyAction).closing = true;
+						}
+					}
+				} 
+				/*
+				 * Minimizing the number of #ifdef _PREESM_MONITORING_INIT in the loop
+				 */
+				if(!loopBlockElts.isEmpty){
+					if(loopBlockElts.get(0) instanceof PapifyFunctionCall){
+						(loopBlockElts.get(0) as PapifyFunctionCall).opening = true;
+						if(!(loopBlockElts.get(1) instanceof PapifyAction)){
+							(loopBlockElts.get(0) as PapifyFunctionCall).closing = true;							
+						}
+					}
+					for(iterator = 1; iterator < loopBlockElts.size-1; iterator++){
+						if(loopBlockElts.get(iterator) instanceof PapifyFunctionCall && !(loopBlockElts.get(iterator - 1) instanceof PapifyFunctionCall)){
+							(loopBlockElts.get(iterator) as PapifyFunctionCall).opening = true;
+						}
+						if(loopBlockElts.get(iterator) instanceof PapifyFunctionCall && !(loopBlockElts.get(iterator + 1) instanceof PapifyFunctionCall)){
+							(loopBlockElts.get(iterator) as PapifyFunctionCall).closing = true;
+						}
+					}
+					if(loopBlockElts.get(loopBlockElts.size-1) instanceof PapifyFunctionCall){
+						(loopBlockElts.get(loopBlockElts.size-1) as PapifyFunctionCall).closing = true;
+					}
+				} 
+				/*
+				 * Minimizing the number of #ifdef _PREESM_MONITORING_INIT in the init
+				 */
+				if(!initBlockElts.isEmpty){
+					if(initBlockElts.get(0) instanceof PapifyFunctionCall){
+						(initBlockElts.get(0) as PapifyFunctionCall).opening = true;
+						if(!(initBlockElts.get(1) instanceof PapifyAction)){
+							(initBlockElts.get(0) as PapifyFunctionCall).closing = true;							
+						}
+					}
+					for(iterator = 1; iterator < initBlockElts.size-1; iterator++){
+						if(initBlockElts.get(iterator) instanceof PapifyFunctionCall && !(initBlockElts.get(iterator - 1) instanceof PapifyFunctionCall)){
+							(initBlockElts.get(iterator) as PapifyFunctionCall).opening = true;
+						}
+						if(initBlockElts.get(iterator) instanceof PapifyFunctionCall && !(initBlockElts.get(iterator + 1) instanceof PapifyFunctionCall)){
+							(initBlockElts.get(iterator) as PapifyFunctionCall).closing = true;
+						}
+					}
+					if(initBlockElts.get(initBlockElts.size-1) instanceof PapifyFunctionCall){
+						(initBlockElts.get(initBlockElts.size-1) as PapifyFunctionCall).closing = true;
+					}
+				} 
 			}
 		}	
 	}

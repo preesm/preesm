@@ -107,6 +107,8 @@ class FunctionCall extends Call {
 
 class PapifyFunctionCall extends FunctionCall {
 	PapifyType papifyType
+	boolean opening = "false"
+	boolean closing = "false"
 }
 
 enum PapifyType {
@@ -277,6 +279,8 @@ class BufferIterator extends SubBuffer {
 }
 
 class PapifyAction extends Variable {
+	boolean opening = "false"
+	boolean closing = "false"
 }
 
 class DataTransferAction extends FunctionCall {
