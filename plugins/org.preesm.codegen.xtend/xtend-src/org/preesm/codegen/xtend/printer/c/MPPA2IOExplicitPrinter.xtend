@@ -43,6 +43,22 @@ import java.util.Map
 import org.preesm.codegen.model.Block
 import org.preesm.codegen.model.Buffer
 import org.preesm.codegen.model.CoreBlock
+import org.preesm.codegen.model.CodeElt
+import org.preesm.codegen.model.PapifyFunctionCall
+import org.apache.velocity.app.VelocityEngine
+import org.apache.velocity.VelocityContext
+import org.preesm.model.pisdf.util.CHeaderUsedLocator
+import org.preesm.commons.files.URLResolver
+import org.preesm.codegen.xtend.CodegenPlugin
+import java.io.InputStreamReader
+import java.net.URL
+import java.io.IOException
+import org.preesm.commons.exceptions.PreesmRuntimeException
+import java.io.StringWriter
+import org.eclipse.emf.common.util.EList
+import org.preesm.codegen.model.Variable
+import java.util.LinkedHashSet
+import java.util.Set
 
 class MPPA2IOExplicitPrinter extends MPPA2ExplicitPrinter {
 
@@ -51,6 +67,7 @@ class MPPA2IOExplicitPrinter extends MPPA2ExplicitPrinter {
 		super(true)
 	}
 
+	protected int usingPapify = 0;
 	protected int sharedOnly = 1;
 	protected int distributedOnly = 1;
 	protected String peName = "";
@@ -103,8 +120,12 @@ class MPPA2IOExplicitPrinter extends MPPA2ExplicitPrinter {
 		#define memset __wrap_memset
 		#define memcpy __wrap_memcpy
 		
-		extern mppa_async_segment_t shared_segment;
-		extern mppa_async_segment_t distributed_segment[PREESM_NB_CLUSTERS + PREESM_IO_USED];
+		«IF (this.distributedOnly == 0)»
+			extern mppa_async_segment_t shared_segment;
+		«ENDIF»
+		«IF (this.sharedOnly == 0)»
+			extern mppa_async_segment_t distributed_segment[PREESM_NB_CLUSTERS + PREESM_IO_USED];
+		«ENDIF»
 
 		/* Scratchpad buffer ptr (will be malloced) */
 		char *local_buffer = NULL;
@@ -116,28 +137,64 @@ class MPPA2IOExplicitPrinter extends MPPA2ExplicitPrinter {
 	
 	}
 
-	override printBufferDefinition(Buffer buffer) {
-		if(!buffer.name.equals("Shared")){
-			this.sharedOnly = 0;
-		}else{
-			this.distributedOnly = 0;
-		}
-	
+	override printBufferDefinition(Buffer buffer) {	
 		var result = '''
-		«IF buffer.type == "papify_action_s"»
-			«buffer.type» «buffer.name»[«buffer.size»]; // «buffer.comment» size:= «buffer.size»*«buffer.type»
+		«IF buffer.name == "Shared"»
+		//#define Shared ((char*)0x10000000ULL) 	/* Shared buffer in DDR */ 
 		«ELSE»
-			«IF buffer.name == "Shared"»
-			//#define Shared ((char*)0x10000000ULL) 	/* Shared buffer in DDR */
-			«ELSE»
-			«buffer.type» «buffer.name»[«buffer.size»] __attribute__ ((aligned(64))); // «buffer.comment» size:= «buffer.size»*«buffer.type» aligned on data cache line
-			int local_memory_size = «buffer.size»;
-			«ENDIF»
+		«buffer.type» «buffer.name»[«buffer.size»] __attribute__ ((aligned(64))); // «buffer.comment» size:= «buffer.size»*«buffer.type» aligned on data cache line
+		int local_memory_size = «buffer.size»;
 		«ENDIF»
 		'''
 		return result;
 	}
 	
+	override CharSequence generatePreesmHeader() {
+	    // 0- without the following class loader initialization, I get the following exception when running as Eclipse
+	    // plugin:
+	    // org.apache.velocity.exception.VelocityException: The specified class for ResourceManager
+	    // (org.apache.velocity.runtime.resource.ResourceManagerImpl) does not implement
+	    // org.apache.velocity.runtime.resource.ResourceManager; Velocity is not initialized correctly.
+	    val ClassLoader oldContextClassLoader = Thread.currentThread().getContextClassLoader();
+	    Thread.currentThread().setContextClassLoader(CPrinter.classLoader);
+
+	    // 1- init engine
+	    val VelocityEngine engine = new VelocityEngine();
+	    engine.init();
+
+	    // 2- init context
+	    val VelocityContext context = new VelocityContext();
+	    val findAllCHeaderFileNamesUsed = CHeaderUsedLocator.findAllCHeaderFileNamesUsed(getEngine.algo.referencePiMMGraph)
+	    context.put("USER_INCLUDES", findAllCHeaderFileNamesUsed.map["#include \""+ it +"\""].join("\n"));
+		
+		var String constants = "#define NB_DESIGN_ELTS "+getEngine.archi.componentInstances.size+"\n";
+		constants = constants.concat("#define PREESM_NB_CLUSTERS "+numClusters+"\n");
+		constants = constants.concat("#define PREESM_IO_USED " + io_used + " \n");
+		if(this.usingPapify == 1){
+			constants = constants.concat("\n\n#ifdef _PREESM_MONITOR_INIT\n#include \"eventLib.h\"\n#endif");
+		}
+	    context.put("CONSTANTS", constants);
+
+	    // 3- init template reader
+	    val String templateLocalURL = "templates/mppa2Explicit/preesm_gen.h";
+	    val URL mainTemplate = URLResolver.findFirstInBundleList(templateLocalURL, CodegenPlugin.BUNDLE_ID);
+	    var InputStreamReader reader = null;
+	    try {
+	      reader = new InputStreamReader(mainTemplate.openStream());
+	    } catch (IOException e) {
+	      throw new PreesmRuntimeException("Could not locate main template [" + templateLocalURL + "].", e);
+	    }
+
+	    // 4- init output writer
+	    val StringWriter writer = new StringWriter();
+
+	    engine.evaluate(context, writer, "org.apache.velocity", reader);
+
+	    // 99- set back default class loader
+	    Thread.currentThread().setContextClassLoader(oldContextClassLoader);
+
+	    return writer.getBuffer().toString();
+	}
 	override createSecondaryFiles(List<Block> printerBlocks, Collection<Block> allBlocks) {
 		val result = super.createSecondaryFiles(printerBlocks, allBlocks);
 		result.remove("cluster_main.c");
@@ -243,6 +300,12 @@ class MPPA2IOExplicitPrinter extends MPPA2ExplicitPrinter {
 				assert(0 && "utask_create\n");
 			}
 						
+			«IF this.usingPapify == 1»
+				#ifdef _PREESM_MONITOR_INIT
+				mkdir("papify-output", 0777);
+				event_init();
+				#endif
+			«ENDIF»
 			for( j = 0 ; j < PREESM_NB_CLUSTERS ; j++ ) {
 		
 				char elf_name[30];
@@ -254,7 +317,7 @@ class MPPA2IOExplicitPrinter extends MPPA2ExplicitPrinter {
 		
 			«IF (this.distributedOnly == 0)»
 				mppa_async_segment_t shared_segment;
-				if(mppa_async_segment_create(&shared_segment, SHARED_SEGMENT_ID, (void*)(uintptr_t)Shared, 1024*1024*1024, 0, 0, NULL) != 0)
+				if(mppa_async_segment_create(&shared_segment, SHARED_SEGMENT_ID, (void*)(uintptr_t)Shared, 1024*1024*1024, 0, 0, NULL) != 0){
 					assert(0 && "mppa_async_segment_create\n");
 				}
 			«ENDIF»
@@ -284,7 +347,12 @@ class MPPA2IOExplicitPrinter extends MPPA2ExplicitPrinter {
 			for( j = 0 ; j < PREESM_NB_CLUSTERS ; j++ ) {
 			    mppa_power_base_waitpid (j, &err, 0);
 			}
-		
+				 
+			«IF this.usingPapify == 1»
+				#ifdef _PREESM_MONITOR_INIT
+				event_destroy();
+				#endif
+			«ENDIF»
 			if (__k1_spawn_type() == __MPPA_PCI_SPAWN) {
 				pcie_queue_barrier(pcie_fd, 0, &ret);
 				pcie_queue_exit(pcie_fd, ret, NULL);
@@ -293,4 +361,49 @@ class MPPA2IOExplicitPrinter extends MPPA2ExplicitPrinter {
 		}
 
 	'''
+	override preProcessing(List<Block> printerBlocks, Collection<Block> allBlocks){
+		var Set<String> coresNames = new LinkedHashSet<String>();
+		for (cluster : allBlocks){
+			if (cluster instanceof CoreBlock) {
+				coresNames.add(cluster.name);
+			}	
+		}				
+		for (cluster : allBlocks){
+			if (cluster instanceof CoreBlock) {
+				if(cluster.coreType.equals("MPPA2Explicit")){
+					numClusters = numClusters + 1;
+					clusterToSync = cluster.coreID;
+				}
+				else if(cluster.coreType.equals("MPPA2IOExplicit")){
+					io_used = 1;
+				}												
+				for(CodeElt codeElt : cluster.loopBlock.codeElts){
+					if(codeElt instanceof PapifyFunctionCall){
+						this.usingPapify = 1;
+					}
+				}
+       		 	var EList<Variable> definitions = cluster.getDefinitions();
+       		 	var EList<Variable> declarations = cluster.getDeclarations();
+       		 	for(Variable variable : definitions){
+       		 		if(variable instanceof Buffer){
+       		 			if(variable.name.equals("Shared")){
+							this.distributedOnly = 0;       		 				
+       		 			}else if(coresNames.contains(variable.name)){
+							this.sharedOnly = 0;       		 				
+       		 			}   
+       		 		}
+       		 	}
+       		 	for(Variable variable : declarations){
+       		 		if(variable instanceof Buffer){
+       		 			if(variable.name.equals("Shared")){
+							this.distributedOnly = 0;       		 				
+       		 			}else if(coresNames.contains(variable.name)){
+							this.sharedOnly = 0;       		 				
+       		 			}   
+       		 		}
+       		 	}
+			}
+		}	
+		local_buffer_size = 0;
+	}
 }
