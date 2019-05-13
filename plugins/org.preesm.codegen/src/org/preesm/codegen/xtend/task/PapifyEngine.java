@@ -247,9 +247,9 @@ public class PapifyEngine {
         ConstantString actorName = CodegenFactory.eINSTANCE.createConstantString();
         String actorNameGeneric;
         if (configMode == 2) {
-          actorNameGeneric = name.substring(0, name.lastIndexOf('_'));
+          actorNameGeneric = finalName.substring(0, finalName.lastIndexOf('_'));
         } else {
-          actorNameGeneric = name;
+          actorNameGeneric = finalName;
         }
         actorName.setName("actor_name".concat(actorNameGeneric));
         actorName.setValue(actorNameGeneric);
