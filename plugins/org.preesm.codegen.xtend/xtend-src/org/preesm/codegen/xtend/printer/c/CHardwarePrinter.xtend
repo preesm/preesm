@@ -138,10 +138,13 @@ class CHardwarePrinter extends DefaultPrinter {
 	 * Variable that store the number or iteration in hardware. Using it, it will be possible to 
 	 * compress all the function calls in just one.
 	 */
-	protected var factorNumber = 0;
-	protected var functionCallNumber = 0;
-	protected var dataTransferCallNumber = 0;
-	protected var dataOutputTransferCallNumber = 0;
+	protected var int factorNumber = 0;
+	protected var int functionCallNumber = 0;
+	protected var int dataTransferCallNumber = 0;
+	protected var int dataOutputTransferCallNumber = 0;
+	protected var int numberHardwareAcceleratorSlots = 0;
+	protected var int threadHardwarePrintedDeclaration = 0;
+	protected var int threadHardwarePrintedUsage = 0;
 	
 //	int getFactorNumber(){
 //		return this.factorNunber;
@@ -516,7 +519,7 @@ class CHardwarePrinter extends DefaultPrinter {
 		 */
 		// no monitoring by default
 
-		#define _PREESM_NBTHREADS_ «engine.codeBlocks.size»
+		#define _PREESM_NBTHREADS_ «engine.codeBlocks.size-(this.numberHardwareAcceleratorSlots)+1»
 		#define _PREESM_MAIN_THREAD_ «mainOperatorId»
 
 		// application dependent includes
@@ -524,7 +527,14 @@ class CHardwarePrinter extends DefaultPrinter {
 
 		// Declare computation thread functions
 		«FOR coreBlock : engine.codeBlocks»
-		void *computationThread_Core«(coreBlock as CoreBlock).coreID»(void *arg);
+		«IF !((coreBlock as CoreBlock).coreType.equals("Hardware"))»
+			void *computationThread_Core«(coreBlock as CoreBlock).coreID»(void *arg);
+		«ELSE»
+			«IF this.threadHardwarePrintedDeclaration == 0»
+				void *computationThread_Core«(coreBlock as CoreBlock).coreID»(void *arg);
+				//«this.threadHardwarePrintedDeclaration=1»
+			«ENDIF»
+		«ENDIF»
 		«ENDFOR»
 
 		pthread_barrier_t iter_barrier;
@@ -579,7 +589,14 @@ class CHardwarePrinter extends DefaultPrinter {
 			// Declaring thread pointers
 			pthread_t coreThreads[_PREESM_NBTHREADS_];
 			void *(*coreThreadComputations[_PREESM_NBTHREADS_])(void *) = {
-				«FOR coreBlock : engine.codeBlocks»&computationThread_Core«(coreBlock as CoreBlock).coreID»«if(engine.codeBlocks.last == coreBlock) {""} else {", "}»«ENDFOR»
+		«FOR coreBlock : engine.codeBlocks»
+		«IF !((coreBlock as CoreBlock).coreType.equals("Hardware"))»		&computationThread_Core«(coreBlock as CoreBlock).coreID»«if(engine.codeBlocks.last == coreBlock) {""} else {", "}»
+		«ELSE»
+			«IF this.threadHardwarePrintedUsage == 0»		&computationThread_Core«(coreBlock as CoreBlock).coreID»
+			// «this.threadHardwarePrintedUsage=1»
+			«ENDIF»
+		«ENDIF»
+		«ENDFOR»
 			};
 
 		#ifdef PREESM_VERBOSE
@@ -741,7 +758,7 @@ class CHardwarePrinter extends DefaultPrinter {
 	«var count = 0»
 	«FOR buffer : action.buffers»
 		a3data_t *global_hardware_«count» = NULL;
-		global_hardware_«count» = hardware_alloc(«buffer.size»«IF (this.factorNumber > 0)» * «this.factorNumber»«ENDIF» * sizeof *«buffer.name», "«action.name»", "«buffer.doSwitch»",  «action.parameterDirections.get(count++)»);
+		global_hardware_«count» = hardware_alloc(«this.numberHardwareAcceleratorSlots» * «buffer.size»«IF (this.factorNumber > 0)» * «this.factorNumber»«ENDIF» * sizeof *«buffer.name», "«action.name»", "«buffer.doSwitch»",  «action.parameterDirections.get(count++)»);
 	«ENDFOR»
 	'''
 		
@@ -826,7 +843,9 @@ class CHardwarePrinter extends DefaultPrinter {
 		var RegisterSetUpNumber = 0;
 		var firstFunctionCallIndex = 0;
 		var lastFunctionCallIndex = 0;
-		var currentFunctionPosition = 0; 
+		var currentFunctionPosition = 0;
+		
+		this.numberHardwareAcceleratorSlots = printerBlocks.size(); 
 
 		var Block coreLoopMerged = CodegenModelUserFactory.createCoreBlock();
 		
