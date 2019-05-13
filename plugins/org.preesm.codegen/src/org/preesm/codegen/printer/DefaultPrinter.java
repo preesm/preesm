@@ -47,6 +47,7 @@ import org.preesm.codegen.model.Constant;
 import org.preesm.codegen.model.ConstantString;
 import org.preesm.codegen.model.CoreBlock;
 import org.preesm.codegen.model.DataTransferAction;
+import org.preesm.codegen.model.DistributedMemoryCommunication;
 import org.preesm.codegen.model.FifoCall;
 import org.preesm.codegen.model.FiniteLoopBlock;
 import org.preesm.codegen.model.FpgaLoadAction;
@@ -245,6 +246,10 @@ public class DefaultPrinter extends CodegenAbstractPrinter {
   }
 
   public CharSequence printSharedMemoryCommunication(SharedMemoryCommunication communication) {
+    return "";
+  }
+
+  public CharSequence printDistributedMemoryCommunication(DistributedMemoryCommunication communication) {
     return "";
   }
 

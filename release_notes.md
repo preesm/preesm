@@ -7,9 +7,14 @@ PREESM Changelog
 ### New Feature
 *  Codegen: enabled the code generation for offloading computation on the FPGA Prgrammable logic (hardware accelerators)
 *  Codegen: core type "Hardware" is allowed
+*  Codegen: core type "MPPA2IOExplicit" is allowed
+*  Codegen: enabled IO usage on the MPPA code generation
+*  Codegen: enabled the use of DistributedOnly through the use of TwinBuffers for the repeated memory transmissions
+*  Codegen: DistributedOnly memory distribution --> Support from CodeGen for each architecture needs to be done (DistributedMemoryCommunication printer has been included) Issue #134
 
 ### Changes
 * SpiderCodegen: updated spider codegeneration to follow up changes of spider develop branch.
+* Codegen: Now host/IO/Cluster codes are automatically generated when using MPPA2 code generation.
 
 ### Bug fix
 *  Fix #94

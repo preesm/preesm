@@ -53,6 +53,7 @@ import org.preesm.codegen.model.Constant;
 import org.preesm.codegen.model.ConstantString;
 import org.preesm.codegen.model.CoreBlock;
 import org.preesm.codegen.model.DataTransferAction;
+import org.preesm.codegen.model.DistributedMemoryCommunication;
 import org.preesm.codegen.model.FifoCall;
 import org.preesm.codegen.model.FiniteLoopBlock;
 import org.preesm.codegen.model.FpgaLoadAction;
@@ -342,6 +343,11 @@ public abstract class CodegenAbstractPrinter extends CodegenSwitch<CharSequence>
   @Override
   public CharSequence caseSharedMemoryCommunication(final SharedMemoryCommunication communication) {
     return printSharedMemoryCommunication(communication);
+  }
+
+  @Override
+  public CharSequence caseDistributedMemoryCommunication(final DistributedMemoryCommunication communication) {
+    return printDistributedMemoryCommunication(communication);
   }
 
   @Override
@@ -1115,13 +1121,22 @@ public abstract class CodegenAbstractPrinter extends CodegenSwitch<CharSequence>
   public abstract CharSequence printRoundBuffer(SpecialCall call);
 
   /**
-   * ethod called to print a {@link SharedMemoryCommunication}.
+   * Method called to print a {@link SharedMemoryCommunication}.
    *
    * @param communication
    *          the printed {@link SharedMemoryCommunication}.
    * @return the printed {@link CharSequence}
    */
   public abstract CharSequence printSharedMemoryCommunication(SharedMemoryCommunication communication);
+
+  /**
+   * ethod called to print a {@link DistributedMemoryCommunication}.
+   *
+   * @param communication
+   *          the printed {@link DistributedMemoryCommunication}.
+   * @return the printed {@link CharSequence}
+   */
+  public abstract CharSequence printDistributedMemoryCommunication(DistributedMemoryCommunication communication);
 
   /**
    * Method called to print a {@link SpecialCall}.

@@ -88,6 +88,7 @@ import org.preesm.model.pisdf.util.CHeaderUsedLocator
 import org.preesm.commons.logger.PreesmLogger
 import java.util.logging.Level
 import java.lang.reflect.Parameter
+import org.preesm.codegen.model.DistributedMemoryCommunication
 
 /**
  * This printer is currently used to print C code only for GPP processors
@@ -619,6 +620,8 @@ class CHardwarePrinter extends DefaultPrinter {
 		(communication.direction == Direction::RECEIVE && communication.delimiter == Delimiter::END)»«communication.sendStart.coreContainer.coreID», «communication.receiveStart.coreContainer.coreID»«ENDIF»); // «communication.sendStart.coreContainer.name» > «communication.receiveStart.coreContainer.name»: «communication.
 		data.doSwitch»
 	'''
+
+	override printDistributedMemoryCommunication(DistributedMemoryCommunication communication) ''''''
 
 	override printFunctionCall(FunctionCall functionCall) '''
 	hardware_kernel_execute("«functionCall.name»",gsize_TO_BE_CHANGED«IF (functionCall.factorNumber > 0)» * «functionCall.factorNumber»«ENDIF», lsize_TO_BE_CHANGED); // executing hardware kernel

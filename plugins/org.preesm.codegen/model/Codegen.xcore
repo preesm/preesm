@@ -92,6 +92,10 @@ class SubBuffer extends Buffer {
 	    }
     }
 }
+class TwinBuffer extends Buffer{
+	contains Buffer original
+	contains Buffer[] twins
+}
 
 class Constant extends Variable {
 	long value
@@ -223,6 +227,9 @@ class CommunicationNode extends Commentable {
 }
 
 class SharedMemoryCommunication extends Communication {
+}
+
+class DistributedMemoryCommunication extends Communication {
 }
 
 enum PortDirection {

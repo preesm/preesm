@@ -66,6 +66,7 @@ import org.preesm.codegen.model.SpecialCall
 import org.preesm.codegen.model.SubBuffer
 import org.preesm.codegen.model.Variable
 import org.preesm.codegen.printer.CodegenAbstractPrinter
+import org.preesm.codegen.model.DistributedMemoryCommunication
 
 /**
  * This {@link DevelopperPrinter} is a dummy implementation of the
@@ -176,6 +177,8 @@ class DevelopperPrinter extends CodegenAbstractPrinter {
 	override printRoundBuffer(SpecialCall call) '''<RoundBuffer>'''
 
 	override printSharedMemoryCommunication(SharedMemoryCommunication communication) '''<Shared_Memory_Communication>'''
+
+	override printDistributedMemoryCommunication(DistributedMemoryCommunication communication) '''<Distributed_Memory_Communication>'''
 
 	override printSpecialCall(SpecialCall specialCall) '''<Special_Call>'''
 
