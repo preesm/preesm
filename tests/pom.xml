@@ -70,7 +70,7 @@
 
     <module>org.preesm.tests.ui</module>
 		
-    <!-- <module>org.preesm.tests.ui.rcptt</module> -->
+    <module>org.preesm.tests.ui.rcptt</module>
 
     <module>fi.abo.preesm.dataparallel.test</module>
 	</modules>
