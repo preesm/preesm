@@ -50,4 +50,34 @@ void receiveStart();
 */
 void receiveEnd(int cluster);
 
+/**
+* Blocking function (for distributed_mem communication) called by the sender to
+* signal that a buffer is ready to be sent.
+*
+* @param cluster
+*        the id of the cluster to post the token.
+*/
+void sendDistributedStart(int cluster);
+
+/**
+* Blocking function (for distributed_mem communication) called by the sender to
+* signal that communication is completed.
+*/
+void sendDistributedEnd(int cluster);
+
+/**
+* Blocking function (for distributed_mem communication) called by the receiver to
+* begin receiving the data.
+*/
+void receiveDistributedStart(int remotePE, off64_t remoteOffset, void* localAddress, size_t transmissionSize);
+
+/**
+* Blocking function (for distributed_mem communication) called by the receiver to
+* signal that data has already been copied.
+*
+* @param cluster
+*        the id of the cluster to sync.
+*/
+void receiveDistributedEnd(int cluster);
+
 #endif
