@@ -126,12 +126,12 @@ public class PapifyEngine {
       for (final DAGVertex vertex : this.dag.vertexSet()) {
         finalName = vertex.getInfo();
         if (finalName != null) {
-          finalNameWithoutUnderScroll = vertex.getInfo().substring(0, vertex.getInfo().lastIndexOf('_'));
+          int positionChecker = vertex.getInfo().lastIndexOf('_');
           config = papifyConfig.getCorePapifyConfigGroupActor(finalName);
           int configMode = 1;
-          if (config == null) {
+          if (config == null && positionChecker != -1) {
+            finalNameWithoutUnderScroll = vertex.getInfo().substring(0, vertex.getInfo().lastIndexOf('_'));
             config = papifyConfig.getCorePapifyConfigGroupActor(finalNameWithoutUnderScroll);
-            finalName = finalNameWithoutUnderScroll;
             configMode = 2;
           }
           finalName = vertex.getInfo().substring(vertex.getInfo().indexOf('/') + 1).replace('/', '_');
