@@ -46,6 +46,7 @@ import java.util.Set;
 import java.util.TreeMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import org.eclipse.emf.common.util.EList;
 import org.preesm.algorithm.clustering.AbstractClust;
 import org.preesm.algorithm.clustering.ClustSequence;
 import org.preesm.algorithm.clustering.ClustVertex;
@@ -72,6 +73,7 @@ import org.preesm.algorithm.model.sdf.transformations.IbsdfFlattener;
 import org.preesm.codegen.model.Buffer;
 import org.preesm.codegen.model.BufferIterator;
 import org.preesm.codegen.model.Call;
+import org.preesm.codegen.model.CodeElt;
 import org.preesm.codegen.model.CodegenFactory;
 import org.preesm.codegen.model.CodegenPackage;
 import org.preesm.codegen.model.Communication;
@@ -287,6 +289,9 @@ public class CodegenHierarchicalModelGenerator {
               forLoop.getCodeElts().add(repFunc); // Add the function call to the for loop block
               // Adding stopping PAPIFY instrumentation
               papifyStoppingFunctions(operatorBlock, dagVertex, forLoop, (SDFVertex) repVertex);
+              // Adding info to include the pragmas
+              compactPapifyUsage(forLoop);
+
               registerCallVariableToCoreBlock(operatorBlock, repFunc); // for declaration in the file
               this.dagVertexCalls.put(dagVertex, repFunc); // Save the functionCall in the dagvertexFunctionCall Map
 
@@ -710,9 +715,7 @@ public class CodegenHierarchicalModelGenerator {
     Map<String,
         String> mapPapifyConfiguration = dagVertex.getPropertyBean().getValue(PapifyEngine.PAPIFY_CONFIGURATION);
     if (mapPapifyConfiguration != null && !mapPapifyConfiguration.isEmpty()) {
-      System.out.println("C: " + repVertex.getInfo());
       String papifying = mapPapifyConfiguration.get(repVertex.getInfo());
-      System.out.println("D: " + papifying);
 
       // In case there is any monitoring add start functions
       if (papifying != null && papifying.equals("Papifying")) {
@@ -1041,4 +1044,32 @@ public class CodegenHierarchicalModelGenerator {
     return func;
   }
 
+  void compactPapifyUsage(FiniteLoopBlock forLoop) {
+    EList<CodeElt> loopBlockElts = forLoop.getCodeElts();
+    int iterator = 0;
+    /*
+     * Minimizing the number of #ifdef _PREESM_MONITORING_INIT in the loop
+     */
+    if (!loopBlockElts.isEmpty()) {
+      if (loopBlockElts.get(0) instanceof PapifyFunctionCall) {
+        ((PapifyFunctionCall) loopBlockElts.get(0)).setOpening(true);
+        if (!(loopBlockElts.get(1) instanceof PapifyFunctionCall)) {
+          ((PapifyFunctionCall) loopBlockElts.get(0)).setClosing(true);
+        }
+      }
+      for (iterator = 1; iterator < loopBlockElts.size() - 1; iterator++) {
+        if (loopBlockElts.get(iterator) instanceof PapifyFunctionCall
+            && !(loopBlockElts.get(iterator - 1) instanceof PapifyFunctionCall)) {
+          ((PapifyFunctionCall) loopBlockElts.get(iterator)).setOpening(true);
+        }
+        if (loopBlockElts.get(iterator) instanceof PapifyFunctionCall
+            && !(loopBlockElts.get(iterator + 1) instanceof PapifyFunctionCall)) {
+          ((PapifyFunctionCall) loopBlockElts.get(iterator)).setClosing(true);
+        }
+      }
+      if (loopBlockElts.get(loopBlockElts.size() - 1) instanceof PapifyFunctionCall) {
+        ((PapifyFunctionCall) loopBlockElts.get(loopBlockElts.size() - 1)).setClosing(true);
+      }
+    }
+  }
 }

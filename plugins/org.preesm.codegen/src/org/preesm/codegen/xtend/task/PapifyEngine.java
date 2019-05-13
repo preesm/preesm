@@ -123,7 +123,6 @@ public class PapifyEngine {
     finalName = info;
 
     if (finalName != null) {
-      System.out.println("Info: " + info);
       int positionChecker = info.lastIndexOf('_');
       config = papifyConfig.getCorePapifyConfigGroupActor(finalName);
       int configMode = 1;

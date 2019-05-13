@@ -600,7 +600,7 @@ public class CodegenModelGenerator {
         if (!loopBlockElts.isEmpty()) {
           if (loopBlockElts.get(0) instanceof PapifyFunctionCall) {
             ((PapifyFunctionCall) loopBlockElts.get(0)).setOpening(true);
-            if (!(loopBlockElts.get(1) instanceof PapifyAction)) {
+            if (!(loopBlockElts.get(1) instanceof PapifyFunctionCall)) {
               ((PapifyFunctionCall) loopBlockElts.get(0)).setClosing(true);
             }
           }
@@ -624,7 +624,7 @@ public class CodegenModelGenerator {
         if (!initBlockElts.isEmpty()) {
           if (initBlockElts.get(0) instanceof PapifyFunctionCall) {
             ((PapifyFunctionCall) initBlockElts.get(0)).setOpening(true);
-            if (!(initBlockElts.get(1) instanceof PapifyAction)) {
+            if (!(initBlockElts.get(1) instanceof PapifyFunctionCall)) {
               ((PapifyFunctionCall) initBlockElts.get(0)).setClosing(true);
             }
           }
