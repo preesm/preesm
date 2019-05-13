@@ -16,6 +16,7 @@ PREESM Changelog
 ### Changes
 * SpiderCodegen: updated spider codegeneration to follow up changes of spider develop branch.
 * Codegen: Now host/IO/Cluster codes are automatically generated when using MPPA2 code generation.
+* Enable RCPTT tests back (https://bugs.eclipse.org/bugs/show_bug.cgi?id=543731)
 
 ### Bug fix
 *  Fix #94
