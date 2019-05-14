@@ -2,8 +2,10 @@
  * Copyright or © or Copr. IETR/INSA - Rennes (2017 - 2019) :
  *
  * Alexandre Honorat <alexandre.honorat@insa-rennes.fr> (2019)
+ * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017 - 2019)
  * Florian Arrestier <florian.arrestier@insa-rennes.fr> (2018)
  * Julien Hascoet <jhascoet@kalray.eu> (2017)
+ * Leonardo Suriano <leonardo.suriano@upm.es> (2019)
  *
  * This software is a computer program whose purpose is to help prototyping
  * parallel applications using dataflow formalism.
@@ -49,7 +51,7 @@ communications.
 #ifndef _PREESM_COMMUNICATION_H
 #define _PREESM_COMMUNICATION_H
 
-#include <preesm_gen.h>
+#include "preesm_gen.h"
 
 #ifdef __APPLE__
 #include <dispatch/dispatch.h>

@@ -1,9 +1,9 @@
 /**
- * Copyright or © or Copr. IETR/INSA - Rennes (2014 - 2018) :
+ * Copyright or © or Copr. IETR/INSA - Rennes (2014 - 2019) :
  *
- * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017 - 2018)
+ * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017 - 2019)
  * Clément Guy <clement.guy@insa-rennes.fr> (2014 - 2015)
- * Florian Arrestier <florian.arrestier@insa-rennes.fr> (2018)
+ * Florian Arrestier <florian.arrestier@insa-rennes.fr> (2018 - 2019)
  * Hugo Miomandre <hugo.miomandre@insa-rennes.fr> (2017)
  * Julien Hascoet <jhascoet@kalray.eu> (2017)
  * Julien Heulot <julien.heulot@insa-rennes.fr> (2015 - 2017)
@@ -51,6 +51,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.logging.Level;
+import org.eclipse.emf.common.util.EList;
 import org.preesm.codegen.xtend.spider.utils.SpiderNameGenerator;
 import org.preesm.codegen.xtend.spider.utils.SpiderTypeConverter;
 import org.preesm.codegen.xtend.spider.utils.SpiderTypeConverter.PiSDFSubType;
@@ -266,9 +267,9 @@ public class SpiderCodegenVisitor extends PiMMSwitch<Boolean> {
     final StringBuilder parameters_def = new StringBuilder();
     final StringBuilder definition = new StringBuilder();
 
-    prototype.append("PiSDFGraph* ");
+    prototype.append("void ");
     prototype.append(SpiderNameGenerator.getMethodName(pg));
-    prototype.append("(");
+    prototype.append("(PiSDFVertex *" + SpiderNameGenerator.getVertexName(pg));
 
     definition.append(prototype.toString());
 
@@ -278,10 +279,8 @@ public class SpiderCodegenVisitor extends PiMMSwitch<Boolean> {
 
     for (final Parameter p : l) {
       if (p.isLocallyStatic() && !p.isDependent() && !p.isConfigurationInterface()) {
-        if (parameters_proto.length() > 0) {
-          parameters_proto.append(", ");
-          parameters_def.append(", ");
-        }
+        parameters_proto.append(", ");
+        parameters_def.append(", ");
         parameters_proto.append("Param " + p.getName() + " = " + p.getValueExpression().evaluate());
         parameters_def.append("Param " + p.getName());
       }
@@ -333,6 +332,10 @@ public class SpiderCodegenVisitor extends PiMMSwitch<Boolean> {
         + "\t\t/*OutputIf*/ " + nOutif + ",\n" + "\t\t/*Config*/   " + nConfig + ",\n" + "\t\t/*Body*/     " + nBody
         + ");\n");
 
+    // Linking subgraph to its parent graph
+    append("\n\t/* Linking subgraph to its parent */\n");
+    append("\tSpider::addSubGraph(" + SpiderNameGenerator.getVertexName(pg) + ", graph);\n");
+
     // Generating parameters
     append("\n\t/* Parameters */\n");
 
@@ -350,13 +353,12 @@ public class SpiderCodegenVisitor extends PiMMSwitch<Boolean> {
       doSwitch(v);
     }
     // Generating edges
-    append("\n\t/* Edges */\n");
+    append("\n\t/* Edges */");
     for (final Fifo f : pg.getFifos()) {
       doSwitch(f);
     }
 
-    append("\treturn graph;");
-    append("\n}\n");
+    append("}\n");
   }
 
   private String generateConfigVertex(final AbstractActor aa) {
@@ -370,7 +372,7 @@ public class SpiderCodegenVisitor extends PiMMSwitch<Boolean> {
     }
 
     // Call the addVertex method on the current graph
-    append("\tPiSDFVertex* " + vertexName);
+    append("\tPiSDFVertex *" + vertexName);
     append(" = Spider::addConfigVertex(\n");
     append("\t\t/*Graph*/   graph,\n");
     append("\t\t/*Name*/    \"" + aa.getName() + "\",\n");
@@ -446,8 +448,6 @@ public class SpiderCodegenVisitor extends PiMMSwitch<Boolean> {
 
     if ((aa instanceof Actor) && ((Actor) aa).isConfigurationActor()) {
       vertexName = generateConfigVertex(aa);
-    } else if (aa instanceof PiGraph) {
-      vertexName = generateHierarchicalVertex(aa);
     } else if (aa.getName() == "end") {
       caseEndActor(aa);
       return true;
@@ -456,17 +456,23 @@ public class SpiderCodegenVisitor extends PiMMSwitch<Boolean> {
     }
 
     // Add connections to parameters if necessary
+    if (!aa.getConfigOutputPorts().isEmpty()) {
+      append("\t/* Adding output parameters */\n");
+    }
     for (final ConfigOutputPort cop : aa.getConfigOutputPorts()) {
       for (final Dependency d : cop.getOutgoingDependencies()) {
         append("\tSpider::addOutParam(");
         append(vertexName + ", ");
-        append(this.portMap.get(cop) + ", ");
+        append(aa.getConfigOutputPorts().indexOf(cop) + ", ");
         append(SpiderNameGenerator.getParameterName((Parameter) d.getGetter().eContainer()));
         append(");\n");
       }
     }
 
     // Add connections from parameters if necessary
+    if (!aa.getConfigInputPorts().isEmpty()) {
+      append("\t/* Adding input parameters */\n");
+    }
     for (final ConfigInputPort cip : aa.getConfigInputPorts()) {
       append("\tSpider::addInParam(");
       append(vertexName + ", ");
@@ -475,9 +481,16 @@ public class SpiderCodegenVisitor extends PiMMSwitch<Boolean> {
       append(");\n");
     }
 
+    // Adding definition of subgraph (if any)
+    if (aa instanceof PiGraph) {
+      append("\t/* Generating subgraph definition */\n");
+      append("\t" + SpiderNameGenerator.getMethodName((PiGraph) aa) + "(" + vertexName + ");\n");
+    }
+
     if ((aa instanceof Actor) && !(aa instanceof PiGraph)) {
       if (this.constraints.get(aa) != null) {
         // Check if the actor is enabled on all PEs.
+        append("\t/* Setting execution constraints */\n");
         final Set<String> peNames = this.constraints.get(aa);
         if (peNames.containsAll(this.callerSpiderCodegen.getCoreIds().keySet())) {
           append("\tSpider::isExecutableOnAllPE(");
@@ -498,6 +511,7 @@ public class SpiderCodegenVisitor extends PiMMSwitch<Boolean> {
 
     final Map<String, String> aaTimings = this.timings.get(aa);
     if (aaTimings != null) {
+      append("\t/* Setting timing on corresponding PEs */\n");
       for (final String coreType : aaTimings.keySet()) {
         append("\tSpider::setTimingOnType(");
         append(vertexName + ", ");
@@ -569,7 +583,7 @@ public class SpiderCodegenVisitor extends PiMMSwitch<Boolean> {
   @Override
   public Boolean caseFifo(final Fifo f) {
     // Call the addEdge method on the current graph
-    append("\tSpider::connect(\n");
+    append("\n\tSpider::connect(\n");
     append("\t\t/*Graph*/   graph,\n");
 
     final DataOutputPort srcPort = f.getSourcePort();
@@ -618,9 +632,9 @@ public class SpiderCodegenVisitor extends PiMMSwitch<Boolean> {
 
     if (f.getDelay() != null) {
       // append("\t\t/*Delay*/ \"(" + delay + ")*sizeof(" + f.getType() + ")\",0);\n\n");
-      append("\t\t/*Delay*/ \"(" + delay + ") * " + typeSize + "\", 0, 0, 0, true);\n\n");
+      append("\t\t/*Delay*/ \"(" + delay + ") * " + typeSize + "\", nullptr, nullptr, nullptr, true);\n");
     } else {
-      append("\t\t/*Delay*/ \"0\", 0, 0, 0, false);\n\n");
+      append("\t\t/*Delay*/ \"0\", nullptr, nullptr, nullptr, false);\n");
     }
     return true;
   }
@@ -632,30 +646,77 @@ public class SpiderCodegenVisitor extends PiMMSwitch<Boolean> {
   public Boolean caseParameter(final Parameter p) {
     final String paramName = SpiderNameGenerator.getParameterName(p);
 
-    if (!p.isLocallyStatic()) {
-      if ((p.getConfigInputPorts().size() == 1)
-          && !(p.getConfigInputPorts().get(0).getIncomingDependency().getSetter() instanceof Parameter)) {
-        /* DYNAMIC */
-        append(
-            "\tPiSDFParam *" + paramName + " = Spider::addDynamicParam(graph, " + "\"" + p.getName() + "\"" + ");\n");
+    final EList<ConfigInputPort> configInputPorts = p.getConfigInputPorts();
+
+    append("\tPiSDFParam *" + paramName + " = Spider::");
+    if (p.isConfigurable()) {
+      /* DYNAMIC */
+      append("addDynamicParam(graph, " + "\"" + p.getName() + "\");\n");
+    } else if (p.isDependent()) {
+      if (p.isLocallyStatic()) {
+        /* STATIC DEPENDANT */
+        append("addStaticDependentParam(graph, " + "\"" + p.getName() + "\", \""
+            + p.getValueExpression().getExpressionAsString() + "\", {");
       } else {
         /* DYNAMIC DEPENDANT */
-        append("\tPiSDFParam *" + paramName + " = Spider::addDynamicDependentParam(graph, " + "\"" + p.getName()
-            + "\", \"" + p.getValueExpression().getExpressionAsString() + "\");\n");
+        append("addDynamicDependentParam(graph, " + "\"" + p.getName() + "\", \""
+            + p.getValueExpression().getExpressionAsString() + "\", {");
       }
-    } else if (p.isConfigurationInterface() && (((ConfigInputInterface) p).getGraphPort() instanceof ConfigInputPort)) {
-      /* HERITED */
-      append("\tPiSDFParam *" + paramName + " = Spider::addHeritedParam(graph, " + "\"" + p.getName() + "\", "
-          + this.portMap.get(((ConfigInputInterface) p).getGraphPort()) + ");\n");
-    } else if (p.getConfigInputPorts().isEmpty()) {
-      /* STATIC */
-      append("\tPiSDFParam *" + paramName + " = Spider::addStaticParam(graph, " + "\"" + p.getName() + "\", "
-          + p.getName() + ");\n");
+      // Adding the different parameter dependencies
+      for (final ConfigInputPort cip : configInputPorts) {
+        final Parameter setter = (Parameter) cip.getIncomingDependency().getSetter();
+        append(SpiderNameGenerator.getParameterName(setter));
+        // Adding trailing comma
+        if (configInputPorts.indexOf(cip) != configInputPorts.size() - 1) {
+          append(", ");
+        }
+      }
+      append("});\n");
     } else {
-      /* STATIC DEPENDANT */
-      append("\tPiSDFParam *" + paramName + " = Spider::addStaticDependentParam(graph, " + "\"" + p.getName() + "\", \""
-          + p.getValueExpression().getExpressionAsString() + "\");\n");
+      if (p.isConfigurationInterface()) {
+        /* INHERITED */
+        append("addInheritedParam(graph, " + "\"" + p.getName() + "\", "
+            + this.portMap.get(((ConfigInputInterface) p).getGraphPort()) + ");\n");
+      } else {
+        /* STATIC */
+        append("addStaticParam(graph, " + "\"" + p.getName() + "\", " + p.getName() + ");\n");
+      }
     }
+
+    // if (!p.isLocallyStatic()) {
+    // if ((configInputPorts.size() == 1)
+    // && !(configInputPorts.get(0).getIncomingDependency().getSetter() instanceof Parameter)) {
+    // /* DYNAMIC */
+    // append("\tPiSDFParam *" + paramName + " = Spider::addDynamicParam(graph, " + "\"" + p.getName() + "\");\n");
+    // } else {
+    // /* DYNAMIC DEPENDANT */
+    // append("\tPiSDFParam *" + paramName + " = Spider::addDynamicDependentParam(graph, " + "\"" + p.getName()
+    // + "\", \"" + p.getValueExpression().getExpressionAsString() + "\"" + ");\n");
+    // }
+    // } else if (p.isConfigurationInterface() && (((ConfigInputInterface) p).getGraphPort() instanceof
+    // ConfigInputPort)) {
+    // /* HERITED */
+    // append("\tPiSDFParam *" + paramName + " = Spider::addInheritedParam(graph, " + "\"" + p.getName() + "\", "
+    // + this.portMap.get(((ConfigInputInterface) p).getGraphPort()) + ");\n");
+    // } else if (configInputPorts.isEmpty()) {
+    // /* STATIC */
+    // append("\tPiSDFParam *" + paramName + " = Spider::addStaticParam(graph, " + "\"" + p.getName() + "\", "
+    // + p.getName() + ");\n");
+    // } else {
+    // /* STATIC DEPENDANT */
+    // append("\tPiSDFParam *" + paramName + " = Spider::addStaticDependentParam(graph, " + "\"" + p.getName() + "\",
+    // \""
+    // + p.getValueExpression().getExpressionAsString() + "\", {");
+    // for (final ConfigInputPort cip : configInputPorts) {
+    // final Parameter setter = (Parameter) cip.getIncomingDependency().getSetter();
+    // append(SpiderNameGenerator.getParameterName(setter));
+    // // Adding trailing comma
+    // if (configInputPorts.indexOf(cip) != configInputPorts.size() - 1) {
+    // append(", ");
+    // }
+    // }
+    // append("});\n");
+    // }
     return true;
   }
 
@@ -664,6 +725,7 @@ public class SpiderCodegenVisitor extends PiMMSwitch<Boolean> {
     append("\tPiSDFVertex* " + SpiderNameGenerator.getVertexName(ba));
     append(" = Spider::addSpecialVertex(\n");
     append("\t\t/*Graph*/   graph,\n");
+    append("\t\t/*Name*/    \"" + ba.getName() + "\",\n");
     append("\t\t/*Type*/    " + "PISDF_SUBTYPE_BROADCAST" + ",\n");
     append("\t\t/*InData*/  " + ba.getDataInputPorts().size() + ",\n");
     append("\t\t/*OutData*/ " + ba.getDataOutputPorts().size() + ",\n");
@@ -688,6 +750,7 @@ public class SpiderCodegenVisitor extends PiMMSwitch<Boolean> {
     append("\tPiSDFVertex* " + SpiderNameGenerator.getVertexName(aa));
     append(" = Spider::addSpecialVertex(\n");
     append("\t\t/*Graph*/   graph,\n");
+    append("\t\t/*Name*/    \"" + aa.getName() + "\",\n");
     append("\t\t/*Type*/    " + "PISDF_SUBTYPE_END" + ",\n");
     append("\t\t/*InData*/  " + aa.getDataInputPorts().size() + ",\n");
     append("\t\t/*OutData*/ " + aa.getDataOutputPorts().size() + ",\n");
@@ -710,6 +773,7 @@ public class SpiderCodegenVisitor extends PiMMSwitch<Boolean> {
     append("\tPiSDFVertex* " + SpiderNameGenerator.getVertexName(ja));
     append(" = Spider::addSpecialVertex(\n");
     append("\t\t/*Graph*/   graph,\n");
+    append("\t\t/*Name*/    \"" + ja.getName() + "\",\n");
     append("\t\t/*Type*/    " + "PISDF_SUBTYPE_JOIN" + ",\n");
     append("\t\t/*InData*/  " + ja.getDataInputPorts().size() + ",\n");
     append("\t\t/*OutData*/ " + ja.getDataOutputPorts().size() + ",\n");
@@ -732,6 +796,7 @@ public class SpiderCodegenVisitor extends PiMMSwitch<Boolean> {
     append("\tPiSDFVertex* " + SpiderNameGenerator.getVertexName(fa));
     append(" = Spider::addSpecialVertex(\n");
     append("\t\t/*Graph*/   graph,\n");
+    append("\t\t/*Name*/    \"" + fa.getName() + "\",\n");
     append("\t\t/*Type*/    " + "PISDF_SUBTYPE_FORK" + ",\n");
     append("\t\t/*InData*/  " + fa.getDataInputPorts().size() + ",\n");
     append("\t\t/*OutData*/ " + fa.getDataOutputPorts().size() + ",\n");
@@ -754,6 +819,7 @@ public class SpiderCodegenVisitor extends PiMMSwitch<Boolean> {
     append("\tPiSDFVertex* " + SpiderNameGenerator.getVertexName(rba));
     append(" = Spider::addSpecialVertex(\n");
     append("\t\t/*Graph*/   graph,\n");
+    append("\t\t/*Name*/    \"" + rba.getName() + "\",\n");
     append("\t\t/*Type*/    " + "PISDF_SUBTYPE_ROUNDBUFFER" + ",\n");
     append("\t\t/*InData*/  " + rba.getDataInputPorts().size() + ",\n");
     append("\t\t/*OutData*/ " + rba.getDataOutputPorts().size() + ",\n");

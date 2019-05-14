@@ -1,10 +1,11 @@
 /**
- * Copyright or © or Copr. IETR/INSA - Rennes (2013 - 2018) :
+ * Copyright or © or Copr. IETR/INSA - Rennes (2013 - 2019) :
  *
  * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017 - 2018)
- * Daniel Madroñal <daniel.madronal@upm.es> (2018)
+ * Daniel Madroñal <daniel.madronal@upm.es> (2018 - 2019)
  * Julien Hascoet <jhascoet@kalray.eu> (2016 - 2017)
  * Karol Desnos <karol.desnos@insa-rennes.fr> (2013 - 2017)
+ * Leonardo Suriano <leonardo.suriano@upm.es> (2019)
  *
  * This software is a computer program whose purpose is to help prototyping
  * parallel applications using dataflow formalism.
@@ -50,16 +51,24 @@ import org.preesm.codegen.model.ConstantString
 import org.preesm.codegen.model.CoreBlock
 import org.preesm.codegen.model.FifoCall
 import org.preesm.codegen.model.FiniteLoopBlock
+import org.preesm.codegen.model.FreeDataTransferBuffer
+import org.preesm.codegen.model.FpgaLoadAction
 import org.preesm.codegen.model.FunctionCall
 import org.preesm.codegen.model.IntVar
+import org.preesm.codegen.model.GlobalBufferDeclaration
 import org.preesm.codegen.model.LoopBlock
 import org.preesm.codegen.model.NullBuffer
+import org.preesm.codegen.model.OutputDataTransfer
 import org.preesm.codegen.model.PapifyAction
+import org.preesm.codegen.model.DataTransferAction
+import org.preesm.codegen.model.RegisterSetUpAction
 import org.preesm.codegen.model.SharedMemoryCommunication
 import org.preesm.codegen.model.SpecialCall
 import org.preesm.codegen.model.SubBuffer
 import org.preesm.codegen.model.Variable
 import org.preesm.codegen.printer.CodegenAbstractPrinter
+import org.preesm.codegen.model.DistributedMemoryCommunication
+import org.preesm.codegen.model.PapifyFunctionCall
 
 /**
  * This {@link DevelopperPrinter} is a dummy implementation of the
@@ -113,8 +122,6 @@ class DevelopperPrinter extends CodegenAbstractPrinter {
 
 	override printConstant(Constant constant) '''<Constant>'''
 
-	override printPapifyAction(PapifyAction action) '''<PapifyAction>'''
-
 	override printConstantDeclaration(Constant constant) '''<Constant_Declaration>'''
 
 	override printConstantDefinition(Constant constant) '''<Consant_Definition>'''
@@ -151,6 +158,8 @@ class DevelopperPrinter extends CodegenAbstractPrinter {
 
 	override printFunctionCall(FunctionCall functionCall) '''<Function_Call>'''
 
+	override printPapifyFunctionCall(PapifyFunctionCall papifyFunctionCall) '''<Papify_Function_Call>'''
+
 	override printJoin(SpecialCall call) '''<Join>'''
 
 	override printLoopBlockFooter(LoopBlock block) '''<Loop_Block_Foot>'''
@@ -171,6 +180,8 @@ class DevelopperPrinter extends CodegenAbstractPrinter {
 
 	override printSharedMemoryCommunication(SharedMemoryCommunication communication) '''<Shared_Memory_Communication>'''
 
+	override printDistributedMemoryCommunication(DistributedMemoryCommunication communication) '''<Distributed_Memory_Communication>'''
+
 	override printSpecialCall(SpecialCall specialCall) '''<Special_Call>'''
 
 	override printSubBuffer(SubBuffer subBuffer) '''<SubBuffer>'''
@@ -190,5 +201,21 @@ class DevelopperPrinter extends CodegenAbstractPrinter {
 	override printBufferIteratorDeclaration(BufferIterator bufferIterator) '''<BufferIterator_Declaration>'''
 
 	override printBufferIteratorDefinition(BufferIterator bufferIterator) '''<BufferIterator_Definition>'''
+	
+	override printDataTansfer(DataTransferAction action) '''<Data_Transfer>'''
+	
+	override printRegisterSetUp(RegisterSetUpAction action) '''<Register_SetUp>'''
+	
+	override printFpgaLoad(FpgaLoadAction action) '''<Fpga_Load>'''
+	
+	override printFreeDataTransferBuffer(FreeDataTransferBuffer action) '''<Free_Buffer_Data_transfer>'''
 
+	override printGlobalBufferDeclaration(GlobalBufferDeclaration action) '''<Global_Buffer_Declaration>'''
+	
+	override printOutputDataTransfer(OutputDataTransfer action) '''<Output_Data_Transfer>'''
+	
+	override printPapifyActionDefinition(PapifyAction action) '''<Papify_Action_Definition>'''
+	
+	override printPapifyActionParam(PapifyAction action) '''<Papify_Action_Param>'''
+	
 }

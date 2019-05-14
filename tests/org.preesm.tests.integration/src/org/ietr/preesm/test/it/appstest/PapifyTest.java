@@ -1,7 +1,8 @@
 /**
- * Copyright or © or Copr. IETR/INSA - Rennes (2017 - 2018) :
+ * Copyright or © or Copr. IETR/INSA - Rennes (2017 - 2019) :
  *
  * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017 - 2018)
+ * Daniel Madroñal <daniel.madronal@upm.es> (2019)
  *
  * This software is a computer program whose purpose is to help prototyping
  * parallel applications using dataflow formalism.
@@ -59,7 +60,8 @@ import org.junit.runners.Parameterized.Parameters;
 @RunWith(Parameterized.class)
 public class PapifyTest {
 
-  static final String[] scenarios = new String[] { "1core.scenario", "2core.scenario", "4core.scenario" };
+  static final String[] scenarios = new String[] { "1core.scenario", "2core.scenario", "4core.scenario",
+      "1corePapify.scenario", "2corePapify.scenario", "4corePapify.scenario" };
   static final String[] workflows = new String[] { "Codegen.workflow" };
 
   static final String projectName = "org.ietr.preesm.sobel_parallel";
@@ -90,7 +92,7 @@ public class PapifyTest {
   }
 
   @Test
-  public void testLargeFFT11() throws IOException, CoreException {
+  public void testPapify() throws IOException, CoreException {
     final String workflowFilePathStr = "/Workflows/" + workflow;
     final String scenarioFilePathStr = "/Scenarios/" + scenario;
     final boolean success = WorkflowRunner.runWorkFlow(projectName, workflowFilePathStr, scenarioFilePathStr);

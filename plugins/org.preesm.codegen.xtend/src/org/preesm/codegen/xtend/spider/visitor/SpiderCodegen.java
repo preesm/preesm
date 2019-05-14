@@ -1,9 +1,10 @@
 /**
- * Copyright or © or Copr. IETR/INSA - Rennes (2014 - 2018) :
+ * Copyright or © or Copr. IETR/INSA - Rennes (2014 - 2019) :
  *
  * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017 - 2018)
  * Clément Guy <clement.guy@insa-rennes.fr> (2014 - 2015)
  * Daniel Madroñal <daniel.madronal@upm.es> (2018)
+ * Florian Arrestier <florian.arrestier@insa-rennes.fr> (2018 - 2019)
  * Hugo Miomandre <hugo.miomandre@insa-rennes.fr> (2017)
  * Julien Heulot <julien.heulot@insa-rennes.fr> (2015 - 2017)
  * Karol Desnos <karol.desnos@insa-rennes.fr> (2017)
@@ -770,10 +771,19 @@ public class SpiderCodegen {
     append("\tPiSDFGraph* topGraph = Spider::createGraph(\n" + "\t\t/*Edges*/    0,\n" + "\t\t/*Params*/   0,\n"
         + "\t\t/*InputIf*/  0,\n" + "\t\t/*OutputIf*/ 0,\n" + "\t\t/*Config*/   0,\n" + "\t\t/*Body*/     1);\n\n");
 
-    append("\tSpider::addHierVertex(\n" + "\t\t/*Graph*/    topGraph,\n" + "\t\t/*Name*/     \"top\",\n"
-        + "\t\t/*Graph*/    " + sgName + "(" + params.toString() + "),\n" + "\t\t/*InputIf*/  0,\n"
-        + "\t\t/*OutputIf*/ 0,\n" + "\t\t/*Params*/   0);\n\n");
+    append("\tPiSDFVertex* topVertex");
+    append(" = Spider::addBodyVertex(\n");
+    append("\t\t/*Graph*/   topGraph,\n");
+    append("\t\t/*Name*/    \"top\",\n");
+    append("\t\t/*FctId*/   -1,\n");
+    append("\t\t/*InData*/   0,\n");
+    append("\t\t/*OutData*/  0,\n");
+    append("\t\t/*InParam*/  0);\n");
 
+    append("\n\t/* Top graph definition */\n");
+    append("\t" + sgName + "(topVertex, " + params.toString() + ");\n");
+
+    append("\n\t/* Setting main application graph */\n");
     append("\tSpider::setGraph(topGraph);\n");
     append("}\n");
   }

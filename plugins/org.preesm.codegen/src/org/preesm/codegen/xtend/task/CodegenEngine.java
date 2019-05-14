@@ -6,6 +6,7 @@
  * Julien Hascoet <jhascoet@kalray.eu> (2016)
  * Julien Heulot <julien.heulot@insa-rennes.fr> (2015)
  * Karol Desnos <karol.desnos@insa-rennes.fr> (2013)
+ * Leonardo Suriano <leonardo.suriano@upm.es> (2019)
  * Maxime Pelcat <maxime.pelcat@insa-rennes.fr> (2013)
  *
  * This software is a computer program whose purpose is to help prototyping
@@ -245,6 +246,7 @@ public class CodegenEngine {
       CodegenAbstractPrinter printer = null;
       try {
         printer = (CodegenAbstractPrinter) printerAndBlocks.getKey().createExecutableExtension("class");
+        //PreesmLogger.getLogger().info("[LEO]" + extension + " ---> The printer is " + printer.toString());
       } catch (final CoreException e) {
         throw new PreesmRuntimeException(e.getMessage(), e);
       }
@@ -286,6 +288,7 @@ public class CodegenEngine {
             final String pes = element.getName();
             if (pes.endsWith(extension)) {
               // and deletes
+              // PreesmLogger.getLogger().info("[LEO] deleting " + pes);
               element.delete();
             }
           }
@@ -318,6 +321,7 @@ public class CodegenEngine {
       for (final Block b : printerAndBlocks.getValue()) {
         final String fileContentString = printer.postProcessing(printer.doSwitch(b)).toString();
         final String fileName = b.getName() + extension;
+        //PreesmLogger.getLogger().info("[LEO] new file:  " + fileName);
         print(fileName, fileContentString);
       }
 

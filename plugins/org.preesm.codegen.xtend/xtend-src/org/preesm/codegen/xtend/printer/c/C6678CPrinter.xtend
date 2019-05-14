@@ -1,7 +1,7 @@
 /**
- * Copyright or © or Copr. IETR/INSA - Rennes (2013 - 2018) :
+ * Copyright or © or Copr. IETR/INSA - Rennes (2013 - 2019) :
  *
- * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017 - 2018)
+ * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017 - 2019)
  * Karol Desnos <karol.desnos@insa-rennes.fr> (2013 - 2017)
  *
  * This software is a computer program whose purpose is to help prototyping
@@ -114,17 +114,27 @@ class C6678CPrinter extends CPrinter {
 	override printCoreInitBlockHeader(CallBlock callBlock) '''
 	void «(callBlock.eContainer as CoreBlock).name.toLowerCase»(void){
 		// Initialisation(s)
-		communicationInit();
-
-	'''
+		communicationInit();«"\n\n"»
+		'''
 
 	override printCoreLoopBlockHeader(LoopBlock block2) '''
 
 		«"\t"»// Begin the execution loop
 			while(1){
-				busy_barrier();
+				busy_barrier();«"\n\n"»
+				'''
 
-	'''
+	override printCoreLoopBlockFooter(LoopBlock block2) '''
+			}
+		}
+
+		«IF block2.codeElts.empty»
+		// This call may inform the compiler that the main loop of the thread does not call any function.
+		void emptyLoop_«(block2.eContainer as CoreBlock).name»(){
+
+		}
+		«ENDIF»
+		'''
 
 	override printFifoCall(FifoCall fifoCall) '''
 		«IF fifoCall.operation == FifoOperation::POP»

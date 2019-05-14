@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<scenario>
+    <files>
+        <algorithm url="/org.preesm.tests.testHardware/Algo/matrix_mul.pi"/>
+        <architecture url="/org.preesm.tests.testHardware/Archi/HardwareMultipleSlots.slam"/>
+        <codegenDirectory url="/org.preesm.tests.testHardware/Code/generated"/>
+    </files>
+    <constraints excelUrl="">
+        <constraintGroup>
+            <operator name="Core0"/>
+            <task name="matrix_mul/matmul"/>
+            <task name="matrix_mul/matrix_tiling_right"/>
+            <task name="matrix_mul/accumulator"/>
+            <task name="matrix_mul/Verification"/>
+            <task name="matrix_mul/matrix_tiling_left"/>
+            <task name="matrix_mul/matrix_generator_0"/>
+            <task name="matrix_mul/matrix_generator_1"/>
+            <task name="matrix_mul"/>
+        </constraintGroup>
+        <constraintGroup>
+            <operator name="Core1"/>
+            <task name="matrix_mul/matmul"/>
+            <task name="matrix_mul/matrix_tiling_right"/>
+            <task name="matrix_mul/accumulator"/>
+            <task name="matrix_mul/Verification"/>
+            <task name="matrix_mul/matrix_tiling_left"/>
+            <task name="matrix_mul/matrix_generator_0"/>
+            <task name="matrix_mul/matrix_generator_1"/>
+            <task name="matrix_mul"/>
+        </constraintGroup>
+        <constraintGroup>
+            <operator name="Core2"/>
+            <task name="matrix_mul/matmul"/>
+        </constraintGroup>
+        <constraintGroup>
+            <operator name="Core3"/>
+            <task name="matrix_mul/matmul"/>
+        </constraintGroup>
+        <constraintGroup>
+            <operator name="Core4"/>
+            <task name="matrix_mul/matmul"/>
+        </constraintGroup>
+        <constraintGroup>
+            <operator name="Core5"/>
+            <task name="matrix_mul/matmul"/>
+        </constraintGroup>
+    </constraints>
+    <relativeconstraints excelUrl=""/>
+    <timings excelUrl="">
+        <memcpyspeed opname="x86" setuptime="1" timeperunit="1.0"/>
+        <memcpyspeed opname="Hardware" setuptime="1" timeperunit="1.0"/>
+    </timings>
+    <simuParams>
+        <mainCore>Core0</mainCore>
+        <mainComNode>shared_mem</mainComNode>
+        <averageDataSize>1000</averageDataSize>
+        <dataTypes>
+            <dataType name="int" size="4"/>
+        </dataTypes>
+        <specialVertexOperators>
+            <specialVertexOperator path="Core0"/>
+            <specialVertexOperator path="Core1"/>
+        </specialVertexOperators>
+        <numberOfTopExecutions>1</numberOfTopExecutions>
+    </simuParams>
+    <parameterValues/>
+    <papifyConfigs xmlUrl=""/>
+</scenario>

@@ -206,7 +206,9 @@ echo "Update task reference"
 
 git clone git@github.com:preesm/preesm.github.io.git -b master site
 
-cat > site/_docs/05-workflow-tasks-ref.md << EOF
+TASK_REF_FILE=site/_docs/01-workflow-tasks-ref.md
+
+cat > ${TASK_REF_FILE} << EOF
 ---
 title: "Workflow Tasks Reference"
 permalink: /docs/workflowtasksref/
@@ -218,8 +220,8 @@ _This page has been generated. Last update : ${TODAY_DATE}; for Preesm version $
 This page references the available workflow tasks.
 
 EOF
-echo -e "\n\n\n" >> site/_docs/05-workflow-tasks-ref.md
-./releng/org.preesm.product/target/products/org.preesm.product/linux/gtk/x86_64/eclipse  --launcher.suppressErrors -nosplash -consolelog -application org.preesm.cli.docgen -mdd site/_docs/05-workflow-tasks-ref.md
+echo -e "\n\n\n" >> ${TASK_REF_FILE}
+./releng/org.preesm.product/target/products/org.preesm.product/linux/gtk/x86_64/eclipse  --launcher.suppressErrors -nosplash -consolelog -application org.preesm.cli.docgen -mdd ${TASK_REF_FILE}
 
 (cd site && git add -A && git commit -m "(TaskRef) Update to match version ${NEW_VERSION}" && git push)
 rm -rf site

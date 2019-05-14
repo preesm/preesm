@@ -1,7 +1,9 @@
 /**
- * Copyright or © or Copr. IETR/INSA - Rennes (2018) :
+ * Copyright or © or Copr. IETR/INSA - Rennes (2018 - 2019) :
  *
  * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2018)
+ * Daniel Madroñal <daniel.madronal@upm.es> (2019)
+ * Leonardo Suriano <leonardo.suriano@upm.es> (2019)
  *
  * This software is a computer program whose purpose is to help prototyping
  * parallel applications using dataflow formalism.
@@ -46,13 +48,21 @@ import org.preesm.codegen.model.Communication;
 import org.preesm.codegen.model.Constant;
 import org.preesm.codegen.model.ConstantString;
 import org.preesm.codegen.model.CoreBlock;
+import org.preesm.codegen.model.DataTransferAction;
+import org.preesm.codegen.model.DistributedMemoryCommunication;
 import org.preesm.codegen.model.FifoCall;
 import org.preesm.codegen.model.FiniteLoopBlock;
+import org.preesm.codegen.model.FpgaLoadAction;
+import org.preesm.codegen.model.FreeDataTransferBuffer;
 import org.preesm.codegen.model.FunctionCall;
+import org.preesm.codegen.model.GlobalBufferDeclaration;
 import org.preesm.codegen.model.IntVar;
 import org.preesm.codegen.model.LoopBlock;
 import org.preesm.codegen.model.NullBuffer;
+import org.preesm.codegen.model.OutputDataTransfer;
 import org.preesm.codegen.model.PapifyAction;
+import org.preesm.codegen.model.PapifyFunctionCall;
+import org.preesm.codegen.model.RegisterSetUpAction;
 import org.preesm.codegen.model.SharedMemoryCommunication;
 import org.preesm.codegen.model.SpecialCall;
 import org.preesm.codegen.model.SubBuffer;
@@ -111,10 +121,6 @@ public class DefaultPrinter extends CodegenAbstractPrinter {
   }
 
   public CharSequence printConstant(Constant constant) {
-    return "";
-  }
-
-  public CharSequence printPapifyAction(PapifyAction action) {
     return "";
   }
 
@@ -202,6 +208,10 @@ public class DefaultPrinter extends CodegenAbstractPrinter {
     return "";
   }
 
+  public CharSequence printPapifyFunctionCall(PapifyFunctionCall papifyFunctionCall) {
+    return "";
+  }
+
   public CharSequence printJoin(SpecialCall call) {
     return "";
   }
@@ -242,6 +252,10 @@ public class DefaultPrinter extends CodegenAbstractPrinter {
     return "";
   }
 
+  public CharSequence printDistributedMemoryCommunication(DistributedMemoryCommunication communication) {
+    return "";
+  }
+
   public CharSequence printSpecialCall(SpecialCall specialCall) {
     return "";
   }
@@ -270,4 +284,37 @@ public class DefaultPrinter extends CodegenAbstractPrinter {
     return "";
   }
 
+  public CharSequence printDataTansfer(DataTransferAction action) {
+    return "";
+  }
+
+  public CharSequence printRegisterSetUp(RegisterSetUpAction action) {
+    return "";
+  }
+
+  public CharSequence printFpgaLoad(FpgaLoadAction action) {
+    return "";
+  }
+
+  public CharSequence printFreeDataTransferBuffer(FreeDataTransferBuffer action) {
+    return "";
+  }
+
+  public CharSequence printGlobalBufferDeclaration(GlobalBufferDeclaration action) {
+    return "";
+  }
+
+  public CharSequence printOutputDataTransfer(OutputDataTransfer action) {
+    return "";
+  }
+
+  @Override
+  public CharSequence printPapifyActionDefinition(PapifyAction action) {
+    return "";
+  }
+
+  @Override
+  public CharSequence printPapifyActionParam(PapifyAction action) {
+    return "";
+  }
 }

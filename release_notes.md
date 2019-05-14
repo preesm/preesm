@@ -1,6 +1,35 @@
 PREESM Changelog
 ================
 
+## Release version 3.7.0
+*2019.05.14*
+
+### New Feature
+*  Codegen: enabled the code generation for offloading computation on the FPGA Prgrammable logic (hardware accelerators)
+*  Codegen: core type "Hardware" is allowed
+*  Codegen: multiple parallel Hardware Slots generated succesfully
+*  Codegen: core type "MPPA2IOExplicit" is allowed
+*  Test Integration: added test for Hardware Codegen
+*  Codegen: enabled IO usage on the MPPA code generation
+*  Codegen: enabled the use of DistributedOnly through the use of TwinBuffers for the repeated memory transmissions
+*  Codegen: DistributedOnly memory distribution --> Support from CodeGen for each architecture needs to be done (DistributedMemoryCommunication printer has been included) Issue #134
+*  Codegen: Inter cluster communication supported on the MPPA when DistributedOnly memory distribution is used
+*  PAPIFY: PAPIFY now supports the monitoring of clustered actors
+
+### Changes
+* SpiderCodegen: updated spider codegeneration to follow up changes of spider develop branch.
+* Codegen: Now host/IO/Cluster codes are automatically generated when using MPPA2 code generation.
+* Enable RCPTT tests back (https://bugs.eclipse.org/bugs/show_bug.cgi?id=543731)
+* PAPIFY now is based on its own classes to be printed --> Better support for each type of architecure
+* PAPIFY monitoring can now be enabled/disabled defining/deleting _PREESM_MONITOR_INIT
+
+### Bug fix
+*  Fix #94
+*  Fix #93
+*  Fix #134
+*  Fix #136
+*  Fix PAPIFY bug where only one monitoring configuration was generated
+
 ## Release version 3.6.2
 *2019.04.15*
 

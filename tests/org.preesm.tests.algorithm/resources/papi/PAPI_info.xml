@@ -311,19 +311,19 @@
   <eventset type="PRESET">
   </eventset>
 </component>
-<component index="2" type="Unknown" id="artico3_errors">
+<component index="2" type="Unknown" id="hardware_errors">
   <eventset type="NATIVE">
-    <event index="0" name="artico3_errors:::ARTICO3_ERRORS_ZERO" desc="This is an artico3_errors counter, that always returns 0">
+    <event index="0" name="hardware_errors:::ARTICO3_ERRORS_ZERO" desc="This is an hardware_errors counter, that always returns 0">
     </event>
-    <event index="1" name="artico3_errors:::ARTICO3_ERRORS_CONSTANT" desc="This is an artico3_errors counter, that always returns a constant value of 42">
+    <event index="1" name="hardware_errors:::ARTICO3_ERRORS_CONSTANT" desc="This is an hardware_errors counter, that always returns a constant value of 42">
     </event>
-    <event index="2" name="artico3_errors:::ARTICO3_ERRORS_AUTOINC" desc="This is an artico3_errors counter, that reports a per-thread  auto-incrementing value">
+    <event index="2" name="hardware_errors:::ARTICO3_ERRORS_AUTOINC" desc="This is an hardware_errors counter, that reports a per-thread  auto-incrementing value">
     </event>
-    <event index="3" name="artico3_errors:::ARTICO3_ERRORS_GLOBAL_AUTOINC" desc="This is an artico3_errors counter, that reports a global auto-incrementing value">
+    <event index="3" name="hardware_errors:::ARTICO3_ERRORS_GLOBAL_AUTOINC" desc="This is an hardware_errors counter, that reports a global auto-incrementing value">
     </event>
-    <event index="4" name="artico3_errors:::ARTICO3_ERRORS_SLOT_0" desc="This is an artico3_errors counter, that reports how many errors occurs in the slot 0">
+    <event index="4" name="hardware_errors:::ARTICO3_ERRORS_SLOT_0" desc="This is an hardware_errors counter, that reports how many errors occurs in the slot 0">
     </event>
-    <event index="5" name="artico3_errors:::ARTICO3_CYCLES_SLOT_0" desc="This is an artico3_errors counter, that reports how many clock cycles were necessary to execute a kernel in the slot 0">
+    <event index="5" name="hardware_errors:::ARTICO3_CYCLES_SLOT_0" desc="This is an hardware_errors counter, that reports how many clock cycles were necessary to execute a kernel in the slot 0">
     </event>
   </eventset>
   <eventset type="PRESET">

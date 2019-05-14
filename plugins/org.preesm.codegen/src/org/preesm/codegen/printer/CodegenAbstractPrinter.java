@@ -2,6 +2,8 @@
  * Copyright or © or Copr. IETR/INSA - Rennes (2018 - 2019) :
  *
  * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2018 - 2019)
+ * Daniel Madroñal <daniel.madronal@upm.es> (2019)
+ * Leonardo Suriano <leonardo.suriano@upm.es> (2019)
  *
  * This software is a computer program whose purpose is to help prototyping
  * parallel applications using dataflow formalism.
@@ -52,13 +54,21 @@ import org.preesm.codegen.model.Communication;
 import org.preesm.codegen.model.Constant;
 import org.preesm.codegen.model.ConstantString;
 import org.preesm.codegen.model.CoreBlock;
+import org.preesm.codegen.model.DataTransferAction;
+import org.preesm.codegen.model.DistributedMemoryCommunication;
 import org.preesm.codegen.model.FifoCall;
 import org.preesm.codegen.model.FiniteLoopBlock;
+import org.preesm.codegen.model.FpgaLoadAction;
+import org.preesm.codegen.model.FreeDataTransferBuffer;
 import org.preesm.codegen.model.FunctionCall;
+import org.preesm.codegen.model.GlobalBufferDeclaration;
 import org.preesm.codegen.model.IntVar;
 import org.preesm.codegen.model.LoopBlock;
 import org.preesm.codegen.model.NullBuffer;
+import org.preesm.codegen.model.OutputDataTransfer;
 import org.preesm.codegen.model.PapifyAction;
+import org.preesm.codegen.model.PapifyFunctionCall;
+import org.preesm.codegen.model.RegisterSetUpAction;
 import org.preesm.codegen.model.SharedMemoryCommunication;
 import org.preesm.codegen.model.SpecialCall;
 import org.preesm.codegen.model.SpecialType;
@@ -339,6 +349,11 @@ public abstract class CodegenAbstractPrinter extends CodegenSwitch<CharSequence>
   }
 
   @Override
+  public CharSequence caseDistributedMemoryCommunication(final DistributedMemoryCommunication communication) {
+    return printDistributedMemoryCommunication(communication);
+  }
+
+  @Override
   public CharSequence caseCoreBlock(final CoreBlock coreBlock) {
 
     // The coreBlock is composed of Blocks
@@ -542,7 +557,12 @@ public abstract class CodegenAbstractPrinter extends CodegenSwitch<CharSequence>
 
   @Override
   public CharSequence casePapifyAction(final PapifyAction action) {
-    return printPapifyAction(action);
+    if (this.state.equals(PrinterState.PRINTING_DEFINITIONS)) {
+      return printPapifyActionDefinition(action);
+    } else {
+      return printPapifyActionParam(action);
+    }
+
   }
 
   @Override
@@ -579,6 +599,11 @@ public abstract class CodegenAbstractPrinter extends CodegenSwitch<CharSequence>
   @Override
   public CharSequence caseFunctionCall(final FunctionCall functionCall) {
     return printFunctionCall(functionCall);
+  }
+
+  @Override
+  public CharSequence casePapifyFunctionCall(final PapifyFunctionCall functionCall) {
+    return printPapifyFunctionCall(functionCall);
   }
 
   @Override
@@ -695,6 +720,36 @@ public abstract class CodegenAbstractPrinter extends CodegenSwitch<CharSequence>
     return printBufferIterator(bufferIterator);
   }
 
+  @Override
+  public CharSequence caseDataTransferAction(DataTransferAction object) {
+    return printDataTansfer(object);
+  }
+
+  @Override
+  public CharSequence caseOutputDataTransfer(OutputDataTransfer object) {
+    return printOutputDataTransfer(object);
+  }
+
+  @Override
+  public CharSequence caseRegisterSetUpAction(RegisterSetUpAction object) {
+    return printRegisterSetUp(object);
+  }
+
+  @Override
+  public CharSequence caseFpgaLoadAction(FpgaLoadAction object) {
+    return printFpgaLoad(object);
+  }
+
+  @Override
+  public CharSequence caseFreeDataTransferBuffer(FreeDataTransferBuffer object) {
+    return printFreeDataTransferBuffer(object);
+  }
+
+  @Override
+  public CharSequence caseGlobalBufferDeclaration(GlobalBufferDeclaration object) {
+    return printGlobalBufferDeclaration(object);
+  }
+
   /**
    * Method called to print a {@link SpecialCall} with {@link SpecialCall#getType() type} {@link SpecialType#BROADCAST}.
    * If this method returns <code>null</code>, the result of {@link #printSpecialCall(SpecialCall) } will be used
@@ -774,6 +829,15 @@ public abstract class CodegenAbstractPrinter extends CodegenSwitch<CharSequence>
   public abstract CharSequence printConstant(Constant constant);
 
   /**
+   * Method called to print a {@link PapifyAction} in the {@link CoreBlock#getDefinitions() definition}
+   *
+   * @param action
+   *          the {@link PapifyAction} to print.
+   * @return the printed {@link CharSequence}
+   */
+  public abstract CharSequence printPapifyActionDefinition(PapifyAction action);
+
+  /**
    * Method called to print a {@link PapifyAction} outside the {@link CoreBlock#getDefinitions() definition} or the
    * {@link CoreBlock#getDeclarations() declaration} of a {@link CoreBlock}
    *
@@ -781,7 +845,7 @@ public abstract class CodegenAbstractPrinter extends CodegenSwitch<CharSequence>
    *          the {@link PapifyAction} to print.
    * @return the printed {@link CharSequence}
    */
-  public abstract CharSequence printPapifyAction(PapifyAction action);
+  public abstract CharSequence printPapifyActionParam(PapifyAction action);
 
   /**
    * Method called to print a {@link Constant} within the {@link CoreBlock#getDeclarations() declaration}
@@ -991,6 +1055,15 @@ public abstract class CodegenAbstractPrinter extends CodegenSwitch<CharSequence>
   public abstract CharSequence printFunctionCall(FunctionCall functionCall);
 
   /**
+   * Method called to print a {@link PapifyFunctionCall}.
+   *
+   * @param papifyFunctionCall
+   *          the printed {@link PapifyFunctionCall}.
+   * @return the printed {@link CharSequence}
+   */
+  public abstract CharSequence printPapifyFunctionCall(PapifyFunctionCall papifyFunctionCall);
+
+  /**
    * Method called to print a {@link SpecialCall} with {@link SpecialCall#getType() type} {@link SpecialType#JOIN}. If
    * this method returns <code>null</code>, the result of {@link #printSpecialCall(SpecialCall) } will be used instead
    * (in case the method is called through doSwitch).
@@ -1079,13 +1152,22 @@ public abstract class CodegenAbstractPrinter extends CodegenSwitch<CharSequence>
   public abstract CharSequence printRoundBuffer(SpecialCall call);
 
   /**
-   * ethod called to print a {@link SharedMemoryCommunication}.
+   * Method called to print a {@link SharedMemoryCommunication}.
    *
    * @param communication
    *          the printed {@link SharedMemoryCommunication}.
    * @return the printed {@link CharSequence}
    */
   public abstract CharSequence printSharedMemoryCommunication(SharedMemoryCommunication communication);
+
+  /**
+   * ethod called to print a {@link DistributedMemoryCommunication}.
+   *
+   * @param communication
+   *          the printed {@link DistributedMemoryCommunication}.
+   * @return the printed {@link CharSequence}
+   */
+  public abstract CharSequence printDistributedMemoryCommunication(DistributedMemoryCommunication communication);
 
   /**
    * Method called to print a {@link SpecialCall}.
@@ -1155,4 +1237,64 @@ public abstract class CodegenAbstractPrinter extends CodegenSwitch<CharSequence>
    * @return the printed {@link CharSequence}
    */
   public abstract CharSequence printBufferIteratorDefinition(BufferIterator bufferIterator);
+
+  /**
+   * Method called to print a {@link DataTansferAction} within the {@link CoreBlock#getDefinitions() definition}
+   * {@link LoopBlock} of a {@link CoreBlock}
+   *
+   * @param action
+   *          the {@link DataTransferAction} to print.
+   * @return the printed {@link CharSequence}
+   */
+  public abstract CharSequence printDataTansfer(final DataTransferAction action);
+
+  /**
+   * Method called to print a {@link OutputDataTransfer} within the {@link CoreBlock#getDefinitions() definition}
+   * {@link LoopBlock} of a {@link CoreBlock}
+   *
+   * @param action
+   *          the {@link OutputDataTransfer} to print.
+   * @return the printed {@link CharSequence}
+   */
+  public abstract CharSequence printOutputDataTransfer(final OutputDataTransfer action);
+
+  /**
+   * Method called to print a {@link RegisterSetUpAction} within the {@link CoreBlock#getDefinitions() definition}
+   * {@link LoopBlock} of a {@link CoreBlock}
+   *
+   * @param action
+   *          the {@link RegisterSetUpAction} to print.
+   * @return the printed {@link CharSequence}
+   */
+  public abstract CharSequence printRegisterSetUp(final RegisterSetUpAction action);
+
+  /**
+   * Method called to print a {@link FpgaLoadAction} within the {@link CoreBlock#getDefinitions() definition}
+   * {@link CallBlock} of a {@link CoreBlock}
+   *
+   * @param action
+   *          the {@link FpgaLoadAction} to print.
+   * @return the printed {@link CharSequence}
+   */
+  public abstract CharSequence printFpgaLoad(final FpgaLoadAction action);
+
+  /**
+   * Method called to print a {@link FreeDataTransferBuffer} within the {@link CoreBlock#getDefinitions() definition}
+   * {@link CallBlock} of a {@link CoreBlock}
+   *
+   * @param action
+   *          the {@link FreeDataTransferBuffer} to print.
+   * @return the printed {@link CharSequence}
+   */
+  public abstract CharSequence printFreeDataTransferBuffer(final FreeDataTransferBuffer action);
+
+  /**
+   * Method called to print a {@link GlobalBufferDeclaration} within the {@link InitBlock#getDefinitions() definition}
+   * {@link InitBlock} of a {@link InitBlock}
+   *
+   * @param action
+   *          the {@link GlobalBufferDeclaration} to print.
+   * @return the printed {@link CharSequence}
+   */
+  public abstract CharSequence printGlobalBufferDeclaration(final GlobalBufferDeclaration action);
 }

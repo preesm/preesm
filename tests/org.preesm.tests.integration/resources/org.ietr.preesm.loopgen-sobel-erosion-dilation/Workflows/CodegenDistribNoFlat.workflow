@@ -97,7 +97,7 @@
         pluginId="org.ietr.preesm.memory.script.MemoryScriptTask" taskId="Memory Scripts">
         <dftools:data key="variables">
             <dftools:variable name="Check" value="Thorough"/>
-            <dftools:variable name="Data alignment" value="None"/>
+            <dftools:variable name="Data alignment" value="Fixed:=64"/>
             <dftools:variable name="Log Path" value="log_memoryScripts"/>
             <dftools:variable name="Verbose" value="True"/>
         </dftools:data>

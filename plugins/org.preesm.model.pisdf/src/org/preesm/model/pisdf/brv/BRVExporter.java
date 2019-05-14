@@ -2,7 +2,7 @@
  * Copyright or © or Copr. IETR/INSA - Rennes (2019) :
  *
  * Alexandre Honorat <alexandre.honorat@insa-rennes.fr> (2019)
- * Morvan Antoine <antoine.morvan@insa-rennes.fr> (2019)
+ * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2019)
  *
  * This software is a computer program whose purpose is to help prototyping
  * parallel applications using dataflow formalism.
@@ -121,7 +121,7 @@ public class BRVExporter extends AbstractTaskImplementation {
     final String filePath = graph.getName() + "_stats_brv.xml";
     final File file = new File(parent, filePath);
 
-    generateXML(brv, file);
+    generateXML(graph, brv, file);
 
     Map<String, Object> res = new LinkedHashMap<>();
     res.put(AbstractWorkflowNodeImplementation.KEY_PI_GRAPH, graph);
@@ -140,7 +140,7 @@ public class BRVExporter extends AbstractTaskImplementation {
     return "Computes and exports repetition vector as csv.";
   }
 
-  private static void generateXML(final Map<AbstractVertex, Long> brv, final File file) {
+  private static void generateXML(final PiGraph graph, final Map<AbstractVertex, Long> brv, final File file) {
     final Map<PiGraph, Long> levelRV = new HashMap<>();
     final Map<AbstractVertex, Long> fullRV = new HashMap<>();
 
@@ -165,7 +165,7 @@ public class BRVExporter extends AbstractTaskImplementation {
     Document content = dBuilder.newDocument();
 
     // Generate the stats to write in an xml file
-    generateXMLStats(content, brv, fullRV);
+    generateXMLStats(content, graph.getName(), brv, fullRV);
 
     // Write the file
     TransformerFactory transformerFactory = TransformerFactory.newInstance();
@@ -182,9 +182,11 @@ public class BRVExporter extends AbstractTaskImplementation {
 
   }
 
-  private static void generateXMLStats(Document doc, Map<AbstractVertex, Long> brv, Map<AbstractVertex, Long> fullRV) {
+  private static void generateXMLStats(Document doc, String graphName, Map<AbstractVertex, Long> brv,
+      Map<AbstractVertex, Long> fullRV) {
 
     Element root = doc.createElement("brv");
+    root.setAttribute("graphName", graphName);
     doc.appendChild(root);
 
     for (final Entry<AbstractVertex, Long> en : brv.entrySet()) {

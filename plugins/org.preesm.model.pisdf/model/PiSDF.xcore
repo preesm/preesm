@@ -575,10 +575,15 @@ class DataOutputInterface extends InterfaceActor {
 
 class ConfigInputInterface extends Parameter {
 	refers ConfigInputPort graphPort
+
+	// A ConfigInputInterface gets its value from the parent graph once per execution.
+	// During one iteration, its value does not change, thus it is locally static.
 	op boolean isLocallyStatic() {
-		// a ConfigInputInterface gets its value from the parent graph once per execution
-		// during one iteration, its value does not change, thus is locally static
 		return true
+	}
+
+	op boolean isConfigurable() {
+		return false
 	}
 	op boolean isConfigurationInterface() {
 		return true
@@ -622,10 +627,15 @@ class Parameter extends Vertex, Configurable, ISetter, ExpressionHolder {
 	op Expression getValueExpression() {
 		return getExpression
 	}
+	// a parameter is static if all its setters are static (or it has no setter)
 	op boolean isLocallyStatic() {
-		// a parameter is static if all its setters are static (or it has no setter)
 		return getConfigInputPorts().map[incomingDependency].filterNull.map[setter].filterNull.forall[isLocallyStatic]
 	}
+	// a parameter is said 'configurable' if it has exactly one dependency, coming from a Configuration Actor.
+	op boolean isConfigurable() {
+		return !isLocallyStatic && isDependent && configInputPorts.size == 1 && configInputPorts.get(0).incomingDependency.setter instanceof ConfigOutputPort;
+	}
+	// a parameter is dependent if it has at least one incoming dependency
 	op boolean isDependent() {
 		return !(configInputPorts.empty)
 	}
