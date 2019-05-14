@@ -143,6 +143,7 @@ class MPPA2ExplicitPrinter extends CPrinter {
 		#include <mppa_async.h>
 		#include <pthread.h>
 		#include <semaphore.h>
+		#include <assert.h>
 		#ifndef __nodeos__
 		#include <utask.h>
 		#endif
@@ -236,12 +237,14 @@ class MPPA2ExplicitPrinter extends CPrinter {
 				if(b.name == "Shared"){
 					gets += "void *" + param.name + " = local_buffer+" + local_offset +";\n";
 					gets += "{\n"
-					gets += "	mppa_async_get(local_buffer + " + local_offset + ",\n";
+					gets += "	if(mppa_async_get(local_buffer + " + local_offset + ",\n";
 					gets += "	&shared_segment,\n";
 					//gets += "	" + b.name + " + " + offset + ",\n";
 					gets += "	/* Shared + */ " + offset + ",\n";
 					gets += "	" + param.typeSize * param.size + ",\n";
-					gets += "	NULL);\n";
+					gets += "	NULL) != 0){\n";
+					gets += "		assert(0 && \"mppa_async_get\\n\")\n";
+					gets += "	}\n";
 					gets += "}\n"
 					local_offset += param.typeSize * param.size;
 					//System.out.print("==> " + b.name + " " + param.name + " size " + param.size + " port_name "+ port.getName + "\n");
@@ -275,11 +278,13 @@ class MPPA2ExplicitPrinter extends CPrinter {
 					//System.out.print("===> " + b.name + "\n");
 					if(b.name == "Shared"){
 						puts += "{\n"
-						puts += "	mppa_async_put(local_buffer + " + local_offset + ",\n";
+						puts += "	if(mppa_async_put(local_buffer + " + local_offset + ",\n";
 						puts += "	&shared_segment,\n";
 						puts += "	/* Shared + */" + offset + ",\n";
 						puts += "	" + param.typeSize * param.size + ",\n";
-						puts += "	NULL);\n";
+						puts += "	NULL) != 0){\n";
+						puts += "		assert(0 && \"mppa_async_put\\n\")\n";
+						puts += "		}\n";
 						puts += "	}\n"
 						local_offset += param.typeSize * param.size;
 						//System.out.print("==> " + b.name + " " + param.name + " size " + param.size + " port_name "+ port.getName + "\n");
@@ -323,7 +328,9 @@ class MPPA2ExplicitPrinter extends CPrinter {
 					if(b.name == "Shared"){
 						gets += "	void *" + param.name + " = local_buffer+" + local_offset +";\n";
 						if(port.getName == "INPUT"){ /* we get data from DDR -> cluster only when INPUT */
-							gets += "	mppa_async_get(local_buffer+" + local_offset + ", &shared_segment, /* Shared + */ " + offset + ", " + param.typeSize * param.size + ", NULL);\n";
+							gets += "	if(mppa_async_get(local_buffer+" + local_offset + ", &shared_segment, /* Shared + */ " + offset + ", " + param.typeSize * param.size + ", NULL) != 0){\n";
+							gets += "		assert(0 && \"mppa_async_get\\n\");\n";
+							gets += "	}\n";
 						}
 						local_offset += param.typeSize * param.size;
 						//System.out.print("==> " + b.name + " " + param.name + " size " + param.size + " port_name "+ port.getName + "\n");
@@ -358,7 +365,9 @@ class MPPA2ExplicitPrinter extends CPrinter {
 					//System.out.print("===> " + b.name + "\n");
 					if(b.name == "Shared"){
 						if(port.getName == "OUTPUT"){ /* we put data from cluster -> DDR only when OUTPUT */
-							puts += "	mppa_async_put(local_buffer+" + local_offset + ", &shared_segment, /* Shared + */ " + offset + ", " + param.typeSize * param.size + ", NULL);\n";
+							puts += "	if(mppa_async_put(local_buffer+" + local_offset + ", &shared_segment, /* Shared + */ " + offset + ", " + param.typeSize * param.size + ", NULL) != 0){\n";
+							puts += "		assert(0 && \"mppa_async_put\\n\");\n";
+							puts += "	}\n";
 						}
 						local_offset += param.typeSize * param.size;
 						//System.out.print("==> " + b.name + " " + param.name + " size " + param.size + " port_name "+ port.getName + "\n");
@@ -943,8 +952,7 @@ class MPPA2ExplicitPrinter extends CPrinter {
 			if (__k1_spawn_type() == __MPPA_PCI_SPAWN) {
 				pcie_fd = pcie_open(0);
 					ret = pcie_queue_init(pcie_fd);
-					assert(ret == 0);
-					pcie_register_console(pcie_fd, stdin, stdout);				
+					assert(ret == 0);		
 			}
 		
 			if(mppa_rpc_server_init(	1 /* rm where to run server */, 
@@ -958,7 +966,9 @@ class MPPA2ExplicitPrinter extends CPrinter {
 			if(mppa_remote_server_init(pcie_fd, PREESM_NB_CLUSTERS) != 0){
 				assert(0 && "mppa_remote_server_init\n");
 			}
-			
+			if (mppa_remote_server_enable_scall() != 0){
+				assert(0 && "mppa_remote_server_enable_scall\n");
+			}				
 			if(utask_create(&t, NULL, (void*)mppa_rpc_server_start, NULL) != 0){
 				assert(0 && "utask_create\n");
 			}
@@ -1025,7 +1035,6 @@ class MPPA2ExplicitPrinter extends CPrinter {
 			//pcie_load_io_exec(fd, "ddr_paging");
 		
 			pcie_queue_init(fd);
-			pcie_register_console(fd, stdin, stdout); 
 		
 			int status;
 			pcie_queue_barrier(fd, 0, &status);

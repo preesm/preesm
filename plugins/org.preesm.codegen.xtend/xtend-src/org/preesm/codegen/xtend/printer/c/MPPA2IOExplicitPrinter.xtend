@@ -283,7 +283,6 @@ class MPPA2IOExplicitPrinter extends MPPA2ExplicitPrinter {
 				pcie_fd = pcie_open(0);
 					ret = pcie_queue_init(pcie_fd);
 					assert(ret == 0);
-					pcie_register_console(pcie_fd, stdin, stdout);
 			}
 					
 			if(mppa_rpc_server_init(	1 /* rm where to run server */, 
@@ -297,7 +296,9 @@ class MPPA2IOExplicitPrinter extends MPPA2ExplicitPrinter {
 			if(mppa_remote_server_init(pcie_fd, PREESM_NB_CLUSTERS) != 0){
 				assert(0 && "mppa_remote_server_init\n");
 			}
-			
+			if (mppa_remote_server_enable_scall() != 0){
+				assert(0 && "mppa_remote_server_enable_scall\n");
+			}				
 			if(utask_create(&t, NULL, (void*)mppa_rpc_server_start, NULL) != 0){
 				assert(0 && "utask_create\n");
 			}
@@ -307,18 +308,8 @@ class MPPA2IOExplicitPrinter extends MPPA2ExplicitPrinter {
 				mkdir("papify-output", 0777);
 				event_init();
 				#endif
-			«ENDIF»
-			for( j = 0 ; j < PREESM_NB_CLUSTERS ; j++ ) {
-		
-				char elf_name[30];
-				sprintf(elf_name, "cluster%d_bin", j);
-				id = mppa_power_base_spawn(j, elf_name, NULL, NULL, MPPA_POWER_SHUFFLING_ENABLED);
-				if (id < 0)
-					return -2;
-			}				
-		
+			«ENDIF»			
 			«IF (this.distributedOnly == 0)»
-				mppa_async_segment_t shared_segment;
 				if(mppa_async_segment_create(&shared_segment, SHARED_SEGMENT_ID, (void*)(uintptr_t)Shared, 1024*1024*1024, 0, 0, NULL) != 0){
 					assert(0 && "mppa_async_segment_create\n");
 				}
@@ -332,6 +323,14 @@ class MPPA2IOExplicitPrinter extends MPPA2ExplicitPrinter {
 					«ENDIF»
 				«ENDFOR»	
 			«ENDIF»	
+			for( j = 0 ; j < PREESM_NB_CLUSTERS ; j++ ) {
+		
+				char elf_name[30];
+				sprintf(elf_name, "cluster%d_bin", j);
+				id = mppa_power_base_spawn(j, elf_name, NULL, NULL, MPPA_POWER_SHUFFLING_ENABLED);
+				if (id < 0)
+					return -2;
+			}			
 			// init comm
 			communicationInit();	
 			mppa_rpc_barrier(1, 2);
