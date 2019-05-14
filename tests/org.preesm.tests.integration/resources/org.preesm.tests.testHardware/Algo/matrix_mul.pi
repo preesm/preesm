@@ -1,0 +1,215 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<graphml xmlns="http://graphml.graphdrawing.org/xmlns">
+    <key attr.name="parameters" for="graph" id="parameters"/>
+    <key attr.name="variables" for="graph" id="variables"/>
+    <key attr.name="arguments" for="node" id="arguments"/>
+    <key attr.name="name" attr.type="string" for="graph"/>
+    <key attr.name="graph_desc" attr.type="string" for="node"/>
+    <graph edgedefault="directed">
+        <data key="name">matrix_mul</data>
+        <node expr="2" id="dim_div_factor" kind="param"/>
+        <node expr="n_cols*n_rows" id="matrix_size" kind="param"/>
+        <node expr="128" id="n_cols" kind="param"/>
+        <node expr="n_cols" id="n_rows" kind="param"/>
+        <node expr="n_cols/dim_div_factor" id="tile_dim_size" kind="param"/>
+        <node id="matmul" kind="actor" period="0">
+            <data key="graph_desc">Code/include/Matrix_Mul.h</data>
+            <loop name="matmul">
+                <param direction="IN" isConfig="true"
+                    name="tile_dim_size" type="int"/>
+                <param direction="IN" isConfig="false"
+                    name="matrix_in1" type="int "/>
+                <param direction="IN" isConfig="false"
+                    name="matrix_in2" type="int "/>
+                <param direction="OUT" isConfig="false"
+                    name="matrix_out" type="int "/>
+            </loop>
+            <port kind="cfg_input" name="tile_dim_size"/>
+            <port annotation="NONE"
+                expr="tile_dim_size * tile_dim_size" kind="input" name="matrix_in1"/>
+            <port annotation="NONE"
+                expr="tile_dim_size * tile_dim_size" kind="input" name="matrix_in2"/>
+            <port annotation="NONE"
+                expr="tile_dim_size * tile_dim_size"
+                kind="output" name="matrix_out"/>
+        </node>
+        <node id="matrix_tiling_right" kind="actor" period="0">
+            <data key="graph_desc">Code/include/Matrix_Tiling.h</data>
+            <loop name="matrix_tiling_right">
+                <param direction="IN" isConfig="true"
+                    name="n_cols" type="int"/>
+                <param direction="IN" isConfig="true"
+                    name="n_rows" type="int"/>
+                <param direction="IN" isConfig="true"
+                    name="tile_dim_size" type="int"/>
+                <param direction="IN" isConfig="false"
+                    name="matrix_in" type="int "/>
+                <param direction="OUT" isConfig="false"
+                    name="matrix_out" type="int "/>
+            </loop>
+            <port kind="cfg_input" name="n_cols"/>
+            <port kind="cfg_input" name="n_rows"/>
+            <port kind="cfg_input" name="tile_dim_size"/>
+            <port annotation="NONE" expr="n_cols*n_rows"
+                kind="input" name="matrix_in"/>
+            <port annotation="NONE"
+                expr="(n_cols) * (n_cols)  * (n_cols) /tile_dim_size"
+                kind="output" name="matrix_out"/>
+        </node>
+        <node id="accumulator" kind="actor" period="0">
+            <data key="graph_desc">Code/include/Matrix_Accumulator.h</data>
+            <loop name="matrix_acculmulator">
+                <param direction="IN" isConfig="true"
+                    name="tile_dim_size" type="int"/>
+                <param direction="IN" isConfig="true"
+                    name="n_cols" type="int"/>
+                <param direction="IN" isConfig="true"
+                    name="n_rows" type="int"/>
+                <param direction="IN" isConfig="false"
+                    name="partial" type="int "/>
+                <param direction="OUT" isConfig="false"
+                    name="matrix_out" type="int "/>
+            </loop>
+            <port kind="cfg_input" name="n_cols"/>
+            <port kind="cfg_input" name="n_rows"/>
+            <port kind="cfg_input" name="tile_dim_size"/>
+            <port annotation="NONE"
+                expr="(n_cols) * (n_cols)  * (n_cols) /tile_dim_size"
+                kind="input" name="partial"/>
+            <port annotation="NONE" expr="n_cols*n_rows"
+                kind="output" name="matrix_out"/>
+        </node>
+        <node id="Verification" kind="actor" period="0">
+            <data key="graph_desc">Code/include/Matrix_Verification.h</data>
+            <loop name="matrix_verification">
+                <param direction="IN" isConfig="true"
+                    name="n_rows" type="int"/>
+                <param direction="IN" isConfig="true"
+                    name="n_cols" type="int"/>
+                <param direction="IN" isConfig="false"
+                    name="matrix_hw" type="int "/>
+            </loop>
+            <port kind="cfg_input" name="n_rows"/>
+            <port kind="cfg_input" name="n_cols"/>
+            <port annotation="NONE" expr="n_cols*n_rows"
+                kind="input" name="matrix_hw"/>
+        </node>
+        <node id="matrix_tiling_left" kind="actor" period="0">
+            <data key="graph_desc">Code/include/Matrix_Tiling.h</data>
+            <loop name="matrix_tiling_left">
+                <param direction="IN" isConfig="true"
+                    name="n_cols" type="int"/>
+                <param direction="IN" isConfig="true"
+                    name="n_rows" type="int"/>
+                <param direction="IN" isConfig="true"
+                    name="tile_dim_size" type="int"/>
+                <param direction="IN" isConfig="false"
+                    name="matrix_in" type="int "/>
+                <param direction="OUT" isConfig="false"
+                    name="matrix_out" type="int "/>
+            </loop>
+            <port kind="cfg_input" name="n_cols"/>
+            <port kind="cfg_input" name="n_rows"/>
+            <port kind="cfg_input" name="tile_dim_size"/>
+            <port annotation="NONE" expr="n_cols*n_rows"
+                kind="input" name="matrix_in"/>
+            <port annotation="NONE"
+                expr="(n_cols) * (n_cols)  * (n_cols) /tile_dim_size"
+                kind="output" name="matrix_out"/>
+        </node>
+        <node id="matrix_generator_0" kind="actor" period="0">
+            <data key="graph_desc">Code/include/Matrix_Creator.h</data>
+            <loop name="Matrix_Creator">
+                <param direction="IN" isConfig="true"
+                    name="matrix_size" type="int"/>
+                <param direction="IN" isConfig="true"
+                    name="n_cols" type="int"/>
+                <param direction="IN" isConfig="true"
+                    name="n_rows" type="int"/>
+                <param direction="OUT" isConfig="false"
+                    name="matrix" type="int "/>
+            </loop>
+            <port kind="cfg_input" name="n_cols"/>
+            <port kind="cfg_input" name="n_rows"/>
+            <port kind="cfg_input" name="matrix_size"/>
+            <port annotation="NONE" expr="matrix_size"
+                kind="output" name="matrix"/>
+        </node>
+        <node id="matrix_generator_1" kind="actor" period="0">
+            <data key="graph_desc">Code/include/Matrix_Creator.h</data>
+            <loop name="Matrix_Creator">
+                <param direction="IN" isConfig="true"
+                    name="matrix_size" type="int"/>
+                <param direction="IN" isConfig="true"
+                    name="n_cols" type="int"/>
+                <param direction="IN" isConfig="true"
+                    name="n_rows" type="int"/>
+                <param direction="OUT" isConfig="false"
+                    name="matrix" type="int "/>
+            </loop>
+            <port kind="cfg_input" name="n_cols"/>
+            <port kind="cfg_input" name="n_rows"/>
+            <port kind="cfg_input" name="matrix_size"/>
+            <port annotation="NONE" expr="matrix_size"
+                kind="output" name="matrix"/>
+        </node>
+        <edge kind="fifo" source="matrix_generator_0"
+            sourceport="matrix" target="matrix_tiling_left"
+            targetport="matrix_in" type="int"/>
+        <edge kind="fifo" source="matrix_generator_1"
+            sourceport="matrix" target="matrix_tiling_right"
+            targetport="matrix_in" type="int"/>
+        <edge kind="fifo" source="matrix_tiling_left"
+            sourceport="matrix_out" target="matmul"
+            targetport="matrix_in1" type="int"/>
+        <edge kind="fifo" source="matrix_tiling_right"
+            sourceport="matrix_out" target="matmul"
+            targetport="matrix_in2" type="int"/>
+        <edge kind="fifo" source="matmul" sourceport="matrix_out"
+            target="accumulator" targetport="partial" type="int"/>
+        <edge kind="fifo" source="accumulator"
+            sourceport="matrix_out" target="Verification"
+            targetport="matrix_hw" type="int"/>
+        <edge kind="dependency" source="n_cols" target="n_rows"/>
+        <edge kind="dependency" source="n_cols" target="matrix_size"/>
+        <edge kind="dependency" source="n_rows" target="matrix_size"/>
+        <edge kind="dependency" source="n_cols"
+            target="matrix_generator_1" targetport="n_cols"/>
+        <edge kind="dependency" source="n_rows"
+            target="matrix_generator_1" targetport="n_rows"/>
+        <edge kind="dependency" source="n_cols" target="tile_dim_size"/>
+        <edge kind="dependency" source="dim_div_factor" target="tile_dim_size"/>
+        <edge kind="dependency" source="matrix_size"
+            target="matrix_generator_1" targetport="matrix_size"/>
+        <edge kind="dependency" source="n_cols"
+            target="matrix_tiling_left" targetport="n_cols"/>
+        <edge kind="dependency" source="n_rows"
+            target="matrix_tiling_left" targetport="n_rows"/>
+        <edge kind="dependency" source="tile_dim_size"
+            target="matrix_tiling_left" targetport="tile_dim_size"/>
+        <edge kind="dependency" source="n_cols"
+            target="matrix_generator_0" targetport="n_cols"/>
+        <edge kind="dependency" source="n_rows"
+            target="matrix_generator_0" targetport="n_rows"/>
+        <edge kind="dependency" source="matrix_size"
+            target="matrix_generator_0" targetport="matrix_size"/>
+        <edge kind="dependency" source="n_cols"
+            target="matrix_tiling_right" targetport="n_cols"/>
+        <edge kind="dependency" source="n_rows"
+            target="matrix_tiling_right" targetport="n_rows"/>
+        <edge kind="dependency" source="tile_dim_size"
+            target="matrix_tiling_right" targetport="tile_dim_size"/>
+        <edge kind="dependency" source="n_cols"
+            target="accumulator" targetport="n_cols"/>
+        <edge kind="dependency" source="n_rows"
+            target="accumulator" targetport="n_rows"/>
+        <edge kind="dependency" source="tile_dim_size"
+            target="accumulator" targetport="tile_dim_size"/>
+        <edge kind="dependency" source="n_cols"
+            target="Verification" targetport="n_cols"/>
+        <edge kind="dependency" source="n_rows"
+            target="Verification" targetport="n_rows"/>
+        <edge kind="dependency" source="tile_dim_size"
+            target="matmul" targetport="tile_dim_size"/>
+    </graph>
+</graphml>

@@ -95,6 +95,12 @@ public class TutorialsTest {
       }
     }
 
+    final String hardwareProjectName = "org.preesm.tests.testHardware";
+    final String hardwareScenario = "HardwareMultipleSlots.scenario";
+    final String hardwareWorkflow = "Codegen.workflow";
+
+    params.add(new Object[] { hardwareWorkflow, hardwareScenario, hardwareProjectName });
+
     return params;
   }
 
