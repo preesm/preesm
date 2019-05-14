@@ -1,8 +1,8 @@
 PREESM Changelog
 ================
 
-## Release version X.Y.Z
-*XXXX.XX.XX*
+## Release version 3.7.0
+*2019.05.14*
 
 ### New Feature
 *  Codegen: enabled the code generation for offloading computation on the FPGA Prgrammable logic (hardware accelerators)
