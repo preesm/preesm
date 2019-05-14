@@ -151,7 +151,7 @@ class MPPA2ExplicitPrinter extends CPrinter {
 		/* user includes */
 		#include "preesm_gen.h"
 
-		extern void *__wrap_memset (void *s, int c, size_t n);
+		extern void *__wrap_memset(void *s, int c, size_t n);
 		extern void *__wrap_memcpy(void *dest, const void *src, size_t n);
 		
 		#define memset __wrap_memset

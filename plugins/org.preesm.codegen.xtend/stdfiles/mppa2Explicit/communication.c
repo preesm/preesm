@@ -330,7 +330,6 @@ void *__real_memset(void *s, int c, size_t n){
 	__builtin_k1_fence();
 	mOS_dinval();
 
-	#ifndef __k1io__
 	if(addr >= DDR_START){
 		off64_t offset = 0;
 		if(mppa_async_offset(&shared_segment, s, &offset) != 0){
@@ -340,13 +339,11 @@ void *__real_memset(void *s, int c, size_t n){
 			assert(0 && "mppa_async_get\n");
 		}
 	}
-	#endif
 	unsigned int i;
 	/* memset */
 	for(i=0;i<n;i++)
 		l[i] = (char)c;
 	
-	#ifndef __k1io__
 	if(addr >= DDR_START){
 		off64_t offset = 0;
 		if(mppa_async_offset(&shared_segment, s, &offset) != 0){
@@ -356,7 +353,6 @@ void *__real_memset(void *s, int c, size_t n){
 			assert(0 && "mppa_async_put\n");
 		}
 	}
-	#endif
 	__builtin_k1_wpurge();
 	__builtin_k1_fence();
 	mOS_dinval();
@@ -399,7 +395,6 @@ void *__real_memcpy(void *dest, const void *src, size_t n){
 			((char*)dest)[i] = ((char*)src)[i];
 	}
 
-	#ifndef __k1io__
 	/* cluster -> ddr */
 	if(dst_addr >= DDR_START && src_addr < DDR_START){
 		off64_t offset = 0;
@@ -414,7 +409,6 @@ void *__real_memcpy(void *dest, const void *src, size_t n){
 	/* ddr -> cluster */
 	if(dst_addr < DDR_START && src_addr >= DDR_START){
 		off64_t offset = 0;
-		//if(mppa_async_offset(&shared_segment, dest, &offset) != 0){
 		if(mppa_async_offset(&shared_segment, (void*)src, &offset) != 0){
 			assert(0 && "mppa_async_offset\n");
 		}
@@ -440,7 +434,6 @@ void *__real_memcpy(void *dest, const void *src, size_t n){
 			assert(0 && "mppa_async_put\n");
 		}
 	}
-	#endif
 
 #if 0
 	if(memcpy_calls > START_DISPLAY)
