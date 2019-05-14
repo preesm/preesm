@@ -42,24 +42,23 @@ import java.util.List
 import java.util.Map
 import org.preesm.codegen.model.Block
 import org.preesm.codegen.model.Buffer
-import org.preesm.codegen.model.CallBlock
-import org.preesm.codegen.model.Communication
-import org.preesm.codegen.model.Constant
-import org.preesm.codegen.model.ConstantString
 import org.preesm.codegen.model.CoreBlock
-import org.preesm.codegen.model.Delimiter
-import org.preesm.codegen.model.Direction
-import org.preesm.codegen.model.FifoCall
-import org.preesm.codegen.model.FifoOperation
-import org.preesm.codegen.model.FiniteLoopBlock
-import org.preesm.codegen.model.FunctionCall
-import org.preesm.codegen.model.LoopBlock
-import org.preesm.codegen.model.NullBuffer
-import org.preesm.codegen.model.SharedMemoryCommunication
-import org.preesm.codegen.model.SpecialCall
-import org.preesm.codegen.model.SubBuffer
-import org.preesm.codegen.model.Variable
+import org.preesm.codegen.model.CodeElt
+import org.preesm.codegen.model.PapifyFunctionCall
+import org.apache.velocity.app.VelocityEngine
+import org.apache.velocity.VelocityContext
+import org.preesm.model.pisdf.util.CHeaderUsedLocator
+import org.preesm.commons.files.URLResolver
+import org.preesm.codegen.xtend.CodegenPlugin
+import java.io.InputStreamReader
+import java.net.URL
+import java.io.IOException
 import org.preesm.commons.exceptions.PreesmRuntimeException
+import java.io.StringWriter
+import org.eclipse.emf.common.util.EList
+import org.preesm.codegen.model.Variable
+import java.util.LinkedHashSet
+import java.util.Set
 
 class MPPA2IOExplicitPrinter extends MPPA2ExplicitPrinter {
 
@@ -68,7 +67,9 @@ class MPPA2IOExplicitPrinter extends MPPA2ExplicitPrinter {
 		super(true)
 	}
 
+	protected int usingPapify = 0;
 	protected int sharedOnly = 1;
+	protected int distributedOnly = 1;
 	protected String peName = "";
 	protected Map<String, Integer> pesToId = new LinkedHashMap<String, Integer>();
 	/**
@@ -119,8 +120,12 @@ class MPPA2IOExplicitPrinter extends MPPA2ExplicitPrinter {
 		#define memset __wrap_memset
 		#define memcpy __wrap_memcpy
 		
-		extern mppa_async_segment_t shared_segment;
-		extern mppa_async_segment_t distributed_segment[PREESM_NB_CLUSTERS + PREESM_IO_USED];
+		«IF (this.distributedOnly == 0)»
+			extern mppa_async_segment_t shared_segment;
+		«ENDIF»
+		«IF (this.sharedOnly == 0)»
+			extern mppa_async_segment_t distributed_segment[PREESM_NB_CLUSTERS + PREESM_IO_USED];
+		«ENDIF»
 
 		/* Scratchpad buffer ptr (will be malloced) */
 		char *local_buffer = NULL;
@@ -131,15 +136,11 @@ class MPPA2IOExplicitPrinter extends MPPA2ExplicitPrinter {
 	return printing;
 	
 	}
-	override printBufferDefinition(Buffer buffer) {
-		
-		if(!buffer.name.equals("Shared")){
-			this.sharedOnly = 0;
-		}
-	
+
+	override printBufferDefinition(Buffer buffer) {	
 		var result = '''
 		«IF buffer.name == "Shared"»
-		//#define Shared ((char*)0x10000000ULL) 	/* Shared buffer in DDR */
+		//#define Shared ((char*)0x10000000ULL) 	/* Shared buffer in DDR */ 
 		«ELSE»
 		«buffer.type» «buffer.name»[«buffer.size»] __attribute__ ((aligned(64))); // «buffer.comment» size:= «buffer.size»*«buffer.type» aligned on data cache line
 		int local_memory_size = «buffer.size»;
@@ -147,409 +148,53 @@ class MPPA2IOExplicitPrinter extends MPPA2ExplicitPrinter {
 		'''
 		return result;
 	}
-
-	override printDefinitionsHeader(List<Variable> list) '''
-	«IF !list.empty»
-		// Core Global Definitions
-
-	«ENDIF»
-	'''
-
-	override printSubBufferDefinition(SubBuffer buffer) '''
-	«buffer.type» *const «buffer.name» = («buffer.type»*) («var offset = 0L»«
-	{offset = buffer.offset
-	 var b = buffer.container;
-	 while(b instanceof SubBuffer){
-	 	offset = offset + b.offset
-	  	b = b.container
-	  }
-	 b}.name»+«offset»);  // «buffer.comment» size:= «buffer.size»*«buffer.type»
-	'''
-
-	override printFiniteLoopBlockHeader(FiniteLoopBlock block2) '''
-	«{
-	 	IS_HIERARCHICAL = true
-	"\t"}»// Begin the for loop
-	{
-		«{
-		var gets = ""
-		var local_offset = 0L;
-			/* go through eventual out param first because of foot FiniteLoopBlock */
-			for(param : block2.outBuffers){
-				var b = param.container;
-				var offset = param.offset;
-				while(b instanceof SubBuffer){
-					offset += b.offset;
-					b = b.container;
-				}
-				/* put out buffer here */
-				if(b.name == "Shared"){
-					gets += "void *" + param.name + " = local_buffer+" + local_offset +";\n";
-					local_offset += param.typeSize * param.size;
-				}
-			}
-			for(param : block2.inBuffers){
-				var b = param.container;
-				var offset = param.offset;
-				while(b instanceof SubBuffer){
-					offset += b.offset;
-					b = b.container;
-				}
-				//System.out.print("===> " + b.name + "\n");
-				if(b.name == "Shared"){
-					gets += "void *" + param.name + " = local_buffer+" + local_offset +";\n";
-					gets += "{\n"
-					gets += "	mppa_async_get(local_buffer + " + local_offset + ",\n";
-					gets += "	&shared_segment,\n";
-					//gets += "	" + b.name + " + " + offset + ",\n";
-					gets += "	/* Shared + */ " + offset + ",\n";
-					gets += "	" + param.typeSize * param.size + ",\n";
-					gets += "	NULL);\n";
-					gets += "}\n"
-					local_offset += param.typeSize * param.size;
-					//System.out.print("==> " + b.name + " " + param.name + " size " + param.size + " port_name "+ port.getName + "\n");
-				}
-			}
-
-			gets += "int " + block2.iter.name + ";\n"
-			gets += "#pragma omp parallel for private(" + block2.iter.name + ")\n"
-			gets += "for(" + block2.iter.name + "=0;" + block2.iter.name +"<" + block2.nbIter + ";" + block2.iter.name + "++)\n"
-			gets += "	{\n"
-
-
-			if(local_offset > local_buffer_size)
-				local_buffer_size = local_offset
-	gets}»
-	'''
-
-	override printFiniteLoopBlockFooter(FiniteLoopBlock block2) '''
-		}
-		«{
-				var puts = ""
-				var local_offset = 0L;
-				for(param : block2.outBuffers){
-					var b = param.container
-					var offset = param.offset
-					while(b instanceof SubBuffer){
-						offset += b.offset;
-						b = b.container;
-						//System.out.print("Running through all buffer " + b.name + "\n");
-					}
-					//System.out.print("===> " + b.name + "\n");
-					if(b.name == "Shared"){
-						puts += "{\n"
-						puts += "	mppa_async_put(local_buffer + " + local_offset + ",\n";
-						puts += "	&shared_segment,\n";
-						puts += "	/* Shared + */" + offset + ",\n";
-						puts += "	" + param.typeSize * param.size + ",\n";
-						puts += "	NULL);\n";
-						puts += "	}\n"
-						local_offset += param.typeSize * param.size;
-						//System.out.print("==> " + b.name + " " + param.name + " size " + param.size + " port_name "+ port.getName + "\n");
-					}
-				}
-				if(local_offset > local_buffer_size)
-					local_buffer_size = local_offset
-				puts += "}\n"
-			puts}»
-		«{
-			 	IS_HIERARCHICAL = false
-			""}»
-	'''
-
-	override printFunctionCall(FunctionCall functionCall) '''
-	«{
-		var gets = ""
-		var local_offset = 0L;
-		if(IS_HIERARCHICAL == false){
-			gets += "{\n"
-			for(param : functionCall.parameters){
-
-				if(param instanceof SubBuffer){
-					var port = functionCall.parameterDirections.get(functionCall.parameters.indexOf(param))
-					var b = param.container;
-					var offset = param.offset;
-					while(b instanceof SubBuffer){
-						offset += b.offset;
-						b = b.container;
-						//System.out.print("Running through all buffer " + b.name + " --- " + this.peName + "\n");
-					}
-					//System.out.print("===> " + b.name + "\n");
-					if(b.name == "Shared"){
-						gets += "	void *" + param.name + " = local_buffer+" + local_offset +";\n";
-						if(port.getName == "INPUT"){ /* we get data from DDR -> cluster only when INPUT */
-							gets += "	{\n"
-							gets += "		mppa_async_get(local_buffer+" + local_offset + ", &shared_segment, /* Shared + */ " + offset + ", " + param.typeSize * param.size + ", NULL);\n";
-							gets += "	}\n"
-						}
-						local_offset += param.typeSize * param.size;
-						//System.out.print("==> " + b.name + " " + param.name + " size " + param.size + " port_name "+ port.getName + "\n");
-					} 
-					/*else{
-						System.out.print("A==> " + b.name + " " + param.name + " size " + param.size + " port_name "+ port.getName + "\n");
-					}*/
-				}
-			}
-			gets += "\t"
-		}else{
-			gets += " /* gets are normaly generated before */ \n"
-		}
-		if(local_offset > local_buffer_size)
-			local_buffer_size = local_offset
-	gets}»
-		«functionCall.name»(«FOR param : functionCall.parameters SEPARATOR ', '»«param.doSwitch»«ENDFOR»); // «functionCall.actorName»
-	«{
-		var puts = ""
-		var local_offset = 0L;
-		if(IS_HIERARCHICAL == false){
-			for(param : functionCall.parameters){
-				if(param instanceof SubBuffer){
-					var port = functionCall.parameterDirections.get(functionCall.parameters.indexOf(param))
-					var b = param.container
-					var offset = param.offset
-					while(b instanceof SubBuffer){
-						offset += b.offset;
-						b = b.container;
-						//System.out.print("Running through all buffer " + b.name + "\n");
-					}
-					//System.out.print("===> " + b.name + "\n");
-					if(b.name == "Shared"){
-						if(port.getName == "OUTPUT"){ /* we put data from cluster -> DDR only when OUTPUT */
-							puts += "	{\n"
-							puts += "		mppa_async_put(local_buffer+" + local_offset + ", &shared_segment, /* Shared + */ " + offset + ", " + param.typeSize * param.size + ", NULL);\n";
-							puts += "	}\n"
-						}
-						local_offset += param.typeSize * param.size;
-						//System.out.print("==> " + b.name + " " + param.name + " size " + param.size + " port_name "+ port.getName + "\n");
-					}			
-					/*else{
-						System.out.print("B==> " + b.name + " " + param.name + " size " + param.size + " port_name "+ port.getName + "\n");
-					}*/
-				}
-			}
-			puts += "}\n"
-		}else{
-			puts += " /* puts are normaly generated before */ \n"
-		}
-		if(local_offset > local_buffer_size)
-			local_buffer_size = local_offset
-	puts}»
-	'''
-
-	override printDefinitionsFooter(List<Variable> list) '''
-	«IF !list.empty»
-
-	«ENDIF»
-	'''
-
-	override printDeclarationsHeader(List<Variable> list) '''
-	// Core Global Declaration
-	extern pthread_barrier_t iter_barrier;
-	extern int stopThreads;
-
-	'''
-
-	override printBufferDeclaration(Buffer buffer) '''
-	extern «printBufferDefinition(buffer)»
-	'''
-
-	override printSubBufferDeclaration(SubBuffer buffer) {
-		/*var bChecker = buffer.container;
-		while(bChecker instanceof SubBuffer){
-	  		bChecker = bChecker.container
-	  	}*/
-	  	var printing = "";
-	  //	if(bChecker.name.equals("Shared")){
-	  		printing = '''
-			«buffer.type» *const «buffer.name» = («buffer.type»*) («var offset = 0L»«
-			{offset = buffer.offset
-			 var b = buffer.container;
-			 while(b instanceof SubBuffer){
-			 	offset = offset + b.offset
-			  	b = b.container
-			  }
-			 b}.name»+«offset»);  // «buffer.comment» size:= «buffer.size»*«buffer.type»
-			'''
-	  	//}
 	
-	return printing;
-	}
+	override CharSequence generatePreesmHeader() {
+	    // 0- without the following class loader initialization, I get the following exception when running as Eclipse
+	    // plugin:
+	    // org.apache.velocity.exception.VelocityException: The specified class for ResourceManager
+	    // (org.apache.velocity.runtime.resource.ResourceManagerImpl) does not implement
+	    // org.apache.velocity.runtime.resource.ResourceManager; Velocity is not initialized correctly.
+	    val ClassLoader oldContextClassLoader = Thread.currentThread().getContextClassLoader();
+	    Thread.currentThread().setContextClassLoader(CPrinter.classLoader);
 
-	override printDeclarationsFooter(List<Variable> list) '''
-	«IF !list.empty»
+	    // 1- init engine
+	    val VelocityEngine engine = new VelocityEngine();
+	    engine.init();
 
-	«ENDIF»
-	'''
-
-	override printCoreInitBlockHeader(CallBlock callBlock) '''
-	void *computationTask_«(callBlock.eContainer as CoreBlock).name»(void *arg __attribute__ ((unused))){
-«/*	#ifdef PREESM_VERBOSE
-		//printf("Cluster %d runs on task «(callBlock.eContainer as CoreBlock).name»\n", __k1_get_cluster_id());
-	#endif*/»
-		«IF !callBlock.codeElts.empty»
-			// Initialisation(s)
-
-		«ENDIF»
-	'''
-
-	override printCoreLoopBlockHeader(LoopBlock block2) '''
-
-		«"\t"»// Begin the execution loop 
-		#ifdef PREESM_LOOP_SIZE // Case of a finite loop
-			int __iii;
-			for(__iii=0;__iii<PREESM_LOOP_SIZE;__iii++){
-		#else // Default case of an infinite loop
-			while(!stopThreads){
-		#endif
-
-				//pthread_barrier_wait(&iter_barrier);
-
-	'''
-
-
-	override printCoreLoopBlockFooter(LoopBlock block2) '''
-
-				/* commit local changes to the global memory */
-				//pthread_barrier_wait(&iter_barrier); /* barrier to make sure all threads have commited data in smem */
-			}
-			return NULL;
+	    // 2- init context
+	    val VelocityContext context = new VelocityContext();
+	    val findAllCHeaderFileNamesUsed = CHeaderUsedLocator.findAllCHeaderFileNamesUsed(getEngine.algo.referencePiMMGraph)
+	    context.put("USER_INCLUDES", findAllCHeaderFileNamesUsed.map["#include \""+ it +"\""].join("\n"));
+		
+		var String constants = "#define NB_DESIGN_ELTS "+getEngine.archi.componentInstances.size+"\n";
+		constants = constants.concat("#define PREESM_NB_CLUSTERS "+numClusters+"\n");
+		constants = constants.concat("#define PREESM_IO_USED " + io_used + " \n");
+		if(this.usingPapify == 1){
+			constants = constants.concat("\n\n#ifdef _PREESM_MONITOR_INIT\n#include \"eventLib.h\"\n#endif");
 		}
-	'''
-	override printFifoCall(FifoCall fifoCall) {
-		var result = "fifo" + fifoCall.operation.toString.toLowerCase.toFirstUpper + "("
+	    context.put("CONSTANTS", constants);
 
-		if (fifoCall.operation != FifoOperation::INIT) {
-			var buffer = fifoCall.parameters.head as Buffer
-			result = result + '''«buffer.doSwitch», '''
-		}
+	    // 3- init template reader
+	    val String templateLocalURL = "templates/mppa2Explicit/preesm_gen.h";
+	    val URL mainTemplate = URLResolver.findFirstInBundleList(templateLocalURL, CodegenPlugin.BUNDLE_ID);
+	    var InputStreamReader reader = null;
+	    try {
+	      reader = new InputStreamReader(mainTemplate.openStream());
+	    } catch (IOException e) {
+	      throw new PreesmRuntimeException("Could not locate main template [" + templateLocalURL + "].", e);
+	    }
 
-		result = result +
-			'''«fifoCall.headBuffer.name», «fifoCall.headBuffer.size»*sizeof(«fifoCall.headBuffer.type»), '''
-		result = result + '''«IF fifoCall.bodyBuffer !== null»«fifoCall.bodyBuffer.name», «fifoCall.bodyBuffer.size»*sizeof(«fifoCall.
-			bodyBuffer.type»)«ELSE»NULL, 0«ENDIF»);
-			'''
+	    // 4- init output writer
+	    val StringWriter writer = new StringWriter();
 
-		return result
+	    engine.evaluate(context, writer, "org.apache.velocity", reader);
+
+	    // 99- set back default class loader
+	    Thread.currentThread().setContextClassLoader(oldContextClassLoader);
+
+	    return writer.getBuffer().toString();
 	}
-
-	override printFork(SpecialCall call) '''
-	// Fork «call.name»«var input = call.inputBuffers.head»«var index = 0L»
-	{
-		«FOR output : call.outputBuffers»
-			«printMemcpy(output,0,input,index,output.size,output.type)»«{index=(output.size+index); ""}»
-		«ENDFOR»
-	}
-	'''
-
-	override printBroadcast(SpecialCall call) '''
-		«{
-			super.printBroadcast(call)
-		}»
-	'''
-
-	override printRoundBuffer(SpecialCall call) '''
-		«{
-			super.printRoundBuffer(call)
-		}»
-	'''
-
-	override printJoin(SpecialCall call) '''
-	// Join «call.name»«var output = call.outputBuffers.head»«var index = 0L»
-	{
-		«FOR input : call.inputBuffers»
-			«printMemcpy(output,index,input,0,input.size,input.type)»«{index=(input.size+index); ""}»
-		«ENDFOR»
-	}
-	'''
-
-	/**
-	 * Print a memcpy call in the generated code. Unless
-	 * {@link #IGNORE_USELESS_MEMCPY} is set to <code>true</code>, this method
-	 * checks if the destination and the source of the memcpy are superimposed.
-	 * In such case, the memcpy is useless and nothing is printed.
-	 *
-	 * @param output
-	 *            the destination {@link Buffer}
-	 * @param outOffset
-	 *            the offset in the destination {@link Buffer}
-	 * @param input
-	 *            the source {@link Buffer}
-	 * @param inOffset
-	 *            the offset in the source {@link Buffer}
-	 * @param size
-	 *            the amount of memory to copy
-	 * @param type
-	 *            the type of objects copied
-	 * @return a {@link CharSequence} containing the memcpy call (if any)
-	 */
-	override printMemcpy(Buffer output, long outOffset, Buffer input, long inOffset, long size, String type) {
-
-		// Retrieve the container buffer of the input and output as well
-		// as their offset in this buffer
-		var totalOffsetOut = outOffset*output.typeSize
-		var bOutput = output
-		while (bOutput instanceof SubBuffer) {
-			totalOffsetOut = totalOffsetOut + bOutput.offset
-			bOutput = bOutput.container
-		}
-
-		var totalOffsetIn = inOffset*input.typeSize
-		var bInput = input
-		while (bInput instanceof SubBuffer) {
-			totalOffsetIn = totalOffsetIn + bInput.offset
-			bInput = bInput.container
-		}
-
-		// If the Buffer and offsets are identical, or one buffer is null
-		// there is nothing to print
-		if((IGNORE_USELESS_MEMCPY && bInput == bOutput && totalOffsetIn == totalOffsetOut) ||
-			output instanceof NullBuffer || input instanceof NullBuffer){
-			return ""
-		} else {
-			return '''memcpy(«output.doSwitch»+«outOffset», «input.doSwitch»+«inOffset», «size»*sizeof(«type»));'''
-		}
-	}
-
-	override printNullBuffer(NullBuffer Buffer) {
-		return printBuffer(Buffer)
-	}
-
-	override caseCommunication(Communication communication) {
-
-		if(communication.nodes.forall[type == "SHARED_MEM"]) {
-			return super.caseCommunication(communication)
-		} else {
-			throw new PreesmRuntimeException("Communication "+ communication.name +
-				 " has at least one unsupported communication node"+
-				 " for the " + this.class.name + " printer")
-		}
-	}
-
-	override printSharedMemoryCommunication(SharedMemoryCommunication communication) '''
-		«communication.direction.toString.toLowerCase»«communication.delimiter.toString.toLowerCase.toFirstUpper»(«IF (communication.
-			direction == Direction::SEND && communication.delimiter == Delimiter::START) ||
-			(communication.direction == Direction::RECEIVE && communication.delimiter == Delimiter::END)»«{
-			var coreID = if (communication.direction == Direction::SEND) {
-					communication.receiveStart.coreContainer.coreID
-				} else {
-					communication.sendStart.coreContainer.coreID
-				}
-			var ret = coreID
-			ret
-		}»«ENDIF»); // «communication.sendStart.coreContainer.name» > «communication.receiveStart.coreContainer.name»: «communication.
-			data.doSwitch»
-	'''
-
-	override printConstant(Constant constant) '''«constant.value»«IF !constant.name.nullOrEmpty»/*«constant.name»*/«ENDIF»'''
-
-	override printConstantString(ConstantString constant) '''"«constant.value»"'''
-
-	override printBuffer(Buffer buffer) '''«buffer.name»'''
-
-	override printSubBuffer(SubBuffer buffer) {
-		return printBuffer(buffer)
-	}
-	
 	override createSecondaryFiles(List<Block> printerBlocks, Collection<Block> allBlocks) {
 		val result = super.createSecondaryFiles(printerBlocks, allBlocks);
 		result.remove("cluster_main.c");
@@ -586,10 +231,11 @@ class MPPA2IOExplicitPrinter extends MPPA2ExplicitPrinter {
 		#include <mppa_async.h>
 		#include <HAL/hal/board/boot_args.h>
 		#include "preesm_gen.h"
-		#include "communication.h"
-		
+		#include "communication.h"		
+		«IF (this.distributedOnly == 0)»
 		/* Shared Segment ID */
 		mppa_async_segment_t shared_segment;
+		«ENDIF»
 		«IF (this.sharedOnly == 0)»
 		mppa_async_segment_t distributed_segment[PREESM_NB_CLUSTERS + PREESM_IO_USED];
 		extern int local_memory_size;
@@ -654,6 +300,12 @@ class MPPA2IOExplicitPrinter extends MPPA2ExplicitPrinter {
 				assert(0 && "utask_create\n");
 			}
 						
+			«IF this.usingPapify == 1»
+				#ifdef _PREESM_MONITOR_INIT
+				mkdir("papify-output", 0777);
+				event_init();
+				#endif
+			«ENDIF»
 			for( j = 0 ; j < PREESM_NB_CLUSTERS ; j++ ) {
 		
 				char elf_name[30];
@@ -663,10 +315,12 @@ class MPPA2IOExplicitPrinter extends MPPA2ExplicitPrinter {
 					return -2;
 			}				
 		
-			mppa_async_segment_t shared_segment;
-			if(mppa_async_segment_create(&shared_segment, SHARED_SEGMENT_ID, (void*)(uintptr_t)Shared, 1024*1024*1024, 0, 0, NULL) != 0)
-				assert(0 && "mppa_async_segment_create\n");
-			}
+			«IF (this.distributedOnly == 0)»
+				mppa_async_segment_t shared_segment;
+				if(mppa_async_segment_create(&shared_segment, SHARED_SEGMENT_ID, (void*)(uintptr_t)Shared, 1024*1024*1024, 0, 0, NULL) != 0){
+					assert(0 && "mppa_async_segment_create\n");
+				}
+			«ENDIF»
 			«IF (this.sharedOnly == 0)»
 				«FOR io : printerBlocks.toSet»
 					«IF (io instanceof CoreBlock)»
@@ -693,7 +347,12 @@ class MPPA2IOExplicitPrinter extends MPPA2ExplicitPrinter {
 			for( j = 0 ; j < PREESM_NB_CLUSTERS ; j++ ) {
 			    mppa_power_base_waitpid (j, &err, 0);
 			}
-		
+				 
+			«IF this.usingPapify == 1»
+				#ifdef _PREESM_MONITOR_INIT
+				event_destroy();
+				#endif
+			«ENDIF»
 			if (__k1_spawn_type() == __MPPA_PCI_SPAWN) {
 				pcie_queue_barrier(pcie_fd, 0, &ret);
 				pcie_queue_exit(pcie_fd, ret, NULL);
@@ -702,8 +361,13 @@ class MPPA2IOExplicitPrinter extends MPPA2ExplicitPrinter {
 		}
 
 	'''
-	
 	override preProcessing(List<Block> printerBlocks, Collection<Block> allBlocks){
+		var Set<String> coresNames = new LinkedHashSet<String>();
+		for (cluster : allBlocks){
+			if (cluster instanceof CoreBlock) {
+				coresNames.add(cluster.name);
+			}	
+		}				
 		for (cluster : allBlocks){
 			if (cluster instanceof CoreBlock) {
 				if(cluster.coreType.equals("MPPA2Explicit")){
@@ -712,14 +376,34 @@ class MPPA2IOExplicitPrinter extends MPPA2ExplicitPrinter {
 				}
 				else if(cluster.coreType.equals("MPPA2IOExplicit")){
 					io_used = 1;
+				}												
+				for(CodeElt codeElt : cluster.loopBlock.codeElts){
+					if(codeElt instanceof PapifyFunctionCall){
+						this.usingPapify = 1;
+					}
 				}
-				this.pesToId.put(cluster.name, cluster.coreID);
-			}				
+       		 	var EList<Variable> definitions = cluster.getDefinitions();
+       		 	var EList<Variable> declarations = cluster.getDeclarations();
+       		 	for(Variable variable : definitions){
+       		 		if(variable instanceof Buffer){
+       		 			if(variable.name.equals("Shared")){
+							this.distributedOnly = 0;       		 				
+       		 			}else if(coresNames.contains(variable.name)){
+							this.sharedOnly = 0;       		 				
+       		 			}   
+       		 		}
+       		 	}
+       		 	for(Variable variable : declarations){
+       		 		if(variable instanceof Buffer){
+       		 			if(variable.name.equals("Shared")){
+							this.distributedOnly = 0;       		 				
+       		 			}else if(coresNames.contains(variable.name)){
+							this.sharedOnly = 0;       		 				
+       		 			}   
+       		 		}
+       		 	}
+			}
 		}	
 		local_buffer_size = 0;
-	}
-	override postProcessing(CharSequence charSequence){
-		var ret = charSequence.toString.replace("int local_buffer_size = 0;", "int local_buffer_size = " + local_buffer_size + ";");
-		return ret;
 	}
 }

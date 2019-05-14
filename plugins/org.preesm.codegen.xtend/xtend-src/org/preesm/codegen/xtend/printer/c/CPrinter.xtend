@@ -81,6 +81,9 @@ import org.preesm.codegen.xtend.CodegenPlugin
 import org.preesm.commons.exceptions.PreesmRuntimeException
 import org.preesm.commons.files.URLResolver
 import org.preesm.model.pisdf.util.CHeaderUsedLocator
+import org.preesm.codegen.model.PapifyFunctionCall
+import org.preesm.codegen.model.CodeElt
+import org.eclipse.emf.common.util.EList
 
 /**
  * This printer is currently used to print C code only for GPP processors
@@ -91,6 +94,10 @@ import org.preesm.model.pisdf.util.CHeaderUsedLocator
  */
 class CPrinter extends DefaultPrinter {
 
+	/*
+	 * Variable to check if we are using PAPIFY or not --> Will be updated during preprocessing
+	 */
+	int usingPapify = 0;
 	/**
 	 * Set to true if a main file should be generated. Set at object creation in constructor.
 	 */
@@ -394,8 +401,11 @@ class CPrinter extends DefaultPrinter {
 	    val findAllCHeaderFileNamesUsed = CHeaderUsedLocator.findAllCHeaderFileNamesUsed(getEngine.algo.referencePiMMGraph)
 	    context.put("USER_INCLUDES", findAllCHeaderFileNamesUsed.map["#include \""+ it +"\""].join("\n"));
 
-
-	    context.put("CONSTANTS", "#define NB_DESIGN_ELTS "+getEngine.archi.componentInstances.size+"\n#define NB_CORES "+getEngine.codeBlocks.size);
+		var String constants = "#define NB_DESIGN_ELTS "+getEngine.archi.componentInstances.size+"\n#define NB_CORES "+getEngine.codeBlocks.size; 
+		if(this.usingPapify == 1){
+			constants = constants.concat("\n\n#ifdef _PREESM_MONITOR_INIT\n#include \"eventLib.h\"\n#endif");
+		}
+	    context.put("CONSTANTS", constants);
 
 	    // 3- init template reader
 	    val String templateLocalURL = "templates/c/preesm_gen.h";
@@ -511,10 +521,12 @@ class CPrinter extends DefaultPrinter {
 
 
 		int main(void) {
-			#ifdef _PREESM_MONITOR_INIT
-			mkdir("papify-output", 0777);
-			event_init_multiplex();
-			#endif
+			«IF this.usingPapify == 1»
+				#ifdef _PREESM_MONITOR_INIT
+				mkdir("papify-output", 0777);
+				event_init_multiplex();
+				#endif
+			«ENDIF»
 			// Declaring thread pointers
 			pthread_t coreThreads[_PREESM_NBTHREADS_];
 			void *(*coreThreadComputations[_PREESM_NBTHREADS_])(void *) = {
@@ -550,9 +562,11 @@ class CPrinter extends DefaultPrinter {
 					pthread_join(coreThreads[i], NULL);
 				}
 			}
-			#ifdef _PREESM_MONITOR_INIT
-			event_destroy();
-			#endif
+			«IF this.usingPapify == 1»
+				#ifdef _PREESM_MONITOR_INIT
+				event_destroy();
+				#endif
+			«ENDIF»
 
 			return 0;
 		}
@@ -575,12 +589,31 @@ class CPrinter extends DefaultPrinter {
 	override printFunctionCall(FunctionCall functionCall) '''
 	«functionCall.name»(«FOR param : functionCall.parameters SEPARATOR ','»«param.doSwitch»«ENDFOR»); // «functionCall.actorName»
 	'''
+	
+	override printPapifyFunctionCall(PapifyFunctionCall papifyFunctionCall) '''
+	«IF papifyFunctionCall.opening == true»
+		#ifdef _PREESM_MONITOR_INIT
+	«ENDIF»
+	«printFunctionCall(papifyFunctionCall)»
+	«IF papifyFunctionCall.closing == true»
+		#endif
+	«ENDIF»
+	'''
 
 	override printConstant(Constant constant) '''«constant.value»«IF !constant.name.nullOrEmpty»/*«constant.name»*/«ENDIF»'''
 
 	override printConstantString(ConstantString constant) '''"«constant.value»"'''
 
-	override printPapifyAction(PapifyAction action) '''«action.name»'''
+	override printPapifyActionDefinition(PapifyAction action) '''
+	«IF action.opening == true»
+		#ifdef _PREESM_MONITOR_INIT
+	«ENDIF»
+	«action.type» «action.name»; // «action.comment»
+	«IF action.closing == true»
+		#endif
+	«ENDIF»
+	'''
+	override printPapifyActionParam(PapifyAction action) '''&«action.name»'''
 
 	override printBuffer(Buffer buffer) '''«buffer.name»'''
 
@@ -605,5 +638,17 @@ class CPrinter extends DefaultPrinter {
 	override printDataTansfer(DataTransferAction action) ''''''
 	
 	override printRegisterSetUp(RegisterSetUpAction action) ''''''
+		
+	override preProcessing(List<Block> printerBlocks, Collection<Block> allBlocks){
+		for (cluster : allBlocks){		
+			if (cluster instanceof CoreBlock) {					
+				for(CodeElt codeElt : cluster.loopBlock.codeElts){
+					if(codeElt instanceof PapifyFunctionCall){
+						this.usingPapify = 1;
+					}
+				}		
+			}			
+		}
+	}
 
 }

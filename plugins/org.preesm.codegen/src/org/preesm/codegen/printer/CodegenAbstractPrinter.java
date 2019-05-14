@@ -65,6 +65,7 @@ import org.preesm.codegen.model.LoopBlock;
 import org.preesm.codegen.model.NullBuffer;
 import org.preesm.codegen.model.OutputDataTransfer;
 import org.preesm.codegen.model.PapifyAction;
+import org.preesm.codegen.model.PapifyFunctionCall;
 import org.preesm.codegen.model.RegisterSetUpAction;
 import org.preesm.codegen.model.SharedMemoryCommunication;
 import org.preesm.codegen.model.SpecialCall;
@@ -554,7 +555,12 @@ public abstract class CodegenAbstractPrinter extends CodegenSwitch<CharSequence>
 
   @Override
   public CharSequence casePapifyAction(final PapifyAction action) {
-    return printPapifyAction(action);
+    if (this.state.equals(PrinterState.PRINTING_DEFINITIONS)) {
+      return printPapifyActionDefinition(action);
+    } else {
+      return printPapifyActionParam(action);
+    }
+
   }
 
   @Override
@@ -591,6 +597,11 @@ public abstract class CodegenAbstractPrinter extends CodegenSwitch<CharSequence>
   @Override
   public CharSequence caseFunctionCall(final FunctionCall functionCall) {
     return printFunctionCall(functionCall);
+  }
+
+  @Override
+  public CharSequence casePapifyFunctionCall(final PapifyFunctionCall functionCall) {
+    return printPapifyFunctionCall(functionCall);
   }
 
   @Override
@@ -816,6 +827,15 @@ public abstract class CodegenAbstractPrinter extends CodegenSwitch<CharSequence>
   public abstract CharSequence printConstant(Constant constant);
 
   /**
+   * Method called to print a {@link PapifyAction} in the {@link CoreBlock#getDefinitions() definition}
+   *
+   * @param action
+   *          the {@link PapifyAction} to print.
+   * @return the printed {@link CharSequence}
+   */
+  public abstract CharSequence printPapifyActionDefinition(PapifyAction action);
+
+  /**
    * Method called to print a {@link PapifyAction} outside the {@link CoreBlock#getDefinitions() definition} or the
    * {@link CoreBlock#getDeclarations() declaration} of a {@link CoreBlock}
    *
@@ -823,7 +843,7 @@ public abstract class CodegenAbstractPrinter extends CodegenSwitch<CharSequence>
    *          the {@link PapifyAction} to print.
    * @return the printed {@link CharSequence}
    */
-  public abstract CharSequence printPapifyAction(PapifyAction action);
+  public abstract CharSequence printPapifyActionParam(PapifyAction action);
 
   /**
    * Method called to print a {@link Constant} within the {@link CoreBlock#getDeclarations() declaration}
@@ -1031,6 +1051,15 @@ public abstract class CodegenAbstractPrinter extends CodegenSwitch<CharSequence>
    * @return the printed {@link CharSequence}
    */
   public abstract CharSequence printFunctionCall(FunctionCall functionCall);
+
+  /**
+   * Method called to print a {@link PapifyFunctionCall}.
+   *
+   * @param papifyFunctionCall
+   *          the printed {@link PapifyFunctionCall}.
+   * @return the printed {@link CharSequence}
+   */
+  public abstract CharSequence printPapifyFunctionCall(PapifyFunctionCall papifyFunctionCall);
 
   /**
    * Method called to print a {@link SpecialCall} with {@link SpecialCall#getType() type} {@link SpecialType#JOIN}. If
