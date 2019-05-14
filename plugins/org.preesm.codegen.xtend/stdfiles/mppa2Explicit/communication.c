@@ -414,7 +414,8 @@ void *__real_memcpy(void *dest, const void *src, size_t n){
 	/* ddr -> cluster */
 	if(dst_addr < DDR_START && src_addr >= DDR_START){
 		off64_t offset = 0;
-		if(mppa_async_offset(&shared_segment, dest, &offset) != 0){
+		//if(mppa_async_offset(&shared_segment, dest, &offset) != 0){
+		if(mppa_async_offset(&shared_segment, (void*)src, &offset) != 0){
 			assert(0 && "mppa_async_offset\n");
 		}
 		if(mppa_async_get(dest, &shared_segment, offset, n, NULL) != 0){

@@ -971,6 +971,11 @@ class MPPA2ExplicitPrinter extends CPrinter {
 			}				
 			if(utask_create(&t, NULL, (void*)mppa_rpc_server_start, NULL) != 0){
 				assert(0 && "utask_create\n");
+			}					
+					
+			mppa_async_segment_t shared_segment;
+			if(mppa_async_segment_create(&shared_segment, SHARED_SEGMENT_ID, (void*)(uintptr_t)Shared, 1024*1024*1024, 0, 0, NULL) != 0){
+				assert(0 && "mppa_async_segment_create\n");
 			}
 			
 			for( j = 0 ; j < PREESM_NB_CLUSTERS ; j++ ) {
@@ -980,12 +985,6 @@ class MPPA2ExplicitPrinter extends CPrinter {
 				id = mppa_power_base_spawn(j, elf_name, NULL, NULL, MPPA_POWER_SHUFFLING_ENABLED);
 				if (id < 0)
 					return -2;
-			}
-		
-		
-			mppa_async_segment_t shared_segment;
-			if(mppa_async_segment_create(&shared_segment, SHARED_SEGMENT_ID, (void*)(uintptr_t)Shared, 1024*1024*1024, 0, 0, NULL) != 0){
-				assert(0 && "mppa_async_segment_create\n");
 			}
 				
 			int err;
