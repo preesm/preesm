@@ -1,10 +1,11 @@
 /**
- * Copyright or © or Copr. IETR/INSA - Rennes (2013 - 2018) :
+ * Copyright or © or Copr. IETR/INSA - Rennes (2013 - 2019) :
  *
  * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017 - 2018)
- * Daniel Madroñal <daniel.madronal@upm.es> (2018)
+ * Daniel Madroñal <daniel.madronal@upm.es> (2018 - 2019)
  * Julien Hascoet <jhascoet@kalray.eu> (2016 - 2017)
  * Karol Desnos <karol.desnos@insa-rennes.fr> (2013 - 2017)
+ * Leonardo Suriano <leonardo.suriano@upm.es> (2019)
  *
  * This software is a computer program whose purpose is to help prototyping
  * parallel applications using dataflow formalism.

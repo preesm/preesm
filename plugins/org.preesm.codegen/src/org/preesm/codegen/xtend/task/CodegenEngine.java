@@ -6,6 +6,7 @@
  * Julien Hascoet <jhascoet@kalray.eu> (2016)
  * Julien Heulot <julien.heulot@insa-rennes.fr> (2015)
  * Karol Desnos <karol.desnos@insa-rennes.fr> (2013)
+ * Leonardo Suriano <leonardo.suriano@upm.es> (2019)
  * Maxime Pelcat <maxime.pelcat@insa-rennes.fr> (2013)
  *
  * This software is a computer program whose purpose is to help prototyping

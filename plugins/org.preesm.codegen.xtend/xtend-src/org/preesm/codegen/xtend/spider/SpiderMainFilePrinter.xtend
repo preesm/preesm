@@ -1,8 +1,8 @@
 /**
- * Copyright or © or Copr. IETR/INSA - Rennes (2017 - 2018) :
+ * Copyright or © or Copr. IETR/INSA - Rennes (2017 - 2019) :
  *
  * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017 - 2018)
- * Florian Arrestier <florian.arrestier@insa-rennes.fr> (2018)
+ * Florian Arrestier <florian.arrestier@insa-rennes.fr> (2018 - 2019)
  * Karol Desnos <karol.desnos@insa-rennes.fr> (2017)
  *
  * This software is a computer program whose purpose is to help prototyping
