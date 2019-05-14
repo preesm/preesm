@@ -1,6 +1,16 @@
 PREESM Changelog
 ================
 
+## Release version X.Y.Z
+*XXXX.XX.XX*
+
+### New Feature
+
+### Changes
+
+### Bug fix
+
+
 ## Release version 3.7.0
 *2019.05.14*
 
