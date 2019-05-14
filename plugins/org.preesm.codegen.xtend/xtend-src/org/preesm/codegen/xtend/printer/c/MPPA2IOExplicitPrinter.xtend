@@ -317,7 +317,7 @@ class MPPA2IOExplicitPrinter extends MPPA2ExplicitPrinter {
 			«IF (this.sharedOnly == 0)»
 				«FOR io : printerBlocks.toSet»
 					«IF (io instanceof CoreBlock)»
-						if(mppa_async_segment_create(&distributed_segment[PREESM_NB_CLUSTERS], INTERCC_BASE_SEGMENT_ID+PREESM_NB_CLUSTERS, (void*)(uintptr_t)«io.name», local_memory_size, 0, 0, NULL) != 0){
+						if(mppa_async_segment_create(&distributed_segment[PREESM_NB_CLUSTERS], INTERCC_BASE_SEGMENT_ID+PREESM_NB_CLUSTERS, (void*)&«io.name», local_memory_size, 0, 0, NULL) != 0){
 							assert(0 && "mppa_async_segment_create\n");
 						}
 					«ENDIF»
