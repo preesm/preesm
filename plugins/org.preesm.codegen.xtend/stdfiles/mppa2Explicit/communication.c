@@ -50,6 +50,7 @@
 #include <mppa_async.h>
 #include <HAL/hal/hal_ext.h>
 #include <mOS_vcore_u.h>
+#include <assert.h>
 
 #include "communication.h"
 
@@ -90,7 +91,9 @@ void sendStart(int cluster)
 		__builtin_k1_afdau(&sync[cluster], 1); 	/* post locally */
 	}else{
 		//printf("Cluster %d post to cluster %d offset %llu\n", sender, receiver, (off64_t)(sender * sizeof(long long)));
-		mppa_async_postadd(&sync_segments[receiver], (off64_t)(sender * sizeof(long long)), 1); /* atomic remote increment of sync[cluster] value */
+		if(mppa_async_postadd(&sync_segments[receiver], (off64_t)(sender * sizeof(long long)), 1) != 0){ /* atomic remote increment of sync[cluster] value */
+			assert(0 && "mppa_async_postadd\n");
+		}
 	}
 }
 
@@ -121,22 +124,30 @@ void sendDistributedStart(int cluster)
 		__builtin_k1_afdau(&sync[cluster], 1); 	/* post locally */
 	}else{
 		//printf("Cluster %d post to cluster %d offset %llu\n", sender, receiver, (off64_t)(sender * sizeof(long long)));
-		mppa_async_postadd(&sync_segments[receiver], (off64_t)(sender * sizeof(long long)), 1); /* atomic remote increment of sync[cluster] value */
+		if(mppa_async_postadd(&sync_segments[receiver], (off64_t)(sender * sizeof(long long)), 1) != 0){ /* atomic remote increment of sync[cluster] value */
+			assert(0 && "mppa_async_postadd\n");
+		}
 	}
 }
 
 void sendDistributedEnd(int cluster)
 {
-	mppa_async_event_wait(&sync_evt[cluster]);	/* unlock when sync[cluster] is GT than 0 */
+	if(mppa_async_event_wait(&sync_evt[cluster]) != 0){	/* unlock when sync[cluster] is GT than 0 */
+		assert(0 && "mppa_async_event_wait\n");
+	}
 	__builtin_k1_afdau(&sync[cluster], -1); 	/* rearm condition (consume token) */
 	//pthread_barrier_wait(&pthread_barrier);
 }
 
 void receiveDistributedStart(int remotePE, off64_t remoteOffset, void* localAddress, size_t transmissionSize)
 {
-	mppa_async_event_wait(&sync_evt[remotePE]);	/* unlock when sync[cluster] is GT than 0 */
+	if(mppa_async_event_wait(&sync_evt[remotePE]) != 0){	/* unlock when sync[cluster] is GT than 0 */
+		assert(0 && "mppa_async_event_wait\n");
+	}
 	__builtin_k1_afdau(&sync[remotePE], -1); 	/* rearm condition (consume token) */
-	mppa_async_get(localAddress, &distributed_segment[remotePE], remoteOffset, transmissionSize, NULL);
+	if(mppa_async_get(localAddress, &distributed_segment[remotePE], remoteOffset, transmissionSize, NULL) != 0){
+		assert(0 && "mppa_async_get\n");
+	}
 	//pthread_barrier_wait(&pthread_barrier);
 }
 
@@ -156,7 +167,9 @@ void receiveDistributedEnd(int cluster)
 		__builtin_k1_afdau(&sync[cluster], 1); 	/* post locally */
 	}else{
 		//printf("Cluster %d post to cluster %d offset %llu\n", sender, receiver, (off64_t)(sender * sizeof(long long)));
-		mppa_async_postadd(&sync_segments[receiver], (off64_t)(sender * sizeof(long long)), 1); /* atomic remote increment of sync[cluster] value */
+		if(mppa_async_postadd(&sync_segments[receiver], (off64_t)(sender * sizeof(long long)), 1) != 0){ /* atomic remote increment of sync[cluster] value */
+			assert(0 && "mppa_async_postadd\n");
+		}
 	}
 }
 
@@ -210,7 +223,9 @@ void communicationInit() {
 	for(i=0; i<PREESM_NB_CLUSTERS + PREESM_IO_USED;i++){
 		/* event &sync_evt[i] unlocks when sync[i] is GT 0 (kind of remote semaphore emulation) */
 		//printf("Cluster %d evalcond addr %llx\n", __k1_get_cluster_id(), (uint64_t)(uintptr_t) &sync[i]);
-		mppa_async_evalcond(&sync[i], 0, MPPA_ASYNC_COND_GT, &sync_evt[i]); /* GT = Greater Than */
+		if(mppa_async_evalcond(&sync[i], 0, MPPA_ASYNC_COND_GT, &sync_evt[i]) != 0){ /* GT = Greater Than */
+			assert(0 && "mppa_async_evalcond\n");
+		}
 	}
 	//extern int _start_async_copy;
 	uintptr_t addr = (uintptr_t)&sync[0] /*- (uintptr_t)&_start_async_copy*/;
@@ -228,7 +243,9 @@ void communicationInit() {
 	if(ret!=0){
 		printf("Error mppa_async_segment_create\n");
 	}
-	mppa_async_put((void*)&addr, MPPA_ASYNC_DDR_0, SYNC_SHARED_ADDRESS+sender*sizeof(void*), sizeof(uintptr_t), NULL);
+	if(mppa_async_put((void*)&addr, MPPA_ASYNC_DDR_0, SYNC_SHARED_ADDRESS+sender*sizeof(void*), sizeof(uintptr_t), NULL) != 0){
+		assert(0 && "mppa_async_put");
+	}
 	mppa_async_fence(MPPA_ASYNC_DDR_0, NULL);
 
 	#ifndef __k1io__
@@ -248,7 +265,9 @@ void communicationInit() {
 		mppa_rpc_barrier(1,2);
 	#endif
 
-	mppa_async_get(sync_remote_ptr, MPPA_ASYNC_DDR_0, SYNC_SHARED_ADDRESS, (PREESM_NB_CLUSTERS + PREESM_IO_USED)*sizeof(uintptr_t), NULL);
+	if(mppa_async_get(sync_remote_ptr, MPPA_ASYNC_DDR_0, SYNC_SHARED_ADDRESS, (PREESM_NB_CLUSTERS + PREESM_IO_USED)*sizeof(uintptr_t), NULL) != 0){
+		assert(0 && "mppa_async_get\n");
+	}
 	int copySyncs = 0;
 	for(copySyncs = 0; copySyncs < PREESM_NB_CLUSTERS + PREESM_IO_USED; copySyncs++){
 		if(copySyncs != sender){
@@ -314,8 +333,12 @@ void *__real_memset(void *s, int c, size_t n){
 	#ifndef __k1io__
 	if(addr >= DDR_START){
 		off64_t offset = 0;
-		mppa_async_offset(&shared_segment, s, &offset);
-		mppa_async_get(l, &shared_segment, offset, n, NULL);
+		if(mppa_async_offset(&shared_segment, s, &offset) != 0){
+			assert(0 && "mppa_async_offset\n");
+		}
+		if(mppa_async_get(l, &shared_segment, offset, n, NULL) != 0){
+			assert(0 && "mppa_async_get\n");
+		}
 	}
 	#endif
 	unsigned int i;
@@ -326,8 +349,12 @@ void *__real_memset(void *s, int c, size_t n){
 	#ifndef __k1io__
 	if(addr >= DDR_START){
 		off64_t offset = 0;
-		mppa_async_offset(&shared_segment, s, &offset);
-		mppa_async_put(l, &shared_segment, offset, n, NULL);
+		if(mppa_async_offset(&shared_segment, s, &offset) != 0){
+			assert(0 && "mppa_async_offset\n");
+		}
+		if(mppa_async_put(l, &shared_segment, offset, n, NULL) != 0){
+			assert(0 && "mppa_async_put\n");
+		}
 	}
 	#endif
 	__builtin_k1_wpurge();
@@ -376,25 +403,41 @@ void *__real_memcpy(void *dest, const void *src, size_t n){
 	/* cluster -> ddr */
 	if(dst_addr >= DDR_START && src_addr < DDR_START){
 		off64_t offset = 0;
-		mppa_async_offset(&shared_segment, dest, &offset);
-		mppa_async_put(src, &shared_segment, offset, n, NULL);
+		if(mppa_async_offset(&shared_segment, dest, &offset) != 0){
+			assert(0 && "mppa_async_offset\n");
+		}
+		if(mppa_async_put(src, &shared_segment, offset, n, NULL) != 0){
+			assert(0 && "mppa_async_put\n");
+		}
 	}
 
 	/* ddr -> cluster */
 	if(dst_addr < DDR_START && src_addr >= DDR_START){
 		off64_t offset = 0;
-		mppa_async_offset(&shared_segment, dest, &offset);
-		mppa_async_get(dest, &shared_segment, offset, n, NULL);
+		if(mppa_async_offset(&shared_segment, dest, &offset) != 0){
+			assert(0 && "mppa_async_offset\n");
+		}
+		if(mppa_async_get(dest, &shared_segment, offset, n, NULL) != 0){
+			assert(0 && "mppa_async_get\n");
+		}
 	}
 
 	/* ddr -> ddr */
 	if(dst_addr >= DDR_START && src_addr >= DDR_START){
 		//printf("=====> local_buffer %llx src %llx dst %llx\n", (uint64_t)(uintptr_t)local_buffer, (uint64_t)(uintptr_t)src, (uint64_t)(uintptr_t)dest );		
 		off64_t offset = 0;
-		mppa_async_offset(&shared_segment, (void*)src, &offset);
-		mppa_async_get(local_buffer, &shared_segment, offset, n, NULL);
-		mppa_async_offset(&shared_segment, dest, &offset);
-		mppa_async_put(local_buffer, &shared_segment, offset, n, NULL);
+		if(mppa_async_offset(&shared_segment, (void*)src, &offset) != 0){
+			assert(0 && "mppa_async_offset\n");
+		}
+		if(mppa_async_get(local_buffer, &shared_segment, offset, n, NULL) != 0){
+			assert(0 && "mppa_async_get\n");
+		}
+		if(mppa_async_offset(&shared_segment, dest, &offset) != 0){
+			assert(0 && "mppa_async_offset\n");
+		}
+		if(mppa_async_put(local_buffer, &shared_segment, offset, n, NULL) != 0){
+			assert(0 && "mppa_async_put\n");
+		}
 	}
 	#endif
 
