@@ -98,8 +98,11 @@ public class WorkflowValidator implements IValidator {
     final Class<?> preesmWorkflowTask = PreesmPlugin.getInstance().getTask(pluginId);
 
     if (preesmWorkflowTask == null) {
-      createMarker(file, "Plugin or Class associated to the workflow task not found.", pluginId, IMarker.PROBLEM,
-          IMarker.SEVERITY_ERROR);
+      final String location = "task='" + vertex.getValue("id") + "' id='" + pluginId + "'";
+      final String message = "Plugin or Class with id '" + pluginId + "' associated to the workflow task '"
+          + vertex.getValue("id") + "' could not be found.\n"
+          + "Please check for typos, leading/trailing spaces, or if the id changed at https://preesm.github.io/docs/workflowtasksref/";
+      createMarker(file, message, location, IMarker.PROBLEM, IMarker.SEVERITY_ERROR);
       return false;
     }
 
