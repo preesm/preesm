@@ -323,13 +323,21 @@ static uintptr_t memcpy_cur_src[LOG_MEMCPY];
 #endif
 
 void *__real_memset(void *s, int c, size_t n){
-	uintptr_t addr = (uintptr_t)s;
-	char *l = (addr >= DDR_START) ? local_buffer : s;
 
 	__builtin_k1_wpurge();
 	__builtin_k1_fence();
 	mOS_dinval();
-
+	uintptr_t addr = (uintptr_t)s;
+	#ifndef __k1io__
+	if(addr >= DDR_START){
+		printf("It is actually happening --> addr >= DDR_START in memset --> size %d\n", n);
+	}
+	#endif
+	char *l = s;
+	/*#if __k1io__
+	#else
+	uintptr_t addr = (uintptr_t)s;
+	char *l = (addr >= DDR_START) ? local_buffer : s;
 	if(addr >= DDR_START){
 		off64_t offset = 0;
 		if(mppa_async_offset(&shared_segment, s, &offset) != 0){
@@ -339,11 +347,15 @@ void *__real_memset(void *s, int c, size_t n){
 			assert(0 && "mppa_async_get\n");
 		}
 	}
+	#endif*/
 	unsigned int i;
 	/* memset */
-	for(i=0;i<n;i++)
+	for(i=0;i<n;i++){
 		l[i] = (char)c;
+	}
 	
+	/*#if __k1io__
+	#else
 	if(addr >= DDR_START){
 		off64_t offset = 0;
 		if(mppa_async_offset(&shared_segment, s, &offset) != 0){
@@ -353,6 +365,7 @@ void *__real_memset(void *s, int c, size_t n){
 			assert(0 && "mppa_async_put\n");
 		}
 	}
+	#endif*/
 	__builtin_k1_wpurge();
 	__builtin_k1_fence();
 	mOS_dinval();
@@ -388,52 +401,58 @@ void *__real_memcpy(void *dest, const void *src, size_t n){
 	memcpy_cur_dst[0] = dst_addr;
 	memcpy_cur_src[0] = src_addr;
 #endif
-
-	/* local memcpy */
-	if(dst_addr < DDR_START && src_addr < DDR_START){
-		for(i=0 ; i<n ; i++)
+	#if __k1io__
+		for(i=0 ; i<n ; i++){
 			((char*)dest)[i] = ((char*)src)[i];
-	}
+		}
+	#else
+		/* local memcpy */
+		if(dst_addr < DDR_START && src_addr < DDR_START){
+			for(i=0 ; i<n ; i++){
+				((char*)dest)[i] = ((char*)src)[i];
+			}
+		}
 
-	/* cluster -> ddr */
-	if(dst_addr >= DDR_START && src_addr < DDR_START){
-		off64_t offset = 0;
-		if(mppa_async_offset(&shared_segment, dest, &offset) != 0){
-			assert(0 && "mppa_async_offset\n");
+		/* cluster -> ddr */
+		if(dst_addr >= DDR_START && src_addr < DDR_START){
+			off64_t offset = 0;
+			if(mppa_async_offset(&shared_segment, dest, &offset) != 0){
+				assert(0 && "mppa_async_offset\n");
+			}
+			if(mppa_async_put(src, &shared_segment, offset, n, NULL) != 0){
+				assert(0 && "mppa_async_put\n");
+			}
 		}
-		if(mppa_async_put(src, &shared_segment, offset, n, NULL) != 0){
-			assert(0 && "mppa_async_put\n");
-		}
-	}
 
-	/* ddr -> cluster */
-	if(dst_addr < DDR_START && src_addr >= DDR_START){
-		off64_t offset = 0;
-		if(mppa_async_offset(&shared_segment, (void*)src, &offset) != 0){
-			assert(0 && "mppa_async_offset\n");
+		/* ddr -> cluster */
+		if(dst_addr < DDR_START && src_addr >= DDR_START){
+			off64_t offset = 0;
+			if(mppa_async_offset(&shared_segment, (void*)src, &offset) != 0){
+				assert(0 && "mppa_async_offset\n");
+			}
+			if(mppa_async_get(dest, &shared_segment, offset, n, NULL) != 0){
+				assert(0 && "mppa_async_get\n");
+			}
 		}
-		if(mppa_async_get(dest, &shared_segment, offset, n, NULL) != 0){
-			assert(0 && "mppa_async_get\n");
-		}
-	}
 
-	/* ddr -> ddr */
-	if(dst_addr >= DDR_START && src_addr >= DDR_START){
-		//printf("=====> local_buffer %llx src %llx dst %llx\n", (uint64_t)(uintptr_t)local_buffer, (uint64_t)(uintptr_t)src, (uint64_t)(uintptr_t)dest );		
-		off64_t offset = 0;
-		if(mppa_async_offset(&shared_segment, (void*)src, &offset) != 0){
-			assert(0 && "mppa_async_offset\n");
+		/* ddr -> ddr */
+		if(dst_addr >= DDR_START && src_addr >= DDR_START){
+			//printf("=====> local_buffer %llx src %llx dst %llx\n", (uint64_t)(uintptr_t)local_buffer, (uint64_t)(uintptr_t)src, (uint64_t)(uintptr_t)dest );
+			off64_t offset = 0;
+			if(mppa_async_offset(&shared_segment, (void*)src, &offset) != 0){
+				assert(0 && "mppa_async_offset\n");
+			}
+			if(mppa_async_get(local_buffer, &shared_segment, offset, n, NULL) != 0){
+				assert(0 && "mppa_async_get\n");
+			}
+			if(mppa_async_offset(&shared_segment, dest, &offset) != 0){
+				assert(0 && "mppa_async_offset\n");
+			}
+			if(mppa_async_put(local_buffer, &shared_segment, offset, n, NULL) != 0){
+				assert(0 && "mppa_async_put\n");
+			}
 		}
-		if(mppa_async_get(local_buffer, &shared_segment, offset, n, NULL) != 0){
-			assert(0 && "mppa_async_get\n");
-		}
-		if(mppa_async_offset(&shared_segment, dest, &offset) != 0){
-			assert(0 && "mppa_async_offset\n");
-		}
-		if(mppa_async_put(local_buffer, &shared_segment, offset, n, NULL) != 0){
-			assert(0 && "mppa_async_put\n");
-		}
-	}
+	#endif
 
 #if 0
 	if(memcpy_calls > START_DISPLAY)

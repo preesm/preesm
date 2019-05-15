@@ -207,8 +207,8 @@ class MPPA2ExplicitPrinter extends CPrinter {
 	override printFiniteLoopBlockHeader(FiniteLoopBlock block2) '''
 	«{
 	 	IS_HIERARCHICAL = true
-	"\t"}»// Begin the for loop
-	{
+	"\t"}»
+	{ // Begin the hierarchical actor
 		«{
 		var gets = ""
 		var local_offset = 0L;
@@ -243,7 +243,7 @@ class MPPA2ExplicitPrinter extends CPrinter {
 					gets += "	/* Shared + */ " + offset + ",\n";
 					gets += "	" + param.typeSize * param.size + ",\n";
 					gets += "	NULL) != 0){\n";
-					gets += "		assert(0 && \"mppa_async_get\\n\")\n";
+					gets += "		assert(0 && \"mppa_async_get\\n\");\n";
 					gets += "	}\n";
 					gets += "}\n"
 					local_offset += param.typeSize * param.size;
@@ -254,7 +254,7 @@ class MPPA2ExplicitPrinter extends CPrinter {
 			gets += "int " + block2.iter.name + ";\n"
 			gets += "#pragma omp parallel for private(" + block2.iter.name + ")\n"
 			gets += "for(" + block2.iter.name + "=0;" + block2.iter.name +"<" + block2.nbIter + ";" + block2.iter.name + "++)\n"
-			gets += "	{\n"
+			gets += "	{\n" 
 
 
 			if(local_offset > local_buffer_size)
@@ -263,7 +263,7 @@ class MPPA2ExplicitPrinter extends CPrinter {
 	'''
 
 	override printFiniteLoopBlockFooter(FiniteLoopBlock block2) '''
-		}
+		}// End the for loop 
 		«{
 				var puts = ""
 				var local_offset = 0L;
@@ -283,7 +283,7 @@ class MPPA2ExplicitPrinter extends CPrinter {
 						puts += "	/* Shared + */" + offset + ",\n";
 						puts += "	" + param.typeSize * param.size + ",\n";
 						puts += "	NULL) != 0){\n";
-						puts += "		assert(0 && \"mppa_async_put\\n\")\n";
+						puts += "		assert(0 && \"mppa_async_put\\n\");\n";
 						puts += "		}\n";
 						puts += "	}\n"
 						local_offset += param.typeSize * param.size;
@@ -292,7 +292,7 @@ class MPPA2ExplicitPrinter extends CPrinter {
 				}
 				if(local_offset > local_buffer_size)
 					local_buffer_size = local_offset
-				puts += "}\n"
+		puts += "	}\n"
 			puts}»
 		«{
 			 	IS_HIERARCHICAL = false
@@ -377,10 +377,10 @@ class MPPA2ExplicitPrinter extends CPrinter {
 					}*/
 				}
 			}
-		puts += "}\n"
 		}else{
 			puts += " /* puts are normaly generated before */ \n"
 		}
+		puts += "}\n"
 		if(local_offset > local_buffer_size)
 			local_buffer_size = local_offset
 	puts}»
