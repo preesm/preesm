@@ -134,9 +134,9 @@ class CHardwarePrinter extends DefaultPrinter {
 	 * whose target and destination are identical.
 	 */
 	protected var boolean IGNORE_USELESS_MEMCPY = true
-	
+
 	/**
-	 * Variable that store the number or iteration in hardware. Using it, it will be possible to 
+	 * Variable that store the number or iteration in hardware. Using it, it will be possible to
 	 * compress all the function calls in just one.
 	 */
 	protected var int factorNumber = 0;
@@ -146,7 +146,7 @@ class CHardwarePrinter extends DefaultPrinter {
 	protected var int numberHardwareAcceleratorSlots = 0;
 	protected var int threadHardwarePrintedDeclaration = 0;
 	protected var int threadHardwarePrintedUsage = 0;
-	
+
 //	int getFactorNumber(){
 //		return this.factorNunber;
 //	}
@@ -222,16 +222,16 @@ class CHardwarePrinter extends DefaultPrinter {
 		}
 		// Initialize Hardware infrastructure
 		hardware_init();
-		
+
 		«IF !callBlock.codeElts.empty»// Initialisation(s)«"\n\n"»«ENDIF»
 	'''
 
 	override printCoreLoopBlockHeader(LoopBlock block2) '''
 
 		«"\t"»// Begin the execution loop
-#ifdef LOOP_SIZE // Case of a finite loop
+#ifdef PREESM_LOOP_SIZE // Case of a finite loop
 			int index;
-			for(index=0;index<LOOP_SIZE;index++){
+			for(index=0;index<PREESM_LOOP_SIZE;index++){
 #else // Default case of an infinite loop
 			while(1){
 #endif
@@ -245,10 +245,10 @@ class CHardwarePrinter extends DefaultPrinter {
 		}
 		// Release kernel instance
 		hardware_kernel_release("matmul");
-		
+
 		// Clean Hardware setup
 		hardware_exit();
-		
+
 		return NULL;
 	}
 
@@ -443,7 +443,7 @@ class CHardwarePrinter extends DefaultPrinter {
 		if(this.usingPapify == 1){
 	    	context.put("CONSTANTS", "\n#ifdef _PREESM_MONITOR_INIT\n#include \"eventLib.h\"\n#endif");
 		}
-	    
+
 
 	    context.put("CONSTANTS", "#define NB_DESIGN_ELTS "+getEngine.archi.componentInstances.size+"\n#define NB_CORES "+getEngine.codeBlocks.size);
 
@@ -658,7 +658,7 @@ class CHardwarePrinter extends DefaultPrinter {
 	hardware_kernel_execute("«functionCall.name»",gsize_TO_BE_CHANGED«IF (functionCall.factorNumber > 0)» * «functionCall.factorNumber»«ENDIF», lsize_TO_BE_CHANGED); // executing hardware kernel
 	hardware_kernel_wait("«functionCall.name»");
 	'''
-	
+
 	override printPapifyFunctionCall(PapifyFunctionCall papifyFunctionCall) '''
 	«IF papifyFunctionCall.opening == true»
 		#ifdef _PREESM_MONITOR_INIT
@@ -716,7 +716,7 @@ class CHardwarePrinter extends DefaultPrinter {
 	«ENDFOR»
 	//«this.dataTransferCallNumber++»
 	'''
-	
+
 	override printOutputDataTransfer(OutputDataTransfer action) '''
 	// Hardware³ data transfer token output
 	«var count = 0»
@@ -729,7 +729,7 @@ class CHardwarePrinter extends DefaultPrinter {
 	«ENDFOR»
 	//«this.dataOutputTransferCallNumber++»
 	'''
-	
+
 	override printRegisterSetUp(RegisterSetUpAction action) '''
 	«var count = 0»
 	«FOR param : action.parameters»
@@ -739,21 +739,21 @@ class CHardwarePrinter extends DefaultPrinter {
 		hardware_kernel_wcfg("«action.name»", A3_ACCELERATOR_REG_«(count++).toString()», wcfg_temp);
 	«ENDFOR»
 	'''
-	
+
 	override printFpgaLoad(FpgaLoadAction action) '''
-			
+
 		// Create kernel instance
 		hardware_kernel_create("«action.name»", SIZE_MEM_HW, N_MEMORY_BANKS, N_REGISTERS);
-		
+
 		a3data_t wcfg_temp[MAX_NACCS];
-		
+
 		for (int i = 0; i < MAX_NACCS; i++) {
 			hardware_load("«action.name»", i, 0, 0, 1);
 		}
 	'''
-	
+
 	override printFreeDataTransferBuffer(FreeDataTransferBuffer action) ''''''
-	
+
 	override printGlobalBufferDeclaration(GlobalBufferDeclaration action) '''
 	// Hardware³ global data buffer declaration
 	«var count = 0»
@@ -762,7 +762,7 @@ class CHardwarePrinter extends DefaultPrinter {
 		global_hardware_«count» = hardware_alloc(«this.numberHardwareAcceleratorSlots» * «buffer.size»«IF (this.factorNumber > 0)» * «this.factorNumber»«ENDIF» * sizeof *«buffer.name», "«action.name»", "«buffer.doSwitch»",  «action.parameterDirections.get(count++)»);
 	«ENDFOR»
 	'''
-		
+
 	def int compactPapifyUsage(Collection<Block> allBlocks){
 		var int usingPapify = 0;
 		for (cluster : allBlocks){
@@ -773,7 +773,7 @@ class CHardwarePrinter extends DefaultPrinter {
 				var int iterator = 0;
 				var boolean closed = false;
 				/*
-				 * Only one #ifdef _PREESM_MONITORING_INIT in the definition code 
+				 * Only one #ifdef _PREESM_MONITORING_INIT in the definition code
 				 */
 				if(!definitions.isEmpty){
 					for(iterator = 0; iterator < definitions.size; iterator++){
@@ -788,7 +788,7 @@ class CHardwarePrinter extends DefaultPrinter {
 							(definitions.get(iterator) as PapifyAction).closing = true;
 						}
 					}
-				} 
+				}
 				/*
 				 * Minimizing the number of #ifdef _PREESM_MONITORING_INIT in the loop
 				 */
@@ -796,7 +796,7 @@ class CHardwarePrinter extends DefaultPrinter {
 					if(loopBlockElts.get(0) instanceof PapifyFunctionCall){
 						(loopBlockElts.get(0) as PapifyFunctionCall).opening = true;
 						if(!(loopBlockElts.get(1) instanceof PapifyAction)){
-							(loopBlockElts.get(0) as PapifyFunctionCall).closing = true;							
+							(loopBlockElts.get(0) as PapifyFunctionCall).closing = true;
 						}
 					}
 					for(iterator = 1; iterator < loopBlockElts.size-1; iterator++){
@@ -810,7 +810,7 @@ class CHardwarePrinter extends DefaultPrinter {
 					if(loopBlockElts.get(loopBlockElts.size-1) instanceof PapifyFunctionCall){
 						(loopBlockElts.get(loopBlockElts.size-1) as PapifyFunctionCall).closing = true;
 					}
-				} 
+				}
 				/*
 				 * Minimizing the number of #ifdef _PREESM_MONITORING_INIT in the init
 				 */
@@ -818,7 +818,7 @@ class CHardwarePrinter extends DefaultPrinter {
 					if(initBlockElts.get(0) instanceof PapifyFunctionCall){
 						(initBlockElts.get(0) as PapifyFunctionCall).opening = true;
 						if(!(initBlockElts.get(1) instanceof PapifyAction)){
-							(initBlockElts.get(0) as PapifyFunctionCall).closing = true;							
+							(initBlockElts.get(0) as PapifyFunctionCall).closing = true;
 						}
 					}
 					for(iterator = 1; iterator < initBlockElts.size-1; iterator++){
@@ -832,9 +832,9 @@ class CHardwarePrinter extends DefaultPrinter {
 					if(initBlockElts.get(initBlockElts.size-1) instanceof PapifyFunctionCall){
 						(initBlockElts.get(initBlockElts.size-1) as PapifyFunctionCall).closing = true;
 					}
-				} 
+				}
 			}
-		}	
+		}
 		return usingPapify;
 	}
 	override preProcessing(List<Block> printerBlocks, Collection<Block> allBlocks) {
@@ -845,11 +845,11 @@ class CHardwarePrinter extends DefaultPrinter {
 		var firstFunctionCallIndex = 0;
 		var lastFunctionCallIndex = 0;
 		var currentFunctionPosition = 0;
-		
-		this.numberHardwareAcceleratorSlots = printerBlocks.size(); 
+
+		this.numberHardwareAcceleratorSlots = printerBlocks.size();
 
 		var Block coreLoopMerged = CodegenModelUserFactory.createCoreBlock();
-		
+
 		/*
 		 * To insert all the elements of loopBlock of every instance of printerBlocks in a Unique Block
 		 * called blockMerged
@@ -862,19 +862,19 @@ class CHardwarePrinter extends DefaultPrinter {
 		}
 		/* to add al the elements of the blockMerged.loopBlock.codeElts inside
 		 * the first block of the printersBlock */
-		 
+
         var Block firstBlock = printerBlocks.get(0)
 		var coreLoopFinal = (firstBlock as CoreBlock).loopBlock
 		var blockLoopMerged = (coreLoopMerged as CoreBlock).loopBlock
 		var clonedElts = blockLoopMerged.codeElts.clone()
 		coreLoopFinal.codeElts.addAll(clonedElts)
-		
+
 		/* The following commented lines are going to be VERY important for possible future modification where
 		 * multiple GlobalBufferDeclaration should be used in the same file.
 		  */
-		
-//		/* to repeat the same operation for the initBlock (only the buffers declarations) */	
-//		
+
+//		/* to repeat the same operation for the initBlock (only the buffers declarations) */
+//
 //		var List bufferCopyList = new ArrayList();
 //		var List parameterDirectionsCopyList = new ArrayList();
 //		for (Block block : printerBlocks) {
@@ -887,7 +887,7 @@ class CHardwarePrinter extends DefaultPrinter {
 //					var parameterDirectionCopy = (elementInit as GlobalBufferDeclarationImpl).getParameterDirections
 //					bufferCopyList.addAll(buffersCopy)
 //					parameterDirectionsCopyList.addAll(parameterDirectionCopy)
-//					
+//
 //					//PreesmLogger.getLogger().info("[LEO] try to copy the buffers and subbuffers.");
 //				}
 //			}
@@ -902,36 +902,36 @@ class CHardwarePrinter extends DefaultPrinter {
 //				(elementInit as GlobalBufferDeclarationImpl).getParameterDirections.addAll(parameterDirectionsCopyList)
 //			}
 //		}
-		
+
 		/* the same operation MUST be done with the global declaration as well. The declaration and definition can be found directly inside the codeBlock */
-		
+
 		var List bufferCopyDeclarationList = new ArrayList();
 		for (Block block : printerBlocks) {
 			bufferCopyDeclarationList.addAll((block as CoreBlock).declarations)
 			PreesmLogger.getLogger().info("[LEO] try to copy the buffers and subbuffers.");
 		}
 		(firstBlock as CoreBlock).declarations.addAll(bufferCopyDeclarationList)
-		
-		
-		
-		
+
+
+
+
 		for (Block block : printerBlocks) {
-			
-			/* 
+
+			/*
 			 * The strategy is:
 			 * to delete all the FunctionCallImpl and to keep just the LAST one. All the other FunctionCallImpl are
 			 * replaced with the "Data Motion".
-			 * 
+			 *
 			 */
-			 
-			 /* 
+
+			 /*
 			  * In order to have a unique file calling all the PEs of the Hardware (many SLOTs can be used), the
-			  * operation described above MUST continued to be performed for every element of the printerBlocks. 
+			  * operation described above MUST continued to be performed for every element of the printerBlocks.
 			  * Additionally, only one element should be kept in the list (that MUST be created to reflect the actors firing
 			  * of the original set of files).
-			  * 
+			  *
 			  */
-			
+
 			var coreLoop = (block as CoreBlock).loopBlock
 			var i = 0;
 			this.functionCallNumber = 0;
@@ -951,7 +951,7 @@ class CHardwarePrinter extends DefaultPrinter {
 				}
 				i++;
 			}
-			
+
 			// This loop adds the new information on the on the class to be printed and substitute the old with the new one
 			// Note that the function to keep is the last one!
 			if (this.functionCallNumber > 0) {
@@ -966,11 +966,11 @@ class CHardwarePrinter extends DefaultPrinter {
 					// set the new value in the new version of the element of the list
 					functionCallImplNew.factorNumber = this.functionCallNumber;
 					// replace the old element with the new one
-					(block as CoreBlock).loopBlock.codeElts.set(lastFunctionCallIndex,functionCallImplNew);	
-				 } 
+					(block as CoreBlock).loopBlock.codeElts.set(lastFunctionCallIndex,functionCallImplNew);
+				 }
 				PreesmLogger.getLogger().info("[LEO] number of FunctionCallImpl " + this.functionCallNumber);
 			}
-			
+
 			// this loop is to delete all the functions but not the last one (the new one!)
 			i = coreLoop.codeElts.size-1;
 			var flagFirstFunctionFound = 0;
@@ -979,7 +979,7 @@ class CHardwarePrinter extends DefaultPrinter {
 				val elt = coreLoop.codeElts.get(i)
 				if (elt.getClass().getSimpleName().equals("FunctionCallImpl") && flagFirstFunctionFound == 0) {
 					flagFirstFunctionFound++;
-					
+
 				}
 				else if (elt.getClass().getSimpleName().equals("FunctionCallImpl") && flagFirstFunctionFound > 0) {
 					coreLoop.codeElts.remove(i);
@@ -987,10 +987,10 @@ class CHardwarePrinter extends DefaultPrinter {
 				}
 				i--;
 			}
-			
+
 			// this loop is for the data transfer. A new DataTrasfer (a replica) is added AFTER the FunctionCall,
 			// one for every buffer used!
-			
+
 			i=0;
 			DataTransferActionNumber = 0;
 			var positionOfNewDataTransfer = currentFunctionPosition;
@@ -1024,10 +1024,10 @@ class CHardwarePrinter extends DefaultPrinter {
 				}
 				i++;
 			}
-			
-			// this loop is for the OutputDataTransfer. All the OUTPUT DataTransfer will be deleted 
+
+			// this loop is for the OutputDataTransfer. All the OUTPUT DataTransfer will be deleted
 			// and inserted after the function execution
-			
+
 			i=0;
 			var positionOfNewOutputDataTransfer = currentFunctionPosition;
 			var OutputDataTransferActionNumber = 0;
@@ -1049,7 +1049,7 @@ class CHardwarePrinter extends DefaultPrinter {
 			}
 			// the last one is deleted after the function execution and does not count
 			currentFunctionPosition++
-			
+
 			// all the OutputDataTransfer should be inserted again but AFTER the function call
 			var countOutputDataTransferInserted = 0
 			i=0
@@ -1086,30 +1086,30 @@ class CHardwarePrinter extends DefaultPrinter {
 			} else {
 				PreesmLogger.getLogger().log(Level.SEVERE, "Hardware³ Codegen ERROR in the preProcessing function. Different number of function calls and data transfers were detected");
 			}
-			
+
 		}
-		
+
 		/* Removing unuseful elements in the list of printersBlock. To keep just the fist one */
 		var numberOfSlotDetected = printerBlocks.size
 		for(var j = numberOfSlotDetected-1; j >= 1; j--){
 			printerBlocks.remove(j)
 		}
-		
+
 		PreesmLogger.getLogger().info("[LEO] End of the Hardware preProcessing.");
 		/*
 		 * Preprocessing for Papify
 		 */
-		for (cluster : allBlocks){		
-			if (cluster instanceof CoreBlock) {					
+		for (cluster : allBlocks){
+			if (cluster instanceof CoreBlock) {
 				for(CodeElt codeElt : cluster.loopBlock.codeElts){
 					if(codeElt instanceof PapifyFunctionCall){
 						this.usingPapify = 1;
 					}
-				}		
-			}			
+				}
+			}
 		}
 	}
-	
+
 }
 
 

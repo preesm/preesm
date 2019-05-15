@@ -7,6 +7,7 @@ PREESM Changelog
 ### New Feature
 
 ### Changes
+*  Fix C Hardware codegen: properly prefix LOOP_SIZE with PREESM_;
 
 ### Bug fix
 
