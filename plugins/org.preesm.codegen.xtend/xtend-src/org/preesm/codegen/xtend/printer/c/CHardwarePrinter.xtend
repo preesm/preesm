@@ -51,23 +51,28 @@ import java.util.Arrays
 import java.util.Collection
 import java.util.Date
 import java.util.List
+import java.util.logging.Level
 import org.apache.velocity.VelocityContext
 import org.apache.velocity.app.VelocityEngine
+import org.eclipse.emf.common.util.EList
 import org.preesm.codegen.model.Block
 import org.preesm.codegen.model.Buffer
 import org.preesm.codegen.model.BufferIterator
 import org.preesm.codegen.model.CallBlock
+import org.preesm.codegen.model.CodeElt
 import org.preesm.codegen.model.Communication
 import org.preesm.codegen.model.Constant
 import org.preesm.codegen.model.ConstantString
 import org.preesm.codegen.model.CoreBlock
+import org.preesm.codegen.model.DataTransferAction
 import org.preesm.codegen.model.Delimiter
 import org.preesm.codegen.model.Direction
+import org.preesm.codegen.model.DistributedMemoryCommunication
 import org.preesm.codegen.model.FifoCall
 import org.preesm.codegen.model.FifoOperation
 import org.preesm.codegen.model.FiniteLoopBlock
-import org.preesm.codegen.model.FreeDataTransferBuffer
 import org.preesm.codegen.model.FpgaLoadAction
+import org.preesm.codegen.model.FreeDataTransferBuffer
 import org.preesm.codegen.model.FunctionCall
 import org.preesm.codegen.model.GlobalBufferDeclaration
 import org.preesm.codegen.model.IntVar
@@ -75,28 +80,19 @@ import org.preesm.codegen.model.LoopBlock
 import org.preesm.codegen.model.NullBuffer
 import org.preesm.codegen.model.OutputDataTransfer
 import org.preesm.codegen.model.PapifyAction
-import org.preesm.codegen.model.DataTransferAction
+import org.preesm.codegen.model.PapifyFunctionCall
 import org.preesm.codegen.model.RegisterSetUpAction
 import org.preesm.codegen.model.SharedMemoryCommunication
 import org.preesm.codegen.model.SpecialCall
 import org.preesm.codegen.model.SubBuffer
 import org.preesm.codegen.model.Variable
+import org.preesm.codegen.model.util.CodegenModelUserFactory
 import org.preesm.codegen.printer.DefaultPrinter
 import org.preesm.codegen.xtend.CodegenPlugin
-import org.preesm.commons.exceptions.PreesmException
 import org.preesm.commons.exceptions.PreesmRuntimeException
 import org.preesm.commons.files.URLResolver
-import org.preesm.model.pisdf.util.CHeaderUsedLocator
 import org.preesm.commons.logger.PreesmLogger
-import java.util.logging.Level
-import java.lang.reflect.Parameter
-import org.preesm.codegen.model.DistributedMemoryCommunication
-import org.preesm.codegen.model.PapifyFunctionCall
-import org.eclipse.emf.common.util.EList
-import java.util.Collections
-import org.preesm.codegen.model.util.CodegenModelUserFactory
-import org.preesm.codegen.model.CodeElt
-import org.preesm.codegen.model.impl.GlobalBufferDeclarationImpl
+import org.preesm.model.pisdf.util.CHeaderUsedLocator
 
 /**
  * This printer is currently used to print C code only for GPP processors
@@ -842,7 +838,6 @@ class CHardwarePrinter extends DefaultPrinter {
 		var DataTransferActionNumber = 0;
 		var FreeDataTransferBufferNumber = 0;
 		var RegisterSetUpNumber = 0;
-		var firstFunctionCallIndex = 0;
 		var lastFunctionCallIndex = 0;
 		var currentFunctionPosition = 0;
 
@@ -905,7 +900,7 @@ class CHardwarePrinter extends DefaultPrinter {
 
 		/* the same operation MUST be done with the global declaration as well. The declaration and definition can be found directly inside the codeBlock */
 
-		var List bufferCopyDeclarationList = new ArrayList();
+		var bufferCopyDeclarationList = new ArrayList();
 		for (Block block : printerBlocks) {
 			bufferCopyDeclarationList.addAll((block as CoreBlock).declarations)
 			PreesmLogger.getLogger().info("[LEO] try to copy the buffers and subbuffers.");
@@ -941,7 +936,6 @@ class CHardwarePrinter extends DefaultPrinter {
 				val elt = coreLoop.codeElts.get(i)
 				if (elt.getClass().getSimpleName().equals("FunctionCallImpl") && this.functionCallNumber == 0) {
 					this.functionCallNumber++;
-					firstFunctionCallIndex = i;
 					lastFunctionCallIndex = i;
 				}
 				else if (elt.getClass().getSimpleName().equals("FunctionCallImpl") && this.functionCallNumber > 0) {
@@ -1029,7 +1023,6 @@ class CHardwarePrinter extends DefaultPrinter {
 			// and inserted after the function execution
 
 			i=0;
-			var positionOfNewOutputDataTransfer = currentFunctionPosition;
 			var OutputDataTransferActionNumber = 0;
 			val cloneCoreLoop = coreLoop.codeElts.clone
 			while (i < coreLoop.codeElts.size) {

@@ -88,9 +88,10 @@ public class WorkflowValidator implements IValidator {
   private boolean validateTaskVertex(final IFile file, final Vertex vertex) {
     // Getting the plugin ID and the associated class name.
     final String pluginId = (String) vertex.getValue("plugin identifier");
+    final String vertexName = (String) vertex.getValue("id");
 
     if (pluginId == null) {
-      createMarker(file, "Enter a plugin identifier for each plugin.", "Any plugin", IMarker.PROBLEM,
+      createMarker(file, "Task '" + vertexName + "' has no id.", "Task '" + vertexName + "'", IMarker.PROBLEM,
           IMarker.SEVERITY_ERROR);
       return false;
     }
@@ -98,9 +99,9 @@ public class WorkflowValidator implements IValidator {
     final Class<?> preesmWorkflowTask = PreesmPlugin.getInstance().getTask(pluginId);
 
     if (preesmWorkflowTask == null) {
-      final String location = "task='" + vertex.getValue("id") + "' id='" + pluginId + "'";
-      final String message = "Plugin or Class with id '" + pluginId + "' associated to the workflow task '"
-          + vertex.getValue("id") + "' could not be found.\n"
+      final String location = "task='" + vertexName + "' id='" + pluginId + "'";
+      final String message = "Plugin or Class with id '" + pluginId + "' associated to the workflow task '" + vertexName
+          + "' could not be found.\n"
           + "Please check for typos, leading/trailing spaces, or if the id changed at https://preesm.github.io/docs/workflowtasksref/";
       createMarker(file, message, location, IMarker.PROBLEM, IMarker.SEVERITY_ERROR);
       return false;

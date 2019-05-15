@@ -85,18 +85,18 @@ class LevelsOperations implements DAGCommonOperations {
 	protected def void computeAllLevels() {
 		dag.vertexSet
 			.filter[instance | seenNodes.contains(instance)]
-			.forEach[instance | levels.put(instance, new Integer(0))]
+			.forEach[instance | levels.put(instance, 0)]
 		while(iterator.hasNext()) {
 			val seenNode = iterator.next()
 			val predecessors = iterator.instanceSources.get(seenNode)
 			if(predecessors.isEmpty) {
-				levels.put(seenNode, new Integer(0))
+				levels.put(seenNode, 0)
 			} else {
 				val predecessorLevel = levels.filter[node, value | predecessors.contains(node)].values.max
 				if(forkJoinOrigInstance.keySet.contains(seenNode)) {
-					levels.put(seenNode, new Integer(predecessorLevel))
+					levels.put(seenNode, predecessorLevel)
 				} else {
-					levels.put(seenNode, new Integer(predecessorLevel+1))
+					levels.put(seenNode, predecessorLevel+1)
 				}
 			}
 		}
