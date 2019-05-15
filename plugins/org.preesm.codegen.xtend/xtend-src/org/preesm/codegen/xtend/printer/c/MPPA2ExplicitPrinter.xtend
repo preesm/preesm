@@ -300,7 +300,7 @@ class MPPA2ExplicitPrinter extends CPrinter {
 	'''
 	override printPapifyFunctionCall(PapifyFunctionCall papifyFunctionCall) '''
 		«IF papifyFunctionCall.opening == true»
-			#ifdef _PREESM_MONITOR_INIT
+			#ifdef _PREESM_MONITOR_INIT 
 		«ENDIF»
 		«papifyFunctionCall.name»(«FOR param : papifyFunctionCall.parameters SEPARATOR ', '»«param.doSwitch»«ENDFOR»); // «papifyFunctionCall.actorName»
 		«IF papifyFunctionCall.closing == true»
@@ -312,7 +312,9 @@ class MPPA2ExplicitPrinter extends CPrinter {
 		var gets = ""
 		var local_offset = 0L;
 		if(IS_HIERARCHICAL == false){
-			gets += "{\n"
+			if(this.sharedOnly == 1){
+				gets += "{\n"				
+			}
 			for(param : functionCall.parameters){
 
 				if(param instanceof SubBuffer){
@@ -377,7 +379,9 @@ class MPPA2ExplicitPrinter extends CPrinter {
 					}*/
 				}
 			}
-			puts += "}\n"
+			if(this.sharedOnly == 1){
+			 	puts += "}\n"
+			}
 		}else{
 			puts += " /* puts are normaly generated before */ \n"
 		}
