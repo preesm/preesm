@@ -753,9 +753,19 @@ public class Distributor {
         // retrieve
         final DirectedAcyclicGraph dag = (DirectedAcyclicGraph) memEx.getPropertyBean()
             .getValue(MemoryExclusionGraph.SOURCE_DAG);
+        // System.out.println(dag.toString());
+        // System.out.println(mObj.getClass());
+        // System.out.println(mObj.toString());
         if (i == 0) {
-          dagVertex = dag.getVertex(mObj.getSource().substring(("FIFO_Head_").length()));
+          System.out.println("A " + mObj.getSource().toString());
+          System.out.println("A1 " + mObj.getSource().substring(("FIFO_Head_").length()));
+          if (mObj.getSource().contains("FIFO_Head_")) {
+            dagVertex = dag.getVertex(mObj.getSource().substring(("FIFO_Head_").length()));
+          } else {
+            dagVertex = dag.getVertex(mObj.getSource());
+          }
         } else {
+          // System.out.println("B " + mObj.getSink().toString());
           dagVertex = dag.getVertex(mObj.getSink());
         }
       }
