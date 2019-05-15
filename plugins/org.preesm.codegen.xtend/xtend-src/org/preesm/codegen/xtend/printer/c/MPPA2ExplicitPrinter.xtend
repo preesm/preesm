@@ -236,16 +236,16 @@ class MPPA2ExplicitPrinter extends CPrinter {
 				//System.out.print("===> " + b.name + "\n");
 				if(b.name == "Shared"){
 					gets += "void *" + param.name + " = local_buffer+" + local_offset +";\n";
-					gets += "{\n"
-					gets += "	if(mppa_async_get(local_buffer + " + local_offset + ",\n";
-					gets += "	&shared_segment,\n";
+					gets += "	{\n"
+					gets += "		if(mppa_async_get(local_buffer + " + local_offset + ",";
+					gets += " &shared_segment,";
 					//gets += "	" + b.name + " + " + offset + ",\n";
-					gets += "	/* Shared + */ " + offset + ",\n";
-					gets += "	" + param.typeSize * param.size + ",\n";
-					gets += "	NULL) != 0){\n";
-					gets += "		assert(0 && \"mppa_async_get\\n\");\n";
-					gets += "	}\n";
-					gets += "}\n"
+					gets += " /* Shared + */ " + offset + ",";
+					gets += " " + param.typeSize * param.size + ",";
+					gets += " NULL) != 0){\n";
+					gets += "			assert(0 && \"mppa_async_get\\n\");\n";
+					gets += "		}\n";
+					gets += "	}\n"
 					local_offset += param.typeSize * param.size;
 					//System.out.print("==> " + b.name + " " + param.name + " size " + param.size + " port_name "+ port.getName + "\n");
 				}
@@ -253,17 +253,17 @@ class MPPA2ExplicitPrinter extends CPrinter {
 
 			gets += "int " + block2.iter.name + ";\n"
 			gets += "#pragma omp parallel for private(" + block2.iter.name + ")\n"
-			gets += "for(" + block2.iter.name + "=0;" + block2.iter.name +"<" + block2.nbIter + ";" + block2.iter.name + "++)\n"
-			gets += "	{\n" 
-
+			gets += "for(" + block2.iter.name + "=0;" + block2.iter.name +"<" + block2.nbIter + ";" + block2.iter.name + "++){\n"
 
 			if(local_offset > local_buffer_size)
 				local_buffer_size = local_offset
 	gets}»
+			
 	'''
 
-	override printFiniteLoopBlockFooter(FiniteLoopBlock block2) '''
-		}// End the for loop 
+	override printFiniteLoopBlockFooter(FiniteLoopBlock block2) '''		
+		
+			}// End the for loop   
 		«{
 				var puts = ""
 				var local_offset = 0L;
@@ -277,13 +277,13 @@ class MPPA2ExplicitPrinter extends CPrinter {
 					}
 					//System.out.print("===> " + b.name + "\n");
 					if(b.name == "Shared"){
-						puts += "{\n"
-						puts += "	if(mppa_async_put(local_buffer + " + local_offset + ",\n";
-						puts += "	&shared_segment,\n";
-						puts += "	/* Shared + */" + offset + ",\n";
-						puts += "	" + param.typeSize * param.size + ",\n";
-						puts += "	NULL) != 0){\n";
-						puts += "		assert(0 && \"mppa_async_put\\n\");\n";
+						puts += "	{\n"
+						puts += "		if(mppa_async_put(local_buffer + " + local_offset + ",";
+						puts += " &shared_segment,";
+						puts += " /* Shared + */" + offset + ",";
+						puts += " " + param.typeSize * param.size + ",";
+						puts += " NULL) != 0){\n";
+						puts += "			assert(0 && \"mppa_async_put\\n\");\n";
 						puts += "		}\n";
 						puts += "	}\n"
 						local_offset += param.typeSize * param.size;
@@ -292,11 +292,11 @@ class MPPA2ExplicitPrinter extends CPrinter {
 				}
 				if(local_offset > local_buffer_size)
 					local_buffer_size = local_offset
-		puts += "	}\n"
 			puts}»
 		«{
 			 	IS_HIERARCHICAL = false
 			""}»
+		}
 	'''
 	override printPapifyFunctionCall(PapifyFunctionCall papifyFunctionCall) '''
 		«IF papifyFunctionCall.opening == true»
@@ -310,9 +310,9 @@ class MPPA2ExplicitPrinter extends CPrinter {
 	override printFunctionCall(FunctionCall functionCall) '''
 	«{
 		var gets = ""
-		gets += "{\n"
 		var local_offset = 0L;
 		if(IS_HIERARCHICAL == false){
+			gets += "{\n"
 			for(param : functionCall.parameters){
 
 				if(param instanceof SubBuffer){
@@ -377,10 +377,10 @@ class MPPA2ExplicitPrinter extends CPrinter {
 					}*/
 				}
 			}
+			puts += "}\n"
 		}else{
 			puts += " /* puts are normaly generated before */ \n"
 		}
-		puts += "}\n"
 		if(local_offset > local_buffer_size)
 			local_buffer_size = local_offset
 	puts}»
@@ -393,7 +393,7 @@ class MPPA2ExplicitPrinter extends CPrinter {
 	'''
 
 	override printDeclarationsHeader(List<Variable> list) '''
-	// Core Global Declaration
+	// Core Global Declaration 
 	extern pthread_barrier_t iter_barrier;
 	extern int stopThreads;
 
@@ -441,8 +441,7 @@ class MPPA2ExplicitPrinter extends CPrinter {
 			while(!stopThreads){
 		#endif
 
-				//pthread_barrier_wait(&iter_barrier);
-
+				//pthread_barrier_wait(&iter_barrier);«"\n\n"»
 	'''
 
 
