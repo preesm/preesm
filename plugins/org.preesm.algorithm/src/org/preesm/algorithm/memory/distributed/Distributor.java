@@ -760,6 +760,12 @@ public class Distributor {
         }
       }
 
+      if (dagVertex == null) {
+        Distributor.logger.log(Level.WARNING,
+            "The use of Clustering task together with the DistributedOnly value for the distribution parameter"
+                + " in memory allocation task is not supported yet.");
+      }
+
       final ComponentInstance component = (ComponentInstance) dagVertex.getPropertyBean()
           .getValue(Distributor.OPERATOR);
 
