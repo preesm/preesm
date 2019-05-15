@@ -60,7 +60,6 @@ import org.preesm.workflow.implement.AbstractTaskImplementation;
     outputs = { @Port(name = "SDF", type = SDFGraph.class) },
 
     description = "Workflow task responsible for clustering hierarchical actors."
-        + "This task is currently incompatible with the DistributedOnly memory allocation distribution"
 
 )
 public class Clustering extends AbstractTaskImplementation {

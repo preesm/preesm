@@ -61,6 +61,7 @@ import org.eclipse.emf.common.util.EList
 import org.preesm.codegen.model.Variable
 import java.util.LinkedHashSet
 import java.util.Set
+import org.preesm.codegen.model.LoopBlock
 
 class MPPA2IOExplicitPrinter extends MPPA2ExplicitPrinter {
 
@@ -150,6 +151,17 @@ class MPPA2IOExplicitPrinter extends MPPA2ExplicitPrinter {
 		'''
 		return result;
 	}
+		override printCoreLoopBlockFooter(LoopBlock block2) '''
+
+				/* commit local changes to the global memory */
+				//pthread_barrier_wait(&iter_barrier); /* barrier to make sure all threads have commited data in smem */
+
+				mppa_rpc_barrier(1,2);
+				mppa_rpc_barrier(1,2);
+			}
+			return NULL;
+		}
+	'''
 	
 	override CharSequence generatePreesmHeader() {
 	    // 0- without the following class loader initialization, I get the following exception when running as Eclipse

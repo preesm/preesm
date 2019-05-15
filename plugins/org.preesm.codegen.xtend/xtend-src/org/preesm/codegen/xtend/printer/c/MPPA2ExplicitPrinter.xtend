@@ -312,9 +312,9 @@ class MPPA2ExplicitPrinter extends CPrinter {
 		var gets = ""
 		var local_offset = 0L;
 		if(IS_HIERARCHICAL == false){
-			if(this.sharedOnly == 1){
+			//if(this.sharedOnly == 1){
 				gets += "{\n"				
-			}
+			//}
 			for(param : functionCall.parameters){
 
 				if(param instanceof SubBuffer){
@@ -379,9 +379,9 @@ class MPPA2ExplicitPrinter extends CPrinter {
 					}*/
 				}
 			}
-			if(this.sharedOnly == 1){
+			//if(this.sharedOnly == 1){
 			 	puts += "}\n"
-			}
+			//}
 		}else{
 			puts += " /* puts are normaly generated before */ \n"
 		}
@@ -453,6 +453,17 @@ class MPPA2ExplicitPrinter extends CPrinter {
 
 				/* commit local changes to the global memory */
 				//pthread_barrier_wait(&iter_barrier); /* barrier to make sure all threads have commited data in smem */
+				«IF (this.io_used == 1)»
+					if(__k1_get_cluster_id() == «clusterToSync»){
+						mppa_rpc_barrier(1,2);
+					}
+				«ENDIF»
+				mppa_rpc_barrier_all();
+				«IF (this.io_used == 1)»
+					if(__k1_get_cluster_id() == «clusterToSync»){
+						mppa_rpc_barrier(1,2);
+					}
+				«ENDIF»
 			}
 			return NULL;
 		}

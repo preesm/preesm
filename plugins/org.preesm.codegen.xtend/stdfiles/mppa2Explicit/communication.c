@@ -328,7 +328,7 @@ void *__real_memset(void *s, int c, size_t n){
 	__builtin_k1_fence();
 	mOS_dinval();
 	uintptr_t addr = (uintptr_t)s;
-	#ifndef __k1io__
+	#if !defined(__k1io__)
 	if(addr >= DDR_START){
 		printf("It is actually happening --> addr >= DDR_START in memset --> size %d\n", n);
 	}
@@ -401,7 +401,7 @@ void *__real_memcpy(void *dest, const void *src, size_t n){
 	memcpy_cur_dst[0] = dst_addr;
 	memcpy_cur_src[0] = src_addr;
 #endif
-	#if __k1io__
+	#if defined(__k1io__)
 		for(i=0 ; i<n ; i++){
 			((char*)dest)[i] = ((char*)src)[i];
 		}
