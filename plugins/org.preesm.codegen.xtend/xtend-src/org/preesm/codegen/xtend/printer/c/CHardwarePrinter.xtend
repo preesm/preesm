@@ -51,6 +51,9 @@ import java.util.Arrays
 import java.util.Collection
 import java.util.Date
 import java.util.List
+import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.Map;
 import java.util.logging.Level
 import org.apache.velocity.VelocityContext
 import org.apache.velocity.app.VelocityEngine
@@ -142,6 +145,7 @@ class CHardwarePrinter extends DefaultPrinter {
 	protected var int numberHardwareAcceleratorSlots = 0;
 	protected var int threadHardwarePrintedDeclaration = 0;
 	protected var int threadHardwarePrintedUsage = 0;
+	protected var Map<String, String> listOfHwFunctions = new LinkedHashMap<String,String>();
 
 //	int getFactorNumber(){
 //		return this.factorNunber;
@@ -239,8 +243,8 @@ class CHardwarePrinter extends DefaultPrinter {
 
 	override printCoreLoopBlockFooter(LoopBlock block2) '''
 		}
-		// Release kernel instance
-		hardware_kernel_release("matmul");
+		// Release kernel instance of the function 
+		hardware_kernel_release(«IF this.listOfHwFunctions.size == 1»"«this.listOfHwFunctions.entrySet.get(0).key»"«ELSE»«PreesmLogger.getLogger().log(Level.SEVERE, "Hardware Codegen ERROR. Multiple hardware functions were detected. This feature is still under developing")»«ENDIF»);
 
 		// Clean Hardware setup
 		hardware_exit();
@@ -834,7 +838,7 @@ class CHardwarePrinter extends DefaultPrinter {
 		return usingPapify;
 	}
 	override preProcessing(List<Block> printerBlocks, Collection<Block> allBlocks) {
-		PreesmLogger.getLogger().info("[LEO] preProcessing for Hardware³. The elements to be processed are " + printerBlocks.size());
+		PreesmLogger.getLogger().info("[LEO] preProcessing for Hardware. The elements to be processed are " + printerBlocks.size());
 		var DataTransferActionNumber = 0;
 		var FreeDataTransferBufferNumber = 0;
 		var RegisterSetUpNumber = 0;
@@ -855,7 +859,7 @@ class CHardwarePrinter extends DefaultPrinter {
 			var clonedElts = coreLoop.codeElts.clone()
 			blockMerged.loopBlock.codeElts.addAll(clonedElts)
 		}
-		/* to add al the elements of the blockMerged.loopBlock.codeElts inside
+		/* to add all the elements of the blockMerged.loopBlock.codeElts inside
 		 * the first block of the printersBlock */
 
         var Block firstBlock = printerBlocks.get(0)
@@ -921,8 +925,9 @@ class CHardwarePrinter extends DefaultPrinter {
 
 			 /*
 			  * In order to have a unique file calling all the PEs of the Hardware (many SLOTs can be used), the
-			  * operation described above MUST continued to be performed for every element of the printerBlocks.
-			  * Additionally, only one element should be kept in the list (that MUST be created to reflect the actors firing
+			  * operation (described above) MUST be performed for every element of the printerBlocks.
+			  * Operator in the S-LAM ---> one element of the printerBlocks.
+			  * Additionally, only one element of the printerBlocks should be kept in the list (that MUST be created to reflect the actors firing
 			  * of the original set of files).
 			  *
 			  */
@@ -946,17 +951,27 @@ class CHardwarePrinter extends DefaultPrinter {
 				i++;
 			}
 
-			// This loop adds the new information on the on the class to be printed and substitute the old with the new one
-			// Note that the function to keep is the last one!
+			// This loop adds the new information on the class to be printed and substitute the old with the new one
+			// Note that the function to be kept is the last one!
 			if (this.functionCallNumber > 0) {
 				currentFunctionPosition = lastFunctionCallIndex;
 				var functionCallImplOld = (block as CoreBlock).loopBlock.codeElts.get(lastFunctionCallIndex);
 				// checking that the function to be changed is the right one
 				 if (!functionCallImplOld.class.getSimpleName().equals("FunctionCallImpl")){
-				 	PreesmLogger.getLogger().log(Level.SEVERE, "Hardware³ Codegen ERROR in the preProcessing function. The functionCall to be modified was NOT found");
+				 	PreesmLogger.getLogger().log(Level.SEVERE, "Hardware Codegen ERROR in the preProcessing function. The functionCall to be modified was NOT found");
 				 } else {
 				 	// create a new function identical to the Old one
 					var functionCallImplNew = (functionCallImplOld as FunctionCall);
+					//storing the name of the function to be executed in hardware in a global dictionary
+					if(this.listOfHwFunctions.empty){
+						this.listOfHwFunctions.put(functionCallImplNew.name,functionCallImplNew.name);
+					}
+					else {
+						if (!this.listOfHwFunctions.containsKey(functionCallImplNew.name)) {
+							this.listOfHwFunctions.put(functionCallImplNew.name,functionCallImplNew.name);
+						}
+					}
+					
 					// set the new value in the new version of the element of the list
 					functionCallImplNew.factorNumber = this.functionCallNumber;
 					// replace the old element with the new one
@@ -1077,7 +1092,7 @@ class CHardwarePrinter extends DefaultPrinter {
 			if (this.functionCallNumber == DataTransferActionNumber && this.functionCallNumber == FreeDataTransferBufferNumber){
 				this.factorNumber = this.functionCallNumber;
 			} else {
-				PreesmLogger.getLogger().log(Level.SEVERE, "Hardware³ Codegen ERROR in the preProcessing function. Different number of function calls and data transfers were detected");
+				PreesmLogger.getLogger().log(Level.SEVERE, "Hardware Codegen ERROR in the preProcessing function. Different number of function calls and data transfers were detected");
 			}
 
 		}
