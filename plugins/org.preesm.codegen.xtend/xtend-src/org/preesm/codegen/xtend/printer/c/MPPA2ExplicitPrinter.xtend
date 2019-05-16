@@ -252,7 +252,9 @@ class MPPA2ExplicitPrinter extends CPrinter {
 			}
 
 			gets += "int " + block2.iter.name + ";\n"
-			gets += "#pragma omp parallel for private(" + block2.iter.name + ")\n"
+			if(block2.nbIter > 1 && this.sharedOnly == 0){
+				gets += "#pragma omp parallel for private(" + block2.iter.name + ")\n"				
+			}
 			gets += "for(" + block2.iter.name + "=0;" + block2.iter.name +"<" + block2.nbIter + ";" + block2.iter.name + "++){\n"
 
 			if(local_offset > local_buffer_size)
@@ -263,7 +265,7 @@ class MPPA2ExplicitPrinter extends CPrinter {
 
 	override printFiniteLoopBlockFooter(FiniteLoopBlock block2) '''		
 		
-			}// End the for loop   
+			}// End the for loop    
 		«{
 				var puts = ""
 				var local_offset = 0L;
