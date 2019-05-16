@@ -441,7 +441,7 @@ class CHardwarePrinter extends DefaultPrinter {
 	    val findAllCHeaderFileNamesUsed = CHeaderUsedLocator.findAllCHeaderFileNamesUsed(getEngine.algo.referencePiMMGraph)
 	    context.put("USER_INCLUDES", findAllCHeaderFileNamesUsed.map["#include \""+ it +"\""].join("\n"));
 		if(this.usingPapify == 1){
-	    	context.put("CONSTANTS", "\n#ifdef _PREESM_MONITOR_INIT\n#include \"eventLib.h\"\n#endif");
+	    	context.put("CONSTANTS", "\n#ifdef _PREESM_PAPIFY_MONITOR\n#include \"eventLib.h\"\n#endif");
 		}
 
 
@@ -582,7 +582,7 @@ class CHardwarePrinter extends DefaultPrinter {
 
 		int main(void) {
 			«IF this.usingPapify == 1»
-				#ifdef _PREESM_MONITOR_INIT
+				#ifdef _PREESM_PAPIFY_MONITOR
 				mkdir("papify-output", 0777);
 				event_init_multiplex();
 				#endif
@@ -630,7 +630,7 @@ class CHardwarePrinter extends DefaultPrinter {
 				}
 			}
 			«IF this.usingPapify == 1»
-				#ifdef _PREESM_MONITOR_INIT
+				#ifdef _PREESM_PAPIFY_MONITOR
 				event_destroy();
 				#endif
 			«ENDIF»
@@ -661,7 +661,7 @@ class CHardwarePrinter extends DefaultPrinter {
 
 	override printPapifyFunctionCall(PapifyFunctionCall papifyFunctionCall) '''
 	«IF papifyFunctionCall.opening == true»
-		#ifdef _PREESM_MONITOR_INIT
+		#ifdef _PREESM_PAPIFY_MONITOR
 	«ENDIF»
 	«papifyFunctionCall.name»(«FOR param : papifyFunctionCall.parameters SEPARATOR ','»«param.doSwitch»«ENDFOR»); // «papifyFunctionCall.actorName»
 	«IF papifyFunctionCall.closing == true»
@@ -675,7 +675,7 @@ class CHardwarePrinter extends DefaultPrinter {
 
 	override printPapifyActionDefinition(PapifyAction action) '''
 	«IF action.opening == true»
-		#ifdef _PREESM_MONITOR_INIT
+		#ifdef _PREESM_PAPIFY_MONITOR
 	«ENDIF»
 	«action.type» «action.name»; // «action.comment»
 	«IF action.closing == true»

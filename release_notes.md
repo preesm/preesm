@@ -11,6 +11,7 @@ PREESM Changelog
 * SpiderCodegen: updated spider codegeneration to support the new Archi model of Spider.
 *  Fix C Hardware codegen: properly printed the Release Kernel Instance with the name of the function to be executed in Hardware
 *  Update workflow editor to better report task id issues;
+*  Changed _PREESM_MONITOR_INIT by _PREESM_PAPIFY_MONITOR;
 
 ### Bug fix
 

@@ -185,7 +185,7 @@ class MPPA2IOExplicitPrinter extends MPPA2ExplicitPrinter {
 		constants = constants.concat("#define PREESM_NB_CLUSTERS "+numClusters+"\n");
 		constants = constants.concat("#define PREESM_IO_USED " + io_used + " \n");
 		if(this.usingPapify == 1){
-			constants = constants.concat("\n\n#ifdef _PREESM_MONITOR_INIT\n#include \"eventLib.h\"\n#endif");
+			constants = constants.concat("\n\n#ifdef _PREESM_PAPIFY_MONITOR\n#include \"eventLib.h\"\n#endif");
 		}
 	    context.put("CONSTANTS", constants);
 
@@ -316,7 +316,7 @@ class MPPA2IOExplicitPrinter extends MPPA2ExplicitPrinter {
 			}
 						
 			«IF this.usingPapify == 1»
-				#ifdef _PREESM_MONITOR_INIT
+				#ifdef _PREESM_PAPIFY_MONITOR
 				mkdir("papify-output", 0777);
 				event_init();
 				#endif
@@ -362,7 +362,7 @@ class MPPA2IOExplicitPrinter extends MPPA2ExplicitPrinter {
 			}
 				 
 			«IF this.usingPapify == 1»
-				#ifdef _PREESM_MONITOR_INIT
+				#ifdef _PREESM_PAPIFY_MONITOR
 				event_destroy();
 				#endif
 			«ENDIF»
