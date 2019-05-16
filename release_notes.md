@@ -5,6 +5,7 @@ PREESM Changelog
 *XXXX.XX.XX*
 
 ### New Feature
+*  Clustering and DistributedOnly memory distribution now are compatible;
 
 ### Changes
 *  Fix C Hardware codegen: properly prefix LOOP_SIZE with PREESM_;
@@ -14,7 +15,7 @@ PREESM Changelog
 *  Changed _PREESM_MONITOR_INIT by _PREESM_PAPIFY_MONITOR;
 
 ### Bug fix
-
+*  Fix several bugs on the communications when using the IO in the MPPA code generation;
 
 ## Release version 3.7.0
 *2019.05.14*
