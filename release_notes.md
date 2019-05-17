@@ -8,6 +8,7 @@ PREESM Changelog
 
 ### Changes
 *  Fix C Hardware codegen: properly prefix LOOP_SIZE with PREESM_;
+* SpiderCodegen: updated spider codegeneration to support the new Archi model of Spider.
 *  Fix C Hardware codegen: properly printed the Release Kernel Instance with the name of the function to be executed in Hardware
 *  Update workflow editor to better report task id issues;
 

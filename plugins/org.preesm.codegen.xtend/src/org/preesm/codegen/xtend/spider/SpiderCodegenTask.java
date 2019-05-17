@@ -147,7 +147,7 @@ public class SpiderCodegenTask extends AbstractTaskImplementation {
     launcher.initGenerator(pg);
     final String graphCode = launcher.generateGraphCode(pg);
     final String fctCode = launcher.generateFunctionCode(pg);
-    final String hCode = launcher.generateHeaderCode(pg);
+    final String hCode = launcher.generateHeaderCode(pg, spiderConfig);
     // TODO: add config as parameters from workflow
     final String mCode = launcher.generateMainCode(pg, spiderConfig);
     final String papifyCode = launcher.generatePapifyCode(pg, scenario);
@@ -183,7 +183,7 @@ public class SpiderCodegenTask extends AbstractTaskImplementation {
     final String hFilePath = pg.getName() + ".h";
     final File hFile = new File(folder, hFilePath);
 
-    final String archiFilePath = pg.getName() + "_archi.cpp";
+    final String archiFilePath = "archi_" + pg.getName() + ".cpp";
     final File archiFile = new File(folder, archiFilePath);
 
     final String piGraphfilePath = "pi_" + pg.getName() + ".cpp";
