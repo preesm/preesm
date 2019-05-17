@@ -327,8 +327,8 @@ void *__real_memset(void *s, int c, size_t n){
 	__builtin_k1_wpurge();
 	__builtin_k1_fence();
 	mOS_dinval();
-	uintptr_t addr = (uintptr_t)s;
 	#if !defined(__k1io__)
+	uintptr_t addr = (uintptr_t)s;
 	if(addr >= DDR_START){
 		printf("It is actually happening --> addr >= DDR_START in memset --> size %d\n", n);
 	}
@@ -381,13 +381,10 @@ __wrap_memset (void *s, int c, size_t n)
 }
 
 void *__real_memcpy(void *dest, const void *src, size_t n){
-	uintptr_t dst_addr = (uintptr_t)dest;
-	uintptr_t src_addr = (uintptr_t)src;
 
 	__builtin_k1_wpurge();
 	__builtin_k1_fence();
 	mOS_dinval();
-
 
 	unsigned int i;
 #if 0
@@ -406,6 +403,8 @@ void *__real_memcpy(void *dest, const void *src, size_t n){
 			((char*)dest)[i] = ((char*)src)[i];
 		}
 	#else
+		uintptr_t dst_addr = (uintptr_t)dest;
+		uintptr_t src_addr = (uintptr_t)src;
 		/* local memcpy */
 		if(dst_addr < DDR_START && src_addr < DDR_START){
 			for(i=0 ; i<n ; i++){
