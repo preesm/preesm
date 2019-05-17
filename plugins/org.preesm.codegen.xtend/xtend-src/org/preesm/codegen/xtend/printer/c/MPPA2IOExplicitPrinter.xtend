@@ -317,7 +317,6 @@ class MPPA2IOExplicitPrinter extends MPPA2ExplicitPrinter {
 						
 			«IF this.usingPapify == 1»
 				#ifdef _PREESM_PAPIFY_MONITOR
-				mkdir("papify-output", 0777);
 				event_init();
 				#endif
 			«ENDIF»			

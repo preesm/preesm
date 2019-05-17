@@ -176,7 +176,11 @@ void receiveDistributedEnd(int cluster)
 #include <omp.h>
 
 void communicationInit() {
-	omp_set_num_threads(PREESM_NB_CORES);
+	#if defined(__k1io__)
+	omp_set_num_threads(PREESM_NB_CORES_IO);
+	#else
+	omp_set_num_threads(PREESM_NB_CORES_CC);
+	#endif
 	#if 0
 	switch (__k1_get_cluster_id()){
 		case 0:	local_buffer_size = Core0_size; break;

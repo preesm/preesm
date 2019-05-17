@@ -77,6 +77,7 @@ import org.preesm.codegen.model.CodeElt
 import org.eclipse.emf.common.util.EList
 import java.util.LinkedHashSet
 import java.util.Set
+import org.preesm.codegen.model.PapifyType
 
 class MPPA2ExplicitPrinter extends CPrinter {
 
@@ -106,6 +107,7 @@ class MPPA2ExplicitPrinter extends CPrinter {
 	protected int sharedOnly = 1;
 	protected int distributedOnly = 1;
 	protected int usingPapify = 0;
+	protected int usingClustering = 0;
 	protected String peName = "";
 
 	/**
@@ -300,15 +302,34 @@ class MPPA2ExplicitPrinter extends CPrinter {
 			""}»
 		}
 	'''
-	override printPapifyFunctionCall(PapifyFunctionCall papifyFunctionCall) '''
-		«IF papifyFunctionCall.opening == true»
-			#ifdef _PREESM_PAPIFY_MONITOR 
-		«ENDIF»
-		«papifyFunctionCall.name»(«FOR param : papifyFunctionCall.parameters SEPARATOR ', '»«param.doSwitch»«ENDFOR»); // «papifyFunctionCall.actorName»
-		«IF papifyFunctionCall.closing == true»
-			#endif
-		«ENDIF»
-		'''
+	override printPapifyFunctionCall(PapifyFunctionCall papifyFunctionCall) {
+		if(!(papifyFunctionCall.papifyType.equals(PapifyType.CONFIGACTOR))){
+			papifyFunctionCall.parameters.remove(papifyFunctionCall.parameters.size-1);
+		}		
+		var printing = '''
+			«IF papifyFunctionCall.opening == true»
+				#ifdef _PREESM_PAPIFY_MONITOR  
+			«ENDIF»				
+			«IF !(papifyFunctionCall.papifyType.equals(PapifyType.CONFIGACTOR))»	
+				«IF (papifyFunctionCall.papifyType.equals(PapifyType.CONFIGPE)) && this.usingClustering == 1»
+					char namingArray[50]; 
+					for(int i = 0; i < PREESM_NB_CORES_CC; i++){
+						snprintf(namingArray, 50, "«this.peName»-PE%d", i); 
+						«papifyFunctionCall.name»(namingArray, «papifyFunctionCall.parameters.get(1).doSwitch», i); // «papifyFunctionCall.actorName»
+					}			
+				«ELSE»
+				«papifyFunctionCall.name»(«FOR param : papifyFunctionCall.parameters SEPARATOR ', '»«param.doSwitch»«ENDFOR», __k1_get_cpu_id()/*PE_id*/); // «papifyFunctionCall.actorName»
+				«ENDIF»
+			«ELSE»
+			«papifyFunctionCall.name»(«FOR param : papifyFunctionCall.parameters SEPARATOR ', '»«param.doSwitch»«ENDFOR»); // «papifyFunctionCall.actorName»
+			«ENDIF»
+			«IF papifyFunctionCall.closing == true»
+				#endif
+			«ENDIF»
+			'''
+			return printing;
+	}
+	
 	override printFunctionCall(FunctionCall functionCall) '''
 	«{
 		var gets = ""
@@ -782,7 +803,7 @@ class MPPA2ExplicitPrinter extends CPrinter {
 		typedef void* (*mppa_preesm_task_t)(void *args);
 		
 		/* pthread_t declaration */
-		static pthread_t threads[PREESM_NB_CORES-1] __attribute__((__unused__));
+		static pthread_t threads[PREESM_NB_CORES_CC-1] __attribute__((__unused__));
 		
 		/* thread function pointers declaration */
 		static mppa_preesm_task_t mppa_preesm_task[PREESM_NB_CLUSTERS]; 
@@ -861,7 +882,7 @@ class MPPA2ExplicitPrinter extends CPrinter {
 		«ENDFOR»
 
 			stopThreads = 0; 
-			pthread_barrier_init(&iter_barrier, NULL, PREESM_NB_CORES);
+			pthread_barrier_init(&iter_barrier, NULL, PREESM_NB_CORES_CC);
 			__builtin_k1_wpurge();
 			__builtin_k1_fence();
 			mOS_dinval();		
@@ -1079,6 +1100,8 @@ class MPPA2ExplicitPrinter extends CPrinter {
 				for(CodeElt codeElt : cluster.loopBlock.codeElts){
 					if(codeElt instanceof PapifyFunctionCall){
 						this.usingPapify = 1;
+					} else if(codeElt instanceof FiniteLoopBlock){
+						this.usingClustering = 1;				
 					}
 				}
        		 	var EList<Variable> definitions = cluster.getDefinitions();
