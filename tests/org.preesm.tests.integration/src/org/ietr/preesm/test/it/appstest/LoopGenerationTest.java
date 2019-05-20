@@ -52,7 +52,8 @@ import org.junit.runners.Parameterized.Parameters;
 @RunWith(Parameterized.class)
 public class LoopGenerationTest {
 
-  static final String[] scenarios = new String[] { "4core.scenario", "4core2.scenario" };
+  static final String[] scenarios = new String[] { "4core.scenario", "4core2.scenario", "MPPA2Explicit.scenario",
+      "MPPA2ExplicitIO.scenario" };
   static final String[] workflows = new String[] { "CodegenDistribNoFlat.workflow", "CodegenDistribFlat1.workflow" };
 
   static final String projectName = "org.ietr.preesm.loopgen-sobel-erosion-dilation";

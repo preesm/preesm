@@ -13,8 +13,14 @@
 #include "preesm.h"
 
 #define NB_DISPLAY 1
+#if 0
 #define DISPLAY_W 352*NB_DISPLAY
 #define DISPLAY_H 288
+#endif
+#if 1
+#define DISPLAY_W 352*NB_DISPLAY
+#define DISPLAY_H 288
+#endif
 
 #define INIT_OVERLAY {NULL} // must be se same size as NB_DISPLAY
 
