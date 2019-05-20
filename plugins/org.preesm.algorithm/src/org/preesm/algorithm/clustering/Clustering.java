@@ -57,7 +57,9 @@ import org.preesm.workflow.implement.AbstractTaskImplementation;
     inputs = { @Port(name = "SDF", type = SDFGraph.class), @Port(name = "scenario", type = PreesmScenario.class),
         @Port(name = "architecture", type = Design.class) },
 
-    outputs = { @Port(name = "SDF", type = SDFGraph.class) }
+    outputs = { @Port(name = "SDF", type = SDFGraph.class) },
+
+    description = "Workflow task responsible for clustering hierarchical actors."
 
 )
 public class Clustering extends AbstractTaskImplementation {

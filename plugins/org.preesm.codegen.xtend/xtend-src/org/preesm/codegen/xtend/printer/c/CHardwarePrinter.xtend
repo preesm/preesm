@@ -441,7 +441,7 @@ class CHardwarePrinter extends DefaultPrinter {
 	    val findAllCHeaderFileNamesUsed = CHeaderUsedLocator.findAllCHeaderFileNamesUsed(getEngine.algo.referencePiMMGraph)
 	    context.put("USER_INCLUDES", findAllCHeaderFileNamesUsed.map["#include \""+ it +"\""].join("\n"));
 		if(this.usingPapify == 1){
-	    	context.put("CONSTANTS", "\n#ifdef _PREESM_MONITOR_INIT\n#include \"eventLib.h\"\n#endif");
+	    	context.put("CONSTANTS", "\n#ifdef _PREESM_PAPIFY_MONITOR\n#include \"eventLib.h\"\n#endif");
 		}
 
 
@@ -582,7 +582,7 @@ class CHardwarePrinter extends DefaultPrinter {
 
 		int main(void) {
 			«IF this.usingPapify == 1»
-				#ifdef _PREESM_MONITOR_INIT
+				#ifdef _PREESM_PAPIFY_MONITOR
 				mkdir("papify-output", 0777);
 				event_init_multiplex();
 				#endif
@@ -630,7 +630,7 @@ class CHardwarePrinter extends DefaultPrinter {
 				}
 			}
 			«IF this.usingPapify == 1»
-				#ifdef _PREESM_MONITOR_INIT
+				#ifdef _PREESM_PAPIFY_MONITOR
 				event_destroy();
 				#endif
 			«ENDIF»
@@ -661,7 +661,7 @@ class CHardwarePrinter extends DefaultPrinter {
 
 	override printPapifyFunctionCall(PapifyFunctionCall papifyFunctionCall) '''
 	«IF papifyFunctionCall.opening == true»
-		#ifdef _PREESM_MONITOR_INIT
+		#ifdef _PREESM_PAPIFY_MONITOR
 	«ENDIF»
 	«papifyFunctionCall.name»(«FOR param : papifyFunctionCall.parameters SEPARATOR ','»«param.doSwitch»«ENDFOR»); // «papifyFunctionCall.actorName»
 	«IF papifyFunctionCall.closing == true»
@@ -675,7 +675,7 @@ class CHardwarePrinter extends DefaultPrinter {
 
 	override printPapifyActionDefinition(PapifyAction action) '''
 	«IF action.opening == true»
-		#ifdef _PREESM_MONITOR_INIT
+		#ifdef _PREESM_PAPIFY_MONITOR
 	«ENDIF»
 	«action.type» «action.name»; // «action.comment»
 	«IF action.closing == true»
@@ -763,80 +763,6 @@ class CHardwarePrinter extends DefaultPrinter {
 	«ENDFOR»
 	'''
 
-	def int compactPapifyUsage(Collection<Block> allBlocks){
-		var int usingPapify = 0;
-		for (cluster : allBlocks){
-			if (cluster instanceof CoreBlock) {
-				var EList<Variable> definitions = cluster.definitions;
-				var EList<CodeElt> loopBlockElts = cluster.loopBlock.codeElts;
-				var EList<CodeElt> initBlockElts = cluster.initBlock.codeElts;
-				var int iterator = 0;
-				var boolean closed = false;
-				/*
-				 * Only one #ifdef _PREESM_MONITORING_INIT in the definition code
-				 */
-				if(!definitions.isEmpty){
-					for(iterator = 0; iterator < definitions.size; iterator++){
-						if(definitions.get(iterator) instanceof PapifyAction && usingPapify == 0){
-							usingPapify = 1;
-							(definitions.get(iterator) as PapifyAction).opening = true;
-						}
-					}
-					for(iterator = definitions.size-1; iterator >= 0; iterator--){
-						if(definitions.get(iterator) instanceof PapifyAction && closed == false){
-							closed = true;
-							(definitions.get(iterator) as PapifyAction).closing = true;
-						}
-					}
-				}
-				/*
-				 * Minimizing the number of #ifdef _PREESM_MONITORING_INIT in the loop
-				 */
-				if(!loopBlockElts.isEmpty){
-					if(loopBlockElts.get(0) instanceof PapifyFunctionCall){
-						(loopBlockElts.get(0) as PapifyFunctionCall).opening = true;
-						if(!(loopBlockElts.get(1) instanceof PapifyAction)){
-							(loopBlockElts.get(0) as PapifyFunctionCall).closing = true;
-						}
-					}
-					for(iterator = 1; iterator < loopBlockElts.size-1; iterator++){
-						if(loopBlockElts.get(iterator) instanceof PapifyFunctionCall && !(loopBlockElts.get(iterator - 1) instanceof PapifyFunctionCall)){
-							(loopBlockElts.get(iterator) as PapifyFunctionCall).opening = true;
-						}
-						if(loopBlockElts.get(iterator) instanceof PapifyFunctionCall && !(loopBlockElts.get(iterator + 1) instanceof PapifyFunctionCall)){
-							(loopBlockElts.get(iterator) as PapifyFunctionCall).closing = true;
-						}
-					}
-					if(loopBlockElts.get(loopBlockElts.size-1) instanceof PapifyFunctionCall){
-						(loopBlockElts.get(loopBlockElts.size-1) as PapifyFunctionCall).closing = true;
-					}
-				}
-				/*
-				 * Minimizing the number of #ifdef _PREESM_MONITORING_INIT in the init
-				 */
-				if(!initBlockElts.isEmpty){
-					if(initBlockElts.get(0) instanceof PapifyFunctionCall){
-						(initBlockElts.get(0) as PapifyFunctionCall).opening = true;
-						if(!(initBlockElts.get(1) instanceof PapifyAction)){
-							(initBlockElts.get(0) as PapifyFunctionCall).closing = true;
-						}
-					}
-					for(iterator = 1; iterator < initBlockElts.size-1; iterator++){
-						if(initBlockElts.get(iterator) instanceof PapifyFunctionCall && !(initBlockElts.get(iterator - 1) instanceof PapifyFunctionCall)){
-							(initBlockElts.get(iterator) as PapifyFunctionCall).opening = true;
-						}
-						if(initBlockElts.get(iterator) instanceof PapifyFunctionCall && !(initBlockElts.get(iterator + 1) instanceof PapifyFunctionCall)){
-							(initBlockElts.get(iterator) as PapifyFunctionCall).closing = true;
-						}
-					}
-					if(initBlockElts.get(initBlockElts.size-1) instanceof PapifyFunctionCall){
-						(initBlockElts.get(initBlockElts.size-1) as PapifyFunctionCall).closing = true;
-					}
-				}
-			}
-		}
-		return usingPapify;
-	}
 	override preProcessing(List<Block> printerBlocks, Collection<Block> allBlocks) {
 		PreesmLogger.getLogger().info("[LEO] preProcessing for Hardware. The elements to be processed are " + printerBlocks.size());
 		var DataTransferActionNumber = 0;

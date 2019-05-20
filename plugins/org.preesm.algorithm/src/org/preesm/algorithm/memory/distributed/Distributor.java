@@ -754,7 +754,11 @@ public class Distributor {
         final DirectedAcyclicGraph dag = (DirectedAcyclicGraph) memEx.getPropertyBean()
             .getValue(MemoryExclusionGraph.SOURCE_DAG);
         if (i == 0) {
-          dagVertex = dag.getVertex(mObj.getSource().substring(("FIFO_Head_").length()));
+          if (mObj.getSource().contains("FIFO_Head_")) {
+            dagVertex = dag.getVertex(mObj.getSource().substring(("FIFO_Head_").length()));
+          } else {
+            dagVertex = dag.getVertex(mObj.getSource());
+          }
         } else {
           dagVertex = dag.getVertex(mObj.getSink());
         }

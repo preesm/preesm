@@ -92,6 +92,7 @@ import org.preesm.codegen.model.PortDirection;
 import org.preesm.codegen.model.SpecialCall;
 import org.preesm.codegen.model.SpecialType;
 import org.preesm.codegen.model.SubBuffer;
+import org.preesm.codegen.model.TwinBuffer;
 import org.preesm.codegen.model.Variable;
 import org.preesm.commons.exceptions.PreesmException;
 import org.preesm.commons.exceptions.PreesmRuntimeException;
@@ -488,6 +489,32 @@ public class CodegenHierarchicalModelGenerator {
 
       if (isInputActorTmp || isOutputActorTmp) {
         var = this.srSDFEdgeBuffers.get(subBufferProperties);
+        if (var instanceof TwinBuffer) {
+          TwinBuffer twinBuffer = (TwinBuffer) var;
+          SubBuffer original = (SubBuffer) twinBuffer.getOriginal();
+          EList<Buffer> twins = twinBuffer.getTwins();
+          SubBuffer originalContainer = (SubBuffer) original.getContainer();
+          String coreBlockName = operatorBlock.getName();
+          /*
+           * System.out.println("A: " + coreBlockName); System.out.println("B: " + originalContainer.getName());
+           * System.out.println("C: " + originalContainer.getContainer().getName());
+           */
+          if (originalContainer.getContainer().getName().equals(coreBlockName)) {
+            var = original;
+          } else {
+            for (Buffer bufferTwinChecker : twins) {
+              SubBuffer subBufferChecker = (SubBuffer) bufferTwinChecker;
+              SubBuffer twinContainer = (SubBuffer) subBufferChecker.getContainer();
+              if (twinContainer.getContainer().getName().equals(coreBlockName)) {
+                var = subBufferChecker;
+                break;
+              }
+            }
+          }
+        }
+        /*
+         * if (var instanceof TwinBuffer) { System.out.println("Here?"); }
+         */
         bufIterSize = subBufferProperties.getSize() / rep;
         bufSize = subBufferProperties.getSize();
       } else {

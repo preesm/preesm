@@ -99,7 +99,7 @@ import org.preesm.workflow.elements.Workflow;
                 effect = "(Default) All memory objects are allocated in a single memory bank accessible to all PE."),
                 @Value(name = "DistributedOnly",
                     effect = "Each PE is associated to a private memory bank that no other PE can access. "
-                        + "(Currently not supported by code generation.)"),
+                        + "(Currently supported only in the MPPA code generation.)"),
                 @Value(name = "Mixed",
                     effect = "Both private memory banks and a shared memory can be used for allocating memory."),
                 @Value(name = "MixedMerged",

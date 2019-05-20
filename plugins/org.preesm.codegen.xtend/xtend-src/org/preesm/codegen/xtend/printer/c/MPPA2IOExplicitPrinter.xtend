@@ -61,6 +61,10 @@ import org.eclipse.emf.common.util.EList
 import org.preesm.codegen.model.Variable
 import java.util.LinkedHashSet
 import java.util.Set
+import org.preesm.codegen.model.LoopBlock
+import org.preesm.codegen.model.PapifyType
+import org.preesm.codegen.model.FiniteLoopBlock
+import org.preesm.codegen.model.SubBuffer
 
 class MPPA2IOExplicitPrinter extends MPPA2ExplicitPrinter {
 
@@ -116,7 +120,7 @@ class MPPA2IOExplicitPrinter extends MPPA2ExplicitPrinter {
 		/* user includes */
 		#include "preesm_gen.h"
 
-		extern void *__wrap_memset (void *s, int c, size_t n);
+		extern void *__wrap_memset(void *s, int c, size_t n);
 		extern void *__wrap_memcpy(void *dest, const void *src, size_t n);
 		
 		#define memset __wrap_memset
@@ -139,6 +143,102 @@ class MPPA2IOExplicitPrinter extends MPPA2ExplicitPrinter {
 	
 	}
 
+	override printFiniteLoopBlockHeader(FiniteLoopBlock block2) '''
+	«{
+	 	IS_HIERARCHICAL = true
+	"\t"}»
+	{ // Begin the hierarchical actor
+		«{
+		var gets = ""
+		var local_offset = 0L;
+			/* go through eventual out param first because of foot FiniteLoopBlock */
+			for(param : block2.outBuffers){
+				var b = param.container;
+				var offset = param.offset;
+				while(b instanceof SubBuffer){
+					offset += b.offset;
+					b = b.container;
+				}
+				/* put out buffer here */
+				if(b.name == "Shared"){
+					gets += "void *" + param.name + " = local_buffer+" + local_offset +";\n";
+					local_offset += param.typeSize * param.size;
+				}
+			}
+			for(param : block2.inBuffers){
+				var b = param.container;
+				var offset = param.offset;
+				while(b instanceof SubBuffer){
+					offset += b.offset;
+					b = b.container;
+				}
+				//System.out.print("===> " + b.name + "\n");
+				if(b.name == "Shared"){
+					gets += "void *" + param.name + " = local_buffer+" + local_offset +";\n";
+					gets += "	{\n"
+					gets += "		if(mppa_async_get(local_buffer + " + local_offset + ",";
+					gets += " &shared_segment,";
+					//gets += "	" + b.name + " + " + offset + ",\n";
+					gets += " /* Shared + */ " + offset + ",";
+					gets += " " + param.typeSize * param.size + ",";
+					gets += " NULL) != 0){\n";
+					gets += "			assert(0 && \"mppa_async_get\\n\");\n";
+					gets += "		}\n";
+					gets += "	}\n"
+					local_offset += param.typeSize * param.size;
+					//System.out.print("==> " + b.name + " " + param.name + " size " + param.size + " port_name "+ port.getName + "\n");
+				}
+			}
+
+			gets += "int " + block2.iter.name + ";\n"
+			if(block2.nbIter > 1 && this.sharedOnly == 0){
+				gets += "#pragma omp parallel for private(" + block2.iter.name + ")\n"				
+			}
+			gets += "for(" + block2.iter.name + "=0;" + block2.iter.name +"<" + block2.nbIter + ";" + block2.iter.name + "++){\n"
+
+			if(local_offset > local_buffer_size)
+				local_buffer_size = local_offset
+	gets}»
+			
+	'''
+
+	override printFiniteLoopBlockFooter(FiniteLoopBlock block2) '''		
+		
+			}// End the for loop    
+		«{
+				var puts = ""
+				var local_offset = 0L;
+				for(param : block2.outBuffers){
+					var b = param.container
+					var offset = param.offset
+					while(b instanceof SubBuffer){
+						offset += b.offset;
+						b = b.container;
+						//System.out.print("Running through all buffer " + b.name + "\n");
+					}
+					//System.out.print("===> " + b.name + "\n");
+					if(b.name == "Shared"){
+						puts += "	{\n"
+						puts += "		if(mppa_async_put(local_buffer + " + local_offset + ",";
+						puts += " &shared_segment,";
+						puts += " /* Shared + */" + offset + ",";
+						puts += " " + param.typeSize * param.size + ",";
+						puts += " NULL) != 0){\n";
+						puts += "			assert(0 && \"mppa_async_put\\n\");\n";
+						puts += "		}\n";
+						puts += "	}\n"
+						local_offset += param.typeSize * param.size;
+						//System.out.print("==> " + b.name + " " + param.name + " size " + param.size + " port_name "+ port.getName + "\n");
+					}
+				}
+				if(local_offset > local_buffer_size)
+					local_buffer_size = local_offset
+			puts}»
+		«{
+			 	IS_HIERARCHICAL = false
+			""}»
+		}
+	'''
 	override printBufferDefinition(Buffer buffer) {	
 		var result = '''
 		«IF buffer.name == "Shared"»
@@ -149,6 +249,46 @@ class MPPA2IOExplicitPrinter extends MPPA2ExplicitPrinter {
 		«ENDIF»
 		'''
 		return result;
+	}
+		override printCoreLoopBlockFooter(LoopBlock block2) '''
+
+				/* commit local changes to the global memory */
+				//pthread_barrier_wait(&iter_barrier); /* barrier to make sure all threads have commited data in smem */
+
+				mppa_rpc_barrier(1,2);
+				mppa_rpc_barrier(1,2);
+			}
+			return NULL;
+		}
+	'''
+	
+	
+	override printPapifyFunctionCall(PapifyFunctionCall papifyFunctionCall) {
+		if(!(papifyFunctionCall.papifyType.equals(PapifyType.CONFIGACTOR))){
+			papifyFunctionCall.parameters.remove(papifyFunctionCall.parameters.size-1);
+		}		
+		var printing = '''
+			«IF papifyFunctionCall.opening == true»
+				#ifdef _PREESM_PAPIFY_MONITOR  
+			«ENDIF»				
+			«IF !(papifyFunctionCall.papifyType.equals(PapifyType.CONFIGACTOR))»	
+				«IF (papifyFunctionCall.papifyType.equals(PapifyType.CONFIGPE)) && this.usingClustering == 1»
+					char namingArray[50]; 
+					for(int i = 0; i < PREESM_NB_CORES_IO; i++){
+						snprintf(namingArray, 50, "«this.peName»-PE%d", i); 
+						«papifyFunctionCall.name»(namingArray, «papifyFunctionCall.parameters.get(1).doSwitch», i); // «papifyFunctionCall.actorName»
+					}			
+				«ELSE»
+				«papifyFunctionCall.name»(«FOR param : papifyFunctionCall.parameters SEPARATOR ', '»«param.doSwitch»«ENDFOR», __k1_get_cpu_id()/*PE_id*/); // «papifyFunctionCall.actorName»
+				«ENDIF»
+			«ELSE»
+			«papifyFunctionCall.name»(«FOR param : papifyFunctionCall.parameters SEPARATOR ', '»«param.doSwitch»«ENDFOR»); // «papifyFunctionCall.actorName»
+			«ENDIF»
+			«IF papifyFunctionCall.closing == true»
+				#endif
+			«ENDIF»
+			'''
+			return printing;
 	}
 	
 	override CharSequence generatePreesmHeader() {
@@ -173,7 +313,7 @@ class MPPA2IOExplicitPrinter extends MPPA2ExplicitPrinter {
 		constants = constants.concat("#define PREESM_NB_CLUSTERS "+numClusters+"\n");
 		constants = constants.concat("#define PREESM_IO_USED " + io_used + " \n");
 		if(this.usingPapify == 1){
-			constants = constants.concat("\n\n#ifdef _PREESM_MONITOR_INIT\n#include \"eventLib.h\"\n#endif");
+			constants = constants.concat("\n\n#ifdef _PREESM_PAPIFY_MONITOR\n#include \"eventLib.h\"\n#endif");
 		}
 	    context.put("CONSTANTS", constants);
 
@@ -209,7 +349,7 @@ class MPPA2IOExplicitPrinter extends MPPA2ExplicitPrinter {
 
 	override String printMainIO(List<Block> printerBlocks) '''
 		/**
-		 * @file io_main.c
+		 * @file io_main.c 
 		 * @generated by «this.class.simpleName»
 		 * @date «new Date»
 		 *
@@ -283,10 +423,9 @@ class MPPA2IOExplicitPrinter extends MPPA2ExplicitPrinter {
 				pcie_fd = pcie_open(0);
 					ret = pcie_queue_init(pcie_fd);
 					assert(ret == 0);
-					pcie_register_console(pcie_fd, stdin, stdout);
 			}
 					
-			if(mppa_rpc_server_init(	1 /* rm where to run server */, 
+			if(mppa_rpc_server_init(	3 /* rm where to run server */, 
 									0 /* offset ddr */, 
 									PREESM_NB_CLUSTERS /* nb_cluster to serve*/) != 0){
 				assert(0 && "mppa_rpc_server_init\n");
@@ -297,28 +436,19 @@ class MPPA2IOExplicitPrinter extends MPPA2ExplicitPrinter {
 			if(mppa_remote_server_init(pcie_fd, PREESM_NB_CLUSTERS) != 0){
 				assert(0 && "mppa_remote_server_init\n");
 			}
-			
-			if(utask_create(&t, NULL, (void*)mppa_rpc_server_start, NULL) != 0){
+			if (mppa_remote_server_enable_scall() != 0){
+				assert(0 && "mppa_remote_server_enable_scall\n");
+			}				
+			if(utask_start_pe(&t, (void*)mppa_rpc_server_start, NULL, 3) != 0){
 				assert(0 && "utask_create\n");
 			}
 						
 			«IF this.usingPapify == 1»
-				#ifdef _PREESM_MONITOR_INIT
-				mkdir("papify-output", 0777);
+				#ifdef _PREESM_PAPIFY_MONITOR
 				event_init();
 				#endif
-			«ENDIF»
-			for( j = 0 ; j < PREESM_NB_CLUSTERS ; j++ ) {
-		
-				char elf_name[30];
-				sprintf(elf_name, "cluster%d_bin", j);
-				id = mppa_power_base_spawn(j, elf_name, NULL, NULL, MPPA_POWER_SHUFFLING_ENABLED);
-				if (id < 0)
-					return -2;
-			}				
-		
+			«ENDIF»			
 			«IF (this.distributedOnly == 0)»
-				mppa_async_segment_t shared_segment;
 				if(mppa_async_segment_create(&shared_segment, SHARED_SEGMENT_ID, (void*)(uintptr_t)Shared, 1024*1024*1024, 0, 0, NULL) != 0){
 					assert(0 && "mppa_async_segment_create\n");
 				}
@@ -326,12 +456,20 @@ class MPPA2IOExplicitPrinter extends MPPA2ExplicitPrinter {
 			«IF (this.sharedOnly == 0)»
 				«FOR io : printerBlocks.toSet»
 					«IF (io instanceof CoreBlock)»
-						if(mppa_async_segment_create(&distributed_segment[PREESM_NB_CLUSTERS], INTERCC_BASE_SEGMENT_ID+PREESM_NB_CLUSTERS, (void*)(uintptr_t)«io.name», local_memory_size, 0, 0, NULL) != 0){
+						if(mppa_async_segment_create(&distributed_segment[PREESM_NB_CLUSTERS], INTERCC_BASE_SEGMENT_ID+PREESM_NB_CLUSTERS, (void*)&«io.name», local_memory_size, 0, 0, NULL) != 0){
 							assert(0 && "mppa_async_segment_create\n");
 						}
 					«ENDIF»
 				«ENDFOR»	
 			«ENDIF»	
+			for( j = 0 ; j < PREESM_NB_CLUSTERS ; j++ ) {
+		
+				char elf_name[30];
+				sprintf(elf_name, "cluster%d_bin", j);
+				id = mppa_power_base_spawn(j, elf_name, NULL, NULL, MPPA_POWER_SHUFFLING_ENABLED);
+				if (id < 0)
+					return -2;
+			}			
 			// init comm
 			communicationInit();	
 			mppa_rpc_barrier(1, 2);
@@ -351,7 +489,7 @@ class MPPA2IOExplicitPrinter extends MPPA2ExplicitPrinter {
 			}
 				 
 			«IF this.usingPapify == 1»
-				#ifdef _PREESM_MONITOR_INIT
+				#ifdef _PREESM_PAPIFY_MONITOR
 				event_destroy();
 				#endif
 			«ENDIF»
@@ -382,6 +520,8 @@ class MPPA2IOExplicitPrinter extends MPPA2ExplicitPrinter {
 				for(CodeElt codeElt : cluster.loopBlock.codeElts){
 					if(codeElt instanceof PapifyFunctionCall){
 						this.usingPapify = 1;
+					} else if(codeElt instanceof FiniteLoopBlock){
+						this.usingClustering = 1;				
 					}
 				}
        		 	var EList<Variable> definitions = cluster.getDefinitions();
