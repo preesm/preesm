@@ -44,14 +44,6 @@
 	============================================================================
 */
 
-#include <semaphore.h>
-#include <preesm.h>
-#include <mppa_rpc.h>
-#include <mppa_async.h>
-#include <HAL/hal/hal_ext.h>
-#include <mOS_vcore_u.h>
-#include <assert.h>
-
 #include "communication.h"
 
 extern mppa_async_segment_t shared_segment __attribute__((weak));

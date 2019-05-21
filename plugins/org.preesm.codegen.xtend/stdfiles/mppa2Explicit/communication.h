@@ -49,7 +49,15 @@
 #ifndef COMMUNICATION_H
 #define COMMUNICATION_H
 
-#include <preesm_gen.h>
+#include "preesm_gen.h"
+#include "preesm.h"
+
+#include <semaphore.h>
+#include <mppa_rpc.h>
+#include <mppa_async.h>
+#include <HAL/hal/hal_ext.h>
+#include <mOS_vcore_u.h>
+#include <assert.h>
 
 /**
 * Communication Initialization (archi dependent)
