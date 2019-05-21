@@ -43,7 +43,6 @@
 	Description :
 	============================================================================
 */
-#include <string.h>
 #include "fifo.h"
 
 void fifoInit(void* headBuffer, int headSize, void* bodyBuffer, int bodySize) {
