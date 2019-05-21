@@ -3,6 +3,7 @@
  *
  * Alexandre Honorat <alexandre.honorat@insa-rennes.fr> (2018)
  * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2018 - 2019)
+ * Daniel Madroñal <daniel.madronal@upm.es> (2019)
  *
  * This software is a computer program whose purpose is to help prototyping
  * parallel applications using dataflow formalism.
@@ -754,7 +755,11 @@ public class Distributor {
         final DirectedAcyclicGraph dag = (DirectedAcyclicGraph) memEx.getPropertyBean()
             .getValue(MemoryExclusionGraph.SOURCE_DAG);
         if (i == 0) {
-          dagVertex = dag.getVertex(mObj.getSource().substring(("FIFO_Head_").length()));
+          if (mObj.getSource().contains("FIFO_Head_")) {
+            dagVertex = dag.getVertex(mObj.getSource().substring(("FIFO_Head_").length()));
+          } else {
+            dagVertex = dag.getVertex(mObj.getSource());
+          }
         } else {
           dagVertex = dag.getVertex(mObj.getSink());
         }

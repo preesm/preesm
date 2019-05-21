@@ -1,7 +1,7 @@
 /**
  * Copyright or © or Copr. IETR/INSA - Rennes (2017 - 2019) :
  *
- * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017 - 2018)
+ * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017 - 2019)
  * Daniel Madroñal <daniel.madronal@upm.es> (2019)
  * Julien Hascoet <jhascoet@kalray.eu> (2017)
  *
@@ -46,10 +46,7 @@
 				  mergeable broadcast and roundbuffers is activated.
 	============================================================================
 */
-#include <stdlib.h>
-#include <pthread.h>
-#include <semaphore.h>
-#include <memory.h>
+#include "memory.h"
 
 void * merged_malloc(int size, int nbFree){
 	char* pointer;

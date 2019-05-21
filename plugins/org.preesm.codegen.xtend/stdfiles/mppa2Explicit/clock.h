@@ -1,7 +1,7 @@
 /**
  * Copyright or © or Copr. IETR/INSA - Rennes (2017 - 2019) :
  *
- * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017 - 2018)
+ * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017 - 2019)
  * Daniel Madroñal <daniel.madronal@upm.es> (2019)
  * Julien Hascoet <jhascoet@kalray.eu> (2017)
  *
@@ -46,6 +46,12 @@
 
 #ifndef CLOCK_H
 #define CLOCK_H
+
+#include <stdint.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <HAL/hal/hal_ext.h>
+#include <HAL/hal/cluster/dsu.h>
 
 // stamps used in clock functions to store data
 #define MAX_STAMPS 8

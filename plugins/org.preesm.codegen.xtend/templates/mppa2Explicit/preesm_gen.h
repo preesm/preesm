@@ -89,8 +89,26 @@
 
 #[[#]]#include "preesm.h"
 
-#[[#]]#ifndef PREESM_NB_CORES
-#[[#]]#define PREESM_NB_CORES 1
+#[[#]]#if defined(__k1io__)
+#[[#]]#ifndef PREESM_NB_CORES_IO
+#[[#]]#define PREESM_NB_CORES_IO 1
+#[[#]]#endif
+#[[#]]#else
+#[[#]]#ifndef PREESM_NB_CORES_CC
+#[[#]]#define PREESM_NB_CORES_CC 1
+#[[#]]#endif
+#[[#]]#endif
+
+#[[#]]#if defined(__k1io__)
+#[[#]]#if PREESM_NB_CORES_IO > 3
+#[[#]]#undef PREESM_NB_CORES_IO
+#[[#]]#define PREESM_NB_CORES_IO 3
+#[[#]]#endif
+#[[#]]#else
+#[[#]]#if PREESM_NB_CORES_CC > 16
+#[[#]]#undef PREESM_NB_CORES_CC
+#[[#]]#define PREESM_NB_CORES_CC 16
+#[[#]]#endif
 #[[#]]#endif
 
 $USER_INCLUDES

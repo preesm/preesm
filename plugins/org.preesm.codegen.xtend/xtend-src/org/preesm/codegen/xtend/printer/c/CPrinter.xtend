@@ -57,10 +57,12 @@ import org.preesm.codegen.model.Block
 import org.preesm.codegen.model.Buffer
 import org.preesm.codegen.model.BufferIterator
 import org.preesm.codegen.model.CallBlock
+import org.preesm.codegen.model.CodeElt
 import org.preesm.codegen.model.Communication
 import org.preesm.codegen.model.Constant
 import org.preesm.codegen.model.ConstantString
 import org.preesm.codegen.model.CoreBlock
+import org.preesm.codegen.model.DataTransferAction
 import org.preesm.codegen.model.Delimiter
 import org.preesm.codegen.model.Direction
 import org.preesm.codegen.model.FifoCall
@@ -70,9 +72,9 @@ import org.preesm.codegen.model.FunctionCall
 import org.preesm.codegen.model.IntVar
 import org.preesm.codegen.model.LoopBlock
 import org.preesm.codegen.model.NullBuffer
-import org.preesm.codegen.model.RegisterSetUpAction
 import org.preesm.codegen.model.PapifyAction
-import org.preesm.codegen.model.DataTransferAction
+import org.preesm.codegen.model.PapifyFunctionCall
+import org.preesm.codegen.model.RegisterSetUpAction
 import org.preesm.codegen.model.SharedMemoryCommunication
 import org.preesm.codegen.model.SpecialCall
 import org.preesm.codegen.model.SubBuffer
@@ -82,9 +84,6 @@ import org.preesm.codegen.xtend.CodegenPlugin
 import org.preesm.commons.exceptions.PreesmRuntimeException
 import org.preesm.commons.files.URLResolver
 import org.preesm.model.pisdf.util.CHeaderUsedLocator
-import org.preesm.codegen.model.PapifyFunctionCall
-import org.preesm.codegen.model.CodeElt
-import org.eclipse.emf.common.util.EList
 
 /**
  * This printer is currently used to print C code only for GPP processors
@@ -402,9 +401,9 @@ class CPrinter extends DefaultPrinter {
 	    val findAllCHeaderFileNamesUsed = CHeaderUsedLocator.findAllCHeaderFileNamesUsed(getEngine.algo.referencePiMMGraph)
 	    context.put("USER_INCLUDES", findAllCHeaderFileNamesUsed.map["#include \""+ it +"\""].join("\n"));
 
-		var String constants = "#define NB_DESIGN_ELTS "+getEngine.archi.componentInstances.size+"\n#define NB_CORES "+getEngine.codeBlocks.size; 
+		var String constants = "#define NB_DESIGN_ELTS "+getEngine.archi.componentInstances.size+"\n#define NB_CORES "+getEngine.codeBlocks.size;
 		if(this.usingPapify == 1){
-			constants = constants.concat("\n\n#ifdef _PREESM_MONITOR_INIT\n#include \"eventLib.h\"\n#endif");
+			constants = constants.concat("\n\n#ifdef _PREESM_PAPIFY_MONITOR\n#include \"eventLib.h\"\n#endif");
 		}
 	    context.put("CONSTANTS", constants);
 
@@ -523,7 +522,7 @@ class CPrinter extends DefaultPrinter {
 
 		int main(void) {
 			«IF this.usingPapify == 1»
-				#ifdef _PREESM_MONITOR_INIT
+				#ifdef _PREESM_PAPIFY_MONITOR
 				mkdir("papify-output", 0777);
 				event_init_multiplex();
 				#endif
@@ -564,7 +563,7 @@ class CPrinter extends DefaultPrinter {
 				}
 			}
 			«IF this.usingPapify == 1»
-				#ifdef _PREESM_MONITOR_INIT
+				#ifdef _PREESM_PAPIFY_MONITOR
 				event_destroy();
 				#endif
 			«ENDIF»
@@ -590,10 +589,10 @@ class CPrinter extends DefaultPrinter {
 	override printFunctionCall(FunctionCall functionCall) '''
 	«functionCall.name»(«FOR param : functionCall.parameters SEPARATOR ','»«param.doSwitch»«ENDFOR»); // «functionCall.actorName»
 	'''
-	
+
 	override printPapifyFunctionCall(PapifyFunctionCall papifyFunctionCall) '''
 	«IF papifyFunctionCall.opening == true»
-		#ifdef _PREESM_MONITOR_INIT
+		#ifdef _PREESM_PAPIFY_MONITOR
 	«ENDIF»
 	«printFunctionCall(papifyFunctionCall)»
 	«IF papifyFunctionCall.closing == true»
@@ -607,7 +606,7 @@ class CPrinter extends DefaultPrinter {
 
 	override printPapifyActionDefinition(PapifyAction action) '''
 	«IF action.opening == true»
-		#ifdef _PREESM_MONITOR_INIT
+		#ifdef _PREESM_PAPIFY_MONITOR
 	«ENDIF»
 	«action.type» «action.name»; // «action.comment»
 	«IF action.closing == true»
@@ -635,20 +634,20 @@ class CPrinter extends DefaultPrinter {
 	override printIntVarDefinition(IntVar intVar) '''
 	int «intVar.name»;
 	'''
-	
+
 	override printDataTansfer(DataTransferAction action) ''''''
-	
+
 	override printRegisterSetUp(RegisterSetUpAction action) ''''''
-		
+
 	override preProcessing(List<Block> printerBlocks, Collection<Block> allBlocks){
-		for (cluster : allBlocks){		
-			if (cluster instanceof CoreBlock) {					
+		for (cluster : allBlocks){
+			if (cluster instanceof CoreBlock) {
 				for(CodeElt codeElt : cluster.loopBlock.codeElts){
 					if(codeElt instanceof PapifyFunctionCall){
 						this.usingPapify = 1;
 					}
-				}		
-			}			
+				}
+			}
 		}
 	}
 

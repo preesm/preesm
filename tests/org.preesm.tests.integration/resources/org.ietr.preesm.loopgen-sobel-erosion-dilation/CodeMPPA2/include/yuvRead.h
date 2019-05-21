@@ -15,6 +15,19 @@
 
 #define NB_FRAME 300
 
+//#define PATH_VIDEO "/home/accesscore/jhascoet/akiyo_cif_640x480.yuv"
+//#define PATH_VIDEO "/home/accesscore/videoSequences/akiyo_cif_640x480.yuv"
+#if 0
+#define PATH_VIDEO "/home/accesscore/videoSequences/akiyo_cif.yuv"
+#define VIDEO_WIDTH 352
+#define VIDEO_HEIGHT 288
+#endif
+#if 1
+#define PATH_VIDEO "/home/accesscore/videoSequences/akiyo_cif_640x480.yuv"
+#define VIDEO_WIDTH 640
+#define VIDEO_HEIGHT 480
+#endif
+
 /**
 * Initialize the readYUV actor.
 * Open the YUV file at the given PATH and check its size.

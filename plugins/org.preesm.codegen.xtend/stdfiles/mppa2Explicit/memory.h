@@ -1,7 +1,7 @@
 /**
  * Copyright or © or Copr. IETR/INSA - Rennes (2017 - 2019) :
  *
- * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017 - 2018)
+ * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017 - 2019)
  * Daniel Madroñal <daniel.madronal@upm.es> (2019)
  * Julien Hascoet <jhascoet@kalray.eu> (2017)
  *
@@ -49,6 +49,10 @@
 
 #ifndef MEMORY_H
 #define MEMORY_H
+
+#include <stdlib.h>
+#include <pthread.h>
+#include <semaphore.h>
 
 /**
 * Allocation function used when a single pointer is allocated several times.

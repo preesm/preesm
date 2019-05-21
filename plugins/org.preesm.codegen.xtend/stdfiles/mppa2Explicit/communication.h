@@ -1,7 +1,7 @@
 /**
  * Copyright or © or Copr. IETR/INSA - Rennes (2017 - 2019) :
  *
- * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017 - 2018)
+ * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017 - 2019)
  * Daniel Madroñal <daniel.madronal@upm.es> (2019)
  * Julien Hascoet <jhascoet@kalray.eu> (2017)
  *
@@ -49,7 +49,15 @@
 #ifndef COMMUNICATION_H
 #define COMMUNICATION_H
 
-#include <preesm_gen.h>
+#include "preesm_gen.h"
+#include "preesm.h"
+
+#include <semaphore.h>
+#include <mppa_rpc.h>
+#include <mppa_async.h>
+#include <HAL/hal/hal_ext.h>
+#include <mOS_vcore_u.h>
+#include <assert.h>
 
 /**
 * Communication Initialization (archi dependent)

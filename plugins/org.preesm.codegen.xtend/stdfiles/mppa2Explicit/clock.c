@@ -1,7 +1,7 @@
 /**
  * Copyright or © or Copr. IETR/INSA - Rennes (2017 - 2019) :
  *
- * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2018)
+ * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2018 - 2019)
  * Daniel Madroñal <daniel.madronal@upm.es> (2019)
  * Julien Hascoet <jhascoet@kalray.eu> (2017)
  *
@@ -43,12 +43,6 @@
 	Description : Timing primitive for Preesm Codegen.
 	============================================================================
 */
-
-#include <stdint.h>
-#include <stdio.h>
-#include <stdlib.h>
-#include <HAL/hal/hal_ext.h>
-#include <HAL/hal/cluster/dsu.h>
 
 #include "clock.h"
 

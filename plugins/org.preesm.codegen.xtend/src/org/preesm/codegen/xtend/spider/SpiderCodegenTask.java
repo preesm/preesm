@@ -3,7 +3,7 @@
  *
  * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017 - 2019)
  * Clément Guy <clement.guy@insa-rennes.fr> (2014 - 2015)
- * Florian Arrestier <florian.arrestier@insa-rennes.fr> (2018)
+ * Florian Arrestier <florian.arrestier@insa-rennes.fr> (2018 - 2019)
  * Julien Heulot <julien.heulot@insa-rennes.fr> (2015 - 2016)
  * Karol Desnos <karol.desnos@insa-rennes.fr> (2017)
  * Maxime Pelcat <maxime.pelcat@insa-rennes.fr> (2015)
@@ -147,7 +147,7 @@ public class SpiderCodegenTask extends AbstractTaskImplementation {
     launcher.initGenerator(pg);
     final String graphCode = launcher.generateGraphCode(pg);
     final String fctCode = launcher.generateFunctionCode(pg);
-    final String hCode = launcher.generateHeaderCode(pg);
+    final String hCode = launcher.generateHeaderCode(pg, spiderConfig);
     // TODO: add config as parameters from workflow
     final String mCode = launcher.generateMainCode(pg, spiderConfig);
     final String papifyCode = launcher.generatePapifyCode(pg, scenario);
@@ -183,7 +183,7 @@ public class SpiderCodegenTask extends AbstractTaskImplementation {
     final String hFilePath = pg.getName() + ".h";
     final File hFile = new File(folder, hFilePath);
 
-    final String archiFilePath = pg.getName() + "_archi.cpp";
+    final String archiFilePath = "archi_" + pg.getName() + ".cpp";
     final File archiFile = new File(folder, archiFilePath);
 
     final String piGraphfilePath = "pi_" + pg.getName() + ".cpp";

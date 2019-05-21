@@ -2,6 +2,7 @@
  * Copyright or © or Copr. IETR/INSA - Rennes (2016 - 2019) :
  *
  * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017 - 2019)
+ * Daniel Madroñal <daniel.madronal@upm.es> (2019)
  * Julien Hascoet <jhascoet@kalray.eu> (2016 - 2017)
  *
  * This software is a computer program whose purpose is to help prototyping
@@ -57,7 +58,9 @@ import org.preesm.workflow.implement.AbstractTaskImplementation;
     inputs = { @Port(name = "SDF", type = SDFGraph.class), @Port(name = "scenario", type = PreesmScenario.class),
         @Port(name = "architecture", type = Design.class) },
 
-    outputs = { @Port(name = "SDF", type = SDFGraph.class) }
+    outputs = { @Port(name = "SDF", type = SDFGraph.class) },
+
+    description = "Workflow task responsible for clustering hierarchical actors."
 
 )
 public class Clustering extends AbstractTaskImplementation {

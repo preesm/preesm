@@ -64,7 +64,7 @@ import org.preesm.workflow.implement.AbstractWorkflowNodeImplementation;
         + "of the code for the application based on the PAPIFY tab information.\n\n"
         + "The generated code makes use of 1 macro that enables/disables the monitoring"
         + " in the **preesm.h** user header file:\n"
-        + "*  **_PREESM_MONITOR_INIT** : if defined, the code monitoring will take place;\n"
+        + "*  **_PREESM_PAPIFY_MONITOR** : if defined, the code monitoring will take place;\n"
 
 )
 public class CodegenPapifyEngineTask extends AbstractTaskImplementation {
