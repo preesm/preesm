@@ -1,8 +1,8 @@
 PREESM Changelog
 ================
 
-## Release version X.Y.Z
-*XXXX.XX.XX*
+## Release version 3.8.0
+*2019.05.21*
 
 ### New Feature
 *  Clustering and DistributedOnly memory distribution now are compatible;
