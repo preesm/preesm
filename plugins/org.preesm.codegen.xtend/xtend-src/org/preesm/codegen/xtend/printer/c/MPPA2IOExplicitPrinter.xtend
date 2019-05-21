@@ -388,7 +388,7 @@ class MPPA2IOExplicitPrinter extends MPPA2ExplicitPrinter {
 		/* extern reference of generated code */
 		«FOR io : printerBlocks.toSet»
 			«IF (io instanceof CoreBlock)»
-				extern void *computationTask_«io.name»(void *arg);
+				extern void *computationTask_«io.name»(void *arg __attribute__((__unused__)));
 			«ENDIF»
 		«ENDFOR»
 		/* extern reference of shared memories */ 
