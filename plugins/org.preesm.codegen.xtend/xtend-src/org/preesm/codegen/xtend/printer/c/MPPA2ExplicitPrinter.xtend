@@ -448,7 +448,7 @@ class MPPA2ExplicitPrinter extends CPrinter {
 	'''
 
 	override printCoreInitBlockHeader(CallBlock callBlock) '''
-	void *computationTask_«(callBlock.eContainer as CoreBlock).name»(void *arg){
+	void *computationTask_«(callBlock.eContainer as CoreBlock).name»(void *arg __attribute__((__unused__))){
 «/*	#ifdef PREESM_VERBOSE
 		//printf("Cluster %d runs on task «(callBlock.eContainer as CoreBlock).name»\n", __k1_get_cluster_id());
 	#endif*/»
