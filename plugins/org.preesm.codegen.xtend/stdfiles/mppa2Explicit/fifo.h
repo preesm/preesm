@@ -48,6 +48,7 @@
 #ifndef FIFO_H
 #define FIFO_H
 
+#include <string.h>
 /**
 * Initialize a FIFO by filling its memory with 0.
 *

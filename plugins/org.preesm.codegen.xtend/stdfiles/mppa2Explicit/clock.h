@@ -47,6 +47,12 @@
 #ifndef CLOCK_H
 #define CLOCK_H
 
+#include <stdint.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <HAL/hal/hal_ext.h>
+#include <HAL/hal/cluster/dsu.h>
+
 // stamps used in clock functions to store data
 #define MAX_STAMPS 8
 #define CLOCK_STAMP_GENERAL 0

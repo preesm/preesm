@@ -44,12 +44,6 @@
 	============================================================================
 */
 
-#include <stdint.h>
-#include <stdio.h>
-#include <stdlib.h>
-#include <HAL/hal/hal_ext.h>
-#include <HAL/hal/cluster/dsu.h>
-
 #include "clock.h"
 
 uint64_t startTimes[MAX_STAMPS]; 	/* cycle */

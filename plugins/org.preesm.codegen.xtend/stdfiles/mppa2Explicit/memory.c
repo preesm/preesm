@@ -46,10 +46,7 @@
 				  mergeable broadcast and roundbuffers is activated.
 	============================================================================
 */
-#include <stdlib.h>
-#include <pthread.h>
-#include <semaphore.h>
-#include <memory.h>
+#include "memory.h"
 
 void * merged_malloc(int size, int nbFree){
 	char* pointer;

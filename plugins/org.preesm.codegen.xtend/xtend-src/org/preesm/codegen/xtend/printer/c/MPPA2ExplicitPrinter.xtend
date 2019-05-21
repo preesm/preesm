@@ -162,7 +162,7 @@ class MPPA2ExplicitPrinter extends CPrinter {
 		«IF (this.distributedOnly == 0)»
 			extern mppa_async_segment_t shared_segment;
 		«ENDIF»
-		«IF (this.sharedOnly == 0)»
+		«IF (this.sharedOnly == 0 && this.distributedOnly == 1)»
 			extern mppa_async_segment_t distributed_segment[PREESM_NB_CLUSTERS + PREESM_IO_USED];
 		«ENDIF»
 
@@ -448,7 +448,7 @@ class MPPA2ExplicitPrinter extends CPrinter {
 	'''
 
 	override printCoreInitBlockHeader(CallBlock callBlock) '''
-	void *computationTask_«(callBlock.eContainer as CoreBlock).name»(void *arg){
+	void *computationTask_«(callBlock.eContainer as CoreBlock).name»(void *arg __attribute__((__unused__))){
 «/*	#ifdef PREESM_VERBOSE
 		//printf("Cluster %d runs on task «(callBlock.eContainer as CoreBlock).name»\n", __k1_get_cluster_id());
 	#endif*/»
@@ -793,7 +793,7 @@ class MPPA2ExplicitPrinter extends CPrinter {
 		/* Shared Segment ID */
 		mppa_async_segment_t shared_segment;
 		«ENDIF»
-		«IF (this.sharedOnly == 0)»
+		«IF (this.sharedOnly == 0 && this.distributedOnly == 1)»
 		/* Distributed Segments ID */
 		mppa_async_segment_t distributed_segment[PREESM_NB_CLUSTERS + PREESM_IO_USED];
 		extern int local_memory_size;
@@ -850,7 +850,7 @@ class MPPA2ExplicitPrinter extends CPrinter {
 			}
 			«ENDIF»
 			
-			«IF (this.sharedOnly == 0)»
+			«IF (this.sharedOnly == 0 && this.distributedOnly == 1)»
 				/* Inter cluster communication support */
 				int cc_id = __k1_get_cluster_id();
 				void *cc_ptr = NULL;
@@ -893,7 +893,7 @@ class MPPA2ExplicitPrinter extends CPrinter {
 				}
 				mppa_rpc_barrier_all();
 			«ENDIF»
-			«IF (this.sharedOnly == 0)»
+			«IF (this.sharedOnly == 0 && this.distributedOnly == 1)»
 				int i;
 				for(i = 0; i < PREESM_NB_CLUSTERS + PREESM_IO_USED; i++){
 					if(cc_id != i){
@@ -960,7 +960,7 @@ class MPPA2ExplicitPrinter extends CPrinter {
 		static utask_t t;
 		static mppadesc_t pcie_fd = 0;
 		
-		«IF (this.sharedOnly == 0)»
+		«IF (this.sharedOnly == 0 && this.distributedOnly == 1)»
 		/* Distributed Segments ID */
 		mppa_async_segment_t distributed_segment[PREESM_NB_CLUSTERS + PREESM_IO_USED] __attribute__ ((unused));
 		«ENDIF»

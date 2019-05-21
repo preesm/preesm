@@ -129,7 +129,7 @@ class MPPA2IOExplicitPrinter extends MPPA2ExplicitPrinter {
 		«IF (this.distributedOnly == 0)»
 			extern mppa_async_segment_t shared_segment;
 		«ENDIF»
-		«IF (this.sharedOnly == 0)»
+		«IF (this.sharedOnly == 0 && this.distributedOnly == 1)»
 			extern mppa_async_segment_t distributed_segment[PREESM_NB_CLUSTERS + PREESM_IO_USED];
 		«ENDIF»
 
@@ -378,7 +378,7 @@ class MPPA2IOExplicitPrinter extends MPPA2ExplicitPrinter {
 		/* Shared Segment ID */
 		mppa_async_segment_t shared_segment;
 		«ENDIF»
-		«IF (this.sharedOnly == 0)»
+		«IF (this.sharedOnly == 0 && this.distributedOnly == 1)»
 		mppa_async_segment_t distributed_segment[PREESM_NB_CLUSTERS + PREESM_IO_USED];
 		extern int local_memory_size;
 		«ENDIF»
@@ -453,7 +453,7 @@ class MPPA2IOExplicitPrinter extends MPPA2ExplicitPrinter {
 					assert(0 && "mppa_async_segment_create\n");
 				}
 			«ENDIF»
-			«IF (this.sharedOnly == 0)»
+			«IF (this.sharedOnly == 0 && this.distributedOnly == 1)»
 				«FOR io : printerBlocks.toSet»
 					«IF (io instanceof CoreBlock)»
 						if(mppa_async_segment_create(&distributed_segment[PREESM_NB_CLUSTERS], INTERCC_BASE_SEGMENT_ID+PREESM_NB_CLUSTERS, (void*)&«io.name», local_memory_size, 0, 0, NULL) != 0){
@@ -473,7 +473,7 @@ class MPPA2IOExplicitPrinter extends MPPA2ExplicitPrinter {
 			// init comm
 			communicationInit();	
 			mppa_rpc_barrier(1, 2);
-			«IF (this.sharedOnly == 0)»
+			«IF (this.sharedOnly == 0 && this.distributedOnly == 1)»
 				int i;
 				for(i = 0; i < PREESM_NB_CLUSTERS; i++){
 					if(mppa_async_segment_clone(&distributed_segment[i], INTERCC_BASE_SEGMENT_ID+i, NULL, 0, NULL) != 0){
