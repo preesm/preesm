@@ -343,7 +343,7 @@ abstract class ExecutableActor extends AbstractActor {
 }
 
 interface RefinementContainer {
-	contains Refinement refinement
+	contains Refinement refinement opposite refinementContainer
 }
 
 class Actor extends ExecutableActor, RefinementContainer, PeriodicElement {
@@ -604,6 +604,8 @@ class ConfigOutputInterface extends InterfaceActor {
 }
 
 interface Refinement {
+	refers RefinementContainer refinementContainer opposite refinement
+
 	IPath filePath
 	op AbstractActor getAbstractActor() {
 		return RefinementResolver.resolveAbstractActor(this)
