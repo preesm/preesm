@@ -52,8 +52,6 @@ import org.preesm.commons.doc.annotations.PreesmTask;
 import org.preesm.commons.doc.annotations.Value;
 import org.preesm.commons.exceptions.PreesmException;
 import org.preesm.commons.exceptions.PreesmRuntimeException;
-import org.preesm.commons.files.ContainersManager;
-import org.preesm.commons.files.PathTools;
 import org.preesm.commons.files.WorkspaceUtils;
 import org.preesm.workflow.elements.Workflow;
 import org.preesm.workflow.implement.AbstractTaskImplementation;
@@ -115,14 +113,14 @@ public class DAGExportTransform extends AbstractTaskImplementation {
 
     final DirectedAcyclicGraph dag = (DirectedAcyclicGraph) inputs.get("DAG");
 
-    final String sGraphmlPath = PathTools.getAbsolutePath(parameters.get("path"), workflow.getProjectName());
+    final String sGraphmlPath = WorkspaceUtils.getAbsolutePath(parameters.get("path"), workflow.getProjectName());
     IPath graphmlPath = new Path(sGraphmlPath);
     // Get a complete valid path with all folders existing
     try {
       if (graphmlPath.getFileExtension() != null) {
-        ContainersManager.createMissingFolders(graphmlPath.removeFileExtension().removeLastSegments(1));
+        WorkspaceUtils.createMissingFolders(graphmlPath.removeFileExtension().removeLastSegments(1));
       } else {
-        ContainersManager.createMissingFolders(graphmlPath);
+        WorkspaceUtils.createMissingFolders(graphmlPath);
         graphmlPath = graphmlPath.append(dag.getName() + ".graphml");
       }
     } catch (CoreException | IllegalArgumentException e) {

@@ -36,13 +36,13 @@ package org.preesm.commons.test;
 
 import org.junit.Assert;
 import org.junit.Test;
-import org.preesm.commons.files.ContainersManager;
+import org.preesm.commons.files.WorkspaceUtils;
 
 // TODO: Auto-generated Javadoc
 /**
  * The Class ContainersManagerTest.
  */
-public class ContainersManagerTest {
+public class WorkspaceUtilsTest {
 
   /**
    * Test project exists.
@@ -50,7 +50,7 @@ public class ContainersManagerTest {
   @Test
   public void testProjectExists() {
     try {
-      final boolean projectExists = ContainersManager.projectExists("toto");
+      final boolean projectExists = WorkspaceUtils.projectExists("toto");
       Assert.assertFalse(projectExists);
       System.out.println("done");
     } catch (final IllegalStateException e) {

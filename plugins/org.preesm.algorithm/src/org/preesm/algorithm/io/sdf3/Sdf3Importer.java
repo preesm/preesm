@@ -48,7 +48,7 @@ import org.preesm.commons.doc.annotations.Port;
 import org.preesm.commons.doc.annotations.PreesmTask;
 import org.preesm.commons.doc.annotations.Value;
 import org.preesm.commons.exceptions.PreesmRuntimeException;
-import org.preesm.commons.files.PathTools;
+import org.preesm.commons.files.WorkspaceUtils;
 import org.preesm.commons.logger.PreesmLogger;
 import org.preesm.model.scenario.PreesmScenario;
 import org.preesm.model.slam.Design;
@@ -99,7 +99,7 @@ public class Sdf3Importer extends AbstractTaskImplementation {
     }
 
     // Locate the intput file
-    final String sPath = PathTools.getAbsolutePath(parameters.get("path"), workflow.getProjectName());
+    final String sPath = WorkspaceUtils.getAbsolutePath(parameters.get("path"), workflow.getProjectName());
     final IPath path = new Path(sPath);
 
     final SDF3ImporterEngine engine = new SDF3ImporterEngine();
