@@ -42,7 +42,9 @@ package org.preesm.algorithm.pisdf.pimm2srdag;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
+import org.eclipse.core.runtime.IPath;
 import org.preesm.algorithm.codegen.idl.ActorPrototypes;
 import org.preesm.algorithm.codegen.idl.Prototype;
 import org.preesm.algorithm.codegen.model.CodeGenArgument;
@@ -394,7 +396,8 @@ public class StaticPiMM2MapperDAGVisitor extends PiMMSwitch<Boolean> {
 
   @Override
   public Boolean casePiSDFRefinement(final PiSDFRefinement refinement) {
-    throw new UnsupportedOperationException("Flat single-rate can not have PiSDFRefinement for a vertex.");
+    throw new UnsupportedOperationException("Flat single-rate can not have children graph as refinement (see vertex "
+        + refinement.getRefinementContainer() + ").");
   }
 
   @Override
@@ -483,16 +486,18 @@ public class StaticPiMM2MapperDAGVisitor extends PiMMSwitch<Boolean> {
 
   @Override
   public Boolean caseCHeaderRefinement(final CHeaderRefinement h) {
-    final ActorPrototypes actorPrototype = new ActorPrototypes(h.getFilePath().toOSString());
+    final String osStringPath = Optional.ofNullable(h.getFilePath()).map(IPath::toOSString).orElse(null);
 
-    doSwitch(h.getLoopPrototype());
-    actorPrototype.setLoopPrototype(this.currentPrototype);
+    final ActorPrototypes actorPrototype = new ActorPrototypes(osStringPath);
+    if (osStringPath != null) {
+      doSwitch(h.getLoopPrototype());
+      actorPrototype.setLoopPrototype(this.currentPrototype);
 
-    if (h.getInitPrototype() != null) {
-      doSwitch(h.getInitPrototype());
-      actorPrototype.setInitPrototype(this.currentPrototype);
+      if (h.getInitPrototype() != null) {
+        doSwitch(h.getInitPrototype());
+        actorPrototype.setInitPrototype(this.currentPrototype);
+      }
     }
-
     this.currentRefinement = actorPrototype;
     return true;
   }
