@@ -10,7 +10,7 @@
 #include "../include/environment.h"
 #include "../include/common.h"
 
-extern int stopThreads;
+extern int preesmStopThreads;
 
 // Global Variable
 float last_action = 0.f;

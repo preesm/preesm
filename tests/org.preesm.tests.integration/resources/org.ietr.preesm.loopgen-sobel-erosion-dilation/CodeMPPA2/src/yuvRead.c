@@ -10,7 +10,7 @@
 #include "preesm.h"
 #include "clock.h"
 
-extern int stopThreads;
+extern int preesmStopThreads;
 #define FPS_INTERVAL 1
 int currentFrameIndex __attribute__((unused));
 

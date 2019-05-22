@@ -8,9 +8,10 @@ PREESM Changelog
 
 ### Changes
 * Make sure the order of tasks in the reference is always the same;
+* Prefix stopThreads with preesm to avoid conflicts with application variables, and document variable;
 
 ### Bug fix
-
+* Fix #135: properly use preesmStopThreads to control the loop;
 
 ## Release version 3.8.0
 *2019.05.21*

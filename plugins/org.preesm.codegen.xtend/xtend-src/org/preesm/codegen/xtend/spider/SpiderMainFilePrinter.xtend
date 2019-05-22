@@ -103,7 +103,7 @@ class SpiderMainFilePrinter {
 
 	#endif
 
-	int stopThreads;
+	int preesmStopThreads;
 
 	int main(int argc, char* argv[]){
 		SpiderConfig cfg;
@@ -160,7 +160,7 @@ class SpiderMainFilePrinter {
 		cfg.traceEnabled = «spiderConfig.useOfTrace»;
 		/* == Enables graph optimizations (may impact performance) == */
 		cfg.useGraphOptim = «spiderConfig.useOfGraphOptims»;
-		
+
 		/* == Papify instrumentation == */
 		«IF spiderConfig.useOfPapify»
 			cfg.usePapify = true;
@@ -172,10 +172,10 @@ class SpiderMainFilePrinter {
 		try {
 			/* == Spider stacks init == */
 			Spider::initStacks(stackConfig);
-			
+
 			/* == Spider Archi init == */
 			initArchi();
-			
+
 			/* == Spider initialisation == */
 			Spider::init(cfg, stackConfig);
 
@@ -189,7 +189,7 @@ class SpiderMainFilePrinter {
 			fprintf(stderr, "INFO: Application execution -- START\n");
 
 			/* == Main loop, exception handling can be removed to increase performance == */
-			for(int i=0; i<NB_ITERATION && !stopThreads; i++){
+			for(int i=0; i<NB_ITERATION && !preesmStopThreads; i++){
 				/* == Compute the SR-DAG, scheduling and executing the main graph == */
 				Spider::iterate();
 
