@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<dftools:workflow xmlns:dftools="http://net.sf.dftools">
+<dftools:workflow errorOnWarning="false" verboseLevel="INFO" xmlns:dftools="http://net.sf.dftools">
     <dftools:scenario pluginId="org.ietr.preesm.scenario.task"/>
     <dftools:task
         pluginId="org.ietr.preesm.plugin.transforms.flathierarchy" taskId="HierarchyFlattening">
@@ -23,10 +23,10 @@
         targetport="SDF" to="HierarchyFlattening"/>
     <dftools:dataTransfer from="scenario" sourceport="scenario"
         targetport="scenario" to="StaticPiMM2SDF"/>
-    <dftools:dataTransfer from="HierarchyFlattening" sourceport="SDF"
-        targetport="SDF" to="ExporterSDF3"/>
+    <dftools:dataTransfer from="HierarchyFlattening"
+        sourceport="SDF" targetport="SDF" to="ExporterSDF3"/>
     <dftools:dataTransfer from="scenario" sourceport="scenario"
         targetport="scenario" to="ExporterSDF3"/>
-    <dftools:dataTransfer from="scenario" sourceport="architecture"
-        targetport="architecture" to="ExporterSDF3"/>
+    <dftools:dataTransfer from="scenario"
+        sourceport="architecture" targetport="architecture" to="ExporterSDF3"/>
 </dftools:workflow>
