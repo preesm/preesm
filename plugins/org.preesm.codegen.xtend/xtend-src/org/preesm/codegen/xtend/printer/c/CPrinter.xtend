@@ -166,7 +166,7 @@ class CPrinter extends DefaultPrinter {
 	override printDeclarationsHeader(List<Variable> list) '''
 	// Core Global Declaration
 	extern pthread_barrier_t iter_barrier;
-	extern int stopThreads;
+	extern int preesmStopThreads;
 
 	'''
 
@@ -194,20 +194,20 @@ class CPrinter extends DefaultPrinter {
 
 	override printCoreLoopBlockHeader(LoopBlock block2) '''
 
-		«"\t"»// Begin the execution loop
+	// Begin the execution loop«"\n\t"»
+	pthread_barrier_wait(&iter_barrier);
 #ifdef PREESM_LOOP_SIZE // Case of a finite loop
-			int index;
-			for(index=0;index<PREESM_LOOP_SIZE;index++){
+	int index;
+	for(index=0;index<PREESM_LOOP_SIZE || preesmStopThreads;index++){
 #else // Default case of an infinite loop
-			while(1){
+	while(!preesmStopThreads){
 #endif
-				pthread_barrier_wait(&iter_barrier);
-				if(stopThreads){
-					pthread_exit(NULL);
-				}«"\n\n"»
-	'''
+		// loop body«"\n\n"»
+		'''
 
 	override printCoreLoopBlockFooter(LoopBlock block2) '''
+			// loop footer
+			pthread_barrier_wait(&iter_barrier);
 		}
 		return NULL;
 	}
@@ -479,7 +479,7 @@ class CPrinter extends DefaultPrinter {
 		«ENDFOR»
 
 		pthread_barrier_t iter_barrier;
-		int stopThreads;
+		int preesmStopThreads;
 
 
 		unsigned int launch(unsigned int core_id, pthread_t * thread, void *(*start_routine) (void *)) {
@@ -538,7 +538,7 @@ class CPrinter extends DefaultPrinter {
 		#endif
 
 			// Creating a synchronization barrier
-			stopThreads = 0;
+			preesmStopThreads = 0;
 			pthread_barrier_init(&iter_barrier, NULL, _PREESM_NBTHREADS_);
 
 			communicationInit();
