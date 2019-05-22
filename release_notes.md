@@ -11,7 +11,7 @@ PREESM Changelog
 * Prefix stopThreads with preesm to avoid conflicts with application variables, and document variable;
 
 ### Bug fix
-
+* Fix #135: properly use preesmStopThreads to control the loop;
 
 ## Release version 3.8.0
 *2019.05.21*
