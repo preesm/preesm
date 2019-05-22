@@ -66,7 +66,7 @@ void handler(int sig) {
 }
 
 // kept for compatibility
-int stopThreads;
+int preesmStopThreads;
 
 void actualThreadComputations(int processingElementID) {
   registry[processingElementID].id = processingElementID;
