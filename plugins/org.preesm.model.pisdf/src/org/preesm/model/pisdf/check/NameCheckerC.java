@@ -38,6 +38,7 @@ package org.preesm.model.pisdf.check;
 import java.util.Arrays;
 import java.util.SortedSet;
 import java.util.TreeSet;
+import org.preesm.commons.exceptions.PreesmRuntimeException;
 
 /**
  * This class enables to check if an actor or port name is compliant with our policy.
@@ -50,6 +51,16 @@ public class NameCheckerC {
    * Valid names correspond to this regex, close to the C variables name policy.
    */
   public static final String REGEX_C = "[a-zA-Z][a-zA-Z0-9_]*";
+
+  /**
+   * End of error message if name does not match {@link REGEX_C}
+   */
+  public static final String msgVariableNameError = "> must match the regex " + REGEX_C + ".";
+
+  /**
+   * End of error message if name is a keyword of C.
+   */
+  public static final String msgCkeywordNameError = "> is a restricted keyword of C.";
 
   /**
    * Only C for now, but it could be extended to C++ keywords also.
@@ -65,16 +76,47 @@ public class NameCheckerC {
   public static final SortedSet<String> restrictedKeywords = new TreeSet<>(Arrays.asList(restrictedKeywordsArr));
 
   /**
-   * Check if the given actor or port name meets the policy.
-   * <p>
-   * Ideally this method should be called by all {@code setName} methods. It is not the case yet.
+   * Match {@code name} with {@link REGEX_C}.
    * 
    * @param name
    *          Name to check.
-   * @return True if valid, false otherwise.
+   * @return True if valid variable name, false otherwise.
    */
-  public static boolean isValidName(String name) {
-    return name.matches(REGEX_C) && !restrictedKeywords.contains(name);
+  public static boolean matchCvariableRegex(String name) {
+    return name.matches(REGEX_C);
+  }
+
+  /**
+   * Test if {@code name} is one of the restricted C keyword.
+   * 
+   * @param name
+   *          Name to check.
+   * @return True if C keyword, false otherwise.
+   */
+  public static boolean isCkeyword(String name) {
+    return restrictedKeywords.contains(name);
+  }
+
+  /**
+   * Check if the given actor or port name meets the policy. If not, throws an exception.
+   * <p>
+   * Ideally this method should be called by all {@code setName} methods. It is not the case yet.
+   * 
+   * @param componentName
+   *          Name of the kind of component (e.g. Actor, Port, ...)
+   * @param name
+   *          Name to check.
+   * @return Always {@code true} if returning.
+   * @throws PreesmRuntimeException
+   *           If not a valid name.
+   */
+  public static boolean checkValidName(String componentName, String name) {
+    if (!matchCvariableRegex(name)) {
+      throw new PreesmRuntimeException(componentName + " <" + name + msgVariableNameError);
+    } else if (isCkeyword(name)) {
+      throw new PreesmRuntimeException(componentName + " <" + name + msgCkeywordNameError);
+    }
+    return true;
   }
 
 }

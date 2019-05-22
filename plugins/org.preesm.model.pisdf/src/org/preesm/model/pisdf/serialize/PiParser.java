@@ -256,11 +256,7 @@ public class PiParser {
     // Get the actor properties
     final String name = nodeElt.getAttribute(PiIdentifiers.ACTOR_NAME);
 
-    if (!NameCheckerC.isValidName(name)) {
-      throw new PreesmRuntimeException(
-          "Parsed actor " + name + " has an invalide name (should meet " + NameCheckerC.REGEX_C + ")");
-    }
-
+    NameCheckerC.checkValidName(Actor.class.getName(), name);
     actor.setName(name);
 
     final String attribute = nodeElt.getAttribute(PiIdentifiers.ACTOR_PERIOD);
@@ -411,10 +407,7 @@ public class PiParser {
 
     // Get the actor properties
     final String attribute = nodeElt.getAttribute(PiIdentifiers.PARAMETER_NAME);
-    if (!NameCheckerC.isValidName(attribute)) {
-      throw new PreesmRuntimeException("Parsed ConfigInputInterface " + attribute
-          + " has an invalide name (should meet " + NameCheckerC.REGEX_C + ")");
-    }
+    NameCheckerC.checkValidName(ConfigInputInterface.class.getName(), attribute);
     param.setName(attribute);
 
     // Add the actor to the parsed graph
@@ -851,10 +844,7 @@ public class PiParser {
 
     // Get the actor properties
     String name = nodeElt.getAttribute(PiIdentifiers.PARAMETER_NAME);
-    if (!NameCheckerC.isValidName(name)) {
-      throw new PreesmRuntimeException(
-          "Parsed parameter " + name + " has an invalide name (should meet " + NameCheckerC.REGEX_C + ")");
-    }
+    NameCheckerC.checkValidName(Parameter.class.getName(), name);
     param.setName(name);
 
     // Add the actor to the parsed graph
@@ -889,10 +879,7 @@ public class PiParser {
    */
   protected void parsePort(final Element elt, final Configurable vertex) {
     final String portName = elt.getAttribute(PiIdentifiers.PORT_NAME);
-    if (!NameCheckerC.isValidName(portName)) {
-      throw new PreesmRuntimeException(
-          "Parsed port " + portName + " has an invalide name (should meet " + NameCheckerC.REGEX_C + ")");
-    }
+    NameCheckerC.checkValidName(Port.class.getName(), portName);
 
     final String portKind = elt.getAttribute(PiIdentifiers.PORT_KIND);
 
@@ -981,10 +968,7 @@ public class PiParser {
 
     // Set the Interface properties
     final String name = nodeElt.getAttribute(PiIdentifiers.CONFIGURATION_OUTPUT_INTERFACE_NAME);
-    if (!NameCheckerC.isValidName(name)) {
-      throw new PreesmRuntimeException(
-          "Parsed ConfigOutputInterface " + name + " has an invalide name (should meet " + NameCheckerC.REGEX_C + ")");
-    }
+    NameCheckerC.checkValidName(ConfigOutputInterface.class.getName(), name);
 
     cfgOutIf.setName(name);
     cfgOutIf.getDataPort().setName(name);
@@ -1010,7 +994,7 @@ public class PiParser {
 
     // Set the sourceInterface properties
     final String name = nodeElt.getAttribute(PiIdentifiers.DATA_OUTPUT_INTERFACE_NAME);
-    if (!NameCheckerC.isValidName(name)) {
+    if (!NameCheckerC.checkValidName(DataOutputInterface.class.getName(), name)) {
       throw new PreesmRuntimeException(
           "Parsed SinkInterface " + name + " has an invalide name (should meet " + NameCheckerC.REGEX_C + ")");
     }
@@ -1039,10 +1023,7 @@ public class PiParser {
 
     // Set the sourceInterface properties
     final String name = nodeElt.getAttribute(PiIdentifiers.DATA_INPUT_INTERFACE_NAME);
-    if (!NameCheckerC.isValidName(name)) {
-      throw new PreesmRuntimeException(
-          "Parsed SourceInterface " + name + " has an invalide name (should meet " + NameCheckerC.REGEX_C + ")");
-    }
+    NameCheckerC.checkValidName(DataInputInterface.class.getName(), name);
 
     srcInterface.setName(name);
     srcInterface.getDataPort().setName(name);
@@ -1068,10 +1049,7 @@ public class PiParser {
     AbstractActor actor = null;
 
     String name = nodeElt.getAttribute(PiIdentifiers.ACTOR_NAME);
-    if (!NameCheckerC.isValidName(name)) {
-      throw new PreesmRuntimeException(
-          "Parsed special actor " + name + " has an invalide name (should meet " + NameCheckerC.REGEX_C + ")");
-    }
+    NameCheckerC.checkValidName("Special actor", name);
 
     // Instantiate the actor.
     switch (nodeKind) {
