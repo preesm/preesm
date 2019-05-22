@@ -93,6 +93,7 @@ import org.preesm.model.pisdf.InterfaceKind;
 import org.preesm.model.pisdf.Parameter;
 import org.preesm.model.pisdf.PersistenceLevel;
 import org.preesm.model.pisdf.PiGraph;
+import org.preesm.model.pisdf.PiSDFRefinement;
 import org.preesm.model.pisdf.Port;
 import org.preesm.model.pisdf.PortKind;
 import org.preesm.model.pisdf.PortMemoryAnnotation;
@@ -293,49 +294,64 @@ public class PiParser {
    *          the actor
    */
   private void parseRefinement(final Element nodeElt, final RefinementContainer actor) {
-    if (!(actor instanceof DelayActor)) {
-      actor.setRefinement(PiMMUserFactory.instance.createPiSDFRefinement());
-    }
     final String refinement = PiParser.getProperty(nodeElt, PiIdentifiers.REFINEMENT);
     if ((refinement != null) && !refinement.isEmpty()) {
       final IPath path = getWorkspaceRelativePathFrom(new Path(refinement));
-
-      // If the refinement is a .h file, then we need to create a
-      // HRefinement
-      if (path.getFileExtension().equals("h")) {
-        final CHeaderRefinement hrefinement;
-        // Delays already have a default refinement by default at creation time
-        if (actor instanceof DelayActor) {
-          hrefinement = (CHeaderRefinement) actor.getRefinement();
-        } else {
-          hrefinement = PiMMUserFactory.instance.createCHeaderRefinement();
-        }
-        // The nodeElt should have a loop element, and may have an init
-        // element
-        final NodeList childList = nodeElt.getChildNodes();
-        for (int i = 0; i < childList.getLength(); i++) {
-          final Node elt = childList.item(i);
-          final String eltName = elt.getNodeName();
-          Element elmt;
-          switch (eltName) {
-            case PiIdentifiers.REFINEMENT_LOOP:
-              elmt = (Element) elt;
-              hrefinement.setLoopPrototype(
-                  parseFunctionPrototype(elmt, elmt.getAttribute(PiIdentifiers.REFINEMENT_FUNCTION_PROTOTYPE_NAME)));
-              break;
-            case PiIdentifiers.REFINEMENT_INIT:
-              elmt = (Element) elt;
-              hrefinement.setInitPrototype(
-                  parseFunctionPrototype(elmt, elmt.getAttribute(PiIdentifiers.REFINEMENT_FUNCTION_PROTOTYPE_NAME)));
-              break;
-            default:
-              // ignore #text and other children
+      final String refinementExtension = path.getFileExtension();
+      switch (refinementExtension) {
+        case "h":
+          final CHeaderRefinement hrefinement;
+          // Delays already have a default C header refinement by default at creation time
+          if (actor instanceof DelayActor) {
+            hrefinement = (CHeaderRefinement) actor.getRefinement();
+          } else {
+            hrefinement = PiMMUserFactory.instance.createCHeaderRefinement();
           }
-        }
-        actor.setRefinement(hrefinement);
+          // The nodeElt should have a loop element, and may have an init
+          // element
+          final NodeList childList = nodeElt.getChildNodes();
+          for (int i = 0; i < childList.getLength(); i++) {
+            final Node elt = childList.item(i);
+            final String eltName = elt.getNodeName();
+            Element elmt;
+            switch (eltName) {
+              case PiIdentifiers.REFINEMENT_LOOP:
+                elmt = (Element) elt;
+                hrefinement.setLoopPrototype(
+                    parseFunctionPrototype(elmt, elmt.getAttribute(PiIdentifiers.REFINEMENT_FUNCTION_PROTOTYPE_NAME)));
+                break;
+              case PiIdentifiers.REFINEMENT_INIT:
+                elmt = (Element) elt;
+                hrefinement.setInitPrototype(
+                    parseFunctionPrototype(elmt, elmt.getAttribute(PiIdentifiers.REFINEMENT_FUNCTION_PROTOTYPE_NAME)));
+                break;
+              default:
+                // ignore #text and other children
+            }
+          }
+          hrefinement.setFilePath(path);
+          actor.setRefinement(hrefinement);
+          break;
+        case "pi":
+          if ((actor instanceof DelayActor)) {
+            throw new UnsupportedOperationException("Cannot specfiy pi refinement as delay initilization");
+          }
+          final PiSDFRefinement hr = PiMMUserFactory.instance.createPiSDFRefinement();
+          hr.setFilePath(path);
+          actor.setRefinement(hr);
+          break;
+        default:
+          throw new UnsupportedOperationException("Unsupported refinement extension " + refinementExtension);
       }
 
-      actor.getRefinement().setFilePath(path);
+    } else {
+      // if there is no refinement property
+      // set by default a C header refinement with empty file path
+      if (!(actor instanceof DelayActor)) {
+        final CHeaderRefinement hr = PiMMUserFactory.instance.createCHeaderRefinement();
+        hr.setFilePath(null);
+        actor.setRefinement(hr);
+      }
     }
   }
 

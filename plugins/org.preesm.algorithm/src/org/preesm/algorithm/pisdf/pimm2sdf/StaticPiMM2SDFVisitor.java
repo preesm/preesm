@@ -39,6 +39,8 @@ package org.preesm.algorithm.pisdf.pimm2sdf;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.Optional;
+import org.eclipse.core.runtime.IPath;
 import org.eclipse.emf.ecore.resource.Resource;
 import org.preesm.algorithm.codegen.idl.ActorPrototypes;
 import org.preesm.algorithm.codegen.idl.Prototype;
@@ -502,16 +504,18 @@ public class StaticPiMM2SDFVisitor extends PiMMSwitch<Boolean> {
 
   @Override
   public Boolean caseCHeaderRefinement(final CHeaderRefinement h) {
-    final ActorPrototypes actorPrototype = new ActorPrototypes(h.getFilePath().toOSString());
+    final String osStringPath = Optional.ofNullable(h.getFilePath()).map(IPath::toOSString).orElse(null);
 
-    doSwitch(h.getLoopPrototype());
-    actorPrototype.setLoopPrototype(this.currentPrototype);
+    final ActorPrototypes actorPrototype = new ActorPrototypes(osStringPath);
+    if (osStringPath != null) {
+      doSwitch(h.getLoopPrototype());
+      actorPrototype.setLoopPrototype(this.currentPrototype);
 
-    if (h.getInitPrototype() != null) {
-      doSwitch(h.getInitPrototype());
-      actorPrototype.setInitPrototype(this.currentPrototype);
+      if (h.getInitPrototype() != null) {
+        doSwitch(h.getInitPrototype());
+        actorPrototype.setInitPrototype(this.currentPrototype);
+      }
     }
-
     this.currentSDFRefinement = actorPrototype;
     return true;
   }

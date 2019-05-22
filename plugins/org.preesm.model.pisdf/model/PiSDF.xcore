@@ -209,6 +209,13 @@ abstract class AbstractActor extends Configurable {
 
 class PiGraph extends AbstractActor, Graph {
 
+	op boolean isLocallyStatic() {
+		// a PiGraph is static if all the parameters it contains are static
+		// and if the input setters on its config interfaces are static
+		// and if all its children graphs are locally static
+		return super.isLocallyStatic && parameters.forall[isLocallyStatic] && childrenGraphs.forall[isLocallyStatic]
+	}
+
 	op unique boolean addActor(AbstractActor actor) {
 		vertices.add(actor)
 	}
@@ -336,7 +343,7 @@ abstract class ExecutableActor extends AbstractActor {
 }
 
 interface RefinementContainer {
-	contains Refinement refinement
+	contains Refinement refinement opposite refinementContainer
 }
 
 class Actor extends ExecutableActor, RefinementContainer, PeriodicElement {
@@ -597,6 +604,8 @@ class ConfigOutputInterface extends InterfaceActor {
 }
 
 interface Refinement {
+	refers RefinementContainer refinementContainer opposite refinement
+
 	IPath filePath
 	op AbstractActor getAbstractActor() {
 		return RefinementResolver.resolveAbstractActor(this)

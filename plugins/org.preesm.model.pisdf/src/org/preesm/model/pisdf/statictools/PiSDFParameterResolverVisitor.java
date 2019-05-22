@@ -225,10 +225,8 @@ public class PiSDFParameterResolverVisitor extends PiMMSwitch<Boolean> {
   @Override
   public Boolean casePiGraph(final PiGraph graph) {
     if (!graph.isLocallyStatic()) {
-      throw new PreesmRuntimeException(
-          "PiGraph " + graph.getName() + " has configuration actors. It is thus impossible to use the"
-              + " Static PiMM 2 SDF transformation. Try instead the Dynamic PiMM 2 SDF"
-              + " transformation (id: org.ietr.preesm.experiment.pimm2sdf.PiMM2SDFTask)");
+      throw new PreesmRuntimeException("PiGraph " + graph.getName()
+          + " has configuration actors. It is thus impossible to use the" + " Static PiMM to SRDAG transformation.");
     }
 
     // Resolve input interfaces
