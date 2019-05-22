@@ -209,6 +209,12 @@ abstract class AbstractActor extends Configurable {
 
 class PiGraph extends AbstractActor, Graph {
 
+	op boolean isLocallyStatic() {
+		// a PiGraph is static if all the parameters it contains are static
+		// and if the input setters on its config interfaces are static
+		return super.isLocallyStatic && parameters.forall[isLocallyStatic]
+	}
+
 	op unique boolean addActor(AbstractActor actor) {
 		vertices.add(actor)
 	}
