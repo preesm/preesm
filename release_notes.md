@@ -7,6 +7,7 @@ PREESM Changelog
 ### New Feature
 
 ### Changes
+* Fix PiGraph.isLocallyStatic: now check for all contained parameters to be static
 
 ### Bug fix
 
