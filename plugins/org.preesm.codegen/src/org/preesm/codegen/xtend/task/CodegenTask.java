@@ -78,7 +78,10 @@ import org.preesm.workflow.implement.AbstractTaskImplementation;
         + " the **preesm.h** user header file:\n"
         + "*  **PREESM_VERBOSE** : if defined, the code will print extra info about actor firing;\n"
         + "*  **PREESM_LOOP_SIZE** : when set to an integer value $$n > 0$$, the application will terminate after"
-        + " $$n$$ executions of the graph.",
+        + " $$n$$ executions of the graph.\n\n"
+        + "When the loop size macro is omitted, the execution can be stopped by setting the global variable "
+        + "**preesmStopThreads** to 1. This variable is defined in the **main.c** generated file, and should be "
+        + "accessed using extern keyword.",
 
     parameters = { @Parameter(name = "Printer",
         description = "Specify which printer should be used to generate code. Printers are defined in Preesm source"

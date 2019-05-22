@@ -34,10 +34,10 @@
  */
 package org.preesm.commons;
 
-import java.util.Collection;
 import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
+import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
@@ -61,7 +61,7 @@ public class PreesmPlugin extends EclipsePlugin implements BundleActivator {
 
   public static final String PREESM_PLUGIN_EXTENSION_POINT_ID = "org.preesm.commons.plugin";
 
-  private final Map<String, Class<?>> taskRegistry = new HashMap<>();
+  private final Map<String, Class<?>> taskRegistry = new LinkedHashMap<>();
 
   @Override
   public void start(BundleContext context) throws Exception {
@@ -79,8 +79,8 @@ public class PreesmPlugin extends EclipsePlugin implements BundleActivator {
 
   private final void fillRegistry() {
     taskRegistry.clear();
-    final Collection<Class<?>> allTasks = ReflectionUtil
-        .lookupAnnotatedClasses(PreesmPlugin.PREESM_PLUGIN_EXTENSION_POINT_ID, PreesmTask.class);
+    final List<Class<?>> allTasks = ReflectionUtil.lookupAnnotatedClasses(PreesmPlugin.PREESM_PLUGIN_EXTENSION_POINT_ID,
+        PreesmTask.class);
     for (final Class<?> task : allTasks) {
       final String id = task.getAnnotation(PreesmTask.class).id();
       if (taskRegistry.containsKey(id)) {
@@ -98,12 +98,12 @@ public class PreesmPlugin extends EclipsePlugin implements BundleActivator {
    * Returns a Map where Keys are category names and values are tasks associated to this category
    */
   public final Map<String, Set<Class<?>>> getTasksByCategory() {
-    final Map<String, Set<Class<?>>> res = new HashMap<>();
+    final Map<String, Set<Class<?>>> res = new LinkedHashMap<>();
     for (final Entry<String, Class<?>> taskEntry : taskRegistry.entrySet()) {
       final Class<?> task = taskEntry.getValue();
       final String category = task.getAnnotation(PreesmTask.class).category();
 
-      final Set<Class<?>> categoryContent = res.getOrDefault(category, new HashSet<>());
+      final Set<Class<?>> categoryContent = res.getOrDefault(category, new LinkedHashSet<>());
       categoryContent.add(task);
 
       res.put(category, categoryContent);
