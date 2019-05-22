@@ -7,6 +7,7 @@ PREESM Changelog
 ### New Feature
 
 ### Changes
+* Make sure the order of tasks in the reference is always the same;
 
 ### Bug fix
 

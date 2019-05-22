@@ -38,7 +38,7 @@ import com.google.common.io.Files;
 import java.io.File;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
@@ -76,7 +76,7 @@ public class MarkdownPrinter {
    */
   public static final String prettyPrint() {
     final Map<String,
-        Set<Class<?>>> outputsPerCategory = new HashMap<>(PreesmPlugin.getInstance().getTasksByCategory());
+        Set<Class<?>>> outputsPerCategory = new LinkedHashMap<>(PreesmPlugin.getInstance().getTasksByCategory());
 
     final StringBuilder sb = new StringBuilder();
     // get default category, listed in the end of doc
