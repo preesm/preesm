@@ -36,10 +36,10 @@ package org.preesm.commons;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Modifier;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.LinkedHashSet;
-import java.util.Set;
+import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import org.eclipse.core.runtime.IExtension;
@@ -56,43 +56,43 @@ import org.osgi.framework.wiring.BundleWiring;
  */
 public class ReflectionUtil {
 
-  private static final Set<Bundle> getContributorBundles(final String extensionPointID) {
+  private static final List<Bundle> getContributorBundles(final String extensionPointID) {
     final IExtensionRegistry registry = Platform.getExtensionRegistry();
     final IExtensionPoint extensionPoint = registry.getExtensionPoint(extensionPointID);
     final IExtension[] extensions = extensionPoint.getExtensions();
-    final Set<Bundle> collect = Stream.of(extensions).map(IExtension::getContributor)
-        .map(contributor -> Platform.getBundle(contributor.getName())).collect(Collectors.toSet());
-    return Collections.unmodifiableSet(collect);
+    final List<Bundle> collect = Stream.of(extensions).map(IExtension::getContributor)
+        .map(contributor -> Platform.getBundle(contributor.getName())).collect(Collectors.toList());
+    return Collections.unmodifiableList(collect);
   }
 
-  private static final Set<BundleWiring> getContributorBundleWirings(final String extensionPointID) {
-    final Set<Bundle> contributorBundles = getContributorBundles(extensionPointID);
-    final Set<BundleWiring> collect = contributorBundles.stream().map(b -> b.adapt(BundleWiring.class))
-        .collect(Collectors.toSet());
-    return Collections.unmodifiableSet(collect);
+  private static final List<BundleWiring> getContributorBundleWirings(final String extensionPointID) {
+    final List<Bundle> contributorBundles = getContributorBundles(extensionPointID);
+    final List<BundleWiring> collect = contributorBundles.stream().map(b -> b.adapt(BundleWiring.class))
+        .collect(Collectors.toList());
+    return Collections.unmodifiableList(collect);
   }
 
-  private static Collection<String> listResources(final BundleWiring bundleWiring) {
-    final Set<String> res = new LinkedHashSet<>();
+  private static List<String> listResources(final BundleWiring bundleWiring) {
+    final List<String> res = new ArrayList<>();
 
     final Collection<String> allResources = bundleWiring.listResources("/", "*.class",
         BundleWiring.LISTRESOURCES_RECURSE | BundleWiring.LISTRESOURCES_LOCAL);
     final Stream<String> filteredResourcesStream = allResources.stream();
     final Stream<String> mappedResourcesToQualifiedClassName = filteredResourcesStream
         .map(s -> s.replace(".class", "").replace("/", "."));
-    res.addAll(mappedResourcesToQualifiedClassName.collect(Collectors.toSet()));
+    res.addAll(mappedResourcesToQualifiedClassName.collect(Collectors.toList()));
 
-    return Collections.unmodifiableSet(res);
+    return Collections.unmodifiableList(res);
   }
 
   /**
    *
    */
-  public static final <T> Collection<Class<? extends T>> lookupChildClassesOf(final String extensionPointID,
+  public static final <T> List<Class<? extends T>> lookupChildClassesOf(final String extensionPointID,
       final Class<T> parentClassOrInterface) {
-    final Set<Class<? extends T>> res = new LinkedHashSet<>();
+    final List<Class<? extends T>> res = new ArrayList<>();
 
-    final Set<BundleWiring> bundleWirings = getContributorBundleWirings(extensionPointID);
+    final List<BundleWiring> bundleWirings = getContributorBundleWirings(extensionPointID);
     for (final BundleWiring bundleWiring : bundleWirings) {
       final ClassLoader classLoader = bundleWiring.getClassLoader();
 
@@ -112,18 +112,18 @@ public class ReflectionUtil {
         }
       }
     }
-
-    return res;
+    Collections.sort(res, (c1, c2) -> c1.getName().compareTo(c2.getName()));
+    return Collections.unmodifiableList(res);
   }
 
   /**
    *
    */
-  public static final Collection<Class<?>> lookupAnnotatedClasses(final String extensionPointID,
+  public static final List<Class<?>> lookupAnnotatedClasses(final String extensionPointID,
       final Class<? extends Annotation> annotationToMatch) {
-    final Set<Class<?>> res = new LinkedHashSet<>();
+    final List<Class<?>> res = new ArrayList<>();
 
-    final Set<BundleWiring> bundleWirings = getContributorBundleWirings(extensionPointID);
+    final List<BundleWiring> bundleWirings = getContributorBundleWirings(extensionPointID);
     for (final BundleWiring bundleWiring : bundleWirings) {
       final ClassLoader classLoader = bundleWiring.getClassLoader();
 
@@ -141,7 +141,7 @@ public class ReflectionUtil {
         }
       }
     }
-
-    return res;
+    Collections.sort(res, (c1, c2) -> c1.getName().compareTo(c2.getName()));
+    return Collections.unmodifiableList(res);
   }
 }

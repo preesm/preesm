@@ -50,7 +50,7 @@ import org.preesm.commons.logger.PreesmLogger;
  * @author anmorvan
  *
  */
-public class DocGenApplicationr implements IApplication {
+public class DocGenApplication implements IApplication {
 
   private Options getCommandLineOptions() {
     final Options options = new Options();

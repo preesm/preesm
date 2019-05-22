@@ -59,7 +59,7 @@
             thread="main"
             visible="true">
          <run
-               class="org.preesm.cli.DocGenApplicationr">
+               class="org.preesm.cli.DocGenApplication">
          </run>
       </application>
    </extension>
