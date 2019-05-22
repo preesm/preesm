@@ -15,7 +15,7 @@
 #include <SDL.h>
 
 
-extern int stopThreads;
+extern int preesmStopThreads;
 
 /**
 * Structure representing one display
@@ -162,7 +162,7 @@ void yuvRefreshDisplay(int id)
         switch (event.type)
         {
         case SDL_QUIT:
-            stopThreads = 1;
+            preesmStopThreads = 1;
             break;
         default:
             break;

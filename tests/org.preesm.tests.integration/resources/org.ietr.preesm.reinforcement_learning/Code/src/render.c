@@ -21,7 +21,7 @@
 #define FPS_MEAN 50
 #define PI 3.1415926535898f
 
-extern int stopThreads;
+extern int preesmStopThreads;
 
 static int render = 0;
 
@@ -39,7 +39,7 @@ int exitCallBack(void* userdata, SDL_Event* event){
             render ^= 1;
         } else if (ans == 'q') {
             printf("Exit request from GUI.\n");
-            stopThreads = 1;
+            preesmStopThreads = 1;
             return 0;
         }
         return 1;
