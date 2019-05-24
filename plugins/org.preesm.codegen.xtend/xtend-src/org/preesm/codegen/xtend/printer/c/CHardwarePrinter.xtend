@@ -50,14 +50,12 @@ import java.util.ArrayList
 import java.util.Arrays
 import java.util.Collection
 import java.util.Date
+import java.util.LinkedHashMap
 import java.util.List
-import java.util.HashMap;
-import java.util.LinkedHashMap;
-import java.util.Map;
+import java.util.Map
 import java.util.logging.Level
 import org.apache.velocity.VelocityContext
 import org.apache.velocity.app.VelocityEngine
-import org.eclipse.emf.common.util.EList
 import org.preesm.codegen.model.Block
 import org.preesm.codegen.model.Buffer
 import org.preesm.codegen.model.BufferIterator
