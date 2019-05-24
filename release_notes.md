@@ -11,6 +11,8 @@ PREESM Changelog
 * When the pi file does not specify a refinement for an actor, the parser was setting a pisdf refinement with null path. The new behavior is to set a CHeader refinement with null path. This allows the graph to be considered flat;
 
 ### Bug fix
+* Fix #139: better error messages for Name checker
+
 
 
 ## Release version 3.8.1
