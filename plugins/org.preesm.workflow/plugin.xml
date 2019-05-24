@@ -41,4 +41,8 @@
 
 <plugin>
    <extension-point id="loggers" name="%loggersName" schema="schema/loggers.exsd"/>
+
+   <extension
+         point="org.preesm.commons.plugin">
+   </extension>
 </plugin>
