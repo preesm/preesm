@@ -43,6 +43,7 @@ import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.Set;
+import org.preesm.algorithm.model.AbstractEdge;
 import org.preesm.algorithm.model.AbstractGraph;
 import org.preesm.algorithm.model.AbstractVertex;
 import org.preesm.algorithm.model.dag.DAGVertex;
@@ -337,12 +338,12 @@ public class PapifyEngine {
   /**
    * Function to iterate over all the vertex / abstractGraphs
    */
-
   void configurePapifyFunctionsManager(DAGVertex vertex) {
     if (vertex.getRefinement() instanceof AbstractGraph) {
-      final AbstractGraph graph = vertex.getGraphDescription();
-      Set<AbstractVertex> children = graph.vertexSet();
-      for (AbstractVertex child : children) {
+      @SuppressWarnings("unchecked")
+      final AbstractGraph<AbstractVertex<?>, AbstractEdge<?, AbstractVertex<?>>> graph = vertex.getGraphDescription();
+      Set<AbstractVertex<?>> children = graph.vertexSet();
+      for (AbstractVertex<?> child : children) {
         if (child instanceof SDFVertex) {
           configurePapifyFunctions(vertex, child.getInfo(), child.getName());
         }
