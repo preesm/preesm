@@ -48,6 +48,7 @@ import org.preesm.commons.exceptions.PreesmException
  * @author Sudeep Kanur
  */
 class DAGComputationBug extends PreesmException {
+  	public static final long serialVersionUID = 1981296681718476711L;
 
 	static val message = "Open an issue, or contact Sudeep Kanur (skanur@abo.fi, skanur@protonmail.com) with the graph that caused the exception."
 

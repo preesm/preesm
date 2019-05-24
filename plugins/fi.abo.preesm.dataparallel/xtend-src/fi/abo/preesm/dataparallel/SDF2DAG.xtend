@@ -71,25 +71,25 @@ final class SDF2DAG extends AbstractDAGConstructor implements PureDAGConstructor
 	/**
 	 * Hold the cloned version of original SDF graph
 	 */
-	@Accessors(PUBLIC_GETTER, PRIVATE_SETTER)
+	@Accessors(PUBLIC_GETTER, PACKAGE_SETTER)
 	val AbstractGraph<SDFAbstractVertex, SDFEdge> inputGraph;
 
 	/**
 	 * Holds constructed DAG
 	 */
-	@Accessors(PUBLIC_GETTER, PRIVATE_SETTER)
+	@Accessors(PUBLIC_GETTER, PACKAGE_SETTER)
 	var SDFGraph outputGraph
 
 	/**
 	 * True if the original graph is SDFGraph
 	 */
-	@Accessors(PUBLIC_GETTER, PRIVATE_SETTER)
+	@Accessors(PUBLIC_GETTER, PACKAGE_SETTER)
 	var Boolean isInputSDFGraph
 
 	/**
 	 * True if the original graph is a Subgraph
 	 */
-	@Accessors(PUBLIC_GETTER, PRIVATE_SETTER)
+	@Accessors(PUBLIC_GETTER, PACKAGE_SETTER)
 	var Boolean isInputSubgraph
 
 	/**
@@ -514,7 +514,11 @@ final class SDF2DAG extends AbstractDAGConstructor implements PureDAGConstructor
 				val portModifier = edge.targetPortModifier
 				if( (portModifier !== null) && !portModifier.toString.equals(SDFEdge.MODIFIER_UNUSED)) {
 					// If the target is unused, set last edges targetModifier as read-only
-					var tokensToProduce = (edge.target.base.outgoingEdgesOf(edge.target) as Set<SDFEdge>).iterator.next.prod.longValue
+					val SDFAbstractVertex target = edge.target
+					val AbstractGraph<SDFAbstractVertex,SDFEdge> base = getBaseUnchecked(target)
+					val Set<SDFEdge> set = base.outgoingEdgesOf(target);
+
+					var tokensToProduce = set.iterator.next.prod.longValue
 
 					// Scan the edges in reverse order
 					while ((tokensToProduce > 0) && iter.hasPrevious()) {
@@ -589,6 +593,12 @@ final class SDF2DAG extends AbstractDAGConstructor implements PureDAGConstructor
 			throw new PreesmRuntimeException("There are still special actors with non-indexed ports. Contact PREESM developers")
 		}
 		SpecialActorPortsIndexer.sortIndexedPorts(outputGraph)
+	}
+
+
+  	@SuppressWarnings("unchecked")
+	protected def AbstractGraph<SDFAbstractVertex, SDFEdge> getBaseUnchecked(SDFAbstractVertex target) {
+		return target.base
 	}
 
 	/**

@@ -67,7 +67,7 @@ class DataParallelCheckOperations implements IGraphVisitor<SDFGraph, SDFAbstract
 	 * Strongly connected subgraphs isolated from the original SDF. The subgraph is guaranteed
 	 * to contain at least one loop/cycle/strongly connected component
 	 */
-	@Accessors(PUBLIC_GETTER, PRIVATE_SETTER)
+	@Accessors(PUBLIC_GETTER, PACKAGE_SETTER)
 	val List<AsSubgraph<SDFAbstractVertex, SDFEdge> > isolatedStronglyConnectedComponents
 
 	/**
@@ -76,25 +76,25 @@ class DataParallelCheckOperations implements IGraphVisitor<SDFGraph, SDFAbstract
 	 * it is rearranged according to DASIP 2017 paper "Detection of Data-Parallelism in SDFG".
 	 * Otherwise, it contains original input graph.
 	 */
-	@Accessors(PUBLIC_GETTER, PROTECTED_SETTER)
+	@Accessors(PUBLIC_GETTER, PACKAGE_SETTER)
 	var SDFGraph cyclicGraph
 
 	/**
 	 * {@link RetimingInfo} instance. Information required for scheduling and code generation stages.
 	 */
-	@Accessors(PUBLIC_GETTER, PROTECTED_SETTER)
+	@Accessors(PUBLIC_GETTER, PACKAGE_SETTER)
 	var RetimingInfo info
 
 	/**
 	 * <code>true</code> if the @{link SDFGraph} is data-parallel as well
 	 */
-	@Accessors(PUBLIC_GETTER, PRIVATE_SETTER)
+	@Accessors(PUBLIC_GETTER, PACKAGE_SETTER)
 	var Boolean isDataParallel
 
 	/**
 	 * <code>true</code> if @{link SDFGraph} is instance independent
 	 */
-	@Accessors(PUBLIC_GETTER, PRIVATE_SETTER)
+	@Accessors(PUBLIC_GETTER, PACKAGE_SETTER)
 	var Boolean isInstanceIndependent
 
 	/**
@@ -102,27 +102,27 @@ class DataParallelCheckOperations implements IGraphVisitor<SDFGraph, SDFAbstract
 	 * This naturally means that it is data-parallel and instance independent
 	 * Extra flag provided to denote the class
 	 */
-	@Accessors(PUBLIC_GETTER, PRIVATE_SETTER)
+	@Accessors(PUBLIC_GETTER, PACKAGE_SETTER)
 	var Boolean isAcyclicLike
 
 	/**
 	 * Optional Logging
 	 */
-	@Accessors(PROTECTED_GETTER, PRIVATE_SETTER)
+	@Accessors(PROTECTED_GETTER, PACKAGE_SETTER)
 	val Logger logger
 
 	/**
 	 * List of actor that have instance dependence. Empty if the DAG is instance independent
 	 * Each sublist is a strongly connected component that exhibits instance dependency
 	 */
-	@Accessors(PUBLIC_GETTER, PRIVATE_SETTER)
+	@Accessors(PUBLIC_GETTER, PACKAGE_SETTER)
 	var List<List<SDFAbstractVertex>> dependentActors
 
 	/**
 	 * List of actor sets that were failed to rearrange. Empty if either DAG is entirely instance
 	 * dependent or if all strongly connected components were rearranged successfully
 	 */
-	@Accessors(PUBLIC_GETTER, PRIVATE_SETTER)
+	@Accessors(PUBLIC_GETTER, PACKAGE_SETTER)
 	var List<List<SDFAbstractVertex>> rearrangeFailedActors
 
 	/**

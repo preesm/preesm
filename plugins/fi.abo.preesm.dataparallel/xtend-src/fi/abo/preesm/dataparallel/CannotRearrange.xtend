@@ -40,6 +40,8 @@ import java.io.File
 import org.preesm.algorithm.model.sdf.SDFGraph
 
 class CannotRearrange extends Error {
+	public static final long serialVersionUID = 1981296681718476710L;
+
 	static val message = "Cannot rearrange the DAG due to insufficient root instances."
 
 	static val sdf_message = message + "\nExporting the associated SrSDF/SDF graph to "

@@ -53,6 +53,9 @@ import org.preesm.commons.exceptions.PreesmRuntimeException
  * @author Sudeep Kanur
  */
 class FifoActorGraph extends SDFGraph {
+
+  	public static final long serialVersionUID = 7014589812535430470L;
+
 	public static String MODEL = "fag" // ;)
 
 	new (){
