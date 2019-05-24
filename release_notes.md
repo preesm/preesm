@@ -9,6 +9,8 @@ PREESM Changelog
 ### Changes
 * Fix PiGraph.isLocallyStatic: now check for all contained parameters to be static;
 * When the pi file does not specify a refinement for an actor, the parser was setting a pisdf refinement with null path. The new behavior is to set a CHeader refinement with null path. This allows the graph to be considered flat;
+* Delete deprecated RandomSDF task and associated test;
+* Fix warnings;
 
 ### Bug fix
 * Fix #139: better error messages for Name checker
