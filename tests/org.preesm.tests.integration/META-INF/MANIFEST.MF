@@ -18,3 +18,5 @@ Require-Bundle: org.junit;bundle-version="4.12.0",
  org.preesm.commons,
  fi.abo.preesm.dataparallel,
  org.preesm.ui
+Export-Package: org.ietr.preesm.test.it.api,
+ org.ietr.preesm.test.it.appstest

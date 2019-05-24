@@ -21,5 +21,14 @@ Require-Bundle: org.eclipse.ui.console;bundle-version="3.5.100",
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Bundle-ActivationPolicy: lazy
 Eclipse-BuddyPolicy: global
-Export-Package: org.preesm.ui.pisdf.features
+Export-Package: org.preesm.ui.pisdf,
+ org.preesm.ui.pisdf.decorators,
+ org.preesm.ui.pisdf.diagram,
+ org.preesm.ui.pisdf.features,
+ org.preesm.ui.pisdf.layout,
+ org.preesm.ui.pisdf.popup.actions,
+ org.preesm.ui.pisdf.properties,
+ org.preesm.ui.pisdf.refactoring,
+ org.preesm.ui.pisdf.util,
+ org.preesm.ui.pisdf.wizards
 

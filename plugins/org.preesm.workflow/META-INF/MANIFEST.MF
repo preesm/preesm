@@ -14,6 +14,7 @@ Bundle-ClassPath: .
 Export-Package: org.preesm.workflow,
  org.preesm.workflow.converter,
  org.preesm.workflow.elements,
+ org.preesm.workflow.eow,
  org.preesm.workflow.implement
 Bundle-Activator: org.preesm.workflow.Activator
 Bundle-ActivationPolicy: lazy

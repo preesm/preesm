@@ -24,8 +24,11 @@ Eclipse-BuddyPolicy: global
 Export-Package: org.preesm.ui.scenario.editor,
  org.preesm.ui.scenario.editor.codegen,
  org.preesm.ui.scenario.editor.constraints,
+ org.preesm.ui.scenario.editor.papify,
  org.preesm.ui.scenario.editor.parametervalues,
  org.preesm.ui.scenario.editor.relativeconstraints,
  org.preesm.ui.scenario.editor.simulation,
- org.preesm.ui.scenario.editor.timings
+ org.preesm.ui.scenario.editor.timings,
+ org.preesm.ui.scenario.popup.actions,
+ org.preesm.ui.scenario.wizards
 
