@@ -76,6 +76,7 @@ import org.preesm.algorithm.mapper.gantt.GanttComponent;
 import org.preesm.algorithm.mapper.gantt.GanttData;
 import org.preesm.algorithm.mapper.gantt.GanttTask;
 import org.preesm.commons.exceptions.PreesmRuntimeException;
+import org.preesm.commons.files.PreesmResourcesHelper;
 
 /**
  * Gantt plotter of a mapperdagvertex using JFreeChart.
@@ -258,7 +259,7 @@ public class GanttPlotter extends ApplicationFrame {
     helpFrame.setDefaultCloseOperation(WindowConstants.HIDE_ON_CLOSE);
 
     try {
-      final URL resource = this.getClass().getResource("/resources/GanttHelp.html");
+      final URL resource = PreesmResourcesHelper.getInstance().resolve("GanttHelp.html", this.getClass());
       final JEditorPane comp = new JEditorPane(resource);
       helpFrame.getContentPane().add(comp, BorderLayout.PAGE_START);
     } catch (final IOException ex) {
