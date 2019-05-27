@@ -72,6 +72,7 @@ import org.preesm.algorithm.model.sdf.SDFEdge;
 import org.preesm.algorithm.model.sdf.SDFGraph;
 import org.preesm.algorithm.model.sdf.SDFVertex;
 import org.preesm.commons.exceptions.PreesmRuntimeException;
+import org.preesm.commons.files.PreesmResourcesHelper;
 import org.preesm.commons.files.URLResolver;
 import org.preesm.commons.logger.PreesmLogger;
 import org.preesm.model.scenario.types.DataType;
@@ -388,9 +389,9 @@ public class ScriptRunner {
    */
   private static void putSpecialScriptFile(final Map<String, URL> specialScriptFiles, final String filePath,
       final String bundleFilter) {
-    final URL file = URLResolver.findFirstInBundleList(filePath, bundleFilter);
-    if (file != null) {
-      specialScriptFiles.put(filePath, file);
+    final URL url = PreesmResourcesHelper.getInstance().resolve(filePath, bundleFilter, ScriptRunner.class);
+    if (url != null) {
+      specialScriptFiles.put(filePath, url);
     }
   }
 
