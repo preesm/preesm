@@ -56,8 +56,7 @@ import org.preesm.commons.doc.annotations.Port;
 import org.preesm.commons.doc.annotations.PreesmTask;
 import org.preesm.commons.doc.annotations.Value;
 import org.preesm.commons.exceptions.PreesmRuntimeException;
-import org.preesm.commons.files.ContainersManager;
-import org.preesm.commons.files.PathTools;
+import org.preesm.commons.files.WorkspaceUtils;
 import org.preesm.commons.logger.PreesmLogger;
 import org.preesm.model.scenario.types.ImplementationPropertyNames;
 import org.preesm.model.slam.ComponentInstance;
@@ -233,16 +232,16 @@ public class MonoActivityExporter extends AbstractTaskImplementation {
    */
   static void writeString(final String text, final String fileName, final String stringPath, final Workflow workflow) {
 
-    final String sPath = PathTools.getAbsolutePath(stringPath, workflow.getProjectName());
+    final String sPath = WorkspaceUtils.getAbsolutePath(stringPath, workflow.getProjectName());
     IPath path = new Path(sPath);
     path = path.append(fileName + ".csv");
 
     // Get a complete valid path with all folders existing
     try {
       if (path.getFileExtension() != null) {
-        ContainersManager.createMissingFolders(path.removeFileExtension().removeLastSegments(1));
+        WorkspaceUtils.createMissingFolders(path.removeFileExtension().removeLastSegments(1));
       } else {
-        ContainersManager.createMissingFolders(path);
+        WorkspaceUtils.createMissingFolders(path);
       }
     } catch (final CoreException e) {
       throw new PreesmRuntimeException("Path " + path + " is not a valid path for export.");

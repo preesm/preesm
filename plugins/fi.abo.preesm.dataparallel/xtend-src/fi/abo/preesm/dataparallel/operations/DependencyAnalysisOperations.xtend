@@ -49,30 +49,30 @@ import org.preesm.algorithm.model.sdf.SDFEdge
 /**
  * Operation that performs instance dependencies in a DAG and return
  * instance dependent actors if it is not instance independent
- * 
+ *
  * @author Sudeep Kanur
  */
 class DependencyAnalysisOperations implements DAGCommonOperations {
-	
-	@Accessors(PUBLIC_GETTER, PRIVATE_SETTER)
+
+	@Accessors(PUBLIC_GETTER, PACKAGE_SETTER)
 	var Boolean isIndependent
-	
-	@Accessors(PUBLIC_GETTER, PRIVATE_SETTER)
+
+	@Accessors(PUBLIC_GETTER, PACKAGE_SETTER)
 	val Set<SDFAbstractVertex> instanceDependentActors
-	
+
 	new() {
 		isIndependent = null
 		instanceDependentActors = newLinkedHashSet
 	}
-	
+
 	/**
-	 * Helper function to analyse instance independence on {@link PureDAGConstructor} 
+	 * Helper function to analyse instance independence on {@link PureDAGConstructor}
 	 * instance based on the instance independence of its subsets.
 	 * <p>
 	 * Logic of implementation is that it checks if each of the subset DAG
 	 * is instance independent and accumulate instance dependent actors on
 	 * its way.
-	 * 
+	 *
 	 * @param dagGen A {@link PureDAGConstructor} instance
 	 */
 	protected def void computeIndependence(PureDAGConstructor dagGen) {
@@ -80,7 +80,7 @@ class DependencyAnalysisOperations implements DAGCommonOperations {
 		val rootVisitor = new RootExitOperations
 		dagGen.accept(rootVisitor)
 		val rootInstances = rootVisitor.rootInstances
-		
+
 
 		val dagIndState = newArrayList
 		rootInstances.forEach[rootNode |
@@ -89,51 +89,51 @@ class DependencyAnalysisOperations implements DAGCommonOperations {
 			val subsetParallelCheck = new DependencyAnalysisOperations
 			dagSub.accept(subsetParallelCheck)
 			dagIndState.add(subsetParallelCheck.isIndependent)
-			instanceDependentActors.addAll(subsetParallelCheck.instanceDependentActors)		
+			instanceDependentActors.addAll(subsetParallelCheck.instanceDependentActors)
 		]
-		
+
 		if(dagIndState.forall[state | state == Boolean.TRUE]) {
 			isIndependent = Boolean.TRUE
 		} else {
 			isIndependent= Boolean.FALSE
 		}
 	}
-	
+
 	/**
 	 * Visitor method that performs instance dependency analysis on
-	 * a {@link SDF2DAG} instance. 
+	 * a {@link SDF2DAG} instance.
 	 * <p>
 	 * Use {@link DependencyAnalysisOperations#isIndependent} to check if the
 	 * DAG is instance independent.
 	 * <p>
 	 * Use {@link DependencyAnalysisOperations#instanceDependentActors} to give
 	 * instance dependent actors.
-	 * 
+	 *
 	 * @param dagGen A {@link SDF2DAG} instance
 	 */
 	override visit(SDF2DAG dagGen) {
 		computeIndependence(dagGen)
 	}
-	
+
 	/**
 	 * Visitor method that performs instance dependency analysis on
-	 * a {@link DAG2DAG} instance. 
+	 * a {@link DAG2DAG} instance.
 	 * <p>
 	 * Use {@link DependencyAnalysisOperations#isIndependent} to check if the
 	 * DAG is instance independent.
 	 * <p>
 	 * Use {@link DependencyAnalysisOperations#instanceDependentActors} to give
 	 * instance dependent actors.
-	 * 
+	 *
 	 * @param dagGen A {@link DAG2DAG} instance
 	 */
 	override visit(DAG2DAG dagGen) {
 		computeIndependence(dagGen)
-	}	
-	
+	}
+
 	/**
 	 * Visitor method that performs instance dependency analysis on
-	 * a {@link DAGSubset} instance. 
+	 * a {@link DAGSubset} instance.
 	 * <p>
 	 * Use {@link DependencyAnalysisOperations#isIndependent} to check if the
 	 * DAG is instance independent.
@@ -146,41 +146,41 @@ class DependencyAnalysisOperations implements DAGCommonOperations {
 	 * of the SDF must occur at a unique level. If an actor occurs at two different
 	 * level, then that actor is not instance independent. We record that actor
 	 * in a special variable (nonParallelActors) and report it.
-	 * 
+	 *
 	 * @param dagGen A {@link DAGSubset} instance
 	 */
 	override visit(DAGSubset dagGen) {
 		val actorsSeen = newLinkedHashSet
 		isIndependent = Boolean.TRUE
-		
+
 		// Get level sets
 		val levelOp = new LevelsOperations()
 		dagGen.accept(levelOp)
 		val levelSets = OperationsUtils.getLevelSets(levelOp.levels)
-		
+
 		levelSets.forEach[levelSet |
 			val Set<SDFAbstractVertex> actorsSeenInLevelSet = newLinkedHashSet
 			levelSet.forEach[ instance |
-				actorsSeenInLevelSet.add(dagGen.instance2Actor.get(instance)) 
+				actorsSeenInLevelSet.add(dagGen.instance2Actor.get(instance))
 			]
 			actorsSeenInLevelSet.forEach[actor |
 				if(actorsSeen.contains(actor)) {
 					isIndependent = Boolean.FALSE
 					instanceDependentActors.add(actor)
-				} 
+				}
 			]
 			actorsSeen.addAll(actorsSeenInLevelSet)
 		]
-		
+
 		// Filter the instanceDependentActors according to the seen nodes
 		val realNonParallelActors = newLinkedHashSet
 		val forkJoinInstances = dagGen.explodeImplodeOrigInstances.keySet
-		
-		instanceDependentActors.forEach[actor | 
+
+		instanceDependentActors.forEach[actor |
 			// For all the instances of the actor, except implode/explodes
 			val instances = dagGen.actor2Instances.get(actor)
 								.filter[instance | !forkJoinInstances.contains(instance)]
-			
+
 			if(instances.filter[instance |
 				// Any iterator can be used. Breadth first implementation is cheaper than rest
 				new BreadthFirstIterator<SDFAbstractVertex, SDFEdge>(dagGen.originalDAG.outputGraph, instance)
@@ -191,11 +191,11 @@ class DependencyAnalysisOperations implements DAGCommonOperations {
 					.contains(actor) // If this actor has been seen before
 			].size > 0) realNonParallelActors.add(actor) // Size is zero if it is a DAGind
 		]
-		
+
 		if(realNonParallelActors.empty) {
 			isIndependent = Boolean.TRUE
 		}
-		
+
 		instanceDependentActors.clear()
 		instanceDependentActors.addAll(realNonParallelActors)
 	}

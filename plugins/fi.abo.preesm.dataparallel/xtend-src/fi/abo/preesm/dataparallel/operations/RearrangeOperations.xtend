@@ -72,27 +72,27 @@ class RearrangeOperations implements DAGOperations {
 	/**
 	 * Optional {@link Logger} instance
 	 */
-	@Accessors(PROTECTED_GETTER, PRIVATE_SETTER)
+	@Accessors(PROTECTED_GETTER, PACKAGE_SETTER)
 	val Logger logger
 
 	/**
 	 * Hold {@link RetimingInfo} to access and add transient graphs expressed as
 	 * {@link FifoActorGraph}
 	 */
-	@Accessors(PUBLIC_GETTER, PRIVATE_SETTER)
+	@Accessors(PUBLIC_GETTER, PACKAGE_SETTER)
 	val RetimingInfo info
 
 	/**
 	 * Hold Single rate SDF (SrSDF) graph
 	 */
-	@Accessors(PROTECTED_GETTER, PRIVATE_SETTER)
+	@Accessors(PROTECTED_GETTER, PACKAGE_SETTER)
 	val SDFGraph srsdf
 
 	/**
 	 * Lookup table of edges with delays and its associated {@link FifoActor}. The edges are
 	 * incident to a single rate vertex that was originally added by the user in the {@link SDFGraph}
 	 */
-	@Accessors(PRIVATE_GETTER, PRIVATE_SETTER)
+	@Accessors(PRIVATE_GETTER, PACKAGE_SETTER)
 	val Map<SDFEdge, FifoActor> edgeFifoActors
 
 	/**
@@ -100,25 +100,25 @@ class RearrangeOperations implements DAGOperations {
 	 * are incident to a single rate vertex that was originally added by the user in {@link SDFGraph}
 	 * The {@link FifoActor} corresponds to the one that was in the SrSDF graph.
 	 */
-	@Accessors(PRIVATE_GETTER, PRIVATE_SETTER)
+	@Accessors(PRIVATE_GETTER, PACKAGE_SETTER)
 	val Map<SDFEdge, FifoActor> originalEdgeFifoActors
 
 	/**
 	 * A {@link FifoActorGraph} that holds non-trivial initialization of certain FIFOs
 	 */
-	@Accessors(PRIVATE_GETTER, PRIVATE_SETTER)
+	@Accessors(PRIVATE_GETTER, PACKAGE_SETTER)
 	val FifoActorGraph transientGraph
 
-	@Accessors(PUBLIC_GETTER, PRIVATE_SETTER)
+	@Accessors(PUBLIC_GETTER, PACKAGE_SETTER)
 	val List<SDFAbstractVertex> interfaceActors
 
-	@Accessors(PUBLIC_GETTER, PRIVATE_SETTER)
+	@Accessors(PUBLIC_GETTER, PACKAGE_SETTER)
 	var PureDAGConstructor dagGen
 
 	/**
 	 * Keep a list of instances that have been fired so far
 	 */
-	@Accessors(PRIVATE_GETTER, PRIVATE_SETTER)
+	@Accessors(PRIVATE_GETTER, PACKAGE_SETTER)
 	val List<SDFAbstractVertex> firedInstances
 
 	/**

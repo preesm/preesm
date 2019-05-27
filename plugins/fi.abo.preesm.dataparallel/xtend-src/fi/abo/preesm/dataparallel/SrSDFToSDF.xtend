@@ -63,19 +63,19 @@ class SrSDFToSDF {
 	/**
 	 * Original SDF Graph
 	 */
-	@Accessors(PRIVATE_SETTER, PRIVATE_GETTER)
+	@Accessors(PACKAGE_SETTER, PACKAGE_SETTER)
 	val SDFGraph sdf
 
 	/**
 	 * A {@PureDAGConstructor} instance derived from the original SDF graph
 	 */
-	@Accessors(PRIVATE_SETTER, PRIVATE_GETTER)
+	@Accessors(PACKAGE_SETTER, PACKAGE_SETTER)
 	val PureDAGConstructor dagGen
 
 	/**
 	 * Clone of original SDF graph. Preserves the initial state of the delays
 	 */
-	@Accessors(PRIVATE_SETTER, PRIVATE_GETTER)
+	@Accessors(PACKAGE_SETTER, PACKAGE_SETTER)
 	val SDFGraph originalSDF
 
 	/**
@@ -85,13 +85,13 @@ class SrSDFToSDF {
 	 * Used to obtain only those nodes that have direct actor in the SDF graph (not associated implode/
 	 * explodes)
 	 */
-	@Accessors(PRIVATE_SETTER, PRIVATE_GETTER)
+	@Accessors(PACKAGE_SETTER, PACKAGE_SETTER)
 	val NodeChainGraph nodeChainGraph
 
 	/**
 	 * True if the SDF graph has been re-timed
 	 */
-	@Accessors(PRIVATE_SETTER, PRIVATE_GETTER)
+	@Accessors(PACKAGE_SETTER, PACKAGE_SETTER)
 	var boolean hasRetimed
 
 	/**

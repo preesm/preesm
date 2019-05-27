@@ -53,7 +53,7 @@ import org.preesm.commons.doc.annotations.Port;
 import org.preesm.commons.doc.annotations.PreesmTask;
 import org.preesm.commons.doc.annotations.Value;
 import org.preesm.commons.exceptions.PreesmRuntimeException;
-import org.preesm.commons.files.PathTools;
+import org.preesm.commons.files.WorkspaceUtils;
 import org.preesm.model.scenario.PreesmScenario;
 import org.preesm.model.slam.Design;
 import org.preesm.workflow.elements.Workflow;
@@ -113,7 +113,7 @@ public class Sdf3ExporterTask extends AbstractTaskImplementation {
     final PreesmScenario scenario = (PreesmScenario) inputs.get(AbstractWorkflowNodeImplementation.KEY_SCENARIO);
     final Design archi = (Design) inputs.get(AbstractWorkflowNodeImplementation.KEY_ARCHITECTURE);
     // Locate the output file
-    final String sPath = PathTools.getAbsolutePath(parameters.get("path"), workflow.getProjectName());
+    final String sPath = WorkspaceUtils.getAbsolutePath(parameters.get("path"), workflow.getProjectName());
     final IPath path = new Path(sPath);
 
     Sdf3ExporterTask.printSDFGraphToSDF3File(sdf, scenario, archi, path);

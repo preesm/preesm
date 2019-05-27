@@ -59,6 +59,7 @@ import org.eclipse.xtext.xbase.lib.Pair;
 import org.preesm.algorithm.memory.exclusiongraph.MemoryExclusionGraph;
 import org.preesm.algorithm.memory.exclusiongraph.MemoryExclusionVertex;
 import org.preesm.algorithm.model.AbstractEdge;
+import org.preesm.algorithm.model.AbstractGraph;
 import org.preesm.algorithm.model.dag.DAGEdge;
 import org.preesm.algorithm.model.dag.DAGVertex;
 import org.preesm.algorithm.model.dag.DirectedAcyclicGraph;
@@ -1546,9 +1547,11 @@ public class ScriptRunner {
               // Match the buffers corresponding to the edge
               // between vertices "dagVertex" and "candidate"
               // Get the sdfEdges
-              DAGEdge dagEdge = (DAGEdge) dagVertex.getBase().getEdge(dagVertex, candidate);
+              @SuppressWarnings("unchecked")
+              final AbstractGraph<DAGVertex, DAGEdge> base = dagVertex.getBase();
+              DAGEdge dagEdge = (DAGEdge) base.getEdge(dagVertex, candidate);
               if (dagEdge == null) {
-                dagEdge = (DAGEdge) dagVertex.getBase().getEdge(candidate, dagVertex);
+                dagEdge = (DAGEdge) base.getEdge(candidate, dagVertex);
               }
 
               // For edges between newVertices, only process if the dagVertex

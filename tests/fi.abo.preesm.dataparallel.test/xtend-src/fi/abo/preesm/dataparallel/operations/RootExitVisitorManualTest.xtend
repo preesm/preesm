@@ -104,6 +104,7 @@ class RootExitVisitorManualTest {
 	 *  <li> <code>true</code> if the test must perform counting, <code>false</code> otherwise
 	 * </ol>
 	 */
+  	@SuppressWarnings("unchecked")
 	@Parameterized.Parameters
 	static def Collection<Object[]> instancesToTest() {
 		val parameters = newArrayList

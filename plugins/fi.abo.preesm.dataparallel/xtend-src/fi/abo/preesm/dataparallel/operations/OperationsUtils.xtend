@@ -253,7 +253,8 @@ class OperationsUtils {
 		// Populate only those actors that are relevant to the given level set
 		for(level: getLevelSets(levels)) {
 			val currentLevel = levels.get(level.get(0))
-			val origLevel = origLevelSets.filter[l | l.contains(level.get(0))].get(0)
+			val origLevelArray = origLevelSets.filter[l | l.contains(level.get(0))]
+			val origLevel = origLevelArray.head
 			val actors = newLinkedHashSet
 			// Get all actors in the current level
 			level.forEach[instance | actors.add(dagGen.instance2Actor.get(instance))]

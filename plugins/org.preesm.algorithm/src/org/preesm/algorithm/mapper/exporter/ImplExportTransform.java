@@ -52,7 +52,6 @@ import org.preesm.commons.doc.annotations.Port;
 import org.preesm.commons.doc.annotations.PreesmTask;
 import org.preesm.commons.doc.annotations.Value;
 import org.preesm.commons.exceptions.PreesmRuntimeException;
-import org.preesm.commons.files.PathTools;
 import org.preesm.commons.files.WorkspaceUtils;
 import org.preesm.workflow.elements.Workflow;
 import org.preesm.workflow.implement.AbstractTaskImplementation;
@@ -85,7 +84,7 @@ public class ImplExportTransform extends AbstractTaskImplementation {
 
     final DirectedAcyclicGraph dag = (DirectedAcyclicGraph) inputs.get("DAG");
 
-    final String sGraphmlPath = PathTools.getAbsolutePath(parameters.get("path"), workflow.getProjectName());
+    final String sGraphmlPath = WorkspaceUtils.getAbsolutePath(parameters.get("path"), workflow.getProjectName());
     final Path graphmlPath = new Path(sGraphmlPath);
 
     // Exporting the DAG in a GraphML

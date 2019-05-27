@@ -67,8 +67,7 @@ import org.preesm.commons.doc.annotations.PreesmTask;
 import org.preesm.commons.doc.annotations.Value;
 import org.preesm.commons.exceptions.PreesmException;
 import org.preesm.commons.exceptions.PreesmRuntimeException;
-import org.preesm.commons.files.ContainersManager;
-import org.preesm.commons.files.PathTools;
+import org.preesm.commons.files.WorkspaceUtils;
 import org.preesm.commons.logger.PreesmLogger;
 import org.preesm.model.pisdf.AbstractActor;
 import org.preesm.model.pisdf.Actor;
@@ -161,7 +160,7 @@ public class CustomQuantaExporter extends AbstractTaskImplementation {
       final String scenarioURL = scenario.getScenarioURL();
       final String scenarioName = Paths.get(scenarioURL).getFileName().toString().replace(".scenario", "");
       inputXLSFile = inputXLSFile.replace("$SCENARIO$", scenarioName);
-      inputXLSFile = PathTools.getAbsolutePath(inputXLSFile, workflow.getProjectName());
+      inputXLSFile = WorkspaceUtils.getAbsolutePath(inputXLSFile, workflow.getProjectName());
 
       // parsing individual quanta values from an excel file
       parseQuantaInputFile(inputXLSFile, abc.getScenario());
@@ -304,16 +303,16 @@ public class CustomQuantaExporter extends AbstractTaskImplementation {
    */
   static void writeString(final String text, final String fileName, final String stringPath, final Workflow workflow) {
 
-    final String sPath = PathTools.getAbsolutePath(stringPath, workflow.getProjectName());
+    final String sPath = WorkspaceUtils.getAbsolutePath(stringPath, workflow.getProjectName());
     IPath path = new Path(sPath);
     path = path.append(fileName + ".csv");
 
     // Get a complete valid path with all folders existing
     try {
       if (path.getFileExtension() != null) {
-        ContainersManager.createMissingFolders(path.removeFileExtension().removeLastSegments(1));
+        WorkspaceUtils.createMissingFolders(path.removeFileExtension().removeLastSegments(1));
       } else {
-        ContainersManager.createMissingFolders(path);
+        WorkspaceUtils.createMissingFolders(path);
       }
     } catch (final CoreException e) {
       throw new PreesmRuntimeException("Path " + path + " is not a valid path for export.");

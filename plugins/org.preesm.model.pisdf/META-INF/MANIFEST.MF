@@ -28,7 +28,6 @@ Export-Package: org.preesm.model.pisdf,
  org.preesm.model.pisdf.statictools.optims,
  org.preesm.model.pisdf.util
 Bundle-ActivationPolicy: lazy
-Bundle-ClassPath: .,
- xsd/
+Bundle-ClassPath: .
 Bundle-Vendor: %providerName
 Bundle-Localization: plugin
