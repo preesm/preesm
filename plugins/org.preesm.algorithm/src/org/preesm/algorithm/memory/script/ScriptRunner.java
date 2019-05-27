@@ -73,6 +73,7 @@ import org.preesm.algorithm.model.sdf.SDFGraph;
 import org.preesm.algorithm.model.sdf.SDFVertex;
 import org.preesm.commons.exceptions.PreesmRuntimeException;
 import org.preesm.commons.files.PreesmResourcesHelper;
+import org.preesm.commons.files.URLHelper;
 import org.preesm.commons.files.URLResolver;
 import org.preesm.commons.logger.PreesmLogger;
 import org.preesm.model.scenario.types.DataType;
@@ -1765,7 +1766,7 @@ public class ScriptRunner {
     try {
 
       // Run the script
-      final String readURL = URLResolver.readURL(script);
+      final String readURL = URLHelper.read(script);
       interpreter.eval(readURL);
 
       // Store the result if the execution was successful
