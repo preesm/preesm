@@ -54,7 +54,6 @@ import org.preesm.codegen.model.Direction;
 import org.preesm.codegen.model.LoopBlock;
 import org.preesm.codegen.model.SharedMemoryCommunication;
 import org.preesm.codegen.model.Variable;
-import org.preesm.codegen.xtend.CodegenPlugin;
 import org.preesm.codegen.xtend.printer.c.CPrinter;
 import org.preesm.commons.exceptions.PreesmRuntimeException;
 import org.preesm.commons.files.PreesmResourcesHelper;
@@ -86,11 +85,11 @@ public class TcpCPrinter extends CPrinter {
     try {
 
       final String tcpcomc = PreesmResourcesHelper.getInstance().read(STDFILES_TCPC_PATH + "tcp_communication.c",
-          CodegenPlugin.BUNDLE_ID, TcpCPrinter.class);
+          TcpCPrinter.class);
       final String tcpcomh = PreesmResourcesHelper.getInstance().read(STDFILES_TCPC_PATH + "tcp_communication.h",
-          CodegenPlugin.BUNDLE_ID, TcpCPrinter.class);
+          TcpCPrinter.class);
       final String preesmgenh = PreesmResourcesHelper.getInstance().read(STDFILES_TCPC_PATH + "preesm_gen_tcp.h",
-          CodegenPlugin.BUNDLE_ID, TcpCPrinter.class);
+          TcpCPrinter.class);
 
       generateStandardLibFiles.put("tcp_communication.c", tcpcomc);
       generateStandardLibFiles.put("tcp_communication.h", tcpcomh);
@@ -297,8 +296,7 @@ public class TcpCPrinter extends CPrinter {
 
     // 3- init template reader
     final String templateLocalPath = "templates/tcpc/main.c";
-    final URL mainTemplate = PreesmResourcesHelper.getInstance().resolve(templateLocalPath, CodegenPlugin.BUNDLE_ID,
-        TcpCPrinter.class);
+    final URL mainTemplate = PreesmResourcesHelper.getInstance().resolve(templateLocalPath, TcpCPrinter.class);
     InputStreamReader reader = null;
     try {
       reader = new InputStreamReader(mainTemplate.openStream());

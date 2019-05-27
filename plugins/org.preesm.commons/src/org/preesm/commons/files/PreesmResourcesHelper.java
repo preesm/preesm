@@ -2,13 +2,13 @@ package org.preesm.commons.files;
 
 import java.io.IOException;
 import java.net.URL;
-import java.util.Arrays;
 import java.util.List;
 import java.util.NoSuchElementException;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.FileLocator;
 import org.eclipse.core.runtime.Path;
 import org.osgi.framework.Bundle;
+import org.osgi.framework.FrameworkUtil;
 import org.preesm.commons.exceptions.PreesmResourceException;
 
 /**
@@ -67,9 +67,8 @@ public class PreesmResourcesHelper {
    * Reads the content of the given URI. This method converts the URI to URL firsts, then open a stream to read its
    * content.
    */
-  public final String read(final String resource, final String bundleFilter, final Class<?> projectClass)
-      throws IOException {
-    final URL url = this.resolve(resource, bundleFilter, projectClass);
+  public final String read(final String resource, final Class<?> projectClass) throws IOException {
+    final URL url = this.resolve(resource, projectClass);
     return URLHelper.read(url);
   }
 
@@ -86,17 +85,17 @@ public class PreesmResourcesHelper {
    * proper classloader, any class from the project containing the resource has to be given as argument.
    * </p>
    */
-  public final URL resolve(final String resource, final String bundleFilter, final Class<?> projectClass) {
+  public final URL resolve(final String resource, final Class<?> projectClass) {
     if (resource == null || resource.isEmpty()) {
       throw new IllegalArgumentException("Expecting non empty argument");
     }
-    URL url = resolveFromBundle(resource, bundleFilter);
+    URL url = resolveFromBundle(resource, projectClass);
     if (url == null) {
       url = resolveFromClass(resource, projectClass);
     }
     if (url == null) {
-      throw new PreesmResourceException("Could not locate resource '" + resource + "' from bundle '" + bundleFilter
-          + "' or class '" + projectClass + "'");
+      throw new PreesmResourceException(
+          "Could not locate resource '" + resource + "' from class '" + projectClass + "'");
     }
     return url;
   }
@@ -105,13 +104,13 @@ public class PreesmResourcesHelper {
    * Resolves the resource URI from the bundles given in the list. The returned URI represents a URL that has been
    * resolved by {@link FileLocator#resolve(URL)}.
    */
-  final URL resolveFromBundle(final String resource, final String bundleFilter) {
-    if (bundleFilter == null || bundleFilter.isEmpty()) {
-      throw new IllegalArgumentException("Expecting non empty bundle name argument");
+  final URL resolveFromBundle(final String resource, final Class<?> projectClass) {
+    if (projectClass == null) {
+      throw new IllegalArgumentException("Expecting non null class");
     }
     // prefix with RESOURCE_PATH to make sure the lookup is done in the resources folder
     // to mimic classpath resources entry.
-    final URL resolveBundleURL = resolveFromBundleFileLocator(RESOURCE_PATH + resource, bundleFilter);
+    final URL resolveBundleURL = resolveFromBundleFileLocator(RESOURCE_PATH + resource, projectClass);
     if (resolveBundleURL == null) {
       return null;
     }
@@ -126,17 +125,17 @@ public class PreesmResourcesHelper {
     return resolve;
   }
 
-  final URL resolveFromBundleFileLocator(final String resource, final String bundleFilter) {
+  final URL resolveFromBundleFileLocator(final String resource, final Class<?> projectClass) {
     final ResourcesPlugin plugin = ResourcesPlugin.getPlugin();
     if (plugin == null) {
       // Eclipse is not running (call from plain Java or JUnit)
       return null;
     }
-    final Bundle[] allBundles = plugin.getBundle().getBundleContext().getBundles();
-    final Bundle bundle = Arrays.asList(allBundles).stream().filter(b -> bundleFilter.equals(b.getSymbolicName()))
-        .findFirst().orElseThrow(() -> new NoSuchElementException(
-            "Given bundle filter name '" + bundleFilter + "' does not exist or is not loaded."));
-
+    final Bundle bundle = FrameworkUtil.getBundle(projectClass);
+    if (bundle == null) {
+      throw new NoSuchElementException(
+          "Given bundle filter name '" + projectClass + "' does not exist or is not loaded.");
+    }
     final Path resourcePath = new Path(resource);
     final URL res = FileLocator.find(bundle, resourcePath);
     if (res != null) {

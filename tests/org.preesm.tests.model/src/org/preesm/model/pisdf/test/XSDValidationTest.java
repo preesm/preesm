@@ -61,8 +61,7 @@ public class XSDValidationTest {
    *
    */
   public XSDValidationTest(final String pisdfName) {
-    this.pisdURL = PreesmResourcesHelper.getInstance().resolve("pisdf/" + pisdfName, "org.preesm.tests.model",
-        XSDValidationTest.class);
+    this.pisdURL = PreesmResourcesHelper.getInstance().resolve("pisdf/" + pisdfName, XSDValidationTest.class);
   }
 
   /**

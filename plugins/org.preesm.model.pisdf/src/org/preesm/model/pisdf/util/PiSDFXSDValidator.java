@@ -60,8 +60,7 @@ public class PiSDFXSDValidator {
   final URL schemaURL;
 
   private PiSDFXSDValidator() {
-    this.schemaURL = PreesmResourcesHelper.getInstance().resolve("xsd/PiSDF.xsd", "org.preesm.model.pisdf",
-        PiSDFXSDValidator.class);
+    this.schemaURL = PreesmResourcesHelper.getInstance().resolve("xsd/PiSDF.xsd", PiSDFXSDValidator.class);
   }
 
   /**

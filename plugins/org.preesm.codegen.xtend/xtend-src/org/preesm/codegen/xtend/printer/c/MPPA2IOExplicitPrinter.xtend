@@ -61,7 +61,6 @@ import org.preesm.codegen.model.PapifyFunctionCall
 import org.preesm.codegen.model.PapifyType
 import org.preesm.codegen.model.SubBuffer
 import org.preesm.codegen.model.Variable
-import org.preesm.codegen.xtend.CodegenPlugin
 import org.preesm.commons.exceptions.PreesmRuntimeException
 import org.preesm.commons.files.PreesmResourcesHelper
 import org.preesm.model.pisdf.util.CHeaderUsedLocator
@@ -319,7 +318,7 @@ class MPPA2IOExplicitPrinter extends MPPA2ExplicitPrinter {
 
 	    // 3- init template reader
 	    val String templateLocalPath = "templates/mppa2Explicit/preesm_gen.h";
-	    val URL mainTemplate = PreesmResourcesHelper.instance.resolve(templateLocalPath, CodegenPlugin.BUNDLE_ID, this.class);
+	    val URL mainTemplate = PreesmResourcesHelper.instance.resolve(templateLocalPath, this.class);
 	    var InputStreamReader reader = null;
 	    try {
 	      reader = new InputStreamReader(mainTemplate.openStream());

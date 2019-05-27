@@ -24,8 +24,7 @@ public class PreesmResourcesTest {
    */
   @Test
   public void testResourceLoadFromBundles() throws IOException {
-    final String content = PreesmResourcesHelper.getInstance().read("test_resource.txt", "org.preesm.tests.framework",
-        this.getClass());
+    final String content = PreesmResourcesHelper.getInstance().read("test_resource.txt", this.getClass());
     Assert.assertEquals(expectedContent1, content);
   }
 
@@ -34,8 +33,7 @@ public class PreesmResourcesTest {
    */
   @Test
   public void testResourceLoadFromBundlesSubFolder() throws IOException {
-    final String content = PreesmResourcesHelper.getInstance().read("subfolder/test_resource.txt",
-        "org.preesm.tests.framework", this.getClass());
+    final String content = PreesmResourcesHelper.getInstance().read("subfolder/test_resource.txt", this.getClass());
     Assert.assertEquals(expectedContentSubFolder, content);
   }
 
@@ -45,8 +43,7 @@ public class PreesmResourcesTest {
   @Test
   public void testResourceLoadFromBundlesFake() throws IOException {
     try {
-      PreesmResourcesHelper.getInstance().resolve("test_resource_fake.txt", "org.preesm.tests.framework",
-          this.getClass());
+      PreesmResourcesHelper.getInstance().resolve("test_resource_fake.txt", this.getClass());
       Assert.fail("Expecting preesm resource exception");
     } catch (final PreesmResourceException e) {
       // success
@@ -59,8 +56,7 @@ public class PreesmResourcesTest {
   @Test
   public void testResourceLoadFromBundlesSubOnly() throws IOException {
     try {
-      PreesmResourcesHelper.getInstance().resolve("test_resource_subonly.txt", "org.preesm.tests.framework",
-          this.getClass());
+      PreesmResourcesHelper.getInstance().resolve("test_resource_subonly.txt", this.getClass());
       Assert.fail("Expecting preesm resource exception");
     } catch (final PreesmResourceException e) {
       // success

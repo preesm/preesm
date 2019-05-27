@@ -89,7 +89,6 @@ import org.preesm.codegen.model.SubBuffer
 import org.preesm.codegen.model.Variable
 import org.preesm.codegen.model.util.CodegenModelUserFactory
 import org.preesm.codegen.printer.DefaultPrinter
-import org.preesm.codegen.xtend.CodegenPlugin
 import org.preesm.commons.exceptions.PreesmRuntimeException
 import org.preesm.commons.files.PreesmResourcesHelper
 import org.preesm.commons.logger.PreesmLogger
@@ -446,7 +445,7 @@ class CHardwarePrinter extends DefaultPrinter {
 
 	    // 3- init template reader
 	    val String templateLocalPath = "templates/c/preesm_gen.h";
-	    val URL mainTemplate = PreesmResourcesHelper.getInstance().resolve(templateLocalPath, CodegenPlugin.BUNDLE_ID, this.class);
+	    val URL mainTemplate = PreesmResourcesHelper.getInstance().resolve(templateLocalPath,this.class);
 	    var InputStreamReader reader = null;
 	    try {
 	      reader = new InputStreamReader(mainTemplate.openStream());
@@ -487,12 +486,12 @@ class CHardwarePrinter extends DefaultPrinter {
 						"hardware_dbg.h"
 					]);
 		files.forEach[it | try {
-			result.put(it, PreesmResourcesHelper.instance.read(stdFilesFolder + it, CodegenPlugin.BUNDLE_ID, this.class))
+			result.put(it, PreesmResourcesHelper.instance.read(stdFilesFolder + it, this.class))
 		} catch (IOException exc) {
 			throw new PreesmRuntimeException("Could not generated content for " + it, exc)
 		}]
 		filesHardware.forEach[it | try {
-			result.put(it, PreesmResourcesHelper.instance.read(stdFileFolderHardware + it, CodegenPlugin.BUNDLE_ID, this.class))
+			result.put(it, PreesmResourcesHelper.instance.read(stdFileFolderHardware + it, this.class))
 		} catch (IOException exc) {
 			throw new PreesmRuntimeException("Could not generated content for " + it, exc)
 		}]
