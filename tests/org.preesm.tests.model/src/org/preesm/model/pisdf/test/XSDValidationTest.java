@@ -43,7 +43,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.Parameters;
-import org.preesm.commons.files.URLResolver;
+import org.preesm.commons.files.PreesmResourcesHelper;
 import org.preesm.model.pisdf.util.PiSDFXSDValidator;
 import org.preesm.model.pisdf.util.PiSDFXSDValidator.PiSDFXSDValidationException;
 
@@ -57,9 +57,12 @@ public class XSDValidationTest {
 
   private final URL pisdURL;
 
+  /**
+   *
+   */
   public XSDValidationTest(final String pisdfName) {
-    this.pisdURL = URLResolver.findFirstInBundleList("resources/pisdf/" + pisdfName,
-        "org.ietr.preesm.experiment.model.test");
+    this.pisdURL = PreesmResourcesHelper.getInstance().resolve("pisdf/" + pisdfName, "org.preesm.tests.model",
+        XSDValidationTest.class);
   }
 
   /**
