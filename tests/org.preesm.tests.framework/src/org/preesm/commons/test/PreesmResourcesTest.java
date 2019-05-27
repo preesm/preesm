@@ -1,5 +1,6 @@
 package org.preesm.commons.test;
 
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.net.URI;
 import java.util.Arrays;
@@ -27,9 +28,7 @@ public class PreesmResourcesTest {
   public void testResourceLoadFromBundles() throws IOException {
     final URI uri = PreesmResourcesHelper.getInstance().resolve("test_resource.txt",
         Arrays.asList("org.preesm.tests.framework"), this);
-    System.out.println(uri);
     final String content = PreesmResourcesHelper.getInstance().read(uri);
-    System.out.println(content);
     Assert.assertEquals(expectedContent1, content);
   }
 
@@ -40,9 +39,37 @@ public class PreesmResourcesTest {
   public void testResourceLoadFromBundlesSubFolder() throws IOException {
     final URI uri = PreesmResourcesHelper.getInstance().resolve("subfolder/test_resource.txt",
         Arrays.asList("org.preesm.tests.framework"), this);
-    System.out.println(uri);
     final String content = PreesmResourcesHelper.getInstance().read(uri);
-    System.out.println(content);
     Assert.assertEquals(expectedContentSubFolder, content);
+  }
+
+  /**
+   *
+   */
+  @Test
+  public void testResourceLoadFromBundlesFake() throws IOException {
+    try {
+      final URI uri = PreesmResourcesHelper.getInstance().resolve("test_resource_fake.txt",
+          Arrays.asList("org.preesm.tests.framework"), this);
+      PreesmResourcesHelper.getInstance().read(uri);
+      Assert.fail("Expecting file not found exception");
+    } catch (final FileNotFoundException e) {
+      // success
+    }
+  }
+
+  /**
+   *
+   */
+  @Test
+  public void testResourceLoadFromBundlesSubOnly() throws IOException {
+    try {
+      final URI uri = PreesmResourcesHelper.getInstance().resolve("test_resource_subonly.txt",
+          Arrays.asList("org.preesm.tests.framework"), this);
+      PreesmResourcesHelper.getInstance().read(uri);
+      Assert.fail("Expecting file not found exception");
+    } catch (final FileNotFoundException e) {
+      // success
+    }
   }
 }
