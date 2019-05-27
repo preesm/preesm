@@ -108,9 +108,20 @@ public class PreesmResourcesHelper {
     if (projectClass == null) {
       throw new IllegalArgumentException("Expecting non null class");
     }
+    final ResourcesPlugin plugin = ResourcesPlugin.getPlugin();
+    if (plugin == null) {
+      // Eclipse is not running (call from plain Java or JUnit)
+      return null;
+    }
+    final Bundle bundle = FrameworkUtil.getBundle(projectClass);
+    if (bundle == null) {
+      throw new NoSuchElementException(
+          "Given bundle filter name '" + projectClass + "' does not exist or is not loaded.");
+    }
     // prefix with RESOURCE_PATH to make sure the lookup is done in the resources folder
     // to mimic classpath resources entry.
-    final URL resolveBundleURL = resolveFromBundleFileLocator(RESOURCE_PATH + resource, projectClass);
+    final Path resourcePath = new Path(RESOURCE_PATH + resource);
+    final URL resolveBundleURL = FileLocator.find(bundle, resourcePath);
     if (resolveBundleURL == null) {
       return null;
     }
@@ -123,25 +134,6 @@ public class PreesmResourcesHelper {
     }
 
     return resolve;
-  }
-
-  final URL resolveFromBundleFileLocator(final String resource, final Class<?> projectClass) {
-    final ResourcesPlugin plugin = ResourcesPlugin.getPlugin();
-    if (plugin == null) {
-      // Eclipse is not running (call from plain Java or JUnit)
-      return null;
-    }
-    final Bundle bundle = FrameworkUtil.getBundle(projectClass);
-    if (bundle == null) {
-      throw new NoSuchElementException(
-          "Given bundle filter name '" + projectClass + "' does not exist or is not loaded.");
-    }
-    final Path resourcePath = new Path(resource);
-    final URL res = FileLocator.find(bundle, resourcePath);
-    if (res != null) {
-      return res;
-    }
-    return null;
   }
 
   /**
