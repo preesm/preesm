@@ -897,18 +897,11 @@ public class ScenarioParser {
           time = -1;
         }
 
-        String actorName;
-        if (vertexpath.contains("/")) {
-          actorName = getActorNameFromPath(vertexpath);
-        } else {
-          actorName = vertexpath;
-        }
-
-        if ((actorName != null) && this.scenario.getOperatorDefinitionIds().contains(opdefname)) {
+        if ((vertexpath != null) && this.scenario.getOperatorDefinitionIds().contains(opdefname)) {
           if (isEvaluated) {
-            timing = new Timing(opdefname, actorName, time);
+            timing = new Timing(opdefname, vertexpath, time);
           } else {
-            timing = new Timing(opdefname, actorName, stringValue);
+            timing = new Timing(opdefname, vertexpath, stringValue);
           }
         }
       }

@@ -642,12 +642,12 @@ public class StaticPiMM2MapperDAGVisitor extends PiMMSwitch<Boolean> {
     // Add the scenario timings
     final List<Timing> currentTimings = new ArrayList<>();
     for (final String operatorDefinitionID : scenario.getOperatorDefinitionIds()) {
-      final Timing timing = scenario.getTimingManager().getTimingOrDefault(actor.getName(), operatorDefinitionID);
+      final Timing timing = scenario.getTimingManager().getTimingOrDefault(actor.getVertexPath(), operatorDefinitionID);
       currentTimings.add(timing);
     }
     final TimingManager timingManager = scenario.getTimingManager();
     for (final Timing t : currentTimings) {
-      final Timing addTiming = timingManager.addTiming(copyActor.getName(), t.getOperatorDefinitionId());
+      final Timing addTiming = timingManager.addTiming(copyActor.getVertexPath(), t.getOperatorDefinitionId());
       addTiming.setTime(t.getTime());
       addTiming.setInputParameters(t.getInputParameters());
     }

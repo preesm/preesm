@@ -160,7 +160,7 @@ public class ExcelTimingParser {
       final Set<String> missingVertices, final Set<String> missingOperatorTypes) {
 
     currentGraph.getActorsWithRefinement().stream().filter(a -> !a.isHierarchical())
-        .forEach(a -> parseTimingForVertex(w, a.getName(), opDefIds, missingVertices, missingOperatorTypes));
+        .forEach(a -> parseTimingForVertex(w, a.getVertexPath(), opDefIds, missingVertices, missingOperatorTypes));
 
     currentGraph.getChildrenGraphs().stream()
         .forEach(g -> parseTimingsForPISDFGraph(w, g, opDefIds, missingVertices, missingOperatorTypes));

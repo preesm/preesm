@@ -114,6 +114,7 @@ public class PiSDFToSingleRate extends PiMMSwitch<Boolean> {
     // 4.5 Check periods with BRV
     PreesmLogger.getLogger().log(Level.FINE, " >>   - check periodicity");
     PiMMHelper.checkPeriodicity(brv);
+
     // 5. Convert to SR-DAG
     PreesmLogger.getLogger().log(Level.FINE, " >>   - apply single rate transfo");
     PiSDFToSingleRate staticPiMM2ASrPiMMVisitor = new PiSDFToSingleRate(graph, brv);

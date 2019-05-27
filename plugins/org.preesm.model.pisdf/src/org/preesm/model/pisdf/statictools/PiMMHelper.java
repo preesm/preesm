@@ -479,6 +479,7 @@ public class PiMMHelper {
     final Map<Long, List<Actor>> mapGraphPeriods = new HashMap<>();
 
     for (final Entry<AbstractVertex, Long> en : graphBRV.entrySet()) {
+
       final AbstractVertex av = en.getKey();
       final PiGraph container = av.getContainingPiGraph();
       if (!levelBRV.containsKey(container)) {
