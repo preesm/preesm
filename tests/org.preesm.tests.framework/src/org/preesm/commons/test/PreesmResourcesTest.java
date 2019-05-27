@@ -1,7 +1,6 @@
 package org.preesm.commons.test;
 
 import java.io.IOException;
-import java.net.URL;
 import org.junit.Assert;
 import org.junit.Test;
 import org.preesm.commons.exceptions.PreesmResourceException;
@@ -25,9 +24,8 @@ public class PreesmResourcesTest {
    */
   @Test
   public void testResourceLoadFromBundles() throws IOException {
-    final URL url = PreesmResourcesHelper.getInstance().resolve("test_resource.txt", "org.preesm.tests.framework",
+    final String content = PreesmResourcesHelper.getInstance().read("test_resource.txt", "org.preesm.tests.framework",
         this.getClass());
-    final String content = PreesmResourcesHelper.getInstance().read(url);
     Assert.assertEquals(expectedContent1, content);
   }
 
@@ -36,9 +34,8 @@ public class PreesmResourcesTest {
    */
   @Test
   public void testResourceLoadFromBundlesSubFolder() throws IOException {
-    final URL url = PreesmResourcesHelper.getInstance().resolve("subfolder/test_resource.txt",
+    final String content = PreesmResourcesHelper.getInstance().read("subfolder/test_resource.txt",
         "org.preesm.tests.framework", this.getClass());
-    final String content = PreesmResourcesHelper.getInstance().read(url);
     Assert.assertEquals(expectedContentSubFolder, content);
   }
 
@@ -48,9 +45,8 @@ public class PreesmResourcesTest {
   @Test
   public void testResourceLoadFromBundlesFake() throws IOException {
     try {
-      final URL url = PreesmResourcesHelper.getInstance().resolve("test_resource_fake.txt",
-          "org.preesm.tests.framework", this.getClass());
-      PreesmResourcesHelper.getInstance().read(url);
+      PreesmResourcesHelper.getInstance().resolve("test_resource_fake.txt", "org.preesm.tests.framework",
+          this.getClass());
       Assert.fail("Expecting preesm resource exception");
     } catch (final PreesmResourceException e) {
       // success
@@ -63,9 +59,8 @@ public class PreesmResourcesTest {
   @Test
   public void testResourceLoadFromBundlesSubOnly() throws IOException {
     try {
-      final URL url = PreesmResourcesHelper.getInstance().resolve("test_resource_subonly.txt",
-          "org.preesm.tests.framework", this.getClass());
-      PreesmResourcesHelper.getInstance().read(url);
+      PreesmResourcesHelper.getInstance().resolve("test_resource_subonly.txt", "org.preesm.tests.framework",
+          this.getClass());
       Assert.fail("Expecting preesm resource exception");
     } catch (final PreesmResourceException e) {
       // success

@@ -1,8 +1,6 @@
 package org.preesm.commons.files;
 
-import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStreamReader;
 import java.net.URL;
 import java.util.Arrays;
 import java.util.List;
@@ -69,15 +67,10 @@ public class PreesmResourcesHelper {
    * Reads the content of the given URI. This method converts the URI to URL firsts, then open a stream to read its
    * content.
    */
-  public final String read(final URL url) throws IOException {
-    final StringBuilder builder = new StringBuilder();
-    try (BufferedReader reader = new BufferedReader(new InputStreamReader(url.openStream()))) {
-      String line;
-      while ((line = reader.readLine()) != null) {
-        builder.append(line + "\n");
-      }
-    }
-    return builder.toString();
+  public final String read(final String resource, final String bundleFilter, final Class<?> projectClass)
+      throws IOException {
+    final URL url = this.resolve(resource, bundleFilter, projectClass);
+    return URLHelper.read(url);
   }
 
   /**

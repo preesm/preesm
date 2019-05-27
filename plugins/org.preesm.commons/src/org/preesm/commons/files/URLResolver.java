@@ -34,10 +34,8 @@
  */
 package org.preesm.commons.files;
 
-import java.io.BufferedReader;
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.io.InputStreamReader;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.nio.file.Path;
@@ -80,14 +78,7 @@ public final class URLResolver {
     if (url == null) {
       throw new FileNotFoundException();
     }
-    final StringBuilder builder = new StringBuilder();
-    try (BufferedReader reader = new BufferedReader(new InputStreamReader(url.openStream()))) {
-      String line;
-      while ((line = reader.readLine()) != null) {
-        builder.append(line + "\n");
-      }
-    }
-    return builder.toString();
+    return URLHelper.read(url);
   }
 
   public static final URL findFirst(final String location) {
