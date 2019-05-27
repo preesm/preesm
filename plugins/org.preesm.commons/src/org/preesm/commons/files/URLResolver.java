@@ -42,7 +42,6 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Objects;
 import java.util.stream.Stream;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IProject;
@@ -51,7 +50,6 @@ import org.eclipse.core.resources.IWorkspace;
 import org.eclipse.core.resources.IWorkspaceRoot;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.IPath;
-import org.osgi.framework.Bundle;
 
 /**
  *
@@ -93,16 +91,6 @@ public final class URLResolver {
     return new URLResolver().resolve(location, bundles);
   }
 
-  private final ClassLoader classLoader;
-
-  public URLResolver() {
-    this(ClassLoader.getSystemClassLoader());
-  }
-
-  public URLResolver(final ClassLoader classLoader) {
-    this.classLoader = classLoader;
-  }
-
   /**
    * Looks for a Resource stored in the open workspace, in the Plug-in classpath, in a remote location, or in the
    * filesystem.<br/>
@@ -127,14 +115,6 @@ public final class URLResolver {
       resultURL = resolveURLFromWorkspace(location, bundleFilterList);
     } catch (final MalformedURLException e) {
       resultURL = null;
-    }
-
-    if (resultURL == null) {
-      resultURL = resolveURLFromBundleClasspath(location, bundleFilterList);
-    }
-
-    if (resultURL == null) {
-      resultURL = resolveURLFromClasspath(location);
     }
 
     if (resultURL == null) {
@@ -185,21 +165,6 @@ public final class URLResolver {
     }
     final IResource findMember = project.findMember(path);
     return findMember.getLocationURI().toURL();
-  }
-
-  private final URL resolveURLFromClasspath(final String resource) {
-    return classLoader.getResource(resource);
-  }
-
-  private final URL resolveURLFromBundleClasspath(final String resource, final List<String> bundleFilterList) {
-    final ResourcesPlugin plugin = ResourcesPlugin.getPlugin();
-    if (plugin == null) {
-      // Eclipse is not running (call from plain Java or JUnit)
-      return null;
-    }
-    final Bundle[] bundles = plugin.getBundle().getBundleContext().getBundles();
-    return Stream.of(bundles).filter(b -> bundleFilterList.isEmpty() || bundleFilterList.contains(b.getSymbolicName()))
-        .map(b -> b.getEntry(resource)).filter(Objects::nonNull).findFirst().orElse(null);
   }
 
   private final URL resolvePlainURL(final String resource) throws MalformedURLException {
