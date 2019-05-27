@@ -1,7 +1,6 @@
 package org.preesm.commons.files;
 
 import java.io.BufferedReader;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.URL;
@@ -12,7 +11,7 @@ import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.FileLocator;
 import org.eclipse.core.runtime.Path;
 import org.osgi.framework.Bundle;
-import org.preesm.commons.exceptions.PreesmRuntimeException;
+import org.preesm.commons.exceptions.PreesmResourceException;
 
 /**
  * <p>
@@ -94,8 +93,7 @@ public class PreesmResourcesHelper {
    * proper classloader, any class from the project containing the resource has to be given as argument.
    * </p>
    */
-  public final URL resolve(final String resource, final String bundleFilter, final Class<?> projectClass)
-      throws FileNotFoundException {
+  public final URL resolve(final String resource, final String bundleFilter, final Class<?> projectClass) {
     if (resource == null || resource.isEmpty()) {
       throw new IllegalArgumentException("Expecting non empty argument");
     }
@@ -104,7 +102,8 @@ public class PreesmResourcesHelper {
       url = resolveFromClass(resource, projectClass);
     }
     if (url == null) {
-      throw new FileNotFoundException();
+      throw new PreesmResourceException("Could not locate resource '" + resource + "' from bundle '" + bundleFilter
+          + "' or class '" + projectClass + "'");
     }
     return url;
   }
@@ -128,7 +127,7 @@ public class PreesmResourcesHelper {
     try {
       resolve = FileLocator.resolve(resolveBundleURL);
     } catch (final IOException e) {
-      throw new PreesmRuntimeException("Could not resolve URI" + resolveBundleURL, e);
+      throw new PreesmResourceException("Could not resolve URI" + resolveBundleURL, e);
     }
 
     return resolve;

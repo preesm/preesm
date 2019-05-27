@@ -1,10 +1,10 @@
 package org.preesm.commons.test;
 
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.net.URL;
 import org.junit.Assert;
 import org.junit.Test;
+import org.preesm.commons.exceptions.PreesmResourceException;
 import org.preesm.commons.files.PreesmResourcesHelper;
 
 /**
@@ -51,8 +51,8 @@ public class PreesmResourcesTest {
       final URL url = PreesmResourcesHelper.getInstance().resolve("test_resource_fake.txt",
           "org.preesm.tests.framework", this.getClass());
       PreesmResourcesHelper.getInstance().read(url);
-      Assert.fail("Expecting file not found exception");
-    } catch (final FileNotFoundException e) {
+      Assert.fail("Expecting preesm resource exception");
+    } catch (final PreesmResourceException e) {
       // success
     }
   }
@@ -66,8 +66,8 @@ public class PreesmResourcesTest {
       final URL url = PreesmResourcesHelper.getInstance().resolve("test_resource_subonly.txt",
           "org.preesm.tests.framework", this.getClass());
       PreesmResourcesHelper.getInstance().read(url);
-      Assert.fail("Expecting file not found exception");
-    } catch (final FileNotFoundException e) {
+      Assert.fail("Expecting preesm resource exception");
+    } catch (final PreesmResourceException e) {
       // success
     }
   }
