@@ -21,7 +21,10 @@ import org.preesm.commons.exceptions.PreesmRuntimeException;
 /**
  *
  * Set of methods to help developers locate, load or read resources from the Preesm source code (or binary) base. This
- * is useful for load templates, test inputs, default scripts, etc.
+ * is useful for load templates, test inputs, default scripts, etc. This helper is not intended to be used for writing
+ * files.
+ *
+ *
  *
  * To find helper methods for input/output (algorithm, generated code, etc.), see {@link PreesmIOHelper}.
  *
@@ -30,6 +33,16 @@ import org.preesm.commons.exceptions.PreesmRuntimeException;
  */
 public class PreesmResourcesHelper {
 
+  /**
+   * Path included in the classpath as defined in the parent pom.xml file.
+   *
+   *
+   */
+  private static final String RESOURCE_PATH = "resources/";
+
+  /**
+   * Singleton
+   */
   private static final PreesmResourcesHelper instance = new PreesmResourcesHelper();
 
   public static final PreesmResourcesHelper getInstance() {
@@ -44,8 +57,9 @@ public class PreesmResourcesHelper {
     if (uri == null) {
       throw new FileNotFoundException();
     }
+    final URL url = uri.toURL();
     final StringBuilder builder = new StringBuilder();
-    try (BufferedReader reader = new BufferedReader(new InputStreamReader(uri.toURL().openStream()))) {
+    try (BufferedReader reader = new BufferedReader(new InputStreamReader(url.openStream()))) {
       String line;
       while ((line = reader.readLine()) != null) {
         builder.append(line + "\n");
@@ -55,19 +69,18 @@ public class PreesmResourcesHelper {
   }
 
   /**
-   *
+   * Try to resolve the URI of a resource given its path. Lookup strategy is to first use the {@link FileLocator} of
+   * Eclipse, then use {@link ClassLoader#getResources(String)}
    */
   public final URI resolve(final String resource, final List<String> bundleFilterList, final Object o) {
-    URI uri = resolveFromClass(resource, o);
+    URI uri = resolveFromBundles(resource, bundleFilterList);
     if (uri == null) {
-      uri = resolveFromBundles(resource, bundleFilterList);
+      uri = resolveFromClass(resource, o);
     }
     return uri;
   }
 
-  /**
-   */
-  public final URI resolveFromClass(final String resource, final Object o) {
+  final URI resolveFromClass(final String resource, final Object o) {
     final URI uri = resolveFromClassloader(resource, o);
     if (uri != null) {
       return uri;
@@ -75,9 +88,7 @@ public class PreesmResourcesHelper {
     return null;
   }
 
-  /**
-   */
-  public final URI resolveFromClassloader(final String resource, final Object o) {
+  final URI resolveFromClassloader(final String resource, final Object o) {
     final ClassLoader classLoader = o.getClass().getClassLoader();
     final URL url = classLoader.getResource(resource);
     if (url == null) {
@@ -96,7 +107,7 @@ public class PreesmResourcesHelper {
    * Resolves the resource URI from the bundles given in the list. The returned URI represents a URL that has been
    * resolved by {@link FileLocator#resolve(URL)}.
    */
-  public final URI resolveFromBundles(final String resource, final List<String> bundleFilterList) {
+  final URI resolveFromBundles(final String resource, final List<String> bundleFilterList) {
 
     URL resolveBundleURL = resolveFromBundlesFileLocator(resource, bundleFilterList);
     if (resolveBundleURL == null) {
@@ -124,7 +135,7 @@ public class PreesmResourcesHelper {
   }
 
   /**
-   * Alternative to {@link #resolveBundlesFileLocator} that does not use {@link FileLocator}
+   * Alternative to {@link #resolveFromBundlesFileLocator} that does not use {@link FileLocator}
    */
   final URL resolveFromBundlesEntries(final String resource, final List<String> bundleFilterList) {
     final ResourcesPlugin plugin = ResourcesPlugin.getPlugin();
@@ -138,8 +149,6 @@ public class PreesmResourcesHelper {
         .map(b -> b.getEntry(resource)).filter(Objects::nonNull).findFirst().orElse(null);
   }
 
-  /**
-   */
   final URL resolveFromBundlesFileLocator(final String resource, final List<String> bundleFilterList) {
     final ResourcesPlugin plugin = ResourcesPlugin.getPlugin();
     if (plugin == null) {
@@ -147,13 +156,19 @@ public class PreesmResourcesHelper {
       return null;
     }
     final Bundle[] allBundles = plugin.getBundle().getBundleContext().getBundles();
-    return Stream.of(allBundles)
-        .filter(b -> bundleFilterList.isEmpty() || bundleFilterList.contains(b.getSymbolicName()))
-        .map(b -> FileLocator.find(b, new Path(resource))).filter(Objects::nonNull).findFirst().orElse(null);
+
+    for (final Bundle bundle : allBundles) {
+      if (bundleFilterList.isEmpty() || bundleFilterList.contains(bundle.getSymbolicName())) {
+        final Path resourcePath = new Path(resource);
+        final URL res = FileLocator.find(bundle, resourcePath);
+        if (res != null) {
+          return res;
+        }
+      }
+    }
+    return null;
   }
 
-  /**
-   */
   final URL resolveFromBundleWiring(final String resource, final List<String> bundleFilterList) {
     final ResourcesPlugin plugin = ResourcesPlugin.getPlugin();
     if (plugin == null) {
@@ -165,12 +180,14 @@ public class PreesmResourcesHelper {
       if (bundleFilterList.isEmpty() || bundleFilterList.contains(bundle.getSymbolicName())) {
         final BundleWiring bundleWiring = bundle.adapt(BundleWiring.class);
 
-        final Collection<String> allResources = bundleWiring.listResources("/", resource,
-            BundleWiring.LISTRESOURCES_RECURSE | BundleWiring.LISTRESOURCES_LOCAL);
-        final URL res = allResources.stream().findFirst().map(s -> resolveFromBundlesFileLocator(s, bundleFilterList))
-            .orElse(null);
-        if (res != null) {
-          return res;
+        final Collection<String> allResources = bundleWiring.listResources("/", RESOURCE_PATH + resource,
+            BundleWiring.LISTRESOURCES_LOCAL);
+
+        for (final String resultPath : allResources) {
+          final URL candidate = resolveFromBundlesFileLocator(resultPath, bundleFilterList);
+          if (candidate != null) {
+            return candidate;
+          }
         }
       }
     }
