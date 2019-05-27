@@ -58,9 +58,6 @@ public class PiMMImageProvider extends AbstractImageProvider {
   /** The Constant IMG_WHITE_DOT_GREY_LINE. */
   public static final String IMG_WHITE_DOT_GREY_LINE = PiMMImageProvider.PREFIX + "whitedotgreyline";
 
-  /** The Constant IMG_PI. */
-  public static final String IMG_PI = PiMMImageProvider.PREFIX + "pi";
-
   /**
    * Default constructor of {@link PiMMImageProvider}.
    */
@@ -76,9 +73,8 @@ public class PiMMImageProvider extends AbstractImageProvider {
   @Override
   protected void addAvailableImages() {
     // register the path for each image identifier
-    addImageFilePath(PiMMImageProvider.IMG_PI, "icons/pi.gif");
-    addImageFilePath(PiMMImageProvider.IMG_WHITE_DOT_BLUE_LINE, "icons/whitedotblueline.gif");
-    addImageFilePath(PiMMImageProvider.IMG_WHITE_DOT_GREY_LINE, "icons/whitedotgreyline.gif");
+    addImageFilePath(PiMMImageProvider.IMG_WHITE_DOT_BLUE_LINE, "resources/icons/whitedotblueline.gif");
+    addImageFilePath(PiMMImageProvider.IMG_WHITE_DOT_GREY_LINE, "resources/icons/whitedotgreyline.gif");
   }
 
 }

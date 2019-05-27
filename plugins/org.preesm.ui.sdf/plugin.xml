@@ -73,7 +73,7 @@
             contributorClass="org.ietr.dftools.graphiti.ui.editors.GraphActionBarContributor"
             default="true"
             extensions="graphml, design, component"
-            icon="icons/graphiti.gif"
+            icon="resources/icons/graphiti.gif"
             id="org.ietr.preesm.ui.editor.graph"
             name="Preesm Network Editor">
       </editor>
@@ -112,7 +112,7 @@
             category="org.ietr.preesm.category"
             class="org.preesm.ui.sdf.wizard.NewGraphMLWizard"
             hasPages="true"
-            icon="icons/graphiti.gif"
+            icon="resources/icons/graphiti.gif"
             id="org.ietr.preesm.ui.wizards.graphml"
             name="Preesm Algorithm (IBSDF - deprecated)"
             project="false">
@@ -292,12 +292,12 @@
          </edgeType>
          <import>
             <xslt
-                  name="xslt/org/ietr/preesm/sdf4j/input_sdf4j.xslt">
+                  name="resources/xslt/sdf4j/input_sdf4j.xslt">
             </xslt>
          </import>
          <export>
             <xslt
-                  name="xslt/org/ietr/preesm/sdf4j/output_sdf4j.xslt">
+                  name="resources/xslt/sdf4j/output_sdf4j.xslt">
             </xslt>
          </export>
          <vertexType
@@ -601,12 +601,12 @@
          </edgeType>
          <import>
             <xslt
-                  name="xslt/org/ietr/preesm/sdf4j/input_sdf4j.xslt">
+                  name="resources/xslt/sdf4j/input_sdf4j.xslt">
             </xslt>
          </import>
          <export>
             <xslt
-                  name="xslt/org/ietr/preesm/sdf4j/output_sdf4j.xslt">
+                  name="resources/xslt/sdf4j/output_sdf4j.xslt">
             </xslt>
          </export>
          <vertexType
