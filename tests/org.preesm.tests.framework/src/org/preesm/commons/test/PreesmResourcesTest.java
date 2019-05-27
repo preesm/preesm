@@ -2,8 +2,7 @@ package org.preesm.commons.test;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.net.URI;
-import java.util.Arrays;
+import java.net.URL;
 import org.junit.Assert;
 import org.junit.Test;
 import org.preesm.commons.files.PreesmResourcesHelper;
@@ -26,9 +25,9 @@ public class PreesmResourcesTest {
    */
   @Test
   public void testResourceLoadFromBundles() throws IOException {
-    final URI uri = PreesmResourcesHelper.getInstance().resolve("test_resource.txt",
-        Arrays.asList("org.preesm.tests.framework"), this);
-    final String content = PreesmResourcesHelper.getInstance().read(uri);
+    final URL url = PreesmResourcesHelper.getInstance().resolve("test_resource.txt", "org.preesm.tests.framework",
+        this.getClass());
+    final String content = PreesmResourcesHelper.getInstance().read(url);
     Assert.assertEquals(expectedContent1, content);
   }
 
@@ -37,9 +36,9 @@ public class PreesmResourcesTest {
    */
   @Test
   public void testResourceLoadFromBundlesSubFolder() throws IOException {
-    final URI uri = PreesmResourcesHelper.getInstance().resolve("subfolder/test_resource.txt",
-        Arrays.asList("org.preesm.tests.framework"), this);
-    final String content = PreesmResourcesHelper.getInstance().read(uri);
+    final URL url = PreesmResourcesHelper.getInstance().resolve("subfolder/test_resource.txt",
+        "org.preesm.tests.framework", this.getClass());
+    final String content = PreesmResourcesHelper.getInstance().read(url);
     Assert.assertEquals(expectedContentSubFolder, content);
   }
 
@@ -49,9 +48,9 @@ public class PreesmResourcesTest {
   @Test
   public void testResourceLoadFromBundlesFake() throws IOException {
     try {
-      final URI uri = PreesmResourcesHelper.getInstance().resolve("test_resource_fake.txt",
-          Arrays.asList("org.preesm.tests.framework"), this);
-      PreesmResourcesHelper.getInstance().read(uri);
+      final URL url = PreesmResourcesHelper.getInstance().resolve("test_resource_fake.txt",
+          "org.preesm.tests.framework", this.getClass());
+      PreesmResourcesHelper.getInstance().read(url);
       Assert.fail("Expecting file not found exception");
     } catch (final FileNotFoundException e) {
       // success
@@ -64,9 +63,9 @@ public class PreesmResourcesTest {
   @Test
   public void testResourceLoadFromBundlesSubOnly() throws IOException {
     try {
-      final URI uri = PreesmResourcesHelper.getInstance().resolve("test_resource_subonly.txt",
-          Arrays.asList("org.preesm.tests.framework"), this);
-      PreesmResourcesHelper.getInstance().read(uri);
+      final URL url = PreesmResourcesHelper.getInstance().resolve("test_resource_subonly.txt",
+          "org.preesm.tests.framework", this.getClass());
+      PreesmResourcesHelper.getInstance().read(url);
       Assert.fail("Expecting file not found exception");
     } catch (final FileNotFoundException e) {
       // success

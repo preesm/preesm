@@ -4,29 +4,43 @@ import java.io.BufferedReader;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.net.URI;
-import java.net.URISyntaxException;
 import java.net.URL;
-import java.util.Collection;
+import java.util.Arrays;
 import java.util.List;
-import java.util.Objects;
-import java.util.stream.Stream;
+import java.util.NoSuchElementException;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.FileLocator;
 import org.eclipse.core.runtime.Path;
 import org.osgi.framework.Bundle;
-import org.osgi.framework.wiring.BundleWiring;
 import org.preesm.commons.exceptions.PreesmRuntimeException;
 
 /**
- *
+ * <p>
  * Set of methods to help developers locate, load or read resources from the Preesm source code (or binary) base. This
- * is useful for load templates, test inputs, default scripts, etc. This helper is not intended to be used for writing
- * files.
+ * is useful for loading templates, test inputs, default scripts, etc. This helper is not intended to be used for
+ * writing files. Entry point is the {@link #resolve(String, List, Object)} method.
+ * </p>
  *
+ * <p>
+ * The resolved resources have to be located under the '&lt;project&gt;/resources/' folder, and the full path under this
+ * folder is required. This path is defined as constant (see {@link #RESOURCE_PATH}) and as project setting in the
+ * parent pom.xml file. In order for the resources to be retrievable from an exported Eclipse plug-in, the
+ * '&lt;project&gt;/resources/' must be included in the 'bin.includes' section of the 'build.properties' file.
+ * </p>
  *
+ * <p>
+ * A sample call would look like
  *
+ * <pre>
+ * final URL url = PreesmResourcesHelper.getInstance().resolve("GanttHelp.html", "org.preesm.algorithm",
+ *     GanttPlotter.class);
+ * final String content = PreesmResourcesHelper.getInstance().read(url);
+ * </pre>
+ * </p>
+ *
+ * <p>
  * To find helper methods for input/output (algorithm, generated code, etc.), see {@link PreesmIOHelper}.
+ * </p>
  *
  * @author anmorvan
  *
@@ -45,6 +59,9 @@ public class PreesmResourcesHelper {
    */
   private static final PreesmResourcesHelper instance = new PreesmResourcesHelper();
 
+  /**
+   * Returns the singleton instance of this helper.
+   */
   public static final PreesmResourcesHelper getInstance() {
     return instance;
   }
@@ -53,11 +70,7 @@ public class PreesmResourcesHelper {
    * Reads the content of the given URI. This method converts the URI to URL firsts, then open a stream to read its
    * content.
    */
-  public final String read(final URI uri) throws IOException {
-    if (uri == null) {
-      throw new FileNotFoundException();
-    }
-    final URL url = uri.toURL();
+  public final String read(final URL url) throws IOException {
     final StringBuilder builder = new StringBuilder();
     try (BufferedReader reader = new BufferedReader(new InputStreamReader(url.openStream()))) {
       String line;
@@ -69,50 +82,44 @@ public class PreesmResourcesHelper {
   }
 
   /**
+   * <p>
    * Try to resolve the URI of a resource given its path. Lookup strategy is to first use the {@link FileLocator} of
-   * Eclipse, then use {@link ClassLoader#getResources(String)}
+   * Eclipse. The path will be resolved in the project (or bundle) whose symbolic name given as argument, under the
+   * 'resources/' folder. The symbolic name of a bundle is given in the META-INF/MANIFEST.MF file.
+   * </p>
+   *
+   * <p>
+   * If Eclipse is not running (i.e. running using plain java), this method falls back on
+   * {@link ClassLoader#getResources(String)} to try resolving from the classpath resources. In order to lookup in the
+   * proper classloader, any class from the project containing the resource has to be given as argument.
+   * </p>
    */
-  public final URI resolve(final String resource, final List<String> bundleFilterList, final Object o) {
-    URI uri = resolveFromBundles(resource, bundleFilterList);
-    if (uri == null) {
-      uri = resolveFromClass(resource, o);
+  public final URL resolve(final String resource, final String bundleFilter, final Class<?> projectClass)
+      throws FileNotFoundException {
+    if (resource == null || resource.isEmpty()) {
+      throw new IllegalArgumentException("Expecting non empty argument");
     }
-    return uri;
-  }
-
-  final URI resolveFromClass(final String resource, final Object o) {
-    final URI uri = resolveFromClassloader(resource, o);
-    if (uri != null) {
-      return uri;
-    }
-    return null;
-  }
-
-  final URI resolveFromClassloader(final String resource, final Object o) {
-    final ClassLoader classLoader = o.getClass().getClassLoader();
-    final URL url = classLoader.getResource(resource);
+    URL url = resolveFromBundle(resource, bundleFilter);
     if (url == null) {
-      return null;
+      url = resolveFromClass(resource, projectClass);
     }
-    URI res = null;
-    try {
-      res = url.toURI();
-    } catch (final URISyntaxException e) {
-      throw new PreesmRuntimeException("Could not create URI", e);
+    if (url == null) {
+      throw new FileNotFoundException();
     }
-    return res;
+    return url;
   }
 
   /**
    * Resolves the resource URI from the bundles given in the list. The returned URI represents a URL that has been
    * resolved by {@link FileLocator#resolve(URL)}.
    */
-  final URI resolveFromBundles(final String resource, final List<String> bundleFilterList) {
-
-    URL resolveBundleURL = resolveFromBundlesFileLocator(resource, bundleFilterList);
-    if (resolveBundleURL == null) {
-      resolveBundleURL = resolveFromBundleWiring(resource, bundleFilterList);
+  final URL resolveFromBundle(final String resource, final String bundleFilter) {
+    if (bundleFilter == null || bundleFilter.isEmpty()) {
+      throw new IllegalArgumentException("Expecting non empty bundle name argument");
     }
+    // prefix with RESOURCE_PATH to make sure the lookup is done in the resources folder
+    // to mimic classpath resources entry.
+    final URL resolveBundleURL = resolveFromBundleFileLocator(RESOURCE_PATH + resource, bundleFilter);
     if (resolveBundleURL == null) {
       return null;
     }
@@ -124,73 +131,43 @@ public class PreesmResourcesHelper {
       throw new PreesmRuntimeException("Could not resolve URI" + resolveBundleURL, e);
     }
 
-    final URI uri;
-    try {
-      uri = resolve.toURI();
-    } catch (final URISyntaxException e) {
-      throw new PreesmRuntimeException("Could not create URI", e);
-    }
+    return resolve;
+  }
 
-    return uri;
+  final URL resolveFromBundleFileLocator(final String resource, final String bundleFilter) {
+    final ResourcesPlugin plugin = ResourcesPlugin.getPlugin();
+    if (plugin == null) {
+      // Eclipse is not running (call from plain Java or JUnit)
+      return null;
+    }
+    final Bundle[] allBundles = plugin.getBundle().getBundleContext().getBundles();
+    final Bundle bundle = Arrays.asList(allBundles).stream().filter(b -> bundleFilter.equals(b.getSymbolicName()))
+        .findFirst().orElseThrow(() -> new NoSuchElementException(
+            "Given bundle filter name '" + bundleFilter + "' does not exist or is not loaded."));
+
+    final Path resourcePath = new Path(resource);
+    final URL res = FileLocator.find(bundle, resourcePath);
+    if (res != null) {
+      return res;
+    }
+    return null;
   }
 
   /**
-   * Alternative to {@link #resolveFromBundlesFileLocator} that does not use {@link FileLocator}
+   * Try resolving the resource from the resources in the classpath using classloader
    */
-  final URL resolveFromBundlesEntries(final String resource, final List<String> bundleFilterList) {
-    final ResourcesPlugin plugin = ResourcesPlugin.getPlugin();
-    if (plugin == null) {
-      // Eclipse is not running (call from plain Java or JUnit)
+  final URL resolveFromClass(final String resource, final Class<?> projectClass) {
+    if (projectClass == null) {
+      throw new IllegalArgumentException("Expecting non null argument");
+    }
+
+    final ClassLoader classLoader = projectClass.getClassLoader();
+    // no need to prefix the resource path with RESOURCE_PATH since the resource folder
+    // should already be included in the classpath
+    final URL url = classLoader.getResource(resource);
+    if (url == null) {
       return null;
     }
-    final Bundle[] allBundles = plugin.getBundle().getBundleContext().getBundles();
-    return Stream.of(allBundles)
-        .filter(b -> bundleFilterList.isEmpty() || bundleFilterList.contains(b.getSymbolicName()))
-        .map(b -> b.getEntry(resource)).filter(Objects::nonNull).findFirst().orElse(null);
-  }
-
-  final URL resolveFromBundlesFileLocator(final String resource, final List<String> bundleFilterList) {
-    final ResourcesPlugin plugin = ResourcesPlugin.getPlugin();
-    if (plugin == null) {
-      // Eclipse is not running (call from plain Java or JUnit)
-      return null;
-    }
-    final Bundle[] allBundles = plugin.getBundle().getBundleContext().getBundles();
-
-    for (final Bundle bundle : allBundles) {
-      if (bundleFilterList.isEmpty() || bundleFilterList.contains(bundle.getSymbolicName())) {
-        final Path resourcePath = new Path(resource);
-        final URL res = FileLocator.find(bundle, resourcePath);
-        if (res != null) {
-          return res;
-        }
-      }
-    }
-    return null;
-  }
-
-  final URL resolveFromBundleWiring(final String resource, final List<String> bundleFilterList) {
-    final ResourcesPlugin plugin = ResourcesPlugin.getPlugin();
-    if (plugin == null) {
-      // Eclipse is not running (call from plain Java or JUnit)
-      return null;
-    }
-    final Bundle[] allBundles = plugin.getBundle().getBundleContext().getBundles();
-    for (final Bundle bundle : allBundles) {
-      if (bundleFilterList.isEmpty() || bundleFilterList.contains(bundle.getSymbolicName())) {
-        final BundleWiring bundleWiring = bundle.adapt(BundleWiring.class);
-
-        final Collection<String> allResources = bundleWiring.listResources("/", RESOURCE_PATH + resource,
-            BundleWiring.LISTRESOURCES_LOCAL);
-
-        for (final String resultPath : allResources) {
-          final URL candidate = resolveFromBundlesFileLocator(resultPath, bundleFilterList);
-          if (candidate != null) {
-            return candidate;
-          }
-        }
-      }
-    }
-    return null;
+    return url;
   }
 }
