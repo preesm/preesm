@@ -911,7 +911,7 @@
             name="Preesm">
          <property
                name="windowImages"
-               value="icons/preesmLogo_16x16.bmp,icons/preesmLogo_32x32.bmp,icons/preesmLogo_48x48.bmp,icons/preesmLogo_64x64.bmp,icons/preesmLogo_128x128.bmp,icons/preesmLogo_256x256.bmp">
+               value="resources/icons/preesmLogo_16x16.bmp,resources/icons/preesmLogo_32x32.bmp,resources/icons/preesmLogo_48x48.bmp,resources/icons/preesmLogo_64x64.bmp,resources/icons/preesmLogo_128x128.bmp,resources/icons/preesmLogo_256x256.bmp">
          </property>
          <property
                name="appName"
@@ -922,7 +922,7 @@
                value="PREESM [&apos;prɪzəm] is an open source rapid prototyping tool. It simulates signal processing applications and generates code for heterogeneous multi/many-core embedded systems. Its dataflow language eases the description of parallel signal processing applications.&#x0A;&#x0A;         PREESM is released under the CeCILL-C License.&#x0A;&#x0A;         Please visit our webpage for more info : http://preesm.org/"/>
 		<property
 				name="aboutImage"
-				value="icons/preesmLogo_48x48.png"/>
+				value="resources/icons/preesmLogo_48x48.png"/>
   <property
         name="startupForegroundColor"
         value="000000">
