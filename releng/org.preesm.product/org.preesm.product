@@ -4,7 +4,7 @@
 <product name="Preesm" uid="org.preesm.product" id="org.preesm.ui.product" application="org.eclipse.ui.ide.workbench" version="3.8.1.qualifier" useFeatures="true" includeLaunchers="true">
 
    <aboutInfo>
-      <image path="/org.preesm.ui/icons/preesmLogo_48x48.png"/>
+      <image path="/org.preesm.ui/resources/icons/preesmLogo_48x48.png"/>
       <text>
          PREESM [&apos;prɪzəm] is an open source rapid prototyping tool. It simulates signal processing applications and generates code for heterogeneous multi/many-core embedded systems. Its dataflow language eases the description of parallel signal processing applications.
 
@@ -22,7 +22,7 @@
       </vmArgsMac>
    </launcherArgs>
 
-   <windowImages i16="icons/preesmLogo_16x16.bmp" i32="icons/preesmLogo_32x32.bmp" i48="icons/preesmLogo_48x48.bmp" i64="icons/preesmLogo_64x64.bmp" i128="icons/preesmLogo_128x128.bmp" i256="icons/preesmLogo_256x256.bmp"/>
+   <windowImages i16="/org.preesm.ui/resources/icons/preesmLogo_16x16.png" i32="/org.preesm.ui/resources/icons/preesmLogo_32x32.bmp" i48="/org.preesm.ui/resources/icons/preesmLogo_48x48.bmp" i64="/org.preesm.ui/resources/icons/preesmLogo_64x64.bmp" i128="/org.preesm.ui/resources/icons/preesmLogo_128x128.bmp" i256="/org.preesm.ui/resources/icons/preesmLogo_256x256.bmp"/>
 
    <splash
       location="org.preesm.ui"
@@ -30,13 +30,14 @@
       startupMessageRect="7,251,445,20"
       startupForegroundColor="000000" />
    <launcher>
-      <linux icon="icons/preesmLogo_256x256.xpm"/>
-      <macosx icon="icons/preesmLogo.icns"/>
+      <linux icon="/org.preesm.ui/resources/icons/preesmLogo_256x256.xpm"/>
+      <macosx icon="/org.preesm.ui/resources/icons/preesmLogo.icns"/>
       <win useIco="true">
-         <ico path="icons/preesmLogo.ico"/>
+         <ico path="/org.preesm.ui/resources/icons/preesmLogo.ico"/>
          <bmp/>
       </win>
    </launcher>
+
 
    <vm>
    </vm>

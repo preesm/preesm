@@ -911,7 +911,7 @@
             name="Preesm">
          <property
                name="windowImages"
-               value="resources/icons/preesmLogo_16x16.bmp,resources/icons/preesmLogo_32x32.bmp,resources/icons/preesmLogo_48x48.bmp,resources/icons/preesmLogo_64x64.bmp,resources/icons/preesmLogo_128x128.bmp,resources/icons/preesmLogo_256x256.bmp">
+               value="resources/icons/preesmLogo_16x16.png,resources/icons/preesmLogo_32x32.bmp,resources/icons/preesmLogo_48x48.bmp,resources/icons/preesmLogo_64x64.bmp,resources/icons/preesmLogo_128x128.bmp,resources/icons/preesmLogo_256x256.bmp">
          </property>
          <property
                name="appName"
