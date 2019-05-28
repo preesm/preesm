@@ -22,7 +22,7 @@
       </vmArgsMac>
    </launcherArgs>
 
-   <windowImages i16="/org.preesm.ui/resources/icons/preesmLogo_16x16.png" i32="/org.preesm.ui/resources/icons/preesmLogo_32x32.bmp" i48="/org.preesm.ui/resources/icons/preesmLogo_48x48.bmp" i64="/org.preesm.ui/resources/icons/preesmLogo_64x64.bmp" i128="/org.preesm.ui/resources/icons/preesmLogo_128x128.bmp" i256="/org.preesm.ui/resources/icons/preesmLogo_256x256.bmp"/>
+   <windowImages i16="/org.preesm.ui/resources/icons/preesmLogo_16x16.bmp" i32="/org.preesm.ui/resources/icons/preesmLogo_32x32.bmp" i48="/org.preesm.ui/resources/icons/preesmLogo_48x48.bmp" i64="/org.preesm.ui/resources/icons/preesmLogo_64x64.bmp" i128="/org.preesm.ui/resources/icons/preesmLogo_128x128.bmp" i256="/org.preesm.ui/resources/icons/preesmLogo_256x256.bmp"/>
 
    <splash
       location="org.preesm.ui"
@@ -30,10 +30,10 @@
       startupMessageRect="7,251,445,20"
       startupForegroundColor="000000" />
    <launcher>
-      <linux icon="/org.preesm.ui/resources/icons/preesmLogo_256x256.xpm"/>
-      <macosx icon="/org.preesm.ui/resources/icons/preesmLogo.icns"/>
+      <linux icon="icons/preesmLogo_256x256.xpm"/>
+      <macosx icon="icons/preesmLogo.icns"/>
       <win useIco="true">
-         <ico path="/org.preesm.ui/resources/icons/preesmLogo.ico"/>
+         <ico path="icons/preesmLogo.ico"/>
          <bmp/>
       </win>
    </launcher>

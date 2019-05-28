@@ -205,7 +205,7 @@
       <perspective
             class="org.preesm.ui.perspective.PreesmPerspective"
             fixed="false"
-            icon="resources/icons/preesmProject.png"
+            icon="resources/icons/preesmLogo_16x16.png"
             id="org.preesm.ui.perspective"
             name="Preesm">
       </perspective>
@@ -224,7 +224,7 @@
             category="org.ietr.preesm.category"
             class="org.preesm.ui.wizards.NewPreesmProjectWizard"
             hasPages="true"
-            icon="resources/icons/preesmProject.png"
+            icon="resources/icons/preesmLogo_16x16.png"
             id="org.ietr.preesm.core.wizards.NewPreesmProjectWizard"
             name="Preesm Project"
             project="true">
@@ -797,7 +797,7 @@
             allPopups="false"
             locationURI="popup:org.eclipse.ui.popup.any?before=additions">
          <menu
-               icon="resources/icons/preesmProject.png"
+               icon="resources/icons/preesmLogo_16x16.png"
                id="org.ietr.preesm.ui.menu1"
                label="Preesm">
             <!-- run the selected workflow -->
@@ -911,7 +911,7 @@
             name="Preesm">
          <property
                name="windowImages"
-               value="resources/icons/preesmLogo_16x16.png,resources/icons/preesmLogo_32x32.bmp,resources/icons/preesmLogo_48x48.bmp,resources/icons/preesmLogo_64x64.bmp,resources/icons/preesmLogo_128x128.bmp,resources/icons/preesmLogo_256x256.bmp">
+               value="resources/icons/preesmLogo_16x16.bmp,resources/icons/preesmLogo_32x32.bmp,resources/icons/preesmLogo_48x48.bmp,resources/icons/preesmLogo_64x64.bmp,resources/icons/preesmLogo_128x128.bmp,resources/icons/preesmLogo_256x256.bmp">
          </property>
          <property
                name="appName"
