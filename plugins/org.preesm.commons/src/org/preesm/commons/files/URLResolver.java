@@ -56,12 +56,12 @@ import org.eclipse.core.runtime.IPath;
  */
 public final class URLResolver {
 
-  public static final String readURLInBundleList(final String strUrl, final List<String> bundles) throws IOException {
+  private static final String readURLInBundleList(final String strUrl, final List<String> bundles) throws IOException {
     final URL url = URLResolver.findFirstInBundleList(strUrl, bundles);
     return URLResolver.readURL(url);
   }
 
-  public static final String readURLInBundleList(final String location, final String... bundles) throws IOException {
+  private static final String readURLInBundleList(final String location, final String... bundles) throws IOException {
     return URLResolver.readURLInBundleList(location, Arrays.asList(bundles));
   }
 
@@ -72,7 +72,7 @@ public final class URLResolver {
   /**
    * Reads the content of the given URL and return it as a String.
    */
-  public static final String readURL(final URL url) throws IOException {
+  private static final String readURL(final URL url) throws IOException {
     if (url == null) {
       throw new FileNotFoundException();
     }
@@ -83,11 +83,11 @@ public final class URLResolver {
     return URLResolver.findFirstInBundleList(location);
   }
 
-  public static final URL findFirstInBundleList(final String location, final String... bundles) {
+  private static final URL findFirstInBundleList(final String location, final String... bundles) {
     return URLResolver.findFirstInBundleList(location, Arrays.asList(bundles));
   }
 
-  public static final URL findFirstInBundleList(final String location, final List<String> bundles) {
+  private static final URL findFirstInBundleList(final String location, final List<String> bundles) {
     return new URLResolver().resolve(location, bundles);
   }
 
@@ -106,7 +106,7 @@ public final class URLResolver {
    * If none of the above method worked, returns null.
    *
    */
-  public final URL resolve(final String location, final List<String> bundleFilterList) {
+  private final URL resolve(final String location, final List<String> bundleFilterList) {
     if ((location == null) || location.isEmpty()) {
       return null;
     }
@@ -178,5 +178,4 @@ public final class URLResolver {
     }
     return null;
   }
-
 }
