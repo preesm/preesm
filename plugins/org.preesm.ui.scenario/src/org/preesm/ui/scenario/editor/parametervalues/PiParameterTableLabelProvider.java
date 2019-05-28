@@ -37,8 +37,6 @@
 package org.preesm.ui.scenario.editor.parametervalues;
 
 import java.net.URL;
-import org.eclipse.core.runtime.FileLocator;
-import org.eclipse.core.runtime.Path;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.jface.viewers.ITableColorProvider;
 import org.eclipse.jface.viewers.ITableLabelProvider;
@@ -46,12 +44,11 @@ import org.eclipse.jface.viewers.LabelProvider;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Table;
-import org.osgi.framework.Bundle;
-import org.osgi.framework.FrameworkUtil;
+import org.preesm.commons.files.PreesmResourcesHelper;
 import org.preesm.model.scenario.ParameterValue;
 import org.preesm.model.scenario.ParameterValue.ParameterType;
+import org.preesm.ui.PreesmUIPlugin;
 
-// TODO: Auto-generated Javadoc
 /**
  * The label provider displays informations to fill the multi-column tree for parameter edition.
  *
@@ -78,14 +75,12 @@ public class PiParameterTableLabelProvider extends LabelProvider implements ITab
     super();
     this.table = _table;
 
-    final Bundle bundle = FrameworkUtil.getBundle(PiParameterTableLabelProvider.class);
-
-    URL url = FileLocator.find(bundle, new Path("icons/error.png"), null);
-    ImageDescriptor imageDcr = ImageDescriptor.createFromURL(url);
+    final URL errorIconURL = PreesmResourcesHelper.getInstance().resolve("icons/error.png", PreesmUIPlugin.class);
+    ImageDescriptor imageDcr = ImageDescriptor.createFromURL(errorIconURL);
     this.imageError = imageDcr.createImage();
 
-    url = FileLocator.find(bundle, new Path("icons/ok.png"), null);
-    imageDcr = ImageDescriptor.createFromURL(url);
+    final URL okIconURL = PreesmResourcesHelper.getInstance().resolve("icons/ok.png", PreesmUIPlugin.class);
+    imageDcr = ImageDescriptor.createFromURL(okIconURL);
     this.imageOk = imageDcr.createImage();
   }
 

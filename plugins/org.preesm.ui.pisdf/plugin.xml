@@ -181,7 +181,7 @@
             contributorClass="org.eclipse.graphiti.ui.editor.DiagramEditorActionBarContributor"
             default="true"
             extensions="diagram"
-            icon="icons/pi.gif"
+            icon="resources/icons/pi.gif"
             id="org.ietr.preesm.ui.pimm.editor.diagram"
             matchingStrategy="org.eclipse.graphiti.ui.editor.DiagramEditorMatchingStrategy"
             name="PiMM Diagram Editor">
@@ -190,7 +190,7 @@
             class="org.eclipse.ui.editors.text.TextEditor"
             default="false"
             extensions="pi"
-            icon="icons/pi.gif"
+            icon="resources/icons/pi.gif"
             id="org.ietr.preesm.experiment.ui.pimm.editor"
             name="PiMM Editor">
       </editor>
@@ -205,7 +205,7 @@
             category="org.ietr.preesm.category"
             class="org.preesm.ui.pisdf.wizards.NewPiMMWizard"
             hasPages="true"
-            icon="icons/pi.gif"
+            icon="resources/icons/pi.gif"
             id="org.ietr.preesm.experiment.ui.pimm.wizards.NewPiMMWizard"
             name="Preesm Algorithm (PiSDF)"
             project="true">
@@ -398,7 +398,7 @@
         <!-- Show/open Eclipse properties view -->
         <command
               commandId="org.eclipse.ui.views.showView"
-              icon="icons/pi.gif"
+              icon="resources/icons/pi.gif"
               label="Show in Properties View"
               mnemonic="P"
               style="push">
@@ -417,7 +417,7 @@
         <!-- Compute BRV -->
         <command
               commandId="org.ietr.preesm.ui.command.PiSDFBRVCompute"
-              icon="icons/pi.gif"
+              icon="resources/icons/pi.gif"
               label="Compute PiSDF BRV (Basic Repetition Vector)"
               mnemonic="B"
               style="push">
@@ -432,7 +432,7 @@
         <!-- Compute SRDAG -->
         <command
               commandId="org.ietr.preesm.ui.command.PiSDFSingleRate"
-              icon="icons/pi.gif"
+              icon="resources/icons/pi.gif"
               label="Compute PiSDF SRDAG (Single Rate)"
               mnemonic="B"
               style="push">
@@ -452,13 +452,13 @@
             allPopups="false"
             locationURI="popup:org.eclipse.ui.popup.any?before=additions">
          <menu
-               icon="icons/preesmProject.png"
+               icon="resources/icons/preesmProject.png"
                id="org.ietr.preesm.ui.menu1"
                label="Preesm">
             <!-- Check the selected pimm file -->
             <command
                   commandId="org.ietr.preesm.ui.command.PimmChecker"
-                  icon="icons/pi.gif"
+                  icon="resources/icons/pi.gif"
                   label="Check PiMM Model"
                   mnemonic="C"
                   style="push">
@@ -487,7 +487,7 @@
             <!-- generation .diagram from the selected .pi file -->
             <command
                   commandId="org.ietr.preesm.ui.command.PiMM2Diagram"
-                  icon="icons/pi.gif"
+                  icon="resources/icons/pi.gif"
                   label="Generate .diagram"
                   mnemonic="G"
                   style="push">
@@ -516,7 +516,7 @@
             <!-- Compute BRV of a PiGraph -->
             <command
                   commandId="org.ietr.preesm.ui.command.PiSDFBRVCompute"
-                  icon="icons/pi.gif"
+                  icon="resources/icons/pi.gif"
                   label="Compute PiSDF BRV (Basic Repetition Vector)"
                   mnemonic="C"
                   style="push">
@@ -545,7 +545,7 @@
             <!-- Compute SRDAG of a PiGraph -->
             <command
                   commandId="org.ietr.preesm.ui.command.PiSDFSingleRate"
-                  icon="icons/pi.gif"
+                  icon="resources/icons/pi.gif"
                   label="Compute PiSDF SRDAG (Single Rate)"
                   mnemonic="C"
                   style="push">

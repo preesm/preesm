@@ -1,10 +1,7 @@
 /**
- * Copyright or © or Copr. IETR/INSA - Rennes (2013 - 2018) :
+ * Copyright or © or Copr. IETR/INSA - Rennes (2018 - 2019) :
  *
- * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017 - 2018)
- * Clément Guy <clement.guy@insa-rennes.fr> (2015)
- * Julien Heulot <julien.heulot@insa-rennes.fr> (2013)
- * Karol Desnos <karol.desnos@insa-rennes.fr> (2013)
+ * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2018 - 2019)
  *
  * This software is a computer program whose purpose is to help prototyping
  * parallel applications using dataflow formalism.
@@ -35,46 +32,39 @@
  * The fact that you are presently reading this means that you have had
  * knowledge of the CeCILL license and that you accept its terms.
  */
-package org.preesm.ui.pisdf.diagram;
+package org.preesm.commons.exceptions;
 
-import org.eclipse.graphiti.ui.platform.AbstractImageProvider;
-
-// TODO: Auto-generated Javadoc
 /**
- * Class used to provide icons used in the PiMM Diagram Editor.
  *
- * @author kdesnos
+ * Exception thrown during Preesm execution, by one of its task or menus, when encountering an issue while loading
+ * resources.
+ *
+ * @author anmorvan
+ *
  */
-public class PiMMImageProvider extends AbstractImageProvider {
+public class PreesmResourceException extends PreesmException {
 
-  /** The Constant PREFIX. */
-  // The prefix for all identifiers of this image provider
-  protected static final String PREFIX = "org.ietr.preesm.experiment.ui.pimm.";
+  private static final long serialVersionUID = 4420197523628616963L;
 
-  /** The Constant IMG_WHITE_DOT_BLUE_LINE. */
-  // The image identifier for white dot.
-  public static final String IMG_WHITE_DOT_BLUE_LINE = PiMMImageProvider.PREFIX + "whitedotblueline";
-
-  /** The Constant IMG_WHITE_DOT_GREY_LINE. */
-  public static final String IMG_WHITE_DOT_GREY_LINE = PiMMImageProvider.PREFIX + "whitedotgreyline";
-
-  /**
-   * Default constructor of {@link PiMMImageProvider}.
-   */
-  public PiMMImageProvider() {
-    super();
+  public PreesmResourceException() {
+    this(null, null);
   }
 
-  /*
-   * (non-Javadoc)
-   *
-   * @see org.eclipse.graphiti.ui.platform.AbstractImageProvider#addAvailableImages()
-   */
+  public PreesmResourceException(final String message) {
+    this(message, null);
+  }
+
+  public PreesmResourceException(final Throwable cause) {
+    this(null, cause);
+  }
+
+  public PreesmResourceException(final String message, final Throwable cause) {
+    super(message, cause);
+  }
+
   @Override
-  protected void addAvailableImages() {
-    // register the path for each image identifier
-    addImageFilePath(PiMMImageProvider.IMG_WHITE_DOT_BLUE_LINE, "resources/icons/whitedotblueline.gif");
-    addImageFilePath(PiMMImageProvider.IMG_WHITE_DOT_GREY_LINE, "resources/icons/whitedotgreyline.gif");
+  public final boolean isFatal() {
+    return true;
   }
 
 }

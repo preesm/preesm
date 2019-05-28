@@ -37,47 +37,46 @@
  */
 package org.preesm.codegen.xtend.printer.c
 
+import java.io.IOException
+import java.io.InputStreamReader
+import java.io.StringWriter
+import java.net.URL
+import java.util.Arrays
+import java.util.Collection
 import java.util.Date
+import java.util.LinkedHashMap
+import java.util.LinkedHashSet
 import java.util.List
+import java.util.Set
+import org.apache.velocity.VelocityContext
+import org.apache.velocity.app.VelocityEngine
+import org.eclipse.emf.common.util.EList
+import org.preesm.codegen.model.Block
 import org.preesm.codegen.model.Buffer
 import org.preesm.codegen.model.CallBlock
+import org.preesm.codegen.model.CodeElt
 import org.preesm.codegen.model.Communication
 import org.preesm.codegen.model.Constant
 import org.preesm.codegen.model.ConstantString
 import org.preesm.codegen.model.CoreBlock
 import org.preesm.codegen.model.Delimiter
 import org.preesm.codegen.model.Direction
+import org.preesm.codegen.model.DistributedMemoryCommunication
 import org.preesm.codegen.model.FifoCall
 import org.preesm.codegen.model.FifoOperation
 import org.preesm.codegen.model.FiniteLoopBlock
 import org.preesm.codegen.model.FunctionCall
 import org.preesm.codegen.model.LoopBlock
 import org.preesm.codegen.model.NullBuffer
+import org.preesm.codegen.model.PapifyFunctionCall
+import org.preesm.codegen.model.PapifyType
 import org.preesm.codegen.model.SharedMemoryCommunication
 import org.preesm.codegen.model.SpecialCall
 import org.preesm.codegen.model.SubBuffer
 import org.preesm.codegen.model.Variable
 import org.preesm.commons.exceptions.PreesmRuntimeException
-import org.preesm.codegen.model.Block
-import java.util.Arrays
-import org.preesm.commons.files.URLResolver
-import org.preesm.codegen.xtend.CodegenPlugin
-import java.io.IOException
-import org.apache.velocity.app.VelocityEngine
+import org.preesm.commons.files.PreesmResourcesHelper
 import org.preesm.model.pisdf.util.CHeaderUsedLocator
-import org.apache.velocity.VelocityContext
-import java.net.URL
-import java.io.InputStreamReader
-import java.io.StringWriter
-import java.util.Collection
-import java.util.LinkedHashMap
-import org.preesm.codegen.model.DistributedMemoryCommunication
-import org.preesm.codegen.model.PapifyFunctionCall
-import org.preesm.codegen.model.CodeElt
-import org.eclipse.emf.common.util.EList
-import java.util.LinkedHashSet
-import java.util.Set
-import org.preesm.codegen.model.PapifyType
 
 class MPPA2ExplicitPrinter extends CPrinter {
 
@@ -693,13 +692,13 @@ class MPPA2ExplicitPrinter extends CPrinter {
 	    context.put("CONSTANTS", constants);
 
 	    // 3- init template reader
-	    val String templateLocalURL = "templates/mppa2Explicit/preesm_gen.h";
-	    val URL mainTemplate = URLResolver.findFirstInBundleList(templateLocalURL, CodegenPlugin.BUNDLE_ID);
+	    val String templateLocalPath = "templates/mppa2Explicit/preesm_gen.h";
+	    val URL mainTemplate = PreesmResourcesHelper.instance.resolve(templateLocalPath, this.class);
 	    var InputStreamReader reader = null;
 	    try {
 	      reader = new InputStreamReader(mainTemplate.openStream());
 	    } catch (IOException e) {
-	      throw new PreesmRuntimeException("Could not locate main template [" + templateLocalURL + "].", e);
+	      throw new PreesmRuntimeException("Could not locate main template [" + templateLocalPath + "].", e);
 	    }
 
 	    // 4- init output writer
@@ -728,7 +727,7 @@ class MPPA2ExplicitPrinter extends CPrinter {
 						"clock.h"
 					]);
 		files.forEach[it | try {
-			result.put(it, URLResolver.readURLInBundleList(stdFilesFolder + it, CodegenPlugin.BUNDLE_ID))
+			result.put(it, PreesmResourcesHelper.instance.read(stdFilesFolder + it, this.class))
 		} catch (IOException exc) {
 			throw new PreesmRuntimeException("Could not generated content for " + it, exc)
 		}]

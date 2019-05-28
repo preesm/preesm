@@ -40,13 +40,11 @@ package org.preesm.ui.scenario.editor.papify;
 import java.net.URL;
 import java.util.LinkedHashMap;
 import java.util.Map;
-import org.eclipse.core.runtime.FileLocator;
-import org.eclipse.core.runtime.Path;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.swt.graphics.Image;
-import org.osgi.framework.Bundle;
-import org.osgi.framework.FrameworkUtil;
+import org.preesm.commons.files.PreesmResourcesHelper;
 import org.preesm.model.pisdf.AbstractActor;
+import org.preesm.ui.PreesmUIPlugin;
 
 // TODO: Auto-generated Javadoc
 /**
@@ -106,14 +104,12 @@ class PapifyEventListTreeElement {
     }
     this.PAPIStatuses = new LinkedHashMap<>();
 
-    final Bundle bundle = FrameworkUtil.getBundle(this.getClass());
-
-    URL url = FileLocator.find(bundle, new Path("icons/error.png"), null);
-    ImageDescriptor imageDcr = ImageDescriptor.createFromURL(url);
+    final URL errorIconURL = PreesmResourcesHelper.getInstance().resolve("icons/error.png", PreesmUIPlugin.class);
+    ImageDescriptor imageDcr = ImageDescriptor.createFromURL(errorIconURL);
     this.imageError = imageDcr.createImage();
 
-    url = FileLocator.find(bundle, new Path("icons/ok.png"), null);
-    imageDcr = ImageDescriptor.createFromURL(url);
+    final URL okIconURL = PreesmResourcesHelper.getInstance().resolve("icons/ok.png", PreesmUIPlugin.class);
+    imageDcr = ImageDescriptor.createFromURL(okIconURL);
     this.imageOk = imageDcr.createImage();
   }
 

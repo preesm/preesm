@@ -72,6 +72,8 @@ import org.preesm.algorithm.model.sdf.SDFEdge;
 import org.preesm.algorithm.model.sdf.SDFGraph;
 import org.preesm.algorithm.model.sdf.SDFVertex;
 import org.preesm.commons.exceptions.PreesmRuntimeException;
+import org.preesm.commons.files.PreesmResourcesHelper;
+import org.preesm.commons.files.URLHelper;
 import org.preesm.commons.files.URLResolver;
 import org.preesm.commons.logger.PreesmLogger;
 import org.preesm.model.scenario.types.DataType;
@@ -89,9 +91,6 @@ public class ScriptRunner {
   private static final String FORK_SCRIPT        = "fork.bsh";
   private static final String ROUNDBUFFER_SCRIPT = "roundbuffer.bsh";
   private static final String BROADCAST_SCRIPT   = "broadcast.bsh";
-
-  // Name of bundle where to look for files (allow not to search into all projects)
-  private static final String BUNDLE_ID = "org.preesm.algorithm";
 
   // Paths to the special scripts files
   private static final String JOIN        = ScriptRunner.SCRIPT_FOLDER + IPath.SEPARATOR + ScriptRunner.JOIN_SCRIPT;
@@ -310,10 +309,10 @@ public class ScriptRunner {
     // Script files already found
     final Map<String, URL> scriptFiles = new LinkedHashMap<>();
 
-    ScriptRunner.putSpecialScriptFile(specialScriptFiles, ScriptRunner.JOIN, ScriptRunner.BUNDLE_ID);
-    ScriptRunner.putSpecialScriptFile(specialScriptFiles, ScriptRunner.FORK, ScriptRunner.BUNDLE_ID);
-    ScriptRunner.putSpecialScriptFile(specialScriptFiles, ScriptRunner.ROUNDBUFFER, ScriptRunner.BUNDLE_ID);
-    ScriptRunner.putSpecialScriptFile(specialScriptFiles, ScriptRunner.BROADCAST, ScriptRunner.BUNDLE_ID);
+    ScriptRunner.putSpecialScriptFile(specialScriptFiles, ScriptRunner.JOIN);
+    ScriptRunner.putSpecialScriptFile(specialScriptFiles, ScriptRunner.FORK);
+    ScriptRunner.putSpecialScriptFile(specialScriptFiles, ScriptRunner.ROUNDBUFFER);
+    ScriptRunner.putSpecialScriptFile(specialScriptFiles, ScriptRunner.BROADCAST);
 
     // Retrieve the original sdf folder
     // Identify all actors with a memory Script
@@ -386,11 +385,10 @@ public class ScriptRunner {
   /**
    * Get the special script file at the right path and put it into the map
    */
-  private static void putSpecialScriptFile(final Map<String, URL> specialScriptFiles, final String filePath,
-      final String bundleFilter) {
-    final URL file = URLResolver.findFirstInBundleList(filePath, bundleFilter);
-    if (file != null) {
-      specialScriptFiles.put(filePath, file);
+  private static void putSpecialScriptFile(final Map<String, URL> specialScriptFiles, final String filePath) {
+    final URL url = PreesmResourcesHelper.getInstance().resolve(filePath, ScriptRunner.class);
+    if (url != null) {
+      specialScriptFiles.put(filePath, url);
     }
   }
 
@@ -1764,7 +1762,7 @@ public class ScriptRunner {
     try {
 
       // Run the script
-      final String readURL = URLResolver.readURL(script);
+      final String readURL = URLHelper.read(script);
       interpreter.eval(readURL);
 
       // Store the result if the execution was successful
