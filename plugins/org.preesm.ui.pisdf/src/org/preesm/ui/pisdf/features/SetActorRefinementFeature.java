@@ -60,7 +60,6 @@ import org.preesm.model.pisdf.header.parser.HeaderParser;
 import org.preesm.ui.pisdf.PiMMUtil;
 import org.preesm.ui.utils.FileUtils;
 
-// TODO: Auto-generated Javadoc
 /**
  * Custom Feature to set a new {@link PiSDFRefinement} of an {@link Actor}.
  *
@@ -158,7 +157,7 @@ public class SetActorRefinementFeature extends AbstractCustomFeature {
 
         final String question = "Please select a valid file\n(.idl, .h or .pi)";
         final String dialogTitle = "Select a refinement file";
-        final IPath path = askRefinement(actor, question, dialogTitle);
+        final IPath path = askRefinement(question, dialogTitle);
         if (path != null) {
           setActorRefinement(actor, path);
         }
@@ -180,7 +179,7 @@ public class SetActorRefinementFeature extends AbstractCustomFeature {
    *          the dialog title
    * @return the i path
    */
-  private IPath askRefinement(final Actor actor, final String question, final String dialogTitle) {
+  private IPath askRefinement(final String question, final String dialogTitle) {
     // Ask user for Actor name until a valid name is entered.
     // For now, authorized refinements are other PiGraphs (.pi files) and
     // .idl prototypes
@@ -188,10 +187,8 @@ public class SetActorRefinementFeature extends AbstractCustomFeature {
     fileExtensions.add("pi");
     fileExtensions.add("idl");
     fileExtensions.add("h");
-    final IPath newFilePath = FileUtils.browseFiles(PlatformUI.getWorkbench().getActiveWorkbenchWindow().getShell(),
-        dialogTitle, fileExtensions);
-
-    return newFilePath;
+    return FileUtils.browseFiles(PlatformUI.getWorkbench().getActiveWorkbenchWindow().getShell(), dialogTitle,
+        fileExtensions);
   }
 
   /**
@@ -226,7 +223,7 @@ public class SetActorRefinementFeature extends AbstractCustomFeature {
         if (!validRefinement) {
           final String message = "The .h file you selected does not contain any prototype."
               + ".\nPlease select another valid file.";
-          newFilePath = askRefinement(actor, message, dialogTitle);
+          newFilePath = askRefinement(message, dialogTitle);
 
           // If the cancel button of the dialog box was clicked
           // stop the setRefinement process.
@@ -262,7 +259,7 @@ public class SetActorRefinementFeature extends AbstractCustomFeature {
             final CHeaderRefinement newRefinement = PiMMUserFactory.instance.createCHeaderRefinement();
             newRefinement.setLoopPrototype(loopProto);
             newRefinement.setInitPrototype(initProto);
-            newRefinement.setFilePath(newFilePath);
+            newRefinement.setFilePath(newFilePath.toString());
             actor.setRefinement(newRefinement);
           }
         }
@@ -270,7 +267,7 @@ public class SetActorRefinementFeature extends AbstractCustomFeature {
         // The file is either a .pi or a .IDL file.
         validRefinement = true;
         final PiSDFRefinement createPiSDFRefinement = PiMMUserFactory.instance.createPiSDFRefinement();
-        createPiSDFRefinement.setFilePath(newFilePath);
+        createPiSDFRefinement.setFilePath(newFilePath.toString());
         actor.setRefinement(createPiSDFRefinement);
         this.hasDoneChanges = true;
       }

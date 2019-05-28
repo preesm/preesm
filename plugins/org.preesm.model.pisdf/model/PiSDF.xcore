@@ -25,13 +25,12 @@
 @Ecore(nsURI="http://org.preesm/model/pisdf")
 package org.preesm.model.pisdf
 
+import java.io.File
 import java.util.Optional
 import org.preesm.commons.exceptions.PreesmRuntimeException
 import org.preesm.model.pisdf.util.RefinementResolver
 import org.preesm.model.pisdf.expression.ExpressionEvaluator
 import org.preesm.model.pisdf.factory.PiMMUserFactory
-
-type IPath wraps org.eclipse.core.runtime.IPath
 
 // !!! This is needed as of the current versions of xcore/xtext
 // For some reason when using the default String/... (i.e. without the following)
@@ -347,7 +346,7 @@ interface RefinementContainer {
 }
 
 class Actor extends ExecutableActor, RefinementContainer, PeriodicElement {
-	IPath memoryScriptPath
+	String memoryScriptPath
 	op boolean isConfigurationActor() {
 		return configOutputPorts.map[outgoingDependencies].filter[!it.isEmpty].map[it.get(0)].map[getter].exists[true]
 	}
@@ -606,12 +605,12 @@ class ConfigOutputInterface extends InterfaceActor {
 interface Refinement {
 	refers RefinementContainer refinementContainer opposite refinement
 
-	IPath filePath
+	String filePath
 	op AbstractActor getAbstractActor() {
 		return RefinementResolver.resolveAbstractActor(this)
 	}
 	op String getFileName() {
-		return Optional.ofNullable(filePath).map[lastSegment].orElse(null)
+		return Optional.ofNullable(filePath).map[it | new File(it).getName()].orElse(null)
 	}
 	op boolean isHierarchical()
 }

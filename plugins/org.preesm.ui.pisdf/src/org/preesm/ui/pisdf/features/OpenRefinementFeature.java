@@ -37,10 +37,12 @@
  */
 package org.preesm.ui.pisdf.features;
 
+import java.util.Optional;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.IPath;
+import org.eclipse.core.runtime.Path;
 import org.eclipse.graphiti.features.IFeatureProvider;
 import org.eclipse.graphiti.features.context.ICustomContext;
 import org.eclipse.graphiti.features.custom.AbstractCustomFeature;
@@ -54,7 +56,6 @@ import org.eclipse.ui.ide.IDE;
 import org.preesm.model.pisdf.Actor;
 import org.preesm.model.pisdf.Refinement;
 
-// TODO: Auto-generated Javadoc
 /**
  * Custom feature in charge of opening an editor for the refinement of an actor.
  *
@@ -115,7 +116,8 @@ public class OpenRefinementFeature extends AbstractCustomFeature {
       final Object bo = getBusinessObjectForPictogramElement(pes[0]);
       if (bo instanceof Actor) {
         // Check if the actor has a valid refinement
-        final IPath refinementPath = ((Actor) bo).getRefinement().getFilePath();
+        final IPath refinementPath = Optional.ofNullable(((Actor) bo).getRefinement().getFilePath()).map(Path::new)
+            .orElse(null);
         if (refinementPath != null) {
           final IWorkbenchWindow dw = PlatformUI.getWorkbench().getActiveWorkbenchWindow();
 

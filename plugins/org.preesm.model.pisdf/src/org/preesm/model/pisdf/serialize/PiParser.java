@@ -42,7 +42,7 @@ package org.preesm.model.pisdf.serialize;
 import java.io.BufferedInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.logging.Level;
 import org.apache.commons.io.IOUtils;
@@ -217,7 +217,7 @@ public class PiParser {
 
     try {
       bis.mark(Integer.MAX_VALUE);
-      final String pisdfContent = IOUtils.toString(bis, Charset.forName("UTF-8"));
+      final String pisdfContent = IOUtils.toString(bis, StandardCharsets.UTF_8);
       PiSDFXSDValidator.validate(pisdfContent);
       bis.reset();
     } catch (final IOException ex) {
@@ -275,7 +275,7 @@ public class PiParser {
     final String memoryScript = PiParser.getProperty(nodeElt, PiIdentifiers.ACTOR_MEMORY_SCRIPT);
     if ((memoryScript != null) && !memoryScript.isEmpty()) {
       final IPath path = getWorkspaceRelativePathFrom(new Path(memoryScript));
-      actor.setMemoryScriptPath(path);
+      actor.setMemoryScriptPath(path.toString());
     }
 
     return actor;
@@ -325,7 +325,7 @@ public class PiParser {
                 // ignore #text and other children
             }
           }
-          hrefinement.setFilePath(path);
+          hrefinement.setFilePath(path.toString());
           actor.setRefinement(hrefinement);
           break;
         case "pi":
@@ -333,7 +333,7 @@ public class PiParser {
             throw new UnsupportedOperationException("Cannot specfiy pi refinement as delay initilization");
           }
           final PiSDFRefinement hr = PiMMUserFactory.instance.createPiSDFRefinement();
-          hr.setFilePath(path);
+          hr.setFilePath(path.toString());
           actor.setRefinement(hr);
           break;
         default:
@@ -368,7 +368,7 @@ public class PiParser {
     for (int i = 0; i < childList.getLength(); i++) {
       final Node elt = childList.item(i);
       final String eltName = elt.getNodeName();
-      if (eltName == PiIdentifiers.REFINEMENT_PARAMETER) {
+      if (PiIdentifiers.REFINEMENT_PARAMETER.equals(eltName)) {
         proto.getParameters().add(parseFunctionParameter((Element) elt));
       }
     }
@@ -662,14 +662,6 @@ public class PiParser {
     // 6. Adds Setter / Getter actors to the delay (if any)
     final String setterName = nodeElt.getAttribute(PiIdentifiers.DELAY_SETTER);
     final AbstractActor setter = (AbstractActor) graph.lookupVertex(setterName);
-    // final String getterName = nodeElt.getAttribute(PiIdentifiers.DELAY_GETTER);
-    // final AbstractActor getter = (AbstractActor) graph.lookupVertex(getterName);
-    // if ((setter == null) && !setterName.isEmpty()) {
-    // throw new PreesmRuntimeException("Delay setter vertex " + setterName + " does not exist.");
-    // }
-    // if ((getter == null) && !getterName.isEmpty()) {
-    // throw new PreesmRuntimeException("Delay getter vertex " + getterName + " does not exist.");
-    // }
 
     // 7. Add the refinement for the INIT of the delay (if it exists)
     // Any refinement is ignored if the delay is already connected to a setter actor
@@ -714,8 +706,6 @@ public class PiParser {
     // document
     final Element graphElt = (Element) graphElts.item(0);
 
-    // TODO parseGraphProperties() of the graph
-
     // Parse the elements of the graph
     final NodeList childList = graphElt.getChildNodes();
     for (int i = 0; i < childList.getLength(); i++) {
@@ -726,8 +716,6 @@ public class PiParser {
       switch (eltName) {
         case PiIdentifiers.DATA:
           // Properties of the Graph.
-          // TODO transfer this code in a separate function
-          // parseGraphProperties()
           final String keyName = elt.getAttributes().getNamedItem(PiIdentifiers.DATA_KEY).getNodeValue();
           final String keyValue = elt.getTextContent();
           if (keyName.equals(PiIdentifiers.GRAPH_NAME)) {
@@ -862,11 +850,8 @@ public class PiParser {
    *          The deserialized {@link PiGraph}
    */
   protected void parsePi(final Element rootElt, final PiGraph graph) {
-    // TODO parseKeys() (Not sure if it is really necessary to do that)
-
     // Parse the graph element
     parseGraph(rootElt, graph);
-
   }
 
   /**

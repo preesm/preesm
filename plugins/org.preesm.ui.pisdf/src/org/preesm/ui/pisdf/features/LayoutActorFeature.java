@@ -39,6 +39,7 @@ package org.preesm.ui.pisdf.features;
 
 import java.util.ArrayList;
 import java.util.List;
+import org.apache.commons.io.FilenameUtils;
 import org.eclipse.emf.common.util.EList;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.graphiti.datatypes.IDimension;
@@ -435,7 +436,7 @@ public class LayoutActorFeature extends AbstractLayoutFeature {
   private void layoutActor(final Actor actor, final EList<Shape> childrenShapes, final GraphicsAlgorithm containerGa) {
     final Refinement refinement = actor.getRefinement();
     final boolean isHactor = (refinement != null) && (refinement.getFilePath() != null)
-        && refinement.getFilePath().getFileExtension().equals("pi");
+        && ("pi".equals(FilenameUtils.getExtension(refinement.getFilePath())));
 
     final IColorConstant bgColor = isHactor ? AddActorFeature.HIERARCHICAL_ACTOR_BACKGROUND
         : AddActorFeature.ACTOR_BACKGROUND;

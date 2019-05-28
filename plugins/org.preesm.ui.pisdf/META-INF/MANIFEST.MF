@@ -15,6 +15,7 @@ Require-Bundle: org.eclipse.ui.console;bundle-version="3.5.100",
  org.eclipse.emf.edit.ui,
  org.eclipse.xtend.lib,
  net.sourceforge.jexcelapi.jxl;bundle-version="2.6.10",
+ org.apache.commons.io;bundle-version="2.6.0",
  org.preesm.ui,
  org.preesm.model.pisdf,
  org.preesm.algorithm
