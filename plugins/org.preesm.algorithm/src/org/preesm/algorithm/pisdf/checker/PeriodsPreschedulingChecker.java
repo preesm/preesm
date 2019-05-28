@@ -49,6 +49,7 @@ import org.preesm.commons.doc.annotations.PreesmTask;
 import org.preesm.commons.doc.annotations.Value;
 import org.preesm.commons.exceptions.PreesmRuntimeException;
 import org.preesm.commons.logger.PreesmLogger;
+import org.preesm.commons.model.PreesmCopyTracker;
 import org.preesm.model.pisdf.AbstractActor;
 import org.preesm.model.pisdf.AbstractVertex;
 import org.preesm.model.pisdf.Actor;
@@ -135,7 +136,8 @@ public class PeriodsPreschedulingChecker extends AbstractTaskImplementation {
     Map<AbstractVertex, Long> brv = PiBRV.compute(graph, BRVMethod.LCM);
 
     for (final Entry<AbstractVertex, Long> en : brv.entrySet()) {
-      final AbstractVertex actor = en.getKey();
+      final AbstractVertex a = en.getKey();
+      AbstractVertex actor = PreesmCopyTracker.getOriginalSource(a);
       long wcetMin = Long.MAX_VALUE;
       for (final String operatorDefinitionID : scenario.getOperatorDefinitionIds()) {
         final long timing = scenario.getTimingManager().getTimingOrDefault(actor.getVertexPath(), operatorDefinitionID)

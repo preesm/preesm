@@ -71,6 +71,7 @@ import org.preesm.model.scenario.ConstraintGroup;
 import org.preesm.model.scenario.PreesmScenario;
 import org.preesm.model.scenario.RelativeConstraintManager;
 import org.preesm.model.scenario.Timing;
+import org.preesm.model.scenario.TimingManager;
 import org.preesm.model.slam.ComponentInstance;
 import org.preesm.model.slam.Design;
 import org.preesm.model.slam.component.Operator;
@@ -282,6 +283,8 @@ public class SdfToDagConverter {
     /**
      * Importing default timings
      */
+    TimingManager tm = scenario.getTimingManager();
+
     // Iterating over dag vertices
     final TopologicalDAGIterator dagiterator = new TopologicalDAGIterator(dag);
 
@@ -298,9 +301,22 @@ public class SdfToDagConverter {
       if (!special) {
         // Default timings are given
         for (final ComponentInstance op : DesignTools.getOperatorInstances(architecture)) {
-          final Timing time = new Timing(op.getComponent().getVlnv().getName(), currentVertex.getId(),
-              Timing.DEFAULT_TASK_TIME);
-          currentVertexInit.addTiming(time);
+          // info is set to the vertexPath of AbstractVertex
+          final Timing originalTiming = tm.getTimingOrDefault(currentVertex.getInfo(),
+              op.getComponent().getVlnv().getName());
+          Timing copyTiming = null;
+          if (originalTiming == tm.defaultTiming) {
+            copyTiming = new Timing(op.getComponent().getVlnv().getName(), currentVertex.getId());
+          } else {
+            if (originalTiming.isEvaluated()) {
+              copyTiming = new Timing(op.getComponent().getVlnv().getName(), currentVertex.getId(),
+                  originalTiming.getTime());
+            } else {
+              copyTiming = new Timing(op.getComponent().getVlnv().getName(), currentVertex.getId(),
+                  Timing.DEFAULT_TASK_TIME);
+            }
+          }
+          currentVertexInit.addTiming(copyTiming);
         }
       }
     }
