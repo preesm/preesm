@@ -4,6 +4,7 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
@@ -27,6 +28,17 @@ import org.eclipse.core.runtime.CoreException;
  *
  */
 public class URLHelper {
+
+  /**
+   * resolve path under baseUrl
+   */
+  public static final URL resolve(final URL baseUrl, final String path) {
+    try {
+      return baseUrl.toURI().resolve(path).toURL();
+    } catch (final MalformedURLException | URISyntaxException e) {
+      return null;
+    }
+  }
 
   /**
    * Reads the content of the given URL.
