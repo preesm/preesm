@@ -37,8 +37,10 @@ package org.preesm.model.pisdf.util;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 import org.eclipse.core.runtime.IPath;
+import org.eclipse.core.runtime.Path;
 import org.preesm.model.pisdf.CHeaderRefinement;
 import org.preesm.model.pisdf.PiGraph;
 
@@ -59,7 +61,8 @@ public class CHeaderUsedLocator {
     final List<IPath> result = new ArrayList<>();
     graph.eAllContents().forEachRemaining(element -> {
       if (element instanceof CHeaderRefinement) {
-        final IPath filePath = ((CHeaderRefinement) element).getFilePath();
+        final IPath filePath = Optional.ofNullable(((CHeaderRefinement) element).getFilePath()).map(Path::new)
+            .orElse(null);
         if (!(result.contains(filePath))) {
           result.add(filePath);
         }

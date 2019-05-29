@@ -35,6 +35,8 @@
 package org.preesm.model.pisdf.util;
 
 import java.util.List;
+import java.util.Optional;
+import org.eclipse.core.runtime.Path;
 import org.eclipse.emf.common.util.EList;
 import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.common.util.WrappedException;
@@ -74,8 +76,9 @@ public final class RefinementResolver extends PiMMSwitch<AbstractActor> {
 
   @Override
   public AbstractActor casePiSDFRefinement(final PiSDFRefinement ref) {
-    if ((ref.getFilePath() != null) && ref.getFilePath().getFileExtension().equals("pi")) {
-      final URI refinementURI = URI.createPlatformResourceURI(ref.getFilePath().makeRelative().toString(), true);
+    final Path path = Optional.ofNullable(ref.getFilePath()).map(Path::new).orElse(null);
+    if ((path != null) && path.getFileExtension().equals("pi")) {
+      final URI refinementURI = URI.createPlatformResourceURI(path.makeRelative().toString(), true);
 
       // Check if the file exists
       if (refinementURI != null) {

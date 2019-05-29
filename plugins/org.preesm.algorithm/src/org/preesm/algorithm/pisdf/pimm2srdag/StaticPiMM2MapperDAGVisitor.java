@@ -44,7 +44,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
-import org.eclipse.core.runtime.IPath;
+import org.eclipse.core.runtime.Path;
 import org.preesm.algorithm.codegen.idl.ActorPrototypes;
 import org.preesm.algorithm.codegen.idl.Prototype;
 import org.preesm.algorithm.codegen.model.CodeGenArgument;
@@ -209,7 +209,7 @@ public class StaticPiMM2MapperDAGVisitor extends PiMMSwitch<Boolean> {
     setDAGVertexPropertiesFromPiMM(actor, vertex);
     // Handle path to memory script of the vertex
     if (actor.getMemoryScriptPath() != null) {
-      vertex.setPropertyValue(SDFVertex.MEMORY_SCRIPT, actor.getMemoryScriptPath().toOSString());
+      vertex.setPropertyValue(SDFVertex.MEMORY_SCRIPT, new Path(actor.getMemoryScriptPath()).toOSString());
     }
     // Handle vertex's refinement (description of the vertex's behavior:
     // function prototypes or subgraphs)
@@ -486,7 +486,7 @@ public class StaticPiMM2MapperDAGVisitor extends PiMMSwitch<Boolean> {
 
   @Override
   public Boolean caseCHeaderRefinement(final CHeaderRefinement h) {
-    final String osStringPath = Optional.ofNullable(h.getFilePath()).map(IPath::toOSString).orElse(null);
+    final String osStringPath = Optional.ofNullable(h.getFilePath()).map(s -> new Path(s).toOSString()).orElse(null);
 
     final ActorPrototypes actorPrototype = new ActorPrototypes(osStringPath);
     if (osStringPath != null) {

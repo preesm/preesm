@@ -35,8 +35,6 @@ import org.preesm.model.slam.ParameterizedElement
 import org.preesm.model.slam.VLNVedElement
 import org.preesm.model.slam.attributes.VLNV
 
-type IPath wraps org.eclipse.core.runtime.IPath
-
 // !!! This is needed as of the current versions of xcore/xtext
 // For some reason when using the default String/... (i.e. without the following)
 // the corresponding EPackage attributes/... are resolved to type java.lang.Object

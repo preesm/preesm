@@ -40,7 +40,7 @@ package org.preesm.algorithm.pisdf.pimm2sdf;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Optional;
-import org.eclipse.core.runtime.IPath;
+import org.eclipse.core.runtime.Path;
 import org.eclipse.emf.ecore.resource.Resource;
 import org.preesm.algorithm.codegen.idl.ActorPrototypes;
 import org.preesm.algorithm.codegen.idl.Prototype;
@@ -340,7 +340,7 @@ public class StaticPiMM2SDFVisitor extends PiMMSwitch<Boolean> {
     v.setRefinement(this.currentSDFRefinement);
     // Handle path to memory script of the vertex
     if (a.getMemoryScriptPath() != null) {
-      v.setPropertyValue(SDFVertex.MEMORY_SCRIPT, a.getMemoryScriptPath().toOSString());
+      v.setPropertyValue(SDFVertex.MEMORY_SCRIPT, new Path(a.getMemoryScriptPath()).toOSString());
     }
     // Handle input parameters as instance arguments
     for (final ConfigInputPort p : a.getConfigInputPorts()) {
@@ -489,7 +489,7 @@ public class StaticPiMM2SDFVisitor extends PiMMSwitch<Boolean> {
 
   @Override
   public Boolean casePiSDFRefinement(final PiSDFRefinement r) {
-    this.currentSDFRefinement = new CodeRefinement(r.getFilePath());
+    this.currentSDFRefinement = new CodeRefinement(new Path(r.getFilePath()));
     return true;
   }
 
@@ -504,7 +504,7 @@ public class StaticPiMM2SDFVisitor extends PiMMSwitch<Boolean> {
 
   @Override
   public Boolean caseCHeaderRefinement(final CHeaderRefinement h) {
-    final String osStringPath = Optional.ofNullable(h.getFilePath()).map(IPath::toOSString).orElse(null);
+    final String osStringPath = Optional.ofNullable(h.getFilePath()).map(s -> new Path(s).toOSString()).orElse(null);
 
     final ActorPrototypes actorPrototype = new ActorPrototypes(osStringPath);
     if (osStringPath != null) {

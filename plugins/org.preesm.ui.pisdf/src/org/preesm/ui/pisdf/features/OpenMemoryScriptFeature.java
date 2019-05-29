@@ -37,10 +37,12 @@
  */
 package org.preesm.ui.pisdf.features;
 
+import java.util.Optional;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.IPath;
+import org.eclipse.core.runtime.Path;
 import org.eclipse.graphiti.features.IFeatureProvider;
 import org.eclipse.graphiti.features.context.ICustomContext;
 import org.eclipse.graphiti.features.custom.AbstractCustomFeature;
@@ -53,7 +55,6 @@ import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.ide.IDE;
 import org.preesm.model.pisdf.Actor;
 
-// TODO: Auto-generated Javadoc
 /**
  * Custom feature in charge of opening an editor for the memory script of an actor.
  *
@@ -90,7 +91,8 @@ public class OpenMemoryScriptFeature extends AbstractCustomFeature {
       final Object bo = getBusinessObjectForPictogramElement(pes[0]);
       if (bo instanceof Actor) {
         // Check if the actor has a valid memory script
-        final IPath memoryScriptPath = ((Actor) bo).getMemoryScriptPath();
+        final IPath memoryScriptPath = Optional.ofNullable(((Actor) bo).getMemoryScriptPath()).map(Path::new)
+            .orElse(null);
         if (memoryScriptPath != null) {
           return true;
         }
@@ -113,7 +115,8 @@ public class OpenMemoryScriptFeature extends AbstractCustomFeature {
       final Object bo = getBusinessObjectForPictogramElement(pes[0]);
       if (bo instanceof Actor) {
         // Check if the actor has a valid path to memory script
-        final IPath memoryScriptPath = ((Actor) bo).getMemoryScriptPath();
+        final IPath memoryScriptPath = Optional.ofNullable(((Actor) bo).getMemoryScriptPath()).map(Path::new)
+            .orElse(null);
         if (memoryScriptPath != null) {
           final IWorkbenchWindow dw = PlatformUI.getWorkbench().getActiveWorkbenchWindow();
 
