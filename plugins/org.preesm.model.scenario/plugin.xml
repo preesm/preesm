@@ -37,7 +37,16 @@
 -->
 <?eclipse version="3.4"?>
 <plugin>
-   <extension
+	<extension
          point="org.preesm.commons.plugin">
    </extension>
+
+   <extension point="org.eclipse.emf.ecore.generated_package">
+      <!-- @generated Scenario -->
+      <package
+            uri="http://org.preesm/model/scenario"
+            class="org.preesm.model.scenario.ScenarioPackage"
+            genModel="model/Scenario.xcore"/>
+   </extension>
+
 </plugin>
