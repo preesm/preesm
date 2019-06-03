@@ -164,7 +164,7 @@ public class ExcelRelativeConstraintsWriter extends ExcelWriter {
       } else if (this.scenario.isPISDFScenario()) {
         final Set<AbstractActor> vSet = provider.getSortedPISDFVertices(this.scenario);
         for (final AbstractActor vertex : vSet) {
-          vertexNames.add(vertex.getName());
+          vertexNames.add(vertex.getVertexPath());
         }
       }
 

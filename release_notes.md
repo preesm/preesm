@@ -13,9 +13,12 @@ PREESM Changelog
 * Cleanup and Fix warnings;
 * Add class for helping loading resources from bundle/code base and replace uses;
 * Paths in models (PiSDF, Slam) are now represented as Strings instead of IPath;
+* Timings now use the full vertex path instead of actor name;
 
 ### Bug fix
 * Fix #139: better error messages for Name checker
+* Fix #121
+* Fix #77
 
 
 ## Release version 3.8.1

@@ -173,7 +173,7 @@ public class CsvTimingParser {
 
     // parse timings of non hierarchical actors of currentGraph
     currentGraph.getActorsWithRefinement().stream().filter(a -> !a.isHierarchical())
-        .forEach(a -> parseTimingForVertex(timings, a.getName(), opDefIds));
+        .forEach(a -> parseTimingForVertex(timings, a.getVertexPath(), opDefIds));
     // parse timings of all direct subgraphs
     currentGraph.getChildrenGraphs().stream().forEach(g -> parseTimingsForPISDFGraph(timings, g, opDefIds));
   }

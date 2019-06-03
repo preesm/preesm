@@ -210,7 +210,7 @@ public class Timing {
       this.time = time;
     } else {
       PreesmLogger.getLogger().log(Level.WARNING,
-          "Trying to set a non strictly positive time for vertex " + this.vertexId);
+          "Trying to set a non strictly positive time for vertex " + this.vertexId + ", modified to 1.");
       this.time = 1;
     }
     this.stringValue = String.valueOf(this.time);

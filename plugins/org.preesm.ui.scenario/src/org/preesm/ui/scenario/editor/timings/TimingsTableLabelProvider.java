@@ -139,7 +139,8 @@ public class TimingsTableLabelProvider implements ITableLabelProvider, Selection
     if ((element instanceof AbstractActor) && (this.currentOpDefId != null)) {
       final AbstractActor vertex = (AbstractActor) element;
 
-      final Timing timing = this.scenario.getTimingManager().getTimingOrDefault(vertex.getName(), this.currentOpDefId);
+      final Timing timing = this.scenario.getTimingManager().getTimingOrDefault(vertex.getVertexPath(),
+          this.currentOpDefId);
       switch (columnIndex) {
         case 1:// Parsing column
           if (timing.canParse()) {
@@ -190,11 +191,12 @@ public class TimingsTableLabelProvider implements ITableLabelProvider, Selection
     if ((element instanceof AbstractActor) && (this.currentOpDefId != null)) {
       final AbstractActor vertex = (AbstractActor) element;
 
-      final Timing timing = this.scenario.getTimingManager().getTimingOrDefault(vertex.getName(), this.currentOpDefId);
+      final Timing timing = this.scenario.getTimingManager().getTimingOrDefault(vertex.getVertexPath(),
+          this.currentOpDefId);
 
       switch (columnIndex) {
         case 0:
-          return vertex.getName();
+          return vertex.getVertexPath();
         case 1: // Parsing Column
         case 2: // Evaluation Column
           return null;
@@ -280,7 +282,7 @@ public class TimingsTableLabelProvider implements ITableLabelProvider, Selection
     if (selection.getFirstElement() instanceof SDFVertex) {
       vertexName = ((SDFVertex) selection.getFirstElement()).getName();
     } else if (selection.getFirstElement() instanceof AbstractActor) {
-      vertexName = ((AbstractActor) selection.getFirstElement()).getName();
+      vertexName = ((AbstractActor) selection.getFirstElement()).getVertexPath();
     }
 
     if ((vertexName != null) && (this.currentOpDefId != null)) {
@@ -295,9 +297,8 @@ public class TimingsTableLabelProvider implements ITableLabelProvider, Selection
         final String value = dialog.getValue();
 
         this.scenario.getTimingManager().setTiming(vertexName, this.currentOpDefId, value);
-
-        this.tableViewer.refresh();
         this.propertyListener.propertyChanged(this, IEditorPart.PROP_DIRTY);
+        this.tableViewer.refresh();
       }
     }
   }

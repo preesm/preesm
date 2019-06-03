@@ -56,7 +56,7 @@ import org.preesm.model.scenario.serialize.ExcelTimingParser;
 public class TimingManager {
 
   /** Default timing when none was set. */
-  private Timing defaultTiming = null;
+  public final Timing defaultTiming;
 
   /** List of all timings. */
   private final List<Timing> timings;

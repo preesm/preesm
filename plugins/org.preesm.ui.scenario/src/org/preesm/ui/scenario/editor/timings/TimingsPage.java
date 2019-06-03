@@ -354,6 +354,7 @@ public class TimingsPage extends FormPage implements IPropertyListener {
 
     this.tableViewer = new TableViewer(tablecps,
         SWT.BORDER | SWT.H_SCROLL | SWT.V_SCROLL | SWT.MULTI | SWT.FULL_SELECTION);
+    tableViewer.setComparator(new TimingsLexicographicalComparator());
     final Table table = this.tableViewer.getTable();
     table.setLayout(new GridLayout());
     table.setLayoutData(new GridData(GridData.FILL_BOTH));
