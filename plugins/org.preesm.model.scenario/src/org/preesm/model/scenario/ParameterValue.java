@@ -36,11 +36,12 @@
  */
 package org.preesm.model.scenario;
 
+import java.util.HashMap;
 import java.util.LinkedHashSet;
+import java.util.Map;
 import java.util.Set;
-import org.nfunk.jep.JEP;
-import org.nfunk.jep.Node;
-import org.nfunk.jep.ParseException;
+import org.preesm.commons.math.ExpressionEvaluationException;
+import org.preesm.commons.math.JEPWrapper;
 import org.preesm.model.pisdf.Parameter;
 
 /**
@@ -54,17 +55,17 @@ public class ParameterValue {
    */
   public enum ParameterType {
 
-  /** The independent. */
-  // No configuration input port
-  INDEPENDENT,
+    /** The independent. */
+    // No configuration input port
+    INDEPENDENT,
 
-  /** The actor dependent. */
-  // Direct dependency from a configuration actor to this parameter
-  ACTOR_DEPENDENT,
-  // Configuration input ports, but none directly dependent from a
-  /** The parameter dependent. */
-  // configuration actor
-  PARAMETER_DEPENDENT
+    /** The actor dependent. */
+    // Direct dependency from a configuration actor to this parameter
+    ACTOR_DEPENDENT,
+    // Configuration input ports, but none directly dependent from a
+    /** The parameter dependent. */
+    // configuration actor
+    PARAMETER_DEPENDENT
   }
 
   /** Parameter for which we keep value(s). */
@@ -228,15 +229,14 @@ public class ParameterValue {
       case ACTOR_DEPENDENT:
         return !this.values.isEmpty();
       case PARAMETER_DEPENDENT:
-        final JEP jep = new JEP();
         try {
-          for (final String parameter : this.inputParameters) {
-            jep.addVariable(parameter, 1);
+          final Map<String, Integer> fakeParameterValues = new HashMap<>();
+          for (final String paramName : this.inputParameters) {
+            fakeParameterValues.put(paramName, 1);
           }
-          final Node parse = jep.parse(this.expression);
-          jep.evaluate(parse);
+          JEPWrapper.evaluate(expression, fakeParameterValues);
           return true;
-        } catch (final ParseException e) {
+        } catch (final ExpressionEvaluationException e) {
           return false;
         }
       default:
