@@ -49,7 +49,6 @@ import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.emf.ecore.EPackage;
 import org.eclipse.emf.ecore.resource.Resource;
-import org.preesm.commons.exceptions.PreesmFrameworkException;
 import org.preesm.model.pisdf.AbstractActor;
 import org.preesm.model.pisdf.PiGraph;
 import org.preesm.model.pisdf.serialize.PiParser;
@@ -121,30 +120,12 @@ public class PreesmScenario {
   }
 
   /**
-   * Checks if is PISDF scenario.
-   *
-   * @return true, if is PISDF scenario
-   */
-  public boolean isPISDFScenario() {
-    return this.algorithmURL.endsWith(".pi");
-  }
-
-  /**
-   * Checks if is IBSDF scenario.
-   *
-   * @return true, if is IBSDF scenario
-   */
-  public boolean isIBSDFScenario() {
-    return this.algorithmURL.endsWith(".graphml");
-  }
-
-  /**
    * Checks if is IBSDF scenario.
    *
    * @return true, if is IBSDF scenario
    */
   public boolean isProperlySet() {
-    final boolean hasProperAlgo = isIBSDFScenario() || isPISDFScenario();
+    final boolean hasProperAlgo = this.algorithmURL.endsWith(".pi");
     final boolean hasProperArchi = this.architectureURL.endsWith(".slam");
     return hasProperAlgo && hasProperArchi;
   }
@@ -168,13 +149,7 @@ public class PreesmScenario {
    * @return the actor names
    */
   public Set<String> getActorNames() {
-    if (isPISDFScenario()) {
-      return getPiActorNames();
-    } else if (isIBSDFScenario()) {
-      throw new PreesmFrameworkException("IBSDF is not supported anymore");
-    } else {
-      return Collections.emptySet();
-    }
+    return getPiActorNames();
   }
 
   /**
@@ -452,11 +427,7 @@ public class PreesmScenario {
     // If the algorithm changes, parameters or variables are no more valid
     // (they are set in the algorithm)
     if (algorithmChange) {
-      if (isPISDFScenario()) {
-        this.parameterValueManager.updateWith(PiParser.getPiGraphWithReconnection(this.algorithmURL));
-      } else if (isIBSDFScenario()) {
-        throw new PreesmFrameworkException("IBSDF is not supported anymore");
-      }
+      this.parameterValueManager.updateWith(PiParser.getPiGraphWithReconnection(this.algorithmURL));
     }
     // If the algorithm or the architecture changes, timings and constraints
     // are no more valid (they depends on both algo and archi)

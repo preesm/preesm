@@ -70,7 +70,6 @@ import org.preesm.model.slam.serialize.SlamParser;
 import org.preesm.model.slam.utils.DesignTools;
 import org.w3c.dom.Document;
 
-// TODO: Auto-generated Javadoc
 /**
  * Class to generate a set of PreesmScenarios from several architectures and algorithms
  *
@@ -89,27 +88,24 @@ public class ScenariosGenerator {
 
   /** The Constant archiExt. */
   // Constants for extensions and folder names
-  private static final String archiExt = "slam";
+  private static final String ARCHI_EXT = "slam";
 
   /** The Constant piAlgoExt. */
-  private static final String piAlgoExt = "pi";
-
-  /** The Constant sdfAlgoExt. */
-  private static final String sdfAlgoExt = "graphml";
+  private static final String PI_GRAPH_EXT = "pi";
 
   /** The Constant archiDirName. */
-  private static final String archiDirName = "Archi";
+  private static final String ARCHI_DIR_NAME = "Archi";
 
   /** The Constant algoDirName. */
-  private static final String algoDirName = "Algo";
+  private static final String ALGO_DIR_NAME = "Algo";
 
   /** The Constant scenarioDirName. */
-  private static final String scenarioDirName = "Scenarios";
+  private static final String SCENARIO_DIR_NAME = "Scenarios";
 
   final IFolder scenarioDir;
 
   public ScenariosGenerator(final IProject project) {
-    scenarioDir = project.getFolder(ScenariosGenerator.scenarioDirName);
+    scenarioDir = project.getFolder(ScenariosGenerator.SCENARIO_DIR_NAME);
   }
 
   /**
@@ -125,8 +121,8 @@ public class ScenariosGenerator {
    *           the file not found exception
    */
   public Set<PreesmScenario> generateScenarios(final IProject project) throws CoreException, FileNotFoundException {
-    final IFolder archiDir = project.getFolder(ScenariosGenerator.archiDirName);
-    final IFolder algoDir = project.getFolder(ScenariosGenerator.algoDirName);
+    final IFolder archiDir = project.getFolder(ScenariosGenerator.ARCHI_DIR_NAME);
+    final IFolder algoDir = project.getFolder(ScenariosGenerator.ALGO_DIR_NAME);
     return generateScenarios(project, archiDir, algoDir);
   }
 
@@ -150,7 +146,7 @@ public class ScenariosGenerator {
     for (final IResource resource : archiDir.members()) {
       if (resource instanceof IFile) {
         final IFile file = (IFile) resource;
-        if (file.getProjectRelativePath().getFileExtension().equals(ScenariosGenerator.archiExt)) {
+        if (file.getProjectRelativePath().getFileExtension().equals(ScenariosGenerator.ARCHI_EXT)) {
           archis.add(file.getFullPath().toOSString());
         }
       }
@@ -159,7 +155,7 @@ public class ScenariosGenerator {
       if (resource instanceof IFile) {
         final IFile file = (IFile) resource;
         final String ext = file.getProjectRelativePath().getFileExtension();
-        if (ext.equals(ScenariosGenerator.piAlgoExt) || ext.equals(ScenariosGenerator.sdfAlgoExt)) {
+        if (ext.equals(ScenariosGenerator.PI_GRAPH_EXT)) {
           algos.add(file.getFullPath().toOSString());
         }
       }
@@ -225,11 +221,8 @@ public class ScenariosGenerator {
     final List<String> coreIds = new ArrayList<>(DesignTools.getOperatorInstanceIds(archi));
     final List<String> comNodeIds = new ArrayList<>(DesignTools.getComNodeInstanceIds(archi));
     // Set default values for constraints, timings and simulation parameters
-    if (algoURL.endsWith(ScenariosGenerator.piAlgoExt)) {
+    if (algoURL.endsWith(ScenariosGenerator.PI_GRAPH_EXT)) {
       fillPiScenario(scenario, archi, algoURL);
-
-    } else if (algoURL.endsWith(ScenariosGenerator.sdfAlgoExt)) {
-      throw new PreesmFrameworkException("IBSDF is not supported anymore");
     }
     // Add a main core (first of the list)
     scenario.getSimulationManager().setMainOperatorName(coreIds.get(0));

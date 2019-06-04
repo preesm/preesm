@@ -40,7 +40,6 @@ import java.util.Set;
 import org.eclipse.emf.common.util.EList;
 import org.eclipse.jface.viewers.ITreeContentProvider;
 import org.eclipse.jface.viewers.Viewer;
-import org.preesm.commons.exceptions.PreesmFrameworkException;
 import org.preesm.model.pisdf.AbstractActor;
 import org.preesm.model.pisdf.Actor;
 import org.preesm.model.pisdf.BroadcastActor;
@@ -54,7 +53,6 @@ import org.preesm.model.pisdf.RoundBufferActor;
 import org.preesm.model.pisdf.serialize.PiParser;
 import org.preesm.model.scenario.PreesmScenario;
 
-// TODO: Auto-generated Javadoc
 /**
  * Provides the elements contained in the papify editor.
  *
@@ -68,15 +66,10 @@ public class PapifyEventListContentProvider2DMatrix implements ITreeContentProvi
 
   /** The current PISDF graph. */
   private PiGraph currentPISDFGraph = null;
-  /**
-   * This map keeps the VertexWithPath used as a tree content for each vertex.
-   */
 
   /**
    * This map keeps the VertexWithPath used as a tree content for each vertex.
    */
-  // private Set<PapifyEventListTreeElement> papifyEventListElements;
-  // private Map<SDFAbstractVertex, HierarchicalSDFVertex> correspondingVertexWithMap = null;
 
   /**
    * Instantiates a new preesm algorithm tree content provider for PAPIFY.
@@ -87,7 +80,6 @@ public class PapifyEventListContentProvider2DMatrix implements ITreeContentProvi
   public PapifyEventListContentProvider2DMatrix(PreesmScenario scenario) {
     super();
     this.scenario = scenario;
-    // this.papifyEventListElements = new LinkedHashSet<>();
   }
 
   /**
@@ -97,21 +89,6 @@ public class PapifyEventListContentProvider2DMatrix implements ITreeContentProvi
     this.checkStateListener = checkStateListener;
   }
 
-  /**
-   *
-   */
-  /*
-   * public void setInput() {
-   *
-   * Set<PapifyConfigActor> papiConfigs = this.scenario.getPapifyConfigManager().getPapifyConfigGroupsActors();
-   *
-   * for (PapifyConfigActor papiConfig : papiConfigs) { String actorId = papiConfig.getActorId(); for (String compName :
-   * papiConfig.getPAPIEvents().keySet()) { for (PapiEvent event : papiConfig.getPAPIEvents().get(compName)) { for
-   * (PapifyListTreeElement treeElement : this.elementList) { if (treeElement.label.equals(event.getName())) { final
-   * Map<String, PAPIStatus> statuses = treeElement.PAPIStatuses; statuses.put(actorId, PAPIStatus.YES); } } } } } for
-   * (PapifyActorListContentProvider2DMatrixES viewer : this.editingSupports) { for (PapifyListTreeElement treeElement :
-   * this.elementList) { viewer.getViewer().update(treeElement, null); } } }
-   */
   /*
    * (non-Javadoc)
    *
@@ -123,19 +100,15 @@ public class PapifyEventListContentProvider2DMatrix implements ITreeContentProvi
 
     if (parentElement instanceof PapifyEventListTreeElement) {
       Object algorithmElement = ((PapifyEventListTreeElement) parentElement).getAlgorithmElement();
-      if (this.scenario.isIBSDFScenario()) {
-        throw new PreesmFrameworkException("IBSDF is not supported anymore");
-      } else if (this.scenario.isPISDFScenario()) {
-        if (algorithmElement instanceof PiGraph) {
-          final PiGraph graph = (PiGraph) algorithmElement;
-          // Some types of vertices are ignored in the constraints view
-          table = filterPISDFChildren(graph.getActors()).toArray();
-        } else if (algorithmElement instanceof Actor) {
-          final Actor actor = (Actor) algorithmElement;
-          if (actor.isHierarchical()) {
-            final PiGraph subGraph = actor.getSubGraph();
-            table = filterPISDFChildren(subGraph.getActors()).toArray();
-          }
+      if (algorithmElement instanceof PiGraph) {
+        final PiGraph graph = (PiGraph) algorithmElement;
+        // Some types of vertices are ignored in the constraints view
+        table = filterPISDFChildren(graph.getActors()).toArray();
+      } else if (algorithmElement instanceof Actor) {
+        final Actor actor = (Actor) algorithmElement;
+        if (actor.isHierarchical()) {
+          final PiGraph subGraph = actor.getSubGraph();
+          table = filterPISDFChildren(subGraph.getActors()).toArray();
         }
       }
     }
@@ -150,7 +123,6 @@ public class PapifyEventListContentProvider2DMatrix implements ITreeContentProvi
    */
   @Override
   public Object getParent(final Object element) {
-    // TODO Auto-generated method stub
     return null;
   }
 
@@ -165,16 +137,12 @@ public class PapifyEventListContentProvider2DMatrix implements ITreeContentProvi
 
     if (element instanceof PapifyEventListTreeElement) {
       Object algorithmElement = ((PapifyEventListTreeElement) element).getAlgorithmElement();
-      if (this.scenario.isIBSDFScenario()) {
-        throw new PreesmFrameworkException("IBSDF is not supported anymore");
-      } else if (this.scenario.isPISDFScenario()) {
-        if (algorithmElement instanceof PiGraph) {
-          final PiGraph graph = (PiGraph) algorithmElement;
-          hasChildren = !graph.getActors().isEmpty();
-        } else if (algorithmElement instanceof Actor) {
-          final Actor actor = (Actor) algorithmElement;
-          hasChildren = actor.getRefinement() != null;
-        }
+      if (algorithmElement instanceof PiGraph) {
+        final PiGraph graph = (PiGraph) algorithmElement;
+        hasChildren = !graph.getActors().isEmpty();
+      } else if (algorithmElement instanceof Actor) {
+        final Actor actor = (Actor) algorithmElement;
+        hasChildren = actor.getRefinement() != null;
       }
     }
 
@@ -193,18 +161,14 @@ public class PapifyEventListContentProvider2DMatrix implements ITreeContentProvi
     if (inputElement instanceof PreesmScenario) {
       this.scenario = (PreesmScenario) inputElement;
       // Opening algorithm from file
-      if (this.scenario.isIBSDFScenario()) {
-        throw new PreesmFrameworkException("IBSDF is not supported anymore");
-      } else if (this.scenario.isPISDFScenario()) {
-        try {
-          this.currentPISDFGraph = PiParser.getPiGraphWithReconnection(this.scenario.getAlgorithmURL());
-        } catch (final Exception e) {
-          e.printStackTrace();
-        }
-        final PapifyEventListTreeElement element = new PapifyEventListTreeElement(this.currentPISDFGraph);
-        this.checkStateListener.addEventListTreeElement(element);
-        table[0] = element;
+      try {
+        this.currentPISDFGraph = PiParser.getPiGraphWithReconnection(this.scenario.getAlgorithmURL());
+      } catch (final Exception e) {
+        e.printStackTrace();
       }
+      final PapifyEventListTreeElement element = new PapifyEventListTreeElement(this.currentPISDFGraph);
+      this.checkStateListener.addEventListTreeElement(element);
+      table[0] = element;
     }
     return table;
   }
@@ -216,8 +180,7 @@ public class PapifyEventListContentProvider2DMatrix implements ITreeContentProvi
    */
   @Override
   public void dispose() {
-    // TODO Auto-generated method stub
-
+    // no behavior by default
   }
 
   /*
@@ -228,8 +191,7 @@ public class PapifyEventListContentProvider2DMatrix implements ITreeContentProvi
    */
   @Override
   public void inputChanged(final Viewer viewer, final Object oldInput, final Object newInput) {
-    // TODO Auto-generated method stub
-
+    // no behavior by default
   }
 
   /**

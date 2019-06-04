@@ -50,7 +50,6 @@ import org.eclipse.core.resources.IWorkspace;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.Path;
-import org.preesm.commons.exceptions.PreesmFrameworkException;
 import org.preesm.commons.exceptions.PreesmRuntimeException;
 import org.preesm.commons.files.WorkspaceUtils;
 import org.preesm.commons.logger.PreesmLogger;
@@ -113,15 +112,11 @@ public class ExcelConstraintsParser {
       final Set<String> missingVertices = new LinkedHashSet<>();
       final Set<String> missingOperators = new LinkedHashSet<>();
 
-      if (this.scenario.isIBSDFScenario()) {
-        throw new PreesmFrameworkException("IBSDF is not supported anymore");
-      } else if (this.scenario.isPISDFScenario()) {
-        final PiGraph currentPiGraph = PiParser.getPiGraphWithReconnection(this.scenario.getAlgorithmURL());
-        for (final AbstractActor vertex : currentPiGraph.getAllActors()) {
-          if (vertex instanceof Actor) {
-            for (final String operatorId : allOperatorIds) {
-              checkOpPiConstraint(w, operatorId, (Actor) vertex, missingVertices, missingOperators);
-            }
+      final PiGraph currentPiGraph = PiParser.getPiGraphWithReconnection(this.scenario.getAlgorithmURL());
+      for (final AbstractActor vertex : currentPiGraph.getAllActors()) {
+        if (vertex instanceof Actor) {
+          for (final String operatorId : allOperatorIds) {
+            checkOpPiConstraint(w, operatorId, (Actor) vertex, missingVertices, missingOperators);
           }
         }
       }

@@ -38,7 +38,6 @@
  */
 package org.preesm.model.scenario.serialize;
 
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.LinkedHashSet;
 import java.util.Set;
@@ -52,7 +51,6 @@ import org.eclipse.core.resources.IWorkspace;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.Path;
-import org.preesm.commons.exceptions.PreesmFrameworkException;
 import org.preesm.commons.exceptions.PreesmRuntimeException;
 import org.preesm.commons.files.WorkspaceUtils;
 import org.preesm.commons.logger.PreesmLogger;
@@ -90,7 +88,7 @@ public class ExcelTimingParser {
    * @param opDefIds
    *          the op def ids
    */
-  public void parse(final String url, final Set<String> opDefIds) throws FileNotFoundException {
+  public void parse(final String url, final Set<String> opDefIds) {
     PreesmLogger.getLogger().log(Level.INFO,
         "Importing timings from an excel sheet. Non precised timings are kept unmodified.");
 
@@ -130,16 +128,11 @@ public class ExcelTimingParser {
    *           the core exception
    */
   private void parseTimings(final Workbook w, final Set<String> opDefIds, final Set<String> missingVertices,
-      final Set<String> missingOperatorTypes) throws CoreException {
+      final Set<String> missingOperatorTypes) {
     // Depending on the type of SDF graph we process (IBSDF or PISDF), call
     // one or the other method
-    if (this.scenario.isIBSDFScenario()) {
-      throw new PreesmFrameworkException("IBSDF is not supported anymore");
-    } else if (this.scenario.isPISDFScenario()) {
-      final PiGraph currentGraph = PiParser.getPiGraphWithReconnection(this.scenario.getAlgorithmURL());
-      parseTimingsForPISDFGraph(w, currentGraph, opDefIds, missingVertices, missingOperatorTypes);
-    }
-
+    final PiGraph currentGraph = PiParser.getPiGraphWithReconnection(this.scenario.getAlgorithmURL());
+    parseTimingsForPISDFGraph(w, currentGraph, opDefIds, missingVertices, missingOperatorTypes);
   }
 
   /**

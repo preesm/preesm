@@ -53,7 +53,6 @@ import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.IPropertyListener;
 import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.eclipse.ui.forms.widgets.Section;
-import org.preesm.commons.exceptions.PreesmFrameworkException;
 import org.preesm.model.pisdf.AbstractActor;
 import org.preesm.model.pisdf.AbstractVertex;
 import org.preesm.model.pisdf.Actor;
@@ -136,18 +135,14 @@ public class ConstraintsCheckStateListener implements ISDFCheckStateListener {
     final boolean isChecked = event.getChecked();
 
     BusyIndicator.showWhile(this.section.getDisplay(), () -> {
-      if (ConstraintsCheckStateListener.this.scenario.isIBSDFScenario()) {
-        throw new PreesmFrameworkException("IBSDF is not supported anymore");
-      } else if (ConstraintsCheckStateListener.this.scenario.isPISDFScenario()) {
-        if (element instanceof PiGraph) {
-          final PiGraph graph2 = (PiGraph) element;
-          fireOnCheck(graph2, isChecked);
-          updateCheck();
-        } else if (element instanceof AbstractActor) {
-          final AbstractActor actor = (AbstractActor) element;
-          fireOnCheck(actor, isChecked);
-          updateCheck();
-        }
+      if (element instanceof PiGraph) {
+        final PiGraph graph2 = (PiGraph) element;
+        fireOnCheck(graph2, isChecked);
+        updateCheck();
+      } else if (element instanceof AbstractActor) {
+        final AbstractActor actor = (AbstractActor) element;
+        fireOnCheck(actor, isChecked);
+        updateCheck();
       }
     });
     this.propertyListener.propertyChanged(this, IEditorPart.PROP_DIRTY);
@@ -210,8 +205,7 @@ public class ConstraintsCheckStateListener implements ISDFCheckStateListener {
    */
   @Override
   public void widgetDefaultSelected(final SelectionEvent e) {
-    // TODO Auto-generated method stub
-
+    // no behavior by default
   }
 
   /**
@@ -237,11 +231,7 @@ public class ConstraintsCheckStateListener implements ISDFCheckStateListener {
    */
   public void updateCheck() {
     if (this.scenario != null) {
-      if (this.scenario.isIBSDFScenario()) {
-        throw new PreesmFrameworkException("IBSDF is not supported anymore");
-      } else if (this.scenario.isPISDFScenario()) {
-        updateCheckPISDF();
-      }
+      updateCheckPISDF();
     }
   }
 
@@ -307,6 +297,7 @@ public class ConstraintsCheckStateListener implements ISDFCheckStateListener {
 
       @Override
       public void focusLost(final FocusEvent e) {
+        // no behavior by default
       }
 
     });

@@ -81,7 +81,6 @@ import org.preesm.model.scenario.PreesmScenario;
 import org.preesm.model.scenario.types.DataType;
 import org.preesm.ui.scenario.editor.Messages;
 
-// TODO: Auto-generated Javadoc
 /**
  * This page contains parameters to influence the deployment simulator.
  *
@@ -121,8 +120,7 @@ public class SimulationPage extends FormPage implements IPropertyListener {
      */
     @Override
     public void widgetDefaultSelected(final SelectionEvent e) {
-      // TODO Auto-generated method stub
-
+      // no behavior by default
     }
 
     /*
@@ -177,19 +175,7 @@ public class SimulationPage extends FormPage implements IPropertyListener {
    */
   @Override
   protected void createFormContent(final IManagedForm managedForm) {
-    /*
-     * FormToolkit toolkit = managedForm.getToolkit(); ScrolledForm form = managedForm.getForm(); form.setBackground(new
-     * Color(null, 100,100,10)); form.setExpandHorizontal(true); form.setExpandVertical(true);
-     * form.setText("Column Object");
-     *
-     * Composite composite = form.getBody();
-     *
-     * composite.computeSize(1000, 1000); FormLayout fl = new FormLayout(); fl. composite.setLayout(fl);
-     * form.setBounds(0, 0, 1000, 1000); Rectangle r = form.getClientArea(); form.reflow(true);
-     */
-
     final ScrolledForm form = managedForm.getForm();
-    // FormToolkit toolkit = managedForm.getToolkit();
     form.setText(Messages.getString("Simulation.title"));
     final GridLayout layout = new GridLayout(2, true);
     layout.verticalSpacing = 10;
@@ -242,12 +228,10 @@ public class SimulationPage extends FormPage implements IPropertyListener {
       }
     };
 
-    if (this.scenario.isPISDFScenario()) {
-      // Number of top-level execution section, added only for PiSDF algorithms
-      createIntegerSection(managedForm, Messages.getString("Overview.simulationTitle"),
-          Messages.getString("Overview.simulationDescription"), numberOfTopExecutionsListener,
-          String.valueOf(this.scenario.getSimulationManager().getNumberOfTopExecutions()));
-    }
+    // Number of top-level execution section, added only for PiSDF algorithms
+    createIntegerSection(managedForm, Messages.getString("Overview.simulationTitle"),
+        Messages.getString("Overview.simulationDescription"), numberOfTopExecutionsListener,
+        String.valueOf(this.scenario.getSimulationManager().getNumberOfTopExecutions()));
 
     // Data type section
     createDataTypesSection(managedForm, Messages.getString("Simulation.DataTypes.title"),
@@ -437,7 +421,6 @@ public class SimulationPage extends FormPage implements IPropertyListener {
     final Table table = tableViewer.getTable();
     table.setLayout(new GridLayout());
     table.setLayoutData(new GridData(GridData.VERTICAL_ALIGN_BEGINNING));
-    // table.setSize(100, 100);
     table.setHeaderVisible(true);
     table.setLinesVisible(true);
 
@@ -591,10 +574,12 @@ public class SimulationPage extends FormPage implements IPropertyListener {
 
       @Override
       public void inputChanged(final Viewer viewer, final Object oldInput, final Object newInput) {
+        // no behavior by default
       }
 
       @Override
       public void dispose() {
+        // no behavior by default
       }
 
       @Override
@@ -621,7 +606,7 @@ public class SimulationPage extends FormPage implements IPropertyListener {
         if (parentElement instanceof List<?>) {
           return ((List<String>) parentElement).toArray();
         }
-        return null;
+        return new Object[0];
       }
     };
 

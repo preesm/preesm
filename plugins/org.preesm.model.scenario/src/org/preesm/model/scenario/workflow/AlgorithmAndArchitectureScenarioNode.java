@@ -48,7 +48,6 @@ import org.eclipse.core.runtime.Path;
 import org.preesm.commons.doc.annotations.Port;
 import org.preesm.commons.doc.annotations.PreesmTask;
 import org.preesm.commons.exceptions.PreesmException;
-import org.preesm.commons.exceptions.PreesmFrameworkException;
 import org.preesm.commons.exceptions.PreesmRuntimeException;
 import org.preesm.model.pisdf.Parameter;
 import org.preesm.model.pisdf.PiGraph;
@@ -100,13 +99,8 @@ public class AlgorithmAndArchitectureScenarioNode extends AbstractScenarioImplem
 
     try {
       scenario = scenarioParser.parseXmlFile(file);
-
-      if (scenario.isIBSDFScenario()) {
-        throw new PreesmFrameworkException("IBSDF is not supported anymore");
-      } else if (scenario.isPISDFScenario()) {
-        piAlgorithm = scenarioParser.getPiGraph();
-        applyScenarioParameterValues(scenario, piAlgorithm);
-      }
+      piAlgorithm = scenarioParser.getPiGraph();
+      applyScenarioParameterValues(scenario, piAlgorithm);
     } catch (FileNotFoundException | CoreException e) {
       throw new PreesmRuntimeException(e.getMessage());
     }

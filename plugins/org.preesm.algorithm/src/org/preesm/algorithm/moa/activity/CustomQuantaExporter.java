@@ -148,7 +148,7 @@ public class CustomQuantaExporter extends AbstractTaskImplementation {
     final Logger logger = PreesmLogger.getLogger();
 
     final String filePath = parameters.get(CustomQuantaExporter.PATH);
-    final boolean human_readable = (parameters.get(CustomQuantaExporter.HUMAN_READABLE) == "Yes");
+    final boolean humanReadable = "Yes".equalsIgnoreCase(parameters.get(CustomQuantaExporter.HUMAN_READABLE));
     // The abc contains all information on the implemented system
     final LatencyAbc abc = (LatencyAbc) inputs.get(AbstractWorkflowNodeImplementation.KEY_SDF_ABC);
 
@@ -165,7 +165,7 @@ public class CustomQuantaExporter extends AbstractTaskImplementation {
       // parsing individual quanta values from an excel file
       parseQuantaInputFile(inputXLSFile, abc.getScenario());
 
-      writeActivity(abc, filePath, workflow, human_readable);
+      writeActivity(abc, filePath, workflow, humanReadable);
     } else {
       logger.log(Level.SEVERE, "Not a valid set of ABCs for ActivityExporter.");
     }
@@ -349,13 +349,9 @@ public class CustomQuantaExporter extends AbstractTaskImplementation {
       try {
         final Workbook w = Workbook.getWorkbook(iFile.getContents());
 
-        if (scenario.isPISDFScenario()) {
-          final PiGraph currentGraph = PiParser.getPiGraphWithReconnection(scenario.getAlgorithmURL());
-          final Set<String> operators = scenario.getOperatorDefinitionIds();
-          parseQuantaForPISDFGraph(w, currentGraph, operators);
-        } else {
-          PreesmLogger.getLogger().log(Level.SEVERE, "Only PiSDF graphs are supported for custom quanta export.");
-        }
+        final PiGraph currentGraph = PiParser.getPiGraphWithReconnection(scenario.getAlgorithmURL());
+        final Set<String> operators = scenario.getOperatorDefinitionIds();
+        parseQuantaForPISDFGraph(w, currentGraph, operators);
 
         // Warnings are displayed once for each missing operator or vertex
         // in the excel sheet

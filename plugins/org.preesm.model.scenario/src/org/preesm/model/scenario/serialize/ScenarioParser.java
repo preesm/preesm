@@ -205,7 +205,7 @@ public class ScenarioParser {
     Node node = paramValuesElt.getFirstChild();
 
     final PiGraph graph = getPiGraph();
-    if ((graph != null) && this.scenario.isPISDFScenario()) {
+    if (graph != null) {
       final Set<Parameter> parameters = new LinkedHashSet<>();
       for (final Parameter p : graph.getAllParameters()) {
         if (!p.isConfigurationInterface()) {
@@ -321,17 +321,15 @@ public class ScenarioParser {
         case "PARAMETER_DEPENDENT":
         case "DEPENDENT": // Retro-compatibility
           final Set<String> inputParameters = new LinkedHashSet<>();
-          if (graph != null) {
 
-            for (final Parameter input : currentParameter.getInputParameters()) {
-              inputParameters.add(input.getName());
-            }
+          for (final Parameter input : currentParameter.getInputParameters()) {
+            inputParameters.add(input.getName());
           }
           this.scenario.getParameterValueManager().addParameterDependentParameterValue(currentParameter, stringValue,
               inputParameters, parent);
           break;
         default:
-          throw new RuntimeException("Unknown Parameter type: " + type + " for Parameter: " + name);
+          throw new PreesmRuntimeException("Unknown Parameter type: " + type + " for Parameter: " + name);
       }
     }
     return currentParameter;

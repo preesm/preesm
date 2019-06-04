@@ -43,7 +43,6 @@ import org.eclipse.core.runtime.CoreException;
 import org.eclipse.emf.common.util.EList;
 import org.eclipse.jface.viewers.IStructuredContentProvider;
 import org.eclipse.jface.viewers.Viewer;
-import org.preesm.commons.exceptions.PreesmFrameworkException;
 import org.preesm.model.pisdf.AbstractActor;
 import org.preesm.model.pisdf.Actor;
 import org.preesm.model.pisdf.PiGraph;
@@ -71,11 +70,7 @@ public class PreesmAlgorithmListContentProvider implements IStructuredContentPro
       final PreesmScenario inputScenario = (PreesmScenario) inputElement;
 
       try {
-        if (inputScenario.isIBSDFScenario()) {
-          throw new PreesmFrameworkException("IBSDF is not supported anymore");
-        } else if (inputScenario.isPISDFScenario()) {
-          elementTable = getSortedPISDFVertices(inputScenario).toArray();
-        }
+        elementTable = getSortedPISDFVertices(inputScenario).toArray();
       } catch (final Exception e) {
         e.printStackTrace();
       }
@@ -116,8 +111,7 @@ public class PreesmAlgorithmListContentProvider implements IStructuredContentPro
    */
   @Override
   public void dispose() {
-    // TODO Auto-generated method stub
-
+    // no behavior by default
   }
 
   /*
@@ -128,8 +122,7 @@ public class PreesmAlgorithmListContentProvider implements IStructuredContentPro
    */
   @Override
   public void inputChanged(final Viewer viewer, final Object oldInput, final Object newInput) {
-    // TODO Auto-generated method stub
-
+    // no behavior by default
   }
 
 }

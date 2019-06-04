@@ -58,7 +58,6 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.IPropertyListener;
 import org.eclipse.ui.forms.widgets.FormToolkit;
-import org.preesm.commons.exceptions.PreesmFrameworkException;
 import org.preesm.model.pisdf.AbstractActor;
 import org.preesm.model.pisdf.Actor;
 import org.preesm.model.pisdf.BroadcastActor;
@@ -397,17 +396,13 @@ public class PapifyCheckStateListener implements ISDFCheckStateListener {
     combo.removeAll();
     final Set<String> result = new LinkedHashSet<>();
     String finalName;
-    if (this.scenario.isPISDFScenario()) {
-      final PiGraph graph = PiParser.getPiGraphWithReconnection(this.scenario.getAlgorithmURL());
-      for (final AbstractActor vertex : graph.getAllActors()) {
-        if (!(vertex instanceof PiGraph) && !(vertex instanceof DataInputInterface)
-            && !(vertex instanceof DataOutputInterface)) {
-          finalName = vertex.getVertexPath().substring(vertex.getVertexPath().indexOf('/') + 1);
-          result.add(finalName);
-        }
+    final PiGraph graph = PiParser.getPiGraphWithReconnection(this.scenario.getAlgorithmURL());
+    for (final AbstractActor vertex : graph.getAllActors()) {
+      if (!(vertex instanceof PiGraph) && !(vertex instanceof DataInputInterface)
+          && !(vertex instanceof DataOutputInterface)) {
+        finalName = vertex.getVertexPath().substring(vertex.getVertexPath().indexOf('/') + 1);
+        result.add(finalName);
       }
-    } else if (this.scenario.isIBSDFScenario()) {
-      throw new PreesmFrameworkException("IBSDF is not supported anymore");
     }
 
     for (final String id : result) {
@@ -447,16 +442,12 @@ public class PapifyCheckStateListener implements ISDFCheckStateListener {
    */
   public boolean hasChildren(Object actorInstance) {
     boolean hasChildren = false;
-    if (this.scenario.isIBSDFScenario()) {
-      throw new PreesmFrameworkException("IBSDF is not supported anymore");
-    } else if (this.scenario.isPISDFScenario()) {
-      if (actorInstance instanceof PiGraph) {
-        final PiGraph graph = (PiGraph) actorInstance;
-        hasChildren = !graph.getActors().isEmpty();
-      } else if (actorInstance instanceof Actor) {
-        final Actor actor = (Actor) actorInstance;
-        hasChildren = actor.getRefinement() != null;
-      }
+    if (actorInstance instanceof PiGraph) {
+      final PiGraph graph = (PiGraph) actorInstance;
+      hasChildren = !graph.getActors().isEmpty();
+    } else if (actorInstance instanceof Actor) {
+      final Actor actor = (Actor) actorInstance;
+      hasChildren = actor.getRefinement() != null;
     }
     return hasChildren;
   }
@@ -466,19 +457,15 @@ public class PapifyCheckStateListener implements ISDFCheckStateListener {
    */
   public Set<String> getChildren(final Object parentElement) {
     Set<String> table = new LinkedHashSet<>();
-    if (this.scenario.isIBSDFScenario()) {
-      throw new PreesmFrameworkException("IBSDF is not supported anymore");
-    } else if (this.scenario.isPISDFScenario()) {
-      if (parentElement instanceof PiGraph) {
-        final PiGraph graph = (PiGraph) parentElement;
-        // Some types of vertices are ignored in the constraints view
-        table.addAll(filterPISDFChildren(graph.getAllActors()));
-      } else if (parentElement instanceof Actor) {
-        final Actor actor = (Actor) parentElement;
-        if (actor.isHierarchical()) {
-          final PiGraph subGraph = actor.getSubGraph();
-          table.addAll(filterPISDFChildren(subGraph.getActors()));
-        }
+    if (parentElement instanceof PiGraph) {
+      final PiGraph graph = (PiGraph) parentElement;
+      // Some types of vertices are ignored in the constraints view
+      table.addAll(filterPISDFChildren(graph.getAllActors()));
+    } else if (parentElement instanceof Actor) {
+      final Actor actor = (Actor) parentElement;
+      if (actor.isHierarchical()) {
+        final PiGraph subGraph = actor.getSubGraph();
+        table.addAll(filterPISDFChildren(subGraph.getActors()));
       }
     }
 

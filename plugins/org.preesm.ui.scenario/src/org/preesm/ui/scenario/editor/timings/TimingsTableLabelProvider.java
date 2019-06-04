@@ -53,7 +53,6 @@ import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.IPropertyListener;
 import org.eclipse.ui.PlatformUI;
 import org.preesm.algorithm.model.sdf.SDFVertex;
-import org.preesm.commons.exceptions.PreesmFrameworkException;
 import org.preesm.commons.files.PreesmResourcesHelper;
 import org.preesm.model.pisdf.AbstractActor;
 import org.preesm.model.scenario.PreesmScenario;
@@ -119,11 +118,7 @@ public class TimingsTableLabelProvider implements ITableLabelProvider, Selection
    */
   @Override
   public Image getColumnImage(final Object element, final int columnIndex) {
-    if (this.scenario.isPISDFScenario()) {
-      return getPISDFColumnImage(element, columnIndex);
-    } else {
-      return null;
-    }
+    return getPISDFColumnImage(element, columnIndex);
   }
 
   /**
@@ -168,13 +163,7 @@ public class TimingsTableLabelProvider implements ITableLabelProvider, Selection
    */
   @Override
   public String getColumnText(final Object element, final int columnIndex) {
-    if (this.scenario.isPISDFScenario()) {
-      return getPISDFColumnText(element, columnIndex);
-    } else if (this.scenario.isIBSDFScenario()) {
-      throw new PreesmFrameworkException("ibsdf not supproted anymore");
-    } else {
-      return null;
-    }
+    return getPISDFColumnText(element, columnIndex);
   }
 
   /**

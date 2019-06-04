@@ -49,7 +49,6 @@ import org.eclipse.core.resources.IWorkspace;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.Path;
-import org.preesm.commons.exceptions.PreesmFrameworkException;
 import org.preesm.commons.files.WorkspaceUtils;
 import org.preesm.commons.logger.PreesmLogger;
 import org.preesm.model.pisdf.PiGraph;
@@ -145,17 +144,11 @@ public class CsvTimingParser {
    * @throws CoreException
    *           the core exception
    */
-  private void parseTimings(final Map<String, Map<String, String>> timings, final Set<String> opDefIds)
-      throws CoreException {
+  private void parseTimings(final Map<String, Map<String, String>> timings, final Set<String> opDefIds) {
     // Depending on the type of SDF graph we process (IBSDF or PISDF), call
     // one or the other method
-    if (this.scenario.isIBSDFScenario()) {
-      throw new PreesmFrameworkException("IBSDF is not supported anymore");
-    } else if (this.scenario.isPISDFScenario()) {
-      final PiGraph currentGraph = PiParser.getPiGraphWithReconnection(this.scenario.getAlgorithmURL());
-      parseTimingsForPISDFGraph(timings, currentGraph, opDefIds);
-    }
-
+    final PiGraph currentGraph = PiParser.getPiGraphWithReconnection(this.scenario.getAlgorithmURL());
+    parseTimingsForPISDFGraph(timings, currentGraph, opDefIds);
   }
 
   /**
