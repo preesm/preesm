@@ -59,7 +59,6 @@ import org.eclipse.emf.ecore.resource.Resource;
 import org.preesm.commons.exceptions.PreesmFrameworkException;
 import org.preesm.commons.exceptions.PreesmRuntimeException;
 import org.preesm.commons.logger.PreesmLogger;
-import org.preesm.model.pisdf.AbstractActor;
 import org.preesm.model.pisdf.Parameter;
 import org.preesm.model.pisdf.PiGraph;
 import org.preesm.model.pisdf.serialize.PiParser;
@@ -108,7 +107,6 @@ public class ScenarioParser {
    * Instantiates a new scenario parser.
    */
   public ScenarioParser() {
-
     this.scenario = new PreesmScenario();
   }
 

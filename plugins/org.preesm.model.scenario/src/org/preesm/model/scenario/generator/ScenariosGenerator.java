@@ -60,7 +60,6 @@ import org.preesm.model.pisdf.AbstractActor;
 import org.preesm.model.pisdf.PiGraph;
 import org.preesm.model.pisdf.serialize.PiParser;
 import org.preesm.model.scenario.PreesmScenario;
-import org.preesm.model.scenario.ScenarioUtils;
 import org.preesm.model.scenario.Timing;
 import org.preesm.model.scenario.serialize.ScenarioWriter;
 import org.preesm.model.scenario.types.DataType;
@@ -106,6 +105,12 @@ public class ScenariosGenerator {
 
   /** The Constant scenarioDirName. */
   private static final String scenarioDirName = "Scenarios";
+
+  final IFolder scenarioDir;
+
+  public ScenariosGenerator(final IProject project) {
+    scenarioDir = project.getFolder(ScenariosGenerator.scenarioDirName);
+  }
 
   /**
    * Generates a set of PreesmScenario from an IProject.
@@ -289,27 +294,7 @@ public class ScenariosGenerator {
    *           the file not found exception
    */
   public void generateAndSaveScenarios(final IProject project) throws CoreException, FileNotFoundException {
-    final IFolder scenarioDir = project.getFolder(ScenariosGenerator.scenarioDirName);
     saveScenarios(generateScenarios(project), scenarioDir);
-  }
-
-  /**
-   * Generate a set of PreesmScenarios from an architecture folder and from an algorithm folder.
-   *
-   * @param archiDir
-   *          the IFolder containing the architectures
-   * @param algoDir
-   *          the IFolder containing the algorithms
-   * @param scenarioDir
-   *          the IFolder where to save the generated PreesmScenarios
-   * @throws CoreException
-   *           the core exception
-   * @throws FileNotFoundException
-   *           the file not found exception
-   */
-  public void generateAndSaveScenarios(final IProject project, final IFolder archiDir, final IFolder algoDir,
-      final IFolder scenarioDir) throws CoreException, FileNotFoundException {
-    saveScenarios(generateScenarios(project, archiDir, algoDir), scenarioDir);
   }
 
   /**
@@ -324,7 +309,7 @@ public class ScenariosGenerator {
    */
   private void saveScenarios(final Set<PreesmScenario> scenarios, final IFolder scenarioDir) throws CoreException {
     for (final PreesmScenario scenario : scenarios) {
-      final String scenarioName = ScenarioUtils.getScenarioName(scenario);
+      final String scenarioName = scenario.getScenarioName();
       final IPath scenarioPath = new Path(scenarioName).addFileExtension("scenario");
       final IFile scenarioFile = scenarioDir.getFile(scenarioPath);
       if (!scenarioFile.exists()) {

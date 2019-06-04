@@ -45,6 +45,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import org.eclipse.core.runtime.CoreException;
+import org.eclipse.core.runtime.IPath;
+import org.eclipse.core.runtime.Path;
 import org.eclipse.emf.ecore.EPackage;
 import org.eclipse.emf.ecore.resource.Resource;
 import org.preesm.commons.exceptions.PreesmFrameworkException;
@@ -106,6 +108,7 @@ public class PreesmScenario {
 
   /**
    * Instantiates a new preesm scenario.
+   *
    */
   public PreesmScenario() {
     this.constraintgroupmanager = new ConstraintGroupManager();
@@ -144,6 +147,19 @@ public class PreesmScenario {
     final boolean hasProperAlgo = isIBSDFScenario() || isPISDFScenario();
     final boolean hasProperArchi = this.architectureURL.endsWith(".slam");
     return hasProperAlgo && hasProperArchi;
+  }
+
+  /**
+   * Util method generating a name for a given PreesmSceario from its architecture and algorithm.
+   *
+   * @return the scenario name
+   */
+  public String getScenarioName() {
+    final IPath algoPath = new Path(this.getAlgorithmURL()).removeFileExtension();
+    final String algoName = algoPath.lastSegment();
+    final IPath archiPath = new Path(this.getArchitectureURL()).removeFileExtension();
+    final String archiName = archiPath.lastSegment();
+    return algoName + "_" + archiName;
   }
 
   /**

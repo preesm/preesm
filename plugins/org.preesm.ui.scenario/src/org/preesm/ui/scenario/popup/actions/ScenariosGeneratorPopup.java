@@ -62,12 +62,12 @@ public class ScenariosGeneratorPopup extends AbstractHandler {
    */
   @Override
   public Object execute(final ExecutionEvent event) throws ExecutionException {
-    final ScenariosGenerator generator = new ScenariosGenerator();
     try {
       // Get the selected IProject
       final IWorkbenchPage page = PreesmUIPlugin.getDefault().getWorkbench().getActiveWorkbenchWindow().getActivePage();
       final TreeSelection selection = (TreeSelection) page.getSelection();
       final IProject project = (IProject) selection.getFirstElement();
+      final ScenariosGenerator generator = new ScenariosGenerator(project);
       // If it is a Preesm project, generate the PreesmScenarios from the
       // content of the Algo and Archi folders
       if (project.hasNature(PreesmProjectNature.ID)) {
