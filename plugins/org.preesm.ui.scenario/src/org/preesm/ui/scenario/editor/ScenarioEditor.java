@@ -114,7 +114,7 @@ public class ScenarioEditor extends SharedHeaderFormEditor implements IPropertyL
     }
 
     if (this.scenarioFile != null) {
-      this.scenario = new PreesmScenario();
+      this.scenario = null;
       final ScenarioParser parser = new ScenarioParser();
       try {
         this.scenario = parser.parseXmlFile(this.scenarioFile);
