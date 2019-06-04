@@ -344,7 +344,7 @@ public class IPXACTDesignParser extends IPXACTParser {
 
           // A design shares its component holder with its
           // subdesigns
-          subDesign.setPath(refinementStringPath);
+          subDesign.setUrl(refinementStringPath);
           component.getRefinements().add(subDesign);
         }
       }

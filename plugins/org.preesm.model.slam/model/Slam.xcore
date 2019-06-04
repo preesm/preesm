@@ -49,11 +49,15 @@ type double wraps double
 
 
 class Design extends VLNVedElement , ParameterizedElement {
+
+	// URL to the file where this graph is saved
+	String url
+
 	contains unordered ComponentInstance[] componentInstances keys instanceName
 	contains Link[] links
 	contains HierarchyPort[] hierarchyPorts
 	container Component refined opposite refinements
-	String path
+
 	refers ComponentHolder componentHolder
 
 	op boolean containsComponentInstance(String name) {

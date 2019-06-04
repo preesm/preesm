@@ -138,12 +138,11 @@ public class PiParser {
     try {
       ressource = resourceSet.getResource(uri, true);
       pigraph = (PiGraph) (ressource.getContents().get(0));
-
+      pigraph.setUrl(algorithmURL);
     } catch (final WrappedException e) {
       final String message = "The algorithm file \"" + uri + "\" specified by the scenario does not exist any more.";
       PreesmLogger.getLogger().log(Level.WARNING, message);
     }
-
     return pigraph;
   }
 

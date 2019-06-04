@@ -39,7 +39,7 @@ public class SlamParser {
       final String message = "The algorithm file \"" + uri + "\" specified by the scenario does not exist any more.";
       PreesmLogger.getLogger().log(Level.WARNING, message);
     }
-
+    slamDesign.setUrl(url);
     return slamDesign;
   }
 }

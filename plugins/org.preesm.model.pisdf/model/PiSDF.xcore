@@ -208,6 +208,9 @@ abstract class AbstractActor extends Configurable {
 
 class PiGraph extends AbstractActor, Graph {
 
+	// URL to the file where this graph is saved
+	String url
+
 	op boolean isLocallyStatic() {
 		// a PiGraph is static if all the parameters it contains are static
 		// and if the input setters on its config interfaces are static
