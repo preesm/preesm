@@ -212,9 +212,8 @@ public class SpiderCodegen {
         if (this.constraints.get(aa) == null) {
           this.constraints.put(aa, new LinkedHashSet<String>());
         }
-        for (final String core : cg.getOperatorIds()) {
-          this.constraints.get(aa).add(core);
-        }
+        final String core = cg.getOperatorId();
+        this.constraints.get(aa).add(core);
       }
     }
 

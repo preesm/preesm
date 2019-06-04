@@ -60,6 +60,7 @@ import org.preesm.model.pisdf.Actor;
 import org.preesm.model.pisdf.PiGraph;
 import org.preesm.model.pisdf.util.ActorPath;
 import org.preesm.model.scenario.ConstraintGroup;
+import org.preesm.model.scenario.ConstraintGroupManager;
 import org.preesm.model.scenario.PreesmScenario;
 import org.preesm.ui.scenario.editor.ISDFCheckStateListener;
 import org.preesm.ui.scenario.editor.Messages;
@@ -252,16 +253,15 @@ public class ConstraintsCheckStateListener implements ISDFCheckStateListener {
     if ((this.currentOpId != null) && (currentGraph != null)) {
       final Set<AbstractVertex> cgSet = new LinkedHashSet<>();
 
-      for (final ConstraintGroup cg : this.scenario.getConstraintGroupManager()
-          .getOpConstraintGroups(this.currentOpId)) {
+      final ConstraintGroupManager constraintGroupManager = this.scenario.getConstraintGroupManager();
+      final ConstraintGroup cg = constraintGroupManager.getOpConstraintGroups(this.currentOpId);
 
-        // Retrieves the elements in the tree that have the same name as
-        // the ones to select in the constraint group
-        for (final String vertexId : cg.getVertexPaths()) {
-          final AbstractVertex v = ActorPath.lookup(currentGraph, vertexId);
-          if (v != null) {
-            cgSet.add(v);
-          }
+      // Retrieves the elements in the tree that have the same name as
+      // the ones to select in the constraint group
+      for (final String vertexId : cg.getVertexPaths()) {
+        final AbstractVertex v = ActorPath.lookup(currentGraph, vertexId);
+        if (v != null) {
+          cgSet.add(v);
         }
       }
 
