@@ -54,12 +54,8 @@ import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.runtime.CoreException;
-import org.eclipse.emf.common.util.URI;
-import org.eclipse.emf.common.util.WrappedException;
 import org.eclipse.emf.ecore.EPackage;
 import org.eclipse.emf.ecore.resource.Resource;
-import org.eclipse.emf.ecore.resource.ResourceSet;
-import org.eclipse.emf.ecore.resource.impl.ResourceSetImpl;
 import org.preesm.commons.exceptions.PreesmFrameworkException;
 import org.preesm.commons.exceptions.PreesmRuntimeException;
 import org.preesm.commons.logger.PreesmLogger;
@@ -85,6 +81,7 @@ import org.preesm.model.scenario.types.VertexType;
 import org.preesm.model.slam.Design;
 import org.preesm.model.slam.SlamPackage;
 import org.preesm.model.slam.serialize.IPXACTResourceFactoryImpl;
+import org.preesm.model.slam.serialize.SlamParser;
 import org.preesm.model.slam.utils.DesignTools;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -104,8 +101,8 @@ public class ScenarioParser {
   /** scenario being retrieved. */
   private PreesmScenario scenario = null;
 
-  /** The algo pi. */
-  private PiGraph algoPi = null;
+  private PiGraph algoPi     = null;
+  private Design  slamDesign = null;
 
   /**
    * Instantiates a new scenario parser.
@@ -239,7 +236,9 @@ public class ScenarioParser {
     }
   }
 
-  private PiGraph getPiGraph() {
+  /**
+   */
+  public PiGraph getPiGraph() {
     final PiGraph piGraph;
     if (this.algoPi != null) {
       piGraph = this.algoPi;
@@ -252,6 +251,23 @@ public class ScenarioParser {
       }
     }
     return piGraph;
+  }
+
+  /**
+   */
+  public Design getDesign() {
+    final Design design;
+    if (this.slamDesign != null) {
+      design = this.slamDesign;
+    } else {
+      if (this.scenario == null) {
+        design = null;
+      } else {
+        final String archiURL = this.scenario.getArchitectureURL();
+        design = SlamParser.parseSlamDesign(archiURL);
+      }
+    }
+    return design;
   }
 
   /**
@@ -508,40 +524,12 @@ public class ScenarioParser {
       }
 
       // Extract the root object from the resource.
-      final Design design = ScenarioParser.parseSlamDesign(url);
+      final Design design = getDesign();
 
       this.scenario.setOperatorIds(DesignTools.getOperatorInstanceIds(design));
       this.scenario.setComNodeIds(DesignTools.getComNodeInstanceIds(design));
       this.scenario.setOperatorDefinitionIds(DesignTools.getOperatorComponentIds(design));
     }
-  }
-
-  /**
-   * Parses the slam design.
-   *
-   * @param url
-   *          the url
-   * @return the design
-   */
-  public static Design parseSlamDesign(final String url) {
-
-    Design slamDesign = null;
-    final ResourceSet resourceSet = new ResourceSetImpl();
-
-    final URI uri = URI.createPlatformResourceURI(url, true);
-    if ((uri.fileExtension() == null) || !uri.fileExtension().contentEquals("slam")) {
-      throw new PreesmRuntimeException("Expecting .slam file");
-    }
-    final Resource ressource;
-    try {
-      ressource = resourceSet.getResource(uri, true);
-      slamDesign = (Design) (ressource.getContents().get(0));
-    } catch (final WrappedException e) {
-      final String message = "The algorithm file \"" + uri + "\" specified by the scenario does not exist any more.";
-      PreesmLogger.getLogger().log(Level.WARNING, message);
-    }
-
-    return slamDesign;
   }
 
   /**
@@ -924,22 +912,6 @@ public class ScenarioParser {
       result = ActorPath.lookup(this.algoPi, path);
     }
     return result;
-  }
-
-  /**
-   * Returns the name of an actor (either SDFAbstractVertex from SDFGraph or AbstractActor from PiGraph) from the path
-   * in its container graph.
-   *
-   * @param path
-   *          the path to the actor, where its segment is the name of an actor and separators are "/"
-   * @return the name of the wanted actor, if we found it
-   */
-  private String getActorNameFromPath(final String path) {
-    final Object actor = getActorFromPath(path);
-    if (actor instanceof AbstractActor) {
-      return ((AbstractActor) actor).getName();
-    }
-    return null;
   }
 
   /**

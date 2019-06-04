@@ -52,7 +52,6 @@ import org.preesm.commons.exceptions.PreesmFrameworkException;
 import org.preesm.commons.exceptions.PreesmRuntimeException;
 import org.preesm.model.pisdf.Parameter;
 import org.preesm.model.pisdf.PiGraph;
-import org.preesm.model.pisdf.serialize.PiParser;
 import org.preesm.model.scenario.ParameterValue;
 import org.preesm.model.scenario.PreesmScenario;
 import org.preesm.model.scenario.serialize.ScenarioParser;
@@ -101,11 +100,11 @@ public class AlgorithmAndArchitectureScenarioNode extends AbstractScenarioImplem
 
     try {
       scenario = scenarioParser.parseXmlFile(file);
-      final String url = scenario.getAlgorithmURL();
+
       if (scenario.isIBSDFScenario()) {
         throw new PreesmFrameworkException("IBSDF is not supported anymore");
       } else if (scenario.isPISDFScenario()) {
-        piAlgorithm = PiParser.getPiGraphWithReconnection(url);
+        piAlgorithm = scenarioParser.getPiGraph();
         applyScenarioParameterValues(scenario, piAlgorithm);
       }
     } catch (FileNotFoundException | CoreException e) {
@@ -113,7 +112,7 @@ public class AlgorithmAndArchitectureScenarioNode extends AbstractScenarioImplem
     }
 
     // Retrieving the architecture
-    final Design slamDesign = ScenarioParser.parseSlamDesign(scenario.getArchitectureURL());
+    final Design slamDesign = scenarioParser.getDesign();
 
     outputs.put(AbstractWorkflowNodeImplementation.KEY_SCENARIO, scenario);
     outputs.put(AbstractWorkflowNodeImplementation.KEY_PI_GRAPH, piAlgorithm);

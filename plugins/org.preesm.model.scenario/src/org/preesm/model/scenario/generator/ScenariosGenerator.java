@@ -62,12 +62,12 @@ import org.preesm.model.pisdf.serialize.PiParser;
 import org.preesm.model.scenario.PreesmScenario;
 import org.preesm.model.scenario.ScenarioUtils;
 import org.preesm.model.scenario.Timing;
-import org.preesm.model.scenario.serialize.ScenarioParser;
 import org.preesm.model.scenario.serialize.ScenarioWriter;
 import org.preesm.model.scenario.types.DataType;
 import org.preesm.model.slam.Design;
 import org.preesm.model.slam.SlamPackage;
 import org.preesm.model.slam.serialize.IPXACTResourceFactoryImpl;
+import org.preesm.model.slam.serialize.SlamParser;
 import org.preesm.model.slam.utils.DesignTools;
 import org.w3c.dom.Document;
 
@@ -213,9 +213,9 @@ public class ScenariosGenerator {
       EPackage.Registry.INSTANCE.put(SlamPackage.eNS_URI, SlamPackage.eINSTANCE);
     }
     // Set algorithm and architecture
-    final Design archi = ScenarioParser.parseSlamDesign(archiURL);
     scenario.setArchitectureURL(archiURL);
 
+    final Design archi = SlamParser.parseSlamDesign(archiURL);
     // Get com nodes and cores names
     final List<String> coreIds = new ArrayList<>(DesignTools.getOperatorInstanceIds(archi));
     final List<String> comNodeIds = new ArrayList<>(DesignTools.getComNodeInstanceIds(archi));
