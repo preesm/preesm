@@ -449,11 +449,10 @@ public class ScenarioWriter {
     final Element constraintGroupElt = this.dom.createElement("constraintGroup");
     parent.appendChild(constraintGroupElt);
 
-    for (final String opId : cst.getOperatorIds()) {
-      final Element opdefelt = this.dom.createElement("operator");
-      constraintGroupElt.appendChild(opdefelt);
-      opdefelt.setAttribute("name", opId);
-    }
+    final String opId = cst.getOperatorId();
+    final Element opdefelt = this.dom.createElement("operator");
+    constraintGroupElt.appendChild(opdefelt);
+    opdefelt.setAttribute("name", opId);
 
     for (final String vtxId : cst.getVertexPaths()) {
       final Element vtxelt = this.dom.createElement(VertexType.TYPE_TASK);

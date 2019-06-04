@@ -413,21 +413,20 @@ public class SdfToDagConverter {
 
         if (sdfVertexIds.contains(lookingFor)) {
 
-          for (final String opId : cg.getOperatorIds()) {
-            final ComponentInstance currentIOp = DesignTools.getComponentInstance(architecture, opId);
-            if (currentIOp.getComponent() instanceof Operator) {
+          final String opId = cg.getOperatorId();
+          final ComponentInstance currentIOp = DesignTools.getComponentInstance(architecture, opId);
+          if (currentIOp.getComponent() instanceof Operator) {
 
-              if (!mv.getInit().isMapable(currentIOp)) {
+            if (!mv.getInit().isMapable(currentIOp)) {
 
-                mv.getInit().addOperator(currentIOp);
+              mv.getInit().addOperator(currentIOp);
 
-                // Initializes a default timing that may be erased
-                // when timings are imported
-                final Timing newTiming = new Timing(currentIOp.getComponent().getVlnv().getName(), mv.getName());
-                mv.getInit().addTiming(newTiming);
-              }
-
+              // Initializes a default timing that may be erased
+              // when timings are imported
+              final Timing newTiming = new Timing(currentIOp.getComponent().getVlnv().getName(), mv.getName());
+              mv.getInit().addTiming(newTiming);
             }
+
           }
         }
       }

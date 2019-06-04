@@ -50,7 +50,7 @@ import java.util.Set;
 public class ConstraintGroup {
 
   /** The set of processing units available for the constraint group. */
-  private final Set<String> operatorIds;
+  private final String operatorId;
 
   /** The set of graphs belonging to the constraint group. */
   private final Set<String> actorsPaths;
@@ -58,22 +58,9 @@ public class ConstraintGroup {
   /**
    * Instantiates a new constraint group.
    */
-  public ConstraintGroup() {
-    this.operatorIds = new LinkedHashSet<>();
+  public ConstraintGroup(final String opId) {
+    this.operatorId = opId;
     this.actorsPaths = new LinkedHashSet<>();
-
-  }
-
-  /**
-   * Adds the operator id.
-   *
-   * @param opId
-   *          the op id
-   */
-  public void addOperatorId(final String opId) {
-    if (!hasOperatorId(opId)) {
-      this.operatorIds.add(opId);
-    }
 
   }
 
@@ -120,8 +107,8 @@ public class ConstraintGroup {
    *
    * @return the operator ids
    */
-  public Set<String> getOperatorIds() {
-    return new LinkedHashSet<>(this.operatorIds);
+  public String getOperatorId() {
+    return this.operatorId;
   }
 
   /**
@@ -141,14 +128,7 @@ public class ConstraintGroup {
    * @return true, if successful
    */
   public boolean hasOperatorId(final String operatorId) {
-
-    for (final String opId : this.operatorIds) {
-      if (opId.equals(operatorId)) {
-        return true;
-      }
-    }
-
-    return false;
+    return this.getOperatorId().equals(operatorId);
   }
 
   /**
@@ -159,30 +139,12 @@ public class ConstraintGroup {
    * @return true, if successful
    */
   public boolean hasVertexPath(final String vertexInfo) {
-
     for (final String vId : this.actorsPaths) {
       if (vId.equals(vertexInfo)) {
         return true;
       }
     }
-
     return false;
-  }
-
-  /**
-   * Removes the operator id.
-   *
-   * @param operatorId
-   *          the operator id
-   */
-  public void removeOperatorId(final String operatorId) {
-    final Iterator<String> it = this.operatorIds.iterator();
-    while (it.hasNext()) {
-      final String currentopId = it.next();
-      if (currentopId.equals(operatorId)) {
-        it.remove();
-      }
-    }
   }
 
   /**
@@ -210,7 +172,7 @@ public class ConstraintGroup {
   @Override
   public String toString() {
     String s = "<";
-    s += this.operatorIds.toString();
+    s += this.operatorId + " - ";
     s += this.actorsPaths.toString();
     s += ">";
 

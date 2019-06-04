@@ -580,12 +580,11 @@ public class ScenarioParser {
    * @return the constraint group
    */
   private ConstraintGroup getConstraintGroup(final Element cstGroupElt) {
-
-    final ConstraintGroup cg = new ConstraintGroup();
+    String opId = null;
+    final Set<String> paths = new LinkedHashSet<>();
 
     if (this.algoPi != null) {
       Node node = cstGroupElt.getFirstChild();
-
       while (node != null) {
         if (node instanceof Element) {
           final Element elt = (Element) node;
@@ -593,19 +592,20 @@ public class ScenarioParser {
           final String name = elt.getAttribute("name");
           if (type.equals(VertexType.TYPE_TASK)) {
             if (getActorFromPath(name) != null) {
-              cg.addActorPath(name);
+              paths.add(name);
             }
           } else if (type.equals("operator") && (this.scenario.getOperatorIds() != null)) {
             if (this.scenario.getOperatorIds().contains(name)) {
-              cg.addOperatorId(name);
+              opId = name;
             }
           }
         }
         node = node.getNextSibling();
       }
-      return cg;
     }
 
+    final ConstraintGroup cg = new ConstraintGroup(opId);
+    cg.addVertexPaths(paths);
     return cg;
   }
 

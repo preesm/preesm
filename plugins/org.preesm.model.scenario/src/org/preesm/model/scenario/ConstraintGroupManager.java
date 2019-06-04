@@ -87,16 +87,13 @@ public class ConstraintGroupManager {
    */
   public void addConstraint(final String opId, final AbstractActor vertex) {
 
-    final Set<ConstraintGroup> cgSet = getOpConstraintGroups(opId);
+    ConstraintGroup cg = getOpConstraintGroups(opId);
 
-    if (cgSet.isEmpty()) {
-      final ConstraintGroup cg = new ConstraintGroup();
-      cg.addOperatorId(opId);
-      cg.addActorPath(vertex.getVertexPath());
+    if (cg == null) {
+      cg = new ConstraintGroup(opId);
       this.constraintgroups.add(cg);
-    } else {
-      ((ConstraintGroup) cgSet.toArray()[0]).addActorPath(vertex.getVertexPath());
     }
+    cg.addActorPath(vertex.getVertexPath());
   }
 
   /**
@@ -109,16 +106,13 @@ public class ConstraintGroupManager {
    */
   public void addConstraints(final String opId, final Set<String> vertexSet) {
 
-    final Set<ConstraintGroup> cgSet = getOpConstraintGroups(opId);
+    ConstraintGroup cg = getOpConstraintGroups(opId);
 
-    if (cgSet.isEmpty()) {
-      final ConstraintGroup cg = new ConstraintGroup();
-      cg.addOperatorId(opId);
-      cg.addVertexPaths(vertexSet);
+    if (cg == null) {
+      cg = new ConstraintGroup(opId);
       this.constraintgroups.add(cg);
-    } else {
-      ((ConstraintGroup) cgSet.toArray()[0]).addVertexPaths(vertexSet);
     }
+    cg.addVertexPaths(vertexSet);
   }
 
   /**
@@ -130,12 +124,10 @@ public class ConstraintGroupManager {
    *          the vertex
    */
   public void removeConstraint(final String opId, final AbstractActor vertex) {
-    final Set<ConstraintGroup> cgSet = getOpConstraintGroups(opId);
+    final ConstraintGroup cgSet = getOpConstraintGroups(opId);
 
-    if (!cgSet.isEmpty()) {
-      for (final ConstraintGroup cg : cgSet) {
-        cg.removeVertexPath(vertex.getVertexPath());
-      }
+    if (cgSet != null) {
+      cgSet.removeVertexPath(vertex.getVertexPath());
     }
   }
 
@@ -156,16 +148,14 @@ public class ConstraintGroupManager {
    *          the op id
    * @return the op constraint groups
    */
-  public Set<ConstraintGroup> getOpConstraintGroups(final String opId) {
-    final Set<ConstraintGroup> graphConstraintGroups = new LinkedHashSet<>();
-
+  public ConstraintGroup getOpConstraintGroups(final String opId) {
     for (final ConstraintGroup cg : this.constraintgroups) {
       if (cg.hasOperatorId(opId)) {
-        graphConstraintGroups.add(cg);
+        return cg;
       }
     }
 
-    return graphConstraintGroups;
+    return null;
   }
 
   /**
