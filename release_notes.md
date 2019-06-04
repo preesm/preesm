@@ -15,7 +15,8 @@ PREESM Changelog
 * Paths in models (PiSDF, Slam) are now represented as Strings instead of IPath;
 * Timings now use the full vertex path instead of actor name;
 * Fix parameter validity analysis: new use JEP Wrapper;
-* Change implementation of Constraint Groups in scenario;
+* Change implementation of Constraint Groups in scenario to have only one operator per group;
+* Make sure the PiGraph and SlamDesign are parsed once only per scenario node in the workflow;
 
 ### Bug fix
 * Fix #139: better error messages for Name checker
