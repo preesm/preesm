@@ -45,7 +45,6 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.LinkedHashSet;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.logging.Level;
@@ -54,8 +53,6 @@ import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.runtime.CoreException;
-import org.eclipse.emf.ecore.EPackage;
-import org.eclipse.emf.ecore.resource.Resource;
 import org.preesm.commons.exceptions.PreesmFrameworkException;
 import org.preesm.commons.exceptions.PreesmRuntimeException;
 import org.preesm.commons.logger.PreesmLogger;
@@ -78,8 +75,6 @@ import org.preesm.model.scenario.papi.PapifyConfigPE;
 import org.preesm.model.scenario.types.DataType;
 import org.preesm.model.scenario.types.VertexType;
 import org.preesm.model.slam.Design;
-import org.preesm.model.slam.SlamPackage;
-import org.preesm.model.slam.serialize.IPXACTResourceFactoryImpl;
 import org.preesm.model.slam.serialize.SlamParser;
 import org.preesm.model.slam.utils.DesignTools;
 import org.w3c.dom.Document;
@@ -433,11 +428,7 @@ public class ScenarioParser {
         if (url.length() > 0) {
           if (type.equals("algorithm")) {
             try {
-              if (url.endsWith(".graphml")) {
-                throw new PreesmFrameworkException("IBSDF is not supported anymore.");
-              } else if (url.endsWith(".pi")) {
-                this.scenario.setAlgorithm(PiParser.getPiGraphWithReconnection(url));
-              }
+              this.scenario.setAlgorithm(PiParser.getPiGraphWithReconnection(url));
             } catch (final Exception e) {
               PreesmLogger.getLogger().log(Level.WARNING, "Could not parse the algorithm: " + e.getMessage(), e);
             }
@@ -465,16 +456,6 @@ public class ScenarioParser {
    */
   private Design initializeArchitectureInformation(final String url) {
     if (url.contains(".slam")) {
-      final Map<String, Object> extToFactoryMap = Resource.Factory.Registry.INSTANCE.getExtensionToFactoryMap();
-      Object instance = extToFactoryMap.get("slam");
-      if (instance == null) {
-        instance = new IPXACTResourceFactoryImpl();
-        extToFactoryMap.put("slam", instance);
-      }
-
-      if (!EPackage.Registry.INSTANCE.containsKey(SlamPackage.eNS_URI)) {
-        EPackage.Registry.INSTANCE.put(SlamPackage.eNS_URI, SlamPackage.eINSTANCE);
-      }
 
       // Extract the root object from the resource.
       final Design design = SlamParser.parseSlamDesign(url);

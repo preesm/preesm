@@ -42,20 +42,15 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.LinkedHashSet;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.Path;
-import org.eclipse.emf.ecore.EPackage;
-import org.eclipse.emf.ecore.resource.Resource;
 import org.preesm.model.pisdf.AbstractActor;
 import org.preesm.model.pisdf.PiGraph;
 import org.preesm.model.pisdf.serialize.PiParser;
 import org.preesm.model.scenario.papi.PapifyConfigManager;
 import org.preesm.model.slam.Design;
-import org.preesm.model.slam.SlamPackage;
-import org.preesm.model.slam.serialize.IPXACTResourceFactoryImpl;
 import org.preesm.model.slam.serialize.SlamParser;
 import org.preesm.model.slam.utils.DesignTools;
 
@@ -402,17 +397,7 @@ public class PreesmScenario {
     // If the architecture changes, operator ids, operator defintion ids and
     // com node ids are no more valid (they are extracted from the
     // architecture)
-    if (archiPath != null && archiPath.endsWith(".slam")) {
-      final Map<String, Object> extToFactoryMap = Resource.Factory.Registry.INSTANCE.getExtensionToFactoryMap();
-      Object instance = extToFactoryMap.get("slam");
-      if (instance == null) {
-        instance = new IPXACTResourceFactoryImpl();
-        extToFactoryMap.put("slam", instance);
-      }
-
-      if (!EPackage.Registry.INSTANCE.containsKey(SlamPackage.eNS_URI)) {
-        EPackage.Registry.INSTANCE.put(SlamPackage.eNS_URI, SlamPackage.eINSTANCE);
-      }
+    if (archiPath != null) {
 
       // Extract the root object from the resource.
       final Design design = SlamParser.parseSlamDesign(archiPath);
