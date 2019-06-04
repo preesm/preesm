@@ -41,6 +41,7 @@ package org.preesm.model.scenario.serialize;
 
 import java.util.Map;
 import java.util.Set;
+import org.preesm.model.pisdf.PiGraph;
 import org.preesm.model.scenario.ConstraintGroup;
 import org.preesm.model.scenario.ParameterValue;
 import org.preesm.model.scenario.ParameterValueManager;
@@ -56,6 +57,7 @@ import org.preesm.model.scenario.papi.PapifyConfigManager;
 import org.preesm.model.scenario.papi.PapifyConfigPE;
 import org.preesm.model.scenario.types.DataType;
 import org.preesm.model.scenario.types.VertexType;
+import org.preesm.model.slam.Design;
 import org.w3c.dom.DOMImplementation;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -404,13 +406,19 @@ public class ScenarioWriter {
     final Element files = this.dom.createElement("files");
     parent.appendChild(files);
 
-    final Element algo = this.dom.createElement("algorithm");
-    files.appendChild(algo);
-    algo.setAttribute("url", this.scenario.getAlgorithmURL());
+    final PiGraph algorithm = this.scenario.getAlgorithm();
+    if (algorithm != null) {
+      final Element algo = this.dom.createElement("algorithm");
+      files.appendChild(algo);
+      algo.setAttribute("url", algorithm.getUrl());
+    }
 
-    final Element archi = this.dom.createElement("architecture");
-    files.appendChild(archi);
-    archi.setAttribute("url", this.scenario.getArchitectureURL());
+    final Design design = this.scenario.getDesign();
+    if (design != null) {
+      final Element archi = this.dom.createElement("architecture");
+      files.appendChild(archi);
+      archi.setAttribute("url", design.getUrl());
+    }
 
     final Element codeGenDir = this.dom.createElement("codegenDirectory");
     files.appendChild(codeGenDir);

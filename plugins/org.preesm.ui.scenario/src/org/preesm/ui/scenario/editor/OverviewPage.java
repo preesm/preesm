@@ -211,16 +211,14 @@ public class OverviewPage extends FormPage {
 
       final String path = FilenameUtils.separatorsToUnix(text.getText());
       if (type.equals(Messages.getString("Overview.algorithmFile"))) {
-        OverviewPage.this.scenario.setAlgorithmURL(path);
         try {
-          OverviewPage.this.scenario.update(true, false);
+          OverviewPage.this.scenario.update(path, null);
         } catch (PreesmException | CoreException ex) {
           ex.printStackTrace();
         }
       } else if (type.equals(Messages.getString("Overview.architectureFile"))) {
-        OverviewPage.this.scenario.setArchitectureURL(path);
         try {
-          OverviewPage.this.scenario.update(false, true);
+          OverviewPage.this.scenario.update(null, path);
         } catch (PreesmException | CoreException ex) {
           ex.printStackTrace();
         }

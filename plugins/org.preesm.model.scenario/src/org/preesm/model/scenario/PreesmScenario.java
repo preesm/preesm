@@ -66,6 +66,11 @@ import org.preesm.model.slam.utils.DesignTools;
  */
 public class PreesmScenario {
 
+  private String scenarioURL = "";
+
+  private PiGraph piGraph;
+  private Design  slamDesign;
+
   /** Manager of constraint groups. */
   private ConstraintGroupManager constraintgroupmanager = null;
 
@@ -84,12 +89,6 @@ public class PreesmScenario {
   /** Manager of parameters values for PiGraphs. */
   private ParameterValueManager parameterValueManager = null;
 
-  /** Path to the algorithm file. */
-  private String algorithmURL = "";
-
-  /** Path to the architecture file. */
-  private String architectureURL = "";
-
   /** current architecture properties. */
   private Set<String> operatorIds = null;
 
@@ -98,9 +97,6 @@ public class PreesmScenario {
 
   /** The com node ids. */
   private Set<String> comNodeIds = null;
-
-  /** Path to the scenario file. */
-  private String scenarioURL = "";
 
   /** Manager of PapifyConfig groups. */
   private PapifyConfigManager papifyconfiggroupmanager = null;
@@ -125,9 +121,17 @@ public class PreesmScenario {
    * @return true, if is IBSDF scenario
    */
   public boolean isProperlySet() {
-    final boolean hasProperAlgo = this.algorithmURL.endsWith(".pi");
-    final boolean hasProperArchi = this.architectureURL.endsWith(".slam");
+    final boolean hasProperAlgo = this.getAlgorithm() != null;
+    final boolean hasProperArchi = this.getDesign() != null;
     return hasProperAlgo && hasProperArchi;
+  }
+
+  public PiGraph getAlgorithm() {
+    return this.piGraph;
+  }
+
+  public Design getDesign() {
+    return this.slamDesign;
   }
 
   /**
@@ -159,7 +163,7 @@ public class PreesmScenario {
    */
   private Set<String> getPiActorNames() {
     final Set<String> result = new LinkedHashSet<>();
-    final PiGraph graph = PiParser.getPiGraphWithReconnection(this.algorithmURL);
+    final PiGraph graph = getAlgorithm();
     for (final AbstractActor vertex : graph.getActors()) {
       result.add(vertex.getName());
     }
@@ -199,17 +203,15 @@ public class PreesmScenario {
    * @return the algorithm URL
    */
   public String getAlgorithmURL() {
-    return this.algorithmURL;
+    if (getAlgorithm() != null) {
+      return getAlgorithm().getUrl();
+    } else {
+      return null;
+    }
   }
 
-  /**
-   * Sets the algorithm URL.
-   *
-   * @param algorithmURL
-   *          the new algorithm URL
-   */
-  public void setAlgorithmURL(final String algorithmURL) {
-    this.algorithmURL = algorithmURL;
+  public void setAlgorithm(final PiGraph algorithm) {
+    this.piGraph = algorithm;
   }
 
   /**
@@ -218,17 +220,18 @@ public class PreesmScenario {
    * @return the architecture URL
    */
   public String getArchitectureURL() {
-    return this.architectureURL;
+    if (getDesign() != null) {
+      return getDesign().getUrl();
+    } else {
+      return null;
+    }
   }
 
   /**
    * Sets the architecture URL.
-   *
-   * @param architectureURL
-   *          the new architecture URL
    */
-  public void setArchitectureURL(final String architectureURL) {
-    this.architectureURL = architectureURL;
+  public void setArchitecture(final Design design) {
+    this.slamDesign = design;
   }
 
   /**
@@ -385,9 +388,9 @@ public class PreesmScenario {
   /**
    * From PiScenario.
    *
-   * @param algorithmChange
+   * @param algoPath
    *          the algorithm change
-   * @param architectureChange
+   * @param archiPath
    *          the architecture change
    * @throws InvalidModelException
    *           the invalid model exception
@@ -395,11 +398,11 @@ public class PreesmScenario {
    *           the core exception
    */
 
-  public void update(final boolean algorithmChange, final boolean architectureChange) throws CoreException {
+  public void update(final String algoPath, final String archiPath) throws CoreException {
     // If the architecture changes, operator ids, operator defintion ids and
     // com node ids are no more valid (they are extracted from the
     // architecture)
-    if (architectureChange && this.architectureURL.endsWith(".slam")) {
+    if (archiPath != null && archiPath.endsWith(".slam")) {
       final Map<String, Object> extToFactoryMap = Resource.Factory.Registry.INSTANCE.getExtensionToFactoryMap();
       Object instance = extToFactoryMap.get("slam");
       if (instance == null) {
@@ -412,7 +415,8 @@ public class PreesmScenario {
       }
 
       // Extract the root object from the resource.
-      final Design design = SlamParser.parseSlamDesign(this.architectureURL);
+      final Design design = SlamParser.parseSlamDesign(archiPath);
+      this.slamDesign = design;
 
       getOperatorIds().clear();
       getOperatorIds().addAll(DesignTools.getOperatorInstanceIds(design));
@@ -426,12 +430,14 @@ public class PreesmScenario {
     }
     // If the algorithm changes, parameters or variables are no more valid
     // (they are set in the algorithm)
-    if (algorithmChange) {
-      this.parameterValueManager.updateWith(PiParser.getPiGraphWithReconnection(this.algorithmURL));
+    if (algoPath != null) {
+      final PiGraph newPiGraph = PiParser.getPiGraphWithReconnection(algoPath);
+      this.piGraph = newPiGraph;
+      this.parameterValueManager.updateWith(newPiGraph);
     }
     // If the algorithm or the architecture changes, timings and constraints
     // are no more valid (they depends on both algo and archi)
-    if (algorithmChange || architectureChange) {
+    if (algoPath != null || archiPath != null) {
       this.timingmanager.getTimings().clear();
       this.constraintgroupmanager.update();
       this.papifyconfiggroupmanager.update();

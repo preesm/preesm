@@ -246,12 +246,14 @@ public class ConstraintsCheckStateListener implements ISDFCheckStateListener {
       final ConstraintGroupManager constraintGroupManager = this.scenario.getConstraintGroupManager();
       final ConstraintGroup cg = constraintGroupManager.getOpConstraintGroups(this.currentOpId);
 
-      // Retrieves the elements in the tree that have the same name as
-      // the ones to select in the constraint group
-      for (final String vertexId : cg.getVertexPaths()) {
-        final AbstractVertex v = ActorPath.lookup(currentGraph, vertexId);
-        if (v != null) {
-          cgSet.add(v);
+      if (cg != null) {
+        // Retrieves the elements in the tree that have the same name as
+        // the ones to select in the constraint group
+        for (final String vertexId : cg.getVertexPaths()) {
+          final AbstractVertex v = ActorPath.lookup(currentGraph, vertexId);
+          if (v != null) {
+            cgSet.add(v);
+          }
         }
       }
 

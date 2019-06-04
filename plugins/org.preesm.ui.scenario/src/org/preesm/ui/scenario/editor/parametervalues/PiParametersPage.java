@@ -169,8 +169,9 @@ public class PiParametersPage extends FormPage implements IPropertyListener {
     this.tableViewer.getTable().setLayoutData(gd);
 
     this.section.addPaintListener(e -> {
+      // TODO XXX
       try {
-        PiParametersPage.this.scenario.update(false, false);
+        PiParametersPage.this.scenario.update(null, null);
       } catch (PreesmException | CoreException ex) {
         ex.printStackTrace();
       }

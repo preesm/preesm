@@ -99,14 +99,19 @@ public class AlgorithmAndArchitectureScenarioNode extends AbstractScenarioImplem
 
     try {
       scenario = scenarioParser.parseXmlFile(file);
-      piAlgorithm = scenarioParser.getPiGraph();
+      piAlgorithm = scenario.getAlgorithm();
       applyScenarioParameterValues(scenario, piAlgorithm);
     } catch (FileNotFoundException | CoreException e) {
       throw new PreesmRuntimeException(e.getMessage());
     }
 
     // Retrieving the architecture
-    final Design slamDesign = scenarioParser.getDesign();
+    final Design slamDesign = scenario.getDesign();
+
+    if (!scenario.isProperlySet()) {
+      throw new PreesmRuntimeException(
+          "Scenario is not complete. Please make sure PiSDF algorithm and Slam design are set properly.");
+    }
 
     outputs.put(AbstractWorkflowNodeImplementation.KEY_SCENARIO, scenario);
     outputs.put(AbstractWorkflowNodeImplementation.KEY_PI_GRAPH, piAlgorithm);

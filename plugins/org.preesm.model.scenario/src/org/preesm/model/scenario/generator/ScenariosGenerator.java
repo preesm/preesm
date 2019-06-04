@@ -214,15 +214,19 @@ public class ScenariosGenerator {
       EPackage.Registry.INSTANCE.put(SlamPackage.eNS_URI, SlamPackage.eINSTANCE);
     }
     // Set algorithm and architecture
-    scenario.setArchitectureURL(archiURL);
 
     final Design archi = SlamParser.parseSlamDesign(archiURL);
+    scenario.setArchitecture(archi);
+
+    final PiGraph piGraph = PiParser.getPiGraphWithReconnection(algoURL);
+    scenario.setAlgorithm(piGraph);
+
     // Get com nodes and cores names
     final List<String> coreIds = new ArrayList<>(DesignTools.getOperatorInstanceIds(archi));
     final List<String> comNodeIds = new ArrayList<>(DesignTools.getComNodeInstanceIds(archi));
     // Set default values for constraints, timings and simulation parameters
     if (algoURL.endsWith(ScenariosGenerator.PI_GRAPH_EXT)) {
-      fillPiScenario(scenario, archi, algoURL);
+      fillPiScenario(scenario, archi, piGraph);
     }
     // Add a main core (first of the list)
     scenario.getSimulationManager().setMainOperatorName(coreIds.get(0));
@@ -247,21 +251,20 @@ public class ScenariosGenerator {
    * @throws CoreException
    *           the core exception
    */
-  private void fillPiScenario(final PreesmScenario scenario, final Design archi, final String algoURL) {
+  private void fillPiScenario(final PreesmScenario scenario, final Design archi, final PiGraph piGraph) {
     // Get com nodes and cores names
-    scenario.setAlgorithmURL(algoURL);
-    final PiGraph algo = PiParser.getPiGraphWithReconnection(algoURL);
+    scenario.setAlgorithm(piGraph);
     final List<String> coreIds = new ArrayList<>(DesignTools.getOperatorInstanceIds(archi));
 
     // for all different type of cores
     for (final String opId : DesignTools.getOperatorComponentIds(archi)) {
-      for (final AbstractActor aa : algo.getAllActors()) {
+      for (final AbstractActor aa : piGraph.getAllActors()) {
         // Add timing: aa run on ci in 10000
         scenario.getTimingManager().addTiming(new Timing(opId, aa.getVertexPath(), 10000));
       }
     }
     for (final String coreId : coreIds) {
-      for (final AbstractActor actor : algo.getAllActors()) {
+      for (final AbstractActor actor : piGraph.getAllActors()) {
         // Add constraint: aa can be run on ci
         scenario.getConstraintGroupManager().addConstraint(coreId, actor);
       }
@@ -271,7 +274,7 @@ public class ScenariosGenerator {
     }
 
     // Fill data-types found in the algo with default value of 1 byte size
-    new PiSDFTypeGatherer().doSwitch(algo)
+    new PiSDFTypeGatherer().doSwitch(piGraph)
         .forEach(type -> scenario.getSimulationManager().putDataType(new DataType(type, 1)));
   }
 
