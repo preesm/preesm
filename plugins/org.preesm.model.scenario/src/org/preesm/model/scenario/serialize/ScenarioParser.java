@@ -53,7 +53,6 @@ import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.runtime.CoreException;
-import org.preesm.commons.exceptions.PreesmFrameworkException;
 import org.preesm.commons.exceptions.PreesmRuntimeException;
 import org.preesm.commons.logger.PreesmLogger;
 import org.preesm.model.pisdf.Parameter;
@@ -76,7 +75,6 @@ import org.preesm.model.scenario.types.DataType;
 import org.preesm.model.scenario.types.VertexType;
 import org.preesm.model.slam.Design;
 import org.preesm.model.slam.serialize.SlamParser;
-import org.preesm.model.slam.utils.DesignTools;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -455,19 +453,9 @@ public class ScenarioParser {
    *          the url
    */
   private Design initializeArchitectureInformation(final String url) {
-    if (url.contains(".slam")) {
-
-      // Extract the root object from the resource.
-      final Design design = SlamParser.parseSlamDesign(url);
-      this.scenario.setArchitecture(design);
-
-      this.scenario.setOperatorIds(DesignTools.getOperatorInstanceIds(design));
-      this.scenario.setComNodeIds(DesignTools.getComNodeInstanceIds(design));
-      this.scenario.setOperatorDefinitionIds(DesignTools.getOperatorComponentIds(design));
-      return design;
-    } else {
-      throw new PreesmFrameworkException("SLAM architecture 1.0 is no more supported. Use .slam architecture files.");
-    }
+    final Design design = SlamParser.parseSlamDesign(url);
+    this.scenario.setArchitecture(design);
+    return design;
   }
 
   /**

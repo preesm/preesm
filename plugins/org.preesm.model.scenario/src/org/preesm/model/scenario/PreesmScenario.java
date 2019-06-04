@@ -84,15 +84,6 @@ public class PreesmScenario {
   /** Manager of parameters values for PiGraphs. */
   private ParameterValueManager parameterValueManager = null;
 
-  /** current architecture properties. */
-  private Set<String> operatorIds = null;
-
-  /** The operator definition ids. */
-  private Set<String> operatorDefinitionIds = null;
-
-  /** The com node ids. */
-  private Set<String> comNodeIds = null;
-
   /** Manager of PapifyConfig groups. */
   private PapifyConfigManager papifyconfiggroupmanager = null;
 
@@ -289,10 +280,7 @@ public class PreesmScenario {
    * @return the operator ids
    */
   public Set<String> getOperatorIds() {
-    if (this.operatorIds == null) {
-      this.operatorIds = new LinkedHashSet<>();
-    }
-    return this.operatorIds;
+    return DesignTools.getOperatorInstanceIds(getDesign());
   }
 
   /**
@@ -313,30 +301,7 @@ public class PreesmScenario {
    * @return the operator definition ids
    */
   public Set<String> getOperatorDefinitionIds() {
-    if (this.operatorDefinitionIds == null) {
-      this.operatorDefinitionIds = new LinkedHashSet<>();
-    }
-    return this.operatorDefinitionIds;
-  }
-
-  /**
-   * Sets the operator ids.
-   *
-   * @param operatorIds
-   *          the new operator ids
-   */
-  public void setOperatorIds(final Set<String> operatorIds) {
-    this.operatorIds = operatorIds;
-  }
-
-  /**
-   * Sets the operator definition ids.
-   *
-   * @param operatorDefinitionIds
-   *          the new operator definition ids
-   */
-  public void setOperatorDefinitionIds(final Set<String> operatorDefinitionIds) {
-    this.operatorDefinitionIds = operatorDefinitionIds;
+    return DesignTools.getOperatorComponentIds(getDesign());
   }
 
   /**
@@ -345,20 +310,7 @@ public class PreesmScenario {
    * @return the com node ids
    */
   public Set<String> getComNodeIds() {
-    if (this.comNodeIds == null) {
-      this.comNodeIds = new LinkedHashSet<>();
-    }
-    return this.comNodeIds;
-  }
-
-  /**
-   * Sets the com node ids.
-   *
-   * @param comNodeIds
-   *          the new com node ids
-   */
-  public void setComNodeIds(final Set<String> comNodeIds) {
-    this.comNodeIds = comNodeIds;
+    return DesignTools.getComNodeInstanceIds(getDesign());
   }
 
   /**
