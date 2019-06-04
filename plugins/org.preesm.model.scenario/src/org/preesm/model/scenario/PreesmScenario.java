@@ -40,13 +40,13 @@ package org.preesm.model.scenario;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.Path;
-import org.preesm.model.pisdf.AbstractActor;
+import org.preesm.model.pisdf.AbstractVertex;
 import org.preesm.model.pisdf.PiGraph;
 import org.preesm.model.pisdf.serialize.PiParser;
 import org.preesm.model.scenario.papi.PapifyConfigManager;
@@ -139,21 +139,7 @@ public class PreesmScenario {
    * @return the actor names
    */
   public Set<String> getActorNames() {
-    return getPiActorNames();
-  }
-
-  /**
-   * Gets the pi actor names.
-   *
-   * @return the pi actor names
-   */
-  private Set<String> getPiActorNames() {
-    final Set<String> result = new LinkedHashSet<>();
-    final PiGraph graph = getAlgorithm();
-    for (final AbstractActor vertex : graph.getActors()) {
-      result.add(vertex.getName());
-    }
-    return result;
+    return getAlgorithm().getActors().stream().map(AbstractVertex::getName).collect(Collectors.toSet());
   }
 
   /**
