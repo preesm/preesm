@@ -124,7 +124,9 @@ public class FileSelectionAdapter extends SelectionAdapter {
 
     final IPath browseFiles = FileUtils.browseFiles(PlatformUI.getWorkbench().getActiveWorkbenchWindow().getShell(),
         this.title, this.fileExtensions);
-    final String pathString = browseFiles.toString();
-    this.filePath.setText(pathString);
+    if (browseFiles != null) {
+      final String pathString = browseFiles.toString();
+      this.filePath.setText(pathString);
+    }
   }
 }

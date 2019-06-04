@@ -17,6 +17,7 @@ PREESM Changelog
 * Fix parameter validity analysis: new use JEP Wrapper;
 * Change implementation of Constraint Groups in scenario to have only one operator per group;
 * Make sure the PiGraph and SlamDesign are parsed once only per scenario node in the workflow;
+* Fix UI throwing exception when canceling file browse;
 
 ### Bug fix
 * Fix #139: better error messages for Name checker
