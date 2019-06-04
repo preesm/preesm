@@ -103,12 +103,15 @@ public class VertexMapping extends GroupProperty {
     final MapperDAGVertex firstVertex = relatedVertices.get(0);
 
     // Adding to the list all candidate components of the first vertex
-    operators.addAll(firstVertex.getInit().getInitialOperatorList());
+    final VertexInit init = firstVertex.getInit();
+    final List<ComponentInstance> initialOperatorList = init.getInitialOperatorList();
+    operators.addAll(initialOperatorList);
 
     // computing intersection with other initial operator lists
     for (final MapperDAGVertex locVertex : relatedVertices) {
-      DesignTools.retainAll(operators, locVertex.getInit().getInitialOperatorList());
-
+      final VertexInit init2 = locVertex.getInit();
+      final List<ComponentInstance> initialOperatorList2 = init2.getInitialOperatorList();
+      DesignTools.retainAll(operators, initialOperatorList2);
     }
 
     // If we consider group mapping and a vertex in the group is mapped, we keep its operator only

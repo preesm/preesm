@@ -52,10 +52,10 @@ import org.preesm.model.pisdf.AbstractActor;
 import org.preesm.model.pisdf.PiGraph;
 import org.preesm.model.pisdf.serialize.PiParser;
 import org.preesm.model.scenario.papi.PapifyConfigManager;
-import org.preesm.model.scenario.serialize.ScenarioParser;
 import org.preesm.model.slam.Design;
 import org.preesm.model.slam.SlamPackage;
 import org.preesm.model.slam.serialize.IPXACTResourceFactoryImpl;
+import org.preesm.model.slam.serialize.SlamParser;
 import org.preesm.model.slam.utils.DesignTools;
 
 /**
@@ -421,7 +421,7 @@ public class PreesmScenario {
       }
 
       // Extract the root object from the resource.
-      final Design design = ScenarioParser.parseSlamDesign(this.architectureURL);
+      final Design design = SlamParser.parseSlamDesign(this.architectureURL);
 
       getOperatorIds().clear();
       getOperatorIds().addAll(DesignTools.getOperatorInstanceIds(design));
