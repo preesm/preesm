@@ -55,6 +55,7 @@ import org.eclipse.core.resources.IFile;
 import org.eclipse.core.runtime.CoreException;
 import org.preesm.commons.exceptions.PreesmRuntimeException;
 import org.preesm.commons.logger.PreesmLogger;
+import org.preesm.model.pisdf.AbstractActor;
 import org.preesm.model.pisdf.Parameter;
 import org.preesm.model.pisdf.PiGraph;
 import org.preesm.model.pisdf.serialize.PiParser;
@@ -495,7 +496,7 @@ public class ScenarioParser {
    */
   private ConstraintGroup getConstraintGroup(final Element cstGroupElt) {
     String opId = null;
-    final Set<String> paths = new LinkedHashSet<>();
+    final Set<AbstractActor> paths = new LinkedHashSet<>();
 
     if (scenario.getAlgorithm() != null) {
       Node node = cstGroupElt.getFirstChild();
@@ -505,8 +506,9 @@ public class ScenarioParser {
           final String type = elt.getTagName();
           final String name = elt.getAttribute("name");
           if (type.equals(VertexType.TYPE_TASK)) {
-            if (getActorFromPath(name) != null) {
-              paths.add(name);
+            final AbstractActor actorFromPath = getActorFromPath(name);
+            if (actorFromPath != null) {
+              paths.add(actorFromPath);
             }
           } else if (type.equals("operator") && (this.scenario.getOperatorIds() != null)) {
             if (this.scenario.getOperatorIds().contains(name)) {
@@ -832,8 +834,8 @@ public class ScenarioParser {
    *          the path to the actor, where its segment is the name of an actor and separators are "/"
    * @return the wanted actor, if existing, null otherwise
    */
-  private Object getActorFromPath(final String path) {
-    Object result = null;
+  private AbstractActor getActorFromPath(final String path) {
+    AbstractActor result = null;
     if (scenario.getAlgorithm() != null) {
       result = ActorPath.lookup(scenario.getAlgorithm(), path);
     }

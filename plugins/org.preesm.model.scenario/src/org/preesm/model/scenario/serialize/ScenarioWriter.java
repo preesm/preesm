@@ -41,6 +41,7 @@ package org.preesm.model.scenario.serialize;
 
 import java.util.Map;
 import java.util.Set;
+import org.preesm.model.pisdf.AbstractActor;
 import org.preesm.model.pisdf.PiGraph;
 import org.preesm.model.scenario.ConstraintGroup;
 import org.preesm.model.scenario.ParameterValue;
@@ -462,10 +463,10 @@ public class ScenarioWriter {
     constraintGroupElt.appendChild(opdefelt);
     opdefelt.setAttribute("name", opId);
 
-    for (final String vtxId : cst.getVertexPaths()) {
+    for (final AbstractActor vtxId : cst.getVertexPaths()) {
       final Element vtxelt = this.dom.createElement(VertexType.TYPE_TASK);
       constraintGroupElt.appendChild(vtxelt);
-      vtxelt.setAttribute("name", vtxId);
+      vtxelt.setAttribute("name", vtxId.getVertexPath());
     }
   }
 

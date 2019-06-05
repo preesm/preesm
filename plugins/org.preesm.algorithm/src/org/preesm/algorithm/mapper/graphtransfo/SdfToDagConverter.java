@@ -49,6 +49,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.logging.Level;
+import java.util.stream.Collectors;
 import org.preesm.algorithm.mapper.abc.SpecialVertexManager;
 import org.preesm.algorithm.mapper.model.MapperDAG;
 import org.preesm.algorithm.mapper.model.MapperDAGEdge;
@@ -66,6 +67,7 @@ import org.preesm.algorithm.model.sdf.visitors.DAGTransformation;
 import org.preesm.algorithm.model.types.LongEdgePropertyType;
 import org.preesm.commons.exceptions.PreesmRuntimeException;
 import org.preesm.commons.logger.PreesmLogger;
+import org.preesm.model.pisdf.AbstractVertex;
 import org.preesm.model.pisdf.PiGraph;
 import org.preesm.model.scenario.ConstraintGroup;
 import org.preesm.model.scenario.PreesmScenario;
@@ -404,7 +406,8 @@ public class SdfToDagConverter {
 
       // Iterating over vertices in DAG with their SDF ref in the
       // constraint group
-      final Set<String> sdfVertexIds = cg.getVertexPaths();
+      final Set<String> sdfVertexIds = cg.getVertexPaths().stream().map(AbstractVertex::getVertexPath)
+          .collect(Collectors.toSet());
 
       for (final DAGVertex v : dag.vertexSet()) {
         final MapperDAGVertex mv = (MapperDAGVertex) v;

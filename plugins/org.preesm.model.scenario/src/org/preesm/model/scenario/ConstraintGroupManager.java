@@ -93,7 +93,7 @@ public class ConstraintGroupManager {
       cg = new ConstraintGroup(opId);
       this.constraintgroups.add(cg);
     }
-    cg.addActorPath(vertex.getVertexPath());
+    cg.addActorPath(vertex);
   }
 
   /**
@@ -104,7 +104,7 @@ public class ConstraintGroupManager {
    * @param vertexSet
    *          the vertex set
    */
-  public void addConstraints(final String opId, final Set<String> vertexSet) {
+  public void addConstraints(final String opId, final Set<AbstractActor> vertexSet) {
 
     ConstraintGroup cg = getOpConstraintGroups(opId);
 
@@ -127,7 +127,7 @@ public class ConstraintGroupManager {
     final ConstraintGroup cgSet = getOpConstraintGroups(opId);
 
     if (cgSet != null) {
-      cgSet.removeVertexPath(vertex.getVertexPath());
+      cgSet.removeVertexPath(vertex);
     }
   }
 

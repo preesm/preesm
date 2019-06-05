@@ -630,9 +630,9 @@ public class StaticPiMM2MapperDAGVisitor extends PiMMSwitch<Boolean> {
     final List<String> currentOperatorIDs = new ArrayList<>();
     final Set<ConstraintGroup> constraintGroups = scenario.getConstraintGroupManager().getConstraintGroups();
     for (final ConstraintGroup cg : constraintGroups) {
-      final Set<String> vertexPaths = cg.getVertexPaths();
+      final Set<AbstractActor> vertexPaths = cg.getVertexPaths();
       final String operatorId = cg.getOperatorId();
-      if (vertexPaths.contains(actor.getVertexPath())) {
+      if (vertexPaths.contains(actor)) {
         currentOperatorIDs.add(operatorId);
       }
     }

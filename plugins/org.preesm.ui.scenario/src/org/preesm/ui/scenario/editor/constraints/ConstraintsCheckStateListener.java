@@ -54,10 +54,8 @@ import org.eclipse.ui.IPropertyListener;
 import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.eclipse.ui.forms.widgets.Section;
 import org.preesm.model.pisdf.AbstractActor;
-import org.preesm.model.pisdf.AbstractVertex;
 import org.preesm.model.pisdf.Actor;
 import org.preesm.model.pisdf.PiGraph;
-import org.preesm.model.pisdf.util.ActorPath;
 import org.preesm.model.scenario.ConstraintGroup;
 import org.preesm.model.scenario.ConstraintGroupManager;
 import org.preesm.model.scenario.PreesmScenario;
@@ -241,7 +239,7 @@ public class ConstraintsCheckStateListener implements ISDFCheckStateListener {
   private void updateCheckPISDF() {
     final PiGraph currentGraph = this.contentProvider.getPISDFCurrentGraph();
     if ((this.currentOpId != null) && (currentGraph != null)) {
-      final Set<AbstractVertex> cgSet = new LinkedHashSet<>();
+      final Set<AbstractActor> cgSet = new LinkedHashSet<>();
 
       final ConstraintGroupManager constraintGroupManager = this.scenario.getConstraintGroupManager();
       final ConstraintGroup cg = constraintGroupManager.getOpConstraintGroups(this.currentOpId);
@@ -249,8 +247,7 @@ public class ConstraintsCheckStateListener implements ISDFCheckStateListener {
       if (cg != null) {
         // Retrieves the elements in the tree that have the same name as
         // the ones to select in the constraint group
-        for (final String vertexId : cg.getVertexPaths()) {
-          final AbstractVertex v = ActorPath.lookup(currentGraph, vertexId);
+        for (final AbstractActor v : cg.getVertexPaths()) {
           if (v != null) {
             cgSet.add(v);
           }

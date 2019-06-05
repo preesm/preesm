@@ -64,7 +64,6 @@ import org.preesm.model.pisdf.FunctionPrototype;
 import org.preesm.model.pisdf.Parameter;
 import org.preesm.model.pisdf.PiGraph;
 import org.preesm.model.pisdf.Port;
-import org.preesm.model.pisdf.util.ActorPath;
 import org.preesm.model.scenario.ConstraintGroup;
 import org.preesm.model.scenario.PreesmScenario;
 import org.preesm.model.scenario.Timing;
@@ -207,8 +206,7 @@ public class SpiderCodegen {
     // Generate constraints
     this.constraints = new LinkedHashMap<>();
     for (final ConstraintGroup cg : this.scenario.getConstraintGroupManager().getConstraintGroups()) {
-      for (final String actorPath : cg.getVertexPaths()) {
-        final AbstractActor aa = ActorPath.lookup(pg, actorPath);
+      for (final AbstractActor aa : cg.getVertexPaths()) {
         if (this.constraints.get(aa) == null) {
           this.constraints.put(aa, new LinkedHashSet<String>());
         }
