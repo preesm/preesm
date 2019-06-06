@@ -72,6 +72,7 @@ import org.preesm.model.scenario.Timing;
 import org.preesm.model.scenario.TimingManager;
 import org.preesm.model.slam.ComponentInstance;
 import org.preesm.model.slam.Design;
+import org.preesm.model.slam.component.Component;
 import org.preesm.model.slam.component.Operator;
 import org.preesm.model.slam.utils.DesignTools;
 
@@ -302,10 +303,10 @@ public class SdfToDagConverter {
       if (SpecialVertexManager.isSpecial(currentVertex)) {
         final VertexInit currentVertexInit = currentVertex.getInit();
 
-        for (final String opDef : scenario.getTimingManager().getMemcpySpeeds().keySet()) {
+        for (final Component opDef : scenario.getTimingManager().getMemcpySpeeds().keySet()) {
           final long sut = scenario.getTimingManager().getMemcpySetupTime(opDef);
-          final float tpu = scenario.getTimingManager().getMemcpyTimePerUnit(opDef);
-          final Timing timing = new Timing(opDef, currentVertex.getId());
+          final double tpu = scenario.getTimingManager().getMemcpyTimePerUnit(opDef);
+          final Timing timing = new Timing(opDef.getVlnv().getName(), currentVertex.getId());
 
           // Depending on the type of vertex, time is given by the size of output or input buffers
           if (SpecialVertexManager.isFork(currentVertex) || SpecialVertexManager.isJoin(currentVertex)

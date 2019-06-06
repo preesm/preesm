@@ -47,6 +47,7 @@ import java.util.List;
 import java.util.Map;
 import org.preesm.model.scenario.serialize.CsvTimingParser;
 import org.preesm.model.scenario.serialize.ExcelTimingParser;
+import org.preesm.model.slam.component.Component;
 
 /**
  * Manager of the graphs timings.
@@ -65,7 +66,7 @@ public class TimingManager {
   private String excelFileURL = "";
 
   /** Storing setup time and speed of memcpy for each type of operator. */
-  private final Map<String, MemCopySpeed> memcpySpeeds;
+  private final Map<Component, MemCopySpeed> memcpySpeeds;
 
   /** Default value for a memcpy setup time. */
   private static final long DEFAULTMEMCPYSETUPTIME = 1;
@@ -254,7 +255,7 @@ public class TimingManager {
    *          the operator def
    * @return the memcpy setup time
    */
-  public long getMemcpySetupTime(final String operatorDef) {
+  public long getMemcpySetupTime(final Component operatorDef) {
     return this.memcpySpeeds.get(operatorDef).getSetupTime();
   }
 
@@ -265,7 +266,7 @@ public class TimingManager {
    *          the operator def
    * @return the memcpy time per unit
    */
-  public float getMemcpyTimePerUnit(final String operatorDef) {
+  public double getMemcpyTimePerUnit(final Component operatorDef) {
     return this.memcpySpeeds.get(operatorDef).getTimePerUnit();
   }
 
@@ -274,7 +275,7 @@ public class TimingManager {
    *
    * @return the memcpy speeds
    */
-  public Map<String, MemCopySpeed> getMemcpySpeeds() {
+  public Map<Component, MemCopySpeed> getMemcpySpeeds() {
     return this.memcpySpeeds;
   }
 
@@ -285,7 +286,7 @@ public class TimingManager {
    *          the operator def
    * @return true, if successful
    */
-  public boolean hasMemCpySpeed(final String operatorDef) {
+  public boolean hasMemCpySpeed(final Component operatorDef) {
     return this.memcpySpeeds.keySet().contains(operatorDef);
   }
 
@@ -295,7 +296,7 @@ public class TimingManager {
    * @param operatorDef
    *          the new default mem cpy speed
    */
-  public void setDefaultMemCpySpeed(final String operatorDef) {
+  public void setDefaultMemCpySpeed(final Component operatorDef) {
     putMemcpySpeed(
         new MemCopySpeed(operatorDef, TimingManager.DEFAULTMEMCPYSETUPTIME, TimingManager.DEFAULTMEMCPYTIMEPERUNIT));
   }

@@ -59,12 +59,12 @@ import org.preesm.model.scenario.types.DataType;
 import org.preesm.model.scenario.types.VertexType;
 import org.preesm.model.slam.ComponentInstance;
 import org.preesm.model.slam.Design;
+import org.preesm.model.slam.component.Component;
 import org.w3c.dom.DOMImplementation;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.bootstrap.DOMImplementationRegistry;
 
-// TODO: Auto-generated Javadoc
 /**
  * Writes a scenario as an XML.
  *
@@ -486,7 +486,7 @@ public class ScenarioWriter {
       addTiming(timings, timing);
     }
 
-    for (final String opDef : this.scenario.getTimingManager().getMemcpySpeeds().keySet()) {
+    for (final Component opDef : this.scenario.getTimingManager().getMemcpySpeeds().keySet()) {
       addMemcpySpeed(timings, opDef, this.scenario.getTimingManager().getMemcpySetupTime(opDef),
           this.scenario.getTimingManager().getMemcpyTimePerUnit(opDef));
     }
@@ -527,13 +527,13 @@ public class ScenarioWriter {
    * @param memcpyTimePerUnit
    *          the memcpy time per unit
    */
-  private void addMemcpySpeed(final Element parent, final String opDef, final long memcpySetupTime,
-      final float memcpyTimePerUnit) {
+  private void addMemcpySpeed(final Element parent, final Component opDef, final long memcpySetupTime,
+      final double memcpyTimePerUnit) {
 
     final Element timingelt = this.dom.createElement("memcpyspeed");
     parent.appendChild(timingelt);
-    timingelt.setAttribute("opname", opDef);
+    timingelt.setAttribute("opname", opDef.getVlnv().getName());
     timingelt.setAttribute("setuptime", Long.toString(memcpySetupTime));
-    timingelt.setAttribute("timeperunit", Float.toString(memcpyTimePerUnit));
+    timingelt.setAttribute("timeperunit", Double.toString(memcpyTimePerUnit));
   }
 }

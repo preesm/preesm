@@ -36,7 +36,8 @@
  */
 package org.preesm.model.scenario;
 
-// TODO: Auto-generated Javadoc
+import org.preesm.model.slam.component.Component;
+
 /**
  * Representing the speed of a memcopy for a given operator type. This speed is composed of 2 elements: setupTime and
  * timePerUnit
@@ -46,13 +47,13 @@ package org.preesm.model.scenario;
 public class MemCopySpeed {
 
   /** The operator def. */
-  private String operatorDef;
+  private final Component operatorDef;
 
   /** The setup time. */
   private long setupTime;
 
   /** The time per unit. */
-  private float timePerUnit;
+  private double timePerUnit;
 
   /**
    * Instantiates a new mem copy speed.
@@ -64,7 +65,7 @@ public class MemCopySpeed {
    * @param timePerUnit
    *          the time per unit
    */
-  public MemCopySpeed(final String operatorDef, final long setupTime, final float timePerUnit) {
+  public MemCopySpeed(final Component operatorDef, final long setupTime, final double timePerUnit) {
     super();
     this.operatorDef = operatorDef;
     this.setupTime = setupTime;
@@ -76,7 +77,7 @@ public class MemCopySpeed {
    *
    * @return the operator def
    */
-  public String getOperatorDef() {
+  public Component getOperatorDef() {
     return this.operatorDef;
   }
 
@@ -94,37 +95,16 @@ public class MemCopySpeed {
    *
    * @return the time per unit
    */
-  public float getTimePerUnit() {
+  public double getTimePerUnit() {
     return this.timePerUnit;
   }
 
-  /**
-   * Sets the operator def.
-   *
-   * @param operatorDef
-   *          the new operator def
-   */
-  public void setOperatorDef(final String operatorDef) {
-    this.operatorDef = operatorDef;
+  public void setSetupTime(final long value) {
+    this.setupTime = value;
   }
 
-  /**
-   * Sets the setup time.
-   *
-   * @param setupTime
-   *          the new setup time
-   */
-  public void setSetupTime(final Long setupTime) {
-    this.setupTime = setupTime;
+  public void setTimePerUnit(final double d) {
+    this.timePerUnit = d;
   }
 
-  /**
-   * Sets the time per unit.
-   *
-   * @param timePerUnit
-   *          the new time per unit
-   */
-  public void setTimePerUnit(final Float timePerUnit) {
-    this.timePerUnit = timePerUnit;
-  }
 }

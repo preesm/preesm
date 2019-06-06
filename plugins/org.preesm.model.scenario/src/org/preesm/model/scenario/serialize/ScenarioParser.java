@@ -76,6 +76,7 @@ import org.preesm.model.scenario.types.DataType;
 import org.preesm.model.scenario.types.VertexType;
 import org.preesm.model.slam.ComponentInstance;
 import org.preesm.model.slam.Design;
+import org.preesm.model.slam.component.Component;
 import org.preesm.model.slam.serialize.SlamParser;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -862,19 +863,21 @@ public class ScenarioParser {
         final String opdefname = timingElt.getAttribute("opname");
         final String sSetupTime = timingElt.getAttribute("setuptime");
         final String sTimePerUnit = timingElt.getAttribute("timeperunit");
-        int setupTime;
-        float timePerUnit;
+        long setupTime;
+        double timePerUnit;
 
         try {
-          setupTime = Integer.parseInt(sSetupTime);
-          timePerUnit = Float.parseFloat(sTimePerUnit);
+          setupTime = Long.parseLong(sSetupTime);
+          timePerUnit = Double.parseDouble(sTimePerUnit);
         } catch (final NumberFormatException e) {
           setupTime = -1;
           timePerUnit = -1;
         }
 
-        if (this.scenario.getOperatorDefinitionIds().contains(opdefname) && (setupTime >= 0) && (timePerUnit >= 0)) {
-          final MemCopySpeed speed = new MemCopySpeed(opdefname, setupTime, timePerUnit);
+        final boolean contains = this.scenario.getDesign().containsComponent(opdefname);
+        if (contains && (setupTime >= 0) && (timePerUnit >= 0)) {
+          final Component component = this.scenario.getDesign().getComponent(opdefname);
+          final MemCopySpeed speed = new MemCopySpeed(component, setupTime, timePerUnit);
           timingManager.putMemcpySpeed(speed);
         }
       }
