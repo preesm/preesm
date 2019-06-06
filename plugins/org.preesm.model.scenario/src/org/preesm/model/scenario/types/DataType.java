@@ -36,9 +36,6 @@
  */
 package org.preesm.model.scenario.types;
 
-import java.util.LinkedHashMap;
-import java.util.Map;
-
 /**
  * Representing a data type in code generation (exple: char, int...).
  *
@@ -53,10 +50,9 @@ public class DataType {
   private long size;
 
   /** The Constant defaultDataTypeSize. */
-  public static final long defaultDataTypeSize = 1;
+  public static final long DEFAUTL_DATA_TYPE_SIZE = 1;
 
   /** The Constant nameToSize. */
-  public static final Map<String, Long> nameToSize = new LinkedHashMap<>();
 
   /**
    * Instantiates a new data type.
@@ -65,25 +61,8 @@ public class DataType {
    *          the type name
    */
   public DataType(final String typeName) {
-    super();
     this.typeName = typeName;
-    if (DataType.nameToSize.get(typeName) == null) {
-      this.size = DataType.defaultDataTypeSize;
-    } else {
-      this.size = DataType.nameToSize.get(typeName);
-    }
-  }
-
-  /**
-   * Instantiates a new data type.
-   *
-   * @param type
-   *          the type
-   */
-  public DataType(final DataType type) {
-    super();
-    this.typeName = type.getTypeName();
-    this.size = type.getSize();
+    this.size = DataType.DEFAUTL_DATA_TYPE_SIZE;
   }
 
   /**
@@ -95,10 +74,8 @@ public class DataType {
    *          the size
    */
   public DataType(final String typeName, final long size) {
-    super();
     this.typeName = typeName;
     this.size = size;
-    DataType.nameToSize.put(typeName, size);
   }
 
   /**

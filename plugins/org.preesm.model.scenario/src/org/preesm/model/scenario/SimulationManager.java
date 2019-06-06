@@ -64,7 +64,7 @@ public class SimulationManager {
   private long averageDataSize = Route.averageTransfer;
 
   /** Names of the data types with their size. */
-  private final Map<String, DataType> dataTypes;
+  private final Map<String /* type name */, DataType> dataTypes;
 
   /** Operators able to execute special vertices. */
   private final Set<ComponentInstance> specialVertexOperators;
@@ -152,7 +152,7 @@ public class SimulationManager {
    */
   public long getDataTypeSizeOrDefault(final String name) {
     if (this.dataTypes.get(name) == null) {
-      return DataType.defaultDataTypeSize;
+      return DataType.DEFAUTL_DATA_TYPE_SIZE;
     } else {
       return this.dataTypes.get(name).getSize();
     }
