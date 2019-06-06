@@ -56,7 +56,6 @@ import org.preesm.commons.logger.PreesmLogger;
 import org.preesm.model.pisdf.AbstractActor;
 import org.preesm.model.pisdf.Actor;
 import org.preesm.model.pisdf.PiGraph;
-import org.preesm.model.pisdf.serialize.PiParser;
 import org.preesm.model.scenario.PreesmScenario;
 
 /**
@@ -112,7 +111,7 @@ public class ExcelConstraintsParser {
       final Set<String> missingVertices = new LinkedHashSet<>();
       final Set<String> missingOperators = new LinkedHashSet<>();
 
-      final PiGraph currentPiGraph = PiParser.getPiGraphWithReconnection(this.scenario.getAlgorithmURL());
+      final PiGraph currentPiGraph = scenario.getAlgorithm();
       for (final AbstractActor vertex : currentPiGraph.getAllActors()) {
         if (vertex instanceof Actor) {
           for (final String operatorId : allOperatorIds) {

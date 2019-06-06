@@ -52,7 +52,6 @@ import org.eclipse.core.runtime.Path;
 import org.preesm.commons.files.WorkspaceUtils;
 import org.preesm.commons.logger.PreesmLogger;
 import org.preesm.model.pisdf.PiGraph;
-import org.preesm.model.pisdf.serialize.PiParser;
 import org.preesm.model.scenario.PreesmScenario;
 import org.preesm.model.scenario.Timing;
 
@@ -147,7 +146,7 @@ public class CsvTimingParser {
   private void parseTimings(final Map<String, Map<String, String>> timings, final Set<String> opDefIds) {
     // Depending on the type of SDF graph we process (IBSDF or PISDF), call
     // one or the other method
-    final PiGraph currentGraph = PiParser.getPiGraphWithReconnection(this.scenario.getAlgorithmURL());
+    final PiGraph currentGraph = scenario.getAlgorithm();
     parseTimingsForPISDFGraph(timings, currentGraph, opDefIds);
   }
 

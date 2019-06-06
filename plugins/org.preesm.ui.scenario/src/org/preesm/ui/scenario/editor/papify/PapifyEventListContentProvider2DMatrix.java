@@ -50,7 +50,6 @@ import org.preesm.model.pisdf.ForkActor;
 import org.preesm.model.pisdf.JoinActor;
 import org.preesm.model.pisdf.PiGraph;
 import org.preesm.model.pisdf.RoundBufferActor;
-import org.preesm.model.pisdf.serialize.PiParser;
 import org.preesm.model.scenario.PreesmScenario;
 
 /**
@@ -162,7 +161,7 @@ public class PapifyEventListContentProvider2DMatrix implements ITreeContentProvi
       this.scenario = (PreesmScenario) inputElement;
       // Opening algorithm from file
       try {
-        this.currentPISDFGraph = PiParser.getPiGraphWithReconnection(this.scenario.getAlgorithmURL());
+        this.currentPISDFGraph = scenario.getAlgorithm();
       } catch (final Exception e) {
         e.printStackTrace();
       }

@@ -68,7 +68,6 @@ import org.preesm.model.pisdf.ForkActor;
 import org.preesm.model.pisdf.JoinActor;
 import org.preesm.model.pisdf.PiGraph;
 import org.preesm.model.pisdf.RoundBufferActor;
-import org.preesm.model.pisdf.serialize.PiParser;
 import org.preesm.model.scenario.PreesmScenario;
 import org.preesm.model.scenario.papi.PapiComponent;
 import org.preesm.model.scenario.papi.PapiEvent;
@@ -396,7 +395,7 @@ public class PapifyCheckStateListener implements ISDFCheckStateListener {
     combo.removeAll();
     final Set<String> result = new LinkedHashSet<>();
     String finalName;
-    final PiGraph graph = PiParser.getPiGraphWithReconnection(this.scenario.getAlgorithmURL());
+    final PiGraph graph = scenario.getAlgorithm();
     for (final AbstractActor vertex : graph.getAllActors()) {
       if (!(vertex instanceof PiGraph) && !(vertex instanceof DataInputInterface)
           && !(vertex instanceof DataOutputInterface)) {

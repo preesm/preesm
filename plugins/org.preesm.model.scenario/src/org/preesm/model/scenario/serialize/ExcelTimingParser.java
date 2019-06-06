@@ -55,7 +55,6 @@ import org.preesm.commons.exceptions.PreesmRuntimeException;
 import org.preesm.commons.files.WorkspaceUtils;
 import org.preesm.commons.logger.PreesmLogger;
 import org.preesm.model.pisdf.PiGraph;
-import org.preesm.model.pisdf.serialize.PiParser;
 import org.preesm.model.scenario.PreesmScenario;
 import org.preesm.model.scenario.Timing;
 
@@ -131,7 +130,7 @@ public class ExcelTimingParser {
       final Set<String> missingOperatorTypes) {
     // Depending on the type of SDF graph we process (IBSDF or PISDF), call
     // one or the other method
-    final PiGraph currentGraph = PiParser.getPiGraphWithReconnection(this.scenario.getAlgorithmURL());
+    final PiGraph currentGraph = scenario.getAlgorithm();
     parseTimingsForPISDFGraph(w, currentGraph, opDefIds, missingVertices, missingOperatorTypes);
   }
 

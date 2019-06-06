@@ -73,7 +73,6 @@ import org.preesm.model.pisdf.AbstractActor;
 import org.preesm.model.pisdf.Actor;
 import org.preesm.model.pisdf.PiGraph;
 import org.preesm.model.pisdf.Refinement;
-import org.preesm.model.pisdf.serialize.PiParser;
 import org.preesm.model.scenario.PreesmScenario;
 import org.preesm.model.scenario.types.ImplementationPropertyNames;
 import org.preesm.model.slam.ComponentInstance;
@@ -349,7 +348,7 @@ public class CustomQuantaExporter extends AbstractTaskImplementation {
       try {
         final Workbook w = Workbook.getWorkbook(iFile.getContents());
 
-        final PiGraph currentGraph = PiParser.getPiGraphWithReconnection(scenario.getAlgorithmURL());
+        final PiGraph currentGraph = scenario.getAlgorithm();
         final Set<String> operators = scenario.getOperatorDefinitionIds();
         parseQuantaForPISDFGraph(w, currentGraph, operators);
 

@@ -44,7 +44,6 @@ import org.eclipse.jface.viewers.ITreeContentProvider;
 import org.preesm.model.pisdf.AbstractActor;
 import org.preesm.model.pisdf.Actor;
 import org.preesm.model.pisdf.PiGraph;
-import org.preesm.model.pisdf.serialize.PiParser;
 import org.preesm.model.scenario.PreesmScenario;
 
 /**
@@ -137,7 +136,7 @@ public class PreesmAlgorithmTreeContentProvider implements ITreeContentProvider 
       scenario = (PreesmScenario) inputElement;
       // Opening algorithm from file
       try {
-        this.currentPISDFGraph = PiParser.getPiGraphWithReconnection(scenario.getAlgorithmURL());
+        this.currentPISDFGraph = scenario.getAlgorithm();
       } catch (final Exception e) {
         e.printStackTrace();
       }

@@ -46,7 +46,6 @@ import org.eclipse.jface.viewers.Viewer;
 import org.preesm.model.pisdf.AbstractActor;
 import org.preesm.model.pisdf.Actor;
 import org.preesm.model.pisdf.PiGraph;
-import org.preesm.model.pisdf.serialize.PiParser;
 import org.preesm.model.scenario.PreesmScenario;
 
 /**
@@ -88,7 +87,7 @@ public class PreesmAlgorithmListContentProvider implements IStructuredContentPro
    *           the core exception
    */
   public Set<AbstractActor> getSortedPISDFVertices(final PreesmScenario inputScenario) throws CoreException {
-    final PiGraph currentGraph = PiParser.getPiGraphWithReconnection(inputScenario.getAlgorithmURL());
+    final PiGraph currentGraph = inputScenario.getAlgorithm();
     return filterVertices(currentGraph.getAllActors());
   }
 
