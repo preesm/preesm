@@ -43,6 +43,8 @@ import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.Set;
+import org.preesm.algorithm.mapper.model.MapperDAG;
+import org.preesm.algorithm.mapper.model.MapperDAGVertex;
 import org.preesm.algorithm.model.AbstractEdge;
 import org.preesm.algorithm.model.AbstractGraph;
 import org.preesm.algorithm.model.AbstractVertex;
@@ -84,7 +86,7 @@ public class PapifyEngine {
   private final PreesmScenario scenario;
 
   /** The original DAG **/
-  private final DirectedAcyclicGraph dag;
+  private final MapperDAG dag;
 
   /**
    * Initialize the PapifyEngine
@@ -94,7 +96,7 @@ public class PapifyEngine {
    * @param scenario
    *          the input scenario
    */
-  public PapifyEngine(final DirectedAcyclicGraph dag, final PreesmScenario scenario) {
+  public PapifyEngine(final MapperDAG dag, final PreesmScenario scenario) {
     this.dag = dag;
     this.scenario = scenario;
   }
@@ -102,7 +104,7 @@ public class PapifyEngine {
   /**
    * Function to add (or not) everything required for PAPIFY
    */
-  private void configurePapifyFunctions(DAGVertex vertex, String info, String name) {
+  private void configurePapifyFunctions(MapperDAGVertex vertex, String info, String name) {
 
     // Variables to check whether an actor has a monitoring configuration
     PapifyConfigManager papifyConfig = null;
@@ -173,7 +175,7 @@ public class PapifyEngine {
               }
             }
             if (!configAdded) {
-              PapifyConfigActor actorConfigToAdd = new PapifyConfigActor(configToAdd, configToAdd);
+              PapifyConfigActor actorConfigToAdd = new PapifyConfigActor(configToAdd);
               actorConfigToAdd.addPAPIEventSet(compNewConfig, config.getPAPIEvents().get(compNewConfig));
               this.configSet.add(actorConfigToAdd);
               counterConfigs = counterConfigs + 1;
@@ -200,8 +202,6 @@ public class PapifyEngine {
 
         // Get component
         comp = config.getPAPIEvents().keySet();
-        // Get events
-        // events = config.getPAPIEvents();
         String eventNames = "";
         String compNames = "";
         includedEvents.clear();
@@ -338,7 +338,7 @@ public class PapifyEngine {
   /**
    * Function to iterate over all the vertex / abstractGraphs
    */
-  void configurePapifyFunctionsManager(DAGVertex vertex) {
+  void configurePapifyFunctionsManager(MapperDAGVertex vertex) {
     if (vertex.getRefinement() instanceof AbstractGraph) {
       @SuppressWarnings("unchecked")
       final AbstractGraph<AbstractVertex<?>, AbstractEdge<?, AbstractVertex<?>>> graph = vertex.getGraphDescription();
@@ -371,7 +371,7 @@ public class PapifyEngine {
 
       // For each vertex, check the monitoring
       for (final DAGVertex vertex : this.dag.vertexSet()) {
-        configurePapifyFunctionsManager(vertex);
+        configurePapifyFunctionsManager((MapperDAGVertex) vertex);
       }
     }
 
