@@ -94,13 +94,13 @@ public class PreesmScenario {
    *
    */
   public PreesmScenario() {
-    this.constraintgroupmanager = new ConstraintGroupManager();
-    this.relativeconstraintmanager = new RelativeConstraintManager();
-    this.timingmanager = new TimingManager();
-    this.simulationManager = new SimulationManager();
+    this.constraintgroupmanager = new ConstraintGroupManager(this);
+    this.relativeconstraintmanager = new RelativeConstraintManager(this);
+    this.timingmanager = new TimingManager(this);
+    this.simulationManager = new SimulationManager(this);
     this.codegenManager = new CodegenManager();
-    this.parameterValueManager = new ParameterValueManager();
-    this.papifyconfiggroupmanager = new PapifyConfigManager();
+    this.parameterValueManager = new ParameterValueManager(this);
+    this.papifyconfiggroupmanager = new PapifyConfigManager(this);
   }
 
   /**

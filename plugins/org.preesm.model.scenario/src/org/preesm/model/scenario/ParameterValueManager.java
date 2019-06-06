@@ -44,7 +44,6 @@ import org.preesm.model.pisdf.Parameter;
 import org.preesm.model.pisdf.PiGraph;
 import org.preesm.model.scenario.ParameterValue.ParameterType;
 
-// TODO: Auto-generated Javadoc
 /**
  * Manager class for parameters, storing values given by the user to parameters.
  *
@@ -54,12 +53,14 @@ public class ParameterValueManager {
 
   /** The parameter values. */
   // Set of ParameterValues
-  private Set<ParameterValue> parameterValues;
+  private Set<ParameterValue>  parameterValues;
+  private final PreesmScenario preesmScenario;
 
   /**
    * Instantiates a new parameter value manager.
    */
-  public ParameterValueManager() {
+  public ParameterValueManager(final PreesmScenario preesmScenario) {
+    this.preesmScenario = preesmScenario;
     this.parameterValues = new LinkedHashSet<>();
   }
 

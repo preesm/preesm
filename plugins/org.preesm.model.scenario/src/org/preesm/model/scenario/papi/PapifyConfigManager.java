@@ -37,6 +37,7 @@ package org.preesm.model.scenario.papi;
 
 import java.util.LinkedHashSet;
 import java.util.Set;
+import org.preesm.model.scenario.PreesmScenario;
 
 /**
  * container and manager of PapifyConfig groups. It can load and store PapifyConfig groups
@@ -55,10 +56,13 @@ public class PapifyConfigManager {
   /** Path to a file containing constraints. */
   private String xmlFileURL = "";
 
+  private final PreesmScenario preesmScenario;
+
   /**
    * Instantiates a new PapifyConfig manager.
    */
-  public PapifyConfigManager() {
+  public PapifyConfigManager(final PreesmScenario preesmScenario) {
+    this.preesmScenario = preesmScenario;
     this.papifyConfigGroupsActors = new LinkedHashSet<>();
     this.papifyConfigGroupsPEs = new LinkedHashSet<>();
   }

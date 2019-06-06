@@ -40,7 +40,6 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Set;
 
-// TODO: Auto-generated Javadoc
 /**
  * Manager of the relative constraints.
  *
@@ -59,10 +58,13 @@ public class RelativeConstraintManager {
   /** Path to a file containing relative constraints. */
   private String excelFileURL = "";
 
+  private final PreesmScenario preesmScenario;
+
   /**
    * Instantiates a new relative constraint manager.
    */
-  public RelativeConstraintManager() {
+  public RelativeConstraintManager(final PreesmScenario preesmScenario) {
+    this.preesmScenario = preesmScenario;
     this.relativeConstraints = new LinkedHashMap<>();
   }
 

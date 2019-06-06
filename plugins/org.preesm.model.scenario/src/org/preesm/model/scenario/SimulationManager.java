@@ -73,11 +73,14 @@ public class SimulationManager {
   /** Number of executions of the top graph when simulating PiGraphs. */
   private int numberOfTopExecutions = 1;
 
+  private final PreesmScenario preesmScenario;
+
   /**
    * Instantiates a new simulation manager.
    */
-  public SimulationManager() {
+  public SimulationManager(final PreesmScenario preesmScenario) {
     super();
+    this.preesmScenario = preesmScenario;
 
     this.dataTypes = new LinkedHashMap<>();
     this.specialVertexOperatorIds = new LinkedHashSet<>();

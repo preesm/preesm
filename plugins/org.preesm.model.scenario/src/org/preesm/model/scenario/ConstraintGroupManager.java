@@ -59,10 +59,13 @@ public class ConstraintGroupManager {
   /** Path to a file containing constraints. */
   private String excelFileURL = "";
 
+  private final PreesmScenario preesmScenario;
+
   /**
    * Instantiates a new constraint group manager.
    */
-  public ConstraintGroupManager() {
+  public ConstraintGroupManager(final PreesmScenario preesmScenario) {
+    this.preesmScenario = preesmScenario;
     this.constraintgroups = new LinkedHashSet<>();
   }
 

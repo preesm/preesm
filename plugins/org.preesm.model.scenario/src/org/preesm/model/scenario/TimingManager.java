@@ -73,10 +73,13 @@ public class TimingManager {
   /** Default value for a memcpy speed. */
   private static final float DEFAULTMEMCPYTIMEPERUNIT = 1.0f;
 
+  private final PreesmScenario preesmScenario;
+
   /**
    * Instantiates a new timing manager.
    */
-  public TimingManager() {
+  public TimingManager(final PreesmScenario preesmScenario) {
+    this.preesmScenario = preesmScenario;
     this.timings = new ArrayList<>();
     this.memcpySpeeds = new LinkedHashMap<>();
     this.defaultTiming = new Timing("default", "default", Timing.DEFAULT_TASK_TIME);
