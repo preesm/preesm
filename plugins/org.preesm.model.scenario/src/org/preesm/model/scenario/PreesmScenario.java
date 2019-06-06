@@ -81,7 +81,7 @@ public class PreesmScenario {
   private SimulationManager simulationManager = null;
 
   /** Manager of code generation parameters. */
-  private CodegenManager codegenManager = null;
+  private String codegenDirectory;
 
   /** Manager of parameters values for PiGraphs. */
   private ParameterValueManager parameterValueManager = null;
@@ -98,7 +98,6 @@ public class PreesmScenario {
     this.relativeconstraintmanager = new RelativeConstraintManager(this);
     this.timingmanager = new TimingManager(this);
     this.simulationManager = new SimulationManager(this);
-    this.codegenManager = new CodegenManager();
     this.parameterValueManager = new ParameterValueManager(this);
     this.papifyconfiggroupmanager = new PapifyConfigManager(this);
   }
@@ -218,12 +217,18 @@ public class PreesmScenario {
   }
 
   /**
-   * Gets the codegen manager.
+   * Gets the codegen directory.
    *
-   * @return the codegen manager
+   * @return the codegen directory
    */
-  public CodegenManager getCodegenManager() {
-    return this.codegenManager;
+  public String getCodegenDirectory() {
+    return this.codegenDirectory;
+  }
+
+  /**
+   */
+  public void setCodegenDirectory(final String dir) {
+    this.codegenDirectory = dir;
   }
 
   /**

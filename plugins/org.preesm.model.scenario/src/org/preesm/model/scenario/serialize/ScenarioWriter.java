@@ -423,7 +423,7 @@ public class ScenarioWriter {
 
     final Element codeGenDir = this.dom.createElement("codegenDirectory");
     files.appendChild(codeGenDir);
-    codeGenDir.setAttribute("url", this.scenario.getCodegenManager().getCodegenDirectory());
+    codeGenDir.setAttribute("url", this.scenario.getCodegenDirectory());
 
   }
 

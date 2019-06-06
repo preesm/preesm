@@ -441,7 +441,7 @@ public class ScenarioParser {
               throw new PreesmRuntimeException("Could not parse the architecture: " + e.getMessage(), e);
             }
           } else if (type.equals("codegenDirectory")) {
-            this.scenario.getCodegenManager().setCodegenDirectory(url);
+            this.scenario.setCodegenDirectory(url);
           }
         }
       }

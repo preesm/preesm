@@ -236,7 +236,7 @@ public class ScenariosGenerator {
     // Add a average transfer size
     scenario.getSimulationManager().setAverageDataSize(1000);
 
-    scenario.getCodegenManager().setCodegenDirectory("/" + project.getName() + "/Code/generated/");
+    scenario.setCodegenDirectory("/" + project.getName() + "/Code/generated/");
     return scenario;
   }
 

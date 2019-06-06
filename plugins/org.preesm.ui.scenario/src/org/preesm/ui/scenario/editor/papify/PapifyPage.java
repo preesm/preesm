@@ -161,7 +161,7 @@ public class PapifyPage extends FormPage implements IPropertyListener {
           scenario.getPapifyConfigManager().addPapifyData(this.papiEvents);
           updateTables();
         } else {
-          this.scenario.setPapifyConfigManager(new PapifyConfigManager());
+          this.scenario.setPapifyConfigManager(new PapifyConfigManager(this.scenario));
           this.scenario.getPapifyConfigManager().addPapifyData(this.papiEvents);
         }
         managedForm.refresh();
@@ -411,7 +411,7 @@ public class PapifyPage extends FormPage implements IPropertyListener {
 
     if (!text.getText().equals(this.scenario.getPapifyConfigManager().getXmlFileURL())
         && (this.papiEvents.getComponents() != null)) {
-      this.scenario.setPapifyConfigManager(new PapifyConfigManager());
+      this.scenario.setPapifyConfigManager(new PapifyConfigManager(this.scenario));
       this.scenario.getPapifyConfigManager().addPapifyData(this.papiEvents);
       this.scenario.getPapifyConfigManager().setExcelFileURL(text.getText());
       this.peTreeViewer.setInput(this.papiEvents);
