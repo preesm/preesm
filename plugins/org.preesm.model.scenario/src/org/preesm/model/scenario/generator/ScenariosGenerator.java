@@ -255,7 +255,7 @@ public class ScenariosGenerator {
   private void fillPiScenario(final PreesmScenario scenario, final Design archi, final PiGraph piGraph) {
     // Get com nodes and cores names
     scenario.setAlgorithm(piGraph);
-    final List<String> coreIds = new ArrayList<>(DesignTools.getOperatorInstanceIds(archi));
+    final List<ComponentInstance> coreIds = new ArrayList<>(DesignTools.getOperatorInstances(archi));
 
     // for all different type of cores
     for (final String opId : DesignTools.getOperatorComponentIds(archi)) {
@@ -264,10 +264,10 @@ public class ScenariosGenerator {
         scenario.getTimingManager().addTiming(new Timing(opId, aa.getVertexPath(), 10000));
       }
     }
-    for (final String coreId : coreIds) {
+    for (final ComponentInstance coreId : coreIds) {
       for (final AbstractActor actor : piGraph.getAllActors()) {
         // Add constraint: aa can be run on ci
-        scenario.getConstraintGroupManager().addConstraint(coreId, actor);
+        scenario.getConstraintGroupManager().addConstraint(coreId.getInstanceName(), actor);
       }
       // Add special actors operator id (all cores can execute special
       // actors)

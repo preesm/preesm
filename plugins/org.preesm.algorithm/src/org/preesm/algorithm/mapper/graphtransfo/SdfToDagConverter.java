@@ -440,14 +440,13 @@ public class SdfToDagConverter {
      */
     final TopologicalDAGIterator it = new TopologicalDAGIterator(dag);
     final List<DAGVertex> vList = new ArrayList<>();
-    final Set<String> specialOpIds = scenario.getSimulationManager().getSpecialVertexOperatorIds();
+    final Set<ComponentInstance> specialOpIds = scenario.getSimulationManager().getSpecialVertexOperatorIds();
 
     while (it.hasNext()) {
       final MapperDAGVertex v = (MapperDAGVertex) it.next();
       if (SpecialVertexManager.isSpecial(v)) {
         vList.add(v);
-        for (final String id : specialOpIds) {
-          final ComponentInstance o = DesignTools.getComponentInstance(architecture, id);
+        for (final ComponentInstance o : specialOpIds) {
           v.getInit().addOperator(o);
         }
       }

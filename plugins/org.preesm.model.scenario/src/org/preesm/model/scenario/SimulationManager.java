@@ -36,7 +36,6 @@
  */
 package org.preesm.model.scenario;
 
-import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.Map;
@@ -68,7 +67,7 @@ public class SimulationManager {
   private final Map<String, DataType> dataTypes;
 
   /** Operators able to execute special vertices. */
-  private final Set<String> specialVertexOperatorIds;
+  private final Set<ComponentInstance> specialVertexOperatorIds;
 
   /** Number of executions of the top graph when simulating PiGraphs. */
   private int numberOfTopExecutions = 1;
@@ -203,7 +202,7 @@ public class SimulationManager {
    *
    * @return the special vertex operator ids
    */
-  public Set<String> getSpecialVertexOperatorIds() {
+  public Set<ComponentInstance> getSpecialVertexOperatorIds() {
     return this.specialVertexOperatorIds;
   }
 
@@ -213,7 +212,7 @@ public class SimulationManager {
    * @param opId
    *          the op id
    */
-  public void addSpecialVertexOperatorId(final String opId) {
+  public void addSpecialVertexOperatorId(final ComponentInstance opId) {
     if (!hasSpecialVertexOperatorId(opId)) {
       this.specialVertexOperatorIds.add(opId);
     }
@@ -225,15 +224,8 @@ public class SimulationManager {
    * @param id
    *          the id
    */
-  public void removeSpecialVertexOperatorId(final String id) {
-    final Iterator<String> it = this.specialVertexOperatorIds.iterator();
-    while (it.hasNext()) {
-      final String cmpId = it.next();
-      if ((cmpId.equals(id))) {
-        it.remove();
-
-      }
-    }
+  public void removeSpecialVertexOperatorId(final ComponentInstance id) {
+    this.specialVertexOperatorIds.remove(id);
   }
 
   /**
@@ -243,13 +235,8 @@ public class SimulationManager {
    *          the id
    * @return true, if successful
    */
-  public boolean hasSpecialVertexOperatorId(final String id) {
-    for (final String currentId : this.specialVertexOperatorIds) {
-      if ((currentId.equals(id))) {
-        return true;
-      }
-    }
-    return false;
+  public boolean hasSpecialVertexOperatorId(final ComponentInstance id) {
+    return this.specialVertexOperatorIds.contains(id);
   }
 
   /**

@@ -58,6 +58,7 @@ import org.preesm.model.scenario.papi.PapifyConfigManager;
 import org.preesm.model.scenario.papi.PapifyConfigPE;
 import org.preesm.model.scenario.types.DataType;
 import org.preesm.model.scenario.types.VertexType;
+import org.preesm.model.slam.ComponentInstance;
 import org.preesm.model.slam.Design;
 import org.w3c.dom.DOMImplementation;
 import org.w3c.dom.Document;
@@ -356,7 +357,7 @@ public class ScenarioWriter {
     final Element sVOperators = this.dom.createElement("specialVertexOperators");
     params.appendChild(sVOperators);
 
-    for (final String opId : this.scenario.getSimulationManager().getSpecialVertexOperatorIds()) {
+    for (final ComponentInstance opId : this.scenario.getSimulationManager().getSpecialVertexOperatorIds()) {
       addSpecialVertexOperator(sVOperators, opId);
     }
 
@@ -389,11 +390,11 @@ public class ScenarioWriter {
    * @param opId
    *          the op id
    */
-  private void addSpecialVertexOperator(final Element parent, final String opId) {
+  private void addSpecialVertexOperator(final Element parent, final ComponentInstance opId) {
 
     final Element dataTypeElt = this.dom.createElement("specialVertexOperator");
     parent.appendChild(dataTypeElt);
-    dataTypeElt.setAttribute("path", opId);
+    dataTypeElt.setAttribute("path", opId.getInstanceName());
   }
 
   /**

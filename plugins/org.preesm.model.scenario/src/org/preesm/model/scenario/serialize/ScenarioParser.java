@@ -387,7 +387,8 @@ public class ScenarioParser {
           final String path = elt.getAttribute("path");
 
           if (path != null) {
-            this.scenario.getSimulationManager().addSpecialVertexOperatorId(path);
+            final ComponentInstance componentInstance = this.scenario.getDesign().getComponentInstance(path);
+            this.scenario.getSimulationManager().addSpecialVertexOperatorId(componentInstance);
           }
         }
       }
@@ -401,7 +402,7 @@ public class ScenarioParser {
      */
     if (this.scenario.getSimulationManager().getSpecialVertexOperatorIds().isEmpty()
         && (this.scenario.getOperatorIds() != null)) {
-      for (final String opId : this.scenario.getOperatorIds()) {
+      for (final ComponentInstance opId : this.scenario.getOperators()) {
         this.scenario.getSimulationManager().addSpecialVertexOperatorId(opId);
       }
     }

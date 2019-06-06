@@ -616,7 +616,17 @@ public class SimulationPage extends FormPage implements IPropertyListener {
 
     // The check state listener modifies the check status of elements
     checkStateListener.setTreeViewer(treeviewer, listener);
-    treeviewer.setLabelProvider(new LabelProvider());
+    treeviewer.setLabelProvider(new LabelProvider() {
+      @Override
+      public String getText(final Object element) {
+        if (element instanceof ComponentInstance) {
+          final ComponentInstance ci = (ComponentInstance) element;
+          return ci.getInstanceName() + " (" + ci.getComponent().getVlnv().getName() + ")";
+        } else {
+          return super.getText(element);
+        }
+      }
+    });
     treeviewer.setAutoExpandLevel(AbstractTreeViewer.ALL_LEVELS);
 
     treeviewer.addCheckStateListener(checkStateListener);
@@ -627,7 +637,7 @@ public class SimulationPage extends FormPage implements IPropertyListener {
     treeviewer.getTree().setLayoutData(gd);
 
     treeviewer.setUseHashlookup(true);
-    treeviewer.setInput(this.scenario.getOrderedOperatorIds());
+    treeviewer.setInput(this.scenario.getOrderedOperators());
     toolkit.paintBordersFor(container);
 
     // Tree is refreshed in case of algorithm modifications
