@@ -266,7 +266,7 @@ public class SdfToDagConverter {
           final Timing originalTiming = tm.getTimingOrDefault(currentVertex.getInfo(),
               op.getComponent().getVlnv().getName());
           Timing copyTiming = null;
-          if (originalTiming == tm.defaultTiming) {
+          if (originalTiming.getTime() == Timing.DEFAULT_TASK_TIME) {
             copyTiming = new Timing(op.getComponent().getVlnv().getName(), currentVertex.getId());
           } else {
             if (originalTiming.isEvaluated()) {

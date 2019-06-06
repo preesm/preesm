@@ -56,9 +56,6 @@ import org.preesm.model.slam.component.Component;
  */
 public class TimingManager {
 
-  /** Default timing when none was set. */
-  public final Timing defaultTiming;
-
   /** List of all timings. */
   private final List<Timing> timings;
 
@@ -83,7 +80,6 @@ public class TimingManager {
     this.preesmScenario = preesmScenario;
     this.timings = new ArrayList<>();
     this.memcpySpeeds = new LinkedHashMap<>();
-    this.defaultTiming = new Timing("default", "default", Timing.DEFAULT_TASK_TIME);
   }
 
   /**
@@ -175,7 +171,7 @@ public class TimingManager {
     }
 
     if (val == null) {
-      val = this.defaultTiming;
+      val = new Timing(operatorDefinitionId, dagVertexId);
     }
 
     return val;
