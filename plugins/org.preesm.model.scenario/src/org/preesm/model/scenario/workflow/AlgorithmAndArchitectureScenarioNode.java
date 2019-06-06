@@ -49,7 +49,6 @@ import org.preesm.commons.doc.annotations.Port;
 import org.preesm.commons.doc.annotations.PreesmTask;
 import org.preesm.commons.exceptions.PreesmException;
 import org.preesm.commons.exceptions.PreesmRuntimeException;
-import org.preesm.model.pisdf.Parameter;
 import org.preesm.model.pisdf.PiGraph;
 import org.preesm.model.scenario.ParameterValue;
 import org.preesm.model.scenario.PreesmScenario;
@@ -122,19 +121,13 @@ public class AlgorithmAndArchitectureScenarioNode extends AbstractScenarioImplem
   private void applyScenarioParameterValues(final PreesmScenario scenario, final PiGraph piAlgorithm) {
     for (final ParameterValue paramValue : scenario.getParameterValueManager().getParameterValues()) {
 
-      final String variableName = paramValue.getName();
       final String newValue = paramValue.getValue();
       final String expression = paramValue.getExpression();
-      final String parentVertex = paramValue.getParentVertex();
 
       if (newValue != null) {
-        // note: need to lookup since graph reconnector may have changed Paramter objects
-        final Parameter lookupParameterGivenGraph = piAlgorithm.lookupParameterGivenGraph(variableName, parentVertex);
-        lookupParameterGivenGraph.setExpression(newValue);
+        paramValue.getParameter().setExpression(newValue);
       } else if (expression != null) {
-        // note: need to lookup since graph reconnector may have changed Paramter objects
-        final Parameter lookupParameterGivenGraph = piAlgorithm.lookupParameterGivenGraph(variableName, parentVertex);
-        lookupParameterGivenGraph.setExpression(expression);
+        paramValue.getParameter().setExpression(expression);
       } else {
         // keep value from PiSDF graph
       }

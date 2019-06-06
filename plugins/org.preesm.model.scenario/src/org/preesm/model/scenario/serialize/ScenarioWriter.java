@@ -173,7 +173,7 @@ public class ScenarioWriter {
       parent.appendChild(valueElt);
 
       valueElt.setAttribute("name", value.getName());
-      valueElt.setAttribute("parent", value.getParentVertex());
+      valueElt.setAttribute("parent", value.getParameter().getContainingPiGraph().getName());
       valueElt.setAttribute("type", value.getType().toString());
 
       valueElt.setAttribute("value", valueToPrint);

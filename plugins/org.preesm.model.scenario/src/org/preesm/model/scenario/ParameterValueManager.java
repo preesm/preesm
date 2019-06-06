@@ -101,11 +101,9 @@ public class ParameterValueManager {
    *          the parameter
    * @param value
    *          the value
-   * @param parent
-   *          the parent
    */
-  public void addIndependentParameterValue(final Parameter parameter, final String value, final String parent) {
-    final ParameterValue pValue = new ParameterValue(parameter, ParameterType.INDEPENDENT, parent);
+  public void addIndependentParameterValue(final Parameter parameter, final String value) {
+    final ParameterValue pValue = new ParameterValue(parameter, ParameterType.INDEPENDENT);
     pValue.setValue(value);
     this.parameterValues.add(pValue);
   }
@@ -117,12 +115,9 @@ public class ParameterValueManager {
    *          the parameter
    * @param values
    *          the values
-   * @param parent
-   *          the parent
    */
-  public void addActorDependentParameterValue(final Parameter parameter, final Set<Integer> values,
-      final String parent) {
-    final ParameterValue pValue = new ParameterValue(parameter, ParameterType.ACTOR_DEPENDENT, parent);
+  public void addActorDependentParameterValue(final Parameter parameter, final Set<Integer> values) {
+    final ParameterValue pValue = new ParameterValue(parameter, ParameterType.ACTOR_DEPENDENT);
     pValue.setValues(values);
     this.parameterValues.add(pValue);
   }
@@ -141,8 +136,7 @@ public class ParameterValueManager {
       inputParametersNames.add(p.getName());
     }
 
-    addParameterDependentParameterValue(param, param.getExpression().getExpressionAsString(), inputParametersNames,
-        parent);
+    addParameterDependentParameterValue(param, param.getExpression().getExpressionAsString(), inputParametersNames);
   }
 
   /**
@@ -154,12 +148,10 @@ public class ParameterValueManager {
    *          the expression
    * @param inputParameters
    *          the input parameters
-   * @param parent
-   *          the parent
    */
   public void addParameterDependentParameterValue(final Parameter parameter, final String expression,
-      final Set<String> inputParameters, final String parent) {
-    final ParameterValue pValue = new ParameterValue(parameter, ParameterType.PARAMETER_DEPENDENT, parent);
+      final Set<String> inputParameters) {
+    final ParameterValue pValue = new ParameterValue(parameter, ParameterType.PARAMETER_DEPENDENT);
     pValue.setExpression(expression);
     pValue.setInputParameters(inputParameters);
     this.parameterValues.add(pValue);
@@ -186,7 +178,7 @@ public class ParameterValueManager {
         addParameterDependentParameterValue(param, parent);
       } else {
         // Add an independent parameter value
-        addIndependentParameterValue(param, param.getExpression().getExpressionAsString(), parent);
+        addIndependentParameterValue(param, param.getExpression().getExpressionAsString());
       }
     } else {
       final boolean isActorDependent = inputParameters.size() < param.getConfigInputPorts().size();
@@ -195,7 +187,7 @@ public class ParameterValueManager {
         final Set<Integer> values = new LinkedHashSet<>();
         values.add(1);
         // Add an actor dependent value
-        addActorDependentParameterValue(param, values, parent);
+        addActorDependentParameterValue(param, values);
       } else {
         // Add a parameter dependent value
         addParameterDependentParameterValue(param, parent);

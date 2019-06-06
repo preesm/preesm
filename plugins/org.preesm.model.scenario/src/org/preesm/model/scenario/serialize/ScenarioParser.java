@@ -256,7 +256,7 @@ public class ScenarioParser {
       switch (type) {
         case "INDEPENDENT":
         case "STATIC": // Retro-compatibility
-          this.scenario.getParameterValueManager().addIndependentParameterValue(currentParameter, stringValue, parent);
+          this.scenario.getParameterValueManager().addIndependentParameterValue(currentParameter, stringValue);
           break;
         case "ACTOR_DEPENDENT":
         case "DYNAMIC": // Retro-compatibility
@@ -273,8 +273,7 @@ public class ScenarioParser {
             } catch (final NumberFormatException e) {
               // TODO: Do smthg?
             }
-            this.scenario.getParameterValueManager().addActorDependentParameterValue(currentParameter, newValues,
-                parent);
+            this.scenario.getParameterValueManager().addActorDependentParameterValue(currentParameter, newValues);
           }
           break;
         case "PARAMETER_DEPENDENT":
@@ -285,7 +284,7 @@ public class ScenarioParser {
             inputParameters.add(input.getName());
           }
           this.scenario.getParameterValueManager().addParameterDependentParameterValue(currentParameter, stringValue,
-              inputParameters, parent);
+              inputParameters);
           break;
         default:
           throw new PreesmRuntimeException("Unknown Parameter type: " + type + " for Parameter: " + name);
