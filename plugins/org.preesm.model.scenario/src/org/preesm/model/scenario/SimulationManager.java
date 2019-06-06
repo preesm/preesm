@@ -53,10 +53,10 @@ import org.preesm.model.slam.route.Route;
 public class SimulationManager {
 
   /** Names of the main operator and com node. */
-  private ComponentInstance mainComNodeName;
+  private ComponentInstance mainComNode;
 
   /** The main operator name. */
-  private ComponentInstance mainOperatorName;
+  private ComponentInstance mainOperator;
 
   /**
    * Average transfer size sizes in base unit (usually byte). This size is used while calculating the routing table. The
@@ -88,18 +88,18 @@ public class SimulationManager {
    *
    * @return the main com node name
    */
-  public ComponentInstance getMainComNodeName() {
-    return this.mainComNodeName;
+  public ComponentInstance getMainComNode() {
+    return this.mainComNode;
   }
 
   /**
    * Sets the main com node name.
    *
-   * @param mainComNodeName
+   * @param mainComNode
    *          the new main com node name
    */
-  public void setMainComNodeName(final ComponentInstance mainComNodeName) {
-    this.mainComNodeName = mainComNodeName;
+  public void setMainComNode(final ComponentInstance mainComNode) {
+    this.mainComNode = mainComNode;
   }
 
   /**
@@ -107,18 +107,18 @@ public class SimulationManager {
    *
    * @return the main operator name
    */
-  public ComponentInstance getMainOperatorName() {
-    return this.mainOperatorName;
+  public ComponentInstance getMainOperator() {
+    return this.mainOperator;
   }
 
   /**
    * Sets the main operator name.
    *
-   * @param mainOperatorName
+   * @param mainOperator
    *          the new main operator name
    */
-  public void setMainOperatorName(final ComponentInstance mainOperatorName) {
-    this.mainOperatorName = mainOperatorName;
+  public void setMainOperator(final ComponentInstance mainOperator) {
+    this.mainOperator = mainOperator;
   }
 
   /**

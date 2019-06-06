@@ -137,9 +137,9 @@ public class SimulationPage extends FormPage implements IPropertyListener {
 
         final ComponentInstance compInstance = scenario.getDesign().getComponentInstance(item);
         if (this.type.equals("operator")) {
-          SimulationPage.this.scenario.getSimulationManager().setMainOperatorName(compInstance);
+          SimulationPage.this.scenario.getSimulationManager().setMainOperator(compInstance);
         } else if (this.type.equals("comNode")) {
-          SimulationPage.this.scenario.getSimulationManager().setMainComNodeName(compInstance);
+          SimulationPage.this.scenario.getSimulationManager().setMainComNode(compInstance);
         }
       }
 
@@ -363,13 +363,13 @@ public class SimulationPage extends FormPage implements IPropertyListener {
         combo.add(opId);
       }
 
-      combo.select(combo.indexOf(this.scenario.getSimulationManager().getMainOperatorName().getInstanceName()));
+      combo.select(combo.indexOf(this.scenario.getSimulationManager().getMainOperator().getInstanceName()));
     } else if (type.equals("comNode")) {
       for (final String nodeId : this.scenario.getComNodeIds()) {
         combo.add(nodeId);
       }
 
-      combo.select(combo.indexOf(this.scenario.getSimulationManager().getMainComNodeName().getInstanceName()));
+      combo.select(combo.indexOf(this.scenario.getSimulationManager().getMainComNode().getInstanceName()));
     }
 
     return combo;

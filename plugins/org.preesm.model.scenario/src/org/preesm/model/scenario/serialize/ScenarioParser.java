@@ -312,11 +312,11 @@ public class ScenarioParser {
         switch (type) {
           case "mainCore":
             final ComponentInstance mainCore = scenario.getDesign().getComponentInstance(content);
-            this.scenario.getSimulationManager().setMainOperatorName(mainCore);
+            this.scenario.getSimulationManager().setMainOperator(mainCore);
             break;
           case "mainComNode":
             final ComponentInstance mainComNode = scenario.getDesign().getComponentInstance(content);
-            this.scenario.getSimulationManager().setMainComNodeName(mainComNode);
+            this.scenario.getSimulationManager().setMainComNode(mainComNode);
             break;
           case "averageDataSize":
             this.scenario.getSimulationManager().setAverageDataSize(Long.valueOf(content));

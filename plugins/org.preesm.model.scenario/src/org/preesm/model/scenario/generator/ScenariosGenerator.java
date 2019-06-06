@@ -230,9 +230,9 @@ public class ScenariosGenerator {
       fillPiScenario(scenario, archi, piGraph);
     }
     // Add a main core (first of the list)
-    scenario.getSimulationManager().setMainOperatorName(coreIds.get(0));
+    scenario.getSimulationManager().setMainOperator(coreIds.get(0));
     // Add a main com node (first of the list)
-    scenario.getSimulationManager().setMainComNodeName(comNodeIds.get(0));
+    scenario.getSimulationManager().setMainComNode(comNodeIds.get(0));
     // Add a average transfer size
     scenario.getSimulationManager().setAverageDataSize(1000);
 

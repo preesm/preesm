@@ -175,7 +175,7 @@ public class SpiderCodegen {
     }
 
     this.coreIds = new LinkedHashMap<>();
-    ComponentInstance mainOperator = this.scenario.getSimulationManager().getMainOperatorName();
+    ComponentInstance mainOperator = this.scenario.getSimulationManager().getMainOperator();
     if ((mainOperator == null) || mainOperator.equals("")) {
       /* Warning */
       mainOperator = this.scenario.getOrderedOperators().get(0);
@@ -645,7 +645,7 @@ public class SpiderCodegen {
       }
       append("\n\t/* === Set Spider GRT core === */\n\n");
       append("\tSpider::setSpiderGRTVirtualID(archi, static_cast<std::uint32_t>(PEVirtID::"
-          + SpiderNameGenerator.getCoreName(scenario.getSimulationManager().getMainOperatorName()) + "));\n");
+          + SpiderNameGenerator.getCoreName(scenario.getSimulationManager().getMainOperator()) + "));\n");
     }
     append("}\n\n");
     append("void freeArchi() {\n\n");
