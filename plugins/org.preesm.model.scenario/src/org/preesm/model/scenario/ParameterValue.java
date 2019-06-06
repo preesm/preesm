@@ -71,9 +71,6 @@ public class ParameterValue {
   /** Parameter for which we keep value(s). */
   private Parameter parameter;
 
-  /** The name of the parameter. */
-  private final String name;
-
   /** The parameter type. */
   private final ParameterType type;
 
@@ -136,7 +133,6 @@ public class ParameterValue {
    */
   public ParameterValue(final Parameter parameter, final ParameterType type, final String parent) {
     setParameter(parameter);
-    this.name = parameter.getName();
     this.type = type;
     this.values = new LinkedHashSet<>();
     this.inputParameters = new LinkedHashSet<>();
@@ -149,7 +145,7 @@ public class ParameterValue {
    * @return the name
    */
   public String getName() {
-    return this.name;
+    return parameter.getName();
   }
 
   /**
