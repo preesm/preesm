@@ -39,7 +39,6 @@ package org.preesm.ui.scenario.editor.timings;
 import org.eclipse.jface.viewers.ISelectionChangedListener;
 import org.eclipse.jface.viewers.SelectionChangedEvent;
 
-// TODO: Auto-generated Javadoc
 /**
  * Listener of core definition change and of table selection.
  *
@@ -55,8 +54,7 @@ public class TimingSelectionListener implements ISelectionChangedListener {
    */
   @Override
   public void selectionChanged(final SelectionChangedEvent event) {
-    // TODO Auto-generated method stub
-
+    // nothing
   }
 
 }

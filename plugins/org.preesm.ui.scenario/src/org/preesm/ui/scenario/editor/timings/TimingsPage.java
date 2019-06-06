@@ -48,8 +48,6 @@ import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.ControlAdapter;
 import org.eclipse.swt.events.ControlEvent;
-import org.eclipse.swt.events.FocusEvent;
-import org.eclipse.swt.events.FocusListener;
 import org.eclipse.swt.events.KeyEvent;
 import org.eclipse.swt.events.KeyListener;
 import org.eclipse.swt.events.SelectionAdapter;
@@ -301,23 +299,16 @@ public class TimingsPage extends FormPage implements IPropertyListener {
   private Combo addCoreSelector(final Composite parent, final FormToolkit toolkit) {
     final Composite combocps = toolkit.createComposite(parent);
     combocps.setLayout(new FillLayout());
+
+    final GridData componentNameGridData = new GridData();
+    componentNameGridData.widthHint = 250;
+    combocps.setLayoutData(componentNameGridData);
+
     combocps.setVisible(true);
     final Combo combo = new Combo(combocps, SWT.DROP_DOWN | SWT.READ_ONLY);
     combo.setToolTipText(Messages.getString("Constraints.coreSelectionTooltip"));
     comboDataInit(combo);
-    combo.addFocusListener(new FocusListener() {
-
-      @Override
-      public void focusGained(final FocusEvent e) {
-        comboDataInit((Combo) e.getSource());
-      }
-
-      @Override
-      public void focusLost(final FocusEvent e) {
-        // no behavior by default
-      }
-
-    });
+    combo.select(0);
     return combo;
   }
 

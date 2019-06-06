@@ -354,6 +354,11 @@ public class SimulationPage extends FormPage implements IPropertyListener {
       final String type) {
     final Composite combocps = toolkit.createComposite(parent);
     combocps.setLayout(new FillLayout());
+
+    final GridData componentNameGridData = new GridData(GridData.HORIZONTAL_ALIGN_FILL);
+    componentNameGridData.widthHint = 250;
+    combocps.setLayoutData(componentNameGridData);
+
     combocps.setVisible(true);
     final Combo combo = new Combo(combocps, SWT.DROP_DOWN | SWT.READ_ONLY);
     combo.setToolTipText(tooltip);

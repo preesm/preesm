@@ -37,16 +37,16 @@
 package org.preesm.ui.scenario.editor.constraints;
 
 import java.util.LinkedHashSet;
+import java.util.List;
 import java.util.Set;
 import org.eclipse.jface.viewers.CheckStateChangedEvent;
 import org.eclipse.jface.viewers.CheckboxTreeViewer;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.BusyIndicator;
-import org.eclipse.swt.events.FocusEvent;
-import org.eclipse.swt.events.FocusListener;
 import org.eclipse.swt.events.PaintEvent;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.layout.FillLayout;
+import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.IEditorPart;
@@ -88,7 +88,7 @@ public class ConstraintsCheckStateListener implements ISDFCheckStateListener {
   private PreesmAlgorithmTreeContentProvider contentProvider = null;
 
   /** Constraints page used as a property listener to change the dirty state. */
-  private IPropertyListener propertyListener = null;
+  IPropertyListener propertyListener = null;
 
   /**
    * Instantiates a new constraints check state listener.
@@ -282,27 +282,18 @@ public class ConstraintsCheckStateListener implements ISDFCheckStateListener {
   public void addComboBoxSelector(final Composite parent, final FormToolkit toolkit) {
     final Composite combocps = toolkit.createComposite(parent);
     combocps.setLayout(new FillLayout());
+
+    final GridData componentNameGridData = new GridData();
+    componentNameGridData.widthHint = 250;
+    combocps.setLayoutData(componentNameGridData);
+
     combocps.setVisible(true);
-    final Combo combo = new Combo(combocps, SWT.DROP_DOWN | SWT.READ_ONLY);
+    final Combo combo = new Combo(combocps, SWT.DROP_DOWN | SWT.READ_ONLY | SWT.SIMPLE);
     combo.setVisibleItemCount(20);
     combo.setToolTipText(Messages.getString("Constraints.coreSelectionTooltip"));
     comboDataInit(combo);
-    combo.addFocusListener(new FocusListener() {
-
-      @Override
-      public void focusGained(final FocusEvent e) {
-        comboDataInit((Combo) e.getSource());
-
-      }
-
-      @Override
-      public void focusLost(final FocusEvent e) {
-        // no behavior by default
-      }
-
-    });
-
     combo.addSelectionListener(this);
+    combo.select(0);
   }
 
   /**
@@ -312,11 +303,13 @@ public class ConstraintsCheckStateListener implements ISDFCheckStateListener {
    *          the combo
    */
   private void comboDataInit(final Combo combo) {
-
     combo.removeAll();
-    for (final String id : this.scenario.getOrderedOperatorIds()) {
-      combo.add(id);
+    final List<ComponentInstance> orderedOperators = this.scenario.getOrderedOperators();
+    for (final ComponentInstance id : orderedOperators) {
+      combo.add(id.getInstanceName());
     }
+    // select first operator by default
+    this.currentOpId = orderedOperators.get(0);
   }
 
   /*
