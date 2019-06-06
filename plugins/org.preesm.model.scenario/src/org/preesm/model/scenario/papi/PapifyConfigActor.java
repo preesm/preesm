@@ -40,7 +40,6 @@ import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.Set;
 
-// TODO: Auto-generated Javadoc
 /**
  * A PapifyConfig stores the monitoring configuration of each core instance.
  *
@@ -48,8 +47,6 @@ import java.util.Set;
  */
 public class PapifyConfigActor {
 
-  /** The actor instance. */
-  private String actorId;
   /** The actor instance path. */
   private String actorPath;
 
@@ -67,20 +64,8 @@ public class PapifyConfigActor {
    * Instantiates a new PapifyConfig group.
    */
   public PapifyConfigActor(final String actorId, final String actorPath) {
-    this.actorId = actorId;
     this.actorPath = actorPath;
     this.actorEventMap = new LinkedHashMap<>();
-  }
-
-  /**
-   * Adds the actorId.
-   *
-   * @param actorId
-   *          the actor instance
-   */
-  public void addActorId(final String actorId) {
-    this.actorId = actorId;
-
   }
 
   /**
@@ -143,19 +128,6 @@ public class PapifyConfigActor {
   }
 
   /**
-   * Removes the actorId.
-   *
-   * @param actorId
-   *          the actorId
-   */
-  public void removeActorId(final String actorId) {
-    if (actorId.equals(this.actorId)) {
-      this.actorId = "";
-      this.actorEventMap = null;
-    }
-  }
-
-  /**
    * Removes an event.
    *
    * @param event
@@ -174,15 +146,6 @@ public class PapifyConfigActor {
   }
 
   /**
-   * Gets the actor id.
-   *
-   * @return the actor id
-   */
-  public String getActorId() {
-    return (this.actorId);
-  }
-
-  /**
    * Gets the actor path.
    *
    * @return the actor path
@@ -198,18 +161,6 @@ public class PapifyConfigActor {
    */
   public Map<String, Set<PapiEvent>> getPAPIEvents() {
     return this.actorEventMap;
-  }
-
-  /**
-   * Checks for Actor id.
-   *
-   * @param actorId
-   *          the actor id
-   * @return true, if successful
-   */
-  public boolean isActorId(final String actorId) {
-
-    return actorId.equals(this.actorId);
   }
 
   /**
@@ -270,9 +221,7 @@ public class PapifyConfigActor {
    */
   @Override
   public String toString() {
-    String s = "<Printing actorId> \n";
-    s += this.actorId;
-    s += "<Printing actorPath> \n";
+    String s = "<Printing actorPath> \n";
     s += this.actorPath;
     s += "\n<Printing components and Events> \n";
     s += this.actorEventMap.toString();

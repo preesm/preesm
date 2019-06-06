@@ -577,13 +577,9 @@ public class ScenarioParser {
         final Element elt = (Element) node;
         final String type = elt.getTagName();
         String actorPath = "";
-        String actorId = "";
         if (type.equals("actorPath")) {
           actorPath = elt.getAttribute("actorPath");
           pc.addActorPath(actorPath);
-        } else if (type.equals("actorId")) {
-          actorId = elt.getAttribute("actorId");
-          pc.addActorId(actorId);
           Node nodeEvents = node.getFirstChild();
           while (nodeEvents != null) {
 

@@ -137,53 +137,6 @@ public class PapifyConfigManager {
   }
 
   /**
-   * Removes the component from the PapifyConfig for the core.
-   *
-   * @param opId
-   *          the op id
-   * @param component
-   *          the PAPI component
-   */
-  public void removeComponent(final Component opId, final PapiComponent component) {
-    final PapifyConfigPE pgSet = getCorePapifyConfigGroupPE(opId);
-
-    if (pgSet != null) {
-      pgSet.removePAPIComponent(component);
-    }
-  }
-
-  /**
-   * Adds an event to the PapifyConfig for the core.
-   *
-   * @param opId
-   *          the op id
-   * @param event
-   *          the PAPI event
-   */
-  public void addEvent(final String opId, final String component, final PapiEvent event) {
-
-    final PapifyConfigActor pgSet = getCorePapifyConfigGroupActor(opId);
-
-    pgSet.addPAPIEvent(component, event);
-  }
-
-  /**
-   * Removes an event from the PapifyConfig for the actor.
-   *
-   * @param opId
-   *          the op id
-   * @param event
-   *          the PAPI event
-   */
-  public void removeEvent(final String opId, final String component, final PapiEvent event) {
-    final PapifyConfigActor pgSet = getCorePapifyConfigGroupActor(opId);
-
-    if (pgSet != null) {
-      pgSet.removePAPIEvent(component, event);
-    }
-  }
-
-  /**
    * Gets the PapifyConfigActors groups.
    *
    * @return the PapifyConfigActors groups
@@ -206,15 +159,15 @@ public class PapifyConfigManager {
   /**
    * Gets the op PapifyConfigActor group.
    *
-   * @param opPath
+   * @param actorPath
    *          the op path
    * @return the op PapifyConfigActor groups
    */
-  public PapifyConfigActor getCorePapifyConfigGroupActor(final String opPath) {
+  public PapifyConfigActor getCorePapifyConfigGroupActor(final String actorPath) {
     PapifyConfigActor papifyConfigGroup = null;
 
     for (final PapifyConfigActor pg : this.papifyConfigGroupsActors) {
-      if (pg.isActorPath(opPath)) {
+      if (pg.isActorPath(actorPath)) {
         papifyConfigGroup = pg;
       }
     }
