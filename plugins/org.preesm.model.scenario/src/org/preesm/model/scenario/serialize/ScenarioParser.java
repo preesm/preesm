@@ -818,11 +818,13 @@ public class ScenarioParser {
           time = -1;
         }
 
-        if ((vertexpath != null) && this.scenario.getOperatorDefinitionIds().contains(opdefname)) {
+        final boolean contains = this.scenario.getDesign().containsComponent(opdefname);
+        if ((vertexpath != null) && contains) {
+          final Component component = this.scenario.getDesign().getComponent(opdefname);
           if (isEvaluated) {
-            timing = new Timing(opdefname, vertexpath, time);
+            timing = new Timing(component, vertexpath, time);
           } else {
-            timing = new Timing(opdefname, vertexpath, stringValue);
+            timing = new Timing(component, vertexpath, stringValue);
           }
         }
       }

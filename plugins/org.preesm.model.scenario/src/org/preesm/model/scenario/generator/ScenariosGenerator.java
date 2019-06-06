@@ -66,6 +66,7 @@ import org.preesm.model.scenario.types.DataType;
 import org.preesm.model.slam.ComponentInstance;
 import org.preesm.model.slam.Design;
 import org.preesm.model.slam.SlamPackage;
+import org.preesm.model.slam.component.Component;
 import org.preesm.model.slam.serialize.IPXACTResourceFactoryImpl;
 import org.preesm.model.slam.serialize.SlamParser;
 import org.preesm.model.slam.utils.DesignTools;
@@ -258,7 +259,7 @@ public class ScenariosGenerator {
     final List<ComponentInstance> coreIds = new ArrayList<>(DesignTools.getOperatorInstances(archi));
 
     // for all different type of cores
-    for (final String opId : DesignTools.getOperatorComponentIds(archi)) {
+    for (final Component opId : DesignTools.getOperatorComponents(archi)) {
       for (final AbstractActor aa : piGraph.getAllActors()) {
         // Add timing: aa run on ci in 10000
         scenario.getTimingManager().addTiming(new Timing(opId, aa.getVertexPath(), 10000));

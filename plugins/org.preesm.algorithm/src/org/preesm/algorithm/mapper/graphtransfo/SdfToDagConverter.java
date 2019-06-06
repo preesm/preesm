@@ -263,18 +263,15 @@ public class SdfToDagConverter {
         // Default timings are given
         for (final ComponentInstance op : DesignTools.getOperatorInstances(architecture)) {
           // info is set to the vertexPath of AbstractVertex
-          final Timing originalTiming = tm.getTimingOrDefault(currentVertex.getInfo(),
-              op.getComponent().getVlnv().getName());
+          final Timing originalTiming = tm.getTimingOrDefault(currentVertex.getInfo(), op.getComponent());
           Timing copyTiming = null;
           if (originalTiming.getTime() == Timing.DEFAULT_TASK_TIME) {
-            copyTiming = new Timing(op.getComponent().getVlnv().getName(), currentVertex.getId());
+            copyTiming = new Timing(op.getComponent(), currentVertex.getId());
           } else {
             if (originalTiming.isEvaluated()) {
-              copyTiming = new Timing(op.getComponent().getVlnv().getName(), currentVertex.getId(),
-                  originalTiming.getTime());
+              copyTiming = new Timing(op.getComponent(), currentVertex.getId(), originalTiming.getTime());
             } else {
-              copyTiming = new Timing(op.getComponent().getVlnv().getName(), currentVertex.getId(),
-                  Timing.DEFAULT_TASK_TIME);
+              copyTiming = new Timing(op.getComponent(), currentVertex.getId(), Timing.DEFAULT_TASK_TIME);
             }
           }
           currentVertexInit.addTiming(copyTiming);
@@ -306,7 +303,7 @@ public class SdfToDagConverter {
         for (final Component opDef : scenario.getTimingManager().getMemcpySpeeds().keySet()) {
           final long sut = scenario.getTimingManager().getMemcpySetupTime(opDef);
           final double tpu = scenario.getTimingManager().getMemcpyTimePerUnit(opDef);
-          final Timing timing = new Timing(opDef.getVlnv().getName(), currentVertex.getId());
+          final Timing timing = new Timing(opDef, currentVertex.getId());
 
           // Depending on the type of vertex, time is given by the size of output or input buffers
           if (SpecialVertexManager.isFork(currentVertex) || SpecialVertexManager.isJoin(currentVertex)
@@ -384,7 +381,7 @@ public class SdfToDagConverter {
 
               // Initializes a default timing that may be erased
               // when timings are imported
-              final Timing newTiming = new Timing(currentIOp.getComponent().getVlnv().getName(), mv.getName());
+              final Timing newTiming = new Timing(currentIOp.getComponent(), mv.getName());
               mv.getInit().addTiming(newTiming);
             }
 

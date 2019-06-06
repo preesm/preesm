@@ -50,14 +50,21 @@ import org.preesm.algorithm.model.sdf.SDFVertex;
 import org.preesm.algorithm.model.sdf.esdf.SDFSinkInterfaceVertex;
 import org.preesm.algorithm.model.sdf.esdf.SDFSourceInterfaceVertex;
 import org.preesm.commons.logger.PreesmLogger;
+import org.preesm.model.scenario.PreesmScenario;
 
-// TODO: Auto-generated Javadoc
 /**
  * Class used to search for the optimal periodic schedule and its throughput for a given hierarchical graph IBSDF.
  *
  * @author blaunay
  */
 public class IBSDFThroughputEvaluator extends ThroughputEvaluator {
+
+  private PreesmScenario scenario;
+
+  public IBSDFThroughputEvaluator(PreesmScenario scenario) {
+    this.scenario = scenario;
+    // TODO Auto-generated constructor stub
+  }
 
   /**
    * Computes (not necessarily optimally) the throughput on the optimal periodic schedule (if it exists) of a given
@@ -194,7 +201,8 @@ public class IBSDFThroughputEvaluator extends ThroughputEvaluator {
           && (edge.getSource().getGraphDescription() instanceof SDFGraph))) {
         L = 0;
       } else {
-        L = this.getScenar().getTimingManager().getTimingOrDefault(edge.getSource().getId(), "x86").getTime();
+        L = this.getScenar().getTimingManager().getTimingOrDefault(edge.getSource().getId(),
+            scenario.getSimulationManager().getMainOperator().getComponent()).getTime();
       }
 
       H = ((double) (edge.getDelay().getValue())

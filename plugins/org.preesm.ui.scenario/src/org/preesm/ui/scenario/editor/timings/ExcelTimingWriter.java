@@ -61,6 +61,7 @@ import org.preesm.model.pisdf.AbstractActor;
 import org.preesm.model.scenario.PreesmScenario;
 import org.preesm.model.scenario.Timing;
 import org.preesm.model.scenario.serialize.PreesmAlgorithmListContentProvider;
+import org.preesm.model.slam.component.Component;
 import org.preesm.ui.scenario.editor.ExcelWriter;
 import org.preesm.ui.scenario.editor.SaveAsWizard;
 
@@ -162,17 +163,17 @@ public class ExcelTimingWriter extends ExcelWriter {
         vertexNames.add(vertex.getVertexPath());
       }
 
-      for (final String opDefId : this.scenario.getOperatorDefinitionIds()) {
+      for (final Component opDefId : this.scenario.getOperatorDefinitions()) {
         for (final String vertexName : vertexNames) {
 
           final Timing timing = this.scenario.getTimingManager().getTimingOrDefault(vertexName, opDefId);
 
-          WritableCell opCell = (WritableCell) sheet.findCell(opDefId);
+          WritableCell opCell = (WritableCell) sheet.findCell(opDefId.getVlnv().getName());
           WritableCell vCell = (WritableCell) sheet.findCell(vertexName);
 
           try {
             if (opCell == null) {
-              opCell = new Label(maxOpAbscissa, 0, opDefId);
+              opCell = new Label(maxOpAbscissa, 0, opDefId.getVlnv().getName());
               sheet.addCell(opCell);
               maxOpAbscissa++;
             }

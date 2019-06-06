@@ -216,17 +216,22 @@ public class LatencyEvaluationTask extends AbstractTaskImplementation {
         if (actor.getKind() == "vertex") {
           if (actor.getGraphDescription() == null) {
             // if atomic actor then copy the duration indicated in the scenario
-            final double duration = scenario.getTimingManager().getTimingOrDefault(actor.getId(), "x86").getTime();
+            final double duration = scenario.getTimingManager()
+                .getTimingOrDefault(actor.getId(), scenario.getSimulationManager().getMainOperator().getComponent())
+                .getTime();
             actor.setPropertyValue(DURATION_LITTERAL, duration);
           } else {
             // if hierarchical actor then as default the duration is 1
             // the real duration of the hierarchical actor will be defined later by scheduling its subgraph
             actor.setPropertyValue(DURATION_LITTERAL, 1.);
-            scenario.getTimingManager().setTiming(actor.getId(), "x86", 1); // to remove
+            scenario.getTimingManager().setTiming(actor.getId(),
+                scenario.getSimulationManager().getMainOperator().getComponent(), 1); // to remove
           }
         } else {
           // keep the duration of input interfaces
-          final double duration = scenario.getTimingManager().getTimingOrDefault(actor.getId(), "x86").getTime();
+          final double duration = scenario.getTimingManager()
+              .getTimingOrDefault(actor.getId(), scenario.getSimulationManager().getMainOperator().getComponent())
+              .getTime();
           actor.setPropertyValue(DURATION_LITTERAL, duration);
 
         }

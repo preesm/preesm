@@ -48,8 +48,8 @@ import org.nfunk.jep.JEP;
 import org.nfunk.jep.Node;
 import org.nfunk.jep.ParseException;
 import org.preesm.commons.logger.PreesmLogger;
+import org.preesm.model.slam.component.Component;
 
-// TODO: Auto-generated Javadoc
 /**
  * A timing links a vertex (either from SDFGraph or from PiGraph) and an operator definition to a time. Ids are used to
  * make the scenario independent from model implementations.
@@ -86,7 +86,7 @@ public class Timing {
    * Operator to which the timing is related (i.e., processing element on which the vertex of the graph takes the given
    * time to execute)
    */
-  private final String operatorDefinitionId;
+  private final Component operatorDefinitionId;
 
   /** Set of Usable Parameters for the expression. */
   private Set<String> inputParameters;
@@ -103,7 +103,7 @@ public class Timing {
    *          the vertex id
    */
 
-  public Timing(final String operatorDefinitionId, final String vertexId) {
+  public Timing(final Component operatorDefinitionId, final String vertexId) {
     this.time = Timing.DEFAULT_TASK_TIME;
     this.stringValue = Timing.DEFAULT_EXPRESSION_VALUE;
     this.inputParameters = new LinkedHashSet<>();
@@ -122,7 +122,7 @@ public class Timing {
    * @param time
    *          the time
    */
-  public Timing(final String operatorId, final String sdfVertexId, final long time) {
+  public Timing(final Component operatorId, final String sdfVertexId, final long time) {
     this(operatorId, sdfVertexId);
     this.time = time;
     this.stringValue = String.valueOf(time);
@@ -139,7 +139,7 @@ public class Timing {
    * @param expression
    *          the expression
    */
-  public Timing(final String operatorId, final String vertexId, final String expression) {
+  public Timing(final Component operatorId, final String vertexId, final String expression) {
     this(operatorId, vertexId);
     this.stringValue = expression;
     this.isEvaluated = false;
@@ -158,7 +158,7 @@ public class Timing {
    * @param inputParameters
    *          the input parameters
    */
-  public Timing(final String operatorId, final String vertexId, final String expression,
+  public Timing(final Component operatorId, final String vertexId, final String expression,
       final Set<String> inputParameters) {
     this(operatorId, vertexId);
     this.stringValue = expression;
@@ -172,7 +172,7 @@ public class Timing {
    *
    * @return the operator definition id
    */
-  public String getOperatorDefinitionId() {
+  public Component getOperatorDefinitionId() {
     return this.operatorDefinitionId;
   }
 

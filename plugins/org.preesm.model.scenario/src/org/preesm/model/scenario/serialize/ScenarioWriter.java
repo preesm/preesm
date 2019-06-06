@@ -505,7 +505,7 @@ public class ScenarioWriter {
     final Element timingelt = this.dom.createElement("timing");
     parent.appendChild(timingelt);
     timingelt.setAttribute("vertexname", timing.getVertexId());
-    timingelt.setAttribute("opname", timing.getOperatorDefinitionId());
+    timingelt.setAttribute("opname", timing.getOperatorDefinitionId().getVlnv().getName());
     String timeString;
     if (timing.isEvaluated()) {
       timeString = Long.toString(timing.getTime());

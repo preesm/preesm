@@ -81,7 +81,9 @@ public class LatencyEvaluationEngine {
       } else {
         // case of regular actor : get its latency from the scenario
         if (scenario != null) {
-          actorLatency = scenario.getTimingManager().getTimingOrDefault(actor.getId(), "x86").getTime();
+          actorLatency = scenario.getTimingManager()
+              .getTimingOrDefault(actor.getId(), scenario.getSimulationManager().getMainOperator().getComponent())
+              .getTime();
         } else {
           actorLatency = (long) actor.getPropertyBean().getValue("duration");
         }
@@ -122,7 +124,9 @@ public class LatencyEvaluationEngine {
       } else {
         // case of regular actor : get its latency from the scenario
         if (scenario != null) {
-          actorLatency = scenario.getTimingManager().getTimingOrDefault(actor.getId(), "x86").getTime();
+          actorLatency = scenario.getTimingManager()
+              .getTimingOrDefault(actor.getId(), scenario.getSimulationManager().getMainOperator().getComponent())
+              .getTime();
         } else {
           actorLatency = (long) actor.getPropertyBean().getValue("duration");
         }
@@ -287,7 +291,9 @@ public class LatencyEvaluationEngine {
         // get actor duration
         double duration;
         if (this.scenario != null) {
-          duration = this.scenario.getTimingManager().getTimingOrDefault(actor.getId(), "x86").getTime();
+          duration = this.scenario.getTimingManager()
+              .getTimingOrDefault(actor.getId(), scenario.getSimulationManager().getMainOperator().getComponent())
+              .getTime();
         } else {
           duration = (Double) actor.getPropertyBean().getValue("duration");
         }

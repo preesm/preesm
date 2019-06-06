@@ -54,6 +54,7 @@ import org.preesm.commons.logger.PreesmLogger;
 import org.preesm.model.pisdf.PiGraph;
 import org.preesm.model.scenario.PreesmScenario;
 import org.preesm.model.scenario.Timing;
+import org.preesm.model.slam.component.Component;
 
 /**
  * Importing timings in a scenario from a csv file. task names are rows while operator types are columns
@@ -84,7 +85,7 @@ public class CsvTimingParser {
    * @param opDefIds
    *          the op def ids
    */
-  public void parse(final String url, final List<String> opDefIds) {
+  public void parse(final String url, final List<Component> opDefIds) {
     PreesmLogger.getLogger().log(Level.INFO,
         "Importing timings from a csv sheet. Non precised timings are kept unmodified.");
 
@@ -95,7 +96,7 @@ public class CsvTimingParser {
     final Path path = new Path(url);
     final IFile file = workspace.getRoot().getFile(path);
     try {
-      final Map<String, Map<String, String>> timings = new LinkedHashMap<>();
+      final Map<String, Map<Component, String>> timings = new LinkedHashMap<>();
       final BufferedReader br = new BufferedReader(new InputStreamReader(file.getContents()));
 
       String line;
@@ -114,10 +115,12 @@ public class CsvTimingParser {
         while ((line = br.readLine()) != null) {
           final String[] cells = line.split(";");
           if (cells.length > 1) {
-            final Map<String, String> timing = new LinkedHashMap<>();
+            final Map<Component, String> timing = new LinkedHashMap<>();
 
             for (int i = 1; i < cells.length; i++) {
-              timing.put(opNames[i], cells[i]);
+              final String vlnvName = opNames[i];
+              final Component com = this.scenario.getDesign().getComponent(vlnvName);
+              timing.put(com, cells[i]);
             }
 
             timings.put(cells[0], timing);
@@ -143,7 +146,7 @@ public class CsvTimingParser {
    * @throws CoreException
    *           the core exception
    */
-  private void parseTimings(final Map<String, Map<String, String>> timings, final List<String> opDefIds) {
+  private void parseTimings(final Map<String, Map<Component, String>> timings, final List<Component> opDefIds) {
     // Depending on the type of SDF graph we process (IBSDF or PISDF), call
     // one or the other method
     final PiGraph currentGraph = scenario.getAlgorithm();
@@ -160,8 +163,8 @@ public class CsvTimingParser {
    * @param opDefIds
    *          the op def ids
    */
-  private void parseTimingsForPISDFGraph(final Map<String, Map<String, String>> timings, final PiGraph currentGraph,
-      final List<String> opDefIds) {
+  private void parseTimingsForPISDFGraph(final Map<String, Map<Component, String>> timings, final PiGraph currentGraph,
+      final List<Component> opDefIds) {
 
     // parse timings of non hierarchical actors of currentGraph
     currentGraph.getActorsWithRefinement().stream().filter(a -> !a.isHierarchical())
@@ -180,11 +183,11 @@ public class CsvTimingParser {
    * @param opDefIds
    *          the op def ids
    */
-  private void parseTimingForVertex(final Map<String, Map<String, String>> timings, final String vertexName,
-      final List<String> opDefIds) {
+  private void parseTimingForVertex(final Map<String, Map<Component, String>> timings, final String vertexName,
+      final List<Component> opDefIds) {
     // For each kind of processing elements, we look for a timing for given vertex
-    for (final String opDefId : opDefIds) {
-      if (!opDefId.isEmpty() && !vertexName.isEmpty()) {
+    for (final Component opDefId : opDefIds) {
+      if (opDefId != null && !vertexName.isEmpty()) {
         // Get the timing we are looking for
         try {
           final String expression = timings.get(vertexName).get(opDefId);

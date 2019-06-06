@@ -111,7 +111,7 @@ public class TimingManager {
    *          the operator definition id
    * @return the timing
    */
-  public Timing addTiming(final String dagVertexId, final String operatorDefinitionId) {
+  public Timing addTiming(final String dagVertexId, final Component operatorDefinitionId) {
 
     final Timing newt = new Timing(operatorDefinitionId, dagVertexId);
     for (final Timing timing : this.timings) {
@@ -134,7 +134,7 @@ public class TimingManager {
    * @param time
    *          the time
    */
-  public void setTiming(final String dagVertexId, final String operatorDefinitionId, final long time) {
+  public void setTiming(final String dagVertexId, final Component operatorDefinitionId, final long time) {
     addTiming(dagVertexId, operatorDefinitionId).setTime(time);
   }
 
@@ -148,7 +148,7 @@ public class TimingManager {
    * @param value
    *          the value
    */
-  public void setTiming(final String dagVertexId, final String operatorDefinitionId, final String value) {
+  public void setTiming(final String dagVertexId, final Component operatorDefinitionId, final String value) {
     addTiming(dagVertexId, operatorDefinitionId).setStringValue(value);
   }
 
@@ -161,7 +161,7 @@ public class TimingManager {
    *          the operator definition id
    * @return the timing or default
    */
-  public Timing getTimingOrDefault(final String dagVertexId, final String operatorDefinitionId) {
+  public Timing getTimingOrDefault(final String dagVertexId, final Component operatorDefinitionId) {
     Timing val = null;
 
     for (final Timing timing : this.timings) {
@@ -221,10 +221,10 @@ public class TimingManager {
         final String[] fileExt = this.excelFileURL.split("\\.");
         switch (fileExt[fileExt.length - 1]) {
           case "xls":
-            excelParser.parse(this.excelFileURL, currentScenario.getOperatorDefinitionIds());
+            excelParser.parse(this.excelFileURL, currentScenario.getOperatorDefinitions());
             break;
           case "csv":
-            csvParser.parse(this.excelFileURL, currentScenario.getOperatorDefinitionIds());
+            csvParser.parse(this.excelFileURL, currentScenario.getOperatorDefinitions());
             break;
           default:
         }

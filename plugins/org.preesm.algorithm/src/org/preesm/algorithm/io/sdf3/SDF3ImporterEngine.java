@@ -140,8 +140,7 @@ public class SDF3ImporterEngine {
         // current actor
         entry.getKey().setInfo(entry.getKey().getName());
         // Set the timing of the actor
-        final Timing t = scenario.getTimingManager().addTiming(entry.getKey().getName(),
-            component.getComponent().getVlnv().getName());
+        final Timing t = scenario.getTimingManager().addTiming(entry.getKey().getName(), component.getComponent());
         t.setTime(entry.getValue());
       }
     }

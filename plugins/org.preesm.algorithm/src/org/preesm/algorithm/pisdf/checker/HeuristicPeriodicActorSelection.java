@@ -51,6 +51,7 @@ import org.preesm.model.pisdf.DataOutputPort;
 import org.preesm.model.pisdf.Fifo;
 import org.preesm.model.pisdf.PiGraph;
 import org.preesm.model.scenario.PreesmScenario;
+import org.preesm.model.slam.component.Component;
 
 /**
  * This class aims to select periodic actors on which execute the period checkers (nbff and nblf).
@@ -84,7 +85,7 @@ class HeuristicPeriodicActorSelection {
       final long rank = topoRanks.get(actor).rank;
       final long period = e.getValue();
       long wcetMin = Long.MAX_VALUE;
-      for (final String operatorDefinitionID : scenario.getOperatorDefinitionIds()) {
+      for (final Component operatorDefinitionID : scenario.getOperatorDefinitions()) {
         final long timing = scenario.getTimingManager().getTimingOrDefault(actor.getVertexPath(), operatorDefinitionID)
             .getTime();
         if (timing < wcetMin) {

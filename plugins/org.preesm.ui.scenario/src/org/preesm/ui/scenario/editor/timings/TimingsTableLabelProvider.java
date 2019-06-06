@@ -73,7 +73,7 @@ public class TimingsTableLabelProvider implements ITableLabelProvider, Selection
   private PreesmScenario scenario = null;
 
   /** The current op def id. */
-  private String currentOpDefId = null;
+  private Component currentOpDefId = null;
 
   /** The table viewer. */
   private TableViewer tableViewer = null;
@@ -113,7 +113,7 @@ public class TimingsTableLabelProvider implements ITableLabelProvider, Selection
     this.imageOk = imageDcr.createImage();
 
     final List<Component> operators = scenario.getOperatorDefinitions();
-    this.currentOpDefId = operators.get(0).getVlnv().getName();
+    this.currentOpDefId = operators.get(0);
   }
 
   /*
@@ -256,8 +256,7 @@ public class TimingsTableLabelProvider implements ITableLabelProvider, Selection
     if (e.getSource() instanceof Combo) {
       final Combo combo = ((Combo) e.getSource());
       final String item = combo.getItem(combo.getSelectionIndex());
-
-      this.currentOpDefId = item;
+      this.currentOpDefId = this.scenario.getDesign().getComponent(item);
       this.tableViewer.refresh();
     }
 
