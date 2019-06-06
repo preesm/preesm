@@ -38,6 +38,7 @@ package org.preesm.model.scenario.papi;
 import java.util.LinkedHashSet;
 import java.util.Set;
 import org.preesm.model.scenario.PreesmScenario;
+import org.preesm.model.slam.component.Component;
 
 /**
  * container and manager of PapifyConfig groups. It can load and store PapifyConfig groups
@@ -121,7 +122,7 @@ public class PapifyConfigManager {
    * @param component
    *          the PAPI component
    */
-  public void addComponent(final String opId, final PapiComponent component) {
+  public void addComponent(final Component opId, final PapiComponent component) {
 
     final PapifyConfigPE pgSet = getCorePapifyConfigGroupPE(opId);
 
@@ -143,7 +144,7 @@ public class PapifyConfigManager {
    * @param component
    *          the PAPI component
    */
-  public void removeComponent(final String opId, final PapiComponent component) {
+  public void removeComponent(final Component opId, final PapiComponent component) {
     final PapifyConfigPE pgSet = getCorePapifyConfigGroupPE(opId);
 
     if (pgSet != null) {
@@ -163,12 +164,7 @@ public class PapifyConfigManager {
 
     final PapifyConfigActor pgSet = getCorePapifyConfigGroupActor(opId);
 
-    /*
-     * if (pgSet == null) { final PapifyConfigActor pg = new PapifyConfigActor(opId); pg.addPAPIEvent(component, event);
-     * this.papifyConfigGroupsActors.add(pg); } else {
-     */
     pgSet.addPAPIEvent(component, event);
-    // }
   }
 
   /**
@@ -233,7 +229,7 @@ public class PapifyConfigManager {
    *          the op id
    * @return the op PapifyConfigActor groups
    */
-  public PapifyConfigPE getCorePapifyConfigGroupPE(final String opId) {
+  public PapifyConfigPE getCorePapifyConfigGroupPE(final Component opId) {
     PapifyConfigPE papifyConfigGroup = null;
 
     for (final PapifyConfigPE pg : this.papifyConfigGroupsPEs) {

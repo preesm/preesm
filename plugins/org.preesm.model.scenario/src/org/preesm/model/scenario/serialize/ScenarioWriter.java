@@ -250,14 +250,13 @@ public class ScenarioWriter {
    */
   private void addPapifyConfigPE(final Element parent, final PapifyConfigPE config) {
 
-    if (!config.getpeType().equals("") && (config.getPAPIComponents() != null)
-        && !config.getPAPIComponents().isEmpty()) {
+    if (config.getpeType() != null && (config.getPAPIComponents() != null) && !config.getPAPIComponents().isEmpty()) {
       final Element papifyConfigElt = this.dom.createElement("papifyConfigPE");
       parent.appendChild(papifyConfigElt);
 
       final Element peType = this.dom.createElement("peType");
       papifyConfigElt.appendChild(peType);
-      peType.setAttribute("peType", config.getpeType());
+      peType.setAttribute("peType", config.getpeType().getVlnv().getName());
       final Set<PapiComponent> components = config.getPAPIComponents();
 
       for (final PapiComponent component : components) {

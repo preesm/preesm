@@ -37,8 +37,8 @@ package org.preesm.model.scenario.papi;
 
 import java.util.LinkedHashSet;
 import java.util.Set;
+import org.preesm.model.slam.component.Component;
 
-// TODO: Auto-generated Javadoc
 /**
  * A PapifyConfig stores the monitoring configuration of each core instance.
  *
@@ -47,7 +47,7 @@ import java.util.Set;
 public class PapifyConfigPE {
 
   /** The peType instance. */
-  private String peType;
+  private Component peType;
 
   /** The PAPI component(s) associated with the core instance. */
   private Set<PapiComponent> PAPIComponents;
@@ -58,7 +58,7 @@ public class PapifyConfigPE {
   /**
    * Instantiates a new PapifyConfig group.
    */
-  public PapifyConfigPE(final String peType) {
+  public PapifyConfigPE(final Component peType) {
     this.peType = peType;
     this.PAPIComponents = new LinkedHashSet<>();
     this.PAPIComponentIDs = new LinkedHashSet<>();
@@ -71,7 +71,7 @@ public class PapifyConfigPE {
    * @param peType
    *          the core instance
    */
-  public void addpeType(final String peType) {
+  public void addpeType(final Component peType) {
     this.peType = peType;
 
   }
@@ -107,9 +107,9 @@ public class PapifyConfigPE {
    * @param peType
    *          the peType
    */
-  public void removepeType(final String peType) {
+  public void removepeType(final Component peType) {
     if (peType.equals(this.peType)) {
-      this.peType = "";
+      this.peType = null;
     }
   }
 
@@ -129,7 +129,7 @@ public class PapifyConfigPE {
    *
    * @return the Core id
    */
-  public String getpeType() {
+  public Component getpeType() {
     return (this.peType);
   }
 
@@ -158,7 +158,7 @@ public class PapifyConfigPE {
    *          the PAPI component
    * @return true, if successful
    */
-  public boolean ispeType(final String peType) {
+  public boolean ispeType(final Component peType) {
 
     return peType.equals(this.peType);
   }

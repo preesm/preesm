@@ -43,9 +43,9 @@ import java.util.Map;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.swt.graphics.Image;
 import org.preesm.commons.files.PreesmResourcesHelper;
+import org.preesm.model.slam.component.Component;
 import org.preesm.ui.PreesmUIPlugin;
 
-// TODO: Auto-generated Javadoc
 /**
  * Provides the elements contained in the papify editor.
  *
@@ -59,8 +59,8 @@ import org.preesm.ui.PreesmUIPlugin;
  */
 
 class PapifyListTreeElement {
-  String                  label;
-  Map<String, PAPIStatus> PAPIStatuses;
+  String                     label;
+  Map<Component, PAPIStatus> PAPIStatuses;
 
   /** The image ok. */
   private final Image imageOk;
@@ -106,7 +106,7 @@ class PapifyListTreeElement {
     this.imageOk = imageDcr.createImage();
   }
 
-  public Image getImage(String name) {
+  public Image getImage(final Component name) {
     if (this.PAPIStatuses.get(name).equals(PAPIStatus.YES)) {
       return this.imageOk;
     } else {

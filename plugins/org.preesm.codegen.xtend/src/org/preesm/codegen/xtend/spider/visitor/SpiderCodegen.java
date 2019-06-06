@@ -570,7 +570,7 @@ public class SpiderCodegen {
     for (Component coreType : this.coresFromCoreType.keySet()) {
       for (ComponentInstance compInst : this.coresFromCoreType.get(coreType)) {
         configAssociated = false;
-        PapifyConfigPE configType = papifyConfigManager.getCorePapifyConfigGroupPE(coreType.getVlnv().getName());
+        PapifyConfigPE configType = papifyConfigManager.getCorePapifyConfigGroupPE(coreType);
         for (String compType : configType.getPAPIComponentIDs()) {
           if (!compType.equals("Timing") && compNames.contains(compType)) {
             configAssociated = true;

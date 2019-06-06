@@ -624,7 +624,8 @@ public class ScenarioParser {
       if (node instanceof Element) {
         final Element elt = (Element) node;
         final String peType = elt.getAttribute("peType");
-        pc = new PapifyConfigPE(peType);
+        final Component component = this.scenario.getDesign().getComponent(peType);
+        pc = new PapifyConfigPE(component);
         final Set<PapiComponent> components = getPAPIComponents(elt);
         pc.addPAPIComponents(components);
       }
