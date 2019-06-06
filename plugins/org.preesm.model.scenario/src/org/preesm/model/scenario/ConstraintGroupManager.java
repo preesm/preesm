@@ -176,13 +176,13 @@ public class ConstraintGroupManager {
    */
   @Override
   public String toString() {
-    String s = "";
+    final StringBuilder sb = new StringBuilder();
 
     for (final ConstraintGroup cg : this.constraintgroups) {
-      s += cg.toString();
+      sb.append(cg.toString());
     }
 
-    return s;
+    return sb.toString();
   }
 
   /**
