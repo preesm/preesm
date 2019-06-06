@@ -47,7 +47,6 @@ import org.preesm.model.scenario.ConstraintGroup;
 import org.preesm.model.scenario.ParameterValue;
 import org.preesm.model.scenario.ParameterValueManager;
 import org.preesm.model.scenario.PreesmScenario;
-import org.preesm.model.scenario.RelativeConstraintManager;
 import org.preesm.model.scenario.Timing;
 import org.preesm.model.scenario.papi.PapiComponent;
 import org.preesm.model.scenario.papi.PapiEvent;
@@ -111,7 +110,6 @@ public class ScenarioWriter {
 
     addFiles(root);
     addConstraints(root);
-    addRelativeConstraints(root);
     addTimings(root);
     addSimuParams(root);
     addParameterValues(root);
@@ -469,43 +467,6 @@ public class ScenarioWriter {
       constraintGroupElt.appendChild(vtxelt);
       vtxelt.setAttribute("name", vtxId.getVertexPath());
     }
-  }
-
-  /**
-   * Adds the relative constraints.
-   *
-   * @param parent
-   *          the parent
-   */
-  private void addRelativeConstraints(final Element parent) {
-
-    final RelativeConstraintManager manager = this.scenario.getRelativeconstraintManager();
-    final Element timings = this.dom.createElement("relativeconstraints");
-    parent.appendChild(timings);
-
-    timings.setAttribute("excelUrl", manager.getExcelFileURL());
-
-    for (final String id : manager.getExplicitConstraintIds()) {
-      addRelativeConstraint(timings, id, manager.getConstraintOrDefault(id));
-    }
-  }
-
-  /**
-   * Adds the relative constraint.
-   *
-   * @param parent
-   *          the parent
-   * @param id
-   *          the id
-   * @param group
-   *          the group
-   */
-  private void addRelativeConstraint(final Element parent, final String id, final int group) {
-
-    final Element timingelt = this.dom.createElement("relativeconstraint");
-    parent.appendChild(timingelt);
-    timingelt.setAttribute("vertexname", id);
-    timingelt.setAttribute("group", Integer.toString(group));
   }
 
   /**

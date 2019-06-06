@@ -43,10 +43,7 @@ package org.preesm.algorithm.mapper.graphtransfo;
 
 import java.util.ArrayList;
 import java.util.Iterator;
-import java.util.LinkedHashMap;
-import java.util.LinkedHashSet;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 import java.util.logging.Level;
 import java.util.stream.Collectors;
@@ -71,7 +68,6 @@ import org.preesm.model.pisdf.AbstractVertex;
 import org.preesm.model.pisdf.PiGraph;
 import org.preesm.model.scenario.ConstraintGroup;
 import org.preesm.model.scenario.PreesmScenario;
-import org.preesm.model.scenario.RelativeConstraintManager;
 import org.preesm.model.scenario.Timing;
 import org.preesm.model.scenario.TimingManager;
 import org.preesm.model.slam.ComponentInstance;
@@ -152,7 +148,12 @@ public class SdfToDagConverter {
     SdfToDagConverter.addInitialEdgeProperties(dag);
     SdfToDagConverter.addInitialSpecialVertexProperties(dag, scenario);
     SdfToDagConverter.addInitialConstraintsProperties(dag, architecture, scenario);
-    SdfToDagConverter.addInitialRelativeConstraintsProperties(dag, scenario);
+
+    // We iterate the dag to add to each vertex its relative constraints (if any)
+    for (final DAGVertex dv : dag.vertexSet()) {
+      dag.getMappings().dedicate((MapperDAGVertex) dv);
+    }
+
     SdfToDagConverter.addInitialTimingProperties(dag);
   }
 
@@ -169,49 +170,6 @@ public class SdfToDagConverter {
       final String type = edge.getDataType().toString();
       final long size = scenario.getSimulationManager().getDataTypeSizeOrDefault(type);
       edge.setDataSize(new LongEdgePropertyType(size));
-    }
-  }
-
-  /**
-   * Retrieves the relative constraints and adds them to the DAG initial properties. It consists in sharing between
-   * vertices information stored in VertexMapping objects.
-   *
-   * @param dag
-   *          the dag
-   * @param scenario
-   *          the scenario
-   */
-  private static void addInitialRelativeConstraintsProperties(final MapperDAG dag, final PreesmScenario scenario) {
-
-    // Initial relative constraints are stored in the scenario
-    final RelativeConstraintManager manager = scenario.getRelativeconstraintManager();
-    final Map<Integer, Set<MapperDAGVertex>> relativeConstraints = new LinkedHashMap<>();
-
-    // We iterate the dag to add to each vertex its relative constraints (if any)
-    for (final DAGVertex dv : dag.vertexSet()) {
-      final String sdfVId = dv.getId();
-
-      // If a group was found, the actor is associated to a group with other actors
-      if (manager.hasRelativeConstraint(sdfVId)) {
-
-        // We get the group ID if any was set in the scenario
-        final int group = manager.getConstraintOrDefault(sdfVId);
-
-        if (!relativeConstraints.containsKey(group)) {
-          relativeConstraints.put(group, new LinkedHashSet<MapperDAGVertex>());
-        }
-        relativeConstraints.get(group).add((MapperDAGVertex) dv);
-      } else {
-        // otherwise, the actor has no relative constraint
-        dag.getMappings().dedicate((MapperDAGVertex) dv);
-      }
-    }
-
-    // A DAGMappings object is stored in a DAG. It stores relative constraints
-    // between vertices of the DAG.
-    // We associate here vertices that will share mapping constraints
-    for (final int group : relativeConstraints.keySet()) {
-      dag.getMappings().associate(relativeConstraints.get(group));
     }
   }
 

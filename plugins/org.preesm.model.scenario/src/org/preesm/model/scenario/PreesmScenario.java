@@ -71,9 +71,6 @@ public class PreesmScenario {
   /** Manager of constraint groups. */
   private ConstraintGroupManager constraintgroupmanager = null;
 
-  /** Manager of relative constraints. */
-  private RelativeConstraintManager relativeconstraintmanager = null;
-
   /** Manager of timings. */
   private TimingManager timingmanager = null;
 
@@ -95,7 +92,6 @@ public class PreesmScenario {
    */
   public PreesmScenario() {
     this.constraintgroupmanager = new ConstraintGroupManager(this);
-    this.relativeconstraintmanager = new RelativeConstraintManager(this);
     this.timingmanager = new TimingManager(this);
     this.simulationManager = new SimulationManager(this);
     this.parameterValueManager = new ParameterValueManager(this);
@@ -150,15 +146,6 @@ public class PreesmScenario {
    */
   public ConstraintGroupManager getConstraintGroupManager() {
     return this.constraintgroupmanager;
-  }
-
-  /**
-   * Gets the relativeconstraint manager.
-   *
-   * @return the relativeconstraint manager
-   */
-  public RelativeConstraintManager getRelativeconstraintManager() {
-    return this.relativeconstraintmanager;
   }
 
   /**
