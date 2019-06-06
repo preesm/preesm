@@ -50,7 +50,9 @@ import org.preesm.model.pisdf.AbstractVertex;
 import org.preesm.model.pisdf.PiGraph;
 import org.preesm.model.pisdf.serialize.PiParser;
 import org.preesm.model.scenario.papi.PapifyConfigManager;
+import org.preesm.model.slam.ComponentInstance;
 import org.preesm.model.slam.Design;
+import org.preesm.model.slam.component.Component;
 import org.preesm.model.slam.serialize.SlamParser;
 import org.preesm.model.slam.utils.DesignTools;
 
@@ -270,6 +272,15 @@ public class PreesmScenario {
   }
 
   /**
+   * Gets the operator.
+   *
+   * @return the operator
+   */
+  public Set<ComponentInstance> getOperators() {
+    return DesignTools.getOperatorInstances(getDesign());
+  }
+
+  /**
    * Gets the ordered operator ids.
    *
    * @return the ordered operator ids
@@ -277,7 +288,17 @@ public class PreesmScenario {
   public List<String> getOrderedOperatorIds() {
     final List<String> opIdList = new ArrayList<>(getOperatorIds());
     Collections.sort(opIdList, (o1, o2) -> o1.compareTo(o2));
+    return opIdList;
+  }
 
+  /**
+   * Gets the ordered operator.
+   *
+   * @return the ordered operator
+   */
+  public List<ComponentInstance> getOrderedOperators() {
+    final List<ComponentInstance> opIdList = new ArrayList<>(getOperators());
+    Collections.sort(opIdList, (o1, o2) -> o1.getInstanceName().compareTo(o2.getInstanceName()));
     return opIdList;
   }
 
@@ -291,12 +312,30 @@ public class PreesmScenario {
   }
 
   /**
+   * Gets the operator definition.
+   *
+   * @return the operator definition
+   */
+  public Set<Component> getOperatorDefinitions() {
+    return DesignTools.getOperatorComponents(getDesign());
+  }
+
+  /**
    * Gets the com node ids.
    *
    * @return the com node ids
    */
   public Set<String> getComNodeIds() {
     return DesignTools.getComNodeInstanceIds(getDesign());
+  }
+
+  /**
+   * Gets the com node.
+   *
+   * @return the com node
+   */
+  public Set<ComponentInstance> getComNodes() {
+    return DesignTools.getComNodeInstances(getDesign());
   }
 
   /**
