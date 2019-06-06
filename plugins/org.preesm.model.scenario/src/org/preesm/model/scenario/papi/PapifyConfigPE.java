@@ -35,7 +35,9 @@
  */
 package org.preesm.model.scenario.papi;
 
+import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
+import java.util.Map;
 import java.util.Set;
 import org.preesm.model.slam.component.Component;
 
@@ -49,19 +51,14 @@ public class PapifyConfigPE {
   /** The peType instance. */
   private Component peType;
 
-  /** The PAPI component(s) associated with the core instance. */
-  private Set<PapiComponent> PAPIComponents;
-
-  /** The PAPI component(s) ID(s) associated with the core instance. */
-  private Set<String> PAPIComponentIDs;
+  private Map<String, PapiComponent> papiComponents;
 
   /**
    * Instantiates a new PapifyConfig group.
    */
   public PapifyConfigPE(final Component peType) {
     this.peType = peType;
-    this.PAPIComponents = new LinkedHashSet<>();
-    this.PAPIComponentIDs = new LinkedHashSet<>();
+    papiComponents = new LinkedHashMap<>();
 
   }
 
@@ -83,8 +80,7 @@ public class PapifyConfigPE {
    *          the PAPI component
    */
   public void addPAPIComponent(final PapiComponent component) {
-    this.PAPIComponents.add(component);
-    this.PAPIComponentIDs.add(component.getId());
+    this.papiComponents.put(component.getId(), component);
 
   }
 
@@ -96,8 +92,7 @@ public class PapifyConfigPE {
    */
   public void addPAPIComponents(final Set<PapiComponent> components) {
     for (final PapiComponent component : components) {
-      this.PAPIComponents.add(component);
-      this.PAPIComponentIDs.add(component.getId());
+      this.papiComponents.put(component.getId(), component);
     }
   }
 
@@ -120,8 +115,7 @@ public class PapifyConfigPE {
    *          the PAPI component
    */
   public void removePAPIComponent(final PapiComponent component) {
-    this.PAPIComponents.remove(component);
-    this.PAPIComponentIDs.remove(component.getId());
+    this.papiComponents.remove(component.getId());
   }
 
   /**
@@ -139,7 +133,7 @@ public class PapifyConfigPE {
    * @return the PAPI components
    */
   public Set<PapiComponent> getPAPIComponents() {
-    return (this.PAPIComponents);
+    return new LinkedHashSet<>(this.papiComponents.values());
   }
 
   /**
@@ -148,7 +142,7 @@ public class PapifyConfigPE {
    * @return the PAPI component IDs
    */
   public Set<String> getPAPIComponentIDs() {
-    return (this.PAPIComponentIDs);
+    return (this.papiComponents.keySet());
   }
 
   /**
@@ -172,7 +166,7 @@ public class PapifyConfigPE {
    */
   public boolean containsPAPIComponent(final PapiComponent component) {
 
-    if (this.PAPIComponents.contains(component)) {
+    if (this.papiComponents.containsValue(component)) {
       return true;
     }
 
@@ -208,7 +202,7 @@ public class PapifyConfigPE {
     String s = "<Printing core> \n";
     s += this.peType.toString();
     s += "\n<Printing component> \n";
-    s += this.PAPIComponents.toString();
+    s += this.papiComponents.values().toString();
     s += "<end printing>\n";
 
     return s;
