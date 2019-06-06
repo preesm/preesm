@@ -41,8 +41,8 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.logging.Level;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IWorkspace;
@@ -84,7 +84,7 @@ public class CsvTimingParser {
    * @param opDefIds
    *          the op def ids
    */
-  public void parse(final String url, final Set<String> opDefIds) {
+  public void parse(final String url, final List<String> opDefIds) {
     PreesmLogger.getLogger().log(Level.INFO,
         "Importing timings from a csv sheet. Non precised timings are kept unmodified.");
 
@@ -143,7 +143,7 @@ public class CsvTimingParser {
    * @throws CoreException
    *           the core exception
    */
-  private void parseTimings(final Map<String, Map<String, String>> timings, final Set<String> opDefIds) {
+  private void parseTimings(final Map<String, Map<String, String>> timings, final List<String> opDefIds) {
     // Depending on the type of SDF graph we process (IBSDF or PISDF), call
     // one or the other method
     final PiGraph currentGraph = scenario.getAlgorithm();
@@ -161,7 +161,7 @@ public class CsvTimingParser {
    *          the op def ids
    */
   private void parseTimingsForPISDFGraph(final Map<String, Map<String, String>> timings, final PiGraph currentGraph,
-      final Set<String> opDefIds) {
+      final List<String> opDefIds) {
 
     // parse timings of non hierarchical actors of currentGraph
     currentGraph.getActorsWithRefinement().stream().filter(a -> !a.isHierarchical())
@@ -181,7 +181,7 @@ public class CsvTimingParser {
    *          the op def ids
    */
   private void parseTimingForVertex(final Map<String, Map<String, String>> timings, final String vertexName,
-      final Set<String> opDefIds) {
+      final List<String> opDefIds) {
     // For each kind of processing elements, we look for a timing for given vertex
     for (final String opDefId : opDefIds) {
       if (!opDefId.isEmpty() && !vertexName.isEmpty()) {

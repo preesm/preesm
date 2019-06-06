@@ -36,11 +36,10 @@
  */
 package org.preesm.model.slam.utils;
 
+import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.Iterator;
-import java.util.LinkedHashSet;
 import java.util.List;
-import java.util.Set;
 import org.preesm.model.slam.ComponentHolder;
 import org.preesm.model.slam.ComponentInstance;
 import org.preesm.model.slam.Design;
@@ -103,8 +102,8 @@ public class DesignTools {
    *          the design
    * @return the operator instance ids
    */
-  public static Set<String> getOperatorInstanceIds(final Design design) {
-    final Set<String> operatorInstanceIds = new LinkedHashSet<>();
+  public static List<String> getOperatorInstanceIds(final Design design) {
+    final List<String> operatorInstanceIds = new ArrayList<>();
     if (design != null) {
       for (final ComponentInstance cmpInstance : getOperatorInstances(design)) {
         operatorInstanceIds.add(cmpInstance.getInstanceName());
@@ -120,9 +119,8 @@ public class DesignTools {
    *          the design
    * @return the com node instance ids
    */
-  public static Set<String> getComNodeInstanceIds(final Design design) {
-    final Set<String> operatorInstanceIds = new LinkedHashSet<>();
-
+  public static List<String> getComNodeInstanceIds(final Design design) {
+    final List<String> operatorInstanceIds = new ArrayList<>();
     if (design != null) {
       for (final ComponentInstance cmpInstance : getComNodeInstances(design)) {
         operatorInstanceIds.add(cmpInstance.getInstanceName());
@@ -139,9 +137,8 @@ public class DesignTools {
    *          the design
    * @return the com node instance ids
    */
-  public static Set<ComponentInstance> getComNodeInstances(final Design design) {
-    final Set<ComponentInstance> operatorInstanceIds = new LinkedHashSet<>();
-
+  public static List<ComponentInstance> getComNodeInstances(final Design design) {
+    final List<ComponentInstance> operatorInstanceIds = new ArrayList<>();
     if (design != null) {
       for (final ComponentInstance cmpInstance : design.getComponentInstances()) {
         if (cmpInstance.getComponent() instanceof ComNodeImpl) {
@@ -149,7 +146,6 @@ public class DesignTools {
         }
       }
     }
-
     return operatorInstanceIds;
   }
 
@@ -160,15 +156,13 @@ public class DesignTools {
    *          the design
    * @return the operator instances
    */
-  public static Set<ComponentInstance> getOperatorInstances(final Design design) {
-    final Set<ComponentInstance> operatorInstances = new LinkedHashSet<>();
-
+  public static List<ComponentInstance> getOperatorInstances(final Design design) {
+    final List<ComponentInstance> operatorInstances = new ArrayList<>();
     for (final ComponentInstance cmpInstance : design.getComponentInstances()) {
       if (cmpInstance.getComponent() instanceof Operator) {
         operatorInstances.add(cmpInstance);
       }
     }
-
     return operatorInstances;
   }
 
@@ -179,13 +173,11 @@ public class DesignTools {
    *          the design
    * @return the operator component ids
    */
-  public static Set<String> getOperatorComponentIds(final Design design) {
-    final Set<String> operatorIds = new LinkedHashSet<>();
-
+  public static List<String> getOperatorComponentIds(final Design design) {
+    final List<String> operatorIds = new ArrayList<>();
     for (final org.preesm.model.slam.component.Component component : getOperatorComponents(design)) {
       operatorIds.add(component.getVlnv().getName());
     }
-
     return operatorIds;
   }
 
@@ -196,9 +188,8 @@ public class DesignTools {
    *          the design
    * @return the operator components
    */
-  public static Set<Component> getOperatorComponents(final Design design) {
-    final Set<Component> operators = new LinkedHashSet<>();
-
+  public static List<Component> getOperatorComponents(final Design design) {
+    final List<Component> operators = new ArrayList<>();
     if (design != null) {
       final ComponentHolder componentHolder = design.getComponentHolder();
       if (componentHolder != null) {
@@ -209,7 +200,6 @@ public class DesignTools {
         }
       }
     }
-
     return operators;
   }
 
@@ -220,13 +210,11 @@ public class DesignTools {
    *          the design
    * @return the component instances
    */
-  public static Set<ComponentInstance> getComponentInstances(final Design design) {
-    final Set<ComponentInstance> instances = new LinkedHashSet<>();
-
+  public static List<ComponentInstance> getComponentInstances(final Design design) {
+    final List<ComponentInstance> instances = new ArrayList<>();
     for (final ComponentInstance cmpInstance : design.getComponentInstances()) {
       instances.add(cmpInstance);
     }
-
     return instances;
   }
 
@@ -308,15 +296,13 @@ public class DesignTools {
    *          the component
    * @return the instances of component
    */
-  public static Set<ComponentInstance> getInstancesOfComponent(final Design design, final Component component) {
-    final Set<ComponentInstance> instances = new LinkedHashSet<>();
-
+  public static List<ComponentInstance> getInstancesOfComponent(final Design design, final Component component) {
+    final List<ComponentInstance> instances = new ArrayList<>();
     for (final ComponentInstance cmpInstance : design.getComponentInstances()) {
       if (cmpInstance.getComponent().getVlnv().getName().equals(component.getVlnv().getName())) {
         instances.add(cmpInstance);
       }
     }
-
     return instances;
   }
 
@@ -364,9 +350,8 @@ public class DesignTools {
    *          the c
    * @return the undirected links
    */
-  public static Set<Link> getUndirectedLinks(final Design design, final ComponentInstance c) {
-    final Set<Link> undirectedLinks = new LinkedHashSet<>();
-
+  public static List<Link> getUndirectedLinks(final Design design, final ComponentInstance c) {
+    final List<Link> undirectedLinks = new ArrayList<>();
     for (final Link link : design.getLinks()) {
       if (!link.isDirected() && link.getDestinationComponentInstance().getInstanceName().equals(c.getInstanceName())
           || link.getSourceComponentInstance().getInstanceName().equals(c.getInstanceName())) {
@@ -385,9 +370,8 @@ public class DesignTools {
    *          the c
    * @return the outgoing directed links
    */
-  public static Set<Link> getOutgoingDirectedLinks(final Design design, final ComponentInstance c) {
-    final Set<Link> directedLinks = new LinkedHashSet<>();
-
+  public static List<Link> getOutgoingDirectedLinks(final Design design, final ComponentInstance c) {
+    final List<Link> directedLinks = new ArrayList<>();
     for (final Link link : design.getLinks()) {
       if (link.isDirected() && link.getSourceComponentInstance().getInstanceName().equals(c.getInstanceName())) {
         directedLinks.add(link);
@@ -405,9 +389,8 @@ public class DesignTools {
    *          the c
    * @return the incoming directed links
    */
-  public static Set<Link> getIncomingDirectedLinks(final Design design, final ComponentInstance c) {
-    final Set<Link> directedLinks = new LinkedHashSet<>();
-
+  public static List<Link> getIncomingDirectedLinks(final Design design, final ComponentInstance c) {
+    final List<Link> directedLinks = new ArrayList<>();
     for (final Link link : design.getLinks()) {
       if (link.isDirected() && link.getDestinationComponentInstance().getInstanceName().equals(c.getInstanceName())) {
         directedLinks.add(link);

@@ -230,7 +230,7 @@ public class RouteCalculator {
    * @param operators
    *          the operators
    */
-  private void floydWarshall(final RoutingTable table, final Set<ComponentInstance> operators) {
+  private void floydWarshall(final RoutingTable table, final List<ComponentInstance> operators) {
 
     for (final ComponentInstance k : operators) {
 

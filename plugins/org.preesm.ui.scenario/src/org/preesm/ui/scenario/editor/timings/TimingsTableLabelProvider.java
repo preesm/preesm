@@ -37,7 +37,7 @@
 package org.preesm.ui.scenario.editor.timings;
 
 import java.net.URL;
-import java.util.Set;
+import java.util.List;
 import org.eclipse.jface.dialogs.IInputValidator;
 import org.eclipse.jface.dialogs.InputDialog;
 import org.eclipse.jface.resource.ImageDescriptor;
@@ -112,8 +112,8 @@ public class TimingsTableLabelProvider implements ITableLabelProvider, Selection
     imageDcr = ImageDescriptor.createFromURL(okIconURL);
     this.imageOk = imageDcr.createImage();
 
-    final Set<Component> operators = scenario.getOperatorDefinitions();
-    this.currentOpDefId = operators.iterator().next().getVlnv().getName();
+    final List<Component> operators = scenario.getOperatorDefinitions();
+    this.currentOpDefId = operators.get(0).getVlnv().getName();
   }
 
   /*

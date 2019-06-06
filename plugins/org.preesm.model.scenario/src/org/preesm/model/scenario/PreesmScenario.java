@@ -272,7 +272,7 @@ public class PreesmScenario {
    *
    * @return the operator ids
    */
-  public Set<String> getOperatorIds() {
+  public List<String> getOperatorIds() {
     return DesignTools.getOperatorInstanceIds(getDesign());
   }
 
@@ -281,7 +281,7 @@ public class PreesmScenario {
    *
    * @return the operator
    */
-  public Set<ComponentInstance> getOperators() {
+  public List<ComponentInstance> getOperators() {
     return DesignTools.getOperatorInstances(getDesign());
   }
 
@@ -312,7 +312,7 @@ public class PreesmScenario {
    *
    * @return the operator definition ids
    */
-  public Set<String> getOperatorDefinitionIds() {
+  public List<String> getOperatorDefinitionIds() {
     return DesignTools.getOperatorComponentIds(getDesign());
   }
 
@@ -321,7 +321,7 @@ public class PreesmScenario {
    *
    * @return the operator definition
    */
-  public Set<Component> getOperatorDefinitions() {
+  public List<Component> getOperatorDefinitions() {
     return DesignTools.getOperatorComponents(getDesign());
   }
 
@@ -330,7 +330,7 @@ public class PreesmScenario {
    *
    * @return the com node ids
    */
-  public Set<String> getComNodeIds() {
+  public List<String> getComNodeIds() {
     return DesignTools.getComNodeInstanceIds(getDesign());
   }
 
@@ -339,7 +339,7 @@ public class PreesmScenario {
    *
    * @return the com node
    */
-  public Set<ComponentInstance> getComNodes() {
+  public List<ComponentInstance> getComNodes() {
     return DesignTools.getComNodeInstances(getDesign());
   }
 

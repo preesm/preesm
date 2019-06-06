@@ -43,7 +43,6 @@ import java.util.Comparator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import org.eclipse.jface.viewers.ILabelProviderListener;
 import org.eclipse.jface.viewers.IStructuredContentProvider;
 import org.eclipse.jface.viewers.ITableLabelProvider;
@@ -110,7 +109,7 @@ public class DeploymentProperties implements IStructuredContentProvider, ITableL
    * Inits the data.
    */
   private void initData() {
-    final Set<ComponentInstance> opSet = DesignTools.getOperatorInstances(this.statGen.getAbc().getArchitecture());
+    final List<ComponentInstance> opSet = DesignTools.getOperatorInstances(this.statGen.getAbc().getArchitecture());
 
     for (final ComponentInstance cmp : opSet) {
       this.loads.put(cmp, this.statGen.getLoad(cmp));

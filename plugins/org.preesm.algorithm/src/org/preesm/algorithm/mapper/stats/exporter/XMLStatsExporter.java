@@ -37,7 +37,7 @@
 package org.preesm.algorithm.mapper.stats.exporter;
 
 import java.io.File;
-import java.util.Set;
+import java.util.List;
 import java.util.logging.Level;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -154,7 +154,7 @@ public class XMLStatsExporter {
     perfs.setAttribute("impl_nbCores", Integer.toString(statGen.getNbMainTypeOperators()));
     // Implementation number of used cores
     perfs.setAttribute("impl_nbUsedCores", Integer.toString(statGen.getNbUsedOperators()));
-    final Set<ComponentInstance> opSet = DesignTools.getOperatorInstances(abc.getArchitecture());
+    final List<ComponentInstance> opSet = DesignTools.getOperatorInstances(abc.getArchitecture());
     for (final ComponentInstance op : opSet) {
       generateCoreLoad(doc, perfs, op, statGen);
     }

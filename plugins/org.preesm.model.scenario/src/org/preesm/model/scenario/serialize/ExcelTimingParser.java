@@ -39,8 +39,8 @@
 package org.preesm.model.scenario.serialize;
 
 import java.io.IOException;
-import java.util.LinkedHashSet;
-import java.util.Set;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.logging.Level;
 import jxl.Cell;
 import jxl.CellType;
@@ -87,7 +87,7 @@ public class ExcelTimingParser {
    * @param opDefIds
    *          the op def ids
    */
-  public void parse(final String url, final Set<String> opDefIds) {
+  public void parse(final String url, final List<String> opDefIds) {
     PreesmLogger.getLogger().log(Level.INFO,
         "Importing timings from an excel sheet. Non precised timings are kept unmodified.");
 
@@ -102,8 +102,8 @@ public class ExcelTimingParser {
 
       // Warnings are displayed once for each missing operator or vertex
       // in the excel sheet
-      final Set<String> missingVertices = new LinkedHashSet<>();
-      final Set<String> missingOperatorTypes = new LinkedHashSet<>();
+      final List<String> missingVertices = new ArrayList<>();
+      final List<String> missingOperatorTypes = new ArrayList<>();
 
       parseTimings(w, opDefIds, missingVertices, missingOperatorTypes);
 
@@ -126,8 +126,8 @@ public class ExcelTimingParser {
    * @throws CoreException
    *           the core exception
    */
-  private void parseTimings(final Workbook w, final Set<String> opDefIds, final Set<String> missingVertices,
-      final Set<String> missingOperatorTypes) {
+  private void parseTimings(final Workbook w, final List<String> opDefIds, final List<String> missingVertices,
+      final List<String> missingOperatorTypes) {
     // Depending on the type of SDF graph we process (IBSDF or PISDF), call
     // one or the other method
     final PiGraph currentGraph = scenario.getAlgorithm();
@@ -148,8 +148,8 @@ public class ExcelTimingParser {
    * @param missingOperatorTypes
    *          the missing operator types
    */
-  private void parseTimingsForPISDFGraph(final Workbook w, final PiGraph currentGraph, final Set<String> opDefIds,
-      final Set<String> missingVertices, final Set<String> missingOperatorTypes) {
+  private void parseTimingsForPISDFGraph(final Workbook w, final PiGraph currentGraph, final List<String> opDefIds,
+      final List<String> missingVertices, final List<String> missingOperatorTypes) {
 
     currentGraph.getActorsWithRefinement().stream().filter(a -> !a.isHierarchical())
         .forEach(a -> parseTimingForVertex(w, a.getVertexPath(), opDefIds, missingVertices, missingOperatorTypes));
@@ -173,8 +173,8 @@ public class ExcelTimingParser {
    * @param missingOperatorTypes
    *          the missing operator types
    */
-  private void parseTimingForVertex(final Workbook w, final String vertexName, final Set<String> opDefIds,
-      final Set<String> missingVertices, final Set<String> missingOperatorTypes) {
+  private void parseTimingForVertex(final Workbook w, final String vertexName, final List<String> opDefIds,
+      final List<String> missingVertices, final List<String> missingOperatorTypes) {
     // For each kind of processing elements, we look for a timing for given
     // vertex
     for (final String opDefId : opDefIds) {

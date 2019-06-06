@@ -39,6 +39,7 @@ package org.preesm.model.scenario.serialize;
 
 import java.io.IOException;
 import java.util.LinkedHashSet;
+import java.util.List;
 import java.util.Set;
 import java.util.logging.Level;
 import jxl.Cell;
@@ -91,7 +92,7 @@ public class ExcelConstraintsParser {
    * @throws CoreException
    *           the core exception
    */
-  public void parse(final String url, final Set<ComponentInstance> allOperatorIds) throws CoreException {
+  public void parse(final String url, final List<ComponentInstance> allOperatorIds) throws CoreException {
 
     final IWorkspace workspace = ResourcesPlugin.getWorkspace();
 

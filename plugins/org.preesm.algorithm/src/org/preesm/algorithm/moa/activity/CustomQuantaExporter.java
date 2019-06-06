@@ -39,6 +39,7 @@ import java.io.IOException;
 import java.nio.file.Paths;
 import java.util.HashMap;
 import java.util.LinkedHashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.logging.Level;
@@ -349,7 +350,7 @@ public class CustomQuantaExporter extends AbstractTaskImplementation {
         final Workbook w = Workbook.getWorkbook(iFile.getContents());
 
         final PiGraph currentGraph = scenario.getAlgorithm();
-        final Set<String> operators = scenario.getOperatorDefinitionIds();
+        final List<String> operators = scenario.getOperatorDefinitionIds();
         parseQuantaForPISDFGraph(w, currentGraph, operators);
 
         // Warnings are displayed once for each missing operator or vertex
@@ -364,7 +365,7 @@ public class CustomQuantaExporter extends AbstractTaskImplementation {
   /**
    * Reading individual quanta information from an excel file. Recursive method.
    */
-  void parseQuantaForPISDFGraph(final Workbook w, final PiGraph appli, final Set<String> operators) {
+  void parseQuantaForPISDFGraph(final Workbook w, final PiGraph appli, final List<String> operators) {
     // Each of the vertices of the graph is either itself a graph
     // (hierarchical vertex), in which case we call recursively this method
     // we parse quanta for standard and special vertices
@@ -398,7 +399,7 @@ public class CustomQuantaExporter extends AbstractTaskImplementation {
   /**
    * Reading individual quanta information from an excel file. Recursive method.
    */
-  void parseQuantaForVertex(final Workbook w, final String vertexName, final Set<String> operators) {
+  void parseQuantaForVertex(final Workbook w, final String vertexName, final List<String> operators) {
 
     // Test excel reader, to be continued
     for (final String opDefId : operators) {
