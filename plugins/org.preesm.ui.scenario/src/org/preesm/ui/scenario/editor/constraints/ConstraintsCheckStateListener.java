@@ -59,6 +59,7 @@ import org.preesm.model.pisdf.PiGraph;
 import org.preesm.model.scenario.ConstraintGroup;
 import org.preesm.model.scenario.ConstraintGroupManager;
 import org.preesm.model.scenario.PreesmScenario;
+import org.preesm.model.slam.ComponentInstance;
 import org.preesm.ui.scenario.editor.ISDFCheckStateListener;
 import org.preesm.ui.scenario.editor.Messages;
 import org.preesm.ui.scenario.editor.PreesmAlgorithmTreeContentProvider;
@@ -75,7 +76,7 @@ public class ConstraintsCheckStateListener implements ISDFCheckStateListener {
   private PreesmScenario scenario = null;
 
   /** Current operator. */
-  private String currentOpId = null;
+  private ComponentInstance currentOpId = null;
 
   /** Current section (necessary to diplay busy status). */
   private Section section = null;
@@ -218,7 +219,7 @@ public class ConstraintsCheckStateListener implements ISDFCheckStateListener {
       final Combo combo = ((Combo) e.getSource());
       final String item = combo.getItem(combo.getSelectionIndex());
 
-      this.currentOpId = item;
+      this.currentOpId = this.scenario.getDesign().getComponentInstance(item);
       updateCheck();
     }
 

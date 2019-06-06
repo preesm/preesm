@@ -42,6 +42,7 @@ import java.util.Iterator;
 import java.util.LinkedHashSet;
 import java.util.Set;
 import org.preesm.model.pisdf.AbstractActor;
+import org.preesm.model.slam.ComponentInstance;
 
 /**
  * A ConstraintGroup associates a set of graph definitions and a set of processing units on which they can be matched.
@@ -51,7 +52,7 @@ import org.preesm.model.pisdf.AbstractActor;
 public class ConstraintGroup {
 
   /** The set of processing units available for the constraint group. */
-  private final String operatorId;
+  private final ComponentInstance operatorId;
 
   /** The set of graphs belonging to the constraint group. */
   private final Set<AbstractActor> actorsPaths;
@@ -59,7 +60,7 @@ public class ConstraintGroup {
   /**
    * Instantiates a new constraint group.
    */
-  public ConstraintGroup(final String opId) {
+  public ConstraintGroup(final ComponentInstance opId) {
     this.operatorId = opId;
     this.actorsPaths = new LinkedHashSet<>();
 
@@ -108,7 +109,7 @@ public class ConstraintGroup {
    *
    * @return the operator ids
    */
-  public String getOperatorId() {
+  public ComponentInstance getOperatorId() {
     return this.operatorId;
   }
 
@@ -128,7 +129,7 @@ public class ConstraintGroup {
    *          the operator id
    * @return true, if successful
    */
-  public boolean hasOperatorId(final String operatorId) {
+  public boolean hasOperatorId(final ComponentInstance operatorId) {
     return this.getOperatorId().equals(operatorId);
   }
 

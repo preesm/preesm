@@ -499,7 +499,7 @@ public class ScenarioParser {
    * @return the constraint group
    */
   private ConstraintGroup getConstraintGroup(final Element cstGroupElt) {
-    String opId = null;
+    ComponentInstance opId = null;
     final Set<AbstractActor> paths = new LinkedHashSet<>();
 
     if (scenario.getAlgorithm() != null) {
@@ -514,9 +514,9 @@ public class ScenarioParser {
             if (actorFromPath != null) {
               paths.add(actorFromPath);
             }
-          } else if (type.equals("operator") && (this.scenario.getOperatorIds() != null)) {
-            if (this.scenario.getOperatorIds().contains(name)) {
-              opId = name;
+          } else if (type.equals("operator")) {
+            if (this.scenario.getDesign().containsComponentInstance(name)) {
+              opId = this.scenario.getDesign().getComponentInstance(name);
             }
           }
         }

@@ -106,6 +106,7 @@ import org.preesm.model.scenario.ConstraintGroupManager;
 import org.preesm.model.scenario.PreesmScenario;
 import org.preesm.model.scenario.Timing;
 import org.preesm.model.scenario.TimingManager;
+import org.preesm.model.slam.ComponentInstance;
 import org.preesm.model.slam.Design;
 
 /**
@@ -627,11 +628,11 @@ public class StaticPiMM2MapperDAGVisitor extends PiMMSwitch<Boolean> {
   private static final void updateScenarioData(final AbstractActor copyActor, final PreesmScenario scenario) {
     final AbstractActor actor = PreesmCopyTracker.getOriginalSource(copyActor);
     // Add the scenario constraints
-    final List<String> currentOperatorIDs = new ArrayList<>();
+    final List<ComponentInstance> currentOperatorIDs = new ArrayList<>();
     final Set<ConstraintGroup> constraintGroups = scenario.getConstraintGroupManager().getConstraintGroups();
     for (final ConstraintGroup cg : constraintGroups) {
       final Set<AbstractActor> vertexPaths = cg.getVertexPaths();
-      final String operatorId = cg.getOperatorId();
+      final ComponentInstance operatorId = cg.getOperatorId();
       if (vertexPaths.contains(actor)) {
         currentOperatorIDs.add(operatorId);
       }

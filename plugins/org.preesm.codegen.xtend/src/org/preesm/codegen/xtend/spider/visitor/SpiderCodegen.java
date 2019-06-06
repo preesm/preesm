@@ -194,7 +194,7 @@ public class SpiderCodegen {
     this.timings = new LinkedHashMap<>();
     for (final Timing t : this.scenario.getTimingManager().getTimings()) {
       final String actorName = t.getVertexId();
-      final AbstractActor aa = lookupTimingRec(pg, actorName);// (AbstractActor) pg.lookupVertex(actorName);
+      final AbstractActor aa = lookupTimingRec(pg, actorName);
       if (aa != null) {
         if (!this.timings.containsKey(aa)) {
           this.timings.put(aa, new LinkedHashMap<String, String>());
@@ -210,8 +210,8 @@ public class SpiderCodegen {
         if (this.constraints.get(aa) == null) {
           this.constraints.put(aa, new LinkedHashSet<String>());
         }
-        final String core = cg.getOperatorId();
-        this.constraints.get(aa).add(core);
+        final ComponentInstance core = cg.getOperatorId();
+        this.constraints.get(aa).add(core.getInstanceName());
       }
     }
 

@@ -416,8 +416,7 @@ public class SdfToDagConverter {
 
         if (sdfVertexIds.contains(lookingFor)) {
 
-          final String opId = cg.getOperatorId();
-          final ComponentInstance currentIOp = DesignTools.getComponentInstance(architecture, opId);
+          final ComponentInstance currentIOp = cg.getOperatorId();
           if (currentIOp.getComponent() instanceof Operator) {
 
             if (!mv.getInit().isMapable(currentIOp)) {
