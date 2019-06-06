@@ -175,13 +175,13 @@ public class SpiderCodegen {
     }
 
     this.coreIds = new LinkedHashMap<>();
-    String mainOperator = this.scenario.getSimulationManager().getMainOperatorName();
+    ComponentInstance mainOperator = this.scenario.getSimulationManager().getMainOperatorName();
     if ((mainOperator == null) || mainOperator.equals("")) {
       /* Warning */
-      mainOperator = this.scenario.getOrderedOperatorIds().get(0);
+      mainOperator = this.scenario.getOrderedOperators().get(0);
       PreesmLogger.getLogger().warning("No Main Operator selected in scenario, " + mainOperator + " used by default");
     }
-    this.coreIds.put(mainOperator, 0);
+    this.coreIds.put(mainOperator.getInstanceName(), 0);
     int coreId = 1;
     for (final String core : this.scenario.getOrderedOperatorIds()) {
       if (!core.equals(mainOperator)) {

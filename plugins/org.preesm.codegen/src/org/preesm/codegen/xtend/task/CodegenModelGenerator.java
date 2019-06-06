@@ -856,7 +856,7 @@ public class CodegenModelGenerator {
       if (memoryBank.equals("Shared")) {
         // If the memory bank is shared, let the main operator
         // declare the Buffer.
-        correspondingOperatorID = this.scenario.getSimulationManager().getMainOperatorName();
+        correspondingOperatorID = this.scenario.getSimulationManager().getMainOperatorName().getInstanceName();
         isLocal = false;
 
         // Check that the main operator block exists.

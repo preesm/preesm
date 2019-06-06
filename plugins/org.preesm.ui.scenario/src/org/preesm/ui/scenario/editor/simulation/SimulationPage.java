@@ -79,6 +79,7 @@ import org.eclipse.ui.forms.widgets.ScrolledForm;
 import org.eclipse.ui.forms.widgets.Section;
 import org.preesm.model.scenario.PreesmScenario;
 import org.preesm.model.scenario.types.DataType;
+import org.preesm.model.slam.ComponentInstance;
 import org.preesm.ui.scenario.editor.Messages;
 
 /**
@@ -134,10 +135,11 @@ public class SimulationPage extends FormPage implements IPropertyListener {
         final Combo combo = ((Combo) e.getSource());
         final String item = combo.getItem(combo.getSelectionIndex());
 
+        final ComponentInstance compInstance = scenario.getDesign().getComponentInstance(item);
         if (this.type.equals("operator")) {
-          SimulationPage.this.scenario.getSimulationManager().setMainOperatorName(item);
+          SimulationPage.this.scenario.getSimulationManager().setMainOperatorName(compInstance);
         } else if (this.type.equals("comNode")) {
-          SimulationPage.this.scenario.getSimulationManager().setMainComNodeName(item);
+          SimulationPage.this.scenario.getSimulationManager().setMainComNodeName(compInstance);
         }
       }
 
@@ -361,13 +363,13 @@ public class SimulationPage extends FormPage implements IPropertyListener {
         combo.add(opId);
       }
 
-      combo.select(combo.indexOf(this.scenario.getSimulationManager().getMainOperatorName()));
+      combo.select(combo.indexOf(this.scenario.getSimulationManager().getMainOperatorName().getInstanceName()));
     } else if (type.equals("comNode")) {
       for (final String nodeId : this.scenario.getComNodeIds()) {
         combo.add(nodeId);
       }
 
-      combo.select(combo.indexOf(this.scenario.getSimulationManager().getMainComNodeName()));
+      combo.select(combo.indexOf(this.scenario.getSimulationManager().getMainComNodeName().getInstanceName()));
     }
 
     return combo;

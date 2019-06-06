@@ -336,11 +336,11 @@ public class ScenarioWriter {
 
     final Element core = this.dom.createElement("mainCore");
     params.appendChild(core);
-    core.setTextContent(this.scenario.getSimulationManager().getMainOperatorName());
+    core.setTextContent(this.scenario.getSimulationManager().getMainOperatorName().getInstanceName());
 
     final Element medium = this.dom.createElement("mainComNode");
     params.appendChild(medium);
-    medium.setTextContent(this.scenario.getSimulationManager().getMainComNodeName());
+    medium.setTextContent(this.scenario.getSimulationManager().getMainComNodeName().getInstanceName());
 
     final Element dataSize = this.dom.createElement("averageDataSize");
     params.appendChild(dataSize);

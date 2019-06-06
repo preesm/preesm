@@ -42,9 +42,9 @@ import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.Set;
 import org.preesm.model.scenario.types.DataType;
+import org.preesm.model.slam.ComponentInstance;
 import org.preesm.model.slam.route.Route;
 
-// TODO: Auto-generated Javadoc
 /**
  * Handles simulation parameters.
  *
@@ -53,10 +53,10 @@ import org.preesm.model.slam.route.Route;
 public class SimulationManager {
 
   /** Names of the main operator and com node. */
-  private String mainComNodeName = "";
+  private ComponentInstance mainComNodeName;
 
   /** The main operator name. */
-  private String mainOperatorName = "";
+  private ComponentInstance mainOperatorName;
 
   /**
    * Average transfer size sizes in base unit (usually byte). This size is used while calculating the routing table. The
@@ -88,7 +88,7 @@ public class SimulationManager {
    *
    * @return the main com node name
    */
-  public String getMainComNodeName() {
+  public ComponentInstance getMainComNodeName() {
     return this.mainComNodeName;
   }
 
@@ -98,7 +98,7 @@ public class SimulationManager {
    * @param mainComNodeName
    *          the new main com node name
    */
-  public void setMainComNodeName(final String mainComNodeName) {
+  public void setMainComNodeName(final ComponentInstance mainComNodeName) {
     this.mainComNodeName = mainComNodeName;
   }
 
@@ -107,7 +107,7 @@ public class SimulationManager {
    *
    * @return the main operator name
    */
-  public String getMainOperatorName() {
+  public ComponentInstance getMainOperatorName() {
     return this.mainOperatorName;
   }
 
@@ -117,7 +117,7 @@ public class SimulationManager {
    * @param mainOperatorName
    *          the new main operator name
    */
-  public void setMainOperatorName(final String mainOperatorName) {
+  public void setMainOperatorName(final ComponentInstance mainOperatorName) {
     this.mainOperatorName = mainOperatorName;
   }
 

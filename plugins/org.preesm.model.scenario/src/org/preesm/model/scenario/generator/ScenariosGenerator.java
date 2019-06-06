@@ -63,6 +63,7 @@ import org.preesm.model.scenario.PreesmScenario;
 import org.preesm.model.scenario.Timing;
 import org.preesm.model.scenario.serialize.ScenarioWriter;
 import org.preesm.model.scenario.types.DataType;
+import org.preesm.model.slam.ComponentInstance;
 import org.preesm.model.slam.Design;
 import org.preesm.model.slam.SlamPackage;
 import org.preesm.model.slam.serialize.IPXACTResourceFactoryImpl;
@@ -222,8 +223,8 @@ public class ScenariosGenerator {
     scenario.setAlgorithm(piGraph);
 
     // Get com nodes and cores names
-    final List<String> coreIds = new ArrayList<>(DesignTools.getOperatorInstanceIds(archi));
-    final List<String> comNodeIds = new ArrayList<>(DesignTools.getComNodeInstanceIds(archi));
+    final List<ComponentInstance> coreIds = new ArrayList<>(DesignTools.getOperatorInstances(archi));
+    final List<ComponentInstance> comNodeIds = new ArrayList<>(DesignTools.getComNodeInstances(archi));
     // Set default values for constraints, timings and simulation parameters
     if (algoURL.endsWith(ScenariosGenerator.PI_GRAPH_EXT)) {
       fillPiScenario(scenario, archi, piGraph);

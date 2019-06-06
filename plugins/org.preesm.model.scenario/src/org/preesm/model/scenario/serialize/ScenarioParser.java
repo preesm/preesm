@@ -74,6 +74,7 @@ import org.preesm.model.scenario.papi.PapifyConfigActor;
 import org.preesm.model.scenario.papi.PapifyConfigPE;
 import org.preesm.model.scenario.types.DataType;
 import org.preesm.model.scenario.types.VertexType;
+import org.preesm.model.slam.ComponentInstance;
 import org.preesm.model.slam.Design;
 import org.preesm.model.slam.serialize.SlamParser;
 import org.w3c.dom.Document;
@@ -310,10 +311,12 @@ public class ScenarioParser {
         final String content = elt.getTextContent();
         switch (type) {
           case "mainCore":
-            this.scenario.getSimulationManager().setMainOperatorName(content);
+            final ComponentInstance mainCore = scenario.getDesign().getComponentInstance(content);
+            this.scenario.getSimulationManager().setMainOperatorName(mainCore);
             break;
           case "mainComNode":
-            this.scenario.getSimulationManager().setMainComNodeName(content);
+            final ComponentInstance mainComNode = scenario.getDesign().getComponentInstance(content);
+            this.scenario.getSimulationManager().setMainComNodeName(mainComNode);
             break;
           case "averageDataSize":
             this.scenario.getSimulationManager().setAverageDataSize(Long.valueOf(content));

@@ -133,8 +133,7 @@ public class StatGenerator {
     long work = 0;
     final MapperDAG dag = this.abc.getDAG();
 
-    final ComponentInstance mainOp = DesignTools.getComponentInstance(this.abc.getArchitecture(),
-        this.scenario.getSimulationManager().getMainOperatorName());
+    final ComponentInstance mainOp = this.scenario.getSimulationManager().getMainOperatorName();
 
     for (final DAGVertex vertex : dag.vertexSet()) {
       if (!(vertex instanceof TransferVertex) && !(vertex instanceof OverheadVertex)
@@ -188,8 +187,7 @@ public class StatGenerator {
    */
   public int getNbMainTypeOperators() {
     int nbMainTypeOperators = 0;
-    final ComponentInstance mainOp = DesignTools.getComponentInstance(this.abc.getArchitecture(),
-        this.scenario.getSimulationManager().getMainOperatorName());
+    final ComponentInstance mainOp = this.scenario.getSimulationManager().getMainOperatorName();
     nbMainTypeOperators = DesignTools.getInstancesOfComponent(this.abc.getArchitecture(), mainOp.getComponent()).size();
     return nbMainTypeOperators;
   }

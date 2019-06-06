@@ -81,8 +81,7 @@ public class MainCoreMappingFromDAG extends AbstractMappingFromDAG {
     // 1- sort components to have a relation from ID to component
     final List<ComponentInstance> componentInstances = new ArrayList<>(architecture.getComponentInstances());
     Collections.sort(componentInstances, new ComponentInstanceComparator());
-    final String mainOperatorName = scenario.getSimulationManager().getMainOperatorName();
-    final ComponentInstance mainOperator = architecture.getComponentInstance(mainOperatorName);
+    final ComponentInstance mainOperator = scenario.getSimulationManager().getMainOperatorName();
 
     final LatencyAbc abc = LatencyAbc.getInstance(abcParams, dag, architecture, scenario);
 
