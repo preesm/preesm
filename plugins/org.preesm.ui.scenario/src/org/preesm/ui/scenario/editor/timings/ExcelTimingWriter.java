@@ -39,9 +39,8 @@ package org.preesm.ui.scenario.editor.timings;
 
 import java.io.FileNotFoundException;
 import java.io.OutputStream;
-import java.util.LinkedHashSet;
+import java.util.List;
 import java.util.Locale;
-import java.util.Set;
 import jxl.Workbook;
 import jxl.WorkbookSettings;
 import jxl.write.Label;
@@ -156,20 +155,15 @@ public class ExcelTimingWriter extends ExcelWriter {
 
       final PreesmAlgorithmListContentProvider provider = new PreesmAlgorithmListContentProvider();
 
-      final Set<String> vertexNames = new LinkedHashSet<>();
-
-      final Set<AbstractActor> vSet = provider.getSortedPISDFVertices(this.scenario);
-      for (final AbstractActor vertex : vSet) {
-        vertexNames.add(vertex.getVertexPath());
-      }
+      final List<AbstractActor> vSet = provider.getSortedPISDFVertices(this.scenario);
 
       for (final Component opDefId : this.scenario.getOperatorDefinitions()) {
-        for (final String vertexName : vertexNames) {
+        for (final AbstractActor vertexName : vSet) {
 
           final Timing timing = this.scenario.getTimingManager().getTimingOrDefault(vertexName, opDefId);
 
           WritableCell opCell = (WritableCell) sheet.findCell(opDefId.getVlnv().getName());
-          WritableCell vCell = (WritableCell) sheet.findCell(vertexName);
+          WritableCell vCell = (WritableCell) sheet.findCell(vertexName.getVertexPath());
 
           try {
             if (opCell == null) {
@@ -179,7 +173,7 @@ public class ExcelTimingWriter extends ExcelWriter {
             }
 
             if (vCell == null) {
-              vCell = new Label(0, maxVOrdinate, vertexName);
+              vCell = new Label(0, maxVOrdinate, vertexName.getVertexPath());
               sheet.addCell(vCell);
               maxVOrdinate++;
             }

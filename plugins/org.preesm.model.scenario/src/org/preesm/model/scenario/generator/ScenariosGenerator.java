@@ -262,7 +262,7 @@ public class ScenariosGenerator {
     for (final Component opId : DesignTools.getOperatorComponents(archi)) {
       for (final AbstractActor aa : piGraph.getAllActors()) {
         // Add timing: aa run on ci in 10000
-        scenario.getTimingManager().addTiming(new Timing(opId, aa.getVertexPath(), 10000));
+        scenario.getTimingManager().addTiming(new Timing(opId, aa, 10000));
       }
     }
     for (final ComponentInstance coreId : coreIds) {

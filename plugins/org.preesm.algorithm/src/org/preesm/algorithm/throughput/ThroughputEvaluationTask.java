@@ -49,6 +49,7 @@ import org.preesm.commons.doc.annotations.Port;
 import org.preesm.commons.doc.annotations.PreesmTask;
 import org.preesm.commons.doc.annotations.Value;
 import org.preesm.commons.logger.PreesmLogger;
+import org.preesm.model.pisdf.AbstractActor;
 import org.preesm.model.scenario.PreesmScenario;
 import org.preesm.workflow.elements.Workflow;
 import org.preesm.workflow.implement.AbstractTaskImplementation;
@@ -198,7 +199,8 @@ public class ThroughputEvaluationTask extends AbstractTaskImplementation {
           if (actor.getGraphDescription() == null) {
             // if atomic actor then copy the duration indicated in the scenario
             final double duration = scenario.getTimingManager()
-                .getTimingOrDefault(actor.getId(), scenario.getSimulationManager().getMainOperator().getComponent())
+                .getTimingOrDefault((AbstractActor) actor.getReferencePiMMVertex(),
+                    scenario.getSimulationManager().getMainOperator().getComponent())
                 .getTime();
             actor.setPropertyValue("duration", duration);
           } else {

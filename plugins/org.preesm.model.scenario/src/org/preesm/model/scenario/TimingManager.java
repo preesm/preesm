@@ -45,6 +45,8 @@ import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import org.preesm.commons.model.PreesmCopyTracker;
+import org.preesm.model.pisdf.AbstractActor;
 import org.preesm.model.scenario.serialize.CsvTimingParser;
 import org.preesm.model.scenario.serialize.ExcelTimingParser;
 import org.preesm.model.slam.component.Component;
@@ -111,7 +113,7 @@ public class TimingManager {
    *          the operator definition id
    * @return the timing
    */
-  public Timing addTiming(final String dagVertexId, final Component operatorDefinitionId) {
+  public Timing addTiming(final AbstractActor dagVertexId, final Component operatorDefinitionId) {
 
     final Timing newt = new Timing(operatorDefinitionId, dagVertexId);
     for (final Timing timing : this.timings) {
@@ -134,7 +136,7 @@ public class TimingManager {
    * @param time
    *          the time
    */
-  public void setTiming(final String dagVertexId, final Component operatorDefinitionId, final long time) {
+  public void setTiming(final AbstractActor dagVertexId, final Component operatorDefinitionId, final long time) {
     addTiming(dagVertexId, operatorDefinitionId).setTime(time);
   }
 
@@ -148,7 +150,7 @@ public class TimingManager {
    * @param value
    *          the value
    */
-  public void setTiming(final String dagVertexId, final Component operatorDefinitionId, final String value) {
+  public void setTiming(final AbstractActor dagVertexId, final Component operatorDefinitionId, final String value) {
     addTiming(dagVertexId, operatorDefinitionId).setStringValue(value);
   }
 
@@ -161,11 +163,14 @@ public class TimingManager {
    *          the operator definition id
    * @return the timing or default
    */
-  public Timing getTimingOrDefault(final String dagVertexId, final Component operatorDefinitionId) {
+  public Timing getTimingOrDefault(final AbstractActor dagVertexId, final Component operatorDefinitionId) {
     Timing val = null;
 
+    final AbstractActor originalSource = PreesmCopyTracker.getOriginalSource(dagVertexId);
+
     for (final Timing timing : this.timings) {
-      if (timing.getVertexId().equals(dagVertexId) && timing.getOperatorDefinitionId().equals(operatorDefinitionId)) {
+      if (timing.getVertexId().equals(originalSource)
+          && timing.getOperatorDefinitionId().equals(operatorDefinitionId)) {
         val = timing;
       }
     }

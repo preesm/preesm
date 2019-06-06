@@ -51,7 +51,9 @@ import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.Path;
 import org.preesm.commons.files.WorkspaceUtils;
 import org.preesm.commons.logger.PreesmLogger;
+import org.preesm.model.pisdf.AbstractActor;
 import org.preesm.model.pisdf.PiGraph;
+import org.preesm.model.pisdf.util.ActorPath;
 import org.preesm.model.scenario.PreesmScenario;
 import org.preesm.model.scenario.Timing;
 import org.preesm.model.slam.component.Component;
@@ -96,7 +98,7 @@ public class CsvTimingParser {
     final Path path = new Path(url);
     final IFile file = workspace.getRoot().getFile(path);
     try {
-      final Map<String, Map<Component, String>> timings = new LinkedHashMap<>();
+      final Map<AbstractActor, Map<Component, String>> timings = new LinkedHashMap<>();
       final BufferedReader br = new BufferedReader(new InputStreamReader(file.getContents()));
 
       String line;
@@ -123,7 +125,11 @@ public class CsvTimingParser {
               timing.put(com, cells[i]);
             }
 
-            timings.put(cells[0], timing);
+            final String string = cells[0];
+            final AbstractActor lookupActor = ActorPath.lookup(this.scenario.getAlgorithm(), string);
+            if (lookupActor != null) {
+              timings.put(lookupActor, timing);
+            }
           }
         }
 
@@ -146,7 +152,7 @@ public class CsvTimingParser {
    * @throws CoreException
    *           the core exception
    */
-  private void parseTimings(final Map<String, Map<Component, String>> timings, final List<Component> opDefIds) {
+  private void parseTimings(final Map<AbstractActor, Map<Component, String>> timings, final List<Component> opDefIds) {
     // Depending on the type of SDF graph we process (IBSDF or PISDF), call
     // one or the other method
     final PiGraph currentGraph = scenario.getAlgorithm();
@@ -163,12 +169,12 @@ public class CsvTimingParser {
    * @param opDefIds
    *          the op def ids
    */
-  private void parseTimingsForPISDFGraph(final Map<String, Map<Component, String>> timings, final PiGraph currentGraph,
-      final List<Component> opDefIds) {
+  private void parseTimingsForPISDFGraph(final Map<AbstractActor, Map<Component, String>> timings,
+      final PiGraph currentGraph, final List<Component> opDefIds) {
 
     // parse timings of non hierarchical actors of currentGraph
     currentGraph.getActorsWithRefinement().stream().filter(a -> !a.isHierarchical())
-        .forEach(a -> parseTimingForVertex(timings, a.getVertexPath(), opDefIds));
+        .forEach(a -> parseTimingForVertex(timings, a, opDefIds));
     // parse timings of all direct subgraphs
     currentGraph.getChildrenGraphs().stream().forEach(g -> parseTimingsForPISDFGraph(timings, g, opDefIds));
   }
@@ -183,11 +189,11 @@ public class CsvTimingParser {
    * @param opDefIds
    *          the op def ids
    */
-  private void parseTimingForVertex(final Map<String, Map<Component, String>> timings, final String vertexName,
-      final List<Component> opDefIds) {
+  private void parseTimingForVertex(final Map<AbstractActor, Map<Component, String>> timings,
+      final AbstractActor vertexName, final List<Component> opDefIds) {
     // For each kind of processing elements, we look for a timing for given vertex
     for (final Component opDefId : opDefIds) {
-      if (opDefId != null && !vertexName.isEmpty()) {
+      if (opDefId != null && vertexName != null) {
         // Get the timing we are looking for
         try {
           final String expression = timings.get(vertexName).get(opDefId);

@@ -86,8 +86,7 @@ class HeuristicPeriodicActorSelection {
       final long period = e.getValue();
       long wcetMin = Long.MAX_VALUE;
       for (final Component operatorDefinitionID : scenario.getOperatorDefinitions()) {
-        final long timing = scenario.getTimingManager().getTimingOrDefault(actor.getVertexPath(), operatorDefinitionID)
-            .getTime();
+        final long timing = scenario.getTimingManager().getTimingOrDefault(actor, operatorDefinitionID).getTime();
         if (timing < wcetMin) {
           wcetMin = timing;
         }

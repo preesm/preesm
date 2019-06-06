@@ -50,6 +50,8 @@ import org.preesm.algorithm.model.sdf.SDFVertex;
 import org.preesm.algorithm.model.sdf.esdf.SDFSinkInterfaceVertex;
 import org.preesm.algorithm.model.sdf.esdf.SDFSourceInterfaceVertex;
 import org.preesm.commons.logger.PreesmLogger;
+import org.preesm.model.pisdf.AbstractActor;
+import org.preesm.model.pisdf.AbstractVertex;
 import org.preesm.model.scenario.PreesmScenario;
 
 /**
@@ -201,8 +203,13 @@ public class IBSDFThroughputEvaluator extends ThroughputEvaluator {
           && (edge.getSource().getGraphDescription() instanceof SDFGraph))) {
         L = 0;
       } else {
-        L = this.getScenar().getTimingManager().getTimingOrDefault(edge.getSource().getId(),
-            scenario.getSimulationManager().getMainOperator().getComponent()).getTime();
+        final AbstractVertex referencePiMMVertex = edge.getSource().getReferencePiMMVertex();
+        if (referencePiMMVertex instanceof AbstractActor) {
+          L = this.getScenar().getTimingManager().getTimingOrDefault((AbstractActor) referencePiMMVertex,
+              scenario.getSimulationManager().getMainOperator().getComponent()).getTime();
+        } else {
+          L = 0;
+        }
       }
 
       H = ((double) (edge.getDelay().getValue())

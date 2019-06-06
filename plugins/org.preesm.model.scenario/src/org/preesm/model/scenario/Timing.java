@@ -48,6 +48,7 @@ import org.nfunk.jep.JEP;
 import org.nfunk.jep.Node;
 import org.nfunk.jep.ParseException;
 import org.preesm.commons.logger.PreesmLogger;
+import org.preesm.model.pisdf.AbstractActor;
 import org.preesm.model.slam.component.Component;
 
 /**
@@ -92,7 +93,7 @@ public class Timing {
   private Set<String> inputParameters;
 
   /** Vertex for which the timing is given. */
-  private final String vertexId;
+  private final AbstractActor vertexId;
 
   /**
    * Constructors.
@@ -103,7 +104,7 @@ public class Timing {
    *          the vertex id
    */
 
-  public Timing(final Component operatorDefinitionId, final String vertexId) {
+  public Timing(final Component operatorDefinitionId, final AbstractActor vertexId) {
     this.time = Timing.DEFAULT_TASK_TIME;
     this.stringValue = Timing.DEFAULT_EXPRESSION_VALUE;
     this.inputParameters = new LinkedHashSet<>();
@@ -122,7 +123,7 @@ public class Timing {
    * @param time
    *          the time
    */
-  public Timing(final Component operatorId, final String sdfVertexId, final long time) {
+  public Timing(final Component operatorId, final AbstractActor sdfVertexId, final long time) {
     this(operatorId, sdfVertexId);
     this.time = time;
     this.stringValue = String.valueOf(time);
@@ -139,7 +140,7 @@ public class Timing {
    * @param expression
    *          the expression
    */
-  public Timing(final Component operatorId, final String vertexId, final String expression) {
+  public Timing(final Component operatorId, final AbstractActor vertexId, final String expression) {
     this(operatorId, vertexId);
     this.stringValue = expression;
     this.isEvaluated = false;
@@ -158,7 +159,7 @@ public class Timing {
    * @param inputParameters
    *          the input parameters
    */
-  public Timing(final Component operatorId, final String vertexId, final String expression,
+  public Timing(final Component operatorId, final AbstractActor vertexId, final String expression,
       final Set<String> inputParameters) {
     this(operatorId, vertexId);
     this.stringValue = expression;
@@ -194,7 +195,7 @@ public class Timing {
    *
    * @return the vertex id
    */
-  public String getVertexId() {
+  public AbstractActor getVertexId() {
     return this.vertexId;
   }
 
@@ -349,9 +350,11 @@ public class Timing {
   @Override
   public String toString() {
     if (this.isEvaluated) {
-      return "{" + this.vertexId + "," + this.operatorDefinitionId + "," + this.time + "}";
+      return "{" + this.vertexId.getVertexPath() + " on " + this.operatorDefinitionId.getVlnv().getName() + " -> "
+          + this.time + "}";
     } else {
-      return "{" + this.vertexId + "," + this.operatorDefinitionId + "," + this.stringValue + "}";
+      return "{" + this.vertexId.getVertexPath() + " on " + this.operatorDefinitionId.getVlnv().getName() + " -> "
+          + this.stringValue + "}";
     }
   }
 }

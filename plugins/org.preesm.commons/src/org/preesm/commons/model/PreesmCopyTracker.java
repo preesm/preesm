@@ -70,6 +70,9 @@ public class PreesmCopyTracker<T extends Notifier> extends PreesmAdapter {
    * Find the adapter that hold the source of copy, then return its source, or null if it does not exist.
    */
   public static final <V extends Notifier> V getSource(final V copy) {
+    if (copy == null) {
+      return null;
+    }
     @SuppressWarnings("unchecked")
     final PreesmCopyTracker<V> adapt = PreesmAdapter.adapt(copy, PreesmCopyTracker.class);
     if (adapt != null) {

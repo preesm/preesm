@@ -69,6 +69,7 @@ import org.preesm.algorithm.model.types.StringEdgePropertyType;
 import org.preesm.commons.exceptions.PreesmException;
 import org.preesm.commons.exceptions.PreesmRuntimeException;
 import org.preesm.commons.logger.PreesmLogger;
+import org.preesm.model.pisdf.PiGraph;
 
 /**
  * Abstract Class representing an SDF graph.
@@ -96,6 +97,10 @@ public class SDFGraph extends AbstractGraph<SDFAbstractVertex, SDFEdge> {
     super(SDFEdge::new);
     setName("");
     getPropertyBean().setValue(AbstractGraph.MODEL, "sdf");
+  }
+
+  public PiGraph getReferencePiMMGraph() {
+    return this.getPropertyBean().getValue(PiGraph.class.getCanonicalName());
   }
 
   /*

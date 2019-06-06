@@ -53,7 +53,6 @@ import org.eclipse.swt.widgets.Combo;
 import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.IPropertyListener;
 import org.eclipse.ui.PlatformUI;
-import org.preesm.algorithm.model.sdf.SDFVertex;
 import org.preesm.commons.files.PreesmResourcesHelper;
 import org.preesm.model.pisdf.AbstractActor;
 import org.preesm.model.scenario.PreesmScenario;
@@ -139,8 +138,7 @@ public class TimingsTableLabelProvider implements ITableLabelProvider, Selection
     if ((element instanceof AbstractActor) && (this.currentOpDefId != null)) {
       final AbstractActor vertex = (AbstractActor) element;
 
-      final Timing timing = this.scenario.getTimingManager().getTimingOrDefault(vertex.getVertexPath(),
-          this.currentOpDefId);
+      final Timing timing = this.scenario.getTimingManager().getTimingOrDefault(vertex, this.currentOpDefId);
       switch (columnIndex) {
         case 1:// Parsing column
           if (timing.canParse()) {
@@ -185,8 +183,7 @@ public class TimingsTableLabelProvider implements ITableLabelProvider, Selection
     if ((element instanceof AbstractActor) && (this.currentOpDefId != null)) {
       final AbstractActor vertex = (AbstractActor) element;
 
-      final Timing timing = this.scenario.getTimingManager().getTimingOrDefault(vertex.getVertexPath(),
-          this.currentOpDefId);
+      final Timing timing = this.scenario.getTimingManager().getTimingOrDefault(vertex, this.currentOpDefId);
 
       switch (columnIndex) {
         case 0:
@@ -271,28 +268,28 @@ public class TimingsTableLabelProvider implements ITableLabelProvider, Selection
   public void handleDoubleClick(final IStructuredSelection selection) {
     final IInputValidator validator = newText -> null;
 
-    String vertexName = null;
-    if (selection.getFirstElement() instanceof SDFVertex) {
-      vertexName = ((SDFVertex) selection.getFirstElement()).getName();
-    } else if (selection.getFirstElement() instanceof AbstractActor) {
-      vertexName = ((AbstractActor) selection.getFirstElement()).getVertexPath();
-    }
+    final Object firstElement = selection.getFirstElement();
+    if (firstElement instanceof AbstractActor) {
+      final AbstractActor abstractActor = (AbstractActor) firstElement;
 
-    if ((vertexName != null) && (this.currentOpDefId != null)) {
-      final String title = Messages.getString("Timings.dialog.title");
-      final String message = Messages.getString("Timings.dialog.message") + vertexName;
-      final String init = this.scenario.getTimingManager().getTimingOrDefault(vertexName, this.currentOpDefId)
-          .getStringValue();
+      if (this.currentOpDefId != null) {
+        final String title = Messages.getString("Timings.dialog.title");
+        final String message = Messages.getString("Timings.dialog.message") + abstractActor.getVertexPath();
+        final String init = this.scenario.getTimingManager().getTimingOrDefault(abstractActor, this.currentOpDefId)
+            .getStringValue();
 
-      final InputDialog dialog = new InputDialog(PlatformUI.getWorkbench().getActiveWorkbenchWindow().getShell(), title,
-          message, init, validator);
-      if (dialog.open() == Window.OK) {
-        final String value = dialog.getValue();
+        final InputDialog dialog = new InputDialog(PlatformUI.getWorkbench().getActiveWorkbenchWindow().getShell(),
+            title, message, init, validator);
+        if (dialog.open() == Window.OK) {
+          final String value = dialog.getValue();
 
-        this.scenario.getTimingManager().setTiming(vertexName, this.currentOpDefId, value);
-        this.propertyListener.propertyChanged(this, IEditorPart.PROP_DIRTY);
-        this.tableViewer.refresh();
+          this.scenario.getTimingManager().setTiming(abstractActor, this.currentOpDefId, value);
+          this.propertyListener.propertyChanged(this, IEditorPart.PROP_DIRTY);
+          this.tableViewer.refresh();
+        }
       }
+    } else {
+      System.out.println("hem");
     }
   }
 

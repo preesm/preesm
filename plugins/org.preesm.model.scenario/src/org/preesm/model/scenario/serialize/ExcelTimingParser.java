@@ -54,6 +54,8 @@ import org.eclipse.core.runtime.Path;
 import org.preesm.commons.exceptions.PreesmRuntimeException;
 import org.preesm.commons.files.WorkspaceUtils;
 import org.preesm.commons.logger.PreesmLogger;
+import org.preesm.model.pisdf.AbstractActor;
+import org.preesm.model.pisdf.AbstractVertex;
 import org.preesm.model.pisdf.PiGraph;
 import org.preesm.model.scenario.PreesmScenario;
 import org.preesm.model.scenario.Timing;
@@ -103,7 +105,7 @@ public class ExcelTimingParser {
 
       // Warnings are displayed once for each missing operator or vertex
       // in the excel sheet
-      final List<String> missingVertices = new ArrayList<>();
+      final List<AbstractVertex> missingVertices = new ArrayList<>();
       final List<Component> missingOperatorTypes = new ArrayList<>();
 
       parseTimings(w, opDefIds, missingVertices, missingOperatorTypes);
@@ -127,8 +129,8 @@ public class ExcelTimingParser {
    * @throws CoreException
    *           the core exception
    */
-  private void parseTimings(final Workbook w, final List<Component> opDefIds, final List<String> missingVertices,
-      final List<Component> missingOperatorTypes) {
+  private void parseTimings(final Workbook w, final List<Component> opDefIds,
+      final List<AbstractVertex> missingVertices, final List<Component> missingOperatorTypes) {
     // Depending on the type of SDF graph we process (IBSDF or PISDF), call
     // one or the other method
     final PiGraph currentGraph = scenario.getAlgorithm();
@@ -150,10 +152,10 @@ public class ExcelTimingParser {
    *          the missing operator types
    */
   private void parseTimingsForPISDFGraph(final Workbook w, final PiGraph currentGraph, final List<Component> opDefIds,
-      final List<String> missingVertices, final List<Component> missingOperatorTypes) {
+      final List<AbstractVertex> missingVertices, final List<Component> missingOperatorTypes) {
 
     currentGraph.getActorsWithRefinement().stream().filter(a -> !a.isHierarchical())
-        .forEach(a -> parseTimingForVertex(w, a.getVertexPath(), opDefIds, missingVertices, missingOperatorTypes));
+        .forEach(a -> parseTimingForVertex(w, a, opDefIds, missingVertices, missingOperatorTypes));
 
     currentGraph.getChildrenGraphs().stream()
         .forEach(g -> parseTimingsForPISDFGraph(w, g, opDefIds, missingVertices, missingOperatorTypes));
@@ -174,14 +176,14 @@ public class ExcelTimingParser {
    * @param missingOperatorTypes
    *          the missing operator types
    */
-  private void parseTimingForVertex(final Workbook w, final String vertexName, final List<Component> opDefIds,
-      final List<String> missingVertices, final List<Component> missingOperatorTypes) {
+  private void parseTimingForVertex(final Workbook w, final AbstractActor vertexName, final List<Component> opDefIds,
+      final List<AbstractVertex> missingVertices, final List<Component> missingOperatorTypes) {
     // For each kind of processing elements, we look for a timing for given
     // vertex
     for (final Component opDefId : opDefIds) {
-      if (opDefId != null && !vertexName.isEmpty()) {
+      if (opDefId != null && vertexName != null) {
         // Get row and column for the timing we are looking for
-        final Cell vertexCell = w.getSheet(0).findCell(vertexName);
+        final Cell vertexCell = w.getSheet(0).findCell(vertexName.getVertexPath());
         final Cell operatorCell = w.getSheet(0).findCell(opDefId.getVlnv().getName());
 
         if ((vertexCell != null) && (operatorCell != null)) {
@@ -209,7 +211,8 @@ public class ExcelTimingParser {
           }
         } else {
           if ((vertexCell == null) && !missingVertices.contains(vertexName)) {
-            PreesmLogger.getLogger().log(Level.WARNING, "No line found in excel sheet for vertex: " + vertexName);
+            PreesmLogger.getLogger().log(Level.WARNING,
+                "No line found in excel sheet for vertex: " + vertexName.getVertexPath());
             missingVertices.add(vertexName);
           } else if ((operatorCell == null) && !missingOperatorTypes.contains(opDefId)) {
             PreesmLogger.getLogger().log(Level.WARNING, "No column found in excel sheet for operator type: " + opDefId);

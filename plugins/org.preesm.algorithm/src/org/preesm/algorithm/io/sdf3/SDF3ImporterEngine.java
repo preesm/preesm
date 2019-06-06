@@ -49,6 +49,7 @@ import org.preesm.algorithm.model.sdf.SDFAbstractVertex;
 import org.preesm.algorithm.model.sdf.SDFGraph;
 import org.preesm.commons.exceptions.PreesmException;
 import org.preesm.commons.exceptions.PreesmRuntimeException;
+import org.preesm.model.pisdf.AbstractActor;
 import org.preesm.model.scenario.PreesmScenario;
 import org.preesm.model.scenario.Timing;
 import org.preesm.model.scenario.types.DataType;
@@ -140,7 +141,9 @@ public class SDF3ImporterEngine {
         // current actor
         entry.getKey().setInfo(entry.getKey().getName());
         // Set the timing of the actor
-        final Timing t = scenario.getTimingManager().addTiming(entry.getKey().getName(), component.getComponent());
+        final SDFAbstractVertex vertex = entry.getKey();
+        final AbstractActor referencePiMMVertex = (AbstractActor) vertex.getReferencePiMMVertex();
+        final Timing t = scenario.getTimingManager().addTiming(referencePiMMVertex, component.getComponent());
         t.setTime(entry.getValue());
       }
     }

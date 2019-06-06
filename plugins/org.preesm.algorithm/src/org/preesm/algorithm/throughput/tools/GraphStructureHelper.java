@@ -50,7 +50,9 @@ import org.preesm.algorithm.model.sdf.SDFVertex;
 import org.preesm.algorithm.model.sdf.esdf.SDFSinkInterfaceVertex;
 import org.preesm.algorithm.model.sdf.esdf.SDFSourceInterfaceVertex;
 import org.preesm.algorithm.model.types.LongEdgePropertyType;
+import org.preesm.model.pisdf.AbstractActor;
 import org.preesm.model.scenario.PreesmScenario;
+import org.preesm.model.slam.component.Component;
 
 /**
  * @author hderoui
@@ -679,9 +681,9 @@ public interface GraphStructureHelper {
       // define the edge weight as the duration of the current source actor
       double actorDuration;
       if (scenario != null) {
-        actorDuration = scenario.getTimingManager()
-            .getTimingOrDefault(currentSource.getId(), scenario.getSimulationManager().getMainOperator().getComponent())
-            .getTime();
+        final Component component = scenario.getSimulationManager().getMainOperator().getComponent();
+        AbstractActor referencePiMMVertex = (AbstractActor) currentSource.getReferencePiMMVertex();
+        actorDuration = scenario.getTimingManager().getTimingOrDefault(referencePiMMVertex, component).getTime();
       } else {
         actorDuration = (double) currentSource.getPropertyBean().getValue(GraphStructureHelper.DURATION_PROPERTY);
       }

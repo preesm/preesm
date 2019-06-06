@@ -819,12 +819,13 @@ public class ScenarioParser {
         }
 
         final boolean contains = this.scenario.getDesign().containsComponent(opdefname);
-        if ((vertexpath != null) && contains) {
+        final AbstractActor lookup = ActorPath.lookup(this.scenario.getAlgorithm(), vertexpath);
+        if ((lookup != null) && contains) {
           final Component component = this.scenario.getDesign().getComponent(opdefname);
           if (isEvaluated) {
-            timing = new Timing(component, vertexpath, time);
+            timing = new Timing(component, lookup, time);
           } else {
-            timing = new Timing(component, vertexpath, stringValue);
+            timing = new Timing(component, lookup, stringValue);
           }
         }
       }

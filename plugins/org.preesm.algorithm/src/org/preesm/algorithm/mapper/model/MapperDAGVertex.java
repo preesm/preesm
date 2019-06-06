@@ -53,6 +53,7 @@ import org.preesm.algorithm.mapper.model.special.TransferVertex;
 import org.preesm.algorithm.model.AbstractVertex;
 import org.preesm.algorithm.model.dag.DAGEdge;
 import org.preesm.algorithm.model.dag.DAGVertex;
+import org.preesm.model.pisdf.PiGraph;
 import org.preesm.model.scenario.types.ImplementationPropertyNames;
 import org.preesm.model.slam.ComponentInstance;
 import org.preesm.model.slam.component.Operator;
@@ -120,6 +121,16 @@ public class MapperDAGVertex extends DAGVertex {
     getPropertyBean().setValue(MapperDAGVertex.INITIAL_PROPERTY, new VertexInit());
     getInit().setParentVertex(this);
     this.effectiveComponent = DesignTools.NO_COMPONENT_INSTANCE;
+  }
+
+  /**
+   *
+   */
+  public org.preesm.model.pisdf.AbstractVertex getReferencePiVertex() {
+    final MapperDAG dag = (MapperDAG) this.getBase();
+    final PiGraph referencePiMMGraph = dag.getReferencePiMMGraph();
+    // reference PiSDF graph should be SRDAG at this point.
+    return referencePiMMGraph.lookupVertex(this.getName());
   }
 
   /*

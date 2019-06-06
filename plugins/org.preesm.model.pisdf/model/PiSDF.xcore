@@ -325,6 +325,11 @@ class PiGraph extends AbstractActor, Graph {
 	op AbstractVertex lookupVertex(String vertexName) {
 		return (actors + parameters).findFirst[it.name == vertexName]
 	}
+
+	op AbstractVertex lookupAllVertex(String vertexName) {
+		return (allActors + allParameters).findFirst[it.name == vertexName]
+	}
+
 	op Fifo lookupFifo(String fifoId) {
 		return fifos.findFirst[it.id == fifoId]
 	}

@@ -64,6 +64,7 @@ import org.preesm.algorithm.model.sdf.visitors.DAGTransformation;
 import org.preesm.algorithm.model.types.LongEdgePropertyType;
 import org.preesm.commons.exceptions.PreesmRuntimeException;
 import org.preesm.commons.logger.PreesmLogger;
+import org.preesm.model.pisdf.AbstractActor;
 import org.preesm.model.pisdf.AbstractVertex;
 import org.preesm.model.pisdf.PiGraph;
 import org.preesm.model.scenario.ConstraintGroup;
@@ -262,19 +263,26 @@ public class SdfToDagConverter {
       if (!special) {
         // Default timings are given
         for (final ComponentInstance op : DesignTools.getOperatorInstances(architecture)) {
-          // info is set to the vertexPath of AbstractVertex
-          final Timing originalTiming = tm.getTimingOrDefault(currentVertex.getInfo(), op.getComponent());
-          Timing copyTiming = null;
-          if (originalTiming.getTime() == Timing.DEFAULT_TASK_TIME) {
-            copyTiming = new Timing(op.getComponent(), currentVertex.getId());
-          } else {
-            if (originalTiming.isEvaluated()) {
-              copyTiming = new Timing(op.getComponent(), currentVertex.getId(), originalTiming.getTime());
+          final AbstractVertex referencePiVertex = currentVertex.getReferencePiVertex();
+
+          if (referencePiVertex instanceof AbstractActor) {
+            final AbstractActor actor = ((AbstractActor) referencePiVertex);
+            // info is set to the vertexPath of AbstractVertex
+            final Timing originalTiming = tm.getTimingOrDefault(actor, op.getComponent());
+            Timing copyTiming = null;
+            if (originalTiming.getTime() == Timing.DEFAULT_TASK_TIME) {
+              copyTiming = new Timing(op.getComponent(), actor);
             } else {
-              copyTiming = new Timing(op.getComponent(), currentVertex.getId(), Timing.DEFAULT_TASK_TIME);
+              if (originalTiming.isEvaluated()) {
+                copyTiming = new Timing(op.getComponent(), actor, originalTiming.getTime());
+              } else {
+                copyTiming = new Timing(op.getComponent(), actor, Timing.DEFAULT_TASK_TIME);
+              }
             }
+            currentVertexInit.addTiming(copyTiming);
+          } else {
+            currentVertexInit.addTiming(new Timing(op.getComponent(), null));
           }
-          currentVertexInit.addTiming(copyTiming);
         }
       }
     }
@@ -299,21 +307,27 @@ public class SdfToDagConverter {
       // Special vertices have timings computed from data copy speed
       if (SpecialVertexManager.isSpecial(currentVertex)) {
         final VertexInit currentVertexInit = currentVertex.getInit();
+        final AbstractVertex referencePiVertex = currentVertex.getReferencePiVertex();
 
         for (final Component opDef : scenario.getTimingManager().getMemcpySpeeds().keySet()) {
-          final long sut = scenario.getTimingManager().getMemcpySetupTime(opDef);
-          final double tpu = scenario.getTimingManager().getMemcpyTimePerUnit(opDef);
-          final Timing timing = new Timing(opDef, currentVertex.getId());
+          if (referencePiVertex instanceof AbstractActor) {
+            final AbstractActor actor = ((AbstractActor) referencePiVertex);
+            final long sut = scenario.getTimingManager().getMemcpySetupTime(opDef);
+            final double tpu = scenario.getTimingManager().getMemcpyTimePerUnit(opDef);
+            final Timing timing = new Timing(opDef, actor);
 
-          // Depending on the type of vertex, time is given by the size of output or input buffers
-          if (SpecialVertexManager.isFork(currentVertex) || SpecialVertexManager.isJoin(currentVertex)
-              || SpecialVertexManager.isEnd(currentVertex)) {
-            timing.setTime(sut + (long) (tpu * SdfToDagConverter.getVertexInputBuffersSize(currentVertex)));
-          } else if (SpecialVertexManager.isBroadCast(currentVertex) || SpecialVertexManager.isInit(currentVertex)) {
-            timing.setTime(sut + (long) (tpu * SdfToDagConverter.getVertexOutputBuffersSize(currentVertex)));
+            // Depending on the type of vertex, time is given by the size of output or input buffers
+            if (SpecialVertexManager.isFork(currentVertex) || SpecialVertexManager.isJoin(currentVertex)
+                || SpecialVertexManager.isEnd(currentVertex)) {
+              timing.setTime(sut + (long) (tpu * SdfToDagConverter.getVertexInputBuffersSize(currentVertex)));
+            } else if (SpecialVertexManager.isBroadCast(currentVertex) || SpecialVertexManager.isInit(currentVertex)) {
+              timing.setTime(sut + (long) (tpu * SdfToDagConverter.getVertexOutputBuffersSize(currentVertex)));
+            }
+
+            currentVertexInit.addTiming(timing);
+          } else {
+            currentVertexInit.addTiming(new Timing(opDef, null));
           }
-
-          currentVertexInit.addTiming(timing);
         }
       }
     }
@@ -368,6 +382,7 @@ public class SdfToDagConverter {
       for (final DAGVertex v : dag.vertexSet()) {
         final MapperDAGVertex mv = (MapperDAGVertex) v;
 
+        final AbstractVertex referencePiVertex = mv.getReferencePiVertex();
         final String lookingFor = mv.getInfo();
 
         if (sdfVertexIds.contains(lookingFor)) {
@@ -381,8 +396,13 @@ public class SdfToDagConverter {
 
               // Initializes a default timing that may be erased
               // when timings are imported
-              final Timing newTiming = new Timing(currentIOp.getComponent(), mv.getName());
-              mv.getInit().addTiming(newTiming);
+              if (referencePiVertex instanceof AbstractActor) {
+                final AbstractActor actor = ((AbstractActor) referencePiVertex);
+                final Timing newTiming = new Timing(currentIOp.getComponent(), actor);
+                mv.getInit().addTiming(newTiming);
+              } else {
+                mv.getInit().addTiming(new Timing(currentIOp.getComponent(), null));
+              }
             }
 
           }

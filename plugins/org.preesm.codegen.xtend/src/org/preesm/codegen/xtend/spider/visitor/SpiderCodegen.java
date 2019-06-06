@@ -192,8 +192,7 @@ public class SpiderCodegen {
     final Map<String, AbstractActor> actorsByNames = this.preprocessor.getActorNames();
     this.timings = new LinkedHashMap<>();
     for (final Timing t : this.scenario.getTimingManager().getTimings()) {
-      final String actorName = t.getVertexId();
-      final AbstractActor aa = lookupTimingRec(pg, actorName);
+      final AbstractActor aa = t.getVertexId();
       if (aa != null) {
         if (!this.timings.containsKey(aa)) {
           this.timings.put(aa, new LinkedHashMap<Component, String>());
