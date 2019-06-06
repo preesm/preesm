@@ -357,7 +357,7 @@ public class ScenarioWriter {
     final Element sVOperators = this.dom.createElement("specialVertexOperators");
     params.appendChild(sVOperators);
 
-    for (final ComponentInstance opId : this.scenario.getSimulationManager().getSpecialVertexOperatorIds()) {
+    for (final ComponentInstance opId : this.scenario.getSimulationManager().getSpecialVertexOperators()) {
       addSpecialVertexOperator(sVOperators, opId);
     }
 

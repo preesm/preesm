@@ -271,7 +271,7 @@ public class ScenariosGenerator {
       }
       // Add special actors operator id (all cores can execute special
       // actors)
-      scenario.getSimulationManager().addSpecialVertexOperatorId(coreId);
+      scenario.getSimulationManager().addSpecialVertexOperator(coreId);
     }
 
     // Fill data-types found in the algo with default value of 1 byte size

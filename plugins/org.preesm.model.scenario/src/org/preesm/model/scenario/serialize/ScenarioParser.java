@@ -388,7 +388,7 @@ public class ScenarioParser {
 
           if (path != null) {
             final ComponentInstance componentInstance = this.scenario.getDesign().getComponentInstance(path);
-            this.scenario.getSimulationManager().addSpecialVertexOperatorId(componentInstance);
+            this.scenario.getSimulationManager().addSpecialVertexOperator(componentInstance);
           }
         }
       }
@@ -400,10 +400,10 @@ public class ScenarioParser {
      * It is not possible to remove all operators from special vertex executors: if no operator is selected, all of them
      * are!!
      */
-    if (this.scenario.getSimulationManager().getSpecialVertexOperatorIds().isEmpty()
+    if (this.scenario.getSimulationManager().getSpecialVertexOperators().isEmpty()
         && (this.scenario.getOperatorIds() != null)) {
       for (final ComponentInstance opId : this.scenario.getOperators()) {
-        this.scenario.getSimulationManager().addSpecialVertexOperatorId(opId);
+        this.scenario.getSimulationManager().addSpecialVertexOperator(opId);
       }
     }
   }
