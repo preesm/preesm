@@ -129,7 +129,7 @@ public class AddOverheadVertexTransaction extends Transaction {
     final String overtexID = "__overhead (" + currentSource.getName() + "," + currentTarget.getName() + ")";
 
     if (this.overheadTime > 0) {
-      this.oVertex = new OverheadVertex(overtexID, this.implementation);
+      this.oVertex = new OverheadVertex(overtexID, this.implementation, null);
       this.implementation.getTimings().dedicate(this.oVertex);
       this.implementation.getMappings().dedicate(this.oVertex);
 

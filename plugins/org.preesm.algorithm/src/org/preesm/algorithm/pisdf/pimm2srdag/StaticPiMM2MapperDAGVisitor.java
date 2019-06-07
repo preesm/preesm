@@ -191,7 +191,7 @@ public class StaticPiMM2MapperDAGVisitor extends PiMMSwitch<Boolean> {
    */
   @Override
   public Boolean caseAbstractActor(final AbstractActor actor) {
-    final MapperDAGVertex vertex = (MapperDAGVertex) this.vertexFactory.createVertex(DAGVertex.DAG_VERTEX);
+    final MapperDAGVertex vertex = (MapperDAGVertex) this.vertexFactory.createVertex(DAGVertex.DAG_VERTEX, actor);
     // Set default properties from the PiMM actor
     setDAGVertexPropertiesFromPiMM(actor, vertex);
     // Add the vertex to the DAG
@@ -206,7 +206,7 @@ public class StaticPiMM2MapperDAGVisitor extends PiMMSwitch<Boolean> {
    */
   @Override
   public Boolean caseActor(final Actor actor) {
-    final MapperDAGVertex vertex = (MapperDAGVertex) this.vertexFactory.createVertex(DAGVertex.DAG_VERTEX);
+    final MapperDAGVertex vertex = (MapperDAGVertex) this.vertexFactory.createVertex(DAGVertex.DAG_VERTEX, actor);
     // Set default properties from the PiMM actor
     setDAGVertexPropertiesFromPiMM(actor, vertex);
     // Handle path to memory script of the vertex
@@ -235,7 +235,7 @@ public class StaticPiMM2MapperDAGVisitor extends PiMMSwitch<Boolean> {
   @Override
   public Boolean caseBroadcastActor(final BroadcastActor actor) {
     final MapperDAGVertex vertex = (MapperDAGVertex) this.vertexFactory
-        .createVertex(DAGBroadcastVertex.DAG_BROADCAST_VERTEX);
+        .createVertex(DAGBroadcastVertex.DAG_BROADCAST_VERTEX, actor);
     // Set default properties from the PiMM actor
     setDAGVertexPropertiesFromPiMM(actor, vertex);
     // Set the special type of the Broadcast
@@ -257,7 +257,7 @@ public class StaticPiMM2MapperDAGVisitor extends PiMMSwitch<Boolean> {
   @Override
   public Boolean caseRoundBufferActor(final RoundBufferActor actor) {
     final MapperDAGVertex vertex = (MapperDAGVertex) this.vertexFactory
-        .createVertex(DAGBroadcastVertex.DAG_BROADCAST_VERTEX);
+        .createVertex(DAGBroadcastVertex.DAG_BROADCAST_VERTEX, actor);
     // Set default properties from the PiMM actor
     setDAGVertexPropertiesFromPiMM(actor, vertex);
     // Set the special type of the RoundBufferActor
@@ -277,7 +277,8 @@ public class StaticPiMM2MapperDAGVisitor extends PiMMSwitch<Boolean> {
    */
   @Override
   public Boolean caseJoinActor(final JoinActor actor) {
-    final MapperDAGVertex vertex = (MapperDAGVertex) this.vertexFactory.createVertex(DAGJoinVertex.DAG_JOIN_VERTEX);
+    final MapperDAGVertex vertex = (MapperDAGVertex) this.vertexFactory.createVertex(DAGJoinVertex.DAG_JOIN_VERTEX,
+        actor);
     // Set default properties from the PiMM actor
     setDAGVertexPropertiesFromPiMM(actor, vertex);
     // Check Join use
@@ -300,7 +301,8 @@ public class StaticPiMM2MapperDAGVisitor extends PiMMSwitch<Boolean> {
    */
   @Override
   public Boolean caseForkActor(final ForkActor actor) {
-    final MapperDAGVertex vertex = (MapperDAGVertex) this.vertexFactory.createVertex(DAGForkVertex.DAG_FORK_VERTEX);
+    final MapperDAGVertex vertex = (MapperDAGVertex) this.vertexFactory.createVertex(DAGForkVertex.DAG_FORK_VERTEX,
+        actor);
     // Set default properties from the PiMM actor
     setDAGVertexPropertiesFromPiMM(actor, vertex);
     // Check Fork use
@@ -334,7 +336,7 @@ public class StaticPiMM2MapperDAGVisitor extends PiMMSwitch<Boolean> {
    */
   @Override
   public Boolean caseInitActor(final InitActor actor) {
-    final DAGVertex vertex = this.vertexFactory.createVertex(DAGInitVertex.DAG_INIT_VERTEX);
+    final DAGVertex vertex = this.vertexFactory.createVertex(DAGInitVertex.DAG_INIT_VERTEX, actor);
     final DataOutputPort dataOutputPort = actor.getDataOutputPorts().get(0);
 
     // Set the number of delay
@@ -358,7 +360,7 @@ public class StaticPiMM2MapperDAGVisitor extends PiMMSwitch<Boolean> {
    */
   @Override
   public Boolean caseEndActor(final EndActor actor) {
-    final DAGVertex vertex = this.vertexFactory.createVertex(DAGEndVertex.DAG_END_VERTEX);
+    final DAGVertex vertex = this.vertexFactory.createVertex(DAGEndVertex.DAG_END_VERTEX, actor);
 
     setDAGVertexPropertiesFromPiMM(actor, vertex);
 

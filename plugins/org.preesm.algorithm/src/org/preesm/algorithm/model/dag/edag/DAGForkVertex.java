@@ -56,8 +56,8 @@ public class DAGForkVertex extends DAGVertex {
   /**
    * Creates a new DAGVertex.
    */
-  public DAGForkVertex() {
-    super();
+  public DAGForkVertex(org.preesm.model.pisdf.AbstractVertex origVertex) {
+    super(origVertex);
     setKind(DAGForkVertex.DAG_FORK_VERTEX);
   }
 

@@ -79,8 +79,8 @@ public class MapperVertexFactory implements IModelVertexFactory<DAGVertex> {
    * @see org.ietr.dftools.algorithm.factories.ModelVertexFactory#createVertex(java.lang.String)
    */
   @Override
-  public DAGVertex createVertex(final String kind) {
-    final DAGVertex result = new MapperDAGVertex();
+  public DAGVertex createVertex(final String kind, org.preesm.model.pisdf.AbstractVertex origVertex) {
+    final DAGVertex result = new MapperDAGVertex(origVertex);
     result.setKind(kind);
     return result;
   }
@@ -91,9 +91,9 @@ public class MapperVertexFactory implements IModelVertexFactory<DAGVertex> {
    * @see org.ietr.dftools.algorithm.factories.ModelVertexFactory#createVertex(org.w3c.dom.Element)
    */
   @Override
-  public DAGVertex createVertex(final Element vertexElt) {
+  public DAGVertex createVertex(final Element vertexElt, org.preesm.model.pisdf.AbstractVertex origVertex) {
     final String kind = getProperty(vertexElt, AbstractVertex.KIND_LITERAL);
-    return this.createVertex(kind);
+    return this.createVertex(kind, origVertex);
   }
 
   /*

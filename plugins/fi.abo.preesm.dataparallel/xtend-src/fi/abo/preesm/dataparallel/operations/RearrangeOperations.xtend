@@ -288,7 +288,7 @@ class RearrangeOperations implements DAGOperations {
 				actor
 			}
 
-			val fifoActorOut = new SDFSinkInterfaceVertex
+			val fifoActorOut = new SDFSinkInterfaceVertex(null)
 			fifoActorOut.name = getFifoInterfaceName(fifoActor)
 
 			fifoActor.addSink(fifoActorOut)
@@ -372,7 +372,7 @@ class RearrangeOperations implements DAGOperations {
 				edgeFifoActors.put(edge, actor)
 				actor
 			}
-			val fifoActorIn = new SDFSourceInterfaceVertex
+			val fifoActorIn = new SDFSourceInterfaceVertex(null)
 			fifoActorIn.name = getFifoInterfaceName(fifoActor)
 			fifoActor.addSource(fifoActorIn)
 
@@ -382,16 +382,16 @@ class RearrangeOperations implements DAGOperations {
 				// Create an implode node, first consuming original tokens, then tokens from new
 				// fifoActor
 				val originalFifoActor = originalEdgeFifoActors.get(edge)
-				val implode = new SDFJoinVertex
+				val implode = new SDFJoinVertex(null)
 				implode.name = "implode_" + edge.source.name + "_" + edge.target.name + "_init"
 				transientGraph.addVertex(implode)
 
 				// Add edge between original fifo and implode
-				val originalFifoActorOut = new SDFSinkInterfaceVertex
+				val originalFifoActorOut = new SDFSinkInterfaceVertex(null)
 				originalFifoActorOut.name =  getFifoInterfaceName(originalFifoActor)
 				originalFifoActor.addSink(originalFifoActorOut)
 
-				val implodeFifoIn = new SDFSourceInterfaceVertex
+				val implodeFifoIn = new SDFSourceInterfaceVertex(null)
 				implodeFifoIn.name = "implode_fifo_" + originalFifoActor.startIndex
 				implode.addSource(implodeFifoIn)
 
@@ -405,7 +405,7 @@ class RearrangeOperations implements DAGOperations {
 				originalFifoImplodeEdge.targetPortModifier = new StringEdgePropertyType(SDFEdge.MODIFIER_READ_ONLY)
 
 				// Add edge between node output and implode
-				val implodeNodeIn= new SDFSourceInterfaceVertex
+				val implodeNodeIn= new SDFSourceInterfaceVertex(null)
 				implodeNodeIn.name = "implode_node_" + originalFifoActor.nbRepeatAsLong
 				implode.addSource(implodeNodeIn)
 				val nodeImplodeEdge = transientGraph.addEdge(node, edge.sourceInterface,
@@ -424,7 +424,7 @@ class RearrangeOperations implements DAGOperations {
 				}
 
 				// Add edge between implode output and FifoActor
-				val implodeOut = new SDFSinkInterfaceVertex
+				val implodeOut = new SDFSinkInterfaceVertex(null)
 				implodeOut.name = implode.name + "_out"
 				implode.addSink(implodeOut)
 

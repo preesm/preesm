@@ -62,8 +62,8 @@ public class DAGInitVertex extends DAGVertex {
   /**
    * Creates a new DAGInitVertex.
    */
-  public DAGInitVertex() {
-    super();
+  public DAGInitVertex(org.preesm.model.pisdf.AbstractVertex origVertex) {
+    super(origVertex);
     setKind(DAGInitVertex.DAG_INIT_VERTEX);
   }
 

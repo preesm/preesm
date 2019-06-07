@@ -71,6 +71,7 @@ import org.preesm.algorithm.model.types.LongEdgePropertyType;
 import org.preesm.algorithm.model.types.LongVertexPropertyType;
 import org.preesm.commons.exceptions.PreesmException;
 import org.preesm.commons.exceptions.PreesmRuntimeException;
+import org.preesm.model.pisdf.AbstractVertex;
 
 /**
  * Visitor to use to transform a SDF Graph in a Directed Acyclic Graph.
@@ -187,7 +188,7 @@ public class DAGTransformation<T extends DirectedAcyclicGraph>
     }
     final SDFInitVertex initVertex = new SDFInitVertex();
     initVertex.setName(loop.getTarget().getName() + "_init_" + loop.getTargetInterface().getName());
-    final SDFSinkInterfaceVertex sinkInit = new SDFSinkInterfaceVertex();
+    final SDFSinkInterfaceVertex sinkInit = new SDFSinkInterfaceVertex(null);
     sinkInit.setName(loop.getSourceInterface().getName());
     initVertex.addSink(sinkInit);
     initVertex.setNbRepeat(1L);
@@ -195,7 +196,7 @@ public class DAGTransformation<T extends DirectedAcyclicGraph>
 
     final SDFEndVertex endVertex = new SDFEndVertex();
     endVertex.setName(loop.getSource().getName() + "_end_" + loop.getSourceInterface().getName());
-    final SDFSourceInterfaceVertex sourceEnd = new SDFSourceInterfaceVertex();
+    final SDFSourceInterfaceVertex sourceEnd = new SDFSourceInterfaceVertex(null);
     sourceEnd.setName(loop.getTargetInterface().getName());
     endVertex.addSource(sourceEnd);
     endVertex.setNbRepeat(1L);
@@ -388,7 +389,7 @@ public class DAGTransformation<T extends DirectedAcyclicGraph>
     for (final SDFEdge loop : loops) {
       final SDFInitVertex initVertex = new SDFInitVertex();
       initVertex.setName(loop.getTarget().getName() + "_init_" + loop.getTargetInterface().getName());
-      final SDFSinkInterfaceVertex sinkInit = new SDFSinkInterfaceVertex();
+      final SDFSinkInterfaceVertex sinkInit = new SDFSinkInterfaceVertex(null);
       sinkInit.setName("init_out");
       initVertex.addSink(sinkInit);
       initVertex.setNbRepeat(1L);
@@ -396,7 +397,7 @@ public class DAGTransformation<T extends DirectedAcyclicGraph>
 
       final SDFEndVertex endVertex = new SDFEndVertex();
       endVertex.setName(loop.getSource().getName() + "_end_" + loop.getSourceInterface().getName());
-      final SDFSourceInterfaceVertex sourceEnd = new SDFSourceInterfaceVertex();
+      final SDFSourceInterfaceVertex sourceEnd = new SDFSourceInterfaceVertex(null);
       sourceEnd.setName("end_in");
       endVertex.addSource(sourceEnd);
       endVertex.setNbRepeat(1L);
@@ -431,7 +432,7 @@ public class DAGTransformation<T extends DirectedAcyclicGraph>
       if (edge.getDelay().longValue() > 0) {
         final SDFInitVertex initVertex = new SDFInitVertex();
         initVertex.setName(edge.getTarget().getName() + "_init_" + edge.getTargetInterface().getName());
-        final SDFSinkInterfaceVertex sinkInit = new SDFSinkInterfaceVertex();
+        final SDFSinkInterfaceVertex sinkInit = new SDFSinkInterfaceVertex(null);
         sinkInit.setName("init_out");
         initVertex.addSink(sinkInit);
         initVertex.setNbRepeat(1L);
@@ -439,7 +440,7 @@ public class DAGTransformation<T extends DirectedAcyclicGraph>
 
         final SDFEndVertex endVertex = new SDFEndVertex();
         endVertex.setName(edge.getSource().getName() + "_end_" + edge.getSourceInterface().getName());
-        final SDFSourceInterfaceVertex sourceEnd = new SDFSourceInterfaceVertex();
+        final SDFSourceInterfaceVertex sourceEnd = new SDFSourceInterfaceVertex(null);
         sourceEnd.setName("end_in");
         endVertex.addSource(sourceEnd);
         endVertex.setNbRepeat(1L);
@@ -513,22 +514,23 @@ public class DAGTransformation<T extends DirectedAcyclicGraph>
   @Override
   public void visit(final SDFAbstractVertex sdfVertex) {
     DAGVertex vertex;
+    final AbstractVertex rv = sdfVertex.getReferencePiMMVertex();
     if (sdfVertex instanceof SDFRoundBufferVertex) {
-      vertex = this.factory.createVertex(DAGBroadcastVertex.DAG_BROADCAST_VERTEX);
+      vertex = this.factory.createVertex(DAGBroadcastVertex.DAG_BROADCAST_VERTEX, rv);
       vertex.getPropertyBean().setValue(DAGBroadcastVertex.SPECIAL_TYPE, DAGBroadcastVertex.SPECIAL_TYPE_ROUNDBUFFER);
     } else if (sdfVertex instanceof SDFBroadcastVertex) {
-      vertex = this.factory.createVertex(DAGBroadcastVertex.DAG_BROADCAST_VERTEX);
+      vertex = this.factory.createVertex(DAGBroadcastVertex.DAG_BROADCAST_VERTEX, rv);
       vertex.getPropertyBean().setValue(DAGBroadcastVertex.SPECIAL_TYPE, DAGBroadcastVertex.SPECIAL_TYPE_BROADCAST);
     } else if (sdfVertex instanceof SDFForkVertex) {
-      vertex = this.factory.createVertex(DAGForkVertex.DAG_FORK_VERTEX);
+      vertex = this.factory.createVertex(DAGForkVertex.DAG_FORK_VERTEX, rv);
     } else if (sdfVertex instanceof SDFJoinVertex) {
-      vertex = this.factory.createVertex(DAGJoinVertex.DAG_JOIN_VERTEX);
+      vertex = this.factory.createVertex(DAGJoinVertex.DAG_JOIN_VERTEX, rv);
     } else if (sdfVertex instanceof SDFEndVertex) {
-      vertex = this.factory.createVertex(DAGEndVertex.DAG_END_VERTEX);
+      vertex = this.factory.createVertex(DAGEndVertex.DAG_END_VERTEX, rv);
     } else if (sdfVertex instanceof SDFInitVertex) {
-      vertex = this.factory.createVertex(DAGInitVertex.DAG_INIT_VERTEX);
+      vertex = this.factory.createVertex(DAGInitVertex.DAG_INIT_VERTEX, rv);
     } else {
-      vertex = this.factory.createVertex(DAGVertex.DAG_VERTEX);
+      vertex = this.factory.createVertex(DAGVertex.DAG_VERTEX, rv);
     }
 
     setProperties(vertex, sdfVertex);

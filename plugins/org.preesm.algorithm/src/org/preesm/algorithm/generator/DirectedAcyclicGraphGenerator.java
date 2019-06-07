@@ -112,7 +112,7 @@ public class DirectedAcyclicGraphGenerator {
     while (nbVertexgraph < nbVertex) {
 
       // Add a new vertex to the graph
-      final SDFVertex vertex = new SDFVertex();
+      final SDFVertex vertex = new SDFVertex(null);
       vertex.setName("Vertex_" + (nbVertexgraph + 1));
       arrayVertex[nbVertexgraph] = vertex;
       graph.addVertex(arrayVertex[nbVertexgraph]);

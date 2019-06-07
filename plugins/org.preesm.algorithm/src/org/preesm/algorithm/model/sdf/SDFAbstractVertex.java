@@ -68,6 +68,8 @@ public abstract class SDFAbstractVertex extends AbstractVertex<SDFGraph> {
     AbstractVertex.public_properties.add(SDFAbstractVertex.NB_REPEAT);
   }
 
+  protected final org.preesm.model.pisdf.AbstractVertex origVertex;
+
   /** The sinks. */
   protected List<SDFSinkInterfaceVertex> sinks;
 
@@ -77,8 +79,9 @@ public abstract class SDFAbstractVertex extends AbstractVertex<SDFGraph> {
   /**
    * Constructs a new SDFAbstractVertex using the given Edge Factory ef.
    */
-  public SDFAbstractVertex() {
+  public SDFAbstractVertex(org.preesm.model.pisdf.AbstractVertex origVertex) {
     super();
+    this.origVertex = origVertex;
     this.sinks = new ArrayList<>();
     this.sources = new ArrayList<>();
     setId(UUID.randomUUID().toString());
@@ -88,10 +91,14 @@ public abstract class SDFAbstractVertex extends AbstractVertex<SDFGraph> {
    *
    */
   public org.preesm.model.pisdf.AbstractVertex getReferencePiMMVertex() {
-    final SDFGraph base = (SDFGraph) this.getBase();
-    final PiGraph referencePiMMGraph = base.getReferencePiMMGraph();
-    return ActorPath.lookup(referencePiMMGraph,
-        this.getPropertyStringValue(ImplementationPropertyNames.Vertex_originalVertexId));
+    if (origVertex != null) {
+      return origVertex;
+    } else {
+      final SDFGraph base = (SDFGraph) this.getBase();
+      final PiGraph referencePiMMGraph = base.getReferencePiMMGraph();
+      return ActorPath.lookup(referencePiMMGraph,
+          this.getPropertyStringValue(ImplementationPropertyNames.Vertex_originalVertexId));
+    }
   }
 
   /*

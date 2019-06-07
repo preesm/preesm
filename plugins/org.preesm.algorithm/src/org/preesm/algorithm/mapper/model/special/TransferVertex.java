@@ -100,8 +100,9 @@ public class TransferVertex extends MapperDAGVertex {
    *          the node index
    */
   public TransferVertex(final String id, final MapperDAG base, final MapperDAGVertex source,
-      final MapperDAGVertex target, final int routeStepIndex, final int nodeIndex) {
-    super(id, base);
+      final MapperDAGVertex target, final int routeStepIndex, final int nodeIndex,
+      org.preesm.model.pisdf.AbstractVertex origVertex) {
+    super(id, base, origVertex);
     this.source = source;
     this.target = target;
     this.routeStepIndex = routeStepIndex;

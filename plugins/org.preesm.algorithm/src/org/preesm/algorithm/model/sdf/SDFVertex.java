@@ -61,8 +61,8 @@ public class SDFVertex extends SDFAbstractVertex {
   /**
    * Builds a new vertex.
    */
-  public SDFVertex() {
-    super();
+  public SDFVertex(org.preesm.model.pisdf.AbstractVertex origVertex) {
+    super(origVertex);
     setKind(SDFVertex.VERTEX);
   }
 
@@ -72,8 +72,8 @@ public class SDFVertex extends SDFAbstractVertex {
    * @param arg0
    *          the arg 0
    */
-  public SDFVertex(final SDFGraph arg0) {
-    super();
+  public SDFVertex(final SDFGraph arg0, org.preesm.model.pisdf.AbstractVertex origVertex) {
+    super(origVertex);
     setKind(SDFVertex.VERTEX);
     setBase(arg0);
   }
@@ -85,7 +85,7 @@ public class SDFVertex extends SDFAbstractVertex {
    */
   @Override
   public SDFVertex copy() {
-    final SDFVertex newVertex = new SDFVertex(null);
+    final SDFVertex newVertex = new SDFVertex(origVertex);
     for (final String key : getPropertyBean().keys()) {
       if (getPropertyBean().getValue(key) != null) {
         final Object val = getPropertyBean().getValue(key);

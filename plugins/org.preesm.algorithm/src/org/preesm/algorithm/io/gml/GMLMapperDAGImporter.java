@@ -114,7 +114,7 @@ public class GMLMapperDAGImporter extends GMLImporter<SDFGraph, SDFAbstractVerte
      *
      * attributes.put("kind", SDFVertex.VERTEX);
      */
-    vertex = SDFVertexFactory.getInstance().createVertex(vertexElt);
+    vertex = SDFVertexFactory.getInstance().createVertex(vertexElt, null);
 
     vertex.setId(vertexElt.getAttribute("id"));
 

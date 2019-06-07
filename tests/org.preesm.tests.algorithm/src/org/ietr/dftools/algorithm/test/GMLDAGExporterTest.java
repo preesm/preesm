@@ -61,19 +61,19 @@ public class GMLDAGExporterTest {
     final DirectedAcyclicGraph graph = new DirectedAcyclicGraph();
 
     // test_com_basique
-    final DAGVertex sensorInt = new DAGVertex();
+    final DAGVertex sensorInt = new DAGVertex(null);
     sensorInt.setName("1");
     graph.addVertex(sensorInt);
 
-    final DAGVertex gen5 = new DAGVertex();
+    final DAGVertex gen5 = new DAGVertex(null);
     gen5.setName("Gen5");
     graph.addVertex(gen5);
 
-    final DAGVertex recopie5 = new DAGVertex();
+    final DAGVertex recopie5 = new DAGVertex(null);
     recopie5.setName("recopie_5");
     graph.addVertex(recopie5);
 
-    final DAGVertex acqData = new DAGVertex();
+    final DAGVertex acqData = new DAGVertex(null);
     acqData.setName("acq_data");
     graph.addVertex(acqData);
 

@@ -111,12 +111,12 @@ public class IterateAlgorithm extends AbstractTaskImplementation {
           newEdge.setCons(new LongEdgePropertyType(1));
 
           // Create a new source stateout port
-          final SDFSourceInterfaceVertex statein = new SDFSourceInterfaceVertex();
+          final SDFSourceInterfaceVertex statein = new SDFSourceInterfaceVertex(null);
           statein.setName("statein");
           previous.addSource(statein);
 
           // Create a new sink statein port
-          final SDFSinkInterfaceVertex stateout = new SDFSinkInterfaceVertex();
+          final SDFSinkInterfaceVertex stateout = new SDFSinkInterfaceVertex(null);
           stateout.setName("stateout");
           current.addSink(stateout);
           newEdge.setSourceInterface(stateout);

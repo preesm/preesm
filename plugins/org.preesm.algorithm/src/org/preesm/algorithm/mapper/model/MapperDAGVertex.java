@@ -84,9 +84,8 @@ public class MapperDAGVertex extends DAGVertex {
   /**
    * Instantiates a new mapper DAG vertex.
    */
-  public MapperDAGVertex() {
-
-    this("default", "default", null);
+  public MapperDAGVertex(final org.preesm.model.pisdf.AbstractVertex referencePiVertex) {
+    this("default", "default", null, referencePiVertex);
     this.effectiveComponent = DesignTools.NO_COMPONENT_INSTANCE;
   }
 
@@ -98,9 +97,10 @@ public class MapperDAGVertex extends DAGVertex {
    * @param base
    *          the base
    */
-  public MapperDAGVertex(final String id, final MapperDAG base) {
+  public MapperDAGVertex(final String id, final MapperDAG base,
+      final org.preesm.model.pisdf.AbstractVertex referencePiVertex) {
 
-    this(id, id, base);
+    this(id, id, base, referencePiVertex);
   }
 
   /**
@@ -113,9 +113,10 @@ public class MapperDAGVertex extends DAGVertex {
    * @param base
    *          the base
    */
-  private MapperDAGVertex(final String id, final String name, final MapperDAG base) {
+  private MapperDAGVertex(final String id, final String name, final MapperDAG base,
+      final org.preesm.model.pisdf.AbstractVertex referencePiVertex) {
 
-    super();
+    super(referencePiVertex);
 
     setName(name);
     getPropertyBean().setValue(MapperDAGVertex.INITIAL_PROPERTY, new VertexInit());
@@ -127,10 +128,15 @@ public class MapperDAGVertex extends DAGVertex {
    *
    */
   public org.preesm.model.pisdf.AbstractVertex getReferencePiVertex() {
-    final MapperDAG dag = (MapperDAG) this.getBase();
-    final PiGraph referencePiMMGraph = dag.getReferencePiMMGraph();
-    // reference PiSDF graph should be SRDAG at this point.
-    return referencePiMMGraph.lookupVertex(this.getName());
+    final org.preesm.model.pisdf.AbstractVertex referencePiVertex = super.getReferencePiVertex();
+    if (referencePiVertex == null) {
+      final MapperDAG dag = (MapperDAG) this.getBase();
+      final PiGraph referencePiMMGraph = dag.getReferencePiMMGraph();
+      // reference PiSDF graph should be SRDAG at this point.
+      return referencePiMMGraph.lookupVertex(this.getName());
+    } else {
+      return referencePiVertex;
+    }
   }
 
   /*
@@ -144,22 +150,22 @@ public class MapperDAGVertex extends DAGVertex {
     MapperDAGVertex result = null;
 
     if (this instanceof OverheadVertex) {
-      result = new OverheadVertex(getId(), (MapperDAG) getBase());
+      result = new OverheadVertex(getId(), (MapperDAG) getBase(), origVertex);
     } else if (this instanceof SendVertex) {
       result = new SendVertex(getId(), (MapperDAG) getBase(), ((SendVertex) this).getSource(),
-          ((SendVertex) this).getTarget(), ((SendVertex) this).getRouteStepIndex(), ((SendVertex) this).getNodeIndex());
+          ((SendVertex) this).getTarget(), ((SendVertex) this).getRouteStepIndex(), ((SendVertex) this).getNodeIndex(),
+          origVertex);
     } else if (this instanceof ReceiveVertex) {
       result = new ReceiveVertex(getId(), (MapperDAG) getBase(), ((ReceiveVertex) this).getSource(),
           ((ReceiveVertex) this).getTarget(), ((ReceiveVertex) this).getRouteStepIndex(),
-          ((ReceiveVertex) this).getNodeIndex());
+          ((ReceiveVertex) this).getNodeIndex(), origVertex);
     } else if (this instanceof TransferVertex) {
       final TransferVertex t = (TransferVertex) this;
       result = new TransferVertex(getId(), (MapperDAG) getBase(), t.getSource(), t.getTarget(), t.getRouteStepIndex(),
-          t.getNodeIndex());
+          t.getNodeIndex(), origVertex);
     } else {
-      result = new MapperDAGVertex(getId(), getName(), (MapperDAG) getBase());
+      result = new MapperDAGVertex(getId(), getName(), (MapperDAG) getBase(), origVertex);
     }
-
     final VertexInit copy = getInit().copy();
     copy.setParentVertex(result);
     result.setInit(copy);

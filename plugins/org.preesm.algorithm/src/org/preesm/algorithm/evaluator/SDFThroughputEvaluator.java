@@ -123,9 +123,9 @@ public class SDFThroughputEvaluator extends ThroughputEvaluator {
 
       // Add the edge looping on the actor
       final SDFEdge loop = input.addEdge(vertex, vertex);
-      final SDFSourceInterfaceVertex in = new SDFSourceInterfaceVertex();
+      final SDFSourceInterfaceVertex in = new SDFSourceInterfaceVertex(null);
       in.setName(vertex.getName() + "In");
-      final SDFSinkInterfaceVertex out = new SDFSinkInterfaceVertex();
+      final SDFSinkInterfaceVertex out = new SDFSinkInterfaceVertex(null);
       out.setName(vertex.getName() + "Out");
       AbstractEdgePropertyType<?> x;
       if (vertex.getSources().size() != 0) {
