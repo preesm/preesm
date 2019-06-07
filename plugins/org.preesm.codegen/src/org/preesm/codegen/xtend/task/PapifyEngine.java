@@ -45,16 +45,14 @@ import java.util.Map;
 import java.util.Set;
 import org.preesm.algorithm.mapper.model.MapperDAG;
 import org.preesm.algorithm.mapper.model.MapperDAGVertex;
-import org.preesm.algorithm.model.AbstractEdge;
 import org.preesm.algorithm.model.AbstractGraph;
-import org.preesm.algorithm.model.AbstractVertex;
 import org.preesm.algorithm.model.dag.DAGVertex;
 import org.preesm.algorithm.model.dag.DirectedAcyclicGraph;
-import org.preesm.algorithm.model.sdf.SDFVertex;
 import org.preesm.codegen.model.CodegenFactory;
 import org.preesm.codegen.model.Constant;
 import org.preesm.codegen.model.ConstantString;
 import org.preesm.codegen.model.PapifyAction;
+import org.preesm.model.pisdf.AbstractActor;
 import org.preesm.model.scenario.PreesmScenario;
 import org.preesm.model.scenario.papi.PapiEvent;
 import org.preesm.model.scenario.papi.PapiEventModifier;
@@ -104,7 +102,7 @@ public class PapifyEngine {
   /**
    * Function to add (or not) everything required for PAPIFY
    */
-  private void configurePapifyFunctions(MapperDAGVertex vertex, String info, String name) {
+  private void configurePapifyFunctions(AbstractActor vertex, String info, String name) {
 
     // Variables to check whether an actor has a monitoring configuration
     PapifyConfigManager papifyConfig = null;
@@ -128,14 +126,17 @@ public class PapifyEngine {
 
     if (finalName != null) {
       int positionChecker = info.lastIndexOf('_');
-      config = papifyConfig.getCorePapifyConfigGroupActor(finalName);
+      config = papifyConfig.getCorePapifyConfigGroupActor(vertex);
       int configMode = 1;
       if (config == null && positionChecker != -1) {
         finalNameWithoutUnderScroll = info.substring(0, info.lastIndexOf('_'));
-        config = papifyConfig.getCorePapifyConfigGroupActor(finalNameWithoutUnderScroll);
+        config = papifyConfig.getCorePapifyConfigGroupActor(vertex);
         configMode = 2;
       }
       finalName = info.substring(info.indexOf('/') + 1).replace('/', '_');
+      // I would say that everything before this is
+      // not required anymore if we are retrieving
+      // the real name of the actor from the PiSDF
       if (config != null && !config.getPAPIEvents().keySet().isEmpty()) {
         configPosition = "";
         Map<String, String> mapMonitorTiming = this.dag.getVertex(vertex.getName()).getPropertyBean()
@@ -175,7 +176,7 @@ public class PapifyEngine {
               }
             }
             if (!configAdded) {
-              PapifyConfigActor actorConfigToAdd = new PapifyConfigActor(configToAdd);
+              PapifyConfigActor actorConfigToAdd = new PapifyConfigActor(vertex);
               actorConfigToAdd.addPAPIEventSet(compNewConfig, config.getPAPIEvents().get(compNewConfig));
               this.configSet.add(actorConfigToAdd);
               counterConfigs = counterConfigs + 1;
@@ -339,17 +340,26 @@ public class PapifyEngine {
    * Function to iterate over all the vertex / abstractGraphs
    */
   void configurePapifyFunctionsManager(MapperDAGVertex vertex) {
-    if (vertex.getRefinement() instanceof AbstractGraph) {
-      @SuppressWarnings("unchecked")
-      final AbstractGraph<AbstractVertex<?>, AbstractEdge<?, AbstractVertex<?>>> graph = vertex.getGraphDescription();
-      Set<AbstractVertex<?>> children = graph.vertexSet();
-      for (AbstractVertex<?> child : children) {
-        if (child instanceof SDFVertex) {
-          configurePapifyFunctions(vertex, child.getInfo(), child.getName());
+    System.out.println(vertex.getInfo()); // Which vertex is entering here?
+    if (vertex.getRefinement() instanceof AbstractGraph) { // with this method the getReferencePiVertex is not
+                                                           // working... I don't have MapperDagVertex anymore inside
+                                                           // this
+      /*
+       * @SuppressWarnings("unchecked") final AbstractGraph<AbstractVertex<?>, AbstractEdge<?, AbstractVertex<?>>> graph
+       * = vertex.getGraphDescription(); Set<AbstractVertex<?>> children = graph.vertexSet(); for (AbstractVertex<?>
+       * child : children) { if (child instanceof SDFVertex) { org.preesm.model.pisdf.AbstractVertex referencePiVertex =
+       * child.getReferencePiVertex(); System.out.println(referencePiVertex.toString()); if (referencePiVertex
+       * instanceof AbstractActor) { configurePapifyFunctions((AbstractActor) referencePiVertex, vertex.getInfo(),
+       * vertex.getName()); } } }
+       */
+    } else {
+      org.preesm.model.pisdf.AbstractVertex referencePiVertex = vertex.getReferencePiVertex();
+      if (referencePiVertex != null) {
+        System.out.println(referencePiVertex.toString()); // And which ones are getting here?
+        if (referencePiVertex instanceof AbstractActor) {
+          configurePapifyFunctions((AbstractActor) referencePiVertex, vertex.getInfo(), vertex.getName());
         }
       }
-    } else {
-      configurePapifyFunctions(vertex, vertex.getInfo(), vertex.getName());
     }
   }
 
