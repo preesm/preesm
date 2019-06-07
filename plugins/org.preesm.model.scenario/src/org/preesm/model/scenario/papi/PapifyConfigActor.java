@@ -39,6 +39,7 @@ import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.Set;
+import org.preesm.model.pisdf.AbstractActor;
 
 /**
  * A PapifyConfig stores the monitoring configuration of each core instance.
@@ -48,7 +49,7 @@ import java.util.Set;
 public class PapifyConfigActor {
 
   /** The actor instance path. */
-  private String actorPath;
+  private AbstractActor actor;
 
   /** The set of eventSets that are going to be monitored. */
   private Map<String, Set<PapiEvent>> actorEventMap;
@@ -63,8 +64,8 @@ public class PapifyConfigActor {
   /**
    * Instantiates a new PapifyConfig group.
    */
-  public PapifyConfigActor(final String actorPath) {
-    this.actorPath = actorPath;
+  public PapifyConfigActor(final AbstractActor actorPath) {
+    this.actor = actorPath;
     this.actorEventMap = new LinkedHashMap<>();
   }
 
@@ -74,8 +75,8 @@ public class PapifyConfigActor {
    * @param actorPath
    *          the actor instance
    */
-  public void addActorPath(final String actorPath) {
-    this.actorPath = actorPath;
+  public void addActorPath(final AbstractActor actorPath) {
+    this.actor = actorPath;
 
   }
 
@@ -150,8 +151,8 @@ public class PapifyConfigActor {
    *
    * @return the actor path
    */
-  public String getActorPath() {
-    return (this.actorPath);
+  public AbstractActor getActorPath() {
+    return (this.actor);
   }
 
   /**
@@ -170,9 +171,9 @@ public class PapifyConfigActor {
    *          the actor path
    * @return true, if successful
    */
-  public boolean isActorPath(final String actorPath) {
+  public boolean isActorPath(final AbstractActor actorPath) {
 
-    return actorPath.equals(this.actorPath);
+    return actorPath.equals(this.actor);
   }
 
   /**
@@ -202,7 +203,7 @@ public class PapifyConfigActor {
 
     if (comparer instanceof PapifyConfigActor) {
       final PapifyConfigActor tester = (PapifyConfigActor) comparer;
-      if (this.actorPath.equals(tester.getActorPath())) {
+      if (this.actor.equals(tester.getActorPath())) {
         decision = true;
       }
     }
@@ -211,7 +212,7 @@ public class PapifyConfigActor {
 
   @Override
   public int hashCode() {
-    return this.actorPath.hashCode();
+    return this.actor.hashCode();
   }
 
   /*
@@ -222,7 +223,7 @@ public class PapifyConfigActor {
   @Override
   public String toString() {
     String s = "<Printing actorPath> \n";
-    s += this.actorPath;
+    s += this.actor.getVertexPath();
     s += "\n<Printing components and Events> \n";
     s += this.actorEventMap.toString();
     s += "<end printing>\n";

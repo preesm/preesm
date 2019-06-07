@@ -579,7 +579,10 @@ public class ScenarioParser {
         String actorPath = "";
         if (type.equals("actorPath")) {
           actorPath = elt.getAttribute("actorPath");
-          pc.addActorPath(actorPath);
+
+          final AbstractActor lookup = ActorPath.lookup(this.scenario.getAlgorithm(), actorPath);
+
+          pc.addActorPath(lookup);
           Node nodeEvents = node.getFirstChild();
           while (nodeEvents != null) {
 

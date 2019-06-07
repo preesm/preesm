@@ -42,6 +42,7 @@ import org.eclipse.jface.viewers.CellEditor;
 import org.eclipse.jface.viewers.CheckboxCellEditor;
 import org.eclipse.jface.viewers.ColumnViewer;
 import org.eclipse.jface.viewers.EditingSupport;
+import org.preesm.model.pisdf.AbstractActor;
 import org.preesm.ui.scenario.editor.papify.PapifyEventListTreeElement.PAPIEventStatus;
 
 /**
@@ -87,7 +88,7 @@ class PapifyEventListContentProvider2DMatrixES extends EditingSupport {
   protected void setValue(final Object element, final Object value) {
     if (element instanceof PapifyEventListTreeElement) {
       final PapifyEventListTreeElement treeElement = (PapifyEventListTreeElement) element;
-      Object actorInstance = treeElement.getAlgorithmElement();
+      AbstractActor actorInstance = treeElement.actorPath;
       final Map<String, PAPIEventStatus> statuses = treeElement.PAPIStatuses;
 
       final PAPIEventStatus actorStatus = statuses.get(this.eventName);

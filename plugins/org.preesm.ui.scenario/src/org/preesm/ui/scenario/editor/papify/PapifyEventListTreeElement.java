@@ -46,23 +46,14 @@ import org.preesm.commons.files.PreesmResourcesHelper;
 import org.preesm.model.pisdf.AbstractActor;
 import org.preesm.ui.PreesmUIPlugin;
 
-// TODO: Auto-generated Javadoc
 /**
  * Provides the elements contained in the papify editor.
  *
  * @author dmadronal
  */
-
-/**
- *
- * @author anmorvan
- *
- */
-
 class PapifyEventListTreeElement {
-  Object                       algorithmElement;
   String                       label;
-  String                       actorPath;
+  AbstractActor                actorPath;
   Map<String, PAPIEventStatus> PAPIStatuses;
 
   /** The image ok. */
@@ -97,10 +88,9 @@ class PapifyEventListTreeElement {
   }
 
   PapifyEventListTreeElement(final Object algorithmElement) {
-    this.algorithmElement = algorithmElement;
     if (algorithmElement instanceof AbstractActor) {
-      this.label = ((AbstractActor) algorithmElement).getName();
-      this.actorPath = ((AbstractActor) algorithmElement).getVertexPath();
+      this.actorPath = ((AbstractActor) algorithmElement);
+      this.label = this.actorPath.getName();
     }
     this.PAPIStatuses = new LinkedHashMap<>();
 
@@ -121,12 +111,8 @@ class PapifyEventListTreeElement {
     }
   }
 
-  public Object getAlgorithmElement() {
-    return this.algorithmElement;
-  }
-
   @Override
   public String toString() {
-    return this.algorithmElement.toString().concat(label).concat(this.PAPIStatuses.toString());
+    return this.actorPath.toString().concat(label).concat(this.PAPIStatuses.toString());
   }
 }

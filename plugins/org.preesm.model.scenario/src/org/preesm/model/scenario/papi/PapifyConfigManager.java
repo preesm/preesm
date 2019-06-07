@@ -37,6 +37,8 @@ package org.preesm.model.scenario.papi;
 
 import java.util.LinkedHashSet;
 import java.util.Set;
+import org.preesm.commons.model.PreesmCopyTracker;
+import org.preesm.model.pisdf.AbstractActor;
 import org.preesm.model.scenario.PreesmScenario;
 import org.preesm.model.slam.component.Component;
 
@@ -163,11 +165,11 @@ public class PapifyConfigManager {
    *          the op path
    * @return the op PapifyConfigActor groups
    */
-  public PapifyConfigActor getCorePapifyConfigGroupActor(final String actorPath) {
+  public PapifyConfigActor getCorePapifyConfigGroupActor(final AbstractActor actorPath) {
     PapifyConfigActor papifyConfigGroup = null;
 
     for (final PapifyConfigActor pg : this.papifyConfigGroupsActors) {
-      if (pg.isActorPath(actorPath)) {
+      if (pg.isActorPath(PreesmCopyTracker.getOriginalSource(actorPath))) {
         papifyConfigGroup = pg;
       }
     }

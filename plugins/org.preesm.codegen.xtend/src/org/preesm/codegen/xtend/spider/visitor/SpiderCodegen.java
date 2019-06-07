@@ -418,8 +418,7 @@ public class SpiderCodegen {
     final ArrayList<AbstractActor> papifiedActors = new ArrayList<>();
 
     for (final AbstractActor actor : this.functionMap.keySet()) {
-      PapifyConfigActor corePapifyConfigGroups = papifyConfigManager
-          .getCorePapifyConfigGroupActor(actor.getVertexPath());
+      PapifyConfigActor corePapifyConfigGroups = papifyConfigManager.getCorePapifyConfigGroupActor(actor);
       if (corePapifyConfigGroups != null) {
         papifiedActors.add(actor);
         if (!generatePapifyConfig(corePapifyConfigGroups, papifyConfigManager, actor, uniqueEventSets, eventSetID)) {

@@ -98,7 +98,7 @@ public class PapifyEventListContentProvider2DMatrix implements ITreeContentProvi
     Object[] table = null;
 
     if (parentElement instanceof PapifyEventListTreeElement) {
-      Object algorithmElement = ((PapifyEventListTreeElement) parentElement).getAlgorithmElement();
+      AbstractActor algorithmElement = ((PapifyEventListTreeElement) parentElement).actorPath;
       if (algorithmElement instanceof PiGraph) {
         final PiGraph graph = (PiGraph) algorithmElement;
         // Some types of vertices are ignored in the constraints view
@@ -135,7 +135,7 @@ public class PapifyEventListContentProvider2DMatrix implements ITreeContentProvi
     boolean hasChildren = false;
 
     if (element instanceof PapifyEventListTreeElement) {
-      Object algorithmElement = ((PapifyEventListTreeElement) element).getAlgorithmElement();
+      AbstractActor algorithmElement = ((PapifyEventListTreeElement) element).actorPath;
       if (algorithmElement instanceof PiGraph) {
         final PiGraph graph = (PiGraph) algorithmElement;
         hasChildren = !graph.getActors().isEmpty();
