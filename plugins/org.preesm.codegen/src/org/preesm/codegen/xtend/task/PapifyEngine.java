@@ -139,17 +139,22 @@ public class PapifyEngine {
       // the real name of the actor from the PiSDF
       if (config != null && !config.getPAPIEvents().keySet().isEmpty()) {
         configPosition = "";
-        Map<String, String> mapMonitorTiming = this.dag.getVertex(vertex.getName()).getPropertyBean()
-            .getValue(PAPIFY_MONITOR_TIMING);
+        /*
+         * System.out.println("AAAAAAAAAAA " + vertex.getName()); System.out.println("1 " + info);
+         * System.out.println("2 " + name); System.out.println("BBBBBBBBBB " + this.dag.toString());
+         * System.out.println("AAAAAAAAAAA " + this.dag.getVertex(vertex.getName()));
+         */
+        Map<String,
+            String> mapMonitorTiming = this.dag.getVertex(name).getPropertyBean().getValue(PAPIFY_MONITOR_TIMING);
         if (mapMonitorTiming == null) {
           mapMonitorTiming = new LinkedHashMap<>();
         }
         mapMonitorTiming.put(info, "No");
-        this.dag.getVertex(vertex.getName()).getPropertyBean().setValue(PAPIFY_MONITOR_TIMING, mapMonitorTiming);
+        this.dag.getVertex(name).getPropertyBean().setValue(PAPIFY_MONITOR_TIMING, mapMonitorTiming);
         if (config.getPAPIEvents().containsKey("Timing")
             && config.getPAPIEvents().get("Timing").contains(this.timingEvent)) {
           mapMonitorTiming.put(info, "Yes");
-          this.dag.getVertex(vertex.getName()).getPropertyBean().setValue(PAPIFY_MONITOR_TIMING, mapMonitorTiming);
+          this.dag.getVertex(name).getPropertyBean().setValue(PAPIFY_MONITOR_TIMING, mapMonitorTiming);
         }
 
         // Check if the current monitoring has already been included
@@ -208,13 +213,13 @@ public class PapifyEngine {
         includedEvents.clear();
 
         // At the beginning there is no monitoring
-        Map<String, String> mapMonitorEvents = this.dag.getVertex(vertex.getName()).getPropertyBean()
-            .getValue(PAPIFY_MONITOR_EVENTS);
+        Map<String,
+            String> mapMonitorEvents = this.dag.getVertex(name).getPropertyBean().getValue(PAPIFY_MONITOR_EVENTS);
         if (mapMonitorEvents == null) {
           mapMonitorEvents = new LinkedHashMap<>();
         }
         mapMonitorEvents.put(info, "No");
-        this.dag.getVertex(vertex.getName()).getPropertyBean().setValue(PAPIFY_MONITOR_EVENTS, mapMonitorEvents);
+        this.dag.getVertex(name).getPropertyBean().setValue(PAPIFY_MONITOR_EVENTS, mapMonitorEvents);
         for (final String key : comp) {
           if (!key.equals("Timing")) {
             events = config.getPAPIEvents().get(key);
@@ -223,7 +228,7 @@ public class PapifyEngine {
               includedEvents.add(singleEvent);
               // Monitoring events
               mapMonitorEvents.put(info, "Yes");
-              this.dag.getVertex(vertex.getName()).getPropertyBean().setValue(PAPIFY_MONITOR_EVENTS, mapMonitorEvents);
+              this.dag.getVertex(name).getPropertyBean().setValue(PAPIFY_MONITOR_EVENTS, mapMonitorEvents);
               if (eventNames.equals("")) {
                 eventNames = singleEvent.getName();
               } else {
@@ -231,7 +236,7 @@ public class PapifyEngine {
               }
             }
             mapMonitorEvents.put(info, "Yes");
-            this.dag.getVertex(vertex.getName()).getPropertyBean().setValue(PAPIFY_MONITOR_EVENTS, mapMonitorEvents);
+            this.dag.getVertex(name).getPropertyBean().setValue(PAPIFY_MONITOR_EVENTS, mapMonitorEvents);
             if (compNames.equals("")) {
               compNames = key;
             } else {
@@ -275,63 +280,62 @@ public class PapifyEngine {
         numConfigs.setValue(counterConfigs);
 
         // Set all the properties to the vertex
-        Map<String, String> mapPapifyConfiguration = this.dag.getVertex(vertex.getName()).getPropertyBean()
-            .getValue(PAPIFY_CONFIGURATION);
+        Map<String,
+            String> mapPapifyConfiguration = this.dag.getVertex(name).getPropertyBean().getValue(PAPIFY_CONFIGURATION);
         if (mapPapifyConfiguration == null) {
           mapPapifyConfiguration = new LinkedHashMap<>();
         }
         mapPapifyConfiguration.put(info, message);
-        Map<String, PapifyAction> mapPapifyActionName = this.dag.getVertex(vertex.getName()).getPropertyBean()
-            .getValue(PAPIFY_ACTION_NAME);
+        Map<String,
+            PapifyAction> mapPapifyActionName = this.dag.getVertex(name).getPropertyBean().getValue(PAPIFY_ACTION_NAME);
         if (mapPapifyActionName == null) {
           mapPapifyActionName = new LinkedHashMap<>();
         }
         mapPapifyActionName.put(info, papifyActionName);
-        Map<String, ConstantString> mapPapifyComponentName = this.dag.getVertex(vertex.getName()).getPropertyBean()
+        Map<String, ConstantString> mapPapifyComponentName = this.dag.getVertex(name).getPropertyBean()
             .getValue(PAPIFY_COMPONENT_NAME);
         if (mapPapifyComponentName == null) {
           mapPapifyComponentName = new LinkedHashMap<>();
         }
         mapPapifyComponentName.put(info, componentName);
-        Map<String, ConstantString> mapPapifyActorName = this.dag.getVertex(vertex.getName()).getPropertyBean()
-            .getValue(PAPIFY_ACTOR_NAME);
+        Map<String,
+            ConstantString> mapPapifyActorName = this.dag.getVertex(name).getPropertyBean().getValue(PAPIFY_ACTOR_NAME);
         if (mapPapifyActorName == null) {
           mapPapifyActorName = new LinkedHashMap<>();
         }
         mapPapifyActorName.put(info, actorName);
-        Map<String, Constant> mapPapifyCodesetSize = this.dag.getVertex(vertex.getName()).getPropertyBean()
-            .getValue(PAPIFY_CODESET_SIZE);
+        Map<String,
+            Constant> mapPapifyCodesetSize = this.dag.getVertex(name).getPropertyBean().getValue(PAPIFY_CODESET_SIZE);
         if (mapPapifyCodesetSize == null) {
           mapPapifyCodesetSize = new LinkedHashMap<>();
         }
         mapPapifyCodesetSize.put(info, codeSetSize);
-        Map<String, ConstantString> mapPapifyEventsetNames = this.dag.getVertex(vertex.getName()).getPropertyBean()
+        Map<String, ConstantString> mapPapifyEventsetNames = this.dag.getVertex(name).getPropertyBean()
             .getValue(PAPIFY_EVENTSET_NAMES);
         if (mapPapifyEventsetNames == null) {
           mapPapifyEventsetNames = new LinkedHashMap<>();
         }
         mapPapifyEventsetNames.put(info, eventSetNames);
-        Map<String, ConstantString> mapPapifyCofigNumber = this.dag.getVertex(vertex.getName()).getPropertyBean()
+        Map<String, ConstantString> mapPapifyCofigNumber = this.dag.getVertex(name).getPropertyBean()
             .getValue(PAPIFY_CONFIG_NUMBER);
         if (mapPapifyCofigNumber == null) {
           mapPapifyCofigNumber = new LinkedHashMap<>();
         }
         mapPapifyCofigNumber.put(info, papifyConfigNumber);
-        Map<String, Constant> mapPapifyCounterConfigs = this.dag.getVertex(vertex.getName()).getPropertyBean()
+        Map<String, Constant> mapPapifyCounterConfigs = this.dag.getVertex(name).getPropertyBean()
             .getValue(PAPIFY_COUNTER_CONFIGS);
         if (mapPapifyCounterConfigs == null) {
           mapPapifyCounterConfigs = new LinkedHashMap<>();
         }
         mapPapifyCounterConfigs.put(info, numConfigs);
-        this.dag.getVertex(vertex.getName()).getPropertyBean().setValue(PAPIFY_CONFIGURATION, mapPapifyConfiguration);
-        this.dag.getVertex(vertex.getName()).getPropertyBean().setValue(PAPIFY_ACTION_NAME, mapPapifyActionName);
-        this.dag.getVertex(vertex.getName()).getPropertyBean().setValue(PAPIFY_COMPONENT_NAME, mapPapifyComponentName);
-        this.dag.getVertex(vertex.getName()).getPropertyBean().setValue(PAPIFY_ACTOR_NAME, mapPapifyActorName);
-        this.dag.getVertex(vertex.getName()).getPropertyBean().setValue(PAPIFY_CODESET_SIZE, mapPapifyCodesetSize);
-        this.dag.getVertex(vertex.getName()).getPropertyBean().setValue(PAPIFY_EVENTSET_NAMES, mapPapifyEventsetNames);
-        this.dag.getVertex(vertex.getName()).getPropertyBean().setValue(PAPIFY_CONFIG_NUMBER, mapPapifyCofigNumber);
-        this.dag.getVertex(vertex.getName()).getPropertyBean().setValue(PAPIFY_COUNTER_CONFIGS,
-            mapPapifyCounterConfigs);
+        this.dag.getVertex(name).getPropertyBean().setValue(PAPIFY_CONFIGURATION, mapPapifyConfiguration);
+        this.dag.getVertex(name).getPropertyBean().setValue(PAPIFY_ACTION_NAME, mapPapifyActionName);
+        this.dag.getVertex(name).getPropertyBean().setValue(PAPIFY_COMPONENT_NAME, mapPapifyComponentName);
+        this.dag.getVertex(name).getPropertyBean().setValue(PAPIFY_ACTOR_NAME, mapPapifyActorName);
+        this.dag.getVertex(name).getPropertyBean().setValue(PAPIFY_CODESET_SIZE, mapPapifyCodesetSize);
+        this.dag.getVertex(name).getPropertyBean().setValue(PAPIFY_EVENTSET_NAMES, mapPapifyEventsetNames);
+        this.dag.getVertex(name).getPropertyBean().setValue(PAPIFY_CONFIG_NUMBER, mapPapifyCofigNumber);
+        this.dag.getVertex(name).getPropertyBean().setValue(PAPIFY_COUNTER_CONFIGS, mapPapifyCounterConfigs);
       }
     }
   }
@@ -340,7 +344,7 @@ public class PapifyEngine {
    * Function to iterate over all the vertex / abstractGraphs
    */
   void configurePapifyFunctionsManager(MapperDAGVertex vertex) {
-    System.out.println(vertex.getInfo()); // Which vertex is entering here?
+    // System.out.println(vertex.getInfo()); // Which vertex is entering here?
     if (vertex.getRefinement() instanceof AbstractGraph) { // with this method the getReferencePiVertex is not
                                                            // working... I don't have MapperDagVertex anymore inside
                                                            // this
@@ -355,7 +359,7 @@ public class PapifyEngine {
     } else {
       org.preesm.model.pisdf.AbstractVertex referencePiVertex = vertex.getReferencePiVertex();
       if (referencePiVertex != null) {
-        System.out.println(referencePiVertex.toString()); // And which ones are getting here?
+        // System.out.println(referencePiVertex.toString()); // And which ones are getting here?
         if (referencePiVertex instanceof AbstractActor) {
           configurePapifyFunctions((AbstractActor) referencePiVertex, vertex.getInfo(), vertex.getName());
         }
