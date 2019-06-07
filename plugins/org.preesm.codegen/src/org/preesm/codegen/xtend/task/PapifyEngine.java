@@ -125,7 +125,8 @@ public class PapifyEngine {
 
     if (finalName != null) {
       config = papifyConfig.getCorePapifyConfigGroupActor(vertex);
-      finalName = info.substring(info.indexOf('/') + 1).replace('/', '_');
+      finalName = PreesmCopyTracker.getOriginalSource(vertex).getVertexPath().substring(info.indexOf('/') + 1);
+      finalName = finalName.replace('/', '_');
       if (config != null && !config.getPAPIEvents().keySet().isEmpty()) {
         configPosition = "";
         Map<String,
@@ -236,8 +237,8 @@ public class PapifyEngine {
 
         // Add the actor name
         ConstantString actorName = CodegenFactory.eINSTANCE.createConstantString();
-        actorName.setName("actor_name".concat(PreesmCopyTracker.getOriginalSource(vertex).getName()));
-        actorName.setValue(PreesmCopyTracker.getOriginalSource(vertex).getName());
+        actorName.setName("actor_name".concat(finalName));
+        actorName.setValue(finalName);
         actorName.setComment("Actor name");
 
         // Add the size of the CodeSet
