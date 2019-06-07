@@ -54,6 +54,7 @@ import org.preesm.codegen.model.ConstantString;
 import org.preesm.codegen.model.PapifyAction;
 import org.preesm.commons.model.PreesmCopyTracker;
 import org.preesm.model.pisdf.AbstractActor;
+import org.preesm.model.pisdf.PiGraph;
 import org.preesm.model.scenario.PreesmScenario;
 import org.preesm.model.scenario.papi.PapiEvent;
 import org.preesm.model.scenario.papi.PapiEventModifier;
@@ -323,9 +324,16 @@ public class PapifyEngine {
    */
   void configurePapifyFunctionsManager(MapperDAGVertex vertex) {
     // System.out.println(vertex.getInfo()); // Which vertex is entering here?
-    if (vertex.getRefinement() instanceof AbstractGraph) { // with this method the getReferencePiVertex is not
-                                                           // working... I don't have MapperDagVertex anymore inside
-                                                           // this
+    if (vertex.getRefinement() instanceof AbstractGraph) {
+      // with this method the getReferencePiVertex is not
+      // working... I don't have MapperDagVertex anymore inside
+      // this
+      org.preesm.model.pisdf.AbstractVertex referencePiVertex = vertex.getReferencePiVertex();
+      if (referencePiVertex != null && referencePiVertex instanceof PiGraph) {
+        for (AbstractActor actor : ((PiGraph) referencePiVertex).getAllActors()) {
+          configurePapifyFunctions(actor, actor.getVertexPath(), vertex.getName());
+        }
+      }
       /*
        * @SuppressWarnings("unchecked") final AbstractGraph<AbstractVertex<?>, AbstractEdge<?, AbstractVertex<?>>> graph
        * = vertex.getGraphDescription(); Set<AbstractVertex<?>> children = graph.vertexSet(); for (AbstractVertex<?>
@@ -334,6 +342,7 @@ public class PapifyEngine {
        * instanceof AbstractActor) { configurePapifyFunctions((AbstractActor) referencePiVertex, vertex.getInfo(),
        * vertex.getName()); } } }
        */
+
     } else {
       org.preesm.model.pisdf.AbstractVertex referencePiVertex = vertex.getReferencePiVertex();
       if (referencePiVertex != null && referencePiVertex instanceof AbstractActor) {
