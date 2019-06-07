@@ -52,6 +52,7 @@ import org.preesm.codegen.model.CodegenFactory;
 import org.preesm.codegen.model.Constant;
 import org.preesm.codegen.model.ConstantString;
 import org.preesm.codegen.model.PapifyAction;
+import org.preesm.commons.model.PreesmCopyTracker;
 import org.preesm.model.pisdf.AbstractActor;
 import org.preesm.model.scenario.PreesmScenario;
 import org.preesm.model.scenario.papi.PapiEvent;
@@ -113,37 +114,20 @@ public class PapifyEngine {
 
     boolean configAdded = false;
     String configPosition = "";
-    String configToAdd = "";
     int counterConfigs = 0;
 
     papifyConfig = this.scenario.getPapifyConfigManager();
 
     String message = "Papifying";
     String finalName;
-    String finalNameWithoutUnderScroll;
 
     finalName = info;
 
     if (finalName != null) {
-      int positionChecker = info.lastIndexOf('_');
       config = papifyConfig.getCorePapifyConfigGroupActor(vertex);
-      int configMode = 1;
-      if (config == null && positionChecker != -1) {
-        finalNameWithoutUnderScroll = info.substring(0, info.lastIndexOf('_'));
-        config = papifyConfig.getCorePapifyConfigGroupActor(vertex);
-        configMode = 2;
-      }
       finalName = info.substring(info.indexOf('/') + 1).replace('/', '_');
-      // I would say that everything before this is
-      // not required anymore if we are retrieving
-      // the real name of the actor from the PiSDF
       if (config != null && !config.getPAPIEvents().keySet().isEmpty()) {
         configPosition = "";
-        /*
-         * System.out.println("AAAAAAAAAAA " + vertex.getName()); System.out.println("1 " + info);
-         * System.out.println("2 " + name); System.out.println("BBBBBBBBBB " + this.dag.toString());
-         * System.out.println("AAAAAAAAAAA " + this.dag.getVertex(vertex.getName()));
-         */
         Map<String,
             String> mapMonitorTiming = this.dag.getVertex(name).getPropertyBean().getValue(PAPIFY_MONITOR_TIMING);
         if (mapMonitorTiming == null) {
@@ -163,7 +147,6 @@ public class PapifyEngine {
           if (!compNewConfig.equals("Timing")) {
             Set<PapiEvent> eventSetNew = config.getPAPIEvents().get(compNewConfig);
             configAdded = false;
-            configToAdd = finalName.concat("-").concat(compNewConfig);
             for (PapifyConfigActor tmp : this.configSet) {
               for (String compConfigTmp : tmp.getPAPIEvents().keySet()) {
                 if (!compConfigTmp.equals("Timing")) {
@@ -253,14 +236,8 @@ public class PapifyEngine {
 
         // Add the actor name
         ConstantString actorName = CodegenFactory.eINSTANCE.createConstantString();
-        String actorNameGeneric;
-        if (configMode == 2) {
-          actorNameGeneric = finalName.substring(0, finalName.lastIndexOf('_'));
-        } else {
-          actorNameGeneric = finalName;
-        }
-        actorName.setName("actor_name".concat(actorNameGeneric));
-        actorName.setValue(actorNameGeneric);
+        actorName.setName("actor_name".concat(PreesmCopyTracker.getOriginalSource(vertex).getName()));
+        actorName.setValue(PreesmCopyTracker.getOriginalSource(vertex).getName());
         actorName.setComment("Actor name");
 
         // Add the size of the CodeSet
@@ -358,11 +335,8 @@ public class PapifyEngine {
        */
     } else {
       org.preesm.model.pisdf.AbstractVertex referencePiVertex = vertex.getReferencePiVertex();
-      if (referencePiVertex != null) {
-        // System.out.println(referencePiVertex.toString()); // And which ones are getting here?
-        if (referencePiVertex instanceof AbstractActor) {
-          configurePapifyFunctions((AbstractActor) referencePiVertex, vertex.getInfo(), vertex.getName());
-        }
+      if (referencePiVertex != null && referencePiVertex instanceof AbstractActor) {
+        configurePapifyFunctions((AbstractActor) referencePiVertex, vertex.getInfo(), vertex.getName());
       }
     }
   }
