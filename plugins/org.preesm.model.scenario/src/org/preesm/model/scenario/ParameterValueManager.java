@@ -35,14 +35,10 @@
  */
 package org.preesm.model.scenario;
 
-import java.util.LinkedHashSet;
-import java.util.List;
-import java.util.Set;
-import java.util.concurrent.ConcurrentSkipListSet;
-import org.eclipse.emf.ecore.EObject;
+import java.util.LinkedHashMap;
+import java.util.Map;
 import org.preesm.model.pisdf.Parameter;
 import org.preesm.model.pisdf.PiGraph;
-import org.preesm.model.scenario.ParameterValue.ParameterType;
 
 /**
  * Manager class for parameters, storing values given by the user to parameters.
@@ -51,9 +47,8 @@ import org.preesm.model.scenario.ParameterValue.ParameterType;
  */
 public class ParameterValueManager {
 
-  /** The parameter values. */
-  // Set of ParameterValues
-  private Set<ParameterValue>  parameterValues;
+  private final Map<Parameter, String> parameterValueMap = new LinkedHashMap<>();
+
   private final PreesmScenario preesmScenario;
 
   /**
@@ -61,7 +56,6 @@ public class ParameterValueManager {
    */
   public ParameterValueManager(final PreesmScenario preesmScenario) {
     this.preesmScenario = preesmScenario;
-    this.parameterValues = new LinkedHashSet<>();
   }
 
   /**
@@ -69,29 +63,8 @@ public class ParameterValueManager {
    *
    * @return the parameter values
    */
-  public Set<ParameterValue> getParameterValues() {
-    return this.parameterValues;
-  }
-
-  /**
-   * Gets the sorted parameter values.
-   *
-   * @return the sorted parameter values
-   */
-  public Set<ParameterValue> getSortedParameterValues() {
-    final Set<ParameterValue> result = new ConcurrentSkipListSet<>((o1, o2) -> o1.getName().compareTo(o2.getName()));
-    result.addAll(this.parameterValues);
-    return result;
-  }
-
-  /**
-   * Sets the parameter values.
-   *
-   * @param parameterValues
-   *          the new parameter values
-   */
-  public void setParameterValues(final Set<ParameterValue> parameterValues) {
-    this.parameterValues = parameterValues;
+  public Map<Parameter, String> getParameterValues() {
+    return this.parameterValueMap;
   }
 
   /**
@@ -102,97 +75,8 @@ public class ParameterValueManager {
    * @param value
    *          the value
    */
-  public void addIndependentParameterValue(final Parameter parameter, final String value) {
-    final ParameterValue pValue = new ParameterValue(parameter, ParameterType.INDEPENDENT);
-    pValue.setValue(value);
-    this.parameterValues.add(pValue);
-  }
-
-  /**
-   * Adds the actor dependent parameter value.
-   *
-   * @param parameter
-   *          the parameter
-   * @param values
-   *          the values
-   */
-  public void addActorDependentParameterValue(final Parameter parameter, final Set<Integer> values) {
-    final ParameterValue pValue = new ParameterValue(parameter, ParameterType.ACTOR_DEPENDENT);
-    pValue.setValues(values);
-    this.parameterValues.add(pValue);
-  }
-
-  /**
-   * Adds the parameter dependent parameter value.
-   *
-   * @param param
-   *          the param
-   * @param parent
-   *          the parent
-   */
-  private void addParameterDependentParameterValue(final Parameter param, final String parent) {
-    final Set<String> inputParametersNames = new LinkedHashSet<>();
-    for (final Parameter p : param.getInputParameters()) {
-      inputParametersNames.add(p.getName());
-    }
-
-    addParameterDependentParameterValue(param, param.getExpression().getExpressionAsString(), inputParametersNames);
-  }
-
-  /**
-   * Adds the parameter dependent parameter value.
-   *
-   * @param parameter
-   *          the parameter
-   * @param expression
-   *          the expression
-   * @param inputParameters
-   *          the input parameters
-   */
-  public void addParameterDependentParameterValue(final Parameter parameter, final String expression,
-      final Set<String> inputParameters) {
-    final ParameterValue pValue = new ParameterValue(parameter, ParameterType.PARAMETER_DEPENDENT);
-    pValue.setExpression(expression);
-    pValue.setInputParameters(inputParameters);
-    this.parameterValues.add(pValue);
-  }
-
-  /**
-   * Adds the parameter value.
-   *
-   * @param param
-   *          the param
-   */
-  public void addParameterValue(final Parameter param) {
-    final EObject container = param.eContainer();
-    String parent = "";
-    if (container instanceof PiGraph) {
-      parent = ((PiGraph) container).getName();
-    }
-    final List<Parameter> inputParameters = param.getInputParameters();
-
-    if (param.isLocallyStatic()) {
-      if (param.isDependent()) {
-        // Add a parameter dependent value (a locally static parameter
-        // cannot be actor dependent)
-        addParameterDependentParameterValue(param, parent);
-      } else {
-        // Add an independent parameter value
-        addIndependentParameterValue(param, param.getExpression().getExpressionAsString());
-      }
-    } else {
-      final boolean isActorDependent = inputParameters.size() < param.getConfigInputPorts().size();
-
-      if (isActorDependent) {
-        final Set<Integer> values = new LinkedHashSet<>();
-        values.add(1);
-        // Add an actor dependent value
-        addActorDependentParameterValue(param, values);
-      } else {
-        // Add a parameter dependent value
-        addParameterDependentParameterValue(param, parent);
-      }
-    }
+  public void addParameterValue(final Parameter parameter, final String value) {
+    this.parameterValueMap.put(parameter, value);
   }
 
   /**
@@ -206,7 +90,7 @@ public class ParameterValueManager {
     if (graph != null) {
       for (final Parameter p : graph.getAllParameters()) {
         if (!p.isConfigurationInterface()) {
-          addParameterValue(p);
+          addParameterValue(p, p.getExpression().getExpressionAsString());
         }
       }
     }

@@ -36,9 +36,7 @@
  */
 package org.preesm.ui.scenario.editor.parametervalues;
 
-import java.util.LinkedHashSet;
-import java.util.Set;
-import org.eclipse.core.runtime.CoreException;
+import java.util.Map.Entry;
 import org.eclipse.jface.viewers.CellEditor;
 import org.eclipse.jface.viewers.ICellModifier;
 import org.eclipse.jface.viewers.TableViewer;
@@ -62,9 +60,7 @@ import org.eclipse.ui.forms.widgets.ColumnLayout;
 import org.eclipse.ui.forms.widgets.ExpandableComposite;
 import org.eclipse.ui.forms.widgets.ScrolledForm;
 import org.eclipse.ui.forms.widgets.Section;
-import org.preesm.commons.exceptions.PreesmException;
-import org.preesm.model.scenario.ParameterValue;
-import org.preesm.model.scenario.ParameterValue.ParameterType;
+import org.preesm.model.pisdf.Parameter;
 import org.preesm.model.scenario.PreesmScenario;
 import org.preesm.ui.scenario.editor.Messages;
 
@@ -77,9 +73,6 @@ public class PiParametersPage extends FormPage implements IPropertyListener {
 
   /** The {@link PreesmScenario}. */
   private PreesmScenario scenario = null;
-
-  /** Page attributes. */
-  private Section section;
 
   /** The table viewer. */
   private TableViewer tableViewer;
@@ -124,16 +117,17 @@ public class PiParametersPage extends FormPage implements IPropertyListener {
     // Creates the section
     managedForm.getForm().setLayout(new FillLayout());
 
-    this.section = managedForm.getToolkit().createSection(managedForm.getForm().getBody(), ExpandableComposite.TWISTIE
-        | ExpandableComposite.TITLE_BAR | Section.DESCRIPTION | ExpandableComposite.EXPANDED);
+    final Section section = managedForm.getToolkit().createSection(managedForm.getForm().getBody(),
+        ExpandableComposite.TWISTIE | ExpandableComposite.TITLE_BAR | Section.DESCRIPTION
+            | ExpandableComposite.EXPANDED);
 
-    this.section.setText(Messages.getString("Parameters.title"));
-    this.section.setDescription(Messages.getString("Parameters.description"));
-    this.section.setLayout(new ColumnLayout());
+    section.setText(Messages.getString("Parameters.title"));
+    section.setDescription(Messages.getString("Parameters.description"));
+    section.setLayout(new ColumnLayout());
 
     // Creates the section part containing the tree with SDF vertices
 
-    final Composite container = managedForm.getToolkit().createComposite(this.section);
+    final Composite container = managedForm.getToolkit().createComposite(section);
     container.setLayout(new GridLayout());
 
     // Creating the tree view
@@ -157,7 +151,12 @@ public class PiParametersPage extends FormPage implements IPropertyListener {
     this.tableViewer.setComparator(new ViewerComparator() {
       @Override
       public int compare(final Viewer viewer, final Object e1, final Object e2) {
-        return ((ParameterValue) e1).getName().compareTo(((ParameterValue) e2).getName());
+        @SuppressWarnings("unchecked")
+        Entry<Parameter, String> ex1 = (Entry<Parameter, String>) e1;
+        @SuppressWarnings("unchecked")
+        Entry<Parameter, String> ex2 = (Entry<Parameter, String>) e2;
+
+        return ex1.getKey().getName().compareTo(ex2.getKey().getName());
       }
 
     });
@@ -167,16 +166,6 @@ public class PiParametersPage extends FormPage implements IPropertyListener {
     gd.heightHint = 400;
     gd.widthHint = 250;
     this.tableViewer.getTable().setLayoutData(gd);
-
-    this.section.addPaintListener(e -> {
-      // TODO XXX
-      try {
-        PiParametersPage.this.scenario.update(null, null);
-      } catch (PreesmException | CoreException ex) {
-        ex.printStackTrace();
-      }
-      PiParametersPage.this.tableViewer.refresh();
-    });
 
     final CellEditor[] editors = new CellEditor[table.getColumnCount()];
     for (int i = 0; i < table.getColumnCount(); i++) {
@@ -189,50 +178,12 @@ public class PiParametersPage extends FormPage implements IPropertyListener {
       @Override
       public void modify(final Object element, final String property, final Object value) {
         if (element instanceof TableItem) {
-          final ParameterValue param = (ParameterValue) ((TableItem) element).getData();
-          switch (param.getType()) {
-            case INDEPENDENT:
-              final String newValue = (String) value;
-              if (!newValue.equals(param.getValue())) {
-                param.setValue(newValue);
-                propertyChanged(this, IEditorPart.PROP_DIRTY);
-              }
-              break;
-            case ACTOR_DEPENDENT:
-              String s = (String) value;
-
-              if ((s.charAt(0) == '[') && (s.charAt(s.length() - 1) == ']')) {
-                s = s.substring(1, s.length() - 1);
-                final String[] values = s.split(",");
-
-                final Set<Integer> newValues = new LinkedHashSet<>();
-                boolean modified = true;
-
-                for (final String val : values) {
-                  try {
-                    newValues.add(Integer.parseInt(val.trim()));
-                  } catch (final NumberFormatException e) {
-                    modified = false;
-                    break;
-                  }
-                }
-
-                final boolean equalSet = newValues.containsAll(param.getValues())
-                    && param.getValues().containsAll(newValues);
-                if (modified && !equalSet) {
-                  param.getValues().clear();
-                  param.getValues().addAll(newValues);
-                  propertyChanged(this, IEditorPart.PROP_DIRTY);
-                }
-              }
-              break;
-            case PARAMETER_DEPENDENT:
-              if (!param.getExpression().contentEquals((String) value)) {
-                param.setExpression((String) value);
-                propertyChanged(this, IEditorPart.PROP_DIRTY);
-              }
-              break;
-            default:
+          @SuppressWarnings("unchecked")
+          Entry<Parameter, String> param = (Entry<Parameter, String>) ((TableItem) element).getData();
+          final String newValue = (String) value;
+          if (!newValue.equals(param.getValue())) {
+            param.setValue(newValue);
+            propertyChanged(this, IEditorPart.PROP_DIRTY);
           }
           PiParametersPage.this.tableViewer.refresh();
         }
@@ -240,34 +191,25 @@ public class PiParametersPage extends FormPage implements IPropertyListener {
 
       @Override
       public Object getValue(final Object element, final String property) {
-        if (element instanceof ParameterValue) {
-          final ParameterValue param = (ParameterValue) element;
-          if (param.getType() == ParameterType.INDEPENDENT) {
-            return param.getValue();
-          } else if (param.getType() == ParameterType.ACTOR_DEPENDENT) {
-            return param.getValues().toString();
-          } else if (param.getType() == ParameterType.PARAMETER_DEPENDENT) {
-            return param.getExpression();
-          }
+        if (element instanceof Entry) {
+          @SuppressWarnings("unchecked")
+          final Entry<Parameter, String> param = (Entry<Parameter, String>) element;
+          return param.getValue();
         }
         return "";
       }
 
       @Override
       public boolean canModify(final Object element, final String property) {
-        if (property.contentEquals("Expression")) {
-          if (element instanceof ParameterValue) {
-            return true;
-          }
-        }
-        return false;
+        return property.contentEquals("Expression") && (element instanceof Entry);
       }
+
     });
 
     managedForm.getToolkit().paintBordersFor(container);
     managedForm.getToolkit().paintBordersFor(this.tableViewer.getTable());
-    this.section.setLayoutData(new GridData(GridData.FILL_HORIZONTAL | GridData.FILL_VERTICAL));
-    this.section.setClient(container);
+    section.setLayoutData(new GridData(GridData.FILL_HORIZONTAL | GridData.FILL_VERTICAL));
+    section.setClient(container);
 
     managedForm.refresh();
     managedForm.reflow(true);

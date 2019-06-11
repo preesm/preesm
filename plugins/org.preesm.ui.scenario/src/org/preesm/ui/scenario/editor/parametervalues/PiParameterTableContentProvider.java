@@ -41,7 +41,6 @@ import org.eclipse.jface.viewers.IStructuredContentProvider;
 import org.eclipse.jface.viewers.Viewer;
 import org.preesm.model.scenario.PreesmScenario;
 
-// TODO: Auto-generated Javadoc
 /**
  * This class provides the elements displayed in {@link ActorTree}. Each element is a {@link ActorNode}. This tree is
  * used in scenario editor to edit parameters
@@ -87,7 +86,7 @@ public class PiParameterTableContentProvider implements IStructuredContentProvid
    */
   @Override
   public Object[] getElements(final Object inputElement) {
-    return this.scenario.getParameterValueManager().getSortedParameterValues().toArray();
+    return this.scenario.getParameterValueManager().getParameterValues().entrySet().toArray();
   }
 
 }

@@ -44,8 +44,8 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 import org.preesm.model.pisdf.AbstractActor;
+import org.preesm.model.pisdf.Parameter;
 import org.preesm.model.pisdf.PiGraph;
-import org.preesm.model.scenario.ParameterValue;
 import org.preesm.model.scenario.ParameterValueManager;
 import org.preesm.model.scenario.PreesmScenario;
 import org.preesm.model.scenario.Timing;
@@ -130,9 +130,10 @@ public class ScenarioWriter {
     parent.appendChild(valuesElt);
 
     final ParameterValueManager manager = this.scenario.getParameterValueManager();
+    final Map<Parameter, String> parameterValues = manager.getParameterValues();
 
-    for (final ParameterValue value : manager.getParameterValues()) {
-      addParameterValue(valuesElt, value);
+    for (final Entry<Parameter, String> e : parameterValues.entrySet()) {
+      addParameterValue(valuesElt, e);
     }
   }
 
@@ -144,38 +145,22 @@ public class ScenarioWriter {
    * @param value
    *          the value
    */
-  private void addParameterValue(final Element parent, final ParameterValue value) {
+  private void addParameterValue(final Element parent, final Entry<Parameter, String> value) {
     // Serialize only if the kept value(s) is different from the "default value" found in the PiGraph:
     // - if the parameter is actor dependent, there is no default value
     // - otherwise, compare the kept value to the parameter expression
     boolean needToBeSerialized = false;
     String valueToPrint = "";
-    switch (value.getType()) {
-      case INDEPENDENT:
-        valueToPrint = "" + value.getValue();
-        if (!value.getParameter().getExpression().getExpressionAsString().equals(valueToPrint)) {
-          needToBeSerialized = true;
-        }
-        break;
-      case ACTOR_DEPENDENT:
-        valueToPrint = value.getValues().toString();
-        needToBeSerialized = true;
-        break;
-      case PARAMETER_DEPENDENT:
-        valueToPrint = value.getExpression();
-        if (!value.getParameter().getExpression().getExpressionAsString().equals(valueToPrint)) {
-          needToBeSerialized = true;
-        }
-        break;
-      default:
+    valueToPrint = "" + value.getValue();
+    if (!value.getKey().getExpression().getExpressionAsString().equals(valueToPrint)) {
+      needToBeSerialized = true;
     }
     if (needToBeSerialized) {
       final Element valueElt = this.dom.createElement("parameter");
       parent.appendChild(valueElt);
 
-      valueElt.setAttribute("name", value.getName());
-      valueElt.setAttribute("parent", value.getParameter().getContainingPiGraph().getName());
-      valueElt.setAttribute("type", value.getType().toString());
+      valueElt.setAttribute("name", value.getKey().getName());
+      valueElt.setAttribute("parent", value.getKey().getContainingPiGraph().getName());
 
       valueElt.setAttribute("value", valueToPrint);
     }

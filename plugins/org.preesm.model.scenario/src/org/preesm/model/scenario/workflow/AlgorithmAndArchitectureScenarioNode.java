@@ -41,6 +41,7 @@ package org.preesm.model.scenario.workflow;
 import java.io.FileNotFoundException;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.Map.Entry;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
@@ -49,8 +50,8 @@ import org.preesm.commons.doc.annotations.Port;
 import org.preesm.commons.doc.annotations.PreesmTask;
 import org.preesm.commons.exceptions.PreesmException;
 import org.preesm.commons.exceptions.PreesmRuntimeException;
+import org.preesm.model.pisdf.Parameter;
 import org.preesm.model.pisdf.PiGraph;
-import org.preesm.model.scenario.ParameterValue;
 import org.preesm.model.scenario.PreesmScenario;
 import org.preesm.model.scenario.serialize.ScenarioParser;
 import org.preesm.model.slam.Design;
@@ -119,15 +120,16 @@ public class AlgorithmAndArchitectureScenarioNode extends AbstractScenarioImplem
   }
 
   private void applyScenarioParameterValues(final PreesmScenario scenario, final PiGraph piAlgorithm) {
-    for (final ParameterValue paramValue : scenario.getParameterValueManager().getParameterValues()) {
+    for (final Entry<Parameter, String> paramValue : scenario.getParameterValueManager().getParameterValues()
+        .entrySet()) {
 
       final String newValue = paramValue.getValue();
-      final String expression = paramValue.getExpression();
+      final String expression = paramValue.getKey().getExpression().getExpressionAsString();
 
       if (newValue != null) {
-        paramValue.getParameter().setExpression(newValue);
+        paramValue.getKey().setExpression(newValue);
       } else if (expression != null) {
-        paramValue.getParameter().setExpression(expression);
+        paramValue.getKey().setExpression(expression);
       } else {
         // keep value from PiSDF graph
       }

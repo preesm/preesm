@@ -222,7 +222,7 @@ public class ScenarioParser {
       // Create a parameter value foreach parameter not yet in the
       // scenario
       for (final Parameter p : parameters) {
-        this.scenario.getParameterValueManager().addParameterValue(p);
+        this.scenario.getParameterValueManager().addParameterValue(p, p.getExpression().getExpressionAsString());
       }
     }
   }
@@ -243,7 +243,6 @@ public class ScenarioParser {
 
     Parameter currentParameter = null;
 
-    final String type = paramValueElt.getAttribute("type");
     final String parent = paramValueElt.getAttribute("parent");
     final String name = paramValueElt.getAttribute("name");
     String stringValue = paramValueElt.getAttribute("value");
@@ -253,42 +252,7 @@ public class ScenarioParser {
       PreesmLogger.getLogger().log(Level.WARNING,
           "Parameter with name '" + name + "' cannot be found in PiGraph '" + parent + "'.");
     } else {
-      switch (type) {
-        case "INDEPENDENT":
-        case "STATIC": // Retro-compatibility
-          this.scenario.getParameterValueManager().addIndependentParameterValue(currentParameter, stringValue);
-          break;
-        case "ACTOR_DEPENDENT":
-        case "DYNAMIC": // Retro-compatibility
-          if ((stringValue.charAt(0) == '[') && (stringValue.charAt(stringValue.length() - 1) == ']')) {
-            stringValue = stringValue.substring(1, stringValue.length() - 1);
-            final String[] values = stringValue.split(",");
-
-            final Set<Integer> newValues = new LinkedHashSet<>();
-
-            try {
-              for (final String val : values) {
-                newValues.add(Integer.parseInt(val.trim()));
-              }
-            } catch (final NumberFormatException e) {
-              // TODO: Do smthg?
-            }
-            this.scenario.getParameterValueManager().addActorDependentParameterValue(currentParameter, newValues);
-          }
-          break;
-        case "PARAMETER_DEPENDENT":
-        case "DEPENDENT": // Retro-compatibility
-          final Set<String> inputParameters = new LinkedHashSet<>();
-
-          for (final Parameter input : currentParameter.getInputParameters()) {
-            inputParameters.add(input.getName());
-          }
-          this.scenario.getParameterValueManager().addParameterDependentParameterValue(currentParameter, stringValue,
-              inputParameters);
-          break;
-        default:
-          throw new PreesmRuntimeException("Unknown Parameter type: " + type + " for Parameter: " + name);
-      }
+      this.scenario.getParameterValueManager().addParameterValue(currentParameter, stringValue);
     }
     return currentParameter;
   }
