@@ -47,6 +47,7 @@ import org.preesm.algorithm.mapper.abc.SpecialVertexManager;
 import org.preesm.algorithm.mapper.model.MapperDAGVertex;
 import org.preesm.commons.CloneableProperty;
 import org.preesm.model.scenario.Timing;
+import org.preesm.model.scenario.TimingManager;
 import org.preesm.model.slam.ComponentInstance;
 import org.preesm.model.slam.component.Component;
 
@@ -210,25 +211,25 @@ public class VertexInit implements CloneableProperty<VertexInit> {
 
       if (!SpecialVertexManager.isSpecial(this.parentVertex)) {
 
-        if (returntiming != Timing.UNAVAILABLE) {
+        if (returntiming != null) {
           if (returntiming.getTime() != 0) {
             // The basic timing is multiplied by the number of
             // repetitions
             time = returntiming.getTime() * this.nbRepeat;
           } else {
-            time = Timing.DEFAULT_TASK_TIME;
+            time = TimingManager.DEFAULT_TASK_TIME;
           }
         }
       } else {
         // Special vertex timings are retrieved
-        if (returntiming != Timing.UNAVAILABLE) {
+        if (returntiming != null) {
           if (returntiming.getTime() != 0) {
             time = returntiming.getTime();
           } else {
-            time = Timing.DEFAULT_SPECIAL_VERTEX_TIME;
+            time = TimingManager.DEFAULT_SPECIAL_VERTEX_TIME;
           }
         } else {
-          time = Timing.DEFAULT_SPECIAL_VERTEX_TIME;
+          time = TimingManager.DEFAULT_SPECIAL_VERTEX_TIME;
         }
       }
     }
@@ -245,7 +246,7 @@ public class VertexInit implements CloneableProperty<VertexInit> {
    */
   private Timing getTiming(final Component operatordefId) {
 
-    Timing returntiming = Timing.UNAVAILABLE;
+    Timing returntiming = null;
 
     final Iterator<Timing> iterator = this.timings.iterator();
 

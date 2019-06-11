@@ -59,6 +59,12 @@ import org.preesm.model.slam.utils.DesignTools;
  */
 public class TimingManager {
 
+  /** The Constant DEFAULT_TASK_TIME. */
+  public static final long DEFAULT_TASK_TIME = 100;
+
+  /** The Constant DEFAULT_SPECIAL_VERTEX_TIME. */
+  public static final long DEFAULT_SPECIAL_VERTEX_TIME = 10;
+
   /** List of all timings. */
   private final List<Timing> timings;
 
@@ -170,8 +176,7 @@ public class TimingManager {
     final AbstractActor originalSource = PreesmCopyTracker.getOriginalSource(actor);
 
     for (final Timing timing : this.timings) {
-      if (timing.getActor().equals(originalSource)
-          && timing.getComponent().equals(component)) {
+      if (timing.getActor().equals(originalSource) && timing.getComponent().equals(component)) {
         val = timing;
       }
     }

@@ -59,21 +59,6 @@ import org.preesm.model.slam.component.Component;
  */
 public class Timing {
 
-  /** The Constant UNAVAILABLE. */
-  public static final Timing UNAVAILABLE = null;
-
-  /** The Constant DEFAULT_TASK_TIME. */
-  public static final long DEFAULT_TASK_TIME = 100;
-
-  /** The Constant DEFAULT_SPECIAL_VERTEX_TIME. */
-  public static final long DEFAULT_SPECIAL_VERTEX_TIME = 10;
-
-  /** The Constant DEFAULT_EXPRESSION_VALUE. */
-  private static final String DEFAULT_EXPRESSION_VALUE = "100";
-
-  /** The Constant DEFAULT_SPECIAL_VERTEX_EXPRESSION_VALUE. */
-  public static final String DEFAULT_SPECIAL_VERTEX_EXPRESSION_VALUE = "10";
-
   /** Long value of the timing, only available if isEvaluated is at true. */
   private long time;
 
@@ -105,8 +90,8 @@ public class Timing {
    */
 
   public Timing(final Component component, final AbstractActor actor) {
-    this.time = Timing.DEFAULT_TASK_TIME;
-    this.stringValue = Timing.DEFAULT_EXPRESSION_VALUE;
+    this.time = TimingManager.DEFAULT_TASK_TIME;
+    this.stringValue = Long.toString(TimingManager.DEFAULT_TASK_TIME);
     this.inputParameters = new LinkedHashSet<>();
     this.component = component;
     this.actor = actor;
@@ -210,8 +195,8 @@ public class Timing {
     if (time > 0) {
       this.time = time;
     } else {
-      PreesmLogger.getLogger().log(Level.WARNING,
-          "Trying to set a non strictly positive time for vertex " + this.actor + ", modified to 1.");
+      final String message = "Trying to set a non strictly positive time for vertex " + this.actor + ", modified to 1.";
+      PreesmLogger.getLogger().log(Level.WARNING, message);
       this.time = 1;
     }
     this.stringValue = String.valueOf(this.time);
@@ -350,11 +335,10 @@ public class Timing {
   @Override
   public String toString() {
     if (this.isEvaluated) {
-      return "{" + this.actor.getVertexPath() + " on " + this.component.getVlnv().getName() + " -> "
-          + this.time + "}";
+      return "{" + this.actor.getVertexPath() + " on " + this.component.getVlnv().getName() + " -> " + this.time + "}";
     } else {
-      return "{" + this.actor.getVertexPath() + " on " + this.component.getVlnv().getName() + " -> "
-          + this.stringValue + "}";
+      return "{" + this.actor.getVertexPath() + " on " + this.component.getVlnv().getName() + " -> " + this.stringValue
+          + "}";
     }
   }
 }

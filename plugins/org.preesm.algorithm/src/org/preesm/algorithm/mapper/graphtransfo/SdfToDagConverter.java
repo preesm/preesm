@@ -270,13 +270,13 @@ public class SdfToDagConverter {
             // info is set to the vertexPath of AbstractVertex
             final Timing originalTiming = tm.getTimingOrDefault(actor, op.getComponent());
             Timing copyTiming = null;
-            if (originalTiming.getTime() == Timing.DEFAULT_TASK_TIME) {
+            if (originalTiming.getTime() == TimingManager.DEFAULT_TASK_TIME) {
               copyTiming = new Timing(op.getComponent(), actor);
             } else {
               if (originalTiming.isEvaluated()) {
                 copyTiming = new Timing(op.getComponent(), actor, originalTiming.getTime());
               } else {
-                copyTiming = new Timing(op.getComponent(), actor, Timing.DEFAULT_TASK_TIME);
+                copyTiming = new Timing(op.getComponent(), actor, TimingManager.DEFAULT_TASK_TIME);
               }
             }
             currentVertexInit.addTiming(copyTiming);

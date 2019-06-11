@@ -59,7 +59,7 @@ import org.preesm.model.pisdf.PiGraph;
 import org.preesm.model.pisdf.brv.BRVMethod;
 import org.preesm.model.pisdf.brv.PiBRV;
 import org.preesm.model.scenario.PreesmScenario;
-import org.preesm.model.scenario.Timing;
+import org.preesm.model.scenario.TimingManager;
 import org.preesm.model.slam.Design;
 import org.preesm.model.slam.component.Component;
 import org.preesm.model.slam.utils.DesignTools;
@@ -151,7 +151,7 @@ public class PeriodsPreschedulingChecker extends AbstractTaskImplementation {
           }
         }
       } else {
-        wcetMin = Timing.DEFAULT_TASK_TIME;
+        wcetMin = TimingManager.DEFAULT_TASK_TIME;
       }
       System.err.println(
           "Actor : " + actor.getName() + " has wcet (min) : " + wcetMin + " [full path: " + actor.getVertexPath());
