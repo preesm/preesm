@@ -18,6 +18,7 @@ PREESM Changelog
 * Make sure the PiGraph and SlamDesign are parsed once only per scenario node in the workflow;
 * Fix UI throwing exception when canceling file browse;
 * Scenario managers now use the Actor/Component reference instead of component ID or actor path/name;
+* Refactor scenario;
 
 ### Bug fix
 * Fix #139: better error messages for Name checker
