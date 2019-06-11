@@ -41,12 +41,9 @@ package org.preesm.model.scenario;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.Set;
-import java.util.stream.Collectors;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.Path;
-import org.preesm.model.pisdf.AbstractVertex;
 import org.preesm.model.pisdf.PiGraph;
 import org.preesm.model.pisdf.serialize.PiParser;
 import org.preesm.model.scenario.papi.PapifyConfigManager;
@@ -128,15 +125,6 @@ public class PreesmScenario {
     final IPath archiPath = new Path(this.getArchitectureURL()).removeFileExtension();
     final String archiName = archiPath.lastSegment();
     return algoName + "_" + archiName;
-  }
-
-  /**
-   * Gets the actor names.
-   *
-   * @return the actor names
-   */
-  public Set<String> getActorNames() {
-    return getAlgorithm().getActors().stream().map(AbstractVertex::getName).collect(Collectors.toSet());
   }
 
   /**
@@ -371,16 +359,6 @@ public class PreesmScenario {
       // Extract the root object from the resource.
       final Design design = SlamParser.parseSlamDesign(archiPath);
       this.slamDesign = design;
-
-      getOperatorIds().clear();
-      getOperatorIds().addAll(DesignTools.getOperatorInstanceIds(design));
-
-      getOperatorDefinitionIds().clear();
-      getOperatorDefinitionIds().addAll(DesignTools.getOperatorComponentIds(design));
-
-      getComNodeIds().clear();
-      getComNodeIds().addAll(DesignTools.getComNodeInstanceIds(design));
-
     }
     // If the algorithm changes, parameters or variables are no more valid
     // (they are set in the algorithm)

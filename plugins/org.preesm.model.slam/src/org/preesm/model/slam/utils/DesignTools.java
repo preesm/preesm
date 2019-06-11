@@ -37,6 +37,7 @@
 package org.preesm.model.slam.utils;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.Iterator;
 import java.util.List;
@@ -167,6 +168,15 @@ public class DesignTools {
   }
 
   /**
+   * Gets the ordered operator ids.
+   */
+  public static List<String> getOrderedOperatorIds(final Design design) {
+    final List<String> operatorComponentIds = new ArrayList<>(getOperatorComponentIds(design));
+    Collections.sort(operatorComponentIds, (o1, o2) -> o1.compareTo(o2));
+    return Collections.unmodifiableList(operatorComponentIds);
+  }
+
+  /**
    * Getting all operator ids in architecture.
    *
    * @param design
@@ -179,6 +189,17 @@ public class DesignTools {
       operatorIds.add(component.getVlnv().getName());
     }
     return operatorIds;
+  }
+
+  /**
+   * Gets the ordered operator.
+   *
+   * @return the ordered operator
+   */
+  public static List<ComponentInstance> getOrderedOperators(final Design design) {
+    final List<ComponentInstance> opIdList = new ArrayList<>(getOperatorInstances(design));
+    Collections.sort(opIdList, (o1, o2) -> o1.getInstanceName().compareTo(o2.getInstanceName()));
+    return opIdList;
   }
 
   /**
