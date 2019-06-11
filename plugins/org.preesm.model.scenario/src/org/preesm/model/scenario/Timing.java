@@ -39,16 +39,14 @@
  */
 package org.preesm.model.scenario;
 
+import java.util.ArrayList;
 import java.util.LinkedHashMap;
-import java.util.LinkedHashSet;
+import java.util.List;
 import java.util.Map;
-import java.util.Set;
-import java.util.logging.Level;
-import org.nfunk.jep.JEP;
-import org.nfunk.jep.Node;
-import org.nfunk.jep.ParseException;
-import org.preesm.commons.logger.PreesmLogger;
+import org.preesm.commons.math.JEPWrapper;
 import org.preesm.model.pisdf.AbstractActor;
+import org.preesm.model.pisdf.ConfigInputPort;
+import org.preesm.model.pisdf.Parameter;
 import org.preesm.model.slam.component.Component;
 
 /**
@@ -59,104 +57,34 @@ import org.preesm.model.slam.component.Component;
  */
 public class Timing {
 
-  /** Long value of the timing, only available if isEvaluated is at true. */
-  private long time;
-
-  /** String expression of the timing, can contains parameters from input parameters. */
   private String stringValue;
 
-  /** Boolean indicatin if the expression has been evaluated and thus if the time is available. */
-  private boolean isEvaluated;
-
-  /**
-   * Operator to which the timing is related (i.e., processing element on which the vertex of the graph takes the given
-   * time to execute)
-   */
   private final Component component;
 
-  /** Set of Usable Parameters for the expression. */
-  private Set<String> inputParameters;
-
-  /** Vertex for which the timing is given. */
   private final AbstractActor actor;
 
   /**
-   * Constructors.
-   *
-   * @param component
-   *          the operator definition id
-   * @param actor
-   *          the vertex id
    */
 
   public Timing(final Component component, final AbstractActor actor) {
-    this.time = TimingManager.DEFAULT_TASK_TIME;
-    this.stringValue = Long.toString(TimingManager.DEFAULT_TASK_TIME);
-    this.inputParameters = new LinkedHashSet<>();
-    this.component = component;
-    this.actor = actor;
-    this.isEvaluated = true;
+    this(component, actor, TimingManager.DEFAULT_TASK_TIME);
   }
 
   /**
-   * Instantiates a new timing.
-   *
-   * @param component
-   *          the operator id
-   * @param actor
-   *          the sdf vertex id
-   * @param time
-   *          the time
    */
   public Timing(final Component component, final AbstractActor actor, final long time) {
-    this(component, actor);
-    this.time = time;
-    this.stringValue = String.valueOf(time);
-    this.isEvaluated = true;
+    this(component, actor, String.valueOf(time));
   }
 
   /**
-   * Instantiates a new timing.
-   *
-   * @param component
-   *          the operator id
-   * @param actor
-   *          the vertex id
-   * @param expression
-   *          the expression
    */
   public Timing(final Component component, final AbstractActor actor, final String expression) {
-    this(component, actor);
+    this.component = component;
+    this.actor = actor;
     this.stringValue = expression;
-    this.isEvaluated = false;
-    tryToEvaluateWith(new LinkedHashMap<String, Integer>());
   }
 
   /**
-   * Instantiates a new timing.
-   *
-   * @param component
-   *          the operator id
-   * @param actor
-   *          the vertex id
-   * @param expression
-   *          the expression
-   * @param inputParameters
-   *          the input parameters
-   */
-  public Timing(final Component component, final AbstractActor actor, final String expression,
-      final Set<String> inputParameters) {
-    this(component, actor);
-    this.stringValue = expression;
-    this.isEvaluated = false;
-    this.inputParameters = inputParameters;
-    tryToEvaluateWith(new LinkedHashMap<String, Integer>());
-  }
-
-  /**
-   * Gets the operator definition id.
-   *
-   * @return the operator definition id
    */
   public Component getComponent() {
     return this.component;
@@ -168,11 +96,49 @@ public class Timing {
    * @return time, only if it is available (if the expression have been evaluated)
    */
   public long getTime() {
-    if (this.isEvaluated) {
-      return this.time;
-    } else {
-      return -1;
+    return JEPWrapper.evaluate(getStringValue(), lookupParameterValues());
+  }
+
+  private Map<String, Long> lookupParameterValues() {
+    final Map<String, Long> res = new LinkedHashMap<>();
+    if (this.actor != null) {
+      final List<Parameter> inputParameters = this.actor.getInputParameters();
+      for (final Parameter param : inputParameters) {
+        final List<ConfigInputPort> inputPorts = this.actor.lookupConfigInputPortsConnectedWithParameter(param);
+        for (ConfigInputPort cip : inputPorts) {
+          final String name = cip.getName();
+          res.put(name, param.getExpression().evaluate());
+        }
+      }
     }
+    return res;
+  }
+
+  /**
+   *
+   */
+  public List<String> getInputParameters() {
+    final List<String> res = new ArrayList<>();
+    if (this.actor != null) {
+      final List<Parameter> inputParameters = this.actor.getInputParameters();
+      for (final Parameter param : inputParameters) {
+        final List<ConfigInputPort> inputPorts = this.actor.lookupConfigInputPortsConnectedWithParameter(param);
+        for (ConfigInputPort cip : inputPorts) {
+          final String name = cip.getName();
+          res.add(name);
+        }
+      }
+    }
+    return res;
+  }
+
+  /**
+   *
+   */
+  public boolean canEvaluate() {
+    final List<String> involvement = JEPWrapper.involvement(getStringValue());
+    final Map<String, Long> lookupParameterValues = lookupParameterValues();
+    return this.actor.isLocallyStatic() && lookupParameterValues.keySet().containsAll(involvement);
   }
 
   /**
@@ -192,34 +158,7 @@ public class Timing {
    *          the new time we want to set
    */
   public void setTime(final long time) {
-    if (time > 0) {
-      this.time = time;
-    } else {
-      final String message = "Trying to set a non strictly positive time for vertex " + this.actor + ", modified to 1.";
-      PreesmLogger.getLogger().log(Level.WARNING, message);
-      this.time = 1;
-    }
-    this.stringValue = String.valueOf(this.time);
-    this.isEvaluated = true;
-  }
-
-  /**
-   * Gets the input parameters.
-   *
-   * @return the input parameters
-   */
-  public Set<String> getInputParameters() {
-    return this.inputParameters;
-  }
-
-  /**
-   * Sets the input parameters.
-   *
-   * @param inputParameters
-   *          the new input parameters
-   */
-  public void setInputParameters(final Set<String> inputParameters) {
-    this.inputParameters = inputParameters;
+    this.stringValue = String.valueOf(time);
   }
 
   /**
@@ -239,74 +178,6 @@ public class Timing {
    */
   public void setStringValue(final String stringValue) {
     this.stringValue = stringValue;
-    this.isEvaluated = false;
-    tryToEvaluateWith(new LinkedHashMap<String, Integer>());
-  }
-
-  /**
-   * Checks if is evaluated.
-   *
-   * @return true, if is evaluated
-   */
-  public boolean isEvaluated() {
-    return this.isEvaluated;
-  }
-
-  /**
-   * Test if the {@link Timing} can be parsed (Check Syntax Errors).
-   *
-   * @return true if it can be parsed.
-   */
-  public boolean canParse() {
-    final JEP jep = new JEP();
-    try {
-      jep.parse(this.stringValue);
-    } catch (final ParseException e) {
-      return false;
-    }
-    return true;
-  }
-
-  /**
-   * Test if the {@link Timing} can be evaluated (Check Parameters Errors).
-   *
-   * @return true if it can be evaluated.
-   */
-  public boolean canEvaluate() {
-    final JEP jep = new JEP();
-    try {
-      for (final String parameter : this.inputParameters) {
-        jep.addVariable(parameter, 1);
-      }
-      final Node parse = jep.parse(this.stringValue);
-      jep.evaluate(parse);
-      return true;
-    } catch (final ParseException e) {
-      return false;
-    }
-  }
-
-  /**
-   * Evaluate the timing expression with the given values for parameters. If the evaluation is successful, isEvaluated
-   * is set to true
-   *
-   * @param parametersValues
-   *          the map of parameters names and associated values with which we want to evaluate the expression
-   */
-  public void tryToEvaluateWith(final Map<String, Integer> parametersValues) {
-    final JEP jep = new JEP();
-    try {
-      for (final String parameter : parametersValues.keySet()) {
-        jep.addVariable(parameter, parametersValues.get(parameter));
-      }
-      final Node parse = jep.parse(this.stringValue);
-      final Object evaluate = jep.evaluate(parse);
-      final long result = ((Double) evaluate).longValue();
-      this.time = result;
-      this.isEvaluated = true;
-    } catch (final ParseException e) {
-      this.isEvaluated = false;
-    }
   }
 
   /*
@@ -322,6 +193,7 @@ public class Timing {
       final Timing otherT = (Timing) obj;
       equals = this.component.equals(otherT.getComponent());
       equals &= this.actor.equals((otherT.getActor()));
+      equals &= this.stringValue.equals((otherT.stringValue));
     }
 
     return equals;
@@ -334,11 +206,7 @@ public class Timing {
    */
   @Override
   public String toString() {
-    if (this.isEvaluated) {
-      return "{" + this.actor.getVertexPath() + " on " + this.component.getVlnv().getName() + " -> " + this.time + "}";
-    } else {
-      return "{" + this.actor.getVertexPath() + " on " + this.component.getVlnv().getName() + " -> " + this.stringValue
-          + "}";
-    }
+    return "{" + this.actor.getVertexPath() + " on " + this.component.getVlnv().getName() + " -> " + this.stringValue
+        + "}";
   }
 }

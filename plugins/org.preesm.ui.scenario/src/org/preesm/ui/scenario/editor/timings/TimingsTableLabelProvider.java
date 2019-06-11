@@ -142,7 +142,7 @@ public class TimingsTableLabelProvider implements ITableLabelProvider, Selection
       final Timing timing = this.scenario.getTimingManager().getTimingOrDefault(vertex, this.currentOpDefId);
       switch (columnIndex) {
         case 1:// Parsing column
-          if (timing.canParse()) {
+          if (timing.canEvaluate()) {
             return this.imageOk;
           } else {
             return this.imageError;

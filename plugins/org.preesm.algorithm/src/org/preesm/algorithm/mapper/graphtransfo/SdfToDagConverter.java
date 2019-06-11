@@ -273,11 +273,7 @@ public class SdfToDagConverter {
             if (originalTiming.getTime() == TimingManager.DEFAULT_TASK_TIME) {
               copyTiming = new Timing(op.getComponent(), actor);
             } else {
-              if (originalTiming.isEvaluated()) {
-                copyTiming = new Timing(op.getComponent(), actor, originalTiming.getTime());
-              } else {
-                copyTiming = new Timing(op.getComponent(), actor, TimingManager.DEFAULT_TASK_TIME);
-              }
+              copyTiming = new Timing(op.getComponent(), actor, originalTiming.getTime());
             }
             currentVertexInit.addTiming(copyTiming);
           } else {

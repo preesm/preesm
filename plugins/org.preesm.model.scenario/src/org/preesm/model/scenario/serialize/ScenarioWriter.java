@@ -489,11 +489,7 @@ public class ScenarioWriter {
     timingelt.setAttribute("vertexname", timing.getActor().getVertexPath());
     timingelt.setAttribute("opname", timing.getComponent().getVlnv().getName());
     String timeString;
-    if (timing.isEvaluated()) {
-      timeString = Long.toString(timing.getTime());
-    } else {
-      timeString = timing.getStringValue();
-    }
+    timeString = timing.getStringValue();
     timingelt.setAttribute("time", timeString);
   }
 

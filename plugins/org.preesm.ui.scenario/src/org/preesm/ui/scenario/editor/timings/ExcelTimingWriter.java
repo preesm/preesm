@@ -44,7 +44,6 @@ import java.util.Locale;
 import jxl.Workbook;
 import jxl.WorkbookSettings;
 import jxl.write.Label;
-import jxl.write.Number;
 import jxl.write.WritableCell;
 import jxl.write.WritableSheet;
 import jxl.write.WritableWorkbook;
@@ -180,13 +179,8 @@ public class ExcelTimingWriter extends ExcelWriter {
             }
 
             WritableCell timeCell;
-            if (timing.isEvaluated()) {
-              final long time = timing.getTime();
-              timeCell = new Number(opCell.getColumn(), vCell.getRow(), time);
-            } else {
-              final String time = timing.getStringValue();
-              timeCell = new Label(opCell.getColumn(), vCell.getRow(), time);
-            }
+            final String time = timing.getStringValue();
+            timeCell = new Label(opCell.getColumn(), vCell.getRow(), time);
 
             sheet.addCell(timeCell);
           } catch (final WriteException e) {
