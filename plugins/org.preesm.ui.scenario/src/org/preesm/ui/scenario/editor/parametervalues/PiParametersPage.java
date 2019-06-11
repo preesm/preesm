@@ -78,10 +78,11 @@ public class PiParametersPage extends FormPage implements IPropertyListener {
   private TableViewer tableViewer;
 
   /** Table of Column name of the multi-column tree viewer. */
-  private static final String[] COLUMN_NAMES = { "Parameters", "Path", "Type", "Input Parameters", "Expression" };
+  private static final String[] COLUMN_NAMES = { "Parameters", "Type", "Input Parameters", "Graph Expression",
+      "Override Expression", "Value" };
 
   /** The column size. */
-  private static final int[] COLUMN_SIZE = { 110, 200, 200, 200, 50 };
+  private static final int[] COLUMN_SIZE = { 200, 75, 200, 200, 200, 50 };
 
   /**
    * Default Constructor of an Variables Page.
@@ -136,7 +137,7 @@ public class PiParametersPage extends FormPage implements IPropertyListener {
     table.setHeaderVisible(true);
 
     for (int i = 0; i < COLUMN_NAMES.length; i++) {
-      final TableColumn col = new TableColumn(table, SWT.CENTER);
+      final TableColumn col = new TableColumn(table, SWT.NONE);
       col.setText(COLUMN_NAMES[i]);
       col.setWidth(COLUMN_SIZE[i]);
     }
@@ -156,7 +157,7 @@ public class PiParametersPage extends FormPage implements IPropertyListener {
         @SuppressWarnings("unchecked")
         Entry<Parameter, String> ex2 = (Entry<Parameter, String>) e2;
 
-        return ex1.getKey().getName().compareTo(ex2.getKey().getName());
+        return ex1.getKey().getVertexPath().compareTo(ex2.getKey().getVertexPath());
       }
 
     });
@@ -201,9 +202,15 @@ public class PiParametersPage extends FormPage implements IPropertyListener {
 
       @Override
       public boolean canModify(final Object element, final String property) {
-        return property.contentEquals("Expression") && (element instanceof Entry);
+        final boolean overrideColumn = property.contentEquals(COLUMN_NAMES[4]);
+        final boolean properElementType = element instanceof Entry;
+        if (overrideColumn && properElementType) {
+          @SuppressWarnings("unchecked")
+          final Entry<Parameter, String> param = (Entry<Parameter, String>) element;
+          return param.getKey().isLocallyStatic();
+        }
+        return false;
       }
-
     });
 
     managedForm.getToolkit().paintBordersFor(container);
