@@ -110,7 +110,7 @@ public class DesignTools {
         operatorInstanceIds.add(cmpInstance.getInstanceName());
       }
     }
-    return operatorInstanceIds;
+    return Collections.unmodifiableList(operatorInstanceIds);
   }
 
   /**
@@ -128,7 +128,7 @@ public class DesignTools {
       }
     }
 
-    return operatorInstanceIds;
+    return Collections.unmodifiableList(operatorInstanceIds);
   }
 
   /**
@@ -147,7 +147,7 @@ public class DesignTools {
         }
       }
     }
-    return operatorInstanceIds;
+    return Collections.unmodifiableList(operatorInstanceIds);
   }
 
   /**
@@ -164,7 +164,7 @@ public class DesignTools {
         operatorInstances.add(cmpInstance);
       }
     }
-    return operatorInstances;
+    return Collections.unmodifiableList(operatorInstances);
   }
 
   /**
@@ -188,7 +188,7 @@ public class DesignTools {
     for (final org.preesm.model.slam.component.Component component : getOperatorComponents(design)) {
       operatorIds.add(component.getVlnv().getName());
     }
-    return operatorIds;
+    return Collections.unmodifiableList(operatorIds);
   }
 
   /**
@@ -199,7 +199,7 @@ public class DesignTools {
   public static List<ComponentInstance> getOrderedOperators(final Design design) {
     final List<ComponentInstance> opIdList = new ArrayList<>(getOperatorInstances(design));
     Collections.sort(opIdList, (o1, o2) -> o1.getInstanceName().compareTo(o2.getInstanceName()));
-    return opIdList;
+    return Collections.unmodifiableList(opIdList);
   }
 
   /**
@@ -221,7 +221,7 @@ public class DesignTools {
         }
       }
     }
-    return operators;
+    return Collections.unmodifiableList(operators);
   }
 
   /**
@@ -236,7 +236,7 @@ public class DesignTools {
     for (final ComponentInstance cmpInstance : design.getComponentInstances()) {
       instances.add(cmpInstance);
     }
-    return instances;
+    return Collections.unmodifiableList(instances);
   }
 
   /**
@@ -324,7 +324,7 @@ public class DesignTools {
         instances.add(cmpInstance);
       }
     }
-    return instances;
+    return Collections.unmodifiableList(instances);
   }
 
   /**
@@ -379,7 +379,7 @@ public class DesignTools {
         undirectedLinks.add(link);
       }
     }
-    return undirectedLinks;
+    return Collections.unmodifiableList(undirectedLinks);
   }
 
   /**
@@ -398,7 +398,7 @@ public class DesignTools {
         directedLinks.add(link);
       }
     }
-    return directedLinks;
+    return Collections.unmodifiableList(directedLinks);
   }
 
   /**
@@ -417,6 +417,6 @@ public class DesignTools {
         directedLinks.add(link);
       }
     }
-    return directedLinks;
+    return Collections.unmodifiableList(directedLinks);
   }
 }
