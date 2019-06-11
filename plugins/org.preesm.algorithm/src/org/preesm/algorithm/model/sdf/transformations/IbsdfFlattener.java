@@ -131,11 +131,11 @@ public class IbsdfFlattener {
         final long minIterDiff = nbDelay / (tgtCons * tgtRepeat);
 
         // Add fork and join
-        final SDFForkVertex fork = new SDFForkVertex();
+        final SDFForkVertex fork = new SDFForkVertex(null);
         fork.setName("exp_" + fifo.getSource().getName() + "_" + fifo.getSourceLabel());
         subgraph.addVertex(fork);
 
-        final SDFJoinVertex join = new SDFJoinVertex();
+        final SDFJoinVertex join = new SDFJoinVertex(null);
         join.setName("imp_" + fifo.getTarget().getName() + "_" + fifo.getTargetLabel());
         subgraph.addVertex(join);
 
@@ -146,9 +146,9 @@ public class IbsdfFlattener {
 
         // Set fifo properties
         fifo0.copyProperties(fifo);
-        fifo0.setSourceInterface(new SDFSinkInterfaceVertex());
+        fifo0.setSourceInterface(new SDFSinkInterfaceVertex(null));
         fifo0.getSourceInterface().setName(fifo.getSourceLabel() + "_0");
-        fifo0.setTargetInterface(new SDFSourceInterfaceVertex());
+        fifo0.setTargetInterface(new SDFSourceInterfaceVertex(null));
         fifo0.getTargetInterface().setName(fifo.getTargetLabel() + "_" + rate1);
         fifo0.setProd(new LongEdgePropertyType(rate0));
         fifo0.setCons(new LongEdgePropertyType(rate0));
@@ -158,9 +158,9 @@ public class IbsdfFlattener {
         fifo0.setSourcePortModifier(new StringEdgePropertyType(SDFEdge.MODIFIER_WRITE_ONLY));
 
         fifo1.copyProperties(fifo);
-        fifo1.setSourceInterface(new SDFSinkInterfaceVertex());
+        fifo1.setSourceInterface(new SDFSinkInterfaceVertex(null));
         fifo1.getSourceInterface().setName(fifo.getSourceLabel() + "_" + rate0);
-        fifo1.setTargetInterface(new SDFSourceInterfaceVertex());
+        fifo1.setTargetInterface(new SDFSourceInterfaceVertex(null));
         fifo1.getTargetInterface().setName(fifo.getTargetLabel() + "_0");
         fifo1.setProd(new LongEdgePropertyType(rate1));
         fifo1.setCons(new LongEdgePropertyType(rate1));
@@ -240,7 +240,7 @@ public class IbsdfFlattener {
         }
         if (prodRate < nbConsumedTokens) {
           // Add the broadcast and connect edges
-          final SDFBroadcastVertex broadcast = new SDFBroadcastVertex();
+          final SDFBroadcastVertex broadcast = new SDFBroadcastVertex(null);
           broadcast.setName("br_" + iface.getName());
           subgraph.addVertex(broadcast);
           final SDFEdge edgeIn = subgraph.addEdge(outEdge.getSource(), broadcast);
@@ -248,7 +248,7 @@ public class IbsdfFlattener {
 
           // Set edges properties
           edgeIn.copyProperties(outEdge);
-          edgeIn.setTargetInterface(new SDFSourceInterfaceVertex());
+          edgeIn.setTargetInterface(new SDFSourceInterfaceVertex(null));
           edgeIn.getTargetInterface().setName(iface.getName());
           edgeIn.setTargetPortModifier(new StringEdgePropertyType(SDFEdge.MODIFIER_READ_ONLY));
           edgeIn.setDelay(new LongEdgePropertyType(0));
@@ -257,7 +257,7 @@ public class IbsdfFlattener {
           edgeOut.copyProperties(outEdge);
           edgeOut.setProd(new LongEdgePropertyType(consRate * nbRepeatCons));
           edgeOut.getPropertyBean().removeProperty(SDFEdge.SOURCE_PORT_MODIFIER);
-          edgeOut.setSourceInterface(new SDFSinkInterfaceVertex());
+          edgeOut.setSourceInterface(new SDFSinkInterfaceVertex(null));
           edgeOut.getSourceInterface().setName(iface.getName() + "_0_0");
 
           broadcast.addSink(edgeOut.getSourceInterface());
@@ -293,7 +293,7 @@ public class IbsdfFlattener {
         }
         if (nbProducedTokens > consRate) {
           // Add the roundbuffer and connect edges
-          final SDFRoundBufferVertex roundbuffer = new SDFRoundBufferVertex();
+          final SDFRoundBufferVertex roundbuffer = new SDFRoundBufferVertex(null);
           roundbuffer.setName("rb_" + iface.getName());
           subgraph.addVertex(roundbuffer);
           final SDFEdge edgeIn = subgraph.addEdge(inEdge.getSource(), roundbuffer);
@@ -304,13 +304,13 @@ public class IbsdfFlattener {
           edgeOut.setSourcePortModifier(new StringEdgePropertyType(SDFEdge.MODIFIER_WRITE_ONLY));
           edgeOut.setProd(new LongEdgePropertyType(consRate));
           edgeOut.setDelay(new LongEdgePropertyType(0));
-          edgeIn.setSourceInterface(new SDFSinkInterfaceVertex());
+          edgeIn.setSourceInterface(new SDFSinkInterfaceVertex(null));
           edgeIn.getSourceInterface().setName(iface.getName());
 
           edgeIn.copyProperties(inEdge);
           edgeIn.setCons(new LongEdgePropertyType(prodRate * nbRepeatProd));
           edgeIn.getPropertyBean().removeProperty(SDFEdge.TARGET_PORT_MODIFIER);
-          edgeIn.setTargetInterface(new SDFSourceInterfaceVertex());
+          edgeIn.setTargetInterface(new SDFSourceInterfaceVertex(null));
           edgeIn.getTargetInterface().setName(iface.getName() + "_0_0");
 
           roundbuffer.addSource(edgeIn.getTargetInterface());

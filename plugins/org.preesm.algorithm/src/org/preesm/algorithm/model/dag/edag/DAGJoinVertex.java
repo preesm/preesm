@@ -56,8 +56,8 @@ public class DAGJoinVertex extends DAGVertex {
   /**
    * Creates a new DAGVertex.
    */
-  public DAGJoinVertex() {
-    super();
+  public DAGJoinVertex(org.preesm.model.pisdf.AbstractVertex origVertex) {
+    super(origVertex);
     setKind(DAGJoinVertex.DAG_JOIN_VERTEX);
   }
 

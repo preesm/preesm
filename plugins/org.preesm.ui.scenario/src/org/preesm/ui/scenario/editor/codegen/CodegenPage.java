@@ -120,8 +120,7 @@ public class CodegenPage extends FormPage {
     // Algorithm file chooser section
     createDirectorySection(managedForm, Messages.getString("Codegen.codeDirectory"),
         Messages.getString("Codegen.codeDirectoryDescription"), Messages.getString("Codegen.codeDirectoryEdit"),
-        this.scenario.getCodegenManager().getCodegenDirectory(),
-        Messages.getString("Codegen.codeDirectoryBrowseTitle"));
+        this.scenario.getCodegenDirectory(), Messages.getString("Codegen.codeDirectoryBrowseTitle"));
 
     managedForm.refresh();
     managedForm.reflow(true);
@@ -200,7 +199,7 @@ public class CodegenPage extends FormPage {
       final Text text1 = (Text) e.getSource();
       colorRedIfFileAbsent(text1);
       final String path = FilenameUtils.separatorsToUnix(text1.getText());
-      CodegenPage.this.scenario.getCodegenManager().setCodegenDirectory(path);
+      CodegenPage.this.scenario.setCodegenDirectory(path);
       firePropertyChange(IEditorPart.PROP_DIRTY);
 
     });

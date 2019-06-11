@@ -58,7 +58,7 @@ public class SDFInitVertex extends SDFAbstractVertex {
    * Creates a new SDFInterfaceVertex with the default direction (SINK).
    */
   public SDFInitVertex() {
-    super();
+    super(null);
     setKind(SDFInitVertex.INIT);
     setNbRepeat(1L);
   }

@@ -133,7 +133,7 @@ public class CodegenTask extends AbstractTaskImplementation {
 
     // Retrieve the desired printer and target folder path
     final String selectedPrinter = parameters.get(CodegenTask.PARAM_PRINTER);
-    final String codegenPath = scenario.getCodegenManager().getCodegenDirectory() + File.separator;
+    final String codegenPath = scenario.getCodegenDirectory() + File.separator;
 
     // Create the codegen engine
     final CodegenEngine engine = new CodegenEngine(codegenPath, codeBlocks, generator);

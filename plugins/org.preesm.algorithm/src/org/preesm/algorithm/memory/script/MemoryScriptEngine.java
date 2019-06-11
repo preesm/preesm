@@ -213,7 +213,7 @@ public class MemoryScriptEngine {
    *
    */
   public void generateCode(final PreesmScenario scenario, final String log) {
-    final String codegenPath = scenario.getCodegenManager().getCodegenDirectory() + "/";
+    final String codegenPath = scenario.getCodegenDirectory() + "/";
     final IFile iFile;
     try {
       iFile = ResourcesPlugin.getWorkspace().getRoot().getFile(new Path(codegenPath + log + ".txt"));

@@ -41,11 +41,12 @@ package org.preesm.model.scenario.serialize;
 
 import java.util.Map;
 import java.util.Set;
+import org.preesm.model.pisdf.AbstractActor;
+import org.preesm.model.pisdf.PiGraph;
 import org.preesm.model.scenario.ConstraintGroup;
 import org.preesm.model.scenario.ParameterValue;
 import org.preesm.model.scenario.ParameterValueManager;
 import org.preesm.model.scenario.PreesmScenario;
-import org.preesm.model.scenario.RelativeConstraintManager;
 import org.preesm.model.scenario.Timing;
 import org.preesm.model.scenario.papi.PapiComponent;
 import org.preesm.model.scenario.papi.PapiEvent;
@@ -56,12 +57,14 @@ import org.preesm.model.scenario.papi.PapifyConfigManager;
 import org.preesm.model.scenario.papi.PapifyConfigPE;
 import org.preesm.model.scenario.types.DataType;
 import org.preesm.model.scenario.types.VertexType;
+import org.preesm.model.slam.ComponentInstance;
+import org.preesm.model.slam.Design;
+import org.preesm.model.slam.component.Component;
 import org.w3c.dom.DOMImplementation;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.bootstrap.DOMImplementationRegistry;
 
-// TODO: Auto-generated Javadoc
 /**
  * Writes a scenario as an XML.
  *
@@ -107,7 +110,6 @@ public class ScenarioWriter {
 
     addFiles(root);
     addConstraints(root);
-    addRelativeConstraints(root);
     addTimings(root);
     addSimuParams(root);
     addParameterValues(root);
@@ -171,7 +173,7 @@ public class ScenarioWriter {
       parent.appendChild(valueElt);
 
       valueElt.setAttribute("name", value.getName());
-      valueElt.setAttribute("parent", value.getParentVertex());
+      valueElt.setAttribute("parent", value.getParameter().getContainingPiGraph().getName());
       valueElt.setAttribute("type", value.getType().toString());
 
       valueElt.setAttribute("value", valueToPrint);
@@ -210,23 +212,20 @@ public class ScenarioWriter {
    */
   private void addPapifyConfigActor(final Element parent, final PapifyConfigActor config) {
 
-    if (!config.getActorId().equals("") && (config.getPAPIEvents() != null) && !config.getPAPIEvents().isEmpty()) {
+    if (config.getActorPath() != null && (config.getPAPIEvents() != null) && !config.getPAPIEvents().isEmpty()) {
       final Element papifyConfigElt = this.dom.createElement("papifyConfigActor");
       parent.appendChild(papifyConfigElt);
 
       final Element actorPath = this.dom.createElement("actorPath");
       papifyConfigElt.appendChild(actorPath);
-      actorPath.setAttribute("actorPath", config.getActorPath());
-      final Element actorId = this.dom.createElement("actorId");
-      papifyConfigElt.appendChild(actorId);
-      actorId.setAttribute("actorId", config.getActorId());
+      actorPath.setAttribute("actorPath", config.getActorPath().getVertexPath());
       final Map<String, Set<PapiEvent>> eventSets = config.getPAPIEvents();
       final Set<String> keys = eventSets.keySet();
       for (final String key : keys) {
         final Set<PapiEvent> eventSet = eventSets.get(key);
         if (!eventSet.isEmpty()) {
           final Element component = this.dom.createElement("component");
-          actorId.appendChild(component);
+          actorPath.appendChild(component);
           component.setAttribute("component", key);
           for (final PapiEvent event : eventSet) {
             final Element singleEvent = this.dom.createElement("event");
@@ -248,14 +247,13 @@ public class ScenarioWriter {
    */
   private void addPapifyConfigPE(final Element parent, final PapifyConfigPE config) {
 
-    if (!config.getpeType().equals("") && (config.getPAPIComponents() != null)
-        && !config.getPAPIComponents().isEmpty()) {
+    if (config.getpeType() != null && (config.getPAPIComponents() != null) && !config.getPAPIComponents().isEmpty()) {
       final Element papifyConfigElt = this.dom.createElement("papifyConfigPE");
       parent.appendChild(papifyConfigElt);
 
       final Element peType = this.dom.createElement("peType");
       papifyConfigElt.appendChild(peType);
-      peType.setAttribute("peType", config.getpeType());
+      peType.setAttribute("peType", config.getpeType().getVlnv().getName());
       final Set<PapiComponent> components = config.getPAPIComponents();
 
       for (final PapiComponent component : components) {
@@ -333,11 +331,11 @@ public class ScenarioWriter {
 
     final Element core = this.dom.createElement("mainCore");
     params.appendChild(core);
-    core.setTextContent(this.scenario.getSimulationManager().getMainOperatorName());
+    core.setTextContent(this.scenario.getSimulationManager().getMainOperator().getInstanceName());
 
     final Element medium = this.dom.createElement("mainComNode");
     params.appendChild(medium);
-    medium.setTextContent(this.scenario.getSimulationManager().getMainComNodeName());
+    medium.setTextContent(this.scenario.getSimulationManager().getMainComNode().getInstanceName());
 
     final Element dataSize = this.dom.createElement("averageDataSize");
     params.appendChild(dataSize);
@@ -353,7 +351,7 @@ public class ScenarioWriter {
     final Element sVOperators = this.dom.createElement("specialVertexOperators");
     params.appendChild(sVOperators);
 
-    for (final String opId : this.scenario.getSimulationManager().getSpecialVertexOperatorIds()) {
+    for (final ComponentInstance opId : this.scenario.getSimulationManager().getSpecialVertexOperators()) {
       addSpecialVertexOperator(sVOperators, opId);
     }
 
@@ -386,11 +384,11 @@ public class ScenarioWriter {
    * @param opId
    *          the op id
    */
-  private void addSpecialVertexOperator(final Element parent, final String opId) {
+  private void addSpecialVertexOperator(final Element parent, final ComponentInstance opId) {
 
     final Element dataTypeElt = this.dom.createElement("specialVertexOperator");
     parent.appendChild(dataTypeElt);
-    dataTypeElt.setAttribute("path", opId);
+    dataTypeElt.setAttribute("path", opId.getInstanceName());
   }
 
   /**
@@ -404,17 +402,23 @@ public class ScenarioWriter {
     final Element files = this.dom.createElement("files");
     parent.appendChild(files);
 
-    final Element algo = this.dom.createElement("algorithm");
-    files.appendChild(algo);
-    algo.setAttribute("url", this.scenario.getAlgorithmURL());
+    final PiGraph algorithm = this.scenario.getAlgorithm();
+    if (algorithm != null) {
+      final Element algo = this.dom.createElement("algorithm");
+      files.appendChild(algo);
+      algo.setAttribute("url", algorithm.getUrl());
+    }
 
-    final Element archi = this.dom.createElement("architecture");
-    files.appendChild(archi);
-    archi.setAttribute("url", this.scenario.getArchitectureURL());
+    final Design design = this.scenario.getDesign();
+    if (design != null) {
+      final Element archi = this.dom.createElement("architecture");
+      files.appendChild(archi);
+      archi.setAttribute("url", design.getUrl());
+    }
 
     final Element codeGenDir = this.dom.createElement("codegenDirectory");
     files.appendChild(codeGenDir);
-    codeGenDir.setAttribute("url", this.scenario.getCodegenManager().getCodegenDirectory());
+    codeGenDir.setAttribute("url", this.scenario.getCodegenDirectory());
 
   }
 
@@ -449,53 +453,16 @@ public class ScenarioWriter {
     final Element constraintGroupElt = this.dom.createElement("constraintGroup");
     parent.appendChild(constraintGroupElt);
 
-    final String opId = cst.getOperatorId();
+    final ComponentInstance opId = cst.getOperatorId();
     final Element opdefelt = this.dom.createElement("operator");
     constraintGroupElt.appendChild(opdefelt);
-    opdefelt.setAttribute("name", opId);
+    opdefelt.setAttribute("name", opId.getInstanceName());
 
-    for (final String vtxId : cst.getVertexPaths()) {
+    for (final AbstractActor vtxId : cst.getVertexPaths()) {
       final Element vtxelt = this.dom.createElement(VertexType.TYPE_TASK);
       constraintGroupElt.appendChild(vtxelt);
-      vtxelt.setAttribute("name", vtxId);
+      vtxelt.setAttribute("name", vtxId.getVertexPath());
     }
-  }
-
-  /**
-   * Adds the relative constraints.
-   *
-   * @param parent
-   *          the parent
-   */
-  private void addRelativeConstraints(final Element parent) {
-
-    final RelativeConstraintManager manager = this.scenario.getRelativeconstraintManager();
-    final Element timings = this.dom.createElement("relativeconstraints");
-    parent.appendChild(timings);
-
-    timings.setAttribute("excelUrl", manager.getExcelFileURL());
-
-    for (final String id : manager.getExplicitConstraintIds()) {
-      addRelativeConstraint(timings, id, manager.getConstraintOrDefault(id));
-    }
-  }
-
-  /**
-   * Adds the relative constraint.
-   *
-   * @param parent
-   *          the parent
-   * @param id
-   *          the id
-   * @param group
-   *          the group
-   */
-  private void addRelativeConstraint(final Element parent, final String id, final int group) {
-
-    final Element timingelt = this.dom.createElement("relativeconstraint");
-    parent.appendChild(timingelt);
-    timingelt.setAttribute("vertexname", id);
-    timingelt.setAttribute("group", Integer.toString(group));
   }
 
   /**
@@ -515,7 +482,7 @@ public class ScenarioWriter {
       addTiming(timings, timing);
     }
 
-    for (final String opDef : this.scenario.getTimingManager().getMemcpySpeeds().keySet()) {
+    for (final Component opDef : this.scenario.getTimingManager().getMemcpySpeeds().keySet()) {
       addMemcpySpeed(timings, opDef, this.scenario.getTimingManager().getMemcpySetupTime(opDef),
           this.scenario.getTimingManager().getMemcpyTimePerUnit(opDef));
     }
@@ -533,8 +500,8 @@ public class ScenarioWriter {
 
     final Element timingelt = this.dom.createElement("timing");
     parent.appendChild(timingelt);
-    timingelt.setAttribute("vertexname", timing.getVertexId());
-    timingelt.setAttribute("opname", timing.getOperatorDefinitionId());
+    timingelt.setAttribute("vertexname", timing.getVertexId().getVertexPath());
+    timingelt.setAttribute("opname", timing.getOperatorDefinitionId().getVlnv().getName());
     String timeString;
     if (timing.isEvaluated()) {
       timeString = Long.toString(timing.getTime());
@@ -556,13 +523,13 @@ public class ScenarioWriter {
    * @param memcpyTimePerUnit
    *          the memcpy time per unit
    */
-  private void addMemcpySpeed(final Element parent, final String opDef, final long memcpySetupTime,
-      final float memcpyTimePerUnit) {
+  private void addMemcpySpeed(final Element parent, final Component opDef, final long memcpySetupTime,
+      final double memcpyTimePerUnit) {
 
     final Element timingelt = this.dom.createElement("memcpyspeed");
     parent.appendChild(timingelt);
-    timingelt.setAttribute("opname", opDef);
+    timingelt.setAttribute("opname", opDef.getVlnv().getName());
     timingelt.setAttribute("setuptime", Long.toString(memcpySetupTime));
-    timingelt.setAttribute("timeperunit", Float.toString(memcpyTimePerUnit));
+    timingelt.setAttribute("timeperunit", Double.toString(memcpyTimePerUnit));
   }
 }

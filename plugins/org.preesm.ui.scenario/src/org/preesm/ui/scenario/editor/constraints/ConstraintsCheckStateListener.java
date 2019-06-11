@@ -37,31 +37,29 @@
 package org.preesm.ui.scenario.editor.constraints;
 
 import java.util.LinkedHashSet;
+import java.util.List;
 import java.util.Set;
 import org.eclipse.jface.viewers.CheckStateChangedEvent;
 import org.eclipse.jface.viewers.CheckboxTreeViewer;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.BusyIndicator;
-import org.eclipse.swt.events.FocusEvent;
-import org.eclipse.swt.events.FocusListener;
 import org.eclipse.swt.events.PaintEvent;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.layout.FillLayout;
+import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.IPropertyListener;
 import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.eclipse.ui.forms.widgets.Section;
-import org.preesm.commons.exceptions.PreesmFrameworkException;
 import org.preesm.model.pisdf.AbstractActor;
-import org.preesm.model.pisdf.AbstractVertex;
 import org.preesm.model.pisdf.Actor;
 import org.preesm.model.pisdf.PiGraph;
-import org.preesm.model.pisdf.util.ActorPath;
 import org.preesm.model.scenario.ConstraintGroup;
 import org.preesm.model.scenario.ConstraintGroupManager;
 import org.preesm.model.scenario.PreesmScenario;
+import org.preesm.model.slam.ComponentInstance;
 import org.preesm.ui.scenario.editor.ISDFCheckStateListener;
 import org.preesm.ui.scenario.editor.Messages;
 import org.preesm.ui.scenario.editor.PreesmAlgorithmTreeContentProvider;
@@ -78,7 +76,7 @@ public class ConstraintsCheckStateListener implements ISDFCheckStateListener {
   private PreesmScenario scenario = null;
 
   /** Current operator. */
-  private String currentOpId = null;
+  private ComponentInstance currentOpId = null;
 
   /** Current section (necessary to diplay busy status). */
   private Section section = null;
@@ -90,7 +88,7 @@ public class ConstraintsCheckStateListener implements ISDFCheckStateListener {
   private PreesmAlgorithmTreeContentProvider contentProvider = null;
 
   /** Constraints page used as a property listener to change the dirty state. */
-  private IPropertyListener propertyListener = null;
+  IPropertyListener propertyListener = null;
 
   /**
    * Instantiates a new constraints check state listener.
@@ -136,18 +134,14 @@ public class ConstraintsCheckStateListener implements ISDFCheckStateListener {
     final boolean isChecked = event.getChecked();
 
     BusyIndicator.showWhile(this.section.getDisplay(), () -> {
-      if (ConstraintsCheckStateListener.this.scenario.isIBSDFScenario()) {
-        throw new PreesmFrameworkException("IBSDF is not supported anymore");
-      } else if (ConstraintsCheckStateListener.this.scenario.isPISDFScenario()) {
-        if (element instanceof PiGraph) {
-          final PiGraph graph2 = (PiGraph) element;
-          fireOnCheck(graph2, isChecked);
-          updateCheck();
-        } else if (element instanceof AbstractActor) {
-          final AbstractActor actor = (AbstractActor) element;
-          fireOnCheck(actor, isChecked);
-          updateCheck();
-        }
+      if (element instanceof PiGraph) {
+        final PiGraph graph2 = (PiGraph) element;
+        fireOnCheck(graph2, isChecked);
+        updateCheck();
+      } else if (element instanceof AbstractActor) {
+        final AbstractActor actor = (AbstractActor) element;
+        fireOnCheck(actor, isChecked);
+        updateCheck();
       }
     });
     this.propertyListener.propertyChanged(this, IEditorPart.PROP_DIRTY);
@@ -210,8 +204,7 @@ public class ConstraintsCheckStateListener implements ISDFCheckStateListener {
    */
   @Override
   public void widgetDefaultSelected(final SelectionEvent e) {
-    // TODO Auto-generated method stub
-
+    // no behavior by default
   }
 
   /**
@@ -226,7 +219,7 @@ public class ConstraintsCheckStateListener implements ISDFCheckStateListener {
       final Combo combo = ((Combo) e.getSource());
       final String item = combo.getItem(combo.getSelectionIndex());
 
-      this.currentOpId = item;
+      this.currentOpId = this.scenario.getDesign().getComponentInstance(item);
       updateCheck();
     }
 
@@ -237,11 +230,7 @@ public class ConstraintsCheckStateListener implements ISDFCheckStateListener {
    */
   public void updateCheck() {
     if (this.scenario != null) {
-      if (this.scenario.isIBSDFScenario()) {
-        throw new PreesmFrameworkException("IBSDF is not supported anymore");
-      } else if (this.scenario.isPISDFScenario()) {
-        updateCheckPISDF();
-      }
+      updateCheckPISDF();
     }
   }
 
@@ -251,17 +240,18 @@ public class ConstraintsCheckStateListener implements ISDFCheckStateListener {
   private void updateCheckPISDF() {
     final PiGraph currentGraph = this.contentProvider.getPISDFCurrentGraph();
     if ((this.currentOpId != null) && (currentGraph != null)) {
-      final Set<AbstractVertex> cgSet = new LinkedHashSet<>();
+      final Set<AbstractActor> cgSet = new LinkedHashSet<>();
 
       final ConstraintGroupManager constraintGroupManager = this.scenario.getConstraintGroupManager();
       final ConstraintGroup cg = constraintGroupManager.getOpConstraintGroups(this.currentOpId);
 
-      // Retrieves the elements in the tree that have the same name as
-      // the ones to select in the constraint group
-      for (final String vertexId : cg.getVertexPaths()) {
-        final AbstractVertex v = ActorPath.lookup(currentGraph, vertexId);
-        if (v != null) {
-          cgSet.add(v);
+      if (cg != null) {
+        // Retrieves the elements in the tree that have the same name as
+        // the ones to select in the constraint group
+        for (final AbstractActor v : cg.getVertexPaths()) {
+          if (v != null) {
+            cgSet.add(v);
+          }
         }
       }
 
@@ -292,26 +282,18 @@ public class ConstraintsCheckStateListener implements ISDFCheckStateListener {
   public void addComboBoxSelector(final Composite parent, final FormToolkit toolkit) {
     final Composite combocps = toolkit.createComposite(parent);
     combocps.setLayout(new FillLayout());
+
+    final GridData componentNameGridData = new GridData();
+    componentNameGridData.widthHint = 250;
+    combocps.setLayoutData(componentNameGridData);
+
     combocps.setVisible(true);
-    final Combo combo = new Combo(combocps, SWT.DROP_DOWN | SWT.READ_ONLY);
+    final Combo combo = new Combo(combocps, SWT.DROP_DOWN | SWT.READ_ONLY | SWT.SIMPLE);
     combo.setVisibleItemCount(20);
     combo.setToolTipText(Messages.getString("Constraints.coreSelectionTooltip"));
     comboDataInit(combo);
-    combo.addFocusListener(new FocusListener() {
-
-      @Override
-      public void focusGained(final FocusEvent e) {
-        comboDataInit((Combo) e.getSource());
-
-      }
-
-      @Override
-      public void focusLost(final FocusEvent e) {
-      }
-
-    });
-
     combo.addSelectionListener(this);
+    combo.select(0);
   }
 
   /**
@@ -321,11 +303,13 @@ public class ConstraintsCheckStateListener implements ISDFCheckStateListener {
    *          the combo
    */
   private void comboDataInit(final Combo combo) {
-
     combo.removeAll();
-    for (final String id : this.scenario.getOrderedOperatorIds()) {
-      combo.add(id);
+    final List<ComponentInstance> orderedOperators = this.scenario.getOrderedOperators();
+    for (final ComponentInstance id : orderedOperators) {
+      combo.add(id.getInstanceName());
     }
+    // select first operator by default
+    this.currentOpId = orderedOperators.get(0);
   }
 
   /*

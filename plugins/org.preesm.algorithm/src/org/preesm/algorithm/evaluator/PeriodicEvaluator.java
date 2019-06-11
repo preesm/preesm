@@ -88,7 +88,7 @@ public class PeriodicEvaluator {
     // if IBSDF -> hierarchical algorithm
     ThroughputEvaluator scheduler;
     if (hierarchical) {
-      scheduler = new IBSDFThroughputEvaluator();
+      scheduler = new IBSDFThroughputEvaluator(scenario);
     } else {
       // if SDF -> linear program for periodic schedule
       scheduler = new SDFThroughputEvaluator();

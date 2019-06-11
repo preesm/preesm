@@ -39,8 +39,8 @@ import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.Set;
+import org.preesm.model.pisdf.AbstractActor;
 
-// TODO: Auto-generated Javadoc
 /**
  * A PapifyConfig stores the monitoring configuration of each core instance.
  *
@@ -48,10 +48,8 @@ import java.util.Set;
  */
 public class PapifyConfigActor {
 
-  /** The actor instance. */
-  private String actorId;
   /** The actor instance path. */
-  private String actorPath;
+  private AbstractActor actor;
 
   /** The set of eventSets that are going to be monitored. */
   private Map<String, Set<PapiEvent>> actorEventMap;
@@ -66,21 +64,9 @@ public class PapifyConfigActor {
   /**
    * Instantiates a new PapifyConfig group.
    */
-  public PapifyConfigActor(final String actorId, final String actorPath) {
-    this.actorId = actorId;
-    this.actorPath = actorPath;
+  public PapifyConfigActor(final AbstractActor actorPath) {
+    this.actor = actorPath;
     this.actorEventMap = new LinkedHashMap<>();
-  }
-
-  /**
-   * Adds the actorId.
-   *
-   * @param actorId
-   *          the actor instance
-   */
-  public void addActorId(final String actorId) {
-    this.actorId = actorId;
-
   }
 
   /**
@@ -89,8 +75,8 @@ public class PapifyConfigActor {
    * @param actorPath
    *          the actor instance
    */
-  public void addActorPath(final String actorPath) {
-    this.actorPath = actorPath;
+  public void addActorPath(final AbstractActor actorPath) {
+    this.actor = actorPath;
 
   }
 
@@ -143,19 +129,6 @@ public class PapifyConfigActor {
   }
 
   /**
-   * Removes the actorId.
-   *
-   * @param actorId
-   *          the actorId
-   */
-  public void removeActorId(final String actorId) {
-    if (actorId.equals(this.actorId)) {
-      this.actorId = "";
-      this.actorEventMap = null;
-    }
-  }
-
-  /**
    * Removes an event.
    *
    * @param event
@@ -174,21 +147,12 @@ public class PapifyConfigActor {
   }
 
   /**
-   * Gets the actor id.
-   *
-   * @return the actor id
-   */
-  public String getActorId() {
-    return (this.actorId);
-  }
-
-  /**
    * Gets the actor path.
    *
    * @return the actor path
    */
-  public String getActorPath() {
-    return (this.actorPath);
+  public AbstractActor getActorPath() {
+    return (this.actor);
   }
 
   /**
@@ -201,27 +165,15 @@ public class PapifyConfigActor {
   }
 
   /**
-   * Checks for Actor id.
-   *
-   * @param actorId
-   *          the actor id
-   * @return true, if successful
-   */
-  public boolean isActorId(final String actorId) {
-
-    return actorId.equals(this.actorId);
-  }
-
-  /**
    * Checks for Actor path.
    *
    * @param actorPath
    *          the actor path
    * @return true, if successful
    */
-  public boolean isActorPath(final String actorPath) {
+  public boolean isActorPath(final AbstractActor actorPath) {
 
-    return actorPath.equals(this.actorPath);
+    return actorPath.equals(this.actor);
   }
 
   /**
@@ -251,7 +203,7 @@ public class PapifyConfigActor {
 
     if (comparer instanceof PapifyConfigActor) {
       final PapifyConfigActor tester = (PapifyConfigActor) comparer;
-      if (this.actorPath.equals(tester.getActorPath())) {
+      if (this.actor.equals(tester.getActorPath())) {
         decision = true;
       }
     }
@@ -260,7 +212,7 @@ public class PapifyConfigActor {
 
   @Override
   public int hashCode() {
-    return this.actorPath.hashCode();
+    return this.actor.hashCode();
   }
 
   /*
@@ -270,10 +222,8 @@ public class PapifyConfigActor {
    */
   @Override
   public String toString() {
-    String s = "<Printing actorId> \n";
-    s += this.actorId;
-    s += "<Printing actorPath> \n";
-    s += this.actorPath;
+    String s = "<Printing actorPath> \n";
+    s += this.actor.getVertexPath();
     s += "\n<Printing components and Events> \n";
     s += this.actorEventMap.toString();
     s += "<end printing>\n";

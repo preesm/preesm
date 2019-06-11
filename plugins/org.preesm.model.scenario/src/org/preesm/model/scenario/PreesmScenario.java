@@ -40,21 +40,19 @@ package org.preesm.model.scenario;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.LinkedHashSet;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
 import org.eclipse.core.runtime.CoreException;
-import org.eclipse.emf.ecore.EPackage;
-import org.eclipse.emf.ecore.resource.Resource;
-import org.preesm.commons.exceptions.PreesmFrameworkException;
-import org.preesm.model.pisdf.AbstractActor;
+import org.eclipse.core.runtime.IPath;
+import org.eclipse.core.runtime.Path;
+import org.preesm.model.pisdf.AbstractVertex;
 import org.preesm.model.pisdf.PiGraph;
 import org.preesm.model.pisdf.serialize.PiParser;
 import org.preesm.model.scenario.papi.PapifyConfigManager;
+import org.preesm.model.slam.ComponentInstance;
 import org.preesm.model.slam.Design;
-import org.preesm.model.slam.SlamPackage;
-import org.preesm.model.slam.serialize.IPXACTResourceFactoryImpl;
+import org.preesm.model.slam.component.Component;
 import org.preesm.model.slam.serialize.SlamParser;
 import org.preesm.model.slam.utils.DesignTools;
 
@@ -65,11 +63,13 @@ import org.preesm.model.slam.utils.DesignTools;
  */
 public class PreesmScenario {
 
+  private String scenarioURL = "";
+
+  private PiGraph piGraph;
+  private Design  slamDesign;
+
   /** Manager of constraint groups. */
   private ConstraintGroupManager constraintgroupmanager = null;
-
-  /** Manager of relative constraints. */
-  private RelativeConstraintManager relativeconstraintmanager = null;
 
   /** Manager of timings. */
   private TimingManager timingmanager = null;
@@ -78,61 +78,24 @@ public class PreesmScenario {
   private SimulationManager simulationManager = null;
 
   /** Manager of code generation parameters. */
-  private CodegenManager codegenManager = null;
+  private String codegenDirectory;
 
   /** Manager of parameters values for PiGraphs. */
   private ParameterValueManager parameterValueManager = null;
-
-  /** Path to the algorithm file. */
-  private String algorithmURL = "";
-
-  /** Path to the architecture file. */
-  private String architectureURL = "";
-
-  /** current architecture properties. */
-  private Set<String> operatorIds = null;
-
-  /** The operator definition ids. */
-  private Set<String> operatorDefinitionIds = null;
-
-  /** The com node ids. */
-  private Set<String> comNodeIds = null;
-
-  /** Path to the scenario file. */
-  private String scenarioURL = "";
 
   /** Manager of PapifyConfig groups. */
   private PapifyConfigManager papifyconfiggroupmanager = null;
 
   /**
    * Instantiates a new preesm scenario.
+   *
    */
   public PreesmScenario() {
-    this.constraintgroupmanager = new ConstraintGroupManager();
-    this.relativeconstraintmanager = new RelativeConstraintManager();
-    this.timingmanager = new TimingManager();
-    this.simulationManager = new SimulationManager();
-    this.codegenManager = new CodegenManager();
-    this.parameterValueManager = new ParameterValueManager();
-    this.papifyconfiggroupmanager = new PapifyConfigManager();
-  }
-
-  /**
-   * Checks if is PISDF scenario.
-   *
-   * @return true, if is PISDF scenario
-   */
-  public boolean isPISDFScenario() {
-    return this.algorithmURL.endsWith(".pi");
-  }
-
-  /**
-   * Checks if is IBSDF scenario.
-   *
-   * @return true, if is IBSDF scenario
-   */
-  public boolean isIBSDFScenario() {
-    return this.algorithmURL.endsWith(".graphml");
+    this.constraintgroupmanager = new ConstraintGroupManager(this);
+    this.timingmanager = new TimingManager(this);
+    this.simulationManager = new SimulationManager(this);
+    this.parameterValueManager = new ParameterValueManager(this);
+    this.papifyconfiggroupmanager = new PapifyConfigManager(this);
   }
 
   /**
@@ -141,9 +104,30 @@ public class PreesmScenario {
    * @return true, if is IBSDF scenario
    */
   public boolean isProperlySet() {
-    final boolean hasProperAlgo = isIBSDFScenario() || isPISDFScenario();
-    final boolean hasProperArchi = this.architectureURL.endsWith(".slam");
+    final boolean hasProperAlgo = this.getAlgorithm() != null;
+    final boolean hasProperArchi = this.getDesign() != null;
     return hasProperAlgo && hasProperArchi;
+  }
+
+  public PiGraph getAlgorithm() {
+    return this.piGraph;
+  }
+
+  public Design getDesign() {
+    return this.slamDesign;
+  }
+
+  /**
+   * Util method generating a name for a given PreesmSceario from its architecture and algorithm.
+   *
+   * @return the scenario name
+   */
+  public String getScenarioName() {
+    final IPath algoPath = new Path(this.getAlgorithmURL()).removeFileExtension();
+    final String algoName = algoPath.lastSegment();
+    final IPath archiPath = new Path(this.getArchitectureURL()).removeFileExtension();
+    final String archiName = archiPath.lastSegment();
+    return algoName + "_" + archiName;
   }
 
   /**
@@ -152,27 +136,7 @@ public class PreesmScenario {
    * @return the actor names
    */
   public Set<String> getActorNames() {
-    if (isPISDFScenario()) {
-      return getPiActorNames();
-    } else if (isIBSDFScenario()) {
-      throw new PreesmFrameworkException("IBSDF is not supported anymore");
-    } else {
-      return Collections.emptySet();
-    }
-  }
-
-  /**
-   * Gets the pi actor names.
-   *
-   * @return the pi actor names
-   */
-  private Set<String> getPiActorNames() {
-    final Set<String> result = new LinkedHashSet<>();
-    final PiGraph graph = PiParser.getPiGraphWithReconnection(this.algorithmURL);
-    for (final AbstractActor vertex : graph.getActors()) {
-      result.add(vertex.getName());
-    }
-    return result;
+    return getAlgorithm().getActors().stream().map(AbstractVertex::getName).collect(Collectors.toSet());
   }
 
   /**
@@ -182,15 +146,6 @@ public class PreesmScenario {
    */
   public ConstraintGroupManager getConstraintGroupManager() {
     return this.constraintgroupmanager;
-  }
-
-  /**
-   * Gets the relativeconstraint manager.
-   *
-   * @return the relativeconstraint manager
-   */
-  public RelativeConstraintManager getRelativeconstraintManager() {
-    return this.relativeconstraintmanager;
   }
 
   /**
@@ -208,17 +163,15 @@ public class PreesmScenario {
    * @return the algorithm URL
    */
   public String getAlgorithmURL() {
-    return this.algorithmURL;
+    if (getAlgorithm() != null) {
+      return getAlgorithm().getUrl();
+    } else {
+      return null;
+    }
   }
 
-  /**
-   * Sets the algorithm URL.
-   *
-   * @param algorithmURL
-   *          the new algorithm URL
-   */
-  public void setAlgorithmURL(final String algorithmURL) {
-    this.algorithmURL = algorithmURL;
+  public void setAlgorithm(final PiGraph algorithm) {
+    this.piGraph = algorithm;
   }
 
   /**
@@ -227,17 +180,18 @@ public class PreesmScenario {
    * @return the architecture URL
    */
   public String getArchitectureURL() {
-    return this.architectureURL;
+    if (getDesign() != null) {
+      return getDesign().getUrl();
+    } else {
+      return null;
+    }
   }
 
   /**
    * Sets the architecture URL.
-   *
-   * @param architectureURL
-   *          the new architecture URL
    */
-  public void setArchitectureURL(final String architectureURL) {
-    this.architectureURL = architectureURL;
+  public void setArchitecture(final Design design) {
+    this.slamDesign = design;
   }
 
   /**
@@ -250,12 +204,18 @@ public class PreesmScenario {
   }
 
   /**
-   * Gets the codegen manager.
+   * Gets the codegen directory.
    *
-   * @return the codegen manager
+   * @return the codegen directory
    */
-  public CodegenManager getCodegenManager() {
-    return this.codegenManager;
+  public String getCodegenDirectory() {
+    return this.codegenDirectory;
+  }
+
+  /**
+   */
+  public void setCodegenDirectory(final String dir) {
+    this.codegenDirectory = dir;
   }
 
   /**
@@ -299,11 +259,17 @@ public class PreesmScenario {
    *
    * @return the operator ids
    */
-  public Set<String> getOperatorIds() {
-    if (this.operatorIds == null) {
-      this.operatorIds = new LinkedHashSet<>();
-    }
-    return this.operatorIds;
+  public List<String> getOperatorIds() {
+    return DesignTools.getOperatorInstanceIds(getDesign());
+  }
+
+  /**
+   * Gets the operator.
+   *
+   * @return the operator
+   */
+  public List<ComponentInstance> getOperators() {
+    return DesignTools.getOperatorInstances(getDesign());
   }
 
   /**
@@ -314,7 +280,17 @@ public class PreesmScenario {
   public List<String> getOrderedOperatorIds() {
     final List<String> opIdList = new ArrayList<>(getOperatorIds());
     Collections.sort(opIdList, (o1, o2) -> o1.compareTo(o2));
+    return opIdList;
+  }
 
+  /**
+   * Gets the ordered operator.
+   *
+   * @return the ordered operator
+   */
+  public List<ComponentInstance> getOrderedOperators() {
+    final List<ComponentInstance> opIdList = new ArrayList<>(getOperators());
+    Collections.sort(opIdList, (o1, o2) -> o1.getInstanceName().compareTo(o2.getInstanceName()));
     return opIdList;
   }
 
@@ -323,31 +299,17 @@ public class PreesmScenario {
    *
    * @return the operator definition ids
    */
-  public Set<String> getOperatorDefinitionIds() {
-    if (this.operatorDefinitionIds == null) {
-      this.operatorDefinitionIds = new LinkedHashSet<>();
-    }
-    return this.operatorDefinitionIds;
+  public List<String> getOperatorDefinitionIds() {
+    return DesignTools.getOperatorComponentIds(getDesign());
   }
 
   /**
-   * Sets the operator ids.
+   * Gets the operator definition.
    *
-   * @param operatorIds
-   *          the new operator ids
+   * @return the operator definition
    */
-  public void setOperatorIds(final Set<String> operatorIds) {
-    this.operatorIds = operatorIds;
-  }
-
-  /**
-   * Sets the operator definition ids.
-   *
-   * @param operatorDefinitionIds
-   *          the new operator definition ids
-   */
-  public void setOperatorDefinitionIds(final Set<String> operatorDefinitionIds) {
-    this.operatorDefinitionIds = operatorDefinitionIds;
+  public List<Component> getOperatorDefinitions() {
+    return DesignTools.getOperatorComponents(getDesign());
   }
 
   /**
@@ -355,21 +317,17 @@ public class PreesmScenario {
    *
    * @return the com node ids
    */
-  public Set<String> getComNodeIds() {
-    if (this.comNodeIds == null) {
-      this.comNodeIds = new LinkedHashSet<>();
-    }
-    return this.comNodeIds;
+  public List<String> getComNodeIds() {
+    return DesignTools.getComNodeInstanceIds(getDesign());
   }
 
   /**
-   * Sets the com node ids.
+   * Gets the com node.
    *
-   * @param comNodeIds
-   *          the new com node ids
+   * @return the com node
    */
-  public void setComNodeIds(final Set<String> comNodeIds) {
-    this.comNodeIds = comNodeIds;
+  public List<ComponentInstance> getComNodes() {
+    return DesignTools.getComNodeInstances(getDesign());
   }
 
   /**
@@ -394,9 +352,9 @@ public class PreesmScenario {
   /**
    * From PiScenario.
    *
-   * @param algorithmChange
+   * @param algoPath
    *          the algorithm change
-   * @param architectureChange
+   * @param archiPath
    *          the architecture change
    * @throws InvalidModelException
    *           the invalid model exception
@@ -404,24 +362,15 @@ public class PreesmScenario {
    *           the core exception
    */
 
-  public void update(final boolean algorithmChange, final boolean architectureChange) throws CoreException {
+  public void update(final String algoPath, final String archiPath) throws CoreException {
     // If the architecture changes, operator ids, operator defintion ids and
     // com node ids are no more valid (they are extracted from the
     // architecture)
-    if (architectureChange && this.architectureURL.endsWith(".slam")) {
-      final Map<String, Object> extToFactoryMap = Resource.Factory.Registry.INSTANCE.getExtensionToFactoryMap();
-      Object instance = extToFactoryMap.get("slam");
-      if (instance == null) {
-        instance = new IPXACTResourceFactoryImpl();
-        extToFactoryMap.put("slam", instance);
-      }
-
-      if (!EPackage.Registry.INSTANCE.containsKey(SlamPackage.eNS_URI)) {
-        EPackage.Registry.INSTANCE.put(SlamPackage.eNS_URI, SlamPackage.eINSTANCE);
-      }
+    if (archiPath != null) {
 
       // Extract the root object from the resource.
-      final Design design = SlamParser.parseSlamDesign(this.architectureURL);
+      final Design design = SlamParser.parseSlamDesign(archiPath);
+      this.slamDesign = design;
 
       getOperatorIds().clear();
       getOperatorIds().addAll(DesignTools.getOperatorInstanceIds(design));
@@ -435,16 +384,14 @@ public class PreesmScenario {
     }
     // If the algorithm changes, parameters or variables are no more valid
     // (they are set in the algorithm)
-    if (algorithmChange) {
-      if (isPISDFScenario()) {
-        this.parameterValueManager.updateWith(PiParser.getPiGraphWithReconnection(this.algorithmURL));
-      } else if (isIBSDFScenario()) {
-        throw new PreesmFrameworkException("IBSDF is not supported anymore");
-      }
+    if (algoPath != null) {
+      final PiGraph newPiGraph = PiParser.getPiGraphWithReconnection(algoPath);
+      this.piGraph = newPiGraph;
+      this.parameterValueManager.updateWith(newPiGraph);
     }
     // If the algorithm or the architecture changes, timings and constraints
     // are no more valid (they depends on both algo and archi)
-    if (algorithmChange || architectureChange) {
+    if (algoPath != null || archiPath != null) {
       this.timingmanager.getTimings().clear();
       this.constraintgroupmanager.update();
       this.papifyconfiggroupmanager.update();

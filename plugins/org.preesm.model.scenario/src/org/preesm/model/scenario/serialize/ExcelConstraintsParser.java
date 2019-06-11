@@ -39,6 +39,7 @@ package org.preesm.model.scenario.serialize;
 
 import java.io.IOException;
 import java.util.LinkedHashSet;
+import java.util.List;
 import java.util.Set;
 import java.util.logging.Level;
 import jxl.Cell;
@@ -50,15 +51,14 @@ import org.eclipse.core.resources.IWorkspace;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.Path;
-import org.preesm.commons.exceptions.PreesmFrameworkException;
 import org.preesm.commons.exceptions.PreesmRuntimeException;
 import org.preesm.commons.files.WorkspaceUtils;
 import org.preesm.commons.logger.PreesmLogger;
 import org.preesm.model.pisdf.AbstractActor;
 import org.preesm.model.pisdf.Actor;
 import org.preesm.model.pisdf.PiGraph;
-import org.preesm.model.pisdf.serialize.PiParser;
 import org.preesm.model.scenario.PreesmScenario;
+import org.preesm.model.slam.ComponentInstance;
 
 /**
  * Importing constraints in a scenario from an excel file. The existing timings mean that the task can be mapped on the
@@ -92,7 +92,7 @@ public class ExcelConstraintsParser {
    * @throws CoreException
    *           the core exception
    */
-  public void parse(final String url, final Set<String> allOperatorIds) throws CoreException {
+  public void parse(final String url, final List<ComponentInstance> allOperatorIds) throws CoreException {
 
     final IWorkspace workspace = ResourcesPlugin.getWorkspace();
 
@@ -110,18 +110,14 @@ public class ExcelConstraintsParser {
 
       // Warnings are displayed once for each missing operator or vertex
       // in the excel sheet
-      final Set<String> missingVertices = new LinkedHashSet<>();
-      final Set<String> missingOperators = new LinkedHashSet<>();
+      final Set<AbstractActor> missingVertices = new LinkedHashSet<>();
+      final Set<ComponentInstance> missingOperators = new LinkedHashSet<>();
 
-      if (this.scenario.isIBSDFScenario()) {
-        throw new PreesmFrameworkException("IBSDF is not supported anymore");
-      } else if (this.scenario.isPISDFScenario()) {
-        final PiGraph currentPiGraph = PiParser.getPiGraphWithReconnection(this.scenario.getAlgorithmURL());
-        for (final AbstractActor vertex : currentPiGraph.getAllActors()) {
-          if (vertex instanceof Actor) {
-            for (final String operatorId : allOperatorIds) {
-              checkOpPiConstraint(w, operatorId, (Actor) vertex, missingVertices, missingOperators);
-            }
+      final PiGraph currentPiGraph = scenario.getAlgorithm();
+      for (final AbstractActor vertex : currentPiGraph.getAllActors()) {
+        if (vertex instanceof Actor) {
+          for (final ComponentInstance operatorId : allOperatorIds) {
+            checkOpPiConstraint(w, operatorId, (Actor) vertex, missingVertices, missingOperators);
           }
         }
       }
@@ -145,13 +141,13 @@ public class ExcelConstraintsParser {
    * @param missingOperators
    *          the missing operators
    */
-  private void checkOpPiConstraint(final Workbook w, final String operatorId, final Actor vertex,
-      final Set<String> missingVertices, final Set<String> missingOperators) {
+  private void checkOpPiConstraint(final Workbook w, final ComponentInstance operatorId, final Actor vertex,
+      final Set<AbstractActor> missingVertices, final Set<ComponentInstance> missingOperators) {
     final String vertexName = vertex.getName();
 
-    if (!operatorId.isEmpty() && !vertexName.isEmpty()) {
+    if (operatorId != null && !vertexName.isEmpty()) {
       final Cell vertexCell = w.getSheet(0).findCell(vertexName);
-      final Cell operatorCell = w.getSheet(0).findCell(operatorId);
+      final Cell operatorCell = w.getSheet(0).findCell(operatorId.getInstanceName());
 
       if ((vertexCell != null) && (operatorCell != null)) {
         final Cell timingCell = w.getSheet(0).getCell(operatorCell.getColumn(), vertexCell.getRow());
@@ -166,7 +162,7 @@ public class ExcelConstraintsParser {
           PreesmLogger.getLogger().log(Level.FINE, "Importing constraint: {" + operatorId + "," + vertex + ",no}");
         }
       } else {
-        if ((vertexCell == null) && !missingVertices.contains(vertexName)) {
+        if ((vertexCell == null) && !missingVertices.contains(vertex)) {
           if (vertex.getRefinement() != null) {
             PreesmLogger.getLogger().log(Level.WARNING,
                 "No line found in excel sheet for hierarchical vertex: " + vertexName);
@@ -174,7 +170,7 @@ public class ExcelConstraintsParser {
             final String message = "No line found in excel sheet for atomic vertex: " + vertexName;
             throw new PreesmRuntimeException(message);
           }
-          missingVertices.add(vertexName);
+          missingVertices.add(vertex);
         } else if ((operatorCell == null) && !missingOperators.contains(operatorId)) {
           final String message = "No column found in excel sheet for operator: " + operatorId;
           throw new PreesmRuntimeException(message);

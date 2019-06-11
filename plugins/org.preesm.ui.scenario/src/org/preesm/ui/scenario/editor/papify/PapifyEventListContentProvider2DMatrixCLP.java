@@ -40,23 +40,16 @@ package org.preesm.ui.scenario.editor.papify;
 import java.util.Map;
 import org.eclipse.jface.viewers.ColumnLabelProvider;
 import org.eclipse.swt.graphics.Image;
+import org.preesm.model.pisdf.AbstractActor;
 import org.preesm.model.scenario.PreesmScenario;
 import org.preesm.model.scenario.papi.PapifyConfigActor;
 import org.preesm.ui.scenario.editor.papify.PapifyEventListTreeElement.PAPIEventStatus;
 
-// TODO: Auto-generated Javadoc
 /**
  * Provides the elements contained in the papify editor.
  *
  * @author dmadronal
  */
-
-/**
- *
- * @author anmorvan
- *
- */
-
 class PapifyEventListContentProvider2DMatrixCLP extends ColumnLabelProvider {
 
   /** Currently edited scenario. */
@@ -76,7 +69,7 @@ class PapifyEventListContentProvider2DMatrixCLP extends ColumnLabelProvider {
     if (element instanceof PapifyEventListTreeElement) {
       final PapifyEventListTreeElement treeElement = (PapifyEventListTreeElement) element;
       String actorName = treeElement.label;
-      String actorPath = treeElement.actorPath;
+      AbstractActor actorPath = treeElement.actorPath;
       if (this.eventName.equals("First_column")) {
         return actorName;
       }
@@ -84,8 +77,8 @@ class PapifyEventListContentProvider2DMatrixCLP extends ColumnLabelProvider {
       final Map<String, PAPIEventStatus> statuses = treeElement.PAPIStatuses;
       if (!statuses.containsKey(this.eventName)) {
         statuses.put(this.eventName, PAPIEventStatus.NO);
-        if (this.scenario.getPapifyConfigManager().getCorePapifyConfigGroupActor(actorName) == null) {
-          this.scenario.getPapifyConfigManager().addPapifyConfigActorGroup(new PapifyConfigActor(actorName, actorPath));
+        if (this.scenario.getPapifyConfigManager().getCorePapifyConfigGroupActor(actorPath) == null) {
+          this.scenario.getPapifyConfigManager().addPapifyConfigActorGroup(new PapifyConfigActor(actorPath));
         }
       }
       return statuses.get(this.eventName).toString();

@@ -79,9 +79,9 @@ import org.eclipse.ui.forms.widgets.ScrolledForm;
 import org.eclipse.ui.forms.widgets.Section;
 import org.preesm.model.scenario.PreesmScenario;
 import org.preesm.model.scenario.types.DataType;
+import org.preesm.model.slam.ComponentInstance;
 import org.preesm.ui.scenario.editor.Messages;
 
-// TODO: Auto-generated Javadoc
 /**
  * This page contains parameters to influence the deployment simulator.
  *
@@ -121,8 +121,7 @@ public class SimulationPage extends FormPage implements IPropertyListener {
      */
     @Override
     public void widgetDefaultSelected(final SelectionEvent e) {
-      // TODO Auto-generated method stub
-
+      // no behavior by default
     }
 
     /*
@@ -136,10 +135,11 @@ public class SimulationPage extends FormPage implements IPropertyListener {
         final Combo combo = ((Combo) e.getSource());
         final String item = combo.getItem(combo.getSelectionIndex());
 
+        final ComponentInstance compInstance = scenario.getDesign().getComponentInstance(item);
         if (this.type.equals("operator")) {
-          SimulationPage.this.scenario.getSimulationManager().setMainOperatorName(item);
+          SimulationPage.this.scenario.getSimulationManager().setMainOperator(compInstance);
         } else if (this.type.equals("comNode")) {
-          SimulationPage.this.scenario.getSimulationManager().setMainComNodeName(item);
+          SimulationPage.this.scenario.getSimulationManager().setMainComNode(compInstance);
         }
       }
 
@@ -177,19 +177,7 @@ public class SimulationPage extends FormPage implements IPropertyListener {
    */
   @Override
   protected void createFormContent(final IManagedForm managedForm) {
-    /*
-     * FormToolkit toolkit = managedForm.getToolkit(); ScrolledForm form = managedForm.getForm(); form.setBackground(new
-     * Color(null, 100,100,10)); form.setExpandHorizontal(true); form.setExpandVertical(true);
-     * form.setText("Column Object");
-     *
-     * Composite composite = form.getBody();
-     *
-     * composite.computeSize(1000, 1000); FormLayout fl = new FormLayout(); fl. composite.setLayout(fl);
-     * form.setBounds(0, 0, 1000, 1000); Rectangle r = form.getClientArea(); form.reflow(true);
-     */
-
     final ScrolledForm form = managedForm.getForm();
-    // FormToolkit toolkit = managedForm.getToolkit();
     form.setText(Messages.getString("Simulation.title"));
     final GridLayout layout = new GridLayout(2, true);
     layout.verticalSpacing = 10;
@@ -242,12 +230,10 @@ public class SimulationPage extends FormPage implements IPropertyListener {
       }
     };
 
-    if (this.scenario.isPISDFScenario()) {
-      // Number of top-level execution section, added only for PiSDF algorithms
-      createIntegerSection(managedForm, Messages.getString("Overview.simulationTitle"),
-          Messages.getString("Overview.simulationDescription"), numberOfTopExecutionsListener,
-          String.valueOf(this.scenario.getSimulationManager().getNumberOfTopExecutions()));
-    }
+    // Number of top-level execution section, added only for PiSDF algorithms
+    createIntegerSection(managedForm, Messages.getString("Overview.simulationTitle"),
+        Messages.getString("Overview.simulationDescription"), numberOfTopExecutionsListener,
+        String.valueOf(this.scenario.getSimulationManager().getNumberOfTopExecutions()));
 
     // Data type section
     createDataTypesSection(managedForm, Messages.getString("Simulation.DataTypes.title"),
@@ -368,6 +354,11 @@ public class SimulationPage extends FormPage implements IPropertyListener {
       final String type) {
     final Composite combocps = toolkit.createComposite(parent);
     combocps.setLayout(new FillLayout());
+
+    final GridData componentNameGridData = new GridData(GridData.HORIZONTAL_ALIGN_FILL);
+    componentNameGridData.widthHint = 250;
+    combocps.setLayoutData(componentNameGridData);
+
     combocps.setVisible(true);
     final Combo combo = new Combo(combocps, SWT.DROP_DOWN | SWT.READ_ONLY);
     combo.setToolTipText(tooltip);
@@ -377,13 +368,13 @@ public class SimulationPage extends FormPage implements IPropertyListener {
         combo.add(opId);
       }
 
-      combo.select(combo.indexOf(this.scenario.getSimulationManager().getMainOperatorName()));
+      combo.select(combo.indexOf(this.scenario.getSimulationManager().getMainOperator().getInstanceName()));
     } else if (type.equals("comNode")) {
       for (final String nodeId : this.scenario.getComNodeIds()) {
         combo.add(nodeId);
       }
 
-      combo.select(combo.indexOf(this.scenario.getSimulationManager().getMainComNodeName()));
+      combo.select(combo.indexOf(this.scenario.getSimulationManager().getMainComNode().getInstanceName()));
     }
 
     return combo;
@@ -437,7 +428,6 @@ public class SimulationPage extends FormPage implements IPropertyListener {
     final Table table = tableViewer.getTable();
     table.setLayout(new GridLayout());
     table.setLayoutData(new GridData(GridData.VERTICAL_ALIGN_BEGINNING));
-    // table.setSize(100, 100);
     table.setHeaderVisible(true);
     table.setLinesVisible(true);
 
@@ -591,10 +581,12 @@ public class SimulationPage extends FormPage implements IPropertyListener {
 
       @Override
       public void inputChanged(final Viewer viewer, final Object oldInput, final Object newInput) {
+        // no behavior by default
       }
 
       @Override
       public void dispose() {
+        // no behavior by default
       }
 
       @Override
@@ -621,7 +613,7 @@ public class SimulationPage extends FormPage implements IPropertyListener {
         if (parentElement instanceof List<?>) {
           return ((List<String>) parentElement).toArray();
         }
-        return null;
+        return new Object[0];
       }
     };
 
@@ -629,7 +621,17 @@ public class SimulationPage extends FormPage implements IPropertyListener {
 
     // The check state listener modifies the check status of elements
     checkStateListener.setTreeViewer(treeviewer, listener);
-    treeviewer.setLabelProvider(new LabelProvider());
+    treeviewer.setLabelProvider(new LabelProvider() {
+      @Override
+      public String getText(final Object element) {
+        if (element instanceof ComponentInstance) {
+          final ComponentInstance ci = (ComponentInstance) element;
+          return ci.getInstanceName() + " (" + ci.getComponent().getVlnv().getName() + ")";
+        } else {
+          return super.getText(element);
+        }
+      }
+    });
     treeviewer.setAutoExpandLevel(AbstractTreeViewer.ALL_LEVELS);
 
     treeviewer.addCheckStateListener(checkStateListener);
@@ -640,7 +642,7 @@ public class SimulationPage extends FormPage implements IPropertyListener {
     treeviewer.getTree().setLayoutData(gd);
 
     treeviewer.setUseHashlookup(true);
-    treeviewer.setInput(this.scenario.getOrderedOperatorIds());
+    treeviewer.setInput(this.scenario.getOrderedOperators());
     toolkit.paintBordersFor(container);
 
     // Tree is refreshed in case of algorithm modifications

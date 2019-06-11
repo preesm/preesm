@@ -312,7 +312,7 @@ public class HSDFBuildLoops {
     }
 
     // now we can build up vertex
-    final SDFVertex vertex = new SDFVertex();
+    final SDFVertex vertex = new SDFVertex(null);
     vertex.setName(left.getName() + "_" + right.getName());
     vertex.setNbRepeat(pgcm);
     vertex.setSinks(sinksVertex);

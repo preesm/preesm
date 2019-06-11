@@ -37,6 +37,10 @@ package org.preesm.model.scenario.papi;
 
 import java.util.LinkedHashSet;
 import java.util.Set;
+import org.preesm.commons.model.PreesmCopyTracker;
+import org.preesm.model.pisdf.AbstractActor;
+import org.preesm.model.scenario.PreesmScenario;
+import org.preesm.model.slam.component.Component;
 
 /**
  * container and manager of PapifyConfig groups. It can load and store PapifyConfig groups
@@ -55,10 +59,13 @@ public class PapifyConfigManager {
   /** Path to a file containing constraints. */
   private String xmlFileURL = "";
 
+  private final PreesmScenario preesmScenario;
+
   /**
    * Instantiates a new PapifyConfig manager.
    */
-  public PapifyConfigManager() {
+  public PapifyConfigManager(final PreesmScenario preesmScenario) {
+    this.preesmScenario = preesmScenario;
     this.papifyConfigGroupsActors = new LinkedHashSet<>();
     this.papifyConfigGroupsPEs = new LinkedHashSet<>();
   }
@@ -117,7 +124,7 @@ public class PapifyConfigManager {
    * @param component
    *          the PAPI component
    */
-  public void addComponent(final String opId, final PapiComponent component) {
+  public void addComponent(final Component opId, final PapiComponent component) {
 
     final PapifyConfigPE pgSet = getCorePapifyConfigGroupPE(opId);
 
@@ -129,58 +136,6 @@ public class PapifyConfigManager {
       pgSet.addPAPIComponent(component);
     }
 
-  }
-
-  /**
-   * Removes the component from the PapifyConfig for the core.
-   *
-   * @param opId
-   *          the op id
-   * @param component
-   *          the PAPI component
-   */
-  public void removeComponent(final String opId, final PapiComponent component) {
-    final PapifyConfigPE pgSet = getCorePapifyConfigGroupPE(opId);
-
-    if (pgSet != null) {
-      pgSet.removePAPIComponent(component);
-    }
-  }
-
-  /**
-   * Adds an event to the PapifyConfig for the core.
-   *
-   * @param opId
-   *          the op id
-   * @param event
-   *          the PAPI event
-   */
-  public void addEvent(final String opId, final String component, final PapiEvent event) {
-
-    final PapifyConfigActor pgSet = getCorePapifyConfigGroupActor(opId);
-
-    /*
-     * if (pgSet == null) { final PapifyConfigActor pg = new PapifyConfigActor(opId); pg.addPAPIEvent(component, event);
-     * this.papifyConfigGroupsActors.add(pg); } else {
-     */
-    pgSet.addPAPIEvent(component, event);
-    // }
-  }
-
-  /**
-   * Removes an event from the PapifyConfig for the actor.
-   *
-   * @param opId
-   *          the op id
-   * @param event
-   *          the PAPI event
-   */
-  public void removeEvent(final String opId, final String component, final PapiEvent event) {
-    final PapifyConfigActor pgSet = getCorePapifyConfigGroupActor(opId);
-
-    if (pgSet != null) {
-      pgSet.removePAPIEvent(component, event);
-    }
   }
 
   /**
@@ -206,15 +161,15 @@ public class PapifyConfigManager {
   /**
    * Gets the op PapifyConfigActor group.
    *
-   * @param opPath
+   * @param actorPath
    *          the op path
    * @return the op PapifyConfigActor groups
    */
-  public PapifyConfigActor getCorePapifyConfigGroupActor(final String opPath) {
+  public PapifyConfigActor getCorePapifyConfigGroupActor(final AbstractActor actorPath) {
     PapifyConfigActor papifyConfigGroup = null;
 
     for (final PapifyConfigActor pg : this.papifyConfigGroupsActors) {
-      if (pg.isActorPath(opPath)) {
+      if (pg.isActorPath(PreesmCopyTracker.getOriginalSource(actorPath))) {
         papifyConfigGroup = pg;
       }
     }
@@ -229,7 +184,7 @@ public class PapifyConfigManager {
    *          the op id
    * @return the op PapifyConfigActor groups
    */
-  public PapifyConfigPE getCorePapifyConfigGroupPE(final String opId) {
+  public PapifyConfigPE getCorePapifyConfigGroupPE(final Component opId) {
     PapifyConfigPE papifyConfigGroup = null;
 
     for (final PapifyConfigPE pg : this.papifyConfigGroupsPEs) {

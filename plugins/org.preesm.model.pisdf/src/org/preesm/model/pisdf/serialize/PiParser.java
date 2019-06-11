@@ -132,18 +132,19 @@ public class PiParser {
 
     final URI uri = URI.createPlatformResourceURI(algorithmURL, true);
     if ((uri.fileExtension() == null) || !uri.fileExtension().contentEquals("pi")) {
-      return null;
+      final String message = "The architecture file \"" + uri + "\" specified by the scenario has improper extension.";
+      throw new PreesmRuntimeException(message);
     }
+
     final Resource ressource;
     try {
       ressource = resourceSet.getResource(uri, true);
       pigraph = (PiGraph) (ressource.getContents().get(0));
-
+      pigraph.setUrl(algorithmURL);
     } catch (final WrappedException e) {
-      final String message = "The algorithm file \"" + uri + "\" specified by the scenario does not exist any more.";
-      PreesmLogger.getLogger().log(Level.WARNING, message);
+      final String message = "The algorithm file \"" + uri + "\" specified by the scenario does not exist.";
+      throw new PreesmRuntimeException(message);
     }
-
     return pigraph;
   }
 
@@ -152,11 +153,9 @@ public class PiParser {
    */
   public static PiGraph getPiGraphWithReconnection(final String algorithmURL) {
     final PiGraph graph = getPiGraph(algorithmURL);
-    if (graph != null) {
-      final SubgraphReconnector connector = new SubgraphReconnector();
-      connector.connectSubgraphs(graph);
-      PiGraphConsistenceChecker.check(graph, false);
-    }
+    final SubgraphReconnector connector = new SubgraphReconnector();
+    connector.connectSubgraphs(graph);
+    PiGraphConsistenceChecker.check(graph, false);
     return graph;
   }
 

@@ -36,15 +36,14 @@
  */
 package org.preesm.model.scenario;
 
-import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.Set;
 import org.preesm.model.scenario.types.DataType;
+import org.preesm.model.slam.ComponentInstance;
 import org.preesm.model.slam.route.Route;
 
-// TODO: Auto-generated Javadoc
 /**
  * Handles simulation parameters.
  *
@@ -53,10 +52,10 @@ import org.preesm.model.slam.route.Route;
 public class SimulationManager {
 
   /** Names of the main operator and com node. */
-  private String mainComNodeName = "";
+  private ComponentInstance mainComNode;
 
   /** The main operator name. */
-  private String mainOperatorName = "";
+  private ComponentInstance mainOperator;
 
   /**
    * Average transfer size sizes in base unit (usually byte). This size is used while calculating the routing table. The
@@ -65,22 +64,25 @@ public class SimulationManager {
   private long averageDataSize = Route.averageTransfer;
 
   /** Names of the data types with their size. */
-  private final Map<String, DataType> dataTypes;
+  private final Map<String /* type name */, DataType> dataTypes;
 
   /** Operators able to execute special vertices. */
-  private final Set<String> specialVertexOperatorIds;
+  private final Set<ComponentInstance> specialVertexOperators;
 
   /** Number of executions of the top graph when simulating PiGraphs. */
   private int numberOfTopExecutions = 1;
 
+  private final PreesmScenario preesmScenario;
+
   /**
    * Instantiates a new simulation manager.
    */
-  public SimulationManager() {
+  public SimulationManager(final PreesmScenario preesmScenario) {
     super();
+    this.preesmScenario = preesmScenario;
 
     this.dataTypes = new LinkedHashMap<>();
-    this.specialVertexOperatorIds = new LinkedHashSet<>();
+    this.specialVertexOperators = new LinkedHashSet<>();
   }
 
   /**
@@ -88,18 +90,18 @@ public class SimulationManager {
    *
    * @return the main com node name
    */
-  public String getMainComNodeName() {
-    return this.mainComNodeName;
+  public ComponentInstance getMainComNode() {
+    return this.mainComNode;
   }
 
   /**
    * Sets the main com node name.
    *
-   * @param mainComNodeName
+   * @param mainComNode
    *          the new main com node name
    */
-  public void setMainComNodeName(final String mainComNodeName) {
-    this.mainComNodeName = mainComNodeName;
+  public void setMainComNode(final ComponentInstance mainComNode) {
+    this.mainComNode = mainComNode;
   }
 
   /**
@@ -107,18 +109,18 @@ public class SimulationManager {
    *
    * @return the main operator name
    */
-  public String getMainOperatorName() {
-    return this.mainOperatorName;
+  public ComponentInstance getMainOperator() {
+    return this.mainOperator;
   }
 
   /**
    * Sets the main operator name.
    *
-   * @param mainOperatorName
+   * @param mainOperator
    *          the new main operator name
    */
-  public void setMainOperatorName(final String mainOperatorName) {
-    this.mainOperatorName = mainOperatorName;
+  public void setMainOperator(final ComponentInstance mainOperator) {
+    this.mainOperator = mainOperator;
   }
 
   /**
@@ -150,7 +152,7 @@ public class SimulationManager {
    */
   public long getDataTypeSizeOrDefault(final String name) {
     if (this.dataTypes.get(name) == null) {
-      return DataType.defaultDataTypeSize;
+      return DataType.DEFAUTL_DATA_TYPE_SIZE;
     } else {
       return this.dataTypes.get(name).getSize();
     }
@@ -200,8 +202,8 @@ public class SimulationManager {
    *
    * @return the special vertex operator ids
    */
-  public Set<String> getSpecialVertexOperatorIds() {
-    return this.specialVertexOperatorIds;
+  public Set<ComponentInstance> getSpecialVertexOperators() {
+    return this.specialVertexOperators;
   }
 
   /**
@@ -210,9 +212,9 @@ public class SimulationManager {
    * @param opId
    *          the op id
    */
-  public void addSpecialVertexOperatorId(final String opId) {
-    if (!hasSpecialVertexOperatorId(opId)) {
-      this.specialVertexOperatorIds.add(opId);
+  public void addSpecialVertexOperator(final ComponentInstance opId) {
+    if (!hasSpecialVertexOperator(opId)) {
+      this.specialVertexOperators.add(opId);
     }
   }
 
@@ -222,15 +224,8 @@ public class SimulationManager {
    * @param id
    *          the id
    */
-  public void removeSpecialVertexOperatorId(final String id) {
-    final Iterator<String> it = this.specialVertexOperatorIds.iterator();
-    while (it.hasNext()) {
-      final String cmpId = it.next();
-      if ((cmpId.equals(id))) {
-        it.remove();
-
-      }
-    }
+  public void removeSpecialVertexOperator(final ComponentInstance id) {
+    this.specialVertexOperators.remove(id);
   }
 
   /**
@@ -240,13 +235,8 @@ public class SimulationManager {
    *          the id
    * @return true, if successful
    */
-  public boolean hasSpecialVertexOperatorId(final String id) {
-    for (final String currentId : this.specialVertexOperatorIds) {
-      if ((currentId.equals(id))) {
-        return true;
-      }
-    }
-    return false;
+  public boolean hasSpecialVertexOperator(final ComponentInstance id) {
+    return this.specialVertexOperators.contains(id);
   }
 
   /**

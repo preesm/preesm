@@ -40,6 +40,7 @@ import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import org.eclipse.core.runtime.IProgressMonitor;
+import org.preesm.algorithm.mapper.model.MapperDAG;
 import org.preesm.algorithm.model.dag.DirectedAcyclicGraph;
 import org.preesm.commons.doc.annotations.Port;
 import org.preesm.commons.doc.annotations.PreesmTask;
@@ -80,7 +81,7 @@ public class CodegenPapifyEngineTask extends AbstractTaskImplementation {
 
     // Retrieve inputs
     final PreesmScenario scenario = (PreesmScenario) inputs.get(AbstractWorkflowNodeImplementation.KEY_SCENARIO);
-    final DirectedAcyclicGraph algo = (DirectedAcyclicGraph) inputs.get(AbstractWorkflowNodeImplementation.KEY_SDF_DAG);
+    final MapperDAG algo = (MapperDAG) inputs.get(AbstractWorkflowNodeImplementation.KEY_SDF_DAG);
 
     // Generate intermediate model
     final PapifyEngine engine = new PapifyEngine(algo, scenario);

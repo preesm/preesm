@@ -48,6 +48,7 @@ import org.preesm.algorithm.mapper.model.MapperDAGVertex;
 import org.preesm.commons.CloneableProperty;
 import org.preesm.model.scenario.Timing;
 import org.preesm.model.slam.ComponentInstance;
+import org.preesm.model.slam.component.Component;
 import org.preesm.model.slam.utils.DesignTools;
 
 /**
@@ -206,7 +207,7 @@ public class VertexInit implements CloneableProperty<VertexInit> {
 
       // Non special vertex timings are retrieved from scenario
       // Special vertex timings were computed from scenario
-      final Timing returntiming = getTiming(operator.getComponent().getVlnv().getName());
+      final Timing returntiming = getTiming(operator.getComponent());
 
       if (!SpecialVertexManager.isSpecial(this.parentVertex)) {
 
@@ -243,7 +244,7 @@ public class VertexInit implements CloneableProperty<VertexInit> {
    *          the operatordef id
    * @return the timing
    */
-  private Timing getTiming(final String operatordefId) {
+  private Timing getTiming(final Component operatordefId) {
 
     Timing returntiming = Timing.UNAVAILABLE;
 

@@ -48,8 +48,6 @@ import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.ControlAdapter;
 import org.eclipse.swt.events.ControlEvent;
-import org.eclipse.swt.events.FocusEvent;
-import org.eclipse.swt.events.FocusListener;
 import org.eclipse.swt.events.KeyEvent;
 import org.eclipse.swt.events.KeyListener;
 import org.eclipse.swt.events.SelectionAdapter;
@@ -84,7 +82,6 @@ import org.preesm.model.scenario.serialize.PreesmAlgorithmListContentProvider;
 import org.preesm.ui.scenario.editor.FileSelectionAdapter;
 import org.preesm.ui.scenario.editor.Messages;
 
-// TODO: Auto-generated Javadoc
 /**
  * Timing editor within the implementation editor.
  *
@@ -100,10 +97,8 @@ public class TimingsPage extends FormPage implements IPropertyListener {
   TableViewer tableViewer = null;
 
   /** The pisdf column names. */
-  private final String[] PISDF_COLUMN_NAMES = { "Actors", "Parsing", "Evaluation", "Input Parameters", "Expression" };
-
-  /** The ibsdf column names. */
-  private final String[] IBSDF_COLUMN_NAMES = { "Actors", "Expression" };
+  private static final String[] PISDF_COLUMN_NAMES = { "Actors", "Parsing", "Evaluation", "Input Parameters",
+      "Expression" };
 
   /**
    * Instantiates a new timings page.
@@ -201,20 +196,19 @@ public class TimingsPage extends FormPage implements IPropertyListener {
     final Composite tablecps = toolkit.createComposite(parent);
     tablecps.setVisible(true);
 
-    final TableViewer tableViewer = new TableViewer(tablecps,
+    final TableViewer newTableViewer = new TableViewer(tablecps,
         SWT.BORDER | SWT.H_SCROLL | SWT.V_SCROLL | SWT.MULTI | SWT.FULL_SELECTION);
 
-    final Table table = tableViewer.getTable();
+    final Table table = newTableViewer.getTable();
     table.setLayout(new GridLayout());
     table.setLayoutData(new GridData(GridData.VERTICAL_ALIGN_BEGINNING));
-    // table.setSize(100, 100);
     table.setHeaderVisible(true);
     table.setLinesVisible(true);
 
-    tableViewer.setContentProvider(new MemCopySpeedContentProvider());
+    newTableViewer.setContentProvider(new MemCopySpeedContentProvider());
 
-    final MemCopySpeedLabelProvider labelProvider = new MemCopySpeedLabelProvider(this.scenario, tableViewer, this);
-    tableViewer.setLabelProvider(labelProvider);
+    final MemCopySpeedLabelProvider labelProvider = new MemCopySpeedLabelProvider(this.scenario, newTableViewer, this);
+    newTableViewer.setLabelProvider(labelProvider);
 
     // Create columns
     final TableColumn column1 = new TableColumn(table, SWT.NONE, 0);
@@ -226,7 +220,7 @@ public class TimingsPage extends FormPage implements IPropertyListener {
     final TableColumn column3 = new TableColumn(table, SWT.NONE, 2);
     column3.setText(Messages.getString("Timings.MemcopySpeeds.timePerUnitColumn"));
 
-    tableViewer.addDoubleClickListener(e -> {
+    newTableViewer.addDoubleClickListener(e -> {
       labelProvider.handleDoubleClick((IStructuredSelection) e.getSelection());
       // Force the "file has changed" property of scenario.
       // Timing changes will have no effects if the scenario
@@ -264,7 +258,7 @@ public class TimingsPage extends FormPage implements IPropertyListener {
       }
     });
 
-    tableViewer.setInput(this.scenario);
+    newTableViewer.setInput(this.scenario);
     final GridData gd = new GridData(GridData.FILL_HORIZONTAL | GridData.VERTICAL_ALIGN_BEGINNING);
     gd.heightHint = 400;
     gd.widthHint = 250;
@@ -305,22 +299,16 @@ public class TimingsPage extends FormPage implements IPropertyListener {
   private Combo addCoreSelector(final Composite parent, final FormToolkit toolkit) {
     final Composite combocps = toolkit.createComposite(parent);
     combocps.setLayout(new FillLayout());
+
+    final GridData componentNameGridData = new GridData();
+    componentNameGridData.widthHint = 250;
+    combocps.setLayoutData(componentNameGridData);
+
     combocps.setVisible(true);
     final Combo combo = new Combo(combocps, SWT.DROP_DOWN | SWT.READ_ONLY);
     combo.setToolTipText(Messages.getString("Constraints.coreSelectionTooltip"));
     comboDataInit(combo);
-    combo.addFocusListener(new FocusListener() {
-
-      @Override
-      public void focusGained(final FocusEvent e) {
-        comboDataInit((Combo) e.getSource());
-      }
-
-      @Override
-      public void focusLost(final FocusEvent e) {
-      }
-
-    });
+    combo.select(0);
     return combo;
   }
 
@@ -369,18 +357,12 @@ public class TimingsPage extends FormPage implements IPropertyListener {
     coreCombo.addSelectionListener(labelProvider);
 
     // Create columns
-    String[] COLUMN_NAMES = {};
-    if (this.scenario.isPISDFScenario()) {
-      COLUMN_NAMES = this.PISDF_COLUMN_NAMES;
-    }
-    if (this.scenario.isIBSDFScenario()) {
-      COLUMN_NAMES = this.IBSDF_COLUMN_NAMES;
-    }
+    final String[] columnNames = PISDF_COLUMN_NAMES;
 
     final List<TableColumn> columns = new ArrayList<>();
-    for (int i = 0; i < COLUMN_NAMES.length; i++) {
+    for (int i = 0; i < columnNames.length; i++) {
       final TableColumn column = new TableColumn(table, SWT.NONE, i);
-      column.setText(COLUMN_NAMES[i]);
+      column.setText(columnNames[i]);
       columns.add(column);
     }
 
@@ -500,7 +482,7 @@ public class TimingsPage extends FormPage implements IPropertyListener {
 
       @Override
       public void keyReleased(final KeyEvent e) {
-
+        // no behavior by default
       }
     });
 
@@ -525,6 +507,7 @@ public class TimingsPage extends FormPage implements IPropertyListener {
 
       @Override
       public void widgetDefaultSelected(final SelectionEvent arg0) {
+        // no behavior by default
       }
     });
 

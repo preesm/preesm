@@ -41,6 +41,8 @@ package org.preesm.model.scenario;
 import java.util.Iterator;
 import java.util.LinkedHashSet;
 import java.util.Set;
+import org.preesm.model.pisdf.AbstractActor;
+import org.preesm.model.slam.ComponentInstance;
 
 /**
  * A ConstraintGroup associates a set of graph definitions and a set of processing units on which they can be matched.
@@ -50,15 +52,15 @@ import java.util.Set;
 public class ConstraintGroup {
 
   /** The set of processing units available for the constraint group. */
-  private final String operatorId;
+  private final ComponentInstance operatorId;
 
   /** The set of graphs belonging to the constraint group. */
-  private final Set<String> actorsPaths;
+  private final Set<AbstractActor> actorsPaths;
 
   /**
    * Instantiates a new constraint group.
    */
-  public ConstraintGroup(final String opId) {
+  public ConstraintGroup(final ComponentInstance opId) {
     this.operatorId = opId;
     this.actorsPaths = new LinkedHashSet<>();
 
@@ -71,7 +73,7 @@ public class ConstraintGroup {
    * @param vertexId
    *          the vertex id
    */
-  public void addActorPath(final String vertexId) {
+  public void addActorPath(final AbstractActor vertexId) {
     if (!hasVertexPath(vertexId)) {
       this.actorsPaths.add(vertexId);
 
@@ -84,8 +86,8 @@ public class ConstraintGroup {
    * @param vertexIdSet
    *          the vertex id set
    */
-  public void addVertexPaths(final Set<String> vertexIdSet) {
-    for (final String vertexId : vertexIdSet) {
+  public void addVertexPaths(final Set<AbstractActor> vertexIdSet) {
+    for (final AbstractActor vertexId : vertexIdSet) {
       addActorPath(vertexId);
     }
   }
@@ -96,8 +98,8 @@ public class ConstraintGroup {
    * @param vertexIdSet
    *          the vertex id set
    */
-  public void removeVertexPaths(final Set<String> vertexIdSet) {
-    for (final String vertexId : vertexIdSet) {
+  public void removeVertexPaths(final Set<AbstractActor> vertexIdSet) {
+    for (final AbstractActor vertexId : vertexIdSet) {
       removeVertexPath(vertexId);
     }
   }
@@ -107,7 +109,7 @@ public class ConstraintGroup {
    *
    * @return the operator ids
    */
-  public String getOperatorId() {
+  public ComponentInstance getOperatorId() {
     return this.operatorId;
   }
 
@@ -116,7 +118,7 @@ public class ConstraintGroup {
    *
    * @return the vertex paths
    */
-  public Set<String> getVertexPaths() {
+  public Set<AbstractActor> getVertexPaths() {
     return new LinkedHashSet<>(this.actorsPaths);
   }
 
@@ -127,7 +129,7 @@ public class ConstraintGroup {
    *          the operator id
    * @return true, if successful
    */
-  public boolean hasOperatorId(final String operatorId) {
+  public boolean hasOperatorId(final ComponentInstance operatorId) {
     return this.getOperatorId().equals(operatorId);
   }
 
@@ -138,8 +140,8 @@ public class ConstraintGroup {
    *          the vertex info
    * @return true, if successful
    */
-  public boolean hasVertexPath(final String vertexInfo) {
-    for (final String vId : this.actorsPaths) {
+  public boolean hasVertexPath(final AbstractActor vertexInfo) {
+    for (final AbstractActor vId : this.actorsPaths) {
       if (vId.equals(vertexInfo)) {
         return true;
       }
@@ -153,10 +155,10 @@ public class ConstraintGroup {
    * @param sdfVertexInfo
    *          the sdf vertex info
    */
-  public void removeVertexPath(final String sdfVertexInfo) {
-    final Iterator<String> it = this.actorsPaths.iterator();
+  public void removeVertexPath(final AbstractActor sdfVertexInfo) {
+    final Iterator<AbstractActor> it = this.actorsPaths.iterator();
     while (it.hasNext()) {
-      final String v = it.next();
+      final AbstractActor v = it.next();
       if ((v.equals(sdfVertexInfo))) {
         it.remove();
       }

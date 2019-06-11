@@ -51,8 +51,8 @@ public class DAGEndVertex extends DAGVertex {
   /**
    * Creates a new DAGInitVertex.
    */
-  public DAGEndVertex() {
-    super();
+  public DAGEndVertex(org.preesm.model.pisdf.AbstractVertex origVertex) {
+    super(origVertex);
     setKind(DAGEndVertex.DAG_END_VERTEX);
   }
 

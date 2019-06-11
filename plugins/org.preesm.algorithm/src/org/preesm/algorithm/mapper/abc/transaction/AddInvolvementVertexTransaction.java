@@ -135,7 +135,7 @@ public class AddInvolvementVertexTransaction extends Transaction {
     final String ivertexID = "__involvement (" + currentSource.getName() + "," + currentTarget.getName() + ")";
 
     if (this.involvementTime > 0) {
-      this.iVertex = new InvolvementVertex(ivertexID, this.implementation);
+      this.iVertex = new InvolvementVertex(ivertexID, this.implementation, null);
       this.implementation.getTimings().dedicate(this.iVertex);
       this.implementation.getMappings().dedicate(this.iVertex);
 

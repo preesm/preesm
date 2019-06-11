@@ -61,7 +61,6 @@ import org.preesm.ui.scenario.editor.codegen.CodegenPage;
 import org.preesm.ui.scenario.editor.constraints.ConstraintsPage;
 import org.preesm.ui.scenario.editor.papify.PapifyPage;
 import org.preesm.ui.scenario.editor.parametervalues.PiParametersPage;
-import org.preesm.ui.scenario.editor.relativeconstraints.RelativeConstraintsPage;
 import org.preesm.ui.scenario.editor.simulation.SimulationPage;
 import org.preesm.ui.scenario.editor.timings.TimingsPage;
 import org.preesm.ui.utils.ErrorWithExceptionDialog;
@@ -114,7 +113,7 @@ public class ScenarioEditor extends SharedHeaderFormEditor implements IPropertyL
     }
 
     if (this.scenarioFile != null) {
-      this.scenario = new PreesmScenario();
+      this.scenario = null;
       final ScenarioParser parser = new ScenarioParser();
       try {
         this.scenario = parser.parseXmlFile(this.scenarioFile);
@@ -135,9 +134,6 @@ public class ScenarioEditor extends SharedHeaderFormEditor implements IPropertyL
     final IFormPage constraintsPage = new ConstraintsPage(this.scenario, this, "Constraints", "Constraints");
     constraintsPage.addPropertyListener(this);
 
-    final IFormPage relativeConstraintsPage = new RelativeConstraintsPage(this.scenario, this, "RelativeConstraints",
-        "Relative Constraints");
-    relativeConstraintsPage.addPropertyListener(this);
     final IFormPage timingsPage = new TimingsPage(this.scenario, this, "Timings", "Timings");
     timingsPage.addPropertyListener(this);
     final SimulationPage simulationPage = new SimulationPage(this.scenario, this, "Simulation", "Simulation");
@@ -153,7 +149,6 @@ public class ScenarioEditor extends SharedHeaderFormEditor implements IPropertyL
     try {
       addPage(overviewPage);
       addPage(constraintsPage);
-      addPage(relativeConstraintsPage);
       addPage(timingsPage);
       addPage(simulationPage);
       addPage(codegenPage);

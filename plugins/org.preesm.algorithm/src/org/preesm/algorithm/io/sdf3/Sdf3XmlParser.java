@@ -168,7 +168,7 @@ public class Sdf3XmlParser {
    *          the parsed {@link SDFGraph}
    */
   private void parseActor(final Element actorElt, final SDFGraph graph) {
-    final SDFVertex actor = new SDFVertex(graph);
+    final SDFVertex actor = new SDFVertex(graph, null);
     final String name = actorElt.getAttribute("name");
     if (name.isEmpty()) {
       throw new PreesmRuntimeException("Unnamed actor was found.");
@@ -368,10 +368,10 @@ public class Sdf3XmlParser {
     final String direction = portElt.getAttribute("type");
     switch (direction) {
       case "in":
-        port = new SDFSourceInterfaceVertex();
+        port = new SDFSourceInterfaceVertex(null);
         break;
       case "out":
-        port = new SDFSinkInterfaceVertex();
+        port = new SDFSinkInterfaceVertex(null);
         break;
       default:
         throw new PreesmRuntimeException("Unknown port direction: " + direction);

@@ -71,14 +71,8 @@ public class ParameterValue {
   /** Parameter for which we keep value(s). */
   private Parameter parameter;
 
-  /** The name of the parameter. */
-  private final String name;
-
   /** The parameter type. */
   private final ParameterType type;
-
-  /** The corresponding parent vertex. */
-  private final String parentVertex;
 
   /** Type specific attributes. */
   /* INDEPENDENT */
@@ -131,16 +125,12 @@ public class ParameterValue {
    *          the parameter
    * @param type
    *          the type
-   * @param parent
-   *          the parent
    */
-  public ParameterValue(final Parameter parameter, final ParameterType type, final String parent) {
+  public ParameterValue(final Parameter parameter, final ParameterType type) {
     setParameter(parameter);
-    this.name = parameter.getName();
     this.type = type;
     this.values = new LinkedHashSet<>();
     this.inputParameters = new LinkedHashSet<>();
-    this.parentVertex = parent;
   }
 
   /**
@@ -149,7 +139,7 @@ public class ParameterValue {
    * @return the name
    */
   public String getName() {
-    return this.name;
+    return parameter.getName();
   }
 
   /**
@@ -159,15 +149,6 @@ public class ParameterValue {
    */
   public ParameterType getType() {
     return this.type;
-  }
-
-  /**
-   * Gets the parent vertex.
-   *
-   * @return the parent
-   */
-  public String getParentVertex() {
-    return this.parentVertex;
   }
 
   /**

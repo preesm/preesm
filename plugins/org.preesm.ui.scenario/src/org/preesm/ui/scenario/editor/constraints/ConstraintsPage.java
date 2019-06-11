@@ -238,7 +238,6 @@ public class ConstraintsPage extends FormPage implements IPropertyListener {
     if ((source instanceof ConstraintsCheckStateListener) && (propId == IEditorPart.PROP_DIRTY)) {
       firePropertyChange(IEditorPart.PROP_DIRTY);
     }
-
   }
 
   /**

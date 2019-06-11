@@ -51,7 +51,7 @@ public class PropertiesTest {
    */
   @Test
   public void testSetProp() {
-    final SDFAbstractVertex toto = new SDFAbstractVertex() {
+    final SDFAbstractVertex toto = new SDFAbstractVertex(null) {
 
       @Override
       public SDFAbstractVertex copy() {

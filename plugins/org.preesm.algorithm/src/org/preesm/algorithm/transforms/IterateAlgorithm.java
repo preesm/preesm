@@ -48,7 +48,6 @@ import org.preesm.commons.doc.annotations.Port;
 import org.preesm.commons.doc.annotations.PreesmTask;
 import org.preesm.commons.doc.annotations.Value;
 import org.preesm.model.scenario.PreesmScenario;
-import org.preesm.model.scenario.RelativeConstraintManager;
 import org.preesm.workflow.elements.Workflow;
 import org.preesm.workflow.implement.AbstractTaskImplementation;
 
@@ -112,12 +111,12 @@ public class IterateAlgorithm extends AbstractTaskImplementation {
           newEdge.setCons(new LongEdgePropertyType(1));
 
           // Create a new source stateout port
-          final SDFSourceInterfaceVertex statein = new SDFSourceInterfaceVertex();
+          final SDFSourceInterfaceVertex statein = new SDFSourceInterfaceVertex(null);
           statein.setName("statein");
           previous.addSource(statein);
 
           // Create a new sink statein port
-          final SDFSinkInterfaceVertex stateout = new SDFSinkInterfaceVertex();
+          final SDFSinkInterfaceVertex stateout = new SDFSinkInterfaceVertex(null);
           stateout.setName("stateout");
           current.addSink(stateout);
           newEdge.setSourceInterface(stateout);
@@ -157,7 +156,6 @@ public class IterateAlgorithm extends AbstractTaskImplementation {
     SDFGraph mainIteration = inputAlgorithm.copy();
 
     if (nbIt > 1) {
-      int groupId = 0;
       // setting first iteration with name "_0"
       for (final SDFAbstractVertex vertex : mainIteration.vertexSet()) {
         final String id = vertex.getId();
@@ -165,11 +163,6 @@ public class IterateAlgorithm extends AbstractTaskImplementation {
         vertex.setId(id);
         vertex.setName(vertex.getName() + "_0");
         // Adding relative constraints to the scenario if present
-        if (scenario != null) {
-          final RelativeConstraintManager relativeconstraintManager = scenario.getRelativeconstraintManager();
-          relativeconstraintManager.addConstraint(id, groupId);
-        }
-        groupId++;
       }
 
       // Incorporating new iterations

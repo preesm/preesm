@@ -42,6 +42,8 @@ import org.preesm.model.pisdf.AbstractActor;
 import org.preesm.model.pisdf.AbstractVertex;
 import org.preesm.model.pisdf.Parameter;
 import org.preesm.model.pisdf.PiGraph;
+import org.preesm.model.slam.ComponentInstance;
+import org.preesm.model.slam.component.Component;
 
 // TODO: Auto-generated Javadoc
 /**
@@ -76,6 +78,17 @@ public final class SpiderNameGenerator {
    */
   public static String getCoreTypeName(final String coreType) {
     return "CORE_TYPE_" + coreType.toUpperCase();
+  }
+
+  /**
+   * Gets the core type name.
+   *
+   * @param coreType
+   *          the core type
+   * @return the core type name
+   */
+  public static String getCoreTypeName(final Component coreType) {
+    return "CORE_TYPE_" + coreType.getVlnv().getName().toUpperCase();
   }
 
   /**
@@ -146,5 +159,16 @@ public final class SpiderNameGenerator {
    */
   public static String getCoreName(final String core) {
     return "CORE_" + core.toUpperCase();
+  }
+
+  /**
+   * Gets the core name.
+   *
+   * @param core
+   *          the core
+   * @return the core name
+   */
+  public static String getCoreName(final ComponentInstance core) {
+    return "CORE_" + core.getInstanceName().toUpperCase();
   }
 }

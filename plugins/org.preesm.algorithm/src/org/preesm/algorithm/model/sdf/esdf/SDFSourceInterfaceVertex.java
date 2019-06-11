@@ -49,8 +49,8 @@ public class SDFSourceInterfaceVertex extends SDFInterfaceVertex {
   /**
    * Builds a new Source interface.
    */
-  public SDFSourceInterfaceVertex() {
-    super();
+  public SDFSourceInterfaceVertex(org.preesm.model.pisdf.AbstractVertex origVertex) {
+    super(origVertex);
     setKind(SDFInterfaceVertex.PORT);
     setDirection(InterfaceDirection.INPUT);
   }
@@ -62,10 +62,10 @@ public class SDFSourceInterfaceVertex extends SDFInterfaceVertex {
    */
   @Override
   public SDFSourceInterfaceVertex copy() {
-    final SDFSourceInterfaceVertex copy = new SDFSourceInterfaceVertex();
+    final SDFSourceInterfaceVertex copy = new SDFSourceInterfaceVertex(this.origVertex);
     copy.setName(getName());
     if (!getSinks().isEmpty()) {
-      final SDFSinkInterfaceVertex si = new SDFSinkInterfaceVertex();
+      final SDFSinkInterfaceVertex si = new SDFSinkInterfaceVertex(null);
       si.setName(getName());
       copy.addSink(si);
     }

@@ -75,19 +75,19 @@ public class ToHSDFVisitorTest {
     final SDFGraph graph = new SDFGraph();
     graph.setName("'test graph'");
 
-    final SDFVertex sensorInt = new SDFVertex();
+    final SDFVertex sensorInt = new SDFVertex(null);
     sensorInt.setName("sensorInt");
     graph.addVertex(sensorInt);
 
-    final SDFVertex gen5 = new SDFVertex();
+    final SDFVertex gen5 = new SDFVertex(null);
     gen5.setName("gen5");
     graph.addVertex(gen5);
 
-    final SDFVertex recopie5 = new SDFVertex();
+    final SDFVertex recopie5 = new SDFVertex(null);
     recopie5.setName("recopie5");
     graph.addVertex(recopie5);
 
-    final SDFVertex acqData = new SDFVertex();
+    final SDFVertex acqData = new SDFVertex(null);
     acqData.setName("acqData");
     graph.addVertex(acqData);
 

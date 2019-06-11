@@ -46,6 +46,7 @@ import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.IPropertyListener;
 import org.eclipse.ui.forms.widgets.Section;
 import org.preesm.model.scenario.PreesmScenario;
+import org.preesm.model.slam.ComponentInstance;
 
 // TODO: Auto-generated Javadoc
 /**
@@ -108,13 +109,15 @@ public class OperatorCheckStateListener implements ICheckStateListener, PaintLis
 
       @Override
       public void run() {
-        if (element instanceof String) {
-          final String path = (String) element;
+        if (element instanceof ComponentInstance) {
+          final ComponentInstance componentInstance = (ComponentInstance) element;
 
           if (isChecked) {
-            OperatorCheckStateListener.this.scenario.getSimulationManager().addSpecialVertexOperatorId(path);
+            OperatorCheckStateListener.this.scenario.getSimulationManager()
+                .addSpecialVertexOperator(componentInstance);
           } else {
-            OperatorCheckStateListener.this.scenario.getSimulationManager().removeSpecialVertexOperatorId(path);
+            OperatorCheckStateListener.this.scenario.getSimulationManager()
+                .removeSpecialVertexOperator(componentInstance);
           }
 
           OperatorCheckStateListener.this.propertyListener.propertyChanged(this, IEditorPart.PROP_DIRTY);
@@ -128,7 +131,7 @@ public class OperatorCheckStateListener implements ICheckStateListener, PaintLis
    */
   public void updateCheck() {
     if (this.scenario != null) {
-      this.treeViewer.setCheckedElements(this.scenario.getSimulationManager().getSpecialVertexOperatorIds().toArray());
+      this.treeViewer.setCheckedElements(this.scenario.getSimulationManager().getSpecialVertexOperators().toArray());
     }
   }
 

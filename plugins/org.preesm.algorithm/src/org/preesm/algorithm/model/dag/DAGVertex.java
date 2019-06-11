@@ -72,11 +72,14 @@ public class DAGVertex extends AbstractVertex<DirectedAcyclicGraph> {
     AbstractVertex.public_properties.add(DAGVertex.NB_REPEAT);
   }
 
+  protected org.preesm.model.pisdf.AbstractVertex origVertex;
+
   /**
    * Creates a new DAGVertex.
    */
-  public DAGVertex() {
+  public DAGVertex(org.preesm.model.pisdf.AbstractVertex origVertex) {
     super();
+    this.origVertex = origVertex;
     setKind(DAGVertex.DAG_VERTEX);
     this.properties = new PropertyBean();
     setId(UUID.randomUUID().toString());
@@ -92,14 +95,24 @@ public class DAGVertex extends AbstractVertex<DirectedAcyclicGraph> {
    * @param nb
    *          This Vertex number of repetition
    */
-  public DAGVertex(final String n, final AbstractVertexPropertyType<?> t, final AbstractVertexPropertyType<?> nb) {
+  public DAGVertex(final String n, final AbstractVertexPropertyType<?> t, final AbstractVertexPropertyType<?> nb,
+      org.preesm.model.pisdf.AbstractVertex origVertex) {
     super();
+    this.origVertex = origVertex;
     setKind(DAGVertex.DAG_VERTEX);
     this.properties = new PropertyBean();
     setId(UUID.randomUUID().toString());
     setNbRepeat(nb);
     setTime(t);
     setName(n);
+  }
+
+  /**
+   *
+   */
+  public org.preesm.model.pisdf.AbstractVertex getReferencePiVertex() {
+    return this.origVertex;
+
   }
 
   /**

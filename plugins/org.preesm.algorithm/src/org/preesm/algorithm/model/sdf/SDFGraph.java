@@ -69,6 +69,7 @@ import org.preesm.algorithm.model.types.StringEdgePropertyType;
 import org.preesm.commons.exceptions.PreesmException;
 import org.preesm.commons.exceptions.PreesmRuntimeException;
 import org.preesm.commons.logger.PreesmLogger;
+import org.preesm.model.pisdf.PiGraph;
 
 /**
  * Abstract Class representing an SDF graph.
@@ -96,6 +97,10 @@ public class SDFGraph extends AbstractGraph<SDFAbstractVertex, SDFEdge> {
     super(SDFEdge::new);
     setName("");
     getPropertyBean().setValue(AbstractGraph.MODEL, "sdf");
+  }
+
+  public PiGraph getReferencePiMMGraph() {
+    return this.getPropertyBean().getValue(PiGraph.class.getCanonicalName());
   }
 
   /*
@@ -206,12 +211,12 @@ public class SDFGraph extends AbstractGraph<SDFAbstractVertex, SDFEdge> {
   public SDFEdge addEdgeWithInterfaces(final SDFAbstractVertex sourceVertex, final SDFAbstractVertex targetVertex) {
     final SDFEdge edge = addEdge(sourceVertex, targetVertex);
     if (edge != null) {
-      final SDFSinkInterfaceVertex sinkInterface = new SDFSinkInterfaceVertex();
+      final SDFSinkInterfaceVertex sinkInterface = new SDFSinkInterfaceVertex(null);
       sinkInterface.setName("O_" + sourceVertex.getName() + "_" + sourceVertex.getSinks().size());
       sourceVertex.addSink(sinkInterface);
       edge.setSourceInterface(sinkInterface);
 
-      final SDFSourceInterfaceVertex sourceInterface = new SDFSourceInterfaceVertex();
+      final SDFSourceInterfaceVertex sourceInterface = new SDFSourceInterfaceVertex(null);
       sourceInterface.setName("I_" + targetVertex.getName() + "_" + targetVertex.getSources().size());
       targetVertex.addSource(sourceInterface);
       edge.setTargetInterface(sourceInterface);
@@ -508,9 +513,9 @@ public class SDFGraph extends AbstractGraph<SDFAbstractVertex, SDFEdge> {
         final String message = "Warning: Implicit Broadcast added in graph " + getName() + " at port " + vertex + "."
             + port.getName();
         PreesmLogger.getLogger().log(Level.WARNING, message);
-        final SDFBroadcastVertex broadcastPort = new SDFBroadcastVertex();
+        final SDFBroadcastVertex broadcastPort = new SDFBroadcastVertex(null);
         broadcastPort.setName("br_" + vertex.getName() + "_" + port.getName());
-        final SDFSourceInterfaceVertex inPort = new SDFSourceInterfaceVertex();
+        final SDFSourceInterfaceVertex inPort = new SDFSourceInterfaceVertex(null);
         inPort.setName("in");
         broadcastPort.addSource(inPort);
         if (!addVertex(broadcastPort)) {
@@ -525,7 +530,7 @@ public class SDFGraph extends AbstractGraph<SDFAbstractVertex, SDFEdge> {
         int nbTokens = 0;
         for (final SDFEdge oldEdge : connections.get(port)) {
           // Create a new outport
-          final SDFSinkInterfaceVertex outPort = new SDFSinkInterfaceVertex();
+          final SDFSinkInterfaceVertex outPort = new SDFSinkInterfaceVertex(null);
           outPort.setName(
               "out_" + (nbTokens / baseEdge.getCons().longValue()) + "_" + (nbTokens % baseEdge.getCons().longValue()));
           nbTokens += oldEdge.getProd().longValue();
@@ -663,7 +668,7 @@ public class SDFGraph extends AbstractGraph<SDFAbstractVertex, SDFEdge> {
     if (arg != null) {
       if (arg instanceof AbstractVertex) {
         if (observable.vertexSet().contains(arg)) {
-          final SDFVertex newVertex = new SDFVertex();
+          final SDFVertex newVertex = new SDFVertex(null);
           newVertex.setName(((AbstractVertex) arg).getName());
           newVertex.setId(((AbstractVertex) arg).getId());
           newVertex.setRefinement(((AbstractVertex) arg).getRefinement());

@@ -39,6 +39,7 @@ package org.preesm.ui.scenario.editor;
 
 import java.util.LinkedHashSet;
 import java.util.Set;
+import java.util.logging.Level;
 import org.apache.commons.io.FilenameUtils;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.swt.SWT;
@@ -60,6 +61,7 @@ import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.eclipse.ui.forms.widgets.ScrolledForm;
 import org.eclipse.ui.forms.widgets.Section;
 import org.preesm.commons.exceptions.PreesmException;
+import org.preesm.commons.logger.PreesmLogger;
 import org.preesm.model.scenario.PreesmScenario;
 import org.preesm.ui.fields.FieldUtils;
 
@@ -210,20 +212,14 @@ public class OverviewPage extends FormPage {
       colorRedIfFileAbsent(text);
 
       final String path = FilenameUtils.separatorsToUnix(text.getText());
-      if (type.equals(Messages.getString("Overview.algorithmFile"))) {
-        OverviewPage.this.scenario.setAlgorithmURL(path);
-        try {
-          OverviewPage.this.scenario.update(true, false);
-        } catch (PreesmException | CoreException ex) {
-          ex.printStackTrace();
+      try {
+        if (type.equals(Messages.getString("Overview.algorithmFile"))) {
+          OverviewPage.this.scenario.update(path, null);
+        } else if (type.equals(Messages.getString("Overview.architectureFile"))) {
+          OverviewPage.this.scenario.update(null, path);
         }
-      } else if (type.equals(Messages.getString("Overview.architectureFile"))) {
-        OverviewPage.this.scenario.setArchitectureURL(path);
-        try {
-          OverviewPage.this.scenario.update(false, true);
-        } catch (PreesmException | CoreException ex) {
-          ex.printStackTrace();
-        }
+      } catch (PreesmException | CoreException ex) {
+        PreesmLogger.getLogger().log(Level.SEVERE, ex.getMessage(), e);
       }
 
       firePropertyChange(IEditorPart.PROP_DIRTY);

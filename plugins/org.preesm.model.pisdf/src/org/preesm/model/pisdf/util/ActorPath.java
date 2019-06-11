@@ -56,7 +56,9 @@ public class ActorPath {
    *
    */
   public static final AbstractActor lookup(final PiGraph graph, final String actorPath) {
-
+    if (actorPath == null) {
+      return null;
+    }
     final String safePath = actorPath.replaceAll("/+", "/").replaceAll("^/*" + graph.getName(), "").replaceAll("^/", "")
         .replaceAll("/$", "");
     if (safePath.isEmpty()) {

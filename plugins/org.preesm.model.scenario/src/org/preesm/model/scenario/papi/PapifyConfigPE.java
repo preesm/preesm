@@ -35,10 +35,12 @@
  */
 package org.preesm.model.scenario.papi;
 
+import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
+import java.util.Map;
 import java.util.Set;
+import org.preesm.model.slam.component.Component;
 
-// TODO: Auto-generated Javadoc
 /**
  * A PapifyConfig stores the monitoring configuration of each core instance.
  *
@@ -47,21 +49,16 @@ import java.util.Set;
 public class PapifyConfigPE {
 
   /** The peType instance. */
-  private String peType;
+  private Component peType;
 
-  /** The PAPI component(s) associated with the core instance. */
-  private Set<PapiComponent> PAPIComponents;
-
-  /** The PAPI component(s) ID(s) associated with the core instance. */
-  private Set<String> PAPIComponentIDs;
+  private Map<String, PapiComponent> papiComponents;
 
   /**
    * Instantiates a new PapifyConfig group.
    */
-  public PapifyConfigPE(final String peType) {
+  public PapifyConfigPE(final Component peType) {
     this.peType = peType;
-    this.PAPIComponents = new LinkedHashSet<>();
-    this.PAPIComponentIDs = new LinkedHashSet<>();
+    papiComponents = new LinkedHashMap<>();
 
   }
 
@@ -71,7 +68,7 @@ public class PapifyConfigPE {
    * @param peType
    *          the core instance
    */
-  public void addpeType(final String peType) {
+  public void addpeType(final Component peType) {
     this.peType = peType;
 
   }
@@ -83,8 +80,7 @@ public class PapifyConfigPE {
    *          the PAPI component
    */
   public void addPAPIComponent(final PapiComponent component) {
-    this.PAPIComponents.add(component);
-    this.PAPIComponentIDs.add(component.getId());
+    this.papiComponents.put(component.getId(), component);
 
   }
 
@@ -96,8 +92,7 @@ public class PapifyConfigPE {
    */
   public void addPAPIComponents(final Set<PapiComponent> components) {
     for (final PapiComponent component : components) {
-      this.PAPIComponents.add(component);
-      this.PAPIComponentIDs.add(component.getId());
+      this.papiComponents.put(component.getId(), component);
     }
   }
 
@@ -107,9 +102,9 @@ public class PapifyConfigPE {
    * @param peType
    *          the peType
    */
-  public void removepeType(final String peType) {
+  public void removepeType(final Component peType) {
     if (peType.equals(this.peType)) {
-      this.peType = "";
+      this.peType = null;
     }
   }
 
@@ -120,8 +115,7 @@ public class PapifyConfigPE {
    *          the PAPI component
    */
   public void removePAPIComponent(final PapiComponent component) {
-    this.PAPIComponents.remove(component);
-    this.PAPIComponentIDs.remove(component.getId());
+    this.papiComponents.remove(component.getId());
   }
 
   /**
@@ -129,7 +123,7 @@ public class PapifyConfigPE {
    *
    * @return the Core id
    */
-  public String getpeType() {
+  public Component getpeType() {
     return (this.peType);
   }
 
@@ -139,7 +133,7 @@ public class PapifyConfigPE {
    * @return the PAPI components
    */
   public Set<PapiComponent> getPAPIComponents() {
-    return (this.PAPIComponents);
+    return new LinkedHashSet<>(this.papiComponents.values());
   }
 
   /**
@@ -148,7 +142,7 @@ public class PapifyConfigPE {
    * @return the PAPI component IDs
    */
   public Set<String> getPAPIComponentIDs() {
-    return (this.PAPIComponentIDs);
+    return (this.papiComponents.keySet());
   }
 
   /**
@@ -158,7 +152,7 @@ public class PapifyConfigPE {
    *          the PAPI component
    * @return true, if successful
    */
-  public boolean ispeType(final String peType) {
+  public boolean ispeType(final Component peType) {
 
     return peType.equals(this.peType);
   }
@@ -172,7 +166,7 @@ public class PapifyConfigPE {
    */
   public boolean containsPAPIComponent(final PapiComponent component) {
 
-    if (this.PAPIComponents.contains(component)) {
+    if (this.papiComponents.containsValue(component)) {
       return true;
     }
 
@@ -208,7 +202,7 @@ public class PapifyConfigPE {
     String s = "<Printing core> \n";
     s += this.peType.toString();
     s += "\n<Printing component> \n";
-    s += this.PAPIComponents.toString();
+    s += this.papiComponents.values().toString();
     s += "<end printing>\n";
 
     return s;

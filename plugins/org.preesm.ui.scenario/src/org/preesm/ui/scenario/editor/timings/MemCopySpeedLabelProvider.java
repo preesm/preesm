@@ -110,11 +110,11 @@ public class MemCopySpeedLabelProvider implements ITableLabelProvider {
       final MemCopySpeed speed = (MemCopySpeed) element;
 
       if (columnIndex == 0) {
-        text = speed.getOperatorDef();
+        text = speed.getOperatorDef().getVlnv().getName();
       } else if (columnIndex == 1) {
         text = Long.toString(speed.getSetupTime());
       } else if (columnIndex == 2) {
-        text = Float.toString(1.0f / speed.getTimePerUnit());
+        text = Double.toString(1.0d / speed.getTimePerUnit());
       }
     }
 
@@ -232,7 +232,7 @@ public class MemCopySpeedLabelProvider implements ITableLabelProvider {
 
           speed.setSetupTime(Long.valueOf(valueSetupTime));
           // Careful! We store the time per memory unit, that is the inverse of the speed.
-          speed.setTimePerUnit(1.0f / Float.valueOf(valueTimePerUnit));
+          speed.setTimePerUnit(1.0d / Double.valueOf(valueTimePerUnit));
           this.scenario.getTimingManager().putMemcpySpeed(speed);
 
           this.tableViewer.refresh();

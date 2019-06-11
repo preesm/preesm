@@ -50,7 +50,9 @@ import org.preesm.algorithm.model.sdf.SDFVertex;
 import org.preesm.algorithm.model.sdf.esdf.SDFSinkInterfaceVertex;
 import org.preesm.algorithm.model.sdf.esdf.SDFSourceInterfaceVertex;
 import org.preesm.algorithm.model.types.LongEdgePropertyType;
+import org.preesm.model.pisdf.AbstractActor;
 import org.preesm.model.scenario.PreesmScenario;
+import org.preesm.model.slam.component.Component;
 
 /**
  * @author hderoui
@@ -163,7 +165,7 @@ public interface GraphStructureHelper {
   public static SDFAbstractVertex addActor(final SDFGraph graph, final String actorName, final SDFGraph subgraph,
       final long repititionFactor, final double latency, final double normalizedPortsRate,
       final SDFAbstractVertex baseActor) {
-    final SDFAbstractVertex actor = new SDFVertex(graph);
+    final SDFAbstractVertex actor = new SDFVertex(graph, null);
     // set the name
     actor.setId(actorName);
     actor.setName(actorName);
@@ -216,7 +218,7 @@ public interface GraphStructureHelper {
     // port in the hierarchical parent actor
 
     // create an input interface and set the parent graph
-    final SDFSourceInterfaceVertex in = new SDFSourceInterfaceVertex();
+    final SDFSourceInterfaceVertex in = new SDFSourceInterfaceVertex(null);
     in.setPropertyValue(AbstractVertex.BASE_LITERAL, graph);
 
     // set the name
@@ -267,7 +269,7 @@ public interface GraphStructureHelper {
     // port in the hierarchical actor
 
     // create an output interface and set the parent graph
-    final SDFSinkInterfaceVertex out = new SDFSinkInterfaceVertex();
+    final SDFSinkInterfaceVertex out = new SDFSinkInterfaceVertex(null);
     out.setPropertyValue(AbstractVertex.BASE_LITERAL, graph);
 
     // set the name
@@ -307,7 +309,7 @@ public interface GraphStructureHelper {
    */
   public static SDFSourceInterfaceVertex addSrcPort(final SDFAbstractVertex actor, final String portName,
       final long portRate) {
-    final SDFSourceInterfaceVertex port = new SDFSourceInterfaceVertex();
+    final SDFSourceInterfaceVertex port = new SDFSourceInterfaceVertex(null);
     port.setId(portName);
     port.setName(portName);
     port.setPropertyValue(GraphStructureHelper.PORT_RATE_PROPERTY, portRate);
@@ -328,7 +330,7 @@ public interface GraphStructureHelper {
    */
   public static SDFSinkInterfaceVertex addSinkPort(final SDFAbstractVertex actor, final String portName,
       final long portRate) {
-    final SDFSinkInterfaceVertex port = new SDFSinkInterfaceVertex();
+    final SDFSinkInterfaceVertex port = new SDFSinkInterfaceVertex(null);
     port.setId(portName);
     port.setName(portName);
     port.setPropertyValue(GraphStructureHelper.PORT_RATE_PROPERTY, portRate);
@@ -679,7 +681,9 @@ public interface GraphStructureHelper {
       // define the edge weight as the duration of the current source actor
       double actorDuration;
       if (scenario != null) {
-        actorDuration = scenario.getTimingManager().getTimingOrDefault(currentSource.getId(), "x86").getTime();
+        final Component component = scenario.getSimulationManager().getMainOperator().getComponent();
+        AbstractActor referencePiMMVertex = (AbstractActor) currentSource.getReferencePiMMVertex();
+        actorDuration = scenario.getTimingManager().getTimingOrDefault(referencePiMMVertex, component).getTime();
       } else {
         actorDuration = (double) currentSource.getPropertyBean().getValue(GraphStructureHelper.DURATION_PROPERTY);
       }

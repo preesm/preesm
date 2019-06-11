@@ -45,7 +45,6 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.LinkedHashSet;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.logging.Level;
@@ -54,9 +53,6 @@ import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.runtime.CoreException;
-import org.eclipse.emf.ecore.EPackage;
-import org.eclipse.emf.ecore.resource.Resource;
-import org.preesm.commons.exceptions.PreesmFrameworkException;
 import org.preesm.commons.exceptions.PreesmRuntimeException;
 import org.preesm.commons.logger.PreesmLogger;
 import org.preesm.model.pisdf.AbstractActor;
@@ -78,11 +74,10 @@ import org.preesm.model.scenario.papi.PapifyConfigActor;
 import org.preesm.model.scenario.papi.PapifyConfigPE;
 import org.preesm.model.scenario.types.DataType;
 import org.preesm.model.scenario.types.VertexType;
+import org.preesm.model.slam.ComponentInstance;
 import org.preesm.model.slam.Design;
-import org.preesm.model.slam.SlamPackage;
-import org.preesm.model.slam.serialize.IPXACTResourceFactoryImpl;
+import org.preesm.model.slam.component.Component;
 import org.preesm.model.slam.serialize.SlamParser;
-import org.preesm.model.slam.utils.DesignTools;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -101,14 +96,10 @@ public class ScenarioParser {
   /** scenario being retrieved. */
   private PreesmScenario scenario = null;
 
-  private PiGraph algoPi     = null;
-  private Design  slamDesign = null;
-
   /**
    * Instantiates a new scenario parser.
    */
   public ScenarioParser() {
-
     this.scenario = new PreesmScenario();
   }
 
@@ -206,8 +197,8 @@ public class ScenarioParser {
 
     Node node = paramValuesElt.getFirstChild();
 
-    final PiGraph graph = getPiGraph();
-    if ((graph != null) && this.scenario.isPISDFScenario()) {
+    final PiGraph graph = scenario.getAlgorithm();
+    if (graph != null) {
       final Set<Parameter> parameters = new LinkedHashSet<>();
       for (final Parameter p : graph.getAllParameters()) {
         if (!p.isConfigurationInterface()) {
@@ -234,40 +225,6 @@ public class ScenarioParser {
         this.scenario.getParameterValueManager().addParameterValue(p);
       }
     }
-  }
-
-  /**
-   */
-  public PiGraph getPiGraph() {
-    final PiGraph piGraph;
-    if (this.algoPi != null) {
-      piGraph = this.algoPi;
-    } else {
-      if (this.scenario == null) {
-        piGraph = null;
-      } else {
-        final String algorithmURL = this.scenario.getAlgorithmURL();
-        piGraph = PiParser.getPiGraphWithReconnection(algorithmURL);
-      }
-    }
-    return piGraph;
-  }
-
-  /**
-   */
-  public Design getDesign() {
-    final Design design;
-    if (this.slamDesign != null) {
-      design = this.slamDesign;
-    } else {
-      if (this.scenario == null) {
-        design = null;
-      } else {
-        final String archiURL = this.scenario.getArchitectureURL();
-        design = SlamParser.parseSlamDesign(archiURL);
-      }
-    }
-    return design;
   }
 
   /**
@@ -299,7 +256,7 @@ public class ScenarioParser {
       switch (type) {
         case "INDEPENDENT":
         case "STATIC": // Retro-compatibility
-          this.scenario.getParameterValueManager().addIndependentParameterValue(currentParameter, stringValue, parent);
+          this.scenario.getParameterValueManager().addIndependentParameterValue(currentParameter, stringValue);
           break;
         case "ACTOR_DEPENDENT":
         case "DYNAMIC": // Retro-compatibility
@@ -316,24 +273,21 @@ public class ScenarioParser {
             } catch (final NumberFormatException e) {
               // TODO: Do smthg?
             }
-            this.scenario.getParameterValueManager().addActorDependentParameterValue(currentParameter, newValues,
-                parent);
+            this.scenario.getParameterValueManager().addActorDependentParameterValue(currentParameter, newValues);
           }
           break;
         case "PARAMETER_DEPENDENT":
         case "DEPENDENT": // Retro-compatibility
           final Set<String> inputParameters = new LinkedHashSet<>();
-          if (graph != null) {
 
-            for (final Parameter input : currentParameter.getInputParameters()) {
-              inputParameters.add(input.getName());
-            }
+          for (final Parameter input : currentParameter.getInputParameters()) {
+            inputParameters.add(input.getName());
           }
           this.scenario.getParameterValueManager().addParameterDependentParameterValue(currentParameter, stringValue,
-              inputParameters, parent);
+              inputParameters);
           break;
         default:
-          throw new RuntimeException("Unknown Parameter type: " + type + " for Parameter: " + name);
+          throw new PreesmRuntimeException("Unknown Parameter type: " + type + " for Parameter: " + name);
       }
     }
     return currentParameter;
@@ -357,10 +311,12 @@ public class ScenarioParser {
         final String content = elt.getTextContent();
         switch (type) {
           case "mainCore":
-            this.scenario.getSimulationManager().setMainOperatorName(content);
+            final ComponentInstance mainCore = scenario.getDesign().getComponentInstance(content);
+            this.scenario.getSimulationManager().setMainOperator(mainCore);
             break;
           case "mainComNode":
-            this.scenario.getSimulationManager().setMainComNodeName(content);
+            final ComponentInstance mainComNode = scenario.getDesign().getComponentInstance(content);
+            this.scenario.getSimulationManager().setMainComNode(mainComNode);
             break;
           case "averageDataSize":
             this.scenario.getSimulationManager().setAverageDataSize(Long.valueOf(content));
@@ -431,7 +387,8 @@ public class ScenarioParser {
           final String path = elt.getAttribute("path");
 
           if (path != null) {
-            this.scenario.getSimulationManager().addSpecialVertexOperatorId(path);
+            final ComponentInstance componentInstance = this.scenario.getDesign().getComponentInstance(path);
+            this.scenario.getSimulationManager().addSpecialVertexOperator(componentInstance);
           }
         }
       }
@@ -443,10 +400,10 @@ public class ScenarioParser {
      * It is not possible to remove all operators from special vertex executors: if no operator is selected, all of them
      * are!!
      */
-    if (this.scenario.getSimulationManager().getSpecialVertexOperatorIds().isEmpty()
+    if (this.scenario.getSimulationManager().getSpecialVertexOperators().isEmpty()
         && (this.scenario.getOperatorIds() != null)) {
-      for (final String opId : this.scenario.getOperatorIds()) {
-        this.scenario.getSimulationManager().addSpecialVertexOperatorId(opId);
+      for (final ComponentInstance opId : this.scenario.getOperators()) {
+        this.scenario.getSimulationManager().addSpecialVertexOperator(opId);
       }
     }
   }
@@ -473,26 +430,19 @@ public class ScenarioParser {
         final String url = elt.getAttribute("url");
         if (url.length() > 0) {
           if (type.equals("algorithm")) {
-            this.scenario.setAlgorithmURL(url);
-            this.algoPi = null;
             try {
-              if (url.endsWith(".graphml")) {
-                throw new PreesmFrameworkException("IBSDF is not supported anymore.");
-              } else if (url.endsWith(".pi")) {
-                this.algoPi = getPiGraph();
-              }
+              this.scenario.setAlgorithm(PiParser.getPiGraphWithReconnection(url));
             } catch (final Exception e) {
               PreesmLogger.getLogger().log(Level.WARNING, "Could not parse the algorithm: " + e.getMessage(), e);
             }
           } else if (type.equals("architecture")) {
             try {
-              this.scenario.setArchitectureURL(url);
               initializeArchitectureInformation(url);
             } catch (final Exception e) {
               throw new PreesmRuntimeException("Could not parse the architecture: " + e.getMessage(), e);
             }
           } else if (type.equals("codegenDirectory")) {
-            this.scenario.getCodegenManager().setCodegenDirectory(url);
+            this.scenario.setCodegenDirectory(url);
           }
         }
       }
@@ -507,29 +457,10 @@ public class ScenarioParser {
    * @param url
    *          the url
    */
-  private void initializeArchitectureInformation(final String url) {
-    if (url.contains(".design")) {
-      throw new PreesmFrameworkException("SLAM architecture 1.0 is no more supported. Use .slam architecture files.");
-    } else if (url.contains(".slam")) {
-
-      final Map<String, Object> extToFactoryMap = Resource.Factory.Registry.INSTANCE.getExtensionToFactoryMap();
-      Object instance = extToFactoryMap.get("slam");
-      if (instance == null) {
-        instance = new IPXACTResourceFactoryImpl();
-        extToFactoryMap.put("slam", instance);
-      }
-
-      if (!EPackage.Registry.INSTANCE.containsKey(SlamPackage.eNS_URI)) {
-        EPackage.Registry.INSTANCE.put(SlamPackage.eNS_URI, SlamPackage.eINSTANCE);
-      }
-
-      // Extract the root object from the resource.
-      final Design design = getDesign();
-
-      this.scenario.setOperatorIds(DesignTools.getOperatorInstanceIds(design));
-      this.scenario.setComNodeIds(DesignTools.getComNodeInstanceIds(design));
-      this.scenario.setOperatorDefinitionIds(DesignTools.getOperatorComponentIds(design));
-    }
+  private Design initializeArchitectureInformation(final String url) {
+    final Design design = SlamParser.parseSlamDesign(url);
+    this.scenario.setArchitecture(design);
+    return design;
   }
 
   /**
@@ -568,10 +499,10 @@ public class ScenarioParser {
    * @return the constraint group
    */
   private ConstraintGroup getConstraintGroup(final Element cstGroupElt) {
-    String opId = null;
-    final Set<String> paths = new LinkedHashSet<>();
+    ComponentInstance opId = null;
+    final Set<AbstractActor> paths = new LinkedHashSet<>();
 
-    if (this.algoPi != null) {
+    if (scenario.getAlgorithm() != null) {
       Node node = cstGroupElt.getFirstChild();
       while (node != null) {
         if (node instanceof Element) {
@@ -579,12 +510,13 @@ public class ScenarioParser {
           final String type = elt.getTagName();
           final String name = elt.getAttribute("name");
           if (type.equals(VertexType.TYPE_TASK)) {
-            if (getActorFromPath(name) != null) {
-              paths.add(name);
+            final AbstractActor actorFromPath = getActorFromPath(name);
+            if (actorFromPath != null) {
+              paths.add(actorFromPath);
             }
-          } else if (type.equals("operator") && (this.scenario.getOperatorIds() != null)) {
-            if (this.scenario.getOperatorIds().contains(name)) {
-              opId = name;
+          } else if (type.equals("operator")) {
+            if (this.scenario.getDesign().containsComponentInstance(name)) {
+              opId = this.scenario.getDesign().getComponentInstance(name);
             }
           }
         }
@@ -645,13 +577,12 @@ public class ScenarioParser {
         final Element elt = (Element) node;
         final String type = elt.getTagName();
         String actorPath = "";
-        String actorId = "";
         if (type.equals("actorPath")) {
           actorPath = elt.getAttribute("actorPath");
-          pc.addActorPath(actorPath);
-        } else if (type.equals("actorId")) {
-          actorId = elt.getAttribute("actorId");
-          pc.addActorId(actorId);
+
+          final AbstractActor lookup = ActorPath.lookup(this.scenario.getAlgorithm(), actorPath);
+
+          pc.addActorPath(lookup);
           Node nodeEvents = node.getFirstChild();
           while (nodeEvents != null) {
 
@@ -692,7 +623,8 @@ public class ScenarioParser {
       if (node instanceof Element) {
         final Element elt = (Element) node;
         final String peType = elt.getAttribute("peType");
-        pc = new PapifyConfigPE(peType);
+        final Component component = this.scenario.getDesign().getComponent(peType);
+        pc = new PapifyConfigPE(component);
         final Set<PapiComponent> components = getPAPIComponents(elt);
         pc.addPAPIComponents(components);
       }
@@ -869,7 +801,7 @@ public class ScenarioParser {
 
     Timing timing = null;
 
-    if (this.algoPi != null) {
+    if (scenario.getAlgorithm() != null) {
 
       final String type = timingElt.getTagName();
       if (type.equals("timing")) {
@@ -885,11 +817,14 @@ public class ScenarioParser {
           time = -1;
         }
 
-        if ((vertexpath != null) && this.scenario.getOperatorDefinitionIds().contains(opdefname)) {
+        final boolean contains = this.scenario.getDesign().containsComponent(opdefname);
+        final AbstractActor lookup = ActorPath.lookup(this.scenario.getAlgorithm(), vertexpath);
+        if ((lookup != null) && contains) {
+          final Component component = this.scenario.getDesign().getComponent(opdefname);
           if (isEvaluated) {
-            timing = new Timing(opdefname, vertexpath, time);
+            timing = new Timing(component, lookup, time);
           } else {
-            timing = new Timing(opdefname, vertexpath, stringValue);
+            timing = new Timing(component, lookup, stringValue);
           }
         }
       }
@@ -906,10 +841,10 @@ public class ScenarioParser {
    *          the path to the actor, where its segment is the name of an actor and separators are "/"
    * @return the wanted actor, if existing, null otherwise
    */
-  private Object getActorFromPath(final String path) {
-    Object result = null;
-    if (this.algoPi != null) {
-      result = ActorPath.lookup(this.algoPi, path);
+  private AbstractActor getActorFromPath(final String path) {
+    AbstractActor result = null;
+    if (scenario.getAlgorithm() != null) {
+      result = ActorPath.lookup(scenario.getAlgorithm(), path);
     }
     return result;
   }
@@ -924,25 +859,27 @@ public class ScenarioParser {
    */
   private void retrieveMemcpySpeed(final TimingManager timingManager, final Element timingElt) {
 
-    if (this.algoPi != null) {
+    if (scenario.getAlgorithm() != null) {
       final String type = timingElt.getTagName();
       if (type.equals("memcpyspeed")) {
         final String opdefname = timingElt.getAttribute("opname");
         final String sSetupTime = timingElt.getAttribute("setuptime");
         final String sTimePerUnit = timingElt.getAttribute("timeperunit");
-        int setupTime;
-        float timePerUnit;
+        long setupTime;
+        double timePerUnit;
 
         try {
-          setupTime = Integer.parseInt(sSetupTime);
-          timePerUnit = Float.parseFloat(sTimePerUnit);
+          setupTime = Long.parseLong(sSetupTime);
+          timePerUnit = Double.parseDouble(sTimePerUnit);
         } catch (final NumberFormatException e) {
           setupTime = -1;
           timePerUnit = -1;
         }
 
-        if (this.scenario.getOperatorDefinitionIds().contains(opdefname) && (setupTime >= 0) && (timePerUnit >= 0)) {
-          final MemCopySpeed speed = new MemCopySpeed(opdefname, setupTime, timePerUnit);
+        final boolean contains = this.scenario.getDesign().containsComponent(opdefname);
+        if (contains && (setupTime >= 0) && (timePerUnit >= 0)) {
+          final Component component = this.scenario.getDesign().getComponent(opdefname);
+          final MemCopySpeed speed = new MemCopySpeed(component, setupTime, timePerUnit);
           timingManager.putMemcpySpeed(speed);
         }
       }

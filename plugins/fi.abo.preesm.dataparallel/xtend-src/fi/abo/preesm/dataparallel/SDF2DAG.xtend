@@ -329,7 +329,7 @@ final class SDF2DAG extends AbstractDAGConstructor implements PureDAGConstructor
 		        // Add explode instance for non-broadcast, non-roundbuffer, non-fork/join actors
 				if(explode && !(sourceInstances.get(sourceIndex) instanceof SDFForkVertex)
 					&& (!(sourceInstances.get(sourceIndex) instanceof SDFBroadcastVertex) || !(sourceInstances.get(sourceIndex) instanceof SDFRoundBufferVertex))) {
-						val explodeInstance = new SDFForkVertex()
+						val explodeInstance = new SDFForkVertex(null)
 						explodeInstance.name = "explode_" + sourceInstances.get(sourceIndex).name + "_" + edge.sourceInterface.name
 						outputGraph.addVertex(explodeInstance)
 						val originalInstance = sourceInstances.get(sourceIndex)
@@ -354,7 +354,7 @@ final class SDF2DAG extends AbstractDAGConstructor implements PureDAGConstructor
 
 				// Add implode instance for non-fork/join and non-roundbuffer
 				if(implode && !(targetInstances.get(targetIndex) instanceof SDFJoinVertex) && !(targetInstances.get(targetIndex) instanceof SDFRoundBufferVertex)) {
-					val implodeInstance = new SDFJoinVertex()
+					val implodeInstance = new SDFJoinVertex(null)
 					implodeInstance.name = "implode_" + targetInstances.get(targetIndex).name + "_" + edge.targetInterface.name
 					val originalInstance = targetInstances.get(targetIndex)
 					outputGraph.addVertex(implodeInstance)

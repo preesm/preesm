@@ -103,7 +103,7 @@ public class GMLDAGImporter extends GMLImporter<DirectedAcyclicGraph, DAGVertex,
    */
   @Override
   public DAGVertex parseNode(final Element vertexElt, final DirectedAcyclicGraph parentGraph) {
-    final DAGVertex vertex = new DAGVertex();
+    final DAGVertex vertex = new DAGVertex(null);
     final String id = vertexElt.getAttribute("id");
     vertex.setId(id);
     vertex.setName(id);

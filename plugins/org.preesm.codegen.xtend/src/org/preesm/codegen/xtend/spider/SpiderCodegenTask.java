@@ -157,7 +157,7 @@ public class SpiderCodegenTask extends AbstractTaskImplementation {
     final IWorkspace workspace = ResourcesPlugin.getWorkspace();
 
     // Get the name of the folder for code generation
-    final String codegenPath = scenario.getCodegenManager().getCodegenDirectory() + "/";
+    final String codegenPath = scenario.getCodegenDirectory() + "/";
 
     if (codegenPath.equals("/")) {
       final String message = "Error: A Codegen folder must be specified in Scenario";

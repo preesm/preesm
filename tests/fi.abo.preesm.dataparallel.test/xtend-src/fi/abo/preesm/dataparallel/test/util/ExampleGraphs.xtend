@@ -77,19 +77,19 @@ class ExampleGraphs {
 		private def SDFAbstractVertex createVertex(String type) {
 			switch(type) {
 				case SDFRoundBufferVertex.ROUND_BUFFER: {
-					return new SDFRoundBufferVertex
+					return new SDFRoundBufferVertex(null)
 				}
 				case SDFBroadcastVertex.BROADCAST: {
-					return new SDFBroadcastVertex
+					return new SDFBroadcastVertex(null)
 				}
 				case SDFJoinVertex.JOIN : {
-					return new SDFJoinVertex
+					return new SDFJoinVertex(null)
 				}
 				case SDFForkVertex.FORK : {
-					return new SDFForkVertex
+					return new SDFForkVertex(null)
 				}
 				case SDFVertex.VERTEX: {
-					return new SDFVertex
+					return new SDFVertex(null)
 				}
 			}
 		}
@@ -134,11 +134,11 @@ class ExampleGraphs {
 					dst
 				}
 
-			val outPort = new SDFSinkInterfaceVertex
+			val outPort = new SDFSinkInterfaceVertex(null)
 			outPort.setName(sourceOutName)
 			source.addSink(outPort)
 
-			val inPort = new SDFSourceInterfaceVertex
+			val inPort = new SDFSourceInterfaceVertex(null)
 			inPort.setName(targetInName)
 			target.addSource(inPort)
 
@@ -475,7 +475,7 @@ class ExampleGraphs {
 	static def SDFGraph acyclicHierarchicalTwoActors() {
     	val sdf = new SDFGraph();
 
-    	val p = new SDFVertex();
+    	val p = new SDFVertex(null);
     	p.setName("p");
     	p.setGraphDescription(acyclicTwoActors());
     	sdf.addVertex(p);

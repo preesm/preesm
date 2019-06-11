@@ -145,6 +145,7 @@ import org.preesm.model.scenario.types.ImplementationPropertyNames;
 import org.preesm.model.scenario.types.VertexType;
 import org.preesm.model.slam.ComponentInstance;
 import org.preesm.model.slam.Design;
+import org.preesm.model.slam.component.Component;
 import org.preesm.model.slam.route.MessageRouteStep;
 import org.preesm.workflow.elements.Workflow;
 
@@ -856,7 +857,7 @@ public class CodegenModelGenerator {
       if (memoryBank.equals("Shared")) {
         // If the memory bank is shared, let the main operator
         // declare the Buffer.
-        correspondingOperatorID = this.scenario.getSimulationManager().getMainOperatorName();
+        correspondingOperatorID = this.scenario.getSimulationManager().getMainOperator().getInstanceName();
         isLocal = false;
 
         // Check that the main operator block exists.
@@ -1976,9 +1977,11 @@ public class CodegenModelGenerator {
     // Create the variable associated to the PAPI component
     String compsSupported = "";
     ConstantString papifyComponentName = CodegenFactory.eINSTANCE.createConstantString();
-    if (this.getScenario().getPapifyConfigManager().getCorePapifyConfigGroupPE(operatorBlock.getCoreType()) != null) {
-      for (String compType : this.getScenario().getPapifyConfigManager()
-          .getCorePapifyConfigGroupPE(operatorBlock.getCoreType()).getPAPIComponentIDs()) {
+    final String coreType = operatorBlock.getCoreType();
+    final Component component = scenario.getDesign().getComponent(coreType);
+    if (this.getScenario().getPapifyConfigManager().getCorePapifyConfigGroupPE(component) != null) {
+      for (String compType : this.getScenario().getPapifyConfigManager().getCorePapifyConfigGroupPE(component)
+          .getPAPIComponentIDs()) {
         if (compsSupported.equals("")) {
           compsSupported = compType;
         } else {
@@ -1986,7 +1989,7 @@ public class CodegenModelGenerator {
         }
       }
     } else {
-      throw new PreesmRuntimeException("There is no PE type of type " + operatorBlock.getCoreType()
+      throw new PreesmRuntimeException("There is no PE type of type " + coreType
           + " in the PAPIFY information. Probably the PAPIFY tab is out of date in the PREESM scenario.");
     }
     papifyComponentName.setValue(compsSupported);

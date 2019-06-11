@@ -60,8 +60,8 @@ public class DAGBroadcastVertex extends DAGVertex {
   /**
    * Creates a new DAGVertex.
    */
-  public DAGBroadcastVertex() {
-    super();
+  public DAGBroadcastVertex(org.preesm.model.pisdf.AbstractVertex origVertex) {
+    super(origVertex);
     setKind(DAGBroadcastVertex.DAG_BROADCAST_VERTEX);
   }
 

@@ -160,7 +160,7 @@ public class IPXACTDesignVendorExtensionsWriter {
 
     final RefinementList list = new RefinementList();
     for (final Design subDesign : component.getRefinements()) {
-      list.addName(subDesign.getPath());
+      list.addName(subDesign.getUrl());
     }
     final String refinementPath = list.toString();
 

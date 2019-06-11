@@ -63,8 +63,8 @@ public abstract class SDFInterfaceVertex extends SDFAbstractVertex implements II
   /**
    * Creates a new SDFInterfaceVertex with the default direction (SINK).
    */
-  public SDFInterfaceVertex() {
-    super();
+  public SDFInterfaceVertex(org.preesm.model.pisdf.AbstractVertex origVertex) {
+    super(origVertex);
     setKind(SDFInterfaceVertex.PORT);
     setDirection(InterfaceDirection.OUTPUT);
   }

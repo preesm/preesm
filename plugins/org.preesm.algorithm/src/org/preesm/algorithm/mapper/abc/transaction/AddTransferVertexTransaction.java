@@ -201,7 +201,7 @@ public class AddTransferVertexTransaction extends Transaction {
 
     if (this.transferTime > 0) {
       this.tVertex = new TransferVertex(tvertexID, this.implementation, (MapperDAGVertex) this.edge.getSource(),
-          (MapperDAGVertex) this.edge.getTarget(), this.routeIndex, this.nodeIndex);
+          (MapperDAGVertex) this.edge.getTarget(), this.routeIndex, this.nodeIndex, null);
       this.implementation.getTimings().dedicate(this.tVertex);
       this.implementation.getMappings().dedicate(this.tVertex);
 

@@ -48,9 +48,7 @@ import org.eclipse.core.runtime.Path;
 import org.preesm.commons.doc.annotations.Port;
 import org.preesm.commons.doc.annotations.PreesmTask;
 import org.preesm.commons.exceptions.PreesmException;
-import org.preesm.commons.exceptions.PreesmFrameworkException;
 import org.preesm.commons.exceptions.PreesmRuntimeException;
-import org.preesm.model.pisdf.Parameter;
 import org.preesm.model.pisdf.PiGraph;
 import org.preesm.model.scenario.ParameterValue;
 import org.preesm.model.scenario.PreesmScenario;
@@ -100,19 +98,19 @@ public class AlgorithmAndArchitectureScenarioNode extends AbstractScenarioImplem
 
     try {
       scenario = scenarioParser.parseXmlFile(file);
-
-      if (scenario.isIBSDFScenario()) {
-        throw new PreesmFrameworkException("IBSDF is not supported anymore");
-      } else if (scenario.isPISDFScenario()) {
-        piAlgorithm = scenarioParser.getPiGraph();
-        applyScenarioParameterValues(scenario, piAlgorithm);
-      }
+      piAlgorithm = scenario.getAlgorithm();
+      applyScenarioParameterValues(scenario, piAlgorithm);
     } catch (FileNotFoundException | CoreException e) {
       throw new PreesmRuntimeException(e.getMessage());
     }
 
     // Retrieving the architecture
-    final Design slamDesign = scenarioParser.getDesign();
+    final Design slamDesign = scenario.getDesign();
+
+    if (!scenario.isProperlySet()) {
+      throw new PreesmRuntimeException(
+          "Scenario is not complete. Please make sure PiSDF algorithm and Slam design are set properly.");
+    }
 
     outputs.put(AbstractWorkflowNodeImplementation.KEY_SCENARIO, scenario);
     outputs.put(AbstractWorkflowNodeImplementation.KEY_PI_GRAPH, piAlgorithm);
@@ -123,19 +121,13 @@ public class AlgorithmAndArchitectureScenarioNode extends AbstractScenarioImplem
   private void applyScenarioParameterValues(final PreesmScenario scenario, final PiGraph piAlgorithm) {
     for (final ParameterValue paramValue : scenario.getParameterValueManager().getParameterValues()) {
 
-      final String variableName = paramValue.getName();
       final String newValue = paramValue.getValue();
       final String expression = paramValue.getExpression();
-      final String parentVertex = paramValue.getParentVertex();
 
       if (newValue != null) {
-        // note: need to lookup since graph reconnector may have changed Paramter objects
-        final Parameter lookupParameterGivenGraph = piAlgorithm.lookupParameterGivenGraph(variableName, parentVertex);
-        lookupParameterGivenGraph.setExpression(newValue);
+        paramValue.getParameter().setExpression(newValue);
       } else if (expression != null) {
-        // note: need to lookup since graph reconnector may have changed Paramter objects
-        final Parameter lookupParameterGivenGraph = piAlgorithm.lookupParameterGivenGraph(variableName, parentVertex);
-        lookupParameterGivenGraph.setExpression(expression);
+        paramValue.getParameter().setExpression(expression);
       } else {
         // keep value from PiSDF graph
       }

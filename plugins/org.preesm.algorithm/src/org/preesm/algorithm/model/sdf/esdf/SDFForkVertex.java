@@ -42,6 +42,7 @@ import org.preesm.algorithm.model.AbstractEdge;
 import org.preesm.algorithm.model.PropertySource;
 import org.preesm.algorithm.model.sdf.SDFEdge;
 import org.preesm.algorithm.model.sdf.SDFInterfaceVertex;
+import org.preesm.model.pisdf.AbstractVertex;
 
 /**
  * Class to represent fork vertices (explode).
@@ -60,8 +61,8 @@ public class SDFForkVertex extends SDFAbstractSpecialVertex {
   /**
    * Creates a new SDFInterfaceVertex with the default direction (SINK).
    */
-  public SDFForkVertex() {
-    super();
+  public SDFForkVertex(AbstractVertex origVertex) {
+    super(origVertex);
     setKind(SDFForkVertex.FORK);
     setNbRepeat(1L);
   }
@@ -146,7 +147,7 @@ public class SDFForkVertex extends SDFAbstractSpecialVertex {
   @Override
   public SDFForkVertex copy() {
     // Copy the vertex properties
-    final SDFForkVertex newVertex = new SDFForkVertex();
+    final SDFForkVertex newVertex = new SDFForkVertex(origVertex);
     for (final String key : getPropertyBean().keys()) {
       if (getPropertyBean().getValue(key) != null) {
         final Object val = getPropertyBean().getValue(key);

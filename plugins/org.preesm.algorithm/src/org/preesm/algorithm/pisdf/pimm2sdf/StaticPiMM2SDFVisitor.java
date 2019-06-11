@@ -274,7 +274,7 @@ public class StaticPiMM2SDFVisitor extends PiMMSwitch<Boolean> {
         sdfInputPort = (SDFSourceInterfaceVertex) sdfTarget;
       } else {
         // Otherwise create a new port and add it to the SDF vertex
-        sdfInputPort = new SDFSourceInterfaceVertex();
+        sdfInputPort = new SDFSourceInterfaceVertex(null);
         sdfInputPort.setName(dip.getName());
         sdfTarget.addSource(sdfInputPort);
       }
@@ -293,7 +293,7 @@ public class StaticPiMM2SDFVisitor extends PiMMSwitch<Boolean> {
         sdfOutputPort = (SDFSinkInterfaceVertex) sdfSource;
       } else {
         // Otherwise create a new port and add it to the SDF vertex
-        sdfOutputPort = new SDFSinkInterfaceVertex();
+        sdfOutputPort = new SDFSinkInterfaceVertex(null);
         sdfOutputPort.setName(dop.getName());
         sdfSource.addSink(sdfOutputPort);
       }
@@ -325,7 +325,7 @@ public class StaticPiMM2SDFVisitor extends PiMMSwitch<Boolean> {
    */
   @Override
   public Boolean caseActor(final Actor a) {
-    final SDFVertex v = new SDFVertex();
+    final SDFVertex v = new SDFVertex(a);
     this.piVx2SDFVx.put(a, v);
     // Handle vertex's name
     v.setName(a.getName());
@@ -465,7 +465,7 @@ public class StaticPiMM2SDFVisitor extends PiMMSwitch<Boolean> {
 
   @Override
   public Boolean caseDataInputInterface(final DataInputInterface dii) {
-    final SDFSourceInterfaceVertex v = new SDFSourceInterfaceVertex();
+    final SDFSourceInterfaceVertex v = new SDFSourceInterfaceVertex(dii);
     this.piVx2SDFVx.put(dii, v);
     v.setName(dii.getName());
 
@@ -477,7 +477,7 @@ public class StaticPiMM2SDFVisitor extends PiMMSwitch<Boolean> {
 
   @Override
   public Boolean caseDataOutputInterface(final DataOutputInterface doi) {
-    final SDFSinkInterfaceVertex v = new SDFSinkInterfaceVertex();
+    final SDFSinkInterfaceVertex v = new SDFSinkInterfaceVertex(doi);
     this.piVx2SDFVx.put(doi, v);
     v.setName(doi.getName());
 
@@ -567,7 +567,7 @@ public class StaticPiMM2SDFVisitor extends PiMMSwitch<Boolean> {
 
   @Override
   public Boolean caseBroadcastActor(final BroadcastActor ba) {
-    final SDFBroadcastVertex bv = new SDFBroadcastVertex();
+    final SDFBroadcastVertex bv = new SDFBroadcastVertex(ba);
     this.piVx2SDFVx.put(ba, bv);
     // Handle vertex's name
     bv.setName(ba.getName());
@@ -593,7 +593,7 @@ public class StaticPiMM2SDFVisitor extends PiMMSwitch<Boolean> {
 
   @Override
   public Boolean caseJoinActor(final JoinActor ja) {
-    final SDFJoinVertex jv = new SDFJoinVertex();
+    final SDFJoinVertex jv = new SDFJoinVertex(ja);
     this.piVx2SDFVx.put(ja, jv);
     // Handle vertex's name
     jv.setName(ja.getName());
@@ -619,7 +619,7 @@ public class StaticPiMM2SDFVisitor extends PiMMSwitch<Boolean> {
 
   @Override
   public Boolean caseForkActor(final ForkActor fa) {
-    final SDFForkVertex fv = new SDFForkVertex();
+    final SDFForkVertex fv = new SDFForkVertex(fa);
     this.piVx2SDFVx.put(fa, fv);
     // Handle vertex's name
     fv.setName(fa.getName());
@@ -645,7 +645,7 @@ public class StaticPiMM2SDFVisitor extends PiMMSwitch<Boolean> {
 
   @Override
   public Boolean caseRoundBufferActor(final RoundBufferActor rba) {
-    final SDFRoundBufferVertex rbv = new SDFRoundBufferVertex();
+    final SDFRoundBufferVertex rbv = new SDFRoundBufferVertex(rba);
     this.piVx2SDFVx.put(rba, rbv);
     // Handle vertex's name
     rbv.setName(rba.getName());
@@ -780,7 +780,7 @@ public class StaticPiMM2SDFVisitor extends PiMMSwitch<Boolean> {
     } else {
       // If result != null, pg is not the first PiGraph we encounter, it is a
       // subgraph
-      final SDFVertex v = new SDFVertex();
+      final SDFVertex v = new SDFVertex(pg);
       this.piVx2SDFVx.put(pg, v);
       // Handle vertex's name
       v.setName(pg.getName());

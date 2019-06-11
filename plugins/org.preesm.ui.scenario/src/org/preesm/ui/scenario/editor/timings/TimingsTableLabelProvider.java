@@ -37,6 +37,7 @@
 package org.preesm.ui.scenario.editor.timings;
 
 import java.net.URL;
+import java.util.List;
 import org.eclipse.jface.dialogs.IInputValidator;
 import org.eclipse.jface.dialogs.InputDialog;
 import org.eclipse.jface.resource.ImageDescriptor;
@@ -52,12 +53,11 @@ import org.eclipse.swt.widgets.Combo;
 import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.IPropertyListener;
 import org.eclipse.ui.PlatformUI;
-import org.preesm.algorithm.model.sdf.SDFVertex;
-import org.preesm.commons.exceptions.PreesmFrameworkException;
 import org.preesm.commons.files.PreesmResourcesHelper;
 import org.preesm.model.pisdf.AbstractActor;
 import org.preesm.model.scenario.PreesmScenario;
 import org.preesm.model.scenario.Timing;
+import org.preesm.model.slam.component.Component;
 import org.preesm.ui.PreesmUIPlugin;
 import org.preesm.ui.scenario.editor.Messages;
 
@@ -72,7 +72,7 @@ public class TimingsTableLabelProvider implements ITableLabelProvider, Selection
   private PreesmScenario scenario = null;
 
   /** The current op def id. */
-  private String currentOpDefId = null;
+  private Component currentOpDefId = null;
 
   /** The table viewer. */
   private TableViewer tableViewer = null;
@@ -110,6 +110,9 @@ public class TimingsTableLabelProvider implements ITableLabelProvider, Selection
     final URL okIconURL = PreesmResourcesHelper.getInstance().resolve("icons/ok.png", PreesmUIPlugin.class);
     imageDcr = ImageDescriptor.createFromURL(okIconURL);
     this.imageOk = imageDcr.createImage();
+
+    final List<Component> operators = scenario.getOperatorDefinitions();
+    this.currentOpDefId = operators.get(0);
   }
 
   /*
@@ -119,11 +122,7 @@ public class TimingsTableLabelProvider implements ITableLabelProvider, Selection
    */
   @Override
   public Image getColumnImage(final Object element, final int columnIndex) {
-    if (this.scenario.isPISDFScenario()) {
-      return getPISDFColumnImage(element, columnIndex);
-    } else {
-      return null;
-    }
+    return getPISDFColumnImage(element, columnIndex);
   }
 
   /**
@@ -139,8 +138,7 @@ public class TimingsTableLabelProvider implements ITableLabelProvider, Selection
     if ((element instanceof AbstractActor) && (this.currentOpDefId != null)) {
       final AbstractActor vertex = (AbstractActor) element;
 
-      final Timing timing = this.scenario.getTimingManager().getTimingOrDefault(vertex.getVertexPath(),
-          this.currentOpDefId);
+      final Timing timing = this.scenario.getTimingManager().getTimingOrDefault(vertex, this.currentOpDefId);
       switch (columnIndex) {
         case 1:// Parsing column
           if (timing.canParse()) {
@@ -168,13 +166,7 @@ public class TimingsTableLabelProvider implements ITableLabelProvider, Selection
    */
   @Override
   public String getColumnText(final Object element, final int columnIndex) {
-    if (this.scenario.isPISDFScenario()) {
-      return getPISDFColumnText(element, columnIndex);
-    } else if (this.scenario.isIBSDFScenario()) {
-      throw new PreesmFrameworkException("ibsdf not supproted anymore");
-    } else {
-      return null;
-    }
+    return getPISDFColumnText(element, columnIndex);
   }
 
   /**
@@ -191,8 +183,7 @@ public class TimingsTableLabelProvider implements ITableLabelProvider, Selection
     if ((element instanceof AbstractActor) && (this.currentOpDefId != null)) {
       final AbstractActor vertex = (AbstractActor) element;
 
-      final Timing timing = this.scenario.getTimingManager().getTimingOrDefault(vertex.getVertexPath(),
-          this.currentOpDefId);
+      final Timing timing = this.scenario.getTimingManager().getTimingOrDefault(vertex, this.currentOpDefId);
 
       switch (columnIndex) {
         case 0:
@@ -262,8 +253,7 @@ public class TimingsTableLabelProvider implements ITableLabelProvider, Selection
     if (e.getSource() instanceof Combo) {
       final Combo combo = ((Combo) e.getSource());
       final String item = combo.getItem(combo.getSelectionIndex());
-
-      this.currentOpDefId = item;
+      this.currentOpDefId = this.scenario.getDesign().getComponent(item);
       this.tableViewer.refresh();
     }
 
@@ -278,28 +268,28 @@ public class TimingsTableLabelProvider implements ITableLabelProvider, Selection
   public void handleDoubleClick(final IStructuredSelection selection) {
     final IInputValidator validator = newText -> null;
 
-    String vertexName = null;
-    if (selection.getFirstElement() instanceof SDFVertex) {
-      vertexName = ((SDFVertex) selection.getFirstElement()).getName();
-    } else if (selection.getFirstElement() instanceof AbstractActor) {
-      vertexName = ((AbstractActor) selection.getFirstElement()).getVertexPath();
-    }
+    final Object firstElement = selection.getFirstElement();
+    if (firstElement instanceof AbstractActor) {
+      final AbstractActor abstractActor = (AbstractActor) firstElement;
 
-    if ((vertexName != null) && (this.currentOpDefId != null)) {
-      final String title = Messages.getString("Timings.dialog.title");
-      final String message = Messages.getString("Timings.dialog.message") + vertexName;
-      final String init = this.scenario.getTimingManager().getTimingOrDefault(vertexName, this.currentOpDefId)
-          .getStringValue();
+      if (this.currentOpDefId != null) {
+        final String title = Messages.getString("Timings.dialog.title");
+        final String message = Messages.getString("Timings.dialog.message") + abstractActor.getVertexPath();
+        final String init = this.scenario.getTimingManager().getTimingOrDefault(abstractActor, this.currentOpDefId)
+            .getStringValue();
 
-      final InputDialog dialog = new InputDialog(PlatformUI.getWorkbench().getActiveWorkbenchWindow().getShell(), title,
-          message, init, validator);
-      if (dialog.open() == Window.OK) {
-        final String value = dialog.getValue();
+        final InputDialog dialog = new InputDialog(PlatformUI.getWorkbench().getActiveWorkbenchWindow().getShell(),
+            title, message, init, validator);
+        if (dialog.open() == Window.OK) {
+          final String value = dialog.getValue();
 
-        this.scenario.getTimingManager().setTiming(vertexName, this.currentOpDefId, value);
-        this.propertyListener.propertyChanged(this, IEditorPart.PROP_DIRTY);
-        this.tableViewer.refresh();
+          this.scenario.getTimingManager().setTiming(abstractActor, this.currentOpDefId, value);
+          this.propertyListener.propertyChanged(this, IEditorPart.PROP_DIRTY);
+          this.tableViewer.refresh();
+        }
       }
+    } else {
+      System.out.println("hem");
     }
   }
 

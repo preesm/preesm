@@ -73,14 +73,14 @@ public class SDFVertexFactory implements IModelVertexFactory<SDFAbstractVertex> 
    * @see org.ietr.dftools.algorithm.factories.ModelVertexFactory#createVertex(org.w3c.dom.Element)
    */
   @Override
-  public SDFAbstractVertex createVertex(final Element vertexElt) {
+  public SDFAbstractVertex createVertex(final Element vertexElt, org.preesm.model.pisdf.AbstractVertex origVertex) {
     final String kind = getProperty(vertexElt, AbstractVertex.KIND_LITERAL);
     if (kind == null) {
       throw new NullPointerException("Vertex elements should have a child element of type 'kind'");
     } else {
       switch (kind) {
         case SDFVertex.VERTEX:
-          final SDFVertex newVertex = new SDFVertex();
+          final SDFVertex newVertex = new SDFVertex(origVertex);
           newVertex.setName("default");
           return newVertex;
 
@@ -88,24 +88,24 @@ public class SDFVertexFactory implements IModelVertexFactory<SDFAbstractVertex> 
           final String direction = getProperty(vertexElt, SDFInterfaceVertex.PORT_DIRECTION);
           if (direction != null) {
             if (direction.equals(InterfaceDirection.INPUT.name())) {
-              return new SDFSourceInterfaceVertex();
+              return new SDFSourceInterfaceVertex(origVertex);
             } else if (direction.equals(InterfaceDirection.OUTPUT.name())) {
-              return new SDFSinkInterfaceVertex();
+              return new SDFSinkInterfaceVertex(origVertex);
             }
           }
           return null;
 
         case SDFBroadcastVertex.BROADCAST:
-          return new SDFBroadcastVertex();
+          return new SDFBroadcastVertex(origVertex);
 
         case SDFRoundBufferVertex.ROUND_BUFFER:
-          return new SDFRoundBufferVertex();
+          return new SDFRoundBufferVertex(origVertex);
 
         case SDFForkVertex.FORK:
-          return new SDFForkVertex();
+          return new SDFForkVertex(origVertex);
 
         case SDFJoinVertex.JOIN:
-          return new SDFJoinVertex();
+          return new SDFJoinVertex(origVertex);
 
         case SDFInitVertex.INIT:
           return new SDFInitVertex();
@@ -125,29 +125,30 @@ public class SDFVertexFactory implements IModelVertexFactory<SDFAbstractVertex> 
    * @deprecated Creates a vertex with the given parameters Used when kind was a node attribute, now a property
    */
   @Deprecated
-  public SDFAbstractVertex createVertex(final Map<String, String> attributes) {
+  public SDFAbstractVertex createVertex(final Map<String, String> attributes,
+      org.preesm.model.pisdf.AbstractVertex origVertex) {
     final String kind = attributes.get("kind");
     if (kind.equals(SDFVertex.VERTEX)) {
-      final SDFVertex newVertex = new SDFVertex();
+      final SDFVertex newVertex = new SDFVertex(origVertex);
       newVertex.setName("default");
       return newVertex;
     } else if (kind.equals(SDFInterfaceVertex.PORT)) {
       if (attributes.get(SDFInterfaceVertex.PORT_DIRECTION) != null) {
         if (attributes.get(SDFInterfaceVertex.PORT_DIRECTION).equals(InterfaceDirection.INPUT.name())) {
-          return new SDFSourceInterfaceVertex();
+          return new SDFSourceInterfaceVertex(origVertex);
         } else if (attributes.get(SDFInterfaceVertex.PORT_DIRECTION).equals(InterfaceDirection.OUTPUT.name())) {
-          return new SDFSinkInterfaceVertex();
+          return new SDFSinkInterfaceVertex(origVertex);
         }
         return null;
       }
     } else if (kind.equals(SDFBroadcastVertex.BROADCAST)) {
-      return new SDFBroadcastVertex();
+      return new SDFBroadcastVertex(origVertex);
     } else if (kind.equals(SDFRoundBufferVertex.ROUND_BUFFER)) {
-      return new SDFRoundBufferVertex();
+      return new SDFRoundBufferVertex(origVertex);
     } else if (kind.equals(SDFForkVertex.FORK)) {
-      return new SDFForkVertex();
+      return new SDFForkVertex(origVertex);
     } else if (kind.equals(SDFJoinVertex.JOIN)) {
-      return new SDFJoinVertex();
+      return new SDFJoinVertex(origVertex);
     } else if (kind.equals(SDFInitVertex.INIT)) {
       return new SDFInitVertex();
     }
@@ -160,7 +161,7 @@ public class SDFVertexFactory implements IModelVertexFactory<SDFAbstractVertex> 
    * @see org.ietr.dftools.algorithm.factories.ModelVertexFactory#createVertex(java.lang.String)
    */
   @Override
-  public SDFAbstractVertex createVertex(final String kind) {
+  public SDFAbstractVertex createVertex(final String kind, org.preesm.model.pisdf.AbstractVertex origVertex) {
     throw new UnsupportedOperationException("Unimplemented method");
   }
 
@@ -185,9 +186,9 @@ public class SDFVertexFactory implements IModelVertexFactory<SDFAbstractVertex> 
   public IInterface createInterface(final String name, final int dir) {
     IInterface port;
     if (dir == 1) {
-      port = new SDFSinkInterfaceVertex();
+      port = new SDFSinkInterfaceVertex(null);
     } else {
-      port = new SDFSourceInterfaceVertex();
+      port = new SDFSourceInterfaceVertex(null);
     }
     port.setName(name);
     return port;

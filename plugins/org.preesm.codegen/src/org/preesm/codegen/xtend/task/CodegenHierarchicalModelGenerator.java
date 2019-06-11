@@ -101,6 +101,7 @@ import org.preesm.model.scenario.PreesmScenario;
 import org.preesm.model.scenario.types.BufferAggregate;
 import org.preesm.model.scenario.types.BufferProperties;
 import org.preesm.model.scenario.types.DataType;
+import org.preesm.model.slam.component.Component;
 
 /**
  *
@@ -156,7 +157,7 @@ public class CodegenHierarchicalModelGenerator {
   private final Map<String, DataType> dataTypes;
 
   /**
-   * 
+   *
    */
 
   private static final String PAPIFY_PE_ID_CONSTANT_NAME = "PE_id";
@@ -848,9 +849,11 @@ public class CodegenHierarchicalModelGenerator {
     // Create the variable associated to the PAPI component
     String compsSupported = "";
     ConstantString papifyComponentName = CodegenFactory.eINSTANCE.createConstantString();
-    if (this.scenario.getPapifyConfigManager().getCorePapifyConfigGroupPE(operatorBlock.getCoreType()) != null) {
-      for (String compType : this.scenario.getPapifyConfigManager()
-          .getCorePapifyConfigGroupPE(operatorBlock.getCoreType()).getPAPIComponentIDs()) {
+    final String coreType = operatorBlock.getCoreType();
+    final Component component = scenario.getDesign().getComponent(coreType);
+    if (this.scenario.getPapifyConfigManager().getCorePapifyConfigGroupPE(component) != null) {
+      for (String compType : this.scenario.getPapifyConfigManager().getCorePapifyConfigGroupPE(component)
+          .getPAPIComponentIDs()) {
         if (compsSupported.equals("")) {
           compsSupported = compType;
         } else {

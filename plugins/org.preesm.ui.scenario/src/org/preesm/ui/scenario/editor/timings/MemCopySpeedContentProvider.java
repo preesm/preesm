@@ -43,8 +43,8 @@ import org.eclipse.jface.viewers.IStructuredContentProvider;
 import org.eclipse.jface.viewers.Viewer;
 import org.preesm.model.scenario.MemCopySpeed;
 import org.preesm.model.scenario.PreesmScenario;
+import org.preesm.model.slam.component.Component;
 
-// TODO: Auto-generated Javadoc
 /**
  * Provides the elements contained in the memcopy speeds editor.
  *
@@ -69,7 +69,7 @@ public class MemCopySpeedContentProvider implements IStructuredContentProvider {
       /**
        * Memcopy speeds are added for all operator types if non present
        */
-      for (final String opDefId : inputScenario.getOperatorDefinitionIds()) {
+      for (final Component opDefId : inputScenario.getOperatorDefinitions()) {
         if (!inputScenario.getTimingManager().hasMemCpySpeed(opDefId)) {
           inputScenario.getTimingManager().setDefaultMemCpySpeed(opDefId);
         }
@@ -78,7 +78,8 @@ public class MemCopySpeedContentProvider implements IStructuredContentProvider {
       // Retrieving the memory copy speeds in operator definition order
       this.elementList = new ArrayList<>(inputScenario.getTimingManager().getMemcpySpeeds().values());
 
-      Collections.sort(this.elementList, (o1, o2) -> o1.getOperatorDef().compareTo(o2.getOperatorDef()));
+      Collections.sort(this.elementList,
+          (o1, o2) -> o1.getOperatorDef().getVlnv().getName().compareTo(o2.getOperatorDef().getVlnv().getName()));
     }
     return this.elementList.toArray();
   }

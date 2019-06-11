@@ -45,8 +45,11 @@ import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import org.preesm.commons.model.PreesmCopyTracker;
+import org.preesm.model.pisdf.AbstractActor;
 import org.preesm.model.scenario.serialize.CsvTimingParser;
 import org.preesm.model.scenario.serialize.ExcelTimingParser;
+import org.preesm.model.slam.component.Component;
 
 /**
  * Manager of the graphs timings.
@@ -55,9 +58,6 @@ import org.preesm.model.scenario.serialize.ExcelTimingParser;
  */
 public class TimingManager {
 
-  /** Default timing when none was set. */
-  public final Timing defaultTiming;
-
   /** List of all timings. */
   private final List<Timing> timings;
 
@@ -65,7 +65,7 @@ public class TimingManager {
   private String excelFileURL = "";
 
   /** Storing setup time and speed of memcpy for each type of operator. */
-  private final Map<String, MemCopySpeed> memcpySpeeds;
+  private final Map<Component, MemCopySpeed> memcpySpeeds;
 
   /** Default value for a memcpy setup time. */
   private static final long DEFAULTMEMCPYSETUPTIME = 1;
@@ -73,13 +73,15 @@ public class TimingManager {
   /** Default value for a memcpy speed. */
   private static final float DEFAULTMEMCPYTIMEPERUNIT = 1.0f;
 
+  private final PreesmScenario preesmScenario;
+
   /**
    * Instantiates a new timing manager.
    */
-  public TimingManager() {
+  public TimingManager(final PreesmScenario preesmScenario) {
+    this.preesmScenario = preesmScenario;
     this.timings = new ArrayList<>();
     this.memcpySpeeds = new LinkedHashMap<>();
-    this.defaultTiming = new Timing("default", "default", Timing.DEFAULT_TASK_TIME);
   }
 
   /**
@@ -111,7 +113,7 @@ public class TimingManager {
    *          the operator definition id
    * @return the timing
    */
-  public Timing addTiming(final String dagVertexId, final String operatorDefinitionId) {
+  public Timing addTiming(final AbstractActor dagVertexId, final Component operatorDefinitionId) {
 
     final Timing newt = new Timing(operatorDefinitionId, dagVertexId);
     for (final Timing timing : this.timings) {
@@ -134,7 +136,7 @@ public class TimingManager {
    * @param time
    *          the time
    */
-  public void setTiming(final String dagVertexId, final String operatorDefinitionId, final long time) {
+  public void setTiming(final AbstractActor dagVertexId, final Component operatorDefinitionId, final long time) {
     addTiming(dagVertexId, operatorDefinitionId).setTime(time);
   }
 
@@ -148,7 +150,7 @@ public class TimingManager {
    * @param value
    *          the value
    */
-  public void setTiming(final String dagVertexId, final String operatorDefinitionId, final String value) {
+  public void setTiming(final AbstractActor dagVertexId, final Component operatorDefinitionId, final String value) {
     addTiming(dagVertexId, operatorDefinitionId).setStringValue(value);
   }
 
@@ -161,17 +163,20 @@ public class TimingManager {
    *          the operator definition id
    * @return the timing or default
    */
-  public Timing getTimingOrDefault(final String dagVertexId, final String operatorDefinitionId) {
+  public Timing getTimingOrDefault(final AbstractActor dagVertexId, final Component operatorDefinitionId) {
     Timing val = null;
 
+    final AbstractActor originalSource = PreesmCopyTracker.getOriginalSource(dagVertexId);
+
     for (final Timing timing : this.timings) {
-      if (timing.getVertexId().equals(dagVertexId) && timing.getOperatorDefinitionId().equals(operatorDefinitionId)) {
+      if (timing.getVertexId().equals(originalSource)
+          && timing.getOperatorDefinitionId().equals(operatorDefinitionId)) {
         val = timing;
       }
     }
 
     if (val == null) {
-      val = this.defaultTiming;
+      val = new Timing(operatorDefinitionId, dagVertexId);
     }
 
     return val;
@@ -221,10 +226,10 @@ public class TimingManager {
         final String[] fileExt = this.excelFileURL.split("\\.");
         switch (fileExt[fileExt.length - 1]) {
           case "xls":
-            excelParser.parse(this.excelFileURL, currentScenario.getOperatorDefinitionIds());
+            excelParser.parse(this.excelFileURL, currentScenario.getOperatorDefinitions());
             break;
           case "csv":
-            csvParser.parse(this.excelFileURL, currentScenario.getOperatorDefinitionIds());
+            csvParser.parse(this.excelFileURL, currentScenario.getOperatorDefinitions());
             break;
           default:
         }
@@ -251,7 +256,7 @@ public class TimingManager {
    *          the operator def
    * @return the memcpy setup time
    */
-  public long getMemcpySetupTime(final String operatorDef) {
+  public long getMemcpySetupTime(final Component operatorDef) {
     return this.memcpySpeeds.get(operatorDef).getSetupTime();
   }
 
@@ -262,7 +267,7 @@ public class TimingManager {
    *          the operator def
    * @return the memcpy time per unit
    */
-  public float getMemcpyTimePerUnit(final String operatorDef) {
+  public double getMemcpyTimePerUnit(final Component operatorDef) {
     return this.memcpySpeeds.get(operatorDef).getTimePerUnit();
   }
 
@@ -271,7 +276,7 @@ public class TimingManager {
    *
    * @return the memcpy speeds
    */
-  public Map<String, MemCopySpeed> getMemcpySpeeds() {
+  public Map<Component, MemCopySpeed> getMemcpySpeeds() {
     return this.memcpySpeeds;
   }
 
@@ -282,7 +287,7 @@ public class TimingManager {
    *          the operator def
    * @return true, if successful
    */
-  public boolean hasMemCpySpeed(final String operatorDef) {
+  public boolean hasMemCpySpeed(final Component operatorDef) {
     return this.memcpySpeeds.keySet().contains(operatorDef);
   }
 
@@ -292,7 +297,7 @@ public class TimingManager {
    * @param operatorDef
    *          the new default mem cpy speed
    */
-  public void setDefaultMemCpySpeed(final String operatorDef) {
+  public void setDefaultMemCpySpeed(final Component operatorDef) {
     putMemcpySpeed(
         new MemCopySpeed(operatorDef, TimingManager.DEFAULTMEMCPYSETUPTIME, TimingManager.DEFAULTMEMCPYTIMEPERUNIT));
   }

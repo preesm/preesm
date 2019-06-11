@@ -124,7 +124,7 @@ public class PiParameterTableLabelProvider extends LabelProvider implements ITab
       case 0: // Actors Column
         return paramValue.getName();
       case 1: // Path Column
-        return paramValue.getParentVertex();
+        return paramValue.getParameter().getContainingPiGraph().getName();
       case 2: // Type Column
         return paramValue.getType().toString();
       case 3: // Variables Column

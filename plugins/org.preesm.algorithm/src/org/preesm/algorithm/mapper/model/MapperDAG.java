@@ -98,10 +98,6 @@ public class MapperDAG extends DirectedAcyclicGraph {
 
   }
 
-  public MapperDAG() {
-    this(null);
-  }
-
   /**
    * Gets the schedule cost.
    *

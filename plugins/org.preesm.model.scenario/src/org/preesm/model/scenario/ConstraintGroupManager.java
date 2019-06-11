@@ -45,6 +45,7 @@ import java.util.Set;
 import org.eclipse.core.runtime.CoreException;
 import org.preesm.model.pisdf.AbstractActor;
 import org.preesm.model.scenario.serialize.ExcelConstraintsParser;
+import org.preesm.model.slam.ComponentInstance;
 
 /**
  * container and manager of Constraint groups. It can load and store constraint groups
@@ -59,10 +60,13 @@ public class ConstraintGroupManager {
   /** Path to a file containing constraints. */
   private String excelFileURL = "";
 
+  private final PreesmScenario preesmScenario;
+
   /**
    * Instantiates a new constraint group manager.
    */
-  public ConstraintGroupManager() {
+  public ConstraintGroupManager(final PreesmScenario preesmScenario) {
+    this.preesmScenario = preesmScenario;
     this.constraintgroups = new LinkedHashSet<>();
   }
 
@@ -85,7 +89,7 @@ public class ConstraintGroupManager {
    * @param vertex
    *          the vertex
    */
-  public void addConstraint(final String opId, final AbstractActor vertex) {
+  public void addConstraint(final ComponentInstance opId, final AbstractActor vertex) {
 
     ConstraintGroup cg = getOpConstraintGroups(opId);
 
@@ -93,7 +97,7 @@ public class ConstraintGroupManager {
       cg = new ConstraintGroup(opId);
       this.constraintgroups.add(cg);
     }
-    cg.addActorPath(vertex.getVertexPath());
+    cg.addActorPath(vertex);
   }
 
   /**
@@ -104,7 +108,7 @@ public class ConstraintGroupManager {
    * @param vertexSet
    *          the vertex set
    */
-  public void addConstraints(final String opId, final Set<String> vertexSet) {
+  public void addConstraints(final ComponentInstance opId, final Set<AbstractActor> vertexSet) {
 
     ConstraintGroup cg = getOpConstraintGroups(opId);
 
@@ -123,11 +127,11 @@ public class ConstraintGroupManager {
    * @param vertex
    *          the vertex
    */
-  public void removeConstraint(final String opId, final AbstractActor vertex) {
+  public void removeConstraint(final ComponentInstance opId, final AbstractActor vertex) {
     final ConstraintGroup cgSet = getOpConstraintGroups(opId);
 
     if (cgSet != null) {
-      cgSet.removeVertexPath(vertex.getVertexPath());
+      cgSet.removeVertexPath(vertex);
     }
   }
 
@@ -148,7 +152,7 @@ public class ConstraintGroupManager {
    *          the op id
    * @return the op constraint groups
    */
-  public ConstraintGroup getOpConstraintGroups(final String opId) {
+  public ConstraintGroup getOpConstraintGroups(final ComponentInstance opId) {
     for (final ConstraintGroup cg : this.constraintgroups) {
       if (cg.hasOperatorId(opId)) {
         return cg;
@@ -173,13 +177,13 @@ public class ConstraintGroupManager {
    */
   @Override
   public String toString() {
-    String s = "";
+    final StringBuilder sb = new StringBuilder();
 
     for (final ConstraintGroup cg : this.constraintgroups) {
-      s += cg.toString();
+      sb.append(cg.toString());
     }
 
-    return s;
+    return sb.toString();
   }
 
   /**
@@ -214,7 +218,7 @@ public class ConstraintGroupManager {
   public void importConstraints(final PreesmScenario currentScenario) throws FileNotFoundException, CoreException {
     if (!this.excelFileURL.isEmpty() && (currentScenario != null)) {
       final ExcelConstraintsParser parser = new ExcelConstraintsParser(currentScenario);
-      parser.parse(this.excelFileURL, currentScenario.getOperatorIds());
+      parser.parse(this.excelFileURL, currentScenario.getOperators());
     }
   }
 

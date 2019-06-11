@@ -49,26 +49,37 @@ type double wraps double
 
 
 class Design extends VLNVedElement , ParameterizedElement {
+
+	// URL to the file where this graph is saved
+	String url
+
 	contains unordered ComponentInstance[] componentInstances keys instanceName
 	contains Link[] links
 	contains HierarchyPort[] hierarchyPorts
 	container Component refined opposite refinements
-	String path
+
 	refers ComponentHolder componentHolder
 
-	op boolean containsComponentInstance(String name) {
-		return componentInstances.exists[instanceName == name]
-	}
 
 	op boolean containsComponent(VLNV name) {
 		return componentHolder.components.exists[VLNVComparator.areSame(vlnv,name)]
 	}
-	op ComponentInstance getComponentInstance(String name) {
-		return componentInstances.findFirst[instanceName == name]
+	op boolean containsComponent(String vlnvName) {
+		return componentHolder.components.exists[vlnvName.equals(it.vlnv.name)]
 	}
 
 	op Component getComponent(VLNV name) {
 		return componentHolder.components.findFirst[VLNVComparator.areSame(vlnv,name)]
+	}
+	op Component getComponent(String vlnvName) {
+		return componentHolder.components.findFirst[vlnvName.equals(it.vlnv.name)]
+	}
+
+	op boolean containsComponentInstance(String name) {
+		return componentInstances.exists[instanceName == name]
+	}
+	op ComponentInstance getComponentInstance(String name) {
+		return componentInstances.findFirst[instanceName == name]
 	}
 }
 

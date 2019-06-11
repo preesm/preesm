@@ -208,6 +208,9 @@ abstract class AbstractActor extends Configurable {
 
 class PiGraph extends AbstractActor, Graph {
 
+	// URL to the file where this graph is saved
+	String url
+
 	op boolean isLocallyStatic() {
 		// a PiGraph is static if all the parameters it contains are static
 		// and if the input setters on its config interfaces are static
@@ -322,6 +325,11 @@ class PiGraph extends AbstractActor, Graph {
 	op AbstractVertex lookupVertex(String vertexName) {
 		return (actors + parameters).findFirst[it.name == vertexName]
 	}
+
+	op AbstractVertex lookupAllVertex(String vertexName) {
+		return (allActors + allParameters).findFirst[it.name == vertexName]
+	}
+
 	op Fifo lookupFifo(String fifoId) {
 		return fifos.findFirst[it.id == fifoId]
 	}

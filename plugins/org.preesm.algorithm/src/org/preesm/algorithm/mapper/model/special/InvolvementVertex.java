@@ -38,6 +38,7 @@ package org.preesm.algorithm.mapper.model.special;
 
 import org.preesm.algorithm.mapper.model.MapperDAG;
 import org.preesm.algorithm.mapper.model.MapperDAGVertex;
+import org.preesm.model.pisdf.AbstractVertex;
 
 // TODO: Auto-generated Javadoc
 /**
@@ -55,8 +56,8 @@ public class InvolvementVertex extends MapperDAGVertex {
    * @param base
    *          the base
    */
-  public InvolvementVertex(final String id, final MapperDAG base) {
-    super(id, base);
+  public InvolvementVertex(final String id, final MapperDAG base, AbstractVertex origVertex) {
+    super(id, base, origVertex);
   }
 
 }
