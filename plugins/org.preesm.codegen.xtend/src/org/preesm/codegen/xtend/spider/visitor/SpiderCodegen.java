@@ -204,11 +204,11 @@ public class SpiderCodegen {
     // Generate constraints
     this.constraints = new LinkedHashMap<>();
     for (final ConstraintGroup cg : this.scenario.getConstraintGroupManager().getConstraintGroups()) {
-      for (final AbstractActor aa : cg.getVertexPaths()) {
+      for (final AbstractActor aa : cg.getActors()) {
         if (this.constraints.get(aa) == null) {
           this.constraints.put(aa, new LinkedHashSet<ComponentInstance>());
         }
-        final ComponentInstance core = cg.getOperatorId();
+        final ComponentInstance core = cg.getComponentInstance();
         this.constraints.get(aa).add(core);
       }
     }

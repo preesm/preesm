@@ -43,7 +43,6 @@ package org.preesm.algorithm.pisdf.pimm2srdag;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-import java.util.Set;
 import org.eclipse.core.runtime.Path;
 import org.preesm.algorithm.codegen.idl.ActorPrototypes;
 import org.preesm.algorithm.codegen.idl.Prototype;
@@ -632,10 +631,10 @@ public class StaticPiMM2MapperDAGVisitor extends PiMMSwitch<Boolean> {
     final AbstractActor actor = PreesmCopyTracker.getOriginalSource(copyActor);
     // Add the scenario constraints
     final List<ComponentInstance> currentOperatorIDs = new ArrayList<>();
-    final Set<ConstraintGroup> constraintGroups = scenario.getConstraintGroupManager().getConstraintGroups();
+    final List<ConstraintGroup> constraintGroups = scenario.getConstraintGroupManager().getConstraintGroups();
     for (final ConstraintGroup cg : constraintGroups) {
-      final Set<AbstractActor> vertexPaths = cg.getVertexPaths();
-      final ComponentInstance operatorId = cg.getOperatorId();
+      final List<AbstractActor> vertexPaths = cg.getActors();
+      final ComponentInstance operatorId = cg.getComponentInstance();
       if (vertexPaths.contains(actor)) {
         currentOperatorIDs.add(operatorId);
       }

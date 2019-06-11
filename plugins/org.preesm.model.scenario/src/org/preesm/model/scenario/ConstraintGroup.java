@@ -38,9 +38,11 @@
  */
 package org.preesm.model.scenario;
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.Iterator;
-import java.util.LinkedHashSet;
-import java.util.Set;
+import java.util.List;
 import org.preesm.model.pisdf.AbstractActor;
 import org.preesm.model.slam.ComponentInstance;
 
@@ -52,17 +54,17 @@ import org.preesm.model.slam.ComponentInstance;
 public class ConstraintGroup {
 
   /** The set of processing units available for the constraint group. */
-  private final ComponentInstance operatorId;
+  private final ComponentInstance cmpInstnace;
 
   /** The set of graphs belonging to the constraint group. */
-  private final Set<AbstractActor> actorsPaths;
+  private final List<AbstractActor> actors;
 
   /**
    * Instantiates a new constraint group.
    */
   public ConstraintGroup(final ComponentInstance opId) {
-    this.operatorId = opId;
-    this.actorsPaths = new LinkedHashSet<>();
+    this.cmpInstnace = opId;
+    this.actors = new ArrayList<>();
 
   }
 
@@ -70,12 +72,12 @@ public class ConstraintGroup {
    * When a vertex is added to the constraints, its hierarchical path is added in its properties in order to separate
    * distinct vertices with same name.
    *
-   * @param vertexId
+   * @param actor
    *          the vertex id
    */
-  public void addActorPath(final AbstractActor vertexId) {
-    if (!hasVertexPath(vertexId)) {
-      this.actorsPaths.add(vertexId);
+  public void addActor(final AbstractActor actor) {
+    if (!hasActor(actor)) {
+      this.actors.add(actor);
 
     }
   }
@@ -83,24 +85,24 @@ public class ConstraintGroup {
   /**
    * Adds the vertex paths.
    *
-   * @param vertexIdSet
+   * @param actors
    *          the vertex id set
    */
-  public void addVertexPaths(final Set<AbstractActor> vertexIdSet) {
-    for (final AbstractActor vertexId : vertexIdSet) {
-      addActorPath(vertexId);
+  public void addActors(final Collection<AbstractActor> actors) {
+    for (final AbstractActor actor : actors) {
+      addActor(actor);
     }
   }
 
   /**
    * Removes the vertex paths.
    *
-   * @param vertexIdSet
+   * @param actors
    *          the vertex id set
    */
-  public void removeVertexPaths(final Set<AbstractActor> vertexIdSet) {
-    for (final AbstractActor vertexId : vertexIdSet) {
-      removeVertexPath(vertexId);
+  public void removeVertexPaths(final Collection<AbstractActor> actors) {
+    for (final AbstractActor actor : actors) {
+      removeActor(actor);
     }
   }
 
@@ -109,8 +111,8 @@ public class ConstraintGroup {
    *
    * @return the operator ids
    */
-  public ComponentInstance getOperatorId() {
-    return this.operatorId;
+  public ComponentInstance getComponentInstance() {
+    return this.cmpInstnace;
   }
 
   /**
@@ -118,31 +120,31 @@ public class ConstraintGroup {
    *
    * @return the vertex paths
    */
-  public Set<AbstractActor> getVertexPaths() {
-    return new LinkedHashSet<>(this.actorsPaths);
+  public List<AbstractActor> getActors() {
+    return Collections.unmodifiableList(this.actors);
   }
 
   /**
    * Checks for operator id.
    *
-   * @param operatorId
+   * @param cmpInstance
    *          the operator id
    * @return true, if successful
    */
-  public boolean hasOperatorId(final ComponentInstance operatorId) {
-    return this.getOperatorId().equals(operatorId);
+  public boolean isComponentInstance(final ComponentInstance cmpInstance) {
+    return this.getComponentInstance().equals(cmpInstance);
   }
 
   /**
    * Checks for vertex path.
    *
-   * @param vertexInfo
+   * @param actor
    *          the vertex info
    * @return true, if successful
    */
-  public boolean hasVertexPath(final AbstractActor vertexInfo) {
-    for (final AbstractActor vId : this.actorsPaths) {
-      if (vId.equals(vertexInfo)) {
+  public boolean hasActor(final AbstractActor actor) {
+    for (final AbstractActor a : this.actors) {
+      if (a.equals(actor)) {
         return true;
       }
     }
@@ -152,14 +154,14 @@ public class ConstraintGroup {
   /**
    * Removes the vertex path.
    *
-   * @param sdfVertexInfo
+   * @param actor
    *          the sdf vertex info
    */
-  public void removeVertexPath(final AbstractActor sdfVertexInfo) {
-    final Iterator<AbstractActor> it = this.actorsPaths.iterator();
+  public void removeActor(final AbstractActor actor) {
+    final Iterator<AbstractActor> it = this.actors.iterator();
     while (it.hasNext()) {
-      final AbstractActor v = it.next();
-      if ((v.equals(sdfVertexInfo))) {
+      final AbstractActor a = it.next();
+      if ((a.equals(actor))) {
         it.remove();
       }
     }
@@ -174,8 +176,8 @@ public class ConstraintGroup {
   @Override
   public String toString() {
     String s = "<";
-    s += this.operatorId + " - ";
-    s += this.actorsPaths.toString();
+    s += this.cmpInstnace + " - ";
+    s += this.actors.toString();
     s += ">";
 
     return s;

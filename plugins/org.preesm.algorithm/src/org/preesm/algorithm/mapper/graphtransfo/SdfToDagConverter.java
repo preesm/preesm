@@ -376,7 +376,7 @@ public class SdfToDagConverter {
 
       // Iterating over vertices in DAG with their SDF ref in the
       // constraint group
-      final Set<String> sdfVertexIds = cg.getVertexPaths().stream().map(AbstractVertex::getVertexPath)
+      final Set<String> sdfVertexIds = cg.getActors().stream().map(AbstractVertex::getVertexPath)
           .collect(Collectors.toSet());
 
       for (final DAGVertex v : dag.vertexSet()) {
@@ -387,7 +387,7 @@ public class SdfToDagConverter {
 
         if (sdfVertexIds.contains(lookingFor)) {
 
-          final ComponentInstance currentIOp = cg.getOperatorId();
+          final ComponentInstance currentIOp = cg.getComponentInstance();
           if (currentIOp.getComponent() instanceof Operator) {
 
             if (!mv.getInit().isMapable(currentIOp)) {

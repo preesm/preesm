@@ -248,7 +248,7 @@ public class ConstraintsCheckStateListener implements ISDFCheckStateListener {
       if (cg != null) {
         // Retrieves the elements in the tree that have the same name as
         // the ones to select in the constraint group
-        for (final AbstractActor v : cg.getVertexPaths()) {
+        for (final AbstractActor v : cg.getActors()) {
           if (v != null) {
             cgSet.add(v);
           }

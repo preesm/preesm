@@ -525,7 +525,7 @@ public class ScenarioParser {
     }
 
     final ConstraintGroup cg = new ConstraintGroup(opId);
-    cg.addVertexPaths(paths);
+    cg.addActors(paths);
     return cg;
   }
 
