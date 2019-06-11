@@ -35,6 +35,7 @@
  */
 package org.preesm.model.scenario.papi;
 
+import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.Map;
@@ -49,15 +50,15 @@ import org.preesm.model.slam.component.Component;
 public class PapifyConfigPE {
 
   /** The peType instance. */
-  private Component peType;
+  private Component slamComponent;
 
   private Map<String, PapiComponent> papiComponents;
 
   /**
    * Instantiates a new PapifyConfig group.
    */
-  public PapifyConfigPE(final Component peType) {
-    this.peType = peType;
+  public PapifyConfigPE(final Component slamComponent) {
+    this.slamComponent = slamComponent;
     papiComponents = new LinkedHashMap<>();
 
   }
@@ -65,33 +66,33 @@ public class PapifyConfigPE {
   /**
    * Adds the peType.
    *
-   * @param peType
+   * @param slamComponent
    *          the core instance
    */
-  public void addpeType(final Component peType) {
-    this.peType = peType;
+  public void addpeType(final Component slamComponent) {
+    this.slamComponent = slamComponent;
 
   }
 
   /**
    * Adds the PAPI component.
    *
-   * @param component
+   * @param papiComponent
    *          the PAPI component
    */
-  public void addPAPIComponent(final PapiComponent component) {
-    this.papiComponents.put(component.getId(), component);
+  public void addPAPIComponent(final PapiComponent papiComponent) {
+    this.papiComponents.put(papiComponent.getId(), papiComponent);
 
   }
 
   /**
    * Adds the PAPI components.
    *
-   * @param components
+   * @param papiComponents
    *          the PAPI components
    */
-  public void addPAPIComponents(final Set<PapiComponent> components) {
-    for (final PapiComponent component : components) {
+  public void addPAPIComponents(final Collection<PapiComponent> papiComponents) {
+    for (final PapiComponent component : papiComponents) {
       this.papiComponents.put(component.getId(), component);
     }
   }
@@ -99,23 +100,23 @@ public class PapifyConfigPE {
   /**
    * Removes the peType.
    *
-   * @param peType
+   * @param slamComponent
    *          the peType
    */
-  public void removepeType(final Component peType) {
-    if (peType.equals(this.peType)) {
-      this.peType = null;
+  public void removepeType(final Component slamComponent) {
+    if (slamComponent.equals(this.slamComponent)) {
+      this.slamComponent = null;
     }
   }
 
   /**
    * Removes the PAPI component.
    *
-   * @param component
+   * @param papiComponent
    *          the PAPI component
    */
-  public void removePAPIComponent(final PapiComponent component) {
-    this.papiComponents.remove(component.getId());
+  public void removePAPIComponent(final PapiComponent papiComponent) {
+    this.papiComponents.remove(papiComponent.getId());
   }
 
   /**
@@ -123,8 +124,8 @@ public class PapifyConfigPE {
    *
    * @return the Core id
    */
-  public Component getpeType() {
-    return (this.peType);
+  public Component getSlamComponent() {
+    return (this.slamComponent);
   }
 
   /**
@@ -148,25 +149,25 @@ public class PapifyConfigPE {
   /**
    * Checks for Core id.
    *
-   * @param peType
+   * @param slamComponent
    *          the PAPI component
    * @return true, if successful
    */
-  public boolean ispeType(final Component peType) {
+  public boolean isSlamComponent(final Component slamComponent) {
 
-    return peType.equals(this.peType);
+    return slamComponent.equals(this.slamComponent);
   }
 
   /**
    * Checks for PAPI component.
    *
-   * @param component
+   * @param papiComponent
    *          the PAPI component
    * @return true, if successful
    */
-  public boolean containsPAPIComponent(final PapiComponent component) {
+  public boolean containsPAPIComponent(final PapiComponent papiComponent) {
 
-    if (this.papiComponents.containsValue(component)) {
+    if (this.papiComponents.containsValue(papiComponent)) {
       return true;
     }
 
@@ -180,7 +181,7 @@ public class PapifyConfigPE {
 
     if (comparer instanceof PapifyConfigPE) {
       final PapifyConfigPE tester = (PapifyConfigPE) comparer;
-      if (this.peType.equals(tester.getpeType())) {
+      if (this.slamComponent.equals(tester.getSlamComponent())) {
         decision = true;
       }
     }
@@ -189,7 +190,7 @@ public class PapifyConfigPE {
 
   @Override
   public int hashCode() {
-    return this.peType.hashCode();
+    return this.slamComponent.hashCode();
   }
 
   /*
@@ -200,7 +201,7 @@ public class PapifyConfigPE {
   @Override
   public String toString() {
     String s = "<Printing core> \n";
-    s += this.peType.toString();
+    s += this.slamComponent.toString();
     s += "\n<Printing component> \n";
     s += this.papiComponents.values().toString();
     s += "<end printing>\n";

@@ -171,7 +171,7 @@ public class PapifyComponentListContentProvider2DMatrix implements ITreeContentP
     Set<PapifyConfigPE> papiConfigs = this.scenario.getPapifyConfigManager().getPapifyConfigGroupsPEs();
 
     for (PapifyConfigPE papiConfig : papiConfigs) {
-      final Component peType = papiConfig.getpeType();
+      final Component peType = papiConfig.getSlamComponent();
       for (String compName : papiConfig.getPAPIComponentIDs()) {
         String comp = compName;
         for (PapifyListTreeElement treeElement : this.componentConfig) {

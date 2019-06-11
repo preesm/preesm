@@ -108,15 +108,15 @@ public class TimingManager {
   /**
    * Adds the timing.
    *
-   * @param dagVertexId
+   * @param actor
    *          the dag vertex id
-   * @param operatorDefinitionId
+   * @param component
    *          the operator definition id
    * @return the timing
    */
-  public Timing addTiming(final AbstractActor dagVertexId, final Component operatorDefinitionId) {
+  public Timing addTiming(final AbstractActor actor, final Component component) {
 
-    final Timing newt = new Timing(operatorDefinitionId, dagVertexId);
+    final Timing newt = new Timing(component, actor);
     for (final Timing timing : this.timings) {
       if (timing.equals(newt)) {
         return timing;
@@ -130,54 +130,54 @@ public class TimingManager {
   /**
    * Sets the timing.
    *
-   * @param dagVertexId
+   * @param actor
    *          the dag vertex id
-   * @param operatorDefinitionId
+   * @param component
    *          the operator definition id
    * @param time
    *          the time
    */
-  public void setTiming(final AbstractActor dagVertexId, final Component operatorDefinitionId, final long time) {
-    addTiming(dagVertexId, operatorDefinitionId).setTime(time);
+  public void setTiming(final AbstractActor actor, final Component component, final long time) {
+    addTiming(actor, component).setTime(time);
   }
 
   /**
    * Sets the timing.
    *
-   * @param dagVertexId
+   * @param actor
    *          the dag vertex id
-   * @param operatorDefinitionId
+   * @param component
    *          the operator definition id
    * @param value
    *          the value
    */
-  public void setTiming(final AbstractActor dagVertexId, final Component operatorDefinitionId, final String value) {
-    addTiming(dagVertexId, operatorDefinitionId).setStringValue(value);
+  public void setTiming(final AbstractActor actor, final Component component, final String value) {
+    addTiming(actor, component).setStringValue(value);
   }
 
   /**
    * Looks for a timing entered in scenario editor. If there is none, returns a default value
    *
-   * @param dagVertexId
+   * @param actor
    *          the dag vertex id
-   * @param operatorDefinitionId
+   * @param component
    *          the operator definition id
    * @return the timing or default
    */
-  public Timing getTimingOrDefault(final AbstractActor dagVertexId, final Component operatorDefinitionId) {
+  public Timing getTimingOrDefault(final AbstractActor actor, final Component component) {
     Timing val = null;
 
-    final AbstractActor originalSource = PreesmCopyTracker.getOriginalSource(dagVertexId);
+    final AbstractActor originalSource = PreesmCopyTracker.getOriginalSource(actor);
 
     for (final Timing timing : this.timings) {
-      if (timing.getVertexId().equals(originalSource)
-          && timing.getOperatorDefinitionId().equals(operatorDefinitionId)) {
+      if (timing.getActor().equals(originalSource)
+          && timing.getComponent().equals(component)) {
         val = timing;
       }
     }
 
     if (val == null) {
-      val = new Timing(operatorDefinitionId, dagVertexId);
+      val = new Timing(component, actor);
     }
 
     return val;
@@ -247,29 +247,29 @@ public class TimingManager {
    *          the speed
    */
   public void putMemcpySpeed(final MemCopySpeed speed) {
-    this.memcpySpeeds.put(speed.getOperatorDef(), speed);
+    this.memcpySpeeds.put(speed.getComponent(), speed);
   }
 
   /**
    * For a type of operator, gets a memcopy setup time.
    *
-   * @param operatorDef
+   * @param component
    *          the operator def
    * @return the memcpy setup time
    */
-  public long getMemcpySetupTime(final Component operatorDef) {
-    return this.memcpySpeeds.get(operatorDef).getSetupTime();
+  public long getMemcpySetupTime(final Component component) {
+    return this.memcpySpeeds.get(component).getSetupTime();
   }
 
   /**
    * For a type of operator, gets the INVERSED memcopy speed (time per memory unit.
    *
-   * @param operatorDef
+   * @param component
    *          the operator def
    * @return the memcpy time per unit
    */
-  public double getMemcpyTimePerUnit(final Component operatorDef) {
-    return this.memcpySpeeds.get(operatorDef).getTimePerUnit();
+  public double getMemcpyTimePerUnit(final Component component) {
+    return this.memcpySpeeds.get(component).getTimePerUnit();
   }
 
   /**
@@ -284,22 +284,22 @@ public class TimingManager {
   /**
    * Checks for mem cpy speed.
    *
-   * @param operatorDef
+   * @param component
    *          the operator def
    * @return true, if successful
    */
-  public boolean hasMemCpySpeed(final Component operatorDef) {
-    return this.memcpySpeeds.keySet().contains(operatorDef);
+  public boolean hasMemCpySpeed(final Component component) {
+    return this.memcpySpeeds.keySet().contains(component);
   }
 
   /**
    * Sets the default mem cpy speed.
    *
-   * @param operatorDef
+   * @param component
    *          the new default mem cpy speed
    */
-  public void setDefaultMemCpySpeed(final Component operatorDef) {
+  public void setDefaultMemCpySpeed(final Component component) {
     putMemcpySpeed(
-        new MemCopySpeed(operatorDef, TimingManager.DEFAULTMEMCPYSETUPTIME, TimingManager.DEFAULTMEMCPYTIMEPERUNIT));
+        new MemCopySpeed(component, TimingManager.DEFAULTMEMCPYSETUPTIME, TimingManager.DEFAULTMEMCPYTIMEPERUNIT));
   }
 }

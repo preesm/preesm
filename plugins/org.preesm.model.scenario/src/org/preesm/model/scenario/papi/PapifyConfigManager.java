@@ -119,21 +119,21 @@ public class PapifyConfigManager {
   /**
    * Adding a component to the core.
    *
-   * @param opId
+   * @param slamComponent
    *          the op id
-   * @param component
+   * @param papiComponent
    *          the PAPI component
    */
-  public void addComponent(final Component opId, final PapiComponent component) {
+  public void addComponent(final Component slamComponent, final PapiComponent papiComponent) {
 
-    final PapifyConfigPE pgSet = getCorePapifyConfigGroupPE(opId);
+    final PapifyConfigPE pgSet = getCorePapifyConfigGroupPE(slamComponent);
 
     if (pgSet == null) {
-      final PapifyConfigPE pg = new PapifyConfigPE(opId);
-      pg.addPAPIComponent(component);
+      final PapifyConfigPE pg = new PapifyConfigPE(slamComponent);
+      pg.addPAPIComponent(papiComponent);
       this.papifyConfigGroupsPEs.add(pg);
     } else {
-      pgSet.addPAPIComponent(component);
+      pgSet.addPAPIComponent(papiComponent);
     }
 
   }
@@ -161,15 +161,15 @@ public class PapifyConfigManager {
   /**
    * Gets the op PapifyConfigActor group.
    *
-   * @param actorPath
+   * @param actor
    *          the op path
    * @return the op PapifyConfigActor groups
    */
-  public PapifyConfigActor getCorePapifyConfigGroupActor(final AbstractActor actorPath) {
+  public PapifyConfigActor getCorePapifyConfigGroupActor(final AbstractActor actor) {
     PapifyConfigActor papifyConfigGroup = null;
 
     for (final PapifyConfigActor pg : this.papifyConfigGroupsActors) {
-      if (pg.isActorPath(PreesmCopyTracker.getOriginalSource(actorPath))) {
+      if (pg.isActor(PreesmCopyTracker.getOriginalSource(actor))) {
         papifyConfigGroup = pg;
       }
     }
@@ -180,15 +180,15 @@ public class PapifyConfigManager {
   /**
    * Gets the op PapifyConfigPE group.
    *
-   * @param opId
+   * @param slamComponent
    *          the op id
    * @return the op PapifyConfigActor groups
    */
-  public PapifyConfigPE getCorePapifyConfigGroupPE(final Component opId) {
+  public PapifyConfigPE getCorePapifyConfigGroupPE(final Component slamComponent) {
     PapifyConfigPE papifyConfigGroup = null;
 
     for (final PapifyConfigPE pg : this.papifyConfigGroupsPEs) {
-      if (pg.ispeType(opId)) {
+      if (pg.isSlamComponent(slamComponent)) {
         papifyConfigGroup = pg;
       }
     }

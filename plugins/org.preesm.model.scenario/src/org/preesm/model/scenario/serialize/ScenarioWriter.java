@@ -212,13 +212,13 @@ public class ScenarioWriter {
    */
   private void addPapifyConfigActor(final Element parent, final PapifyConfigActor config) {
 
-    if (config.getActorPath() != null && (config.getPAPIEvents() != null) && !config.getPAPIEvents().isEmpty()) {
+    if (config.getActor() != null && (config.getPAPIEvents() != null) && !config.getPAPIEvents().isEmpty()) {
       final Element papifyConfigElt = this.dom.createElement("papifyConfigActor");
       parent.appendChild(papifyConfigElt);
 
       final Element actorPath = this.dom.createElement("actorPath");
       papifyConfigElt.appendChild(actorPath);
-      actorPath.setAttribute("actorPath", config.getActorPath().getVertexPath());
+      actorPath.setAttribute("actorPath", config.getActor().getVertexPath());
       final Map<String, Set<PapiEvent>> eventSets = config.getPAPIEvents();
       final Set<String> keys = eventSets.keySet();
       for (final String key : keys) {
@@ -246,14 +246,14 @@ public class ScenarioWriter {
    *          the value
    */
   private void addPapifyConfigPE(final Element parent, final PapifyConfigPE config) {
-
-    if (config.getpeType() != null && (config.getPAPIComponents() != null) && !config.getPAPIComponents().isEmpty()) {
+    if (config.getSlamComponent() != null && (config.getPAPIComponents() != null)
+        && !config.getPAPIComponents().isEmpty()) {
       final Element papifyConfigElt = this.dom.createElement("papifyConfigPE");
       parent.appendChild(papifyConfigElt);
 
       final Element peType = this.dom.createElement("peType");
       papifyConfigElt.appendChild(peType);
-      peType.setAttribute("peType", config.getpeType().getVlnv().getName());
+      peType.setAttribute("peType", config.getSlamComponent().getVlnv().getName());
       final Set<PapiComponent> components = config.getPAPIComponents();
 
       for (final PapiComponent component : components) {
@@ -500,8 +500,8 @@ public class ScenarioWriter {
 
     final Element timingelt = this.dom.createElement("timing");
     parent.appendChild(timingelt);
-    timingelt.setAttribute("vertexname", timing.getVertexId().getVertexPath());
-    timingelt.setAttribute("opname", timing.getOperatorDefinitionId().getVlnv().getName());
+    timingelt.setAttribute("vertexname", timing.getActor().getVertexPath());
+    timingelt.setAttribute("opname", timing.getComponent().getVlnv().getName());
     String timeString;
     if (timing.isEvaluated()) {
       timeString = Long.toString(timing.getTime());

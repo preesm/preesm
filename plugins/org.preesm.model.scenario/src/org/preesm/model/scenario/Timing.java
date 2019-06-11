@@ -87,44 +87,44 @@ public class Timing {
    * Operator to which the timing is related (i.e., processing element on which the vertex of the graph takes the given
    * time to execute)
    */
-  private final Component operatorDefinitionId;
+  private final Component component;
 
   /** Set of Usable Parameters for the expression. */
   private Set<String> inputParameters;
 
   /** Vertex for which the timing is given. */
-  private final AbstractActor vertexId;
+  private final AbstractActor actor;
 
   /**
    * Constructors.
    *
-   * @param operatorDefinitionId
+   * @param component
    *          the operator definition id
-   * @param vertexId
+   * @param actor
    *          the vertex id
    */
 
-  public Timing(final Component operatorDefinitionId, final AbstractActor vertexId) {
+  public Timing(final Component component, final AbstractActor actor) {
     this.time = Timing.DEFAULT_TASK_TIME;
     this.stringValue = Timing.DEFAULT_EXPRESSION_VALUE;
     this.inputParameters = new LinkedHashSet<>();
-    this.operatorDefinitionId = operatorDefinitionId;
-    this.vertexId = vertexId;
+    this.component = component;
+    this.actor = actor;
     this.isEvaluated = true;
   }
 
   /**
    * Instantiates a new timing.
    *
-   * @param operatorId
+   * @param component
    *          the operator id
-   * @param sdfVertexId
+   * @param actor
    *          the sdf vertex id
    * @param time
    *          the time
    */
-  public Timing(final Component operatorId, final AbstractActor sdfVertexId, final long time) {
-    this(operatorId, sdfVertexId);
+  public Timing(final Component component, final AbstractActor actor, final long time) {
+    this(component, actor);
     this.time = time;
     this.stringValue = String.valueOf(time);
     this.isEvaluated = true;
@@ -133,15 +133,15 @@ public class Timing {
   /**
    * Instantiates a new timing.
    *
-   * @param operatorId
+   * @param component
    *          the operator id
-   * @param vertexId
+   * @param actor
    *          the vertex id
    * @param expression
    *          the expression
    */
-  public Timing(final Component operatorId, final AbstractActor vertexId, final String expression) {
-    this(operatorId, vertexId);
+  public Timing(final Component component, final AbstractActor actor, final String expression) {
+    this(component, actor);
     this.stringValue = expression;
     this.isEvaluated = false;
     tryToEvaluateWith(new LinkedHashMap<String, Integer>());
@@ -150,18 +150,18 @@ public class Timing {
   /**
    * Instantiates a new timing.
    *
-   * @param operatorId
+   * @param component
    *          the operator id
-   * @param vertexId
+   * @param actor
    *          the vertex id
    * @param expression
    *          the expression
    * @param inputParameters
    *          the input parameters
    */
-  public Timing(final Component operatorId, final AbstractActor vertexId, final String expression,
+  public Timing(final Component component, final AbstractActor actor, final String expression,
       final Set<String> inputParameters) {
-    this(operatorId, vertexId);
+    this(component, actor);
     this.stringValue = expression;
     this.isEvaluated = false;
     this.inputParameters = inputParameters;
@@ -173,8 +173,8 @@ public class Timing {
    *
    * @return the operator definition id
    */
-  public Component getOperatorDefinitionId() {
-    return this.operatorDefinitionId;
+  public Component getComponent() {
+    return this.component;
   }
 
   /**
@@ -195,8 +195,8 @@ public class Timing {
    *
    * @return the vertex id
    */
-  public AbstractActor getVertexId() {
-    return this.vertexId;
+  public AbstractActor getActor() {
+    return this.actor;
   }
 
   /**
@@ -211,7 +211,7 @@ public class Timing {
       this.time = time;
     } else {
       PreesmLogger.getLogger().log(Level.WARNING,
-          "Trying to set a non strictly positive time for vertex " + this.vertexId + ", modified to 1.");
+          "Trying to set a non strictly positive time for vertex " + this.actor + ", modified to 1.");
       this.time = 1;
     }
     this.stringValue = String.valueOf(this.time);
@@ -335,8 +335,8 @@ public class Timing {
 
     if (obj instanceof Timing) {
       final Timing otherT = (Timing) obj;
-      equals = this.operatorDefinitionId.equals(otherT.getOperatorDefinitionId());
-      equals &= this.vertexId.equals((otherT.getVertexId()));
+      equals = this.component.equals(otherT.getComponent());
+      equals &= this.actor.equals((otherT.getActor()));
     }
 
     return equals;
@@ -350,10 +350,10 @@ public class Timing {
   @Override
   public String toString() {
     if (this.isEvaluated) {
-      return "{" + this.vertexId.getVertexPath() + " on " + this.operatorDefinitionId.getVlnv().getName() + " -> "
+      return "{" + this.actor.getVertexPath() + " on " + this.component.getVlnv().getName() + " -> "
           + this.time + "}";
     } else {
-      return "{" + this.vertexId.getVertexPath() + " on " + this.operatorDefinitionId.getVlnv().getName() + " -> "
+      return "{" + this.actor.getVertexPath() + " on " + this.component.getVlnv().getName() + " -> "
           + this.stringValue + "}";
     }
   }

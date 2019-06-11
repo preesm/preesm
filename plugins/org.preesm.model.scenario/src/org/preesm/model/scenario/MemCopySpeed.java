@@ -47,7 +47,7 @@ import org.preesm.model.slam.component.Component;
 public class MemCopySpeed {
 
   /** The operator def. */
-  private final Component operatorDef;
+  private final Component component;
 
   /** The setup time. */
   private long setupTime;
@@ -58,16 +58,16 @@ public class MemCopySpeed {
   /**
    * Instantiates a new mem copy speed.
    *
-   * @param operatorDef
+   * @param component
    *          the operator def
    * @param setupTime
    *          the setup time
    * @param timePerUnit
    *          the time per unit
    */
-  public MemCopySpeed(final Component operatorDef, final long setupTime, final double timePerUnit) {
+  public MemCopySpeed(final Component component, final long setupTime, final double timePerUnit) {
     super();
-    this.operatorDef = operatorDef;
+    this.component = component;
     this.setupTime = setupTime;
     this.timePerUnit = timePerUnit;
   }
@@ -77,8 +77,8 @@ public class MemCopySpeed {
    *
    * @return the operator def
    */
-  public Component getOperatorDef() {
-    return this.operatorDef;
+  public Component getComponent() {
+    return this.component;
   }
 
   /**

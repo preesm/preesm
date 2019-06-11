@@ -80,7 +80,7 @@ public class MemCopySpeedContentProvider implements IStructuredContentProvider {
       this.elementList = new ArrayList<>(inputScenario.getTimingManager().getMemcpySpeeds().values());
 
       Collections.sort(this.elementList,
-          (o1, o2) -> o1.getOperatorDef().getVlnv().getName().compareTo(o2.getOperatorDef().getVlnv().getName()));
+          (o1, o2) -> o1.getComponent().getVlnv().getName().compareTo(o2.getComponent().getVlnv().getName()));
     }
     return this.elementList.toArray();
   }

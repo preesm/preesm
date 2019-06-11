@@ -107,7 +107,7 @@ public class VertexInit implements CloneableProperty<VertexInit> {
    *          the timing
    */
   public void addTiming(final Timing timing) {
-    if (getTiming(timing.getOperatorDefinitionId()) == null) {
+    if (getTiming(timing.getComponent()) == null) {
       this.timings.add(timing);
     }
   }
@@ -253,7 +253,7 @@ public class VertexInit implements CloneableProperty<VertexInit> {
     while (iterator.hasNext()) {
       final Timing currenttiming = iterator.next();
 
-      if (operatordefId.equals(currenttiming.getOperatorDefinitionId())) {
+      if (operatordefId.equals(currenttiming.getComponent())) {
         returntiming = currenttiming;
         break;
       }

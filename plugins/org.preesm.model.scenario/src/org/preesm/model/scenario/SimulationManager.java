@@ -209,34 +209,34 @@ public class SimulationManager {
   /**
    * Adds the special vertex operator id.
    *
-   * @param opId
+   * @param component
    *          the op id
    */
-  public void addSpecialVertexOperator(final ComponentInstance opId) {
-    if (!hasSpecialVertexOperator(opId)) {
-      this.specialVertexOperators.add(opId);
+  public void addSpecialVertexOperator(final ComponentInstance component) {
+    if (!hasSpecialVertexOperator(component)) {
+      this.specialVertexOperators.add(component);
     }
   }
 
   /**
    * Removes the special vertex operator id.
    *
-   * @param id
+   * @param component
    *          the id
    */
-  public void removeSpecialVertexOperator(final ComponentInstance id) {
-    this.specialVertexOperators.remove(id);
+  public void removeSpecialVertexOperator(final ComponentInstance component) {
+    this.specialVertexOperators.remove(component);
   }
 
   /**
    * Checks for special vertex operator id.
    *
-   * @param id
+   * @param component
    *          the id
    * @return true, if successful
    */
-  public boolean hasSpecialVertexOperator(final ComponentInstance id) {
-    return this.specialVertexOperators.contains(id);
+  public boolean hasSpecialVertexOperator(final ComponentInstance component) {
+    return this.specialVertexOperators.contains(component);
   }
 
   /**
