@@ -50,9 +50,7 @@ import org.preesm.algorithm.mapper.params.AbcParameters;
 import org.preesm.model.scenario.PreesmScenario;
 import org.preesm.model.slam.ComponentInstance;
 import org.preesm.model.slam.Design;
-import org.preesm.model.slam.utils.DesignTools;
 
-// TODO: Auto-generated Javadoc
 /**
  * The accurately timed ABC schedules edges and setup times.
  *
@@ -103,7 +101,7 @@ public class AccuratelyTimedAbc extends LatencyAbc {
 
     final ComponentInstance effectiveOp = vertex.getEffectiveOperator();
 
-    if (effectiveOp != DesignTools.NO_COMPONENT_INSTANCE) {
+    if (effectiveOp != null) {
       new PrecedenceEdgeAdder(this.orderManager, this.implementation).scheduleVertex(vertex);
       this.comRouter.routeNewVertex(vertex, this.types);
     }

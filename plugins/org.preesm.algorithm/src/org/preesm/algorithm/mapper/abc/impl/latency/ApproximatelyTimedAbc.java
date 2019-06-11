@@ -50,9 +50,7 @@ import org.preesm.algorithm.mapper.params.AbcParameters;
 import org.preesm.model.scenario.PreesmScenario;
 import org.preesm.model.slam.ComponentInstance;
 import org.preesm.model.slam.Design;
-import org.preesm.model.slam.utils.DesignTools;
 
-// TODO: Auto-generated Javadoc
 /**
  * An approximately timed architecture simulator associates a complex cost to each inter-core communication. This cost
  * is composed of an overhead on the sender, a transfer time on the medium and a reception time on the receiver.
@@ -103,7 +101,7 @@ public class ApproximatelyTimedAbc extends LatencyAbc {
 
     final ComponentInstance effectiveOp = vertex.getEffectiveOperator();
 
-    if (effectiveOp != DesignTools.NO_COMPONENT_INSTANCE) {
+    if (effectiveOp != null) {
 
       new PrecedenceEdgeAdder(this.orderManager, this.implementation).scheduleVertex(vertex);
       this.comRouter.routeNewVertex(vertex, this.types);
@@ -118,12 +116,7 @@ public class ApproximatelyTimedAbc extends LatencyAbc {
    */
   @Override
   protected final void setEdgeCost(final MapperDAGEdge edge) {
-
     edge.getTiming().setCost(0);
-
-    // Setting edge costs for special types
-    // super.setEdgeCost(edge);
-
   }
 
   /*

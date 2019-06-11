@@ -57,9 +57,6 @@ import org.preesm.model.slam.link.Link;
  */
 public class DesignTools {
 
-  /** Value used to state a non-existing component. */
-  public static final ComponentInstance NO_COMPONENT_INSTANCE = null;
-
   /** Key of instance parameter used to store a property used in Preesm. */
   public static final String OPERATOR_BASE_ADDRESS = "BaseAddress";
 

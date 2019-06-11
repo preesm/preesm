@@ -49,7 +49,6 @@ import org.preesm.commons.CloneableProperty;
 import org.preesm.model.scenario.Timing;
 import org.preesm.model.slam.ComponentInstance;
 import org.preesm.model.slam.component.Component;
-import org.preesm.model.slam.utils.DesignTools;
 
 /**
  * Properties of a mapped vertex set when converting dag to mapper dag.
@@ -203,7 +202,7 @@ public class VertexInit implements CloneableProperty<VertexInit> {
 
     long time = 0;
 
-    if (operator != DesignTools.NO_COMPONENT_INSTANCE) {
+    if (operator != null) {
 
       // Non special vertex timings are retrieved from scenario
       // Special vertex timings were computed from scenario
