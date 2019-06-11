@@ -98,8 +98,10 @@ public class TimingsPage extends FormPage implements IPropertyListener {
   TableViewer tableViewer = null;
 
   /** The pisdf column names. */
-  private static final String[] PISDF_COLUMN_NAMES = { "Actors", "Parsing", "Evaluation", "Input Parameters",
-      "Expression" };
+  private static final String[] PISDF_COLUMN_NAMES = { "Actors", "Input Parameters", "Expression", "Evaluation",
+      "Value" };
+
+  private static final int[] PISDF_COLUMN_SIZES = { 200, 200, 200, 50, 50 };
 
   /**
    * Instantiates a new timings page.
@@ -244,18 +246,10 @@ public class TimingsPage extends FormPage implements IPropertyListener {
           final Point vBarSize = vBar.getSize();
           width -= vBarSize.x;
         }
-        final Point oldSize = tref.getSize();
-        if (oldSize.x > area.width) {
-          column1.setWidth((width / 4) - 1);
-          column2.setWidth((width - column1.getWidth()) / 2);
-          column3.setWidth((width - column1.getWidth()) / 2);
-          tref.setSize(area.width, area.height);
-        } else {
-          tref.setSize(area.width, area.height);
-          column1.setWidth((width / 4) - 1);
-          column2.setWidth((width - column1.getWidth()) / 2);
-          column3.setWidth((width - column1.getWidth()) / 2);
-        }
+        tref.setSize(area.width, area.height);
+        column1.setWidth((width / 4) - 1);
+        column2.setWidth((width - column1.getWidth()) / 2);
+        column3.setWidth((width - column1.getWidth()) / 2);
       }
     });
 
@@ -364,6 +358,7 @@ public class TimingsPage extends FormPage implements IPropertyListener {
     for (int i = 0; i < columnNames.length; i++) {
       final TableColumn column = new TableColumn(table, SWT.NONE, i);
       column.setText(columnNames[i]);
+      column.setWidth(PISDF_COLUMN_SIZES[i]);
       columns.add(column);
     }
 
@@ -388,18 +383,11 @@ public class TimingsPage extends FormPage implements IPropertyListener {
           final Point vBarSize = vBar.getSize();
           width -= vBarSize.x;
         }
-        final Point oldSize = tref.getSize();
-        if (oldSize.x > area.width) {
-          for (final TableColumn col : fColumns) {
-            col.setWidth((width / 5) - 1);
-          }
-          tref.setSize(area.width, area.height);
-        } else {
-          tref.setSize(area.width, area.height);
-          for (final TableColumn col : fColumns) {
-            col.setWidth((width / 5) - 1);
-          }
+        for (final TableColumn col : fColumns) {
+
+          col.setWidth((width / PISDF_COLUMN_NAMES.length) - 1);
         }
+        tref.setSize(area.width, area.height);
       }
     });
 

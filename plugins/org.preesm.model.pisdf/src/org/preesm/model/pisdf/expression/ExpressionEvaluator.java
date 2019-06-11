@@ -54,6 +54,7 @@ import org.preesm.model.pisdf.ExpressionProxy;
 import org.preesm.model.pisdf.InterfaceActor;
 import org.preesm.model.pisdf.LongExpression;
 import org.preesm.model.pisdf.Parameter;
+import org.preesm.model.pisdf.Parameterizable;
 import org.preesm.model.pisdf.PeriodicElement;
 import org.preesm.model.pisdf.StringExpression;
 import org.preesm.model.pisdf.util.PiMMSwitch;
@@ -131,7 +132,7 @@ public class ExpressionEvaluator extends PiMMSwitch<Long> {
 
   private static Map<String, Number> lookupParameterValues(final Expression expression) {
     final Map<String, Number> result = new LinkedHashMap<>();
-    final ExpressionHolder holder = expression.getHolder();
+    final Parameterizable holder = expression.getHolder();
     if (holder != null) {
       final EList<Parameter> inputParameters = holder.getInputParameters();
       for (final Parameter param : inputParameters) {

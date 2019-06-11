@@ -140,21 +140,12 @@ public class TimingsTableLabelProvider implements ITableLabelProvider, Selection
       final AbstractActor vertex = (AbstractActor) element;
 
       final Timing timing = this.scenario.getTimingManager().getTimingOrDefault(vertex, this.currentOpDefId);
-      switch (columnIndex) {
-        case 1:// Parsing column
-          if (timing.canEvaluate()) {
-            return this.imageOk;
-          } else {
-            return this.imageError;
-          }
-        case 2:// Evaluation column
-          if (timing.canEvaluate()) {
-            return this.imageOk;
-          } else {
-            return this.imageError;
-          }
-        default:// Others
-          break;
+      if (columnIndex == 3) {
+        if (timing.canEvaluate()) {
+          return this.imageOk;
+        } else {
+          return this.imageError;
+        }
       }
     }
     return null;
@@ -189,10 +180,7 @@ public class TimingsTableLabelProvider implements ITableLabelProvider, Selection
       switch (columnIndex) {
         case 0:
           return vertex.getVertexPath();
-        case 1: // Parsing Column
-        case 2: // Evaluation Column
-          return null;
-        case 3: // Variables Column
+        case 1: // Input Parameters
           if (timing != null) {
             if (timing.getInputParameters().isEmpty()) {
               text = "-";
@@ -201,13 +189,19 @@ public class TimingsTableLabelProvider implements ITableLabelProvider, Selection
             }
           }
           break;
-        case 4: // Expression Column
+        case 2: // Expression
           if (timing != null) {
             text = timing.getStringValue();
           }
           break;
-        default:// Others
+        case 3: // Evaluation Status
+          return null;
+        case 4: // Value
+          if (timing != null) {
+            text = Long.toString(timing.getTime());
+          }
           break;
+        default:
       }
     }
     return text;
