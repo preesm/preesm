@@ -65,6 +65,19 @@ import org.preesm.model.pisdf.util.PiMMSwitch;
  */
 public class ExpressionEvaluator extends PiMMSwitch<Long> {
 
+  /**
+   *
+   */
+  public static final long evaluate(final ExpressionHolder p, final String value) {
+    final Expression tmp = p.getExpression();
+    try {
+      p.setExpression(value);
+      return p.getExpression().evaluate();
+    } finally {
+      p.setExpression(tmp);
+    }
+  }
+
   public static final long evaluate(final Expression expression) {
     return evaluate(expression, Collections.emptyMap());
   }
@@ -147,6 +160,25 @@ public class ExpressionEvaluator extends PiMMSwitch<Long> {
       }
     }
     return result;
+  }
+
+  /**
+   *
+   */
+  public static final boolean canEvaluate(final ExpressionHolder p, final String value) {
+    if (value != null && !value.isEmpty()) {
+      final Expression tmp = p.getExpression();
+      try {
+        p.setExpression(value);
+        p.getExpression().evaluate();
+        return true;
+      } catch (final Exception e) {
+        return false;
+      } finally {
+        p.setExpression(tmp);
+      }
+    }
+    return false;
   }
 
 }

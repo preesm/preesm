@@ -47,8 +47,8 @@ import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Table;
 import org.preesm.commons.files.PreesmResourcesHelper;
-import org.preesm.model.pisdf.Expression;
 import org.preesm.model.pisdf.Parameter;
+import org.preesm.model.pisdf.expression.ExpressionEvaluator;
 import org.preesm.ui.PreesmUIPlugin;
 
 /**
@@ -107,30 +107,18 @@ public class PiParameterTableLabelProvider extends LabelProvider implements ITab
     final Entry<Parameter, String> paramValue = ((Entry<Parameter, String>) element);
     if (columnIndex == 5) { // Expression Value Column
       final String value = paramValue.getValue();
-      if (value != null && !value.isEmpty()) {
-        if (paramValue.getKey().isConfigurable()) {
+      if (paramValue.getKey().isConfigurable()) {
+        return this.imageOk;
+      } else {
+        if (ExpressionEvaluator.canEvaluate(paramValue.getKey(), value)) {
           return this.imageOk;
         } else {
-          final Expression tmp = paramValue.getKey().getExpression();
-          try {
-            paramValue.getKey().setExpression(value);
-            paramValue.getKey().getExpression().evaluate();
-            return this.imageOk;
-          } catch (final Exception e) {
-            return this.imageError;
-          } finally {
-            paramValue.getKey().setExpression(tmp);
-          }
+          return this.imageError;
         }
-      } else {
-        return this.imageError;
       }
     }
     return null;
   }
-
-  private static final String[] COLUMN_NAMES = { "Parameters", "Type", "Input Parameters", "Graph Expression",
-      "Override Expression", "Value" };
 
   /*
    * (non-Javadoc)
@@ -158,18 +146,9 @@ public class PiParameterTableLabelProvider extends LabelProvider implements ITab
           return " - ";
         }
       case 5: // Expression Value Column
-        if (paramValue.getKey().isLocallyStatic()) {
-
-          final Expression tmp = paramValue.getKey().getExpression();
-          try {
-            paramValue.getKey().setExpression(paramValue.getValue());
-            return Long.toString(paramValue.getKey().getExpression().evaluate());
-          } catch (final Exception e) {
-            return " - ";
-          } finally {
-            paramValue.getKey().setExpression(tmp);
-          }
-
+        if (paramValue.getKey().isLocallyStatic()
+            && ExpressionEvaluator.canEvaluate(paramValue.getKey(), paramValue.getValue())) {
+          return Long.toString(ExpressionEvaluator.evaluate(paramValue.getKey(), paramValue.getValue()));
         } else {
           return paramValue.getValue();
         }
