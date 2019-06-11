@@ -43,7 +43,10 @@ import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
 import org.eclipse.core.runtime.CoreException;
 import org.preesm.model.pisdf.AbstractActor;
 import org.preesm.model.scenario.serialize.ExcelConstraintsParser;
@@ -57,7 +60,7 @@ import org.preesm.model.slam.ComponentInstance;
 public class ConstraintGroupManager {
 
   /** List of all constraint groups. */
-  private final List<ConstraintGroup> constraintgroups;
+  private final Map<ComponentInstance, List<AbstractActor>> constraintgroups = new LinkedHashMap<>();
 
   /** Path to a file containing constraints. */
   private String excelFileURL = "";
@@ -69,17 +72,6 @@ public class ConstraintGroupManager {
    */
   public ConstraintGroupManager(final PreesmScenario preesmScenario) {
     this.preesmScenario = preesmScenario;
-    this.constraintgroups = new ArrayList<>();
-  }
-
-  /**
-   * Adds the constraint group.
-   *
-   * @param cg
-   *          the cg
-   */
-  public void addConstraintGroup(final ConstraintGroup cg) {
-    this.constraintgroups.add(cg);
   }
 
   /**
@@ -91,12 +83,10 @@ public class ConstraintGroupManager {
    *          the vertex
    */
   public void addConstraint(final ComponentInstance cmpInstance, final AbstractActor actor) {
-    ConstraintGroup cg = getOpConstraintGroups(cmpInstance);
-    if (cg == null) {
-      cg = new ConstraintGroup(cmpInstance);
-      this.constraintgroups.add(cg);
+    if (!constraintgroups.containsKey(cmpInstance)) {
+      constraintgroups.put(cmpInstance, new ArrayList<>());
     }
-    cg.addActor(actor);
+    constraintgroups.get(cmpInstance).add(actor);
   }
 
   /**
@@ -108,12 +98,10 @@ public class ConstraintGroupManager {
    *          the vertex set
    */
   public void addConstraints(final ComponentInstance cmpInstance, final Collection<AbstractActor> actors) {
-    ConstraintGroup cg = getOpConstraintGroups(cmpInstance);
-    if (cg == null) {
-      cg = new ConstraintGroup(cmpInstance);
-      this.constraintgroups.add(cg);
+    if (!constraintgroups.containsKey(cmpInstance)) {
+      constraintgroups.put(cmpInstance, new ArrayList<>());
     }
-    cg.addActors(actors);
+    constraintgroups.get(cmpInstance).addAll(actors);
   }
 
   /**
@@ -125,9 +113,8 @@ public class ConstraintGroupManager {
    *          the vertex
    */
   public void removeConstraint(final ComponentInstance cmpInstance, final AbstractActor actor) {
-    final ConstraintGroup cgSet = getOpConstraintGroups(cmpInstance);
-    if (cgSet != null) {
-      cgSet.removeActor(actor);
+    if (constraintgroups.containsKey(cmpInstance)) {
+      constraintgroups.get(cmpInstance).remove(actor);
     }
   }
 
@@ -136,8 +123,8 @@ public class ConstraintGroupManager {
    *
    * @return the constraint groups
    */
-  public List<ConstraintGroup> getConstraintGroups() {
-    return Collections.unmodifiableList(this.constraintgroups);
+  public Map<ComponentInstance, List<AbstractActor>> getConstraintGroups() {
+    return Collections.unmodifiableMap(this.constraintgroups);
   }
 
   /**
@@ -147,14 +134,11 @@ public class ConstraintGroupManager {
    *          the op id
    * @return the op constraint groups
    */
-  public ConstraintGroup getOpConstraintGroups(final ComponentInstance cmpInstance) {
-    for (final ConstraintGroup cg : this.constraintgroups) {
-      if (cg.isComponentInstance(cmpInstance)) {
-        return cg;
-      }
+  public List<AbstractActor> getOpConstraintGroups(final ComponentInstance cmpInstance) {
+    if (!this.constraintgroups.containsKey(cmpInstance)) {
+      this.constraintgroups.put(cmpInstance, new ArrayList<>());
     }
-
-    return null;
+    return this.constraintgroups.get(cmpInstance);
   }
 
   /**
@@ -172,7 +156,7 @@ public class ConstraintGroupManager {
   @Override
   public String toString() {
     final StringBuilder sb = new StringBuilder();
-    for (final ConstraintGroup cg : this.constraintgroups) {
+    for (final Entry<ComponentInstance, List<AbstractActor>> cg : this.constraintgroups.entrySet()) {
       sb.append(cg.toString());
     }
     return sb.toString();

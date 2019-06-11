@@ -60,7 +60,6 @@ import org.preesm.model.pisdf.Parameter;
 import org.preesm.model.pisdf.PiGraph;
 import org.preesm.model.pisdf.serialize.PiParser;
 import org.preesm.model.pisdf.util.ActorPath;
-import org.preesm.model.scenario.ConstraintGroup;
 import org.preesm.model.scenario.MemCopySpeed;
 import org.preesm.model.scenario.PreesmScenario;
 import org.preesm.model.scenario.Timing;
@@ -482,8 +481,7 @@ public class ScenarioParser {
         final Element elt = (Element) node;
         final String type = elt.getTagName();
         if (type.equals("constraintGroup")) {
-          final ConstraintGroup cg = getConstraintGroup(elt);
-          this.scenario.getConstraintGroupManager().addConstraintGroup(cg);
+          parseConstraintGroup(elt);
         }
       }
 
@@ -498,8 +496,9 @@ public class ScenarioParser {
    *          the cst group elt
    * @return the constraint group
    */
-  private ConstraintGroup getConstraintGroup(final Element cstGroupElt) {
+  private void parseConstraintGroup(final Element cstGroupElt) {
     ComponentInstance opId = null;
+
     final Set<AbstractActor> paths = new LinkedHashSet<>();
 
     if (scenario.getAlgorithm() != null) {
@@ -523,10 +522,9 @@ public class ScenarioParser {
         node = node.getNextSibling();
       }
     }
-
-    final ConstraintGroup cg = new ConstraintGroup(opId);
-    cg.addActors(paths);
-    return cg;
+    final List<
+        AbstractActor> opConstraintGroups = this.scenario.getConstraintGroupManager().getOpConstraintGroups(opId);
+    opConstraintGroups.addAll(paths);
   }
 
   /**

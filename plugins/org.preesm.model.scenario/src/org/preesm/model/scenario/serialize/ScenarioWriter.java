@@ -39,11 +39,12 @@
  */
 package org.preesm.model.scenario.serialize;
 
+import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
 import org.preesm.model.pisdf.AbstractActor;
 import org.preesm.model.pisdf.PiGraph;
-import org.preesm.model.scenario.ConstraintGroup;
 import org.preesm.model.scenario.ParameterValue;
 import org.preesm.model.scenario.ParameterValueManager;
 import org.preesm.model.scenario.PreesmScenario;
@@ -435,8 +436,9 @@ public class ScenarioWriter {
 
     constraints.setAttribute("excelUrl", this.scenario.getConstraintGroupManager().getExcelFileURL());
 
-    for (final ConstraintGroup cst : this.scenario.getConstraintGroupManager().getConstraintGroups()) {
-      addConstraint(constraints, cst);
+    for (final Entry<ComponentInstance, List<AbstractActor>> cst : this.scenario.getConstraintGroupManager()
+        .getConstraintGroups().entrySet()) {
+      addConstraint(constraints, cst.getKey(), cst.getValue());
     }
   }
 
@@ -448,20 +450,19 @@ public class ScenarioWriter {
    * @param cst
    *          the cst
    */
-  private void addConstraint(final Element parent, final ConstraintGroup cst) {
+  private void addConstraint(final Element parent, final ComponentInstance cmpi, final List<AbstractActor> actors) {
 
     final Element constraintGroupElt = this.dom.createElement("constraintGroup");
     parent.appendChild(constraintGroupElt);
 
-    final ComponentInstance opId = cst.getComponentInstance();
     final Element opdefelt = this.dom.createElement("operator");
     constraintGroupElt.appendChild(opdefelt);
-    opdefelt.setAttribute("name", opId.getInstanceName());
+    opdefelt.setAttribute("name", cmpi.getInstanceName());
 
-    for (final AbstractActor vtxId : cst.getActors()) {
+    for (final AbstractActor actor : actors) {
       final Element vtxelt = this.dom.createElement(VertexType.TYPE_TASK);
       constraintGroupElt.appendChild(vtxelt);
-      vtxelt.setAttribute("name", vtxId.getVertexPath());
+      vtxelt.setAttribute("name", actor.getVertexPath());
     }
   }
 

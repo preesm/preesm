@@ -56,7 +56,6 @@ import org.eclipse.ui.forms.widgets.Section;
 import org.preesm.model.pisdf.AbstractActor;
 import org.preesm.model.pisdf.Actor;
 import org.preesm.model.pisdf.PiGraph;
-import org.preesm.model.scenario.ConstraintGroup;
 import org.preesm.model.scenario.ConstraintGroupManager;
 import org.preesm.model.scenario.PreesmScenario;
 import org.preesm.model.slam.ComponentInstance;
@@ -244,12 +243,12 @@ public class ConstraintsCheckStateListener implements ISDFCheckStateListener {
       final Set<AbstractActor> cgSet = new LinkedHashSet<>();
 
       final ConstraintGroupManager constraintGroupManager = this.scenario.getConstraintGroupManager();
-      final ConstraintGroup cg = constraintGroupManager.getOpConstraintGroups(this.currentOpId);
+      final List<AbstractActor> cg = constraintGroupManager.getOpConstraintGroups(this.currentOpId);
 
       if (cg != null) {
         // Retrieves the elements in the tree that have the same name as
         // the ones to select in the constraint group
-        for (final AbstractActor v : cg.getActors()) {
+        for (final AbstractActor v : cg) {
           if (v != null) {
             cgSet.add(v);
           }
