@@ -74,6 +74,7 @@ import org.preesm.model.scenario.papi.PapifyConfigPE;
 import org.preesm.model.slam.ComponentInstance;
 import org.preesm.model.slam.Design;
 import org.preesm.model.slam.component.Component;
+import org.preesm.model.slam.utils.DesignTools;
 
 /**
  * The Class SpiderCodegen.
@@ -160,7 +161,7 @@ public class SpiderCodegen {
     this.coresPerCoreType = new LinkedHashMap<>();
     this.coresFromCoreType = new LinkedHashMap<>();
     int coreTypeId = 0;
-    for (final Component coreType : this.scenario.getOperatorDefinitions()) {
+    for (final Component coreType : DesignTools.getOperatorComponents(this.scenario.getDesign())) {
       this.coreTypesIds.put(coreType, coreTypeId++);
       // Link the number of cores associated to each core type
       final EList<Component> components = this.architecture.getComponentHolder().getComponents();
@@ -175,14 +176,15 @@ public class SpiderCodegen {
 
     this.coreIds = new LinkedHashMap<>();
     ComponentInstance mainOperator = this.scenario.getSimulationManager().getMainOperator();
+    final List<ComponentInstance> orderedOperators = DesignTools.getOrderedOperators(this.scenario.getDesign());
     if (mainOperator == null) {
       /* Warning */
-      mainOperator = this.scenario.getOrderedOperators().get(0);
+      mainOperator = orderedOperators.get(0);
       PreesmLogger.getLogger().warning("No Main Operator selected in scenario, " + mainOperator + " used by default");
     }
     this.coreIds.put(mainOperator, 0);
     int coreId = 1;
-    for (final ComponentInstance core : this.scenario.getOrderedOperators()) {
+    for (final ComponentInstance core : orderedOperators) {
       if (!core.equals(mainOperator)) {
         this.coreIds.put(core, coreId++);
       }

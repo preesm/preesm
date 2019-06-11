@@ -38,20 +38,14 @@
  */
 package org.preesm.model.scenario;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.Path;
 import org.preesm.model.pisdf.PiGraph;
 import org.preesm.model.pisdf.serialize.PiParser;
 import org.preesm.model.scenario.papi.PapifyConfigManager;
-import org.preesm.model.slam.ComponentInstance;
 import org.preesm.model.slam.Design;
-import org.preesm.model.slam.component.Component;
 import org.preesm.model.slam.serialize.SlamParser;
-import org.preesm.model.slam.utils.DesignTools;
 
 /**
  * Storing all information of a scenario.
@@ -243,98 +237,12 @@ public class PreesmScenario {
   }
 
   /**
-   * Gets the operator ids.
-   *
-   * @return the operator ids
-   */
-  public List<String> getOperatorIds() {
-    return DesignTools.getOperatorInstanceIds(getDesign());
-  }
-
-  /**
-   * Gets the operator.
-   *
-   * @return the operator
-   */
-  public List<ComponentInstance> getOperators() {
-    return DesignTools.getOperatorInstances(getDesign());
-  }
-
-  /**
-   * Gets the ordered operator ids.
-   *
-   * @return the ordered operator ids
-   */
-  public List<String> getOrderedOperatorIds() {
-    final List<String> opIdList = new ArrayList<>(getOperatorIds());
-    Collections.sort(opIdList, (o1, o2) -> o1.compareTo(o2));
-    return opIdList;
-  }
-
-  /**
-   * Gets the ordered operator.
-   *
-   * @return the ordered operator
-   */
-  public List<ComponentInstance> getOrderedOperators() {
-    final List<ComponentInstance> opIdList = new ArrayList<>(getOperators());
-    Collections.sort(opIdList, (o1, o2) -> o1.getInstanceName().compareTo(o2.getInstanceName()));
-    return opIdList;
-  }
-
-  /**
-   * Gets the operator definition ids.
-   *
-   * @return the operator definition ids
-   */
-  public List<String> getOperatorDefinitionIds() {
-    return DesignTools.getOperatorComponentIds(getDesign());
-  }
-
-  /**
-   * Gets the operator definition.
-   *
-   * @return the operator definition
-   */
-  public List<Component> getOperatorDefinitions() {
-    return DesignTools.getOperatorComponents(getDesign());
-  }
-
-  /**
-   * Gets the com node ids.
-   *
-   * @return the com node ids
-   */
-  public List<String> getComNodeIds() {
-    return DesignTools.getComNodeInstanceIds(getDesign());
-  }
-
-  /**
-   * Gets the com node.
-   *
-   * @return the com node
-   */
-  public List<ComponentInstance> getComNodes() {
-    return DesignTools.getComNodeInstances(getDesign());
-  }
-
-  /**
    * Gets the parameter value manager.
    *
    * @return the parameter value manager
    */
   public ParameterValueManager getParameterValueManager() {
     return this.parameterValueManager;
-  }
-
-  /**
-   * Sets the parameter value manager.
-   *
-   * @param parameterValueManager
-   *          the new parameter value manager
-   */
-  public void setParameterValueManager(final ParameterValueManager parameterValueManager) {
-    this.parameterValueManager = parameterValueManager;
   }
 
   /**

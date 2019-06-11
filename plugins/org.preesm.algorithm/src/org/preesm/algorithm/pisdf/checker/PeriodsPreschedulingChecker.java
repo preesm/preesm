@@ -62,6 +62,7 @@ import org.preesm.model.scenario.PreesmScenario;
 import org.preesm.model.scenario.Timing;
 import org.preesm.model.slam.Design;
 import org.preesm.model.slam.component.Component;
+import org.preesm.model.slam.utils.DesignTools;
 import org.preesm.workflow.elements.Workflow;
 import org.preesm.workflow.implement.AbstractTaskImplementation;
 import org.preesm.workflow.implement.AbstractWorkflowNodeImplementation;
@@ -142,7 +143,7 @@ public class PeriodsPreschedulingChecker extends AbstractTaskImplementation {
       AbstractVertex actor = PreesmCopyTracker.getOriginalSource(a);
       long wcetMin = Long.MAX_VALUE;
       if (actor instanceof AbstractActor) {
-        for (final Component operatorDefinitionID : scenario.getOperatorDefinitions()) {
+        for (final Component operatorDefinitionID : DesignTools.getOperatorComponents(scenario.getDesign())) {
           final long timing = scenario.getTimingManager()
               .getTimingOrDefault((AbstractActor) actor, operatorDefinitionID).getTime();
           if (timing < wcetMin) {

@@ -210,7 +210,7 @@ public class ConstraintGroupManager {
   public void importConstraints(final PreesmScenario currentScenario) throws FileNotFoundException, CoreException {
     if (!this.excelFileURL.isEmpty() && (currentScenario != null)) {
       final ExcelConstraintsParser parser = new ExcelConstraintsParser(currentScenario);
-      parser.parse(this.excelFileURL, currentScenario.getOperators());
+      parser.parse(this.excelFileURL);
     }
   }
 

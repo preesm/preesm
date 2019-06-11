@@ -39,7 +39,6 @@ package org.preesm.model.scenario.serialize;
 
 import java.io.IOException;
 import java.util.LinkedHashSet;
-import java.util.List;
 import java.util.Set;
 import java.util.logging.Level;
 import jxl.Cell;
@@ -59,6 +58,7 @@ import org.preesm.model.pisdf.Actor;
 import org.preesm.model.pisdf.PiGraph;
 import org.preesm.model.scenario.PreesmScenario;
 import org.preesm.model.slam.ComponentInstance;
+import org.preesm.model.slam.utils.DesignTools;
 
 /**
  * Importing constraints in a scenario from an excel file. The existing timings mean that the task can be mapped on the
@@ -87,12 +87,10 @@ public class ExcelConstraintsParser {
    *
    * @param url
    *          the url
-   * @param allOperatorIds
-   *          the all operator ids
    * @throws CoreException
    *           the core exception
    */
-  public void parse(final String url, final List<ComponentInstance> allOperatorIds) throws CoreException {
+  public void parse(final String url) throws CoreException {
 
     final IWorkspace workspace = ResourcesPlugin.getWorkspace();
 
@@ -116,7 +114,7 @@ public class ExcelConstraintsParser {
       final PiGraph currentPiGraph = scenario.getAlgorithm();
       for (final AbstractActor vertex : currentPiGraph.getAllActors()) {
         if (vertex instanceof Actor) {
-          for (final ComponentInstance operatorId : allOperatorIds) {
+          for (final ComponentInstance operatorId : DesignTools.getOperatorInstances(this.scenario.getDesign())) {
             checkOpPiConstraint(w, operatorId, (Actor) vertex, missingVertices, missingOperators);
           }
         }

@@ -108,6 +108,7 @@ import org.preesm.model.scenario.TimingManager;
 import org.preesm.model.slam.ComponentInstance;
 import org.preesm.model.slam.Design;
 import org.preesm.model.slam.component.Component;
+import org.preesm.model.slam.utils.DesignTools;
 
 /**
  * @author farresti
@@ -644,7 +645,7 @@ public class StaticPiMM2MapperDAGVisitor extends PiMMSwitch<Boolean> {
     currentOperatorIDs.forEach(s -> constraintGroupManager.addConstraint(s, copyActor));
     // Add the scenario timings
     final List<Timing> currentTimings = new ArrayList<>();
-    for (final Component operatorDefinitionID : scenario.getOperatorDefinitions()) {
+    for (final Component operatorDefinitionID : DesignTools.getOperatorComponents(scenario.getDesign())) {
       final Timing timing = scenario.getTimingManager().getTimingOrDefault(actor, operatorDefinitionID);
       currentTimings.add(timing);
     }

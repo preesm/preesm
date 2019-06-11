@@ -79,6 +79,7 @@ import org.eclipse.ui.forms.widgets.ScrolledForm;
 import org.eclipse.ui.forms.widgets.Section;
 import org.preesm.model.scenario.PreesmScenario;
 import org.preesm.model.scenario.serialize.PreesmAlgorithmListContentProvider;
+import org.preesm.model.slam.utils.DesignTools;
 import org.preesm.ui.scenario.editor.FileSelectionAdapter;
 import org.preesm.ui.scenario.editor.Messages;
 
@@ -320,7 +321,7 @@ public class TimingsPage extends FormPage implements IPropertyListener {
    */
   private void comboDataInit(final Combo combo) {
     combo.removeAll();
-    for (final String defId : this.scenario.getOperatorDefinitionIds()) {
+    for (final String defId : DesignTools.getOperatorComponentIds(this.scenario.getDesign())) {
       combo.add(defId);
     }
   }

@@ -44,6 +44,7 @@ import org.eclipse.jface.viewers.Viewer;
 import org.preesm.model.scenario.MemCopySpeed;
 import org.preesm.model.scenario.PreesmScenario;
 import org.preesm.model.slam.component.Component;
+import org.preesm.model.slam.utils.DesignTools;
 
 /**
  * Provides the elements contained in the memcopy speeds editor.
@@ -69,7 +70,7 @@ public class MemCopySpeedContentProvider implements IStructuredContentProvider {
       /**
        * Memcopy speeds are added for all operator types if non present
        */
-      for (final Component opDefId : inputScenario.getOperatorDefinitions()) {
+      for (final Component opDefId : DesignTools.getOperatorComponents(inputScenario.getDesign())) {
         if (!inputScenario.getTimingManager().hasMemCpySpeed(opDefId)) {
           inputScenario.getTimingManager().setDefaultMemCpySpeed(opDefId);
         }

@@ -78,6 +78,7 @@ import org.preesm.model.slam.ComponentInstance;
 import org.preesm.model.slam.Design;
 import org.preesm.model.slam.component.Component;
 import org.preesm.model.slam.serialize.SlamParser;
+import org.preesm.model.slam.utils.DesignTools;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -400,9 +401,8 @@ public class ScenarioParser {
      * It is not possible to remove all operators from special vertex executors: if no operator is selected, all of them
      * are!!
      */
-    if (this.scenario.getSimulationManager().getSpecialVertexOperators().isEmpty()
-        && (this.scenario.getOperatorIds() != null)) {
-      for (final ComponentInstance opId : this.scenario.getOperators()) {
+    if (this.scenario.getSimulationManager().getSpecialVertexOperators().isEmpty()) {
+      for (final ComponentInstance opId : DesignTools.getOperatorInstances(this.scenario.getDesign())) {
         this.scenario.getSimulationManager().addSpecialVertexOperator(opId);
       }
     }

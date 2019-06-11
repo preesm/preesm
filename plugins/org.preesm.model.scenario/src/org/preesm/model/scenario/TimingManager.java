@@ -50,6 +50,7 @@ import org.preesm.model.pisdf.AbstractActor;
 import org.preesm.model.scenario.serialize.CsvTimingParser;
 import org.preesm.model.scenario.serialize.ExcelTimingParser;
 import org.preesm.model.slam.component.Component;
+import org.preesm.model.slam.utils.DesignTools;
 
 /**
  * Manager of the graphs timings.
@@ -226,10 +227,10 @@ public class TimingManager {
         final String[] fileExt = this.excelFileURL.split("\\.");
         switch (fileExt[fileExt.length - 1]) {
           case "xls":
-            excelParser.parse(this.excelFileURL, currentScenario.getOperatorDefinitions());
+            excelParser.parse(this.excelFileURL, DesignTools.getOperatorComponents(currentScenario.getDesign()));
             break;
           case "csv":
-            csvParser.parse(this.excelFileURL, currentScenario.getOperatorDefinitions());
+            csvParser.parse(this.excelFileURL, DesignTools.getOperatorComponents(currentScenario.getDesign()));
             break;
           default:
         }

@@ -80,6 +80,7 @@ import org.eclipse.ui.forms.widgets.Section;
 import org.preesm.model.scenario.PreesmScenario;
 import org.preesm.model.scenario.types.DataType;
 import org.preesm.model.slam.ComponentInstance;
+import org.preesm.model.slam.utils.DesignTools;
 import org.preesm.ui.scenario.editor.Messages;
 
 /**
@@ -364,13 +365,13 @@ public class SimulationPage extends FormPage implements IPropertyListener {
     combo.setToolTipText(tooltip);
 
     if (type.equals("operator")) {
-      for (final String opId : this.scenario.getOrderedOperatorIds()) {
+      for (final String opId : DesignTools.getOrderedOperatorIds(this.scenario.getDesign())) {
         combo.add(opId);
       }
 
       combo.select(combo.indexOf(this.scenario.getSimulationManager().getMainOperator().getInstanceName()));
     } else if (type.equals("comNode")) {
-      for (final String nodeId : this.scenario.getComNodeIds()) {
+      for (final String nodeId : DesignTools.getComNodeInstanceIds(this.scenario.getDesign())) {
         combo.add(nodeId);
       }
 
@@ -642,7 +643,7 @@ public class SimulationPage extends FormPage implements IPropertyListener {
     treeviewer.getTree().setLayoutData(gd);
 
     treeviewer.setUseHashlookup(true);
-    treeviewer.setInput(this.scenario.getOrderedOperators());
+    treeviewer.setInput(DesignTools.getOrderedOperators(this.scenario.getDesign()));
     toolkit.paintBordersFor(container);
 
     // Tree is refreshed in case of algorithm modifications

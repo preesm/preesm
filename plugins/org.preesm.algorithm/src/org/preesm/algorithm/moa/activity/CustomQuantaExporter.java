@@ -82,6 +82,7 @@ import org.preesm.model.slam.component.Component;
 import org.preesm.model.slam.route.AbstractRouteStep;
 import org.preesm.model.slam.route.MessageRouteStep;
 import org.preesm.model.slam.route.Route;
+import org.preesm.model.slam.utils.DesignTools;
 import org.preesm.workflow.elements.Workflow;
 import org.preesm.workflow.implement.AbstractTaskImplementation;
 import org.preesm.workflow.implement.AbstractWorkflowNodeImplementation;
@@ -350,7 +351,7 @@ public class CustomQuantaExporter extends AbstractTaskImplementation {
         final Workbook w = Workbook.getWorkbook(iFile.getContents());
 
         final PiGraph currentGraph = scenario.getAlgorithm();
-        final List<String> operators = scenario.getOperatorDefinitionIds();
+        final List<String> operators = DesignTools.getOperatorComponentIds(scenario.getDesign());
         parseQuantaForPISDFGraph(w, currentGraph, operators);
 
         // Warnings are displayed once for each missing operator or vertex
