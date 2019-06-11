@@ -34,10 +34,17 @@
  */
 package org.preesm.commons.math;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Set;
 import org.nfunk.jep.JEP;
 import org.nfunk.jep.Node;
 import org.nfunk.jep.ParseException;
+import org.nfunk.jep.SymbolTable;
+import org.nfunk.jep.Variable;
 import org.preesm.commons.math.functions.CeilFunction;
 import org.preesm.commons.math.functions.FloorFunction;
 import org.preesm.commons.math.functions.GeometricSum;
@@ -52,6 +59,33 @@ public class JEPWrapper {
 
   private JEPWrapper() {
     // forbid instantiation
+  }
+
+  /**
+   * Return the list of symbols used in the expression. The result list does not include standard constants, standard
+   * functions and user declared functions (see {@link #initJep(Map)}). Unknown functions are treated as symbols.
+   */
+  public static final List<String> involvement(final String expression) {
+    final JEP jep = initJep(Collections.emptyMap());
+    // allow undeclared to be able to list symbols without values
+    jep.setAllowUndeclared(true);
+    // allow implicit multiplication to be able to list undeclared functions as symbols
+    jep.setImplicitMul(true);
+    final List<String> res = new ArrayList<>();
+    try {
+      jep.parse(expression);
+      final SymbolTable symbolTable = jep.getSymbolTable();
+      @SuppressWarnings("unchecked")
+      final Set<Entry<String, Variable>> symbols = symbolTable.entrySet();
+      for (final Entry<String, Variable> sym : symbols) {
+        if (sym.getValue().getValue() == null) {
+          res.add(sym.getKey());
+        }
+      }
+    } catch (ParseException e) {
+      throw new ExpressionEvaluationException("Could not analyse expression '" + expression + "'.", e);
+    }
+    return res;
   }
 
   /**
@@ -72,6 +106,10 @@ public class JEPWrapper {
 
   private static JEP initJep(final Map<String, ? extends Number> addInputParameterValues) {
     final JEP jep = new JEP();
+
+    jep.setAllowAssignment(false);
+    jep.setAllowUndeclared(false);
+    jep.setImplicitMul(false);
 
     if (addInputParameterValues != null) {
       addInputParameterValues.forEach(jep::addVariable);
