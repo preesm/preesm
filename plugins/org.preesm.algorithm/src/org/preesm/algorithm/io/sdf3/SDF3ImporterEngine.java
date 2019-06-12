@@ -142,13 +142,13 @@ public class SDF3ImporterEngine {
         // Set the timing of the actor
         final SDFAbstractVertex vertex = entry.getKey();
         final AbstractActor referencePiMMVertex = (AbstractActor) vertex.getReferencePiMMVertex();
-        scenario.getTimingManager().setTiming(referencePiMMVertex, component.getComponent(), entry.toString());
+        scenario.getTimings().setTiming(referencePiMMVertex, component.getComponent(), entry.toString());
       }
     }
     // Add the data types of the SDF3 graph to the scenario
     for (final Entry<String, Integer> entry : this.sdf3Parser.getDataTypes().entrySet()) {
       final DataType type = new DataType(entry.getKey(), entry.getValue());
-      scenario.getSimulationManager().putDataType(type);
+      scenario.getSimulationInfo().putDataType(type);
     }
   }
 

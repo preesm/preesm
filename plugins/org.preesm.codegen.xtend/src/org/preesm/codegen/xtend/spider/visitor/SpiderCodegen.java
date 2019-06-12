@@ -173,7 +173,7 @@ public class SpiderCodegen {
     }
 
     this.coreIds = new LinkedHashMap<>();
-    ComponentInstance mainOperator = this.scenario.getSimulationManager().getMainOperator();
+    ComponentInstance mainOperator = this.scenario.getSimulationInfo().getMainOperator();
     final List<ComponentInstance> orderedOperators = DesignTools.getOrderedOperators(this.scenario.getDesign());
     if (mainOperator == null) {
       /* Warning */
@@ -192,7 +192,7 @@ public class SpiderCodegen {
     this.timings = new LinkedHashMap<>();
     final Map<String, AbstractActor> actorsByNames = this.preprocessor.getActorNames();
     for (final AbstractActor actor : actorsByNames.values()) {
-      final Map<Component, String> listTimings = this.scenario.getTimingManager().listTimings(actor);
+      final Map<Component, String> listTimings = this.scenario.getTimings().listTimings(actor);
       for (Entry<Component, String> e : listTimings.entrySet()) {
         if (actor != null) {
           if (!this.timings.containsKey(actor)) {
@@ -205,7 +205,7 @@ public class SpiderCodegen {
 
     // Generate constraints
     this.constraints = new LinkedHashMap<>();
-    for (final Entry<ComponentInstance, List<AbstractActor>> cg : this.scenario.getConstraintGroupManager()
+    for (final Entry<ComponentInstance, List<AbstractActor>> cg : this.scenario.getConstraints()
         .getConstraintGroups().entrySet()) {
       for (final AbstractActor aa : cg.getValue()) {
         if (this.constraints.get(aa) == null) {
@@ -368,7 +368,7 @@ public class SpiderCodegen {
 
     final StringBuilder tmp = new StringBuilder();
     final SpiderCodegenVisitor codeGenerator = new SpiderCodegenVisitor(this, tmp, this.preprocessor, this.timings,
-        this.constraints, this.scenario.getSimulationManager().getDataTypes());
+        this.constraints, this.scenario.getSimulationInfo().getDataTypes());
     // Generate C++ code for the whole PiGraph, at the end, tmp will contain
     // the vertex declaration for pg
     codeGenerator.doSwitch(pg);
@@ -413,7 +413,7 @@ public class SpiderCodegen {
     append("#include <spider.h>\n");
     append("#include \"" + pg.getName() + ".h\"\n\n");
     // Papify pre-processing
-    PapifyConfigManager papifyConfigManager = scenario.getPapifyConfigManager();
+    PapifyConfigManager papifyConfigManager = scenario.getPapifyConfig();
 
     final HashMap<ArrayList<String>, Integer> uniqueEventSets = new HashMap<>();
     int eventSetID = 0;
@@ -644,7 +644,7 @@ public class SpiderCodegen {
       }
       append("\n\t/* === Set Spider GRT core === */\n\n");
       append("\tSpider::setSpiderGRTVirtualID(archi, static_cast<std::uint32_t>(PEVirtID::"
-          + SpiderNameGenerator.getCoreName(scenario.getSimulationManager().getMainOperator()) + "));\n");
+          + SpiderNameGenerator.getCoreName(scenario.getSimulationInfo().getMainOperator()) + "));\n");
     }
     append("}\n\n");
     append("void freeArchi() {\n\n");

@@ -137,7 +137,7 @@ public class MemoryScriptTask extends AbstractMemoryScriptTask {
 
     // Get the data types from the scenario
     final PreesmScenario scenario = (PreesmScenario) inputs.get("scenario");
-    final Map<String, DataType> dataTypes = scenario.getSimulationManager().getDataTypes();
+    final Map<String, DataType> dataTypes = scenario.getSimulationInfo().getDataTypes();
 
     // Get check policy
     final String checkString = parameters.get(AbstractMemoryScriptTask.PARAM_CHECK);

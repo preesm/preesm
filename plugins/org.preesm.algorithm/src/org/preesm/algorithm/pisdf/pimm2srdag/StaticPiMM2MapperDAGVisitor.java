@@ -438,7 +438,7 @@ public class StaticPiMM2MapperDAGVisitor extends PiMMSwitch<Boolean> {
       newEdge.setTargetPortModifier(new StringEdgePropertyType(targetModifier));
     }
     // 1.4 Set the different properties of the Edge
-    final long dataSize = this.scenario.getSimulationManager().getDataTypeSizeOrDefault(fifo.getType());
+    final long dataSize = this.scenario.getSimulationInfo().getDataTypeSizeOrDefault(fifo.getType());
     newEdge.setPropertyValue(SDFEdge.DATA_TYPE, fifo.getType());
     newEdge.setPropertyValue(SDFEdge.DATA_SIZE, dataSize);
     newEdge.setWeight(new LongEdgePropertyType(weight));
@@ -629,7 +629,7 @@ public class StaticPiMM2MapperDAGVisitor extends PiMMSwitch<Boolean> {
     final AbstractActor actor = PreesmCopyTracker.getOriginalSource(copyActor);
     // Add the scenario constraints
     final List<ComponentInstance> currentOperatorIDs = new ArrayList<>();
-    final Set<Entry<ComponentInstance, List<AbstractActor>>> constraintGroups = scenario.getConstraintGroupManager()
+    final Set<Entry<ComponentInstance, List<AbstractActor>>> constraintGroups = scenario.getConstraints()
         .getConstraintGroups().entrySet();
     for (final Entry<ComponentInstance, List<AbstractActor>> cg : constraintGroups) {
       final List<AbstractActor> vertexPaths = cg.getValue();
@@ -639,7 +639,7 @@ public class StaticPiMM2MapperDAGVisitor extends PiMMSwitch<Boolean> {
       }
     }
 
-    final ConstraintGroupManager constraintGroupManager = scenario.getConstraintGroupManager();
+    final ConstraintGroupManager constraintGroupManager = scenario.getConstraints();
     currentOperatorIDs.forEach(s -> constraintGroupManager.addConstraint(s, copyActor));
   }
 

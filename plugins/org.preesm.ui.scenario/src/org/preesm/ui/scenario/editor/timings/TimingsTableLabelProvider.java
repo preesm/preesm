@@ -141,7 +141,7 @@ public class TimingsTableLabelProvider implements ITableLabelProvider, Selection
     if ((element instanceof AbstractActor) && (this.currentOpDefId != null)) {
       final AbstractActor vertex = (AbstractActor) element;
 
-      final String timing = this.scenario.getTimingManager().getTimingOrDefault(vertex, this.currentOpDefId);
+      final String timing = this.scenario.getTimings().getTimingOrDefault(vertex, this.currentOpDefId);
       if (columnIndex == 3) {
         if (ExpressionEvaluator.canEvaluate(vertex, timing)) {
           return this.imageOk;
@@ -177,7 +177,7 @@ public class TimingsTableLabelProvider implements ITableLabelProvider, Selection
     if ((element instanceof AbstractActor) && (this.currentOpDefId != null)) {
       final AbstractActor vertex = (AbstractActor) element;
 
-      final String timing = this.scenario.getTimingManager().getTimingOrDefault(vertex, this.currentOpDefId);
+      final String timing = this.scenario.getTimings().getTimingOrDefault(vertex, this.currentOpDefId);
 
       switch (columnIndex) {
         case 0:
@@ -272,14 +272,14 @@ public class TimingsTableLabelProvider implements ITableLabelProvider, Selection
       if (this.currentOpDefId != null) {
         final String title = Messages.getString("Timings.dialog.title");
         final String message = Messages.getString("Timings.dialog.message") + abstractActor.getVertexPath();
-        final String init = this.scenario.getTimingManager().getTimingOrDefault(abstractActor, this.currentOpDefId);
+        final String init = this.scenario.getTimings().getTimingOrDefault(abstractActor, this.currentOpDefId);
 
         final InputDialog dialog = new InputDialog(PlatformUI.getWorkbench().getActiveWorkbenchWindow().getShell(),
             title, message, init, validator);
         if (dialog.open() == Window.OK) {
           final String value = dialog.getValue();
 
-          this.scenario.getTimingManager().setTiming(abstractActor, this.currentOpDefId, value);
+          this.scenario.getTimings().setTiming(abstractActor, this.currentOpDefId, value);
           this.propertyListener.propertyChanged(this, IEditorPart.PROP_DIRTY);
           this.tableViewer.refresh();
         }

@@ -245,7 +245,7 @@ public class RouteCalculator {
             if ((routeSrcK != null) && (routeKTgt != null)) {
               final Route compoundRoute = new Route(routeSrcK, routeKTgt);
               if (compoundRoute.isSingleAppearance()) {
-                final long averageDataSize = this.scenario.getSimulationManager().getAverageDataSize();
+                final long averageDataSize = this.scenario.getSimulationInfo().getAverageDataSize();
                 // If this if statement is removed, several
                 // routes become available
                 if (table.getBestRoute(src, tgt) == null) {

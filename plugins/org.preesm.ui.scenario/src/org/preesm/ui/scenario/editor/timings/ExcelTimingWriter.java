@@ -159,7 +159,7 @@ public class ExcelTimingWriter extends ExcelWriter {
       for (final Component opDefId : DesignTools.getOperatorComponents(this.scenario.getDesign())) {
         for (final AbstractActor vertexName : vSet) {
 
-          final String timing = this.scenario.getTimingManager().getTimingOrDefault(vertexName, opDefId);
+          final String timing = this.scenario.getTimings().getTimingOrDefault(vertexName, opDefId);
 
           WritableCell opCell = (WritableCell) sheet.findCell(opDefId.getVlnv().getName());
           WritableCell vCell = (WritableCell) sheet.findCell(vertexName.getVertexPath());

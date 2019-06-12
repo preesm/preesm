@@ -196,9 +196,9 @@ public class ThroughputEvaluationTask extends AbstractTaskImplementation {
         if (actor.getKind() == "vertex") {
           if (actor.getGraphDescription() == null) {
             // if atomic actor then copy the duration indicated in the scenario
-            final double duration = scenario.getTimingManager().evaluateTimingOrDefault(
+            final double duration = scenario.getTimings().evaluateTimingOrDefault(
                 (AbstractActor) actor.getReferencePiMMVertex(),
-                scenario.getSimulationManager().getMainOperator().getComponent());
+                scenario.getSimulationInfo().getMainOperator().getComponent());
             actor.setPropertyValue("duration", duration);
           } else {
             // if hierarchical actor then as default the duration is 1

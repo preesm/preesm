@@ -224,7 +224,7 @@ public abstract class CodegenAbstractPrinter extends CodegenSwitch<CharSequence>
    *
    */
   protected final int getMainOperatorId() {
-    final ComponentInstance mainOperatorName = getEngine().getScenario().getSimulationManager().getMainOperator();
+    final ComponentInstance mainOperatorName = getEngine().getScenario().getSimulationInfo().getMainOperator();
     final Collection<Block> codeBlocks = getEngine().getCodeBlocks();
     for (final Block block : codeBlocks) {
       if (block.getName().equals(mainOperatorName.getInstanceName())) {

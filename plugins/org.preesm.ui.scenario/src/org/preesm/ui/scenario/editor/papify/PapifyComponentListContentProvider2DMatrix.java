@@ -99,9 +99,9 @@ public class PapifyComponentListContentProvider2DMatrix implements ITreeContentP
   public void removePEfromComp(final Component peType, final String compName) {
     if (peType != null && !compName.equals("")) {
 
-      PapiEventInfo papiData = this.scenario.getPapifyConfigManager().getPapifyData();
+      PapiEventInfo papiData = this.scenario.getPapifyConfig().getPapifyData();
       PapiComponent pc = papiData.getComponent(compName);
-      this.scenario.getPapifyConfigManager().getCorePapifyConfigGroupPE(peType).remove(pc);
+      this.scenario.getPapifyConfig().getCorePapifyConfigGroupPE(peType).remove(pc);
 
       for (PapifyListTreeElement treeElement : this.componentConfig) {
         if (treeElement.label.equals(compName)) {
@@ -117,9 +117,9 @@ public class PapifyComponentListContentProvider2DMatrix implements ITreeContentP
    */
   public void addPEtoComp(final Component peType, final String compName) {
     if (peType != null && !compName.equals("")) {
-      PapiEventInfo papiData = this.scenario.getPapifyConfigManager().getPapifyData();
+      PapiEventInfo papiData = this.scenario.getPapifyConfig().getPapifyData();
       PapiComponent pc = papiData.getComponent(compName);
-      this.scenario.getPapifyConfigManager().getCorePapifyConfigGroupPE(peType).add(pc);
+      this.scenario.getPapifyConfig().getCorePapifyConfigGroupPE(peType).add(pc);
 
       for (PapifyListTreeElement treeElement : this.componentConfig) {
         if (treeElement.label.equals(compName)) {
@@ -135,10 +135,10 @@ public class PapifyComponentListContentProvider2DMatrix implements ITreeContentP
    */
   public void cleanPE(final Component peType) {
 
-    List<PapiComponent> corePapifyConfigGroupPE = this.scenario.getPapifyConfigManager()
+    List<PapiComponent> corePapifyConfigGroupPE = this.scenario.getPapifyConfig()
         .getCorePapifyConfigGroupPE(peType);
     if (peType != null && corePapifyConfigGroupPE != null) {
-      PapiEventInfo papiData = this.scenario.getPapifyConfigManager().getPapifyData();
+      PapiEventInfo papiData = this.scenario.getPapifyConfig().getPapifyData();
       corePapifyConfigGroupPE.removeAll(papiData.getComponents().values());
 
       for (PapifyListTreeElement treeElement : this.componentConfig) {
@@ -165,7 +165,7 @@ public class PapifyComponentListContentProvider2DMatrix implements ITreeContentP
    */
   public void setInput() {
     final Map<Component,
-        List<PapiComponent>> papifyConfigGroupsPEs = this.scenario.getPapifyConfigManager().getPapifyConfigGroupsPEs();
+        List<PapiComponent>> papifyConfigGroupsPEs = this.scenario.getPapifyConfig().getPapifyConfigGroupsPEs();
 
     final Set<Entry<Component, List<PapiComponent>>> entrySet = papifyConfigGroupsPEs.entrySet();
     for (final Entry<Component, List<PapiComponent>> papiConfig : entrySet) {

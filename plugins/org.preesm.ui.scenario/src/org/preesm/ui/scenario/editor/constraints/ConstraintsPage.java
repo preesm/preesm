@@ -116,7 +116,7 @@ public class ConstraintsPage extends FormPage implements IPropertyListener {
       // Constrints file chooser section
       createFileSection(managedForm, Messages.getString("Constraints.file"),
           Messages.getString("Constraints.fileDescription"), Messages.getString("Constraints.fileEdit"),
-          this.scenario.getConstraintGroupManager().getExcelFileURL(),
+          this.scenario.getConstraints().getExcelFileURL(),
           Messages.getString("Constraints.fileBrowseTitle"), "xls");
 
       createConstraintsSection(managedForm, Messages.getString("Constraints.title"),
@@ -328,8 +328,8 @@ public class ConstraintsPage extends FormPage implements IPropertyListener {
    */
   private void importData(final Text text) throws PreesmException, FileNotFoundException, CoreException {
 
-    this.scenario.getConstraintGroupManager().setExcelFileURL(text.getText());
-    this.scenario.getConstraintGroupManager().importConstraints(this.scenario);
+    this.scenario.getConstraints().setExcelFileURL(text.getText());
+    this.scenario.getConstraints().importConstraints(this.scenario);
 
     firePropertyChange(IEditorPart.PROP_DIRTY);
 

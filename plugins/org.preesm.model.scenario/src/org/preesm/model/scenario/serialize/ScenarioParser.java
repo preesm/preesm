@@ -221,7 +221,7 @@ public class ScenarioParser {
       // Create a parameter value foreach parameter not yet in the
       // scenario
       for (final Parameter p : parameters) {
-        this.scenario.getParameterValueManager().addParameterValue(p, p.getExpression().getExpressionAsString());
+        this.scenario.getParameterValues().addParameterValue(p, p.getExpression().getExpressionAsString());
       }
     }
   }
@@ -251,7 +251,7 @@ public class ScenarioParser {
       PreesmLogger.getLogger().log(Level.WARNING,
           "Parameter with name '" + name + "' cannot be found in PiGraph '" + parent + "'.");
     } else {
-      this.scenario.getParameterValueManager().addParameterValue(currentParameter, stringValue);
+      this.scenario.getParameterValues().addParameterValue(currentParameter, stringValue);
     }
     return currentParameter;
   }
@@ -275,14 +275,14 @@ public class ScenarioParser {
         switch (type) {
           case "mainCore":
             final ComponentInstance mainCore = scenario.getDesign().getComponentInstance(content);
-            this.scenario.getSimulationManager().setMainOperator(mainCore);
+            this.scenario.getSimulationInfo().setMainOperator(mainCore);
             break;
           case "mainComNode":
             final ComponentInstance mainComNode = scenario.getDesign().getComponentInstance(content);
-            this.scenario.getSimulationManager().setMainComNode(mainComNode);
+            this.scenario.getSimulationInfo().setMainComNode(mainComNode);
             break;
           case "averageDataSize":
-            this.scenario.getSimulationManager().setAverageDataSize(Long.valueOf(content));
+            this.scenario.getSimulationInfo().setAverageDataSize(Long.valueOf(content));
             break;
           case "dataTypes":
             parseDataTypes(elt);
@@ -291,7 +291,7 @@ public class ScenarioParser {
             parseSpecialVertexOperators(elt);
             break;
           case "numberOfTopExecutions":
-            this.scenario.getSimulationManager().setNumberOfTopExecutions(Integer.parseInt(content));
+            this.scenario.getSimulationInfo().setNumberOfTopExecutions(Integer.parseInt(content));
             break;
           default:
         }
@@ -322,7 +322,7 @@ public class ScenarioParser {
 
           if (!name.isEmpty() && !size.isEmpty()) {
             final DataType dataType = new DataType(name, Integer.parseInt(size));
-            this.scenario.getSimulationManager().putDataType(dataType);
+            this.scenario.getSimulationInfo().putDataType(dataType);
           }
         }
       }
@@ -351,7 +351,7 @@ public class ScenarioParser {
 
           if (path != null) {
             final ComponentInstance componentInstance = this.scenario.getDesign().getComponentInstance(path);
-            this.scenario.getSimulationManager().addSpecialVertexOperator(componentInstance);
+            this.scenario.getSimulationInfo().addSpecialVertexOperator(componentInstance);
           }
         }
       }
@@ -363,9 +363,9 @@ public class ScenarioParser {
      * It is not possible to remove all operators from special vertex executors: if no operator is selected, all of them
      * are!!
      */
-    if (this.scenario.getSimulationManager().getSpecialVertexOperators().isEmpty()) {
+    if (this.scenario.getSimulationInfo().getSpecialVertexOperators().isEmpty()) {
       for (final ComponentInstance opId : DesignTools.getOperatorInstances(this.scenario.getDesign())) {
-        this.scenario.getSimulationManager().addSpecialVertexOperator(opId);
+        this.scenario.getSimulationInfo().addSpecialVertexOperator(opId);
       }
     }
   }
@@ -434,7 +434,7 @@ public class ScenarioParser {
   private void parseConstraintGroups(final Element cstGroupsElt) {
 
     final String excelFileUrl = cstGroupsElt.getAttribute("excelUrl");
-    this.scenario.getConstraintGroupManager().setExcelFileURL(excelFileUrl);
+    this.scenario.getConstraints().setExcelFileURL(excelFileUrl);
 
     Node node = cstGroupsElt.getFirstChild();
 
@@ -486,7 +486,7 @@ public class ScenarioParser {
       }
     }
     final List<
-        AbstractActor> opConstraintGroups = this.scenario.getConstraintGroupManager().getOpConstraintGroups(opId);
+        AbstractActor> opConstraintGroups = this.scenario.getConstraints().getOpConstraintGroups(opId);
     opConstraintGroups.addAll(paths);
   }
 
@@ -499,7 +499,7 @@ public class ScenarioParser {
   private void parsePapifyConfigs(final Element papifyConfigsElt) {
 
     final String xmlFileURL = papifyConfigsElt.getAttribute("xmlUrl");
-    this.scenario.getPapifyConfigManager().setXmlFileURL(xmlFileURL);
+    this.scenario.getPapifyConfig().setXmlFileURL(xmlFileURL);
 
     Node node = papifyConfigsElt.getFirstChild();
 
@@ -510,7 +510,7 @@ public class ScenarioParser {
         final String type = elt.getTagName();
         if (type.equals("papifyConfigActor")) {
           final PapifyConfigActor pg = getPapifyConfigActor(elt);
-          this.scenario.getPapifyConfigManager().addPapifyConfigActorGroup(pg);
+          this.scenario.getPapifyConfig().addPapifyConfigActorGroup(pg);
         } else if (type.equals("papifyConfigPE")) {
           parsePapifyConfigPE(elt);
 
@@ -652,7 +652,7 @@ public class ScenarioParser {
     }
     component.setEventSets(eventSetList);
 
-    this.scenario.getPapifyConfigManager().addComponent(slamComponent, component);
+    this.scenario.getPapifyConfig().addComponent(slamComponent, component);
 
   }
 
@@ -727,7 +727,7 @@ public class ScenarioParser {
   private void parseTimings(final Element timingsElt) {
 
     final String timingFileUrl = timingsElt.getAttribute("excelUrl");
-    this.scenario.getTimingManager().setExcelFileURL(timingFileUrl);
+    this.scenario.getTimings().setExcelFileURL(timingFileUrl);
 
     Node node = timingsElt.getFirstChild();
 
@@ -739,7 +739,7 @@ public class ScenarioParser {
         if (type.equals("timing")) {
           parseTiming(elt);
         } else if (type.equals("memcpyspeed")) {
-          retrieveMemcpySpeed(this.scenario.getTimingManager(), elt);
+          retrieveMemcpySpeed(this.scenario.getTimings(), elt);
         }
       }
 
@@ -766,7 +766,7 @@ public class ScenarioParser {
         final AbstractActor lookup = ActorPath.lookup(this.scenario.getAlgorithm(), vertexpath);
         if ((lookup != null) && contains) {
           final Component component = this.scenario.getDesign().getComponent(opdefname);
-          this.scenario.getTimingManager().setTiming(lookup, component, stringValue);
+          this.scenario.getTimings().setTiming(lookup, component, stringValue);
         }
       }
     }

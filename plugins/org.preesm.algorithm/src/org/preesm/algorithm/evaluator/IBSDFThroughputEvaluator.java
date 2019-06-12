@@ -206,9 +206,9 @@ public class IBSDFThroughputEvaluator extends ThroughputEvaluator {
       } else {
         final AbstractVertex referencePiMMVertex = edge.getSource().getReferencePiMMVertex();
         if (referencePiMMVertex instanceof AbstractActor) {
-          final Component component = scenario.getSimulationManager().getMainOperator().getComponent();
+          final Component component = scenario.getSimulationInfo().getMainOperator().getComponent();
           final AbstractActor actor = (AbstractActor) referencePiMMVertex;
-          L = this.getScenar().getTimingManager().evaluateTimingOrDefault(actor, component);
+          L = this.getScenar().getTimings().evaluateTimingOrDefault(actor, component);
         } else {
           L = 0;
         }

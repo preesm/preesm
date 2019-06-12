@@ -197,7 +197,7 @@ public class CsvTimingParser {
         try {
           final String expression = timings.get(actor).get(component);
 
-          this.scenario.getTimingManager().setTiming(actor, component, expression);
+          this.scenario.getTimings().setTiming(actor, component, expression);
 
           final String msg = "Importing timing: " + actor.getVertexPath() + " on " + component.getVlnv().getName()
               + " takes " + expression;

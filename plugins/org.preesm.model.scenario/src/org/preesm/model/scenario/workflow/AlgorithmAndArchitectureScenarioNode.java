@@ -120,7 +120,7 @@ public class AlgorithmAndArchitectureScenarioNode extends AbstractScenarioImplem
   }
 
   private void applyScenarioParameterValues(final PreesmScenario scenario) {
-    for (final Entry<Parameter, String> paramValue : scenario.getParameterValueManager().getParameterValues()
+    for (final Entry<Parameter, String> paramValue : scenario.getParameterValues().getParameterValues()
         .entrySet()) {
 
       final String newValue = paramValue.getValue();

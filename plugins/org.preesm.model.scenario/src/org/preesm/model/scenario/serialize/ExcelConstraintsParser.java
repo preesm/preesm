@@ -99,7 +99,7 @@ public class ExcelConstraintsParser {
     final Path path = new Path(url);
     final IFile file = workspace.getRoot().getFile(path);
 
-    this.scenario.getConstraintGroupManager().removeAll();
+    this.scenario.getConstraints().removeAll();
     PreesmLogger.getLogger().log(Level.INFO,
         "Importing constraints from an excel sheet. Previously defined constraints are discarded.");
 
@@ -152,7 +152,7 @@ public class ExcelConstraintsParser {
 
         if (timingCell.getType().equals(CellType.NUMBER) || timingCell.getType().equals(CellType.NUMBER_FORMULA)) {
 
-          this.scenario.getConstraintGroupManager().addConstraint(operatorId, vertex);
+          this.scenario.getConstraints().addConstraint(operatorId, vertex);
 
           PreesmLogger.getLogger().log(Level.FINE, "Importing constraint: {" + operatorId + "," + vertex + ",yes}");
 

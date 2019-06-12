@@ -179,9 +179,9 @@ public class ConstraintsCheckStateListener implements ISDFCheckStateListener {
   private void fireOnCheck(final AbstractActor abstractActor, final boolean isChecked) {
     if (this.currentOpId != null) {
       if (isChecked) {
-        this.scenario.getConstraintGroupManager().addConstraint(this.currentOpId, abstractActor);
+        this.scenario.getConstraints().addConstraint(this.currentOpId, abstractActor);
       } else {
-        this.scenario.getConstraintGroupManager().removeConstraint(this.currentOpId, abstractActor);
+        this.scenario.getConstraints().removeConstraint(this.currentOpId, abstractActor);
       }
     }
 
@@ -242,7 +242,7 @@ public class ConstraintsCheckStateListener implements ISDFCheckStateListener {
     if ((this.currentOpId != null) && (currentGraph != null)) {
       final Set<AbstractActor> cgSet = new LinkedHashSet<>();
 
-      final ConstraintGroupManager constraintGroupManager = this.scenario.getConstraintGroupManager();
+      final ConstraintGroupManager constraintGroupManager = this.scenario.getConstraints();
       final List<AbstractActor> cg = constraintGroupManager.getOpConstraintGroups(this.currentOpId);
 
       if (cg != null) {

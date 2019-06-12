@@ -117,7 +117,7 @@ public class PapifyEngine {
     String configPosition = "";
     int counterConfigs = 0;
 
-    papifyConfig = this.scenario.getPapifyConfigManager();
+    papifyConfig = this.scenario.getPapifyConfig();
 
     String message = "Papifying";
     String finalName;
@@ -365,7 +365,7 @@ public class PapifyEngine {
     this.timingEvent.setIndex(9999);
     this.timingEvent.setModifiers(modifTimingList);
 
-    if (this.scenario.getPapifyConfigManager() != null) {
+    if (this.scenario.getPapifyConfig() != null) {
 
       // For each vertex, check the monitoring
       for (final DAGVertex vertex : this.dag.vertexSet()) {

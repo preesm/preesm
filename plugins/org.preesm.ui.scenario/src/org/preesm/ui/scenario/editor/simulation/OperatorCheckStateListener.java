@@ -113,10 +113,10 @@ public class OperatorCheckStateListener implements ICheckStateListener, PaintLis
           final ComponentInstance componentInstance = (ComponentInstance) element;
 
           if (isChecked) {
-            OperatorCheckStateListener.this.scenario.getSimulationManager()
+            OperatorCheckStateListener.this.scenario.getSimulationInfo()
                 .addSpecialVertexOperator(componentInstance);
           } else {
-            OperatorCheckStateListener.this.scenario.getSimulationManager()
+            OperatorCheckStateListener.this.scenario.getSimulationInfo()
                 .removeSpecialVertexOperator(componentInstance);
           }
 
@@ -131,7 +131,7 @@ public class OperatorCheckStateListener implements ICheckStateListener, PaintLis
    */
   public void updateCheck() {
     if (this.scenario != null) {
-      this.treeViewer.setCheckedElements(this.scenario.getSimulationManager().getSpecialVertexOperators().toArray());
+      this.treeViewer.setCheckedElements(this.scenario.getSimulationInfo().getSpecialVertexOperators().toArray());
     }
   }
 

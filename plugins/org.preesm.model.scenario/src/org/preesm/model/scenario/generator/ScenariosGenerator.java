@@ -230,11 +230,11 @@ public class ScenariosGenerator {
       fillPiScenario(scenario, archi, piGraph);
     }
     // Add a main core (first of the list)
-    scenario.getSimulationManager().setMainOperator(coreIds.get(0));
+    scenario.getSimulationInfo().setMainOperator(coreIds.get(0));
     // Add a main com node (first of the list)
-    scenario.getSimulationManager().setMainComNode(comNodeIds.get(0));
+    scenario.getSimulationInfo().setMainComNode(comNodeIds.get(0));
     // Add a average transfer size
-    scenario.getSimulationManager().setAverageDataSize(1000);
+    scenario.getSimulationInfo().setAverageDataSize(1000);
 
     scenario.setCodegenDirectory("/" + project.getName() + "/Code/generated/");
     return scenario;
@@ -261,22 +261,22 @@ public class ScenariosGenerator {
     for (final Component opId : DesignTools.getOperatorComponents(archi)) {
       for (final AbstractActor aa : piGraph.getAllActors()) {
         // Add timing: aa run on ci in 10000
-        scenario.getTimingManager().setTiming(aa, opId, 10000);
+        scenario.getTimings().setTiming(aa, opId, 10000);
       }
     }
     for (final ComponentInstance coreId : coreIds) {
       for (final AbstractActor actor : piGraph.getAllActors()) {
         // Add constraint: aa can be run on ci
-        scenario.getConstraintGroupManager().addConstraint(coreId, actor);
+        scenario.getConstraints().addConstraint(coreId, actor);
       }
       // Add special actors operator id (all cores can execute special
       // actors)
-      scenario.getSimulationManager().addSpecialVertexOperator(coreId);
+      scenario.getSimulationInfo().addSpecialVertexOperator(coreId);
     }
 
     // Fill data-types found in the algo with default value of 1 byte size
     new PiSDFTypeGatherer().doSwitch(piGraph)
-        .forEach(type -> scenario.getSimulationManager().putDataType(new DataType(type, 1)));
+        .forEach(type -> scenario.getSimulationInfo().putDataType(new DataType(type, 1)));
   }
 
   /**

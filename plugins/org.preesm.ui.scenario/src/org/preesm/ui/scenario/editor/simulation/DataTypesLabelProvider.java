@@ -203,7 +203,7 @@ public class DataTypesLabelProvider implements ITableLabelProvider {
         final String value = dialog.getValue();
 
         dataType.setSize(Integer.valueOf(value));
-        this.scenario.getSimulationManager().putDataType(dataType);
+        this.scenario.getSimulationInfo().putDataType(dataType);
 
         this.tableViewer.refresh();
         this.propertyListener.propertyChanged(this, IEditorPart.PROP_DIRTY);

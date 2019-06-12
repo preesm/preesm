@@ -100,9 +100,9 @@ public class InfiniteHomogeneousAbc extends LatencyAbc {
     super(params, dag, archi, AbcType.InfiniteHomogeneous, scenario);
     getType().setTaskSchedType(taskSchedType);
 
-    final ComponentInstance mainComNode = scenario.getSimulationManager().getMainComNode();
+    final ComponentInstance mainComNode = scenario.getSimulationInfo().getMainComNode();
 
-    final ComponentInstance mainOperator = scenario.getSimulationManager().getMainOperator();
+    final ComponentInstance mainOperator = scenario.getSimulationInfo().getMainOperator();
 
     if (mainComNode != null) {
       PreesmLogger.getLogger().info("Infinite homogeneous simulation");
@@ -215,7 +215,7 @@ public class InfiniteHomogeneousAbc extends LatencyAbc {
      * In a Infinite Homogeneous Architecture, each communication is supposed to be done on the main medium. The
      * communication cost is simply calculated from the main medium speed.
      */
-    final ComponentInstance mainCom = this.scenario.getSimulationManager().getMainComNode();
+    final ComponentInstance mainCom = this.scenario.getSimulationInfo().getMainComNode();
 
     if (mainCom != null) {
 

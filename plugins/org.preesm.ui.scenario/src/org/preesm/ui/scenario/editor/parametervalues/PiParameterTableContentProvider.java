@@ -86,7 +86,7 @@ public class PiParameterTableContentProvider implements IStructuredContentProvid
    */
   @Override
   public Object[] getElements(final Object inputElement) {
-    return this.scenario.getParameterValueManager().getParameterValues().entrySet().toArray();
+    return this.scenario.getParameterValues().getParameterValues().entrySet().toArray();
   }
 
 }

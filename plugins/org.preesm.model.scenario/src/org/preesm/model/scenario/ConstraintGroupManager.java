@@ -60,7 +60,7 @@ import org.preesm.model.slam.ComponentInstance;
 public class ConstraintGroupManager {
 
   /** List of all constraint groups. */
-  private final Map<ComponentInstance, List<AbstractActor>> constraintgroups = new LinkedHashMap<>();
+  private final Map<ComponentInstance, List<AbstractActor>> constraintGroups = new LinkedHashMap<>();
 
   /** Path to a file containing constraints. */
   private String excelFileURL = "";
@@ -83,10 +83,10 @@ public class ConstraintGroupManager {
    *          the vertex
    */
   public void addConstraint(final ComponentInstance cmpInstance, final AbstractActor actor) {
-    if (!constraintgroups.containsKey(cmpInstance)) {
-      constraintgroups.put(cmpInstance, new ArrayList<>());
+    if (!constraintGroups.containsKey(cmpInstance)) {
+      constraintGroups.put(cmpInstance, new ArrayList<>());
     }
-    constraintgroups.get(cmpInstance).add(actor);
+    constraintGroups.get(cmpInstance).add(actor);
   }
 
   /**
@@ -98,10 +98,10 @@ public class ConstraintGroupManager {
    *          the vertex set
    */
   public void addConstraints(final ComponentInstance cmpInstance, final Collection<AbstractActor> actors) {
-    if (!constraintgroups.containsKey(cmpInstance)) {
-      constraintgroups.put(cmpInstance, new ArrayList<>());
+    if (!constraintGroups.containsKey(cmpInstance)) {
+      constraintGroups.put(cmpInstance, new ArrayList<>());
     }
-    constraintgroups.get(cmpInstance).addAll(actors);
+    constraintGroups.get(cmpInstance).addAll(actors);
   }
 
   /**
@@ -113,8 +113,8 @@ public class ConstraintGroupManager {
    *          the vertex
    */
   public void removeConstraint(final ComponentInstance cmpInstance, final AbstractActor actor) {
-    if (constraintgroups.containsKey(cmpInstance)) {
-      constraintgroups.get(cmpInstance).remove(actor);
+    if (constraintGroups.containsKey(cmpInstance)) {
+      constraintGroups.get(cmpInstance).remove(actor);
     }
   }
 
@@ -124,7 +124,7 @@ public class ConstraintGroupManager {
    * @return the constraint groups
    */
   public Map<ComponentInstance, List<AbstractActor>> getConstraintGroups() {
-    return Collections.unmodifiableMap(this.constraintgroups);
+    return Collections.unmodifiableMap(this.constraintGroups);
   }
 
   /**
@@ -135,17 +135,17 @@ public class ConstraintGroupManager {
    * @return the op constraint groups
    */
   public List<AbstractActor> getOpConstraintGroups(final ComponentInstance cmpInstance) {
-    if (!this.constraintgroups.containsKey(cmpInstance)) {
-      this.constraintgroups.put(cmpInstance, new ArrayList<>());
+    if (!this.constraintGroups.containsKey(cmpInstance)) {
+      this.constraintGroups.put(cmpInstance, new ArrayList<>());
     }
-    return this.constraintgroups.get(cmpInstance);
+    return this.constraintGroups.get(cmpInstance);
   }
 
   /**
    * Removes the all.
    */
   public void removeAll() {
-    this.constraintgroups.clear();
+    this.constraintGroups.clear();
   }
 
   /*
@@ -156,7 +156,7 @@ public class ConstraintGroupManager {
   @Override
   public String toString() {
     final StringBuilder sb = new StringBuilder();
-    for (final Entry<ComponentInstance, List<AbstractActor>> cg : this.constraintgroups.entrySet()) {
+    for (final Entry<ComponentInstance, List<AbstractActor>> cg : this.constraintGroups.entrySet()) {
       sb.append(cg.toString());
     }
     return sb.toString();

@@ -63,7 +63,7 @@ public class DataTypesContentProvider implements IStructuredContentProvider {
       final PreesmScenario inputScenario = (PreesmScenario) inputElement;
 
       // Retrieving the data types from the scenario
-      this.elementTable = inputScenario.getSimulationManager().getDataTypes().values().toArray();
+      this.elementTable = inputScenario.getSimulationInfo().getDataTypes().values().toArray();
     }
     return this.elementTable;
   }

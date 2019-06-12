@@ -144,7 +144,7 @@ public class TimingsPage extends FormPage implements IPropertyListener {
       // Timing file chooser section
       createFileSection(managedForm, Messages.getString("Timings.timingFile"),
           Messages.getString("Timings.timingFileDescription"), Messages.getString("Timings.timingFileEdit"),
-          this.scenario.getTimingManager().getExcelFileURL(), Messages.getString("Timings.timingFileBrowseTitle"),
+          this.scenario.getTimings().getExcelFileURL(), Messages.getString("Timings.timingFileBrowseTitle"),
           new LinkedHashSet<>(Arrays.asList("xls", "csv")));
 
       createTimingsSection(managedForm, Messages.getString("Timings.title"), Messages.getString("Timings.description"));
@@ -451,8 +451,8 @@ public class TimingsPage extends FormPage implements IPropertyListener {
     // If the text is modified or Enter key pressed, timings are imported
     text.addModifyListener(e -> {
       final Text text1 = (Text) e.getSource();
-      TimingsPage.this.scenario.getTimingManager().setExcelFileURL(text1.getText());
-      TimingsPage.this.scenario.getTimingManager().importTimings(TimingsPage.this.scenario);
+      TimingsPage.this.scenario.getTimings().setExcelFileURL(text1.getText());
+      TimingsPage.this.scenario.getTimings().importTimings(TimingsPage.this.scenario);
       TimingsPage.this.tableViewer.refresh();
       firePropertyChange(IEditorPart.PROP_DIRTY);
 
@@ -463,8 +463,8 @@ public class TimingsPage extends FormPage implements IPropertyListener {
       public void keyPressed(final KeyEvent e) {
         if (e.keyCode == SWT.CR) {
           final Text text = (Text) e.getSource();
-          TimingsPage.this.scenario.getTimingManager().setExcelFileURL(text.getText());
-          TimingsPage.this.scenario.getTimingManager().importTimings(TimingsPage.this.scenario);
+          TimingsPage.this.scenario.getTimings().setExcelFileURL(text.getText());
+          TimingsPage.this.scenario.getTimings().importTimings(TimingsPage.this.scenario);
           TimingsPage.this.tableViewer.refresh();
         }
 
@@ -487,7 +487,7 @@ public class TimingsPage extends FormPage implements IPropertyListener {
       @Override
       public void widgetSelected(final SelectionEvent e) {
         // Cause scenario editor to import timings from excel sheet
-        TimingsPage.this.scenario.getTimingManager().importTimings(TimingsPage.this.scenario);
+        TimingsPage.this.scenario.getTimings().importTimings(TimingsPage.this.scenario);
         TimingsPage.this.tableViewer.refresh();
         // Force the "file has changed" property of scenario.
         // Timing changes will have no effects if the scenario

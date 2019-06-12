@@ -858,7 +858,7 @@ public class CodegenModelGenerator {
       if (memoryBank.equals("Shared")) {
         // If the memory bank is shared, let the main operator
         // declare the Buffer.
-        correspondingOperatorID = this.scenario.getSimulationManager().getMainOperator().getInstanceName();
+        correspondingOperatorID = this.scenario.getSimulationInfo().getMainOperator().getInstanceName();
         isLocal = false;
 
         // Check that the main operator block exists.
@@ -1980,7 +1980,7 @@ public class CodegenModelGenerator {
     ConstantString papifyComponentName = CodegenFactory.eINSTANCE.createConstantString();
     final String coreType = operatorBlock.getCoreType();
     final Component component = scenario.getDesign().getComponent(coreType);
-    final List<PapiComponent> corePapifyConfigGroupPE = this.getScenario().getPapifyConfigManager()
+    final List<PapiComponent> corePapifyConfigGroupPE = this.getScenario().getPapifyConfig()
         .getCorePapifyConfigGroupPE(component);
     if (corePapifyConfigGroupPE != null) {
       for (final PapiComponent compType : corePapifyConfigGroupPE) {
@@ -2426,7 +2426,7 @@ public class CodegenModelGenerator {
    */
   protected long generateSubBuffers(final Buffer parentBuffer, final DAGEdge dagEdge) {
 
-    final Map<String, DataType> dataTypes = this.scenario.getSimulationManager().getDataTypes();
+    final Map<String, DataType> dataTypes = this.scenario.getSimulationInfo().getDataTypes();
 
     final BufferAggregate buffers = dagEdge.getPropertyBean().getValue(BufferAggregate.propertyBeanName);
 

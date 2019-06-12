@@ -101,7 +101,7 @@ public class StaticPiMM2SDFLauncher {
   private Map<Parameter, Integer> getParametersValues() {
     final Map<Parameter, Integer> result = new LinkedHashMap<>();
 
-    final ParameterValueManager parameterValueManager = this.scenario.getParameterValueManager();
+    final ParameterValueManager parameterValueManager = this.scenario.getParameterValues();
     final Set<Entry<Parameter, String>> parameterValues = parameterValueManager.getParameterValues().entrySet();
     for (final Entry<Parameter, String> paramValue : parameterValues) {
       if (!paramValue.getKey().isLocallyStatic()) {

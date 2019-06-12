@@ -146,7 +146,7 @@ public class PapifyPage extends FormPage implements IPropertyListener {
     if (this.scenario.isProperlySet()) {
       // Papify file chooser section
       createFileSection(managedForm, Messages.getString("Papify.file"), Messages.getString("Papify.fileDescription"),
-          Messages.getString("Papify.fileEdit"), this.scenario.getPapifyConfigManager().getXmlFileURL(),
+          Messages.getString("Papify.fileEdit"), this.scenario.getPapifyConfig().getXmlFileURL(),
           Messages.getString("Papify.fileBrowseTitle"), "xml");
 
       createPapifyPESection(managedForm, Messages.getString("Papify.titlePESection"),
@@ -154,17 +154,17 @@ public class PapifyPage extends FormPage implements IPropertyListener {
       createPapifyActorSection(managedForm, Messages.getString("Papify.titleActorSection"),
           Messages.getString("Papify.descriptionActor"));
 
-      if (!this.scenario.getPapifyConfigManager().getXmlFileURL().equals("")) {
-        final String xmlFullPath = getFullXmlPath(this.scenario.getPapifyConfigManager().getXmlFileURL());
+      if (!this.scenario.getPapifyConfig().getXmlFileURL().equals("")) {
+        final String xmlFullPath = getFullXmlPath(this.scenario.getPapifyConfig().getXmlFileURL());
         if (!xmlFullPath.equals("")) {
           parseXmlData(xmlFullPath);
         }
         if ((this.papiEvents != null) && !this.papiEvents.getComponents().isEmpty()) {
-          scenario.getPapifyConfigManager().addPapifyData(this.papiEvents);
+          scenario.getPapifyConfig().addPapifyData(this.papiEvents);
           updateTables();
         } else {
           this.scenario.setPapifyConfigManager(new PapifyConfigManager(this.scenario));
-          this.scenario.getPapifyConfigManager().addPapifyData(this.papiEvents);
+          this.scenario.getPapifyConfig().addPapifyData(this.papiEvents);
         }
         managedForm.refresh();
         managedForm.reflow(true);
@@ -411,11 +411,11 @@ public class PapifyPage extends FormPage implements IPropertyListener {
 
     this.papiEvents = this.papiParser.parse(file.getLocation().toString());
 
-    if (!text.getText().equals(this.scenario.getPapifyConfigManager().getXmlFileURL())
+    if (!text.getText().equals(this.scenario.getPapifyConfig().getXmlFileURL())
         && (this.papiEvents.getComponents() != null)) {
       this.scenario.setPapifyConfigManager(new PapifyConfigManager(this.scenario));
-      this.scenario.getPapifyConfigManager().addPapifyData(this.papiEvents);
-      this.scenario.getPapifyConfigManager().setXmlFileURL(text.getText());
+      this.scenario.getPapifyConfig().addPapifyData(this.papiEvents);
+      this.scenario.getPapifyConfig().setXmlFileURL(text.getText());
       this.peTreeViewer.setInput(this.papiEvents);
       this.peContentProvider.setInput();
 
@@ -461,7 +461,7 @@ public class PapifyPage extends FormPage implements IPropertyListener {
   private void parseXmlData(final String xmlfile) {
 
     this.papiEvents = this.papiParser.parse(xmlfile);
-    scenario.getPapifyConfigManager().addPapifyData(this.papiEvents);
+    scenario.getPapifyConfig().addPapifyData(this.papiEvents);
 
   }
 

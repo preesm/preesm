@@ -170,7 +170,7 @@ public class SdfToDagConverter {
   private static void setDataSizeForSDF(final SDFGraph graph, final PreesmScenario scenario) {
     for (final SDFEdge edge : graph.edgeSet()) {
       final String type = edge.getDataType().toString();
-      final long size = scenario.getSimulationManager().getDataTypeSizeOrDefault(type);
+      final long size = scenario.getSimulationInfo().getDataTypeSizeOrDefault(type);
       edge.setDataSize(new LongEdgePropertyType(size));
     }
   }
@@ -245,7 +245,7 @@ public class SdfToDagConverter {
     /**
      * Importing default timings
      */
-    TimingManager tm = scenario.getTimingManager();
+    TimingManager tm = scenario.getTimings();
 
     // Iterating over dag vertices
     final TopologicalDAGIterator dagiterator = new TopologicalDAGIterator(dag);
@@ -305,11 +305,11 @@ public class SdfToDagConverter {
         final VertexInit currentVertexInit = currentVertex.getInit();
         final AbstractVertex referencePiVertex = currentVertex.getReferencePiVertex();
 
-        for (final Component opDef : scenario.getTimingManager().getMemcpySpeeds().keySet()) {
+        for (final Component opDef : scenario.getTimings().getMemcpySpeeds().keySet()) {
           if (referencePiVertex instanceof AbstractActor) {
             final AbstractActor actor = ((AbstractActor) referencePiVertex);
-            final long sut = scenario.getTimingManager().getMemcpySetupTime(opDef);
-            final double tpu = scenario.getTimingManager().getMemcpyTimePerUnit(opDef);
+            final long sut = scenario.getTimings().getMemcpySetupTime(opDef);
+            final double tpu = scenario.getTimings().getMemcpyTimePerUnit(opDef);
             final Timing timing = new Timing(opDef, actor);
 
             // Depending on the type of vertex, time is given by the size of output or input buffers
@@ -364,7 +364,7 @@ public class SdfToDagConverter {
      */
 
     // Iterating over constraint groups
-    final Iterator<Entry<ComponentInstance, List<AbstractActor>>> cgit = scenario.getConstraintGroupManager()
+    final Iterator<Entry<ComponentInstance, List<AbstractActor>>> cgit = scenario.getConstraints()
         .getConstraintGroups().entrySet().iterator();
 
     while (cgit.hasNext()) {
@@ -411,7 +411,7 @@ public class SdfToDagConverter {
      */
     final TopologicalDAGIterator it = new TopologicalDAGIterator(dag);
     final List<DAGVertex> vList = new ArrayList<>();
-    final Set<ComponentInstance> specialOpIds = scenario.getSimulationManager().getSpecialVertexOperators();
+    final Set<ComponentInstance> specialOpIds = scenario.getSimulationInfo().getSpecialVertexOperators();
 
     while (it.hasNext()) {
       final MapperDAGVertex v = (MapperDAGVertex) it.next();

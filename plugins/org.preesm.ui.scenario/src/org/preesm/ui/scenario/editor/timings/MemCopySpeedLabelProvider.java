@@ -233,7 +233,7 @@ public class MemCopySpeedLabelProvider implements ITableLabelProvider {
           speed.setSetupTime(Long.valueOf(valueSetupTime));
           // Careful! We store the time per memory unit, that is the inverse of the speed.
           speed.setTimePerUnit(1.0d / Double.valueOf(valueTimePerUnit));
-          this.scenario.getTimingManager().putMemcpySpeed(speed);
+          this.scenario.getTimings().putMemcpySpeed(speed);
 
           this.tableViewer.refresh();
           this.propertyListener.propertyChanged(this, IEditorPart.PROP_DIRTY);

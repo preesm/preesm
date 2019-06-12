@@ -71,13 +71,13 @@ public class MemCopySpeedContentProvider implements IStructuredContentProvider {
        * Memcopy speeds are added for all operator types if non present
        */
       for (final Component opDefId : DesignTools.getOperatorComponents(inputScenario.getDesign())) {
-        if (!inputScenario.getTimingManager().hasMemCpySpeed(opDefId)) {
-          inputScenario.getTimingManager().setDefaultMemCpySpeed(opDefId);
+        if (!inputScenario.getTimings().hasMemCpySpeed(opDefId)) {
+          inputScenario.getTimings().setDefaultMemCpySpeed(opDefId);
         }
       }
 
       // Retrieving the memory copy speeds in operator definition order
-      this.elementList = new ArrayList<>(inputScenario.getTimingManager().getMemcpySpeeds().values());
+      this.elementList = new ArrayList<>(inputScenario.getTimings().getMemcpySpeeds().values());
 
       Collections.sort(this.elementList,
           (o1, o2) -> o1.getComponent().getVlnv().getName().compareTo(o2.getComponent().getVlnv().getName()));

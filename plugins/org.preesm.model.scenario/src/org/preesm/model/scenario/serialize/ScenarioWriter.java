@@ -128,7 +128,7 @@ public class ScenarioWriter {
     final Element valuesElt = this.dom.createElement("parameterValues");
     parent.appendChild(valuesElt);
 
-    final ParameterValueManager manager = this.scenario.getParameterValueManager();
+    final ParameterValueManager manager = this.scenario.getParameterValues();
     final Map<Parameter, String> parameterValues = manager.getParameterValues();
 
     for (final Entry<Parameter, String> e : parameterValues.entrySet()) {
@@ -175,9 +175,9 @@ public class ScenarioWriter {
     final Element papifyConfigs = this.dom.createElement("papifyConfigs");
     parent.appendChild(papifyConfigs);
 
-    papifyConfigs.setAttribute("xmlUrl", this.scenario.getPapifyConfigManager().getXmlFileURL());
+    papifyConfigs.setAttribute("xmlUrl", this.scenario.getPapifyConfig().getXmlFileURL());
 
-    final PapifyConfigManager manager = this.scenario.getPapifyConfigManager();
+    final PapifyConfigManager manager = this.scenario.getPapifyConfig();
 
     for (final PapifyConfigActor config : manager.getPapifyConfigGroupsActors()) {
       addPapifyConfigActor(papifyConfigs, config);
@@ -315,33 +315,33 @@ public class ScenarioWriter {
 
     final Element core = this.dom.createElement("mainCore");
     params.appendChild(core);
-    core.setTextContent(this.scenario.getSimulationManager().getMainOperator().getInstanceName());
+    core.setTextContent(this.scenario.getSimulationInfo().getMainOperator().getInstanceName());
 
     final Element medium = this.dom.createElement("mainComNode");
     params.appendChild(medium);
-    medium.setTextContent(this.scenario.getSimulationManager().getMainComNode().getInstanceName());
+    medium.setTextContent(this.scenario.getSimulationInfo().getMainComNode().getInstanceName());
 
     final Element dataSize = this.dom.createElement("averageDataSize");
     params.appendChild(dataSize);
-    dataSize.setTextContent(String.valueOf(this.scenario.getSimulationManager().getAverageDataSize()));
+    dataSize.setTextContent(String.valueOf(this.scenario.getSimulationInfo().getAverageDataSize()));
 
     final Element dataTypes = this.dom.createElement("dataTypes");
     params.appendChild(dataTypes);
 
-    for (final DataType dataType : this.scenario.getSimulationManager().getDataTypes().values()) {
+    for (final DataType dataType : this.scenario.getSimulationInfo().getDataTypes().values()) {
       addDataType(dataTypes, dataType);
     }
 
     final Element sVOperators = this.dom.createElement("specialVertexOperators");
     params.appendChild(sVOperators);
 
-    for (final ComponentInstance opId : this.scenario.getSimulationManager().getSpecialVertexOperators()) {
+    for (final ComponentInstance opId : this.scenario.getSimulationInfo().getSpecialVertexOperators()) {
       addSpecialVertexOperator(sVOperators, opId);
     }
 
     final Element nbExec = this.dom.createElement("numberOfTopExecutions");
     params.appendChild(nbExec);
-    nbExec.setTextContent(String.valueOf(this.scenario.getSimulationManager().getNumberOfTopExecutions()));
+    nbExec.setTextContent(String.valueOf(this.scenario.getSimulationInfo().getNumberOfTopExecutions()));
   }
 
   /**
@@ -417,9 +417,9 @@ public class ScenarioWriter {
     final Element constraints = this.dom.createElement("constraints");
     parent.appendChild(constraints);
 
-    constraints.setAttribute("excelUrl", this.scenario.getConstraintGroupManager().getExcelFileURL());
+    constraints.setAttribute("excelUrl", this.scenario.getConstraints().getExcelFileURL());
 
-    for (final Entry<ComponentInstance, List<AbstractActor>> cst : this.scenario.getConstraintGroupManager()
+    for (final Entry<ComponentInstance, List<AbstractActor>> cst : this.scenario.getConstraints()
         .getConstraintGroups().entrySet()) {
       addConstraint(constraints, cst.getKey(), cst.getValue());
     }
@@ -460,15 +460,15 @@ public class ScenarioWriter {
     final Element timingsElement = this.dom.createElement("timings");
     parent.appendChild(timingsElement);
 
-    timingsElement.setAttribute("excelUrl", this.scenario.getTimingManager().getExcelFileURL());
+    timingsElement.setAttribute("excelUrl", this.scenario.getTimings().getExcelFileURL());
 
-    for (final Triple<AbstractActor, Component, String> timing : this.scenario.getTimingManager().exportTimings()) {
+    for (final Triple<AbstractActor, Component, String> timing : this.scenario.getTimings().exportTimings()) {
       addTiming(timingsElement, timing);
     }
 
-    for (final Component opDef : this.scenario.getTimingManager().getMemcpySpeeds().keySet()) {
-      addMemcpySpeed(timingsElement, opDef, this.scenario.getTimingManager().getMemcpySetupTime(opDef),
-          this.scenario.getTimingManager().getMemcpyTimePerUnit(opDef));
+    for (final Component opDef : this.scenario.getTimings().getMemcpySpeeds().keySet()) {
+      addMemcpySpeed(timingsElement, opDef, this.scenario.getTimings().getMemcpySetupTime(opDef),
+          this.scenario.getTimings().getMemcpyTimePerUnit(opDef));
     }
   }
 

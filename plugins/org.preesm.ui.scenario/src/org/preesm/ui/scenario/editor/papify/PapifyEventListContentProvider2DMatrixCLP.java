@@ -77,8 +77,8 @@ class PapifyEventListContentProvider2DMatrixCLP extends ColumnLabelProvider {
       final Map<String, PAPIEventStatus> statuses = treeElement.PAPIStatuses;
       if (!statuses.containsKey(this.eventName)) {
         statuses.put(this.eventName, PAPIEventStatus.NO);
-        if (this.scenario.getPapifyConfigManager().getCorePapifyConfigGroupActor(actorPath) == null) {
-          this.scenario.getPapifyConfigManager().addPapifyConfigActorGroup(new PapifyConfigActor(actorPath));
+        if (this.scenario.getPapifyConfig().getCorePapifyConfigGroupActor(actorPath) == null) {
+          this.scenario.getPapifyConfig().addPapifyConfigActorGroup(new PapifyConfigActor(actorPath));
         }
       }
       return statuses.get(this.eventName).toString();

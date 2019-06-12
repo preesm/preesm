@@ -280,7 +280,7 @@ public class TagDAG {
     for (final AbstractEdge<?, ?> aggMember : edge.getAggregate()) {
       final DAGEdge dagEdge = (DAGEdge) aggMember;
       final String value = (String) dagEdge.getPropertyBean().getValue(SDFEdge.DATA_TYPE);
-      final DataType dataType = scenario.getSimulationManager().getDataType(value);
+      final DataType dataType = scenario.getSimulationInfo().getDataType(value);
       final BufferProperties props = new BufferProperties(dataType, dagEdge.getSourceLabel(), dagEdge.getTargetLabel(),
           (int) dagEdge.getWeight().longValue());
       agg.add(props);

@@ -681,9 +681,9 @@ public interface GraphStructureHelper {
       // define the edge weight as the duration of the current source actor
       double actorDuration;
       if (scenario != null) {
-        final Component component = scenario.getSimulationManager().getMainOperator().getComponent();
+        final Component component = scenario.getSimulationInfo().getMainOperator().getComponent();
         AbstractActor referencePiMMVertex = (AbstractActor) currentSource.getReferencePiMMVertex();
-        actorDuration = scenario.getTimingManager().evaluateTimingOrDefault(referencePiMMVertex, component);
+        actorDuration = scenario.getTimings().evaluateTimingOrDefault(referencePiMMVertex, component);
       } else {
         actorDuration = (double) currentSource.getPropertyBean().getValue(GraphStructureHelper.DURATION_PROPERTY);
       }

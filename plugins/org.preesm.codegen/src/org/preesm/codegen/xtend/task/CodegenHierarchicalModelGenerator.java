@@ -177,7 +177,7 @@ public class CodegenHierarchicalModelGenerator {
     this.scenario = scenario;
     this.linkHSDFEdgeBuffer = new LinkedHashMap<>();
     this.currentWorkingMemOffset = 0;
-    this.dataTypes = scenario.getSimulationManager().getDataTypes();
+    this.dataTypes = scenario.getSimulationInfo().getDataTypes();
     this.papifiedPEs = papifiedPEs;
   }
 
@@ -852,7 +852,7 @@ public class CodegenHierarchicalModelGenerator {
     ConstantString papifyComponentName = CodegenFactory.eINSTANCE.createConstantString();
     final String coreType = operatorBlock.getCoreType();
     final Component component = scenario.getDesign().getComponent(coreType);
-    final List<PapiComponent> corePapifyConfigGroupPE = this.scenario.getPapifyConfigManager()
+    final List<PapiComponent> corePapifyConfigGroupPE = this.scenario.getPapifyConfig()
         .getCorePapifyConfigGroupPE(component);
     if (corePapifyConfigGroupPE != null) {
       for (final PapiComponent compType : corePapifyConfigGroupPE) {

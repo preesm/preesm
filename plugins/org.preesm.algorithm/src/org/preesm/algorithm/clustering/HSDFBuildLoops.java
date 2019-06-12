@@ -86,7 +86,7 @@ public class HSDFBuildLoops {
    *          the architecture to pass
    */
   public HSDFBuildLoops(final PreesmScenario scenario, final Design architecture) {
-    this.dataTypes = scenario.getSimulationManager().getDataTypes();
+    this.dataTypes = scenario.getSimulationInfo().getDataTypes();
   }
 
   private void p(final String s) {

@@ -144,7 +144,7 @@ public class PeriodsPreschedulingChecker extends AbstractTaskImplementation {
       long wcetMin = Long.MAX_VALUE;
       if (actor instanceof AbstractActor) {
         for (final Component operatorDefinitionID : DesignTools.getOperatorComponents(scenario.getDesign())) {
-          final long timing = scenario.getTimingManager().evaluateTimingOrDefault((AbstractActor) actor,
+          final long timing = scenario.getTimings().evaluateTimingOrDefault((AbstractActor) actor,
               operatorDefinitionID);
           if (timing < wcetMin) {
             wcetMin = timing;

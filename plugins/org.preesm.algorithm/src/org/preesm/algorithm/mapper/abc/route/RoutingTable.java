@@ -238,7 +238,7 @@ public class RoutingTable {
     if (key != null) {
       list = this.table.get(key);
     } else {
-      list = new RouteList(this.scenario.getSimulationManager().getAverageDataSize());
+      list = new RouteList(this.scenario.getSimulationInfo().getAverageDataSize());
       this.table.put(opCouple, list);
     }
     list.add(route);

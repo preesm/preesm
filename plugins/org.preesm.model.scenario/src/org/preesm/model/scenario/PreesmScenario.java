@@ -59,7 +59,7 @@ public class PreesmScenario {
   private Design  design;
 
   /** Manager of constraint groups. */
-  private ConstraintGroupManager constraintgroupmanager = null;
+  private ConstraintGroupManager constraints = null;
 
   /** Manager of timings. */
   private TimingManager timingmanager = null;
@@ -81,7 +81,7 @@ public class PreesmScenario {
    *
    */
   public PreesmScenario() {
-    this.constraintgroupmanager = new ConstraintGroupManager(this);
+    this.constraints = new ConstraintGroupManager(this);
     this.timingmanager = new TimingManager(this);
     this.simulationManager = new SimulationManager(this);
     this.parameterValueManager = new ParameterValueManager(this);
@@ -125,8 +125,8 @@ public class PreesmScenario {
    *
    * @return the constraint group manager
    */
-  public ConstraintGroupManager getConstraintGroupManager() {
-    return this.constraintgroupmanager;
+  public ConstraintGroupManager getConstraints() {
+    return this.constraints;
   }
 
   /**
@@ -134,7 +134,7 @@ public class PreesmScenario {
    *
    * @return the timing manager
    */
-  public TimingManager getTimingManager() {
+  public TimingManager getTimings() {
     return this.timingmanager;
   }
 
@@ -154,7 +154,7 @@ public class PreesmScenario {
    *
    * @return the simulation manager
    */
-  public SimulationManager getSimulationManager() {
+  public SimulationManager getSimulationInfo() {
     return this.simulationManager;
   }
 
@@ -187,7 +187,7 @@ public class PreesmScenario {
    *
    * @return the PapifyConfig group manager
    */
-  public PapifyConfigManager getPapifyConfigManager() {
+  public PapifyConfigManager getPapifyConfig() {
     return this.papifyconfiggroupmanager;
   }
 
@@ -214,7 +214,7 @@ public class PreesmScenario {
    *
    * @return the parameter value manager
    */
-  public ParameterValueManager getParameterValueManager() {
+  public ParameterValueManager getParameterValues() {
     return this.parameterValueManager;
   }
 
@@ -251,7 +251,7 @@ public class PreesmScenario {
     // are no more valid (they depends on both algo and archi)
     if (algoPath != null || archiPath != null) {
       this.timingmanager.clear();
-      this.constraintgroupmanager.update();
+      this.constraints.update();
       this.papifyconfiggroupmanager.update();
     }
   }

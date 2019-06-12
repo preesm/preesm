@@ -138,9 +138,9 @@ public class SimulationPage extends FormPage implements IPropertyListener {
 
         final ComponentInstance compInstance = scenario.getDesign().getComponentInstance(item);
         if (this.type.equals("operator")) {
-          SimulationPage.this.scenario.getSimulationManager().setMainOperator(compInstance);
+          SimulationPage.this.scenario.getSimulationInfo().setMainOperator(compInstance);
         } else if (this.type.equals("comNode")) {
-          SimulationPage.this.scenario.getSimulationManager().setMainComNode(compInstance);
+          SimulationPage.this.scenario.getSimulationInfo().setMainComNode(compInstance);
         }
       }
 
@@ -202,7 +202,7 @@ public class SimulationPage extends FormPage implements IPropertyListener {
         int averageSize = 0;
         try {
           averageSize = Integer.valueOf(text.getText());
-          SimulationPage.this.scenario.getSimulationManager().setAverageDataSize(averageSize);
+          SimulationPage.this.scenario.getSimulationInfo().setAverageDataSize(averageSize);
           propertyChanged(this, IEditorPart.PROP_DIRTY);
         } catch (final NumberFormatException ex) {
           ex.printStackTrace();
@@ -213,7 +213,7 @@ public class SimulationPage extends FormPage implements IPropertyListener {
     // Average data size section
     createIntegerSection(managedForm, Messages.getString("Simulation.DataAverageSize.title"),
         Messages.getString("Simulation.DataAverageSize.description"), averageDataSizeListener,
-        String.valueOf(this.scenario.getSimulationManager().getAverageDataSize()));
+        String.valueOf(this.scenario.getSimulationInfo().getAverageDataSize()));
 
     // Text modification listener that updates the average data size
     final ModifyListener numberOfTopExecutionsListener = new ModifyListener() {
@@ -223,7 +223,7 @@ public class SimulationPage extends FormPage implements IPropertyListener {
         int number = 1;
         try {
           number = Integer.valueOf(text.getText());
-          SimulationPage.this.scenario.getSimulationManager().setNumberOfTopExecutions(number);
+          SimulationPage.this.scenario.getSimulationInfo().setNumberOfTopExecutions(number);
           propertyChanged(this, IEditorPart.PROP_DIRTY);
         } catch (final NumberFormatException ex) {
           ex.printStackTrace();
@@ -234,7 +234,7 @@ public class SimulationPage extends FormPage implements IPropertyListener {
     // Number of top-level execution section, added only for PiSDF algorithms
     createIntegerSection(managedForm, Messages.getString("Overview.simulationTitle"),
         Messages.getString("Overview.simulationDescription"), numberOfTopExecutionsListener,
-        String.valueOf(this.scenario.getSimulationManager().getNumberOfTopExecutions()));
+        String.valueOf(this.scenario.getSimulationInfo().getNumberOfTopExecutions()));
 
     // Data type section
     createDataTypesSection(managedForm, Messages.getString("Simulation.DataTypes.title"),
@@ -369,13 +369,13 @@ public class SimulationPage extends FormPage implements IPropertyListener {
         combo.add(opId);
       }
 
-      combo.select(combo.indexOf(this.scenario.getSimulationManager().getMainOperator().getInstanceName()));
+      combo.select(combo.indexOf(this.scenario.getSimulationInfo().getMainOperator().getInstanceName()));
     } else if (type.equals("comNode")) {
       for (final String nodeId : DesignTools.getComNodeInstanceIds(this.scenario.getDesign())) {
         combo.add(nodeId);
       }
 
-      combo.select(combo.indexOf(this.scenario.getSimulationManager().getMainComNode().getInstanceName()));
+      combo.select(combo.indexOf(this.scenario.getSimulationInfo().getMainComNode().getInstanceName()));
     }
 
     return combo;
@@ -495,7 +495,7 @@ public class SimulationPage extends FormPage implements IPropertyListener {
             dialogTitle, dialogMessage, init, validator);
         if (dialog.open() == Window.OK) {
           final DataType dataType = new DataType(dialog.getValue());
-          SimulationPage.this.scenario.getSimulationManager().putDataType(dataType);
+          SimulationPage.this.scenario.getSimulationInfo().putDataType(dataType);
           tableViewer.refresh();
           propertyChanged(this, IEditorPart.PROP_DIRTY);
         }
@@ -511,7 +511,7 @@ public class SimulationPage extends FormPage implements IPropertyListener {
         final IStructuredSelection selection = (IStructuredSelection) tableViewer.getSelection();
         if ((selection != null) && (selection.getFirstElement() instanceof DataType)) {
           final DataType dataType = (DataType) selection.getFirstElement();
-          SimulationPage.this.scenario.getSimulationManager().removeDataType(dataType.getTypeName());
+          SimulationPage.this.scenario.getSimulationInfo().removeDataType(dataType.getTypeName());
           tableViewer.refresh();
           propertyChanged(this, IEditorPart.PROP_DIRTY);
         }
