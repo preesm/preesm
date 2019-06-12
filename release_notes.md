@@ -19,6 +19,7 @@ PREESM Changelog
 * Fix UI throwing exception when canceling file browse;
 * Scenario managers now use the Actor/Component reference instead of component ID or actor path/name;
 * Refactor scenario;
+* Add support for parameterized timings;
 
 ### Bug fix
 * Fix #139: better error messages for Name checker
