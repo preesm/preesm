@@ -62,7 +62,9 @@ import org.eclipse.ui.forms.widgets.ScrolledForm;
 import org.eclipse.ui.forms.widgets.Section;
 import org.preesm.commons.exceptions.PreesmException;
 import org.preesm.commons.logger.PreesmLogger;
+import org.preesm.model.pisdf.PiGraph;
 import org.preesm.model.scenario.PreesmScenario;
+import org.preesm.model.slam.Design;
 import org.preesm.ui.fields.FieldUtils;
 
 /**
@@ -120,18 +122,22 @@ public class OverviewPage extends FormPage {
     algoExtensions.add("graphml");
 
     // Algorithm file chooser section
+    final PiGraph algo = this.scenario.getAlgorithm();
+    final String algourl = algo == null ? null : algo.getUrl();
     createFileSection(managedForm, Messages.getString("Overview.algorithmFile"),
-        Messages.getString("Overview.algorithmDescription"), Messages.getString("Overview.algorithmFileEdit"),
-        this.scenario.getAlgorithmURL(), Messages.getString("Overview.algorithmBrowseTitle"), algoExtensions);
+        Messages.getString("Overview.algorithmDescription"), Messages.getString("Overview.algorithmFileEdit"), algourl,
+        Messages.getString("Overview.algorithmBrowseTitle"), algoExtensions);
 
     final Set<String> archiExtensions = new LinkedHashSet<>();
     archiExtensions.add("slam");
     archiExtensions.add("design");
 
     // Architecture file chooser section
+    final Design design = this.scenario.getDesign();
+    final String designUrl = design == null ? null : design.getUrl();
     createFileSection(managedForm, Messages.getString("Overview.architectureFile"),
         Messages.getString("Overview.architectureDescription"), Messages.getString("Overview.architectureFileEdit"),
-        this.scenario.getArchitectureURL(), Messages.getString("Overview.architectureBrowseTitle"), archiExtensions);
+        designUrl, Messages.getString("Overview.architectureBrowseTitle"), archiExtensions);
 
   }
 

@@ -156,7 +156,7 @@ public class PapifyCheckStateListener implements ISDFCheckStateListener {
     PapiEvent timingEvent = new PapiEvent();
     ArrayList<PapiEventModifier> modifTimingList = new ArrayList<>();
     timingEvent.setName("Timing");
-    timingEvent.setDesciption("Event to time through PAPI_get_time()");
+    timingEvent.setDescription("Event to time through PAPI_get_time()");
     timingEvent.setIndex(9999);
     timingEvent.setModifiers(modifTimingList);
     boolean timing = false;
@@ -234,7 +234,7 @@ public class PapifyCheckStateListener implements ISDFCheckStateListener {
     PapiEvent timingEvent = new PapiEvent();
     ArrayList<PapiEventModifier> modifTimingList = new ArrayList<>();
     timingEvent.setName("Timing");
-    timingEvent.setDesciption("Event to time through PAPI_get_time()");
+    timingEvent.setDescription("Event to time through PAPI_get_time()");
     timingEvent.setIndex(9999);
     timingEvent.setModifiers(modifTimingList);
     boolean timing = false;

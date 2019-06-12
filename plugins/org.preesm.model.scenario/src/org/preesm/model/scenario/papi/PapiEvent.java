@@ -69,7 +69,7 @@ public class PapiEvent {
     return this.description;
   }
 
-  public void setDesciption(final String desciption) {
+  public void setDescription(final String desciption) {
     this.description = desciption;
   }
 

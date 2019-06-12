@@ -421,7 +421,7 @@ public class ScenarioParser {
    */
   private Design initializeArchitectureInformation(final String url) {
     final Design design = SlamParser.parseSlamDesign(url);
-    this.scenario.setArchitecture(design);
+    this.scenario.setesign(design);
     return design;
   }
 
@@ -499,7 +499,7 @@ public class ScenarioParser {
   private void parsePapifyConfigs(final Element papifyConfigsElt) {
 
     final String xmlFileURL = papifyConfigsElt.getAttribute("xmlUrl");
-    this.scenario.getPapifyConfigManager().setExcelFileURL(xmlFileURL);
+    this.scenario.getPapifyConfigManager().setXmlFileURL(xmlFileURL);
 
     Node node = papifyConfigsElt.getFirstChild();
 
@@ -697,7 +697,7 @@ public class ScenarioParser {
         final String type = elt.getTagName();
         if (type.equals("eventDescription")) {
           final String eventDescription = elt.getAttribute("eventDescription");
-          event.setDesciption(eventDescription);
+          event.setDescription(eventDescription);
         } else if (type.equals("eventId")) {
           final String eventId = elt.getAttribute("eventId");
           event.setIndex(Integer.valueOf(eventId));

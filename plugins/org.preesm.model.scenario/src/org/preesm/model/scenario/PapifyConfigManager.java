@@ -33,13 +33,16 @@
  * The fact that you are presently reading this means that you have had
  * knowledge of the CeCILL license and that you accept its terms.
  */
-package org.preesm.model.scenario.papi;
+package org.preesm.model.scenario;
 
 import java.util.LinkedHashSet;
 import java.util.Set;
 import org.preesm.commons.model.PreesmCopyTracker;
 import org.preesm.model.pisdf.AbstractActor;
-import org.preesm.model.scenario.PreesmScenario;
+import org.preesm.model.scenario.papi.PapiComponent;
+import org.preesm.model.scenario.papi.PapiEventInfo;
+import org.preesm.model.scenario.papi.PapifyConfigActor;
+import org.preesm.model.scenario.papi.PapifyConfigPE;
 import org.preesm.model.slam.component.Component;
 
 /**
@@ -227,7 +230,7 @@ public class PapifyConfigManager {
    * @param xmlFileURL
    *          the new xml file URL
    */
-  public void setExcelFileURL(final String xmlFileURL) {
+  public void setXmlFileURL(final String xmlFileURL) {
     this.xmlFileURL = xmlFileURL;
   }
 

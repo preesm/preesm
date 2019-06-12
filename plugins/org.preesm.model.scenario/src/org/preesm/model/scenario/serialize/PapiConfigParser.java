@@ -32,7 +32,7 @@
  * The fact that you are presently reading this means that you have had
  * knowledge of the CeCILL license and that you accept its terms.
  */
-package org.preesm.model.scenario.papi;
+package org.preesm.model.scenario.serialize;
 
 import java.io.File;
 import java.nio.file.Paths;
@@ -43,6 +43,14 @@ import java.util.function.Consumer;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import org.preesm.commons.exceptions.PreesmRuntimeException;
+import org.preesm.model.scenario.papi.PapiComponent;
+import org.preesm.model.scenario.papi.PapiCpuID;
+import org.preesm.model.scenario.papi.PapiEvent;
+import org.preesm.model.scenario.papi.PapiEventInfo;
+import org.preesm.model.scenario.papi.PapiEventModifier;
+import org.preesm.model.scenario.papi.PapiEventSet;
+import org.preesm.model.scenario.papi.PapiEventSetType;
+import org.preesm.model.scenario.papi.PapiHardware;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NamedNodeMap;
@@ -173,7 +181,7 @@ public class PapiConfigParser {
     final PapiEvent event = new PapiEvent();
     event.setIndex(index);
     event.setName(name);
-    event.setDesciption(desc);
+    event.setDescription(desc);
     event.setModifiers(this.modifiers);
     this.events.add(event);
   }

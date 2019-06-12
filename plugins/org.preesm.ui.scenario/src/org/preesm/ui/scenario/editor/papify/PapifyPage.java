@@ -74,14 +74,14 @@ import org.eclipse.ui.forms.widgets.ScrolledForm;
 import org.eclipse.ui.forms.widgets.Section;
 import org.preesm.commons.exceptions.PreesmException;
 import org.preesm.commons.files.WorkspaceUtils;
+import org.preesm.model.scenario.PapifyConfigManager;
 import org.preesm.model.scenario.PreesmScenario;
 import org.preesm.model.scenario.papi.PapiComponent;
-import org.preesm.model.scenario.papi.PapiConfigParser;
 import org.preesm.model.scenario.papi.PapiEvent;
 import org.preesm.model.scenario.papi.PapiEventInfo;
 import org.preesm.model.scenario.papi.PapiEventModifier;
 import org.preesm.model.scenario.papi.PapiEventSet;
-import org.preesm.model.scenario.papi.PapifyConfigManager;
+import org.preesm.model.scenario.serialize.PapiConfigParser;
 import org.preesm.model.slam.component.Component;
 import org.preesm.model.slam.utils.DesignTools;
 import org.preesm.ui.scenario.editor.FileSelectionAdapter;
@@ -415,7 +415,7 @@ public class PapifyPage extends FormPage implements IPropertyListener {
         && (this.papiEvents.getComponents() != null)) {
       this.scenario.setPapifyConfigManager(new PapifyConfigManager(this.scenario));
       this.scenario.getPapifyConfigManager().addPapifyData(this.papiEvents);
-      this.scenario.getPapifyConfigManager().setExcelFileURL(text.getText());
+      this.scenario.getPapifyConfigManager().setXmlFileURL(text.getText());
       this.peTreeViewer.setInput(this.papiEvents);
       this.peContentProvider.setInput();
 
@@ -626,7 +626,7 @@ public class PapifyPage extends FormPage implements IPropertyListener {
     PapiEvent timingEvent = new PapiEvent();
     ArrayList<PapiEventModifier> modifTimingList = new ArrayList<>();
     timingEvent.setName("Timing");
-    timingEvent.setDesciption("Event to time through PAPI_get_time()");
+    timingEvent.setDescription("Event to time through PAPI_get_time()");
     timingEvent.setIndex(9999);
     timingEvent.setModifiers(modifTimingList);
 

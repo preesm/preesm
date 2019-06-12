@@ -55,11 +55,11 @@ import org.preesm.codegen.model.PapifyAction;
 import org.preesm.commons.model.PreesmCopyTracker;
 import org.preesm.model.pisdf.AbstractActor;
 import org.preesm.model.pisdf.PiGraph;
+import org.preesm.model.scenario.PapifyConfigManager;
 import org.preesm.model.scenario.PreesmScenario;
 import org.preesm.model.scenario.papi.PapiEvent;
 import org.preesm.model.scenario.papi.PapiEventModifier;
 import org.preesm.model.scenario.papi.PapifyConfigActor;
-import org.preesm.model.scenario.papi.PapifyConfigManager;
 
 /**
  * The Class PapifyEngine.
@@ -361,7 +361,7 @@ public class PapifyEngine {
 
     // The timing event
     this.timingEvent.setName("Timing");
-    this.timingEvent.setDesciption("Event to time through PAPI_get_time()");
+    this.timingEvent.setDescription("Event to time through PAPI_get_time()");
     this.timingEvent.setIndex(9999);
     this.timingEvent.setModifiers(modifTimingList);
 

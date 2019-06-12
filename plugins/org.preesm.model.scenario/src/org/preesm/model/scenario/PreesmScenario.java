@@ -43,7 +43,6 @@ import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.Path;
 import org.preesm.model.pisdf.PiGraph;
 import org.preesm.model.pisdf.serialize.PiParser;
-import org.preesm.model.scenario.papi.PapifyConfigManager;
 import org.preesm.model.slam.Design;
 import org.preesm.model.slam.serialize.SlamParser;
 
@@ -56,8 +55,8 @@ public class PreesmScenario {
 
   private String scenarioURL = "";
 
-  private PiGraph piGraph;
-  private Design  slamDesign;
+  private PiGraph algorithm;
+  private Design  design;
 
   /** Manager of constraint groups. */
   private ConstraintGroupManager constraintgroupmanager = null;
@@ -101,11 +100,11 @@ public class PreesmScenario {
   }
 
   public PiGraph getAlgorithm() {
-    return this.piGraph;
+    return this.algorithm;
   }
 
   public Design getDesign() {
-    return this.slamDesign;
+    return this.design;
   }
 
   /**
@@ -114,9 +113,9 @@ public class PreesmScenario {
    * @return the scenario name
    */
   public String getScenarioName() {
-    final IPath algoPath = new Path(this.getAlgorithmURL()).removeFileExtension();
+    final IPath algoPath = new Path(this.getAlgorithm().getUrl()).removeFileExtension();
     final String algoName = algoPath.lastSegment();
-    final IPath archiPath = new Path(this.getArchitectureURL()).removeFileExtension();
+    final IPath archiPath = new Path(this.getDesign().getUrl()).removeFileExtension();
     final String archiName = archiPath.lastSegment();
     return algoName + "_" + archiName;
   }
@@ -139,41 +138,15 @@ public class PreesmScenario {
     return this.timingmanager;
   }
 
-  /**
-   * Gets the algorithm URL.
-   *
-   * @return the algorithm URL
-   */
-  public String getAlgorithmURL() {
-    if (getAlgorithm() != null) {
-      return getAlgorithm().getUrl();
-    } else {
-      return null;
-    }
-  }
-
   public void setAlgorithm(final PiGraph algorithm) {
-    this.piGraph = algorithm;
-  }
-
-  /**
-   * Gets the architecture URL.
-   *
-   * @return the architecture URL
-   */
-  public String getArchitectureURL() {
-    if (getDesign() != null) {
-      return getDesign().getUrl();
-    } else {
-      return null;
-    }
+    this.algorithm = algorithm;
   }
 
   /**
    * Sets the architecture URL.
    */
-  public void setArchitecture(final Design design) {
-    this.slamDesign = design;
+  public void setesign(final Design design) {
+    this.design = design;
   }
 
   /**
@@ -266,13 +239,13 @@ public class PreesmScenario {
 
       // Extract the root object from the resource.
       final Design design = SlamParser.parseSlamDesign(archiPath);
-      this.slamDesign = design;
+      this.design = design;
     }
     // If the algorithm changes, parameters or variables are no more valid
     // (they are set in the algorithm)
     if (algoPath != null) {
       final PiGraph newPiGraph = PiParser.getPiGraphWithReconnection(algoPath);
-      this.piGraph = newPiGraph;
+      this.algorithm = newPiGraph;
       this.parameterValueManager.updateWith(newPiGraph);
     }
     // If the algorithm or the architecture changes, timings and constraints
