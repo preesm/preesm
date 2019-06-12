@@ -38,6 +38,7 @@ package org.preesm.ui.scenario.editor.timings;
 
 import java.net.URL;
 import java.util.List;
+import java.util.stream.Collectors;
 import org.eclipse.jface.dialogs.IInputValidator;
 import org.eclipse.jface.dialogs.InputDialog;
 import org.eclipse.jface.resource.ImageDescriptor;
@@ -55,6 +56,7 @@ import org.eclipse.ui.IPropertyListener;
 import org.eclipse.ui.PlatformUI;
 import org.preesm.commons.files.PreesmResourcesHelper;
 import org.preesm.model.pisdf.AbstractActor;
+import org.preesm.model.pisdf.AbstractVertex;
 import org.preesm.model.scenario.PreesmScenario;
 import org.preesm.model.scenario.Timing;
 import org.preesm.model.slam.component.Component;
@@ -181,12 +183,11 @@ public class TimingsTableLabelProvider implements ITableLabelProvider, Selection
         case 0:
           return vertex.getVertexPath();
         case 1: // Input Parameters
-          if (timing != null) {
-            if (timing.getInputParameters().isEmpty()) {
-              text = "-";
-            } else {
-              text = timing.getInputParameters().toString();
-            }
+          if (timing == null || timing.getActor().getInputParameters().isEmpty()) {
+            text = " - ";
+          } else {
+            text = timing.getActor().getInputParameters().stream().map(AbstractVertex::getName)
+                .collect(Collectors.toList()).toString();
           }
           break;
         case 2: // Expression
@@ -197,7 +198,7 @@ public class TimingsTableLabelProvider implements ITableLabelProvider, Selection
         case 3: // Evaluation Status
           return null;
         case 4: // Value
-          if (timing != null) {
+          if (timing != null && timing.canEvaluate()) {
             text = Long.toString(timing.getTime());
           }
           break;
@@ -205,6 +206,7 @@ public class TimingsTableLabelProvider implements ITableLabelProvider, Selection
       }
     }
     return text;
+
   }
 
   /*

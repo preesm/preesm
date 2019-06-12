@@ -39,14 +39,8 @@
  */
 package org.preesm.model.scenario;
 
-import java.util.ArrayList;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
-import org.preesm.commons.math.JEPWrapper;
 import org.preesm.model.pisdf.AbstractActor;
-import org.preesm.model.pisdf.ConfigInputPort;
-import org.preesm.model.pisdf.Parameter;
+import org.preesm.model.pisdf.expression.ExpressionEvaluator;
 import org.preesm.model.slam.component.Component;
 
 /**
@@ -96,49 +90,11 @@ public class Timing {
    * @return time, only if it is available (if the expression have been evaluated)
    */
   public long getTime() {
-    return JEPWrapper.evaluate(getStringValue(), lookupParameterValues());
+    return ExpressionEvaluator.evaluate(getActor(), getStringValue());
   }
 
-  private Map<String, Long> lookupParameterValues() {
-    final Map<String, Long> res = new LinkedHashMap<>();
-    if (this.actor != null) {
-      final List<Parameter> inputParameters = this.actor.getInputParameters();
-      for (final Parameter param : inputParameters) {
-        final List<ConfigInputPort> inputPorts = this.actor.lookupConfigInputPortsConnectedWithParameter(param);
-        for (ConfigInputPort cip : inputPorts) {
-          final String name = cip.getName();
-          res.put(name, param.getExpression().evaluate());
-        }
-      }
-    }
-    return res;
-  }
-
-  /**
-   *
-   */
-  public List<String> getInputParameters() {
-    final List<String> res = new ArrayList<>();
-    if (this.actor != null) {
-      final List<Parameter> inputParameters = this.actor.getInputParameters();
-      for (final Parameter param : inputParameters) {
-        final List<ConfigInputPort> inputPorts = this.actor.lookupConfigInputPortsConnectedWithParameter(param);
-        for (ConfigInputPort cip : inputPorts) {
-          final String name = cip.getName();
-          res.add(name);
-        }
-      }
-    }
-    return res;
-  }
-
-  /**
-   *
-   */
   public boolean canEvaluate() {
-    final List<String> involvement = JEPWrapper.involvement(getStringValue());
-    final Map<String, Long> lookupParameterValues = lookupParameterValues();
-    return this.actor.isLocallyStatic() && lookupParameterValues.keySet().containsAll(involvement);
+    return ExpressionEvaluator.canEvaluate(getActor(), getStringValue());
   }
 
   /**

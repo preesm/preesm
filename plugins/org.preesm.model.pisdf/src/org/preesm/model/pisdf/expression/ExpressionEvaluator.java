@@ -53,7 +53,6 @@ import org.preesm.model.pisdf.InterfaceActor;
 import org.preesm.model.pisdf.LongExpression;
 import org.preesm.model.pisdf.Parameter;
 import org.preesm.model.pisdf.Parameterizable;
-import org.preesm.model.pisdf.PeriodicElement;
 import org.preesm.model.pisdf.StringExpression;
 import org.preesm.model.pisdf.util.PiMMSwitch;
 
@@ -62,7 +61,7 @@ import org.preesm.model.pisdf.util.PiMMSwitch;
  * @author anmorvan
  *
  */
-public class ExpressionEvaluator extends PiMMSwitch<Long> {
+public class ExpressionEvaluator {
 
   public static final long evaluate(final Parameterizable p, final String value) {
     final Map<String, Double> lookupParameterValues = lookupParameterValues(p);
@@ -74,50 +73,8 @@ public class ExpressionEvaluator extends PiMMSwitch<Long> {
   }
 
   public static final long evaluate(final Expression expression, final Map<String, ? extends Number> paramValues) {
-    return new ExpressionEvaluator(paramValues).doSwitch(expression);
+    return new InternalEvaluationVisitor(paramValues).doSwitch(expression);
 
-  }
-
-  private final Map<String, ? extends Number> parameterValues;
-
-  /**
-   * Initialize the Expression evaluator with pre-computed parameter values. This can speedup evaluation as there will
-   * be no parameter value lookup.
-   */
-  private ExpressionEvaluator(final Map<String, ? extends Number> parameterValues) {
-    this.parameterValues = parameterValues;
-  }
-
-  @Override
-  public Long caseLongExpression(final LongExpression longExpr) {
-    return longExpr.getValue();
-  }
-
-  @Override
-  public Long caseExpressionProxy(final ExpressionProxy proxyExpr) {
-    return doSwitch(proxyExpr.getProxy().getExpression());
-  }
-
-  @Override
-  public Long caseStringExpression(final StringExpression stringExpr) {
-    final String expressionString = stringExpr.getExpressionString();
-    try {
-      // try to parse a long value stored as String
-      // NumberFormatException is thrown if the expression String does not represent a long value
-      return Long.parseLong(expressionString);
-    } catch (final NumberFormatException e) {
-      try {
-        // try to evaluate the expression without collecting variables, but only the one given in the parameterValue
-        // Map. ExpressionEvaluationException is thrown if the evaluation encounter unknown parameters.
-        // This can speedup even with empty Map in case expression only involves constant values.
-        return JEPWrapper.evaluate(expressionString, this.parameterValues);
-      } catch (final ExpressionEvaluationException ex) {
-        // gather Expression parameters and evaluate the expression.
-        // ExpressionEvaluationException will still be thrown if something goes wrong.
-        final Map<String, Number> addInputParameterValues = ExpressionEvaluator.lookupParameterValues(stringExpr);
-        return JEPWrapper.evaluate(expressionString, addInputParameterValues);
-      }
-    }
   }
 
   /**
@@ -142,15 +99,19 @@ public class ExpressionEvaluator extends PiMMSwitch<Long> {
       for (final Parameter param : inputParameters) {
         final double evaluate = (double) param.getExpression().evaluate();
         if ((parameterizable instanceof Parameter) || (parameterizable instanceof Delay)
-            || (parameterizable instanceof InterfaceActor) || (parameterizable instanceof PeriodicElement)) {
+            || (parameterizable instanceof InterfaceActor)) {
           res.put(param.getName(), evaluate);
-        } else if (parameterizable instanceof DataPort) {
-          final AbstractActor containingActor = ((DataPort) parameterizable).getContainingActor();
-          if (containingActor instanceof InterfaceActor || containingActor instanceof DelayActor) {
+        } else if (parameterizable instanceof DataPort || parameterizable instanceof AbstractActor) {
+          final AbstractActor actor;
+          if (parameterizable instanceof AbstractActor) {
+            actor = (AbstractActor) parameterizable;
+          } else {
+            actor = ((DataPort) parameterizable).getContainingActor();
+          }
+          if (actor instanceof InterfaceActor || actor instanceof DelayActor) {
             res.put(param.getName(), evaluate);
           } else {
-            final List<
-                ConfigInputPort> inputPorts = containingActor.lookupConfigInputPortsConnectedWithParameter(param);
+            final List<ConfigInputPort> inputPorts = actor.lookupConfigInputPortsConnectedWithParameter(param);
             for (ConfigInputPort cip : inputPorts) {
               final String name = cip.getName();
               res.put(name, evaluate);
@@ -176,4 +137,52 @@ public class ExpressionEvaluator extends PiMMSwitch<Long> {
     return false;
   }
 
+  /**
+   *
+   * @author anmorvan
+   *
+   */
+  private static class InternalEvaluationVisitor extends PiMMSwitch<Long> {
+    private final Map<String, ? extends Number> parameterValues;
+
+    /**
+     * Initialize the Expression evaluator with pre-computed parameter values. This can speedup evaluation as there will
+     * be no parameter value lookup.
+     */
+    private InternalEvaluationVisitor(final Map<String, ? extends Number> parameterValues) {
+      this.parameterValues = parameterValues;
+    }
+
+    @Override
+    public Long caseLongExpression(final LongExpression longExpr) {
+      return longExpr.getValue();
+    }
+
+    @Override
+    public Long caseExpressionProxy(final ExpressionProxy proxyExpr) {
+      return doSwitch(proxyExpr.getProxy().getExpression());
+    }
+
+    @Override
+    public Long caseStringExpression(final StringExpression stringExpr) {
+      final String expressionString = stringExpr.getExpressionString();
+      try {
+        // try to parse a long value stored as String
+        // NumberFormatException is thrown if the expression String does not represent a long value
+        return Long.parseLong(expressionString);
+      } catch (final NumberFormatException e) {
+        try {
+          // try to evaluate the expression without collecting variables, but only the one given in the parameterValue
+          // Map. ExpressionEvaluationException is thrown if the evaluation encounter unknown parameters.
+          // This can speedup even with empty Map in case expression only involves constant values.
+          return JEPWrapper.evaluate(expressionString, this.parameterValues);
+        } catch (final ExpressionEvaluationException ex) {
+          // gather Expression parameters and evaluate the expression.
+          // ExpressionEvaluationException will still be thrown if something goes wrong.
+          final Map<String, Number> addInputParameterValues = ExpressionEvaluator.lookupParameterValues(stringExpr);
+          return JEPWrapper.evaluate(expressionString, addInputParameterValues);
+        }
+      }
+    }
+  }
 }
