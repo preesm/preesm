@@ -166,8 +166,7 @@ public class PapifyCheckStateListener implements ISDFCheckStateListener {
       if (eventName.equals(timingEvent.getName())) {
         timing = true;
       }
-      PapifyConfigActor papiConfig = this.scenario.getPapifyConfig()
-          .getCorePapifyConfigGroupActor(actorInstance);
+      PapifyConfigActor papiConfig = this.scenario.getPapifyConfig().getCorePapifyConfigGroupActor(actorInstance);
       PapiEventInfo papiData = this.scenario.getPapifyConfig().getPapifyData();
       String compName = "";
       PapiEvent event = null;
@@ -244,8 +243,7 @@ public class PapifyCheckStateListener implements ISDFCheckStateListener {
       if (eventName.equals(timingEvent.getName())) {
         timing = true;
       }
-      PapifyConfigActor papiConfig = this.scenario.getPapifyConfig()
-          .getCorePapifyConfigGroupActor(actorInstance);
+      PapifyConfigActor papiConfig = this.scenario.getPapifyConfig().getCorePapifyConfigGroupActor(actorInstance);
       PapiEventInfo papiData = this.scenario.getPapifyConfig().getPapifyData();
       String compName = "";
       PapiEvent event = null;
@@ -408,12 +406,12 @@ public class PapifyCheckStateListener implements ISDFCheckStateListener {
 
     for (PapifyConfigActor papiConfig : papiConfigs) {
       AbstractActor actorPath = papiConfig.getActor();
-      Map<String, Set<PapiEvent>> actorEventMap = papiConfig.getPAPIEvents();
+      Map<String, List<PapiEvent>> actorEventMap = papiConfig.getPAPIEvents();
 
       for (PapifyEventListTreeElement treeElement : this.elementList) {
         if (treeElement.actorPath.equals(actorPath)) {
 
-          for (final Entry<String, Set<PapiEvent>> entry : actorEventMap.entrySet()) {
+          for (final Entry<String, List<PapiEvent>> entry : actorEventMap.entrySet()) {
             final String comp = entry.getKey();
             for (PapiEvent oneEvent : actorEventMap.get(comp)) {
               treeElement.PAPIStatuses.put(oneEvent.getName(), PAPIEventStatus.YES);

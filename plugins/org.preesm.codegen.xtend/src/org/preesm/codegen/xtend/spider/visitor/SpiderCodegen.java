@@ -205,8 +205,8 @@ public class SpiderCodegen {
 
     // Generate constraints
     this.constraints = new LinkedHashMap<>();
-    for (final Entry<ComponentInstance, List<AbstractActor>> cg : this.scenario.getConstraints()
-        .getConstraintGroups().entrySet()) {
+    for (final Entry<ComponentInstance, List<AbstractActor>> cg : this.scenario.getConstraints().getConstraintGroups()
+        .entrySet()) {
       for (final AbstractActor aa : cg.getValue()) {
         if (this.constraints.get(aa) == null) {
           this.constraints.put(aa, new LinkedHashSet<ComponentInstance>());
@@ -472,7 +472,7 @@ public class SpiderCodegen {
   private boolean generatePapifyConfig(final PapifyConfigActor corePapifyConfigGroups,
       PapifyConfigManager papifyConfigManager, final AbstractActor actor,
       final HashMap<ArrayList<String>, Integer> uniqueEventSets, final Integer eventSetID) {
-    Map<String, Set<PapiEvent>> configInfo = corePapifyConfigGroups.getPAPIEvents();
+    Map<String, List<PapiEvent>> configInfo = corePapifyConfigGroups.getPAPIEvents();
 
     boolean eventMonitoring = false;
     boolean timingMonitoring = false;

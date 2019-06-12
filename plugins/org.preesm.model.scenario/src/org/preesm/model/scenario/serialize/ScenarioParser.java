@@ -485,8 +485,7 @@ public class ScenarioParser {
         node = node.getNextSibling();
       }
     }
-    final List<
-        AbstractActor> opConstraintGroups = this.scenario.getConstraints().getOpConstraintGroups(opId);
+    final List<AbstractActor> opConstraintGroups = this.scenario.getConstraints().getOpConstraintGroups(opId);
     opConstraintGroups.addAll(paths);
   }
 
@@ -552,7 +551,7 @@ public class ScenarioParser {
               final String typeEvents = eltEvents.getTagName();
               if (typeEvents.equals("component")) {
                 final String component = eltEvents.getAttribute("component");
-                final Set<PapiEvent> eventSet = new LinkedHashSet<>();
+                final List<PapiEvent> eventSet = new ArrayList<>();
                 final List<PapiEvent> eventList = getPapifyEvents(eltEvents);
                 eventSet.addAll(eventList);
                 pc.addPAPIEventSet(component, eventSet);

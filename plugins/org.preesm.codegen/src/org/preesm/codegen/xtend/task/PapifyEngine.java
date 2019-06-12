@@ -40,7 +40,7 @@ package org.preesm.codegen.xtend.task;
 
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
-import java.util.LinkedHashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import org.preesm.algorithm.mapper.model.MapperDAG;
@@ -110,8 +110,8 @@ public class PapifyEngine {
     PapifyConfigManager papifyConfig = null;
     PapifyConfigActor config;
     Set<String> comp;
-    Set<PapiEvent> events;
-    Set<PapiEvent> includedEvents = new LinkedHashSet<>();
+    List<PapiEvent> events;
+    List<PapiEvent> includedEvents = new ArrayList<>();
 
     boolean configAdded = false;
     String configPosition = "";
@@ -147,12 +147,12 @@ public class PapifyEngine {
         counterConfigs = 0;
         for (String compNewConfig : config.getPAPIEvents().keySet()) {
           if (!compNewConfig.equals("Timing")) {
-            Set<PapiEvent> eventSetNew = config.getPAPIEvents().get(compNewConfig);
+            List<PapiEvent> eventSetNew = config.getPAPIEvents().get(compNewConfig);
             configAdded = false;
             for (PapifyConfigActor tmp : this.configSet) {
               for (String compConfigTmp : tmp.getPAPIEvents().keySet()) {
                 if (!compConfigTmp.equals("Timing")) {
-                  Set<PapiEvent> eventSetTmp = tmp.getPAPIEvents().get(compConfigTmp);
+                  List<PapiEvent> eventSetTmp = tmp.getPAPIEvents().get(compConfigTmp);
                   if (eventSetTmp.equals(eventSetNew)) {
                     configAdded = true;
                     counterConfigs = counterConfigs + 1;

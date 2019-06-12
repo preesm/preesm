@@ -204,10 +204,10 @@ public class ScenarioWriter {
       final Element actorPath = this.dom.createElement("actorPath");
       papifyConfigElt.appendChild(actorPath);
       actorPath.setAttribute("actorPath", config.getActor().getVertexPath());
-      final Map<String, Set<PapiEvent>> eventSets = config.getPAPIEvents();
+      final Map<String, List<PapiEvent>> eventSets = config.getPAPIEvents();
       final Set<String> keys = eventSets.keySet();
       for (final String key : keys) {
-        final Set<PapiEvent> eventSet = eventSets.get(key);
+        final List<PapiEvent> eventSet = eventSets.get(key);
         if (!eventSet.isEmpty()) {
           final Element component = this.dom.createElement("component");
           actorPath.appendChild(component);
@@ -419,8 +419,8 @@ public class ScenarioWriter {
 
     constraints.setAttribute("excelUrl", this.scenario.getConstraints().getExcelFileURL());
 
-    for (final Entry<ComponentInstance, List<AbstractActor>> cst : this.scenario.getConstraints()
-        .getConstraintGroups().entrySet()) {
+    for (final Entry<ComponentInstance, List<AbstractActor>> cst : this.scenario.getConstraints().getConstraintGroups()
+        .entrySet()) {
       addConstraint(constraints, cst.getKey(), cst.getValue());
     }
   }

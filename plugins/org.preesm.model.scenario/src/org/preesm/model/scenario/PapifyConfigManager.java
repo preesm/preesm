@@ -162,7 +162,7 @@ public class PapifyConfigManager {
     PapifyConfigActor papifyConfigGroup = null;
 
     for (final PapifyConfigActor pg : this.papifyConfigGroupsActors) {
-      if (pg.isActor(PreesmCopyTracker.getOriginalSource(actor))) {
+      if (pg.getActor().equals(PreesmCopyTracker.getOriginalSource(actor))) {
         papifyConfigGroup = pg;
       }
     }

@@ -35,10 +35,10 @@
  */
 package org.preesm.model.scenario.papi;
 
+import java.util.ArrayList;
 import java.util.LinkedHashMap;
-import java.util.LinkedHashSet;
+import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import org.preesm.model.pisdf.AbstractActor;
 
 /**
@@ -52,7 +52,7 @@ public class PapifyConfigActor {
   private AbstractActor actor;
 
   /** The set of eventSets that are going to be monitored. */
-  private Map<String, Set<PapiEvent>> actorEventMap;
+  private Map<String, List<PapiEvent>> actorEventMap;
 
   /**
    * Instantiates a new PapifyConfig group.
@@ -87,7 +87,7 @@ public class PapifyConfigActor {
    *          the PAPI event
    */
   public void addPAPIEvent(final String component, final PapiEvent event) {
-    Set<PapiEvent> eventSetAux = null;
+    List<PapiEvent> eventSetAux = null;
     if (component != null && !component.equals("") && event != null) {
       eventSetAux = this.actorEventMap.get(component);
       if (eventSetAux != null) {
@@ -95,7 +95,7 @@ public class PapifyConfigActor {
           eventSetAux.add(event);
         }
       } else {
-        eventSetAux = new LinkedHashSet<>();
+        eventSetAux = new ArrayList<>();
         eventSetAux.add(event);
         this.actorEventMap.put(component, eventSetAux);
       }
@@ -108,8 +108,8 @@ public class PapifyConfigActor {
    * @param events
    *          the PAPI events
    */
-  public void addPAPIEventSet(final String component, final Set<PapiEvent> events) {
-    Set<PapiEvent> eventSetAux = null;
+  public void addPAPIEventSet(final String component, final List<PapiEvent> events) {
+    List<PapiEvent> eventSetAux = null;
     if (component != null && !component.equals("") && !events.isEmpty()) {
       eventSetAux = this.actorEventMap.get(component);
       if (eventSetAux != null) {
@@ -119,7 +119,7 @@ public class PapifyConfigActor {
           }
         }
       } else {
-        eventSetAux = new LinkedHashSet<>();
+        eventSetAux = new ArrayList<>();
         for (final PapiEvent eventAux : events) {
           eventSetAux.add(eventAux);
         }
@@ -135,7 +135,7 @@ public class PapifyConfigActor {
    *          the PAPI event
    */
   public void removePAPIEvent(final String component, final PapiEvent event) {
-    Set<PapiEvent> eventSetAux = null;
+    List<PapiEvent> eventSetAux = null;
     if (component != null && !component.equals("") && event != null) {
       eventSetAux = this.actorEventMap.get(component);
       if (eventSetAux != null) {
@@ -160,19 +160,8 @@ public class PapifyConfigActor {
    *
    * @return the PAPI events
    */
-  public Map<String, Set<PapiEvent>> getPAPIEvents() {
+  public Map<String, List<PapiEvent>> getPAPIEvents() {
     return this.actorEventMap;
-  }
-
-  /**
-   * Checks for Actor path.
-   *
-   * @param actor
-   *          the actor path
-   * @return true, if successful
-   */
-  public boolean isActor(final AbstractActor actor) {
-    return actor.equals(this.actor);
   }
 
   /**
@@ -183,7 +172,7 @@ public class PapifyConfigActor {
    * @return true, if successful
    */
   public boolean hasPapiEvent(String component, final PapiEvent event) {
-    Set<PapiEvent> eventSetAux = null;
+    List<PapiEvent> eventSetAux = null;
     if (component != null && !component.equals("") && event != null) {
       eventSetAux = this.actorEventMap.get(component);
       if (eventSetAux != null) {
