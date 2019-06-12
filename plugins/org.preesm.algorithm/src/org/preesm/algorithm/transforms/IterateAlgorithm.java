@@ -47,7 +47,7 @@ import org.preesm.commons.doc.annotations.Parameter;
 import org.preesm.commons.doc.annotations.Port;
 import org.preesm.commons.doc.annotations.PreesmTask;
 import org.preesm.commons.doc.annotations.Value;
-import org.preesm.model.scenario.PreesmScenario;
+import org.preesm.model.scenario.Scenario;
 import org.preesm.workflow.elements.Workflow;
 import org.preesm.workflow.implement.AbstractTaskImplementation;
 
@@ -150,8 +150,7 @@ public class IterateAlgorithm extends AbstractTaskImplementation {
   /**
    * Mixing nbIt iterations of a single graph, adding a state in case makeStates = true
    */
-  SDFGraph iterate(final SDFGraph inputAlgorithm, final int nbIt, final boolean setStates,
-      final PreesmScenario scenario) {
+  SDFGraph iterate(final SDFGraph inputAlgorithm, final int nbIt, final boolean setStates, final Scenario scenario) {
 
     SDFGraph mainIteration = inputAlgorithm.copy();
 
@@ -187,7 +186,7 @@ public class IterateAlgorithm extends AbstractTaskImplementation {
     final SDFGraph inputAlgorithm = (SDFGraph) inputs.get("SDF");
 
     // If we retrieve a scenario, relative constraints are added in the scenario
-    final PreesmScenario scenario = (PreesmScenario) inputs.get("scenario");
+    final Scenario scenario = (Scenario) inputs.get("scenario");
 
     final int nbIt = Integer.valueOf(parameters.get(IterateAlgorithm.NB_IT));
     final boolean setStates = Boolean.valueOf(parameters.get(IterateAlgorithm.SET_STATES));

@@ -59,7 +59,7 @@ import org.preesm.commons.doc.annotations.PreesmTask;
 import org.preesm.commons.doc.annotations.Value;
 import org.preesm.commons.exceptions.PreesmRuntimeException;
 import org.preesm.model.pisdf.PiGraph;
-import org.preesm.model.scenario.PreesmScenario;
+import org.preesm.model.scenario.Scenario;
 import org.preesm.model.slam.Design;
 import org.preesm.workflow.elements.Workflow;
 import org.preesm.workflow.implement.AbstractTaskImplementation;
@@ -71,7 +71,7 @@ import org.preesm.workflow.implement.AbstractWorkflowNodeImplementation;
 @PreesmTask(id = "org.ietr.preesm.pimm.algorithm.spider.codegen.SpiderCodegenTask", name = "Spider Codegen",
     category = "Code Generation",
 
-    inputs = { @Port(name = "PiMM", type = PiGraph.class), @Port(name = "scenario", type = PreesmScenario.class),
+    inputs = { @Port(name = "PiMM", type = PiGraph.class), @Port(name = "scenario", type = Scenario.class),
         @Port(name = "architecture", type = Design.class) },
 
     shortDescription = "Generate Spider code for dynamic PiSDF.",
@@ -130,7 +130,7 @@ public class SpiderCodegenTask extends AbstractTaskImplementation {
 
     // Retrieve inputs
     final Design architecture = (Design) inputs.get(AbstractWorkflowNodeImplementation.KEY_ARCHITECTURE);
-    final PreesmScenario scenario = (PreesmScenario) inputs.get(AbstractWorkflowNodeImplementation.KEY_SCENARIO);
+    final Scenario scenario = (Scenario) inputs.get(AbstractWorkflowNodeImplementation.KEY_SCENARIO);
     final PiGraph pg = (PiGraph) inputs.get(AbstractWorkflowNodeImplementation.KEY_PI_GRAPH);
     // Check if we are using papify instrumentation
     final String papifyParameter = parameters.get(SpiderCodegenTask.PARAM_PAPIFY);

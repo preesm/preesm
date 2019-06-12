@@ -50,7 +50,7 @@ import org.preesm.commons.doc.annotations.Value;
 import org.preesm.commons.exceptions.PreesmRuntimeException;
 import org.preesm.commons.files.WorkspaceUtils;
 import org.preesm.commons.logger.PreesmLogger;
-import org.preesm.model.scenario.PreesmScenario;
+import org.preesm.model.scenario.Scenario;
 import org.preesm.model.slam.Design;
 import org.preesm.workflow.elements.Workflow;
 import org.preesm.workflow.implement.AbstractTaskImplementation;
@@ -64,9 +64,8 @@ import org.preesm.workflow.implement.AbstractWorkflowNodeImplementation;
  */
 @PreesmTask(id = "org.ietr.preesm.algorithm.importSdf3Xml.Sdf3Importer", name = "SDF3 Importer",
 
-    inputs = { @Port(name = "architecture", type = Design.class),
-        @Port(name = "scenario", type = PreesmScenario.class) },
-    outputs = { @Port(name = "SDF", type = SDFGraph.class), @Port(name = "scenario", type = PreesmScenario.class) },
+    inputs = { @Port(name = "architecture", type = Design.class), @Port(name = "scenario", type = Scenario.class) },
+    outputs = { @Port(name = "SDF", type = SDFGraph.class), @Port(name = "scenario", type = Scenario.class) },
 
     parameters = { @Parameter(name = "path", values = { @Value(name = "./Code/SDF3/graph.xml", effect = "") }) })
 public class Sdf3Importer extends AbstractTaskImplementation {
@@ -92,7 +91,7 @@ public class Sdf3Importer extends AbstractTaskImplementation {
 
     // Retrieve the inputs
     final Design architecture = (Design) inputs.get(AbstractWorkflowNodeImplementation.KEY_ARCHITECTURE);
-    final PreesmScenario scenario = (PreesmScenario) inputs.get(AbstractWorkflowNodeImplementation.KEY_SCENARIO);
+    final Scenario scenario = (Scenario) inputs.get(AbstractWorkflowNodeImplementation.KEY_SCENARIO);
 
     if (architecture == null) {
       throw new PreesmRuntimeException("Architecture is not properly initialized, cannot execute SDF3 import task");

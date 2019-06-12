@@ -39,7 +39,7 @@ package org.preesm.ui.scenario.editor.parametervalues;
 
 import org.eclipse.jface.viewers.IStructuredContentProvider;
 import org.eclipse.jface.viewers.Viewer;
-import org.preesm.model.scenario.PreesmScenario;
+import org.preesm.model.scenario.Scenario;
 
 /**
  * This class provides the elements displayed in {@link ActorTree}. Each element is a {@link ActorNode}. This tree is
@@ -50,7 +50,7 @@ import org.preesm.model.scenario.PreesmScenario;
 public class PiParameterTableContentProvider implements IStructuredContentProvider {
 
   /** The scenario. */
-  private PreesmScenario scenario = null;
+  private Scenario scenario = null;
 
   /**
    * Default Constructor.
@@ -76,7 +76,7 @@ public class PiParameterTableContentProvider implements IStructuredContentProvid
    */
   @Override
   public void inputChanged(final Viewer viewer, final Object oldInput, final Object newInput) {
-    this.scenario = (PreesmScenario) newInput;
+    this.scenario = (Scenario) newInput;
   }
 
   /*
@@ -86,7 +86,7 @@ public class PiParameterTableContentProvider implements IStructuredContentProvid
    */
   @Override
   public Object[] getElements(final Object inputElement) {
-    return this.scenario.getParameterValues().getParameterValues().entrySet().toArray();
+    return this.scenario.getParameterValues().entrySet().toArray();
   }
 
 }

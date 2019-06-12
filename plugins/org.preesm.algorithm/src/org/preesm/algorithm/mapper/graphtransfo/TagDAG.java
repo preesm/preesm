@@ -42,6 +42,7 @@
 package org.preesm.algorithm.mapper.graphtransfo;
 
 import java.util.Iterator;
+import org.eclipse.emf.common.util.EMap;
 import org.preesm.algorithm.mapper.abc.edgescheduling.AbstractEdgeSched;
 import org.preesm.algorithm.mapper.abc.edgescheduling.EdgeSchedType;
 import org.preesm.algorithm.mapper.abc.edgescheduling.IEdgeSched;
@@ -58,10 +59,11 @@ import org.preesm.algorithm.model.PropertyBean;
 import org.preesm.algorithm.model.dag.DAGEdge;
 import org.preesm.algorithm.model.dag.DAGVertex;
 import org.preesm.algorithm.model.sdf.SDFEdge;
-import org.preesm.model.scenario.PreesmScenario;
+import org.preesm.model.scenario.Scenario;
+import org.preesm.model.scenario.ScenarioConstants;
+import org.preesm.model.scenario.SimulationInfo;
 import org.preesm.model.scenario.types.BufferAggregate;
 import org.preesm.model.scenario.types.BufferProperties;
-import org.preesm.model.scenario.types.DataType;
 import org.preesm.model.scenario.types.ImplementationPropertyNames;
 import org.preesm.model.scenario.types.VertexType;
 import org.preesm.model.slam.ComponentInstance;
@@ -98,7 +100,7 @@ public class TagDAG {
    * @param edgeSchedType
    *          the edge sched type
    */
-  public void tag(final MapperDAG dag, final Design architecture, final PreesmScenario scenario, final LatencyAbc simu,
+  public void tag(final MapperDAG dag, final Design architecture, final Scenario scenario, final LatencyAbc simu,
       final EdgeSchedType edgeSchedType) {
 
     final PropertyBean bean = dag.getPropertyBean();
@@ -120,7 +122,7 @@ public class TagDAG {
    * @param scenario
    *          the scenario
    */
-  private void addSendReceive(final MapperDAG dag, final Design architecture, final PreesmScenario scenario) {
+  private void addSendReceive(final MapperDAG dag, final Design architecture, final Scenario scenario) {
 
     final OrderManager orderMgr = new OrderManager(architecture);
     orderMgr.reconstructTotalOrderFromDAG(dag); // could be avoided?
@@ -253,7 +255,7 @@ public class TagDAG {
    * @param scenario
    *          the scenario
    */
-  private void addAllAggregates(final MapperDAG dag, final PreesmScenario scenario) {
+  private void addAllAggregates(final MapperDAG dag, final Scenario scenario) {
 
     MapperDAGEdge edge;
 
@@ -275,14 +277,21 @@ public class TagDAG {
    * @param scenario
    *          the scenario
    */
-  private void addAggregate(final MapperDAGEdge edge, final PreesmScenario scenario) {
+  private void addAggregate(final MapperDAGEdge edge, final Scenario scenario) {
     final BufferAggregate agg = new BufferAggregate();
     for (final AbstractEdge<?, ?> aggMember : edge.getAggregate()) {
       final DAGEdge dagEdge = (DAGEdge) aggMember;
-      final String value = (String) dagEdge.getPropertyBean().getValue(SDFEdge.DATA_TYPE);
-      final DataType dataType = scenario.getSimulationInfo().getDataType(value);
-      final BufferProperties props = new BufferProperties(dataType, dagEdge.getSourceLabel(), dagEdge.getTargetLabel(),
-          (int) dagEdge.getWeight().longValue());
+      final String dataTypename = dagEdge.getPropertyBean().getValue(SDFEdge.DATA_TYPE);
+      final SimulationInfo simulationInfo = scenario.getSimulationInfo();
+      final EMap<String, Long> dataTypes = simulationInfo.getDataTypes();
+      final long dataTypeSize;
+      if (dataTypes.containsKey(dataTypename)) {
+        dataTypeSize = dataTypes.get(dataTypename);
+      } else {
+        dataTypeSize = ScenarioConstants.DEFAULT_DATA_TYPE_SIZE.getValue();
+      }
+      final BufferProperties props = new BufferProperties(dataTypename, dataTypeSize, dagEdge.getSourceLabel(),
+          dagEdge.getTargetLabel(), (int) dagEdge.getWeight().longValue());
       agg.add(props);
     }
     edge.getPropertyBean().setValue(BufferAggregate.propertyBeanName, agg);

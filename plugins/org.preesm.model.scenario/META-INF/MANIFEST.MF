@@ -23,7 +23,6 @@ Export-Package: org.preesm.model.scenario,
  org.preesm.model.scenario.impl,
  org.preesm.model.scenario.util,
  org.preesm.model.scenario.generator,
- org.preesm.model.scenario.papi,
  org.preesm.model.scenario.serialize,
  org.preesm.model.scenario.types,
  org.preesm.model.scenario.workflow

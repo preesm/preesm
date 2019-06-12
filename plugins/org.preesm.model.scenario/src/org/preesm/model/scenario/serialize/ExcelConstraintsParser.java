@@ -56,7 +56,7 @@ import org.preesm.commons.logger.PreesmLogger;
 import org.preesm.model.pisdf.AbstractActor;
 import org.preesm.model.pisdf.Actor;
 import org.preesm.model.pisdf.PiGraph;
-import org.preesm.model.scenario.PreesmScenario;
+import org.preesm.model.scenario.Scenario;
 import org.preesm.model.slam.ComponentInstance;
 import org.preesm.model.slam.utils.DesignTools;
 
@@ -69,7 +69,7 @@ import org.preesm.model.slam.utils.DesignTools;
 public class ExcelConstraintsParser {
 
   /** The scenario. */
-  private PreesmScenario scenario = null;
+  private Scenario scenario = null;
 
   /**
    * Instantiates a new excel constraints parser.
@@ -77,7 +77,7 @@ public class ExcelConstraintsParser {
    * @param scenario
    *          the scenario
    */
-  public ExcelConstraintsParser(final PreesmScenario scenario) {
+  public ExcelConstraintsParser(final Scenario scenario) {
     super();
     this.scenario = scenario;
   }
@@ -99,7 +99,7 @@ public class ExcelConstraintsParser {
     final Path path = new Path(url);
     final IFile file = workspace.getRoot().getFile(path);
 
-    this.scenario.getConstraints().removeAll();
+    this.scenario.getConstraints().getGroupConstraints().clear();
     PreesmLogger.getLogger().log(Level.INFO,
         "Importing constraints from an excel sheet. Previously defined constraints are discarded.");
 

@@ -57,12 +57,11 @@ import org.eclipse.ui.forms.widgets.ExpandableComposite;
 import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.eclipse.ui.forms.widgets.ScrolledForm;
 import org.eclipse.ui.forms.widgets.Section;
-import org.preesm.model.scenario.PreesmScenario;
+import org.preesm.model.scenario.Scenario;
 import org.preesm.ui.fields.FieldUtils;
 import org.preesm.ui.scenario.editor.FileSelectionAdapter;
 import org.preesm.ui.scenario.editor.Messages;
 
-// TODO: Auto-generated Javadoc
 /**
  * code generation properties editor within the implementation editor.
  *
@@ -71,7 +70,7 @@ import org.preesm.ui.scenario.editor.Messages;
 public class CodegenPage extends FormPage {
 
   /** Currently edited scenario. */
-  private final PreesmScenario scenario;
+  private final Scenario scenario;
 
   /**
    * Instantiates a new codegen page.
@@ -85,7 +84,7 @@ public class CodegenPage extends FormPage {
    * @param title
    *          the title
    */
-  public CodegenPage(final PreesmScenario scenario, final FormEditor editor, final String id, final String title) {
+  public CodegenPage(final Scenario scenario, final FormEditor editor, final String id, final String title) {
     super(editor, id, title);
     this.scenario = scenario;
   }

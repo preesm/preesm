@@ -46,6 +46,7 @@ import java.util.Map.Entry;
 import java.util.Optional;
 import java.util.Set;
 import org.eclipse.core.runtime.Path;
+import org.eclipse.emf.common.util.EList;
 import org.preesm.algorithm.codegen.idl.ActorPrototypes;
 import org.preesm.algorithm.codegen.idl.Prototype;
 import org.preesm.algorithm.codegen.model.CodeGenArgument;
@@ -102,8 +103,8 @@ import org.preesm.model.pisdf.Port;
 import org.preesm.model.pisdf.Refinement;
 import org.preesm.model.pisdf.RoundBufferActor;
 import org.preesm.model.pisdf.util.PiMMSwitch;
-import org.preesm.model.scenario.ConstraintGroupManager;
-import org.preesm.model.scenario.PreesmScenario;
+import org.preesm.model.scenario.Constraints;
+import org.preesm.model.scenario.Scenario;
 import org.preesm.model.slam.ComponentInstance;
 import org.preesm.model.slam.Design;
 
@@ -116,8 +117,7 @@ public class StaticPiMM2MapperDAGVisitor extends PiMMSwitch<Boolean> {
   /**
    *
    */
-  public static final MapperDAG convert(final PiGraph piGraph, final Design architecture,
-      final PreesmScenario scenario) {
+  public static final MapperDAG convert(final PiGraph piGraph, final Design architecture, final Scenario scenario) {
     final StaticPiMM2MapperDAGVisitor visitor = new StaticPiMM2MapperDAGVisitor(piGraph, architecture, scenario);
     visitor.doSwitch(piGraph);
     return visitor.getResult();
@@ -134,7 +134,7 @@ public class StaticPiMM2MapperDAGVisitor extends PiMMSwitch<Boolean> {
   private IRefinement currentRefinement;
 
   /** The scenario. */
-  private final PreesmScenario scenario;
+  private final Scenario scenario;
 
   private final Design architecture;
 
@@ -146,7 +146,7 @@ public class StaticPiMM2MapperDAGVisitor extends PiMMSwitch<Boolean> {
    * @param scenario
    *          The scenario
    */
-  private StaticPiMM2MapperDAGVisitor(final PiGraph piGraph, final Design architecture, final PreesmScenario scenario) {
+  private StaticPiMM2MapperDAGVisitor(final PiGraph piGraph, final Design architecture, final Scenario scenario) {
     this.architecture = architecture;
     this.result = new MapperDAG(piGraph);
     this.vertexFactory = MapperVertexFactory.getInstance();
@@ -625,13 +625,13 @@ public class StaticPiMM2MapperDAGVisitor extends PiMMSwitch<Boolean> {
   /**
    * Update the Scenario with timing/mapping constraints for copyActor.
    */
-  private static final void updateScenarioData(final AbstractActor copyActor, final PreesmScenario scenario) {
+  private static final void updateScenarioData(final AbstractActor copyActor, final Scenario scenario) {
     final AbstractActor actor = PreesmCopyTracker.getOriginalSource(copyActor);
     // Add the scenario constraints
     final List<ComponentInstance> currentOperatorIDs = new ArrayList<>();
-    final Set<Entry<ComponentInstance, List<AbstractActor>>> constraintGroups = scenario.getConstraints()
-        .getConstraintGroups().entrySet();
-    for (final Entry<ComponentInstance, List<AbstractActor>> cg : constraintGroups) {
+    final Set<Entry<ComponentInstance, EList<AbstractActor>>> constraintGroups = scenario.getConstraints()
+        .getGroupConstraints().entrySet();
+    for (final Entry<ComponentInstance, EList<AbstractActor>> cg : constraintGroups) {
       final List<AbstractActor> vertexPaths = cg.getValue();
       final ComponentInstance operatorId = cg.getKey();
       if (vertexPaths.contains(actor)) {
@@ -639,7 +639,7 @@ public class StaticPiMM2MapperDAGVisitor extends PiMMSwitch<Boolean> {
       }
     }
 
-    final ConstraintGroupManager constraintGroupManager = scenario.getConstraints();
+    final Constraints constraintGroupManager = scenario.getConstraints();
     currentOperatorIDs.forEach(s -> constraintGroupManager.addConstraint(s, copyActor));
   }
 

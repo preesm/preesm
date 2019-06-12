@@ -60,7 +60,6 @@ import org.preesm.commons.exceptions.PreesmRuntimeException;
 import org.preesm.commons.math.MathFunctionsHelper;
 import org.preesm.model.scenario.types.BufferAggregate;
 import org.preesm.model.scenario.types.BufferProperties;
-import org.preesm.model.scenario.types.DataType;
 
 // TODO: Auto-generated Javadoc
 /**
@@ -130,16 +129,16 @@ public abstract class MemoryAllocator {
           while (iter.hasNext()) {
             final BufferProperties properties = iter.next();
             final String dataType = properties.getDataType();
-            final DataType type = MemoryExclusionVertex.NAME_TO_DATATYPES.get(dataType);
             long typeSize;
             // A proper type was not set for the considered edge
-            if (type == null) {
+            if (!MemoryExclusionVertex.NAME_TO_DATATYPES.containsKey(dataType)) {
               final String msg = "No valid data type was found on an edge between actors " + edge.getSource().getName()
                   + " and " + edge.getTarget().getName()
                   + ".\nCheck the edge in the graph editor and the declared types in the scenario.";
               throw new PreesmRuntimeException(msg);
             } else {
-              typeSize = type.getSize();
+              final long type = MemoryExclusionVertex.NAME_TO_DATATYPES.get(dataType);
+              typeSize = type;
             }
             largestTypeSize = Math.max(typeSize, largestTypeSize);
             long interSpace = 0;
@@ -681,8 +680,7 @@ public abstract class MemoryAllocator {
           while (iter.hasNext()) {
             final BufferProperties properties = iter.next();
             final String dataType = properties.getDataType();
-            final DataType type = MemoryExclusionVertex.NAME_TO_DATATYPES.get(dataType);
-            final long typeSize = type.getSize();
+            final long typeSize = MemoryExclusionVertex.NAME_TO_DATATYPES.get(dataType);
 
             if (interBufferSpaces != null) {
               internalOffset += interBufferSpaces.get(i);

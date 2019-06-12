@@ -70,7 +70,7 @@ public class Sdf3XmlParser {
   /**
    * This {@link Map} associates each data type of the graph {@link SDFEdge} to their size.
    */
-  private final Map<String, Integer> dataTypes = new LinkedHashMap<>();
+  private final Map<String, Long> dataTypes = new LinkedHashMap<>();
 
   /**
    * This {@link Map} associates the name of an edge from the SDF3 file to its corresponding {@link SDFEdge}.
@@ -80,7 +80,7 @@ public class Sdf3XmlParser {
   /**
    * This {@link Map} associates the actors of the parsed graph to their execution time.
    */
-  private final Map<SDFAbstractVertex, Integer> actorExecTimes = new LinkedHashMap<>();
+  private final Map<SDFAbstractVertex, Long> actorExecTimes = new LinkedHashMap<>();
 
   /**
    * Find the unique {@link Element} with the specified name in the children of the given {@link Element}.
@@ -114,7 +114,7 @@ public class Sdf3XmlParser {
    *
    * @return actorExecTimes the execution time of the parsed graph actors
    */
-  public Map<SDFAbstractVertex, Integer> getActorExecTimes() {
+  public Map<SDFAbstractVertex, Long> getActorExecTimes() {
     return this.actorExecTimes;
   }
 
@@ -125,7 +125,7 @@ public class Sdf3XmlParser {
    *
    * @return dataTypes the data types of the parsed SDF3 graph
    */
-  public Map<String, Integer> getDataTypes() {
+  public Map<String, Long> getDataTypes() {
     return this.dataTypes;
   }
 
@@ -210,7 +210,7 @@ public class Sdf3XmlParser {
       final Element execTimeElement = findElement(procElement, "executionTime");
       final String time = execTimeElement.getAttribute("time");
       if (!time.isEmpty()) {
-        final Integer execTime = new Integer(time);
+        final long execTime = Long.parseLong(time);
         this.actorExecTimes.put(actor, execTime);
       }
 
@@ -218,7 +218,7 @@ public class Sdf3XmlParser {
       final Element stateSizeElement = findElement(memoryElement, "stateSize");
       final String stateSize = stateSizeElement.getAttribute("max");
       if (!stateSize.isEmpty()) {
-        actor.setPropertyValue("working_memory", new Integer(stateSize));
+        actor.setPropertyValue("working_memory", Long.parseLong(stateSize));
       }
     } catch (final RuntimeException e) {
       if (e.getMessage().contains("does not contain any")) {
@@ -348,7 +348,7 @@ public class Sdf3XmlParser {
       }
       final String dataType = "t" + tokenSz;
       edge.setDataType(new StringEdgePropertyType(dataType));
-      this.dataTypes.put(dataType, new Integer(tokenSz));
+      this.dataTypes.put(dataType, Long.parseLong(tokenSz));
     } catch (final RuntimeException e) {
       throw new PreesmRuntimeException(e);
     }

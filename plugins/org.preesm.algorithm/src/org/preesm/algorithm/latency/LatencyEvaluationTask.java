@@ -54,7 +54,7 @@ import org.preesm.commons.doc.annotations.PreesmTask;
 import org.preesm.commons.doc.annotations.Value;
 import org.preesm.commons.logger.PreesmLogger;
 import org.preesm.model.pisdf.AbstractActor;
-import org.preesm.model.scenario.PreesmScenario;
+import org.preesm.model.scenario.Scenario;
 import org.preesm.workflow.elements.Workflow;
 import org.preesm.workflow.implement.AbstractTaskImplementation;
 
@@ -64,9 +64,9 @@ import org.preesm.workflow.implement.AbstractTaskImplementation;
  */
 @PreesmTask(id = "org.ietr.preesm.latency.LatencyEvaluationPlugin", name = "Latency Evaluation",
 
-    inputs = { @Port(name = "SDF", type = SDFGraph.class), @Port(name = "scenario", type = PreesmScenario.class) },
+    inputs = { @Port(name = "SDF", type = SDFGraph.class), @Port(name = "scenario", type = Scenario.class) },
 
-    outputs = { @Port(name = "SDF", type = SDFGraph.class), @Port(name = "scenario", type = PreesmScenario.class),
+    outputs = { @Port(name = "SDF", type = SDFGraph.class), @Port(name = "scenario", type = Scenario.class),
         @Port(name = "latency", type = Double.class) },
 
     parameters = {
@@ -108,7 +108,7 @@ public class LatencyEvaluationTask extends AbstractTaskImplementation {
 
     // get the input graph, the scenario for actors duration, and the total number of cores
     final SDFGraph inputGraph = GraphStructureHelper.cloneIBSDF((SDFGraph) inputs.get("SDF"));
-    final PreesmScenario inputScenario = (PreesmScenario) inputs.get("scenario");
+    final Scenario inputScenario = (Scenario) inputs.get("scenario");
     final boolean multicore = Boolean.parseBoolean(parameters.get("multicore"));
     final LatencyMethod inputMethod = LatencyMethod.valueOf(parameters.get(METHOD_LITTERAL));
 
@@ -205,7 +205,7 @@ public class LatencyEvaluationTask extends AbstractTaskImplementation {
    *
    * @return true if deadlock free, false if not
    */
-  private boolean init(final SDFGraph inputGraph, final PreesmScenario scenario) {
+  private boolean init(final SDFGraph inputGraph, final Scenario scenario) {
     // check the consistency by computing the RV of the graph
     boolean deadlockFree = IBSDFConsistency.computeRV(inputGraph);
 

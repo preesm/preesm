@@ -44,7 +44,7 @@ import org.preesm.algorithm.model.sdf.SDFGraph;
 import org.preesm.commons.exceptions.PreesmException;
 import org.preesm.commons.exceptions.PreesmRuntimeException;
 import org.preesm.commons.logger.PreesmLogger;
-import org.preesm.model.scenario.PreesmScenario;
+import org.preesm.model.scenario.Scenario;
 import org.preesm.workflow.elements.Workflow;
 
 /**
@@ -65,7 +65,7 @@ public class PeriodicEvaluator {
 
     // Retrieve the input dataflow and the scenario
     final SDFGraph inputGraph = (SDFGraph) inputs.get("SDF");
-    final PreesmScenario scenario = (PreesmScenario) inputs.get("scenario");
+    final Scenario scenario = (Scenario) inputs.get("scenario");
 
     // Normalize the graph (for each actor, ins=outs)
     PreesmLogger.getLogger().log(Level.INFO, "Normalization");

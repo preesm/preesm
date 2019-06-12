@@ -43,6 +43,7 @@ import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.emf.common.util.EMap;
 import org.preesm.algorithm.model.dag.DirectedAcyclicGraph;
 import org.preesm.algorithm.transforms.ForkJoinRemover;
 import org.preesm.commons.doc.annotations.Parameter;
@@ -50,8 +51,7 @@ import org.preesm.commons.doc.annotations.Port;
 import org.preesm.commons.doc.annotations.PreesmTask;
 import org.preesm.commons.doc.annotations.Value;
 import org.preesm.commons.logger.PreesmLogger;
-import org.preesm.model.scenario.PreesmScenario;
-import org.preesm.model.scenario.types.DataType;
+import org.preesm.model.scenario.Scenario;
 import org.preesm.workflow.elements.Workflow;
 import org.preesm.workflow.implement.AbstractTaskImplementation;
 import org.preesm.workflow.implement.AbstractWorkflowNodeImplementation;
@@ -66,7 +66,7 @@ import org.preesm.workflow.implement.AbstractWorkflowNodeImplementation;
     category = "Memory Optimization",
 
     inputs = { @Port(name = "DAG", type = DirectedAcyclicGraph.class),
-        @Port(name = "scenario", type = PreesmScenario.class) },
+        @Port(name = "scenario", type = Scenario.class) },
     outputs = { @Port(name = "MemEx", type = MemoryExclusionGraph.class) },
 
     shortDescription = "Builds the Memory Exclusion Graph (MEG) modeling the memory allocation constraints.",
@@ -129,8 +129,8 @@ public class MemoryExclusionGraphBuilder extends AbstractTaskImplementation {
     supprForkJoin = valueSupprForkJoin.equals(MemoryExclusionGraphBuilder.VALUE_TRUE);
 
     // Retrieve list of types and associated sizes in the scenario
-    final PreesmScenario scenario = (PreesmScenario) inputs.get("scenario");
-    final Map<String, DataType> dataTypes = scenario.getSimulationInfo().getDataTypes();
+    final Scenario scenario = (Scenario) inputs.get("scenario");
+    final EMap<String, Long> dataTypes = scenario.getSimulationInfo().getDataTypes();
     MemoryExclusionVertex.setDataTypes(dataTypes);
 
     // Make a copy of the Input DAG for treatment

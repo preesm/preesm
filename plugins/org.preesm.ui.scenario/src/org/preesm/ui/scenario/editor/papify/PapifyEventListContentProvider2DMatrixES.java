@@ -94,7 +94,6 @@ class PapifyEventListContentProvider2DMatrixES extends EditingSupport {
       final PAPIEventStatus actorStatus = statuses.get(this.eventName);
       if (actorStatus.next().equals(PAPIEventStatus.NO)) {
         this.actorProvider.removeEventfromActor(actorInstance, this.eventName);
-
       } else {
         this.actorProvider.addEventtoActor(actorInstance, this.eventName);
       }

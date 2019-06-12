@@ -44,7 +44,7 @@ import org.preesm.algorithm.mapper.model.MapperDAG;
 import org.preesm.algorithm.model.dag.DirectedAcyclicGraph;
 import org.preesm.commons.doc.annotations.Port;
 import org.preesm.commons.doc.annotations.PreesmTask;
-import org.preesm.model.scenario.PreesmScenario;
+import org.preesm.model.scenario.Scenario;
 import org.preesm.workflow.elements.Workflow;
 import org.preesm.workflow.implement.AbstractTaskImplementation;
 import org.preesm.workflow.implement.AbstractWorkflowNodeImplementation;
@@ -54,7 +54,7 @@ import org.preesm.workflow.implement.AbstractWorkflowNodeImplementation;
  */
 @PreesmTask(id = "org.ietr.preesm.codegen.xtend.task.CodegenPapifyEngineTask", name = "Papify Engine",
 
-    inputs = { @Port(name = "scenario", type = PreesmScenario.class),
+    inputs = { @Port(name = "scenario", type = Scenario.class),
         @Port(name = "DAG", type = DirectedAcyclicGraph.class) },
     outputs = { @Port(name = "DAG", type = DirectedAcyclicGraph.class) },
 
@@ -80,7 +80,7 @@ public class CodegenPapifyEngineTask extends AbstractTaskImplementation {
       final IProgressMonitor monitor, final String nodeName, final Workflow workflow) {
 
     // Retrieve inputs
-    final PreesmScenario scenario = (PreesmScenario) inputs.get(AbstractWorkflowNodeImplementation.KEY_SCENARIO);
+    final Scenario scenario = (Scenario) inputs.get(AbstractWorkflowNodeImplementation.KEY_SCENARIO);
     final MapperDAG algo = (MapperDAG) inputs.get(AbstractWorkflowNodeImplementation.KEY_SDF_DAG);
 
     // Generate intermediate model

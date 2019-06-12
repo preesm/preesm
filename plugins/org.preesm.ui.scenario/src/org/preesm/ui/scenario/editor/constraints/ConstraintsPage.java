@@ -62,7 +62,8 @@ import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.eclipse.ui.forms.widgets.ScrolledForm;
 import org.eclipse.ui.forms.widgets.Section;
 import org.preesm.commons.exceptions.PreesmException;
-import org.preesm.model.scenario.PreesmScenario;
+import org.preesm.model.scenario.Scenario;
+import org.preesm.model.scenario.serialize.ExcelConstraintsParser;
 import org.preesm.ui.scenario.editor.FileSelectionAdapter;
 import org.preesm.ui.scenario.editor.Messages;
 import org.preesm.ui.scenario.editor.SDFTreeSection;
@@ -75,7 +76,7 @@ import org.preesm.ui.scenario.editor.SDFTreeSection;
 public class ConstraintsPage extends FormPage implements IPropertyListener {
 
   /** Currently edited scenario. */
-  private PreesmScenario scenario = null;
+  private Scenario scenario = null;
 
   /** The check state listener. */
   private ConstraintsCheckStateListener checkStateListener = null;
@@ -92,7 +93,7 @@ public class ConstraintsPage extends FormPage implements IPropertyListener {
    * @param title
    *          the title
    */
-  public ConstraintsPage(final PreesmScenario scenario, final FormEditor editor, final String id, final String title) {
+  public ConstraintsPage(final Scenario scenario, final FormEditor editor, final String id, final String title) {
     super(editor, id, title);
     this.scenario = scenario;
   }
@@ -116,7 +117,7 @@ public class ConstraintsPage extends FormPage implements IPropertyListener {
       // Constrints file chooser section
       createFileSection(managedForm, Messages.getString("Constraints.file"),
           Messages.getString("Constraints.fileDescription"), Messages.getString("Constraints.fileEdit"),
-          this.scenario.getConstraints().getExcelFileURL(),
+          this.scenario.getConstraints().getGroupConstraintsFileURL(),
           Messages.getString("Constraints.fileBrowseTitle"), "xls");
 
       createConstraintsSection(managedForm, Messages.getString("Constraints.title"),
@@ -328,8 +329,10 @@ public class ConstraintsPage extends FormPage implements IPropertyListener {
    */
   private void importData(final Text text) throws PreesmException, FileNotFoundException, CoreException {
 
-    this.scenario.getConstraints().setExcelFileURL(text.getText());
-    this.scenario.getConstraints().importConstraints(this.scenario);
+    this.scenario.getConstraints().setGroupConstraintsFileURL(text.getText());
+
+    final ExcelConstraintsParser parser = new ExcelConstraintsParser(this.scenario);
+    parser.parse(text.getText());
 
     firePropertyChange(IEditorPart.PROP_DIRTY);
 

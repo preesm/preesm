@@ -47,7 +47,7 @@ import org.preesm.algorithm.mapper.params.AbcParameters;
 import org.preesm.algorithm.mapper.tools.TLevelIterator;
 import org.preesm.commons.exceptions.PreesmException;
 import org.preesm.commons.logger.PreesmLogger;
-import org.preesm.model.scenario.PreesmScenario;
+import org.preesm.model.scenario.Scenario;
 import org.preesm.model.slam.ComponentInstance;
 import org.preesm.model.slam.Design;
 import org.preesm.model.slam.component.ComNode;
@@ -75,7 +75,7 @@ public class InfiniteHomogeneousAbc extends LatencyAbc {
    *           the workflow exception
    */
   public InfiniteHomogeneousAbc(final AbcParameters params, final MapperDAG dag, final Design archi,
-      final PreesmScenario scenario) {
+      final Scenario scenario) {
     this(params, dag, archi, TaskSchedType.SIMPLE, scenario);
   }
 
@@ -96,7 +96,7 @@ public class InfiniteHomogeneousAbc extends LatencyAbc {
    *           the workflow exception
    */
   public InfiniteHomogeneousAbc(final AbcParameters params, final MapperDAG dag, final Design archi,
-      final TaskSchedType taskSchedType, final PreesmScenario scenario) {
+      final TaskSchedType taskSchedType, final Scenario scenario) {
     super(params, dag, archi, AbcType.InfiniteHomogeneous, scenario);
     getType().setTaskSchedType(taskSchedType);
 

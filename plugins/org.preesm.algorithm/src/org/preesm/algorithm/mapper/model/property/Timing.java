@@ -41,7 +41,7 @@ package org.preesm.algorithm.mapper.model.property;
 
 import org.preesm.model.pisdf.AbstractActor;
 import org.preesm.model.pisdf.expression.ExpressionEvaluator;
-import org.preesm.model.scenario.TimingManager;
+import org.preesm.model.scenario.ScenarioConstants;
 import org.preesm.model.slam.component.Component;
 
 /**
@@ -62,7 +62,7 @@ public class Timing {
    */
 
   public Timing(final Component component, final AbstractActor actor) {
-    this(component, actor, TimingManager.DEFAULT_TASK_TIME);
+    this(component, actor, ScenarioConstants.DEFAULT_TIMING_TASK.getValue());
   }
 
   /**

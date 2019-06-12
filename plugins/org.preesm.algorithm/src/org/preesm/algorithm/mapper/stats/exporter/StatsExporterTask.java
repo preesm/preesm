@@ -50,7 +50,7 @@ import org.preesm.commons.doc.annotations.Port;
 import org.preesm.commons.doc.annotations.PreesmTask;
 import org.preesm.commons.doc.annotations.Value;
 import org.preesm.model.pisdf.brv.BRVExporter;
-import org.preesm.model.scenario.PreesmScenario;
+import org.preesm.model.scenario.Scenario;
 import org.preesm.workflow.elements.Workflow;
 import org.preesm.workflow.implement.AbstractTaskImplementation;
 import org.preesm.workflow.implement.AbstractWorkflowNodeImplementation;
@@ -62,7 +62,7 @@ import org.preesm.workflow.implement.AbstractWorkflowNodeImplementation;
  */
 @PreesmTask(id = "org.ietr.preesm.stats.exporter.StatsExporterTask", name = "Gantt Exporter", category = "Analysis",
 
-    inputs = { @Port(name = "ABC", type = LatencyAbc.class), @Port(name = "scenario", type = PreesmScenario.class) },
+    inputs = { @Port(name = "ABC", type = LatencyAbc.class), @Port(name = "scenario", type = Scenario.class) },
 
     shortDescription = "This task exports scheduling results as a *.pgantt file that can be "
         + "viewed using the ganttDisplay viewer [1].",
@@ -100,7 +100,7 @@ public class StatsExporterTask extends AbstractTaskImplementation {
       final IProgressMonitor monitor, final String nodeName, final Workflow workflow) {
 
     final LatencyAbc abc = (LatencyAbc) inputs.get(AbstractWorkflowNodeImplementation.KEY_SDF_ABC);
-    final PreesmScenario scenario = (PreesmScenario) inputs.get(AbstractWorkflowNodeImplementation.KEY_SCENARIO);
+    final Scenario scenario = (Scenario) inputs.get(AbstractWorkflowNodeImplementation.KEY_SCENARIO);
     String folderPath = parameters.get(PARAM_PATH);
 
     // Get the root of the workspace

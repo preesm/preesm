@@ -74,7 +74,7 @@ import org.preesm.model.pisdf.AbstractActor;
 import org.preesm.model.pisdf.Actor;
 import org.preesm.model.pisdf.PiGraph;
 import org.preesm.model.pisdf.Refinement;
-import org.preesm.model.scenario.PreesmScenario;
+import org.preesm.model.scenario.Scenario;
 import org.preesm.model.scenario.types.ImplementationPropertyNames;
 import org.preesm.model.slam.ComponentInstance;
 import org.preesm.model.slam.Design;
@@ -157,7 +157,7 @@ public class CustomQuantaExporter extends AbstractTaskImplementation {
 
     if (abc != null) {
       // The pattern $SCENARIO$ in the input excel file name is replaced by the scenario name
-      final PreesmScenario scenario = abc.getScenario();
+      final Scenario scenario = abc.getScenario();
       final String scenarioURL = scenario.getScenarioURL();
       final String scenarioName = Paths.get(scenarioURL).getFileName().toString().replace(".scenario", "");
       inputXLSFile = inputXLSFile.replace("$SCENARIO$", scenarioName);
@@ -336,7 +336,7 @@ public class CustomQuantaExporter extends AbstractTaskImplementation {
   /**
    * Reading individual quanta information from an excel file.
    */
-  void parseQuantaInputFile(final String fileName, final PreesmScenario scenario) {
+  void parseQuantaInputFile(final String fileName, final Scenario scenario) {
 
     final IPath path = new Path(fileName);
     final IFile iFile = ResourcesPlugin.getWorkspace().getRoot().getFile(path);

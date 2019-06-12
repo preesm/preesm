@@ -59,9 +59,9 @@ import org.preesm.commons.exceptions.PreesmFrameworkException;
 import org.preesm.model.pisdf.AbstractActor;
 import org.preesm.model.pisdf.PiGraph;
 import org.preesm.model.pisdf.serialize.PiParser;
-import org.preesm.model.scenario.PreesmScenario;
+import org.preesm.model.scenario.Scenario;
 import org.preesm.model.scenario.serialize.ScenarioWriter;
-import org.preesm.model.scenario.types.DataType;
+import org.preesm.model.scenario.util.ScenarioUserFactory;
 import org.preesm.model.slam.ComponentInstance;
 import org.preesm.model.slam.Design;
 import org.preesm.model.slam.SlamPackage;
@@ -121,7 +121,7 @@ public class ScenariosGenerator {
    * @throws FileNotFoundException
    *           the file not found exception
    */
-  public Set<PreesmScenario> generateScenarios(final IProject project) throws CoreException, FileNotFoundException {
+  public Set<Scenario> generateScenarios(final IProject project) throws CoreException, FileNotFoundException {
     final IFolder archiDir = project.getFolder(ScenariosGenerator.ARCHI_DIR_NAME);
     final IFolder algoDir = project.getFolder(ScenariosGenerator.ALGO_DIR_NAME);
     return generateScenarios(project, archiDir, algoDir);
@@ -140,7 +140,7 @@ public class ScenariosGenerator {
    * @throws FileNotFoundException
    *           the file not found exception
    */
-  public Set<PreesmScenario> generateScenarios(final IProject project, final IFolder archiDir, final IFolder algoDir)
+  public Set<Scenario> generateScenarios(final IProject project, final IFolder archiDir, final IFolder algoDir)
       throws CoreException, FileNotFoundException {
     final Set<String> archis = new LinkedHashSet<>();
     final Set<String> algos = new LinkedHashSet<>();
@@ -177,9 +177,8 @@ public class ScenariosGenerator {
    * @throws FileNotFoundException
    *           the file not found exception
    */
-  private Set<PreesmScenario> generateScenarios(final IProject project, final Set<String> archis,
-      final Set<String> algos) {
-    final Set<PreesmScenario> scenarios = new LinkedHashSet<>();
+  private Set<Scenario> generateScenarios(final IProject project, final Set<String> archis, final Set<String> algos) {
+    final Set<Scenario> scenarios = new LinkedHashSet<>();
     for (final String archiURL : archis) {
       for (final String algoURL : algos) {
         scenarios.add(createScenario(project, archiURL, algoURL));
@@ -201,9 +200,9 @@ public class ScenariosGenerator {
    * @throws FileNotFoundException
    *           the file not found exception
    */
-  private PreesmScenario createScenario(final IProject project, final String archiURL, final String algoURL) {
+  private Scenario createScenario(final IProject project, final String archiURL, final String algoURL) {
     // Create a new PreesmScenario
-    final PreesmScenario scenario = new PreesmScenario();
+    final Scenario scenario = ScenarioUserFactory.createScenario();
     // Handle factory registry
     final Map<String, Object> extToFactoryMap = Resource.Factory.Registry.INSTANCE.getExtensionToFactoryMap();
     Object instance = extToFactoryMap.get("slam");
@@ -252,7 +251,7 @@ public class ScenariosGenerator {
    * @throws CoreException
    *           the core exception
    */
-  private void fillPiScenario(final PreesmScenario scenario, final Design archi, final PiGraph piGraph) {
+  private void fillPiScenario(final Scenario scenario, final Design archi, final PiGraph piGraph) {
     // Get com nodes and cores names
     scenario.setAlgorithm(piGraph);
     final List<ComponentInstance> coreIds = new ArrayList<>(DesignTools.getOperatorInstances(archi));
@@ -276,7 +275,7 @@ public class ScenariosGenerator {
 
     // Fill data-types found in the algo with default value of 1 byte size
     new PiSDFTypeGatherer().doSwitch(piGraph)
-        .forEach(type -> scenario.getSimulationInfo().putDataType(new DataType(type, 1)));
+        .forEach(type -> scenario.getSimulationInfo().getDataTypes().put(type, 1L));
   }
 
   /**
@@ -304,8 +303,8 @@ public class ScenariosGenerator {
    * @throws CoreException
    *           the core exception
    */
-  private void saveScenarios(final Set<PreesmScenario> scenarios, final IFolder scenarioDir) throws CoreException {
-    for (final PreesmScenario scenario : scenarios) {
+  private void saveScenarios(final Set<Scenario> scenarios, final IFolder scenarioDir) throws CoreException {
+    for (final Scenario scenario : scenarios) {
       final String scenarioName = scenario.getScenarioName();
       final IPath scenarioPath = new Path(scenarioName).addFileExtension("scenario");
       final IFile scenarioFile = scenarioDir.getFile(scenarioPath);
@@ -324,7 +323,7 @@ public class ScenariosGenerator {
    * @param scenarioFile
    *          the IFile in which to save the PreesmScenario
    */
-  private void saveScenario(final PreesmScenario scenario, final IFile scenarioFile) {
+  private void saveScenario(final Scenario scenario, final IFile scenarioFile) {
     final ScenarioWriter writer = new ScenarioWriter(scenario);
     final Document generateScenarioDOM = writer.generateScenarioDOM();
     try (final ByteArrayOutputStream byteStream = new ByteArrayOutputStream()) {

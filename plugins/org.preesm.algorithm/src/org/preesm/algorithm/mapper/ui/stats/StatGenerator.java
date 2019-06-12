@@ -53,7 +53,7 @@ import org.preesm.algorithm.model.PropertyBean;
 import org.preesm.algorithm.model.dag.DAGEdge;
 import org.preesm.algorithm.model.dag.DAGVertex;
 import org.preesm.commons.exceptions.PreesmException;
-import org.preesm.model.scenario.PreesmScenario;
+import org.preesm.model.scenario.Scenario;
 import org.preesm.model.scenario.types.ImplementationPropertyNames;
 import org.preesm.model.scenario.types.VertexType;
 import org.preesm.model.slam.ComponentInstance;
@@ -70,7 +70,7 @@ public class StatGenerator {
   private LatencyAbc abc = null;
 
   /** The scenario. */
-  private PreesmScenario scenario = null;
+  private Scenario scenario = null;
 
   /** The params. */
   private Map<String, String> params = null;
@@ -88,7 +88,7 @@ public class StatGenerator {
    * @param params
    *          the params
    */
-  public StatGenerator(final LatencyAbc abc, final PreesmScenario scenario, final Map<String, String> params) {
+  public StatGenerator(final LatencyAbc abc, final Scenario scenario, final Map<String, String> params) {
     super();
     this.params = params;
     this.scenario = scenario;
@@ -260,7 +260,7 @@ public class StatGenerator {
    *
    * @return the scenario
    */
-  public PreesmScenario getScenario() {
+  public Scenario getScenario() {
     return this.scenario;
   }
 

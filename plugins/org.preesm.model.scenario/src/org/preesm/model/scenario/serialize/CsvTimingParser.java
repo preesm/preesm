@@ -54,7 +54,7 @@ import org.preesm.commons.logger.PreesmLogger;
 import org.preesm.model.pisdf.AbstractActor;
 import org.preesm.model.pisdf.PiGraph;
 import org.preesm.model.pisdf.util.ActorPath;
-import org.preesm.model.scenario.PreesmScenario;
+import org.preesm.model.scenario.Scenario;
 import org.preesm.model.slam.component.Component;
 
 /**
@@ -65,7 +65,7 @@ import org.preesm.model.slam.component.Component;
 public class CsvTimingParser {
 
   /** The scenario. */
-  private PreesmScenario scenario = null;
+  private Scenario scenario = null;
 
   /**
    * Instantiates a new csv timing parser.
@@ -73,7 +73,7 @@ public class CsvTimingParser {
    * @param scenario
    *          the scenario
    */
-  public CsvTimingParser(final PreesmScenario scenario) {
+  public CsvTimingParser(final Scenario scenario) {
     super();
     this.scenario = scenario;
   }

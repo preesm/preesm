@@ -56,7 +56,7 @@ import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.PlatformUI;
 import org.preesm.commons.exceptions.PreesmException;
 import org.preesm.model.pisdf.AbstractActor;
-import org.preesm.model.scenario.PreesmScenario;
+import org.preesm.model.scenario.Scenario;
 import org.preesm.model.scenario.serialize.PreesmAlgorithmListContentProvider;
 import org.preesm.model.slam.component.Component;
 import org.preesm.model.slam.utils.DesignTools;
@@ -71,7 +71,7 @@ import org.preesm.ui.scenario.editor.SaveAsWizard;
 public class ExcelTimingWriter extends ExcelWriter {
 
   /** The scenario. */
-  private final PreesmScenario scenario;
+  private final Scenario scenario;
 
   /**
    * Instantiates a new excel timing writer.
@@ -79,7 +79,7 @@ public class ExcelTimingWriter extends ExcelWriter {
    * @param scenario
    *          the scenario
    */
-  public ExcelTimingWriter(final PreesmScenario scenario) {
+  public ExcelTimingWriter(final Scenario scenario) {
     super();
     this.scenario = scenario;
   }

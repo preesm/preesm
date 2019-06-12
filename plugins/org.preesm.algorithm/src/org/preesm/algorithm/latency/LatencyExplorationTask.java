@@ -41,7 +41,7 @@ import java.util.Map;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.preesm.algorithm.model.sdf.SDFGraph;
 import org.preesm.algorithm.throughput.tools.GraphStructureHelper;
-import org.preesm.model.scenario.PreesmScenario;
+import org.preesm.model.scenario.Scenario;
 import org.preesm.workflow.elements.Workflow;
 
 /**
@@ -58,7 +58,7 @@ public class LatencyExplorationTask {
 
     // get the input graph, the scenario for actors duration, and the total number of cores
     final SDFGraph inputGraph = GraphStructureHelper.cloneIBSDF((SDFGraph) inputs.get("SDF"));
-    final PreesmScenario inputScenario = (PreesmScenario) inputs.get("scenario");
+    final Scenario inputScenario = (Scenario) inputs.get("scenario");
 
     final Integer nbCores = Integer.parseInt(parameters.get("nbCores"));
 

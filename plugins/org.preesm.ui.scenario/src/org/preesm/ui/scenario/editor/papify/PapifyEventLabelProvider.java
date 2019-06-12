@@ -44,10 +44,9 @@ import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.ui.IPropertyListener;
-import org.preesm.model.scenario.PreesmScenario;
-import org.preesm.model.scenario.papi.PapiEvent;
+import org.preesm.model.scenario.PapiEvent;
+import org.preesm.model.scenario.Scenario;
 
-// TODO: Auto-generated Javadoc
 /**
  * Displays the available PAPI events.
  *
@@ -68,7 +67,7 @@ public class PapifyEventLabelProvider implements ITableLabelProvider, SelectionL
    * @param propertyListener
    *          the property listener
    */
-  public PapifyEventLabelProvider(final PreesmScenario scenario, final TableViewer tableViewer,
+  public PapifyEventLabelProvider(final Scenario scenario, final TableViewer tableViewer,
       final IPropertyListener propertyListener) {
     super();
   }

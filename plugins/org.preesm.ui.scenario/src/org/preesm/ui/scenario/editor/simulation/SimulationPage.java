@@ -37,6 +37,7 @@
 package org.preesm.ui.scenario.editor.simulation;
 
 import java.util.List;
+import java.util.Map.Entry;
 import org.eclipse.jface.dialogs.IInputValidator;
 import org.eclipse.jface.dialogs.InputDialog;
 import org.eclipse.jface.viewers.AbstractTreeViewer;
@@ -77,8 +78,8 @@ import org.eclipse.ui.forms.widgets.ExpandableComposite;
 import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.eclipse.ui.forms.widgets.ScrolledForm;
 import org.eclipse.ui.forms.widgets.Section;
-import org.preesm.model.scenario.PreesmScenario;
-import org.preesm.model.scenario.types.DataType;
+import org.preesm.model.scenario.Scenario;
+import org.preesm.model.scenario.ScenarioConstants;
 import org.preesm.model.slam.ComponentInstance;
 import org.preesm.model.slam.utils.DesignTools;
 import org.preesm.ui.scenario.editor.Messages;
@@ -150,7 +151,7 @@ public class SimulationPage extends FormPage implements IPropertyListener {
   }
 
   /** The current scenario being edited. */
-  private final PreesmScenario scenario;
+  private final Scenario scenario;
 
   /**
    * Instantiates a new simulation page.
@@ -164,7 +165,7 @@ public class SimulationPage extends FormPage implements IPropertyListener {
    * @param title
    *          the title
    */
-  public SimulationPage(final PreesmScenario scenario, final FormEditor editor, final String id, final String title) {
+  public SimulationPage(final Scenario scenario, final FormEditor editor, final String id, final String title) {
     super(editor, id, title);
 
     this.scenario = scenario;
@@ -494,8 +495,8 @@ public class SimulationPage extends FormPage implements IPropertyListener {
         final InputDialog dialog = new InputDialog(PlatformUI.getWorkbench().getActiveWorkbenchWindow().getShell(),
             dialogTitle, dialogMessage, init, validator);
         if (dialog.open() == Window.OK) {
-          final DataType dataType = new DataType(dialog.getValue());
-          SimulationPage.this.scenario.getSimulationInfo().putDataType(dataType);
+          SimulationPage.this.scenario.getSimulationInfo().getDataTypes().put(dialog.getValue(),
+              (long) ScenarioConstants.DEFAULT_DATA_TYPE_SIZE.getValue());
           tableViewer.refresh();
           propertyChanged(this, IEditorPart.PROP_DIRTY);
         }
@@ -509,9 +510,12 @@ public class SimulationPage extends FormPage implements IPropertyListener {
       @Override
       public void widgetSelected(final SelectionEvent e) {
         final IStructuredSelection selection = (IStructuredSelection) tableViewer.getSelection();
-        if ((selection != null) && (selection.getFirstElement() instanceof DataType)) {
-          final DataType dataType = (DataType) selection.getFirstElement();
-          SimulationPage.this.scenario.getSimulationInfo().removeDataType(dataType.getTypeName());
+        final Object element = selection.getFirstElement();
+        if ((selection != null) && (element instanceof Entry)) {
+
+          @SuppressWarnings("unchecked")
+          final Entry<String, Long> dataType = (Entry<String, Long>) element;
+          SimulationPage.this.scenario.getSimulationInfo().getDataTypes().removeKey(dataType.getKey());
           tableViewer.refresh();
           propertyChanged(this, IEditorPart.PROP_DIRTY);
         }

@@ -61,7 +61,7 @@ import org.preesm.algorithm.mapper.ui.gantt.GanttEditorRunnable;
 import org.preesm.commons.exceptions.PreesmException;
 import org.preesm.commons.exceptions.PreesmRuntimeException;
 import org.preesm.commons.logger.PreesmLogger;
-import org.preesm.model.scenario.PreesmScenario;
+import org.preesm.model.scenario.Scenario;
 import org.preesm.model.slam.ComponentInstance;
 import org.preesm.model.slam.Design;
 import org.preesm.model.slam.utils.DesignTools;
@@ -83,7 +83,7 @@ public class FastAlgorithm extends Observable {
   private InitialLists initialLists = null;
 
   /** The scenario. */
-  private PreesmScenario scenario = null;
+  private Scenario scenario = null;
 
   /**
    * Constructor.
@@ -93,7 +93,7 @@ public class FastAlgorithm extends Observable {
    * @param scenario
    *          the scenario
    */
-  public FastAlgorithm(final InitialLists initialLists, final PreesmScenario scenario) {
+  public FastAlgorithm(final InitialLists initialLists, final Scenario scenario) {
     super();
     this.initialLists = initialLists;
     this.scenario = scenario;

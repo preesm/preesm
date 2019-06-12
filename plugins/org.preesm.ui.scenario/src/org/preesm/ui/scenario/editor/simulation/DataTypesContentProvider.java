@@ -37,10 +37,8 @@
 package org.preesm.ui.scenario.editor.simulation;
 
 import org.eclipse.jface.viewers.IStructuredContentProvider;
-import org.eclipse.jface.viewers.Viewer;
-import org.preesm.model.scenario.PreesmScenario;
+import org.preesm.model.scenario.Scenario;
 
-// TODO: Auto-generated Javadoc
 /**
  * Provides the elements contained in the data types editor.
  *
@@ -59,36 +57,13 @@ public class DataTypesContentProvider implements IStructuredContentProvider {
   @Override
   public Object[] getElements(final Object inputElement) {
 
-    if (inputElement instanceof PreesmScenario) {
-      final PreesmScenario inputScenario = (PreesmScenario) inputElement;
+    if (inputElement instanceof Scenario) {
+      final Scenario inputScenario = (Scenario) inputElement;
 
       // Retrieving the data types from the scenario
-      this.elementTable = inputScenario.getSimulationInfo().getDataTypes().values().toArray();
+      this.elementTable = inputScenario.getSimulationInfo().getDataTypes().entrySet().toArray();
     }
     return this.elementTable;
-  }
-
-  /*
-   * (non-Javadoc)
-   *
-   * @see org.eclipse.jface.viewers.IContentProvider#dispose()
-   */
-  @Override
-  public void dispose() {
-    // TODO Auto-generated method stub
-
-  }
-
-  /*
-   * (non-Javadoc)
-   *
-   * @see org.eclipse.jface.viewers.IContentProvider#inputChanged(org.eclipse.jface.viewers.Viewer, java.lang.Object,
-   * java.lang.Object)
-   */
-  @Override
-  public void inputChanged(final Viewer viewer, final Object oldInput, final Object newInput) {
-    // TODO Auto-generated method stub
-
   }
 
 }

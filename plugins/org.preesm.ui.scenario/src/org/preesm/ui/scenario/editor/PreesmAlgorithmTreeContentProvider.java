@@ -44,7 +44,7 @@ import org.eclipse.jface.viewers.ITreeContentProvider;
 import org.preesm.model.pisdf.AbstractActor;
 import org.preesm.model.pisdf.Actor;
 import org.preesm.model.pisdf.PiGraph;
-import org.preesm.model.scenario.PreesmScenario;
+import org.preesm.model.scenario.Scenario;
 
 /**
  * This class provides the elements displayed in {@link SDFTreeSection}. Each element is a vertex. This tree is used in
@@ -131,9 +131,9 @@ public class PreesmAlgorithmTreeContentProvider implements ITreeContentProvider 
     final Object[] table = new Object[1];
 
     /** The scenario. */
-    PreesmScenario scenario;
-    if (inputElement instanceof PreesmScenario) {
-      scenario = (PreesmScenario) inputElement;
+    Scenario scenario;
+    if (inputElement instanceof Scenario) {
+      scenario = (Scenario) inputElement;
       // Opening algorithm from file
       try {
         this.currentPISDFGraph = scenario.getAlgorithm();

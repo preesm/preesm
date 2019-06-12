@@ -52,7 +52,7 @@ import org.preesm.algorithm.model.sdf.esdf.SDFSourceInterfaceVertex;
 import org.preesm.commons.logger.PreesmLogger;
 import org.preesm.model.pisdf.AbstractActor;
 import org.preesm.model.pisdf.AbstractVertex;
-import org.preesm.model.scenario.PreesmScenario;
+import org.preesm.model.scenario.Scenario;
 import org.preesm.model.slam.component.Component;
 
 /**
@@ -62,9 +62,9 @@ import org.preesm.model.slam.component.Component;
  */
 public class IBSDFThroughputEvaluator extends ThroughputEvaluator {
 
-  private PreesmScenario scenario;
+  private Scenario scenario;
 
-  public IBSDFThroughputEvaluator(PreesmScenario scenario) {
+  public IBSDFThroughputEvaluator(Scenario scenario) {
     this.scenario = scenario;
     // TODO Auto-generated constructor stub
   }

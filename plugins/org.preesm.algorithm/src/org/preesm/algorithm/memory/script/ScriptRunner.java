@@ -55,6 +55,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
 import org.eclipse.core.runtime.IPath;
+import org.eclipse.emf.common.util.EMap;
 import org.eclipse.xtext.xbase.lib.Pair;
 import org.preesm.algorithm.memory.exclusiongraph.MemoryExclusionGraph;
 import org.preesm.algorithm.memory.exclusiongraph.MemoryExclusionVertex;
@@ -76,7 +77,6 @@ import org.preesm.commons.files.PreesmResourcesHelper;
 import org.preesm.commons.files.URLHelper;
 import org.preesm.commons.files.URLResolver;
 import org.preesm.commons.logger.PreesmLogger;
-import org.preesm.model.scenario.types.DataType;
 
 /**
  *
@@ -105,7 +105,7 @@ public class ScriptRunner {
   /**
    * A {@link Map} that associates each {@link String} representing a type name with a corresponding {@link DataType}.
    */
-  private Map<String, DataType> dataTypes;
+  private EMap<String, Long> dataTypes;
 
   /**
    * A {@link Map} that associates each {@link DAGVertex} from the {@link #scriptedVertices} map to the result of the
@@ -1695,7 +1695,7 @@ public class ScriptRunner {
       final String portModiferString = it.getTargetPortModifier() == null ? "" : it.getTargetPortModifier().toString();
       final boolean isMergeable = portModiferString.contains(SDFEdge.MODIFIER_READ_ONLY)
           || (portModiferString.contains(SDFEdge.MODIFIER_UNUSED));
-      final long dataSize = this.dataTypes.get(dataType.toString()).getSize();
+      final long dataSize = this.dataTypes.get(dataType.toString());
       // Weight is already dataSize * (Cons || prod)
       final long nbTokens = it.getWeight().longValue(); // / dataSize
       try {
@@ -1723,7 +1723,7 @@ public class ScriptRunner {
       final String portModiferString = it.getTargetPortModifier() == null ? "" : it.getTargetPortModifier().toString();
       final boolean isMergeable = portModiferString.contains(SDFEdge.MODIFIER_READ_ONLY)
           || (portModiferString.contains(SDFEdge.MODIFIER_UNUSED));
-      final long dataSize = this.dataTypes.get(dataType.toString()).getSize();
+      final long dataSize = this.dataTypes.get(dataType.toString());
       // Weight is already dataSize * (Cons || prod)
       final long nbTokens = it.getWeight().longValue(); // / dataSize
       try {
@@ -2029,11 +2029,11 @@ public class ScriptRunner {
     outputs.removeAll(unmatchedBuffer);
   }
 
-  public Map<String, DataType> getDataTypes() {
+  public EMap<String, Long> getDataTypes() {
     return this.dataTypes;
   }
 
-  public void setDataTypes(final Map<String, DataType> dataTypes) {
+  public void setDataTypes(final EMap<String, Long> dataTypes) {
     this.dataTypes = dataTypes;
   }
 

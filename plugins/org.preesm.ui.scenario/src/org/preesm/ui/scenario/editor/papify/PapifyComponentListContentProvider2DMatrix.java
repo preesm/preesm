@@ -42,12 +42,14 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
+import org.eclipse.emf.common.util.EList;
+import org.eclipse.emf.common.util.EMap;
 import org.eclipse.jface.viewers.ITreeContentProvider;
 import org.eclipse.jface.viewers.Viewer;
-import org.preesm.model.scenario.PreesmScenario;
-import org.preesm.model.scenario.papi.PapiComponent;
-import org.preesm.model.scenario.papi.PapiEventInfo;
-import org.preesm.model.scenario.papi.PapiEventSet;
+import org.preesm.model.scenario.PapiComponent;
+import org.preesm.model.scenario.PapiEventInfo;
+import org.preesm.model.scenario.PapiEventSet;
+import org.preesm.model.scenario.Scenario;
 import org.preesm.model.slam.component.Component;
 import org.preesm.ui.scenario.editor.papify.PapifyListTreeElement.PAPIStatus;
 
@@ -59,12 +61,12 @@ import org.preesm.ui.scenario.editor.papify.PapifyListTreeElement.PAPIStatus;
 public class PapifyComponentListContentProvider2DMatrix implements ITreeContentProvider {
 
   /** Currently edited scenario. */
-  private PreesmScenario                                    scenario           = null;
+  private Scenario                                          scenario           = null;
   private Set<PapifyListTreeElement>                        componentConfig;
   PapifyCheckStateListener                                  checkStateListener = null;
   private Set<PapifyComponentListContentProvider2DMatrixES> editingSupports    = new LinkedHashSet<>();
 
-  public PapifyComponentListContentProvider2DMatrix(PreesmScenario scenario) {
+  public PapifyComponentListContentProvider2DMatrix(Scenario scenario) {
     this.scenario = scenario;
   }
 
@@ -99,9 +101,9 @@ public class PapifyComponentListContentProvider2DMatrix implements ITreeContentP
   public void removePEfromComp(final Component peType, final String compName) {
     if (peType != null && !compName.equals("")) {
 
-      PapiEventInfo papiData = this.scenario.getPapifyConfig().getPapifyData();
-      PapiComponent pc = papiData.getComponent(compName);
-      this.scenario.getPapifyConfig().getCorePapifyConfigGroupPE(peType).remove(pc);
+      PapiEventInfo papiData = this.scenario.getPapifyConfig().getPapiData();
+      PapiComponent pc = papiData.getComponents().get(compName);
+      this.scenario.getPapifyConfig().getPapifyConfigGroupsPEs().get(peType).remove(pc);
 
       for (PapifyListTreeElement treeElement : this.componentConfig) {
         if (treeElement.label.equals(compName)) {
@@ -117,9 +119,9 @@ public class PapifyComponentListContentProvider2DMatrix implements ITreeContentP
    */
   public void addPEtoComp(final Component peType, final String compName) {
     if (peType != null && !compName.equals("")) {
-      PapiEventInfo papiData = this.scenario.getPapifyConfig().getPapifyData();
-      PapiComponent pc = papiData.getComponent(compName);
-      this.scenario.getPapifyConfig().getCorePapifyConfigGroupPE(peType).add(pc);
+      PapiEventInfo papiData = this.scenario.getPapifyConfig().getPapiData();
+      PapiComponent pc = papiData.getComponents().get(compName);
+      this.scenario.getPapifyConfig().addComponent(peType, pc);
 
       for (PapifyListTreeElement treeElement : this.componentConfig) {
         if (treeElement.label.equals(compName)) {
@@ -135,10 +137,10 @@ public class PapifyComponentListContentProvider2DMatrix implements ITreeContentP
    */
   public void cleanPE(final Component peType) {
 
-    List<PapiComponent> corePapifyConfigGroupPE = this.scenario.getPapifyConfig()
-        .getCorePapifyConfigGroupPE(peType);
+    List<
+        PapiComponent> corePapifyConfigGroupPE = this.scenario.getPapifyConfig().getPapifyConfigGroupsPEs().get(peType);
     if (peType != null && corePapifyConfigGroupPE != null) {
-      PapiEventInfo papiData = this.scenario.getPapifyConfig().getPapifyData();
+      PapiEventInfo papiData = this.scenario.getPapifyConfig().getPapiData();
       corePapifyConfigGroupPE.removeAll(papiData.getComponents().values());
 
       for (PapifyListTreeElement treeElement : this.componentConfig) {
@@ -164,11 +166,10 @@ public class PapifyComponentListContentProvider2DMatrix implements ITreeContentP
    *
    */
   public void setInput() {
-    final Map<Component,
-        List<PapiComponent>> papifyConfigGroupsPEs = this.scenario.getPapifyConfig().getPapifyConfigGroupsPEs();
+    final EMap<Component,
+        EList<PapiComponent>> papifyConfigGroupsPEs = this.scenario.getPapifyConfig().getPapifyConfigGroupsPEs();
 
-    final Set<Entry<Component, List<PapiComponent>>> entrySet = papifyConfigGroupsPEs.entrySet();
-    for (final Entry<Component, List<PapiComponent>> papiConfig : entrySet) {
+    for (final Entry<Component, EList<PapiComponent>> papiConfig : papifyConfigGroupsPEs) {
       final Component peType = papiConfig.getKey();
       for (PapiComponent compName : papiConfig.getValue()) {
         String comp = compName.getId();
