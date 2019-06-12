@@ -60,7 +60,6 @@ import org.preesm.model.pisdf.AbstractActor;
 import org.preesm.model.pisdf.PiGraph;
 import org.preesm.model.pisdf.serialize.PiParser;
 import org.preesm.model.scenario.PreesmScenario;
-import org.preesm.model.scenario.Timing;
 import org.preesm.model.scenario.serialize.ScenarioWriter;
 import org.preesm.model.scenario.types.DataType;
 import org.preesm.model.slam.ComponentInstance;
@@ -262,7 +261,7 @@ public class ScenariosGenerator {
     for (final Component opId : DesignTools.getOperatorComponents(archi)) {
       for (final AbstractActor aa : piGraph.getAllActors()) {
         // Add timing: aa run on ci in 10000
-        scenario.getTimingManager().addTiming(new Timing(opId, aa, 10000));
+        scenario.getTimingManager().setTiming(aa, opId, 10000);
       }
     }
     for (final ComponentInstance coreId : coreIds) {

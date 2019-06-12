@@ -57,8 +57,8 @@ import org.eclipse.ui.PlatformUI;
 import org.preesm.commons.files.PreesmResourcesHelper;
 import org.preesm.model.pisdf.AbstractActor;
 import org.preesm.model.pisdf.AbstractVertex;
+import org.preesm.model.pisdf.expression.ExpressionEvaluator;
 import org.preesm.model.scenario.PreesmScenario;
-import org.preesm.model.scenario.Timing;
 import org.preesm.model.slam.component.Component;
 import org.preesm.model.slam.utils.DesignTools;
 import org.preesm.ui.PreesmUIPlugin;
@@ -141,9 +141,9 @@ public class TimingsTableLabelProvider implements ITableLabelProvider, Selection
     if ((element instanceof AbstractActor) && (this.currentOpDefId != null)) {
       final AbstractActor vertex = (AbstractActor) element;
 
-      final Timing timing = this.scenario.getTimingManager().getTimingOrDefault(vertex, this.currentOpDefId);
+      final String timing = this.scenario.getTimingManager().getTimingOrDefault(vertex, this.currentOpDefId);
       if (columnIndex == 3) {
-        if (timing.canEvaluate()) {
+        if (ExpressionEvaluator.canEvaluate(vertex, timing)) {
           return this.imageOk;
         } else {
           return this.imageError;
@@ -177,29 +177,29 @@ public class TimingsTableLabelProvider implements ITableLabelProvider, Selection
     if ((element instanceof AbstractActor) && (this.currentOpDefId != null)) {
       final AbstractActor vertex = (AbstractActor) element;
 
-      final Timing timing = this.scenario.getTimingManager().getTimingOrDefault(vertex, this.currentOpDefId);
+      final String timing = this.scenario.getTimingManager().getTimingOrDefault(vertex, this.currentOpDefId);
 
       switch (columnIndex) {
         case 0:
           return vertex.getVertexPath();
         case 1: // Input Parameters
-          if (timing == null || timing.getActor().getInputParameters().isEmpty()) {
+          if (timing == null || vertex.getInputParameters().isEmpty()) {
             text = " - ";
           } else {
-            text = timing.getActor().getInputParameters().stream().map(AbstractVertex::getName)
-                .collect(Collectors.toList()).toString();
+            text = vertex.getInputParameters().stream().map(AbstractVertex::getName).collect(Collectors.toList())
+                .toString();
           }
           break;
         case 2: // Expression
           if (timing != null) {
-            text = timing.getStringValue();
+            text = timing;
           }
           break;
         case 3: // Evaluation Status
           return null;
         case 4: // Value
-          if (timing != null && timing.canEvaluate()) {
-            text = Long.toString(timing.getTime());
+          if (timing != null && ExpressionEvaluator.canEvaluate(vertex, timing)) {
+            text = Long.toString(ExpressionEvaluator.evaluate(vertex, timing));
           }
           break;
         default:
@@ -272,8 +272,7 @@ public class TimingsTableLabelProvider implements ITableLabelProvider, Selection
       if (this.currentOpDefId != null) {
         final String title = Messages.getString("Timings.dialog.title");
         final String message = Messages.getString("Timings.dialog.message") + abstractActor.getVertexPath();
-        final String init = this.scenario.getTimingManager().getTimingOrDefault(abstractActor, this.currentOpDefId)
-            .getStringValue();
+        final String init = this.scenario.getTimingManager().getTimingOrDefault(abstractActor, this.currentOpDefId);
 
         final InputDialog dialog = new InputDialog(PlatformUI.getWorkbench().getActiveWorkbenchWindow().getShell(),
             title, message, init, validator);

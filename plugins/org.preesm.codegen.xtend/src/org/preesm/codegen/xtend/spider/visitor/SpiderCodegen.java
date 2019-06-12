@@ -65,7 +65,6 @@ import org.preesm.model.pisdf.Parameter;
 import org.preesm.model.pisdf.PiGraph;
 import org.preesm.model.pisdf.Port;
 import org.preesm.model.scenario.PreesmScenario;
-import org.preesm.model.scenario.Timing;
 import org.preesm.model.scenario.papi.PapiEvent;
 import org.preesm.model.scenario.papi.PapifyConfigActor;
 import org.preesm.model.scenario.papi.PapifyConfigManager;
@@ -190,15 +189,17 @@ public class SpiderCodegen {
     }
 
     // Generate timings
-    final Map<String, AbstractActor> actorsByNames = this.preprocessor.getActorNames();
     this.timings = new LinkedHashMap<>();
-    for (final Timing t : this.scenario.getTimingManager().getTimings()) {
-      final AbstractActor aa = t.getActor();
-      if (aa != null) {
-        if (!this.timings.containsKey(aa)) {
-          this.timings.put(aa, new LinkedHashMap<Component, String>());
+    final Map<String, AbstractActor> actorsByNames = this.preprocessor.getActorNames();
+    for (final AbstractActor actor : actorsByNames.values()) {
+      final Map<Component, String> listTimings = this.scenario.getTimingManager().listTimings(actor);
+      for (Entry<Component, String> e : listTimings.entrySet()) {
+        if (actor != null) {
+          if (!this.timings.containsKey(actor)) {
+            this.timings.put(actor, new LinkedHashMap<Component, String>());
+          }
+          this.timings.get(actor).put(e.getKey(), e.getValue());
         }
-        this.timings.get(aa).put(t.getComponent(), t.getStringValue());
       }
     }
 

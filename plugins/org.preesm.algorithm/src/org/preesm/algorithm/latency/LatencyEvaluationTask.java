@@ -217,10 +217,9 @@ public class LatencyEvaluationTask extends AbstractTaskImplementation {
         if (actor.getKind() == "vertex") {
           if (actor.getGraphDescription() == null) {
             // if atomic actor then copy the duration indicated in the scenario
-            final double duration = scenario.getTimingManager()
-                .getTimingOrDefault((AbstractActor) actor.getReferencePiMMVertex(),
-                    scenario.getSimulationManager().getMainOperator().getComponent())
-                .getTime();
+            final double duration = scenario.getTimingManager().evaluateTimingOrDefault(
+                (AbstractActor) actor.getReferencePiMMVertex(),
+                scenario.getSimulationManager().getMainOperator().getComponent());
             actor.setPropertyValue(DURATION_LITTERAL, duration);
           } else {
             // if hierarchical actor then as default the duration is 1
@@ -231,10 +230,9 @@ public class LatencyEvaluationTask extends AbstractTaskImplementation {
           }
         } else {
           // keep the duration of input interfaces
-          final double duration = scenario.getTimingManager()
-              .getTimingOrDefault((AbstractActor) actor.getReferencePiMMVertex(),
-                  scenario.getSimulationManager().getMainOperator().getComponent())
-              .getTime();
+          final double duration = scenario.getTimingManager().evaluateTimingOrDefault(
+              (AbstractActor) actor.getReferencePiMMVertex(),
+              scenario.getSimulationManager().getMainOperator().getComponent());
           actor.setPropertyValue(DURATION_LITTERAL, duration);
 
         }

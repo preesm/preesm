@@ -37,10 +37,11 @@
  * The fact that you are presently reading this means that you have had
  * knowledge of the CeCILL license and that you accept its terms.
  */
-package org.preesm.model.scenario;
+package org.preesm.algorithm.mapper.model.property;
 
 import org.preesm.model.pisdf.AbstractActor;
 import org.preesm.model.pisdf.expression.ExpressionEvaluator;
+import org.preesm.model.scenario.TimingManager;
 import org.preesm.model.slam.component.Component;
 
 /**

@@ -43,12 +43,12 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
+import org.apache.commons.lang3.tuple.Triple;
 import org.preesm.model.pisdf.AbstractActor;
 import org.preesm.model.pisdf.Parameter;
 import org.preesm.model.pisdf.PiGraph;
 import org.preesm.model.scenario.ParameterValueManager;
 import org.preesm.model.scenario.PreesmScenario;
-import org.preesm.model.scenario.Timing;
 import org.preesm.model.scenario.papi.PapiComponent;
 import org.preesm.model.scenario.papi.PapiEvent;
 import org.preesm.model.scenario.papi.PapiEventModifier;
@@ -459,17 +459,17 @@ public class ScenarioWriter {
    */
   private void addTimings(final Element parent) {
 
-    final Element timings = this.dom.createElement("timings");
-    parent.appendChild(timings);
+    final Element timingsElement = this.dom.createElement("timings");
+    parent.appendChild(timingsElement);
 
-    timings.setAttribute("excelUrl", this.scenario.getTimingManager().getExcelFileURL());
+    timingsElement.setAttribute("excelUrl", this.scenario.getTimingManager().getExcelFileURL());
 
-    for (final Timing timing : this.scenario.getTimingManager().getTimings()) {
-      addTiming(timings, timing);
+    for (final Triple<AbstractActor, Component, String> timing : this.scenario.getTimingManager().exportTimings()) {
+      addTiming(timingsElement, timing);
     }
 
     for (final Component opDef : this.scenario.getTimingManager().getMemcpySpeeds().keySet()) {
-      addMemcpySpeed(timings, opDef, this.scenario.getTimingManager().getMemcpySetupTime(opDef),
+      addMemcpySpeed(timingsElement, opDef, this.scenario.getTimingManager().getMemcpySetupTime(opDef),
           this.scenario.getTimingManager().getMemcpyTimePerUnit(opDef));
     }
   }
@@ -482,15 +482,12 @@ public class ScenarioWriter {
    * @param timing
    *          the timing
    */
-  private void addTiming(final Element parent, final Timing timing) {
-
+  private void addTiming(final Element parent, final Triple<AbstractActor, Component, String> timing) {
     final Element timingelt = this.dom.createElement("timing");
     parent.appendChild(timingelt);
-    timingelt.setAttribute("vertexname", timing.getActor().getVertexPath());
-    timingelt.setAttribute("opname", timing.getComponent().getVlnv().getName());
-    String timeString;
-    timeString = timing.getStringValue();
-    timingelt.setAttribute("time", timeString);
+    timingelt.setAttribute("vertexname", timing.getLeft().getVertexPath());
+    timingelt.setAttribute("opname", timing.getMiddle().getVlnv().getName());
+    timingelt.setAttribute("time", timing.getRight());
   }
 
   /**

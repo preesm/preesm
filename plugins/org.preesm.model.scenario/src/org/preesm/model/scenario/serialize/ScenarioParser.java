@@ -62,7 +62,6 @@ import org.preesm.model.pisdf.serialize.PiParser;
 import org.preesm.model.pisdf.util.ActorPath;
 import org.preesm.model.scenario.MemCopySpeed;
 import org.preesm.model.scenario.PreesmScenario;
-import org.preesm.model.scenario.Timing;
 import org.preesm.model.scenario.TimingManager;
 import org.preesm.model.scenario.papi.PapiComponent;
 import org.preesm.model.scenario.papi.PapiEvent;
@@ -739,10 +738,7 @@ public class ScenarioParser {
         final Element elt = (Element) node;
         final String type = elt.getTagName();
         if (type.equals("timing")) {
-          final Timing timing = getTiming(elt);
-          if (timing != null) {
-            this.scenario.getTimingManager().addTiming(timing);
-          }
+          parseTiming(elt);
         } else if (type.equals("memcpyspeed")) {
           retrieveMemcpySpeed(this.scenario.getTimingManager(), elt);
         }
@@ -759,40 +755,22 @@ public class ScenarioParser {
    *          the timing elt
    * @return the timing
    */
-  private Timing getTiming(final Element timingElt) {
-
-    Timing timing = null;
-
+  private void parseTiming(final Element timingElt) {
     if (scenario.getAlgorithm() != null) {
-
       final String type = timingElt.getTagName();
       if (type.equals("timing")) {
         final String vertexpath = timingElt.getAttribute("vertexname");
         final String opdefname = timingElt.getAttribute("opname");
-        long time;
         final String stringValue = timingElt.getAttribute("time");
-        boolean isEvaluated = false;
-        try {
-          time = Long.parseLong(stringValue);
-          isEvaluated = true;
-        } catch (final NumberFormatException e) {
-          time = -1;
-        }
 
         final boolean contains = this.scenario.getDesign().containsComponent(opdefname);
         final AbstractActor lookup = ActorPath.lookup(this.scenario.getAlgorithm(), vertexpath);
         if ((lookup != null) && contains) {
           final Component component = this.scenario.getDesign().getComponent(opdefname);
-          if (isEvaluated) {
-            timing = new Timing(component, lookup, time);
-          } else {
-            timing = new Timing(component, lookup, stringValue);
-          }
+          this.scenario.getTimingManager().setTiming(lookup, component, stringValue);
         }
       }
     }
-
-    return timing;
   }
 
   /**

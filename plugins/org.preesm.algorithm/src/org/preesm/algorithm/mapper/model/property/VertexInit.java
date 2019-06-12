@@ -46,7 +46,6 @@ import java.util.List;
 import org.preesm.algorithm.mapper.abc.SpecialVertexManager;
 import org.preesm.algorithm.mapper.model.MapperDAGVertex;
 import org.preesm.commons.CloneableProperty;
-import org.preesm.model.scenario.Timing;
 import org.preesm.model.scenario.TimingManager;
 import org.preesm.model.slam.ComponentInstance;
 import org.preesm.model.slam.component.Component;

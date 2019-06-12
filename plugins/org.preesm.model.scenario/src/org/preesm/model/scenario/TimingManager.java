@@ -42,11 +42,15 @@
 package org.preesm.model.scenario;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
+import org.apache.commons.lang3.tuple.Triple;
 import org.preesm.commons.model.PreesmCopyTracker;
 import org.preesm.model.pisdf.AbstractActor;
+import org.preesm.model.pisdf.expression.ExpressionEvaluator;
 import org.preesm.model.scenario.serialize.CsvTimingParser;
 import org.preesm.model.scenario.serialize.ExcelTimingParser;
 import org.preesm.model.slam.component.Component;
@@ -66,13 +70,13 @@ public class TimingManager {
   public static final long DEFAULT_SPECIAL_VERTEX_TIME = 10;
 
   /** List of all timings. */
-  private final List<Timing> timings;
+  private final Map<AbstractActor, Map<Component, String>> actorTimings = new LinkedHashMap<>();
 
   /** Path to a file containing timings. */
   private String excelFileURL = "";
 
   /** Storing setup time and speed of memcpy for each type of operator. */
-  private final Map<Component, MemCopySpeed> memcpySpeeds;
+  private final Map<Component, MemCopySpeed> memcpySpeeds = new LinkedHashMap<>();
 
   /** Default value for a memcpy setup time. */
   private static final long DEFAULTMEMCPYSETUPTIME = 1;
@@ -87,28 +91,11 @@ public class TimingManager {
    */
   public TimingManager(final PreesmScenario preesmScenario) {
     this.preesmScenario = preesmScenario;
-    this.timings = new ArrayList<>();
-    this.memcpySpeeds = new LinkedHashMap<>();
   }
 
-  /**
-   * Adds the timing.
-   *
-   * @param newt
-   *          the newt
-   * @return the timing
-   */
-  public Timing addTiming(final Timing newt) {
-
-    for (final Timing timing : this.timings) {
-      if (timing.equals(newt)) {
-        timing.setTime(newt.getTime());
-        return timing;
-      }
-    }
-
-    this.timings.add(newt);
-    return newt;
+  public void clear() {
+    this.memcpySpeeds.clear();
+    this.actorTimings.clear();
   }
 
   /**
@@ -118,19 +105,9 @@ public class TimingManager {
    *          the dag vertex id
    * @param component
    *          the operator definition id
-   * @return the timing
    */
-  public Timing addTiming(final AbstractActor actor, final Component component) {
-
-    final Timing newt = new Timing(component, actor);
-    for (final Timing timing : this.timings) {
-      if (timing.equals(newt)) {
-        return timing;
-      }
-    }
-
-    this.timings.add(newt);
-    return newt;
+  public void addDefaultTiming(final AbstractActor actor, final Component component) {
+    setTiming(actor, component, DEFAULT_TASK_TIME);
   }
 
   /**
@@ -144,7 +121,7 @@ public class TimingManager {
    *          the time
    */
   public void setTiming(final AbstractActor actor, final Component component, final long time) {
-    addTiming(actor, component).setTime(time);
+    setTiming(actor, component, Long.toString(time));
   }
 
   /**
@@ -158,7 +135,33 @@ public class TimingManager {
    *          the value
    */
   public void setTiming(final AbstractActor actor, final Component component, final String value) {
-    addTiming(actor, component).setStringValue(value);
+    if (!this.actorTimings.containsKey(actor)) {
+      this.actorTimings.put(actor, new LinkedHashMap<>());
+    }
+    this.actorTimings.get(actor).put(component, value);
+  }
+
+  /**
+   *
+   */
+  public List<Triple<AbstractActor, Component, String>> exportTimings() {
+    final List<Triple<AbstractActor, Component, String>> res = new ArrayList<>();
+    for (final Entry<AbstractActor, Map<Component, String>> actorEntry : this.actorTimings.entrySet()) {
+      for (Entry<Component, String> timingEntry : actorEntry.getValue().entrySet()) {
+        res.add(Triple.of(actorEntry.getKey(), timingEntry.getKey(), timingEntry.getValue()));
+      }
+    }
+    return res;
+  }
+
+  /**
+   *
+   */
+  public Map<Component, String> listTimings(final AbstractActor actor) {
+    if (this.actorTimings.containsKey(actor)) {
+      return Collections.unmodifiableMap(this.actorTimings.get(actor));
+    }
+    return Collections.unmodifiableMap(Collections.emptyMap());
   }
 
   /**
@@ -170,32 +173,39 @@ public class TimingManager {
    *          the operator definition id
    * @return the timing or default
    */
-  public Timing getTimingOrDefault(final AbstractActor actor, final Component component) {
-    Timing val = null;
-
-    final AbstractActor originalSource = PreesmCopyTracker.getOriginalSource(actor);
-
-    for (final Timing timing : this.timings) {
-      if (timing.getActor().equals(originalSource) && timing.getComponent().equals(component)) {
-        val = timing;
+  public String getTimingOrDefault(final AbstractActor actor, final Component component) {
+    if (this.actorTimings.containsKey(actor)) {
+      final Map<Component, String> map = this.actorTimings.get(actor);
+      if (map.containsKey(component)) {
+        return map.get(component);
+      }
+    } else {
+      final AbstractActor source = PreesmCopyTracker.getSource(actor);
+      if (source != actor) {
+        return getTimingOrDefault(source, component);
       }
     }
-
-    if (val == null) {
-      val = new Timing(component, actor);
-    }
-
-    return val;
+    return Long.toString(DEFAULT_TASK_TIME);
   }
 
   /**
-   * Gets the timings.
+   * Looks for a timing entered in scenario editor. If there is none, returns a default value
    *
-   * @return the timings
+   * @param actor
+   *          the dag vertex id
+   * @param component
+   *          the operator definition id
+   * @return the timing or default
    */
-  public List<Timing> getTimings() {
-
-    return this.timings;
+  public long evaluateTimingOrDefault(final AbstractActor actor, final Component component) {
+    final String timingExpression = getTimingOrDefault(actor, component);
+    final long t;
+    if (timingExpression != null) {
+      t = ExpressionEvaluator.evaluate(actor, timingExpression);
+    } else {
+      t = DEFAULT_TASK_TIME;
+    }
+    return t;
   }
 
   /**

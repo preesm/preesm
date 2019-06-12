@@ -278,7 +278,7 @@ public class PreesmScenario {
     // If the algorithm or the architecture changes, timings and constraints
     // are no more valid (they depends on both algo and archi)
     if (algoPath != null || archiPath != null) {
-      this.timingmanager.getTimings().clear();
+      this.timingmanager.clear();
       this.constraintgroupmanager.update();
       this.papifyconfiggroupmanager.update();
     }

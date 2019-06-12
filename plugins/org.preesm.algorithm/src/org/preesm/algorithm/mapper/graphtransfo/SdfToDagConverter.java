@@ -54,6 +54,7 @@ import org.preesm.algorithm.mapper.model.MapperDAGEdge;
 import org.preesm.algorithm.mapper.model.MapperDAGVertex;
 import org.preesm.algorithm.mapper.model.MapperVertexFactory;
 import org.preesm.algorithm.mapper.model.property.EdgeInit;
+import org.preesm.algorithm.mapper.model.property.Timing;
 import org.preesm.algorithm.mapper.model.property.VertexInit;
 import org.preesm.algorithm.mapper.model.special.TransferVertex;
 import org.preesm.algorithm.model.dag.DAGEdge;
@@ -69,7 +70,6 @@ import org.preesm.model.pisdf.AbstractActor;
 import org.preesm.model.pisdf.AbstractVertex;
 import org.preesm.model.pisdf.PiGraph;
 import org.preesm.model.scenario.PreesmScenario;
-import org.preesm.model.scenario.Timing;
 import org.preesm.model.scenario.TimingManager;
 import org.preesm.model.slam.ComponentInstance;
 import org.preesm.model.slam.Design;
@@ -268,12 +268,12 @@ public class SdfToDagConverter {
           if (referencePiVertex instanceof AbstractActor) {
             final AbstractActor actor = ((AbstractActor) referencePiVertex);
             // info is set to the vertexPath of AbstractVertex
-            final Timing originalTiming = tm.getTimingOrDefault(actor, op.getComponent());
-            Timing copyTiming = null;
-            if (originalTiming.getTime() == TimingManager.DEFAULT_TASK_TIME) {
+            final long originalTiming = tm.evaluateTimingOrDefault(actor, op.getComponent());
+            final Timing copyTiming;
+            if (originalTiming == TimingManager.DEFAULT_TASK_TIME) {
               copyTiming = new Timing(op.getComponent(), actor);
             } else {
-              copyTiming = new Timing(op.getComponent(), actor, originalTiming.getTime());
+              copyTiming = new Timing(op.getComponent(), actor, originalTiming);
             }
             currentVertexInit.addTiming(copyTiming);
           } else {
