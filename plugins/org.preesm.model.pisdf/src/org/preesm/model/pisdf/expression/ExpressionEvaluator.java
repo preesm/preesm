@@ -40,7 +40,6 @@ import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import org.eclipse.emf.common.util.EList;
 import org.preesm.commons.math.ExpressionEvaluationException;
 import org.preesm.commons.math.JEPWrapper;
 import org.preesm.model.pisdf.AbstractActor;
@@ -49,7 +48,6 @@ import org.preesm.model.pisdf.DataPort;
 import org.preesm.model.pisdf.Delay;
 import org.preesm.model.pisdf.DelayActor;
 import org.preesm.model.pisdf.Expression;
-import org.preesm.model.pisdf.ExpressionHolder;
 import org.preesm.model.pisdf.ExpressionProxy;
 import org.preesm.model.pisdf.InterfaceActor;
 import org.preesm.model.pisdf.LongExpression;
@@ -66,17 +64,9 @@ import org.preesm.model.pisdf.util.PiMMSwitch;
  */
 public class ExpressionEvaluator extends PiMMSwitch<Long> {
 
-  /**
-   *
-   */
-  public static final long evaluate(final ExpressionHolder p, final String value) {
-    final Expression tmp = p.getExpression();
-    try {
-      p.setExpression(value);
-      return p.getExpression().evaluate();
-    } finally {
-      p.setExpression(tmp);
-    }
+  public static final long evaluate(final Parameterizable p, final String value) {
+    final Map<String, Double> lookupParameterValues = lookupParameterValues(p);
+    return JEPWrapper.evaluate(value, lookupParameterValues);
   }
 
   public static final long evaluate(final Expression expression) {
@@ -130,35 +120,14 @@ public class ExpressionEvaluator extends PiMMSwitch<Long> {
     }
   }
 
-  private static Map<String, Number> lookupParameterValues(final Expression expression) {
+  /**
+   *
+   */
+  public static Map<String, Number> lookupParameterValues(final Expression expression) {
     final Map<String, Number> result = new LinkedHashMap<>();
     final Parameterizable holder = expression.getHolder();
     if (holder != null) {
-      final EList<Parameter> inputParameters = holder.getInputParameters();
-      for (final Parameter param : inputParameters) {
-        final Expression valueExpression = param.getValueExpression();
-        final double value = valueExpression.evaluate();
-
-        if ((holder instanceof Parameter) || (holder instanceof Delay) || (holder instanceof InterfaceActor)
-            || (holder instanceof PeriodicElement)) {
-          result.put(param.getName(), value);
-        } else if (holder instanceof DataPort) {
-          final AbstractActor containingActor = ((DataPort) holder).getContainingActor();
-          if (containingActor instanceof InterfaceActor || containingActor instanceof DelayActor) {
-            result.put(param.getName(), value);
-          } else {
-            final List<
-                ConfigInputPort> inputPorts = containingActor.lookupConfigInputPortsConnectedWithParameter(param);
-            for (ConfigInputPort cip : inputPorts) {
-              final String name = cip.getName();
-              result.put(name, value);
-            }
-          }
-
-        } else {
-          throw new ExpressionEvaluationException("Could not compute proper parameter name");
-        }
-      }
+      result.putAll(lookupParameterValues(holder));
     }
     return result;
   }
@@ -166,18 +135,43 @@ public class ExpressionEvaluator extends PiMMSwitch<Long> {
   /**
    *
    */
-  public static final boolean canEvaluate(final ExpressionHolder p, final String value) {
-    if (value != null && !value.isEmpty()) {
-      final Expression tmp = p.getExpression();
-      try {
-        p.setExpression(value);
-        p.getExpression().evaluate();
-        return true;
-      } catch (final Exception e) {
-        return false;
-      } finally {
-        p.setExpression(tmp);
+  public static Map<String, Double> lookupParameterValues(final Parameterizable parameterizable) {
+    final Map<String, Double> res = new LinkedHashMap<>();
+    if (parameterizable != null) {
+      final List<Parameter> inputParameters = parameterizable.getInputParameters();
+      for (final Parameter param : inputParameters) {
+        final double evaluate = (double) param.getExpression().evaluate();
+        if ((parameterizable instanceof Parameter) || (parameterizable instanceof Delay)
+            || (parameterizable instanceof InterfaceActor) || (parameterizable instanceof PeriodicElement)) {
+          res.put(param.getName(), evaluate);
+        } else if (parameterizable instanceof DataPort) {
+          final AbstractActor containingActor = ((DataPort) parameterizable).getContainingActor();
+          if (containingActor instanceof InterfaceActor || containingActor instanceof DelayActor) {
+            res.put(param.getName(), evaluate);
+          } else {
+            final List<
+                ConfigInputPort> inputPorts = containingActor.lookupConfigInputPortsConnectedWithParameter(param);
+            for (ConfigInputPort cip : inputPorts) {
+              final String name = cip.getName();
+              res.put(name, evaluate);
+            }
+          }
+        } else {
+          throw new ExpressionEvaluationException("Could not compute proper parameter name");
+        }
       }
+    }
+    return res;
+  }
+
+  /**
+   *
+   */
+  public static final boolean canEvaluate(final Parameterizable p, final String value) {
+    if (value != null && !value.isEmpty()) {
+      final List<String> involvement = JEPWrapper.involvement(value);
+      final Map<String, Double> lookupParameterValues = lookupParameterValues(p);
+      return lookupParameterValues.keySet().containsAll(involvement);
     }
     return false;
   }
