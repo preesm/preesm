@@ -41,8 +41,6 @@ import org.eclipse.jface.viewers.CellEditor;
 import org.eclipse.jface.viewers.ICellModifier;
 import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.jface.viewers.TextCellEditor;
-import org.eclipse.jface.viewers.Viewer;
-import org.eclipse.jface.viewers.ViewerComparator;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.layout.GridData;
@@ -63,6 +61,7 @@ import org.eclipse.ui.forms.widgets.Section;
 import org.preesm.model.pisdf.Parameter;
 import org.preesm.model.scenario.PreesmScenario;
 import org.preesm.ui.scenario.editor.Messages;
+import org.preesm.ui.scenario.editor.utils.VertexLexicographicalComparator;
 
 /**
  * This page contains parameters informations of the {@link PreesmScenario}.
@@ -149,18 +148,7 @@ public class PiParametersPage extends FormPage implements IPropertyListener {
     // The content provider fills the tree
     this.tableViewer.setContentProvider(new PiParameterTableContentProvider());
     this.tableViewer.setLabelProvider(new PiParameterTableLabelProvider(table));
-    this.tableViewer.setComparator(new ViewerComparator() {
-      @Override
-      public int compare(final Viewer viewer, final Object e1, final Object e2) {
-        @SuppressWarnings("unchecked")
-        Entry<Parameter, String> ex1 = (Entry<Parameter, String>) e1;
-        @SuppressWarnings("unchecked")
-        Entry<Parameter, String> ex2 = (Entry<Parameter, String>) e2;
-
-        return ex1.getKey().getVertexPath().compareTo(ex2.getKey().getVertexPath());
-      }
-
-    });
+    this.tableViewer.setComparator(new VertexLexicographicalComparator());
     this.tableViewer.setInput(this.scenario);
 
     final GridData gd = new GridData(GridData.FILL_BOTH);

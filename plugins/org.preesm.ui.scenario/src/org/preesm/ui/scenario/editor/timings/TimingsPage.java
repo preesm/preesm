@@ -82,6 +82,7 @@ import org.preesm.model.scenario.serialize.PreesmAlgorithmListContentProvider;
 import org.preesm.model.slam.utils.DesignTools;
 import org.preesm.ui.scenario.editor.FileSelectionAdapter;
 import org.preesm.ui.scenario.editor.Messages;
+import org.preesm.ui.scenario.editor.utils.VertexLexicographicalComparator;
 
 /**
  * Timing editor within the implementation editor.
@@ -337,7 +338,7 @@ public class TimingsPage extends FormPage implements IPropertyListener {
 
     this.tableViewer = new TableViewer(tablecps,
         SWT.BORDER | SWT.H_SCROLL | SWT.V_SCROLL | SWT.MULTI | SWT.FULL_SELECTION);
-    tableViewer.setComparator(new TimingsLexicographicalComparator());
+    tableViewer.setComparator(new VertexLexicographicalComparator());
     final Table table = this.tableViewer.getTable();
     table.setLayout(new GridLayout());
     table.setLayoutData(new GridData(GridData.FILL_BOTH));
