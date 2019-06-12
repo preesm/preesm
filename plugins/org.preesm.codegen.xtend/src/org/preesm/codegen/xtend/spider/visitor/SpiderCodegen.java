@@ -472,7 +472,7 @@ public class SpiderCodegen {
   private boolean generatePapifyConfig(final PapifyConfigActor corePapifyConfigGroups,
       PapifyConfigManager papifyConfigManager, final AbstractActor actor,
       final HashMap<ArrayList<String>, Integer> uniqueEventSets, final Integer eventSetID) {
-    Map<String, List<PapiEvent>> configInfo = corePapifyConfigGroups.getPAPIEvents();
+    Map<String, List<PapiEvent>> configInfo = corePapifyConfigGroups.getActorEventMap();
 
     boolean eventMonitoring = false;
     boolean timingMonitoring = false;

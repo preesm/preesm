@@ -197,14 +197,14 @@ public class ScenarioWriter {
    */
   private void addPapifyConfigActor(final Element parent, final PapifyConfigActor config) {
 
-    if (config.getActor() != null && (config.getPAPIEvents() != null) && !config.getPAPIEvents().isEmpty()) {
+    if (config.getActor() != null && (config.getActorEventMap() != null) && !config.getActorEventMap().isEmpty()) {
       final Element papifyConfigElt = this.dom.createElement("papifyConfigActor");
       parent.appendChild(papifyConfigElt);
 
       final Element actorPath = this.dom.createElement("actorPath");
       papifyConfigElt.appendChild(actorPath);
       actorPath.setAttribute("actorPath", config.getActor().getVertexPath());
-      final Map<String, List<PapiEvent>> eventSets = config.getPAPIEvents();
+      final Map<String, List<PapiEvent>> eventSets = config.getActorEventMap();
       final Set<String> keys = eventSets.keySet();
       for (final String key : keys) {
         final List<PapiEvent> eventSet = eventSets.get(key);

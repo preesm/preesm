@@ -160,7 +160,7 @@ public class PapifyConfigActor {
    *
    * @return the PAPI events
    */
-  public Map<String, List<PapiEvent>> getPAPIEvents() {
+  public Map<String, List<PapiEvent>> getActorEventMap() {
     return this.actorEventMap;
   }
 

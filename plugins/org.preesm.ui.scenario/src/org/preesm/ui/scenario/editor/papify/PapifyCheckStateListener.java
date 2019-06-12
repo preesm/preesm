@@ -406,7 +406,7 @@ public class PapifyCheckStateListener implements ISDFCheckStateListener {
 
     for (PapifyConfigActor papiConfig : papiConfigs) {
       AbstractActor actorPath = papiConfig.getActor();
-      Map<String, List<PapiEvent>> actorEventMap = papiConfig.getPAPIEvents();
+      Map<String, List<PapiEvent>> actorEventMap = papiConfig.getActorEventMap();
 
       for (PapifyEventListTreeElement treeElement : this.elementList) {
         if (treeElement.actorPath.equals(actorPath)) {

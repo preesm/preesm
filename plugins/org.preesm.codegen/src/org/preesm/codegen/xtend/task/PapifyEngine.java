@@ -128,7 +128,7 @@ public class PapifyEngine {
       config = papifyConfig.getCorePapifyConfigGroupActor(vertex);
       finalName = PreesmCopyTracker.getOriginalSource(vertex).getVertexPath().substring(info.indexOf('/') + 1);
       finalName = finalName.replace('/', '_');
-      if (config != null && !config.getPAPIEvents().keySet().isEmpty()) {
+      if (config != null && !config.getActorEventMap().keySet().isEmpty()) {
         configPosition = "";
         Map<String,
             String> mapMonitorTiming = this.dag.getVertex(name).getPropertyBean().getValue(PAPIFY_MONITOR_TIMING);
@@ -137,22 +137,22 @@ public class PapifyEngine {
         }
         mapMonitorTiming.put(info, "No");
         this.dag.getVertex(name).getPropertyBean().setValue(PAPIFY_MONITOR_TIMING, mapMonitorTiming);
-        if (config.getPAPIEvents().containsKey("Timing")
-            && config.getPAPIEvents().get("Timing").contains(this.timingEvent)) {
+        if (config.getActorEventMap().containsKey("Timing")
+            && config.getActorEventMap().get("Timing").contains(this.timingEvent)) {
           mapMonitorTiming.put(info, "Yes");
           this.dag.getVertex(name).getPropertyBean().setValue(PAPIFY_MONITOR_TIMING, mapMonitorTiming);
         }
 
         // Check if the current monitoring has already been included
         counterConfigs = 0;
-        for (String compNewConfig : config.getPAPIEvents().keySet()) {
+        for (String compNewConfig : config.getActorEventMap().keySet()) {
           if (!compNewConfig.equals("Timing")) {
-            List<PapiEvent> eventSetNew = config.getPAPIEvents().get(compNewConfig);
+            List<PapiEvent> eventSetNew = config.getActorEventMap().get(compNewConfig);
             configAdded = false;
             for (PapifyConfigActor tmp : this.configSet) {
-              for (String compConfigTmp : tmp.getPAPIEvents().keySet()) {
+              for (String compConfigTmp : tmp.getActorEventMap().keySet()) {
                 if (!compConfigTmp.equals("Timing")) {
-                  List<PapiEvent> eventSetTmp = tmp.getPAPIEvents().get(compConfigTmp);
+                  List<PapiEvent> eventSetTmp = tmp.getActorEventMap().get(compConfigTmp);
                   if (eventSetTmp.equals(eventSetNew)) {
                     configAdded = true;
                     counterConfigs = counterConfigs + 1;
@@ -167,7 +167,7 @@ public class PapifyEngine {
             }
             if (!configAdded) {
               PapifyConfigActor actorConfigToAdd = new PapifyConfigActor(vertex);
-              actorConfigToAdd.addPAPIEventSet(compNewConfig, config.getPAPIEvents().get(compNewConfig));
+              actorConfigToAdd.addPAPIEventSet(compNewConfig, config.getActorEventMap().get(compNewConfig));
               this.configSet.add(actorConfigToAdd);
               counterConfigs = counterConfigs + 1;
               if (configPosition.equals("")) {
@@ -192,7 +192,7 @@ public class PapifyEngine {
         papifyConfigNumber.setComment("PAPIFY actor configs");
 
         // Get component
-        comp = config.getPAPIEvents().keySet();
+        comp = config.getActorEventMap().keySet();
         String eventNames = "";
         String compNames = "";
         includedEvents.clear();
@@ -207,7 +207,7 @@ public class PapifyEngine {
         this.dag.getVertex(name).getPropertyBean().setValue(PAPIFY_MONITOR_EVENTS, mapMonitorEvents);
         for (final String key : comp) {
           if (!key.equals("Timing")) {
-            events = config.getPAPIEvents().get(key);
+            events = config.getActorEventMap().get(key);
 
             for (PapiEvent singleEvent : events) {
               includedEvents.add(singleEvent);
