@@ -100,7 +100,7 @@ public class AlgorithmAndArchitectureScenarioNode extends AbstractScenarioImplem
     try {
       scenario = scenarioParser.parseXmlFile(file);
       piAlgorithm = scenario.getAlgorithm();
-      applyScenarioParameterValues(scenario, piAlgorithm);
+      applyScenarioParameterValues(scenario);
     } catch (FileNotFoundException | CoreException e) {
       throw new PreesmRuntimeException(e.getMessage());
     }
@@ -119,7 +119,7 @@ public class AlgorithmAndArchitectureScenarioNode extends AbstractScenarioImplem
     return outputs;
   }
 
-  private void applyScenarioParameterValues(final PreesmScenario scenario, final PiGraph piAlgorithm) {
+  private void applyScenarioParameterValues(final PreesmScenario scenario) {
     for (final Entry<Parameter, String> paramValue : scenario.getParameterValueManager().getParameterValues()
         .entrySet()) {
 
