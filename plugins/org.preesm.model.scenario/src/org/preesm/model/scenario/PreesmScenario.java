@@ -145,7 +145,7 @@ public class PreesmScenario {
   /**
    * Sets the architecture URL.
    */
-  public void setesign(final Design design) {
+  public void setDesign(final Design design) {
     this.design = design;
   }
 
@@ -238,8 +238,7 @@ public class PreesmScenario {
     if (archiPath != null) {
 
       // Extract the root object from the resource.
-      final Design design = SlamParser.parseSlamDesign(archiPath);
-      this.design = design;
+      this.design = SlamParser.parseSlamDesign(archiPath);
     }
     // If the algorithm changes, parameters or variables are no more valid
     // (they are set in the algorithm)

@@ -94,15 +94,6 @@ public class PapiComponent {
   private int                index;
   private List<PapiEventSet> eventSets;
 
-  /**
-   *
-   */
-  public PapiComponent(final String componentID, final String componentIndex, final String componentType) {
-    this.index = Integer.valueOf(componentIndex);
-    this.id = componentID;
-    this.type = PapiComponentType.parse(componentType);
-  }
-
   @Override
   public boolean equals(final Object comparer) {
 

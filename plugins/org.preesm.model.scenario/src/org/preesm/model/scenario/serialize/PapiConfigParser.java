@@ -37,13 +37,16 @@ package org.preesm.model.scenario.serialize;
 import java.io.File;
 import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.function.Consumer;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import org.preesm.commons.exceptions.PreesmRuntimeException;
 import org.preesm.model.scenario.papi.PapiComponent;
+import org.preesm.model.scenario.papi.PapiComponentType;
 import org.preesm.model.scenario.papi.PapiCpuID;
 import org.preesm.model.scenario.papi.PapiEvent;
 import org.preesm.model.scenario.papi.PapiEventInfo;
@@ -82,12 +85,12 @@ public class PapiConfigParser {
     }
   }
 
-  private PapiCpuID               cpuId;
-  private PapiHardware            hardware;
-  private List<PapiComponent>     components;
-  private List<PapiEvent>         events;
-  private List<PapiEventSet>      eventSets;
-  private List<PapiEventModifier> modifiers;
+  private PapiCpuID                  cpuId;
+  private PapiHardware               hardware;
+  private Map<String, PapiComponent> components;
+  private List<PapiEvent>            events;
+  private List<PapiEventSet>         eventSets;
+  private List<PapiEventModifier>    modifiers;
 
   /**
    * @return
@@ -98,9 +101,12 @@ public class PapiConfigParser {
     final Document document = openDocument(xmlConfigFile);
     final Element classElement = document.getDocumentElement();
 
-    this.components = new ArrayList<>();
+    this.components = new LinkedHashMap<>();
     visitChildrenSkippingTexts(classElement, this::switchRootChildren);
-    return new PapiEventInfo(this.hardware, this.components);
+    final PapiEventInfo papiEventInfo = new PapiEventInfo();
+    papiEventInfo.getComponents().putAll(this.components);
+    papiEventInfo.setHardware(this.hardware);
+    return papiEventInfo;
   }
 
   private final Document openDocument(final File xmlConfigFile) {
@@ -370,11 +376,15 @@ public class PapiConfigParser {
         .orElse(null);
     final String componentType = Optional.ofNullable(attributes.getNamedItem("type")).map(Node::getTextContent)
         .orElse(null);
-    final PapiComponent component = new PapiComponent(componentID, componentIndex, componentType);
+    final PapiComponent component = new PapiComponent();
+    component.setIndex(Integer.valueOf(componentIndex));
+    component.setId(componentID);
+    component.setType(PapiComponentType.parse(componentType));
+
     this.eventSets = new ArrayList<>();
     visitChildrenSkippingTexts(componentNode, this::switchComponentChildren);
     component.setEventSets(this.eventSets);
-    this.components.add(component);
+    this.components.put(componentID, component);
 
   }
 

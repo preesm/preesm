@@ -173,7 +173,7 @@ public class PapifyCheckStateListener implements ISDFCheckStateListener {
       PapiEvent event = null;
       boolean found = false;
       if (!timing) {
-        for (PapiComponent comp : papiData.getComponents()) {
+        for (PapiComponent comp : papiData.getComponents().values()) {
           for (PapiEventSet eventSet : comp.getEventSets()) {
             for (PapiEvent eventAux : eventSet.getEvents()) {
               if (eventAux.getModifiers().isEmpty() && eventAux.getName().equals(eventName)) {
@@ -251,7 +251,7 @@ public class PapifyCheckStateListener implements ISDFCheckStateListener {
       PapiEvent event = null;
       boolean found = false;
       if (!timing) {
-        for (PapiComponent comp : papiData.getComponents()) {
+        for (PapiComponent comp : papiData.getComponents().values()) {
           for (PapiEventSet eventSet : comp.getEventSets()) {
             for (PapiEvent eventAux : eventSet.getEvents()) {
               if (eventAux.getModifiers().isEmpty() && eventAux.getName().equals(eventName)) {

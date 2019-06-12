@@ -645,7 +645,7 @@ public class PapifyPage extends FormPage implements IPropertyListener {
     viewerColumnTiming.setEditingSupport(editingSupportTiming);
     this.checkStateListener.addEstatusSupport(editingSupportTiming);
 
-    for (PapiComponent oneComponent : this.papiEvents.getComponents()) {
+    for (PapiComponent oneComponent : this.papiEvents.getComponents().values()) {
       if (!oneComponent.getEventSets().isEmpty()) {
         for (PapiEventSet oneEventSet : oneComponent.getEventSets()) {
           for (PapiEvent oneEvent : oneEventSet.getEvents()) {

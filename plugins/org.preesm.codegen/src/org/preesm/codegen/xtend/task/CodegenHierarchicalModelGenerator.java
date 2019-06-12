@@ -98,6 +98,7 @@ import org.preesm.commons.exceptions.PreesmException;
 import org.preesm.commons.exceptions.PreesmRuntimeException;
 import org.preesm.commons.logger.PreesmLogger;
 import org.preesm.model.scenario.PreesmScenario;
+import org.preesm.model.scenario.papi.PapiComponent;
 import org.preesm.model.scenario.types.BufferAggregate;
 import org.preesm.model.scenario.types.BufferProperties;
 import org.preesm.model.scenario.types.DataType;
@@ -851,13 +852,14 @@ public class CodegenHierarchicalModelGenerator {
     ConstantString papifyComponentName = CodegenFactory.eINSTANCE.createConstantString();
     final String coreType = operatorBlock.getCoreType();
     final Component component = scenario.getDesign().getComponent(coreType);
-    if (this.scenario.getPapifyConfigManager().getCorePapifyConfigGroupPE(component) != null) {
-      for (String compType : this.scenario.getPapifyConfigManager().getCorePapifyConfigGroupPE(component)
-          .getPAPIComponentIDs()) {
+    final List<PapiComponent> corePapifyConfigGroupPE = this.scenario.getPapifyConfigManager()
+        .getCorePapifyConfigGroupPE(component);
+    if (corePapifyConfigGroupPE != null) {
+      for (final PapiComponent compType : corePapifyConfigGroupPE) {
         if (compsSupported.equals("")) {
-          compsSupported = compType;
+          compsSupported = compType.getId();
         } else {
-          compsSupported = compsSupported.concat(",").concat(compType);
+          compsSupported = compsSupported.concat(",").concat(compType.getId());
         }
       }
     } else {

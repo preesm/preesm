@@ -66,9 +66,9 @@ import org.preesm.model.pisdf.PiGraph;
 import org.preesm.model.pisdf.Port;
 import org.preesm.model.scenario.PapifyConfigManager;
 import org.preesm.model.scenario.PreesmScenario;
+import org.preesm.model.scenario.papi.PapiComponent;
 import org.preesm.model.scenario.papi.PapiEvent;
 import org.preesm.model.scenario.papi.PapifyConfigActor;
-import org.preesm.model.scenario.papi.PapifyConfigPE;
 import org.preesm.model.slam.ComponentInstance;
 import org.preesm.model.slam.Design;
 import org.preesm.model.slam.component.Component;
@@ -572,9 +572,9 @@ public class SpiderCodegen {
     for (Component coreType : this.coresFromCoreType.keySet()) {
       for (ComponentInstance compInst : this.coresFromCoreType.get(coreType)) {
         configAssociated = false;
-        PapifyConfigPE configType = papifyConfigManager.getCorePapifyConfigGroupPE(coreType);
-        for (String compType : configType.getPAPIComponentIDs()) {
-          if (!compType.equals("Timing") && compNames.contains(compType)) {
+        final List<PapiComponent> corePapifyConfigGroupPE = papifyConfigManager.getCorePapifyConfigGroupPE(coreType);
+        for (final PapiComponent compType : corePapifyConfigGroupPE) {
+          if (!compType.equals("Timing") && compNames.contains(compType.getId())) {
             configAssociated = true;
             append("\tconfigMap.insert(std::make_pair(\"LRT_" + this.coreIds.get(compInst) + "\", config_" + compType
                 + "));\n");

@@ -36,7 +36,11 @@
 package org.preesm.model.scenario.papi;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
 
 /**
  *
@@ -45,22 +49,18 @@ import java.util.List;
  */
 public class PapiEventInfo {
 
-  private final PapiHardware        hardware;
-  private final List<PapiComponent> components;
-
-  /**
-   *
-   */
-  public PapiEventInfo(final PapiHardware hardware, final List<PapiComponent> components) {
-    this.hardware = hardware;
-    this.components = components;
-  }
+  private PapiHardware                     hardware;
+  private final Map<String, PapiComponent> components = new LinkedHashMap<>();
 
   public PapiHardware getHardware() {
     return this.hardware;
   }
 
-  public List<PapiComponent> getComponents() {
+  public void setHardware(PapiHardware hardware) {
+    this.hardware = hardware;
+  }
+
+  public Map<String, PapiComponent> getComponents() {
     return this.components;
   }
 
@@ -68,45 +68,23 @@ public class PapiEventInfo {
    *
    */
   public PapiComponent getComponent(String id) {
-    for (final PapiComponent compAux : this.components) {
-      if (compAux.getId().equals(id)) {
-        return compAux;
-      }
-    }
-    return null;
+    return this.components.get(id);
   }
 
   /**
    *
    */
   public List<String> getComponentNames() {
-
-    boolean checkingEvents = false;
-    boolean componentAdded = false;
-    List<String> componentList = new ArrayList<>();
-
-    for (final PapiComponent compAux : this.components) {
-      for (final PapiEventSet eventSetAux : compAux.getEventSets()) {
-        checkingEvents = eventSetAux.getEvents().isEmpty();
-        if (!checkingEvents) {
-          componentAdded = true;
-        }
-      }
-      if (componentAdded) {
-        componentAdded = false;
-        componentList.add(compAux.getId());
-      }
-    }
-    return componentList;
+    return Collections.unmodifiableList(new ArrayList<>(this.components.keySet()));
   }
 
   @Override
   public String toString() {
     final StringBuilder b = new StringBuilder();
     b.append(String.format("<eventinfo>%n"));
-    b.append(this.hardware.toString());
-    for (final PapiComponent component : this.components) {
-      b.append(component.toString());
+    b.append(this.getHardware().toString());
+    for (final Entry<String, PapiComponent> component : this.components.entrySet()) {
+      b.append(component.getValue().toString());
     }
     b.append(String.format("</eventinfo>%n"));
     return b.toString();

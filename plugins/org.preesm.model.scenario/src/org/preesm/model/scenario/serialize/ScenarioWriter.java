@@ -55,7 +55,6 @@ import org.preesm.model.scenario.papi.PapiEvent;
 import org.preesm.model.scenario.papi.PapiEventModifier;
 import org.preesm.model.scenario.papi.PapiEventSet;
 import org.preesm.model.scenario.papi.PapifyConfigActor;
-import org.preesm.model.scenario.papi.PapifyConfigPE;
 import org.preesm.model.scenario.types.DataType;
 import org.preesm.model.scenario.types.VertexType;
 import org.preesm.model.slam.ComponentInstance;
@@ -183,8 +182,8 @@ public class ScenarioWriter {
     for (final PapifyConfigActor config : manager.getPapifyConfigGroupsActors()) {
       addPapifyConfigActor(papifyConfigs, config);
     }
-    for (final PapifyConfigPE config : manager.getPapifyConfigGroupsPEs()) {
-      addPapifyConfigPE(papifyConfigs, config);
+    for (final Entry<Component, List<PapiComponent>> config : manager.getPapifyConfigGroupsPEs().entrySet()) {
+      addPapifyConfigPE(papifyConfigs, config.getKey(), config.getValue());
     }
   }
 
@@ -231,18 +230,17 @@ public class ScenarioWriter {
    * @param value
    *          the value
    */
-  private void addPapifyConfigPE(final Element parent, final PapifyConfigPE config) {
-    if (config.getSlamComponent() != null && (config.getPAPIComponents() != null)
-        && !config.getPAPIComponents().isEmpty()) {
+  private void addPapifyConfigPE(final Element parent, final Component slamComponent,
+      final List<PapiComponent> papiComponents) {
+    if (slamComponent != null && (papiComponents != null) && !papiComponents.isEmpty()) {
       final Element papifyConfigElt = this.dom.createElement("papifyConfigPE");
       parent.appendChild(papifyConfigElt);
 
       final Element peType = this.dom.createElement("peType");
       papifyConfigElt.appendChild(peType);
-      peType.setAttribute("peType", config.getSlamComponent().getVlnv().getName());
-      final Set<PapiComponent> components = config.getPAPIComponents();
+      peType.setAttribute("peType", slamComponent.getVlnv().getName());
 
-      for (final PapiComponent component : components) {
+      for (final PapiComponent component : papiComponents) {
         final Element singleComponent = this.dom.createElement("PAPIComponent");
         peType.appendChild(singleComponent);
         addPapifyComponent(singleComponent, component);

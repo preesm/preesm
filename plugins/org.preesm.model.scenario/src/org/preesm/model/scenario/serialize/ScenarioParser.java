@@ -64,12 +64,12 @@ import org.preesm.model.scenario.MemCopySpeed;
 import org.preesm.model.scenario.PreesmScenario;
 import org.preesm.model.scenario.TimingManager;
 import org.preesm.model.scenario.papi.PapiComponent;
+import org.preesm.model.scenario.papi.PapiComponentType;
 import org.preesm.model.scenario.papi.PapiEvent;
 import org.preesm.model.scenario.papi.PapiEventModifier;
 import org.preesm.model.scenario.papi.PapiEventSet;
 import org.preesm.model.scenario.papi.PapiEventSetType;
 import org.preesm.model.scenario.papi.PapifyConfigActor;
-import org.preesm.model.scenario.papi.PapifyConfigPE;
 import org.preesm.model.scenario.types.DataType;
 import org.preesm.model.scenario.types.VertexType;
 import org.preesm.model.slam.ComponentInstance;
@@ -421,7 +421,7 @@ public class ScenarioParser {
    */
   private Design initializeArchitectureInformation(final String url) {
     final Design design = SlamParser.parseSlamDesign(url);
-    this.scenario.setesign(design);
+    this.scenario.setDesign(design);
     return design;
   }
 
@@ -512,8 +512,8 @@ public class ScenarioParser {
           final PapifyConfigActor pg = getPapifyConfigActor(elt);
           this.scenario.getPapifyConfigManager().addPapifyConfigActorGroup(pg);
         } else if (type.equals("papifyConfigPE")) {
-          final PapifyConfigPE pg = getPapifyConfigPE(elt);
-          this.scenario.getPapifyConfigManager().addPapifyConfigPEGroup(pg);
+          parsePapifyConfigPE(elt);
+
         }
       }
 
@@ -575,23 +575,22 @@ public class ScenarioParser {
    *          the papifyConfig group elt
    * @return the papifyConfig
    */
-  private PapifyConfigPE getPapifyConfigPE(final Element papifyConfigElt) {
+  private void parsePapifyConfigPE(final Element papifyConfigElt) {
 
-    PapifyConfigPE pc = null;
     Node node = papifyConfigElt.getFirstChild();
+
+    Component slamComponent = null;
+    final List<PapiComponent> list = new ArrayList<>();
 
     while (node != null) {
       if (node instanceof Element) {
         final Element elt = (Element) node;
         final String peType = elt.getAttribute("peType");
-        final Component component = this.scenario.getDesign().getComponent(peType);
-        pc = new PapifyConfigPE(component);
-        final Set<PapiComponent> components = getPAPIComponents(elt);
-        pc.addPAPIComponents(components);
+        slamComponent = this.scenario.getDesign().getComponent(peType);
+        parsePAPIComponents(elt, slamComponent);
       }
       node = node.getNextSibling();
     }
-    return pc;
   }
 
   /**
@@ -600,25 +599,21 @@ public class ScenarioParser {
    * @param componentsElt
    *          the PAPI components elt
    */
-  private Set<PapiComponent> getPAPIComponents(final Element componentsElt) {
+  private void parsePAPIComponents(final Element componentsElt, Component slamComponent) {
 
-    Set<PapiComponent> components = new LinkedHashSet<>();
     Node node = componentsElt.getFirstChild();
 
     while (node != null) {
-
       if (node instanceof Element) {
         final Element elt = (Element) node;
         final String type = elt.getTagName();
         if (type.equals("PAPIComponent")) {
-          final PapiComponent cg = getPapifyComponent(elt);
-          components.add(cg);
+          parsePapifyComponent(elt, slamComponent);
         }
       }
 
       node = node.getNextSibling();
     }
-    return components;
   }
 
   /**
@@ -628,14 +623,16 @@ public class ScenarioParser {
    *          the papi component elt
    * @return the papi component
    */
-  private PapiComponent getPapifyComponent(final Element papifyComponentElt) {
+  private void parsePapifyComponent(final Element papifyComponentElt, Component slamComponent) {
 
-    PapiComponent component = null;
     final String componentId = papifyComponentElt.getAttribute("componentId");
     final String componentIndex = papifyComponentElt.getAttribute("componentIndex");
     final String componentType = papifyComponentElt.getAttribute("componentType");
 
-    component = new PapiComponent(componentId, componentIndex, componentType);
+    final PapiComponent component = new PapiComponent();
+    component.setIndex(Integer.valueOf(componentIndex));
+    component.setId(componentId);
+    component.setType(PapiComponentType.parse(componentType));
 
     final List<PapiEventSet> eventSetList = new ArrayList<>();
 
@@ -654,7 +651,9 @@ public class ScenarioParser {
       node = node.getNextSibling();
     }
     component.setEventSets(eventSetList);
-    return component;
+
+    this.scenario.getPapifyConfigManager().addComponent(slamComponent, component);
+
   }
 
   /**

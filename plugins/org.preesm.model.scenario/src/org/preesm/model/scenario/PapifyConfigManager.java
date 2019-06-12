@@ -35,14 +35,19 @@
  */
 package org.preesm.model.scenario;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
 import org.preesm.commons.model.PreesmCopyTracker;
 import org.preesm.model.pisdf.AbstractActor;
 import org.preesm.model.scenario.papi.PapiComponent;
 import org.preesm.model.scenario.papi.PapiEventInfo;
 import org.preesm.model.scenario.papi.PapifyConfigActor;
-import org.preesm.model.scenario.papi.PapifyConfigPE;
 import org.preesm.model.slam.component.Component;
 
 /**
@@ -55,9 +60,9 @@ public class PapifyConfigManager {
   private PapiEventInfo papiData = null;
 
   /** List of all PapifyConfig groups for Actors. */
-  private final Set<PapifyConfigActor> papifyConfigGroupsActors;
+  private final Set<PapifyConfigActor>              papifyConfigGroupsActors;
   /** List of all PapifyConfig groups for PEs. */
-  private final Set<PapifyConfigPE>    papifyConfigGroupsPEs;
+  private final Map<Component, List<PapiComponent>> papifyConfigGroupsPEs;
 
   /** Path to a file containing constraints. */
   private String xmlFileURL = "";
@@ -70,7 +75,7 @@ public class PapifyConfigManager {
   public PapifyConfigManager(final PreesmScenario preesmScenario) {
     this.preesmScenario = preesmScenario;
     this.papifyConfigGroupsActors = new LinkedHashSet<>();
-    this.papifyConfigGroupsPEs = new LinkedHashSet<>();
+    this.papifyConfigGroupsPEs = new LinkedHashMap<>();
   }
 
   /**
@@ -108,15 +113,12 @@ public class PapifyConfigManager {
 
   /**
    * Adds a PapifyConfigPE group.
-   *
-   * @param pg
-   *          the pg
    */
-  public void addPapifyConfigPEGroup(final PapifyConfigPE pg) {
-
-    if (!this.papifyConfigGroupsPEs.contains(pg)) {
-      this.papifyConfigGroupsPEs.add(pg);
+  public void addPapifyConfigPEGroup(final Component slamComponent, List<PapiComponent> papiComponents) {
+    if (!this.papifyConfigGroupsPEs.containsKey(slamComponent)) {
+      this.papifyConfigGroupsPEs.put(slamComponent, new ArrayList<>());
     }
+    this.papifyConfigGroupsPEs.get(slamComponent).addAll(papiComponents);
   }
 
   /**
@@ -128,17 +130,7 @@ public class PapifyConfigManager {
    *          the PAPI component
    */
   public void addComponent(final Component slamComponent, final PapiComponent papiComponent) {
-
-    final PapifyConfigPE pgSet = getCorePapifyConfigGroupPE(slamComponent);
-
-    if (pgSet == null) {
-      final PapifyConfigPE pg = new PapifyConfigPE(slamComponent);
-      pg.addPAPIComponent(papiComponent);
-      this.papifyConfigGroupsPEs.add(pg);
-    } else {
-      pgSet.addPAPIComponent(papiComponent);
-    }
-
+    this.addPapifyConfigPEGroup(slamComponent, Arrays.asList(papiComponent));
   }
 
   /**
@@ -147,7 +139,6 @@ public class PapifyConfigManager {
    * @return the PapifyConfigActors groups
    */
   public Set<PapifyConfigActor> getPapifyConfigGroupsActors() {
-
     return this.papifyConfigGroupsActors;
   }
 
@@ -156,8 +147,7 @@ public class PapifyConfigManager {
    *
    * @return the PapifyConfigPE groups
    */
-  public Set<PapifyConfigPE> getPapifyConfigGroupsPEs() {
-
+  public Map<Component, List<PapiComponent>> getPapifyConfigGroupsPEs() {
     return this.papifyConfigGroupsPEs;
   }
 
@@ -187,16 +177,11 @@ public class PapifyConfigManager {
    *          the op id
    * @return the op PapifyConfigActor groups
    */
-  public PapifyConfigPE getCorePapifyConfigGroupPE(final Component slamComponent) {
-    PapifyConfigPE papifyConfigGroup = null;
-
-    for (final PapifyConfigPE pg : this.papifyConfigGroupsPEs) {
-      if (pg.isSlamComponent(slamComponent)) {
-        papifyConfigGroup = pg;
-      }
+  public List<PapiComponent> getCorePapifyConfigGroupPE(final Component slamComponent) {
+    if (!this.papifyConfigGroupsPEs.containsKey(slamComponent)) {
+      this.papifyConfigGroupsPEs.put(slamComponent, new ArrayList<>());
     }
-
-    return papifyConfigGroup;
+    return this.papifyConfigGroupsPEs.get(slamComponent);
   }
 
   /**
@@ -246,7 +231,7 @@ public class PapifyConfigManager {
     for (final PapifyConfigActor pg : this.papifyConfigGroupsActors) {
       s.append(pg.toString());
     }
-    for (final PapifyConfigPE pg : this.papifyConfigGroupsPEs) {
+    for (final Entry<Component, List<PapiComponent>> pg : this.papifyConfigGroupsPEs.entrySet()) {
       s.append(pg.toString());
     }
 

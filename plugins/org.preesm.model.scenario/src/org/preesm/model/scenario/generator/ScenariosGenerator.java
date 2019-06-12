@@ -217,7 +217,7 @@ public class ScenariosGenerator {
     // Set algorithm and architecture
 
     final Design archi = SlamParser.parseSlamDesign(archiURL);
-    scenario.setesign(archi);
+    scenario.setDesign(archi);
 
     final PiGraph piGraph = PiParser.getPiGraphWithReconnection(algoURL);
     scenario.setAlgorithm(piGraph);
