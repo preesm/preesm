@@ -51,7 +51,6 @@ import org.preesm.model.scenario.PreesmScenario;
 import org.preesm.model.slam.ComponentInstance;
 import org.preesm.model.slam.Design;
 import org.preesm.model.slam.component.ComNode;
-import org.preesm.model.slam.utils.DesignTools;
 
 /**
  * Simulates an architecture having as many cores as necessary to execute one operation on one core. All core have the
@@ -149,7 +148,7 @@ public class InfiniteHomogeneousAbc extends LatencyAbc {
      *
      * As we have an infinite homogeneous architecture, each communication is done through the unique type of medium
      */
-    if (effectiveOp == DesignTools.NO_COMPONENT_INSTANCE) {
+    if (effectiveOp == null) {
       PreesmLogger.getLogger().severe("implementation of " + vertex.getName() + " failed. No operator was assigned.");
 
       vertex.getTiming().setCost(0);

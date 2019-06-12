@@ -57,7 +57,6 @@ import org.preesm.model.pisdf.PiGraph;
 import org.preesm.model.scenario.types.ImplementationPropertyNames;
 import org.preesm.model.slam.ComponentInstance;
 import org.preesm.model.slam.component.Operator;
-import org.preesm.model.slam.utils.DesignTools;
 
 /**
  * Represents a vertex in a DAG of type {@link MapperDAG} used in the mapper.
@@ -86,7 +85,7 @@ public class MapperDAGVertex extends DAGVertex {
    */
   public MapperDAGVertex(final org.preesm.model.pisdf.AbstractVertex referencePiVertex) {
     this("default", "default", null, referencePiVertex);
-    this.effectiveComponent = DesignTools.NO_COMPONENT_INSTANCE;
+    this.effectiveComponent = null;
   }
 
   /**
@@ -121,7 +120,7 @@ public class MapperDAGVertex extends DAGVertex {
     setName(name);
     getPropertyBean().setValue(MapperDAGVertex.INITIAL_PROPERTY, new VertexInit());
     getInit().setParentVertex(this);
-    this.effectiveComponent = DesignTools.NO_COMPONENT_INSTANCE;
+    this.effectiveComponent = null;
   }
 
   /**
@@ -368,7 +367,7 @@ public class MapperDAGVertex extends DAGVertex {
     if ((this.effectiveComponent != null) && (this.effectiveComponent.getComponent() instanceof Operator)) {
       return this.effectiveComponent;
     } else {
-      return DesignTools.NO_COMPONENT_INSTANCE;
+      return null;
     }
   }
 
@@ -378,7 +377,7 @@ public class MapperDAGVertex extends DAGVertex {
    * @return true, if successful
    */
   public boolean hasEffectiveOperator() {
-    return getEffectiveOperator() != DesignTools.NO_COMPONENT_INSTANCE;
+    return getEffectiveOperator() != null;
   }
 
   /**
@@ -406,7 +405,7 @@ public class MapperDAGVertex extends DAGVertex {
    * @return true, if successful
    */
   public boolean hasEffectiveComponent() {
-    return getEffectiveComponent() != DesignTools.NO_COMPONENT_INSTANCE;
+    return getEffectiveComponent() != null;
   }
 
   /**

@@ -58,7 +58,6 @@ import org.preesm.model.pisdf.AbstractActor;
 import org.preesm.model.pisdf.AbstractVertex;
 import org.preesm.model.pisdf.PiGraph;
 import org.preesm.model.scenario.PreesmScenario;
-import org.preesm.model.scenario.Timing;
 import org.preesm.model.slam.component.Component;
 
 /**
@@ -167,7 +166,7 @@ public class ExcelTimingParser {
    *
    * @param w
    *          the w
-   * @param vertexName
+   * @param actor
    *          the vertex name
    * @param opDefIds
    *          the op def ids
@@ -176,15 +175,15 @@ public class ExcelTimingParser {
    * @param missingOperatorTypes
    *          the missing operator types
    */
-  private void parseTimingForVertex(final Workbook w, final AbstractActor vertexName, final List<Component> opDefIds,
+  private void parseTimingForVertex(final Workbook w, final AbstractActor actor, final List<Component> opDefIds,
       final List<AbstractVertex> missingVertices, final List<Component> missingOperatorTypes) {
     // For each kind of processing elements, we look for a timing for given
     // vertex
-    for (final Component opDefId : opDefIds) {
-      if (opDefId != null && vertexName != null) {
+    for (final Component component : opDefIds) {
+      if (component != null && actor != null) {
         // Get row and column for the timing we are looking for
-        final Cell vertexCell = w.getSheet(0).findCell(vertexName.getVertexPath());
-        final Cell operatorCell = w.getSheet(0).findCell(opDefId.getVlnv().getName());
+        final Cell vertexCell = w.getSheet(0).findCell(actor.getVertexPath());
+        final Cell operatorCell = w.getSheet(0).findCell(component.getVlnv().getName());
 
         if ((vertexCell != null) && (operatorCell != null)) {
           // Get the cell containing the timing
@@ -192,31 +191,32 @@ public class ExcelTimingParser {
 
           if (timingCell.getType().equals(CellType.NUMBER) || timingCell.getType().equals(CellType.NUMBER_FORMULA)) {
 
-            String stringTiming = timingCell.getContents();
+            final String expression = timingCell.getContents();
+            String stringTiming = expression;
             // Removing useless characters (spaces...)
             stringTiming = stringTiming.replaceAll(" ", "");
 
             try {
-              final Timing timing = new Timing(opDefId, vertexName, Long.valueOf(timingCell.getContents()));
-
-              this.scenario.getTimingManager().addTiming(timing);
-
-              PreesmLogger.getLogger().log(Level.INFO, "Importing timing: " + timing.toString());
+              this.scenario.getTimingManager().setTiming(actor, component, expression);
+              final String msg = "Importing timing: " + actor.getVertexPath() + " on " + component.getVlnv().getName()
+                  + " takes " + expression;
+              PreesmLogger.getLogger().log(Level.INFO, msg);
             } catch (final NumberFormatException e) {
-              final String message = "Problem importing timing of " + vertexName + " on " + opDefId
+              final String message = "Problem importing timing of " + actor + " on " + component
                   + ". Integer with no space or special character needed. Be careful on the special number formats.";
               throw new PreesmRuntimeException(message);
 
             }
           }
         } else {
-          if ((vertexCell == null) && !missingVertices.contains(vertexName)) {
+          if ((vertexCell == null) && !missingVertices.contains(actor)) {
             PreesmLogger.getLogger().log(Level.WARNING,
-                "No line found in excel sheet for vertex: " + vertexName.getVertexPath());
-            missingVertices.add(vertexName);
-          } else if ((operatorCell == null) && !missingOperatorTypes.contains(opDefId)) {
-            PreesmLogger.getLogger().log(Level.WARNING, "No column found in excel sheet for operator type: " + opDefId);
-            missingOperatorTypes.add(opDefId);
+                "No line found in excel sheet for vertex: " + actor.getVertexPath());
+            missingVertices.add(actor);
+          } else if ((operatorCell == null) && !missingOperatorTypes.contains(component)) {
+            PreesmLogger.getLogger().log(Level.WARNING,
+                "No column found in excel sheet for operator type: " + component);
+            missingOperatorTypes.add(component);
           }
         }
       }

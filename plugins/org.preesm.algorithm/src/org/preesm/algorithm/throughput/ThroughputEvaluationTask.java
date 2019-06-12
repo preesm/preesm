@@ -185,8 +185,6 @@ public class ThroughputEvaluationTask extends AbstractTaskImplementation {
    */
   private boolean init(final SDFGraph inputGraph, final PreesmScenario scenario) {
     // test the inputs
-    // TestPlugin.start(null, null);
-
     // check the consistency by computing the RV of the graph
     boolean deadlockFree = IBSDFConsistency.computeRV(inputGraph);
 
@@ -198,10 +196,9 @@ public class ThroughputEvaluationTask extends AbstractTaskImplementation {
         if (actor.getKind() == "vertex") {
           if (actor.getGraphDescription() == null) {
             // if atomic actor then copy the duration indicated in the scenario
-            final double duration = scenario.getTimingManager()
-                .getTimingOrDefault((AbstractActor) actor.getReferencePiMMVertex(),
-                    scenario.getSimulationManager().getMainOperator().getComponent())
-                .getTime();
+            final double duration = scenario.getTimingManager().evaluateTimingOrDefault(
+                (AbstractActor) actor.getReferencePiMMVertex(),
+                scenario.getSimulationManager().getMainOperator().getComponent());
             actor.setPropertyValue("duration", duration);
           } else {
             // if hierarchical actor then as default the duration is 1

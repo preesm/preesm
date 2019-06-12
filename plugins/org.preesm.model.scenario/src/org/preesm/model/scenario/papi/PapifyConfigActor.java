@@ -72,11 +72,11 @@ public class PapifyConfigActor {
   /**
    * Adds the actorPath.
    *
-   * @param actorPath
+   * @param actor
    *          the actor instance
    */
-  public void addActorPath(final AbstractActor actorPath) {
-    this.actor = actorPath;
+  public void setActor(final AbstractActor actor) {
+    this.actor = actor;
 
   }
 
@@ -151,8 +151,8 @@ public class PapifyConfigActor {
    *
    * @return the actor path
    */
-  public AbstractActor getActorPath() {
-    return (this.actor);
+  public AbstractActor getActor() {
+    return this.actor;
   }
 
   /**
@@ -167,13 +167,12 @@ public class PapifyConfigActor {
   /**
    * Checks for Actor path.
    *
-   * @param actorPath
+   * @param actor
    *          the actor path
    * @return true, if successful
    */
-  public boolean isActorPath(final AbstractActor actorPath) {
-
-    return actorPath.equals(this.actor);
+  public boolean isActor(final AbstractActor actor) {
+    return actor.equals(this.actor);
   }
 
   /**
@@ -203,7 +202,7 @@ public class PapifyConfigActor {
 
     if (comparer instanceof PapifyConfigActor) {
       final PapifyConfigActor tester = (PapifyConfigActor) comparer;
-      if (this.actor.equals(tester.getActorPath())) {
+      if (this.actor.equals(tester.getActor())) {
         decision = true;
       }
     }

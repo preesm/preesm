@@ -15,7 +15,8 @@ Require-Bundle: org.eclipse.core.runtime,
  org.eclipse.emf.ecore.xcore.lib,
  org.preesm.model.slam;visibility:=reexport,
  org.preesm.model.pisdf;visibility:=reexport,
- net.sourceforge.jexcelapi.jxl;bundle-version="2.6.10"
+ net.sourceforge.jexcelapi.jxl;bundle-version="2.6.10",
+ org.apache.commons.lang3;bundle-version="3.8.1"
 Bundle-ActivationPolicy: lazy
 Bundle-Vendor: IETR / INSA Rennes - VAADER
 Export-Package: org.preesm.model.scenario,

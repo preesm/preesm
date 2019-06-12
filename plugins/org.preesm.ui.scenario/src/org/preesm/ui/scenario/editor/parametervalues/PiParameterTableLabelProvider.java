@@ -37,6 +37,8 @@
 package org.preesm.ui.scenario.editor.parametervalues;
 
 import java.net.URL;
+import java.util.Map.Entry;
+import java.util.stream.Collectors;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.jface.viewers.ITableColorProvider;
 import org.eclipse.jface.viewers.ITableLabelProvider;
@@ -45,8 +47,8 @@ import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Table;
 import org.preesm.commons.files.PreesmResourcesHelper;
-import org.preesm.model.scenario.ParameterValue;
-import org.preesm.model.scenario.ParameterValue.ParameterType;
+import org.preesm.model.pisdf.Parameter;
+import org.preesm.model.pisdf.expression.ExpressionEvaluator;
 import org.preesm.ui.PreesmUIPlugin;
 
 /**
@@ -101,12 +103,18 @@ public class PiParameterTableLabelProvider extends LabelProvider implements ITab
    */
   @Override
   public Image getColumnImage(final Object element, final int columnIndex) {
-    final ParameterValue paramValue = ((ParameterValue) element);
-    if (columnIndex == 4) { // Expression Column
-      if (paramValue.isValid()) {
+    @SuppressWarnings("unchecked")
+    final Entry<Parameter, String> paramValue = ((Entry<Parameter, String>) element);
+    if (columnIndex == 5) { // Expression Value Column
+      final String value = paramValue.getValue();
+      if (paramValue.getKey().isConfigurable()) {
         return this.imageOk;
       } else {
-        return this.imageError;
+        if (ExpressionEvaluator.canEvaluate(paramValue.getKey(), value)) {
+          return this.imageOk;
+        } else {
+          return this.imageError;
+        }
       }
     }
     return null;
@@ -119,29 +127,31 @@ public class PiParameterTableLabelProvider extends LabelProvider implements ITab
    */
   @Override
   public String getColumnText(final Object element, final int columnIndex) {
-    final ParameterValue paramValue = ((ParameterValue) element);
+    @SuppressWarnings("unchecked")
+    final Entry<Parameter, String> paramValue = ((Entry<Parameter, String>) element);
     switch (columnIndex) {
-      case 0: // Actors Column
-        return paramValue.getName();
-      case 1: // Path Column
-        return paramValue.getParameter().getContainingPiGraph().getName();
-      case 2: // Type Column
-        return paramValue.getType().toString();
-      case 3: // Variables Column
-        if (paramValue.getType() == ParameterType.PARAMETER_DEPENDENT) {
-          return paramValue.getInputParameters().toString();
+      case 0: // Paremeter path
+        return paramValue.getKey().getVertexPath();
+      case 1: // Type Column
+        return paramValue.getKey().isLocallyStatic() ? "STATIC" : "DYNAMIC";
+      case 2: // Input Parameter Column
+        return paramValue.getKey().getInputParameters().stream().map(Parameter::getName).collect(Collectors.toList())
+            .toString();
+      case 3: // Graph Expression Column
+        return paramValue.getKey().getExpression().getExpressionAsString();
+      case 4: // Override Expression Column
+        if (paramValue.getKey().isLocallyStatic()) {
+          return paramValue.getValue();
         } else {
-          return null;
+          return " - ";
         }
-      case 4: // Expression Column
-        if (paramValue.getType() == ParameterType.PARAMETER_DEPENDENT) {
-          return paramValue.getExpression();
-        } else if (paramValue.getType() == ParameterType.INDEPENDENT) {
-          return String.valueOf(paramValue.getValue());
-        } else if (paramValue.getType() == ParameterType.ACTOR_DEPENDENT) {
-          return paramValue.getValues().toString();
+      case 5: // Expression Value Column
+        if (paramValue.getKey().isLocallyStatic()
+            && ExpressionEvaluator.canEvaluate(paramValue.getKey(), paramValue.getValue())) {
+          return Long.toString(ExpressionEvaluator.evaluate(paramValue.getKey(), paramValue.getValue()));
+        } else {
+          return paramValue.getValue();
         }
-        return null;
       default:
     }
     return null;
@@ -164,15 +174,22 @@ public class PiParameterTableLabelProvider extends LabelProvider implements ITab
    */
   @Override
   public Color getBackground(final Object element, final int columnIndex) {
-    final ParameterValue paramValue = ((ParameterValue) element);
+    @SuppressWarnings("unchecked")
+    final Entry<Parameter, String> paramValue = ((Entry<Parameter, String>) element);
     switch (columnIndex) {
       case 0: // Actors Column
       case 1: // Path Column
       case 2: // Type Column
-      case 4: // Expression Column
         return this.table.getBackground();
-      case 3: // Variables Column
-        if (paramValue.getType() == ParameterType.ACTOR_DEPENDENT) {
+      case 3: // Expression Column
+        if (paramValue.getValue() != null && !paramValue.getValue().isEmpty()) {
+          return this.table.getBackground();
+        } else {
+          return new Color(this.table.getDisplay(), 200, 200, 200);
+        }
+      case 4:
+      case 5: // Value Column
+        if (paramValue.getKey().isLocallyStatic()) {
           return this.table.getBackground();
         } else {
           return new Color(this.table.getDisplay(), 200, 200, 200);

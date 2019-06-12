@@ -42,14 +42,19 @@
 package org.preesm.model.scenario;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
+import org.apache.commons.lang3.tuple.Triple;
 import org.preesm.commons.model.PreesmCopyTracker;
 import org.preesm.model.pisdf.AbstractActor;
+import org.preesm.model.pisdf.expression.ExpressionEvaluator;
 import org.preesm.model.scenario.serialize.CsvTimingParser;
 import org.preesm.model.scenario.serialize.ExcelTimingParser;
 import org.preesm.model.slam.component.Component;
+import org.preesm.model.slam.utils.DesignTools;
 
 /**
  * Manager of the graphs timings.
@@ -58,14 +63,20 @@ import org.preesm.model.slam.component.Component;
  */
 public class TimingManager {
 
+  /** The Constant DEFAULT_TASK_TIME. */
+  public static final long DEFAULT_TASK_TIME = 100;
+
+  /** The Constant DEFAULT_SPECIAL_VERTEX_TIME. */
+  public static final long DEFAULT_SPECIAL_VERTEX_TIME = 10;
+
   /** List of all timings. */
-  private final List<Timing> timings;
+  private final Map<AbstractActor, Map<Component, String>> actorTimings = new LinkedHashMap<>();
 
   /** Path to a file containing timings. */
   private String excelFileURL = "";
 
   /** Storing setup time and speed of memcpy for each type of operator. */
-  private final Map<Component, MemCopySpeed> memcpySpeeds;
+  private final Map<Component, MemCopySpeed> memcpySpeeds = new LinkedHashMap<>();
 
   /** Default value for a memcpy setup time. */
   private static final long DEFAULTMEMCPYSETUPTIME = 1;
@@ -80,116 +91,121 @@ public class TimingManager {
    */
   public TimingManager(final PreesmScenario preesmScenario) {
     this.preesmScenario = preesmScenario;
-    this.timings = new ArrayList<>();
-    this.memcpySpeeds = new LinkedHashMap<>();
+  }
+
+  public void clear() {
+    this.memcpySpeeds.clear();
+    this.actorTimings.clear();
   }
 
   /**
    * Adds the timing.
    *
-   * @param newt
-   *          the newt
-   * @return the timing
-   */
-  public Timing addTiming(final Timing newt) {
-
-    for (final Timing timing : this.timings) {
-      if (timing.equals(newt)) {
-        timing.setTime(newt.getTime());
-        return timing;
-      }
-    }
-
-    this.timings.add(newt);
-    return newt;
-  }
-
-  /**
-   * Adds the timing.
-   *
-   * @param dagVertexId
+   * @param actor
    *          the dag vertex id
-   * @param operatorDefinitionId
+   * @param component
    *          the operator definition id
-   * @return the timing
    */
-  public Timing addTiming(final AbstractActor dagVertexId, final Component operatorDefinitionId) {
-
-    final Timing newt = new Timing(operatorDefinitionId, dagVertexId);
-    for (final Timing timing : this.timings) {
-      if (timing.equals(newt)) {
-        return timing;
-      }
-    }
-
-    this.timings.add(newt);
-    return newt;
+  public void addDefaultTiming(final AbstractActor actor, final Component component) {
+    setTiming(actor, component, DEFAULT_TASK_TIME);
   }
 
   /**
    * Sets the timing.
    *
-   * @param dagVertexId
+   * @param actor
    *          the dag vertex id
-   * @param operatorDefinitionId
+   * @param component
    *          the operator definition id
    * @param time
    *          the time
    */
-  public void setTiming(final AbstractActor dagVertexId, final Component operatorDefinitionId, final long time) {
-    addTiming(dagVertexId, operatorDefinitionId).setTime(time);
+  public void setTiming(final AbstractActor actor, final Component component, final long time) {
+    setTiming(actor, component, Long.toString(time));
   }
 
   /**
    * Sets the timing.
    *
-   * @param dagVertexId
+   * @param actor
    *          the dag vertex id
-   * @param operatorDefinitionId
+   * @param component
    *          the operator definition id
    * @param value
    *          the value
    */
-  public void setTiming(final AbstractActor dagVertexId, final Component operatorDefinitionId, final String value) {
-    addTiming(dagVertexId, operatorDefinitionId).setStringValue(value);
+  public void setTiming(final AbstractActor actor, final Component component, final String value) {
+    if (!this.actorTimings.containsKey(actor)) {
+      this.actorTimings.put(actor, new LinkedHashMap<>());
+    }
+    this.actorTimings.get(actor).put(component, value);
+  }
+
+  /**
+   *
+   */
+  public List<Triple<AbstractActor, Component, String>> exportTimings() {
+    final List<Triple<AbstractActor, Component, String>> res = new ArrayList<>();
+    for (final Entry<AbstractActor, Map<Component, String>> actorEntry : this.actorTimings.entrySet()) {
+      for (Entry<Component, String> timingEntry : actorEntry.getValue().entrySet()) {
+        res.add(Triple.of(actorEntry.getKey(), timingEntry.getKey(), timingEntry.getValue()));
+      }
+    }
+    return res;
+  }
+
+  /**
+   *
+   */
+  public Map<Component, String> listTimings(final AbstractActor actor) {
+    if (this.actorTimings.containsKey(actor)) {
+      return Collections.unmodifiableMap(this.actorTimings.get(actor));
+    }
+    return Collections.unmodifiableMap(Collections.emptyMap());
   }
 
   /**
    * Looks for a timing entered in scenario editor. If there is none, returns a default value
    *
-   * @param dagVertexId
+   * @param actor
    *          the dag vertex id
-   * @param operatorDefinitionId
+   * @param component
    *          the operator definition id
    * @return the timing or default
    */
-  public Timing getTimingOrDefault(final AbstractActor dagVertexId, final Component operatorDefinitionId) {
-    Timing val = null;
-
-    final AbstractActor originalSource = PreesmCopyTracker.getOriginalSource(dagVertexId);
-
-    for (final Timing timing : this.timings) {
-      if (timing.getVertexId().equals(originalSource)
-          && timing.getOperatorDefinitionId().equals(operatorDefinitionId)) {
-        val = timing;
+  public String getTimingOrDefault(final AbstractActor actor, final Component component) {
+    if (this.actorTimings.containsKey(actor)) {
+      final Map<Component, String> map = this.actorTimings.get(actor);
+      if (map.containsKey(component)) {
+        return map.get(component);
+      }
+    } else {
+      final AbstractActor source = PreesmCopyTracker.getSource(actor);
+      if (source != actor) {
+        return getTimingOrDefault(source, component);
       }
     }
-
-    if (val == null) {
-      val = new Timing(operatorDefinitionId, dagVertexId);
-    }
-
-    return val;
+    return Long.toString(DEFAULT_TASK_TIME);
   }
 
   /**
-   * Gets the timings.
+   * Looks for a timing entered in scenario editor. If there is none, returns a default value
    *
-   * @return the timings
+   * @param actor
+   *          the dag vertex id
+   * @param component
+   *          the operator definition id
+   * @return the timing or default
    */
-  public List<Timing> getTimings() {
-
-    return this.timings;
+  public long evaluateTimingOrDefault(final AbstractActor actor, final Component component) {
+    final String timingExpression = getTimingOrDefault(actor, component);
+    final long t;
+    if (timingExpression != null) {
+      t = ExpressionEvaluator.evaluate(actor, timingExpression);
+    } else {
+      t = DEFAULT_TASK_TIME;
+    }
+    return t;
   }
 
   /**
@@ -226,10 +242,10 @@ public class TimingManager {
         final String[] fileExt = this.excelFileURL.split("\\.");
         switch (fileExt[fileExt.length - 1]) {
           case "xls":
-            excelParser.parse(this.excelFileURL, currentScenario.getOperatorDefinitions());
+            excelParser.parse(this.excelFileURL, DesignTools.getOperatorComponents(currentScenario.getDesign()));
             break;
           case "csv":
-            csvParser.parse(this.excelFileURL, currentScenario.getOperatorDefinitions());
+            csvParser.parse(this.excelFileURL, DesignTools.getOperatorComponents(currentScenario.getDesign()));
             break;
           default:
         }
@@ -246,29 +262,29 @@ public class TimingManager {
    *          the speed
    */
   public void putMemcpySpeed(final MemCopySpeed speed) {
-    this.memcpySpeeds.put(speed.getOperatorDef(), speed);
+    this.memcpySpeeds.put(speed.getComponent(), speed);
   }
 
   /**
    * For a type of operator, gets a memcopy setup time.
    *
-   * @param operatorDef
+   * @param component
    *          the operator def
    * @return the memcpy setup time
    */
-  public long getMemcpySetupTime(final Component operatorDef) {
-    return this.memcpySpeeds.get(operatorDef).getSetupTime();
+  public long getMemcpySetupTime(final Component component) {
+    return this.memcpySpeeds.get(component).getSetupTime();
   }
 
   /**
    * For a type of operator, gets the INVERSED memcopy speed (time per memory unit.
    *
-   * @param operatorDef
+   * @param component
    *          the operator def
    * @return the memcpy time per unit
    */
-  public double getMemcpyTimePerUnit(final Component operatorDef) {
-    return this.memcpySpeeds.get(operatorDef).getTimePerUnit();
+  public double getMemcpyTimePerUnit(final Component component) {
+    return this.memcpySpeeds.get(component).getTimePerUnit();
   }
 
   /**
@@ -283,22 +299,22 @@ public class TimingManager {
   /**
    * Checks for mem cpy speed.
    *
-   * @param operatorDef
+   * @param component
    *          the operator def
    * @return true, if successful
    */
-  public boolean hasMemCpySpeed(final Component operatorDef) {
-    return this.memcpySpeeds.keySet().contains(operatorDef);
+  public boolean hasMemCpySpeed(final Component component) {
+    return this.memcpySpeeds.keySet().contains(component);
   }
 
   /**
    * Sets the default mem cpy speed.
    *
-   * @param operatorDef
+   * @param component
    *          the new default mem cpy speed
    */
-  public void setDefaultMemCpySpeed(final Component operatorDef) {
+  public void setDefaultMemCpySpeed(final Component component) {
     putMemcpySpeed(
-        new MemCopySpeed(operatorDef, TimingManager.DEFAULTMEMCPYSETUPTIME, TimingManager.DEFAULTMEMCPYTIMEPERUNIT));
+        new MemCopySpeed(component, TimingManager.DEFAULTMEMCPYSETUPTIME, TimingManager.DEFAULTMEMCPYTIMEPERUNIT));
   }
 }

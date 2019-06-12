@@ -110,7 +110,7 @@ public class MemCopySpeedLabelProvider implements ITableLabelProvider {
       final MemCopySpeed speed = (MemCopySpeed) element;
 
       if (columnIndex == 0) {
-        text = speed.getOperatorDef().getVlnv().getName();
+        text = speed.getComponent().getVlnv().getName();
       } else if (columnIndex == 1) {
         text = Long.toString(speed.getSetupTime());
       } else if (columnIndex == 2) {
@@ -211,7 +211,7 @@ public class MemCopySpeedLabelProvider implements ITableLabelProvider {
       final MemCopySpeed speed = (MemCopySpeed) selection.getFirstElement();
 
       String title = Messages.getString("Timings.MemcopySpeeds.dialog.setupTitle");
-      String message = Messages.getString("Timings.MemcopySpeeds.dialog.setupMessage") + speed.getOperatorDef();
+      String message = Messages.getString("Timings.MemcopySpeeds.dialog.setupMessage") + speed.getComponent();
 
       final String initSetupTime = String.valueOf(speed.getSetupTime());
       final String initSpeed = String.valueOf(1.0 / speed.getTimePerUnit());
@@ -220,7 +220,7 @@ public class MemCopySpeedLabelProvider implements ITableLabelProvider {
           PlatformUI.getWorkbench().getActiveWorkbenchWindow().getShell(), title, message, initSetupTime, intValidator);
 
       title = Messages.getString("Timings.MemcopySpeeds.dialog.timePerUnitTitle");
-      message = Messages.getString("Timings.MemcopySpeeds.dialog.timePerUnitMessage") + speed.getOperatorDef();
+      message = Messages.getString("Timings.MemcopySpeeds.dialog.timePerUnitMessage") + speed.getComponent();
 
       final InputDialog dialogTimePerUnit = new InputDialog(
           PlatformUI.getWorkbench().getActiveWorkbenchWindow().getShell(), title, message, initSpeed, floatValidator);

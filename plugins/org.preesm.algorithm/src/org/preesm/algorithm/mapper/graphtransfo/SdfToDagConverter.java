@@ -44,6 +44,7 @@ package org.preesm.algorithm.mapper.graphtransfo;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map.Entry;
 import java.util.Set;
 import java.util.logging.Level;
 import java.util.stream.Collectors;
@@ -53,6 +54,7 @@ import org.preesm.algorithm.mapper.model.MapperDAGEdge;
 import org.preesm.algorithm.mapper.model.MapperDAGVertex;
 import org.preesm.algorithm.mapper.model.MapperVertexFactory;
 import org.preesm.algorithm.mapper.model.property.EdgeInit;
+import org.preesm.algorithm.mapper.model.property.Timing;
 import org.preesm.algorithm.mapper.model.property.VertexInit;
 import org.preesm.algorithm.mapper.model.special.TransferVertex;
 import org.preesm.algorithm.model.dag.DAGEdge;
@@ -67,9 +69,7 @@ import org.preesm.commons.logger.PreesmLogger;
 import org.preesm.model.pisdf.AbstractActor;
 import org.preesm.model.pisdf.AbstractVertex;
 import org.preesm.model.pisdf.PiGraph;
-import org.preesm.model.scenario.ConstraintGroup;
 import org.preesm.model.scenario.PreesmScenario;
-import org.preesm.model.scenario.Timing;
 import org.preesm.model.scenario.TimingManager;
 import org.preesm.model.slam.ComponentInstance;
 import org.preesm.model.slam.Design;
@@ -149,7 +149,7 @@ public class SdfToDagConverter {
     SdfToDagConverter.addInitialVertexProperties(dag, architecture, scenario);
     SdfToDagConverter.addInitialEdgeProperties(dag);
     SdfToDagConverter.addInitialSpecialVertexProperties(dag, scenario);
-    SdfToDagConverter.addInitialConstraintsProperties(dag, architecture, scenario);
+    SdfToDagConverter.addInitialConstraintsProperties(dag, scenario);
 
     // We iterate the dag to add to each vertex its relative constraints (if any)
     for (final DAGVertex dv : dag.vertexSet()) {
@@ -268,16 +268,12 @@ public class SdfToDagConverter {
           if (referencePiVertex instanceof AbstractActor) {
             final AbstractActor actor = ((AbstractActor) referencePiVertex);
             // info is set to the vertexPath of AbstractVertex
-            final Timing originalTiming = tm.getTimingOrDefault(actor, op.getComponent());
-            Timing copyTiming = null;
-            if (originalTiming.getTime() == Timing.DEFAULT_TASK_TIME) {
+            final long originalTiming = tm.evaluateTimingOrDefault(actor, op.getComponent());
+            final Timing copyTiming;
+            if (originalTiming == TimingManager.DEFAULT_TASK_TIME) {
               copyTiming = new Timing(op.getComponent(), actor);
             } else {
-              if (originalTiming.isEvaluated()) {
-                copyTiming = new Timing(op.getComponent(), actor, originalTiming.getTime());
-              } else {
-                copyTiming = new Timing(op.getComponent(), actor, Timing.DEFAULT_TASK_TIME);
-              }
+              copyTiming = new Timing(op.getComponent(), actor, originalTiming);
             }
             currentVertexInit.addTiming(copyTiming);
           } else {
@@ -362,22 +358,22 @@ public class SdfToDagConverter {
    * @param scenario
    *          the scenario
    */
-  private static void addInitialConstraintsProperties(final MapperDAG dag, final Design architecture,
-      final PreesmScenario scenario) {
+  private static void addInitialConstraintsProperties(final MapperDAG dag, final PreesmScenario scenario) {
     /**
      * Importing scenario: Only the timings to allowed mappings are set.
      */
 
     // Iterating over constraint groups
-    final Iterator<ConstraintGroup> cgit = scenario.getConstraintGroupManager().getConstraintGroups().iterator();
+    final Iterator<Entry<ComponentInstance, List<AbstractActor>>> cgit = scenario.getConstraintGroupManager()
+        .getConstraintGroups().entrySet().iterator();
 
     while (cgit.hasNext()) {
-      final ConstraintGroup cg = cgit.next();
+      final Entry<ComponentInstance, List<AbstractActor>> cg = cgit.next();
 
       // Iterating over vertices in DAG with their SDF ref in the
       // constraint group
-      final Set<String> sdfVertexIds = cg.getVertexPaths().stream().map(AbstractVertex::getVertexPath)
-          .collect(Collectors.toSet());
+      final Set<
+          String> sdfVertexIds = cg.getValue().stream().map(AbstractVertex::getVertexPath).collect(Collectors.toSet());
 
       for (final DAGVertex v : dag.vertexSet()) {
         final MapperDAGVertex mv = (MapperDAGVertex) v;
@@ -387,7 +383,7 @@ public class SdfToDagConverter {
 
         if (sdfVertexIds.contains(lookingFor)) {
 
-          final ComponentInstance currentIOp = cg.getOperatorId();
+          final ComponentInstance currentIOp = cg.getKey();
           if (currentIOp.getComponent() instanceof Operator) {
 
             if (!mv.getInit().isMapable(currentIOp)) {

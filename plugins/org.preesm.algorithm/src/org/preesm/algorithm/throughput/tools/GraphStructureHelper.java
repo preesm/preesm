@@ -683,7 +683,7 @@ public interface GraphStructureHelper {
       if (scenario != null) {
         final Component component = scenario.getSimulationManager().getMainOperator().getComponent();
         AbstractActor referencePiMMVertex = (AbstractActor) currentSource.getReferencePiMMVertex();
-        actorDuration = scenario.getTimingManager().getTimingOrDefault(referencePiMMVertex, component).getTime();
+        actorDuration = scenario.getTimingManager().evaluateTimingOrDefault(referencePiMMVertex, component);
       } else {
         actorDuration = (double) currentSource.getPropertyBean().getValue(GraphStructureHelper.DURATION_PROPERTY);
       }

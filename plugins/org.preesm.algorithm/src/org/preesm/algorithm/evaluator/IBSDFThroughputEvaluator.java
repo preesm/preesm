@@ -53,6 +53,7 @@ import org.preesm.commons.logger.PreesmLogger;
 import org.preesm.model.pisdf.AbstractActor;
 import org.preesm.model.pisdf.AbstractVertex;
 import org.preesm.model.scenario.PreesmScenario;
+import org.preesm.model.slam.component.Component;
 
 /**
  * Class used to search for the optimal periodic schedule and its throughput for a given hierarchical graph IBSDF.
@@ -205,8 +206,9 @@ public class IBSDFThroughputEvaluator extends ThroughputEvaluator {
       } else {
         final AbstractVertex referencePiMMVertex = edge.getSource().getReferencePiMMVertex();
         if (referencePiMMVertex instanceof AbstractActor) {
-          L = this.getScenar().getTimingManager().getTimingOrDefault((AbstractActor) referencePiMMVertex,
-              scenario.getSimulationManager().getMainOperator().getComponent()).getTime();
+          final Component component = scenario.getSimulationManager().getMainOperator().getComponent();
+          final AbstractActor actor = (AbstractActor) referencePiMMVertex;
+          L = this.getScenar().getTimingManager().evaluateTimingOrDefault(actor, component);
         } else {
           L = 0;
         }

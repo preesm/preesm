@@ -1,15 +1,15 @@
-package org.preesm.ui.scenario.editor.timings;
+package org.preesm.ui.scenario.editor.utils;
 
 import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.jface.viewers.ViewerComparator;
-import org.preesm.model.pisdf.AbstractActor;
+import org.preesm.model.pisdf.AbstractVertex;
 
 /**
- * Allows to compare timings by lexicographical order of the actors.
- * 
+ * Allows to compare vertices by lexicographical order of their paths.
+ *
  * @author ahonorat
  */
-public class TimingsLexicographicalComparator extends ViewerComparator {
+public class VertexLexicographicalComparator extends ViewerComparator {
 
   /**
    * According to {@link org.preesm.model.pisdf.PiSDF.xcore#getVertexPath}
@@ -18,9 +18,9 @@ public class TimingsLexicographicalComparator extends ViewerComparator {
 
   @Override
   public int compare(Viewer viewer, Object o1, Object o2) {
-    if ((o1 instanceof AbstractActor) && (o2 instanceof AbstractActor)) {
-      final AbstractActor vertex1 = (AbstractActor) o1;
-      final AbstractActor vertex2 = (AbstractActor) o2;
+    if ((o1 instanceof AbstractVertex) && (o2 instanceof AbstractVertex)) {
+      final AbstractVertex vertex1 = (AbstractVertex) o1;
+      final AbstractVertex vertex2 = (AbstractVertex) o2;
       int nbSep1 = vertex1.getVertexPath().split(HIERARCHY_DELIMITER).length;
       int nbSep2 = vertex2.getVertexPath().split(HIERARCHY_DELIMITER).length;
       if (nbSep1 != nbSep2) {

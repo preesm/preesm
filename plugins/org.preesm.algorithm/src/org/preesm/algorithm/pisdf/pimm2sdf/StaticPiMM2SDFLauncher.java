@@ -39,13 +39,13 @@ package org.preesm.algorithm.pisdf.pimm2sdf;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
 import org.preesm.algorithm.model.sdf.SDFGraph;
 import org.preesm.commons.exceptions.PreesmRuntimeException;
 import org.preesm.model.pisdf.Parameter;
 import org.preesm.model.pisdf.PiGraph;
 import org.preesm.model.pisdf.statictools.PiGraphExecution;
-import org.preesm.model.scenario.ParameterValue;
 import org.preesm.model.scenario.ParameterValueManager;
 import org.preesm.model.scenario.PreesmScenario;
 
@@ -102,27 +102,23 @@ public class StaticPiMM2SDFLauncher {
     final Map<Parameter, Integer> result = new LinkedHashMap<>();
 
     final ParameterValueManager parameterValueManager = this.scenario.getParameterValueManager();
-    final Set<ParameterValue> parameterValues = parameterValueManager.getParameterValues();
-    for (final ParameterValue paramValue : parameterValues) {
-      switch (paramValue.getType()) {
-        case ACTOR_DEPENDENT:
-          throw new PreesmRuntimeException("Parameter " + paramValue.getName()
-              + " is depends on a configuration actor. It is thus impossible to use the"
-              + " Static PiMM 2 SDF transformation. Try instead the Dynamic PiMM 2 SDF"
-              + " transformation (id: org.ietr.preesm.experiment.pimm2sdf.PiMM2SDFTask)");
-        case INDEPENDENT:
-          try {
-            final int value = Integer.parseInt(paramValue.getValue());
-            result.put(paramValue.getParameter(), value);
-            break;
-          } catch (final NumberFormatException e) {
-            // The expression associated to the parameter is an
-            // expression (and not an constant int value).
-            // Leave it as it is, it will be solved later.
-            break;
-          }
-        default:
-          break;
+    final Set<Entry<Parameter, String>> parameterValues = parameterValueManager.getParameterValues().entrySet();
+    for (final Entry<Parameter, String> paramValue : parameterValues) {
+      if (!paramValue.getKey().isLocallyStatic()) {
+
+        throw new PreesmRuntimeException("Parameter " + paramValue.getKey().getName()
+            + " is depends on a configuration actor. It is thus impossible to use the"
+            + " Static PiMM 2 SDF transformation. Try instead the Dynamic PiMM 2 SDF"
+            + " transformation (id: org.ietr.preesm.experiment.pimm2sdf.PiMM2SDFTask)");
+      } else {
+        try {
+          final int value = Integer.parseInt(paramValue.getValue());
+          result.put(paramValue.getKey(), value);
+        } catch (final NumberFormatException e) {
+          // The expression associated to the parameter is an
+          // expression (and not an constant int value).
+          // Leave it as it is, it will be solved later.
+        }
       }
     }
 

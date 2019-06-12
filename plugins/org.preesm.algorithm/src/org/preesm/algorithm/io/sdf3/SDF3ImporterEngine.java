@@ -51,7 +51,6 @@ import org.preesm.commons.exceptions.PreesmException;
 import org.preesm.commons.exceptions.PreesmRuntimeException;
 import org.preesm.model.pisdf.AbstractActor;
 import org.preesm.model.scenario.PreesmScenario;
-import org.preesm.model.scenario.Timing;
 import org.preesm.model.scenario.types.DataType;
 import org.preesm.model.slam.ComponentInstance;
 import org.preesm.model.slam.Design;
@@ -143,8 +142,7 @@ public class SDF3ImporterEngine {
         // Set the timing of the actor
         final SDFAbstractVertex vertex = entry.getKey();
         final AbstractActor referencePiMMVertex = (AbstractActor) vertex.getReferencePiMMVertex();
-        final Timing t = scenario.getTimingManager().addTiming(referencePiMMVertex, component.getComponent());
-        t.setTime(entry.getValue());
+        scenario.getTimingManager().setTiming(referencePiMMVertex, component.getComponent(), entry.toString());
       }
     }
     // Add the data types of the SDF3 graph to the scenario

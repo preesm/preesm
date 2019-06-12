@@ -64,9 +64,7 @@ import org.preesm.model.pisdf.FunctionPrototype;
 import org.preesm.model.pisdf.Parameter;
 import org.preesm.model.pisdf.PiGraph;
 import org.preesm.model.pisdf.Port;
-import org.preesm.model.scenario.ConstraintGroup;
 import org.preesm.model.scenario.PreesmScenario;
-import org.preesm.model.scenario.Timing;
 import org.preesm.model.scenario.papi.PapiEvent;
 import org.preesm.model.scenario.papi.PapifyConfigActor;
 import org.preesm.model.scenario.papi.PapifyConfigManager;
@@ -74,6 +72,7 @@ import org.preesm.model.scenario.papi.PapifyConfigPE;
 import org.preesm.model.slam.ComponentInstance;
 import org.preesm.model.slam.Design;
 import org.preesm.model.slam.component.Component;
+import org.preesm.model.slam.utils.DesignTools;
 
 /**
  * The Class SpiderCodegen.
@@ -160,7 +159,7 @@ public class SpiderCodegen {
     this.coresPerCoreType = new LinkedHashMap<>();
     this.coresFromCoreType = new LinkedHashMap<>();
     int coreTypeId = 0;
-    for (final Component coreType : this.scenario.getOperatorDefinitions()) {
+    for (final Component coreType : DesignTools.getOperatorComponents(this.scenario.getDesign())) {
       this.coreTypesIds.put(coreType, coreTypeId++);
       // Link the number of cores associated to each core type
       final EList<Component> components = this.architecture.getComponentHolder().getComponents();
@@ -175,40 +174,44 @@ public class SpiderCodegen {
 
     this.coreIds = new LinkedHashMap<>();
     ComponentInstance mainOperator = this.scenario.getSimulationManager().getMainOperator();
+    final List<ComponentInstance> orderedOperators = DesignTools.getOrderedOperators(this.scenario.getDesign());
     if (mainOperator == null) {
       /* Warning */
-      mainOperator = this.scenario.getOrderedOperators().get(0);
+      mainOperator = orderedOperators.get(0);
       PreesmLogger.getLogger().warning("No Main Operator selected in scenario, " + mainOperator + " used by default");
     }
     this.coreIds.put(mainOperator, 0);
     int coreId = 1;
-    for (final ComponentInstance core : this.scenario.getOrderedOperators()) {
+    for (final ComponentInstance core : orderedOperators) {
       if (!core.equals(mainOperator)) {
         this.coreIds.put(core, coreId++);
       }
     }
 
     // Generate timings
-    final Map<String, AbstractActor> actorsByNames = this.preprocessor.getActorNames();
     this.timings = new LinkedHashMap<>();
-    for (final Timing t : this.scenario.getTimingManager().getTimings()) {
-      final AbstractActor aa = t.getVertexId();
-      if (aa != null) {
-        if (!this.timings.containsKey(aa)) {
-          this.timings.put(aa, new LinkedHashMap<Component, String>());
+    final Map<String, AbstractActor> actorsByNames = this.preprocessor.getActorNames();
+    for (final AbstractActor actor : actorsByNames.values()) {
+      final Map<Component, String> listTimings = this.scenario.getTimingManager().listTimings(actor);
+      for (Entry<Component, String> e : listTimings.entrySet()) {
+        if (actor != null) {
+          if (!this.timings.containsKey(actor)) {
+            this.timings.put(actor, new LinkedHashMap<Component, String>());
+          }
+          this.timings.get(actor).put(e.getKey(), e.getValue());
         }
-        this.timings.get(aa).put(t.getOperatorDefinitionId(), t.getStringValue());
       }
     }
 
     // Generate constraints
     this.constraints = new LinkedHashMap<>();
-    for (final ConstraintGroup cg : this.scenario.getConstraintGroupManager().getConstraintGroups()) {
-      for (final AbstractActor aa : cg.getVertexPaths()) {
+    for (final Entry<ComponentInstance, List<AbstractActor>> cg : this.scenario.getConstraintGroupManager()
+        .getConstraintGroups().entrySet()) {
+      for (final AbstractActor aa : cg.getValue()) {
         if (this.constraints.get(aa) == null) {
           this.constraints.put(aa, new LinkedHashSet<ComponentInstance>());
         }
-        final ComponentInstance core = cg.getOperatorId();
+        final ComponentInstance core = cg.getKey();
         this.constraints.get(aa).add(core);
       }
     }

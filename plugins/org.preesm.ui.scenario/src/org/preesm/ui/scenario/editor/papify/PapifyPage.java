@@ -83,6 +83,7 @@ import org.preesm.model.scenario.papi.PapiEventModifier;
 import org.preesm.model.scenario.papi.PapiEventSet;
 import org.preesm.model.scenario.papi.PapifyConfigManager;
 import org.preesm.model.slam.component.Component;
+import org.preesm.model.slam.utils.DesignTools;
 import org.preesm.ui.scenario.editor.FileSelectionAdapter;
 import org.preesm.ui.scenario.editor.Messages;
 import org.preesm.ui.scenario.editor.PreesmAlgorithmTreeLabelProvider;
@@ -526,7 +527,7 @@ public class PapifyPage extends FormPage implements IPropertyListener {
     this.checkStateListener.setPropertyListener(this);
     this.peContentProvider.addCheckStateListener(this.checkStateListener);
 
-    for (final Component columnLabel : this.scenario.getOperatorDefinitions()) {
+    for (final Component columnLabel : DesignTools.getOperatorComponents(this.scenario.getDesign())) {
 
       final TreeViewerColumn viewerColumn = new TreeViewerColumn(peTreeViewer, SWT.CENTER | SWT.CHECK);
       final TreeColumn column = viewerColumn.getColumn();

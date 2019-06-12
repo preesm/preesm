@@ -55,7 +55,6 @@ import org.preesm.model.pisdf.AbstractActor;
 import org.preesm.model.pisdf.PiGraph;
 import org.preesm.model.pisdf.util.ActorPath;
 import org.preesm.model.scenario.PreesmScenario;
-import org.preesm.model.scenario.Timing;
 import org.preesm.model.slam.component.Component;
 
 /**
@@ -184,28 +183,29 @@ public class CsvTimingParser {
    *
    * @param timings
    *          the timings
-   * @param vertexName
+   * @param actor
    *          the vertex name
-   * @param opDefIds
+   * @param componentList
    *          the op def ids
    */
-  private void parseTimingForVertex(final Map<AbstractActor, Map<Component, String>> timings,
-      final AbstractActor vertexName, final List<Component> opDefIds) {
+  private void parseTimingForVertex(final Map<AbstractActor, Map<Component, String>> timings, final AbstractActor actor,
+      final List<Component> componentList) {
     // For each kind of processing elements, we look for a timing for given vertex
-    for (final Component opDefId : opDefIds) {
-      if (opDefId != null && vertexName != null) {
+    for (final Component component : componentList) {
+      if (component != null && actor != null) {
         // Get the timing we are looking for
         try {
-          final String expression = timings.get(vertexName).get(opDefId);
-          final Timing timing = new Timing(opDefId, vertexName, expression);
+          final String expression = timings.get(actor).get(component);
 
-          this.scenario.getTimingManager().addTiming(timing);
+          this.scenario.getTimingManager().setTiming(actor, component, expression);
 
-          PreesmLogger.getLogger().log(Level.INFO, "Importing timing: {0}", timing.toString());
+          final String msg = "Importing timing: " + actor.getVertexPath() + " on " + component.getVlnv().getName()
+              + " takes " + expression;
+          PreesmLogger.getLogger().log(Level.INFO, msg);
 
         } catch (final Exception e) {
           PreesmLogger.getLogger().log(Level.INFO, "Cannot retreive timing for ({0}, {1})",
-              new Object[] { vertexName, opDefId });
+              new Object[] { actor, component });
         }
       }
     }

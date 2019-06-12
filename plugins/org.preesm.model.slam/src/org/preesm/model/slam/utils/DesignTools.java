@@ -37,6 +37,7 @@
 package org.preesm.model.slam.utils;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.Iterator;
 import java.util.List;
@@ -55,9 +56,6 @@ import org.preesm.model.slam.link.Link;
  * @author mpelcat
  */
 public class DesignTools {
-
-  /** Value used to state a non-existing component. */
-  public static final ComponentInstance NO_COMPONENT_INSTANCE = null;
 
   /** Key of instance parameter used to store a property used in Preesm. */
   public static final String OPERATOR_BASE_ADDRESS = "BaseAddress";
@@ -109,7 +107,7 @@ public class DesignTools {
         operatorInstanceIds.add(cmpInstance.getInstanceName());
       }
     }
-    return operatorInstanceIds;
+    return Collections.unmodifiableList(operatorInstanceIds);
   }
 
   /**
@@ -127,7 +125,7 @@ public class DesignTools {
       }
     }
 
-    return operatorInstanceIds;
+    return Collections.unmodifiableList(operatorInstanceIds);
   }
 
   /**
@@ -146,7 +144,7 @@ public class DesignTools {
         }
       }
     }
-    return operatorInstanceIds;
+    return Collections.unmodifiableList(operatorInstanceIds);
   }
 
   /**
@@ -163,7 +161,16 @@ public class DesignTools {
         operatorInstances.add(cmpInstance);
       }
     }
-    return operatorInstances;
+    return Collections.unmodifiableList(operatorInstances);
+  }
+
+  /**
+   * Gets the ordered operator ids.
+   */
+  public static List<String> getOrderedOperatorIds(final Design design) {
+    final List<String> operatorComponentIds = new ArrayList<>(getOperatorComponentIds(design));
+    Collections.sort(operatorComponentIds, (o1, o2) -> o1.compareTo(o2));
+    return Collections.unmodifiableList(operatorComponentIds);
   }
 
   /**
@@ -178,7 +185,18 @@ public class DesignTools {
     for (final org.preesm.model.slam.component.Component component : getOperatorComponents(design)) {
       operatorIds.add(component.getVlnv().getName());
     }
-    return operatorIds;
+    return Collections.unmodifiableList(operatorIds);
+  }
+
+  /**
+   * Gets the ordered operator.
+   *
+   * @return the ordered operator
+   */
+  public static List<ComponentInstance> getOrderedOperators(final Design design) {
+    final List<ComponentInstance> opIdList = new ArrayList<>(getOperatorInstances(design));
+    Collections.sort(opIdList, (o1, o2) -> o1.getInstanceName().compareTo(o2.getInstanceName()));
+    return Collections.unmodifiableList(opIdList);
   }
 
   /**
@@ -200,7 +218,7 @@ public class DesignTools {
         }
       }
     }
-    return operators;
+    return Collections.unmodifiableList(operators);
   }
 
   /**
@@ -215,7 +233,7 @@ public class DesignTools {
     for (final ComponentInstance cmpInstance : design.getComponentInstances()) {
       instances.add(cmpInstance);
     }
-    return instances;
+    return Collections.unmodifiableList(instances);
   }
 
   /**
@@ -303,7 +321,7 @@ public class DesignTools {
         instances.add(cmpInstance);
       }
     }
-    return instances;
+    return Collections.unmodifiableList(instances);
   }
 
   /**
@@ -358,7 +376,7 @@ public class DesignTools {
         undirectedLinks.add(link);
       }
     }
-    return undirectedLinks;
+    return Collections.unmodifiableList(undirectedLinks);
   }
 
   /**
@@ -377,7 +395,7 @@ public class DesignTools {
         directedLinks.add(link);
       }
     }
-    return directedLinks;
+    return Collections.unmodifiableList(directedLinks);
   }
 
   /**
@@ -396,6 +414,6 @@ public class DesignTools {
         directedLinks.add(link);
       }
     }
-    return directedLinks;
+    return Collections.unmodifiableList(directedLinks);
   }
 }

@@ -288,7 +288,7 @@ public abstract class LatencyAbc {
       final boolean updateRank) {
     final MapperDAGVertex impvertex = translateInImplementationVertex(dagvertex);
 
-    if (impvertex.getEffectiveOperator() != DesignTools.NO_COMPONENT_INSTANCE) {
+    if (impvertex.getEffectiveOperator() != null) {
       // Unmapping if necessary before mapping
       unmap(dagvertex);
     }
@@ -356,8 +356,7 @@ public abstract class LatencyAbc {
 
       // We unmap systematically the main vertex (impvertex) if it has an
       // effectiveComponent and optionally its group
-      final boolean isToUnmap = (previousOperator != DesignTools.NO_COMPONENT_INSTANCE)
-          && (dv.equals(dagvertex) || remapGroup);
+      final boolean isToUnmap = (previousOperator != null) && (dv.equals(dagvertex) || remapGroup);
 
       // We map transfer vertices, if rank is kept, and if mappable
       final boolean isToMap = (dv.equals(dagvertex) || remapGroup)
@@ -396,8 +395,7 @@ public abstract class LatencyAbc {
       } else if (dv.equals(dagvertex) || remapGroup) {
         final String msg = dagvertex + " can not be mapped (group) on " + operator;
         PreesmLogger.getLogger().log(Level.SEVERE, msg);
-        dv.setEffectiveOperator(DesignTools.NO_COMPONENT_INSTANCE);
-        dv.setEffectiveOperator(DesignTools.NO_COMPONENT_INSTANCE);
+        dv.setEffectiveOperator(null);
       }
     }
 
@@ -426,7 +424,7 @@ public abstract class LatencyAbc {
       final boolean remapGroup) {
     final MapperDAGVertex impvertex = translateInImplementationVertex(dagvertex);
 
-    if (operator != DesignTools.NO_COMPONENT_INSTANCE) {
+    if (operator != null) {
       // On a single actor if it is alone in the group
       if (impvertex.getMapping().getNumberOfVertices() < 2) {
         mapSingleVertex(dagvertex, operator, updateRank);
@@ -691,9 +689,9 @@ public abstract class LatencyAbc {
 
     fireNewUnmappedVertex(impvertex);
 
-    dagvertex.setEffectiveOperator(DesignTools.NO_COMPONENT_INSTANCE);
+    dagvertex.setEffectiveOperator(null);
 
-    impvertex.setEffectiveOperator(DesignTools.NO_COMPONENT_INSTANCE);
+    impvertex.setEffectiveOperator(null);
   }
 
   /**
@@ -831,8 +829,8 @@ public abstract class LatencyAbc {
     for (final DAGVertex v : dag.vertexSet()) {
       final MapperDAGVertex mdv = (MapperDAGVertex) v;
       operators.put(mdv, mdv.getEffectiveOperator());
-      mdv.setEffectiveComponent(DesignTools.NO_COMPONENT_INSTANCE);
-      this.implementation.getMapperDAGVertex(mdv.getName()).setEffectiveComponent(DesignTools.NO_COMPONENT_INSTANCE);
+      mdv.setEffectiveComponent(null);
+      this.implementation.getMapperDAGVertex(mdv.getName()).setEffectiveComponent(null);
     }
 
     this.edgeScheduler = AbstractEdgeSched.getInstance(this.edgeScheduler.getEdgeSchedType(), this.orderManager);
@@ -858,7 +856,7 @@ public abstract class LatencyAbc {
 
     final ComponentInstance effectiveOp = vertex.getEffectiveOperator();
 
-    if (effectiveOp == DesignTools.NO_COMPONENT_INSTANCE) {
+    if (effectiveOp == null) {
       PreesmLogger.getLogger().severe("implementation of " + vertex.getName() + " failed");
     } else {
 

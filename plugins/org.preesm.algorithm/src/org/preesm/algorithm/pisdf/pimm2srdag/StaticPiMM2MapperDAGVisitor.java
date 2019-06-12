@@ -42,6 +42,7 @@ package org.preesm.algorithm.pisdf.pimm2srdag;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map.Entry;
 import java.util.Optional;
 import java.util.Set;
 import org.eclipse.core.runtime.Path;
@@ -101,14 +102,10 @@ import org.preesm.model.pisdf.Port;
 import org.preesm.model.pisdf.Refinement;
 import org.preesm.model.pisdf.RoundBufferActor;
 import org.preesm.model.pisdf.util.PiMMSwitch;
-import org.preesm.model.scenario.ConstraintGroup;
 import org.preesm.model.scenario.ConstraintGroupManager;
 import org.preesm.model.scenario.PreesmScenario;
-import org.preesm.model.scenario.Timing;
-import org.preesm.model.scenario.TimingManager;
 import org.preesm.model.slam.ComponentInstance;
 import org.preesm.model.slam.Design;
-import org.preesm.model.slam.component.Component;
 
 /**
  * @author farresti
@@ -632,10 +629,11 @@ public class StaticPiMM2MapperDAGVisitor extends PiMMSwitch<Boolean> {
     final AbstractActor actor = PreesmCopyTracker.getOriginalSource(copyActor);
     // Add the scenario constraints
     final List<ComponentInstance> currentOperatorIDs = new ArrayList<>();
-    final Set<ConstraintGroup> constraintGroups = scenario.getConstraintGroupManager().getConstraintGroups();
-    for (final ConstraintGroup cg : constraintGroups) {
-      final Set<AbstractActor> vertexPaths = cg.getVertexPaths();
-      final ComponentInstance operatorId = cg.getOperatorId();
+    final Set<Entry<ComponentInstance, List<AbstractActor>>> constraintGroups = scenario.getConstraintGroupManager()
+        .getConstraintGroups().entrySet();
+    for (final Entry<ComponentInstance, List<AbstractActor>> cg : constraintGroups) {
+      final List<AbstractActor> vertexPaths = cg.getValue();
+      final ComponentInstance operatorId = cg.getKey();
       if (vertexPaths.contains(actor)) {
         currentOperatorIDs.add(operatorId);
       }
@@ -643,18 +641,6 @@ public class StaticPiMM2MapperDAGVisitor extends PiMMSwitch<Boolean> {
 
     final ConstraintGroupManager constraintGroupManager = scenario.getConstraintGroupManager();
     currentOperatorIDs.forEach(s -> constraintGroupManager.addConstraint(s, copyActor));
-    // Add the scenario timings
-    final List<Timing> currentTimings = new ArrayList<>();
-    for (final Component operatorDefinitionID : scenario.getOperatorDefinitions()) {
-      final Timing timing = scenario.getTimingManager().getTimingOrDefault(actor, operatorDefinitionID);
-      currentTimings.add(timing);
-    }
-    final TimingManager timingManager = scenario.getTimingManager();
-    for (final Timing t : currentTimings) {
-      final Timing addTiming = timingManager.addTiming(copyActor, t.getOperatorDefinitionId());
-      addTiming.setTime(t.getTime());
-      addTiming.setInputParameters(t.getInputParameters());
-    }
   }
 
   @Override

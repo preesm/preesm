@@ -44,7 +44,6 @@ import java.util.Locale;
 import jxl.Workbook;
 import jxl.WorkbookSettings;
 import jxl.write.Label;
-import jxl.write.Number;
 import jxl.write.WritableCell;
 import jxl.write.WritableSheet;
 import jxl.write.WritableWorkbook;
@@ -58,9 +57,9 @@ import org.eclipse.ui.PlatformUI;
 import org.preesm.commons.exceptions.PreesmException;
 import org.preesm.model.pisdf.AbstractActor;
 import org.preesm.model.scenario.PreesmScenario;
-import org.preesm.model.scenario.Timing;
 import org.preesm.model.scenario.serialize.PreesmAlgorithmListContentProvider;
 import org.preesm.model.slam.component.Component;
+import org.preesm.model.slam.utils.DesignTools;
 import org.preesm.ui.scenario.editor.ExcelWriter;
 import org.preesm.ui.scenario.editor.SaveAsWizard;
 
@@ -157,10 +156,10 @@ public class ExcelTimingWriter extends ExcelWriter {
 
       final List<AbstractActor> vSet = provider.getSortedPISDFVertices(this.scenario);
 
-      for (final Component opDefId : this.scenario.getOperatorDefinitions()) {
+      for (final Component opDefId : DesignTools.getOperatorComponents(this.scenario.getDesign())) {
         for (final AbstractActor vertexName : vSet) {
 
-          final Timing timing = this.scenario.getTimingManager().getTimingOrDefault(vertexName, opDefId);
+          final String timing = this.scenario.getTimingManager().getTimingOrDefault(vertexName, opDefId);
 
           WritableCell opCell = (WritableCell) sheet.findCell(opDefId.getVlnv().getName());
           WritableCell vCell = (WritableCell) sheet.findCell(vertexName.getVertexPath());
@@ -179,13 +178,7 @@ public class ExcelTimingWriter extends ExcelWriter {
             }
 
             WritableCell timeCell;
-            if (timing.isEvaluated()) {
-              final long time = timing.getTime();
-              timeCell = new Number(opCell.getColumn(), vCell.getRow(), time);
-            } else {
-              final String time = timing.getStringValue();
-              timeCell = new Label(opCell.getColumn(), vCell.getRow(), time);
-            }
+            timeCell = new Label(opCell.getColumn(), vCell.getRow(), timing);
 
             sheet.addCell(timeCell);
           } catch (final WriteException e) {

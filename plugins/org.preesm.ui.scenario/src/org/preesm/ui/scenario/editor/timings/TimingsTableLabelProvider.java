@@ -38,6 +38,7 @@ package org.preesm.ui.scenario.editor.timings;
 
 import java.net.URL;
 import java.util.List;
+import java.util.stream.Collectors;
 import org.eclipse.jface.dialogs.IInputValidator;
 import org.eclipse.jface.dialogs.InputDialog;
 import org.eclipse.jface.resource.ImageDescriptor;
@@ -55,9 +56,11 @@ import org.eclipse.ui.IPropertyListener;
 import org.eclipse.ui.PlatformUI;
 import org.preesm.commons.files.PreesmResourcesHelper;
 import org.preesm.model.pisdf.AbstractActor;
+import org.preesm.model.pisdf.AbstractVertex;
+import org.preesm.model.pisdf.expression.ExpressionEvaluator;
 import org.preesm.model.scenario.PreesmScenario;
-import org.preesm.model.scenario.Timing;
 import org.preesm.model.slam.component.Component;
+import org.preesm.model.slam.utils.DesignTools;
 import org.preesm.ui.PreesmUIPlugin;
 import org.preesm.ui.scenario.editor.Messages;
 
@@ -111,7 +114,7 @@ public class TimingsTableLabelProvider implements ITableLabelProvider, Selection
     imageDcr = ImageDescriptor.createFromURL(okIconURL);
     this.imageOk = imageDcr.createImage();
 
-    final List<Component> operators = scenario.getOperatorDefinitions();
+    final List<Component> operators = DesignTools.getOperatorComponents(scenario.getDesign());
     this.currentOpDefId = operators.get(0);
   }
 
@@ -138,22 +141,13 @@ public class TimingsTableLabelProvider implements ITableLabelProvider, Selection
     if ((element instanceof AbstractActor) && (this.currentOpDefId != null)) {
       final AbstractActor vertex = (AbstractActor) element;
 
-      final Timing timing = this.scenario.getTimingManager().getTimingOrDefault(vertex, this.currentOpDefId);
-      switch (columnIndex) {
-        case 1:// Parsing column
-          if (timing.canParse()) {
-            return this.imageOk;
-          } else {
-            return this.imageError;
-          }
-        case 2:// Evaluation column
-          if (timing.canEvaluate()) {
-            return this.imageOk;
-          } else {
-            return this.imageError;
-          }
-        default:// Others
-          break;
+      final String timing = this.scenario.getTimingManager().getTimingOrDefault(vertex, this.currentOpDefId);
+      if (columnIndex == 3) {
+        if (ExpressionEvaluator.canEvaluate(vertex, timing)) {
+          return this.imageOk;
+        } else {
+          return this.imageError;
+        }
       }
     }
     return null;
@@ -183,33 +177,36 @@ public class TimingsTableLabelProvider implements ITableLabelProvider, Selection
     if ((element instanceof AbstractActor) && (this.currentOpDefId != null)) {
       final AbstractActor vertex = (AbstractActor) element;
 
-      final Timing timing = this.scenario.getTimingManager().getTimingOrDefault(vertex, this.currentOpDefId);
+      final String timing = this.scenario.getTimingManager().getTimingOrDefault(vertex, this.currentOpDefId);
 
       switch (columnIndex) {
         case 0:
           return vertex.getVertexPath();
-        case 1: // Parsing Column
-        case 2: // Evaluation Column
+        case 1: // Input Parameters
+          if (timing == null || vertex.getInputParameters().isEmpty()) {
+            text = " - ";
+          } else {
+            text = vertex.getInputParameters().stream().map(AbstractVertex::getName).collect(Collectors.toList())
+                .toString();
+          }
+          break;
+        case 2: // Expression
+          if (timing != null) {
+            text = timing;
+          }
+          break;
+        case 3: // Evaluation Status
           return null;
-        case 3: // Variables Column
-          if (timing != null) {
-            if (timing.getInputParameters().isEmpty()) {
-              text = "-";
-            } else {
-              text = timing.getInputParameters().toString();
-            }
+        case 4: // Value
+          if (timing != null && ExpressionEvaluator.canEvaluate(vertex, timing)) {
+            text = Long.toString(ExpressionEvaluator.evaluate(vertex, timing));
           }
           break;
-        case 4: // Expression Column
-          if (timing != null) {
-            text = timing.getStringValue();
-          }
-          break;
-        default:// Others
-          break;
+        default:
       }
     }
     return text;
+
   }
 
   /*
@@ -275,8 +272,7 @@ public class TimingsTableLabelProvider implements ITableLabelProvider, Selection
       if (this.currentOpDefId != null) {
         final String title = Messages.getString("Timings.dialog.title");
         final String message = Messages.getString("Timings.dialog.message") + abstractActor.getVertexPath();
-        final String init = this.scenario.getTimingManager().getTimingOrDefault(abstractActor, this.currentOpDefId)
-            .getStringValue();
+        final String init = this.scenario.getTimingManager().getTimingOrDefault(abstractActor, this.currentOpDefId);
 
         final InputDialog dialog = new InputDialog(PlatformUI.getWorkbench().getActiveWorkbenchWindow().getShell(),
             title, message, init, validator);
