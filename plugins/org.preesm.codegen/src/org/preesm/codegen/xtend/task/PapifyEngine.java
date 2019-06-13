@@ -47,6 +47,7 @@ import java.util.Set;
 import org.eclipse.emf.common.util.ECollections;
 import org.eclipse.emf.common.util.EList;
 import org.eclipse.emf.common.util.EMap;
+import org.eclipse.emf.ecore.util.EcoreUtil;
 import org.preesm.algorithm.mapper.model.MapperDAG;
 import org.preesm.algorithm.mapper.model.MapperDAGVertex;
 import org.preesm.algorithm.model.AbstractGraph;
@@ -108,7 +109,7 @@ public class PapifyEngine {
   /**
    * Function to add (or not) everything required for PAPIFY
    */
-  private void configurePapifyFunctions(AbstractActor vertex, String info, String name) {
+  private void configurePapifyFunctions(AbstractActor vertex, String info, String name, String actionName) {
 
     // Variables to check whether an actor has a monitoring configuration
     PapifyConfig papifyConfig = null;
@@ -141,7 +142,7 @@ public class PapifyEngine {
         }
         mapMonitorTiming.put(info, "No");
         this.dag.getVertex(name).getPropertyBean().setValue(PAPIFY_MONITOR_TIMING, mapMonitorTiming);
-        if (config.containsKey("Timing") && config.get("Timing").contains(this.timingEvent)) {
+        if (config.containsKey("Timing") && ECollections.indexOf(config.get("Timing"), this.timingEvent, 0) != -1) {
           mapMonitorTiming.put(info, "Yes");
           this.dag.getVertex(name).getPropertyBean().setValue(PAPIFY_MONITOR_TIMING, mapMonitorTiming);
         }
@@ -156,7 +157,7 @@ public class PapifyEngine {
               for (String compConfigTmp : tmp.getValue().keySet()) {
                 if (!compConfigTmp.equals("Timing")) {
                   List<PapiEvent> eventSetTmp = tmp.getValue().get(compConfigTmp);
-                  if (eventSetTmp.equals(eventSetNew)) {
+                  if (EcoreUtil.equals(eventSetTmp, eventSetNew)) {
                     configAdded = true;
                     counterConfigs = counterConfigs + 1;
                     if (configPosition.equals("")) {
@@ -188,7 +189,7 @@ public class PapifyEngine {
 
         // The variable to store the monitoring
         PapifyAction papifyActionName = CodegenFactory.eINSTANCE.createPapifyAction();
-        papifyActionName.setName("papify_actions_".concat(name));
+        papifyActionName.setName("papify_actions_".concat(actionName));
 
         // Set the id associated to the Papify configuration
         // Add the PAPI component name
@@ -331,28 +332,22 @@ public class PapifyEngine {
   void configurePapifyFunctionsManager(MapperDAGVertex vertex) {
     // System.out.println(vertex.getInfo()); // Which vertex is entering here?
     if (vertex.getRefinement() instanceof AbstractGraph) {
-      // with this method the getReferencePiVertex is not
-      // working... I don't have MapperDagVertex anymore inside
-      // this
-      org.preesm.model.pisdf.AbstractVertex referencePiVertex = vertex.getReferencePiVertex();
-      if (referencePiVertex != null && referencePiVertex instanceof PiGraph) {
+      org.preesm.model.pisdf.AbstractVertex referencePiVertexA = vertex.getReferencePiVertex();
+      org.preesm.model.pisdf.AbstractVertex referencePiVertex = PreesmCopyTracker.getOriginalSource(referencePiVertexA);
+      if (referencePiVertex instanceof PiGraph) {
         for (AbstractActor actor : ((PiGraph) referencePiVertex).getAllActors()) {
-          configurePapifyFunctions(actor, actor.getVertexPath(), vertex.getName());
+          String papifyActionNameBuilder = actor.getVertexPath().substring(actor.getVertexPath().indexOf('/') + 1);
+          papifyActionNameBuilder = papifyActionNameBuilder.replace('/', '_');
+          configurePapifyFunctions(actor, actor.getVertexPath(), vertex.getName(), papifyActionNameBuilder);
         }
       }
-      /*
-       * @SuppressWarnings("unchecked") final AbstractGraph<AbstractVertex<?>, AbstractEdge<?, AbstractVertex<?>>> graph
-       * = vertex.getGraphDescription(); Set<AbstractVertex<?>> children = graph.vertexSet(); for (AbstractVertex<?>
-       * child : children) { if (child instanceof SDFVertex) { org.preesm.model.pisdf.AbstractVertex referencePiVertex =
-       * child.getReferencePiVertex(); System.out.println(referencePiVertex.toString()); if (referencePiVertex
-       * instanceof AbstractActor) { configurePapifyFunctions((AbstractActor) referencePiVertex, vertex.getInfo(),
-       * vertex.getName()); } } }
-       */
 
     } else {
-      org.preesm.model.pisdf.AbstractVertex referencePiVertex = vertex.getReferencePiVertex();
-      if (referencePiVertex != null && referencePiVertex instanceof AbstractActor) {
-        configurePapifyFunctions((AbstractActor) referencePiVertex, vertex.getInfo(), vertex.getName());
+      org.preesm.model.pisdf.AbstractVertex referencePiVertexA = vertex.getReferencePiVertex();
+      org.preesm.model.pisdf.AbstractVertex referencePiVertex = PreesmCopyTracker.getOriginalSource(referencePiVertexA);
+      if (referencePiVertex instanceof AbstractActor) {
+        configurePapifyFunctions((AbstractActor) referencePiVertex, vertex.getInfo(), vertex.getName(),
+            vertex.getName());
       }
     }
   }
