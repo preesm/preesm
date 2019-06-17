@@ -345,10 +345,6 @@ public class ScenarioWriter {
     for (final ComponentInstance opId : this.scenario.getSimulationInfo().getSpecialVertexOperators()) {
       writeSpecialVertexOperator(sVOperators, opId);
     }
-
-    final Element nbExec = this.dom.createElement("numberOfTopExecutions");
-    params.appendChild(nbExec);
-    nbExec.setTextContent(String.valueOf(this.scenario.getSimulationInfo().getNumberOfTopExecutions()));
   }
 
   /**

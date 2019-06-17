@@ -294,9 +294,6 @@ public class ScenarioParser {
             case "specialVertexOperators":
               parseSpecialVertexOperators(elt);
               break;
-            case "numberOfTopExecutions":
-              this.scenario.getSimulationInfo().setNumberOfTopExecutions(Integer.parseInt(content));
-              break;
             default:
           }
         }

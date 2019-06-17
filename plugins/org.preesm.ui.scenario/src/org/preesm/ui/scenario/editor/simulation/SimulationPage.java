@@ -214,33 +214,6 @@ public class SimulationPage extends ScenarioPage {
           }
         }
       };
-
-      // Average data size section
-      createIntegerSection(managedForm, Messages.getString("Simulation.DataAverageSize.title"),
-          Messages.getString("Simulation.DataAverageSize.description"), averageDataSizeListener,
-          String.valueOf(this.scenario.getSimulationInfo().getAverageDataSize()));
-
-      // Text modification listener that updates the average data size
-      final ModifyListener numberOfTopExecutionsListener = new ModifyListener() {
-        @Override
-        public void modifyText(final ModifyEvent e) {
-          final Text text = (Text) e.getSource();
-          int number = 1;
-          try {
-            number = Integer.valueOf(text.getText());
-            SimulationPage.this.scenario.getSimulationInfo().setNumberOfTopExecutions(number);
-            propertyChanged(this, IEditorPart.PROP_DIRTY);
-          } catch (final NumberFormatException ex) {
-            ex.printStackTrace();
-          }
-        }
-      };
-
-      // Number of top-level execution section, added only for PiSDF algorithms
-      createIntegerSection(managedForm, Messages.getString("Overview.simulationTitle"),
-          Messages.getString("Overview.simulationDescription"), numberOfTopExecutionsListener,
-          String.valueOf(this.scenario.getSimulationInfo().getNumberOfTopExecutions()));
-
       // Data type section
       createDataTypesSection(managedForm, Messages.getString("Simulation.DataTypes.title"),
           Messages.getString("Simulation.DataTypes.description"));
@@ -248,6 +221,11 @@ public class SimulationPage extends ScenarioPage {
       // Cores to execute broadcast/fork/join selection
       createSpecialVertexSection(managedForm, Messages.getString("Simulation.SpecialVertex.title"),
           Messages.getString("Simulation.SpecialVertex.description"));
+
+      // Average data size section
+      createIntegerSection(managedForm, Messages.getString("Simulation.DataAverageSize.title"),
+          Messages.getString("Simulation.DataAverageSize.description"), averageDataSizeListener,
+          String.valueOf(this.scenario.getSimulationInfo().getAverageDataSize()));
 
       managedForm.refresh();
       managedForm.reflow(true);
