@@ -78,7 +78,8 @@ import org.eclipse.ui.forms.widgets.Section;
 import org.preesm.model.scenario.Scenario;
 import org.preesm.model.scenario.serialize.PreesmAlgorithmListContentProvider;
 import org.preesm.model.scenario.serialize.TimingImporter;
-import org.preesm.model.slam.utils.DesignTools;
+import org.preesm.model.slam.Design;
+import org.preesm.model.slam.component.Component;
 import org.preesm.ui.scenario.editor.FileSelectionAdapter;
 import org.preesm.ui.scenario.editor.Messages;
 import org.preesm.ui.scenario.editor.ScenarioPage;
@@ -316,8 +317,9 @@ public class TimingsPage extends ScenarioPage {
    */
   private void comboDataInit(final Combo combo) {
     combo.removeAll();
-    for (final String defId : DesignTools.getOperatorComponentIds(this.scenario.getDesign())) {
-      combo.add(defId);
+    final Design design = this.scenario.getDesign();
+    for (final Component defId : design.getOperatorComponents()) {
+      combo.add(defId.getVlnv().getName());
     }
   }
 

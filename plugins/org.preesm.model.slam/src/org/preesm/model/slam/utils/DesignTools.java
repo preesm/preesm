@@ -77,21 +77,6 @@ public class DesignTools {
   }
 
   /**
-   * Getting all operator ids in architecture.
-   *
-   * @param design
-   *          the design
-   * @return the operator component ids
-   */
-  public static List<String> getOperatorComponentIds(final Design design) {
-    final List<String> operatorIds = new ArrayList<>();
-    for (final org.preesm.model.slam.component.Component component : design.getOperatorComponents()) {
-      operatorIds.add(component.getVlnv().getName());
-    }
-    return Collections.unmodifiableList(operatorIds);
-  }
-
-  /**
    * Gets the ordered operator.
    *
    * @return the ordered operator

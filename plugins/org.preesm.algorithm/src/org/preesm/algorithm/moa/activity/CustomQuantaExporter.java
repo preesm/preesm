@@ -82,7 +82,6 @@ import org.preesm.model.slam.component.Component;
 import org.preesm.model.slam.route.AbstractRouteStep;
 import org.preesm.model.slam.route.MessageRouteStep;
 import org.preesm.model.slam.route.Route;
-import org.preesm.model.slam.utils.DesignTools;
 import org.preesm.workflow.elements.Workflow;
 import org.preesm.workflow.implement.AbstractTaskImplementation;
 import org.preesm.workflow.implement.AbstractWorkflowNodeImplementation;
@@ -241,7 +240,7 @@ public class CustomQuantaExporter extends AbstractTaskImplementation {
   private void visitVertex(final MapperDAGVertex vertex) {
     final String duration = vertex.getPropertyStringValue(ImplementationPropertyNames.Task_duration);
     final Component operator = vertex.getEffectiveComponent().getComponent();
-    final String cquanta = this.customQuanta.getQuanta(vertex.getName(), operator.getVlnv().getName());
+    final String cquanta = this.customQuanta.getQuanta(vertex.getName(), operator);
 
     if (!cquanta.isEmpty()) {
       // Resolving the value as a String expression of t
@@ -351,8 +350,8 @@ public class CustomQuantaExporter extends AbstractTaskImplementation {
         final Workbook w = Workbook.getWorkbook(iFile.getContents());
 
         final PiGraph currentGraph = scenario.getAlgorithm();
-        final List<String> operators = DesignTools.getOperatorComponentIds(scenario.getDesign());
-        parseQuantaForPISDFGraph(w, currentGraph, operators);
+        final Design design = scenario.getDesign();
+        parseQuantaForPISDFGraph(w, currentGraph, design.getOperatorComponents());
 
         // Warnings are displayed once for each missing operator or vertex
         // in the excel sheet
@@ -366,7 +365,7 @@ public class CustomQuantaExporter extends AbstractTaskImplementation {
   /**
    * Reading individual quanta information from an excel file. Recursive method.
    */
-  void parseQuantaForPISDFGraph(final Workbook w, final PiGraph appli, final List<String> operators) {
+  void parseQuantaForPISDFGraph(final Workbook w, final PiGraph appli, final List<Component> operators) {
     // Each of the vertices of the graph is either itself a graph
     // (hierarchical vertex), in which case we call recursively this method
     // we parse quanta for standard and special vertices
@@ -400,12 +399,12 @@ public class CustomQuantaExporter extends AbstractTaskImplementation {
   /**
    * Reading individual quanta information from an excel file. Recursive method.
    */
-  void parseQuantaForVertex(final Workbook w, final String vertexName, final List<String> operators) {
+  void parseQuantaForVertex(final Workbook w, final String vertexName, final List<Component> operators) {
 
     // Test excel reader, to be continued
-    for (final String opDefId : operators) {
+    for (final Component opDefId : operators) {
       final Cell vertexCell = w.getSheet(0).findCell(vertexName);
-      final Cell operatorCell = w.getSheet(0).findCell(opDefId);
+      final Cell operatorCell = w.getSheet(0).findCell(opDefId.getVlnv().getName());
 
       if ((vertexCell != null) && (operatorCell != null)) {
         // Get the cell containing the timing
