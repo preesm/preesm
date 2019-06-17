@@ -59,7 +59,7 @@ import org.eclipse.ui.forms.widgets.ExpandableComposite;
 import org.eclipse.ui.forms.widgets.ScrolledForm;
 import org.eclipse.ui.forms.widgets.Section;
 import org.preesm.model.pisdf.Parameter;
-import org.preesm.model.scenario.PreesmScenario;
+import org.preesm.model.scenario.Scenario;
 import org.preesm.ui.scenario.editor.Messages;
 import org.preesm.ui.scenario.editor.utils.VertexLexicographicalComparator;
 
@@ -71,7 +71,7 @@ import org.preesm.ui.scenario.editor.utils.VertexLexicographicalComparator;
 public class PiParametersPage extends FormPage implements IPropertyListener {
 
   /** The {@link PreesmScenario}. */
-  private PreesmScenario scenario = null;
+  private Scenario scenario = null;
 
   /** The table viewer. */
   private TableViewer tableViewer;
@@ -95,7 +95,7 @@ public class PiParametersPage extends FormPage implements IPropertyListener {
    * @param title
    *          the title
    */
-  public PiParametersPage(final PreesmScenario scenario, final FormEditor editor, final String id, final String title) {
+  public PiParametersPage(final Scenario scenario, final FormEditor editor, final String id, final String title) {
     super(editor, id, title);
     this.scenario = scenario;
   }

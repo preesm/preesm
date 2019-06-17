@@ -57,7 +57,7 @@ import org.preesm.commons.doc.annotations.Port;
 import org.preesm.commons.doc.annotations.PreesmTask;
 import org.preesm.commons.doc.annotations.Value;
 import org.preesm.commons.exceptions.PreesmRuntimeException;
-import org.preesm.model.scenario.PreesmScenario;
+import org.preesm.model.scenario.Scenario;
 import org.preesm.model.slam.Design;
 import org.preesm.workflow.elements.Workflow;
 import org.preesm.workflow.implement.AbstractTaskImplementation;
@@ -69,7 +69,7 @@ import org.preesm.workflow.implement.AbstractTaskImplementation;
     category = "Code Generation",
 
     inputs = { @Port(name = "MEGs", type = Map.class), @Port(name = "DAG", type = DirectedAcyclicGraph.class),
-        @Port(name = "scenario", type = PreesmScenario.class), @Port(name = "architecture", type = Design.class) },
+        @Port(name = "scenario", type = Scenario.class), @Port(name = "architecture", type = Design.class) },
 
     shortDescription = "Generate code for the application deployment resulting from the workflow execution.",
 
@@ -116,7 +116,7 @@ public class CodegenTask extends AbstractTaskImplementation {
       final IProgressMonitor monitor, final String nodeName, final Workflow workflow) {
 
     // Retrieve inputs
-    final PreesmScenario scenario = (PreesmScenario) inputs.get("scenario");
+    final Scenario scenario = (Scenario) inputs.get("scenario");
     final Design archi = (Design) inputs.get("architecture");
     @SuppressWarnings("unchecked")
     final Map<String, MemoryExclusionGraph> megs = (Map<String, MemoryExclusionGraph>) inputs.get("MEGs");

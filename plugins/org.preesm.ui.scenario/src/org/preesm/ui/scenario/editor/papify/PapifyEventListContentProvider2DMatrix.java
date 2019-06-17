@@ -50,7 +50,7 @@ import org.preesm.model.pisdf.ForkActor;
 import org.preesm.model.pisdf.JoinActor;
 import org.preesm.model.pisdf.PiGraph;
 import org.preesm.model.pisdf.RoundBufferActor;
-import org.preesm.model.scenario.PreesmScenario;
+import org.preesm.model.scenario.Scenario;
 
 /**
  * Provides the elements contained in the papify editor.
@@ -60,7 +60,7 @@ import org.preesm.model.scenario.PreesmScenario;
 public class PapifyEventListContentProvider2DMatrix implements ITreeContentProvider {
 
   /** Currently edited scenario. */
-  private PreesmScenario   scenario           = null;
+  private Scenario         scenario           = null;
   PapifyCheckStateListener checkStateListener = null;
 
   /** The current PISDF graph. */
@@ -76,7 +76,7 @@ public class PapifyEventListContentProvider2DMatrix implements ITreeContentProvi
    * @param scenario
    *          the scenario
    */
-  public PapifyEventListContentProvider2DMatrix(PreesmScenario scenario) {
+  public PapifyEventListContentProvider2DMatrix(Scenario scenario) {
     super();
     this.scenario = scenario;
   }
@@ -157,8 +157,8 @@ public class PapifyEventListContentProvider2DMatrix implements ITreeContentProvi
   public Object[] getElements(final Object inputElement) {
     final Object[] table = new Object[1];
 
-    if (inputElement instanceof PreesmScenario) {
-      this.scenario = (PreesmScenario) inputElement;
+    if (inputElement instanceof Scenario) {
+      this.scenario = (Scenario) inputElement;
       // Opening algorithm from file
       try {
         this.currentPISDFGraph = scenario.getAlgorithm();

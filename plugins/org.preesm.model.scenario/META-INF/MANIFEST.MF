@@ -18,10 +18,11 @@ Require-Bundle: org.eclipse.core.runtime,
  net.sourceforge.jexcelapi.jxl;bundle-version="2.6.10",
  org.apache.commons.lang3;bundle-version="3.8.1"
 Bundle-ActivationPolicy: lazy
-Bundle-Vendor: IETR / INSA Rennes - VAADER
+Bundle-Vendor: %providerName
 Export-Package: org.preesm.model.scenario,
+ org.preesm.model.scenario.impl,
+ org.preesm.model.scenario.util,
  org.preesm.model.scenario.generator,
- org.preesm.model.scenario.papi,
  org.preesm.model.scenario.serialize,
  org.preesm.model.scenario.types,
  org.preesm.model.scenario.workflow

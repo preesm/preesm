@@ -46,7 +46,7 @@ import org.preesm.algorithm.throughput.tools.GraphStructureHelper;
 import org.preesm.algorithm.throughput.tools.SDFTransformer;
 import org.preesm.algorithm.throughput.tools.Stopwatch;
 import org.preesm.model.pisdf.AbstractActor;
-import org.preesm.model.scenario.PreesmScenario;
+import org.preesm.model.scenario.Scenario;
 
 /**
  * @author hderoui
@@ -56,7 +56,7 @@ public class LatencyEvaluationEngine {
 
   // list of replacement graphs
   private Map<String, SDFGraph> replacementSubgraphlList;
-  private PreesmScenario        scenario;
+  private Scenario              scenario;
   Stopwatch                     timer;
 
   /**
@@ -64,7 +64,7 @@ public class LatencyEvaluationEngine {
    *
    * @return maxLatency
    */
-  public long getMinLatencySingleCore(final SDFGraph graph, final PreesmScenario scenario) {
+  public long getMinLatencySingleCore(final SDFGraph graph, final Scenario scenario) {
     this.timer = new Stopwatch();
     this.timer.start();
 
@@ -82,9 +82,8 @@ public class LatencyEvaluationEngine {
       } else {
         // case of regular actor : get its latency from the scenario
         if (scenario != null) {
-          actorLatency = scenario.getTimingManager().evaluateTimingOrDefault(
-              (AbstractActor) actor.getReferencePiMMVertex(),
-              scenario.getSimulationManager().getMainOperator().getComponent());
+          actorLatency = scenario.getTimings().evaluateTimingOrDefault((AbstractActor) actor.getReferencePiMMVertex(),
+              scenario.getSimulationInfo().getMainOperator().getComponent());
         } else {
           actorLatency = (long) actor.getPropertyBean().getValue("duration");
         }
@@ -106,8 +105,7 @@ public class LatencyEvaluationEngine {
    *
    * @return subgraph latency
    */
-  private long getSubgraphMinLatencySinlgeCore(final SDFAbstractVertex hierarchicalActor,
-      final PreesmScenario scenario) {
+  private long getSubgraphMinLatencySinlgeCore(final SDFAbstractVertex hierarchicalActor, final Scenario scenario) {
     // sum l(a)*rv_global(a) -- not the local RV
     long subgraphLatency = 0;
 
@@ -125,9 +123,8 @@ public class LatencyEvaluationEngine {
       } else {
         // case of regular actor : get its latency from the scenario
         if (scenario != null) {
-          actorLatency = scenario.getTimingManager().evaluateTimingOrDefault(
-              (AbstractActor) actor.getReferencePiMMVertex(),
-              scenario.getSimulationManager().getMainOperator().getComponent());
+          actorLatency = scenario.getTimings().evaluateTimingOrDefault((AbstractActor) actor.getReferencePiMMVertex(),
+              scenario.getSimulationInfo().getMainOperator().getComponent());
         } else {
           actorLatency = (long) actor.getPropertyBean().getValue("duration");
         }
@@ -146,7 +143,7 @@ public class LatencyEvaluationEngine {
    *
    * @return minLatency
    */
-  public double getMinLatencyMultiCore(final SDFGraph graph, final PreesmScenario scenario, final Boolean retiming) {
+  public double getMinLatencyMultiCore(final SDFGraph graph, final Scenario scenario, final Boolean retiming) {
 
     /*
      * Algorithm
@@ -292,9 +289,8 @@ public class LatencyEvaluationEngine {
         // get actor duration
         double duration;
         if (this.scenario != null) {
-          duration = this.scenario.getTimingManager().evaluateTimingOrDefault(
-              (AbstractActor) actor.getReferencePiMMVertex(),
-              scenario.getSimulationManager().getMainOperator().getComponent());
+          duration = this.scenario.getTimings().evaluateTimingOrDefault((AbstractActor) actor.getReferencePiMMVertex(),
+              scenario.getSimulationInfo().getMainOperator().getComponent());
         } else {
           duration = (Double) actor.getPropertyBean().getValue("duration");
         }

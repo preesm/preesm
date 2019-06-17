@@ -57,7 +57,7 @@ import org.preesm.commons.logger.PreesmLogger;
 import org.preesm.model.pisdf.AbstractActor;
 import org.preesm.model.pisdf.AbstractVertex;
 import org.preesm.model.pisdf.PiGraph;
-import org.preesm.model.scenario.PreesmScenario;
+import org.preesm.model.scenario.Scenario;
 import org.preesm.model.slam.component.Component;
 
 /**
@@ -68,7 +68,7 @@ import org.preesm.model.slam.component.Component;
 public class ExcelTimingParser {
 
   /** The scenario. */
-  private PreesmScenario scenario = null;
+  private Scenario scenario = null;
 
   /**
    * Instantiates a new excel timing parser.
@@ -76,7 +76,7 @@ public class ExcelTimingParser {
    * @param scenario
    *          the scenario
    */
-  public ExcelTimingParser(final PreesmScenario scenario) {
+  public ExcelTimingParser(final Scenario scenario) {
     super();
     this.scenario = scenario;
   }
@@ -197,7 +197,7 @@ public class ExcelTimingParser {
             stringTiming = stringTiming.replaceAll(" ", "");
 
             try {
-              this.scenario.getTimingManager().setTiming(actor, component, expression);
+              this.scenario.getTimings().setTiming(actor, component, expression);
               final String msg = "Importing timing: " + actor.getVertexPath() + " on " + component.getVlnv().getName()
                   + " takes " + expression;
               PreesmLogger.getLogger().log(Level.INFO, msg);

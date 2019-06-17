@@ -52,6 +52,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.logging.Level;
 import org.eclipse.emf.common.util.EList;
+import org.eclipse.emf.common.util.EMap;
 import org.preesm.codegen.xtend.spider.utils.SpiderNameGenerator;
 import org.preesm.codegen.xtend.spider.utils.SpiderTypeConverter;
 import org.preesm.codegen.xtend.spider.utils.SpiderTypeConverter.PiSDFSubType;
@@ -91,7 +92,6 @@ import org.preesm.model.pisdf.PiSDFRefinement;
 import org.preesm.model.pisdf.Port;
 import org.preesm.model.pisdf.RoundBufferActor;
 import org.preesm.model.pisdf.util.PiMMSwitch;
-import org.preesm.model.scenario.types.DataType;
 import org.preesm.model.slam.ComponentInstance;
 import org.preesm.model.slam.component.Component;
 
@@ -120,7 +120,7 @@ public class SpiderCodegenVisitor extends PiMMSwitch<Boolean> {
   private final Map<PiGraph, StringBuilder> graph2method    = new LinkedHashMap<>();
   private final Map<PiGraph, List<PiGraph>> graph2subgraphs = new LinkedHashMap<>();
 
-  private final Map<String, DataType> dataTypes;
+  private final EMap<String, Long> dataTypes;
 
   private StringBuilder currentMethod;
 
@@ -158,7 +158,7 @@ public class SpiderCodegenVisitor extends PiMMSwitch<Boolean> {
    */
   public SpiderCodegenVisitor(final SpiderCodegen callerSpiderCodegen, final StringBuilder topMethod,
       final SpiderPreProcessVisitor prepocessor, final Map<AbstractActor, Map<Component, String>> timings,
-      final Map<AbstractActor, Set<ComponentInstance>> constraints, final Map<String, DataType> dataTypes) {
+      final Map<AbstractActor, Set<ComponentInstance>> constraints, final EMap<String, Long> dataTypes) {
     this.callerSpiderCodegen = callerSpiderCodegen;
     this.currentMethod = topMethod;
     this.preprocessor = prepocessor;
@@ -574,7 +574,7 @@ public class SpiderCodegenVisitor extends PiMMSwitch<Boolean> {
 
     long typeSize;
     if (this.dataTypes.containsKey(f.getType())) {
-      typeSize = this.dataTypes.get(f.getType()).getSize();
+      typeSize = this.dataTypes.get(f.getType());
     } else {
       PreesmLogger.getLogger().warning("Type " + f.getType() + " is not defined in scenario (considered size = 1).");
       typeSize = 1;

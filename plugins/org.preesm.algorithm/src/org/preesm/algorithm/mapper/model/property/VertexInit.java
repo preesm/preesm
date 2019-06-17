@@ -46,7 +46,7 @@ import java.util.List;
 import org.preesm.algorithm.mapper.abc.SpecialVertexManager;
 import org.preesm.algorithm.mapper.model.MapperDAGVertex;
 import org.preesm.commons.CloneableProperty;
-import org.preesm.model.scenario.TimingManager;
+import org.preesm.model.scenario.ScenarioConstants;
 import org.preesm.model.slam.ComponentInstance;
 import org.preesm.model.slam.component.Component;
 
@@ -216,7 +216,7 @@ public class VertexInit implements CloneableProperty<VertexInit> {
             // repetitions
             time = returntiming.getTime() * this.nbRepeat;
           } else {
-            time = TimingManager.DEFAULT_TASK_TIME;
+            time = ScenarioConstants.DEFAULT_TIMING_TASK.getValue();
           }
         }
       } else {
@@ -225,10 +225,10 @@ public class VertexInit implements CloneableProperty<VertexInit> {
           if (returntiming.getTime() != 0) {
             time = returntiming.getTime();
           } else {
-            time = TimingManager.DEFAULT_SPECIAL_VERTEX_TIME;
+            time = ScenarioConstants.DEFAULT_TIMING_SPECIAL_TASK.getValue();
           }
         } else {
-          time = TimingManager.DEFAULT_SPECIAL_VERTEX_TIME;
+          time = ScenarioConstants.DEFAULT_TIMING_SPECIAL_TASK.getValue();
         }
       }
     }

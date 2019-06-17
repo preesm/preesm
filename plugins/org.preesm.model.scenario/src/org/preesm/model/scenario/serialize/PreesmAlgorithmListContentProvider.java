@@ -46,7 +46,7 @@ import org.eclipse.jface.viewers.Viewer;
 import org.preesm.model.pisdf.AbstractActor;
 import org.preesm.model.pisdf.Actor;
 import org.preesm.model.pisdf.PiGraph;
-import org.preesm.model.scenario.PreesmScenario;
+import org.preesm.model.scenario.Scenario;
 
 /**
  * Provides the elements contained in the timing editor.
@@ -65,8 +65,8 @@ public class PreesmAlgorithmListContentProvider implements IStructuredContentPro
 
     Object[] elementTable = null;
 
-    if (inputElement instanceof PreesmScenario) {
-      final PreesmScenario inputScenario = (PreesmScenario) inputElement;
+    if (inputElement instanceof Scenario) {
+      final Scenario inputScenario = (Scenario) inputElement;
 
       try {
         elementTable = getSortedPISDFVertices(inputScenario).toArray();
@@ -86,7 +86,7 @@ public class PreesmAlgorithmListContentProvider implements IStructuredContentPro
    * @throws CoreException
    *           the core exception
    */
-  public List<AbstractActor> getSortedPISDFVertices(final PreesmScenario inputScenario) throws CoreException {
+  public List<AbstractActor> getSortedPISDFVertices(final Scenario inputScenario) throws CoreException {
     final PiGraph currentGraph = inputScenario.getAlgorithm();
     return filterVertices(currentGraph.getAllActors());
   }

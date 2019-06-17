@@ -58,8 +58,8 @@ import org.preesm.model.pisdf.PeriodicElement;
 import org.preesm.model.pisdf.PiGraph;
 import org.preesm.model.pisdf.brv.BRVMethod;
 import org.preesm.model.pisdf.brv.PiBRV;
-import org.preesm.model.scenario.PreesmScenario;
-import org.preesm.model.scenario.TimingManager;
+import org.preesm.model.scenario.Scenario;
+import org.preesm.model.scenario.ScenarioConstants;
 import org.preesm.model.slam.Design;
 import org.preesm.model.slam.component.Component;
 import org.preesm.model.slam.utils.DesignTools;
@@ -76,7 +76,7 @@ import org.preesm.workflow.implement.AbstractWorkflowNodeImplementation;
 @PreesmTask(id = "org.ietr.preesm.pimm.algorithm.checker.periods.PeriodsPreschedulingChecker",
     name = "Periods Prescheduling Checker",
 
-    inputs = { @Port(name = "PiMM", type = PiGraph.class), @Port(name = "scenario", type = PreesmScenario.class),
+    inputs = { @Port(name = "PiMM", type = PiGraph.class), @Port(name = "scenario", type = Scenario.class),
         @Port(name = "architecture", type = Design.class) },
 
     outputs = { @Port(name = "PiMM", type = PiGraph.class) },
@@ -105,7 +105,7 @@ public class PeriodsPreschedulingChecker extends AbstractTaskImplementation {
       final IProgressMonitor monitor, final String nodeName, final Workflow workflow) {
 
     inputs.get(AbstractWorkflowNodeImplementation.KEY_ARCHITECTURE);
-    final PreesmScenario scenario = (PreesmScenario) inputs.get(AbstractWorkflowNodeImplementation.KEY_SCENARIO);
+    final Scenario scenario = (Scenario) inputs.get(AbstractWorkflowNodeImplementation.KEY_SCENARIO);
     final PiGraph graph = (PiGraph) inputs.get(AbstractWorkflowNodeImplementation.KEY_PI_GRAPH);
 
     if (!graph.getChildrenGraphs().isEmpty()) {
@@ -144,14 +144,14 @@ public class PeriodsPreschedulingChecker extends AbstractTaskImplementation {
       long wcetMin = Long.MAX_VALUE;
       if (actor instanceof AbstractActor) {
         for (final Component operatorDefinitionID : DesignTools.getOperatorComponents(scenario.getDesign())) {
-          final long timing = scenario.getTimingManager().evaluateTimingOrDefault((AbstractActor) actor,
+          final long timing = scenario.getTimings().evaluateTimingOrDefault((AbstractActor) actor,
               operatorDefinitionID);
           if (timing < wcetMin) {
             wcetMin = timing;
           }
         }
       } else {
-        wcetMin = TimingManager.DEFAULT_TASK_TIME;
+        wcetMin = ScenarioConstants.DEFAULT_TIMING_TASK.getValue();
       }
       System.err.println(
           "Actor : " + actor.getName() + " has wcet (min) : " + wcetMin + " [full path: " + actor.getVertexPath());

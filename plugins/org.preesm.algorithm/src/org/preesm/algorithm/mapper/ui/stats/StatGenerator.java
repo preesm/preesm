@@ -53,7 +53,7 @@ import org.preesm.algorithm.model.PropertyBean;
 import org.preesm.algorithm.model.dag.DAGEdge;
 import org.preesm.algorithm.model.dag.DAGVertex;
 import org.preesm.commons.exceptions.PreesmException;
-import org.preesm.model.scenario.PreesmScenario;
+import org.preesm.model.scenario.Scenario;
 import org.preesm.model.scenario.types.ImplementationPropertyNames;
 import org.preesm.model.scenario.types.VertexType;
 import org.preesm.model.slam.ComponentInstance;
@@ -70,7 +70,7 @@ public class StatGenerator {
   private LatencyAbc abc = null;
 
   /** The scenario. */
-  private PreesmScenario scenario = null;
+  private Scenario scenario = null;
 
   /** The params. */
   private Map<String, String> params = null;
@@ -88,7 +88,7 @@ public class StatGenerator {
    * @param params
    *          the params
    */
-  public StatGenerator(final LatencyAbc abc, final PreesmScenario scenario, final Map<String, String> params) {
+  public StatGenerator(final LatencyAbc abc, final Scenario scenario, final Map<String, String> params) {
     super();
     this.params = params;
     this.scenario = scenario;
@@ -133,7 +133,7 @@ public class StatGenerator {
     long work = 0;
     final MapperDAG dag = this.abc.getDAG();
 
-    final ComponentInstance mainOp = this.scenario.getSimulationManager().getMainOperator();
+    final ComponentInstance mainOp = this.scenario.getSimulationInfo().getMainOperator();
 
     for (final DAGVertex vertex : dag.vertexSet()) {
       if (!(vertex instanceof TransferVertex) && !(vertex instanceof OverheadVertex)
@@ -187,7 +187,7 @@ public class StatGenerator {
    */
   public int getNbMainTypeOperators() {
     int nbMainTypeOperators = 0;
-    final ComponentInstance mainOp = this.scenario.getSimulationManager().getMainOperator();
+    final ComponentInstance mainOp = this.scenario.getSimulationInfo().getMainOperator();
     nbMainTypeOperators = DesignTools.getInstancesOfComponent(this.abc.getArchitecture(), mainOp.getComponent()).size();
     return nbMainTypeOperators;
   }
@@ -260,7 +260,7 @@ public class StatGenerator {
    *
    * @return the scenario
    */
-  public PreesmScenario getScenario() {
+  public Scenario getScenario() {
     return this.scenario;
   }
 

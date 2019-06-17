@@ -45,10 +45,9 @@ import org.eclipse.swt.events.PaintListener;
 import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.IPropertyListener;
 import org.eclipse.ui.forms.widgets.Section;
-import org.preesm.model.scenario.PreesmScenario;
+import org.preesm.model.scenario.Scenario;
 import org.preesm.model.slam.ComponentInstance;
 
-// TODO: Auto-generated Javadoc
 /**
  * Listener of the check state of the Operator tree.
  *
@@ -57,7 +56,7 @@ import org.preesm.model.slam.ComponentInstance;
 public class OperatorCheckStateListener implements ICheckStateListener, PaintListener {
 
   /** Currently edited scenario. */
-  private PreesmScenario scenario = null;
+  private Scenario scenario = null;
 
   /** Current section (necessary to diplay busy status). */
   private Section section = null;
@@ -76,7 +75,7 @@ public class OperatorCheckStateListener implements ICheckStateListener, PaintLis
    * @param scenario
    *          the scenario
    */
-  public OperatorCheckStateListener(final Section section, final PreesmScenario scenario) {
+  public OperatorCheckStateListener(final Section section, final Scenario scenario) {
     super();
     this.scenario = scenario;
     this.section = section;
@@ -113,11 +112,10 @@ public class OperatorCheckStateListener implements ICheckStateListener, PaintLis
           final ComponentInstance componentInstance = (ComponentInstance) element;
 
           if (isChecked) {
-            OperatorCheckStateListener.this.scenario.getSimulationManager()
-                .addSpecialVertexOperator(componentInstance);
+            OperatorCheckStateListener.this.scenario.getSimulationInfo().addSpecialVertexOperator(componentInstance);
           } else {
-            OperatorCheckStateListener.this.scenario.getSimulationManager()
-                .removeSpecialVertexOperator(componentInstance);
+            OperatorCheckStateListener.this.scenario.getSimulationInfo().getSpecialVertexOperators()
+                .remove(componentInstance);
           }
 
           OperatorCheckStateListener.this.propertyListener.propertyChanged(this, IEditorPart.PROP_DIRTY);
@@ -131,7 +129,7 @@ public class OperatorCheckStateListener implements ICheckStateListener, PaintLis
    */
   public void updateCheck() {
     if (this.scenario != null) {
-      this.treeViewer.setCheckedElements(this.scenario.getSimulationManager().getSpecialVertexOperators().toArray());
+      this.treeViewer.setCheckedElements(this.scenario.getSimulationInfo().getSpecialVertexOperators().toArray());
     }
   }
 

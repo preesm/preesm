@@ -36,6 +36,7 @@
  */
 package org.preesm.ui.scenario.editor.simulation;
 
+import java.util.Map.Entry;
 import org.eclipse.jface.dialogs.IInputValidator;
 import org.eclipse.jface.dialogs.InputDialog;
 import org.eclipse.jface.viewers.ILabelProviderListener;
@@ -47,11 +48,9 @@ import org.eclipse.swt.graphics.Image;
 import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.IPropertyListener;
 import org.eclipse.ui.PlatformUI;
-import org.preesm.model.scenario.PreesmScenario;
-import org.preesm.model.scenario.types.DataType;
+import org.preesm.model.scenario.Scenario;
 import org.preesm.ui.scenario.editor.Messages;
 
-// TODO: Auto-generated Javadoc
 /**
  * Displays the labels for data types and their sizes.
  *
@@ -60,7 +59,7 @@ import org.preesm.ui.scenario.editor.Messages;
 public class DataTypesLabelProvider implements ITableLabelProvider {
 
   /** The scenario. */
-  private PreesmScenario scenario = null;
+  private Scenario scenario = null;
 
   /** The table viewer. */
   private TableViewer tableViewer = null;
@@ -78,7 +77,7 @@ public class DataTypesLabelProvider implements ITableLabelProvider {
    * @param propertyListener
    *          the property listener
    */
-  public DataTypesLabelProvider(final PreesmScenario scenario, final TableViewer tableViewer,
+  public DataTypesLabelProvider(final Scenario scenario, final TableViewer tableViewer,
       final IPropertyListener propertyListener) {
     super();
     this.scenario = scenario;
@@ -106,14 +105,15 @@ public class DataTypesLabelProvider implements ITableLabelProvider {
   public String getColumnText(final Object element, final int columnIndex) {
     String text = "";
 
-    if (element instanceof DataType) {
-      final DataType type = (DataType) element;
+    if (element instanceof Entry) {
+      @SuppressWarnings("unchecked")
+      final Entry<String, Long> type = (Entry<String, Long>) element;
 
       if (columnIndex == 0) {
-        text = type.getTypeName();
+        text = type.getKey();
       } else if ((columnIndex == 1) && (this.scenario != null)) {
 
-        text = Long.toString(type.getSize());
+        text = Long.toString(type.getValue());
       }
     }
 
@@ -189,21 +189,22 @@ public class DataTypesLabelProvider implements ITableLabelProvider {
       return message;
     };
 
-    if (selection.getFirstElement() instanceof DataType) {
-      final DataType dataType = (DataType) selection.getFirstElement();
+    final Object element = selection.getFirstElement();
+    if (element instanceof Entry) {
+      @SuppressWarnings("unchecked")
+      final Entry<String, Long> dataType = (Entry<String, Long>) element;
 
       final String title = Messages.getString("Simulation.DataTypes.dialog.title");
-      final String message = Messages.getString("Simulation.DataTypes.dialog.message") + dataType.getTypeName();
+      final String message = Messages.getString("Simulation.DataTypes.dialog.message") + dataType.getKey();
 
-      final String init = String.valueOf(dataType.getSize());
+      final String init = String.valueOf(dataType.getValue());
 
       final InputDialog dialog = new InputDialog(PlatformUI.getWorkbench().getActiveWorkbenchWindow().getShell(), title,
           message, init, validator);
       if (dialog.open() == Window.OK) {
         final String value = dialog.getValue();
 
-        dataType.setSize(Integer.valueOf(value));
-        this.scenario.getSimulationManager().putDataType(dataType);
+        this.scenario.getSimulationInfo().getDataTypes().put(dataType.getKey(), Long.parseLong(value));
 
         this.tableViewer.refresh();
         this.propertyListener.propertyChanged(this, IEditorPart.PROP_DIRTY);

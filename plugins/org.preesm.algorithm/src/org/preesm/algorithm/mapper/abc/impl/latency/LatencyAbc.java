@@ -77,7 +77,7 @@ import org.preesm.algorithm.model.iterators.TopologicalDAGIterator;
 import org.preesm.commons.exceptions.PreesmException;
 import org.preesm.commons.exceptions.PreesmRuntimeException;
 import org.preesm.commons.logger.PreesmLogger;
-import org.preesm.model.scenario.PreesmScenario;
+import org.preesm.model.scenario.Scenario;
 import org.preesm.model.slam.ComponentInstance;
 import org.preesm.model.slam.Design;
 import org.preesm.model.slam.utils.DesignTools;
@@ -112,7 +112,7 @@ public abstract class LatencyAbc {
   protected AbstractTaskSched taskScheduler = null;
 
   /** Scenario with information common to algorithm and architecture. */
-  protected PreesmScenario scenario;
+  protected Scenario scenario;
 
   /**
    * Gets internal implementation graph. Use only for debug!
@@ -144,7 +144,7 @@ public abstract class LatencyAbc {
    *           the workflow exception
    */
   public static LatencyAbc getInstance(final AbcParameters params, final MapperDAG dag, final Design archi,
-      final PreesmScenario scenario) {
+      final Scenario scenario) {
 
     LatencyAbc abc = null;
     final AbcType simulatorType = params.getSimulatorType();
@@ -233,7 +233,7 @@ public abstract class LatencyAbc {
    *
    * @see org.ietr.preesm.mapper.abc.IAbc#getScenario()
    */
-  public final PreesmScenario getScenario() {
+  public final Scenario getScenario() {
     return this.scenario;
   }
 
@@ -775,7 +775,7 @@ public abstract class LatencyAbc {
    *          the scenario
    */
   public LatencyAbc(final AbcParameters params, final MapperDAG dag, final Design archi, final AbcType abcType,
-      final PreesmScenario scenario) {
+      final Scenario scenario) {
 
     this.abcType = abcType;
     this.orderManager = new OrderManager(archi);

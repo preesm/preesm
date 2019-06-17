@@ -56,8 +56,7 @@ import org.eclipse.ui.forms.widgets.Section;
 import org.preesm.model.pisdf.AbstractActor;
 import org.preesm.model.pisdf.Actor;
 import org.preesm.model.pisdf.PiGraph;
-import org.preesm.model.scenario.ConstraintGroupManager;
-import org.preesm.model.scenario.PreesmScenario;
+import org.preesm.model.scenario.Scenario;
 import org.preesm.model.slam.ComponentInstance;
 import org.preesm.model.slam.utils.DesignTools;
 import org.preesm.ui.scenario.editor.ISDFCheckStateListener;
@@ -73,7 +72,7 @@ import org.preesm.ui.scenario.editor.PreesmAlgorithmTreeContentProvider;
 public class ConstraintsCheckStateListener implements ISDFCheckStateListener {
 
   /** Currently edited scenario. */
-  private PreesmScenario scenario = null;
+  private Scenario scenario = null;
 
   /** Current operator. */
   private ComponentInstance currentOpId = null;
@@ -98,7 +97,7 @@ public class ConstraintsCheckStateListener implements ISDFCheckStateListener {
    * @param scenario
    *          the scenario
    */
-  public ConstraintsCheckStateListener(final Section section, final PreesmScenario scenario) {
+  public ConstraintsCheckStateListener(final Section section, final Scenario scenario) {
     super();
     this.scenario = scenario;
     this.section = section;
@@ -179,9 +178,9 @@ public class ConstraintsCheckStateListener implements ISDFCheckStateListener {
   private void fireOnCheck(final AbstractActor abstractActor, final boolean isChecked) {
     if (this.currentOpId != null) {
       if (isChecked) {
-        this.scenario.getConstraintGroupManager().addConstraint(this.currentOpId, abstractActor);
+        this.scenario.getConstraints().addConstraint(this.currentOpId, abstractActor);
       } else {
-        this.scenario.getConstraintGroupManager().removeConstraint(this.currentOpId, abstractActor);
+        this.scenario.getConstraints().getGroupConstraints().get(currentOpId).remove(abstractActor);
       }
     }
 
@@ -242,8 +241,7 @@ public class ConstraintsCheckStateListener implements ISDFCheckStateListener {
     if ((this.currentOpId != null) && (currentGraph != null)) {
       final Set<AbstractActor> cgSet = new LinkedHashSet<>();
 
-      final ConstraintGroupManager constraintGroupManager = this.scenario.getConstraintGroupManager();
-      final List<AbstractActor> cg = constraintGroupManager.getOpConstraintGroups(this.currentOpId);
+      final List<AbstractActor> cg = this.scenario.getConstraints().getGroupConstraints().get(this.currentOpId);
 
       if (cg != null) {
         // Retrieves the elements in the tree that have the same name as

@@ -51,7 +51,7 @@ import org.preesm.algorithm.model.sdf.esdf.SDFSinkInterfaceVertex;
 import org.preesm.algorithm.model.sdf.esdf.SDFSourceInterfaceVertex;
 import org.preesm.algorithm.model.types.LongEdgePropertyType;
 import org.preesm.model.pisdf.AbstractActor;
-import org.preesm.model.scenario.PreesmScenario;
+import org.preesm.model.scenario.Scenario;
 import org.preesm.model.slam.component.Component;
 
 /**
@@ -659,8 +659,8 @@ public interface GraphStructureHelper {
    *          source actor
    * @return list of distances
    */
-  public static Map<String, Double> getLongestPathToAllTargets(final SDFAbstractVertex source,
-      final PreesmScenario scenario, List<SDFAbstractVertex> topoSortList) {
+  public static Map<String, Double> getLongestPathToAllTargets(final SDFAbstractVertex source, final Scenario scenario,
+      List<SDFAbstractVertex> topoSortList) {
 
     // get the topological sorting of the graph
     if (topoSortList == null) {
@@ -681,9 +681,9 @@ public interface GraphStructureHelper {
       // define the edge weight as the duration of the current source actor
       double actorDuration;
       if (scenario != null) {
-        final Component component = scenario.getSimulationManager().getMainOperator().getComponent();
+        final Component component = scenario.getSimulationInfo().getMainOperator().getComponent();
         AbstractActor referencePiMMVertex = (AbstractActor) currentSource.getReferencePiMMVertex();
-        actorDuration = scenario.getTimingManager().evaluateTimingOrDefault(referencePiMMVertex, component);
+        actorDuration = scenario.getTimings().evaluateTimingOrDefault(referencePiMMVertex, component);
       } else {
         actorDuration = (double) currentSource.getPropertyBean().getValue(GraphStructureHelper.DURATION_PROPERTY);
       }
@@ -715,7 +715,7 @@ public interface GraphStructureHelper {
    *          graph
    * @return value of the longest path in the graph
    */
-  public static double getLongestPath(final SDFGraph dag, final PreesmScenario scenario,
+  public static double getLongestPath(final SDFGraph dag, final Scenario scenario,
       List<SDFAbstractVertex> topoSortList) {
     // add a source and a target actor
     final SDFAbstractVertex source = GraphStructureHelper.addActor(dag, "S_LongestPath", null, 1L, 0, 0, null);

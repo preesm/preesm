@@ -39,7 +39,7 @@ import org.preesm.algorithm.model.sdf.SDFAbstractVertex;
 import org.preesm.algorithm.model.sdf.SDFEdge;
 import org.preesm.algorithm.model.sdf.SDFGraph;
 import org.preesm.algorithm.model.sdf.esdf.SDFSourceInterfaceVertex;
-import org.preesm.model.scenario.PreesmScenario;
+import org.preesm.model.scenario.Scenario;
 
 /**
  * Class used to evaluate the throughput of a SDF or IBSDF graph on its optimal periodic schedule.
@@ -49,7 +49,7 @@ import org.preesm.model.scenario.PreesmScenario;
 public abstract class ThroughputEvaluator {
 
   /** The scenar. */
-  private PreesmScenario scenar;
+  private Scenario scenar;
 
   /**
    * Launches the evaluation of the throughput.
@@ -96,11 +96,11 @@ public abstract class ThroughputEvaluator {
     return minThroughput;
   }
 
-  public PreesmScenario getScenar() {
+  public Scenario getScenar() {
     return scenar;
   }
 
-  public void setScenar(PreesmScenario scenar) {
+  public void setScenar(Scenario scenar) {
     this.scenar = scenar;
   }
 }

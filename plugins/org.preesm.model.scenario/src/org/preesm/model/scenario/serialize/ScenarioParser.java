@@ -53,6 +53,9 @@ import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.runtime.CoreException;
+import org.eclipse.emf.common.util.BasicEList;
+import org.eclipse.emf.common.util.ECollections;
+import org.eclipse.emf.common.util.EList;
 import org.preesm.commons.exceptions.PreesmRuntimeException;
 import org.preesm.commons.logger.PreesmLogger;
 import org.preesm.model.pisdf.AbstractActor;
@@ -60,18 +63,18 @@ import org.preesm.model.pisdf.Parameter;
 import org.preesm.model.pisdf.PiGraph;
 import org.preesm.model.pisdf.serialize.PiParser;
 import org.preesm.model.pisdf.util.ActorPath;
-import org.preesm.model.scenario.MemCopySpeed;
-import org.preesm.model.scenario.PreesmScenario;
-import org.preesm.model.scenario.TimingManager;
-import org.preesm.model.scenario.papi.PapiComponent;
-import org.preesm.model.scenario.papi.PapiEvent;
-import org.preesm.model.scenario.papi.PapiEventModifier;
-import org.preesm.model.scenario.papi.PapiEventSet;
-import org.preesm.model.scenario.papi.PapiEventSetType;
-import org.preesm.model.scenario.papi.PapifyConfigActor;
-import org.preesm.model.scenario.papi.PapifyConfigPE;
-import org.preesm.model.scenario.types.DataType;
+import org.preesm.model.scenario.MemoryCopySpeedValue;
+import org.preesm.model.scenario.PapiComponent;
+import org.preesm.model.scenario.PapiComponentType;
+import org.preesm.model.scenario.PapiEvent;
+import org.preesm.model.scenario.PapiEventModifier;
+import org.preesm.model.scenario.PapiEventSet;
+import org.preesm.model.scenario.PapiEventSetType;
+import org.preesm.model.scenario.Scenario;
+import org.preesm.model.scenario.ScenarioFactory;
+import org.preesm.model.scenario.Timings;
 import org.preesm.model.scenario.types.VertexType;
+import org.preesm.model.scenario.util.ScenarioUserFactory;
 import org.preesm.model.slam.ComponentInstance;
 import org.preesm.model.slam.Design;
 import org.preesm.model.slam.component.Component;
@@ -93,13 +96,13 @@ public class ScenarioParser {
   private Document dom = null;
 
   /** scenario being retrieved. */
-  private PreesmScenario scenario = null;
+  private Scenario scenario = null;
 
   /**
    * Instantiates a new scenario parser.
    */
   public ScenarioParser() {
-    this.scenario = new PreesmScenario();
+    this.scenario = ScenarioUserFactory.createScenario();
   }
 
   /**
@@ -122,7 +125,7 @@ public class ScenarioParser {
    * @throws CoreException
    *           the core exception
    */
-  public PreesmScenario parseXmlFile(final IFile file) throws FileNotFoundException, CoreException {
+  public Scenario parseXmlFile(final IFile file) throws FileNotFoundException, CoreException {
     // get the factory
     final DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
 
@@ -221,7 +224,7 @@ public class ScenarioParser {
       // Create a parameter value foreach parameter not yet in the
       // scenario
       for (final Parameter p : parameters) {
-        this.scenario.getParameterValueManager().addParameterValue(p, p.getExpression().getExpressionAsString());
+        this.scenario.getParameterValues().put(p, p.getExpression().getExpressionAsString());
       }
     }
   }
@@ -251,7 +254,7 @@ public class ScenarioParser {
       PreesmLogger.getLogger().log(Level.WARNING,
           "Parameter with name '" + name + "' cannot be found in PiGraph '" + parent + "'.");
     } else {
-      this.scenario.getParameterValueManager().addParameterValue(currentParameter, stringValue);
+      this.scenario.getParameterValues().put(currentParameter, stringValue);
     }
     return currentParameter;
   }
@@ -275,14 +278,14 @@ public class ScenarioParser {
         switch (type) {
           case "mainCore":
             final ComponentInstance mainCore = scenario.getDesign().getComponentInstance(content);
-            this.scenario.getSimulationManager().setMainOperator(mainCore);
+            this.scenario.getSimulationInfo().setMainOperator(mainCore);
             break;
           case "mainComNode":
             final ComponentInstance mainComNode = scenario.getDesign().getComponentInstance(content);
-            this.scenario.getSimulationManager().setMainComNode(mainComNode);
+            this.scenario.getSimulationInfo().setMainComNode(mainComNode);
             break;
           case "averageDataSize":
-            this.scenario.getSimulationManager().setAverageDataSize(Long.valueOf(content));
+            this.scenario.getSimulationInfo().setAverageDataSize(Long.valueOf(content));
             break;
           case "dataTypes":
             parseDataTypes(elt);
@@ -291,7 +294,7 @@ public class ScenarioParser {
             parseSpecialVertexOperators(elt);
             break;
           case "numberOfTopExecutions":
-            this.scenario.getSimulationManager().setNumberOfTopExecutions(Integer.parseInt(content));
+            this.scenario.getSimulationInfo().setNumberOfTopExecutions(Integer.parseInt(content));
             break;
           default:
         }
@@ -321,8 +324,7 @@ public class ScenarioParser {
           final String size = elt.getAttribute("size");
 
           if (!name.isEmpty() && !size.isEmpty()) {
-            final DataType dataType = new DataType(name, Integer.parseInt(size));
-            this.scenario.getSimulationManager().putDataType(dataType);
+            this.scenario.getSimulationInfo().getDataTypes().put(name, Long.parseLong(size));
           }
         }
       }
@@ -351,7 +353,12 @@ public class ScenarioParser {
 
           if (path != null) {
             final ComponentInstance componentInstance = this.scenario.getDesign().getComponentInstance(path);
-            this.scenario.getSimulationManager().addSpecialVertexOperator(componentInstance);
+            if (componentInstance != null) {
+              this.scenario.getSimulationInfo().addSpecialVertexOperator(componentInstance);
+            } else {
+              PreesmLogger.getLogger().log(Level.WARNING,
+                  "Could not add special vertex operator '" + path + "' as it is not part of the design");
+            }
           }
         }
       }
@@ -363,9 +370,9 @@ public class ScenarioParser {
      * It is not possible to remove all operators from special vertex executors: if no operator is selected, all of them
      * are!!
      */
-    if (this.scenario.getSimulationManager().getSpecialVertexOperators().isEmpty()) {
+    if (this.scenario.getSimulationInfo().getSpecialVertexOperators().isEmpty()) {
       for (final ComponentInstance opId : DesignTools.getOperatorInstances(this.scenario.getDesign())) {
-        this.scenario.getSimulationManager().addSpecialVertexOperator(opId);
+        this.scenario.getSimulationInfo().addSpecialVertexOperator(opId);
       }
     }
   }
@@ -421,7 +428,7 @@ public class ScenarioParser {
    */
   private Design initializeArchitectureInformation(final String url) {
     final Design design = SlamParser.parseSlamDesign(url);
-    this.scenario.setArchitecture(design);
+    this.scenario.setDesign(design);
     return design;
   }
 
@@ -434,7 +441,7 @@ public class ScenarioParser {
   private void parseConstraintGroups(final Element cstGroupsElt) {
 
     final String excelFileUrl = cstGroupsElt.getAttribute("excelUrl");
-    this.scenario.getConstraintGroupManager().setExcelFileURL(excelFileUrl);
+    this.scenario.getConstraints().setGroupConstraintsFileURL(excelFileUrl);
 
     Node node = cstGroupsElt.getFirstChild();
 
@@ -462,7 +469,7 @@ public class ScenarioParser {
   private void parseConstraintGroup(final Element cstGroupElt) {
     ComponentInstance opId = null;
 
-    final Set<AbstractActor> paths = new LinkedHashSet<>();
+    final Set<AbstractActor> actors = new LinkedHashSet<>();
 
     if (scenario.getAlgorithm() != null) {
       Node node = cstGroupElt.getFirstChild();
@@ -474,7 +481,7 @@ public class ScenarioParser {
           if (type.equals(VertexType.TYPE_TASK)) {
             final AbstractActor actorFromPath = getActorFromPath(name);
             if (actorFromPath != null) {
-              paths.add(actorFromPath);
+              actors.add(actorFromPath);
             }
           } else if (type.equals("operator")) {
             if (this.scenario.getDesign().containsComponentInstance(name)) {
@@ -485,9 +492,8 @@ public class ScenarioParser {
         node = node.getNextSibling();
       }
     }
-    final List<
-        AbstractActor> opConstraintGroups = this.scenario.getConstraintGroupManager().getOpConstraintGroups(opId);
-    opConstraintGroups.addAll(paths);
+    this.scenario.getConstraints().addConstraints(opId, ECollections.asEList(new ArrayList<>(actors)));
+
   }
 
   /**
@@ -499,7 +505,7 @@ public class ScenarioParser {
   private void parsePapifyConfigs(final Element papifyConfigsElt) {
 
     final String xmlFileURL = papifyConfigsElt.getAttribute("xmlUrl");
-    this.scenario.getPapifyConfigManager().setExcelFileURL(xmlFileURL);
+    this.scenario.getPapifyConfig().setXmlFileURL(xmlFileURL);
 
     Node node = papifyConfigsElt.getFirstChild();
 
@@ -509,11 +515,10 @@ public class ScenarioParser {
         final Element elt = (Element) node;
         final String type = elt.getTagName();
         if (type.equals("papifyConfigActor")) {
-          final PapifyConfigActor pg = getPapifyConfigActor(elt);
-          this.scenario.getPapifyConfigManager().addPapifyConfigActorGroup(pg);
+          parsePapifyConfigActor(elt);
         } else if (type.equals("papifyConfigPE")) {
-          final PapifyConfigPE pg = getPapifyConfigPE(elt);
-          this.scenario.getPapifyConfigManager().addPapifyConfigPEGroup(pg);
+          parsePapifyConfigPE(elt);
+
         }
       }
 
@@ -528,10 +533,9 @@ public class ScenarioParser {
    *          the papifyConfig group elt
    * @return the papifyConfig
    */
-  private PapifyConfigActor getPapifyConfigActor(final Element papifyConfigElt) {
+  private void parsePapifyConfigActor(final Element papifyConfigElt) {
 
     Node node = papifyConfigElt.getFirstChild();
-    PapifyConfigActor pc = new PapifyConfigActor();
 
     while (node != null) {
       if (node instanceof Element) {
@@ -543,7 +547,6 @@ public class ScenarioParser {
 
           final AbstractActor lookup = ActorPath.lookup(this.scenario.getAlgorithm(), actorPath);
 
-          pc.setActor(lookup);
           Node nodeEvents = node.getFirstChild();
           while (nodeEvents != null) {
 
@@ -552,10 +555,10 @@ public class ScenarioParser {
               final String typeEvents = eltEvents.getTagName();
               if (typeEvents.equals("component")) {
                 final String component = eltEvents.getAttribute("component");
-                final Set<PapiEvent> eventSet = new LinkedHashSet<>();
+                final EList<PapiEvent> eventSet = new BasicEList<>();
                 final List<PapiEvent> eventList = getPapifyEvents(eltEvents);
                 eventSet.addAll(eventList);
-                pc.addPAPIEventSet(component, eventSet);
+                this.scenario.getPapifyConfig().addActorConfigEvent(lookup, component, eventSet);
               }
             }
             nodeEvents = nodeEvents.getNextSibling();
@@ -565,7 +568,6 @@ public class ScenarioParser {
       }
       node = node.getNextSibling();
     }
-    return pc;
   }
 
   /**
@@ -575,23 +577,21 @@ public class ScenarioParser {
    *          the papifyConfig group elt
    * @return the papifyConfig
    */
-  private PapifyConfigPE getPapifyConfigPE(final Element papifyConfigElt) {
+  private void parsePapifyConfigPE(final Element papifyConfigElt) {
 
-    PapifyConfigPE pc = null;
     Node node = papifyConfigElt.getFirstChild();
+
+    Component slamComponent = null;
 
     while (node != null) {
       if (node instanceof Element) {
         final Element elt = (Element) node;
         final String peType = elt.getAttribute("peType");
-        final Component component = this.scenario.getDesign().getComponent(peType);
-        pc = new PapifyConfigPE(component);
-        final Set<PapiComponent> components = getPAPIComponents(elt);
-        pc.addPAPIComponents(components);
+        slamComponent = this.scenario.getDesign().getComponent(peType);
+        parsePAPIComponents(elt, slamComponent);
       }
       node = node.getNextSibling();
     }
-    return pc;
   }
 
   /**
@@ -600,25 +600,21 @@ public class ScenarioParser {
    * @param componentsElt
    *          the PAPI components elt
    */
-  private Set<PapiComponent> getPAPIComponents(final Element componentsElt) {
+  private void parsePAPIComponents(final Element componentsElt, Component slamComponent) {
 
-    Set<PapiComponent> components = new LinkedHashSet<>();
     Node node = componentsElt.getFirstChild();
 
     while (node != null) {
-
       if (node instanceof Element) {
         final Element elt = (Element) node;
         final String type = elt.getTagName();
         if (type.equals("PAPIComponent")) {
-          final PapiComponent cg = getPapifyComponent(elt);
-          components.add(cg);
+          parsePapifyComponent(elt, slamComponent);
         }
       }
 
       node = node.getNextSibling();
     }
-    return components;
   }
 
   /**
@@ -628,14 +624,16 @@ public class ScenarioParser {
    *          the papi component elt
    * @return the papi component
    */
-  private PapiComponent getPapifyComponent(final Element papifyComponentElt) {
+  private void parsePapifyComponent(final Element papifyComponentElt, Component slamComponent) {
 
-    PapiComponent component = null;
     final String componentId = papifyComponentElt.getAttribute("componentId");
     final String componentIndex = papifyComponentElt.getAttribute("componentIndex");
     final String componentType = papifyComponentElt.getAttribute("componentType");
 
-    component = new PapiComponent(componentId, componentIndex, componentType);
+    final PapiComponent component = ScenarioFactory.eINSTANCE.createPapiComponent();
+    component.setIndex(Integer.valueOf(componentIndex));
+    component.setId(componentId);
+    component.setType(PapiComponentType.valueOf(componentType));
 
     final List<PapiEventSet> eventSetList = new ArrayList<>();
 
@@ -644,17 +642,19 @@ public class ScenarioParser {
       if (node instanceof Element) {
         final Element elt = (Element) node;
         final String type = elt.getAttribute("type");
-        final PapiEventSet eventSet = new PapiEventSet();
+        final PapiEventSet eventSet = ScenarioFactory.eINSTANCE.createPapiEventSet();
 
         final List<PapiEvent> eventList = getPapifyEvents(elt);
         eventSet.setType(Optional.ofNullable(type).map(PapiEventSetType::valueOf).orElse(null));
-        eventSet.setEvents(eventList);
+        eventSet.getEvents().addAll(eventList);
         eventSetList.add(eventSet);
       }
       node = node.getNextSibling();
     }
-    component.setEventSets(eventSetList);
-    return component;
+    component.getEventSets().addAll(eventSetList);
+
+    this.scenario.getPapifyConfig().addComponent(slamComponent, component);
+
   }
 
   /**
@@ -688,7 +688,7 @@ public class ScenarioParser {
    */
   private PapiEvent getPapifyEvent(final Element papifyEventElt) {
 
-    final PapiEvent event = new PapiEvent();
+    final PapiEvent event = ScenarioFactory.eINSTANCE.createPapiEvent();
     Node node = papifyEventElt.getFirstChild();
     final List<PapiEventModifier> eventModiferList = new ArrayList<>();
     while (node != null) {
@@ -697,7 +697,7 @@ public class ScenarioParser {
         final String type = elt.getTagName();
         if (type.equals("eventDescription")) {
           final String eventDescription = elt.getAttribute("eventDescription");
-          event.setDesciption(eventDescription);
+          event.setDescription(eventDescription);
         } else if (type.equals("eventId")) {
           final String eventId = elt.getAttribute("eventId");
           event.setIndex(Integer.valueOf(eventId));
@@ -705,7 +705,7 @@ public class ScenarioParser {
           final String eventName = elt.getAttribute("eventName");
           event.setName(eventName);
         } else if (type.equals("eventModifier")) {
-          final PapiEventModifier eventModifer = new PapiEventModifier();
+          final PapiEventModifier eventModifer = ScenarioFactory.eINSTANCE.createPapiEventModifier();
           final String description = elt.getAttribute("description");
           eventModifer.setDescription(description);
           final String name = elt.getAttribute("name");
@@ -715,7 +715,7 @@ public class ScenarioParser {
       }
       node = node.getNextSibling();
     }
-    event.setModifiers(eventModiferList);
+    event.getModifiers().addAll(eventModiferList);
     return event;
   }
 
@@ -728,7 +728,7 @@ public class ScenarioParser {
   private void parseTimings(final Element timingsElt) {
 
     final String timingFileUrl = timingsElt.getAttribute("excelUrl");
-    this.scenario.getTimingManager().setExcelFileURL(timingFileUrl);
+    this.scenario.getTimings().setExcelFileURL(timingFileUrl);
 
     Node node = timingsElt.getFirstChild();
 
@@ -740,7 +740,7 @@ public class ScenarioParser {
         if (type.equals("timing")) {
           parseTiming(elt);
         } else if (type.equals("memcpyspeed")) {
-          retrieveMemcpySpeed(this.scenario.getTimingManager(), elt);
+          retrieveMemcpySpeed(this.scenario.getTimings(), elt);
         }
       }
 
@@ -767,7 +767,7 @@ public class ScenarioParser {
         final AbstractActor lookup = ActorPath.lookup(this.scenario.getAlgorithm(), vertexpath);
         if ((lookup != null) && contains) {
           final Component component = this.scenario.getDesign().getComponent(opdefname);
-          this.scenario.getTimingManager().setTiming(lookup, component, stringValue);
+          this.scenario.getTimings().setTiming(lookup, component, stringValue);
         }
       }
     }
@@ -797,7 +797,7 @@ public class ScenarioParser {
    * @param timingElt
    *          the timing elt
    */
-  private void retrieveMemcpySpeed(final TimingManager timingManager, final Element timingElt) {
+  private void retrieveMemcpySpeed(final Timings timingManager, final Element timingElt) {
 
     if (scenario.getAlgorithm() != null) {
       final String type = timingElt.getTagName();
@@ -819,8 +819,11 @@ public class ScenarioParser {
         final boolean contains = this.scenario.getDesign().containsComponent(opdefname);
         if (contains && (setupTime >= 0) && (timePerUnit >= 0)) {
           final Component component = this.scenario.getDesign().getComponent(opdefname);
-          final MemCopySpeed speed = new MemCopySpeed(component, setupTime, timePerUnit);
-          timingManager.putMemcpySpeed(speed);
+          final MemoryCopySpeedValue createMemoryCopySpeedValue = ScenarioFactory.eINSTANCE
+              .createMemoryCopySpeedValue();
+          createMemoryCopySpeedValue.setSetupTime(setupTime);
+          createMemoryCopySpeedValue.setTimePerUnit(timePerUnit);
+          timingManager.getMemTimings().put(component, createMemoryCopySpeedValue);
         }
       }
 

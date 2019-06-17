@@ -48,7 +48,7 @@ import org.preesm.algorithm.mapper.model.MapperDAGEdge;
 import org.preesm.algorithm.mapper.model.MapperDAGVertex;
 import org.preesm.commons.exceptions.PreesmRuntimeException;
 import org.preesm.commons.logger.PreesmLogger;
-import org.preesm.model.scenario.PreesmScenario;
+import org.preesm.model.scenario.Scenario;
 import org.preesm.model.slam.ComponentInstance;
 import org.preesm.model.slam.Design;
 import org.preesm.model.slam.component.Operator;
@@ -79,7 +79,7 @@ public class RouteCalculator {
   private RouteStepFactory stepFactory = null;
 
   /** The scenario. */
-  private PreesmScenario scenario = null;
+  private Scenario scenario = null;
 
   /**
    * Gets the single instance of RouteCalculator.
@@ -90,7 +90,7 @@ public class RouteCalculator {
    *          the scenario
    * @return single instance of RouteCalculator
    */
-  public static RouteCalculator getInstance(final Design archi, final PreesmScenario scenario) {
+  public static RouteCalculator getInstance(final Design archi, final Scenario scenario) {
     if (RouteCalculator.instances.get(archi) == null) {
       RouteCalculator.instances.put(archi, new RouteCalculator(archi, scenario));
     }
@@ -105,7 +105,7 @@ public class RouteCalculator {
    * @param scenario
    *          the scenario
    */
-  public static void recalculate(final Design archi, final PreesmScenario scenario) {
+  public static void recalculate(final Design archi, final Scenario scenario) {
     RouteCalculator.instances.put(archi, new RouteCalculator(archi, scenario));
   }
 
@@ -127,7 +127,7 @@ public class RouteCalculator {
    * @param scenario
    *          the scenario
    */
-  private RouteCalculator(final Design archi, final PreesmScenario scenario) {
+  private RouteCalculator(final Design archi, final Scenario scenario) {
 
     this.archi = archi;
     this.table = new RoutingTable(scenario);
@@ -245,7 +245,7 @@ public class RouteCalculator {
             if ((routeSrcK != null) && (routeKTgt != null)) {
               final Route compoundRoute = new Route(routeSrcK, routeKTgt);
               if (compoundRoute.isSingleAppearance()) {
-                final long averageDataSize = this.scenario.getSimulationManager().getAverageDataSize();
+                final long averageDataSize = this.scenario.getSimulationInfo().getAverageDataSize();
                 // If this if statement is removed, several
                 // routes become available
                 if (table.getBestRoute(src, tgt) == null) {

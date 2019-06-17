@@ -51,7 +51,7 @@ import org.preesm.commons.doc.annotations.Parameter;
 import org.preesm.commons.doc.annotations.Port;
 import org.preesm.commons.doc.annotations.PreesmTask;
 import org.preesm.commons.doc.annotations.Value;
-import org.preesm.model.scenario.PreesmScenario;
+import org.preesm.model.scenario.Scenario;
 import org.preesm.model.slam.Design;
 import org.preesm.workflow.elements.Workflow;
 import org.preesm.workflow.implement.AbstractWorkflowNodeImplementation;
@@ -66,7 +66,7 @@ import org.preesm.workflow.implement.AbstractWorkflowNodeImplementation;
 @PreesmTask(id = "org.ietr.preesm.plugin.mapper.pfast", name = "PFast Scheduling from SDF", category = "Schedulers",
 
     inputs = { @Port(name = "SDF", type = SDFGraph.class), @Port(name = "architecture", type = Design.class),
-        @Port(name = "scenario", type = PreesmScenario.class) },
+        @Port(name = "scenario", type = Scenario.class) },
 
     outputs = { @Port(name = "DAG", type = DirectedAcyclicGraph.class), @Port(name = "ABC", type = LatencyAbc.class) },
 
@@ -92,7 +92,7 @@ public class PFASTMapping extends PFASTMappingFromDAG {
 
     final SDFGraph algorithm = (SDFGraph) inputs.get(AbstractWorkflowNodeImplementation.KEY_SDF_GRAPH);
     final Design architecture = (Design) inputs.get(AbstractWorkflowNodeImplementation.KEY_ARCHITECTURE);
-    final PreesmScenario scenario = (PreesmScenario) inputs.get(AbstractWorkflowNodeImplementation.KEY_SCENARIO);
+    final Scenario scenario = (Scenario) inputs.get(AbstractWorkflowNodeImplementation.KEY_SCENARIO);
 
     final MapperDAG dag = SdfToDagConverter.convert(algorithm, architecture, scenario);
     inputs.put(AbstractWorkflowNodeImplementation.KEY_SDF_DAG, dag);

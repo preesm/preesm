@@ -7,189 +7,7 @@
     </files>
     <constraints excelUrl="">
         <constraintGroup>
-            <operator name="IO"/>
-            <task name="myapp2/Read_YUV"/>
-            <task name="myapp2/display"/>
-            <task name="myapp2/hierarchical_app/topInputs"/>
-            <task name="myapp2/hierarchical_app/topOutputs"/>
-            <task name="myapp2/hierarchical_app/Split"/>
-            <task name="myapp2/hierarchical_app/hierarchical_sobel_median/Sobel"/>
-            <task name="myapp2/hierarchical_app/hierarchical_sobel_median/hierarchicalSplit"/>
-            <task name="myapp2/hierarchical_app/hierarchical_sobel_median/Dilation"/>
-            <task name="myapp2/hierarchical_app/hierarchical_sobel_median/Erosion"/>
-            <task name="myapp2/hierarchical_app/hierarchical_sobel_median/output"/>
-            <task name="myapp2/hierarchical_app/hierarchical_sobel_median/input"/>
-            <task name="myapp2/hierarchical_app/hierarchical_sobel_median"/>
-            <task name="myapp2/hierarchical_app"/>
-            <task name="myapp2"/>
-        </constraintGroup>
-        <constraintGroup>
-            <operator name="Cluster00"/>
-            <task name="myapp2/hierarchical_app/topInputs"/>
-            <task name="myapp2/hierarchical_app/topOutputs"/>
-            <task name="myapp2/hierarchical_app/Split"/>
-            <task name="myapp2/hierarchical_app/hierarchical_sobel_median/Sobel"/>
-            <task name="myapp2/hierarchical_app/hierarchical_sobel_median/hierarchicalSplit"/>
-            <task name="myapp2/hierarchical_app/hierarchical_sobel_median/Dilation"/>
-            <task name="myapp2/hierarchical_app/hierarchical_sobel_median/Erosion"/>
-            <task name="myapp2/hierarchical_app/hierarchical_sobel_median/output"/>
-            <task name="myapp2/hierarchical_app/hierarchical_sobel_median/input"/>
-            <task name="myapp2/hierarchical_app/hierarchical_sobel_median"/>
-            <task name="myapp2/hierarchical_app"/>
-            <task name="myapp2"/>
-        </constraintGroup>
-        <constraintGroup>
-            <operator name="Cluster01"/>
-            <task name="myapp2/hierarchical_app/topInputs"/>
-            <task name="myapp2/hierarchical_app/topOutputs"/>
-            <task name="myapp2/hierarchical_app/Split"/>
-            <task name="myapp2/hierarchical_app/hierarchical_sobel_median/Sobel"/>
-            <task name="myapp2/hierarchical_app/hierarchical_sobel_median/hierarchicalSplit"/>
-            <task name="myapp2/hierarchical_app/hierarchical_sobel_median/Dilation"/>
-            <task name="myapp2/hierarchical_app/hierarchical_sobel_median/Erosion"/>
-            <task name="myapp2/hierarchical_app/hierarchical_sobel_median/output"/>
-            <task name="myapp2/hierarchical_app/hierarchical_sobel_median/input"/>
-            <task name="myapp2/hierarchical_app/hierarchical_sobel_median"/>
-            <task name="myapp2/hierarchical_app"/>
-            <task name="myapp2"/>
-        </constraintGroup>
-        <constraintGroup>
-            <operator name="Cluster02"/>
-            <task name="myapp2/hierarchical_app/topInputs"/>
-            <task name="myapp2/hierarchical_app/topOutputs"/>
-            <task name="myapp2/hierarchical_app/Split"/>
-            <task name="myapp2/hierarchical_app/hierarchical_sobel_median/Sobel"/>
-            <task name="myapp2/hierarchical_app/hierarchical_sobel_median/hierarchicalSplit"/>
-            <task name="myapp2/hierarchical_app/hierarchical_sobel_median/Dilation"/>
-            <task name="myapp2/hierarchical_app/hierarchical_sobel_median/Erosion"/>
-            <task name="myapp2/hierarchical_app/hierarchical_sobel_median/output"/>
-            <task name="myapp2/hierarchical_app/hierarchical_sobel_median/input"/>
-            <task name="myapp2/hierarchical_app/hierarchical_sobel_median"/>
-            <task name="myapp2/hierarchical_app"/>
-            <task name="myapp2"/>
-        </constraintGroup>
-        <constraintGroup>
-            <operator name="Cluster03"/>
-            <task name="myapp2/hierarchical_app/topInputs"/>
-            <task name="myapp2/hierarchical_app/topOutputs"/>
-            <task name="myapp2/hierarchical_app/Split"/>
-            <task name="myapp2/hierarchical_app/hierarchical_sobel_median/Sobel"/>
-            <task name="myapp2/hierarchical_app/hierarchical_sobel_median/hierarchicalSplit"/>
-            <task name="myapp2/hierarchical_app/hierarchical_sobel_median/Dilation"/>
-            <task name="myapp2/hierarchical_app/hierarchical_sobel_median/Erosion"/>
-            <task name="myapp2/hierarchical_app/hierarchical_sobel_median/output"/>
-            <task name="myapp2/hierarchical_app/hierarchical_sobel_median/input"/>
-            <task name="myapp2/hierarchical_app/hierarchical_sobel_median"/>
-            <task name="myapp2/hierarchical_app"/>
-            <task name="myapp2"/>
-        </constraintGroup>
-        <constraintGroup>
-            <operator name="Cluster04"/>
-            <task name="myapp2/hierarchical_app/topInputs"/>
-            <task name="myapp2/hierarchical_app/topOutputs"/>
-            <task name="myapp2/hierarchical_app/Split"/>
-            <task name="myapp2/hierarchical_app/hierarchical_sobel_median/Sobel"/>
-            <task name="myapp2/hierarchical_app/hierarchical_sobel_median/hierarchicalSplit"/>
-            <task name="myapp2/hierarchical_app/hierarchical_sobel_median/Dilation"/>
-            <task name="myapp2/hierarchical_app/hierarchical_sobel_median/Erosion"/>
-            <task name="myapp2/hierarchical_app/hierarchical_sobel_median/output"/>
-            <task name="myapp2/hierarchical_app/hierarchical_sobel_median/input"/>
-            <task name="myapp2/hierarchical_app/hierarchical_sobel_median"/>
-            <task name="myapp2/hierarchical_app"/>
-            <task name="myapp2"/>
-        </constraintGroup>
-        <constraintGroup>
-            <operator name="Cluster05"/>
-            <task name="myapp2/hierarchical_app/topInputs"/>
-            <task name="myapp2/hierarchical_app/topOutputs"/>
-            <task name="myapp2/hierarchical_app/Split"/>
-            <task name="myapp2/hierarchical_app/hierarchical_sobel_median/Sobel"/>
-            <task name="myapp2/hierarchical_app/hierarchical_sobel_median/hierarchicalSplit"/>
-            <task name="myapp2/hierarchical_app/hierarchical_sobel_median/Dilation"/>
-            <task name="myapp2/hierarchical_app/hierarchical_sobel_median/Erosion"/>
-            <task name="myapp2/hierarchical_app/hierarchical_sobel_median/output"/>
-            <task name="myapp2/hierarchical_app/hierarchical_sobel_median/input"/>
-            <task name="myapp2/hierarchical_app/hierarchical_sobel_median"/>
-            <task name="myapp2/hierarchical_app"/>
-            <task name="myapp2"/>
-        </constraintGroup>
-        <constraintGroup>
-            <operator name="Cluster06"/>
-            <task name="myapp2/hierarchical_app/topInputs"/>
-            <task name="myapp2/hierarchical_app/topOutputs"/>
-            <task name="myapp2/hierarchical_app/Split"/>
-            <task name="myapp2/hierarchical_app/hierarchical_sobel_median/Sobel"/>
-            <task name="myapp2/hierarchical_app/hierarchical_sobel_median/hierarchicalSplit"/>
-            <task name="myapp2/hierarchical_app/hierarchical_sobel_median/Dilation"/>
-            <task name="myapp2/hierarchical_app/hierarchical_sobel_median/Erosion"/>
-            <task name="myapp2/hierarchical_app/hierarchical_sobel_median/output"/>
-            <task name="myapp2/hierarchical_app/hierarchical_sobel_median/input"/>
-            <task name="myapp2/hierarchical_app/hierarchical_sobel_median"/>
-            <task name="myapp2/hierarchical_app"/>
-            <task name="myapp2"/>
-        </constraintGroup>
-        <constraintGroup>
-            <operator name="Cluster07"/>
-            <task name="myapp2/hierarchical_app/topInputs"/>
-            <task name="myapp2/hierarchical_app/topOutputs"/>
-            <task name="myapp2/hierarchical_app/Split"/>
-            <task name="myapp2/hierarchical_app/hierarchical_sobel_median/Sobel"/>
-            <task name="myapp2/hierarchical_app/hierarchical_sobel_median/hierarchicalSplit"/>
-            <task name="myapp2/hierarchical_app/hierarchical_sobel_median/Dilation"/>
-            <task name="myapp2/hierarchical_app/hierarchical_sobel_median/Erosion"/>
-            <task name="myapp2/hierarchical_app/hierarchical_sobel_median/output"/>
-            <task name="myapp2/hierarchical_app/hierarchical_sobel_median/input"/>
-            <task name="myapp2/hierarchical_app/hierarchical_sobel_median"/>
-            <task name="myapp2/hierarchical_app"/>
-            <task name="myapp2"/>
-        </constraintGroup>
-        <constraintGroup>
             <operator name="Cluster08"/>
-            <task name="myapp2/hierarchical_app/topInputs"/>
-            <task name="myapp2/hierarchical_app/topOutputs"/>
-            <task name="myapp2/hierarchical_app/Split"/>
-            <task name="myapp2/hierarchical_app/hierarchical_sobel_median/Sobel"/>
-            <task name="myapp2/hierarchical_app/hierarchical_sobel_median/hierarchicalSplit"/>
-            <task name="myapp2/hierarchical_app/hierarchical_sobel_median/Dilation"/>
-            <task name="myapp2/hierarchical_app/hierarchical_sobel_median/Erosion"/>
-            <task name="myapp2/hierarchical_app/hierarchical_sobel_median/output"/>
-            <task name="myapp2/hierarchical_app/hierarchical_sobel_median/input"/>
-            <task name="myapp2/hierarchical_app/hierarchical_sobel_median"/>
-            <task name="myapp2/hierarchical_app"/>
-            <task name="myapp2"/>
-        </constraintGroup>
-        <constraintGroup>
-            <operator name="Cluster09"/>
-            <task name="myapp2/hierarchical_app/topInputs"/>
-            <task name="myapp2/hierarchical_app/topOutputs"/>
-            <task name="myapp2/hierarchical_app/Split"/>
-            <task name="myapp2/hierarchical_app/hierarchical_sobel_median/Sobel"/>
-            <task name="myapp2/hierarchical_app/hierarchical_sobel_median/hierarchicalSplit"/>
-            <task name="myapp2/hierarchical_app/hierarchical_sobel_median/Dilation"/>
-            <task name="myapp2/hierarchical_app/hierarchical_sobel_median/Erosion"/>
-            <task name="myapp2/hierarchical_app/hierarchical_sobel_median/output"/>
-            <task name="myapp2/hierarchical_app/hierarchical_sobel_median/input"/>
-            <task name="myapp2/hierarchical_app/hierarchical_sobel_median"/>
-            <task name="myapp2/hierarchical_app"/>
-            <task name="myapp2"/>
-        </constraintGroup>
-        <constraintGroup>
-            <operator name="Cluster10"/>
-            <task name="myapp2/hierarchical_app/topInputs"/>
-            <task name="myapp2/hierarchical_app/topOutputs"/>
-            <task name="myapp2/hierarchical_app/Split"/>
-            <task name="myapp2/hierarchical_app/hierarchical_sobel_median/Sobel"/>
-            <task name="myapp2/hierarchical_app/hierarchical_sobel_median/hierarchicalSplit"/>
-            <task name="myapp2/hierarchical_app/hierarchical_sobel_median/Dilation"/>
-            <task name="myapp2/hierarchical_app/hierarchical_sobel_median/Erosion"/>
-            <task name="myapp2/hierarchical_app/hierarchical_sobel_median/output"/>
-            <task name="myapp2/hierarchical_app/hierarchical_sobel_median/input"/>
-            <task name="myapp2/hierarchical_app/hierarchical_sobel_median"/>
-            <task name="myapp2/hierarchical_app"/>
-            <task name="myapp2"/>
-        </constraintGroup>
-        <constraintGroup>
-            <operator name="Cluster11"/>
             <task name="myapp2/hierarchical_app/topInputs"/>
             <task name="myapp2/hierarchical_app/topOutputs"/>
             <task name="myapp2/hierarchical_app/Split"/>
@@ -234,6 +52,158 @@
             <task name="myapp2"/>
         </constraintGroup>
         <constraintGroup>
+            <operator name="Cluster15"/>
+            <task name="myapp2/hierarchical_app/topInputs"/>
+            <task name="myapp2/hierarchical_app/topOutputs"/>
+            <task name="myapp2/hierarchical_app/Split"/>
+            <task name="myapp2/hierarchical_app/hierarchical_sobel_median/Sobel"/>
+            <task name="myapp2/hierarchical_app/hierarchical_sobel_median/hierarchicalSplit"/>
+            <task name="myapp2/hierarchical_app/hierarchical_sobel_median/Dilation"/>
+            <task name="myapp2/hierarchical_app/hierarchical_sobel_median/Erosion"/>
+            <task name="myapp2/hierarchical_app/hierarchical_sobel_median/output"/>
+            <task name="myapp2/hierarchical_app/hierarchical_sobel_median/input"/>
+            <task name="myapp2/hierarchical_app/hierarchical_sobel_median"/>
+            <task name="myapp2/hierarchical_app"/>
+            <task name="myapp2"/>
+        </constraintGroup>
+        <constraintGroup>
+            <operator name="Cluster01"/>
+            <task name="myapp2/hierarchical_app/topInputs"/>
+            <task name="myapp2/hierarchical_app/topOutputs"/>
+            <task name="myapp2/hierarchical_app/Split"/>
+            <task name="myapp2/hierarchical_app/hierarchical_sobel_median/Sobel"/>
+            <task name="myapp2/hierarchical_app/hierarchical_sobel_median/hierarchicalSplit"/>
+            <task name="myapp2/hierarchical_app/hierarchical_sobel_median/Dilation"/>
+            <task name="myapp2/hierarchical_app/hierarchical_sobel_median/Erosion"/>
+            <task name="myapp2/hierarchical_app/hierarchical_sobel_median/output"/>
+            <task name="myapp2/hierarchical_app/hierarchical_sobel_median/input"/>
+            <task name="myapp2/hierarchical_app/hierarchical_sobel_median"/>
+            <task name="myapp2/hierarchical_app"/>
+            <task name="myapp2"/>
+        </constraintGroup>
+        <constraintGroup>
+            <operator name="Cluster09"/>
+            <task name="myapp2/hierarchical_app/topInputs"/>
+            <task name="myapp2/hierarchical_app/topOutputs"/>
+            <task name="myapp2/hierarchical_app/Split"/>
+            <task name="myapp2/hierarchical_app/hierarchical_sobel_median/Sobel"/>
+            <task name="myapp2/hierarchical_app/hierarchical_sobel_median/hierarchicalSplit"/>
+            <task name="myapp2/hierarchical_app/hierarchical_sobel_median/Dilation"/>
+            <task name="myapp2/hierarchical_app/hierarchical_sobel_median/Erosion"/>
+            <task name="myapp2/hierarchical_app/hierarchical_sobel_median/output"/>
+            <task name="myapp2/hierarchical_app/hierarchical_sobel_median/input"/>
+            <task name="myapp2/hierarchical_app/hierarchical_sobel_median"/>
+            <task name="myapp2/hierarchical_app"/>
+            <task name="myapp2"/>
+        </constraintGroup>
+        <constraintGroup>
+            <operator name="IO"/>
+            <task name="myapp2/Read_YUV"/>
+            <task name="myapp2/display"/>
+            <task name="myapp2/hierarchical_app/topInputs"/>
+            <task name="myapp2/hierarchical_app/topOutputs"/>
+            <task name="myapp2/hierarchical_app/Split"/>
+            <task name="myapp2/hierarchical_app/hierarchical_sobel_median/Sobel"/>
+            <task name="myapp2/hierarchical_app/hierarchical_sobel_median/hierarchicalSplit"/>
+            <task name="myapp2/hierarchical_app/hierarchical_sobel_median/Dilation"/>
+            <task name="myapp2/hierarchical_app/hierarchical_sobel_median/Erosion"/>
+            <task name="myapp2/hierarchical_app/hierarchical_sobel_median/output"/>
+            <task name="myapp2/hierarchical_app/hierarchical_sobel_median/input"/>
+            <task name="myapp2/hierarchical_app/hierarchical_sobel_median"/>
+            <task name="myapp2/hierarchical_app"/>
+            <task name="myapp2"/>
+        </constraintGroup>
+        <constraintGroup>
+            <operator name="Cluster05"/>
+            <task name="myapp2/hierarchical_app/topInputs"/>
+            <task name="myapp2/hierarchical_app/topOutputs"/>
+            <task name="myapp2/hierarchical_app/Split"/>
+            <task name="myapp2/hierarchical_app/hierarchical_sobel_median/Sobel"/>
+            <task name="myapp2/hierarchical_app/hierarchical_sobel_median/hierarchicalSplit"/>
+            <task name="myapp2/hierarchical_app/hierarchical_sobel_median/Dilation"/>
+            <task name="myapp2/hierarchical_app/hierarchical_sobel_median/Erosion"/>
+            <task name="myapp2/hierarchical_app/hierarchical_sobel_median/output"/>
+            <task name="myapp2/hierarchical_app/hierarchical_sobel_median/input"/>
+            <task name="myapp2/hierarchical_app/hierarchical_sobel_median"/>
+            <task name="myapp2/hierarchical_app"/>
+            <task name="myapp2"/>
+        </constraintGroup>
+        <constraintGroup>
+            <operator name="Cluster11"/>
+            <task name="myapp2/hierarchical_app/topInputs"/>
+            <task name="myapp2/hierarchical_app/topOutputs"/>
+            <task name="myapp2/hierarchical_app/Split"/>
+            <task name="myapp2/hierarchical_app/hierarchical_sobel_median/Sobel"/>
+            <task name="myapp2/hierarchical_app/hierarchical_sobel_median/hierarchicalSplit"/>
+            <task name="myapp2/hierarchical_app/hierarchical_sobel_median/Dilation"/>
+            <task name="myapp2/hierarchical_app/hierarchical_sobel_median/Erosion"/>
+            <task name="myapp2/hierarchical_app/hierarchical_sobel_median/output"/>
+            <task name="myapp2/hierarchical_app/hierarchical_sobel_median/input"/>
+            <task name="myapp2/hierarchical_app/hierarchical_sobel_median"/>
+            <task name="myapp2/hierarchical_app"/>
+            <task name="myapp2"/>
+        </constraintGroup>
+        <constraintGroup>
+            <operator name="Cluster02"/>
+            <task name="myapp2/hierarchical_app/topInputs"/>
+            <task name="myapp2/hierarchical_app/topOutputs"/>
+            <task name="myapp2/hierarchical_app/Split"/>
+            <task name="myapp2/hierarchical_app/hierarchical_sobel_median/Sobel"/>
+            <task name="myapp2/hierarchical_app/hierarchical_sobel_median/hierarchicalSplit"/>
+            <task name="myapp2/hierarchical_app/hierarchical_sobel_median/Dilation"/>
+            <task name="myapp2/hierarchical_app/hierarchical_sobel_median/Erosion"/>
+            <task name="myapp2/hierarchical_app/hierarchical_sobel_median/output"/>
+            <task name="myapp2/hierarchical_app/hierarchical_sobel_median/input"/>
+            <task name="myapp2/hierarchical_app/hierarchical_sobel_median"/>
+            <task name="myapp2/hierarchical_app"/>
+            <task name="myapp2"/>
+        </constraintGroup>
+        <constraintGroup>
+            <operator name="Cluster00"/>
+            <task name="myapp2/hierarchical_app/topInputs"/>
+            <task name="myapp2/hierarchical_app/topOutputs"/>
+            <task name="myapp2/hierarchical_app/Split"/>
+            <task name="myapp2/hierarchical_app/hierarchical_sobel_median/Sobel"/>
+            <task name="myapp2/hierarchical_app/hierarchical_sobel_median/hierarchicalSplit"/>
+            <task name="myapp2/hierarchical_app/hierarchical_sobel_median/Dilation"/>
+            <task name="myapp2/hierarchical_app/hierarchical_sobel_median/Erosion"/>
+            <task name="myapp2/hierarchical_app/hierarchical_sobel_median/output"/>
+            <task name="myapp2/hierarchical_app/hierarchical_sobel_median/input"/>
+            <task name="myapp2/hierarchical_app/hierarchical_sobel_median"/>
+            <task name="myapp2/hierarchical_app"/>
+            <task name="myapp2"/>
+        </constraintGroup>
+        <constraintGroup>
+            <operator name="Cluster03"/>
+            <task name="myapp2/hierarchical_app/topInputs"/>
+            <task name="myapp2/hierarchical_app/topOutputs"/>
+            <task name="myapp2/hierarchical_app/Split"/>
+            <task name="myapp2/hierarchical_app/hierarchical_sobel_median/Sobel"/>
+            <task name="myapp2/hierarchical_app/hierarchical_sobel_median/hierarchicalSplit"/>
+            <task name="myapp2/hierarchical_app/hierarchical_sobel_median/Dilation"/>
+            <task name="myapp2/hierarchical_app/hierarchical_sobel_median/Erosion"/>
+            <task name="myapp2/hierarchical_app/hierarchical_sobel_median/output"/>
+            <task name="myapp2/hierarchical_app/hierarchical_sobel_median/input"/>
+            <task name="myapp2/hierarchical_app/hierarchical_sobel_median"/>
+            <task name="myapp2/hierarchical_app"/>
+            <task name="myapp2"/>
+        </constraintGroup>
+        <constraintGroup>
+            <operator name="Cluster04"/>
+            <task name="myapp2/hierarchical_app/topInputs"/>
+            <task name="myapp2/hierarchical_app/topOutputs"/>
+            <task name="myapp2/hierarchical_app/Split"/>
+            <task name="myapp2/hierarchical_app/hierarchical_sobel_median/Sobel"/>
+            <task name="myapp2/hierarchical_app/hierarchical_sobel_median/hierarchicalSplit"/>
+            <task name="myapp2/hierarchical_app/hierarchical_sobel_median/Dilation"/>
+            <task name="myapp2/hierarchical_app/hierarchical_sobel_median/Erosion"/>
+            <task name="myapp2/hierarchical_app/hierarchical_sobel_median/output"/>
+            <task name="myapp2/hierarchical_app/hierarchical_sobel_median/input"/>
+            <task name="myapp2/hierarchical_app/hierarchical_sobel_median"/>
+            <task name="myapp2/hierarchical_app"/>
+            <task name="myapp2"/>
+        </constraintGroup>
+        <constraintGroup>
             <operator name="Cluster14"/>
             <task name="myapp2/hierarchical_app/topInputs"/>
             <task name="myapp2/hierarchical_app/topOutputs"/>
@@ -249,7 +219,37 @@
             <task name="myapp2"/>
         </constraintGroup>
         <constraintGroup>
-            <operator name="Cluster15"/>
+            <operator name="Cluster07"/>
+            <task name="myapp2/hierarchical_app/topInputs"/>
+            <task name="myapp2/hierarchical_app/topOutputs"/>
+            <task name="myapp2/hierarchical_app/Split"/>
+            <task name="myapp2/hierarchical_app/hierarchical_sobel_median/Sobel"/>
+            <task name="myapp2/hierarchical_app/hierarchical_sobel_median/hierarchicalSplit"/>
+            <task name="myapp2/hierarchical_app/hierarchical_sobel_median/Dilation"/>
+            <task name="myapp2/hierarchical_app/hierarchical_sobel_median/Erosion"/>
+            <task name="myapp2/hierarchical_app/hierarchical_sobel_median/output"/>
+            <task name="myapp2/hierarchical_app/hierarchical_sobel_median/input"/>
+            <task name="myapp2/hierarchical_app/hierarchical_sobel_median"/>
+            <task name="myapp2/hierarchical_app"/>
+            <task name="myapp2"/>
+        </constraintGroup>
+        <constraintGroup>
+            <operator name="Cluster10"/>
+            <task name="myapp2/hierarchical_app/topInputs"/>
+            <task name="myapp2/hierarchical_app/topOutputs"/>
+            <task name="myapp2/hierarchical_app/Split"/>
+            <task name="myapp2/hierarchical_app/hierarchical_sobel_median/Sobel"/>
+            <task name="myapp2/hierarchical_app/hierarchical_sobel_median/hierarchicalSplit"/>
+            <task name="myapp2/hierarchical_app/hierarchical_sobel_median/Dilation"/>
+            <task name="myapp2/hierarchical_app/hierarchical_sobel_median/Erosion"/>
+            <task name="myapp2/hierarchical_app/hierarchical_sobel_median/output"/>
+            <task name="myapp2/hierarchical_app/hierarchical_sobel_median/input"/>
+            <task name="myapp2/hierarchical_app/hierarchical_sobel_median"/>
+            <task name="myapp2/hierarchical_app"/>
+            <task name="myapp2"/>
+        </constraintGroup>
+        <constraintGroup>
+            <operator name="Cluster06"/>
             <task name="myapp2/hierarchical_app/topInputs"/>
             <task name="myapp2/hierarchical_app/topOutputs"/>
             <task name="myapp2/hierarchical_app/Split"/>
@@ -264,7 +264,6 @@
             <task name="myapp2"/>
         </constraintGroup>
     </constraints>
-    <relativeconstraints excelUrl=""/>
     <timings excelUrl="">
         <memcpyspeed opname="MPPA2Explicit" setuptime="1" timeperunit="1.0E-5"/>
     </timings>
@@ -276,8 +275,6 @@
             <dataType name="uchar" size="1"/>
         </dataTypes>
         <specialVertexOperators>
-            <specialVertexOperator path="Core0"/>
-            <specialVertexOperator path="IO"/>
             <specialVertexOperator path="Cluster00"/>
             <specialVertexOperator path="Cluster01"/>
             <specialVertexOperator path="Cluster02"/>
@@ -294,203 +291,14 @@
             <specialVertexOperator path="Cluster13"/>
             <specialVertexOperator path="Cluster14"/>
             <specialVertexOperator path="Cluster15"/>
+            <specialVertexOperator path="IO"/>
         </specialVertexOperators>
         <numberOfTopExecutions>1</numberOfTopExecutions>
     </simuParams>
     <parameterValues/>
     <papifyConfigs xmlUrl="/org.ietr.preesm.loopgen-sobel-erosion-dilation/CodeMPPA2/PAPI_info_MPPA.xml">
-        <papifyConfigActor>
-            <actorPath actorPath="myapp2"/>
-            <actorId actorId="myapp2">
-                <component component="Timing">
-                    <event>
-                        <eventId eventId="9999"/>
-                        <eventName eventName="Timing"/>
-                        <eventDescription eventDescription="Event to time through PAPI_get_time()"/>
-                    </event>
-                </component>
-                <component component="k1_mppa2">
-                    <event>
-                        <eventId eventId="0"/>
-                        <eventName eventName="k1_mppa2:::_K1_CYCLE_COUNT"/>
-                        <eventDescription eventDescription="Clocks cycles (default)"/>
-                    </event>
-                </component>
-            </actorId>
-        </papifyConfigActor>
-        <papifyConfigActor>
-            <actorPath actorPath="myapp2/Read_YUV"/>
-            <actorId actorId="Read_YUV">
-                <component component="Timing">
-                    <event>
-                        <eventId eventId="9999"/>
-                        <eventName eventName="Timing"/>
-                        <eventDescription eventDescription="Event to time through PAPI_get_time()"/>
-                    </event>
-                </component>
-                <component component="k1_mppa2">
-                    <event>
-                        <eventId eventId="0"/>
-                        <eventName eventName="k1_mppa2:::_K1_CYCLE_COUNT"/>
-                        <eventDescription eventDescription="Clocks cycles (default)"/>
-                    </event>
-                </component>
-            </actorId>
-        </papifyConfigActor>
-        <papifyConfigActor>
-            <actorPath actorPath="myapp2/display"/>
-            <actorId actorId="display">
-                <component component="Timing">
-                    <event>
-                        <eventId eventId="9999"/>
-                        <eventName eventName="Timing"/>
-                        <eventDescription eventDescription="Event to time through PAPI_get_time()"/>
-                    </event>
-                </component>
-                <component component="k1_mppa2">
-                    <event>
-                        <eventId eventId="0"/>
-                        <eventName eventName="k1_mppa2:::_K1_CYCLE_COUNT"/>
-                        <eventDescription eventDescription="Clocks cycles (default)"/>
-                    </event>
-                </component>
-            </actorId>
-        </papifyConfigActor>
-        <papifyConfigActor>
-            <actorPath actorPath="myapp2/hierarchical_app"/>
-            <actorId actorId="hierarchical_app">
-                <component component="Timing">
-                    <event>
-                        <eventId eventId="9999"/>
-                        <eventName eventName="Timing"/>
-                        <eventDescription eventDescription="Event to time through PAPI_get_time()"/>
-                    </event>
-                </component>
-                <component component="k1_mppa2">
-                    <event>
-                        <eventId eventId="0"/>
-                        <eventName eventName="k1_mppa2:::_K1_CYCLE_COUNT"/>
-                        <eventDescription eventDescription="Clocks cycles (default)"/>
-                    </event>
-                </component>
-            </actorId>
-        </papifyConfigActor>
-        <papifyConfigActor>
-            <actorPath actorPath="myapp2/hierarchical_app/Split"/>
-            <actorId actorId="Split">
-                <component component="Timing">
-                    <event>
-                        <eventId eventId="9999"/>
-                        <eventName eventName="Timing"/>
-                        <eventDescription eventDescription="Event to time through PAPI_get_time()"/>
-                    </event>
-                </component>
-                <component component="k1_mppa2">
-                    <event>
-                        <eventId eventId="0"/>
-                        <eventName eventName="k1_mppa2:::_K1_CYCLE_COUNT"/>
-                        <eventDescription eventDescription="Clocks cycles (default)"/>
-                    </event>
-                </component>
-            </actorId>
-        </papifyConfigActor>
-        <papifyConfigActor>
-            <actorPath actorPath="myapp2/hierarchical_app/hierarchical_sobel_median"/>
-            <actorId actorId="hierarchical_sobel_median">
-                <component component="Timing">
-                    <event>
-                        <eventId eventId="9999"/>
-                        <eventName eventName="Timing"/>
-                        <eventDescription eventDescription="Event to time through PAPI_get_time()"/>
-                    </event>
-                </component>
-                <component component="k1_mppa2">
-                    <event>
-                        <eventId eventId="0"/>
-                        <eventName eventName="k1_mppa2:::_K1_CYCLE_COUNT"/>
-                        <eventDescription eventDescription="Clocks cycles (default)"/>
-                    </event>
-                </component>
-            </actorId>
-        </papifyConfigActor>
-        <papifyConfigActor>
-            <actorPath actorPath="myapp2/hierarchical_app/hierarchical_sobel_median/Sobel"/>
-            <actorId actorId="Sobel">
-                <component component="Timing">
-                    <event>
-                        <eventId eventId="9999"/>
-                        <eventName eventName="Timing"/>
-                        <eventDescription eventDescription="Event to time through PAPI_get_time()"/>
-                    </event>
-                </component>
-                <component component="k1_mppa2">
-                    <event>
-                        <eventId eventId="0"/>
-                        <eventName eventName="k1_mppa2:::_K1_CYCLE_COUNT"/>
-                        <eventDescription eventDescription="Clocks cycles (default)"/>
-                    </event>
-                </component>
-            </actorId>
-        </papifyConfigActor>
-        <papifyConfigActor>
-            <actorPath actorPath="myapp2/hierarchical_app/hierarchical_sobel_median/hierarchicalSplit"/>
-            <actorId actorId="hierarchicalSplit">
-                <component component="Timing">
-                    <event>
-                        <eventId eventId="9999"/>
-                        <eventName eventName="Timing"/>
-                        <eventDescription eventDescription="Event to time through PAPI_get_time()"/>
-                    </event>
-                </component>
-                <component component="k1_mppa2">
-                    <event>
-                        <eventId eventId="0"/>
-                        <eventName eventName="k1_mppa2:::_K1_CYCLE_COUNT"/>
-                        <eventDescription eventDescription="Clocks cycles (default)"/>
-                    </event>
-                </component>
-            </actorId>
-        </papifyConfigActor>
-        <papifyConfigActor>
-            <actorPath actorPath="myapp2/hierarchical_app/hierarchical_sobel_median/Dilation"/>
-            <actorId actorId="Dilation">
-                <component component="Timing">
-                    <event>
-                        <eventId eventId="9999"/>
-                        <eventName eventName="Timing"/>
-                        <eventDescription eventDescription="Event to time through PAPI_get_time()"/>
-                    </event>
-                </component>
-                <component component="k1_mppa2">
-                    <event>
-                        <eventId eventId="0"/>
-                        <eventName eventName="k1_mppa2:::_K1_CYCLE_COUNT"/>
-                        <eventDescription eventDescription="Clocks cycles (default)"/>
-                    </event>
-                </component>
-            </actorId>
-        </papifyConfigActor>
-        <papifyConfigActor>
-            <actorPath actorPath="myapp2/hierarchical_app/hierarchical_sobel_median/Erosion"/>
-            <actorId actorId="Erosion">
-                <component component="Timing">
-                    <event>
-                        <eventId eventId="9999"/>
-                        <eventName eventName="Timing"/>
-                        <eventDescription eventDescription="Event to time through PAPI_get_time()"/>
-                    </event>
-                </component>
-                <component component="k1_mppa2">
-                    <event>
-                        <eventId eventId="0"/>
-                        <eventName eventName="k1_mppa2:::_K1_CYCLE_COUNT"/>
-                        <eventDescription eventDescription="Clocks cycles (default)"/>
-                    </event>
-                </component>
-            </actorId>
-        </papifyConfigActor>
         <papifyConfigPE>
-            <peType peType="MPPA2Explicit">
+            <peType peType="MPPA2IOExplicit">
                 <PAPIComponent componentId="k1_mppa2"
                     componentIndex="0" componentType="CPU">
                     <eventSet type="NATIVE">
@@ -631,7 +439,7 @@
             </peType>
         </papifyConfigPE>
         <papifyConfigPE>
-            <peType peType="MPPA2IOExplicit">
+            <peType peType="MPPA2Explicit">
                 <PAPIComponent componentId="k1_mppa2"
                     componentIndex="0" componentType="CPU">
                     <eventSet type="NATIVE">

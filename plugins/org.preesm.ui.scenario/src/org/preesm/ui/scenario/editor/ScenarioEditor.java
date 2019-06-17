@@ -54,7 +54,7 @@ import org.eclipse.ui.forms.editor.SharedHeaderFormEditor;
 import org.eclipse.ui.part.FileEditorInput;
 import org.preesm.commons.DomUtil;
 import org.preesm.commons.exceptions.PreesmRuntimeException;
-import org.preesm.model.scenario.PreesmScenario;
+import org.preesm.model.scenario.Scenario;
 import org.preesm.model.scenario.serialize.ScenarioParser;
 import org.preesm.model.scenario.serialize.ScenarioWriter;
 import org.preesm.ui.scenario.editor.codegen.CodegenPage;
@@ -81,7 +81,7 @@ public class ScenarioEditor extends SharedHeaderFormEditor implements IPropertyL
   private IFile scenarioFile = null;
 
   /** The scenario. */
-  private PreesmScenario scenario;
+  private Scenario scenario;
 
   /**
    * Instantiates a new scenario editor.

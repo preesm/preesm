@@ -168,7 +168,7 @@ public class DesignTools {
    * Gets the ordered operator ids.
    */
   public static List<String> getOrderedOperatorIds(final Design design) {
-    final List<String> operatorComponentIds = new ArrayList<>(getOperatorComponentIds(design));
+    final List<String> operatorComponentIds = new ArrayList<>(getOperatorInstanceIds(design));
     Collections.sort(operatorComponentIds, (o1, o2) -> o1.compareTo(o2));
     return Collections.unmodifiableList(operatorComponentIds);
   }

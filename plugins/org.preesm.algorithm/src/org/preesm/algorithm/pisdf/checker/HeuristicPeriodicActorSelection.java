@@ -50,7 +50,7 @@ import org.preesm.model.pisdf.DataInputPort;
 import org.preesm.model.pisdf.DataOutputPort;
 import org.preesm.model.pisdf.Fifo;
 import org.preesm.model.pisdf.PiGraph;
-import org.preesm.model.scenario.PreesmScenario;
+import org.preesm.model.scenario.Scenario;
 import org.preesm.model.slam.component.Component;
 import org.preesm.model.slam.utils.DesignTools;
 
@@ -62,8 +62,8 @@ import org.preesm.model.slam.utils.DesignTools;
 class HeuristicPeriodicActorSelection {
 
   static Map<Actor, Long> selectActors(final Map<Actor, Long> periodicActors, final Set<AbstractActor> originActors,
-      final Map<AbstractActor, Integer> actorsNbVisits, final int rate, final PiGraph graph,
-      final PreesmScenario scenario, final boolean reverse) {
+      final Map<AbstractActor, Integer> actorsNbVisits, final int rate, final PiGraph graph, final Scenario scenario,
+      final boolean reverse) {
     if ((rate == 100) || periodicActors.isEmpty()) {
       return periodicActors;
     }
@@ -87,7 +87,7 @@ class HeuristicPeriodicActorSelection {
       final long period = e.getValue();
       long wcetMin = Long.MAX_VALUE;
       for (final Component operatorDefinitionID : DesignTools.getOperatorComponents(scenario.getDesign())) {
-        final long timing = scenario.getTimingManager().evaluateTimingOrDefault(actor, operatorDefinitionID);
+        final long timing = scenario.getTimings().evaluateTimingOrDefault(actor, operatorDefinitionID);
         if (timing < wcetMin) {
           wcetMin = timing;
         }

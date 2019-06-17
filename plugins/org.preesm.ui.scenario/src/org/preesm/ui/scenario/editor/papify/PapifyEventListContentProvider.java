@@ -39,15 +39,16 @@ package org.preesm.ui.scenario.editor.papify;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map.Entry;
 import org.eclipse.jface.viewers.IStructuredContentProvider;
 import org.eclipse.jface.viewers.Viewer;
-import org.preesm.model.scenario.papi.PapiComponent;
-import org.preesm.model.scenario.papi.PapiEvent;
-import org.preesm.model.scenario.papi.PapiEventInfo;
-import org.preesm.model.scenario.papi.PapiEventModifier;
-import org.preesm.model.scenario.papi.PapiEventSet;
+import org.preesm.model.scenario.PapiComponent;
+import org.preesm.model.scenario.PapiEvent;
+import org.preesm.model.scenario.PapiEventInfo;
+import org.preesm.model.scenario.PapiEventModifier;
+import org.preesm.model.scenario.PapiEventSet;
+import org.preesm.model.scenario.ScenarioFactory;
 
-// TODO: Auto-generated Javadoc
 /**
  * Provides the events contained in the papify component.
  *
@@ -78,19 +79,20 @@ public class PapifyEventListContentProvider implements IStructuredContentProvide
 
     if (inputElement instanceof PapiEventInfo) {
       final PapiEventInfo inputPapiEventInfo = (PapiEventInfo) inputElement;
-      final PapiEvent timingEvent = new PapiEvent();
+      final PapiEvent timingEvent = ScenarioFactory.eINSTANCE.createPapiEvent();
       final List<PapiEventModifier> modifTimingList = new ArrayList<>();
       PapiComponent compAux = null;
       PapiEventSet eventSetAux = null;
       PapiEvent eventAux = null;
       this.eventList = new ArrayList<>();
       timingEvent.setName("Timing");
-      timingEvent.setDesciption("Event to time through PAPI_get_time()");
+      timingEvent.setDescription("Event to time through PAPI_get_time()");
       timingEvent.setIndex(9999);
-      timingEvent.setModifiers(modifTimingList);
+      timingEvent.getModifiers().addAll(modifTimingList);
       this.eventList.add(timingEvent);
       for (int i = inputPapiEventInfo.getComponents().size() - 1; i >= 0; i--) {
-        compAux = inputPapiEventInfo.getComponents().get(i);
+        final Entry<String, PapiComponent> entry = inputPapiEventInfo.getComponents().get(i);
+        compAux = entry.getValue();
         for (int j = compAux.getEventSets().size() - 1; j >= 0; j--) {
           eventSetAux = compAux.getEventSets().get(j);
           for (int k = 0; k < eventSetAux.getEvents().size(); k++) {

@@ -47,7 +47,7 @@ import org.preesm.algorithm.mapper.model.MapperDAGEdge;
 import org.preesm.algorithm.mapper.model.MapperDAGVertex;
 import org.preesm.algorithm.mapper.model.special.PrecedenceEdgeAdder;
 import org.preesm.algorithm.mapper.params.AbcParameters;
-import org.preesm.model.scenario.PreesmScenario;
+import org.preesm.model.scenario.Scenario;
 import org.preesm.model.slam.ComponentInstance;
 import org.preesm.model.slam.Design;
 
@@ -76,7 +76,7 @@ public class AccuratelyTimedAbc extends LatencyAbc {
    *          the scenario
    */
   public AccuratelyTimedAbc(final AbcParameters params, final MapperDAG dag, final Design archi, final AbcType abcType,
-      final PreesmScenario scenario) {
+      final Scenario scenario) {
     super(params, dag, archi, abcType, scenario);
 
     this.types = new ArrayList<>();

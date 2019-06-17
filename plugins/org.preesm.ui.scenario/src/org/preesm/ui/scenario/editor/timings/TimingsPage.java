@@ -77,8 +77,9 @@ import org.eclipse.ui.forms.widgets.ExpandableComposite;
 import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.eclipse.ui.forms.widgets.ScrolledForm;
 import org.eclipse.ui.forms.widgets.Section;
-import org.preesm.model.scenario.PreesmScenario;
+import org.preesm.model.scenario.Scenario;
 import org.preesm.model.scenario.serialize.PreesmAlgorithmListContentProvider;
+import org.preesm.model.scenario.serialize.TimingImporter;
 import org.preesm.model.slam.utils.DesignTools;
 import org.preesm.ui.scenario.editor.FileSelectionAdapter;
 import org.preesm.ui.scenario.editor.Messages;
@@ -93,7 +94,7 @@ import org.preesm.ui.scenario.editor.utils.VertexLexicographicalComparator;
 public class TimingsPage extends FormPage implements IPropertyListener {
 
   /** The scenario. */
-  final PreesmScenario scenario;
+  final Scenario scenario;
 
   /** The table viewer. */
   TableViewer tableViewer = null;
@@ -116,7 +117,7 @@ public class TimingsPage extends FormPage implements IPropertyListener {
    * @param title
    *          the title
    */
-  public TimingsPage(final PreesmScenario scenario, final FormEditor editor, final String id, final String title) {
+  public TimingsPage(final Scenario scenario, final FormEditor editor, final String id, final String title) {
     super(editor, id, title);
 
     this.scenario = scenario;
@@ -144,7 +145,7 @@ public class TimingsPage extends FormPage implements IPropertyListener {
       // Timing file chooser section
       createFileSection(managedForm, Messages.getString("Timings.timingFile"),
           Messages.getString("Timings.timingFileDescription"), Messages.getString("Timings.timingFileEdit"),
-          this.scenario.getTimingManager().getExcelFileURL(), Messages.getString("Timings.timingFileBrowseTitle"),
+          this.scenario.getTimings().getExcelFileURL(), Messages.getString("Timings.timingFileBrowseTitle"),
           new LinkedHashSet<>(Arrays.asList("xls", "csv")));
 
       createTimingsSection(managedForm, Messages.getString("Timings.title"), Messages.getString("Timings.description"));
@@ -451,8 +452,8 @@ public class TimingsPage extends FormPage implements IPropertyListener {
     // If the text is modified or Enter key pressed, timings are imported
     text.addModifyListener(e -> {
       final Text text1 = (Text) e.getSource();
-      TimingsPage.this.scenario.getTimingManager().setExcelFileURL(text1.getText());
-      TimingsPage.this.scenario.getTimingManager().importTimings(TimingsPage.this.scenario);
+      TimingsPage.this.scenario.getTimings().setExcelFileURL(text1.getText());
+      TimingImporter.importTimings(TimingsPage.this.scenario);
       TimingsPage.this.tableViewer.refresh();
       firePropertyChange(IEditorPart.PROP_DIRTY);
 
@@ -463,8 +464,7 @@ public class TimingsPage extends FormPage implements IPropertyListener {
       public void keyPressed(final KeyEvent e) {
         if (e.keyCode == SWT.CR) {
           final Text text = (Text) e.getSource();
-          TimingsPage.this.scenario.getTimingManager().setExcelFileURL(text.getText());
-          TimingsPage.this.scenario.getTimingManager().importTimings(TimingsPage.this.scenario);
+          TimingsPage.this.scenario.getTimings().setExcelFileURL(text.getText());
           TimingsPage.this.tableViewer.refresh();
         }
 
@@ -487,7 +487,7 @@ public class TimingsPage extends FormPage implements IPropertyListener {
       @Override
       public void widgetSelected(final SelectionEvent e) {
         // Cause scenario editor to import timings from excel sheet
-        TimingsPage.this.scenario.getTimingManager().importTimings(TimingsPage.this.scenario);
+        TimingImporter.importTimings(TimingsPage.this.scenario);
         TimingsPage.this.tableViewer.refresh();
         // Force the "file has changed" property of scenario.
         // Timing changes will have no effects if the scenario

@@ -50,8 +50,7 @@ import org.preesm.algorithm.model.sdf.SDFGraph;
 import org.preesm.commons.exceptions.PreesmException;
 import org.preesm.commons.exceptions.PreesmRuntimeException;
 import org.preesm.model.pisdf.AbstractActor;
-import org.preesm.model.scenario.PreesmScenario;
-import org.preesm.model.scenario.types.DataType;
+import org.preesm.model.scenario.Scenario;
 import org.preesm.model.slam.ComponentInstance;
 import org.preesm.model.slam.Design;
 
@@ -85,7 +84,7 @@ public class SDF3ImporterEngine {
    * @throws PreesmException
    *           the workflow exception
    */
-  public SDFGraph importFrom(final IPath path, final PreesmScenario scenario, final Design architecture,
+  public SDFGraph importFrom(final IPath path, final Scenario scenario, final Design architecture,
       final Logger logger) {
     final IWorkspace workspace = ResourcesPlugin.getWorkspace();
     final IFile iFile = workspace.getRoot().getFile(path);
@@ -129,26 +128,25 @@ public class SDF3ImporterEngine {
    * @param architecture
    *          the architecture
    */
-  private void updateScenario(final PreesmScenario scenario, final Design architecture) {
+  private void updateScenario(final Scenario scenario, final Design architecture) {
     // Update the input scenario so that all task can be scheduled
     // on all operators, and all have the same runtime.
     // For each operator of the architecture
     for (final ComponentInstance component : architecture.getComponentInstances()) {
       // for each actor of the graph
-      for (final Entry<SDFAbstractVertex, Integer> entry : this.sdf3Parser.getActorExecTimes().entrySet()) {
+      for (final Entry<SDFAbstractVertex, Long> entry : this.sdf3Parser.getActorExecTimes().entrySet()) {
         // Add the operator to the available operator for the
         // current actor
         entry.getKey().setInfo(entry.getKey().getName());
         // Set the timing of the actor
         final SDFAbstractVertex vertex = entry.getKey();
         final AbstractActor referencePiMMVertex = (AbstractActor) vertex.getReferencePiMMVertex();
-        scenario.getTimingManager().setTiming(referencePiMMVertex, component.getComponent(), entry.toString());
+        scenario.getTimings().setTiming(referencePiMMVertex, component.getComponent(), entry.toString());
       }
     }
     // Add the data types of the SDF3 graph to the scenario
-    for (final Entry<String, Integer> entry : this.sdf3Parser.getDataTypes().entrySet()) {
-      final DataType type = new DataType(entry.getKey(), entry.getValue());
-      scenario.getSimulationManager().putDataType(type);
+    for (final Entry<String, Long> entry : this.sdf3Parser.getDataTypes().entrySet()) {
+      scenario.getSimulationInfo().getDataTypes().put(entry.getKey(), entry.getValue());
     }
   }
 

@@ -50,7 +50,7 @@ import org.preesm.commons.doc.annotations.PreesmTask;
 import org.preesm.commons.doc.annotations.Value;
 import org.preesm.commons.logger.PreesmLogger;
 import org.preesm.model.pisdf.AbstractActor;
-import org.preesm.model.scenario.PreesmScenario;
+import org.preesm.model.scenario.Scenario;
 import org.preesm.workflow.elements.Workflow;
 import org.preesm.workflow.implement.AbstractTaskImplementation;
 
@@ -61,10 +61,10 @@ import org.preesm.workflow.implement.AbstractTaskImplementation;
  */
 @PreesmTask(id = "org.ietr.preesm.throughput.ThroughputPlugin", name = "Throughput Evaluation",
 
-    inputs = { @Port(name = "SDF", type = SDFGraph.class), @Port(name = "scenario", type = PreesmScenario.class) },
+    inputs = { @Port(name = "SDF", type = SDFGraph.class), @Port(name = "scenario", type = Scenario.class) },
 
     outputs = { @Port(name = "throughput", type = Double.class), @Port(name = "SDF", type = SDFGraph.class),
-        @Port(name = "scenario", type = PreesmScenario.class) },
+        @Port(name = "scenario", type = Scenario.class) },
 
     parameters = {
 
@@ -104,7 +104,7 @@ public class ThroughputEvaluationTask extends AbstractTaskImplementation {
 
     // get the input graph, the scenario for actors duration, and the method to use
     final SDFGraph inputGraph = GraphStructureHelper.cloneIBSDF((SDFGraph) inputs.get("SDF"));
-    final PreesmScenario inputScenario = (PreesmScenario) inputs.get("scenario");
+    final Scenario inputScenario = (Scenario) inputs.get("scenario");
     final ThroughputMethod inputMethod = ThroughputMethod.valueOf(parameters.get("method"));
 
     // init & test
@@ -183,7 +183,7 @@ public class ThroughputEvaluationTask extends AbstractTaskImplementation {
    *
    * @return true if deadlock free, false if not
    */
-  private boolean init(final SDFGraph inputGraph, final PreesmScenario scenario) {
+  private boolean init(final SDFGraph inputGraph, final Scenario scenario) {
     // test the inputs
     // check the consistency by computing the RV of the graph
     boolean deadlockFree = IBSDFConsistency.computeRV(inputGraph);
@@ -196,9 +196,9 @@ public class ThroughputEvaluationTask extends AbstractTaskImplementation {
         if (actor.getKind() == "vertex") {
           if (actor.getGraphDescription() == null) {
             // if atomic actor then copy the duration indicated in the scenario
-            final double duration = scenario.getTimingManager().evaluateTimingOrDefault(
+            final double duration = scenario.getTimings().evaluateTimingOrDefault(
                 (AbstractActor) actor.getReferencePiMMVertex(),
-                scenario.getSimulationManager().getMainOperator().getComponent());
+                scenario.getSimulationInfo().getMainOperator().getComponent());
             actor.setPropertyValue("duration", duration);
           } else {
             // if hierarchical actor then as default the duration is 1

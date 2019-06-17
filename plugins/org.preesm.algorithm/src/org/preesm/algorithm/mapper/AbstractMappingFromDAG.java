@@ -62,7 +62,7 @@ import org.preesm.algorithm.model.dag.DirectedAcyclicGraph;
 import org.preesm.commons.exceptions.PreesmException;
 import org.preesm.commons.exceptions.PreesmRuntimeException;
 import org.preesm.commons.logger.PreesmLogger;
-import org.preesm.model.scenario.PreesmScenario;
+import org.preesm.model.scenario.Scenario;
 import org.preesm.model.slam.Design;
 import org.preesm.workflow.elements.Workflow;
 import org.preesm.workflow.implement.AbstractTaskImplementation;
@@ -103,7 +103,7 @@ public abstract class AbstractMappingFromDAG extends AbstractTaskImplementation 
     final Map<String, Object> outputs = new LinkedHashMap<>();
     final Design architecture = (Design) inputs.get(AbstractWorkflowNodeImplementation.KEY_ARCHITECTURE);
     final MapperDAG dag = (MapperDAG) inputs.get(AbstractWorkflowNodeImplementation.KEY_SDF_DAG);
-    final PreesmScenario scenario = (PreesmScenario) inputs.get(AbstractWorkflowNodeImplementation.KEY_SCENARIO);
+    final Scenario scenario = (Scenario) inputs.get(AbstractWorkflowNodeImplementation.KEY_SCENARIO);
 
     // Asking to recalculate routes
     RouteCalculator.recalculate(architecture, scenario);
@@ -156,7 +156,7 @@ public abstract class AbstractMappingFromDAG extends AbstractTaskImplementation 
   }
 
   protected abstract LatencyAbc schedule(final Map<String, Object> outputs, final Map<String, String> parameters,
-      final InitialLists initial, final PreesmScenario scenario, final AbcParameters abcParams, final MapperDAG dag,
+      final InitialLists initial, final Scenario scenario, final AbcParameters abcParams, final MapperDAG dag,
       final Design architecture, final AbstractTaskSched taskSched);
 
   /**
@@ -245,7 +245,7 @@ public abstract class AbstractMappingFromDAG extends AbstractTaskImplementation 
    * @throws PreesmException
    *           the workflow exception
    */
-  private void calculateSpan(final MapperDAG dag, final Design archi, final PreesmScenario scenario,
+  private void calculateSpan(final MapperDAG dag, final Design archi, final Scenario scenario,
       final AbcParameters parameters) {
     final TaskSchedType taskSchedType = parameters.getSimulatorType().getTaskSchedType();
     final SpanLengthCalculator spanCalc = new SpanLengthCalculator(parameters, dag, archi, taskSchedType, scenario);

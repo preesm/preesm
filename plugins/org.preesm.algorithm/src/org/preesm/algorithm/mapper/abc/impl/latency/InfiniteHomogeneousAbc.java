@@ -47,7 +47,7 @@ import org.preesm.algorithm.mapper.params.AbcParameters;
 import org.preesm.algorithm.mapper.tools.TLevelIterator;
 import org.preesm.commons.exceptions.PreesmException;
 import org.preesm.commons.logger.PreesmLogger;
-import org.preesm.model.scenario.PreesmScenario;
+import org.preesm.model.scenario.Scenario;
 import org.preesm.model.slam.ComponentInstance;
 import org.preesm.model.slam.Design;
 import org.preesm.model.slam.component.ComNode;
@@ -75,7 +75,7 @@ public class InfiniteHomogeneousAbc extends LatencyAbc {
    *           the workflow exception
    */
   public InfiniteHomogeneousAbc(final AbcParameters params, final MapperDAG dag, final Design archi,
-      final PreesmScenario scenario) {
+      final Scenario scenario) {
     this(params, dag, archi, TaskSchedType.SIMPLE, scenario);
   }
 
@@ -96,13 +96,13 @@ public class InfiniteHomogeneousAbc extends LatencyAbc {
    *           the workflow exception
    */
   public InfiniteHomogeneousAbc(final AbcParameters params, final MapperDAG dag, final Design archi,
-      final TaskSchedType taskSchedType, final PreesmScenario scenario) {
+      final TaskSchedType taskSchedType, final Scenario scenario) {
     super(params, dag, archi, AbcType.InfiniteHomogeneous, scenario);
     getType().setTaskSchedType(taskSchedType);
 
-    final ComponentInstance mainComNode = scenario.getSimulationManager().getMainComNode();
+    final ComponentInstance mainComNode = scenario.getSimulationInfo().getMainComNode();
 
-    final ComponentInstance mainOperator = scenario.getSimulationManager().getMainOperator();
+    final ComponentInstance mainOperator = scenario.getSimulationInfo().getMainOperator();
 
     if (mainComNode != null) {
       PreesmLogger.getLogger().info("Infinite homogeneous simulation");
@@ -215,7 +215,7 @@ public class InfiniteHomogeneousAbc extends LatencyAbc {
      * In a Infinite Homogeneous Architecture, each communication is supposed to be done on the main medium. The
      * communication cost is simply calculated from the main medium speed.
      */
-    final ComponentInstance mainCom = this.scenario.getSimulationManager().getMainComNode();
+    final ComponentInstance mainCom = this.scenario.getSimulationInfo().getMainComNode();
 
     if (mainCom != null) {
 

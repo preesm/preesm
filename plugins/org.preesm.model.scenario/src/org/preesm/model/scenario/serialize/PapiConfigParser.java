@@ -32,17 +32,29 @@
  * The fact that you are presently reading this means that you have had
  * knowledge of the CeCILL license and that you accept its terms.
  */
-package org.preesm.model.scenario.papi;
+package org.preesm.model.scenario.serialize;
 
 import java.io.File;
 import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.function.Consumer;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import org.preesm.commons.exceptions.PreesmRuntimeException;
+import org.preesm.model.scenario.PapiComponent;
+import org.preesm.model.scenario.PapiComponentType;
+import org.preesm.model.scenario.PapiCpuID;
+import org.preesm.model.scenario.PapiEvent;
+import org.preesm.model.scenario.PapiEventInfo;
+import org.preesm.model.scenario.PapiEventModifier;
+import org.preesm.model.scenario.PapiEventSet;
+import org.preesm.model.scenario.PapiEventSetType;
+import org.preesm.model.scenario.PapiHardware;
+import org.preesm.model.scenario.ScenarioFactory;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NamedNodeMap;
@@ -74,12 +86,12 @@ public class PapiConfigParser {
     }
   }
 
-  private PapiCpuID               cpuId;
-  private PapiHardware            hardware;
-  private List<PapiComponent>     components;
-  private List<PapiEvent>         events;
-  private List<PapiEventSet>      eventSets;
-  private List<PapiEventModifier> modifiers;
+  private PapiCpuID                  cpuId;
+  private PapiHardware               hardware;
+  private Map<String, PapiComponent> components;
+  private List<PapiEvent>            events;
+  private List<PapiEventSet>         eventSets;
+  private List<PapiEventModifier>    modifiers;
 
   /**
    * @return
@@ -90,9 +102,12 @@ public class PapiConfigParser {
     final Document document = openDocument(xmlConfigFile);
     final Element classElement = document.getDocumentElement();
 
-    this.components = new ArrayList<>();
+    this.components = new LinkedHashMap<>();
     visitChildrenSkippingTexts(classElement, this::switchRootChildren);
-    return new PapiEventInfo(this.hardware, this.components);
+    final PapiEventInfo papiEventInfo = ScenarioFactory.eINSTANCE.createPapiEventInfo();
+    papiEventInfo.getComponents().putAll(this.components);
+    papiEventInfo.setHardware(this.hardware);
+    return papiEventInfo;
   }
 
   private final Document openDocument(final File xmlConfigFile) {
@@ -151,7 +166,7 @@ public class PapiConfigParser {
   }
 
   private void visitModifier(final Node node) {
-    final PapiEventModifier papiEventModifier = new PapiEventModifier();
+    final PapiEventModifier papiEventModifier = ScenarioFactory.eINSTANCE.createPapiEventModifier();
     final String name = Optional.ofNullable(node.getAttributes().getNamedItem("name")).map(Node::getTextContent)
         .orElse(null);
     final String desc = Optional.ofNullable(node.getAttributes().getNamedItem("desc")).map(Node::getTextContent)
@@ -170,22 +185,22 @@ public class PapiConfigParser {
         .orElse(null);
     this.modifiers = new ArrayList<>();
     visitChildrenSkippingTexts(node, this::switchEventChildren);
-    final PapiEvent event = new PapiEvent();
+    final PapiEvent event = ScenarioFactory.eINSTANCE.createPapiEvent();
     event.setIndex(index);
     event.setName(name);
-    event.setDesciption(desc);
-    event.setModifiers(this.modifiers);
+    event.setDescription(desc);
+    event.getModifiers().addAll(this.modifiers);
     this.events.add(event);
   }
 
   private void visitEventSet(final Node node) {
     this.events = new ArrayList<>();
     visitChildrenSkippingTexts(node, this::switchEventSetChildren);
-    final PapiEventSet eventSet = new PapiEventSet();
+    final PapiEventSet eventSet = ScenarioFactory.eINSTANCE.createPapiEventSet();
     final PapiEventSetType type = Optional.ofNullable(node.getAttributes().getNamedItem("type"))
         .map(Node::getTextContent).map(PapiEventSetType::valueOf).orElse(null);
     eventSet.setType(type);
-    eventSet.setEvents(this.events);
+    eventSet.getEvents().addAll(this.events);
     this.eventSets.add(eventSet);
   }
 
@@ -321,7 +336,7 @@ public class PapiConfigParser {
   }
 
   private void visitCpuID(final Node node) {
-    this.cpuId = new PapiCpuID();
+    this.cpuId = ScenarioFactory.eINSTANCE.createPapiCpuID();
     visitChildrenSkippingTexts(node, this::switchCpuIDChildren);
     this.hardware.setCpuID(this.cpuId);
   }
@@ -362,16 +377,20 @@ public class PapiConfigParser {
         .orElse(null);
     final String componentType = Optional.ofNullable(attributes.getNamedItem("type")).map(Node::getTextContent)
         .orElse(null);
-    final PapiComponent component = new PapiComponent(componentID, componentIndex, componentType);
+    final PapiComponent component = ScenarioFactory.eINSTANCE.createPapiComponent();
+    component.setIndex(Integer.valueOf(componentIndex));
+    component.setId(componentID);
+    component.setType(PapiComponentType.getByName(componentType));
+
     this.eventSets = new ArrayList<>();
     visitChildrenSkippingTexts(componentNode, this::switchComponentChildren);
-    component.setEventSets(this.eventSets);
-    this.components.add(component);
+    component.getEventSets().addAll(this.eventSets);
+    this.components.put(componentID, component);
 
   }
 
   private void visitHardware(final Node hardwareNode) {
-    this.hardware = new PapiHardware();
+    this.hardware = ScenarioFactory.eINSTANCE.createPapiHardware();
     visitChildrenSkippingTexts(hardwareNode, this::switchHWChildren);
   }
 

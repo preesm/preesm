@@ -64,7 +64,7 @@ import org.preesm.algorithm.mapper.ui.bestcost.BestCostEditor;
 import org.preesm.commons.exceptions.PreesmException;
 import org.preesm.commons.exceptions.PreesmRuntimeException;
 import org.preesm.commons.logger.PreesmLogger;
-import org.preesm.model.scenario.PreesmScenario;
+import org.preesm.model.scenario.Scenario;
 import org.preesm.model.slam.Design;
 
 /**
@@ -126,7 +126,7 @@ public class PFastAlgorithm extends Observable {
      *          the scenario
      */
     public FinalTimeComparator(final AbcParameters abcParams, final MapperDAG dag, final Design archi,
-        final PreesmScenario scenario) {
+        final Scenario scenario) {
       super();
     }
 
@@ -277,10 +277,10 @@ public class PFastAlgorithm extends Observable {
    * @throws PreesmException
    *           the workflow exception
    */
-  public MapperDAG map(MapperDAG dag, final Design archi, final PreesmScenario scenario,
-      final InitialLists initialLists, final AbcParameters abcParams, final PFastAlgoParameters pFastParams,
-      final boolean population, int populationsize, final boolean isDisplaySolutions,
-      final List<MapperDAG> populationList, final AbstractTaskSched taskSched) {
+  public MapperDAG map(MapperDAG dag, final Design archi, final Scenario scenario, final InitialLists initialLists,
+      final AbcParameters abcParams, final PFastAlgoParameters pFastParams, final boolean population,
+      int populationsize, final boolean isDisplaySolutions, final List<MapperDAG> populationList,
+      final AbstractTaskSched taskSched) {
 
     int i = 0;
     if (populationsize < 1) {

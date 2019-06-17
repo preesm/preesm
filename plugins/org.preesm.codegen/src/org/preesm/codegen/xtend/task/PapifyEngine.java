@@ -40,9 +40,14 @@ package org.preesm.codegen.xtend.task;
 
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
-import java.util.LinkedHashSet;
+import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
+import org.eclipse.emf.common.util.ECollections;
+import org.eclipse.emf.common.util.EList;
+import org.eclipse.emf.common.util.EMap;
+import org.eclipse.emf.ecore.util.EcoreUtil;
 import org.preesm.algorithm.mapper.model.MapperDAG;
 import org.preesm.algorithm.mapper.model.MapperDAGVertex;
 import org.preesm.algorithm.model.AbstractGraph;
@@ -55,11 +60,11 @@ import org.preesm.codegen.model.PapifyAction;
 import org.preesm.commons.model.PreesmCopyTracker;
 import org.preesm.model.pisdf.AbstractActor;
 import org.preesm.model.pisdf.PiGraph;
-import org.preesm.model.scenario.PreesmScenario;
-import org.preesm.model.scenario.papi.PapiEvent;
-import org.preesm.model.scenario.papi.PapiEventModifier;
-import org.preesm.model.scenario.papi.PapifyConfigActor;
-import org.preesm.model.scenario.papi.PapifyConfigManager;
+import org.preesm.model.scenario.PapiEvent;
+import org.preesm.model.scenario.PapiEventModifier;
+import org.preesm.model.scenario.PapifyConfig;
+import org.preesm.model.scenario.Scenario;
+import org.preesm.model.scenario.ScenarioFactory;
 
 /**
  * The Class PapifyEngine.
@@ -79,11 +84,11 @@ public class PapifyEngine {
   static final String PAPIFY_COUNTER_CONFIGS = "papifyCounterConfigs";
 
   /** The variables to avoid configuration repetitions **/
-  ArrayList<PapifyConfigActor> configSet   = new ArrayList<>();
-  PapiEvent                    timingEvent = new PapiEvent();
+  Map<AbstractActor, EMap<String, EList<PapiEvent>>> configSet   = new LinkedHashMap<>();
+  PapiEvent                                          timingEvent = ScenarioFactory.eINSTANCE.createPapiEvent();
 
   /** The PREESM scenario **/
-  private final PreesmScenario scenario;
+  private final Scenario scenario;
 
   /** The original DAG **/
   private final MapperDAG dag;
@@ -96,7 +101,7 @@ public class PapifyEngine {
    * @param scenario
    *          the input scenario
    */
-  public PapifyEngine(final MapperDAG dag, final PreesmScenario scenario) {
+  public PapifyEngine(final MapperDAG dag, final Scenario scenario) {
     this.dag = dag;
     this.scenario = scenario;
   }
@@ -104,20 +109,20 @@ public class PapifyEngine {
   /**
    * Function to add (or not) everything required for PAPIFY
    */
-  private void configurePapifyFunctions(AbstractActor vertex, String info, String name) {
+  private void configurePapifyFunctions(AbstractActor vertex, String info, String name, String actionName) {
 
     // Variables to check whether an actor has a monitoring configuration
-    PapifyConfigManager papifyConfig = null;
-    PapifyConfigActor config;
+    PapifyConfig papifyConfig = null;
+    EMap<String, EList<PapiEvent>> config;
     Set<String> comp;
-    Set<PapiEvent> events;
-    Set<PapiEvent> includedEvents = new LinkedHashSet<>();
+    List<PapiEvent> events;
+    List<PapiEvent> includedEvents = new ArrayList<>();
 
     boolean configAdded = false;
     String configPosition = "";
     int counterConfigs = 0;
 
-    papifyConfig = this.scenario.getPapifyConfigManager();
+    papifyConfig = this.scenario.getPapifyConfig();
 
     String message = "Papifying";
     String finalName;
@@ -125,10 +130,10 @@ public class PapifyEngine {
     finalName = info;
 
     if (finalName != null) {
-      config = papifyConfig.getCorePapifyConfigGroupActor(vertex);
+      config = papifyConfig.getPapifyConfigGroupsActors().get(vertex);
       finalName = PreesmCopyTracker.getOriginalSource(vertex).getVertexPath().substring(info.indexOf('/') + 1);
       finalName = finalName.replace('/', '_');
-      if (config != null && !config.getPAPIEvents().keySet().isEmpty()) {
+      if (config != null && !config.keySet().isEmpty()) {
         configPosition = "";
         Map<String,
             String> mapMonitorTiming = this.dag.getVertex(name).getPropertyBean().getValue(PAPIFY_MONITOR_TIMING);
@@ -137,44 +142,46 @@ public class PapifyEngine {
         }
         mapMonitorTiming.put(info, "No");
         this.dag.getVertex(name).getPropertyBean().setValue(PAPIFY_MONITOR_TIMING, mapMonitorTiming);
-        if (config.getPAPIEvents().containsKey("Timing")
-            && config.getPAPIEvents().get("Timing").contains(this.timingEvent)) {
+        if (config.containsKey("Timing") && ECollections.indexOf(config.get("Timing"), this.timingEvent, 0) != -1) {
           mapMonitorTiming.put(info, "Yes");
           this.dag.getVertex(name).getPropertyBean().setValue(PAPIFY_MONITOR_TIMING, mapMonitorTiming);
         }
 
         // Check if the current monitoring has already been included
         counterConfigs = 0;
-        for (String compNewConfig : config.getPAPIEvents().keySet()) {
+        for (String compNewConfig : config.keySet()) {
           if (!compNewConfig.equals("Timing")) {
-            Set<PapiEvent> eventSetNew = config.getPAPIEvents().get(compNewConfig);
+            List<PapiEvent> eventSetNew = config.get(compNewConfig);
             configAdded = false;
-            for (PapifyConfigActor tmp : this.configSet) {
-              for (String compConfigTmp : tmp.getPAPIEvents().keySet()) {
+            for (Entry<AbstractActor, EMap<String, EList<PapiEvent>>> tmp : this.configSet.entrySet()) {
+              for (String compConfigTmp : tmp.getValue().keySet()) {
                 if (!compConfigTmp.equals("Timing")) {
-                  Set<PapiEvent> eventSetTmp = tmp.getPAPIEvents().get(compConfigTmp);
-                  if (eventSetTmp.equals(eventSetNew)) {
+                  List<PapiEvent> eventSetTmp = tmp.getValue().get(compConfigTmp);
+                  if (EcoreUtil.equals(eventSetTmp, eventSetNew)) {
                     configAdded = true;
                     counterConfigs = counterConfigs + 1;
                     if (configPosition.equals("")) {
-                      configPosition = Integer.toString(this.configSet.indexOf(tmp));
+                      configPosition = Integer.toString(new ArrayList<>(this.configSet.keySet()).indexOf(tmp.getKey()));
                     } else {
-                      configPosition = configPosition.concat(",").concat(Integer.toString(this.configSet.indexOf(tmp)));
+                      configPosition = configPosition.concat(",")
+                          .concat(Integer.toString(new ArrayList<>(this.configSet.keySet()).indexOf(tmp.getKey())));
                     }
                   }
                 }
               }
             }
             if (!configAdded) {
-              PapifyConfigActor actorConfigToAdd = new PapifyConfigActor(vertex);
-              actorConfigToAdd.addPAPIEventSet(compNewConfig, config.getPAPIEvents().get(compNewConfig));
-              this.configSet.add(actorConfigToAdd);
+              if (!this.configSet.containsKey(vertex)) {
+                this.configSet.put(vertex, ECollections.asEMap(new LinkedHashMap<>()));
+              }
+              this.configSet.get(vertex).put(compNewConfig, config.get(compNewConfig));
               counterConfigs = counterConfigs + 1;
+
               if (configPosition.equals("")) {
-                configPosition = Integer.toString(this.configSet.indexOf(actorConfigToAdd));
+                configPosition = Integer.toString(new ArrayList<>(this.configSet.keySet()).indexOf(vertex));
               } else {
                 configPosition = configPosition.concat(",")
-                    .concat(Integer.toString(this.configSet.indexOf(actorConfigToAdd)));
+                    .concat(Integer.toString(new ArrayList<>(this.configSet.keySet()).indexOf(vertex)));
               }
             }
           }
@@ -182,7 +189,7 @@ public class PapifyEngine {
 
         // The variable to store the monitoring
         PapifyAction papifyActionName = CodegenFactory.eINSTANCE.createPapifyAction();
-        papifyActionName.setName("papify_actions_".concat(name));
+        papifyActionName.setName("papify_actions_".concat(actionName));
 
         // Set the id associated to the Papify configuration
         // Add the PAPI component name
@@ -192,7 +199,7 @@ public class PapifyEngine {
         papifyConfigNumber.setComment("PAPIFY actor configs");
 
         // Get component
-        comp = config.getPAPIEvents().keySet();
+        comp = config.keySet();
         String eventNames = "";
         String compNames = "";
         includedEvents.clear();
@@ -207,7 +214,7 @@ public class PapifyEngine {
         this.dag.getVertex(name).getPropertyBean().setValue(PAPIFY_MONITOR_EVENTS, mapMonitorEvents);
         for (final String key : comp) {
           if (!key.equals("Timing")) {
-            events = config.getPAPIEvents().get(key);
+            events = config.get(key);
 
             for (PapiEvent singleEvent : events) {
               includedEvents.add(singleEvent);
@@ -325,28 +332,22 @@ public class PapifyEngine {
   void configurePapifyFunctionsManager(MapperDAGVertex vertex) {
     // System.out.println(vertex.getInfo()); // Which vertex is entering here?
     if (vertex.getRefinement() instanceof AbstractGraph) {
-      // with this method the getReferencePiVertex is not
-      // working... I don't have MapperDagVertex anymore inside
-      // this
-      org.preesm.model.pisdf.AbstractVertex referencePiVertex = vertex.getReferencePiVertex();
-      if (referencePiVertex != null && referencePiVertex instanceof PiGraph) {
+      org.preesm.model.pisdf.AbstractVertex referencePiVertexA = vertex.getReferencePiVertex();
+      org.preesm.model.pisdf.AbstractVertex referencePiVertex = PreesmCopyTracker.getOriginalSource(referencePiVertexA);
+      if (referencePiVertex instanceof PiGraph) {
         for (AbstractActor actor : ((PiGraph) referencePiVertex).getAllActors()) {
-          configurePapifyFunctions(actor, actor.getVertexPath(), vertex.getName());
+          String papifyActionNameBuilder = actor.getVertexPath().substring(actor.getVertexPath().indexOf('/') + 1);
+          papifyActionNameBuilder = papifyActionNameBuilder.replace('/', '_');
+          configurePapifyFunctions(actor, actor.getVertexPath(), vertex.getName(), papifyActionNameBuilder);
         }
       }
-      /*
-       * @SuppressWarnings("unchecked") final AbstractGraph<AbstractVertex<?>, AbstractEdge<?, AbstractVertex<?>>> graph
-       * = vertex.getGraphDescription(); Set<AbstractVertex<?>> children = graph.vertexSet(); for (AbstractVertex<?>
-       * child : children) { if (child instanceof SDFVertex) { org.preesm.model.pisdf.AbstractVertex referencePiVertex =
-       * child.getReferencePiVertex(); System.out.println(referencePiVertex.toString()); if (referencePiVertex
-       * instanceof AbstractActor) { configurePapifyFunctions((AbstractActor) referencePiVertex, vertex.getInfo(),
-       * vertex.getName()); } } }
-       */
 
     } else {
-      org.preesm.model.pisdf.AbstractVertex referencePiVertex = vertex.getReferencePiVertex();
-      if (referencePiVertex != null && referencePiVertex instanceof AbstractActor) {
-        configurePapifyFunctions((AbstractActor) referencePiVertex, vertex.getInfo(), vertex.getName());
+      org.preesm.model.pisdf.AbstractVertex referencePiVertexA = vertex.getReferencePiVertex();
+      org.preesm.model.pisdf.AbstractVertex referencePiVertex = PreesmCopyTracker.getOriginalSource(referencePiVertexA);
+      if (referencePiVertex instanceof AbstractActor) {
+        configurePapifyFunctions((AbstractActor) referencePiVertex, vertex.getInfo(), vertex.getName(),
+            vertex.getName());
       }
     }
   }
@@ -357,15 +358,14 @@ public class PapifyEngine {
    */
   public DirectedAcyclicGraph generate() {
 
-    ArrayList<PapiEventModifier> modifTimingList = new ArrayList<>();
-
     // The timing event
     this.timingEvent.setName("Timing");
-    this.timingEvent.setDesciption("Event to time through PAPI_get_time()");
+    this.timingEvent.setDescription("Event to time through PAPI_get_time()");
     this.timingEvent.setIndex(9999);
-    this.timingEvent.setModifiers(modifTimingList);
+    List<PapiEventModifier> modifTimingList = new ArrayList<>();
+    this.timingEvent.getModifiers().addAll(modifTimingList);
 
-    if (this.scenario.getPapifyConfigManager() != null) {
+    if (this.scenario.getPapifyConfig() != null) {
 
       // For each vertex, check the monitoring
       for (final DAGVertex vertex : this.dag.vertexSet()) {

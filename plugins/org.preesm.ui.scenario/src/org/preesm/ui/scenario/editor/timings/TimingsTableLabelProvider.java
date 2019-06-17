@@ -58,7 +58,7 @@ import org.preesm.commons.files.PreesmResourcesHelper;
 import org.preesm.model.pisdf.AbstractActor;
 import org.preesm.model.pisdf.AbstractVertex;
 import org.preesm.model.pisdf.expression.ExpressionEvaluator;
-import org.preesm.model.scenario.PreesmScenario;
+import org.preesm.model.scenario.Scenario;
 import org.preesm.model.slam.component.Component;
 import org.preesm.model.slam.utils.DesignTools;
 import org.preesm.ui.PreesmUIPlugin;
@@ -72,7 +72,7 @@ import org.preesm.ui.scenario.editor.Messages;
 public class TimingsTableLabelProvider implements ITableLabelProvider, SelectionListener {
 
   /** The scenario. */
-  private PreesmScenario scenario = null;
+  private Scenario scenario = null;
 
   /** The current op def id. */
   private Component currentOpDefId = null;
@@ -99,7 +99,7 @@ public class TimingsTableLabelProvider implements ITableLabelProvider, Selection
    * @param propertyListener
    *          the property listener
    */
-  public TimingsTableLabelProvider(final PreesmScenario scenario, final TableViewer tableViewer,
+  public TimingsTableLabelProvider(final Scenario scenario, final TableViewer tableViewer,
       final IPropertyListener propertyListener) {
     super();
     this.scenario = scenario;
@@ -141,7 +141,7 @@ public class TimingsTableLabelProvider implements ITableLabelProvider, Selection
     if ((element instanceof AbstractActor) && (this.currentOpDefId != null)) {
       final AbstractActor vertex = (AbstractActor) element;
 
-      final String timing = this.scenario.getTimingManager().getTimingOrDefault(vertex, this.currentOpDefId);
+      final String timing = this.scenario.getTimings().getTimingOrDefault(vertex, this.currentOpDefId);
       if (columnIndex == 3) {
         if (ExpressionEvaluator.canEvaluate(vertex, timing)) {
           return this.imageOk;
@@ -177,7 +177,7 @@ public class TimingsTableLabelProvider implements ITableLabelProvider, Selection
     if ((element instanceof AbstractActor) && (this.currentOpDefId != null)) {
       final AbstractActor vertex = (AbstractActor) element;
 
-      final String timing = this.scenario.getTimingManager().getTimingOrDefault(vertex, this.currentOpDefId);
+      final String timing = this.scenario.getTimings().getTimingOrDefault(vertex, this.currentOpDefId);
 
       switch (columnIndex) {
         case 0:
@@ -272,14 +272,14 @@ public class TimingsTableLabelProvider implements ITableLabelProvider, Selection
       if (this.currentOpDefId != null) {
         final String title = Messages.getString("Timings.dialog.title");
         final String message = Messages.getString("Timings.dialog.message") + abstractActor.getVertexPath();
-        final String init = this.scenario.getTimingManager().getTimingOrDefault(abstractActor, this.currentOpDefId);
+        final String init = this.scenario.getTimings().getTimingOrDefault(abstractActor, this.currentOpDefId);
 
         final InputDialog dialog = new InputDialog(PlatformUI.getWorkbench().getActiveWorkbenchWindow().getShell(),
             title, message, init, validator);
         if (dialog.open() == Window.OK) {
           final String value = dialog.getValue();
 
-          this.scenario.getTimingManager().setTiming(abstractActor, this.currentOpDefId, value);
+          this.scenario.getTimings().setTiming(abstractActor, this.currentOpDefId, value);
           this.propertyListener.propertyChanged(this, IEditorPart.PROP_DIRTY);
           this.tableViewer.refresh();
         }

@@ -1,0 +1,397 @@
+
+@GenModel(modelName="Scenario", prefix="Scenario", modelDirectory="/org.preesm.model.scenario/ecore-gen", // redirection="",
+	// classNamePattern="",
+	// codeFormatting="true",
+	// cleanup="true",
+	importerID="org.eclipse.emf.importer.ecore", // !! if true a instrs.ecore is generated in .impl and is used by xxpackage.init() to
+	// load the intrs packages (by default this false unless the generated XyzPackage might
+	// exceed Java's byte code limit of 64k)
+	loadInitialization="false", creationCommands="false", creationIcons="false", dataTypeConverters="false",
+	operationReflection="false", complianceLevel="8.0")
+@Ecore(nsURI="http://org.preesm/model/scenario")
+package org.preesm.model.scenario
+
+import org.preesm.model.pisdf.Parameter
+import org.preesm.model.pisdf.PiGraph
+import org.preesm.model.slam.Design
+import org.preesm.model.slam.ComponentInstance
+import org.preesm.model.pisdf.AbstractActor
+import org.preesm.model.slam.component.Component
+import org.eclipse.emf.common.util.ECollections
+import org.eclipse.emf.common.util.EMap
+import org.preesm.commons.model.PreesmCopyTracker
+import org.preesm.model.pisdf.expression.ExpressionEvaluator
+import org.eclipse.core.runtime.IPath
+import org.eclipse.core.runtime.Path
+import org.preesm.model.slam.serialize.SlamParser
+import org.preesm.model.pisdf.serialize.PiParser
+import java.util.Objects
+
+// !!! This is needed as of the current versions of xcore/xtext
+// For some reason when using the default String/... (i.e. without the following)
+// the corresponding EPackage attributes/... are resolved to type java.lang.Object
+// instead of java.lang.String.
+// This causes a problem for Tom mapping generation for instance.
+// The following fixes this problem.
+type String wraps String
+
+type int wraps int
+
+type long wraps long
+
+type double wraps double
+
+enum ScenarioConstants {
+	DEFAULT_TIMING_TASK = 100
+	DEFAULT_TIMING_SPECIAL_TASK = 10
+	DEFAULT_MEMCOPY_SETUP_TIME = 1
+	DEFAULT_MEMCOPY_TIME_PER_UNIT = 1
+	DEFAULT_DATA_TYPE_SIZE = 1
+}
+
+class Scenario {
+	String scenarioURL
+	refers PiGraph algorithm
+	refers Design  design
+	contains Constraints constraints opposite scenario
+	contains Timings timings opposite scenario
+	contains SimulationInfo simulationInfo opposite scenario
+	String codegenDirectory
+	contains ParameterValueOverride[] parameterValues opposite scenario
+	contains PapifyConfig papifyConfig opposite scenario
+	op String getScenarioName() {
+		val IPath algoPath = new Path(algorithm.url).removeFileExtension();
+		val String algoName = algoPath.lastSegment();
+		val IPath archiPath = new Path(design.url).removeFileExtension();
+		val String archiName = archiPath.lastSegment();
+		return algoName + "_" + archiName;
+	}
+	op boolean isProperlySet() {
+		val boolean hasProperAlgo = algorithm !== null;
+		val boolean hasProperArchi = design !== null;
+		return hasProperAlgo && hasProperArchi;
+	}
+	op void update(String algoPath, String archiPath) {
+		// If the architecture changes, operator ids, operator defintion ids and
+		// com node ids are no more valid (they are extracted from the
+		// architecture)
+		if (archiPath !== null) {
+
+			// Extract the root object from the resource.
+			this.design = SlamParser.parseSlamDesign(archiPath);
+		}
+		// If the algorithm changes, parameters or variables are no more valid
+		// (they are set in the algorithm)
+		if (algoPath !== null) {
+			val PiGraph newPiGraph = PiParser.getPiGraphWithReconnection(algoPath);
+			this.algorithm = newPiGraph;
+			getParameterValues().clear();
+			for (Parameter p : newPiGraph.getAllParameters()) {
+				if (!p.isConfigurationInterface()) {
+					parameterValues.put(p, p.getExpression().getExpressionAsString());
+				}
+			}
+		}
+		// If the algorithm or the architecture changes, timings and constraints
+		// are no more valid (they depends on both algo and archi)
+		if (algoPath !== null || archiPath !== null) {
+			timings.actorTimings.clear()
+			constraints.groupConstraints.clear()
+			papifyConfig.papifyConfigGroupsActors.clear
+			papifyConfig.papifyConfigGroupsPEs.clear
+		}
+	}
+}
+
+/* #####################
+ *  		Simulation
+ ##################### */
+class SimulationInfo {
+	refers Scenario scenario opposite simulationInfo
+	refers ComponentInstance mainComNode
+	refers ComponentInstance mainOperator
+	long averageDataSize = "1000"
+	long numberOfTopExecutions = "1"
+	refers ComponentInstance[] specialVertexOperators
+	op void addSpecialVertexOperator(ComponentInstance component) {
+		if (!specialVertexOperators.contains(component)) {
+			this.specialVertexOperators.add(component);
+		}
+	}
+	contains DataType[] dataTypes opposite simulationInfo
+	op long getDataTypeSizeOrDefault(String typeName) {
+		if (dataTypes.containsKey(typeName)) {
+			return dataTypes.get(typeName);
+		} else {
+			return ScenarioConstants.DEFAULT_DATA_TYPE_SIZE.value
+		}
+	}
+}
+
+class DataType wraps java.util.Map$Entry {
+	refers SimulationInfo simulationInfo opposite dataTypes
+	String key // the type name (i.e. short, float, etc.)
+	Long value // the type size (i.e. 2, 4, etc.)
+}
+
+/* #####################
+ *  		Constraints
+ ##################### */
+class Constraints {
+	refers Scenario scenario opposite constraints
+	// constraint group
+	String groupConstraintsFileURL
+	contains GroupConstraint[] groupConstraints opposite constraints
+	op void addConstraint(ComponentInstance cmpInstance, AbstractActor actor) {
+		if (!groupConstraints.containsKey(cmpInstance)) {
+			groupConstraints.put(cmpInstance, ECollections.newBasicEList);
+		}
+		groupConstraints.get(cmpInstance).add(actor);
+	}
+	op void addConstraints(ComponentInstance cmpInstance, AbstractActor[] actors) {
+		if (!groupConstraints.containsKey(cmpInstance)) {
+			groupConstraints.put(cmpInstance, ECollections.newBasicEList);
+		}
+		groupConstraints.get(cmpInstance).addAll(actors);
+	}
+}
+
+/*
+ * A group constraint specifies which actors (the value) can be executed
+ * on a given processing element (the key)
+ */
+class GroupConstraint wraps java.util.Map$Entry {
+	refers Constraints constraints opposite groupConstraints
+	refers ComponentInstance key // the operator
+	refers AbstractActor[] value // the vertices allowed on that operator
+}
+
+/* #####################
+ *  		Parameters
+ ##################### */
+class ParameterValueOverride wraps java.util.Map$Entry {
+	refers Scenario scenario opposite parameterValues
+	refers Parameter key
+	String value // expression
+// all other values can be derived from the Parameter key
+}
+
+/* #####################
+ *  		 Timings
+ ##################### */
+class Timings {
+	String excelFileURL // excel or csv local file
+	refers Scenario scenario opposite timings
+	contains ActorTimings[] actorTimings opposite timings
+	op void addDefaultTiming(AbstractActor actor, Component component) {
+		setTiming(actor, component, 100)
+	}
+	op void setTiming(AbstractActor actor, Component component, long time) {
+		setTiming(actor, component, Long.toString(time))
+	}
+	op void setTiming(AbstractActor actor, Component component, String value) {
+		if (!actorTimings.containsKey(actor)) {
+			actorTimings.put(actor, ECollections.asEMap(newLinkedHashMap))
+		}
+		actorTimings.get(actor).put(component, value)
+	}
+	op String getTimingOrDefault(AbstractActor actor, Component component) {
+		if (this.actorTimings.containsKey(actor)) {
+			val EMap<Component, String> map = actorTimings.get(actor);
+			if (map.containsKey(component)) {
+				return map.get(component);
+			}
+		} else {
+			val AbstractActor source = PreesmCopyTracker.getSource(actor);
+			if (source != actor) {
+				return getTimingOrDefault(source, component);
+			}
+		}
+		return Long.toString(ScenarioConstants.DEFAULT_TIMING_TASK.value);
+	}
+	op long evaluateTimingOrDefault(AbstractActor actor, Component component) {
+		val String timingExpression = getTimingOrDefault(actor, component);
+		var long t;
+		if (timingExpression !== null) {
+			t = ExpressionEvaluator.evaluate(actor, timingExpression);
+		} else {
+			t = ScenarioConstants.DEFAULT_TIMING_TASK.value;
+		}
+		return t;
+	}
+	// TODO Memory values should be moved to SLAM
+	contains MemoryInfo[] memTimings opposite timings
+}
+
+class ActorTimings wraps java.util.Map$Entry {
+	refers Timings timings opposite actorTimings
+	// TODO use actor reference ? implement lookup with copy tracker ?
+	refers AbstractActor key // the actor path
+	contains ActorTimingValue[] value opposite actorTimings // the timing values
+}
+
+class ActorTimingValue wraps java.util.Map$Entry {
+	refers ActorTimings actorTimings opposite value
+	refers Component key // the operator definition ID from the design
+	// TODO unit ?
+	// TODO expression
+	String value // litteral value or expression of the timing;
+}
+
+/**
+ * TODO Memory values should be moved to SLAM
+ */
+class MemoryInfo wraps java.util.Map$Entry {
+	refers Timings timings opposite memTimings
+	refers Component key // the operator definition ID from the design
+	contains MemoryCopySpeedValue value opposite memTimings // the timing value
+}
+
+/**
+ * TODO Memory values should be moved to SLAM
+ */
+class MemoryCopySpeedValue {
+	refers MemoryInfo memTimings opposite value
+	long setupTime // TODO unit ?
+	double timePerUnit // TODO unit ?
+}
+
+/* #####################
+ *  		  Papify
+ ##################### */
+class PapifyConfig {
+	refers Scenario scenario opposite papifyConfig
+	contains PapiEventInfo papiData opposite papifyConfig
+	contains PapifyConfigActor[] papifyConfigGroupsActors
+	contains PapifyConfigPE[] papifyConfigGroupsPEs
+	String xmlFileURL = ""
+	op void addComponent(Component slamComponent, PapiComponent papiComponents) {
+		addComponent(slamComponent, ECollections.asEList(papiComponents))
+	}
+	op void addComponent(Component slamComponent, PapiComponent[] papiComponents) {
+		if (!this.papifyConfigGroupsPEs.containsKey(slamComponent)) {
+			this.papifyConfigGroupsPEs.put(slamComponent, newBasicEList());
+		}
+		this.papifyConfigGroupsPEs.get(slamComponent).addAll(papiComponents);
+	}
+	op void addActorConfigEvent(AbstractActor actor, String component, PapiEvent[] events) {
+		if (!papifyConfigGroupsActors.containsKey(actor)) {
+			papifyConfigGroupsActors.put(actor, ECollections.asEMap(newLinkedHashMap));
+		}
+		val actorConfig = papifyConfigGroupsActors.get(actor)
+		if (!actorConfig.containsKey(component)) {
+			actorConfig.put(component, newBasicEList())
+		}
+		actorConfig.get(component).addAll(events)
+	}
+	op void removeActorConfigEvent(AbstractActor actor, String component, PapiEvent event) {
+		if (!papifyConfigGroupsActors.containsKey(actor)) {
+			papifyConfigGroupsActors.put(actor, ECollections.asEMap(newLinkedHashMap));
+		}
+		val actorConfig = papifyConfigGroupsActors.get(actor)
+		if (!actorConfig.containsKey(component)) {
+			actorConfig.put(component, newBasicEList())
+		}
+		val eventList = actorConfig.get(component)
+		eventList.remove(event)
+	}
+
+	op void clear() {
+		papiData.components.clear
+		papifyConfigGroupsActors.clear
+		papifyConfigGroupsPEs.clear
+	}
+}
+
+class PapifyConfigPE wraps java.util.Map$Entry {
+	refers Component key
+	refers PapiComponent[] value
+}
+
+class PapifyConfigActor wraps java.util.Map$Entry {
+	refers AbstractActor key
+	contains ActorEvent[] value
+}
+
+class ActorEvent wraps java.util.Map$Entry {
+	String key // the operator ID
+	refers PapiEvent[] value // set of events to monitor
+}
+
+class PapiEventInfo {
+	refers PapifyConfig papifyConfig opposite papiData
+	contains PapiHardware   hardware
+	contains PapiComponentEntry[] components
+}
+
+enum PapiComponentType {
+	UNKNOWN as "Unknown" = 0
+	CPU as "CPU" = 1
+}
+
+enum PapiEventSetType {
+	NATIVE as "NATIVE" = 0
+	PRESET as "PRESET" = 1
+}
+
+class PapiComponentEntry wraps java.util.Map$Entry {
+	String             key
+	contains PapiComponent value
+}
+
+class PapiComponent {
+	String             ^id
+	PapiComponentType  ^type
+	int                index
+	contains PapiEventSet[] eventSets
+}
+
+class PapiEventSet {
+	contains PapiEvent[] events
+	PapiEventSetType ^type
+}
+
+class PapiEvent {
+	int                     index
+	String                  name        = ""
+	String                  description = ""
+	contains PapiEventModifier[] modifiers
+
+	op boolean equals(Object other) {
+		if (other instanceof PapiEvent) {
+			return this.index === other.index && this.name == other.name
+		}
+		return false
+	}
+	op int hashCode() {
+		Objects.hash(this.index, this.name);
+	}
+}
+
+class PapiEventModifier {
+	String name
+	String description
+}
+
+class PapiHardware {
+	contains PapiCpuID cpuID
+	String    vendor
+	int       vendorCode
+	String    model
+	int       modelCode
+	double    cpuRevision
+	int       cpuMaxMegahertz
+	int       cpuMinMegahertz
+	int threads
+	int cores
+	int sockets
+	int nodes
+	int cpuPerNode
+	int totalCPUs
+}
+
+class PapiCpuID {
+	int family
+	int model
+	int stepping
+}

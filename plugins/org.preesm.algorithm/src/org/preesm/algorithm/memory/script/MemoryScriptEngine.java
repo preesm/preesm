@@ -42,7 +42,6 @@ import bsh.EvalError;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.util.List;
-import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.eclipse.core.resources.IFile;
@@ -52,13 +51,13 @@ import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.Path;
+import org.eclipse.emf.common.util.EMap;
 import org.preesm.algorithm.memory.allocation.AbstractMemoryAllocatorTask;
 import org.preesm.algorithm.memory.exclusiongraph.MemoryExclusionGraph;
 import org.preesm.algorithm.model.dag.DirectedAcyclicGraph;
 import org.preesm.commons.exceptions.PreesmRuntimeException;
 import org.preesm.commons.logger.PreesmLogger;
-import org.preesm.model.scenario.PreesmScenario;
-import org.preesm.model.scenario.types.DataType;
+import org.preesm.model.scenario.Scenario;
 
 /**
  * The Class MemoryScriptEngine.
@@ -131,8 +130,8 @@ public class MemoryScriptEngine {
    * @param checkString
    *          the check string
    */
-  public void runScripts(final DirectedAcyclicGraph dag, final Map<String, DataType> dataTypes,
-      final String checkString) throws EvalError {
+  public void runScripts(final DirectedAcyclicGraph dag, final EMap<String, Long> dataTypes, final String checkString)
+      throws EvalError {
     // Retrieve all the scripts
     final int nbScripts = this.sr.findScripts(dag);
 
@@ -212,7 +211,7 @@ public class MemoryScriptEngine {
   /**
    *
    */
-  public void generateCode(final PreesmScenario scenario, final String log) {
+  public void generateCode(final Scenario scenario, final String log) {
     final String codegenPath = scenario.getCodegenDirectory() + "/";
     final IFile iFile;
     try {

@@ -36,7 +36,6 @@
  */
 package org.preesm.model.scenario.types;
 
-// TODO: Auto-generated Javadoc
 /**
  * Objects used to tag the DAG edges. The buffer couple definition is transmitted to the code generation. One buffer is
  * created for the source and one for the destination.
@@ -47,7 +46,8 @@ package org.preesm.model.scenario.types;
 public class BufferProperties {
 
   /** The data type. */
-  private final DataType dataType;
+  private final String dataTypeName;
+  private final long   dataTypeSize;
 
   /** The dest input port ID. */
   private final String destInputPortID;
@@ -61,8 +61,6 @@ public class BufferProperties {
   /**
    * Instantiates a new buffer properties.
    *
-   * @param dataType
-   *          the data type
    * @param sourceOutputPortID
    *          the source output port ID
    * @param destInputPortID
@@ -70,10 +68,11 @@ public class BufferProperties {
    * @param size
    *          the size
    */
-  public BufferProperties(final DataType dataType, final String sourceOutputPortID, final String destInputPortID,
-      final int size) {
+  public BufferProperties(final String dataTypeName, final long dataTypeSize, final String sourceOutputPortID,
+      final String destInputPortID, final int size) {
     super();
-    this.dataType = dataType;
+    this.dataTypeName = dataTypeName;
+    this.dataTypeSize = dataTypeSize;
     this.destInputPortID = destInputPortID;
     this.size = size;
     this.sourceOutputPortID = sourceOutputPortID;
@@ -85,12 +84,7 @@ public class BufferProperties {
    * @return the data type
    */
   public String getDataType() {
-    String typeName = "";
-    if (this.dataType == null) {
-      typeName = "typeNotFound";
-    } else {
-      typeName = this.dataType.getTypeName();
-    }
+    String typeName = this.dataTypeName;
     return typeName;
   }
 

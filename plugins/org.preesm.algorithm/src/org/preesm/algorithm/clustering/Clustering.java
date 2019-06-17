@@ -43,8 +43,7 @@ import org.eclipse.core.runtime.IProgressMonitor;
 import org.preesm.algorithm.model.sdf.SDFGraph;
 import org.preesm.commons.doc.annotations.Port;
 import org.preesm.commons.doc.annotations.PreesmTask;
-import org.preesm.commons.exceptions.PreesmException;
-import org.preesm.model.scenario.PreesmScenario;
+import org.preesm.model.scenario.Scenario;
 import org.preesm.model.slam.Design;
 import org.preesm.workflow.elements.Workflow;
 import org.preesm.workflow.implement.AbstractTaskImplementation;
@@ -55,7 +54,7 @@ import org.preesm.workflow.implement.AbstractTaskImplementation;
  */
 @PreesmTask(id = "org.ietr.preesm.Clustering", name = "Clustering",
 
-    inputs = { @Port(name = "SDF", type = SDFGraph.class), @Port(name = "scenario", type = PreesmScenario.class),
+    inputs = { @Port(name = "SDF", type = SDFGraph.class), @Port(name = "scenario", type = Scenario.class),
         @Port(name = "architecture", type = Design.class) },
 
     outputs = { @Port(name = "SDF", type = SDFGraph.class) },
@@ -67,10 +66,10 @@ public class Clustering extends AbstractTaskImplementation {
 
   @Override
   public Map<String, Object> execute(final Map<String, Object> inputs, final Map<String, String> parameters,
-      final IProgressMonitor monitor, final String nodeName, final Workflow workflow) throws PreesmException {
+      final IProgressMonitor monitor, final String nodeName, final Workflow workflow) {
     final Map<String, Object> outputs = new LinkedHashMap<>();
     final SDFGraph algorithm = (SDFGraph) inputs.get("SDF");
-    final PreesmScenario scenario = (PreesmScenario) inputs.get("scenario");
+    final Scenario scenario = (Scenario) inputs.get("scenario");
     final Design architecture = (Design) inputs.get("architecture");
     final HSDFBuildLoops loopBuilder = new HSDFBuildLoops(scenario, architecture);
     outputs.put("SDF", loopBuilder.execute(algorithm));

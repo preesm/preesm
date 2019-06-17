@@ -36,6 +36,7 @@
  */
 package org.preesm.ui.scenario.editor.timings;
 
+import java.util.Map.Entry;
 import org.eclipse.jface.dialogs.IInputValidator;
 import org.eclipse.jface.dialogs.InputDialog;
 import org.eclipse.jface.viewers.ILabelProviderListener;
@@ -47,11 +48,11 @@ import org.eclipse.swt.graphics.Image;
 import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.IPropertyListener;
 import org.eclipse.ui.PlatformUI;
-import org.preesm.model.scenario.MemCopySpeed;
-import org.preesm.model.scenario.PreesmScenario;
+import org.preesm.model.scenario.MemoryCopySpeedValue;
+import org.preesm.model.scenario.Scenario;
+import org.preesm.model.slam.component.Component;
 import org.preesm.ui.scenario.editor.Messages;
 
-// TODO: Auto-generated Javadoc
 /**
  * Displays the labels for memcopy speed.
  *
@@ -60,7 +61,7 @@ import org.preesm.ui.scenario.editor.Messages;
 public class MemCopySpeedLabelProvider implements ITableLabelProvider {
 
   /** The scenario. */
-  private PreesmScenario scenario = null;
+  private Scenario scenario = null;
 
   /** The table viewer. */
   private TableViewer tableViewer = null;
@@ -78,7 +79,7 @@ public class MemCopySpeedLabelProvider implements ITableLabelProvider {
    * @param propertyListener
    *          the property listener
    */
-  public MemCopySpeedLabelProvider(final PreesmScenario scenario, final TableViewer tableViewer,
+  public MemCopySpeedLabelProvider(final Scenario scenario, final TableViewer tableViewer,
       final IPropertyListener propertyListener) {
     super();
     this.scenario = scenario;
@@ -106,15 +107,16 @@ public class MemCopySpeedLabelProvider implements ITableLabelProvider {
   public String getColumnText(final Object element, final int columnIndex) {
     String text = "";
 
-    if (element instanceof MemCopySpeed) {
-      final MemCopySpeed speed = (MemCopySpeed) element;
+    if (element instanceof Entry) {
+      @SuppressWarnings("unchecked")
+      final Entry<Component, MemoryCopySpeedValue> speed = (Entry<Component, MemoryCopySpeedValue>) element;
 
       if (columnIndex == 0) {
-        text = speed.getComponent().getVlnv().getName();
+        text = speed.getKey().getVlnv().getName();
       } else if (columnIndex == 1) {
-        text = Long.toString(speed.getSetupTime());
+        text = Long.toString(speed.getValue().getSetupTime());
       } else if (columnIndex == 2) {
-        text = Double.toString(1.0d / speed.getTimePerUnit());
+        text = Double.toString(1.0d / speed.getValue().getTimePerUnit());
       }
     }
 
@@ -207,20 +209,23 @@ public class MemCopySpeedLabelProvider implements ITableLabelProvider {
       return message;
     };
 
-    if (selection.getFirstElement() instanceof MemCopySpeed) {
-      final MemCopySpeed speed = (MemCopySpeed) selection.getFirstElement();
+    if (selection.getFirstElement() instanceof Entry) {
+      @SuppressWarnings("unchecked")
+      final Entry<Component,
+          MemoryCopySpeedValue> speed = (Entry<Component, MemoryCopySpeedValue>) selection.getFirstElement();
 
       String title = Messages.getString("Timings.MemcopySpeeds.dialog.setupTitle");
-      String message = Messages.getString("Timings.MemcopySpeeds.dialog.setupMessage") + speed.getComponent();
+      final Component component = speed.getKey();
+      String message = Messages.getString("Timings.MemcopySpeeds.dialog.setupMessage") + component;
 
-      final String initSetupTime = String.valueOf(speed.getSetupTime());
-      final String initSpeed = String.valueOf(1.0 / speed.getTimePerUnit());
+      final String initSetupTime = String.valueOf(speed.getValue().getSetupTime());
+      final String initSpeed = String.valueOf(1.0 / speed.getValue().getTimePerUnit());
 
       final InputDialog dialogSetupTime = new InputDialog(
           PlatformUI.getWorkbench().getActiveWorkbenchWindow().getShell(), title, message, initSetupTime, intValidator);
 
       title = Messages.getString("Timings.MemcopySpeeds.dialog.timePerUnitTitle");
-      message = Messages.getString("Timings.MemcopySpeeds.dialog.timePerUnitMessage") + speed.getComponent();
+      message = Messages.getString("Timings.MemcopySpeeds.dialog.timePerUnitMessage") + component;
 
       final InputDialog dialogTimePerUnit = new InputDialog(
           PlatformUI.getWorkbench().getActiveWorkbenchWindow().getShell(), title, message, initSpeed, floatValidator);
@@ -230,10 +235,9 @@ public class MemCopySpeedLabelProvider implements ITableLabelProvider {
           final String valueSetupTime = dialogSetupTime.getValue();
           final String valueTimePerUnit = dialogTimePerUnit.getValue();
 
-          speed.setSetupTime(Long.valueOf(valueSetupTime));
+          speed.getValue().setSetupTime(Long.valueOf(valueSetupTime));
           // Careful! We store the time per memory unit, that is the inverse of the speed.
-          speed.setTimePerUnit(1.0d / Double.valueOf(valueTimePerUnit));
-          this.scenario.getTimingManager().putMemcpySpeed(speed);
+          speed.getValue().setTimePerUnit(1.0d / Double.valueOf(valueTimePerUnit));
 
           this.tableViewer.refresh();
           this.propertyListener.propertyChanged(this, IEditorPart.PROP_DIRTY);

@@ -48,6 +48,7 @@ import java.util.TreeMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.eclipse.emf.common.util.EList;
+import org.eclipse.emf.common.util.EMap;
 import org.preesm.algorithm.clustering.AbstractClust;
 import org.preesm.algorithm.clustering.ClustSequence;
 import org.preesm.algorithm.clustering.ClustVertex;
@@ -97,10 +98,10 @@ import org.preesm.codegen.model.Variable;
 import org.preesm.commons.exceptions.PreesmException;
 import org.preesm.commons.exceptions.PreesmRuntimeException;
 import org.preesm.commons.logger.PreesmLogger;
-import org.preesm.model.scenario.PreesmScenario;
+import org.preesm.model.scenario.PapiComponent;
+import org.preesm.model.scenario.Scenario;
 import org.preesm.model.scenario.types.BufferAggregate;
 import org.preesm.model.scenario.types.BufferProperties;
-import org.preesm.model.scenario.types.DataType;
 import org.preesm.model.slam.component.Component;
 
 /**
@@ -149,12 +150,12 @@ public class CodegenHierarchicalModelGenerator {
   /**
    * {@link PreesmScenario Scenario}.
    */
-  private final PreesmScenario scenario;
+  private final Scenario scenario;
 
   /**
    *
    */
-  private final Map<String, DataType> dataTypes;
+  private final EMap<String, Long> dataTypes;
 
   /**
    *
@@ -166,7 +167,7 @@ public class CodegenHierarchicalModelGenerator {
   /**
    *
    */
-  public CodegenHierarchicalModelGenerator(final PreesmScenario scenario, final DirectedAcyclicGraph dag,
+  public CodegenHierarchicalModelGenerator(final Scenario scenario, final DirectedAcyclicGraph dag,
       final Map<DAGVertex, Buffer> linkHSDFVertexBuffer, final Map<BufferProperties, Buffer> srSDFEdgeBuffers,
       final BiMap<DAGVertex, Call> dagVertexCalls, final List<String> papifiedPEs) {
     this.dag = dag;
@@ -176,7 +177,7 @@ public class CodegenHierarchicalModelGenerator {
     this.scenario = scenario;
     this.linkHSDFEdgeBuffer = new LinkedHashMap<>();
     this.currentWorkingMemOffset = 0;
-    this.dataTypes = scenario.getSimulationManager().getDataTypes();
+    this.dataTypes = scenario.getSimulationInfo().getDataTypes();
     this.papifiedPEs = papifiedPEs;
   }
 
@@ -537,8 +538,9 @@ public class CodegenHierarchicalModelGenerator {
           buf.setSize((int) bufSize);
           buf.setType(currentEdge.getDataType().toString());
           // sorry lign of the death
-          buf.setTypeSize(this.dataTypes.get(currentEdge.getDataType().toString()).getSize());
-          this.currentWorkingMemOffset += bufSize * this.dataTypes.get(currentEdge.getDataType().toString()).getSize();
+          final long edgeDataSize = this.dataTypes.get(currentEdge.getDataType().toString());
+          buf.setTypeSize(edgeDataSize);
+          this.currentWorkingMemOffset += bufSize * this.dataTypes.get(currentEdge.getDataType().toString());
           this.linkHSDFEdgeBuffer.put(currentEdge, buf);
         }
         var = buf;
@@ -713,8 +715,9 @@ public class CodegenHierarchicalModelGenerator {
           buf.setOffset(this.currentWorkingMemOffset);
           buf.setSize((int) bufSize);
           buf.setType(currentEdge.getDataType().toString());
-          buf.setTypeSize(this.dataTypes.get(currentEdge.getDataType().toString()).getSize());
-          this.currentWorkingMemOffset += bufSize * this.dataTypes.get(currentEdge.getDataType().toString()).getSize();
+          final long value = this.dataTypes.get(currentEdge.getDataType().toString());
+          buf.setTypeSize(value);
+          this.currentWorkingMemOffset += bufSize * value;
           this.linkHSDFEdgeBuffer.put(currentEdge, buf);
         }
         if (port.getDirection().toString().equals("Input")) {
@@ -851,13 +854,14 @@ public class CodegenHierarchicalModelGenerator {
     ConstantString papifyComponentName = CodegenFactory.eINSTANCE.createConstantString();
     final String coreType = operatorBlock.getCoreType();
     final Component component = scenario.getDesign().getComponent(coreType);
-    if (this.scenario.getPapifyConfigManager().getCorePapifyConfigGroupPE(component) != null) {
-      for (String compType : this.scenario.getPapifyConfigManager().getCorePapifyConfigGroupPE(component)
-          .getPAPIComponentIDs()) {
+    final List<PapiComponent> corePapifyConfigGroupPE = this.scenario.getPapifyConfig().getPapifyConfigGroupsPEs()
+        .get(component);
+    if (corePapifyConfigGroupPE != null) {
+      for (final PapiComponent compType : corePapifyConfigGroupPE) {
         if (compsSupported.equals("")) {
-          compsSupported = compType;
+          compsSupported = compType.getId();
         } else {
-          compsSupported = compsSupported.concat(",").concat(compType);
+          compsSupported = compsSupported.concat(",").concat(compType.getId());
         }
       }
     } else {

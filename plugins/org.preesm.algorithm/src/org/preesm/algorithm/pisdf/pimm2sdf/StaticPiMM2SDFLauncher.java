@@ -46,8 +46,7 @@ import org.preesm.commons.exceptions.PreesmRuntimeException;
 import org.preesm.model.pisdf.Parameter;
 import org.preesm.model.pisdf.PiGraph;
 import org.preesm.model.pisdf.statictools.PiGraphExecution;
-import org.preesm.model.scenario.ParameterValueManager;
-import org.preesm.model.scenario.PreesmScenario;
+import org.preesm.model.scenario.Scenario;
 
 /**
  * The Class StaticPiMM2SDFLauncher.
@@ -55,7 +54,7 @@ import org.preesm.model.scenario.PreesmScenario;
 public class StaticPiMM2SDFLauncher {
 
   /** The scenario. */
-  private final PreesmScenario scenario;
+  private final Scenario scenario;
 
   /** The graph. */
   private final PiGraph graph;
@@ -68,7 +67,7 @@ public class StaticPiMM2SDFLauncher {
    * @param graph
    *          the graph
    */
-  public StaticPiMM2SDFLauncher(final PreesmScenario scenario, final PiGraph graph) {
+  public StaticPiMM2SDFLauncher(final Scenario scenario, final PiGraph graph) {
     this.scenario = scenario;
     this.graph = graph;
   }
@@ -101,8 +100,7 @@ public class StaticPiMM2SDFLauncher {
   private Map<Parameter, Integer> getParametersValues() {
     final Map<Parameter, Integer> result = new LinkedHashMap<>();
 
-    final ParameterValueManager parameterValueManager = this.scenario.getParameterValueManager();
-    final Set<Entry<Parameter, String>> parameterValues = parameterValueManager.getParameterValues().entrySet();
+    final Set<Entry<Parameter, String>> parameterValues = this.scenario.getParameterValues().entrySet();
     for (final Entry<Parameter, String> paramValue : parameterValues) {
       if (!paramValue.getKey().isLocallyStatic()) {
 

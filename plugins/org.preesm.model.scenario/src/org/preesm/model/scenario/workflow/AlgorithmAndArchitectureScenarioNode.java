@@ -52,7 +52,7 @@ import org.preesm.commons.exceptions.PreesmException;
 import org.preesm.commons.exceptions.PreesmRuntimeException;
 import org.preesm.model.pisdf.Parameter;
 import org.preesm.model.pisdf.PiGraph;
-import org.preesm.model.scenario.PreesmScenario;
+import org.preesm.model.scenario.Scenario;
 import org.preesm.model.scenario.serialize.ScenarioParser;
 import org.preesm.model.slam.Design;
 import org.preesm.workflow.implement.AbstractScenarioImplementation;
@@ -67,8 +67,8 @@ import org.preesm.workflow.implement.AbstractWorkflowNodeImplementation;
  */
 @PreesmTask(id = "org.ietr.preesm.scenario.task", name = "scenario",
 
-    outputs = { @Port(name = "scenario", type = PreesmScenario.class),
-        @Port(name = "architecture", type = Design.class), @Port(name = "PiMM", type = PiGraph.class) }
+    outputs = { @Port(name = "scenario", type = Scenario.class), @Port(name = "architecture", type = Design.class),
+        @Port(name = "PiMM", type = PiGraph.class) }
 
 )
 public class AlgorithmAndArchitectureScenarioNode extends AbstractScenarioImplementation {
@@ -93,7 +93,7 @@ public class AlgorithmAndArchitectureScenarioNode extends AbstractScenarioImplem
     final Path relativePath = new Path(path);
     final IFile file = ResourcesPlugin.getWorkspace().getRoot().getFile(relativePath);
 
-    PreesmScenario scenario;
+    Scenario scenario;
     // Retrieving the algorithm
     PiGraph piAlgorithm = null;
 
@@ -119,9 +119,8 @@ public class AlgorithmAndArchitectureScenarioNode extends AbstractScenarioImplem
     return outputs;
   }
 
-  private void applyScenarioParameterValues(final PreesmScenario scenario) {
-    for (final Entry<Parameter, String> paramValue : scenario.getParameterValueManager().getParameterValues()
-        .entrySet()) {
+  private void applyScenarioParameterValues(final Scenario scenario) {
+    for (final Entry<Parameter, String> paramValue : scenario.getParameterValues().entrySet()) {
 
       final String newValue = paramValue.getValue();
       final String expression = paramValue.getKey().getExpression().getExpressionAsString();

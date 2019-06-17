@@ -38,15 +38,18 @@
 package org.preesm.ui.scenario.editor.papify;
 
 import java.util.LinkedHashSet;
+import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
+import org.eclipse.emf.common.util.EList;
+import org.eclipse.emf.common.util.EMap;
 import org.eclipse.jface.viewers.ITreeContentProvider;
 import org.eclipse.jface.viewers.Viewer;
-import org.preesm.model.scenario.PreesmScenario;
-import org.preesm.model.scenario.papi.PapiComponent;
-import org.preesm.model.scenario.papi.PapiEventInfo;
-import org.preesm.model.scenario.papi.PapiEventSet;
-import org.preesm.model.scenario.papi.PapifyConfigPE;
+import org.preesm.model.scenario.PapiComponent;
+import org.preesm.model.scenario.PapiEventInfo;
+import org.preesm.model.scenario.PapiEventSet;
+import org.preesm.model.scenario.Scenario;
 import org.preesm.model.slam.component.Component;
 import org.preesm.ui.scenario.editor.papify.PapifyListTreeElement.PAPIStatus;
 
@@ -58,12 +61,12 @@ import org.preesm.ui.scenario.editor.papify.PapifyListTreeElement.PAPIStatus;
 public class PapifyComponentListContentProvider2DMatrix implements ITreeContentProvider {
 
   /** Currently edited scenario. */
-  private PreesmScenario                                    scenario           = null;
+  private Scenario                                          scenario           = null;
   private Set<PapifyListTreeElement>                        componentConfig;
   PapifyCheckStateListener                                  checkStateListener = null;
   private Set<PapifyComponentListContentProvider2DMatrixES> editingSupports    = new LinkedHashSet<>();
 
-  public PapifyComponentListContentProvider2DMatrix(PreesmScenario scenario) {
+  public PapifyComponentListContentProvider2DMatrix(Scenario scenario) {
     this.scenario = scenario;
   }
 
@@ -98,10 +101,9 @@ public class PapifyComponentListContentProvider2DMatrix implements ITreeContentP
   public void removePEfromComp(final Component peType, final String compName) {
     if (peType != null && !compName.equals("")) {
 
-      PapifyConfigPE papiConfig = this.scenario.getPapifyConfigManager().getCorePapifyConfigGroupPE(peType);
-      PapiEventInfo papiData = this.scenario.getPapifyConfigManager().getPapifyData();
-      PapiComponent pc = papiData.getComponent(compName);
-      papiConfig.removePAPIComponent(pc);
+      PapiEventInfo papiData = this.scenario.getPapifyConfig().getPapiData();
+      PapiComponent pc = papiData.getComponents().get(compName);
+      this.scenario.getPapifyConfig().getPapifyConfigGroupsPEs().get(peType).remove(pc);
 
       for (PapifyListTreeElement treeElement : this.componentConfig) {
         if (treeElement.label.equals(compName)) {
@@ -117,10 +119,9 @@ public class PapifyComponentListContentProvider2DMatrix implements ITreeContentP
    */
   public void addPEtoComp(final Component peType, final String compName) {
     if (peType != null && !compName.equals("")) {
-      PapifyConfigPE papiConfig = this.scenario.getPapifyConfigManager().getCorePapifyConfigGroupPE(peType);
-      PapiEventInfo papiData = this.scenario.getPapifyConfigManager().getPapifyData();
-      PapiComponent pc = papiData.getComponent(compName);
-      papiConfig.addPAPIComponent(pc);
+      PapiEventInfo papiData = this.scenario.getPapifyConfig().getPapiData();
+      PapiComponent pc = papiData.getComponents().get(compName);
+      this.scenario.getPapifyConfig().addComponent(peType, pc);
 
       for (PapifyListTreeElement treeElement : this.componentConfig) {
         if (treeElement.label.equals(compName)) {
@@ -135,14 +136,12 @@ public class PapifyComponentListContentProvider2DMatrix implements ITreeContentP
    *
    */
   public void cleanPE(final Component peType) {
-    PapifyConfigPE papiConfig = this.scenario.getPapifyConfigManager().getCorePapifyConfigGroupPE(peType);
-    if (peType != null && papiConfig != null) {
-      PapiEventInfo papiData = this.scenario.getPapifyConfigManager().getPapifyData();
-      for (PapiComponent pc : papiData.getComponents()) {
-        if (papiConfig.containsPAPIComponent(pc)) {
-          papiConfig.removePAPIComponent(pc);
-        }
-      }
+
+    List<
+        PapiComponent> corePapifyConfigGroupPE = this.scenario.getPapifyConfig().getPapifyConfigGroupsPEs().get(peType);
+    if (peType != null && corePapifyConfigGroupPE != null) {
+      PapiEventInfo papiData = this.scenario.getPapifyConfig().getPapiData();
+      corePapifyConfigGroupPE.removeAll(papiData.getComponents().values());
 
       for (PapifyListTreeElement treeElement : this.componentConfig) {
         final Map<Component, PAPIStatus> statuses = treeElement.PAPIStatuses;
@@ -167,13 +166,13 @@ public class PapifyComponentListContentProvider2DMatrix implements ITreeContentP
    *
    */
   public void setInput() {
+    final EMap<Component,
+        EList<PapiComponent>> papifyConfigGroupsPEs = this.scenario.getPapifyConfig().getPapifyConfigGroupsPEs();
 
-    Set<PapifyConfigPE> papiConfigs = this.scenario.getPapifyConfigManager().getPapifyConfigGroupsPEs();
-
-    for (PapifyConfigPE papiConfig : papiConfigs) {
-      final Component peType = papiConfig.getSlamComponent();
-      for (String compName : papiConfig.getPAPIComponentIDs()) {
-        String comp = compName;
+    for (final Entry<Component, EList<PapiComponent>> papiConfig : papifyConfigGroupsPEs) {
+      final Component peType = papiConfig.getKey();
+      for (PapiComponent compName : papiConfig.getValue()) {
+        String comp = compName.getId();
         for (PapifyListTreeElement treeElement : this.componentConfig) {
           if (treeElement.label.equals(comp)) {
             final Map<Component, PAPIStatus> statuses = treeElement.PAPIStatuses;
@@ -213,7 +212,7 @@ public class PapifyComponentListContentProvider2DMatrix implements ITreeContentP
       componentConfig = new LinkedHashSet<>();
       boolean componentAdded = false;
 
-      for (final PapiComponent compAux : inputPapiEventInfo.getComponents()) {
+      for (final PapiComponent compAux : inputPapiEventInfo.getComponents().values()) {
         if (!compAux.getEventSets().isEmpty()) {
           for (final PapiEventSet eventSet : compAux.getEventSets()) {
             if (!eventSet.getEvents().isEmpty()) {

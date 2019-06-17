@@ -48,7 +48,7 @@ import org.preesm.algorithm.mapper.model.MapperDAG;
 import org.preesm.algorithm.mapper.model.MapperDAGVertex;
 import org.preesm.algorithm.mapper.params.AbcParameters;
 import org.preesm.algorithm.mapper.params.FastAlgoParameters;
-import org.preesm.model.scenario.PreesmScenario;
+import org.preesm.model.scenario.Scenario;
 import org.preesm.model.slam.Design;
 
 /**
@@ -91,7 +91,7 @@ class PFastCallable implements Callable<MapperDAG> {
   private final boolean alreadyMapped;
 
   /** The scenario. */
-  private final PreesmScenario scenario;
+  private final Scenario scenario;
 
   /**
    * Constructor.
@@ -117,7 +117,7 @@ class PFastCallable implements Callable<MapperDAG> {
    */
   public PFastCallable(final String name, final MapperDAG inputDAG, final Design inputArchi,
       final Set<String> blockingNodeNames, final boolean isDisplaySolutions, final boolean alreadyMapped,
-      final AbcParameters abcParams, final FastAlgoParameters fastParams, final PreesmScenario scenario) {
+      final AbcParameters abcParams, final FastAlgoParameters fastParams, final Scenario scenario) {
     this.threadName = name;
     this.inputDAG = inputDAG;
     this.inputArchi = inputArchi;
