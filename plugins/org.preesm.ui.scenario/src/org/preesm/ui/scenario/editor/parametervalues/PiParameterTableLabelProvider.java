@@ -49,6 +49,8 @@ import org.eclipse.swt.widgets.Table;
 import org.preesm.commons.files.PreesmResourcesHelper;
 import org.preesm.model.pisdf.Parameter;
 import org.preesm.model.pisdf.expression.ExpressionEvaluator;
+import org.preesm.model.scenario.Scenario;
+import org.preesm.model.scenario.util.ParameterEvaluator;
 import org.preesm.ui.PreesmUIPlugin;
 
 /**
@@ -67,15 +69,18 @@ public class PiParameterTableLabelProvider extends LabelProvider implements ITab
   /** The image error. */
   private final Image imageError;
 
+  private final Scenario scenario;
+
   /**
    * Instantiates a new pi parameter table label provider.
    *
    * @param _table
    *          the table
    */
-  PiParameterTableLabelProvider(final Table _table) {
+  PiParameterTableLabelProvider(final Table _table, final Scenario scenario) {
     super();
     this.table = _table;
+    this.scenario = scenario;
 
     final URL errorIconURL = PreesmResourcesHelper.getInstance().resolve("icons/error.png", PreesmUIPlugin.class);
     ImageDescriptor imageDcr = ImageDescriptor.createFromURL(errorIconURL);
@@ -146,9 +151,17 @@ public class PiParameterTableLabelProvider extends LabelProvider implements ITab
           return " - ";
         }
       case 5: // Expression Value Column
-        if (paramValue.getKey().isLocallyStatic()
-            && ExpressionEvaluator.canEvaluate(paramValue.getKey(), paramValue.getValue())) {
-          return Long.toString(ExpressionEvaluator.evaluate(paramValue.getKey(), paramValue.getValue()));
+        if (paramValue.getKey().isLocallyStatic()) {
+
+          final String evaluate = ParameterEvaluator.evaluate(paramValue.getKey(), this.scenario,
+              paramValue.getValue());
+          System.out.println(paramValue.getKey().getName() + " -> " + evaluate);
+
+          if (ExpressionEvaluator.canEvaluate(paramValue.getKey(), paramValue.getValue())) {
+            return Long.toString(ExpressionEvaluator.evaluate(paramValue.getKey(), paramValue.getValue()));
+          } else {
+            return paramValue.getValue();
+          }
         } else {
           return paramValue.getValue();
         }

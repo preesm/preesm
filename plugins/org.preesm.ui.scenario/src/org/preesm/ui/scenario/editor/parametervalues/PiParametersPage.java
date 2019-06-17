@@ -147,7 +147,7 @@ public class PiParametersPage extends FormPage implements IPropertyListener {
 
     // The content provider fills the tree
     this.tableViewer.setContentProvider(new PiParameterTableContentProvider());
-    this.tableViewer.setLabelProvider(new PiParameterTableLabelProvider(table));
+    this.tableViewer.setLabelProvider(new PiParameterTableLabelProvider(table, this.scenario));
     this.tableViewer.setComparator(new VertexLexicographicalComparator());
     this.tableViewer.setInput(this.scenario);
 

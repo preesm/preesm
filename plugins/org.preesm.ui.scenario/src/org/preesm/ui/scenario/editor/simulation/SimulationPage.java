@@ -383,13 +383,19 @@ public class SimulationPage extends FormPage implements IPropertyListener {
         combo.add(opId);
       }
 
-      combo.select(combo.indexOf(this.scenario.getSimulationInfo().getMainOperator().getInstanceName()));
+      final ComponentInstance mainOperator = this.scenario.getSimulationInfo().getMainOperator();
+      if (mainOperator != null) {
+        combo.select(combo.indexOf(mainOperator.getInstanceName()));
+      }
     } else if (type.equals("comNode")) {
       for (final String nodeId : DesignTools.getComNodeInstanceIds(this.scenario.getDesign())) {
         combo.add(nodeId);
       }
 
-      combo.select(combo.indexOf(this.scenario.getSimulationInfo().getMainComNode().getInstanceName()));
+      final ComponentInstance mainComNode = this.scenario.getSimulationInfo().getMainComNode();
+      if (mainComNode != null) {
+        combo.select(combo.indexOf(mainComNode.getInstanceName()));
+      }
     }
 
     return combo;
