@@ -39,6 +39,7 @@
  */
 package org.preesm.algorithm.mapper.model.property;
 
+import java.util.Collections;
 import org.preesm.model.pisdf.AbstractActor;
 import org.preesm.model.pisdf.expression.ExpressionEvaluator;
 import org.preesm.model.scenario.ScenarioConstants;
@@ -91,7 +92,7 @@ public class Timing {
    * @return time, only if it is available (if the expression have been evaluated)
    */
   public long getTime() {
-    return ExpressionEvaluator.evaluate(getActor(), getStringValue());
+    return ExpressionEvaluator.evaluate(getActor(), getStringValue(), Collections.emptyMap());
   }
 
   public boolean canEvaluate() {

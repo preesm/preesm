@@ -43,12 +43,16 @@ import java.util.Map;
 import org.preesm.commons.math.ExpressionEvaluationException;
 import org.preesm.commons.math.JEPWrapper;
 import org.preesm.model.pisdf.AbstractActor;
+import org.preesm.model.pisdf.ConfigInputInterface;
 import org.preesm.model.pisdf.ConfigInputPort;
+import org.preesm.model.pisdf.ConfigOutputPort;
 import org.preesm.model.pisdf.DataPort;
 import org.preesm.model.pisdf.Delay;
 import org.preesm.model.pisdf.DelayActor;
+import org.preesm.model.pisdf.Dependency;
 import org.preesm.model.pisdf.Expression;
 import org.preesm.model.pisdf.ExpressionProxy;
+import org.preesm.model.pisdf.ISetter;
 import org.preesm.model.pisdf.InterfaceActor;
 import org.preesm.model.pisdf.LongExpression;
 import org.preesm.model.pisdf.Parameter;
@@ -63,8 +67,13 @@ import org.preesm.model.pisdf.util.PiMMSwitch;
  */
 public class ExpressionEvaluator {
 
-  public static final long evaluate(final Parameterizable p, final String value) {
-    final Map<String, Double> lookupParameterValues = lookupParameterValues(p);
+  public static final long evaluate(final Parameter param, final Map<Parameter, String> overridenValues) {
+    return evaluate(param, param.getValueExpression().getExpressionAsString(), overridenValues);
+  }
+
+  public static final long evaluate(final Parameterizable p, final String value,
+      final Map<Parameter, String> overridenValues) {
+    final Map<String, Double> lookupParameterValues = lookupParameterValues(p, overridenValues);
     return JEPWrapper.evaluate(value, lookupParameterValues);
   }
 
@@ -72,19 +81,50 @@ public class ExpressionEvaluator {
     return evaluate(expression, Collections.emptyMap());
   }
 
-  public static final long evaluate(final Expression expression, final Map<String, ? extends Number> paramValues) {
-    return new InternalEvaluationVisitor(paramValues).doSwitch(expression);
-
+  /**
+   * Will lookup parameter values if needed (see
+   * {@link InternalExpressionEvaluationVisitor#caseStringExpression(StringExpression)}).
+   */
+  public static final long evaluate(final Expression expression,
+      final Map<Parameter, String> overridenParameterValues) {
+    return new InternalExpressionEvaluationVisitor(Collections.emptyMap(), overridenParameterValues)
+        .doSwitch(expression);
   }
 
   /**
    *
    */
-  public static Map<String, Number> lookupParameterValues(final Expression expression) {
+  public static Parameter lookupFirstNonInterfaceParent(final ConfigInputInterface cii) {
+    Parameter parent = cii;
+    while (parent instanceof ConfigInputInterface) {
+      final ConfigInputPort graphPort = ((ConfigInputInterface) parent).getGraphPort();
+      final Dependency incomingDependency = graphPort.getIncomingDependency();
+      if (incomingDependency != null) {
+        final ISetter setter = incomingDependency.getSetter();
+        if (setter instanceof ConfigOutputPort) {
+          throw new ExpressionEvaluationException("Cannot evaluate expression of a dynamic Setter");
+        } else {
+          parent = (Parameter) setter;
+          if (!(parent instanceof ConfigInputInterface)) {
+            return parent;
+          }
+        }
+      } else {
+        return null;
+      }
+    }
+    return null;
+  }
+
+  /**
+   *
+   */
+  public static Map<String, Number> lookupParameterValues(final Expression expression,
+      final Map<Parameter, String> overridenValues) {
     final Map<String, Number> result = new LinkedHashMap<>();
     final Parameterizable holder = expression.getHolder();
     if (holder != null) {
-      result.putAll(lookupParameterValues(holder));
+      result.putAll(lookupParameterValues(holder, overridenValues));
     }
     return result;
   }
@@ -92,12 +132,37 @@ public class ExpressionEvaluator {
   /**
    *
    */
-  public static Map<String, Double> lookupParameterValues(final Parameterizable parameterizable) {
+  public static Map<String, Double> lookupParameterValues(final Parameterizable parameterizable,
+      final Map<Parameter, String> overridenValues) {
     final Map<String, Double> res = new LinkedHashMap<>();
     if (parameterizable != null) {
       final List<Parameter> inputParameters = parameterizable.getInputParameters();
       for (final Parameter param : inputParameters) {
-        final double evaluate = (double) param.getExpression().evaluate();
+        final String paramExpressionValue;
+        if (overridenValues.containsKey(param)) {
+          paramExpressionValue = overridenValues.get(param);
+        } else {
+          paramExpressionValue = param.getExpression().getExpressionAsString();
+        }
+        final double evaluate;
+        if (param instanceof ConfigInputInterface) {
+          final ConfigInputInterface configInputInterface = (ConfigInputInterface) param;
+          final Parameter connectedParam = lookupFirstNonInterfaceParent(configInputInterface);
+          if (connectedParam != null) {
+            final String connectedeParamExpressionValue;
+            if (overridenValues.containsKey(connectedParam)) {
+              connectedeParamExpressionValue = overridenValues.get(connectedParam);
+            } else {
+              connectedeParamExpressionValue = connectedParam.getExpression().getExpressionAsString();
+            }
+            evaluate = evaluate(connectedParam, connectedeParamExpressionValue, overridenValues);
+          } else {
+            evaluate = 0.;
+          }
+        } else {
+          evaluate = evaluate(param, paramExpressionValue, overridenValues);
+        }
+
         if ((parameterizable instanceof Parameter) || (parameterizable instanceof Delay)
             || (parameterizable instanceof InterfaceActor)) {
           res.put(param.getName(), evaluate);
@@ -131,7 +196,7 @@ public class ExpressionEvaluator {
   public static final boolean canEvaluate(final Parameterizable p, final String value) {
     if (value != null && !value.isEmpty()) {
       final List<String> involvement = JEPWrapper.involvement(value);
-      final Map<String, Double> lookupParameterValues = lookupParameterValues(p);
+      final Map<String, Double> lookupParameterValues = lookupParameterValues(p, Collections.emptyMap());
       return lookupParameterValues.keySet().containsAll(involvement);
     }
     return false;
@@ -142,15 +207,18 @@ public class ExpressionEvaluator {
    * @author anmorvan
    *
    */
-  private static class InternalEvaluationVisitor extends PiMMSwitch<Long> {
+  private static class InternalExpressionEvaluationVisitor extends PiMMSwitch<Long> {
     private final Map<String, ? extends Number> parameterValues;
+    private final Map<Parameter, String>        overridenValues;
 
     /**
      * Initialize the Expression evaluator with pre-computed parameter values. This can speedup evaluation as there will
      * be no parameter value lookup.
      */
-    private InternalEvaluationVisitor(final Map<String, ? extends Number> parameterValues) {
+    private InternalExpressionEvaluationVisitor(final Map<String, ? extends Number> parameterValues,
+        final Map<Parameter, String> overridenValues) {
       this.parameterValues = parameterValues;
+      this.overridenValues = overridenValues;
     }
 
     @Override
@@ -179,7 +247,8 @@ public class ExpressionEvaluator {
         } catch (final ExpressionEvaluationException ex) {
           // gather Expression parameters and evaluate the expression.
           // ExpressionEvaluationException will still be thrown if something goes wrong.
-          final Map<String, Number> addInputParameterValues = ExpressionEvaluator.lookupParameterValues(stringExpr);
+          final Map<String,
+              Number> addInputParameterValues = ExpressionEvaluator.lookupParameterValues(stringExpr, overridenValues);
           return JEPWrapper.evaluate(expressionString, addInputParameterValues);
         }
       }

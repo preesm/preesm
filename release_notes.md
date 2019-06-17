@@ -20,6 +20,9 @@ PREESM Changelog
 * Scenario managers now use the Actor/Component reference instead of component ID or actor path/name;
 * Refactor scenario and use XCore for Scenario;
 * Add support for parameterized timings and for overriding parameter values in scenario (note: display is wrong when using ConfigInputInterface values);
+* Fix Scenario UI: 
+  * Timing tab is properly refreshed when param override values are changed;
+  * Timing and Paramever override expressions are now properly using config input interface values from parent graphs;
 
 ### Bug fix
 * Fix #139: better error messages for Name checker

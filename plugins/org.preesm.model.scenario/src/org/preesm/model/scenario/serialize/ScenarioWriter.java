@@ -315,11 +315,17 @@ public class ScenarioWriter {
 
     final Element core = this.dom.createElement("mainCore");
     params.appendChild(core);
-    core.setTextContent(this.scenario.getSimulationInfo().getMainOperator().getInstanceName());
+    final ComponentInstance mainOperator = this.scenario.getSimulationInfo().getMainOperator();
+    if (mainOperator != null) {
+      core.setTextContent(mainOperator.getInstanceName());
+    }
 
     final Element medium = this.dom.createElement("mainComNode");
     params.appendChild(medium);
-    medium.setTextContent(this.scenario.getSimulationInfo().getMainComNode().getInstanceName());
+    final ComponentInstance mainComNode = this.scenario.getSimulationInfo().getMainComNode();
+    if (mainComNode != null) {
+      medium.setTextContent(mainComNode.getInstanceName());
+    }
 
     final Element dataSize = this.dom.createElement("averageDataSize");
     params.appendChild(dataSize);

@@ -31,6 +31,7 @@ import org.preesm.commons.exceptions.PreesmRuntimeException
 import org.preesm.model.pisdf.util.RefinementResolver
 import org.preesm.model.pisdf.expression.ExpressionEvaluator
 import org.preesm.model.pisdf.factory.PiMMUserFactory
+import java.util.Collections
 
 // !!! This is needed as of the current versions of xcore/xtext
 // For some reason when using the default String/... (i.e. without the following)
@@ -98,7 +99,7 @@ class StringExpression extends Expression {
 		return getExpressionString()
 	}
 	op long evaluate() {
-		return ExpressionEvaluator.evaluate(this)
+		return ExpressionEvaluator.evaluate(this, Collections.emptyMap)
 	}
 }
 

@@ -49,6 +49,7 @@ import org.eclipse.swt.widgets.Table;
 import org.preesm.commons.files.PreesmResourcesHelper;
 import org.preesm.model.pisdf.Parameter;
 import org.preesm.model.pisdf.expression.ExpressionEvaluator;
+import org.preesm.model.scenario.Scenario;
 import org.preesm.ui.PreesmUIPlugin;
 
 /**
@@ -67,15 +68,18 @@ public class PiParameterTableLabelProvider extends LabelProvider implements ITab
   /** The image error. */
   private final Image imageError;
 
+  private final Scenario scenario;
+
   /**
    * Instantiates a new pi parameter table label provider.
    *
    * @param _table
    *          the table
    */
-  PiParameterTableLabelProvider(final Table _table) {
+  PiParameterTableLabelProvider(final Table _table, final Scenario scenario) {
     super();
     this.table = _table;
+    this.scenario = scenario;
 
     final URL errorIconURL = PreesmResourcesHelper.getInstance().resolve("icons/error.png", PreesmUIPlugin.class);
     ImageDescriptor imageDcr = ImageDescriptor.createFromURL(errorIconURL);
@@ -129,28 +133,33 @@ public class PiParameterTableLabelProvider extends LabelProvider implements ITab
   public String getColumnText(final Object element, final int columnIndex) {
     @SuppressWarnings("unchecked")
     final Entry<Parameter, String> paramValue = ((Entry<Parameter, String>) element);
+    final Parameter parameter = paramValue.getKey();
+    final String overrideExpression = paramValue.getValue();
     switch (columnIndex) {
       case 0: // Paremeter path
-        return paramValue.getKey().getVertexPath();
+        return parameter.getVertexPath();
       case 1: // Type Column
-        return paramValue.getKey().isLocallyStatic() ? "STATIC" : "DYNAMIC";
+        return parameter.isLocallyStatic() ? "STATIC" : "DYNAMIC";
       case 2: // Input Parameter Column
-        return paramValue.getKey().getInputParameters().stream().map(Parameter::getName).collect(Collectors.toList())
-            .toString();
+        return parameter.getInputParameters().stream().map(Parameter::getName).collect(Collectors.toList()).toString();
       case 3: // Graph Expression Column
-        return paramValue.getKey().getExpression().getExpressionAsString();
+        return parameter.getExpression().getExpressionAsString();
       case 4: // Override Expression Column
-        if (paramValue.getKey().isLocallyStatic()) {
-          return paramValue.getValue();
+        if (parameter.isLocallyStatic()) {
+          return overrideExpression;
         } else {
           return " - ";
         }
       case 5: // Expression Value Column
-        if (paramValue.getKey().isLocallyStatic()
-            && ExpressionEvaluator.canEvaluate(paramValue.getKey(), paramValue.getValue())) {
-          return Long.toString(ExpressionEvaluator.evaluate(paramValue.getKey(), paramValue.getValue()));
+        if (parameter.isLocallyStatic()) {
+          if (ExpressionEvaluator.canEvaluate(parameter, overrideExpression)) {
+            return Long.toString(
+                ExpressionEvaluator.evaluate(parameter, overrideExpression, this.scenario.getParameterValues().map()));
+          } else {
+            return overrideExpression;
+          }
         } else {
-          return paramValue.getValue();
+          return overrideExpression;
         }
       default:
     }

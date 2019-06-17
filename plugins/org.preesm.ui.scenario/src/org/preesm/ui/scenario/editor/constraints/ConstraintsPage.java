@@ -50,10 +50,8 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.IEditorPart;
-import org.eclipse.ui.IPropertyListener;
 import org.eclipse.ui.forms.IManagedForm;
 import org.eclipse.ui.forms.editor.FormEditor;
-import org.eclipse.ui.forms.editor.FormPage;
 import org.eclipse.ui.forms.events.ExpansionAdapter;
 import org.eclipse.ui.forms.events.ExpansionEvent;
 import org.eclipse.ui.forms.widgets.ColumnLayout;
@@ -67,13 +65,14 @@ import org.preesm.model.scenario.serialize.ExcelConstraintsParser;
 import org.preesm.ui.scenario.editor.FileSelectionAdapter;
 import org.preesm.ui.scenario.editor.Messages;
 import org.preesm.ui.scenario.editor.SDFTreeSection;
+import org.preesm.ui.scenario.editor.ScenarioPage;
 
 /**
  * Constraint editor within the implementation editor.
  *
  * @author mpelcat
  */
-public class ConstraintsPage extends FormPage implements IPropertyListener {
+public class ConstraintsPage extends ScenarioPage {
 
   /** Currently edited scenario. */
   private Scenario scenario = null;

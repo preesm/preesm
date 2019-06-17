@@ -67,10 +67,8 @@ import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.IEditorPart;
-import org.eclipse.ui.IPropertyListener;
 import org.eclipse.ui.forms.IManagedForm;
 import org.eclipse.ui.forms.editor.FormEditor;
-import org.eclipse.ui.forms.editor.FormPage;
 import org.eclipse.ui.forms.events.ExpansionAdapter;
 import org.eclipse.ui.forms.events.ExpansionEvent;
 import org.eclipse.ui.forms.widgets.ExpandableComposite;
@@ -83,6 +81,7 @@ import org.preesm.model.scenario.serialize.TimingImporter;
 import org.preesm.model.slam.utils.DesignTools;
 import org.preesm.ui.scenario.editor.FileSelectionAdapter;
 import org.preesm.ui.scenario.editor.Messages;
+import org.preesm.ui.scenario.editor.ScenarioPage;
 import org.preesm.ui.scenario.editor.utils.VertexLexicographicalComparator;
 
 /**
@@ -91,7 +90,7 @@ import org.preesm.ui.scenario.editor.utils.VertexLexicographicalComparator;
  * @author mpelcat
  * @author kdesnos
  */
-public class TimingsPage extends FormPage implements IPropertyListener {
+public class TimingsPage extends ScenarioPage {
 
   /** The scenario. */
   final Scenario scenario;
@@ -398,6 +397,7 @@ public class TimingsPage extends FormPage implements IPropertyListener {
     gd.heightHint = 400;
     gd.widthHint = 400;
     tablecps.setLayoutData(gd);
+
   }
 
   /**
@@ -413,7 +413,7 @@ public class TimingsPage extends FormPage implements IPropertyListener {
     if ((source instanceof TimingsTableLabelProvider) && (propId == IEditorPart.PROP_DIRTY)) {
       firePropertyChange(IEditorPart.PROP_DIRTY);
     }
-
+    this.tableViewer.refresh();
   }
 
   /**
