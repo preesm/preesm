@@ -171,7 +171,7 @@ public class StatGenerator {
    */
   public int getNbUsedOperators() {
     int nbUsedOperators = 0;
-    for (final ComponentInstance o : this.abc.getArchitecture().getComponentInstances()) {
+    for (final ComponentInstance o : this.abc.getArchitecture().getOperatorComponentInstances()) {
       if (this.abc.getFinalCost(o) > 0) {
         nbUsedOperators++;
       }

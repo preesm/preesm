@@ -370,7 +370,7 @@ public class ScenarioParser {
      * are!!
      */
     if (this.scenario.getSimulationInfo().getSpecialVertexOperators().isEmpty()) {
-      for (final ComponentInstance opId : design.getComponentInstances()) {
+      for (final ComponentInstance opId : design.getOperatorComponentInstances()) {
         this.scenario.getSimulationInfo().addSpecialVertexOperator(opId);
       }
     }

@@ -368,7 +368,7 @@ public class SimulationPage extends ScenarioPage {
         combo.select(combo.indexOf(mainOperator.getInstanceName()));
       }
     } else if (type.equals("comNode")) {
-      for (final ComponentInstance nodeId : design.getCommunicationNodeInstances()) {
+      for (final ComponentInstance nodeId : design.getCommunicationComponentInstances()) {
         combo.add(nodeId.getInstanceName());
       }
 

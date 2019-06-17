@@ -115,7 +115,7 @@ public class ExcelConstraintsParser {
       for (final AbstractActor vertex : currentPiGraph.getAllActors()) {
         if (vertex instanceof Actor) {
           final Design design = this.scenario.getDesign();
-          for (final ComponentInstance operatorId : design.getComponentInstances()) {
+          for (final ComponentInstance operatorId : design.getOperatorComponentInstances()) {
             checkOpPiConstraint(w, operatorId, (Actor) vertex, missingVertices, missingOperators);
           }
         }

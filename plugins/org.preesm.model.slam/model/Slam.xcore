@@ -22,6 +22,7 @@ import org.preesm.model.slam.link.Link
 import org.preesm.model.slam.utils.VLNVComparator
 import org.preesm.model.slam.component.ComNode
 import org.eclipse.emf.common.util.ECollections
+import org.preesm.model.slam.component.Operator
 
 // !!! This is needed as of the current versions of xcore/xtext
 // For some reason when using the default String/... (i.e. without the following)
@@ -46,6 +47,8 @@ class Design extends VLNVedElement , ParameterizedElement {
 	container Component refined opposite refinements
 	refers ComponentHolder componentHolder
 
+	// COMPONENT RELATED OPERATIONS
+
 	op Component[] getComponents() {
 		if (componentHolder !== null) {
 			componentHolder.components.unmodifiableView
@@ -66,18 +69,26 @@ class Design extends VLNVedElement , ParameterizedElement {
 		return components.findFirst[vlnvName.equals(it.vlnv.name)]
 	}
 
+	// COMPONENT INSTANCES RELATED OPERATIONS
+
 	op boolean containsComponentInstance(String name) {
 		return componentInstances.exists[instanceName == name]
 	}
 	op ComponentInstance getComponentInstance(String name) {
 		return componentInstances.findFirst[instanceName == name]
 	}
-	op ComponentInstance[] getCommunicationNodeInstances() {
+	op ComponentInstance[] getCommunicationComponentInstances() {
 		return componentInstances.filter[(it.component instanceof ComNode)].toEList.unmodifiableView
+	}
+	op ComponentInstance[] getOperatorComponentInstances() {
+		return componentInstances.filter[(it.component instanceof Operator)].toEList.unmodifiableView
 	}
 	op ComponentInstance[] getComponentInstancesOfType(Component component) {
 		componentInstances.filter[component.vlnv.name == it.component.vlnv.name].toEList.unmodifiableView
 	}
+
+	// LINK RELATED OPERATIONS
+
 	op Link[] getUndirectedLinks(ComponentInstance c) {
 		return links.filter [
 			(!it.isDirected) && ((it.destinationComponentInstance.instanceName == c.instanceName) ||

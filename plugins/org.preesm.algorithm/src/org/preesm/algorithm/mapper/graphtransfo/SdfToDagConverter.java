@@ -262,7 +262,7 @@ public class SdfToDagConverter {
       final boolean special = SpecialVertexManager.isSpecial(currentVertex);
       if (!special) {
         // Default timings are given
-        for (final ComponentInstance op : architecture.getComponentInstances()) {
+        for (final ComponentInstance op : architecture.getOperatorComponentInstances()) {
           final AbstractVertex referencePiVertex = currentVertex.getReferencePiVertex();
 
           if (referencePiVertex instanceof AbstractActor) {

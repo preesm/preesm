@@ -256,7 +256,7 @@ public class FastAlgorithm extends Observable {
     final long fastStopTime = System.currentTimeMillis() + (1000 * fastParams.getFastTime());
     // the number of local solutions searched in a neighborhood is the size
     // of the graph
-    final int maxStep = dag.vertexSet().size() * archi.getComponentInstances().size();
+    final int maxStep = dag.vertexSet().size() * archi.getOperatorComponentInstances().size();
     // the number of better solutions found in a neighborhood is limited
     final int margin = Math.max(maxStep / 10, 1);
 

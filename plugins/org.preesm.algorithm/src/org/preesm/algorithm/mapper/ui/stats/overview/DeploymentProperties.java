@@ -110,7 +110,7 @@ public class DeploymentProperties implements IStructuredContentProvider, ITableL
    */
   private void initData() {
     final Design architecture = this.statGen.getAbc().getArchitecture();
-    final List<ComponentInstance> opSet = architecture.getComponentInstances();
+    final List<ComponentInstance> opSet = architecture.getOperatorComponentInstances();
 
     for (final ComponentInstance cmp : opSet) {
       this.loads.put(cmp, this.statGen.getLoad(cmp));
