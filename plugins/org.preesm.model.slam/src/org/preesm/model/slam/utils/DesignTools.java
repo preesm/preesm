@@ -310,26 +310,6 @@ public class DesignTools {
    *          the design
    * @param c
    *          the c
-   * @return the undirected links
-   */
-  public static List<Link> getUndirectedLinks(final Design design, final ComponentInstance c) {
-    final List<Link> undirectedLinks = new ArrayList<>();
-    for (final Link link : design.getLinks()) {
-      if (!link.isDirected() && link.getDestinationComponentInstance().getInstanceName().equals(c.getInstanceName())
-          || link.getSourceComponentInstance().getInstanceName().equals(c.getInstanceName())) {
-        undirectedLinks.add(link);
-      }
-    }
-    return Collections.unmodifiableList(undirectedLinks);
-  }
-
-  /**
-   * All undirected links linked to instance c.
-   *
-   * @param design
-   *          the design
-   * @param c
-   *          the c
    * @return the outgoing directed links
    */
   public static List<Link> getOutgoingDirectedLinks(final Design design, final ComponentInstance c) {

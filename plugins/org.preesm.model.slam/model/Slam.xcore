@@ -64,6 +64,14 @@ class Design extends VLNVedElement , ParameterizedElement {
 	op ComponentInstance[] getInstancesOfComponent(Component component) {
 		componentInstances.filter[component.vlnv.name == it.component.vlnv.name].toEList.unmodifiableView
 	}
+	op Link[] getUndirectedLinks(ComponentInstance c) {
+		links.filter [
+			(!it.isDirected) &&
+				((it.destinationComponentInstance.instanceName == c.instanceName) ||
+					(it.sourceComponentInstance.instanceName == c.instanceName))
+		].toEList.unmodifiableView
+
+	}
 }
 
 class ComponentInstance extends ParameterizedElement {
