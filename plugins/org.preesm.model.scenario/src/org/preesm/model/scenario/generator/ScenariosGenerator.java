@@ -223,7 +223,7 @@ public class ScenariosGenerator {
 
     // Get com nodes and cores names
     final List<ComponentInstance> coreIds = new ArrayList<>(archi.getComponentInstances());
-    final List<ComponentInstance> comNodeIds = new ArrayList<>(DesignTools.getComNodeInstances(archi));
+    final List<ComponentInstance> comNodeIds = archi.getCommunicationNodeInstances();
     // Set default values for constraints, timings and simulation parameters
     if (algoURL.endsWith(ScenariosGenerator.PI_GRAPH_EXT)) {
       fillPiScenario(scenario, archi, piGraph);

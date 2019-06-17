@@ -45,7 +45,6 @@ import org.preesm.model.slam.ComponentInstance;
 import org.preesm.model.slam.Design;
 import org.preesm.model.slam.component.Component;
 import org.preesm.model.slam.component.Operator;
-import org.preesm.model.slam.component.impl.ComNodeImpl;
 
 /**
  * Provides specific getters and setters for S-LAM architecture.
@@ -66,43 +65,6 @@ public class DesignTools {
     if (design != null) {
       for (final ComponentInstance cmpInstance : design.getComponentInstances()) {
         operatorInstanceIds.add(cmpInstance.getInstanceName());
-      }
-    }
-    return Collections.unmodifiableList(operatorInstanceIds);
-  }
-
-  /**
-   * Getting all communication node instance ids in architecture.
-   *
-   * @param design
-   *          the design
-   * @return the com node instance ids
-   */
-  public static List<String> getComNodeInstanceIds(final Design design) {
-    final List<String> operatorInstanceIds = new ArrayList<>();
-    if (design != null) {
-      for (final ComponentInstance cmpInstance : getComNodeInstances(design)) {
-        operatorInstanceIds.add(cmpInstance.getInstanceName());
-      }
-    }
-
-    return Collections.unmodifiableList(operatorInstanceIds);
-  }
-
-  /**
-   * Getting all communication node instance ids in architecture.
-   *
-   * @param design
-   *          the design
-   * @return the com node instance ids
-   */
-  public static List<ComponentInstance> getComNodeInstances(final Design design) {
-    final List<ComponentInstance> operatorInstanceIds = new ArrayList<>();
-    if (design != null) {
-      for (final ComponentInstance cmpInstance : design.getComponentInstances()) {
-        if (cmpInstance.getComponent() instanceof ComNodeImpl) {
-          operatorInstanceIds.add(cmpInstance);
-        }
       }
     }
     return Collections.unmodifiableList(operatorInstanceIds);

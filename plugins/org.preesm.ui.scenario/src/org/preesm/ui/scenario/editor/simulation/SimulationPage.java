@@ -81,6 +81,7 @@ import org.eclipse.ui.forms.widgets.Section;
 import org.preesm.model.scenario.Scenario;
 import org.preesm.model.scenario.ScenarioConstants;
 import org.preesm.model.slam.ComponentInstance;
+import org.preesm.model.slam.Design;
 import org.preesm.model.slam.utils.DesignTools;
 import org.preesm.ui.scenario.editor.Messages;
 import org.preesm.ui.scenario.editor.ScenarioPage;
@@ -356,8 +357,9 @@ public class SimulationPage extends ScenarioPage {
     final Combo combo = new Combo(combocps, SWT.DROP_DOWN | SWT.READ_ONLY);
     combo.setToolTipText(tooltip);
 
+    final Design design = this.scenario.getDesign();
     if (type.equals("operator")) {
-      for (final String opId : DesignTools.getOrderedOperatorIds(this.scenario.getDesign())) {
+      for (final String opId : DesignTools.getOrderedOperatorIds(design)) {
         combo.add(opId);
       }
 
@@ -366,8 +368,8 @@ public class SimulationPage extends ScenarioPage {
         combo.select(combo.indexOf(mainOperator.getInstanceName()));
       }
     } else if (type.equals("comNode")) {
-      for (final String nodeId : DesignTools.getComNodeInstanceIds(this.scenario.getDesign())) {
-        combo.add(nodeId);
+      for (final ComponentInstance nodeId : design.getCommunicationNodeInstances()) {
+        combo.add(nodeId.getInstanceName());
       }
 
       final ComponentInstance mainComNode = this.scenario.getSimulationInfo().getMainComNode();
