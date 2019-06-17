@@ -213,7 +213,7 @@ class Timings {
 		val String timingExpression = getTimingOrDefault(actor, component);
 		var long t;
 		if (timingExpression !== null) {
-			t = ExpressionEvaluator.evaluate(actor, timingExpression);
+			t = ExpressionEvaluator.evaluate(actor, timingExpression, scenario.parameterValues.map);
 		} else {
 			t = ScenarioConstants.DEFAULT_TIMING_TASK.value;
 		}

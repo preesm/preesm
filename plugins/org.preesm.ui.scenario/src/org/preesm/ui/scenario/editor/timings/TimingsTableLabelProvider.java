@@ -37,8 +37,8 @@
 package org.preesm.ui.scenario.editor.timings;
 
 import java.net.URL;
+import java.util.Collections;
 import java.util.List;
-import java.util.stream.Collectors;
 import org.eclipse.jface.dialogs.IInputValidator;
 import org.eclipse.jface.dialogs.InputDialog;
 import org.eclipse.jface.resource.ImageDescriptor;
@@ -56,7 +56,6 @@ import org.eclipse.ui.IPropertyListener;
 import org.eclipse.ui.PlatformUI;
 import org.preesm.commons.files.PreesmResourcesHelper;
 import org.preesm.model.pisdf.AbstractActor;
-import org.preesm.model.pisdf.AbstractVertex;
 import org.preesm.model.pisdf.expression.ExpressionEvaluator;
 import org.preesm.model.scenario.Scenario;
 import org.preesm.model.slam.component.Component;
@@ -125,25 +124,13 @@ public class TimingsTableLabelProvider implements ITableLabelProvider, Selection
    */
   @Override
   public Image getColumnImage(final Object element, final int columnIndex) {
-    return getPISDFColumnImage(element, columnIndex);
-  }
-
-  /**
-   * Gets the PISDF column image.
-   *
-   * @param element
-   *          the element
-   * @param columnIndex
-   *          the column index
-   * @return the PISDF column image
-   */
-  private Image getPISDFColumnImage(final Object element, final int columnIndex) {
     if ((element instanceof AbstractActor) && (this.currentOpDefId != null)) {
       final AbstractActor vertex = (AbstractActor) element;
 
       final String timing = this.scenario.getTimings().getTimingOrDefault(vertex, this.currentOpDefId);
       if (columnIndex == 3) {
-        if (ExpressionEvaluator.canEvaluate(vertex, timing)) {
+        final boolean canEvaluate = ExpressionEvaluator.canEvaluate(vertex, timing);
+        if (canEvaluate) {
           return this.imageOk;
         } else {
           return this.imageError;
@@ -160,19 +147,6 @@ public class TimingsTableLabelProvider implements ITableLabelProvider, Selection
    */
   @Override
   public String getColumnText(final Object element, final int columnIndex) {
-    return getPISDFColumnText(element, columnIndex);
-  }
-
-  /**
-   * Gets the PISDF column text.
-   *
-   * @param element
-   *          the element
-   * @param columnIndex
-   *          the column index
-   * @return the PISDF column text
-   */
-  private String getPISDFColumnText(final Object element, final int columnIndex) {
     String text = "";
     if ((element instanceof AbstractActor) && (this.currentOpDefId != null)) {
       final AbstractActor vertex = (AbstractActor) element;
@@ -186,8 +160,7 @@ public class TimingsTableLabelProvider implements ITableLabelProvider, Selection
           if (timing == null || vertex.getInputParameters().isEmpty()) {
             text = " - ";
           } else {
-            text = vertex.getInputParameters().stream().map(AbstractVertex::getName).collect(Collectors.toList())
-                .toString();
+            text = ExpressionEvaluator.lookupParameterValues(vertex, Collections.emptyMap()).keySet().toString();
           }
           break;
         case 2: // Expression
@@ -199,14 +172,14 @@ public class TimingsTableLabelProvider implements ITableLabelProvider, Selection
           return null;
         case 4: // Value
           if (timing != null && ExpressionEvaluator.canEvaluate(vertex, timing)) {
-            text = Long.toString(ExpressionEvaluator.evaluate(vertex, timing));
+            text = Long
+                .toString(ExpressionEvaluator.evaluate(vertex, timing, this.scenario.getParameterValues().map()));
           }
           break;
         default:
       }
     }
     return text;
-
   }
 
   /*

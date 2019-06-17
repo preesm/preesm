@@ -153,7 +153,8 @@ public class PiParameterTableLabelProvider extends LabelProvider implements ITab
       case 5: // Expression Value Column
         if (parameter.isLocallyStatic()) {
           if (ExpressionEvaluator.canEvaluate(parameter, overrideExpression)) {
-            return Long.toString(ExpressionEvaluator.evaluate(parameter, overrideExpression));
+            return Long.toString(
+                ExpressionEvaluator.evaluate(parameter, overrideExpression, this.scenario.getParameterValues().map()));
           } else {
             return overrideExpression;
           }
