@@ -82,7 +82,6 @@ import org.preesm.model.scenario.Scenario;
 import org.preesm.model.scenario.ScenarioConstants;
 import org.preesm.model.slam.ComponentInstance;
 import org.preesm.model.slam.Design;
-import org.preesm.model.slam.utils.DesignTools;
 import org.preesm.ui.scenario.editor.Messages;
 import org.preesm.ui.scenario.editor.ScenarioPage;
 
@@ -359,8 +358,8 @@ public class SimulationPage extends ScenarioPage {
 
     final Design design = this.scenario.getDesign();
     if (type.equals("operator")) {
-      for (final String opId : DesignTools.getOrderedOperatorIds(design)) {
-        combo.add(opId);
+      for (final ComponentInstance opId : design.getOrderedOperatorComponentInstances()) {
+        combo.add(opId.getInstanceName());
       }
 
       final ComponentInstance mainOperator = this.scenario.getSimulationInfo().getMainOperator();
@@ -646,7 +645,8 @@ public class SimulationPage extends ScenarioPage {
     treeviewer.getTree().setLayoutData(gd);
 
     treeviewer.setUseHashlookup(true);
-    treeviewer.setInput(DesignTools.getOrderedOperators(this.scenario.getDesign()));
+    final Design design = this.scenario.getDesign();
+    treeviewer.setInput(design.getOrderedOperatorComponentInstances());
     toolkit.paintBordersFor(container);
 
     // Tree is refreshed in case of algorithm modifications

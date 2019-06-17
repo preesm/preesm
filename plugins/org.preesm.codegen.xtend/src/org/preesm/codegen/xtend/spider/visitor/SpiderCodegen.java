@@ -75,7 +75,6 @@ import org.preesm.model.scenario.ScenarioFactory;
 import org.preesm.model.slam.ComponentInstance;
 import org.preesm.model.slam.Design;
 import org.preesm.model.slam.component.Component;
-import org.preesm.model.slam.utils.DesignTools;
 
 /**
  * The Class SpiderCodegen.
@@ -178,7 +177,7 @@ public class SpiderCodegen {
 
     this.coreIds = new LinkedHashMap<>();
     ComponentInstance mainOperator = this.scenario.getSimulationInfo().getMainOperator();
-    final List<ComponentInstance> orderedOperators = DesignTools.getOrderedOperators(design);
+    final List<ComponentInstance> orderedOperators = design.getOrderedOperatorComponentInstances();
     if (mainOperator == null) {
       /* Warning */
       mainOperator = orderedOperators.get(0);

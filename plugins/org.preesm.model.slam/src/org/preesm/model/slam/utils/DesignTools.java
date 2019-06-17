@@ -36,12 +36,9 @@
  */
 package org.preesm.model.slam.utils;
 
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 import org.preesm.model.slam.ComponentInstance;
-import org.preesm.model.slam.Design;
 
 /**
  * Provides specific getters and setters for S-LAM architecture.
@@ -49,43 +46,6 @@ import org.preesm.model.slam.Design;
  * @author mpelcat
  */
 public class DesignTools {
-
-  /**
-   * Getting all operator instance ids in architecture.
-   *
-   * @param design
-   *          the design
-   * @return the operator instance ids
-   */
-  public static List<String> getOperatorInstanceIds(final Design design) {
-    final List<String> operatorInstanceIds = new ArrayList<>();
-    if (design != null) {
-      for (final ComponentInstance cmpInstance : design.getComponentInstances()) {
-        operatorInstanceIds.add(cmpInstance.getInstanceName());
-      }
-    }
-    return Collections.unmodifiableList(operatorInstanceIds);
-  }
-
-  /**
-   * Gets the ordered operator ids.
-   */
-  public static List<String> getOrderedOperatorIds(final Design design) {
-    final List<String> operatorComponentIds = new ArrayList<>(getOperatorInstanceIds(design));
-    Collections.sort(operatorComponentIds, (o1, o2) -> o1.compareTo(o2));
-    return Collections.unmodifiableList(operatorComponentIds);
-  }
-
-  /**
-   * Gets the ordered operator.
-   *
-   * @return the ordered operator
-   */
-  public static List<ComponentInstance> getOrderedOperators(final Design design) {
-    final List<ComponentInstance> opIdList = new ArrayList<>(design.getComponentInstances());
-    Collections.sort(opIdList, (o1, o2) -> o1.getInstanceName().compareTo(o2.getInstanceName()));
-    return Collections.unmodifiableList(opIdList);
-  }
 
   /**
    * Testing the presence of an instance in a list based on instance names.

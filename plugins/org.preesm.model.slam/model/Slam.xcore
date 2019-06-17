@@ -86,6 +86,9 @@ class Design extends VLNVedElement , ParameterizedElement {
 	op ComponentInstance[] getOperatorComponentInstances() {
 		return componentInstances.filter[(it.component instanceof Operator)].toEList.unmodifiableView
 	}
+	op ComponentInstance[] getOrderedOperatorComponentInstances() {
+		return operatorComponentInstances.sortEList[$0.instanceName.compareTo($1.instanceName)].unmodifiableView
+	}
 	op ComponentInstance[] getComponentInstancesOfType(Component component) {
 		componentInstances.filter[component.vlnv.name == it.component.vlnv.name].toEList.unmodifiableView
 	}
