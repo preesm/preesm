@@ -46,7 +46,6 @@ import org.preesm.model.slam.Design;
 import org.preesm.model.slam.component.Component;
 import org.preesm.model.slam.component.Operator;
 import org.preesm.model.slam.component.impl.ComNodeImpl;
-import org.preesm.model.slam.link.Link;
 
 /**
  * Provides specific getters and setters for S-LAM architecture.
@@ -263,45 +262,7 @@ public class DesignTools {
         return cmpInstance;
       }
     }
-
     return null;
   }
 
-  /**
-   * All undirected links linked to instance c.
-   *
-   * @param design
-   *          the design
-   * @param c
-   *          the c
-   * @return the outgoing directed links
-   */
-  public static List<Link> getOutgoingDirectedLinks(final Design design, final ComponentInstance c) {
-    final List<Link> directedLinks = new ArrayList<>();
-    for (final Link link : design.getLinks()) {
-      if (link.isDirected() && link.getSourceComponentInstance().getInstanceName().equals(c.getInstanceName())) {
-        directedLinks.add(link);
-      }
-    }
-    return Collections.unmodifiableList(directedLinks);
-  }
-
-  /**
-   * All undirected links linked to instance c.
-   *
-   * @param design
-   *          the design
-   * @param c
-   *          the c
-   * @return the incoming directed links
-   */
-  public static List<Link> getIncomingDirectedLinks(final Design design, final ComponentInstance c) {
-    final List<Link> directedLinks = new ArrayList<>();
-    for (final Link link : design.getLinks()) {
-      if (link.isDirected() && link.getDestinationComponentInstance().getInstanceName().equals(c.getInstanceName())) {
-        directedLinks.add(link);
-      }
-    }
-    return Collections.unmodifiableList(directedLinks);
-  }
 }

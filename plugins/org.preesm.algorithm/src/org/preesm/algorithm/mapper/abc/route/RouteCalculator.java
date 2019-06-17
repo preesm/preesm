@@ -166,7 +166,7 @@ public class RouteCalculator {
     final Set<Link> outgoingAndUndirected = new LinkedHashSet<>();
 
     outgoingAndUndirected.addAll(this.archi.getUndirectedLinks(source));
-    outgoingAndUndirected.addAll(DesignTools.getOutgoingDirectedLinks(this.archi, source));
+    outgoingAndUndirected.addAll(this.archi.getOutgoingDirectedLinks(source));
 
     for (final Link i : outgoingAndUndirected) {
       final ComponentInstance otherEnd = i.getOtherEnd(source);
@@ -196,7 +196,7 @@ public class RouteCalculator {
     // Iterating on outgoing and undirected edges
     final Set<Link> outgoingAndUndirected = new LinkedHashSet<>();
     outgoingAndUndirected.addAll(this.archi.getUndirectedLinks(node));
-    outgoingAndUndirected.addAll(DesignTools.getOutgoingDirectedLinks(this.archi, node));
+    outgoingAndUndirected.addAll(this.archi.getOutgoingDirectedLinks(node));
 
     for (final Link i : outgoingAndUndirected) {
       final ComponentInstance otherEnd = i.getOtherEnd(node);
