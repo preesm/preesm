@@ -320,7 +320,6 @@ class PapifyConfig {
 	}
 	op boolean isMonitoringTiming(ActorEvent[] actorConfig){
 		if(actorConfig.keySet.contains("Timing") && !actorConfig.get("Timing").empty){
-			System.out.println(actorConfig.get("Timing").toString())
 			return true	
 		}else{
 			return false
