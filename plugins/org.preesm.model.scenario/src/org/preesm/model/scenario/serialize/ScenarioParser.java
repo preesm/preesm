@@ -56,7 +56,6 @@ import org.eclipse.core.runtime.CoreException;
 import org.eclipse.emf.common.util.BasicEList;
 import org.eclipse.emf.common.util.ECollections;
 import org.eclipse.emf.common.util.EList;
-import org.preesm.commons.exceptions.PreesmRuntimeException;
 import org.preesm.commons.logger.PreesmLogger;
 import org.preesm.model.pisdf.AbstractActor;
 import org.preesm.model.pisdf.Parameter;
@@ -267,40 +266,43 @@ public class ScenarioParser {
    */
   private void parseSimuParams(final Element filesElt) {
 
-    Node node = filesElt.getFirstChild();
+    if (this.scenario.isProperlySet()) {
 
-    while (node != null) {
+      Node node = filesElt.getFirstChild();
 
-      if (node instanceof Element) {
-        final Element elt = (Element) node;
-        final String type = elt.getTagName();
-        final String content = elt.getTextContent();
-        switch (type) {
-          case "mainCore":
-            final ComponentInstance mainCore = scenario.getDesign().getComponentInstance(content);
-            this.scenario.getSimulationInfo().setMainOperator(mainCore);
-            break;
-          case "mainComNode":
-            final ComponentInstance mainComNode = scenario.getDesign().getComponentInstance(content);
-            this.scenario.getSimulationInfo().setMainComNode(mainComNode);
-            break;
-          case "averageDataSize":
-            this.scenario.getSimulationInfo().setAverageDataSize(Long.valueOf(content));
-            break;
-          case "dataTypes":
-            parseDataTypes(elt);
-            break;
-          case "specialVertexOperators":
-            parseSpecialVertexOperators(elt);
-            break;
-          case "numberOfTopExecutions":
-            this.scenario.getSimulationInfo().setNumberOfTopExecutions(Integer.parseInt(content));
-            break;
-          default:
+      while (node != null) {
+
+        if (node instanceof Element) {
+          final Element elt = (Element) node;
+          final String type = elt.getTagName();
+          final String content = elt.getTextContent();
+          switch (type) {
+            case "mainCore":
+              final ComponentInstance mainCore = scenario.getDesign().getComponentInstance(content);
+              this.scenario.getSimulationInfo().setMainOperator(mainCore);
+              break;
+            case "mainComNode":
+              final ComponentInstance mainComNode = scenario.getDesign().getComponentInstance(content);
+              this.scenario.getSimulationInfo().setMainComNode(mainComNode);
+              break;
+            case "averageDataSize":
+              this.scenario.getSimulationInfo().setAverageDataSize(Long.valueOf(content));
+              break;
+            case "dataTypes":
+              parseDataTypes(elt);
+              break;
+            case "specialVertexOperators":
+              parseSpecialVertexOperators(elt);
+              break;
+            case "numberOfTopExecutions":
+              this.scenario.getSimulationInfo().setNumberOfTopExecutions(Integer.parseInt(content));
+              break;
+            default:
+          }
         }
-      }
 
-      node = node.getNextSibling();
+        node = node.getNextSibling();
+      }
     }
   }
 
@@ -408,7 +410,7 @@ public class ScenarioParser {
             try {
               initializeArchitectureInformation(url);
             } catch (final Exception e) {
-              throw new PreesmRuntimeException("Could not parse the architecture: " + e.getMessage(), e);
+              PreesmLogger.getLogger().log(Level.WARNING, "Could not parse the architecture: " + e.getMessage(), e);
             }
           } else if (type.equals("codegenDirectory")) {
             this.scenario.setCodegenDirectory(url);
@@ -471,7 +473,7 @@ public class ScenarioParser {
 
     final Set<AbstractActor> actors = new LinkedHashSet<>();
 
-    if (scenario.getAlgorithm() != null) {
+    if (scenario.isProperlySet()) {
       Node node = cstGroupElt.getFirstChild();
       while (node != null) {
         if (node instanceof Element) {
@@ -799,7 +801,7 @@ public class ScenarioParser {
    */
   private void retrieveMemcpySpeed(final Timings timingManager, final Element timingElt) {
 
-    if (scenario.getAlgorithm() != null) {
+    if (scenario.isProperlySet()) {
       final String type = timingElt.getTagName();
       if (type.equals("memcpyspeed")) {
         final String opdefname = timingElt.getAttribute("opname");

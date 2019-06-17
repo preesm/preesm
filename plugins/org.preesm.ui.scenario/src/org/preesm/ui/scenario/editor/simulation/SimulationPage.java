@@ -64,6 +64,7 @@ import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.ScrollBar;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
@@ -183,70 +184,82 @@ public class SimulationPage extends FormPage implements IPropertyListener {
     form.setText(Messages.getString("Simulation.title"));
     final GridLayout layout = new GridLayout(2, true);
     layout.verticalSpacing = 10;
-    form.getBody().setLayout(layout);
+    final Composite body = form.getBody();
+    body.setLayout(layout);
 
-    // Main operator chooser section
-    createComboBoxSection(managedForm, Messages.getString("Simulation.mainOperator.title"),
-        Messages.getString("Simulation.mainOperator.description"),
-        Messages.getString("Simulation.mainOperatorSelectionTooltip"), "operator");
+    if (this.scenario.isProperlySet()) {
 
-    // Main medium chooser section
-    createComboBoxSection(managedForm, Messages.getString("Simulation.mainMedium.title"),
-        Messages.getString("Simulation.mainMedium.description"),
-        Messages.getString("Simulation.mainMediumSelectionTooltip"), "comNode");
+      // Main operator chooser section
+      createComboBoxSection(managedForm, Messages.getString("Simulation.mainOperator.title"),
+          Messages.getString("Simulation.mainOperator.description"),
+          Messages.getString("Simulation.mainOperatorSelectionTooltip"), "operator");
 
-    // Text modification listener that updates the average data size
-    final ModifyListener averageDataSizeListener = new ModifyListener() {
-      @Override
-      public void modifyText(final ModifyEvent e) {
-        final Text text = (Text) e.getSource();
-        int averageSize = 0;
-        try {
-          averageSize = Integer.valueOf(text.getText());
-          SimulationPage.this.scenario.getSimulationInfo().setAverageDataSize(averageSize);
-          propertyChanged(this, IEditorPart.PROP_DIRTY);
-        } catch (final NumberFormatException ex) {
-          ex.printStackTrace();
+      // Main medium chooser section
+      createComboBoxSection(managedForm, Messages.getString("Simulation.mainMedium.title"),
+          Messages.getString("Simulation.mainMedium.description"),
+          Messages.getString("Simulation.mainMediumSelectionTooltip"), "comNode");
+
+      // Text modification listener that updates the average data size
+      final ModifyListener averageDataSizeListener = new ModifyListener() {
+        @Override
+        public void modifyText(final ModifyEvent e) {
+          final Text text = (Text) e.getSource();
+          int averageSize = 0;
+          try {
+            averageSize = Integer.valueOf(text.getText());
+            SimulationPage.this.scenario.getSimulationInfo().setAverageDataSize(averageSize);
+            propertyChanged(this, IEditorPart.PROP_DIRTY);
+          } catch (final NumberFormatException ex) {
+            ex.printStackTrace();
+          }
         }
-      }
-    };
+      };
 
-    // Average data size section
-    createIntegerSection(managedForm, Messages.getString("Simulation.DataAverageSize.title"),
-        Messages.getString("Simulation.DataAverageSize.description"), averageDataSizeListener,
-        String.valueOf(this.scenario.getSimulationInfo().getAverageDataSize()));
+      // Average data size section
+      createIntegerSection(managedForm, Messages.getString("Simulation.DataAverageSize.title"),
+          Messages.getString("Simulation.DataAverageSize.description"), averageDataSizeListener,
+          String.valueOf(this.scenario.getSimulationInfo().getAverageDataSize()));
 
-    // Text modification listener that updates the average data size
-    final ModifyListener numberOfTopExecutionsListener = new ModifyListener() {
-      @Override
-      public void modifyText(final ModifyEvent e) {
-        final Text text = (Text) e.getSource();
-        int number = 1;
-        try {
-          number = Integer.valueOf(text.getText());
-          SimulationPage.this.scenario.getSimulationInfo().setNumberOfTopExecutions(number);
-          propertyChanged(this, IEditorPart.PROP_DIRTY);
-        } catch (final NumberFormatException ex) {
-          ex.printStackTrace();
+      // Text modification listener that updates the average data size
+      final ModifyListener numberOfTopExecutionsListener = new ModifyListener() {
+        @Override
+        public void modifyText(final ModifyEvent e) {
+          final Text text = (Text) e.getSource();
+          int number = 1;
+          try {
+            number = Integer.valueOf(text.getText());
+            SimulationPage.this.scenario.getSimulationInfo().setNumberOfTopExecutions(number);
+            propertyChanged(this, IEditorPart.PROP_DIRTY);
+          } catch (final NumberFormatException ex) {
+            ex.printStackTrace();
+          }
         }
-      }
-    };
+      };
 
-    // Number of top-level execution section, added only for PiSDF algorithms
-    createIntegerSection(managedForm, Messages.getString("Overview.simulationTitle"),
-        Messages.getString("Overview.simulationDescription"), numberOfTopExecutionsListener,
-        String.valueOf(this.scenario.getSimulationInfo().getNumberOfTopExecutions()));
+      // Number of top-level execution section, added only for PiSDF algorithms
+      createIntegerSection(managedForm, Messages.getString("Overview.simulationTitle"),
+          Messages.getString("Overview.simulationDescription"), numberOfTopExecutionsListener,
+          String.valueOf(this.scenario.getSimulationInfo().getNumberOfTopExecutions()));
 
-    // Data type section
-    createDataTypesSection(managedForm, Messages.getString("Simulation.DataTypes.title"),
-        Messages.getString("Simulation.DataTypes.description"));
+      // Data type section
+      createDataTypesSection(managedForm, Messages.getString("Simulation.DataTypes.title"),
+          Messages.getString("Simulation.DataTypes.description"));
 
-    // Cores to execute broadcast/fork/join selection
-    createSpecialVertexSection(managedForm, Messages.getString("Simulation.SpecialVertex.title"),
-        Messages.getString("Simulation.SpecialVertex.description"));
+      // Cores to execute broadcast/fork/join selection
+      createSpecialVertexSection(managedForm, Messages.getString("Simulation.SpecialVertex.title"),
+          Messages.getString("Simulation.SpecialVertex.description"));
 
-    managedForm.refresh();
-    managedForm.reflow(true);
+      managedForm.refresh();
+      managedForm.reflow(true);
+
+    } else {
+      final FormToolkit toolkit = managedForm.getToolkit();
+      final Label lbl = toolkit.createLabel(body,
+          "Please properly set Algorithm and Architecture paths on the overview tab, then save, close and "
+              + "reopen this file to enable other tabs.");
+      lbl.setEnabled(true);
+      body.setEnabled(false);
+    }
   }
 
   /**

@@ -126,7 +126,6 @@ public class OverviewPage extends FormPage {
     createFileSection(managedForm, Messages.getString("Overview.algorithmFile"),
         Messages.getString("Overview.algorithmDescription"), Messages.getString("Overview.algorithmFileEdit"), algourl,
         Messages.getString("Overview.algorithmBrowseTitle"), algoExtensions);
-
     final Set<String> archiExtensions = new LinkedHashSet<>();
     archiExtensions.add("slam");
     archiExtensions.add("design");
