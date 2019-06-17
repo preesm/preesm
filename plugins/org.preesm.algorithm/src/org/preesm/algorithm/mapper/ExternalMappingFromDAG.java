@@ -73,7 +73,7 @@ import org.preesm.model.slam.ComponentInstance;
 import org.preesm.model.slam.Design;
 import org.preesm.model.slam.attributes.VLNV;
 import org.preesm.model.slam.component.Operator;
-import org.preesm.model.slam.utils.DesignTools.ComponentInstanceComparator;
+import org.preesm.model.slam.utils.ComponentInstanceComparator;
 
 /**
  *

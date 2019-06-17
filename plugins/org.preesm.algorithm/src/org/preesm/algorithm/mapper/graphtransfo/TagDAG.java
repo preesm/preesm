@@ -79,6 +79,8 @@ import org.preesm.model.slam.utils.DesignTools;
  */
 public class TagDAG {
 
+  public static final String OPERATOR_BASE_ADDRESS = "BaseAddress";
+
   /**
    * Constructor.
    */
@@ -181,7 +183,7 @@ public class TagDAG {
         // Setting the address of the operator on which vertex is
         // executed
         final String baseAddress = DesignTools.getParameter(((SendVertex) currentVertex).getRouteStep().getSender(),
-            DesignTools.OPERATOR_BASE_ADDRESS);
+            OPERATOR_BASE_ADDRESS);
 
         if (baseAddress != null) {
           bean.setValue(ImplementationPropertyNames.SendReceive_Operator_address, baseAddress);
