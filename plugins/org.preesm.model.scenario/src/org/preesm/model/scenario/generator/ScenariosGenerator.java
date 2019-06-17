@@ -256,7 +256,7 @@ public class ScenariosGenerator {
     final List<ComponentInstance> coreIds = new ArrayList<>(archi.getOperatorComponentInstances());
 
     // for all different type of cores
-    for (final Component opId : archi.getComponents()) {
+    for (final Component opId : archi.getOperatorComponents()) {
       for (final AbstractActor aa : piGraph.getAllActors()) {
         // Add timing: aa run on ci in 10000
         scenario.getTimings().setTiming(aa, opId, 10000);

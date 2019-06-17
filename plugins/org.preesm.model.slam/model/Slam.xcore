@@ -56,6 +56,9 @@ class Design extends VLNVedElement , ParameterizedElement {
 			ECollections.emptyEList
 		}
 	}
+	op Component[] getOperatorComponents() {
+		return components.filter[(it instanceof Operator)].toEList.unmodifiableView
+	}
 	op boolean containsComponent(VLNV name) {
 		return components.exists[VLNVComparator.areSame(vlnv, name)]
 	}

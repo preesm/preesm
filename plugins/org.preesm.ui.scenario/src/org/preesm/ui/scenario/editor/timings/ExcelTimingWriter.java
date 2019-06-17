@@ -157,7 +157,7 @@ public class ExcelTimingWriter extends ExcelWriter {
       final List<AbstractActor> vSet = provider.getSortedPISDFVertices(this.scenario);
 
       final Design design = this.scenario.getDesign();
-      for (final Component opDefId : design.getComponents()) {
+      for (final Component opDefId : design.getOperatorComponents()) {
         for (final AbstractActor vertexName : vSet) {
 
           final String timing = this.scenario.getTimings().getTimingOrDefault(vertexName, opDefId);

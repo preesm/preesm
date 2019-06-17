@@ -22,10 +22,10 @@ public class TimingImporter {
         final Design design = currentScenario.getDesign();
         switch (fileExt[fileExt.length - 1]) {
           case "xls":
-            excelParser.parse(excelFileURL, design.getComponents());
+            excelParser.parse(excelFileURL, design.getOperatorComponents());
             break;
           case "csv":
-            csvParser.parse(excelFileURL, design.getComponents());
+            csvParser.parse(excelFileURL, design.getOperatorComponents());
             break;
           default:
         }

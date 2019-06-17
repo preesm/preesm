@@ -114,7 +114,7 @@ public class TimingsTableLabelProvider implements ITableLabelProvider, Selection
     this.imageOk = imageDcr.createImage();
 
     final Design design = scenario.getDesign();
-    final List<Component> operators = design.getComponents();
+    final List<Component> operators = design.getOperatorComponents();
     this.currentOpDefId = operators.get(0);
   }
 

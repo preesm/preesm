@@ -163,7 +163,7 @@ public class SpiderCodegen {
     this.coresFromCoreType = new LinkedHashMap<>();
     int coreTypeId = 0;
     final Design design = this.scenario.getDesign();
-    for (final Component coreType : design.getComponents()) {
+    for (final Component coreType : design.getOperatorComponents()) {
       this.coreTypesIds.put(coreType, coreTypeId++);
       // Link the number of cores associated to each core type
       final EList<Component> components = this.architecture.getComponentHolder().getComponents();

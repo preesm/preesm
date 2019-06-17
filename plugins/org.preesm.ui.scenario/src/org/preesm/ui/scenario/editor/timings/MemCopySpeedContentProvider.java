@@ -73,7 +73,7 @@ public class MemCopySpeedContentProvider implements IStructuredContentProvider {
        * Memcopy speeds are added for all operator types if non present
        */
       final Design design = inputScenario.getDesign();
-      for (final Component opDefId : design.getComponents()) {
+      for (final Component opDefId : design.getOperatorComponents()) {
         if (!inputScenario.getTimings().getMemTimings().containsKey(opDefId)) {
           final MemoryCopySpeedValue createMemoryCopySpeedValue = ScenarioUserFactory.createMemoryCopySpeedValue();
           inputScenario.getTimings().getMemTimings().put(opDefId, createMemoryCopySpeedValue);

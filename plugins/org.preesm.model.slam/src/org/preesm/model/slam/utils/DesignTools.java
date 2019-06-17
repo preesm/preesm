@@ -85,7 +85,7 @@ public class DesignTools {
    */
   public static List<String> getOperatorComponentIds(final Design design) {
     final List<String> operatorIds = new ArrayList<>();
-    for (final org.preesm.model.slam.component.Component component : design.getComponents()) {
+    for (final org.preesm.model.slam.component.Component component : design.getOperatorComponents()) {
       operatorIds.add(component.getVlnv().getName());
     }
     return Collections.unmodifiableList(operatorIds);

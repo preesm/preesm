@@ -539,7 +539,7 @@ public class PapifyPage extends ScenarioPage {
     this.peContentProvider.addCheckStateListener(this.checkStateListener);
 
     final Design design = this.scenario.getDesign();
-    for (final Component columnLabel : design.getComponents()) {
+    for (final Component columnLabel : design.getOperatorComponents()) {
 
       final TreeViewerColumn viewerColumn = new TreeViewerColumn(peTreeViewer, SWT.CENTER | SWT.CHECK);
       final TreeColumn column = viewerColumn.getColumn();
