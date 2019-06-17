@@ -287,23 +287,6 @@ public class DesignTools {
   }
 
   /**
-   * Getting the other extremity component of a link.
-   *
-   * @param link
-   *          the link
-   * @param c
-   *          the c
-   * @return the other end
-   */
-  public static ComponentInstance getOtherEnd(final Link link, final ComponentInstance c) {
-    if (!link.getDestinationComponentInstance().getInstanceName().equals(c.getInstanceName())) {
-      return link.getDestinationComponentInstance();
-    } else {
-      return link.getSourceComponentInstance();
-    }
-  }
-
-  /**
    * All undirected links linked to instance c.
    *
    * @param design

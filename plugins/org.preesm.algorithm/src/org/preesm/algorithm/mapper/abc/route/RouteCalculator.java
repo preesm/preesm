@@ -169,8 +169,9 @@ public class RouteCalculator {
     outgoingAndUndirected.addAll(DesignTools.getOutgoingDirectedLinks(this.archi, source));
 
     for (final Link i : outgoingAndUndirected) {
-      if (DesignTools.getOtherEnd(i, source).getComponent() instanceof ComNodeImpl) {
-        final ComponentInstance node = DesignTools.getOtherEnd(i, source);
+      final ComponentInstance otherEnd = i.getOtherEnd(source);
+      if (otherEnd.getComponent() instanceof ComNodeImpl) {
+        final ComponentInstance node = otherEnd;
 
         final List<ComponentInstance> alreadyVisitedNodes = new ArrayList<>();
         alreadyVisitedNodes.add(node);
@@ -198,16 +199,17 @@ public class RouteCalculator {
     outgoingAndUndirected.addAll(DesignTools.getOutgoingDirectedLinks(this.archi, node));
 
     for (final Link i : outgoingAndUndirected) {
-      if (DesignTools.getOtherEnd(i, node).getComponent() instanceof ComNodeImpl) {
-        final ComponentInstance newNode = DesignTools.getOtherEnd(i, node);
+      final ComponentInstance otherEnd = i.getOtherEnd(node);
+      if (otherEnd.getComponent() instanceof ComNodeImpl) {
+        final ComponentInstance newNode = otherEnd;
         if (!alreadyVisitedNodes.contains(newNode)) {
           final List<ComponentInstance> newAlreadyVisitedNodes = new ArrayList<>(alreadyVisitedNodes);
           newAlreadyVisitedNodes.add(newNode);
           exploreRoute(source, newNode, newAlreadyVisitedNodes);
         }
-      } else if ((DesignTools.getOtherEnd(i, node).getComponent() instanceof Operator)
-          && !DesignTools.getOtherEnd(i, node).getInstanceName().equals(source.getInstanceName())) {
-        final ComponentInstance target = DesignTools.getOtherEnd(i, node);
+      } else if ((otherEnd.getComponent() instanceof Operator)
+          && !otherEnd.getInstanceName().equals(source.getInstanceName())) {
+        final ComponentInstance target = otherEnd;
         final AbstractRouteStep step = this.stepFactory.getRouteStep(source, alreadyVisitedNodes, target);
         this.table.addRoute(source, target, new Route(step));
       }
