@@ -131,15 +131,15 @@ public class CodegenTask extends AbstractTaskImplementation {
 
     // Generate intermediate model
     final CodegenModelGenerator generator = new CodegenModelGenerator(archi, algo, megs, scenario, workflow);
+    // Retrieve the PAPIFY flag
+    final String papifyMonitoring = parameters.get(CodegenTask.PARAM_PAPIFY);
+    generator.registerPapify(papifyMonitoring);
 
     final Collection<Block> codeBlocks = generator.generate();
 
     // Retrieve the desired printer and target folder path
     final String selectedPrinter = parameters.get(CodegenTask.PARAM_PRINTER);
     final String codegenPath = scenario.getCodegenDirectory() + File.separator;
-
-    // Retrieve the PAPIFY flag
-    final String papifyMonitoring = parameters.get(CodegenTask.PARAM_PAPIFY);
 
     // Create the codegen engine
     final CodegenEngine engine = new CodegenEngine(codegenPath, codeBlocks, generator);
@@ -149,7 +149,6 @@ public class CodegenTask extends AbstractTaskImplementation {
     }
 
     engine.registerPrintersAndBlocks(selectedPrinter);
-    engine.registerPapify(papifyMonitoring);
     engine.preprocessPrinters();
     engine.print();
 

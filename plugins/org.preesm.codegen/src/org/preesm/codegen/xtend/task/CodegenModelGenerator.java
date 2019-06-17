@@ -260,6 +260,9 @@ public class CodegenModelGenerator {
    */
   protected final List<String> papifiedPEs;
 
+  /** The flag to activate PAPIFY instrumentation. */
+  private boolean papifyActive;
+
   /**
    * Constructor of the {@link CodegenModelGenerator}. The constructor performs verification to ensure that the inputs
    * are valid:
@@ -301,6 +304,7 @@ public class CodegenModelGenerator {
     this.popFifoCalls = new LinkedHashMap<>();
     this.linkHSDFVertexBuffer = new LinkedHashMap<>();
     this.papifiedPEs = new ArrayList<>();
+    this.papifyActive = false;
   }
 
   public final Design getArchi() {
@@ -317,6 +321,22 @@ public class CodegenModelGenerator {
 
   public final Scenario getScenario() {
     return this.scenario;
+  }
+
+  /**
+   * Sets PAPIFY flag.
+   *
+   * @param papifyMonitoring
+   *          the flag to set papify instrumentation
+   */
+  public void registerPapify(final String papifyMonitoring) {
+
+    if (papifyMonitoring.equalsIgnoreCase("false")) {
+      this.papifyActive = false;
+    } else {
+      this.papifyActive = true;
+    }
+
   }
 
   /**
@@ -725,6 +745,12 @@ public class CodegenModelGenerator {
         final FunctionCall functionCall = generateFunctionCall(dagVertex, loopPrototype, false);
 
         // Check for papify in the dagVertex
+        if (this.papifyActive) {
+          System.out.println("Hey! I will do stuff");
+        } else {
+          System.out.println("Nothing to do man");
+        }
+
         Map<String,
             String> mapPapifyConfiguration = dagVertex.getPropertyBean().getValue(PapifyEngine.PAPIFY_CONFIGURATION);
         if (mapPapifyConfiguration != null && !mapPapifyConfiguration.isEmpty()) {
