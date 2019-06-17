@@ -106,6 +106,9 @@ public class CodegenEngine {
 
   private final CodegenModelGenerator generator;
 
+  /** The flag to activate PAPIFY instrumentation. */
+  private boolean papifyActive;
+
   /**
    * Instantiates a new codegen engine.
    *
@@ -114,6 +117,7 @@ public class CodegenEngine {
     this.codegenPath = codegenPath;
     this.codeBlocks = codeBlocks;
     this.generator = generator;
+    this.papifyActive = false;
   }
 
   public final Design getArchi() {
@@ -130,6 +134,24 @@ public class CodegenEngine {
 
   public final Scenario getScenario() {
     return this.generator.getScenario();
+  }
+
+  /**
+   * Sets PAPIFY flag.
+   *
+   * @param papifyMonitoring
+   *          the flag to set papify instrumentation
+   */
+  public void registerPapify(final String papifyMonitoring) {
+
+    if (papifyMonitoring.equalsIgnoreCase("false")) {
+      this.papifyActive = false;
+      System.out.println("PAPIFY is set to false");
+    } else {
+      this.papifyActive = true;
+      System.out.println("PAPIFY is set to true");
+    }
+
   }
 
   /**

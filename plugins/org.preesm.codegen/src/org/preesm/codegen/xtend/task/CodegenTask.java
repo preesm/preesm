@@ -105,6 +105,9 @@ public class CodegenTask extends AbstractTaskImplementation {
   /** The Constant VALUE_PRINTER_IR. */
   public static final String VALUE_PRINTER_IR = "IR";
 
+  /** The Constant PARAM_PAPIFY. */
+  public static final String PARAM_PAPIFY = "Papify";
+
   /*
    * (non-Javadoc)
    *
@@ -135,6 +138,9 @@ public class CodegenTask extends AbstractTaskImplementation {
     final String selectedPrinter = parameters.get(CodegenTask.PARAM_PRINTER);
     final String codegenPath = scenario.getCodegenDirectory() + File.separator;
 
+    // Retrieve the PAPIFY flag
+    final String papifyMonitoring = parameters.get(CodegenTask.PARAM_PAPIFY);
+
     // Create the codegen engine
     final CodegenEngine engine = new CodegenEngine(codegenPath, codeBlocks, generator);
 
@@ -143,6 +149,7 @@ public class CodegenTask extends AbstractTaskImplementation {
     }
 
     engine.registerPrintersAndBlocks(selectedPrinter);
+    engine.registerPapify(papifyMonitoring);
     engine.preprocessPrinters();
     engine.print();
 
@@ -176,6 +183,8 @@ public class CodegenTask extends AbstractTaskImplementation {
     avilableLanguages += CodegenTask.VALUE_PRINTER_IR + "}";
 
     parameters.put(CodegenTask.PARAM_PRINTER, avilableLanguages);
+    // Papify default
+    parameters.put(CodegenTask.PARAM_PAPIFY, "false");
     return parameters;
   }
 
