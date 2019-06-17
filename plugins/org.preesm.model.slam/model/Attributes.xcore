@@ -43,9 +43,9 @@ type double wraps double
 
 class VLNV {
 	String vendor = ""
-	String library
-	String name
-	String version
+	String library = ""
+	String name = ""
+	String version = ""
 }
 
 class Parameter wraps java.util.Map$Entry {

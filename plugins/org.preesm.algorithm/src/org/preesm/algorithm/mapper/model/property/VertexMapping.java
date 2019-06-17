@@ -46,7 +46,6 @@ import org.preesm.algorithm.mapper.model.MapperDAG;
 import org.preesm.algorithm.mapper.model.MapperDAGVertex;
 import org.preesm.commons.logger.PreesmLogger;
 import org.preesm.model.slam.ComponentInstance;
-import org.preesm.model.slam.utils.DesignTools;
 
 // TODO: Auto-generated Javadoc
 /**
@@ -111,7 +110,7 @@ public class VertexMapping extends GroupProperty {
     for (final MapperDAGVertex locVertex : relatedVertices) {
       final VertexInit init2 = locVertex.getInit();
       final List<ComponentInstance> initialOperatorList2 = init2.getInitialOperatorList();
-      DesignTools.retainAll(operators, initialOperatorList2);
+      operators.retainAll(initialOperatorList2);
     }
 
     // If we consider group mapping and a vertex in the group is mapped, we keep its operator only
