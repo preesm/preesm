@@ -15,6 +15,7 @@ import java.util.Objects
 import org.eclipse.core.runtime.IPath
 import org.eclipse.core.runtime.Path
 import org.eclipse.emf.common.util.ECollections
+import org.eclipse.emf.common.util.EList
 import org.eclipse.emf.common.util.EMap
 import org.preesm.commons.model.PreesmCopyTracker
 import org.preesm.model.pisdf.AbstractActor
@@ -26,6 +27,7 @@ import org.preesm.model.slam.ComponentInstance
 import org.preesm.model.slam.Design
 import org.preesm.model.slam.component.Component
 import org.preesm.model.slam.serialize.SlamParser
+
 
 // !!! This is needed as of the current versions of xcore/xtext
 // For some reason when using the default String/... (i.e. without the following)
@@ -299,6 +301,29 @@ class PapifyConfig {
 		val index = ECollections.indexOf(eventList, event, 0)
 		if (index >= 0) {
 			eventList.remove(index)
+		}
+	}
+	/*op ActorEvent[] getActorConfig(AbstractActor actor){
+		var actorConfig = papifyConfigGroupsActors.get(actor)		
+		var AbstractActor source = PreesmCopyTracker.getSource(actor);
+		if(actorConfig !== null && !actorConfig.empty){
+			return actorConfig
+		}else if(source != actor){
+			actorConfig = papifyConfigGroupsActors.get(source)
+			if(actorConfig !== null && !actorConfig.empty){
+				return actorConfig
+			}
+		}
+	}*/
+	op boolean isMonitoringEvents(ActorEvent[] actorConfig){
+		return true
+	}
+	op boolean isMonitoringTiming(ActorEvent[] actorConfig){
+		if(actorConfig.keySet.contains("Timing") && !actorConfig.get("Timing").empty){
+			System.out.println(actorConfig.get("Timing").toString())
+			return true	
+		}else{
+			return false
 		}
 	}
 
