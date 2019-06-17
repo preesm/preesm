@@ -103,6 +103,9 @@ public class PapifyCheckStateListener implements ISDFCheckStateListener {
 
   private Set<PapifyEventListTreeElement> elementList;
 
+  // The timing event
+  private PapiEvent timingEvent;
+
   /**
    * Instantiates a new constraints check state listener.
    *
@@ -113,6 +116,12 @@ public class PapifyCheckStateListener implements ISDFCheckStateListener {
     super();
     this.scenario = scenario;
     this.elementList = new LinkedHashSet<>();
+    timingEvent = ScenarioFactory.eINSTANCE.createPapiEvent();
+    timingEvent.setName("Timing");
+    timingEvent.setDescription("Event to time through PAPI_get_time()");
+    timingEvent.setIndex(9999);
+    List<PapiEventModifier> modifTimingList = new ArrayList<>();
+    timingEvent.getModifiers().addAll(modifTimingList);
   }
 
   /**
@@ -156,13 +165,7 @@ public class PapifyCheckStateListener implements ISDFCheckStateListener {
    *
    */
   public void removeEventfromActor(AbstractActor actorInstance, String eventName) {
-    // The timing event
-    PapiEvent timingEvent = ScenarioFactory.eINSTANCE.createPapiEvent();
-    timingEvent.setName("Timing");
-    timingEvent.setDescription("Event to time through PAPI_get_time()");
-    timingEvent.setIndex(9999);
-    final List<PapiEventModifier> modifTimingList = new ArrayList<>();
-    timingEvent.getModifiers().addAll(modifTimingList);
+
     boolean timing = false;
 
     if (!eventName.equals("")) {
@@ -190,7 +193,7 @@ public class PapifyCheckStateListener implements ISDFCheckStateListener {
         }
       } else {
         found = true;
-        event = timingEvent;
+        event = this.timingEvent;
       }
 
       Map<String, PAPIEventStatus> statuses = new LinkedHashMap<>();
@@ -232,13 +235,7 @@ public class PapifyCheckStateListener implements ISDFCheckStateListener {
    *
    */
   public void addEventtoActor(AbstractActor actorInstance, String eventName) {
-    // The timing event
-    PapiEvent timingEvent = ScenarioFactory.eINSTANCE.createPapiEvent();
-    timingEvent.setName("Timing");
-    timingEvent.setDescription("Event to time through PAPI_get_time()");
-    timingEvent.setIndex(9999);
-    List<PapiEventModifier> modifTimingList = new ArrayList<>();
-    timingEvent.getModifiers().addAll(modifTimingList);
+
     boolean timing = false;
 
     if (!eventName.equals("")) {
@@ -267,7 +264,7 @@ public class PapifyCheckStateListener implements ISDFCheckStateListener {
         }
       } else {
         found = true;
-        event = timingEvent;
+        event = this.timingEvent;
       }
 
       Map<String, PAPIEventStatus> statuses = new LinkedHashMap<>();
