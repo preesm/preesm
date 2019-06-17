@@ -57,7 +57,6 @@ import org.preesm.model.slam.link.Link;
 import org.preesm.model.slam.route.AbstractRouteStep;
 import org.preesm.model.slam.route.Route;
 import org.preesm.model.slam.route.RouteStepFactory;
-import org.preesm.model.slam.utils.DesignTools;
 
 /**
  * This class can evaluate a given transfer and choose the best route between two operators.
@@ -147,7 +146,7 @@ public class RouteCalculator {
   private void createRouteSteps() {
     PreesmLogger.getLogger().log(Level.INFO, "creating route steps.");
 
-    for (final ComponentInstance c : DesignTools.getOperatorInstances(this.archi)) {
+    for (final ComponentInstance c : this.archi.getComponentInstances()) {
       final ComponentInstance o = c;
 
       createRouteSteps(o);
@@ -222,7 +221,7 @@ public class RouteCalculator {
   private void createRoutes() {
     PreesmLogger.getLogger().log(Level.INFO, "Initializing routing table.");
 
-    floydWarshall(this.table, DesignTools.getOperatorInstances(this.archi));
+    floydWarshall(this.table, this.archi.getComponentInstances());
   }
 
   /**

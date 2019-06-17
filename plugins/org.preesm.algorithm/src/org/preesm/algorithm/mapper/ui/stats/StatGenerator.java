@@ -57,7 +57,6 @@ import org.preesm.model.scenario.Scenario;
 import org.preesm.model.scenario.types.ImplementationPropertyNames;
 import org.preesm.model.scenario.types.VertexType;
 import org.preesm.model.slam.ComponentInstance;
-import org.preesm.model.slam.utils.DesignTools;
 
 /**
  * Generating the statistics to be displayed in stat editor.
@@ -172,7 +171,7 @@ public class StatGenerator {
    */
   public int getNbUsedOperators() {
     int nbUsedOperators = 0;
-    for (final ComponentInstance o : DesignTools.getOperatorInstances(this.abc.getArchitecture())) {
+    for (final ComponentInstance o : this.abc.getArchitecture().getComponentInstances()) {
       if (this.abc.getFinalCost(o) > 0) {
         nbUsedOperators++;
       }

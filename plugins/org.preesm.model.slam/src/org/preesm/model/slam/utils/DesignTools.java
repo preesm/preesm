@@ -64,7 +64,7 @@ public class DesignTools {
   public static List<String> getOperatorInstanceIds(final Design design) {
     final List<String> operatorInstanceIds = new ArrayList<>();
     if (design != null) {
-      for (final ComponentInstance cmpInstance : getOperatorInstances(design)) {
+      for (final ComponentInstance cmpInstance : design.getComponentInstances()) {
         operatorInstanceIds.add(cmpInstance.getInstanceName());
       }
     }
@@ -109,23 +109,6 @@ public class DesignTools {
   }
 
   /**
-   * Getting all operator instances in architecture.
-   *
-   * @param design
-   *          the design
-   * @return the operator instances
-   */
-  public static List<ComponentInstance> getOperatorInstances(final Design design) {
-    final List<ComponentInstance> operatorInstances = new ArrayList<>();
-    for (final ComponentInstance cmpInstance : design.getComponentInstances()) {
-      if (cmpInstance.getComponent() instanceof Operator) {
-        operatorInstances.add(cmpInstance);
-      }
-    }
-    return Collections.unmodifiableList(operatorInstances);
-  }
-
-  /**
    * Gets the ordered operator ids.
    */
   public static List<String> getOrderedOperatorIds(final Design design) {
@@ -155,7 +138,7 @@ public class DesignTools {
    * @return the ordered operator
    */
   public static List<ComponentInstance> getOrderedOperators(final Design design) {
-    final List<ComponentInstance> opIdList = new ArrayList<>(getOperatorInstances(design));
+    final List<ComponentInstance> opIdList = new ArrayList<>(design.getComponentInstances());
     Collections.sort(opIdList, (o1, o2) -> o1.getInstanceName().compareTo(o2.getInstanceName()));
     return Collections.unmodifiableList(opIdList);
   }
@@ -180,32 +163,6 @@ public class DesignTools {
       }
     }
     return Collections.unmodifiableList(operators);
-  }
-
-  /**
-   * Getting all component instances in architecture.
-   *
-   * @param design
-   *          the design
-   * @return the component instances
-   */
-  public static List<ComponentInstance> getComponentInstances(final Design design) {
-    final List<ComponentInstance> instances = new ArrayList<>();
-    for (final ComponentInstance cmpInstance : design.getComponentInstances()) {
-      instances.add(cmpInstance);
-    }
-    return Collections.unmodifiableList(instances);
-  }
-
-  /**
-   * Getting the number of operator instances in architecture.
-   *
-   * @param design
-   *          the design
-   * @return the number of operator instances
-   */
-  public static int getNumberOfOperatorInstances(final Design design) {
-    return DesignTools.getOperatorInstances(design).size();
   }
 
   /**
@@ -245,24 +202,4 @@ public class DesignTools {
       }
     }
   }
-
-  /**
-   * Getting the instance of the given name.
-   *
-   * @param design
-   *          the design
-   * @param name
-   *          the name
-   * @return the component instance
-   */
-  public static ComponentInstance getComponentInstance(final Design design, final String name) {
-
-    for (final ComponentInstance cmpInstance : design.getComponentInstances()) {
-      if (cmpInstance.getInstanceName().equals(name)) {
-        return cmpInstance;
-      }
-    }
-    return null;
-  }
-
 }

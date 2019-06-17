@@ -53,7 +53,6 @@ import org.preesm.algorithm.model.dag.DAGVertex;
 import org.preesm.commons.exceptions.PreesmRuntimeException;
 import org.preesm.model.slam.ComponentInstance;
 import org.preesm.model.slam.Design;
-import org.preesm.model.slam.utils.DesignTools;
 
 /**
  * The scheduling order manager keeps a total order of the vertices and a partial order in each schedule. It is used by
@@ -81,7 +80,7 @@ public class OrderManager extends Observable {
     this.schedules = new LinkedHashMap<>();
 
     // Adding one schedule per component
-    for (final ComponentInstance cmp : DesignTools.getComponentInstances(archi)) {
+    for (final ComponentInstance cmp : archi.getComponentInstances()) {
       this.schedules.put(cmp, new Schedule());
     }
 

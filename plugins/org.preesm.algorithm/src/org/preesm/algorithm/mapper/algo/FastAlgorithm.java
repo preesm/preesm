@@ -64,7 +64,6 @@ import org.preesm.commons.logger.PreesmLogger;
 import org.preesm.model.scenario.Scenario;
 import org.preesm.model.slam.ComponentInstance;
 import org.preesm.model.slam.Design;
-import org.preesm.model.slam.utils.DesignTools;
 
 /**
  * Fast Algorithm.
@@ -257,7 +256,7 @@ public class FastAlgorithm extends Observable {
     final long fastStopTime = System.currentTimeMillis() + (1000 * fastParams.getFastTime());
     // the number of local solutions searched in a neighborhood is the size
     // of the graph
-    final int maxStep = dag.vertexSet().size() * DesignTools.getNumberOfOperatorInstances(archi);
+    final int maxStep = dag.vertexSet().size() * archi.getComponentInstances().size();
     // the number of better solutions found in a neighborhood is limited
     final int margin = Math.max(maxStep / 10, 1);
 

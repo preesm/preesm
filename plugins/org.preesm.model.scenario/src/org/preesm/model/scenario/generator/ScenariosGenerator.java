@@ -222,7 +222,7 @@ public class ScenariosGenerator {
     scenario.setAlgorithm(piGraph);
 
     // Get com nodes and cores names
-    final List<ComponentInstance> coreIds = new ArrayList<>(DesignTools.getOperatorInstances(archi));
+    final List<ComponentInstance> coreIds = new ArrayList<>(archi.getComponentInstances());
     final List<ComponentInstance> comNodeIds = new ArrayList<>(DesignTools.getComNodeInstances(archi));
     // Set default values for constraints, timings and simulation parameters
     if (algoURL.endsWith(ScenariosGenerator.PI_GRAPH_EXT)) {
@@ -254,7 +254,7 @@ public class ScenariosGenerator {
   private void fillPiScenario(final Scenario scenario, final Design archi, final PiGraph piGraph) {
     // Get com nodes and cores names
     scenario.setAlgorithm(piGraph);
-    final List<ComponentInstance> coreIds = new ArrayList<>(DesignTools.getOperatorInstances(archi));
+    final List<ComponentInstance> coreIds = new ArrayList<>(archi.getComponentInstances());
 
     // for all different type of cores
     for (final Component opId : DesignTools.getOperatorComponents(archi)) {
