@@ -187,7 +187,7 @@ public class StatGenerator {
   public int getNbMainTypeOperators() {
     int nbMainTypeOperators = 0;
     final ComponentInstance mainOp = this.scenario.getSimulationInfo().getMainOperator();
-    nbMainTypeOperators = this.abc.getArchitecture().getInstancesOfComponent(mainOp.getComponent()).size();
+    nbMainTypeOperators = this.abc.getArchitecture().getComponentInstancesOfType(mainOp.getComponent()).size();
     return nbMainTypeOperators;
   }
 

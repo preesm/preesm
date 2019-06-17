@@ -84,8 +84,8 @@ import org.preesm.model.scenario.PapifyConfig;
 import org.preesm.model.scenario.Scenario;
 import org.preesm.model.scenario.ScenarioFactory;
 import org.preesm.model.scenario.serialize.PapiConfigParser;
+import org.preesm.model.slam.Design;
 import org.preesm.model.slam.component.Component;
-import org.preesm.model.slam.utils.DesignTools;
 import org.preesm.ui.scenario.editor.FileSelectionAdapter;
 import org.preesm.ui.scenario.editor.Messages;
 import org.preesm.ui.scenario.editor.PreesmAlgorithmTreeLabelProvider;
@@ -538,7 +538,8 @@ public class PapifyPage extends ScenarioPage {
     this.checkStateListener.setPropertyListener(this);
     this.peContentProvider.addCheckStateListener(this.checkStateListener);
 
-    for (final Component columnLabel : DesignTools.getOperatorComponents(this.scenario.getDesign())) {
+    final Design design = this.scenario.getDesign();
+    for (final Component columnLabel : design.getComponents()) {
 
       final TreeViewerColumn viewerColumn = new TreeViewerColumn(peTreeViewer, SWT.CENTER | SWT.CHECK);
       final TreeColumn column = viewerColumn.getColumn();

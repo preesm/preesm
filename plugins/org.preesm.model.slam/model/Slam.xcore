@@ -21,6 +21,7 @@ import org.preesm.model.slam.component.HierarchyPort
 import org.preesm.model.slam.link.Link
 import org.preesm.model.slam.utils.VLNVComparator
 import org.preesm.model.slam.component.ComNode
+import org.eclipse.emf.common.util.ECollections
 
 // !!! This is needed as of the current versions of xcore/xtext
 // For some reason when using the default String/... (i.e. without the following)
@@ -45,18 +46,26 @@ class Design extends VLNVedElement , ParameterizedElement {
 	container Component refined opposite refinements
 	refers ComponentHolder componentHolder
 
+	op Component[] getComponents() {
+		if (componentHolder !== null) {
+			componentHolder.components.unmodifiableView
+		} else {
+			ECollections.emptyEList
+		}
+	}
 	op boolean containsComponent(VLNV name) {
-		return componentHolder.components.exists[VLNVComparator.areSame(vlnv, name)]
+		return components.exists[VLNVComparator.areSame(vlnv, name)]
 	}
 	op boolean containsComponent(String vlnvName) {
-		return componentHolder.components.exists[vlnvName.equals(it.vlnv.name)]
+		return components.exists[vlnvName.equals(it.vlnv.name)]
 	}
 	op Component getComponent(VLNV name) {
-		return componentHolder.components.findFirst[VLNVComparator.areSame(vlnv, name)]
+		return components.findFirst[VLNVComparator.areSame(vlnv, name)]
 	}
 	op Component getComponent(String vlnvName) {
-		return componentHolder.components.findFirst[vlnvName.equals(it.vlnv.name)]
+		return components.findFirst[vlnvName.equals(it.vlnv.name)]
 	}
+
 	op boolean containsComponentInstance(String name) {
 		return componentInstances.exists[instanceName == name]
 	}
@@ -66,7 +75,7 @@ class Design extends VLNVedElement , ParameterizedElement {
 	op ComponentInstance[] getCommunicationNodeInstances() {
 		return componentInstances.filter[(it.component instanceof ComNode)].toEList.unmodifiableView
 	}
-	op ComponentInstance[] getInstancesOfComponent(Component component) {
+	op ComponentInstance[] getComponentInstancesOfType(Component component) {
 		componentInstances.filter[component.vlnv.name == it.component.vlnv.name].toEList.unmodifiableView
 	}
 	op Link[] getUndirectedLinks(ComponentInstance c) {

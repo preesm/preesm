@@ -40,11 +40,8 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
-import org.preesm.model.slam.ComponentHolder;
 import org.preesm.model.slam.ComponentInstance;
 import org.preesm.model.slam.Design;
-import org.preesm.model.slam.component.Component;
-import org.preesm.model.slam.component.Operator;
 
 /**
  * Provides specific getters and setters for S-LAM architecture.
@@ -88,7 +85,7 @@ public class DesignTools {
    */
   public static List<String> getOperatorComponentIds(final Design design) {
     final List<String> operatorIds = new ArrayList<>();
-    for (final org.preesm.model.slam.component.Component component : getOperatorComponents(design)) {
+    for (final org.preesm.model.slam.component.Component component : design.getComponents()) {
       operatorIds.add(component.getVlnv().getName());
     }
     return Collections.unmodifiableList(operatorIds);
@@ -103,28 +100,6 @@ public class DesignTools {
     final List<ComponentInstance> opIdList = new ArrayList<>(design.getComponentInstances());
     Collections.sort(opIdList, (o1, o2) -> o1.getInstanceName().compareTo(o2.getInstanceName()));
     return Collections.unmodifiableList(opIdList);
-  }
-
-  /**
-   * Getting all operator instances in architecture.
-   *
-   * @param design
-   *          the design
-   * @return the operator components
-   */
-  public static List<Component> getOperatorComponents(final Design design) {
-    final List<Component> operators = new ArrayList<>();
-    if (design != null) {
-      final ComponentHolder componentHolder = design.getComponentHolder();
-      if (componentHolder != null) {
-        for (final org.preesm.model.slam.component.Component component : componentHolder.getComponents()) {
-          if (component instanceof Operator) {
-            operators.add(component);
-          }
-        }
-      }
-    }
-    return Collections.unmodifiableList(operators);
   }
 
   /**

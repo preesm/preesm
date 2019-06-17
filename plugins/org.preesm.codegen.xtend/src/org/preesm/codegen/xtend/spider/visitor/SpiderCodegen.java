@@ -162,7 +162,8 @@ public class SpiderCodegen {
     this.coresPerCoreType = new LinkedHashMap<>();
     this.coresFromCoreType = new LinkedHashMap<>();
     int coreTypeId = 0;
-    for (final Component coreType : DesignTools.getOperatorComponents(this.scenario.getDesign())) {
+    final Design design = this.scenario.getDesign();
+    for (final Component coreType : design.getComponents()) {
       this.coreTypesIds.put(coreType, coreTypeId++);
       // Link the number of cores associated to each core type
       final EList<Component> components = this.architecture.getComponentHolder().getComponents();
@@ -177,7 +178,7 @@ public class SpiderCodegen {
 
     this.coreIds = new LinkedHashMap<>();
     ComponentInstance mainOperator = this.scenario.getSimulationInfo().getMainOperator();
-    final List<ComponentInstance> orderedOperators = DesignTools.getOrderedOperators(this.scenario.getDesign());
+    final List<ComponentInstance> orderedOperators = DesignTools.getOrderedOperators(design);
     if (mainOperator == null) {
       /* Warning */
       mainOperator = orderedOperators.get(0);
