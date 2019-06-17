@@ -748,6 +748,8 @@ public class CodegenModelGenerator {
         final FunctionCall functionCall = generateFunctionCall(dagVertex, loopPrototype, false);
 
         EMap<String, EList<PapiEvent>> actorConfig = null;
+        boolean monitoringTiming = false;
+        boolean monitoringEvents = false;
         if (this.papifyActive) {
           // Check if this actor has a monitoring configuration
           PapifyConfig papifyConfig = this.scenario.getPapifyConfig();
@@ -770,11 +772,24 @@ public class CodegenModelGenerator {
             papifyActionS.setComment("papify configuration variable");
             operatorBlock.getDefinitions().add(papifyActionS);
 
-            if (papifyConfig.isMonitoringEvents(actorConfig)) {
+            // What are we monitoring?
+            monitoringEvents = papifyConfig.isMonitoringEvents(actorConfig);
+            monitoringTiming = papifyConfig.isMonitoringTiming(actorConfig);
+            if (monitoringEvents) {
+              // Generate Papify start function for events
+              final PapifyFunctionCall functionCallPapifyStart = generatePapifyStartFunctionCall(dagVertex,
+                  operatorBlock);
+              // Add the Papify start function for events to the loop
+              operatorBlock.getLoopBlock().getCodeElts().add(functionCallPapifyStart);
               System.out.println("Wiiiiiiiiiiii1");
             }
 
-            if (papifyConfig.isMonitoringTiming(actorConfig)) {
+            if (monitoringTiming) {
+              // Generate Papify start timing function
+              final PapifyFunctionCall functionCallPapifyTimingStart = generatePapifyStartTimingFunctionCall(dagVertex,
+                  operatorBlock);
+              // Add the Papify start timing function to the loop
+              operatorBlock.getLoopBlock().getCodeElts().add(functionCallPapifyTimingStart);
               System.out.println("Wiiiiiiiiiiii2");
             }
 
@@ -848,6 +863,12 @@ public class CodegenModelGenerator {
         if (this.papifyActive) {
           if (actorConfig != null && !actorConfig.isEmpty()) {
             System.out.println("Wiii?");
+            if (monitoringTiming) {
+              System.out.println("Wiiiiiiiiiiii2?");
+            }
+            if (monitoringEvents) {
+              System.out.println("Wiiiiiiiiiiii1?");
+            }
           }
         } else {
           Map<String,

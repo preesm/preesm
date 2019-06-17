@@ -316,10 +316,16 @@ class PapifyConfig {
 		}
 	}*/
 	op boolean isMonitoringEvents(ActorEvent[] actorConfig){
-		return true
+		if(actorConfig.keySet.contains("Timing") && actorConfig.keySet.size > 1){
+			return true
+		}else if(!actorConfig.keySet.contains("Timing") && actorConfig.keySet.size > 0){
+			return true
+		}else{
+			return false
+		}		
 	}
 	op boolean isMonitoringTiming(ActorEvent[] actorConfig){
-		if(actorConfig.keySet.contains("Timing") && !actorConfig.get("Timing").empty){
+		if(actorConfig.keySet.contains("Timing")){
 			return true	
 		}else{
 			return false
