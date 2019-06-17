@@ -51,7 +51,6 @@ import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.forms.IManagedForm;
 import org.eclipse.ui.forms.editor.FormEditor;
-import org.eclipse.ui.forms.editor.FormPage;
 import org.eclipse.ui.forms.events.ExpansionAdapter;
 import org.eclipse.ui.forms.events.ExpansionEvent;
 import org.eclipse.ui.forms.widgets.ColumnLayout;
@@ -71,7 +70,7 @@ import org.preesm.ui.fields.FieldUtils;
  *
  * @author mpelcat
  */
-public class OverviewPage extends FormPage {
+public class OverviewPage extends ScenarioPage {
 
   /** The current scenario being edited. */
   private final Scenario scenario;
@@ -244,6 +243,12 @@ public class OverviewPage extends FormPage {
     final String textFieldContent = text.getText();
     final boolean testPathValidInWorkspace = FieldUtils.testPathValidInWorkspace(textFieldContent);
     FieldUtils.colorRedOnCondition(text, !testPathValidInWorkspace);
+  }
+
+  @Override
+  public void propertyChanged(Object source, int propId) {
+    // TODO Auto-generated method stub
+
   }
 
 }

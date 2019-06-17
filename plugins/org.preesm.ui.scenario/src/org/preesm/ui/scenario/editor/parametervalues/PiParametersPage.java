@@ -50,10 +50,8 @@ import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
 import org.eclipse.swt.widgets.TableItem;
 import org.eclipse.ui.IEditorPart;
-import org.eclipse.ui.IPropertyListener;
 import org.eclipse.ui.forms.IManagedForm;
 import org.eclipse.ui.forms.editor.FormEditor;
-import org.eclipse.ui.forms.editor.FormPage;
 import org.eclipse.ui.forms.widgets.ColumnLayout;
 import org.eclipse.ui.forms.widgets.ExpandableComposite;
 import org.eclipse.ui.forms.widgets.ScrolledForm;
@@ -61,6 +59,7 @@ import org.eclipse.ui.forms.widgets.Section;
 import org.preesm.model.pisdf.Parameter;
 import org.preesm.model.scenario.Scenario;
 import org.preesm.ui.scenario.editor.Messages;
+import org.preesm.ui.scenario.editor.ScenarioPage;
 import org.preesm.ui.scenario.editor.utils.VertexLexicographicalComparator;
 
 /**
@@ -68,7 +67,7 @@ import org.preesm.ui.scenario.editor.utils.VertexLexicographicalComparator;
  *
  * @author jheulot
  */
-public class PiParametersPage extends FormPage implements IPropertyListener {
+public class PiParametersPage extends ScenarioPage {
 
   /** The {@link PreesmScenario}. */
   private Scenario scenario = null;

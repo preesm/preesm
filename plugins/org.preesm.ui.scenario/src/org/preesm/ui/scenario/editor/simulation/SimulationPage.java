@@ -74,7 +74,6 @@ import org.eclipse.ui.IPropertyListener;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.forms.IManagedForm;
 import org.eclipse.ui.forms.editor.FormEditor;
-import org.eclipse.ui.forms.editor.FormPage;
 import org.eclipse.ui.forms.widgets.ExpandableComposite;
 import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.eclipse.ui.forms.widgets.ScrolledForm;
@@ -84,13 +83,14 @@ import org.preesm.model.scenario.ScenarioConstants;
 import org.preesm.model.slam.ComponentInstance;
 import org.preesm.model.slam.utils.DesignTools;
 import org.preesm.ui.scenario.editor.Messages;
+import org.preesm.ui.scenario.editor.ScenarioPage;
 
 /**
  * This page contains parameters to influence the deployment simulator.
  *
  * @author mpelcat
  */
-public class SimulationPage extends FormPage implements IPropertyListener {
+public class SimulationPage extends ScenarioPage {
 
   /**
    * The listener interface for receiving comboBox events. The class that is interested in processing a comboBox event

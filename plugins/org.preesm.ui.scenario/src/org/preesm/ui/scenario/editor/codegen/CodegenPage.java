@@ -49,7 +49,6 @@ import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.forms.IManagedForm;
 import org.eclipse.ui.forms.editor.FormEditor;
-import org.eclipse.ui.forms.editor.FormPage;
 import org.eclipse.ui.forms.events.ExpansionAdapter;
 import org.eclipse.ui.forms.events.ExpansionEvent;
 import org.eclipse.ui.forms.widgets.ColumnLayout;
@@ -61,13 +60,14 @@ import org.preesm.model.scenario.Scenario;
 import org.preesm.ui.fields.FieldUtils;
 import org.preesm.ui.scenario.editor.FileSelectionAdapter;
 import org.preesm.ui.scenario.editor.Messages;
+import org.preesm.ui.scenario.editor.ScenarioPage;
 
 /**
  * code generation properties editor within the implementation editor.
  *
  * @author mpelcat
  */
-public class CodegenPage extends FormPage {
+public class CodegenPage extends ScenarioPage {
 
   /** Currently edited scenario. */
   private final Scenario scenario;
@@ -229,6 +229,12 @@ public class CodegenPage extends FormPage {
     } else {
       FieldUtils.colorRedOnCondition(text, true);
     }
+  }
+
+  @Override
+  public void propertyChanged(Object source, int propId) {
+    // TODO Auto-generated method stub
+
   }
 
 }

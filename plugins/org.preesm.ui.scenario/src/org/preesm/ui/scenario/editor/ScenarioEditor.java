@@ -49,7 +49,6 @@ import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.IEditorSite;
 import org.eclipse.ui.IPropertyListener;
 import org.eclipse.ui.PartInitException;
-import org.eclipse.ui.forms.editor.IFormPage;
 import org.eclipse.ui.forms.editor.SharedHeaderFormEditor;
 import org.eclipse.ui.part.FileEditorInput;
 import org.preesm.commons.DomUtil;
@@ -129,22 +128,16 @@ public class ScenarioEditor extends SharedHeaderFormEditor implements IPropertyL
    */
   @Override
   protected void addPages() {
-    final IFormPage overviewPage = new OverviewPage(this.scenario, this, "Overview", "Overview");
-    overviewPage.addPropertyListener(this);
-    final IFormPage constraintsPage = new ConstraintsPage(this.scenario, this, "Constraints", "Constraints");
-    constraintsPage.addPropertyListener(this);
+    final ScenarioPage overviewPage = new OverviewPage(this.scenario, this, "Overview", "Overview");
+    final ScenarioPage constraintsPage = new ConstraintsPage(this.scenario, this, "Constraints", "Constraints");
+    final ScenarioPage timingsPage = new TimingsPage(this.scenario, this, "Timings", "Timings");
+    final ScenarioPage simulationPage = new SimulationPage(this.scenario, this, "Simulation", "Simulation");
+    final ScenarioPage codegenPage = new CodegenPage(this.scenario, this, "Codegen", "Codegen");
+    final ScenarioPage paramPage = new PiParametersPage(this.scenario, this, "Parameters", "Parameters");
+    final ScenarioPage papifyPage = new PapifyPage(this.scenario, this, "PAPIFY", "PAPIFY");
 
-    final IFormPage timingsPage = new TimingsPage(this.scenario, this, "Timings", "Timings");
-    timingsPage.addPropertyListener(this);
-    final SimulationPage simulationPage = new SimulationPage(this.scenario, this, "Simulation", "Simulation");
-    simulationPage.addPropertyListener(this);
-    final CodegenPage codegenPage = new CodegenPage(this.scenario, this, "Codegen", "Codegen");
-    codegenPage.addPropertyListener(this);
-    final PiParametersPage paramPage = new PiParametersPage(this.scenario, this, "Parameters", "Parameters");
-    paramPage.addPropertyListener(this);
-
-    final IFormPage papifyPage = new PapifyPage(this.scenario, this, "PAPIFY", "PAPIFY");
-    papifyPage.addPropertyListener(this);
+    // redraw timings when parameter value change
+    paramPage.addPropertyListener(timingsPage);
 
     try {
       addPage(overviewPage);
@@ -158,6 +151,14 @@ public class ScenarioEditor extends SharedHeaderFormEditor implements IPropertyL
       ErrorWithExceptionDialog.errorDialogWithStackTrace("Could not open scenario", e);
       close(false);
     }
+  }
+
+  /**
+   *
+   */
+  public int addPage(final ScenarioPage page) throws PartInitException {
+    page.addPropertyListener(this);
+    return super.addPage(page);
   }
 
   /**
