@@ -48,7 +48,7 @@ class VLNV {
 	String version
 }
 
-class Parameter {
+class Parameter wraps java.util.Map$Entry {
 	String key
 	String value
 }

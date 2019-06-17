@@ -43,7 +43,6 @@ import java.util.List;
 import org.preesm.model.slam.ComponentHolder;
 import org.preesm.model.slam.ComponentInstance;
 import org.preesm.model.slam.Design;
-import org.preesm.model.slam.attributes.Parameter;
 import org.preesm.model.slam.component.Component;
 import org.preesm.model.slam.component.Operator;
 import org.preesm.model.slam.component.impl.ComNodeImpl;
@@ -265,24 +264,6 @@ public class DesignTools {
       }
     }
 
-    return null;
-  }
-
-  /**
-   * Getting a component parameter corresponding to the given key.
-   *
-   * @param instance
-   *          the instance
-   * @param key
-   *          the key
-   * @return the parameter
-   */
-  public static String getParameter(final ComponentInstance instance, final String key) {
-    for (final Parameter p : instance.getParameters()) {
-      if (p.getKey().equals(key)) {
-        return p.getValue();
-      }
-    }
     return null;
   }
 

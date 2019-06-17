@@ -40,7 +40,7 @@ package org.preesm.algorithm.mapper.exporter;
 
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
-import java.util.Iterator;
+import org.eclipse.emf.common.util.EMap;
 import org.preesm.algorithm.io.gml.GMLExporter;
 import org.preesm.algorithm.mapper.model.MapperDAG;
 import org.preesm.algorithm.mapper.model.MapperDAGVertex;
@@ -53,7 +53,6 @@ import org.preesm.algorithm.model.dag.DAGVertex;
 import org.preesm.commons.GMLKey;
 import org.preesm.commons.exceptions.PreesmRuntimeException;
 import org.preesm.model.scenario.types.ImplementationPropertyNames;
-import org.preesm.model.slam.attributes.Parameter;
 import org.preesm.model.slam.impl.ComponentInstanceImpl;
 import org.preesm.model.slam.route.AbstractRouteStep;
 import org.w3c.dom.Element;
@@ -144,15 +143,9 @@ public class ImplementationExporter extends GMLExporter<DAGVertex, DAGEdge> {
       if (routeStep != null) {
         String memAddress = null;
         final Element operatorAdress = this.domDocument.createElement("data");
-        final Iterator<
-            Parameter> iter = ((ComponentInstanceImpl) vtxBeans.getValue("Operator")).getParameters().iterator();
-        while (iter.hasNext()) {
-          final Parameter param = iter.next();
-          if (param.getKey().equals("memoryAddress")) {
-            memAddress = param.getValue();
-            break;
-          }
-        }
+        final EMap<String, String> parameters = ((ComponentInstanceImpl) vtxBeans.getValue("Operator")).getParameters();
+
+        memAddress = parameters.get("memoryAddress");
 
         if (memAddress != null) {
           operatorAdress.setAttribute("key", "Operator_address");
