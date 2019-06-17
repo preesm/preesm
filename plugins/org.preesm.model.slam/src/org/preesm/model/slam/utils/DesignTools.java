@@ -269,25 +269,6 @@ public class DesignTools {
   }
 
   /**
-   * Getting all instances of a given component.
-   *
-   * @param design
-   *          the design
-   * @param component
-   *          the component
-   * @return the instances of component
-   */
-  public static List<ComponentInstance> getInstancesOfComponent(final Design design, final Component component) {
-    final List<ComponentInstance> instances = new ArrayList<>();
-    for (final ComponentInstance cmpInstance : design.getComponentInstances()) {
-      if (cmpInstance.getComponent().getVlnv().getName().equals(component.getVlnv().getName())) {
-        instances.add(cmpInstance);
-      }
-    }
-    return Collections.unmodifiableList(instances);
-  }
-
-  /**
    * Getting a component parameter corresponding to the given key.
    *
    * @param instance

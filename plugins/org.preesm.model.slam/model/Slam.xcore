@@ -1,32 +1,17 @@
 
-@GenModel(
-	modelName="Slam", prefix="Slam",
-	modelDirectory="/org.preesm.model.slam/ecore-gen",
-//	editDirectory="/org.ietr.dftools.architecture.edit/ecore-gen",
+@GenModel(modelName="Slam", prefix="Slam", modelDirectory="/org.preesm.model.slam/ecore-gen", //	editDirectory="/org.ietr.dftools.architecture.edit/ecore-gen",
 //	editorDirectory="/org.ietr.dftools.architecture.editor/ecore-gen",
 //	testsDirectory="/org.ietr.dftools.architecture.tests/ecore-gen",
-
 	// redirection="",
 	// classNamePattern="",
-
 	// codeFormatting="true",
 	// cleanup="true",
-
-	importerID="org.eclipse.emf.importer.ecore",
-
-	// !! if true a instrs.ecore is generated in .impl and is used by xxpackage.init() to
+	importerID="org.eclipse.emf.importer.ecore", // !! if true a instrs.ecore is generated in .impl and is used by xxpackage.init() to
 	// load the intrs packages (by default this false unless the generated XyzPackage might
 	// exceed Java's byte code limit of 64k)
-	loadInitialization="false",
-	creationCommands="false",
-	creationIcons="false",
-	dataTypeConverters="false",
-	operationReflection="false",
-	complianceLevel="8.0"
-)
-
+	loadInitialization="false", creationCommands="false", creationIcons="false", dataTypeConverters="false",
+	operationReflection="false", complianceLevel="8.0")
 @Ecore(nsURI="http://org.preesm/model/slam")
-
 package org.preesm.model.slam
 
 import org.preesm.model.slam.attributes.Parameter
@@ -43,43 +28,41 @@ import org.preesm.model.slam.utils.VLNVComparator
 // This causes a problem for Tom mapping generation for instance.
 // The following fixes this problem.
 type String wraps String
+
 type int wraps int
+
 type long wraps long
+
 type double wraps double
 
-
 class Design extends VLNVedElement , ParameterizedElement {
-
 	// URL to the file where this graph is saved
 	String url
-
 	contains unordered ComponentInstance[] componentInstances keys instanceName
 	contains Link[] links
 	contains HierarchyPort[] hierarchyPorts
 	container Component refined opposite refinements
-
 	refers ComponentHolder componentHolder
-
-
 	op boolean containsComponent(VLNV name) {
-		return componentHolder.components.exists[VLNVComparator.areSame(vlnv,name)]
+		return componentHolder.components.exists[VLNVComparator.areSame(vlnv, name)]
 	}
 	op boolean containsComponent(String vlnvName) {
 		return componentHolder.components.exists[vlnvName.equals(it.vlnv.name)]
 	}
-
 	op Component getComponent(VLNV name) {
-		return componentHolder.components.findFirst[VLNVComparator.areSame(vlnv,name)]
+		return componentHolder.components.findFirst[VLNVComparator.areSame(vlnv, name)]
 	}
 	op Component getComponent(String vlnvName) {
 		return componentHolder.components.findFirst[vlnvName.equals(it.vlnv.name)]
 	}
-
 	op boolean containsComponentInstance(String name) {
 		return componentInstances.exists[instanceName == name]
 	}
 	op ComponentInstance getComponentInstance(String name) {
 		return componentInstances.findFirst[instanceName == name]
+	}
+	op ComponentInstance[] getInstancesOfComponent(Component component) {
+		componentInstances.filter[component.vlnv.name == it.component.vlnv.name].toEList.unmodifiableView
 	}
 }
 
