@@ -43,12 +43,15 @@ import java.util.Map;
 import org.preesm.commons.math.ExpressionEvaluationException;
 import org.preesm.commons.math.JEPWrapper;
 import org.preesm.model.pisdf.AbstractActor;
+import org.preesm.model.pisdf.ConfigInputInterface;
 import org.preesm.model.pisdf.ConfigInputPort;
+import org.preesm.model.pisdf.ConfigOutputPort;
 import org.preesm.model.pisdf.DataPort;
 import org.preesm.model.pisdf.Delay;
 import org.preesm.model.pisdf.DelayActor;
 import org.preesm.model.pisdf.Expression;
 import org.preesm.model.pisdf.ExpressionProxy;
+import org.preesm.model.pisdf.ISetter;
 import org.preesm.model.pisdf.InterfaceActor;
 import org.preesm.model.pisdf.LongExpression;
 import org.preesm.model.pisdf.Parameter;
@@ -73,8 +76,28 @@ public class ExpressionEvaluator {
   }
 
   public static final long evaluate(final Expression expression, final Map<String, ? extends Number> paramValues) {
-    return new InternalEvaluationVisitor(paramValues).doSwitch(expression);
+    return new InternalExpressionEvaluationVisitor(paramValues).doSwitch(expression);
 
+  }
+
+  /**
+   *
+   */
+  public static Parameter lookupFirstNonInterfaceParent(final ConfigInputInterface cii) {
+    Parameter parent = cii;
+    while (parent instanceof ConfigInputInterface) {
+      final ConfigInputPort graphPort = ((ConfigInputInterface) parent).getGraphPort();
+      final ISetter setter = graphPort.getIncomingDependency().getSetter();
+      if (setter instanceof ConfigOutputPort) {
+        throw new ExpressionEvaluationException("Cannot evaluate expression of a dynamic Setter");
+      } else {
+        parent = (Parameter) setter;
+        if (!(parent instanceof ConfigInputInterface)) {
+          return parent;
+        }
+      }
+    }
+    return null;
   }
 
   /**
@@ -98,7 +121,12 @@ public class ExpressionEvaluator {
       final List<Parameter> inputParameters = parameterizable.getInputParameters();
       for (final Parameter param : inputParameters) {
         final double evaluate = (double) param.getExpression().evaluate();
-        if ((parameterizable instanceof Parameter) || (parameterizable instanceof Delay)
+        if (param instanceof ConfigInputInterface) {
+          final ConfigInputInterface configInputInterface = (ConfigInputInterface) param;
+          final Parameter lookupFirstNonInterfaceParent = lookupFirstNonInterfaceParent(configInputInterface);
+          final double ciive = lookupFirstNonInterfaceParent.getExpression().evaluate();
+          res.put(param.getName(), ciive);
+        } else if ((parameterizable instanceof Parameter) || (parameterizable instanceof Delay)
             || (parameterizable instanceof InterfaceActor)) {
           res.put(param.getName(), evaluate);
         } else if (parameterizable instanceof DataPort || parameterizable instanceof AbstractActor) {
@@ -142,14 +170,14 @@ public class ExpressionEvaluator {
    * @author anmorvan
    *
    */
-  private static class InternalEvaluationVisitor extends PiMMSwitch<Long> {
+  private static class InternalExpressionEvaluationVisitor extends PiMMSwitch<Long> {
     private final Map<String, ? extends Number> parameterValues;
 
     /**
      * Initialize the Expression evaluator with pre-computed parameter values. This can speedup evaluation as there will
      * be no parameter value lookup.
      */
-    private InternalEvaluationVisitor(final Map<String, ? extends Number> parameterValues) {
+    private InternalExpressionEvaluationVisitor(final Map<String, ? extends Number> parameterValues) {
       this.parameterValues = parameterValues;
     }
 
