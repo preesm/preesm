@@ -23,11 +23,13 @@ PREESM Changelog
 * Fix Scenario UI: 
   * Timing tab is properly refreshed when param override values are changed;
   * Timing and Paramever override expressions are now properly using config input interface values from parent graphs;
+* Remove number of execution of top graph from scenario (and UI);
 
 ### Bug fix
 * Fix #139: better error messages for Name checker
 * Fix #121
 * Fix #77
+* Fix #87
 
 
 ## Release version 3.8.1

@@ -111,7 +111,6 @@ class SimulationInfo {
 	refers ComponentInstance mainComNode
 	refers ComponentInstance mainOperator
 	long averageDataSize = "1000"
-	long numberOfTopExecutions = "1"
 	refers ComponentInstance[] specialVertexOperators
 	op void addSpecialVertexOperator(ComponentInstance component) {
 		if (!specialVertexOperators.contains(component)) {
