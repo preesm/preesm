@@ -84,7 +84,7 @@ public class HeaderParser {
    * <li><code>\\s</code>: Match exactly 1 whitespace.</li>
    * <li><code>([\\S&&[^\\[\\]]]+)</code>: <b>Group 4 - Name</b></li> Match a string of non-whitespace characters
    * (except '[' or ']') of length 1 to infinite.
-   * <li><code>(\\[(\\d|\\]\\[)*\\])?</code>: <b>Group 5 - Array?</b></li> Match, if possible, a string of opening and
+   * <li><code>(\\[(\\d|\\]\\[)*\\])?</code>: <b>Group 5 - Array</b></li> Match, if possible, a string of opening and
    * closing square brackets '[]', possibly containing digits.
    * </ul>
    */
@@ -178,6 +178,8 @@ public class HeaderParser {
               fp.setDirection(Direction.OUT);
             }
           }
+
+          // if not pointer (group 3) nor array (group 5), then it's a parameter
           if ((matcher.group(3) == null) && (matcher.group(5) == null)) {
             fp.setIsConfigurationParameter(true);
           }

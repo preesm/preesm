@@ -155,7 +155,7 @@ public class SetActorRefinementFeature extends AbstractCustomFeature {
       if (bo instanceof Actor) {
         final Actor actor = (Actor) bo;
 
-        final String question = "Please select a valid file\n(.idl, .h or .pi)";
+        final String question = "Please select a valid refinement file (.h or .pi)";
         final String dialogTitle = "Select a refinement file";
         final IPath path = askRefinement(question, dialogTitle);
         if (path != null) {
@@ -185,9 +185,8 @@ public class SetActorRefinementFeature extends AbstractCustomFeature {
     // .idl prototypes
     final Set<String> fileExtensions = new LinkedHashSet<>();
     fileExtensions.add("pi");
-    fileExtensions.add("idl");
     fileExtensions.add("h");
-    return FileUtils.browseFiles(PlatformUI.getWorkbench().getActiveWorkbenchWindow().getShell(), dialogTitle,
+    return FileUtils.browseFiles(PlatformUI.getWorkbench().getActiveWorkbenchWindow().getShell(), dialogTitle, question,
         fileExtensions);
   }
 
