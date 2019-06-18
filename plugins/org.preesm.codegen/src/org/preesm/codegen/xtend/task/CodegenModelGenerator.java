@@ -753,7 +753,7 @@ public class CodegenModelGenerator {
           // Check if this actor has a monitoring configuration
           PapifyConfig papifyConfig = this.scenario.getPapifyConfig();
           org.preesm.model.pisdf.AbstractVertex referencePiVertex = dagVertex.getReferencePiVertex();
-          actorConfig = papifyConfig.getActorConfig(referencePiVertex);
+          actorConfig = papifyConfig.getActorConfig((org.preesm.model.pisdf.AbstractActor) referencePiVertex);
 
           if (actorConfig != null && !actorConfig.isEmpty()) {
             // Add the function to configure the monitoring in this PE (operatorBlock)
