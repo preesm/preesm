@@ -172,8 +172,8 @@ public class PiParametersPage extends ScenarioPage {
           if (!newValue.equals(param.getValue())) {
             param.setValue(newValue);
             propertyChanged(this, IEditorPart.PROP_DIRTY);
+            PiParametersPage.this.tableViewer.refresh();
           }
-          PiParametersPage.this.tableViewer.refresh();
         }
       }
 
