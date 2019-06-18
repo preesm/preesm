@@ -514,7 +514,7 @@ public class DAGTransformation<T extends DirectedAcyclicGraph>
   @Override
   public void visit(final SDFAbstractVertex sdfVertex) {
     DAGVertex vertex;
-    final AbstractVertex rv = sdfVertex.getReferencePiMMVertex();
+    final AbstractVertex rv = sdfVertex.getReferencePiVertex();
     if (sdfVertex instanceof SDFRoundBufferVertex) {
       vertex = this.factory.createVertex(DAGBroadcastVertex.DAG_BROADCAST_VERTEX, rv);
       vertex.getPropertyBean().setValue(DAGBroadcastVertex.SPECIAL_TYPE, DAGBroadcastVertex.SPECIAL_TYPE_ROUNDBUFFER);

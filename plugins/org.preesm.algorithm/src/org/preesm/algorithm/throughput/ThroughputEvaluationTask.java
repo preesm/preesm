@@ -193,11 +193,11 @@ public class ThroughputEvaluationTask extends AbstractTaskImplementation {
 
       // Copy actors duration from the scenario to actors properties
       for (final SDFAbstractVertex actor : inputGraph.getAllVertices()) {
-        if (actor.getKind() == "vertex") {
+        if ("vertex".equals(actor.getKind())) {
           if (actor.getGraphDescription() == null) {
             // if atomic actor then copy the duration indicated in the scenario
             final double duration = scenario.getTimings().evaluateTimingOrDefault(
-                (AbstractActor) actor.getReferencePiMMVertex(),
+                (AbstractActor) actor.getReferencePiVertex(),
                 scenario.getSimulationInfo().getMainOperator().getComponent());
             actor.setPropertyValue("duration", duration);
           } else {

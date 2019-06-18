@@ -50,7 +50,7 @@ import org.preesm.commons.exceptions.PreesmRuntimeException;
 import org.preesm.commons.logger.PreesmLogger;
 import org.preesm.commons.math.ExpressionEvaluationException;
 import org.preesm.model.pisdf.PiGraph;
-import org.preesm.model.pisdf.util.ActorPath;
+import org.preesm.model.pisdf.util.VertexPath;
 import org.preesm.model.scenario.types.ImplementationPropertyNames;
 
 /**
@@ -90,14 +90,22 @@ public abstract class SDFAbstractVertex extends AbstractVertex<SDFGraph> {
   /**
    *
    */
-  public org.preesm.model.pisdf.AbstractVertex getReferencePiMMVertex() {
+  /**
+  *
+  */
+  public <T extends org.preesm.model.pisdf.AbstractVertex> T getReferencePiVertex() {
     if (origVertex != null) {
-      return origVertex;
+      @SuppressWarnings("unchecked")
+      final T res = (T) this.origVertex;
+      return res;
     } else {
       final SDFGraph base = (SDFGraph) this.getBase();
       final PiGraph referencePiMMGraph = base.getReferencePiMMGraph();
-      return ActorPath.lookup(referencePiMMGraph,
+
+      @SuppressWarnings("unchecked")
+      final T res = (T) VertexPath.lookup(referencePiMMGraph,
           this.getPropertyStringValue(ImplementationPropertyNames.Vertex_originalVertexId));
+      return res;
     }
   }
 

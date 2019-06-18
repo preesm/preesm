@@ -110,9 +110,10 @@ public class DAGVertex extends AbstractVertex<DirectedAcyclicGraph> {
   /**
    *
    */
-  public org.preesm.model.pisdf.AbstractVertex getReferencePiVertex() {
-    return this.origVertex;
-
+  public <T extends org.preesm.model.pisdf.AbstractVertex> T getReferencePiVertex() {
+    @SuppressWarnings("unchecked")
+    final T res = (T) this.origVertex;
+    return res;
   }
 
   /**

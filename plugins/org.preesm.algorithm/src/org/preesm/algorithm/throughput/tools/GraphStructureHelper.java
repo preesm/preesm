@@ -682,10 +682,10 @@ public interface GraphStructureHelper {
       double actorDuration;
       if (scenario != null) {
         final Component component = scenario.getSimulationInfo().getMainOperator().getComponent();
-        AbstractActor referencePiMMVertex = (AbstractActor) currentSource.getReferencePiMMVertex();
+        AbstractActor referencePiMMVertex = currentSource.getReferencePiVertex();
         actorDuration = scenario.getTimings().evaluateTimingOrDefault(referencePiMMVertex, component);
       } else {
-        actorDuration = (double) currentSource.getPropertyBean().getValue(GraphStructureHelper.DURATION_PROPERTY);
+        actorDuration = currentSource.getPropertyBean().getValue(GraphStructureHelper.DURATION_PROPERTY);
       }
 
       // update the distances
