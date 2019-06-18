@@ -304,9 +304,8 @@ class PapifyConfig {
 		}
 	}
 	op ActorEvent[] getActorConfig(AbstractActor actor){
-		var actorCasted = actor
-		if (this.papifyConfigGroupsActors.containsKey(actorCasted)) {
-			return papifyConfigGroupsActors.get(actorCasted)
+		if (this.papifyConfigGroupsActors.containsKey(actor)) {
+			return papifyConfigGroupsActors.get(actor)
 		}else{
 			var AbstractActor source = PreesmCopyTracker.getOriginalSource(actor);
 			if (this.papifyConfigGroupsActors.containsKey(source)) {
@@ -332,6 +331,18 @@ class PapifyConfig {
 			return false
 		}
 	}
+	
+	op ActorEvent[] getPapiComponentsWithConfig(AbstractActor actor){
+		if(papifyConfigGroupsActors.containsKey(actor)){
+			var map = papifyConfigGroupsActors.get(actor)
+			if(map.containsKey("Timing")){
+				map.remove("Timing")
+			}
+			return map
+		}
+		return ECollections.emptyEMap;
+	}
+	
 	op PapiComponent[] getSupportedPapiComponents(Component component){
 		if(papifyConfigGroupsPEs.containsKey(component)){
 			return papifyConfigGroupsPEs.get(component)
