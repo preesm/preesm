@@ -69,7 +69,6 @@ import org.preesm.model.scenario.types.VertexType;
 import org.preesm.model.slam.ComponentInstance;
 import org.preesm.model.slam.Design;
 import org.preesm.model.slam.route.AbstractRouteStep;
-import org.preesm.model.slam.utils.DesignTools;
 
 /**
  * Tags an SDF with the implementation information necessary for code generation, and DAG exporting.
@@ -78,6 +77,8 @@ import org.preesm.model.slam.utils.DesignTools;
  * @author mpelcat
  */
 public class TagDAG {
+
+  public static final String OPERATOR_BASE_ADDRESS = "BaseAddress";
 
   /**
    * Constructor.
@@ -165,8 +166,8 @@ public class TagDAG {
         bean.setValue(ImplementationPropertyNames.Vertex_vertexType, VertexType.SEND);
 
         // Setting the operator on which vertex is executed
-        bean.setValue(ImplementationPropertyNames.Vertex_Operator,
-            ((SendVertex) currentVertex).getRouteStep().getSender());
+        final ComponentInstance sender = ((SendVertex) currentVertex).getRouteStep().getSender();
+        bean.setValue(ImplementationPropertyNames.Vertex_Operator, sender);
 
         // Setting the medium transmitting the current data
         final AbstractRouteStep sendRs = ((SendVertex) currentVertex).getRouteStep();
@@ -180,8 +181,7 @@ public class TagDAG {
 
         // Setting the address of the operator on which vertex is
         // executed
-        final String baseAddress = DesignTools.getParameter(((SendVertex) currentVertex).getRouteStep().getSender(),
-            DesignTools.OPERATOR_BASE_ADDRESS);
+        final String baseAddress = sender.getParameters().get(OPERATOR_BASE_ADDRESS);
 
         if (baseAddress != null) {
           bean.setValue(ImplementationPropertyNames.SendReceive_Operator_address, baseAddress);
@@ -195,8 +195,8 @@ public class TagDAG {
         bean.setValue(ImplementationPropertyNames.Vertex_vertexType, VertexType.RECEIVE);
 
         // Setting the operator on which vertex is executed
-        bean.setValue(ImplementationPropertyNames.Vertex_Operator,
-            ((ReceiveVertex) currentVertex).getRouteStep().getReceiver());
+        final ComponentInstance receiver = ((ReceiveVertex) currentVertex).getRouteStep().getReceiver();
+        bean.setValue(ImplementationPropertyNames.Vertex_Operator, receiver);
 
         // Setting the medium transmitting the current data
         final AbstractRouteStep rcvRs = ((ReceiveVertex) currentVertex).getRouteStep();
@@ -210,8 +210,7 @@ public class TagDAG {
 
         // Setting the address of the operator on which vertex is
         // executed
-        final String baseAddress = DesignTools
-            .getParameter(((ReceiveVertex) currentVertex).getRouteStep().getReceiver(), "BaseAddress");
+        final String baseAddress = receiver.getParameters().get(OPERATOR_BASE_ADDRESS);
 
         if (baseAddress != null) {
           bean.setValue(ImplementationPropertyNames.SendReceive_Operator_address, baseAddress);

@@ -46,6 +46,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.logging.Level;
+import org.eclipse.emf.common.util.ECollections;
 import org.preesm.algorithm.mapper.abc.AbcType;
 import org.preesm.algorithm.mapper.abc.ImplementationCleaner;
 import org.preesm.algorithm.mapper.abc.SpecialVertexManager;
@@ -80,7 +81,6 @@ import org.preesm.commons.logger.PreesmLogger;
 import org.preesm.model.scenario.Scenario;
 import org.preesm.model.slam.ComponentInstance;
 import org.preesm.model.slam.Design;
-import org.preesm.model.slam.utils.DesignTools;
 
 /**
  * Abc that minimizes latency.
@@ -550,7 +550,7 @@ public abstract class LatencyAbc {
 
     final List<ComponentInstance> opList = getCandidateOperators(currentvertex, protectGroupMapping);
 
-    if (DesignTools.contains(opList, preferedOperator)) {
+    if (ECollections.indexOf(opList, preferedOperator, 0) != -1) {
       return preferedOperator;
     } else {
 
@@ -589,8 +589,8 @@ public abstract class LatencyAbc {
 
   public final boolean isMapable(final MapperDAGVertex vertex, final ComponentInstance operator,
       final boolean protectGroupMapping) {
-
-    return DesignTools.contains(getCandidateOperators(vertex, protectGroupMapping), operator);
+    final List<ComponentInstance> candidateOperators = getCandidateOperators(vertex, protectGroupMapping);
+    return ECollections.indexOf(candidateOperators, operator, 0) != -1;
   }
 
   /**

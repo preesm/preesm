@@ -49,8 +49,6 @@ import org.preesm.commons.exceptions.PreesmRuntimeException;
 import org.preesm.model.slam.ComponentInstance;
 import org.preesm.model.slam.Design;
 import org.preesm.model.slam.SlamFactory;
-import org.preesm.model.slam.attributes.AttributesFactory;
-import org.preesm.model.slam.attributes.Parameter;
 import org.preesm.model.slam.component.ComInterface;
 import org.preesm.model.slam.component.Component;
 import org.preesm.model.slam.component.HierarchyPort;
@@ -329,12 +327,7 @@ public class SlamFlattener {
       refMap.put(originalInstance, newInstance);
 
       // Duplicates instance parameters
-      for (final Parameter param : originalInstance.getParameters()) {
-        final Parameter newParam = AttributesFactory.eINSTANCE.createParameter();
-        newParam.setKey(param.getKey());
-        newParam.setValue(param.getValue());
-        newInstance.getParameters().add(newParam);
-      }
+      newInstance.getParameters().putAll(originalInstance.getParameters());
     }
   }
 

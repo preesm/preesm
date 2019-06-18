@@ -58,7 +58,7 @@ import org.preesm.model.pisdf.Actor;
 import org.preesm.model.pisdf.PiGraph;
 import org.preesm.model.scenario.Scenario;
 import org.preesm.model.slam.ComponentInstance;
-import org.preesm.model.slam.utils.DesignTools;
+import org.preesm.model.slam.Design;
 import org.preesm.ui.scenario.editor.ISDFCheckStateListener;
 import org.preesm.ui.scenario.editor.Messages;
 import org.preesm.ui.scenario.editor.PreesmAlgorithmTreeContentProvider;
@@ -302,7 +302,8 @@ public class ConstraintsCheckStateListener implements ISDFCheckStateListener {
    */
   private void comboDataInit(final Combo combo) {
     combo.removeAll();
-    final List<ComponentInstance> orderedOperators = DesignTools.getOrderedOperators(this.scenario.getDesign());
+    final Design design = this.scenario.getDesign();
+    final List<ComponentInstance> orderedOperators = design.getOrderedOperatorComponentInstances();
     for (final ComponentInstance id : orderedOperators) {
       combo.add(id.getInstanceName());
     }

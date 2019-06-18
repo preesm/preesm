@@ -68,7 +68,6 @@ import org.preesm.model.slam.SlamPackage;
 import org.preesm.model.slam.component.Component;
 import org.preesm.model.slam.serialize.IPXACTResourceFactoryImpl;
 import org.preesm.model.slam.serialize.SlamParser;
-import org.preesm.model.slam.utils.DesignTools;
 import org.w3c.dom.Document;
 
 /**
@@ -222,8 +221,8 @@ public class ScenariosGenerator {
     scenario.setAlgorithm(piGraph);
 
     // Get com nodes and cores names
-    final List<ComponentInstance> coreIds = new ArrayList<>(DesignTools.getOperatorInstances(archi));
-    final List<ComponentInstance> comNodeIds = new ArrayList<>(DesignTools.getComNodeInstances(archi));
+    final List<ComponentInstance> coreIds = new ArrayList<>(archi.getOperatorComponentInstances());
+    final List<ComponentInstance> comNodeIds = archi.getCommunicationComponentInstances();
     // Set default values for constraints, timings and simulation parameters
     if (algoURL.endsWith(ScenariosGenerator.PI_GRAPH_EXT)) {
       fillPiScenario(scenario, archi, piGraph);
@@ -254,10 +253,10 @@ public class ScenariosGenerator {
   private void fillPiScenario(final Scenario scenario, final Design archi, final PiGraph piGraph) {
     // Get com nodes and cores names
     scenario.setAlgorithm(piGraph);
-    final List<ComponentInstance> coreIds = new ArrayList<>(DesignTools.getOperatorInstances(archi));
+    final List<ComponentInstance> coreIds = new ArrayList<>(archi.getOperatorComponentInstances());
 
     // for all different type of cores
-    for (final Component opId : DesignTools.getOperatorComponents(archi)) {
+    for (final Component opId : archi.getOperatorComponents()) {
       for (final AbstractActor aa : piGraph.getAllActors()) {
         // Add timing: aa run on ci in 10000
         scenario.getTimings().setTiming(aa, opId, 10000);

@@ -78,7 +78,6 @@ import org.preesm.model.slam.ComponentInstance;
 import org.preesm.model.slam.Design;
 import org.preesm.model.slam.component.Component;
 import org.preesm.model.slam.serialize.SlamParser;
-import org.preesm.model.slam.utils.DesignTools;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -342,6 +341,7 @@ public class ScenarioParser {
 
     Node node = spvElt.getFirstChild();
 
+    final Design design = this.scenario.getDesign();
     while (node != null) {
 
       if (node instanceof Element) {
@@ -351,7 +351,7 @@ public class ScenarioParser {
           final String path = elt.getAttribute("path");
 
           if (path != null) {
-            final ComponentInstance componentInstance = this.scenario.getDesign().getComponentInstance(path);
+            final ComponentInstance componentInstance = design.getComponentInstance(path);
             if (componentInstance != null) {
               this.scenario.getSimulationInfo().addSpecialVertexOperator(componentInstance);
             } else {
@@ -370,7 +370,7 @@ public class ScenarioParser {
      * are!!
      */
     if (this.scenario.getSimulationInfo().getSpecialVertexOperators().isEmpty()) {
-      for (final ComponentInstance opId : DesignTools.getOperatorInstances(this.scenario.getDesign())) {
+      for (final ComponentInstance opId : design.getOperatorComponentInstances()) {
         this.scenario.getSimulationInfo().addSpecialVertexOperator(opId);
       }
     }

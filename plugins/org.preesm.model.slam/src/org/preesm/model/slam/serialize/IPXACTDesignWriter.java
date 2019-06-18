@@ -39,6 +39,7 @@ package org.preesm.model.slam.serialize;
 
 import java.io.IOException;
 import java.io.OutputStream;
+import java.util.Map.Entry;
 import java.util.UUID;
 import org.eclipse.emf.common.util.EList;
 import org.preesm.commons.DomUtil;
@@ -46,7 +47,6 @@ import org.preesm.commons.exceptions.PreesmRuntimeException;
 import org.preesm.model.slam.ComponentInstance;
 import org.preesm.model.slam.Design;
 import org.preesm.model.slam.VLNVedElement;
-import org.preesm.model.slam.attributes.Parameter;
 import org.preesm.model.slam.attributes.VLNV;
 import org.preesm.model.slam.component.ComInterface;
 import org.preesm.model.slam.component.HierarchyPort;
@@ -224,7 +224,7 @@ public class IPXACTDesignWriter {
   private void writeParameters(final Element confsElt, final ComponentInstance instance, final Document document) {
 
     if (!instance.getParameters().isEmpty()) {
-      for (final Parameter param : instance.getParameters()) {
+      for (final Entry<String, String> param : instance.getParameters()) {
         writeParameter(confsElt, param.getKey(), param.getValue(), document);
       }
     }

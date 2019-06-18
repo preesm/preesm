@@ -77,7 +77,6 @@ import org.preesm.model.slam.ComponentInstance;
 import org.preesm.model.slam.Design;
 import org.preesm.model.slam.component.Component;
 import org.preesm.model.slam.component.Operator;
-import org.preesm.model.slam.utils.DesignTools;
 
 /**
  * Uses the SDF4J library to convert the input SDF into a DAG before scheduling.
@@ -263,7 +262,7 @@ public class SdfToDagConverter {
       final boolean special = SpecialVertexManager.isSpecial(currentVertex);
       if (!special) {
         // Default timings are given
-        for (final ComponentInstance op : DesignTools.getOperatorInstances(architecture)) {
+        for (final ComponentInstance op : architecture.getOperatorComponentInstances()) {
           final AbstractVertex referencePiVertex = currentVertex.getReferencePiVertex();
 
           if (referencePiVertex instanceof AbstractActor) {

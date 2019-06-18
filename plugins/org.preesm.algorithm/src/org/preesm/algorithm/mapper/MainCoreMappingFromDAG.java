@@ -52,7 +52,7 @@ import org.preesm.commons.doc.annotations.PreesmTask;
 import org.preesm.model.scenario.Scenario;
 import org.preesm.model.slam.ComponentInstance;
 import org.preesm.model.slam.Design;
-import org.preesm.model.slam.utils.DesignTools.ComponentInstanceComparator;
+import org.preesm.model.slam.utils.ComponentInstanceComparator;
 
 /**
  *

@@ -75,7 +75,6 @@ import org.preesm.model.scenario.ScenarioFactory;
 import org.preesm.model.slam.ComponentInstance;
 import org.preesm.model.slam.Design;
 import org.preesm.model.slam.component.Component;
-import org.preesm.model.slam.utils.DesignTools;
 
 /**
  * The Class SpiderCodegen.
@@ -162,7 +161,8 @@ public class SpiderCodegen {
     this.coresPerCoreType = new LinkedHashMap<>();
     this.coresFromCoreType = new LinkedHashMap<>();
     int coreTypeId = 0;
-    for (final Component coreType : DesignTools.getOperatorComponents(this.scenario.getDesign())) {
+    final Design design = this.scenario.getDesign();
+    for (final Component coreType : design.getOperatorComponents()) {
       this.coreTypesIds.put(coreType, coreTypeId++);
       // Link the number of cores associated to each core type
       final EList<Component> components = this.architecture.getComponentHolder().getComponents();
@@ -177,7 +177,7 @@ public class SpiderCodegen {
 
     this.coreIds = new LinkedHashMap<>();
     ComponentInstance mainOperator = this.scenario.getSimulationInfo().getMainOperator();
-    final List<ComponentInstance> orderedOperators = DesignTools.getOrderedOperators(this.scenario.getDesign());
+    final List<ComponentInstance> orderedOperators = design.getOrderedOperatorComponentInstances();
     if (mainOperator == null) {
       /* Warning */
       mainOperator = orderedOperators.get(0);

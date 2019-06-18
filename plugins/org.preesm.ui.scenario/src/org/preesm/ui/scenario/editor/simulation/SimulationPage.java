@@ -81,7 +81,7 @@ import org.eclipse.ui.forms.widgets.Section;
 import org.preesm.model.scenario.Scenario;
 import org.preesm.model.scenario.ScenarioConstants;
 import org.preesm.model.slam.ComponentInstance;
-import org.preesm.model.slam.utils.DesignTools;
+import org.preesm.model.slam.Design;
 import org.preesm.ui.scenario.editor.Messages;
 import org.preesm.ui.scenario.editor.ScenarioPage;
 
@@ -356,9 +356,10 @@ public class SimulationPage extends ScenarioPage {
     final Combo combo = new Combo(combocps, SWT.DROP_DOWN | SWT.READ_ONLY);
     combo.setToolTipText(tooltip);
 
+    final Design design = this.scenario.getDesign();
     if (type.equals("operator")) {
-      for (final String opId : DesignTools.getOrderedOperatorIds(this.scenario.getDesign())) {
-        combo.add(opId);
+      for (final ComponentInstance opId : design.getOrderedOperatorComponentInstances()) {
+        combo.add(opId.getInstanceName());
       }
 
       final ComponentInstance mainOperator = this.scenario.getSimulationInfo().getMainOperator();
@@ -366,8 +367,8 @@ public class SimulationPage extends ScenarioPage {
         combo.select(combo.indexOf(mainOperator.getInstanceName()));
       }
     } else if (type.equals("comNode")) {
-      for (final String nodeId : DesignTools.getComNodeInstanceIds(this.scenario.getDesign())) {
-        combo.add(nodeId);
+      for (final ComponentInstance nodeId : design.getCommunicationComponentInstances()) {
+        combo.add(nodeId.getInstanceName());
       }
 
       final ComponentInstance mainComNode = this.scenario.getSimulationInfo().getMainComNode();
@@ -644,7 +645,8 @@ public class SimulationPage extends ScenarioPage {
     treeviewer.getTree().setLayoutData(gd);
 
     treeviewer.setUseHashlookup(true);
-    treeviewer.setInput(DesignTools.getOrderedOperators(this.scenario.getDesign()));
+    final Design design = this.scenario.getDesign();
+    treeviewer.setInput(design.getOrderedOperatorComponentInstances());
     toolkit.paintBordersFor(container);
 
     // Tree is refreshed in case of algorithm modifications

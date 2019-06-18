@@ -58,7 +58,7 @@ import org.preesm.model.pisdf.Actor;
 import org.preesm.model.pisdf.PiGraph;
 import org.preesm.model.scenario.Scenario;
 import org.preesm.model.slam.ComponentInstance;
-import org.preesm.model.slam.utils.DesignTools;
+import org.preesm.model.slam.Design;
 
 /**
  * Importing constraints in a scenario from an excel file. The existing timings mean that the task can be mapped on the
@@ -114,7 +114,8 @@ public class ExcelConstraintsParser {
       final PiGraph currentPiGraph = scenario.getAlgorithm();
       for (final AbstractActor vertex : currentPiGraph.getAllActors()) {
         if (vertex instanceof Actor) {
-          for (final ComponentInstance operatorId : DesignTools.getOperatorInstances(this.scenario.getDesign())) {
+          final Design design = this.scenario.getDesign();
+          for (final ComponentInstance operatorId : design.getOperatorComponentInstances()) {
             checkOpPiConstraint(w, operatorId, (Actor) vertex, missingVertices, missingOperators);
           }
         }

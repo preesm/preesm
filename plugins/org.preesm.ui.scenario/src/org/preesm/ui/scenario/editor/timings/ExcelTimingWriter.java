@@ -58,8 +58,8 @@ import org.preesm.commons.exceptions.PreesmException;
 import org.preesm.model.pisdf.AbstractActor;
 import org.preesm.model.scenario.Scenario;
 import org.preesm.model.scenario.serialize.PreesmAlgorithmListContentProvider;
+import org.preesm.model.slam.Design;
 import org.preesm.model.slam.component.Component;
-import org.preesm.model.slam.utils.DesignTools;
 import org.preesm.ui.scenario.editor.ExcelWriter;
 import org.preesm.ui.scenario.editor.SaveAsWizard;
 
@@ -156,7 +156,8 @@ public class ExcelTimingWriter extends ExcelWriter {
 
       final List<AbstractActor> vSet = provider.getSortedPISDFVertices(this.scenario);
 
-      for (final Component opDefId : DesignTools.getOperatorComponents(this.scenario.getDesign())) {
+      final Design design = this.scenario.getDesign();
+      for (final Component opDefId : design.getOperatorComponents()) {
         for (final AbstractActor vertexName : vSet) {
 
           final String timing = this.scenario.getTimings().getTimingOrDefault(vertexName, opDefId);

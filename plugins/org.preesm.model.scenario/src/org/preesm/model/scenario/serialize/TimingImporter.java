@@ -1,7 +1,7 @@
 package org.preesm.model.scenario.serialize;
 
 import org.preesm.model.scenario.Scenario;
-import org.preesm.model.slam.utils.DesignTools;
+import org.preesm.model.slam.Design;
 
 /**
  *
@@ -19,12 +19,13 @@ public class TimingImporter {
 
       try {
         final String[] fileExt = excelFileURL.split("\\.");
+        final Design design = currentScenario.getDesign();
         switch (fileExt[fileExt.length - 1]) {
           case "xls":
-            excelParser.parse(excelFileURL, DesignTools.getOperatorComponents(currentScenario.getDesign()));
+            excelParser.parse(excelFileURL, design.getOperatorComponents());
             break;
           case "csv":
-            csvParser.parse(excelFileURL, DesignTools.getOperatorComponents(currentScenario.getDesign()));
+            csvParser.parse(excelFileURL, design.getOperatorComponents());
             break;
           default:
         }

@@ -37,8 +37,8 @@
  */
 package org.preesm.model.slam.serialize;
 
+import java.util.Map.Entry;
 import org.preesm.model.slam.Design;
-import org.preesm.model.slam.attributes.Parameter;
 import org.preesm.model.slam.component.ComNode;
 import org.preesm.model.slam.component.Component;
 import org.preesm.model.slam.component.Dma;
@@ -100,7 +100,7 @@ public class IPXACTDesignVendorExtensionsWriter {
     final Element parametersElt = document.createElement("slam:parameters");
     designDescriptionElt.appendChild(parametersElt);
 
-    for (final Parameter p : this.design.getParameters()) {
+    for (final Entry<String, String> p : this.design.getParameters()) {
       writeDesignParameter(parametersElt, p.getKey(), p.getValue(), document);
     }
   }

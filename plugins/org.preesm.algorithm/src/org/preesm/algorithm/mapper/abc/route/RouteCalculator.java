@@ -57,7 +57,6 @@ import org.preesm.model.slam.link.Link;
 import org.preesm.model.slam.route.AbstractRouteStep;
 import org.preesm.model.slam.route.Route;
 import org.preesm.model.slam.route.RouteStepFactory;
-import org.preesm.model.slam.utils.DesignTools;
 
 /**
  * This class can evaluate a given transfer and choose the best route between two operators.
@@ -147,7 +146,7 @@ public class RouteCalculator {
   private void createRouteSteps() {
     PreesmLogger.getLogger().log(Level.INFO, "creating route steps.");
 
-    for (final ComponentInstance c : DesignTools.getOperatorInstances(this.archi)) {
+    for (final ComponentInstance c : this.archi.getOperatorComponentInstances()) {
       final ComponentInstance o = c;
 
       createRouteSteps(o);
@@ -164,12 +163,14 @@ public class RouteCalculator {
 
     // Iterating on outgoing and undirected edges
     final Set<Link> outgoingAndUndirected = new LinkedHashSet<>();
-    outgoingAndUndirected.addAll(DesignTools.getUndirectedLinks(this.archi, source));
-    outgoingAndUndirected.addAll(DesignTools.getOutgoingDirectedLinks(this.archi, source));
+
+    outgoingAndUndirected.addAll(this.archi.getUndirectedLinks(source));
+    outgoingAndUndirected.addAll(this.archi.getOutgoingDirectedLinks(source));
 
     for (final Link i : outgoingAndUndirected) {
-      if (DesignTools.getOtherEnd(i, source).getComponent() instanceof ComNodeImpl) {
-        final ComponentInstance node = DesignTools.getOtherEnd(i, source);
+      final ComponentInstance otherEnd = i.getOtherEnd(source);
+      if (otherEnd.getComponent() instanceof ComNodeImpl) {
+        final ComponentInstance node = otherEnd;
 
         final List<ComponentInstance> alreadyVisitedNodes = new ArrayList<>();
         alreadyVisitedNodes.add(node);
@@ -193,20 +194,21 @@ public class RouteCalculator {
 
     // Iterating on outgoing and undirected edges
     final Set<Link> outgoingAndUndirected = new LinkedHashSet<>();
-    outgoingAndUndirected.addAll(DesignTools.getUndirectedLinks(this.archi, node));
-    outgoingAndUndirected.addAll(DesignTools.getOutgoingDirectedLinks(this.archi, node));
+    outgoingAndUndirected.addAll(this.archi.getUndirectedLinks(node));
+    outgoingAndUndirected.addAll(this.archi.getOutgoingDirectedLinks(node));
 
     for (final Link i : outgoingAndUndirected) {
-      if (DesignTools.getOtherEnd(i, node).getComponent() instanceof ComNodeImpl) {
-        final ComponentInstance newNode = DesignTools.getOtherEnd(i, node);
+      final ComponentInstance otherEnd = i.getOtherEnd(node);
+      if (otherEnd.getComponent() instanceof ComNodeImpl) {
+        final ComponentInstance newNode = otherEnd;
         if (!alreadyVisitedNodes.contains(newNode)) {
           final List<ComponentInstance> newAlreadyVisitedNodes = new ArrayList<>(alreadyVisitedNodes);
           newAlreadyVisitedNodes.add(newNode);
           exploreRoute(source, newNode, newAlreadyVisitedNodes);
         }
-      } else if ((DesignTools.getOtherEnd(i, node).getComponent() instanceof Operator)
-          && !DesignTools.getOtherEnd(i, node).getInstanceName().equals(source.getInstanceName())) {
-        final ComponentInstance target = DesignTools.getOtherEnd(i, node);
+      } else if ((otherEnd.getComponent() instanceof Operator)
+          && !otherEnd.getInstanceName().equals(source.getInstanceName())) {
+        final ComponentInstance target = otherEnd;
         final AbstractRouteStep step = this.stepFactory.getRouteStep(source, alreadyVisitedNodes, target);
         this.table.addRoute(source, target, new Route(step));
       }
@@ -219,7 +221,7 @@ public class RouteCalculator {
   private void createRoutes() {
     PreesmLogger.getLogger().log(Level.INFO, "Initializing routing table.");
 
-    floydWarshall(this.table, DesignTools.getOperatorInstances(this.archi));
+    floydWarshall(this.table, this.archi.getOperatorComponentInstances());
   }
 
   /**

@@ -58,8 +58,8 @@ import org.preesm.commons.files.PreesmResourcesHelper;
 import org.preesm.model.pisdf.AbstractActor;
 import org.preesm.model.pisdf.expression.ExpressionEvaluator;
 import org.preesm.model.scenario.Scenario;
+import org.preesm.model.slam.Design;
 import org.preesm.model.slam.component.Component;
-import org.preesm.model.slam.utils.DesignTools;
 import org.preesm.ui.PreesmUIPlugin;
 import org.preesm.ui.scenario.editor.Messages;
 
@@ -113,7 +113,8 @@ public class TimingsTableLabelProvider implements ITableLabelProvider, Selection
     imageDcr = ImageDescriptor.createFromURL(okIconURL);
     this.imageOk = imageDcr.createImage();
 
-    final List<Component> operators = DesignTools.getOperatorComponents(scenario.getDesign());
+    final Design design = scenario.getDesign();
+    final List<Component> operators = design.getOperatorComponents();
     this.currentOpDefId = operators.get(0);
   }
 
