@@ -759,7 +759,8 @@ public class CodegenModelGenerator {
             // Add the function to configure the monitoring in this PE (operatorBlock)
             if (!(this.papifiedPEs.contains(operatorBlock.getName()))) {
               this.papifiedPEs.add(operatorBlock.getName());
-              final FunctionCall functionCallPapifyConfigurePE = generatePapifyConfigurePEFunctionCall(operatorBlock);
+              final FunctionCall functionCallPapifyConfigurePE = generatePapifyConfigurePEFunctionCall(operatorBlock,
+                  papifyConfig);
               operatorBlock.getInitBlock().getCodeElts().add(functionCallPapifyConfigurePE);
             }
             // Add the papify action variable
@@ -768,9 +769,6 @@ public class CodegenModelGenerator {
             papifyActionS.setType("papify_action_s");
             papifyActionS.setComment("papify configuration variable");
             operatorBlock.getDefinitions().add(papifyActionS);
-
-            // Checker to debug
-            System.out.println("Name = " + papifyActionS.getName());
 
             // Add the function to configure the monitoring of this actor (dagVertex)
             final PapifyFunctionCall functionCallPapifyConfigureActor = generatePapifyConfigureActorFunctionCall(
@@ -786,7 +784,6 @@ public class CodegenModelGenerator {
                   operatorBlock);
               // Add the Papify start function for events to the loop
               operatorBlock.getLoopBlock().getCodeElts().add(functionCallPapifyStart);
-              System.out.println("Including events start function");
             }
 
             if (monitoringTiming) {
@@ -795,11 +792,11 @@ public class CodegenModelGenerator {
                   operatorBlock);
               // Add the Papify start timing function to the loop
               operatorBlock.getLoopBlock().getCodeElts().add(functionCallPapifyTimingStart);
-              System.out.println("Including timing start function");
             }
 
           }
         } else {
+          PapifyConfig papifyConfig = this.scenario.getPapifyConfig();
           Map<String,
               String> mapPapifyConfiguration = dagVertex.getPropertyBean().getValue(PapifyEngine.PAPIFY_CONFIGURATION);
           if (mapPapifyConfiguration != null && !mapPapifyConfiguration.isEmpty()) {
@@ -809,7 +806,8 @@ public class CodegenModelGenerator {
               // Add the function to configure the monitoring in this PE (operatorBlock)
               if (!(this.papifiedPEs.contains(operatorBlock.getName()))) {
                 this.papifiedPEs.add(operatorBlock.getName());
-                final FunctionCall functionCallPapifyConfigurePE = generatePapifyConfigurePEFunctionCall(operatorBlock);
+                final FunctionCall functionCallPapifyConfigurePE = generatePapifyConfigurePEFunctionCall(operatorBlock,
+                    papifyConfig);
                 operatorBlock.getInitBlock().getCodeElts().add(functionCallPapifyConfigurePE);
               }
               // Add the papify_action_s variable to the code
@@ -873,7 +871,6 @@ public class CodegenModelGenerator {
                   operatorBlock);
               // Add the Papify stop timing function to the loop
               operatorBlock.getLoopBlock().getCodeElts().add(functionCallPapifyTimingStop);
-              System.out.println("Including timing ending function");
             }
             if (monitoringEvents) {
               // Generate Papify stop function for events
@@ -881,8 +878,12 @@ public class CodegenModelGenerator {
                   operatorBlock);
               // Add the Papify stop function for events to the loop
               operatorBlock.getLoopBlock().getCodeElts().add(functionCallPapifyStop);
-              System.out.println("Including events ending function");
             }
+            // Generate Papify writing function
+            final PapifyFunctionCall functionCallPapifyWriting = generatePapifyWritingFunctionCall(dagVertex,
+                operatorBlock);
+            // Add the Papify writing function to the loop
+            operatorBlock.getLoopBlock().getCodeElts().add(functionCallPapifyWriting);
           }
         } else {
           Map<String,
@@ -2073,46 +2074,59 @@ public class CodegenModelGenerator {
    *          the {@link DAGVertex} corresponding to the {@link FunctionCall}.
    * @return The {@link FunctionCall} corresponding to the {@link CoreBlock operatorBlock} firing.
    */
-  protected PapifyFunctionCall generatePapifyConfigurePEFunctionCall(final CoreBlock operatorBlock) {
+  protected PapifyFunctionCall generatePapifyConfigurePEFunctionCall(final CoreBlock operatorBlock,
+      final PapifyConfig papifyConfig) {
     // Create the corresponding FunctionCall
     final PapifyFunctionCall configurePapifyPE = CodegenFactory.eINSTANCE.createPapifyFunctionCall();
     configurePapifyPE.setName("configure_papify_PE");
     // Create the variable associated to the PE name
     ConstantString papifyPEName = CodegenFactory.eINSTANCE.createConstantString();
     papifyPEName.setValue(operatorBlock.getName());
-    // Create the variable associated to the PAPI component
-    String compsSupported = "";
-    ConstantString papifyComponentName = CodegenFactory.eINSTANCE.createConstantString();
-    final String coreType = operatorBlock.getCoreType();
-    final Component component = scenario.getDesign().getComponent(coreType);
-    final List<PapiComponent> corePapifyConfigGroupPE = this.getScenario().getPapifyConfig().getPapifyConfigGroupsPEs()
-        .get(component);
-    if (corePapifyConfigGroupPE != null) {
-      for (final PapiComponent compType : corePapifyConfigGroupPE) {
-        if (compsSupported.equals("")) {
-          compsSupported = compType.getId();
+    if (this.papifyActive) {
+      final Component component = scenario.getDesign().getComponent(operatorBlock.getCoreType());
+      String componentsSupported = "";
+      for (PapiComponent papiComponent : papifyConfig.getSupportedPapiComponents(component)) {
+        if (componentsSupported.equals("")) {
+          componentsSupported = papiComponent.getId();
         } else {
-          compsSupported = compsSupported.concat(",").concat(compType.getId());
+          componentsSupported = componentsSupported.concat(",").concat(papiComponent.getId());
         }
       }
     } else {
-      throw new PreesmRuntimeException("There is no PE type of type " + coreType
-          + " in the PAPIFY information. Probably the PAPIFY tab is out of date in the PREESM scenario.");
-    }
-    papifyComponentName.setValue(compsSupported);
-    // Create the variable associated to the PE id
-    Constant papifyPEId = CodegenFactory.eINSTANCE.createConstant();
-    papifyPEId.setName(PAPIFY_PE_ID_CONSTANT_NAME);
-    papifyPEId.setValue(this.papifiedPEs.indexOf(operatorBlock.getName()));
-    // Add the function parameters
-    configurePapifyPE.addParameter(papifyPEName, PortDirection.INPUT);
-    configurePapifyPE.addParameter(papifyComponentName, PortDirection.INPUT);
-    configurePapifyPE.addParameter(papifyPEId, PortDirection.INPUT);
-    // Add the function comment
-    configurePapifyPE.setActorName("Papify --> configure papification of ".concat(operatorBlock.getName()));
+      // Create the variable associated to the PAPI component
+      String compsSupported = "";
+      ConstantString papifyComponentName = CodegenFactory.eINSTANCE.createConstantString();
+      final String coreType = operatorBlock.getCoreType();
+      final Component component = scenario.getDesign().getComponent(coreType);
+      final List<PapiComponent> corePapifyConfigGroupPE = this.getScenario().getPapifyConfig()
+          .getPapifyConfigGroupsPEs().get(component);
+      if (corePapifyConfigGroupPE != null) {
+        for (final PapiComponent compType : corePapifyConfigGroupPE) {
+          if (compsSupported.equals("")) {
+            compsSupported = compType.getId();
+          } else {
+            compsSupported = compsSupported.concat(",").concat(compType.getId());
+          }
+        }
+      } else {
+        throw new PreesmRuntimeException("There is no PE type of type " + coreType
+            + " in the PAPIFY information. Probably the PAPIFY tab is out of date in the PREESM scenario.");
+      }
+      papifyComponentName.setValue(compsSupported);
+      // Create the variable associated to the PE id
+      Constant papifyPEId = CodegenFactory.eINSTANCE.createConstant();
+      papifyPEId.setName(PAPIFY_PE_ID_CONSTANT_NAME);
+      papifyPEId.setValue(this.papifiedPEs.indexOf(operatorBlock.getName()));
+      // Add the function parameters
+      configurePapifyPE.addParameter(papifyPEName, PortDirection.INPUT);
+      configurePapifyPE.addParameter(papifyComponentName, PortDirection.INPUT);
+      configurePapifyPE.addParameter(papifyPEId, PortDirection.INPUT);
+      // Add the function comment
+      configurePapifyPE.setActorName("Papify --> configure papification of ".concat(operatorBlock.getName()));
 
-    // Add type of Papify function
-    configurePapifyPE.setPapifyType(PapifyType.CONFIGPE);
+      // Add type of Papify function
+      configurePapifyPE.setPapifyType(PapifyType.CONFIGPE);
+    }
 
     return configurePapifyPE;
   }

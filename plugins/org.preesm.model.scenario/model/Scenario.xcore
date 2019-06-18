@@ -332,6 +332,12 @@ class PapifyConfig {
 			return false
 		}
 	}
+	op PapiComponent[] getSupportedPapiComponents(Component component){
+		if(papifyConfigGroupsPEs.containsKey(component)){
+			return papifyConfigGroupsPEs.get(component)
+		}
+		return ECollections.emptyEList;
+	}
 
 	op void clear() {
 		papiData.components.clear
