@@ -12,7 +12,7 @@ import org.preesm.model.pisdf.AbstractVertex;
 public class VertexLexicographicalComparator extends ViewerComparator {
 
   /**
-   * According to {@link org.preesm.model.pisdf.PiSDF.xcore#getVertexPath}
+   * According to {@link org.preesm.model.pisdf.AbstractVertex#getVertexPath}
    */
   public static final String HIERARCHY_DELIMITER = "/";
 

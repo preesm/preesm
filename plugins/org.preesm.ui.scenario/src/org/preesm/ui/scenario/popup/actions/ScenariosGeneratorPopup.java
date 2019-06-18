@@ -55,11 +55,6 @@ import org.preesm.ui.wizards.PreesmProjectNature;
  */
 public class ScenariosGeneratorPopup extends AbstractHandler {
 
-  /*
-   * (non-Javadoc)
-   *
-   * @see org.eclipse.core.commands.IHandler#execute(org.eclipse.core.commands.ExecutionEvent)
-   */
   @Override
   public Object execute(final ExecutionEvent event) throws ExecutionException {
     try {
