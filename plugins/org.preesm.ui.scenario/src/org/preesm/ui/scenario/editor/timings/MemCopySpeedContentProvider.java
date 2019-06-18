@@ -55,14 +55,8 @@ import org.preesm.model.slam.component.Component;
  */
 public class MemCopySpeedContentProvider implements IStructuredContentProvider {
 
-  /** The element list. */
-  List<Entry<Component, MemoryCopySpeedValue>> elementList = null;
+  private List<Entry<Component, MemoryCopySpeedValue>> elementList = null;
 
-  /*
-   * (non-Javadoc)
-   *
-   * @see org.eclipse.jface.viewers.IStructuredContentProvider#getElements(java.lang.Object)
-   */
   @Override
   public Object[] getElements(final Object inputElement) {
 

@@ -141,6 +141,5 @@ public class OperatorCheckStateListener implements ICheckStateListener, PaintLis
   @Override
   public void paintControl(final PaintEvent e) {
     updateCheck();
-
   }
 }

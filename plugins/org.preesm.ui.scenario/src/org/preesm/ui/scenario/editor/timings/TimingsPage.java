@@ -223,7 +223,7 @@ public class TimingsPage extends ScenarioPage {
 
     newTableViewer.setContentProvider(new MemCopySpeedContentProvider());
 
-    final MemCopySpeedLabelProvider labelProvider = new MemCopySpeedLabelProvider(this.scenario, newTableViewer, this);
+    final MemCopySpeedLabelProvider labelProvider = new MemCopySpeedLabelProvider(newTableViewer, this);
     newTableViewer.setLabelProvider(labelProvider);
 
     // Create columns

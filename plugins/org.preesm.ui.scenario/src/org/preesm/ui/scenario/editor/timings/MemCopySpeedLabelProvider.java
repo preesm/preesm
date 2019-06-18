@@ -49,7 +49,6 @@ import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.IPropertyListener;
 import org.eclipse.ui.PlatformUI;
 import org.preesm.model.scenario.MemoryCopySpeedValue;
-import org.preesm.model.scenario.Scenario;
 import org.preesm.model.slam.component.Component;
 import org.preesm.ui.scenario.editor.Messages;
 
@@ -60,9 +59,6 @@ import org.preesm.ui.scenario.editor.Messages;
  */
 public class MemCopySpeedLabelProvider extends BaseLabelProvider implements ITableLabelProvider {
 
-  /** The scenario. */
-  private Scenario scenario = null;
-
   /** The table viewer. */
   private TableViewer tableViewer = null;
 
@@ -72,17 +68,13 @@ public class MemCopySpeedLabelProvider extends BaseLabelProvider implements ITab
   /**
    * Instantiates a new mem copy speed label provider.
    *
-   * @param scenario
-   *          the scenario
    * @param tableViewer
    *          the table viewer
    * @param propertyListener
    *          the property listener
    */
-  public MemCopySpeedLabelProvider(final Scenario scenario, final TableViewer tableViewer,
-      final IPropertyListener propertyListener) {
+  public MemCopySpeedLabelProvider(final TableViewer tableViewer, final IPropertyListener propertyListener) {
     super();
-    this.scenario = scenario;
     this.tableViewer = tableViewer;
     this.propertyListener = propertyListener;
   }

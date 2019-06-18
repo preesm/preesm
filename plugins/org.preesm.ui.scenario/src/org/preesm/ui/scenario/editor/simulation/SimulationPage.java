@@ -102,7 +102,6 @@ public class SimulationPage extends ScenarioPage {
    */
   private class ComboBoxListener implements SelectionListener {
 
-    /** The type. */
     // "operator" or "medium"
     String type = "";
 
@@ -117,21 +116,11 @@ public class SimulationPage extends ScenarioPage {
       this.type = type;
     }
 
-    /*
-     * (non-Javadoc)
-     *
-     * @see org.eclipse.swt.events.SelectionListener#widgetDefaultSelected(org.eclipse.swt.events.SelectionEvent)
-     */
     @Override
     public void widgetDefaultSelected(final SelectionEvent e) {
       // no behavior by default
     }
 
-    /*
-     * (non-Javadoc)
-     *
-     * @see org.eclipse.swt.events.SelectionListener#widgetSelected(org.eclipse.swt.events.SelectionEvent)
-     */
     @Override
     public void widgetSelected(final SelectionEvent e) {
       if (e.getSource() instanceof Combo) {
