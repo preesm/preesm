@@ -90,21 +90,6 @@ public class PiParameterTableLabelProvider extends LabelProvider implements ITab
     this.imageOk = imageDcr.createImage();
   }
 
-  /*
-   * (non-Javadoc)
-   *
-   * @see org.eclipse.jface.viewers.LabelProvider#getText(java.lang.Object)
-   */
-  @Override
-  public String getText(final Object element) {
-    return null;
-  }
-
-  /*
-   * (non-Javadoc)
-   *
-   * @see org.eclipse.jface.viewers.ITableLabelProvider#getColumnImage(java.lang.Object, int)
-   */
   @Override
   public Image getColumnImage(final Object element, final int columnIndex) {
     @SuppressWarnings("unchecked")
@@ -124,11 +109,6 @@ public class PiParameterTableLabelProvider extends LabelProvider implements ITab
     return null;
   }
 
-  /*
-   * (non-Javadoc)
-   *
-   * @see org.eclipse.jface.viewers.ITableLabelProvider#getColumnText(java.lang.Object, int)
-   */
   @Override
   public String getColumnText(final Object element, final int columnIndex) {
     @SuppressWarnings("unchecked")
@@ -166,21 +146,11 @@ public class PiParameterTableLabelProvider extends LabelProvider implements ITab
     return null;
   }
 
-  /*
-   * (non-Javadoc)
-   *
-   * @see org.eclipse.jface.viewers.ITableColorProvider#getForeground(java.lang.Object, int)
-   */
   @Override
   public Color getForeground(final Object element, final int columnIndex) {
     return this.table.getForeground();
   }
 
-  /*
-   * (non-Javadoc)
-   *
-   * @see org.eclipse.jface.viewers.ITableColorProvider#getBackground(java.lang.Object, int)
-   */
   @Override
   public Color getBackground(final Object element, final int columnIndex) {
     @SuppressWarnings("unchecked")

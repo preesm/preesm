@@ -311,11 +311,6 @@ public class ConstraintsCheckStateListener implements ISDFCheckStateListener {
     this.currentOpId = orderedOperators.get(0);
   }
 
-  /*
-   * (non-Javadoc)
-   *
-   * @see org.eclipse.swt.events.PaintListener#paintControl(org.eclipse.swt.events.PaintEvent)
-   */
   @Override
   public void paintControl(final PaintEvent e) {
     updateCheck();
