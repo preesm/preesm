@@ -53,7 +53,7 @@ import org.preesm.commons.files.WorkspaceUtils;
 import org.preesm.commons.logger.PreesmLogger;
 import org.preesm.model.pisdf.AbstractActor;
 import org.preesm.model.pisdf.PiGraph;
-import org.preesm.model.pisdf.util.ActorPath;
+import org.preesm.model.pisdf.util.VertexPath;
 import org.preesm.model.scenario.Scenario;
 import org.preesm.model.slam.component.Component;
 
@@ -125,7 +125,7 @@ public class CsvTimingParser {
             }
 
             final String string = cells[0];
-            final AbstractActor lookupActor = ActorPath.lookup(this.scenario.getAlgorithm(), string);
+            final AbstractActor lookupActor = VertexPath.lookup(this.scenario.getAlgorithm(), string);
             if (lookupActor != null) {
               timings.put(lookupActor, timing);
             }

@@ -37,7 +37,7 @@ package org.preesm.model.pisdf.util;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import org.preesm.model.pisdf.AbstractActor;
+import org.preesm.model.pisdf.AbstractVertex;
 import org.preesm.model.pisdf.Actor;
 import org.preesm.model.pisdf.PiGraph;
 
@@ -46,38 +46,42 @@ import org.preesm.model.pisdf.PiGraph;
  * @author anmorvan
  *
  */
-public class ActorPath {
+public class VertexPath {
 
-  private ActorPath() {
+  private VertexPath() {
     // no instantiation allowed
   }
 
   /**
    *
    */
-  public static final AbstractActor lookup(final PiGraph graph, final String actorPath) {
+  public static final <T extends AbstractVertex> T lookup(final PiGraph graph, final String actorPath) {
     if (actorPath == null) {
       return null;
     }
     final String safePath = actorPath.replaceAll("/+", "/").replaceAll("^/*" + graph.getName(), "").replaceAll("^/", "")
         .replaceAll("/$", "");
     if (safePath.isEmpty()) {
-      return graph;
+      @SuppressWarnings("unchecked")
+      final T res = (T) graph;
+      return res;
     }
     final List<String> pathFragments = new ArrayList<>(Arrays.asList(safePath.split("/")));
     final String firstFragment = pathFragments.remove(0);
-    final AbstractActor current = graph.getActors().stream().filter(a -> firstFragment.equals(a.getName())).findFirst()
+    final AbstractVertex current = graph.getActors().stream().filter(a -> firstFragment.equals(a.getName())).findFirst()
         .orElse(null);
     if (pathFragments.isEmpty()) {
-      return current;
+      @SuppressWarnings("unchecked")
+      final T res = (T) current;
+      return res;
     } else {
       final String remainingPathFragments = String.join("/", pathFragments);
       if (current instanceof PiGraph) {
-        return ActorPath.lookup((PiGraph) current, remainingPathFragments);
+        return VertexPath.lookup((PiGraph) current, remainingPathFragments);
       } else if (current instanceof Actor) {
         final Actor actor = (Actor) current;
         if (actor.isHierarchical()) {
-          return ActorPath.lookup(actor.getSubGraph(), remainingPathFragments);
+          return VertexPath.lookup(actor.getSubGraph(), remainingPathFragments);
         } else {
           return null;
         }

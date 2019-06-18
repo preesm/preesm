@@ -26,6 +26,7 @@ PREESM Changelog
 * Remove number of execution of top graph from scenario (and UI);
 * Update Xtend/Xcore maven plugins to 2.18.0+;
 * Fix PiSDF UI: do show persistence level on Delay only;
+* Update SDF/DAGVertex.getReferencePiVertex(): cast is now done inside;
 
 ### Bug fix
 * Fix #139: better error messages for Name checker

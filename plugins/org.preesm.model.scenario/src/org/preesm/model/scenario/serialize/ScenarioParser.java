@@ -61,7 +61,7 @@ import org.preesm.model.pisdf.AbstractActor;
 import org.preesm.model.pisdf.Parameter;
 import org.preesm.model.pisdf.PiGraph;
 import org.preesm.model.pisdf.serialize.PiParser;
-import org.preesm.model.pisdf.util.ActorPath;
+import org.preesm.model.pisdf.util.VertexPath;
 import org.preesm.model.scenario.MemoryCopySpeedValue;
 import org.preesm.model.scenario.PapiComponent;
 import org.preesm.model.scenario.PapiComponentType;
@@ -544,7 +544,7 @@ public class ScenarioParser {
         if (type.equals("actorPath")) {
           actorPath = elt.getAttribute("actorPath");
 
-          final AbstractActor lookup = ActorPath.lookup(this.scenario.getAlgorithm(), actorPath);
+          final AbstractActor lookup = VertexPath.lookup(this.scenario.getAlgorithm(), actorPath);
 
           Node nodeEvents = node.getFirstChild();
           while (nodeEvents != null) {
@@ -763,7 +763,7 @@ public class ScenarioParser {
         final String stringValue = timingElt.getAttribute("time");
 
         final boolean contains = this.scenario.getDesign().containsComponent(opdefname);
-        final AbstractActor lookup = ActorPath.lookup(this.scenario.getAlgorithm(), vertexpath);
+        final AbstractActor lookup = VertexPath.lookup(this.scenario.getAlgorithm(), vertexpath);
         if ((lookup != null) && contains) {
           final Component component = this.scenario.getDesign().getComponent(opdefname);
           this.scenario.getTimings().setTiming(lookup, component, stringValue);
@@ -783,7 +783,7 @@ public class ScenarioParser {
   private AbstractActor getActorFromPath(final String path) {
     AbstractActor result = null;
     if (scenario.getAlgorithm() != null) {
-      result = ActorPath.lookup(scenario.getAlgorithm(), path);
+      result = VertexPath.lookup(scenario.getAlgorithm(), path);
     }
     return result;
   }

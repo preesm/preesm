@@ -140,7 +140,7 @@ public class SDF3ImporterEngine {
         entry.getKey().setInfo(entry.getKey().getName());
         // Set the timing of the actor
         final SDFAbstractVertex vertex = entry.getKey();
-        final AbstractActor referencePiMMVertex = (AbstractActor) vertex.getReferencePiMMVertex();
+        final AbstractActor referencePiMMVertex = vertex.getReferencePiVertex();
         scenario.getTimings().setTiming(referencePiMMVertex, component.getComponent(), entry.toString());
       }
     }

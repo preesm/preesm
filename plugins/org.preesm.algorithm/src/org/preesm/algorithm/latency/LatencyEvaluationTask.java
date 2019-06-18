@@ -214,24 +214,24 @@ public class LatencyEvaluationTask extends AbstractTaskImplementation {
 
       // Copy actors duration from the scenario to actors properties
       for (final SDFAbstractVertex actor : inputGraph.getAllVertices()) {
-        if (actor.getKind() == "vertex") {
+        if ("vertex".equals(actor.getKind())) {
           if (actor.getGraphDescription() == null) {
             // if atomic actor then copy the duration indicated in the scenario
             final double duration = scenario.getTimings().evaluateTimingOrDefault(
-                (AbstractActor) actor.getReferencePiMMVertex(),
+                (AbstractActor) actor.getReferencePiVertex(),
                 scenario.getSimulationInfo().getMainOperator().getComponent());
             actor.setPropertyValue(DURATION_LITTERAL, duration);
           } else {
             // if hierarchical actor then as default the duration is 1
             // the real duration of the hierarchical actor will be defined later by scheduling its subgraph
             actor.setPropertyValue(DURATION_LITTERAL, 1.);
-            scenario.getTimings().setTiming((AbstractActor) actor.getReferencePiMMVertex(),
+            scenario.getTimings().setTiming((AbstractActor) actor.getReferencePiVertex(),
                 scenario.getSimulationInfo().getMainOperator().getComponent(), 1); // to remove
           }
         } else {
           // keep the duration of input interfaces
           final double duration = scenario.getTimings().evaluateTimingOrDefault(
-              (AbstractActor) actor.getReferencePiMMVertex(),
+              (AbstractActor) actor.getReferencePiVertex(),
               scenario.getSimulationInfo().getMainOperator().getComponent());
           actor.setPropertyValue(DURATION_LITTERAL, duration);
 
