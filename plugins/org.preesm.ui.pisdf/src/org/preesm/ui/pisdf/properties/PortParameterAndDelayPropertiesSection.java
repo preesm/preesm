@@ -377,6 +377,13 @@ public class PortParameterAndDelayPropertiesSection extends DataPortPropertiesUp
         this.persistenceLabelLevel.setEnabled(false);
         this.persistenceLabelLevel.setVisible(true);
         this.persistenceLabelLevel.setEnabled(true);
+      } else {
+        this.persistenceComboLevel.setEnabled(false);
+        this.persistenceComboLevel.setVisible(false);
+        this.persistenceComboLevel.setEnabled(false);
+        this.persistenceLabelLevel.setEnabled(false);
+        this.persistenceLabelLevel.setVisible(false);
+        this.persistenceLabelLevel.setEnabled(false);
       } // end Delay
     }
     refresh();

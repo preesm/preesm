@@ -25,7 +25,7 @@ PREESM Changelog
   * Timing and Paramever override expressions are now properly using config input interface values from parent graphs;
 * Remove number of execution of top graph from scenario (and UI);
 * Update Xtend/Xcore maven plugins to 2.18.0+;
-
+* Fix PiSDF UI: do show persistence level on Delay only;
 
 ### Bug fix
 * Fix #139: better error messages for Name checker
