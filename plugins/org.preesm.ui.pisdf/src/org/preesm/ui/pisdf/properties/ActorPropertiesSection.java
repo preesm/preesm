@@ -292,7 +292,7 @@ public class ActorPropertiesSection extends GFPropertySection implements ITabbed
     this.butRefinementClear.setLayoutData(data);
     this.butRefinementClear.setEnabled(true);
 
-    /*** Edit Button ***/
+    /*** Browse Button ***/
     this.butRefinementBrowse = factory.createButton(composite, "Browse", SWT.PUSH);
     data = new FormData();
     data.left = new FormAttachment(100, -205);
@@ -367,7 +367,7 @@ public class ActorPropertiesSection extends GFPropertySection implements ITabbed
 
     });
 
-    /*** Edit Button Listener ***/
+    /*** Browse Button Listener ***/
     this.butRefinementBrowse.addSelectionListener(new SelectionListener() {
       @Override
       public void widgetSelected(final SelectionEvent e) {

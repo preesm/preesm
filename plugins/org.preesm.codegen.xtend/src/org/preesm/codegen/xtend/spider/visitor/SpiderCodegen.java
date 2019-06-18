@@ -61,7 +61,7 @@ import org.preesm.commons.logger.PreesmLogger;
 import org.preesm.model.pisdf.AbstractActor;
 import org.preesm.model.pisdf.Actor;
 import org.preesm.model.pisdf.CHeaderRefinement;
-import org.preesm.model.pisdf.FunctionParameter;
+import org.preesm.model.pisdf.FunctionArgument;
 import org.preesm.model.pisdf.FunctionPrototype;
 import org.preesm.model.pisdf.Parameter;
 import org.preesm.model.pisdf.PiGraph;
@@ -796,12 +796,12 @@ public class SpiderCodegen {
 
       append("\t" + proto.getName() + "(\n");
       int maxParamSize = 0;
-      for (final FunctionParameter param : proto.getParameters()) {
+      for (final FunctionArgument param : proto.getArguments()) {
         maxParamSize = Math.max(maxParamSize, param.getName().length());
       }
 
       boolean first = true;
-      for (final FunctionParameter param : proto.getParameters()) {
+      for (final FunctionArgument param : proto.getArguments()) {
         if (first) {
           first = false;
         } else {

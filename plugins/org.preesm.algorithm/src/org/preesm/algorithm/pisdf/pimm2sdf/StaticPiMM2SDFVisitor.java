@@ -91,7 +91,7 @@ import org.preesm.model.pisdf.ExecutableActor;
 import org.preesm.model.pisdf.Expression;
 import org.preesm.model.pisdf.Fifo;
 import org.preesm.model.pisdf.ForkActor;
-import org.preesm.model.pisdf.FunctionParameter;
+import org.preesm.model.pisdf.FunctionArgument;
 import org.preesm.model.pisdf.FunctionPrototype;
 import org.preesm.model.pisdf.ISetter;
 import org.preesm.model.pisdf.InterfaceActor;
@@ -523,7 +523,7 @@ public class StaticPiMM2SDFVisitor extends PiMMSwitch<Boolean> {
   @Override
   public Boolean caseFunctionPrototype(final FunctionPrototype f) {
     this.currentPrototype = new Prototype(f.getName());
-    for (final FunctionParameter p : f.getParameters()) {
+    for (final FunctionArgument p : f.getArguments()) {
       doSwitch(p);
       if (p.isIsConfigurationParameter()) {
         this.currentPrototype.addParameter(this.currentParameter);
@@ -535,7 +535,7 @@ public class StaticPiMM2SDFVisitor extends PiMMSwitch<Boolean> {
   }
 
   @Override
-  public Boolean caseFunctionParameter(final FunctionParameter f) {
+  public Boolean caseFunctionArgument(final FunctionArgument f) {
     if (f.isIsConfigurationParameter()) {
       int direction = 0;
       switch (f.getDirection()) {

@@ -38,25 +38,24 @@
 package org.preesm.model.pisdf.header.parser;
 
 import java.io.IOException;
-import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Scanner;
 import java.util.Set;
+import java.util.logging.Level;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import org.eclipse.core.resources.IFile;
-import org.eclipse.core.runtime.CoreException;
 import org.eclipse.emf.common.util.EList;
+import org.preesm.commons.files.URLResolver;
+import org.preesm.commons.logger.PreesmLogger;
 import org.preesm.model.pisdf.AbstractActor;
 import org.preesm.model.pisdf.Direction;
-import org.preesm.model.pisdf.FunctionParameter;
+import org.preesm.model.pisdf.FunctionArgument;
 import org.preesm.model.pisdf.FunctionPrototype;
 import org.preesm.model.pisdf.Port;
 import org.preesm.model.pisdf.factory.PiMMUserFactory;
 
-// TODO: Auto-generated Javadoc
 /**
  * Utility class containing method to extract prototypes from a C header file.
  *
@@ -85,7 +84,7 @@ public class HeaderParser {
    * <li><code>\\s</code>: Match exactly 1 whitespace.</li>
    * <li><code>([\\S&&[^\\[\\]]]+)</code>: <b>Group 4 - Name</b></li> Match a string of non-whitespace characters
    * (except '[' or ']') of length 1 to infinite.
-   * <li><code>(\\[(\\d|\\]\\[)*\\])?</code>: <b>Group 5 - Array?</b></li> Match, if possible, a string of opening and
+   * <li><code>(\\[(\\d|\\]\\[)*\\])?</code>: <b>Group 5 - Array</b></li> Match, if possible, a string of opening and
    * closing square brackets '[]', possibly containing digits.
    * </ul>
    */
@@ -105,8 +104,9 @@ public class HeaderParser {
     List<FunctionPrototype> result = null;
     if (file != null) {
       try {
+
         // Read the file content
-        String fileContent = HeaderParser.readFileContent(file);
+        String fileContent = URLResolver.readURL(file.getLocationURI().toURL().toString());
 
         // Filter unwanted content
         fileContent = HeaderParser.filterHeaderFileContent(fileContent);
@@ -116,8 +116,8 @@ public class HeaderParser {
 
         // Create the FunctionPrototypes
         result = HeaderParser.createFunctionPrototypes(prototypes);
-      } catch (CoreException | IOException e) {
-        e.printStackTrace();
+      } catch (IOException e) {
+        PreesmLogger.getLogger().log(Level.INFO, "Could not parse header '" + file + "'.");
       }
     }
     return result;
@@ -160,7 +160,7 @@ public class HeaderParser {
       final Pattern paramPattern = Pattern.compile(HeaderParser.PARAM_BREAK_DOWN_REGEX);
       // Procces parameters one by one
       for (final String param : parameters) {
-        final FunctionParameter fp = PiMMUserFactory.instance.createFunctionParameter();
+        final FunctionArgument fp = PiMMUserFactory.instance.createFunctionArgument();
         matcher = paramPattern.matcher(param);
         final boolean matched = matcher.matches();
         if (matched) { // Apply the matcher (if possible)
@@ -178,10 +178,12 @@ public class HeaderParser {
               fp.setDirection(Direction.OUT);
             }
           }
+
+          // if not pointer (group 3) nor array (group 5), then it's a parameter
           if ((matcher.group(3) == null) && (matcher.group(5) == null)) {
             fp.setIsConfigurationParameter(true);
           }
-          final EList<FunctionParameter> protoParameters = funcProto.getParameters();
+          final EList<FunctionArgument> protoParameters = funcProto.getArguments();
           protoParameters.add(fp);
         }
       }
@@ -268,26 +270,6 @@ public class HeaderParser {
   }
 
   /**
-   * Read the content of an {@link IFile} and returns it as a {@link String}.
-   *
-   * @param file
-   *          the {@link IFile} to read.
-   * @return the content of the {@link IFile} as a {@link String}.
-   *
-   * @throws CoreException
-   *           {@link IFile#getContents()}
-   * @throws IOException
-   *           {@link InputStream#read()}
-   */
-  protected static String readFileContent(final IFile file) throws CoreException, IOException {
-    String fileString = null;
-    try (Scanner scanner = new Scanner(file.getContents())) {
-      fileString = scanner.useDelimiter("\\A").next();
-    }
-    return fileString;
-  }
-
-  /**
    * Filters the prototypes obtained from the parsed file to keep only the ones corresponding to the actor possible
    * initialization.
    *
@@ -306,13 +288,13 @@ public class HeaderParser {
       // proto matches the initialization of actor if:
       // -it does not have more parameters than the actors configuration
       // input ports
-      final List<FunctionParameter> params = new ArrayList<>(proto.getParameters());
+      final List<FunctionArgument> params = new ArrayList<>(proto.getArguments());
       boolean matches = params.size() <= actor.getConfigInputPorts().size();
       // -all function parameters of proto match a configuration input
       // port of the actor (initialization function cannot read or write
       // in fifo nor write on configuration output ports)
       if (matches) {
-        for (final FunctionParameter param : params) {
+        for (final FunctionArgument param : params) {
           if (HeaderParser.hasCorrespondingPort(param, actor.getConfigInputPorts())) {
             param.setDirection(Direction.IN);
             param.setIsConfigurationParameter(true);
@@ -349,7 +331,7 @@ public class HeaderParser {
     for (final FunctionPrototype proto : prototypes) {
       // proto matches the signature of actor if:
       // -it does not have more parameters than the actors ports
-      final ArrayList<FunctionParameter> params = new ArrayList<>(proto.getParameters());
+      final ArrayList<FunctionArgument> params = new ArrayList<>(proto.getArguments());
       boolean matches = params.size() <= (actor.getDataInputPorts().size() + actor.getDataOutputPorts().size()
           + actor.getConfigInputPorts().size() + actor.getConfigOutputPorts().size());
 
@@ -359,7 +341,7 @@ public class HeaderParser {
       allPorts.addAll(actor.getDataOutputPorts());
       allPorts.addAll(actor.getConfigInputPorts());
       allPorts.addAll(actor.getConfigOutputPorts());
-      for (final FunctionParameter param : proto.getParameters()) {
+      for (final FunctionArgument param : proto.getArguments()) {
         matches &= HeaderParser.hasCorrespondingPort(param, allPorts);
       }
 
@@ -367,7 +349,7 @@ public class HeaderParser {
       // of the parameters of proto
       if (matches) {
         for (final Port p : actor.getDataInputPorts()) {
-          final FunctionParameter param = HeaderParser.getCorrespondingFunctionParameter(p, params);
+          final FunctionArgument param = HeaderParser.getCorrespondingFunctionParameter(p, params);
           if (param != null) {
             param.setDirection(Direction.IN);
             param.setIsConfigurationParameter(false);
@@ -380,7 +362,7 @@ public class HeaderParser {
       }
       if (matches) {
         for (final Port p : actor.getDataOutputPorts()) {
-          final FunctionParameter param = HeaderParser.getCorrespondingFunctionParameter(p, params);
+          final FunctionArgument param = HeaderParser.getCorrespondingFunctionParameter(p, params);
           if (param != null) {
             param.setDirection(Direction.OUT);
             param.setIsConfigurationParameter(false);
@@ -395,7 +377,7 @@ public class HeaderParser {
       // of the parameters of proto
       if (matches) {
         for (final Port p : actor.getConfigOutputPorts()) {
-          final FunctionParameter param = HeaderParser.getCorrespondingFunctionParameter(p, params);
+          final FunctionArgument param = HeaderParser.getCorrespondingFunctionParameter(p, params);
           if (param != null) {
             param.setDirection(Direction.OUT);
             param.setIsConfigurationParameter(true);
@@ -409,7 +391,7 @@ public class HeaderParser {
       // -all other function parameters of proto match a configuration
       // input port of the actor
       if (matches) {
-        for (final FunctionParameter param : params) {
+        for (final FunctionArgument param : params) {
           if (HeaderParser.hasCorrespondingPort(param, actor.getConfigInputPorts())) {
             param.setDirection(Direction.IN);
             param.setIsConfigurationParameter(true);
@@ -438,9 +420,8 @@ public class HeaderParser {
     // For each function prototype proto check that the prototype has no
     // input or output buffers (i.e. parameters with a pointer type)
     for (final FunctionPrototype proto : prototypes) {
-      final List<FunctionParameter> params = new ArrayList<>(proto.getParameters());
       boolean allParams = true;
-      for (final FunctionParameter param : params) {
+      for (final FunctionArgument param : proto.getArguments()) {
         if (param.isIsConfigurationParameter()) {
           param.setDirection(Direction.IN);
         } else {
@@ -466,9 +447,8 @@ public class HeaderParser {
    *          the params
    * @return the corresponding function parameter
    */
-  private static FunctionParameter getCorrespondingFunctionParameter(final Port p,
-      final List<FunctionParameter> params) {
-    for (final FunctionParameter param : params) {
+  private static FunctionArgument getCorrespondingFunctionParameter(final Port p, final List<FunctionArgument> params) {
+    for (final FunctionArgument param : params) {
       if (p.getName().equals(param.getName())) {
         return param;
       }
@@ -485,7 +465,7 @@ public class HeaderParser {
    *          the ports
    * @return true, if successful
    */
-  private static boolean hasCorrespondingPort(final FunctionParameter f, final List<? extends Port> ports) {
+  private static boolean hasCorrespondingPort(final FunctionArgument f, final List<? extends Port> ports) {
     for (final Port p : ports) {
       if (p.getName().equals(f.getName())) {
         return true;

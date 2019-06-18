@@ -84,7 +84,7 @@ import org.preesm.model.pisdf.EndActor;
 import org.preesm.model.pisdf.ExecutableActor;
 import org.preesm.model.pisdf.Fifo;
 import org.preesm.model.pisdf.ForkActor;
-import org.preesm.model.pisdf.FunctionParameter;
+import org.preesm.model.pisdf.FunctionArgument;
 import org.preesm.model.pisdf.FunctionPrototype;
 import org.preesm.model.pisdf.ISetter;
 import org.preesm.model.pisdf.InitActor;
@@ -368,7 +368,7 @@ public class PiParser {
       final Node elt = childList.item(i);
       final String eltName = elt.getNodeName();
       if (PiIdentifiers.REFINEMENT_PARAMETER.equals(eltName)) {
-        proto.getParameters().add(parseFunctionParameter((Element) elt));
+        proto.getArguments().add(parseFunctionParameter((Element) elt));
       }
     }
     return proto;
@@ -381,8 +381,8 @@ public class PiParser {
    *          the elt
    * @return the function parameter
    */
-  private FunctionParameter parseFunctionParameter(final Element elt) {
-    final FunctionParameter param = PiMMUserFactory.instance.createFunctionParameter();
+  private FunctionArgument parseFunctionParameter(final Element elt) {
+    final FunctionArgument param = PiMMUserFactory.instance.createFunctionArgument();
     param.setName(elt.getAttribute(PiIdentifiers.REFINEMENT_PARAMETER_NAME));
     param.setType(elt.getAttribute(PiIdentifiers.REFINEMENT_PARAMETER_TYPE));
     param.setDirection(Direction.valueOf(elt.getAttribute(PiIdentifiers.REFINEMENT_PARAMETER_DIRECTION)));

@@ -34,7 +34,7 @@
  */
 package org.preesm.model.pisdf.util;
 
-import org.preesm.model.pisdf.FunctionParameter;
+import org.preesm.model.pisdf.FunctionArgument;
 import org.preesm.model.pisdf.FunctionPrototype;
 
 /**
@@ -52,7 +52,7 @@ public class PrototypeFormatter {
   public static final String format(final FunctionPrototype prototype) {
     final StringBuilder result = new StringBuilder(prototype.getName() + "(");
     boolean first = true;
-    for (final FunctionParameter p : prototype.getParameters()) {
+    for (final FunctionArgument p : prototype.getArguments()) {
       if (first) {
         first = false;
       } else {
