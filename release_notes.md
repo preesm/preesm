@@ -35,6 +35,7 @@ PREESM Changelog
 * Fix #77
 * Fix #87
 * Fix #155: always show the init function selection dialog and add a note explaining which functions are filtered out;
+* PAPIFY: fix removing PAPIFY timing event not working;
 
 
 ## Release version 3.8.1
