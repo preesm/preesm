@@ -59,31 +59,11 @@ public class PiParameterTableContentProvider implements IStructuredContentProvid
     super();
   }
 
-  /*
-   * (non-Javadoc)
-   *
-   * @see org.eclipse.jface.viewers.IContentProvider#dispose()
-   */
-  @Override
-  public void dispose() {
-  }
-
-  /*
-   * (non-Javadoc)
-   *
-   * @see org.eclipse.jface.viewers.IContentProvider#inputChanged(org.eclipse.jface.viewers.Viewer, java.lang.Object,
-   * java.lang.Object)
-   */
   @Override
   public void inputChanged(final Viewer viewer, final Object oldInput, final Object newInput) {
     this.scenario = (Scenario) newInput;
   }
 
-  /*
-   * (non-Javadoc)
-   *
-   * @see org.eclipse.jface.viewers.IStructuredContentProvider#getElements(java.lang.Object)
-   */
   @Override
   public Object[] getElements(final Object inputElement) {
     return this.scenario.getParameterValues().entrySet().toArray();

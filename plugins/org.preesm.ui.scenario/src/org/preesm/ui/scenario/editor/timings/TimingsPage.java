@@ -43,8 +43,13 @@ import java.util.Arrays;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
-import org.eclipse.jface.viewers.IStructuredSelection;
+import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.Status;
+import org.eclipse.jface.dialogs.ErrorDialog;
+import org.eclipse.jface.viewers.CellEditor;
+import org.eclipse.jface.viewers.ICellModifier;
 import org.eclipse.jface.viewers.TableViewer;
+import org.eclipse.jface.viewers.TextCellEditor;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.ControlAdapter;
 import org.eclipse.swt.events.ControlEvent;
@@ -65,6 +70,7 @@ import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.ScrollBar;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
+import org.eclipse.swt.widgets.TableItem;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.forms.IManagedForm;
@@ -75,7 +81,9 @@ import org.eclipse.ui.forms.widgets.ExpandableComposite;
 import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.eclipse.ui.forms.widgets.ScrolledForm;
 import org.eclipse.ui.forms.widgets.Section;
+import org.preesm.model.pisdf.AbstractActor;
 import org.preesm.model.scenario.Scenario;
+import org.preesm.model.scenario.impl.MemoryInfoImpl;
 import org.preesm.model.scenario.serialize.PreesmAlgorithmListContentProvider;
 import org.preesm.model.scenario.serialize.TimingImporter;
 import org.preesm.model.slam.Design;
@@ -92,6 +100,12 @@ import org.preesm.ui.scenario.editor.utils.VertexLexicographicalComparator;
  * @author kdesnos
  */
 public class TimingsPage extends ScenarioPage {
+
+  private static final String OP_DEF_TITLE        = Messages.getString("Timings.MemcopySpeeds.opDefColumn");
+  private static final String SETUP_TIME_TITLE    = Messages.getString("Timings.MemcopySpeeds.setupTimeColumn");
+  private static final String TIME_PER_UNIT_TITLE = Messages.getString("Timings.MemcopySpeeds.timePerUnitColumn");
+
+  private static final String[] MEM_COLUMN_NAMES = { OP_DEF_TITLE, SETUP_TIME_TITLE, TIME_PER_UNIT_TITLE };
 
   /** The scenario. */
   final Scenario scenario;
@@ -211,27 +225,85 @@ public class TimingsPage extends ScenarioPage {
     table.setLinesVisible(true);
 
     newTableViewer.setContentProvider(new MemCopySpeedContentProvider());
-
-    final MemCopySpeedLabelProvider labelProvider = new MemCopySpeedLabelProvider(this.scenario, newTableViewer, this);
-    newTableViewer.setLabelProvider(labelProvider);
+    newTableViewer.setLabelProvider(new MemCopySpeedLabelProvider());
 
     // Create columns
-    final TableColumn column1 = new TableColumn(table, SWT.NONE, 0);
-    column1.setText(Messages.getString("Timings.MemcopySpeeds.opDefColumn"));
+    final TableColumn[] columns = new TableColumn[MEM_COLUMN_NAMES.length];
+    for (int i = 0; i < MEM_COLUMN_NAMES.length; i++) {
+      final TableColumn columni = new TableColumn(table, SWT.NONE, i);
+      columni.setText(MEM_COLUMN_NAMES[i]);
+      columns[i] = columni;
+    }
 
-    final TableColumn column2 = new TableColumn(table, SWT.NONE, 1);
-    column2.setText(Messages.getString("Timings.MemcopySpeeds.setupTimeColumn"));
+    newTableViewer.setCellModifier(new ICellModifier() {
+      @Override
+      public void modify(final Object element, final String property, final Object value) {
+        if (element instanceof TableItem) {
+          final TableItem ti = (TableItem) element;
+          final MemoryInfoImpl memInfo = (MemoryInfoImpl) ti.getData();
+          final String newValue = (String) value;
+          boolean dirty = false;
+          if (SETUP_TIME_TITLE.equals(property)) {
+            final long oldSetupTime = memInfo.getValue().getSetupTime();
+            try {
+              final long parseLong = Long.parseLong(newValue);
+              if (oldSetupTime != parseLong) {
+                dirty = true;
+                memInfo.getValue().setSetupTime(parseLong);
+              }
+            } catch (final NumberFormatException e) {
+              ErrorDialog.openError(TimingsPage.this.getEditorSite().getShell(), "Wrong number format",
+                  "Setup time values are Long typed.",
+                  new Status(IStatus.ERROR, "org.preesm.ui.scenario", "Could not parse long. " + e.getMessage()));
+            }
+          } else if (TIME_PER_UNIT_TITLE.equals(property)) {
+            final double oldTimePerUnit = memInfo.getValue().getTimePerUnit();
+            try {
+              final double newUnitPerTime = Double.parseDouble(newValue);
+              final double newTimePerUnit = 1. / newUnitPerTime;
+              if (oldTimePerUnit != newTimePerUnit) {
+                dirty = true;
+                memInfo.getValue().setTimePerUnit(newTimePerUnit);
+              }
+            } catch (final NumberFormatException e) {
+              ErrorDialog.openError(TimingsPage.this.getEditorSite().getShell(), "Wrong number format",
+                  "Unit per time values are Double typed.",
+                  new Status(IStatus.ERROR, "org.preesm.ui.scenario", "Could not parse double. " + e.getMessage()));
+            }
+          }
 
-    final TableColumn column3 = new TableColumn(table, SWT.NONE, 2);
-    column3.setText(Messages.getString("Timings.MemcopySpeeds.timePerUnitColumn"));
+          if (dirty) {
+            firePropertyChange(IEditorPart.PROP_DIRTY);
+            newTableViewer.refresh();
+          }
+        }
+      }
 
-    newTableViewer.addDoubleClickListener(e -> {
-      labelProvider.handleDoubleClick((IStructuredSelection) e.getSelection());
-      // Force the "file has changed" property of scenario.
-      // Timing changes will have no effects if the scenario
-      // is not saved.
-      firePropertyChange(IEditorPart.PROP_DIRTY);
+      @Override
+      public Object getValue(final Object element, final String property) {
+        if (element instanceof MemoryInfoImpl) {
+          final MemoryInfoImpl memInfo = (MemoryInfoImpl) element;
+          if (SETUP_TIME_TITLE.equals(property)) {
+            return Long.toString(memInfo.getValue().getSetupTime());
+          } else if (TIME_PER_UNIT_TITLE.equals(property)) {
+            return Double.toString(1. / memInfo.getValue().getTimePerUnit());
+          }
+        }
+        return "";
+      }
+
+      @Override
+      public boolean canModify(final Object element, final String property) {
+        return property.contentEquals(MEM_COLUMN_NAMES[1]) || property.contentEquals(MEM_COLUMN_NAMES[2]);
+      }
     });
+
+    final CellEditor[] editors = new CellEditor[table.getColumnCount()];
+    for (int i = 0; i < table.getColumnCount(); i++) {
+      editors[i] = new TextCellEditor(table);
+    }
+    newTableViewer.setColumnProperties(MEM_COLUMN_NAMES);
+    newTableViewer.setCellEditors(editors);
 
     final Table tref = table;
     final Composite comp = tablecps;
@@ -249,9 +321,9 @@ public class TimingsPage extends ScenarioPage {
           width -= vBarSize.x;
         }
         tref.setSize(area.width, area.height);
-        column1.setWidth((width / 4) - 1);
-        column2.setWidth((width - column1.getWidth()) / 2);
-        column3.setWidth((width - column1.getWidth()) / 2);
+        columns[0].setWidth((width / 4) - 1);
+        columns[1].setWidth((width - columns[0].getWidth()) / 2);
+        columns[2].setWidth((width - columns[0].getWidth()) / 2);
       }
     });
 
@@ -365,10 +437,49 @@ public class TimingsPage extends ScenarioPage {
       columns.add(column);
     }
 
-    // Make the last column (Expression) editable
-    // XXX: Through an other way than double clicking (direct editing)
-    this.tableViewer
-        .addDoubleClickListener(e -> labelProvider.handleDoubleClick((IStructuredSelection) e.getSelection()));
+    final CellEditor[] editors = new CellEditor[table.getColumnCount()];
+    for (int i = 0; i < table.getColumnCount(); i++) {
+      editors[i] = new TextCellEditor(table);
+    }
+    this.tableViewer.setColumnProperties(PISDF_COLUMN_NAMES);
+    this.tableViewer.setCellEditors(editors);
+
+    this.tableViewer.setCellModifier(new ICellModifier() {
+      @Override
+      public void modify(final Object element, final String property, final Object value) {
+        if (element instanceof TableItem) {
+          final TableItem ti = (TableItem) element;
+          final AbstractActor actor = (AbstractActor) ti.getData();
+          final String componentType = coreCombo.getText();
+          final Component component = TimingsPage.this.scenario.getDesign().getComponent(componentType);
+
+          final String oldValue = TimingsPage.this.scenario.getTimings().getTimingOrDefault(actor, component);
+          final String newValue = (String) value;
+
+          if (!oldValue.equals(newValue)) {
+            TimingsPage.this.scenario.getTimings().setTiming(actor, component, newValue);
+            firePropertyChange(IEditorPart.PROP_DIRTY);
+            tableViewer.refresh(actor, false, false);
+          }
+        }
+      }
+
+      @Override
+      public Object getValue(final Object element, final String property) {
+        if (element instanceof AbstractActor) {
+          final AbstractActor actor = (AbstractActor) element;
+          final String componentType = coreCombo.getText();
+          final Component component = TimingsPage.this.scenario.getDesign().getComponent(componentType);
+          return TimingsPage.this.scenario.getTimings().getTimingOrDefault(actor, component);
+        }
+        return "";
+      }
+
+      @Override
+      public boolean canModify(final Object element, final String property) {
+        return property.contentEquals(PISDF_COLUMN_NAMES[2]);
+      }
+    });
 
     final Table tref = table;
     final Composite comp = tablecps;
@@ -415,7 +526,9 @@ public class TimingsPage extends ScenarioPage {
     if ((source instanceof TimingsTableLabelProvider) && (propId == IEditorPart.PROP_DIRTY)) {
       firePropertyChange(IEditorPart.PROP_DIRTY);
     }
-    this.tableViewer.refresh();
+    if (this.tableViewer != null) {
+      this.tableViewer.refresh();
+    }
   }
 
   /**

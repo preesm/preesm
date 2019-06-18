@@ -37,70 +37,22 @@
 package org.preesm.ui.scenario.editor.simulation;
 
 import java.util.Map.Entry;
-import org.eclipse.jface.dialogs.IInputValidator;
-import org.eclipse.jface.dialogs.InputDialog;
-import org.eclipse.jface.viewers.ILabelProviderListener;
-import org.eclipse.jface.viewers.IStructuredSelection;
+import org.eclipse.jface.viewers.BaseLabelProvider;
 import org.eclipse.jface.viewers.ITableLabelProvider;
-import org.eclipse.jface.viewers.TableViewer;
-import org.eclipse.jface.window.Window;
 import org.eclipse.swt.graphics.Image;
-import org.eclipse.ui.IEditorPart;
-import org.eclipse.ui.IPropertyListener;
-import org.eclipse.ui.PlatformUI;
-import org.preesm.model.scenario.Scenario;
-import org.preesm.ui.scenario.editor.Messages;
 
 /**
  * Displays the labels for data types and their sizes.
  *
  * @author mpelcat
  */
-public class DataTypesLabelProvider implements ITableLabelProvider {
+public class DataTypesLabelProvider extends BaseLabelProvider implements ITableLabelProvider {
 
-  /** The scenario. */
-  private Scenario scenario = null;
-
-  /** The table viewer. */
-  private TableViewer tableViewer = null;
-
-  /** Constraints page used as a property listener to change the dirty state. */
-  private IPropertyListener propertyListener = null;
-
-  /**
-   * Instantiates a new data types label provider.
-   *
-   * @param scenario
-   *          the scenario
-   * @param tableViewer
-   *          the table viewer
-   * @param propertyListener
-   *          the property listener
-   */
-  public DataTypesLabelProvider(final Scenario scenario, final TableViewer tableViewer,
-      final IPropertyListener propertyListener) {
-    super();
-    this.scenario = scenario;
-    this.tableViewer = tableViewer;
-    this.propertyListener = propertyListener;
-  }
-
-  /*
-   * (non-Javadoc)
-   *
-   * @see org.eclipse.jface.viewers.ITableLabelProvider#getColumnImage(java.lang.Object, int)
-   */
   @Override
   public Image getColumnImage(final Object element, final int columnIndex) {
-    // TODO Auto-generated method stub
     return null;
   }
 
-  /*
-   * (non-Javadoc)
-   *
-   * @see org.eclipse.jface.viewers.ITableLabelProvider#getColumnText(java.lang.Object, int)
-   */
   @Override
   public String getColumnText(final Object element, final int columnIndex) {
     String text = "";
@@ -111,106 +63,13 @@ public class DataTypesLabelProvider implements ITableLabelProvider {
 
       if (columnIndex == 0) {
         text = type.getKey();
-      } else if ((columnIndex == 1) && (this.scenario != null)) {
+      } else if ((columnIndex == 1)) {
 
         text = Long.toString(type.getValue());
       }
     }
 
     return text;
-  }
-
-  /*
-   * (non-Javadoc)
-   *
-   * @see org.eclipse.jface.viewers.IBaseLabelProvider#addListener(org.eclipse.jface.viewers.ILabelProviderListener)
-   */
-  @Override
-  public void addListener(final ILabelProviderListener listener) {
-    // TODO Auto-generated method stub
-
-  }
-
-  /*
-   * (non-Javadoc)
-   *
-   * @see org.eclipse.jface.viewers.IBaseLabelProvider#dispose()
-   */
-  @Override
-  public void dispose() {
-    // TODO Auto-generated method stub
-
-  }
-
-  /*
-   * (non-Javadoc)
-   *
-   * @see org.eclipse.jface.viewers.IBaseLabelProvider#isLabelProperty(java.lang.Object, java.lang.String)
-   */
-  @Override
-  public boolean isLabelProperty(final Object element, final String property) {
-    // TODO Auto-generated method stub
-    return false;
-  }
-
-  /*
-   * (non-Javadoc)
-   *
-   * @see org.eclipse.jface.viewers.IBaseLabelProvider#removeListener(org.eclipse.jface.viewers.ILabelProviderListener)
-   */
-  @Override
-  public void removeListener(final ILabelProviderListener listener) {
-    // TODO Auto-generated method stub
-
-  }
-
-  /**
-   * Handle double click.
-   *
-   * @param selection
-   *          the selection
-   */
-  public void handleDoubleClick(final IStructuredSelection selection) {
-
-    final IInputValidator validator = newText -> {
-      String message = null;
-      int size = 0;
-
-      try {
-        size = Integer.valueOf(newText);
-      } catch (final NumberFormatException e) {
-        size = 0;
-      }
-
-      if (size == 0) {
-        message = "invalid data type size";
-      }
-
-      return message;
-    };
-
-    final Object element = selection.getFirstElement();
-    if (element instanceof Entry) {
-      @SuppressWarnings("unchecked")
-      final Entry<String, Long> dataType = (Entry<String, Long>) element;
-
-      final String title = Messages.getString("Simulation.DataTypes.dialog.title");
-      final String message = Messages.getString("Simulation.DataTypes.dialog.message") + dataType.getKey();
-
-      final String init = String.valueOf(dataType.getValue());
-
-      final InputDialog dialog = new InputDialog(PlatformUI.getWorkbench().getActiveWorkbenchWindow().getShell(), title,
-          message, init, validator);
-      if (dialog.open() == Window.OK) {
-        final String value = dialog.getValue();
-
-        this.scenario.getSimulationInfo().getDataTypes().put(dataType.getKey(), Long.parseLong(value));
-
-        this.tableViewer.refresh();
-        this.propertyListener.propertyChanged(this, IEditorPart.PROP_DIRTY);
-      }
-    }
-
   }
 
 }

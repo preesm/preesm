@@ -37,6 +37,7 @@
 package org.preesm.ui.scenario.editor.constraints;
 
 import java.io.FileNotFoundException;
+import java.util.logging.Level;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.KeyEvent;
@@ -60,6 +61,7 @@ import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.eclipse.ui.forms.widgets.ScrolledForm;
 import org.eclipse.ui.forms.widgets.Section;
 import org.preesm.commons.exceptions.PreesmException;
+import org.preesm.commons.logger.PreesmLogger;
 import org.preesm.model.scenario.Scenario;
 import org.preesm.model.scenario.serialize.ExcelConstraintsParser;
 import org.preesm.ui.scenario.editor.FileSelectionAdapter;
@@ -277,7 +279,7 @@ public class ConstraintsPage extends ScenarioPage {
       try {
         importData(text1);
       } catch (final Exception ex) {
-        ex.printStackTrace();
+        PreesmLogger.getLogger().log(Level.WARNING, "Could not import constraint data", ex);
       }
 
     });
@@ -291,7 +293,7 @@ public class ConstraintsPage extends ScenarioPage {
           try {
             importData(text);
           } catch (final Exception ex) {
-            ex.printStackTrace();
+            PreesmLogger.getLogger().log(Level.WARNING, "Could not import constraint data", ex);
           }
         }
 
@@ -326,7 +328,7 @@ public class ConstraintsPage extends ScenarioPage {
    * @throws CoreException
    *           the core exception
    */
-  private void importData(final Text text) throws PreesmException, FileNotFoundException, CoreException {
+  private void importData(final Text text) throws CoreException {
 
     this.scenario.getConstraints().setGroupConstraintsFileURL(text.getText());
 

@@ -42,7 +42,7 @@ import java.util.List;
 import org.eclipse.jface.dialogs.IInputValidator;
 import org.eclipse.jface.dialogs.InputDialog;
 import org.eclipse.jface.resource.ImageDescriptor;
-import org.eclipse.jface.viewers.ILabelProviderListener;
+import org.eclipse.jface.viewers.BaseLabelProvider;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.ITableLabelProvider;
 import org.eclipse.jface.viewers.TableViewer;
@@ -68,7 +68,7 @@ import org.preesm.ui.scenario.editor.Messages;
  *
  * @author mpelcat
  */
-public class TimingsTableLabelProvider implements ITableLabelProvider, SelectionListener {
+public class TimingsTableLabelProvider extends BaseLabelProvider implements ITableLabelProvider, SelectionListener {
 
   /** The scenario. */
   private Scenario scenario = null;
@@ -118,11 +118,6 @@ public class TimingsTableLabelProvider implements ITableLabelProvider, Selection
     this.currentOpDefId = operators.get(0);
   }
 
-  /*
-   * (non-Javadoc)
-   *
-   * @see org.eclipse.jface.viewers.ITableLabelProvider#getColumnImage(java.lang.Object, int)
-   */
   @Override
   public Image getColumnImage(final Object element, final int columnIndex) {
     if ((element instanceof AbstractActor) && (this.currentOpDefId != null)) {
@@ -141,14 +136,8 @@ public class TimingsTableLabelProvider implements ITableLabelProvider, Selection
     return null;
   }
 
-  /*
-   * (non-Javadoc)
-   *
-   * @see org.eclipse.jface.viewers.ITableLabelProvider#getColumnText(java.lang.Object, int)
-   */
   @Override
   public String getColumnText(final Object element, final int columnIndex) {
-    String text = "";
     if ((element instanceof AbstractActor) && (this.currentOpDefId != null)) {
       final AbstractActor vertex = (AbstractActor) element;
 
@@ -159,58 +148,28 @@ public class TimingsTableLabelProvider implements ITableLabelProvider, Selection
           return vertex.getVertexPath();
         case 1: // Input Parameters
           if (timing == null || vertex.getInputParameters().isEmpty()) {
-            text = " - ";
+            return " - ";
           } else {
-            text = ExpressionEvaluator.lookupParameterValues(vertex, Collections.emptyMap()).keySet().toString();
+            return ExpressionEvaluator.lookupParameterValues(vertex, Collections.emptyMap()).keySet().toString();
           }
-          break;
         case 2: // Expression
           if (timing != null) {
-            text = timing;
+            return timing;
           }
           break;
         case 3: // Evaluation Status
           return null;
         case 4: // Value
           if (timing != null && ExpressionEvaluator.canEvaluate(vertex, timing)) {
-            text = Long
+            return Long
                 .toString(ExpressionEvaluator.evaluate(vertex, timing, this.scenario.getParameterValues().map()));
+          } else {
+            return "";
           }
-          break;
         default:
       }
     }
-    return text;
-  }
-
-  /*
-   * (non-Javadoc)
-   *
-   * @see org.eclipse.jface.viewers.IBaseLabelProvider#addListener(org.eclipse.jface.viewers.ILabelProviderListener)
-   */
-  @Override
-  public void addListener(final ILabelProviderListener listener) {
-    // nothing
-  }
-
-  @Override
-  public void dispose() {
-    // nothing
-  }
-
-  @Override
-  public boolean isLabelProperty(final Object element, final String property) {
-    return false;
-  }
-
-  @Override
-  public void removeListener(final ILabelProviderListener listener) {
-    // nothing
-  }
-
-  @Override
-  public void widgetDefaultSelected(final SelectionEvent e) {
-    // nothing
+    return "";
   }
 
   /**
@@ -227,7 +186,11 @@ public class TimingsTableLabelProvider implements ITableLabelProvider, Selection
       this.currentOpDefId = this.scenario.getDesign().getComponent(item);
       this.tableViewer.refresh();
     }
+  }
 
+  @Override
+  public void widgetDefaultSelected(SelectionEvent e) {
+    // nothing
   }
 
   /**
@@ -258,9 +221,6 @@ public class TimingsTableLabelProvider implements ITableLabelProvider, Selection
           this.tableViewer.refresh();
         }
       }
-    } else {
-      System.out.println("hem");
     }
   }
-
 }

@@ -27,6 +27,7 @@ PREESM Changelog
 * Update Xtend/Xcore maven plugins to 2.18.0+;
 * Fix PiSDF UI: do show persistence level on Delay only;
 * Update SDF/DAGVertex.getReferencePiVertex(): cast is now done inside;
+* Fix Scenario UI and cleanup code, replace dialogs with inplace table cell modifiers;
 
 ### Bug fix
 * Fix #139: better error messages for Name checker

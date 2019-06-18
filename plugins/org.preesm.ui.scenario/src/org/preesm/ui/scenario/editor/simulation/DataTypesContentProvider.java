@@ -46,14 +46,8 @@ import org.preesm.model.scenario.Scenario;
  */
 public class DataTypesContentProvider implements IStructuredContentProvider {
 
-  /** The element table. */
-  Object[] elementTable = null;
+  private Object[] elementTable = null;
 
-  /*
-   * (non-Javadoc)
-   *
-   * @see org.eclipse.jface.viewers.IStructuredContentProvider#getElements(java.lang.Object)
-   */
   @Override
   public Object[] getElements(final Object inputElement) {
 
