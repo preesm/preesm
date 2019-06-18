@@ -43,6 +43,9 @@ import java.util.Arrays;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
+import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.Status;
+import org.eclipse.jface.dialogs.ErrorDialog;
 import org.eclipse.jface.viewers.CellEditor;
 import org.eclipse.jface.viewers.ICellModifier;
 import org.eclipse.jface.viewers.TableViewer;
@@ -243,16 +246,31 @@ public class TimingsPage extends ScenarioPage {
           final String newValue = (String) value;
           boolean dirty = false;
           if (SETUP_TIME_TITLE.equals(property)) {
-            final String oldValue = Long.toString(memInfo.getValue().getSetupTime());
-            if (!oldValue.equals(newValue)) {
-              dirty = true;
-              memInfo.getValue().setSetupTime(Long.parseLong(newValue));
+            final long oldSetupTime = memInfo.getValue().getSetupTime();
+            try {
+              final long parseLong = Long.parseLong(newValue);
+              if (oldSetupTime != parseLong) {
+                dirty = true;
+                memInfo.getValue().setSetupTime(parseLong);
+              }
+            } catch (final NumberFormatException e) {
+              ErrorDialog.openError(TimingsPage.this.getEditorSite().getShell(), "Wrong number format",
+                  "Setup time values are Long typed.",
+                  new Status(IStatus.ERROR, "org.preesm.ui.scenario", "Could not parse long. " + e.getMessage()));
             }
           } else if (TIME_PER_UNIT_TITLE.equals(property)) {
-            final String oldValue = Double.toString(memInfo.getValue().getTimePerUnit());
-            if (!oldValue.equals(newValue)) {
-              dirty = true;
-              memInfo.getValue().setTimePerUnit(1. / Double.parseDouble(newValue));
+            final double oldTimePerUnit = memInfo.getValue().getTimePerUnit();
+            try {
+              final double newUnitPerTime = Double.parseDouble(newValue);
+              final double newTimePerUnit = 1. / newUnitPerTime;
+              if (oldTimePerUnit != newTimePerUnit) {
+                dirty = true;
+                memInfo.getValue().setTimePerUnit(newTimePerUnit);
+              }
+            } catch (final NumberFormatException e) {
+              ErrorDialog.openError(TimingsPage.this.getEditorSite().getShell(), "Wrong number format",
+                  "Unit per time values are Double typed.",
+                  new Status(IStatus.ERROR, "org.preesm.ui.scenario", "Could not parse double. " + e.getMessage()));
             }
           }
 
