@@ -459,10 +459,10 @@ class DelayActor extends NonExecutableActor, RefinementContainer {
 		if (initPrototype.getParameters().length != 2) {
 			return false
 		}
-		if (initPrototype.getParameters().get(0).direction !== Direction.IN) {
+		if (initPrototype.getParameters().get(0).getDirection !== Direction.IN) {
 			return false
 		}
-		if (initPrototype.getParameters().get(1).direction !== Direction.OUT) {
+		if (initPrototype.getParameters().get(1).getDirection !== Direction.OUT) {
 			return false
 		}
 		return true
@@ -750,10 +750,10 @@ class Delay extends Configurable, ExpressionHolder {
 
 class FunctionPrototype {
 	String name
-	contains FunctionParameter[] parameters
+	contains FunctionArgument[] parameters
 }
 
-class FunctionParameter {
+class FunctionArgument {
 	String name
 	Direction direction
 	String ^type

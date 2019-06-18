@@ -52,7 +52,7 @@ import org.preesm.model.pisdf.ConfigOutputPort;
 import org.preesm.model.pisdf.DataInputPort;
 import org.preesm.model.pisdf.DataOutputPort;
 import org.preesm.model.pisdf.Direction;
-import org.preesm.model.pisdf.FunctionParameter;
+import org.preesm.model.pisdf.FunctionArgument;
 import org.preesm.model.pisdf.FunctionPrototype;
 import org.preesm.model.pisdf.PiGraph;
 import org.preesm.model.pisdf.PiSDFRefinement;
@@ -114,8 +114,8 @@ public final class RefinementResolver extends PiMMSwitch<AbstractActor> {
       // Create all its ports corresponding to parameters of the
       // prototype
       final FunctionPrototype loopProto = ref.getLoopPrototype();
-      final List<FunctionParameter> loopParameters = loopProto.getParameters();
-      for (final FunctionParameter param : loopParameters) {
+      final List<FunctionArgument> loopParameters = loopProto.getParameters();
+      for (final FunctionArgument param : loopParameters) {
         if (!param.isIsConfigurationParameter()) {
           // Data Port
           if (param.getDirection().equals(Direction.IN)) {

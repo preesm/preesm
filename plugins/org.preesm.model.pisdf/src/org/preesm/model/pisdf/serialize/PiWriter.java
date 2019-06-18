@@ -73,7 +73,7 @@ import org.preesm.model.pisdf.ExecutableActor;
 import org.preesm.model.pisdf.Expression;
 import org.preesm.model.pisdf.Fifo;
 import org.preesm.model.pisdf.ForkActor;
-import org.preesm.model.pisdf.FunctionParameter;
+import org.preesm.model.pisdf.FunctionArgument;
 import org.preesm.model.pisdf.FunctionPrototype;
 import org.preesm.model.pisdf.ISetter;
 import org.preesm.model.pisdf.InitActor;
@@ -756,7 +756,7 @@ public class PiWriter {
       final String functionName) {
     final Element protoElt = appendChild(vertexElt, functionName);
     protoElt.setAttribute(PiIdentifiers.REFINEMENT_FUNCTION_PROTOTYPE_NAME, prototype.getName());
-    for (final FunctionParameter p : prototype.getParameters()) {
+    for (final FunctionArgument p : prototype.getParameters()) {
       writeFunctionParameter(protoElt, p);
     }
   }
@@ -769,7 +769,7 @@ public class PiWriter {
    * @param p
    *          the p
    */
-  private void writeFunctionParameter(final Element prototypeElt, final FunctionParameter p) {
+  private void writeFunctionParameter(final Element prototypeElt, final FunctionArgument p) {
     final Element protoElt = appendChild(prototypeElt, PiIdentifiers.REFINEMENT_PARAMETER);
     protoElt.setAttribute(PiIdentifiers.REFINEMENT_PARAMETER_NAME, p.getName());
     protoElt.setAttribute(PiIdentifiers.REFINEMENT_PARAMETER_TYPE, p.getType());

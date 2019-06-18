@@ -51,7 +51,7 @@ import org.preesm.commons.files.URLResolver;
 import org.preesm.commons.logger.PreesmLogger;
 import org.preesm.model.pisdf.AbstractActor;
 import org.preesm.model.pisdf.Direction;
-import org.preesm.model.pisdf.FunctionParameter;
+import org.preesm.model.pisdf.FunctionArgument;
 import org.preesm.model.pisdf.FunctionPrototype;
 import org.preesm.model.pisdf.Port;
 import org.preesm.model.pisdf.factory.PiMMUserFactory;
@@ -160,7 +160,7 @@ public class HeaderParser {
       final Pattern paramPattern = Pattern.compile(HeaderParser.PARAM_BREAK_DOWN_REGEX);
       // Procces parameters one by one
       for (final String param : parameters) {
-        final FunctionParameter fp = PiMMUserFactory.instance.createFunctionParameter();
+        final FunctionArgument fp = PiMMUserFactory.instance.createFunctionArgument();
         matcher = paramPattern.matcher(param);
         final boolean matched = matcher.matches();
         if (matched) { // Apply the matcher (if possible)
@@ -181,7 +181,7 @@ public class HeaderParser {
           if ((matcher.group(3) == null) && (matcher.group(5) == null)) {
             fp.setIsConfigurationParameter(true);
           }
-          final EList<FunctionParameter> protoParameters = funcProto.getParameters();
+          final EList<FunctionArgument> protoParameters = funcProto.getParameters();
           protoParameters.add(fp);
         }
       }
@@ -286,13 +286,13 @@ public class HeaderParser {
       // proto matches the initialization of actor if:
       // -it does not have more parameters than the actors configuration
       // input ports
-      final List<FunctionParameter> params = new ArrayList<>(proto.getParameters());
+      final List<FunctionArgument> params = new ArrayList<>(proto.getParameters());
       boolean matches = params.size() <= actor.getConfigInputPorts().size();
       // -all function parameters of proto match a configuration input
       // port of the actor (initialization function cannot read or write
       // in fifo nor write on configuration output ports)
       if (matches) {
-        for (final FunctionParameter param : params) {
+        for (final FunctionArgument param : params) {
           if (HeaderParser.hasCorrespondingPort(param, actor.getConfigInputPorts())) {
             param.setDirection(Direction.IN);
             param.setIsConfigurationParameter(true);
@@ -329,7 +329,7 @@ public class HeaderParser {
     for (final FunctionPrototype proto : prototypes) {
       // proto matches the signature of actor if:
       // -it does not have more parameters than the actors ports
-      final ArrayList<FunctionParameter> params = new ArrayList<>(proto.getParameters());
+      final ArrayList<FunctionArgument> params = new ArrayList<>(proto.getParameters());
       boolean matches = params.size() <= (actor.getDataInputPorts().size() + actor.getDataOutputPorts().size()
           + actor.getConfigInputPorts().size() + actor.getConfigOutputPorts().size());
 
@@ -339,7 +339,7 @@ public class HeaderParser {
       allPorts.addAll(actor.getDataOutputPorts());
       allPorts.addAll(actor.getConfigInputPorts());
       allPorts.addAll(actor.getConfigOutputPorts());
-      for (final FunctionParameter param : proto.getParameters()) {
+      for (final FunctionArgument param : proto.getParameters()) {
         matches &= HeaderParser.hasCorrespondingPort(param, allPorts);
       }
 
@@ -347,7 +347,7 @@ public class HeaderParser {
       // of the parameters of proto
       if (matches) {
         for (final Port p : actor.getDataInputPorts()) {
-          final FunctionParameter param = HeaderParser.getCorrespondingFunctionParameter(p, params);
+          final FunctionArgument param = HeaderParser.getCorrespondingFunctionParameter(p, params);
           if (param != null) {
             param.setDirection(Direction.IN);
             param.setIsConfigurationParameter(false);
@@ -360,7 +360,7 @@ public class HeaderParser {
       }
       if (matches) {
         for (final Port p : actor.getDataOutputPorts()) {
-          final FunctionParameter param = HeaderParser.getCorrespondingFunctionParameter(p, params);
+          final FunctionArgument param = HeaderParser.getCorrespondingFunctionParameter(p, params);
           if (param != null) {
             param.setDirection(Direction.OUT);
             param.setIsConfigurationParameter(false);
@@ -375,7 +375,7 @@ public class HeaderParser {
       // of the parameters of proto
       if (matches) {
         for (final Port p : actor.getConfigOutputPorts()) {
-          final FunctionParameter param = HeaderParser.getCorrespondingFunctionParameter(p, params);
+          final FunctionArgument param = HeaderParser.getCorrespondingFunctionParameter(p, params);
           if (param != null) {
             param.setDirection(Direction.OUT);
             param.setIsConfigurationParameter(true);
@@ -389,7 +389,7 @@ public class HeaderParser {
       // -all other function parameters of proto match a configuration
       // input port of the actor
       if (matches) {
-        for (final FunctionParameter param : params) {
+        for (final FunctionArgument param : params) {
           if (HeaderParser.hasCorrespondingPort(param, actor.getConfigInputPorts())) {
             param.setDirection(Direction.IN);
             param.setIsConfigurationParameter(true);
@@ -418,9 +418,8 @@ public class HeaderParser {
     // For each function prototype proto check that the prototype has no
     // input or output buffers (i.e. parameters with a pointer type)
     for (final FunctionPrototype proto : prototypes) {
-      final List<FunctionParameter> params = new ArrayList<>(proto.getParameters());
       boolean allParams = true;
-      for (final FunctionParameter param : params) {
+      for (final FunctionArgument param : proto.getParameters()) {
         if (param.isIsConfigurationParameter()) {
           param.setDirection(Direction.IN);
         } else {
@@ -446,9 +445,8 @@ public class HeaderParser {
    *          the params
    * @return the corresponding function parameter
    */
-  private static FunctionParameter getCorrespondingFunctionParameter(final Port p,
-      final List<FunctionParameter> params) {
-    for (final FunctionParameter param : params) {
+  private static FunctionArgument getCorrespondingFunctionParameter(final Port p, final List<FunctionArgument> params) {
+    for (final FunctionArgument param : params) {
       if (p.getName().equals(param.getName())) {
         return param;
       }
@@ -465,7 +463,7 @@ public class HeaderParser {
    *          the ports
    * @return true, if successful
    */
-  private static boolean hasCorrespondingPort(final FunctionParameter f, final List<? extends Port> ports) {
+  private static boolean hasCorrespondingPort(final FunctionArgument f, final List<? extends Port> ports) {
     for (final Port p : ports) {
       if (p.getName().equals(f.getName())) {
         return true;
