@@ -335,10 +335,7 @@ class PapifyConfig {
 	op String[] getActorAssociatedPapiComponents(AbstractActor actor){
 		var actorConfig = getActorConfig(actor)
 		if(!actorConfig.nullOrEmpty){
-			var map = actorConfig.keySet
-			if(map.contains("Timing")){
-				map.remove("Timing")
-			}
+			var map = actorConfig.keySet.filter[it|!(it.equals("Timing"))]
 			return map.asEList
 		}
 		return ECollections.emptyEList;
