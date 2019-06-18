@@ -303,29 +303,45 @@ class PapifyConfig {
 			eventList.remove(index)
 		}
 	}
-	/*op ActorEvent[] getActorConfig(AbstractActor actor){
-		var actorConfig = papifyConfigGroupsActors.get(actor)		
-		var AbstractActor source = PreesmCopyTracker.getSource(actor);
-		if(actorConfig !== null && !actorConfig.empty){
-			return actorConfig
-		}else if(source != actor){
-			actorConfig = papifyConfigGroupsActors.get(source)
-			if(actorConfig !== null && !actorConfig.empty){
-				return actorConfig
+	op ActorEvent[] getActorConfig(org.preesm.model.pisdf.AbstractVertex actor){
+		var actorCasted = actor
+		if(actorCasted instanceof org.preesm.model.pisdf.AbstractActor){
+			if (this.papifyConfigGroupsActors.containsKey(actorCasted)) {
+				return papifyConfigGroupsActors.get(actorCasted)
+			}else{
+				var org.preesm.model.pisdf.AbstractVertex source = PreesmCopyTracker.getOriginalSource(actor);
+				if(source instanceof org.preesm.model.pisdf.AbstractActor){
+					if (this.papifyConfigGroupsActors.containsKey(source)) {
+						return papifyConfigGroupsActors.get(source)
+					}					
+				}
+			}
+		}		
+		return ECollections.emptyEMap;
+	}
+	op ActorEvent[] getActorConfig2(AbstractActor actor) {
+		if (this.papifyConfigGroupsActors.containsKey(actor)) {
+			val EMap<String, EList<PapiEvent>> map = papifyConfigGroupsActors.get(actor);
+			return map;
+		} else {
+			val AbstractActor source = PreesmCopyTracker.getSource(actor);
+			if (source != actor) {
+				return getActorConfig2(source);
 			}
 		}
-	}*/
+		return ECollections.emptyEMap;
+	}
 	op boolean isMonitoringEvents(ActorEvent[] actorConfig){
-		if(actorConfig.keySet.contains("Timing") && actorConfig.keySet.size > 1){
+		if(actorConfig.containsKey("Timing") && actorConfig.keySet.size > 1){
 			return true
-		}else if(!actorConfig.keySet.contains("Timing") && actorConfig.keySet.size > 0){
+		}else if(!actorConfig.containsKey("Timing") && actorConfig.keySet.size > 0){
 			return true
 		}else{
 			return false
 		}		
 	}
 	op boolean isMonitoringTiming(ActorEvent[] actorConfig){
-		if(actorConfig.keySet.contains("Timing")){
+		if(actorConfig.containsKey("Timing")){
 			return true	
 		}else{
 			return false

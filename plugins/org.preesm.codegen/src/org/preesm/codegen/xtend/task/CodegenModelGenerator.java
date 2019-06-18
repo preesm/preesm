@@ -137,7 +137,6 @@ import org.preesm.codegen.model.util.CodegenModelUserFactory;
 import org.preesm.commons.exceptions.PreesmException;
 import org.preesm.commons.exceptions.PreesmRuntimeException;
 import org.preesm.commons.logger.PreesmLogger;
-import org.preesm.commons.model.PreesmCopyTracker;
 import org.preesm.model.pisdf.PersistenceLevel;
 import org.preesm.model.scenario.PapiComponent;
 import org.preesm.model.scenario.PapiEvent;
@@ -754,9 +753,8 @@ public class CodegenModelGenerator {
           // Check if this actor has a monitoring configuration
           PapifyConfig papifyConfig = this.scenario.getPapifyConfig();
           org.preesm.model.pisdf.AbstractVertex referencePiVertex = dagVertex.getReferencePiVertex();
-          org.preesm.model.pisdf.AbstractVertex originalSource = PreesmCopyTracker.getOriginalSource(referencePiVertex);
-          actorConfig = papifyConfig.getPapifyConfigGroupsActors()
-              .get((org.preesm.model.pisdf.AbstractActor) originalSource);
+          actorConfig = papifyConfig.getActorConfig(referencePiVertex);
+
           if (actorConfig != null && !actorConfig.isEmpty()) {
             // Add the function to configure the monitoring in this PE (operatorBlock)
             if (!(this.papifiedPEs.contains(operatorBlock.getName()))) {
@@ -767,10 +765,17 @@ public class CodegenModelGenerator {
             // Add the papify action variable
             PapifyAction papifyActionS = CodegenFactory.eINSTANCE.createPapifyAction();
             papifyActionS.setName("papify_action_".concat(dagVertex.getName()));
-            System.out.println("Name = " + papifyActionS.getName());
             papifyActionS.setType("papify_action_s");
             papifyActionS.setComment("papify configuration variable");
             operatorBlock.getDefinitions().add(papifyActionS);
+
+            // Checker to debug
+            System.out.println("Name = " + papifyActionS.getName());
+
+            // Add the function to configure the monitoring of this actor (dagVertex)
+            final PapifyFunctionCall functionCallPapifyConfigureActor = generatePapifyConfigureActorFunctionCall(
+                dagVertex);
+            operatorBlock.getInitBlock().getCodeElts().add(functionCallPapifyConfigureActor);
 
             // What are we monitoring?
             monitoringEvents = papifyConfig.isMonitoringEvents(actorConfig);
@@ -781,7 +786,7 @@ public class CodegenModelGenerator {
                   operatorBlock);
               // Add the Papify start function for events to the loop
               operatorBlock.getLoopBlock().getCodeElts().add(functionCallPapifyStart);
-              System.out.println("Wiiiiiiiiiiii1");
+              System.out.println("Including events start function");
             }
 
             if (monitoringTiming) {
@@ -790,7 +795,7 @@ public class CodegenModelGenerator {
                   operatorBlock);
               // Add the Papify start timing function to the loop
               operatorBlock.getLoopBlock().getCodeElts().add(functionCallPapifyTimingStart);
-              System.out.println("Wiiiiiiiiiiii2");
+              System.out.println("Including timing start function");
             }
 
           }
@@ -862,12 +867,21 @@ public class CodegenModelGenerator {
 
         if (this.papifyActive) {
           if (actorConfig != null && !actorConfig.isEmpty()) {
-            System.out.println("Wiii?");
             if (monitoringTiming) {
-              System.out.println("Wiiiiiiiiiiii2?");
+              // Generate Papify stop timing function
+              final PapifyFunctionCall functionCallPapifyTimingStop = generatePapifyStopTimingFunctionCall(dagVertex,
+                  operatorBlock);
+              // Add the Papify stop timing function to the loop
+              operatorBlock.getLoopBlock().getCodeElts().add(functionCallPapifyTimingStop);
+              System.out.println("Including timing ending function");
             }
             if (monitoringEvents) {
-              System.out.println("Wiiiiiiiiiiii1?");
+              // Generate Papify stop function for events
+              final PapifyFunctionCall functionCallPapifyStop = generatePapifyStopFunctionCall(dagVertex,
+                  operatorBlock);
+              // Add the Papify stop function for events to the loop
+              operatorBlock.getLoopBlock().getCodeElts().add(functionCallPapifyStop);
+              System.out.println("Including events ending function");
             }
           }
         } else {

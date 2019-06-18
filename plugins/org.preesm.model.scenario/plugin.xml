@@ -38,10 +38,6 @@
 <?eclipse version="3.4"?>
 <plugin>
 
-   <extension
-         point="org.preesm.commons.plugin">
-   </extension>
-
    <extension point="org.eclipse.emf.ecore.generated_package">
       <!-- @generated Scenario -->
       <package
