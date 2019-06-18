@@ -37,20 +37,11 @@
 package org.preesm.ui.scenario.editor.timings;
 
 import java.util.Map.Entry;
-import org.eclipse.jface.dialogs.IInputValidator;
-import org.eclipse.jface.dialogs.InputDialog;
 import org.eclipse.jface.viewers.BaseLabelProvider;
-import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.ITableLabelProvider;
-import org.eclipse.jface.viewers.TableViewer;
-import org.eclipse.jface.window.Window;
 import org.eclipse.swt.graphics.Image;
-import org.eclipse.ui.IEditorPart;
-import org.eclipse.ui.IPropertyListener;
-import org.eclipse.ui.PlatformUI;
 import org.preesm.model.scenario.MemoryCopySpeedValue;
 import org.preesm.model.slam.component.Component;
-import org.preesm.ui.scenario.editor.Messages;
 
 /**
  * Displays the labels for memcopy speed.
@@ -58,26 +49,6 @@ import org.preesm.ui.scenario.editor.Messages;
  * @author mpelcat
  */
 public class MemCopySpeedLabelProvider extends BaseLabelProvider implements ITableLabelProvider {
-
-  /** The table viewer. */
-  private TableViewer tableViewer = null;
-
-  /** Constraints page used as a property listener to change the dirty state. */
-  private IPropertyListener propertyListener = null;
-
-  /**
-   * Instantiates a new mem copy speed label provider.
-   *
-   * @param tableViewer
-   *          the table viewer
-   * @param propertyListener
-   *          the property listener
-   */
-  public MemCopySpeedLabelProvider(final TableViewer tableViewer, final IPropertyListener propertyListener) {
-    super();
-    this.tableViewer = tableViewer;
-    this.propertyListener = propertyListener;
-  }
 
   @Override
   public Image getColumnImage(final Object element, final int columnIndex) {
@@ -103,85 +74,4 @@ public class MemCopySpeedLabelProvider extends BaseLabelProvider implements ITab
 
     return text;
   }
-
-  /**
-   * Handle double click.
-   *
-   * @param selection
-   *          the selection
-   */
-  public void handleDoubleClick(final IStructuredSelection selection) {
-
-    final IInputValidator intValidator = newText -> {
-      String message = null;
-      int val = 0;
-
-      try {
-        val = Integer.valueOf(newText);
-      } catch (final NumberFormatException e) {
-        val = 0;
-      }
-
-      if (val <= 0) {
-        message = "invalid positive integer";
-      }
-
-      return message;
-    };
-
-    final IInputValidator floatValidator = newText -> {
-      String message = null;
-      float val = 0;
-
-      try {
-        val = Float.valueOf(newText);
-      } catch (final NumberFormatException e) {
-        val = 0;
-      }
-
-      if (val <= 0) {
-        message = "invalid positive float";
-      }
-
-      return message;
-    };
-
-    if (selection.getFirstElement() instanceof Entry) {
-      @SuppressWarnings("unchecked")
-      final Entry<Component,
-          MemoryCopySpeedValue> speed = (Entry<Component, MemoryCopySpeedValue>) selection.getFirstElement();
-
-      String title = Messages.getString("Timings.MemcopySpeeds.dialog.setupTitle");
-      final Component component = speed.getKey();
-      String message = Messages.getString("Timings.MemcopySpeeds.dialog.setupMessage") + component;
-
-      final String initSetupTime = String.valueOf(speed.getValue().getSetupTime());
-      final String initSpeed = String.valueOf(1.0 / speed.getValue().getTimePerUnit());
-
-      final InputDialog dialogSetupTime = new InputDialog(
-          PlatformUI.getWorkbench().getActiveWorkbenchWindow().getShell(), title, message, initSetupTime, intValidator);
-
-      title = Messages.getString("Timings.MemcopySpeeds.dialog.timePerUnitTitle");
-      message = Messages.getString("Timings.MemcopySpeeds.dialog.timePerUnitMessage") + component;
-
-      final InputDialog dialogTimePerUnit = new InputDialog(
-          PlatformUI.getWorkbench().getActiveWorkbenchWindow().getShell(), title, message, initSpeed, floatValidator);
-
-      if (dialogSetupTime.open() == Window.OK) {
-        if (dialogTimePerUnit.open() == Window.OK) {
-          final String valueSetupTime = dialogSetupTime.getValue();
-          final String valueTimePerUnit = dialogTimePerUnit.getValue();
-
-          speed.getValue().setSetupTime(Long.valueOf(valueSetupTime));
-          // Careful! We store the time per memory unit, that is the inverse of the speed.
-          speed.getValue().setTimePerUnit(1.0d / Double.valueOf(valueTimePerUnit));
-
-          this.tableViewer.refresh();
-          this.propertyListener.propertyChanged(this, IEditorPart.PROP_DIRTY);
-        }
-      }
-    }
-
-  }
-
 }

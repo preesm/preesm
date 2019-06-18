@@ -38,14 +38,20 @@ package org.preesm.ui.scenario.editor.simulation;
 
 import java.util.List;
 import java.util.Map.Entry;
+import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.Status;
+import org.eclipse.jface.dialogs.ErrorDialog;
 import org.eclipse.jface.dialogs.IInputValidator;
 import org.eclipse.jface.dialogs.InputDialog;
 import org.eclipse.jface.viewers.AbstractTreeViewer;
+import org.eclipse.jface.viewers.CellEditor;
 import org.eclipse.jface.viewers.CheckboxTreeViewer;
+import org.eclipse.jface.viewers.ICellModifier;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.ITreeContentProvider;
 import org.eclipse.jface.viewers.LabelProvider;
 import org.eclipse.jface.viewers.TableViewer;
+import org.eclipse.jface.viewers.TextCellEditor;
 import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.jface.window.Window;
 import org.eclipse.swt.SWT;
@@ -68,6 +74,7 @@ import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.ScrollBar;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
+import org.eclipse.swt.widgets.TableItem;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.IPropertyListener;
@@ -80,6 +87,7 @@ import org.eclipse.ui.forms.widgets.ScrolledForm;
 import org.eclipse.ui.forms.widgets.Section;
 import org.preesm.model.scenario.Scenario;
 import org.preesm.model.scenario.ScenarioConstants;
+import org.preesm.model.scenario.impl.DataTypeImpl;
 import org.preesm.model.slam.ComponentInstance;
 import org.preesm.model.slam.Design;
 import org.preesm.ui.scenario.editor.Messages;
@@ -91,6 +99,11 @@ import org.preesm.ui.scenario.editor.ScenarioPage;
  * @author mpelcat
  */
 public class SimulationPage extends ScenarioPage {
+
+  private static final String DATA_TYPE_SIZE_TITLE = Messages.getString("Simulation.DataTypes.sizeColumn");
+  private static final String DATA_TYPE_NAME_TITLE = Messages.getString("Simulation.DataTypes.typeColumn");
+
+  private static final String[] DATA_TYPE_TABLE_TITLES = { DATA_TYPE_SIZE_TITLE, DATA_TYPE_NAME_TITLE };
 
   /**
    * The listener interface for receiving comboBox events. The class that is interested in processing a comboBox event
@@ -421,19 +434,58 @@ public class SimulationPage extends ScenarioPage {
     table.setLinesVisible(true);
 
     tableViewer.setContentProvider(new DataTypesContentProvider());
+    tableViewer.setLabelProvider(new DataTypesLabelProvider());
 
-    final DataTypesLabelProvider labelProvider = new DataTypesLabelProvider(this.scenario, tableViewer, this);
-    tableViewer.setLabelProvider(labelProvider);
+    final TableColumn[] columns = new TableColumn[DATA_TYPE_TABLE_TITLES.length];
+    for (int i = 0; i < DATA_TYPE_TABLE_TITLES.length; i++) {
+      final TableColumn columni = new TableColumn(table, SWT.NONE, i);
+      columni.setText(DATA_TYPE_TABLE_TITLES[i]);
+      columns[i] = columni;
+    }
 
-    // Create columns
-    final TableColumn column1 = new TableColumn(table, SWT.NONE, 0);
-    column1.setText(Messages.getString("Simulation.DataTypes.typeColumn"));
+    final CellEditor[] editors = new CellEditor[table.getColumnCount()];
+    for (int i = 0; i < table.getColumnCount(); i++) {
+      editors[i] = new TextCellEditor(table);
+    }
+    tableViewer.setColumnProperties(DATA_TYPE_TABLE_TITLES);
+    tableViewer.setCellEditors(editors);
 
-    final TableColumn column2 = new TableColumn(table, SWT.NONE, 1);
-    column2.setText(Messages.getString("Simulation.DataTypes.sizeColumn"));
+    tableViewer.setCellModifier(new ICellModifier() {
+      @Override
+      public void modify(final Object element, final String property, final Object value) {
+        if (element instanceof TableItem) {
+          final TableItem ti = (TableItem) element;
+          final DataTypeImpl data = (DataTypeImpl) ti.getData();
+          final long oldValue = data.getValue();
+          try {
+            final long newValue = Long.parseLong((String) value);
+            if (oldValue != newValue) {
+              data.setValue(newValue);
+              firePropertyChange(PROP_DIRTY);
+              tableViewer.refresh();
+            }
+          } catch (final NumberFormatException e) {
+            ErrorDialog.openError(SimulationPage.this.getEditorSite().getShell(), "Wrong number format",
+                "Data type sizes are Long typed.",
+                new Status(IStatus.ERROR, "org.preesm.ui.scenario", "Could not parse long. " + e.getMessage()));
+          }
+          // toto
+        }
+      }
 
-    tableViewer.addDoubleClickListener(e -> labelProvider.handleDoubleClick((IStructuredSelection) e.getSelection()));
+      @Override
+      public Object getValue(final Object element, final String property) {
+        if (element instanceof DataTypeImpl) {
+          return Long.toString(((DataTypeImpl) element).getValue());
+        }
+        return "";
+      }
 
+      @Override
+      public boolean canModify(final Object element, final String property) {
+        return property.contentEquals(DATA_TYPE_TABLE_TITLES[1]);
+      }
+    });
     final Table tref = table;
     final Composite comp = tablecps;
 
@@ -449,16 +501,9 @@ public class SimulationPage extends ScenarioPage {
           final Point vBarSize = vBar.getSize();
           width -= vBarSize.x;
         }
-        final Point oldSize = tref.getSize();
-        if (oldSize.x > area.width) {
-          column1.setWidth((width / 4) - 1);
-          column2.setWidth(width - column1.getWidth());
-          tref.setSize(area.width, area.height);
-        } else {
-          tref.setSize(area.width, area.height);
-          column1.setWidth((width / 4) - 1);
-          column2.setWidth(width - column1.getWidth());
-        }
+        columns[0].setWidth((width / 4) - 1);
+        columns[1].setWidth(width - columns[0].getWidth());
+        tref.setSize(area.width, area.height);
       }
     });
 
