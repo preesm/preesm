@@ -242,17 +242,14 @@ public class SetActorRefinementFeature extends AbstractCustomFeature {
           final List<FunctionPrototype> allInitPrototypes = getPrototypes(file, actor, PrototypeFilter.INIT);
 
           FunctionPrototype initProto = null;
-          if (!initPrototypes.isEmpty() || !allInitPrototypes.isEmpty()) {
-            title = "Init Function Selection";
-            message = "Select an optionnal init function for actor " + actor.getName()
-                + ", or click Cancel\n(* = any string, ? = any char):";
-            final FunctionPrototype[] initProtoArray = initPrototypes
-                .toArray(new FunctionPrototype[initPrototypes.size()]);
-            final FunctionPrototype[] allInitProtoArray = allInitPrototypes
-                .toArray(new FunctionPrototype[allInitPrototypes.size()]);
-            initProto = PiMMUtil.selectFunction(initProtoArray, allInitProtoArray, title, message, false);
-
-          }
+          title = "Init Function Selection";
+          message = "Select an optionnal init function for actor " + actor.getName()
+              + ", or click Cancel to set none\n(* = any string, ? = any char):";
+          final FunctionPrototype[] initProtoArray = initPrototypes
+              .toArray(new FunctionPrototype[initPrototypes.size()]);
+          final FunctionPrototype[] allInitProtoArray = allInitPrototypes
+              .toArray(new FunctionPrototype[allInitPrototypes.size()]);
+          initProto = PiMMUtil.selectFunction(initProtoArray, allInitProtoArray, title, message, false);
           if ((loopProto != null) || (initProto != null)) {
             this.hasDoneChanges = true;
             final CHeaderRefinement newRefinement = PiMMUserFactory.instance.createCHeaderRefinement();
