@@ -1,7 +1,7 @@
 /**
- * Copyright or © or Copr. IETR/INSA - Rennes (2018) :
+ * Copyright or © or Copr. IETR/INSA - Rennes (2018 - 2019) :
  *
- * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2018)
+ * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2018 - 2019)
  *
  * This software is a computer program whose purpose is to help prototyping
  * parallel applications using dataflow formalism.
@@ -44,7 +44,6 @@ import org.preesm.algorithm.mapper.model.special.SendVertex;
 import org.preesm.algorithm.mapper.model.special.TransferVertex;
 import org.preesm.algorithm.model.dag.DAGVertex;
 import org.preesm.model.slam.ComponentInstance;
-import org.preesm.model.slam.attributes.Parameter;
 import org.preesm.model.slam.route.MessageRouteStep;
 
 /**
@@ -64,7 +63,7 @@ public class SyncGraph extends org.jgrapht.graph.SimpleDirectedWeightedGraph<Con
     final List<ComponentInstance> communicationSteps = ((MessageRouteStep) currentVertex.getRouteStep()).getNodes();
     for (final ComponentInstance component : communicationSteps) {
       boolean isZeroCopy = false;
-      for (final Parameter p : component.getParameters()) {
+      for (final Entry<String, String> p : component.getParameters()) {
         isZeroCopy |= p.getKey().equals(RedundantSynchronizationCleaner.ZERO_COPY)
             && p.getValue().equals(AbstractMappingFromDAG.VALUE_TRUE);
       }

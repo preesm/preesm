@@ -1,7 +1,7 @@
 /**
- * Copyright or © or Copr. IETR/INSA - Rennes (2015 - 2018) :
+ * Copyright or © or Copr. IETR/INSA - Rennes (2015 - 2019) :
  *
- * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017 - 2018)
+ * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017 - 2019)
  * blaunay <bapt.launay@gmail.com> (2015)
  * Hamza Deroui <hamza.deroui@insa-rennes.fr> (2018)
  *
@@ -123,9 +123,9 @@ public class SDFThroughputEvaluator extends ThroughputEvaluator {
 
       // Add the edge looping on the actor
       final SDFEdge loop = input.addEdge(vertex, vertex);
-      final SDFSourceInterfaceVertex in = new SDFSourceInterfaceVertex();
+      final SDFSourceInterfaceVertex in = new SDFSourceInterfaceVertex(null);
       in.setName(vertex.getName() + "In");
-      final SDFSinkInterfaceVertex out = new SDFSinkInterfaceVertex();
+      final SDFSinkInterfaceVertex out = new SDFSinkInterfaceVertex(null);
       out.setName(vertex.getName() + "Out");
       AbstractEdgePropertyType<?> x;
       if (vertex.getSources().size() != 0) {

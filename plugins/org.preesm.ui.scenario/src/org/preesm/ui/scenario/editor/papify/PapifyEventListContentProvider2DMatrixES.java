@@ -1,7 +1,7 @@
 /**
- * Copyright or © or Copr. IETR/INSA - Rennes (2008 - 2018) :
+ * Copyright or © or Copr. IETR/INSA - Rennes (2008 - 2019) :
  *
- * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017 - 2018)
+ * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017 - 2019)
  * Daniel Madroñal <daniel.madronal@upm.es> (2018)
  * Matthieu Wipliez <matthieu.wipliez@insa-rennes.fr> (2008)
  * Maxime Pelcat <maxime.pelcat@insa-rennes.fr> (2008 - 2011)
@@ -42,6 +42,7 @@ import org.eclipse.jface.viewers.CellEditor;
 import org.eclipse.jface.viewers.CheckboxCellEditor;
 import org.eclipse.jface.viewers.ColumnViewer;
 import org.eclipse.jface.viewers.EditingSupport;
+import org.preesm.model.pisdf.AbstractActor;
 import org.preesm.ui.scenario.editor.papify.PapifyEventListTreeElement.PAPIEventStatus;
 
 /**
@@ -87,13 +88,12 @@ class PapifyEventListContentProvider2DMatrixES extends EditingSupport {
   protected void setValue(final Object element, final Object value) {
     if (element instanceof PapifyEventListTreeElement) {
       final PapifyEventListTreeElement treeElement = (PapifyEventListTreeElement) element;
-      Object actorInstance = treeElement.getAlgorithmElement();
+      AbstractActor actorInstance = treeElement.actorPath;
       final Map<String, PAPIEventStatus> statuses = treeElement.PAPIStatuses;
 
       final PAPIEventStatus actorStatus = statuses.get(this.eventName);
       if (actorStatus.next().equals(PAPIEventStatus.NO)) {
         this.actorProvider.removeEventfromActor(actorInstance, this.eventName);
-
       } else {
         this.actorProvider.addEventtoActor(actorInstance, this.eventName);
       }

@@ -1,7 +1,7 @@
 /**
- * Copyright or © or Copr. IETR/INSA - Rennes (2008 - 2018) :
+ * Copyright or © or Copr. IETR/INSA - Rennes (2008 - 2019) :
  *
- * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017 - 2018)
+ * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017 - 2019)
  * Clément Guy <clement.guy@insa-rennes.fr> (2014)
  * Matthieu Wipliez <matthieu.wipliez@insa-rennes.fr> (2008)
  * Maxime Pelcat <maxime.pelcat@insa-rennes.fr> (2008 - 2014)
@@ -44,10 +44,9 @@ import org.preesm.algorithm.mapper.model.MapperDAGEdge;
 import org.preesm.algorithm.mapper.model.MapperDAGVertex;
 import org.preesm.algorithm.mapper.model.special.PrecedenceEdgeAdder;
 import org.preesm.algorithm.mapper.params.AbcParameters;
-import org.preesm.model.scenario.PreesmScenario;
+import org.preesm.model.scenario.Scenario;
 import org.preesm.model.slam.ComponentInstance;
 import org.preesm.model.slam.Design;
-import org.preesm.model.slam.utils.DesignTools;
 
 // TODO: Auto-generated Javadoc
 /**
@@ -73,7 +72,7 @@ public class LooselyTimedAbc extends LatencyAbc {
    *          the scenario
    */
   public LooselyTimedAbc(final AbcParameters params, final MapperDAG dag, final Design archi, final AbcType abcType,
-      final PreesmScenario scenario) {
+      final Scenario scenario) {
     super(params, dag, archi, abcType, scenario);
   }
 
@@ -90,7 +89,7 @@ public class LooselyTimedAbc extends LatencyAbc {
 
     final ComponentInstance effectiveOp = vertex.getEffectiveOperator();
 
-    if (effectiveOp != DesignTools.NO_COMPONENT_INSTANCE) {
+    if (effectiveOp != null) {
       // Adding precedence edges for an automatic graph timings
       // calculation
       new PrecedenceEdgeAdder(this.orderManager, this.implementation).scheduleVertex(vertex);
@@ -113,7 +112,7 @@ public class LooselyTimedAbc extends LatencyAbc {
     final ComponentInstance sourceOp = source.getEffectiveOperator();
     final ComponentInstance destOp = dest.getEffectiveOperator();
 
-    if ((sourceOp != DesignTools.NO_COMPONENT_INSTANCE) && (destOp != DesignTools.NO_COMPONENT_INSTANCE)) {
+    if ((sourceOp != null) && (destOp != null)) {
       if (sourceOp.getInstanceName().equals(destOp.getInstanceName())) {
         edge.getTiming().setCost(0);
       } else {
@@ -122,9 +121,6 @@ public class LooselyTimedAbc extends LatencyAbc {
         edge.getTiming().setCost(this.comRouter.evaluateTransferCost(edge));
       }
     }
-
-    // Setting edge costs for special types
-    // super.setEdgeCost(edge);
   }
 
   /*

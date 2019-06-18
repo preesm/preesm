@@ -1,7 +1,7 @@
 /**
- * Copyright or © or Copr. IETR/INSA - Rennes (2018) :
+ * Copyright or © or Copr. IETR/INSA - Rennes (2018 - 2019) :
  *
- * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2018)
+ * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2018 - 2019)
  * Daniel Madroñal <daniel.madronal@upm.es> (2018)
  *
  * This software is a computer program whose purpose is to help prototyping
@@ -37,6 +37,7 @@ package org.preesm.algorithm.moa.activity;
 
 import java.util.HashMap;
 import java.util.Map;
+import org.preesm.model.slam.component.Component;
 
 /**
  * Storing the number of custom quanta per actor. Information is stored as strings containing JEP compatible formula.
@@ -50,10 +51,10 @@ public class CustomQuanta {
    * Key for storing the number of custom quanta in a 2D map
    */
   private static class MapKeyPair {
-    private final String actor;
-    private final String operator;
+    private final String    actor;
+    private final Component operator;
 
-    private MapKeyPair(final String actor, final String operator) {
+    private MapKeyPair(final String actor, final Component operator) {
       this.actor = actor;
       this.operator = operator;
     }
@@ -84,7 +85,7 @@ public class CustomQuanta {
     this.customQuanta = new HashMap<>();
   }
 
-  public void addQuantaExpression(final String actor, final String operator, final String expression) {
+  public void addQuantaExpression(final String actor, final Component operator, final String expression) {
     final MapKeyPair mkp = new MapKeyPair(actor, operator);
     this.customQuanta.put(mkp, expression);
   }
@@ -92,7 +93,7 @@ public class CustomQuanta {
   /**
    *
    */
-  public String getQuanta(final String actor, final String operator) {
+  public String getQuanta(final String actor, final Component operator) {
     final MapKeyPair mkp = new MapKeyPair(actor, operator);
     if (this.customQuanta.containsKey(mkp)) {
       return this.customQuanta.get(mkp);

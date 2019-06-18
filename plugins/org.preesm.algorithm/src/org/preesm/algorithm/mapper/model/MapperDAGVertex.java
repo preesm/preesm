@@ -1,7 +1,7 @@
 /**
- * Copyright or © or Copr. IETR/INSA - Rennes (2008 - 2018) :
+ * Copyright or © or Copr. IETR/INSA - Rennes (2008 - 2019) :
  *
- * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017 - 2018)
+ * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017 - 2019)
  * Clément Guy <clement.guy@insa-rennes.fr> (2014 - 2015)
  * Jonathan Piat <jpiat@laas.fr> (2011)
  * Karol Desnos <karol.desnos@insa-rennes.fr> (2013)
@@ -53,10 +53,10 @@ import org.preesm.algorithm.mapper.model.special.TransferVertex;
 import org.preesm.algorithm.model.AbstractVertex;
 import org.preesm.algorithm.model.dag.DAGEdge;
 import org.preesm.algorithm.model.dag.DAGVertex;
+import org.preesm.model.pisdf.PiGraph;
 import org.preesm.model.scenario.types.ImplementationPropertyNames;
 import org.preesm.model.slam.ComponentInstance;
 import org.preesm.model.slam.component.Operator;
-import org.preesm.model.slam.utils.DesignTools;
 
 /**
  * Represents a vertex in a DAG of type {@link MapperDAG} used in the mapper.
@@ -83,10 +83,9 @@ public class MapperDAGVertex extends DAGVertex {
   /**
    * Instantiates a new mapper DAG vertex.
    */
-  public MapperDAGVertex() {
-
-    this("default", "default", null);
-    this.effectiveComponent = DesignTools.NO_COMPONENT_INSTANCE;
+  public MapperDAGVertex(final org.preesm.model.pisdf.AbstractVertex referencePiVertex) {
+    this("default", "default", null, referencePiVertex);
+    this.effectiveComponent = null;
   }
 
   /**
@@ -97,9 +96,10 @@ public class MapperDAGVertex extends DAGVertex {
    * @param base
    *          the base
    */
-  public MapperDAGVertex(final String id, final MapperDAG base) {
+  public MapperDAGVertex(final String id, final MapperDAG base,
+      final org.preesm.model.pisdf.AbstractVertex referencePiVertex) {
 
-    this(id, id, base);
+    this(id, id, base, referencePiVertex);
   }
 
   /**
@@ -112,14 +112,30 @@ public class MapperDAGVertex extends DAGVertex {
    * @param base
    *          the base
    */
-  private MapperDAGVertex(final String id, final String name, final MapperDAG base) {
+  private MapperDAGVertex(final String id, final String name, final MapperDAG base,
+      final org.preesm.model.pisdf.AbstractVertex referencePiVertex) {
 
-    super();
+    super(referencePiVertex);
 
     setName(name);
     getPropertyBean().setValue(MapperDAGVertex.INITIAL_PROPERTY, new VertexInit());
     getInit().setParentVertex(this);
-    this.effectiveComponent = DesignTools.NO_COMPONENT_INSTANCE;
+    this.effectiveComponent = null;
+  }
+
+  /**
+   *
+   */
+  public org.preesm.model.pisdf.AbstractVertex getReferencePiVertex() {
+    final org.preesm.model.pisdf.AbstractVertex referencePiVertex = super.getReferencePiVertex();
+    if (referencePiVertex == null) {
+      final MapperDAG dag = (MapperDAG) this.getBase();
+      final PiGraph referencePiMMGraph = dag.getReferencePiMMGraph();
+      // reference PiSDF graph should be SRDAG at this point.
+      return referencePiMMGraph.lookupVertex(this.getName());
+    } else {
+      return referencePiVertex;
+    }
   }
 
   /*
@@ -133,22 +149,22 @@ public class MapperDAGVertex extends DAGVertex {
     MapperDAGVertex result = null;
 
     if (this instanceof OverheadVertex) {
-      result = new OverheadVertex(getId(), (MapperDAG) getBase());
+      result = new OverheadVertex(getId(), (MapperDAG) getBase(), origVertex);
     } else if (this instanceof SendVertex) {
       result = new SendVertex(getId(), (MapperDAG) getBase(), ((SendVertex) this).getSource(),
-          ((SendVertex) this).getTarget(), ((SendVertex) this).getRouteStepIndex(), ((SendVertex) this).getNodeIndex());
+          ((SendVertex) this).getTarget(), ((SendVertex) this).getRouteStepIndex(), ((SendVertex) this).getNodeIndex(),
+          origVertex);
     } else if (this instanceof ReceiveVertex) {
       result = new ReceiveVertex(getId(), (MapperDAG) getBase(), ((ReceiveVertex) this).getSource(),
           ((ReceiveVertex) this).getTarget(), ((ReceiveVertex) this).getRouteStepIndex(),
-          ((ReceiveVertex) this).getNodeIndex());
+          ((ReceiveVertex) this).getNodeIndex(), origVertex);
     } else if (this instanceof TransferVertex) {
       final TransferVertex t = (TransferVertex) this;
       result = new TransferVertex(getId(), (MapperDAG) getBase(), t.getSource(), t.getTarget(), t.getRouteStepIndex(),
-          t.getNodeIndex());
+          t.getNodeIndex(), origVertex);
     } else {
-      result = new MapperDAGVertex(getId(), getName(), (MapperDAG) getBase());
+      result = new MapperDAGVertex(getId(), getName(), (MapperDAG) getBase(), origVertex);
     }
-
     final VertexInit copy = getInit().copy();
     copy.setParentVertex(result);
     result.setInit(copy);
@@ -351,7 +367,7 @@ public class MapperDAGVertex extends DAGVertex {
     if ((this.effectiveComponent != null) && (this.effectiveComponent.getComponent() instanceof Operator)) {
       return this.effectiveComponent;
     } else {
-      return DesignTools.NO_COMPONENT_INSTANCE;
+      return null;
     }
   }
 
@@ -361,7 +377,7 @@ public class MapperDAGVertex extends DAGVertex {
    * @return true, if successful
    */
   public boolean hasEffectiveOperator() {
-    return getEffectiveOperator() != DesignTools.NO_COMPONENT_INSTANCE;
+    return getEffectiveOperator() != null;
   }
 
   /**
@@ -389,7 +405,7 @@ public class MapperDAGVertex extends DAGVertex {
    * @return true, if successful
    */
   public boolean hasEffectiveComponent() {
-    return getEffectiveComponent() != DesignTools.NO_COMPONENT_INSTANCE;
+    return getEffectiveComponent() != null;
   }
 
   /**

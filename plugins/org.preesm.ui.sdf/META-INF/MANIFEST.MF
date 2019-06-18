@@ -3,7 +3,7 @@ Bundle-ManifestVersion: 2
 Bundle-Name: PREESM :: Plugins :: IBSDF UI
 Automatic-Module-Name: org.preesm.ui.sdf
 Bundle-SymbolicName: org.preesm.ui.sdf;singleton:=true
-Bundle-Version: 3.8.1
+Bundle-Version: 3.9.0
 Bundle-Vendor: IETR / INSA Rennes - VAADER
 Require-Bundle: org.eclipse.ui.console;bundle-version="3.5.100",
  org.eclipse.ui.editors,
@@ -19,4 +19,8 @@ Require-Bundle: org.eclipse.ui.console;bundle-version="3.5.100",
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Bundle-ActivationPolicy: lazy
 Eclipse-BuddyPolicy: global
+Export-Package: org.preesm.ui.sdf.editor.graph.validators,
+ org.preesm.ui.sdf.properties,
+ org.preesm.ui.sdf.properties.filters,
+ org.preesm.ui.sdf.wizard
 

@@ -39,6 +39,7 @@ import java.io.IOException;
 import java.nio.file.Paths;
 import java.util.HashMap;
 import java.util.LinkedHashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.logging.Level;
@@ -67,15 +68,13 @@ import org.preesm.commons.doc.annotations.PreesmTask;
 import org.preesm.commons.doc.annotations.Value;
 import org.preesm.commons.exceptions.PreesmException;
 import org.preesm.commons.exceptions.PreesmRuntimeException;
-import org.preesm.commons.files.ContainersManager;
-import org.preesm.commons.files.PathTools;
+import org.preesm.commons.files.WorkspaceUtils;
 import org.preesm.commons.logger.PreesmLogger;
 import org.preesm.model.pisdf.AbstractActor;
 import org.preesm.model.pisdf.Actor;
 import org.preesm.model.pisdf.PiGraph;
 import org.preesm.model.pisdf.Refinement;
-import org.preesm.model.pisdf.serialize.PiParser;
-import org.preesm.model.scenario.PreesmScenario;
+import org.preesm.model.scenario.Scenario;
 import org.preesm.model.scenario.types.ImplementationPropertyNames;
 import org.preesm.model.slam.ComponentInstance;
 import org.preesm.model.slam.Design;
@@ -149,7 +148,7 @@ public class CustomQuantaExporter extends AbstractTaskImplementation {
     final Logger logger = PreesmLogger.getLogger();
 
     final String filePath = parameters.get(CustomQuantaExporter.PATH);
-    final boolean human_readable = (parameters.get(CustomQuantaExporter.HUMAN_READABLE) == "Yes");
+    final boolean humanReadable = "Yes".equalsIgnoreCase(parameters.get(CustomQuantaExporter.HUMAN_READABLE));
     // The abc contains all information on the implemented system
     final LatencyAbc abc = (LatencyAbc) inputs.get(AbstractWorkflowNodeImplementation.KEY_SDF_ABC);
 
@@ -157,16 +156,16 @@ public class CustomQuantaExporter extends AbstractTaskImplementation {
 
     if (abc != null) {
       // The pattern $SCENARIO$ in the input excel file name is replaced by the scenario name
-      final PreesmScenario scenario = abc.getScenario();
+      final Scenario scenario = abc.getScenario();
       final String scenarioURL = scenario.getScenarioURL();
       final String scenarioName = Paths.get(scenarioURL).getFileName().toString().replace(".scenario", "");
       inputXLSFile = inputXLSFile.replace("$SCENARIO$", scenarioName);
-      inputXLSFile = PathTools.getAbsolutePath(inputXLSFile, workflow.getProjectName());
+      inputXLSFile = WorkspaceUtils.getAbsolutePath(inputXLSFile, workflow.getProjectName());
 
       // parsing individual quanta values from an excel file
       parseQuantaInputFile(inputXLSFile, abc.getScenario());
 
-      writeActivity(abc, filePath, workflow, human_readable);
+      writeActivity(abc, filePath, workflow, humanReadable);
     } else {
       logger.log(Level.SEVERE, "Not a valid set of ABCs for ActivityExporter.");
     }
@@ -241,7 +240,7 @@ public class CustomQuantaExporter extends AbstractTaskImplementation {
   private void visitVertex(final MapperDAGVertex vertex) {
     final String duration = vertex.getPropertyStringValue(ImplementationPropertyNames.Task_duration);
     final Component operator = vertex.getEffectiveComponent().getComponent();
-    final String cquanta = this.customQuanta.getQuanta(vertex.getName(), operator.getVlnv().getName());
+    final String cquanta = this.customQuanta.getQuanta(vertex.getName(), operator);
 
     if (!cquanta.isEmpty()) {
       // Resolving the value as a String expression of t
@@ -304,16 +303,16 @@ public class CustomQuantaExporter extends AbstractTaskImplementation {
    */
   static void writeString(final String text, final String fileName, final String stringPath, final Workflow workflow) {
 
-    final String sPath = PathTools.getAbsolutePath(stringPath, workflow.getProjectName());
+    final String sPath = WorkspaceUtils.getAbsolutePath(stringPath, workflow.getProjectName());
     IPath path = new Path(sPath);
     path = path.append(fileName + ".csv");
 
     // Get a complete valid path with all folders existing
     try {
       if (path.getFileExtension() != null) {
-        ContainersManager.createMissingFolders(path.removeFileExtension().removeLastSegments(1));
+        WorkspaceUtils.createMissingFolders(path.removeFileExtension().removeLastSegments(1));
       } else {
-        ContainersManager.createMissingFolders(path);
+        WorkspaceUtils.createMissingFolders(path);
       }
     } catch (final CoreException e) {
       throw new PreesmRuntimeException("Path " + path + " is not a valid path for export.");
@@ -336,7 +335,7 @@ public class CustomQuantaExporter extends AbstractTaskImplementation {
   /**
    * Reading individual quanta information from an excel file.
    */
-  void parseQuantaInputFile(final String fileName, final PreesmScenario scenario) {
+  void parseQuantaInputFile(final String fileName, final Scenario scenario) {
 
     final IPath path = new Path(fileName);
     final IFile iFile = ResourcesPlugin.getWorkspace().getRoot().getFile(path);
@@ -350,13 +349,9 @@ public class CustomQuantaExporter extends AbstractTaskImplementation {
       try {
         final Workbook w = Workbook.getWorkbook(iFile.getContents());
 
-        if (scenario.isPISDFScenario()) {
-          final PiGraph currentGraph = PiParser.getPiGraphWithReconnection(scenario.getAlgorithmURL());
-          final Set<String> operators = scenario.getOperatorDefinitionIds();
-          parseQuantaForPISDFGraph(w, currentGraph, operators);
-        } else {
-          PreesmLogger.getLogger().log(Level.SEVERE, "Only PiSDF graphs are supported for custom quanta export.");
-        }
+        final PiGraph currentGraph = scenario.getAlgorithm();
+        final Design design = scenario.getDesign();
+        parseQuantaForPISDFGraph(w, currentGraph, design.getOperatorComponents());
 
         // Warnings are displayed once for each missing operator or vertex
         // in the excel sheet
@@ -370,7 +365,7 @@ public class CustomQuantaExporter extends AbstractTaskImplementation {
   /**
    * Reading individual quanta information from an excel file. Recursive method.
    */
-  void parseQuantaForPISDFGraph(final Workbook w, final PiGraph appli, final Set<String> operators) {
+  void parseQuantaForPISDFGraph(final Workbook w, final PiGraph appli, final List<Component> operators) {
     // Each of the vertices of the graph is either itself a graph
     // (hierarchical vertex), in which case we call recursively this method
     // we parse quanta for standard and special vertices
@@ -404,12 +399,12 @@ public class CustomQuantaExporter extends AbstractTaskImplementation {
   /**
    * Reading individual quanta information from an excel file. Recursive method.
    */
-  void parseQuantaForVertex(final Workbook w, final String vertexName, final Set<String> operators) {
+  void parseQuantaForVertex(final Workbook w, final String vertexName, final List<Component> operators) {
 
     // Test excel reader, to be continued
-    for (final String opDefId : operators) {
+    for (final Component opDefId : operators) {
       final Cell vertexCell = w.getSheet(0).findCell(vertexName);
-      final Cell operatorCell = w.getSheet(0).findCell(opDefId);
+      final Cell operatorCell = w.getSheet(0).findCell(opDefId.getVlnv().getName());
 
       if ((vertexCell != null) && (operatorCell != null)) {
         // Get the cell containing the timing

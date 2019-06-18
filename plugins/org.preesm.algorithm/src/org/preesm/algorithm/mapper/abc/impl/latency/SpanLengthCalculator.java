@@ -1,7 +1,7 @@
 /**
- * Copyright or © or Copr. IETR/INSA - Rennes (2009 - 2018) :
+ * Copyright or © or Copr. IETR/INSA - Rennes (2009 - 2019) :
  *
- * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017 - 2018)
+ * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017 - 2019)
  * Clément Guy <clement.guy@insa-rennes.fr> (2014 - 2015)
  * Maxime Pelcat <maxime.pelcat@insa-rennes.fr> (2009 - 2012)
  *
@@ -41,7 +41,7 @@ import org.preesm.algorithm.mapper.model.MapperDAG;
 import org.preesm.algorithm.mapper.model.MapperDAGEdge;
 import org.preesm.algorithm.mapper.params.AbcParameters;
 import org.preesm.commons.exceptions.PreesmException;
-import org.preesm.model.scenario.PreesmScenario;
+import org.preesm.model.scenario.Scenario;
 import org.preesm.model.slam.Design;
 
 /**
@@ -71,7 +71,7 @@ public class SpanLengthCalculator extends InfiniteHomogeneousAbc {
    *           the workflow exception
    */
   public SpanLengthCalculator(final AbcParameters params, final MapperDAG dag, final Design archi,
-      final TaskSchedType taskSchedType, final PreesmScenario scenario) {
+      final TaskSchedType taskSchedType, final Scenario scenario) {
     super(params, dag, archi, taskSchedType, scenario);
 
     updateTimings();

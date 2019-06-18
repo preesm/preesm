@@ -1,7 +1,7 @@
 /**
- * Copyright or © or Copr. IETR/INSA - Rennes (2008 - 2018) :
+ * Copyright or © or Copr. IETR/INSA - Rennes (2008 - 2019) :
  *
- * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017 - 2018)
+ * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017 - 2019)
  * Clément Guy <clement.guy@insa-rennes.fr> (2014 - 2015)
  * Jonathan Piat <jpiat@laas.fr> (2009 - 2011)
  * Karol Desnos <karol.desnos@insa-rennes.fr> (2013)
@@ -76,8 +76,8 @@ public class SendVertex extends TransferVertex {
    *          the node index
    */
   public SendVertex(final String id, final MapperDAG base, final MapperDAGVertex source, final MapperDAGVertex target,
-      final int routeStepIndex, final int nodeIndex) {
-    super(id, base, source, target, routeStepIndex, nodeIndex);
+      final int routeStepIndex, final int nodeIndex, org.preesm.model.pisdf.AbstractVertex origVertex) {
+    super(id, base, source, target, routeStepIndex, nodeIndex, origVertex);
   }
 
   /*

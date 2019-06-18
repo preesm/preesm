@@ -40,6 +40,7 @@ import bsh.EvalError;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.emf.common.util.EMap;
 import org.preesm.algorithm.memory.allocation.AbstractMemoryAllocatorTask;
 import org.preesm.algorithm.memory.exclusiongraph.MemoryExclusionGraph;
 import org.preesm.algorithm.model.dag.DirectedAcyclicGraph;
@@ -48,8 +49,7 @@ import org.preesm.commons.doc.annotations.Port;
 import org.preesm.commons.doc.annotations.PreesmTask;
 import org.preesm.commons.doc.annotations.Value;
 import org.preesm.commons.exceptions.PreesmRuntimeException;
-import org.preesm.model.scenario.PreesmScenario;
-import org.preesm.model.scenario.types.DataType;
+import org.preesm.model.scenario.Scenario;
 import org.preesm.workflow.elements.Workflow;
 
 /**
@@ -59,8 +59,7 @@ import org.preesm.workflow.elements.Workflow;
     category = "Memory Optimization",
 
     inputs = { @Port(name = "DAG", type = DirectedAcyclicGraph.class),
-        @Port(name = "MemEx", type = MemoryExclusionGraph.class),
-        @Port(name = "scenario", type = PreesmScenario.class) },
+        @Port(name = "MemEx", type = MemoryExclusionGraph.class), @Port(name = "scenario", type = Scenario.class) },
     outputs = { @Port(name = "MemEx", type = MemoryExclusionGraph.class) },
 
     shortDescription = "Executes the memory scripts associated to actors and merge buffers.",
@@ -136,8 +135,8 @@ public class MemoryScriptTask extends AbstractMemoryScriptTask {
     final DirectedAcyclicGraph dag = (DirectedAcyclicGraph) inputs.get("DAG");
 
     // Get the data types from the scenario
-    final PreesmScenario scenario = (PreesmScenario) inputs.get("scenario");
-    final Map<String, DataType> dataTypes = scenario.getSimulationManager().getDataTypes();
+    final Scenario scenario = (Scenario) inputs.get("scenario");
+    final EMap<String, Long> dataTypes = scenario.getSimulationInfo().getDataTypes();
 
     // Get check policy
     final String checkString = parameters.get(AbstractMemoryScriptTask.PARAM_CHECK);

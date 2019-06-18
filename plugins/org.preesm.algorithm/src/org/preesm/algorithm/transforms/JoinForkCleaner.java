@@ -253,7 +253,7 @@ public class JoinForkCleaner {
               || (sourceCopies.get(sourceIndex) instanceof SDFRoundBufferVertex))) {
 
         // If an explode must be added
-        final SDFAbstractVertex explodeVertex = new SDFForkVertex();
+        final SDFAbstractVertex explodeVertex = new SDFForkVertex(null);
         graph.addVertex(explodeVertex);
         final SDFAbstractVertex originVertex = sourceCopies.get(sourceIndex);
         explodeVertex.setName(
@@ -280,7 +280,7 @@ public class JoinForkCleaner {
       if (implode && !(targetCopies.get(targetIndex) instanceof SDFJoinVertex)
           && !(targetCopies.get(targetIndex) instanceof SDFRoundBufferVertex)) {
         // If an implode must be added
-        final SDFAbstractVertex implodeVertex = new SDFJoinVertex();
+        final SDFAbstractVertex implodeVertex = new SDFJoinVertex(null);
         graph.addVertex(implodeVertex);
         final SDFAbstractVertex originVertex = targetCopies.get(targetIndex);
         implodeVertex.setName(

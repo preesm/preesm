@@ -39,6 +39,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
 import java.util.logging.Level;
 import org.eclipse.core.runtime.IProgressMonitor;
@@ -48,13 +49,19 @@ import org.preesm.commons.doc.annotations.PreesmTask;
 import org.preesm.commons.doc.annotations.Value;
 import org.preesm.commons.exceptions.PreesmRuntimeException;
 import org.preesm.commons.logger.PreesmLogger;
+import org.preesm.commons.model.PreesmCopyTracker;
 import org.preesm.model.pisdf.AbstractActor;
+import org.preesm.model.pisdf.AbstractVertex;
 import org.preesm.model.pisdf.Actor;
 import org.preesm.model.pisdf.ExecutableActor;
 import org.preesm.model.pisdf.PeriodicElement;
 import org.preesm.model.pisdf.PiGraph;
-import org.preesm.model.scenario.PreesmScenario;
+import org.preesm.model.pisdf.brv.BRVMethod;
+import org.preesm.model.pisdf.brv.PiBRV;
+import org.preesm.model.scenario.Scenario;
+import org.preesm.model.scenario.ScenarioConstants;
 import org.preesm.model.slam.Design;
+import org.preesm.model.slam.component.Component;
 import org.preesm.workflow.elements.Workflow;
 import org.preesm.workflow.implement.AbstractTaskImplementation;
 import org.preesm.workflow.implement.AbstractWorkflowNodeImplementation;
@@ -68,7 +75,7 @@ import org.preesm.workflow.implement.AbstractWorkflowNodeImplementation;
 @PreesmTask(id = "org.ietr.preesm.pimm.algorithm.checker.periods.PeriodsPreschedulingChecker",
     name = "Periods Prescheduling Checker",
 
-    inputs = { @Port(name = "PiMM", type = PiGraph.class), @Port(name = "scenario", type = PreesmScenario.class),
+    inputs = { @Port(name = "PiMM", type = PiGraph.class), @Port(name = "scenario", type = Scenario.class),
         @Port(name = "architecture", type = Design.class) },
 
     outputs = { @Port(name = "PiMM", type = PiGraph.class) },
@@ -97,7 +104,7 @@ public class PeriodsPreschedulingChecker extends AbstractTaskImplementation {
       final IProgressMonitor monitor, final String nodeName, final Workflow workflow) {
 
     inputs.get(AbstractWorkflowNodeImplementation.KEY_ARCHITECTURE);
-    final PreesmScenario scenario = (PreesmScenario) inputs.get(AbstractWorkflowNodeImplementation.KEY_SCENARIO);
+    final Scenario scenario = (Scenario) inputs.get(AbstractWorkflowNodeImplementation.KEY_SCENARIO);
     final PiGraph graph = (PiGraph) inputs.get(AbstractWorkflowNodeImplementation.KEY_PI_GRAPH);
 
     if (!graph.getChildrenGraphs().isEmpty()) {
@@ -126,6 +133,28 @@ public class PeriodsPreschedulingChecker extends AbstractTaskImplementation {
           }
         }
       }
+    }
+
+    Map<AbstractVertex, Long> brv = PiBRV.compute(graph, BRVMethod.LCM);
+
+    for (final Entry<AbstractVertex, Long> en : brv.entrySet()) {
+      final AbstractVertex a = en.getKey();
+      AbstractVertex actor = PreesmCopyTracker.getOriginalSource(a);
+      long wcetMin = Long.MAX_VALUE;
+      if (actor instanceof AbstractActor) {
+        final Design design = scenario.getDesign();
+        for (final Component operatorDefinitionID : design.getOperatorComponents()) {
+          final long timing = scenario.getTimings().evaluateTimingOrDefault((AbstractActor) actor,
+              operatorDefinitionID);
+          if (timing < wcetMin) {
+            wcetMin = timing;
+          }
+        }
+      } else {
+        wcetMin = ScenarioConstants.DEFAULT_TIMING_TASK.getValue();
+      }
+      System.err.println(
+          "Actor : " + actor.getName() + " has wcet (min) : " + wcetMin + " [full path: " + actor.getVertexPath());
     }
 
     // 0. find all cycles and retrieve actors placed after delays.

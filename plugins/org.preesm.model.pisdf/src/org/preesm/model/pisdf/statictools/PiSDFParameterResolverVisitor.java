@@ -42,6 +42,7 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import org.eclipse.emf.common.util.EList;
 import org.preesm.commons.exceptions.PreesmRuntimeException;
+import org.preesm.commons.math.JEPWrapper;
 import org.preesm.model.pisdf.AbstractActor;
 import org.preesm.model.pisdf.ConfigInputInterface;
 import org.preesm.model.pisdf.ConfigInputPort;
@@ -56,7 +57,6 @@ import org.preesm.model.pisdf.ISetter;
 import org.preesm.model.pisdf.InterfaceActor;
 import org.preesm.model.pisdf.Parameter;
 import org.preesm.model.pisdf.PiGraph;
-import org.preesm.model.pisdf.expression.ExpressionEvaluator;
 import org.preesm.model.pisdf.util.PiMMSwitch;
 
 /**
@@ -134,7 +134,9 @@ public class PiSDFParameterResolverVisitor extends PiMMSwitch<Boolean> {
    */
   private void resolveExpression(final ExpressionHolder holder, final Map<String, Long> paramValues) {
     final Expression expression = holder.getExpression();
-    final long value = ExpressionEvaluator.evaluate(expression, paramValues);
+    final long value = JEPWrapper.evaluate(expression.getExpressionAsString(), paramValues);
+    // final long value = ExpressionEvaluator.evaluate(expression.getExpressionAsString(), Collections.emptyMap(),
+    // paramValues);
     holder.setExpression(value);
   }
 
@@ -225,10 +227,8 @@ public class PiSDFParameterResolverVisitor extends PiMMSwitch<Boolean> {
   @Override
   public Boolean casePiGraph(final PiGraph graph) {
     if (!graph.isLocallyStatic()) {
-      throw new PreesmRuntimeException(
-          "PiGraph " + graph.getName() + " has configuration actors. It is thus impossible to use the"
-              + " Static PiMM 2 SDF transformation. Try instead the Dynamic PiMM 2 SDF"
-              + " transformation (id: org.ietr.preesm.experiment.pimm2sdf.PiMM2SDFTask)");
+      throw new PreesmRuntimeException("PiGraph " + graph.getName()
+          + " has configuration actors. It is thus impossible to use the" + " Static PiMM to SRDAG transformation.");
     }
 
     // Resolve input interfaces

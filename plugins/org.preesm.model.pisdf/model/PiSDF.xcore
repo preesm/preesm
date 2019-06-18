@@ -25,13 +25,13 @@
 @Ecore(nsURI="http://org.preesm/model/pisdf")
 package org.preesm.model.pisdf
 
+import java.io.File
 import java.util.Optional
 import org.preesm.commons.exceptions.PreesmRuntimeException
 import org.preesm.model.pisdf.util.RefinementResolver
 import org.preesm.model.pisdf.expression.ExpressionEvaluator
 import org.preesm.model.pisdf.factory.PiMMUserFactory
-
-type IPath wraps org.eclipse.core.runtime.IPath
+import java.util.Collections
 
 // !!! This is needed as of the current versions of xcore/xtext
 // For some reason when using the default String/... (i.e. without the following)
@@ -99,7 +99,7 @@ class StringExpression extends Expression {
 		return getExpressionString()
 	}
 	op long evaluate() {
-		return ExpressionEvaluator.evaluate(this)
+		return ExpressionEvaluator.evaluate(this, Collections.emptyMap)
 	}
 }
 
@@ -209,6 +209,16 @@ abstract class AbstractActor extends Configurable {
 
 class PiGraph extends AbstractActor, Graph {
 
+	// URL to the file where this graph is saved
+	String url
+
+	op boolean isLocallyStatic() {
+		// a PiGraph is static if all the parameters it contains are static
+		// and if the input setters on its config interfaces are static
+		// and if all its children graphs are locally static
+		return super.isLocallyStatic && parameters.forall[isLocallyStatic] && childrenGraphs.forall[isLocallyStatic]
+	}
+
 	op unique boolean addActor(AbstractActor actor) {
 		vertices.add(actor)
 	}
@@ -316,6 +326,11 @@ class PiGraph extends AbstractActor, Graph {
 	op AbstractVertex lookupVertex(String vertexName) {
 		return (actors + parameters).findFirst[it.name == vertexName]
 	}
+
+	op AbstractVertex lookupAllVertex(String vertexName) {
+		return (allActors + allParameters).findFirst[it.name == vertexName]
+	}
+
 	op Fifo lookupFifo(String fifoId) {
 		return fifos.findFirst[it.id == fifoId]
 	}
@@ -336,11 +351,11 @@ abstract class ExecutableActor extends AbstractActor {
 }
 
 interface RefinementContainer {
-	contains Refinement refinement
+	contains Refinement refinement opposite refinementContainer
 }
 
 class Actor extends ExecutableActor, RefinementContainer, PeriodicElement {
-	IPath memoryScriptPath
+	String memoryScriptPath
 	op boolean isConfigurationActor() {
 		return configOutputPorts.map[outgoingDependencies].filter[!it.isEmpty].map[it.get(0)].map[getter].exists[true]
 	}
@@ -441,13 +456,13 @@ class DelayActor extends NonExecutableActor, RefinementContainer {
 	// void delayInitRefinement(IN int size, OUT <type> *fifo);
 	op boolean isValidRefinement(CHeaderRefinement hrefinement) {
 		var FunctionPrototype initPrototype = hrefinement.getLoopPrototype()
-		if (initPrototype.getParameters().length != 2) {
+		if (initPrototype.arguments.length != 2) {
 			return false
 		}
-		if (initPrototype.getParameters().get(0).direction !== Direction.IN) {
+		if (initPrototype.arguments.get(0).getDirection !== Direction.IN) {
 			return false
 		}
-		if (initPrototype.getParameters().get(1).direction !== Direction.OUT) {
+		if (initPrototype.arguments.get(1).getDirection !== Direction.OUT) {
 			return false
 		}
 		return true
@@ -597,12 +612,14 @@ class ConfigOutputInterface extends InterfaceActor {
 }
 
 interface Refinement {
-	IPath filePath
+	refers RefinementContainer refinementContainer opposite refinement
+
+	String filePath
 	op AbstractActor getAbstractActor() {
 		return RefinementResolver.resolveAbstractActor(this)
 	}
 	op String getFileName() {
-		return Optional.ofNullable(filePath).map[lastSegment].orElse(null)
+		return Optional.ofNullable(filePath).map[it | new File(it).getName()].orElse(null)
 	}
 	op boolean isHierarchical()
 }
@@ -733,10 +750,10 @@ class Delay extends Configurable, ExpressionHolder {
 
 class FunctionPrototype {
 	String name
-	contains FunctionParameter[] parameters
+	contains FunctionArgument[] arguments
 }
 
-class FunctionParameter {
+class FunctionArgument {
 	String name
 	Direction direction
 	String ^type

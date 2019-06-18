@@ -52,6 +52,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.logging.Level;
 import org.eclipse.emf.common.util.EList;
+import org.eclipse.emf.common.util.EMap;
 import org.preesm.codegen.xtend.spider.utils.SpiderNameGenerator;
 import org.preesm.codegen.xtend.spider.utils.SpiderTypeConverter;
 import org.preesm.codegen.xtend.spider.utils.SpiderTypeConverter.PiSDFSubType;
@@ -78,7 +79,7 @@ import org.preesm.model.pisdf.ExecutableActor;
 import org.preesm.model.pisdf.Expression;
 import org.preesm.model.pisdf.Fifo;
 import org.preesm.model.pisdf.ForkActor;
-import org.preesm.model.pisdf.FunctionParameter;
+import org.preesm.model.pisdf.FunctionArgument;
 import org.preesm.model.pisdf.FunctionPrototype;
 import org.preesm.model.pisdf.ISetter;
 import org.preesm.model.pisdf.InitActor;
@@ -91,7 +92,8 @@ import org.preesm.model.pisdf.PiSDFRefinement;
 import org.preesm.model.pisdf.Port;
 import org.preesm.model.pisdf.RoundBufferActor;
 import org.preesm.model.pisdf.util.PiMMSwitch;
-import org.preesm.model.scenario.types.DataType;
+import org.preesm.model.slam.ComponentInstance;
+import org.preesm.model.slam.component.Component;
 
 // TODO: Find a cleaner way to setParentEdge in Interfaces
 /*
@@ -118,7 +120,7 @@ public class SpiderCodegenVisitor extends PiMMSwitch<Boolean> {
   private final Map<PiGraph, StringBuilder> graph2method    = new LinkedHashMap<>();
   private final Map<PiGraph, List<PiGraph>> graph2subgraphs = new LinkedHashMap<>();
 
-  private final Map<String, DataType> dataTypes;
+  private final EMap<String, Long> dataTypes;
 
   private StringBuilder currentMethod;
 
@@ -135,11 +137,11 @@ public class SpiderCodegenVisitor extends PiMMSwitch<Boolean> {
 
   private final Map<AbstractActor, Integer> functionMap;
 
-  private final Map<AbstractActor, Map<String, String>> timings;
+  private final Map<AbstractActor, Map<Component, String>> timings;
 
-  private final Map<AbstractActor, Set<String>> constraints;
+  private final Map<AbstractActor, Set<ComponentInstance>> constraints;
 
-  public LinkedHashSet<String> getPrototypes() {
+  public Set<String> getPrototypes() {
     return this.prototypes;
   }
 
@@ -155,8 +157,8 @@ public class SpiderCodegenVisitor extends PiMMSwitch<Boolean> {
   /**
    */
   public SpiderCodegenVisitor(final SpiderCodegen callerSpiderCodegen, final StringBuilder topMethod,
-      final SpiderPreProcessVisitor prepocessor, final Map<AbstractActor, Map<String, String>> timings,
-      final Map<AbstractActor, Set<String>> constraints, final Map<String, DataType> dataTypes) {
+      final SpiderPreProcessVisitor prepocessor, final Map<AbstractActor, Map<Component, String>> timings,
+      final Map<AbstractActor, Set<ComponentInstance>> constraints, final EMap<String, Long> dataTypes) {
     this.callerSpiderCodegen = callerSpiderCodegen;
     this.currentMethod = topMethod;
     this.preprocessor = prepocessor;
@@ -229,24 +231,24 @@ public class SpiderCodegenVisitor extends PiMMSwitch<Boolean> {
    * Class that sort parameters with dependencies
    */
   private class ParameterSorting {
-    private final Map<Parameter, Integer> ParameterLevels = new LinkedHashMap<>();
+    private final Map<Parameter, Integer> parameterLevels = new LinkedHashMap<>();
 
     private Integer getLevelParameter(final Parameter p) {
-      if (this.ParameterLevels.containsKey(p)) {
-        return this.ParameterLevels.get(p);
+      if (this.parameterLevels.containsKey(p)) {
+        return this.parameterLevels.get(p);
       }
 
       int level = 0;
       for (final ConfigInputPort port : p.getConfigInputPorts()) {
         if (port.getIncomingDependency().getSetter() instanceof Parameter) {
           final Parameter incomingParameter = (Parameter) port.getIncomingDependency().getSetter();
-          if (!this.ParameterLevels.containsKey(incomingParameter)) {
+          if (!this.parameterLevels.containsKey(incomingParameter)) {
             getLevelParameter(incomingParameter);
           }
-          level = Math.max(level, this.ParameterLevels.get(incomingParameter) + 1);
+          level = Math.max(level, this.parameterLevels.get(incomingParameter) + 1);
         }
       }
-      this.ParameterLevels.put(p, level);
+      this.parameterLevels.put(p, level);
       return level;
     }
 
@@ -254,7 +256,7 @@ public class SpiderCodegenVisitor extends PiMMSwitch<Boolean> {
       for (final Parameter p : params) {
         getLevelParameter(p);
       }
-      params.sort((p1, p2) -> this.ParameterLevels.get(p1) - this.ParameterLevels.get(p2));
+      params.sort((p1, p2) -> this.parameterLevels.get(p1) - this.parameterLevels.get(p2));
       return params;
     }
 
@@ -265,8 +267,8 @@ public class SpiderCodegenVisitor extends PiMMSwitch<Boolean> {
    */
   private void generateMethodPrototype(final PiGraph pg) {
     final StringBuilder prototype = new StringBuilder();
-    final StringBuilder parameters_proto = new StringBuilder();
-    final StringBuilder parameters_def = new StringBuilder();
+    final StringBuilder parametersProto = new StringBuilder();
+    final StringBuilder parametersDef = new StringBuilder();
     final StringBuilder definition = new StringBuilder();
 
     prototype.append("void ");
@@ -281,15 +283,15 @@ public class SpiderCodegenVisitor extends PiMMSwitch<Boolean> {
 
     for (final Parameter p : l) {
       if (p.isLocallyStatic() && !p.isDependent() && !p.isConfigurationInterface()) {
-        parameters_proto.append(", ");
-        parameters_def.append(", ");
-        parameters_proto.append("Param " + p.getName() + " = " + p.getValueExpression().evaluate());
-        parameters_def.append("Param " + p.getName());
+        parametersProto.append(", ");
+        parametersDef.append(", ");
+        parametersProto.append("Param " + p.getName() + " = " + p.getValueExpression().evaluate());
+        parametersDef.append("Param " + p.getName());
       }
     }
 
-    prototype.append(parameters_proto);
-    definition.append(parameters_def);
+    prototype.append(parametersProto);
+    definition.append(parametersDef);
 
     prototype.append(");\n");
     definition.append(")");
@@ -475,13 +477,13 @@ public class SpiderCodegenVisitor extends PiMMSwitch<Boolean> {
       if (this.constraints.get(aa) != null) {
         // Check if the actor is enabled on all PEs.
         append("\t/* == Setting execution constraints == */\n");
-        final Set<String> peNames = this.constraints.get(aa);
+        final Set<ComponentInstance> peNames = this.constraints.get(aa);
         if (peNames.containsAll(this.callerSpiderCodegen.getCoreIds().keySet())) {
           append("\tSpider::isExecutableOnAllPE(");
           append(vertexName + ");\n");
         } else {
           // Not all the PEs are enabled for the actor
-          for (final String core : this.constraints.get(aa)) {
+          for (final ComponentInstance core : this.constraints.get(aa)) {
             append("\tSpider::isExecutableOnPE(");
             append(vertexName + ", static_cast<std::uint32_t>(PEVirtID::");
             append(SpiderNameGenerator.getCoreName(core) + "));\n");
@@ -493,10 +495,10 @@ public class SpiderCodegenVisitor extends PiMMSwitch<Boolean> {
       }
     }
 
-    final Map<String, String> aaTimings = this.timings.get(aa);
+    final Map<Component, String> aaTimings = this.timings.get(aa);
     if (aaTimings != null) {
       append("\t/* == Setting timing on corresponding PEs == */\n");
-      for (final String coreType : aaTimings.keySet()) {
+      for (final Component coreType : aaTimings.keySet()) {
         append("\tSpider::setTimingOnType(");
         append(vertexName + ", static_cast<std::uint32_t>(PEType::");
         append(SpiderNameGenerator.getCoreTypeName(coreType) + "), \"");
@@ -572,7 +574,7 @@ public class SpiderCodegenVisitor extends PiMMSwitch<Boolean> {
 
     long typeSize;
     if (this.dataTypes.containsKey(f.getType())) {
-      typeSize = this.dataTypes.get(f.getType()).getSize();
+      typeSize = this.dataTypes.get(f.getType());
     } else {
       PreesmLogger.getLogger().warning("Type " + f.getType() + " is not defined in scenario (considered size = 1).");
       typeSize = 1;
@@ -888,7 +890,7 @@ public class SpiderCodegenVisitor extends PiMMSwitch<Boolean> {
   }
 
   @Override
-  public Boolean caseFunctionParameter(final FunctionParameter functionParameter) {
+  public Boolean caseFunctionArgument(final FunctionArgument functionParameter) {
     throw new UnsupportedOperationException();
   }
 

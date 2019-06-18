@@ -1,7 +1,7 @@
 /**
- * Copyright or © or Copr. IETR/INSA - Rennes (2008 - 2018) :
+ * Copyright or © or Copr. IETR/INSA - Rennes (2008 - 2019) :
  *
- * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017 - 2018)
+ * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017 - 2019)
  * Matthieu Wipliez <matthieu.wipliez@insa-rennes.fr> (2008)
  * Maxime Pelcat <maxime.pelcat@insa-rennes.fr> (2008 - 2012)
  *
@@ -38,6 +38,7 @@ package org.preesm.algorithm.mapper.model.special;
 
 import org.preesm.algorithm.mapper.model.MapperDAG;
 import org.preesm.algorithm.mapper.model.MapperDAGVertex;
+import org.preesm.model.pisdf.AbstractVertex;
 
 // TODO: Auto-generated Javadoc
 /**
@@ -55,8 +56,8 @@ public class InvolvementVertex extends MapperDAGVertex {
    * @param base
    *          the base
    */
-  public InvolvementVertex(final String id, final MapperDAG base) {
-    super(id, base);
+  public InvolvementVertex(final String id, final MapperDAG base, AbstractVertex origVertex) {
+    super(id, base, origVertex);
   }
 
 }

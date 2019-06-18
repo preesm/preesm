@@ -1,7 +1,7 @@
 /**
- * Copyright or © or Copr. IETR/INSA - Rennes (2018) :
+ * Copyright or © or Copr. IETR/INSA - Rennes (2018 - 2019) :
  *
- * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2018)
+ * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2018 - 2019)
  *
  * This software is a computer program whose purpose is to help prototyping
  * parallel applications using dataflow formalism.
@@ -37,8 +37,8 @@
  */
 package org.preesm.model.slam.serialize;
 
+import java.util.Map.Entry;
 import org.preesm.model.slam.Design;
-import org.preesm.model.slam.attributes.Parameter;
 import org.preesm.model.slam.component.ComNode;
 import org.preesm.model.slam.component.Component;
 import org.preesm.model.slam.component.Dma;
@@ -100,7 +100,7 @@ public class IPXACTDesignVendorExtensionsWriter {
     final Element parametersElt = document.createElement("slam:parameters");
     designDescriptionElt.appendChild(parametersElt);
 
-    for (final Parameter p : this.design.getParameters()) {
+    for (final Entry<String, String> p : this.design.getParameters()) {
       writeDesignParameter(parametersElt, p.getKey(), p.getValue(), document);
     }
   }
@@ -160,7 +160,7 @@ public class IPXACTDesignVendorExtensionsWriter {
 
     final RefinementList list = new RefinementList();
     for (final Design subDesign : component.getRefinements()) {
-      list.addName(subDesign.getPath());
+      list.addName(subDesign.getUrl());
     }
     final String refinementPath = list.toString();
 

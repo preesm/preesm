@@ -1,7 +1,7 @@
 /**
- * Copyright or © or Copr. IETR/INSA - Rennes (2014 - 2018) :
+ * Copyright or © or Copr. IETR/INSA - Rennes (2014 - 2019) :
  *
- * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017 - 2018)
+ * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017 - 2019)
  * Clément Guy <clement.guy@insa-rennes.fr> (2014 - 2015)
  * Florian Arrestier <florian.arrestier@insa-rennes.fr> (2018)
  * Julien Heulot <julien.heulot@insa-rennes.fr> (2015 - 2017)
@@ -60,7 +60,7 @@ import org.preesm.model.pisdf.ExecutableActor;
 import org.preesm.model.pisdf.Expression;
 import org.preesm.model.pisdf.Fifo;
 import org.preesm.model.pisdf.ForkActor;
-import org.preesm.model.pisdf.FunctionParameter;
+import org.preesm.model.pisdf.FunctionArgument;
 import org.preesm.model.pisdf.FunctionPrototype;
 import org.preesm.model.pisdf.ISetter;
 import org.preesm.model.pisdf.InterfaceActor;
@@ -343,7 +343,7 @@ public class SpiderPreProcessVisitor extends PiMMSwitch<Boolean> {
   }
 
   @Override
-  public Boolean caseFunctionParameter(final FunctionParameter functionParameter) {
+  public Boolean caseFunctionArgument(final FunctionArgument functionParameter) {
     throw new UnsupportedOperationException();
   }
 

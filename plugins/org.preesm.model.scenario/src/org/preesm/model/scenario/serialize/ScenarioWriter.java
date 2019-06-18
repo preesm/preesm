@@ -1,7 +1,7 @@
 /**
- * Copyright or © or Copr. IETR/INSA - Rennes (2008 - 2018) :
+ * Copyright or © or Copr. IETR/INSA - Rennes (2008 - 2019) :
  *
- * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017 - 2018)
+ * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017 - 2019)
  * Clément Guy <clement.guy@insa-rennes.fr> (2014)
  * Daniel Madroñal <daniel.madronal@upm.es> (2018)
  * Jonathan Piat <jpiat@laas.fr> (2011)
@@ -39,29 +39,30 @@
  */
 package org.preesm.model.scenario.serialize;
 
-import java.util.Map;
+import java.util.List;
+import java.util.Map.Entry;
 import java.util.Set;
-import org.preesm.model.scenario.ConstraintGroup;
-import org.preesm.model.scenario.ParameterValue;
-import org.preesm.model.scenario.ParameterValueManager;
-import org.preesm.model.scenario.PreesmScenario;
-import org.preesm.model.scenario.RelativeConstraintManager;
-import org.preesm.model.scenario.Timing;
-import org.preesm.model.scenario.papi.PapiComponent;
-import org.preesm.model.scenario.papi.PapiEvent;
-import org.preesm.model.scenario.papi.PapiEventModifier;
-import org.preesm.model.scenario.papi.PapiEventSet;
-import org.preesm.model.scenario.papi.PapifyConfigActor;
-import org.preesm.model.scenario.papi.PapifyConfigManager;
-import org.preesm.model.scenario.papi.PapifyConfigPE;
-import org.preesm.model.scenario.types.DataType;
+import org.eclipse.emf.common.util.EList;
+import org.eclipse.emf.common.util.EMap;
+import org.preesm.model.pisdf.AbstractActor;
+import org.preesm.model.pisdf.Parameter;
+import org.preesm.model.pisdf.PiGraph;
+import org.preesm.model.scenario.MemoryCopySpeedValue;
+import org.preesm.model.scenario.PapiComponent;
+import org.preesm.model.scenario.PapiEvent;
+import org.preesm.model.scenario.PapiEventModifier;
+import org.preesm.model.scenario.PapiEventSet;
+import org.preesm.model.scenario.PapifyConfig;
+import org.preesm.model.scenario.Scenario;
 import org.preesm.model.scenario.types.VertexType;
+import org.preesm.model.slam.ComponentInstance;
+import org.preesm.model.slam.Design;
+import org.preesm.model.slam.component.Component;
 import org.w3c.dom.DOMImplementation;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.bootstrap.DOMImplementationRegistry;
 
-// TODO: Auto-generated Javadoc
 /**
  * Writes a scenario as an XML.
  *
@@ -73,7 +74,7 @@ public class ScenarioWriter {
   private Document dom;
 
   /** Current scenario. */
-  private final PreesmScenario scenario;
+  private final Scenario scenario;
 
   /**
    * Instantiates a new scenario writer.
@@ -81,7 +82,7 @@ public class ScenarioWriter {
    * @param scenario
    *          the scenario
    */
-  public ScenarioWriter(final PreesmScenario scenario) {
+  public ScenarioWriter(final Scenario scenario) {
     super();
 
     this.scenario = scenario;
@@ -105,13 +106,12 @@ public class ScenarioWriter {
 
     final Element root = this.dom.getDocumentElement();
 
-    addFiles(root);
-    addConstraints(root);
-    addRelativeConstraints(root);
-    addTimings(root);
-    addSimuParams(root);
-    addParameterValues(root);
-    addPapifyConfigs(root);
+    writeFiles(root);
+    writeConstraints(root);
+    writeTimings(root);
+    writeSimuParams(root);
+    writeParameterValues(root);
+    writePapifyConfigs(root);
 
     return this.dom;
   }
@@ -122,14 +122,14 @@ public class ScenarioWriter {
    * @param parent
    *          the parent
    */
-  private void addParameterValues(final Element parent) {
+  private void writeParameterValues(final Element parent) {
     final Element valuesElt = this.dom.createElement("parameterValues");
     parent.appendChild(valuesElt);
 
-    final ParameterValueManager manager = this.scenario.getParameterValueManager();
+    final EMap<Parameter, String> parameterValues = this.scenario.getParameterValues();
 
-    for (final ParameterValue value : manager.getParameterValues()) {
-      addParameterValue(valuesElt, value);
+    for (final Entry<Parameter, String> e : parameterValues) {
+      writeParameterValue(valuesElt, e);
     }
   }
 
@@ -141,38 +141,22 @@ public class ScenarioWriter {
    * @param value
    *          the value
    */
-  private void addParameterValue(final Element parent, final ParameterValue value) {
+  private void writeParameterValue(final Element parent, final Entry<Parameter, String> value) {
     // Serialize only if the kept value(s) is different from the "default value" found in the PiGraph:
     // - if the parameter is actor dependent, there is no default value
     // - otherwise, compare the kept value to the parameter expression
     boolean needToBeSerialized = false;
     String valueToPrint = "";
-    switch (value.getType()) {
-      case INDEPENDENT:
-        valueToPrint = "" + value.getValue();
-        if (!value.getParameter().getExpression().getExpressionAsString().equals(valueToPrint)) {
-          needToBeSerialized = true;
-        }
-        break;
-      case ACTOR_DEPENDENT:
-        valueToPrint = value.getValues().toString();
-        needToBeSerialized = true;
-        break;
-      case PARAMETER_DEPENDENT:
-        valueToPrint = value.getExpression();
-        if (!value.getParameter().getExpression().getExpressionAsString().equals(valueToPrint)) {
-          needToBeSerialized = true;
-        }
-        break;
-      default:
+    valueToPrint = "" + value.getValue();
+    if (!value.getKey().getExpression().getExpressionAsString().equals(valueToPrint)) {
+      needToBeSerialized = true;
     }
     if (needToBeSerialized) {
       final Element valueElt = this.dom.createElement("parameter");
       parent.appendChild(valueElt);
 
-      valueElt.setAttribute("name", value.getName());
-      valueElt.setAttribute("parent", value.getParentVertex());
-      valueElt.setAttribute("type", value.getType().toString());
+      valueElt.setAttribute("name", value.getKey().getName());
+      valueElt.setAttribute("parent", value.getKey().getContainingPiGraph().getName());
 
       valueElt.setAttribute("value", valueToPrint);
     }
@@ -184,19 +168,21 @@ public class ScenarioWriter {
    * @param parent
    *          the parent
    */
-  private void addPapifyConfigs(final Element parent) {
+  private void writePapifyConfigs(final Element parent) {
     final Element papifyConfigs = this.dom.createElement("papifyConfigs");
     parent.appendChild(papifyConfigs);
 
-    papifyConfigs.setAttribute("xmlUrl", this.scenario.getPapifyConfigManager().getXmlFileURL());
+    papifyConfigs.setAttribute("xmlUrl", this.scenario.getPapifyConfig().getXmlFileURL());
 
-    final PapifyConfigManager manager = this.scenario.getPapifyConfigManager();
+    final PapifyConfig manager = this.scenario.getPapifyConfig();
 
-    for (final PapifyConfigActor config : manager.getPapifyConfigGroupsActors()) {
-      addPapifyConfigActor(papifyConfigs, config);
+    final EMap<AbstractActor,
+        EMap<String, EList<PapiEvent>>> papifyConfigGroupsActors = manager.getPapifyConfigGroupsActors();
+    for (final Entry<AbstractActor, EMap<String, EList<PapiEvent>>> config : papifyConfigGroupsActors) {
+      writePapifyConfigActor(papifyConfigs, config.getKey(), config.getValue());
     }
-    for (final PapifyConfigPE config : manager.getPapifyConfigGroupsPEs()) {
-      addPapifyConfigPE(papifyConfigs, config);
+    for (final Entry<Component, EList<PapiComponent>> config : manager.getPapifyConfigGroupsPEs()) {
+      writePapifyConfigPE(papifyConfigs, config.getKey(), config.getValue());
     }
   }
 
@@ -208,30 +194,28 @@ public class ScenarioWriter {
    * @param value
    *          the value
    */
-  private void addPapifyConfigActor(final Element parent, final PapifyConfigActor config) {
+  private void writePapifyConfigActor(final Element parent, final AbstractActor actor,
+      final EMap<String, EList<PapiEvent>> config) {
 
-    if (!config.getActorId().equals("") && (config.getPAPIEvents() != null) && !config.getPAPIEvents().isEmpty()) {
+    if (actor != null && (config != null) && !config.isEmpty()) {
       final Element papifyConfigElt = this.dom.createElement("papifyConfigActor");
       parent.appendChild(papifyConfigElt);
 
       final Element actorPath = this.dom.createElement("actorPath");
       papifyConfigElt.appendChild(actorPath);
-      actorPath.setAttribute("actorPath", config.getActorPath());
-      final Element actorId = this.dom.createElement("actorId");
-      papifyConfigElt.appendChild(actorId);
-      actorId.setAttribute("actorId", config.getActorId());
-      final Map<String, Set<PapiEvent>> eventSets = config.getPAPIEvents();
+      actorPath.setAttribute("actorPath", actor.getVertexPath());
+      final EMap<String, EList<PapiEvent>> eventSets = config;
       final Set<String> keys = eventSets.keySet();
       for (final String key : keys) {
-        final Set<PapiEvent> eventSet = eventSets.get(key);
+        final List<PapiEvent> eventSet = eventSets.get(key);
         if (!eventSet.isEmpty()) {
           final Element component = this.dom.createElement("component");
-          actorId.appendChild(component);
+          actorPath.appendChild(component);
           component.setAttribute("component", key);
           for (final PapiEvent event : eventSet) {
             final Element singleEvent = this.dom.createElement("event");
             component.appendChild(singleEvent);
-            addPapifyEvent(singleEvent, event);
+            writePapifyEvent(singleEvent, event);
           }
         }
       }
@@ -246,22 +230,20 @@ public class ScenarioWriter {
    * @param value
    *          the value
    */
-  private void addPapifyConfigPE(final Element parent, final PapifyConfigPE config) {
-
-    if (!config.getpeType().equals("") && (config.getPAPIComponents() != null)
-        && !config.getPAPIComponents().isEmpty()) {
+  private void writePapifyConfigPE(final Element parent, final Component slamComponent,
+      final List<PapiComponent> papiComponents) {
+    if (slamComponent != null && (papiComponents != null) && !papiComponents.isEmpty()) {
       final Element papifyConfigElt = this.dom.createElement("papifyConfigPE");
       parent.appendChild(papifyConfigElt);
 
       final Element peType = this.dom.createElement("peType");
       papifyConfigElt.appendChild(peType);
-      peType.setAttribute("peType", config.getpeType());
-      final Set<PapiComponent> components = config.getPAPIComponents();
+      peType.setAttribute("peType", slamComponent.getVlnv().getName());
 
-      for (final PapiComponent component : components) {
+      for (final PapiComponent component : papiComponents) {
         final Element singleComponent = this.dom.createElement("PAPIComponent");
         peType.appendChild(singleComponent);
-        addPapifyComponent(singleComponent, component);
+        writePapifyComponent(singleComponent, component);
       }
     }
   }
@@ -274,7 +256,7 @@ public class ScenarioWriter {
    * @param papiComponent
    *          the papiComponent itself
    */
-  private void addPapifyComponent(final Element component, final PapiComponent papiComponent) {
+  private void writePapifyComponent(final Element component, final PapiComponent papiComponent) {
 
     component.setAttribute("componentId", papiComponent.getId());
     component.setAttribute("componentType", papiComponent.getType().toString());
@@ -287,7 +269,7 @@ public class ScenarioWriter {
       for (final PapiEvent event : eventSet.getEvents()) {
         final Element singleEvent = this.dom.createElement("event");
         singleEventSet.appendChild(singleEvent);
-        addPapifyEvent(singleEvent, event);
+        writePapifyEvent(singleEvent, event);
       }
     }
   }
@@ -300,7 +282,7 @@ public class ScenarioWriter {
    * @param papiEvent
    *          the papiEvent itself
    */
-  private void addPapifyEvent(final Element event, final PapiEvent papiEvent) {
+  private void writePapifyEvent(final Element event, final PapiEvent papiEvent) {
 
     final Element eventId = this.dom.createElement("eventId");
     event.appendChild(eventId);
@@ -326,40 +308,43 @@ public class ScenarioWriter {
    * @param parent
    *          the parent
    */
-  private void addSimuParams(final Element parent) {
+  private void writeSimuParams(final Element parent) {
 
     final Element params = this.dom.createElement("simuParams");
     parent.appendChild(params);
 
     final Element core = this.dom.createElement("mainCore");
     params.appendChild(core);
-    core.setTextContent(this.scenario.getSimulationManager().getMainOperatorName());
+    final ComponentInstance mainOperator = this.scenario.getSimulationInfo().getMainOperator();
+    if (mainOperator != null) {
+      core.setTextContent(mainOperator.getInstanceName());
+    }
 
     final Element medium = this.dom.createElement("mainComNode");
     params.appendChild(medium);
-    medium.setTextContent(this.scenario.getSimulationManager().getMainComNodeName());
+    final ComponentInstance mainComNode = this.scenario.getSimulationInfo().getMainComNode();
+    if (mainComNode != null) {
+      medium.setTextContent(mainComNode.getInstanceName());
+    }
 
     final Element dataSize = this.dom.createElement("averageDataSize");
     params.appendChild(dataSize);
-    dataSize.setTextContent(String.valueOf(this.scenario.getSimulationManager().getAverageDataSize()));
+    dataSize.setTextContent(String.valueOf(this.scenario.getSimulationInfo().getAverageDataSize()));
 
     final Element dataTypes = this.dom.createElement("dataTypes");
     params.appendChild(dataTypes);
 
-    for (final DataType dataType : this.scenario.getSimulationManager().getDataTypes().values()) {
-      addDataType(dataTypes, dataType);
+    final EMap<String, Long> types = this.scenario.getSimulationInfo().getDataTypes();
+    for (final Entry<String, Long> dataType : types) {
+      writeDataType(dataTypes, dataType.getKey(), dataType.getValue());
     }
 
     final Element sVOperators = this.dom.createElement("specialVertexOperators");
     params.appendChild(sVOperators);
 
-    for (final String opId : this.scenario.getSimulationManager().getSpecialVertexOperatorIds()) {
-      addSpecialVertexOperator(sVOperators, opId);
+    for (final ComponentInstance opId : this.scenario.getSimulationInfo().getSpecialVertexOperators()) {
+      writeSpecialVertexOperator(sVOperators, opId);
     }
-
-    final Element nbExec = this.dom.createElement("numberOfTopExecutions");
-    params.appendChild(nbExec);
-    nbExec.setTextContent(String.valueOf(this.scenario.getSimulationManager().getNumberOfTopExecutions()));
   }
 
   /**
@@ -370,12 +355,12 @@ public class ScenarioWriter {
    * @param dataType
    *          the data type
    */
-  private void addDataType(final Element parent, final DataType dataType) {
+  private void writeDataType(final Element parent, final String dataTypeName, final long dataTypeSize) {
 
     final Element dataTypeElt = this.dom.createElement("dataType");
     parent.appendChild(dataTypeElt);
-    dataTypeElt.setAttribute("name", dataType.getTypeName());
-    dataTypeElt.setAttribute("size", Long.toString(dataType.getSize()));
+    dataTypeElt.setAttribute("name", dataTypeName);
+    dataTypeElt.setAttribute("size", Long.toString(dataTypeSize));
   }
 
   /**
@@ -386,11 +371,11 @@ public class ScenarioWriter {
    * @param opId
    *          the op id
    */
-  private void addSpecialVertexOperator(final Element parent, final String opId) {
+  private void writeSpecialVertexOperator(final Element parent, final ComponentInstance opId) {
 
     final Element dataTypeElt = this.dom.createElement("specialVertexOperator");
     parent.appendChild(dataTypeElt);
-    dataTypeElt.setAttribute("path", opId);
+    dataTypeElt.setAttribute("path", opId.getInstanceName());
   }
 
   /**
@@ -399,22 +384,28 @@ public class ScenarioWriter {
    * @param parent
    *          the parent
    */
-  private void addFiles(final Element parent) {
+  private void writeFiles(final Element parent) {
 
     final Element files = this.dom.createElement("files");
     parent.appendChild(files);
 
-    final Element algo = this.dom.createElement("algorithm");
-    files.appendChild(algo);
-    algo.setAttribute("url", this.scenario.getAlgorithmURL());
+    final PiGraph algorithm = this.scenario.getAlgorithm();
+    if (algorithm != null) {
+      final Element algo = this.dom.createElement("algorithm");
+      files.appendChild(algo);
+      algo.setAttribute("url", algorithm.getUrl());
+    }
 
-    final Element archi = this.dom.createElement("architecture");
-    files.appendChild(archi);
-    archi.setAttribute("url", this.scenario.getArchitectureURL());
+    final Design design = this.scenario.getDesign();
+    if (design != null) {
+      final Element archi = this.dom.createElement("architecture");
+      files.appendChild(archi);
+      archi.setAttribute("url", design.getUrl());
+    }
 
     final Element codeGenDir = this.dom.createElement("codegenDirectory");
     files.appendChild(codeGenDir);
-    codeGenDir.setAttribute("url", this.scenario.getCodegenManager().getCodegenDirectory());
+    codeGenDir.setAttribute("url", this.scenario.getCodegenDirectory());
 
   }
 
@@ -424,15 +415,19 @@ public class ScenarioWriter {
    * @param parent
    *          the parent
    */
-  private void addConstraints(final Element parent) {
+  private void writeConstraints(final Element parent) {
 
     final Element constraints = this.dom.createElement("constraints");
     parent.appendChild(constraints);
 
-    constraints.setAttribute("excelUrl", this.scenario.getConstraintGroupManager().getExcelFileURL());
+    String groupConstraintsFileURL = this.scenario.getConstraints().getGroupConstraintsFileURL();
+    constraints.setAttribute("excelUrl", groupConstraintsFileURL);
 
-    for (final ConstraintGroup cst : this.scenario.getConstraintGroupManager().getConstraintGroups()) {
-      addConstraint(constraints, cst);
+    for (final Entry<ComponentInstance, EList<AbstractActor>> cst : this.scenario.getConstraints()
+        .getGroupConstraints()) {
+      final ComponentInstance component = cst.getKey();
+      final EList<AbstractActor> actors = cst.getValue();
+      writeConstraints(constraints, component, actors);
     }
   }
 
@@ -444,59 +439,20 @@ public class ScenarioWriter {
    * @param cst
    *          the cst
    */
-  private void addConstraint(final Element parent, final ConstraintGroup cst) {
+  private void writeConstraints(final Element parent, final ComponentInstance cmpi, final List<AbstractActor> actors) {
 
     final Element constraintGroupElt = this.dom.createElement("constraintGroup");
     parent.appendChild(constraintGroupElt);
 
-    for (final String opId : cst.getOperatorIds()) {
-      final Element opdefelt = this.dom.createElement("operator");
-      constraintGroupElt.appendChild(opdefelt);
-      opdefelt.setAttribute("name", opId);
-    }
+    final Element opdefelt = this.dom.createElement("operator");
+    constraintGroupElt.appendChild(opdefelt);
+    opdefelt.setAttribute("name", cmpi.getInstanceName());
 
-    for (final String vtxId : cst.getVertexPaths()) {
+    for (final AbstractActor actor : actors) {
       final Element vtxelt = this.dom.createElement(VertexType.TYPE_TASK);
       constraintGroupElt.appendChild(vtxelt);
-      vtxelt.setAttribute("name", vtxId);
+      vtxelt.setAttribute("name", actor.getVertexPath());
     }
-  }
-
-  /**
-   * Adds the relative constraints.
-   *
-   * @param parent
-   *          the parent
-   */
-  private void addRelativeConstraints(final Element parent) {
-
-    final RelativeConstraintManager manager = this.scenario.getRelativeconstraintManager();
-    final Element timings = this.dom.createElement("relativeconstraints");
-    parent.appendChild(timings);
-
-    timings.setAttribute("excelUrl", manager.getExcelFileURL());
-
-    for (final String id : manager.getExplicitConstraintIds()) {
-      addRelativeConstraint(timings, id, manager.getConstraintOrDefault(id));
-    }
-  }
-
-  /**
-   * Adds the relative constraint.
-   *
-   * @param parent
-   *          the parent
-   * @param id
-   *          the id
-   * @param group
-   *          the group
-   */
-  private void addRelativeConstraint(final Element parent, final String id, final int group) {
-
-    final Element timingelt = this.dom.createElement("relativeconstraint");
-    parent.appendChild(timingelt);
-    timingelt.setAttribute("vertexname", id);
-    timingelt.setAttribute("group", Integer.toString(group));
   }
 
   /**
@@ -505,20 +461,25 @@ public class ScenarioWriter {
    * @param parent
    *          the parent
    */
-  private void addTimings(final Element parent) {
+  private void writeTimings(final Element parent) {
 
-    final Element timings = this.dom.createElement("timings");
-    parent.appendChild(timings);
+    final Element timingsElement = this.dom.createElement("timings");
+    parent.appendChild(timingsElement);
 
-    timings.setAttribute("excelUrl", this.scenario.getTimingManager().getExcelFileURL());
+    String excelFileURL = this.scenario.getTimings().getExcelFileURL();
+    timingsElement.setAttribute("excelUrl", excelFileURL);
 
-    for (final Timing timing : this.scenario.getTimingManager().getTimings()) {
-      addTiming(timings, timing);
+    final EMap<AbstractActor, EMap<Component, String>> actorsTimings = this.scenario.getTimings().getActorTimings();
+    for (final Entry<AbstractActor, EMap<Component, String>> actorTimings : actorsTimings) {
+      for (final Entry<Component, String> timing : actorTimings.getValue()) {
+        writeTiming(timingsElement, actorTimings.getKey(), timing.getKey(), timing.getValue());
+      }
     }
 
-    for (final String opDef : this.scenario.getTimingManager().getMemcpySpeeds().keySet()) {
-      addMemcpySpeed(timings, opDef, this.scenario.getTimingManager().getMemcpySetupTime(opDef),
-          this.scenario.getTimingManager().getMemcpyTimePerUnit(opDef));
+    final EMap<Component, MemoryCopySpeedValue> memTimings = this.scenario.getTimings().getMemTimings();
+    for (final Entry<Component, MemoryCopySpeedValue> opDef : this.scenario.getTimings().getMemTimings()) {
+      writeMemcpySpeed(timingsElement, opDef.getKey(), memTimings.get(opDef.getKey()).getSetupTime(),
+          memTimings.get(opDef.getKey()).getTimePerUnit());
     }
   }
 
@@ -530,19 +491,13 @@ public class ScenarioWriter {
    * @param timing
    *          the timing
    */
-  private void addTiming(final Element parent, final Timing timing) {
-
+  private void writeTiming(final Element parent, final AbstractActor actor, final Component component,
+      final String timing) {
     final Element timingelt = this.dom.createElement("timing");
     parent.appendChild(timingelt);
-    timingelt.setAttribute("vertexname", timing.getVertexId());
-    timingelt.setAttribute("opname", timing.getOperatorDefinitionId());
-    String timeString;
-    if (timing.isEvaluated()) {
-      timeString = Long.toString(timing.getTime());
-    } else {
-      timeString = timing.getStringValue();
-    }
-    timingelt.setAttribute("time", timeString);
+    timingelt.setAttribute("vertexname", actor.getVertexPath());
+    timingelt.setAttribute("opname", component.getVlnv().getName());
+    timingelt.setAttribute("time", timing);
   }
 
   /**
@@ -557,13 +512,13 @@ public class ScenarioWriter {
    * @param memcpyTimePerUnit
    *          the memcpy time per unit
    */
-  private void addMemcpySpeed(final Element parent, final String opDef, final long memcpySetupTime,
-      final float memcpyTimePerUnit) {
+  private void writeMemcpySpeed(final Element parent, final Component opDef, final long memcpySetupTime,
+      final double memcpyTimePerUnit) {
 
     final Element timingelt = this.dom.createElement("memcpyspeed");
     parent.appendChild(timingelt);
-    timingelt.setAttribute("opname", opDef);
+    timingelt.setAttribute("opname", opDef.getVlnv().getName());
     timingelt.setAttribute("setuptime", Long.toString(memcpySetupTime));
-    timingelt.setAttribute("timeperunit", Float.toString(memcpyTimePerUnit));
+    timingelt.setAttribute("timeperunit", Double.toString(memcpyTimePerUnit));
   }
 }

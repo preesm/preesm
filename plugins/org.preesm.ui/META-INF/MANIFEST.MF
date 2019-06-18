@@ -3,7 +3,7 @@ Bundle-ManifestVersion: 2
 Bundle-Name: PREESM :: Plugins :: UI
 Automatic-Module-Name: org.preesm.ui
 Bundle-SymbolicName: org.preesm.ui;singleton:=true
-Bundle-Version: 3.8.1
+Bundle-Version: 3.9.0
 Bundle-Activator: org.preesm.ui.PreesmUIPlugin
 Require-Bundle: org.eclipse.core.runtime;visibility:=reexport,
  org.eclipse.core.resources,
@@ -29,7 +29,6 @@ Export-Package: org.preesm.ui,
  org.preesm.ui.utils,
  org.preesm.ui.wizards,
  org.preesm.ui.workflow,
- org.preesm.ui.workflow.command,
  org.preesm.ui.workflow.filters,
  org.preesm.ui.workflow.launch,
  org.preesm.ui.workflow.properties,

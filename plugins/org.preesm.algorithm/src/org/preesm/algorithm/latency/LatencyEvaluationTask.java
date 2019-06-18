@@ -53,7 +53,8 @@ import org.preesm.commons.doc.annotations.Port;
 import org.preesm.commons.doc.annotations.PreesmTask;
 import org.preesm.commons.doc.annotations.Value;
 import org.preesm.commons.logger.PreesmLogger;
-import org.preesm.model.scenario.PreesmScenario;
+import org.preesm.model.pisdf.AbstractActor;
+import org.preesm.model.scenario.Scenario;
 import org.preesm.workflow.elements.Workflow;
 import org.preesm.workflow.implement.AbstractTaskImplementation;
 
@@ -63,9 +64,9 @@ import org.preesm.workflow.implement.AbstractTaskImplementation;
  */
 @PreesmTask(id = "org.ietr.preesm.latency.LatencyEvaluationPlugin", name = "Latency Evaluation",
 
-    inputs = { @Port(name = "SDF", type = SDFGraph.class), @Port(name = "scenario", type = PreesmScenario.class) },
+    inputs = { @Port(name = "SDF", type = SDFGraph.class), @Port(name = "scenario", type = Scenario.class) },
 
-    outputs = { @Port(name = "SDF", type = SDFGraph.class), @Port(name = "scenario", type = PreesmScenario.class),
+    outputs = { @Port(name = "SDF", type = SDFGraph.class), @Port(name = "scenario", type = Scenario.class),
         @Port(name = "latency", type = Double.class) },
 
     parameters = {
@@ -107,7 +108,7 @@ public class LatencyEvaluationTask extends AbstractTaskImplementation {
 
     // get the input graph, the scenario for actors duration, and the total number of cores
     final SDFGraph inputGraph = GraphStructureHelper.cloneIBSDF((SDFGraph) inputs.get("SDF"));
-    final PreesmScenario inputScenario = (PreesmScenario) inputs.get("scenario");
+    final Scenario inputScenario = (Scenario) inputs.get("scenario");
     final boolean multicore = Boolean.parseBoolean(parameters.get("multicore"));
     final LatencyMethod inputMethod = LatencyMethod.valueOf(parameters.get(METHOD_LITTERAL));
 
@@ -204,7 +205,7 @@ public class LatencyEvaluationTask extends AbstractTaskImplementation {
    *
    * @return true if deadlock free, false if not
    */
-  private boolean init(final SDFGraph inputGraph, final PreesmScenario scenario) {
+  private boolean init(final SDFGraph inputGraph, final Scenario scenario) {
     // check the consistency by computing the RV of the graph
     boolean deadlockFree = IBSDFConsistency.computeRV(inputGraph);
 
@@ -213,20 +214,25 @@ public class LatencyEvaluationTask extends AbstractTaskImplementation {
 
       // Copy actors duration from the scenario to actors properties
       for (final SDFAbstractVertex actor : inputGraph.getAllVertices()) {
-        if (actor.getKind() == "vertex") {
+        if ("vertex".equals(actor.getKind())) {
           if (actor.getGraphDescription() == null) {
             // if atomic actor then copy the duration indicated in the scenario
-            final double duration = scenario.getTimingManager().getTimingOrDefault(actor.getId(), "x86").getTime();
+            final double duration = scenario.getTimings().evaluateTimingOrDefault(
+                (AbstractActor) actor.getReferencePiVertex(),
+                scenario.getSimulationInfo().getMainOperator().getComponent());
             actor.setPropertyValue(DURATION_LITTERAL, duration);
           } else {
             // if hierarchical actor then as default the duration is 1
             // the real duration of the hierarchical actor will be defined later by scheduling its subgraph
             actor.setPropertyValue(DURATION_LITTERAL, 1.);
-            scenario.getTimingManager().setTiming(actor.getId(), "x86", 1); // to remove
+            scenario.getTimings().setTiming((AbstractActor) actor.getReferencePiVertex(),
+                scenario.getSimulationInfo().getMainOperator().getComponent(), 1); // to remove
           }
         } else {
           // keep the duration of input interfaces
-          final double duration = scenario.getTimingManager().getTimingOrDefault(actor.getId(), "x86").getTime();
+          final double duration = scenario.getTimings().evaluateTimingOrDefault(
+              (AbstractActor) actor.getReferencePiVertex(),
+              scenario.getSimulationInfo().getMainOperator().getComponent());
           actor.setPropertyValue(DURATION_LITTERAL, duration);
 
         }

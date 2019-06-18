@@ -1,8 +1,8 @@
 /**
- * Copyright or © or Copr. Åbo Akademi University (2017 - 2018),
- * IETR/INSA - Rennes (2017 - 2018) :
+ * Copyright or © or Copr. Åbo Akademi University (2017 - 2019),
+ * IETR/INSA - Rennes (2017 - 2019) :
  *
- * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017 - 2018)
+ * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017 - 2019)
  * Sudeep Kanur <skanur@abo.fi> (2017 - 2018)
  *
  * This software is a computer program whose purpose is to help prototyping
@@ -59,10 +59,10 @@ import org.preesm.commons.exceptions.PreesmException
  */
 class AcyclicLikeSubgraphDetector implements IGraphVisitor<SDFGraph, SDFAbstractVertex, SDFEdge> {
 
-	@Accessors(PUBLIC_GETTER, PRIVATE_SETTER)
+	@Accessors(PUBLIC_GETTER, PACKAGE_SETTER)
 	var Boolean isAcyclicLike
 
-	@Accessors(PUBLIC_GETTER, PRIVATE_SETTER)
+	@Accessors(PUBLIC_GETTER, PACKAGE_SETTER)
 	var SDFGraph processedSDF
 
 	/**

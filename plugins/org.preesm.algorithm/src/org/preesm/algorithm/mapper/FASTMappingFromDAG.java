@@ -55,7 +55,7 @@ import org.preesm.commons.doc.annotations.Parameter;
 import org.preesm.commons.doc.annotations.Port;
 import org.preesm.commons.doc.annotations.PreesmTask;
 import org.preesm.commons.doc.annotations.Value;
-import org.preesm.model.scenario.PreesmScenario;
+import org.preesm.model.scenario.Scenario;
 import org.preesm.model.slam.Design;
 
 /**
@@ -68,7 +68,7 @@ import org.preesm.model.slam.Design;
 @PreesmTask(id = "org.ietr.preesm.plugin.mapper.fastdag", name = "Fast Scheduling from DAG", category = "Schedulers",
 
     inputs = { @Port(name = "DAG", type = DirectedAcyclicGraph.class),
-        @Port(name = "architecture", type = Design.class), @Port(name = "scenario", type = PreesmScenario.class) },
+        @Port(name = "architecture", type = Design.class), @Port(name = "scenario", type = Scenario.class) },
 
     outputs = { @Port(name = "DAG", type = DirectedAcyclicGraph.class), @Port(name = "ABC", type = LatencyAbc.class) },
 
@@ -102,7 +102,7 @@ public class FASTMappingFromDAG extends AbstractMappingFromDAG {
 
   @Override
   protected LatencyAbc schedule(final Map<String, Object> outputs, final Map<String, String> parameters,
-      final InitialLists initial, final PreesmScenario scenario, final AbcParameters abcParams, final MapperDAG dag,
+      final InitialLists initial, final Scenario scenario, final AbcParameters abcParams, final MapperDAG dag,
       final Design architecture, final AbstractTaskSched taskSched) {
 
     final FastAlgoParameters fastParams = new FastAlgoParameters(parameters);

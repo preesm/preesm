@@ -49,19 +49,17 @@ import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.IEditorSite;
 import org.eclipse.ui.IPropertyListener;
 import org.eclipse.ui.PartInitException;
-import org.eclipse.ui.forms.editor.IFormPage;
 import org.eclipse.ui.forms.editor.SharedHeaderFormEditor;
 import org.eclipse.ui.part.FileEditorInput;
 import org.preesm.commons.DomUtil;
 import org.preesm.commons.exceptions.PreesmRuntimeException;
-import org.preesm.model.scenario.PreesmScenario;
+import org.preesm.model.scenario.Scenario;
 import org.preesm.model.scenario.serialize.ScenarioParser;
 import org.preesm.model.scenario.serialize.ScenarioWriter;
 import org.preesm.ui.scenario.editor.codegen.CodegenPage;
 import org.preesm.ui.scenario.editor.constraints.ConstraintsPage;
 import org.preesm.ui.scenario.editor.papify.PapifyPage;
 import org.preesm.ui.scenario.editor.parametervalues.PiParametersPage;
-import org.preesm.ui.scenario.editor.relativeconstraints.RelativeConstraintsPage;
 import org.preesm.ui.scenario.editor.simulation.SimulationPage;
 import org.preesm.ui.scenario.editor.timings.TimingsPage;
 import org.preesm.ui.utils.ErrorWithExceptionDialog;
@@ -82,7 +80,7 @@ public class ScenarioEditor extends SharedHeaderFormEditor implements IPropertyL
   private IFile scenarioFile = null;
 
   /** The scenario. */
-  private PreesmScenario scenario;
+  private Scenario scenario;
 
   /**
    * Instantiates a new scenario editor.
@@ -114,7 +112,7 @@ public class ScenarioEditor extends SharedHeaderFormEditor implements IPropertyL
     }
 
     if (this.scenarioFile != null) {
-      this.scenario = new PreesmScenario();
+      this.scenario = null;
       final ScenarioParser parser = new ScenarioParser();
       try {
         this.scenario = parser.parseXmlFile(this.scenarioFile);
@@ -130,30 +128,20 @@ public class ScenarioEditor extends SharedHeaderFormEditor implements IPropertyL
    */
   @Override
   protected void addPages() {
-    final IFormPage overviewPage = new OverviewPage(this.scenario, this, "Overview", "Overview");
-    overviewPage.addPropertyListener(this);
-    final IFormPage constraintsPage = new ConstraintsPage(this.scenario, this, "Constraints", "Constraints");
-    constraintsPage.addPropertyListener(this);
+    final ScenarioPage overviewPage = new OverviewPage(this.scenario, this, "Overview", "Overview");
+    final ScenarioPage constraintsPage = new ConstraintsPage(this.scenario, this, "Constraints", "Constraints");
+    final ScenarioPage timingsPage = new TimingsPage(this.scenario, this, "Timings", "Timings");
+    final ScenarioPage simulationPage = new SimulationPage(this.scenario, this, "Simulation", "Simulation");
+    final ScenarioPage codegenPage = new CodegenPage(this.scenario, this, "Codegen", "Codegen");
+    final ScenarioPage paramPage = new PiParametersPage(this.scenario, this, "Parameters", "Parameters");
+    final ScenarioPage papifyPage = new PapifyPage(this.scenario, this, "PAPIFY", "PAPIFY");
 
-    final IFormPage relativeConstraintsPage = new RelativeConstraintsPage(this.scenario, this, "RelativeConstraints",
-        "Relative Constraints");
-    relativeConstraintsPage.addPropertyListener(this);
-    final IFormPage timingsPage = new TimingsPage(this.scenario, this, "Timings", "Timings");
-    timingsPage.addPropertyListener(this);
-    final SimulationPage simulationPage = new SimulationPage(this.scenario, this, "Simulation", "Simulation");
-    simulationPage.addPropertyListener(this);
-    final CodegenPage codegenPage = new CodegenPage(this.scenario, this, "Codegen", "Codegen");
-    codegenPage.addPropertyListener(this);
-    final PiParametersPage paramPage = new PiParametersPage(this.scenario, this, "Parameters", "Parameters");
-    paramPage.addPropertyListener(this);
-
-    final IFormPage papifyPage = new PapifyPage(this.scenario, this, "PAPIFY", "PAPIFY");
-    papifyPage.addPropertyListener(this);
+    // redraw timings when parameter value change
+    paramPage.addPropertyListener(timingsPage);
 
     try {
       addPage(overviewPage);
       addPage(constraintsPage);
-      addPage(relativeConstraintsPage);
       addPage(timingsPage);
       addPage(simulationPage);
       addPage(codegenPage);
@@ -163,6 +151,14 @@ public class ScenarioEditor extends SharedHeaderFormEditor implements IPropertyL
       ErrorWithExceptionDialog.errorDialogWithStackTrace("Could not open scenario", e);
       close(false);
     }
+  }
+
+  /**
+   *
+   */
+  public int addPage(final ScenarioPage page) throws PartInitException {
+    page.addPropertyListener(this);
+    return super.addPage(page);
   }
 
   /**

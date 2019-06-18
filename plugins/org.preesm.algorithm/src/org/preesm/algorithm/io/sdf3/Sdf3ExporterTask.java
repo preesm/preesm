@@ -53,8 +53,8 @@ import org.preesm.commons.doc.annotations.Port;
 import org.preesm.commons.doc.annotations.PreesmTask;
 import org.preesm.commons.doc.annotations.Value;
 import org.preesm.commons.exceptions.PreesmRuntimeException;
-import org.preesm.commons.files.PathTools;
-import org.preesm.model.scenario.PreesmScenario;
+import org.preesm.commons.files.WorkspaceUtils;
+import org.preesm.model.scenario.Scenario;
 import org.preesm.model.slam.Design;
 import org.preesm.workflow.elements.Workflow;
 import org.preesm.workflow.implement.AbstractTaskImplementation;
@@ -67,7 +67,7 @@ import org.preesm.workflow.implement.AbstractWorkflowNodeImplementation;
     category = "Graph Exporters",
 
     inputs = { @Port(name = "SDF", type = SDFGraph.class), @Port(name = "architecture", type = Design.class),
-        @Port(name = "scenario", type = PreesmScenario.class) },
+        @Port(name = "scenario", type = Scenario.class) },
 
     shortDescription = "Export a *.xml file conforming the SDF For Free (SDF3) format.",
 
@@ -110,10 +110,10 @@ public class Sdf3ExporterTask extends AbstractTaskImplementation {
 
     // Retrieve the inputs
     final SDFGraph sdf = (SDFGraph) inputs.get(AbstractWorkflowNodeImplementation.KEY_SDF_GRAPH);
-    final PreesmScenario scenario = (PreesmScenario) inputs.get(AbstractWorkflowNodeImplementation.KEY_SCENARIO);
+    final Scenario scenario = (Scenario) inputs.get(AbstractWorkflowNodeImplementation.KEY_SCENARIO);
     final Design archi = (Design) inputs.get(AbstractWorkflowNodeImplementation.KEY_ARCHITECTURE);
     // Locate the output file
-    final String sPath = PathTools.getAbsolutePath(parameters.get("path"), workflow.getProjectName());
+    final String sPath = WorkspaceUtils.getAbsolutePath(parameters.get("path"), workflow.getProjectName());
     final IPath path = new Path(sPath);
 
     Sdf3ExporterTask.printSDFGraphToSDF3File(sdf, scenario, archi, path);
@@ -155,8 +155,8 @@ public class Sdf3ExporterTask extends AbstractTaskImplementation {
    * @param path
    *          the path
    */
-  public static void printSDFGraphToSDF3File(final SDFGraph sdf, final PreesmScenario scenario,
-      final Design architecture, IPath path) {
+  public static void printSDFGraphToSDF3File(final SDFGraph sdf, final Scenario scenario, final Design architecture,
+      IPath path) {
     // Create the exporter
     final Sdf3Printer exporter = new Sdf3Printer(sdf, architecture);
 

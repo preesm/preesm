@@ -37,18 +37,16 @@
  */
 package org.preesm.model.scenario.serialize;
 
-import java.util.Set;
+import java.util.List;
 import java.util.stream.Collectors;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.emf.common.util.EList;
 import org.eclipse.jface.viewers.IStructuredContentProvider;
 import org.eclipse.jface.viewers.Viewer;
-import org.preesm.commons.exceptions.PreesmFrameworkException;
 import org.preesm.model.pisdf.AbstractActor;
 import org.preesm.model.pisdf.Actor;
 import org.preesm.model.pisdf.PiGraph;
-import org.preesm.model.pisdf.serialize.PiParser;
-import org.preesm.model.scenario.PreesmScenario;
+import org.preesm.model.scenario.Scenario;
 
 /**
  * Provides the elements contained in the timing editor.
@@ -67,15 +65,11 @@ public class PreesmAlgorithmListContentProvider implements IStructuredContentPro
 
     Object[] elementTable = null;
 
-    if (inputElement instanceof PreesmScenario) {
-      final PreesmScenario inputScenario = (PreesmScenario) inputElement;
+    if (inputElement instanceof Scenario) {
+      final Scenario inputScenario = (Scenario) inputElement;
 
       try {
-        if (inputScenario.isIBSDFScenario()) {
-          throw new PreesmFrameworkException("IBSDF is not supported anymore");
-        } else if (inputScenario.isPISDFScenario()) {
-          elementTable = getSortedPISDFVertices(inputScenario).toArray();
-        }
+        elementTable = getSortedPISDFVertices(inputScenario).toArray();
       } catch (final Exception e) {
         e.printStackTrace();
       }
@@ -92,8 +86,8 @@ public class PreesmAlgorithmListContentProvider implements IStructuredContentPro
    * @throws CoreException
    *           the core exception
    */
-  public Set<AbstractActor> getSortedPISDFVertices(final PreesmScenario inputScenario) throws CoreException {
-    final PiGraph currentGraph = PiParser.getPiGraphWithReconnection(inputScenario.getAlgorithmURL());
+  public List<AbstractActor> getSortedPISDFVertices(final Scenario inputScenario) throws CoreException {
+    final PiGraph currentGraph = inputScenario.getAlgorithm();
     return filterVertices(currentGraph.getAllActors());
   }
 
@@ -104,9 +98,9 @@ public class PreesmAlgorithmListContentProvider implements IStructuredContentPro
    *          the set of AbstractActor to filter
    * @return a set of Actors, with none of them being a hierarchical actor
    */
-  private Set<AbstractActor> filterVertices(final EList<AbstractActor> vertices) {
+  private List<AbstractActor> filterVertices(final EList<AbstractActor> vertices) {
     return vertices.stream().filter(Actor.class::isInstance).map(Actor.class::cast).filter(a -> !a.isHierarchical())
-        .collect(Collectors.toSet());
+        .collect(Collectors.toList());
   }
 
   /*
@@ -116,8 +110,7 @@ public class PreesmAlgorithmListContentProvider implements IStructuredContentPro
    */
   @Override
   public void dispose() {
-    // TODO Auto-generated method stub
-
+    // no behavior by default
   }
 
   /*
@@ -128,8 +121,7 @@ public class PreesmAlgorithmListContentProvider implements IStructuredContentPro
    */
   @Override
   public void inputChanged(final Viewer viewer, final Object oldInput, final Object newInput) {
-    // TODO Auto-generated method stub
-
+    // no behavior by default
   }
 
 }

@@ -1,8 +1,8 @@
 /**
- * Copyright or © or Copr. Åbo Akademi University (2017 - 2018),
- * IETR/INSA - Rennes (2017 - 2018) :
+ * Copyright or © or Copr. Åbo Akademi University (2017 - 2019),
+ * IETR/INSA - Rennes (2017 - 2019) :
  *
- * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017 - 2018)
+ * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017 - 2019)
  * Sudeep Kanur <skanur@abo.fi> (2017 - 2018)
  *
  * This software is a computer program whose purpose is to help prototyping
@@ -253,7 +253,8 @@ class OperationsUtils {
 		// Populate only those actors that are relevant to the given level set
 		for(level: getLevelSets(levels)) {
 			val currentLevel = levels.get(level.get(0))
-			val origLevel = origLevelSets.filter[l | l.contains(level.get(0))].get(0)
+			val origLevelArray = origLevelSets.filter[l | l.contains(level.get(0))]
+			val origLevel = origLevelArray.head
 			val actors = newLinkedHashSet
 			// Get all actors in the current level
 			level.forEach[instance | actors.add(dagGen.instance2Actor.get(instance))]

@@ -1,7 +1,7 @@
 /**
- * Copyright or © or Copr. IETR/INSA - Rennes (2011 - 2018) :
+ * Copyright or © or Copr. IETR/INSA - Rennes (2011 - 2019) :
  *
- * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017 - 2018)
+ * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017 - 2019)
  * Clément Guy <clement.guy@insa-rennes.fr> (2014 - 2015)
  * Maxime Pelcat <maxime.pelcat@insa-rennes.fr> (2011 - 2015)
  *
@@ -37,6 +37,7 @@
 package org.preesm.ui.scenario.editor.constraints;
 
 import java.io.FileNotFoundException;
+import java.util.logging.Level;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.KeyEvent;
@@ -50,10 +51,8 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.IEditorPart;
-import org.eclipse.ui.IPropertyListener;
 import org.eclipse.ui.forms.IManagedForm;
 import org.eclipse.ui.forms.editor.FormEditor;
-import org.eclipse.ui.forms.editor.FormPage;
 import org.eclipse.ui.forms.events.ExpansionAdapter;
 import org.eclipse.ui.forms.events.ExpansionEvent;
 import org.eclipse.ui.forms.widgets.ColumnLayout;
@@ -62,20 +61,23 @@ import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.eclipse.ui.forms.widgets.ScrolledForm;
 import org.eclipse.ui.forms.widgets.Section;
 import org.preesm.commons.exceptions.PreesmException;
-import org.preesm.model.scenario.PreesmScenario;
+import org.preesm.commons.logger.PreesmLogger;
+import org.preesm.model.scenario.Scenario;
+import org.preesm.model.scenario.serialize.ExcelConstraintsParser;
 import org.preesm.ui.scenario.editor.FileSelectionAdapter;
 import org.preesm.ui.scenario.editor.Messages;
 import org.preesm.ui.scenario.editor.SDFTreeSection;
+import org.preesm.ui.scenario.editor.ScenarioPage;
 
 /**
  * Constraint editor within the implementation editor.
  *
  * @author mpelcat
  */
-public class ConstraintsPage extends FormPage implements IPropertyListener {
+public class ConstraintsPage extends ScenarioPage {
 
   /** Currently edited scenario. */
-  private PreesmScenario scenario = null;
+  private Scenario scenario = null;
 
   /** The check state listener. */
   private ConstraintsCheckStateListener checkStateListener = null;
@@ -92,7 +94,7 @@ public class ConstraintsPage extends FormPage implements IPropertyListener {
    * @param title
    *          the title
    */
-  public ConstraintsPage(final PreesmScenario scenario, final FormEditor editor, final String id, final String title) {
+  public ConstraintsPage(final Scenario scenario, final FormEditor editor, final String id, final String title) {
     super(editor, id, title);
     this.scenario = scenario;
   }
@@ -116,7 +118,7 @@ public class ConstraintsPage extends FormPage implements IPropertyListener {
       // Constrints file chooser section
       createFileSection(managedForm, Messages.getString("Constraints.file"),
           Messages.getString("Constraints.fileDescription"), Messages.getString("Constraints.fileEdit"),
-          this.scenario.getConstraintGroupManager().getExcelFileURL(),
+          this.scenario.getConstraints().getGroupConstraintsFileURL(),
           Messages.getString("Constraints.fileBrowseTitle"), "xls");
 
       createConstraintsSection(managedForm, Messages.getString("Constraints.title"),
@@ -238,7 +240,6 @@ public class ConstraintsPage extends FormPage implements IPropertyListener {
     if ((source instanceof ConstraintsCheckStateListener) && (propId == IEditorPart.PROP_DIRTY)) {
       firePropertyChange(IEditorPart.PROP_DIRTY);
     }
-
   }
 
   /**
@@ -278,7 +279,7 @@ public class ConstraintsPage extends FormPage implements IPropertyListener {
       try {
         importData(text1);
       } catch (final Exception ex) {
-        ex.printStackTrace();
+        PreesmLogger.getLogger().log(Level.WARNING, "Could not import constraint data", ex);
       }
 
     });
@@ -292,7 +293,7 @@ public class ConstraintsPage extends FormPage implements IPropertyListener {
           try {
             importData(text);
           } catch (final Exception ex) {
-            ex.printStackTrace();
+            PreesmLogger.getLogger().log(Level.WARNING, "Could not import constraint data", ex);
           }
         }
 
@@ -327,10 +328,12 @@ public class ConstraintsPage extends FormPage implements IPropertyListener {
    * @throws CoreException
    *           the core exception
    */
-  private void importData(final Text text) throws PreesmException, FileNotFoundException, CoreException {
+  private void importData(final Text text) throws CoreException {
 
-    this.scenario.getConstraintGroupManager().setExcelFileURL(text.getText());
-    this.scenario.getConstraintGroupManager().importConstraints(this.scenario);
+    this.scenario.getConstraints().setGroupConstraintsFileURL(text.getText());
+
+    final ExcelConstraintsParser parser = new ExcelConstraintsParser(this.scenario);
+    parser.parse(text.getText());
 
     firePropertyChange(IEditorPart.PROP_DIRTY);
 

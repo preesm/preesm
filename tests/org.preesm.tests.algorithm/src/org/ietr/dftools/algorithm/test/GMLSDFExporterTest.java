@@ -1,7 +1,7 @@
 /**
- * Copyright or © or Copr. IETR/INSA - Rennes (2018) :
+ * Copyright or © or Copr. IETR/INSA - Rennes (2018 - 2019) :
  *
- * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2018)
+ * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2018 - 2019)
  *
  * This software is a computer program whose purpose is to help prototyping
  * parallel applications using dataflow formalism.
@@ -70,19 +70,19 @@ public class GMLSDFExporterTest {
     final SDFGraph graph = new SDFGraph();
 
     // test_com_basique
-    final SDFInterfaceVertex sensorInt = new SDFSourceInterfaceVertex();
+    final SDFInterfaceVertex sensorInt = new SDFSourceInterfaceVertex(null);
     sensorInt.setName("sensor_Int");
     graph.addVertex(sensorInt);
 
-    final SDFVertex gen5 = new SDFVertex();
+    final SDFVertex gen5 = new SDFVertex(null);
     gen5.setName("Gen5");
     graph.addVertex(gen5);
 
-    final SDFVertex recopie5 = new SDFVertex();
+    final SDFVertex recopie5 = new SDFVertex(null);
     recopie5.setName("recopie_5");
     graph.addVertex(recopie5);
 
-    final SDFInterfaceVertex acqData = new SDFSinkInterfaceVertex();
+    final SDFInterfaceVertex acqData = new SDFSinkInterfaceVertex(null);
     acqData.setName("acq_data");
     graph.addVertex(acqData);
 

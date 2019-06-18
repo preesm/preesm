@@ -1,7 +1,7 @@
 /**
- * Copyright or © or Copr. IETR/INSA - Rennes (2017 - 2018) :
+ * Copyright or © or Copr. IETR/INSA - Rennes (2017 - 2019) :
  *
- * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017 - 2018)
+ * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017 - 2019)
  *
  * This software is a computer program whose purpose is to help prototyping
  * parallel applications using dataflow formalism.
@@ -35,25 +35,22 @@
 package org.ietr.preesm.test.it.api;
 
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.net.URL;
 import java.nio.file.FileVisitOption;
 import java.nio.file.Files;
 import java.util.Comparator;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.Stream;
-import org.eclipse.core.resources.IContainer;
-import org.eclipse.core.resources.IFile;
-import org.eclipse.core.resources.IFolder;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IProjectDescription;
 import org.eclipse.core.resources.IWorkspace;
 import org.eclipse.core.resources.IWorkspaceRoot;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
-import org.eclipse.core.runtime.Path;
+import org.preesm.commons.files.PreesmResourcesHelper;
+import org.preesm.commons.files.URLHelper;
 import org.preesm.commons.logger.PreesmLogger;
 import org.preesm.workflow.AbstractWorkflowExecutor;
 
@@ -64,14 +61,11 @@ import org.preesm.workflow.AbstractWorkflowExecutor;
  */
 public class WorkflowRunner {
 
-  private static final String PROJECT_RESOURCES_LOCAL_PATH = "resources";
-
   /**
    */
   public static final boolean runWorkFlow(final String projectName, final String workflowFilePathStr,
       final String scenarioFilePathStr) throws CoreException, IOException {
-    // init
-    // init
+    // init workspace and project
     final IWorkspace workspace = ResourcesPlugin.getWorkspace();
     final IWorkspaceRoot root = workspace.getRoot();
     final IProjectDescription newProjectDescription = workspace.newProjectDescription(projectName);
@@ -84,41 +78,27 @@ public class WorkflowRunner {
     final Logger logger = PreesmLogger.getLogger();
     logger.setLevel(Level.ALL);
 
-    // run workflow
-    WorkflowRunner.copyFiles(new File(WorkflowRunner.PROJECT_RESOURCES_LOCAL_PATH + "/" + projectName + "/"), project);
-    final AbstractWorkflowExecutor workflowManager = new PreesmTestWorkflowExecutor();
-    workflowManager.setDebug(true);
-    final String workflowPath = "/" + projectName + workflowFilePathStr;
-    final String scenarioPath = "/" + projectName + scenarioFilePathStr;
+    try {
+      // copy content
+      final URL resolve = PreesmResourcesHelper.getInstance().resolve(projectName, WorkflowRunner.class);
+      URLHelper.copyContent(resolve, project);
 
-    final boolean success = workflowManager.execute(workflowPath, scenarioPath, null);
+      // run workflow
+      final AbstractWorkflowExecutor workflowManager = new PreesmTestWorkflowExecutor();
+      workflowManager.setDebug(true);
+      final String workflowPath = "/" + projectName + workflowFilePathStr;
+      final String scenarioPath = "/" + projectName + scenarioFilePathStr;
 
-    // clean
-    project.close(null);
-    final Stream<java.nio.file.Path> walk = Files.walk(createTempDirectory, FileVisitOption.FOLLOW_LINKS);
-    walk.sorted(Comparator.reverseOrder()).map(java.nio.file.Path::toFile).forEach(File::delete);
-    walk.close();
-    project.delete(true, null);
-    return success;
-  }
+      final boolean success = workflowManager.execute(workflowPath, scenarioPath, null);
 
-  private static final void copyFiles(final File srcFolder, final IContainer destFolder)
-      throws CoreException, FileNotFoundException {
-    for (final File f : srcFolder.listFiles()) {
-      if (f.isDirectory()) {
-        final IFolder newFolder = destFolder.getFolder(new Path(f.getName()));
-        if (newFolder.exists()) {
-          continue;
-        }
-        newFolder.create(true, true, null);
-        WorkflowRunner.copyFiles(f, newFolder);
-      } else {
-        final IFile newFile = destFolder.getFile(new Path(f.getName()));
-        if (newFile.exists()) {
-          continue;
-        }
-        newFile.create(new FileInputStream(f), false, null);
-      }
+      return success;
+    } finally {
+      // clean
+      project.close(null);
+      final Stream<java.nio.file.Path> walk = Files.walk(createTempDirectory, FileVisitOption.FOLLOW_LINKS);
+      walk.sorted(Comparator.reverseOrder()).map(java.nio.file.Path::toFile).forEach(File::delete);
+      walk.close();
+      project.delete(true, null);
     }
   }
 }

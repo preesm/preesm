@@ -41,12 +41,10 @@ import java.util.Set;
 import org.eclipse.emf.common.util.EList;
 import org.eclipse.jface.viewers.CheckboxTreeViewer;
 import org.eclipse.jface.viewers.ITreeContentProvider;
-import org.preesm.commons.exceptions.PreesmFrameworkException;
 import org.preesm.model.pisdf.AbstractActor;
 import org.preesm.model.pisdf.Actor;
 import org.preesm.model.pisdf.PiGraph;
-import org.preesm.model.pisdf.serialize.PiParser;
-import org.preesm.model.scenario.PreesmScenario;
+import org.preesm.model.scenario.Scenario;
 
 /**
  * This class provides the elements displayed in {@link SDFTreeSection}. Each element is a vertex. This tree is used in
@@ -58,9 +56,6 @@ public class PreesmAlgorithmTreeContentProvider implements ITreeContentProvider 
 
   /** The current PISDF graph. */
   private PiGraph currentPISDFGraph = null;
-
-  /** The scenario. */
-  private PreesmScenario scenario;
 
   /**
    * Instantiates a new preesm algorithm tree content provider.
@@ -81,19 +76,15 @@ public class PreesmAlgorithmTreeContentProvider implements ITreeContentProvider 
   public Object[] getChildren(final Object parentElement) {
     Object[] table = null;
 
-    if (this.scenario.isIBSDFScenario()) {
-      throw new PreesmFrameworkException("IBSDF is not supported anymore");
-    } else if (this.scenario.isPISDFScenario()) {
-      if (parentElement instanceof PiGraph) {
-        final PiGraph graph = (PiGraph) parentElement;
-        // Some types of vertices are ignored in the constraints view
-        table = filterPISDFChildren(graph.getActors()).toArray();
-      } else if (parentElement instanceof Actor) {
-        final Actor actor = (Actor) parentElement;
-        if (actor.isHierarchical()) {
-          final PiGraph subGraph = actor.getSubGraph();
-          table = filterPISDFChildren(subGraph.getActors()).toArray();
-        }
+    if (parentElement instanceof PiGraph) {
+      final PiGraph graph = (PiGraph) parentElement;
+      // Some types of vertices are ignored in the constraints view
+      table = filterPISDFChildren(graph.getActors()).toArray();
+    } else if (parentElement instanceof Actor) {
+      final Actor actor = (Actor) parentElement;
+      if (actor.isHierarchical()) {
+        final PiGraph subGraph = actor.getSubGraph();
+        table = filterPISDFChildren(subGraph.getActors()).toArray();
       }
     }
 
@@ -119,16 +110,12 @@ public class PreesmAlgorithmTreeContentProvider implements ITreeContentProvider 
   public boolean hasChildren(final Object element) {
     boolean hasChildren = false;
 
-    if (this.scenario.isIBSDFScenario()) {
-      throw new PreesmFrameworkException("IBSDF is not supported anymore");
-    } else if (this.scenario.isPISDFScenario()) {
-      if (element instanceof PiGraph) {
-        final PiGraph graph = (PiGraph) element;
-        hasChildren = !graph.getActors().isEmpty();
-      } else if (element instanceof Actor) {
-        final Actor actor = (Actor) element;
-        hasChildren = actor.getRefinement() != null;
-      }
+    if (element instanceof PiGraph) {
+      final PiGraph graph = (PiGraph) element;
+      hasChildren = !graph.getActors().isEmpty();
+    } else if (element instanceof Actor) {
+      final Actor actor = (Actor) element;
+      hasChildren = actor.getRefinement() != null;
     }
 
     return hasChildren;
@@ -143,19 +130,17 @@ public class PreesmAlgorithmTreeContentProvider implements ITreeContentProvider 
   public Object[] getElements(final Object inputElement) {
     final Object[] table = new Object[1];
 
-    if (inputElement instanceof PreesmScenario) {
-      this.scenario = (PreesmScenario) inputElement;
+    /** The scenario. */
+    Scenario scenario;
+    if (inputElement instanceof Scenario) {
+      scenario = (Scenario) inputElement;
       // Opening algorithm from file
-      if (this.scenario.isIBSDFScenario()) {
-        throw new PreesmFrameworkException("IBSDF is not supported anymore");
-      } else if (this.scenario.isPISDFScenario()) {
-        try {
-          this.currentPISDFGraph = PiParser.getPiGraphWithReconnection(this.scenario.getAlgorithmURL());
-        } catch (final Exception e) {
-          e.printStackTrace();
-        }
-        table[0] = this.currentPISDFGraph;
+      try {
+        this.currentPISDFGraph = scenario.getAlgorithm();
+      } catch (final Exception e) {
+        e.printStackTrace();
       }
+      table[0] = this.currentPISDFGraph;
     }
     return table;
   }

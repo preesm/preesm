@@ -56,7 +56,7 @@
       <wizard canFinishEarly="false"
          category="org.ietr.preesm.category"
          class="org.preesm.ui.slam.NewSlamFileWizard"
-         hasPages="true" icon="icons/graphiti.gif"
+         hasPages="true" icon="resources/icons/graphiti.gif"
          id="net.sf.dftools.ui.slam.NewSlamFileWizard"
          name="S-LAM Architecture" project="false">
          <description>
@@ -92,7 +92,7 @@
       <editor
          class="org.ietr.dftools.graphiti.ui.editors.GraphEditor"
          contributorClass="org.ietr.dftools.graphiti.ui.editors.GraphActionBarContributor"
-         default="true" extensions="slam" icon="icons/graphiti.gif"
+         default="true" extensions="slam" icon="resources/icons/graphiti.gif"
          id="net.sf.dftools.ui.SlamEditor" name="S-LAM Editor">
       </editor>
 
@@ -148,7 +148,7 @@
             </parameter>
          </graphType>
          <import>
-            <xslt name="xslt/net/sf/dftools/s-lam/input_S-LAM.xslt">
+            <xslt name="resources/xslt/s-lam/input_S-LAM.xslt">
             </xslt>
          </import>
          <vertexType name="hierConnection">
@@ -204,7 +204,7 @@
          </edgeType>
          <export>
             <xslt
-               name="xslt/net/sf/dftools/s-lam/output_S-LAM.xslt">
+               name="resources/xslt/s-lam/output_S-LAM.xslt">
             </xslt>
          </export>
          <vertexType name="Mem">

@@ -80,9 +80,8 @@ import org.preesm.codegen.model.SpecialCall
 import org.preesm.codegen.model.SubBuffer
 import org.preesm.codegen.model.Variable
 import org.preesm.codegen.printer.DefaultPrinter
-import org.preesm.codegen.xtend.CodegenPlugin
 import org.preesm.commons.exceptions.PreesmRuntimeException
-import org.preesm.commons.files.URLResolver
+import org.preesm.commons.files.PreesmResourcesHelper
 import org.preesm.model.pisdf.util.CHeaderUsedLocator
 
 /**
@@ -408,13 +407,13 @@ class CPrinter extends DefaultPrinter {
 	    context.put("CONSTANTS", constants);
 
 	    // 3- init template reader
-	    val String templateLocalURL = "templates/c/preesm_gen.h";
-	    val URL mainTemplate = URLResolver.findFirstInBundleList(templateLocalURL, CodegenPlugin.BUNDLE_ID);
+	    val String templateLocalPath = "templates/c/preesm_gen.h";
+	    val URL mainTemplate = PreesmResourcesHelper.instance.resolve(templateLocalPath, this.class);
 	    var InputStreamReader reader = null;
 	    try {
 	      reader = new InputStreamReader(mainTemplate.openStream());
 	    } catch (IOException e) {
-	      throw new PreesmRuntimeException("Could not locate main template [" + templateLocalURL + "].", e);
+	      throw new PreesmRuntimeException("Could not locate main template [" + templateLocalPath + "].", e);
 	    }
 
 	    // 4- init output writer
@@ -442,7 +441,7 @@ class CPrinter extends DefaultPrinter {
 						"mac_barrier.h"
 					]);
 		files.forEach[it | try {
-			result.put(it, URLResolver.readURLInBundleList(stdFilesFolder + it, CodegenPlugin.BUNDLE_ID))
+			result.put(it, PreesmResourcesHelper.instance.read(stdFilesFolder + it, this.class))
 		} catch (IOException exc) {
 			throw new PreesmRuntimeException("Could not generated content for " + it, exc)
 		}]

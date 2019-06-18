@@ -1,7 +1,7 @@
 /**
- * Copyright or © or Copr. IETR/INSA - Rennes (2008 - 2018) :
+ * Copyright or © or Copr. IETR/INSA - Rennes (2008 - 2019) :
  *
- * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017 - 2018)
+ * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017 - 2019)
  * Clément Guy <clement.guy@insa-rennes.fr> (2014)
  * Karol Desnos <karol.desnos@insa-rennes.fr> (2013 - 2017)
  * Matthieu Wipliez <matthieu.wipliez@insa-rennes.fr> (2008)
@@ -166,7 +166,7 @@ public class AddSendReceiveTransaction extends Transaction {
     final ComponentInstance receiverOperator = this.step.getReceiver();
 
     this.sendVertex = new SendVertex(sendVertexID, this.implementation, (MapperDAGVertex) this.edge.getSource(),
-        (MapperDAGVertex) this.edge.getTarget(), 0, 0);
+        (MapperDAGVertex) this.edge.getTarget(), 0, 0, null);
     this.implementation.getTimings().dedicate(this.sendVertex);
     this.implementation.getMappings().dedicate(this.sendVertex);
     this.sendVertex.setRouteStep(this.step);
@@ -186,7 +186,7 @@ public class AddSendReceiveTransaction extends Transaction {
     this.orderManager.insertAfter(insertionPosition, this.sendVertex);
 
     this.receiveVertex = new ReceiveVertex(receiveVertexID, this.implementation,
-        (MapperDAGVertex) this.edge.getSource(), (MapperDAGVertex) this.edge.getTarget(), 0, 0);
+        (MapperDAGVertex) this.edge.getSource(), (MapperDAGVertex) this.edge.getTarget(), 0, 0, null);
     this.implementation.getTimings().dedicate(this.receiveVertex);
     this.implementation.getMappings().dedicate(this.receiveVertex);
     this.receiveVertex.setRouteStep(this.step);

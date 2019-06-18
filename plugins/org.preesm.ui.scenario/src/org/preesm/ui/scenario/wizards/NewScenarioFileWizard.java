@@ -1,7 +1,7 @@
 /**
- * Copyright or © or Copr. IETR/INSA - Rennes (2008 - 2018) :
+ * Copyright or © or Copr. IETR/INSA - Rennes (2008 - 2019) :
  *
- * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017 - 2018)
+ * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017 - 2019)
  * Julien Heulot <julien.heulot@insa-rennes.fr> (2013)
  * Maxime Pelcat <maxime.pelcat@insa-rennes.fr> (2008 - 2011)
  *
@@ -55,22 +55,12 @@ public class NewScenarioFileWizard extends BasicNewFileResourceWizard {
   public static final String SCENARIO_INITIAL_CONTENT = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" + "<scenario>\n"
       + "</scenario>";
 
-  /*
-   * (non-Javadoc)
-   *
-   * @see org.eclipse.ui.wizards.newresource.BasicNewFileResourceWizard#addPages()
-   */
   @Override
   public void addPages() {
     super.addPages();
     super.setWindowTitle("New Scenario File");
   }
 
-  /*
-   * (non-Javadoc)
-   *
-   * @see org.eclipse.ui.wizards.newresource.BasicNewFileResourceWizard#performFinish()
-   */
   @Override
   public boolean performFinish() {
     final WizardNewFileCreationPage page = (WizardNewFileCreationPage) (getPage("newFilePage1"));

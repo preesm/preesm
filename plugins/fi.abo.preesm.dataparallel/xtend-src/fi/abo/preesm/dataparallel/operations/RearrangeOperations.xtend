@@ -1,8 +1,8 @@
 /**
- * Copyright or © or Copr. Åbo Akademi University (2017 - 2018),
- * IETR/INSA - Rennes (2017 - 2018) :
+ * Copyright or © or Copr. Åbo Akademi University (2017 - 2019),
+ * IETR/INSA - Rennes (2017 - 2019) :
  *
- * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017 - 2018)
+ * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017 - 2019)
  * Sudeep Kanur <skanur@abo.fi> (2017 - 2018)
  *
  * This software is a computer program whose purpose is to help prototyping
@@ -72,27 +72,27 @@ class RearrangeOperations implements DAGOperations {
 	/**
 	 * Optional {@link Logger} instance
 	 */
-	@Accessors(PROTECTED_GETTER, PRIVATE_SETTER)
+	@Accessors(PROTECTED_GETTER, PACKAGE_SETTER)
 	val Logger logger
 
 	/**
 	 * Hold {@link RetimingInfo} to access and add transient graphs expressed as
 	 * {@link FifoActorGraph}
 	 */
-	@Accessors(PUBLIC_GETTER, PRIVATE_SETTER)
+	@Accessors(PUBLIC_GETTER, PACKAGE_SETTER)
 	val RetimingInfo info
 
 	/**
 	 * Hold Single rate SDF (SrSDF) graph
 	 */
-	@Accessors(PROTECTED_GETTER, PRIVATE_SETTER)
+	@Accessors(PROTECTED_GETTER, PACKAGE_SETTER)
 	val SDFGraph srsdf
 
 	/**
 	 * Lookup table of edges with delays and its associated {@link FifoActor}. The edges are
 	 * incident to a single rate vertex that was originally added by the user in the {@link SDFGraph}
 	 */
-	@Accessors(PRIVATE_GETTER, PRIVATE_SETTER)
+	@Accessors(PRIVATE_GETTER, PACKAGE_SETTER)
 	val Map<SDFEdge, FifoActor> edgeFifoActors
 
 	/**
@@ -100,25 +100,25 @@ class RearrangeOperations implements DAGOperations {
 	 * are incident to a single rate vertex that was originally added by the user in {@link SDFGraph}
 	 * The {@link FifoActor} corresponds to the one that was in the SrSDF graph.
 	 */
-	@Accessors(PRIVATE_GETTER, PRIVATE_SETTER)
+	@Accessors(PRIVATE_GETTER, PACKAGE_SETTER)
 	val Map<SDFEdge, FifoActor> originalEdgeFifoActors
 
 	/**
 	 * A {@link FifoActorGraph} that holds non-trivial initialization of certain FIFOs
 	 */
-	@Accessors(PRIVATE_GETTER, PRIVATE_SETTER)
+	@Accessors(PRIVATE_GETTER, PACKAGE_SETTER)
 	val FifoActorGraph transientGraph
 
-	@Accessors(PUBLIC_GETTER, PRIVATE_SETTER)
+	@Accessors(PUBLIC_GETTER, PACKAGE_SETTER)
 	val List<SDFAbstractVertex> interfaceActors
 
-	@Accessors(PUBLIC_GETTER, PRIVATE_SETTER)
+	@Accessors(PUBLIC_GETTER, PACKAGE_SETTER)
 	var PureDAGConstructor dagGen
 
 	/**
 	 * Keep a list of instances that have been fired so far
 	 */
-	@Accessors(PRIVATE_GETTER, PRIVATE_SETTER)
+	@Accessors(PRIVATE_GETTER, PACKAGE_SETTER)
 	val List<SDFAbstractVertex> firedInstances
 
 	/**
@@ -288,7 +288,7 @@ class RearrangeOperations implements DAGOperations {
 				actor
 			}
 
-			val fifoActorOut = new SDFSinkInterfaceVertex
+			val fifoActorOut = new SDFSinkInterfaceVertex(null)
 			fifoActorOut.name = getFifoInterfaceName(fifoActor)
 
 			fifoActor.addSink(fifoActorOut)
@@ -372,7 +372,7 @@ class RearrangeOperations implements DAGOperations {
 				edgeFifoActors.put(edge, actor)
 				actor
 			}
-			val fifoActorIn = new SDFSourceInterfaceVertex
+			val fifoActorIn = new SDFSourceInterfaceVertex(null)
 			fifoActorIn.name = getFifoInterfaceName(fifoActor)
 			fifoActor.addSource(fifoActorIn)
 
@@ -382,16 +382,16 @@ class RearrangeOperations implements DAGOperations {
 				// Create an implode node, first consuming original tokens, then tokens from new
 				// fifoActor
 				val originalFifoActor = originalEdgeFifoActors.get(edge)
-				val implode = new SDFJoinVertex
+				val implode = new SDFJoinVertex(null)
 				implode.name = "implode_" + edge.source.name + "_" + edge.target.name + "_init"
 				transientGraph.addVertex(implode)
 
 				// Add edge between original fifo and implode
-				val originalFifoActorOut = new SDFSinkInterfaceVertex
+				val originalFifoActorOut = new SDFSinkInterfaceVertex(null)
 				originalFifoActorOut.name =  getFifoInterfaceName(originalFifoActor)
 				originalFifoActor.addSink(originalFifoActorOut)
 
-				val implodeFifoIn = new SDFSourceInterfaceVertex
+				val implodeFifoIn = new SDFSourceInterfaceVertex(null)
 				implodeFifoIn.name = "implode_fifo_" + originalFifoActor.startIndex
 				implode.addSource(implodeFifoIn)
 
@@ -405,7 +405,7 @@ class RearrangeOperations implements DAGOperations {
 				originalFifoImplodeEdge.targetPortModifier = new StringEdgePropertyType(SDFEdge.MODIFIER_READ_ONLY)
 
 				// Add edge between node output and implode
-				val implodeNodeIn= new SDFSourceInterfaceVertex
+				val implodeNodeIn= new SDFSourceInterfaceVertex(null)
 				implodeNodeIn.name = "implode_node_" + originalFifoActor.nbRepeatAsLong
 				implode.addSource(implodeNodeIn)
 				val nodeImplodeEdge = transientGraph.addEdge(node, edge.sourceInterface,
@@ -424,7 +424,7 @@ class RearrangeOperations implements DAGOperations {
 				}
 
 				// Add edge between implode output and FifoActor
-				val implodeOut = new SDFSinkInterfaceVertex
+				val implodeOut = new SDFSinkInterfaceVertex(null)
 				implodeOut.name = implode.name + "_out"
 				implode.addSink(implodeOut)
 

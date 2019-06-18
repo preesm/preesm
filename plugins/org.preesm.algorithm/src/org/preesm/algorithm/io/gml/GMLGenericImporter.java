@@ -145,7 +145,7 @@ public class GMLGenericImporter extends GMLImporter<AbstractGraph, AbstractVerte
   @Override
   public AbstractVertex parseNode(final Element vertexElt, final AbstractGraph parentGraph) {
     AbstractVertex vertex;
-    vertex = this.vertexFactory.createVertex(vertexElt);
+    vertex = this.vertexFactory.createVertex(vertexElt, null);
     vertex.setId(vertexElt.getAttribute("id"));
     vertex.setName(vertexElt.getAttribute("id"));
     parseKeys(vertexElt, vertex);

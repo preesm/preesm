@@ -1,7 +1,7 @@
 /**
- * Copyright or © or Copr. IETR/INSA - Rennes (2012 - 2018) :
+ * Copyright or © or Copr. IETR/INSA - Rennes (2012 - 2019) :
  *
- * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017 - 2018)
+ * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017 - 2019)
  * Clément Guy <clement.guy@insa-rennes.fr> (2014 - 2015)
  * Julien Heulot <julien.heulot@insa-rennes.fr> (2013)
  * Karol Desnos <karol.desnos@insa-rennes.fr> (2012 - 2013)
@@ -48,7 +48,6 @@ import org.eclipse.ui.PlatformUI;
 import org.preesm.model.pisdf.Actor;
 import org.preesm.ui.utils.FileUtils;
 
-// TODO: Auto-generated Javadoc
 /**
  * Custom Feature to set a new memory script to an {@link Actor}.
  *
@@ -125,9 +124,8 @@ public class SetActorMemoryScriptFeature extends AbstractCustomFeature {
       if (bo instanceof Actor) {
         final Actor actor = (Actor) bo;
 
-        final String question = "Please select a valid file\n(.bshi)";
         final String dialogTitle = "Select a memory script";
-        askMemoryScript(actor, question, dialogTitle);
+        askMemoryScript(actor, dialogTitle);
 
         // Call the layout feature
         layoutPictogramElement(pes[0]);
@@ -145,16 +143,17 @@ public class SetActorMemoryScriptFeature extends AbstractCustomFeature {
    * @param dialogTitle
    *          the dialog title
    */
-  private void askMemoryScript(final Actor actor, final String question, final String dialogTitle) {
+  private void askMemoryScript(final Actor actor, final String dialogTitle) {
     // Ask user for memory script
     final Set<String> fileExtensions = new LinkedHashSet<>();
     fileExtensions.add("bsh");
     final IPath newFilePath = FileUtils.browseFiles(PlatformUI.getWorkbench().getActiveWorkbenchWindow().getShell(),
         dialogTitle, fileExtensions);
 
-    if ((newFilePath != null) && (newFilePath != actor.getMemoryScriptPath())) {
+    final String filePathString = newFilePath.toString();
+    if ((filePathString != null) && (newFilePath.toString() != actor.getMemoryScriptPath())) {
       this.hasDoneChanges = true;
-      actor.setMemoryScriptPath(newFilePath);
+      actor.setMemoryScriptPath(newFilePath.toString());
     }
   }
 

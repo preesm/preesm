@@ -1,7 +1,7 @@
 /**
- * Copyright or © or Copr. IETR/INSA - Rennes (2009 - 2018) :
+ * Copyright or © or Copr. IETR/INSA - Rennes (2009 - 2019) :
  *
- * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017 - 2018)
+ * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017 - 2019)
  * Clément Guy <clement.guy@insa-rennes.fr> (2014 - 2015)
  * Jonathan Piat <jpiat@laas.fr> (2011)
  * Maxime Pelcat <maxime.pelcat@insa-rennes.fr> (2009 - 2012)
@@ -103,7 +103,7 @@ public class GMLDAGImporter extends GMLImporter<DirectedAcyclicGraph, DAGVertex,
    */
   @Override
   public DAGVertex parseNode(final Element vertexElt, final DirectedAcyclicGraph parentGraph) {
-    final DAGVertex vertex = new DAGVertex();
+    final DAGVertex vertex = new DAGVertex(null);
     final String id = vertexElt.getAttribute("id");
     vertex.setId(id);
     vertex.setName(id);

@@ -43,7 +43,6 @@ import java.util.Comparator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import org.eclipse.jface.viewers.ILabelProviderListener;
 import org.eclipse.jface.viewers.IStructuredContentProvider;
 import org.eclipse.jface.viewers.ITableLabelProvider;
@@ -52,7 +51,7 @@ import org.eclipse.swt.graphics.Image;
 import org.preesm.algorithm.mapper.ui.Messages;
 import org.preesm.algorithm.mapper.ui.stats.StatGenerator;
 import org.preesm.model.slam.ComponentInstance;
-import org.preesm.model.slam.utils.DesignTools;
+import org.preesm.model.slam.Design;
 
 // TODO: Auto-generated Javadoc
 /**
@@ -110,7 +109,8 @@ public class DeploymentProperties implements IStructuredContentProvider, ITableL
    * Inits the data.
    */
   private void initData() {
-    final Set<ComponentInstance> opSet = DesignTools.getOperatorInstances(this.statGen.getAbc().getArchitecture());
+    final Design architecture = this.statGen.getAbc().getArchitecture();
+    final List<ComponentInstance> opSet = architecture.getOperatorComponentInstances();
 
     for (final ComponentInstance cmp : opSet) {
       this.loads.put(cmp, this.statGen.getLoad(cmp));

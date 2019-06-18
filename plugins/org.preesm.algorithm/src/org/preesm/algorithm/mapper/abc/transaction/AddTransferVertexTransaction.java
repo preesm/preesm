@@ -1,7 +1,7 @@
 /**
- * Copyright or © or Copr. IETR/INSA - Rennes (2008 - 2018) :
+ * Copyright or © or Copr. IETR/INSA - Rennes (2008 - 2019) :
  *
- * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017 - 2018)
+ * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017 - 2019)
  * Clément Guy <clement.guy@insa-rennes.fr> (2014)
  * Matthieu Wipliez <matthieu.wipliez@insa-rennes.fr> (2008)
  * Maxime Pelcat <maxime.pelcat@insa-rennes.fr> (2008 - 2014)
@@ -201,7 +201,7 @@ public class AddTransferVertexTransaction extends Transaction {
 
     if (this.transferTime > 0) {
       this.tVertex = new TransferVertex(tvertexID, this.implementation, (MapperDAGVertex) this.edge.getSource(),
-          (MapperDAGVertex) this.edge.getTarget(), this.routeIndex, this.nodeIndex);
+          (MapperDAGVertex) this.edge.getTarget(), this.routeIndex, this.nodeIndex, null);
       this.implementation.getTimings().dedicate(this.tVertex);
       this.implementation.getMappings().dedicate(this.tVertex);
 

@@ -1,7 +1,7 @@
 /**
- * Copyright or © or Copr. IETR/INSA - Rennes (2015 - 2018) :
+ * Copyright or © or Copr. IETR/INSA - Rennes (2015 - 2019) :
  *
- * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017 - 2018)
+ * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017 - 2019)
  * blaunay <bapt.launay@gmail.com> (2015)
  *
  * This software is a computer program whose purpose is to help prototyping
@@ -50,14 +50,24 @@ import org.preesm.algorithm.model.sdf.SDFVertex;
 import org.preesm.algorithm.model.sdf.esdf.SDFSinkInterfaceVertex;
 import org.preesm.algorithm.model.sdf.esdf.SDFSourceInterfaceVertex;
 import org.preesm.commons.logger.PreesmLogger;
+import org.preesm.model.pisdf.AbstractActor;
+import org.preesm.model.pisdf.AbstractVertex;
+import org.preesm.model.scenario.Scenario;
+import org.preesm.model.slam.component.Component;
 
-// TODO: Auto-generated Javadoc
 /**
  * Class used to search for the optimal periodic schedule and its throughput for a given hierarchical graph IBSDF.
  *
  * @author blaunay
  */
 public class IBSDFThroughputEvaluator extends ThroughputEvaluator {
+
+  private Scenario scenario;
+
+  public IBSDFThroughputEvaluator(Scenario scenario) {
+    this.scenario = scenario;
+    // TODO Auto-generated constructor stub
+  }
 
   /**
    * Computes (not necessarily optimally) the throughput on the optimal periodic schedule (if it exists) of a given
@@ -168,9 +178,9 @@ public class IBSDFThroughputEvaluator extends ThroughputEvaluator {
     for (final SDFAbstractVertex vertex : g.vertexSet()) {
       if (!((vertex.getGraphDescription() != null) && (vertex.getGraphDescription() instanceof SDFGraph))) {
         final SDFEdge loop = g.addEdge(vertex, vertex);
-        final SDFSourceInterfaceVertex in = new SDFSourceInterfaceVertex();
+        final SDFSourceInterfaceVertex in = new SDFSourceInterfaceVertex(null);
         in.setName(vertex.getName() + "In");
-        final SDFSinkInterfaceVertex out = new SDFSinkInterfaceVertex();
+        final SDFSinkInterfaceVertex out = new SDFSinkInterfaceVertex(null);
         out.setName(vertex.getName() + "Out");
         AbstractEdgePropertyType<?> x;
         if (vertex.getSources().size() != 0) {
@@ -194,7 +204,14 @@ public class IBSDFThroughputEvaluator extends ThroughputEvaluator {
           && (edge.getSource().getGraphDescription() instanceof SDFGraph))) {
         L = 0;
       } else {
-        L = this.getScenar().getTimingManager().getTimingOrDefault(edge.getSource().getId(), "x86").getTime();
+        final AbstractVertex referencePiMMVertex = edge.getSource().getReferencePiVertex();
+        if (referencePiMMVertex instanceof AbstractActor) {
+          final Component component = scenario.getSimulationInfo().getMainOperator().getComponent();
+          final AbstractActor actor = (AbstractActor) referencePiMMVertex;
+          L = this.getScenar().getTimings().evaluateTimingOrDefault(actor, component);
+        } else {
+          L = 0;
+        }
       }
 
       H = ((double) (edge.getDelay().getValue())
@@ -221,10 +238,10 @@ public class IBSDFThroughputEvaluator extends ThroughputEvaluator {
           // Create new nodes corresponding to the interfaces
           for (final String input : dist.keySet()) {
             // Create a new vertex for each new input interface
-            final SDFAbstractVertex VertexIn = new SDFVertex();
+            final SDFAbstractVertex VertexIn = new SDFVertex(null);
             VertexIn.setName(input);
             // Create a new port for the incoming edge
-            final SDFSourceInterfaceVertex inPortIN = new SDFSourceInterfaceVertex();
+            final SDFSourceInterfaceVertex inPortIN = new SDFSourceInterfaceVertex(null);
             inPortIN.setName("in");
             VertexIn.addSource(inPortIN);
             // Add it to the graph
@@ -247,10 +264,10 @@ public class IBSDFThroughputEvaluator extends ThroughputEvaluator {
               SDFAbstractVertex VertexOut = g.getVertex(output);
               if (VertexOut == null) {
                 // Create vertex out only if it does not exist already
-                VertexOut = new SDFVertex();
+                VertexOut = new SDFVertex(null);
                 VertexOut.setName(output);
                 // Create a new port port for the outgoing edge
-                final SDFSinkInterfaceVertex outPortOUT = new SDFSinkInterfaceVertex();
+                final SDFSinkInterfaceVertex outPortOUT = new SDFSinkInterfaceVertex(null);
                 outPortOUT.setName("out");
                 VertexOut.addSink(outPortOUT);
                 g.addVertex(VertexOut);
@@ -280,12 +297,12 @@ public class IBSDFThroughputEvaluator extends ThroughputEvaluator {
               EdgeInOut.setCons(E_out);
               EdgeInOut.setProd(E_in);
               // port of origin of this edge
-              final SDFSinkInterfaceVertex outPortIN = new SDFSinkInterfaceVertex();
+              final SDFSinkInterfaceVertex outPortIN = new SDFSinkInterfaceVertex(null);
               outPortIN.setName(output);
               VertexIn.addSink(outPortIN);
               EdgeInOut.setSourceInterface(outPortIN);
               // target port of this edge
-              final SDFSourceInterfaceVertex inPortOUT = new SDFSourceInterfaceVertex();
+              final SDFSourceInterfaceVertex inPortOUT = new SDFSourceInterfaceVertex(null);
               inPortOUT.setName(VertexIn.getName());
               VertexOut.addSource(inPortOUT);
               EdgeInOut.setTargetInterface(inPortOUT);
@@ -422,10 +439,10 @@ public class IBSDFThroughputEvaluator extends ThroughputEvaluator {
           // Create new nodes corresponding to the interfaces
           for (final String input : dist.keySet()) {
             // Create a new vertex for each new input interface
-            final SDFVertex VertexIn = new SDFVertex();
+            final SDFVertex VertexIn = new SDFVertex(null);
             VertexIn.setName(input);
             // Create a new port for the incoming edge
-            final SDFSourceInterfaceVertex inPortIN = new SDFSourceInterfaceVertex();
+            final SDFSourceInterfaceVertex inPortIN = new SDFSourceInterfaceVertex(null);
             inPortIN.setName("in");
             VertexIn.addSource(inPortIN);
             // Add it to the graph
@@ -443,10 +460,10 @@ public class IBSDFThroughputEvaluator extends ThroughputEvaluator {
               SDFAbstractVertex VertexOut = g.getVertex(output);
               if (VertexOut == null) {
                 // Create vertex out only if it does not exist already
-                VertexOut = new SDFVertex();
+                VertexOut = new SDFVertex(null);
                 VertexOut.setName(output);
                 // Create a new port port for the outgoing edge
-                final SDFSinkInterfaceVertex outPortOUT = new SDFSinkInterfaceVertex();
+                final SDFSinkInterfaceVertex outPortOUT = new SDFSinkInterfaceVertex(null);
                 outPortOUT.setName("out");
                 VertexOut.addSink(outPortOUT);
                 g.addVertex(VertexOut);
@@ -464,12 +481,12 @@ public class IBSDFThroughputEvaluator extends ThroughputEvaluator {
               // Create the edge linking the new in and out
               final SDFEdge EdgeInOut = g.addEdge(VertexIn, VertexOut);
               // port of origin of this edge
-              final SDFSinkInterfaceVertex outPortIN = new SDFSinkInterfaceVertex();
+              final SDFSinkInterfaceVertex outPortIN = new SDFSinkInterfaceVertex(null);
               outPortIN.setName(output);
               VertexIn.addSink(outPortIN);
               EdgeInOut.setSourceInterface(outPortIN);
               // target port of this edge
-              final SDFSourceInterfaceVertex inPortOUT = new SDFSourceInterfaceVertex();
+              final SDFSourceInterfaceVertex inPortOUT = new SDFSourceInterfaceVertex(null);
               inPortOUT.setName(VertexIn.getName());
               VertexOut.addSource(inPortOUT);
               EdgeInOut.setTargetInterface(inPortOUT);

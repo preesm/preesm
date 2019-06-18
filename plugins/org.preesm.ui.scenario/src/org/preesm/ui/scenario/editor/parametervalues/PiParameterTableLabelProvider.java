@@ -1,7 +1,7 @@
 /**
- * Copyright or © or Copr. IETR/INSA - Rennes (2014 - 2018) :
+ * Copyright or © or Copr. IETR/INSA - Rennes (2014 - 2019) :
  *
- * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017 - 2018)
+ * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017 - 2019)
  * Clément Guy <clement.guy@insa-rennes.fr> (2014)
  * Julien Heulot <julien.heulot@insa-rennes.fr> (2014)
  *
@@ -37,8 +37,8 @@
 package org.preesm.ui.scenario.editor.parametervalues;
 
 import java.net.URL;
-import org.eclipse.core.runtime.FileLocator;
-import org.eclipse.core.runtime.Path;
+import java.util.Map.Entry;
+import java.util.stream.Collectors;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.jface.viewers.ITableColorProvider;
 import org.eclipse.jface.viewers.ITableLabelProvider;
@@ -46,12 +46,12 @@ import org.eclipse.jface.viewers.LabelProvider;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Table;
-import org.osgi.framework.Bundle;
-import org.osgi.framework.FrameworkUtil;
-import org.preesm.model.scenario.ParameterValue;
-import org.preesm.model.scenario.ParameterValue.ParameterType;
+import org.preesm.commons.files.PreesmResourcesHelper;
+import org.preesm.model.pisdf.Parameter;
+import org.preesm.model.pisdf.expression.ExpressionEvaluator;
+import org.preesm.model.scenario.Scenario;
+import org.preesm.ui.PreesmUIPlugin;
 
-// TODO: Auto-generated Javadoc
 /**
  * The label provider displays informations to fill the multi-column tree for parameter edition.
  *
@@ -68,116 +68,107 @@ public class PiParameterTableLabelProvider extends LabelProvider implements ITab
   /** The image error. */
   private final Image imageError;
 
+  private final Scenario scenario;
+
   /**
    * Instantiates a new pi parameter table label provider.
    *
    * @param _table
    *          the table
    */
-  PiParameterTableLabelProvider(final Table _table) {
+  PiParameterTableLabelProvider(final Table _table, final Scenario scenario) {
     super();
     this.table = _table;
+    this.scenario = scenario;
 
-    final Bundle bundle = FrameworkUtil.getBundle(PiParameterTableLabelProvider.class);
-
-    URL url = FileLocator.find(bundle, new Path("icons/error.png"), null);
-    ImageDescriptor imageDcr = ImageDescriptor.createFromURL(url);
+    final URL errorIconURL = PreesmResourcesHelper.getInstance().resolve("icons/error.png", PreesmUIPlugin.class);
+    ImageDescriptor imageDcr = ImageDescriptor.createFromURL(errorIconURL);
     this.imageError = imageDcr.createImage();
 
-    url = FileLocator.find(bundle, new Path("icons/ok.png"), null);
-    imageDcr = ImageDescriptor.createFromURL(url);
+    final URL okIconURL = PreesmResourcesHelper.getInstance().resolve("icons/ok.png", PreesmUIPlugin.class);
+    imageDcr = ImageDescriptor.createFromURL(okIconURL);
     this.imageOk = imageDcr.createImage();
   }
 
-  /*
-   * (non-Javadoc)
-   *
-   * @see org.eclipse.jface.viewers.LabelProvider#getText(java.lang.Object)
-   */
-  @Override
-  public String getText(final Object element) {
-    return null;
-  }
-
-  /*
-   * (non-Javadoc)
-   *
-   * @see org.eclipse.jface.viewers.ITableLabelProvider#getColumnImage(java.lang.Object, int)
-   */
   @Override
   public Image getColumnImage(final Object element, final int columnIndex) {
-    final ParameterValue paramValue = ((ParameterValue) element);
-    if (columnIndex == 4) { // Expression Column
-      if (paramValue.isValid()) {
+    @SuppressWarnings("unchecked")
+    final Entry<Parameter, String> paramValue = ((Entry<Parameter, String>) element);
+    if (columnIndex == 5) { // Expression Value Column
+      final String value = paramValue.getValue();
+      if (paramValue.getKey().isConfigurable()) {
         return this.imageOk;
       } else {
-        return this.imageError;
+        if (ExpressionEvaluator.canEvaluate(paramValue.getKey(), value)) {
+          return this.imageOk;
+        } else {
+          return this.imageError;
+        }
       }
     }
     return null;
   }
 
-  /*
-   * (non-Javadoc)
-   *
-   * @see org.eclipse.jface.viewers.ITableLabelProvider#getColumnText(java.lang.Object, int)
-   */
   @Override
   public String getColumnText(final Object element, final int columnIndex) {
-    final ParameterValue paramValue = ((ParameterValue) element);
+    @SuppressWarnings("unchecked")
+    final Entry<Parameter, String> paramValue = ((Entry<Parameter, String>) element);
+    final Parameter parameter = paramValue.getKey();
+    final String overrideExpression = paramValue.getValue();
     switch (columnIndex) {
-      case 0: // Actors Column
-        return paramValue.getName();
-      case 1: // Path Column
-        return paramValue.getParentVertex();
-      case 2: // Type Column
-        return paramValue.getType().toString();
-      case 3: // Variables Column
-        if (paramValue.getType() == ParameterType.PARAMETER_DEPENDENT) {
-          return paramValue.getInputParameters().toString();
+      case 0: // Paremeter path
+        return parameter.getVertexPath();
+      case 1: // Type Column
+        return parameter.isLocallyStatic() ? "STATIC" : "DYNAMIC";
+      case 2: // Input Parameter Column
+        return parameter.getInputParameters().stream().map(Parameter::getName).collect(Collectors.toList()).toString();
+      case 3: // Graph Expression Column
+        return parameter.getExpression().getExpressionAsString();
+      case 4: // Override Expression Column
+        if (parameter.isLocallyStatic()) {
+          return overrideExpression;
         } else {
-          return null;
+          return " - ";
         }
-      case 4: // Expression Column
-        if (paramValue.getType() == ParameterType.PARAMETER_DEPENDENT) {
-          return paramValue.getExpression();
-        } else if (paramValue.getType() == ParameterType.INDEPENDENT) {
-          return String.valueOf(paramValue.getValue());
-        } else if (paramValue.getType() == ParameterType.ACTOR_DEPENDENT) {
-          return paramValue.getValues().toString();
+      case 5: // Expression Value Column
+        if (parameter.isLocallyStatic()) {
+          if (ExpressionEvaluator.canEvaluate(parameter, overrideExpression)) {
+            return Long.toString(
+                ExpressionEvaluator.evaluate(parameter, overrideExpression, this.scenario.getParameterValues().map()));
+          } else {
+            return overrideExpression;
+          }
+        } else {
+          return overrideExpression;
         }
-        return null;
       default:
     }
     return null;
   }
 
-  /*
-   * (non-Javadoc)
-   *
-   * @see org.eclipse.jface.viewers.ITableColorProvider#getForeground(java.lang.Object, int)
-   */
   @Override
   public Color getForeground(final Object element, final int columnIndex) {
     return this.table.getForeground();
   }
 
-  /*
-   * (non-Javadoc)
-   *
-   * @see org.eclipse.jface.viewers.ITableColorProvider#getBackground(java.lang.Object, int)
-   */
   @Override
   public Color getBackground(final Object element, final int columnIndex) {
-    final ParameterValue paramValue = ((ParameterValue) element);
+    @SuppressWarnings("unchecked")
+    final Entry<Parameter, String> paramValue = ((Entry<Parameter, String>) element);
     switch (columnIndex) {
       case 0: // Actors Column
       case 1: // Path Column
       case 2: // Type Column
-      case 4: // Expression Column
         return this.table.getBackground();
-      case 3: // Variables Column
-        if (paramValue.getType() == ParameterType.ACTOR_DEPENDENT) {
+      case 3: // Expression Column
+        if (paramValue.getValue() != null && !paramValue.getValue().isEmpty()) {
+          return this.table.getBackground();
+        } else {
+          return new Color(this.table.getDisplay(), 200, 200, 200);
+        }
+      case 4:
+      case 5: // Value Column
+        if (paramValue.getKey().isLocallyStatic()) {
           return this.table.getBackground();
         } else {
           return new Color(this.table.getDisplay(), 200, 200, 200);

@@ -1,7 +1,7 @@
 /**
- * Copyright or © or Copr. IETR/INSA - Rennes (2018) :
+ * Copyright or © or Copr. IETR/INSA - Rennes (2018 - 2019) :
  *
- * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2018)
+ * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2018 - 2019)
  *
  * This software is a computer program whose purpose is to help prototyping
  * parallel applications using dataflow formalism.
@@ -39,7 +39,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
 import java.nio.charset.Charset;
-import java.util.Collections;
 import javax.xml.XMLConstants;
 import javax.xml.transform.Source;
 import javax.xml.transform.stream.StreamSource;
@@ -48,7 +47,7 @@ import javax.xml.validation.SchemaFactory;
 import javax.xml.validation.Validator;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.io.input.CloseShieldInputStream;
-import org.preesm.commons.files.URLResolver;
+import org.preesm.commons.files.PreesmResourcesHelper;
 import org.xml.sax.SAXException;
 
 /**
@@ -61,7 +60,7 @@ public class PiSDFXSDValidator {
   final URL schemaURL;
 
   private PiSDFXSDValidator() {
-    this.schemaURL = new URLResolver(this.getClass().getClassLoader()).resolve("PiSDF.xsd", Collections.emptyList());
+    this.schemaURL = PreesmResourcesHelper.getInstance().resolve("xsd/PiSDF.xsd", PiSDFXSDValidator.class);
   }
 
   /**

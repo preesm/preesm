@@ -55,10 +55,12 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
 import org.eclipse.core.runtime.IPath;
+import org.eclipse.emf.common.util.EMap;
 import org.eclipse.xtext.xbase.lib.Pair;
 import org.preesm.algorithm.memory.exclusiongraph.MemoryExclusionGraph;
 import org.preesm.algorithm.memory.exclusiongraph.MemoryExclusionVertex;
 import org.preesm.algorithm.model.AbstractEdge;
+import org.preesm.algorithm.model.AbstractGraph;
 import org.preesm.algorithm.model.dag.DAGEdge;
 import org.preesm.algorithm.model.dag.DAGVertex;
 import org.preesm.algorithm.model.dag.DirectedAcyclicGraph;
@@ -71,9 +73,10 @@ import org.preesm.algorithm.model.sdf.SDFEdge;
 import org.preesm.algorithm.model.sdf.SDFGraph;
 import org.preesm.algorithm.model.sdf.SDFVertex;
 import org.preesm.commons.exceptions.PreesmRuntimeException;
+import org.preesm.commons.files.PreesmResourcesHelper;
+import org.preesm.commons.files.URLHelper;
 import org.preesm.commons.files.URLResolver;
 import org.preesm.commons.logger.PreesmLogger;
-import org.preesm.model.scenario.types.DataType;
 
 /**
  *
@@ -89,9 +92,6 @@ public class ScriptRunner {
   private static final String ROUNDBUFFER_SCRIPT = "roundbuffer.bsh";
   private static final String BROADCAST_SCRIPT   = "broadcast.bsh";
 
-  // Name of bundle where to look for files (allow not to search into all projects)
-  private static final String BUNDLE_ID = "org.preesm.algorithm";
-
   // Paths to the special scripts files
   private static final String JOIN        = ScriptRunner.SCRIPT_FOLDER + IPath.SEPARATOR + ScriptRunner.JOIN_SCRIPT;
   private static final String FORK        = ScriptRunner.SCRIPT_FOLDER + IPath.SEPARATOR + ScriptRunner.FORK_SCRIPT;
@@ -105,7 +105,7 @@ public class ScriptRunner {
   /**
    * A {@link Map} that associates each {@link String} representing a type name with a corresponding {@link DataType}.
    */
-  private Map<String, DataType> dataTypes;
+  private EMap<String, Long> dataTypes;
 
   /**
    * A {@link Map} that associates each {@link DAGVertex} from the {@link #scriptedVertices} map to the result of the
@@ -309,10 +309,10 @@ public class ScriptRunner {
     // Script files already found
     final Map<String, URL> scriptFiles = new LinkedHashMap<>();
 
-    ScriptRunner.putSpecialScriptFile(specialScriptFiles, ScriptRunner.JOIN, ScriptRunner.BUNDLE_ID);
-    ScriptRunner.putSpecialScriptFile(specialScriptFiles, ScriptRunner.FORK, ScriptRunner.BUNDLE_ID);
-    ScriptRunner.putSpecialScriptFile(specialScriptFiles, ScriptRunner.ROUNDBUFFER, ScriptRunner.BUNDLE_ID);
-    ScriptRunner.putSpecialScriptFile(specialScriptFiles, ScriptRunner.BROADCAST, ScriptRunner.BUNDLE_ID);
+    ScriptRunner.putSpecialScriptFile(specialScriptFiles, ScriptRunner.JOIN);
+    ScriptRunner.putSpecialScriptFile(specialScriptFiles, ScriptRunner.FORK);
+    ScriptRunner.putSpecialScriptFile(specialScriptFiles, ScriptRunner.ROUNDBUFFER);
+    ScriptRunner.putSpecialScriptFile(specialScriptFiles, ScriptRunner.BROADCAST);
 
     // Retrieve the original sdf folder
     // Identify all actors with a memory Script
@@ -385,11 +385,10 @@ public class ScriptRunner {
   /**
    * Get the special script file at the right path and put it into the map
    */
-  private static void putSpecialScriptFile(final Map<String, URL> specialScriptFiles, final String filePath,
-      final String bundleFilter) {
-    final URL file = URLResolver.findFirstInBundleList(filePath, bundleFilter);
-    if (file != null) {
-      specialScriptFiles.put(filePath, file);
+  private static void putSpecialScriptFile(final Map<String, URL> specialScriptFiles, final String filePath) {
+    final URL url = PreesmResourcesHelper.getInstance().resolve(filePath, ScriptRunner.class);
+    if (url != null) {
+      specialScriptFiles.put(filePath, url);
     }
   }
 
@@ -1546,9 +1545,11 @@ public class ScriptRunner {
               // Match the buffers corresponding to the edge
               // between vertices "dagVertex" and "candidate"
               // Get the sdfEdges
-              DAGEdge dagEdge = (DAGEdge) dagVertex.getBase().getEdge(dagVertex, candidate);
+              @SuppressWarnings("unchecked")
+              final AbstractGraph<DAGVertex, DAGEdge> base = dagVertex.getBase();
+              DAGEdge dagEdge = (DAGEdge) base.getEdge(dagVertex, candidate);
               if (dagEdge == null) {
-                dagEdge = (DAGEdge) dagVertex.getBase().getEdge(candidate, dagVertex);
+                dagEdge = (DAGEdge) base.getEdge(candidate, dagVertex);
               }
 
               // For edges between newVertices, only process if the dagVertex
@@ -1694,7 +1695,7 @@ public class ScriptRunner {
       final String portModiferString = it.getTargetPortModifier() == null ? "" : it.getTargetPortModifier().toString();
       final boolean isMergeable = portModiferString.contains(SDFEdge.MODIFIER_READ_ONLY)
           || (portModiferString.contains(SDFEdge.MODIFIER_UNUSED));
-      final long dataSize = this.dataTypes.get(dataType.toString()).getSize();
+      final long dataSize = this.dataTypes.get(dataType.toString());
       // Weight is already dataSize * (Cons || prod)
       final long nbTokens = it.getWeight().longValue(); // / dataSize
       try {
@@ -1722,7 +1723,7 @@ public class ScriptRunner {
       final String portModiferString = it.getTargetPortModifier() == null ? "" : it.getTargetPortModifier().toString();
       final boolean isMergeable = portModiferString.contains(SDFEdge.MODIFIER_READ_ONLY)
           || (portModiferString.contains(SDFEdge.MODIFIER_UNUSED));
-      final long dataSize = this.dataTypes.get(dataType.toString()).getSize();
+      final long dataSize = this.dataTypes.get(dataType.toString());
       // Weight is already dataSize * (Cons || prod)
       final long nbTokens = it.getWeight().longValue(); // / dataSize
       try {
@@ -1761,7 +1762,7 @@ public class ScriptRunner {
     try {
 
       // Run the script
-      final String readURL = URLResolver.readURL(script);
+      final String readURL = URLHelper.read(script);
       interpreter.eval(readURL);
 
       // Store the result if the execution was successful
@@ -2028,11 +2029,11 @@ public class ScriptRunner {
     outputs.removeAll(unmatchedBuffer);
   }
 
-  public Map<String, DataType> getDataTypes() {
+  public EMap<String, Long> getDataTypes() {
     return this.dataTypes;
   }
 
-  public void setDataTypes(final Map<String, DataType> dataTypes) {
+  public void setDataTypes(final EMap<String, Long> dataTypes) {
     this.dataTypes = dataTypes;
   }
 

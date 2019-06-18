@@ -41,6 +41,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import org.eclipse.emf.common.util.EMap;
 import org.preesm.algorithm.mapper.model.MapperDAG;
 import org.preesm.algorithm.model.AbstractGraph;
 import org.preesm.algorithm.model.AbstractVertex;
@@ -59,8 +60,7 @@ import org.preesm.commons.exceptions.PreesmException;
 import org.preesm.commons.exceptions.PreesmRuntimeException;
 import org.preesm.commons.logger.PreesmLogger;
 import org.preesm.commons.math.MathFunctionsHelper;
-import org.preesm.model.scenario.PreesmScenario;
-import org.preesm.model.scenario.types.DataType;
+import org.preesm.model.scenario.Scenario;
 import org.preesm.model.slam.Design;
 
 /**
@@ -75,7 +75,7 @@ public class HSDFBuildLoops {
 
   private final Logger logger = PreesmLogger.getLogger();
 
-  private final Map<String, DataType> dataTypes;
+  private final EMap<String, Long> dataTypes;
 
   /**
    * Build loops.
@@ -85,8 +85,8 @@ public class HSDFBuildLoops {
    * @param architecture
    *          the architecture to pass
    */
-  public HSDFBuildLoops(final PreesmScenario scenario, final Design architecture) {
-    this.dataTypes = scenario.getSimulationManager().getDataTypes();
+  public HSDFBuildLoops(final Scenario scenario, final Design architecture) {
+    this.dataTypes = scenario.getSimulationInfo().getDataTypes();
   }
 
   private void p(final String s) {
@@ -312,7 +312,7 @@ public class HSDFBuildLoops {
     }
 
     // now we can build up vertex
-    final SDFVertex vertex = new SDFVertex();
+    final SDFVertex vertex = new SDFVertex(null);
     vertex.setName(left.getName() + "_" + right.getName());
     vertex.setNbRepeat(pgcm);
     vertex.setSinks(sinksVertex);
@@ -580,8 +580,7 @@ public class HSDFBuildLoops {
                 "Internal Memory allocation failed for actor " + v.getName() + " unsupported special actor");
           }
 
-          final DataType d = this.dataTypes.get(e.getDataType().toString());
-          final long sizeType = d.getSize();
+          final long sizeType = this.dataTypes.get(e.getDataType().toString());
 
           bufSize += mem * sizeType;
           allocEdge.add(e);

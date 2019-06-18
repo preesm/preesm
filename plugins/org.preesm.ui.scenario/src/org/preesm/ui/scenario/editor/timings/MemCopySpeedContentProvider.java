@@ -1,7 +1,7 @@
 /**
- * Copyright or © or Copr. IETR/INSA - Rennes (2008 - 2018) :
+ * Copyright or © or Copr. IETR/INSA - Rennes (2008 - 2019) :
  *
- * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017 - 2018)
+ * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017 - 2019)
  * Matthieu Wipliez <matthieu.wipliez@insa-rennes.fr> (2008)
  * Maxime Pelcat <maxime.pelcat@insa-rennes.fr> (2008 - 2013)
  *
@@ -39,12 +39,15 @@ package org.preesm.ui.scenario.editor.timings;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map.Entry;
+import java.util.Set;
 import org.eclipse.jface.viewers.IStructuredContentProvider;
-import org.eclipse.jface.viewers.Viewer;
-import org.preesm.model.scenario.MemCopySpeed;
-import org.preesm.model.scenario.PreesmScenario;
+import org.preesm.model.scenario.MemoryCopySpeedValue;
+import org.preesm.model.scenario.Scenario;
+import org.preesm.model.scenario.util.ScenarioUserFactory;
+import org.preesm.model.slam.Design;
+import org.preesm.model.slam.component.Component;
 
-// TODO: Auto-generated Javadoc
 /**
  * Provides the elements contained in the memcopy speeds editor.
  *
@@ -52,58 +55,34 @@ import org.preesm.model.scenario.PreesmScenario;
  */
 public class MemCopySpeedContentProvider implements IStructuredContentProvider {
 
-  /** The element list. */
-  List<MemCopySpeed> elementList = null;
+  private List<Entry<Component, MemoryCopySpeedValue>> elementList = null;
 
-  /*
-   * (non-Javadoc)
-   *
-   * @see org.eclipse.jface.viewers.IStructuredContentProvider#getElements(java.lang.Object)
-   */
   @Override
   public Object[] getElements(final Object inputElement) {
 
-    if (inputElement instanceof PreesmScenario) {
-      final PreesmScenario inputScenario = (PreesmScenario) inputElement;
+    if (inputElement instanceof Scenario) {
+      final Scenario inputScenario = (Scenario) inputElement;
 
       /**
        * Memcopy speeds are added for all operator types if non present
        */
-      for (final String opDefId : inputScenario.getOperatorDefinitionIds()) {
-        if (!inputScenario.getTimingManager().hasMemCpySpeed(opDefId)) {
-          inputScenario.getTimingManager().setDefaultMemCpySpeed(opDefId);
+      final Design design = inputScenario.getDesign();
+      for (final Component opDefId : design.getOperatorComponents()) {
+        if (!inputScenario.getTimings().getMemTimings().containsKey(opDefId)) {
+          final MemoryCopySpeedValue createMemoryCopySpeedValue = ScenarioUserFactory.createMemoryCopySpeedValue();
+          inputScenario.getTimings().getMemTimings().put(opDefId, createMemoryCopySpeedValue);
         }
       }
 
       // Retrieving the memory copy speeds in operator definition order
-      this.elementList = new ArrayList<>(inputScenario.getTimingManager().getMemcpySpeeds().values());
+      final Set<
+          Entry<Component, MemoryCopySpeedValue>> entrySet = inputScenario.getTimings().getMemTimings().entrySet();
+      this.elementList = new ArrayList<>(entrySet);
 
-      Collections.sort(this.elementList, (o1, o2) -> o1.getOperatorDef().compareTo(o2.getOperatorDef()));
+      Collections.sort(this.elementList,
+          (o1, o2) -> o1.getKey().getVlnv().getName().compareTo(o2.getKey().getVlnv().getName()));
     }
     return this.elementList.toArray();
-  }
-
-  /*
-   * (non-Javadoc)
-   *
-   * @see org.eclipse.jface.viewers.IContentProvider#dispose()
-   */
-  @Override
-  public void dispose() {
-    // TODO Auto-generated method stub
-
-  }
-
-  /*
-   * (non-Javadoc)
-   *
-   * @see org.eclipse.jface.viewers.IContentProvider#inputChanged(org.eclipse.jface.viewers.Viewer, java.lang.Object,
-   * java.lang.Object)
-   */
-  @Override
-  public void inputChanged(final Viewer viewer, final Object oldInput, final Object newInput) {
-    // TODO Auto-generated method stub
-
   }
 
 }

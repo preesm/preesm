@@ -38,7 +38,9 @@
  */
 package org.preesm.ui.pisdf.properties;
 
+import java.util.Optional;
 import org.eclipse.core.runtime.IPath;
+import org.eclipse.core.runtime.Path;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.transaction.RecordingCommand;
 import org.eclipse.emf.transaction.TransactionalEditingDomain;
@@ -91,9 +93,6 @@ public class ActorPropertiesSection extends GFPropertySection implements ITabbed
   /** Items of the {@link ActorPropertiesSection}. */
   private Composite composite;
 
-  /** The lbl name. */
-  private CLabel lblName;
-
   /** The txt name obj. */
   private Text txtNameObj;
 
@@ -143,7 +142,7 @@ public class ActorPropertiesSection extends GFPropertySection implements ITabbed
   private CLabel lblPeriodValueObj;
 
   /** The first column width. */
-  private final int FIRST_COLUMN_WIDTH = 150;
+  private static final int FIRST_COLUMN_WIDTH = 150;
 
   /*
    * (non-Javadoc)
@@ -165,16 +164,17 @@ public class ActorPropertiesSection extends GFPropertySection implements ITabbed
     /**** NAME ****/
     this.txtNameObj = factory.createText(this.composite, "");
     data = new FormData();
-    data.left = new FormAttachment(0, this.FIRST_COLUMN_WIDTH);
+    data.left = new FormAttachment(0, FIRST_COLUMN_WIDTH);
     data.right = new FormAttachment(50, 0);
     this.txtNameObj.setLayoutData(data);
     this.txtNameObj.setEnabled(true);
 
-    this.lblName = factory.createCLabel(this.composite, "Name:");
+    /** The lbl name. */
+    final CLabel lblName = factory.createCLabel(this.composite, "Name:");
     data = new FormData();
     data.left = new FormAttachment(0, 0);
     data.right = new FormAttachment(this.txtNameObj, -ITabbedPropertyConstants.HSPACE);
-    this.lblName.setLayoutData(data);
+    lblName.setLayoutData(data);
 
     /*** Name box listener ***/
     this.txtNameObj.addModifyListener(e -> {
@@ -209,7 +209,7 @@ public class ActorPropertiesSection extends GFPropertySection implements ITabbed
     /**** Period ****/
     this.txtPeriod = factory.createText(this.composite, "0");
     data = new FormData();
-    data.left = new FormAttachment(0, this.FIRST_COLUMN_WIDTH);
+    data.left = new FormAttachment(0, FIRST_COLUMN_WIDTH);
     data.right = new FormAttachment(50, 0);
     data.top = new FormAttachment(lblMemoryScript);
     this.txtPeriod.setLayoutData(data);
@@ -229,7 +229,7 @@ public class ActorPropertiesSection extends GFPropertySection implements ITabbed
 
     this.lblPeriodValueObj = factory.createCLabel(this.composite, "0");
     data = new FormData();
-    data.left = new FormAttachment(0, this.FIRST_COLUMN_WIDTH);
+    data.left = new FormAttachment(0, FIRST_COLUMN_WIDTH);
     data.right = new FormAttachment(50, 0);
     data.top = new FormAttachment(lblPeriod);
     this.lblPeriodValueObj.setLayoutData(data);
@@ -267,8 +267,6 @@ public class ActorPropertiesSection extends GFPropertySection implements ITabbed
         final String strPeriod = ActorPropertiesSection.this.txtPeriod.getText();
         if (strPeriod.compareTo(periodicExp.getExpressionAsString()) != 0) {
           setNewPeriod(periodEl, strPeriod);
-          // getDiagramTypeProvider().getDiagramBehavior().refreshRenderingDecorators((PictogramElement)
-          // pe.eContainer());
           refresh();
         }
       } // end PeriodicElement
@@ -294,7 +292,7 @@ public class ActorPropertiesSection extends GFPropertySection implements ITabbed
     this.butRefinementClear.setLayoutData(data);
     this.butRefinementClear.setEnabled(true);
 
-    /*** Edit Button ***/
+    /*** Browse Button ***/
     this.butRefinementBrowse = factory.createButton(composite, "Browse", SWT.PUSH);
     data = new FormData();
     data.left = new FormAttachment(100, -205);
@@ -315,7 +313,7 @@ public class ActorPropertiesSection extends GFPropertySection implements ITabbed
     /**** Refinement ****/
     this.lblRefinementObj = factory.createCLabel(composite, "");
     data = new FormData();
-    data.left = new FormAttachment(0, this.FIRST_COLUMN_WIDTH);
+    data.left = new FormAttachment(0, FIRST_COLUMN_WIDTH);
     data.right = new FormAttachment(this.butRefinementBrowse, 0);
     data.top = new FormAttachment(this.txtNameObj);
     this.lblRefinementObj.setLayoutData(data);
@@ -331,7 +329,7 @@ public class ActorPropertiesSection extends GFPropertySection implements ITabbed
     /**** Refinement view ****/
     this.lblRefinementView = factory.createCLabel(composite, "loop: \n init:");
     data = new FormData();
-    data.left = new FormAttachment(0, this.FIRST_COLUMN_WIDTH);
+    data.left = new FormAttachment(0, FIRST_COLUMN_WIDTH);
     data.right = new FormAttachment(100, 0);
     data.top = new FormAttachment(this.lblRefinement);
     data.height = 30;
@@ -364,11 +362,12 @@ public class ActorPropertiesSection extends GFPropertySection implements ITabbed
 
       @Override
       public void widgetDefaultSelected(final SelectionEvent e) {
+        // nothing by default
       }
 
     });
 
-    /*** Edit Button Listener ***/
+    /*** Browse Button Listener ***/
     this.butRefinementBrowse.addSelectionListener(new SelectionListener() {
       @Override
       public void widgetSelected(final SelectionEvent e) {
@@ -394,6 +393,7 @@ public class ActorPropertiesSection extends GFPropertySection implements ITabbed
 
       @Override
       public void widgetDefaultSelected(final SelectionEvent e) {
+        // nothing by default
       }
 
     });
@@ -424,6 +424,7 @@ public class ActorPropertiesSection extends GFPropertySection implements ITabbed
 
       @Override
       public void widgetDefaultSelected(final SelectionEvent e) {
+        // nothing by default
       }
 
     });
@@ -469,7 +470,7 @@ public class ActorPropertiesSection extends GFPropertySection implements ITabbed
     /**** Memory Script ****/
     this.lblMemoryScriptObj = factory.createCLabel(composite, "");
     data = new FormData();
-    data.left = new FormAttachment(0, this.FIRST_COLUMN_WIDTH);
+    data.left = new FormAttachment(0, FIRST_COLUMN_WIDTH);
     data.right = new FormAttachment(this.butMemoryScriptBrowse, 0);
     data.top = new FormAttachment(this.lblRefinementView);
     this.lblMemoryScriptObj.setLayoutData(data);
@@ -508,6 +509,7 @@ public class ActorPropertiesSection extends GFPropertySection implements ITabbed
 
       @Override
       public void widgetDefaultSelected(final SelectionEvent e) {
+        // nothing by default
       }
 
     });
@@ -538,6 +540,7 @@ public class ActorPropertiesSection extends GFPropertySection implements ITabbed
 
       @Override
       public void widgetDefaultSelected(final SelectionEvent e) {
+        // nothing by default
       }
 
     });
@@ -568,6 +571,7 @@ public class ActorPropertiesSection extends GFPropertySection implements ITabbed
 
       @Override
       public void widgetDefaultSelected(final SelectionEvent e) {
+        // nothing by default
       }
 
     });
@@ -631,7 +635,7 @@ public class ActorPropertiesSection extends GFPropertySection implements ITabbed
             this.butRefinementBrowse.setEnabled(true);
             this.butRefinementOpen.setEnabled(false);
           } else {
-            final IPath path = refinement.getFilePath();
+            final IPath path = Optional.ofNullable(refinement.getFilePath()).map(Path::new).orElse(null);
             final String text = path.lastSegment();
             this.lblRefinementObj.setText(text);
 
@@ -640,7 +644,7 @@ public class ActorPropertiesSection extends GFPropertySection implements ITabbed
             if (refinement instanceof CHeaderRefinement) {
               String tooltip = "";
               // Max length
-              int maxLength = (int) ((this.composite.getBounds().width - this.FIRST_COLUMN_WIDTH) * 0.17);
+              int maxLength = (int) ((this.composite.getBounds().width - FIRST_COLUMN_WIDTH) * 0.17);
               maxLength = Math.max(maxLength, 40);
               if (((CHeaderRefinement) refinement).getLoopPrototype() != null) {
                 final String loop = "loop: "
@@ -652,7 +656,6 @@ public class ActorPropertiesSection extends GFPropertySection implements ITabbed
                 final String init = "\ninit: "
                     + PrototypeFormatter.format(((CHeaderRefinement) refinement).getInitPrototype());
                 view += (init.length() <= maxLength) ? init : init.substring(0, maxLength) + "...";
-                ;
                 tooltip += init;
               }
               this.lblRefinementView.setToolTipText(tooltip);
@@ -669,7 +672,7 @@ public class ActorPropertiesSection extends GFPropertySection implements ITabbed
             this.butMemoryScriptBrowse.setEnabled(true);
             this.butMemoryScriptOpen.setEnabled(false);
           } else {
-            final IPath path = actor.getMemoryScriptPath();
+            final IPath path = Optional.ofNullable(actor.getMemoryScriptPath()).map(Path::new).orElse(null);
             final String text = path.lastSegment();
 
             this.lblMemoryScriptObj.setText(text);

@@ -1,7 +1,7 @@
 /**
- * Copyright or © or Copr. IETR/INSA - Rennes (2011 - 2018) :
+ * Copyright or © or Copr. IETR/INSA - Rennes (2011 - 2019) :
  *
- * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017 - 2018)
+ * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017 - 2019)
  * Clément Guy <clement.guy@insa-rennes.fr> (2014 - 2015)
  * Daniel Madroñal <daniel.madronal@upm.es> (2018)
  * Maxime Pelcat <maxime.pelcat@insa-rennes.fr> (2011 - 2015)
@@ -39,6 +39,8 @@ package org.preesm.ui.scenario.editor.papify;
 
 import java.io.FileNotFoundException;
 import java.util.ArrayList;
+import java.util.List;
+import java.util.logging.Level;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IWorkspace;
 import org.eclipse.core.resources.ResourcesPlugin;
@@ -58,13 +60,12 @@ import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.swt.widgets.TreeColumn;
 import org.eclipse.ui.IEditorPart;
-import org.eclipse.ui.IPropertyListener;
 import org.eclipse.ui.forms.IManagedForm;
 import org.eclipse.ui.forms.editor.FormEditor;
-import org.eclipse.ui.forms.editor.FormPage;
 import org.eclipse.ui.forms.events.ExpansionAdapter;
 import org.eclipse.ui.forms.events.ExpansionEvent;
 import org.eclipse.ui.forms.widgets.ExpandableComposite;
@@ -73,27 +74,32 @@ import org.eclipse.ui.forms.widgets.ScrolledForm;
 import org.eclipse.ui.forms.widgets.Section;
 import org.preesm.commons.exceptions.PreesmException;
 import org.preesm.commons.files.WorkspaceUtils;
-import org.preesm.model.scenario.PreesmScenario;
-import org.preesm.model.scenario.papi.PapiComponent;
-import org.preesm.model.scenario.papi.PapiConfigParser;
-import org.preesm.model.scenario.papi.PapiEvent;
-import org.preesm.model.scenario.papi.PapiEventInfo;
-import org.preesm.model.scenario.papi.PapiEventModifier;
-import org.preesm.model.scenario.papi.PapiEventSet;
-import org.preesm.model.scenario.papi.PapifyConfigManager;
+import org.preesm.commons.logger.PreesmLogger;
+import org.preesm.model.scenario.PapiComponent;
+import org.preesm.model.scenario.PapiEvent;
+import org.preesm.model.scenario.PapiEventInfo;
+import org.preesm.model.scenario.PapiEventModifier;
+import org.preesm.model.scenario.PapiEventSet;
+import org.preesm.model.scenario.PapifyConfig;
+import org.preesm.model.scenario.Scenario;
+import org.preesm.model.scenario.ScenarioFactory;
+import org.preesm.model.scenario.serialize.PapiConfigParser;
+import org.preesm.model.slam.Design;
+import org.preesm.model.slam.component.Component;
 import org.preesm.ui.scenario.editor.FileSelectionAdapter;
 import org.preesm.ui.scenario.editor.Messages;
 import org.preesm.ui.scenario.editor.PreesmAlgorithmTreeLabelProvider;
+import org.preesm.ui.scenario.editor.ScenarioPage;
 
 /**
  * Papify editor within the implementation editor.
  *
  * @author dmadronal
  */
-public class PapifyPage extends FormPage implements IPropertyListener {
+public class PapifyPage extends ScenarioPage {
 
   /** Currently edited scenario. */
-  private PreesmScenario scenario = null;
+  private Scenario scenario = null;
 
   /** The check state listener. */
   private PapifyCheckStateListener checkStateListener = null;
@@ -120,7 +126,7 @@ public class PapifyPage extends FormPage implements IPropertyListener {
    * @param title
    *          the title
    */
-  public PapifyPage(final PreesmScenario scenario, final FormEditor editor, final String id, final String title) {
+  public PapifyPage(final Scenario scenario, final FormEditor editor, final String id, final String title) {
     super(editor, id, title);
     this.scenario = scenario;
   }
@@ -137,32 +143,44 @@ public class PapifyPage extends FormPage implements IPropertyListener {
 
     final ScrolledForm f = managedForm.getForm();
     f.setText(Messages.getString("Papify.title"));
-    f.getBody().setLayout(new GridLayout());
+    final Composite body = f.getBody();
+    body.setLayout(new GridLayout());
 
-    // Papify file chooser section
-    createFileSection(managedForm, Messages.getString("Papify.file"), Messages.getString("Papify.fileDescription"),
-        Messages.getString("Papify.fileEdit"), this.scenario.getPapifyConfigManager().getXmlFileURL(),
-        Messages.getString("Papify.fileBrowseTitle"), "xml");
+    if (this.scenario.isProperlySet()) {
+      // Papify file chooser section
+      createFileSection(managedForm, Messages.getString("Papify.file"), Messages.getString("Papify.fileDescription"),
+          Messages.getString("Papify.fileEdit"), this.scenario.getPapifyConfig().getXmlFileURL(),
+          Messages.getString("Papify.fileBrowseTitle"), "xml");
 
-    createPapifyPESection(managedForm, Messages.getString("Papify.titlePESection"),
-        Messages.getString("Papify.descriptionPE"));
-    createPapifyActorSection(managedForm, Messages.getString("Papify.titleActorSection"),
-        Messages.getString("Papify.descriptionActor"));
+      createPapifyPESection(managedForm, Messages.getString("Papify.titlePESection"),
+          Messages.getString("Papify.descriptionPE"));
+      createPapifyActorSection(managedForm, Messages.getString("Papify.titleActorSection"),
+          Messages.getString("Papify.descriptionActor"));
 
-    if (!this.scenario.getPapifyConfigManager().getXmlFileURL().equals("")) {
-      final String xmlFullPath = getFullXmlPath(this.scenario.getPapifyConfigManager().getXmlFileURL());
-      if (!xmlFullPath.equals("")) {
-        parseXmlData(xmlFullPath);
+      if (!this.scenario.getPapifyConfig().getXmlFileURL().equals("")) {
+        final String xmlFullPath = getFullXmlPath(this.scenario.getPapifyConfig().getXmlFileURL());
+        if (!xmlFullPath.equals("")) {
+          parseXmlData(xmlFullPath);
+        }
+        if ((this.papiEvents != null) && !this.papiEvents.getComponents().isEmpty()) {
+
+          scenario.getPapifyConfig().setPapiData(this.papiEvents);
+          updateTables();
+        } else {
+          this.scenario.getPapifyConfig().clear();
+          ;
+          this.scenario.getPapifyConfig().setPapiData(this.papiEvents);
+        }
+        managedForm.refresh();
+        managedForm.reflow(true);
       }
-      if ((this.papiEvents != null) && !this.papiEvents.getComponents().isEmpty()) {
-        scenario.getPapifyConfigManager().addPapifyData(this.papiEvents);
-        updateTables();
-      } else {
-        this.scenario.setPapifyConfigManager(new PapifyConfigManager());
-        this.scenario.getPapifyConfigManager().addPapifyData(this.papiEvents);
-      }
-      managedForm.refresh();
-      managedForm.reflow(true);
+    } else {
+      final FormToolkit toolkit = managedForm.getToolkit();
+      final Label lbl = toolkit.createLabel(body,
+          "Please properly set Algorithm and Architecture paths on the overview tab, then save, close and "
+              + "reopen this file to enable other tabs.");
+      lbl.setEnabled(true);
+      body.setEnabled(false);
     }
 
   }
@@ -394,27 +412,33 @@ public class PapifyPage extends FormPage implements IPropertyListener {
     WorkspaceUtils.updateWorkspace();
 
     final Path path = new Path(text.getText());
-    final IFile file = workspace.getRoot().getFile(path);
 
-    this.papiEvents = this.papiParser.parse(file.getLocation().toString());
+    if (workspace.getRoot().exists(path)) {
+      final IFile file = workspace.getRoot().getFile(path);
+      this.papiEvents = this.papiParser.parse(file.getLocation().toString());
 
-    if (!text.getText().equals(this.scenario.getPapifyConfigManager().getXmlFileURL())
-        && (this.papiEvents.getComponents() != null)) {
-      this.scenario.setPapifyConfigManager(new PapifyConfigManager());
-      this.scenario.getPapifyConfigManager().addPapifyData(this.papiEvents);
-      this.scenario.getPapifyConfigManager().setExcelFileURL(text.getText());
-      this.peTreeViewer.setInput(this.papiEvents);
-      this.peContentProvider.setInput();
+      if (!text.getText().equals(this.scenario.getPapifyConfig().getXmlFileURL())
+          && (this.papiEvents.getComponents() != null)) {
 
-      this.checkStateListener.clearEvents();
-      updateColumns();
-      if (this.checkStateListener != null) {
-        // this.checkStateListener.updateCheck();
+        PreesmLogger.getLogger().log(Level.INFO, "Loading Papi configuration from '" + text.getText() + "'");
+
+        final PapifyConfig createPapifyConfig = ScenarioFactory.eINSTANCE.createPapifyConfig();
+        createPapifyConfig.setPapiData(papiEvents);
+        createPapifyConfig.setXmlFileURL(text.getText());
+
+        this.scenario.getPapifyConfig().clear();
+        this.scenario.getPapifyConfig().setPapiData(papiEvents);
+        this.peTreeViewer.setInput(this.papiEvents);
+        this.peContentProvider.setInput();
+
+        this.checkStateListener.clearEvents();
+        updateColumns();
+        this.actorTreeViewer.setInput(this.scenario);
+        firePropertyChange(IEditorPart.PROP_DIRTY);
       }
-      this.actorTreeViewer.setInput(this.scenario);
-      // this.actorContentProvider.setInput();
+    } else {
+      PreesmLogger.getLogger().log(Level.WARNING, "Could not locate file under '" + text.getText() + "'");
     }
-    firePropertyChange(IEditorPart.PROP_DIRTY);
   }
 
   /**
@@ -448,7 +472,7 @@ public class PapifyPage extends FormPage implements IPropertyListener {
   private void parseXmlData(final String xmlfile) {
 
     this.papiEvents = this.papiParser.parse(xmlfile);
-    scenario.getPapifyConfigManager().addPapifyData(this.papiEvents);
+    scenario.getPapifyConfig().setPapiData(this.papiEvents);
 
   }
 
@@ -514,12 +538,13 @@ public class PapifyPage extends FormPage implements IPropertyListener {
     this.checkStateListener.setPropertyListener(this);
     this.peContentProvider.addCheckStateListener(this.checkStateListener);
 
-    for (final String columnLabel : this.scenario.getOperatorDefinitionIds()) {
+    final Design design = this.scenario.getDesign();
+    for (final Component columnLabel : design.getOperatorComponents()) {
 
       final TreeViewerColumn viewerColumn = new TreeViewerColumn(peTreeViewer, SWT.CENTER | SWT.CHECK);
       final TreeColumn column = viewerColumn.getColumn();
 
-      column.setText(columnLabel);
+      column.setText(columnLabel.getVlnv().getName());
       column.setMoveable(true);
       column.setWidth(150);
 
@@ -610,12 +635,12 @@ public class PapifyPage extends FormPage implements IPropertyListener {
     }
 
     // The timing event
-    PapiEvent timingEvent = new PapiEvent();
-    ArrayList<PapiEventModifier> modifTimingList = new ArrayList<>();
+    PapiEvent timingEvent = ScenarioFactory.eINSTANCE.createPapiEvent();
     timingEvent.setName("Timing");
-    timingEvent.setDesciption("Event to time through PAPI_get_time()");
+    timingEvent.setDescription("Event to time through PAPI_get_time()");
     timingEvent.setIndex(9999);
-    timingEvent.setModifiers(modifTimingList);
+    List<PapiEventModifier> modifTimingList = new ArrayList<>();
+    timingEvent.getModifiers().addAll(modifTimingList);
 
     final TreeViewerColumn viewerColumnTiming = new TreeViewerColumn(this.actorTreeViewer, SWT.CENTER | SWT.CHECK);
     final TreeColumn columnTiming = viewerColumnTiming.getColumn();
@@ -632,7 +657,7 @@ public class PapifyPage extends FormPage implements IPropertyListener {
     viewerColumnTiming.setEditingSupport(editingSupportTiming);
     this.checkStateListener.addEstatusSupport(editingSupportTiming);
 
-    for (PapiComponent oneComponent : this.papiEvents.getComponents()) {
+    for (PapiComponent oneComponent : this.papiEvents.getComponents().values()) {
       if (!oneComponent.getEventSets().isEmpty()) {
         for (PapiEventSet oneEventSet : oneComponent.getEventSets()) {
           for (PapiEvent oneEvent : oneEventSet.getEvents()) {

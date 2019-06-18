@@ -170,7 +170,7 @@ public class ToHSDFVisitor implements IGraphVisitor<SDFGraph, SDFAbstractVertex,
                 || (sourceCopies.get((int) sourceIndex) instanceof SDFRoundBufferVertex))) {
 
           // If an explode must be added
-          final SDFAbstractVertex explodeVertex = new SDFForkVertex();
+          final SDFAbstractVertex explodeVertex = new SDFForkVertex(null);
           final SDFAbstractVertex originVertex = sourceCopies.get((int) sourceIndex);
           explodeVertex.setName("explode_" + originVertex.getName() + "_" + edge.getSourceInterface().getName());
           output.addVertex(explodeVertex);
@@ -197,7 +197,7 @@ public class ToHSDFVisitor implements IGraphVisitor<SDFGraph, SDFAbstractVertex,
         if (implode && !(targetCopies.get((int) targetIndex) instanceof SDFJoinVertex)
             && !(targetCopies.get((int) targetIndex) instanceof SDFRoundBufferVertex)) {
           // If an implode must be added
-          final SDFAbstractVertex implodeVertex = new SDFJoinVertex();
+          final SDFAbstractVertex implodeVertex = new SDFJoinVertex(null);
           final SDFAbstractVertex originVertex = targetCopies.get((int) targetIndex);
           implodeVertex.setName("implode_" + originVertex.getName() + "_" + edge.getTargetInterface().getName());
           output.addVertex(implodeVertex);

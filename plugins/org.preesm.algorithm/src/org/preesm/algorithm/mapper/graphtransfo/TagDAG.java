@@ -42,6 +42,7 @@
 package org.preesm.algorithm.mapper.graphtransfo;
 
 import java.util.Iterator;
+import org.eclipse.emf.common.util.EMap;
 import org.preesm.algorithm.mapper.abc.edgescheduling.AbstractEdgeSched;
 import org.preesm.algorithm.mapper.abc.edgescheduling.EdgeSchedType;
 import org.preesm.algorithm.mapper.abc.edgescheduling.IEdgeSched;
@@ -58,16 +59,16 @@ import org.preesm.algorithm.model.PropertyBean;
 import org.preesm.algorithm.model.dag.DAGEdge;
 import org.preesm.algorithm.model.dag.DAGVertex;
 import org.preesm.algorithm.model.sdf.SDFEdge;
-import org.preesm.model.scenario.PreesmScenario;
+import org.preesm.model.scenario.Scenario;
+import org.preesm.model.scenario.ScenarioConstants;
+import org.preesm.model.scenario.SimulationInfo;
 import org.preesm.model.scenario.types.BufferAggregate;
 import org.preesm.model.scenario.types.BufferProperties;
-import org.preesm.model.scenario.types.DataType;
 import org.preesm.model.scenario.types.ImplementationPropertyNames;
 import org.preesm.model.scenario.types.VertexType;
 import org.preesm.model.slam.ComponentInstance;
 import org.preesm.model.slam.Design;
 import org.preesm.model.slam.route.AbstractRouteStep;
-import org.preesm.model.slam.utils.DesignTools;
 
 /**
  * Tags an SDF with the implementation information necessary for code generation, and DAG exporting.
@@ -76,6 +77,8 @@ import org.preesm.model.slam.utils.DesignTools;
  * @author mpelcat
  */
 public class TagDAG {
+
+  public static final String OPERATOR_BASE_ADDRESS = "BaseAddress";
 
   /**
    * Constructor.
@@ -98,7 +101,7 @@ public class TagDAG {
    * @param edgeSchedType
    *          the edge sched type
    */
-  public void tag(final MapperDAG dag, final Design architecture, final PreesmScenario scenario, final LatencyAbc simu,
+  public void tag(final MapperDAG dag, final Design architecture, final Scenario scenario, final LatencyAbc simu,
       final EdgeSchedType edgeSchedType) {
 
     final PropertyBean bean = dag.getPropertyBean();
@@ -120,7 +123,7 @@ public class TagDAG {
    * @param scenario
    *          the scenario
    */
-  private void addSendReceive(final MapperDAG dag, final Design architecture, final PreesmScenario scenario) {
+  private void addSendReceive(final MapperDAG dag, final Design architecture, final Scenario scenario) {
 
     final OrderManager orderMgr = new OrderManager(architecture);
     orderMgr.reconstructTotalOrderFromDAG(dag); // could be avoided?
@@ -163,8 +166,8 @@ public class TagDAG {
         bean.setValue(ImplementationPropertyNames.Vertex_vertexType, VertexType.SEND);
 
         // Setting the operator on which vertex is executed
-        bean.setValue(ImplementationPropertyNames.Vertex_Operator,
-            ((SendVertex) currentVertex).getRouteStep().getSender());
+        final ComponentInstance sender = ((SendVertex) currentVertex).getRouteStep().getSender();
+        bean.setValue(ImplementationPropertyNames.Vertex_Operator, sender);
 
         // Setting the medium transmitting the current data
         final AbstractRouteStep sendRs = ((SendVertex) currentVertex).getRouteStep();
@@ -178,8 +181,7 @@ public class TagDAG {
 
         // Setting the address of the operator on which vertex is
         // executed
-        final String baseAddress = DesignTools.getParameter(((SendVertex) currentVertex).getRouteStep().getSender(),
-            DesignTools.OPERATOR_BASE_ADDRESS);
+        final String baseAddress = sender.getParameters().get(OPERATOR_BASE_ADDRESS);
 
         if (baseAddress != null) {
           bean.setValue(ImplementationPropertyNames.SendReceive_Operator_address, baseAddress);
@@ -193,8 +195,8 @@ public class TagDAG {
         bean.setValue(ImplementationPropertyNames.Vertex_vertexType, VertexType.RECEIVE);
 
         // Setting the operator on which vertex is executed
-        bean.setValue(ImplementationPropertyNames.Vertex_Operator,
-            ((ReceiveVertex) currentVertex).getRouteStep().getReceiver());
+        final ComponentInstance receiver = ((ReceiveVertex) currentVertex).getRouteStep().getReceiver();
+        bean.setValue(ImplementationPropertyNames.Vertex_Operator, receiver);
 
         // Setting the medium transmitting the current data
         final AbstractRouteStep rcvRs = ((ReceiveVertex) currentVertex).getRouteStep();
@@ -208,8 +210,7 @@ public class TagDAG {
 
         // Setting the address of the operator on which vertex is
         // executed
-        final String baseAddress = DesignTools
-            .getParameter(((ReceiveVertex) currentVertex).getRouteStep().getReceiver(), "BaseAddress");
+        final String baseAddress = receiver.getParameters().get(OPERATOR_BASE_ADDRESS);
 
         if (baseAddress != null) {
           bean.setValue(ImplementationPropertyNames.SendReceive_Operator_address, baseAddress);
@@ -253,7 +254,7 @@ public class TagDAG {
    * @param scenario
    *          the scenario
    */
-  private void addAllAggregates(final MapperDAG dag, final PreesmScenario scenario) {
+  private void addAllAggregates(final MapperDAG dag, final Scenario scenario) {
 
     MapperDAGEdge edge;
 
@@ -275,14 +276,21 @@ public class TagDAG {
    * @param scenario
    *          the scenario
    */
-  private void addAggregate(final MapperDAGEdge edge, final PreesmScenario scenario) {
+  private void addAggregate(final MapperDAGEdge edge, final Scenario scenario) {
     final BufferAggregate agg = new BufferAggregate();
     for (final AbstractEdge<?, ?> aggMember : edge.getAggregate()) {
       final DAGEdge dagEdge = (DAGEdge) aggMember;
-      final String value = (String) dagEdge.getPropertyBean().getValue(SDFEdge.DATA_TYPE);
-      final DataType dataType = scenario.getSimulationManager().getDataType(value);
-      final BufferProperties props = new BufferProperties(dataType, dagEdge.getSourceLabel(), dagEdge.getTargetLabel(),
-          (int) dagEdge.getWeight().longValue());
+      final String dataTypename = dagEdge.getPropertyBean().getValue(SDFEdge.DATA_TYPE);
+      final SimulationInfo simulationInfo = scenario.getSimulationInfo();
+      final EMap<String, Long> dataTypes = simulationInfo.getDataTypes();
+      final long dataTypeSize;
+      if (dataTypes.containsKey(dataTypename)) {
+        dataTypeSize = dataTypes.get(dataTypename);
+      } else {
+        dataTypeSize = ScenarioConstants.DEFAULT_DATA_TYPE_SIZE.getValue();
+      }
+      final BufferProperties props = new BufferProperties(dataTypename, dataTypeSize, dagEdge.getSourceLabel(),
+          dagEdge.getTargetLabel(), (int) dagEdge.getWeight().longValue());
       agg.add(props);
     }
     edge.getPropertyBean().setValue(BufferAggregate.propertyBeanName, agg);

@@ -1,7 +1,7 @@
 /**
- * Copyright or © or Copr. IETR/INSA - Rennes (2008 - 2018) :
+ * Copyright or © or Copr. IETR/INSA - Rennes (2008 - 2019) :
  *
- * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017 - 2018)
+ * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017 - 2019)
  * Clément Guy <clement.guy@insa-rennes.fr> (2015)
  * Maxime Pelcat <maxime.pelcat@insa-rennes.fr> (2008 - 2011)
  *
@@ -49,7 +49,6 @@ import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.forms.IManagedForm;
 import org.eclipse.ui.forms.editor.FormEditor;
-import org.eclipse.ui.forms.editor.FormPage;
 import org.eclipse.ui.forms.events.ExpansionAdapter;
 import org.eclipse.ui.forms.events.ExpansionEvent;
 import org.eclipse.ui.forms.widgets.ColumnLayout;
@@ -57,21 +56,21 @@ import org.eclipse.ui.forms.widgets.ExpandableComposite;
 import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.eclipse.ui.forms.widgets.ScrolledForm;
 import org.eclipse.ui.forms.widgets.Section;
-import org.preesm.model.scenario.PreesmScenario;
+import org.preesm.model.scenario.Scenario;
 import org.preesm.ui.fields.FieldUtils;
 import org.preesm.ui.scenario.editor.FileSelectionAdapter;
 import org.preesm.ui.scenario.editor.Messages;
+import org.preesm.ui.scenario.editor.ScenarioPage;
 
-// TODO: Auto-generated Javadoc
 /**
  * code generation properties editor within the implementation editor.
  *
  * @author mpelcat
  */
-public class CodegenPage extends FormPage {
+public class CodegenPage extends ScenarioPage {
 
   /** Currently edited scenario. */
-  private final PreesmScenario scenario;
+  private final Scenario scenario;
 
   /**
    * Instantiates a new codegen page.
@@ -85,7 +84,7 @@ public class CodegenPage extends FormPage {
    * @param title
    *          the title
    */
-  public CodegenPage(final PreesmScenario scenario, final FormEditor editor, final String id, final String title) {
+  public CodegenPage(final Scenario scenario, final FormEditor editor, final String id, final String title) {
     super(editor, id, title);
     this.scenario = scenario;
   }
@@ -120,8 +119,7 @@ public class CodegenPage extends FormPage {
     // Algorithm file chooser section
     createDirectorySection(managedForm, Messages.getString("Codegen.codeDirectory"),
         Messages.getString("Codegen.codeDirectoryDescription"), Messages.getString("Codegen.codeDirectoryEdit"),
-        this.scenario.getCodegenManager().getCodegenDirectory(),
-        Messages.getString("Codegen.codeDirectoryBrowseTitle"));
+        this.scenario.getCodegenDirectory(), Messages.getString("Codegen.codeDirectoryBrowseTitle"));
 
     managedForm.refresh();
     managedForm.reflow(true);
@@ -200,7 +198,7 @@ public class CodegenPage extends FormPage {
       final Text text1 = (Text) e.getSource();
       colorRedIfFileAbsent(text1);
       final String path = FilenameUtils.separatorsToUnix(text1.getText());
-      CodegenPage.this.scenario.getCodegenManager().setCodegenDirectory(path);
+      CodegenPage.this.scenario.setCodegenDirectory(path);
       firePropertyChange(IEditorPart.PROP_DIRTY);
 
     });
@@ -231,6 +229,12 @@ public class CodegenPage extends FormPage {
     } else {
       FieldUtils.colorRedOnCondition(text, true);
     }
+  }
+
+  @Override
+  public void propertyChanged(Object source, int propId) {
+    // TODO Auto-generated method stub
+
   }
 
 }

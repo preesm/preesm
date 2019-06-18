@@ -1,7 +1,7 @@
 /**
- * Copyright or © or Copr. IETR/INSA - Rennes (2008 - 2018) :
+ * Copyright or © or Copr. IETR/INSA - Rennes (2008 - 2019) :
  *
- * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017 - 2018)
+ * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017 - 2019)
  * Clément Guy <clement.guy@insa-rennes.fr> (2014)
  * Jonathan Piat <jpiat@laas.fr> (2011)
  * Matthieu Wipliez <matthieu.wipliez@insa-rennes.fr> (2008)
@@ -46,9 +46,9 @@ import java.util.List;
 import org.preesm.algorithm.mapper.abc.SpecialVertexManager;
 import org.preesm.algorithm.mapper.model.MapperDAGVertex;
 import org.preesm.commons.CloneableProperty;
-import org.preesm.model.scenario.Timing;
+import org.preesm.model.scenario.ScenarioConstants;
 import org.preesm.model.slam.ComponentInstance;
-import org.preesm.model.slam.utils.DesignTools;
+import org.preesm.model.slam.component.Component;
 
 /**
  * Properties of a mapped vertex set when converting dag to mapper dag.
@@ -106,7 +106,7 @@ public class VertexInit implements CloneableProperty<VertexInit> {
    *          the timing
    */
   public void addTiming(final Timing timing) {
-    if (getTiming(timing.getOperatorDefinitionId()) == null) {
+    if (getTiming(timing.getComponent()) == null) {
       this.timings.add(timing);
     }
   }
@@ -202,33 +202,33 @@ public class VertexInit implements CloneableProperty<VertexInit> {
 
     long time = 0;
 
-    if (operator != DesignTools.NO_COMPONENT_INSTANCE) {
+    if (operator != null) {
 
       // Non special vertex timings are retrieved from scenario
       // Special vertex timings were computed from scenario
-      final Timing returntiming = getTiming(operator.getComponent().getVlnv().getName());
+      final Timing returntiming = getTiming(operator.getComponent());
 
       if (!SpecialVertexManager.isSpecial(this.parentVertex)) {
 
-        if (returntiming != Timing.UNAVAILABLE) {
+        if (returntiming != null) {
           if (returntiming.getTime() != 0) {
             // The basic timing is multiplied by the number of
             // repetitions
             time = returntiming.getTime() * this.nbRepeat;
           } else {
-            time = Timing.DEFAULT_TASK_TIME;
+            time = ScenarioConstants.DEFAULT_TIMING_TASK.getValue();
           }
         }
       } else {
         // Special vertex timings are retrieved
-        if (returntiming != Timing.UNAVAILABLE) {
+        if (returntiming != null) {
           if (returntiming.getTime() != 0) {
             time = returntiming.getTime();
           } else {
-            time = Timing.DEFAULT_SPECIAL_VERTEX_TIME;
+            time = ScenarioConstants.DEFAULT_TIMING_SPECIAL_TASK.getValue();
           }
         } else {
-          time = Timing.DEFAULT_SPECIAL_VERTEX_TIME;
+          time = ScenarioConstants.DEFAULT_TIMING_SPECIAL_TASK.getValue();
         }
       }
     }
@@ -243,16 +243,16 @@ public class VertexInit implements CloneableProperty<VertexInit> {
    *          the operatordef id
    * @return the timing
    */
-  private Timing getTiming(final String operatordefId) {
+  private Timing getTiming(final Component operatordefId) {
 
-    Timing returntiming = Timing.UNAVAILABLE;
+    Timing returntiming = null;
 
     final Iterator<Timing> iterator = this.timings.iterator();
 
     while (iterator.hasNext()) {
       final Timing currenttiming = iterator.next();
 
-      if (operatordefId.equals(currenttiming.getOperatorDefinitionId())) {
+      if (operatordefId.equals(currenttiming.getComponent())) {
         returntiming = currenttiming;
         break;
       }

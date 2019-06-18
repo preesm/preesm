@@ -1,8 +1,8 @@
 /**
- * Copyright or © or Copr. Åbo Akademi University (2017 - 2018),
- * IETR/INSA - Rennes (2017 - 2018) :
+ * Copyright or © or Copr. Åbo Akademi University (2017 - 2019),
+ * IETR/INSA - Rennes (2017 - 2019) :
  *
- * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2018)
+ * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2018 - 2019)
  * Sudeep Kanur <skanur@abo.fi> (2017 - 2018)
  *
  * This software is a computer program whose purpose is to help prototyping
@@ -40,6 +40,8 @@ import java.io.File
 import org.preesm.algorithm.model.sdf.SDFGraph
 
 class CannotRearrange extends Error {
+	public static final long serialVersionUID = 1981296681718476710L;
+
 	static val message = "Cannot rearrange the DAG due to insufficient root instances."
 
 	static val sdf_message = message + "\nExporting the associated SrSDF/SDF graph to "

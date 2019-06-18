@@ -7,40 +7,6 @@
     </files>
     <constraints excelUrl="">
         <constraintGroup>
-            <operator name="Dsp0"/>
-            <task name="top/largeFFT/FFT_2"/>
-            <task name="top/largeFFT/Transpose_6"/>
-            <task name="top/largeFFT/out"/>
-            <task name="top/largeFFT/GenRowIds"/>
-            <task name="top/largeFFT/Transpose_3"/>
-            <task name="top/largeFFT/FFT_5"/>
-            <task name="top/largeFFT"/>
-            <task name="top/largeFFT/Twiddle_4"/>
-            <task name="top/largeFFT/in"/>
-            <task name="top/largeFFT/Transpose_1"/>
-        </constraintGroup>
-        <constraintGroup>
-            <operator name="FFTC1"/>
-            <task name="top/largeFFT/FFT_2"/>
-            <task name="top/largeFFT/FFT_5"/>
-        </constraintGroup>
-        <constraintGroup>
-            <operator name="Arm0"/>
-            <task name="top/largeFFT/Transpose_6"/>
-            <task name="top/largeFFT/out"/>
-            <task name="top/largeFFT/Transpose_3"/>
-            <task name="top/largeFFT/Twiddle_4"/>
-            <task name="top/largeFFT/in"/>
-            <task name="top/src"/>
-            <task name="top/snk"/>
-            <task name="top/largeFFT/FFT_2"/>
-            <task name="top/largeFFT/GenRowIds"/>
-            <task name="top/largeFFT/FFT_5"/>
-            <task name="top/largeFFT"/>
-            <task name="top/largeFFT/Transpose_1"/>
-            <task name="top"/>
-        </constraintGroup>
-        <constraintGroup>
             <operator name="Arm1"/>
             <task name="top/largeFFT/Transpose_6"/>
             <task name="top/largeFFT/out"/>
@@ -57,9 +23,17 @@
             <task name="top"/>
         </constraintGroup>
         <constraintGroup>
-            <operator name="FFTC0"/>
+            <operator name="Dsp3"/>
             <task name="top/largeFFT/FFT_2"/>
+            <task name="top/largeFFT/Transpose_6"/>
+            <task name="top/largeFFT/out"/>
+            <task name="top/largeFFT/GenRowIds"/>
+            <task name="top/largeFFT/Transpose_3"/>
             <task name="top/largeFFT/FFT_5"/>
+            <task name="top/largeFFT"/>
+            <task name="top/largeFFT/Twiddle_4"/>
+            <task name="top/largeFFT/in"/>
+            <task name="top/largeFFT/Transpose_1"/>
         </constraintGroup>
         <constraintGroup>
             <operator name="Dsp2"/>
@@ -88,7 +62,7 @@
             <task name="top/largeFFT/Transpose_1"/>
         </constraintGroup>
         <constraintGroup>
-            <operator name="Dsp3"/>
+            <operator name="Dsp0"/>
             <task name="top/largeFFT/FFT_2"/>
             <task name="top/largeFFT/Transpose_6"/>
             <task name="top/largeFFT/out"/>
@@ -100,26 +74,37 @@
             <task name="top/largeFFT/in"/>
             <task name="top/largeFFT/Transpose_1"/>
         </constraintGroup>
+        <constraintGroup>
+            <operator name="FFTC0"/>
+            <task name="top/largeFFT/FFT_2"/>
+            <task name="top/largeFFT/FFT_5"/>
+        </constraintGroup>
+        <constraintGroup>
+            <operator name="FFTC1"/>
+            <task name="top/largeFFT/FFT_2"/>
+            <task name="top/largeFFT/FFT_5"/>
+        </constraintGroup>
+        <constraintGroup>
+            <operator name="Arm0"/>
+            <task name="top/largeFFT/Transpose_6"/>
+            <task name="top/largeFFT/out"/>
+            <task name="top/largeFFT/Transpose_3"/>
+            <task name="top/largeFFT/Twiddle_4"/>
+            <task name="top/largeFFT/in"/>
+            <task name="top/src"/>
+            <task name="top/snk"/>
+            <task name="top/largeFFT/FFT_2"/>
+            <task name="top/largeFFT/GenRowIds"/>
+            <task name="top/largeFFT/FFT_5"/>
+            <task name="top/largeFFT"/>
+            <task name="top/largeFFT/Transpose_1"/>
+            <task name="top"/>
+        </constraintGroup>
     </constraints>
-    <relativeconstraints excelUrl=""/>
     <timings excelUrl="">
-        <timing opname="c6678" time="1302" vertexname="FFT_2"/>
-        <timing opname="c6678" time="1302" vertexname="FFT_5"/>
-        <timing opname="c6678" time="10000" vertexname="Transpose_1"/>
-        <timing opname="c6678" time="10000" vertexname="Transpose_3"/>
-        <timing opname="c6678" time="10000" vertexname="Transpose_6"/>
-        <timing opname="c6678" time="246" vertexname="Twiddle_4"/>
-        <timing opname="CortexA15" time="13020" vertexname="FFT_2"/>
-        <timing opname="CortexA15" time="13020" vertexname="FFT_5"/>
-        <timing opname="CortexA15" time="100000" vertexname="Transpose_1"/>
-        <timing opname="CortexA15" time="100000" vertexname="Transpose_3"/>
-        <timing opname="CortexA15" time="100000" vertexname="Transpose_6"/>
-        <timing opname="CortexA15" time="2460" vertexname="Twiddle_4"/>
-        <timing opname="fftc" time="488" vertexname="FFT_2"/>
-        <timing opname="fftc" time="488" vertexname="FFT_5"/>
-        <memcpyspeed opname="c6678" setuptime="1" timeperunit="1.0E-5"/>
         <memcpyspeed opname="CortexA15" setuptime="1" timeperunit="1.0E-5"/>
         <memcpyspeed opname="fftc" setuptime="1" timeperunit="1.0E-5"/>
+        <memcpyspeed opname="c6678" setuptime="1" timeperunit="1.0E-5"/>
     </timings>
     <simuParams>
         <mainCore>Arm0</mainCore>
@@ -129,22 +114,15 @@
             <dataType name="char" size="1"/>
         </dataTypes>
         <specialVertexOperators>
+            <specialVertexOperator path="Dsp3"/>
             <specialVertexOperator path="Arm0"/>
             <specialVertexOperator path="Arm1"/>
-            <specialVertexOperator path="Arm2"/>
-            <specialVertexOperator path="Arm3"/>
             <specialVertexOperator path="Dsp0"/>
-            <specialVertexOperator path="Dsp3"/>
-            <specialVertexOperator path="Dsp4"/>
             <specialVertexOperator path="Dsp1"/>
             <specialVertexOperator path="Dsp2"/>
-            <specialVertexOperator path="Core0"/>
-            <specialVertexOperator path="Dsp7"/>
-            <specialVertexOperator path="Dsp5"/>
-            <specialVertexOperator path="Dsp6"/>
         </specialVertexOperators>
         <numberOfTopExecutions>1</numberOfTopExecutions>
     </simuParams>
-    <variables excelUrl=""/>
     <parameterValues/>
+    <papifyConfigs xmlUrl=""/>
 </scenario>

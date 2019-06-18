@@ -1,6 +1,7 @@
 /**
  * Copyright or © or Copr. IETR/INSA - Rennes (2014 - 2019) :
  *
+ * Alexandre Honorat <alexandre.honorat@insa-rennes.fr> (2019)
  * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017 - 2019)
  * Clément Guy <clement.guy@insa-rennes.fr> (2014 - 2015)
  * Florian Arrestier <florian.arrestier@insa-rennes.fr> (2018)
@@ -42,7 +43,11 @@ package org.preesm.algorithm.pisdf.pimm2srdag;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map.Entry;
+import java.util.Optional;
 import java.util.Set;
+import org.eclipse.core.runtime.Path;
+import org.eclipse.emf.common.util.EList;
 import org.preesm.algorithm.codegen.idl.ActorPrototypes;
 import org.preesm.algorithm.codegen.idl.Prototype;
 import org.preesm.algorithm.codegen.model.CodeGenArgument;
@@ -87,7 +92,7 @@ import org.preesm.model.pisdf.ExecutableActor;
 import org.preesm.model.pisdf.Expression;
 import org.preesm.model.pisdf.Fifo;
 import org.preesm.model.pisdf.ForkActor;
-import org.preesm.model.pisdf.FunctionParameter;
+import org.preesm.model.pisdf.FunctionArgument;
 import org.preesm.model.pisdf.FunctionPrototype;
 import org.preesm.model.pisdf.ISetter;
 import org.preesm.model.pisdf.InitActor;
@@ -99,11 +104,9 @@ import org.preesm.model.pisdf.Port;
 import org.preesm.model.pisdf.Refinement;
 import org.preesm.model.pisdf.RoundBufferActor;
 import org.preesm.model.pisdf.util.PiMMSwitch;
-import org.preesm.model.scenario.ConstraintGroup;
-import org.preesm.model.scenario.ConstraintGroupManager;
-import org.preesm.model.scenario.PreesmScenario;
-import org.preesm.model.scenario.Timing;
-import org.preesm.model.scenario.TimingManager;
+import org.preesm.model.scenario.Constraints;
+import org.preesm.model.scenario.Scenario;
+import org.preesm.model.slam.ComponentInstance;
 import org.preesm.model.slam.Design;
 
 /**
@@ -115,8 +118,7 @@ public class StaticPiMM2MapperDAGVisitor extends PiMMSwitch<Boolean> {
   /**
    *
    */
-  public static final MapperDAG convert(final PiGraph piGraph, final Design architecture,
-      final PreesmScenario scenario) {
+  public static final MapperDAG convert(final PiGraph piGraph, final Design architecture, final Scenario scenario) {
     final StaticPiMM2MapperDAGVisitor visitor = new StaticPiMM2MapperDAGVisitor(piGraph, architecture, scenario);
     visitor.doSwitch(piGraph);
     return visitor.getResult();
@@ -133,7 +135,7 @@ public class StaticPiMM2MapperDAGVisitor extends PiMMSwitch<Boolean> {
   private IRefinement currentRefinement;
 
   /** The scenario. */
-  private final PreesmScenario scenario;
+  private final Scenario scenario;
 
   private final Design architecture;
 
@@ -145,7 +147,7 @@ public class StaticPiMM2MapperDAGVisitor extends PiMMSwitch<Boolean> {
    * @param scenario
    *          The scenario
    */
-  private StaticPiMM2MapperDAGVisitor(final PiGraph piGraph, final Design architecture, final PreesmScenario scenario) {
+  private StaticPiMM2MapperDAGVisitor(final PiGraph piGraph, final Design architecture, final Scenario scenario) {
     this.architecture = architecture;
     this.result = new MapperDAG(piGraph);
     this.vertexFactory = MapperVertexFactory.getInstance();
@@ -187,7 +189,7 @@ public class StaticPiMM2MapperDAGVisitor extends PiMMSwitch<Boolean> {
    */
   @Override
   public Boolean caseAbstractActor(final AbstractActor actor) {
-    final MapperDAGVertex vertex = (MapperDAGVertex) this.vertexFactory.createVertex(DAGVertex.DAG_VERTEX);
+    final MapperDAGVertex vertex = (MapperDAGVertex) this.vertexFactory.createVertex(DAGVertex.DAG_VERTEX, actor);
     // Set default properties from the PiMM actor
     setDAGVertexPropertiesFromPiMM(actor, vertex);
     // Add the vertex to the DAG
@@ -202,12 +204,12 @@ public class StaticPiMM2MapperDAGVisitor extends PiMMSwitch<Boolean> {
    */
   @Override
   public Boolean caseActor(final Actor actor) {
-    final MapperDAGVertex vertex = (MapperDAGVertex) this.vertexFactory.createVertex(DAGVertex.DAG_VERTEX);
+    final MapperDAGVertex vertex = (MapperDAGVertex) this.vertexFactory.createVertex(DAGVertex.DAG_VERTEX, actor);
     // Set default properties from the PiMM actor
     setDAGVertexPropertiesFromPiMM(actor, vertex);
     // Handle path to memory script of the vertex
     if (actor.getMemoryScriptPath() != null) {
-      vertex.setPropertyValue(SDFVertex.MEMORY_SCRIPT, actor.getMemoryScriptPath().toOSString());
+      vertex.setPropertyValue(SDFVertex.MEMORY_SCRIPT, new Path(actor.getMemoryScriptPath()).toOSString());
     }
     // Handle vertex's refinement (description of the vertex's behavior:
     // function prototypes or subgraphs)
@@ -231,7 +233,7 @@ public class StaticPiMM2MapperDAGVisitor extends PiMMSwitch<Boolean> {
   @Override
   public Boolean caseBroadcastActor(final BroadcastActor actor) {
     final MapperDAGVertex vertex = (MapperDAGVertex) this.vertexFactory
-        .createVertex(DAGBroadcastVertex.DAG_BROADCAST_VERTEX);
+        .createVertex(DAGBroadcastVertex.DAG_BROADCAST_VERTEX, actor);
     // Set default properties from the PiMM actor
     setDAGVertexPropertiesFromPiMM(actor, vertex);
     // Set the special type of the Broadcast
@@ -253,7 +255,7 @@ public class StaticPiMM2MapperDAGVisitor extends PiMMSwitch<Boolean> {
   @Override
   public Boolean caseRoundBufferActor(final RoundBufferActor actor) {
     final MapperDAGVertex vertex = (MapperDAGVertex) this.vertexFactory
-        .createVertex(DAGBroadcastVertex.DAG_BROADCAST_VERTEX);
+        .createVertex(DAGBroadcastVertex.DAG_BROADCAST_VERTEX, actor);
     // Set default properties from the PiMM actor
     setDAGVertexPropertiesFromPiMM(actor, vertex);
     // Set the special type of the RoundBufferActor
@@ -273,7 +275,8 @@ public class StaticPiMM2MapperDAGVisitor extends PiMMSwitch<Boolean> {
    */
   @Override
   public Boolean caseJoinActor(final JoinActor actor) {
-    final MapperDAGVertex vertex = (MapperDAGVertex) this.vertexFactory.createVertex(DAGJoinVertex.DAG_JOIN_VERTEX);
+    final MapperDAGVertex vertex = (MapperDAGVertex) this.vertexFactory.createVertex(DAGJoinVertex.DAG_JOIN_VERTEX,
+        actor);
     // Set default properties from the PiMM actor
     setDAGVertexPropertiesFromPiMM(actor, vertex);
     // Check Join use
@@ -296,7 +299,8 @@ public class StaticPiMM2MapperDAGVisitor extends PiMMSwitch<Boolean> {
    */
   @Override
   public Boolean caseForkActor(final ForkActor actor) {
-    final MapperDAGVertex vertex = (MapperDAGVertex) this.vertexFactory.createVertex(DAGForkVertex.DAG_FORK_VERTEX);
+    final MapperDAGVertex vertex = (MapperDAGVertex) this.vertexFactory.createVertex(DAGForkVertex.DAG_FORK_VERTEX,
+        actor);
     // Set default properties from the PiMM actor
     setDAGVertexPropertiesFromPiMM(actor, vertex);
     // Check Fork use
@@ -330,7 +334,7 @@ public class StaticPiMM2MapperDAGVisitor extends PiMMSwitch<Boolean> {
    */
   @Override
   public Boolean caseInitActor(final InitActor actor) {
-    final DAGVertex vertex = this.vertexFactory.createVertex(DAGInitVertex.DAG_INIT_VERTEX);
+    final DAGVertex vertex = this.vertexFactory.createVertex(DAGInitVertex.DAG_INIT_VERTEX, actor);
     final DataOutputPort dataOutputPort = actor.getDataOutputPorts().get(0);
 
     // Set the number of delay
@@ -354,7 +358,7 @@ public class StaticPiMM2MapperDAGVisitor extends PiMMSwitch<Boolean> {
    */
   @Override
   public Boolean caseEndActor(final EndActor actor) {
-    final DAGVertex vertex = this.vertexFactory.createVertex(DAGEndVertex.DAG_END_VERTEX);
+    final DAGVertex vertex = this.vertexFactory.createVertex(DAGEndVertex.DAG_END_VERTEX, actor);
 
     setDAGVertexPropertiesFromPiMM(actor, vertex);
 
@@ -394,7 +398,8 @@ public class StaticPiMM2MapperDAGVisitor extends PiMMSwitch<Boolean> {
 
   @Override
   public Boolean casePiSDFRefinement(final PiSDFRefinement refinement) {
-    throw new UnsupportedOperationException("Flat single-rate can not have PiSDFRefinement for a vertex.");
+    throw new UnsupportedOperationException("Flat single-rate can not have children graph as refinement (see vertex "
+        + refinement.getRefinementContainer() + ").");
   }
 
   @Override
@@ -434,7 +439,7 @@ public class StaticPiMM2MapperDAGVisitor extends PiMMSwitch<Boolean> {
       newEdge.setTargetPortModifier(new StringEdgePropertyType(targetModifier));
     }
     // 1.4 Set the different properties of the Edge
-    final long dataSize = this.scenario.getSimulationManager().getDataTypeSizeOrDefault(fifo.getType());
+    final long dataSize = this.scenario.getSimulationInfo().getDataTypeSizeOrDefault(fifo.getType());
     newEdge.setPropertyValue(SDFEdge.DATA_TYPE, fifo.getType());
     newEdge.setPropertyValue(SDFEdge.DATA_SIZE, dataSize);
     newEdge.setWeight(new LongEdgePropertyType(weight));
@@ -483,16 +488,18 @@ public class StaticPiMM2MapperDAGVisitor extends PiMMSwitch<Boolean> {
 
   @Override
   public Boolean caseCHeaderRefinement(final CHeaderRefinement h) {
-    final ActorPrototypes actorPrototype = new ActorPrototypes(h.getFilePath().toOSString());
+    final String osStringPath = Optional.ofNullable(h.getFilePath()).map(s -> new Path(s).toOSString()).orElse(null);
 
-    doSwitch(h.getLoopPrototype());
-    actorPrototype.setLoopPrototype(this.currentPrototype);
+    final ActorPrototypes actorPrototype = new ActorPrototypes(osStringPath);
+    if (osStringPath != null) {
+      doSwitch(h.getLoopPrototype());
+      actorPrototype.setLoopPrototype(this.currentPrototype);
 
-    if (h.getInitPrototype() != null) {
-      doSwitch(h.getInitPrototype());
-      actorPrototype.setInitPrototype(this.currentPrototype);
+      if (h.getInitPrototype() != null) {
+        doSwitch(h.getInitPrototype());
+        actorPrototype.setInitPrototype(this.currentPrototype);
+      }
     }
-
     this.currentRefinement = actorPrototype;
     return true;
   }
@@ -500,7 +507,7 @@ public class StaticPiMM2MapperDAGVisitor extends PiMMSwitch<Boolean> {
   @Override
   public Boolean caseFunctionPrototype(final FunctionPrototype f) {
     this.currentPrototype = new Prototype(f.getName());
-    for (final FunctionParameter p : f.getParameters()) {
+    for (final FunctionArgument p : f.getArguments()) {
       doSwitch(p);
       if (p.isIsConfigurationParameter()) {
         this.currentPrototype.addParameter(this.currentParameter);
@@ -512,7 +519,7 @@ public class StaticPiMM2MapperDAGVisitor extends PiMMSwitch<Boolean> {
   }
 
   @Override
-  public Boolean caseFunctionParameter(final FunctionParameter f) {
+  public Boolean caseFunctionArgument(final FunctionArgument f) {
     if (f.isIsConfigurationParameter()) {
       int direction = 0;
       switch (f.getDirection()) {
@@ -619,33 +626,22 @@ public class StaticPiMM2MapperDAGVisitor extends PiMMSwitch<Boolean> {
   /**
    * Update the Scenario with timing/mapping constraints for copyActor.
    */
-  private static final void updateScenarioData(final AbstractActor copyActor, final PreesmScenario scenario) {
+  private static final void updateScenarioData(final AbstractActor copyActor, final Scenario scenario) {
     final AbstractActor actor = PreesmCopyTracker.getOriginalSource(copyActor);
     // Add the scenario constraints
-    final List<String> currentOperatorIDs = new ArrayList<>();
-    final Set<ConstraintGroup> constraintGroups = scenario.getConstraintGroupManager().getConstraintGroups();
-    for (final ConstraintGroup cg : constraintGroups) {
-      final Set<String> vertexPaths = cg.getVertexPaths();
-      final Set<String> operatorIds = cg.getOperatorIds();
-      if (vertexPaths.contains(actor.getVertexPath())) {
-        currentOperatorIDs.add((String) operatorIds.toArray()[0]);
+    final List<ComponentInstance> currentOperatorIDs = new ArrayList<>();
+    final Set<Entry<ComponentInstance, EList<AbstractActor>>> constraintGroups = scenario.getConstraints()
+        .getGroupConstraints().entrySet();
+    for (final Entry<ComponentInstance, EList<AbstractActor>> cg : constraintGroups) {
+      final List<AbstractActor> vertexPaths = cg.getValue();
+      final ComponentInstance operatorId = cg.getKey();
+      if (vertexPaths.contains(actor)) {
+        currentOperatorIDs.add(operatorId);
       }
     }
 
-    final ConstraintGroupManager constraintGroupManager = scenario.getConstraintGroupManager();
+    final Constraints constraintGroupManager = scenario.getConstraints();
     currentOperatorIDs.forEach(s -> constraintGroupManager.addConstraint(s, copyActor));
-    // Add the scenario timings
-    final List<Timing> currentTimings = new ArrayList<>();
-    for (final String operatorDefinitionID : scenario.getOperatorDefinitionIds()) {
-      final Timing timing = scenario.getTimingManager().getTimingOrDefault(actor.getName(), operatorDefinitionID);
-      currentTimings.add(timing);
-    }
-    final TimingManager timingManager = scenario.getTimingManager();
-    for (final Timing t : currentTimings) {
-      final Timing addTiming = timingManager.addTiming(copyActor.getName(), t.getOperatorDefinitionId());
-      addTiming.setTime(t.getTime());
-      addTiming.setInputParameters(t.getInputParameters());
-    }
   }
 
   @Override

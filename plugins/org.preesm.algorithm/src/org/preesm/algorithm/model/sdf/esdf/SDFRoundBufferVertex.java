@@ -1,7 +1,7 @@
 /**
- * Copyright or © or Copr. IETR/INSA - Rennes (2018) :
+ * Copyright or © or Copr. IETR/INSA - Rennes (2018 - 2019) :
  *
- * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2018)
+ * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2018 - 2019)
  *
  * This software is a computer program whose purpose is to help prototyping
  * parallel applications using dataflow formalism.
@@ -38,6 +38,7 @@ import java.util.ArrayList;
 import java.util.List;
 import org.preesm.algorithm.model.sdf.SDFEdge;
 import org.preesm.algorithm.model.sdf.SDFInterfaceVertex;
+import org.preesm.model.pisdf.AbstractVertex;
 
 /**
  * ROund buffer vertex.
@@ -52,8 +53,8 @@ public class SDFRoundBufferVertex extends SDFBroadcastVertex {
   /**
    * Creates a new SDFInterfaceVertex with the default direction (SINK).
    */
-  public SDFRoundBufferVertex() {
-    super();
+  public SDFRoundBufferVertex(AbstractVertex origVertex) {
+    super(origVertex);
     setNbRepeat(1L);
   }
 
@@ -105,7 +106,7 @@ public class SDFRoundBufferVertex extends SDFBroadcastVertex {
    */
   @Override
   public SDFRoundBufferVertex copy() {
-    final SDFRoundBufferVertex copy = new SDFRoundBufferVertex();
+    final SDFRoundBufferVertex copy = new SDFRoundBufferVertex(origVertex);
     copy.setName(getName());
     copy.setNbRepeat(getNbRepeat());
 

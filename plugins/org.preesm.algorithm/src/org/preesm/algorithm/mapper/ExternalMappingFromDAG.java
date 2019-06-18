@@ -68,12 +68,12 @@ import org.preesm.commons.logger.PreesmLogger;
 import org.preesm.model.pisdf.AbstractActor;
 import org.preesm.model.pisdf.PiGraph;
 import org.preesm.model.pisdf.util.PiIdentifiers;
-import org.preesm.model.scenario.PreesmScenario;
+import org.preesm.model.scenario.Scenario;
 import org.preesm.model.slam.ComponentInstance;
 import org.preesm.model.slam.Design;
 import org.preesm.model.slam.attributes.VLNV;
 import org.preesm.model.slam.component.Operator;
-import org.preesm.model.slam.utils.DesignTools.ComponentInstanceComparator;
+import org.preesm.model.slam.utils.ComponentInstanceComparator;
 
 /**
  *
@@ -84,7 +84,7 @@ import org.preesm.model.slam.utils.DesignTools.ComponentInstanceComparator;
     category = "Schedulers",
 
     inputs = { @Port(name = "DAG", type = DirectedAcyclicGraph.class),
-        @Port(name = "architecture", type = Design.class), @Port(name = "scenario", type = PreesmScenario.class) },
+        @Port(name = "architecture", type = Design.class), @Port(name = "scenario", type = Scenario.class) },
 
     outputs = { @Port(name = "DAG", type = DirectedAcyclicGraph.class), @Port(name = "ABC", type = LatencyAbc.class) },
 
@@ -106,7 +106,7 @@ public class ExternalMappingFromDAG extends AbstractMappingFromDAG {
 
   @Override
   protected LatencyAbc schedule(final Map<String, Object> outputs, final Map<String, String> parameters,
-      final InitialLists initial, final PreesmScenario scenario, final AbcParameters abcParams, final MapperDAG dag,
+      final InitialLists initial, final Scenario scenario, final AbcParameters abcParams, final MapperDAG dag,
       final Design architecture, final AbstractTaskSched taskSched) {
 
     // 1- read schedule file

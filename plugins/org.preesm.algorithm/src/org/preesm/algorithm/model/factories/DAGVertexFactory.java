@@ -1,7 +1,7 @@
 /**
- * Copyright or © or Copr. IETR/INSA - Rennes (2008 - 2018) :
+ * Copyright or © or Copr. IETR/INSA - Rennes (2008 - 2019) :
  *
- * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017 - 2018)
+ * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017 - 2019)
  * Clément Guy <clement.guy@insa-rennes.fr> (2014 - 2015)
  * Jonathan Piat <jpiat@laas.fr> (2009 - 2011)
  * Matthieu Wipliez <matthieu.wipliez@insa-rennes.fr> (2008)
@@ -83,9 +83,9 @@ public class DAGVertexFactory implements IModelVertexFactory<DAGVertex> {
    * @see org.ietr.dftools.algorithm.factories.ModelVertexFactory#createVertex(org.w3c.dom.Element)
    */
   @Override
-  public DAGVertex createVertex(final Element vertexElt) {
+  public DAGVertex createVertex(final Element vertexElt, org.preesm.model.pisdf.AbstractVertex origVertex) {
     final String kind = getProperty(vertexElt, AbstractVertex.KIND_LITERAL);
-    return this.createVertex(kind);
+    return this.createVertex(kind, origVertex);
   }
 
   /*
@@ -94,21 +94,21 @@ public class DAGVertexFactory implements IModelVertexFactory<DAGVertex> {
    * @see org.ietr.dftools.algorithm.factories.ModelVertexFactory#createVertex(java.lang.String)
    */
   @Override
-  public DAGVertex createVertex(final String kind) {
+  public DAGVertex createVertex(final String kind, org.preesm.model.pisdf.AbstractVertex origVertex) {
     if (kind.equals(DAGVertex.DAG_VERTEX)) {
-      return new DAGVertex();
+      return new DAGVertex(origVertex);
     } else if (kind.equals(DAGBroadcastVertex.DAG_BROADCAST_VERTEX)) {
-      return new DAGBroadcastVertex();
+      return new DAGBroadcastVertex(origVertex);
     } else if (kind.equals(DAGForkVertex.DAG_FORK_VERTEX)) {
-      return new DAGForkVertex();
+      return new DAGForkVertex(origVertex);
     } else if (kind.equals(DAGJoinVertex.DAG_JOIN_VERTEX)) {
-      return new DAGJoinVertex();
+      return new DAGJoinVertex(origVertex);
     } else if (kind.equals(DAGInitVertex.DAG_INIT_VERTEX)) {
-      return new DAGInitVertex();
+      return new DAGInitVertex(origVertex);
     } else if (kind.equals(DAGEndVertex.DAG_END_VERTEX)) {
-      return new DAGEndVertex();
+      return new DAGEndVertex(origVertex);
     } else {
-      return new DAGVertex();
+      return new DAGVertex(origVertex);
     }
   }
 

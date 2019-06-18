@@ -56,7 +56,7 @@ import org.preesm.model.pisdf.PiGraph;
 import org.preesm.model.pisdf.brv.BRVMethod;
 import org.preesm.model.pisdf.statictools.PiSDFToSingleRate;
 import org.preesm.model.pisdf.statictools.PiSDFToSingleRateTask;
-import org.preesm.model.scenario.PreesmScenario;
+import org.preesm.model.scenario.Scenario;
 import org.preesm.model.slam.Design;
 import org.preesm.workflow.elements.Workflow;
 import org.preesm.workflow.implement.AbstractTaskImplementation;
@@ -71,7 +71,7 @@ import org.preesm.workflow.implement.AbstractWorkflowNodeImplementation;
 @PreesmTask(id = "org.ietr.preesm.experiment.pimm2srdag.StaticPiMM2SrDAGTask", name = "Single-Rate Transformation",
     category = "Graph Transformation",
 
-    inputs = { @Port(name = "PiMM", type = PiGraph.class), @Port(name = "scenario", type = PreesmScenario.class),
+    inputs = { @Port(name = "PiMM", type = PiGraph.class), @Port(name = "scenario", type = Scenario.class),
         @Port(name = "architecture", type = Design.class) },
 
     outputs = { @Port(name = "DAG", type = DirectedAcyclicGraph.class), @Port(name = "PiMM", type = PiGraph.class) },
@@ -124,7 +124,7 @@ public class StaticPiMM2SrDAGTask extends AbstractTaskImplementation {
   public Map<String, Object> execute(final Map<String, Object> inputs, final Map<String, String> parameters,
       final IProgressMonitor monitor, final String nodeName, final Workflow workflow) {
     final Design architecture = (Design) inputs.get(AbstractWorkflowNodeImplementation.KEY_ARCHITECTURE);
-    final PreesmScenario scenario = (PreesmScenario) inputs.get(AbstractWorkflowNodeImplementation.KEY_SCENARIO);
+    final Scenario scenario = (Scenario) inputs.get(AbstractWorkflowNodeImplementation.KEY_SCENARIO);
     final PiGraph graph = (PiGraph) inputs.get(AbstractWorkflowNodeImplementation.KEY_PI_GRAPH);
 
     final MapperDAG result;

@@ -52,26 +52,26 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 import org.eclipse.emf.common.util.EList;
+import org.eclipse.emf.common.util.EMap;
 import org.preesm.codegen.xtend.spider.SpiderMainFilePrinter;
 import org.preesm.codegen.xtend.spider.utils.SpiderConfig;
 import org.preesm.codegen.xtend.spider.utils.SpiderNameGenerator;
+import org.preesm.commons.exceptions.PreesmRuntimeException;
 import org.preesm.commons.logger.PreesmLogger;
 import org.preesm.model.pisdf.AbstractActor;
 import org.preesm.model.pisdf.Actor;
 import org.preesm.model.pisdf.CHeaderRefinement;
-import org.preesm.model.pisdf.FunctionParameter;
+import org.preesm.model.pisdf.FunctionArgument;
 import org.preesm.model.pisdf.FunctionPrototype;
 import org.preesm.model.pisdf.Parameter;
 import org.preesm.model.pisdf.PiGraph;
 import org.preesm.model.pisdf.Port;
-import org.preesm.model.pisdf.util.ActorPath;
-import org.preesm.model.scenario.ConstraintGroup;
-import org.preesm.model.scenario.PreesmScenario;
-import org.preesm.model.scenario.Timing;
-import org.preesm.model.scenario.papi.PapiEvent;
-import org.preesm.model.scenario.papi.PapifyConfigActor;
-import org.preesm.model.scenario.papi.PapifyConfigManager;
-import org.preesm.model.scenario.papi.PapifyConfigPE;
+import org.preesm.model.scenario.PapiComponent;
+import org.preesm.model.scenario.PapiEvent;
+import org.preesm.model.scenario.PapifyConfig;
+import org.preesm.model.scenario.Scenario;
+import org.preesm.model.scenario.ScenarioConstants;
+import org.preesm.model.scenario.ScenarioFactory;
 import org.preesm.model.slam.ComponentInstance;
 import org.preesm.model.slam.Design;
 import org.preesm.model.slam.component.Component;
@@ -82,7 +82,7 @@ import org.preesm.model.slam.component.Component;
 public class SpiderCodegen {
 
   /** The scenario. */
-  private final PreesmScenario scenario;
+  private final Scenario scenario;
 
   /** The architecture */
   final Design architecture;
@@ -103,19 +103,19 @@ public class SpiderCodegen {
 
   /** The core types ids. */
   /* Map core types to core type indexes */
-  private Map<String, Integer>                  coreTypesIds;
-  private Map<String, Integer>                  coresPerCoreType;
-  private Map<String, EList<ComponentInstance>> coresFromCoreType;
+  private Map<Component, Integer>                  coreTypesIds;
+  private Map<Component, Integer>                  coresPerCoreType;
+  private Map<Component, EList<ComponentInstance>> coresFromCoreType;
 
   /** The core ids. */
-  private Map<String, Integer> coreIds;
+  private Map<ComponentInstance, Integer> coreIds;
 
   /** The preprocessor. */
   private SpiderPreProcessVisitor preprocessor;
 
   /** The timings. */
   /* Map timing strings to actors */
-  private Map<AbstractActor, Map<String, String>> timings;
+  private Map<AbstractActor, Map<Component, String>> timings;
 
   /** The function map. */
   /* Map functions to function ix */
@@ -126,7 +126,7 @@ public class SpiderCodegen {
   private Map<Port, Integer> portMap;
 
   /** The constraints. */
-  private Map<AbstractActor, Set<String>> constraints;
+  private Map<AbstractActor, Set<ComponentInstance>> constraints;
 
   /** **/
   private final List<String> coreTypeName = new LinkedList<>();
@@ -137,7 +137,7 @@ public class SpiderCodegen {
    * @param scenario
    *          the scenario
    */
-  public SpiderCodegen(final PreesmScenario scenario, final Design architecture) {
+  public SpiderCodegen(final Scenario scenario, final Design architecture) {
     this.scenario = scenario;
     this.architecture = architecture;
   }
@@ -161,13 +161,13 @@ public class SpiderCodegen {
     this.coresPerCoreType = new LinkedHashMap<>();
     this.coresFromCoreType = new LinkedHashMap<>();
     int coreTypeId = 0;
-    for (final String coreType : this.scenario.getOperatorDefinitionIds()) {
+    final Design design = this.scenario.getDesign();
+    for (final Component coreType : design.getOperatorComponents()) {
       this.coreTypesIds.put(coreType, coreTypeId++);
       // Link the number of cores associated to each core type
       final EList<Component> components = this.architecture.getComponentHolder().getComponents();
       for (final Component c : components) {
-        final String name = c.getVlnv().getName();
-        if (name.equals(coreType)) {
+        if (c.equals(coreType)) {
           final EList<ComponentInstance> instances = c.getInstances();
           this.coresPerCoreType.put(coreType, instances.size());
           this.coresFromCoreType.put(coreType, instances);
@@ -176,56 +176,61 @@ public class SpiderCodegen {
     }
 
     this.coreIds = new LinkedHashMap<>();
-    String mainOperator = this.scenario.getSimulationManager().getMainOperatorName();
-    if ((mainOperator == null) || mainOperator.equals("")) {
+    ComponentInstance mainOperator = this.scenario.getSimulationInfo().getMainOperator();
+    final List<ComponentInstance> orderedOperators = design.getOrderedOperatorComponentInstances();
+    if (mainOperator == null) {
       /* Warning */
-      mainOperator = this.scenario.getOrderedOperatorIds().get(0);
+      mainOperator = orderedOperators.get(0);
       PreesmLogger.getLogger().warning("No Main Operator selected in scenario, " + mainOperator + " used by default");
     }
     this.coreIds.put(mainOperator, 0);
     int coreId = 1;
-    for (final String core : this.scenario.getOrderedOperatorIds()) {
+    for (final ComponentInstance core : orderedOperators) {
       if (!core.equals(mainOperator)) {
         this.coreIds.put(core, coreId++);
       }
     }
 
     // Generate timings
-    final Map<String, AbstractActor> actorsByNames = this.preprocessor.getActorNames();
     this.timings = new LinkedHashMap<>();
-    for (final Timing t : this.scenario.getTimingManager().getTimings()) {
-      final String actorName = t.getVertexId();
-      final AbstractActor aa = lookupTimingRec(pg, actorName);// (AbstractActor) pg.lookupVertex(actorName);
-      if (aa != null) {
-        if (!this.timings.containsKey(aa)) {
-          this.timings.put(aa, new LinkedHashMap<String, String>());
+    final Map<String, AbstractActor> actorsByNames = this.preprocessor.getActorNames();
+    for (final AbstractActor actor : actorsByNames.values()) {
+      if (actor != null) {
+        if (!this.timings.containsKey(actor)) {
+          this.timings.put(actor, new LinkedHashMap<Component, String>());
         }
-        this.timings.get(aa).put(t.getOperatorDefinitionId(), t.getStringValue());
+        if (this.scenario.getTimings().getActorTimings().containsKey(actor)) {
+          final EMap<Component, String> listTimings = this.scenario.getTimings().getActorTimings().get(actor);
+          for (Entry<Component, String> e : listTimings) {
+            this.timings.get(actor).put(e.getKey(), e.getValue());
+          }
+        }
+      } else {
+        throw new PreesmRuntimeException();
       }
     }
 
     // Generate constraints
     this.constraints = new LinkedHashMap<>();
-    for (final ConstraintGroup cg : this.scenario.getConstraintGroupManager().getConstraintGroups()) {
-      for (final String actorPath : cg.getVertexPaths()) {
-        final AbstractActor aa = ActorPath.lookup(pg, actorPath);
+    for (final Entry<ComponentInstance, EList<AbstractActor>> cg : this.scenario.getConstraints().getGroupConstraints()
+        .entrySet()) {
+      for (final AbstractActor aa : cg.getValue()) {
         if (this.constraints.get(aa) == null) {
-          this.constraints.put(aa, new LinkedHashSet<String>());
+          this.constraints.put(aa, new LinkedHashSet<ComponentInstance>());
         }
-        for (final String core : cg.getOperatorIds()) {
-          this.constraints.get(aa).add(core);
-        }
+        final ComponentInstance core = cg.getKey();
+        this.constraints.get(aa).add(core);
       }
     }
 
     // Add Default timings if needed
     for (final AbstractActor aa : actorsByNames.values()) {
       if (!this.timings.containsKey(aa)) {
-        this.timings.put(aa, new LinkedHashMap<String, String>());
+        this.timings.put(aa, new LinkedHashMap<Component, String>());
       }
-      for (final String coreType : this.coreTypesIds.keySet()) {
+      for (final Component coreType : this.coreTypesIds.keySet()) {
         if (!this.timings.get(aa).containsKey(coreType)) {
-          this.timings.get(aa).put(coreType, "100");
+          this.timings.get(aa).put(coreType, Integer.toString(ScenarioConstants.DEFAULT_TIMING_TASK.getValue()));
         }
       }
     }
@@ -265,7 +270,7 @@ public class SpiderCodegen {
     append("#include <spider.h>\n\n");
 
     append("#define N_PE_TYPE " + Integer.toString(this.coreTypesIds.keySet().size()) + "\n");
-    for (final String coreType : this.coreTypesIds.keySet()) {
+    for (final Component coreType : this.coreTypesIds.keySet()) {
       final String name = "N_" + SpiderNameGenerator.getCoreTypeName(coreType);
       this.coreTypeName.add(name);
       append("#define " + name + " " + Integer.toString(this.coresPerCoreType.get(coreType)) + "\n");
@@ -287,16 +292,16 @@ public class SpiderCodegen {
     final List<Parameter> l = new LinkedList<>();
     l.addAll(pg.getParameters());
     Collections.sort(l, (p1, p2) -> p1.getName().compareTo(p2.getName()));
-    final StringBuilder parameters_proto = new StringBuilder();
+    final StringBuilder parametersProto = new StringBuilder();
     for (final Parameter p : l) {
       if (p.isLocallyStatic() && !p.isDependent() && !p.isConfigurationInterface()) {
-        if (parameters_proto.length() > 0) {
-          parameters_proto.append(", ");
+        if (parametersProto.length() > 0) {
+          parametersProto.append(", ");
         }
-        parameters_proto.append("Param " + p.getName() + " = " + p.getValueExpression().evaluate());
+        parametersProto.append("Param " + p.getName() + " = " + p.getValueExpression().evaluate());
       }
     }
-    append(parameters_proto);
+    append(parametersProto);
     append(");\n");
 
     append("void free_" + pg.getName() + "();\n");
@@ -307,12 +312,12 @@ public class SpiderCodegen {
 
     /* Core */
     append("enum class PEVirtID : std::uint32_t {\n");
-    final List<String> sortedCores = new ArrayList<>(this.coreIds.keySet());
-    Collections.sort(sortedCores);
+    final List<ComponentInstance> sortedCores = new ArrayList<>(this.coreIds.keySet());
+    Collections.sort(sortedCores, (c1, c2) -> c1.getInstanceName().compareTo(c2.getInstanceName()));
     for (int i = 0; i < this.coreIds.size(); i++) {
-      for (final Entry<String, Integer> entry : this.coreIds.entrySet()) {
+      for (final Entry<ComponentInstance, Integer> entry : this.coreIds.entrySet()) {
         if (entry.getValue() == i) {
-          final String core = entry.getKey();
+          final ComponentInstance core = entry.getKey();
           append("\t" + SpiderNameGenerator.getCoreName(core) + " = " + this.coreIds.get(core) + ",\n");
         }
       }
@@ -322,9 +327,9 @@ public class SpiderCodegen {
     /* Hardware ID */
     append("enum class PEHardwareID : std::uint32_t {\n");
     for (int i = 0; i < this.coreIds.size(); i++) {
-      for (final Entry<String, Integer> entry : this.coreIds.entrySet()) {
+      for (final Entry<ComponentInstance, Integer> entry : this.coreIds.entrySet()) {
         if (entry.getValue() == i) {
-          final String core = entry.getKey();
+          final ComponentInstance core = entry.getKey();
           append("\t" + SpiderNameGenerator.getCoreName(core) + " = " + this.coreIds.get(core) + ",\n");
         }
       }
@@ -333,7 +338,7 @@ public class SpiderCodegen {
 
     /* Core Type */
     append("enum class PEType : std::uint32_t {\n");
-    for (final String coreType : this.coreTypesIds.keySet()) {
+    for (final Component coreType : this.coreTypesIds.keySet()) {
       append("\t" + SpiderNameGenerator.getCoreTypeName(coreType) + " = " + this.coreTypesIds.get(coreType) + ",\n");
     }
     append("};\n\n");
@@ -370,7 +375,7 @@ public class SpiderCodegen {
 
     final StringBuilder tmp = new StringBuilder();
     final SpiderCodegenVisitor codeGenerator = new SpiderCodegenVisitor(this, tmp, this.preprocessor, this.timings,
-        this.constraints, this.scenario.getSimulationManager().getDataTypes());
+        this.constraints, this.scenario.getSimulationInfo().getDataTypes());
     // Generate C++ code for the whole PiGraph, at the end, tmp will contain
     // the vertex declaration for pg
     codeGenerator.doSwitch(pg);
@@ -405,7 +410,7 @@ public class SpiderCodegen {
    *          Preesm scenario
    * @return the string
    */
-  public String generatePapifyCode(final PiGraph pg, final PreesmScenario scenario) {
+  public String generatePapifyCode(final PiGraph pg, final Scenario scenario) {
     this.cppString.setLength(0);
     // Generate the header (license, includes and constants)
     append(getLicense());
@@ -415,7 +420,7 @@ public class SpiderCodegen {
     append("#include <spider.h>\n");
     append("#include \"" + pg.getName() + ".h\"\n\n");
     // Papify pre-processing
-    PapifyConfigManager papifyConfigManager = scenario.getPapifyConfigManager();
+    PapifyConfig papifyConfigManager = scenario.getPapifyConfig();
 
     final HashMap<ArrayList<String>, Integer> uniqueEventSets = new HashMap<>();
     int eventSetID = 0;
@@ -423,8 +428,8 @@ public class SpiderCodegen {
     final ArrayList<AbstractActor> papifiedActors = new ArrayList<>();
 
     for (final AbstractActor actor : this.functionMap.keySet()) {
-      PapifyConfigActor corePapifyConfigGroups = papifyConfigManager
-          .getCorePapifyConfigGroupActor(actor.getVertexPath());
+      EMap<String,
+          EList<PapiEvent>> corePapifyConfigGroups = papifyConfigManager.getPapifyConfigGroupsActors().get(actor);
       if (corePapifyConfigGroups != null) {
         papifiedActors.add(actor);
         if (!generatePapifyConfig(corePapifyConfigGroups, papifyConfigManager, actor, uniqueEventSets, eventSetID)) {
@@ -472,39 +477,38 @@ public class SpiderCodegen {
    *          The current event set ID
    * @return true if the actor has the same event set as an existing one, false else
    */
-  private boolean generatePapifyConfig(final PapifyConfigActor corePapifyConfigGroups,
-      PapifyConfigManager papifyConfigManager, final AbstractActor actor,
+  private boolean generatePapifyConfig(final EMap<String, EList<PapiEvent>> configInfo,
+      PapifyConfig papifyConfigManager, final AbstractActor actor,
       final HashMap<ArrayList<String>, Integer> uniqueEventSets, final Integer eventSetID) {
-    Map<String, Set<PapiEvent>> configInfo = corePapifyConfigGroups.getPAPIEvents();
 
     boolean eventMonitoring = false;
     boolean timingMonitoring = false;
 
-    final PapiEvent timingEvent = new PapiEvent();
+    final PapiEvent timingEvent = ScenarioFactory.eINSTANCE.createPapiEvent();
     timingEvent.setName("Timing");
 
     ArrayList<String> compNames = new ArrayList<>();
     Map<String, ArrayList<String>> associatedEvents = new LinkedHashMap<>();
 
-    for (String compName : configInfo.keySet()) {
+    for (Entry<String, EList<PapiEvent>> compName : configInfo) {
       // Build the eventNames and the Timing variables to be printed
-      for (PapiEvent event : configInfo.get(compName)) {
+      for (PapiEvent event : configInfo.get(compName.getKey())) {
         if (event.getName().equals(timingEvent.getName())) {
           timingMonitoring = true;
         } else {
-          if (associatedEvents.get(compName) == null) {
+          if (associatedEvents.get(compName.getKey()) == null) {
             ArrayList<String> compEventNames = new ArrayList<>();
             compEventNames.add(event.getName());
-            associatedEvents.put(compName, compEventNames);
+            associatedEvents.put(compName.getKey(), compEventNames);
           } else {
-            associatedEvents.get(compName).add(event.getName());
+            associatedEvents.get(compName.getKey()).add(event.getName());
           }
           eventMonitoring = true;
         }
       }
       // Build the peType variable to be printed
-      if (!compName.equals("Timing")) {
-        compNames.add(compName);
+      if (!compName.getKey().equals("Timing")) {
+        compNames.add(compName.getKey());
       }
     }
 
@@ -572,20 +576,20 @@ public class SpiderCodegen {
 
     boolean configAssociated = false;
     append("\n\t// Mapping actor to LRT PAPIFY configuration: " + actor.getName() + "\n");
-    for (String coreType : this.coresFromCoreType.keySet()) {
+    for (Component coreType : this.coresFromCoreType.keySet()) {
       for (ComponentInstance compInst : this.coresFromCoreType.get(coreType)) {
         configAssociated = false;
-        PapifyConfigPE configType = papifyConfigManager.getCorePapifyConfigGroupPE(coreType);
-        for (String compType : configType.getPAPIComponentIDs()) {
-          if (!compType.equals("Timing") && compNames.contains(compType)) {
+        final List<
+            PapiComponent> corePapifyConfigGroupPE = papifyConfigManager.getPapifyConfigGroupsPEs().get(coreType);
+        for (final PapiComponent compType : corePapifyConfigGroupPE) {
+          if (!compType.equals("Timing") && compNames.contains(compType.getId())) {
             configAssociated = true;
-            append("\tconfigMap.insert(std::make_pair(\"LRT_" + this.coreIds.get(compInst.getInstanceName())
-                + "\", config_" + compType + "));\n");
+            append("\tconfigMap.insert(std::make_pair(\"LRT_" + this.coreIds.get(compInst) + "\", config_" + compType
+                + "));\n");
           }
         }
         if (!configAssociated && timingMonitoring) {
-          append("\tconfigMap.insert(std::make_pair(\"LRT_" + this.coreIds.get(compInst.getInstanceName())
-              + "\", config_Timing));\n");
+          append("\tconfigMap.insert(std::make_pair(\"LRT_" + this.coreIds.get(compInst) + "\", config_Timing));\n");
         }
       }
     }
@@ -603,7 +607,7 @@ public class SpiderCodegen {
    *          Preesm scenario
    * @return the string
    */
-  public String generateArchiCode(final PiGraph pg, final PreesmScenario scenario) {
+  public String generateArchiCode(final PiGraph pg, final Scenario scenario) {
     this.cppString.setLength(0);
     // Generate the header (license, includes and constants)
     append(getLicense());
@@ -634,21 +638,21 @@ public class SpiderCodegen {
     append("\tauto *shMem = Spider::createMemoryUnit(shMemBuffer, SH_MEM_SIZE);\n");
     append("\tmemset(shMemBuffer, 0, SH_MEM_SIZE);\n\n");
     append("\t/* === Create the different PE(s) === */\n");
-    for (final String coreType : this.coreTypesIds.keySet()) {
-      final String coreTypeName = SpiderNameGenerator.getCoreTypeName(coreType);
-      append("\n\t/* == " + coreTypeName + " == */");
+    for (final Component coreType : this.coreTypesIds.keySet()) {
+      final String localCoreTypeName = SpiderNameGenerator.getCoreTypeName(coreType);
+      append("\n\t/* == " + localCoreTypeName + " == */");
       for (final ComponentInstance c : this.coresFromCoreType.get(coreType)) {
         final String coreName = SpiderNameGenerator.getCoreName(c.getInstanceName());
-        final String peName = "pe" + coreType.toUpperCase() + c.getInstanceName();
+        final String peName = "pe" + coreType.getVlnv().getName().toUpperCase() + c.getInstanceName();
         append("\n\tauto *" + peName + " = Spider::createPE(\n" + "\t\tstatic_cast<std::uint32_t>(PEType::"
-            + coreTypeName + "),\n" + "\t\tstatic_cast<std::uint32_t>(PEHardwareID::" + coreName + "),\n"
+            + localCoreTypeName + "),\n" + "\t\tstatic_cast<std::uint32_t>(PEHardwareID::" + coreName + "),\n"
             + "\t\tstatic_cast<std::uint32_t>(PEVirtID::" + coreName + "),\n" + "\t\t\"" + coreType + "-"
             + c.getInstanceName() + "\",\n" + "\t\tSpiderPEType::LRT_PE,\n" + "\t\tSpiderHWType::PHYS_PE);\n");
         append("\tSpider::setPEMemoryUnit(" + peName + ", shMem);\n");
       }
       append("\n\t/* === Set Spider GRT core === */\n\n");
       append("\tSpider::setSpiderGRTVirtualID(archi, static_cast<std::uint32_t>(PEVirtID::"
-          + SpiderNameGenerator.getCoreName(scenario.getSimulationManager().getMainOperatorName()) + "));\n");
+          + SpiderNameGenerator.getCoreName(scenario.getSimulationInfo().getMainOperator()) + "));\n");
     }
     append("}\n\n");
     append("void freeArchi() {\n\n");
@@ -739,18 +743,18 @@ public class SpiderCodegen {
     final List<Parameter> l = new LinkedList<>();
     l.addAll(pg.getParameters());
     Collections.sort(l, (p1, p2) -> p1.getName().compareTo(p2.getName()));
-    final StringBuilder parameters_proto = new StringBuilder();
+    final StringBuilder parametersProto = new StringBuilder();
     for (final Parameter p : l) {
       if (p.isLocallyStatic() && !p.isDependent() && !p.isConfigurationInterface()) {
-        if (parameters_proto.length() > 0) {
-          parameters_proto.append(", ");
+        if (parametersProto.length() > 0) {
+          parametersProto.append(", ");
           params.append(", ");
         }
-        parameters_proto.append("Param " + p.getName());
+        parametersProto.append("Param " + p.getName());
         params.append(p.getName());
       }
     }
-    append(parameters_proto);
+    append(parametersProto);
     append("){\n");
 
     // Create a top graph and a top vertex
@@ -786,18 +790,18 @@ public class SpiderCodegen {
     append("(void* inputFIFOs[], void* outputFIFOs[], Param inParams[], Param outParams[]){\n");
 
     final Actor a = (Actor) aa;
-    if ((a.getRefinement() != null) && (a.getRefinement() instanceof CHeaderRefinement)) {
+    if (a.getRefinement() instanceof CHeaderRefinement) {
       final CHeaderRefinement href = (CHeaderRefinement) a.getRefinement();
       final FunctionPrototype proto = href.getLoopPrototype();
 
       append("\t" + proto.getName() + "(\n");
       int maxParamSize = 0;
-      for (final FunctionParameter param : proto.getParameters()) {
+      for (final FunctionArgument param : proto.getArguments()) {
         maxParamSize = Math.max(maxParamSize, param.getName().length());
       }
 
       boolean first = true;
-      for (final FunctionParameter param : proto.getParameters()) {
+      for (final FunctionArgument param : proto.getArguments()) {
         if (first) {
           first = false;
         } else {
@@ -893,14 +897,14 @@ public class SpiderCodegen {
    *
    * @return the core types codes
    */
-  public Map<String, Integer> getCoreTypesCodes() {
+  public Map<Component, Integer> getCoreTypesCodes() {
     return this.coreTypesIds;
   }
 
   /**
    * @return the coreIds
    */
-  protected Map<String, Integer> getCoreIds() {
+  protected Map<ComponentInstance, Integer> getCoreIds() {
     return this.coreIds;
   }
 }

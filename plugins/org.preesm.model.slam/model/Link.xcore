@@ -33,9 +33,8 @@ package org.preesm.model.slam.link
 
 import org.preesm.model.slam.ComponentInstance
 import org.preesm.model.slam.component.ComInterface
+import org.preesm.commons.exceptions.PreesmRuntimeException
 
-
-type IPath wraps org.eclipse.core.runtime.IPath
 
 // !!! This is needed as of the current versions of xcore/xtext
 // For some reason when using the default String/... (i.e. without the following)
@@ -56,6 +55,16 @@ abstract class Link {
 	refers ComponentInstance destinationComponentInstance
 	String uuid
 	boolean directed = "false"
+
+	op ComponentInstance getOtherEnd(ComponentInstance oneEnd) {
+		if (sourceComponentInstance.instanceName == oneEnd.instanceName) {
+			return destinationComponentInstance;
+		} else if (destinationComponentInstance.instanceName == oneEnd.instanceName) {
+			return sourceComponentInstance;
+		} else {
+			throw new PreesmRuntimeException("The given end is not related to this link");
+		}
+	}
 }
 
 class DataLink extends Link {

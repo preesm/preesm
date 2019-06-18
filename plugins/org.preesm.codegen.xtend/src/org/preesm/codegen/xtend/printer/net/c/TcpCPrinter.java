@@ -54,10 +54,9 @@ import org.preesm.codegen.model.Direction;
 import org.preesm.codegen.model.LoopBlock;
 import org.preesm.codegen.model.SharedMemoryCommunication;
 import org.preesm.codegen.model.Variable;
-import org.preesm.codegen.xtend.CodegenPlugin;
 import org.preesm.codegen.xtend.printer.c.CPrinter;
 import org.preesm.commons.exceptions.PreesmRuntimeException;
-import org.preesm.commons.files.URLResolver;
+import org.preesm.commons.files.PreesmResourcesHelper;
 
 /**
  *
@@ -65,6 +64,8 @@ import org.preesm.commons.files.URLResolver;
  *
  */
 public class TcpCPrinter extends CPrinter {
+
+  private static final String STDFILES_TCPC_PATH = "stdfiles/tcpc/";
 
   private final List<List<List<String>>> receivingCalls;
 
@@ -82,12 +83,17 @@ public class TcpCPrinter extends CPrinter {
   public Map<String, CharSequence> generateStandardLibFiles() {
     final Map<String, CharSequence> generateStandardLibFiles = super.generateStandardLibFiles();
     try {
-      generateStandardLibFiles.put("tcp_communication.c",
-          URLResolver.readURLInBundleList("/stdfiles/tcpc/" + "tcp_communication.c", CodegenPlugin.BUNDLE_ID));
-      generateStandardLibFiles.put("tcp_communication.h",
-          URLResolver.readURLInBundleList("/stdfiles/tcpc/" + "tcp_communication.h", CodegenPlugin.BUNDLE_ID));
-      generateStandardLibFiles.put("preesm_gen_tcp.h",
-          URLResolver.readURLInBundleList("/stdfiles/tcpc/" + "preesm_gen_tcp.h", CodegenPlugin.BUNDLE_ID));
+
+      final String tcpcomc = PreesmResourcesHelper.getInstance().read(STDFILES_TCPC_PATH + "tcp_communication.c",
+          TcpCPrinter.class);
+      final String tcpcomh = PreesmResourcesHelper.getInstance().read(STDFILES_TCPC_PATH + "tcp_communication.h",
+          TcpCPrinter.class);
+      final String preesmgenh = PreesmResourcesHelper.getInstance().read(STDFILES_TCPC_PATH + "preesm_gen_tcp.h",
+          TcpCPrinter.class);
+
+      generateStandardLibFiles.put("tcp_communication.c", tcpcomc);
+      generateStandardLibFiles.put("tcp_communication.h", tcpcomh);
+      generateStandardLibFiles.put("preesm_gen_tcp.h", preesmgenh);
     } catch (IOException e) {
       throw new PreesmRuntimeException("Could not override communication files", e);
     }
@@ -289,13 +295,13 @@ public class TcpCPrinter extends CPrinter {
     context.put("PREESM_THREAD_FUNCTIONS", "&" + String.join(",&", threadFunctionNames));
 
     // 3- init template reader
-    final String templateLocalURL = "templates/tcpc/main.c";
-    final URL mainTemplate = URLResolver.findFirstInBundleList(templateLocalURL, CodegenPlugin.BUNDLE_ID);
+    final String templateLocalPath = "templates/tcpc/main.c";
+    final URL mainTemplate = PreesmResourcesHelper.getInstance().resolve(templateLocalPath, TcpCPrinter.class);
     InputStreamReader reader = null;
     try {
       reader = new InputStreamReader(mainTemplate.openStream());
     } catch (IOException e) {
-      throw new PreesmRuntimeException("Could not locate main template [" + templateLocalURL + "].", e);
+      throw new PreesmRuntimeException("Could not locate main template [" + templateLocalPath + "].", e);
     }
 
     // 4- init output writer

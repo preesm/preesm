@@ -1,7 +1,7 @@
 /**
- * Copyright or © or Copr. IETR/INSA - Rennes (2012 - 2018) :
+ * Copyright or © or Copr. IETR/INSA - Rennes (2012 - 2019) :
  *
- * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017 - 2018)
+ * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017 - 2019)
  * Clément Guy <clement.guy@insa-rennes.fr> (2014 - 2015)
  * Julien Hascoet <jhascoet@kalray.eu> (2016)
  * Julien Heulot <julien.heulot@insa-rennes.fr> (2013 - 2015)
@@ -38,10 +38,7 @@
  */
 package org.preesm.ui.pisdf;
 
-import java.util.LinkedHashSet;
 import java.util.Set;
-import org.eclipse.core.resources.IFile;
-import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.graphiti.features.IFeatureProvider;
@@ -64,19 +61,19 @@ import org.eclipse.swt.widgets.FileDialog;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.dialogs.ElementListSelectionDialog;
-import org.eclipse.ui.dialogs.ElementTreeSelectionDialog;
-import org.eclipse.ui.model.WorkbenchLabelProvider;
 import org.preesm.model.pisdf.FunctionPrototype;
 import org.preesm.model.pisdf.util.PrototypeFormatter;
 import org.preesm.ui.pisdf.diagram.PiMMToolBehaviorProvider;
-import org.preesm.ui.utils.FileUtils;
-import org.preesm.ui.utils.FileUtils.FileContentProvider;
 
-// TODO: Auto-generated Javadoc
 /**
  * The Class PiMMUtil.
  */
 public class PiMMUtil {
+
+  private PiMMUtil() {
+    // prevent instantiation
+  }
+
   /**
    * Returns the currently active Shell.
    *
@@ -109,83 +106,6 @@ public class PiMMUtil {
       ret = inputDialog.getValue();
     }
     return ret;
-  }
-
-  /**
-   * Open an input dialog to select a pi file.
-   *
-   * @param dialogTitle
-   *          the dialog title, or <code>null</code> if none
-   * @param dialogMessage
-   *          the dialog message, or <code>null</code> if none
-   * @param validator
-   *          an input validator, or <code>null</code> if none
-   * @return the string, or <code>null</code> if user cancels
-   */
-  @Deprecated
-  public static IPath askRefinement(final String dialogTitle, final String dialogMessage,
-      final IInputValidator validator) {
-    final Shell shell = PiMMUtil.getShell();
-
-    // For now, authorized refinements are other PiGraphs (.pi files) and
-    // .idl prototypes
-    final Set<String> fileExtensions = new LinkedHashSet<>();
-    fileExtensions.add("pi");
-    fileExtensions.add("idl");
-    fileExtensions.add("h");
-    final FileContentProvider contentProvider = new FileContentProvider(fileExtensions);
-
-    final ElementTreeSelectionDialog inputDialog = new ElementTreeSelectionDialog(shell,
-        WorkbenchLabelProvider.getDecoratingWorkbenchLabelProvider(), contentProvider);
-    inputDialog.setAllowMultiple(false);
-    inputDialog.setInput(ResourcesPlugin.getWorkspace().getRoot());
-    inputDialog.setMessage(dialogMessage);
-    inputDialog.setTitle(dialogTitle);
-
-    final int retDialog = inputDialog.open();
-    if (retDialog == Window.OK) {
-      final IFile file = (IFile) (inputDialog.getResult()[0]);
-      return file.getFullPath();
-
-    }
-    return null;
-  }
-
-  /**
-   * Ask file.
-   *
-   * @param dialogTitle
-   *          the dialog title
-   * @param dialogMessage
-   *          the dialog message
-   * @param validator
-   *          the validator
-   * @param fileExtensions
-   *          the file extensions
-   * @return the i path
-   *
-   * @deprecated use {@link FileUtils#browseFiles(Shell, String, java.util.Collection)}
-   */
-  @Deprecated
-  public static IPath askFile(final String dialogTitle, final String dialogMessage, final IInputValidator validator,
-      final Set<String> fileExtensions) {
-    final Shell shell = PiMMUtil.getShell();
-
-    final FileContentProvider contentProvider = new FileContentProvider(fileExtensions);
-
-    final ElementTreeSelectionDialog inputDialog = new ElementTreeSelectionDialog(shell,
-        WorkbenchLabelProvider.getDecoratingWorkbenchLabelProvider(), contentProvider);
-    inputDialog.setAllowMultiple(false);
-    inputDialog.setInput(ResourcesPlugin.getWorkspace().getRoot());
-    inputDialog.setMessage(dialogMessage);
-    inputDialog.setTitle(dialogTitle);
-
-    final int retDialog = inputDialog.open();
-    if (retDialog == Window.OK) {
-      final IFile file = (IFile) (inputDialog.getResult()[0]);
-      return file.getFullPath();
-    }
-    return null;
   }
 
   /**
@@ -234,7 +154,7 @@ public class PiMMUtil {
 
       @Override
       public String getText(final Object element) {
-        if ((element != null) && (element instanceof FunctionPrototype)) {
+        if (element instanceof FunctionPrototype) {
           return PrototypeFormatter.format((FunctionPrototype) element);
         } else {
           return "";
@@ -264,8 +184,6 @@ public class PiMMUtil {
         data.grabExcessHorizontalSpace = true;
         data.horizontalAlignment = GridData.FILL;
         data.verticalAlignment = GridData.BEGINNING;
-        // Checkbox check = new Checkbox("Show only functions with
-        // corresponding ports.", true);
         final Button check = new Button(composite, SWT.CHECK);
         check.setText("Show only functions with corresponding ports.");
         check.setSelection(showOnlyValidPrototypes);
@@ -294,8 +212,7 @@ public class PiMMUtil {
 
     final int retDialog = dialog.open();
     if (retDialog == Window.OK) {
-      final FunctionPrototype proto = (FunctionPrototype) (dialog.getResult()[0]);
-      return proto;
+      return (FunctionPrototype) (dialog.getResult()[0]);
     }
     return null;
   }

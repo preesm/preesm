@@ -37,34 +37,33 @@
  */
 package org.preesm.codegen.xtend.printer.c
 
+import java.io.IOException
+import java.io.InputStreamReader
+import java.io.StringWriter
+import java.net.URL
 import java.util.Collection
 import java.util.Date
 import java.util.LinkedHashMap
+import java.util.LinkedHashSet
 import java.util.List
 import java.util.Map
+import java.util.Set
+import org.apache.velocity.VelocityContext
+import org.apache.velocity.app.VelocityEngine
+import org.eclipse.emf.common.util.EList
 import org.preesm.codegen.model.Block
 import org.preesm.codegen.model.Buffer
-import org.preesm.codegen.model.CoreBlock
 import org.preesm.codegen.model.CodeElt
-import org.preesm.codegen.model.PapifyFunctionCall
-import org.apache.velocity.app.VelocityEngine
-import org.apache.velocity.VelocityContext
-import org.preesm.model.pisdf.util.CHeaderUsedLocator
-import org.preesm.commons.files.URLResolver
-import org.preesm.codegen.xtend.CodegenPlugin
-import java.io.InputStreamReader
-import java.net.URL
-import java.io.IOException
-import org.preesm.commons.exceptions.PreesmRuntimeException
-import java.io.StringWriter
-import org.eclipse.emf.common.util.EList
-import org.preesm.codegen.model.Variable
-import java.util.LinkedHashSet
-import java.util.Set
-import org.preesm.codegen.model.LoopBlock
-import org.preesm.codegen.model.PapifyType
+import org.preesm.codegen.model.CoreBlock
 import org.preesm.codegen.model.FiniteLoopBlock
+import org.preesm.codegen.model.LoopBlock
+import org.preesm.codegen.model.PapifyFunctionCall
+import org.preesm.codegen.model.PapifyType
 import org.preesm.codegen.model.SubBuffer
+import org.preesm.codegen.model.Variable
+import org.preesm.commons.exceptions.PreesmRuntimeException
+import org.preesm.commons.files.PreesmResourcesHelper
+import org.preesm.model.pisdf.util.CHeaderUsedLocator
 
 class MPPA2IOExplicitPrinter extends MPPA2ExplicitPrinter {
 
@@ -91,11 +90,11 @@ class MPPA2IOExplicitPrinter extends MPPA2ExplicitPrinter {
 	protected String scratch_pad_buffer = ""
 
 	protected long local_buffer_size = 0
-	
+
 	override printCoreBlockHeader(CoreBlock block)  {
-	
+
 	this.peName = block.name;
-	
+
 	var String printing = '''
 		/**
 		 * @file «block.name».c
@@ -122,10 +121,10 @@ class MPPA2IOExplicitPrinter extends MPPA2ExplicitPrinter {
 
 		extern void *__wrap_memset(void *s, int c, size_t n);
 		extern void *__wrap_memcpy(void *dest, const void *src, size_t n);
-		
+
 		#define memset __wrap_memset
 		#define memcpy __wrap_memcpy
-		
+
 		«IF (this.distributedOnly == 0)»
 			extern mppa_async_segment_t shared_segment;
 		«ENDIF»
@@ -140,7 +139,7 @@ class MPPA2IOExplicitPrinter extends MPPA2ExplicitPrinter {
 
 	'''
 	return printing;
-	
+
 	}
 
 	override printFiniteLoopBlockHeader(FiniteLoopBlock block2) '''
@@ -192,19 +191,19 @@ class MPPA2IOExplicitPrinter extends MPPA2ExplicitPrinter {
 
 			gets += "int " + block2.iter.name + ";\n"
 			if(block2.nbIter > 1 && this.sharedOnly == 0){
-				gets += "#pragma omp parallel for private(" + block2.iter.name + ")\n"				
+				gets += "#pragma omp parallel for private(" + block2.iter.name + ")\n"
 			}
 			gets += "for(" + block2.iter.name + "=0;" + block2.iter.name +"<" + block2.nbIter + ";" + block2.iter.name + "++){\n"
 
 			if(local_offset > local_buffer_size)
 				local_buffer_size = local_offset
 	gets}»
-			
+
 	'''
 
-	override printFiniteLoopBlockFooter(FiniteLoopBlock block2) '''		
-		
-			}// End the for loop    
+	override printFiniteLoopBlockFooter(FiniteLoopBlock block2) '''
+
+			}// End the for loop
 		«{
 				var puts = ""
 				var local_offset = 0L;
@@ -239,10 +238,10 @@ class MPPA2IOExplicitPrinter extends MPPA2ExplicitPrinter {
 			""}»
 		}
 	'''
-	override printBufferDefinition(Buffer buffer) {	
+	override printBufferDefinition(Buffer buffer) {
 		var result = '''
 		«IF buffer.name == "Shared"»
-		//#define Shared ((char*)0x10000000ULL) 	/* Shared buffer in DDR */ 
+		//#define Shared ((char*)0x10000000ULL) 	/* Shared buffer in DDR */
 		«ELSE»
 		«buffer.type» «buffer.name»[«buffer.size»] __attribute__ ((aligned(64))); // «buffer.comment» size:= «buffer.size»*«buffer.type» aligned on data cache line
 		int local_memory_size = «buffer.size»;
@@ -261,23 +260,23 @@ class MPPA2IOExplicitPrinter extends MPPA2ExplicitPrinter {
 			return NULL;
 		}
 	'''
-	
-	
+
+
 	override printPapifyFunctionCall(PapifyFunctionCall papifyFunctionCall) {
 		if(!(papifyFunctionCall.papifyType.equals(PapifyType.CONFIGACTOR))){
 			papifyFunctionCall.parameters.remove(papifyFunctionCall.parameters.size-1);
-		}		
+		}
 		var printing = '''
 			«IF papifyFunctionCall.opening == true»
-				#ifdef _PREESM_PAPIFY_MONITOR  
-			«ENDIF»				
-			«IF !(papifyFunctionCall.papifyType.equals(PapifyType.CONFIGACTOR))»	
+				#ifdef _PREESM_PAPIFY_MONITOR
+			«ENDIF»
+			«IF !(papifyFunctionCall.papifyType.equals(PapifyType.CONFIGACTOR))»
 				«IF (papifyFunctionCall.papifyType.equals(PapifyType.CONFIGPE)) && this.usingClustering == 1»
-					char namingArray[50]; 
+					char namingArray[50];
 					for(int i = 0; i < PREESM_NB_CORES_IO; i++){
-						snprintf(namingArray, 50, "«this.peName»-PE%d", i); 
+						snprintf(namingArray, 50, "«this.peName»-PE%d", i);
 						«papifyFunctionCall.name»(namingArray, «papifyFunctionCall.parameters.get(1).doSwitch», i); // «papifyFunctionCall.actorName»
-					}			
+					}
 				«ELSE»
 				«papifyFunctionCall.name»(«FOR param : papifyFunctionCall.parameters SEPARATOR ', '»«param.doSwitch»«ENDFOR», __k1_get_cpu_id()/*PE_id*/); // «papifyFunctionCall.actorName»
 				«ENDIF»
@@ -290,7 +289,7 @@ class MPPA2IOExplicitPrinter extends MPPA2ExplicitPrinter {
 			'''
 			return printing;
 	}
-	
+
 	override CharSequence generatePreesmHeader() {
 	    // 0- without the following class loader initialization, I get the following exception when running as Eclipse
 	    // plugin:
@@ -308,7 +307,7 @@ class MPPA2IOExplicitPrinter extends MPPA2ExplicitPrinter {
 	    val VelocityContext context = new VelocityContext();
 	    val findAllCHeaderFileNamesUsed = CHeaderUsedLocator.findAllCHeaderFileNamesUsed(getEngine.algo.referencePiMMGraph)
 	    context.put("USER_INCLUDES", findAllCHeaderFileNamesUsed.map["#include \""+ it +"\""].join("\n"));
-		
+
 		var String constants = "#define NB_DESIGN_ELTS "+getEngine.archi.componentInstances.size+"\n";
 		constants = constants.concat("#define PREESM_NB_CLUSTERS "+numClusters+"\n");
 		constants = constants.concat("#define PREESM_IO_USED " + io_used + " \n");
@@ -318,13 +317,13 @@ class MPPA2IOExplicitPrinter extends MPPA2ExplicitPrinter {
 	    context.put("CONSTANTS", constants);
 
 	    // 3- init template reader
-	    val String templateLocalURL = "templates/mppa2Explicit/preesm_gen.h";
-	    val URL mainTemplate = URLResolver.findFirstInBundleList(templateLocalURL, CodegenPlugin.BUNDLE_ID);
+	    val String templateLocalPath = "templates/mppa2Explicit/preesm_gen.h";
+	    val URL mainTemplate = PreesmResourcesHelper.instance.resolve(templateLocalPath, this.class);
 	    var InputStreamReader reader = null;
 	    try {
 	      reader = new InputStreamReader(mainTemplate.openStream());
 	    } catch (IOException e) {
-	      throw new PreesmRuntimeException("Could not locate main template [" + templateLocalURL + "].", e);
+	      throw new PreesmRuntimeException("Could not locate main template [" + templateLocalPath + "].", e);
 	    }
 
 	    // 4- init output writer
@@ -349,7 +348,7 @@ class MPPA2IOExplicitPrinter extends MPPA2ExplicitPrinter {
 
 	override String printMainIO(List<Block> printerBlocks) '''
 		/**
-		 * @file io_main.c 
+		 * @file io_main.c
 		 * @generated by «this.class.simpleName»
 		 * @date «new Date»
 		 *
@@ -359,7 +358,7 @@ class MPPA2IOExplicitPrinter extends MPPA2ExplicitPrinter {
 		 *
 		 * All rights reserved.
 		 */
-		
+
 		#include <stdio.h>
 		#include <stdlib.h>
 		#include "mppa_boot_args.h"
@@ -373,7 +372,7 @@ class MPPA2IOExplicitPrinter extends MPPA2ExplicitPrinter {
 		#include <mppa_async.h>
 		#include <HAL/hal/board/boot_args.h>
 		#include "preesm_gen.h"
-		#include "communication.h"		
+		#include "communication.h"
 		«IF (this.distributedOnly == 0)»
 		/* Shared Segment ID */
 		mppa_async_segment_t shared_segment;
@@ -382,7 +381,7 @@ class MPPA2IOExplicitPrinter extends MPPA2ExplicitPrinter {
 		mppa_async_segment_t distributed_segment[PREESM_NB_CLUSTERS + PREESM_IO_USED];
 		extern int local_memory_size;
 		«ENDIF»
-				
+
 		static utask_t t;
 		static mppadesc_t pcie_fd = 0;
 		/* extern reference of generated code */
@@ -391,20 +390,20 @@ class MPPA2IOExplicitPrinter extends MPPA2ExplicitPrinter {
 				extern void *computationTask_«io.name»(void *arg);
 			«ENDIF»
 		«ENDFOR»
-		/* extern reference of shared memories */ 
+		/* extern reference of shared memories */
 		«FOR io : printerBlocks.toSet»
 			«IF (io instanceof CoreBlock)»
 				extern char *«io.name»;
-			«ENDIF»					
+			«ENDIF»
 		«ENDFOR»
-		
+
 		int
 		main(int argc __attribute__ ((unused)), char *argv[] __attribute__ ((unused)))
 		{
 			int id;
 			int j;
 			int ret ;
-		
+
 			if(__k1_spawn_type() == __MPPA_PCI_SPAWN){
 				#if 1
 				long long *ptr = (void*)(uintptr_t)Shared;
@@ -418,15 +417,15 @@ class MPPA2IOExplicitPrinter extends MPPA2ExplicitPrinter {
 				mOS_dinval();
 				#endif
 			}
-		
+
 			if (__k1_spawn_type() == __MPPA_PCI_SPAWN) {
 				pcie_fd = pcie_open(0);
 					ret = pcie_queue_init(pcie_fd);
 					assert(ret == 0);
 			}
-					
-			if(mppa_rpc_server_init(	3 /* rm where to run server */, 
-									0 /* offset ddr */, 
+
+			if(mppa_rpc_server_init(	3 /* rm where to run server */,
+									0 /* offset ddr */,
 									PREESM_NB_CLUSTERS /* nb_cluster to serve*/) != 0){
 				assert(0 && "mppa_rpc_server_init\n");
 			}
@@ -438,16 +437,16 @@ class MPPA2IOExplicitPrinter extends MPPA2ExplicitPrinter {
 			}
 			if (mppa_remote_server_enable_scall() != 0){
 				assert(0 && "mppa_remote_server_enable_scall\n");
-			}				
+			}
 			if(utask_start_pe(&t, (void*)mppa_rpc_server_start, NULL, 3) != 0){
 				assert(0 && "utask_create\n");
 			}
-						
+
 			«IF this.usingPapify == 1»
 				#ifdef _PREESM_PAPIFY_MONITOR
 				event_init();
 				#endif
-			«ENDIF»			
+			«ENDIF»
 			«IF (this.distributedOnly == 0)»
 				if(mppa_async_segment_create(&shared_segment, SHARED_SEGMENT_ID, (void*)(uintptr_t)Shared, 1024*1024*1024, 0, 0, NULL) != 0){
 					assert(0 && "mppa_async_segment_create\n");
@@ -460,18 +459,18 @@ class MPPA2IOExplicitPrinter extends MPPA2ExplicitPrinter {
 							assert(0 && "mppa_async_segment_create\n");
 						}
 					«ENDIF»
-				«ENDFOR»	
-			«ENDIF»	
+				«ENDFOR»
+			«ENDIF»
 			for( j = 0 ; j < PREESM_NB_CLUSTERS ; j++ ) {
-		
+
 				char elf_name[30];
 				sprintf(elf_name, "cluster%d_bin", j);
 				id = mppa_power_base_spawn(j, elf_name, NULL, NULL, MPPA_POWER_SHUFFLING_ENABLED);
 				if (id < 0)
 					return -2;
-			}			
+			}
 			// init comm
-			communicationInit();	
+			communicationInit();
 			mppa_rpc_barrier(1, 2);
 			«IF (this.sharedOnly == 0 && this.distributedOnly == 1)»
 				int i;
@@ -487,7 +486,7 @@ class MPPA2IOExplicitPrinter extends MPPA2ExplicitPrinter {
 			for( j = 0 ; j < PREESM_NB_CLUSTERS ; j++ ) {
 			    mppa_power_base_waitpid (j, &err, 0);
 			}
-				 
+
 			«IF this.usingPapify == 1»
 				#ifdef _PREESM_PAPIFY_MONITOR
 				event_destroy();
@@ -506,8 +505,8 @@ class MPPA2IOExplicitPrinter extends MPPA2ExplicitPrinter {
 		for (cluster : allBlocks){
 			if (cluster instanceof CoreBlock) {
 				coresNames.add(cluster.name);
-			}	
-		}				
+			}
+		}
 		for (cluster : allBlocks){
 			if (cluster instanceof CoreBlock) {
 				if(cluster.coreType.equals("MPPA2Explicit")){
@@ -516,12 +515,12 @@ class MPPA2IOExplicitPrinter extends MPPA2ExplicitPrinter {
 				}
 				else if(cluster.coreType.equals("MPPA2IOExplicit")){
 					io_used = 1;
-				}												
+				}
 				for(CodeElt codeElt : cluster.loopBlock.codeElts){
 					if(codeElt instanceof PapifyFunctionCall){
 						this.usingPapify = 1;
 					} else if(codeElt instanceof FiniteLoopBlock){
-						this.usingClustering = 1;				
+						this.usingClustering = 1;
 					}
 				}
        		 	var EList<Variable> definitions = cluster.getDefinitions();
@@ -529,23 +528,23 @@ class MPPA2IOExplicitPrinter extends MPPA2ExplicitPrinter {
        		 	for(Variable variable : definitions){
        		 		if(variable instanceof Buffer){
        		 			if(variable.name.equals("Shared")){
-							this.distributedOnly = 0;       		 				
+							this.distributedOnly = 0;
        		 			}else if(coresNames.contains(variable.name)){
-							this.sharedOnly = 0;       		 				
-       		 			}   
+							this.sharedOnly = 0;
+       		 			}
        		 		}
        		 	}
        		 	for(Variable variable : declarations){
        		 		if(variable instanceof Buffer){
        		 			if(variable.name.equals("Shared")){
-							this.distributedOnly = 0;       		 				
+							this.distributedOnly = 0;
        		 			}else if(coresNames.contains(variable.name)){
-							this.sharedOnly = 0;       		 				
-       		 			}   
+							this.sharedOnly = 0;
+       		 			}
        		 		}
        		 	}
 			}
-		}	
+		}
 		local_buffer_size = 0;
 	}
 }

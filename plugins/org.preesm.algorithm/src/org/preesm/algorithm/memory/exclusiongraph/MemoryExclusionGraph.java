@@ -72,7 +72,6 @@ import org.preesm.commons.CloneableProperty;
 import org.preesm.commons.exceptions.PreesmRuntimeException;
 import org.preesm.commons.logger.PreesmLogger;
 import org.preesm.model.scenario.types.BufferAggregate;
-import org.preesm.model.scenario.types.DataType;
 import org.preesm.model.scenario.types.ImplementationPropertyNames;
 import org.preesm.model.scenario.types.VertexType;
 import org.preesm.model.slam.ComponentInstance;
@@ -296,9 +295,10 @@ public class MemoryExclusionGraph extends SimpleGraph<MemoryExclusionVertex, Def
             throw new RuntimeException("DAGEdge " + outgoingEdge + " is equivalent to several SDFEdges.\n"
                 + "This is not supported by the MemEx builder.\n" + "Please contact Preesm developers.");
           }
-          final DataType type = MemoryExclusionVertex.NAME_TO_DATATYPES.get(buffers.get(0).getDataType());
-          if (type != null) {
-            typeSize = type.getSize();
+          final String typeName = buffers.get(0).getDataType();
+          if (MemoryExclusionVertex.NAME_TO_DATATYPES.containsKey(typeName)) {
+            final long type = MemoryExclusionVertex.NAME_TO_DATATYPES.get(typeName);
+            typeSize = type;
           }
           headMemoryNode = new MemoryExclusionVertex("FIFO_Head_" + dagEndVertex.getName(), dagInitVertex.getName(),
               buffers.get(0).getSize() * typeSize);

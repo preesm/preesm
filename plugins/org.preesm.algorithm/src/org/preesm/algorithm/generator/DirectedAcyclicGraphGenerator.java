@@ -1,7 +1,7 @@
 /**
- * Copyright or © or Copr. IETR/INSA - Rennes (2018) :
+ * Copyright or © or Copr. IETR/INSA - Rennes (2018 - 2019) :
  *
- * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2018)
+ * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2018 - 2019)
  *
  * This software is a computer program whose purpose is to help prototyping
  * parallel applications using dataflow formalism.
@@ -112,7 +112,7 @@ public class DirectedAcyclicGraphGenerator {
     while (nbVertexgraph < nbVertex) {
 
       // Add a new vertex to the graph
-      final SDFVertex vertex = new SDFVertex();
+      final SDFVertex vertex = new SDFVertex(null);
       vertex.setName("Vertex_" + (nbVertexgraph + 1));
       arrayVertex[nbVertexgraph] = vertex;
       graph.addVertex(arrayVertex[nbVertexgraph]);

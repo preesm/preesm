@@ -112,10 +112,14 @@ public class PortNameValidator implements IInputValidator {
       return message;
     }
 
-    // Check if the name contains a space
+    // Check if the name is not a C keyword
+    if (NameCheckerC.isCkeyword(newPortName)) {
+      message = "/!\\ Name <" + newPortName + NameCheckerC.msgCkeywordNameError;
+      return message;
+    }
     // Check if the name meets the model regex
-    if (!NameCheckerC.isValidName(newPortName)) {
-      message = "/!\\ Name must match the regex " + NameCheckerC.REGEX_C + " and not be a C keyword /!\\";
+    if (!NameCheckerC.matchCvariableRegex(newPortName)) {
+      message = "/!\\ Name <" + newPortName + NameCheckerC.msgVariableNameError;
       return message;
     }
 

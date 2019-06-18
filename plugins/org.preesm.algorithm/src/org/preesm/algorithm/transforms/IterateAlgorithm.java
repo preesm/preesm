@@ -47,8 +47,7 @@ import org.preesm.commons.doc.annotations.Parameter;
 import org.preesm.commons.doc.annotations.Port;
 import org.preesm.commons.doc.annotations.PreesmTask;
 import org.preesm.commons.doc.annotations.Value;
-import org.preesm.model.scenario.PreesmScenario;
-import org.preesm.model.scenario.RelativeConstraintManager;
+import org.preesm.model.scenario.Scenario;
 import org.preesm.workflow.elements.Workflow;
 import org.preesm.workflow.implement.AbstractTaskImplementation;
 
@@ -112,12 +111,12 @@ public class IterateAlgorithm extends AbstractTaskImplementation {
           newEdge.setCons(new LongEdgePropertyType(1));
 
           // Create a new source stateout port
-          final SDFSourceInterfaceVertex statein = new SDFSourceInterfaceVertex();
+          final SDFSourceInterfaceVertex statein = new SDFSourceInterfaceVertex(null);
           statein.setName("statein");
           previous.addSource(statein);
 
           // Create a new sink statein port
-          final SDFSinkInterfaceVertex stateout = new SDFSinkInterfaceVertex();
+          final SDFSinkInterfaceVertex stateout = new SDFSinkInterfaceVertex(null);
           stateout.setName("stateout");
           current.addSink(stateout);
           newEdge.setSourceInterface(stateout);
@@ -151,13 +150,11 @@ public class IterateAlgorithm extends AbstractTaskImplementation {
   /**
    * Mixing nbIt iterations of a single graph, adding a state in case makeStates = true
    */
-  SDFGraph iterate(final SDFGraph inputAlgorithm, final int nbIt, final boolean setStates,
-      final PreesmScenario scenario) {
+  SDFGraph iterate(final SDFGraph inputAlgorithm, final int nbIt, final boolean setStates, final Scenario scenario) {
 
     SDFGraph mainIteration = inputAlgorithm.copy();
 
     if (nbIt > 1) {
-      int groupId = 0;
       // setting first iteration with name "_0"
       for (final SDFAbstractVertex vertex : mainIteration.vertexSet()) {
         final String id = vertex.getId();
@@ -165,11 +162,6 @@ public class IterateAlgorithm extends AbstractTaskImplementation {
         vertex.setId(id);
         vertex.setName(vertex.getName() + "_0");
         // Adding relative constraints to the scenario if present
-        if (scenario != null) {
-          final RelativeConstraintManager relativeconstraintManager = scenario.getRelativeconstraintManager();
-          relativeconstraintManager.addConstraint(id, groupId);
-        }
-        groupId++;
       }
 
       // Incorporating new iterations
@@ -194,7 +186,7 @@ public class IterateAlgorithm extends AbstractTaskImplementation {
     final SDFGraph inputAlgorithm = (SDFGraph) inputs.get("SDF");
 
     // If we retrieve a scenario, relative constraints are added in the scenario
-    final PreesmScenario scenario = (PreesmScenario) inputs.get("scenario");
+    final Scenario scenario = (Scenario) inputs.get("scenario");
 
     final int nbIt = Integer.valueOf(parameters.get(IterateAlgorithm.NB_IT));
     final boolean setStates = Boolean.valueOf(parameters.get(IterateAlgorithm.SET_STATES));

@@ -1,7 +1,7 @@
 /**
- * Copyright or © or Copr. IETR/INSA - Rennes (2014 - 2018) :
+ * Copyright or © or Copr. IETR/INSA - Rennes (2014 - 2019) :
  *
- * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017 - 2018)
+ * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017 - 2019)
  * Clément Guy <clement.guy@insa-rennes.fr> (2014 - 2015)
  * Karol Desnos <karol.desnos@insa-rennes.fr> (2015)
  *
@@ -41,6 +41,7 @@ import java.util.Set;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.IPath;
+import org.eclipse.core.runtime.Path;
 import org.preesm.model.pisdf.AbstractActor;
 import org.preesm.model.pisdf.Actor;
 import org.preesm.model.pisdf.PiGraph;
@@ -130,7 +131,7 @@ public class RefinementChecker {
    * @return true if the file extension of the refinement of a is a valid one, false otherwise
    */
   private boolean checkRefinementExtension(final Actor a) {
-    final IPath path = a.getRefinement().getFilePath();
+    final IPath path = new Path(a.getRefinement().getFilePath());
     final String fileExtension = path.getFileExtension();
     if (!fileExtension.equals("h") && !fileExtension.equals("idl") && !fileExtension.equals("pi")) {
       // File pointed by the refinement of a does not have a valid
@@ -153,7 +154,7 @@ public class RefinementChecker {
    * @return true if the file exists, false otherwise
    */
   private boolean checkRefinementValidity(final Actor a) {
-    final IPath path = a.getRefinement().getFilePath();
+    final IPath path = new Path(a.getRefinement().getFilePath());
     final IFile file = ResourcesPlugin.getWorkspace().getRoot().getFile(path);
     if (!file.exists()) {
       // File pointed by the refinement does not exist

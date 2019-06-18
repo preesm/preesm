@@ -61,10 +61,9 @@ import org.preesm.algorithm.mapper.ui.gantt.GanttEditorRunnable;
 import org.preesm.commons.exceptions.PreesmException;
 import org.preesm.commons.exceptions.PreesmRuntimeException;
 import org.preesm.commons.logger.PreesmLogger;
-import org.preesm.model.scenario.PreesmScenario;
+import org.preesm.model.scenario.Scenario;
 import org.preesm.model.slam.ComponentInstance;
 import org.preesm.model.slam.Design;
-import org.preesm.model.slam.utils.DesignTools;
 
 /**
  * Fast Algorithm.
@@ -83,7 +82,7 @@ public class FastAlgorithm extends Observable {
   private InitialLists initialLists = null;
 
   /** The scenario. */
-  private PreesmScenario scenario = null;
+  private Scenario scenario = null;
 
   /**
    * Constructor.
@@ -93,7 +92,7 @@ public class FastAlgorithm extends Observable {
    * @param scenario
    *          the scenario
    */
-  public FastAlgorithm(final InitialLists initialLists, final PreesmScenario scenario) {
+  public FastAlgorithm(final InitialLists initialLists, final Scenario scenario) {
     super();
     this.initialLists = initialLists;
     this.scenario = scenario;
@@ -257,7 +256,7 @@ public class FastAlgorithm extends Observable {
     final long fastStopTime = System.currentTimeMillis() + (1000 * fastParams.getFastTime());
     // the number of local solutions searched in a neighborhood is the size
     // of the graph
-    final int maxStep = dag.vertexSet().size() * DesignTools.getNumberOfOperatorInstances(archi);
+    final int maxStep = dag.vertexSet().size() * archi.getOperatorComponentInstances().size();
     // the number of better solutions found in a neighborhood is limited
     final int margin = Math.max(maxStep / 10, 1);
 

@@ -65,6 +65,7 @@ import org.eclipse.core.runtime.Path;
 import org.eclipse.emf.common.util.BasicEList;
 import org.eclipse.emf.common.util.ECollections;
 import org.eclipse.emf.common.util.EList;
+import org.eclipse.emf.common.util.EMap;
 import org.eclipse.xtext.xbase.lib.Pair;
 import org.preesm.algorithm.codegen.idl.ActorPrototypes;
 import org.preesm.algorithm.codegen.idl.IDLPrototypeFactory;
@@ -137,14 +138,15 @@ import org.preesm.commons.exceptions.PreesmException;
 import org.preesm.commons.exceptions.PreesmRuntimeException;
 import org.preesm.commons.logger.PreesmLogger;
 import org.preesm.model.pisdf.PersistenceLevel;
-import org.preesm.model.scenario.PreesmScenario;
+import org.preesm.model.scenario.PapiComponent;
+import org.preesm.model.scenario.Scenario;
 import org.preesm.model.scenario.types.BufferAggregate;
 import org.preesm.model.scenario.types.BufferProperties;
-import org.preesm.model.scenario.types.DataType;
 import org.preesm.model.scenario.types.ImplementationPropertyNames;
 import org.preesm.model.scenario.types.VertexType;
 import org.preesm.model.slam.ComponentInstance;
 import org.preesm.model.slam.Design;
+import org.preesm.model.slam.component.Component;
 import org.preesm.model.slam.route.MessageRouteStep;
 import org.preesm.workflow.elements.Workflow;
 
@@ -200,7 +202,7 @@ public class CodegenModelGenerator {
   /**
    * {@link PreesmScenario Scenario} at the origin of the call to the {@link AbstractCodegenPrinter Code Generator}.
    */
-  private final PreesmScenario scenario;
+  private final Scenario scenario;
 
   /** The workflow. */
   private final Workflow workflow;
@@ -280,7 +282,7 @@ public class CodegenModelGenerator {
    *          the workflow
    */
   public CodegenModelGenerator(final Design archi, final MapperDAG algo, final Map<String, MemoryExclusionGraph> megs,
-      final PreesmScenario scenario, final Workflow workflow) {
+      final Scenario scenario, final Workflow workflow) {
     this.archi = archi;
     this.algo = algo;
     this.megs = megs;
@@ -313,7 +315,7 @@ public class CodegenModelGenerator {
     return this.megs;
   }
 
-  public final PreesmScenario getScenario() {
+  public final Scenario getScenario() {
     return this.scenario;
   }
 
@@ -579,7 +581,7 @@ public class CodegenModelGenerator {
         boolean closed = false;
         /*
          * Only one #ifdef _PREESM_MONITORING_INIT in the definition code Assumption: All the PapifyActions are printed
-         * consecutively (AS CONSTANTS ARE NOT PRINTED THIS USUALLY TRUE)
+         * consecutively (AS CONSTANTS ARE NOT PRINTED, THIS IS USUALLY TRUE)
          */
         if (!definitions.isEmpty()) {
           for (iterator = 0; iterator < definitions.size(); iterator++) {
@@ -617,6 +619,9 @@ public class CodegenModelGenerator {
           }
           if (loopBlockElts.get(loopBlockElts.size() - 1) instanceof PapifyFunctionCall) {
             ((PapifyFunctionCall) loopBlockElts.get(loopBlockElts.size() - 1)).setClosing(true);
+            if (!(loopBlockElts.get(loopBlockElts.size() - 2) instanceof PapifyFunctionCall)) {
+              ((PapifyFunctionCall) loopBlockElts.get(loopBlockElts.size() - 1)).setOpening(true);
+            }
           }
         }
         /*
@@ -641,6 +646,9 @@ public class CodegenModelGenerator {
           }
           if (initBlockElts.get(initBlockElts.size() - 1) instanceof PapifyFunctionCall) {
             ((PapifyFunctionCall) initBlockElts.get(initBlockElts.size() - 1)).setClosing(true);
+            if (!(initBlockElts.get(initBlockElts.size() - 2) instanceof PapifyFunctionCall)) {
+              ((PapifyFunctionCall) initBlockElts.get(initBlockElts.size() - 1)).setOpening(true);
+            }
           }
         }
       }
@@ -856,7 +864,7 @@ public class CodegenModelGenerator {
       if (memoryBank.equals("Shared")) {
         // If the memory bank is shared, let the main operator
         // declare the Buffer.
-        correspondingOperatorID = this.scenario.getSimulationManager().getMainOperatorName();
+        correspondingOperatorID = this.scenario.getSimulationInfo().getMainOperator().getInstanceName();
         isLocal = false;
 
         // Check that the main operator block exists.
@@ -1976,17 +1984,20 @@ public class CodegenModelGenerator {
     // Create the variable associated to the PAPI component
     String compsSupported = "";
     ConstantString papifyComponentName = CodegenFactory.eINSTANCE.createConstantString();
-    if (this.getScenario().getPapifyConfigManager().getCorePapifyConfigGroupPE(operatorBlock.getCoreType()) != null) {
-      for (String compType : this.getScenario().getPapifyConfigManager()
-          .getCorePapifyConfigGroupPE(operatorBlock.getCoreType()).getPAPIComponentIDs()) {
+    final String coreType = operatorBlock.getCoreType();
+    final Component component = scenario.getDesign().getComponent(coreType);
+    final List<PapiComponent> corePapifyConfigGroupPE = this.getScenario().getPapifyConfig().getPapifyConfigGroupsPEs()
+        .get(component);
+    if (corePapifyConfigGroupPE != null) {
+      for (final PapiComponent compType : corePapifyConfigGroupPE) {
         if (compsSupported.equals("")) {
-          compsSupported = compType;
+          compsSupported = compType.getId();
         } else {
-          compsSupported = compsSupported.concat(",").concat(compType);
+          compsSupported = compsSupported.concat(",").concat(compType.getId());
         }
       }
     } else {
-      throw new PreesmRuntimeException("There is no PE type of type " + operatorBlock.getCoreType()
+      throw new PreesmRuntimeException("There is no PE type of type " + coreType
           + " in the PAPIFY information. Probably the PAPIFY tab is out of date in the PREESM scenario.");
     }
     papifyComponentName.setValue(compsSupported);
@@ -2421,7 +2432,7 @@ public class CodegenModelGenerator {
    */
   protected long generateSubBuffers(final Buffer parentBuffer, final DAGEdge dagEdge) {
 
-    final Map<String, DataType> dataTypes = this.scenario.getSimulationManager().getDataTypes();
+    final EMap<String, Long> dataTypes = this.scenario.getSimulationInfo().getDataTypes();
 
     final BufferAggregate buffers = dagEdge.getPropertyBean().getValue(BufferAggregate.propertyBeanName);
 
@@ -2435,6 +2446,7 @@ public class CodegenModelGenerator {
     for (final BufferProperties subBufferProperties : buffers) {
       Buffer buff = null;
       // If the parent buffer is not null
+      final String dataType = subBufferProperties.getDataType();
       if (!(parentBuffer instanceof NullBuffer)) {
         final SubBuffer subBuff = CodegenFactory.eINSTANCE.createSubBuffer();
         buff = subBuff;
@@ -2453,7 +2465,7 @@ public class CodegenModelGenerator {
         subBuff.setName(name);
         subBuff.reaffectContainer(parentBuffer);
         subBuff.setOffset(aggregateOffset);
-        subBuff.setType(subBufferProperties.getDataType());
+        subBuff.setType(dataType);
         subBuff.setSize(subBufferProperties.getSize());
 
         // Save the created SubBuffer
@@ -2484,17 +2496,16 @@ public class CodegenModelGenerator {
 
       // Increment the aggregate offset with the size of the current
       // subBuffer multiplied by the size of the datatype
-      if (subBufferProperties.getDataType().equals("typeNotFound")) {
+      if (dataType.equals("typeNotFound")) {
         throw new PreesmRuntimeException("There is a problem with datatypes.\n"
             + "Please make sure that all data types are defined in the Simulation tab of the scenario editor.");
       }
-      final DataType subBuffDataType = dataTypes.get(subBufferProperties.getDataType());
-      if (subBuffDataType == null) {
-        throw new PreesmRuntimeException(
-            "Data type " + subBufferProperties.getDataType() + " is undefined in the scenario.");
+      if (!dataTypes.containsKey(dataType)) {
+        throw new PreesmRuntimeException("Data type " + dataType + " is undefined in the scenario.");
       }
-      buff.setTypeSize(subBuffDataType.getSize());
-      aggregateOffset += (buff.getSize() * subBuffDataType.getSize());
+      final long subBuffDataType = dataTypes.get(dataType);
+      buff.setTypeSize(subBuffDataType);
+      aggregateOffset += (buff.getSize() * subBuffDataType);
     }
 
     return aggregateOffset;

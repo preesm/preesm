@@ -1,7 +1,7 @@
 /**
- * Copyright or © or Copr. IETR/INSA - Rennes (2008 - 2018) :
+ * Copyright or © or Copr. IETR/INSA - Rennes (2008 - 2019) :
  *
- * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017 - 2018)
+ * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017 - 2019)
  * Daniel Madroñal <daniel.madronal@upm.es> (2018)
  * Matthieu Wipliez <matthieu.wipliez@insa-rennes.fr> (2008)
  * Maxime Pelcat <maxime.pelcat@insa-rennes.fr> (2008 - 2011)
@@ -40,14 +40,12 @@ package org.preesm.ui.scenario.editor.papify;
 import java.net.URL;
 import java.util.LinkedHashMap;
 import java.util.Map;
-import org.eclipse.core.runtime.FileLocator;
-import org.eclipse.core.runtime.Path;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.swt.graphics.Image;
-import org.osgi.framework.Bundle;
-import org.osgi.framework.FrameworkUtil;
+import org.preesm.commons.files.PreesmResourcesHelper;
+import org.preesm.model.slam.component.Component;
+import org.preesm.ui.PreesmUIPlugin;
 
-// TODO: Auto-generated Javadoc
 /**
  * Provides the elements contained in the papify editor.
  *
@@ -61,8 +59,8 @@ import org.osgi.framework.FrameworkUtil;
  */
 
 class PapifyListTreeElement {
-  String                  label;
-  Map<String, PAPIStatus> PAPIStatuses;
+  String                     label;
+  Map<Component, PAPIStatus> PAPIStatuses;
 
   /** The image ok. */
   private final Image imageOk;
@@ -99,18 +97,16 @@ class PapifyListTreeElement {
     this.label = label;
     this.PAPIStatuses = new LinkedHashMap<>();
 
-    final Bundle bundle = FrameworkUtil.getBundle(this.getClass());
-
-    URL url = FileLocator.find(bundle, new Path("icons/error.png"), null);
-    ImageDescriptor imageDcr = ImageDescriptor.createFromURL(url);
+    final URL errorIconURL = PreesmResourcesHelper.getInstance().resolve("icons/error.png", PreesmUIPlugin.class);
+    ImageDescriptor imageDcr = ImageDescriptor.createFromURL(errorIconURL);
     this.imageError = imageDcr.createImage();
 
-    url = FileLocator.find(bundle, new Path("icons/ok.png"), null);
-    imageDcr = ImageDescriptor.createFromURL(url);
+    final URL okIconURL = PreesmResourcesHelper.getInstance().resolve("icons/ok.png", PreesmUIPlugin.class);
+    imageDcr = ImageDescriptor.createFromURL(okIconURL);
     this.imageOk = imageDcr.createImage();
   }
 
-  public Image getImage(String name) {
+  public Image getImage(final Component name) {
     if (this.PAPIStatuses.get(name).equals(PAPIStatus.YES)) {
       return this.imageOk;
     } else {

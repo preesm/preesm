@@ -1,7 +1,7 @@
 /**
- * Copyright or © or Copr. IETR/INSA - Rennes (2008 - 2018) :
+ * Copyright or © or Copr. IETR/INSA - Rennes (2008 - 2019) :
  *
- * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017 - 2018)
+ * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017 - 2019)
  * Clément Guy <clement.guy@insa-rennes.fr> (2014)
  * Matthieu Wipliez <matthieu.wipliez@insa-rennes.fr> (2008)
  * Maxime Pelcat <maxime.pelcat@insa-rennes.fr> (2008 - 2014)
@@ -47,12 +47,10 @@ import org.preesm.algorithm.mapper.model.MapperDAGEdge;
 import org.preesm.algorithm.mapper.model.MapperDAGVertex;
 import org.preesm.algorithm.mapper.model.special.PrecedenceEdgeAdder;
 import org.preesm.algorithm.mapper.params.AbcParameters;
-import org.preesm.model.scenario.PreesmScenario;
+import org.preesm.model.scenario.Scenario;
 import org.preesm.model.slam.ComponentInstance;
 import org.preesm.model.slam.Design;
-import org.preesm.model.slam.utils.DesignTools;
 
-// TODO: Auto-generated Javadoc
 /**
  * The accurately timed ABC schedules edges and setup times.
  *
@@ -78,7 +76,7 @@ public class AccuratelyTimedAbc extends LatencyAbc {
    *          the scenario
    */
   public AccuratelyTimedAbc(final AbcParameters params, final MapperDAG dag, final Design archi, final AbcType abcType,
-      final PreesmScenario scenario) {
+      final Scenario scenario) {
     super(params, dag, archi, abcType, scenario);
 
     this.types = new ArrayList<>();
@@ -103,7 +101,7 @@ public class AccuratelyTimedAbc extends LatencyAbc {
 
     final ComponentInstance effectiveOp = vertex.getEffectiveOperator();
 
-    if (effectiveOp != DesignTools.NO_COMPONENT_INSTANCE) {
+    if (effectiveOp != null) {
       new PrecedenceEdgeAdder(this.orderManager, this.implementation).scheduleVertex(vertex);
       this.comRouter.routeNewVertex(vertex, this.types);
     }

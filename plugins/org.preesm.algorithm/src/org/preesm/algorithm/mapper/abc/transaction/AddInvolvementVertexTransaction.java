@@ -1,7 +1,7 @@
 /**
- * Copyright or © or Copr. IETR/INSA - Rennes (2008 - 2018) :
+ * Copyright or © or Copr. IETR/INSA - Rennes (2008 - 2019) :
  *
- * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017 - 2018)
+ * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017 - 2019)
  * Clément Guy <clement.guy@insa-rennes.fr> (2014)
  * Matthieu Wipliez <matthieu.wipliez@insa-rennes.fr> (2008)
  * Maxime Pelcat <maxime.pelcat@insa-rennes.fr> (2008 - 2014)
@@ -135,7 +135,7 @@ public class AddInvolvementVertexTransaction extends Transaction {
     final String ivertexID = "__involvement (" + currentSource.getName() + "," + currentTarget.getName() + ")";
 
     if (this.involvementTime > 0) {
-      this.iVertex = new InvolvementVertex(ivertexID, this.implementation);
+      this.iVertex = new InvolvementVertex(ivertexID, this.implementation, null);
       this.implementation.getTimings().dedicate(this.iVertex);
       this.implementation.getMappings().dedicate(this.iVertex);
 

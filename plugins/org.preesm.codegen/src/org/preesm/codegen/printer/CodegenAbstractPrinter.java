@@ -77,6 +77,7 @@ import org.preesm.codegen.model.Variable;
 import org.preesm.codegen.model.util.CodegenSwitch;
 import org.preesm.codegen.xtend.task.CodegenEngine;
 import org.preesm.commons.exceptions.PreesmRuntimeException;
+import org.preesm.model.slam.ComponentInstance;
 
 /**
  * The {@link CodegenAbstractPrinter} is used to visit a {@link CodegenPackage Codegen model}. To use a printer, the
@@ -223,10 +224,10 @@ public abstract class CodegenAbstractPrinter extends CodegenSwitch<CharSequence>
    *
    */
   protected final int getMainOperatorId() {
-    final String mainOperatorName = getEngine().getScenario().getSimulationManager().getMainOperatorName();
+    final ComponentInstance mainOperatorName = getEngine().getScenario().getSimulationInfo().getMainOperator();
     final Collection<Block> codeBlocks = getEngine().getCodeBlocks();
     for (final Block block : codeBlocks) {
-      if (block.getName().equals(mainOperatorName)) {
+      if (block.getName().equals(mainOperatorName.getInstanceName())) {
         if (block instanceof CoreBlock) {
           return ((CoreBlock) block).getCoreID();
         }

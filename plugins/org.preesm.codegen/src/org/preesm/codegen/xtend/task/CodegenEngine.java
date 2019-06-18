@@ -78,7 +78,7 @@ import org.preesm.codegen.printer.CodegenAbstractPrinter;
 import org.preesm.commons.exceptions.PreesmException;
 import org.preesm.commons.exceptions.PreesmRuntimeException;
 import org.preesm.commons.logger.PreesmLogger;
-import org.preesm.model.scenario.PreesmScenario;
+import org.preesm.model.scenario.Scenario;
 import org.preesm.model.slam.Design;
 
 /**
@@ -128,7 +128,7 @@ public class CodegenEngine {
     return this.generator.getMegs();
   }
 
-  public final PreesmScenario getScenario() {
+  public final Scenario getScenario() {
     return this.generator.getScenario();
   }
 
@@ -246,7 +246,7 @@ public class CodegenEngine {
       CodegenAbstractPrinter printer = null;
       try {
         printer = (CodegenAbstractPrinter) printerAndBlocks.getKey().createExecutableExtension("class");
-        //PreesmLogger.getLogger().info("[LEO]" + extension + " ---> The printer is " + printer.toString());
+        // PreesmLogger.getLogger().info("[LEO]" + extension + " ---> The printer is " + printer.toString());
       } catch (final CoreException e) {
         throw new PreesmRuntimeException(e.getMessage(), e);
       }
@@ -321,7 +321,7 @@ public class CodegenEngine {
       for (final Block b : printerAndBlocks.getValue()) {
         final String fileContentString = printer.postProcessing(printer.doSwitch(b)).toString();
         final String fileName = b.getName() + extension;
-        //PreesmLogger.getLogger().info("[LEO] new file:  " + fileName);
+        // PreesmLogger.getLogger().info("[LEO] new file: " + fileName);
         print(fileName, fileContentString);
       }
 

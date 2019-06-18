@@ -1,7 +1,7 @@
 /**
- * Copyright or © or Copr. IETR/INSA - Rennes (2009 - 2018) :
+ * Copyright or © or Copr. IETR/INSA - Rennes (2009 - 2019) :
  *
- * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017 - 2018)
+ * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017 - 2019)
  * Clément Guy <clement.guy@insa-rennes.fr> (2014 - 2015)
  * Jonathan Piat <jpiat@laas.fr> (2011)
  * Maxime Pelcat <maxime.pelcat@insa-rennes.fr> (2009 - 2012)
@@ -114,7 +114,7 @@ public class GMLMapperDAGImporter extends GMLImporter<SDFGraph, SDFAbstractVerte
      *
      * attributes.put("kind", SDFVertex.VERTEX);
      */
-    vertex = SDFVertexFactory.getInstance().createVertex(vertexElt);
+    vertex = SDFVertexFactory.getInstance().createVertex(vertexElt, null);
 
     vertex.setId(vertexElt.getAttribute("id"));
 

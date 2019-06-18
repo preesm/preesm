@@ -1,7 +1,7 @@
 /**
- * Copyright or © or Copr. IETR/INSA - Rennes (2011 - 2018) :
+ * Copyright or © or Copr. IETR/INSA - Rennes (2011 - 2019) :
  *
- * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017 - 2018)
+ * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017 - 2019)
  * Clément Guy <clement.guy@insa-rennes.fr> (2014 - 2015)
  * Julien Heulot <julien.heulot@insa-rennes.fr> (2013)
  * Maxime Pelcat <maxime.pelcat@insa-rennes.fr> (2011)
@@ -39,8 +39,8 @@ package org.preesm.ui.scenario.editor;
 
 import java.util.LinkedHashSet;
 import java.util.Set;
+import java.util.logging.Level;
 import org.apache.commons.io.FilenameUtils;
-import org.eclipse.core.runtime.CoreException;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.layout.GridData;
@@ -51,7 +51,6 @@ import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.forms.IManagedForm;
 import org.eclipse.ui.forms.editor.FormEditor;
-import org.eclipse.ui.forms.editor.FormPage;
 import org.eclipse.ui.forms.events.ExpansionAdapter;
 import org.eclipse.ui.forms.events.ExpansionEvent;
 import org.eclipse.ui.forms.widgets.ColumnLayout;
@@ -60,7 +59,10 @@ import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.eclipse.ui.forms.widgets.ScrolledForm;
 import org.eclipse.ui.forms.widgets.Section;
 import org.preesm.commons.exceptions.PreesmException;
-import org.preesm.model.scenario.PreesmScenario;
+import org.preesm.commons.logger.PreesmLogger;
+import org.preesm.model.pisdf.PiGraph;
+import org.preesm.model.scenario.Scenario;
+import org.preesm.model.slam.Design;
 import org.preesm.ui.fields.FieldUtils;
 
 /**
@@ -68,10 +70,10 @@ import org.preesm.ui.fields.FieldUtils;
  *
  * @author mpelcat
  */
-public class OverviewPage extends FormPage {
+public class OverviewPage extends ScenarioPage {
 
   /** The current scenario being edited. */
-  private final PreesmScenario scenario;
+  private final Scenario scenario;
 
   /**
    * Instantiates a new overview page.
@@ -85,7 +87,7 @@ public class OverviewPage extends FormPage {
    * @param title
    *          the title
    */
-  public OverviewPage(final PreesmScenario scenario, final FormEditor editor, final String id, final String title) {
+  public OverviewPage(final Scenario scenario, final FormEditor editor, final String id, final String title) {
     super(editor, id, title);
 
     this.scenario = scenario;
@@ -118,18 +120,21 @@ public class OverviewPage extends FormPage {
     algoExtensions.add("graphml");
 
     // Algorithm file chooser section
+    final PiGraph algo = this.scenario.getAlgorithm();
+    final String algourl = algo == null ? null : algo.getUrl();
     createFileSection(managedForm, Messages.getString("Overview.algorithmFile"),
-        Messages.getString("Overview.algorithmDescription"), Messages.getString("Overview.algorithmFileEdit"),
-        this.scenario.getAlgorithmURL(), Messages.getString("Overview.algorithmBrowseTitle"), algoExtensions);
-
+        Messages.getString("Overview.algorithmDescription"), Messages.getString("Overview.algorithmFileEdit"), algourl,
+        Messages.getString("Overview.algorithmBrowseTitle"), algoExtensions);
     final Set<String> archiExtensions = new LinkedHashSet<>();
     archiExtensions.add("slam");
     archiExtensions.add("design");
 
     // Architecture file chooser section
+    final Design design = this.scenario.getDesign();
+    final String designUrl = design == null ? null : design.getUrl();
     createFileSection(managedForm, Messages.getString("Overview.architectureFile"),
         Messages.getString("Overview.architectureDescription"), Messages.getString("Overview.architectureFileEdit"),
-        this.scenario.getArchitectureURL(), Messages.getString("Overview.architectureBrowseTitle"), archiExtensions);
+        designUrl, Messages.getString("Overview.architectureBrowseTitle"), archiExtensions);
 
   }
 
@@ -210,20 +215,14 @@ public class OverviewPage extends FormPage {
       colorRedIfFileAbsent(text);
 
       final String path = FilenameUtils.separatorsToUnix(text.getText());
-      if (type.equals(Messages.getString("Overview.algorithmFile"))) {
-        OverviewPage.this.scenario.setAlgorithmURL(path);
-        try {
-          OverviewPage.this.scenario.update(true, false);
-        } catch (PreesmException | CoreException ex) {
-          ex.printStackTrace();
+      try {
+        if (type.equals(Messages.getString("Overview.algorithmFile"))) {
+          OverviewPage.this.scenario.update(path, null);
+        } else if (type.equals(Messages.getString("Overview.architectureFile"))) {
+          OverviewPage.this.scenario.update(null, path);
         }
-      } else if (type.equals(Messages.getString("Overview.architectureFile"))) {
-        OverviewPage.this.scenario.setArchitectureURL(path);
-        try {
-          OverviewPage.this.scenario.update(false, true);
-        } catch (PreesmException | CoreException ex) {
-          ex.printStackTrace();
-        }
+      } catch (PreesmException ex) {
+        PreesmLogger.getLogger().log(Level.SEVERE, ex.getMessage(), e);
       }
 
       firePropertyChange(IEditorPart.PROP_DIRTY);
@@ -244,6 +243,12 @@ public class OverviewPage extends FormPage {
     final String textFieldContent = text.getText();
     final boolean testPathValidInWorkspace = FieldUtils.testPathValidInWorkspace(textFieldContent);
     FieldUtils.colorRedOnCondition(text, !testPathValidInWorkspace);
+  }
+
+  @Override
+  public void propertyChanged(Object source, int propId) {
+    // TODO Auto-generated method stub
+
   }
 
 }

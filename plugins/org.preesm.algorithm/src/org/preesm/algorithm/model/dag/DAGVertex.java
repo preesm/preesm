@@ -1,7 +1,7 @@
 /**
- * Copyright or © or Copr. IETR/INSA - Rennes (2018) :
+ * Copyright or © or Copr. IETR/INSA - Rennes (2018 - 2019) :
  *
- * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2018)
+ * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2018 - 2019)
  *
  * This software is a computer program whose purpose is to help prototyping
  * parallel applications using dataflow formalism.
@@ -72,11 +72,14 @@ public class DAGVertex extends AbstractVertex<DirectedAcyclicGraph> {
     AbstractVertex.public_properties.add(DAGVertex.NB_REPEAT);
   }
 
+  protected org.preesm.model.pisdf.AbstractVertex origVertex;
+
   /**
    * Creates a new DAGVertex.
    */
-  public DAGVertex() {
+  public DAGVertex(org.preesm.model.pisdf.AbstractVertex origVertex) {
     super();
+    this.origVertex = origVertex;
     setKind(DAGVertex.DAG_VERTEX);
     this.properties = new PropertyBean();
     setId(UUID.randomUUID().toString());
@@ -92,14 +95,25 @@ public class DAGVertex extends AbstractVertex<DirectedAcyclicGraph> {
    * @param nb
    *          This Vertex number of repetition
    */
-  public DAGVertex(final String n, final AbstractVertexPropertyType<?> t, final AbstractVertexPropertyType<?> nb) {
+  public DAGVertex(final String n, final AbstractVertexPropertyType<?> t, final AbstractVertexPropertyType<?> nb,
+      org.preesm.model.pisdf.AbstractVertex origVertex) {
     super();
+    this.origVertex = origVertex;
     setKind(DAGVertex.DAG_VERTEX);
     this.properties = new PropertyBean();
     setId(UUID.randomUUID().toString());
     setNbRepeat(nb);
     setTime(t);
     setName(n);
+  }
+
+  /**
+   *
+   */
+  public <T extends org.preesm.model.pisdf.AbstractVertex> T getReferencePiVertex() {
+    @SuppressWarnings("unchecked")
+    final T res = (T) this.origVertex;
+    return res;
   }
 
   /**

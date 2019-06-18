@@ -46,6 +46,7 @@ import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.ResourcesPlugin;
@@ -72,7 +73,7 @@ import org.preesm.model.pisdf.ExecutableActor;
 import org.preesm.model.pisdf.Expression;
 import org.preesm.model.pisdf.Fifo;
 import org.preesm.model.pisdf.ForkActor;
-import org.preesm.model.pisdf.FunctionParameter;
+import org.preesm.model.pisdf.FunctionArgument;
 import org.preesm.model.pisdf.FunctionPrototype;
 import org.preesm.model.pisdf.ISetter;
 import org.preesm.model.pisdf.InitActor;
@@ -321,7 +322,6 @@ public class PiWriter {
     } else if (abstractActor instanceof InterfaceActor) {
       writeInterfaceVertex(vertexElt, (InterfaceActor) abstractActor);
     }
-    // TODO addProperties() of the vertex
   }
 
   private void writePiGraphAsHActor(Element vertexElt, PiGraph abstractActor) {
@@ -334,11 +334,10 @@ public class PiWriter {
     if (refinement != null) {
       writeRefinement(vertexElt, refinement);
     }
-    final IPath memoryScriptPath = originalActor.getMemoryScriptPath();
+    final IPath memoryScriptPath = Optional.ofNullable(originalActor.getMemoryScriptPath()).map(Path::new).orElse(null);
     if (memoryScriptPath != null) {
       writeMemoryScript(vertexElt, getProjectRelativePathFrom(memoryScriptPath));
     }
-    // writeDataElt(vertexElt, "kind", "actor");
     // Write ports of the actor
     writePorts(vertexElt, abstractActor.getConfigInputPorts());
     writePorts(vertexElt, abstractActor.getConfigOutputPorts());
@@ -356,7 +355,6 @@ public class PiWriter {
    *          The {@link Actor} to serialize
    */
   protected void writeActor(final Element vertexElt, final Actor actor) {
-    // TODO change this method when several kinds will exist
     // Set the kind of the Actor
     vertexElt.setAttribute(PiIdentifiers.NODE_KIND, PiIdentifiers.ACTOR);
     vertexElt.setAttribute(PiIdentifiers.ACTOR_PERIOD, actor.getPeriod().getExpressionAsString());
@@ -364,11 +362,10 @@ public class PiWriter {
     if (refinement != null) {
       writeRefinement(vertexElt, refinement);
     }
-    final IPath memoryScriptPath = actor.getMemoryScriptPath();
+    final IPath memoryScriptPath = Optional.ofNullable(actor.getMemoryScriptPath()).map(Path::new).orElse(null);
     if (memoryScriptPath != null) {
       writeMemoryScript(vertexElt, getProjectRelativePathFrom(memoryScriptPath));
     }
-    // writeDataElt(vertexElt, "kind", "actor");
     // Write ports of the actor
     writePorts(vertexElt, actor.getConfigInputPorts());
     writePorts(vertexElt, actor.getConfigOutputPorts());
@@ -473,7 +470,7 @@ public class PiWriter {
     }
 
     if (source == null) {
-      throw new RuntimeException(
+      throw new PreesmRuntimeException(
           "Setter of the dependency has a type not supported by the writer: " + setter.getClass());
     }
     dependencyElt.setAttribute(PiIdentifiers.DEPENDENCY_SOURCE, source.getName());
@@ -528,7 +525,6 @@ public class PiWriter {
       writeDataElt(fifoElt, PiIdentifiers.DELAY, fifo.getDelay().getActor().getName());
       fifoElt.setAttribute(PiIdentifiers.DELAY_EXPRESSION, fifo.getDelay().getSizeExpression().getExpressionAsString());
     }
-    // TODO other Fifo properties (if any)
   }
 
   /**
@@ -544,8 +540,6 @@ public class PiWriter {
     final Element graphElt = addGraphElt(rootElt);
     writeDataElt(graphElt, PiIdentifiers.GRAPH_NAME, graph.getName());
 
-    // TODO addProperties() of the graph
-    // TODO writeParameters()
     for (final Parameter param : graph.getParameters()) {
       writeParameter(graphElt, param);
     }
@@ -704,7 +698,7 @@ public class PiWriter {
    *          The {@link PiSDFRefinement} to serialize
    */
   protected void writeRefinement(final Element vertexElt, final Refinement refinement) {
-    final IPath refinementFilePath = refinement.getFilePath();
+    final IPath refinementFilePath = Optional.ofNullable(refinement.getFilePath()).map(Path::new).orElse(null);
     if (refinementFilePath != null) {
 
       final IPath refinementPath = getProjectRelativePathFrom(refinementFilePath);
@@ -762,7 +756,7 @@ public class PiWriter {
       final String functionName) {
     final Element protoElt = appendChild(vertexElt, functionName);
     protoElt.setAttribute(PiIdentifiers.REFINEMENT_FUNCTION_PROTOTYPE_NAME, prototype.getName());
-    for (final FunctionParameter p : prototype.getParameters()) {
+    for (final FunctionArgument p : prototype.getArguments()) {
       writeFunctionParameter(protoElt, p);
     }
   }
@@ -775,7 +769,7 @@ public class PiWriter {
    * @param p
    *          the p
    */
-  private void writeFunctionParameter(final Element prototypeElt, final FunctionParameter p) {
+  private void writeFunctionParameter(final Element prototypeElt, final FunctionArgument p) {
     final Element protoElt = appendChild(prototypeElt, PiIdentifiers.REFINEMENT_PARAMETER);
     protoElt.setAttribute(PiIdentifiers.REFINEMENT_PARAMETER_NAME, p.getName());
     protoElt.setAttribute(PiIdentifiers.REFINEMENT_PARAMETER_TYPE, p.getType());

@@ -60,8 +60,6 @@ import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.IWorkbenchPage;
 import org.eclipse.ui.PlatformUI;
 import org.preesm.commons.exceptions.PreesmRuntimeException;
-import org.preesm.commons.files.ContainersManager;
-import org.preesm.commons.files.PathTools;
 import org.preesm.commons.files.WorkspaceUtils;
 import org.preesm.commons.logger.PreesmLogger;
 import org.preesm.model.pisdf.ConfigInputPort;
@@ -144,14 +142,14 @@ public class PiSDFSRDAGComputePopup extends AbstractHandler {
     final IPath inProjectPath = targetFolder.removeFirstSegments(1);
     final String relative = inProjectPath.toString();
 
-    final String sXmlPath = PathTools.getAbsolutePath(relative, iProject.getName());
+    final String sXmlPath = WorkspaceUtils.getAbsolutePath(relative, iProject.getName());
     IPath xmlPath = new Path(sXmlPath);
     // Get a complete valid path with all folders existing
     try {
       if (xmlPath.getFileExtension() != null) {
-        ContainersManager.createMissingFolders(xmlPath.removeFileExtension().removeLastSegments(1));
+        WorkspaceUtils.createMissingFolders(xmlPath.removeFileExtension().removeLastSegments(1));
       } else {
-        ContainersManager.createMissingFolders(xmlPath);
+        WorkspaceUtils.createMissingFolders(xmlPath);
         xmlPath = xmlPath.append(srdag.getName() + "_srdag.pi");
       }
     } catch (CoreException | IllegalArgumentException e) {

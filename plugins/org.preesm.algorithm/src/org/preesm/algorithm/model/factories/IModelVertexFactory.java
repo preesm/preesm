@@ -1,7 +1,7 @@
 /**
- * Copyright or © or Copr. IETR/INSA - Rennes (2008 - 2018) :
+ * Copyright or © or Copr. IETR/INSA - Rennes (2008 - 2019) :
  *
- * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017 - 2018)
+ * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017 - 2019)
  * Clément Guy <clement.guy@insa-rennes.fr> (2014)
  * Jonathan Piat <jpiat@laas.fr> (2011)
  * Matthieu Wipliez <matthieu.wipliez@insa-rennes.fr> (2008)
@@ -59,7 +59,7 @@ public interface IModelVertexFactory<V extends AbstractVertex<?>> {
    *          The DOM element from which to create the vertex
    * @return The created vertex
    */
-  public V createVertex(Element vertexElt);
+  public V createVertex(Element vertexElt, org.preesm.model.pisdf.AbstractVertex origVertex);
 
   /**
    * Creates a new ModelVertex object.
@@ -68,7 +68,7 @@ public interface IModelVertexFactory<V extends AbstractVertex<?>> {
    *          the kind
    * @return the v
    */
-  public V createVertex(String kind);
+  public V createVertex(String kind, org.preesm.model.pisdf.AbstractVertex origVertex);
 
   /**
    * Creates a new ModelVertex object.

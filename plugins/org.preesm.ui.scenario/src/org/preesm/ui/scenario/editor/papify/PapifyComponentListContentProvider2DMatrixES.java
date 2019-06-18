@@ -1,7 +1,7 @@
 /**
- * Copyright or © or Copr. IETR/INSA - Rennes (2008 - 2018) :
+ * Copyright or © or Copr. IETR/INSA - Rennes (2008 - 2019) :
  *
- * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017 - 2018)
+ * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017 - 2019)
  * Daniel Madroñal <daniel.madronal@upm.es> (2018)
  * Matthieu Wipliez <matthieu.wipliez@insa-rennes.fr> (2008)
  * Maxime Pelcat <maxime.pelcat@insa-rennes.fr> (2008 - 2011)
@@ -42,6 +42,7 @@ import org.eclipse.jface.viewers.CellEditor;
 import org.eclipse.jface.viewers.CheckboxCellEditor;
 import org.eclipse.jface.viewers.ColumnViewer;
 import org.eclipse.jface.viewers.EditingSupport;
+import org.preesm.model.slam.component.Component;
 import org.preesm.ui.scenario.editor.papify.PapifyListTreeElement.PAPIStatus;
 
 /**
@@ -56,11 +57,11 @@ import org.preesm.ui.scenario.editor.papify.PapifyListTreeElement.PAPIStatus;
  */
 class PapifyComponentListContentProvider2DMatrixES extends EditingSupport {
 
-  String                                     peType;
+  Component                                  peType;
   CellEditor                                 editor = new CheckboxCellEditor();
   PapifyComponentListContentProvider2DMatrix contentProvider;
 
-  public PapifyComponentListContentProvider2DMatrixES(final ColumnViewer viewer, final String name,
+  public PapifyComponentListContentProvider2DMatrixES(final ColumnViewer viewer, final Component name,
       PapifyComponentListContentProvider2DMatrix contentProvider) {
     super(viewer);
     this.peType = name;
@@ -87,7 +88,7 @@ class PapifyComponentListContentProvider2DMatrixES extends EditingSupport {
   protected void setValue(final Object element, final Object value) {
     if (element instanceof PapifyListTreeElement) {
       String elementName = ((PapifyListTreeElement) element).label;
-      final Map<String, PAPIStatus> statuses = ((PapifyListTreeElement) element).PAPIStatuses;
+      final Map<Component, PAPIStatus> statuses = ((PapifyListTreeElement) element).PAPIStatuses;
 
       final PAPIStatus componentStatus = statuses.get(this.peType);
       if (componentStatus.next().equals(PAPIStatus.NO)) {

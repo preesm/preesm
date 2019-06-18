@@ -1,7 +1,7 @@
 /**
- * Copyright or © or Copr. IETR/INSA - Rennes (2018) :
+ * Copyright or © or Copr. IETR/INSA - Rennes (2018 - 2019) :
  *
- * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2018)
+ * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2018 - 2019)
  *
  * This software is a computer program whose purpose is to help prototyping
  * parallel applications using dataflow formalism.
@@ -41,6 +41,7 @@ import java.util.Map;
 import org.preesm.algorithm.model.AbstractEdge;
 import org.preesm.algorithm.model.sdf.SDFEdge;
 import org.preesm.algorithm.model.sdf.SDFInterfaceVertex;
+import org.preesm.model.pisdf.AbstractVertex;
 
 /**
  * Special vertex that supports broadcast.
@@ -58,8 +59,8 @@ public class SDFBroadcastVertex extends SDFAbstractSpecialVertex {
   /**
    * Creates a new SDFInterfaceVertex with the default direction (SINK).
    */
-  public SDFBroadcastVertex() {
-    super();
+  public SDFBroadcastVertex(AbstractVertex origVertex) {
+    super(origVertex);
     setKind(SDFBroadcastVertex.BROADCAST);
     setNbRepeat(1L);
   }
@@ -71,7 +72,7 @@ public class SDFBroadcastVertex extends SDFAbstractSpecialVertex {
    */
   @Override
   public SDFBroadcastVertex copy() {
-    final SDFBroadcastVertex copy = new SDFBroadcastVertex();
+    final SDFBroadcastVertex copy = new SDFBroadcastVertex(this.origVertex);
     copy.setName(getName());
     copy.setNbRepeat(getNbRepeat());
 

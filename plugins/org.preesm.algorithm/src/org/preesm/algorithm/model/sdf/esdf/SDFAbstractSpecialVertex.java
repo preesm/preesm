@@ -1,7 +1,7 @@
 /**
- * Copyright or © or Copr. IETR/INSA - Rennes (2018) :
+ * Copyright or © or Copr. IETR/INSA - Rennes (2018 - 2019) :
  *
- * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2018)
+ * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2018 - 2019)
  *
  * This software is a computer program whose purpose is to help prototyping
  * parallel applications using dataflow formalism.
@@ -36,6 +36,7 @@ package org.preesm.algorithm.model.sdf.esdf;
 
 import org.preesm.algorithm.model.sdf.SDFAbstractVertex;
 import org.preesm.algorithm.model.sdf.SDFEdge;
+import org.preesm.model.pisdf.AbstractVertex;
 
 /**
  *
@@ -43,6 +44,10 @@ import org.preesm.algorithm.model.sdf.SDFEdge;
  *
  */
 public abstract class SDFAbstractSpecialVertex extends SDFAbstractVertex {
+
+  public SDFAbstractSpecialVertex(AbstractVertex origVertex) {
+    super(origVertex);
+  }
 
   public abstract boolean setEdgeIndex(final SDFEdge edge, long index);
 }

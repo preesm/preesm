@@ -1,7 +1,7 @@
 /**
- * Copyright or © or Copr. IETR/INSA - Rennes (2008 - 2018) :
+ * Copyright or © or Copr. IETR/INSA - Rennes (2008 - 2019) :
  *
- * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017 - 2018)
+ * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017 - 2019)
  * Matthieu Wipliez <matthieu.wipliez@insa-rennes.fr> (2008)
  * Maxime Pelcat <maxime.pelcat@insa-rennes.fr> (2008 - 2011)
  *
@@ -124,7 +124,9 @@ public class FileSelectionAdapter extends SelectionAdapter {
 
     final IPath browseFiles = FileUtils.browseFiles(PlatformUI.getWorkbench().getActiveWorkbenchWindow().getShell(),
         this.title, this.fileExtensions);
-    final String pathString = browseFiles.toString();
-    this.filePath.setText(pathString);
+    if (browseFiles != null) {
+      final String pathString = browseFiles.toString();
+      this.filePath.setText(pathString);
+    }
   }
 }

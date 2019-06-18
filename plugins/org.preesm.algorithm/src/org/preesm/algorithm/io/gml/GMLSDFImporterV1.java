@@ -85,7 +85,7 @@ public class GMLSDFImporterV1 extends GMLImporter<SDFGraph, SDFAbstractVertex, S
       }
     }
     if (sourcePort == null) {
-      sourcePort = new SDFSinkInterfaceVertex();
+      sourcePort = new SDFSinkInterfaceVertex(null);
       sourcePort.setName(sourcePortName);
       vertexSource.addSink(sourcePort);
     }
@@ -96,7 +96,7 @@ public class GMLSDFImporterV1 extends GMLImporter<SDFGraph, SDFAbstractVertex, S
       }
     }
     if (targetPort == null) {
-      targetPort = new SDFSourceInterfaceVertex();
+      targetPort = new SDFSourceInterfaceVertex(null);
       targetPort.setName(targetPortName);
       vertexTarget.addSource(targetPort);
     }
@@ -218,7 +218,7 @@ public class GMLSDFImporterV1 extends GMLImporter<SDFGraph, SDFAbstractVertex, S
     for (int i = 0; i < vertexElt.getAttributes().getLength(); i++) {
       attributes.put(vertexElt.getAttributes().item(i).getNodeName(), vertexElt.getAttributes().item(i).getNodeValue());
     }
-    final SDFAbstractVertex vertex = SDFVertexFactory.getInstance().createVertex(attributes);
+    final SDFAbstractVertex vertex = SDFVertexFactory.getInstance().createVertex(attributes, null);
     vertex.setId(vertexElt.getAttribute("id"));
     vertex.setName(vertexElt.getAttribute("id"));
     parseKeys(vertexElt, vertex);

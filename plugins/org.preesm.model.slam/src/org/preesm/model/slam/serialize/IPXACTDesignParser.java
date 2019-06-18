@@ -46,7 +46,6 @@ import java.util.ArrayList;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.Set;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.emf.common.util.URI;
@@ -59,8 +58,6 @@ import org.preesm.model.slam.ComponentInstance;
 import org.preesm.model.slam.Design;
 import org.preesm.model.slam.ParameterizedElement;
 import org.preesm.model.slam.SlamFactory;
-import org.preesm.model.slam.attributes.AttributesFactory;
-import org.preesm.model.slam.attributes.Parameter;
 import org.preesm.model.slam.attributes.VLNV;
 import org.preesm.model.slam.component.ComInterface;
 import org.preesm.model.slam.component.ComNode;
@@ -163,13 +160,7 @@ public class IPXACTDesignParser extends IPXACTParser {
    */
   private void setDesignParameters(final Design design) {
     final Map<String, String> designParameters = this.vendorExtensions.getDesignParameters();
-    for (Entry<String, String> e : designParameters.entrySet()) {
-      final String key = e.getKey();
-      final Parameter p = AttributesFactory.eINSTANCE.createParameter();
-      p.setKey(key);
-      p.setValue(designParameters.get(key));
-      design.getParameters().add(p);
-    }
+    design.getParameters().putAll(designParameters);
   }
 
   /**
@@ -344,7 +335,7 @@ public class IPXACTDesignParser extends IPXACTParser {
 
           // A design shares its component holder with its
           // subdesigns
-          subDesign.setPath(refinementStringPath);
+          subDesign.setUrl(refinementStringPath);
           component.getRefinements().add(subDesign);
         }
       }
@@ -395,10 +386,7 @@ public class IPXACTDesignParser extends IPXACTParser {
           final String name = elt.getAttribute("spirit:referenceId");
           final String value = elt.getTextContent();
 
-          final Parameter param = AttributesFactory.eINSTANCE.createParameter();
-          param.setKey(name);
-          param.setValue(value);
-          paramElt.getParameters().add(param);
+          paramElt.getParameters().put(name, value);
         }
       }
       node = node.getNextSibling();

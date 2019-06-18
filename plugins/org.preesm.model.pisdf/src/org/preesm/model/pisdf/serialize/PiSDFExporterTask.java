@@ -57,8 +57,6 @@ import org.preesm.commons.doc.annotations.Port;
 import org.preesm.commons.doc.annotations.PreesmTask;
 import org.preesm.commons.doc.annotations.Value;
 import org.preesm.commons.exceptions.PreesmRuntimeException;
-import org.preesm.commons.files.ContainersManager;
-import org.preesm.commons.files.PathTools;
 import org.preesm.commons.files.WorkspaceUtils;
 import org.preesm.model.pisdf.PiGraph;
 import org.preesm.workflow.elements.Workflow;
@@ -90,14 +88,14 @@ public class PiSDFExporterTask extends AbstractTaskImplementation {
 
     // Creates the output file now
     final String relative = parameters.get("path");
-    final String sXmlPath = PathTools.getAbsolutePath(relative, workflow.getProjectName());
+    final String sXmlPath = WorkspaceUtils.getAbsolutePath(relative, workflow.getProjectName());
     IPath xmlPath = new Path(sXmlPath);
     // Get a complete valid path with all folders existing
     try {
       if (xmlPath.getFileExtension() != null) {
-        ContainersManager.createMissingFolders(xmlPath.removeFileExtension().removeLastSegments(1));
+        WorkspaceUtils.createMissingFolders(xmlPath.removeFileExtension().removeLastSegments(1));
       } else {
-        ContainersManager.createMissingFolders(xmlPath);
+        WorkspaceUtils.createMissingFolders(xmlPath);
         xmlPath = xmlPath.append(graph.getName() + ".pi");
       }
     } catch (CoreException | IllegalArgumentException e) {

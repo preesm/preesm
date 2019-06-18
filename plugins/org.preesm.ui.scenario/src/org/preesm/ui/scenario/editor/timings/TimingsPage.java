@@ -1,7 +1,8 @@
 /**
- * Copyright or © or Copr. IETR/INSA - Rennes (2011 - 2018) :
+ * Copyright or © or Copr. IETR/INSA - Rennes (2011 - 2019) :
  *
- * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017 - 2018)
+ * Alexandre Honorat <alexandre.honorat@insa-rennes.fr> (2019)
+ * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017 - 2019)
  * Clément Guy <clement.guy@insa-rennes.fr> (2014 - 2015)
  * Julien Heulot <julien.heulot@insa-rennes.fr> (2015)
  * Karol Desnos <karol.desnos@insa-rennes.fr> (2012 - 2015)
@@ -43,13 +44,16 @@ import java.util.Arrays;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
-import org.eclipse.jface.viewers.IStructuredSelection;
+import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.Status;
+import org.eclipse.jface.dialogs.ErrorDialog;
+import org.eclipse.jface.viewers.CellEditor;
+import org.eclipse.jface.viewers.ICellModifier;
 import org.eclipse.jface.viewers.TableViewer;
+import org.eclipse.jface.viewers.TextCellEditor;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.ControlAdapter;
 import org.eclipse.swt.events.ControlEvent;
-import org.eclipse.swt.events.FocusEvent;
-import org.eclipse.swt.events.FocusListener;
 import org.eclipse.swt.events.KeyEvent;
 import org.eclipse.swt.events.KeyListener;
 import org.eclipse.swt.events.SelectionAdapter;
@@ -67,43 +71,54 @@ import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.ScrollBar;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
+import org.eclipse.swt.widgets.TableItem;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.IEditorPart;
-import org.eclipse.ui.IPropertyListener;
 import org.eclipse.ui.forms.IManagedForm;
 import org.eclipse.ui.forms.editor.FormEditor;
-import org.eclipse.ui.forms.editor.FormPage;
 import org.eclipse.ui.forms.events.ExpansionAdapter;
 import org.eclipse.ui.forms.events.ExpansionEvent;
 import org.eclipse.ui.forms.widgets.ExpandableComposite;
 import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.eclipse.ui.forms.widgets.ScrolledForm;
 import org.eclipse.ui.forms.widgets.Section;
-import org.preesm.model.scenario.PreesmScenario;
+import org.preesm.model.pisdf.AbstractActor;
+import org.preesm.model.scenario.Scenario;
+import org.preesm.model.scenario.impl.MemoryInfoImpl;
 import org.preesm.model.scenario.serialize.PreesmAlgorithmListContentProvider;
+import org.preesm.model.scenario.serialize.TimingImporter;
+import org.preesm.model.slam.Design;
+import org.preesm.model.slam.component.Component;
 import org.preesm.ui.scenario.editor.FileSelectionAdapter;
 import org.preesm.ui.scenario.editor.Messages;
+import org.preesm.ui.scenario.editor.ScenarioPage;
+import org.preesm.ui.scenario.editor.utils.VertexLexicographicalComparator;
 
-// TODO: Auto-generated Javadoc
 /**
  * Timing editor within the implementation editor.
  *
  * @author mpelcat
  * @author kdesnos
  */
-public class TimingsPage extends FormPage implements IPropertyListener {
+public class TimingsPage extends ScenarioPage {
+
+  private static final String OP_DEF_TITLE        = Messages.getString("Timings.MemcopySpeeds.opDefColumn");
+  private static final String SETUP_TIME_TITLE    = Messages.getString("Timings.MemcopySpeeds.setupTimeColumn");
+  private static final String TIME_PER_UNIT_TITLE = Messages.getString("Timings.MemcopySpeeds.timePerUnitColumn");
+
+  private static final String[] MEM_COLUMN_NAMES = { OP_DEF_TITLE, SETUP_TIME_TITLE, TIME_PER_UNIT_TITLE };
 
   /** The scenario. */
-  final PreesmScenario scenario;
+  final Scenario scenario;
 
   /** The table viewer. */
   TableViewer tableViewer = null;
 
   /** The pisdf column names. */
-  private final String[] PISDF_COLUMN_NAMES = { "Actors", "Parsing", "Evaluation", "Input Parameters", "Expression" };
+  private static final String[] PISDF_COLUMN_NAMES = { "Actors", "Input Parameters", "Expression", "Evaluation",
+      "Value" };
 
-  /** The ibsdf column names. */
-  private final String[] IBSDF_COLUMN_NAMES = { "Actors", "Expression" };
+  private static final int[] PISDF_COLUMN_SIZES = { 200, 200, 200, 50, 50 };
 
   /**
    * Instantiates a new timings page.
@@ -117,7 +132,7 @@ public class TimingsPage extends FormPage implements IPropertyListener {
    * @param title
    *          the title
    */
-  public TimingsPage(final PreesmScenario scenario, final FormEditor editor, final String id, final String title) {
+  public TimingsPage(final Scenario scenario, final FormEditor editor, final String id, final String title) {
     super(editor, id, title);
 
     this.scenario = scenario;
@@ -145,7 +160,7 @@ public class TimingsPage extends FormPage implements IPropertyListener {
       // Timing file chooser section
       createFileSection(managedForm, Messages.getString("Timings.timingFile"),
           Messages.getString("Timings.timingFileDescription"), Messages.getString("Timings.timingFileEdit"),
-          this.scenario.getTimingManager().getExcelFileURL(), Messages.getString("Timings.timingFileBrowseTitle"),
+          this.scenario.getTimings().getExcelFileURL(), Messages.getString("Timings.timingFileBrowseTitle"),
           new LinkedHashSet<>(Arrays.asList("xls", "csv")));
 
       createTimingsSection(managedForm, Messages.getString("Timings.title"), Messages.getString("Timings.description"));
@@ -201,38 +216,95 @@ public class TimingsPage extends FormPage implements IPropertyListener {
     final Composite tablecps = toolkit.createComposite(parent);
     tablecps.setVisible(true);
 
-    final TableViewer tableViewer = new TableViewer(tablecps,
+    final TableViewer newTableViewer = new TableViewer(tablecps,
         SWT.BORDER | SWT.H_SCROLL | SWT.V_SCROLL | SWT.MULTI | SWT.FULL_SELECTION);
 
-    final Table table = tableViewer.getTable();
+    final Table table = newTableViewer.getTable();
     table.setLayout(new GridLayout());
     table.setLayoutData(new GridData(GridData.VERTICAL_ALIGN_BEGINNING));
-    // table.setSize(100, 100);
     table.setHeaderVisible(true);
     table.setLinesVisible(true);
 
-    tableViewer.setContentProvider(new MemCopySpeedContentProvider());
-
-    final MemCopySpeedLabelProvider labelProvider = new MemCopySpeedLabelProvider(this.scenario, tableViewer, this);
-    tableViewer.setLabelProvider(labelProvider);
+    newTableViewer.setContentProvider(new MemCopySpeedContentProvider());
+    newTableViewer.setLabelProvider(new MemCopySpeedLabelProvider());
 
     // Create columns
-    final TableColumn column1 = new TableColumn(table, SWT.NONE, 0);
-    column1.setText(Messages.getString("Timings.MemcopySpeeds.opDefColumn"));
+    final TableColumn[] columns = new TableColumn[MEM_COLUMN_NAMES.length];
+    for (int i = 0; i < MEM_COLUMN_NAMES.length; i++) {
+      final TableColumn columni = new TableColumn(table, SWT.NONE, i);
+      columni.setText(MEM_COLUMN_NAMES[i]);
+      columns[i] = columni;
+    }
 
-    final TableColumn column2 = new TableColumn(table, SWT.NONE, 1);
-    column2.setText(Messages.getString("Timings.MemcopySpeeds.setupTimeColumn"));
+    newTableViewer.setCellModifier(new ICellModifier() {
+      @Override
+      public void modify(final Object element, final String property, final Object value) {
+        if (element instanceof TableItem) {
+          final TableItem ti = (TableItem) element;
+          final MemoryInfoImpl memInfo = (MemoryInfoImpl) ti.getData();
+          final String newValue = (String) value;
+          boolean dirty = false;
+          if (SETUP_TIME_TITLE.equals(property)) {
+            final long oldSetupTime = memInfo.getValue().getSetupTime();
+            try {
+              final long parseLong = Long.parseLong(newValue);
+              if (oldSetupTime != parseLong) {
+                dirty = true;
+                memInfo.getValue().setSetupTime(parseLong);
+              }
+            } catch (final NumberFormatException e) {
+              ErrorDialog.openError(TimingsPage.this.getEditorSite().getShell(), "Wrong number format",
+                  "Setup time values are Long typed.",
+                  new Status(IStatus.ERROR, "org.preesm.ui.scenario", "Could not parse long. " + e.getMessage()));
+            }
+          } else if (TIME_PER_UNIT_TITLE.equals(property)) {
+            final double oldTimePerUnit = memInfo.getValue().getTimePerUnit();
+            try {
+              final double newUnitPerTime = Double.parseDouble(newValue);
+              final double newTimePerUnit = 1. / newUnitPerTime;
+              if (oldTimePerUnit != newTimePerUnit) {
+                dirty = true;
+                memInfo.getValue().setTimePerUnit(newTimePerUnit);
+              }
+            } catch (final NumberFormatException e) {
+              ErrorDialog.openError(TimingsPage.this.getEditorSite().getShell(), "Wrong number format",
+                  "Unit per time values are Double typed.",
+                  new Status(IStatus.ERROR, "org.preesm.ui.scenario", "Could not parse double. " + e.getMessage()));
+            }
+          }
 
-    final TableColumn column3 = new TableColumn(table, SWT.NONE, 2);
-    column3.setText(Messages.getString("Timings.MemcopySpeeds.timePerUnitColumn"));
+          if (dirty) {
+            firePropertyChange(IEditorPart.PROP_DIRTY);
+            newTableViewer.refresh();
+          }
+        }
+      }
 
-    tableViewer.addDoubleClickListener(e -> {
-      labelProvider.handleDoubleClick((IStructuredSelection) e.getSelection());
-      // Force the "file has changed" property of scenario.
-      // Timing changes will have no effects if the scenario
-      // is not saved.
-      firePropertyChange(IEditorPart.PROP_DIRTY);
+      @Override
+      public Object getValue(final Object element, final String property) {
+        if (element instanceof MemoryInfoImpl) {
+          final MemoryInfoImpl memInfo = (MemoryInfoImpl) element;
+          if (SETUP_TIME_TITLE.equals(property)) {
+            return Long.toString(memInfo.getValue().getSetupTime());
+          } else if (TIME_PER_UNIT_TITLE.equals(property)) {
+            return Double.toString(1. / memInfo.getValue().getTimePerUnit());
+          }
+        }
+        return "";
+      }
+
+      @Override
+      public boolean canModify(final Object element, final String property) {
+        return property.contentEquals(MEM_COLUMN_NAMES[1]) || property.contentEquals(MEM_COLUMN_NAMES[2]);
+      }
     });
+
+    final CellEditor[] editors = new CellEditor[table.getColumnCount()];
+    for (int i = 0; i < table.getColumnCount(); i++) {
+      editors[i] = new TextCellEditor(table);
+    }
+    newTableViewer.setColumnProperties(MEM_COLUMN_NAMES);
+    newTableViewer.setCellEditors(editors);
 
     final Table tref = table;
     final Composite comp = tablecps;
@@ -249,22 +321,14 @@ public class TimingsPage extends FormPage implements IPropertyListener {
           final Point vBarSize = vBar.getSize();
           width -= vBarSize.x;
         }
-        final Point oldSize = tref.getSize();
-        if (oldSize.x > area.width) {
-          column1.setWidth((width / 4) - 1);
-          column2.setWidth((width - column1.getWidth()) / 2);
-          column3.setWidth((width - column1.getWidth()) / 2);
-          tref.setSize(area.width, area.height);
-        } else {
-          tref.setSize(area.width, area.height);
-          column1.setWidth((width / 4) - 1);
-          column2.setWidth((width - column1.getWidth()) / 2);
-          column3.setWidth((width - column1.getWidth()) / 2);
-        }
+        tref.setSize(area.width, area.height);
+        columns[0].setWidth((width / 4) - 1);
+        columns[1].setWidth((width - columns[0].getWidth()) / 2);
+        columns[2].setWidth((width - columns[0].getWidth()) / 2);
       }
     });
 
-    tableViewer.setInput(this.scenario);
+    newTableViewer.setInput(this.scenario);
     final GridData gd = new GridData(GridData.FILL_HORIZONTAL | GridData.VERTICAL_ALIGN_BEGINNING);
     gd.heightHint = 400;
     gd.widthHint = 250;
@@ -305,22 +369,16 @@ public class TimingsPage extends FormPage implements IPropertyListener {
   private Combo addCoreSelector(final Composite parent, final FormToolkit toolkit) {
     final Composite combocps = toolkit.createComposite(parent);
     combocps.setLayout(new FillLayout());
+
+    final GridData componentNameGridData = new GridData();
+    componentNameGridData.widthHint = 250;
+    combocps.setLayoutData(componentNameGridData);
+
     combocps.setVisible(true);
     final Combo combo = new Combo(combocps, SWT.DROP_DOWN | SWT.READ_ONLY);
     combo.setToolTipText(Messages.getString("Constraints.coreSelectionTooltip"));
     comboDataInit(combo);
-    combo.addFocusListener(new FocusListener() {
-
-      @Override
-      public void focusGained(final FocusEvent e) {
-        comboDataInit((Combo) e.getSource());
-      }
-
-      @Override
-      public void focusLost(final FocusEvent e) {
-      }
-
-    });
+    combo.select(0);
     return combo;
   }
 
@@ -332,8 +390,9 @@ public class TimingsPage extends FormPage implements IPropertyListener {
    */
   private void comboDataInit(final Combo combo) {
     combo.removeAll();
-    for (final String defId : this.scenario.getOperatorDefinitionIds()) {
-      combo.add(defId);
+    final Design design = this.scenario.getDesign();
+    for (final Component defId : design.getOperatorComponents()) {
+      combo.add(defId.getVlnv().getName());
     }
   }
 
@@ -354,6 +413,7 @@ public class TimingsPage extends FormPage implements IPropertyListener {
 
     this.tableViewer = new TableViewer(tablecps,
         SWT.BORDER | SWT.H_SCROLL | SWT.V_SCROLL | SWT.MULTI | SWT.FULL_SELECTION);
+    tableViewer.setComparator(new VertexLexicographicalComparator());
     final Table table = this.tableViewer.getTable();
     table.setLayout(new GridLayout());
     table.setLayoutData(new GridData(GridData.FILL_BOTH));
@@ -368,25 +428,59 @@ public class TimingsPage extends FormPage implements IPropertyListener {
     coreCombo.addSelectionListener(labelProvider);
 
     // Create columns
-    String[] COLUMN_NAMES = {};
-    if (this.scenario.isPISDFScenario()) {
-      COLUMN_NAMES = this.PISDF_COLUMN_NAMES;
-    }
-    if (this.scenario.isIBSDFScenario()) {
-      COLUMN_NAMES = this.IBSDF_COLUMN_NAMES;
-    }
+    final String[] columnNames = PISDF_COLUMN_NAMES;
 
     final List<TableColumn> columns = new ArrayList<>();
-    for (int i = 0; i < COLUMN_NAMES.length; i++) {
+    for (int i = 0; i < columnNames.length; i++) {
       final TableColumn column = new TableColumn(table, SWT.NONE, i);
-      column.setText(COLUMN_NAMES[i]);
+      column.setText(columnNames[i]);
+      column.setWidth(PISDF_COLUMN_SIZES[i]);
       columns.add(column);
     }
 
-    // Make the last column (Expression) editable
-    // XXX: Through an other way than double clicking (direct editing)
-    this.tableViewer
-        .addDoubleClickListener(e -> labelProvider.handleDoubleClick((IStructuredSelection) e.getSelection()));
+    final CellEditor[] editors = new CellEditor[table.getColumnCount()];
+    for (int i = 0; i < table.getColumnCount(); i++) {
+      editors[i] = new TextCellEditor(table);
+    }
+    this.tableViewer.setColumnProperties(PISDF_COLUMN_NAMES);
+    this.tableViewer.setCellEditors(editors);
+
+    this.tableViewer.setCellModifier(new ICellModifier() {
+      @Override
+      public void modify(final Object element, final String property, final Object value) {
+        if (element instanceof TableItem) {
+          final TableItem ti = (TableItem) element;
+          final AbstractActor actor = (AbstractActor) ti.getData();
+          final String componentType = coreCombo.getText();
+          final Component component = TimingsPage.this.scenario.getDesign().getComponent(componentType);
+
+          final String oldValue = TimingsPage.this.scenario.getTimings().getTimingOrDefault(actor, component);
+          final String newValue = (String) value;
+
+          if (!oldValue.equals(newValue)) {
+            TimingsPage.this.scenario.getTimings().setTiming(actor, component, newValue);
+            firePropertyChange(IEditorPart.PROP_DIRTY);
+            tableViewer.refresh(actor, false, false);
+          }
+        }
+      }
+
+      @Override
+      public Object getValue(final Object element, final String property) {
+        if (element instanceof AbstractActor) {
+          final AbstractActor actor = (AbstractActor) element;
+          final String componentType = coreCombo.getText();
+          final Component component = TimingsPage.this.scenario.getDesign().getComponent(componentType);
+          return TimingsPage.this.scenario.getTimings().getTimingOrDefault(actor, component);
+        }
+        return "";
+      }
+
+      @Override
+      public boolean canModify(final Object element, final String property) {
+        return property.contentEquals(PISDF_COLUMN_NAMES[2]);
+      }
+    });
 
     final Table tref = table;
     final Composite comp = tablecps;
@@ -404,18 +498,11 @@ public class TimingsPage extends FormPage implements IPropertyListener {
           final Point vBarSize = vBar.getSize();
           width -= vBarSize.x;
         }
-        final Point oldSize = tref.getSize();
-        if (oldSize.x > area.width) {
-          for (final TableColumn col : fColumns) {
-            col.setWidth((width / 5) - 1);
-          }
-          tref.setSize(area.width, area.height);
-        } else {
-          tref.setSize(area.width, area.height);
-          for (final TableColumn col : fColumns) {
-            col.setWidth((width / 5) - 1);
-          }
+        for (final TableColumn col : fColumns) {
+
+          col.setWidth((width / PISDF_COLUMN_NAMES.length) - 1);
         }
+        tref.setSize(area.width, area.height);
       }
     });
 
@@ -424,6 +511,7 @@ public class TimingsPage extends FormPage implements IPropertyListener {
     gd.heightHint = 400;
     gd.widthHint = 400;
     tablecps.setLayoutData(gd);
+
   }
 
   /**
@@ -439,7 +527,9 @@ public class TimingsPage extends FormPage implements IPropertyListener {
     if ((source instanceof TimingsTableLabelProvider) && (propId == IEditorPart.PROP_DIRTY)) {
       firePropertyChange(IEditorPart.PROP_DIRTY);
     }
-
+    if (this.tableViewer != null) {
+      this.tableViewer.refresh();
+    }
   }
 
   /**
@@ -478,8 +568,8 @@ public class TimingsPage extends FormPage implements IPropertyListener {
     // If the text is modified or Enter key pressed, timings are imported
     text.addModifyListener(e -> {
       final Text text1 = (Text) e.getSource();
-      TimingsPage.this.scenario.getTimingManager().setExcelFileURL(text1.getText());
-      TimingsPage.this.scenario.getTimingManager().importTimings(TimingsPage.this.scenario);
+      TimingsPage.this.scenario.getTimings().setExcelFileURL(text1.getText());
+      TimingImporter.importTimings(TimingsPage.this.scenario);
       TimingsPage.this.tableViewer.refresh();
       firePropertyChange(IEditorPart.PROP_DIRTY);
 
@@ -490,8 +580,7 @@ public class TimingsPage extends FormPage implements IPropertyListener {
       public void keyPressed(final KeyEvent e) {
         if (e.keyCode == SWT.CR) {
           final Text text = (Text) e.getSource();
-          TimingsPage.this.scenario.getTimingManager().setExcelFileURL(text.getText());
-          TimingsPage.this.scenario.getTimingManager().importTimings(TimingsPage.this.scenario);
+          TimingsPage.this.scenario.getTimings().setExcelFileURL(text.getText());
           TimingsPage.this.tableViewer.refresh();
         }
 
@@ -499,7 +588,7 @@ public class TimingsPage extends FormPage implements IPropertyListener {
 
       @Override
       public void keyReleased(final KeyEvent e) {
-
+        // no behavior by default
       }
     });
 
@@ -514,7 +603,7 @@ public class TimingsPage extends FormPage implements IPropertyListener {
       @Override
       public void widgetSelected(final SelectionEvent e) {
         // Cause scenario editor to import timings from excel sheet
-        TimingsPage.this.scenario.getTimingManager().importTimings(TimingsPage.this.scenario);
+        TimingImporter.importTimings(TimingsPage.this.scenario);
         TimingsPage.this.tableViewer.refresh();
         // Force the "file has changed" property of scenario.
         // Timing changes will have no effects if the scenario
@@ -524,6 +613,7 @@ public class TimingsPage extends FormPage implements IPropertyListener {
 
       @Override
       public void widgetDefaultSelected(final SelectionEvent arg0) {
+        // no behavior by default
       }
     });
 

@@ -1,7 +1,7 @@
 /**
- * Copyright or © or Copr. IETR/INSA - Rennes (2012 - 2018) :
+ * Copyright or © or Copr. IETR/INSA - Rennes (2012 - 2019) :
  *
- * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017 - 2018)
+ * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017 - 2019)
  * Clément Guy <clement.guy@insa-rennes.fr> (2014)
  * Maxime Pelcat <maxime.pelcat@insa-rennes.fr> (2012 - 2014)
  *
@@ -47,7 +47,6 @@ import org.preesm.algorithm.mapper.model.MapperDAGVertex;
 import org.preesm.algorithm.model.iterators.TopologicalDAGIterator;
 import org.preesm.commons.logger.PreesmLogger;
 import org.preesm.model.slam.ComponentInstance;
-import org.preesm.model.slam.utils.DesignTools;
 
 /**
  * GanttData carries information that can be displayed in a Gantt chart.
@@ -115,7 +114,7 @@ public class GanttData {
       final MapperDAGVertex currentVertex = (MapperDAGVertex) viterator.next();
       final ComponentInstance cmp = currentVertex.getEffectiveComponent();
 
-      if (cmp != DesignTools.NO_COMPONENT_INSTANCE) {
+      if (cmp != null) {
         final long startTime = currentVertex.getTiming().getTLevel();
         final long duration = currentVertex.getTiming().getCost();
         final String id = currentVertex.getName() + " (x" + currentVertex.getInit().getNbRepeat() + ")";

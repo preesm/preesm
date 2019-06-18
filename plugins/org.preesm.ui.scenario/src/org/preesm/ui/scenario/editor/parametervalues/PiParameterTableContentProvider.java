@@ -1,7 +1,7 @@
 /**
- * Copyright or © or Copr. IETR/INSA - Rennes (2013 - 2018) :
+ * Copyright or © or Copr. IETR/INSA - Rennes (2013 - 2019) :
  *
- * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017 - 2018)
+ * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017 - 2019)
  * Clément Guy <clement.guy@insa-rennes.fr> (2014 - 2015)
  * Julien Heulot <julien.heulot@insa-rennes.fr> (2013 - 2014)
  * Romina Racca <romina.racca@gmail.com> (2013)
@@ -39,9 +39,8 @@ package org.preesm.ui.scenario.editor.parametervalues;
 
 import org.eclipse.jface.viewers.IStructuredContentProvider;
 import org.eclipse.jface.viewers.Viewer;
-import org.preesm.model.scenario.PreesmScenario;
+import org.preesm.model.scenario.Scenario;
 
-// TODO: Auto-generated Javadoc
 /**
  * This class provides the elements displayed in {@link ActorTree}. Each element is a {@link ActorNode}. This tree is
  * used in scenario editor to edit parameters
@@ -51,7 +50,7 @@ import org.preesm.model.scenario.PreesmScenario;
 public class PiParameterTableContentProvider implements IStructuredContentProvider {
 
   /** The scenario. */
-  private PreesmScenario scenario = null;
+  private Scenario scenario = null;
 
   /**
    * Default Constructor.
@@ -60,34 +59,14 @@ public class PiParameterTableContentProvider implements IStructuredContentProvid
     super();
   }
 
-  /*
-   * (non-Javadoc)
-   *
-   * @see org.eclipse.jface.viewers.IContentProvider#dispose()
-   */
-  @Override
-  public void dispose() {
-  }
-
-  /*
-   * (non-Javadoc)
-   *
-   * @see org.eclipse.jface.viewers.IContentProvider#inputChanged(org.eclipse.jface.viewers.Viewer, java.lang.Object,
-   * java.lang.Object)
-   */
   @Override
   public void inputChanged(final Viewer viewer, final Object oldInput, final Object newInput) {
-    this.scenario = (PreesmScenario) newInput;
+    this.scenario = (Scenario) newInput;
   }
 
-  /*
-   * (non-Javadoc)
-   *
-   * @see org.eclipse.jface.viewers.IStructuredContentProvider#getElements(java.lang.Object)
-   */
   @Override
   public Object[] getElements(final Object inputElement) {
-    return this.scenario.getParameterValueManager().getSortedParameterValues().toArray();
+    return this.scenario.getParameterValues().entrySet().toArray();
   }
 
 }

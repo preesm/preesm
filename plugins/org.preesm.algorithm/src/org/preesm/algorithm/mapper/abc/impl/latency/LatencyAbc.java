@@ -46,6 +46,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.logging.Level;
+import org.eclipse.emf.common.util.ECollections;
 import org.preesm.algorithm.mapper.abc.AbcType;
 import org.preesm.algorithm.mapper.abc.ImplementationCleaner;
 import org.preesm.algorithm.mapper.abc.SpecialVertexManager;
@@ -77,10 +78,9 @@ import org.preesm.algorithm.model.iterators.TopologicalDAGIterator;
 import org.preesm.commons.exceptions.PreesmException;
 import org.preesm.commons.exceptions.PreesmRuntimeException;
 import org.preesm.commons.logger.PreesmLogger;
-import org.preesm.model.scenario.PreesmScenario;
+import org.preesm.model.scenario.Scenario;
 import org.preesm.model.slam.ComponentInstance;
 import org.preesm.model.slam.Design;
-import org.preesm.model.slam.utils.DesignTools;
 
 /**
  * Abc that minimizes latency.
@@ -112,7 +112,7 @@ public abstract class LatencyAbc {
   protected AbstractTaskSched taskScheduler = null;
 
   /** Scenario with information common to algorithm and architecture. */
-  protected PreesmScenario scenario;
+  protected Scenario scenario;
 
   /**
    * Gets internal implementation graph. Use only for debug!
@@ -144,7 +144,7 @@ public abstract class LatencyAbc {
    *           the workflow exception
    */
   public static LatencyAbc getInstance(final AbcParameters params, final MapperDAG dag, final Design archi,
-      final PreesmScenario scenario) {
+      final Scenario scenario) {
 
     LatencyAbc abc = null;
     final AbcType simulatorType = params.getSimulatorType();
@@ -233,7 +233,7 @@ public abstract class LatencyAbc {
    *
    * @see org.ietr.preesm.mapper.abc.IAbc#getScenario()
    */
-  public final PreesmScenario getScenario() {
+  public final Scenario getScenario() {
     return this.scenario;
   }
 
@@ -288,7 +288,7 @@ public abstract class LatencyAbc {
       final boolean updateRank) {
     final MapperDAGVertex impvertex = translateInImplementationVertex(dagvertex);
 
-    if (impvertex.getEffectiveOperator() != DesignTools.NO_COMPONENT_INSTANCE) {
+    if (impvertex.getEffectiveOperator() != null) {
       // Unmapping if necessary before mapping
       unmap(dagvertex);
     }
@@ -356,8 +356,7 @@ public abstract class LatencyAbc {
 
       // We unmap systematically the main vertex (impvertex) if it has an
       // effectiveComponent and optionally its group
-      final boolean isToUnmap = (previousOperator != DesignTools.NO_COMPONENT_INSTANCE)
-          && (dv.equals(dagvertex) || remapGroup);
+      final boolean isToUnmap = (previousOperator != null) && (dv.equals(dagvertex) || remapGroup);
 
       // We map transfer vertices, if rank is kept, and if mappable
       final boolean isToMap = (dv.equals(dagvertex) || remapGroup)
@@ -396,8 +395,7 @@ public abstract class LatencyAbc {
       } else if (dv.equals(dagvertex) || remapGroup) {
         final String msg = dagvertex + " can not be mapped (group) on " + operator;
         PreesmLogger.getLogger().log(Level.SEVERE, msg);
-        dv.setEffectiveOperator(DesignTools.NO_COMPONENT_INSTANCE);
-        dv.setEffectiveOperator(DesignTools.NO_COMPONENT_INSTANCE);
+        dv.setEffectiveOperator(null);
       }
     }
 
@@ -426,7 +424,7 @@ public abstract class LatencyAbc {
       final boolean remapGroup) {
     final MapperDAGVertex impvertex = translateInImplementationVertex(dagvertex);
 
-    if (operator != DesignTools.NO_COMPONENT_INSTANCE) {
+    if (operator != null) {
       // On a single actor if it is alone in the group
       if (impvertex.getMapping().getNumberOfVertices() < 2) {
         mapSingleVertex(dagvertex, operator, updateRank);
@@ -552,7 +550,7 @@ public abstract class LatencyAbc {
 
     final List<ComponentInstance> opList = getCandidateOperators(currentvertex, protectGroupMapping);
 
-    if (DesignTools.contains(opList, preferedOperator)) {
+    if (ECollections.indexOf(opList, preferedOperator, 0) != -1) {
       return preferedOperator;
     } else {
 
@@ -591,8 +589,8 @@ public abstract class LatencyAbc {
 
   public final boolean isMapable(final MapperDAGVertex vertex, final ComponentInstance operator,
       final boolean protectGroupMapping) {
-
-    return DesignTools.contains(getCandidateOperators(vertex, protectGroupMapping), operator);
+    final List<ComponentInstance> candidateOperators = getCandidateOperators(vertex, protectGroupMapping);
+    return ECollections.indexOf(candidateOperators, operator, 0) != -1;
   }
 
   /**
@@ -691,9 +689,9 @@ public abstract class LatencyAbc {
 
     fireNewUnmappedVertex(impvertex);
 
-    dagvertex.setEffectiveOperator(DesignTools.NO_COMPONENT_INSTANCE);
+    dagvertex.setEffectiveOperator(null);
 
-    impvertex.setEffectiveOperator(DesignTools.NO_COMPONENT_INSTANCE);
+    impvertex.setEffectiveOperator(null);
   }
 
   /**
@@ -777,7 +775,7 @@ public abstract class LatencyAbc {
    *          the scenario
    */
   public LatencyAbc(final AbcParameters params, final MapperDAG dag, final Design archi, final AbcType abcType,
-      final PreesmScenario scenario) {
+      final Scenario scenario) {
 
     this.abcType = abcType;
     this.orderManager = new OrderManager(archi);
@@ -831,8 +829,8 @@ public abstract class LatencyAbc {
     for (final DAGVertex v : dag.vertexSet()) {
       final MapperDAGVertex mdv = (MapperDAGVertex) v;
       operators.put(mdv, mdv.getEffectiveOperator());
-      mdv.setEffectiveComponent(DesignTools.NO_COMPONENT_INSTANCE);
-      this.implementation.getMapperDAGVertex(mdv.getName()).setEffectiveComponent(DesignTools.NO_COMPONENT_INSTANCE);
+      mdv.setEffectiveComponent(null);
+      this.implementation.getMapperDAGVertex(mdv.getName()).setEffectiveComponent(null);
     }
 
     this.edgeScheduler = AbstractEdgeSched.getInstance(this.edgeScheduler.getEdgeSchedType(), this.orderManager);
@@ -858,7 +856,7 @@ public abstract class LatencyAbc {
 
     final ComponentInstance effectiveOp = vertex.getEffectiveOperator();
 
-    if (effectiveOp == DesignTools.NO_COMPONENT_INSTANCE) {
+    if (effectiveOp == null) {
       PreesmLogger.getLogger().severe("implementation of " + vertex.getName() + " failed");
     } else {
 

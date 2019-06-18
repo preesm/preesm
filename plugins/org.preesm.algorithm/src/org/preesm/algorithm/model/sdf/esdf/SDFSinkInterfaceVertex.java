@@ -1,7 +1,7 @@
 /**
- * Copyright or © or Copr. IETR/INSA - Rennes (2011 - 2018) :
+ * Copyright or © or Copr. IETR/INSA - Rennes (2011 - 2019) :
  *
- * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017 - 2018)
+ * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017 - 2019)
  * Clément Guy <clement.guy@insa-rennes.fr> (2014)
  * Maxime Pelcat <maxime.pelcat@insa-rennes.fr> (2011)
  *
@@ -49,8 +49,8 @@ public class SDFSinkInterfaceVertex extends SDFInterfaceVertex {
   /**
    * Builds a new Sink interface.
    */
-  public SDFSinkInterfaceVertex() {
-    super();
+  public SDFSinkInterfaceVertex(org.preesm.model.pisdf.AbstractVertex origVertex) {
+    super(origVertex);
     setKind(SDFInterfaceVertex.PORT);
     setDirection(InterfaceDirection.OUTPUT);
   }
@@ -62,10 +62,10 @@ public class SDFSinkInterfaceVertex extends SDFInterfaceVertex {
    */
   @Override
   public SDFSinkInterfaceVertex copy() {
-    final SDFSinkInterfaceVertex copy = new SDFSinkInterfaceVertex();
+    final SDFSinkInterfaceVertex copy = new SDFSinkInterfaceVertex(this.origVertex);
     copy.setName(getName());
     if (!getSources().isEmpty()) {
-      final SDFSourceInterfaceVertex so = new SDFSourceInterfaceVertex();
+      final SDFSourceInterfaceVertex so = new SDFSourceInterfaceVertex(null);
       so.setName(getName());
       copy.addSource(so);
     }

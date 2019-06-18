@@ -1,7 +1,7 @@
 /**
- * Copyright or © or Copr. IETR/INSA - Rennes (2011 - 2018) :
+ * Copyright or © or Copr. IETR/INSA - Rennes (2011 - 2019) :
  *
- * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017 - 2018)
+ * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017 - 2019)
  * Clément Guy <clement.guy@insa-rennes.fr> (2015)
  * Maxime Pelcat <maxime.pelcat@insa-rennes.fr> (2011 - 2012)
  *
@@ -36,180 +36,40 @@
  */
 package org.preesm.ui.scenario.editor.simulation;
 
-import org.eclipse.jface.dialogs.IInputValidator;
-import org.eclipse.jface.dialogs.InputDialog;
-import org.eclipse.jface.viewers.ILabelProviderListener;
-import org.eclipse.jface.viewers.IStructuredSelection;
+import java.util.Map.Entry;
+import org.eclipse.jface.viewers.BaseLabelProvider;
 import org.eclipse.jface.viewers.ITableLabelProvider;
-import org.eclipse.jface.viewers.TableViewer;
-import org.eclipse.jface.window.Window;
 import org.eclipse.swt.graphics.Image;
-import org.eclipse.ui.IEditorPart;
-import org.eclipse.ui.IPropertyListener;
-import org.eclipse.ui.PlatformUI;
-import org.preesm.model.scenario.PreesmScenario;
-import org.preesm.model.scenario.types.DataType;
-import org.preesm.ui.scenario.editor.Messages;
 
-// TODO: Auto-generated Javadoc
 /**
  * Displays the labels for data types and their sizes.
  *
  * @author mpelcat
  */
-public class DataTypesLabelProvider implements ITableLabelProvider {
+public class DataTypesLabelProvider extends BaseLabelProvider implements ITableLabelProvider {
 
-  /** The scenario. */
-  private PreesmScenario scenario = null;
-
-  /** The table viewer. */
-  private TableViewer tableViewer = null;
-
-  /** Constraints page used as a property listener to change the dirty state. */
-  private IPropertyListener propertyListener = null;
-
-  /**
-   * Instantiates a new data types label provider.
-   *
-   * @param scenario
-   *          the scenario
-   * @param tableViewer
-   *          the table viewer
-   * @param propertyListener
-   *          the property listener
-   */
-  public DataTypesLabelProvider(final PreesmScenario scenario, final TableViewer tableViewer,
-      final IPropertyListener propertyListener) {
-    super();
-    this.scenario = scenario;
-    this.tableViewer = tableViewer;
-    this.propertyListener = propertyListener;
-  }
-
-  /*
-   * (non-Javadoc)
-   *
-   * @see org.eclipse.jface.viewers.ITableLabelProvider#getColumnImage(java.lang.Object, int)
-   */
   @Override
   public Image getColumnImage(final Object element, final int columnIndex) {
-    // TODO Auto-generated method stub
     return null;
   }
 
-  /*
-   * (non-Javadoc)
-   *
-   * @see org.eclipse.jface.viewers.ITableLabelProvider#getColumnText(java.lang.Object, int)
-   */
   @Override
   public String getColumnText(final Object element, final int columnIndex) {
     String text = "";
 
-    if (element instanceof DataType) {
-      final DataType type = (DataType) element;
+    if (element instanceof Entry) {
+      @SuppressWarnings("unchecked")
+      final Entry<String, Long> type = (Entry<String, Long>) element;
 
       if (columnIndex == 0) {
-        text = type.getTypeName();
-      } else if ((columnIndex == 1) && (this.scenario != null)) {
+        text = type.getKey();
+      } else if ((columnIndex == 1)) {
 
-        text = Long.toString(type.getSize());
+        text = Long.toString(type.getValue());
       }
     }
 
     return text;
-  }
-
-  /*
-   * (non-Javadoc)
-   *
-   * @see org.eclipse.jface.viewers.IBaseLabelProvider#addListener(org.eclipse.jface.viewers.ILabelProviderListener)
-   */
-  @Override
-  public void addListener(final ILabelProviderListener listener) {
-    // TODO Auto-generated method stub
-
-  }
-
-  /*
-   * (non-Javadoc)
-   *
-   * @see org.eclipse.jface.viewers.IBaseLabelProvider#dispose()
-   */
-  @Override
-  public void dispose() {
-    // TODO Auto-generated method stub
-
-  }
-
-  /*
-   * (non-Javadoc)
-   *
-   * @see org.eclipse.jface.viewers.IBaseLabelProvider#isLabelProperty(java.lang.Object, java.lang.String)
-   */
-  @Override
-  public boolean isLabelProperty(final Object element, final String property) {
-    // TODO Auto-generated method stub
-    return false;
-  }
-
-  /*
-   * (non-Javadoc)
-   *
-   * @see org.eclipse.jface.viewers.IBaseLabelProvider#removeListener(org.eclipse.jface.viewers.ILabelProviderListener)
-   */
-  @Override
-  public void removeListener(final ILabelProviderListener listener) {
-    // TODO Auto-generated method stub
-
-  }
-
-  /**
-   * Handle double click.
-   *
-   * @param selection
-   *          the selection
-   */
-  public void handleDoubleClick(final IStructuredSelection selection) {
-
-    final IInputValidator validator = newText -> {
-      String message = null;
-      int size = 0;
-
-      try {
-        size = Integer.valueOf(newText);
-      } catch (final NumberFormatException e) {
-        size = 0;
-      }
-
-      if (size == 0) {
-        message = "invalid data type size";
-      }
-
-      return message;
-    };
-
-    if (selection.getFirstElement() instanceof DataType) {
-      final DataType dataType = (DataType) selection.getFirstElement();
-
-      final String title = Messages.getString("Simulation.DataTypes.dialog.title");
-      final String message = Messages.getString("Simulation.DataTypes.dialog.message") + dataType.getTypeName();
-
-      final String init = String.valueOf(dataType.getSize());
-
-      final InputDialog dialog = new InputDialog(PlatformUI.getWorkbench().getActiveWorkbenchWindow().getShell(), title,
-          message, init, validator);
-      if (dialog.open() == Window.OK) {
-        final String value = dialog.getValue();
-
-        dataType.setSize(Integer.valueOf(value));
-        this.scenario.getSimulationManager().putDataType(dataType);
-
-        this.tableViewer.refresh();
-        this.propertyListener.propertyChanged(this, IEditorPart.PROP_DIRTY);
-      }
-    }
-
   }
 
 }

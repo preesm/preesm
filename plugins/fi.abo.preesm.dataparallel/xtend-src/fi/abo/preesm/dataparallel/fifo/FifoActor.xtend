@@ -73,7 +73,7 @@ class FifoActor extends SDFAbstractVertex {
 	var int startIndex
 
 	new(int startIndex) {
-		super()
+		super(null)
 		kind = FIFOACTOR
 		this.startIndex = startIndex
 	}

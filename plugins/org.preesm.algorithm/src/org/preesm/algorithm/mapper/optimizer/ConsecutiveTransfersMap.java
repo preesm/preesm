@@ -1,7 +1,7 @@
 /**
- * Copyright or © or Copr. IETR/INSA - Rennes (2018) :
+ * Copyright or © or Copr. IETR/INSA - Rennes (2018 - 2019) :
  *
- * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2018)
+ * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2018 - 2019)
  *
  * This software is a computer program whose purpose is to help prototyping
  * parallel applications using dataflow formalism.
@@ -35,7 +35,6 @@
 package org.preesm.algorithm.mapper.optimizer;
 
 import java.util.LinkedHashMap;
-import java.util.Map.Entry;
 import org.preesm.algorithm.mapper.ScheduledDAGIterator;
 import org.preesm.algorithm.model.dag.DAGVertex;
 import org.preesm.algorithm.model.dag.DirectedAcyclicGraph;
@@ -49,7 +48,7 @@ public class ConsecutiveTransfersMap extends LinkedHashMap<ComponentInstance, Co
   private static final long serialVersionUID = -8987927834037340036L;
 
   private static final ComponentInstance findComponent(final DAGVertex vertex) {
-    return (ComponentInstance) vertex.getPropertyBean().getValue("Operator");
+    return vertex.getPropertyBean().getValue("Operator");
   }
 
   final ConsecutiveTransfersGroup findGroup(final DAGVertex vertex) {
@@ -89,7 +88,7 @@ public class ConsecutiveTransfersMap extends LinkedHashMap<ComponentInstance, Co
   @Override
   public String toString() {
     final StringBuilder sb = new StringBuilder();
-    for (final Entry<ComponentInstance, ConsecutiveTransfersList> e : entrySet()) {
+    for (final java.util.Map.Entry<ComponentInstance, ConsecutiveTransfersList> e : entrySet()) {
       final ComponentInstance componentInstance = e.getKey();
       final ConsecutiveTransfersList transferGroupList = e.getValue();
       sb.append("  - " + componentInstance.getInstanceName() + ": " + transferGroupList.toString() + "\n");

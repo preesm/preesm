@@ -1,7 +1,7 @@
 /**
- * Copyright or © or Copr. IETR/INSA - Rennes (2018) :
+ * Copyright or © or Copr. IETR/INSA - Rennes (2018 - 2019) :
  *
- * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2018)
+ * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2018 - 2019)
  *
  * This software is a computer program whose purpose is to help prototyping
  * parallel applications using dataflow formalism.
@@ -35,6 +35,8 @@
 package org.preesm.model.pisdf.util;
 
 import java.util.List;
+import java.util.Optional;
+import org.eclipse.core.runtime.Path;
 import org.eclipse.emf.common.util.EList;
 import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.common.util.WrappedException;
@@ -50,7 +52,7 @@ import org.preesm.model.pisdf.ConfigOutputPort;
 import org.preesm.model.pisdf.DataInputPort;
 import org.preesm.model.pisdf.DataOutputPort;
 import org.preesm.model.pisdf.Direction;
-import org.preesm.model.pisdf.FunctionParameter;
+import org.preesm.model.pisdf.FunctionArgument;
 import org.preesm.model.pisdf.FunctionPrototype;
 import org.preesm.model.pisdf.PiGraph;
 import org.preesm.model.pisdf.PiSDFRefinement;
@@ -74,8 +76,9 @@ public final class RefinementResolver extends PiMMSwitch<AbstractActor> {
 
   @Override
   public AbstractActor casePiSDFRefinement(final PiSDFRefinement ref) {
-    if ((ref.getFilePath() != null) && ref.getFilePath().getFileExtension().equals("pi")) {
-      final URI refinementURI = URI.createPlatformResourceURI(ref.getFilePath().makeRelative().toString(), true);
+    final Path path = Optional.ofNullable(ref.getFilePath()).map(Path::new).orElse(null);
+    if ((path != null) && path.getFileExtension().equals("pi")) {
+      final URI refinementURI = URI.createPlatformResourceURI(path.makeRelative().toString(), true);
 
       // Check if the file exists
       if (refinementURI != null) {
@@ -111,8 +114,8 @@ public final class RefinementResolver extends PiMMSwitch<AbstractActor> {
       // Create all its ports corresponding to parameters of the
       // prototype
       final FunctionPrototype loopProto = ref.getLoopPrototype();
-      final List<FunctionParameter> loopParameters = loopProto.getParameters();
-      for (final FunctionParameter param : loopParameters) {
+      final List<FunctionArgument> loopParameters = loopProto.getArguments();
+      for (final FunctionArgument param : loopParameters) {
         if (!param.isIsConfigurationParameter()) {
           // Data Port
           if (param.getDirection().equals(Direction.IN)) {

@@ -42,7 +42,7 @@ package org.preesm.model.pisdf.serialize;
 import java.io.BufferedInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.logging.Level;
 import org.apache.commons.io.IOUtils;
@@ -84,7 +84,7 @@ import org.preesm.model.pisdf.EndActor;
 import org.preesm.model.pisdf.ExecutableActor;
 import org.preesm.model.pisdf.Fifo;
 import org.preesm.model.pisdf.ForkActor;
-import org.preesm.model.pisdf.FunctionParameter;
+import org.preesm.model.pisdf.FunctionArgument;
 import org.preesm.model.pisdf.FunctionPrototype;
 import org.preesm.model.pisdf.ISetter;
 import org.preesm.model.pisdf.InitActor;
@@ -93,6 +93,7 @@ import org.preesm.model.pisdf.InterfaceKind;
 import org.preesm.model.pisdf.Parameter;
 import org.preesm.model.pisdf.PersistenceLevel;
 import org.preesm.model.pisdf.PiGraph;
+import org.preesm.model.pisdf.PiSDFRefinement;
 import org.preesm.model.pisdf.Port;
 import org.preesm.model.pisdf.PortKind;
 import org.preesm.model.pisdf.PortMemoryAnnotation;
@@ -131,18 +132,19 @@ public class PiParser {
 
     final URI uri = URI.createPlatformResourceURI(algorithmURL, true);
     if ((uri.fileExtension() == null) || !uri.fileExtension().contentEquals("pi")) {
-      return null;
+      final String message = "The architecture file \"" + uri + "\" specified by the scenario has improper extension.";
+      throw new PreesmRuntimeException(message);
     }
+
     final Resource ressource;
     try {
       ressource = resourceSet.getResource(uri, true);
       pigraph = (PiGraph) (ressource.getContents().get(0));
-
+      pigraph.setUrl(algorithmURL);
     } catch (final WrappedException e) {
-      final String message = "The algorithm file \"" + uri + "\" specified by the scenario does not exist any more.";
-      PreesmLogger.getLogger().log(Level.WARNING, message);
+      final String message = "The algorithm file \"" + uri + "\" specified by the scenario does not exist.";
+      throw new PreesmRuntimeException(message);
     }
-
     return pigraph;
   }
 
@@ -151,11 +153,9 @@ public class PiParser {
    */
   public static PiGraph getPiGraphWithReconnection(final String algorithmURL) {
     final PiGraph graph = getPiGraph(algorithmURL);
-    if (graph != null) {
-      final SubgraphReconnector connector = new SubgraphReconnector();
-      connector.connectSubgraphs(graph);
-      PiGraphConsistenceChecker.check(graph, false);
-    }
+    final SubgraphReconnector connector = new SubgraphReconnector();
+    connector.connectSubgraphs(graph);
+    PiGraphConsistenceChecker.check(graph, false);
     return graph;
   }
 
@@ -216,7 +216,7 @@ public class PiParser {
 
     try {
       bis.mark(Integer.MAX_VALUE);
-      final String pisdfContent = IOUtils.toString(bis, Charset.forName("UTF-8"));
+      final String pisdfContent = IOUtils.toString(bis, StandardCharsets.UTF_8);
       PiSDFXSDValidator.validate(pisdfContent);
       bis.reset();
     } catch (final IOException ex) {
@@ -255,11 +255,7 @@ public class PiParser {
     // Get the actor properties
     final String name = nodeElt.getAttribute(PiIdentifiers.ACTOR_NAME);
 
-    if (!NameCheckerC.isValidName(name)) {
-      throw new PreesmRuntimeException(
-          "Parsed actor " + name + " has an invalide name (should meet " + NameCheckerC.REGEX_C + ")");
-    }
-
+    NameCheckerC.checkValidName(Actor.class.getName(), name);
     actor.setName(name);
 
     final String attribute = nodeElt.getAttribute(PiIdentifiers.ACTOR_PERIOD);
@@ -278,7 +274,7 @@ public class PiParser {
     final String memoryScript = PiParser.getProperty(nodeElt, PiIdentifiers.ACTOR_MEMORY_SCRIPT);
     if ((memoryScript != null) && !memoryScript.isEmpty()) {
       final IPath path = getWorkspaceRelativePathFrom(new Path(memoryScript));
-      actor.setMemoryScriptPath(path);
+      actor.setMemoryScriptPath(path.toString());
     }
 
     return actor;
@@ -293,49 +289,64 @@ public class PiParser {
    *          the actor
    */
   private void parseRefinement(final Element nodeElt, final RefinementContainer actor) {
-    if (!(actor instanceof DelayActor)) {
-      actor.setRefinement(PiMMUserFactory.instance.createPiSDFRefinement());
-    }
     final String refinement = PiParser.getProperty(nodeElt, PiIdentifiers.REFINEMENT);
     if ((refinement != null) && !refinement.isEmpty()) {
       final IPath path = getWorkspaceRelativePathFrom(new Path(refinement));
-
-      // If the refinement is a .h file, then we need to create a
-      // HRefinement
-      if (path.getFileExtension().equals("h")) {
-        final CHeaderRefinement hrefinement;
-        // Delays already have a default refinement by default at creation time
-        if (actor instanceof DelayActor) {
-          hrefinement = (CHeaderRefinement) actor.getRefinement();
-        } else {
-          hrefinement = PiMMUserFactory.instance.createCHeaderRefinement();
-        }
-        // The nodeElt should have a loop element, and may have an init
-        // element
-        final NodeList childList = nodeElt.getChildNodes();
-        for (int i = 0; i < childList.getLength(); i++) {
-          final Node elt = childList.item(i);
-          final String eltName = elt.getNodeName();
-          Element elmt;
-          switch (eltName) {
-            case PiIdentifiers.REFINEMENT_LOOP:
-              elmt = (Element) elt;
-              hrefinement.setLoopPrototype(
-                  parseFunctionPrototype(elmt, elmt.getAttribute(PiIdentifiers.REFINEMENT_FUNCTION_PROTOTYPE_NAME)));
-              break;
-            case PiIdentifiers.REFINEMENT_INIT:
-              elmt = (Element) elt;
-              hrefinement.setInitPrototype(
-                  parseFunctionPrototype(elmt, elmt.getAttribute(PiIdentifiers.REFINEMENT_FUNCTION_PROTOTYPE_NAME)));
-              break;
-            default:
-              // ignore #text and other children
+      final String refinementExtension = path.getFileExtension();
+      switch (refinementExtension) {
+        case "h":
+          final CHeaderRefinement hrefinement;
+          // Delays already have a default C header refinement by default at creation time
+          if (actor instanceof DelayActor) {
+            hrefinement = (CHeaderRefinement) actor.getRefinement();
+          } else {
+            hrefinement = PiMMUserFactory.instance.createCHeaderRefinement();
           }
-        }
-        actor.setRefinement(hrefinement);
+          // The nodeElt should have a loop element, and may have an init
+          // element
+          final NodeList childList = nodeElt.getChildNodes();
+          for (int i = 0; i < childList.getLength(); i++) {
+            final Node elt = childList.item(i);
+            final String eltName = elt.getNodeName();
+            Element elmt;
+            switch (eltName) {
+              case PiIdentifiers.REFINEMENT_LOOP:
+                elmt = (Element) elt;
+                hrefinement.setLoopPrototype(
+                    parseFunctionPrototype(elmt, elmt.getAttribute(PiIdentifiers.REFINEMENT_FUNCTION_PROTOTYPE_NAME)));
+                break;
+              case PiIdentifiers.REFINEMENT_INIT:
+                elmt = (Element) elt;
+                hrefinement.setInitPrototype(
+                    parseFunctionPrototype(elmt, elmt.getAttribute(PiIdentifiers.REFINEMENT_FUNCTION_PROTOTYPE_NAME)));
+                break;
+              default:
+                // ignore #text and other children
+            }
+          }
+          hrefinement.setFilePath(path.toString());
+          actor.setRefinement(hrefinement);
+          break;
+        case "pi":
+          if ((actor instanceof DelayActor)) {
+            throw new UnsupportedOperationException("Cannot specfiy pi refinement as delay initilization");
+          }
+          final PiSDFRefinement hr = PiMMUserFactory.instance.createPiSDFRefinement();
+          hr.setFilePath(path.toString());
+          actor.setRefinement(hr);
+          break;
+        default:
+          throw new UnsupportedOperationException("Unsupported refinement extension " + refinementExtension);
       }
 
-      actor.getRefinement().setFilePath(path);
+    } else {
+      // if there is no refinement property
+      // set by default a C header refinement with empty file path
+      if (!(actor instanceof DelayActor)) {
+        final CHeaderRefinement hr = PiMMUserFactory.instance.createCHeaderRefinement();
+        hr.setFilePath(null);
+        actor.setRefinement(hr);
+      }
     }
   }
 
@@ -356,8 +367,8 @@ public class PiParser {
     for (int i = 0; i < childList.getLength(); i++) {
       final Node elt = childList.item(i);
       final String eltName = elt.getNodeName();
-      if (eltName == PiIdentifiers.REFINEMENT_PARAMETER) {
-        proto.getParameters().add(parseFunctionParameter((Element) elt));
+      if (PiIdentifiers.REFINEMENT_PARAMETER.equals(eltName)) {
+        proto.getArguments().add(parseFunctionParameter((Element) elt));
       }
     }
     return proto;
@@ -370,8 +381,8 @@ public class PiParser {
    *          the elt
    * @return the function parameter
    */
-  private FunctionParameter parseFunctionParameter(final Element elt) {
-    final FunctionParameter param = PiMMUserFactory.instance.createFunctionParameter();
+  private FunctionArgument parseFunctionParameter(final Element elt) {
+    final FunctionArgument param = PiMMUserFactory.instance.createFunctionArgument();
     param.setName(elt.getAttribute(PiIdentifiers.REFINEMENT_PARAMETER_NAME));
     param.setType(elt.getAttribute(PiIdentifiers.REFINEMENT_PARAMETER_TYPE));
     param.setDirection(Direction.valueOf(elt.getAttribute(PiIdentifiers.REFINEMENT_PARAMETER_DIRECTION)));
@@ -395,10 +406,7 @@ public class PiParser {
 
     // Get the actor properties
     final String attribute = nodeElt.getAttribute(PiIdentifiers.PARAMETER_NAME);
-    if (!NameCheckerC.isValidName(attribute)) {
-      throw new PreesmRuntimeException("Parsed ConfigInputInterface " + attribute
-          + " has an invalide name (should meet " + NameCheckerC.REGEX_C + ")");
-    }
+    NameCheckerC.checkValidName(ConfigInputInterface.class.getName(), attribute);
     param.setName(attribute);
 
     // Add the actor to the parsed graph
@@ -653,14 +661,6 @@ public class PiParser {
     // 6. Adds Setter / Getter actors to the delay (if any)
     final String setterName = nodeElt.getAttribute(PiIdentifiers.DELAY_SETTER);
     final AbstractActor setter = (AbstractActor) graph.lookupVertex(setterName);
-    // final String getterName = nodeElt.getAttribute(PiIdentifiers.DELAY_GETTER);
-    // final AbstractActor getter = (AbstractActor) graph.lookupVertex(getterName);
-    // if ((setter == null) && !setterName.isEmpty()) {
-    // throw new PreesmRuntimeException("Delay setter vertex " + setterName + " does not exist.");
-    // }
-    // if ((getter == null) && !getterName.isEmpty()) {
-    // throw new PreesmRuntimeException("Delay getter vertex " + getterName + " does not exist.");
-    // }
 
     // 7. Add the refinement for the INIT of the delay (if it exists)
     // Any refinement is ignored if the delay is already connected to a setter actor
@@ -705,8 +705,6 @@ public class PiParser {
     // document
     final Element graphElt = (Element) graphElts.item(0);
 
-    // TODO parseGraphProperties() of the graph
-
     // Parse the elements of the graph
     final NodeList childList = graphElt.getChildNodes();
     for (int i = 0; i < childList.getLength(); i++) {
@@ -717,8 +715,6 @@ public class PiParser {
       switch (eltName) {
         case PiIdentifiers.DATA:
           // Properties of the Graph.
-          // TODO transfer this code in a separate function
-          // parseGraphProperties()
           final String keyName = elt.getAttributes().getNamedItem(PiIdentifiers.DATA_KEY).getNodeValue();
           final String keyValue = elt.getTextContent();
           if (keyName.equals(PiIdentifiers.GRAPH_NAME)) {
@@ -835,10 +831,7 @@ public class PiParser {
 
     // Get the actor properties
     String name = nodeElt.getAttribute(PiIdentifiers.PARAMETER_NAME);
-    if (!NameCheckerC.isValidName(name)) {
-      throw new PreesmRuntimeException(
-          "Parsed parameter " + name + " has an invalide name (should meet " + NameCheckerC.REGEX_C + ")");
-    }
+    NameCheckerC.checkValidName(Parameter.class.getName(), name);
     param.setName(name);
 
     // Add the actor to the parsed graph
@@ -856,11 +849,8 @@ public class PiParser {
    *          The deserialized {@link PiGraph}
    */
   protected void parsePi(final Element rootElt, final PiGraph graph) {
-    // TODO parseKeys() (Not sure if it is really necessary to do that)
-
     // Parse the graph element
     parseGraph(rootElt, graph);
-
   }
 
   /**
@@ -873,10 +863,7 @@ public class PiParser {
    */
   protected void parsePort(final Element elt, final Configurable vertex) {
     final String portName = elt.getAttribute(PiIdentifiers.PORT_NAME);
-    if (!NameCheckerC.isValidName(portName)) {
-      throw new PreesmRuntimeException(
-          "Parsed port " + portName + " has an invalide name (should meet " + NameCheckerC.REGEX_C + ")");
-    }
+    NameCheckerC.checkValidName(Port.class.getName(), portName);
 
     final String portKind = elt.getAttribute(PiIdentifiers.PORT_KIND);
 
@@ -965,10 +952,7 @@ public class PiParser {
 
     // Set the Interface properties
     final String name = nodeElt.getAttribute(PiIdentifiers.CONFIGURATION_OUTPUT_INTERFACE_NAME);
-    if (!NameCheckerC.isValidName(name)) {
-      throw new PreesmRuntimeException(
-          "Parsed ConfigOutputInterface " + name + " has an invalide name (should meet " + NameCheckerC.REGEX_C + ")");
-    }
+    NameCheckerC.checkValidName(ConfigOutputInterface.class.getName(), name);
 
     cfgOutIf.setName(name);
     cfgOutIf.getDataPort().setName(name);
@@ -994,7 +978,7 @@ public class PiParser {
 
     // Set the sourceInterface properties
     final String name = nodeElt.getAttribute(PiIdentifiers.DATA_OUTPUT_INTERFACE_NAME);
-    if (!NameCheckerC.isValidName(name)) {
+    if (!NameCheckerC.checkValidName(DataOutputInterface.class.getName(), name)) {
       throw new PreesmRuntimeException(
           "Parsed SinkInterface " + name + " has an invalide name (should meet " + NameCheckerC.REGEX_C + ")");
     }
@@ -1023,10 +1007,7 @@ public class PiParser {
 
     // Set the sourceInterface properties
     final String name = nodeElt.getAttribute(PiIdentifiers.DATA_INPUT_INTERFACE_NAME);
-    if (!NameCheckerC.isValidName(name)) {
-      throw new PreesmRuntimeException(
-          "Parsed SourceInterface " + name + " has an invalide name (should meet " + NameCheckerC.REGEX_C + ")");
-    }
+    NameCheckerC.checkValidName(DataInputInterface.class.getName(), name);
 
     srcInterface.setName(name);
     srcInterface.getDataPort().setName(name);
@@ -1052,10 +1033,7 @@ public class PiParser {
     AbstractActor actor = null;
 
     String name = nodeElt.getAttribute(PiIdentifiers.ACTOR_NAME);
-    if (!NameCheckerC.isValidName(name)) {
-      throw new PreesmRuntimeException(
-          "Parsed special actor " + name + " has an invalide name (should meet " + NameCheckerC.REGEX_C + ")");
-    }
+    NameCheckerC.checkValidName("Special actor", name);
 
     // Instantiate the actor.
     switch (nodeKind) {

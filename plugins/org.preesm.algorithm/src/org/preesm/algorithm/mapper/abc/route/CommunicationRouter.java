@@ -58,7 +58,7 @@ import org.preesm.algorithm.mapper.model.special.PrecedenceEdge;
 import org.preesm.algorithm.model.dag.DAGEdge;
 import org.preesm.algorithm.model.dag.DAGVertex;
 import org.preesm.commons.exceptions.PreesmRuntimeException;
-import org.preesm.model.scenario.PreesmScenario;
+import org.preesm.model.scenario.Scenario;
 import org.preesm.model.slam.ComponentInstance;
 import org.preesm.model.slam.Design;
 import org.preesm.model.slam.route.AbstractRouteStep;
@@ -106,7 +106,7 @@ public class CommunicationRouter {
    * @param orderManager
    *          the order manager
    */
-  public CommunicationRouter(final Design archi, final PreesmScenario scenario, final MapperDAG implementation,
+  public CommunicationRouter(final Design archi, final Scenario scenario, final MapperDAG implementation,
       final IEdgeSched edgeScheduler, final OrderManager orderManager) {
     this.implementers = new LinkedHashMap<>();
     setManagers(implementation, edgeScheduler, orderManager);

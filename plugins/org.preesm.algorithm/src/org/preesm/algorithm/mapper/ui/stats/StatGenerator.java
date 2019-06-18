@@ -53,11 +53,10 @@ import org.preesm.algorithm.model.PropertyBean;
 import org.preesm.algorithm.model.dag.DAGEdge;
 import org.preesm.algorithm.model.dag.DAGVertex;
 import org.preesm.commons.exceptions.PreesmException;
-import org.preesm.model.scenario.PreesmScenario;
+import org.preesm.model.scenario.Scenario;
 import org.preesm.model.scenario.types.ImplementationPropertyNames;
 import org.preesm.model.scenario.types.VertexType;
 import org.preesm.model.slam.ComponentInstance;
-import org.preesm.model.slam.utils.DesignTools;
 
 /**
  * Generating the statistics to be displayed in stat editor.
@@ -70,7 +69,7 @@ public class StatGenerator {
   private LatencyAbc abc = null;
 
   /** The scenario. */
-  private PreesmScenario scenario = null;
+  private Scenario scenario = null;
 
   /** The params. */
   private Map<String, String> params = null;
@@ -88,7 +87,7 @@ public class StatGenerator {
    * @param params
    *          the params
    */
-  public StatGenerator(final LatencyAbc abc, final PreesmScenario scenario, final Map<String, String> params) {
+  public StatGenerator(final LatencyAbc abc, final Scenario scenario, final Map<String, String> params) {
     super();
     this.params = params;
     this.scenario = scenario;
@@ -133,8 +132,7 @@ public class StatGenerator {
     long work = 0;
     final MapperDAG dag = this.abc.getDAG();
 
-    final ComponentInstance mainOp = DesignTools.getComponentInstance(this.abc.getArchitecture(),
-        this.scenario.getSimulationManager().getMainOperatorName());
+    final ComponentInstance mainOp = this.scenario.getSimulationInfo().getMainOperator();
 
     for (final DAGVertex vertex : dag.vertexSet()) {
       if (!(vertex instanceof TransferVertex) && !(vertex instanceof OverheadVertex)
@@ -173,7 +171,7 @@ public class StatGenerator {
    */
   public int getNbUsedOperators() {
     int nbUsedOperators = 0;
-    for (final ComponentInstance o : DesignTools.getOperatorInstances(this.abc.getArchitecture())) {
+    for (final ComponentInstance o : this.abc.getArchitecture().getOperatorComponentInstances()) {
       if (this.abc.getFinalCost(o) > 0) {
         nbUsedOperators++;
       }
@@ -188,9 +186,8 @@ public class StatGenerator {
    */
   public int getNbMainTypeOperators() {
     int nbMainTypeOperators = 0;
-    final ComponentInstance mainOp = DesignTools.getComponentInstance(this.abc.getArchitecture(),
-        this.scenario.getSimulationManager().getMainOperatorName());
-    nbMainTypeOperators = DesignTools.getInstancesOfComponent(this.abc.getArchitecture(), mainOp.getComponent()).size();
+    final ComponentInstance mainOp = this.scenario.getSimulationInfo().getMainOperator();
+    nbMainTypeOperators = this.abc.getArchitecture().getComponentInstancesOfType(mainOp.getComponent()).size();
     return nbMainTypeOperators;
   }
 
@@ -262,7 +259,7 @@ public class StatGenerator {
    *
    * @return the scenario
    */
-  public PreesmScenario getScenario() {
+  public Scenario getScenario() {
     return this.scenario;
   }
 

@@ -3,7 +3,7 @@ Bundle-ManifestVersion: 2
 Bundle-Name: PREESM :: Plugins :: Scenario UI
 Automatic-Module-Name: org.preesm.ui.scenario
 Bundle-SymbolicName: org.preesm.ui.scenario;singleton:=true
-Bundle-Version: 3.8.1
+Bundle-Version: 3.9.0
 Bundle-Vendor: IETR / INSA Rennes - VAADER
 Require-Bundle: org.eclipse.ui.console;bundle-version="3.5.100",
  org.eclipse.ui.editors,
@@ -24,8 +24,10 @@ Eclipse-BuddyPolicy: global
 Export-Package: org.preesm.ui.scenario.editor,
  org.preesm.ui.scenario.editor.codegen,
  org.preesm.ui.scenario.editor.constraints,
+ org.preesm.ui.scenario.editor.papify,
  org.preesm.ui.scenario.editor.parametervalues,
- org.preesm.ui.scenario.editor.relativeconstraints,
  org.preesm.ui.scenario.editor.simulation,
- org.preesm.ui.scenario.editor.timings
+ org.preesm.ui.scenario.editor.timings,
+ org.preesm.ui.scenario.popup.actions,
+ org.preesm.ui.scenario.wizards
 

@@ -59,19 +59,17 @@ import org.preesm.commons.exceptions.PreesmFrameworkException;
 import org.preesm.model.pisdf.AbstractActor;
 import org.preesm.model.pisdf.PiGraph;
 import org.preesm.model.pisdf.serialize.PiParser;
-import org.preesm.model.scenario.PreesmScenario;
-import org.preesm.model.scenario.ScenarioUtils;
-import org.preesm.model.scenario.Timing;
-import org.preesm.model.scenario.serialize.ScenarioParser;
+import org.preesm.model.scenario.Scenario;
 import org.preesm.model.scenario.serialize.ScenarioWriter;
-import org.preesm.model.scenario.types.DataType;
+import org.preesm.model.scenario.util.ScenarioUserFactory;
+import org.preesm.model.slam.ComponentInstance;
 import org.preesm.model.slam.Design;
 import org.preesm.model.slam.SlamPackage;
+import org.preesm.model.slam.component.Component;
 import org.preesm.model.slam.serialize.IPXACTResourceFactoryImpl;
-import org.preesm.model.slam.utils.DesignTools;
+import org.preesm.model.slam.serialize.SlamParser;
 import org.w3c.dom.Document;
 
-// TODO: Auto-generated Javadoc
 /**
  * Class to generate a set of PreesmScenarios from several architectures and algorithms
  *
@@ -90,22 +88,25 @@ public class ScenariosGenerator {
 
   /** The Constant archiExt. */
   // Constants for extensions and folder names
-  private static final String archiExt = "slam";
+  private static final String ARCHI_EXT = "slam";
 
   /** The Constant piAlgoExt. */
-  private static final String piAlgoExt = "pi";
-
-  /** The Constant sdfAlgoExt. */
-  private static final String sdfAlgoExt = "graphml";
+  private static final String PI_GRAPH_EXT = "pi";
 
   /** The Constant archiDirName. */
-  private static final String archiDirName = "Archi";
+  private static final String ARCHI_DIR_NAME = "Archi";
 
   /** The Constant algoDirName. */
-  private static final String algoDirName = "Algo";
+  private static final String ALGO_DIR_NAME = "Algo";
 
   /** The Constant scenarioDirName. */
-  private static final String scenarioDirName = "Scenarios";
+  private static final String SCENARIO_DIR_NAME = "Scenarios";
+
+  final IFolder scenarioDir;
+
+  public ScenariosGenerator(final IProject project) {
+    scenarioDir = project.getFolder(ScenariosGenerator.SCENARIO_DIR_NAME);
+  }
 
   /**
    * Generates a set of PreesmScenario from an IProject.
@@ -119,9 +120,9 @@ public class ScenariosGenerator {
    * @throws FileNotFoundException
    *           the file not found exception
    */
-  public Set<PreesmScenario> generateScenarios(final IProject project) throws CoreException, FileNotFoundException {
-    final IFolder archiDir = project.getFolder(ScenariosGenerator.archiDirName);
-    final IFolder algoDir = project.getFolder(ScenariosGenerator.algoDirName);
+  public Set<Scenario> generateScenarios(final IProject project) throws CoreException, FileNotFoundException {
+    final IFolder archiDir = project.getFolder(ScenariosGenerator.ARCHI_DIR_NAME);
+    final IFolder algoDir = project.getFolder(ScenariosGenerator.ALGO_DIR_NAME);
     return generateScenarios(project, archiDir, algoDir);
   }
 
@@ -138,14 +139,14 @@ public class ScenariosGenerator {
    * @throws FileNotFoundException
    *           the file not found exception
    */
-  public Set<PreesmScenario> generateScenarios(final IProject project, final IFolder archiDir, final IFolder algoDir)
+  public Set<Scenario> generateScenarios(final IProject project, final IFolder archiDir, final IFolder algoDir)
       throws CoreException, FileNotFoundException {
     final Set<String> archis = new LinkedHashSet<>();
     final Set<String> algos = new LinkedHashSet<>();
     for (final IResource resource : archiDir.members()) {
       if (resource instanceof IFile) {
         final IFile file = (IFile) resource;
-        if (file.getProjectRelativePath().getFileExtension().equals(ScenariosGenerator.archiExt)) {
+        if (file.getProjectRelativePath().getFileExtension().equals(ScenariosGenerator.ARCHI_EXT)) {
           archis.add(file.getFullPath().toOSString());
         }
       }
@@ -154,7 +155,7 @@ public class ScenariosGenerator {
       if (resource instanceof IFile) {
         final IFile file = (IFile) resource;
         final String ext = file.getProjectRelativePath().getFileExtension();
-        if (ext.equals(ScenariosGenerator.piAlgoExt) || ext.equals(ScenariosGenerator.sdfAlgoExt)) {
+        if (ext.equals(ScenariosGenerator.PI_GRAPH_EXT)) {
           algos.add(file.getFullPath().toOSString());
         }
       }
@@ -175,9 +176,8 @@ public class ScenariosGenerator {
    * @throws FileNotFoundException
    *           the file not found exception
    */
-  private Set<PreesmScenario> generateScenarios(final IProject project, final Set<String> archis,
-      final Set<String> algos) {
-    final Set<PreesmScenario> scenarios = new LinkedHashSet<>();
+  private Set<Scenario> generateScenarios(final IProject project, final Set<String> archis, final Set<String> algos) {
+    final Set<Scenario> scenarios = new LinkedHashSet<>();
     for (final String archiURL : archis) {
       for (final String algoURL : algos) {
         scenarios.add(createScenario(project, archiURL, algoURL));
@@ -199,9 +199,9 @@ public class ScenariosGenerator {
    * @throws FileNotFoundException
    *           the file not found exception
    */
-  private PreesmScenario createScenario(final IProject project, final String archiURL, final String algoURL) {
+  private Scenario createScenario(final IProject project, final String archiURL, final String algoURL) {
     // Create a new PreesmScenario
-    final PreesmScenario scenario = new PreesmScenario();
+    final Scenario scenario = ScenarioUserFactory.createScenario();
     // Handle factory registry
     final Map<String, Object> extToFactoryMap = Resource.Factory.Registry.INSTANCE.getExtensionToFactoryMap();
     Object instance = extToFactoryMap.get("slam");
@@ -213,27 +213,28 @@ public class ScenariosGenerator {
       EPackage.Registry.INSTANCE.put(SlamPackage.eNS_URI, SlamPackage.eINSTANCE);
     }
     // Set algorithm and architecture
-    final Design archi = ScenarioParser.parseSlamDesign(archiURL);
-    scenario.setArchitectureURL(archiURL);
+
+    final Design archi = SlamParser.parseSlamDesign(archiURL);
+    scenario.setDesign(archi);
+
+    final PiGraph piGraph = PiParser.getPiGraphWithReconnection(algoURL);
+    scenario.setAlgorithm(piGraph);
 
     // Get com nodes and cores names
-    final List<String> coreIds = new ArrayList<>(DesignTools.getOperatorInstanceIds(archi));
-    final List<String> comNodeIds = new ArrayList<>(DesignTools.getComNodeInstanceIds(archi));
+    final List<ComponentInstance> coreIds = new ArrayList<>(archi.getOperatorComponentInstances());
+    final List<ComponentInstance> comNodeIds = archi.getCommunicationComponentInstances();
     // Set default values for constraints, timings and simulation parameters
-    if (algoURL.endsWith(ScenariosGenerator.piAlgoExt)) {
-      fillPiScenario(scenario, archi, algoURL);
-
-    } else if (algoURL.endsWith(ScenariosGenerator.sdfAlgoExt)) {
-      throw new PreesmFrameworkException("IBSDF is not supported anymore");
+    if (algoURL.endsWith(ScenariosGenerator.PI_GRAPH_EXT)) {
+      fillPiScenario(scenario, archi, piGraph);
     }
     // Add a main core (first of the list)
-    scenario.getSimulationManager().setMainOperatorName(coreIds.get(0));
+    scenario.getSimulationInfo().setMainOperator(coreIds.get(0));
     // Add a main com node (first of the list)
-    scenario.getSimulationManager().setMainComNodeName(comNodeIds.get(0));
+    scenario.getSimulationInfo().setMainComNode(comNodeIds.get(0));
     // Add a average transfer size
-    scenario.getSimulationManager().setAverageDataSize(1000);
+    scenario.getSimulationInfo().setAverageDataSize(1000);
 
-    scenario.getCodegenManager().setCodegenDirectory("/" + project.getName() + "/Code/generated/");
+    scenario.setCodegenDirectory("/" + project.getName() + "/Code/generated/");
     return scenario;
   }
 
@@ -249,32 +250,31 @@ public class ScenariosGenerator {
    * @throws CoreException
    *           the core exception
    */
-  private void fillPiScenario(final PreesmScenario scenario, final Design archi, final String algoURL) {
+  private void fillPiScenario(final Scenario scenario, final Design archi, final PiGraph piGraph) {
     // Get com nodes and cores names
-    scenario.setAlgorithmURL(algoURL);
-    final PiGraph algo = PiParser.getPiGraphWithReconnection(algoURL);
-    final List<String> coreIds = new ArrayList<>(DesignTools.getOperatorInstanceIds(archi));
+    scenario.setAlgorithm(piGraph);
+    final List<ComponentInstance> coreIds = new ArrayList<>(archi.getOperatorComponentInstances());
 
     // for all different type of cores
-    for (final String opId : DesignTools.getOperatorComponentIds(archi)) {
-      for (final AbstractActor aa : algo.getAllActors()) {
+    for (final Component opId : archi.getOperatorComponents()) {
+      for (final AbstractActor aa : piGraph.getAllActors()) {
         // Add timing: aa run on ci in 10000
-        scenario.getTimingManager().addTiming(new Timing(opId, aa.getVertexPath(), 10000));
+        scenario.getTimings().setTiming(aa, opId, 10000);
       }
     }
-    for (final String coreId : coreIds) {
-      for (final AbstractActor actor : algo.getAllActors()) {
+    for (final ComponentInstance coreId : coreIds) {
+      for (final AbstractActor actor : piGraph.getAllActors()) {
         // Add constraint: aa can be run on ci
-        scenario.getConstraintGroupManager().addConstraint(coreId, actor);
+        scenario.getConstraints().addConstraint(coreId, actor);
       }
       // Add special actors operator id (all cores can execute special
       // actors)
-      scenario.getSimulationManager().addSpecialVertexOperatorId(coreId);
+      scenario.getSimulationInfo().addSpecialVertexOperator(coreId);
     }
 
     // Fill data-types found in the algo with default value of 1 byte size
-    new PiSDFTypeGatherer().doSwitch(algo)
-        .forEach(type -> scenario.getSimulationManager().putDataType(new DataType(type, 1)));
+    new PiSDFTypeGatherer().doSwitch(piGraph)
+        .forEach(type -> scenario.getSimulationInfo().getDataTypes().put(type, 1L));
   }
 
   /**
@@ -289,27 +289,7 @@ public class ScenariosGenerator {
    *           the file not found exception
    */
   public void generateAndSaveScenarios(final IProject project) throws CoreException, FileNotFoundException {
-    final IFolder scenarioDir = project.getFolder(ScenariosGenerator.scenarioDirName);
     saveScenarios(generateScenarios(project), scenarioDir);
-  }
-
-  /**
-   * Generate a set of PreesmScenarios from an architecture folder and from an algorithm folder.
-   *
-   * @param archiDir
-   *          the IFolder containing the architectures
-   * @param algoDir
-   *          the IFolder containing the algorithms
-   * @param scenarioDir
-   *          the IFolder where to save the generated PreesmScenarios
-   * @throws CoreException
-   *           the core exception
-   * @throws FileNotFoundException
-   *           the file not found exception
-   */
-  public void generateAndSaveScenarios(final IProject project, final IFolder archiDir, final IFolder algoDir,
-      final IFolder scenarioDir) throws CoreException, FileNotFoundException {
-    saveScenarios(generateScenarios(project, archiDir, algoDir), scenarioDir);
   }
 
   /**
@@ -322,9 +302,9 @@ public class ScenariosGenerator {
    * @throws CoreException
    *           the core exception
    */
-  private void saveScenarios(final Set<PreesmScenario> scenarios, final IFolder scenarioDir) throws CoreException {
-    for (final PreesmScenario scenario : scenarios) {
-      final String scenarioName = ScenarioUtils.getScenarioName(scenario);
+  private void saveScenarios(final Set<Scenario> scenarios, final IFolder scenarioDir) throws CoreException {
+    for (final Scenario scenario : scenarios) {
+      final String scenarioName = scenario.getScenarioName();
       final IPath scenarioPath = new Path(scenarioName).addFileExtension("scenario");
       final IFile scenarioFile = scenarioDir.getFile(scenarioPath);
       if (!scenarioFile.exists()) {
@@ -342,7 +322,7 @@ public class ScenariosGenerator {
    * @param scenarioFile
    *          the IFile in which to save the PreesmScenario
    */
-  private void saveScenario(final PreesmScenario scenario, final IFile scenarioFile) {
+  private void saveScenario(final Scenario scenario, final IFile scenarioFile) {
     final ScenarioWriter writer = new ScenarioWriter(scenario);
     final Document generateScenarioDOM = writer.generateScenarioDOM();
     try (final ByteArrayOutputStream byteStream = new ByteArrayOutputStream()) {

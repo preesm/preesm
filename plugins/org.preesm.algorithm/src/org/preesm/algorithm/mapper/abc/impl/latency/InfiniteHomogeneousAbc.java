@@ -1,7 +1,7 @@
 /**
- * Copyright or © or Copr. IETR/INSA - Rennes (2008 - 2018) :
+ * Copyright or © or Copr. IETR/INSA - Rennes (2008 - 2019) :
  *
- * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017 - 2018)
+ * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017 - 2019)
  * Clément Guy <clement.guy@insa-rennes.fr> (2014 - 2015)
  * Matthieu Wipliez <matthieu.wipliez@insa-rennes.fr> (2008)
  * Maxime Pelcat <maxime.pelcat@insa-rennes.fr> (2008 - 2014)
@@ -47,11 +47,10 @@ import org.preesm.algorithm.mapper.params.AbcParameters;
 import org.preesm.algorithm.mapper.tools.TLevelIterator;
 import org.preesm.commons.exceptions.PreesmException;
 import org.preesm.commons.logger.PreesmLogger;
-import org.preesm.model.scenario.PreesmScenario;
+import org.preesm.model.scenario.Scenario;
 import org.preesm.model.slam.ComponentInstance;
 import org.preesm.model.slam.Design;
 import org.preesm.model.slam.component.ComNode;
-import org.preesm.model.slam.utils.DesignTools;
 
 /**
  * Simulates an architecture having as many cores as necessary to execute one operation on one core. All core have the
@@ -76,7 +75,7 @@ public class InfiniteHomogeneousAbc extends LatencyAbc {
    *           the workflow exception
    */
   public InfiniteHomogeneousAbc(final AbcParameters params, final MapperDAG dag, final Design archi,
-      final PreesmScenario scenario) {
+      final Scenario scenario) {
     this(params, dag, archi, TaskSchedType.SIMPLE, scenario);
   }
 
@@ -97,15 +96,13 @@ public class InfiniteHomogeneousAbc extends LatencyAbc {
    *           the workflow exception
    */
   public InfiniteHomogeneousAbc(final AbcParameters params, final MapperDAG dag, final Design archi,
-      final TaskSchedType taskSchedType, final PreesmScenario scenario) {
+      final TaskSchedType taskSchedType, final Scenario scenario) {
     super(params, dag, archi, AbcType.InfiniteHomogeneous, scenario);
     getType().setTaskSchedType(taskSchedType);
 
-    final ComponentInstance mainComNode = DesignTools.getComponentInstance(archi,
-        scenario.getSimulationManager().getMainComNodeName());
+    final ComponentInstance mainComNode = scenario.getSimulationInfo().getMainComNode();
 
-    final ComponentInstance mainOperator = DesignTools.getComponentInstance(archi,
-        scenario.getSimulationManager().getMainOperatorName());
+    final ComponentInstance mainOperator = scenario.getSimulationInfo().getMainOperator();
 
     if (mainComNode != null) {
       PreesmLogger.getLogger().info("Infinite homogeneous simulation");
@@ -151,7 +148,7 @@ public class InfiniteHomogeneousAbc extends LatencyAbc {
      *
      * As we have an infinite homogeneous architecture, each communication is done through the unique type of medium
      */
-    if (effectiveOp == DesignTools.NO_COMPONENT_INSTANCE) {
+    if (effectiveOp == null) {
       PreesmLogger.getLogger().severe("implementation of " + vertex.getName() + " failed. No operator was assigned.");
 
       vertex.getTiming().setCost(0);
@@ -218,8 +215,7 @@ public class InfiniteHomogeneousAbc extends LatencyAbc {
      * In a Infinite Homogeneous Architecture, each communication is supposed to be done on the main medium. The
      * communication cost is simply calculated from the main medium speed.
      */
-    final String mainComName = this.scenario.getSimulationManager().getMainComNodeName();
-    final ComponentInstance mainCom = DesignTools.getComponentInstance(this.archi, mainComName);
+    final ComponentInstance mainCom = this.scenario.getSimulationInfo().getMainComNode();
 
     if (mainCom != null) {
 

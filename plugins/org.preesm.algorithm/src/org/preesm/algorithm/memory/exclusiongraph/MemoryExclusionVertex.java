@@ -1,7 +1,7 @@
 /**
- * Copyright or © or Copr. IETR/INSA - Rennes (2012 - 2018) :
+ * Copyright or © or Copr. IETR/INSA - Rennes (2012 - 2019) :
  *
- * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017 - 2018)
+ * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017 - 2019)
  * Clément Guy <clement.guy@insa-rennes.fr> (2014 - 2015)
  * Florian Arrestier <florian.arrestier@insa-rennes.fr> (2018)
  * Julien Hascoet <jhascoet@kalray.eu> (2017)
@@ -41,8 +41,9 @@ package org.preesm.algorithm.memory.exclusiongraph;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.logging.Level;
+import org.eclipse.emf.common.util.ECollections;
+import org.eclipse.emf.common.util.EMap;
 import org.eclipse.xtext.util.Pair;
 import org.preesm.algorithm.memory.script.Range;
 import org.preesm.algorithm.model.AbstractVertex;
@@ -53,7 +54,6 @@ import org.preesm.algorithm.model.dag.DAGVertex;
 import org.preesm.commons.logger.PreesmLogger;
 import org.preesm.model.scenario.types.BufferAggregate;
 import org.preesm.model.scenario.types.BufferProperties;
-import org.preesm.model.scenario.types.DataType;
 
 /**
  * MemoryExclusionVertex is used to represent vertices in the Exclusion graph.
@@ -130,7 +130,7 @@ public class MemoryExclusionVertex extends AbstractVertex<MemoryExclusionGraph>
   public static final String DIVIDED_PARTS_HOSTS = "divided_parts_hosts";
 
   /** This Map is used as a reference of dataTypes size when creating an vertex from a DAGEdge. */
-  public static Map<String, DataType> NAME_TO_DATATYPES = new LinkedHashMap<>();
+  public static EMap<String, Long> NAME_TO_DATATYPES = ECollections.asEMap(new LinkedHashMap<>());
 
   /**
    * This method is used to associate a map of data types to the MemoryExclusionVertex class. This map will be used when
@@ -139,7 +139,7 @@ public class MemoryExclusionVertex extends AbstractVertex<MemoryExclusionGraph>
    * @param dataTypes
    *          the map of DataType
    */
-  public static void setDataTypes(final Map<String, DataType> dataTypes) {
+  public static void setDataTypes(final EMap<String, Long> dataTypes) {
     if (dataTypes != null) {
       MemoryExclusionVertex.NAME_TO_DATATYPES = dataTypes;
     }
@@ -211,10 +211,10 @@ public class MemoryExclusionVertex extends AbstractVertex<MemoryExclusionGraph>
       final BufferProperties properties = iter.next();
 
       final String dataType = properties.getDataType();
-      final DataType type = MemoryExclusionVertex.NAME_TO_DATATYPES.get(dataType);
 
-      if (type != null) {
-        vertexWeight += type.getSize() * properties.getSize();
+      if (MemoryExclusionVertex.NAME_TO_DATATYPES.containsKey(dataType)) {
+        final long type = MemoryExclusionVertex.NAME_TO_DATATYPES.get(dataType);
+        vertexWeight += type * properties.getSize();
       } else {
         vertexWeight += properties.getSize();
       }

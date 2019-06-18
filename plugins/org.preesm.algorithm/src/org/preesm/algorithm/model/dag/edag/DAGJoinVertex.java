@@ -1,7 +1,7 @@
 /**
- * Copyright or © or Copr. IETR/INSA - Rennes (2018) :
+ * Copyright or © or Copr. IETR/INSA - Rennes (2018 - 2019) :
  *
- * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2018)
+ * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2018 - 2019)
  *
  * This software is a computer program whose purpose is to help prototyping
  * parallel applications using dataflow formalism.
@@ -56,8 +56,8 @@ public class DAGJoinVertex extends DAGVertex {
   /**
    * Creates a new DAGVertex.
    */
-  public DAGJoinVertex() {
-    super();
+  public DAGJoinVertex(org.preesm.model.pisdf.AbstractVertex origVertex) {
+    super(origVertex);
     setKind(DAGJoinVertex.DAG_JOIN_VERTEX);
   }
 

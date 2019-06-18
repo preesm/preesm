@@ -50,15 +50,15 @@ import org.eclipse.core.resources.IWorkspace;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.Path;
-import org.preesm.commons.exceptions.PreesmFrameworkException;
 import org.preesm.commons.exceptions.PreesmRuntimeException;
 import org.preesm.commons.files.WorkspaceUtils;
 import org.preesm.commons.logger.PreesmLogger;
 import org.preesm.model.pisdf.AbstractActor;
 import org.preesm.model.pisdf.Actor;
 import org.preesm.model.pisdf.PiGraph;
-import org.preesm.model.pisdf.serialize.PiParser;
-import org.preesm.model.scenario.PreesmScenario;
+import org.preesm.model.scenario.Scenario;
+import org.preesm.model.slam.ComponentInstance;
+import org.preesm.model.slam.Design;
 
 /**
  * Importing constraints in a scenario from an excel file. The existing timings mean that the task can be mapped on the
@@ -69,7 +69,7 @@ import org.preesm.model.scenario.PreesmScenario;
 public class ExcelConstraintsParser {
 
   /** The scenario. */
-  private PreesmScenario scenario = null;
+  private Scenario scenario = null;
 
   /**
    * Instantiates a new excel constraints parser.
@@ -77,7 +77,7 @@ public class ExcelConstraintsParser {
    * @param scenario
    *          the scenario
    */
-  public ExcelConstraintsParser(final PreesmScenario scenario) {
+  public ExcelConstraintsParser(final Scenario scenario) {
     super();
     this.scenario = scenario;
   }
@@ -87,12 +87,10 @@ public class ExcelConstraintsParser {
    *
    * @param url
    *          the url
-   * @param allOperatorIds
-   *          the all operator ids
    * @throws CoreException
    *           the core exception
    */
-  public void parse(final String url, final Set<String> allOperatorIds) throws CoreException {
+  public void parse(final String url) throws CoreException {
 
     final IWorkspace workspace = ResourcesPlugin.getWorkspace();
 
@@ -101,7 +99,7 @@ public class ExcelConstraintsParser {
     final Path path = new Path(url);
     final IFile file = workspace.getRoot().getFile(path);
 
-    this.scenario.getConstraintGroupManager().removeAll();
+    this.scenario.getConstraints().getGroupConstraints().clear();
     PreesmLogger.getLogger().log(Level.INFO,
         "Importing constraints from an excel sheet. Previously defined constraints are discarded.");
 
@@ -110,18 +108,15 @@ public class ExcelConstraintsParser {
 
       // Warnings are displayed once for each missing operator or vertex
       // in the excel sheet
-      final Set<String> missingVertices = new LinkedHashSet<>();
-      final Set<String> missingOperators = new LinkedHashSet<>();
+      final Set<AbstractActor> missingVertices = new LinkedHashSet<>();
+      final Set<ComponentInstance> missingOperators = new LinkedHashSet<>();
 
-      if (this.scenario.isIBSDFScenario()) {
-        throw new PreesmFrameworkException("IBSDF is not supported anymore");
-      } else if (this.scenario.isPISDFScenario()) {
-        final PiGraph currentPiGraph = PiParser.getPiGraphWithReconnection(this.scenario.getAlgorithmURL());
-        for (final AbstractActor vertex : currentPiGraph.getAllActors()) {
-          if (vertex instanceof Actor) {
-            for (final String operatorId : allOperatorIds) {
-              checkOpPiConstraint(w, operatorId, (Actor) vertex, missingVertices, missingOperators);
-            }
+      final PiGraph currentPiGraph = scenario.getAlgorithm();
+      for (final AbstractActor vertex : currentPiGraph.getAllActors()) {
+        if (vertex instanceof Actor) {
+          final Design design = this.scenario.getDesign();
+          for (final ComponentInstance operatorId : design.getOperatorComponentInstances()) {
+            checkOpPiConstraint(w, operatorId, (Actor) vertex, missingVertices, missingOperators);
           }
         }
       }
@@ -145,20 +140,20 @@ public class ExcelConstraintsParser {
    * @param missingOperators
    *          the missing operators
    */
-  private void checkOpPiConstraint(final Workbook w, final String operatorId, final Actor vertex,
-      final Set<String> missingVertices, final Set<String> missingOperators) {
+  private void checkOpPiConstraint(final Workbook w, final ComponentInstance operatorId, final Actor vertex,
+      final Set<AbstractActor> missingVertices, final Set<ComponentInstance> missingOperators) {
     final String vertexName = vertex.getName();
 
-    if (!operatorId.isEmpty() && !vertexName.isEmpty()) {
+    if (operatorId != null && !vertexName.isEmpty()) {
       final Cell vertexCell = w.getSheet(0).findCell(vertexName);
-      final Cell operatorCell = w.getSheet(0).findCell(operatorId);
+      final Cell operatorCell = w.getSheet(0).findCell(operatorId.getInstanceName());
 
       if ((vertexCell != null) && (operatorCell != null)) {
         final Cell timingCell = w.getSheet(0).getCell(operatorCell.getColumn(), vertexCell.getRow());
 
         if (timingCell.getType().equals(CellType.NUMBER) || timingCell.getType().equals(CellType.NUMBER_FORMULA)) {
 
-          this.scenario.getConstraintGroupManager().addConstraint(operatorId, vertex);
+          this.scenario.getConstraints().addConstraint(operatorId, vertex);
 
           PreesmLogger.getLogger().log(Level.FINE, "Importing constraint: {" + operatorId + "," + vertex + ",yes}");
 
@@ -166,7 +161,7 @@ public class ExcelConstraintsParser {
           PreesmLogger.getLogger().log(Level.FINE, "Importing constraint: {" + operatorId + "," + vertex + ",no}");
         }
       } else {
-        if ((vertexCell == null) && !missingVertices.contains(vertexName)) {
+        if ((vertexCell == null) && !missingVertices.contains(vertex)) {
           if (vertex.getRefinement() != null) {
             PreesmLogger.getLogger().log(Level.WARNING,
                 "No line found in excel sheet for hierarchical vertex: " + vertexName);
@@ -174,7 +169,7 @@ public class ExcelConstraintsParser {
             final String message = "No line found in excel sheet for atomic vertex: " + vertexName;
             throw new PreesmRuntimeException(message);
           }
-          missingVertices.add(vertexName);
+          missingVertices.add(vertex);
         } else if ((operatorCell == null) && !missingOperators.contains(operatorId)) {
           final String message = "No column found in excel sheet for operator: " + operatorId;
           throw new PreesmRuntimeException(message);

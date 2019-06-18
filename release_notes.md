@@ -1,6 +1,44 @@
 PREESM Changelog
 ================
 
+## Release version 3.9.0
+*2019.06.18*
+
+### New Feature
+
+### Changes
+* Fix PiGraph.isLocallyStatic: now check for all contained parameters to be static;
+* When the pi file does not specify a refinement for an actor, the parser was setting a pisdf refinement with null path. The new behavior is to set a CHeader refinement with null path. This allows the graph to be considered flat;
+* Delete deprecated RandomSDF task and associated test;
+* Cleanup and Fix warnings;
+* Add class for helping loading resources from bundle/code base and replace uses;
+* Paths in models (PiSDF, Slam) are now represented as Strings instead of IPath;
+* Fix parameter validity analysis: new use JEP Wrapper;
+* Change implementation of Constraint Groups in scenario to have only one operator per group;
+* Make sure the PiGraph and SlamDesign are parsed once only per scenario node in the workflow;
+* Fix UI throwing exception when canceling file browse;
+* Scenario managers now use the Actor/Component reference instead of component ID or actor path/name;
+* Refactor scenario and use XCore for Scenario;
+* Add support for parameterized timings and for overriding parameter values in scenario (note: display is wrong when using ConfigInputInterface values);
+* Fix Scenario UI: 
+  * Timing tab is properly refreshed when param override values are changed;
+  * Timing and Paramever override expressions are now properly using config input interface values from parent graphs;
+* Remove number of execution of top graph from scenario (and UI);
+* Update Xtend/Xcore maven plugins to 2.18.0+;
+* Fix PiSDF UI: do show persistence level on Delay only;
+* Update SDF/DAGVertex.getReferencePiVertex(): cast is now done inside;
+* Fix Scenario UI and cleanup code, replace dialogs with inplace table cell modifiers;
+
+### Bug fix
+* Fix #139: better error messages for Name checker
+* Fix #121
+* Fix #77
+* Fix #87
+* Fix #155: always show the init function selection dialog and add a note explaining which functions are filtered out;
+* Fix #158
+* PAPIFY: fix removing PAPIFY timing event not working;
+
+
 ## Release version 3.8.1
 *2019.05.22*
 

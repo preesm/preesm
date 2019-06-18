@@ -1,7 +1,7 @@
 /**
- * Copyright or © or Copr. IETR/INSA - Rennes (2011 - 2018) :
+ * Copyright or © or Copr. IETR/INSA - Rennes (2011 - 2019) :
  *
- * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017 - 2018)
+ * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017 - 2019)
  * Clément Guy <clement.guy@insa-rennes.fr> (2015)
  * Maxime Pelcat <maxime.pelcat@insa-rennes.fr> (2011)
  *
@@ -45,9 +45,9 @@ import org.eclipse.swt.events.PaintListener;
 import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.IPropertyListener;
 import org.eclipse.ui.forms.widgets.Section;
-import org.preesm.model.scenario.PreesmScenario;
+import org.preesm.model.scenario.Scenario;
+import org.preesm.model.slam.ComponentInstance;
 
-// TODO: Auto-generated Javadoc
 /**
  * Listener of the check state of the Operator tree.
  *
@@ -56,7 +56,7 @@ import org.preesm.model.scenario.PreesmScenario;
 public class OperatorCheckStateListener implements ICheckStateListener, PaintListener {
 
   /** Currently edited scenario. */
-  private PreesmScenario scenario = null;
+  private Scenario scenario = null;
 
   /** Current section (necessary to diplay busy status). */
   private Section section = null;
@@ -75,7 +75,7 @@ public class OperatorCheckStateListener implements ICheckStateListener, PaintLis
    * @param scenario
    *          the scenario
    */
-  public OperatorCheckStateListener(final Section section, final PreesmScenario scenario) {
+  public OperatorCheckStateListener(final Section section, final Scenario scenario) {
     super();
     this.scenario = scenario;
     this.section = section;
@@ -108,13 +108,14 @@ public class OperatorCheckStateListener implements ICheckStateListener, PaintLis
 
       @Override
       public void run() {
-        if (element instanceof String) {
-          final String path = (String) element;
+        if (element instanceof ComponentInstance) {
+          final ComponentInstance componentInstance = (ComponentInstance) element;
 
           if (isChecked) {
-            OperatorCheckStateListener.this.scenario.getSimulationManager().addSpecialVertexOperatorId(path);
+            OperatorCheckStateListener.this.scenario.getSimulationInfo().addSpecialVertexOperator(componentInstance);
           } else {
-            OperatorCheckStateListener.this.scenario.getSimulationManager().removeSpecialVertexOperatorId(path);
+            OperatorCheckStateListener.this.scenario.getSimulationInfo().getSpecialVertexOperators()
+                .remove(componentInstance);
           }
 
           OperatorCheckStateListener.this.propertyListener.propertyChanged(this, IEditorPart.PROP_DIRTY);
@@ -128,7 +129,7 @@ public class OperatorCheckStateListener implements ICheckStateListener, PaintLis
    */
   public void updateCheck() {
     if (this.scenario != null) {
-      this.treeViewer.setCheckedElements(this.scenario.getSimulationManager().getSpecialVertexOperatorIds().toArray());
+      this.treeViewer.setCheckedElements(this.scenario.getSimulationInfo().getSpecialVertexOperators().toArray());
     }
   }
 
@@ -140,6 +141,5 @@ public class OperatorCheckStateListener implements ICheckStateListener, PaintLis
   @Override
   public void paintControl(final PaintEvent e) {
     updateCheck();
-
   }
 }

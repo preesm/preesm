@@ -48,7 +48,7 @@ import org.preesm.algorithm.mapper.abc.impl.latency.LatencyAbc;
 import org.preesm.commons.doc.annotations.Port;
 import org.preesm.commons.doc.annotations.PreesmTask;
 import org.preesm.commons.logger.PreesmLogger;
-import org.preesm.model.scenario.PreesmScenario;
+import org.preesm.model.scenario.Scenario;
 import org.preesm.workflow.elements.Workflow;
 import org.preesm.workflow.implement.AbstractTaskImplementation;
 
@@ -59,7 +59,7 @@ import org.preesm.workflow.implement.AbstractTaskImplementation;
  */
 @PreesmTask(id = "org.ietr.preesm.plugin.mapper.plot", name = "Gantt Display", category = "Analysis",
 
-    inputs = { @Port(name = "ABC", type = LatencyAbc.class), @Port(name = "scenario", type = PreesmScenario.class) },
+    inputs = { @Port(name = "ABC", type = LatencyAbc.class), @Port(name = "scenario", type = Scenario.class) },
 
     shortDescription = "Displays the result of a mapping/scheduling algorithm as a Gantt diagram.",
 
@@ -84,7 +84,7 @@ public class StatEditorTransform extends AbstractTaskImplementation {
       final IProgressMonitor monitor, final String nodeName, final Workflow workflow) {
 
     final LatencyAbc abc = (LatencyAbc) inputs.get("ABC");
-    final PreesmScenario scenario = (PreesmScenario) inputs.get("scenario");
+    final Scenario scenario = (Scenario) inputs.get("scenario");
 
     final IEditorInput input = new StatEditorInput(abc, scenario, parameters);
 

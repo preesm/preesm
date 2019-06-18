@@ -1,8 +1,8 @@
 /**
- * Copyright or © or Copr. Åbo Akademi University (2017 - 2018),
- * IETR/INSA - Rennes (2017 - 2018) :
+ * Copyright or © or Copr. Åbo Akademi University (2017 - 2019),
+ * IETR/INSA - Rennes (2017 - 2019) :
  *
- * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017 - 2018)
+ * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017 - 2019)
  * Sudeep Kanur <skanur@abo.fi> (2017 - 2018)
  *
  * This software is a computer program whose purpose is to help prototyping
@@ -77,19 +77,19 @@ class ExampleGraphs {
 		private def SDFAbstractVertex createVertex(String type) {
 			switch(type) {
 				case SDFRoundBufferVertex.ROUND_BUFFER: {
-					return new SDFRoundBufferVertex
+					return new SDFRoundBufferVertex(null)
 				}
 				case SDFBroadcastVertex.BROADCAST: {
-					return new SDFBroadcastVertex
+					return new SDFBroadcastVertex(null)
 				}
 				case SDFJoinVertex.JOIN : {
-					return new SDFJoinVertex
+					return new SDFJoinVertex(null)
 				}
 				case SDFForkVertex.FORK : {
-					return new SDFForkVertex
+					return new SDFForkVertex(null)
 				}
 				case SDFVertex.VERTEX: {
-					return new SDFVertex
+					return new SDFVertex(null)
 				}
 			}
 		}
@@ -134,11 +134,11 @@ class ExampleGraphs {
 					dst
 				}
 
-			val outPort = new SDFSinkInterfaceVertex
+			val outPort = new SDFSinkInterfaceVertex(null)
 			outPort.setName(sourceOutName)
 			source.addSink(outPort)
 
-			val inPort = new SDFSourceInterfaceVertex
+			val inPort = new SDFSourceInterfaceVertex(null)
 			inPort.setName(targetInName)
 			target.addSource(inPort)
 
@@ -475,7 +475,7 @@ class ExampleGraphs {
 	static def SDFGraph acyclicHierarchicalTwoActors() {
     	val sdf = new SDFGraph();
 
-    	val p = new SDFVertex();
+    	val p = new SDFVertex(null);
     	p.setName("p");
     	p.setGraphDescription(acyclicTwoActors());
     	sdf.addVertex(p);

@@ -1,7 +1,7 @@
 /**
- * Copyright or © or Copr. IETR/INSA - Rennes (2018) :
+ * Copyright or © or Copr. IETR/INSA - Rennes (2018 - 2019) :
  *
- * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2018)
+ * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2018 - 2019)
  *
  * This software is a computer program whose purpose is to help prototyping
  * parallel applications using dataflow formalism.
@@ -42,6 +42,7 @@ import org.preesm.algorithm.model.AbstractEdge;
 import org.preesm.algorithm.model.PropertySource;
 import org.preesm.algorithm.model.sdf.SDFEdge;
 import org.preesm.algorithm.model.sdf.SDFInterfaceVertex;
+import org.preesm.model.pisdf.AbstractVertex;
 
 /**
  * Class to represent join vertices (implode).
@@ -59,8 +60,8 @@ public class SDFJoinVertex extends SDFAbstractSpecialVertex {
   /**
    * Creates a new SDFInterfaceVertex with the default direction (SINK).
    */
-  public SDFJoinVertex() {
-    super();
+  public SDFJoinVertex(AbstractVertex origVertex) {
+    super(origVertex);
     setKind(SDFJoinVertex.JOIN);
     setNbRepeat(1L);
   }
@@ -73,7 +74,7 @@ public class SDFJoinVertex extends SDFAbstractSpecialVertex {
   @Override
   public SDFJoinVertex copy() {
     // Copy the vertex properties
-    final SDFJoinVertex newVertex = new SDFJoinVertex();
+    final SDFJoinVertex newVertex = new SDFJoinVertex(this.origVertex);
     for (final String key : getPropertyBean().keys()) {
       if (getPropertyBean().getValue(key) != null) {
         final Object val = getPropertyBean().getValue(key);

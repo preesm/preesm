@@ -1,7 +1,7 @@
 /**
- * Copyright or © or Copr. IETR/INSA - Rennes (2008 - 2018) :
+ * Copyright or © or Copr. IETR/INSA - Rennes (2008 - 2019) :
  *
- * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017 - 2018)
+ * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017 - 2019)
  * Daniel Madroñal <daniel.madronal@upm.es> (2018)
  * Matthieu Wipliez <matthieu.wipliez@insa-rennes.fr> (2008)
  * Maxime Pelcat <maxime.pelcat@insa-rennes.fr> (2008 - 2011)
@@ -40,30 +40,23 @@ package org.preesm.ui.scenario.editor.papify;
 import java.util.Map;
 import org.eclipse.jface.viewers.ColumnLabelProvider;
 import org.eclipse.swt.graphics.Image;
-import org.preesm.model.scenario.PreesmScenario;
-import org.preesm.model.scenario.papi.PapifyConfigPE;
+import org.preesm.model.scenario.Scenario;
+import org.preesm.model.slam.component.Component;
 import org.preesm.ui.scenario.editor.papify.PapifyListTreeElement.PAPIStatus;
 
-// TODO: Auto-generated Javadoc
 /**
  * Provides the elements contained in the papify editor.
  *
  * @author dmadronal
  */
 
-/**
- *
- * @author anmorvan
- *
- */
-
 class PapifyComponentListContentProvider2DMatrixCLP extends ColumnLabelProvider {
 
   /** Currently edited scenario. */
-  private PreesmScenario scenario = null;
-  String                 peType;
+  private Scenario scenario = null;
+  Component        peType;
 
-  public PapifyComponentListContentProvider2DMatrixCLP(final PreesmScenario scenario, final String name) {
+  public PapifyComponentListContentProvider2DMatrixCLP(final Scenario scenario, final Component name) {
     this.peType = name;
     this.scenario = scenario;
   }
@@ -72,12 +65,9 @@ class PapifyComponentListContentProvider2DMatrixCLP extends ColumnLabelProvider 
   public String getText(final Object element) {
     if (element instanceof PapifyListTreeElement) {
       final PapifyListTreeElement treeElement = (PapifyListTreeElement) element;
-      final Map<String, PAPIStatus> statuses = treeElement.PAPIStatuses;
+      final Map<Component, PAPIStatus> statuses = treeElement.PAPIStatuses;
       if (!statuses.containsKey(this.peType)) {
         statuses.put(this.peType, PAPIStatus.NO);
-        if (this.scenario.getPapifyConfigManager().getCorePapifyConfigGroupPE(this.peType) == null) {
-          this.scenario.getPapifyConfigManager().addPapifyConfigPEGroup(new PapifyConfigPE(this.peType));
-        }
       }
       return statuses.get(this.peType).toString();
     } else {
@@ -89,7 +79,7 @@ class PapifyComponentListContentProvider2DMatrixCLP extends ColumnLabelProvider 
   public Image getImage(final Object element) {
     if (element instanceof PapifyListTreeElement) {
       final PapifyListTreeElement treeElement = (PapifyListTreeElement) element;
-      final Map<String, PAPIStatus> statuses = treeElement.PAPIStatuses;
+      final Map<Component, PAPIStatus> statuses = treeElement.PAPIStatuses;
       if (statuses.containsKey(this.peType)) {
         return treeElement.getImage(this.peType);
       }

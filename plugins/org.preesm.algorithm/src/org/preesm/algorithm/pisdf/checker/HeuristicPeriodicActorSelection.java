@@ -50,7 +50,9 @@ import org.preesm.model.pisdf.DataInputPort;
 import org.preesm.model.pisdf.DataOutputPort;
 import org.preesm.model.pisdf.Fifo;
 import org.preesm.model.pisdf.PiGraph;
-import org.preesm.model.scenario.PreesmScenario;
+import org.preesm.model.scenario.Scenario;
+import org.preesm.model.slam.Design;
+import org.preesm.model.slam.component.Component;
 
 /**
  * This class aims to select periodic actors on which execute the period checkers (nbff and nblf).
@@ -60,8 +62,8 @@ import org.preesm.model.scenario.PreesmScenario;
 class HeuristicPeriodicActorSelection {
 
   static Map<Actor, Long> selectActors(final Map<Actor, Long> periodicActors, final Set<AbstractActor> originActors,
-      final Map<AbstractActor, Integer> actorsNbVisits, final int rate, final PiGraph graph,
-      final PreesmScenario scenario, final boolean reverse) {
+      final Map<AbstractActor, Integer> actorsNbVisits, final int rate, final PiGraph graph, final Scenario scenario,
+      final boolean reverse) {
     if ((rate == 100) || periodicActors.isEmpty()) {
       return periodicActors;
     }
@@ -84,9 +86,9 @@ class HeuristicPeriodicActorSelection {
       final long rank = topoRanks.get(actor).rank;
       final long period = e.getValue();
       long wcetMin = Long.MAX_VALUE;
-      for (final String operatorDefinitionID : scenario.getOperatorDefinitionIds()) {
-        final long timing = scenario.getTimingManager().getTimingOrDefault(actor.getName(), operatorDefinitionID)
-            .getTime();
+      final Design design = scenario.getDesign();
+      for (final Component operatorDefinitionID : design.getOperatorComponents()) {
+        final long timing = scenario.getTimings().evaluateTimingOrDefault(actor, operatorDefinitionID);
         if (timing < wcetMin) {
           wcetMin = timing;
         }

@@ -1,7 +1,7 @@
 /**
- * Copyright or © or Copr. IETR/INSA - Rennes (2012 - 2018) :
+ * Copyright or © or Copr. IETR/INSA - Rennes (2012 - 2019) :
  *
- * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017 - 2018)
+ * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017 - 2019)
  * Clément Guy <clement.guy@insa-rennes.fr> (2014 - 2015)
  * Julien Heulot <julien.heulot@insa-rennes.fr> (2013)
  * Karol Desnos <karol.desnos@insa-rennes.fr> (2012 - 2015)
@@ -55,19 +55,14 @@ import org.preesm.ui.wizards.PreesmProjectNature;
  */
 public class ScenariosGeneratorPopup extends AbstractHandler {
 
-  /*
-   * (non-Javadoc)
-   *
-   * @see org.eclipse.core.commands.IHandler#execute(org.eclipse.core.commands.ExecutionEvent)
-   */
   @Override
   public Object execute(final ExecutionEvent event) throws ExecutionException {
-    final ScenariosGenerator generator = new ScenariosGenerator();
     try {
       // Get the selected IProject
       final IWorkbenchPage page = PreesmUIPlugin.getDefault().getWorkbench().getActiveWorkbenchWindow().getActivePage();
       final TreeSelection selection = (TreeSelection) page.getSelection();
       final IProject project = (IProject) selection.getFirstElement();
+      final ScenariosGenerator generator = new ScenariosGenerator(project);
       // If it is a Preesm project, generate the PreesmScenarios from the
       // content of the Algo and Archi folders
       if (project.hasNature(PreesmProjectNature.ID)) {

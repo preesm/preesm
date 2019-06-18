@@ -1,7 +1,7 @@
 /**
- * Copyright or © or Copr. IETR/INSA - Rennes (2008 - 2018) :
+ * Copyright or © or Copr. IETR/INSA - Rennes (2008 - 2019) :
  *
- * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017 - 2018)
+ * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017 - 2019)
  * Clément Guy <clement.guy@insa-rennes.fr> (2014)
  * Matthieu Wipliez <matthieu.wipliez@insa-rennes.fr> (2008)
  * Maxime Pelcat <maxime.pelcat@insa-rennes.fr> (2008 - 2014)
@@ -129,7 +129,7 @@ public class AddOverheadVertexTransaction extends Transaction {
     final String overtexID = "__overhead (" + currentSource.getName() + "," + currentTarget.getName() + ")";
 
     if (this.overheadTime > 0) {
-      this.oVertex = new OverheadVertex(overtexID, this.implementation);
+      this.oVertex = new OverheadVertex(overtexID, this.implementation, null);
       this.implementation.getTimings().dedicate(this.oVertex);
       this.implementation.getMappings().dedicate(this.oVertex);
 
