@@ -39,7 +39,7 @@ package org.preesm.ui.scenario.editor.timings;
 import java.util.Map.Entry;
 import org.eclipse.jface.dialogs.IInputValidator;
 import org.eclipse.jface.dialogs.InputDialog;
-import org.eclipse.jface.viewers.ILabelProviderListener;
+import org.eclipse.jface.viewers.BaseLabelProvider;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.ITableLabelProvider;
 import org.eclipse.jface.viewers.TableViewer;
@@ -58,7 +58,7 @@ import org.preesm.ui.scenario.editor.Messages;
  *
  * @author mpelcat
  */
-public class MemCopySpeedLabelProvider implements ITableLabelProvider {
+public class MemCopySpeedLabelProvider extends BaseLabelProvider implements ITableLabelProvider {
 
   /** The scenario. */
   private Scenario scenario = null;
@@ -87,22 +87,11 @@ public class MemCopySpeedLabelProvider implements ITableLabelProvider {
     this.propertyListener = propertyListener;
   }
 
-  /*
-   * (non-Javadoc)
-   *
-   * @see org.eclipse.jface.viewers.ITableLabelProvider#getColumnImage(java.lang.Object, int)
-   */
   @Override
   public Image getColumnImage(final Object element, final int columnIndex) {
-    // TODO Auto-generated method stub
     return null;
   }
 
-  /*
-   * (non-Javadoc)
-   *
-   * @see org.eclipse.jface.viewers.ITableLabelProvider#getColumnText(java.lang.Object, int)
-   */
   @Override
   public String getColumnText(final Object element, final int columnIndex) {
     String text = "";
@@ -121,50 +110,6 @@ public class MemCopySpeedLabelProvider implements ITableLabelProvider {
     }
 
     return text;
-  }
-
-  /*
-   * (non-Javadoc)
-   *
-   * @see org.eclipse.jface.viewers.IBaseLabelProvider#addListener(org.eclipse.jface.viewers.ILabelProviderListener)
-   */
-  @Override
-  public void addListener(final ILabelProviderListener listener) {
-    // TODO Auto-generated method stub
-
-  }
-
-  /*
-   * (non-Javadoc)
-   *
-   * @see org.eclipse.jface.viewers.IBaseLabelProvider#dispose()
-   */
-  @Override
-  public void dispose() {
-    // TODO Auto-generated method stub
-
-  }
-
-  /*
-   * (non-Javadoc)
-   *
-   * @see org.eclipse.jface.viewers.IBaseLabelProvider#isLabelProperty(java.lang.Object, java.lang.String)
-   */
-  @Override
-  public boolean isLabelProperty(final Object element, final String property) {
-    // TODO Auto-generated method stub
-    return false;
-  }
-
-  /*
-   * (non-Javadoc)
-   *
-   * @see org.eclipse.jface.viewers.IBaseLabelProvider#removeListener(org.eclipse.jface.viewers.ILabelProviderListener)
-   */
-  @Override
-  public void removeListener(final ILabelProviderListener listener) {
-    // TODO Auto-generated method stub
-
   }
 
   /**

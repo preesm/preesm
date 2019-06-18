@@ -45,7 +45,6 @@ import java.util.List;
 import java.util.Set;
 import org.eclipse.jface.viewers.CellEditor;
 import org.eclipse.jface.viewers.ICellModifier;
-import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.jface.viewers.TextCellEditor;
 import org.eclipse.swt.SWT;
@@ -81,6 +80,7 @@ import org.eclipse.ui.forms.widgets.ScrolledForm;
 import org.eclipse.ui.forms.widgets.Section;
 import org.preesm.model.pisdf.AbstractActor;
 import org.preesm.model.scenario.Scenario;
+import org.preesm.model.scenario.impl.MemoryInfoImpl;
 import org.preesm.model.scenario.serialize.PreesmAlgorithmListContentProvider;
 import org.preesm.model.scenario.serialize.TimingImporter;
 import org.preesm.model.slam.Design;
@@ -97,6 +97,12 @@ import org.preesm.ui.scenario.editor.utils.VertexLexicographicalComparator;
  * @author kdesnos
  */
 public class TimingsPage extends ScenarioPage {
+
+  private static final String OP_DEF_TITLE        = Messages.getString("Timings.MemcopySpeeds.opDefColumn");
+  private static final String SETUP_TIME_TITLE    = Messages.getString("Timings.MemcopySpeeds.setupTimeColumn");
+  private static final String TIME_PER_UNIT_TITLE = Messages.getString("Timings.MemcopySpeeds.timePerUnitColumn");
+
+  private static final String[] MEM_COLUMN_NAMES = { OP_DEF_TITLE, SETUP_TIME_TITLE, TIME_PER_UNIT_TITLE };
 
   /** The scenario. */
   final Scenario scenario;
@@ -221,22 +227,67 @@ public class TimingsPage extends ScenarioPage {
     newTableViewer.setLabelProvider(labelProvider);
 
     // Create columns
-    final TableColumn column1 = new TableColumn(table, SWT.NONE, 0);
-    column1.setText(Messages.getString("Timings.MemcopySpeeds.opDefColumn"));
+    final TableColumn[] columns = new TableColumn[MEM_COLUMN_NAMES.length];
+    for (int i = 0; i < MEM_COLUMN_NAMES.length; i++) {
+      final TableColumn columni = new TableColumn(table, SWT.NONE, i);
+      columni.setText(MEM_COLUMN_NAMES[i]);
+      columns[i] = columni;
+    }
 
-    final TableColumn column2 = new TableColumn(table, SWT.NONE, 1);
-    column2.setText(Messages.getString("Timings.MemcopySpeeds.setupTimeColumn"));
+    newTableViewer.setCellModifier(new ICellModifier() {
+      @Override
+      public void modify(final Object element, final String property, final Object value) {
+        if (element instanceof TableItem) {
+          final TableItem ti = (TableItem) element;
+          final MemoryInfoImpl memInfo = (MemoryInfoImpl) ti.getData();
+          final String newValue = (String) value;
+          boolean dirty = false;
+          if (SETUP_TIME_TITLE.equals(property)) {
+            final String oldValue = Long.toString(memInfo.getValue().getSetupTime());
+            if (!oldValue.equals(newValue)) {
+              dirty = true;
+              memInfo.getValue().setSetupTime(Long.parseLong(newValue));
+            }
+          } else if (TIME_PER_UNIT_TITLE.equals(property)) {
+            final String oldValue = Double.toString(memInfo.getValue().getTimePerUnit());
+            if (!oldValue.equals(newValue)) {
+              dirty = true;
+              memInfo.getValue().setTimePerUnit(1. / Double.parseDouble(newValue));
+            }
+          }
 
-    final TableColumn column3 = new TableColumn(table, SWT.NONE, 2);
-    column3.setText(Messages.getString("Timings.MemcopySpeeds.timePerUnitColumn"));
+          if (dirty) {
+            firePropertyChange(IEditorPart.PROP_DIRTY);
+            newTableViewer.refresh();
+          }
+        }
+      }
 
-    newTableViewer.addDoubleClickListener(e -> {
-      labelProvider.handleDoubleClick((IStructuredSelection) e.getSelection());
-      // Force the "file has changed" property of scenario.
-      // Timing changes will have no effects if the scenario
-      // is not saved.
-      firePropertyChange(IEditorPart.PROP_DIRTY);
+      @Override
+      public Object getValue(final Object element, final String property) {
+        if (element instanceof MemoryInfoImpl) {
+          final MemoryInfoImpl memInfo = (MemoryInfoImpl) element;
+          if (SETUP_TIME_TITLE.equals(property)) {
+            return Long.toString(memInfo.getValue().getSetupTime());
+          } else if (TIME_PER_UNIT_TITLE.equals(property)) {
+            return Double.toString(1. / memInfo.getValue().getTimePerUnit());
+          }
+        }
+        return "";
+      }
+
+      @Override
+      public boolean canModify(final Object element, final String property) {
+        return property.contentEquals(MEM_COLUMN_NAMES[1]) || property.contentEquals(MEM_COLUMN_NAMES[2]);
+      }
     });
+
+    final CellEditor[] editors = new CellEditor[table.getColumnCount()];
+    for (int i = 0; i < table.getColumnCount(); i++) {
+      editors[i] = new TextCellEditor(table);
+    }
+    newTableViewer.setColumnProperties(MEM_COLUMN_NAMES);
+    newTableViewer.setCellEditors(editors);
 
     final Table tref = table;
     final Composite comp = tablecps;
@@ -254,9 +305,9 @@ public class TimingsPage extends ScenarioPage {
           width -= vBarSize.x;
         }
         tref.setSize(area.width, area.height);
-        column1.setWidth((width / 4) - 1);
-        column2.setWidth((width - column1.getWidth()) / 2);
-        column3.setWidth((width - column1.getWidth()) / 2);
+        columns[0].setWidth((width / 4) - 1);
+        columns[1].setWidth((width - columns[0].getWidth()) / 2);
+        columns[2].setWidth((width - columns[0].getWidth()) / 2);
       }
     });
 
