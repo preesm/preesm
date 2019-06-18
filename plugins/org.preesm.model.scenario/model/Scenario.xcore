@@ -332,15 +332,35 @@ class PapifyConfig {
 		}
 	}
 	
-	op ActorEvent[] getPapiComponentsWithConfig(AbstractActor actor){
-		if(papifyConfigGroupsActors.containsKey(actor)){
-			var map = papifyConfigGroupsActors.get(actor)
-			if(map.containsKey("Timing")){
+	op String[] getActorAssociatedPapiComponents(AbstractActor actor){
+		var actorConfig = getActorConfig(actor)
+		if(!actorConfig.nullOrEmpty){
+			var map = actorConfig.keySet
+			if(map.contains("Timing")){
 				map.remove("Timing")
 			}
-			return map
+			return map.asEList
 		}
-		return ECollections.emptyEMap;
+		return ECollections.emptyEList;
+	}
+	
+	op PapiEvent[] getActorAssociatedEvents(AbstractActor actor){
+		var actorConfig = getActorConfig(actor)
+		if(!actorConfig.nullOrEmpty){
+			return actorConfig.filter[it|!(it.key.equals("Timing"))].map[it.value].flatten.asEList
+		}
+		return ECollections.emptyEList;
+	}
+	
+	op String getActorOriginalIdentifier(AbstractActor actor){
+		if (this.papifyConfigGroupsActors.containsKey(actor)) {
+			return actor.actorPath.substring(actor.actorPath.indexOf('/') + 1).replace('/', '_')
+		}else{
+			var AbstractActor source = PreesmCopyTracker.getOriginalSource(actor);
+			if (this.papifyConfigGroupsActors.containsKey(source)) {
+				return source.actorPath.substring(source.actorPath.indexOf('/') + 1).replace('/', '_')
+			}			
+		}
 	}
 	
 	op PapiComponent[] getSupportedPapiComponents(Component component){
@@ -348,6 +368,17 @@ class PapifyConfig {
 			return papifyConfigGroupsPEs.get(component)
 		}
 		return ECollections.emptyEList;
+	}
+	
+	op ActorEvent[] getActorEventSets(AbstractActor actor){
+		var actorConfig = getActorConfig(actor)
+		if(!actorConfig.nullOrEmpty){
+			if(actorConfig.containsKey("Timing")){
+				actorConfig.removeKey("Timing")				
+			}
+			return actorConfig
+		}
+		return ECollections.emptyEMap;
 	}
 
 	op void clear() {

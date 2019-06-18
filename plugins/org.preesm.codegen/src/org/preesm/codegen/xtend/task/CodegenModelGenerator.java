@@ -66,6 +66,7 @@ import org.eclipse.emf.common.util.BasicEList;
 import org.eclipse.emf.common.util.ECollections;
 import org.eclipse.emf.common.util.EList;
 import org.eclipse.emf.common.util.EMap;
+import org.eclipse.emf.ecore.util.EcoreUtil;
 import org.eclipse.xtext.xbase.lib.Pair;
 import org.preesm.algorithm.codegen.idl.ActorPrototypes;
 import org.preesm.algorithm.codegen.idl.IDLPrototypeFactory;
@@ -263,6 +264,11 @@ public class CodegenModelGenerator {
    */
   protected final List<String> papifiedPEs;
 
+  /**
+   * This {@link List} of {@link List} stores the Papify configurations already used.
+   */
+  protected final List<EList<PapiEvent>> configsAdded;
+
   /** The flag to activate PAPIFY instrumentation. */
   private boolean papifyActive;
 
@@ -307,6 +313,7 @@ public class CodegenModelGenerator {
     this.popFifoCalls = new LinkedHashMap<>();
     this.linkHSDFVertexBuffer = new LinkedHashMap<>();
     this.papifiedPEs = new ArrayList<>();
+    this.configsAdded = new ArrayList<>();
     this.papifyActive = false;
   }
 
@@ -2153,9 +2160,9 @@ public class CodegenModelGenerator {
 
       // Add the PAPI component name
       AbstractActor referencePiVertex = dagVertex.getReferencePiVertex();
-      EMap<String, EList<PapiEvent>> compsWithConfig = papifyConfig.getPapiComponentsWithConfig(referencePiVertex);
+      EList<String> compsWithConfig = papifyConfig.getActorAssociatedPapiComponents(referencePiVertex);
       String compNames = "";
-      for (String compName : compsWithConfig.keySet()) {
+      for (String compName : compsWithConfig) {
         if (compNames.equals("")) {
           compNames = compName;
         } else {
@@ -2167,25 +2174,74 @@ public class CodegenModelGenerator {
       componentName.setValue(compNames);
       componentName.setComment("PAPI component name");
 
-      // Add the function parameters
-      Map<String,
-          ConstantString> mapPapifyActorName = dagVertex.getPropertyBean().getValue(PapifyEngine.PAPIFY_ACTOR_NAME);
-      Map<String,
-          Constant> mapPapifyCodesetSize = dagVertex.getPropertyBean().getValue(PapifyEngine.PAPIFY_CODESET_SIZE);
-      Map<String, ConstantString> mapPapifyEventsetNames = dagVertex.getPropertyBean()
-          .getValue(PapifyEngine.PAPIFY_EVENTSET_NAMES);
-      Map<String, ConstantString> mapPapifyConfigNumber = dagVertex.getPropertyBean()
-          .getValue(PapifyEngine.PAPIFY_CONFIG_NUMBER);
-      Map<String,
-          Constant> mapPapifyCounterConfigs = dagVertex.getPropertyBean().getValue(PapifyEngine.PAPIFY_COUNTER_CONFIGS);
+      // Add the size of the configs
+      Constant numConfigs = CodegenFactory.eINSTANCE.createConstant();
+      numConfigs.setName("numConfigs");
+      numConfigs.setValue(compsWithConfig.size());
 
+      // Add the actor name
+      String actorOriginalIdentifier = papifyConfig.getActorOriginalIdentifier(referencePiVertex);
+      ConstantString actorName = CodegenFactory.eINSTANCE.createConstantString();
+      actorName.setName("actor_name".concat(actorOriginalIdentifier));
+      actorName.setValue(actorOriginalIdentifier);
+      actorName.setComment("Actor name");
+
+      // Add the PAPI component name
+      EList<PapiEvent> actorEvents = papifyConfig.getActorAssociatedEvents(referencePiVertex);
+      String eventNames = "";
+      for (PapiEvent oneEvent : actorEvents) {
+        if (eventNames.equals("")) {
+          eventNames = oneEvent.getName();
+        } else {
+          eventNames = eventNames.concat(",").concat(oneEvent.getName());
+        }
+      }
+      ConstantString eventSetNames = CodegenFactory.eINSTANCE.createConstantString();
+      eventSetNames.setName("allEventNames");
+      eventSetNames.setValue(eventNames);
+      eventSetNames.setComment("Papify events");
+
+      // Add the size of the CodeSet
+      Constant codeSetSize = CodegenFactory.eINSTANCE.createConstant();
+      codeSetSize.setName("CodeSetSize");
+      codeSetSize.setValue(actorEvents.size());
+
+      // Set the id associated to the Papify configuration
+      EMap<String, EList<PapiEvent>> actorConfig = papifyConfig.getActorConfig(referencePiVertex);
+      String configIds = "";
+
+      for (EList<PapiEvent> oneConfig : actorConfig.values()) {
+        boolean found = false;
+        int positionConfig = -1;
+        for (EList<PapiEvent> storedConfig : this.configsAdded) {
+          if (EcoreUtil.equals(storedConfig, oneConfig)) {
+            found = true;
+            positionConfig = this.configsAdded.indexOf(storedConfig);
+          }
+        }
+        if (!found) {
+          this.configsAdded.add(oneConfig);
+          positionConfig = this.configsAdded.indexOf(oneConfig);
+        }
+        if (configIds.equals("")) {
+          configIds = Integer.toString(positionConfig);
+        } else {
+          configIds = configIds.concat(",").concat(Integer.toString(positionConfig));
+        }
+      }
+      ConstantString papifyConfigNumber = CodegenFactory.eINSTANCE.createConstantString();
+      papifyConfigNumber.setName("PAPIFY_configs_".concat(dagVertex.getName()));
+      papifyConfigNumber.setValue(configIds);
+      papifyConfigNumber.setComment("PAPIFY actor configs");
+
+      // Add the function parameters
       func.addParameter((Variable) papifyActionS, PortDirection.OUTPUT);
       func.addParameter((Variable) componentName, PortDirection.INPUT);
-      func.addParameter((Variable) mapPapifyActorName.get(dagVertex.getInfo()), PortDirection.INPUT);
-      func.addParameter((Variable) mapPapifyCodesetSize.get(dagVertex.getInfo()), PortDirection.INPUT);
-      func.addParameter((Variable) mapPapifyEventsetNames.get(dagVertex.getInfo()), PortDirection.INPUT);
-      func.addParameter((Variable) mapPapifyConfigNumber.get(dagVertex.getInfo()), PortDirection.INPUT);
-      func.addParameter((Variable) mapPapifyCounterConfigs.get(dagVertex.getInfo()), PortDirection.INPUT);
+      func.addParameter((Variable) actorName, PortDirection.INPUT);
+      func.addParameter((Variable) codeSetSize, PortDirection.INPUT);
+      func.addParameter((Variable) eventSetNames, PortDirection.INPUT);
+      func.addParameter((Variable) papifyConfigNumber, PortDirection.INPUT);
+      func.addParameter((Variable) numConfigs, PortDirection.INPUT);
 
     } else {
       // Add the function parameters
