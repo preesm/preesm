@@ -181,7 +181,7 @@ public class HeaderParser {
           if ((matcher.group(3) == null) && (matcher.group(5) == null)) {
             fp.setIsConfigurationParameter(true);
           }
-          final EList<FunctionArgument> protoParameters = funcProto.getParameters();
+          final EList<FunctionArgument> protoParameters = funcProto.getArguments();
           protoParameters.add(fp);
         }
       }
@@ -286,7 +286,7 @@ public class HeaderParser {
       // proto matches the initialization of actor if:
       // -it does not have more parameters than the actors configuration
       // input ports
-      final List<FunctionArgument> params = new ArrayList<>(proto.getParameters());
+      final List<FunctionArgument> params = new ArrayList<>(proto.getArguments());
       boolean matches = params.size() <= actor.getConfigInputPorts().size();
       // -all function parameters of proto match a configuration input
       // port of the actor (initialization function cannot read or write
@@ -329,7 +329,7 @@ public class HeaderParser {
     for (final FunctionPrototype proto : prototypes) {
       // proto matches the signature of actor if:
       // -it does not have more parameters than the actors ports
-      final ArrayList<FunctionArgument> params = new ArrayList<>(proto.getParameters());
+      final ArrayList<FunctionArgument> params = new ArrayList<>(proto.getArguments());
       boolean matches = params.size() <= (actor.getDataInputPorts().size() + actor.getDataOutputPorts().size()
           + actor.getConfigInputPorts().size() + actor.getConfigOutputPorts().size());
 
@@ -339,7 +339,7 @@ public class HeaderParser {
       allPorts.addAll(actor.getDataOutputPorts());
       allPorts.addAll(actor.getConfigInputPorts());
       allPorts.addAll(actor.getConfigOutputPorts());
-      for (final FunctionArgument param : proto.getParameters()) {
+      for (final FunctionArgument param : proto.getArguments()) {
         matches &= HeaderParser.hasCorrespondingPort(param, allPorts);
       }
 
@@ -419,7 +419,7 @@ public class HeaderParser {
     // input or output buffers (i.e. parameters with a pointer type)
     for (final FunctionPrototype proto : prototypes) {
       boolean allParams = true;
-      for (final FunctionArgument param : proto.getParameters()) {
+      for (final FunctionArgument param : proto.getArguments()) {
         if (param.isIsConfigurationParameter()) {
           param.setDirection(Direction.IN);
         } else {

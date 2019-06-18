@@ -114,7 +114,7 @@ public final class RefinementResolver extends PiMMSwitch<AbstractActor> {
       // Create all its ports corresponding to parameters of the
       // prototype
       final FunctionPrototype loopProto = ref.getLoopPrototype();
-      final List<FunctionArgument> loopParameters = loopProto.getParameters();
+      final List<FunctionArgument> loopParameters = loopProto.getArguments();
       for (final FunctionArgument param : loopParameters) {
         if (!param.isIsConfigurationParameter()) {
           // Data Port

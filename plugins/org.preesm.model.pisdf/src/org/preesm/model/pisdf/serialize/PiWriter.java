@@ -756,7 +756,7 @@ public class PiWriter {
       final String functionName) {
     final Element protoElt = appendChild(vertexElt, functionName);
     protoElt.setAttribute(PiIdentifiers.REFINEMENT_FUNCTION_PROTOTYPE_NAME, prototype.getName());
-    for (final FunctionArgument p : prototype.getParameters()) {
+    for (final FunctionArgument p : prototype.getArguments()) {
       writeFunctionParameter(protoElt, p);
     }
   }

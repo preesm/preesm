@@ -368,7 +368,7 @@ public class PiParser {
       final Node elt = childList.item(i);
       final String eltName = elt.getNodeName();
       if (PiIdentifiers.REFINEMENT_PARAMETER.equals(eltName)) {
-        proto.getParameters().add(parseFunctionParameter((Element) elt));
+        proto.getArguments().add(parseFunctionParameter((Element) elt));
       }
     }
     return proto;

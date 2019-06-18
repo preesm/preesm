@@ -796,12 +796,12 @@ public class SpiderCodegen {
 
       append("\t" + proto.getName() + "(\n");
       int maxParamSize = 0;
-      for (final FunctionArgument param : proto.getParameters()) {
+      for (final FunctionArgument param : proto.getArguments()) {
         maxParamSize = Math.max(maxParamSize, param.getName().length());
       }
 
       boolean first = true;
-      for (final FunctionArgument param : proto.getParameters()) {
+      for (final FunctionArgument param : proto.getArguments()) {
         if (first) {
           first = false;
         } else {

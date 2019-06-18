@@ -52,7 +52,7 @@ public class PrototypeFormatter {
   public static final String format(final FunctionPrototype prototype) {
     final StringBuilder result = new StringBuilder(prototype.getName() + "(");
     boolean first = true;
-    for (final FunctionArgument p : prototype.getParameters()) {
+    for (final FunctionArgument p : prototype.getArguments()) {
       if (first) {
         first = false;
       } else {

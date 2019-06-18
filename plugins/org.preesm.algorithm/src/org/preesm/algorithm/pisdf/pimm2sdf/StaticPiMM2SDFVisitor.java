@@ -523,7 +523,7 @@ public class StaticPiMM2SDFVisitor extends PiMMSwitch<Boolean> {
   @Override
   public Boolean caseFunctionPrototype(final FunctionPrototype f) {
     this.currentPrototype = new Prototype(f.getName());
-    for (final FunctionArgument p : f.getParameters()) {
+    for (final FunctionArgument p : f.getArguments()) {
       doSwitch(p);
       if (p.isIsConfigurationParameter()) {
         this.currentPrototype.addParameter(this.currentParameter);
