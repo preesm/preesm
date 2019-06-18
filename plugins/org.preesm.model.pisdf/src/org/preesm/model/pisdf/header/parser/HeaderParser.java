@@ -38,17 +38,17 @@
 package org.preesm.model.pisdf.header.parser;
 
 import java.io.IOException;
-import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Scanner;
 import java.util.Set;
+import java.util.logging.Level;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import org.eclipse.core.resources.IFile;
-import org.eclipse.core.runtime.CoreException;
 import org.eclipse.emf.common.util.EList;
+import org.preesm.commons.files.URLResolver;
+import org.preesm.commons.logger.PreesmLogger;
 import org.preesm.model.pisdf.AbstractActor;
 import org.preesm.model.pisdf.Direction;
 import org.preesm.model.pisdf.FunctionParameter;
@@ -56,7 +56,6 @@ import org.preesm.model.pisdf.FunctionPrototype;
 import org.preesm.model.pisdf.Port;
 import org.preesm.model.pisdf.factory.PiMMUserFactory;
 
-// TODO: Auto-generated Javadoc
 /**
  * Utility class containing method to extract prototypes from a C header file.
  *
@@ -105,8 +104,9 @@ public class HeaderParser {
     List<FunctionPrototype> result = null;
     if (file != null) {
       try {
+
         // Read the file content
-        String fileContent = HeaderParser.readFileContent(file);
+        String fileContent = URLResolver.readURL(file.getLocationURI().toURL().toString());
 
         // Filter unwanted content
         fileContent = HeaderParser.filterHeaderFileContent(fileContent);
@@ -116,8 +116,8 @@ public class HeaderParser {
 
         // Create the FunctionPrototypes
         result = HeaderParser.createFunctionPrototypes(prototypes);
-      } catch (CoreException | IOException e) {
-        e.printStackTrace();
+      } catch (IOException e) {
+        PreesmLogger.getLogger().log(Level.INFO, "Could not parse header '" + file + "'.");
       }
     }
     return result;
@@ -265,26 +265,6 @@ public class HeaderParser {
     matcher = pattern.matcher(fileContent);
     fileContent = matcher.replaceAll(" $0 ");
     return fileContent;
-  }
-
-  /**
-   * Read the content of an {@link IFile} and returns it as a {@link String}.
-   *
-   * @param file
-   *          the {@link IFile} to read.
-   * @return the content of the {@link IFile} as a {@link String}.
-   *
-   * @throws CoreException
-   *           {@link IFile#getContents()}
-   * @throws IOException
-   *           {@link InputStream#read()}
-   */
-  protected static String readFileContent(final IFile file) throws CoreException, IOException {
-    String fileString = null;
-    try (Scanner scanner = new Scanner(file.getContents())) {
-      fileString = scanner.useDelimiter("\\A").next();
-    }
-    return fileString;
   }
 
   /**
