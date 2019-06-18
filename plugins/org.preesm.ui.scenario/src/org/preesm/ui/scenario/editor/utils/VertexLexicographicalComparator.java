@@ -1,5 +1,6 @@
 package org.preesm.ui.scenario.editor.utils;
 
+import java.util.Map.Entry;
 import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.jface.viewers.ViewerComparator;
 import org.preesm.model.pisdf.AbstractVertex;
@@ -27,6 +28,12 @@ public class VertexLexicographicalComparator extends ViewerComparator {
         return Integer.compare(nbSep1, nbSep2);
       }
       return vertex1.getVertexPath().compareTo(vertex2.getVertexPath());
+    } else if ((o1 instanceof Entry<?, ?>) && (o2 instanceof Entry<?, ?>)) {
+      final Object key1 = ((Entry<?, ?>) o1).getKey();
+      final Object key2 = ((Entry<?, ?>) o2).getKey();
+      if (key1 instanceof AbstractVertex && key2 instanceof AbstractVertex) {
+        return compare(viewer, key1, key2);
+      }
     }
     return 0;
   }
