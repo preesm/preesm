@@ -43,8 +43,11 @@ import java.util.Arrays;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
+import org.eclipse.jface.viewers.CellEditor;
+import org.eclipse.jface.viewers.ICellModifier;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.TableViewer;
+import org.eclipse.jface.viewers.TextCellEditor;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.ControlAdapter;
 import org.eclipse.swt.events.ControlEvent;
@@ -65,6 +68,7 @@ import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.ScrollBar;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
+import org.eclipse.swt.widgets.TableItem;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.forms.IManagedForm;
@@ -75,6 +79,7 @@ import org.eclipse.ui.forms.widgets.ExpandableComposite;
 import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.eclipse.ui.forms.widgets.ScrolledForm;
 import org.eclipse.ui.forms.widgets.Section;
+import org.preesm.model.pisdf.AbstractActor;
 import org.preesm.model.scenario.Scenario;
 import org.preesm.model.scenario.serialize.PreesmAlgorithmListContentProvider;
 import org.preesm.model.scenario.serialize.TimingImporter;
@@ -365,10 +370,49 @@ public class TimingsPage extends ScenarioPage {
       columns.add(column);
     }
 
-    // Make the last column (Expression) editable
-    // XXX: Through an other way than double clicking (direct editing)
-    this.tableViewer
-        .addDoubleClickListener(e -> labelProvider.handleDoubleClick((IStructuredSelection) e.getSelection()));
+    final CellEditor[] editors = new CellEditor[table.getColumnCount()];
+    for (int i = 0; i < table.getColumnCount(); i++) {
+      editors[i] = new TextCellEditor(table);
+    }
+    this.tableViewer.setColumnProperties(PISDF_COLUMN_NAMES);
+    this.tableViewer.setCellEditors(editors);
+
+    this.tableViewer.setCellModifier(new ICellModifier() {
+      @Override
+      public void modify(final Object element, final String property, final Object value) {
+        if (element instanceof TableItem) {
+          final TableItem ti = (TableItem) element;
+          final AbstractActor actor = (AbstractActor) ti.getData();
+          final String componentType = coreCombo.getText();
+          final Component component = TimingsPage.this.scenario.getDesign().getComponent(componentType);
+
+          final String oldValue = TimingsPage.this.scenario.getTimings().getTimingOrDefault(actor, component);
+          final String newValue = (String) value;
+
+          if (!oldValue.equals(newValue)) {
+            TimingsPage.this.scenario.getTimings().setTiming(actor, component, newValue);
+            firePropertyChange(IEditorPart.PROP_DIRTY);
+            tableViewer.refresh(actor, false, false);
+          }
+        }
+      }
+
+      @Override
+      public Object getValue(final Object element, final String property) {
+        if (element instanceof AbstractActor) {
+          final AbstractActor actor = (AbstractActor) element;
+          final String componentType = coreCombo.getText();
+          final Component component = TimingsPage.this.scenario.getDesign().getComponent(componentType);
+          return TimingsPage.this.scenario.getTimings().getTimingOrDefault(actor, component);
+        }
+        return "";
+      }
+
+      @Override
+      public boolean canModify(final Object element, final String property) {
+        return property.contentEquals(PISDF_COLUMN_NAMES[2]);
+      }
+    });
 
     final Table tref = table;
     final Composite comp = tablecps;
@@ -415,7 +459,9 @@ public class TimingsPage extends ScenarioPage {
     if ((source instanceof TimingsTableLabelProvider) && (propId == IEditorPart.PROP_DIRTY)) {
       firePropertyChange(IEditorPart.PROP_DIRTY);
     }
-    this.tableViewer.refresh();
+    if (this.tableViewer != null) {
+      this.tableViewer.refresh();
+    }
   }
 
   /**
