@@ -244,7 +244,8 @@ public class SetActorRefinementFeature extends AbstractCustomFeature {
           FunctionPrototype initProto = null;
           title = "Init Function Selection";
           message = "Select an optionnal init function for actor " + actor.getName()
-              + ", or click Cancel to set none\n(* = any string, ? = any char):";
+              + ", or click Cancel to set none.\nNote: prototypes with pointers or arrays as "
+              + "arguments are filtered out.\n(* = any string, ? = any char):";
           final FunctionPrototype[] initProtoArray = initPrototypes
               .toArray(new FunctionPrototype[initPrototypes.size()]);
           final FunctionPrototype[] allInitProtoArray = allInitPrototypes
