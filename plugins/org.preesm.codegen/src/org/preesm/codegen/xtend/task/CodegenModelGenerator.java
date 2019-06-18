@@ -581,7 +581,7 @@ public class CodegenModelGenerator {
         boolean closed = false;
         /*
          * Only one #ifdef _PREESM_MONITORING_INIT in the definition code Assumption: All the PapifyActions are printed
-         * consecutively (AS CONSTANTS ARE NOT PRINTED THIS USUALLY TRUE)
+         * consecutively (AS CONSTANTS ARE NOT PRINTED, THIS IS USUALLY TRUE)
          */
         if (!definitions.isEmpty()) {
           for (iterator = 0; iterator < definitions.size(); iterator++) {
@@ -619,6 +619,9 @@ public class CodegenModelGenerator {
           }
           if (loopBlockElts.get(loopBlockElts.size() - 1) instanceof PapifyFunctionCall) {
             ((PapifyFunctionCall) loopBlockElts.get(loopBlockElts.size() - 1)).setClosing(true);
+            if (!(loopBlockElts.get(loopBlockElts.size() - 2) instanceof PapifyFunctionCall)) {
+              ((PapifyFunctionCall) loopBlockElts.get(loopBlockElts.size() - 1)).setOpening(true);
+            }
           }
         }
         /*
@@ -643,6 +646,9 @@ public class CodegenModelGenerator {
           }
           if (initBlockElts.get(initBlockElts.size() - 1) instanceof PapifyFunctionCall) {
             ((PapifyFunctionCall) initBlockElts.get(initBlockElts.size() - 1)).setClosing(true);
+            if (!(initBlockElts.get(initBlockElts.size() - 2) instanceof PapifyFunctionCall)) {
+              ((PapifyFunctionCall) initBlockElts.get(initBlockElts.size() - 1)).setOpening(true);
+            }
           }
         }
       }
