@@ -11,7 +11,7 @@ PREESM Changelog
 * Update sonar plugin to 3.6.0.1398;
 
 ### Bug fix
-
+* Fix #154: fix scenario UI layouts;
 
 ## Release version 3.9.0
 *2019.06.18*

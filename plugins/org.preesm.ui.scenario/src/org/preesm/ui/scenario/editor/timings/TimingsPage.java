@@ -46,6 +46,7 @@ import java.util.List;
 import java.util.Set;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
+import org.eclipse.emf.common.util.EList;
 import org.eclipse.jface.dialogs.ErrorDialog;
 import org.eclipse.jface.viewers.CellEditor;
 import org.eclipse.jface.viewers.ICellModifier;
@@ -196,8 +197,8 @@ public class TimingsPage extends ScenarioPage {
 
     // Creates the section
     managedForm.getForm().setLayout(new FillLayout());
-    final Composite container = createSection(managedForm, title, desc, 1,
-        new GridData(GridData.FILL_HORIZONTAL | GridData.VERTICAL_ALIGN_BEGINNING));
+    final GridData gridData = new GridData(GridData.FILL_HORIZONTAL | GridData.VERTICAL_ALIGN_FILL);
+    final Composite container = createSection(managedForm, title, desc, 1, gridData);
     final FormToolkit toolkit = managedForm.getToolkit();
 
     addMemcopySpeedsTable(container, toolkit);
@@ -221,7 +222,7 @@ public class TimingsPage extends ScenarioPage {
 
     final Table table = newTableViewer.getTable();
     table.setLayout(new GridLayout());
-    table.setLayoutData(new GridData(GridData.VERTICAL_ALIGN_BEGINNING));
+    table.setLayoutData(new GridData(GridData.FILL_HORIZONTAL | GridData.VERTICAL_ALIGN_BEGINNING));
     table.setHeaderVisible(true);
     table.setLinesVisible(true);
 
@@ -329,9 +330,11 @@ public class TimingsPage extends ScenarioPage {
     });
 
     newTableViewer.setInput(this.scenario);
-    final GridData gd = new GridData(GridData.FILL_HORIZONTAL | GridData.VERTICAL_ALIGN_BEGINNING);
-    gd.heightHint = 400;
-    gd.widthHint = 250;
+    final GridData gd = new GridData(GridData.FILL_HORIZONTAL | GridData.VERTICAL_ALIGN_FILL);
+    final EList<Component> components = scenario.getDesign().getComponents();
+    gd.heightHint = Math.max(50, Math.min(200, components.size() * 20 + 30));
+    gd.widthHint = 400;
+    gd.grabExcessVerticalSpace = true;
     tablecps.setLayoutData(gd);
   }
 
@@ -350,7 +353,7 @@ public class TimingsPage extends ScenarioPage {
     // Creates the section
     managedForm.getForm().setLayout(new FillLayout());
     final Composite container = createSection(managedForm, title, desc, 1,
-        new GridData(GridData.FILL_HORIZONTAL | GridData.FILL_VERTICAL));
+        new GridData(GridData.FILL_HORIZONTAL | GridData.VERTICAL_ALIGN_BEGINNING));
     final FormToolkit toolkit = managedForm.getToolkit();
 
     final Combo coreCombo = addCoreSelector(container, toolkit);
@@ -416,7 +419,7 @@ public class TimingsPage extends ScenarioPage {
     tableViewer.setComparator(new VertexLexicographicalComparator());
     final Table table = this.tableViewer.getTable();
     table.setLayout(new GridLayout());
-    table.setLayoutData(new GridData(GridData.FILL_BOTH));
+    table.setLayoutData(new GridData(GridData.HORIZONTAL_ALIGN_FILL | GridData.VERTICAL_ALIGN_BEGINNING));
     table.setHeaderVisible(true);
     table.setLinesVisible(true);
 
@@ -508,8 +511,11 @@ public class TimingsPage extends ScenarioPage {
 
     this.tableViewer.setInput(this.scenario);
     final GridData gd = new GridData(GridData.FILL_HORIZONTAL | GridData.VERTICAL_ALIGN_BEGINNING);
-    gd.heightHint = 400;
+    final List<AbstractActor> sortedPISDFVertices = PreesmAlgorithmListContentProvider
+        .getSortedPISDFVertices(TimingsPage.this.scenario);
+    gd.heightHint = Math.min(400, sortedPISDFVertices.size() * 20 + 50);
     gd.widthHint = 400;
+    gd.grabExcessVerticalSpace = false;
     tablecps.setLayoutData(gd);
 
   }
@@ -553,8 +559,7 @@ public class TimingsPage extends ScenarioPage {
   private void createFileSection(final IManagedForm mform, final String title, final String desc, final String fileEdit,
       final String initValue, final String browseTitle, final Set<String> fileExtension) {
 
-    final GridData gridData = new GridData(GridData.FILL_HORIZONTAL);
-    gridData.heightHint = 120;
+    final GridData gridData = new GridData(GridData.FILL_HORIZONTAL | GridData.VERTICAL_ALIGN_BEGINNING);
     final Composite client = createSection(mform, title, desc, 3, gridData);
 
     final FormToolkit toolkit = mform.getToolkit();
