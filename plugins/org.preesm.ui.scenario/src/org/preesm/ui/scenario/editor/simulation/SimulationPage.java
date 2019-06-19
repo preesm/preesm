@@ -509,7 +509,8 @@ public class SimulationPage extends ScenarioPage {
 
     tableViewer.setInput(this.scenario);
     final GridData gd = new GridData(GridData.FILL_HORIZONTAL | GridData.VERTICAL_ALIGN_BEGINNING);
-    gd.heightHint = 400;
+
+    gd.heightHint = Math.max(50, Math.min(300, this.scenario.getSimulationInfo().getDataTypes().size() * 20 + 30));
     gd.widthHint = 250;
     tablecps.setLayoutData(gd);
 
@@ -530,7 +531,10 @@ public class SimulationPage extends ScenarioPage {
           SimulationPage.this.scenario.getSimulationInfo().getDataTypes().put(dialog.getValue(),
               (long) ScenarioConstants.DEFAULT_DATA_TYPE_SIZE.getValue());
           tableViewer.refresh();
-          propertyChanged(this, IEditorPart.PROP_DIRTY);
+          propertyChanged(SimulationPage.this, IEditorPart.PROP_DIRTY);
+          gd.heightHint = Math.max(50,
+              Math.min(300, SimulationPage.this.scenario.getSimulationInfo().getDataTypes().size() * 20 + 30));
+          tablecps.requestLayout();
         }
       }
 
@@ -543,13 +547,16 @@ public class SimulationPage extends ScenarioPage {
       public void widgetSelected(final SelectionEvent e) {
         final IStructuredSelection selection = (IStructuredSelection) tableViewer.getSelection();
         final Object element = selection.getFirstElement();
-        if ((selection != null) && (element instanceof Entry)) {
+        if (element instanceof Entry) {
 
           @SuppressWarnings("unchecked")
           final Entry<String, Long> dataType = (Entry<String, Long>) element;
           SimulationPage.this.scenario.getSimulationInfo().getDataTypes().removeKey(dataType.getKey());
           tableViewer.refresh();
           propertyChanged(this, IEditorPart.PROP_DIRTY);
+          gd.heightHint = Math.max(50,
+              Math.min(300, SimulationPage.this.scenario.getSimulationInfo().getDataTypes().size() * 20 + 30));
+          tablecps.requestLayout();
         }
       }
     });
@@ -674,7 +681,8 @@ public class SimulationPage extends ScenarioPage {
     treeviewer.addCheckStateListener(checkStateListener);
 
     final GridData gd = new GridData(GridData.FILL_HORIZONTAL | GridData.VERTICAL_ALIGN_BEGINNING);
-    gd.heightHint = 400;
+    gd.heightHint = Math.max(50,
+        Math.min(300, SimulationPage.this.scenario.getDesign().getOperatorComponentInstances().size() * 20 + 30));
     gd.widthHint = 250;
     treeviewer.getTree().setLayoutData(gd);
 

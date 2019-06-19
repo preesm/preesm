@@ -143,9 +143,12 @@ public class PapifyPage extends ScenarioPage {
     final ScrolledForm f = managedForm.getForm();
     f.setText(Messages.getString("Papify.title"));
     final Composite body = f.getBody();
-    body.setLayout(new GridLayout());
+    final GridLayout layout = new GridLayout(2, true);
+    layout.verticalSpacing = 10;
+    body.setLayout(layout);
 
     if (this.scenario.isProperlySet()) {
+
       // Papify file chooser section
       createFileSection(managedForm, Messages.getString("Papify.file"), Messages.getString("Papify.fileDescription"),
           Messages.getString("Papify.fileEdit"), this.scenario.getPapifyConfig().getXmlFileURL(),
@@ -153,6 +156,7 @@ public class PapifyPage extends ScenarioPage {
 
       createPapifyPESection(managedForm, Messages.getString("Papify.titlePESection"),
           Messages.getString("Papify.descriptionPE"));
+
       createPapifyActorSection(managedForm, Messages.getString("Papify.titleActorSection"),
           Messages.getString("Papify.descriptionActor"));
 
@@ -167,7 +171,6 @@ public class PapifyPage extends ScenarioPage {
           updateTables();
         } else {
           this.scenario.getPapifyConfig().clear();
-          ;
           this.scenario.getPapifyConfig().setPapiData(this.papiEvents);
         }
         managedForm.refresh();
@@ -264,8 +267,9 @@ public class PapifyPage extends ScenarioPage {
 
     // Creates the section
     managedForm.getForm().setLayout(new FillLayout());
-    final Composite container = createSection(managedForm, title, desc, 1,
-        new GridData(GridData.FILL_HORIZONTAL | GridData.FILL_VERTICAL));
+    // final GridData gridData = new GridData(GridData.FILL_HORIZONTAL | GridData.FILL_VERTICAL);
+    final GridData gridData = new GridData(GridData.FILL_HORIZONTAL | GridData.VERTICAL_ALIGN_BEGINNING);
+    final Composite container = createSection(managedForm, title, desc, 1, gridData);
 
     this.checkStateListener = new PapifyCheckStateListener(this.scenario);
     container.addPaintListener(this.checkStateListener);
@@ -290,8 +294,11 @@ public class PapifyPage extends ScenarioPage {
 
     // Creates the section
     managedForm.getForm().setLayout(new FillLayout());
-    final GridData gridData = new GridData(GridData.FILL_HORIZONTAL);
-    final Composite container = createSection(managedForm, title, desc, 1, gridData);
+    final GridData gridData = new GridData(GridData.FILL_HORIZONTAL | GridData.VERTICAL_ALIGN_FILL);
+    // final GridData gridData = new GridData(GridData.FILL_HORIZONTAL, GridData.VERTICAL_ALIGN_BEGINNING, true, true);
+    gridData.horizontalSpan = 2;
+    gridData.grabExcessVerticalSpace = true;
+    final Composite container = createSection(managedForm, title, desc, 2, gridData);
 
     // this.checkStateListener = new PapifyCheckStateListener(container, this.scenario);
     // container.addPaintListener(this.checkStateListener);
@@ -339,8 +346,7 @@ public class PapifyPage extends ScenarioPage {
   private void createFileSection(final IManagedForm mform, final String title, final String desc, final String fileEdit,
       final String initValue, final String browseTitle, final String fileExtension) {
 
-    final GridData gridData = new GridData(GridData.FILL_HORIZONTAL);
-    gridData.heightHint = 180;
+    final GridData gridData = new GridData(GridData.FILL_HORIZONTAL | GridData.VERTICAL_ALIGN_BEGINNING);
     final Composite client = createSection(mform, title, desc, 1, gridData);
     final FormToolkit toolkit = mform.getToolkit();
 

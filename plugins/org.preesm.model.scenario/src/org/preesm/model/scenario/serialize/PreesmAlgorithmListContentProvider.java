@@ -86,7 +86,7 @@ public class PreesmAlgorithmListContentProvider implements IStructuredContentPro
    * @throws CoreException
    *           the core exception
    */
-  public List<AbstractActor> getSortedPISDFVertices(final Scenario inputScenario) throws CoreException {
+  public static List<AbstractActor> getSortedPISDFVertices(final Scenario inputScenario) {
     final PiGraph currentGraph = inputScenario.getAlgorithm();
     return filterVertices(currentGraph.getAllActors());
   }
@@ -98,7 +98,7 @@ public class PreesmAlgorithmListContentProvider implements IStructuredContentPro
    *          the set of AbstractActor to filter
    * @return a set of Actors, with none of them being a hierarchical actor
    */
-  private List<AbstractActor> filterVertices(final EList<AbstractActor> vertices) {
+  private static List<AbstractActor> filterVertices(final EList<AbstractActor> vertices) {
     return vertices.stream().filter(Actor.class::isInstance).map(Actor.class::cast).filter(a -> !a.isHierarchical())
         .collect(Collectors.toList());
   }
