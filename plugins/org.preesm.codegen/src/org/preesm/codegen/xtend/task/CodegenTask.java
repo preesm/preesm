@@ -95,8 +95,11 @@ import org.preesm.workflow.implement.AbstractTaskImplementation;
             @Value(name = "InstrumentedC",
                 effect = "Print C code instrumented with profiling code, and shared-memory based communications. "
                     + "Currently compatible with x86, c6678 architectures.."),
-            @Value(name = "XML", effect = "Print XML code with all informations used by other printers to print code. "
-                + "Compatible with x86, c6678.") }) })
+            @Value(name = "XML",
+                effect = "Print XML code with all informations used by other printers to print code. "
+                    + "Compatible with x86, c6678.") }),
+        @Parameter(name = "Papify", description = "Enable papify",
+            values = { @Value(name = "true/false", effect = "") }) })
 public class CodegenTask extends AbstractTaskImplementation {
 
   /** The Constant PARAM_PRINTER. */
