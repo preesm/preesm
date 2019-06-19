@@ -754,18 +754,15 @@ public class CodegenModelGenerator {
             loopPrototype, false);
         final FunctionCall functionCall = generateFunctionCall(dagVertex, loopPrototype, false);
 
-        EMap<String, EList<PapiEvent>> actorConfig = null;
         boolean monitoringTiming = false;
         boolean monitoringEvents = false;
         PapifyAction papifyActionS = CodegenFactory.eINSTANCE.createPapifyAction();
         Constant papifyPEId = CodegenFactory.eINSTANCE.createConstant();
+        // Check if this actor has a monitoring configuration
+        PapifyConfig papifyConfig = this.scenario.getPapifyConfig();
+        AbstractActor referencePiVertex = dagVertex.getReferencePiVertex();
         if (this.papifyActive) {
-          // Check if this actor has a monitoring configuration
-          PapifyConfig papifyConfig = this.scenario.getPapifyConfig();
-          AbstractActor referencePiVertex = dagVertex.getReferencePiVertex();
-          actorConfig = papifyConfig.getActorConfig(referencePiVertex);
-
-          if (actorConfig != null && !actorConfig.isEmpty()) {
+          if (papifyConfig.hasPapifyConfig(referencePiVertex)) {
             // Add the papify action variable
             papifyActionS.setName("papify_action_".concat(dagVertex.getName()));
             papifyActionS.setType("papify_action_s");
@@ -794,8 +791,8 @@ public class CodegenModelGenerator {
             operatorBlock.getInitBlock().getCodeElts().add(functionCallPapifyConfigureActor);
 
             // What are we monitoring?
-            monitoringEvents = papifyConfig.isMonitoringEvents(actorConfig);
-            monitoringTiming = papifyConfig.isMonitoringTiming(actorConfig);
+            monitoringEvents = papifyConfig.isMonitoringEvents(referencePiVertex);
+            monitoringTiming = papifyConfig.isMonitoringTiming(referencePiVertex);
             if (monitoringEvents) {
               // Generate Papify start function for events
               final PapifyFunctionCall functionCallPapifyStart = generatePapifyStartFunctionCall(dagVertex,
@@ -814,7 +811,6 @@ public class CodegenModelGenerator {
 
           }
         } else {
-          PapifyConfig papifyConfig = this.scenario.getPapifyConfig();
           Map<String,
               String> mapPapifyConfiguration = dagVertex.getPropertyBean().getValue(PapifyEngine.PAPIFY_CONFIGURATION);
           if (mapPapifyConfiguration != null && !mapPapifyConfiguration.isEmpty()) {
@@ -888,7 +884,7 @@ public class CodegenModelGenerator {
         operatorBlock.getLoopBlock().getCodeElts().add(outputDataTransferFunctionCall);
 
         if (this.papifyActive) {
-          if (actorConfig != null && !actorConfig.isEmpty()) {
+          if (papifyConfig.hasPapifyConfig(referencePiVertex)) {
             if (monitoringTiming) {
               // Generate Papify stop timing function
               final PapifyFunctionCall functionCallPapifyTimingStop = generatePapifyStopTimingFunctionCall(dagVertex,
@@ -2214,28 +2210,26 @@ public class CodegenModelGenerator {
       codeSetSize.setValue(actorEvents.size());
 
       // Set the id associated to the Papify configuration
-      EMap<String, EList<PapiEvent>> actorConfig = papifyConfig.getActorConfig(referencePiVertex);
+      EList<String> actorSupportedComps = papifyConfig.getActorAssociatedPapiComponents(referencePiVertex);
       String configIds = "";
-      for (String papiComponent : actorConfig.keySet()) {
-        if (!papiComponent.equals("Timing")) {
-          EList<PapiEvent> oneConfig = actorConfig.get(papiComponent);
-          boolean found = false;
-          int positionConfig = -1;
-          for (EList<PapiEvent> storedConfig : this.configsAdded) {
-            if (EcoreUtil.equals(storedConfig, oneConfig)) {
-              found = true;
-              positionConfig = this.configsAdded.indexOf(storedConfig);
-            }
+      for (String papiComponent : actorSupportedComps) {
+        EList<PapiEvent> oneConfig = papifyConfig.getActorComponentEvents(referencePiVertex, papiComponent);
+        boolean found = false;
+        int positionConfig = -1;
+        for (EList<PapiEvent> storedConfig : this.configsAdded) {
+          if (EcoreUtil.equals(storedConfig, oneConfig)) {
+            found = true;
+            positionConfig = this.configsAdded.indexOf(storedConfig);
           }
-          if (!found) {
-            this.configsAdded.add(oneConfig);
-            positionConfig = this.configsAdded.indexOf(oneConfig);
-          }
-          if (configIds.equals("")) {
-            configIds = Integer.toString(positionConfig);
-          } else {
-            configIds = configIds.concat(",").concat(Integer.toString(positionConfig));
-          }
+        }
+        if (!found) {
+          this.configsAdded.add(oneConfig);
+          positionConfig = this.configsAdded.indexOf(oneConfig);
+        }
+        if (configIds.equals("")) {
+          configIds = Integer.toString(positionConfig);
+        } else {
+          configIds = configIds.concat(",").concat(Integer.toString(positionConfig));
         }
       }
       ConstantString papifyConfigNumber = CodegenFactory.eINSTANCE.createConstantString();
