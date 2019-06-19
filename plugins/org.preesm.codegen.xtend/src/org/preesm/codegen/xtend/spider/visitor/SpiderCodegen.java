@@ -53,6 +53,7 @@ import java.util.Map.Entry;
 import java.util.Set;
 import org.eclipse.emf.common.util.EList;
 import org.eclipse.emf.common.util.EMap;
+import org.eclipse.emf.ecore.util.EcoreUtil;
 import org.preesm.codegen.xtend.spider.SpiderMainFilePrinter;
 import org.preesm.codegen.xtend.spider.utils.SpiderConfig;
 import org.preesm.codegen.xtend.spider.utils.SpiderNameGenerator;
@@ -422,17 +423,15 @@ public class SpiderCodegen {
     // Papify pre-processing
     PapifyConfig papifyConfigManager = scenario.getPapifyConfig();
 
-    final HashMap<ArrayList<String>, Integer> uniqueEventSets = new HashMap<>();
+    final HashMap<EList<PapiEvent>, Integer> uniqueEventSets = new HashMap<>();
     int eventSetID = 0;
 
     final ArrayList<AbstractActor> papifiedActors = new ArrayList<>();
 
     for (final AbstractActor actor : this.functionMap.keySet()) {
-      EMap<String,
-          EList<PapiEvent>> corePapifyConfigGroups = papifyConfigManager.getPapifyConfigGroupsActors().get(actor);
-      if (corePapifyConfigGroups != null) {
+      if (papifyConfigManager.hasPapifyConfig(actor)) {
         papifiedActors.add(actor);
-        if (!generatePapifyConfig(corePapifyConfigGroups, papifyConfigManager, actor, uniqueEventSets, eventSetID)) {
+        if (!generatePapifyConfig(papifyConfigManager, actor, uniqueEventSets, eventSetID)) {
           eventSetID++;
         }
       }
@@ -467,8 +466,6 @@ public class SpiderCodegen {
   /**
    * Generate the static initialization functions
    *
-   * @param corePapifyConfigGroups
-   *          Group of papify
    * @param actor
    *          Current actor being papified
    * @param uniqueEventSets
@@ -477,9 +474,8 @@ public class SpiderCodegen {
    *          The current event set ID
    * @return true if the actor has the same event set as an existing one, false else
    */
-  private boolean generatePapifyConfig(final EMap<String, EList<PapiEvent>> configInfo,
-      PapifyConfig papifyConfigManager, final AbstractActor actor,
-      final HashMap<ArrayList<String>, Integer> uniqueEventSets, final Integer eventSetID) {
+  private boolean generatePapifyConfig(PapifyConfig papifyConfigManager, final AbstractActor actor,
+      final HashMap<EList<PapiEvent>, Integer> uniqueEventSets, final Integer eventSetID) {
 
     boolean eventMonitoring = false;
     boolean timingMonitoring = false;
@@ -488,28 +484,20 @@ public class SpiderCodegen {
     timingEvent.setName("Timing");
 
     ArrayList<String> compNames = new ArrayList<>();
-    Map<String, ArrayList<String>> associatedEvents = new LinkedHashMap<>();
+    Map<String, EList<PapiEvent>> associatedEvents = new LinkedHashMap<>();
 
-    for (Entry<String, EList<PapiEvent>> compName : configInfo) {
-      // Build the eventNames and the Timing variables to be printed
-      for (PapiEvent event : configInfo.get(compName.getKey())) {
-        if (event.getName().equals(timingEvent.getName())) {
-          timingMonitoring = true;
-        } else {
-          if (associatedEvents.get(compName.getKey()) == null) {
-            ArrayList<String> compEventNames = new ArrayList<>();
-            compEventNames.add(event.getName());
-            associatedEvents.put(compName.getKey(), compEventNames);
-          } else {
-            associatedEvents.get(compName.getKey()).add(event.getName());
-          }
-          eventMonitoring = true;
-        }
+    // Build the Timing variable to be printed
+    if (papifyConfigManager.isMonitoringTiming(actor)) {
+      timingMonitoring = true;
+    }
+    // Build the event variables to be printed
+    if (papifyConfigManager.isMonitoringEvents(actor)) {
+      EList<String> actorCompsSupported = papifyConfigManager.getActorAssociatedPapiComponents(actor);
+      for (String compName : actorCompsSupported) {
+        associatedEvents.put(compName, papifyConfigManager.getActorComponentEvents(actor, compName));
+        compNames.add(compName);
       }
-      // Build the peType variable to be printed
-      if (!compName.getKey().equals("Timing")) {
-        compNames.add(compName.getKey());
-      }
+      eventMonitoring = true;
     }
 
     // Check if this set of ID already exists
@@ -517,26 +505,18 @@ public class SpiderCodegen {
     boolean found = false;
     for (String compName : associatedEvents.keySet()) {
       found = false;
-      final ArrayList<String> compEventSetNames = associatedEvents.get(compName);
-      if (!uniqueEventSets.isEmpty()) {
-        for (Map.Entry<ArrayList<String>, Integer> eventSet : uniqueEventSets.entrySet()) {
-          final ArrayList<String> currentEventSetNames = eventSet.getKey();
-          final Integer currentEventSetID = eventSet.getValue();
-          if (compEventSetNames.size() == currentEventSetNames.size()) {
-            found = compEventSetNames.containsAll(currentEventSetNames)
-                && currentEventSetNames.containsAll(compEventSetNames);
-            if (found) {
-              realEventSetID = currentEventSetID;
-              break;
-            }
-          }
+      EList<PapiEvent> eventSetChecking = associatedEvents.get(compName);
+      for (Map.Entry<EList<PapiEvent>, Integer> eventSet : uniqueEventSets.entrySet()) {
+        final EList<PapiEvent> eventSetStored = eventSet.getKey();
+        final Integer eventSetStoredID = eventSet.getValue();
+        if (EcoreUtil.equals(eventSetStored, eventSetChecking)) {
+          realEventSetID = eventSetStoredID;
+          found = true;
+          break;
         }
-        // If it does not already exist, add it to the set
-        if (!found) {
-          uniqueEventSets.put(compEventSetNames, eventSetID);
-        }
-      } else {
-        uniqueEventSets.put(compEventSetNames, eventSetID);
+      }
+      if (found) {
+        uniqueEventSets.put(eventSetChecking, realEventSetID);
       }
     }
 
@@ -557,8 +537,9 @@ public class SpiderCodegen {
         append("\tconfig_" + compNameGen + "->monitoredEvents_ = std::vector<const char*>("
             + Integer.toString(associatedEvents.get(compNameGen).size()) + ");\n");
         int i = 0;
-        for (String name : associatedEvents.get(compNameGen)) {
-          append("\tconfig_" + compNameGen + "->monitoredEvents_[" + Integer.toString(i++) + "] = \"" + name + "\";\n");
+        for (PapiEvent papiEvent : associatedEvents.get(compNameGen)) {
+          append("\tconfig_" + compNameGen + "->monitoredEvents_[" + Integer.toString(i++) + "] = \""
+              + papiEvent.getName() + "\";\n");
         }
       }
     }
@@ -579,13 +560,12 @@ public class SpiderCodegen {
     for (Component coreType : this.coresFromCoreType.keySet()) {
       for (ComponentInstance compInst : this.coresFromCoreType.get(coreType)) {
         configAssociated = false;
-        final List<
-            PapiComponent> corePapifyConfigGroupPE = papifyConfigManager.getPapifyConfigGroupsPEs().get(coreType);
+        final EList<PapiComponent> corePapifyConfigGroupPE = papifyConfigManager.getSupportedPapiComponents(coreType);
         for (final PapiComponent compType : corePapifyConfigGroupPE) {
-          if (!compType.equals("Timing") && compNames.contains(compType.getId())) {
+          if (compNames.contains(compType.getId())) {
             configAssociated = true;
-            append("\tconfigMap.insert(std::make_pair(\"LRT_" + this.coreIds.get(compInst) + "\", config_" + compType
-                + "));\n");
+            append("\tconfigMap.insert(std::make_pair(\"LRT_" + this.coreIds.get(compInst) + "\", config_"
+                + compType.getId() + "));\n");
           }
         }
         if (!configAssociated && timingMonitoring) {
