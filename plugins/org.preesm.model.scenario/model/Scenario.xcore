@@ -11,21 +11,21 @@
 @Ecore(nsURI="http://org.preesm/model/scenario")
 package org.preesm.model.scenario
 
-import org.preesm.model.pisdf.Parameter
-import org.preesm.model.pisdf.PiGraph
-import org.preesm.model.slam.Design
-import org.preesm.model.slam.ComponentInstance
-import org.preesm.model.pisdf.AbstractActor
-import org.preesm.model.slam.component.Component
+import java.util.Objects
+import org.eclipse.core.runtime.IPath
+import org.eclipse.core.runtime.Path
 import org.eclipse.emf.common.util.ECollections
 import org.eclipse.emf.common.util.EMap
 import org.preesm.commons.model.PreesmCopyTracker
+import org.preesm.model.pisdf.AbstractActor
+import org.preesm.model.pisdf.Parameter
+import org.preesm.model.pisdf.PiGraph
 import org.preesm.model.pisdf.expression.ExpressionEvaluator
-import org.eclipse.core.runtime.IPath
-import org.eclipse.core.runtime.Path
-import org.preesm.model.slam.serialize.SlamParser
 import org.preesm.model.pisdf.serialize.PiParser
-import java.util.Objects
+import org.preesm.model.slam.ComponentInstance
+import org.preesm.model.slam.Design
+import org.preesm.model.slam.component.Component
+import org.preesm.model.slam.serialize.SlamParser
 
 // !!! This is needed as of the current versions of xcore/xtext
 // For some reason when using the default String/... (i.e. without the following)
@@ -292,7 +292,10 @@ class PapifyConfig {
 			actorConfig.put(component, newBasicEList())
 		}
 		val eventList = actorConfig.get(component)
-		eventList.remove(event)
+		val index = ECollections.indexOf(eventList, event, 0)
+		if (index >= 0) {
+			eventList.remove(index)
+		}
 	}
 
 	op void clear() {
