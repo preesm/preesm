@@ -15,7 +15,6 @@ import java.util.Objects
 import org.eclipse.core.runtime.IPath
 import org.eclipse.core.runtime.Path
 import org.eclipse.emf.common.util.ECollections
-import org.eclipse.emf.common.util.EList
 import org.eclipse.emf.common.util.EMap
 import org.preesm.commons.model.PreesmCopyTracker
 import org.preesm.model.pisdf.AbstractActor
@@ -203,7 +202,7 @@ class Timings {
 			}
 		} else {
 			val AbstractActor source = PreesmCopyTracker.getSource(actor);
-			if (source != actor) {
+			if (source !== actor) {
 				return getTimingOrDefault(source, component);
 			}
 		}
@@ -307,62 +306,38 @@ class PapifyConfig {
 		if (this.papifyConfigGroupsActors.containsKey(actor)) {
 			return papifyConfigGroupsActors.get(actor)
 		} else {
-			var AbstractActor source = PreesmCopyTracker.getOriginalSource(actor);
-			if (this.papifyConfigGroupsActors.containsKey(source)) {
-				return papifyConfigGroupsActors.get(source)
+			val AbstractActor source = PreesmCopyTracker.getSource(actor);
+			if (source !== actor) {
+				return getActorConfig(source)
+			} else {
+				return ECollections.emptyEMap;
 			}
 		}
-		return ECollections.emptyEMap;
 	}
 	op boolean hasPapifyConfig(AbstractActor actor) {
-		var actorConfig = getActorConfig(actor)
-		if (!actorConfig.nullOrEmpty) {
-			return true
-		}
-		return false
+		return !getActorConfig(actor).nullOrEmpty
 	}
 	op boolean isMonitoringEvents(AbstractActor actor) {
-		var actorConfig = getActorConfig(actor)
-		if (actorConfig.containsKey("Timing") && actorConfig.keySet.size > 1) {
-			return true
-		} else if (!actorConfig.containsKey("Timing") && actorConfig.keySet.size > 0) {
-			return true
+		val size = getActorConfig(actor).size
+		if (isMonitoringTiming(actor)) {
+			return size > 1
 		} else {
-			return false
+			return size > 0
 		}
 	}
 	op boolean isMonitoringTiming(AbstractActor actor) {
-		var actorConfig = getActorConfig(actor)
-		if (actorConfig.containsKey("Timing")) {
-			return true
-		} else {
-			return false
-		}
+		return getActorConfig(actor).containsKey("Timing")
 	}
 	op String[] getActorAssociatedPapiComponents(AbstractActor actor) {
-		var actorConfig = getActorConfig(actor)
-		if (!actorConfig.nullOrEmpty) {
-			var map = actorConfig.keySet.filter[it|!(it.equals("Timing"))]
-			return map.asEList
-		}
-		return ECollections.emptyEList;
+		return getActorConfig(actor).keySet.filter[!(it.equals("Timing"))].asEList.unmodifiableView
 	}
 	op PapiEvent[] getActorAssociatedEvents(AbstractActor actor) {
-		var actorConfig = getActorConfig(actor)
-		if (!actorConfig.nullOrEmpty) {
-			return actorConfig.filter[it|!(it.key.equals("Timing"))].map[it.value].flatten.asEList
-		}
-		return ECollections.emptyEList;
+		return getActorConfig(actor).filter[it|!(it.key.equals("Timing"))].map[it.value].flatten.asEList.
+			unmodifiableView
 	}
 	op String getActorOriginalIdentifier(AbstractActor actor) {
-		if (this.papifyConfigGroupsActors.containsKey(actor)) {
-			return actor.actorPath.substring(actor.actorPath.indexOf('/') + 1).replace('/', '_')
-		} else {
-			var AbstractActor source = PreesmCopyTracker.getOriginalSource(actor);
-			if (this.papifyConfigGroupsActors.containsKey(source)) {
-				return source.actorPath.substring(source.actorPath.indexOf('/') + 1).replace('/', '_')
-			}
-		}
+		var AbstractActor source = PreesmCopyTracker.getOriginalSource(actor);
+		return source.vertexPath.substring(source.vertexPath.indexOf('/') + 1).replace('/', '_')
 	}
 	op PapiComponent[] getSupportedPapiComponents(Component component) {
 		if (papifyConfigGroupsPEs.containsKey(component)) {
