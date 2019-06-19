@@ -341,7 +341,7 @@ public class CodegenModelGenerator {
    */
   public void registerPapify(final String papifyMonitoring) {
 
-    if (papifyMonitoring.equalsIgnoreCase("false")) {
+    if (!papifyMonitoring.equalsIgnoreCase("true")) {
       this.papifyActive = false;
     } else {
       this.papifyActive = true;
