@@ -46,4 +46,8 @@
             genModel="model/Scenario.xcore"/>
    </extension>
 
+   <extension
+         point="org.preesm.commons.plugin">
+   </extension>
+
 </plugin>
