@@ -708,7 +708,7 @@ public class CodegenModelGenerator {
       try {
         final CodegenHierarchicalModelGenerator hiearchicalCodeGen = new CodegenHierarchicalModelGenerator(
             this.scenario, this.algo, this.linkHSDFVertexBuffer, this.srSDFEdgeBuffers, this.dagVertexCalls,
-            this.papifiedPEs);
+            this.papifiedPEs, this.configsAdded, this.papifyActive);
         hiearchicalCodeGen.execute(operatorBlock, dagVertex);
       } catch (final PreesmException e) {
         throw new PreesmRuntimeException("Codegen for " + dagVertex.getName() + "failed.", e);
@@ -764,7 +764,7 @@ public class CodegenModelGenerator {
         if (this.papifyActive) {
           if (papifyConfig.hasPapifyConfig(referencePiVertex)) {
             // Add the papify action variable
-            papifyActionS.setName("papify_action_".concat(dagVertex.getName()));
+            papifyActionS.setName("papify_actions_".concat(dagVertex.getName()));
             papifyActionS.setType("papify_action_s");
             papifyActionS.setComment("papify configuration variable");
             operatorBlock.getDefinitions().add(papifyActionS);
@@ -2105,8 +2105,8 @@ public class CodegenModelGenerator {
     // Create the variable associated to the PAPI component
     String componentsSupported = "";
     ConstantString papifyComponentName = CodegenFactory.eINSTANCE.createConstantString();
+    final Component component = scenario.getDesign().getComponent(operatorBlock.getCoreType());
     if (this.papifyActive) {
-      final Component component = scenario.getDesign().getComponent(operatorBlock.getCoreType());
       for (PapiComponent papiComponent : papifyConfig.getSupportedPapiComponents(component)) {
         if (componentsSupported.equals("")) {
           componentsSupported = papiComponent.getId();
@@ -2116,8 +2116,6 @@ public class CodegenModelGenerator {
       }
       papifyComponentName.setValue(componentsSupported);
     } else {
-      final String coreType = operatorBlock.getCoreType();
-      final Component component = scenario.getDesign().getComponent(coreType);
       final List<PapiComponent> corePapifyConfigGroupPE = this.getScenario().getPapifyConfig()
           .getPapifyConfigGroupsPEs().get(component);
       if (corePapifyConfigGroupPE != null) {
@@ -2129,7 +2127,7 @@ public class CodegenModelGenerator {
           }
         }
       } else {
-        throw new PreesmRuntimeException("There is no PE type of type " + coreType
+        throw new PreesmRuntimeException("There is no PE type of type " + operatorBlock.getCoreType()
             + " in the PAPIFY information. Probably the PAPIFY tab is out of date in the PREESM scenario.");
       }
     }
@@ -2189,7 +2187,7 @@ public class CodegenModelGenerator {
       actorName.setValue(actorOriginalIdentifier);
       actorName.setComment("Actor name");
 
-      // Add the PAPI component name
+      // Add the PAPI event names
       EList<PapiEvent> actorEvents = papifyConfig.getActorAssociatedEvents(referencePiVertex);
       String eventNames = "";
       for (PapiEvent oneEvent : actorEvents) {
