@@ -28,7 +28,6 @@ import org.preesm.model.slam.Design
 import org.preesm.model.slam.component.Component
 import org.preesm.model.slam.serialize.SlamParser
 
-
 // !!! This is needed as of the current versions of xcore/xtext
 // For some reason when using the default String/... (i.e. without the following)
 // the corresponding EPackage attributes/... are resolved to type java.lang.Object
@@ -287,7 +286,7 @@ class PapifyConfig {
 		val index = ECollections.indexOf(eventList, event, 0)
 		if (index < 0) {
 			eventList.add(event)
-			eventList.sortInplace(e1, e2 | e1.getIndex() - e2.getIndex())
+			eventList.sortInplace(e1, e2|e1.getIndex() - e2.getIndex())
 		}
 	}
 	op void removeActorConfigEvent(AbstractActor actor, String component, PapiEvent event) {
@@ -304,88 +303,80 @@ class PapifyConfig {
 			eventList.remove(index)
 		}
 	}
-	op ActorEvent[] getActorConfig(AbstractActor actor){
+	op ActorEvent[] getActorConfig(AbstractActor actor) {
 		if (this.papifyConfigGroupsActors.containsKey(actor)) {
 			return papifyConfigGroupsActors.get(actor)
-		}else{
+		} else {
 			var AbstractActor source = PreesmCopyTracker.getOriginalSource(actor);
 			if (this.papifyConfigGroupsActors.containsKey(source)) {
 				return papifyConfigGroupsActors.get(source)
-			}			
+			}
 		}
 		return ECollections.emptyEMap;
 	}
-	
-	op boolean hasPapifyConfig(AbstractActor actor){
+	op boolean hasPapifyConfig(AbstractActor actor) {
 		var actorConfig = getActorConfig(actor)
-		if(!actorConfig.nullOrEmpty){
+		if (!actorConfig.nullOrEmpty) {
 			return true
-		}	
-		return false	
+		}
+		return false
 	}
-
-	op boolean isMonitoringEvents(AbstractActor actor){
+	op boolean isMonitoringEvents(AbstractActor actor) {
 		var actorConfig = getActorConfig(actor)
-		if(actorConfig.containsKey("Timing") && actorConfig.keySet.size > 1){
+		if (actorConfig.containsKey("Timing") && actorConfig.keySet.size > 1) {
 			return true
-		}else if(!actorConfig.containsKey("Timing") && actorConfig.keySet.size > 0){
+		} else if (!actorConfig.containsKey("Timing") && actorConfig.keySet.size > 0) {
 			return true
-		}else{
-			return false
-		}		
-	}
-	op boolean isMonitoringTiming(AbstractActor actor){
-		var actorConfig = getActorConfig(actor)
-		if(actorConfig.containsKey("Timing")){
-			return true	
-		}else{
+		} else {
 			return false
 		}
 	}
-	
-	op String[] getActorAssociatedPapiComponents(AbstractActor actor){
+	op boolean isMonitoringTiming(AbstractActor actor) {
 		var actorConfig = getActorConfig(actor)
-		if(!actorConfig.nullOrEmpty){
+		if (actorConfig.containsKey("Timing")) {
+			return true
+		} else {
+			return false
+		}
+	}
+	op String[] getActorAssociatedPapiComponents(AbstractActor actor) {
+		var actorConfig = getActorConfig(actor)
+		if (!actorConfig.nullOrEmpty) {
 			var map = actorConfig.keySet.filter[it|!(it.equals("Timing"))]
 			return map.asEList
 		}
 		return ECollections.emptyEList;
 	}
-	
-	op PapiEvent[] getActorAssociatedEvents(AbstractActor actor){
+	op PapiEvent[] getActorAssociatedEvents(AbstractActor actor) {
 		var actorConfig = getActorConfig(actor)
-		if(!actorConfig.nullOrEmpty){
+		if (!actorConfig.nullOrEmpty) {
 			return actorConfig.filter[it|!(it.key.equals("Timing"))].map[it.value].flatten.asEList
 		}
 		return ECollections.emptyEList;
 	}
-	
-	op String getActorOriginalIdentifier(AbstractActor actor){
+	op String getActorOriginalIdentifier(AbstractActor actor) {
 		if (this.papifyConfigGroupsActors.containsKey(actor)) {
 			return actor.actorPath.substring(actor.actorPath.indexOf('/') + 1).replace('/', '_')
-		}else{
+		} else {
 			var AbstractActor source = PreesmCopyTracker.getOriginalSource(actor);
 			if (this.papifyConfigGroupsActors.containsKey(source)) {
 				return source.actorPath.substring(source.actorPath.indexOf('/') + 1).replace('/', '_')
-			}			
+			}
 		}
 	}
-	
-	op PapiComponent[] getSupportedPapiComponents(Component component){
-		if(papifyConfigGroupsPEs.containsKey(component)){
+	op PapiComponent[] getSupportedPapiComponents(Component component) {
+		if (papifyConfigGroupsPEs.containsKey(component)) {
 			return papifyConfigGroupsPEs.get(component)
 		}
 		return ECollections.emptyEList;
 	}
-	
-	op PapiEvent[] getActorComponentEvents(AbstractActor actor, String componentName){
+	op PapiEvent[] getActorComponentEvents(AbstractActor actor, String componentName) {
 		var actorConfig = getActorConfig(actor)
-		if(actorConfig.containsKey(componentName)){
+		if (actorConfig.containsKey(componentName)) {
 			return actorConfig.get(componentName)
 		}
 		return ECollections.emptyEList;
 	}
-	
 	op void clear() {
 		papiData.components.clear
 		papifyConfigGroupsActors.clear
@@ -446,7 +437,6 @@ class PapiEvent {
 	String                  name        = ""
 	String                  description = ""
 	contains PapiEventModifier[] modifiers
-
 	op boolean equals(Object other) {
 		if (other instanceof PapiEvent) {
 			return this.index === other.index && this.name == other.name
