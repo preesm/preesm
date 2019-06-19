@@ -776,6 +776,10 @@
                            <name>.settings/org.eclipse.xtend.core.Xtend.prefs</name>
                            <location>/org.eclipse.xtend.core.Xtend.prefs</location>
                         </file>
+                        <file>
+                           <name>.settings/org.eclipse.emf.ecore.xcore.Xcore.prefs</name>
+                           <location>/org.eclipse.emf.ecore.xcore.Xcore.prefs</location>
+                        </file>
                      </additionalConfig>
                   </configuration>
                </plugin>
