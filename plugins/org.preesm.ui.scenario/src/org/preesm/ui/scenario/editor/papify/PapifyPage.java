@@ -607,7 +607,6 @@ public class PapifyPage extends ScenarioPage {
     this.actorTreeViewer.getTree().setLinesVisible(true);
     this.actorTreeViewer.getTree().setHeaderVisible(true);
 
-    // updateColumns();
     final TreeViewerColumn actorViewerColumn = new TreeViewerColumn(this.actorTreeViewer, SWT.CENTER | SWT.CHECK);
     final TreeColumn peColumn = actorViewerColumn.getColumn();
     peColumn.setText("Actor name \\ Event name");
@@ -619,9 +618,8 @@ public class PapifyPage extends ScenarioPage {
 
     final GridData gd = new GridData(
         GridData.VERTICAL_ALIGN_BEGINNING | GridData.FILL_HORIZONTAL | GridData.FILL_VERTICAL);
-    gd.heightHint = 140;
+    gd.heightHint = 400;
     this.actorTreeViewer.getTree().setLayoutData(gd);
-    // toolkit.paintBordersFor(parent);
 
     // Tree is refreshed in case of algorithm modifications
     parent.addPaintListener(checkStateListener);
