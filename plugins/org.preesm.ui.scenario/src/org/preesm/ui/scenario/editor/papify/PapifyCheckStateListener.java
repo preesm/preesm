@@ -44,7 +44,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
-import org.eclipse.emf.common.util.ECollections;
 import org.eclipse.emf.common.util.EList;
 import org.eclipse.emf.common.util.EMap;
 import org.eclipse.jface.viewers.CheckStateChangedEvent;
@@ -276,9 +275,9 @@ public class PapifyCheckStateListener implements ISDFCheckStateListener {
       }
       if (found) {
         if (!timing) {
-          papifyConfig.addActorConfigEvent(actorInstance, compName, ECollections.asEList(event));
+          papifyConfig.addActorConfigEvent(actorInstance, compName, event);
         } else {
-          papifyConfig.addActorConfigEvent(actorInstance, "Timing", ECollections.asEList(event));
+          papifyConfig.addActorConfigEvent(actorInstance, "Timing", event);
         }
         statuses.put(eventName, PAPIEventStatus.YES);
         if (hasChildren(actorInstance)) {
@@ -288,9 +287,9 @@ public class PapifyCheckStateListener implements ISDFCheckStateListener {
               if (treeElement.actorPath.equals(oneActorPath)) {
                 treeElement.PAPIStatuses.put(eventName, PAPIEventStatus.YES);
                 if (!timing) {
-                  papifyConfig.addActorConfigEvent(oneActorPath, compName, ECollections.asEList(event));
+                  papifyConfig.addActorConfigEvent(oneActorPath, compName, event);
                 } else {
-                  papifyConfig.addActorConfigEvent(oneActorPath, "Timing", ECollections.asEList(event));
+                  papifyConfig.addActorConfigEvent(oneActorPath, "Timing", event);
                 }
                 break;
               }

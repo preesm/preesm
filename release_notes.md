@@ -7,6 +7,8 @@ PREESM Changelog
 ### New Feature
 
 ### Changes
+* Fix Papi event add/remove;
+* Update sonar plugin to 3.6.0.1398;
 
 ### Bug fix
 

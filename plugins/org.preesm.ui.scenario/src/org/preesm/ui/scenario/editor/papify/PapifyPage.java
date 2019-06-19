@@ -80,7 +80,6 @@ import org.preesm.model.scenario.PapiEvent;
 import org.preesm.model.scenario.PapiEventInfo;
 import org.preesm.model.scenario.PapiEventModifier;
 import org.preesm.model.scenario.PapiEventSet;
-import org.preesm.model.scenario.PapifyConfig;
 import org.preesm.model.scenario.Scenario;
 import org.preesm.model.scenario.ScenarioFactory;
 import org.preesm.model.scenario.serialize.PapiConfigParser;
@@ -422,12 +421,10 @@ public class PapifyPage extends ScenarioPage {
 
         PreesmLogger.getLogger().log(Level.INFO, "Loading Papi configuration from '" + text.getText() + "'");
 
-        final PapifyConfig createPapifyConfig = ScenarioFactory.eINSTANCE.createPapifyConfig();
-        createPapifyConfig.setPapiData(papiEvents);
-        createPapifyConfig.setXmlFileURL(text.getText());
-
         this.scenario.getPapifyConfig().clear();
+        this.scenario.getPapifyConfig().setXmlFileURL(text.getText());
         this.scenario.getPapifyConfig().setPapiData(papiEvents);
+
         this.peTreeViewer.setInput(this.papiEvents);
         this.peContentProvider.setInput();
 
