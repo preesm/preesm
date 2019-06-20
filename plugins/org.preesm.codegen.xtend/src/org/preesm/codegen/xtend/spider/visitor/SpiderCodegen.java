@@ -482,6 +482,8 @@ public class SpiderCodegen {
     final List<String> compNames = new ArrayList<>();
     final Map<String, EList<PapiEvent>> associatedEvents = new LinkedHashMap<>();
 
+    final Map<String, Integer> configIdPerPapiComponent = new LinkedHashMap<>();
+
     // Build the Timing variable to be printed
     if (papifyConfigManager.isMonitoringTiming(actor)) {
       timingMonitoring = true;
@@ -511,9 +513,10 @@ public class SpiderCodegen {
           break;
         }
       }
-      if (found) {
+      if (!found) {
         uniqueEventSets.put(eventSetChecking, realEventSetID);
       }
+      configIdPerPapiComponent.put(compName, realEventSetID);
     }
 
     append("static std::map<const char *, PapifyConfig*> " + "create" + actor.getName() + "PapifyConfig() {\n");
@@ -526,7 +529,9 @@ public class SpiderCodegen {
       append("\tconfig_" + compNameGen + "->actorName_       = \"" + actor.getName() + "\";\n");
       append("\tconfig_" + compNameGen + "->eventSize_       = "
           + Integer.toString(associatedEvents.get(compNameGen).size()) + ";\n");
-      append("\tconfig_" + compNameGen + "->eventSetID_      = " + realEventSetID.toString() + ";\n");
+      // append("\tconfig_" + compNameGen + "->eventSetID_ = " + realEventSetID.toString() + ";\n");
+      append("\tconfig_" + compNameGen + "->eventSetID_      = " + configIdPerPapiComponent.get(compNameGen).toString()
+          + ";\n");
       final String timing = timingMonitoring ? "true" : "false";
       append("\tconfig_" + compNameGen + "->isTiming_        = " + timing + ";\n");
       if (eventMonitoring) {
@@ -546,7 +551,8 @@ public class SpiderCodegen {
       append("\tconfig_Timing->peType_          = \"\";\n");
       append("\tconfig_Timing->actorName_       = \"" + actor.getName() + "\";\n");
       append("\tconfig_Timing->eventSize_       = 0;\n");
-      append("\tconfig_Timing->eventSetID_      = " + realEventSetID.toString() + ";\n");
+      // append("\tconfig_Timing->eventSetID_ = " + realEventSetID.toString() + ";\n");
+      append("\tconfig_Timing->eventSetID_      = 0;\n");
       final String timing = timingMonitoring ? "true" : "false";
       append("\tconfig_Timing->isTiming_        = " + timing + ";\n");
     }
