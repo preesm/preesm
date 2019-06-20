@@ -41,6 +41,11 @@
 <?eclipse version="3.2"?>
 
 <plugin>
+    <extension
+         point="org.preesm.commons.plugin">
+      <!-- Generic point -->
+   </extension>
+
    <extension
          point="org.eclipse.ui.editors">
       <editor
@@ -65,8 +70,13 @@
             name="GanttEditor">
       </editor>
    </extension>
-   <extension
-         point="org.preesm.commons.plugin">
+
+   <extension point="org.eclipse.emf.ecore.generated_package">
+      <!-- @generated Schedule -->
+      <package
+            uri="http://org.preesm/algos/schedule"
+            class="org.preesm.model.algorithm.schedule.PiMMPackage"
+            genModel="model/Schedule.xcore"/>
    </extension>
 
 </plugin>
