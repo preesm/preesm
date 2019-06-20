@@ -15,7 +15,7 @@ Require-Bundle: org.apache.velocity;bundle-version="1.7.0",
  org.preesm.codegen;visibility:=reexport
 Bundle-ActivationPolicy: lazy
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
-Bundle-Version: 3.10.0
+Bundle-Version: 3.10.0.qualifier
 Export-Package: org.preesm.codegen.xtend,
  org.preesm.codegen.xtend.printer,
  org.preesm.codegen.xtend.printer.c,
