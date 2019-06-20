@@ -72,10 +72,18 @@
    </extension>
 
    <extension point="org.eclipse.emf.ecore.generated_package">
+      <!-- @generated Mapping -->
+      <package
+            uri="http://org.preesm/algos/mapping"
+            class="org.preesm.model.algorithm.mapping.MappingPackage"
+            genModel="model/Mapping.xcore"/>
+   </extension>
+
+   <extension point="org.eclipse.emf.ecore.generated_package">
       <!-- @generated Schedule -->
       <package
             uri="http://org.preesm/algos/schedule"
-            class="org.preesm.model.algorithm.schedule.PiMMPackage"
+            class="org.preesm.model.algorithm.schedule.SchedulePackage"
             genModel="model/Schedule.xcore"/>
    </extension>
 
