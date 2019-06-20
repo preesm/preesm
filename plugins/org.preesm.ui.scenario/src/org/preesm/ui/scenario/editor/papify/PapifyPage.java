@@ -60,6 +60,7 @@ import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Text;
+import org.eclipse.swt.widgets.Tree;
 import org.eclipse.swt.widgets.TreeColumn;
 import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.forms.IManagedForm;
@@ -135,8 +136,6 @@ public class PapifyPage extends ScenarioPage {
    */
   @Override
   protected void createFormContent(final IManagedForm managedForm) {
-    super.createFormContent(managedForm);
-
     final ScrolledForm f = managedForm.getForm();
     f.setText(Messages.getString("Papify.title"));
     final Composite body = f.getBody();
@@ -296,7 +295,7 @@ public class PapifyPage extends ScenarioPage {
     final Composite container = createSection(managedForm, title, desc, 2, gridData);
 
     final FormToolkit toolkit = managedForm.getToolkit();
-    addEventCheckBoxTreeViewer(container, toolkit);
+    addEventCheckBoxTreeViewer(managedForm, container, toolkit);
 
   }
 
@@ -556,15 +555,19 @@ public class PapifyPage extends ScenarioPage {
   /**
    * Adds a checkBoxTreeViewer to edit event association.
    *
+   * @param managedForm
+   *
    * @param parent
    *          the parent
    * @param toolkit
    *          the toolkit
    */
-  private void addEventCheckBoxTreeViewer(final Composite parent, final FormToolkit toolkit) {
+  private void addEventCheckBoxTreeViewer(final IManagedForm managedForm, final Composite parent,
+      final FormToolkit toolkit) {
 
     // Creating the tree view
-    this.actorTreeViewer = new CheckboxTreeViewer(toolkit.createTree(parent, SWT.CHECK));
+    final Tree treeViewerParent = toolkit.createTree(parent, SWT.CHECK);
+    this.actorTreeViewer = new CheckboxTreeViewer(treeViewerParent);
 
     this.actorContentProvider = new PapifyEventListContentProvider2DMatrix(this.scenario);
     this.actorContentProvider.addCheckStateListener(this.checkStateListener);
@@ -580,8 +583,8 @@ public class PapifyPage extends ScenarioPage {
 
     this.actorTreeViewer.setUseHashlookup(true);
 
-    this.actorTreeViewer.getTree().setLinesVisible(true);
-    this.actorTreeViewer.getTree().setHeaderVisible(true);
+    treeViewerParent.setLinesVisible(true);
+    treeViewerParent.setHeaderVisible(true);
 
     final TreeViewerColumn actorViewerColumn = new TreeViewerColumn(this.actorTreeViewer, SWT.CENTER | SWT.CHECK);
     final TreeColumn peColumn = actorViewerColumn.getColumn();
@@ -595,7 +598,9 @@ public class PapifyPage extends ScenarioPage {
     final GridData gd = new GridData(
         GridData.VERTICAL_ALIGN_BEGINNING | GridData.FILL_HORIZONTAL | GridData.FILL_VERTICAL);
     gd.heightHint = 400;
-    this.actorTreeViewer.getTree().setLayoutData(gd);
+    gd.widthHint = managedForm.getForm().getBody().getClientArea().width;
+    treeViewerParent.setLayout(new GridLayout());
+    treeViewerParent.setLayoutData(gd);
 
     // Tree is refreshed in case of algorithm modifications
     parent.addPaintListener(checkStateListener);
