@@ -32,9 +32,11 @@
  * The fact that you are presently reading this means that you have had
  * knowledge of the CeCILL license and that you accept its terms.
  */
-package org.preesm.model.scenario.serialize;
+package org.preesm.ui.scenario.editor.timings;
 
 import org.preesm.model.scenario.Scenario;
+import org.preesm.model.scenario.serialize.CsvTimingParser;
+import org.preesm.model.scenario.serialize.ExcelTimingParser;
 import org.preesm.model.slam.Design;
 
 /**
