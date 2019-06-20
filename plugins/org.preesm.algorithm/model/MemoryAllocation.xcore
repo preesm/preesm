@@ -12,6 +12,7 @@
 package org.preesm.model.algorithm.memalloc
 
 import org.preesm.model.pisdf.Fifo
+import org.preesm.model.slam.ComponentInstance
 
 type String wraps String
 
@@ -21,7 +22,16 @@ type long wraps long
 
 type double wraps double
 
-class Buffer {
+interface Buffer {
+	contains LogicalBuffer[] children opposite memory
+}
+
+class PhysicalBuffer extends Buffer {
+	refers ComponentInstance memory
+}
+
+class LogicalBuffer extends Buffer {
+	refers Buffer memory opposite children
 }
 
 class Allocation {
