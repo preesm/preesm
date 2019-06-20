@@ -1993,11 +1993,15 @@ public class CodegenModelGenerator {
   }
 
   /**
-   * This method creates the event configure PE function call for PAPI instrumentation
+   * This method creates the event configure PE function call for PAPIFY instrumentation
    *
-   * @param dagVertex
-   *          the {@link DAGVertex} corresponding to the {@link FunctionCall}.
-   * @return The {@link FunctionCall} corresponding to the {@link CoreBlock operatorBlock} firing.
+   * @param operatorBlock
+   *          the {@link CoreBlock} where the {@link PapifyFunctionCall} will be added.
+   * @param papifyConfig
+   *          the {@link PapifyConfig} storing all the instrumentation information.
+   * @param papifyPEId
+   *          the {@link Constant} identifying the PE that is being configured.
+   * @return The {@link PapifyFunctionCall} corresponding to the {@link CoreBlock operatorBlock} firing.
    */
   protected PapifyFunctionCall generatePapifyConfigurePEFunctionCall(final CoreBlock operatorBlock,
       final PapifyConfig papifyConfig, final Constant papifyPEId) {
@@ -2033,11 +2037,15 @@ public class CodegenModelGenerator {
   }
 
   /**
-   * This method creates the event configure actor function call for PAPI instrumentation
+   * This method creates the event configure actor function call for PAPIFY instrumentation
    *
    * @param dagVertex
    *          the {@link DAGVertex} corresponding to the {@link FunctionCall}.
-   * @return The {@link FunctionCall} corresponding to the {@link DAGVertex actor} firing.
+   * @param papifyConfig
+   *          the {@link PapifyConfig} storing all the instrumentation information.
+   * @param papifyActionS
+   *          the {@link PapifyAction} identifying the actor that is being configured.
+   * @return The {@link PapifyFunctionCall} corresponding to the {@link DAGVertex actor} firing.
    */
   protected PapifyFunctionCall generatePapifyConfigureActorFunctionCall(final DAGVertex dagVertex,
       final PapifyConfig papifyConfig, final PapifyAction papifyActionS) {
@@ -2140,11 +2148,15 @@ public class CodegenModelGenerator {
   }
 
   /**
-   * This method creates the event start function call for PAPI instrumentation
+   * This method creates the event start function call for PAPIFY instrumentation
    *
    * @param dagVertex
    *          the {@link DAGVertex} corresponding to the {@link FunctionCall}.
-   * @return The {@link FunctionCall} corresponding to the {@link DAGVertex actor} firing.
+   * @param papifyPEId
+   *          the {@link Constant} identifying the PE that is being configured.
+   * @param papifyActionS
+   *          the {@link PapifyAction} identifying the actor that is being configured.
+   * @return The {@link PapifyFunctionCall} corresponding to the {@link DAGVertex actor} firing.
    */
   protected PapifyFunctionCall generatePapifyStartFunctionCall(final DAGVertex dagVertex, final Constant papifyPEId,
       final PapifyAction papifyActionS) {
@@ -2164,11 +2176,15 @@ public class CodegenModelGenerator {
   }
 
   /**
-   * This method creates the event start Papify timing function call for PAPI instrumentation
+   * This method creates the event start Papify timing function call for PAPIFY instrumentation
    *
    * @param dagVertex
    *          the {@link DAGVertex} corresponding to the {@link FunctionCall}.
-   * @return The {@link FunctionCall} corresponding to the {@link DAGVertex actor} firing.
+   * @param papifyPEId
+   *          the {@link Constant} identifying the PE that is being configured.
+   * @param papifyActionS
+   *          the {@link PapifyAction} identifying the actor that is being configured.
+   * @return The {@link PapifyFunctionCall} corresponding to the {@link DAGVertex actor} firing.
    */
   protected PapifyFunctionCall generatePapifyStartTimingFunctionCall(final DAGVertex dagVertex,
       final Constant papifyPEId, final PapifyAction papifyActionS) {
@@ -2186,11 +2202,15 @@ public class CodegenModelGenerator {
   }
 
   /**
-   * This method creates the event stop function call for PAPI instrumentation
+   * This method creates the event stop function call for PAPIFY instrumentation
    *
    * @param dagVertex
    *          the {@link DAGVertex} corresponding to the {@link FunctionCall}.
-   * @return The {@link FunctionCall} corresponding to the {@link DAGVertex actor} firing.
+   * @param papifyPEId
+   *          the {@link Constant} identifying the PE that is being configured.
+   * @param papifyActionS
+   *          the {@link PapifyAction} identifying the actor that is being configured.
+   * @return The {@link PapifyFunctionCall} corresponding to the {@link DAGVertex actor} firing.
    */
   protected PapifyFunctionCall generatePapifyStopFunctionCall(final DAGVertex dagVertex, final Constant papifyPEId,
       final PapifyAction papifyActionS) {
@@ -2210,11 +2230,15 @@ public class CodegenModelGenerator {
   }
 
   /**
-   * This method creates the event stop Papify timing function call for PAPI instrumentation
+   * This method creates the event stop Papify timing function call for PAPIFY instrumentation
    *
    * @param dagVertex
    *          the {@link DAGVertex} corresponding to the {@link FunctionCall}.
-   * @return The {@link FunctionCall} corresponding to the {@link DAGVertex actor} firing.
+   * @param papifyPEId
+   *          the {@link Constant} identifying the PE that is being configured.
+   * @param papifyActionS
+   *          the {@link PapifyAction} identifying the actor that is being configured.
+   * @return The {@link PapifyFunctionCall} corresponding to the {@link DAGVertex actor} firing.
    */
   protected PapifyFunctionCall generatePapifyStopTimingFunctionCall(final DAGVertex dagVertex,
       final Constant papifyPEId, final PapifyAction papifyActionS) {
@@ -2234,11 +2258,15 @@ public class CodegenModelGenerator {
   }
 
   /**
-   * This method creates the event write Papify function call for PAPI instrumentation
+   * This method creates the event write Papify function call for PAPIFY instrumentation
    *
    * @param dagVertex
    *          the {@link DAGVertex} corresponding to the {@link FunctionCall}.
-   * @return The {@link FunctionCall} corresponding to the {@link DAGVertex actor} firing.
+   * @param papifyPEId
+   *          the {@link Constant} identifying the PE that is being configured.
+   * @param papifyActionS
+   *          the {@link PapifyAction} identifying the actor that is being configured.
+   * @return The {@link PapifyFunctionCall} corresponding to the {@link DAGVertex actor} firing.
    */
   protected PapifyFunctionCall generatePapifyWritingFunctionCall(final DAGVertex dagVertex, final Constant papifyPEId,
       final PapifyAction papifyActionS) {
