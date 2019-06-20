@@ -72,7 +72,6 @@ import org.preesm.model.scenario.PapiEvent;
 import org.preesm.model.scenario.PapifyConfig;
 import org.preesm.model.scenario.Scenario;
 import org.preesm.model.scenario.ScenarioConstants;
-import org.preesm.model.scenario.ScenarioFactory;
 import org.preesm.model.slam.ComponentInstance;
 import org.preesm.model.slam.Design;
 import org.preesm.model.slam.component.Component;
@@ -480,11 +479,8 @@ public class SpiderCodegen {
     boolean eventMonitoring = false;
     boolean timingMonitoring = false;
 
-    final PapiEvent timingEvent = ScenarioFactory.eINSTANCE.createPapiEvent();
-    timingEvent.setName("Timing");
-
-    ArrayList<String> compNames = new ArrayList<>();
-    Map<String, EList<PapiEvent>> associatedEvents = new LinkedHashMap<>();
+    final List<String> compNames = new ArrayList<>();
+    final Map<String, EList<PapiEvent>> associatedEvents = new LinkedHashMap<>();
 
     // Build the Timing variable to be printed
     if (papifyConfigManager.isMonitoringTiming(actor)) {

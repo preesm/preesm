@@ -80,7 +80,6 @@ public class CodegenPapifyEngineTask extends AbstractTaskImplementation {
   public Map<String, Object> execute(final Map<String, Object> inputs, final Map<String, String> parameters,
       final IProgressMonitor monitor, final String nodeName, final Workflow workflow) {
 
-    // Retrieve inputs
     final MapperDAG algo = (MapperDAG) inputs.get(AbstractWorkflowNodeImplementation.KEY_SDF_DAG);
 
     PreesmLogger.getLogger().log(Level.WARNING,
@@ -88,7 +87,6 @@ public class CodegenPapifyEngineTask extends AbstractTaskImplementation {
             + "It does nothing and can be safely removed.\n"
             + "See the new 'Papify' parameter of the codegen tasks for equivalent behavior.");
 
-    // Create empty output map (codegen doesn't have output)
     LinkedHashMap<String, Object> output = new LinkedHashMap<>();
     output.put(AbstractWorkflowNodeImplementation.KEY_SDF_DAG, algo);
     return output;
