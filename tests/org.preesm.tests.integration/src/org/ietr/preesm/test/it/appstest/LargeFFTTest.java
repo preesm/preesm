@@ -53,8 +53,8 @@ public class LargeFFTTest {
 
   static final String[] scenarios = new String[] { "largeFFT_hawking.scenario", "largeFFT_lamaar.scenario",
       "largeFFT_monox86.scenario" };
-  static final String[] workflows = new String[] { "CodegenWMemScripts.workflow", "SDF3Exporter.workflow",
-      "Simulate.workflow", "XTendCodegen.workflow" };
+  static final String[] workflows = new String[] { "CodegenWMemScripts.workflow", "Simulate.workflow",
+      "XTendCodegen.workflow" };
 
   static final String projectName = "org.ietr.preesm.largeFFT";
 
