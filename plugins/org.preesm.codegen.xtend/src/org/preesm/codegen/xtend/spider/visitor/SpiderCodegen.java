@@ -441,7 +441,7 @@ public class SpiderCodegen {
     append("\tstd::map<const char *, PapifyConfig*> mapPapifyConfigs;\n");
     append("\t// Initializing the map\n");
     for (final AbstractActor actor : papifiedActors) {
-      append("\tmapPapifyConfigs = create" + actor.getName() + "PapifyConfig();\n");
+      append("\tmapPapifyConfigs = create_" + SpiderNameGenerator.getFunctionName(actor) + "_PapifyConfig();\n");
       append("\tif(!mapPapifyConfigs.empty()) {\n");
       append("\t\tmap.insert(std::make_pair(" + pg.getName() + "_fcts["
           + SpiderNameGenerator.getFunctionName(actor).toUpperCase() + "_FCT" + "], mapPapifyConfigs));\n");
@@ -519,8 +519,9 @@ public class SpiderCodegen {
       configIdPerPapiComponent.put(compName, realEventSetID);
     }
 
-    append("static std::map<const char *, PapifyConfig*> " + "create" + actor.getName() + "PapifyConfig() {\n");
-    append("\t// Setting the PapifyConfigs for actor: " + actor.getName() + "\n");
+    append("static std::map<const char *, PapifyConfig*> " + "create_" + SpiderNameGenerator.getFunctionName(actor)
+        + "_PapifyConfig() {\n");
+    append("\t// Setting the PapifyConfigs for actor: " + SpiderNameGenerator.getFunctionName(actor) + "\n");
     append("\tstd::map<const char *, PapifyConfig*> configMap;\n");
     for (String compNameGen : compNames) {
       append("\n\tPapifyConfig* config_" + compNameGen + "  = new PapifyConfig;\n");
