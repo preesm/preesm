@@ -1,7 +1,7 @@
 
 @GenModel(
 	modelName="PiMM", prefix="PiMM",
-	modelDirectory="/org.preesm.model.algorithm/ecore-gen",
+	modelDirectory="/org.preesm.algorithm/ecore-gen",
 
 	// redirection="",
 	// classNamePattern="",
@@ -25,14 +25,6 @@
 @Ecore(nsURI="http://org.preesm/algos/schedule")
 package org.preesm.model.algorithm.schedule
 
-import java.io.File
-import java.util.Optional
-import org.preesm.commons.exceptions.PreesmRuntimeException
-import org.preesm.model.pisdf.util.RefinementResolver
-import org.preesm.model.pisdf.expression.ExpressionEvaluator
-import org.preesm.model.pisdf.factory.PiMMUserFactory
-import java.util.Collections
-
 // !!! This is needed as of the current versions of xcore/xtext
 // For some reason when using the default String/... (i.e. without the following)
 // the corresponding EPackage attributes/... are resolved to type java.lang.Object
@@ -51,5 +43,5 @@ type double wraps double
  **************************************/
 
  class Toto {
-
+	String toto
  }
