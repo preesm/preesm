@@ -631,7 +631,7 @@ public class ScenarioParser {
     final PapiComponent component = ScenarioFactory.eINSTANCE.createPapiComponent();
     component.setIndex(Integer.valueOf(componentIndex));
     component.setId(componentId);
-    component.setType(PapiComponentType.valueOf(componentType));
+    component.setType(PapiComponentType.valueOf(componentType.toUpperCase()));
 
     final List<PapiEventSet> eventSetList = new ArrayList<>();
 
