@@ -527,10 +527,10 @@ public class SpiderCodegen {
       append("\n\tPapifyConfig* config_" + compNameGen + "  = new PapifyConfig;\n");
       append("\tconfig_" + compNameGen + "->peID_            = \"\";\n");
       append("\tconfig_" + compNameGen + "->peType_          = \"" + compNameGen + "\";\n");
-      append("\tconfig_" + compNameGen + "->actorName_       = \"" + actor.getName() + "\";\n");
+      append(
+          "\tconfig_" + compNameGen + "->actorName_       = \"" + SpiderNameGenerator.getFunctionName(actor) + "\";\n");
       append("\tconfig_" + compNameGen + "->eventSize_       = "
           + Integer.toString(associatedEvents.get(compNameGen).size()) + ";\n");
-      // append("\tconfig_" + compNameGen + "->eventSetID_ = " + realEventSetID.toString() + ";\n");
       append("\tconfig_" + compNameGen + "->eventSetID_      = " + configIdPerPapiComponent.get(compNameGen).toString()
           + ";\n");
       final String timing = timingMonitoring ? "true" : "false";
@@ -550,9 +550,8 @@ public class SpiderCodegen {
       append("\n\tPapifyConfig* config_Timing  = new PapifyConfig;\n");
       append("\tconfig_Timing->peID_            = \"\";\n");
       append("\tconfig_Timing->peType_          = \"\";\n");
-      append("\tconfig_Timing->actorName_       = \"" + actor.getName() + "\";\n");
+      append("\tconfig_Timing->actorName_       = \"" + SpiderNameGenerator.getFunctionName(actor) + "\";\n");
       append("\tconfig_Timing->eventSize_       = 0;\n");
-      // append("\tconfig_Timing->eventSetID_ = " + realEventSetID.toString() + ";\n");
       append("\tconfig_Timing->eventSetID_      = 0;\n");
       final String timing = timingMonitoring ? "true" : "false";
       append("\tconfig_Timing->isTiming_        = " + timing + ";\n");
