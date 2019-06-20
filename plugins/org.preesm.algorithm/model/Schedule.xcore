@@ -1,47 +1,62 @@
 
-@GenModel(
-	modelName="PiMM", prefix="PiMM",
-	modelDirectory="/org.preesm.algorithm/ecore-gen",
-
-	// redirection="",
+@GenModel(modelName="PiMM", prefix="PiMM", modelDirectory="/org.preesm.algorithm/ecore-gen", // redirection="",
 	// classNamePattern="",
-
 	// codeFormatting="true",
 	// cleanup="true",
-
-	importerID="org.eclipse.emf.importer.ecore",
-
-	// !! if true a instrs.ecore is generated in .impl and is used by xxpackage.init() to
+	importerID="org.eclipse.emf.importer.ecore", // !! if true a instrs.ecore is generated in .impl and is used by xxpackage.init() to
 	// load the intrs packages (by default this false unless the generated XyzPackage might
 	// exceed Java's byte code limit of 64k)
-	loadInitialization="false",
-	creationCommands="false",
-	creationIcons="false",
-	dataTypeConverters="false",
-	operationReflection="false",
-	complianceLevel="8.0"
-)
-
+	loadInitialization="false", creationCommands="false", creationIcons="false", dataTypeConverters="false",
+	operationReflection="false", complianceLevel="8.0")
 @Ecore(nsURI="http://org.preesm/algos/schedule")
 package org.preesm.model.algorithm.schedule
 
-// !!! This is needed as of the current versions of xcore/xtext
-// For some reason when using the default String/... (i.e. without the following)
-// the corresponding EPackage attributes/... are resolved to type java.lang.Object
-// instead of java.lang.String.
-// This causes a problem for Tom mapping generation for instance.
-// The following fixes this problem.
+import org.preesm.model.pisdf.AbstractActor
+import org.eclipse.emf.common.util.ECollections
+
 type String wraps String
+
 type int wraps int
+
 type long wraps long
+
 type double wraps double
 
-/*************************************
- *
- * Generic Graph Definition
- *
- **************************************/
+interface Schedule {
+	op long getRepetition()
+	op Schedule[] getChildren()
+	op AbstractActor[] getActors()
+}
 
- class Toto {
-	String toto
- }
+interface HierarchicalSchedule extends Schedule {
+	contains Schedule[] scheduleTree
+	op Schedule[] getChildren() {
+		return scheduleTree
+	}
+	op AbstractActor[] getActors() {
+		return scheduleTree.map[it.getActors()].flatten.asEList
+	}
+}
+
+class ActorSchedule extends Schedule {
+	// this Map associate for every actor a virtual 'execution date'.
+	// All dates should be different to define a total order.
+	refers AbstractActor[] orderedActors
+	op Schedule[] getChildren() {
+		return ECollections.emptyEList
+	}
+	op AbstractActor[] getActors() {
+		return orderedActors
+	}
+}
+
+class ParallelSchedule extends HierarchicalSchedule {
+	// all elements of this list can be executed simultaneously (i.e. in parallel)
+}
+
+class SequentialSchedule extends HierarchicalSchedule {
+	// all elements of this list should be executed sequentially
+}
+
+
+
