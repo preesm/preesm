@@ -87,4 +87,12 @@
             genModel="model/Schedule.xcore"/>
    </extension>
 
+   <extension point="org.eclipse.emf.ecore.generated_package">
+      <!-- @generated MemoryAllocation -->
+      <package
+            uri="http://org.preesm/algos/memalloc"
+            class="org.preesm.model.algorithm.memalloc.MemoryAllocationPackage"
+            genModel="model/MemoryAllocation.xcore"/>
+   </extension>
+
 </plugin>
