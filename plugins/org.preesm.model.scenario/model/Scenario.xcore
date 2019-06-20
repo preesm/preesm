@@ -11,21 +11,21 @@
 @Ecore(nsURI="http://org.preesm/model/scenario")
 package org.preesm.model.scenario
 
-import org.preesm.model.pisdf.Parameter
-import org.preesm.model.pisdf.PiGraph
-import org.preesm.model.slam.Design
-import org.preesm.model.slam.ComponentInstance
-import org.preesm.model.pisdf.AbstractActor
-import org.preesm.model.slam.component.Component
+import java.util.Objects
+import org.eclipse.core.runtime.IPath
+import org.eclipse.core.runtime.Path
 import org.eclipse.emf.common.util.ECollections
 import org.eclipse.emf.common.util.EMap
 import org.preesm.commons.model.PreesmCopyTracker
+import org.preesm.model.pisdf.AbstractActor
+import org.preesm.model.pisdf.Parameter
+import org.preesm.model.pisdf.PiGraph
 import org.preesm.model.pisdf.expression.ExpressionEvaluator
-import org.eclipse.core.runtime.IPath
-import org.eclipse.core.runtime.Path
-import org.preesm.model.slam.serialize.SlamParser
 import org.preesm.model.pisdf.serialize.PiParser
-import java.util.Objects
+import org.preesm.model.slam.ComponentInstance
+import org.preesm.model.slam.Design
+import org.preesm.model.slam.component.Component
+import org.preesm.model.slam.serialize.SlamParser
 
 // !!! This is needed as of the current versions of xcore/xtext
 // For some reason when using the default String/... (i.e. without the following)
@@ -202,7 +202,7 @@ class Timings {
 			}
 		} else {
 			val AbstractActor source = PreesmCopyTracker.getSource(actor);
-			if (source != actor) {
+			if (source !== actor) {
 				return getTimingOrDefault(source, component);
 			}
 		}
@@ -258,6 +258,19 @@ class MemoryCopySpeedValue {
 /* #####################
  *  		  Papify
  ##################### */
+enum PapifyConstants {
+	PAPIFY_CONFIGURATION   as  "papifyConfig"
+	PAPIFY_ACTION_NAME     as "papifyActionName"
+	PAPIFY_CONFIG_NUMBER   as "papifyConfigNumber"
+	PAPIFY_MONITOR_EVENTS  as "papifyMonitorEvents"
+	PAPIFY_MONITOR_TIMING  as "papifyMonitorTiming"
+	PAPIFY_COMPONENT_NAME  as "papifyComponentName"
+	PAPIFY_ACTOR_NAME      as "papifyActorName"
+	PAPIFY_CODESET_SIZE    as "papifyCodeSetSize"
+	PAPIFY_EVENTSET_NAMES  as "papifyEventSetNames"
+	PAPIFY_COUNTER_CONFIGS as "papifyCounterConfigs"
+}
+
 class PapifyConfig {
 	refers Scenario scenario opposite papifyConfig
 	contains PapiEventInfo papiData opposite papifyConfig
@@ -273,7 +286,7 @@ class PapifyConfig {
 		}
 		this.papifyConfigGroupsPEs.get(slamComponent).addAll(papiComponents);
 	}
-	op void addActorConfigEvent(AbstractActor actor, String component, PapiEvent[] events) {
+	op void addActorConfigEvent(AbstractActor actor, String component, PapiEvent event) {
 		if (!papifyConfigGroupsActors.containsKey(actor)) {
 			papifyConfigGroupsActors.put(actor, ECollections.asEMap(newLinkedHashMap));
 		}
@@ -281,7 +294,12 @@ class PapifyConfig {
 		if (!actorConfig.containsKey(component)) {
 			actorConfig.put(component, newBasicEList())
 		}
-		actorConfig.get(component).addAll(events)
+		val eventList = actorConfig.get(component)
+		val index = ECollections.indexOf(eventList, event, 0)
+		if (index < 0) {
+			eventList.add(event)
+			eventList.sortInplace(e1, e2|e1.getIndex() - e2.getIndex())
+		}
 	}
 	op void removeActorConfigEvent(AbstractActor actor, String component, PapiEvent event) {
 		if (!papifyConfigGroupsActors.containsKey(actor)) {
@@ -292,11 +310,65 @@ class PapifyConfig {
 			actorConfig.put(component, newBasicEList())
 		}
 		val eventList = actorConfig.get(component)
-		eventList.remove(event)
+		val index = ECollections.indexOf(eventList, event, 0)
+		if (index >= 0) {
+			eventList.remove(index)
+		}
 	}
-
+	op ActorEvent[] getActorConfig(AbstractActor actor) {
+		if (this.papifyConfigGroupsActors.containsKey(actor)) {
+			return papifyConfigGroupsActors.get(actor)
+		} else {
+			val AbstractActor source = PreesmCopyTracker.getSource(actor);
+			if (source !== actor) {
+				return getActorConfig(source)
+			} else {
+				return ECollections.emptyEMap;
+			}
+		}
+	}
+	op boolean hasPapifyConfig(AbstractActor actor) {
+		return !getActorConfig(actor).nullOrEmpty
+	}
+	op boolean isMonitoringEvents(AbstractActor actor) {
+		val size = getActorConfig(actor).size
+		if (isMonitoringTiming(actor)) {
+			return size > 1
+		} else {
+			return size > 0
+		}
+	}
+	op boolean isMonitoringTiming(AbstractActor actor) {
+		return getActorConfig(actor).containsKey("Timing")
+	}
+	op String[] getActorAssociatedPapiComponents(AbstractActor actor) {
+		return getActorConfig(actor).keySet.filter[!(it.equals("Timing"))].asEList.unmodifiableView
+	}
+	op PapiEvent[] getActorAssociatedEvents(AbstractActor actor) {
+		return getActorConfig(actor).filter[it|!(it.key.equals("Timing"))].map[it.value].flatten.asEList.
+			unmodifiableView
+	}
+	op String getActorOriginalIdentifier(AbstractActor actor) {
+		var AbstractActor source = PreesmCopyTracker.getOriginalSource(actor);
+		return source.vertexPath.substring(source.vertexPath.indexOf('/') + 1).replace('/', '_')
+	}
+	op PapiComponent[] getSupportedPapiComponents(Component component) {
+		if (papifyConfigGroupsPEs.containsKey(component)) {
+			return papifyConfigGroupsPEs.get(component)
+		}
+		return ECollections.emptyEList;
+	}
+	op PapiEvent[] getActorComponentEvents(AbstractActor actor, String componentName) {
+		var actorConfig = getActorConfig(actor)
+		if (actorConfig.containsKey(componentName)) {
+			return actorConfig.get(componentName)
+		}
+		return ECollections.emptyEList;
+	}
 	op void clear() {
-		papiData.components.clear
+		if (papiData !== null) {
+			papiData.components.clear
+		}
 		papifyConfigGroupsActors.clear
 		papifyConfigGroupsPEs.clear
 	}
@@ -355,7 +427,6 @@ class PapiEvent {
 	String                  name        = ""
 	String                  description = ""
 	contains PapiEventModifier[] modifiers
-
 	op boolean equals(Object other) {
 		if (other instanceof PapiEvent) {
 			return this.index === other.index && this.name == other.name

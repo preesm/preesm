@@ -39,11 +39,13 @@ package org.preesm.codegen.xtend.task;
 import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.logging.Level;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.preesm.algorithm.mapper.model.MapperDAG;
 import org.preesm.algorithm.model.dag.DirectedAcyclicGraph;
 import org.preesm.commons.doc.annotations.Port;
 import org.preesm.commons.doc.annotations.PreesmTask;
+import org.preesm.commons.logger.PreesmLogger;
 import org.preesm.model.scenario.Scenario;
 import org.preesm.workflow.elements.Workflow;
 import org.preesm.workflow.implement.AbstractTaskImplementation;
@@ -51,6 +53,8 @@ import org.preesm.workflow.implement.AbstractWorkflowNodeImplementation;
 
 /**
  * The Class CodegenTask.
+ *
+ * @deprecated see parameter "Papify" in task {@link CodegenTask}
  */
 @PreesmTask(id = "org.ietr.preesm.codegen.xtend.task.CodegenPapifyEngineTask", name = "Papify Engine",
 
@@ -58,59 +62,44 @@ import org.preesm.workflow.implement.AbstractWorkflowNodeImplementation;
         @Port(name = "DAG", type = DirectedAcyclicGraph.class) },
     outputs = { @Port(name = "DAG", type = DirectedAcyclicGraph.class) },
 
-    shortDescription = "Generate the required instrumentation code for the application"
-        + " based on the PAPIFY tab information.",
+    shortDescription = "Deprecated - does nothing (as of v3.9.1). See parameter 'Papify' in CodegenTask'.\n\nOld doc: "
+        + "Generate the required instrumentation code for the application" + " based on the PAPIFY tab information.",
 
-    description = "This workflow task is responsible for generating the instrumentation "
+    description = "Deprecated - does nothing (as of v3.9.1). See parameter 'Papify' in CodegenTask'.\n\n"
+        + "Old doc: This workflow task is responsible for generating the instrumentation "
         + "of the code for the application based on the PAPIFY tab information.\n\n"
         + "The generated code makes use of 1 macro that enables/disables the monitoring"
         + " in the **preesm.h** user header file:\n"
         + "*  **_PREESM_PAPIFY_MONITOR** : if defined, the code monitoring will take place;\n"
 
 )
+@Deprecated
 public class CodegenPapifyEngineTask extends AbstractTaskImplementation {
-  /*
-   * (non-Javadoc)
-   *
-   * @see org.ietr.dftools.workflow.implement.AbstractTaskImplementation#execute( java.util.Map, java.util.Map,
-   * org.eclipse.core.runtime.IProgressMonitor, java.lang.String, org.ietr.dftools.workflow.elements.Workflow)
-   */
+
   @Override
   public Map<String, Object> execute(final Map<String, Object> inputs, final Map<String, String> parameters,
       final IProgressMonitor monitor, final String nodeName, final Workflow workflow) {
 
-    // Retrieve inputs
-    final Scenario scenario = (Scenario) inputs.get(AbstractWorkflowNodeImplementation.KEY_SCENARIO);
     final MapperDAG algo = (MapperDAG) inputs.get(AbstractWorkflowNodeImplementation.KEY_SDF_DAG);
 
-    // Generate intermediate model
-    final PapifyEngine engine = new PapifyEngine(algo, scenario);
-    final DirectedAcyclicGraph result = engine.generate();
+    PreesmLogger.getLogger().log(Level.WARNING,
+        "PapifyEngine task is now deprecated (since v3.9.1) and will be removed eventually. \n"
+            + "It does nothing and can be safely removed.\n"
+            + "See the new 'Papify' parameter of the codegen tasks for equivalent behavior.");
 
-    // Create empty output map (codegen doesn't have output)
     LinkedHashMap<String, Object> output = new LinkedHashMap<>();
-    output.put(AbstractWorkflowNodeImplementation.KEY_SDF_DAG, result);
+    output.put(AbstractWorkflowNodeImplementation.KEY_SDF_DAG, algo);
     return output;
   }
 
-  /*
-   * (non-Javadoc)
-   *
-   * @see org.ietr.dftools.workflow.implement.AbstractTaskImplementation#getDefaultParameters()
-   */
   @Override
   public Map<String, String> getDefaultParameters() {
     return Collections.emptyMap();
   }
 
-  /*
-   * (non-Javadoc)
-   *
-   * @see org.ietr.dftools.workflow.implement.AbstractWorkflowNodeImplementation#monitorMessage()
-   */
   @Override
   public String monitorMessage() {
-    return "Generate xtend code";
+    return "Papify Engine - Deprecated (does nothing)";
   }
 
 }

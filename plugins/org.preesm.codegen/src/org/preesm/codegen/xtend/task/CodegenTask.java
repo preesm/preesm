@@ -3,6 +3,7 @@
  *
  * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017 - 2019)
  * Clément Guy <clement.guy@insa-rennes.fr> (2014 - 2015)
+ * Daniel Madroñal <daniel.madronal@upm.es> (2019)
  * Julien Hascoet <jhascoet@kalray.eu> (2016)
  * Karol Desnos <karol.desnos@insa-rennes.fr> (2013 - 2015)
  * Maxime Pelcat <maxime.pelcat@insa-rennes.fr> (2013)
@@ -95,8 +96,13 @@ import org.preesm.workflow.implement.AbstractTaskImplementation;
             @Value(name = "InstrumentedC",
                 effect = "Print C code instrumented with profiling code, and shared-memory based communications. "
                     + "Currently compatible with x86, c6678 architectures.."),
-            @Value(name = "XML", effect = "Print XML code with all informations used by other printers to print code. "
-                + "Compatible with x86, c6678.") }) })
+            @Value(name = "XML",
+                effect = "Print XML code with all informations used by other printers to print code. "
+                    + "Compatible with x86, c6678.") }),
+        @Parameter(name = "Papify", description = "Enable the PAPI-based code instrumentation provided by PAPIFY",
+            values = { @Value(name = "true/false",
+                effect = "Print C code instrumented with PAPIFY function calls based on the user-defined configuration"
+                    + " of PAPIFY tab in the scenario. Currently compatibe with x86 and MPPA-256") }) })
 public class CodegenTask extends AbstractTaskImplementation {
 
   /** The Constant PARAM_PRINTER. */
@@ -104,6 +110,9 @@ public class CodegenTask extends AbstractTaskImplementation {
 
   /** The Constant VALUE_PRINTER_IR. */
   public static final String VALUE_PRINTER_IR = "IR";
+
+  /** The Constant PARAM_PAPIFY. */
+  public static final String PARAM_PAPIFY = "Papify";
 
   /*
    * (non-Javadoc)
@@ -128,6 +137,9 @@ public class CodegenTask extends AbstractTaskImplementation {
 
     // Generate intermediate model
     final CodegenModelGenerator generator = new CodegenModelGenerator(archi, algo, megs, scenario, workflow);
+    // Retrieve the PAPIFY flag
+    final String papifyMonitoring = parameters.get(CodegenTask.PARAM_PAPIFY);
+    generator.registerPapify(papifyMonitoring);
 
     final Collection<Block> codeBlocks = generator.generate();
 
@@ -176,6 +188,8 @@ public class CodegenTask extends AbstractTaskImplementation {
     avilableLanguages += CodegenTask.VALUE_PRINTER_IR + "}";
 
     parameters.put(CodegenTask.PARAM_PRINTER, avilableLanguages);
+    // Papify default
+    parameters.put(CodegenTask.PARAM_PAPIFY, "false");
     return parameters;
   }
 

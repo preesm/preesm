@@ -1,6 +1,21 @@
 PREESM Changelog
 ================
 
+## Release version 3.10.0
+*2019.06.20*
+
+### New Feature
+
+### Changes
+* Fix Papi event add/remove;
+* Deprecated PapifyEngine task, replaced with the new parameter in the codegen task;
+* Update sonar plugin to 3.6.0.1398;
+* Fix Scenario UI layouts;
+* Refactoring;
+
+### Bug fix
+* Fix #154: fix scenario UI layouts;
+
 ## Release version 3.9.0
 *2019.06.18*
 

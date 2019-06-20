@@ -45,9 +45,8 @@ import org.eclipse.jface.viewers.Viewer;
 import org.preesm.model.scenario.PapiComponent;
 import org.preesm.model.scenario.PapiEvent;
 import org.preesm.model.scenario.PapiEventInfo;
-import org.preesm.model.scenario.PapiEventModifier;
 import org.preesm.model.scenario.PapiEventSet;
-import org.preesm.model.scenario.ScenarioFactory;
+import org.preesm.model.scenario.util.ScenarioUserFactory;
 
 /**
  * Provides the events contained in the papify component.
@@ -79,16 +78,11 @@ public class PapifyEventListContentProvider implements IStructuredContentProvide
 
     if (inputElement instanceof PapiEventInfo) {
       final PapiEventInfo inputPapiEventInfo = (PapiEventInfo) inputElement;
-      final PapiEvent timingEvent = ScenarioFactory.eINSTANCE.createPapiEvent();
-      final List<PapiEventModifier> modifTimingList = new ArrayList<>();
+      final PapiEvent timingEvent = ScenarioUserFactory.createTimingEvent();
       PapiComponent compAux = null;
       PapiEventSet eventSetAux = null;
       PapiEvent eventAux = null;
       this.eventList = new ArrayList<>();
-      timingEvent.setName("Timing");
-      timingEvent.setDescription("Event to time through PAPI_get_time()");
-      timingEvent.setIndex(9999);
-      timingEvent.getModifiers().addAll(modifTimingList);
       this.eventList.add(timingEvent);
       for (int i = inputPapiEventInfo.getComponents().size() - 1; i >= 0; i--) {
         final Entry<String, PapiComponent> entry = inputPapiEventInfo.getComponents().get(i);
@@ -105,7 +99,6 @@ public class PapifyEventListContentProvider implements IStructuredContentProvide
       }
       elementTable = this.eventList.toArray();
     }
-
     return elementTable;
   }
 
@@ -116,8 +109,7 @@ public class PapifyEventListContentProvider implements IStructuredContentProvide
    */
   @Override
   public void dispose() {
-    // TODO Auto-generated method stub
-
+    // nothing
   }
 
   /*
@@ -128,8 +120,7 @@ public class PapifyEventListContentProvider implements IStructuredContentProvide
    */
   @Override
   public void inputChanged(final Viewer viewer, final Object oldInput, final Object newInput) {
-    // TODO Auto-generated method stub
-
+    // nothing
   }
 
 }

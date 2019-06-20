@@ -43,7 +43,7 @@
    <modelVersion>4.0.0</modelVersion>
    <groupId>org.preesm</groupId>
    <artifactId>org.preesm.parent</artifactId>
-   <version>3.9.0</version>
+   <version>3.10.0</version>
    <packaging>pom</packaging>
 
    <!-- More Project Information -->
@@ -80,7 +80,7 @@
       <jacoco-version>0.8.3</jacoco-version>
       <tycho-version>1.4.0</tycho-version>
       <findbugs-version>3.0.5</findbugs-version>
-      <sonar-version>3.4.1.1168</sonar-version>
+      <sonar-version>3.6.0.1398</sonar-version>
       <checkstyle-version>8.18</checkstyle-version>
       <rcptt-version>2.4.2</rcptt-version>
       <rcptt-runner-version>2.4.2</rcptt-runner-version>
@@ -775,6 +775,10 @@
                         <file>
                            <name>.settings/org.eclipse.xtend.core.Xtend.prefs</name>
                            <location>/org.eclipse.xtend.core.Xtend.prefs</location>
+                        </file>
+                        <file>
+                           <name>.settings/org.eclipse.emf.ecore.xcore.Xcore.prefs</name>
+                           <location>/org.eclipse.emf.ecore.xcore.Xcore.prefs</location>
                         </file>
                      </additionalConfig>
                   </configuration>

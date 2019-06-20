@@ -54,9 +54,7 @@ import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.runtime.CoreException;
-import org.eclipse.emf.common.util.BasicEList;
 import org.eclipse.emf.common.util.ECollections;
-import org.eclipse.emf.common.util.EList;
 import org.preesm.commons.logger.PreesmLogger;
 import org.preesm.model.pisdf.AbstractActor;
 import org.preesm.model.pisdf.Parameter;
@@ -555,10 +553,10 @@ public class ScenarioParser {
               final String typeEvents = eltEvents.getTagName();
               if (typeEvents.equals("component")) {
                 final String component = eltEvents.getAttribute("component");
-                final EList<PapiEvent> eventSet = new BasicEList<>();
                 final List<PapiEvent> eventList = getPapifyEvents(eltEvents);
-                eventSet.addAll(eventList);
-                this.scenario.getPapifyConfig().addActorConfigEvent(lookup, component, eventSet);
+                for (PapiEvent event : eventList) {
+                  this.scenario.getPapifyConfig().addActorConfigEvent(lookup, component, event);
+                }
               }
             }
             nodeEvents = nodeEvents.getNextSibling();

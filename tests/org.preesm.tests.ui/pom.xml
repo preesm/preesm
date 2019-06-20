@@ -44,7 +44,7 @@
 	<parent>
 		<groupId>org.preesm</groupId>
 		<artifactId>org.preesm.tests</artifactId>
-		<version>3.9.0</version>
+		<version>3.10.0</version>
 		<relativePath>..</relativePath>
 	</parent>
 </project>
