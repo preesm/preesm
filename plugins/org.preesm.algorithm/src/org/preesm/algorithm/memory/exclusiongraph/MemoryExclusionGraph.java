@@ -56,6 +56,7 @@ import org.jgrapht.graph.SimpleGraph;
 import org.preesm.algorithm.mapper.ScheduledDAGIterator;
 import org.preesm.algorithm.mapper.graphtransfo.BufferAggregate;
 import org.preesm.algorithm.mapper.graphtransfo.ImplementationPropertyNames;
+import org.preesm.algorithm.mapper.graphtransfo.VertexType;
 import org.preesm.algorithm.memory.script.Range;
 import org.preesm.algorithm.model.PropertyBean;
 import org.preesm.algorithm.model.PropertyFactory;
@@ -73,7 +74,6 @@ import org.preesm.algorithm.model.sdf.esdf.SDFInitVertex;
 import org.preesm.commons.CloneableProperty;
 import org.preesm.commons.exceptions.PreesmRuntimeException;
 import org.preesm.commons.logger.PreesmLogger;
-import org.preesm.model.scenario.types.VertexType;
 import org.preesm.model.slam.ComponentInstance;
 
 // TODO: Auto-generated Javadoc

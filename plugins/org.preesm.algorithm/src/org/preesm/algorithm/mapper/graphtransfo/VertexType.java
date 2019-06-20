@@ -36,7 +36,7 @@
  * The fact that you are presently reading this means that you have had
  * knowledge of the CeCILL license and that you accept its terms.
  */
-package org.preesm.model.scenario.types;
+package org.preesm.algorithm.mapper.graphtransfo;
 
 /**
  * Represents the type of a vertex in its propertybeans.

@@ -43,6 +43,7 @@ import java.util.Map;
 import org.preesm.algorithm.mapper.abc.impl.latency.LatencyAbc;
 import org.preesm.algorithm.mapper.abc.impl.latency.SpanLengthCalculator;
 import org.preesm.algorithm.mapper.graphtransfo.ImplementationPropertyNames;
+import org.preesm.algorithm.mapper.graphtransfo.VertexType;
 import org.preesm.algorithm.mapper.model.MapperDAG;
 import org.preesm.algorithm.mapper.model.MapperDAGEdge;
 import org.preesm.algorithm.mapper.model.MapperDAGVertex;
@@ -55,7 +56,6 @@ import org.preesm.algorithm.model.dag.DAGEdge;
 import org.preesm.algorithm.model.dag.DAGVertex;
 import org.preesm.commons.exceptions.PreesmException;
 import org.preesm.model.scenario.Scenario;
-import org.preesm.model.scenario.types.VertexType;
 import org.preesm.model.slam.ComponentInstance;
 
 /**

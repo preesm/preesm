@@ -62,7 +62,6 @@ import org.preesm.algorithm.model.sdf.SDFEdge;
 import org.preesm.model.scenario.Scenario;
 import org.preesm.model.scenario.ScenarioConstants;
 import org.preesm.model.scenario.SimulationInfo;
-import org.preesm.model.scenario.types.VertexType;
 import org.preesm.model.slam.ComponentInstance;
 import org.preesm.model.slam.Design;
 import org.preesm.model.slam.route.AbstractRouteStep;

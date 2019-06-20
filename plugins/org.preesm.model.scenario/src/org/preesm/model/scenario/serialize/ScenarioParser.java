@@ -71,7 +71,6 @@ import org.preesm.model.scenario.PapiEventSetType;
 import org.preesm.model.scenario.Scenario;
 import org.preesm.model.scenario.ScenarioFactory;
 import org.preesm.model.scenario.Timings;
-import org.preesm.model.scenario.types.VertexType;
 import org.preesm.model.scenario.util.ScenarioUserFactory;
 import org.preesm.model.slam.ComponentInstance;
 import org.preesm.model.slam.Design;
@@ -476,7 +475,7 @@ public class ScenarioParser {
           final Element elt = (Element) node;
           final String type = elt.getTagName();
           final String name = elt.getAttribute("name");
-          if (type.equals(VertexType.TYPE_TASK)) {
+          if (type.equals("task")) {
             final AbstractActor actorFromPath = getActorFromPath(name);
             if (actorFromPath != null) {
               actors.add(actorFromPath);

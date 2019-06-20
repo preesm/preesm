@@ -45,6 +45,7 @@ import java.util.LinkedHashSet;
 import java.util.Set;
 import java.util.logging.Level;
 import org.preesm.algorithm.mapper.graphtransfo.ImplementationPropertyNames;
+import org.preesm.algorithm.mapper.graphtransfo.VertexType;
 import org.preesm.algorithm.model.dag.DAGEdge;
 import org.preesm.algorithm.model.dag.DAGVertex;
 import org.preesm.algorithm.model.dag.DirectedAcyclicGraph;
@@ -59,7 +60,6 @@ import org.preesm.algorithm.model.sdf.esdf.SDFBroadcastVertex;
 import org.preesm.algorithm.model.sdf.esdf.SDFJoinVertex;
 import org.preesm.algorithm.model.sdf.esdf.SDFRoundBufferVertex;
 import org.preesm.commons.logger.PreesmLogger;
-import org.preesm.model.scenario.types.VertexType;
 
 /**
  * Utility class created to gather all static methods used to remove fork/join nodes from a graph.
