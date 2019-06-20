@@ -49,6 +49,8 @@ import org.eclipse.xtext.xbase.lib.Functions.Function1;
 import org.eclipse.xtext.xbase.lib.IterableExtensions;
 import org.eclipse.xtext.xbase.lib.Pair;
 import org.jgrapht.graph.DefaultEdge;
+import org.preesm.algorithm.mapper.graphtransfo.BufferAggregate;
+import org.preesm.algorithm.mapper.graphtransfo.BufferProperties;
 import org.preesm.algorithm.memory.exclusiongraph.MemoryExclusionGraph;
 import org.preesm.algorithm.memory.exclusiongraph.MemoryExclusionVertex;
 import org.preesm.algorithm.memory.script.Range;
@@ -58,10 +60,7 @@ import org.preesm.algorithm.model.sdf.SDFEdge;
 import org.preesm.algorithm.model.sdf.SDFGraph;
 import org.preesm.commons.exceptions.PreesmRuntimeException;
 import org.preesm.commons.math.MathFunctionsHelper;
-import org.preesm.model.scenario.types.BufferAggregate;
-import org.preesm.model.scenario.types.BufferProperties;
 
-// TODO: Auto-generated Javadoc
 /**
  * This class is both an interface and toolbox class for memory allocator.
  *

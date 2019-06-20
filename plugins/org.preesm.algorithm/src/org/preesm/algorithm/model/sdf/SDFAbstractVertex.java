@@ -38,6 +38,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 import java.util.logging.Level;
+import org.preesm.algorithm.mapper.graphtransfo.ImplementationPropertyNames;
 import org.preesm.algorithm.model.AbstractVertex;
 import org.preesm.algorithm.model.IInterface;
 import org.preesm.algorithm.model.InterfaceDirection;
@@ -51,7 +52,6 @@ import org.preesm.commons.logger.PreesmLogger;
 import org.preesm.commons.math.ExpressionEvaluationException;
 import org.preesm.model.pisdf.PiGraph;
 import org.preesm.model.pisdf.util.VertexPath;
-import org.preesm.model.scenario.types.ImplementationPropertyNames;
 
 /**
  * Abstract class representing SDF Vertices.

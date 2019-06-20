@@ -58,6 +58,8 @@ import org.preesm.algorithm.codegen.idl.ActorPrototypes;
 import org.preesm.algorithm.codegen.idl.Prototype;
 import org.preesm.algorithm.codegen.model.CodeGenArgument;
 import org.preesm.algorithm.codegen.model.CodeGenParameter;
+import org.preesm.algorithm.mapper.graphtransfo.BufferAggregate;
+import org.preesm.algorithm.mapper.graphtransfo.BufferProperties;
 import org.preesm.algorithm.mapper.model.MapperDAG;
 import org.preesm.algorithm.model.AbstractGraph;
 import org.preesm.algorithm.model.AbstractVertex;
@@ -105,8 +107,6 @@ import org.preesm.model.scenario.PapiEvent;
 import org.preesm.model.scenario.PapifyConfig;
 import org.preesm.model.scenario.PapifyConstants;
 import org.preesm.model.scenario.Scenario;
-import org.preesm.model.scenario.types.BufferAggregate;
-import org.preesm.model.scenario.types.BufferProperties;
 import org.preesm.model.slam.component.Component;
 
 /**

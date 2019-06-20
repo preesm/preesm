@@ -35,7 +35,7 @@
  * The fact that you are presently reading this means that you have had
  * knowledge of the CeCILL license and that you accept its terms.
  */
-package org.preesm.model.scenario.types;
+package org.preesm.algorithm.mapper.graphtransfo;
 
 /**
  * This class contains property bean names used to exchange vertex properties between the mapper and the code generation
