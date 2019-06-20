@@ -258,6 +258,19 @@ class MemoryCopySpeedValue {
 /* #####################
  *  		  Papify
  ##################### */
+enum PapifyConstants {
+	PAPIFY_CONFIGURATION   as  "papifyConfig"
+	PAPIFY_ACTION_NAME     as "papifyActionName"
+	PAPIFY_CONFIG_NUMBER   as "papifyConfigNumber"
+	PAPIFY_MONITOR_EVENTS  as "papifyMonitorEvents"
+	PAPIFY_MONITOR_TIMING  as "papifyMonitorTiming"
+	PAPIFY_COMPONENT_NAME  as "papifyComponentName"
+	PAPIFY_ACTOR_NAME      as "papifyActorName"
+	PAPIFY_CODESET_SIZE    as "papifyCodeSetSize"
+	PAPIFY_EVENTSET_NAMES  as "papifyEventSetNames"
+	PAPIFY_COUNTER_CONFIGS as "papifyCounterConfigs"
+}
+
 class PapifyConfig {
 	refers Scenario scenario opposite papifyConfig
 	contains PapiEventInfo papiData opposite papifyConfig
