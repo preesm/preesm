@@ -73,11 +73,10 @@ import org.preesm.model.pisdf.RoundBufferActor;
 import org.preesm.model.scenario.PapiComponent;
 import org.preesm.model.scenario.PapiEvent;
 import org.preesm.model.scenario.PapiEventInfo;
-import org.preesm.model.scenario.PapiEventModifier;
 import org.preesm.model.scenario.PapiEventSet;
 import org.preesm.model.scenario.PapifyConfig;
 import org.preesm.model.scenario.Scenario;
-import org.preesm.model.scenario.ScenarioFactory;
+import org.preesm.model.scenario.util.ScenarioUserFactory;
 import org.preesm.ui.scenario.editor.ISDFCheckStateListener;
 import org.preesm.ui.scenario.editor.Messages;
 import org.preesm.ui.scenario.editor.PreesmAlgorithmTreeContentProvider;
@@ -115,12 +114,7 @@ public class PapifyCheckStateListener implements ISDFCheckStateListener {
     super();
     this.scenario = scenario;
     this.elementList = new LinkedHashSet<>();
-    timingEvent = ScenarioFactory.eINSTANCE.createPapiEvent();
-    timingEvent.setName("Timing");
-    timingEvent.setDescription("Event to time through PAPI_get_time()");
-    timingEvent.setIndex(9999);
-    List<PapiEventModifier> modifTimingList = new ArrayList<>();
-    timingEvent.getModifiers().addAll(modifTimingList);
+    timingEvent = ScenarioUserFactory.createTimingEvent();
   }
 
   /**
@@ -469,7 +463,6 @@ public class PapifyCheckStateListener implements ISDFCheckStateListener {
   public List<AbstractActor> filterPISDFChildren(final List<AbstractActor> vertices) {
     final List<AbstractActor> actorPaths = new ArrayList<>();
     for (final AbstractActor actor : vertices) {
-      // TODO: Filter if needed
       if (!(actor instanceof DataInputInterface) && !(actor instanceof DataOutputInterface)
           && !(actor instanceof BroadcastActor) && !(actor instanceof JoinActor) && !(actor instanceof ForkActor)
           && !(actor instanceof RoundBufferActor) && !(actor instanceof DelayActor)) {

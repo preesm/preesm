@@ -38,8 +38,6 @@
 package org.preesm.ui.scenario.editor.papify;
 
 import java.io.FileNotFoundException;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.logging.Level;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IWorkspace;
@@ -78,11 +76,10 @@ import org.preesm.commons.logger.PreesmLogger;
 import org.preesm.model.scenario.PapiComponent;
 import org.preesm.model.scenario.PapiEvent;
 import org.preesm.model.scenario.PapiEventInfo;
-import org.preesm.model.scenario.PapiEventModifier;
 import org.preesm.model.scenario.PapiEventSet;
 import org.preesm.model.scenario.Scenario;
-import org.preesm.model.scenario.ScenarioFactory;
 import org.preesm.model.scenario.serialize.PapiConfigParser;
+import org.preesm.model.scenario.util.ScenarioUserFactory;
 import org.preesm.model.slam.Design;
 import org.preesm.model.slam.component.Component;
 import org.preesm.ui.scenario.editor.FileSelectionAdapter;
@@ -267,7 +264,6 @@ public class PapifyPage extends ScenarioPage {
 
     // Creates the section
     managedForm.getForm().setLayout(new FillLayout());
-    // final GridData gridData = new GridData(GridData.FILL_HORIZONTAL | GridData.FILL_VERTICAL);
     final GridData gridData = new GridData(GridData.FILL_HORIZONTAL | GridData.VERTICAL_ALIGN_BEGINNING);
     final Composite container = createSection(managedForm, title, desc, 1, gridData);
 
@@ -295,16 +291,11 @@ public class PapifyPage extends ScenarioPage {
     // Creates the section
     managedForm.getForm().setLayout(new FillLayout());
     final GridData gridData = new GridData(GridData.FILL_HORIZONTAL | GridData.VERTICAL_ALIGN_FILL);
-    // final GridData gridData = new GridData(GridData.FILL_HORIZONTAL, GridData.VERTICAL_ALIGN_BEGINNING, true, true);
     gridData.horizontalSpan = 2;
     gridData.grabExcessVerticalSpace = true;
     final Composite container = createSection(managedForm, title, desc, 2, gridData);
 
-    // this.checkStateListener = new PapifyCheckStateListener(container, this.scenario);
-    // container.addPaintListener(this.checkStateListener);
-
     final FormToolkit toolkit = managedForm.getToolkit();
-
     addEventCheckBoxTreeViewer(container, toolkit);
 
   }
@@ -361,7 +352,8 @@ public class PapifyPage extends ScenarioPage {
       try {
         importData(text1);
       } catch (final Exception ex) {
-        ex.printStackTrace();
+        PreesmLogger.getLogger().log(Level.WARNING, "Could not importe Papi data from file '" + text1.getText() + "'",
+            ex);
       }
 
     });
@@ -375,7 +367,8 @@ public class PapifyPage extends ScenarioPage {
           try {
             importData(text);
           } catch (final Exception ex) {
-            ex.printStackTrace();
+            PreesmLogger.getLogger().log(Level.WARNING,
+                "Could not importe Papi data from file '" + text.getText() + "'", ex);
           }
         }
 
@@ -486,15 +479,12 @@ public class PapifyPage extends ScenarioPage {
    *          the xmlfile
    */
   private void updateTables() {
-
     this.peTreeViewer.setInput(this.papiEvents);
-    // this.peTreeViewer.refresh();
     this.peContentProvider.setInput();
     this.checkStateListener.clearEvents();
     updateColumns();
     this.actorTreeViewer.setInput(this.scenario);
     this.checkStateListener.updateEvents();
-    // this.actorContentProvider.setInput();
   }
 
   /**
@@ -507,14 +497,8 @@ public class PapifyPage extends ScenarioPage {
    */
   private void addComponentCheckBoxTreeViewer(final Composite parent, final FormToolkit toolkit) {
 
-    /*
-     * final Composite tablecps = toolkit.createComposite(parent); tablecps.setVisible(true);
-     */
-
     // Creating the tree view
-    this.peTreeViewer = new CheckboxTreeViewer(toolkit.createTree(parent, SWT.NONE)) {
-
-    };
+    this.peTreeViewer = new CheckboxTreeViewer(toolkit.createTree(parent, SWT.NONE));
 
     this.peContentProvider = new PapifyComponentListContentProvider2DMatrix(this.scenario);
 
@@ -522,9 +506,7 @@ public class PapifyPage extends ScenarioPage {
 
     peTreeViewer.setContentProvider(this.peContentProvider);
 
-    peTreeViewer.setLabelProvider(new LabelProvider() {
-
-    });
+    peTreeViewer.setLabelProvider(new LabelProvider());
     peTreeViewer.addCheckStateListener(this.checkStateListener);
 
     peTreeViewer.setUseHashlookup(true);
@@ -532,7 +514,8 @@ public class PapifyPage extends ScenarioPage {
     peTreeViewer.getTree().setLinesVisible(true);
     peTreeViewer.getTree().setHeaderVisible(true);
 
-    final TreeViewerColumn peViewerColumn = new TreeViewerColumn(peTreeViewer, SWT.CENTER | SWT.CHECK);
+    final TreeViewerColumn peViewerColumn = new TreeViewerColumn(peTreeViewer,
+        SWT.CENTER | SWT.CHECK | SWT.H_SCROLL | SWT.V_SCROLL);
     final TreeColumn peColumn = peViewerColumn.getColumn();
     peColumn.setText("Component type \\ PE type");
     peColumn.setWidth(200);
@@ -561,11 +544,10 @@ public class PapifyPage extends ScenarioPage {
     }
 
     peTreeViewer.setInput(this.papiEvents);
-    final GridData gd = new GridData(GridData.VERTICAL_ALIGN_BEGINNING);
+    final GridData gd = new GridData(GridData.VERTICAL_ALIGN_BEGINNING | GridData.FILL_HORIZONTAL);
     gd.heightHint = 100;
-    peTreeViewer.getTree().setLayoutData(gd);
 
-    // toolkit.paintBordersFor(parent);
+    peTreeViewer.getTree().setLayoutData(gd);
 
     // Tree is refreshed in case of algorithm modifications
     parent.addPaintListener(checkStateListener);
@@ -581,14 +563,8 @@ public class PapifyPage extends ScenarioPage {
    */
   private void addEventCheckBoxTreeViewer(final Composite parent, final FormToolkit toolkit) {
 
-    /*
-     * final Composite tablecps = toolkit.createComposite(parent); tablecps.setVisible(true);
-     */
-
     // Creating the tree view
-    this.actorTreeViewer = new CheckboxTreeViewer(toolkit.createTree(parent, SWT.CHECK)) {
-
-    };
+    this.actorTreeViewer = new CheckboxTreeViewer(toolkit.createTree(parent, SWT.CHECK));
 
     this.actorContentProvider = new PapifyEventListContentProvider2DMatrix(this.scenario);
     this.actorContentProvider.addCheckStateListener(this.checkStateListener);
@@ -636,12 +612,7 @@ public class PapifyPage extends ScenarioPage {
     }
 
     // The timing event
-    PapiEvent timingEvent = ScenarioFactory.eINSTANCE.createPapiEvent();
-    timingEvent.setName("Timing");
-    timingEvent.setDescription("Event to time through PAPI_get_time()");
-    timingEvent.setIndex(9999);
-    List<PapiEventModifier> modifTimingList = new ArrayList<>();
-    timingEvent.getModifiers().addAll(modifTimingList);
+    final PapiEvent timingEvent = ScenarioUserFactory.createTimingEvent();
 
     final TreeViewerColumn viewerColumnTiming = new TreeViewerColumn(this.actorTreeViewer, SWT.CENTER | SWT.CHECK);
     final TreeColumn columnTiming = viewerColumnTiming.getColumn();
