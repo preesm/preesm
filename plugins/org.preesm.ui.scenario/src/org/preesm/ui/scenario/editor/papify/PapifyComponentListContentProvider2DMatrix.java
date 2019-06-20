@@ -103,7 +103,7 @@ public class PapifyComponentListContentProvider2DMatrix implements ITreeContentP
 
       PapiEventInfo papiData = this.scenario.getPapifyConfig().getPapiData();
       PapiComponent pc = papiData.getComponents().get(compName);
-      this.scenario.getPapifyConfig().getPapifyConfigGroupsPEs().get(peType).remove(pc);
+      this.scenario.getPapifyConfig().removeComponent(peType, pc);
 
       for (PapifyListTreeElement treeElement : this.componentConfig) {
         if (treeElement.label.equals(compName)) {
