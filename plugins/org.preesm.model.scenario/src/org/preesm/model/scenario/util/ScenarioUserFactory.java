@@ -34,7 +34,11 @@
  */
 package org.preesm.model.scenario.util;
 
+import java.util.ArrayList;
+import java.util.List;
 import org.preesm.model.scenario.MemoryCopySpeedValue;
+import org.preesm.model.scenario.PapiEvent;
+import org.preesm.model.scenario.PapiEventModifier;
 import org.preesm.model.scenario.PapifyConfig;
 import org.preesm.model.scenario.Scenario;
 import org.preesm.model.scenario.ScenarioConstants;
@@ -54,6 +58,19 @@ public class ScenarioUserFactory {
     final PapifyConfig res = factory.createPapifyConfig();
     res.setPapiData(factory.createPapiEventInfo());
     return res;
+  }
+
+  /**
+   *
+   */
+  public static final PapiEvent createTimingEvent() {
+    final PapiEvent timingEvent = ScenarioFactory.eINSTANCE.createPapiEvent();
+    timingEvent.setName("Timing");
+    timingEvent.setDescription("Event to time through PAPI_get_time()");
+    timingEvent.setIndex(9999);
+    final List<PapiEventModifier> modifTimingList = new ArrayList<>();
+    timingEvent.getModifiers().addAll(modifTimingList);
+    return timingEvent;
   }
 
   /**

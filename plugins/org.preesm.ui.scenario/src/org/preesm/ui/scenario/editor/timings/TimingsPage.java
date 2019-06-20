@@ -307,22 +307,19 @@ public class TimingsPage extends ScenarioPage {
     newTableViewer.setColumnProperties(MEM_COLUMN_NAMES);
     newTableViewer.setCellEditors(editors);
 
-    final Table tref = table;
-    final Composite comp = tablecps;
-
     // Setting the column width
     tablecps.addControlListener(new ControlAdapter() {
       @Override
       public void controlResized(final ControlEvent e) {
-        final Rectangle area = comp.getClientArea();
-        final Point size = tref.computeSize(SWT.DEFAULT, SWT.DEFAULT);
-        final ScrollBar vBar = tref.getVerticalBar();
-        int width = area.width - tref.computeTrim(0, 0, 0, 0).width - 2;
-        if (size.y > (area.height + tref.getHeaderHeight())) {
+        final Rectangle area = tablecps.getClientArea();
+        final Point size = table.computeSize(SWT.DEFAULT, SWT.DEFAULT);
+        final ScrollBar vBar = table.getVerticalBar();
+        int width = area.width - table.computeTrim(0, 0, 0, 0).width - 2;
+        if (size.y > (area.height + table.getHeaderHeight())) {
           final Point vBarSize = vBar.getSize();
           width -= vBarSize.x;
         }
-        tref.setSize(area.width, area.height);
+        table.setSize(area.width, area.height);
         columns[0].setWidth((width / 4) - 1);
         columns[1].setWidth((width - columns[0].getWidth()) / 2);
         columns[2].setWidth((width - columns[0].getWidth()) / 2);
