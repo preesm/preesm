@@ -97,20 +97,18 @@ import org.preesm.algorithm.model.sdf.SDFVertex;
 import org.preesm.algorithm.model.sdf.esdf.SDFInitVertex;
 import org.preesm.codegen.model.ActorBlock;
 import org.preesm.codegen.model.ActorCall;
+import org.preesm.codegen.model.ActorFunctionCall;
 import org.preesm.codegen.model.Block;
-import org.preesm.codegen.model.Buffer;
 import org.preesm.codegen.model.Call;
 import org.preesm.codegen.model.CodeElt;
 import org.preesm.codegen.model.CodegenFactory;
 import org.preesm.codegen.model.CodegenPackage;
 import org.preesm.codegen.model.Communication;
 import org.preesm.codegen.model.CommunicationNode;
-import org.preesm.codegen.model.Constant;
 import org.preesm.codegen.model.ConstantString;
 import org.preesm.codegen.model.CoreBlock;
 import org.preesm.codegen.model.DataTransferAction;
 import org.preesm.codegen.model.Delimiter;
-import org.preesm.codegen.model.Direction;
 import org.preesm.codegen.model.DistributedMemoryCommunication;
 import org.preesm.codegen.model.FifoCall;
 import org.preesm.codegen.model.FifoOperation;
@@ -131,11 +129,11 @@ import org.preesm.codegen.model.SpecialCall;
 import org.preesm.codegen.model.SpecialType;
 import org.preesm.codegen.model.SubBuffer;
 import org.preesm.codegen.model.TwinBuffer;
-import org.preesm.codegen.model.Variable;
 import org.preesm.codegen.model.util.CodegenModelUserFactory;
 import org.preesm.commons.exceptions.PreesmException;
 import org.preesm.commons.exceptions.PreesmRuntimeException;
 import org.preesm.commons.logger.PreesmLogger;
+import org.preesm.commons.model.PreesmCopyTracker;
 import org.preesm.model.pisdf.AbstractActor;
 import org.preesm.model.pisdf.PersistenceLevel;
 import org.preesm.model.scenario.PapiComponent;
@@ -667,7 +665,7 @@ public class CodegenModelGenerator extends AbstractCodegenModelGenerator {
             loopPrototype, false);
         final OutputDataTransfer outputDataTransferFunctionCall = generateOutputDataTransferFunctionCall(dagVertex,
             loopPrototype, false);
-        final FunctionCall functionCall = generateFunctionCall(dagVertex, loopPrototype, false);
+        final ActorFunctionCall functionCall = generateFunctionCall(dagVertex, loopPrototype, false);
 
         boolean monitoringTiming = false;
         boolean monitoringEvents = false;
@@ -1752,12 +1750,15 @@ public class CodegenModelGenerator extends AbstractCodegenModelGenerator {
    *          in the prototype.
    * @return The {@link FunctionCall} corresponding to the {@link DAGVertex actor} firing.
    */
-  protected FunctionCall generateFunctionCall(final DAGVertex dagVertex, final Prototype prototype,
+  protected ActorFunctionCall generateFunctionCall(final DAGVertex dagVertex, final Prototype prototype,
       final boolean isInit) {
     // Create the corresponding FunctionCall
-    final FunctionCall func = CodegenFactory.eINSTANCE.createFunctionCall();
+    final ActorFunctionCall func = CodegenFactory.eINSTANCE.createActorFunctionCall();
     func.setName(prototype.getFunctionName());
     func.setActorName(dagVertex.getName());
+    org.preesm.model.pisdf.AbstractVertex oriPiActor = PreesmCopyTracker.<
+        org.preesm.model.pisdf.AbstractVertex>getOriginalSource(dagVertex.getReferencePiVertex());
+    func.setOriginalVertexPath(oriPiActor.getVertexPath());
     // Retrieve the Arguments that must correspond to the incoming data
     // fifos
     final Entry<List<Variable>, List<PortDirection>> callVars = generateCallVariables(dagVertex, prototype, isInit);

@@ -56,10 +56,13 @@ import org.preesm.codegen.model.SpecialCall
 import org.preesm.codegen.model.Variable
 import org.preesm.codegen.printer.PrinterState
 import org.preesm.codegen.xtend.printer.c.CPrinter
+import org.preesm.codegen.model.ActorFunctionCall
 
 /**
  * This printer currently prints instrumented C code for X86 cores with all
  * communications made in the shared memory.
+ * 
+ * Only actor firings are instrumented now.
  *
  * @author kdesnos
  */
@@ -137,40 +140,9 @@ class InstrumentedCPrinter extends CPrinter {
 
 			var coreLoop = (block as CoreBlock).loopBlock
 
-			// Insert first dumpCall of the core (does not correspond to any actor)
-			{
-				var dumpCall = CodegenFactory.eINSTANCE.createFunctionCall
-				dumpCall.name = "dumpTime"
-				dumpCall.addParameter(
-					{
-						var const = CodegenFactory::eINSTANCE.createConstant
-						const.name = "globalID"
-						const.type = "int"
-						const.value = globalID
-						const
-					}, PortDirection.NONE)
-				globalID = globalID + 1
-				dumpCall.addParameter(dumpTimedBuffer, PortDirection.NONE)
-				coreLoop.codeElts.add(0, dumpCall)
-			}
-
 			// Insert a call after each codeElt.
 			var i = 1;
 			while (i < coreLoop.codeElts.size) {
-
-				// Do the insertion
-				val dumpCall = CodegenFactory.eINSTANCE.createFunctionCall
-				dumpCall.name = "dumpTime"
-				dumpCall.addParameter(
-					{
-						val const = CodegenFactory::eINSTANCE.createConstant
-						const.name = "globalID"
-						const.type = "int"
-						const.value = globalID
-						const
-					}, PortDirection.NONE)
-				dumpCall.addParameter(dumpTimedBuffer, PortDirection.NONE)
-				coreLoop.codeElts.add(i + 1, dumpCall)
 
 				// Retrieve the function ID
 				val elt = coreLoop.codeElts.get(i)
@@ -188,18 +160,56 @@ class InstrumentedCPrinter extends CPrinter {
 						"undefined"
 				}
 
-				// Register the call
-				globalFunctionID.put(globalID, functionID)
-				var actorID = actorIDs.get(functionID) ?: {
-					actorIDs.put(functionID, new ArrayList<Integer>)
-					actorIDs.get(functionID)
-				}
-				actorID.add(globalID);
-				codeEltID.put(elt, globalID)
+				if (elt instanceof ActorFunctionCall) {
+					val ovp = elt.originalVertexPath
+					System.err.println("Firing of: " + functionID + " >>> " + ovp  /*elt.getClass()*/)
 
-				// Increment the indices
-				globalID = globalID + 1;
-				i = i + 2;
+					// Do the pre insertion
+					val preDumpCall = CodegenFactory.eINSTANCE.createFunctionCall
+					preDumpCall.name = "dumpTime"
+					preDumpCall.addParameter(
+					{
+						val const = CodegenFactory::eINSTANCE.createConstant
+						const.name = "globalID"
+						const.type = "int"
+						const.value = globalID
+						const
+					}, PortDirection.NONE)
+					preDumpCall.addParameter(dumpTimedBuffer, PortDirection.NONE)
+					coreLoop.codeElts.add(i, preDumpCall)
+
+					// Register the call
+					globalFunctionID.put(globalID, ovp)
+					var actorID = actorIDs.get(ovp) ?: {
+						actorIDs.put(ovp, new ArrayList<Integer>)
+						actorIDs.get(ovp)
+					}
+					actorID.add(globalID+1);
+					codeEltID.put(elt, globalID+1)
+
+					// Do the pre insertion
+					val postDumpCall = CodegenFactory.eINSTANCE.createFunctionCall
+					postDumpCall.name = "dumpTime"
+					postDumpCall.addParameter(
+					{
+						val const = CodegenFactory::eINSTANCE.createConstant
+						const.name = "globalID"
+						const.type = "int"
+						const.value = globalID+1
+						const
+					}, PortDirection.NONE)
+					postDumpCall.addParameter(dumpTimedBuffer, PortDirection.NONE)
+					coreLoop.codeElts.add(i + 2, postDumpCall)
+
+
+					// Increment the indices
+					globalID = globalID + 2
+					i = i + 3
+
+				} else {
+					i = i + 1
+	
+				}			
 			}
 		}
 

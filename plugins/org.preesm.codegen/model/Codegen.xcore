@@ -138,6 +138,10 @@ class FunctionCall extends Call {
 	String actorName
 }
 
+class ActorFunctionCall extends FunctionCall {
+	String originalVertexPath
+}
+
 class PapifyFunctionCall extends FunctionCall {
 	PapifyType papifyType
 	boolean opening = "false"
