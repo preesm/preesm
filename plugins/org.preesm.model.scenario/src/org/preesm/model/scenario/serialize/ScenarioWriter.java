@@ -54,7 +54,6 @@ import org.preesm.model.scenario.PapiEventModifier;
 import org.preesm.model.scenario.PapiEventSet;
 import org.preesm.model.scenario.PapifyConfig;
 import org.preesm.model.scenario.Scenario;
-import org.preesm.model.scenario.types.VertexType;
 import org.preesm.model.slam.ComponentInstance;
 import org.preesm.model.slam.Design;
 import org.preesm.model.slam.component.Component;
@@ -449,7 +448,7 @@ public class ScenarioWriter {
     opdefelt.setAttribute("name", cmpi.getInstanceName());
 
     for (final AbstractActor actor : actors) {
-      final Element vtxelt = this.dom.createElement(VertexType.TYPE_TASK);
+      final Element vtxelt = this.dom.createElement("task");
       constraintGroupElt.appendChild(vtxelt);
       vtxelt.setAttribute("name", actor.getVertexPath());
     }

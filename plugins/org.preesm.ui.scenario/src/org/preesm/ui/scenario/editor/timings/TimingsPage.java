@@ -86,13 +86,12 @@ import org.eclipse.ui.forms.widgets.Section;
 import org.preesm.model.pisdf.AbstractActor;
 import org.preesm.model.scenario.Scenario;
 import org.preesm.model.scenario.impl.MemoryInfoImpl;
-import org.preesm.model.scenario.serialize.PreesmAlgorithmListContentProvider;
-import org.preesm.model.scenario.serialize.TimingImporter;
 import org.preesm.model.slam.Design;
 import org.preesm.model.slam.component.Component;
 import org.preesm.ui.scenario.editor.FileSelectionAdapter;
 import org.preesm.ui.scenario.editor.Messages;
 import org.preesm.ui.scenario.editor.ScenarioPage;
+import org.preesm.ui.scenario.editor.utils.PreesmAlgorithmListContentProvider;
 import org.preesm.ui.scenario.editor.utils.VertexLexicographicalComparator;
 
 /**

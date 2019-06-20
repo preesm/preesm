@@ -59,6 +59,7 @@ import org.preesm.commons.exceptions.PreesmFrameworkException;
 import org.preesm.model.pisdf.AbstractActor;
 import org.preesm.model.pisdf.PiGraph;
 import org.preesm.model.pisdf.serialize.PiParser;
+import org.preesm.model.pisdf.util.PiSDFTypeGatherer;
 import org.preesm.model.scenario.Scenario;
 import org.preesm.model.scenario.serialize.ScenarioWriter;
 import org.preesm.model.scenario.util.ScenarioUserFactory;
