@@ -353,7 +353,9 @@ class PapifyConfig {
 		return ECollections.emptyEList;
 	}
 	op void clear() {
-		papiData.components.clear
+		if (papiData !== null) {
+			papiData.components.clear
+		}
 		papifyConfigGroupsActors.clear
 		papifyConfigGroupsPEs.clear
 	}
