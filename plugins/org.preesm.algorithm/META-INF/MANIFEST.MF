@@ -12,6 +12,7 @@ Require-Bundle: org.eclipse.core.resources,
  org.eclipse.xtext.xbase.lib,
  org.eclipse.emf.ecore.xcore.lib,
  org.preesm.model.pisdf;visibility:=reexport,
+ org.preesm.model.slam;visibility:=reexport,
  org.eclipse.ui.workbench,
  org.eclipse.jface,
  org.eclipse.ui.forms,
@@ -102,7 +103,10 @@ Export-Package: org.preesm.algorithm,
  org.preesm.algorithm.transforms,
  org.preesm.model.algorithm.schedule,
  org.preesm.model.algorithm.schedule.impl,
- org.preesm.model.algorithm.schedule.util
+ org.preesm.model.algorithm.schedule.util,
+ org.preesm.model.algorithm.mapping,
+ org.preesm.model.algorithm.mapping.impl,
+ org.preesm.model.algorithm.mapping.util
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Bundle-ActivationPolicy: lazy
 Bundle-Activator: org.preesm.algorithm.PreesmAlgorithmPlugin

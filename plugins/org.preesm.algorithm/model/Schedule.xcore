@@ -1,5 +1,5 @@
 
-@GenModel(modelName="PiMM", prefix="PiMM", modelDirectory="/org.preesm.algorithm/ecore-gen", // redirection="",
+@GenModel(modelName="Schedule", prefix="Schedule", modelDirectory="/org.preesm.algorithm/ecore-gen", // redirection="",
 	// classNamePattern="",
 	// codeFormatting="true",
 	// cleanup="true",

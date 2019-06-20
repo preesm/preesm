@@ -1,0 +1,32 @@
+
+@GenModel(modelName="Mapping", prefix="Mapping", modelDirectory="/org.preesm.algorithm/ecore-gen", // redirection="",
+	// classNamePattern="",
+	// codeFormatting="true",
+	// cleanup="true",
+	importerID="org.eclipse.emf.importer.ecore", // !! if true a instrs.ecore is generated in .impl and is used by xxpackage.init() to
+	// load the intrs packages (by default this false unless the generated XyzPackage might
+	// exceed Java's byte code limit of 64k)
+	loadInitialization="false", creationCommands="false", creationIcons="false", dataTypeConverters="false",
+	operationReflection="false", complianceLevel="8.0")
+@Ecore(nsURI="http://org.preesm/algos/mapping")
+package org.preesm.model.algorithm.mapping
+
+import org.preesm.model.pisdf.AbstractActor
+import org.preesm.model.slam.ComponentInstance
+
+type String wraps String
+
+type int wraps int
+
+type long wraps long
+
+type double wraps double
+
+class Mapping {
+	contains MappingEntry[] mappings
+}
+
+class MappingEntry wraps java.util.Map$Entry {
+	refers AbstractActor key
+	refers ComponentInstance value
+}
