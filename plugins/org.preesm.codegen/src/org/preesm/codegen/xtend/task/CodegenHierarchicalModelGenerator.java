@@ -103,6 +103,7 @@ import org.preesm.model.pisdf.AbstractActor;
 import org.preesm.model.scenario.PapiComponent;
 import org.preesm.model.scenario.PapiEvent;
 import org.preesm.model.scenario.PapifyConfig;
+import org.preesm.model.scenario.PapifyConstants;
 import org.preesm.model.scenario.Scenario;
 import org.preesm.model.scenario.types.BufferAggregate;
 import org.preesm.model.scenario.types.BufferProperties;
@@ -807,8 +808,8 @@ public class CodegenHierarchicalModelGenerator {
       }
     } else {
 
-      Map<String,
-          String> mapPapifyConfiguration = dagVertex.getPropertyBean().getValue(PapifyEngine.PAPIFY_CONFIGURATION);
+      Map<String, String> mapPapifyConfiguration = dagVertex.getPropertyBean()
+          .getValue(PapifyConstants.PAPIFY_CONFIGURATION.getLiteral());
       if (mapPapifyConfiguration != null && !mapPapifyConfiguration.isEmpty()) {
         String papifying = mapPapifyConfiguration.get(repVertex.getInfo());
 
@@ -822,8 +823,8 @@ public class CodegenHierarchicalModelGenerator {
             operatorBlock.getInitBlock().getCodeElts().add(functionCallPapifyConfigurePE);
           }
           // Add the papify_action_s variable to the code
-          Map<String,
-              PapifyAction> mapPapifyActionName = dagVertex.getPropertyBean().getValue(PapifyEngine.PAPIFY_ACTION_NAME);
+          Map<String, PapifyAction> mapPapifyActionName = dagVertex.getPropertyBean()
+              .getValue(PapifyConstants.PAPIFY_ACTION_NAME.getLiteral());
           PapifyAction nameFunction = mapPapifyActionName.get(repVertex.getInfo());
           papifyActionS.setName(nameFunction.getName());
           // papifyActionS.setSize(1);
@@ -836,8 +837,8 @@ public class CodegenHierarchicalModelGenerator {
           operatorBlock.getInitBlock().getCodeElts().add(functionCallPapifyConfigureActor);
 
           // Check for papify in the dagVertex
-          Map<String,
-              String> mapMonitorEvents = dagVertex.getPropertyBean().getValue(PapifyEngine.PAPIFY_MONITOR_EVENTS);
+          Map<String, String> mapMonitorEvents = dagVertex.getPropertyBean()
+              .getValue(PapifyConstants.PAPIFY_MONITOR_EVENTS.getLiteral());
           String papifyMonitoringEvents = mapMonitorEvents.get(repVertex.getInfo());
           if (papifyMonitoringEvents != null && papifyMonitoringEvents.equals("Yes")) {
             // Generate Papify start function for events
@@ -846,8 +847,8 @@ public class CodegenHierarchicalModelGenerator {
             // Add the Papify start function for events to the loop
             forLoop.getCodeElts().add(functionCallPapifyStart);
           }
-          Map<String,
-              String> mapMonitorTiming = dagVertex.getPropertyBean().getValue(PapifyEngine.PAPIFY_MONITOR_TIMING);
+          Map<String, String> mapMonitorTiming = dagVertex.getPropertyBean()
+              .getValue(PapifyConstants.PAPIFY_MONITOR_TIMING.getLiteral());
           String papifyMonitoringTiming = mapMonitorTiming.get(repVertex.getInfo());
           if (papifyMonitoringTiming != null && papifyMonitoringTiming.equals("Yes")) {
             // Generate Papify start timing function
@@ -898,13 +899,13 @@ public class CodegenHierarchicalModelGenerator {
         forLoop.getCodeElts().add(functionCallPapifyWriting);
       }
     } else {
-      Map<String,
-          String> mapPapifyConfiguration = dagVertex.getPropertyBean().getValue(PapifyEngine.PAPIFY_CONFIGURATION);
+      Map<String, String> mapPapifyConfiguration = dagVertex.getPropertyBean()
+          .getValue(PapifyConstants.PAPIFY_CONFIGURATION.getLiteral());
       if (mapPapifyConfiguration != null && !mapPapifyConfiguration.isEmpty()) {
         String papifying = mapPapifyConfiguration.get(repVertex.getInfo());
         if (papifying != null && papifying.equals("Papifying")) {
-          Map<String,
-              String> mapMonitorTiming = dagVertex.getPropertyBean().getValue(PapifyEngine.PAPIFY_MONITOR_TIMING);
+          Map<String, String> mapMonitorTiming = dagVertex.getPropertyBean()
+              .getValue(PapifyConstants.PAPIFY_MONITOR_TIMING.getLiteral());
           String papifyMonitoringTiming = mapMonitorTiming.get(repVertex.getInfo());
           if (papifyMonitoringTiming != null && papifyMonitoringTiming.equals("Yes")) {
             // Generate Papify stop timing function
@@ -913,8 +914,8 @@ public class CodegenHierarchicalModelGenerator {
             // Add the Papify stop timing function to the loop
             forLoop.getCodeElts().add(functionCallPapifyTimingStop);
           }
-          Map<String,
-              String> mapMonitorEvents = dagVertex.getPropertyBean().getValue(PapifyEngine.PAPIFY_MONITOR_EVENTS);
+          Map<String, String> mapMonitorEvents = dagVertex.getPropertyBean()
+              .getValue(PapifyConstants.PAPIFY_MONITOR_EVENTS.getLiteral());
           String papifyMonitoringEvents = mapMonitorEvents.get(repVertex.getInfo());
           if (papifyMonitoringEvents != null && papifyMonitoringEvents.equals("Yes")) {
             // Generate Papify stop function for events
@@ -935,7 +936,7 @@ public class CodegenHierarchicalModelGenerator {
 
   /**
    * This method creates the event configure PE function call for PAPI instrumentation
-   * 
+   *
    * @param dagVertex
    *          the {@link DAGVertex} corresponding to the {@link FunctionCall}.
    * @return The {@link FunctionCall} corresponding to the {@link CoreBlock operatorBlock} firing.
@@ -1096,20 +1097,20 @@ public class CodegenHierarchicalModelGenerator {
 
     } else {
       // Add the function parameters
-      Map<String,
-          PapifyAction> mapPapifyActionName = dagVertex.getPropertyBean().getValue(PapifyEngine.PAPIFY_ACTION_NAME);
+      Map<String, PapifyAction> mapPapifyActionName = dagVertex.getPropertyBean()
+          .getValue(PapifyConstants.PAPIFY_ACTION_NAME.getLiteral());
       Map<String, ConstantString> mapPapifyComponentName = dagVertex.getPropertyBean()
-          .getValue(PapifyEngine.PAPIFY_COMPONENT_NAME);
-      Map<String,
-          ConstantString> mapPapifyActorName = dagVertex.getPropertyBean().getValue(PapifyEngine.PAPIFY_ACTOR_NAME);
-      Map<String,
-          Constant> mapPapifyCodesetSize = dagVertex.getPropertyBean().getValue(PapifyEngine.PAPIFY_CODESET_SIZE);
+          .getValue(PapifyConstants.PAPIFY_COMPONENT_NAME.getLiteral());
+      Map<String, ConstantString> mapPapifyActorName = dagVertex.getPropertyBean()
+          .getValue(PapifyConstants.PAPIFY_ACTOR_NAME.getLiteral());
+      Map<String, Constant> mapPapifyCodesetSize = dagVertex.getPropertyBean()
+          .getValue(PapifyConstants.PAPIFY_CODESET_SIZE.getLiteral());
       Map<String, ConstantString> mapPapifyEventsetNames = dagVertex.getPropertyBean()
-          .getValue(PapifyEngine.PAPIFY_EVENTSET_NAMES);
+          .getValue(PapifyConstants.PAPIFY_EVENTSET_NAMES.getLiteral());
       Map<String, ConstantString> mapPapifyConfigNumber = dagVertex.getPropertyBean()
-          .getValue(PapifyEngine.PAPIFY_CONFIG_NUMBER);
-      Map<String,
-          Constant> mapPapifyCounterConfigs = dagVertex.getPropertyBean().getValue(PapifyEngine.PAPIFY_COUNTER_CONFIGS);
+          .getValue(PapifyConstants.PAPIFY_CONFIG_NUMBER.getLiteral());
+      Map<String, Constant> mapPapifyCounterConfigs = dagVertex.getPropertyBean()
+          .getValue(PapifyConstants.PAPIFY_COUNTER_CONFIGS.getLiteral());
 
       func.addParameter((Variable) mapPapifyActionName.get(repVertex.getInfo()), PortDirection.OUTPUT);
       func.addParameter((Variable) mapPapifyComponentName.get(repVertex.getInfo()), PortDirection.INPUT);
@@ -1155,8 +1156,8 @@ public class CodegenHierarchicalModelGenerator {
       papifyPEIdTask.setName(PAPIFY_PE_ID_CONSTANT_NAME);
       papifyPEIdTask.setValue(this.papifiedPEs.indexOf(operatorBlock.getName()));
       // Add the function parameters
-      Map<String,
-          PapifyAction> mapPapifyActionName = dagVertex.getPropertyBean().getValue(PapifyEngine.PAPIFY_ACTION_NAME);
+      Map<String, PapifyAction> mapPapifyActionName = dagVertex.getPropertyBean()
+          .getValue(PapifyConstants.PAPIFY_ACTION_NAME.getLiteral());
       func.addParameter((Variable) mapPapifyActionName.get(repVertex.getInfo()), PortDirection.INPUT);
       func.addParameter(papifyPEIdTask, PortDirection.INPUT);
     }
@@ -1192,8 +1193,8 @@ public class CodegenHierarchicalModelGenerator {
       papifyPEIdTask.setName(PAPIFY_PE_ID_CONSTANT_NAME);
       papifyPEIdTask.setValue(this.papifiedPEs.indexOf(operatorBlock.getName()));
       // Add the function parameters
-      Map<String,
-          PapifyAction> mapPapifyActionName = dagVertex.getPropertyBean().getValue(PapifyEngine.PAPIFY_ACTION_NAME);
+      Map<String, PapifyAction> mapPapifyActionName = dagVertex.getPropertyBean()
+          .getValue(PapifyConstants.PAPIFY_ACTION_NAME.getLiteral());
       func.addParameter((Variable) mapPapifyActionName.get(repVertex.getInfo()), PortDirection.INPUT);
       func.addParameter(papifyPEIdTask, PortDirection.INPUT);
     }
@@ -1228,8 +1229,8 @@ public class CodegenHierarchicalModelGenerator {
       papifyPEIdTask.setName(PAPIFY_PE_ID_CONSTANT_NAME);
       papifyPEIdTask.setValue(this.papifiedPEs.indexOf(operatorBlock.getName()));
       // Add the function parameters
-      Map<String,
-          PapifyAction> mapPapifyActionName = dagVertex.getPropertyBean().getValue(PapifyEngine.PAPIFY_ACTION_NAME);
+      Map<String, PapifyAction> mapPapifyActionName = dagVertex.getPropertyBean()
+          .getValue(PapifyConstants.PAPIFY_ACTION_NAME.getLiteral());
       func.addParameter((Variable) mapPapifyActionName.get(repVertex.getInfo()), PortDirection.INPUT);
       func.addParameter(papifyPEIdTask, PortDirection.INPUT);
     }
@@ -1265,8 +1266,8 @@ public class CodegenHierarchicalModelGenerator {
       papifyPEIdTask.setName(PAPIFY_PE_ID_CONSTANT_NAME);
       papifyPEIdTask.setValue(this.papifiedPEs.indexOf(operatorBlock.getName()));
       // Add the function parameters
-      Map<String,
-          PapifyAction> mapPapifyActionName = dagVertex.getPropertyBean().getValue(PapifyEngine.PAPIFY_ACTION_NAME);
+      Map<String, PapifyAction> mapPapifyActionName = dagVertex.getPropertyBean()
+          .getValue(PapifyConstants.PAPIFY_ACTION_NAME.getLiteral());
       func.addParameter((Variable) mapPapifyActionName.get(repVertex.getInfo()), PortDirection.INPUT);
       func.addParameter(papifyPEIdTask, PortDirection.INPUT);
     }
@@ -1302,8 +1303,8 @@ public class CodegenHierarchicalModelGenerator {
       papifyPEIdTask.setName(PAPIFY_PE_ID_CONSTANT_NAME);
       papifyPEIdTask.setValue(this.papifiedPEs.indexOf(operatorBlock.getName()));
       // Add the function parameters
-      Map<String,
-          PapifyAction> mapPapifyActionName = dagVertex.getPropertyBean().getValue(PapifyEngine.PAPIFY_ACTION_NAME);
+      Map<String, PapifyAction> mapPapifyActionName = dagVertex.getPropertyBean()
+          .getValue(PapifyConstants.PAPIFY_ACTION_NAME.getLiteral());
       func.addParameter((Variable) mapPapifyActionName.get(repVertex.getInfo()), PortDirection.INPUT);
       func.addParameter(papifyPEIdTask, PortDirection.INPUT);
     }
