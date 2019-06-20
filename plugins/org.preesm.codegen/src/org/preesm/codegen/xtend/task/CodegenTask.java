@@ -98,8 +98,10 @@ import org.preesm.workflow.implement.AbstractTaskImplementation;
             @Value(name = "XML",
                 effect = "Print XML code with all informations used by other printers to print code. "
                     + "Compatible with x86, c6678.") }),
-        @Parameter(name = "Papify", description = "Enable papify",
-            values = { @Value(name = "true/false", effect = "") }) })
+        @Parameter(name = "Papify", description = "Enable the PAPI-based code instrumentation provided by PAPIFY",
+            values = { @Value(name = "true/false",
+                effect = "Print C code instrumented with PAPIFY function calls based on the user-defined configuration"
+                    + " of PAPIFY tab in the scenario. Currently compatibe with x86 and MPPA-256") }) })
 public class CodegenTask extends AbstractTaskImplementation {
 
   /** The Constant PARAM_PRINTER. */
