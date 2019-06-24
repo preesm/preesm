@@ -27,6 +27,9 @@ interface Mapping {
 	op ComponentInstance[] getMapping(AbstractActor actor) {
 		return mappings.get(actor).unmodifiableView;
 	}
+	op ComponentInstance[] getAllInvolvedComponentInstances() {
+		return mappings.values.flatten.toSet.toEList.unmodifiableView
+	}
 }
 
 class MultiMappingEntry wraps java.util.Map$Entry {
