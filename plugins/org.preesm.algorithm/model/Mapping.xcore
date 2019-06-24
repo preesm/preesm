@@ -13,7 +13,6 @@ package org.preesm.model.algorithm.mapping
 
 import org.preesm.model.pisdf.AbstractActor
 import org.preesm.model.slam.ComponentInstance
-import org.eclipse.emf.common.util.ECollections
 
 type String wraps String
 
@@ -24,22 +23,6 @@ type long wraps long
 type double wraps double
 
 interface Mapping {
-	op ComponentInstance[] getMapping(AbstractActor actor)
-}
-
-class SimpleMapping extends Mapping {
-	contains MappingEntry[] mappings
-	op ComponentInstance[] getMapping(AbstractActor actor) {
-		return ECollections.asEList(mappings.get(actor)).unmodifiableView;
-	}
-}
-
-class MappingEntry wraps java.util.Map$Entry {
-	refers AbstractActor key
-	refers ComponentInstance value
-}
-
-class MultiMapping extends Mapping {
 	contains MultiMappingEntry[] mappings
 	op ComponentInstance[] getMapping(AbstractActor actor) {
 		return mappings.get(actor).unmodifiableView;
