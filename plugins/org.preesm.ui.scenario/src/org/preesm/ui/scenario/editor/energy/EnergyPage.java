@@ -84,6 +84,7 @@ import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.eclipse.ui.forms.widgets.ScrolledForm;
 import org.eclipse.ui.forms.widgets.Section;
 import org.preesm.model.pisdf.AbstractActor;
+import org.preesm.model.scenario.PerformanceObjective;
 import org.preesm.model.scenario.Scenario;
 import org.preesm.model.scenario.impl.MemoryInfoImpl;
 import org.preesm.model.scenario.serialize.PreesmAlgorithmListContentProvider;
@@ -654,9 +655,6 @@ public class EnergyPage extends ScenarioPage {
 
   }
 
-  float objectiveEPS = 0.0f;
-  float toleranceEPS = 0.0f;
-
   /**
    * Creates a section to set the objective.
    *
@@ -677,7 +675,9 @@ public class EnergyPage extends ScenarioPage {
     final GridData gd = new GridData();
     gd.widthHint = 150;
     toolkit.createLabel(client, "Objective (in executions per second): ");
-    final Text objective = toolkit.createText(client, Float.toString(this.objectiveEPS), SWT.SINGLE);
+    final PerformanceObjective performanceObjective = this.scenario.getEnergyConfig().getPerformanceObjective();
+    final Text objective = toolkit.createText(client, Float.toString(performanceObjective.getObjectiveEPS()),
+        SWT.SINGLE);
     objective.setLayoutData(gd);
     objective.addKeyListener(new KeyListener() {
 
@@ -691,22 +691,23 @@ public class EnergyPage extends ScenarioPage {
         try {
           float newObjectiveEPS = Float.parseFloat((String) objective.getText());
           if (newObjectiveEPS >= 0.0) {
-            EnergyPage.this.objectiveEPS = newObjectiveEPS;
+            performanceObjective.setObjectiveEPS(newObjectiveEPS);
             objective.setText(Float.toString(newObjectiveEPS));
             objective.update();
           } else {
-            objective.setText(Float.toString(EnergyPage.this.objectiveEPS));
+            objective.setText(Float.toString(performanceObjective.getObjectiveEPS()));
             objective.update();
           }
         } catch (final Exception ex) {
-          objective.setText(Float.toString(EnergyPage.this.objectiveEPS));
+          objective.setText(Float.toString(performanceObjective.getObjectiveEPS()));
           objective.update();
         }
       }
     });
 
     toolkit.createLabel(client, "Tolerance (in %): ");
-    final Text tolerance = toolkit.createText(client, Float.toString(this.toleranceEPS), SWT.SINGLE);
+    final Text tolerance = toolkit.createText(client, Float.toString(performanceObjective.getToleranceEPS()),
+        SWT.SINGLE);
     tolerance.setLayoutData(gd);
     tolerance.addKeyListener(new KeyListener() {
 
@@ -720,15 +721,15 @@ public class EnergyPage extends ScenarioPage {
         try {
           float newToleranceEPS = Float.parseFloat((String) tolerance.getText());
           if (newToleranceEPS >= 0.0) {
-            EnergyPage.this.toleranceEPS = newToleranceEPS;
+            performanceObjective.setToleranceEPS(newToleranceEPS);
             tolerance.setText(Float.toString(newToleranceEPS));
             tolerance.update();
           } else {
-            tolerance.setText(Float.toString(EnergyPage.this.toleranceEPS));
+            tolerance.setText(Float.toString(performanceObjective.getToleranceEPS()));
             tolerance.update();
           }
         } catch (final Exception ex) {
-          tolerance.setText(Float.toString(EnergyPage.this.toleranceEPS));
+          tolerance.setText(Float.toString(performanceObjective.getToleranceEPS()));
           tolerance.update();
         }
       }
