@@ -137,11 +137,21 @@ class Scenario {
 		}
 	}
 	op ComponentInstance[] getPossibleMappings(AbstractActor actor) {
+		var ComponentInstance[] mapping
 		if (actor instanceof SpecialActor) {
-			return simulationInfo.specialVertexOperators.unmodifiableView
+			mapping = simulationInfo.specialVertexOperators
 		} else {
-			return constraints.groupConstraints.filter[it.value.contains(actor)].map[it.key].toEList.unmodifiableView
+			mapping = constraints.groupConstraints.filter[ECollections.indexOf(it.value, actor, 0) != -1].map[it.key]
 		}
+		if (mapping.isEmpty) {
+			val source = PreesmCopyTracker.getSource(actor)
+			if (source != actor) {
+				mapping = getPossibleMappings(source)
+			} else {
+				mapping = ECollections.newBasicEList
+			}
+		}
+		return mapping.unmodifiableEList
 	}
 }
 
