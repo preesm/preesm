@@ -2,6 +2,8 @@ package org.preesm.algorithm.scheduler;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Level;
+import org.preesm.commons.logger.PreesmLogger;
 import org.preesm.commons.model.PreesmCopyTracker;
 import org.preesm.model.algorithm.mapping.Mapping;
 import org.preesm.model.algorithm.schedule.Schedule;
@@ -21,6 +23,9 @@ public abstract class AbstractScheduler implements IScheduler {
     verifyInputs(piGraph, slamDesign, scenario);
     final SchedulerResult res = exec(piGraph, slamDesign, scenario);
     verifyOutputs(piGraph, slamDesign, scenario, res.schedule, res.mapping);
+
+    PreesmLogger.getLogger().log(Level.FINEST, res.toString());
+
     return res;
   }
 
@@ -75,14 +80,17 @@ public abstract class AbstractScheduler implements IScheduler {
     }
 
     for (final AbstractActor actor : piGraphAllActors) {
-      final List<ComponentInstance> possibleMappings = new ArrayList<>(scenario.getPossibleMappings(actor));
-      final List<ComponentInstance> actorMapping = new ArrayList<>(mapping.getMapping(actor));
-      if (!possibleMappings.containsAll(actorMapping)) {
-        throw new PreesmSchedulerException("Some actors are mapped to unauthorized components.");
-      }
-
+      verifyActor(scenario, mapping, actor);
     }
+  }
 
+  private void verifyActor(final Scenario scenario, final Mapping mapping, final AbstractActor actor) {
+    final List<ComponentInstance> possibleMappings = new ArrayList<>(scenario.getPossibleMappings(actor));
+    final List<ComponentInstance> actorMapping = new ArrayList<>(mapping.getMapping(actor));
+    if (!possibleMappings.containsAll(actorMapping)) {
+      throw new PreesmSchedulerException("Actor '" + actor + "' is mapped on '" + actorMapping
+          + "' which is not in the authorized components list '" + possibleMappings + "'.");
+    }
   }
 
 }
