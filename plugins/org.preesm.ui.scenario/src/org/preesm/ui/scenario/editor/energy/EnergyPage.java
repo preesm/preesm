@@ -93,8 +93,6 @@ import org.preesm.model.slam.component.Component;
 import org.preesm.ui.scenario.editor.FileSelectionAdapter;
 import org.preesm.ui.scenario.editor.Messages;
 import org.preesm.ui.scenario.editor.ScenarioPage;
-import org.preesm.ui.scenario.editor.timings.ExcelTimingWriter;
-import org.preesm.ui.scenario.editor.timings.TimingsTableLabelProvider;
 import org.preesm.ui.scenario.editor.utils.VertexLexicographicalComparator;
 
 /**
@@ -104,9 +102,9 @@ import org.preesm.ui.scenario.editor.utils.VertexLexicographicalComparator;
  */
 public class EnergyPage extends ScenarioPage {
 
-  private static final String OP_DEF_TITLE        = Messages.getString("Timings.MemcopySpeeds.opDefColumn");
-  private static final String SETUP_TIME_TITLE    = Messages.getString("Timings.MemcopySpeeds.setupTimeColumn");
-  private static final String TIME_PER_UNIT_TITLE = Messages.getString("Timings.MemcopySpeeds.timePerUnitColumn");
+  private static final String OP_DEF_TITLE        = Messages.getString("Energy.MemcopySpeeds.opDefColumn");
+  private static final String SETUP_TIME_TITLE    = Messages.getString("Energy.MemcopySpeeds.setupTimeColumn");
+  private static final String TIME_PER_UNIT_TITLE = Messages.getString("Energy.MemcopySpeeds.timePerUnitColumn");
 
   private static final String[] MEM_COLUMN_NAMES = { OP_DEF_TITLE, SETUP_TIME_TITLE, TIME_PER_UNIT_TITLE };
 
@@ -123,7 +121,7 @@ public class EnergyPage extends ScenarioPage {
   private static final int[] PISDF_COLUMN_SIZES = { 200, 200, 200, 50, 50 };
 
   /**
-   * Instantiates a new timings page.
+   * Instantiates a new energy page.
    *
    * @param scenario
    *          the scenario
@@ -151,25 +149,33 @@ public class EnergyPage extends ScenarioPage {
     super.createFormContent(managedForm);
 
     final ScrolledForm form = managedForm.getForm();
-    form.setText(Messages.getString("Timings.title"));
+    form.setText(Messages.getString("Energy.title"));
 
-    final GridLayout layout = new GridLayout();
+    final GridLayout layout = new GridLayout(2, true);
     final Composite body = form.getBody();
     body.setLayout(layout);
 
     if (this.scenario.isProperlySet()) {
 
       // Timing file chooser section
-      createFileSection(managedForm, Messages.getString("Timings.timingFile"),
-          Messages.getString("Timings.timingFileDescription"), Messages.getString("Timings.timingFileEdit"),
-          this.scenario.getTimings().getExcelFileURL(), Messages.getString("Timings.timingFileBrowseTitle"),
+      createFileSection(managedForm, Messages.getString("Energy.fileTitle"),
+          Messages.getString("Energy.fileDescription"), Messages.getString("Energy.fileEdit"),
+          this.scenario.getTimings().getExcelFileURL(), Messages.getString("Energy.timingFileBrowseTitle"),
+          new LinkedHashSet<>(Arrays.asList("xls", "csv")));
+      createObjectiveSection(managedForm, Messages.getString("Energy.fileTitle"),
+          Messages.getString("Energy.fileDescription"), Messages.getString("Energy.fileEdit"),
+          this.scenario.getTimings().getExcelFileURL(), Messages.getString("Energy.timingFileBrowseTitle"),
           new LinkedHashSet<>(Arrays.asList("xls", "csv")));
 
-      createTimingsSection(managedForm, Messages.getString("Timings.title"), Messages.getString("Timings.description"));
-
       // Data type section
-      createMemcopySpeedsSection(managedForm, Messages.getString("Timings.MemcopySpeeds.title"),
-          Messages.getString("Timings.MemcopySpeeds.description"));
+      createMemcopySpeedsSection(managedForm, Messages.getString("Energy.platformTitle"),
+          Messages.getString("Energy.platformDescription"));
+      // Data type section
+      createMemcopySpeedsSection(managedForm, Messages.getString("Energy.platformTitle"),
+          Messages.getString("Energy.platformDescription"));
+
+      createActorEnergySection(managedForm, Messages.getString("Energy.actorsTitle"),
+          Messages.getString("Energy.actorsDescription"));
 
     } else {
       final FormToolkit toolkit = managedForm.getToolkit();
@@ -337,7 +343,7 @@ public class EnergyPage extends ScenarioPage {
   }
 
   /**
-   * Creates the section editing timings.
+   * Creates the section editing energy.
    *
    * @param managedForm
    *          the managed form
@@ -346,12 +352,14 @@ public class EnergyPage extends ScenarioPage {
    * @param desc
    *          the desc
    */
-  private void createTimingsSection(final IManagedForm managedForm, final String title, final String desc) {
+  private void createActorEnergySection(final IManagedForm managedForm, final String title, final String desc) {
 
     // Creates the section
     managedForm.getForm().setLayout(new FillLayout());
-    final Composite container = createSection(managedForm, title, desc, 1,
-        new GridData(GridData.FILL_HORIZONTAL | GridData.VERTICAL_ALIGN_BEGINNING));
+    final GridData gridData = new GridData(GridData.FILL_HORIZONTAL | GridData.VERTICAL_ALIGN_FILL);
+    gridData.horizontalSpan = 2;
+    gridData.grabExcessVerticalSpace = true;
+    final Composite container = createSection(managedForm, title, desc, 1, gridData);
     final FormToolkit toolkit = managedForm.getToolkit();
 
     final Combo coreCombo = addCoreSelector(container, toolkit);
@@ -398,7 +406,7 @@ public class EnergyPage extends ScenarioPage {
   }
 
   /**
-   * Adds a table to edit timings.
+   * Adds a table to edit energy.
    *
    * @param parent
    *          the parent
@@ -423,8 +431,7 @@ public class EnergyPage extends ScenarioPage {
 
     this.tableViewer.setContentProvider(new PreesmAlgorithmListContentProvider());
 
-    final TimingsTableLabelProvider labelProvider = new TimingsTableLabelProvider(this.scenario, this.tableViewer,
-        this);
+    final EnergyTableLabelProvider labelProvider = new EnergyTableLabelProvider(this.scenario, this.tableViewer, this);
     this.tableViewer.setLabelProvider(labelProvider);
     coreCombo.addSelectionListener(labelProvider);
 
@@ -528,7 +535,7 @@ public class EnergyPage extends ScenarioPage {
    */
   @Override
   public void propertyChanged(final Object source, final int propId) {
-    if ((source instanceof TimingsTableLabelProvider) && (propId == IEditorPart.PROP_DIRTY)) {
+    if ((source instanceof EnergyTableLabelProvider) && (propId == IEditorPart.PROP_DIRTY)) {
       firePropertyChange(IEditorPart.PROP_DIRTY);
     }
     if (this.tableViewer != null) {
@@ -568,7 +575,7 @@ public class EnergyPage extends ScenarioPage {
     final Text text = toolkit.createText(client, initValue, SWT.SINGLE);
     text.setData(title);
 
-    // If the text is modified or Enter key pressed, timings are imported
+    // If the text is modified or Enter key pressed, energy are imported
     text.addModifyListener(e -> {
       final Text text1 = (Text) e.getSource();
       EnergyPage.this.scenario.getTimings().setExcelFileURL(text1.getText());
@@ -599,13 +606,12 @@ public class EnergyPage extends ScenarioPage {
     text.setLayoutData(gd);
 
     // Add a "Refresh" button to the scenario editor
-    final Button refreshButton = toolkit.createButton(client, Messages.getString("Timings.timingFileRefresh"),
-        SWT.PUSH);
+    final Button refreshButton = toolkit.createButton(client, Messages.getString("Energy.fileRefresh"), SWT.PUSH);
     refreshButton.addSelectionListener(new SelectionListener() {
 
       @Override
       public void widgetSelected(final SelectionEvent e) {
-        // Cause scenario editor to import timings from excel sheet
+        // Cause scenario editor to import energy from excel sheet
         TimingImporter.importTimings(EnergyPage.this.scenario);
         EnergyPage.this.tableViewer.refresh();
         // Force the "file has changed" property of scenario.
@@ -626,7 +632,101 @@ public class EnergyPage extends ScenarioPage {
     final SelectionAdapter browseAdapter = new FileSelectionAdapter(text, browseTitle, fileExtension);
     browseButton.addSelectionListener(browseAdapter);
 
-    final Button exportButton = toolkit.createButton(client, Messages.getString("Timings.timingExportExcel"), SWT.PUSH);
+    final Button exportButton = toolkit.createButton(client, Messages.getString("Energy.energyExportExcel"), SWT.PUSH);
+    exportButton.addSelectionListener(new ExcelTimingWriter(this.scenario));
+
+  }
+
+  /**
+   * Creates a section to set the objective.
+   *
+   * @param mform
+   *          form containing the section
+   * @param title
+   *          section title
+   * @param desc
+   *          description of the section
+   * @param fileEdit
+   *          text to display in text label
+   * @param initValue
+   *          initial value of Text
+   * @param browseTitle
+   *          title of file browser
+   * @param fileExtension
+   *          the file extension
+   */
+  private void createObjectiveSection(final IManagedForm mform, final String title, final String desc,
+      final String fileEdit, final String initValue, final String browseTitle, final Set<String> fileExtension) {
+
+    final GridData gridData = new GridData(GridData.FILL_HORIZONTAL | GridData.VERTICAL_ALIGN_BEGINNING);
+    final Composite client = createSection(mform, title, desc, 3, gridData);
+
+    final FormToolkit toolkit = mform.getToolkit();
+
+    final GridData gd = new GridData();
+    toolkit.createLabel(client, fileEdit);
+
+    final Text text = toolkit.createText(client, initValue, SWT.SINGLE);
+    text.setData(title);
+
+    // If the text is modified or Enter key pressed, energy are imported
+    text.addModifyListener(e -> {
+      final Text text1 = (Text) e.getSource();
+      EnergyPage.this.scenario.getTimings().setExcelFileURL(text1.getText());
+      TimingImporter.importTimings(EnergyPage.this.scenario);
+      EnergyPage.this.tableViewer.refresh();
+      firePropertyChange(IEditorPart.PROP_DIRTY);
+
+    });
+    text.addKeyListener(new KeyListener() {
+
+      @Override
+      public void keyPressed(final KeyEvent e) {
+        if (e.keyCode == SWT.CR) {
+          final Text text = (Text) e.getSource();
+          EnergyPage.this.scenario.getTimings().setExcelFileURL(text.getText());
+          EnergyPage.this.tableViewer.refresh();
+        }
+
+      }
+
+      @Override
+      public void keyReleased(final KeyEvent e) {
+        // no behavior by default
+      }
+    });
+
+    gd.widthHint = 400;
+    text.setLayoutData(gd);
+
+    // Add a "Refresh" button to the scenario editor
+    final Button refreshButton = toolkit.createButton(client, Messages.getString("Energy.fileRefresh"), SWT.PUSH);
+    refreshButton.addSelectionListener(new SelectionListener() {
+
+      @Override
+      public void widgetSelected(final SelectionEvent e) {
+        // Cause scenario editor to import energy from excel sheet
+        TimingImporter.importTimings(EnergyPage.this.scenario);
+        EnergyPage.this.tableViewer.refresh();
+        // Force the "file has changed" property of scenario.
+        // Timing changes will have no effects if the scenario
+        // is not saved.
+        firePropertyChange(IEditorPart.PROP_DIRTY);
+      }
+
+      @Override
+      public void widgetDefaultSelected(final SelectionEvent arg0) {
+        // no behavior by default
+      }
+    });
+
+    toolkit.paintBordersFor(client);
+
+    final Button browseButton = toolkit.createButton(client, Messages.getString("Overview.browse"), SWT.PUSH);
+    final SelectionAdapter browseAdapter = new FileSelectionAdapter(text, browseTitle, fileExtension);
+    browseButton.addSelectionListener(browseAdapter);
+
+    final Button exportButton = toolkit.createButton(client, Messages.getString("Energy.energyExportExcel"), SWT.PUSH);
     exportButton.addSelectionListener(new ExcelTimingWriter(this.scenario));
 
   }
