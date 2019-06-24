@@ -162,17 +162,15 @@ public class EnergyPage extends ScenarioPage {
           Messages.getString("Energy.fileDescription"), Messages.getString("Energy.fileEdit"),
           this.scenario.getTimings().getExcelFileURL(), Messages.getString("Energy.timingFileBrowseTitle"),
           new LinkedHashSet<>(Arrays.asList("xls", "csv")));
-      createObjectiveSection(managedForm, Messages.getString("Energy.fileTitle"),
-          Messages.getString("Energy.fileDescription"), Messages.getString("Energy.fileEdit"),
-          this.scenario.getTimings().getExcelFileURL(), Messages.getString("Energy.timingFileBrowseTitle"),
-          new LinkedHashSet<>(Arrays.asList("xls", "csv")));
+      createObjectiveSection(managedForm, Messages.getString("Energy.objectiveTitle"),
+          Messages.getString("Energy.objectiveDescription"));
 
       // Data type section
-      createMemcopySpeedsSection(managedForm, Messages.getString("Energy.platformTitle"),
+      createPlatformPowerSection(managedForm, Messages.getString("Energy.platformTitle"),
           Messages.getString("Energy.platformDescription"));
       // Data type section
-      createMemcopySpeedsSection(managedForm, Messages.getString("Energy.platformTitle"),
-          Messages.getString("Energy.platformDescription"));
+      createCommunicationEnergySection(managedForm, Messages.getString("Energy.commsTitle"),
+          Messages.getString("Energy.commsDescription"));
 
       createActorEnergySection(managedForm, Messages.getString("Energy.actorsTitle"),
           Messages.getString("Energy.actorsDescription"));
@@ -191,7 +189,7 @@ public class EnergyPage extends ScenarioPage {
   }
 
   /**
-   * Creates the section editing memcopy speeds.
+   * Creates the section editing platform power.
    *
    * @param managedForm
    *          the managed form
@@ -200,7 +198,7 @@ public class EnergyPage extends ScenarioPage {
    * @param desc
    *          the desc
    */
-  private void createMemcopySpeedsSection(final IManagedForm managedForm, final String title, final String desc) {
+  private void createPlatformPowerSection(final IManagedForm managedForm, final String title, final String desc) {
 
     // Creates the section
     managedForm.getForm().setLayout(new FillLayout());
@@ -209,6 +207,25 @@ public class EnergyPage extends ScenarioPage {
     final FormToolkit toolkit = managedForm.getToolkit();
 
     addMemcopySpeedsTable(container, toolkit);
+  }
+
+  /**
+   * Creates the section editing platform power.
+   *
+   * @param managedForm
+   *          the managed form
+   * @param title
+   *          the title
+   * @param desc
+   *          the desc
+   */
+  private void createCommunicationEnergySection(final IManagedForm managedForm, final String title, final String desc) {
+
+    // Creates the section
+    managedForm.getForm().setLayout(new FillLayout());
+    final GridData gridData = new GridData(GridData.FILL_HORIZONTAL | GridData.VERTICAL_ALIGN_FILL);
+    final Composite container = createSection(managedForm, title, desc, 1, gridData);
+    final FormToolkit toolkit = managedForm.getToolkit();
   }
 
   /**
@@ -637,6 +654,9 @@ public class EnergyPage extends ScenarioPage {
 
   }
 
+  float objectiveEPS = 0.0f;
+  float toleranceEPS = 0.0f;
+
   /**
    * Creates a section to set the objective.
    *
@@ -646,88 +666,78 @@ public class EnergyPage extends ScenarioPage {
    *          section title
    * @param desc
    *          description of the section
-   * @param fileEdit
-   *          text to display in text label
-   * @param initValue
-   *          initial value of Text
-   * @param browseTitle
-   *          title of file browser
-   * @param fileExtension
-   *          the file extension
    */
-  private void createObjectiveSection(final IManagedForm mform, final String title, final String desc,
-      final String fileEdit, final String initValue, final String browseTitle, final Set<String> fileExtension) {
+  private void createObjectiveSection(final IManagedForm mform, final String title, final String desc) {
 
     final GridData gridData = new GridData(GridData.FILL_HORIZONTAL | GridData.VERTICAL_ALIGN_BEGINNING);
-    final Composite client = createSection(mform, title, desc, 3, gridData);
+    final Composite client = createSection(mform, title, desc, 2, gridData);
 
     final FormToolkit toolkit = mform.getToolkit();
 
     final GridData gd = new GridData();
-    toolkit.createLabel(client, fileEdit);
-
-    final Text text = toolkit.createText(client, initValue, SWT.SINGLE);
-    text.setData(title);
-
-    // If the text is modified or Enter key pressed, energy are imported
-    text.addModifyListener(e -> {
-      final Text text1 = (Text) e.getSource();
-      EnergyPage.this.scenario.getTimings().setExcelFileURL(text1.getText());
-      TimingImporter.importTimings(EnergyPage.this.scenario);
-      EnergyPage.this.tableViewer.refresh();
-      firePropertyChange(IEditorPart.PROP_DIRTY);
-
-    });
-    text.addKeyListener(new KeyListener() {
+    gd.widthHint = 150;
+    toolkit.createLabel(client, "Objective (in executions per second): ");
+    final Text objective = toolkit.createText(client, Float.toString(this.objectiveEPS), SWT.SINGLE);
+    objective.setLayoutData(gd);
+    objective.addKeyListener(new KeyListener() {
 
       @Override
       public void keyPressed(final KeyEvent e) {
-        if (e.keyCode == SWT.CR) {
-          final Text text = (Text) e.getSource();
-          EnergyPage.this.scenario.getTimings().setExcelFileURL(text.getText());
-          EnergyPage.this.tableViewer.refresh();
-        }
-
+        // nothing to be done
       }
 
       @Override
       public void keyReleased(final KeyEvent e) {
-        // no behavior by default
+        try {
+          float newObjectiveEPS = Float.parseFloat((String) objective.getText());
+          if (newObjectiveEPS >= 0.0) {
+            EnergyPage.this.objectiveEPS = newObjectiveEPS;
+            objective.setText(Float.toString(newObjectiveEPS));
+            objective.update();
+          } else {
+            objective.setText(Float.toString(EnergyPage.this.objectiveEPS));
+            objective.update();
+          }
+        } catch (final Exception ex) {
+          objective.setText(Float.toString(EnergyPage.this.objectiveEPS));
+          objective.update();
+        }
       }
     });
 
-    gd.widthHint = 400;
-    text.setLayoutData(gd);
-
-    // Add a "Refresh" button to the scenario editor
-    final Button refreshButton = toolkit.createButton(client, Messages.getString("Energy.fileRefresh"), SWT.PUSH);
-    refreshButton.addSelectionListener(new SelectionListener() {
+    toolkit.createLabel(client, "Tolerance (in %): ");
+    final Text tolerance = toolkit.createText(client, Float.toString(this.toleranceEPS), SWT.SINGLE);
+    tolerance.setLayoutData(gd);
+    tolerance.addKeyListener(new KeyListener() {
 
       @Override
-      public void widgetSelected(final SelectionEvent e) {
-        // Cause scenario editor to import energy from excel sheet
-        TimingImporter.importTimings(EnergyPage.this.scenario);
-        EnergyPage.this.tableViewer.refresh();
-        // Force the "file has changed" property of scenario.
-        // Timing changes will have no effects if the scenario
-        // is not saved.
-        firePropertyChange(IEditorPart.PROP_DIRTY);
+      public void keyPressed(final KeyEvent e) {
+        // nothing to be done
       }
 
       @Override
-      public void widgetDefaultSelected(final SelectionEvent arg0) {
-        // no behavior by default
+      public void keyReleased(final KeyEvent e) {
+        try {
+          float newToleranceEPS = Float.parseFloat((String) tolerance.getText());
+          if (newToleranceEPS >= 0.0) {
+            EnergyPage.this.toleranceEPS = newToleranceEPS;
+            tolerance.setText(Float.toString(newToleranceEPS));
+            tolerance.update();
+          } else {
+            tolerance.setText(Float.toString(EnergyPage.this.toleranceEPS));
+            tolerance.update();
+          }
+        } catch (final Exception ex) {
+          tolerance.setText(Float.toString(EnergyPage.this.toleranceEPS));
+          tolerance.update();
+        }
       }
     });
+
+    gridData.widthHint = 400;
+    gridData.heightHint = 100;
 
     toolkit.paintBordersFor(client);
-
-    final Button browseButton = toolkit.createButton(client, Messages.getString("Overview.browse"), SWT.PUSH);
-    final SelectionAdapter browseAdapter = new FileSelectionAdapter(text, browseTitle, fileExtension);
-    browseButton.addSelectionListener(browseAdapter);
-
-    final Button exportButton = toolkit.createButton(client, Messages.getString("Energy.energyExportExcel"), SWT.PUSH);
-    exportButton.addSelectionListener(new ExcelTimingWriter(this.scenario));
 
   }
 
