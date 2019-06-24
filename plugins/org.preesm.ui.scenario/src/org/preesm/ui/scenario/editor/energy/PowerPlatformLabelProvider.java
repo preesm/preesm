@@ -1,9 +1,9 @@
 /**
- * Copyright or © or Copr. IETR/INSA - Rennes (2008 - 2019) :
+ * Copyright or © or Copr. IETR/INSA - Rennes (2011 - 2019) :
  *
  * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017 - 2019)
- * Matthieu Wipliez <matthieu.wipliez@insa-rennes.fr> (2008)
- * Maxime Pelcat <maxime.pelcat@insa-rennes.fr> (2008 - 2013)
+ * Clément Guy <clement.guy@insa-rennes.fr> (2015)
+ * Maxime Pelcat <maxime.pelcat@insa-rennes.fr> (2011 - 2013)
  *
  * This software is a computer program whose purpose is to help prototyping
  * parallel applications using dataflow formalism.
@@ -36,53 +36,42 @@
  */
 package org.preesm.ui.scenario.editor.energy;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
 import java.util.Map.Entry;
-import java.util.Set;
-import org.eclipse.jface.viewers.IStructuredContentProvider;
+import org.eclipse.jface.viewers.BaseLabelProvider;
+import org.eclipse.jface.viewers.ITableLabelProvider;
+import org.eclipse.swt.graphics.Image;
 import org.preesm.model.scenario.MemoryCopySpeedValue;
-import org.preesm.model.scenario.Scenario;
-import org.preesm.model.scenario.util.ScenarioUserFactory;
-import org.preesm.model.slam.Design;
 import org.preesm.model.slam.component.Component;
 
 /**
- * Provides the elements contained in the memcopy speeds editor.
+ * Displays the labels for memcopy speed.
  *
  * @author mpelcat
  */
-public class AlgorithmEnergyContentProvider implements IStructuredContentProvider {
-
-  private List<Entry<Component, MemoryCopySpeedValue>> elementList = null;
+public class PowerPlatformLabelProvider extends BaseLabelProvider implements ITableLabelProvider {
 
   @Override
-  public Object[] getElements(final Object inputElement) {
-
-    if (inputElement instanceof Scenario) {
-      final Scenario inputScenario = (Scenario) inputElement;
-
-      /**
-       * Memcopy speeds are added for all operator types if non present
-       */
-      final Design design = inputScenario.getDesign();
-      for (final Component opDefId : design.getOperatorComponents()) {
-        if (!inputScenario.getTimings().getMemTimings().containsKey(opDefId)) {
-          final MemoryCopySpeedValue createMemoryCopySpeedValue = ScenarioUserFactory.createMemoryCopySpeedValue();
-          inputScenario.getTimings().getMemTimings().put(opDefId, createMemoryCopySpeedValue);
-        }
-      }
-
-      // Retrieving the memory copy speeds in operator definition order
-      final Set<
-          Entry<Component, MemoryCopySpeedValue>> entrySet = inputScenario.getTimings().getMemTimings().entrySet();
-      this.elementList = new ArrayList<>(entrySet);
-
-      Collections.sort(this.elementList,
-          (o1, o2) -> o1.getKey().getVlnv().getName().compareTo(o2.getKey().getVlnv().getName()));
-    }
-    return this.elementList.toArray();
+  public Image getColumnImage(final Object element, final int columnIndex) {
+    return null;
   }
 
+  @Override
+  public String getColumnText(final Object element, final int columnIndex) {
+    String text = "";
+
+    if (element instanceof Entry) {
+      @SuppressWarnings("unchecked")
+      final Entry<Component, MemoryCopySpeedValue> speed = (Entry<Component, MemoryCopySpeedValue>) element;
+
+      if (columnIndex == 0) {
+        text = speed.getKey().getVlnv().getName();
+      } else if (columnIndex == 1) {
+        text = Long.toString(speed.getValue().getSetupTime());
+      } else if (columnIndex == 2) {
+        text = Double.toString(1.0d / speed.getValue().getTimePerUnit());
+      }
+    }
+
+    return text;
+  }
 }

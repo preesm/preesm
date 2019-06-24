@@ -103,11 +103,10 @@ import org.preesm.ui.scenario.editor.utils.VertexLexicographicalComparator;
  */
 public class EnergyPage extends ScenarioPage {
 
-  private static final String OP_DEF_TITLE        = Messages.getString("Energy.MemcopySpeeds.opDefColumn");
-  private static final String SETUP_TIME_TITLE    = Messages.getString("Energy.MemcopySpeeds.setupTimeColumn");
-  private static final String TIME_PER_UNIT_TITLE = Messages.getString("Energy.MemcopySpeeds.timePerUnitColumn");
+  private static final String OP_DEF_TITLE         = Messages.getString("Energy.opDefColumn");
+  private static final String POWER_PLATFORM_TITLE = Messages.getString("Energy.powerPlatformColumn");
 
-  private static final String[] MEM_COLUMN_NAMES = { OP_DEF_TITLE, SETUP_TIME_TITLE, TIME_PER_UNIT_TITLE };
+  private static final String[] POWER_PLATFORM_NAMES = { OP_DEF_TITLE, POWER_PLATFORM_TITLE };
 
   /** The scenario. */
   final Scenario scenario;
@@ -207,7 +206,7 @@ public class EnergyPage extends ScenarioPage {
     final Composite container = createSection(managedForm, title, desc, 1, gridData);
     final FormToolkit toolkit = managedForm.getToolkit();
 
-    addMemcopySpeedsTable(container, toolkit);
+    addPlatformPowerTable(container, toolkit);
   }
 
   /**
@@ -237,7 +236,7 @@ public class EnergyPage extends ScenarioPage {
    * @param toolkit
    *          the toolkit
    */
-  private void addMemcopySpeedsTable(final Composite parent, final FormToolkit toolkit) {
+  private void addPlatformPowerTable(final Composite parent, final FormToolkit toolkit) {
 
     final Composite tablecps = toolkit.createComposite(parent);
     tablecps.setVisible(true);
@@ -251,14 +250,14 @@ public class EnergyPage extends ScenarioPage {
     table.setHeaderVisible(true);
     table.setLinesVisible(true);
 
-    newTableViewer.setContentProvider(new AlgorithmEnergyContentProvider());
-    newTableViewer.setLabelProvider(new AlgorithmEnergyLabelProvider());
+    newTableViewer.setContentProvider(new PowerPlatformContentProvider());
+    newTableViewer.setLabelProvider(new PowerPlatformLabelProvider());
 
     // Create columns
-    final TableColumn[] columns = new TableColumn[MEM_COLUMN_NAMES.length];
-    for (int i = 0; i < MEM_COLUMN_NAMES.length; i++) {
+    final TableColumn[] columns = new TableColumn[POWER_PLATFORM_NAMES.length];
+    for (int i = 0; i < POWER_PLATFORM_NAMES.length; i++) {
       final TableColumn columni = new TableColumn(table, SWT.NONE, i);
-      columni.setText(MEM_COLUMN_NAMES[i]);
+      columni.setText(POWER_PLATFORM_NAMES[i]);
       columns[i] = columni;
     }
 
@@ -270,7 +269,7 @@ public class EnergyPage extends ScenarioPage {
           final MemoryInfoImpl memInfo = (MemoryInfoImpl) ti.getData();
           final String newValue = (String) value;
           boolean dirty = false;
-          if (SETUP_TIME_TITLE.equals(property)) {
+          if (POWER_PLATFORM_TITLE.equals(property)) {
             final long oldSetupTime = memInfo.getValue().getSetupTime();
             try {
               final long parseLong = Long.parseLong(newValue);
@@ -282,20 +281,6 @@ public class EnergyPage extends ScenarioPage {
               ErrorDialog.openError(EnergyPage.this.getEditorSite().getShell(), "Wrong number format",
                   "Setup time values are Long typed.",
                   new Status(IStatus.ERROR, "org.preesm.ui.scenario", "Could not parse long. " + e.getMessage()));
-            }
-          } else if (TIME_PER_UNIT_TITLE.equals(property)) {
-            final double oldTimePerUnit = memInfo.getValue().getTimePerUnit();
-            try {
-              final double newUnitPerTime = Double.parseDouble(newValue);
-              final double newTimePerUnit = 1. / newUnitPerTime;
-              if (oldTimePerUnit != newTimePerUnit) {
-                dirty = true;
-                memInfo.getValue().setTimePerUnit(newTimePerUnit);
-              }
-            } catch (final NumberFormatException e) {
-              ErrorDialog.openError(EnergyPage.this.getEditorSite().getShell(), "Wrong number format",
-                  "Unit per time values are Double typed.",
-                  new Status(IStatus.ERROR, "org.preesm.ui.scenario", "Could not parse double. " + e.getMessage()));
             }
           }
 
@@ -310,10 +295,8 @@ public class EnergyPage extends ScenarioPage {
       public Object getValue(final Object element, final String property) {
         if (element instanceof MemoryInfoImpl) {
           final MemoryInfoImpl memInfo = (MemoryInfoImpl) element;
-          if (SETUP_TIME_TITLE.equals(property)) {
+          if (POWER_PLATFORM_TITLE.equals(property)) {
             return Long.toString(memInfo.getValue().getSetupTime());
-          } else if (TIME_PER_UNIT_TITLE.equals(property)) {
-            return Double.toString(1. / memInfo.getValue().getTimePerUnit());
           }
         }
         return "";
@@ -321,7 +304,7 @@ public class EnergyPage extends ScenarioPage {
 
       @Override
       public boolean canModify(final Object element, final String property) {
-        return property.contentEquals(MEM_COLUMN_NAMES[1]) || property.contentEquals(MEM_COLUMN_NAMES[2]);
+        return property.contentEquals(POWER_PLATFORM_NAMES[1]);
       }
     });
 
@@ -329,7 +312,7 @@ public class EnergyPage extends ScenarioPage {
     for (int i = 0; i < table.getColumnCount(); i++) {
       editors[i] = new TextCellEditor(table);
     }
-    newTableViewer.setColumnProperties(MEM_COLUMN_NAMES);
+    newTableViewer.setColumnProperties(POWER_PLATFORM_NAMES);
     newTableViewer.setCellEditors(editors);
 
     // Setting the column width
@@ -347,7 +330,6 @@ public class EnergyPage extends ScenarioPage {
         table.setSize(area.width, area.height);
         columns[0].setWidth((width / 4) - 1);
         columns[1].setWidth((width - columns[0].getWidth()) / 2);
-        columns[2].setWidth((width - columns[0].getWidth()) / 2);
       }
     });
 
@@ -674,7 +656,7 @@ public class EnergyPage extends ScenarioPage {
 
     final GridData gd = new GridData();
     gd.widthHint = 150;
-    toolkit.createLabel(client, "Objective (in executions per second): ");
+    toolkit.createLabel(client, Messages.getString("Energy.objectiveLabel"));
     final PerformanceObjective performanceObjective = this.scenario.getEnergyConfig().getPerformanceObjective();
     final Text objective = toolkit.createText(client, Float.toString(performanceObjective.getObjectiveEPS()),
         SWT.SINGLE);
@@ -706,7 +688,7 @@ public class EnergyPage extends ScenarioPage {
       }
     });
 
-    toolkit.createLabel(client, "Tolerance (in %): ");
+    toolkit.createLabel(client, Messages.getString("Energy.toleranceLabel"));
     final Text tolerance = toolkit.createText(client, Float.toString(performanceObjective.getToleranceEPS()),
         SWT.SINGLE);
     tolerance.setLayoutData(gd);
