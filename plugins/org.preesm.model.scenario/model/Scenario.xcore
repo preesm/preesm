@@ -54,6 +54,7 @@ import org.preesm.commons.model.PreesmCopyTracker
 import org.preesm.model.pisdf.AbstractActor
 import org.preesm.model.pisdf.Parameter
 import org.preesm.model.pisdf.PiGraph
+import org.preesm.model.pisdf.SpecialActor
 import org.preesm.model.pisdf.expression.ExpressionEvaluator
 import org.preesm.model.pisdf.serialize.PiParser
 import org.preesm.model.slam.ComponentInstance
@@ -133,6 +134,13 @@ class Scenario {
 			constraints.groupConstraints.clear()
 			papifyConfig.papifyConfigGroupsActors.clear
 			papifyConfig.papifyConfigGroupsPEs.clear
+		}
+	}
+	op ComponentInstance[] getPossibleMappings(AbstractActor actor) {
+		if (actor instanceof SpecialActor) {
+			return simulationInfo.specialVertexOperators.unmodifiableView
+		} else {
+			return constraints.groupConstraints.filter[it.value.contains(actor)].map[it.key].toEList.unmodifiableView
 		}
 	}
 }
