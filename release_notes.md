@@ -7,6 +7,7 @@ PREESM Changelog
 ### New Feature
 
 ### Changes
+* Make sure PiSDF flatten and SRDAG transformations keep track of the input PiGraph;
 
 ### Bug fix
 
