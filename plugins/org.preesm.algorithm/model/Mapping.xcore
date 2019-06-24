@@ -22,7 +22,7 @@ type long wraps long
 
 type double wraps double
 
-interface Mapping {
+class Mapping {
 	contains MultiMappingEntry[] mappings
 	op ComponentInstance[] getMapping(AbstractActor actor) {
 		return mappings.get(actor).unmodifiableView;
