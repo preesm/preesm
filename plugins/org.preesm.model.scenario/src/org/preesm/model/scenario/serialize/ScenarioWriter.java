@@ -47,12 +47,14 @@ import org.eclipse.emf.common.util.EMap;
 import org.preesm.model.pisdf.AbstractActor;
 import org.preesm.model.pisdf.Parameter;
 import org.preesm.model.pisdf.PiGraph;
+import org.preesm.model.scenario.EnergyConfig;
 import org.preesm.model.scenario.MemoryCopySpeedValue;
 import org.preesm.model.scenario.PapiComponent;
 import org.preesm.model.scenario.PapiEvent;
 import org.preesm.model.scenario.PapiEventModifier;
 import org.preesm.model.scenario.PapiEventSet;
 import org.preesm.model.scenario.PapifyConfig;
+import org.preesm.model.scenario.PerformanceObjective;
 import org.preesm.model.scenario.Scenario;
 import org.preesm.model.slam.Component;
 import org.preesm.model.slam.ComponentInstance;
@@ -111,6 +113,7 @@ public class ScenarioWriter {
     writeSimuParams(root);
     writeParameterValues(root);
     writePapifyConfigs(root);
+    writeEnergyConfigs(root);
 
     return this.dom;
   }
@@ -522,5 +525,39 @@ public class ScenarioWriter {
     timingelt.setAttribute("opname", opDef.getVlnv().getName());
     timingelt.setAttribute("setuptime", Long.toString(memcpySetupTime));
     timingelt.setAttribute("timeperunit", Double.toString(memcpyTimePerUnit));
+  }
+
+  /**
+   * Adds the Energy configurations.
+   *
+   * @param parent
+   *          the parent
+   */
+  private void writeEnergyConfigs(final Element parent) {
+    final Element energyConfigs = this.dom.createElement("energyConfigs");
+    parent.appendChild(energyConfigs);
+
+    // energyConfigs.setAttribute("xmlUrl", this.scenario.getPapifyConfig().getXmlFileURL());
+
+    final EnergyConfig manager = this.scenario.getEnergyConfig();
+
+    writePerformanceObjective(energyConfigs, manager.getPerformanceObjective());
+  }
+
+  /**
+   * Adds the PerformanceObjective.
+   *
+   * @param parent
+   *          the parent
+   * @param value
+   *          the value
+   */
+  private void writePerformanceObjective(final Element parent, final PerformanceObjective performanceObjective) {
+
+    final Element performanceObjectiveElt = this.dom.createElement("performanceObjective");
+    parent.appendChild(performanceObjectiveElt);
+
+    performanceObjectiveElt.setAttribute("objectiveEPS", Float.toString(performanceObjective.getObjectiveEPS()));
+    performanceObjectiveElt.setAttribute("toleranceEPS", Float.toString(performanceObjective.getToleranceEPS()));
   }
 }

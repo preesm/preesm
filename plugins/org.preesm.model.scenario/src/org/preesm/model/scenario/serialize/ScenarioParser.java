@@ -167,6 +167,9 @@ public class ScenarioParser {
             case "papifyConfigs":
               parsePapifyConfigs(elt);
               break;
+            case "energyConfigs":
+              parseEnergyConfigs(elt);
+              break;
             case "variables":
               // deprecated
               break;
@@ -826,6 +829,56 @@ public class ScenarioParser {
         }
       }
 
+    }
+  }
+
+  /**
+   * Retrieves all the energyConfigs groups.
+   *
+   * @param cstGroupsElt
+   *          the cst groups elt
+   */
+  private void parseEnergyConfigs(final Element energyConfigsElt) {
+
+    // final String xmlFileURL = papifyConfigsElt.getAttribute("xmlUrl");
+    // this.scenario.getPapifyConfig().setXmlFileURL(xmlFileURL);
+
+    Node node = energyConfigsElt.getFirstChild();
+
+    while (node != null) {
+
+      if (node instanceof Element) {
+        final Element elt = (Element) node;
+        final String type = elt.getTagName();
+        if (type.equals("performanceObjective")) {
+          parsePerformanceObjective(elt);
+        }
+      }
+
+      node = node.getNextSibling();
+    }
+  }
+
+  /**
+   * Retrieves a performanceObjective.
+   *
+   * @param performanceObjectiveElt
+   *          the performanceObjective group elt
+   * @return the performanceObjective
+   */
+  private void parsePerformanceObjective(final Element performanceObjectiveElt) {
+
+    Node node = performanceObjectiveElt.getAttributeNode("objectiveEPS");
+    if (node != null) {
+      String objectiveEPS = node.getNodeValue();
+      final float objectiveEPSValue = Float.parseFloat(objectiveEPS);
+      this.scenario.getEnergyConfig().getPerformanceObjective().setObjectiveEPS(objectiveEPSValue);
+    }
+    node = performanceObjectiveElt.getAttributeNode("toleranceEPS");
+    if (node != null) {
+      String toleranceEPS = node.getNodeValue();
+      final float toleranceEPSValue = Float.parseFloat(toleranceEPS);
+      this.scenario.getEnergyConfig().getPerformanceObjective().setToleranceEPS(toleranceEPSValue);
     }
   }
 }

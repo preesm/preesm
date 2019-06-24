@@ -94,7 +94,7 @@ class Scenario {
 	String codegenDirectory
 	contains ParameterValueOverride[] parameterValues opposite scenario
 	contains PapifyConfig papifyConfig opposite scenario
-	contains Energy energyConfig opposite scenario
+	contains EnergyConfig energyConfig opposite scenario
 	op String getScenarioName() {
 		val IPath algoPath = new Path(algorithm.url).removeFileExtension();
 		val String algoName = algoPath.lastSegment();
@@ -546,7 +546,7 @@ class PapiCpuID {
  *  		  Energy
  ##################### */
  
- class Energy{
+ class EnergyConfig{
 	refers Scenario scenario opposite energyConfig
  	contains PerformanceObjective performanceObjective
  }

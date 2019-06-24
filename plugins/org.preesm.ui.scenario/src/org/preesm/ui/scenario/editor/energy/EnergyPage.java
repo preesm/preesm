@@ -690,10 +690,11 @@ public class EnergyPage extends ScenarioPage {
       public void keyReleased(final KeyEvent e) {
         try {
           float newObjectiveEPS = Float.parseFloat((String) objective.getText());
-          if (newObjectiveEPS >= 0.0) {
+          if (newObjectiveEPS >= 0.0 && newObjectiveEPS != performanceObjective.getObjectiveEPS()) {
             performanceObjective.setObjectiveEPS(newObjectiveEPS);
             objective.setText(Float.toString(newObjectiveEPS));
             objective.update();
+            firePropertyChange(IEditorPart.PROP_DIRTY);
           } else {
             objective.setText(Float.toString(performanceObjective.getObjectiveEPS()));
             objective.update();
@@ -720,10 +721,11 @@ public class EnergyPage extends ScenarioPage {
       public void keyReleased(final KeyEvent e) {
         try {
           float newToleranceEPS = Float.parseFloat((String) tolerance.getText());
-          if (newToleranceEPS >= 0.0) {
+          if (newToleranceEPS >= 0.0 && newToleranceEPS != performanceObjective.getToleranceEPS()) {
             performanceObjective.setToleranceEPS(newToleranceEPS);
             tolerance.setText(Float.toString(newToleranceEPS));
             tolerance.update();
+            firePropertyChange(IEditorPart.PROP_DIRTY);
           } else {
             tolerance.setText(Float.toString(performanceObjective.getToleranceEPS()));
             tolerance.update();
