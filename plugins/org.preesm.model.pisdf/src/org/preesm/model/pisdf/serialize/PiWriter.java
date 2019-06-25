@@ -329,7 +329,10 @@ public class PiWriter {
 
     // Set the kind of the Actor
     vertexElt.setAttribute(PiIdentifiers.NODE_KIND, PiIdentifiers.ACTOR);
-    vertexElt.setAttribute(PiIdentifiers.ACTOR_PERIOD, originalActor.getPeriod().getExpressionAsString());
+    final Expression period = originalActor.getPeriod();
+    if (period != null) {
+      vertexElt.setAttribute(PiIdentifiers.ACTOR_PERIOD, period.getExpressionAsString());
+    }
     final Refinement refinement = originalActor.getRefinement();
     if (refinement != null) {
       writeRefinement(vertexElt, refinement);
