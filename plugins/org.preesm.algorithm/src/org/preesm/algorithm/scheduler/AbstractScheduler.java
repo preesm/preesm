@@ -8,6 +8,8 @@ import org.preesm.commons.model.PreesmCopyTracker;
 import org.preesm.model.algorithm.mapping.Mapping;
 import org.preesm.model.algorithm.schedule.Schedule;
 import org.preesm.model.pisdf.AbstractActor;
+import org.preesm.model.pisdf.EndActor;
+import org.preesm.model.pisdf.InitActor;
 import org.preesm.model.pisdf.PiGraph;
 import org.preesm.model.scenario.Scenario;
 import org.preesm.model.slam.ComponentInstance;
@@ -85,11 +87,26 @@ public abstract class AbstractScheduler implements IScheduler {
   }
 
   private void verifyActor(final Scenario scenario, final Mapping mapping, final AbstractActor actor) {
-    final List<ComponentInstance> possibleMappings = new ArrayList<>(scenario.getPossibleMappings(actor));
     final List<ComponentInstance> actorMapping = new ArrayList<>(mapping.getMapping(actor));
+
+    final List<ComponentInstance> possibleMappings = new ArrayList<>(scenario.getPossibleMappings(actor));
     if (!possibleMappings.containsAll(actorMapping)) {
       throw new PreesmSchedulerException("Actor '" + actor + "' is mapped on '" + actorMapping
           + "' which is not in the authorized components list '" + possibleMappings + "'.");
+    }
+
+    if (actor instanceof InitActor) {
+      final AbstractActor endReference = ((InitActor) actor).getEndReference();
+      final List<ComponentInstance> targetMappings = new ArrayList<>(mapping.getMapping(endReference));
+      if (!targetMappings.equals(actorMapping)) {
+        throw new PreesmSchedulerException("Init and End actors are not mapped onto the same PE.");
+      }
+    } else if (actor instanceof EndActor) {
+      final AbstractActor initReference = ((EndActor) actor).getInitReference();
+      final List<ComponentInstance> targetMappings = new ArrayList<>(mapping.getMapping(initReference));
+      if (!targetMappings.equals(actorMapping)) {
+        throw new PreesmSchedulerException("Init and End actors are not mapped onto the same PE.");
+      }
     }
   }
 
