@@ -542,6 +542,9 @@ public class ScenarioWriter {
     final EnergyConfig manager = this.scenario.getEnergyConfig();
 
     writePerformanceObjective(energyConfigs, manager.getPerformanceObjective());
+    for (final Entry<String, Double> opDef : manager.getPlatformPower()) {
+      writePlatformPower(energyConfigs, opDef.getKey(), opDef.getValue());
+    }
   }
 
   /**
@@ -559,5 +562,22 @@ public class ScenarioWriter {
 
     performanceObjectiveElt.setAttribute("objectiveEPS", Double.toString(performanceObjective.getObjectiveEPS()));
     performanceObjectiveElt.setAttribute("toleranceEPS", Double.toString(performanceObjective.getToleranceEPS()));
+  }
+
+  /**
+   * Adds the PlatformPower.
+   *
+   * @param parent
+   *          the parent
+   * @param value
+   *          the value
+   */
+  private void writePlatformPower(final Element parent, final String opDefName, final double pePower) {
+
+    final Element pePowerElt = this.dom.createElement("pePower");
+    parent.appendChild(pePowerElt);
+
+    pePowerElt.setAttribute("opName", opDefName);
+    pePowerElt.setAttribute("pePower", Double.toString(pePower));
   }
 }

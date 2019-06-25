@@ -42,9 +42,9 @@ import java.util.List;
 import java.util.Map.Entry;
 import java.util.Set;
 import org.eclipse.jface.viewers.IStructuredContentProvider;
-import org.preesm.model.scenario.MemoryCopySpeedValue;
+import org.preesm.model.scenario.EnergyConfig;
 import org.preesm.model.scenario.Scenario;
-import org.preesm.model.scenario.util.ScenarioUserFactory;
+import org.preesm.model.scenario.ScenarioConstants;
 import org.preesm.model.slam.Design;
 import org.preesm.model.slam.component.Component;
 
@@ -55,32 +55,39 @@ import org.preesm.model.slam.component.Component;
  */
 public class PowerPlatformContentProvider implements IStructuredContentProvider {
 
-  private List<Entry<Component, MemoryCopySpeedValue>> elementList = null;
+  private List<Entry<String, Double>> elementList = null;
 
   @Override
   public Object[] getElements(final Object inputElement) {
 
     if (inputElement instanceof Scenario) {
       final Scenario inputScenario = (Scenario) inputElement;
+      final Design design = inputScenario.getDesign();
+      final EnergyConfig energyConfig = inputScenario.getEnergyConfig();
 
       /**
-       * Memcopy speeds are added for all operator types if non present
+       * The base power goes apart, that's why we cannot use Component as key here
        */
-      final Design design = inputScenario.getDesign();
+      if (!energyConfig.getPlatformPower().containsKey("Base")) {
+        energyConfig.getPlatformPower().put("Base", (double) ScenarioConstants.DEFAULT_POWER_PE.getValue());
+      }
+      /**
+       * PE powers are added for all operator types if non present
+       */
       for (final Component opDefId : design.getOperatorComponents()) {
-        if (!inputScenario.getTimings().getMemTimings().containsKey(opDefId)) {
-          final MemoryCopySpeedValue createMemoryCopySpeedValue = ScenarioUserFactory.createMemoryCopySpeedValue();
-          inputScenario.getTimings().getMemTimings().put(opDefId, createMemoryCopySpeedValue);
+        if (!energyConfig.getPlatformPower().containsKey(opDefId.getVlnv().getName())) {
+          energyConfig.getPlatformPower().put(opDefId.getVlnv().getName(),
+              (double) ScenarioConstants.DEFAULT_POWER_PE.getValue());
         }
       }
 
-      // Retrieving the memory copy speeds in operator definition order
-      final Set<
-          Entry<Component, MemoryCopySpeedValue>> entrySet = inputScenario.getTimings().getMemTimings().entrySet();
+      /**
+       * Retrieving the PE powers in operator definition order
+       */
+      final Set<Entry<String, Double>> entrySet = energyConfig.getPlatformPower().entrySet();
       this.elementList = new ArrayList<>(entrySet);
 
-      Collections.sort(this.elementList,
-          (o1, o2) -> o1.getKey().getVlnv().getName().compareTo(o2.getKey().getVlnv().getName()));
+      Collections.sort(this.elementList, (o1, o2) -> o1.getKey().compareTo(o2.getKey()));
     }
     return this.elementList.toArray();
   }

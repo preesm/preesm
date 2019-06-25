@@ -40,8 +40,6 @@ import java.util.Map.Entry;
 import org.eclipse.jface.viewers.BaseLabelProvider;
 import org.eclipse.jface.viewers.ITableLabelProvider;
 import org.eclipse.swt.graphics.Image;
-import org.preesm.model.scenario.MemoryCopySpeedValue;
-import org.preesm.model.slam.component.Component;
 
 /**
  * Displays the labels for memcopy speed.
@@ -61,14 +59,12 @@ public class PowerPlatformLabelProvider extends BaseLabelProvider implements ITa
 
     if (element instanceof Entry) {
       @SuppressWarnings("unchecked")
-      final Entry<Component, MemoryCopySpeedValue> speed = (Entry<Component, MemoryCopySpeedValue>) element;
+      final Entry<String, Double> power = (Entry<String, Double>) element;
 
       if (columnIndex == 0) {
-        text = speed.getKey().getVlnv().getName();
+        text = power.getKey();
       } else if (columnIndex == 1) {
-        text = Long.toString(speed.getValue().getSetupTime());
-      } else if (columnIndex == 2) {
-        text = Double.toString(1.0d / speed.getValue().getTimePerUnit());
+        text = Double.toString(power.getValue());
       }
     }
 

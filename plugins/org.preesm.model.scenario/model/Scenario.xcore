@@ -82,6 +82,7 @@ enum ScenarioConstants {
 	DEFAULT_MEMCOPY_SETUP_TIME = 1
 	DEFAULT_MEMCOPY_TIME_PER_UNIT = 1
 	DEFAULT_DATA_TYPE_SIZE = 1
+	DEFAULT_POWER_PE = 10
 }
 
 class Scenario {
@@ -563,7 +564,7 @@ class PapiCpuID {
  	double toleranceEPS
  }
 class PEPower wraps java.util.Map$Entry {
-	refers Component key 		// The component type and the "base" power
+	String key 		// The component type and the "base" power
 	Double value	// The power value
 }
 class PeActorsEnergy wraps java.util.Map$Entry {

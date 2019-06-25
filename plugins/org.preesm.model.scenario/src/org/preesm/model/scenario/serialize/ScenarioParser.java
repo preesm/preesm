@@ -852,6 +852,8 @@ public class ScenarioParser {
         final String type = elt.getTagName();
         if (type.equals("performanceObjective")) {
           parsePerformanceObjective(elt);
+        } else if (type.equals("pePower")) {
+          parsePlatformPower(elt);
         }
       }
 
@@ -879,6 +881,25 @@ public class ScenarioParser {
       String toleranceEPS = node.getNodeValue();
       final double toleranceEPSValue = Double.parseDouble(toleranceEPS);
       this.scenario.getEnergyConfig().getPerformanceObjective().setToleranceEPS(toleranceEPSValue);
+    }
+  }
+
+  /**
+   * Retrieves a PlatformPower.
+   *
+   * @param platformPowerElt
+   *          the performanceObjective group elt
+   * @return the performanceObjective
+   */
+  private void parsePlatformPower(final Element platformPowerElt) {
+
+    Node nodeOpName = platformPowerElt.getAttributeNode("opName");
+    Node nodePePower = platformPowerElt.getAttributeNode("pePower");
+    if (nodeOpName != null && nodePePower != null) {
+      String opName = nodeOpName.getNodeValue();
+      String pePower = nodePePower.getNodeValue();
+      final double pePowerValue = Double.parseDouble(pePower);
+      this.scenario.getEnergyConfig().getPlatformPower().put(opName, pePowerValue);
     }
   }
 }

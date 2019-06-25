@@ -46,7 +46,6 @@ import java.util.List;
 import java.util.Set;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
-import org.eclipse.emf.common.util.EList;
 import org.eclipse.jface.dialogs.ErrorDialog;
 import org.eclipse.jface.viewers.CellEditor;
 import org.eclipse.jface.viewers.ICellModifier;
@@ -86,7 +85,7 @@ import org.eclipse.ui.forms.widgets.Section;
 import org.preesm.model.pisdf.AbstractActor;
 import org.preesm.model.scenario.PerformanceObjective;
 import org.preesm.model.scenario.Scenario;
-import org.preesm.model.scenario.impl.MemoryInfoImpl;
+import org.preesm.model.scenario.impl.PEPowerImpl;
 import org.preesm.model.scenario.serialize.PreesmAlgorithmListContentProvider;
 import org.preesm.model.scenario.serialize.TimingImporter;
 import org.preesm.model.slam.Design;
@@ -266,16 +265,16 @@ public class EnergyPage extends ScenarioPage {
       public void modify(final Object element, final String property, final Object value) {
         if (element instanceof TableItem) {
           final TableItem ti = (TableItem) element;
-          final MemoryInfoImpl memInfo = (MemoryInfoImpl) ti.getData();
+          final PEPowerImpl powerPe = (PEPowerImpl) ti.getData();
           final String newValue = (String) value;
           boolean dirty = false;
           if (POWER_PLATFORM_TITLE.equals(property)) {
-            final long oldSetupTime = memInfo.getValue().getSetupTime();
+            final double oldpowerPE = powerPe.getValue();
             try {
-              final long parseLong = Long.parseLong(newValue);
-              if (oldSetupTime != parseLong) {
+              final double parseDouble = Double.parseDouble(newValue);
+              if (oldpowerPE != parseDouble) {
                 dirty = true;
-                memInfo.getValue().setSetupTime(parseLong);
+                powerPe.setValue(parseDouble);
               }
             } catch (final NumberFormatException e) {
               ErrorDialog.openError(EnergyPage.this.getEditorSite().getShell(), "Wrong number format",
@@ -285,6 +284,7 @@ public class EnergyPage extends ScenarioPage {
           }
 
           if (dirty) {
+            EnergyPage.this.scenario.getEnergyConfig().getPlatformPower().add(powerPe);
             firePropertyChange(IEditorPart.PROP_DIRTY);
             newTableViewer.refresh();
           }
@@ -293,10 +293,10 @@ public class EnergyPage extends ScenarioPage {
 
       @Override
       public Object getValue(final Object element, final String property) {
-        if (element instanceof MemoryInfoImpl) {
-          final MemoryInfoImpl memInfo = (MemoryInfoImpl) element;
+        if (element instanceof PEPowerImpl) {
+          final PEPowerImpl powerPe = (PEPowerImpl) element;
           if (POWER_PLATFORM_TITLE.equals(property)) {
-            return Long.toString(memInfo.getValue().getSetupTime());
+            return Double.toString(powerPe.getValue());
           }
         }
         return "";
@@ -335,8 +335,9 @@ public class EnergyPage extends ScenarioPage {
 
     newTableViewer.setInput(this.scenario);
     final GridData gd = new GridData(GridData.FILL_HORIZONTAL | GridData.VERTICAL_ALIGN_FILL);
-    final EList<Component> components = scenario.getDesign().getComponents();
-    gd.heightHint = Math.max(50, Math.min(200, components.size() * 20 + 30));
+    final Integer entryNumber = scenario.getEnergyConfig().getPlatformPower().entrySet().size();
+    gd.heightHint = Math.max(50, entryNumber * 25 + 30);
+    System.out.println(gd.heightHint);
     gd.widthHint = 400;
     gd.grabExcessVerticalSpace = true;
     tablecps.setLayoutData(gd);
