@@ -36,7 +36,7 @@ function fixFile {
 			#"@rem "
 			COMMENT="@rem "
 			;;
-		C |	CPP | H | JAVA | XTEND | BSH)
+		C |	CPP | H | JAVA | XTEND | BSH | XCORE)
 			#" * "
 			COMMENT=" * "
 			;;
@@ -44,12 +44,13 @@ function fixFile {
 			#"# "
 			COMMENT="# "
 			;;
-		XML | XSD | HTML | ECORE | GENMODEL)
+		XML | XSD | HTML | ECORE | GENMODEL | EXSD)
 			#"    "
 			COMMENT="    "
 			;;
 		*)
-			echo "Unsupported file extension $EXTENSION"
+			COMMENT=""
+      echo "Unsupported file extension $EXTENSION ($file)"
 			;;
 	esac
 	
@@ -65,7 +66,7 @@ function fixFile {
 			AUTHORDATE="($AUTHORLOWERDATE - $AUTHORUPPERDATE)"
 		fi
 		
-		LINE=`echo "$FILEAUTHORLISTWITHDATES" | grep "$AUTHOR" | cut -d' ' -f2- | sort -u`
+		LINE=`echo "$FILEAUTHORLISTWITHDATES" | grep "$AUTHOR" | cut -d' ' -f2- | sort -u | tr '<' '[' | tr '>' ']'`
     
 		sed -i -e "s/$AUTHORSPATTERN/${LINE} ${AUTHORDATE}\n$COMMENT$AUTHORSPATTERN/g" "$file"
     done
