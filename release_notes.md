@@ -12,6 +12,7 @@ PREESM Changelog
 * Fix Papify heterogeneity (different monitoring configs depending on the PE type executing the actor) for PREESM and SPiDER;
 * Update comments in PAPIFY UI;
 * Update relend;
+* Fix PiWriter: avoid throwing NPE when period is not attached to an element;
 
 ### Bug fix
 
