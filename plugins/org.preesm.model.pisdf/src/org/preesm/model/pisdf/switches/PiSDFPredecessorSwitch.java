@@ -16,14 +16,14 @@ import org.preesm.model.pisdf.util.PiMMSwitch;
 /**
  *
  */
-public class PiSDFPredecessorSwitch extends PiMMSwitch<Boolean> {
+public abstract class PiSDFPredecessorSwitch extends PiMMSwitch<Boolean> {
 
   private final List<AbstractActor> visitedElements = new ArrayList<>();
 
   @Override
   public Boolean caseAbstractActor(final AbstractActor actor) {
-    if (!visitedElements.contains(actor)) {
-      visitedElements.add(actor);
+    if (!this.visitedElements.contains(actor)) {
+      this.visitedElements.add(actor);
       actor.getDataInputPorts().forEach(this::doSwitch);
       final EList<AbstractActor> delayActors = actor.getContainingPiGraph().getDelayActors();
       delayActors.forEach(this::doSwitch);
@@ -32,21 +32,21 @@ public class PiSDFPredecessorSwitch extends PiMMSwitch<Boolean> {
   }
 
   @Override
-  public Boolean caseFifo(Fifo fifo) {
+  public Boolean caseFifo(final Fifo fifo) {
     final DataOutputPort sourcePort = fifo.getSourcePort();
     doSwitch(sourcePort);
     return true;
   }
 
   @Override
-  public Boolean caseDataOutputPort(DataOutputPort dop) {
+  public Boolean caseDataOutputPort(final DataOutputPort dop) {
     final AbstractActor containingActor = dop.getContainingActor();
     doSwitch(containingActor);
     return true;
   }
 
   @Override
-  public Boolean caseDataInputPort(DataInputPort dip) {
+  public Boolean caseDataInputPort(final DataInputPort dip) {
     final Fifo fifo = dip.getFifo();
     if (fifo != null) {
       doSwitch(fifo);
@@ -55,7 +55,7 @@ public class PiSDFPredecessorSwitch extends PiMMSwitch<Boolean> {
   }
 
   @Override
-  public Boolean caseDataInputInterface(DataInputInterface inputInterface) {
+  public Boolean caseDataInputInterface(final DataInputInterface inputInterface) {
     caseAbstractActor(inputInterface);
     final Port graphPort = inputInterface.getGraphPort();
     doSwitch(graphPort);
@@ -63,9 +63,9 @@ public class PiSDFPredecessorSwitch extends PiMMSwitch<Boolean> {
   }
 
   @Override
-  public Boolean casePiGraph(PiGraph graph) {
+  public Boolean casePiGraph(final PiGraph graph) {
     // only visit children if did not start here
-    if (!visitedElements.isEmpty()) {
+    if (!this.visitedElements.isEmpty()) {
       graph.getActors().forEach(this::doSwitch);
     }
     caseAbstractActor(graph);
@@ -73,7 +73,7 @@ public class PiSDFPredecessorSwitch extends PiMMSwitch<Boolean> {
   }
 
   @Override
-  public Boolean caseDelayActor(DelayActor delayActor) {
+  public Boolean caseDelayActor(final DelayActor delayActor) {
     caseAbstractActor(delayActor);
     final PiGraph graph = delayActor.getContainingPiGraph();
     graph.getDataInputInterfaces().forEach(this::doSwitch);
@@ -107,7 +107,7 @@ public class PiSDFPredecessorSwitch extends PiMMSwitch<Boolean> {
    *
    */
   private static class IsPredecessorSwitch extends PiSDFPredecessorSwitch {
-    private AbstractActor potentialPred;
+    private final AbstractActor potentialPred;
 
     public IsPredecessorSwitch(final AbstractActor potentialPred) {
       this.potentialPred = potentialPred;
@@ -115,7 +115,7 @@ public class PiSDFPredecessorSwitch extends PiMMSwitch<Boolean> {
 
     @Override
     public Boolean caseAbstractActor(final AbstractActor actor) {
-      if (actor.equals(potentialPred)) {
+      if (actor.equals(this.potentialPred)) {
         throw new PredecessorFoundException();
       }
       return super.caseAbstractActor(actor);
