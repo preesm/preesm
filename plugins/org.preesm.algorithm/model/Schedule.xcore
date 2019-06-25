@@ -14,6 +14,12 @@ package org.preesm.model.algorithm.schedule
 import org.preesm.model.pisdf.AbstractActor
 import org.eclipse.emf.common.util.ECollections
 
+// !!! This is needed as of the current versions of xcore/xtext
+// For some reason when using the default String/... (i.e. without the following)
+// the corresponding EPackage attributes/... are resolved to type java.lang.Object
+// instead of java.lang.String.
+// This causes a problem for Tom mapping generation for instance.
+// The following fixes this problem.
 type String wraps String
 
 type int wraps int
