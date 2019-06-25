@@ -526,7 +526,7 @@
                   <exclude>libs/**</exclude>
                   <exclude>doc/**</exclude>
                   <exclude>**/*.sh</exclude>
-                  <exclude>*.txt</exclude>
+                  <exclude>**/*.txt</exclude>
                   <exclude>**/*.css</exclude>
                   <exclude>**/*.PNG</exclude>
                   <exclude>**/*.xsl</exclude>
