@@ -658,7 +658,7 @@ public class EnergyPage extends ScenarioPage {
     gd.widthHint = 150;
     toolkit.createLabel(client, Messages.getString("Energy.objectiveLabel"));
     final PerformanceObjective performanceObjective = this.scenario.getEnergyConfig().getPerformanceObjective();
-    final Text objective = toolkit.createText(client, Float.toString(performanceObjective.getObjectiveEPS()),
+    final Text objective = toolkit.createText(client, Double.toString(performanceObjective.getObjectiveEPS()),
         SWT.SINGLE);
     objective.setLayoutData(gd);
     objective.addKeyListener(new KeyListener() {
@@ -671,25 +671,25 @@ public class EnergyPage extends ScenarioPage {
       @Override
       public void keyReleased(final KeyEvent e) {
         try {
-          float newObjectiveEPS = Float.parseFloat((String) objective.getText());
+          double newObjectiveEPS = Double.parseDouble((String) objective.getText());
           if (newObjectiveEPS >= 0.0 && newObjectiveEPS != performanceObjective.getObjectiveEPS()) {
             performanceObjective.setObjectiveEPS(newObjectiveEPS);
-            objective.setText(Float.toString(newObjectiveEPS));
+            objective.setText(Double.toString(newObjectiveEPS));
             objective.update();
             firePropertyChange(IEditorPart.PROP_DIRTY);
           } else {
-            objective.setText(Float.toString(performanceObjective.getObjectiveEPS()));
+            objective.setText(Double.toString(performanceObjective.getObjectiveEPS()));
             objective.update();
           }
         } catch (final Exception ex) {
-          objective.setText(Float.toString(performanceObjective.getObjectiveEPS()));
+          objective.setText(Double.toString(performanceObjective.getObjectiveEPS()));
           objective.update();
         }
       }
     });
 
     toolkit.createLabel(client, Messages.getString("Energy.toleranceLabel"));
-    final Text tolerance = toolkit.createText(client, Float.toString(performanceObjective.getToleranceEPS()),
+    final Text tolerance = toolkit.createText(client, Double.toString(performanceObjective.getToleranceEPS()),
         SWT.SINGLE);
     tolerance.setLayoutData(gd);
     tolerance.addKeyListener(new KeyListener() {
@@ -702,18 +702,18 @@ public class EnergyPage extends ScenarioPage {
       @Override
       public void keyReleased(final KeyEvent e) {
         try {
-          float newToleranceEPS = Float.parseFloat((String) tolerance.getText());
+          double newToleranceEPS = Double.parseDouble((String) tolerance.getText());
           if (newToleranceEPS >= 0.0 && newToleranceEPS != performanceObjective.getToleranceEPS()) {
             performanceObjective.setToleranceEPS(newToleranceEPS);
-            tolerance.setText(Float.toString(newToleranceEPS));
+            tolerance.setText(Double.toString(newToleranceEPS));
             tolerance.update();
             firePropertyChange(IEditorPart.PROP_DIRTY);
           } else {
-            tolerance.setText(Float.toString(performanceObjective.getToleranceEPS()));
+            tolerance.setText(Double.toString(performanceObjective.getToleranceEPS()));
             tolerance.update();
           }
         } catch (final Exception ex) {
-          tolerance.setText(Float.toString(performanceObjective.getToleranceEPS()));
+          tolerance.setText(Double.toString(performanceObjective.getToleranceEPS()));
           tolerance.update();
         }
       }

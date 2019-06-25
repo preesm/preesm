@@ -871,13 +871,13 @@ public class ScenarioParser {
     Node node = performanceObjectiveElt.getAttributeNode("objectiveEPS");
     if (node != null) {
       String objectiveEPS = node.getNodeValue();
-      final float objectiveEPSValue = Float.parseFloat(objectiveEPS);
+      final double objectiveEPSValue = Double.parseDouble(objectiveEPS);
       this.scenario.getEnergyConfig().getPerformanceObjective().setObjectiveEPS(objectiveEPSValue);
     }
     node = performanceObjectiveElt.getAttributeNode("toleranceEPS");
     if (node != null) {
       String toleranceEPS = node.getNodeValue();
-      final float toleranceEPSValue = Float.parseFloat(toleranceEPS);
+      final double toleranceEPSValue = Double.parseDouble(toleranceEPS);
       this.scenario.getEnergyConfig().getPerformanceObjective().setToleranceEPS(toleranceEPSValue);
     }
   }

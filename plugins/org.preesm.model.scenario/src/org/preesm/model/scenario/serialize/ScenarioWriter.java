@@ -557,7 +557,7 @@ public class ScenarioWriter {
     final Element performanceObjectiveElt = this.dom.createElement("performanceObjective");
     parent.appendChild(performanceObjectiveElt);
 
-    performanceObjectiveElt.setAttribute("objectiveEPS", Float.toString(performanceObjective.getObjectiveEPS()));
-    performanceObjectiveElt.setAttribute("toleranceEPS", Float.toString(performanceObjective.getToleranceEPS()));
+    performanceObjectiveElt.setAttribute("objectiveEPS", Double.toString(performanceObjective.getObjectiveEPS()));
+    performanceObjectiveElt.setAttribute("toleranceEPS", Double.toString(performanceObjective.getToleranceEPS()));
   }
 }
