@@ -23,7 +23,7 @@ type long wraps long
 type double wraps double
 
 interface Schedule {
-	op long getRepetition()
+	long repetition
 	op Schedule[] getChildren()
 	op AbstractActor[] getActors()
 }
