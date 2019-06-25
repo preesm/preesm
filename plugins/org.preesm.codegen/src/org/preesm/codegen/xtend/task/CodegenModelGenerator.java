@@ -143,7 +143,6 @@ import org.preesm.model.pisdf.PersistenceLevel;
 import org.preesm.model.scenario.PapiComponent;
 import org.preesm.model.scenario.PapiEvent;
 import org.preesm.model.scenario.PapifyConfig;
-import org.preesm.model.scenario.PapifyConstants;
 import org.preesm.model.scenario.Scenario;
 import org.preesm.model.scenario.types.BufferAggregate;
 import org.preesm.model.scenario.types.BufferProperties;
@@ -796,8 +795,8 @@ public class CodegenModelGenerator {
             monitoringTiming = papifyConfig.isMonitoringTiming(referencePiVertex);
             if (monitoringEvents) {
               // Generate Papify start function for events
-              final PapifyFunctionCall functionCallPapifyStart = generatePapifyStartFunctionCall(dagVertex,
-                  operatorBlock, papifyPEId, papifyActionS);
+              final PapifyFunctionCall functionCallPapifyStart = generatePapifyStartFunctionCall(dagVertex, papifyPEId,
+                  papifyActionS);
               // Add the Papify start function for events to the loop
               operatorBlock.getLoopBlock().getCodeElts().add(functionCallPapifyStart);
             }
@@ -805,69 +804,9 @@ public class CodegenModelGenerator {
             if (monitoringTiming) {
               // Generate Papify start timing function
               final PapifyFunctionCall functionCallPapifyTimingStart = generatePapifyStartTimingFunctionCall(dagVertex,
-                  operatorBlock, papifyPEId, papifyActionS);
+                  papifyPEId, papifyActionS);
               // Add the Papify start timing function to the loop
               operatorBlock.getLoopBlock().getCodeElts().add(functionCallPapifyTimingStart);
-            }
-
-          }
-        } else {
-          Map<String, String> mapPapifyConfiguration = dagVertex.getPropertyBean()
-              .getValue(PapifyConstants.PAPIFY_CONFIGURATION.getLiteral());
-          if (mapPapifyConfiguration != null && !mapPapifyConfiguration.isEmpty()) {
-            String papifying = mapPapifyConfiguration.get(dagVertex.getInfo());
-            // In case there is any monitoring add start functions
-            if (papifying != null && papifying.equals("Papifying")) {
-              // Add the function to configure the monitoring in this PE (operatorBlock)
-              papifyPEId.setName(PAPIFY_PE_ID_CONSTANT_NAME);
-              if (!(this.papifiedPEs.contains(operatorBlock.getName()))) {
-                this.papifiedPEs.add(operatorBlock.getName());
-                // Create the variable associated to the PE id
-                papifyPEId.setValue(this.papifiedPEs.indexOf(operatorBlock.getName()));
-
-                final FunctionCall functionCallPapifyConfigurePE = generatePapifyConfigurePEFunctionCall(operatorBlock,
-                    papifyConfig, papifyPEId);
-                operatorBlock.getInitBlock().getCodeElts().add(functionCallPapifyConfigurePE);
-              } else {
-                // Create the variable associated to the PE id
-                papifyPEId.setValue(this.papifiedPEs.indexOf(operatorBlock.getName()));
-              }
-              // Add the papify_action_s variable to the code
-              Map<String, PapifyAction> mapPapifyActionName = dagVertex.getPropertyBean()
-                  .getValue(PapifyConstants.PAPIFY_ACTION_NAME.getLiteral());
-              PapifyAction nameFunction = mapPapifyActionName.get(dagVertex.getInfo());
-              papifyActionS.setName(nameFunction.getName());
-              // papifyActionS.setSize(1);
-              papifyActionS.setType("papify_action_s");
-              papifyActionS.setComment("papify configuration variable");
-              operatorBlock.getDefinitions().add(papifyActionS);
-              // Add the function to configure the monitoring of this actor (dagVertex)
-              final PapifyFunctionCall functionCallPapifyConfigureActor = generatePapifyConfigureActorFunctionCall(
-                  dagVertex, papifyConfig, papifyActionS);
-              operatorBlock.getInitBlock().getCodeElts().add(functionCallPapifyConfigureActor);
-
-              // Check for papify in the dagVertex
-              Map<String, String> mapMonitorEvents = dagVertex.getPropertyBean()
-                  .getValue(PapifyConstants.PAPIFY_MONITOR_EVENTS.getLiteral());
-              String papifyMonitoringEvents = mapMonitorEvents.get(dagVertex.getInfo());
-              if (papifyMonitoringEvents != null && papifyMonitoringEvents.equals("Yes")) {
-                // Generate Papify start function for events
-                final PapifyFunctionCall functionCallPapifyStart = generatePapifyStartFunctionCall(dagVertex,
-                    operatorBlock, papifyPEId, papifyActionS);
-                // Add the Papify start function for events to the loop
-                operatorBlock.getLoopBlock().getCodeElts().add(functionCallPapifyStart);
-              }
-              Map<String, String> mapMonitorTiming = dagVertex.getPropertyBean()
-                  .getValue(PapifyConstants.PAPIFY_MONITOR_TIMING.getLiteral());
-              String papifyMonitoringTiming = mapMonitorTiming.get(dagVertex.getInfo());
-              if (papifyMonitoringTiming != null && papifyMonitoringTiming.equals("Yes")) {
-                // Generate Papify start timing function
-                final PapifyFunctionCall functionCallPapifyTimingStart = generatePapifyStartTimingFunctionCall(
-                    dagVertex, operatorBlock, papifyPEId, papifyActionS);
-                // Add the Papify start timing function to the loop
-                operatorBlock.getLoopBlock().getCodeElts().add(functionCallPapifyTimingStart);
-              }
-
             }
           }
         }
@@ -889,59 +828,24 @@ public class CodegenModelGenerator {
             if (monitoringTiming) {
               // Generate Papify stop timing function
               final PapifyFunctionCall functionCallPapifyTimingStop = generatePapifyStopTimingFunctionCall(dagVertex,
-                  operatorBlock, papifyPEId, papifyActionS);
+                  papifyPEId, papifyActionS);
               // Add the Papify stop timing function to the loop
               operatorBlock.getLoopBlock().getCodeElts().add(functionCallPapifyTimingStop);
             }
             if (monitoringEvents) {
               // Generate Papify stop function for events
-              final PapifyFunctionCall functionCallPapifyStop = generatePapifyStopFunctionCall(dagVertex, operatorBlock,
-                  papifyPEId, papifyActionS);
+              final PapifyFunctionCall functionCallPapifyStop = generatePapifyStopFunctionCall(dagVertex, papifyPEId,
+                  papifyActionS);
               // Add the Papify stop function for events to the loop
               operatorBlock.getLoopBlock().getCodeElts().add(functionCallPapifyStop);
             }
             // Generate Papify writing function
             final PapifyFunctionCall functionCallPapifyWriting = generatePapifyWritingFunctionCall(dagVertex,
-                operatorBlock, papifyPEId, papifyActionS);
+                papifyPEId, papifyActionS);
             // Add the Papify writing function to the loop
             operatorBlock.getLoopBlock().getCodeElts().add(functionCallPapifyWriting);
           }
-        } else {
-          Map<String, String> mapPapifyConfiguration = dagVertex.getPropertyBean()
-              .getValue(PapifyConstants.PAPIFY_CONFIGURATION.getLiteral());
-          // In case there is any monitoring add stop functions
-          if (mapPapifyConfiguration != null && !mapPapifyConfiguration.isEmpty()) {
-            String papifying = mapPapifyConfiguration.get(dagVertex.getInfo());
-            if (papifying != null && papifying.equals("Papifying")) {
-              Map<String, String> mapMonitorTiming = dagVertex.getPropertyBean()
-                  .getValue(PapifyConstants.PAPIFY_MONITOR_TIMING.getLiteral());
-              String papifyMonitoringTiming = mapMonitorTiming.get(dagVertex.getInfo());
-              if (papifyMonitoringTiming != null && papifyMonitoringTiming.equals("Yes")) {
-                // Generate Papify stop timing function
-                final PapifyFunctionCall functionCallPapifyTimingStop = generatePapifyStopTimingFunctionCall(dagVertex,
-                    operatorBlock, papifyPEId, papifyActionS);
-                // Add the Papify stop timing function to the loop
-                operatorBlock.getLoopBlock().getCodeElts().add(functionCallPapifyTimingStop);
-              }
-              Map<String, String> mapMonitorEvents = dagVertex.getPropertyBean()
-                  .getValue(PapifyConstants.PAPIFY_MONITOR_EVENTS.getLiteral());
-              String papifyMonitoringEvents = mapMonitorEvents.get(dagVertex.getInfo());
-              if (papifyMonitoringEvents != null && papifyMonitoringEvents.equals("Yes")) {
-                // Generate Papify stop function for events
-                final PapifyFunctionCall functionCallPapifyStop = generatePapifyStopFunctionCall(dagVertex,
-                    operatorBlock, papifyPEId, papifyActionS);
-                // Add the Papify stop function for events to the loop
-                operatorBlock.getLoopBlock().getCodeElts().add(functionCallPapifyStop);
-              }
-              // Generate Papify writing function
-              final PapifyFunctionCall functionCallPapifyWriting = generatePapifyWritingFunctionCall(dagVertex,
-                  operatorBlock, papifyPEId, papifyActionS);
-              // Add the Papify writing function to the loop
-              operatorBlock.getLoopBlock().getCodeElts().add(functionCallPapifyWriting);
-            }
-          }
         }
-
         // Save the functionCall in the dagvertexFunctionCall Map
         this.dagVertexCalls.put(dagVertex, functionCall);
 
@@ -2089,11 +1993,15 @@ public class CodegenModelGenerator {
   }
 
   /**
-   * This method creates the event configure PE function call for PAPI instrumentation
+   * This method creates the event configure PE function call for PAPIFY instrumentation
    *
-   * @param dagVertex
-   *          the {@link DAGVertex} corresponding to the {@link FunctionCall}.
-   * @return The {@link FunctionCall} corresponding to the {@link CoreBlock operatorBlock} firing.
+   * @param operatorBlock
+   *          the {@link CoreBlock} where the {@link PapifyFunctionCall} will be added.
+   * @param papifyConfig
+   *          the {@link PapifyConfig} storing all the instrumentation information.
+   * @param papifyPEId
+   *          the {@link Constant} identifying the PE that is being configured.
+   * @return The {@link PapifyFunctionCall} corresponding to the {@link CoreBlock operatorBlock} firing.
    */
   protected PapifyFunctionCall generatePapifyConfigurePEFunctionCall(final CoreBlock operatorBlock,
       final PapifyConfig papifyConfig, final Constant papifyPEId) {
@@ -2107,29 +2015,11 @@ public class CodegenModelGenerator {
     String componentsSupported = "";
     ConstantString papifyComponentName = CodegenFactory.eINSTANCE.createConstantString();
     final Component component = scenario.getDesign().getComponent(operatorBlock.getCoreType());
-    if (this.papifyActive) {
-      for (PapiComponent papiComponent : papifyConfig.getSupportedPapiComponents(component)) {
-        if (componentsSupported.equals("")) {
-          componentsSupported = papiComponent.getId();
-        } else {
-          componentsSupported = componentsSupported.concat(",").concat(papiComponent.getId());
-        }
-      }
-      papifyComponentName.setValue(componentsSupported);
-    } else {
-      final List<PapiComponent> corePapifyConfigGroupPE = this.getScenario().getPapifyConfig()
-          .getPapifyConfigGroupsPEs().get(component);
-      if (corePapifyConfigGroupPE != null) {
-        for (final PapiComponent compType : corePapifyConfigGroupPE) {
-          if (componentsSupported.equals("")) {
-            componentsSupported = compType.getId();
-          } else {
-            componentsSupported = componentsSupported.concat(",").concat(compType.getId());
-          }
-        }
+    for (PapiComponent papiComponent : papifyConfig.getSupportedPapiComponents(component)) {
+      if (componentsSupported.equals("")) {
+        componentsSupported = papiComponent.getId();
       } else {
-        throw new PreesmRuntimeException("There is no PE type of type " + operatorBlock.getCoreType()
-            + " in the PAPIFY information. Probably the PAPIFY tab is out of date in the PREESM scenario.");
+        componentsSupported = componentsSupported.concat(",").concat(papiComponent.getId());
       }
     }
     papifyComponentName.setValue(componentsSupported);
@@ -2147,129 +2037,107 @@ public class CodegenModelGenerator {
   }
 
   /**
-   * This method creates the event configure actor function call for PAPI instrumentation
+   * This method creates the event configure actor function call for PAPIFY instrumentation
    *
    * @param dagVertex
    *          the {@link DAGVertex} corresponding to the {@link FunctionCall}.
-   * @return The {@link FunctionCall} corresponding to the {@link DAGVertex actor} firing.
+   * @param papifyConfig
+   *          the {@link PapifyConfig} storing all the instrumentation information.
+   * @param papifyActionS
+   *          the {@link PapifyAction} identifying the actor that is being configured.
+   * @return The {@link PapifyFunctionCall} corresponding to the {@link DAGVertex actor} firing.
    */
   protected PapifyFunctionCall generatePapifyConfigureActorFunctionCall(final DAGVertex dagVertex,
       final PapifyConfig papifyConfig, final PapifyAction papifyActionS) {
     // Create the corresponding FunctionCall
     final PapifyFunctionCall func = CodegenFactory.eINSTANCE.createPapifyFunctionCall();
     func.setName("configure_papify_actor");
-    if (this.papifyActive) {
 
-      // Add the PAPI component name
-      AbstractActor referencePiVertex = dagVertex.getReferencePiVertex();
-      EList<String> compsWithConfig = papifyConfig.getActorAssociatedPapiComponents(referencePiVertex);
-      String compNames = "";
-      for (String compName : compsWithConfig) {
-        if (compNames.equals("")) {
-          compNames = compName;
-        } else {
-          compNames = compNames.concat(",").concat(compName);
-        }
+    // Add the PAPI component name
+    AbstractActor referencePiVertex = dagVertex.getReferencePiVertex();
+    EList<String> compsWithConfig = papifyConfig.getActorAssociatedPapiComponents(referencePiVertex);
+    String compNames = "";
+    for (String compName : compsWithConfig) {
+      if (compNames.equals("")) {
+        compNames = compName;
+      } else {
+        compNames = compNames.concat(",").concat(compName);
       }
-      ConstantString componentName = CodegenFactory.eINSTANCE.createConstantString();
-      componentName.setName("component_name".concat(dagVertex.getName()));
-      componentName.setValue(compNames);
-      componentName.setComment("PAPI component name");
-
-      // Add the size of the configs
-      Constant numConfigs = CodegenFactory.eINSTANCE.createConstant();
-      numConfigs.setName("numConfigs");
-      numConfigs.setValue(compsWithConfig.size());
-
-      // Add the actor name
-      String actorOriginalIdentifier = papifyConfig.getActorOriginalIdentifier(referencePiVertex);
-      ConstantString actorName = CodegenFactory.eINSTANCE.createConstantString();
-      actorName.setName("actor_name".concat(actorOriginalIdentifier));
-      actorName.setValue(actorOriginalIdentifier);
-      actorName.setComment("Actor name");
-
-      // Add the PAPI event names
-      EList<PapiEvent> actorEvents = papifyConfig.getActorAssociatedEvents(referencePiVertex);
-      String eventNames = "";
-      for (PapiEvent oneEvent : actorEvents) {
-        if (eventNames.equals("")) {
-          eventNames = oneEvent.getName();
-        } else {
-          eventNames = eventNames.concat(",").concat(oneEvent.getName());
-        }
-      }
-      ConstantString eventSetNames = CodegenFactory.eINSTANCE.createConstantString();
-      eventSetNames.setName("allEventNames");
-      eventSetNames.setValue(eventNames);
-      eventSetNames.setComment("Papify events");
-
-      // Add the size of the CodeSet
-      Constant codeSetSize = CodegenFactory.eINSTANCE.createConstant();
-      codeSetSize.setName("CodeSetSize");
-      codeSetSize.setValue(actorEvents.size());
-
-      // Set the id associated to the Papify configuration
-      EList<String> actorSupportedComps = papifyConfig.getActorAssociatedPapiComponents(referencePiVertex);
-      String configIds = "";
-      for (String papiComponent : actorSupportedComps) {
-        EList<PapiEvent> oneConfig = papifyConfig.getActorComponentEvents(referencePiVertex, papiComponent);
-        boolean found = false;
-        int positionConfig = -1;
-        for (EList<PapiEvent> storedConfig : this.configsAdded) {
-          if (EcoreUtil.equals(storedConfig, oneConfig)) {
-            found = true;
-            positionConfig = this.configsAdded.indexOf(storedConfig);
-          }
-        }
-        if (!found) {
-          this.configsAdded.add(oneConfig);
-          positionConfig = this.configsAdded.indexOf(oneConfig);
-        }
-        if (configIds.equals("")) {
-          configIds = Integer.toString(positionConfig);
-        } else {
-          configIds = configIds.concat(",").concat(Integer.toString(positionConfig));
-        }
-      }
-      ConstantString papifyConfigNumber = CodegenFactory.eINSTANCE.createConstantString();
-      papifyConfigNumber.setName("PAPIFY_configs_".concat(dagVertex.getName()));
-      papifyConfigNumber.setValue(configIds);
-      papifyConfigNumber.setComment("PAPIFY actor configs");
-
-      // Add the function parameters
-      func.addParameter((Variable) papifyActionS, PortDirection.OUTPUT);
-      func.addParameter((Variable) componentName, PortDirection.INPUT);
-      func.addParameter((Variable) actorName, PortDirection.INPUT);
-      func.addParameter((Variable) codeSetSize, PortDirection.INPUT);
-      func.addParameter((Variable) eventSetNames, PortDirection.INPUT);
-      func.addParameter((Variable) papifyConfigNumber, PortDirection.INPUT);
-      func.addParameter((Variable) numConfigs, PortDirection.INPUT);
-
-    } else {
-      // Add the function parameters
-      Map<String, PapifyAction> mapPapifyActionName = dagVertex.getPropertyBean()
-          .getValue(PapifyConstants.PAPIFY_ACTION_NAME.getLiteral());
-      Map<String, ConstantString> mapPapifyComponentName = dagVertex.getPropertyBean()
-          .getValue(PapifyConstants.PAPIFY_COMPONENT_NAME.getLiteral());
-      Map<String, ConstantString> mapPapifyActorName = dagVertex.getPropertyBean()
-          .getValue(PapifyConstants.PAPIFY_ACTOR_NAME.getLiteral());
-      Map<String, Constant> mapPapifyCodesetSize = dagVertex.getPropertyBean()
-          .getValue(PapifyConstants.PAPIFY_CODESET_SIZE.getLiteral());
-      Map<String, ConstantString> mapPapifyEventsetNames = dagVertex.getPropertyBean()
-          .getValue(PapifyConstants.PAPIFY_EVENTSET_NAMES.getLiteral());
-      Map<String, ConstantString> mapPapifyConfigNumber = dagVertex.getPropertyBean()
-          .getValue(PapifyConstants.PAPIFY_CONFIG_NUMBER.getLiteral());
-      Map<String, Constant> mapPapifyCounterConfigs = dagVertex.getPropertyBean()
-          .getValue(PapifyConstants.PAPIFY_COUNTER_CONFIGS.getLiteral());
-
-      func.addParameter((Variable) mapPapifyActionName.get(dagVertex.getInfo()), PortDirection.OUTPUT);
-      func.addParameter((Variable) mapPapifyComponentName.get(dagVertex.getInfo()), PortDirection.INPUT);
-      func.addParameter((Variable) mapPapifyActorName.get(dagVertex.getInfo()), PortDirection.INPUT);
-      func.addParameter((Variable) mapPapifyCodesetSize.get(dagVertex.getInfo()), PortDirection.INPUT);
-      func.addParameter((Variable) mapPapifyEventsetNames.get(dagVertex.getInfo()), PortDirection.INPUT);
-      func.addParameter((Variable) mapPapifyConfigNumber.get(dagVertex.getInfo()), PortDirection.INPUT);
-      func.addParameter((Variable) mapPapifyCounterConfigs.get(dagVertex.getInfo()), PortDirection.INPUT);
     }
+    ConstantString componentName = CodegenFactory.eINSTANCE.createConstantString();
+    componentName.setName("component_name".concat(dagVertex.getName()));
+    componentName.setValue(compNames);
+    componentName.setComment("PAPI component name");
+
+    // Add the size of the configs
+    Constant numConfigs = CodegenFactory.eINSTANCE.createConstant();
+    numConfigs.setName("numConfigs");
+    numConfigs.setValue(compsWithConfig.size());
+
+    // Add the actor name
+    String actorOriginalIdentifier = papifyConfig.getActorOriginalIdentifier(referencePiVertex);
+    ConstantString actorName = CodegenFactory.eINSTANCE.createConstantString();
+    actorName.setName("actor_name".concat(actorOriginalIdentifier));
+    actorName.setValue(actorOriginalIdentifier);
+    actorName.setComment("Actor name");
+
+    // Add the PAPI event names
+    EList<PapiEvent> actorEvents = papifyConfig.getActorAssociatedEvents(referencePiVertex);
+    String eventNames = "";
+    for (PapiEvent oneEvent : actorEvents) {
+      if (eventNames.equals("")) {
+        eventNames = oneEvent.getName();
+      } else {
+        eventNames = eventNames.concat(",").concat(oneEvent.getName());
+      }
+    }
+    ConstantString eventSetNames = CodegenFactory.eINSTANCE.createConstantString();
+    eventSetNames.setName("allEventNames");
+    eventSetNames.setValue(eventNames);
+    eventSetNames.setComment("Papify events");
+
+    // Add the size of the CodeSet
+    Constant codeSetSize = CodegenFactory.eINSTANCE.createConstant();
+    codeSetSize.setName("CodeSetSize");
+    codeSetSize.setValue(actorEvents.size());
+
+    // Set the id associated to the Papify configuration
+    EList<String> actorSupportedComps = papifyConfig.getActorAssociatedPapiComponents(referencePiVertex);
+    String configIds = "";
+    for (String papiComponent : actorSupportedComps) {
+      EList<PapiEvent> oneConfig = papifyConfig.getActorComponentEvents(referencePiVertex, papiComponent);
+      boolean found = false;
+      int positionConfig = -1;
+      for (EList<PapiEvent> storedConfig : this.configsAdded) {
+        if (EcoreUtil.equals(storedConfig, oneConfig)) {
+          found = true;
+          positionConfig = this.configsAdded.indexOf(storedConfig);
+        }
+      }
+      if (!found) {
+        this.configsAdded.add(oneConfig);
+        positionConfig = this.configsAdded.indexOf(oneConfig);
+      }
+      if (configIds.equals("")) {
+        configIds = Integer.toString(positionConfig);
+      } else {
+        configIds = configIds.concat(",").concat(Integer.toString(positionConfig));
+      }
+    }
+    ConstantString papifyConfigNumber = CodegenFactory.eINSTANCE.createConstantString();
+    papifyConfigNumber.setName("PAPIFY_configs_".concat(dagVertex.getName()));
+    papifyConfigNumber.setValue(configIds);
+    papifyConfigNumber.setComment("PAPIFY actor configs");
+
+    // Add the function parameters
+    func.addParameter((Variable) papifyActionS, PortDirection.OUTPUT);
+    func.addParameter((Variable) componentName, PortDirection.INPUT);
+    func.addParameter((Variable) actorName, PortDirection.INPUT);
+    func.addParameter((Variable) codeSetSize, PortDirection.INPUT);
+    func.addParameter((Variable) eventSetNames, PortDirection.INPUT);
+    func.addParameter((Variable) papifyConfigNumber, PortDirection.INPUT);
+    func.addParameter((Variable) numConfigs, PortDirection.INPUT);
+
     // Add the function comment
     func.setActorName("Papify --> configure papification of ".concat(dagVertex.getName()));
 
@@ -2280,33 +2148,25 @@ public class CodegenModelGenerator {
   }
 
   /**
-   * This method creates the event start function call for PAPI instrumentation
+   * This method creates the event start function call for PAPIFY instrumentation
    *
    * @param dagVertex
    *          the {@link DAGVertex} corresponding to the {@link FunctionCall}.
-   * @return The {@link FunctionCall} corresponding to the {@link DAGVertex actor} firing.
+   * @param papifyPEId
+   *          the {@link Constant} identifying the PE that is being configured.
+   * @param papifyActionS
+   *          the {@link PapifyAction} identifying the actor that is being configured.
+   * @return The {@link PapifyFunctionCall} corresponding to the {@link DAGVertex actor} firing.
    */
-  protected PapifyFunctionCall generatePapifyStartFunctionCall(final DAGVertex dagVertex, final CoreBlock operatorBlock,
-      final Constant papifyPEId, final PapifyAction papifyActionS) {
+  protected PapifyFunctionCall generatePapifyStartFunctionCall(final DAGVertex dagVertex, final Constant papifyPEId,
+      final PapifyAction papifyActionS) {
     // Create the corresponding FunctionCall
     final PapifyFunctionCall func = CodegenFactory.eINSTANCE.createPapifyFunctionCall();
     func.setName("event_start");
-    if (this.papifyActive) {
-      // Add the function parameters
-      func.addParameter((Variable) papifyActionS, PortDirection.INPUT);
-      func.addParameter(papifyPEId, PortDirection.INPUT);
+    // Add the function parameters
+    func.addParameter((Variable) papifyActionS, PortDirection.INPUT);
+    func.addParameter(papifyPEId, PortDirection.INPUT);
 
-    } else {
-      // Create the variable associated to the PE id
-      Constant papifyPEIdTask = CodegenFactory.eINSTANCE.createConstant();
-      papifyPEIdTask.setName(PAPIFY_PE_ID_CONSTANT_NAME);
-      papifyPEIdTask.setValue(this.papifiedPEs.indexOf(operatorBlock.getName()));
-      // Add the function parameters
-      Map<String, PapifyAction> mapPapifyActionName = dagVertex.getPropertyBean()
-          .getValue(PapifyConstants.PAPIFY_ACTION_NAME.getLiteral());
-      func.addParameter((Variable) mapPapifyActionName.get(dagVertex.getInfo()), PortDirection.INPUT);
-      func.addParameter(papifyPEIdTask, PortDirection.INPUT);
-    }
     // Add the function actor name
     func.setActorName(dagVertex.getName());
 
@@ -2316,32 +2176,23 @@ public class CodegenModelGenerator {
   }
 
   /**
-   * This method creates the event start Papify timing function call for PAPI instrumentation
+   * This method creates the event start Papify timing function call for PAPIFY instrumentation
    *
    * @param dagVertex
    *          the {@link DAGVertex} corresponding to the {@link FunctionCall}.
-   * @return The {@link FunctionCall} corresponding to the {@link DAGVertex actor} firing.
+   * @param papifyPEId
+   *          the {@link Constant} identifying the PE that is being configured.
+   * @param papifyActionS
+   *          the {@link PapifyAction} identifying the actor that is being configured.
+   * @return The {@link PapifyFunctionCall} corresponding to the {@link DAGVertex actor} firing.
    */
   protected PapifyFunctionCall generatePapifyStartTimingFunctionCall(final DAGVertex dagVertex,
-      final CoreBlock operatorBlock, final Constant papifyPEId, final PapifyAction papifyActionS) {
+      final Constant papifyPEId, final PapifyAction papifyActionS) {
     // Create the corresponding FunctionCall
     final PapifyFunctionCall func = CodegenFactory.eINSTANCE.createPapifyFunctionCall();
     func.setName("event_start_papify_timing");
-    if (this.papifyActive) {
-      func.addParameter((Variable) papifyActionS, PortDirection.INPUT);
-      func.addParameter(papifyPEId, PortDirection.INPUT);
-
-    } else {
-      // Create the variable associated to the PE id
-      Constant papifyPEIdTask = CodegenFactory.eINSTANCE.createConstant();
-      papifyPEIdTask.setName(PAPIFY_PE_ID_CONSTANT_NAME);
-      papifyPEIdTask.setValue(this.papifiedPEs.indexOf(operatorBlock.getName()));
-      // Add the function parameters
-      Map<String, PapifyAction> mapPapifyActionName = dagVertex.getPropertyBean()
-          .getValue(PapifyConstants.PAPIFY_ACTION_NAME.getLiteral());
-      func.addParameter((Variable) mapPapifyActionName.get(dagVertex.getInfo()), PortDirection.INPUT);
-      func.addParameter(papifyPEIdTask, PortDirection.INPUT);
-    }
+    func.addParameter((Variable) papifyActionS, PortDirection.INPUT);
+    func.addParameter(papifyPEId, PortDirection.INPUT);
     // Add the function actor name
     func.setActorName(dagVertex.getName());
 
@@ -2351,33 +2202,25 @@ public class CodegenModelGenerator {
   }
 
   /**
-   * This method creates the event stop function call for PAPI instrumentation
+   * This method creates the event stop function call for PAPIFY instrumentation
    *
    * @param dagVertex
    *          the {@link DAGVertex} corresponding to the {@link FunctionCall}.
-   * @return The {@link FunctionCall} corresponding to the {@link DAGVertex actor} firing.
+   * @param papifyPEId
+   *          the {@link Constant} identifying the PE that is being configured.
+   * @param papifyActionS
+   *          the {@link PapifyAction} identifying the actor that is being configured.
+   * @return The {@link PapifyFunctionCall} corresponding to the {@link DAGVertex actor} firing.
    */
-  protected PapifyFunctionCall generatePapifyStopFunctionCall(final DAGVertex dagVertex, final CoreBlock operatorBlock,
-      final Constant papifyPEId, final PapifyAction papifyActionS) {
+  protected PapifyFunctionCall generatePapifyStopFunctionCall(final DAGVertex dagVertex, final Constant papifyPEId,
+      final PapifyAction papifyActionS) {
     // Create the corresponding FunctionCall
     final PapifyFunctionCall func = CodegenFactory.eINSTANCE.createPapifyFunctionCall();
     func.setName("event_stop");
-    if (this.papifyActive) {
-      // Add the function parameters
-      func.addParameter((Variable) papifyActionS, PortDirection.INPUT);
-      func.addParameter(papifyPEId, PortDirection.INPUT);
+    // Add the function parameters
+    func.addParameter((Variable) papifyActionS, PortDirection.INPUT);
+    func.addParameter(papifyPEId, PortDirection.INPUT);
 
-    } else {
-      // Create the variable associated to the PE id
-      Constant papifyPEIdTask = CodegenFactory.eINSTANCE.createConstant();
-      papifyPEIdTask.setName(PAPIFY_PE_ID_CONSTANT_NAME);
-      papifyPEIdTask.setValue(this.papifiedPEs.indexOf(operatorBlock.getName()));
-      // Add the function parameters
-      Map<String, PapifyAction> mapPapifyActionName = dagVertex.getPropertyBean()
-          .getValue(PapifyConstants.PAPIFY_ACTION_NAME.getLiteral());
-      func.addParameter((Variable) mapPapifyActionName.get(dagVertex.getInfo()), PortDirection.INPUT);
-      func.addParameter(papifyPEIdTask, PortDirection.INPUT);
-    }
     // Add the function actor name
     func.setActorName(dagVertex.getName());
 
@@ -2387,33 +2230,25 @@ public class CodegenModelGenerator {
   }
 
   /**
-   * This method creates the event stop Papify timing function call for PAPI instrumentation
+   * This method creates the event stop Papify timing function call for PAPIFY instrumentation
    *
    * @param dagVertex
    *          the {@link DAGVertex} corresponding to the {@link FunctionCall}.
-   * @return The {@link FunctionCall} corresponding to the {@link DAGVertex actor} firing.
+   * @param papifyPEId
+   *          the {@link Constant} identifying the PE that is being configured.
+   * @param papifyActionS
+   *          the {@link PapifyAction} identifying the actor that is being configured.
+   * @return The {@link PapifyFunctionCall} corresponding to the {@link DAGVertex actor} firing.
    */
   protected PapifyFunctionCall generatePapifyStopTimingFunctionCall(final DAGVertex dagVertex,
-      final CoreBlock operatorBlock, final Constant papifyPEId, final PapifyAction papifyActionS) {
+      final Constant papifyPEId, final PapifyAction papifyActionS) {
     // Create the corresponding FunctionCall
     final PapifyFunctionCall func = CodegenFactory.eINSTANCE.createPapifyFunctionCall();
     func.setName("event_stop_papify_timing");
-    if (this.papifyActive) {
-      // Add the function parameters
-      func.addParameter((Variable) papifyActionS, PortDirection.INPUT);
-      func.addParameter(papifyPEId, PortDirection.INPUT);
+    // Add the function parameters
+    func.addParameter((Variable) papifyActionS, PortDirection.INPUT);
+    func.addParameter(papifyPEId, PortDirection.INPUT);
 
-    } else {
-      // Create the variable associated to the PE id
-      Constant papifyPEIdTask = CodegenFactory.eINSTANCE.createConstant();
-      papifyPEIdTask.setName(PAPIFY_PE_ID_CONSTANT_NAME);
-      papifyPEIdTask.setValue(this.papifiedPEs.indexOf(operatorBlock.getName()));
-      // Add the function parameters
-      Map<String, PapifyAction> mapPapifyActionName = dagVertex.getPropertyBean()
-          .getValue(PapifyConstants.PAPIFY_ACTION_NAME.getLiteral());
-      func.addParameter((Variable) mapPapifyActionName.get(dagVertex.getInfo()), PortDirection.INPUT);
-      func.addParameter(papifyPEIdTask, PortDirection.INPUT);
-    }
     // Add the function actor name
     func.setActorName(dagVertex.getName());
 
@@ -2423,33 +2258,25 @@ public class CodegenModelGenerator {
   }
 
   /**
-   * This method creates the event write Papify function call for PAPI instrumentation
+   * This method creates the event write Papify function call for PAPIFY instrumentation
    *
    * @param dagVertex
    *          the {@link DAGVertex} corresponding to the {@link FunctionCall}.
-   * @return The {@link FunctionCall} corresponding to the {@link DAGVertex actor} firing.
+   * @param papifyPEId
+   *          the {@link Constant} identifying the PE that is being configured.
+   * @param papifyActionS
+   *          the {@link PapifyAction} identifying the actor that is being configured.
+   * @return The {@link PapifyFunctionCall} corresponding to the {@link DAGVertex actor} firing.
    */
-  protected PapifyFunctionCall generatePapifyWritingFunctionCall(final DAGVertex dagVertex,
-      final CoreBlock operatorBlock, final Constant papifyPEId, final PapifyAction papifyActionS) {
+  protected PapifyFunctionCall generatePapifyWritingFunctionCall(final DAGVertex dagVertex, final Constant papifyPEId,
+      final PapifyAction papifyActionS) {
     // Create the corresponding FunctionCall
     final PapifyFunctionCall func = CodegenFactory.eINSTANCE.createPapifyFunctionCall();
     func.setName("event_write_file");
-    if (this.papifyActive) {
-      // Add the function parameters
-      func.addParameter((Variable) papifyActionS, PortDirection.INPUT);
-      func.addParameter(papifyPEId, PortDirection.INPUT);
+    // Add the function parameters
+    func.addParameter((Variable) papifyActionS, PortDirection.INPUT);
+    func.addParameter(papifyPEId, PortDirection.INPUT);
 
-    } else {
-      // Create the variable associated to the PE id
-      Constant papifyPEIdTask = CodegenFactory.eINSTANCE.createConstant();
-      papifyPEIdTask.setName(PAPIFY_PE_ID_CONSTANT_NAME);
-      papifyPEIdTask.setValue(this.papifiedPEs.indexOf(operatorBlock.getName()));
-      // Add the function parameters
-      Map<String, PapifyAction> mapPapifyActionName = dagVertex.getPropertyBean()
-          .getValue(PapifyConstants.PAPIFY_ACTION_NAME.getLiteral());
-      func.addParameter((Variable) mapPapifyActionName.get(dagVertex.getInfo()), PortDirection.INPUT);
-      func.addParameter(papifyPEIdTask, PortDirection.INPUT);
-    }
     // Add the function actor name
     func.setActorName(dagVertex.getName());
 

@@ -8,6 +8,9 @@ PREESM Changelog
 
 ### Changes
 * Make sure PiSDF flatten and SRDAG transformations keep track of the input PiGraph;
+* Fix Papify component add/remove;
+* Fix Papify heterogeneity (different monitoring configs depending on the PE type executing the actor) for PREESM and SPiDER;
+* Update comments in PAPIFY UI;
 
 ### Bug fix
 
