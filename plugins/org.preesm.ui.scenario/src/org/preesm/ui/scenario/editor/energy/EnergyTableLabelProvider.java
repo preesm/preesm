@@ -40,21 +40,15 @@ package org.preesm.ui.scenario.editor.energy;
 import java.net.URL;
 import java.util.Collections;
 import java.util.List;
-import org.eclipse.jface.dialogs.IInputValidator;
-import org.eclipse.jface.dialogs.InputDialog;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.jface.viewers.BaseLabelProvider;
-import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.ITableLabelProvider;
 import org.eclipse.jface.viewers.TableViewer;
-import org.eclipse.jface.window.Window;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Combo;
-import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.IPropertyListener;
-import org.eclipse.ui.PlatformUI;
 import org.preesm.commons.files.PreesmResourcesHelper;
 import org.preesm.model.pisdf.AbstractActor;
 import org.preesm.model.pisdf.expression.ExpressionEvaluator;
@@ -62,7 +56,6 @@ import org.preesm.model.scenario.Scenario;
 import org.preesm.model.slam.Design;
 import org.preesm.model.slam.component.Component;
 import org.preesm.ui.PreesmUIPlugin;
-import org.preesm.ui.scenario.editor.Messages;
 
 /**
  * Displays the labels for tasks timings. These labels are the time of each task
@@ -90,7 +83,7 @@ public class EnergyTableLabelProvider extends BaseLabelProvider implements ITabl
   private IPropertyListener propertyListener = null;
 
   /**
-   * Instantiates a new timings table label provider.
+   * Instantiates a new actor energy label provider.
    *
    * @param scenario
    *          the scenario
@@ -124,9 +117,9 @@ public class EnergyTableLabelProvider extends BaseLabelProvider implements ITabl
     if ((element instanceof AbstractActor) && (this.currentOpDefId != null)) {
       final AbstractActor vertex = (AbstractActor) element;
 
-      final String timing = this.scenario.getTimings().getTimingOrDefault(vertex, this.currentOpDefId);
+      final String energy = this.scenario.getEnergyConfig().getEnergyOrDefault(vertex, this.currentOpDefId);
       if (columnIndex == 3) {
-        final boolean canEvaluate = ExpressionEvaluator.canEvaluate(vertex, timing);
+        final boolean canEvaluate = ExpressionEvaluator.canEvaluate(vertex, energy);
         if (canEvaluate) {
           return this.imageOk;
         } else {
@@ -142,28 +135,28 @@ public class EnergyTableLabelProvider extends BaseLabelProvider implements ITabl
     if ((element instanceof AbstractActor) && (this.currentOpDefId != null)) {
       final AbstractActor vertex = (AbstractActor) element;
 
-      final String timing = this.scenario.getTimings().getTimingOrDefault(vertex, this.currentOpDefId);
+      final String energy = this.scenario.getEnergyConfig().getEnergyOrDefault(vertex, this.currentOpDefId);
 
       switch (columnIndex) {
         case 0:
           return vertex.getVertexPath();
         case 1: // Input Parameters
-          if (timing == null || vertex.getInputParameters().isEmpty()) {
+          if (energy == null || vertex.getInputParameters().isEmpty()) {
             return " - ";
           } else {
             return ExpressionEvaluator.lookupParameterValues(vertex, Collections.emptyMap()).keySet().toString();
           }
         case 2: // Expression
-          if (timing != null) {
-            return timing;
+          if (energy != null) {
+            return energy;
           }
           break;
         case 3: // Evaluation Status
           return null;
         case 4: // Value
-          if (timing != null && ExpressionEvaluator.canEvaluate(vertex, timing)) {
+          if (energy != null && ExpressionEvaluator.canEvaluate(vertex, energy)) {
             return Long
-                .toString(ExpressionEvaluator.evaluate(vertex, timing, this.scenario.getParameterValues().map()));
+                .toString(ExpressionEvaluator.evaluate(vertex, energy, this.scenario.getParameterValues().map()));
           } else {
             return "";
           }
@@ -194,34 +187,4 @@ public class EnergyTableLabelProvider extends BaseLabelProvider implements ITabl
     // nothing
   }
 
-  /**
-   * Handle double click.
-   *
-   * @param selection
-   *          the selection
-   */
-  public void handleDoubleClick(final IStructuredSelection selection) {
-    final IInputValidator validator = newText -> null;
-
-    final Object firstElement = selection.getFirstElement();
-    if (firstElement instanceof AbstractActor) {
-      final AbstractActor abstractActor = (AbstractActor) firstElement;
-
-      if (this.currentOpDefId != null) {
-        final String title = Messages.getString("Timings.dialog.title");
-        final String message = Messages.getString("Timings.dialog.message") + abstractActor.getVertexPath();
-        final String init = this.scenario.getTimings().getTimingOrDefault(abstractActor, this.currentOpDefId);
-
-        final InputDialog dialog = new InputDialog(PlatformUI.getWorkbench().getActiveWorkbenchWindow().getShell(),
-            title, message, init, validator);
-        if (dialog.open() == Window.OK) {
-          final String value = dialog.getValue();
-
-          this.scenario.getTimings().setTiming(abstractActor, this.currentOpDefId, value);
-          this.propertyListener.propertyChanged(this, IEditorPart.PROP_DIRTY);
-          this.tableViewer.refresh();
-        }
-      }
-    }
-  }
 }

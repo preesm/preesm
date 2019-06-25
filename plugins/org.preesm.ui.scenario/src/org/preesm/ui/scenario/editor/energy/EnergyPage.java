@@ -117,8 +117,6 @@ public class EnergyPage extends ScenarioPage {
   private static final String[] PISDF_COLUMN_NAMES = { "Actors", "Input Parameters", "Expression", "Evaluation",
       "Value" };
 
-  private static final int[] PISDF_COLUMN_SIZES = { 200, 200, 200, 50, 50 };
-
   /**
    * Instantiates a new energy page.
    *
@@ -337,7 +335,6 @@ public class EnergyPage extends ScenarioPage {
     final GridData gd = new GridData(GridData.FILL_HORIZONTAL | GridData.VERTICAL_ALIGN_FILL);
     final Integer entryNumber = scenario.getEnergyConfig().getPlatformPower().entrySet().size();
     gd.heightHint = Math.max(50, entryNumber * 25 + 30);
-    System.out.println(gd.heightHint);
     gd.widthHint = 400;
     gd.grabExcessVerticalSpace = true;
     tablecps.setLayoutData(gd);
@@ -364,7 +361,7 @@ public class EnergyPage extends ScenarioPage {
     final FormToolkit toolkit = managedForm.getToolkit();
 
     final Combo coreCombo = addCoreSelector(container, toolkit);
-    addTimingsTable(container, toolkit, coreCombo);
+    addActorEnergyTable(container, toolkit, coreCombo);
   }
 
   /**
@@ -416,7 +413,7 @@ public class EnergyPage extends ScenarioPage {
    * @param coreCombo
    *          the core combo
    */
-  private void addTimingsTable(final Composite parent, final FormToolkit toolkit, final Combo coreCombo) {
+  private void addActorEnergyTable(final Composite parent, final FormToolkit toolkit, final Combo coreCombo) {
 
     final Composite tablecps = toolkit.createComposite(parent);
     tablecps.setVisible(true);
@@ -443,7 +440,6 @@ public class EnergyPage extends ScenarioPage {
     for (int i = 0; i < columnNames.length; i++) {
       final TableColumn column = new TableColumn(table, SWT.NONE, i);
       column.setText(columnNames[i]);
-      column.setWidth(PISDF_COLUMN_SIZES[i]);
       columns.add(column);
     }
 
@@ -463,11 +459,11 @@ public class EnergyPage extends ScenarioPage {
           final String componentType = coreCombo.getText();
           final Component component = EnergyPage.this.scenario.getDesign().getComponent(componentType);
 
-          final String oldValue = EnergyPage.this.scenario.getTimings().getTimingOrDefault(actor, component);
+          final String oldValue = EnergyPage.this.scenario.getEnergyConfig().getEnergyOrDefault(actor, component);
           final String newValue = (String) value;
 
           if (!oldValue.equals(newValue)) {
-            EnergyPage.this.scenario.getTimings().setTiming(actor, component, newValue);
+            EnergyPage.this.scenario.getEnergyConfig().setActorPeEnergy(actor, component, newValue);
             firePropertyChange(IEditorPart.PROP_DIRTY);
             tableViewer.refresh(actor, false, false);
           }
@@ -480,7 +476,7 @@ public class EnergyPage extends ScenarioPage {
           final AbstractActor actor = (AbstractActor) element;
           final String componentType = coreCombo.getText();
           final Component component = EnergyPage.this.scenario.getDesign().getComponent(componentType);
-          return EnergyPage.this.scenario.getTimings().getTimingOrDefault(actor, component);
+          return EnergyPage.this.scenario.getEnergyConfig().getEnergyOrDefault(actor, component);
         }
         return "";
       }

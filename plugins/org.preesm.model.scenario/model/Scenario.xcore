@@ -83,6 +83,7 @@ enum ScenarioConstants {
 	DEFAULT_MEMCOPY_TIME_PER_UNIT = 1
 	DEFAULT_DATA_TYPE_SIZE = 1
 	DEFAULT_POWER_PE = 10
+	DEFAULT_ENERGY_TASK = 1
 }
 
 class Scenario {
@@ -552,12 +553,31 @@ class PapiCpuID {
 	String excelFileURL // excel or csv local file
 	refers Scenario scenario opposite energyConfig
  	contains PerformanceObjective performanceObjective
- 	//TODO: fill this with real values in the UI and parse/write
  	contains PEPower[] platformPower
  	//TODO: fill this with real values in the UI and parse/write
  	contains PeActorsEnergy[] algorithmEnergy
  	//TODO: fill this with real values in the UI and parse/write
  	contains PeCommsEnergy[] commsEnergy
+	op String getEnergyOrDefault(AbstractActor actor, Component component) {
+		if (this.algorithmEnergy.containsKey(component)) {
+			val EMap<AbstractActor, String> map = algorithmEnergy.get(component);
+			if (map.containsKey(actor)) {
+				return map.get(actor);
+			}
+		} else {
+			val AbstractActor source = PreesmCopyTracker.getSource(actor);
+			if (source !== actor) {
+				return getEnergyOrDefault(source, component);
+			}
+		}
+		return Double.toString(ScenarioConstants.DEFAULT_ENERGY_TASK.value);
+	}
+	op void setActorPeEnergy(AbstractActor actor, Component component, String energy) {
+		if (!algorithmEnergy.containsKey(component)) {
+			algorithmEnergy.put(component, ECollections.asEMap(newLinkedHashMap))			
+		}		
+		algorithmEnergy.get(component).put(actor, energy)
+	}
  }
  class PerformanceObjective{
  	double objectiveEPS
@@ -573,7 +593,7 @@ class PeActorsEnergy wraps java.util.Map$Entry {
 }
 class ActorEnergy wraps java.util.Map$Entry {
 	refers AbstractActor key 	// The actor
-	Double value				// The energy value
+	String value				// The expression of the energy
 }
 class PeCommsEnergy wraps java.util.Map$Entry{
 	refers Component key		// The source component type
