@@ -1,8 +1,8 @@
 /**
- * Copyright or © or Copr. IETR/INSA - Rennes (2009 - 2018) :
+ * Copyright or © or Copr. IETR/INSA - Rennes (2009 - 2019) :
  *
- * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017 - 2018)
- * Maxime Pelcat <maxime.pelcat@insa-rennes.fr> (2009 - 2014)
+ * Antoine Morvan [antoine.morvan@insa-rennes.fr] (2017 - 2019)
+ * Maxime Pelcat [maxime.pelcat@insa-rennes.fr] (2009 - 2014)
  *
  * This software is a computer program whose purpose is to help prototyping
  * parallel applications using dataflow formalism.
