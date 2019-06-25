@@ -552,7 +552,7 @@ class PapiCpuID {
 	refers Scenario scenario opposite energyConfig
  	contains PerformanceObjective performanceObjective
  	//TODO: fill this with real values in the UI and parse/write
- 	contains PlatformPower platformPower
+ 	contains PEPower[] platformPower
  	//TODO: fill this with real values in the UI and parse/write
  	contains PeActorsEnergy[] algorithmEnergy
  	//TODO: fill this with real values in the UI and parse/write
@@ -562,16 +562,12 @@ class PapiCpuID {
  	double objectiveEPS
  	double toleranceEPS
  }
-class PlatformPower{
-	double basePower
-	contains PEPower[] pePower
-}
 class PEPower wraps java.util.Map$Entry {
-	String key 		// The component type
+	refers Component key 		// The component type and the "base" power
 	Double value	// The power value
 }
 class PeActorsEnergy wraps java.util.Map$Entry {
-	String key 						// The component type
+	refers Component key 			// The component type
 	contains ActorEnergy[] value	// The actor energy values for this type of PE
 }
 class ActorEnergy wraps java.util.Map$Entry {
@@ -579,11 +575,11 @@ class ActorEnergy wraps java.util.Map$Entry {
 	Double value				// The energy value
 }
 class PeCommsEnergy wraps java.util.Map$Entry{
-	String key					// The source component type
+	refers Component key		// The source component type
 	contains NodeEnergy[] value // The energy value for each destination
 }
 class NodeEnergy wraps java.util.Map$Entry {
-	String key 		// The destination component type
-	Double value	// The energy value
+	refers Component key 		// The destination component type
+	Double value				// The energy value
 }
  
