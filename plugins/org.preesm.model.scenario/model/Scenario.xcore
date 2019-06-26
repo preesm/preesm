@@ -595,9 +595,7 @@ class PapiCpuID {
 		return value		
 	}
 	op void setCommEnergy(String source, String destination, Double energy) {
-		if (!commsEnergy.containsKey(source)) {
-			commsEnergy.put(source, ECollections.asEMap(newLinkedHashMap))			
-		}		
+		createNewCommNodeIfNeeded(source)		
 		commsEnergy.get(source).put(destination, energy)
 	}
  }
