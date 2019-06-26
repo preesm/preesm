@@ -854,6 +854,8 @@ public class ScenarioParser {
           parsePerformanceObjective(elt);
         } else if (type.equals("pePower")) {
           parsePlatformPower(elt);
+        } else if (type.equals("peActorEnergy")) {
+          parsePeActorEnergyr(elt);
         }
       }
 
@@ -887,9 +889,9 @@ public class ScenarioParser {
   /**
    * Retrieves a PlatformPower.
    *
-   * @param platformPowerElt
-   *          the performanceObjective group elt
-   * @return the performanceObjective
+   * @param PlatformPower
+   *          the PlatformPower group elt
+   * @return the PlatformPower
    */
   private void parsePlatformPower(final Element platformPowerElt) {
 
@@ -900,6 +902,53 @@ public class ScenarioParser {
       String pePower = nodePePower.getNodeValue();
       final double pePowerValue = Double.parseDouble(pePower);
       this.scenario.getEnergyConfig().getPlatformPower().put(opName, pePowerValue);
+    }
+  }
+
+  /**
+   * Retrieves a peActorEnergy.
+   *
+   * @param peActorEnergy
+   *          the peActorEnergy group elt
+   * @return the peActorEnergy
+   */
+  private void parsePeActorEnergyr(final Element peActorEnergy) {
+
+    Node nodeOpName = peActorEnergy.getAttributeNode("opName");
+    String opName = nodeOpName.getNodeValue();
+    Node nodeChild = peActorEnergy.getFirstChild();
+
+    while (nodeChild != null) {
+
+      if (nodeChild instanceof Element) {
+        final Element elt = (Element) nodeChild;
+        final String type = elt.getTagName();
+        if (type.equals("actorEnergy")) {
+          parseActorEnergy(elt, opName);
+        }
+      }
+      nodeChild = nodeChild.getNextSibling();
+    }
+  }
+
+  /**
+   * Retrieves a actorEnergy.
+   *
+   * @param actorEnergyElt
+   *          the actorEnergy group elt
+   * @return the actorEnergy
+   */
+  private void parseActorEnergy(final Element actorEnergyElt, final String opName) {
+
+    Node nodeEnergyrValue = actorEnergyElt.getAttributeNode("energyValue");
+    Node nodeVertexPath = actorEnergyElt.getAttributeNode("vertexPath");
+    if (nodeEnergyrValue != null && nodeVertexPath != null) {
+      String energyValue = nodeEnergyrValue.getNodeValue();
+      String vertexPath = nodeVertexPath.getNodeValue();
+      final double actorEnergyValue = Double.parseDouble(energyValue);
+      final AbstractActor actor = getActorFromPath(vertexPath);
+      final Component component = this.scenario.getDesign().getComponent(opName);
+      this.scenario.getEnergyConfig().setActorPeEnergy(actor, component, actorEnergyValue);
     }
   }
 }

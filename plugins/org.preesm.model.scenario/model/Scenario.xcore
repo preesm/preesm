@@ -554,7 +554,6 @@ class PapiCpuID {
 	refers Scenario scenario opposite energyConfig
  	contains PerformanceObjective performanceObjective
  	contains PEPower[] platformPower
- 	//TODO: fill this with real values in the UI and parse/write
  	contains PeActorsEnergy[] algorithmEnergy
  	//TODO: fill this with real values in the UI and parse/write
  	contains PeCommsEnergy[] commsEnergy

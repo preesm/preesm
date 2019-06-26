@@ -545,6 +545,9 @@ public class ScenarioWriter {
     for (final Entry<String, Double> opDef : manager.getPlatformPower()) {
       writePlatformPower(energyConfigs, opDef.getKey(), opDef.getValue());
     }
+    for (final Entry<Component, EMap<AbstractActor, Double>> peActorEnergy : manager.getAlgorithmEnergy()) {
+      writePeActorEnergy(energyConfigs, peActorEnergy.getKey(), peActorEnergy.getValue());
+    }
   }
 
   /**
@@ -579,5 +582,46 @@ public class ScenarioWriter {
 
     pePowerElt.setAttribute("opName", opDefName);
     pePowerElt.setAttribute("pePower", Double.toString(pePower));
+  }
+
+  /**
+   * Adds the peActorEnergy.
+   *
+   * @param parent
+   *          the parent
+   * @param value
+   *          the value
+   */
+  private void writePeActorEnergy(final Element parent, final Component component,
+      final EMap<AbstractActor, Double> pePower) {
+
+    final Element peActorEnergy = this.dom.createElement("peActorEnergy");
+    parent.appendChild(peActorEnergy);
+
+    peActorEnergy.setAttribute("opName", component.getVlnv().getName());
+    for (final Entry<AbstractActor, Double> actorEnergies : pePower.entrySet()) {
+      writeActorEnergy(peActorEnergy, actorEnergies.getKey(), actorEnergies.getValue());
+    }
+  }
+
+  /**
+   * Adds the peActorEnergy.
+   *
+   * @param parent
+   *          the parent
+   * @param actor
+   *          the actor
+   * @param energyValue
+   *          the energy value
+   * @param value
+   *          the value
+   */
+  private void writeActorEnergy(final Element parent, final AbstractActor actor, Double energyValue) {
+
+    final Element actorEnergy = this.dom.createElement("actorEnergy");
+    parent.appendChild(actorEnergy);
+
+    actorEnergy.setAttribute("vertexPath", actor.getVertexPath());
+    actorEnergy.setAttribute("energyValue", energyValue.toString());
   }
 }
