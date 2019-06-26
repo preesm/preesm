@@ -548,6 +548,9 @@ public class ScenarioWriter {
     for (final Entry<Component, EMap<AbstractActor, Double>> peActorEnergy : manager.getAlgorithmEnergy()) {
       writePeActorEnergy(energyConfigs, peActorEnergy.getKey(), peActorEnergy.getValue());
     }
+    for (final Entry<String, EMap<String, Double>> peCommsEnergy : manager.getCommsEnergy()) {
+      writePeCommsEnergy(energyConfigs, peCommsEnergy.getKey(), peCommsEnergy.getValue());
+    }
   }
 
   /**
@@ -623,5 +626,46 @@ public class ScenarioWriter {
 
     actorEnergy.setAttribute("vertexPath", actor.getVertexPath());
     actorEnergy.setAttribute("energyValue", energyValue.toString());
+  }
+
+  /**
+   * Adds the peCommsEnergy.
+   *
+   * @param parent
+   *          the parent
+   * @param value
+   *          the value
+   */
+  private void writePeCommsEnergy(final Element parent, final String sourceComm,
+      final EMap<String, Double> destinationNodes) {
+
+    final Element peTypeCommsEnergy = this.dom.createElement("peTypeCommsEnergy");
+    parent.appendChild(peTypeCommsEnergy);
+
+    peTypeCommsEnergy.setAttribute("sourcePeType", sourceComm);
+    for (final Entry<String, Double> destinationEnergy : destinationNodes) {
+      writeCommNodeEnergy(peTypeCommsEnergy, destinationEnergy.getKey(), destinationEnergy.getValue());
+    }
+  }
+
+  /**
+   * Adds the peActorEnergy.
+   *
+   * @param parent
+   *          the parent
+   * @param actor
+   *          the actor
+   * @param energyValue
+   *          the energy value
+   * @param value
+   *          the value
+   */
+  private void writeCommNodeEnergy(final Element parent, final String destinationPeType, Double energyValue) {
+
+    final Element destinationEnergy = this.dom.createElement("destinationType");
+    parent.appendChild(destinationEnergy);
+
+    destinationEnergy.setAttribute("destinationPeType", destinationPeType);
+    destinationEnergy.setAttribute("energyValue", energyValue.toString());
   }
 }

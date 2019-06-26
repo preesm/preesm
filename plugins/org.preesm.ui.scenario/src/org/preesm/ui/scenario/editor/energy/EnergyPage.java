@@ -282,14 +282,14 @@ public class EnergyPage extends ScenarioPage {
           final PeCommsEnergyImpl commsEnergyPe = (PeCommsEnergyImpl) ti.getData();
           final String newValue = (String) value;
           boolean dirty = false;
+          double parseDouble = 0.0;
           if (!property.equals(Messages.getString("Energy.commsHeader"))) {
             final double oldpowerPE = EnergyPage.this.scenario.getEnergyConfig()
                 .getCommValueOrDefault(commsEnergyPe.getKey(), property);
             try {
-              final double parseDouble = Double.parseDouble(newValue);
+              parseDouble = Double.parseDouble(newValue);
               if (oldpowerPE != parseDouble) {
                 dirty = true;
-                commsEnergyPe.getValue().put(property, parseDouble);
               }
             } catch (final NumberFormatException e) {
               ErrorDialog.openError(EnergyPage.this.getEditorSite().getShell(), "Wrong number format",
@@ -299,7 +299,7 @@ public class EnergyPage extends ScenarioPage {
           }
 
           if (dirty) {
-            EnergyPage.this.scenario.getEnergyConfig().getCommsEnergy().add(commsEnergyPe);
+            EnergyPage.this.scenario.getEnergyConfig().setCommEnergy(commsEnergyPe.getKey(), property, parseDouble);
             firePropertyChange(IEditorPart.PROP_DIRTY);
             newTableViewer.refresh();
           }
