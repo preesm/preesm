@@ -556,7 +556,6 @@ class PapiCpuID {
  	contains PerformanceObjective performanceObjective
  	contains PEPower[] platformPower
  	contains PeActorsEnergy[] algorithmEnergy
- 	//TODO: fill this with real values in the UI and parse/write
  	contains PeCommsEnergy[] commsEnergy
 	op Double getEnergyActorOrDefault(AbstractActor actor, Component component) {
 		if (this.algorithmEnergy.containsKey(component)) {
