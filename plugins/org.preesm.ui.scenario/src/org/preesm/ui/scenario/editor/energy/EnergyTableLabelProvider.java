@@ -52,7 +52,7 @@ import org.preesm.model.slam.Design;
 import org.preesm.model.slam.component.Component;
 
 /**
- * Displays the labels for tasks timings. These labels are the time of each task
+ * Displays the labels for tasks energies. These labels are the energy of each task
  *
  * @author mpelcat
  */

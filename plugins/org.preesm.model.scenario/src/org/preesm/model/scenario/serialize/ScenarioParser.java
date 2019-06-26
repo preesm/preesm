@@ -937,6 +937,8 @@ public class ScenarioParser {
    *
    * @param actorEnergyElt
    *          the actorEnergy group elt
+   * @param opName
+   *          the operator name
    * @return the actorEnergy
    */
   private void parseActorEnergy(final Element actorEnergyElt, final String opName) {
@@ -983,6 +985,8 @@ public class ScenarioParser {
    *
    * @param commNodeEnergy
    *          the commNodeEnergy group elt
+   * @param sourcePeType
+   *          the sourcePeType
    * @return the commNodeEnergy
    */
   private void parseCommNodeEnergy(final Element commNodeEnergyElt, final String sourcePeType) {

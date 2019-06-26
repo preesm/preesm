@@ -72,9 +72,6 @@ public class CommsEnergyContentProvider implements IStructuredContentProvider {
         energyConfig.createNewCommNodeIfNeeded(opDefId.getVlnv().getName());
       }
 
-      /**
-       * Retrieving the PE powers in operator definition order
-       */
       final Set<Entry<String, EMap<String, Double>>> entrySet = energyConfig.getCommsEnergy().entrySet();
       this.elementList = new ArrayList<>(entrySet);
 

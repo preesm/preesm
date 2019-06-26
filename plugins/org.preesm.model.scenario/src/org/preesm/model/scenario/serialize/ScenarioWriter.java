@@ -558,8 +558,8 @@ public class ScenarioWriter {
    *
    * @param parent
    *          the parent
-   * @param value
-   *          the value
+   * @param performanceObjective
+   *          the performance objective
    */
   private void writePerformanceObjective(final Element parent, final PerformanceObjective performanceObjective) {
 
@@ -575,8 +575,10 @@ public class ScenarioWriter {
    *
    * @param parent
    *          the parent
-   * @param value
-   *          the value
+   * @param opDefName
+   *          the operator name
+   * @param pePower
+   *          the associated static power
    */
   private void writePlatformPower(final Element parent, final String opDefName, final double pePower) {
 
@@ -592,8 +594,10 @@ public class ScenarioWriter {
    *
    * @param parent
    *          the parent
-   * @param value
-   *          the value
+   * @param component
+   *          the component executing the actors
+   * @param pePower
+   *          the energy associated to each of the actors
    */
   private void writePeActorEnergy(final Element parent, final Component component,
       final EMap<AbstractActor, Double> pePower) {
@@ -616,8 +620,6 @@ public class ScenarioWriter {
    *          the actor
    * @param energyValue
    *          the energy value
-   * @param value
-   *          the value
    */
   private void writeActorEnergy(final Element parent, final AbstractActor actor, Double energyValue) {
 
@@ -633,8 +635,10 @@ public class ScenarioWriter {
    *
    * @param parent
    *          the parent
-   * @param value
-   *          the value
+   * @param sourceComm
+   *          the source of the communication (PE type)
+   * @param destinationNodes
+   *          the list of PE types with a valid energy value
    */
   private void writePeCommsEnergy(final Element parent, final String sourceComm,
       final EMap<String, Double> destinationNodes) {
@@ -657,8 +661,6 @@ public class ScenarioWriter {
    *          the actor
    * @param energyValue
    *          the energy value
-   * @param value
-   *          the value
    */
   private void writeCommNodeEnergy(final Element parent, final String destinationPeType, Double energyValue) {
 
