@@ -36,17 +36,30 @@
  */
 package org.preesm.ui.scenario.editor.energy;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map.Entry;
+import org.eclipse.emf.common.util.EMap;
 import org.eclipse.jface.viewers.BaseLabelProvider;
 import org.eclipse.jface.viewers.ITableLabelProvider;
 import org.eclipse.swt.graphics.Image;
+import org.preesm.model.scenario.Scenario;
 
 /**
- * Displays the labels for static power of the platform.
+ * Displays the labels for energy consumption among platform resources.
  *
  * @author dmadronal
  */
-public class PowerPlatformLabelProvider extends BaseLabelProvider implements ITableLabelProvider {
+public class CommsEnergyLabelProvider extends BaseLabelProvider implements ITableLabelProvider {
+  List<String> operatorTypes = null;
+
+  /** The scenario. */
+  final Scenario scenario;
+
+  public CommsEnergyLabelProvider(List<String> operatorTypes, Scenario scenario) {
+    this.operatorTypes = new ArrayList<>(operatorTypes);
+    this.scenario = scenario;
+  }
 
   @Override
   public Image getColumnImage(final Object element, final int columnIndex) {
@@ -59,12 +72,16 @@ public class PowerPlatformLabelProvider extends BaseLabelProvider implements ITa
 
     if (element instanceof Entry) {
       @SuppressWarnings("unchecked")
-      final Entry<String, Double> power = (Entry<String, Double>) element;
+      final Entry<String, EMap<String, Double>> peEnergyComms = (Entry<String, EMap<String, Double>>) element;
 
       if (columnIndex == 0) {
-        text = power.getKey();
+        text = peEnergyComms.getKey();
       } else if (columnIndex == 1) {
-        text = Double.toString(power.getValue());
+        final String peTypeSource = peEnergyComms.getKey();
+        final String peTypeDestination = this.operatorTypes.get(columnIndex - 1);
+        final double valueEnergy = this.scenario.getEnergyConfig().getCommValueOrDefault(peTypeSource,
+            peTypeDestination);
+        text = Double.toString(valueEnergy);
       }
     }
 

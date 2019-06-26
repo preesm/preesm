@@ -84,6 +84,7 @@ enum ScenarioConstants {
 	DEFAULT_DATA_TYPE_SIZE = 1
 	DEFAULT_POWER_PE = 10
 	DEFAULT_ENERGY_TASK = 1
+	DEFAULT_ENERGY_COMM = 1
 }
 
 class Scenario {
@@ -557,7 +558,7 @@ class PapiCpuID {
  	contains PeActorsEnergy[] algorithmEnergy
  	//TODO: fill this with real values in the UI and parse/write
  	contains PeCommsEnergy[] commsEnergy
-	op Double getEnergyOrDefault(AbstractActor actor, Component component) {
+	op Double getEnergyActorOrDefault(AbstractActor actor, Component component) {
 		if (this.algorithmEnergy.containsKey(component)) {
 			val EMap<AbstractActor, Double> map = algorithmEnergy.get(component)
 			if (map.containsKey(actor)) {
@@ -566,7 +567,7 @@ class PapiCpuID {
 		} else {
 			val AbstractActor source = PreesmCopyTracker.getSource(actor);
 			if (source !== actor) {
-				return getEnergyOrDefault(source, component)
+				return getEnergyActorOrDefault(source, component)
 			}
 		}
 		var double value = ScenarioConstants.DEFAULT_ENERGY_TASK.value
@@ -577,6 +578,22 @@ class PapiCpuID {
 			algorithmEnergy.put(component, ECollections.asEMap(newLinkedHashMap))			
 		}		
 		algorithmEnergy.get(component).put(actor, energy)
+	}
+	op void createNewCommNodeIfNeeded(String source) {
+		if (!commsEnergy.containsKey(source)) {
+			commsEnergy.put(source, ECollections.asEMap(newLinkedHashMap))			
+		}		
+	}
+	op Double getCommValueOrDefault(String source, String destination){
+		if (this.commsEnergy.containsKey(source)) {
+			val EMap<String, Double> map = commsEnergy.get(source)
+			if (map.containsKey(destination)) {
+				return map.get(destination)
+			}
+		}
+		var double value = ScenarioConstants.DEFAULT_ENERGY_COMM.value
+		return value
+		
 	}
  }
  class PerformanceObjective{
@@ -596,11 +613,11 @@ class ActorEnergy wraps java.util.Map$Entry {
 	Double value				// The expression of the energy
 }
 class PeCommsEnergy wraps java.util.Map$Entry{
-	refers Component key		// The source component type
+	String key		// The source component type
 	contains NodeEnergy[] value // The energy value for each destination
 }
 class NodeEnergy wraps java.util.Map$Entry {
-	refers Component key 		// The destination component type
+	String key 		// The destination component type
 	Double value				// The energy value
 }
  

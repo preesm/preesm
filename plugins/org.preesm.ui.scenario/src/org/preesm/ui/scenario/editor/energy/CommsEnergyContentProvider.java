@@ -41,21 +41,21 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map.Entry;
 import java.util.Set;
+import org.eclipse.emf.common.util.EMap;
 import org.eclipse.jface.viewers.IStructuredContentProvider;
 import org.preesm.model.scenario.EnergyConfig;
 import org.preesm.model.scenario.Scenario;
-import org.preesm.model.scenario.ScenarioConstants;
 import org.preesm.model.slam.Design;
 import org.preesm.model.slam.component.Component;
 
 /**
- * Provides the elements contained in the static power of the platform editor.
+ * Provides the elements contained in the energy consumption among platform resources editor.
  *
  * @author dmadronal
  */
-public class PowerPlatformContentProvider implements IStructuredContentProvider {
+public class CommsEnergyContentProvider implements IStructuredContentProvider {
 
-  private List<Entry<String, Double>> elementList = null;
+  private List<Entry<String, EMap<String, Double>>> elementList = null;
 
   @Override
   public Object[] getElements(final Object inputElement) {
@@ -66,25 +66,16 @@ public class PowerPlatformContentProvider implements IStructuredContentProvider 
       final EnergyConfig energyConfig = inputScenario.getEnergyConfig();
 
       /**
-       * The base power goes apart, that's why we cannot use Component as key here
-       */
-      if (!energyConfig.getPlatformPower().containsKey("Base")) {
-        energyConfig.getPlatformPower().put("Base", (double) ScenarioConstants.DEFAULT_POWER_PE.getValue());
-      }
-      /**
-       * PE powers are added for all operator types if non present
+       * Comms energies are added between all operator types if non present
        */
       for (final Component opDefId : design.getOperatorComponents()) {
-        if (!energyConfig.getPlatformPower().containsKey(opDefId.getVlnv().getName())) {
-          energyConfig.getPlatformPower().put(opDefId.getVlnv().getName(),
-              (double) ScenarioConstants.DEFAULT_POWER_PE.getValue());
-        }
+        energyConfig.createNewCommNodeIfNeeded(opDefId.getVlnv().getName());
       }
 
       /**
        * Retrieving the PE powers in operator definition order
        */
-      final Set<Entry<String, Double>> entrySet = energyConfig.getPlatformPower().entrySet();
+      final Set<Entry<String, EMap<String, Double>>> entrySet = energyConfig.getCommsEnergy().entrySet();
       this.elementList = new ArrayList<>(entrySet);
 
       Collections.sort(this.elementList, (o1, o2) -> o1.getKey().compareTo(o2.getKey()));

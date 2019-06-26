@@ -41,6 +41,7 @@ package org.preesm.ui.scenario.editor.energy;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
@@ -86,6 +87,7 @@ import org.preesm.model.pisdf.AbstractActor;
 import org.preesm.model.scenario.PerformanceObjective;
 import org.preesm.model.scenario.Scenario;
 import org.preesm.model.scenario.impl.PEPowerImpl;
+import org.preesm.model.scenario.impl.PeCommsEnergyImpl;
 import org.preesm.model.scenario.serialize.PreesmAlgorithmListContentProvider;
 import org.preesm.model.scenario.serialize.TimingImporter;
 import org.preesm.model.slam.Design;
@@ -222,10 +224,144 @@ public class EnergyPage extends ScenarioPage {
     final GridData gridData = new GridData(GridData.FILL_HORIZONTAL | GridData.VERTICAL_ALIGN_FILL);
     final Composite container = createSection(managedForm, title, desc, 1, gridData);
     final FormToolkit toolkit = managedForm.getToolkit();
+
+    addCommsEnergyTable(container, toolkit);
   }
 
   /**
-   * Adds a table to edit memcopy speeds.
+   * Adds a table to edit platform communication energy consumptions.
+   *
+   * @param parent
+   *          the parent
+   * @param toolkit
+   *          the toolkit
+   */
+  private void addCommsEnergyTable(final Composite parent, final FormToolkit toolkit) {
+
+    final Composite tablecps = toolkit.createComposite(parent);
+    tablecps.setVisible(true);
+
+    final TableViewer newTableViewer = new TableViewer(tablecps,
+        SWT.BORDER | SWT.H_SCROLL | SWT.V_SCROLL | SWT.MULTI | SWT.FULL_SELECTION);
+
+    final Table table = newTableViewer.getTable();
+    table.setLayout(new GridLayout());
+    table.setLayoutData(new GridData(GridData.FILL_HORIZONTAL | GridData.VERTICAL_ALIGN_BEGINNING));
+    table.setHeaderVisible(true);
+    table.setLinesVisible(true);
+
+    // Create columns
+    final List<String> operatorTypes = new ArrayList<>();
+    for (final Component opDefId : this.scenario.getDesign().getOperatorComponents()) {
+      if (!operatorTypes.contains(opDefId.getVlnv().getName())) {
+        operatorTypes.add(opDefId.getVlnv().getName());
+      }
+    }
+    Collections.sort(operatorTypes, (o1, o2) -> o1.compareTo(o2));
+    newTableViewer.setContentProvider(new CommsEnergyContentProvider());
+    newTableViewer.setLabelProvider(new CommsEnergyLabelProvider(operatorTypes, this.scenario));
+
+    String[] columnNames = new String[operatorTypes.size() + 1];
+    final TableColumn[] columns = new TableColumn[operatorTypes.size() + 1];
+    final TableColumn columnBase = new TableColumn(table, SWT.NONE, 0);
+    columnBase.setText(Messages.getString("Energy.commsHeader"));
+    columns[0] = columnBase;
+    columnNames[0] = Messages.getString("Energy.commsHeader");
+    int columnCounter = 1;
+    for (String columnName : operatorTypes) {
+      final TableColumn columni = new TableColumn(table, SWT.NONE, columnCounter);
+      columnNames[columnCounter] = columnName;
+      columni.setText(columnName);
+      columns[columnCounter] = columni;
+      columnCounter = columnCounter + 1;
+    }
+
+    newTableViewer.setCellModifier(new ICellModifier() {
+      @Override
+      public void modify(final Object element, final String property, final Object value) {
+        if (element instanceof TableItem) {
+          final TableItem ti = (TableItem) element;
+          final PeCommsEnergyImpl commsEnergyPe = (PeCommsEnergyImpl) ti.getData();
+          final String newValue = (String) value;
+          boolean dirty = false;
+          if (!property.equals(Messages.getString("Energy.commsHeader"))) {
+            final double oldpowerPE = EnergyPage.this.scenario.getEnergyConfig()
+                .getCommValueOrDefault(commsEnergyPe.getKey(), property);
+            try {
+              final double parseDouble = Double.parseDouble(newValue);
+              if (oldpowerPE != parseDouble) {
+                dirty = true;
+                commsEnergyPe.getValue().put(property, parseDouble);
+              }
+            } catch (final NumberFormatException e) {
+              ErrorDialog.openError(EnergyPage.this.getEditorSite().getShell(), "Wrong number format",
+                  "Power PE values are Double typed.",
+                  new Status(IStatus.ERROR, "org.preesm.ui.scenario", "Could not parse double. " + e.getMessage()));
+            }
+          }
+
+          if (dirty) {
+            EnergyPage.this.scenario.getEnergyConfig().getCommsEnergy().add(commsEnergyPe);
+            firePropertyChange(IEditorPart.PROP_DIRTY);
+            newTableViewer.refresh();
+          }
+        }
+      }
+
+      @Override
+      public Object getValue(final Object element, final String property) {
+        if (element instanceof PeCommsEnergyImpl) {
+          final PeCommsEnergyImpl commsEnergyPe = (PeCommsEnergyImpl) element;
+          if (!property.equals(Messages.getString("Energy.commsHeader"))) {
+            return Double.toString(
+                EnergyPage.this.scenario.getEnergyConfig().getCommValueOrDefault(commsEnergyPe.getKey(), property));
+          }
+        }
+        return "";
+      }
+
+      @Override
+      public boolean canModify(final Object element, final String property) {
+        return !property.contentEquals(Messages.getString("Energy.commsHeader"));
+      }
+    });
+
+    final CellEditor[] editors = new CellEditor[table.getColumnCount()];
+    for (int i = 0; i < table.getColumnCount(); i++) {
+      editors[i] = new TextCellEditor(table);
+    }
+    newTableViewer.setColumnProperties(columnNames);
+    newTableViewer.setCellEditors(editors);
+
+    // Setting the column width
+    tablecps.addControlListener(new ControlAdapter() {
+      @Override
+      public void controlResized(final ControlEvent e) {
+        final Rectangle area = tablecps.getClientArea();
+        final Point size = table.computeSize(SWT.DEFAULT, SWT.DEFAULT);
+        final ScrollBar vBar = table.getVerticalBar();
+        int width = area.width - table.computeTrim(0, 0, 0, 0).width - 2;
+        if (size.y > (area.height + table.getHeaderHeight())) {
+          final Point vBarSize = vBar.getSize();
+          width -= vBarSize.x;
+        }
+        table.setSize(area.width, area.height);
+        columns[0].setWidth((width / 4) - 1);
+        columns[1].setWidth((width - columns[0].getWidth()) / 2);
+      }
+    });
+
+    newTableViewer.setInput(this.scenario);
+    final GridData gd = new GridData(GridData.FILL_HORIZONTAL | GridData.VERTICAL_ALIGN_FILL);
+    final Integer entryNumber = scenario.getEnergyConfig().getPlatformPower().entrySet().size();
+    gd.heightHint = Math.max(50, entryNumber * 25 + 30);
+    gd.widthHint = 400;
+    gd.grabExcessVerticalSpace = true;
+    tablecps.setLayoutData(gd);
+  }
+
+  /**
+   * Adds a table to edit static platform power consumptions.
    *
    * @param parent
    *          the parent
@@ -265,6 +401,7 @@ public class EnergyPage extends ScenarioPage {
           final PEPowerImpl powerPe = (PEPowerImpl) ti.getData();
           final String newValue = (String) value;
           boolean dirty = false;
+          System.out.println("A: " + property);
           if (POWER_PLATFORM_TITLE.equals(property)) {
             final double oldpowerPE = powerPe.getValue();
             try {
@@ -454,7 +591,8 @@ public class EnergyPage extends ScenarioPage {
           if (PISDF_COLUMN_NAMES[1].equals(property)) {
             try {
               final Component component = EnergyPage.this.scenario.getDesign().getComponent(componentType);
-              final double oldValue = EnergyPage.this.scenario.getEnergyConfig().getEnergyOrDefault(actor, component);
+              final double oldValue = EnergyPage.this.scenario.getEnergyConfig().getEnergyActorOrDefault(actor,
+                  component);
               final double parsedNewValue = Double.parseDouble(newValue);
               if (oldValue != parsedNewValue) {
                 dirty = true;
@@ -480,7 +618,7 @@ public class EnergyPage extends ScenarioPage {
           if (PISDF_COLUMN_NAMES[1].equals(property)) {
             final String componentType = coreCombo.getText();
             final Component component = EnergyPage.this.scenario.getDesign().getComponent(componentType);
-            return EnergyPage.this.scenario.getEnergyConfig().getEnergyOrDefault(actor, component).toString();
+            return EnergyPage.this.scenario.getEnergyConfig().getEnergyActorOrDefault(actor, component).toString();
           }
         }
         return "";

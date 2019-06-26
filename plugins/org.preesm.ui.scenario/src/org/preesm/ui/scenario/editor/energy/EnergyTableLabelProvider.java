@@ -103,7 +103,7 @@ public class EnergyTableLabelProvider extends BaseLabelProvider implements ITabl
     if ((element instanceof AbstractActor) && (this.currentOpDefId != null)) {
       final AbstractActor vertex = (AbstractActor) element;
 
-      final Double energy = this.scenario.getEnergyConfig().getEnergyOrDefault(vertex, this.currentOpDefId);
+      final Double energy = this.scenario.getEnergyConfig().getEnergyActorOrDefault(vertex, this.currentOpDefId);
 
       switch (columnIndex) {
         case 0:
