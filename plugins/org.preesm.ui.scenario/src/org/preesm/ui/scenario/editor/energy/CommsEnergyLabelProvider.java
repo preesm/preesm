@@ -76,7 +76,7 @@ public class CommsEnergyLabelProvider extends BaseLabelProvider implements ITabl
 
       if (columnIndex == 0) {
         text = peEnergyComms.getKey();
-      } else if (columnIndex == 1) {
+      } else {
         final String peTypeSource = peEnergyComms.getKey();
         final String peTypeDestination = this.operatorTypes.get(columnIndex - 1);
         final double valueEnergy = this.scenario.getEnergyConfig().getCommValueOrDefault(peTypeSource,

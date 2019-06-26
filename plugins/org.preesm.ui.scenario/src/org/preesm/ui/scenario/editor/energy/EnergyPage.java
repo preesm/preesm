@@ -267,13 +267,11 @@ public class EnergyPage extends ScenarioPage {
     columnBase.setText(Messages.getString("Energy.commsHeader"));
     columns[0] = columnBase;
     columnNames[0] = Messages.getString("Energy.commsHeader");
-    int columnCounter = 1;
-    for (String columnName : operatorTypes) {
-      final TableColumn columni = new TableColumn(table, SWT.NONE, columnCounter);
-      columnNames[columnCounter] = columnName;
-      columni.setText(columnName);
-      columns[columnCounter] = columni;
-      columnCounter = columnCounter + 1;
+    for (int i = 1; i < operatorTypes.size() + 1; i++) {
+      final TableColumn columni = new TableColumn(table, SWT.NONE, i);
+      columnNames[i] = operatorTypes.get(i - 1);
+      columni.setText(operatorTypes.get(i - 1));
+      columns[i] = columni;
     }
 
     newTableViewer.setCellModifier(new ICellModifier() {
@@ -346,8 +344,9 @@ public class EnergyPage extends ScenarioPage {
           width -= vBarSize.x;
         }
         table.setSize(area.width, area.height);
-        columns[0].setWidth((width / 4) - 1);
-        columns[1].setWidth((width - columns[0].getWidth()) / 2);
+        for (int i = 0; i < table.getColumnCount(); i++) {
+          columns[i].setWidth((width / table.getColumnCount()) - 1);
+        }
       }
     });
 
