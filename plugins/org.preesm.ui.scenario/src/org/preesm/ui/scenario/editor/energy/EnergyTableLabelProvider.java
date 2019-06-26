@@ -115,16 +115,8 @@ public class EnergyTableLabelProvider extends BaseLabelProvider implements ITabl
   @Override
   public Image getColumnImage(final Object element, final int columnIndex) {
     if ((element instanceof AbstractActor) && (this.currentOpDefId != null)) {
-      final AbstractActor vertex = (AbstractActor) element;
-
-      final String energy = this.scenario.getEnergyConfig().getEnergyOrDefault(vertex, this.currentOpDefId);
       if (columnIndex == 3) {
-        final boolean canEvaluate = ExpressionEvaluator.canEvaluate(vertex, energy);
-        if (canEvaluate) {
-          return this.imageOk;
-        } else {
-          return this.imageError;
-        }
+        return this.imageOk;
       }
     }
     return null;
@@ -135,31 +127,23 @@ public class EnergyTableLabelProvider extends BaseLabelProvider implements ITabl
     if ((element instanceof AbstractActor) && (this.currentOpDefId != null)) {
       final AbstractActor vertex = (AbstractActor) element;
 
-      final String energy = this.scenario.getEnergyConfig().getEnergyOrDefault(vertex, this.currentOpDefId);
+      final Double energy = this.scenario.getEnergyConfig().getEnergyOrDefault(vertex, this.currentOpDefId);
 
       switch (columnIndex) {
         case 0:
           return vertex.getVertexPath();
         case 1: // Input Parameters
-          if (energy == null || vertex.getInputParameters().isEmpty()) {
+          if (vertex.getInputParameters().isEmpty()) {
             return " - ";
           } else {
             return ExpressionEvaluator.lookupParameterValues(vertex, Collections.emptyMap()).keySet().toString();
           }
         case 2: // Expression
-          if (energy != null) {
-            return energy;
-          }
-          break;
+          return Double.toString(energy);
         case 3: // Evaluation Status
           return null;
         case 4: // Value
-          if (energy != null && ExpressionEvaluator.canEvaluate(vertex, energy)) {
-            return Long
-                .toString(ExpressionEvaluator.evaluate(vertex, energy, this.scenario.getParameterValues().map()));
-          } else {
-            return "";
-          }
+          return Double.toString(energy);
         default:
       }
     }

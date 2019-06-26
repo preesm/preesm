@@ -558,21 +558,22 @@ class PapiCpuID {
  	contains PeActorsEnergy[] algorithmEnergy
  	//TODO: fill this with real values in the UI and parse/write
  	contains PeCommsEnergy[] commsEnergy
-	op String getEnergyOrDefault(AbstractActor actor, Component component) {
+	op Double getEnergyOrDefault(AbstractActor actor, Component component) {
 		if (this.algorithmEnergy.containsKey(component)) {
-			val EMap<AbstractActor, String> map = algorithmEnergy.get(component);
+			val EMap<AbstractActor, Double> map = algorithmEnergy.get(component)
 			if (map.containsKey(actor)) {
-				return map.get(actor);
+				return map.get(actor)
 			}
 		} else {
 			val AbstractActor source = PreesmCopyTracker.getSource(actor);
 			if (source !== actor) {
-				return getEnergyOrDefault(source, component);
+				return getEnergyOrDefault(source, component)
 			}
 		}
-		return Double.toString(ScenarioConstants.DEFAULT_ENERGY_TASK.value);
+		var double value = ScenarioConstants.DEFAULT_ENERGY_TASK.value
+		return value
 	}
-	op void setActorPeEnergy(AbstractActor actor, Component component, String energy) {
+	op void setActorPeEnergy(AbstractActor actor, Component component, Double energy) {
 		if (!algorithmEnergy.containsKey(component)) {
 			algorithmEnergy.put(component, ECollections.asEMap(newLinkedHashMap))			
 		}		
@@ -593,7 +594,7 @@ class PeActorsEnergy wraps java.util.Map$Entry {
 }
 class ActorEnergy wraps java.util.Map$Entry {
 	refers AbstractActor key 	// The actor
-	String value				// The expression of the energy
+	Double value				// The expression of the energy
 }
 class PeCommsEnergy wraps java.util.Map$Entry{
 	refers Component key		// The source component type
