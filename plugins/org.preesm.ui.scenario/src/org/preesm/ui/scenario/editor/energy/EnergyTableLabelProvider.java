@@ -37,10 +37,7 @@
  */
 package org.preesm.ui.scenario.editor.energy;
 
-import java.net.URL;
-import java.util.Collections;
 import java.util.List;
-import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.jface.viewers.BaseLabelProvider;
 import org.eclipse.jface.viewers.ITableLabelProvider;
 import org.eclipse.jface.viewers.TableViewer;
@@ -49,13 +46,10 @@ import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Combo;
 import org.eclipse.ui.IPropertyListener;
-import org.preesm.commons.files.PreesmResourcesHelper;
 import org.preesm.model.pisdf.AbstractActor;
-import org.preesm.model.pisdf.expression.ExpressionEvaluator;
 import org.preesm.model.scenario.Scenario;
 import org.preesm.model.slam.Design;
 import org.preesm.model.slam.component.Component;
-import org.preesm.ui.PreesmUIPlugin;
 
 /**
  * Displays the labels for tasks timings. These labels are the time of each task
@@ -72,12 +66,6 @@ public class EnergyTableLabelProvider extends BaseLabelProvider implements ITabl
 
   /** The table viewer. */
   private TableViewer tableViewer = null;
-
-  /** The image ok. */
-  private final Image imageOk;
-
-  /** The image error. */
-  private final Image imageError;
 
   /** Constraints page used as a property listener to change the dirty state. */
   private IPropertyListener propertyListener = null;
@@ -99,14 +87,6 @@ public class EnergyTableLabelProvider extends BaseLabelProvider implements ITabl
     this.tableViewer = tableViewer;
     this.propertyListener = propertyListener;
 
-    final URL errorIconURL = PreesmResourcesHelper.getInstance().resolve("icons/error.png", PreesmUIPlugin.class);
-    ImageDescriptor imageDcr = ImageDescriptor.createFromURL(errorIconURL);
-    this.imageError = imageDcr.createImage();
-
-    final URL okIconURL = PreesmResourcesHelper.getInstance().resolve("icons/ok.png", PreesmUIPlugin.class);
-    imageDcr = ImageDescriptor.createFromURL(okIconURL);
-    this.imageOk = imageDcr.createImage();
-
     final Design design = scenario.getDesign();
     final List<Component> operators = design.getOperatorComponents();
     this.currentOpDefId = operators.get(0);
@@ -114,11 +94,7 @@ public class EnergyTableLabelProvider extends BaseLabelProvider implements ITabl
 
   @Override
   public Image getColumnImage(final Object element, final int columnIndex) {
-    if ((element instanceof AbstractActor) && (this.currentOpDefId != null)) {
-      if (columnIndex == 3) {
-        return this.imageOk;
-      }
-    }
+    // Not necessary here
     return null;
   }
 
@@ -132,17 +108,7 @@ public class EnergyTableLabelProvider extends BaseLabelProvider implements ITabl
       switch (columnIndex) {
         case 0:
           return vertex.getVertexPath();
-        case 1: // Input Parameters
-          if (vertex.getInputParameters().isEmpty()) {
-            return " - ";
-          } else {
-            return ExpressionEvaluator.lookupParameterValues(vertex, Collections.emptyMap()).keySet().toString();
-          }
-        case 2: // Expression
-          return Double.toString(energy);
-        case 3: // Evaluation Status
-          return null;
-        case 4: // Value
+        case 1: // Value
           return Double.toString(energy);
         default:
       }

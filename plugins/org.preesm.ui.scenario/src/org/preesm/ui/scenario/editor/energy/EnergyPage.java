@@ -114,8 +114,7 @@ public class EnergyPage extends ScenarioPage {
   TableViewer tableViewer = null;
 
   /** The pisdf column names. */
-  private static final String[] PISDF_COLUMN_NAMES = { "Actors", "Input Parameters", "Expression", "Evaluation",
-      "Value" };
+  private static final String[] PISDF_COLUMN_NAMES = { "Actors", "Value" };
 
   /**
    * Instantiates a new energy page.
@@ -452,7 +451,7 @@ public class EnergyPage extends ScenarioPage {
           final String componentType = coreCombo.getText();
           final String newValue = (String) value;
           boolean dirty = false;
-          if (PISDF_COLUMN_NAMES[2].equals(property)) {
+          if (PISDF_COLUMN_NAMES[1].equals(property)) {
             try {
               final Component component = EnergyPage.this.scenario.getDesign().getComponent(componentType);
               final double oldValue = EnergyPage.this.scenario.getEnergyConfig().getEnergyOrDefault(actor, component);
@@ -478,7 +477,7 @@ public class EnergyPage extends ScenarioPage {
       public Object getValue(final Object element, final String property) {
         if (element instanceof AbstractActor) {
           final AbstractActor actor = (AbstractActor) element;
-          if (PISDF_COLUMN_NAMES[2].equals(property)) {
+          if (PISDF_COLUMN_NAMES[1].equals(property)) {
             final String componentType = coreCombo.getText();
             final Component component = EnergyPage.this.scenario.getDesign().getComponent(componentType);
             return EnergyPage.this.scenario.getEnergyConfig().getEnergyOrDefault(actor, component).toString();
@@ -489,7 +488,7 @@ public class EnergyPage extends ScenarioPage {
 
       @Override
       public boolean canModify(final Object element, final String property) {
-        return property.contentEquals(PISDF_COLUMN_NAMES[2]);
+        return property.contentEquals(PISDF_COLUMN_NAMES[1]);
       }
     });
 
