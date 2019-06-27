@@ -884,9 +884,8 @@ public class EnergyPage extends ScenarioPage {
       @Override
       public void modify(final Object element, final String property, final Object value) {
         if (element instanceof TableItem) {
-          System.out.println("A:" + property);
-          System.out.println("B:" + element.toString());
           final TableItem ti = (TableItem) element;
+          @SuppressWarnings("unchecked")
           final Entry<String, Double> objective = (Entry<String, Double>) ti.getData();
           final String newValue = (String) value;
           boolean dirty = false;
@@ -919,11 +918,8 @@ public class EnergyPage extends ScenarioPage {
 
       @Override
       public Object getValue(final Object element, final String property) {
-        System.out.println("A:" + property);
-        System.out.println("B:" + element.toString());
         if (element instanceof Entry<?, ?>) {
-          System.out.println("A1:" + property);
-          System.out.println("B1:" + element.toString());
+          @SuppressWarnings("unchecked")
           final Entry<String, Double> objective = (Entry<String, Double>) element;
           if (OBJECTIVE_COLUMN_NAMES[1].equals(property)) {
             return Double.toString(objective.getValue());
@@ -934,8 +930,6 @@ public class EnergyPage extends ScenarioPage {
 
       @Override
       public boolean canModify(final Object element, final String property) {
-        System.out.println("A:" + property);
-        System.out.println("B:" + element.toString());
         return property.contentEquals(OBJECTIVE_COLUMN_NAMES[1]);
       }
     });
