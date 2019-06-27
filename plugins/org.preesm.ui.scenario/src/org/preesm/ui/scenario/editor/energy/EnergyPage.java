@@ -44,6 +44,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Map.Entry;
 import java.util.Set;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
@@ -84,7 +85,6 @@ import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.eclipse.ui.forms.widgets.ScrolledForm;
 import org.eclipse.ui.forms.widgets.Section;
 import org.preesm.model.pisdf.AbstractActor;
-import org.preesm.model.scenario.PerformanceObjective;
 import org.preesm.model.scenario.Scenario;
 import org.preesm.model.scenario.impl.PEPowerImpl;
 import org.preesm.model.scenario.impl.PeCommsEnergyImpl;
@@ -117,6 +117,9 @@ public class EnergyPage extends ScenarioPage {
 
   /** The pisdf column names. */
   private static final String[] PISDF_COLUMN_NAMES = { "Actors", "Value" };
+
+  /** The objective column names. */
+  private static final String[] OBJECTIVE_COLUMN_NAMES = { "Parameter", "Value" };
 
   /**
    * Instantiates a new energy page.
@@ -400,7 +403,6 @@ public class EnergyPage extends ScenarioPage {
           final PEPowerImpl powerPe = (PEPowerImpl) ti.getData();
           final String newValue = (String) value;
           boolean dirty = false;
-          System.out.println("A: " + property);
           if (POWER_PLATFORM_TITLE.equals(property)) {
             final double oldpowerPE = powerPe.getValue();
             try {
@@ -800,75 +802,7 @@ public class EnergyPage extends ScenarioPage {
 
     final FormToolkit toolkit = mform.getToolkit();
 
-    final GridData gd = new GridData();
-    gd.widthHint = 150;
-    toolkit.createLabel(client, Messages.getString("Energy.objectiveLabel"));
-    final PerformanceObjective performanceObjective = this.scenario.getEnergyConfig().getPerformanceObjective();
-    final Text objective = toolkit.createText(client, Double.toString(performanceObjective.getObjectiveEPS()),
-        SWT.SINGLE);
-    objective.setLayoutData(gd);
-    objective.addKeyListener(new KeyListener() {
-
-      @Override
-      public void keyPressed(final KeyEvent e) {
-        // nothing to be done
-      }
-
-      @Override
-      public void keyReleased(final KeyEvent e) {
-        try {
-          double newObjectiveEPS = Double.parseDouble((String) objective.getText());
-          if (newObjectiveEPS >= 0.0 && newObjectiveEPS != performanceObjective.getObjectiveEPS()) {
-            performanceObjective.setObjectiveEPS(newObjectiveEPS);
-            objective.setText(Double.toString(newObjectiveEPS));
-            objective.update();
-            firePropertyChange(IEditorPart.PROP_DIRTY);
-          } else {
-            objective.setText(Double.toString(performanceObjective.getObjectiveEPS()));
-            objective.update();
-          }
-        } catch (final Exception ex) {
-          objective.setText(Double.toString(performanceObjective.getObjectiveEPS()));
-          objective.update();
-        }
-      }
-    });
-
-    toolkit.createLabel(client, Messages.getString("Energy.toleranceLabel"));
-    final Text tolerance = toolkit.createText(client, Double.toString(performanceObjective.getToleranceEPS()),
-        SWT.SINGLE);
-    tolerance.setLayoutData(gd);
-    tolerance.addKeyListener(new KeyListener() {
-
-      @Override
-      public void keyPressed(final KeyEvent e) {
-        // nothing to be done
-      }
-
-      @Override
-      public void keyReleased(final KeyEvent e) {
-        try {
-          double newToleranceEPS = Double.parseDouble((String) tolerance.getText());
-          if (newToleranceEPS >= 0.0 && newToleranceEPS != performanceObjective.getToleranceEPS()) {
-            performanceObjective.setToleranceEPS(newToleranceEPS);
-            tolerance.setText(Double.toString(newToleranceEPS));
-            tolerance.update();
-            firePropertyChange(IEditorPart.PROP_DIRTY);
-          } else {
-            tolerance.setText(Double.toString(performanceObjective.getToleranceEPS()));
-            tolerance.update();
-          }
-        } catch (final Exception ex) {
-          tolerance.setText(Double.toString(performanceObjective.getToleranceEPS()));
-          tolerance.update();
-        }
-      }
-    });
-
-    gridData.widthHint = 400;
-    gridData.heightHint = 100;
-
-    toolkit.paintBordersFor(client);
+    addObjectiveTable(client, toolkit);
 
   }
 
@@ -911,5 +845,132 @@ public class EnergyPage extends ScenarioPage {
     });
     section.setLayoutData(gridData);
     return client;
+  }
+
+  /**
+   * Adds a table to edit the performance objective.
+   *
+   * @param parent
+   *          the parent
+   * @param toolkit
+   *          the toolkit
+   */
+  private void addObjectiveTable(final Composite parent, final FormToolkit toolkit) {
+
+    final Composite tablecps = toolkit.createComposite(parent);
+    tablecps.setVisible(true);
+
+    final TableViewer newTableViewer = new TableViewer(tablecps,
+        SWT.BORDER | SWT.H_SCROLL | SWT.V_SCROLL | SWT.MULTI | SWT.FULL_SELECTION);
+
+    final Table table = newTableViewer.getTable();
+    table.setLayout(new GridLayout());
+    table.setLayoutData(new GridData(GridData.FILL_HORIZONTAL | GridData.VERTICAL_ALIGN_BEGINNING));
+    table.setHeaderVisible(true);
+    table.setLinesVisible(true);
+
+    newTableViewer.setContentProvider(new ObjectiveContentProvider());
+    newTableViewer.setLabelProvider(new ObjectiveLabelProvider());
+
+    // Create columns
+    final TableColumn[] columns = new TableColumn[OBJECTIVE_COLUMN_NAMES.length];
+    for (int i = 0; i < OBJECTIVE_COLUMN_NAMES.length; i++) {
+      final TableColumn columni = new TableColumn(table, SWT.NONE, i);
+      columni.setText(OBJECTIVE_COLUMN_NAMES[i]);
+      columns[i] = columni;
+    }
+
+    newTableViewer.setCellModifier(new ICellModifier() {
+      @Override
+      public void modify(final Object element, final String property, final Object value) {
+        if (element instanceof TableItem) {
+          System.out.println("A:" + property);
+          System.out.println("B:" + element.toString());
+          final TableItem ti = (TableItem) element;
+          final Entry<String, Double> objective = (Entry<String, Double>) ti.getData();
+          final String newValue = (String) value;
+          boolean dirty = false;
+          double parseDouble = 0.0;
+          if (OBJECTIVE_COLUMN_NAMES[1].equals(property)) {
+            final double oldValue = objective.getValue();
+            try {
+              parseDouble = Double.parseDouble(newValue);
+              if (oldValue != parseDouble) {
+                dirty = true;
+              }
+            } catch (final NumberFormatException e) {
+              ErrorDialog.openError(EnergyPage.this.getEditorSite().getShell(), "Wrong number format",
+                  "Power PE values are Double typed.",
+                  new Status(IStatus.ERROR, "org.preesm.ui.scenario", "Could not parse double. " + e.getMessage()));
+            }
+          }
+
+          if (dirty) {
+            if (objective.getKey().equals(Messages.getString("Energy.objectiveLabel"))) {
+              EnergyPage.this.scenario.getEnergyConfig().getPerformanceObjective().setObjectiveEPS(parseDouble);
+            } else {
+              EnergyPage.this.scenario.getEnergyConfig().getPerformanceObjective().setToleranceEPS(parseDouble);
+            }
+            firePropertyChange(IEditorPart.PROP_DIRTY);
+            newTableViewer.refresh();
+          }
+        }
+      }
+
+      @Override
+      public Object getValue(final Object element, final String property) {
+        System.out.println("A:" + property);
+        System.out.println("B:" + element.toString());
+        if (element instanceof Entry<?, ?>) {
+          System.out.println("A1:" + property);
+          System.out.println("B1:" + element.toString());
+          final Entry<String, Double> objective = (Entry<String, Double>) element;
+          if (OBJECTIVE_COLUMN_NAMES[1].equals(property)) {
+            return Double.toString(objective.getValue());
+          }
+        }
+        return "";
+      }
+
+      @Override
+      public boolean canModify(final Object element, final String property) {
+        System.out.println("A:" + property);
+        System.out.println("B:" + element.toString());
+        return property.contentEquals(OBJECTIVE_COLUMN_NAMES[1]);
+      }
+    });
+
+    final CellEditor[] editors = new CellEditor[table.getColumnCount()];
+    for (int i = 0; i < table.getColumnCount(); i++) {
+      editors[i] = new TextCellEditor(table);
+    }
+    newTableViewer.setColumnProperties(OBJECTIVE_COLUMN_NAMES);
+    newTableViewer.setCellEditors(editors);
+
+    // Setting the column width
+    tablecps.addControlListener(new ControlAdapter() {
+      @Override
+      public void controlResized(final ControlEvent e) {
+        final Rectangle area = tablecps.getClientArea();
+        final Point size = table.computeSize(SWT.DEFAULT, SWT.DEFAULT);
+        final ScrollBar vBar = table.getVerticalBar();
+        int width = area.width - table.computeTrim(0, 0, 0, 0).width - 2;
+        if (size.y > (area.height + table.getHeaderHeight())) {
+          final Point vBarSize = vBar.getSize();
+          width -= vBarSize.x;
+        }
+        table.setSize(area.width, area.height);
+        columns[0].setWidth((width / 2));
+        columns[1].setWidth((width / 2));
+      }
+    });
+
+    newTableViewer.setInput(this.scenario);
+    final GridData gd = new GridData(GridData.FILL_HORIZONTAL | GridData.VERTICAL_ALIGN_FILL);
+    final Integer entryNumber = scenario.getEnergyConfig().getPlatformPower().entrySet().size();
+    gd.heightHint = Math.max(50, entryNumber * 25 + 10);
+    gd.widthHint = 400;
+    gd.grabExcessVerticalSpace = true;
+    tablecps.setLayoutData(gd);
   }
 }
