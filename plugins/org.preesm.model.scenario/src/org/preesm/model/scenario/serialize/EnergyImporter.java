@@ -49,19 +49,12 @@ public class EnergyImporter {
     final String excelFileURL = currentScenario.getEnergyConfig().getExcelFileURL();
     if (!excelFileURL.isEmpty()) {
       final ExcelEnergyParser excelParser = new ExcelEnergyParser(currentScenario);
-      final CsvTimingParser csvParser = new CsvTimingParser(currentScenario);
 
       try {
         final String[] fileExt = excelFileURL.split("\\.");
         final Design design = currentScenario.getDesign();
-        switch (fileExt[fileExt.length - 1]) {
-          case "xls":
-            excelParser.parse(excelFileURL, design.getOperatorComponents());
-            break;
-          case "csv":
-            csvParser.parse(excelFileURL, design.getOperatorComponents());
-            break;
-          default:
+        if (fileExt[fileExt.length - 1].equals("xls")) {
+          excelParser.parse(excelFileURL, design.getOperatorComponents());
         }
       } catch (final Exception e) {
         e.printStackTrace();

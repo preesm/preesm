@@ -65,7 +65,7 @@ import org.preesm.ui.scenario.editor.ExcelWriter;
 import org.preesm.ui.scenario.editor.SaveAsWizard;
 
 /**
- * Exporting timings in an excel sheet.
+ * Exporting energy in an excel sheet.
  *
  * @author mpelcat
  */
@@ -96,7 +96,7 @@ public class ExcelEnergyWriter extends ExcelWriter {
   }
 
   /**
-   * Add timing cells to the newly created file.
+   * Add energy cells to the newly created file.
    *
    * @param os
    *          the os
@@ -120,7 +120,7 @@ public class ExcelEnergyWriter extends ExcelWriter {
   }
 
   /**
-   * Add timing cells to the newly created file.
+   * Add nergy cells to the newly created file.
    *
    * @param sheet
    *          the sheet
