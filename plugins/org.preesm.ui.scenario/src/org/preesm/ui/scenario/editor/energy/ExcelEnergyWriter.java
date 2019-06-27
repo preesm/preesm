@@ -69,13 +69,13 @@ import org.preesm.ui.scenario.editor.SaveAsWizard;
  *
  * @author mpelcat
  */
-public class ExcelTimingWriter extends ExcelWriter {
+public class ExcelEnergyWriter extends ExcelWriter {
 
   private final Scenario scenario;
 
   /**
    */
-  public ExcelTimingWriter(final Scenario scenario) {
+  public ExcelEnergyWriter(final Scenario scenario) {
     super();
     this.scenario = scenario;
   }
@@ -90,7 +90,7 @@ public class ExcelTimingWriter extends ExcelWriter {
 
     final IWorkbench workbench = PlatformUI.getWorkbench();
     final IWorkbenchWindow window = workbench.getActiveWorkbenchWindow();
-    final SaveAsWizard wizard = new SaveAsWizard(this, "Timings");
+    final SaveAsWizard wizard = new SaveAsWizard(this, "Energy");
     final WizardDialog dialog = new WizardDialog(window.getShell(), wizard);
     dialog.open();
   }
@@ -108,7 +108,7 @@ public class ExcelTimingWriter extends ExcelWriter {
       final WorkbookSettings ws = new WorkbookSettings();
       ws.setLocale(new Locale("en", "EN"));
       final WritableWorkbook workbook = Workbook.createWorkbook(os, ws);
-      final WritableSheet sheet = workbook.createSheet("Timings", 0);
+      final WritableSheet sheet = workbook.createSheet("Energy", 0);
 
       addCells(sheet);
       workbook.write();
@@ -146,7 +146,7 @@ public class ExcelTimingWriter extends ExcelWriter {
       for (final Component opDefId : design.getOperatorComponents()) {
         for (final AbstractActor vertexName : vSet) {
 
-          final String timing = this.scenario.getTimings().getTimingOrDefault(vertexName, opDefId);
+          final String energy = this.scenario.getEnergyConfig().getEnergyActorOrDefault(vertexName, opDefId).toString();
 
           WritableCell opCell = (WritableCell) sheet.findCell(opDefId.getVlnv().getName());
           WritableCell vCell = (WritableCell) sheet.findCell(vertexName.getVertexPath());
@@ -164,10 +164,10 @@ public class ExcelTimingWriter extends ExcelWriter {
               maxVOrdinate++;
             }
 
-            WritableCell timeCell;
-            timeCell = new Label(opCell.getColumn(), vCell.getRow(), timing);
+            WritableCell energyCell;
+            energyCell = new Label(opCell.getColumn(), vCell.getRow(), energy);
 
-            sheet.addCell(timeCell);
+            sheet.addCell(energyCell);
           } catch (final WriteException e) {
             e.printStackTrace();
           }

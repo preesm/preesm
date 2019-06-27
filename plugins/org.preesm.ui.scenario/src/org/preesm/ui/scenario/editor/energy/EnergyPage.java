@@ -88,8 +88,8 @@ import org.preesm.model.pisdf.AbstractActor;
 import org.preesm.model.scenario.Scenario;
 import org.preesm.model.scenario.impl.PEPowerImpl;
 import org.preesm.model.scenario.impl.PeCommsEnergyImpl;
+import org.preesm.model.scenario.serialize.EnergyImporter;
 import org.preesm.model.scenario.serialize.PreesmAlgorithmListContentProvider;
-import org.preesm.model.scenario.serialize.TimingImporter;
 import org.preesm.model.slam.Design;
 import org.preesm.model.slam.component.Component;
 import org.preesm.ui.scenario.editor.FileSelectionAdapter;
@@ -723,11 +723,11 @@ public class EnergyPage extends ScenarioPage {
     final Text text = toolkit.createText(client, initValue, SWT.SINGLE);
     text.setData(title);
 
-    // If the text is modified or Enter key pressed, energy are imported
+    // If the text is modified or Enter key pressed, the energy of the actors is imported
     text.addModifyListener(e -> {
       final Text text1 = (Text) e.getSource();
-      EnergyPage.this.scenario.getTimings().setExcelFileURL(text1.getText());
-      TimingImporter.importTimings(EnergyPage.this.scenario);
+      EnergyPage.this.scenario.getEnergyConfig().setExcelFileURL(text1.getText());
+      EnergyImporter.importEnergy(EnergyPage.this.scenario);
       EnergyPage.this.tableViewer.refresh();
       firePropertyChange(IEditorPart.PROP_DIRTY);
 
@@ -738,7 +738,7 @@ public class EnergyPage extends ScenarioPage {
       public void keyPressed(final KeyEvent e) {
         if (e.keyCode == SWT.CR) {
           final Text text = (Text) e.getSource();
-          EnergyPage.this.scenario.getTimings().setExcelFileURL(text.getText());
+          EnergyPage.this.scenario.getEnergyConfig().setExcelFileURL(text.getText());
           EnergyPage.this.tableViewer.refresh();
         }
 
@@ -760,7 +760,7 @@ public class EnergyPage extends ScenarioPage {
       @Override
       public void widgetSelected(final SelectionEvent e) {
         // Cause scenario editor to import energy from excel sheet
-        TimingImporter.importTimings(EnergyPage.this.scenario);
+        EnergyImporter.importEnergy(EnergyPage.this.scenario);
         EnergyPage.this.tableViewer.refresh();
         // Force the "file has changed" property of scenario.
         // Timing changes will have no effects if the scenario
@@ -781,7 +781,7 @@ public class EnergyPage extends ScenarioPage {
     browseButton.addSelectionListener(browseAdapter);
 
     final Button exportButton = toolkit.createButton(client, Messages.getString("Energy.energyExportExcel"), SWT.PUSH);
-    exportButton.addSelectionListener(new ExcelTimingWriter(this.scenario));
+    exportButton.addSelectionListener(new ExcelEnergyWriter(this.scenario));
 
   }
 
@@ -962,7 +962,7 @@ public class EnergyPage extends ScenarioPage {
     newTableViewer.setInput(this.scenario);
     final GridData gd = new GridData(GridData.FILL_HORIZONTAL | GridData.VERTICAL_ALIGN_FILL);
     final Integer entryNumber = scenario.getEnergyConfig().getPlatformPower().entrySet().size();
-    gd.heightHint = Math.max(50, entryNumber * 25 + 10);
+    gd.heightHint = Math.max(75, entryNumber * 25 + 10);
     gd.widthHint = 400;
     gd.grabExcessVerticalSpace = true;
     tablecps.setLayoutData(gd);

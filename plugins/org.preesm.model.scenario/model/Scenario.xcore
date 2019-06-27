@@ -550,7 +550,6 @@ class PapiCpuID {
  ##################### */
  
  class EnergyConfig{
- 	//TODO: export/import energy
 	String excelFileURL // excel or csv local file
 	refers Scenario scenario opposite energyConfig
  	contains PerformanceObjective performanceObjective
