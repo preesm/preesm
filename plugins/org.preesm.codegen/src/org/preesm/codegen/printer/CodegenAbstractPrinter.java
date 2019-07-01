@@ -233,7 +233,9 @@ public abstract class CodegenAbstractPrinter extends CodegenSwitch<CharSequence>
         }
       }
     }
-    return -1;
+    // If nothing is mapped on the main operator, there is no code block that has been generated for
+    // it. By default, use the first code block in the list.
+    return 0;
   }
 
   /**

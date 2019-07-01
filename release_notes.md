@@ -15,7 +15,7 @@ PREESM Changelog
 * Fix PiWriter: avoid throwing NPE when period is not attached to an element;
 
 ### Bug fix
-
+* Fix #162
 
 ## Release version 3.10.0
 *2019.06.20*
