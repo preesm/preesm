@@ -58,11 +58,11 @@ import org.eclipse.ui.PlatformUI;
 import org.preesm.commons.exceptions.PreesmException;
 import org.preesm.model.pisdf.AbstractActor;
 import org.preesm.model.scenario.Scenario;
-import org.preesm.model.scenario.serialize.PreesmAlgorithmListContentProvider;
 import org.preesm.model.slam.Design;
 import org.preesm.model.slam.component.Component;
 import org.preesm.ui.scenario.editor.ExcelWriter;
 import org.preesm.ui.scenario.editor.SaveAsWizard;
+import org.preesm.ui.scenario.editor.utils.PreesmAlgorithmListContentProvider;
 
 /**
  * Exporting timings in an excel sheet.

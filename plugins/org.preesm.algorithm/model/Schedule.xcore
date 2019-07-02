@@ -1,0 +1,181 @@
+
+@GenModel(modelName="Schedule", prefix="Schedule", modelDirectory="/org.preesm.algorithm/ecore-gen", // redirection="",
+	// classNamePattern="",
+	// codeFormatting="true",
+	// cleanup="true",
+	importerID="org.eclipse.emf.importer.ecore", // !! if true a instrs.ecore is generated in .impl and is used by xxpackage.init() to
+	// load the intrs packages (by default this false unless the generated XyzPackage might
+	// exceed Java's byte code limit of 64k)
+	loadInitialization="false", creationCommands="false", creationIcons="false", dataTypeConverters="false",
+	operationReflection="false", complianceLevel="8.0")
+@Ecore(nsURI="http://org.preesm/algos/schedule")
+package org.preesm.model.algorithm.schedule
+
+import org.preesm.model.pisdf.AbstractActor
+import org.eclipse.emf.common.util.ECollections
+
+// !!! This is needed as of the current versions of xcore/xtext
+// For some reason when using the default String/... (i.e. without the following)
+// the corresponding EPackage attributes/... are resolved to type java.lang.Object
+// instead of java.lang.String.
+// This causes a problem for Tom mapping generation for instance.
+// The following fixes this problem.
+type String wraps String
+
+type int wraps int
+
+type long wraps long
+
+type double wraps double
+
+/*
+ * Represent a schedule, that is an order of execution. Its hierarchy make possible
+ * the association with several level of hierarchy in the architecture model.
+ *
+ * TODO - See https://preesm.org/todo for more examples.
+ */
+interface Schedule {
+	/*
+	 * TODO - Semantic to be refined
+	 *
+	 * Used when building schedules for non-srdag PiGraphs.
+	 */
+	long repetition
+	/*
+	 * Returns the next level of schedule in the hierarchy
+	 */
+	op Schedule[] getChildren() {
+		return ECollections.emptyEList
+	}
+	/*
+	 * Return the list of all the actors contained by this schedule and all of its children
+	 */
+	op AbstractActor[] getActors() {
+		return children.map[it.actors].flatten.asEList
+	}
+	/*
+	 * Returns the number of extra top iterations this schedule can cross. It is used to
+	 * represent software pipelined schedules (see {@link StagedSchedule}) or to pipeline
+	 * the execution of actors (see {@link StagedActorSchedule}).
+	 *
+	 * Default value is the sum of its children.
+	 */
+	op int getSpan() {
+		if (children.empty)
+			return 0
+		else
+			return children.stream.mapToInt(it | it.span).sum
+	}
+	/*
+	 * Returns whether the direct children of this schedule can be executed simultaneously.
+	 */
+	op boolean isParallel()
+}
+
+/*
+ * Denotes a schedule whose children can be executed simultaneously.
+ *
+ * The span of parallel schedule is the max of its children
+ */
+interface ParallelSchedule extends Schedule {
+	op boolean isParallel() {
+		return true;
+	}
+	op int getSpan() {
+		if (children.empty)
+			return 0
+		else
+			return children.map[span].max
+	}
+}
+
+/*
+ * Denotes a schedule whose children can NOT be executed simultaneously.
+ */
+interface SequentialSchedule extends Schedule {
+	// all elements of this list should be executed sequentially
+	op boolean isParallel() {
+		return false;
+	}
+}
+
+/*
+ * Abstraction to represent a Schedule with other schedules as children.
+ * There is no hypothesis on the order on the execution of its children.
+ */
+interface HierarchicalSchedule extends Schedule {
+	contains Schedule[] scheduleTree
+	op Schedule[] getChildren() {
+		return scheduleTree
+	}
+}
+
+/*
+ * Abstraction to represent a Schedule with a list of actor(s) to execute, and no children.
+ * There is no hypothesis on the order on the execution of its children.
+ */
+interface ActorSchedule extends Schedule {
+	// this Map associate for every actor a virtual 'execution date'.
+	// All dates should be different to define a total order.
+	refers AbstractActor[] orderedActors
+	op AbstractActor[] getActors() {
+		return orderedActors
+	}
+}
+
+/*
+ * This schedule contains an ordered list of actors whose execution is
+ * sequential, in the order of apparition in the list.
+ *
+ * This schedule as no children.
+ */
+class SequentialActorSchedule extends ActorSchedule, SequentialSchedule {
+}
+
+/*
+ * This schedule contains an ordered list of schedule children whose execution is
+ * sequential, in the order of apparition in the list.
+ */
+class SequentialHiearchicalSchedule extends HierarchicalSchedule, SequentialSchedule {
+}
+
+/*
+ * This schedule contains a list of schedule children whose execution can be
+ * simultaneous (i.e. parallel).
+ */
+class ParallelHiearchicalSchedule extends HierarchicalSchedule, ParallelSchedule {
+}
+
+/*
+ * This schedule contains an ordered list of actors whose execution is
+ * sequential, in the order of apparition in the list.
+ *
+ * The span value indicates how many iteration of its parent it can cross until
+ * its execution is considered terminated. This is a "logical timing" as the real
+ * time of execution will be affected by synchronized communications of the SDF
+ * execution model.
+ *
+ * This schedule as no children.
+ */
+class StagedActorSchedule extends SequentialActorSchedule {
+	int spanValue
+	op int getSpan() {
+		return spanValue
+	}
+}
+
+/*
+ * This schedule contains an ordered list of schedule children whose execution is
+ * sequential, in the order of apparition in the list.
+ *
+ * The span value is equals to the number of children, and indicates how many
+ * iteration of its parent it can cross until its execution is considered terminated.
+ * This is a "logical timing" as the real time of execution will be affected by
+ * synchronized communications of the SDF execution model.
+ */
+class StagedHiearchicalSchedule extends SequentialHiearchicalSchedule {
+	op int getSpan() {
+		return children.stream.mapToInt(it | Math.max(it.span,1)).sum
+	}
+}
+

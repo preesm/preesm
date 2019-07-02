@@ -34,24 +34,85 @@
  * The fact that you are presently reading this means that you have had
  * knowledge of the CeCILL license and that you accept its terms.
  */
-package org.preesm.model.scenario.types;
+package org.preesm.algorithm.mapper.graphtransfo;
 
-import java.util.ArrayList;
-
-// TODO: Auto-generated Javadoc
 /**
- * Objects used to tag the SDF edges when they represent more than one buffer each. One edge contains one aggregate in
- * its propertybean. The Aggregate is composed of BufferDefinitions with details on their size, type...
+ * Objects used to tag the DAG edges. The buffer couple definition is transmitted to the code generation. One buffer is
+ * created for the source and one for the destination.
  *
  * @author mpelcat
  *
  */
-public class BufferAggregate extends ArrayList<BufferProperties> {
+public class BufferProperties {
 
-  /** ID used to reference the element in a property bean. */
-  public static final String propertyBeanName = "bufferAggregate";
+  /** The data type. */
+  private final String dataTypeName;
+  private final long   dataTypeSize;
 
-  /** The Constant serialVersionUID. */
-  private static final long serialVersionUID = 1L;
+  /** The dest input port ID. */
+  private final String destInputPortID;
+
+  /** The size. */
+  private final int size;
+
+  /** The source output port ID. */
+  private final String sourceOutputPortID;
+
+  /**
+   * Instantiates a new buffer properties.
+   *
+   * @param sourceOutputPortID
+   *          the source output port ID
+   * @param destInputPortID
+   *          the dest input port ID
+   * @param size
+   *          the size
+   */
+  public BufferProperties(final String dataTypeName, final long dataTypeSize, final String sourceOutputPortID,
+      final String destInputPortID, final int size) {
+    super();
+    this.dataTypeName = dataTypeName;
+    this.dataTypeSize = dataTypeSize;
+    this.destInputPortID = destInputPortID;
+    this.size = size;
+    this.sourceOutputPortID = sourceOutputPortID;
+  }
+
+  /**
+   * Gets the data type.
+   *
+   * @return the data type
+   */
+  public String getDataType() {
+    String typeName = this.dataTypeName;
+    return typeName;
+  }
+
+  /**
+   * Gets the dest input port ID.
+   *
+   * @return the dest input port ID
+   */
+  public String getDestInputPortID() {
+    return this.destInputPortID;
+  }
+
+  /**
+   * Gets the size.
+   *
+   * @return the size
+   */
+  public int getSize() {
+    return this.size;
+  }
+
+  /**
+   * Gets the source output port ID.
+   *
+   * @return the source output port ID
+   */
+  public String getSourceOutputPortID() {
+    return this.sourceOutputPortID;
+  }
 
 }

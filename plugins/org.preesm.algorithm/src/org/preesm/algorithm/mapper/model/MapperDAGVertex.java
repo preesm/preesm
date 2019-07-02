@@ -42,6 +42,7 @@ package org.preesm.algorithm.mapper.model;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Set;
+import org.preesm.algorithm.mapper.graphtransfo.ImplementationPropertyNames;
 import org.preesm.algorithm.mapper.model.property.VertexInit;
 import org.preesm.algorithm.mapper.model.property.VertexMapping;
 import org.preesm.algorithm.mapper.model.property.VertexTiming;
@@ -54,7 +55,6 @@ import org.preesm.algorithm.model.AbstractVertex;
 import org.preesm.algorithm.model.dag.DAGEdge;
 import org.preesm.algorithm.model.dag.DAGVertex;
 import org.preesm.model.pisdf.PiGraph;
-import org.preesm.model.scenario.types.ImplementationPropertyNames;
 import org.preesm.model.slam.ComponentInstance;
 import org.preesm.model.slam.component.Operator;
 
