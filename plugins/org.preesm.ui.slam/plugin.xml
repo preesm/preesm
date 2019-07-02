@@ -137,6 +137,8 @@
             </shape>
             <size height="40" width="40">
             </size>
+            <parameter name="hardwareId" type="java.lang.String">
+            </parameter>
             <parameter name="id" type="java.lang.String">
             </parameter>
          </vertexType>
@@ -145,6 +147,8 @@
             </color>
             <shape type="roundedBox">
             </shape>
+            <parameter name="hardwareId" type="java.lang.String">
+            </parameter>
             <parameter name="id" type="java.lang.String">
             </parameter>
             <size height="40" width="40">
@@ -164,6 +168,8 @@
             </color>
             <shape type="roundedBox">
             </shape>
+            <parameter name="hardwareId" type="java.lang.String">
+            </parameter>
             <parameter name="id" type="java.lang.String">
             </parameter>
             <size height="40" width="40">
@@ -185,6 +191,8 @@
             </color>
             <shape type="roundedBox">
             </shape>
+            <parameter name="hardwareId" type="java.lang.String">
+            </parameter>
             <parameter name="id" type="java.lang.String">
             </parameter>
             <size height="40" width="40">
@@ -207,6 +215,8 @@
             </color>
             <shape type="roundedBox">
             </shape>
+            <parameter name="hardwareId" type="java.lang.String">
+            </parameter>
             <parameter name="id" type="java.lang.String">
             </parameter>
             <size height="40" width="40">
@@ -228,6 +238,8 @@
             </color>
             <shape type="roundedBox">
             </shape>
+            <parameter name="hardwareId" type="java.lang.String">
+            </parameter>
             <parameter name="id" type="java.lang.String">
             </parameter>
             <size height="40" width="40">

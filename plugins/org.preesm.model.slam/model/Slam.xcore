@@ -149,8 +149,16 @@ class Design extends VLNVedElement , ParameterizedElement {
 
 class ComponentInstance extends ParameterizedElement {
 	refers Component component opposite instances
+	/*
+	 * Unique name used to identify the component in the whole architecture.
+	 */
 	String instanceName
-	int ^id
+	/*
+	 * When several elements of the same type are present in the design,
+	 * this hardware ID is used by the codegen to properly set the affinity
+	 * or initialize the accelerators.
+	 */
+	int hardwareId
 	op boolean isHierarchical()
 }
 

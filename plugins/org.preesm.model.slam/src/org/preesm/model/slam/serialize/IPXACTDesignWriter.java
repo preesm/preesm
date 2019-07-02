@@ -162,8 +162,8 @@ public class IPXACTDesignWriter {
     nameElt.setTextContent(instance.getInstanceName());
     cmpElt.appendChild(nameElt);
 
-    final Element idElt = document.createElement("spirit:id");
-    idElt.setTextContent(Integer.toString(instance.getId()));
+    final Element idElt = document.createElement("spirit:procId");
+    idElt.setTextContent(Integer.toString(instance.getHardwareId()));
     cmpElt.appendChild(idElt);
 
     writeCompactVLNV(cmpElt, instance.getComponent(), document);
