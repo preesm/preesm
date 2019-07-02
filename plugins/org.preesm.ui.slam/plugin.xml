@@ -105,6 +105,17 @@
          refinement="org.preesm.ui.slam.SlamRefinementPolicy"
          type="text/xml"
          validator="org.preesm.ui.slam.SlamValidator">
+         <!-- I/O -->
+         <import>
+            <xslt name="resources/xslt/s-lam/input_S-LAM.xslt">
+            </xslt>
+         </import>
+         <export>
+            <xslt
+               name="resources/xslt/s-lam/output_S-LAM.xslt">
+            </xslt>
+         </export>
+         <!-- Top Design -->
          <graphType name="S-LAM Design">
             <parameter name="vendor" type="java.lang.String">
             </parameter>
@@ -118,10 +129,7 @@
                type="java.util.Map">
             </parameter>
          </graphType>
-         <import>
-            <xslt name="resources/xslt/s-lam/input_S-LAM.xslt">
-            </xslt>
-         </import>
+         <!-- Vertices -->
          <vertexType name="hierConnection">
             <color blue="0" green="0" red="255">
             </color>
@@ -151,33 +159,6 @@
                type="java.util.Map">
             </parameter>
          </vertexType>
-         <edgeType directed="false" name="hierConnection">
-            <color blue="0" green="0" red="255">
-            </color>
-            <parameter name="source port"
-               type="java.lang.String">
-            </parameter>
-         </edgeType>
-         <edgeType directed="true" name="ControlLink">
-            <color blue="41" green="213" red="165">
-            </color>
-            <parameter name="id" type="java.lang.String">
-            </parameter>
-            <parameter name="source port"
-               type="java.lang.String">
-            </parameter>
-            <parameter name="target port"
-               type="java.lang.String">
-            </parameter>
-            <parameter name="custom parameters"
-               type="java.util.Map">
-            </parameter>
-         </edgeType>
-         <export>
-            <xslt
-               name="resources/xslt/s-lam/output_S-LAM.xslt">
-            </xslt>
-         </export>
          <vertexType name="Mem">
             <color blue="173" green="237" red="198">
             </color>
@@ -199,21 +180,6 @@
             <parameter name="memSize" type="java.lang.String">
             </parameter>
          </vertexType>
-         <edgeType directed="false" name="undirectedDataLink">
-            <color blue="0" green="0" red="0">
-            </color>
-            <parameter name="id" type="java.lang.String">
-            </parameter>
-            <parameter name="source port"
-               type="java.lang.String">
-            </parameter>
-            <parameter name="target port"
-               type="java.lang.String">
-            </parameter>
-            <parameter name="custom parameters"
-               type="java.util.Map">
-            </parameter>
-         </edgeType>
          <vertexType name="Dma">
             <color blue="31" green="135" red="70">
             </color>
@@ -236,21 +202,6 @@
                type="java.lang.String">
             </parameter>
          </vertexType>
-         <edgeType directed="true" name="directedDataLink">
-            <color blue="0" green="0" red="0">
-            </color>
-            <parameter name="id" type="java.lang.String">
-            </parameter>
-            <parameter name="source port"
-               type="java.lang.String">
-            </parameter>
-            <parameter name="target port"
-               type="java.lang.String">
-            </parameter>
-            <parameter name="custom parameters"
-               type="java.util.Map">
-            </parameter>
-         </edgeType>
          <vertexType name="contentionComNode">
             <color blue="0" green="124" red="249">
             </color>
@@ -293,6 +244,59 @@
                type="java.util.Map">
             </parameter>
          </vertexType>
+         <!-- Edges -->
+         <edgeType directed="false" name="hierConnection">
+            <color blue="0" green="0" red="255">
+            </color>
+            <parameter name="source port"
+               type="java.lang.String">
+            </parameter>
+         </edgeType>
+         <edgeType directed="true" name="ControlLink">
+            <color blue="41" green="213" red="165">
+            </color>
+            <parameter name="id" type="java.lang.String">
+            </parameter>
+            <parameter name="source port"
+               type="java.lang.String">
+            </parameter>
+            <parameter name="target port"
+               type="java.lang.String">
+            </parameter>
+            <parameter name="custom parameters"
+               type="java.util.Map">
+            </parameter>
+         </edgeType>
+         <edgeType directed="false" name="undirectedDataLink">
+            <color blue="0" green="0" red="0">
+            </color>
+            <parameter name="id" type="java.lang.String">
+            </parameter>
+            <parameter name="source port"
+               type="java.lang.String">
+            </parameter>
+            <parameter name="target port"
+               type="java.lang.String">
+            </parameter>
+            <parameter name="custom parameters"
+               type="java.util.Map">
+            </parameter>
+         </edgeType>
+         <edgeType directed="true" name="directedDataLink">
+            <color blue="0" green="0" red="0">
+            </color>
+            <parameter name="id" type="java.lang.String">
+            </parameter>
+            <parameter name="source port"
+               type="java.lang.String">
+            </parameter>
+            <parameter name="target port"
+               type="java.lang.String">
+            </parameter>
+            <parameter name="custom parameters"
+               type="java.util.Map">
+            </parameter>
+         </edgeType>
       </configuration>
    </extension>
 
