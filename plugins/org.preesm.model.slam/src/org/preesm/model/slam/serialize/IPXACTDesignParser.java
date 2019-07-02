@@ -47,12 +47,14 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.logging.Level;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.EClass;
 import org.eclipse.emf.ecore.EPackage;
 import org.preesm.commons.DomUtil;
 import org.preesm.commons.exceptions.PreesmRuntimeException;
+import org.preesm.commons.logger.PreesmLogger;
 import org.preesm.model.slam.ComponentHolder;
 import org.preesm.model.slam.ComponentInstance;
 import org.preesm.model.slam.Design;
@@ -238,6 +240,9 @@ public class IPXACTDesignParser extends IPXACTParser {
     final String instanceName = parseInstanceName(parent);
     instance.setInstanceName(instanceName);
 
+    final int id = parseID(parent);
+    instance.setId(id);
+
     Node node = parent.getFirstChild();
 
     while (node != null) {
@@ -365,6 +370,30 @@ public class IPXACTDesignParser extends IPXACTParser {
     }
 
     return name;
+  }
+
+  private int parseID(final Element parent) {
+    Node node = parent.getFirstChild();
+    int id = 0;
+
+    while (node != null) {
+      if (node instanceof Element) {
+        final Element elt = (Element) node;
+        final String type = elt.getTagName();
+        if (type.equals("spirit:id")) {
+          final String textContent = elt.getTextContent();
+          try {
+            id = Integer.valueOf(textContent);
+          } catch (final NumberFormatException e) {
+            PreesmLogger.getLogger().log(Level.WARNING,
+                "Could not parse component instance ID '" + textContent + "'. Using default value (0).");
+            id = 0;
+          }
+        }
+      }
+      node = node.getNextSibling();
+    }
+    return id;
   }
 
   /**
