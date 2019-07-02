@@ -10,6 +10,5 @@ Bundle-ActivationPolicy: lazy
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Bundle-Vendor: IETR / INSA Rennes - VAADER
 Export-Package: org.preesm.ui.slam,
- org.preesm.ui.slam.editor,
  org.preesm.ui.slam.filters,
  org.preesm.ui.slam.properties

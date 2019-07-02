@@ -86,12 +86,6 @@
       <propertySections
             contributorId="org.ietr.dftools.graphiti.ui.properties.contributor">
          <propertySection
-               class="org.preesm.ui.slam.properties.VertexParametersMapSection"
-               filter="org.preesm.ui.slam.properties.ArchitectureVertexFilter"
-               id="org.ietr.dftools.architecture.ui.properties.section.vertex.parameters"
-               tab="org.ietr.dftools.architecture.ui.properties.tab.vertex.parameters">
-         </propertySection>
-         <propertySection
             class="org.preesm.ui.slam.properties.SlamComponentVariablesMapSection"
             filter="org.preesm.ui.slam.filters.SlamComponentFilter"
             id="net.sf.dftools.ui.slam.vertex.parameters.section"
