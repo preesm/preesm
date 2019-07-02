@@ -63,13 +63,6 @@
             id="net.sf.dftools.ui.slam.vertex.parameters"
             label="Custom Parameters">
          </propertyTab>
-         <!-- Properties of selected Component instance - Custom Parameters -->
-         <!-- Unused ? -->
-         <propertyTab
-			category="org.ietr.dftools.graphiti.ui.properties.category.vertex"
-			id="org.ietr.dftools.architecture.ui.properties.tab.vertex.parameters"
-			label="Component instance parameters">
-         </propertyTab>
          <!-- Properties of the open desined (when nothing is selected) - Design Parameters -->
          <propertyTab
             category="org.ietr.dftools.graphiti.ui.properties.category.graph"
@@ -86,15 +79,8 @@
          default="true" extensions="slam" icon="resources/icons/graphiti.gif"
          id="net.sf.dftools.ui.SlamEditor" name="S-LAM Editor">
       </editor>
-
-      <editor
-            class="org.ietr.dftools.graphiti.ui.editors.GraphEditor"
-            contributorClass="org.ietr.dftools.graphiti.ui.editors.GraphActionBarContributor"
-            default="true"
-            id="org.ietr.dftools.architecture.ui.editor"
-            name="IP-XACT Editor">
-      </editor>
    </extension>
+
    <extension
          point="org.eclipse.ui.views.properties.tabbed.propertySections">
       <propertySections
