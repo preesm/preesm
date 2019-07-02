@@ -150,6 +150,7 @@ class Design extends VLNVedElement , ParameterizedElement {
 class ComponentInstance extends ParameterizedElement {
 	refers Component component opposite instances
 	String instanceName
+	int ^id
 	op boolean isHierarchical()
 }
 
