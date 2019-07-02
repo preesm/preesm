@@ -14,6 +14,7 @@ PREESM Changelog
 * Update relend;
 * Fix PiWriter: avoid throwing NPE when period is not attached to an element;
 * Change mirror (ibcp down);
+* Add new models for Schedule/Mapping/Memory Allocation;
 
 ### Bug fix
 * Fix #162
