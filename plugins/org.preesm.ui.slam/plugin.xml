@@ -57,20 +57,24 @@
       point="org.eclipse.ui.views.properties.tabbed.propertyTabs">
       <propertyTabs
          contributorId="org.ietr.dftools.graphiti.ui.properties.contributor">
+         <!-- Properties of selected Component instance - Custom Parameters -->
          <propertyTab
             category="org.ietr.dftools.graphiti.ui.properties.category.vertex"
             id="net.sf.dftools.ui.slam.vertex.parameters"
             label="Custom Parameters">
          </propertyTab>
+         <!-- Properties of selected Component instance - Custom Parameters -->
+         <!-- Unused ? -->
+         <propertyTab
+			category="org.ietr.dftools.graphiti.ui.properties.category.vertex"
+			id="org.ietr.dftools.architecture.ui.properties.tab.vertex.parameters"
+			label="Component instance parameters">
+         </propertyTab>
+         <!-- Properties of the open desined (when nothing is selected) - Design Parameters -->
          <propertyTab
             category="org.ietr.dftools.graphiti.ui.properties.category.graph"
             id="net.sf.dftools.ui.slam.design.parameters"
             label="Design Parameters">
-         </propertyTab>
-         <propertyTab
-               category="org.ietr.dftools.graphiti.ui.properties.category.vertex"
-               id="org.ietr.dftools.architecture.ui.properties.tab.vertex.parameters"
-               label="Component instance parameters">
          </propertyTab>
       </propertyTabs>
    </extension>
