@@ -105,14 +105,13 @@
       <!-- ############### -->
       <!-- ## Main (mostly down ...) : -->
       <!-- http://download.eclipse.org -->
-      <!-- ## Mirrors : -->
+      <!-- ## Full list of mirrors : -->
+      <!-- https://www.eclipse.org/downloads/download.php?format=xml -->
+      <!-- ## Usually good performing mirrors : -->
       <!-- http://ftp.fau.de/eclipse/ -->
-      <!-- http://mirror.ibcp.fr/pub/eclipse/ -->
       <!-- http://ftp.halifax.rwth-aachen.de/eclipse/ -->
-      <!-- http://eclipse.mirror.wearetriple.com/ -->
-      <!-- http://artfiles.org/eclipse.org/ -->
       <!-- http://mirror.switch.ch/eclipse/ -->
-      <eclipse.mirror>http://mirror.ibcp.fr/pub/eclipse/</eclipse.mirror>
+      <eclipse.mirror>http://ftp.halifax.rwth-aachen.de/eclipse/</eclipse.mirror>
 
       <!-- ############### -->
       <!-- P2 REPOS CONFIG -->

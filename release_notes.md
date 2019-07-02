@@ -13,6 +13,7 @@ PREESM Changelog
 * Update comments in PAPIFY UI;
 * Update relend;
 * Fix PiWriter: avoid throwing NPE when period is not attached to an element;
+* Change mirror (ibcp down);
 
 ### Bug fix
 * Fix #162
