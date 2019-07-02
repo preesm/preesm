@@ -40,19 +40,6 @@
 <plugin>
    <extension
          point="org.eclipse.ui.newWizards">
-      <category
-            id="org.ietr.dftools.architecture.ui.ArchitectureCategory"
-            name="Architecture">
-      </category>
-      <wizard
-            canFinishEarly="false"
-            category="org.ietr.dftools.architecture.ui.ArchitectureCategory"
-            class="org.preesm.ui.slam.ArchitectureProjectWizard"
-            hasPages="true"
-            id="org.ietr.dftools.architecture.ui.ArchitectureProjectWizard"
-            name="Architecture Project"
-            project="true">
-      </wizard>
       <wizard canFinishEarly="false"
          category="org.ietr.preesm.category"
          class="org.preesm.ui.slam.NewSlamFileWizard"
