@@ -331,6 +331,10 @@ public abstract class AbstractWorkflowExecutor {
           } catch (final PreesmException e) {
             getLogger().log(Level.SEVERE, e.getMessage(), e);
             nodeResult = false;
+          } catch (final Exception e) {
+            getLogger().log(Level.SEVERE, "Unexpected Exception: " + e.getClass().getCanonicalName() + ":"
+                + e.getMessage() + "\n Contact Preesm developers if you cannot solve the problem.", e);
+            nodeResult = false;
           }
         }
       } else if (node.isTaskNode()) {

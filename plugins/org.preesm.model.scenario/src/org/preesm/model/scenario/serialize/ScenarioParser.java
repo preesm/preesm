@@ -399,13 +399,13 @@ public class ScenarioParser {
             try {
               this.scenario.setAlgorithm(PiParser.getPiGraphWithReconnection(url));
             } catch (final Exception e) {
-              PreesmLogger.getLogger().log(Level.WARNING, "Could not parse the algorithm: " + e.getMessage(), e);
+              PreesmLogger.getLogger().log(Level.SEVERE, "Could not parse the algorithm: " + e.getMessage(), e);
             }
           } else if (type.equals("architecture")) {
             try {
               initializeArchitectureInformation(url);
             } catch (final Exception e) {
-              PreesmLogger.getLogger().log(Level.WARNING, "Could not parse the architecture: " + e.getMessage(), e);
+              PreesmLogger.getLogger().log(Level.SEVERE, "Could not parse the architecture: " + e.getMessage(), e);
             }
           } else if (type.equals("codegenDirectory")) {
             this.scenario.setCodegenDirectory(url);

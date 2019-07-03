@@ -47,14 +47,12 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.logging.Level;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.EClass;
 import org.eclipse.emf.ecore.EPackage;
 import org.preesm.commons.DomUtil;
 import org.preesm.commons.exceptions.PreesmRuntimeException;
-import org.preesm.commons.logger.PreesmLogger;
 import org.preesm.model.slam.ComponentHolder;
 import org.preesm.model.slam.ComponentInstance;
 import org.preesm.model.slam.Design;
@@ -240,7 +238,10 @@ public class IPXACTDesignParser extends IPXACTParser {
     final String instanceName = parseID(parent);
     instance.setInstanceName(instanceName);
 
-    final int id = parseHardwareID(parent);
+    final int id = parseHardwareID(parent, instanceName);
+    if (id == -1) {
+      throw new PreesmRuntimeException("No hardware ID specified for component instance '" + instanceName + "'");
+    }
     instance.setHardwareId(id);
 
     Node node = parent.getFirstChild();
@@ -372,9 +373,9 @@ public class IPXACTDesignParser extends IPXACTParser {
     return name;
   }
 
-  private int parseHardwareID(final Element parent) {
+  private int parseHardwareID(final Element parent, final String componentName) {
     Node node = parent.getFirstChild();
-    int id = 0;
+    int id = -1;
 
     while (node != null) {
       if (node instanceof Element) {
@@ -382,12 +383,19 @@ public class IPXACTDesignParser extends IPXACTParser {
         final String type = elt.getTagName();
         if (type.equals("spirit:hardwareId")) {
           final String textContent = elt.getTextContent();
+          if (textContent == null || textContent.isEmpty()) {
+            throw new PreesmRuntimeException(
+                "No component instance ID specified for component '" + componentName + "'");
+          }
           try {
             id = Integer.valueOf(textContent);
+            if (id < 0) {
+              throw new NumberFormatException(
+                  "Component instance ID '" + id + "' of component '" + componentName + "' should be positive.");
+            }
           } catch (final NumberFormatException e) {
-            PreesmLogger.getLogger().log(Level.WARNING,
-                "Could not parse component instance ID '" + textContent + "'. Using default value (0).");
-            id = 0;
+            throw new PreesmRuntimeException(
+                "Could not parse component instance ID '" + textContent + "' of component '" + componentName + "'", e);
           }
         }
       }
