@@ -209,9 +209,6 @@ class ActorBlock extends Block {
 class LoopBlock extends Block {
 }
 
-class ActorCall extends Call {
-}
-
 class CallBlock extends Block {
 }
 

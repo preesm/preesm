@@ -101,7 +101,7 @@ void initNbExec(int* nbExec, int nbDump) {
     fseek(ptfile , 0 , SEEK_END);
 
     //printf(";;");
-    for (i = 1; i < nbDump; i++){
+    for (i = 0; i < nbDump/2; i++){
         nbExec[i] = 1;
         fprintf(ptfile, "%d;", i);
     }
@@ -119,39 +119,39 @@ void writeTime(uint64_t* dumpBuffer, int nbDump, int* nbExec) {
     int i ;
 	int nbNotReady = 0;
 
-    if (stable == 0) {
-        for (i = 1; i < nbDump; i++) {
+	if (stable == 0) {
+		for (i = 0; i < nbDump/2; i++) {
 
-            double time = getElapsedNanoSec(dumpBuffer+i-1, dumpBuffer+i);
+			double time = getElapsedNanoSec(dumpBuffer+i*2, dumpBuffer+i*2+1);
             // We consider that all measures below 500 microseconds are not precise enough
-            int nbExecBefore = nbExec[i];
-            if (time < (double) 0) {
-            	nbExec[i] = 0;
-            	fprintf(stderr, "Error taking timing %d\n.", i);
-            } else if (time < (double) (MIN_TIME_MEASURE)) {
-                nbExec[i] = nbExecBefore * 2;
-                if (nbExec[i] > MAX_ITER_MEASURE) {
-                	nbExec[i] = MAX_ITER_MEASURE;
-                }
-            }
-            if (nbExecBefore != nbExec[i]) {
+			int nbExecBefore = nbExec[i];
+			if (time < (double) 0) {
+				nbExec[i] = 0;
+				fprintf(stderr, "Error taking timing %d\n.", i);
+			} else if (time < (double) (MIN_TIME_MEASURE)) {
+				nbExec[i] = nbExecBefore * 2;
+				if (nbExec[i] > MAX_ITER_MEASURE) {
+					nbExec[i] = MAX_ITER_MEASURE;
+				}
+			}
+			if (nbExecBefore != nbExec[i]) {
 				nbNotReady++;
 			}
-        }
+		}
 		if (nbNotReady == 0) {
 			stable = 1;
 		}
     }
-	fprintf(stderr, "Ready: %d/%d\n", nbDump-nbNotReady-1, nbDump-1);
+	fprintf(stderr, "Ready: %d/%d\n", nbDump/2-nbNotReady, nbDump/2);
 
-    for (i = 1; i < nbDump; i++) {
-        double nbEx = (double) nbExec[i];
-        double res;
-        nbEx = (nbEx != 0) ? 1/nbEx : 0;
-        res = getElapsedNanoSec(dumpBuffer+i-1, dumpBuffer+i) * nbEx;
-        fprintf(ptfile, "%.0lf;", res);
-    }
-    fprintf(ptfile, "\n");
-    fflush(ptfile);
+	for (i = 0; i < nbDump/2; i++) {
+		double nbEx = (double) nbExec[i];
+		double res;
+		nbEx = (nbEx != 0) ? 1/nbEx : 0;
+		res = getElapsedNanoSec(dumpBuffer+i*2, dumpBuffer+i*2+1) * nbEx;
+		fprintf(ptfile, "%.0lf;", res);
+	}
+	fprintf(ptfile, "\n");
+	fflush(ptfile);
 
 }

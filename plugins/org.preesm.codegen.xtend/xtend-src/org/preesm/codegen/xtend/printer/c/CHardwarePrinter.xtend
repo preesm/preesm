@@ -803,7 +803,7 @@ class CHardwarePrinter extends DefaultPrinter {
 //			var iteratorInit = coreInit.codeElts.size
 //			for (var i = 0; i < iteratorInit; i++){
 //				var elementInit = coreInit.codeElts.get(i)
-//				if (elementInit.class.simpleName.equals("GlobalBufferDeclarationImpl")){
+//				if (elementInit instanceof GlobalBufferDeclaration){
 //					var buffersCopy = (elementInit as GlobalBufferDeclarationImpl).getBuffers
 //					var parameterDirectionCopy = (elementInit as GlobalBufferDeclarationImpl).getParameterDirections
 //					bufferCopyList.addAll(buffersCopy)
@@ -818,7 +818,7 @@ class CHardwarePrinter extends DefaultPrinter {
 //		var iteratorInit = coreInitFinal.codeElts.size
 //		for (var i = 0; i < iteratorInit; i++){
 //			var elementInit = coreInitFinal.codeElts.get(i)
-//			if (elementInit.class.simpleName.equals("GlobalBufferDeclarationImpl")){
+//			if (elementInit instanceof GlobalBufferDeclaration){
 //				(elementInit as GlobalBufferDeclarationImpl).getBuffers.addAll(bufferCopyList)
 //				(elementInit as GlobalBufferDeclarationImpl).getParameterDirections.addAll(parameterDirectionsCopyList)
 //			}
@@ -861,14 +861,12 @@ class CHardwarePrinter extends DefaultPrinter {
 			while (i < coreLoop.codeElts.size) {
 				// Retrieve the function ID
 				val elt = coreLoop.codeElts.get(i)
-				if (elt.getClass().getSimpleName().equals("FunctionCallImpl") && this.functionCallNumber == 0) {
+				if (elt instanceof FunctionCall) {
 					this.functionCallNumber++;
 					lastFunctionCallIndex = i;
-				}
-				else if (elt.getClass().getSimpleName().equals("FunctionCallImpl") && this.functionCallNumber > 0) {
-					this.functionCallNumber++;
-					lastFunctionCallIndex = i;
-					//coreLoop.codeElts.remove(i);
+					if (this.functionCallNumber > 0) {
+						//coreLoop.codeElts.remove(i);
+					}
 				}
 				i++;
 			}
@@ -879,7 +877,7 @@ class CHardwarePrinter extends DefaultPrinter {
 				currentFunctionPosition = lastFunctionCallIndex;
 				var functionCallImplOld = (block as CoreBlock).loopBlock.codeElts.get(lastFunctionCallIndex);
 				// checking that the function to be changed is the right one
-				 if (!functionCallImplOld.class.getSimpleName().equals("FunctionCallImpl")){
+				 if (! (functionCallImplOld instanceof FunctionCall)) {
 				 	PreesmLogger.getLogger().log(Level.SEVERE, "Hardware Codegen ERROR in the preProcessing function. The functionCall to be modified was NOT found");
 				 } else {
 				 	// create a new function identical to the Old one
@@ -908,11 +906,11 @@ class CHardwarePrinter extends DefaultPrinter {
 			while (i > 0) {
 				// Retrieve the function ID
 				val elt = coreLoop.codeElts.get(i)
-				if (elt.getClass().getSimpleName().equals("FunctionCallImpl") && flagFirstFunctionFound == 0) {
+				if ((elt instanceof FunctionCall) && flagFirstFunctionFound == 0) {
 					flagFirstFunctionFound++;
 
 				}
-				else if (elt.getClass().getSimpleName().equals("FunctionCallImpl") && flagFirstFunctionFound > 0) {
+				else if ((elt instanceof FunctionCall) && flagFirstFunctionFound > 0) {
 					coreLoop.codeElts.remove(i);
 					currentFunctionPosition--;
 				}
@@ -928,14 +926,12 @@ class CHardwarePrinter extends DefaultPrinter {
 			while (i < coreLoop.codeElts.size) {
 				// Retrieve the function ID
 				val elt = coreLoop.codeElts.get(i)
-				if (elt.getClass().getSimpleName().equals("DataTransferActionImpl") && DataTransferActionNumber == 0) {
+				if (elt instanceof DataTransferAction) {
 					DataTransferActionNumber++;
 					positionOfNewDataTransfer++;
-				}
-				else if (elt.getClass().getSimpleName().equals("DataTransferActionImpl") && DataTransferActionNumber > 0) {
-					DataTransferActionNumber++;
-					positionOfNewDataTransfer++;
-					//coreLoop.codeElts.remove(i);
+					if (DataTransferActionNumber > 0) {
+						//coreLoop.codeElts.remove(i);
+					}	
 				}
 				i++;
 			}
@@ -945,11 +941,11 @@ class CHardwarePrinter extends DefaultPrinter {
 			while (i < coreLoop.codeElts.size) {
 				// Retrieve the function ID
 				val elt = coreLoop.codeElts.get(i)
-				if (elt.getClass().getSimpleName().equals("FreeDataTransferBufferImpl") && FreeDataTransferBufferNumber == 0) {
+				if ((elt instanceof FreeDataTransferBuffer) && FreeDataTransferBufferNumber == 0) {
 					FreeDataTransferBufferNumber++;
 					//firstFreeDataIndex = i;
 				}
-				else if (elt.getClass().getSimpleName().equals("FreeDataTransferBufferImpl") && FreeDataTransferBufferNumber > 0) {
+				else if ((elt instanceof FreeDataTransferBuffer) && FreeDataTransferBufferNumber > 0) {
 					FreeDataTransferBufferNumber++;
 					//coreLoop.codeElts.remove(i);
 				}
@@ -965,12 +961,7 @@ class CHardwarePrinter extends DefaultPrinter {
 			while (i < coreLoop.codeElts.size) {
 				// Retrieve the function ID
 				val elt = coreLoop.codeElts.get(i)
-				if (elt.getClass().getSimpleName().equals("OutputDataTransferImpl") && OutputDataTransferActionNumber == 0) {
-					OutputDataTransferActionNumber++;
-					currentFunctionPosition--
-					coreLoop.codeElts.remove(i);
-				}
-				else if (elt.getClass().getSimpleName().equals("OutputDataTransferImpl") && OutputDataTransferActionNumber > 0) {
+				if (elt instanceof OutputDataTransfer) {
 					OutputDataTransferActionNumber++;
 					currentFunctionPosition--
 					coreLoop.codeElts.remove(i);
@@ -986,7 +977,7 @@ class CHardwarePrinter extends DefaultPrinter {
 			while (i < cloneCoreLoop.size){
 				// Retrieve the function ID
 				val elt = cloneCoreLoop.get(i)
-				if (elt.getClass().getSimpleName().equals("OutputDataTransferImpl")){
+				if (elt instanceof OutputDataTransfer){
 					countOutputDataTransferInserted++
 					coreLoop.codeElts.add(currentFunctionPosition+countOutputDataTransferInserted,elt)
 				}
@@ -999,11 +990,11 @@ class CHardwarePrinter extends DefaultPrinter {
 			while (i < coreLoop.codeElts.size) {
 				// Retrieve the function ID
 				val elt = coreLoop.codeElts.get(i)
-				if (elt.getClass().getSimpleName().equals("RegisterSetUpActionImpl") && RegisterSetUpNumber == 0) {
+				if ((elt instanceof RegisterSetUpAction) && RegisterSetUpNumber == 0) {
 					RegisterSetUpNumber++;
 					//firstRegisterSetUp = i;
 				}
-				else if (elt.getClass().getSimpleName().equals("RegisterSetUpActionImpl") && RegisterSetUpNumber > 0) {
+				else if ((elt instanceof RegisterSetUpAction) && RegisterSetUpNumber > 0) {
 					RegisterSetUpNumber++;
 					coreLoop.codeElts.remove(i);
 				}
