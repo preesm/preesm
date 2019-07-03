@@ -402,6 +402,7 @@ public abstract class CodegenAbstractPrinter extends CodegenSwitch<CharSequence>
     String indentation;
     boolean hasNewLine;
 
+    final EList<Variable> definitions = coreBlock.getDefinitions();
     // Visit Declarations
     {
       setState(PrinterState.PRINTING_DECLARATIONS);
@@ -409,7 +410,7 @@ public abstract class CodegenAbstractPrinter extends CodegenSwitch<CharSequence>
       final List<Variable> declsNotDefs = new ArrayList<>();
       final EList<Variable> declarations = coreBlock.getDeclarations();
       for (final Variable v : declarations) {
-        if (!coreBlock.getDefinitions().contains(v)) {
+        if (!definitions.contains(v)) {
           declsNotDefs.add(v);
         }
       }
@@ -440,7 +441,6 @@ public abstract class CodegenAbstractPrinter extends CodegenSwitch<CharSequence>
     // Visit Definitions
     {
       setState(PrinterState.PRINTING_DEFINITIONS);
-      final EList<Variable> definitions = coreBlock.getDefinitions();
       final CharSequence definitionsHeader = printDefinitionsHeader(definitions);
       result.append(definitionsHeader, indentationCoreBlock);
       if (definitionsHeader.length() > 0) {
