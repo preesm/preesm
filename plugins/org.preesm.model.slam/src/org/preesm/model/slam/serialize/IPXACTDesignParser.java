@@ -47,12 +47,17 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.logging.Level;
+import java.util.stream.Collectors;
 import org.eclipse.core.runtime.Path;
+import org.eclipse.emf.common.util.EList;
 import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.EClass;
 import org.eclipse.emf.ecore.EPackage;
 import org.preesm.commons.DomUtil;
 import org.preesm.commons.exceptions.PreesmRuntimeException;
+import org.preesm.commons.logger.PreesmLogger;
 import org.preesm.model.slam.ComponentHolder;
 import org.preesm.model.slam.ComponentInstance;
 import org.preesm.model.slam.Design;
@@ -218,6 +223,27 @@ public class IPXACTDesignParser extends IPXACTParser {
       }
       node = node.getNextSibling();
     }
+
+    // set default hardware ID
+    final EList<ComponentInstance> componentInstances = design.getComponentInstances();
+    final Set<Integer> usedIDs = componentInstances.stream().map(c -> c.getHardwareId()).collect(Collectors.toSet());
+
+    final List<ComponentInstance> unsetHardwareIDComponentInstances = componentInstances.stream()
+        .filter(c -> c.getHardwareId() == -1).collect(Collectors.toList());
+    if (!unsetHardwareIDComponentInstances.isEmpty()) {
+      PreesmLogger.getLogger().log(Level.WARNING,
+          "Some component instances have an unset hardware ID. Using counter to set a default value.");
+      final AtomicInteger counter = new AtomicInteger(0);
+      for (final ComponentInstance cmp : unsetHardwareIDComponentInstances) {
+        while (usedIDs.contains(counter.get())) {
+          counter.incrementAndGet();
+        }
+        cmp.setHardwareId(counter.get());
+        usedIDs.add(counter.get());
+      }
+
+    }
+
   }
 
   /**
@@ -239,9 +265,6 @@ public class IPXACTDesignParser extends IPXACTParser {
     instance.setInstanceName(instanceName);
 
     final int id = parseHardwareID(parent, instanceName);
-    if (id == -1) {
-      throw new PreesmRuntimeException("No hardware ID specified for component instance '" + instanceName + "'");
-    }
     instance.setHardwareId(id);
 
     Node node = parent.getFirstChild();

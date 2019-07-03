@@ -308,8 +308,8 @@ public abstract class CodegenAbstractPrinter extends CodegenSwitch<CharSequence>
         final int coreBlockjID = coreBlockj.getCoreID();
         if (coreBlockiID == coreBlockjID) {
           throw new PreesmRuntimeException("Operators '" + coreBlocki.getName() + "' and '" + coreBlockj.getName()
-              + "' in the design have the same hardware ID. The codegen '" + this.getClass().getSimpleName()
-              + "' does not support this.");
+              + "' in the design have the same hardware ID '" + coreBlockiID + "'. The codegen '"
+              + this.getClass().getSimpleName() + "' does not support this.");
         }
       }
     }
