@@ -176,6 +176,10 @@
                     <xsl:attribute name="value"><xsl:value-of select="spirit:instanceName"/></xsl:attribute>
                 </xsl:element>
                 <xsl:element name="parameter">
+                    <xsl:attribute name="name">hardwareId</xsl:attribute>
+                    <xsl:attribute name="value"><xsl:value-of select="spirit:hardwareId"/></xsl:attribute>
+                </xsl:element>
+                <xsl:element name="parameter">
                     <xsl:attribute name="name">refinement</xsl:attribute>
                     <xsl:attribute name="value"><xsl:value-of select="$refinement"/></xsl:attribute>
                 </xsl:element>
