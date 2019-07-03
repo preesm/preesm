@@ -221,17 +221,16 @@ class CPrinter extends DefaultPrinter {
 
 	//#pragma omp parallel for private(«block2.iter.name»)
 	override printFiniteLoopBlockHeader(FiniteLoopBlock block2) '''
-
 		// Begin the for loop
 		{
 			int «block2.iter.name»;
-			for(«block2.iter.name»=0;«block2.iter.name»<«block2.nbIter»;«block2.iter.name»++){
-
-	'''
+			for(«block2.iter.name»=0;«block2.iter.name»<«block2.nbIter»;«block2.iter.name»++) {
+				
+				'''
 
 	override printFiniteLoopBlockFooter(FiniteLoopBlock block2) '''
+			}
 		}
-	}
 	'''
 
 	override String printFifoCall(FifoCall fifoCall) {

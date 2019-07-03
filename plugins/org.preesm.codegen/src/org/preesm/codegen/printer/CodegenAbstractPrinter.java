@@ -672,7 +672,6 @@ public abstract class CodegenAbstractPrinter extends CodegenSwitch<CharSequence>
 
     if (hasNewLine) {
       result.newLineIfNotEmpty();
-      result.append(indentation);
     }
 
     result.append(printFiniteLoopBlockFooter(loopBlock), "");
