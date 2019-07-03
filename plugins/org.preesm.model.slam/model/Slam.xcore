@@ -55,8 +55,8 @@ import org.preesm.model.slam.component.Component
 import org.preesm.model.slam.component.HierarchyPort
 import org.preesm.model.slam.component.Operator
 import org.preesm.model.slam.link.Link
-import org.preesm.model.slam.utils.ComponentInstanceComparator
 import org.preesm.model.slam.utils.VLNVComparator
+import org.preesm.model.slam.utils.LexicographicComponentInstanceComparator
 
 // !!! This is needed as of the current versions of xcore/xtext
 // For some reason when using the default String/... (i.e. without the following)
@@ -121,7 +121,7 @@ class Design extends VLNVedElement , ParameterizedElement {
 		return componentInstances.filter[(it.component instanceof Operator)].toEList.unmodifiableView
 	}
 	op ComponentInstance[] getOrderedOperatorComponentInstances() {
-		return operatorComponentInstances.sortEList(new ComponentInstanceComparator()).unmodifiableView
+		return operatorComponentInstances.sortEList(new LexicographicComponentInstanceComparator()).unmodifiableView
 	}
 	op ComponentInstance[] getComponentInstancesOfType(Component component) {
 		componentInstances.filter[component.vlnv.name == it.component.vlnv.name].toEList.unmodifiableView

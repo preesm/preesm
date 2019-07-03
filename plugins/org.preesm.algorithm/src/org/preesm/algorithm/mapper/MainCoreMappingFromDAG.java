@@ -52,7 +52,7 @@ import org.preesm.commons.doc.annotations.PreesmTask;
 import org.preesm.model.scenario.Scenario;
 import org.preesm.model.slam.ComponentInstance;
 import org.preesm.model.slam.Design;
-import org.preesm.model.slam.utils.ComponentInstanceComparator;
+import org.preesm.model.slam.utils.LexicographicComponentInstanceComparator;
 
 /**
  *
@@ -80,7 +80,7 @@ public class MainCoreMappingFromDAG extends AbstractMappingFromDAG {
 
     // 1- sort components to have a relation from ID to component
     final List<ComponentInstance> componentInstances = new ArrayList<>(architecture.getComponentInstances());
-    Collections.sort(componentInstances, new ComponentInstanceComparator());
+    Collections.sort(componentInstances, new LexicographicComponentInstanceComparator());
     final ComponentInstance mainOperator = scenario.getSimulationInfo().getMainOperator();
 
     final LatencyAbc abc = LatencyAbc.getInstance(abcParams, dag, architecture, scenario);
