@@ -486,6 +486,16 @@ public class CodegenModelGenerator {
     // 0 - Create the Buffers of the MemEx
     generateBuffers();
 
+    // init coreBlocks
+    for (final ComponentInstance cmp : this.archi.getOperatorComponentInstances()) {
+      if (!this.coreBlocks.containsKey(cmp)) {
+        CoreBlock operatorBlock = CodegenModelUserFactory.createCoreBlock();
+        operatorBlock.setName(cmp.getInstanceName());
+        operatorBlock.setCoreType(cmp.getComponent().getVlnv().getName());
+        this.coreBlocks.put(cmp, operatorBlock);
+      }
+    }
+
     // 1 - iterate over dag vertices in SCHEDULING Order !
     final ScheduledDAGIterator scheduledDAGIterator = new ScheduledDAGIterator(algo);
     scheduledDAGIterator.forEachRemaining(vert -> {
@@ -498,13 +508,10 @@ public class CodegenModelGenerator {
       operator = vert.getPropertyBean().getValue(ImplementationPropertyNames.Vertex_Operator);
       // If this is the first time this operator is encountered,
       // Create a Block and store it.
-      operatorBlock = this.coreBlocks.get(operator);
-      if (operatorBlock == null) {
-        operatorBlock = CodegenModelUserFactory.createCoreBlock();
-        operatorBlock.setName(operator.getInstanceName());
-        operatorBlock.setCoreType(operator.getComponent().getVlnv().getName());
-        this.coreBlocks.put(operator, operatorBlock);
+      if (!this.coreBlocks.containsKey(operator)) {
+        throw new PreesmRuntimeException();
       }
+      operatorBlock = this.coreBlocks.get(operator);
       // 1.1 - Construct the "loop" of each core.
       final String vertexType = vert.getPropertyBean().getValue(ImplementationPropertyNames.Vertex_vertexType)
           .toString();
