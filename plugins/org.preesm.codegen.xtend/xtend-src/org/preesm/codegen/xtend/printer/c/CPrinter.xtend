@@ -83,6 +83,7 @@ import org.preesm.codegen.printer.DefaultPrinter
 import org.preesm.commons.exceptions.PreesmRuntimeException
 import org.preesm.commons.files.PreesmResourcesHelper
 import org.preesm.model.pisdf.util.CHeaderUsedLocator
+import org.preesm.codegen.model.IteratedBuffer
 
 /**
  * This printer is currently used to print C code only for GPP processors
@@ -636,6 +637,8 @@ class CPrinter extends DefaultPrinter {
 	override printBufferIteratorDeclaration(BufferIterator bufferIterator) ''''''
 
 	override printBufferIteratorDefinition(BufferIterator bufferIterator) ''''''
+
+	override printIteratedBuffer(IteratedBuffer iteratedBuffer) '''«doSwitch(iteratedBuffer.buffer)» + «printIntVar(iteratedBuffer.iter)» * «iteratedBuffer.iterSize»'''
 
 	override printIntVar(IntVar intVar) '''«intVar.name»'''
 

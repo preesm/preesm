@@ -69,6 +69,7 @@ import org.preesm.codegen.model.Variable
 import org.preesm.codegen.printer.CodegenAbstractPrinter
 import org.preesm.codegen.model.DistributedMemoryCommunication
 import org.preesm.codegen.model.PapifyFunctionCall
+import org.preesm.codegen.model.IteratedBuffer
 
 /**
  * This {@link DevelopperPrinter} is a dummy implementation of the
@@ -201,6 +202,8 @@ class DevelopperPrinter extends CodegenAbstractPrinter {
 	override printBufferIteratorDeclaration(BufferIterator bufferIterator) '''<BufferIterator_Declaration>'''
 
 	override printBufferIteratorDefinition(BufferIterator bufferIterator) '''<BufferIterator_Definition>'''
+	
+	override printIteratedBuffer(IteratedBuffer iteratedBuffer) '''<IteratedBuffer>'''
 	
 	override printDataTansfer(DataTransferAction action) '''<Data_Transfer>'''
 	

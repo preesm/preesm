@@ -312,6 +312,13 @@ class BufferIterator extends SubBuffer {
 	refers IntVar iter
 }
 
+class IteratedBuffer extends Buffer {
+	refers Buffer buffer
+	refers IntVar iter
+	long iterSize
+	
+}
+
 class PapifyAction extends Variable {
 	boolean opening = "false"
 	boolean closing = "false"

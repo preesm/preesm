@@ -64,6 +64,7 @@ import org.preesm.codegen.model.FreeDataTransferBuffer;
 import org.preesm.codegen.model.FunctionCall;
 import org.preesm.codegen.model.GlobalBufferDeclaration;
 import org.preesm.codegen.model.IntVar;
+import org.preesm.codegen.model.IteratedBuffer;
 import org.preesm.codegen.model.LoopBlock;
 import org.preesm.codegen.model.NullBuffer;
 import org.preesm.codegen.model.OutputDataTransfer;
@@ -741,6 +742,11 @@ public abstract class CodegenAbstractPrinter extends CodegenSwitch<CharSequence>
   }
 
   @Override
+  public CharSequence caseIteratedBuffer(final IteratedBuffer iteratedBuffer) {
+    return printIteratedBuffer(iteratedBuffer);
+  }
+
+  @Override
   public CharSequence caseDataTransferAction(DataTransferAction object) {
     return printDataTansfer(object);
   }
@@ -1237,6 +1243,16 @@ public abstract class CodegenAbstractPrinter extends CodegenSwitch<CharSequence>
    * @return the printed {@link CharSequence}
    */
   public abstract CharSequence printBufferIterator(BufferIterator bufferIterator);
+
+  /**
+   * Method called to print a {@link IteratedBuffer} outside the {@link CoreBlock#getDefinitions() definition} or the
+   * {@link CoreBlock#getDeclarations() declaration} of a {@link CoreBlock}
+   *
+   * @param iteratedBuffer
+   *          the {@link IteratedBuffer} to print.
+   * @return the printed {@link CharSequence}
+   */
+  public abstract CharSequence printIteratedBuffer(IteratedBuffer iteratedBuffer);
 
   /**
    * Method called to print a {@link BufferIterator} within the {@link CoreBlock#getDeclarations() declaration}

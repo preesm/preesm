@@ -57,6 +57,7 @@ import org.preesm.codegen.model.FreeDataTransferBuffer;
 import org.preesm.codegen.model.FunctionCall;
 import org.preesm.codegen.model.GlobalBufferDeclaration;
 import org.preesm.codegen.model.IntVar;
+import org.preesm.codegen.model.IteratedBuffer;
 import org.preesm.codegen.model.LoopBlock;
 import org.preesm.codegen.model.NullBuffer;
 import org.preesm.codegen.model.OutputDataTransfer;
@@ -281,6 +282,10 @@ public class DefaultPrinter extends CodegenAbstractPrinter {
   }
 
   public CharSequence printBufferIteratorDefinition(BufferIterator bufferIterator) {
+    return "";
+  }
+
+  public CharSequence printIteratedBuffer(IteratedBuffer iteratedBuffer) {
     return "";
   }
 
