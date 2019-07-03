@@ -52,6 +52,7 @@ import org.preesm.algorithm.mapper.ui.Messages;
 import org.preesm.algorithm.mapper.ui.stats.StatGenerator;
 import org.preesm.model.slam.ComponentInstance;
 import org.preesm.model.slam.Design;
+import org.preesm.model.slam.utils.LexicographicComponentInstanceComparator;
 
 // TODO: Auto-generated Javadoc
 /**
@@ -131,7 +132,7 @@ public class DeploymentProperties implements IStructuredContentProvider, ITableL
     Comparator<ComponentInstance> comparator = null;
 
     if (this.columnOrder.equals(Messages.getString("Overview.properties.opColumn"))) {
-      comparator = (o1, o2) -> o1.getInstanceName().compareTo(o2.getInstanceName());
+      comparator = new LexicographicComponentInstanceComparator();
     } else if (this.columnOrder.equals(Messages.getString("Overview.properties.loadColumn"))) {
       comparator = (o1, o2) -> {
         long l1 = loads.get(o1);
