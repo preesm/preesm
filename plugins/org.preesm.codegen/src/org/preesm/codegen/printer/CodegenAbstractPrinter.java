@@ -41,6 +41,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.stream.Collectors;
 import org.eclipse.emf.common.util.EList;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.xtend2.lib.StringConcatenation;
@@ -294,7 +295,24 @@ public abstract class CodegenAbstractPrinter extends CodegenSwitch<CharSequence>
    *          printerBlocks
    */
   public void preProcessing(final List<Block> printerBlocks, final Collection<Block> allBlocks) {
-    // no pre processing by default
+    // by default, check that all Operators have a unique hardware ID
+    // this can be overriden.
+    final List<CoreBlock> operatorBlocks = allBlocks.stream().filter(block -> block instanceof CoreBlock)
+        .map(block -> (CoreBlock) block).collect(Collectors.toList());
+    final long operatorBlockCount = operatorBlocks.size();
+    for (int i = 0; i < operatorBlockCount; i++) {
+      final CoreBlock coreBlocki = operatorBlocks.get(i);
+      final int coreBlockiID = coreBlocki.getCoreID();
+      for (int j = i + 1; j < operatorBlockCount; j++) {
+        final CoreBlock coreBlockj = operatorBlocks.get(j);
+        final int coreBlockjID = coreBlockj.getCoreID();
+        if (coreBlockiID == coreBlockjID) {
+          throw new PreesmRuntimeException("Operators '" + coreBlocki.getName() + "' and '" + coreBlockj.getName()
+              + "' in the design have the same hardware ID. The codegen '" + this.getClass().getSimpleName()
+              + "' does not support this.");
+        }
+      }
+    }
   }
 
   /**

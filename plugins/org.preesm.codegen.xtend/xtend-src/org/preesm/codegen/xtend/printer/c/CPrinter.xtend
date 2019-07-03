@@ -639,6 +639,7 @@ class CPrinter extends DefaultPrinter {
 	override printRegisterSetUp(RegisterSetUpAction action) ''''''
 
 	override preProcessing(List<Block> printerBlocks, Collection<Block> allBlocks){
+		super.preProcessing(printerBlocks, allBlocks);
 		for (cluster : allBlocks){
 			if (cluster instanceof CoreBlock) {
 				for(CodeElt codeElt : cluster.loopBlock.codeElts){
