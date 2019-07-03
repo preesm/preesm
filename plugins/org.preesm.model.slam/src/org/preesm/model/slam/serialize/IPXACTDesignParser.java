@@ -240,7 +240,7 @@ public class IPXACTDesignParser extends IPXACTParser {
     final String instanceName = parseID(parent);
     instance.setInstanceName(instanceName);
 
-    final int id = parseProcessorID(parent);
+    final int id = parseHardwareID(parent);
     instance.setHardwareId(id);
 
     Node node = parent.getFirstChild();
@@ -372,7 +372,7 @@ public class IPXACTDesignParser extends IPXACTParser {
     return name;
   }
 
-  private int parseProcessorID(final Element parent) {
+  private int parseHardwareID(final Element parent) {
     Node node = parent.getFirstChild();
     int id = 0;
 
@@ -380,7 +380,7 @@ public class IPXACTDesignParser extends IPXACTParser {
       if (node instanceof Element) {
         final Element elt = (Element) node;
         final String type = elt.getTagName();
-        if (type.equals("spirit:procId")) {
+        if (type.equals("spirit:hardwareId")) {
           final String textContent = elt.getTextContent();
           try {
             id = Integer.valueOf(textContent);
