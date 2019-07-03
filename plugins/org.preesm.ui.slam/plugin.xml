@@ -137,8 +137,6 @@
             </shape>
             <size height="40" width="40">
             </size>
-            <parameter name="hardwareId" type="java.lang.String">
-            </parameter>
             <parameter name="id" type="java.lang.String">
             </parameter>
          </vertexType>
