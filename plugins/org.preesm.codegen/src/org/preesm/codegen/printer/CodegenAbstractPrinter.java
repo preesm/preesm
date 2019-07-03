@@ -49,6 +49,7 @@ import org.preesm.codegen.model.Block;
 import org.preesm.codegen.model.Buffer;
 import org.preesm.codegen.model.BufferIterator;
 import org.preesm.codegen.model.CallBlock;
+import org.preesm.codegen.model.ClusterBlock;
 import org.preesm.codegen.model.CodeElt;
 import org.preesm.codegen.model.CodegenPackage;
 import org.preesm.codegen.model.Communication;
@@ -681,6 +682,39 @@ public abstract class CodegenAbstractPrinter extends CodegenSwitch<CharSequence>
   }
 
   @Override
+  public CharSequence caseClusterBlock(final ClusterBlock clusterBlock) {
+    StringConcatenation result = new StringConcatenation();
+    String indentation = "";
+    boolean hasNewLine;
+
+    final CharSequence clusterBlockheader = printClusterBlockHeader(clusterBlock);
+    result.append(clusterBlockheader, indentation);
+
+    if (clusterBlockheader.length() > 0) {
+      indentation = CodegenAbstractPrinter.getLastLineIndentation(result);
+      result = CodegenAbstractPrinter.trimLastEOL(result);
+      hasNewLine = CodegenAbstractPrinter.endWithEOL(result);
+    } else {
+      hasNewLine = false;
+    }
+
+    // Visit all codeElements
+    final EList<CodeElt> codeElts = clusterBlock.getCodeElts();
+    for (final CodeElt codeElt : codeElts) {
+      final CharSequence code = doSwitch(codeElt);
+      result.append(code, indentation);
+    }
+
+    if (hasNewLine) {
+      result.newLineIfNotEmpty();
+    }
+
+    result.append(printClusterBlockFooter(clusterBlock), "");
+
+    return result;
+  }
+
+  @Override
   public CharSequence caseNullBuffer(final NullBuffer nullBuffer) {
     if (this.state.equals(PrinterState.PRINTING_DEFINITIONS)) {
       return printNullBufferDefinition(nullBuffer);
@@ -1135,6 +1169,24 @@ public abstract class CodegenAbstractPrinter extends CodegenSwitch<CharSequence>
    * @return the printed {@link CharSequence}
    */
   public abstract CharSequence printFiniteLoopBlockHeader(FiniteLoopBlock block);
+
+  /**
+   * Method called after printing all {@link CodeElt} belonging to a {@link ClusterBlock}.
+   *
+   * @param block
+   *          the {@link ClusterBlock} whose {@link CodeElt} were printed before calling this method.
+   * @return the printed {@link CharSequence}
+   */
+  public abstract CharSequence printClusterBlockFooter(ClusterBlock block);
+
+  /**
+   * Method called before printing all {@link CodeElt} belonging to a {@link ClusterBlock}.
+   *
+   * @param block
+   *          the {@link ClusterBlock} whose {@link CodeElt} will be printed after calling this method.
+   * @return the printed {@link CharSequence}
+   */
+  public abstract CharSequence printClusterBlockHeader(ClusterBlock block);
 
   /**
    * Method called to print a {@link NullBuffer} outside the {@link CoreBlock#getDefinitions() definition} or the

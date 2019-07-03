@@ -201,6 +201,10 @@ class CoreBlock extends Block {
 	unordered id int coreID
 }
 
+class ClusterBlock extends Block {
+	String schedule
+}
+
 class ActorBlock extends Block {
 	refers LoopBlock loopBlock
 	refers CallBlock initBlock

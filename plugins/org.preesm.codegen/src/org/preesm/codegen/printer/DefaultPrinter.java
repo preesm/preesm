@@ -44,6 +44,7 @@ import org.preesm.codegen.model.Block;
 import org.preesm.codegen.model.Buffer;
 import org.preesm.codegen.model.BufferIterator;
 import org.preesm.codegen.model.CallBlock;
+import org.preesm.codegen.model.ClusterBlock;
 import org.preesm.codegen.model.Communication;
 import org.preesm.codegen.model.Constant;
 import org.preesm.codegen.model.ConstantString;
@@ -230,6 +231,14 @@ public class DefaultPrinter extends CodegenAbstractPrinter {
   }
 
   public CharSequence printFiniteLoopBlockHeader(FiniteLoopBlock block) {
+    return "";
+  }
+
+  public CharSequence printClusterBlockFooter(ClusterBlock block) {
+    return "";
+  }
+
+  public CharSequence printClusterBlockHeader(ClusterBlock block) {
     return "";
   }
 

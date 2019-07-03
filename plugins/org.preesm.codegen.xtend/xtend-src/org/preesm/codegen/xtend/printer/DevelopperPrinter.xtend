@@ -70,6 +70,7 @@ import org.preesm.codegen.printer.CodegenAbstractPrinter
 import org.preesm.codegen.model.DistributedMemoryCommunication
 import org.preesm.codegen.model.PapifyFunctionCall
 import org.preesm.codegen.model.IteratedBuffer
+import org.preesm.codegen.model.ClusterBlock
 
 /**
  * This {@link DevelopperPrinter} is a dummy implementation of the
@@ -170,6 +171,10 @@ class DevelopperPrinter extends CodegenAbstractPrinter {
 	override printFiniteLoopBlockFooter(FiniteLoopBlock block) '''<Finite_Loop_Block_Foot>'''
 
 	override printFiniteLoopBlockHeader(FiniteLoopBlock block) '''<Finite_Loop_Block_Head>'''
+
+	override printClusterBlockFooter(ClusterBlock block) '''<Cluster_Block_Foot>'''
+
+	override printClusterBlockHeader(ClusterBlock block) '''<Cluster_Block_Head>'''
 
 	override printNullBuffer(NullBuffer nullBuffer) '''<NullBuffer>'''
 

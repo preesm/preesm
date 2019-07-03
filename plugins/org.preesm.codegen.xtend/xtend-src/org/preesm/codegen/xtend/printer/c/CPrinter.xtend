@@ -84,6 +84,7 @@ import org.preesm.commons.exceptions.PreesmRuntimeException
 import org.preesm.commons.files.PreesmResourcesHelper
 import org.preesm.model.pisdf.util.CHeaderUsedLocator
 import org.preesm.codegen.model.IteratedBuffer
+import org.preesm.codegen.model.ClusterBlock
 
 /**
  * This printer is currently used to print C code only for GPP processors
@@ -233,6 +234,18 @@ class CPrinter extends DefaultPrinter {
 			}
 		}
 	'''
+
+	override printClusterBlockHeader(ClusterBlock block) '''
+		// Cluster: «block.name»
+		// Schedule: «block.schedule»
+		{
+			
+			'''
+
+	override printClusterBlockFooter(ClusterBlock block) '''
+		}
+	'''
+
 
 	override String printFifoCall(FifoCall fifoCall) {
 		var result = "fifo" + fifoCall.operation.toString.toLowerCase.toFirstUpper + "("
