@@ -520,6 +520,12 @@ class CPrinter extends DefaultPrinter {
 
 
 		int main(void) {
+			// Set affinity of main thread to proper core ID
+			cpu_set_t cpuset;
+			CPU_ZERO(&cpuset);
+			CPU_SET(_PREESM_MAIN_THREAD_, &cpuset);
+			sched_setaffinity(getpid(),  sizeof(cpuset), &cpuset);
+
 			«IF this.usingPapify == 1»
 				#ifdef _PREESM_PAPIFY_MONITOR
 				mkdir("papify-output", 0777);
