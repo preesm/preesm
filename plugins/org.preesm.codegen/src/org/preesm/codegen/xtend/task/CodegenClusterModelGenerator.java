@@ -5,6 +5,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.stream.Collectors;
 import org.preesm.algorithm.clustering.ClusteringHelper;
 import org.preesm.algorithm.mapper.model.MapperDAG;
 import org.preesm.codegen.model.Block;
@@ -24,11 +25,16 @@ import org.preesm.model.algorithm.schedule.SequentialActorSchedule;
 import org.preesm.model.algorithm.schedule.SequentialHiearchicalSchedule;
 import org.preesm.model.pisdf.AbstractActor;
 import org.preesm.model.pisdf.AbstractVertex;
+import org.preesm.model.pisdf.Actor;
+import org.preesm.model.pisdf.CHeaderRefinement;
 import org.preesm.model.pisdf.DataInputInterface;
 import org.preesm.model.pisdf.DataInputPort;
 import org.preesm.model.pisdf.DataOutputInterface;
 import org.preesm.model.pisdf.DataOutputPort;
+import org.preesm.model.pisdf.DataPort;
+import org.preesm.model.pisdf.Direction;
 import org.preesm.model.pisdf.Fifo;
+import org.preesm.model.pisdf.FunctionArgument;
 import org.preesm.model.pisdf.PiGraph;
 import org.preesm.model.pisdf.brv.BRVMethod;
 import org.preesm.model.pisdf.brv.PiBRV;
@@ -79,13 +85,6 @@ public class CodegenClusterModelGenerator extends AbstractCodegenModelGenerator 
 
   @Override
   public List<Block> generate() {
-
-    // // For every clustered actors of the map that contains a Schedule
-    // for (Entry<AbstractActor, Schedule> e : mapper.entrySet()) {
-    // // Get every FIFO and build a FIFO Buffer Map
-    // Map<Fifo, Buffer> bufferMap = generateFifoBuffer(e.getValue());
-    //
-    // }
 
     // Build CoreBlock
     CoreBlock cb = CodegenModelUserFactory.createCoreBlock();
@@ -148,10 +147,9 @@ public class CodegenClusterModelGenerator extends AbstractCodegenModelGenerator 
     } else if (schedule instanceof SequentialActorSchedule) {
 
       // Retrieve each actor to fire
-      AbstractActor actor = schedule.getActors().get(0);
+      Actor actor = (Actor) schedule.getActors().get(0);
       FunctionCall functionCall = CodegenFactory.eINSTANCE.createFunctionCall();
       functionCall.setActorName(actor.getName());
-      functionCall.setName(actor.getName());
       LoopBlock callSet = CodegenFactory.eINSTANCE.createLoopBlock();
       callSet.getCodeElts().add(functionCall);
 
@@ -167,6 +165,53 @@ public class CodegenClusterModelGenerator extends AbstractCodegenModelGenerator 
         outputBlock = flb;
       } else {
         outputBlock = callSet;
+      }
+
+      // Retrieve Refinement from actor
+      if (actor.getRefinement() instanceof CHeaderRefinement) {
+        CHeaderRefinement cheader = (CHeaderRefinement) actor.getRefinement();
+        // Retrieve function argument
+        List<FunctionArgument> arguments = cheader.getLoopPrototype().getArguments();
+        // Retrieve function name
+        functionCall.setName(cheader.getLoopPrototype().getName());
+
+        // Associate argument with buffer
+        for (FunctionArgument a : arguments) {
+          DataPort associatedPort = actor.getAllDataPorts().stream().filter(x -> x.getName().contentEquals(a.getName()))
+              .collect(Collectors.toList()).get(0);
+
+          // Retrieve associated Fifo
+          Fifo associatedFifo = null;
+          if (a.getDirection().equals(Direction.IN)) {
+            DataInputPort dip = (DataInputPort) associatedPort;
+            associatedFifo = dip.getIncomingFifo();
+          } else {
+            DataOutputPort dop = (DataOutputPort) associatedPort;
+            associatedFifo = dop.getOutgoingFifo();
+          }
+
+          // Retrieve associated Buffer
+          Buffer associatedBuffer = null;
+          if (internalBufferMap.containsKey(associatedFifo)) {
+            associatedBuffer = internalBufferMap.get(associatedFifo);
+          } else {
+            associatedBuffer = externalBufferMap.get(associatedFifo);
+          }
+
+          // If there is an iteration to run actor, iterate the buffer
+          IteratedBuffer iteratedBuffer = null;
+          if (iterMap.containsKey(actor)) {
+            iteratedBuffer = CodegenFactory.eINSTANCE.createIteratedBuffer();
+            iteratedBuffer.setBuffer(associatedBuffer);
+            iteratedBuffer.setIter(iterMap.get(actor));
+            iteratedBuffer.setIterSize(associatedPort.getExpression().evaluate());
+            associatedBuffer = iteratedBuffer;
+          }
+
+          functionCall.addParameter(associatedBuffer,
+              (a.getDirection().equals(Direction.IN) ? PortDirection.INPUT : PortDirection.OUTPUT));
+        }
+
       }
 
     }
@@ -220,9 +265,11 @@ public class CodegenClusterModelGenerator extends AbstractCodegenModelGenerator 
         direction = PortDirection.OUTPUT;
       }
 
-      Buffer buffer = internalBufferMap.get(outsideFifo);
-      if (buffer == null) {
-        externalBufferMap.get(outsideFifo);
+      Buffer buffer = null;
+      if (internalBufferMap.containsKey(outsideFifo)) {
+        buffer = internalBufferMap.get(outsideFifo);
+      } else {
+        buffer = externalBufferMap.get(outsideFifo);
       }
       if (this.repVector.get(cluster) > 1) {
         IteratedBuffer iteratedBuffer = CodegenFactory.eINSTANCE.createIteratedBuffer();
@@ -259,117 +306,5 @@ public class CodegenClusterModelGenerator extends AbstractCodegenModelGenerator 
     }
     return outFifo;
   }
-
-  // private Buffer buildIncomingBuffer(Fifo inFifo) {
-  // Map<AbstractVertex, Long> repVector = PiBRV.compute(inFifo.getContainingPiGraph(), BRVMethod.LCM);
-  // AbstractActor source = (AbstractActor) inFifo.getSource();
-  // Buffer buff = buffmap.get(inFifo);
-  // // If actors is repeated, prepare a iterated buffer
-  // if (repVector.get(source) > 1) {
-  // IteratedBuffer iteratedBuffer = CodegenFactory.eINSTANCE.createIteratedBuffer();
-  // iteratedBuffer.setIter(itermap.get(source));
-  // iteratedBuffer.setIterSize(inFifo.getSourcePort().getExpression().evaluate());
-  // iteratedBuffer.setBuffer(buff);
-  // buff = iteratedBuffer;
-  // }
-  // if (source instanceof PiGraph) {
-  // PiGraph graph = (PiGraph) source;
-  // List<DataOutputInterface> doi = new LinkedList<>();
-  // doi.addAll(graph.getDataOutputInterfaces());
-  // doi.removeIf(x -> !x.getName().equals(inFifo.getSourcePort().getName()));
-  // Fifo incomingFifo = ((DataInputPort) doi.get(0).getDataPort()).getIncomingFifo();
-  // buffmap.put(incomingFifo, buff);
-  // return buildIncomingBuffer(incomingFifo);
-  // } else {
-  // return buff;
-  // }
-  // }
-  //
-  // private Buffer buildOutgoingBuffer(Fifo inFifo) {
-  // Map<AbstractVertex, Long> repVector = PiBRV.compute(inFifo.getContainingPiGraph(), BRVMethod.LCM);
-  // AbstractActor target = (AbstractActor) inFifo.getTarget();
-  // Buffer buff = buffmap.get(inFifo);
-  // // If actors is repeated, prepare a iterated buffer
-  // if (repVector.get(target) > 1) {
-  // IteratedBuffer iteratedBuffer = CodegenFactory.eINSTANCE.createIteratedBuffer();
-  // iteratedBuffer.setIter(itermap.get(target));
-  // iteratedBuffer.setIterSize(inFifo.getTargetPort().getExpression().evaluate());
-  // iteratedBuffer.setBuffer(buff);
-  // iteratedBuffer.setName("iterBuff_" + target.getName());
-  // buff = iteratedBuffer;
-  // }
-  // if (target instanceof PiGraph) {
-  // PiGraph graph = (PiGraph) target;
-  // List<DataInputInterface> dii = new LinkedList<>();
-  // dii.addAll(graph.getDataInputInterfaces());
-  // dii.removeIf(x -> !x.getName().equals(inFifo.getTargetPort().getName()));
-  // Fifo outgoingFifo = ((DataOutputPort) dii.get(0).getDataPort()).getOutgoingFifo();
-  // buffmap.put(outgoingFifo, buff);
-  // return buildOutgoingBuffer(outgoingFifo);
-  // } else {
-  // return buff;
-  // }
-  // }
-
-  // private Map<Fifo, Buffer> generateFifoBuffer(Schedule schedule) {
-  // Map<Fifo, Buffer> bufferMap = new LinkedHashMap<>();
-  //
-  // // Retrieve Fifo involve in the schedule
-  // Set<Fifo> fifoSet = new LinkedHashSet<>();
-  // for (AbstractActor a : schedule.getActors()) {
-  // a.getDataInputPorts().stream().forEach(x -> fifoSet.add(x.getIncomingFifo()));
-  // a.getDataOutputPorts().stream().forEach(x -> fifoSet.add(x.getOutgoingFifo()));
-  // }
-  //
-  // // Build Buffer block for each Fifo
-  // Map<AbstractVertex, Long> repetitionVector = PiBRV.compute(this.piAlgo, BRVMethod.LCM);
-  // for (Fifo fifo : fifoSet) {long
-  // Buffer buffer = CodegenFactory.eINSTANCE.createBuffer();
-  // DataOutputPort dop = fifo.getSourcePort();
-  // DataInputPort dip = fifo.getTargetPort();
-  // // Retrieve the fifo outside the cluster if not included
-  // if (dop.getContainingActor() instanceof DataInputInterface) {
-  // // Case of a DataInputInterface
-  // DataInputInterface dii = (DataInputInterface) dop.getContainingActor();
-  // DataInputPort outsideDip = (DataInputPort) dii.getGraphPort();
-  // DataOutputPort outsideDop = outsideDip.getIncomingFifo().getSourcePort();
-  // buffer.setSize(outsideDip.getExpression().evaluate() * repetitionVector.get(outsideDip.getContainingActor()));
-  // buffer.setName(outsideDop.getContainingActor().getName() + dip.getContainingActor().getName());
-  // } else if (dip.getContainingActor() instanceof DataOutputInterface) {
-  // // Case of a DataOutputInterface
-  // DataOutputInterface doi = (DataOutputInterface) dip.getContainingActor();
-  // DataOutputPort outsideDop = (DataOutputPort) doi.getGraphPort();
-  // DataInputPort outsideDip = outsideDop.getOutgoingFifo().getTargetPort();
-  // buffer.setSize(outsideDop.getExpression().evaluate() * repetitionVector.get(outsideDop.getContainingActor()));
-  // buffer.setName(dop.getContainingActor().getName() + outsideDip.getContainingActor().getName());
-  // } else {
-  // // Fifo inside the cluster
-  // buffer.setSize(dop.getExpression().evaluate() * repetitionVector.get(dop.getContainingActor()));
-  // buffer.setType(fifo.getType());
-  // buffer.setName(dop.getContainingActor().getName() + dip.getContainingActor().getName());
-  // }
-  // buffer.setTypeSize(scenario.getSimulationInfo().getDataTypeSizeOrDefault(fifo.getType()));
-  // bufferMap.put(fifo, buffer);
-  // }
-  //
-  // return bufferMap;
-  //
-  // }
-
-  // private AbstractActor retrieveNextAbstractActor(Fifo inputFifo) {
-  //
-  // DataOutputPort dop = inputFifo.getSourcePort();
-  // DataInputPort dip = inputFifo.getTargetPort();
-  // while ((dip instanceof InterfaceActor) || (dop instanceof InterfaceActor)) {
-  // if (dop.getContainingActor() instanceof DataInputInterface) {
-  // // Case of a DataInputInterface
-  // } else if (dip.getContainingActor() instanceof DataOutputInterface) {
-  // // Case of a DataOutputInterface
-  // }
-  //
-  // }
-  //
-  // return Fifo;
-  // }
 
 }
