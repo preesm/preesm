@@ -2,35 +2,40 @@
 <spirit:design xmlns:spirit="http://www.spiritconsortium.org/XMLSchema/SPIRIT/1.4">
     <spirit:vendor>ietr</spirit:vendor>
     <spirit:library>preesm</spirit:library>
-    <spirit:name>4CoreX86</spirit:name>
+    <spirit:name>12CoreX86</spirit:name>
     <spirit:version>1</spirit:version>
     <spirit:componentInstances>
         <spirit:componentInstance>
             <spirit:instanceName>Core0</spirit:instanceName>
+            <spirit:hardwareId>0</spirit:hardwareId>
             <spirit:componentRef spirit:library="" spirit:name="x86"
                 spirit:vendor="" spirit:version=""/>
             <spirit:configurableElementValues/>
         </spirit:componentInstance>
         <spirit:componentInstance>
             <spirit:instanceName>Core1</spirit:instanceName>
+            <spirit:hardwareId>1</spirit:hardwareId>
             <spirit:componentRef spirit:library="" spirit:name="x86"
                 spirit:vendor="" spirit:version=""/>
             <spirit:configurableElementValues/>
         </spirit:componentInstance>
         <spirit:componentInstance>
             <spirit:instanceName>Core3</spirit:instanceName>
+            <spirit:hardwareId>3</spirit:hardwareId>
             <spirit:componentRef spirit:library="" spirit:name="x86"
                 spirit:vendor="" spirit:version=""/>
             <spirit:configurableElementValues/>
         </spirit:componentInstance>
         <spirit:componentInstance>
             <spirit:instanceName>Core2</spirit:instanceName>
+            <spirit:hardwareId>2</spirit:hardwareId>
             <spirit:componentRef spirit:library="" spirit:name="x86"
                 spirit:vendor="" spirit:version=""/>
             <spirit:configurableElementValues/>
         </spirit:componentInstance>
         <spirit:componentInstance>
             <spirit:instanceName>shared_mem</spirit:instanceName>
+            <spirit:hardwareId>0</spirit:hardwareId>
             <spirit:componentRef spirit:library=""
                 spirit:name="SHARED_MEM" spirit:vendor="" spirit:version=""/>
             <spirit:configurableElementValues>
@@ -39,48 +44,56 @@
         </spirit:componentInstance>
         <spirit:componentInstance>
             <spirit:instanceName>Core4</spirit:instanceName>
+            <spirit:hardwareId>4</spirit:hardwareId>
             <spirit:componentRef spirit:library="" spirit:name="x86"
                 spirit:vendor="" spirit:version=""/>
             <spirit:configurableElementValues/>
         </spirit:componentInstance>
         <spirit:componentInstance>
             <spirit:instanceName>Core5</spirit:instanceName>
+            <spirit:hardwareId>5</spirit:hardwareId>
             <spirit:componentRef spirit:library="" spirit:name="x86"
                 spirit:vendor="" spirit:version=""/>
             <spirit:configurableElementValues/>
         </spirit:componentInstance>
         <spirit:componentInstance>
             <spirit:instanceName>Core6</spirit:instanceName>
+            <spirit:hardwareId>6</spirit:hardwareId>
             <spirit:componentRef spirit:library="" spirit:name="x86"
                 spirit:vendor="" spirit:version=""/>
             <spirit:configurableElementValues/>
         </spirit:componentInstance>
         <spirit:componentInstance>
             <spirit:instanceName>Core7</spirit:instanceName>
+            <spirit:hardwareId>7</spirit:hardwareId>
             <spirit:componentRef spirit:library="" spirit:name="x86"
                 spirit:vendor="" spirit:version=""/>
             <spirit:configurableElementValues/>
         </spirit:componentInstance>
         <spirit:componentInstance>
             <spirit:instanceName>Core8</spirit:instanceName>
+            <spirit:hardwareId>8</spirit:hardwareId>
             <spirit:componentRef spirit:library="" spirit:name="x86"
                 spirit:vendor="" spirit:version=""/>
             <spirit:configurableElementValues/>
         </spirit:componentInstance>
         <spirit:componentInstance>
             <spirit:instanceName>Core9</spirit:instanceName>
+            <spirit:hardwareId>9</spirit:hardwareId>
             <spirit:componentRef spirit:library="" spirit:name="x86"
                 spirit:vendor="" spirit:version=""/>
             <spirit:configurableElementValues/>
         </spirit:componentInstance>
         <spirit:componentInstance>
             <spirit:instanceName>Core10</spirit:instanceName>
+            <spirit:hardwareId>10</spirit:hardwareId>
             <spirit:componentRef spirit:library="" spirit:name="x86"
                 spirit:vendor="" spirit:version=""/>
             <spirit:configurableElementValues/>
         </spirit:componentInstance>
         <spirit:componentInstance>
             <spirit:instanceName>Core11</spirit:instanceName>
+            <spirit:hardwareId>11</spirit:hardwareId>
             <spirit:componentRef spirit:library="" spirit:name="x86"
                 spirit:vendor="" spirit:version=""/>
             <spirit:configurableElementValues/>

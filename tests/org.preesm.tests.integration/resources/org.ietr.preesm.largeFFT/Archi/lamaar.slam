@@ -1,60 +1,69 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <spirit:design xmlns:spirit="http://www.spiritconsortium.org/XMLSchema/SPIRIT/1.4">
     <spirit:vendor>ietr</spirit:vendor>
-    <spirit:name>1CoreX86</spirit:name>
+    <spirit:name>lamaar</spirit:name>
     <spirit:library>preesm</spirit:library>
     <spirit:version>1</spirit:version>
     <spirit:componentInstances>
         <spirit:componentInstance>
             <spirit:instanceName>shared_mem</spirit:instanceName>
+            <spirit:hardwareId>0</spirit:hardwareId>
             <spirit:componentRef spirit:library=""
                 spirit:name="SHARED_MEM" spirit:vendor="" spirit:version=""/>
             <spirit:configurableElementValues/>
         </spirit:componentInstance>
         <spirit:componentInstance>
             <spirit:instanceName>Dsp0</spirit:instanceName>
+            <spirit:hardwareId>0</spirit:hardwareId>
             <spirit:componentRef spirit:library="" spirit:name="c6678"
                 spirit:vendor="" spirit:version=""/>
             <spirit:configurableElementValues/>
         </spirit:componentInstance>
         <spirit:componentInstance>
             <spirit:instanceName>Dsp1</spirit:instanceName>
+            <spirit:hardwareId>1</spirit:hardwareId>
             <spirit:componentRef spirit:library="" spirit:name="c6678"
                 spirit:vendor="" spirit:version=""/>
             <spirit:configurableElementValues/>
         </spirit:componentInstance>
         <spirit:componentInstance>
             <spirit:instanceName>Dsp2</spirit:instanceName>
+            <spirit:hardwareId>2</spirit:hardwareId>
             <spirit:componentRef spirit:library="" spirit:name="c6678"
                 spirit:vendor="" spirit:version=""/>
             <spirit:configurableElementValues/>
         </spirit:componentInstance>
         <spirit:componentInstance>
             <spirit:instanceName>Dsp3</spirit:instanceName>
+            <spirit:hardwareId>3</spirit:hardwareId>
             <spirit:componentRef spirit:library="" spirit:name="c6678"
                 spirit:vendor="" spirit:version=""/>
             <spirit:configurableElementValues/>
         </spirit:componentInstance>
         <spirit:componentInstance>
             <spirit:instanceName>Arm0</spirit:instanceName>
+            <spirit:hardwareId>4</spirit:hardwareId>
             <spirit:componentRef spirit:library=""
                 spirit:name="CortexA15" spirit:vendor="" spirit:version=""/>
             <spirit:configurableElementValues/>
         </spirit:componentInstance>
         <spirit:componentInstance>
             <spirit:instanceName>Arm1</spirit:instanceName>
+            <spirit:hardwareId>5</spirit:hardwareId>
             <spirit:componentRef spirit:library=""
                 spirit:name="CortexA15" spirit:vendor="" spirit:version=""/>
             <spirit:configurableElementValues/>
         </spirit:componentInstance>
         <spirit:componentInstance>
             <spirit:instanceName>FFTC0</spirit:instanceName>
+            <spirit:hardwareId>6</spirit:hardwareId>
             <spirit:componentRef spirit:library="" spirit:name="fftc"
                 spirit:vendor="" spirit:version=""/>
             <spirit:configurableElementValues/>
         </spirit:componentInstance>
         <spirit:componentInstance>
             <spirit:instanceName>FFTC1</spirit:instanceName>
+            <spirit:hardwareId>7</spirit:hardwareId>
             <spirit:componentRef spirit:library="" spirit:name="fftc"
                 spirit:vendor="" spirit:version=""/>
             <spirit:configurableElementValues/>

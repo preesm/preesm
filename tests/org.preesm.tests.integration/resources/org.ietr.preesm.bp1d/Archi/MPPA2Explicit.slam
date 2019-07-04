@@ -7,102 +7,119 @@
     <spirit:componentInstances>
         <spirit:componentInstance>
             <spirit:instanceName>Core0</spirit:instanceName>
+            <spirit:hardwareId>0</spirit:hardwareId>
             <spirit:componentRef spirit:library=""
                 spirit:name="MPPA2Explicit" spirit:vendor="" spirit:version=""/>
             <spirit:configurableElementValues/>
         </spirit:componentInstance>
         <spirit:componentInstance>
             <spirit:instanceName>Core1</spirit:instanceName>
+            <spirit:hardwareId>1</spirit:hardwareId>
             <spirit:componentRef spirit:library=""
                 spirit:name="MPPA2Explicit" spirit:vendor="" spirit:version=""/>
             <spirit:configurableElementValues/>
         </spirit:componentInstance>
         <spirit:componentInstance>
             <spirit:instanceName>Core3</spirit:instanceName>
+            <spirit:hardwareId>3</spirit:hardwareId>
             <spirit:componentRef spirit:library=""
                 spirit:name="MPPA2Explicit" spirit:vendor="" spirit:version=""/>
             <spirit:configurableElementValues/>
         </spirit:componentInstance>
         <spirit:componentInstance>
             <spirit:instanceName>Core2</spirit:instanceName>
+            <spirit:hardwareId>2</spirit:hardwareId>
             <spirit:componentRef spirit:library=""
                 spirit:name="MPPA2Explicit" spirit:vendor="" spirit:version=""/>
             <spirit:configurableElementValues/>
         </spirit:componentInstance>
         <spirit:componentInstance>
             <spirit:instanceName>shared_mem</spirit:instanceName>
+            <spirit:hardwareId>0</spirit:hardwareId>
             <spirit:componentRef spirit:library=""
                 spirit:name="defaultcontentionComNode" spirit:vendor="" spirit:version=""/>
             <spirit:configurableElementValues/>
         </spirit:componentInstance>
         <spirit:componentInstance>
             <spirit:instanceName>Core4</spirit:instanceName>
+            <spirit:hardwareId>4</spirit:hardwareId>
             <spirit:componentRef spirit:library=""
                 spirit:name="MPPA2Explicit" spirit:vendor="" spirit:version=""/>
             <spirit:configurableElementValues/>
         </spirit:componentInstance>
         <spirit:componentInstance>
             <spirit:instanceName>Core5</spirit:instanceName>
+            <spirit:hardwareId>5</spirit:hardwareId>
             <spirit:componentRef spirit:library=""
                 spirit:name="MPPA2Explicit" spirit:vendor="" spirit:version=""/>
             <spirit:configurableElementValues/>
         </spirit:componentInstance>
         <spirit:componentInstance>
             <spirit:instanceName>Core6</spirit:instanceName>
+            <spirit:hardwareId>6</spirit:hardwareId>
             <spirit:componentRef spirit:library=""
                 spirit:name="MPPA2Explicit" spirit:vendor="" spirit:version=""/>
             <spirit:configurableElementValues/>
         </spirit:componentInstance>
         <spirit:componentInstance>
             <spirit:instanceName>Core7</spirit:instanceName>
+            <spirit:hardwareId>7</spirit:hardwareId>
             <spirit:componentRef spirit:library=""
                 spirit:name="MPPA2Explicit" spirit:vendor="" spirit:version=""/>
             <spirit:configurableElementValues/>
         </spirit:componentInstance>
         <spirit:componentInstance>
             <spirit:instanceName>Core8</spirit:instanceName>
+            <spirit:hardwareId>8</spirit:hardwareId>
             <spirit:componentRef spirit:library=""
                 spirit:name="MPPA2Explicit" spirit:vendor="" spirit:version=""/>
             <spirit:configurableElementValues/>
         </spirit:componentInstance>
         <spirit:componentInstance>
             <spirit:instanceName>Core9</spirit:instanceName>
+            <spirit:hardwareId>9</spirit:hardwareId>
             <spirit:componentRef spirit:library=""
                 spirit:name="MPPA2Explicit" spirit:vendor="" spirit:version=""/>
             <spirit:configurableElementValues/>
         </spirit:componentInstance>
         <spirit:componentInstance>
             <spirit:instanceName>Core10</spirit:instanceName>
+            <spirit:hardwareId>10</spirit:hardwareId>
             <spirit:componentRef spirit:library=""
                 spirit:name="MPPA2Explicit" spirit:vendor="" spirit:version=""/>
             <spirit:configurableElementValues/>
         </spirit:componentInstance>
         <spirit:componentInstance>
             <spirit:instanceName>Core11</spirit:instanceName>
+            <spirit:hardwareId>11</spirit:hardwareId>
             <spirit:componentRef spirit:library=""
                 spirit:name="MPPA2Explicit" spirit:vendor="" spirit:version=""/>
             <spirit:configurableElementValues/>
         </spirit:componentInstance>
         <spirit:componentInstance>
             <spirit:instanceName>Core12</spirit:instanceName>
+            <spirit:hardwareId>12</spirit:hardwareId>
             <spirit:componentRef spirit:library=""
                 spirit:name="MPPA2Explicit" spirit:vendor="" spirit:version=""/>
             <spirit:configurableElementValues/>
         </spirit:componentInstance>
         <spirit:componentInstance>
             <spirit:instanceName>Core13</spirit:instanceName>
+            <spirit:hardwareId>13</spirit:hardwareId>
             <spirit:componentRef spirit:library=""
                 spirit:name="MPPA2Explicit" spirit:vendor="" spirit:version=""/>
             <spirit:configurableElementValues/>
         </spirit:componentInstance>
         <spirit:componentInstance>
             <spirit:instanceName>Core14</spirit:instanceName>
+            <spirit:hardwareId>14</spirit:hardwareId>
             <spirit:componentRef spirit:library=""
                 spirit:name="MPPA2Explicit" spirit:vendor="" spirit:version=""/>
             <spirit:configurableElementValues/>
         </spirit:componentInstance>
         <spirit:componentInstance>
             <spirit:instanceName>Core15</spirit:instanceName>
+            <spirit:hardwareId>15</spirit:hardwareId>
             <spirit:componentRef spirit:library=""
                 spirit:name="MPPA2Explicit" spirit:vendor="" spirit:version=""/>
             <spirit:configurableElementValues/>

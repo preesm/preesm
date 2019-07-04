@@ -2,7 +2,7 @@
 <scenario>
     <files>
         <algorithm url="/org.ietr.preesm.stereo/Algo/stereo_top.pi"/>
-        <architecture url="/org.ietr.preesm.stereo/Archi/4CoreX86.slam"/>
+        <architecture url="/org.ietr.preesm.stereo/Archi/8CoreX86.slam"/>
         <codegenDirectory url="/org.ietr.preesm.stereo/Code/generated"/>
     </files>
     <constraints excelUrl="">
