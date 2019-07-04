@@ -4,10 +4,8 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.stream.Collectors;
 import org.preesm.algorithm.clustering.ClusteringHelper;
-import org.preesm.algorithm.mapper.model.MapperDAG;
 import org.preesm.codegen.model.Block;
 import org.preesm.codegen.model.Buffer;
 import org.preesm.codegen.model.ClusterBlock;
@@ -20,11 +18,11 @@ import org.preesm.codegen.model.IntVar;
 import org.preesm.codegen.model.IteratedBuffer;
 import org.preesm.codegen.model.LoopBlock;
 import org.preesm.codegen.model.PortDirection;
-import org.preesm.codegen.model.util.CodegenModelUserFactory;
 import org.preesm.commons.exceptions.PreesmRuntimeException;
 import org.preesm.model.algorithm.schedule.Schedule;
 import org.preesm.model.algorithm.schedule.SequentialActorSchedule;
 import org.preesm.model.algorithm.schedule.SequentialHiearchicalSchedule;
+import org.preesm.model.algorithm.schedule.SequentialSchedule;
 import org.preesm.model.pisdf.AbstractActor;
 import org.preesm.model.pisdf.AbstractVertex;
 import org.preesm.model.pisdf.Actor;
@@ -46,16 +44,18 @@ import org.preesm.model.pisdf.Port;
 import org.preesm.model.pisdf.brv.BRVMethod;
 import org.preesm.model.pisdf.brv.PiBRV;
 import org.preesm.model.scenario.Scenario;
-import org.preesm.model.slam.Design;
-import org.preesm.workflow.elements.Workflow;
 
 /**
  * @author dgageot
  *
  */
-public class CodegenClusterModelGenerator extends AbstractCodegenModelGenerator {
+public class CodegenClusterModelGenerator {
 
-  final Map<AbstractActor, Schedule> mapper;
+  final Schedule schedule;
+
+  final Scenario scenario;
+
+  final CoreBlock operatorBlock;
 
   final Map<Fifo, Buffer> internalBufferMap;
 
@@ -65,52 +65,45 @@ public class CodegenClusterModelGenerator extends AbstractCodegenModelGenerator 
 
   Map<AbstractVertex, Long> repVector;
 
-  final PiGraph piAlgo;
+  IOutsideFetcher outsideFetcher;
+
+  Map<String, Object> fetcherMap;
 
   /**
-   * @param archi
-   *          architecture
-   * @param algo
-   *          PiGraph algorithm
+   * @param operatorBlock
+   *          core block to print in
+   * @param schedule
+   *          schedule to print
    * @param scenario
    *          scenario
-   * @param workflow
-   *          workflow
-   * @param mapper
-   *          schedule associated with cluster
+   * @param outsideFetcher
+   *          algorithm use to fetch outside buffer
+   * @param fetcherMap
+   *          argument for fetcher algorithm
    */
-  public CodegenClusterModelGenerator(final Design archi, final PiGraph algo, final Scenario scenario,
-      final Workflow workflow, final Map<AbstractActor, Schedule> mapper) {
-    super(archi, new MapperDAG(algo), null, scenario, workflow);
-    this.mapper = mapper;
-    this.piAlgo = algo;
+  public CodegenClusterModelGenerator(final CoreBlock operatorBlock, final Schedule schedule, final Scenario scenario,
+      IOutsideFetcher outsideFetcher, Map<String, Object> fetcherMap) {
+    this.schedule = schedule;
+    this.scenario = scenario;
+    this.operatorBlock = operatorBlock;
     this.internalBufferMap = new HashMap<>();
     this.externalBufferMap = new HashMap<>();
     this.iterMap = new HashMap<>();
+    this.outsideFetcher = outsideFetcher;
+    this.fetcherMap = fetcherMap;
     this.repVector = null;
   }
 
-  @Override
-  public List<Block> generate() {
-
-    // Build CoreBlock
-    CoreBlock cb = CodegenModelUserFactory.createCoreBlock();
-    cb.setCoreID(0);
-    cb.setName(scenario.getSimulationInfo().getMainOperator().getInstanceName());
-    cb.setCoreType("x86");
-
-    // Construct codegen model corresponding to cluster in
-    // 1st step: Parse every cluster
-    for (Entry<AbstractActor, Schedule> clusterSchedule : mapper.entrySet()) {
-      this.repVector = PiBRV.compute((PiGraph) clusterSchedule.getKey(), BRVMethod.LCM);
-      cb.getLoopBlock().getCodeElts().add(buildClusterBlockRec(clusterSchedule.getValue()));
-    }
-
-    cb.getDefinitions().addAll(internalBufferMap.values());
-    List<Block> blockList = new LinkedList<>();
-    blockList.add(cb);
-
-    return blockList;
+  /**
+   * 
+   */
+  public void generate() {
+    // Compute repetition vector for the whole process
+    this.repVector = PiBRV.compute((PiGraph) ((SequentialSchedule) schedule).getAttachedActor(), BRVMethod.LCM);
+    // Print cluster into operatorBlock
+    operatorBlock.getLoopBlock().getCodeElts().add(buildClusterBlockRec(schedule));
+    // Add internal buffer definition
+    operatorBlock.getDefinitions().addAll(internalBufferMap.values());
   }
 
   private final Block buildClusterBlockRec(final Schedule schedule) {
@@ -354,7 +347,12 @@ public class CodegenClusterModelGenerator extends AbstractCodegenModelGenerator 
       } else if (externalBufferMap.containsKey(outsideFifo)) {
         buffer = externalBufferMap.get(outsideFifo);
       } else {
-        throw new PreesmRuntimeException("Cannot fetch external Fifo (from cluster) in this version of Codegen");
+        // This is actually an outside cluster fifo, so we need to get from outside
+        if (direction.equals(PortDirection.OUTPUT)) {
+          buffer = getOuterClusterBuffer(outsideFifo.getSourcePort());
+        } else {
+          buffer = getOuterClusterBuffer(outsideFifo.getTargetPort());
+        }
       }
 
       // If cluster is repeated few times, create an iterated buffer
@@ -398,6 +396,10 @@ public class CodegenClusterModelGenerator extends AbstractCodegenModelGenerator 
       outFifo = ((DataInputPort) ((DataInputInterface) sourceActor).getGraphPort()).getIncomingFifo();
     }
     return outFifo;
+  }
+
+  private Buffer getOuterClusterBuffer(DataPort graphPort) {
+    return outsideFetcher.getOuterClusterBuffer(graphPort, this.fetcherMap);
   }
 
 }

@@ -34,13 +34,14 @@ public class CodegenTestTask extends AbstractTaskImplementation {
   public Map<String, Object> execute(Map<String, Object> inputs, Map<String, String> parameters,
       IProgressMonitor monitor, String nodeName, Workflow workflow) {
     final PiGraph algorithm = (PiGraph) inputs.get("PiMM");
+    @SuppressWarnings("unchecked")
     final Map<AbstractActor, Schedule> mapper = (Map<AbstractActor, Schedule>) inputs.get("schedules");
     final Scenario scenario = (Scenario) inputs.get("scenario");
     final Design architecture = (Design) inputs.get("architecture");
 
     final String codegenPath = scenario.getCodegenDirectory() + File.separator;
-    CodegenClusterModelGenerator modelGen = new CodegenClusterModelGenerator(architecture, algorithm, scenario,
-        workflow, mapper);
+    CodegenTestModelGenerator modelGen = new CodegenTestModelGenerator(architecture, algorithm, scenario, workflow,
+        mapper);
     List<Block> blocks = modelGen.generate();
     CodegenEngine engine = new CodegenEngine(codegenPath, blocks, modelGen);
     engine.registerPrintersAndBlocks("C");
