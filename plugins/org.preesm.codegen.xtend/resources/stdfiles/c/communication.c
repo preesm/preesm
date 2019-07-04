@@ -43,7 +43,20 @@
 	============================================================================
 */
 
+#include "preesm_gen.h"
+/**
+* Maximum number of core supported by the communication library.
+* This number is used to allocate the table of semaphores used for intercore
+* synchronization.
+*
+* It is not defined in communication.h, otherwise it would lead to a cyclic inclusion
+* with preesm_gen.h (also including communication.h).
+*/
+#define MAX_NB_CORES NB_CORES
+
 #include "communication.h"
+
+
 
 // note: rk_ struct and functions comes from
 // https://stackoverflow.com/questions/27736618/why-are-sem-init-sem-getvalue-sem-destroy-deprecated-on-mac-os-x-and-w

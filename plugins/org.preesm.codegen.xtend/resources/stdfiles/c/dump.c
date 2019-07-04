@@ -45,13 +45,13 @@
 	============================================================================
 */
 
+#include "preesm_gen.h"
 
+#include "dump.h"
 
 #include <stdio.h>
 #include <stdlib.h>
 
-
-#include "dump.h"
 
 
 #ifdef _WIN32
@@ -123,7 +123,7 @@ void writeTime(uint64_t* dumpBuffer, int nbDump, int* nbExec) {
 		for (i = 0; i < nbDump/2; i++) {
 
 			double time = getElapsedNanoSec(dumpBuffer+i*2, dumpBuffer+i*2+1);
-            // We consider that all measures below 500 microseconds are not precise enough
+            // We consider that all measures below MIN_TIME_MEASURE nanoseconds are not precise enough
 			int nbExecBefore = nbExec[i];
 			if (time < (double) 0) {
 				nbExec[i] = 0;
@@ -145,6 +145,7 @@ void writeTime(uint64_t* dumpBuffer, int nbDump, int* nbExec) {
 	fprintf(stderr, "Ready: %d/%d\n", nbDump/2-nbNotReady, nbDump/2);
 
 	for (i = 0; i < nbDump/2; i++) {
+		//fprintf(stderr, "nbExec[%d]: %d\n", i, nbExec[i]);
 		double nbEx = (double) nbExec[i];
 		double res;
 		nbEx = (nbEx != 0) ? 1/nbEx : 0;
