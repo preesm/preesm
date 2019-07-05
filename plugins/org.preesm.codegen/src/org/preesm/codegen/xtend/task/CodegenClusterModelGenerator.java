@@ -4,6 +4,7 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Level;
 import java.util.stream.Collectors;
 import org.preesm.algorithm.clustering.ClusteringHelper;
 import org.preesm.codegen.model.Block;
@@ -19,6 +20,7 @@ import org.preesm.codegen.model.IteratedBuffer;
 import org.preesm.codegen.model.LoopBlock;
 import org.preesm.codegen.model.PortDirection;
 import org.preesm.commons.exceptions.PreesmRuntimeException;
+import org.preesm.commons.logger.PreesmLogger;
 import org.preesm.model.algorithm.schedule.Schedule;
 import org.preesm.model.algorithm.schedule.SequentialActorSchedule;
 import org.preesm.model.algorithm.schedule.SequentialHiearchicalSchedule;
@@ -98,12 +100,17 @@ public class CodegenClusterModelGenerator {
    * 
    */
   public void generate() {
+    // Get PiGraph
+    PiGraph graph = (PiGraph) ((SequentialSchedule) schedule).getAttachedActor();
     // Compute repetition vector for the whole process
-    this.repVector = PiBRV.compute((PiGraph) ((SequentialSchedule) schedule).getAttachedActor(), BRVMethod.LCM);
+    this.repVector = PiBRV.compute(graph, BRVMethod.LCM);
     // Print cluster into operatorBlock
     operatorBlock.getLoopBlock().getCodeElts().add(buildClusterBlockRec(schedule));
     // Add internal buffer definition
     operatorBlock.getDefinitions().addAll(internalBufferMap.values());
+    // Print memory consumption of the cluster
+    PreesmLogger.getLogger().log(Level.INFO,
+        "Memory allocation for cluster " + graph.getName() + ": " + computeMemorySize() + " bytes");
   }
 
   private final Block buildClusterBlockRec(final Schedule schedule) {
@@ -118,6 +125,14 @@ public class CodegenClusterModelGenerator {
     }
 
     return outputBlock;
+  }
+
+  private final long computeMemorySize() {
+    long size = 0;
+    for (Buffer buffer : internalBufferMap.values()) {
+      size += buffer.getSize();
+    }
+    return size;
   }
 
   private final Block buildClusterBlock(Schedule schedule) {
