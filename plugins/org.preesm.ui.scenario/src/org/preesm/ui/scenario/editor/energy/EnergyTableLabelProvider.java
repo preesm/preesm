@@ -48,8 +48,8 @@ import org.eclipse.swt.widgets.Combo;
 import org.eclipse.ui.IPropertyListener;
 import org.preesm.model.pisdf.AbstractActor;
 import org.preesm.model.scenario.Scenario;
+import org.preesm.model.slam.Component;
 import org.preesm.model.slam.Design;
-import org.preesm.model.slam.component.Component;
 
 /**
  * Displays the labels for tasks energies. These labels are the energy of each task

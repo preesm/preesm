@@ -45,8 +45,8 @@ import org.eclipse.jface.viewers.IStructuredContentProvider;
 import org.preesm.model.scenario.EnergyConfig;
 import org.preesm.model.scenario.Scenario;
 import org.preesm.model.scenario.ScenarioConstants;
+import org.preesm.model.slam.Component;
 import org.preesm.model.slam.Design;
-import org.preesm.model.slam.component.Component;
 
 /**
  * Provides the elements contained in the static power of the platform editor.
