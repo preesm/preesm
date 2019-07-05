@@ -15,6 +15,10 @@ PREESM Changelog
 * Fix PiWriter: avoid throwing NPE when period is not attached to an element;
 * Change mirror (ibcp down);
 * Add new models for Schedule/Mapping/Memory Allocation;
+* Add hardware ID in Slam to identify to which real core the thread affinity should be set;
+* Update codegen:
+  * forces affinity of main thread to assigned core;
+  * disable affinity on windows;
 
 ### Bug fix
 * Fix #162
