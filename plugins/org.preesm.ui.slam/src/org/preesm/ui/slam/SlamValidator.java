@@ -1,7 +1,7 @@
 /**
  * Copyright or © or Copr. IETR/INSA - Rennes (2018 - 2019) :
  *
- * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2018 - 2019)
+ * Antoine Morvan [antoine.morvan@insa-rennes.fr] (2018 - 2019)
  *
  * This software is a computer program whose purpose is to help prototyping
  * parallel applications using dataflow formalism.
@@ -37,6 +37,7 @@
  */
 package org.preesm.ui.slam;
 
+import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import org.eclipse.core.resources.IFile;
@@ -551,7 +552,7 @@ public final class SlamValidator implements IValidator {
 
     boolean valid = true;
 
-    for (final Vertex v : graph.vertexSet()) {
+    for (final Vertex v : new ArrayList<>(graph.vertexSet())) {
       final String type = v.getType().getName();
       if (type.contains("hierConnection")) {
 

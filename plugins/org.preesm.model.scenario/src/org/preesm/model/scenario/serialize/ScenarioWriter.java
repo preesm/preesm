@@ -1,12 +1,12 @@
 /**
  * Copyright or © or Copr. IETR/INSA - Rennes (2008 - 2019) :
  *
- * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017 - 2019)
- * Clément Guy <clement.guy@insa-rennes.fr> (2014)
- * Daniel Madroñal <daniel.madronal@upm.es> (2018)
- * Jonathan Piat <jpiat@laas.fr> (2011)
- * Maxime Pelcat <maxime.pelcat@insa-rennes.fr> (2008 - 2013)
- * Pengcheng Mu <pengcheng.mu@insa-rennes.fr> (2008)
+ * Antoine Morvan [antoine.morvan@insa-rennes.fr] (2017 - 2019)
+ * Clément Guy [clement.guy@insa-rennes.fr] (2014)
+ * Daniel Madroñal [daniel.madronal@upm.es] (2018)
+ * Jonathan Piat [jpiat@laas.fr] (2011)
+ * Maxime Pelcat [maxime.pelcat@insa-rennes.fr] (2008 - 2013)
+ * Pengcheng Mu [pengcheng.mu@insa-rennes.fr] (2008)
  *
  * This software is a computer program whose purpose is to help prototyping
  * parallel applications using dataflow formalism.
@@ -54,10 +54,9 @@ import org.preesm.model.scenario.PapiEventModifier;
 import org.preesm.model.scenario.PapiEventSet;
 import org.preesm.model.scenario.PapifyConfig;
 import org.preesm.model.scenario.Scenario;
-import org.preesm.model.scenario.types.VertexType;
+import org.preesm.model.slam.Component;
 import org.preesm.model.slam.ComponentInstance;
 import org.preesm.model.slam.Design;
-import org.preesm.model.slam.component.Component;
 import org.w3c.dom.DOMImplementation;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -426,8 +425,10 @@ public class ScenarioWriter {
     for (final Entry<ComponentInstance, EList<AbstractActor>> cst : this.scenario.getConstraints()
         .getGroupConstraints()) {
       final ComponentInstance component = cst.getKey();
-      final EList<AbstractActor> actors = cst.getValue();
-      writeConstraints(constraints, component, actors);
+      if (component != null) {
+        final EList<AbstractActor> actors = cst.getValue();
+        writeConstraints(constraints, component, actors);
+      }
     }
   }
 
@@ -446,10 +447,11 @@ public class ScenarioWriter {
 
     final Element opdefelt = this.dom.createElement("operator");
     constraintGroupElt.appendChild(opdefelt);
-    opdefelt.setAttribute("name", cmpi.getInstanceName());
+    final String instanceName = cmpi.getInstanceName();
+    opdefelt.setAttribute("name", instanceName);
 
     for (final AbstractActor actor : actors) {
-      final Element vtxelt = this.dom.createElement(VertexType.TYPE_TASK);
+      final Element vtxelt = this.dom.createElement("task");
       constraintGroupElt.appendChild(vtxelt);
       vtxelt.setAttribute("name", actor.getVertexPath());
     }

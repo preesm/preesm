@@ -1,9 +1,9 @@
 /**
  * Copyright or © or Copr. IETR/INSA - Rennes (2018 - 2019) :
  *
- * Alexandre Honorat <alexandre.honorat@insa-rennes.fr> (2019)
- * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2018 - 2019)
- * Florian Arrestier <florian.arrestier@insa-rennes.fr> (2018)
+ * Alexandre Honorat [alexandre.honorat@insa-rennes.fr] (2019)
+ * Antoine Morvan [antoine.morvan@insa-rennes.fr] (2018 - 2019)
+ * Florian Arrestier [florian.arrestier@insa-rennes.fr] (2018)
  *
  * This software is a computer program whose purpose is to help prototyping
  * parallel applications using dataflow formalism.
@@ -48,6 +48,7 @@ import java.util.logging.Level;
 import org.preesm.commons.IntegerName;
 import org.preesm.commons.exceptions.PreesmRuntimeException;
 import org.preesm.commons.logger.PreesmLogger;
+import org.preesm.commons.model.PreesmCopyTracker;
 import org.preesm.model.pisdf.AbstractActor;
 import org.preesm.model.pisdf.AbstractVertex;
 import org.preesm.model.pisdf.BroadcastActor;
@@ -197,6 +198,7 @@ public class PiSDFToSingleRate extends PiMMSwitch<Boolean> {
   public PiSDFToSingleRate(final PiGraph inputGraph, final Map<AbstractVertex, Long> brv) {
     this.inputGraph = inputGraph;
     this.result = PiMMUserFactory.instance.createPiGraph();
+    PreesmCopyTracker.trackCopy(inputGraph, this.result);
     this.result.setName(this.inputGraph.getName());
     this.brv = brv;
     this.graphName = "";

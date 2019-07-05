@@ -1,9 +1,7 @@
 /**
- * Copyright or © or Copr. IETR/INSA - Rennes (2011 - 2018) :
+ * Copyright or © or Copr. IETR/INSA - Rennes (2019) :
  *
- * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017 - 2018)
- * Clément Guy <clement.guy@insa-rennes.fr> (2014)
- * Maxime Pelcat <maxime.pelcat@insa-rennes.fr> (2011)
+ * Antoine Morvan [antoine.morvan@insa-rennes.fr] (2019)
  *
  * This software is a computer program whose purpose is to help prototyping
  * parallel applications using dataflow formalism.
@@ -34,48 +32,48 @@
  * The fact that you are presently reading this means that you have had
  * knowledge of the CeCILL license and that you accept its terms.
  */
-package org.preesm.ui.slam.editor;
+package org.preesm.algorithm.scheduler;
 
-import org.eclipse.core.resources.IFile;
-import org.eclipse.core.resources.IProject;
-import org.eclipse.core.runtime.IPath;
-import org.ietr.dftools.graphiti.model.DefaultRefinementPolicy;
-import org.ietr.dftools.graphiti.model.Vertex;
+import java.util.List;
+import java.util.stream.Collectors;
+import org.preesm.model.algorithm.mapping.Mapping;
+import org.preesm.model.algorithm.schedule.HierarchicalSchedule;
+import org.preesm.model.algorithm.schedule.Schedule;
+import org.preesm.model.pisdf.AbstractActor;
 
 /**
- * This class extends the default refinement policy.
- *
- * @author Matthieu Wipliez
  *
  */
-public class ArchitectureRefinementPolicy extends DefaultRefinementPolicy {
+public class SchedulerResult {
+  public final Mapping  mapping;
+  public final Schedule schedule;
 
-  /**
-   * Returns the project to which the vertex belongs.
-   *
-   * @param vertex
-   *          a vertex
-   * @return a project
-   */
-  private IProject getProject(final Vertex vertex) {
-    return vertex.getParent().getFile().getProject();
+  public SchedulerResult(final Mapping mapping, final Schedule schedule) {
+    this.mapping = mapping;
+    this.schedule = schedule;
   }
 
-  /*
-   * (non-Javadoc)
-   *
-   * @see
-   * org.ietr.dftools.graphiti.model.DefaultRefinementPolicy#getRefinementFile(org.ietr.dftools.graphiti.model.Vertex)
-   */
   @Override
-  public IFile getRefinementFile(final Vertex vertex) {
-    final IPath refinement = getRefinement(vertex);
-    if (refinement != null) {
-      final IProject project = getProject(vertex);
+  public String toString() {
+    return "\n\n" + buildString(schedule, mapping, "").toString();
+  }
 
-      return project.getFile(refinement);
+  private static StringBuilder buildString(final Schedule sched, final Mapping mapp, final String indent) {
+    final StringBuilder res = new StringBuilder("");
+    res.append(indent + sched.getClass().getSimpleName() + " {\n");
+    if (sched instanceof HierarchicalSchedule) {
+      for (final Schedule child : sched.getChildren()) {
+        res.append(buildString(child, mapp, indent + "  ").toString());
+      }
+    } else {
+      for (final AbstractActor actor : sched.getActors()) {
+        final List<String> collect = mapp.getMapping(actor).stream().map(m -> m.getInstanceName())
+            .collect(Collectors.toList());
+        res.append(indent + "  " + collect + " " + actor.getName() + "\n");
+      }
     }
-    return null;
+    res.append(indent + "}\n");
+    return res;
   }
 
 }

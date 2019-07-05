@@ -1,6 +1,29 @@
 PREESM Changelog
 ================
 
+## Release version 3.11.0
+*2019.07.05*
+
+### New Feature
+
+### Changes
+* Make sure PiSDF flatten and SRDAG transformations keep track of the input PiGraph;
+* Fix Papify component add/remove;
+* Fix Papify heterogeneity (different monitoring configs depending on the PE type executing the actor) for PREESM and SPiDER;
+* Update comments in PAPIFY UI;
+* Update relend;
+* Fix PiWriter: avoid throwing NPE when period is not attached to an element;
+* Change mirror (ibcp down);
+* Add new models for Schedule/Mapping/Memory Allocation;
+* Add hardware ID in Slam to identify to which real core the thread affinity should be set;
+* Merge the 4 Slam models into 1 file;
+* Update codegen:
+  * forces affinity of main thread to assigned core;
+  * disable affinity on windows;
+
+### Bug fix
+* Fix #162
+
 ## Release version 3.10.0
 *2019.06.20*
 

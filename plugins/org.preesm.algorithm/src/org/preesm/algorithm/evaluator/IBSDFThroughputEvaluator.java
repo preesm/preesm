@@ -1,8 +1,8 @@
 /**
  * Copyright or © or Copr. IETR/INSA - Rennes (2015 - 2019) :
  *
- * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017 - 2019)
- * blaunay <bapt.launay@gmail.com> (2015)
+ * Antoine Morvan [antoine.morvan@insa-rennes.fr] (2017 - 2019)
+ * blaunay [bapt.launay@gmail.com] (2015)
  *
  * This software is a computer program whose purpose is to help prototyping
  * parallel applications using dataflow formalism.
@@ -53,7 +53,7 @@ import org.preesm.commons.logger.PreesmLogger;
 import org.preesm.model.pisdf.AbstractActor;
 import org.preesm.model.pisdf.AbstractVertex;
 import org.preesm.model.scenario.Scenario;
-import org.preesm.model.slam.component.Component;
+import org.preesm.model.slam.Component;
 
 /**
  * Class used to search for the optimal periodic schedule and its throughput for a given hierarchical graph IBSDF.

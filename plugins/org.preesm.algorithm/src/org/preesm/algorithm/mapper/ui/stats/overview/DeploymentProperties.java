@@ -1,10 +1,10 @@
 /**
  * Copyright or © or Copr. IETR/INSA - Rennes (2008 - 2019) :
  *
- * Alexandre Honorat <alexandre.honorat@insa-rennes.fr> (2019)
- * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017 - 2019)
- * Clément Guy <clement.guy@insa-rennes.fr> (2014 - 2015)
- * Maxime Pelcat <maxime.pelcat@insa-rennes.fr> (2008 - 2012)
+ * Alexandre Honorat [alexandre.honorat@insa-rennes.fr] (2019)
+ * Antoine Morvan [antoine.morvan@insa-rennes.fr] (2017 - 2019)
+ * Clément Guy [clement.guy@insa-rennes.fr] (2014 - 2015)
+ * Maxime Pelcat [maxime.pelcat@insa-rennes.fr] (2008 - 2012)
  *
  * This software is a computer program whose purpose is to help prototyping
  * parallel applications using dataflow formalism.
@@ -52,6 +52,7 @@ import org.preesm.algorithm.mapper.ui.Messages;
 import org.preesm.algorithm.mapper.ui.stats.StatGenerator;
 import org.preesm.model.slam.ComponentInstance;
 import org.preesm.model.slam.Design;
+import org.preesm.model.slam.utils.LexicographicComponentInstanceComparator;
 
 // TODO: Auto-generated Javadoc
 /**
@@ -131,7 +132,7 @@ public class DeploymentProperties implements IStructuredContentProvider, ITableL
     Comparator<ComponentInstance> comparator = null;
 
     if (this.columnOrder.equals(Messages.getString("Overview.properties.opColumn"))) {
-      comparator = (o1, o2) -> o1.getInstanceName().compareTo(o2.getInstanceName());
+      comparator = new LexicographicComponentInstanceComparator();
     } else if (this.columnOrder.equals(Messages.getString("Overview.properties.loadColumn"))) {
       comparator = (o1, o2) -> {
         long l1 = loads.get(o1);

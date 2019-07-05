@@ -1,10 +1,10 @@
 /**
  * Copyright or © or Copr. IETR/INSA - Rennes (2008 - 2019) :
  *
- * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017 - 2019)
- * Clément Guy <clement.guy@insa-rennes.fr> (2014 - 2015)
- * Jonathan Piat <jpiat@laas.fr> (2011)
- * Maxime Pelcat <maxime.pelcat@insa-rennes.fr> (2008 - 2012)
+ * Antoine Morvan [antoine.morvan@insa-rennes.fr] (2017 - 2019)
+ * Clément Guy [clement.guy@insa-rennes.fr] (2014 - 2015)
+ * Jonathan Piat [jpiat@laas.fr] (2011)
+ * Maxime Pelcat [maxime.pelcat@insa-rennes.fr] (2008 - 2012)
  *
  * This software is a computer program whose purpose is to help prototyping
  * parallel applications using dataflow formalism.
@@ -35,7 +35,7 @@
  * The fact that you are presently reading this means that you have had
  * knowledge of the CeCILL license and that you accept its terms.
  */
-package org.preesm.model.scenario.serialize;
+package org.preesm.ui.scenario.editor.utils;
 
 import java.util.List;
 import java.util.stream.Collectors;

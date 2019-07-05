@@ -1,7 +1,7 @@
 /**
- * Copyright or © or Copr. IETR/INSA - Rennes (2017 - 2018) :
+ * Copyright or © or Copr. IETR/INSA - Rennes (2017 - 2019) :
  *
- * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017 - 2018)
+ * Antoine Morvan [antoine.morvan@insa-rennes.fr] (2017 - 2019)
  *
  * This software is a computer program whose purpose is to help prototyping
  * parallel applications using dataflow formalism.
@@ -35,10 +35,10 @@
 package org.preesm.model.slam.utils;
 
 import org.eclipse.emf.ecore.EClass;
-import org.preesm.model.slam.attributes.VLNV;
-import org.preesm.model.slam.component.Component;
-import org.preesm.model.slam.component.ComponentFactory;
-import org.preesm.model.slam.component.ComponentPackage;
+import org.preesm.model.slam.Component;
+import org.preesm.model.slam.SlamFactory;
+import org.preesm.model.slam.SlamPackage;
+import org.preesm.model.slam.VLNV;
 
 /**
  *
@@ -51,13 +51,13 @@ public class SlamUserFactory {
     // Not meant to be instantiated: use static methods.
   }
 
-  private static final ComponentFactory factory = ComponentFactory.eINSTANCE;
+  private static final SlamFactory factory = SlamFactory.eINSTANCE;
 
   /**
    *
    */
   public static final Component createComponent(final VLNV name, final String componentType) {
-    final EClass eClass = (EClass) ComponentPackage.eINSTANCE.getEClassifier(componentType);
+    final EClass eClass = (EClass) SlamPackage.eINSTANCE.getEClassifier(componentType);
     final Component component = (Component) SlamUserFactory.factory.create(eClass);
     component.setVlnv(name);
     return component;

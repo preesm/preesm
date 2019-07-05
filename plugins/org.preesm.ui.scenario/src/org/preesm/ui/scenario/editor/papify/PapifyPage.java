@@ -1,10 +1,10 @@
 /**
  * Copyright or © or Copr. IETR/INSA - Rennes (2011 - 2019) :
  *
- * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017 - 2019)
- * Clément Guy <clement.guy@insa-rennes.fr> (2014 - 2015)
- * Daniel Madroñal <daniel.madronal@upm.es> (2018)
- * Maxime Pelcat <maxime.pelcat@insa-rennes.fr> (2011 - 2015)
+ * Antoine Morvan [antoine.morvan@insa-rennes.fr] (2017 - 2019)
+ * Clément Guy [clement.guy@insa-rennes.fr] (2014 - 2015)
+ * Daniel Madroñal [daniel.madronal@upm.es] (2018 - 2019)
+ * Maxime Pelcat [maxime.pelcat@insa-rennes.fr] (2011 - 2015)
  *
  * This software is a computer program whose purpose is to help prototyping
  * parallel applications using dataflow formalism.
@@ -81,8 +81,8 @@ import org.preesm.model.scenario.PapiEventSet;
 import org.preesm.model.scenario.Scenario;
 import org.preesm.model.scenario.serialize.PapiConfigParser;
 import org.preesm.model.scenario.util.ScenarioUserFactory;
+import org.preesm.model.slam.Component;
 import org.preesm.model.slam.Design;
-import org.preesm.model.slam.component.Component;
 import org.preesm.ui.scenario.editor.FileSelectionAdapter;
 import org.preesm.ui.scenario.editor.Messages;
 import org.preesm.ui.scenario.editor.PreesmAlgorithmTreeLabelProvider;
@@ -147,8 +147,8 @@ public class PapifyPage extends ScenarioPage {
 
       // Papify file chooser section
       createFileSection(managedForm, Messages.getString("Papify.file"), Messages.getString("Papify.fileDescription"),
-          Messages.getString("Papify.fileEdit"), this.scenario.getPapifyConfig().getXmlFileURL(),
-          Messages.getString("Papify.fileBrowseTitle"), "xml");
+          this.scenario.getPapifyConfig().getXmlFileURL(), Messages.getString("Papify.fileBrowseTitle"), "xml",
+          Messages.getString("Papify.papifyFileEdit"));
 
       createPapifyPESection(managedForm, Messages.getString("Papify.titlePESection"),
           Messages.getString("Papify.descriptionPE"));
@@ -324,8 +324,6 @@ public class PapifyPage extends ScenarioPage {
    *          section title
    * @param desc
    *          description of the section
-   * @param fileEdit
-   *          text to display in text label
    * @param initValue
    *          initial value of Text
    * @param browseTitle
@@ -333,15 +331,15 @@ public class PapifyPage extends ScenarioPage {
    * @param fileExtension
    *          the file extension
    */
-  private void createFileSection(final IManagedForm mform, final String title, final String desc, final String fileEdit,
-      final String initValue, final String browseTitle, final String fileExtension) {
+  private void createFileSection(final IManagedForm mform, final String title, final String desc,
+      final String initValue, final String browseTitle, final String fileExtension, final String editFile) {
 
     final GridData gridData = new GridData(GridData.FILL_HORIZONTAL | GridData.VERTICAL_ALIGN_BEGINNING);
-    final Composite client = createSection(mform, title, desc, 1, gridData);
+    final Composite client = createSection(mform, title, desc, 2, gridData);
     final FormToolkit toolkit = mform.getToolkit();
 
     final GridData gd = new GridData();
-    toolkit.createLabel(client, fileEdit);
+    toolkit.createLabel(client, editFile);
 
     final Text text = toolkit.createText(client, initValue, SWT.SINGLE);
     text.setData(title);
@@ -351,7 +349,7 @@ public class PapifyPage extends ScenarioPage {
       try {
         importData(text1);
       } catch (final Exception ex) {
-        PreesmLogger.getLogger().log(Level.WARNING, "Could not importe Papi data from file '" + text1.getText() + "'",
+        PreesmLogger.getLogger().log(Level.WARNING, "Could not import Papi data from file '" + text1.getText() + "'",
             ex);
       }
 
@@ -366,8 +364,8 @@ public class PapifyPage extends ScenarioPage {
           try {
             importData(text);
           } catch (final Exception ex) {
-            PreesmLogger.getLogger().log(Level.WARNING,
-                "Could not importe Papi data from file '" + text.getText() + "'", ex);
+            PreesmLogger.getLogger().log(Level.WARNING, "Could not import Papi data from file '" + text.getText() + "'",
+                ex);
           }
         }
 

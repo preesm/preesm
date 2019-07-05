@@ -1,15 +1,15 @@
 /**
  * Copyright or © or Copr. IETR/INSA - Rennes (2008 - 2019) :
  *
- * Alexandre Honorat <alexandre.honorat@insa-rennes.fr> (2019)
- * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017 - 2019)
- * Clément Guy <clement.guy@insa-rennes.fr> (2014 - 2015)
- * Florian Arrestier <florian.arrestier@insa-rennes.fr> (2018)
- * Jonathan Piat <jpiat@laas.fr> (2008 - 2011)
- * Karol Desnos <karol.desnos@insa-rennes.fr> (2013)
- * Matthieu Wipliez <matthieu.wipliez@insa-rennes.fr> (2008)
- * Maxime Pelcat <maxime.pelcat@insa-rennes.fr> (2008 - 2014)
- * Pengcheng Mu <pengcheng.mu@insa-rennes.fr> (2008)
+ * Alexandre Honorat [alexandre.honorat@insa-rennes.fr] (2019)
+ * Antoine Morvan [antoine.morvan@insa-rennes.fr] (2017 - 2019)
+ * Clément Guy [clement.guy@insa-rennes.fr] (2014 - 2015)
+ * Florian Arrestier [florian.arrestier@insa-rennes.fr] (2018)
+ * Jonathan Piat [jpiat@laas.fr] (2008 - 2011)
+ * Karol Desnos [karol.desnos@insa-rennes.fr] (2013)
+ * Matthieu Wipliez [matthieu.wipliez@insa-rennes.fr] (2008)
+ * Maxime Pelcat [maxime.pelcat@insa-rennes.fr] (2008 - 2014)
+ * Pengcheng Mu [pengcheng.mu@insa-rennes.fr] (2008)
  *
  * This software is a computer program whose purpose is to help prototyping
  * parallel applications using dataflow formalism.
@@ -74,10 +74,10 @@ import org.preesm.model.pisdf.PiGraph;
 import org.preesm.model.scenario.Scenario;
 import org.preesm.model.scenario.ScenarioConstants;
 import org.preesm.model.scenario.Timings;
+import org.preesm.model.slam.Component;
 import org.preesm.model.slam.ComponentInstance;
 import org.preesm.model.slam.Design;
-import org.preesm.model.slam.component.Component;
-import org.preesm.model.slam.component.Operator;
+import org.preesm.model.slam.Operator;
 
 /**
  * Uses the SDF4J library to convert the input SDF into a DAG before scheduling.

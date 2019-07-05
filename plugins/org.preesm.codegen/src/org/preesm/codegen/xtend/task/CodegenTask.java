@@ -1,12 +1,12 @@
 /**
  * Copyright or © or Copr. IETR/INSA - Rennes (2013 - 2019) :
  *
- * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017 - 2019)
- * Clément Guy <clement.guy@insa-rennes.fr> (2014 - 2015)
- * Daniel Madroñal <daniel.madronal@upm.es> (2019)
- * Julien Hascoet <jhascoet@kalray.eu> (2016)
- * Karol Desnos <karol.desnos@insa-rennes.fr> (2013 - 2015)
- * Maxime Pelcat <maxime.pelcat@insa-rennes.fr> (2013)
+ * Antoine Morvan [antoine.morvan@insa-rennes.fr] (2017 - 2019)
+ * Clément Guy [clement.guy@insa-rennes.fr] (2014 - 2015)
+ * Daniel Madroñal [daniel.madronal@upm.es] (2019)
+ * Julien Hascoet [jhascoet@kalray.eu] (2016)
+ * Karol Desnos [karol.desnos@insa-rennes.fr] (2013 - 2015)
+ * Maxime Pelcat [maxime.pelcat@insa-rennes.fr] (2013)
  *
  * This software is a computer program whose purpose is to help prototyping
  * parallel applications using dataflow formalism.
@@ -79,7 +79,9 @@ import org.preesm.workflow.implement.AbstractTaskImplementation;
         + " the **preesm.h** user header file:\n"
         + "*  **PREESM_VERBOSE** : if defined, the code will print extra info about actor firing;\n"
         + "*  **PREESM_LOOP_SIZE** : when set to an integer value $$n > 0$$, the application will terminate after"
-        + " $$n$$ executions of the graph.\n\n"
+        + " $$n$$ executions of the graph.\n"
+        + "*  **PREESM_NO_AFFINITY** : if defined, the part of the code that sets the affinity to specific cores "
+        + "will be skipped;\n" + "\n"
         + "When the loop size macro is omitted, the execution can be stopped by setting the global variable "
         + "**preesmStopThreads** to 1. This variable is defined in the **main.c** generated file, and should be "
         + "accessed using extern keyword.",

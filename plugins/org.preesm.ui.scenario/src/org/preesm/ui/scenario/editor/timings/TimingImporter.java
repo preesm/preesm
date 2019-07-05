@@ -1,7 +1,7 @@
 /**
- * Copyright or © or Copr. IETR/INSA - Rennes (2018) :
+ * Copyright or © or Copr. IETR/INSA - Rennes (2019) :
  *
- * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2018)
+ * Antoine Morvan [antoine.morvan@insa-rennes.fr] (2019)
  *
  * This software is a computer program whose purpose is to help prototyping
  * parallel applications using dataflow formalism.
@@ -32,32 +32,43 @@
  * The fact that you are presently reading this means that you have had
  * knowledge of the CeCILL license and that you accept its terms.
  */
-package org.preesm.model.scenario.generator;
+package org.preesm.ui.scenario.editor.timings;
 
-import java.util.Collections;
-import java.util.LinkedHashSet;
-import java.util.Set;
-import org.preesm.model.pisdf.Fifo;
-import org.preesm.model.pisdf.PiGraph;
-import org.preesm.model.pisdf.util.PiMMSwitch;
+import org.preesm.model.scenario.Scenario;
+import org.preesm.model.scenario.serialize.CsvTimingParser;
+import org.preesm.model.scenario.serialize.ExcelTimingParser;
+import org.preesm.model.slam.Design;
 
 /**
  *
  */
-public class PiSDFTypeGatherer extends PiMMSwitch<Set<String>> {
+public class TimingImporter {
 
-  private final Set<String> dataTypes = new LinkedHashSet<>();
+  /**
+   *
+   */
+  public static final void importTimings(final Scenario currentScenario) {
+    final String excelFileURL = currentScenario.getTimings().getExcelFileURL();
+    if (!excelFileURL.isEmpty()) {
+      final ExcelTimingParser excelParser = new ExcelTimingParser(currentScenario);
+      final CsvTimingParser csvParser = new CsvTimingParser(currentScenario);
 
-  @Override
-  public Set<String> casePiGraph(final PiGraph graph) {
-    graph.getChildrenGraphs().stream().forEach(this::doSwitch);
-    graph.getFifos().stream().forEach(this::doSwitch);
-    return dataTypes;
+      try {
+        final String[] fileExt = excelFileURL.split("\\.");
+        final Design design = currentScenario.getDesign();
+        switch (fileExt[fileExt.length - 1]) {
+          case "xls":
+            excelParser.parse(excelFileURL, design.getOperatorComponents());
+            break;
+          case "csv":
+            csvParser.parse(excelFileURL, design.getOperatorComponents());
+            break;
+          default:
+        }
+      } catch (final Exception e) {
+        e.printStackTrace();
+      }
+    }
   }
 
-  @Override
-  public Set<String> caseFifo(Fifo fifo) {
-    dataTypes.add(fifo.getType());
-    return Collections.emptySet();
-  }
 }

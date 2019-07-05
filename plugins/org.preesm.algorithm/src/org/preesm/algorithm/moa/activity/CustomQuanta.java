@@ -1,8 +1,8 @@
 /**
  * Copyright or © or Copr. IETR/INSA - Rennes (2018 - 2019) :
  *
- * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2018 - 2019)
- * Daniel Madroñal <daniel.madronal@upm.es> (2018)
+ * Antoine Morvan [antoine.morvan@insa-rennes.fr] (2018 - 2019)
+ * Daniel Madroñal [daniel.madronal@upm.es] (2018)
  *
  * This software is a computer program whose purpose is to help prototyping
  * parallel applications using dataflow formalism.
@@ -37,7 +37,7 @@ package org.preesm.algorithm.moa.activity;
 
 import java.util.HashMap;
 import java.util.Map;
-import org.preesm.model.slam.component.Component;
+import org.preesm.model.slam.Component;
 
 /**
  * Storing the number of custom quanta per actor. Information is stored as strings containing JEP compatible formula.

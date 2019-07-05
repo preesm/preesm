@@ -1,12 +1,18 @@
 Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
-Bundle-Name: PREESM :: Plugins :: Algorithms
+Bundle-Name: %pluginName
 Automatic-Module-Name: org.preesm.algorithm
 Bundle-SymbolicName: org.preesm.algorithm;singleton:=true
-Bundle-Version: 3.10.0
-Bundle-Vendor: IETR / INSA Rennes - VAADER
+Bundle-Version: 3.11.0
+Bundle-Vendor: %providerName
+Bundle-Localization: plugin
 Require-Bundle: org.eclipse.core.resources,
  org.eclipse.core.runtime,
+ org.eclipse.emf.ecore;visibility:=reexport,
+ org.eclipse.xtext.xbase.lib,
+ org.eclipse.emf.ecore.xcore.lib,
+ org.preesm.model.pisdf;visibility:=reexport,
+ org.preesm.model.slam;visibility:=reexport,
  org.eclipse.ui.workbench,
  org.eclipse.jface,
  org.eclipse.ui.forms,
@@ -30,7 +36,8 @@ Require-Bundle: org.eclipse.core.resources,
  org.beanshell.bsh;bundle-version="2.1.8",
  org.preesm.workflow;visibility:=reexport,
  org.preesm.model.scenario;visibility:=reexport,
- org.preesm.commons
+ org.preesm.commons,
+ org.eclipse.emf.ecore.xcore;bundle-version="1.9.0"
 Bundle-ClassPath: .
 Export-Package: org.preesm.algorithm,
  org.preesm.algorithm.clustering,
@@ -40,7 +47,6 @@ Export-Package: org.preesm.algorithm,
  org.preesm.algorithm.evaluator,
  org.preesm.algorithm.generator,
  org.preesm.algorithm.io.gml,
- org.preesm.algorithm.io.sdf3,
  org.preesm.algorithm.io.xml,
  org.preesm.algorithm.latency,
  org.preesm.algorithm.mapper,
@@ -94,7 +100,16 @@ Export-Package: org.preesm.algorithm,
  org.preesm.algorithm.schedule,
  org.preesm.algorithm.throughput,
  org.preesm.algorithm.throughput.tools,
- org.preesm.algorithm.transforms
+ org.preesm.algorithm.transforms,
+ org.preesm.model.algorithm.schedule,
+ org.preesm.model.algorithm.schedule.impl,
+ org.preesm.model.algorithm.schedule.util,
+ org.preesm.model.algorithm.mapping,
+ org.preesm.model.algorithm.mapping.impl,
+ org.preesm.model.algorithm.mapping.util,
+ org.preesm.model.algorithm.memalloc,
+ org.preesm.model.algorithm.memalloc.impl,
+ org.preesm.model.algorithm.memalloc.util
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Bundle-ActivationPolicy: lazy
 Bundle-Activator: org.preesm.algorithm.PreesmAlgorithmPlugin

@@ -1,4 +1,37 @@
-
+/**
+ * Copyright or © or Copr. IETR/INSA - Rennes (2018 - 2019) :
+ *
+ * Antoine Morvan [antoine.morvan@insa-rennes.fr] (2018 - 2019)
+ *
+ * This software is a computer program whose purpose is to help prototyping
+ * parallel applications using dataflow formalism.
+ *
+ * This software is governed by the CeCILL  license under French law and
+ * abiding by the rules of distribution of free software.  You can  use,
+ * modify and/ or redistribute the software under the terms of the CeCILL
+ * license as circulated by CEA, CNRS and INRIA at the following URL
+ * "http://www.cecill.info".
+ *
+ * As a counterpart to the access to the source code and  rights to copy,
+ * modify and redistribute granted by the license, users are provided only
+ * with a limited warranty  and the software's author,  the holder of the
+ * economic rights,  and the successive licensors  have only  limited
+ * liability.
+ *
+ * In this respect, the user's attention is drawn to the risks associated
+ * with loading,  using,  modifying and/or developing or reproducing the
+ * software by the user in light of its specific status of free software,
+ * that may mean  that it is complicated to manipulate,  and  that  also
+ * therefore means  that it is reserved for developers  and  experienced
+ * professionals having in-depth computer knowledge. Users are therefore
+ * encouraged to load and test the software's suitability as regards their
+ * requirements in conditions enabling the security of their systems and/or
+ * data to be ensured and,  more generally, to use and operate it in the
+ * same conditions as regards security.
+ *
+ * The fact that you are presently reading this means that you have had
+ * knowledge of the CeCILL license and that you accept its terms.
+ */
 @GenModel(modelName="Slam", prefix="Slam", modelDirectory="/org.preesm.model.slam/ecore-gen", //	editDirectory="/org.ietr.dftools.architecture.edit/ecore-gen",
 //	editorDirectory="/org.ietr.dftools.architecture.editor/ecore-gen",
 //	testsDirectory="/org.ietr.dftools.architecture.tests/ecore-gen",
@@ -15,15 +48,8 @@
 package org.preesm.model.slam
 
 import org.eclipse.emf.common.util.ECollections
-import org.preesm.model.slam.attributes.Parameter
-import org.preesm.model.slam.attributes.VLNV
-import org.preesm.model.slam.component.ComNode
-import org.preesm.model.slam.component.Component
-import org.preesm.model.slam.component.HierarchyPort
-import org.preesm.model.slam.component.Operator
-import org.preesm.model.slam.link.Link
-import org.preesm.model.slam.utils.ComponentInstanceComparator
-import org.preesm.model.slam.utils.VLNVComparator
+import org.preesm.model.slam.utils.LexicographicComponentInstanceComparator
+import org.preesm.commons.exceptions.PreesmRuntimeException
 
 // !!! This is needed as of the current versions of xcore/xtext
 // For some reason when using the default String/... (i.e. without the following)
@@ -58,13 +84,13 @@ class Design extends VLNVedElement , ParameterizedElement {
 		return components.filter[(it instanceof Operator)].toEList.unmodifiableView
 	}
 	op boolean containsComponent(VLNV name) {
-		return components.exists[VLNVComparator.areSame(vlnv, name)]
+		return components.exists[vlnv.isSame(name)]
 	}
 	op boolean containsComponent(String vlnvName) {
 		return components.exists[vlnvName.equals(it.vlnv.name)]
 	}
 	op Component getComponent(VLNV name) {
-		return components.findFirst[VLNVComparator.areSame(vlnv, name)]
+		return components.findFirst[vlnv.isSame(name)]
 	}
 	op Component getComponent(String vlnvName) {
 		return components.findFirst[vlnvName.equals(it.vlnv.name)]
@@ -88,7 +114,7 @@ class Design extends VLNVedElement , ParameterizedElement {
 		return componentInstances.filter[(it.component instanceof Operator)].toEList.unmodifiableView
 	}
 	op ComponentInstance[] getOrderedOperatorComponentInstances() {
-		return operatorComponentInstances.sortEList(new ComponentInstanceComparator()).unmodifiableView
+		return operatorComponentInstances.sortEList(new LexicographicComponentInstanceComparator()).unmodifiableView
 	}
 	op ComponentInstance[] getComponentInstancesOfType(Component component) {
 		componentInstances.filter[component.vlnv.name == it.component.vlnv.name].toEList.unmodifiableView
@@ -116,7 +142,16 @@ class Design extends VLNVedElement , ParameterizedElement {
 
 class ComponentInstance extends ParameterizedElement {
 	refers Component component opposite instances
+	/*
+	 * Unique name used to identify the component in the whole architecture.
+	 */
 	String instanceName
+	/*
+	 * When several elements of the same type are present in the design,
+	 * this hardware ID is used by the codegen to properly set the affinity
+	 * or initialize the accelerators.
+	 */
+	int hardwareId
 	op boolean isHierarchical()
 }
 
@@ -130,4 +165,85 @@ class ParameterizedElement {
 
 class ComponentHolder {
 	contains unordered Component[] components
+}
+
+class VLNV {
+	String vendor = ""
+	String library = ""
+	String name = ""
+	String version = ""
+
+	op boolean isSame(VLNV other) {
+		return this.vendor == other.vendor && this.library == other.library && this.name == other.name && this.version == other.version
+	}
+}
+
+class Parameter wraps java.util.Map$Entry {
+	String key
+	String value
+}
+
+abstract class Link {
+	refers ComInterface sourceInterface
+	refers ComInterface destinationInterface
+	refers ComponentInstance sourceComponentInstance
+	refers ComponentInstance destinationComponentInstance
+	String uuid
+	boolean directed = "false"
+
+	op ComponentInstance getOtherEnd(ComponentInstance oneEnd) {
+		if (sourceComponentInstance.instanceName == oneEnd.instanceName) {
+			return destinationComponentInstance;
+		} else if (destinationComponentInstance.instanceName == oneEnd.instanceName) {
+			return sourceComponentInstance;
+		} else {
+			throw new PreesmRuntimeException("The given end is not related to this link");
+		}
+	}
+}
+
+class DataLink extends Link {
+}
+
+class ControlLink extends Link {
+}
+
+class Component extends VLNVedElement , ParameterizedElement {
+	contains ComInterface[] interfaces opposite component
+	refers ComponentInstance[] instances opposite component
+	contains Design[] refinements opposite refined
+	op ComInterface getInterface(String name) {
+		return interfaces.findFirst[it -> it.name == name]
+	}
+}
+
+class Operator extends Component {
+}
+
+class ComNode extends Component {
+	boolean parallel = "true"
+	float speed = "1"
+}
+
+abstract class Enabler extends Component {
+}
+
+class Dma extends Enabler {
+	int setupTime = "0"
+}
+
+class Mem extends Enabler {
+	int size = "1"
+}
+
+class HierarchyPort {
+	refers ComInterface externalInterface
+	refers ComInterface internalInterface
+	refers ComponentInstance internalComponentInstance
+}
+
+class ComInterface {
+	container Component component opposite interfaces
+	contains VLNV busType
+	id String name = ""
 }

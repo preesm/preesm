@@ -1,8 +1,8 @@
 /**
  * Copyright or © or Copr. IETR/INSA - Rennes (2018 - 2019) :
  *
- * Alexandre Honorat <alexandre.honorat@insa-rennes.fr> (2018 - 2019)
- * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2018 - 2019)
+ * Alexandre Honorat [alexandre.honorat@insa-rennes.fr] (2018 - 2019)
+ * Antoine Morvan [antoine.morvan@insa-rennes.fr] (2018 - 2019)
  *
  * This software is a computer program whose purpose is to help prototyping
  * parallel applications using dataflow formalism.
@@ -51,8 +51,8 @@ import org.preesm.model.pisdf.DataOutputPort;
 import org.preesm.model.pisdf.Fifo;
 import org.preesm.model.pisdf.PiGraph;
 import org.preesm.model.scenario.Scenario;
+import org.preesm.model.slam.Component;
 import org.preesm.model.slam.Design;
-import org.preesm.model.slam.component.Component;
 
 /**
  * This class aims to select periodic actors on which execute the period checkers (nbff and nblf).

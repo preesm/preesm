@@ -7,12 +7,14 @@
     <spirit:componentInstances>
         <spirit:componentInstance>
             <spirit:instanceName>Core0</spirit:instanceName>
+            <spirit:hardwareId>0</spirit:hardwareId>
             <spirit:componentRef spirit:library="" spirit:name="x86"
                 spirit:vendor="" spirit:version=""/>
             <spirit:configurableElementValues/>
         </spirit:componentInstance>
         <spirit:componentInstance>
             <spirit:instanceName>shared_mem</spirit:instanceName>
+            <spirit:hardwareId>0</spirit:hardwareId>
             <spirit:componentRef spirit:library=""
                 spirit:name="SHARED_MEM" spirit:vendor="" spirit:version=""/>
             <spirit:configurableElementValues/>

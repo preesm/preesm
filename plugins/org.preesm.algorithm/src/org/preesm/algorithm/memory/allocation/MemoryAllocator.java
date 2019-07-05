@@ -1,11 +1,11 @@
 /**
  * Copyright or © or Copr. IETR/INSA - Rennes (2012 - 2019) :
  *
- * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017 - 2019)
- * Clément Guy <clement.guy@insa-rennes.fr> (2014 - 2015)
- * Julien Hascoet <jhascoet@kalray.eu> (2017)
- * Karol Desnos <karol.desnos@insa-rennes.fr> (2012 - 2016)
- * Maxime Pelcat <maxime.pelcat@insa-rennes.fr> (2014)
+ * Antoine Morvan [antoine.morvan@insa-rennes.fr] (2017 - 2019)
+ * Clément Guy [clement.guy@insa-rennes.fr] (2014 - 2015)
+ * Julien Hascoet [jhascoet@kalray.eu] (2017)
+ * Karol Desnos [karol.desnos@insa-rennes.fr] (2012 - 2016)
+ * Maxime Pelcat [maxime.pelcat@insa-rennes.fr] (2014)
  *
  * This software is a computer program whose purpose is to help prototyping
  * parallel applications using dataflow formalism.
@@ -49,6 +49,8 @@ import org.eclipse.xtext.xbase.lib.Functions.Function1;
 import org.eclipse.xtext.xbase.lib.IterableExtensions;
 import org.eclipse.xtext.xbase.lib.Pair;
 import org.jgrapht.graph.DefaultEdge;
+import org.preesm.algorithm.mapper.graphtransfo.BufferAggregate;
+import org.preesm.algorithm.mapper.graphtransfo.BufferProperties;
 import org.preesm.algorithm.memory.exclusiongraph.MemoryExclusionGraph;
 import org.preesm.algorithm.memory.exclusiongraph.MemoryExclusionVertex;
 import org.preesm.algorithm.memory.script.Range;
@@ -58,10 +60,7 @@ import org.preesm.algorithm.model.sdf.SDFEdge;
 import org.preesm.algorithm.model.sdf.SDFGraph;
 import org.preesm.commons.exceptions.PreesmRuntimeException;
 import org.preesm.commons.math.MathFunctionsHelper;
-import org.preesm.model.scenario.types.BufferAggregate;
-import org.preesm.model.scenario.types.BufferProperties;
 
-// TODO: Auto-generated Javadoc
 /**
  * This class is both an interface and toolbox class for memory allocator.
  *

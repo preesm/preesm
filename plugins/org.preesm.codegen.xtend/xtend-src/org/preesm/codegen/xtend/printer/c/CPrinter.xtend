@@ -1,15 +1,15 @@
 /**
  * Copyright or © or Copr. IETR/INSA - Rennes (2013 - 2019) :
  *
- * Alexandre Honorat <alexandre.honorat@insa-rennes.fr> (2019)
- * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017 - 2019)
- * Clément Guy <clement.guy@insa-rennes.fr> (2015)
- * Daniel Madroñal <daniel.madronal@upm.es> (2018 - 2019)
- * Florian Arrestier <florian.arrestier@insa-rennes.fr> (2018)
- * Julien Hascoet <jhascoet@kalray.eu> (2016)
- * Karol Desnos <karol.desnos@insa-rennes.fr> (2013 - 2018)
- * Leonardo Suriano <leonardo.suriano@upm.es> (2019)
- * Maxime Pelcat <maxime.pelcat@insa-rennes.fr> (2013 - 2016)
+ * Alexandre Honorat [alexandre.honorat@insa-rennes.fr] (2019)
+ * Antoine Morvan [antoine.morvan@insa-rennes.fr] (2017 - 2019)
+ * Clément Guy [clement.guy@insa-rennes.fr] (2015)
+ * Daniel Madroñal [daniel.madronal@upm.es] (2018 - 2019)
+ * Florian Arrestier [florian.arrestier@insa-rennes.fr] (2018)
+ * Julien Hascoet [jhascoet@kalray.eu] (2016)
+ * Karol Desnos [karol.desnos@insa-rennes.fr] (2013 - 2018)
+ * Leonardo Suriano [leonardo.suriano@upm.es] (2019)
+ * Maxime Pelcat [maxime.pelcat@insa-rennes.fr] (2013 - 2016)
  *
  * This software is a computer program whose purpose is to help prototyping
  * parallel applications using dataflow formalism.
@@ -483,6 +483,11 @@ class CPrinter extends DefaultPrinter {
 
 		unsigned int launch(unsigned int core_id, pthread_t * thread, void *(*start_routine) (void *)) {
 
+			// init pthread attributes
+			pthread_attr_t attr;
+			pthread_attr_init(&attr);
+
+		#ifndef PREESM_NO_AFFINITY
 		#ifdef _WIN32
 			SYSTEM_INFO sysinfo;
 			GetSystemInfo(&sysinfo);
@@ -491,16 +496,12 @@ class CPrinter extends DefaultPrinter {
 			unsigned int numCPU = sysconf(_SC_NPROCESSORS_ONLN);
 		#endif
 
-			// init pthread attributes
-			pthread_attr_t attr;
-			pthread_attr_init(&attr);
-
 			// check CPU id is valid
 			if (core_id >= numCPU) {
 				// leave attribute uninitialized
 				printf("** Warning: thread %d will not be set with specific core affinity \n   due to the lack of available dedicated cores.\n",core_id);
 			} else {
-		#ifdef __APPLE__
+		#if defined __APPLE__ || defined _WIN32
 				// NOT SUPPORTED
 		#else
 				// init cpuset struct
@@ -512,6 +513,7 @@ class CPrinter extends DefaultPrinter {
 				pthread_attr_setaffinity_np(&attr, sizeof(cpuset), &cpuset);
 		#endif
 			}
+		#endif
 
 			// create thread
 			pthread_create(thread, &attr, start_routine, NULL);
@@ -520,6 +522,18 @@ class CPrinter extends DefaultPrinter {
 
 
 		int main(void) {
+			// Set affinity of main thread to proper core ID
+		#ifndef PREESM_NO_AFFINITY
+		#if defined __APPLE__ || defined _WIN32
+			// NOT SUPPORTED
+		#else
+			cpu_set_t cpuset;
+			CPU_ZERO(&cpuset);
+			CPU_SET(_PREESM_MAIN_THREAD_, &cpuset);
+			sched_setaffinity(getpid(),  sizeof(cpuset), &cpuset);
+		#endif
+		#endif
+
 			«IF this.usingPapify == 1»
 				#ifdef _PREESM_PAPIFY_MONITOR
 				mkdir("papify-output", 0777);
@@ -639,6 +653,7 @@ class CPrinter extends DefaultPrinter {
 	override printRegisterSetUp(RegisterSetUpAction action) ''''''
 
 	override preProcessing(List<Block> printerBlocks, Collection<Block> allBlocks){
+		super.preProcessing(printerBlocks, allBlocks);
 		for (cluster : allBlocks){
 			if (cluster instanceof CoreBlock) {
 				for(CodeElt codeElt : cluster.loopBlock.codeElts){

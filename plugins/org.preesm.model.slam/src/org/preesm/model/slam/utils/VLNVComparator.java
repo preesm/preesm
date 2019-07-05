@@ -1,8 +1,8 @@
 /**
- * Copyright or © or Copr. IETR/INSA - Rennes (2018) :
+ * Copyright or © or Copr. IETR/INSA - Rennes (2018 - 2019) :
  *
- * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2018)
- * Daniel Madroñal <daniel.madronal@upm.es> (2018)
+ * Antoine Morvan [antoine.morvan@insa-rennes.fr] (2018 - 2019)
+ * Daniel Madroñal [daniel.madronal@upm.es] (2018)
  *
  * This software is a computer program whose purpose is to help prototyping
  * parallel applications using dataflow formalism.
@@ -36,16 +36,12 @@
 package org.preesm.model.slam.utils;
 
 import java.util.Comparator;
-import org.preesm.model.slam.attributes.VLNV;
+import org.preesm.model.slam.VLNV;
 
 /**
  *
  */
 public class VLNVComparator implements Comparator<VLNV> {
-
-  public static final boolean areSame(final VLNV v1, final VLNV v2) {
-    return new VLNVComparator().compare(v1, v2) == 0;
-  }
 
   public static final int compareVLNV(final VLNV v1, final VLNV v2) {
     return new VLNVComparator().compare(v1, v2);

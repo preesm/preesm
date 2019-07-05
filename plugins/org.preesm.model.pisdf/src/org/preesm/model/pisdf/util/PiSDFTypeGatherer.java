@@ -1,10 +1,7 @@
 /**
- * Copyright or © or Copr. IETR/INSA - Rennes (2009 - 2018) :
+ * Copyright or © or Copr. IETR/INSA - Rennes (2018 - 2019) :
  *
- * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017 - 2018)
- * Clément Guy <clement.guy@insa-rennes.fr> (2014)
- * Jonathan Piat <jpiat@laas.fr> (2009)
- * Maxime Pelcat <maxime.pelcat@insa-rennes.fr> (2009 - 2012)
+ * Antoine Morvan [antoine.morvan@insa-rennes.fr] (2018 - 2019)
  *
  * This software is a computer program whose purpose is to help prototyping
  * parallel applications using dataflow formalism.
@@ -35,26 +32,32 @@
  * The fact that you are presently reading this means that you have had
  * knowledge of the CeCILL license and that you accept its terms.
  */
-package org.preesm.ui.slam;
+package org.preesm.model.pisdf.util;
 
-import org.eclipse.ui.wizards.newresource.BasicNewProjectResourceWizard;
+import java.util.Collections;
+import java.util.LinkedHashSet;
+import java.util.Set;
+import org.preesm.model.pisdf.Fifo;
+import org.preesm.model.pisdf.PiGraph;
+import org.preesm.model.pisdf.util.PiMMSwitch;
 
 /**
- * This class provides a wizard to create a new Architecture project.
  *
- * @author Matthieu Wipliez
  */
-public class ArchitectureProjectWizard extends BasicNewProjectResourceWizard {
+public class PiSDFTypeGatherer extends PiMMSwitch<Set<String>> {
 
-  /*
-   * (non-Javadoc)
-   *
-   * @see org.eclipse.ui.wizards.newresource.BasicNewProjectResourceWizard#addPages()
-   */
+  private final Set<String> dataTypes = new LinkedHashSet<>();
+
   @Override
-  public void addPages() {
-    super.addPages();
-    super.setWindowTitle("New Architecture Project");
+  public Set<String> casePiGraph(final PiGraph graph) {
+    graph.getChildrenGraphs().stream().forEach(this::doSwitch);
+    graph.getFifos().stream().forEach(this::doSwitch);
+    return dataTypes;
   }
 
+  @Override
+  public Set<String> caseFifo(Fifo fifo) {
+    dataTypes.add(fifo.getType());
+    return Collections.emptySet();
+  }
 }

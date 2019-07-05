@@ -1,13 +1,13 @@
 /**
  * Copyright or © or Copr. IETR/INSA - Rennes (2008 - 2019) :
  *
- * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017 - 2019)
- * Clément Guy <clement.guy@insa-rennes.fr> (2014 - 2015)
- * Florian Arrestier <florian.arrestier@insa-rennes.fr> (2018)
- * Jonathan Piat <jpiat@laas.fr> (2009 - 2011)
- * Karol Desnos <karol.desnos@insa-rennes.fr> (2012 - 2013)
- * Matthieu Wipliez <matthieu.wipliez@insa-rennes.fr> (2008)
- * Maxime Pelcat <maxime.pelcat@insa-rennes.fr> (2008 - 2012)
+ * Antoine Morvan [antoine.morvan@insa-rennes.fr] (2017 - 2019)
+ * Clément Guy [clement.guy@insa-rennes.fr] (2014 - 2015)
+ * Florian Arrestier [florian.arrestier@insa-rennes.fr] (2018)
+ * Jonathan Piat [jpiat@laas.fr] (2009 - 2011)
+ * Karol Desnos [karol.desnos@insa-rennes.fr] (2012 - 2013)
+ * Matthieu Wipliez [matthieu.wipliez@insa-rennes.fr] (2008)
+ * Maxime Pelcat [maxime.pelcat@insa-rennes.fr] (2008 - 2012)
  *
  * This software is a computer program whose purpose is to help prototyping
  * parallel applications using dataflow formalism.
@@ -44,6 +44,8 @@ import java.util.ArrayList;
 import java.util.LinkedHashSet;
 import java.util.Set;
 import java.util.logging.Level;
+import org.preesm.algorithm.mapper.graphtransfo.ImplementationPropertyNames;
+import org.preesm.algorithm.mapper.graphtransfo.VertexType;
 import org.preesm.algorithm.model.dag.DAGEdge;
 import org.preesm.algorithm.model.dag.DAGVertex;
 import org.preesm.algorithm.model.dag.DirectedAcyclicGraph;
@@ -58,8 +60,6 @@ import org.preesm.algorithm.model.sdf.esdf.SDFBroadcastVertex;
 import org.preesm.algorithm.model.sdf.esdf.SDFJoinVertex;
 import org.preesm.algorithm.model.sdf.esdf.SDFRoundBufferVertex;
 import org.preesm.commons.logger.PreesmLogger;
-import org.preesm.model.scenario.types.ImplementationPropertyNames;
-import org.preesm.model.scenario.types.VertexType;
 
 /**
  * Utility class created to gather all static methods used to remove fork/join nodes from a graph.

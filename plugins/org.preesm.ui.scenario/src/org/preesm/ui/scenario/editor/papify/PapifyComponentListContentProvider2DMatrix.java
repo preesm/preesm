@@ -1,10 +1,10 @@
 /**
  * Copyright or © or Copr. IETR/INSA - Rennes (2008 - 2019) :
  *
- * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017 - 2019)
- * Daniel Madroñal <daniel.madronal@upm.es> (2018)
- * Matthieu Wipliez <matthieu.wipliez@insa-rennes.fr> (2008)
- * Maxime Pelcat <maxime.pelcat@insa-rennes.fr> (2008 - 2011)
+ * Antoine Morvan [antoine.morvan@insa-rennes.fr] (2017 - 2019)
+ * Daniel Madroñal [daniel.madronal@upm.es] (2018 - 2019)
+ * Matthieu Wipliez [matthieu.wipliez@insa-rennes.fr] (2008)
+ * Maxime Pelcat [maxime.pelcat@insa-rennes.fr] (2008 - 2011)
  *
  * This software is a computer program whose purpose is to help prototyping
  * parallel applications using dataflow formalism.
@@ -50,7 +50,7 @@ import org.preesm.model.scenario.PapiComponent;
 import org.preesm.model.scenario.PapiEventInfo;
 import org.preesm.model.scenario.PapiEventSet;
 import org.preesm.model.scenario.Scenario;
-import org.preesm.model.slam.component.Component;
+import org.preesm.model.slam.Component;
 import org.preesm.ui.scenario.editor.papify.PapifyListTreeElement.PAPIStatus;
 
 /**
@@ -103,7 +103,7 @@ public class PapifyComponentListContentProvider2DMatrix implements ITreeContentP
 
       PapiEventInfo papiData = this.scenario.getPapifyConfig().getPapiData();
       PapiComponent pc = papiData.getComponents().get(compName);
-      this.scenario.getPapifyConfig().getPapifyConfigGroupsPEs().get(peType).remove(pc);
+      this.scenario.getPapifyConfig().removeComponent(peType, pc);
 
       for (PapifyListTreeElement treeElement : this.componentConfig) {
         if (treeElement.label.equals(compName)) {

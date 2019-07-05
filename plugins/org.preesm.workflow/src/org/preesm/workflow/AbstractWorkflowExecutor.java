@@ -1,7 +1,7 @@
 /**
  * Copyright or © or Copr. IETR/INSA - Rennes (2018 - 2019) :
  *
- * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2018 - 2019)
+ * Antoine Morvan [antoine.morvan@insa-rennes.fr] (2018 - 2019)
  *
  * This software is a computer program whose purpose is to help prototyping
  * parallel applications using dataflow formalism.
@@ -330,6 +330,10 @@ public abstract class AbstractWorkflowExecutor {
             }
           } catch (final PreesmException e) {
             getLogger().log(Level.SEVERE, e.getMessage(), e);
+            nodeResult = false;
+          } catch (final Exception e) {
+            getLogger().log(Level.SEVERE, "Unexpected Exception: " + e.getClass().getCanonicalName() + ":"
+                + e.getMessage() + "\n Contact Preesm developers if you cannot solve the problem.", e);
             nodeResult = false;
           }
         }

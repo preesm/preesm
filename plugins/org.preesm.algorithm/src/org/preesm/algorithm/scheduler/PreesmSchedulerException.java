@@ -1,9 +1,7 @@
 /**
- * Copyright or © or Copr. IETR/INSA - Rennes (2008 - 2018) :
+ * Copyright or © or Copr. IETR/INSA - Rennes (2019) :
  *
- * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017 - 2018)
- * Matthieu Wipliez <matthieu.wipliez@insa-rennes.fr> (2008)
- * Maxime Pelcat <maxime.pelcat@insa-rennes.fr> (2008 - 2012)
+ * Antoine Morvan [antoine.morvan@insa-rennes.fr] (2019)
  *
  * This software is a computer program whose purpose is to help prototyping
  * parallel applications using dataflow formalism.
@@ -34,24 +32,33 @@
  * The fact that you are presently reading this means that you have had
  * knowledge of the CeCILL license and that you accept its terms.
  */
-package org.preesm.model.scenario.types;
+package org.preesm.algorithm.scheduler;
 
-import java.util.ArrayList;
+import org.preesm.commons.exceptions.PreesmRuntimeException;
 
-// TODO: Auto-generated Javadoc
 /**
- * Objects used to tag the SDF edges when they represent more than one buffer each. One edge contains one aggregate in
- * its propertybean. The Aggregate is composed of BufferDefinitions with details on their size, type...
  *
- * @author mpelcat
+ * @author anmorvan
  *
  */
-public class BufferAggregate extends ArrayList<BufferProperties> {
+public class PreesmSchedulerException extends PreesmRuntimeException {
 
-  /** ID used to reference the element in a property bean. */
-  public static final String propertyBeanName = "bufferAggregate";
+  private static final long serialVersionUID = 8953229077928699904L;
 
-  /** The Constant serialVersionUID. */
-  private static final long serialVersionUID = 1L;
+  public PreesmSchedulerException() {
+    this((String) null);
+  }
 
+  public PreesmSchedulerException(String message) {
+    this(message, null);
+  }
+
+  public PreesmSchedulerException(String message, Throwable cause) {
+    super(true, message, cause);
+  }
+
+  public PreesmSchedulerException(Throwable cause) {
+    this(null, cause);
+
+  }
 }

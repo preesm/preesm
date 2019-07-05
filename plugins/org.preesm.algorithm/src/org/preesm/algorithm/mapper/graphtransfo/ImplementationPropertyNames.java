@@ -1,10 +1,10 @@
 /**
- * Copyright or © or Copr. IETR/INSA - Rennes (2009 - 2018) :
+ * Copyright or © or Copr. IETR/INSA - Rennes (2009 - 2019) :
  *
- * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017 - 2018)
- * Clément Guy <clement.guy@insa-rennes.fr> (2014 - 2015)
- * Karol Desnos <karol.desnos@insa-rennes.fr> (2013)
- * Maxime Pelcat <maxime.pelcat@insa-rennes.fr> (2009 - 2012)
+ * Antoine Morvan [antoine.morvan@insa-rennes.fr] (2017 - 2019)
+ * Clément Guy [clement.guy@insa-rennes.fr] (2014 - 2015)
+ * Karol Desnos [karol.desnos@insa-rennes.fr] (2013)
+ * Maxime Pelcat [maxime.pelcat@insa-rennes.fr] (2009 - 2012)
  *
  * This software is a computer program whose purpose is to help prototyping
  * parallel applications using dataflow formalism.
@@ -35,7 +35,9 @@
  * The fact that you are presently reading this means that you have had
  * knowledge of the CeCILL license and that you accept its terms.
  */
-package org.preesm.model.scenario.types;
+package org.preesm.algorithm.mapper.graphtransfo;
+
+import org.preesm.algorithm.model.dag.DAGEdge;
 
 /**
  * This class contains property bean names used to exchange vertex properties between the mapper and the code generation

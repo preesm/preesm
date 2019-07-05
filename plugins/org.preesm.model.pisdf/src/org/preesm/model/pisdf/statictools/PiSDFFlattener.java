@@ -1,9 +1,9 @@
 /**
  * Copyright or © or Copr. IETR/INSA - Rennes (2018 - 2019) :
  *
- * Alexandre Honorat <alexandre.honorat@insa-rennes.fr> (2018 - 2019)
- * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2018 - 2019)
- * Florian Arrestier <florian.arrestier@insa-rennes.fr> (2018)
+ * Alexandre Honorat [alexandre.honorat@insa-rennes.fr] (2018 - 2019)
+ * Antoine Morvan [antoine.morvan@insa-rennes.fr] (2018 - 2019)
+ * Florian Arrestier [florian.arrestier@insa-rennes.fr] (2018)
  *
  * This software is a computer program whose purpose is to help prototyping
  * parallel applications using dataflow formalism.
@@ -46,6 +46,7 @@ import java.util.logging.Level;
 import org.preesm.commons.IntegerName;
 import org.preesm.commons.exceptions.PreesmRuntimeException;
 import org.preesm.commons.logger.PreesmLogger;
+import org.preesm.commons.model.PreesmCopyTracker;
 import org.preesm.model.pisdf.AbstractActor;
 import org.preesm.model.pisdf.AbstractVertex;
 import org.preesm.model.pisdf.BroadcastActor;
@@ -623,6 +624,7 @@ public class PiSDFFlattener extends PiMMSwitch<Boolean> {
   public Boolean casePiGraph(final PiGraph graph) {
     if (graph.getContainingPiGraph() == null) {
       result.setName(graph.getName() + "_flat");
+      PreesmCopyTracker.trackCopy(graph, this.result);
     }
     // If there are no actors in the graph we leave
     if (graph.getActors().isEmpty()) {

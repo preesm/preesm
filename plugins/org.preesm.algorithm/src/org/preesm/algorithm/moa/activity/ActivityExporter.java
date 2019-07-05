@@ -1,7 +1,7 @@
 /**
  * Copyright or © or Copr. IETR/INSA - Rennes (2018 - 2019) :
  *
- * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2018 - 2019)
+ * Antoine Morvan [antoine.morvan@insa-rennes.fr] (2018 - 2019)
  *
  * This software is a computer program whose purpose is to help prototyping
  * parallel applications using dataflow formalism.
@@ -49,6 +49,7 @@ import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.Path;
 import org.preesm.algorithm.mapper.abc.impl.latency.LatencyAbc;
+import org.preesm.algorithm.mapper.graphtransfo.ImplementationPropertyNames;
 import org.preesm.algorithm.mapper.model.MapperDAGEdge;
 import org.preesm.algorithm.mapper.model.MapperDAGVertex;
 import org.preesm.commons.doc.annotations.Parameter;
@@ -58,7 +59,6 @@ import org.preesm.commons.doc.annotations.Value;
 import org.preesm.commons.exceptions.PreesmRuntimeException;
 import org.preesm.commons.files.WorkspaceUtils;
 import org.preesm.commons.logger.PreesmLogger;
-import org.preesm.model.scenario.types.ImplementationPropertyNames;
 import org.preesm.model.slam.ComponentInstance;
 import org.preesm.model.slam.Design;
 import org.preesm.model.slam.route.AbstractRouteStep;

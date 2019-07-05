@@ -3,10 +3,10 @@
 
     Copyright or © or Copr. IETR/INSA - Rennes (2008 - 2019) :
 
-    Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017 - 2019)
-    Clément Guy <clement.guy@insa-rennes.fr> (2014 - 2015)
-    Matthieu Wipliez <matthieu.wipliez@insa-rennes.fr> (2008)
-    Maxime Pelcat <maxime.pelcat@insa-rennes.fr> (2008 - 2012)
+    Antoine Morvan [antoine.morvan@insa-rennes.fr] (2017 - 2019)
+    Clément Guy [clement.guy@insa-rennes.fr] (2014 - 2015)
+    Matthieu Wipliez [matthieu.wipliez@insa-rennes.fr] (2008)
+    Maxime Pelcat [maxime.pelcat@insa-rennes.fr] (2008 - 2012)
 
     This software is a computer program whose purpose is to help prototyping
     parallel applications using dataflow formalism.
@@ -41,6 +41,11 @@
 <?eclipse version="3.2"?>
 
 <plugin>
+    <extension
+         point="org.preesm.commons.plugin">
+      <!-- Generic point -->
+   </extension>
+
    <extension
          point="org.eclipse.ui.editors">
       <editor
@@ -65,8 +70,29 @@
             name="GanttEditor">
       </editor>
    </extension>
-   <extension
-         point="org.preesm.commons.plugin">
+
+   <extension point="org.eclipse.emf.ecore.generated_package">
+      <!-- @generated Mapping -->
+      <package
+            uri="http://org.preesm/algos/mapping"
+            class="org.preesm.model.algorithm.mapping.MappingPackage"
+            genModel="model/Mapping.xcore"/>
+   </extension>
+
+   <extension point="org.eclipse.emf.ecore.generated_package">
+      <!-- @generated Schedule -->
+      <package
+            uri="http://org.preesm/algos/schedule"
+            class="org.preesm.model.algorithm.schedule.SchedulePackage"
+            genModel="model/Schedule.xcore"/>
+   </extension>
+
+   <extension point="org.eclipse.emf.ecore.generated_package">
+      <!-- @generated MemoryAllocation -->
+      <package
+            uri="http://org.preesm/algos/memalloc"
+            class="org.preesm.model.algorithm.memalloc.MemoryAllocationPackage"
+            genModel="model/MemoryAllocation.xcore"/>
    </extension>
 
 </plugin>

@@ -1,9 +1,9 @@
 /**
  * Copyright or © or Copr. IETR/INSA - Rennes (2008 - 2019) :
  *
- * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017 - 2019)
- * Matthieu Wipliez <matthieu.wipliez@insa-rennes.fr> (2008)
- * Maxime Pelcat <maxime.pelcat@insa-rennes.fr> (2008 - 2012)
+ * Antoine Morvan [antoine.morvan@insa-rennes.fr] (2017 - 2019)
+ * Matthieu Wipliez [matthieu.wipliez@insa-rennes.fr] (2008)
+ * Maxime Pelcat [maxime.pelcat@insa-rennes.fr] (2008 - 2012)
  *
  * This software is a computer program whose purpose is to help prototyping
  * parallel applications using dataflow formalism.
@@ -34,7 +34,7 @@
  * The fact that you are presently reading this means that you have had
  * knowledge of the CeCILL license and that you accept its terms.
  */
-package org.preesm.model.scenario.types;
+package org.preesm.algorithm.mapper.graphtransfo;
 
 /**
  * Objects used to tag the DAG edges. The buffer couple definition is transmitted to the code generation. One buffer is

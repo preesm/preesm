@@ -1,7 +1,7 @@
 /**
  * Copyright or © or Copr. IETR/INSA - Rennes (2019) :
  *
- * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2019)
+ * Antoine Morvan [antoine.morvan@insa-rennes.fr] (2019)
  *
  * This software is a computer program whose purpose is to help prototyping
  * parallel applications using dataflow formalism.
@@ -32,41 +32,39 @@
  * The fact that you are presently reading this means that you have had
  * knowledge of the CeCILL license and that you accept its terms.
  */
-package org.preesm.model.scenario.serialize;
+package org.preesm.model.slam.utils;
 
-import org.preesm.model.scenario.Scenario;
-import org.preesm.model.slam.Design;
+import org.preesm.model.slam.ComponentInstance;
 
 /**
- *
+ * Comparing two components using their names.
  */
-public class TimingImporter {
+public class LexicographicComponentInstanceComparator implements ComponentInstanceComparator {
 
-  /**
+  /*
+   * (non-Javadoc)
    *
+   * @see java.util.Comparator#compare(java.lang.Object, java.lang.Object)
    */
-  public static final void importTimings(final Scenario currentScenario) {
-    final String excelFileURL = currentScenario.getTimings().getExcelFileURL();
-    if (!excelFileURL.isEmpty()) {
-      final ExcelTimingParser excelParser = new ExcelTimingParser(currentScenario);
-      final CsvTimingParser csvParser = new CsvTimingParser(currentScenario);
+  @Override
+  public int compare(ComponentInstance cb1, ComponentInstance cb2) {
+    final String o1 = cb1.getInstanceName();
+    final String o2 = cb2.getInstanceName();
 
-      try {
-        final String[] fileExt = excelFileURL.split("\\.");
-        final Design design = currentScenario.getDesign();
-        switch (fileExt[fileExt.length - 1]) {
-          case "xls":
-            excelParser.parse(excelFileURL, design.getOperatorComponents());
-            break;
-          case "csv":
-            csvParser.parse(excelFileURL, design.getOperatorComponents());
-            break;
-          default:
-        }
-      } catch (final Exception e) {
-        e.printStackTrace();
-      }
+    final String o1StringPart = o1.replaceAll("\\d", "");
+    final String o2StringPart = o2.replaceAll("\\d", "");
+
+    if (o1StringPart.equalsIgnoreCase(o2StringPart)) {
+      return extractInt(o1) - extractInt(o2);
+    } else {
+      return o1.compareTo(o2);
     }
+  }
+
+  int extractInt(String s) {
+    String num = s.replaceAll("\\D", "");
+    // return 0 if no digits found
+    return num.isEmpty() ? 0 : Integer.parseInt(num);
   }
 
 }

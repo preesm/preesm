@@ -1,12 +1,12 @@
 /**
  * Copyright or © or Copr. IETR/INSA - Rennes (2008 - 2019) :
  *
- * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017 - 2019)
- * Clément Guy <clement.guy@insa-rennes.fr> (2014 - 2015)
- * Jonathan Piat <jpiat@laas.fr> (2011)
- * Karol Desnos <karol.desnos@insa-rennes.fr> (2013)
- * Matthieu Wipliez <matthieu.wipliez@insa-rennes.fr> (2008)
- * Maxime Pelcat <maxime.pelcat@insa-rennes.fr> (2008 - 2014)
+ * Antoine Morvan [antoine.morvan@insa-rennes.fr] (2017 - 2019)
+ * Clément Guy [clement.guy@insa-rennes.fr] (2014 - 2015)
+ * Jonathan Piat [jpiat@laas.fr] (2011)
+ * Karol Desnos [karol.desnos@insa-rennes.fr] (2013)
+ * Matthieu Wipliez [matthieu.wipliez@insa-rennes.fr] (2008)
+ * Maxime Pelcat [maxime.pelcat@insa-rennes.fr] (2008 - 2014)
  *
  * This software is a computer program whose purpose is to help prototyping
  * parallel applications using dataflow formalism.
@@ -39,12 +39,12 @@
  */
 package org.preesm.algorithm.mapper.model.special;
 
+import org.preesm.algorithm.mapper.graphtransfo.ImplementationPropertyNames;
 import org.preesm.algorithm.mapper.model.MapperDAG;
 import org.preesm.algorithm.mapper.model.MapperDAGVertex;
 import org.preesm.algorithm.model.AbstractVertex;
 import org.preesm.algorithm.model.dag.DAGEdge;
 import org.preesm.algorithm.model.dag.DirectedAcyclicGraph;
-import org.preesm.model.scenario.types.ImplementationPropertyNames;
 import org.preesm.model.slam.route.AbstractRouteStep;
 
 // TODO: Auto-generated Javadoc

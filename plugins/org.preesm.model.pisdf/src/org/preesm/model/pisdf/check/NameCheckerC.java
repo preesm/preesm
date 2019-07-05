@@ -1,8 +1,8 @@
 /**
  * Copyright or © or Copr. IETR/INSA - Rennes (2019) :
  *
- * Alexandre Honorat <alexandre.honorat@insa-rennes.fr> (2019)
- * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2019)
+ * Alexandre Honorat [alexandre.honorat@insa-rennes.fr] (2019)
+ * Antoine Morvan [antoine.morvan@insa-rennes.fr] (2019)
  *
  * This software is a computer program whose purpose is to help prototyping
  * parallel applications using dataflow formalism.
@@ -42,7 +42,7 @@ import org.preesm.commons.exceptions.PreesmRuntimeException;
 
 /**
  * This class enables to check if an actor or port name is compliant with our policy.
- * 
+ *
  * @author ahonorat
  */
 public class NameCheckerC {
@@ -77,7 +77,7 @@ public class NameCheckerC {
 
   /**
    * Match {@code name} with {@link REGEX_C}.
-   * 
+   *
    * @param name
    *          Name to check.
    * @return True if valid variable name, false otherwise.
@@ -88,7 +88,7 @@ public class NameCheckerC {
 
   /**
    * Test if {@code name} is one of the restricted C keyword.
-   * 
+   *
    * @param name
    *          Name to check.
    * @return True if C keyword, false otherwise.
@@ -101,7 +101,7 @@ public class NameCheckerC {
    * Check if the given actor or port name meets the policy. If not, throws an exception.
    * <p>
    * Ideally this method should be called by all {@code setName} methods. It is not the case yet.
-   * 
+   *
    * @param componentName
    *          Name of the kind of component (e.g. Actor, Port, ...)
    * @param name

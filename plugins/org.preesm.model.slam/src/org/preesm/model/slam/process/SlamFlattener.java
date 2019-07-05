@@ -1,7 +1,7 @@
 /**
  * Copyright or © or Copr. IETR/INSA - Rennes (2018 - 2019) :
  *
- * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2018 - 2019)
+ * Antoine Morvan [antoine.morvan@insa-rennes.fr] (2018 - 2019)
  *
  * This software is a computer program whose purpose is to help prototyping
  * parallel applications using dataflow formalism.
@@ -46,16 +46,15 @@ import java.util.Set;
 import java.util.UUID;
 import org.eclipse.emf.common.util.EList;
 import org.preesm.commons.exceptions.PreesmRuntimeException;
+import org.preesm.model.slam.ComInterface;
+import org.preesm.model.slam.Component;
 import org.preesm.model.slam.ComponentInstance;
+import org.preesm.model.slam.ControlLink;
+import org.preesm.model.slam.DataLink;
 import org.preesm.model.slam.Design;
+import org.preesm.model.slam.HierarchyPort;
+import org.preesm.model.slam.Link;
 import org.preesm.model.slam.SlamFactory;
-import org.preesm.model.slam.component.ComInterface;
-import org.preesm.model.slam.component.Component;
-import org.preesm.model.slam.component.HierarchyPort;
-import org.preesm.model.slam.link.ControlLink;
-import org.preesm.model.slam.link.DataLink;
-import org.preesm.model.slam.link.Link;
-import org.preesm.model.slam.link.LinkFactory;
 
 /**
  * Methods to flatten the hierarchy of a System-Level Architecture Model. If multiple refinements are available for a
@@ -348,9 +347,9 @@ public class SlamFlattener {
       Link newLink = null;
 
       if (originalLink instanceof DataLink) {
-        newLink = LinkFactory.eINSTANCE.createDataLink();
+        newLink = SlamFactory.eINSTANCE.createDataLink();
       } else if (originalLink instanceof ControlLink) {
-        newLink = LinkFactory.eINSTANCE.createControlLink();
+        newLink = SlamFactory.eINSTANCE.createControlLink();
       } else {
         throw new PreesmRuntimeException("Unsupported link type");
       }

@@ -1,7 +1,7 @@
 /**
  * Copyright or © or Copr. IETR/INSA - Rennes (2018 - 2019) :
  *
- * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2018 - 2019)
+ * Antoine Morvan [antoine.morvan@insa-rennes.fr] (2018 - 2019)
  *
  * This software is a computer program whose purpose is to help prototyping
  * parallel applications using dataflow formalism.
@@ -38,12 +38,12 @@
 package org.preesm.model.slam.serialize;
 
 import java.util.Map.Entry;
+import org.preesm.model.slam.ComNode;
+import org.preesm.model.slam.Component;
 import org.preesm.model.slam.Design;
-import org.preesm.model.slam.component.ComNode;
-import org.preesm.model.slam.component.Component;
-import org.preesm.model.slam.component.Dma;
-import org.preesm.model.slam.component.Mem;
-import org.preesm.model.slam.link.Link;
+import org.preesm.model.slam.Dma;
+import org.preesm.model.slam.Link;
+import org.preesm.model.slam.Mem;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 

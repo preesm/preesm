@@ -1,7 +1,7 @@
 /**
- * Copyright or © or Copr. IETR/INSA - Rennes (2017 - 2018) :
+ * Copyright or © or Copr. IETR/INSA - Rennes (2017 - 2019) :
  *
- * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017 - 2018)
+ * Antoine Morvan [antoine.morvan@insa-rennes.fr] (2017 - 2019)
  *
  * This software is a computer program whose purpose is to help prototyping
  * parallel applications using dataflow formalism.
@@ -53,8 +53,8 @@ public class LargeFFTTest {
 
   static final String[] scenarios = new String[] { "largeFFT_hawking.scenario", "largeFFT_lamaar.scenario",
       "largeFFT_monox86.scenario" };
-  static final String[] workflows = new String[] { "CodegenWMemScripts.workflow", "SDF3Exporter.workflow",
-      "Simulate.workflow", "XTendCodegen.workflow" };
+  static final String[] workflows = new String[] { "CodegenWMemScripts.workflow", "Simulate.workflow",
+      "XTendCodegen.workflow" };
 
   static final String projectName = "org.ietr.preesm.largeFFT";
 

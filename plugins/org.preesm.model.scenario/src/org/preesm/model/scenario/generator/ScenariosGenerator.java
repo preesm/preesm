@@ -1,8 +1,8 @@
 /**
  * Copyright or © or Copr. IETR/INSA - Rennes (2015 - 2019) :
  *
- * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017 - 2019)
- * Clément Guy <clement.guy@insa-rennes.fr> (2015)
+ * Antoine Morvan [antoine.morvan@insa-rennes.fr] (2017 - 2019)
+ * Clément Guy [clement.guy@insa-rennes.fr] (2015)
  *
  * This software is a computer program whose purpose is to help prototyping
  * parallel applications using dataflow formalism.
@@ -59,13 +59,14 @@ import org.preesm.commons.exceptions.PreesmFrameworkException;
 import org.preesm.model.pisdf.AbstractActor;
 import org.preesm.model.pisdf.PiGraph;
 import org.preesm.model.pisdf.serialize.PiParser;
+import org.preesm.model.pisdf.util.PiSDFTypeGatherer;
 import org.preesm.model.scenario.Scenario;
 import org.preesm.model.scenario.serialize.ScenarioWriter;
 import org.preesm.model.scenario.util.ScenarioUserFactory;
+import org.preesm.model.slam.Component;
 import org.preesm.model.slam.ComponentInstance;
 import org.preesm.model.slam.Design;
 import org.preesm.model.slam.SlamPackage;
-import org.preesm.model.slam.component.Component;
 import org.preesm.model.slam.serialize.IPXACTResourceFactoryImpl;
 import org.preesm.model.slam.serialize.SlamParser;
 import org.w3c.dom.Document;

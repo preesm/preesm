@@ -1,9 +1,9 @@
 /**
  * Copyright or © or Copr. IETR/INSA - Rennes (2011 - 2019) :
  *
- * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017 - 2019)
- * Clément Guy <clement.guy@insa-rennes.fr> (2015)
- * Maxime Pelcat <maxime.pelcat@insa-rennes.fr> (2011 - 2013)
+ * Antoine Morvan [antoine.morvan@insa-rennes.fr] (2017 - 2019)
+ * Clément Guy [clement.guy@insa-rennes.fr] (2015)
+ * Maxime Pelcat [maxime.pelcat@insa-rennes.fr] (2011 - 2013)
  *
  * This software is a computer program whose purpose is to help prototyping
  * parallel applications using dataflow formalism.
@@ -41,7 +41,7 @@ import org.eclipse.jface.viewers.BaseLabelProvider;
 import org.eclipse.jface.viewers.ITableLabelProvider;
 import org.eclipse.swt.graphics.Image;
 import org.preesm.model.scenario.MemoryCopySpeedValue;
-import org.preesm.model.slam.component.Component;
+import org.preesm.model.slam.Component;
 
 /**
  * Displays the labels for memcopy speed.

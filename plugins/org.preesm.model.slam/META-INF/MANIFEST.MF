@@ -3,21 +3,12 @@ Bundle-ManifestVersion: 2
 Bundle-Name: %pluginName
 Automatic-Module-Name: org.preesm.model.slam
 Bundle-SymbolicName: org.preesm.model.slam;singleton:=true
-Bundle-Version: 3.10.0
+Bundle-Version: 3.11.0
 Bundle-ClassPath: .
 Bundle-Localization: plugin
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Export-Package: org.preesm.model.slam,
- org.preesm.model.slam.attributes,
- org.preesm.model.slam.attributes.impl,
- org.preesm.model.slam.attributes.util,
- org.preesm.model.slam.component,
- org.preesm.model.slam.component.impl,
- org.preesm.model.slam.component.util,
  org.preesm.model.slam.impl,
- org.preesm.model.slam.link,
- org.preesm.model.slam.link.impl,
- org.preesm.model.slam.link.util,
  org.preesm.model.slam.process,
  org.preesm.model.slam.route,
  org.preesm.model.slam.serialize,

@@ -1,7 +1,7 @@
 /**
  * Copyright or © or Copr. IETR/INSA - Rennes (2018 - 2019) :
  *
- * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2018 - 2019)
+ * Antoine Morvan [antoine.morvan@insa-rennes.fr] (2018 - 2019)
  *
  * This software is a computer program whose purpose is to help prototyping
  * parallel applications using dataflow formalism.
@@ -47,28 +47,31 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.logging.Level;
+import java.util.stream.Collectors;
 import org.eclipse.core.runtime.Path;
+import org.eclipse.emf.common.util.EList;
 import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.EClass;
 import org.eclipse.emf.ecore.EPackage;
 import org.preesm.commons.DomUtil;
 import org.preesm.commons.exceptions.PreesmRuntimeException;
+import org.preesm.commons.logger.PreesmLogger;
+import org.preesm.model.slam.ComInterface;
+import org.preesm.model.slam.ComNode;
+import org.preesm.model.slam.Component;
 import org.preesm.model.slam.ComponentHolder;
 import org.preesm.model.slam.ComponentInstance;
 import org.preesm.model.slam.Design;
+import org.preesm.model.slam.Dma;
+import org.preesm.model.slam.HierarchyPort;
+import org.preesm.model.slam.Link;
+import org.preesm.model.slam.Mem;
 import org.preesm.model.slam.ParameterizedElement;
 import org.preesm.model.slam.SlamFactory;
-import org.preesm.model.slam.attributes.VLNV;
-import org.preesm.model.slam.component.ComInterface;
-import org.preesm.model.slam.component.ComNode;
-import org.preesm.model.slam.component.Component;
-import org.preesm.model.slam.component.ComponentFactory;
-import org.preesm.model.slam.component.Dma;
-import org.preesm.model.slam.component.HierarchyPort;
-import org.preesm.model.slam.component.Mem;
-import org.preesm.model.slam.link.Link;
-import org.preesm.model.slam.link.LinkFactory;
-import org.preesm.model.slam.link.LinkPackage;
+import org.preesm.model.slam.SlamPackage;
+import org.preesm.model.slam.VLNV;
 import org.preesm.model.slam.serialize.IPXACTDesignVendorExtensionsParser.LinkDescription;
 import org.preesm.model.slam.utils.SlamUserFactory;
 import org.w3c.dom.Document;
@@ -115,7 +118,7 @@ public class IPXACTDesignParser extends IPXACTParser {
     // the hierarchical external interfaces
 
     if (refinedComponent == null) {
-      refinedComponent = ComponentFactory.eINSTANCE.createComponent();
+      refinedComponent = SlamFactory.eINSTANCE.createComponent();
     }
 
     final Design design = SlamFactory.eINSTANCE.createDesign();
@@ -218,6 +221,27 @@ public class IPXACTDesignParser extends IPXACTParser {
       }
       node = node.getNextSibling();
     }
+
+    // set default hardware ID
+    final EList<ComponentInstance> componentInstances = design.getComponentInstances();
+    final Set<Integer> usedIDs = componentInstances.stream().map(c -> c.getHardwareId()).collect(Collectors.toSet());
+
+    final List<ComponentInstance> unsetHardwareIDComponentInstances = componentInstances.stream()
+        .filter(c -> c.getHardwareId() == -1).collect(Collectors.toList());
+    if (!unsetHardwareIDComponentInstances.isEmpty()) {
+      PreesmLogger.getLogger().log(Level.WARNING,
+          "Some component instances have an unset hardware ID. Using counter to set a default value.");
+      final AtomicInteger counter = new AtomicInteger(0);
+      for (final ComponentInstance cmp : unsetHardwareIDComponentInstances) {
+        while (usedIDs.contains(counter.get())) {
+          counter.incrementAndGet();
+        }
+        cmp.setHardwareId(counter.get());
+        usedIDs.add(counter.get());
+      }
+
+    }
+
   }
 
   /**
@@ -235,8 +259,11 @@ public class IPXACTDesignParser extends IPXACTParser {
     design.getComponentInstances().add(instance);
 
     VLNV vlnv = null;
-    final String instanceName = parseInstanceName(parent);
+    final String instanceName = parseID(parent);
     instance.setInstanceName(instanceName);
+
+    final int id = parseHardwareID(parent, instanceName);
+    instance.setHardwareId(id);
 
     Node node = parent.getFirstChild();
 
@@ -349,7 +376,7 @@ public class IPXACTDesignParser extends IPXACTParser {
    *          the parent
    * @return the string
    */
-  private String parseInstanceName(final Element parent) {
+  private String parseID(final Element parent) {
     Node node = parent.getFirstChild();
     String name = "";
 
@@ -365,6 +392,37 @@ public class IPXACTDesignParser extends IPXACTParser {
     }
 
     return name;
+  }
+
+  private int parseHardwareID(final Element parent, final String componentName) {
+    Node node = parent.getFirstChild();
+    int id = -1;
+
+    while (node != null) {
+      if (node instanceof Element) {
+        final Element elt = (Element) node;
+        final String type = elt.getTagName();
+        if (type.equals("spirit:hardwareId")) {
+          final String textContent = elt.getTextContent();
+          if (textContent == null || textContent.isEmpty()) {
+            throw new PreesmRuntimeException(
+                "No component instance ID specified for component '" + componentName + "'");
+          }
+          try {
+            id = Integer.valueOf(textContent);
+            if (id < 0) {
+              throw new NumberFormatException(
+                  "Component instance ID '" + id + "' of component '" + componentName + "' should be positive.");
+            }
+          } catch (final NumberFormatException e) {
+            throw new PreesmRuntimeException(
+                "Could not parse component instance ID '" + textContent + "' of component '" + componentName + "'", e);
+          }
+        }
+      }
+      node = node.getNextSibling();
+    }
+    return id;
   }
 
   /**
@@ -436,11 +494,11 @@ public class IPXACTDesignParser extends IPXACTParser {
         linkType = linkDescription.getType();
       }
 
-      final EPackage eLinkPackage = LinkPackage.eINSTANCE;
+      final EPackage eLinkPackage = SlamPackage.eINSTANCE;
       final EClass linkEclass = (EClass) eLinkPackage.getEClassifier(linkType);
 
       // Creating the link with appropriate type
-      final Link link = (Link) LinkFactory.eINSTANCE.create(linkEclass);
+      final Link link = (Link) SlamFactory.eINSTANCE.create(linkEclass);
 
       link.setDirected(linkDescription.isDirected());
       link.setUuid(linkUuid);
@@ -450,7 +508,7 @@ public class IPXACTDesignParser extends IPXACTParser {
 
       // Creating source interface if necessary
       if (sourceInterface == null) {
-        sourceInterface = ComponentFactory.eINSTANCE.createComInterface();
+        sourceInterface = SlamFactory.eINSTANCE.createComInterface();
         sourceInterface.setName(comItfs.get(0));
         sourceInstance.getComponent().getInterfaces().add(sourceInterface);
       }
@@ -462,7 +520,7 @@ public class IPXACTDesignParser extends IPXACTParser {
 
       // Creating destination interface if necessary
       if (destinationInterface == null) {
-        destinationInterface = ComponentFactory.eINSTANCE.createComInterface();
+        destinationInterface = SlamFactory.eINSTANCE.createComInterface();
         destinationInterface.setName(comItfs.get(1));
         destinationInstance.getComponent().getInterfaces().add(destinationInterface);
       }
@@ -505,13 +563,13 @@ public class IPXACTDesignParser extends IPXACTParser {
    */
   private void parseHierarchicalPort(final Element parent, final Design design) {
 
-    final HierarchyPort port = ComponentFactory.eINSTANCE.createHierarchyPort();
+    final HierarchyPort port = SlamFactory.eINSTANCE.createHierarchyPort();
 
     final String externalInterfaceName = parent.getAttribute("spirit:interfaceRef");
     ComInterface externalInterface = design.getRefined().getInterface(externalInterfaceName);
     // Creating the external interface if nonexistent
     if (externalInterface == null) {
-      externalInterface = ComponentFactory.eINSTANCE.createComInterface();
+      externalInterface = SlamFactory.eINSTANCE.createComInterface();
       externalInterface.setName(externalInterfaceName);
     }
     port.setExternalInterface(externalInterface);
@@ -544,7 +602,7 @@ public class IPXACTDesignParser extends IPXACTParser {
 
     // Creating internal interface if necessary
     if (internalInterface == null) {
-      internalInterface = ComponentFactory.eINSTANCE.createComInterface();
+      internalInterface = SlamFactory.eINSTANCE.createComInterface();
       internalInterface.setName(internalInterfaceName);
       internalComponentInstance.getComponent().getInterfaces().add(internalInterface);
     }

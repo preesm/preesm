@@ -1,14 +1,14 @@
 /**
  * Copyright or © or Copr. IETR/INSA - Rennes (2008 - 2019) :
  *
- * Alexandre Honorat <alexandre.honorat@insa-rennes.fr> (2019)
- * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017 - 2019)
- * Clément Guy <clement.guy@insa-rennes.fr> (2014 - 2015)
- * Daniel Madroñal <daniel.madronal@upm.es> (2018)
- * Jonathan Piat <jpiat@laas.fr> (2008 - 2011)
- * Karol Desnos <karol.desnos@insa-rennes.fr> (2015)
- * Maxime Pelcat <maxime.pelcat@insa-rennes.fr> (2008 - 2016)
- * Pengcheng Mu <pengcheng.mu@insa-rennes.fr> (2008)
+ * Alexandre Honorat [alexandre.honorat@insa-rennes.fr] (2019)
+ * Antoine Morvan [antoine.morvan@insa-rennes.fr] (2017 - 2019)
+ * Clément Guy [clement.guy@insa-rennes.fr] (2014 - 2015)
+ * Daniel Madroñal [daniel.madronal@upm.es] (2018 - 2019)
+ * Jonathan Piat [jpiat@laas.fr] (2008 - 2011)
+ * Karol Desnos [karol.desnos@insa-rennes.fr] (2015)
+ * Maxime Pelcat [maxime.pelcat@insa-rennes.fr] (2008 - 2016)
+ * Pengcheng Mu [pengcheng.mu@insa-rennes.fr] (2008)
  *
  * This software is a computer program whose purpose is to help prototyping
  * parallel applications using dataflow formalism.
@@ -71,11 +71,10 @@ import org.preesm.model.scenario.PapiEventSetType;
 import org.preesm.model.scenario.Scenario;
 import org.preesm.model.scenario.ScenarioFactory;
 import org.preesm.model.scenario.Timings;
-import org.preesm.model.scenario.types.VertexType;
 import org.preesm.model.scenario.util.ScenarioUserFactory;
+import org.preesm.model.slam.Component;
 import org.preesm.model.slam.ComponentInstance;
 import org.preesm.model.slam.Design;
-import org.preesm.model.slam.component.Component;
 import org.preesm.model.slam.serialize.SlamParser;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -400,13 +399,13 @@ public class ScenarioParser {
             try {
               this.scenario.setAlgorithm(PiParser.getPiGraphWithReconnection(url));
             } catch (final Exception e) {
-              PreesmLogger.getLogger().log(Level.WARNING, "Could not parse the algorithm: " + e.getMessage(), e);
+              PreesmLogger.getLogger().log(Level.SEVERE, "Could not parse the algorithm: " + e.getMessage(), e);
             }
           } else if (type.equals("architecture")) {
             try {
               initializeArchitectureInformation(url);
             } catch (final Exception e) {
-              PreesmLogger.getLogger().log(Level.WARNING, "Could not parse the architecture: " + e.getMessage(), e);
+              PreesmLogger.getLogger().log(Level.SEVERE, "Could not parse the architecture: " + e.getMessage(), e);
             }
           } else if (type.equals("codegenDirectory")) {
             this.scenario.setCodegenDirectory(url);
@@ -476,7 +475,7 @@ public class ScenarioParser {
           final Element elt = (Element) node;
           final String type = elt.getTagName();
           final String name = elt.getAttribute("name");
-          if (type.equals(VertexType.TYPE_TASK)) {
+          if (type.equals("task")) {
             final AbstractActor actorFromPath = getActorFromPath(name);
             if (actorFromPath != null) {
               actors.add(actorFromPath);
@@ -631,7 +630,7 @@ public class ScenarioParser {
     final PapiComponent component = ScenarioFactory.eINSTANCE.createPapiComponent();
     component.setIndex(Integer.valueOf(componentIndex));
     component.setId(componentId);
-    component.setType(PapiComponentType.valueOf(componentType));
+    component.setType(PapiComponentType.valueOf(componentType.toUpperCase()));
 
     final List<PapiEventSet> eventSetList = new ArrayList<>();
 
@@ -729,20 +728,21 @@ public class ScenarioParser {
     this.scenario.getTimings().setExcelFileURL(timingFileUrl);
 
     Node node = timingsElt.getFirstChild();
+    if (scenario.isProperlySet()) {
+      while (node != null) {
 
-    while (node != null) {
-
-      if (node instanceof Element) {
-        final Element elt = (Element) node;
-        final String type = elt.getTagName();
-        if (type.equals("timing")) {
-          parseTiming(elt);
-        } else if (type.equals("memcpyspeed")) {
-          retrieveMemcpySpeed(this.scenario.getTimings(), elt);
+        if (node instanceof Element) {
+          final Element elt = (Element) node;
+          final String type = elt.getTagName();
+          if (type.equals("timing")) {
+            parseTiming(elt);
+          } else if (type.equals("memcpyspeed")) {
+            retrieveMemcpySpeed(this.scenario.getTimings(), elt);
+          }
         }
-      }
 
-      node = node.getNextSibling();
+        node = node.getNextSibling();
+      }
     }
   }
 
@@ -761,10 +761,11 @@ public class ScenarioParser {
         final String opdefname = timingElt.getAttribute("opname");
         final String stringValue = timingElt.getAttribute("time");
 
-        final boolean contains = this.scenario.getDesign().containsComponent(opdefname);
+        final Design design = this.scenario.getDesign();
+        final boolean contains = design.containsComponent(opdefname);
         final AbstractActor lookup = VertexPath.lookup(this.scenario.getAlgorithm(), vertexpath);
         if ((lookup != null) && contains) {
-          final Component component = this.scenario.getDesign().getComponent(opdefname);
+          final Component component = design.getComponent(opdefname);
           this.scenario.getTimings().setTiming(lookup, component, stringValue);
         }
       }

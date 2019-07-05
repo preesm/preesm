@@ -1,12 +1,12 @@
 /**
  * Copyright or © or Copr. IETR/INSA - Rennes (2008 - 2019) :
  *
- * Alexandre Honorat <alexandre.honorat@insa-rennes.fr> (2019)
- * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017 - 2019)
- * Clément Guy <clement.guy@insa-rennes.fr> (2014)
- * Jonathan Piat <jpiat@laas.fr> (2011)
- * Karol Desnos <karol.desnos@insa-rennes.fr> (2012)
- * Maxime Pelcat <maxime.pelcat@insa-rennes.fr> (2008 - 2014)
+ * Alexandre Honorat [alexandre.honorat@insa-rennes.fr] (2019)
+ * Antoine Morvan [antoine.morvan@insa-rennes.fr] (2017 - 2019)
+ * Clément Guy [clement.guy@insa-rennes.fr] (2014)
+ * Jonathan Piat [jpiat@laas.fr] (2011)
+ * Karol Desnos [karol.desnos@insa-rennes.fr] (2012)
+ * Maxime Pelcat [maxime.pelcat@insa-rennes.fr] (2008 - 2014)
  *
  * This software is a computer program whose purpose is to help prototyping
  * parallel applications using dataflow formalism.
@@ -42,6 +42,8 @@ package org.preesm.algorithm.mapper.ui.stats;
 import java.util.Map;
 import org.preesm.algorithm.mapper.abc.impl.latency.LatencyAbc;
 import org.preesm.algorithm.mapper.abc.impl.latency.SpanLengthCalculator;
+import org.preesm.algorithm.mapper.graphtransfo.ImplementationPropertyNames;
+import org.preesm.algorithm.mapper.graphtransfo.VertexType;
 import org.preesm.algorithm.mapper.model.MapperDAG;
 import org.preesm.algorithm.mapper.model.MapperDAGEdge;
 import org.preesm.algorithm.mapper.model.MapperDAGVertex;
@@ -54,8 +56,6 @@ import org.preesm.algorithm.model.dag.DAGEdge;
 import org.preesm.algorithm.model.dag.DAGVertex;
 import org.preesm.commons.exceptions.PreesmException;
 import org.preesm.model.scenario.Scenario;
-import org.preesm.model.scenario.types.ImplementationPropertyNames;
-import org.preesm.model.scenario.types.VertexType;
 import org.preesm.model.slam.ComponentInstance;
 
 /**

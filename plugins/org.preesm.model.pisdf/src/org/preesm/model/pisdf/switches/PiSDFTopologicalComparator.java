@@ -1,10 +1,7 @@
 /**
- * Copyright or © or Copr. IETR/INSA - Rennes (2011 - 2018) :
+ * Copyright or © or Copr. IETR/INSA - Rennes (2019) :
  *
- * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017 - 2018)
- * Clément Guy <clement.guy@insa-rennes.fr> (2014 - 2015)
- * Jonathan Piat <jpiat@laas.fr> (2011)
- * Maxime Pelcat <maxime.pelcat@insa-rennes.fr> (2011)
+ * Antoine Morvan [antoine.morvan@insa-rennes.fr] (2019)
  *
  * This software is a computer program whose purpose is to help prototyping
  * parallel applications using dataflow formalism.
@@ -35,34 +32,43 @@
  * The fact that you are presently reading this means that you have had
  * knowledge of the CeCILL license and that you accept its terms.
  */
-package org.preesm.ui.slam.properties;
+package org.preesm.model.pisdf.switches;
 
-import org.eclipse.gef.EditPart;
-import org.eclipse.jface.viewers.IFilter;
-import org.ietr.dftools.graphiti.model.Graph;
-import org.ietr.dftools.graphiti.model.Vertex;
+import java.util.Comparator;
+import java.util.HashSet;
+import java.util.Set;
+import org.preesm.model.pisdf.AbstractActor;
 
 /**
- * The Class ArchitectureVertexFilter.
+ *
+ * @author anmorvan
+ *
  */
-public class ArchitectureVertexFilter implements IFilter {
+public class PiSDFTopologicalComparator implements Comparator<AbstractActor> {
 
-  /*
-   * (non-Javadoc)
-   *
-   * @see org.eclipse.jface.viewers.IFilter#select(java.lang.Object)
-   */
+  private final Set<AbstractActor> visitedElements = new HashSet<>();
+
   @Override
-  public boolean select(final Object toTest) {
-    if (toTest instanceof EditPart) {
-      final Object model = ((EditPart) toTest).getModel();
-      if (model instanceof Vertex) {
-        final Vertex vertex = (Vertex) model;
-        final Graph graph = vertex.getParent();
-        return graph.getType().getName().equals("IP-XACT design");
+  public int compare(final AbstractActor o1, final AbstractActor o2) {
+    int res = 0;
+    visitedElements.clear();
+    if (o1.equals(o2)) {
+      res = 0;
+    } else {
+      final boolean predecessor = PiSDFPredecessorSwitch.isPredecessor(o1, o2);
+      visitedElements.clear();
+      if (predecessor) {
+        res = 1;
+      } else {
+        final boolean predecessor2 = PiSDFPredecessorSwitch.isPredecessor(o2, o1);
+        visitedElements.clear();
+        if (predecessor2) {
+          res = -1;
+        } else {
+          res = 0;
+        }
       }
     }
-    return false;
+    return res;
   }
-
 }

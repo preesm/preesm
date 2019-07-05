@@ -2,10 +2,10 @@
 
     Copyright or © or Copr. IETR/INSA - Rennes (2015 - 2019) :
 
-    Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017 - 2019)
-    Julien Hascoet <jhascoet@kalray.eu> (2017)
-    Julien Heulot <julien.heulot@insa-rennes.fr> (2015 - 2016)
-    Karol Desnos <karol.desnos@insa-rennes.fr> (2016)
+    Antoine Morvan [antoine.morvan@insa-rennes.fr] (2017 - 2019)
+    Julien Hascoet [jhascoet@kalray.eu] (2017)
+    Julien Heulot [julien.heulot@insa-rennes.fr] (2015 - 2016)
+    Karol Desnos [karol.desnos@insa-rennes.fr] (2016)
 
     This software is a computer program whose purpose is to help prototyping
     parallel applications using dataflow formalism.
@@ -43,7 +43,7 @@
    <modelVersion>4.0.0</modelVersion>
    <groupId>org.preesm</groupId>
    <artifactId>org.preesm.parent</artifactId>
-   <version>3.10.0</version>
+   <version>3.11.0</version>
    <packaging>pom</packaging>
 
    <!-- More Project Information -->
@@ -77,11 +77,11 @@
    <properties>
       <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 
-      <jacoco-version>0.8.3</jacoco-version>
+      <jacoco-version>0.8.4</jacoco-version>
       <tycho-version>1.4.0</tycho-version>
       <findbugs-version>3.0.5</findbugs-version>
       <sonar-version>3.6.0.1398</sonar-version>
-      <checkstyle-version>8.18</checkstyle-version>
+      <checkstyle-version>8.22</checkstyle-version>
       <rcptt-version>2.4.2</rcptt-version>
       <rcptt-runner-version>2.4.2</rcptt-runner-version>
       <preesm.coding.policy.version>1.3.0</preesm.coding.policy.version>
@@ -105,14 +105,13 @@
       <!-- ############### -->
       <!-- ## Main (mostly down ...) : -->
       <!-- http://download.eclipse.org -->
-      <!-- ## Mirrors : -->
+      <!-- ## Full list of mirrors : -->
+      <!-- https://www.eclipse.org/downloads/download.php?format=xml -->
+      <!-- ## Usually good performing mirrors : -->
       <!-- http://ftp.fau.de/eclipse/ -->
-      <!-- http://mirror.ibcp.fr/pub/eclipse/ -->
       <!-- http://ftp.halifax.rwth-aachen.de/eclipse/ -->
-      <!-- http://eclipse.mirror.wearetriple.com/ -->
-      <!-- http://artfiles.org/eclipse.org/ -->
       <!-- http://mirror.switch.ch/eclipse/ -->
-      <eclipse.mirror>http://mirror.ibcp.fr/pub/eclipse/</eclipse.mirror>
+      <eclipse.mirror>http://ftp.halifax.rwth-aachen.de/eclipse/</eclipse.mirror>
 
       <!-- ############### -->
       <!-- P2 REPOS CONFIG -->
@@ -458,7 +457,7 @@
          <plugin>
             <groupId>org.apache.maven.plugins</groupId>
             <artifactId>maven-checkstyle-plugin</artifactId>
-            <version>3.0.0</version>
+            <version>3.1.0</version>
             <configuration>
                <configLocation>/VAADER_checkstyle.xml</configLocation>
                <failsOnError>true</failsOnError>
@@ -515,6 +514,8 @@
                <excludes>
                   <exclude>**/fi.abo*/**</exclude>
                   <exclude>LICENSE</exclude>
+                  <exclude>Jenkinsfile</exclude>
+                  <exclude>.mailmap</exclude>
                   <exclude>**/README.md</exclude>
                   <exclude>**/resources/**</exclude>
                   <exclude>**/ecore-gen/**</exclude>
@@ -524,15 +525,20 @@
                   <exclude>libs/**</exclude>
                   <exclude>doc/**</exclude>
                   <exclude>**/*.sh</exclude>
+                  <exclude>**/*.txt</exclude>
                   <exclude>**/*.css</exclude>
+                  <exclude>**/*.PNG</exclude>
                   <exclude>**/*.xsl</exclude>
                   <exclude>**/rcptt.properties</exclude>
                </excludes>
                <!-- Additional extensions to support -->
                <mapping>
+                  <properties>SCRIPT_STYLE</properties>
                   <ecore>XML_STYLE</ecore>
+                  <exsd>XML_STYLE</exsd>
                   <genmodel>XML_STYLE</genmodel>
                   <xtend>JAVADOC_STYLE</xtend>
+                  <xcore>JAVADOC_STYLE</xcore>
                   <bsh>JAVADOC_STYLE</bsh>
                </mapping>
             </configuration>

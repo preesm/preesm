@@ -1,10 +1,10 @@
 /**
  * Copyright or © or Copr. IETR/INSA - Rennes (2008 - 2019) :
  *
- * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017 - 2019)
- * Daniel Madroñal <daniel.madronal@upm.es> (2018)
- * Matthieu Wipliez <matthieu.wipliez@insa-rennes.fr> (2008)
- * Maxime Pelcat <maxime.pelcat@insa-rennes.fr> (2008 - 2011)
+ * Antoine Morvan [antoine.morvan@insa-rennes.fr] (2017 - 2019)
+ * Daniel Madroñal [daniel.madronal@upm.es] (2018)
+ * Matthieu Wipliez [matthieu.wipliez@insa-rennes.fr] (2008)
+ * Maxime Pelcat [maxime.pelcat@insa-rennes.fr] (2008 - 2011)
  *
  * This software is a computer program whose purpose is to help prototyping
  * parallel applications using dataflow formalism.
@@ -41,7 +41,7 @@ import java.util.Map;
 import org.eclipse.jface.viewers.ColumnLabelProvider;
 import org.eclipse.swt.graphics.Image;
 import org.preesm.model.scenario.Scenario;
-import org.preesm.model.slam.component.Component;
+import org.preesm.model.slam.Component;
 import org.preesm.ui.scenario.editor.papify.PapifyListTreeElement.PAPIStatus;
 
 /**

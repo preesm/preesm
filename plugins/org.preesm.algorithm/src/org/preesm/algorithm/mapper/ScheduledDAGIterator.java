@@ -1,7 +1,7 @@
 /**
- * Copyright or © or Copr. IETR/INSA - Rennes (2018) :
+ * Copyright or © or Copr. IETR/INSA - Rennes (2018 - 2019) :
  *
- * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2018)
+ * Antoine Morvan [antoine.morvan@insa-rennes.fr] (2018 - 2019)
  *
  * This software is a computer program whose purpose is to help prototyping
  * parallel applications using dataflow formalism.
@@ -40,10 +40,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.TreeMap;
+import org.preesm.algorithm.mapper.graphtransfo.ImplementationPropertyNames;
 import org.preesm.algorithm.mapper.model.MapperDAGVertex;
 import org.preesm.algorithm.model.dag.DirectedAcyclicGraph;
 import org.preesm.algorithm.model.iterators.TopologicalDAGIterator;
-import org.preesm.model.scenario.types.ImplementationPropertyNames;
 
 /**
  *

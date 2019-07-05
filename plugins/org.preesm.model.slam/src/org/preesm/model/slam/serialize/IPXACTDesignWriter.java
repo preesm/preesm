@@ -1,7 +1,7 @@
 /**
  * Copyright or © or Copr. IETR/INSA - Rennes (2018 - 2019) :
  *
- * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2018 - 2019)
+ * Antoine Morvan [antoine.morvan@insa-rennes.fr] (2018 - 2019)
  *
  * This software is a computer program whose purpose is to help prototyping
  * parallel applications using dataflow formalism.
@@ -44,13 +44,13 @@ import java.util.UUID;
 import org.eclipse.emf.common.util.EList;
 import org.preesm.commons.DomUtil;
 import org.preesm.commons.exceptions.PreesmRuntimeException;
+import org.preesm.model.slam.ComInterface;
 import org.preesm.model.slam.ComponentInstance;
 import org.preesm.model.slam.Design;
+import org.preesm.model.slam.HierarchyPort;
+import org.preesm.model.slam.Link;
+import org.preesm.model.slam.VLNV;
 import org.preesm.model.slam.VLNVedElement;
-import org.preesm.model.slam.attributes.VLNV;
-import org.preesm.model.slam.component.ComInterface;
-import org.preesm.model.slam.component.HierarchyPort;
-import org.preesm.model.slam.link.Link;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
@@ -159,8 +159,13 @@ public class IPXACTDesignWriter {
     parent.appendChild(cmpElt);
 
     final Element nameElt = document.createElement("spirit:instanceName");
-    cmpElt.appendChild(nameElt);
     nameElt.setTextContent(instance.getInstanceName());
+    cmpElt.appendChild(nameElt);
+
+    final Element idElt = document.createElement("spirit:procId");
+    idElt.setTextContent(Integer.toString(instance.getHardwareId()));
+    cmpElt.appendChild(idElt);
+
     writeCompactVLNV(cmpElt, instance.getComponent(), document);
 
     final Element confsElt = document.createElement("spirit:configurableElementValues");

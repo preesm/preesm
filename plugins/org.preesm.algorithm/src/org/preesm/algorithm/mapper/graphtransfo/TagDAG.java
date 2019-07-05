@@ -1,14 +1,14 @@
 /**
  * Copyright or © or Copr. IETR/INSA - Rennes (2008 - 2019) :
  *
- * Alexandre Honorat <alexandre.honorat@insa-rennes.fr> (2019)
- * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017 - 2019)
- * Clément Guy <clement.guy@insa-rennes.fr> (2014)
- * Florian Arrestier <florian.arrestier@insa-rennes.fr> (2018)
- * Jonathan Piat <jpiat@laas.fr> (2008 - 2011)
- * Karol Desnos <karol.desnos@insa-rennes.fr> (2013)
- * Matthieu Wipliez <matthieu.wipliez@insa-rennes.fr> (2008)
- * Maxime Pelcat <maxime.pelcat@insa-rennes.fr> (2008 - 2014)
+ * Alexandre Honorat [alexandre.honorat@insa-rennes.fr] (2019)
+ * Antoine Morvan [antoine.morvan@insa-rennes.fr] (2017 - 2019)
+ * Clément Guy [clement.guy@insa-rennes.fr] (2014)
+ * Florian Arrestier [florian.arrestier@insa-rennes.fr] (2018)
+ * Jonathan Piat [jpiat@laas.fr] (2008 - 2011)
+ * Karol Desnos [karol.desnos@insa-rennes.fr] (2013)
+ * Matthieu Wipliez [matthieu.wipliez@insa-rennes.fr] (2008)
+ * Maxime Pelcat [maxime.pelcat@insa-rennes.fr] (2008 - 2014)
  *
  * This software is a computer program whose purpose is to help prototyping
  * parallel applications using dataflow formalism.
@@ -62,10 +62,6 @@ import org.preesm.algorithm.model.sdf.SDFEdge;
 import org.preesm.model.scenario.Scenario;
 import org.preesm.model.scenario.ScenarioConstants;
 import org.preesm.model.scenario.SimulationInfo;
-import org.preesm.model.scenario.types.BufferAggregate;
-import org.preesm.model.scenario.types.BufferProperties;
-import org.preesm.model.scenario.types.ImplementationPropertyNames;
-import org.preesm.model.scenario.types.VertexType;
 import org.preesm.model.slam.ComponentInstance;
 import org.preesm.model.slam.Design;
 import org.preesm.model.slam.route.AbstractRouteStep;

@@ -1,14 +1,14 @@
 /**
  * Copyright or © or Copr. IETR/INSA - Rennes (2014 - 2019) :
  *
- * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017 - 2019)
- * Clément Guy <clement.guy@insa-rennes.fr> (2014 - 2015)
- * Daniel Madroñal <daniel.madronal@upm.es> (2018 - 2019)
- * Florian Arrestier <florian.arrestier@insa-rennes.fr> (2018 - 2019)
- * Hugo Miomandre <hugo.miomandre@insa-rennes.fr> (2017)
- * Julien Heulot <julien.heulot@insa-rennes.fr> (2015 - 2017)
- * Karol Desnos <karol.desnos@insa-rennes.fr> (2017)
- * Maxime Pelcat <maxime.pelcat@insa-rennes.fr> (2015)
+ * Antoine Morvan [antoine.morvan@insa-rennes.fr] (2017 - 2019)
+ * Clément Guy [clement.guy@insa-rennes.fr] (2014 - 2015)
+ * Daniel Madroñal [daniel.madronal@upm.es] (2018 - 2019)
+ * Florian Arrestier [florian.arrestier@insa-rennes.fr] (2018 - 2019)
+ * Hugo Miomandre [hugo.miomandre@insa-rennes.fr] (2017)
+ * Julien Heulot [julien.heulot@insa-rennes.fr] (2015 - 2017)
+ * Karol Desnos [karol.desnos@insa-rennes.fr] (2017)
+ * Maxime Pelcat [maxime.pelcat@insa-rennes.fr] (2015)
  *
  * This software is a computer program whose purpose is to help prototyping
  * parallel applications using dataflow formalism.
@@ -72,9 +72,9 @@ import org.preesm.model.scenario.PapiEvent;
 import org.preesm.model.scenario.PapifyConfig;
 import org.preesm.model.scenario.Scenario;
 import org.preesm.model.scenario.ScenarioConstants;
+import org.preesm.model.slam.Component;
 import org.preesm.model.slam.ComponentInstance;
 import org.preesm.model.slam.Design;
-import org.preesm.model.slam.component.Component;
 
 /**
  * The Class SpiderCodegen.
@@ -441,7 +441,7 @@ public class SpiderCodegen {
     append("\tstd::map<const char *, PapifyConfig*> mapPapifyConfigs;\n");
     append("\t// Initializing the map\n");
     for (final AbstractActor actor : papifiedActors) {
-      append("\tmapPapifyConfigs = create" + actor.getName() + "PapifyConfig();\n");
+      append("\tmapPapifyConfigs = create_" + SpiderNameGenerator.getFunctionName(actor) + "_PapifyConfig();\n");
       append("\tif(!mapPapifyConfigs.empty()) {\n");
       append("\t\tmap.insert(std::make_pair(" + pg.getName() + "_fcts["
           + SpiderNameGenerator.getFunctionName(actor).toUpperCase() + "_FCT" + "], mapPapifyConfigs));\n");
@@ -482,6 +482,8 @@ public class SpiderCodegen {
     final List<String> compNames = new ArrayList<>();
     final Map<String, EList<PapiEvent>> associatedEvents = new LinkedHashMap<>();
 
+    final Map<String, Integer> configIdPerPapiComponent = new LinkedHashMap<>();
+
     // Build the Timing variable to be printed
     if (papifyConfigManager.isMonitoringTiming(actor)) {
       timingMonitoring = true;
@@ -511,22 +513,26 @@ public class SpiderCodegen {
           break;
         }
       }
-      if (found) {
+      if (!found) {
         uniqueEventSets.put(eventSetChecking, realEventSetID);
       }
+      configIdPerPapiComponent.put(compName, realEventSetID);
     }
 
-    append("static std::map<const char *, PapifyConfig*> " + "create" + actor.getName() + "PapifyConfig() {\n");
-    append("\t// Setting the PapifyConfigs for actor: " + actor.getName() + "\n");
+    append("static std::map<const char *, PapifyConfig*> " + "create_" + SpiderNameGenerator.getFunctionName(actor)
+        + "_PapifyConfig() {\n");
+    append("\t// Setting the PapifyConfigs for actor: " + SpiderNameGenerator.getFunctionName(actor) + "\n");
     append("\tstd::map<const char *, PapifyConfig*> configMap;\n");
     for (String compNameGen : compNames) {
       append("\n\tPapifyConfig* config_" + compNameGen + "  = new PapifyConfig;\n");
       append("\tconfig_" + compNameGen + "->peID_            = \"\";\n");
       append("\tconfig_" + compNameGen + "->peType_          = \"" + compNameGen + "\";\n");
-      append("\tconfig_" + compNameGen + "->actorName_       = \"" + actor.getName() + "\";\n");
+      append(
+          "\tconfig_" + compNameGen + "->actorName_       = \"" + SpiderNameGenerator.getFunctionName(actor) + "\";\n");
       append("\tconfig_" + compNameGen + "->eventSize_       = "
           + Integer.toString(associatedEvents.get(compNameGen).size()) + ";\n");
-      append("\tconfig_" + compNameGen + "->eventSetID_      = " + realEventSetID.toString() + ";\n");
+      append("\tconfig_" + compNameGen + "->eventSetID_      = " + configIdPerPapiComponent.get(compNameGen).toString()
+          + ";\n");
       final String timing = timingMonitoring ? "true" : "false";
       append("\tconfig_" + compNameGen + "->isTiming_        = " + timing + ";\n");
       if (eventMonitoring) {
@@ -544,9 +550,9 @@ public class SpiderCodegen {
       append("\n\tPapifyConfig* config_Timing  = new PapifyConfig;\n");
       append("\tconfig_Timing->peID_            = \"\";\n");
       append("\tconfig_Timing->peType_          = \"\";\n");
-      append("\tconfig_Timing->actorName_       = \"" + actor.getName() + "\";\n");
+      append("\tconfig_Timing->actorName_       = \"" + SpiderNameGenerator.getFunctionName(actor) + "\";\n");
       append("\tconfig_Timing->eventSize_       = 0;\n");
-      append("\tconfig_Timing->eventSetID_      = " + realEventSetID.toString() + ";\n");
+      append("\tconfig_Timing->eventSetID_      = 0;\n");
       final String timing = timingMonitoring ? "true" : "false";
       append("\tconfig_Timing->isTiming_        = " + timing + ";\n");
     }

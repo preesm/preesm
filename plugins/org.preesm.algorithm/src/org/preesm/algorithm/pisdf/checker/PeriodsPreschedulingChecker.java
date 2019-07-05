@@ -1,8 +1,8 @@
 /**
  * Copyright or © or Copr. IETR/INSA - Rennes (2018 - 2019) :
  *
- * Alexandre Honorat <alexandre.honorat@insa-rennes.fr> (2018 - 2019)
- * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2018 - 2019)
+ * Alexandre Honorat [alexandre.honorat@insa-rennes.fr] (2018 - 2019)
+ * Antoine Morvan [antoine.morvan@insa-rennes.fr] (2018 - 2019)
  *
  * This software is a computer program whose purpose is to help prototyping
  * parallel applications using dataflow formalism.
@@ -60,8 +60,8 @@ import org.preesm.model.pisdf.brv.BRVMethod;
 import org.preesm.model.pisdf.brv.PiBRV;
 import org.preesm.model.scenario.Scenario;
 import org.preesm.model.scenario.ScenarioConstants;
+import org.preesm.model.slam.Component;
 import org.preesm.model.slam.Design;
-import org.preesm.model.slam.component.Component;
 import org.preesm.workflow.elements.Workflow;
 import org.preesm.workflow.implement.AbstractTaskImplementation;
 import org.preesm.workflow.implement.AbstractWorkflowNodeImplementation;

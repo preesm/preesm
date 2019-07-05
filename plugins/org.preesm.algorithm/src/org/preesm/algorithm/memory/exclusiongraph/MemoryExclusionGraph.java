@@ -1,11 +1,11 @@
 /**
  * Copyright or © or Copr. IETR/INSA - Rennes (2012 - 2019) :
  *
- * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017 - 2019)
- * Clément Guy <clement.guy@insa-rennes.fr> (2014 - 2015)
- * Florian Arrestier <florian.arrestier@insa-rennes.fr> (2018)
- * Julien Hascoet <jhascoet@kalray.eu> (2017)
- * Karol Desnos <karol.desnos@insa-rennes.fr> (2012 - 2017)
+ * Antoine Morvan [antoine.morvan@insa-rennes.fr] (2017 - 2019)
+ * Clément Guy [clement.guy@insa-rennes.fr] (2014 - 2015)
+ * Florian Arrestier [florian.arrestier@insa-rennes.fr] (2018)
+ * Julien Hascoet [jhascoet@kalray.eu] (2017)
+ * Karol Desnos [karol.desnos@insa-rennes.fr] (2012 - 2017)
  *
  * This software is a computer program whose purpose is to help prototyping
  * parallel applications using dataflow formalism.
@@ -54,6 +54,9 @@ import org.eclipse.xtext.xbase.lib.Pair;
 import org.jgrapht.graph.DefaultEdge;
 import org.jgrapht.graph.SimpleGraph;
 import org.preesm.algorithm.mapper.ScheduledDAGIterator;
+import org.preesm.algorithm.mapper.graphtransfo.BufferAggregate;
+import org.preesm.algorithm.mapper.graphtransfo.ImplementationPropertyNames;
+import org.preesm.algorithm.mapper.graphtransfo.VertexType;
 import org.preesm.algorithm.memory.script.Range;
 import org.preesm.algorithm.model.PropertyBean;
 import org.preesm.algorithm.model.PropertyFactory;
@@ -71,9 +74,6 @@ import org.preesm.algorithm.model.sdf.esdf.SDFInitVertex;
 import org.preesm.commons.CloneableProperty;
 import org.preesm.commons.exceptions.PreesmRuntimeException;
 import org.preesm.commons.logger.PreesmLogger;
-import org.preesm.model.scenario.types.BufferAggregate;
-import org.preesm.model.scenario.types.ImplementationPropertyNames;
-import org.preesm.model.scenario.types.VertexType;
 import org.preesm.model.slam.ComponentInstance;
 
 // TODO: Auto-generated Javadoc

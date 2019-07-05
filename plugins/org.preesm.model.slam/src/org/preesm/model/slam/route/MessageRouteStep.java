@@ -1,9 +1,9 @@
 /**
- * Copyright or © or Copr. IETR/INSA - Rennes (2009 - 2018) :
+ * Copyright or © or Copr. IETR/INSA - Rennes (2009 - 2019) :
  *
- * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017 - 2018)
- * Clément Guy <clement.guy@insa-rennes.fr> (2014)
- * Maxime Pelcat <maxime.pelcat@insa-rennes.fr> (2009 - 2016)
+ * Antoine Morvan [antoine.morvan@insa-rennes.fr] (2017 - 2019)
+ * Clément Guy [clement.guy@insa-rennes.fr] (2014)
+ * Maxime Pelcat [maxime.pelcat@insa-rennes.fr] (2009 - 2016)
  *
  * This software is a computer program whose purpose is to help prototyping
  * parallel applications using dataflow formalism.
@@ -38,10 +38,10 @@ package org.preesm.model.slam.route;
 
 import java.util.ArrayList;
 import java.util.List;
+import org.preesm.model.slam.ComNode;
+import org.preesm.model.slam.Component;
 import org.preesm.model.slam.ComponentInstance;
-import org.preesm.model.slam.component.ComNode;
-import org.preesm.model.slam.component.Component;
-import org.preesm.model.slam.component.impl.ComNodeImpl;
+import org.preesm.model.slam.impl.ComNodeImpl;
 
 // TODO: Auto-generated Javadoc
 /**

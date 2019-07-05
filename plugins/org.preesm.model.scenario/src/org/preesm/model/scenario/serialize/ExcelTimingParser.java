@@ -1,12 +1,12 @@
 /**
  * Copyright or © or Copr. IETR/INSA - Rennes (2008 - 2019) :
  *
- * Alexandre Honorat <alexandre.honorat@insa-rennes.fr> (2019)
- * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017 - 2019)
- * Clément Guy <clement.guy@insa-rennes.fr> (2014)
- * Jonathan Piat <jpiat@laas.fr> (2011)
- * Maxime Pelcat <maxime.pelcat@insa-rennes.fr> (2008 - 2016)
- * Pengcheng Mu <pengcheng.mu@insa-rennes.fr> (2008 - 2009)
+ * Alexandre Honorat [alexandre.honorat@insa-rennes.fr] (2019)
+ * Antoine Morvan [antoine.morvan@insa-rennes.fr] (2017 - 2019)
+ * Clément Guy [clement.guy@insa-rennes.fr] (2014)
+ * Jonathan Piat [jpiat@laas.fr] (2011)
+ * Maxime Pelcat [maxime.pelcat@insa-rennes.fr] (2008 - 2016)
+ * Pengcheng Mu [pengcheng.mu@insa-rennes.fr] (2008 - 2009)
  *
  * This software is a computer program whose purpose is to help prototyping
  * parallel applications using dataflow formalism.
@@ -59,7 +59,7 @@ import org.preesm.model.pisdf.AbstractActor;
 import org.preesm.model.pisdf.AbstractVertex;
 import org.preesm.model.pisdf.PiGraph;
 import org.preesm.model.scenario.Scenario;
-import org.preesm.model.slam.component.Component;
+import org.preesm.model.slam.Component;
 
 /**
  * Importing timings in a scenario from an excel file. task names are rows while operator types are columns

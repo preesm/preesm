@@ -3,7 +3,7 @@ Bundle-ManifestVersion: 2
 Bundle-Name: %pluginName
 Automatic-Module-Name: org.preesm.commons
 Bundle-SymbolicName: org.preesm.commons;singleton:=true
-Bundle-Version: 3.10.0
+Bundle-Version: 3.11.0
 Bundle-Vendor: %providerName
 Require-Bundle: javax.annotation;bundle-version="1.2.0";visibility:=reexport,
  org.eclipse.core.runtime,
