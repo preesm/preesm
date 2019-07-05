@@ -73,7 +73,7 @@ import org.preesm.model.slam.ComponentInstance;
 import org.preesm.model.slam.Design;
 import org.preesm.model.slam.attributes.VLNV;
 import org.preesm.model.slam.component.Operator;
-import org.preesm.model.slam.utils.ComponentInstanceComparator;
+import org.preesm.model.slam.utils.LexicographicComponentInstanceComparator;
 
 /**
  *
@@ -118,7 +118,7 @@ public class ExternalMappingFromDAG extends AbstractMappingFromDAG {
 
     // 3- sort components to have a relation from ID to component
     final List<ComponentInstance> componentInstances = new ArrayList<>(architecture.getComponentInstances());
-    Collections.sort(componentInstances, new ComponentInstanceComparator());
+    Collections.sort(componentInstances, new LexicographicComponentInstanceComparator());
 
     // 4- prepare map to have relation from vertex to its schedule entry
     final Map<DAGVertex, ScheduleEntry> entries = initEntryMap(dag, schedule);

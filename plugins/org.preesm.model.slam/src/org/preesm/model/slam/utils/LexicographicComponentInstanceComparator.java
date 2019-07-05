@@ -1,9 +1,7 @@
 /**
- * Copyright or © or Copr. IETR/INSA - Rennes (2011 - 2019) :
+ * Copyright or © or Copr. IETR/INSA - Rennes (2019) :
  *
- * Antoine Morvan [antoine.morvan@insa-rennes.fr] (2017 - 2019)
- * Clément Guy [clement.guy@insa-rennes.fr] (2014)
- * Maxime Pelcat [maxime.pelcat@insa-rennes.fr] (2011)
+ * Antoine Morvan [antoine.morvan@insa-rennes.fr] (2019)
  *
  * This software is a computer program whose purpose is to help prototyping
  * parallel applications using dataflow formalism.
@@ -34,31 +32,39 @@
  * The fact that you are presently reading this means that you have had
  * knowledge of the CeCILL license and that you accept its terms.
  */
-package org.preesm.ui.slam.properties;
+package org.preesm.model.slam.utils;
 
-import org.eclipse.swt.widgets.Composite;
-import org.eclipse.ui.views.properties.tabbed.TabbedPropertySheetPage;
-import org.ietr.dftools.graphiti.ui.properties.MapSection;
+import org.preesm.model.slam.ComponentInstance;
 
 /**
- * This class defines a map section for vertex parameters.
- *
- * @author Matthieu Wipliez
- *
+ * Comparing two components using their names.
  */
-public class VertexParametersMapSection extends MapSection {
+public class LexicographicComponentInstanceComparator implements ComponentInstanceComparator {
 
   /*
    * (non-Javadoc)
    *
-   * @see org.ietr.dftools.graphiti.ui.properties.MapSection#createControls(org.eclipse.swt.widgets.Composite,
-   * org.eclipse.ui.views.properties.tabbed.TabbedPropertySheetPage)
+   * @see java.util.Comparator#compare(java.lang.Object, java.lang.Object)
    */
   @Override
-  public void createControls(final Composite parent, final TabbedPropertySheetPage aTabbedPropertySheetPage) {
-    super.createControls(parent, aTabbedPropertySheetPage);
-    getForm().setText("Component instance parameters");
-    setParameterName("component instance parameters");
+  public int compare(ComponentInstance cb1, ComponentInstance cb2) {
+    final String o1 = cb1.getInstanceName();
+    final String o2 = cb2.getInstanceName();
+
+    final String o1StringPart = o1.replaceAll("\\d", "");
+    final String o2StringPart = o2.replaceAll("\\d", "");
+
+    if (o1StringPart.equalsIgnoreCase(o2StringPart)) {
+      return extractInt(o1) - extractInt(o2);
+    } else {
+      return o1.compareTo(o2);
+    }
+  }
+
+  int extractInt(String s) {
+    String num = s.replaceAll("\\D", "");
+    // return 0 if no digits found
+    return num.isEmpty() ? 0 : Integer.parseInt(num);
   }
 
 }

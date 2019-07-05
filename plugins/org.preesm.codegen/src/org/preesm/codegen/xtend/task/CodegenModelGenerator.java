@@ -46,15 +46,14 @@ import com.google.common.collect.HashBiMap;
 import java.util.AbstractMap;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 import java.util.TreeMap;
-import java.util.concurrent.atomic.AtomicInteger;
 import java.util.logging.Level;
+import java.util.stream.Collectors;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IWorkspace;
@@ -470,7 +469,6 @@ public class CodegenModelGenerator {
    *         </ul>
    */
   public List<Block> generate() {
-    final List<Block> resultList;
     // -1- Add all hosted MemoryObject back in te MemEx
     // 0 - Create the Buffers of the MemEx
 
@@ -486,6 +484,17 @@ public class CodegenModelGenerator {
     // 0 - Create the Buffers of the MemEx
     generateBuffers();
 
+    // init coreBlocks
+    for (final ComponentInstance cmp : this.archi.getOperatorComponentInstances()) {
+      if (!this.coreBlocks.containsKey(cmp)) {
+        CoreBlock operatorBlock = CodegenModelUserFactory.createCoreBlock();
+        operatorBlock.setName(cmp.getInstanceName());
+        operatorBlock.setCoreID(cmp.getHardwareId());
+        operatorBlock.setCoreType(cmp.getComponent().getVlnv().getName());
+        this.coreBlocks.put(cmp, operatorBlock);
+      }
+    }
+
     // 1 - iterate over dag vertices in SCHEDULING Order !
     final ScheduledDAGIterator scheduledDAGIterator = new ScheduledDAGIterator(algo);
     scheduledDAGIterator.forEachRemaining(vert -> {
@@ -498,13 +507,10 @@ public class CodegenModelGenerator {
       operator = vert.getPropertyBean().getValue(ImplementationPropertyNames.Vertex_Operator);
       // If this is the first time this operator is encountered,
       // Create a Block and store it.
-      operatorBlock = this.coreBlocks.get(operator);
-      if (operatorBlock == null) {
-        operatorBlock = CodegenModelUserFactory.createCoreBlock();
-        operatorBlock.setName(operator.getInstanceName());
-        operatorBlock.setCoreType(operator.getComponent().getVlnv().getName());
-        this.coreBlocks.put(operator, operatorBlock);
+      if (!this.coreBlocks.containsKey(operator)) {
+        throw new PreesmRuntimeException();
       }
+      operatorBlock = this.coreBlocks.get(operator);
       // 1.1 - Construct the "loop" of each core.
       final String vertexType = vert.getPropertyBean().getValue(ImplementationPropertyNames.Vertex_vertexType)
           .toString();
@@ -556,40 +562,9 @@ public class CodegenModelGenerator {
       }
     });
 
-    // 2 - Set codeBlockI ID
-    // This objective is to give a unique ID to each coreBlock.
-    // Alphabetical order of coreBlock name is used to determine the id (in an attempt to limit randomness)
-
-    final Comparator<CoreBlock> c = new Comparator<CoreBlock>() {
-      public int compare(CoreBlock cb1, CoreBlock cb2) {
-        final String o1 = cb1.getName();
-        final String o2 = cb2.getName();
-
-        final String o1StringPart = o1.replaceAll("\\d", "");
-        final String o2StringPart = o2.replaceAll("\\d", "");
-
-        if (o1StringPart.equalsIgnoreCase(o2StringPart)) {
-          return extractInt(o1) - extractInt(o2);
-        } else {
-          return o1.compareTo(o2);
-        }
-      }
-
-      int extractInt(String s) {
-        String num = s.replaceAll("\\D", "");
-        // return 0 if no digits found
-        return num.isEmpty() ? 0 : Integer.parseInt(num);
-      }
-    };
-
-    // Need this because non-final argument cannot be used within lambda expressions.
-    final AtomicInteger id = new AtomicInteger(0);
-
-    resultList = new ArrayList<>(this.coreBlocks.size());
-    this.coreBlocks.values().stream().sorted(c).forEach(cb -> {
-      cb.setCoreID(id.getAndIncrement());
-      resultList.add(cb);
-    });
+    final List<Block> resultList = this.coreBlocks.entrySet().stream()
+        .sorted((e1, e2) -> e1.getKey().getHardwareId() - e2.getKey().getHardwareId()).map(Entry::getValue)
+        .collect(Collectors.toList());
 
     // 3 - Put the buffer definition in their right place
     generateBufferDefinitions();

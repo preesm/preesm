@@ -159,8 +159,13 @@ public class IPXACTDesignWriter {
     parent.appendChild(cmpElt);
 
     final Element nameElt = document.createElement("spirit:instanceName");
-    cmpElt.appendChild(nameElt);
     nameElt.setTextContent(instance.getInstanceName());
+    cmpElt.appendChild(nameElt);
+
+    final Element idElt = document.createElement("spirit:procId");
+    idElt.setTextContent(Integer.toString(instance.getHardwareId()));
+    cmpElt.appendChild(idElt);
+
     writeCompactVLNV(cmpElt, instance.getComponent(), document);
 
     final Element confsElt = document.createElement("spirit:configurableElementValues");

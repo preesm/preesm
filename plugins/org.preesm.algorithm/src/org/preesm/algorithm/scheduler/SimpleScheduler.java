@@ -17,7 +17,7 @@ import org.preesm.model.pisdf.switches.PiSDFTopologicalSorter;
 import org.preesm.model.scenario.Scenario;
 import org.preesm.model.slam.ComponentInstance;
 import org.preesm.model.slam.Design;
-import org.preesm.model.slam.utils.ComponentInstanceComparator;
+import org.preesm.model.slam.utils.LexicographicComponentInstanceComparator;
 
 /**
  *
@@ -38,7 +38,8 @@ public class SimpleScheduler extends AbstractScheduler {
 
     for (final AbstractActor orderedActor : depthFirstSort) {
       final ComponentInstance targetCmpIntance = scenario.getPossibleMappings(orderedActor).stream()
-          .sorted(new ComponentInstanceComparator()).findFirst().orElse(scenario.getSimulationInfo().getMainOperator());
+          .sorted(new LexicographicComponentInstanceComparator()).findFirst()
+          .orElse(scenario.getSimulationInfo().getMainOperator());
       createMapping.getMappings().put(orderedActor, ECollections.singletonEList(targetCmpIntance));
       if (!cmpSchedules.containsKey(targetCmpIntance)) {
         final ActorSchedule createActorSchedule = ScheduleFactory.eINSTANCE.createSequentialActorSchedule();
