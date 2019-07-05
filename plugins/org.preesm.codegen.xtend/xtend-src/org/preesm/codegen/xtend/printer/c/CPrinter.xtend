@@ -521,10 +521,14 @@ class CPrinter extends DefaultPrinter {
 
 		int main(void) {
 			// Set affinity of main thread to proper core ID
+		#ifdef __APPLE__
+			// NOT SUPPORTED
+		#else
 			cpu_set_t cpuset;
 			CPU_ZERO(&cpuset);
 			CPU_SET(_PREESM_MAIN_THREAD_, &cpuset);
 			sched_setaffinity(getpid(),  sizeof(cpuset), &cpuset);
+		#endif
 
 			«IF this.usingPapify == 1»
 				#ifdef _PREESM_PAPIFY_MONITOR
