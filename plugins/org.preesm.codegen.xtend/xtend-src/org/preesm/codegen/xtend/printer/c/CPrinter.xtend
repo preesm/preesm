@@ -483,6 +483,11 @@ class CPrinter extends DefaultPrinter {
 
 		unsigned int launch(unsigned int core_id, pthread_t * thread, void *(*start_routine) (void *)) {
 
+			// init pthread attributes
+			pthread_attr_t attr;
+			pthread_attr_init(&attr);
+
+		#ifndef PREESM_NO_AFFINITY
 		#ifdef _WIN32
 			SYSTEM_INFO sysinfo;
 			GetSystemInfo(&sysinfo);
@@ -490,10 +495,6 @@ class CPrinter extends DefaultPrinter {
 		#else
 			unsigned int numCPU = sysconf(_SC_NPROCESSORS_ONLN);
 		#endif
-
-			// init pthread attributes
-			pthread_attr_t attr;
-			pthread_attr_init(&attr);
 
 			// check CPU id is valid
 			if (core_id >= numCPU) {
@@ -512,6 +513,7 @@ class CPrinter extends DefaultPrinter {
 				pthread_attr_setaffinity_np(&attr, sizeof(cpuset), &cpuset);
 		#endif
 			}
+		#endif
 
 			// create thread
 			pthread_create(thread, &attr, start_routine, NULL);
@@ -521,6 +523,7 @@ class CPrinter extends DefaultPrinter {
 
 		int main(void) {
 			// Set affinity of main thread to proper core ID
+		#ifndef PREESM_NO_AFFINITY
 		#ifdef __APPLE__
 			// NOT SUPPORTED
 		#else
@@ -528,6 +531,7 @@ class CPrinter extends DefaultPrinter {
 			CPU_ZERO(&cpuset);
 			CPU_SET(_PREESM_MAIN_THREAD_, &cpuset);
 			sched_setaffinity(getpid(),  sizeof(cpuset), &cpuset);
+		#endif
 		#endif
 
 			«IF this.usingPapify == 1»
