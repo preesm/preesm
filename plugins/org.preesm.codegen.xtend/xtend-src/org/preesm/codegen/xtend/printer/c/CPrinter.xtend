@@ -501,7 +501,7 @@ class CPrinter extends DefaultPrinter {
 				// leave attribute uninitialized
 				printf("** Warning: thread %d will not be set with specific core affinity \n   due to the lack of available dedicated cores.\n",core_id);
 			} else {
-		#ifdef __APPLE__
+		#if defined __APPLE__ || defined _WIN32
 				// NOT SUPPORTED
 		#else
 				// init cpuset struct
@@ -524,7 +524,7 @@ class CPrinter extends DefaultPrinter {
 		int main(void) {
 			// Set affinity of main thread to proper core ID
 		#ifndef PREESM_NO_AFFINITY
-		#ifdef __APPLE__
+		#if defined __APPLE__ || defined _WIN32
 			// NOT SUPPORTED
 		#else
 			cpu_set_t cpuset;
