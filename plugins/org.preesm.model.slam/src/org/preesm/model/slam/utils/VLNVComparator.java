@@ -43,10 +43,6 @@ import org.preesm.model.slam.attributes.VLNV;
  */
 public class VLNVComparator implements Comparator<VLNV> {
 
-  public static final boolean areSame(final VLNV v1, final VLNV v2) {
-    return new VLNVComparator().compare(v1, v2) == 0;
-  }
-
   public static final int compareVLNV(final VLNV v1, final VLNV v2) {
     return new VLNVComparator().compare(v1, v2);
   }

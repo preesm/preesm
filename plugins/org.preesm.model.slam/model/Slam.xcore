@@ -55,7 +55,6 @@ import org.preesm.model.slam.component.Component
 import org.preesm.model.slam.component.HierarchyPort
 import org.preesm.model.slam.component.Operator
 import org.preesm.model.slam.link.Link
-import org.preesm.model.slam.utils.VLNVComparator
 import org.preesm.model.slam.utils.LexicographicComponentInstanceComparator
 
 // !!! This is needed as of the current versions of xcore/xtext
@@ -91,13 +90,13 @@ class Design extends VLNVedElement , ParameterizedElement {
 		return components.filter[(it instanceof Operator)].toEList.unmodifiableView
 	}
 	op boolean containsComponent(VLNV name) {
-		return components.exists[VLNVComparator.areSame(vlnv, name)]
+		return components.exists[vlnv.isSame(name)]
 	}
 	op boolean containsComponent(String vlnvName) {
 		return components.exists[vlnvName.equals(it.vlnv.name)]
 	}
 	op Component getComponent(VLNV name) {
-		return components.findFirst[VLNVComparator.areSame(vlnv, name)]
+		return components.findFirst[vlnv.isSame(name)]
 	}
 	op Component getComponent(String vlnvName) {
 		return components.findFirst[vlnvName.equals(it.vlnv.name)]
