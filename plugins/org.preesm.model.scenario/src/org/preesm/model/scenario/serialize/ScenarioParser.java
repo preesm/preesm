@@ -728,20 +728,21 @@ public class ScenarioParser {
     this.scenario.getTimings().setExcelFileURL(timingFileUrl);
 
     Node node = timingsElt.getFirstChild();
+    if (scenario.isProperlySet()) {
+      while (node != null) {
 
-    while (node != null) {
-
-      if (node instanceof Element) {
-        final Element elt = (Element) node;
-        final String type = elt.getTagName();
-        if (type.equals("timing")) {
-          parseTiming(elt);
-        } else if (type.equals("memcpyspeed")) {
-          retrieveMemcpySpeed(this.scenario.getTimings(), elt);
+        if (node instanceof Element) {
+          final Element elt = (Element) node;
+          final String type = elt.getTagName();
+          if (type.equals("timing")) {
+            parseTiming(elt);
+          } else if (type.equals("memcpyspeed")) {
+            retrieveMemcpySpeed(this.scenario.getTimings(), elt);
+          }
         }
-      }
 
-      node = node.getNextSibling();
+        node = node.getNextSibling();
+      }
     }
   }
 
@@ -760,10 +761,11 @@ public class ScenarioParser {
         final String opdefname = timingElt.getAttribute("opname");
         final String stringValue = timingElt.getAttribute("time");
 
-        final boolean contains = this.scenario.getDesign().containsComponent(opdefname);
+        final Design design = this.scenario.getDesign();
+        final boolean contains = design.containsComponent(opdefname);
         final AbstractActor lookup = VertexPath.lookup(this.scenario.getAlgorithm(), vertexpath);
         if ((lookup != null) && contains) {
-          final Component component = this.scenario.getDesign().getComponent(opdefname);
+          final Component component = design.getComponent(opdefname);
           this.scenario.getTimings().setTiming(lookup, component, stringValue);
         }
       }

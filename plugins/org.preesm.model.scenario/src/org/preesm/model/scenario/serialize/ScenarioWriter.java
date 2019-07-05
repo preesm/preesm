@@ -425,8 +425,10 @@ public class ScenarioWriter {
     for (final Entry<ComponentInstance, EList<AbstractActor>> cst : this.scenario.getConstraints()
         .getGroupConstraints()) {
       final ComponentInstance component = cst.getKey();
-      final EList<AbstractActor> actors = cst.getValue();
-      writeConstraints(constraints, component, actors);
+      if (component != null) {
+        final EList<AbstractActor> actors = cst.getValue();
+        writeConstraints(constraints, component, actors);
+      }
     }
   }
 
@@ -445,7 +447,8 @@ public class ScenarioWriter {
 
     final Element opdefelt = this.dom.createElement("operator");
     constraintGroupElt.appendChild(opdefelt);
-    opdefelt.setAttribute("name", cmpi.getInstanceName());
+    final String instanceName = cmpi.getInstanceName();
+    opdefelt.setAttribute("name", instanceName);
 
     for (final AbstractActor actor : actors) {
       final Element vtxelt = this.dom.createElement("task");
