@@ -56,7 +56,7 @@ import org.preesm.algorithm.model.dag.DAGEdge;
 import org.preesm.algorithm.model.dag.DAGVertex;
 import org.preesm.model.pisdf.PiGraph;
 import org.preesm.model.slam.ComponentInstance;
-import org.preesm.model.slam.component.Operator;
+import org.preesm.model.slam.Operator;
 
 /**
  * Represents a vertex in a DAG of type {@link MapperDAG} used in the mapper.

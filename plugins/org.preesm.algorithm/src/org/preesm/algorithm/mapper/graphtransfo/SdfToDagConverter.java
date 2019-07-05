@@ -74,10 +74,10 @@ import org.preesm.model.pisdf.PiGraph;
 import org.preesm.model.scenario.Scenario;
 import org.preesm.model.scenario.ScenarioConstants;
 import org.preesm.model.scenario.Timings;
+import org.preesm.model.slam.Component;
 import org.preesm.model.slam.ComponentInstance;
 import org.preesm.model.slam.Design;
-import org.preesm.model.slam.component.Component;
-import org.preesm.model.slam.component.Operator;
+import org.preesm.model.slam.Operator;
 
 /**
  * Uses the SDF4J library to convert the input SDF into a DAG before scheduling.

@@ -38,10 +38,10 @@ package org.preesm.model.slam.route;
 
 import java.util.ArrayList;
 import java.util.List;
+import org.preesm.model.slam.ComNode;
+import org.preesm.model.slam.Component;
 import org.preesm.model.slam.ComponentInstance;
-import org.preesm.model.slam.component.ComNode;
-import org.preesm.model.slam.component.Component;
-import org.preesm.model.slam.component.impl.ComNodeImpl;
+import org.preesm.model.slam.impl.ComNodeImpl;
 
 // TODO: Auto-generated Javadoc
 /**

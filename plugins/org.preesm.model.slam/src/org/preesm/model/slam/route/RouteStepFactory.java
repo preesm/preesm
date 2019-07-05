@@ -38,13 +38,13 @@ package org.preesm.model.slam.route;
 
 import java.util.List;
 import org.preesm.model.slam.ComponentInstance;
+import org.preesm.model.slam.ControlLink;
 import org.preesm.model.slam.Design;
-import org.preesm.model.slam.component.Dma;
-import org.preesm.model.slam.component.Mem;
-import org.preesm.model.slam.component.impl.DmaImpl;
-import org.preesm.model.slam.component.impl.MemImpl;
-import org.preesm.model.slam.link.ControlLink;
-import org.preesm.model.slam.link.Link;
+import org.preesm.model.slam.Dma;
+import org.preesm.model.slam.Link;
+import org.preesm.model.slam.Mem;
+import org.preesm.model.slam.impl.DmaImpl;
+import org.preesm.model.slam.impl.MemImpl;
 
 // TODO: Auto-generated Javadoc
 /**

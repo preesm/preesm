@@ -36,7 +36,7 @@
 package org.preesm.model.slam.utils;
 
 import java.util.Comparator;
-import org.preesm.model.slam.attributes.VLNV;
+import org.preesm.model.slam.VLNV;
 
 /**
  *

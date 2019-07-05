@@ -44,7 +44,7 @@ import java.util.Collections;
 import org.preesm.model.pisdf.AbstractActor;
 import org.preesm.model.pisdf.expression.ExpressionEvaluator;
 import org.preesm.model.scenario.ScenarioConstants;
-import org.preesm.model.slam.component.Component;
+import org.preesm.model.slam.Component;
 
 /**
  * A timing links a vertex (either from SDFGraph or from PiGraph) and an operator definition to a time. Ids are used to

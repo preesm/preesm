@@ -50,7 +50,7 @@ import org.preesm.model.scenario.PapiComponent;
 import org.preesm.model.scenario.PapiEventInfo;
 import org.preesm.model.scenario.PapiEventSet;
 import org.preesm.model.scenario.Scenario;
-import org.preesm.model.slam.component.Component;
+import org.preesm.model.slam.Component;
 import org.preesm.ui.scenario.editor.papify.PapifyListTreeElement.PAPIStatus;
 
 /**
