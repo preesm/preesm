@@ -48,9 +48,9 @@ import org.preesm.algorithm.mapper.tools.TLevelIterator;
 import org.preesm.commons.exceptions.PreesmException;
 import org.preesm.commons.logger.PreesmLogger;
 import org.preesm.model.scenario.Scenario;
+import org.preesm.model.slam.ComNode;
 import org.preesm.model.slam.ComponentInstance;
 import org.preesm.model.slam.Design;
-import org.preesm.model.slam.component.ComNode;
 
 /**
  * Simulates an architecture having as many cores as necessary to execute one operation on one core. All core have the

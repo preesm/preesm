@@ -106,7 +106,7 @@ import org.preesm.model.scenario.PapiComponent;
 import org.preesm.model.scenario.PapiEvent;
 import org.preesm.model.scenario.PapifyConfig;
 import org.preesm.model.scenario.Scenario;
-import org.preesm.model.slam.component.Component;
+import org.preesm.model.slam.Component;
 
 /**
  *

@@ -71,8 +71,8 @@ import org.preesm.model.pisdf.util.PiIdentifiers;
 import org.preesm.model.scenario.Scenario;
 import org.preesm.model.slam.ComponentInstance;
 import org.preesm.model.slam.Design;
-import org.preesm.model.slam.attributes.VLNV;
-import org.preesm.model.slam.component.Operator;
+import org.preesm.model.slam.Operator;
+import org.preesm.model.slam.VLNV;
 import org.preesm.model.slam.utils.LexicographicComponentInstanceComparator;
 
 /**

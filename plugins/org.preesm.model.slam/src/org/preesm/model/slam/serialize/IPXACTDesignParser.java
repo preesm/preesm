@@ -58,22 +58,20 @@ import org.eclipse.emf.ecore.EPackage;
 import org.preesm.commons.DomUtil;
 import org.preesm.commons.exceptions.PreesmRuntimeException;
 import org.preesm.commons.logger.PreesmLogger;
+import org.preesm.model.slam.ComInterface;
+import org.preesm.model.slam.ComNode;
+import org.preesm.model.slam.Component;
 import org.preesm.model.slam.ComponentHolder;
 import org.preesm.model.slam.ComponentInstance;
 import org.preesm.model.slam.Design;
+import org.preesm.model.slam.Dma;
+import org.preesm.model.slam.HierarchyPort;
+import org.preesm.model.slam.Link;
+import org.preesm.model.slam.Mem;
 import org.preesm.model.slam.ParameterizedElement;
 import org.preesm.model.slam.SlamFactory;
-import org.preesm.model.slam.attributes.VLNV;
-import org.preesm.model.slam.component.ComInterface;
-import org.preesm.model.slam.component.ComNode;
-import org.preesm.model.slam.component.Component;
-import org.preesm.model.slam.component.ComponentFactory;
-import org.preesm.model.slam.component.Dma;
-import org.preesm.model.slam.component.HierarchyPort;
-import org.preesm.model.slam.component.Mem;
-import org.preesm.model.slam.link.Link;
-import org.preesm.model.slam.link.LinkFactory;
-import org.preesm.model.slam.link.LinkPackage;
+import org.preesm.model.slam.SlamPackage;
+import org.preesm.model.slam.VLNV;
 import org.preesm.model.slam.serialize.IPXACTDesignVendorExtensionsParser.LinkDescription;
 import org.preesm.model.slam.utils.SlamUserFactory;
 import org.w3c.dom.Document;
@@ -120,7 +118,7 @@ public class IPXACTDesignParser extends IPXACTParser {
     // the hierarchical external interfaces
 
     if (refinedComponent == null) {
-      refinedComponent = ComponentFactory.eINSTANCE.createComponent();
+      refinedComponent = SlamFactory.eINSTANCE.createComponent();
     }
 
     final Design design = SlamFactory.eINSTANCE.createDesign();
@@ -496,11 +494,11 @@ public class IPXACTDesignParser extends IPXACTParser {
         linkType = linkDescription.getType();
       }
 
-      final EPackage eLinkPackage = LinkPackage.eINSTANCE;
+      final EPackage eLinkPackage = SlamPackage.eINSTANCE;
       final EClass linkEclass = (EClass) eLinkPackage.getEClassifier(linkType);
 
       // Creating the link with appropriate type
-      final Link link = (Link) LinkFactory.eINSTANCE.create(linkEclass);
+      final Link link = (Link) SlamFactory.eINSTANCE.create(linkEclass);
 
       link.setDirected(linkDescription.isDirected());
       link.setUuid(linkUuid);
@@ -510,7 +508,7 @@ public class IPXACTDesignParser extends IPXACTParser {
 
       // Creating source interface if necessary
       if (sourceInterface == null) {
-        sourceInterface = ComponentFactory.eINSTANCE.createComInterface();
+        sourceInterface = SlamFactory.eINSTANCE.createComInterface();
         sourceInterface.setName(comItfs.get(0));
         sourceInstance.getComponent().getInterfaces().add(sourceInterface);
       }
@@ -522,7 +520,7 @@ public class IPXACTDesignParser extends IPXACTParser {
 
       // Creating destination interface if necessary
       if (destinationInterface == null) {
-        destinationInterface = ComponentFactory.eINSTANCE.createComInterface();
+        destinationInterface = SlamFactory.eINSTANCE.createComInterface();
         destinationInterface.setName(comItfs.get(1));
         destinationInstance.getComponent().getInterfaces().add(destinationInterface);
       }
@@ -565,13 +563,13 @@ public class IPXACTDesignParser extends IPXACTParser {
    */
   private void parseHierarchicalPort(final Element parent, final Design design) {
 
-    final HierarchyPort port = ComponentFactory.eINSTANCE.createHierarchyPort();
+    final HierarchyPort port = SlamFactory.eINSTANCE.createHierarchyPort();
 
     final String externalInterfaceName = parent.getAttribute("spirit:interfaceRef");
     ComInterface externalInterface = design.getRefined().getInterface(externalInterfaceName);
     // Creating the external interface if nonexistent
     if (externalInterface == null) {
-      externalInterface = ComponentFactory.eINSTANCE.createComInterface();
+      externalInterface = SlamFactory.eINSTANCE.createComInterface();
       externalInterface.setName(externalInterfaceName);
     }
     port.setExternalInterface(externalInterface);
@@ -604,7 +602,7 @@ public class IPXACTDesignParser extends IPXACTParser {
 
     // Creating internal interface if necessary
     if (internalInterface == null) {
-      internalInterface = ComponentFactory.eINSTANCE.createComInterface();
+      internalInterface = SlamFactory.eINSTANCE.createComInterface();
       internalInterface.setName(internalInterfaceName);
       internalComponentInstance.getComponent().getInterfaces().add(internalInterface);
     }

@@ -37,8 +37,8 @@
  */
 package org.preesm.model.slam.serialize;
 
-import org.preesm.model.slam.attributes.AttributesFactory;
-import org.preesm.model.slam.attributes.VLNV;
+import org.preesm.model.slam.SlamFactory;
+import org.preesm.model.slam.VLNV;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 
@@ -68,7 +68,7 @@ public abstract class IPXACTParser {
   protected VLNV parseVLNV(final Element parent) {
     Node node = parent.getFirstChild();
 
-    final VLNV vlnv = AttributesFactory.eINSTANCE.createVLNV();
+    final VLNV vlnv = SlamFactory.eINSTANCE.createVLNV();
 
     while (node != null) {
       // this test allows us to skip #text nodes
@@ -101,7 +101,7 @@ public abstract class IPXACTParser {
    * @return the vlnv
    */
   protected VLNV parseCompactVLNV(final Element parent) {
-    final VLNV vlnv = AttributesFactory.eINSTANCE.createVLNV();
+    final VLNV vlnv = SlamFactory.eINSTANCE.createVLNV();
 
     vlnv.setVendor(parent.getAttribute("spirit:vendor"));
     vlnv.setLibrary(parent.getAttribute("spirit:library"));

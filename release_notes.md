@@ -16,6 +16,7 @@ PREESM Changelog
 * Change mirror (ibcp down);
 * Add new models for Schedule/Mapping/Memory Allocation;
 * Add hardware ID in Slam to identify to which real core the thread affinity should be set;
+* Merge the 4 Slam models into 1 file;
 * Update codegen:
   * forces affinity of main thread to assigned core;
   * disable affinity on windows;

@@ -47,8 +47,8 @@ import org.preesm.algorithm.mapper.abc.SpecialVertexManager;
 import org.preesm.algorithm.mapper.model.MapperDAGVertex;
 import org.preesm.commons.CloneableProperty;
 import org.preesm.model.scenario.ScenarioConstants;
+import org.preesm.model.slam.Component;
 import org.preesm.model.slam.ComponentInstance;
-import org.preesm.model.slam.component.Component;
 
 /**
  * Properties of a mapped vertex set when converting dag to mapper dag.

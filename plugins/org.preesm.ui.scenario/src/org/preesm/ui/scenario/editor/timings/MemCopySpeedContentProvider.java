@@ -45,8 +45,8 @@ import org.eclipse.jface.viewers.IStructuredContentProvider;
 import org.preesm.model.scenario.MemoryCopySpeedValue;
 import org.preesm.model.scenario.Scenario;
 import org.preesm.model.scenario.util.ScenarioUserFactory;
+import org.preesm.model.slam.Component;
 import org.preesm.model.slam.Design;
-import org.preesm.model.slam.component.Component;
 
 /**
  * Provides the elements contained in the memcopy speeds editor.

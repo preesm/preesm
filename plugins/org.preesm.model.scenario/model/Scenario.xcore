@@ -59,8 +59,8 @@ import org.preesm.model.pisdf.expression.ExpressionEvaluator
 import org.preesm.model.pisdf.serialize.PiParser
 import org.preesm.model.slam.ComponentInstance
 import org.preesm.model.slam.Design
-import org.preesm.model.slam.component.Component
 import org.preesm.model.slam.serialize.SlamParser
+import org.preesm.model.slam.Component
 
 // !!! This is needed as of the current versions of xcore/xtext
 // For some reason when using the default String/... (i.e. without the following)
@@ -340,7 +340,7 @@ class PapifyConfig {
 		val index = ECollections.indexOf(papiComponentList, papiComponents, 0)
 		if(index < 0){
 			this.papifyConfigGroupsPEs.get(slamComponent).addAll(papiComponents);
-		}	
+		}
 	}
 	op void removeComponent(Component slamComponent, PapiComponent papiComponents) {
 		if (!papifyConfigGroupsPEs.containsKey(slamComponent)) {

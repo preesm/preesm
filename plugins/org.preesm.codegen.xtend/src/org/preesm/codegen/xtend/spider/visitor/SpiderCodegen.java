@@ -72,9 +72,9 @@ import org.preesm.model.scenario.PapiEvent;
 import org.preesm.model.scenario.PapifyConfig;
 import org.preesm.model.scenario.Scenario;
 import org.preesm.model.scenario.ScenarioConstants;
+import org.preesm.model.slam.Component;
 import org.preesm.model.slam.ComponentInstance;
 import org.preesm.model.slam.Design;
-import org.preesm.model.slam.component.Component;
 
 /**
  * The Class SpiderCodegen.

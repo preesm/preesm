@@ -51,7 +51,7 @@ import org.preesm.algorithm.mapper.model.MapperDAGVertex;
 import org.preesm.algorithm.mapper.model.special.TransferVertex;
 import org.preesm.commons.logger.PreesmLogger;
 import org.preesm.model.slam.ComponentInstance;
-import org.preesm.model.slam.component.Dma;
+import org.preesm.model.slam.Dma;
 import org.preesm.model.slam.route.AbstractRouteStep;
 import org.preesm.model.slam.route.DmaRouteStep;
 

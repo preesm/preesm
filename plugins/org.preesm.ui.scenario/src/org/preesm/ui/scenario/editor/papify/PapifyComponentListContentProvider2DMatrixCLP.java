@@ -41,7 +41,7 @@ import java.util.Map;
 import org.eclipse.jface.viewers.ColumnLabelProvider;
 import org.eclipse.swt.graphics.Image;
 import org.preesm.model.scenario.Scenario;
-import org.preesm.model.slam.component.Component;
+import org.preesm.model.slam.Component;
 import org.preesm.ui.scenario.editor.papify.PapifyListTreeElement.PAPIStatus;
 
 /**

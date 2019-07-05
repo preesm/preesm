@@ -37,7 +37,7 @@ package org.preesm.algorithm.moa.activity;
 
 import java.util.HashMap;
 import java.util.Map;
-import org.preesm.model.slam.component.Component;
+import org.preesm.model.slam.Component;
 
 /**
  * Storing the number of custom quanta per actor. Information is stored as strings containing JEP compatible formula.

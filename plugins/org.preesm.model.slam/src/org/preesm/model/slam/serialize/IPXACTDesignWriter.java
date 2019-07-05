@@ -44,13 +44,13 @@ import java.util.UUID;
 import org.eclipse.emf.common.util.EList;
 import org.preesm.commons.DomUtil;
 import org.preesm.commons.exceptions.PreesmRuntimeException;
+import org.preesm.model.slam.ComInterface;
 import org.preesm.model.slam.ComponentInstance;
 import org.preesm.model.slam.Design;
+import org.preesm.model.slam.HierarchyPort;
+import org.preesm.model.slam.Link;
+import org.preesm.model.slam.VLNV;
 import org.preesm.model.slam.VLNVedElement;
-import org.preesm.model.slam.attributes.VLNV;
-import org.preesm.model.slam.component.ComInterface;
-import org.preesm.model.slam.component.HierarchyPort;
-import org.preesm.model.slam.link.Link;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 

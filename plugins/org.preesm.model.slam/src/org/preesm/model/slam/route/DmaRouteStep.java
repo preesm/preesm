@@ -38,7 +38,7 @@ package org.preesm.model.slam.route;
 
 import java.util.List;
 import org.preesm.model.slam.ComponentInstance;
-import org.preesm.model.slam.component.Dma;
+import org.preesm.model.slam.Dma;
 
 // TODO: Auto-generated Javadoc
 /**

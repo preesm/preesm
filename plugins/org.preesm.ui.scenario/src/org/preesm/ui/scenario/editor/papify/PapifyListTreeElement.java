@@ -43,7 +43,7 @@ import java.util.Map;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.swt.graphics.Image;
 import org.preesm.commons.files.PreesmResourcesHelper;
-import org.preesm.model.slam.component.Component;
+import org.preesm.model.slam.Component;
 import org.preesm.ui.PreesmUIPlugin;
 
 /**

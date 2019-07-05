@@ -37,6 +37,8 @@
  */
 package org.preesm.algorithm.mapper.graphtransfo;
 
+import org.preesm.algorithm.model.dag.DAGEdge;
+
 /**
  * This class contains property bean names used to exchange vertex properties between the mapper and the code generation
  * plugins.

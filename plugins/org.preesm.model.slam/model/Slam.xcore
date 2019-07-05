@@ -48,15 +48,8 @@
 package org.preesm.model.slam
 
 import org.eclipse.emf.common.util.ECollections
-import org.preesm.model.slam.attributes.Parameter
-import org.preesm.model.slam.attributes.VLNV
-import org.preesm.model.slam.component.ComNode
-import org.preesm.model.slam.component.Component
-import org.preesm.model.slam.component.HierarchyPort
-import org.preesm.model.slam.component.Operator
-import org.preesm.model.slam.link.Link
-import org.preesm.model.slam.utils.VLNVComparator
 import org.preesm.model.slam.utils.LexicographicComponentInstanceComparator
+import org.preesm.commons.exceptions.PreesmRuntimeException
 
 // !!! This is needed as of the current versions of xcore/xtext
 // For some reason when using the default String/... (i.e. without the following)
@@ -91,13 +84,13 @@ class Design extends VLNVedElement , ParameterizedElement {
 		return components.filter[(it instanceof Operator)].toEList.unmodifiableView
 	}
 	op boolean containsComponent(VLNV name) {
-		return components.exists[VLNVComparator.areSame(vlnv, name)]
+		return components.exists[vlnv.isSame(name)]
 	}
 	op boolean containsComponent(String vlnvName) {
 		return components.exists[vlnvName.equals(it.vlnv.name)]
 	}
 	op Component getComponent(VLNV name) {
-		return components.findFirst[VLNVComparator.areSame(vlnv, name)]
+		return components.findFirst[vlnv.isSame(name)]
 	}
 	op Component getComponent(String vlnvName) {
 		return components.findFirst[vlnvName.equals(it.vlnv.name)]
@@ -172,4 +165,85 @@ class ParameterizedElement {
 
 class ComponentHolder {
 	contains unordered Component[] components
+}
+
+class VLNV {
+	String vendor = ""
+	String library = ""
+	String name = ""
+	String version = ""
+
+	op boolean isSame(VLNV other) {
+		return this.vendor == other.vendor && this.library == other.library && this.name == other.name && this.version == other.version
+	}
+}
+
+class Parameter wraps java.util.Map$Entry {
+	String key
+	String value
+}
+
+abstract class Link {
+	refers ComInterface sourceInterface
+	refers ComInterface destinationInterface
+	refers ComponentInstance sourceComponentInstance
+	refers ComponentInstance destinationComponentInstance
+	String uuid
+	boolean directed = "false"
+
+	op ComponentInstance getOtherEnd(ComponentInstance oneEnd) {
+		if (sourceComponentInstance.instanceName == oneEnd.instanceName) {
+			return destinationComponentInstance;
+		} else if (destinationComponentInstance.instanceName == oneEnd.instanceName) {
+			return sourceComponentInstance;
+		} else {
+			throw new PreesmRuntimeException("The given end is not related to this link");
+		}
+	}
+}
+
+class DataLink extends Link {
+}
+
+class ControlLink extends Link {
+}
+
+class Component extends VLNVedElement , ParameterizedElement {
+	contains ComInterface[] interfaces opposite component
+	refers ComponentInstance[] instances opposite component
+	contains Design[] refinements opposite refined
+	op ComInterface getInterface(String name) {
+		return interfaces.findFirst[it -> it.name == name]
+	}
+}
+
+class Operator extends Component {
+}
+
+class ComNode extends Component {
+	boolean parallel = "true"
+	float speed = "1"
+}
+
+abstract class Enabler extends Component {
+}
+
+class Dma extends Enabler {
+	int setupTime = "0"
+}
+
+class Mem extends Enabler {
+	int size = "1"
+}
+
+class HierarchyPort {
+	refers ComInterface externalInterface
+	refers ComInterface internalInterface
+	refers ComponentInstance internalComponentInstance
+}
+
+class ComInterface {
+	container Component component opposite interfaces
+	contains VLNV busType
+	id String name = ""
 }
