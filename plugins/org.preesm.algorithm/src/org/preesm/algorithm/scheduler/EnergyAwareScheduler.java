@@ -39,6 +39,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.logging.Level;
+import java.util.stream.Collectors;
 import org.eclipse.emf.common.util.ECollections;
 import org.eclipse.emf.common.util.EList;
 import org.preesm.commons.logger.PreesmLogger;
@@ -110,21 +111,18 @@ public class EnergyAwareScheduler extends AbstractScheduler {
       /**
        * Reset
        */
-      scenarioMapping.getConstraints().getGroupConstraints().clear();
+
+      scenario.getConstraints().getGroupConstraints().addAll(scenarioMapping.getConstraints().getGroupConstraints());
 
       /**
        * Add the constraints that represents the new config
        */
       for (Entry<String, Integer> instance : coresUsedOfEachType.entrySet()) {
-        int alreadyAdded = 0;
-        for (Entry<ComponentInstance, EList<AbstractActor>> constraint : scenario.getConstraints()
-            .getGroupConstraints()) {
-          String instanceToBeAddedName = instance.getKey();
-          String instanceNameChecker = constraint.getKey().getComponent().getVlnv().getName();
-          if (instanceToBeAddedName.equals(instanceNameChecker) && alreadyAdded < instance.getValue()) {
-            scenarioMapping.getConstraints().getGroupConstraints().put(constraint.getKey(), constraint.getValue());
-          }
-        }
+        List<Entry<ComponentInstance, EList<AbstractActor>>> constraints = scenario.getConstraints()
+            .getGroupConstraints().stream()
+            .filter(e -> e.getKey().getComponent().getVlnv().getName().equals(instance.getKey()))
+            .collect(Collectors.toList()).subList(0, instance.getValue());
+        scenarioMapping.getConstraints().getGroupConstraints().addAll(constraints);
       }
 
       /**
@@ -162,6 +160,10 @@ public class EnergyAwareScheduler extends AbstractScheduler {
         break;
       }
     }
+    /**
+     * Fill scenario with everything again to avoid further problems
+     */
+    scenario.getConstraints().getGroupConstraints().addAll(scenarioMapping.getConstraints().getGroupConstraints());
 
     final int span = topParallelSchedule.getSpan();
     PreesmLogger.getLogger().log(Level.INFO, "span = " + span);
