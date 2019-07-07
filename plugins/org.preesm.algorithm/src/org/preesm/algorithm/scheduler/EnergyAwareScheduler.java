@@ -149,14 +149,8 @@ public class EnergyAwareScheduler extends AbstractScheduler {
       /**
        * Check whether we have tested everything or not
        */
-      boolean finished = true;
-      for (Entry<String, Integer> peType : coresUsedOfEachType.entrySet()) {
-        if (peType.getValue() != 0) {
-          finished = false;
-          break;
-        }
-      }
-      if (finished) {
+      if (coresUsedOfEachType.entrySet().stream().filter(e -> e.getValue() != 0).collect(Collectors.toList())
+          .isEmpty()) {
         break;
       }
     }
