@@ -182,10 +182,14 @@ public class CodegenClusterModelGenerator {
 
     // Retrieve actor to fire
     Actor actor = (Actor) schedule.getActors().get(0);
+    // Retrieve and add init function
+    addInitFunctionCall(actor);
 
     // Build FunctionCall
     FunctionCall functionCall = CodegenFactory.eINSTANCE.createFunctionCall();
     functionCall.setActorName(actor.getName());
+
+    // Put FunctionCall in a block
     LoopBlock callSet = CodegenFactory.eINSTANCE.createLoopBlock();
     callSet.getCodeElts().add(functionCall);
 
@@ -206,10 +210,44 @@ public class CodegenClusterModelGenerator {
       outputBlock = callSet;
     }
 
-    // Retrieve Refinement from actor
+    // Retrieve Refinement from actor for loop function
     fillFunctionCallArgument(functionCall, actor);
 
     return outputBlock;
+  }
+
+  private final void addInitFunctionCall(Actor actor) {
+    // Retrieve Refinement from actor
+    if (actor.getRefinement() instanceof CHeaderRefinement) {
+      // Create function call
+      FunctionCall functionCall = CodegenFactory.eINSTANCE.createFunctionCall();
+      functionCall.setActorName(actor.getName());
+
+      CHeaderRefinement cheader = (CHeaderRefinement) actor.getRefinement();
+      // Verify that a init prototype is present
+      if (cheader.getInitPrototype() == null) {
+        return;
+      }
+
+      // Retrieve function argument
+      List<FunctionArgument> arguments = cheader.getInitPrototype().getArguments();
+      // Retrieve function name
+      functionCall.setName(cheader.getInitPrototype().getName());
+
+      // Associate argument with buffer
+      for (FunctionArgument a : arguments) {
+        // Search for the corresponding port into actor ports list
+        Port associatedPort = actor.getAllPorts().stream().filter(x -> x.getName().contentEquals(a.getName()))
+            .collect(Collectors.toList()).get(0);
+
+        if (associatedPort instanceof ConfigInputPort) {
+          addConfigInputPortParameter(functionCall, actor, (ConfigInputPort) associatedPort, a);
+        }
+      }
+
+      // Add function call to core block init loop
+      operatorBlock.getInitBlock().getCodeElts().add(functionCall);
+    }
   }
 
   private final void fillFunctionCallArgument(FunctionCall functionCall, Actor actor) {
