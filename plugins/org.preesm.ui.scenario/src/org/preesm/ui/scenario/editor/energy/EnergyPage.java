@@ -161,7 +161,7 @@ public class EnergyPage extends ScenarioPage {
       // Timing file chooser section
       createFileSection(managedForm, Messages.getString("Energy.fileTitle"),
           Messages.getString("Energy.fileDescription"), Messages.getString("Energy.fileEdit"),
-          this.scenario.getTimings().getExcelFileURL(), Messages.getString("Energy.timingFileBrowseTitle"),
+          this.scenario.getEnergyConfig().getExcelFileURL(), Messages.getString("Energy.timingFileBrowseTitle"),
           new LinkedHashSet<>(Arrays.asList("xls", "csv")));
       createObjectiveSection(managedForm, Messages.getString("Energy.objectiveTitle"),
           Messages.getString("Energy.objectiveDescription"));
