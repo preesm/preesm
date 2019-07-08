@@ -561,12 +561,12 @@ class PapiCpuID {
 			val EMap<AbstractActor, Double> map = algorithmEnergy.get(component)
 			if (map.containsKey(actor)) {
 				return map.get(actor)
-			}
-		} else {
-			val AbstractActor source = PreesmCopyTracker.getSource(actor);
-			if (source !== actor) {
-				return getEnergyActorOrDefault(source, component)
-			}
+			}else {
+				val AbstractActor source = PreesmCopyTracker.getSource(actor);
+				if (source !== actor) {
+					return getEnergyActorOrDefault(source, component)
+				}
+			} 
 		}
 		var double value = ScenarioConstants.DEFAULT_ENERGY_TASK.value
 		return value
