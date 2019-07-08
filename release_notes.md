@@ -10,6 +10,7 @@ PREESM Changelog
 ### Changes
 
 ### Bug fix
+* Fix #166: forces scheduler to put init and end actors on same core;
 
 
 ## Release version 3.11.0

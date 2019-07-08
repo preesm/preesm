@@ -38,7 +38,6 @@ package org.preesm.algorithm.mapper.model.property;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
-import java.util.Set;
 import org.preesm.algorithm.mapper.model.MapperDAGVertex;
 import org.preesm.commons.CloneableProperty;
 
@@ -73,19 +72,6 @@ public class DAGMappings implements CloneableProperty<DAGMappings> {
    */
   public VertexMapping getMapping(final String vertexId) {
     return this.mappings.get(vertexId);
-  }
-
-  /**
-   * Associates vertices by making them share a created VertexMapping object.
-   *
-   * @param vertices
-   *          the vertices
-   */
-  public void associate(final Set<MapperDAGVertex> vertices) {
-    final VertexMapping newMapping = new VertexMapping();
-    for (final MapperDAGVertex v : vertices) {
-      put(v.getName(), newMapping);
-    }
   }
 
   /**

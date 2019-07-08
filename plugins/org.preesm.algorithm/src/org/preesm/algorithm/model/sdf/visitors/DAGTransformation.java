@@ -41,16 +41,12 @@ import java.util.Map;
 import java.util.Set;
 import org.apache.commons.math3.util.ArithmeticUtils;
 import org.jgrapht.alg.cycle.CycleDetector;
+import org.preesm.algorithm.mapper.model.MapperDAGVertex;
 import org.preesm.algorithm.model.AbstractEdge;
 import org.preesm.algorithm.model.IGraphVisitor;
 import org.preesm.algorithm.model.dag.DAGEdge;
 import org.preesm.algorithm.model.dag.DAGVertex;
 import org.preesm.algorithm.model.dag.DirectedAcyclicGraph;
-import org.preesm.algorithm.model.dag.edag.DAGBroadcastVertex;
-import org.preesm.algorithm.model.dag.edag.DAGEndVertex;
-import org.preesm.algorithm.model.dag.edag.DAGForkVertex;
-import org.preesm.algorithm.model.dag.edag.DAGInitVertex;
-import org.preesm.algorithm.model.dag.edag.DAGJoinVertex;
 import org.preesm.algorithm.model.factories.IModelVertexFactory;
 import org.preesm.algorithm.model.iterators.SDFIterator;
 import org.preesm.algorithm.model.sdf.SDFAbstractVertex;
@@ -516,19 +512,19 @@ public class DAGTransformation<T extends DirectedAcyclicGraph>
     DAGVertex vertex;
     final AbstractVertex rv = sdfVertex.getReferencePiVertex();
     if (sdfVertex instanceof SDFRoundBufferVertex) {
-      vertex = this.factory.createVertex(DAGBroadcastVertex.DAG_BROADCAST_VERTEX, rv);
-      vertex.getPropertyBean().setValue(DAGBroadcastVertex.SPECIAL_TYPE, DAGBroadcastVertex.SPECIAL_TYPE_ROUNDBUFFER);
+      vertex = this.factory.createVertex(MapperDAGVertex.DAG_BROADCAST_VERTEX, rv);
+      vertex.getPropertyBean().setValue(MapperDAGVertex.SPECIAL_TYPE, MapperDAGVertex.SPECIAL_TYPE_ROUNDBUFFER);
     } else if (sdfVertex instanceof SDFBroadcastVertex) {
-      vertex = this.factory.createVertex(DAGBroadcastVertex.DAG_BROADCAST_VERTEX, rv);
-      vertex.getPropertyBean().setValue(DAGBroadcastVertex.SPECIAL_TYPE, DAGBroadcastVertex.SPECIAL_TYPE_BROADCAST);
+      vertex = this.factory.createVertex(MapperDAGVertex.DAG_BROADCAST_VERTEX, rv);
+      vertex.getPropertyBean().setValue(MapperDAGVertex.SPECIAL_TYPE, MapperDAGVertex.SPECIAL_TYPE_BROADCAST);
     } else if (sdfVertex instanceof SDFForkVertex) {
-      vertex = this.factory.createVertex(DAGForkVertex.DAG_FORK_VERTEX, rv);
+      vertex = this.factory.createVertex(MapperDAGVertex.DAG_FORK_VERTEX, rv);
     } else if (sdfVertex instanceof SDFJoinVertex) {
-      vertex = this.factory.createVertex(DAGJoinVertex.DAG_JOIN_VERTEX, rv);
+      vertex = this.factory.createVertex(MapperDAGVertex.DAG_JOIN_VERTEX, rv);
     } else if (sdfVertex instanceof SDFEndVertex) {
-      vertex = this.factory.createVertex(DAGEndVertex.DAG_END_VERTEX, rv);
+      vertex = this.factory.createVertex(MapperDAGVertex.DAG_END_VERTEX, rv);
     } else if (sdfVertex instanceof SDFInitVertex) {
-      vertex = this.factory.createVertex(DAGInitVertex.DAG_INIT_VERTEX, rv);
+      vertex = this.factory.createVertex(MapperDAGVertex.DAG_INIT_VERTEX, rv);
     } else {
       vertex = this.factory.createVertex(DAGVertex.DAG_VERTEX, rv);
     }
@@ -578,14 +574,14 @@ public class DAGTransformation<T extends DirectedAcyclicGraph>
       // Setting the end reference
       final SDFEndVertex sdfEndVertex = (SDFEndVertex) sdfVertex;
       final String endReferenceName = sdfEndVertex.getEndReference().getName();
-      dagVertex.getPropertyBean().setValue(DAGInitVertex.END_REFERENCE, endReferenceName);
+      dagVertex.getPropertyBean().setValue(MapperDAGVertex.END_REFERENCE, endReferenceName);
     } else if (sdfVertex instanceof SDFInitVertex) {
       // Setting the end reference
       final SDFInitVertex sdfInitVertex = (SDFInitVertex) sdfVertex;
       final String endReferenceName = sdfInitVertex.getEndReference().getName();
-      dagVertex.getPropertyBean().setValue(DAGInitVertex.END_REFERENCE, endReferenceName);
+      dagVertex.getPropertyBean().setValue(MapperDAGVertex.END_REFERENCE, endReferenceName);
       // Setting the init size property
-      dagVertex.getPropertyBean().setValue(DAGInitVertex.INIT_SIZE, sdfInitVertex.getInitSize());
+      dagVertex.getPropertyBean().setValue(MapperDAGVertex.INIT_SIZE, sdfInitVertex.getInitSize());
     }
   }
 

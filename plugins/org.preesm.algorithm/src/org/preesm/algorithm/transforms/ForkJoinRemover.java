@@ -46,11 +46,10 @@ import java.util.Set;
 import java.util.logging.Level;
 import org.preesm.algorithm.mapper.graphtransfo.ImplementationPropertyNames;
 import org.preesm.algorithm.mapper.graphtransfo.VertexType;
+import org.preesm.algorithm.mapper.model.MapperDAGVertex;
 import org.preesm.algorithm.model.dag.DAGEdge;
 import org.preesm.algorithm.model.dag.DAGVertex;
 import org.preesm.algorithm.model.dag.DirectedAcyclicGraph;
-import org.preesm.algorithm.model.dag.edag.DAGForkVertex;
-import org.preesm.algorithm.model.dag.edag.DAGJoinVertex;
 import org.preesm.algorithm.model.iterators.SDFIterator;
 import org.preesm.algorithm.model.iterators.TopologicalDAGIterator;
 import org.preesm.algorithm.model.sdf.SDFAbstractVertex;
@@ -301,7 +300,7 @@ public class ForkJoinRemover {
         vertKind = vert.getKind();
       }
 
-      if (vertKind.equals(DAGForkVertex.DAG_FORK_VERTEX) || vertKind.equals(DAGJoinVertex.DAG_JOIN_VERTEX)) {
+      if (vertKind.equals(MapperDAGVertex.DAG_FORK_VERTEX) || vertKind.equals(MapperDAGVertex.DAG_JOIN_VERTEX)) {
         // If the vertex is a task (an implode or explode vertex)
 
         // Link incoming/outgoing edges of the implode/explode
@@ -325,7 +324,8 @@ public class ForkJoinRemover {
 
               // Select the edges whose properties must be
               // copied to the new edge
-              final DAGEdge edge = (vert.getKind().equals(DAGJoinVertex.DAG_JOIN_VERTEX)) ? incomingEdge : outgoingEdge;
+              final DAGEdge edge = (vert.getKind().equals(MapperDAGVertex.DAG_JOIN_VERTEX)) ? incomingEdge
+                  : outgoingEdge;
 
               // Create the new edge that bypass the
               // explode/implode

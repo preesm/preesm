@@ -78,6 +78,7 @@ import org.preesm.algorithm.mapper.graphtransfo.BufferProperties;
 import org.preesm.algorithm.mapper.graphtransfo.ImplementationPropertyNames;
 import org.preesm.algorithm.mapper.graphtransfo.VertexType;
 import org.preesm.algorithm.mapper.model.MapperDAG;
+import org.preesm.algorithm.mapper.model.MapperDAGVertex;
 import org.preesm.algorithm.memory.allocation.MemoryAllocator;
 import org.preesm.algorithm.memory.exclusiongraph.MemoryExclusionGraph;
 import org.preesm.algorithm.memory.exclusiongraph.MemoryExclusionVertex;
@@ -90,11 +91,6 @@ import org.preesm.algorithm.model.CodeRefinement.Language;
 import org.preesm.algorithm.model.dag.DAGEdge;
 import org.preesm.algorithm.model.dag.DAGVertex;
 import org.preesm.algorithm.model.dag.DirectedAcyclicGraph;
-import org.preesm.algorithm.model.dag.edag.DAGBroadcastVertex;
-import org.preesm.algorithm.model.dag.edag.DAGEndVertex;
-import org.preesm.algorithm.model.dag.edag.DAGForkVertex;
-import org.preesm.algorithm.model.dag.edag.DAGInitVertex;
-import org.preesm.algorithm.model.dag.edag.DAGJoinVertex;
 import org.preesm.algorithm.model.parameters.Argument;
 import org.preesm.algorithm.model.sdf.SDFEdge;
 import org.preesm.algorithm.model.sdf.SDFGraph;
@@ -527,13 +523,13 @@ public class CodegenModelGenerator {
             case DAGVertex.DAG_VERTEX:
               generateActorFiring(operatorBlock, vert);
               break;
-            case DAGForkVertex.DAG_FORK_VERTEX:
-            case DAGJoinVertex.DAG_JOIN_VERTEX:
-            case DAGBroadcastVertex.DAG_BROADCAST_VERTEX:
+            case MapperDAGVertex.DAG_FORK_VERTEX:
+            case MapperDAGVertex.DAG_JOIN_VERTEX:
+            case MapperDAGVertex.DAG_BROADCAST_VERTEX:
               generateSpecialCall(operatorBlock, vert);
               break;
-            case DAGInitVertex.DAG_INIT_VERTEX:
-            case DAGEndVertex.DAG_END_VERTEX:
+            case MapperDAGVertex.DAG_INIT_VERTEX:
+            case MapperDAGVertex.DAG_END_VERTEX:
               generateFifoCall(operatorBlock, vert);
               break;
             default:
@@ -1678,10 +1674,10 @@ public class CodegenModelGenerator {
     // Find the type of FiFo operation
     final String kind = dagVertex.getKind();
     switch (kind) {
-      case DAGInitVertex.DAG_INIT_VERTEX:
+      case MapperDAGVertex.DAG_INIT_VERTEX:
         fifoCall.setOperation(FifoOperation.POP);
         break;
-      case DAGEndVertex.DAG_END_VERTEX:
+      case MapperDAGVertex.DAG_END_VERTEX:
         fifoCall.setOperation(FifoOperation.PUSH);
         break;
       default:
@@ -1769,7 +1765,7 @@ public class CodegenModelGenerator {
       fifoInitCall.setName(fifoCall.getName());
       fifoInitCall.setHeadBuffer(fifoCall.getHeadBuffer());
       fifoInitCall.setBodyBuffer(fifoCall.getBodyBuffer());
-      final PersistenceLevel level = dagInitVertex.getPropertyBean().getValue(DAGInitVertex.PERSISTENCE_LEVEL);
+      final PersistenceLevel level = dagInitVertex.getPropertyBean().getValue(MapperDAGVertex.PERSISTENCE_LEVEL);
       if (level == null || PersistenceLevel.PERMANENT.equals(level)) {
         operatorBlock.getInitBlock().getCodeElts().add(fifoInitCall);
       } else {
@@ -2356,20 +2352,20 @@ public class CodegenModelGenerator {
     f.setName(dagVertex.getName());
     final String vertexType = dagVertex.getPropertyStringValue(AbstractVertex.KIND_LITERAL);
     switch (vertexType) {
-      case DAGForkVertex.DAG_FORK_VERTEX:
+      case MapperDAGVertex.DAG_FORK_VERTEX:
         f.setType(SpecialType.FORK);
         break;
-      case DAGJoinVertex.DAG_JOIN_VERTEX:
+      case MapperDAGVertex.DAG_JOIN_VERTEX:
         f.setType(SpecialType.JOIN);
         break;
-      case DAGBroadcastVertex.DAG_BROADCAST_VERTEX:
-        final String specialKind = dagVertex.getPropertyBean().getValue(DAGBroadcastVertex.SPECIAL_TYPE);
+      case MapperDAGVertex.DAG_BROADCAST_VERTEX:
+        final String specialKind = dagVertex.getPropertyBean().getValue(MapperDAGVertex.SPECIAL_TYPE);
         if (specialKind == null) {
           throw new PreesmRuntimeException("Broadcast DAGVertex " + dagVertex + " has null special type");
         }
-        if (specialKind.equals(DAGBroadcastVertex.SPECIAL_TYPE_BROADCAST)) {
+        if (specialKind.equals(MapperDAGVertex.SPECIAL_TYPE_BROADCAST)) {
           f.setType(SpecialType.BROADCAST);
-        } else if (specialKind.equals(DAGBroadcastVertex.SPECIAL_TYPE_ROUNDBUFFER)) {
+        } else if (specialKind.equals(MapperDAGVertex.SPECIAL_TYPE_ROUNDBUFFER)) {
           f.setType(SpecialType.ROUND_BUFFER);
         } else {
           throw new PreesmRuntimeException(
