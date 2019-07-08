@@ -49,6 +49,7 @@ import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.emf.common.util.EList;
 import org.preesm.algorithm.mapper.abc.impl.latency.LatencyAbc;
 import org.preesm.algorithm.mapper.model.MapperDAG;
+import org.preesm.algorithm.model.dag.DAGVertex;
 import org.preesm.algorithm.model.dag.DirectedAcyclicGraph;
 import org.preesm.algorithm.pisdf.pimm2srdag.StaticPiMM2MapperDAGVisitor;
 import org.preesm.commons.doc.annotations.Parameter;
@@ -59,6 +60,7 @@ import org.preesm.model.pisdf.AbstractActor;
 import org.preesm.model.pisdf.PiGraph;
 import org.preesm.model.scenario.Scenario;
 import org.preesm.model.scenario.util.ScenarioUserFactory;
+import org.preesm.model.slam.Component;
 import org.preesm.model.slam.ComponentInstance;
 import org.preesm.model.slam.Design;
 import org.preesm.workflow.elements.Workflow;
@@ -105,6 +107,9 @@ public class ListSchedulingMappingFromPiMM extends ListSchedulingMappingFromDAG 
 
     Map<String, Integer> coresOfEachType = new LinkedHashMap<>();
     Map<String, Integer> coresUsedOfEachType = new LinkedHashMap<>();
+
+    Map<String, Integer> bestConfig = new LinkedHashMap<>();
+    double minEnergy = Double.MAX_VALUE;
 
     /**
      * Analyze the constraints and initialize the configs
@@ -158,6 +163,25 @@ public class ListSchedulingMappingFromPiMM extends ListSchedulingMappingFromDAG 
       inputs.put(AbstractWorkflowNodeImplementation.KEY_SDF_DAG, dag);
       mapping = super.execute(inputs, parameters, monitor, nodeName, workflow);
 
+      /**
+       * Check the energy
+       */
+      double energyThisOne = 0.0;
+      energyThisOne = scenarioMapping.getEnergyConfig().getPlatformPower().get("Base");
+      for (Entry<String, Integer> instance : coresUsedOfEachType.entrySet()) {
+        double powerPe = scenarioMapping.getEnergyConfig().getPlatformPower().get(instance.getKey());
+        energyThisOne = energyThisOne + (powerPe * instance.getValue());
+      }
+      System.out.println("Static energy = " + energyThisOne);
+      MapperDAG dagMapping = (MapperDAG) mapping.get("DAG");
+      for (DAGVertex vertex : dagMapping.getHierarchicalVertexSet()) {
+        ComponentInstance componentInstance = vertex.getPropertyBean().getValue("Operator");
+        Component component = componentInstance.getComponent();
+        AbstractActor actor = vertex.getReferencePiVertex();
+        double energyActor = scenarioMapping.getEnergyConfig().getEnergyActorOrDefault(actor, component);
+        System.out.println(vertex.getName() + " is mapped on " + componentInstance.getInstanceName()
+            + " and is consuming " + energyActor);
+      }
       /**
        * Compute the next configuration
        */
