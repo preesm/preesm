@@ -91,9 +91,6 @@ public class ListSchedulingMappingFromPiMM extends ListSchedulingMappingFromDAG 
     final Design architecture = (Design) inputs.get(AbstractWorkflowNodeImplementation.KEY_ARCHITECTURE);
     final Scenario scenario = (Scenario) inputs.get(AbstractWorkflowNodeImplementation.KEY_SCENARIO);
 
-    final MapperDAG dag = StaticPiMM2MapperDAGVisitor.convert(algorithm, architecture, scenario);
-    inputs.put(AbstractWorkflowNodeImplementation.KEY_SDF_DAG, dag);
-
     /**
      * Energy stuff
      */
@@ -103,7 +100,6 @@ public class ListSchedulingMappingFromPiMM extends ListSchedulingMappingFromDAG 
     Scenario scenarioMapping = ScenarioUserFactory.createScenario();
     scenarioMapping.setAlgorithm(scenario.getAlgorithm());
     scenarioMapping.setDesign(scenario.getDesign());
-    scenarioMapping.setSimulationInfo(scenario.getSimulationInfo());
     scenarioMapping.setTimings(scenario.getTimings());
     scenarioMapping.setEnergyConfig(scenario.getEnergyConfig());
 
@@ -125,6 +121,7 @@ public class ListSchedulingMappingFromPiMM extends ListSchedulingMappingFromDAG 
       }
       coresOfEachType.put(typeOfPe, coresOfEachType.get(typeOfPe) + 1);
     }
+    inputs.put(AbstractWorkflowNodeImplementation.KEY_SCENARIO, scenarioMapping);
     Map<String, Object> mapping = null;
     while (true) {
       /**
@@ -143,13 +140,24 @@ public class ListSchedulingMappingFromPiMM extends ListSchedulingMappingFromDAG 
             .collect(Collectors.toList()).subList(0, instance.getValue());
         scenarioMapping.getConstraints().getGroupConstraints().addAll(constraints);
       }
-      inputs.put(AbstractWorkflowNodeImplementation.KEY_SCENARIO, scenarioMapping);
+      if (scenarioMapping.getConstraints().getGroupConstraints().stream()
+          .filter(e -> e.getKey().getInstanceName().equals(scenario.getSimulationInfo().getMainOperator()))
+          .count() == 0) {
+        ComponentInstance newMainNode = scenarioMapping.getConstraints().getGroupConstraints().get(0).getKey();
+        scenarioMapping.getSimulationInfo().setMainOperator(newMainNode);
+      } else {
+        scenarioMapping.getSimulationInfo().setMainOperator(scenario.getSimulationInfo().getMainOperator());
+      }
+      scenarioMapping.getSimulationInfo().setMainComNode(scenario.getSimulationInfo().getMainComNode());
 
       /**
        * Try the mapping
        */
       System.out.println("Doing: " + coresUsedOfEachType.toString());
+      final MapperDAG dag = StaticPiMM2MapperDAGVisitor.convert(algorithm, architecture, scenarioMapping);
+      inputs.put(AbstractWorkflowNodeImplementation.KEY_SDF_DAG, dag);
       mapping = super.execute(inputs, parameters, monitor, nodeName, workflow);
+
       /**
        * Compute the next configuration
        */
@@ -175,11 +183,13 @@ public class ListSchedulingMappingFromPiMM extends ListSchedulingMappingFromDAG 
     scenario.getConstraints().getGroupConstraints().addAll(scenarioMapping.getConstraints().getGroupConstraints());
     scenario.setAlgorithm(scenarioMapping.getAlgorithm());
     scenario.setDesign(scenarioMapping.getDesign());
-    scenario.setSimulationInfo(scenarioMapping.getSimulationInfo());
     scenario.setTimings(scenarioMapping.getTimings());
     scenario.setEnergyConfig(scenarioMapping.getEnergyConfig());
+    inputs.put(AbstractWorkflowNodeImplementation.KEY_SCENARIO, scenario);
 
-    System.out.println("AAA");
+    System.out.println("Repeating for the best one");
+    final MapperDAG dag = StaticPiMM2MapperDAGVisitor.convert(algorithm, architecture, scenario);
+    inputs.put(AbstractWorkflowNodeImplementation.KEY_SDF_DAG, dag);
     mapping = super.execute(inputs, parameters, monitor, nodeName, workflow);
     return mapping;
   }
