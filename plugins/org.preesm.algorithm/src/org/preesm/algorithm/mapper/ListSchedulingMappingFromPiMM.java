@@ -185,9 +185,9 @@ public class ListSchedulingMappingFromPiMM extends ListSchedulingMappingFromDAG 
         }
       }
 
-      double totalDynamicEnergy = energyDynamic * (1000000.0 / abcMapping.getFinalLatency());
+      double totalDynamicEnergy = (energyDynamic / 1000000.0) * (1000000.0 / abcMapping.getFinalLatency());
       energyThisOne = energyThisOne + totalDynamicEnergy;
-      System.out.println("Total energy = " + energyThisOne + " --- FPS = " + 1000000 / abcMapping.getFinalLatency());
+      System.out.println("Total energy = " + energyThisOne + " --- FPS = " + 1000000.0 / abcMapping.getFinalLatency());
       /**
        * Compute the next configuration
        */
