@@ -537,7 +537,7 @@ public class ScenarioWriter {
     final Element energyConfigs = this.dom.createElement("energyConfigs");
     parent.appendChild(energyConfigs);
 
-    // energyConfigs.setAttribute("xmlUrl", this.scenario.getPapifyConfig().getXmlFileURL());
+    energyConfigs.setAttribute("xmlUrl", this.scenario.getEnergyConfig().getExcelFileURL());
 
     final EnergyConfig manager = this.scenario.getEnergyConfig();
 

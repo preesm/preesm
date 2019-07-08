@@ -840,8 +840,8 @@ public class ScenarioParser {
    */
   private void parseEnergyConfigs(final Element energyConfigsElt) {
 
-    // final String xmlFileURL = papifyConfigsElt.getAttribute("xmlUrl");
-    // this.scenario.getPapifyConfig().setXmlFileURL(xmlFileURL);
+    final String xmlFileURL = energyConfigsElt.getAttribute("xmlUrl");
+    this.scenario.getEnergyConfig().setExcelFileURL(xmlFileURL);
 
     Node node = energyConfigsElt.getFirstChild();
 
