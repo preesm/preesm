@@ -43,8 +43,11 @@ package org.preesm.algorithm.mapper;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.Optional;
+import java.util.Set;
 import java.util.logging.Level;
 import org.eclipse.core.runtime.IProgressMonitor;
+import org.preesm.algorithm.mapper.abc.SpecialVertexManager;
 import org.preesm.algorithm.mapper.abc.impl.latency.InfiniteHomogeneousAbc;
 import org.preesm.algorithm.mapper.abc.impl.latency.LatencyAbc;
 import org.preesm.algorithm.mapper.abc.impl.latency.SpanLengthCalculator;
@@ -55,14 +58,17 @@ import org.preesm.algorithm.mapper.abc.taskscheduling.TopologicalTaskSched;
 import org.preesm.algorithm.mapper.algo.InitialLists;
 import org.preesm.algorithm.mapper.graphtransfo.TagDAG;
 import org.preesm.algorithm.mapper.model.MapperDAG;
+import org.preesm.algorithm.mapper.model.MapperDAGVertex;
 import org.preesm.algorithm.mapper.optimizer.RedundantSynchronizationCleaner;
 import org.preesm.algorithm.mapper.params.AbcParameters;
 import org.preesm.algorithm.mapper.tools.CommunicationOrderChecker;
+import org.preesm.algorithm.model.dag.DAGVertex;
 import org.preesm.algorithm.model.dag.DirectedAcyclicGraph;
 import org.preesm.commons.exceptions.PreesmException;
 import org.preesm.commons.exceptions.PreesmRuntimeException;
 import org.preesm.commons.logger.PreesmLogger;
 import org.preesm.model.scenario.Scenario;
+import org.preesm.model.slam.ComponentInstance;
 import org.preesm.model.slam.Design;
 import org.preesm.workflow.elements.Workflow;
 import org.preesm.workflow.implement.AbstractTaskImplementation;
@@ -212,6 +218,31 @@ public abstract class AbstractMappingFromDAG extends AbstractTaskImplementation 
     if (parameters.get(AbstractMappingFromDAG.PARAM_CHECK).equals(AbstractMappingFromDAG.VALUE_TRUE)) {
       CommunicationOrderChecker.checkCommunicationOrder(dag);
       CommunicationOrderChecker.checkMultiStepSendReceiveValidity(dag);
+    }
+    checkInitEndActorMapping(dag);
+  }
+
+  private void checkInitEndActorMapping(DirectedAcyclicGraph dag) {
+    final Set<DAGVertex> vertexSet = dag.vertexSet();
+    final Optional<
+        DAGVertex> findAny = vertexSet.stream().filter(v -> SpecialVertexManager.isInit(v)).filter(initVertex -> {
+
+          final String endReferenceName = initVertex.getPropertyBean().getValue(MapperDAGVertex.END_REFERENCE);
+          final MapperDAGVertex dagEndVertex = (MapperDAGVertex) dag.getVertex(endReferenceName);
+          final ComponentInstance endEffectiveOperator = dagEndVertex.getEffectiveOperator();
+
+          final String initReferenceName = dagEndVertex.getPropertyBean().getValue(MapperDAGVertex.END_REFERENCE);
+          final MapperDAGVertex dagInitVertex = (MapperDAGVertex) dag.getVertex(initReferenceName);
+          final ComponentInstance initEffectiveOperator = dagInitVertex.getEffectiveOperator();
+
+          final boolean properlyReferenced = initVertex == initEffectiveOperator;
+          final boolean sameOperator = initEffectiveOperator.getInstanceName()
+              .equals(endEffectiveOperator.getInstanceName());
+
+          return properlyReferenced && sameOperator;
+        }).findAny();
+    if (findAny.isPresent()) {
+      throw new PreesmRuntimeException("Scheduler chosed to put init and end actors on different PE.");
     }
   }
 
