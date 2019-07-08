@@ -40,8 +40,13 @@
  */
 package org.preesm.algorithm.mapper;
 
+import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
+import java.util.stream.Collectors;
 import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.emf.common.util.EList;
 import org.preesm.algorithm.mapper.abc.impl.latency.LatencyAbc;
 import org.preesm.algorithm.mapper.model.MapperDAG;
 import org.preesm.algorithm.model.dag.DirectedAcyclicGraph;
@@ -50,8 +55,11 @@ import org.preesm.commons.doc.annotations.Parameter;
 import org.preesm.commons.doc.annotations.Port;
 import org.preesm.commons.doc.annotations.PreesmTask;
 import org.preesm.commons.doc.annotations.Value;
+import org.preesm.model.pisdf.AbstractActor;
 import org.preesm.model.pisdf.PiGraph;
 import org.preesm.model.scenario.Scenario;
+import org.preesm.model.scenario.util.ScenarioUserFactory;
+import org.preesm.model.slam.ComponentInstance;
 import org.preesm.model.slam.Design;
 import org.preesm.workflow.elements.Workflow;
 import org.preesm.workflow.implement.AbstractWorkflowNodeImplementation;
@@ -86,7 +94,90 @@ public class ListSchedulingMappingFromPiMM extends ListSchedulingMappingFromDAG 
     final MapperDAG dag = StaticPiMM2MapperDAGVisitor.convert(algorithm, architecture, scenario);
     inputs.put(AbstractWorkflowNodeImplementation.KEY_SDF_DAG, dag);
 
-    return super.execute(inputs, parameters, monitor, nodeName, workflow);
+    /**
+     * Empezamos con la energía
+     */
+    /**
+     * Copy scenario
+     */
+    Scenario scenarioMapping = ScenarioUserFactory.createScenario();
+    scenarioMapping.setAlgorithm(scenario.getAlgorithm());
+    scenarioMapping.setDesign(scenario.getDesign());
+    scenarioMapping.setSimulationInfo(scenario.getSimulationInfo());
+
+    Map<String, Integer> coresOfEachType = new LinkedHashMap<>();
+    Map<String, Integer> coresUsedOfEachType = new LinkedHashMap<>();
+
+    /**
+     * Analyze the constraints and initialize the configs
+     */
+    for (Entry<ComponentInstance, EList<AbstractActor>> constraint : scenario.getConstraints().getGroupConstraints()) {
+      String typeOfPe = constraint.getKey().getComponent().getVlnv().getName();
+      if (!coresOfEachType.containsKey(typeOfPe)) {
+        coresOfEachType.put(typeOfPe, 0);
+        if (coresUsedOfEachType.isEmpty()) {
+          coresUsedOfEachType.put(typeOfPe, 1);
+        } else {
+          coresUsedOfEachType.put(typeOfPe, 0);
+        }
+      }
+      coresOfEachType.put(typeOfPe, coresOfEachType.get(typeOfPe) + 1);
+    }
+    Map<String, Object> mapping = null;
+    while (true) {
+      /**
+       * Reset
+       */
+
+      scenario.getConstraints().getGroupConstraints().addAll(scenarioMapping.getConstraints().getGroupConstraints());
+
+      /**
+       * Add the constraints that represents the new config
+       */
+      for (Entry<String, Integer> instance : coresUsedOfEachType.entrySet()) {
+        List<Entry<ComponentInstance, EList<AbstractActor>>> constraints = scenario.getConstraints()
+            .getGroupConstraints().stream()
+            .filter(e -> e.getKey().getComponent().getVlnv().getName().equals(instance.getKey()))
+            .collect(Collectors.toList()).subList(0, instance.getValue());
+        scenarioMapping.getConstraints().getGroupConstraints().addAll(constraints);
+      }
+      inputs.put(AbstractWorkflowNodeImplementation.KEY_SCENARIO, scenarioMapping);
+
+      /**
+       * Try the mapping
+       */
+      System.out.println("Doing: " + coresUsedOfEachType.toString());
+      mapping = super.execute(inputs, parameters, monitor, nodeName, workflow);
+      /**
+       * Compute the next configuration
+       */
+      for (Entry<String, Integer> peType : coresUsedOfEachType.entrySet()) {
+        peType.setValue(peType.getValue() + 1);
+        if (peType.getValue() > coresOfEachType.get(peType.getKey())) {
+          peType.setValue(0);
+        } else {
+          break;
+        }
+      }
+      /**
+       * Check whether we have tested everything or not
+       */
+      if (coresUsedOfEachType.entrySet().stream().filter(e -> e.getValue() != 0).collect(Collectors.toList())
+          .isEmpty()) {
+        break;
+      }
+    }
+    /**
+     * Fill scenario with everything again to avoid further problems
+     */
+    scenario.getConstraints().getGroupConstraints().addAll(scenarioMapping.getConstraints().getGroupConstraints());
+    scenario.setAlgorithm(scenarioMapping.getAlgorithm());
+    scenario.setDesign(scenarioMapping.getDesign());
+    scenario.setSimulationInfo(scenarioMapping.getSimulationInfo());
+
+    System.out.println("AAA");
+    mapping = super.execute(inputs, parameters, monitor, nodeName, workflow);
+    return mapping;
   }
 
 }
