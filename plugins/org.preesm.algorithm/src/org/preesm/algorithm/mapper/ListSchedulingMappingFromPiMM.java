@@ -58,6 +58,7 @@ import org.preesm.commons.doc.annotations.PreesmTask;
 import org.preesm.commons.doc.annotations.Value;
 import org.preesm.model.pisdf.AbstractActor;
 import org.preesm.model.pisdf.PiGraph;
+import org.preesm.model.pisdf.impl.ActorImpl;
 import org.preesm.model.scenario.Scenario;
 import org.preesm.model.scenario.util.ScenarioUserFactory;
 import org.preesm.model.slam.Component;
@@ -166,22 +167,27 @@ public class ListSchedulingMappingFromPiMM extends ListSchedulingMappingFromDAG 
       /**
        * Check the energy
        */
-      double energyThisOne = 0.0;
-      energyThisOne = scenarioMapping.getEnergyConfig().getPlatformPower().get("Base");
+      double energyThisOne = scenarioMapping.getEnergyConfig().getPlatformPower().get("Base");
+      double energyDynamic = 0.0;
       for (Entry<String, Integer> instance : coresUsedOfEachType.entrySet()) {
         double powerPe = scenarioMapping.getEnergyConfig().getPlatformPower().get(instance.getKey());
         energyThisOne = energyThisOne + (powerPe * instance.getValue());
       }
-      System.out.println("Static energy = " + energyThisOne);
       MapperDAG dagMapping = (MapperDAG) mapping.get("DAG");
+      LatencyAbc abcMapping = (LatencyAbc) mapping.get("ABC");
       for (DAGVertex vertex : dagMapping.getHierarchicalVertexSet()) {
         ComponentInstance componentInstance = vertex.getPropertyBean().getValue("Operator");
         Component component = componentInstance.getComponent();
         AbstractActor actor = vertex.getReferencePiVertex();
-        double energyActor = scenarioMapping.getEnergyConfig().getEnergyActorOrDefault(actor, component);
-        System.out.println(vertex.getName() + " is mapped on " + componentInstance.getInstanceName()
-            + " and is consuming " + energyActor);
+        if (actor != null && actor.getClass().equals(ActorImpl.class)) {
+          double energyActor = scenarioMapping.getEnergyConfig().getEnergyActorOrDefault(actor, component);
+          energyDynamic = energyDynamic + energyActor;
+        }
       }
+
+      double totalDynamicEnergy = energyDynamic * (1000000.0 / abcMapping.getFinalLatency());
+      energyThisOne = energyThisOne + totalDynamicEnergy;
+      System.out.println("Total energy = " + energyThisOne + " --- FPS = " + 1000000 / abcMapping.getFinalLatency());
       /**
        * Compute the next configuration
        */
