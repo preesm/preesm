@@ -95,6 +95,9 @@ public class EnergyAwareScheduler extends AbstractScheduler {
     Map<String, Integer> coresOfEachType = new LinkedHashMap<>();
     Map<String, Integer> coresUsedOfEachType = new LinkedHashMap<>();
 
+    /**
+     * Analyze the constraints and initialize the configs
+     */
     for (Entry<ComponentInstance, EList<AbstractActor>> constraint : scenario.getConstraints().getGroupConstraints()) {
       String typeOfPe = constraint.getKey().getComponent().getVlnv().getName();
       if (!coresOfEachType.containsKey(typeOfPe)) {
