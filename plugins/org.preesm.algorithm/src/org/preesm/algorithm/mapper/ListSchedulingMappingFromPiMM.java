@@ -95,7 +95,7 @@ public class ListSchedulingMappingFromPiMM extends ListSchedulingMappingFromDAG 
     inputs.put(AbstractWorkflowNodeImplementation.KEY_SDF_DAG, dag);
 
     /**
-     * Empezamos con la energía
+     * Energy stuff
      */
     /**
      * Copy scenario
@@ -104,6 +104,8 @@ public class ListSchedulingMappingFromPiMM extends ListSchedulingMappingFromDAG 
     scenarioMapping.setAlgorithm(scenario.getAlgorithm());
     scenarioMapping.setDesign(scenario.getDesign());
     scenarioMapping.setSimulationInfo(scenario.getSimulationInfo());
+    scenarioMapping.setTimings(scenario.getTimings());
+    scenarioMapping.setEnergyConfig(scenario.getEnergyConfig());
 
     Map<String, Integer> coresOfEachType = new LinkedHashMap<>();
     Map<String, Integer> coresUsedOfEachType = new LinkedHashMap<>();
@@ -174,6 +176,8 @@ public class ListSchedulingMappingFromPiMM extends ListSchedulingMappingFromDAG 
     scenario.setAlgorithm(scenarioMapping.getAlgorithm());
     scenario.setDesign(scenarioMapping.getDesign());
     scenario.setSimulationInfo(scenarioMapping.getSimulationInfo());
+    scenario.setTimings(scenarioMapping.getTimings());
+    scenario.setEnergyConfig(scenarioMapping.getEnergyConfig());
 
     System.out.println("AAA");
     mapping = super.execute(inputs, parameters, monitor, nodeName, workflow);
