@@ -8,6 +8,7 @@ PREESM Changelog
 * Added a new tab in the scenario to include power and energy information for the architecture and for the algorithm being executed on the different resources. The possibility to include a performance objective is also added;
 
 ### Changes
+* Fix gantt viewer PE order;
 
 ### Bug fix
 * Fix #166: forces scheduler to put init and end actors on same core;
