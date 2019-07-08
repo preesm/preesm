@@ -47,12 +47,14 @@ import org.eclipse.emf.common.util.EMap;
 import org.preesm.model.pisdf.AbstractActor;
 import org.preesm.model.pisdf.Parameter;
 import org.preesm.model.pisdf.PiGraph;
+import org.preesm.model.scenario.EnergyConfig;
 import org.preesm.model.scenario.MemoryCopySpeedValue;
 import org.preesm.model.scenario.PapiComponent;
 import org.preesm.model.scenario.PapiEvent;
 import org.preesm.model.scenario.PapiEventModifier;
 import org.preesm.model.scenario.PapiEventSet;
 import org.preesm.model.scenario.PapifyConfig;
+import org.preesm.model.scenario.PerformanceObjective;
 import org.preesm.model.scenario.Scenario;
 import org.preesm.model.slam.Component;
 import org.preesm.model.slam.ComponentInstance;
@@ -111,6 +113,7 @@ public class ScenarioWriter {
     writeSimuParams(root);
     writeParameterValues(root);
     writePapifyConfigs(root);
+    writeEnergyConfigs(root);
 
     return this.dom;
   }
@@ -522,5 +525,149 @@ public class ScenarioWriter {
     timingelt.setAttribute("opname", opDef.getVlnv().getName());
     timingelt.setAttribute("setuptime", Long.toString(memcpySetupTime));
     timingelt.setAttribute("timeperunit", Double.toString(memcpyTimePerUnit));
+  }
+
+  /**
+   * Adds the Energy configurations.
+   *
+   * @param parent
+   *          the parent
+   */
+  private void writeEnergyConfigs(final Element parent) {
+    final Element energyConfigs = this.dom.createElement("energyConfigs");
+    parent.appendChild(energyConfigs);
+
+    // energyConfigs.setAttribute("xmlUrl", this.scenario.getPapifyConfig().getXmlFileURL());
+
+    final EnergyConfig manager = this.scenario.getEnergyConfig();
+
+    writePerformanceObjective(energyConfigs, manager.getPerformanceObjective());
+    for (final Entry<String, Double> opDef : manager.getPlatformPower()) {
+      writePlatformPower(energyConfigs, opDef.getKey(), opDef.getValue());
+    }
+    for (final Entry<Component, EMap<AbstractActor, Double>> peActorEnergy : manager.getAlgorithmEnergy()) {
+      writePeActorEnergy(energyConfigs, peActorEnergy.getKey(), peActorEnergy.getValue());
+    }
+    for (final Entry<String, EMap<String, Double>> peCommsEnergy : manager.getCommsEnergy()) {
+      writePeCommsEnergy(energyConfigs, peCommsEnergy.getKey(), peCommsEnergy.getValue());
+    }
+  }
+
+  /**
+   * Adds the PerformanceObjective.
+   *
+   * @param parent
+   *          the parent
+   * @param performanceObjective
+   *          the performance objective
+   */
+  private void writePerformanceObjective(final Element parent, final PerformanceObjective performanceObjective) {
+
+    final Element performanceObjectiveElt = this.dom.createElement("performanceObjective");
+    parent.appendChild(performanceObjectiveElt);
+
+    performanceObjectiveElt.setAttribute("objectiveEPS", Double.toString(performanceObjective.getObjectiveEPS()));
+    performanceObjectiveElt.setAttribute("toleranceEPS", Double.toString(performanceObjective.getToleranceEPS()));
+  }
+
+  /**
+   * Adds the PlatformPower.
+   *
+   * @param parent
+   *          the parent
+   * @param opDefName
+   *          the operator name
+   * @param pePower
+   *          the associated static power
+   */
+  private void writePlatformPower(final Element parent, final String opDefName, final double pePower) {
+
+    final Element pePowerElt = this.dom.createElement("pePower");
+    parent.appendChild(pePowerElt);
+
+    pePowerElt.setAttribute("opName", opDefName);
+    pePowerElt.setAttribute("pePower", Double.toString(pePower));
+  }
+
+  /**
+   * Adds the peActorEnergy.
+   *
+   * @param parent
+   *          the parent
+   * @param component
+   *          the component executing the actors
+   * @param pePower
+   *          the energy associated to each of the actors
+   */
+  private void writePeActorEnergy(final Element parent, final Component component,
+      final EMap<AbstractActor, Double> pePower) {
+
+    final Element peActorEnergy = this.dom.createElement("peActorEnergy");
+    parent.appendChild(peActorEnergy);
+
+    peActorEnergy.setAttribute("opName", component.getVlnv().getName());
+    for (final Entry<AbstractActor, Double> actorEnergies : pePower.entrySet()) {
+      writeActorEnergy(peActorEnergy, actorEnergies.getKey(), actorEnergies.getValue());
+    }
+  }
+
+  /**
+   * Adds the peActorEnergy.
+   *
+   * @param parent
+   *          the parent
+   * @param actor
+   *          the actor
+   * @param energyValue
+   *          the energy value
+   */
+  private void writeActorEnergy(final Element parent, final AbstractActor actor, Double energyValue) {
+
+    final Element actorEnergy = this.dom.createElement("actorEnergy");
+    parent.appendChild(actorEnergy);
+
+    actorEnergy.setAttribute("vertexPath", actor.getVertexPath());
+    actorEnergy.setAttribute("energyValue", energyValue.toString());
+  }
+
+  /**
+   * Adds the peCommsEnergy.
+   *
+   * @param parent
+   *          the parent
+   * @param sourceComm
+   *          the source of the communication (PE type)
+   * @param destinationNodes
+   *          the list of PE types with a valid energy value
+   */
+  private void writePeCommsEnergy(final Element parent, final String sourceComm,
+      final EMap<String, Double> destinationNodes) {
+
+    final Element peTypeCommsEnergy = this.dom.createElement("peTypeCommsEnergy");
+    parent.appendChild(peTypeCommsEnergy);
+
+    peTypeCommsEnergy.setAttribute("sourcePeType", sourceComm);
+    for (final Entry<String, Double> destinationEnergy : destinationNodes) {
+      writeCommNodeEnergy(peTypeCommsEnergy, destinationEnergy.getKey(), destinationEnergy.getValue());
+    }
+  }
+
+  /**
+   * Adds the peActorEnergy.
+   *
+   * @param parent
+   *          the parent
+   * @param actor
+   *          the actor
+   * @param energyValue
+   *          the energy value
+   */
+  private void writeCommNodeEnergy(final Element parent, final String destinationPeType, Double energyValue) {
+
+    final Element destinationEnergy = this.dom.createElement("destinationType");
+    parent.appendChild(destinationEnergy);
+
+    destinationEnergy.setAttribute("destinationPeType", destinationPeType);
+    destinationEnergy.setAttribute("energyValue", energyValue.toString());
   }
 }

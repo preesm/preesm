@@ -5,6 +5,7 @@ PREESM Changelog
 *XXXX.XX.XX*
 
 ### New Feature
+* Added a new tab in the scenario to include power and energy information for the architecture and for the algorithm being executed on the different resources. The possibility to include a performance objective is also added;
 
 ### Changes
 
