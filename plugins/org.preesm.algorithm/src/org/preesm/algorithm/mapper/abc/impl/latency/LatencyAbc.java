@@ -246,35 +246,41 @@ public abstract class LatencyAbc {
    *
    * @param dagvertex
    *          the dagvertex
-   * @param operator
+   * @param specifiedOperator
    *          the operator
    * @param updateRank
    *          the update rank
    * @throws PreesmException
    *           the workflow exception
    */
-  private final void mapSingleVertex(final MapperDAGVertex dagvertex, final ComponentInstance operator,
+  private final void mapSingleVertex(final MapperDAGVertex dagvertex, final ComponentInstance specifiedOperator,
       final boolean updateRank) {
 
-    final MapperDAGVertex impvertex = translateInImplementationVertex(dagvertex);
+    final ComponentInstance finalOperator;
 
+    final MapperDAGVertex impvertex = translateInImplementationVertex(dagvertex);
     final ComponentInstance effectiveOperator = impvertex.getEffectiveOperator();
+
     if (MapperDAGVertex.DAG_END_VERTEX.equals(dagvertex.getKind())) {
       final String initReferenceName = dagvertex.getPropertyBean().getValue(MapperDAGVertex.END_REFERENCE);
       final MapperDAGVertex dagInitVertex = (MapperDAGVertex) dag.getVertex(initReferenceName);
 
       final MapperDAGVertex implInitVertex = translateInImplementationVertex(dagInitVertex);
       final ComponentInstance initEffectiveOperator = implInitVertex.getEffectiveOperator();
-      if (effectiveOperator != null && initEffectiveOperator != null) {
-        if (!effectiveOperator.getInstanceName().equals(initEffectiveOperator.getInstanceName())) {
-          unmap(dagvertex);
-          dagvertex.setEffectiveOperator(initEffectiveOperator);
-          impvertex.setEffectiveOperator(initEffectiveOperator);
-          fireNewMappedVertex(impvertex, updateRank);
+      if (initEffectiveOperator != null) {
+        // if init has been mapped (should be the case), forces end to be on same operator
+        if (effectiveOperator != null
+            && effectiveOperator.getInstanceName().equals(initEffectiveOperator.getInstanceName())) {
+          // skip remapping if operator is already properly set
+          return;
+        } else {
+          finalOperator = initEffectiveOperator;
         }
-        // else: already mapped on proper core -> return
-        return;
+      } else {
+        finalOperator = specifiedOperator;
       }
+    } else {
+      finalOperator = specifiedOperator;
     }
 
     if (effectiveOperator != null) {
@@ -284,19 +290,19 @@ public abstract class LatencyAbc {
 
     // Testing if the vertex or its group can be mapped on the
     // target operator
-    if (isMapable(impvertex, operator, false) || !updateRank || (impvertex instanceof TransferVertex)) {
+    if (isMapable(impvertex, finalOperator, false) || !updateRank || (impvertex instanceof TransferVertex)) {
 
       // Implementation property is set in both DAG and
       // implementation
       // Modifying effective operator of the vertex and all its
       // mapping set!
-      dagvertex.setEffectiveOperator(operator);
-      impvertex.setEffectiveOperator(operator);
+      dagvertex.setEffectiveOperator(finalOperator);
+      impvertex.setEffectiveOperator(finalOperator);
 
       fireNewMappedVertex(impvertex, updateRank);
 
     } else {
-      final String msg = impvertex + " can not be mapped (single) on " + operator;
+      final String msg = impvertex + " can not be mapped (single) on " + finalOperator;
       PreesmLogger.getLogger().log(Level.SEVERE, msg);
     }
   }
