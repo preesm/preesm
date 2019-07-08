@@ -73,7 +73,6 @@ import org.preesm.algorithm.mapper.tools.CustomTopologicalIterator;
 import org.preesm.algorithm.mapper.tools.SchedulingOrderIterator;
 import org.preesm.algorithm.model.dag.DAGEdge;
 import org.preesm.algorithm.model.dag.DAGVertex;
-import org.preesm.algorithm.model.dag.edag.DAGInitVertex;
 import org.preesm.algorithm.model.iterators.TopologicalDAGIterator;
 import org.preesm.commons.exceptions.PreesmException;
 import org.preesm.commons.exceptions.PreesmRuntimeException;
@@ -203,7 +202,7 @@ public abstract class LatencyAbc {
     verticesToAssociate.add(vertex);
 
     if (SpecialVertexManager.isInit(vertex)) {
-      final String endReferenceName = (String) vertex.getPropertyBean().getValue(DAGInitVertex.END_REFERENCE);
+      final String endReferenceName = (String) vertex.getPropertyBean().getValue(MapperDAGVertex.END_REFERENCE);
       final MapperDAGVertex end = (MapperDAGVertex) (this.dag.getVertex(endReferenceName));
       verticesToAssociate.add(end);
     }

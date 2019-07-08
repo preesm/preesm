@@ -57,6 +57,7 @@ import java.util.stream.Collectors;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.emf.common.util.EMap;
 import org.eclipse.xtext.xbase.lib.Pair;
+import org.preesm.algorithm.mapper.model.MapperDAGVertex;
 import org.preesm.algorithm.memory.exclusiongraph.MemoryExclusionGraph;
 import org.preesm.algorithm.memory.exclusiongraph.MemoryExclusionVertex;
 import org.preesm.algorithm.model.AbstractEdge;
@@ -65,9 +66,6 @@ import org.preesm.algorithm.model.dag.DAGEdge;
 import org.preesm.algorithm.model.dag.DAGVertex;
 import org.preesm.algorithm.model.dag.DirectedAcyclicGraph;
 import org.preesm.algorithm.model.dag.EdgeAggregate;
-import org.preesm.algorithm.model.dag.edag.DAGBroadcastVertex;
-import org.preesm.algorithm.model.dag.edag.DAGForkVertex;
-import org.preesm.algorithm.model.dag.edag.DAGJoinVertex;
 import org.preesm.algorithm.model.parameters.Argument;
 import org.preesm.algorithm.model.sdf.SDFEdge;
 import org.preesm.algorithm.model.sdf.SDFGraph;
@@ -339,19 +337,19 @@ public class ScriptRunner {
               }
             }
             break;
-          case DAGForkVertex.DAG_FORK_VERTEX:
+          case MapperDAGVertex.DAG_FORK_VERTEX:
             associateScriptToSpecialVertex(dagVertex, "fork", specialScriptFiles.get(ScriptRunner.FORK));
             break;
-          case DAGJoinVertex.DAG_JOIN_VERTEX:
+          case MapperDAGVertex.DAG_JOIN_VERTEX:
             associateScriptToSpecialVertex(dagVertex, "join", specialScriptFiles.get(ScriptRunner.JOIN));
             break;
-          case DAGBroadcastVertex.DAG_BROADCAST_VERTEX:
-            final String specialType = dagVertex.getPropertyBean().getValue(DAGBroadcastVertex.SPECIAL_TYPE);
+          case MapperDAGVertex.DAG_BROADCAST_VERTEX:
+            final String specialType = dagVertex.getPropertyBean().getValue(MapperDAGVertex.SPECIAL_TYPE);
             switch (specialType) {
-              case DAGBroadcastVertex.SPECIAL_TYPE_BROADCAST:
+              case MapperDAGVertex.SPECIAL_TYPE_BROADCAST:
                 associateScriptToSpecialVertex(dagVertex, "broadcast", specialScriptFiles.get(ScriptRunner.BROADCAST));
                 break;
-              case DAGBroadcastVertex.SPECIAL_TYPE_ROUNDBUFFER:
+              case MapperDAGVertex.SPECIAL_TYPE_ROUNDBUFFER:
                 associateScriptToSpecialVertex(dagVertex, "roundbuffer",
                     specialScriptFiles.get(ScriptRunner.ROUNDBUFFER));
                 break;

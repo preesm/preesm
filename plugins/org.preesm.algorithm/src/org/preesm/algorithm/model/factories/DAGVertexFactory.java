@@ -38,14 +38,10 @@
  */
 package org.preesm.algorithm.model.factories;
 
+import org.preesm.algorithm.mapper.model.MapperDAGVertex;
 import org.preesm.algorithm.model.AbstractVertex;
 import org.preesm.algorithm.model.IInterface;
 import org.preesm.algorithm.model.dag.DAGVertex;
-import org.preesm.algorithm.model.dag.edag.DAGBroadcastVertex;
-import org.preesm.algorithm.model.dag.edag.DAGEndVertex;
-import org.preesm.algorithm.model.dag.edag.DAGForkVertex;
-import org.preesm.algorithm.model.dag.edag.DAGInitVertex;
-import org.preesm.algorithm.model.dag.edag.DAGJoinVertex;
 import org.w3c.dom.Element;
 
 /**
@@ -97,16 +93,16 @@ public class DAGVertexFactory implements IModelVertexFactory<DAGVertex> {
   public DAGVertex createVertex(final String kind, org.preesm.model.pisdf.AbstractVertex origVertex) {
     if (kind.equals(DAGVertex.DAG_VERTEX)) {
       return new DAGVertex(origVertex);
-    } else if (kind.equals(DAGBroadcastVertex.DAG_BROADCAST_VERTEX)) {
-      return new DAGBroadcastVertex(origVertex);
-    } else if (kind.equals(DAGForkVertex.DAG_FORK_VERTEX)) {
-      return new DAGForkVertex(origVertex);
-    } else if (kind.equals(DAGJoinVertex.DAG_JOIN_VERTEX)) {
-      return new DAGJoinVertex(origVertex);
-    } else if (kind.equals(DAGInitVertex.DAG_INIT_VERTEX)) {
-      return new DAGInitVertex(origVertex);
-    } else if (kind.equals(DAGEndVertex.DAG_END_VERTEX)) {
-      return new DAGEndVertex(origVertex);
+    } else if (kind.equals(MapperDAGVertex.DAG_BROADCAST_VERTEX)) {
+      return new MapperDAGVertex(origVertex);
+    } else if (kind.equals(MapperDAGVertex.DAG_FORK_VERTEX)) {
+      return new MapperDAGVertex(origVertex);
+    } else if (kind.equals(MapperDAGVertex.DAG_JOIN_VERTEX)) {
+      return new MapperDAGVertex(origVertex);
+    } else if (kind.equals(MapperDAGVertex.DAG_INIT_VERTEX)) {
+      return new MapperDAGVertex(origVertex);
+    } else if (kind.equals(MapperDAGVertex.DAG_END_VERTEX)) {
+      return new MapperDAGVertex(origVertex);
     } else {
       return new DAGVertex(origVertex);
     }
