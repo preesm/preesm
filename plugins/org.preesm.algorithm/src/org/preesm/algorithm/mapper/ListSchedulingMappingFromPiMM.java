@@ -200,6 +200,7 @@ public class ListSchedulingMappingFromPiMM extends ListSchedulingMappingFromDAG 
       if (fps <= maxObjective && fps >= minObjective) {
         if (minEnergy > energyThisOne) {
           minEnergy = energyThisOne;
+          closestFPS = fps;
           for (Entry<String, Integer> config : coresUsedOfEachType.entrySet()) {
             bestConfig.put(config.getKey(), config.getValue());
           }
@@ -210,6 +211,7 @@ public class ListSchedulingMappingFromPiMM extends ListSchedulingMappingFromDAG 
           bestConfig.put(config.getKey(), config.getValue());
         }
       }
+      System.out.println("Best energy = " + minEnergy + " --- best FPS = " + closestFPS);
       /**
        * Compute the next configuration
        */
@@ -254,6 +256,7 @@ public class ListSchedulingMappingFromPiMM extends ListSchedulingMappingFromDAG 
     scenarioMapping.getSimulationInfo().setMainComNode(scenario.getSimulationInfo().getMainComNode());
 
     System.out.println("Repeating for the best one");
+    System.out.println("Doing: " + bestConfig.toString());
     final MapperDAG dag = StaticPiMM2MapperDAGVisitor.convert(algorithm, architecture, scenarioMapping);
     inputs.put(AbstractWorkflowNodeImplementation.KEY_SDF_DAG, dag);
     mapping = super.execute(inputs, parameters, monitor, nodeName, workflow);
