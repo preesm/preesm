@@ -111,6 +111,7 @@ public class ListSchedulingMappingFromPiMM extends ListSchedulingMappingFromDAG 
 
     Map<String, Integer> bestConfig = new LinkedHashMap<>();
     double minEnergy = Double.MAX_VALUE;
+    double bestObjective = Double.MAX_VALUE;
 
     /**
      * Analyze the constraints and initialize the configs
@@ -129,6 +130,10 @@ public class ListSchedulingMappingFromPiMM extends ListSchedulingMappingFromDAG 
     }
     inputs.put(AbstractWorkflowNodeImplementation.KEY_SCENARIO, scenarioMapping);
     Map<String, Object> mapping = null;
+    double objective = scenarioMapping.getEnergyConfig().getPerformanceObjective().getObjectiveEPS();
+    double tolerance = scenarioMapping.getEnergyConfig().getPerformanceObjective().getToleranceEPS();
+    double maxObjective = objective + (objective * tolerance);
+    double minObjective = objective - (objective * tolerance);
     while (true) {
       /**
        * Reset
@@ -185,9 +190,16 @@ public class ListSchedulingMappingFromPiMM extends ListSchedulingMappingFromDAG 
         }
       }
 
-      double totalDynamicEnergy = (energyDynamic / 1000000.0) * (1000000.0 / abcMapping.getFinalLatency());
+      double fps = 1000000.0 / abcMapping.getFinalLatency();
+      double totalDynamicEnergy = (energyDynamic / 1000000.0) * fps;
       energyThisOne = energyThisOne + totalDynamicEnergy;
-      System.out.println("Total energy = " + energyThisOne + " --- FPS = " + 1000000.0 / abcMapping.getFinalLatency());
+      System.out.println("Total energy = " + energyThisOne + " --- FPS = " + fps);
+      /**
+       * Check if it is the best one
+       */
+      if (fps <= maxObjective && fps >= minObjective) {
+
+      }
       /**
        * Compute the next configuration
        */
