@@ -111,7 +111,7 @@ public class ListSchedulingMappingFromPiMM extends ListSchedulingMappingFromDAG 
 
     Map<String, Integer> bestConfig = new LinkedHashMap<>();
     double minEnergy = Double.MAX_VALUE;
-    double bestObjective = Double.MAX_VALUE;
+    double closestFPS = Double.MAX_VALUE;
 
     /**
      * Analyze the constraints and initialize the configs
@@ -198,7 +198,17 @@ public class ListSchedulingMappingFromPiMM extends ListSchedulingMappingFromDAG 
        * Check if it is the best one
        */
       if (fps <= maxObjective && fps >= minObjective) {
-
+        if (minEnergy > energyThisOne) {
+          minEnergy = energyThisOne;
+          for (Entry<String, Integer> config : coresUsedOfEachType.entrySet()) {
+            bestConfig.put(config.getKey(), config.getValue());
+          }
+        }
+      } else if (Math.abs(objective - fps) < Math.abs(closestFPS - fps)) {
+        closestFPS = fps;
+        for (Entry<String, Integer> config : coresUsedOfEachType.entrySet()) {
+          bestConfig.put(config.getKey(), config.getValue());
+        }
       }
       /**
        * Compute the next configuration
@@ -220,6 +230,35 @@ public class ListSchedulingMappingFromPiMM extends ListSchedulingMappingFromDAG 
       }
     }
     /**
+     * Reset
+     */
+    scenario.getConstraints().getGroupConstraints().addAll(scenarioMapping.getConstraints().getGroupConstraints());
+
+    /**
+     * Repeating for the best one
+     */
+    for (Entry<String, Integer> instance : bestConfig.entrySet()) {
+      List<Entry<ComponentInstance, EList<AbstractActor>>> constraints = scenario.getConstraints().getGroupConstraints()
+          .stream().filter(e -> e.getKey().getComponent().getVlnv().getName().equals(instance.getKey()))
+          .collect(Collectors.toList()).subList(0, instance.getValue());
+      scenarioMapping.getConstraints().getGroupConstraints().addAll(constraints);
+    }
+    if (scenarioMapping.getConstraints().getGroupConstraints().stream()
+        .filter(e -> e.getKey().getInstanceName().equals(scenario.getSimulationInfo().getMainOperator()))
+        .count() == 0) {
+      ComponentInstance newMainNode = scenarioMapping.getConstraints().getGroupConstraints().get(0).getKey();
+      scenarioMapping.getSimulationInfo().setMainOperator(newMainNode);
+    } else {
+      scenarioMapping.getSimulationInfo().setMainOperator(scenario.getSimulationInfo().getMainOperator());
+    }
+    scenarioMapping.getSimulationInfo().setMainComNode(scenario.getSimulationInfo().getMainComNode());
+
+    System.out.println("Repeating for the best one");
+    final MapperDAG dag = StaticPiMM2MapperDAGVisitor.convert(algorithm, architecture, scenarioMapping);
+    inputs.put(AbstractWorkflowNodeImplementation.KEY_SDF_DAG, dag);
+    mapping = super.execute(inputs, parameters, monitor, nodeName, workflow);
+
+    /**
      * Fill scenario with everything again to avoid further problems
      */
     scenario.getConstraints().getGroupConstraints().addAll(scenarioMapping.getConstraints().getGroupConstraints());
@@ -228,11 +267,6 @@ public class ListSchedulingMappingFromPiMM extends ListSchedulingMappingFromDAG 
     scenario.setTimings(scenarioMapping.getTimings());
     scenario.setEnergyConfig(scenarioMapping.getEnergyConfig());
     inputs.put(AbstractWorkflowNodeImplementation.KEY_SCENARIO, scenario);
-
-    System.out.println("Repeating for the best one");
-    final MapperDAG dag = StaticPiMM2MapperDAGVisitor.convert(algorithm, architecture, scenario);
-    inputs.put(AbstractWorkflowNodeImplementation.KEY_SDF_DAG, dag);
-    mapping = super.execute(inputs, parameters, monitor, nodeName, workflow);
     return mapping;
   }
 
