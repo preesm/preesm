@@ -132,7 +132,7 @@ public class PiParser {
 
     final URI uri = URI.createPlatformResourceURI(algorithmURL, true);
     if ((uri.fileExtension() == null) || !uri.fileExtension().contentEquals("pi")) {
-      final String message = "The architecture file \"" + uri + "\" specified by the scenario has improper extension.";
+      final String message = "The architecture file \"" + uri + "\" has improper extension.";
       throw new PreesmRuntimeException(message);
     }
 
@@ -142,7 +142,7 @@ public class PiParser {
       pigraph = (PiGraph) (ressource.getContents().get(0));
       pigraph.setUrl(algorithmURL);
     } catch (final WrappedException e) {
-      final String message = "The algorithm file \"" + uri + "\" specified by the scenario does not exist.";
+      final String message = "The algorithm file \"" + uri + "\" does not exist.";
       throw new PreesmRuntimeException(message);
     }
     return pigraph;
