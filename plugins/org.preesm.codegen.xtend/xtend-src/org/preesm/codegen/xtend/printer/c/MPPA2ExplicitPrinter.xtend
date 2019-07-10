@@ -1089,40 +1089,42 @@ class MPPA2ExplicitPrinter extends CPrinter {
 		}
 		for (cluster : allBlocks){
 			if (cluster instanceof CoreBlock) {
-				if(cluster.coreType.equals("MPPA2Explicit")){
-					numClusters = numClusters + 1;
-					clusterToSync = cluster.coreID;
-				}
-				else if(cluster.coreType.equals("MPPA2IOExplicit")){
-					io_used = 1;
-				}
-				for(CodeElt codeElt : cluster.loopBlock.codeElts){
-					if(codeElt instanceof PapifyFunctionCall){
-						this.usingPapify = 1;
-					} else if(codeElt instanceof FiniteLoopBlock){
-						this.usingClustering = 1;
+				if(!cluster.loopBlock.codeElts.empty){
+					if(cluster.coreType.equals("MPPA2Explicit")){
+						numClusters = numClusters + 1;
+						clusterToSync = cluster.coreID;
 					}
-				}
-       		 	var EList<Variable> definitions = cluster.getDefinitions();
-       		 	var EList<Variable> declarations = cluster.getDeclarations();
-       		 	for(Variable variable : definitions){
-       		 		if(variable instanceof Buffer){
-       		 			if(variable.name.equals("Shared")){
-							this.distributedOnly = 0;
-       		 			}else if(coresNames.contains(variable.name)){
-							this.sharedOnly = 0;
-       		 			}
-       		 		}
-       		 	}
-       		 	for(Variable variable : declarations){
-       		 		if(variable instanceof Buffer){
-       		 			if(variable.name.equals("Shared")){
-							this.distributedOnly = 0;
-       		 			}else if(coresNames.contains(variable.name)){
-							this.sharedOnly = 0;
-       		 			}
-       		 		}
-       		 	}
+					else if(cluster.coreType.equals("MPPA2IOExplicit")){
+						io_used = 1;
+					}
+					for(CodeElt codeElt : cluster.loopBlock.codeElts){
+						if(codeElt instanceof PapifyFunctionCall){
+							this.usingPapify = 1;
+						} else if(codeElt instanceof FiniteLoopBlock){
+							this.usingClustering = 1;
+						}
+					}
+	       		 	var EList<Variable> definitions = cluster.getDefinitions();
+	       		 	var EList<Variable> declarations = cluster.getDeclarations();
+	       		 	for(Variable variable : definitions){
+	       		 		if(variable instanceof Buffer){
+	       		 			if(variable.name.equals("Shared")){
+								this.distributedOnly = 0;
+	       		 			}else if(coresNames.contains(variable.name)){
+								this.sharedOnly = 0;
+	       		 			}
+	       		 		}
+	       		 	}
+	       		 	for(Variable variable : declarations){
+	       		 		if(variable instanceof Buffer){
+	       		 			if(variable.name.equals("Shared")){
+								this.distributedOnly = 0;
+	       		 			}else if(coresNames.contains(variable.name)){
+								this.sharedOnly = 0;
+	       		 			}
+	       		 		}
+	       		 	}	       		 	
+	       		 }
 			}
 		}
 		local_buffer_size = 0;
