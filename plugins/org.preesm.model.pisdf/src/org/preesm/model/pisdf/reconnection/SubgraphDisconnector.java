@@ -23,32 +23,32 @@ import org.preesm.model.pisdf.factory.PiMMUserFactory;
  * @author anmorvan
  *
  */
-public class SubgraphDeconnector {
+public class SubgraphDisconnector {
 
-  private SubgraphDeconnector() {
+  private SubgraphDisconnector() {
     // forbid instantiation
   }
 
   /**
    *
    */
-  public static final void deconnectSubGraphs(final PiGraph graph) {
+  public static final void disconnectSubGraphs(final PiGraph graph) {
     for (final PiGraph child : graph.getChildrenGraphs()) {
-      deconnect(graph, child);
+      disconnect(graph, child);
     }
   }
 
   /**
    *
    */
-  private static final void deconnect(final PiGraph parentGraph, final PiGraph childGraph) {
+  private static final void disconnect(final PiGraph parentGraph, final PiGraph childGraph) {
 
     final Actor actorToIntroduce;
 
     final Actor originalActor = SubgraphOriginalActorTracker.getOriginalActor(childGraph);
     if (originalActor == null) {
       // instantiate a new actor on the fly if the PiGraph was introduced during some transformation
-      actorToIntroduce = SubgraphDeconnector.instantiateNewActor(parentGraph, childGraph);
+      actorToIntroduce = SubgraphDisconnector.instantiateNewActor(parentGraph, childGraph);
     } else {
       actorToIntroduce = originalActor;
     }
@@ -60,12 +60,12 @@ public class SubgraphDeconnector {
   private static Actor instantiateNewActor(final PiGraph parentGraph, final PiGraph childGraph) {
     final Actor actorToIntroduce;
     actorToIntroduce = PiMMUserFactory.instance.createActor();
-    final PiSDFRefinement refinment = SubgraphDeconnector.createRefinement(parentGraph, childGraph);
+    final PiSDFRefinement refinment = SubgraphDisconnector.createRefinement(parentGraph, childGraph);
     actorToIntroduce.setName(childGraph.getName());
     actorToIntroduce.setRefinement(refinment);
 
     copyPorts(actorToIntroduce, childGraph);
-    deconnectPiGraph(actorToIntroduce, childGraph);
+    disconnectPiGraph(actorToIntroduce, childGraph);
 
     return actorToIntroduce;
   }
@@ -115,16 +115,16 @@ public class SubgraphDeconnector {
     }
   }
 
-  private static void deconnectPiGraph(final Actor hierarchicalActor, final PiGraph subGraph) {
+  private static void disconnectPiGraph(final Actor hierarchicalActor, final PiGraph subGraph) {
     SubgraphOriginalActorTracker.untrackOriginalActor(subGraph);
 
-    SubgraphDeconnector.deconnectDataInputPorts(hierarchicalActor, subGraph);
-    SubgraphDeconnector.deconnectDataOutputPorts(hierarchicalActor, subGraph);
-    SubgraphDeconnector.deconnectConfigInputPorts(hierarchicalActor, subGraph);
-    SubgraphDeconnector.deconnectConfigOutputPorts(hierarchicalActor, subGraph);
+    SubgraphDisconnector.disconnectDataInputPorts(hierarchicalActor, subGraph);
+    SubgraphDisconnector.disconnectDataOutputPorts(hierarchicalActor, subGraph);
+    SubgraphDisconnector.disconnectConfigInputPorts(hierarchicalActor, subGraph);
+    SubgraphDisconnector.disconnectConfigOutputPorts(hierarchicalActor, subGraph);
   }
 
-  private static void deconnectConfigOutputPorts(final Actor hierarchicalActor, final PiGraph subGraph) {
+  private static void disconnectConfigOutputPorts(final Actor hierarchicalActor, final PiGraph subGraph) {
     for (final ConfigOutputPort cop1 : subGraph.getConfigOutputPorts()) {
       for (final ConfigOutputPort cop2 : hierarchicalActor.getConfigOutputPorts()) {
         if (cop1.getName().equals(cop2.getName())) {
@@ -138,7 +138,7 @@ public class SubgraphDeconnector {
     }
   }
 
-  private static void deconnectConfigInputPorts(final Actor hierarchicalActor, final PiGraph subGraph) {
+  private static void disconnectConfigInputPorts(final Actor hierarchicalActor, final PiGraph subGraph) {
     for (final ConfigInputPort topGraphActorConfigInputPort : subGraph.getConfigInputPorts()) {
       for (final ConfigInputPort subGraphConfigInputPorts : hierarchicalActor.getConfigInputPorts()) {
         if (topGraphActorConfigInputPort.getName().equals(subGraphConfigInputPorts.getName())) {
@@ -153,7 +153,7 @@ public class SubgraphDeconnector {
     }
   }
 
-  private static void deconnectDataOutputPorts(final Actor hierarchicalActor, final PiGraph subGraph) {
+  private static void disconnectDataOutputPorts(final Actor hierarchicalActor, final PiGraph subGraph) {
     for (final DataOutputPort dop1 : subGraph.getDataOutputPorts()) {
       for (final DataOutputPort dop2 : hierarchicalActor.getDataOutputPorts()) {
         if (dop1.getName().equals(dop2.getName())) {
@@ -171,7 +171,7 @@ public class SubgraphDeconnector {
     }
   }
 
-  private static void deconnectDataInputPorts(final Actor hierarchicalActor, final PiGraph subGraph) {
+  private static void disconnectDataInputPorts(final Actor hierarchicalActor, final PiGraph subGraph) {
     for (final DataInputPort dip1 : subGraph.getDataInputPorts()) {
       for (final DataInputPort dip2 : hierarchicalActor.getDataInputPorts()) {
         if (dip1.getName().equals(dip2.getName())) {
@@ -194,7 +194,7 @@ public class SubgraphDeconnector {
     if ((childGraph.getUrl() != null) && !childGraph.getUrl().isEmpty()) {
       refinment.setFilePath(childGraph.getUrl());
     } else {
-      final String newUrlString = SubgraphDeconnector.generateRefinementURL(parentGraph, childGraph);
+      final String newUrlString = SubgraphDisconnector.generateRefinementURL(parentGraph, childGraph);
       childGraph.setUrl(newUrlString);
       refinment.setFilePath(newUrlString);
     }
