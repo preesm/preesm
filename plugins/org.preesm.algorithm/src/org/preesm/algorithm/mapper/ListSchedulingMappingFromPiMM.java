@@ -132,8 +132,8 @@ public class ListSchedulingMappingFromPiMM extends ListSchedulingMappingFromDAG 
     Map<String, Object> mapping = null;
     double objective = scenarioMapping.getEnergyConfig().getPerformanceObjective().getObjectiveEPS();
     double tolerance = scenarioMapping.getEnergyConfig().getPerformanceObjective().getToleranceEPS();
-    double maxObjective = objective + (objective * tolerance);
-    double minObjective = objective - (objective * tolerance);
+    double maxObjective = objective + (objective * tolerance / 100);
+    double minObjective = objective - (objective * tolerance / 100);
     while (true) {
       /**
        * Reset
@@ -205,8 +205,9 @@ public class ListSchedulingMappingFromPiMM extends ListSchedulingMappingFromDAG 
             bestConfig.put(config.getKey(), config.getValue());
           }
         }
-      } else if (Math.abs(objective - fps) < Math.abs(closestFPS - fps)) {
+      } else if (Math.abs(objective - fps) < Math.abs(objective - closestFPS)) {
         closestFPS = fps;
+        minEnergy = energyThisOne;
         for (Entry<String, Integer> config : coresUsedOfEachType.entrySet()) {
           bestConfig.put(config.getKey(), config.getValue());
         }
@@ -257,6 +258,7 @@ public class ListSchedulingMappingFromPiMM extends ListSchedulingMappingFromDAG 
 
     System.out.println("Repeating for the best one");
     System.out.println("Doing: " + bestConfig.toString());
+    System.out.println("Best energy = " + minEnergy + " --- best FPS = " + closestFPS);
     final MapperDAG dag = StaticPiMM2MapperDAGVisitor.convert(algorithm, architecture, scenarioMapping);
     inputs.put(AbstractWorkflowNodeImplementation.KEY_SDF_DAG, dag);
     mapping = super.execute(inputs, parameters, monitor, nodeName, workflow);
