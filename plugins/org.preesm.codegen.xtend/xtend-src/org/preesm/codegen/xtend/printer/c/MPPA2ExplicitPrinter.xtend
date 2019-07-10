@@ -83,6 +83,7 @@ import org.preesm.codegen.model.BufferIterator
 import org.preesm.codegen.model.IntVar
 import org.preesm.codegen.model.DataTransferAction
 import org.preesm.codegen.model.RegisterSetUpAction
+import java.util.Map
 
 class MPPA2ExplicitPrinter extends DefaultPrinter {
 
@@ -114,6 +115,7 @@ class MPPA2ExplicitPrinter extends DefaultPrinter {
 	protected int usingPapify = 0;
 	protected int usingClustering = 0;
 	protected String peName = "";
+	protected Map <String, Integer> coreNameToID = new LinkedHashMap();
 
 	/**
 	 * Temporary global var to ignore the automatic suppression of memcpy
@@ -662,9 +664,11 @@ class MPPA2ExplicitPrinter extends DefaultPrinter {
 			direction == Direction::SEND && communication.delimiter == Delimiter::START) ||
 			(communication.direction == Direction::RECEIVE && communication.delimiter == Delimiter::END)»«{
 			var coreID = if (communication.direction == Direction::SEND) {
-					communication.receiveStart.coreContainer.coreID
+					coreNameToID.get(communication.receiveStart.coreContainer.name)
+					//communication.receiveStart.coreContainer.coreID
 				} else {
-					communication.sendStart.coreContainer.coreID
+					coreNameToID.get(communication.sendStart.coreContainer.name)
+					//communication.sendStart.coreContainer.coreID
 				}
 			var ret = coreID
 			ret
@@ -1133,6 +1137,7 @@ class MPPA2ExplicitPrinter extends DefaultPrinter {
 					else if(cluster.coreType.equals("MPPA2IOExplicit")){
 						io_used = 1;
 					}
+					coreNameToID.put(cluster.name, coreNameToID.size);
 					for(CodeElt codeElt : cluster.loopBlock.codeElts){
 						if(codeElt instanceof PapifyFunctionCall){
 							this.usingPapify = 1;
