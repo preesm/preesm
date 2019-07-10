@@ -50,6 +50,21 @@ import org.eclipse.emf.ecore.util.EcoreUtil;
  */
 public abstract class PreesmAdapter extends EContentAdapter {
 
+  public static final <T extends PreesmAdapter> void unadapt(final Notifier notifier, final Class<T> target) {
+    unadapt(notifier.eAdapters(), target);
+  }
+
+  /**
+   *
+   */
+  public static <T extends PreesmAdapter> void unadapt(final List<? extends Adapter> adapters, final Class<T> target) {
+    final List<Adapter> arrayList = new ArrayList<>(adapters);
+    final Adapter adapter = EcoreUtil.getAdapter(arrayList, target);
+    if (adapter != null) {
+      adapters.remove(adapter);
+    }
+  }
+
   public static final <T extends PreesmAdapter> T adapt(final Notifier notifier, final Class<T> target) {
     return adapt(notifier.eAdapters(), target);
   }

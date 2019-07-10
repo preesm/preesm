@@ -44,6 +44,10 @@ import org.preesm.model.pisdf.PiGraph;
  */
 public class SubgraphOriginalActorTracker extends PreesmAdapter {
 
+  public static final void untrackOriginalActor(final PiGraph subGraph) {
+    PreesmAdapter.unadapt(subGraph, SubgraphOriginalActorTracker.class);
+  }
+
   /**
    *
    */
