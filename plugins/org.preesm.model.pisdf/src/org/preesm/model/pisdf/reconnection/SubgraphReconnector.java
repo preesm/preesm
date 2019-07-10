@@ -32,7 +32,7 @@
  * The fact that you are presently reading this means that you have had
  * knowledge of the CeCILL license and that you accept its terms.
  */
-package org.preesm.model.pisdf.util;
+package org.preesm.model.pisdf.reconnection;
 
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
@@ -57,6 +57,7 @@ import org.preesm.model.pisdf.Fifo;
 import org.preesm.model.pisdf.Parameter;
 import org.preesm.model.pisdf.PiGraph;
 import org.preesm.model.pisdf.Port;
+import org.preesm.model.pisdf.util.PiMMSwitch;
 
 /**
  * Parse and connect hierarchical sub-{@link PiGraph} to a top level {@link PiGraph}.
