@@ -37,13 +37,6 @@ package org.preesm.model.pisdf.util;
 import java.util.List;
 import java.util.Optional;
 import org.eclipse.core.runtime.Path;
-import org.eclipse.emf.common.util.EList;
-import org.eclipse.emf.common.util.URI;
-import org.eclipse.emf.common.util.WrappedException;
-import org.eclipse.emf.ecore.EObject;
-import org.eclipse.emf.ecore.resource.Resource;
-import org.eclipse.emf.ecore.resource.ResourceSet;
-import org.eclipse.emf.ecore.resource.impl.ResourceSetImpl;
 import org.preesm.model.pisdf.AbstractActor;
 import org.preesm.model.pisdf.Actor;
 import org.preesm.model.pisdf.CHeaderRefinement;
@@ -58,6 +51,7 @@ import org.preesm.model.pisdf.PiGraph;
 import org.preesm.model.pisdf.PiSDFRefinement;
 import org.preesm.model.pisdf.Refinement;
 import org.preesm.model.pisdf.factory.PiMMUserFactory;
+import org.preesm.model.pisdf.serialize.PiParser;
 
 /**
  *
@@ -78,29 +72,9 @@ public final class RefinementResolver extends PiMMSwitch<AbstractActor> {
   public AbstractActor casePiSDFRefinement(final PiSDFRefinement ref) {
     final Path path = Optional.ofNullable(ref.getFilePath()).map(Path::new).orElse(null);
     if ((path != null) && path.getFileExtension().equals("pi")) {
-      final URI refinementURI = URI.createPlatformResourceURI(path.makeRelative().toString(), true);
-
-      // Check if the file exists
-      if (refinementURI != null) {
-        final ResourceSet rSet = new ResourceSetImpl();
-        Resource resourceRefinement;
-        try {
-          resourceRefinement = rSet.getResource(refinementURI, true);
-          if (resourceRefinement != null) {
-            // does resource contain a graph as root object?
-            final EList<EObject> contents = resourceRefinement.getContents();
-            for (final EObject object : contents) {
-              if (object instanceof PiGraph) {
-                final PiGraph actor = (PiGraph) object;
-                actor.setName(((Actor) ref.eContainer()).getName());
-                return actor;
-              }
-            }
-          }
-        } catch (final WrappedException e) {
-          e.printStackTrace();
-        }
-      }
+      final PiGraph piGraph = PiParser.getPiGraph(ref.getFilePath());
+      piGraph.setName(((Actor) ref.eContainer()).getName());
+      return piGraph;
     }
     return null;
   }
