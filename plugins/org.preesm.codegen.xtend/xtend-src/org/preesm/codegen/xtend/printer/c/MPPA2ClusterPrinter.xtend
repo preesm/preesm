@@ -85,7 +85,7 @@ import org.preesm.codegen.model.DataTransferAction
 import org.preesm.codegen.model.RegisterSetUpAction
 import java.util.Map
 
-class MPPA2ExplicitPrinter extends DefaultPrinter {
+class MPPA2ClusterPrinter extends DefaultPrinter {
 
 	/**
 	 * Set to true if a main file should be generated. Set at object creation in constructor.
@@ -1130,11 +1130,11 @@ class MPPA2ExplicitPrinter extends DefaultPrinter {
 		for (cluster : allBlocks){
 			if (cluster instanceof CoreBlock) {
 				if(!cluster.loopBlock.codeElts.empty){
-					if(cluster.coreType.equals("MPPA2Explicit")){
+					if(cluster.coreType.equals("MPPA2Cluster")){
 						numClusters = numClusters + 1;
 						clusterToSync = cluster.coreID;
 					}
-					else if(cluster.coreType.equals("MPPA2IOExplicit")){
+					else if(cluster.coreType.equals("MPPA2IO")){
 						io_used = 1;
 					}
 					coreNameToID.put(cluster.name, coreNameToID.size);

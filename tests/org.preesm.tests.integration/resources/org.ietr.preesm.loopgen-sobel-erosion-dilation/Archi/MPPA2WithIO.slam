@@ -17,119 +17,119 @@
             <spirit:instanceName>Cluster00</spirit:instanceName>
             <spirit:hardwareId>0</spirit:hardwareId>
             <spirit:componentRef spirit:library=""
-                spirit:name="MPPA2Explicit" spirit:vendor="" spirit:version=""/>
+                spirit:name="MPPA2Cluster" spirit:vendor="" spirit:version=""/>
             <spirit:configurableElementValues/>
         </spirit:componentInstance>
         <spirit:componentInstance>
             <spirit:instanceName>Cluster01</spirit:instanceName>
             <spirit:hardwareId>1</spirit:hardwareId>
             <spirit:componentRef spirit:library=""
-                spirit:name="MPPA2Explicit" spirit:vendor="" spirit:version=""/>
+                spirit:name="MPPA2Cluster" spirit:vendor="" spirit:version=""/>
             <spirit:configurableElementValues/>
         </spirit:componentInstance>
         <spirit:componentInstance>
             <spirit:instanceName>Cluster02</spirit:instanceName>
             <spirit:hardwareId>2</spirit:hardwareId>
             <spirit:componentRef spirit:library=""
-                spirit:name="MPPA2Explicit" spirit:vendor="" spirit:version=""/>
+                spirit:name="MPPA2Cluster" spirit:vendor="" spirit:version=""/>
             <spirit:configurableElementValues/>
         </spirit:componentInstance>
         <spirit:componentInstance>
             <spirit:instanceName>Cluster03</spirit:instanceName>
             <spirit:hardwareId>3</spirit:hardwareId>
             <spirit:componentRef spirit:library=""
-                spirit:name="MPPA2Explicit" spirit:vendor="" spirit:version=""/>
+                spirit:name="MPPA2Cluster" spirit:vendor="" spirit:version=""/>
             <spirit:configurableElementValues/>
         </spirit:componentInstance>
         <spirit:componentInstance>
             <spirit:instanceName>Cluster04</spirit:instanceName>
             <spirit:hardwareId>4</spirit:hardwareId>
             <spirit:componentRef spirit:library=""
-                spirit:name="MPPA2Explicit" spirit:vendor="" spirit:version=""/>
+                spirit:name="MPPA2Cluster" spirit:vendor="" spirit:version=""/>
             <spirit:configurableElementValues/>
         </spirit:componentInstance>
         <spirit:componentInstance>
             <spirit:instanceName>Cluster05</spirit:instanceName>
             <spirit:hardwareId>5</spirit:hardwareId>
             <spirit:componentRef spirit:library=""
-                spirit:name="MPPA2Explicit" spirit:vendor="" spirit:version=""/>
+                spirit:name="MPPA2Cluster" spirit:vendor="" spirit:version=""/>
             <spirit:configurableElementValues/>
         </spirit:componentInstance>
         <spirit:componentInstance>
             <spirit:instanceName>Cluster06</spirit:instanceName>
             <spirit:hardwareId>6</spirit:hardwareId>
             <spirit:componentRef spirit:library=""
-                spirit:name="MPPA2Explicit" spirit:vendor="" spirit:version=""/>
+                spirit:name="MPPA2Cluster" spirit:vendor="" spirit:version=""/>
             <spirit:configurableElementValues/>
         </spirit:componentInstance>
         <spirit:componentInstance>
             <spirit:instanceName>Cluster07</spirit:instanceName>
             <spirit:hardwareId>7</spirit:hardwareId>
             <spirit:componentRef spirit:library=""
-                spirit:name="MPPA2Explicit" spirit:vendor="" spirit:version=""/>
+                spirit:name="MPPA2Cluster" spirit:vendor="" spirit:version=""/>
             <spirit:configurableElementValues/>
         </spirit:componentInstance>
         <spirit:componentInstance>
             <spirit:instanceName>Cluster08</spirit:instanceName>
             <spirit:hardwareId>8</spirit:hardwareId>
             <spirit:componentRef spirit:library=""
-                spirit:name="MPPA2Explicit" spirit:vendor="" spirit:version=""/>
+                spirit:name="MPPA2Cluster" spirit:vendor="" spirit:version=""/>
             <spirit:configurableElementValues/>
         </spirit:componentInstance>
         <spirit:componentInstance>
             <spirit:instanceName>Cluster09</spirit:instanceName>
             <spirit:hardwareId>9</spirit:hardwareId>
             <spirit:componentRef spirit:library=""
-                spirit:name="MPPA2Explicit" spirit:vendor="" spirit:version=""/>
+                spirit:name="MPPA2Cluster" spirit:vendor="" spirit:version=""/>
             <spirit:configurableElementValues/>
         </spirit:componentInstance>
         <spirit:componentInstance>
             <spirit:instanceName>Cluster10</spirit:instanceName>
             <spirit:hardwareId>10</spirit:hardwareId>
             <spirit:componentRef spirit:library=""
-                spirit:name="MPPA2Explicit" spirit:vendor="" spirit:version=""/>
+                spirit:name="MPPA2Cluster" spirit:vendor="" spirit:version=""/>
             <spirit:configurableElementValues/>
         </spirit:componentInstance>
         <spirit:componentInstance>
             <spirit:instanceName>Cluster11</spirit:instanceName>
             <spirit:hardwareId>11</spirit:hardwareId>
             <spirit:componentRef spirit:library=""
-                spirit:name="MPPA2Explicit" spirit:vendor="" spirit:version=""/>
+                spirit:name="MPPA2Cluster" spirit:vendor="" spirit:version=""/>
             <spirit:configurableElementValues/>
         </spirit:componentInstance>
         <spirit:componentInstance>
             <spirit:instanceName>Cluster12</spirit:instanceName>
             <spirit:hardwareId>12</spirit:hardwareId>
             <spirit:componentRef spirit:library=""
-                spirit:name="MPPA2Explicit" spirit:vendor="" spirit:version=""/>
+                spirit:name="MPPA2Cluster" spirit:vendor="" spirit:version=""/>
             <spirit:configurableElementValues/>
         </spirit:componentInstance>
         <spirit:componentInstance>
             <spirit:instanceName>Cluster13</spirit:instanceName>
             <spirit:hardwareId>13</spirit:hardwareId>
             <spirit:componentRef spirit:library=""
-                spirit:name="MPPA2Explicit" spirit:vendor="" spirit:version=""/>
+                spirit:name="MPPA2Cluster" spirit:vendor="" spirit:version=""/>
             <spirit:configurableElementValues/>
         </spirit:componentInstance>
         <spirit:componentInstance>
             <spirit:instanceName>Cluster14</spirit:instanceName>
             <spirit:hardwareId>14</spirit:hardwareId>
             <spirit:componentRef spirit:library=""
-                spirit:name="MPPA2Explicit" spirit:vendor="" spirit:version=""/>
+                spirit:name="MPPA2Cluster" spirit:vendor="" spirit:version=""/>
             <spirit:configurableElementValues/>
         </spirit:componentInstance>
         <spirit:componentInstance>
             <spirit:instanceName>Cluster15</spirit:instanceName>
             <spirit:hardwareId>15</spirit:hardwareId>
             <spirit:componentRef spirit:library=""
-                spirit:name="MPPA2Explicit" spirit:vendor="" spirit:version=""/>
+                spirit:name="MPPA2Cluster" spirit:vendor="" spirit:version=""/>
             <spirit:configurableElementValues/>
         </spirit:componentInstance>
         <spirit:componentInstance>
             <spirit:instanceName>IO</spirit:instanceName>
             <spirit:hardwareId>16</spirit:hardwareId>
             <spirit:componentRef spirit:library=""
-                spirit:name="MPPA2IOExplicit" spirit:vendor="" spirit:version=""/>
+                spirit:name="MPPA2IO" spirit:vendor="" spirit:version=""/>
             <spirit:configurableElementValues/>
         </spirit:componentInstance>
     </spirit:componentInstances>
@@ -228,10 +228,10 @@
                 slam:componentType="contentionComNode"
                 slam:refinement="" slam:speed="100000"/>
             <slam:componentDescription
-                slam:componentRef="MPPA2Explicit"
+                slam:componentRef="MPPA2Cluster"
                 slam:componentType="Operator" slam:refinement=""/>
             <slam:componentDescription
-                slam:componentRef="MPPA2IOExplicit"
+                slam:componentRef="MPPA2IO"
                 slam:componentType="Operator" slam:refinement=""/>
         </slam:componentDescriptions>
         <slam:linkDescriptions xmlns:slam="http://sourceforge.net/projects/dftools/slam">

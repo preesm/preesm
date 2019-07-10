@@ -54,7 +54,7 @@ public class LoopBP1DTest {
 
   static final String   projectName = "org.ietr.preesm.bp1d";
   static final String   workflow    = "CodegenDistribNoFlat.workflow";
-  static final String[] scenarios   = new String[] { "1core.scenario", "4core.scenario", "MPPA2Explicit.scenario" };
+  static final String[] scenarios   = new String[] { "1core.scenario", "4core.scenario", "MPPA2.scenario" };
 
   final String scenario;
 

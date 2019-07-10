@@ -69,7 +69,7 @@ import org.preesm.codegen.model.Delimiter
 import org.preesm.codegen.model.Direction
 import org.preesm.codegen.model.PapifyAction
 
-class MPPA2IOExplicitPrinter extends MPPA2ExplicitPrinter {
+class MPPA2IOPrinter extends MPPA2ClusterPrinter {
 
 	new() {
 		// do not generate a main file
@@ -532,11 +532,11 @@ class MPPA2IOExplicitPrinter extends MPPA2ExplicitPrinter {
 		for (cluster : allBlocks){
 			if (cluster instanceof CoreBlock) {
 				if(!cluster.loopBlock.codeElts.empty){
-					if(cluster.coreType.equals("MPPA2Explicit")){
+					if(cluster.coreType.equals("MPPA2Cluster")){
 						numClusters = numClusters + 1;
 						clusterToSync = cluster.coreID;
 					}
-					else if(cluster.coreType.equals("MPPA2IOExplicit")){
+					else if(cluster.coreType.equals("MPPA2IO")){
 						io_used = 1;
 					}
 					coreNameToID.put(cluster.name, coreNameToID.size);
