@@ -9,6 +9,7 @@ PREESM Changelog
 
 ### Changes
 * Fix gantt viewer PE order;
+* Add subgraph disconnector, called before exporting graphs;
 
 ### Bug fix
 * Fix #166: forces scheduler to put init and end actors on same core;

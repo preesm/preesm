@@ -87,10 +87,10 @@ import org.preesm.model.pisdf.PiSDFRefinement;
 import org.preesm.model.pisdf.Port;
 import org.preesm.model.pisdf.Refinement;
 import org.preesm.model.pisdf.RoundBufferActor;
+import org.preesm.model.pisdf.reconnection.SubgraphOriginalActorTracker;
 import org.preesm.model.pisdf.util.PiGraphConsistenceChecker;
 import org.preesm.model.pisdf.util.PiIdentifiers;
 import org.preesm.model.pisdf.util.PiSDFXSDValidator;
-import org.preesm.model.pisdf.util.SubgraphOriginalActorTracker;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -324,8 +324,8 @@ public class PiWriter {
     }
   }
 
-  private void writePiGraphAsHActor(Element vertexElt, PiGraph abstractActor) {
-    final Actor originalActor = SubgraphOriginalActorTracker.getOriginalActor(abstractActor);
+  private void writePiGraphAsHActor(final Element vertexElt, final PiGraph childGraph) {
+    final Actor originalActor = SubgraphOriginalActorTracker.getOriginalActor(childGraph);
 
     // Set the kind of the Actor
     vertexElt.setAttribute(PiIdentifiers.NODE_KIND, PiIdentifiers.ACTOR);
@@ -342,10 +342,10 @@ public class PiWriter {
       writeMemoryScript(vertexElt, getProjectRelativePathFrom(memoryScriptPath));
     }
     // Write ports of the actor
-    writePorts(vertexElt, abstractActor.getConfigInputPorts());
-    writePorts(vertexElt, abstractActor.getConfigOutputPorts());
-    writePorts(vertexElt, abstractActor.getDataInputPorts());
-    writePorts(vertexElt, abstractActor.getDataOutputPorts());
+    writePorts(vertexElt, childGraph.getConfigInputPorts());
+    writePorts(vertexElt, childGraph.getConfigOutputPorts());
+    writePorts(vertexElt, childGraph.getDataInputPorts());
+    writePorts(vertexElt, childGraph.getDataOutputPorts());
 
   }
 

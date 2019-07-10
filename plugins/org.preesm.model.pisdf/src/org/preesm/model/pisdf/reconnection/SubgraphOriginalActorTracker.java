@@ -32,7 +32,7 @@
  * The fact that you are presently reading this means that you have had
  * knowledge of the CeCILL license and that you accept its terms.
  */
-package org.preesm.model.pisdf.util;
+package org.preesm.model.pisdf.reconnection;
 
 import org.preesm.commons.exceptions.PreesmRuntimeException;
 import org.preesm.commons.model.PreesmAdapter;
@@ -43,6 +43,10 @@ import org.preesm.model.pisdf.PiGraph;
  *
  */
 public class SubgraphOriginalActorTracker extends PreesmAdapter {
+
+  public static final void untrackOriginalActor(final PiGraph subGraph) {
+    PreesmAdapter.unadapt(subGraph, SubgraphOriginalActorTracker.class);
+  }
 
   /**
    *
