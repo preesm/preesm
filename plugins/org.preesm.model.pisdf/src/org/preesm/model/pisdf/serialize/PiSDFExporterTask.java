@@ -52,13 +52,18 @@ import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.emf.common.util.URI;
+import org.eclipse.emf.ecore.util.EcoreUtil;
 import org.preesm.commons.doc.annotations.Parameter;
 import org.preesm.commons.doc.annotations.Port;
 import org.preesm.commons.doc.annotations.PreesmTask;
 import org.preesm.commons.doc.annotations.Value;
 import org.preesm.commons.exceptions.PreesmRuntimeException;
 import org.preesm.commons.files.WorkspaceUtils;
+import org.preesm.commons.model.PreesmCopyTracker;
+import org.preesm.commons.model.PreesmUserFactory;
 import org.preesm.model.pisdf.PiGraph;
+import org.preesm.model.pisdf.factory.PiMMUserFactory;
+import org.preesm.model.pisdf.reconnection.SubgraphDeconnector;
 import org.preesm.workflow.elements.Workflow;
 import org.preesm.workflow.implement.AbstractTaskImplementation;
 import org.preesm.workflow.implement.AbstractWorkflowNodeImplementation;
@@ -86,6 +91,9 @@ public class PiSDFExporterTask extends AbstractTaskImplementation {
 
     final PiGraph graph = (PiGraph) inputs.get(AbstractWorkflowNodeImplementation.KEY_PI_GRAPH);
 
+    final PiGraph copy = PiMMUserFactory.instance.copy(graph);
+    SubgraphDeconnector.deconnectSubGraphs(copy);
+
     // Creates the output file now
     final String relative = parameters.get("path");
     final String sXmlPath = WorkspaceUtils.getAbsolutePath(relative, workflow.getProjectName());
@@ -109,6 +117,7 @@ public class PiSDFExporterTask extends AbstractTaskImplementation {
     final String osString = documentFile.getLocation().toOSString();
     try (final OutputStream outStream = new FileOutputStream(osString);) {
       // Write the Graph to the OutputStream using the Pi format
+
       new PiWriter(uri).write(graph, outStream);
     } catch (IOException e) {
       throw new PreesmRuntimeException("Could not open outputstream file " + xmlPath.toString());
