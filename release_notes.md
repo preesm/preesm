@@ -13,6 +13,8 @@ PREESM Changelog
 
 ### Bug fix
 * Fix #166: forces scheduler to put init and end actors on same core;
+* Fix #170: do not count/launch empty clusters;
+* Fix papify for clustered actors;
 
 
 ## Release version 3.11.0
