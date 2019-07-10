@@ -837,6 +837,9 @@ public class CodegenHierarchicalModelGenerator {
     AbstractActor referencePiVertex = repVertex.getReferencePiVertex();
     if (this.papifyActive) {
       if (papifyConfig.hasPapifyConfig(referencePiVertex)) {
+        papifyActionS.setName("papify_actions_".concat(papifyConfig.getActorOriginalIdentifier(referencePiVertex)));
+        papifyActionS.setType("papify_action_s");
+        papifyActionS.setComment("papify configuration variable");
         // What are we monitoring?
         if (papifyConfig.isMonitoringTiming(referencePiVertex)) {
           // Generate Papify stop timing function
