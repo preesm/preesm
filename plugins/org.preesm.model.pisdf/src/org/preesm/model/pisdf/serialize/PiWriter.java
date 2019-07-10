@@ -87,7 +87,6 @@ import org.preesm.model.pisdf.PiSDFRefinement;
 import org.preesm.model.pisdf.Port;
 import org.preesm.model.pisdf.Refinement;
 import org.preesm.model.pisdf.RoundBufferActor;
-import org.preesm.model.pisdf.reconnection.SubgraphDeconnector;
 import org.preesm.model.pisdf.reconnection.SubgraphOriginalActorTracker;
 import org.preesm.model.pisdf.util.PiGraphConsistenceChecker;
 import org.preesm.model.pisdf.util.PiIdentifiers;
@@ -260,8 +259,6 @@ public class PiWriter {
   public void write(final PiGraph graph, final OutputStream outputStream) {
 
     PiGraphConsistenceChecker.check(graph, false);
-
-    SubgraphDeconnector.deconnectSubGraphs(graph);
 
     // Create the domDocument
     this.domDocument = DomUtil.createDocument("http://graphml.graphdrawing.org/xmlns", "graphml");
