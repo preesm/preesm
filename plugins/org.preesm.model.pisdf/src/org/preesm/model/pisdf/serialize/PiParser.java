@@ -153,8 +153,7 @@ public class PiParser {
    */
   public static PiGraph getPiGraphWithReconnection(final String algorithmURL) {
     final PiGraph graph = getPiGraph(algorithmURL);
-    final SubgraphReconnector connector = new SubgraphReconnector();
-    connector.connectSubgraphs(graph);
+    SubgraphReconnector.reconnectChildren(graph);
     PiGraphConsistenceChecker.check(graph, false);
     return graph;
   }

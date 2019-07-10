@@ -99,15 +99,6 @@ public class SubgraphReconnector extends PiMMSwitch<Boolean> {
   /** The graph replacements. */
   private final Map<PiGraph, List<ActorByGraphReplacement>> graphReplacements = new LinkedHashMap<>();
 
-  /**
-   * Gets the graph replacements.
-   *
-   * @return the graph replacements
-   */
-  public Map<PiGraph, List<ActorByGraphReplacement>> getGraphReplacements() {
-    return this.graphReplacements;
-  }
-
   /** The current graph. */
   private PiGraph currentGraph = null;
 
@@ -117,7 +108,7 @@ public class SubgraphReconnector extends PiMMSwitch<Boolean> {
    * @param pg
    *          the graph process
    */
-  public void connectSubgraphs(final PiGraph pg) {
+  private void connectSubgraphs(final PiGraph pg) {
     doSwitch(pg);
     // Replace Actors with refinement by PiGraphs in pg and all its
     // subgraphs
@@ -271,7 +262,7 @@ public class SubgraphReconnector extends PiMMSwitch<Boolean> {
    * @param subGraph
    *          the subgraph linked to the hierarchical actor
    */
-  public static void reconnectPiGraph(final Actor hierarchicalActor, final PiGraph subGraph) {
+  private static void reconnectPiGraph(final Actor hierarchicalActor, final PiGraph subGraph) {
     SubgraphOriginalActorTracker.trackOriginalActor(hierarchicalActor, subGraph);
     SubgraphReconnector.reconnectDataInputPorts(hierarchicalActor, subGraph);
     SubgraphReconnector.reconnectDataOutputPorts(hierarchicalActor, subGraph);
@@ -370,5 +361,10 @@ public class SubgraphReconnector extends PiMMSwitch<Boolean> {
   private static void error(final Actor hierarchicalActor, final PiGraph subGraph, final Port port) {
     throw new PreesmRuntimeException("PiGraph '" + subGraph.getName() + "' does not have a corresponding "
         + port.getClass().getSimpleName() + " named '" + port.getName() + "' for Actor " + hierarchicalActor.getName());
+  }
+
+  public static void reconnectChildren(PiGraph graph) {
+    final SubgraphReconnector connector = new SubgraphReconnector();
+    connector.connectSubgraphs(graph);
   }
 }
