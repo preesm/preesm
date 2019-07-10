@@ -77,15 +77,21 @@ import org.preesm.codegen.model.Variable
 import org.preesm.commons.exceptions.PreesmRuntimeException
 import org.preesm.commons.files.PreesmResourcesHelper
 import org.preesm.model.pisdf.util.CHeaderUsedLocator
+import org.preesm.codegen.printer.DefaultPrinter
+import org.preesm.codegen.model.PapifyAction
+import org.preesm.codegen.model.BufferIterator
+import org.preesm.codegen.model.IntVar
+import org.preesm.codegen.model.DataTransferAction
+import org.preesm.codegen.model.RegisterSetUpAction
 
-class MPPA2ExplicitPrinter extends CPrinter {
+class MPPA2ExplicitPrinter extends DefaultPrinter {
 
 	/**
 	 * Set to true if a main file should be generated. Set at object creation in constructor.
 	 */
 	final boolean generateMainFile;
 
-	override boolean generateMainFile() {
+	def boolean generateMainFile() {
 		return this.generateMainFile;
 	}
 
@@ -329,6 +335,17 @@ class MPPA2ExplicitPrinter extends CPrinter {
 			return printing;
 	}
 
+	override printPapifyActionDefinition(PapifyAction action) '''
+	«IF action.opening == true»
+		#ifdef _PREESM_PAPIFY_MONITOR
+	«ENDIF»
+	«action.type» «action.name»; // «action.comment»
+	«IF action.closing == true»
+		#endif
+	«ENDIF»
+	'''
+	override printPapifyActionParam(PapifyAction action) '''&«action.name»'''
+	
 	override printFunctionCall(FunctionCall functionCall) '''
 	«{
 		var gets = ""
@@ -557,7 +574,7 @@ class MPPA2ExplicitPrinter extends CPrinter {
 	 *            the type of objects copied
 	 * @return a {@link CharSequence} containing the memcpy call (if any)
 	 */
-	override printMemcpy(Buffer output, long outOffset, Buffer input, long inOffset, long size, String type) {
+	def printMemcpy(Buffer output, long outOffset, Buffer input, long inOffset, long size, String type) {
 
 		// Retrieve the container buffer of the input and output as well
 		// as their offset in this buffer
@@ -664,8 +681,27 @@ class MPPA2ExplicitPrinter extends CPrinter {
 	override printSubBuffer(SubBuffer buffer) {
 		return printBuffer(buffer)
 	}
+	override printBufferIterator(BufferIterator bufferIterator) '''«bufferIterator.name» + «printIntVar(bufferIterator.iter)» * «bufferIterator.iterSize»'''
 
-	override CharSequence generatePreesmHeader() {
+	override printBufferIteratorDeclaration(BufferIterator bufferIterator) ''''''
+
+	override printBufferIteratorDefinition(BufferIterator bufferIterator) ''''''
+
+	override printIntVar(IntVar intVar) '''«intVar.name»'''
+
+	override printIntVarDeclaration(IntVar intVar) '''
+	extern int «intVar.name»;
+	'''
+	
+	override printIntVarDefinition(IntVar intVar) '''
+	int «intVar.name»;
+	'''
+	
+	override printDataTansfer(DataTransferAction action) ''''''
+
+	override printRegisterSetUp(RegisterSetUpAction action) ''''''
+	
+	def CharSequence generatePreesmHeader() {
 	    // 0- without the following class loader initialization, I get the following exception when running as Eclipse
 	    // plugin:
 	    // org.apache.velocity.exception.VelocityException: The specified class for ResourceManager
