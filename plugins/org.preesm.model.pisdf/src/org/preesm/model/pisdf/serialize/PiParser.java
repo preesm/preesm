@@ -878,7 +878,7 @@ public class PiParser {
               "Parsed data port " + portName + " cannot belong to the non-actor vertex " + vertex.getName());
         }
 
-        DataInputPort iPort;
+        final DataInputPort iPort;
 
         // Do not create data ports for InterfaceActor since the unique port
         // is automatically created when the vertex is instantiated
@@ -900,7 +900,7 @@ public class PiParser {
               "Parsed data port " + portName + " cannot belong to the non-actor vertex " + vertex.getName());
         }
 
-        DataOutputPort oPort;
+        final DataOutputPort oPort;
 
         // Do not create data ports for InterfaceActor since the unique port
         // is automatically created when the vertex is instantiated
