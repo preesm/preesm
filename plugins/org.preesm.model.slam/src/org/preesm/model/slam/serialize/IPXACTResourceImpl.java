@@ -48,7 +48,6 @@ import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.resource.impl.ResourceImpl;
 import org.preesm.model.slam.Design;
 
-// TODO: Auto-generated Javadoc
 /**
  * Resource implementation used to (de)serialize the System-Level Architecture Model into IP-XACT.
  *
@@ -88,9 +87,7 @@ public class IPXACTResourceImpl extends ResourceImpl {
    */
   @Override
   protected void doLoad(final InputStream inputStream, final Map<?, ?> options) throws IOException {
-
-    final IPXACTDesignParser designParser = new IPXACTDesignParser(this.uri);
-
+    final IPXACTDesignParser designParser = new IPXACTDesignParser();
     final Design design = designParser.parse(inputStream, null, null);
     if ((design != null) && !getContents().contains(design)) {
       getContents().add(design);

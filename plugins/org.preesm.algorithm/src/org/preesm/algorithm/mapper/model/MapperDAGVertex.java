@@ -71,6 +71,41 @@ public class MapperDAGVertex extends DAGVertex {
   /** Properties set when converting sdf to dag. */
   private static final String INITIAL_PROPERTY = "INITIAL_PROPERTY";
 
+  public static final String DAG_END_VERTEX = "dag_end_vertex";
+
+  /** Key to access to property dag_broadcast_vertex. */
+  public static final String DAG_BROADCAST_VERTEX = "dag_broadcast_vertex";
+
+  /** Key to access to property special_type. */
+  public static final String SPECIAL_TYPE = "special_type";
+
+  /** Key to access to property special_type_broadcast. */
+  public static final String SPECIAL_TYPE_BROADCAST = "special_type_broadcast";
+
+  /** Key to access to property special_type_roundbuffer. */
+  public static final String SPECIAL_TYPE_ROUNDBUFFER = "special_type_roundbuffer";
+
+  /** Key to access to property dag_init_vertex. */
+  public static final String DAG_INIT_VERTEX = "dag_init_vertex";
+
+  /** Persistence level of a delay */
+  public static final String PERSISTENCE_LEVEL = "persistence_level";
+
+  /** The Constant END_REFERENCE. */
+  public static final String END_REFERENCE = "END_REFERENCE";
+
+  /** The Constant INIT_SIZE. */
+  public static final String INIT_SIZE = "INIT_SIZE";
+
+  /** Key to access to property dag_broadcast_vertex. */
+  public static final String DAG_FORK_VERTEX = "dag_fork_vertex";
+
+  /** String to access the property edges order. */
+  private static final String EDGES_ORDER = "edges_order";
+
+  /** Key to access to property dag_broadcast_vertex. */
+  public static final String DAG_JOIN_VERTEX = "dag_join_vertex";
+
   static {
     AbstractVertex.public_properties.add(ImplementationPropertyNames.Vertex_OperatorDef);
     AbstractVertex.public_properties.add(ImplementationPropertyNames.Vertex_Available_Operators);

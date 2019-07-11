@@ -1,9 +1,10 @@
 /**
- * Copyright or © or Copr. IETR/INSA - Rennes (2011 - 2019) :
+ * Copyright or © or Copr. IETR/INSA - Rennes (2008 - 2019) :
  *
  * Antoine Morvan [antoine.morvan@insa-rennes.fr] (2017 - 2019)
- * Clément Guy [clement.guy@insa-rennes.fr] (2014 - 2015)
- * Maxime Pelcat [maxime.pelcat@insa-rennes.fr] (2011)
+ * Daniel Madroñal [daniel.madronal@upm.es] (2019)
+ * Matthieu Wipliez [matthieu.wipliez@insa-rennes.fr] (2008)
+ * Maxime Pelcat [maxime.pelcat@insa-rennes.fr] (2008 - 2013)
  *
  * This software is a computer program whose purpose is to help prototyping
  * parallel applications using dataflow formalism.
@@ -34,44 +35,48 @@
  * The fact that you are presently reading this means that you have had
  * knowledge of the CeCILL license and that you accept its terms.
  */
-package org.preesm.algorithm.model.dag.edag;
+package org.preesm.ui.scenario.editor.energy;
 
-import org.preesm.algorithm.model.dag.DAGVertex;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Set;
+import org.eclipse.jface.viewers.IStructuredContentProvider;
+import org.preesm.model.scenario.Scenario;
+import org.preesm.ui.scenario.editor.Messages;
 
 /**
- * Class used to represent a braodcast Vertex in a Directed Acyclic Graph.
+ * Provides the elements contained in the static power of the platform editor.
  *
- * @author jpiat
+ * @author dmadronal
  */
-public class DAGBroadcastVertex extends DAGVertex {
+public class ObjectiveContentProvider implements IStructuredContentProvider {
 
-  /** Key to access to property dag_broadcast_vertex. */
-  public static final String DAG_BROADCAST_VERTEX = "dag_broadcast_vertex";
+  private List<Entry<String, Double>> elementList = null;
 
-  /** Key to access to property special_type. */
-  public static final String SPECIAL_TYPE = "special_type";
-
-  /** Key to access to property special_type_broadcast. */
-  public static final String SPECIAL_TYPE_BROADCAST = "special_type_broadcast";
-
-  /** Key to access to property special_type_roundbuffer. */
-  public static final String SPECIAL_TYPE_ROUNDBUFFER = "special_type_roundbuffer";
-
-  /**
-   * Creates a new DAGVertex.
-   */
-  public DAGBroadcastVertex(org.preesm.model.pisdf.AbstractVertex origVertex) {
-    super(origVertex);
-    setKind(DAGBroadcastVertex.DAG_BROADCAST_VERTEX);
-  }
-
-  /*
-   * (non-Javadoc)
-   *
-   * @see org.ietr.dftools.algorithm.model.dag.DAGVertex#toString()
-   */
   @Override
-  public String toString() {
-    return getName();
+  public Object[] getElements(final Object inputElement) {
+
+    if (inputElement instanceof Scenario) {
+
+      final Scenario inputScenario = (Scenario) inputElement;
+      /**
+       * Adding the row names
+       */
+      final Map<String, Double> map = new LinkedHashMap<>();
+      map.put(Messages.getString("Energy.objectiveLabel"),
+          inputScenario.getEnergyConfig().getPerformanceObjective().getObjectiveEPS());
+      map.put(Messages.getString("Energy.toleranceLabel"),
+          inputScenario.getEnergyConfig().getPerformanceObjective().getToleranceEPS());
+      final Set<Entry<String, Double>> entrySet = map.entrySet();
+      this.elementList = new ArrayList<>(entrySet);
+
+      Collections.sort(this.elementList, (o1, o2) -> o1.getKey().compareTo(o2.getKey()));
+    }
+    return this.elementList.toArray();
   }
+
 }

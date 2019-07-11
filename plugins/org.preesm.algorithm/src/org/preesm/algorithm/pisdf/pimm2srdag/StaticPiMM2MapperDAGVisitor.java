@@ -60,11 +60,6 @@ import org.preesm.algorithm.model.AbstractEdge;
 import org.preesm.algorithm.model.IRefinement;
 import org.preesm.algorithm.model.dag.DAGEdge;
 import org.preesm.algorithm.model.dag.DAGVertex;
-import org.preesm.algorithm.model.dag.edag.DAGBroadcastVertex;
-import org.preesm.algorithm.model.dag.edag.DAGEndVertex;
-import org.preesm.algorithm.model.dag.edag.DAGForkVertex;
-import org.preesm.algorithm.model.dag.edag.DAGInitVertex;
-import org.preesm.algorithm.model.dag.edag.DAGJoinVertex;
 import org.preesm.algorithm.model.parameters.Argument;
 import org.preesm.algorithm.model.sdf.SDFEdge;
 import org.preesm.algorithm.model.sdf.SDFVertex;
@@ -233,11 +228,11 @@ public class StaticPiMM2MapperDAGVisitor extends PiMMSwitch<Boolean> {
   @Override
   public Boolean caseBroadcastActor(final BroadcastActor actor) {
     final MapperDAGVertex vertex = (MapperDAGVertex) this.vertexFactory
-        .createVertex(DAGBroadcastVertex.DAG_BROADCAST_VERTEX, actor);
+        .createVertex(MapperDAGVertex.DAG_BROADCAST_VERTEX, actor);
     // Set default properties from the PiMM actor
     setDAGVertexPropertiesFromPiMM(actor, vertex);
     // Set the special type of the Broadcast
-    vertex.getPropertyBean().setValue(DAGBroadcastVertex.SPECIAL_TYPE, DAGBroadcastVertex.SPECIAL_TYPE_BROADCAST);
+    vertex.getPropertyBean().setValue(MapperDAGVertex.SPECIAL_TYPE, MapperDAGVertex.SPECIAL_TYPE_BROADCAST);
     // Handle input parameters as instance arguments
     setArguments(actor, vertex);
     // Add the vertex to the DAG
@@ -255,11 +250,11 @@ public class StaticPiMM2MapperDAGVisitor extends PiMMSwitch<Boolean> {
   @Override
   public Boolean caseRoundBufferActor(final RoundBufferActor actor) {
     final MapperDAGVertex vertex = (MapperDAGVertex) this.vertexFactory
-        .createVertex(DAGBroadcastVertex.DAG_BROADCAST_VERTEX, actor);
+        .createVertex(MapperDAGVertex.DAG_BROADCAST_VERTEX, actor);
     // Set default properties from the PiMM actor
     setDAGVertexPropertiesFromPiMM(actor, vertex);
     // Set the special type of the RoundBufferActor
-    vertex.getPropertyBean().setValue(DAGBroadcastVertex.SPECIAL_TYPE, DAGBroadcastVertex.SPECIAL_TYPE_ROUNDBUFFER);
+    vertex.getPropertyBean().setValue(MapperDAGVertex.SPECIAL_TYPE, MapperDAGVertex.SPECIAL_TYPE_ROUNDBUFFER);
     // Handle input parameters as instance arguments
     setArguments(actor, vertex);
     // Add the vertex to the DAG
@@ -275,7 +270,7 @@ public class StaticPiMM2MapperDAGVisitor extends PiMMSwitch<Boolean> {
    */
   @Override
   public Boolean caseJoinActor(final JoinActor actor) {
-    final MapperDAGVertex vertex = (MapperDAGVertex) this.vertexFactory.createVertex(DAGJoinVertex.DAG_JOIN_VERTEX,
+    final MapperDAGVertex vertex = (MapperDAGVertex) this.vertexFactory.createVertex(MapperDAGVertex.DAG_JOIN_VERTEX,
         actor);
     // Set default properties from the PiMM actor
     setDAGVertexPropertiesFromPiMM(actor, vertex);
@@ -299,7 +294,7 @@ public class StaticPiMM2MapperDAGVisitor extends PiMMSwitch<Boolean> {
    */
   @Override
   public Boolean caseForkActor(final ForkActor actor) {
-    final MapperDAGVertex vertex = (MapperDAGVertex) this.vertexFactory.createVertex(DAGForkVertex.DAG_FORK_VERTEX,
+    final MapperDAGVertex vertex = (MapperDAGVertex) this.vertexFactory.createVertex(MapperDAGVertex.DAG_FORK_VERTEX,
         actor);
     // Set default properties from the PiMM actor
     setDAGVertexPropertiesFromPiMM(actor, vertex);
@@ -334,16 +329,16 @@ public class StaticPiMM2MapperDAGVisitor extends PiMMSwitch<Boolean> {
    */
   @Override
   public Boolean caseInitActor(final InitActor actor) {
-    final DAGVertex vertex = this.vertexFactory.createVertex(DAGInitVertex.DAG_INIT_VERTEX, actor);
+    final DAGVertex vertex = this.vertexFactory.createVertex(MapperDAGVertex.DAG_INIT_VERTEX, actor);
     final DataOutputPort dataOutputPort = actor.getDataOutputPorts().get(0);
 
     // Set the number of delay
-    vertex.getPropertyBean().setValue(DAGInitVertex.INIT_SIZE, dataOutputPort.getPortRateExpression().evaluate());
+    vertex.getPropertyBean().setValue(MapperDAGVertex.INIT_SIZE, dataOutputPort.getPortRateExpression().evaluate());
 
     setDAGVertexPropertiesFromPiMM(actor, vertex);
 
     // Set the PERSISTENCE_LEVEL property
-    vertex.setPropertyValue(DAGInitVertex.PERSISTENCE_LEVEL, actor.getLevel());
+    vertex.setPropertyValue(MapperDAGVertex.PERSISTENCE_LEVEL, actor.getLevel());
 
     // Add the vertex to the DAG
     this.result.addVertex(vertex);
@@ -358,7 +353,7 @@ public class StaticPiMM2MapperDAGVisitor extends PiMMSwitch<Boolean> {
    */
   @Override
   public Boolean caseEndActor(final EndActor actor) {
-    final DAGVertex vertex = this.vertexFactory.createVertex(DAGEndVertex.DAG_END_VERTEX, actor);
+    final DAGVertex vertex = this.vertexFactory.createVertex(MapperDAGVertex.DAG_END_VERTEX, actor);
 
     setDAGVertexPropertiesFromPiMM(actor, vertex);
 
@@ -367,8 +362,8 @@ public class StaticPiMM2MapperDAGVisitor extends PiMMSwitch<Boolean> {
     // Handle the END_REFERENCE property
     final DAGVertex initVertex = this.result.getVertex(delayInitID);
     if (initVertex != null) {
-      initVertex.getPropertyBean().setValue(DAGInitVertex.END_REFERENCE, vertex.getName());
-      vertex.getPropertyBean().setValue(DAGInitVertex.END_REFERENCE, delayInitID);
+      initVertex.getPropertyBean().setValue(MapperDAGVertex.END_REFERENCE, vertex.getName());
+      vertex.getPropertyBean().setValue(MapperDAGVertex.END_REFERENCE, delayInitID);
     }
 
     // Add the vertex to the DAG

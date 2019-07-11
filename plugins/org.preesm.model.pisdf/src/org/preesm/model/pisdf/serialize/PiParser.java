@@ -100,10 +100,10 @@ import org.preesm.model.pisdf.PortMemoryAnnotation;
 import org.preesm.model.pisdf.RefinementContainer;
 import org.preesm.model.pisdf.check.NameCheckerC;
 import org.preesm.model.pisdf.factory.PiMMUserFactory;
+import org.preesm.model.pisdf.reconnection.SubgraphReconnector;
 import org.preesm.model.pisdf.util.PiGraphConsistenceChecker;
 import org.preesm.model.pisdf.util.PiIdentifiers;
 import org.preesm.model.pisdf.util.PiSDFXSDValidator;
-import org.preesm.model.pisdf.util.SubgraphReconnector;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -132,7 +132,7 @@ public class PiParser {
 
     final URI uri = URI.createPlatformResourceURI(algorithmURL, true);
     if ((uri.fileExtension() == null) || !uri.fileExtension().contentEquals("pi")) {
-      final String message = "The architecture file \"" + uri + "\" specified by the scenario has improper extension.";
+      final String message = "The architecture file \"" + uri + "\" has improper extension.";
       throw new PreesmRuntimeException(message);
     }
 
@@ -142,7 +142,7 @@ public class PiParser {
       pigraph = (PiGraph) (ressource.getContents().get(0));
       pigraph.setUrl(algorithmURL);
     } catch (final WrappedException e) {
-      final String message = "The algorithm file \"" + uri + "\" specified by the scenario does not exist.";
+      final String message = "The algorithm file \"" + uri + "\" does not exist.";
       throw new PreesmRuntimeException(message);
     }
     return pigraph;
@@ -153,8 +153,7 @@ public class PiParser {
    */
   public static PiGraph getPiGraphWithReconnection(final String algorithmURL) {
     final PiGraph graph = getPiGraph(algorithmURL);
-    final SubgraphReconnector connector = new SubgraphReconnector();
-    connector.connectSubgraphs(graph);
+    SubgraphReconnector.reconnectChildren(graph);
     PiGraphConsistenceChecker.check(graph, false);
     return graph;
   }
@@ -879,7 +878,7 @@ public class PiParser {
               "Parsed data port " + portName + " cannot belong to the non-actor vertex " + vertex.getName());
         }
 
-        DataInputPort iPort;
+        final DataInputPort iPort;
 
         // Do not create data ports for InterfaceActor since the unique port
         // is automatically created when the vertex is instantiated
@@ -901,7 +900,7 @@ public class PiParser {
               "Parsed data port " + portName + " cannot belong to the non-actor vertex " + vertex.getName());
         }
 
-        DataOutputPort oPort;
+        final DataOutputPort oPort;
 
         // Do not create data ports for InterfaceActor since the unique port
         // is automatically created when the vertex is instantiated

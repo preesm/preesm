@@ -2,6 +2,7 @@
  * Copyright or © or Copr. IETR/INSA - Rennes (2019) :
  *
  * Antoine Morvan [antoine.morvan@insa-rennes.fr] (2019)
+ * Daniel Madroñal [daniel.madronal@upm.es] (2019)
  *
  * This software is a computer program whose purpose is to help prototyping
  * parallel applications using dataflow formalism.
@@ -36,6 +37,7 @@ package org.preesm.model.scenario.util;
 
 import java.util.ArrayList;
 import java.util.List;
+import org.preesm.model.scenario.EnergyConfig;
 import org.preesm.model.scenario.MemoryCopySpeedValue;
 import org.preesm.model.scenario.PapiEvent;
 import org.preesm.model.scenario.PapiEventModifier;
@@ -61,6 +63,15 @@ public class ScenarioUserFactory {
   }
 
   /**
+  *
+  */
+  public static final EnergyConfig createEnergyConfig() {
+    final EnergyConfig res = factory.createEnergyConfig();
+    res.setPerformanceObjective(factory.createPerformanceObjective());
+    return res;
+  }
+
+  /**
    *
    */
   public static final PapiEvent createTimingEvent() {
@@ -82,6 +93,7 @@ public class ScenarioUserFactory {
     createScenario.setPapifyConfig(createPapifyConfig());
     createScenario.setSimulationInfo(factory.createSimulationInfo());
     createScenario.setTimings(factory.createTimings());
+    createScenario.setEnergyConfig(createEnergyConfig());
     return createScenario;
   }
 

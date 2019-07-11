@@ -56,8 +56,6 @@ import org.preesm.algorithm.mapper.schedule.ScheduleUtils;
 import org.preesm.algorithm.model.dag.DAGEdge;
 import org.preesm.algorithm.model.dag.DAGVertex;
 import org.preesm.algorithm.model.dag.DirectedAcyclicGraph;
-import org.preesm.algorithm.model.dag.edag.DAGForkVertex;
-import org.preesm.algorithm.model.dag.edag.DAGJoinVertex;
 import org.preesm.commons.doc.annotations.Parameter;
 import org.preesm.commons.doc.annotations.Port;
 import org.preesm.commons.doc.annotations.PreesmTask;
@@ -182,7 +180,7 @@ public class ExternalMappingFromDAG extends AbstractMappingFromDAG {
     final String nodeKind = vtx.getPropertyStringValue(PiIdentifiers.NODE_KIND);
     final DAGVertex associateVtx;
     switch (nodeKind) {
-      case DAGForkVertex.DAG_FORK_VERTEX:
+      case MapperDAGVertex.DAG_FORK_VERTEX:
         final Set<DAGEdge> incomingEdges = vtx.incomingEdges();
         if (incomingEdges.size() != 1) {
           throw new PreesmRuntimeException("Fork node should have only one incomming edge");
@@ -190,7 +188,7 @@ public class ExternalMappingFromDAG extends AbstractMappingFromDAG {
         final DAGEdge inEdge = incomingEdges.iterator().next();
         associateVtx = inEdge.getSource();
         break;
-      case DAGJoinVertex.DAG_JOIN_VERTEX:
+      case MapperDAGVertex.DAG_JOIN_VERTEX:
         final Set<DAGEdge> outgoingEdges = vtx.outgoingEdges();
         if (outgoingEdges.size() != 1) {
           throw new PreesmRuntimeException("Join node should have only one outgoing edge");
@@ -304,10 +302,10 @@ public class ExternalMappingFromDAG extends AbstractMappingFromDAG {
         lhs = ExternalMappingFromDAG.getAssociateVertex(o1);
         final String kind = o1.getPropertyStringValue(PiIdentifiers.NODE_KIND);
         switch (kind) {
-          case DAGJoinVertex.DAG_JOIN_VERTEX:
+          case MapperDAGVertex.DAG_JOIN_VERTEX:
             modifier = -1;
             break;
-          case DAGForkVertex.DAG_FORK_VERTEX:
+          case MapperDAGVertex.DAG_FORK_VERTEX:
             modifier = +1;
             break;
           default:
@@ -319,10 +317,10 @@ public class ExternalMappingFromDAG extends AbstractMappingFromDAG {
         rhs = ExternalMappingFromDAG.getAssociateVertex(o2);
         final String kind = o2.getPropertyStringValue(PiIdentifiers.NODE_KIND);
         switch (kind) {
-          case DAGJoinVertex.DAG_JOIN_VERTEX:
+          case MapperDAGVertex.DAG_JOIN_VERTEX:
             modifier = +1;
             break;
-          case DAGForkVertex.DAG_FORK_VERTEX:
+          case MapperDAGVertex.DAG_FORK_VERTEX:
             modifier = -1;
             break;
           default:

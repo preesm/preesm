@@ -37,12 +37,8 @@
  */
 package org.preesm.algorithm.mapper.abc;
 
+import org.preesm.algorithm.mapper.model.MapperDAGVertex;
 import org.preesm.algorithm.model.dag.DAGVertex;
-import org.preesm.algorithm.model.dag.edag.DAGBroadcastVertex;
-import org.preesm.algorithm.model.dag.edag.DAGEndVertex;
-import org.preesm.algorithm.model.dag.edag.DAGForkVertex;
-import org.preesm.algorithm.model.dag.edag.DAGInitVertex;
-import org.preesm.algorithm.model.dag.edag.DAGJoinVertex;
 
 /**
  * The special vertices are special to the mapper because they have additional mapping rules.
@@ -69,9 +65,11 @@ public class SpecialVertexManager {
       return false;
     }
 
-    return kind.equalsIgnoreCase(DAGBroadcastVertex.DAG_BROADCAST_VERTEX)
-        || kind.equalsIgnoreCase(DAGForkVertex.DAG_FORK_VERTEX) || kind.equalsIgnoreCase(DAGJoinVertex.DAG_JOIN_VERTEX)
-        || kind.equalsIgnoreCase(DAGInitVertex.DAG_INIT_VERTEX) || kind.equalsIgnoreCase(DAGEndVertex.DAG_END_VERTEX);
+    return kind.equalsIgnoreCase(MapperDAGVertex.DAG_BROADCAST_VERTEX)
+        || kind.equalsIgnoreCase(MapperDAGVertex.DAG_FORK_VERTEX)
+        || kind.equalsIgnoreCase(MapperDAGVertex.DAG_JOIN_VERTEX)
+        || kind.equalsIgnoreCase(MapperDAGVertex.DAG_INIT_VERTEX)
+        || kind.equalsIgnoreCase(MapperDAGVertex.DAG_END_VERTEX);
   }
 
   /**
@@ -88,7 +86,7 @@ public class SpecialVertexManager {
       return false;
     }
 
-    return kind.equalsIgnoreCase(DAGBroadcastVertex.DAG_BROADCAST_VERTEX);
+    return kind.equalsIgnoreCase(MapperDAGVertex.DAG_BROADCAST_VERTEX);
   }
 
   /**
@@ -105,7 +103,7 @@ public class SpecialVertexManager {
       return false;
     }
 
-    return kind.equalsIgnoreCase(DAGForkVertex.DAG_FORK_VERTEX);
+    return kind.equalsIgnoreCase(MapperDAGVertex.DAG_FORK_VERTEX);
   }
 
   /**
@@ -122,7 +120,7 @@ public class SpecialVertexManager {
       return false;
     }
 
-    return kind.equalsIgnoreCase(DAGJoinVertex.DAG_JOIN_VERTEX);
+    return kind.equalsIgnoreCase(MapperDAGVertex.DAG_JOIN_VERTEX);
   }
 
   /**
@@ -139,7 +137,7 @@ public class SpecialVertexManager {
       return false;
     }
 
-    return kind.equalsIgnoreCase(DAGInitVertex.DAG_INIT_VERTEX);
+    return kind.equalsIgnoreCase(MapperDAGVertex.DAG_INIT_VERTEX);
   }
 
   /**
@@ -156,7 +154,7 @@ public class SpecialVertexManager {
       return false;
     }
 
-    return kind.equalsIgnoreCase(DAGEndVertex.DAG_END_VERTEX);
+    return kind.equalsIgnoreCase(MapperDAGVertex.DAG_END_VERTEX);
   }
 
 }

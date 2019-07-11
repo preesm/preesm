@@ -1,7 +1,8 @@
 /**
- * Copyright or © or Copr. IETR/INSA - Rennes (2018 - 2019) :
+ * Copyright or © or Copr. IETR/INSA - Rennes (2019) :
  *
- * Antoine Morvan [antoine.morvan@insa-rennes.fr] (2018 - 2019)
+ * Antoine Morvan [antoine.morvan@insa-rennes.fr] (2019)
+ * Daniel Madroñal [daniel.madronal@upm.es] (2019)
  *
  * This software is a computer program whose purpose is to help prototyping
  * parallel applications using dataflow formalism.
@@ -32,50 +33,34 @@
  * The fact that you are presently reading this means that you have had
  * knowledge of the CeCILL license and that you accept its terms.
  */
-package org.preesm.model.pisdf.util;
+package org.preesm.model.scenario.serialize;
 
-import org.preesm.commons.exceptions.PreesmRuntimeException;
-import org.preesm.commons.model.PreesmAdapter;
-import org.preesm.model.pisdf.Actor;
-import org.preesm.model.pisdf.PiGraph;
+import org.preesm.model.scenario.Scenario;
+import org.preesm.model.slam.Design;
 
 /**
  *
  */
-public class SubgraphOriginalActorTracker extends PreesmAdapter {
+public class EnergyImporter {
 
   /**
    *
    */
-  public static final void trackOriginalActor(final Actor actor, final PiGraph graph) {
-    final Actor originalActor2 = getOriginalActor(graph);
-    if (originalActor2 != null && originalActor2 != actor) {
-      throw new PreesmRuntimeException();
-    }
-    final SubgraphOriginalActorTracker adapter = new SubgraphOriginalActorTracker(actor);
-    graph.eAdapters().add(adapter);
-  }
+  public static final void importEnergy(final Scenario currentScenario) {
+    final String excelFileURL = currentScenario.getEnergyConfig().getExcelFileURL();
+    if (!excelFileURL.isEmpty()) {
+      final ExcelEnergyParser excelParser = new ExcelEnergyParser(currentScenario);
 
-  /**
-   *
-   */
-  public static final Actor getOriginalActor(final PiGraph graph) {
-    final SubgraphOriginalActorTracker adapter = PreesmAdapter.adapt(graph, SubgraphOriginalActorTracker.class);
-    if (adapter != null) {
-      return adapter.getOriginalActor();
-    } else {
-      return null;
+      try {
+        final String[] fileExt = excelFileURL.split("\\.");
+        final Design design = currentScenario.getDesign();
+        if (fileExt[fileExt.length - 1].equals("xls")) {
+          excelParser.parse(excelFileURL, design.getOperatorComponents());
+        }
+      } catch (final Exception e) {
+        e.printStackTrace();
+      }
     }
   }
 
-  private final Actor originalActor;
-
-  public SubgraphOriginalActorTracker(final Actor originalActor) {
-    super();
-    this.originalActor = originalActor;
-  }
-
-  public Actor getOriginalActor() {
-    return originalActor;
-  }
 }

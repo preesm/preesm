@@ -2,6 +2,7 @@
  * Copyright or © or Copr. IETR/INSA - Rennes (2017 - 2019) :
  *
  * Antoine Morvan [antoine.morvan@insa-rennes.fr] (2017 - 2019)
+ * Daniel Madroñal [daniel.madronal@upm.es] (2019)
  * Julien Hascoet [jhascoet@kalray.eu] (2017)
  *
  * This software is a computer program whose purpose is to help prototyping
@@ -54,7 +55,7 @@ public class LoopBP1DTest {
 
   static final String   projectName = "org.ietr.preesm.bp1d";
   static final String   workflow    = "CodegenDistribNoFlat.workflow";
-  static final String[] scenarios   = new String[] { "1core.scenario", "4core.scenario", "MPPA2Explicit.scenario" };
+  static final String[] scenarios   = new String[] { "1core.scenario", "4core.scenario", "MPPA2.scenario" };
 
   final String scenario;
 

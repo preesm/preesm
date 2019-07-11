@@ -2,10 +2,9 @@
  * Copyright or © or Copr. IETR/INSA - Rennes (2008 - 2019) :
  *
  * Antoine Morvan [antoine.morvan@insa-rennes.fr] (2017 - 2019)
- * Clément Guy [clement.guy@insa-rennes.fr] (2014 - 2015)
- * Jonathan Piat [jpiat@laas.fr] (2009 - 2011)
+ * Daniel Madroñal [daniel.madronal@upm.es] (2019)
  * Matthieu Wipliez [matthieu.wipliez@insa-rennes.fr] (2008)
- * Maxime Pelcat [maxime.pelcat@insa-rennes.fr] (2008 - 2012)
+ * Maxime Pelcat [maxime.pelcat@insa-rennes.fr] (2008 - 2013)
  *
  * This software is a computer program whose purpose is to help prototyping
  * parallel applications using dataflow formalism.
@@ -36,63 +35,50 @@
  * The fact that you are presently reading this means that you have had
  * knowledge of the CeCILL license and that you accept its terms.
  */
-package org.preesm.algorithm.model.dag.edag;
+package org.preesm.ui.scenario.editor.energy;
 
-import org.preesm.algorithm.model.dag.DAGVertex;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map.Entry;
+import java.util.Set;
+import org.eclipse.emf.common.util.EMap;
+import org.eclipse.jface.viewers.IStructuredContentProvider;
+import org.preesm.model.scenario.EnergyConfig;
+import org.preesm.model.scenario.Scenario;
+import org.preesm.model.slam.Component;
+import org.preesm.model.slam.Design;
 
 /**
- * Represent a initialization vertex in the DAG.
+ * Provides the elements contained in the energy consumption among platform resources editor.
  *
- * @author jpiat
+ * @author dmadronal
  */
-public class DAGInitVertex extends DAGVertex {
+public class CommsEnergyContentProvider implements IStructuredContentProvider {
 
-  /** Key to access to property dag_init_vertex. */
-  public static final String DAG_INIT_VERTEX = "dag_init_vertex";
+  private List<Entry<String, EMap<String, Double>>> elementList = null;
 
-  /** Persistence level of a delay */
-  public static final String PERSISTENCE_LEVEL = "persistence_level";
-
-  /** The Constant END_REFERENCE. */
-  public static final String END_REFERENCE = "END_REFERENCE";
-
-  /** The Constant INIT_SIZE. */
-  public static final String INIT_SIZE = "INIT_SIZE";
-
-  /**
-   * Creates a new DAGInitVertex.
-   */
-  public DAGInitVertex(org.preesm.model.pisdf.AbstractVertex origVertex) {
-    super(origVertex);
-    setKind(DAGInitVertex.DAG_INIT_VERTEX);
-  }
-
-  /**
-   * Sets the end reference.
-   *
-   * @param ref
-   *          the new end reference
-   */
-  public void setEndReference(final DAGEndVertex ref) {
-    getPropertyBean().setValue(DAGInitVertex.END_REFERENCE, ref);
-  }
-
-  /**
-   * Gets the end reference.
-   *
-   * @return the end reference
-   */
-  public DAGEndVertex getEndReference() {
-    return (DAGEndVertex) getPropertyBean().getValue(DAGInitVertex.END_REFERENCE);
-  }
-
-  /*
-   * (non-Javadoc)
-   *
-   * @see org.ietr.dftools.algorithm.model.dag.DAGVertex#toString()
-   */
   @Override
-  public String toString() {
-    return getName();
+  public Object[] getElements(final Object inputElement) {
+
+    if (inputElement instanceof Scenario) {
+      final Scenario inputScenario = (Scenario) inputElement;
+      final Design design = inputScenario.getDesign();
+      final EnergyConfig energyConfig = inputScenario.getEnergyConfig();
+
+      /**
+       * Comms energies are added between all operator types if non present
+       */
+      for (final Component opDefId : design.getOperatorComponents()) {
+        energyConfig.createNewCommNodeIfNeeded(opDefId.getVlnv().getName());
+      }
+
+      final Set<Entry<String, EMap<String, Double>>> entrySet = energyConfig.getCommsEnergy().entrySet();
+      this.elementList = new ArrayList<>(entrySet);
+
+      Collections.sort(this.elementList, (o1, o2) -> o1.getKey().compareTo(o2.getKey()));
+    }
+    return this.elementList.toArray();
   }
+
 }

@@ -47,16 +47,12 @@ import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.IPath;
 import org.preesm.algorithm.io.gml.GMLExporter;
 import org.preesm.algorithm.mapper.model.MapperDAG;
+import org.preesm.algorithm.mapper.model.MapperDAGVertex;
 import org.preesm.algorithm.model.AbstractGraph;
 import org.preesm.algorithm.model.AbstractVertex;
 import org.preesm.algorithm.model.dag.DAGEdge;
 import org.preesm.algorithm.model.dag.DAGVertex;
 import org.preesm.algorithm.model.dag.DirectedAcyclicGraph;
-import org.preesm.algorithm.model.dag.edag.DAGBroadcastVertex;
-import org.preesm.algorithm.model.dag.edag.DAGEndVertex;
-import org.preesm.algorithm.model.dag.edag.DAGForkVertex;
-import org.preesm.algorithm.model.dag.edag.DAGInitVertex;
-import org.preesm.algorithm.model.dag.edag.DAGJoinVertex;
 import org.preesm.algorithm.model.sdf.esdf.SDFBroadcastVertex;
 import org.preesm.algorithm.model.sdf.esdf.SDFEndVertex;
 import org.preesm.algorithm.model.sdf.esdf.SDFForkVertex;
@@ -107,19 +103,19 @@ public class DAGExporter extends GMLExporter<DAGVertex, DAGEdge> {
         case DAGVertex.DAG_VERTEX:
           kind = VERTEX_LITTERAL;
           break;
-        case DAGBroadcastVertex.DAG_BROADCAST_VERTEX:
+        case MapperDAGVertex.DAG_BROADCAST_VERTEX:
           kind = SDFBroadcastVertex.BROADCAST;
           break;
-        case DAGEndVertex.DAG_END_VERTEX:
+        case MapperDAGVertex.DAG_END_VERTEX:
           kind = SDFEndVertex.END;
           break;
-        case DAGForkVertex.DAG_FORK_VERTEX:
+        case MapperDAGVertex.DAG_FORK_VERTEX:
           kind = SDFForkVertex.FORK;
           break;
-        case DAGInitVertex.DAG_INIT_VERTEX:
+        case MapperDAGVertex.DAG_INIT_VERTEX:
           kind = SDFInitVertex.INIT;
           break;
-        case DAGJoinVertex.DAG_JOIN_VERTEX:
+        case MapperDAGVertex.DAG_JOIN_VERTEX:
           kind = SDFJoinVertex.JOIN;
           break;
         default:

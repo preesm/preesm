@@ -1,6 +1,28 @@
 PREESM Changelog
 ================
 
+## Release version 3.12.0
+*2019.07.11*
+
+### New Feature
+* Added a new tab in the scenario to include power and energy information for the architecture and for the algorithm being executed on the different resources. The possibility to include a performance objective is also added;
+  * These values are, as of now, not used in the later tasks;
+* Add support for exporting hierarchical PiSDF graphs;
+
+### Changes
+* Fix gantt viewer PE order;
+* Add subgraph disconnector, called before exporting graphs;
+* Fix Slam parser;
+* MPPA2Explicit now is called MPPA2Cluster;
+* MPPA2IOExplicit now is called MPPA2IO;
+* Update PiSDF consistency checker;
+
+### Bug fix
+* Fix #166: forces scheduler to put init and end actors on same core;
+* Fix #170: do not count/launch empty clusters;
+* Fix papify for clustered actors;
+
+
 ## Release version 3.11.0
 *2019.07.05*
 

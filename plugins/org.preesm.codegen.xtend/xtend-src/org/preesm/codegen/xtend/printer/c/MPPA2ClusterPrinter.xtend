@@ -77,15 +77,22 @@ import org.preesm.codegen.model.Variable
 import org.preesm.commons.exceptions.PreesmRuntimeException
 import org.preesm.commons.files.PreesmResourcesHelper
 import org.preesm.model.pisdf.util.CHeaderUsedLocator
+import org.preesm.codegen.printer.DefaultPrinter
+import org.preesm.codegen.model.PapifyAction
+import org.preesm.codegen.model.BufferIterator
+import org.preesm.codegen.model.IntVar
+import org.preesm.codegen.model.DataTransferAction
+import org.preesm.codegen.model.RegisterSetUpAction
+import java.util.Map
 
-class MPPA2ExplicitPrinter extends CPrinter {
+class MPPA2ClusterPrinter extends DefaultPrinter {
 
 	/**
 	 * Set to true if a main file should be generated. Set at object creation in constructor.
 	 */
 	final boolean generateMainFile;
 
-	override boolean generateMainFile() {
+	def boolean generateMainFile() {
 		return this.generateMainFile;
 	}
 
@@ -108,6 +115,7 @@ class MPPA2ExplicitPrinter extends CPrinter {
 	protected int usingPapify = 0;
 	protected int usingClustering = 0;
 	protected String peName = "";
+	protected Map <String, Integer> coreNameToID = new LinkedHashMap();
 
 	/**
 	 * Temporary global var to ignore the automatic suppression of memcpy
@@ -329,6 +337,17 @@ class MPPA2ExplicitPrinter extends CPrinter {
 			return printing;
 	}
 
+	override printPapifyActionDefinition(PapifyAction action) '''
+	«IF action.opening == true»
+		#ifdef _PREESM_PAPIFY_MONITOR
+	«ENDIF»
+	«action.type» «action.name»; // «action.comment»
+	«IF action.closing == true»
+		#endif
+	«ENDIF»
+	'''
+	override printPapifyActionParam(PapifyAction action) '''&«action.name»'''
+	
 	override printFunctionCall(FunctionCall functionCall) '''
 	«{
 		var gets = ""
@@ -557,7 +576,7 @@ class MPPA2ExplicitPrinter extends CPrinter {
 	 *            the type of objects copied
 	 * @return a {@link CharSequence} containing the memcpy call (if any)
 	 */
-	override printMemcpy(Buffer output, long outOffset, Buffer input, long inOffset, long size, String type) {
+	def printMemcpy(Buffer output, long outOffset, Buffer input, long inOffset, long size, String type) {
 
 		// Retrieve the container buffer of the input and output as well
 		// as their offset in this buffer
@@ -645,9 +664,11 @@ class MPPA2ExplicitPrinter extends CPrinter {
 			direction == Direction::SEND && communication.delimiter == Delimiter::START) ||
 			(communication.direction == Direction::RECEIVE && communication.delimiter == Delimiter::END)»«{
 			var coreID = if (communication.direction == Direction::SEND) {
-					communication.receiveStart.coreContainer.coreID
+					coreNameToID.get(communication.receiveStart.coreContainer.name)
+					//communication.receiveStart.coreContainer.coreID
 				} else {
-					communication.sendStart.coreContainer.coreID
+					coreNameToID.get(communication.sendStart.coreContainer.name)
+					//communication.sendStart.coreContainer.coreID
 				}
 			var ret = coreID
 			ret
@@ -664,8 +685,27 @@ class MPPA2ExplicitPrinter extends CPrinter {
 	override printSubBuffer(SubBuffer buffer) {
 		return printBuffer(buffer)
 	}
+	override printBufferIterator(BufferIterator bufferIterator) '''«bufferIterator.name» + «printIntVar(bufferIterator.iter)» * «bufferIterator.iterSize»'''
 
-	override CharSequence generatePreesmHeader() {
+	override printBufferIteratorDeclaration(BufferIterator bufferIterator) ''''''
+
+	override printBufferIteratorDefinition(BufferIterator bufferIterator) ''''''
+
+	override printIntVar(IntVar intVar) '''«intVar.name»'''
+
+	override printIntVarDeclaration(IntVar intVar) '''
+	extern int «intVar.name»;
+	'''
+	
+	override printIntVarDefinition(IntVar intVar) '''
+	int «intVar.name»;
+	'''
+	
+	override printDataTansfer(DataTransferAction action) ''''''
+
+	override printRegisterSetUp(RegisterSetUpAction action) ''''''
+	
+	def CharSequence generatePreesmHeader() {
 	    // 0- without the following class loader initialization, I get the following exception when running as Eclipse
 	    // plugin:
 	    // org.apache.velocity.exception.VelocityException: The specified class for ResourceManager
@@ -1089,40 +1129,43 @@ class MPPA2ExplicitPrinter extends CPrinter {
 		}
 		for (cluster : allBlocks){
 			if (cluster instanceof CoreBlock) {
-				if(cluster.coreType.equals("MPPA2Explicit")){
-					numClusters = numClusters + 1;
-					clusterToSync = cluster.coreID;
-				}
-				else if(cluster.coreType.equals("MPPA2IOExplicit")){
-					io_used = 1;
-				}
-				for(CodeElt codeElt : cluster.loopBlock.codeElts){
-					if(codeElt instanceof PapifyFunctionCall){
-						this.usingPapify = 1;
-					} else if(codeElt instanceof FiniteLoopBlock){
-						this.usingClustering = 1;
+				if(!cluster.loopBlock.codeElts.empty){
+					if(cluster.coreType.equals("MPPA2Cluster")){
+						numClusters = numClusters + 1;
+						clusterToSync = cluster.coreID;
 					}
-				}
-       		 	var EList<Variable> definitions = cluster.getDefinitions();
-       		 	var EList<Variable> declarations = cluster.getDeclarations();
-       		 	for(Variable variable : definitions){
-       		 		if(variable instanceof Buffer){
-       		 			if(variable.name.equals("Shared")){
-							this.distributedOnly = 0;
-       		 			}else if(coresNames.contains(variable.name)){
-							this.sharedOnly = 0;
-       		 			}
-       		 		}
-       		 	}
-       		 	for(Variable variable : declarations){
-       		 		if(variable instanceof Buffer){
-       		 			if(variable.name.equals("Shared")){
-							this.distributedOnly = 0;
-       		 			}else if(coresNames.contains(variable.name)){
-							this.sharedOnly = 0;
-       		 			}
-       		 		}
-       		 	}
+					else if(cluster.coreType.equals("MPPA2IO")){
+						io_used = 1;
+					}
+					coreNameToID.put(cluster.name, coreNameToID.size);
+					for(CodeElt codeElt : cluster.loopBlock.codeElts){
+						if(codeElt instanceof PapifyFunctionCall){
+							this.usingPapify = 1;
+						} else if(codeElt instanceof FiniteLoopBlock){
+							this.usingClustering = 1;
+						}
+					}
+	       		 	var EList<Variable> definitions = cluster.getDefinitions();
+	       		 	var EList<Variable> declarations = cluster.getDeclarations();
+	       		 	for(Variable variable : definitions){
+	       		 		if(variable instanceof Buffer){
+	       		 			if(variable.name.equals("Shared")){
+								this.distributedOnly = 0;
+	       		 			}else if(coresNames.contains(variable.name)){
+								this.sharedOnly = 0;
+	       		 			}
+	       		 		}
+	       		 	}
+	       		 	for(Variable variable : declarations){
+	       		 		if(variable instanceof Buffer){
+	       		 			if(variable.name.equals("Shared")){
+								this.distributedOnly = 0;
+	       		 			}else if(coresNames.contains(variable.name)){
+								this.sharedOnly = 0;
+	       		 			}
+	       		 		}
+	       		 	}	       		 	
+	       		 }
 			}
 		}
 		local_buffer_size = 0;

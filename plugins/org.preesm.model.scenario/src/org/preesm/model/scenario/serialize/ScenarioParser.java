@@ -167,6 +167,9 @@ public class ScenarioParser {
             case "papifyConfigs":
               parsePapifyConfigs(elt);
               break;
+            case "energyConfigs":
+              parseEnergyConfigs(elt);
+              break;
             case "variables":
               // deprecated
               break;
@@ -826,6 +829,175 @@ public class ScenarioParser {
         }
       }
 
+    }
+  }
+
+  /**
+   * Retrieves all the energyConfigs groups.
+   *
+   * @param cstGroupsElt
+   *          the cst groups elt
+   */
+  private void parseEnergyConfigs(final Element energyConfigsElt) {
+
+    final String xmlFileURL = energyConfigsElt.getAttribute("xmlUrl");
+    this.scenario.getEnergyConfig().setExcelFileURL(xmlFileURL);
+
+    Node node = energyConfigsElt.getFirstChild();
+
+    while (node != null) {
+
+      if (node instanceof Element) {
+        final Element elt = (Element) node;
+        final String type = elt.getTagName();
+        if (type.equals("performanceObjective")) {
+          parsePerformanceObjective(elt);
+        } else if (type.equals("pePower")) {
+          parsePlatformPower(elt);
+        } else if (type.equals("peActorEnergy")) {
+          parsePeActorEnergy(elt);
+        } else if (type.equals("peTypeCommsEnergy")) {
+          parsePeCommsEnergy(elt);
+        }
+      }
+
+      node = node.getNextSibling();
+    }
+  }
+
+  /**
+   * Retrieves a performanceObjective.
+   *
+   * @param performanceObjectiveElt
+   *          the performanceObjective group elt
+   * @return the performanceObjective
+   */
+  private void parsePerformanceObjective(final Element performanceObjectiveElt) {
+
+    Node node = performanceObjectiveElt.getAttributeNode("objectiveEPS");
+    if (node != null) {
+      String objectiveEPS = node.getNodeValue();
+      final double objectiveEPSValue = Double.parseDouble(objectiveEPS);
+      this.scenario.getEnergyConfig().getPerformanceObjective().setObjectiveEPS(objectiveEPSValue);
+    }
+    node = performanceObjectiveElt.getAttributeNode("toleranceEPS");
+    if (node != null) {
+      String toleranceEPS = node.getNodeValue();
+      final double toleranceEPSValue = Double.parseDouble(toleranceEPS);
+      this.scenario.getEnergyConfig().getPerformanceObjective().setToleranceEPS(toleranceEPSValue);
+    }
+  }
+
+  /**
+   * Retrieves a PlatformPower.
+   *
+   * @param PlatformPower
+   *          the PlatformPower group elt
+   * @return the PlatformPower
+   */
+  private void parsePlatformPower(final Element platformPowerElt) {
+
+    Node nodeOpName = platformPowerElt.getAttributeNode("opName");
+    Node nodePePower = platformPowerElt.getAttributeNode("pePower");
+    if (nodeOpName != null && nodePePower != null) {
+      String opName = nodeOpName.getNodeValue();
+      String pePower = nodePePower.getNodeValue();
+      final double pePowerValue = Double.parseDouble(pePower);
+      this.scenario.getEnergyConfig().getPlatformPower().put(opName, pePowerValue);
+    }
+  }
+
+  /**
+   * Retrieves a peActorEnergy.
+   *
+   * @param peActorEnergy
+   *          the peActorEnergy group elt
+   * @return the peActorEnergy
+   */
+  private void parsePeActorEnergy(final Element peActorEnergy) {
+
+    Node nodeOpName = peActorEnergy.getAttributeNode("opName");
+    String opName = nodeOpName.getNodeValue();
+    Node nodeChild = peActorEnergy.getFirstChild();
+
+    while (nodeChild != null) {
+      if (nodeChild instanceof Element) {
+        final Element elt = (Element) nodeChild;
+        final String type = elt.getTagName();
+        if (type.equals("actorEnergy")) {
+          parseActorEnergy(elt, opName);
+        }
+      }
+      nodeChild = nodeChild.getNextSibling();
+    }
+  }
+
+  /**
+   * Retrieves a actorEnergy.
+   *
+   * @param actorEnergyElt
+   *          the actorEnergy group elt
+   * @param opName
+   *          the operator name
+   * @return the actorEnergy
+   */
+  private void parseActorEnergy(final Element actorEnergyElt, final String opName) {
+
+    Node nodeEnergyValue = actorEnergyElt.getAttributeNode("energyValue");
+    Node nodeVertexPath = actorEnergyElt.getAttributeNode("vertexPath");
+    if (nodeEnergyValue != null && nodeVertexPath != null) {
+      String energyValue = nodeEnergyValue.getNodeValue();
+      String vertexPath = nodeVertexPath.getNodeValue();
+      final double actorEnergyValue = Double.parseDouble(energyValue);
+      final AbstractActor actor = getActorFromPath(vertexPath);
+      final Component component = this.scenario.getDesign().getComponent(opName);
+      this.scenario.getEnergyConfig().setActorPeEnergy(actor, component, actorEnergyValue);
+    }
+  }
+
+  /**
+   * Retrieves a peCommsEnergy.
+   *
+   * @param peCommsEnergy
+   *          the peCommsEnergy group elt
+   * @return the peCommsEnergy
+   */
+  private void parsePeCommsEnergy(final Element peCommsEnergy) {
+
+    Node nodeSourcePeType = peCommsEnergy.getAttributeNode("sourcePeType");
+    String sourcePeType = nodeSourcePeType.getNodeValue();
+    Node nodeChild = peCommsEnergy.getFirstChild();
+
+    while (nodeChild != null) {
+      if (nodeChild instanceof Element) {
+        final Element elt = (Element) nodeChild;
+        final String type = elt.getTagName();
+        if (type.equals("destinationType")) {
+          parseCommNodeEnergy(elt, sourcePeType);
+        }
+      }
+      nodeChild = nodeChild.getNextSibling();
+    }
+  }
+
+  /**
+   * Retrieves a commNodeEnergy.
+   *
+   * @param commNodeEnergy
+   *          the commNodeEnergy group elt
+   * @param sourcePeType
+   *          the sourcePeType
+   * @return the commNodeEnergy
+   */
+  private void parseCommNodeEnergy(final Element commNodeEnergyElt, final String sourcePeType) {
+
+    Node nodeEnergyValue = commNodeEnergyElt.getAttributeNode("energyValue");
+    Node nodeDestinationPeType = commNodeEnergyElt.getAttributeNode("destinationPeType");
+    if (nodeEnergyValue != null && nodeDestinationPeType != null) {
+      String energyValue = nodeEnergyValue.getNodeValue();
+      String destinationPeType = nodeDestinationPeType.getNodeValue();
+      final double commEnergyValue = Double.parseDouble(energyValue);
+      this.scenario.getEnergyConfig().setCommEnergy(sourcePeType, destinationPeType, commEnergyValue);
     }
   }
 }

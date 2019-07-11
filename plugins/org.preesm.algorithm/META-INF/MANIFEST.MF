@@ -3,7 +3,7 @@ Bundle-ManifestVersion: 2
 Bundle-Name: %pluginName
 Automatic-Module-Name: org.preesm.algorithm
 Bundle-SymbolicName: org.preesm.algorithm;singleton:=true
-Bundle-Version: 3.11.0
+Bundle-Version: 3.12.0
 Bundle-Vendor: %providerName
 Bundle-Localization: plugin
 Require-Bundle: org.eclipse.core.resources,
@@ -84,7 +84,6 @@ Export-Package: org.preesm.algorithm,
  org.preesm.algorithm.moa.activity,
  org.preesm.algorithm.model,
  org.preesm.algorithm.model.dag,
- org.preesm.algorithm.model.dag.edag,
  org.preesm.algorithm.model.factories,
  org.preesm.algorithm.model.generic,
  org.preesm.algorithm.model.iterators,

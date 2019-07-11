@@ -41,7 +41,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
-import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -49,7 +48,6 @@ import java.util.logging.Level;
 import org.eclipse.emf.common.util.ECollections;
 import org.preesm.algorithm.mapper.abc.AbcType;
 import org.preesm.algorithm.mapper.abc.ImplementationCleaner;
-import org.preesm.algorithm.mapper.abc.SpecialVertexManager;
 import org.preesm.algorithm.mapper.abc.edgescheduling.AbstractEdgeSched;
 import org.preesm.algorithm.mapper.abc.edgescheduling.EdgeSchedType;
 import org.preesm.algorithm.mapper.abc.edgescheduling.IEdgeSched;
@@ -73,7 +71,6 @@ import org.preesm.algorithm.mapper.tools.CustomTopologicalIterator;
 import org.preesm.algorithm.mapper.tools.SchedulingOrderIterator;
 import org.preesm.algorithm.model.dag.DAGEdge;
 import org.preesm.algorithm.model.dag.DAGVertex;
-import org.preesm.algorithm.model.dag.edag.DAGInitVertex;
 import org.preesm.algorithm.model.iterators.TopologicalDAGIterator;
 import org.preesm.commons.exceptions.PreesmException;
 import org.preesm.commons.exceptions.PreesmRuntimeException;
@@ -182,34 +179,6 @@ public abstract class LatencyAbc {
     }
   }
 
-  /**
-   * Setting common constraints to all non-special vertices and their related init and end vertices.
-   */
-  private void initRelativeConstraints() {
-    for (final DAGVertex v : this.implementation.vertexSet()) {
-      populateRelativeConstraint((MapperDAGVertex) v);
-    }
-  }
-
-  /**
-   * Setting common constraints to a non-special vertex and its related init and end vertices.
-   *
-   * @param vertex
-   *          the vertex
-   */
-  private void populateRelativeConstraint(final MapperDAGVertex vertex) {
-
-    final Set<MapperDAGVertex> verticesToAssociate = new LinkedHashSet<>();
-    verticesToAssociate.add(vertex);
-
-    if (SpecialVertexManager.isInit(vertex)) {
-      final String endReferenceName = (String) vertex.getPropertyBean().getValue(DAGInitVertex.END_REFERENCE);
-      final MapperDAGVertex end = (MapperDAGVertex) (this.dag.getVertex(endReferenceName));
-      verticesToAssociate.add(end);
-    }
-
-  }
-
   /*
    * (non-Javadoc)
    *
@@ -277,37 +246,63 @@ public abstract class LatencyAbc {
    *
    * @param dagvertex
    *          the dagvertex
-   * @param operator
+   * @param specifiedOperator
    *          the operator
    * @param updateRank
    *          the update rank
    * @throws PreesmException
    *           the workflow exception
    */
-  private final void mapSingleVertex(final MapperDAGVertex dagvertex, final ComponentInstance operator,
+  private final void mapSingleVertex(final MapperDAGVertex dagvertex, final ComponentInstance specifiedOperator,
       final boolean updateRank) {
-    final MapperDAGVertex impvertex = translateInImplementationVertex(dagvertex);
 
-    if (impvertex.getEffectiveOperator() != null) {
+    final ComponentInstance finalOperator;
+
+    final MapperDAGVertex impvertex = translateInImplementationVertex(dagvertex);
+    final ComponentInstance effectiveOperator = impvertex.getEffectiveOperator();
+
+    if (MapperDAGVertex.DAG_END_VERTEX.equals(dagvertex.getKind())) {
+      final String initReferenceName = dagvertex.getPropertyBean().getValue(MapperDAGVertex.END_REFERENCE);
+      final MapperDAGVertex dagInitVertex = (MapperDAGVertex) dag.getVertex(initReferenceName);
+
+      final MapperDAGVertex implInitVertex = translateInImplementationVertex(dagInitVertex);
+      final ComponentInstance initEffectiveOperator = implInitVertex.getEffectiveOperator();
+      if (initEffectiveOperator != null) {
+        // if init has been mapped (should be the case), forces end to be on same operator
+        if (effectiveOperator != null
+            && effectiveOperator.getInstanceName().equals(initEffectiveOperator.getInstanceName())) {
+          // skip remapping if operator is already properly set
+          return;
+        } else {
+          finalOperator = initEffectiveOperator;
+        }
+      } else {
+        finalOperator = specifiedOperator;
+      }
+    } else {
+      finalOperator = specifiedOperator;
+    }
+
+    if (effectiveOperator != null) {
       // Unmapping if necessary before mapping
       unmap(dagvertex);
     }
 
     // Testing if the vertex or its group can be mapped on the
     // target operator
-    if (isMapable(impvertex, operator, false) || !updateRank || (impvertex instanceof TransferVertex)) {
+    if (isMapable(impvertex, finalOperator, false) || !updateRank || (impvertex instanceof TransferVertex)) {
 
       // Implementation property is set in both DAG and
       // implementation
       // Modifying effective operator of the vertex and all its
       // mapping set!
-      dagvertex.setEffectiveOperator(operator);
-      impvertex.setEffectiveOperator(operator);
+      dagvertex.setEffectiveOperator(finalOperator);
+      impvertex.setEffectiveOperator(finalOperator);
 
       fireNewMappedVertex(impvertex, updateRank);
 
     } else {
-      final String msg = impvertex + " can not be mapped (single) on " + operator;
+      final String msg = impvertex + " can not be mapped (single) on " + finalOperator;
       PreesmLogger.getLogger().log(Level.SEVERE, msg);
     }
   }
@@ -784,9 +779,6 @@ public abstract class LatencyAbc {
 
     // implementation is a duplicate from dag
     this.implementation = dag.copy();
-
-    // Initializes relative constraints
-    initRelativeConstraints();
 
     this.archi = archi;
     this.scenario = scenario;

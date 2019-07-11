@@ -41,6 +41,7 @@ import java.util.Collection;
 import java.util.TreeSet;
 import java.util.logging.Level;
 import org.preesm.commons.logger.PreesmLogger;
+import org.preesm.model.slam.ComponentInstance;
 
 /**
  * A Gantt component is the information for 1 line in a Gantt chart.
@@ -52,7 +53,7 @@ public class GanttComponent {
   /**
    * Unique ID.
    */
-  private final String id;
+  private final ComponentInstance id;
 
   /**
    * List of the tasks in the order of their start times.
@@ -65,7 +66,7 @@ public class GanttComponent {
    * @param id
    *          the id
    */
-  public GanttComponent(final String id) {
+  public GanttComponent(final ComponentInstance id) {
     super();
     this.id = id;
     this.tasks = new TreeSet<>();
@@ -108,6 +109,10 @@ public class GanttComponent {
    * @return the id
    */
   public String getId() {
+    return this.getComponentInstance().getInstanceName();
+  }
+
+  public ComponentInstance getComponentInstance() {
     return this.id;
   }
 
@@ -130,7 +135,7 @@ public class GanttComponent {
    */
   @Override
   public String toString() {
-    return this.id;
+    return this.getId();
   }
 
   /**

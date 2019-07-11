@@ -2,8 +2,9 @@
  * Copyright or © or Copr. IETR/INSA - Rennes (2011 - 2019) :
  *
  * Antoine Morvan [antoine.morvan@insa-rennes.fr] (2017 - 2019)
- * Clément Guy [clement.guy@insa-rennes.fr] (2014)
- * Maxime Pelcat [maxime.pelcat@insa-rennes.fr] (2011)
+ * Clément Guy [clement.guy@insa-rennes.fr] (2015)
+ * Daniel Madroñal [daniel.madronal@upm.es] (2019)
+ * Maxime Pelcat [maxime.pelcat@insa-rennes.fr] (2011 - 2013)
  *
  * This software is a computer program whose purpose is to help prototyping
  * parallel applications using dataflow formalism.
@@ -34,35 +35,40 @@
  * The fact that you are presently reading this means that you have had
  * knowledge of the CeCILL license and that you accept its terms.
  */
-package org.preesm.algorithm.model.dag.edag;
+package org.preesm.ui.scenario.editor.energy;
 
-import org.preesm.algorithm.model.dag.DAGVertex;
+import java.util.Map.Entry;
+import org.eclipse.jface.viewers.BaseLabelProvider;
+import org.eclipse.jface.viewers.ITableLabelProvider;
+import org.eclipse.swt.graphics.Image;
 
 /**
- * Represent an initialization vertex in the DAG.
+ * Displays the labels for static power of the platform.
  *
- * @author jpiat
+ * @author dmadronal
  */
-public class DAGEndVertex extends DAGVertex {
+public class ObjectiveLabelProvider extends BaseLabelProvider implements ITableLabelProvider {
 
-  /** Key to access to property dag_end_vertex. */
-  public static final String DAG_END_VERTEX = "dag_end_vertex";
-
-  /**
-   * Creates a new DAGInitVertex.
-   */
-  public DAGEndVertex(org.preesm.model.pisdf.AbstractVertex origVertex) {
-    super(origVertex);
-    setKind(DAGEndVertex.DAG_END_VERTEX);
+  @Override
+  public Image getColumnImage(final Object element, final int columnIndex) {
+    return null;
   }
 
-  /*
-   * (non-Javadoc)
-   *
-   * @see org.ietr.dftools.algorithm.model.dag.DAGVertex#toString()
-   */
   @Override
-  public String toString() {
-    return getName();
+  public String getColumnText(final Object element, final int columnIndex) {
+    String text = "";
+
+    if (element instanceof Entry) {
+      @SuppressWarnings("unchecked")
+      final Entry<String, Double> parameter = (Entry<String, Double>) element;
+
+      if (columnIndex == 0) {
+        text = parameter.getKey();
+      } else if (columnIndex == 1) {
+        text = Double.toString(parameter.getValue());
+      }
+    }
+
+    return text;
   }
 }

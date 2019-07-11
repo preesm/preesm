@@ -84,9 +84,9 @@
             </core_type>
          </printer>
          <printer
-            class="org.preesm.codegen.xtend.printer.c.MPPA2ExplicitPrinter"
+            class="org.preesm.codegen.xtend.printer.c.MPPA2ClusterPrinter"
             extension=".c">
-            <core_type type="MPPA2Explicit">
+            <core_type type="MPPA2Cluster">
             </core_type>
          </printer>
          <printer
@@ -97,10 +97,10 @@
             </core_type>
          </printer>
          <printer
-               class="org.preesm.codegen.xtend.printer.c.MPPA2IOExplicitPrinter"
+               class="org.preesm.codegen.xtend.printer.c.MPPA2IOPrinter"
                extension=".c">
             <core_type
-                  type="MPPA2IOExplicit">
+                  type="MPPA2IO">
             </core_type>
          </printer>
       </printers>

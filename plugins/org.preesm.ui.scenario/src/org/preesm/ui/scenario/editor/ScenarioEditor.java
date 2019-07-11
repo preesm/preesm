@@ -3,7 +3,7 @@
  *
  * Antoine Morvan [antoine.morvan@insa-rennes.fr] (2017 - 2019)
  * Clément Guy [clement.guy@insa-rennes.fr] (2014 - 2015)
- * Daniel Madroñal [daniel.madronal@upm.es] (2018)
+ * Daniel Madroñal [daniel.madronal@upm.es] (2018 - 2019)
  * Maxime Pelcat [maxime.pelcat@insa-rennes.fr] (2008 - 2014)
  *
  * This software is a computer program whose purpose is to help prototyping
@@ -58,6 +58,7 @@ import org.preesm.model.scenario.serialize.ScenarioParser;
 import org.preesm.model.scenario.serialize.ScenarioWriter;
 import org.preesm.ui.scenario.editor.codegen.CodegenPage;
 import org.preesm.ui.scenario.editor.constraints.ConstraintsPage;
+import org.preesm.ui.scenario.editor.energy.EnergyPage;
 import org.preesm.ui.scenario.editor.papify.PapifyPage;
 import org.preesm.ui.scenario.editor.parametervalues.PiParametersPage;
 import org.preesm.ui.scenario.editor.simulation.SimulationPage;
@@ -135,6 +136,7 @@ public class ScenarioEditor extends SharedHeaderFormEditor implements IPropertyL
     final ScenarioPage codegenPage = new CodegenPage(this.scenario, this, "Codegen", "Codegen");
     final ScenarioPage paramPage = new PiParametersPage(this.scenario, this, "Parameters", "Parameters");
     final ScenarioPage papifyPage = new PapifyPage(this.scenario, this, "PAPIFY", "PAPIFY");
+    final ScenarioPage energyPage = new EnergyPage(this.scenario, this, "Energy", "Energy");
 
     // redraw timings when parameter value change
     paramPage.addPropertyListener(timingsPage);
@@ -147,6 +149,7 @@ public class ScenarioEditor extends SharedHeaderFormEditor implements IPropertyL
       addPage(codegenPage);
       addPage(paramPage);
       addPage(papifyPage);
+      addPage(energyPage);
     } catch (final PartInitException e) {
       ErrorWithExceptionDialog.errorDialogWithStackTrace("Could not open scenario", e);
       close(false);
