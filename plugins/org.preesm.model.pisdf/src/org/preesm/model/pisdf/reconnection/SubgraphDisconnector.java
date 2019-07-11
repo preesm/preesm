@@ -32,16 +32,17 @@ public class SubgraphDisconnector {
   /**
    *
    */
-  public static final void disconnectSubGraphs(final PiGraph graph) {
+  public static final void disconnectSubGraphs(final PiGraph graph, final String refinementPath) {
     for (final PiGraph child : graph.getChildrenGraphs()) {
-      disconnect(graph, child);
+      disconnect(graph, child, refinementPath);
     }
   }
 
   /**
    *
    */
-  private static final void disconnect(final PiGraph parentGraph, final PiGraph childGraph) {
+  private static final void disconnect(final PiGraph parentGraph, final PiGraph childGraph,
+      final String refinementPath) {
 
     final Actor actorToIntroduce;
 
@@ -52,6 +53,9 @@ public class SubgraphDisconnector {
     } else {
       actorToIntroduce = originalActor;
     }
+
+    final PiSDFRefinement refinement = (PiSDFRefinement) actorToIntroduce.getRefinement();
+    refinement.setFilePath(refinementPath + "/" + childGraph.getName() + ".pi");
 
     parentGraph.removeActor(childGraph);
     parentGraph.addActor(actorToIntroduce);
