@@ -6,6 +6,7 @@ PREESM Changelog
 
 ### New Feature
 * Added a new tab in the scenario to include power and energy information for the architecture and for the algorithm being executed on the different resources. The possibility to include a performance objective is also added;
+  * These values are, as of now, not used in the later tasks;
 * Add support for exporting hierarchical PiSDF graphs;
 
 ### Changes
