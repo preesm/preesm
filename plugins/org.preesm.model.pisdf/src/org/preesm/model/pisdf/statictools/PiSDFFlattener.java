@@ -624,6 +624,7 @@ public class PiSDFFlattener extends PiMMSwitch<Boolean> {
   public Boolean casePiGraph(final PiGraph graph) {
     if (graph.getContainingPiGraph() == null) {
       result.setName(graph.getName() + "_flat");
+      result.setUrl(graph.getUrl());
       PreesmCopyTracker.trackCopy(graph, this.result);
     }
     // If there are no actors in the graph we leave

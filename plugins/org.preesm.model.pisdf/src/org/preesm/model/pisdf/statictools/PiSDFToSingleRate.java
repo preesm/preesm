@@ -200,6 +200,7 @@ public class PiSDFToSingleRate extends PiMMSwitch<Boolean> {
     this.result = PiMMUserFactory.instance.createPiGraph();
     PreesmCopyTracker.trackCopy(inputGraph, this.result);
     this.result.setName(this.inputGraph.getName());
+    this.result.setUrl(this.inputGraph.getUrl());
     this.brv = brv;
     this.graphName = "";
     this.graphPrefix = "";
