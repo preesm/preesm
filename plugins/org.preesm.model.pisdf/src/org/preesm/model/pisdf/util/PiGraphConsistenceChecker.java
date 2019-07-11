@@ -52,6 +52,7 @@ import org.preesm.model.pisdf.Dependency;
 import org.preesm.model.pisdf.Fifo;
 import org.preesm.model.pisdf.Graph;
 import org.preesm.model.pisdf.ISetter;
+import org.preesm.model.pisdf.InterfaceActor;
 import org.preesm.model.pisdf.Parameter;
 import org.preesm.model.pisdf.PiGraph;
 import org.preesm.model.pisdf.Port;
@@ -89,10 +90,26 @@ public class PiGraphConsistenceChecker extends PiMMSwitch<Boolean> {
   }
 
   @Override
+  public Boolean caseInterfaceActor(final InterfaceActor actor) {
+    final DataPort dataPort = actor.getDataPort();
+    final String portName = dataPort.getName();
+    final String name = actor.getName();
+    if (!name.equals(portName)) {
+      final String message = "The interface data port <%s> should have the same name as its containing actor '%s'";
+      error(message, portName, actor.getVertexPath());
+    }
+    return super.caseInterfaceActor(actor);
+  }
+
+  @Override
   public Boolean casePiGraph(final PiGraph graph) {
     this.graphStack.push(graph);
     // visit children & references
-    boolean graphValid = graph.getActors().stream().allMatch(this::doSwitch);
+    boolean graphValid = graph.getUrl() != null;
+    if (!graphValid) {
+      error("Graph [%s] has null URL.", graph.getVertexPath());
+    }
+    graphValid = graphValid && graph.getActors().stream().allMatch(this::doSwitch);
     graphValid = graphValid && graph.getFifos().stream().allMatch(this::doSwitch);
     graphValid = graphValid && graph.getDependencies().stream().allMatch(this::doSwitch);
     graphValid = graphValid && graph.getChildrenGraphs().stream().allMatch(this::doSwitch);

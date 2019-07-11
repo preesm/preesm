@@ -52,7 +52,6 @@ import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.emf.common.util.URI;
-import org.eclipse.emf.ecore.util.EcoreUtil;
 import org.preesm.commons.doc.annotations.Parameter;
 import org.preesm.commons.doc.annotations.Port;
 import org.preesm.commons.doc.annotations.PreesmTask;
@@ -61,6 +60,7 @@ import org.preesm.commons.exceptions.PreesmRuntimeException;
 import org.preesm.commons.files.WorkspaceUtils;
 import org.preesm.model.pisdf.PiGraph;
 import org.preesm.model.pisdf.reconnection.SubgraphDisconnector;
+import org.preesm.model.pisdf.util.PiMMSwitch;
 import org.preesm.workflow.elements.Workflow;
 import org.preesm.workflow.implement.AbstractTaskImplementation;
 import org.preesm.workflow.implement.AbstractWorkflowNodeImplementation;
@@ -73,8 +73,33 @@ import org.preesm.workflow.implement.AbstractWorkflowNodeImplementation;
     inputs = { @Port(name = "PiMM", type = PiGraph.class) },
 
     parameters = {
-        @Parameter(name = "path", values = { @Value(name = "/Algo/generated/pisdf/", effect = "default path") }) })
+        @Parameter(name = "path", values = { @Value(name = "/Algo/generated/pisdf/", effect = "default path") }),
+        @Parameter(name = "hierarchical",
+            values = { @Value(name = "true/false",
+                effect = "Export the whole hierarchy (default: true). When set to true, will export all the "
+                    + "hierarchy in the folder given by 'path', replacing refinement paths. Note: exporting "
+                    + "hierarchical graph with this option set to false can cause the  the consistency check "
+                    + "fail if the children graphs do not exist.") }) })
 public class PiSDFExporterTask extends AbstractTaskImplementation {
+
+  /**
+   */
+  private class BottomUpChildrenGraphExporter extends PiMMSwitch<Boolean> {
+
+    private final IPath xmlPath;
+
+    public BottomUpChildrenGraphExporter(final IPath xmlPath) {
+      this.xmlPath = xmlPath;
+    }
+
+    @Override
+    public final Boolean casePiGraph(final PiGraph graph) {
+      graph.getChildrenGraphs().forEach(this::doSwitch);
+      exportGraph(graph, xmlPath);
+      return true;
+    }
+
+  }
 
   /*
    * (non-Javadoc)
@@ -88,9 +113,14 @@ public class PiSDFExporterTask extends AbstractTaskImplementation {
 
     final PiGraph graph = (PiGraph) inputs.get(AbstractWorkflowNodeImplementation.KEY_PI_GRAPH);
 
+    final String hierarchicalParameter = parameters.get("hierarchical");
+    final String pathParameter = parameters.get("path");
+
+    // create a copy of the input graph so that subgraph disconnector does not impact other tasks
+    final PiGraph graphCopy = graph; // PiMMUserFactory.instance.copy(graph);
+
     // Creates the output file now
-    final String relative = parameters.get("path");
-    final String sXmlPath = WorkspaceUtils.getAbsolutePath(relative, workflow.getProjectName());
+    final String sXmlPath = WorkspaceUtils.getAbsolutePath(pathParameter, workflow.getProjectName());
     IPath xmlPath = new Path(sXmlPath);
     // Get a complete valid path with all folders existing
     try {
@@ -98,33 +128,46 @@ public class PiSDFExporterTask extends AbstractTaskImplementation {
         WorkspaceUtils.createMissingFolders(xmlPath.removeFileExtension().removeLastSegments(1));
       } else {
         WorkspaceUtils.createMissingFolders(xmlPath);
-        xmlPath = xmlPath.append(graph.getName() + ".pi");
       }
     } catch (CoreException | IllegalArgumentException e) {
       throw new PreesmRuntimeException("Path " + sXmlPath + " is not a valid path for export.\n" + e.getMessage());
     }
 
-    final URI uri = URI.createPlatformResourceURI(xmlPath.toString(), true);
+    final boolean doHiearchicalExport = "true".equalsIgnoreCase(hierarchicalParameter);
+
+    if (doHiearchicalExport) {
+      new BottomUpChildrenGraphExporter(xmlPath).doSwitch(graphCopy);
+    } else {
+      exportGraph(graphCopy, xmlPath);
+
+    }
+    WorkspaceUtils.updateWorkspace();
+
+    return new LinkedHashMap<>();
+  }
+
+  private static final void exportGraph(final PiGraph graph, final IPath xmlPath) {
+
+    final IPath graphPath;
+    graphPath = xmlPath.append(graph.getName() + ".pi");
+    // if (graph.getContainingPiGraph() != null) {
+    // } else {
+    // graphPath = xmlPath;
+    // }
+
+    final String string = graphPath.toString();
+    final URI uri = URI.createPlatformResourceURI(string, true);
     // Get the project
     final String platformString = uri.toPlatformString(true);
     final IFile documentFile = ResourcesPlugin.getWorkspace().getRoot().getFile(new Path(platformString));
     final String osString = documentFile.getLocation().toOSString();
     try (final OutputStream outStream = new FileOutputStream(osString);) {
       // Write the Graph to the OutputStream using the Pi format
-
-      final EcoreUtil.Copier copier = new EcoreUtil.Copier(false, false);
-      final PiGraph copy = (PiGraph) copier.copy(graph);
-      copier.copyReferences();
-
-      SubgraphDisconnector.disconnectSubGraphs(copy);
-      new PiWriter(uri).write(copy, outStream);
+      SubgraphDisconnector.disconnectSubGraphs(graph, xmlPath.toString());
+      new PiWriter(uri).write(graph, outStream);
     } catch (IOException e) {
-      throw new PreesmRuntimeException("Could not open outputstream file " + xmlPath.toString());
+      throw new PreesmRuntimeException("Could not open outputstream file " + string);
     }
-
-    WorkspaceUtils.updateWorkspace();
-
-    return new LinkedHashMap<>();
   }
 
   /*
@@ -137,6 +180,7 @@ public class PiSDFExporterTask extends AbstractTaskImplementation {
     final Map<String, String> parameters = new LinkedHashMap<>();
 
     parameters.put("path", "/Algo/generated/pisdf/");
+    parameters.put("hierarchical", "true");
     return parameters;
   }
 

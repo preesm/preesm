@@ -47,8 +47,10 @@ public interface PreesmUserFactory {
    * Copy an existing Preesm object.
    */
   public default <T extends EObject> T copy(final T eObject) {
+    final EcoreUtil.Copier copier = new EcoreUtil.Copier(false);
+    copier.copyReferences();
     @SuppressWarnings("unchecked")
-    final T copy = (T) new EcoreUtil.Copier(false).copy(eObject);
+    final T copy = (T) copier.copy(eObject);
     return copy;
   }
 
