@@ -64,8 +64,12 @@ import org.preesm.codegen.model.Variable
 import org.preesm.commons.exceptions.PreesmRuntimeException
 import org.preesm.commons.files.PreesmResourcesHelper
 import org.preesm.model.pisdf.util.CHeaderUsedLocator
+import org.preesm.codegen.model.SharedMemoryCommunication
+import org.preesm.codegen.model.Delimiter
+import org.preesm.codegen.model.Direction
+import org.preesm.codegen.model.PapifyAction
 
-class MPPA2IOExplicitPrinter extends MPPA2ExplicitPrinter {
+class MPPA2IOPrinter extends MPPA2ClusterPrinter {
 
 	new() {
 		// do not generate a main file
@@ -76,7 +80,7 @@ class MPPA2IOExplicitPrinter extends MPPA2ExplicitPrinter {
 	protected int sharedOnly = 1;
 	protected int distributedOnly = 1;
 	protected String peName = "";
-	protected Map<String, Integer> pesToId = new LinkedHashMap<String, Integer>();
+	protected Map <String, Integer> coreNameToID = new LinkedHashMap();
 	/**
 	 * Temporary global var to ignore the automatic suppression of memcpy
 	 * whose target and destination are identical.
@@ -500,6 +504,24 @@ class MPPA2IOExplicitPrinter extends MPPA2ExplicitPrinter {
 		}
 
 	'''
+	override printPapifyActionParam(PapifyAction action) '''&«action.name»'''
+	
+	override printSharedMemoryCommunication(SharedMemoryCommunication communication) '''
+		«communication.direction.toString.toLowerCase»«communication.delimiter.toString.toLowerCase.toFirstUpper»(«IF (communication.
+			direction == Direction::SEND && communication.delimiter == Delimiter::START) ||
+			(communication.direction == Direction::RECEIVE && communication.delimiter == Delimiter::END)»«{
+			var coreID = if (communication.direction == Direction::SEND) {
+					coreNameToID.get(communication.receiveStart.coreContainer.name)
+					//communication.receiveStart.coreContainer.coreID
+				} else {
+					coreNameToID.get(communication.sendStart.coreContainer.name)
+					//communication.sendStart.coreContainer.coreID
+				}
+			var ret = coreID
+			ret
+		}»«ENDIF»); // «communication.sendStart.coreContainer.name» > «communication.receiveStart.coreContainer.name»: «communication.
+			data.doSwitch»
+	'''
 	override preProcessing(List<Block> printerBlocks, Collection<Block> allBlocks){
 		var Set<String> coresNames = new LinkedHashSet<String>();
 		for (cluster : allBlocks){
@@ -509,39 +531,42 @@ class MPPA2IOExplicitPrinter extends MPPA2ExplicitPrinter {
 		}
 		for (cluster : allBlocks){
 			if (cluster instanceof CoreBlock) {
-				if(cluster.coreType.equals("MPPA2Explicit")){
-					numClusters = numClusters + 1;
-					clusterToSync = cluster.coreID;
-				}
-				else if(cluster.coreType.equals("MPPA2IOExplicit")){
-					io_used = 1;
-				}
-				for(CodeElt codeElt : cluster.loopBlock.codeElts){
-					if(codeElt instanceof PapifyFunctionCall){
-						this.usingPapify = 1;
-					} else if(codeElt instanceof FiniteLoopBlock){
-						this.usingClustering = 1;
+				if(!cluster.loopBlock.codeElts.empty){
+					if(cluster.coreType.equals("MPPA2Cluster")){
+						numClusters = numClusters + 1;
+						clusterToSync = cluster.coreID;
 					}
-				}
-       		 	var EList<Variable> definitions = cluster.getDefinitions();
-       		 	var EList<Variable> declarations = cluster.getDeclarations();
-       		 	for(Variable variable : definitions){
-       		 		if(variable instanceof Buffer){
-       		 			if(variable.name.equals("Shared")){
-							this.distributedOnly = 0;
-       		 			}else if(coresNames.contains(variable.name)){
-							this.sharedOnly = 0;
-       		 			}
-       		 		}
-       		 	}
-       		 	for(Variable variable : declarations){
-       		 		if(variable instanceof Buffer){
-       		 			if(variable.name.equals("Shared")){
-							this.distributedOnly = 0;
-       		 			}else if(coresNames.contains(variable.name)){
-							this.sharedOnly = 0;
-       		 			}
-       		 		}
+					else if(cluster.coreType.equals("MPPA2IO")){
+						io_used = 1;
+					}
+					coreNameToID.put(cluster.name, coreNameToID.size);
+					for(CodeElt codeElt : cluster.loopBlock.codeElts){
+						if(codeElt instanceof PapifyFunctionCall){
+							this.usingPapify = 1;
+						} else if(codeElt instanceof FiniteLoopBlock){
+							this.usingClustering = 1;
+						}
+					}
+	       		 	var EList<Variable> definitions = cluster.getDefinitions();
+	       		 	var EList<Variable> declarations = cluster.getDeclarations();
+	       		 	for(Variable variable : definitions){
+	       		 		if(variable instanceof Buffer){
+	       		 			if(variable.name.equals("Shared")){
+								this.distributedOnly = 0;
+	       		 			}else if(coresNames.contains(variable.name)){
+								this.sharedOnly = 0;
+	       		 			}
+	       		 		}
+	       		 	}
+	       		 	for(Variable variable : declarations){
+	       		 		if(variable instanceof Buffer){
+	       		 			if(variable.name.equals("Shared")){
+								this.distributedOnly = 0;
+	       		 			}else if(coresNames.contains(variable.name)){
+								this.sharedOnly = 0;
+	       		 			}
+	       		 		}
+	       		 	}	       		 	
        		 	}
 			}
 		}
