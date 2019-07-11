@@ -73,7 +73,9 @@ import org.preesm.workflow.implement.AbstractWorkflowNodeImplementation;
     inputs = { @Port(name = "PiMM", type = PiGraph.class) },
 
     parameters = {
-        @Parameter(name = "path", values = { @Value(name = "/Algo/generated/pisdf/", effect = "default path") }) })
+        @Parameter(name = "path", values = { @Value(name = "/Algo/generated/pisdf/", effect = "default path") }),
+        @Parameter(name = "hierarchical",
+            values = { @Value(name = "true/false", effect = "Export the whole hierarchy (default: true)") }) })
 public class PiSDFExporterTask extends AbstractTaskImplementation {
 
   /*
@@ -137,6 +139,7 @@ public class PiSDFExporterTask extends AbstractTaskImplementation {
     final Map<String, String> parameters = new LinkedHashMap<>();
 
     parameters.put("path", "/Algo/generated/pisdf/");
+    parameters.put("hierarchical", "true");
     return parameters;
   }
 
