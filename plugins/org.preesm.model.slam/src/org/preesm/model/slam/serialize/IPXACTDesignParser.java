@@ -42,6 +42,8 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.URISyntaxException;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.LinkedHashSet;
 import java.util.List;
@@ -50,13 +52,12 @@ import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.logging.Level;
 import java.util.stream.Collectors;
-import org.eclipse.core.runtime.Path;
 import org.eclipse.emf.common.util.EList;
-import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.EClass;
 import org.eclipse.emf.ecore.EPackage;
 import org.preesm.commons.DomUtil;
 import org.preesm.commons.exceptions.PreesmRuntimeException;
+import org.preesm.commons.files.URLResolver;
 import org.preesm.commons.logger.PreesmLogger;
 import org.preesm.model.slam.ComInterface;
 import org.preesm.model.slam.ComNode;
@@ -85,20 +86,14 @@ import org.w3c.dom.Node;
  */
 public class IPXACTDesignParser extends IPXACTParser {
 
-  /** URI of the last opened file. */
-  private final URI uri;
-
   /** Information needed in the vendor extensions of the design. */
   private final IPXACTDesignVendorExtensionsParser vendorExtensions;
 
   /**
    * IPXact parser constructor.
    *
-   * @param uri
-   *          the uri
    */
-  public IPXACTDesignParser(final URI uri) {
-    this.uri = uri;
+  public IPXACTDesignParser() {
     this.vendorExtensions = new IPXACTDesignVendorExtensionsParser();
   }
 
@@ -342,20 +337,23 @@ public class IPXACTDesignParser extends IPXACTParser {
 
         for (final String refinementStringPath : list.toStringArray()) {
 
-          final String base = this.uri.trimSegments(1).toFileString();
-          final Path refinementPath = new Path(base + "/" + refinementStringPath);
-          refinementPath.toString();
-          final URI refinementURI = URI.createFileURI(refinementPath.toString());
-          final File file = new File(refinementURI.toFileString());
+          final URL findFirst = URLResolver.findFirst(refinementStringPath);
+
+          File file;
+          try {
+            file = new File(findFirst.toURI());
+          } catch (final URISyntaxException e) {
+            throw new PreesmRuntimeException("Malformed URL " + findFirst, e);
+          }
 
           // Read from an input stream
-          final IPXACTDesignParser subParser = new IPXACTDesignParser(refinementURI);
+          final IPXACTDesignParser subParser = new IPXACTDesignParser();
           InputStream stream = null;
 
           try {
             stream = new FileInputStream(file.getPath());
           } catch (final FileNotFoundException e) {
-            throw new PreesmRuntimeException("Could not locate file", e);
+            throw new PreesmRuntimeException("Could not locate file " + file.getPath(), e);
           }
 
           final Design subDesign = subParser.parse(stream, design.getComponentHolder(), component);

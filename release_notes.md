@@ -10,6 +10,7 @@ PREESM Changelog
 ### Changes
 * Fix gantt viewer PE order;
 * Add subgraph disconnector, called before exporting graphs;
+* Fix Slam parser;
 * MPPA2Explicit now is called MPPA2Cluster;
 * MPPA2IOExplicit now is called MPPA2IO;
 
