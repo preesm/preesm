@@ -126,19 +126,18 @@ public class ListSchedulingMappingFromPiMM extends ListSchedulingMappingFromDAG 
       /**
        * Analyze the constraints and initialize the configs
        */
-      for (Entry<ComponentInstance, EList<AbstractActor>> constraint : scenario.getConstraints()
-          .getGroupConstraints()) {
-        String typeOfPe = constraint.getKey().getComponent().getVlnv().getName();
-        if (!coresOfEachType.containsKey(typeOfPe)) {
-          coresOfEachType.put(typeOfPe, 0);
-          if (coresUsedOfEachType.isEmpty()) {
-            coresUsedOfEachType.put(typeOfPe, 1);
+      for (Component component : scenario.getDesign().getComponents()) {
+        int numOfConstrainedComps = scenario.getConstraints().nbConstrainsWithComp(component.getVlnv().getName());
+        if (numOfConstrainedComps > 0) {
+          if (coresUsedOfEachType.size() == 0) {
+            coresUsedOfEachType.put(component.getVlnv().getName(), 1);
           } else {
-            coresUsedOfEachType.put(typeOfPe, 0);
+            coresUsedOfEachType.put(component.getVlnv().getName(), 0);
           }
+          coresOfEachType.put(component.getVlnv().getName(), numOfConstrainedComps);
         }
-        coresOfEachType.put(typeOfPe, coresOfEachType.get(typeOfPe) + 1);
       }
+
       inputs.put(AbstractWorkflowNodeImplementation.KEY_SCENARIO, scenarioMapping);
       double objective = scenarioMapping.getEnergyConfig().getPerformanceObjective().getObjectiveEPS();
       double tolerance = scenarioMapping.getEnergyConfig().getPerformanceObjective().getToleranceEPS();
@@ -154,6 +153,7 @@ public class ListSchedulingMappingFromPiMM extends ListSchedulingMappingFromDAG 
         /**
          * Add the constraints that represents the new config
          */
+        System.out.println("Doing: " + coresUsedOfEachType.toString());
         for (Entry<String, Integer> instance : coresUsedOfEachType.entrySet()) {
           List<Entry<ComponentInstance, EList<AbstractActor>>> constraints = scenario.getConstraints()
               .getGroupConstraints().stream()
@@ -161,8 +161,8 @@ public class ListSchedulingMappingFromPiMM extends ListSchedulingMappingFromDAG 
               .collect(Collectors.toList()).subList(0, instance.getValue());
           scenarioMapping.getConstraints().getGroupConstraints().addAll(constraints);
         }
-        if (scenarioMapping.getConstraints().getGroupConstraints().stream()
-            .filter(e -> e.getKey().getInstanceName().equals(scenario.getSimulationInfo().getMainOperator()))
+        if (scenarioMapping.getConstraints().getGroupConstraints().stream().filter(
+            e -> e.getKey().getInstanceName().equals(scenario.getSimulationInfo().getMainOperator().getInstanceName()))
             .count() == 0) {
           ComponentInstance newMainNode = scenarioMapping.getConstraints().getGroupConstraints().get(0).getKey();
           scenarioMapping.getSimulationInfo().setMainOperator(newMainNode);
@@ -182,10 +182,10 @@ public class ListSchedulingMappingFromPiMM extends ListSchedulingMappingFromDAG 
         /**
          * Check the energy
          */
-        double energyThisOne = scenarioMapping.getEnergyConfig().getPlatformPower().get("Base");
+        double energyThisOne = scenarioMapping.getEnergyConfig().getPeTypePowerOrDefault("Base");
         double energyDynamic = 0.0;
         for (Entry<String, Integer> instance : coresUsedOfEachType.entrySet()) {
-          double powerPe = scenarioMapping.getEnergyConfig().getPlatformPower().get(instance.getKey());
+          double powerPe = scenarioMapping.getEnergyConfig().getPeTypePowerOrDefault(instance.getKey());
           energyThisOne = energyThisOne + (powerPe * instance.getValue());
         }
         MapperDAG dagMapping = (MapperDAG) mapping.get("DAG");
@@ -284,6 +284,9 @@ public class ListSchedulingMappingFromPiMM extends ListSchedulingMappingFromDAG 
       scenario.setEnergyConfig(scenarioMapping.getEnergyConfig());
       inputs.put(AbstractWorkflowNodeImplementation.KEY_SCENARIO, scenario);
     } else {
+      for (Component component : scenario.getDesign().getComponents()) {
+        System.out.println("A: " + component.getVlnv().getName());
+      }
       final MapperDAG dag = StaticPiMM2MapperDAGVisitor.convert(algorithm, architecture, scenario);
       inputs.put(AbstractWorkflowNodeImplementation.KEY_SDF_DAG, dag);
       mapping = super.execute(inputs, parameters, monitor, nodeName, workflow);
