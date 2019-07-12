@@ -161,9 +161,8 @@ public class ListSchedulingMappingFromPiMM extends ListSchedulingMappingFromDAG 
               .collect(Collectors.toList()).subList(0, instance.getValue());
           scenarioMapping.getConstraints().getGroupConstraints().addAll(constraints);
         }
-        if (scenarioMapping.getConstraints().getGroupConstraints().stream().filter(
-            e -> e.getKey().getInstanceName().equals(scenario.getSimulationInfo().getMainOperator().getInstanceName()))
-            .count() == 0) {
+        if (!scenarioMapping.getConstraints()
+            .isCoreContained(scenario.getSimulationInfo().getMainOperator().getInstanceName())) {
           ComponentInstance newMainNode = scenarioMapping.getConstraints().getGroupConstraints().get(0).getKey();
           scenarioMapping.getSimulationInfo().setMainOperator(newMainNode);
         } else {
@@ -174,7 +173,6 @@ public class ListSchedulingMappingFromPiMM extends ListSchedulingMappingFromDAG 
         /**
          * Try the mapping
          */
-        System.out.println("Doing: " + coresUsedOfEachType.toString());
         final MapperDAG dag = StaticPiMM2MapperDAGVisitor.convert(algorithm, architecture, scenarioMapping);
         inputs.put(AbstractWorkflowNodeImplementation.KEY_SDF_DAG, dag);
         mapping = super.execute(inputs, parameters, monitor, nodeName, workflow);
@@ -257,9 +255,8 @@ public class ListSchedulingMappingFromPiMM extends ListSchedulingMappingFromDAG 
             .collect(Collectors.toList()).subList(0, instance.getValue());
         scenarioMapping.getConstraints().getGroupConstraints().addAll(constraints);
       }
-      if (scenarioMapping.getConstraints().getGroupConstraints().stream()
-          .filter(e -> e.getKey().getInstanceName().equals(scenario.getSimulationInfo().getMainOperator()))
-          .count() == 0) {
+      if (!scenarioMapping.getConstraints()
+          .isCoreContained(scenario.getSimulationInfo().getMainOperator().getInstanceName())) {
         ComponentInstance newMainNode = scenarioMapping.getConstraints().getGroupConstraints().get(0).getKey();
         scenarioMapping.getSimulationInfo().setMainOperator(newMainNode);
       } else {
