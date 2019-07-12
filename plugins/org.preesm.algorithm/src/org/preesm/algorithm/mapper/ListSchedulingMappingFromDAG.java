@@ -74,6 +74,7 @@ import org.preesm.model.slam.Design;
         @Parameter(name = "simulatorType", values = { @Value(name = "LooselyTimed") }),
         @Parameter(name = "Check", values = { @Value(name = "True") }),
         @Parameter(name = "Optimize synchronization", values = { @Value(name = "False") }),
+        @Parameter(name = "EnergyAwareness", values = { @Value(name = "False") }),
         @Parameter(name = "balanceLoads", values = { @Value(name = "false") })
 
     })

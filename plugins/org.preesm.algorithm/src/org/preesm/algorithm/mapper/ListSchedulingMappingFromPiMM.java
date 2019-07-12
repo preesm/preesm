@@ -81,6 +81,7 @@ import org.preesm.workflow.implement.AbstractWorkflowNodeImplementation;
         @Parameter(name = "simulatorType", values = { @Value(name = "LooselyTimed") }),
         @Parameter(name = "Check", values = { @Value(name = "True") }),
         @Parameter(name = "Optimize synchronization", values = { @Value(name = "False") }),
+        @Parameter(name = "EnergyAwareness", values = { @Value(name = "False") }),
         @Parameter(name = "balanceLoads", values = { @Value(name = "false") })
 
     })
@@ -94,57 +95,162 @@ public class ListSchedulingMappingFromPiMM extends ListSchedulingMappingFromDAG 
     final Design architecture = (Design) inputs.get(AbstractWorkflowNodeImplementation.KEY_ARCHITECTURE);
     final Scenario scenario = (Scenario) inputs.get(AbstractWorkflowNodeImplementation.KEY_SCENARIO);
 
-    /**
-     * Energy stuff
-     */
-    /**
-     * Copy scenario
-     */
-    Scenario scenarioMapping = ScenarioUserFactory.createScenario();
-    scenarioMapping.setAlgorithm(scenario.getAlgorithm());
-    scenarioMapping.setDesign(scenario.getDesign());
-    scenarioMapping.setTimings(scenario.getTimings());
-    scenarioMapping.setEnergyConfig(scenario.getEnergyConfig());
+    boolean usingEnergy = false;
 
-    Map<String, Integer> coresOfEachType = new LinkedHashMap<>();
-    Map<String, Integer> coresUsedOfEachType = new LinkedHashMap<>();
+    if (parameters.get("EnergyAwareness").equalsIgnoreCase("true")) {
+      usingEnergy = true;
+    }
 
-    Map<String, Integer> bestConfig = new LinkedHashMap<>();
-    double minEnergy = Double.MAX_VALUE;
-    double closestFPS = Double.MAX_VALUE;
+    Map<String, Object> mapping = null;
 
-    /**
-     * Analyze the constraints and initialize the configs
-     */
-    for (Entry<ComponentInstance, EList<AbstractActor>> constraint : scenario.getConstraints().getGroupConstraints()) {
-      String typeOfPe = constraint.getKey().getComponent().getVlnv().getName();
-      if (!coresOfEachType.containsKey(typeOfPe)) {
-        coresOfEachType.put(typeOfPe, 0);
-        if (coresUsedOfEachType.isEmpty()) {
-          coresUsedOfEachType.put(typeOfPe, 1);
+    if (usingEnergy) {
+      /**
+       * Energy stuff
+       */
+      /**
+       * Copy scenario
+       */
+      Scenario scenarioMapping = ScenarioUserFactory.createScenario();
+      scenarioMapping.setAlgorithm(scenario.getAlgorithm());
+      scenarioMapping.setDesign(scenario.getDesign());
+      scenarioMapping.setTimings(scenario.getTimings());
+      scenarioMapping.setEnergyConfig(scenario.getEnergyConfig());
+
+      Map<String, Integer> coresOfEachType = new LinkedHashMap<>();
+      Map<String, Integer> coresUsedOfEachType = new LinkedHashMap<>();
+
+      Map<String, Integer> bestConfig = new LinkedHashMap<>();
+      double minEnergy = Double.MAX_VALUE;
+      double closestFPS = Double.MAX_VALUE;
+
+      /**
+       * Analyze the constraints and initialize the configs
+       */
+      for (Entry<ComponentInstance, EList<AbstractActor>> constraint : scenario.getConstraints()
+          .getGroupConstraints()) {
+        String typeOfPe = constraint.getKey().getComponent().getVlnv().getName();
+        if (!coresOfEachType.containsKey(typeOfPe)) {
+          coresOfEachType.put(typeOfPe, 0);
+          if (coresUsedOfEachType.isEmpty()) {
+            coresUsedOfEachType.put(typeOfPe, 1);
+          } else {
+            coresUsedOfEachType.put(typeOfPe, 0);
+          }
+        }
+        coresOfEachType.put(typeOfPe, coresOfEachType.get(typeOfPe) + 1);
+      }
+      inputs.put(AbstractWorkflowNodeImplementation.KEY_SCENARIO, scenarioMapping);
+      double objective = scenarioMapping.getEnergyConfig().getPerformanceObjective().getObjectiveEPS();
+      double tolerance = scenarioMapping.getEnergyConfig().getPerformanceObjective().getToleranceEPS();
+      double maxObjective = objective + (objective * tolerance / 100);
+      double minObjective = objective - (objective * tolerance / 100);
+      while (true) {
+        /**
+         * Reset
+         */
+
+        scenario.getConstraints().getGroupConstraints().addAll(scenarioMapping.getConstraints().getGroupConstraints());
+
+        /**
+         * Add the constraints that represents the new config
+         */
+        for (Entry<String, Integer> instance : coresUsedOfEachType.entrySet()) {
+          List<Entry<ComponentInstance, EList<AbstractActor>>> constraints = scenario.getConstraints()
+              .getGroupConstraints().stream()
+              .filter(e -> e.getKey().getComponent().getVlnv().getName().equals(instance.getKey()))
+              .collect(Collectors.toList()).subList(0, instance.getValue());
+          scenarioMapping.getConstraints().getGroupConstraints().addAll(constraints);
+        }
+        if (scenarioMapping.getConstraints().getGroupConstraints().stream()
+            .filter(e -> e.getKey().getInstanceName().equals(scenario.getSimulationInfo().getMainOperator()))
+            .count() == 0) {
+          ComponentInstance newMainNode = scenarioMapping.getConstraints().getGroupConstraints().get(0).getKey();
+          scenarioMapping.getSimulationInfo().setMainOperator(newMainNode);
         } else {
-          coresUsedOfEachType.put(typeOfPe, 0);
+          scenarioMapping.getSimulationInfo().setMainOperator(scenario.getSimulationInfo().getMainOperator());
+        }
+        scenarioMapping.getSimulationInfo().setMainComNode(scenario.getSimulationInfo().getMainComNode());
+
+        /**
+         * Try the mapping
+         */
+        System.out.println("Doing: " + coresUsedOfEachType.toString());
+        final MapperDAG dag = StaticPiMM2MapperDAGVisitor.convert(algorithm, architecture, scenarioMapping);
+        inputs.put(AbstractWorkflowNodeImplementation.KEY_SDF_DAG, dag);
+        mapping = super.execute(inputs, parameters, monitor, nodeName, workflow);
+
+        /**
+         * Check the energy
+         */
+        double energyThisOne = scenarioMapping.getEnergyConfig().getPlatformPower().get("Base");
+        double energyDynamic = 0.0;
+        for (Entry<String, Integer> instance : coresUsedOfEachType.entrySet()) {
+          double powerPe = scenarioMapping.getEnergyConfig().getPlatformPower().get(instance.getKey());
+          energyThisOne = energyThisOne + (powerPe * instance.getValue());
+        }
+        MapperDAG dagMapping = (MapperDAG) mapping.get("DAG");
+        LatencyAbc abcMapping = (LatencyAbc) mapping.get("ABC");
+        for (DAGVertex vertex : dagMapping.getHierarchicalVertexSet()) {
+          ComponentInstance componentInstance = vertex.getPropertyBean().getValue("Operator");
+          Component component = componentInstance.getComponent();
+          AbstractActor actor = vertex.getReferencePiVertex();
+          if (actor != null && actor.getClass().equals(ActorImpl.class)) {
+            double energyActor = scenarioMapping.getEnergyConfig().getEnergyActorOrDefault(actor, component);
+            energyDynamic = energyDynamic + energyActor;
+          }
+        }
+
+        double fps = 1000000.0 / abcMapping.getFinalLatency();
+        double totalDynamicEnergy = (energyDynamic / 1000000.0) * fps;
+        energyThisOne = energyThisOne + totalDynamicEnergy;
+        System.out.println("Total energy = " + energyThisOne + " --- FPS = " + fps);
+        /**
+         * Check if it is the best one
+         */
+        if (fps <= maxObjective && fps >= minObjective) {
+          if (minEnergy > energyThisOne) {
+            minEnergy = energyThisOne;
+            closestFPS = fps;
+            for (Entry<String, Integer> config : coresUsedOfEachType.entrySet()) {
+              bestConfig.put(config.getKey(), config.getValue());
+            }
+          }
+        } else if (Math.abs(objective - fps) < Math.abs(objective - closestFPS)) {
+          closestFPS = fps;
+          minEnergy = energyThisOne;
+          for (Entry<String, Integer> config : coresUsedOfEachType.entrySet()) {
+            bestConfig.put(config.getKey(), config.getValue());
+          }
+        }
+        System.out.println("Best energy = " + minEnergy + " --- best FPS = " + closestFPS);
+        /**
+         * Compute the next configuration
+         */
+        for (Entry<String, Integer> peType : coresUsedOfEachType.entrySet()) {
+          peType.setValue(peType.getValue() + 1);
+          if (peType.getValue() > coresOfEachType.get(peType.getKey())) {
+            peType.setValue(0);
+          } else {
+            break;
+          }
+        }
+        /**
+         * Check whether we have tested everything or not
+         */
+        if (coresUsedOfEachType.entrySet().stream().filter(e -> e.getValue() != 0).collect(Collectors.toList())
+            .isEmpty()) {
+          break;
         }
       }
-      coresOfEachType.put(typeOfPe, coresOfEachType.get(typeOfPe) + 1);
-    }
-    inputs.put(AbstractWorkflowNodeImplementation.KEY_SCENARIO, scenarioMapping);
-    Map<String, Object> mapping = null;
-    double objective = scenarioMapping.getEnergyConfig().getPerformanceObjective().getObjectiveEPS();
-    double tolerance = scenarioMapping.getEnergyConfig().getPerformanceObjective().getToleranceEPS();
-    double maxObjective = objective + (objective * tolerance / 100);
-    double minObjective = objective - (objective * tolerance / 100);
-    while (true) {
       /**
        * Reset
        */
-
       scenario.getConstraints().getGroupConstraints().addAll(scenarioMapping.getConstraints().getGroupConstraints());
 
       /**
-       * Add the constraints that represents the new config
+       * Repeating for the best one
        */
-      for (Entry<String, Integer> instance : coresUsedOfEachType.entrySet()) {
+      for (Entry<String, Integer> instance : bestConfig.entrySet()) {
         List<Entry<ComponentInstance, EList<AbstractActor>>> constraints = scenario.getConstraints()
             .getGroupConstraints().stream()
             .filter(e -> e.getKey().getComponent().getVlnv().getName().equals(instance.getKey()))
@@ -161,117 +267,27 @@ public class ListSchedulingMappingFromPiMM extends ListSchedulingMappingFromDAG 
       }
       scenarioMapping.getSimulationInfo().setMainComNode(scenario.getSimulationInfo().getMainComNode());
 
-      /**
-       * Try the mapping
-       */
-      System.out.println("Doing: " + coresUsedOfEachType.toString());
+      System.out.println("Repeating for the best one");
+      System.out.println("Doing: " + bestConfig.toString());
+      System.out.println("Best energy = " + minEnergy + " --- best FPS = " + closestFPS);
       final MapperDAG dag = StaticPiMM2MapperDAGVisitor.convert(algorithm, architecture, scenarioMapping);
       inputs.put(AbstractWorkflowNodeImplementation.KEY_SDF_DAG, dag);
       mapping = super.execute(inputs, parameters, monitor, nodeName, workflow);
 
       /**
-       * Check the energy
+       * Fill scenario with everything again to avoid further problems
        */
-      double energyThisOne = scenarioMapping.getEnergyConfig().getPlatformPower().get("Base");
-      double energyDynamic = 0.0;
-      for (Entry<String, Integer> instance : coresUsedOfEachType.entrySet()) {
-        double powerPe = scenarioMapping.getEnergyConfig().getPlatformPower().get(instance.getKey());
-        energyThisOne = energyThisOne + (powerPe * instance.getValue());
-      }
-      MapperDAG dagMapping = (MapperDAG) mapping.get("DAG");
-      LatencyAbc abcMapping = (LatencyAbc) mapping.get("ABC");
-      for (DAGVertex vertex : dagMapping.getHierarchicalVertexSet()) {
-        ComponentInstance componentInstance = vertex.getPropertyBean().getValue("Operator");
-        Component component = componentInstance.getComponent();
-        AbstractActor actor = vertex.getReferencePiVertex();
-        if (actor != null && actor.getClass().equals(ActorImpl.class)) {
-          double energyActor = scenarioMapping.getEnergyConfig().getEnergyActorOrDefault(actor, component);
-          energyDynamic = energyDynamic + energyActor;
-        }
-      }
-
-      double fps = 1000000.0 / abcMapping.getFinalLatency();
-      double totalDynamicEnergy = (energyDynamic / 1000000.0) * fps;
-      energyThisOne = energyThisOne + totalDynamicEnergy;
-      System.out.println("Total energy = " + energyThisOne + " --- FPS = " + fps);
-      /**
-       * Check if it is the best one
-       */
-      if (fps <= maxObjective && fps >= minObjective) {
-        if (minEnergy > energyThisOne) {
-          minEnergy = energyThisOne;
-          closestFPS = fps;
-          for (Entry<String, Integer> config : coresUsedOfEachType.entrySet()) {
-            bestConfig.put(config.getKey(), config.getValue());
-          }
-        }
-      } else if (Math.abs(objective - fps) < Math.abs(objective - closestFPS)) {
-        closestFPS = fps;
-        minEnergy = energyThisOne;
-        for (Entry<String, Integer> config : coresUsedOfEachType.entrySet()) {
-          bestConfig.put(config.getKey(), config.getValue());
-        }
-      }
-      System.out.println("Best energy = " + minEnergy + " --- best FPS = " + closestFPS);
-      /**
-       * Compute the next configuration
-       */
-      for (Entry<String, Integer> peType : coresUsedOfEachType.entrySet()) {
-        peType.setValue(peType.getValue() + 1);
-        if (peType.getValue() > coresOfEachType.get(peType.getKey())) {
-          peType.setValue(0);
-        } else {
-          break;
-        }
-      }
-      /**
-       * Check whether we have tested everything or not
-       */
-      if (coresUsedOfEachType.entrySet().stream().filter(e -> e.getValue() != 0).collect(Collectors.toList())
-          .isEmpty()) {
-        break;
-      }
-    }
-    /**
-     * Reset
-     */
-    scenario.getConstraints().getGroupConstraints().addAll(scenarioMapping.getConstraints().getGroupConstraints());
-
-    /**
-     * Repeating for the best one
-     */
-    for (Entry<String, Integer> instance : bestConfig.entrySet()) {
-      List<Entry<ComponentInstance, EList<AbstractActor>>> constraints = scenario.getConstraints().getGroupConstraints()
-          .stream().filter(e -> e.getKey().getComponent().getVlnv().getName().equals(instance.getKey()))
-          .collect(Collectors.toList()).subList(0, instance.getValue());
-      scenarioMapping.getConstraints().getGroupConstraints().addAll(constraints);
-    }
-    if (scenarioMapping.getConstraints().getGroupConstraints().stream()
-        .filter(e -> e.getKey().getInstanceName().equals(scenario.getSimulationInfo().getMainOperator()))
-        .count() == 0) {
-      ComponentInstance newMainNode = scenarioMapping.getConstraints().getGroupConstraints().get(0).getKey();
-      scenarioMapping.getSimulationInfo().setMainOperator(newMainNode);
+      scenario.getConstraints().getGroupConstraints().addAll(scenarioMapping.getConstraints().getGroupConstraints());
+      scenario.setAlgorithm(scenarioMapping.getAlgorithm());
+      scenario.setDesign(scenarioMapping.getDesign());
+      scenario.setTimings(scenarioMapping.getTimings());
+      scenario.setEnergyConfig(scenarioMapping.getEnergyConfig());
+      inputs.put(AbstractWorkflowNodeImplementation.KEY_SCENARIO, scenario);
     } else {
-      scenarioMapping.getSimulationInfo().setMainOperator(scenario.getSimulationInfo().getMainOperator());
+      final MapperDAG dag = StaticPiMM2MapperDAGVisitor.convert(algorithm, architecture, scenario);
+      inputs.put(AbstractWorkflowNodeImplementation.KEY_SDF_DAG, dag);
+      mapping = super.execute(inputs, parameters, monitor, nodeName, workflow);
     }
-    scenarioMapping.getSimulationInfo().setMainComNode(scenario.getSimulationInfo().getMainComNode());
-
-    System.out.println("Repeating for the best one");
-    System.out.println("Doing: " + bestConfig.toString());
-    System.out.println("Best energy = " + minEnergy + " --- best FPS = " + closestFPS);
-    final MapperDAG dag = StaticPiMM2MapperDAGVisitor.convert(algorithm, architecture, scenarioMapping);
-    inputs.put(AbstractWorkflowNodeImplementation.KEY_SDF_DAG, dag);
-    mapping = super.execute(inputs, parameters, monitor, nodeName, workflow);
-
-    /**
-     * Fill scenario with everything again to avoid further problems
-     */
-    scenario.getConstraints().getGroupConstraints().addAll(scenarioMapping.getConstraints().getGroupConstraints());
-    scenario.setAlgorithm(scenarioMapping.getAlgorithm());
-    scenario.setDesign(scenarioMapping.getDesign());
-    scenario.setTimings(scenarioMapping.getTimings());
-    scenario.setEnergyConfig(scenarioMapping.getEnergyConfig());
-    inputs.put(AbstractWorkflowNodeImplementation.KEY_SCENARIO, scenario);
     return mapping;
   }
 
