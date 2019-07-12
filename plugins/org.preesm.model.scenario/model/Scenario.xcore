@@ -209,6 +209,9 @@ class Constraints {
 		}
 		groupConstraints.get(cmpInstance).addAll(actors);
 	}
+	op int nbConstrainsWithComp(String compType) {
+		return groupConstraints.filter[e | e.key.component.vlnv.name.equals(compType)].size;
+	}
 }
 
 /*
