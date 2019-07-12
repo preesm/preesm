@@ -41,28 +41,21 @@
 package org.preesm.algorithm.mapper;
 
 import java.util.LinkedHashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.stream.Collectors;
 import org.eclipse.core.runtime.IProgressMonitor;
-import org.eclipse.emf.common.util.EList;
 import org.preesm.algorithm.mapper.abc.impl.latency.LatencyAbc;
+import org.preesm.algorithm.mapper.energyAwareness.EnergyAwarenessHelper;
 import org.preesm.algorithm.mapper.model.MapperDAG;
-import org.preesm.algorithm.model.dag.DAGVertex;
 import org.preesm.algorithm.model.dag.DirectedAcyclicGraph;
 import org.preesm.algorithm.pisdf.pimm2srdag.StaticPiMM2MapperDAGVisitor;
 import org.preesm.commons.doc.annotations.Parameter;
 import org.preesm.commons.doc.annotations.Port;
 import org.preesm.commons.doc.annotations.PreesmTask;
 import org.preesm.commons.doc.annotations.Value;
-import org.preesm.model.pisdf.AbstractActor;
 import org.preesm.model.pisdf.PiGraph;
-import org.preesm.model.pisdf.impl.ActorImpl;
 import org.preesm.model.scenario.Scenario;
 import org.preesm.model.scenario.util.ScenarioUserFactory;
-import org.preesm.model.slam.Component;
-import org.preesm.model.slam.ComponentInstance;
 import org.preesm.model.slam.Design;
 import org.preesm.workflow.elements.Workflow;
 import org.preesm.workflow.implement.AbstractWorkflowNodeImplementation;
@@ -107,68 +100,39 @@ public class ListSchedulingMappingFromPiMM extends ListSchedulingMappingFromDAG 
       /**
        * Energy stuff
        */
+      Map<String, Integer> bestConfig = new LinkedHashMap<>();
+      double minEnergy = Double.MAX_VALUE;
+      double closestFPS = Double.MAX_VALUE;
+      double objective = scenario.getEnergyConfig().getPerformanceObjective().getObjectiveEPS();
+      double tolerance = scenario.getEnergyConfig().getPerformanceObjective().getToleranceEPS();
+      double maxObjective = objective + (objective * tolerance / 100);
+      double minObjective = objective - (objective * tolerance / 100);
+
       /**
        * Copy scenario
        */
       Scenario scenarioMapping = ScenarioUserFactory.createScenario();
-      scenarioMapping.setAlgorithm(scenario.getAlgorithm());
-      scenarioMapping.setDesign(scenario.getDesign());
-      scenarioMapping.setTimings(scenario.getTimings());
-      scenarioMapping.setEnergyConfig(scenario.getEnergyConfig());
-
-      Map<String, Integer> coresOfEachType = new LinkedHashMap<>();
-      Map<String, Integer> coresUsedOfEachType = new LinkedHashMap<>();
-
-      Map<String, Integer> bestConfig = new LinkedHashMap<>();
-      double minEnergy = Double.MAX_VALUE;
-      double closestFPS = Double.MAX_VALUE;
+      EnergyAwarenessHelper.copyScenario(scenario, scenarioMapping);
+      inputs.put(AbstractWorkflowNodeImplementation.KEY_SCENARIO, scenarioMapping);
 
       /**
        * Analyze the constraints and initialize the configs
        */
-      for (Component component : scenario.getDesign().getComponents()) {
-        int numOfConstrainedComps = scenario.getConstraints().nbConstrainsWithComp(component.getVlnv().getName());
-        if (numOfConstrainedComps > 0) {
-          if (coresUsedOfEachType.size() == 0) {
-            coresUsedOfEachType.put(component.getVlnv().getName(), 1);
-          } else {
-            coresUsedOfEachType.put(component.getVlnv().getName(), 0);
-          }
-          coresOfEachType.put(component.getVlnv().getName(), numOfConstrainedComps);
-        }
-      }
+      Map<String, Integer> coresOfEachType = EnergyAwarenessHelper.getCoresOfEachType(scenarioMapping);
+      Map<String, Integer> coresUsedOfEachType = EnergyAwarenessHelper.getFirstConfig(coresOfEachType, "thorough");
 
-      inputs.put(AbstractWorkflowNodeImplementation.KEY_SCENARIO, scenarioMapping);
-      double objective = scenarioMapping.getEnergyConfig().getPerformanceObjective().getObjectiveEPS();
-      double tolerance = scenarioMapping.getEnergyConfig().getPerformanceObjective().getToleranceEPS();
-      double maxObjective = objective + (objective * tolerance / 100);
-      double minObjective = objective - (objective * tolerance / 100);
       while (true) {
         /**
          * Reset
          */
-
         scenario.getConstraints().getGroupConstraints().addAll(scenarioMapping.getConstraints().getGroupConstraints());
 
         /**
          * Add the constraints that represents the new config
          */
         System.out.println("Doing: " + coresUsedOfEachType.toString());
-        for (Entry<String, Integer> instance : coresUsedOfEachType.entrySet()) {
-          List<Entry<ComponentInstance, EList<AbstractActor>>> constraints = scenario.getConstraints()
-              .getGroupConstraints().stream()
-              .filter(e -> e.getKey().getComponent().getVlnv().getName().equals(instance.getKey()))
-              .collect(Collectors.toList()).subList(0, instance.getValue());
-          scenarioMapping.getConstraints().getGroupConstraints().addAll(constraints);
-        }
-        if (!scenarioMapping.getConstraints()
-            .isCoreContained(scenario.getSimulationInfo().getMainOperator().getInstanceName())) {
-          ComponentInstance newMainNode = scenarioMapping.getConstraints().getGroupConstraints().get(0).getKey();
-          scenarioMapping.getSimulationInfo().setMainOperator(newMainNode);
-        } else {
-          scenarioMapping.getSimulationInfo().setMainOperator(scenario.getSimulationInfo().getMainOperator());
-        }
-        scenarioMapping.getSimulationInfo().setMainComNode(scenario.getSimulationInfo().getMainComNode());
+        EnergyAwarenessHelper.updateConfigConstrains(scenario, scenarioMapping, coresUsedOfEachType);
+        EnergyAwarenessHelper.updateConfigSimu(scenario, scenarioMapping);
 
         /**
          * Try the mapping
@@ -180,28 +144,18 @@ public class ListSchedulingMappingFromPiMM extends ListSchedulingMappingFromDAG 
         /**
          * Check the energy
          */
-        double energyThisOne = scenarioMapping.getEnergyConfig().getPeTypePowerOrDefault("Base");
-        double energyDynamic = 0.0;
-        for (Entry<String, Integer> instance : coresUsedOfEachType.entrySet()) {
-          double powerPe = scenarioMapping.getEnergyConfig().getPeTypePowerOrDefault(instance.getKey());
-          energyThisOne = energyThisOne + (powerPe * instance.getValue());
-        }
+        double powerPlatform = EnergyAwarenessHelper.computePlatformPower(coresUsedOfEachType, scenarioMapping);
         MapperDAG dagMapping = (MapperDAG) mapping.get("DAG");
-        LatencyAbc abcMapping = (LatencyAbc) mapping.get("ABC");
-        for (DAGVertex vertex : dagMapping.getHierarchicalVertexSet()) {
-          ComponentInstance componentInstance = vertex.getPropertyBean().getValue("Operator");
-          Component component = componentInstance.getComponent();
-          AbstractActor actor = vertex.getReferencePiVertex();
-          if (actor != null && actor.getClass().equals(ActorImpl.class)) {
-            double energyActor = scenarioMapping.getEnergyConfig().getEnergyActorOrDefault(actor, component);
-            energyDynamic = energyDynamic + energyActor;
-          }
-        }
+        double energyDynamic = EnergyAwarenessHelper.computeDynamicEnergy(dagMapping, scenarioMapping);
 
+        LatencyAbc abcMapping = (LatencyAbc) mapping.get("ABC");
+        // We consider that timing tab is filled with us (extracted with PAPIFY, for example)
         double fps = 1000000.0 / abcMapping.getFinalLatency();
+        // We consider that energy tab is filled with uJ
         double totalDynamicEnergy = (energyDynamic / 1000000.0) * fps;
-        energyThisOne = energyThisOne + totalDynamicEnergy;
+        double energyThisOne = powerPlatform + totalDynamicEnergy;
         System.out.println("Total energy = " + energyThisOne + " --- FPS = " + fps);
+
         /**
          * Check if it is the best one
          */
@@ -224,19 +178,12 @@ public class ListSchedulingMappingFromPiMM extends ListSchedulingMappingFromDAG 
         /**
          * Compute the next configuration
          */
-        for (Entry<String, Integer> peType : coresUsedOfEachType.entrySet()) {
-          peType.setValue(peType.getValue() + 1);
-          if (peType.getValue() > coresOfEachType.get(peType.getKey())) {
-            peType.setValue(0);
-          } else {
-            break;
-          }
-        }
+        EnergyAwarenessHelper.getNextConfig(coresUsedOfEachType, coresOfEachType, "thorough");
+
         /**
          * Check whether we have tested everything or not
          */
-        if (coresUsedOfEachType.entrySet().stream().filter(e -> e.getValue() != 0).collect(Collectors.toList())
-            .isEmpty()) {
+        if (!EnergyAwarenessHelper.configValid(coresUsedOfEachType)) {
           break;
         }
       }
@@ -248,21 +195,8 @@ public class ListSchedulingMappingFromPiMM extends ListSchedulingMappingFromDAG 
       /**
        * Repeating for the best one
        */
-      for (Entry<String, Integer> instance : bestConfig.entrySet()) {
-        List<Entry<ComponentInstance, EList<AbstractActor>>> constraints = scenario.getConstraints()
-            .getGroupConstraints().stream()
-            .filter(e -> e.getKey().getComponent().getVlnv().getName().equals(instance.getKey()))
-            .collect(Collectors.toList()).subList(0, instance.getValue());
-        scenarioMapping.getConstraints().getGroupConstraints().addAll(constraints);
-      }
-      if (!scenarioMapping.getConstraints()
-          .isCoreContained(scenario.getSimulationInfo().getMainOperator().getInstanceName())) {
-        ComponentInstance newMainNode = scenarioMapping.getConstraints().getGroupConstraints().get(0).getKey();
-        scenarioMapping.getSimulationInfo().setMainOperator(newMainNode);
-      } else {
-        scenarioMapping.getSimulationInfo().setMainOperator(scenario.getSimulationInfo().getMainOperator());
-      }
-      scenarioMapping.getSimulationInfo().setMainComNode(scenario.getSimulationInfo().getMainComNode());
+      EnergyAwarenessHelper.updateConfigConstrains(scenario, scenarioMapping, bestConfig);
+      EnergyAwarenessHelper.updateConfigSimu(scenario, scenarioMapping);
 
       System.out.println("Repeating for the best one");
       System.out.println("Doing: " + bestConfig.toString());
@@ -275,15 +209,9 @@ public class ListSchedulingMappingFromPiMM extends ListSchedulingMappingFromDAG 
        * Fill scenario with everything again to avoid further problems
        */
       scenario.getConstraints().getGroupConstraints().addAll(scenarioMapping.getConstraints().getGroupConstraints());
-      scenario.setAlgorithm(scenarioMapping.getAlgorithm());
-      scenario.setDesign(scenarioMapping.getDesign());
-      scenario.setTimings(scenarioMapping.getTimings());
-      scenario.setEnergyConfig(scenarioMapping.getEnergyConfig());
+      EnergyAwarenessHelper.copyScenario(scenarioMapping, scenario);
       inputs.put(AbstractWorkflowNodeImplementation.KEY_SCENARIO, scenario);
     } else {
-      for (Component component : scenario.getDesign().getComponents()) {
-        System.out.println("A: " + component.getVlnv().getName());
-      }
       final MapperDAG dag = StaticPiMM2MapperDAGVisitor.convert(algorithm, architecture, scenario);
       inputs.put(AbstractWorkflowNodeImplementation.KEY_SDF_DAG, dag);
       mapping = super.execute(inputs, parameters, monitor, nodeName, workflow);
