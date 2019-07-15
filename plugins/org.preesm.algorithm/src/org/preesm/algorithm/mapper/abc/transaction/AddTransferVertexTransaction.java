@@ -51,13 +51,12 @@ import org.preesm.commons.logger.PreesmLogger;
 import org.preesm.model.slam.ComponentInstance;
 import org.preesm.model.slam.route.AbstractRouteStep;
 
-// TODO: Auto-generated Javadoc
 /**
  * A transaction that adds one transfer vertex in an implementation and schedules it given the right edge scheduler.
  *
  * @author mpelcat
  */
-public class AddTransferVertexTransaction extends Transaction {
+public class AddTransferVertexTransaction implements Transaction {
   // Inputs
   /**
    * The beginning of the transfer name. Typically: 'transfer', 'read' or 'write'
@@ -175,8 +174,6 @@ public class AddTransferVertexTransaction extends Transaction {
    */
   @Override
   public void execute(final List<Object> resultList) {
-    super.execute(resultList);
-
     final MapperDAGVertex currentTarget = (MapperDAGVertex) this.edge.getTarget();
 
     // Linking with previous transaction consists in chaining the new

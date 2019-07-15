@@ -51,13 +51,12 @@ import org.preesm.algorithm.mapper.model.special.TransferVertex;
 import org.preesm.commons.logger.PreesmLogger;
 import org.preesm.model.slam.route.AbstractRouteStep;
 
-// TODO: Auto-generated Javadoc
 /**
  * Transaction executing the addition of an involvement vertex.
  *
  * @author mpelcat
  */
-public class AddInvolvementVertexTransaction extends Transaction {
+public class AddInvolvementVertexTransaction implements Transaction {
 
   // Inputs
   /**
@@ -121,8 +120,6 @@ public class AddInvolvementVertexTransaction extends Transaction {
    */
   @Override
   public void execute(final List<Object> resultList) {
-
-    super.execute(resultList);
 
     final MapperDAGVertex currentSource = (MapperDAGVertex) this.edge.getSource();
     final MapperDAGVertex currentTarget = (MapperDAGVertex) this.edge.getTarget();

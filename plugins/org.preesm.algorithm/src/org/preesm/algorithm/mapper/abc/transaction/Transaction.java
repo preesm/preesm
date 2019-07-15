@@ -38,21 +38,13 @@ package org.preesm.algorithm.mapper.abc.transaction;
 
 import java.util.List;
 
-// TODO: Auto-generated Javadoc
 /**
  * Transactions are used because these actions can be created and stored while going through a graph and then executed
  * altogether afterwards in the right order.
  *
  * @author mpelcat
  */
-public abstract class Transaction {
-
-  /**
-   * Instantiates a new transaction.
-   */
-  public Transaction() {
-    super();
-  }
+public interface Transaction {
 
   /**
    * Execute.
@@ -60,15 +52,6 @@ public abstract class Transaction {
    * @param resultList
    *          the result list
    */
-  public void execute(final List<Object> resultList) {
-  }
-
-  /*
-   * (non-Javadoc)
-   *
-   * @see java.lang.Object#toString()
-   */
-  @Override
-  public abstract String toString();
+  public void execute(final List<Object> resultList);
 
 }

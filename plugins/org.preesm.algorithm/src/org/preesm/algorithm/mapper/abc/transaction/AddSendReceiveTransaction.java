@@ -54,34 +54,33 @@ import org.preesm.commons.logger.PreesmLogger;
 import org.preesm.model.slam.ComponentInstance;
 import org.preesm.model.slam.route.AbstractRouteStep;
 
-// TODO: Auto-generated Javadoc
 /**
  * A transaction that adds a send and a receive vertex in an implementation.
  *
  * @author mpelcat
  */
-public class AddSendReceiveTransaction extends Transaction {
+public class AddSendReceiveTransaction implements Transaction {
   // Inputs
   /** If not null, the transfer vertices need to be chained with formerly added ones. */
-  private Transaction precedingTransaction = null;
+  private final Transaction precedingTransaction;
 
   /** Implementation DAG to which the vertex is added. */
-  private MapperDAG implementation = null;
+  private final MapperDAG implementation;
 
   /** Route step corresponding to this overhead. */
-  private AbstractRouteStep step = null;
+  private final AbstractRouteStep step;
 
   /** Original edge corresponding to this overhead. */
-  private MapperDAGEdge edge = null;
+  private final MapperDAGEdge edge;
 
   /** manager keeping scheduling orders. */
-  private OrderManager orderManager = null;
+  private final OrderManager orderManager;
 
   /** Cost of the transfer to give to the transfer vertex. */
-  private long transferCost = 0;
+  private final long transferCost;
 
   /** Index of the route step within its route. */
-  private int routeIndex = 0;
+  private final int routeIndex;
 
   // Generated objects
   /** overhead vertex added. */
@@ -137,7 +136,6 @@ public class AddSendReceiveTransaction extends Transaction {
    */
   @Override
   public void execute(final List<Object> resultList) {
-    super.execute(resultList);
 
     MapperDAGVertex currentSource = null;
     final MapperDAGVertex currentTarget = (MapperDAGVertex) this.edge.getTarget();

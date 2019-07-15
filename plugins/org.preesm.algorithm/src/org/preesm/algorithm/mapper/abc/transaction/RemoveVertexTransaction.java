@@ -45,13 +45,12 @@ import org.preesm.algorithm.mapper.model.MapperDAGVertex;
 import org.preesm.algorithm.mapper.model.special.PrecedenceEdgeAdder;
 import org.preesm.algorithm.model.dag.DAGEdge;
 
-// TODO: Auto-generated Javadoc
 /**
  * A transaction that removes one vertex in an implementation.
  *
  * @author mpelcat
  */
-public class RemoveVertexTransaction extends Transaction {
+public class RemoveVertexTransaction implements Transaction {
   // Inputs
   /** Implementation DAG from which the vertex is removed. */
   private MapperDAG implementation = null;
@@ -87,8 +86,6 @@ public class RemoveVertexTransaction extends Transaction {
    */
   @Override
   public void execute(final List<Object> resultList) {
-    super.execute(resultList);
-
     // Unscheduling first
     final MapperDAGVertex prev = this.orderManager.getPrevious(this.vertex);
     final MapperDAGVertex next = this.orderManager.getNext(this.vertex);

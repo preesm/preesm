@@ -40,13 +40,12 @@ import org.preesm.algorithm.mapper.model.MapperDAG;
 import org.preesm.algorithm.mapper.model.MapperDAGVertex;
 import org.preesm.algorithm.mapper.model.special.PrecedenceEdge;
 
-// TODO: Auto-generated Javadoc
 /**
  * Transaction executing the addition of a {@link PrecedenceEdge}.
  *
  * @author mpelcat
  */
-public class AddPrecedenceEdgeTransaction extends Transaction {
+public class AddPrecedenceEdgeTransaction implements Transaction {
 
   // Inputs
 
@@ -88,8 +87,6 @@ public class AddPrecedenceEdgeTransaction extends Transaction {
    */
   @Override
   public void execute(final List<Object> resultList) {
-    super.execute(resultList);
-
     this.precedenceEdge = new PrecedenceEdge(this.source);
     this.precedenceEdge.getTiming().setCost(0);
     this.implementation.addEdge(this.source, this.destination, this.precedenceEdge);
