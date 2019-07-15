@@ -138,6 +138,11 @@ interface SequentialSchedule extends Schedule {
  * There is no hypothesis on the order on the execution of its children.
  */
 interface HierarchicalSchedule extends Schedule {
+	/*
+	 * This reference may be used when scheduling non flatten/srdag graph.
+	 * For instance, when clustering, it can refer the corresponding subgraph.
+	 */
+	refers AbstractActor attachedActor
 	contains Schedule[] scheduleTree
 	op Schedule[] getChildren() {
 		return scheduleTree
