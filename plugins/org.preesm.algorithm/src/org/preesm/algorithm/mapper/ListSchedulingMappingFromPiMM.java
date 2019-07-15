@@ -101,6 +101,7 @@ public class ListSchedulingMappingFromPiMM extends ListSchedulingMappingFromDAG 
        */
       Map<String, Integer> bestConfig = new LinkedHashMap<>();
       double minEnergy = Double.MAX_VALUE;
+      double energyNoObjective = Double.MAX_VALUE;
       double closestFPS = Double.MAX_VALUE;
       double objective = scenario.getEnergyConfig().getPerformanceObjective().getObjectiveEPS();
       double tolerance = scenario.getEnergyConfig().getPerformanceObjective().getToleranceEPS();
@@ -118,7 +119,7 @@ public class ListSchedulingMappingFromPiMM extends ListSchedulingMappingFromDAG 
        * Analyze the constraints and initialize the configs
        */
       Map<String, Integer> coresOfEachType = EnergyAwarenessHelper.getCoresOfEachType(scenarioMapping);
-      Map<String, Integer> coresUsedOfEachType = EnergyAwarenessHelper.getFirstConfig(coresOfEachType, "random");
+      Map<String, Integer> coresUsedOfEachType = EnergyAwarenessHelper.getFirstConfig(coresOfEachType, "max");
 
       while (true) {
         /**
@@ -166,14 +167,14 @@ public class ListSchedulingMappingFromPiMM extends ListSchedulingMappingFromDAG 
           }
         } else if (Math.abs(objective - fps) < Math.abs(objective - closestFPS)) {
           closestFPS = fps;
-          minEnergy = energyThisOne;
+          energyNoObjective = energyThisOne;
           bestConfig.putAll(coresUsedOfEachType);
         }
         System.out.println("Best energy = " + minEnergy + " --- best FPS = " + closestFPS);
         /**
          * Compute the next configuration
          */
-        EnergyAwarenessHelper.getNextConfig(coresUsedOfEachType, coresOfEachType, "oneMore");
+        EnergyAwarenessHelper.getNextConfig(coresUsedOfEachType, coresOfEachType, "oneLess");
 
         /**
          * Check whether we have tested everything or not
@@ -192,6 +193,10 @@ public class ListSchedulingMappingFromPiMM extends ListSchedulingMappingFromDAG 
        */
       EnergyAwarenessHelper.updateConfigConstrains(scenario, scenarioMapping, bestConfig);
       EnergyAwarenessHelper.updateConfigSimu(scenario, scenarioMapping);
+
+      if (minEnergy == Double.MAX_VALUE) {
+        minEnergy = energyNoObjective;
+      }
 
       System.out.println("Repeating for the best one");
       System.out.println("Doing: " + bestConfig.toString());

@@ -234,6 +234,16 @@ public class EnergyAwarenessHelper {
           }
         }
         break;
+      case "oneLess":
+        for (Entry<String, Integer> peType : coresUsedOfEachType.entrySet()) {
+          peType.setValue(peType.getValue() - 1);
+          if (peType.getValue() < 0) {
+            peType.setValue(coresOfEachType.get(peType.getKey()));
+          } else {
+            break;
+          }
+        }
+        break;
       default:
         break;
     }
