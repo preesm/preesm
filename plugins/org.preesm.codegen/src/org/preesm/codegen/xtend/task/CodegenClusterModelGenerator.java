@@ -24,7 +24,6 @@ import org.preesm.commons.logger.PreesmLogger;
 import org.preesm.model.algorithm.schedule.Schedule;
 import org.preesm.model.algorithm.schedule.SequentialActorSchedule;
 import org.preesm.model.algorithm.schedule.SequentialHiearchicalSchedule;
-import org.preesm.model.algorithm.schedule.SequentialSchedule;
 import org.preesm.model.pisdf.AbstractActor;
 import org.preesm.model.pisdf.AbstractVertex;
 import org.preesm.model.pisdf.Actor;
@@ -103,7 +102,7 @@ public class CodegenClusterModelGenerator {
    */
   public void generate() {
     // Get PiGraph
-    PiGraph graph = (PiGraph) ((SequentialSchedule) schedule).getAttachedActor();
+    PiGraph graph = (PiGraph) ((SequentialHiearchicalSchedule) schedule).getAttachedActor();
     // Compute repetition vector for the whole process
     this.repVector = PiBRV.compute(graph, BRVMethod.LCM);
     // Print cluster into operatorBlock
