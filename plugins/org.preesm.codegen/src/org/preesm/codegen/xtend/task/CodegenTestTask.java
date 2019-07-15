@@ -7,7 +7,6 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import org.eclipse.core.runtime.IProgressMonitor;
-import org.preesm.algorithm.mapper.model.MapperDAG;
 import org.preesm.codegen.model.Block;
 import org.preesm.codegen.model.CoreBlock;
 import org.preesm.codegen.model.util.CodegenModelUserFactory;
@@ -50,8 +49,9 @@ public class CodegenTestTask extends AbstractTaskImplementation {
     block.add(cb);
 
     final String codegenPath = scenario.getCodegenDirectory() + File.separator;
-    CodegenClusterModelGenerator modelGen = new CodegenClusterModelGenerator(architecture, new MapperDAG(algorithm),
-        null, scenario, workflow);
+    CodegenClusterModelGenerator modelGen = new CodegenClusterModelGenerator(architecture, algorithm, scenario,
+        workflow, mapper);
+    modelGen.generate();
     CodegenEngine engine = new CodegenEngine(codegenPath, block, modelGen);
     engine.registerPrintersAndBlocks("C");
     engine.preprocessPrinters();
