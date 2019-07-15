@@ -42,7 +42,6 @@ package org.preesm.algorithm.mapper;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
-import java.util.Map.Entry;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.preesm.algorithm.mapper.abc.impl.latency.LatencyAbc;
 import org.preesm.algorithm.mapper.energyAwareness.EnergyAwarenessHelper;
@@ -149,7 +148,7 @@ public class ListSchedulingMappingFromPiMM extends ListSchedulingMappingFromDAG 
         double energyDynamic = EnergyAwarenessHelper.computeDynamicEnergy(dagMapping, scenarioMapping);
 
         LatencyAbc abcMapping = (LatencyAbc) mapping.get("ABC");
-        // We consider that timing tab is filled with us (extracted with PAPIFY, for example)
+        // We consider that timing tab is filled with us (extracted with PAPIFY timing, for example)
         double fps = 1000000.0 / abcMapping.getFinalLatency();
         // We consider that energy tab is filled with uJ
         double totalDynamicEnergy = (energyDynamic / 1000000.0) * fps;
@@ -163,16 +162,12 @@ public class ListSchedulingMappingFromPiMM extends ListSchedulingMappingFromDAG 
           if (minEnergy > energyThisOne) {
             minEnergy = energyThisOne;
             closestFPS = fps;
-            for (Entry<String, Integer> config : coresUsedOfEachType.entrySet()) {
-              bestConfig.put(config.getKey(), config.getValue());
-            }
+            bestConfig.putAll(coresUsedOfEachType);
           }
         } else if (Math.abs(objective - fps) < Math.abs(objective - closestFPS)) {
           closestFPS = fps;
           minEnergy = energyThisOne;
-          for (Entry<String, Integer> config : coresUsedOfEachType.entrySet()) {
-            bestConfig.put(config.getKey(), config.getValue());
-          }
+          bestConfig.putAll(coresUsedOfEachType);
         }
         System.out.println("Best energy = " + minEnergy + " --- best FPS = " + closestFPS);
         /**
