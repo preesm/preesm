@@ -7,6 +7,8 @@ PREESM Changelog
 ### New Feature
 
 ### Changes
+* Schedule:
+  * Added a reference to a AbstractActor in HierarchicalSchedule to retrieve cluster from their schedule
 * Releng:
   * Update jacoco/sonar config;
 
