@@ -118,7 +118,7 @@ public class ListSchedulingMappingFromPiMM extends ListSchedulingMappingFromDAG 
        * Analyze the constraints and initialize the configs
        */
       Map<String, Integer> coresOfEachType = EnergyAwarenessHelper.getCoresOfEachType(scenarioMapping);
-      Map<String, Integer> coresUsedOfEachType = EnergyAwarenessHelper.getFirstConfig(coresOfEachType, "thorough");
+      Map<String, Integer> coresUsedOfEachType = EnergyAwarenessHelper.getFirstConfig(coresOfEachType, "random");
 
       while (true) {
         /**
@@ -173,7 +173,7 @@ public class ListSchedulingMappingFromPiMM extends ListSchedulingMappingFromDAG 
         /**
          * Compute the next configuration
          */
-        EnergyAwarenessHelper.getNextConfig(coresUsedOfEachType, coresOfEachType, "thorough");
+        EnergyAwarenessHelper.getNextConfig(coresUsedOfEachType, coresOfEachType, "oneMore");
 
         /**
          * Check whether we have tested everything or not

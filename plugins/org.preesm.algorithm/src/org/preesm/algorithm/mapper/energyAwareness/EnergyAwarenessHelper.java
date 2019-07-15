@@ -101,8 +101,8 @@ public class EnergyAwarenessHelper {
    */
   public static Map<String, Integer> getFirstConfig(Map<String, Integer> coresOfEachType, String typeOfSearch) {
     Map<String, Integer> coresUsedOfEachType = new LinkedHashMap<>();
-    switch (typeOfSearch.toLowerCase()) {
-      case "thorough":
+    switch (typeOfSearch) {
+      case "first":
         for (Entry<String, Integer> instance : coresOfEachType.entrySet()) {
           if (coresUsedOfEachType.isEmpty()) {
             coresUsedOfEachType.put(instance.getKey(), 1);
@@ -110,6 +110,23 @@ public class EnergyAwarenessHelper {
             coresUsedOfEachType.put(instance.getKey(), 0);
           }
         }
+        break;
+      case "max":
+        coresUsedOfEachType.putAll(coresOfEachType);
+        break;
+      case "middle":
+        for (Entry<String, Integer> instance : coresOfEachType.entrySet()) {
+          int value = ((Double) Math.ceil(instance.getValue() / 2.0)).intValue();
+          coresUsedOfEachType.put(instance.getKey(), value);
+        }
+        break;
+      case "random":
+        do {
+          for (Entry<String, Integer> instance : coresOfEachType.entrySet()) {
+            int value = ((Double) (Math.random() * instance.getValue())).intValue();
+            coresUsedOfEachType.put(instance.getKey(), value);
+          }
+        } while (!configValid(coresUsedOfEachType));
         break;
       default:
         break;
@@ -206,8 +223,8 @@ public class EnergyAwarenessHelper {
    */
   public static void getNextConfig(Map<String, Integer> coresUsedOfEachType, Map<String, Integer> coresOfEachType,
       String typeOfSearch) {
-    switch (typeOfSearch.toLowerCase()) {
-      case "thorough":
+    switch (typeOfSearch) {
+      case "oneMore":
         for (Entry<String, Integer> peType : coresUsedOfEachType.entrySet()) {
           peType.setValue(peType.getValue() + 1);
           if (peType.getValue() > coresOfEachType.get(peType.getKey())) {
