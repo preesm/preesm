@@ -62,9 +62,6 @@ import org.preesm.model.scenario.Scenario;
 import org.preesm.model.slam.ComponentInstance;
 import org.preesm.model.slam.Design;
 import org.preesm.model.slam.route.AbstractRouteStep;
-import org.preesm.model.slam.route.DmaRouteStep;
-import org.preesm.model.slam.route.MemRouteStep;
-import org.preesm.model.slam.route.MessageRouteStep;
 import org.preesm.model.slam.route.Route;
 
 /**
@@ -114,9 +111,9 @@ public class CommunicationRouter {
     this.calculator = RouteCalculator.getInstance(archi, scenario);
 
     // Initializing the available router implementers
-    addImplementer(DmaRouteStep.type, new DmaComRouterImplementer(this));
-    addImplementer(MessageRouteStep.type, new MessageComRouterImplementer(this));
-    addImplementer(MemRouteStep.type, new SharedRamRouterImplementer(this));
+    addImplementer(AbstractRouteStep.DMA_TYPE, new DmaComRouterImplementer(this));
+    addImplementer(AbstractRouteStep.NODE_TYPE, new MessageComRouterImplementer(this));
+    addImplementer(AbstractRouteStep.MEM_TYPE, new SharedRamRouterImplementer(this));
   }
 
   /**

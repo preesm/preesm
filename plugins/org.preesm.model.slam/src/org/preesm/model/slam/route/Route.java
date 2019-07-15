@@ -42,7 +42,6 @@ import java.util.LinkedHashSet;
 import java.util.Set;
 import org.preesm.model.slam.ComponentInstance;
 
-// TODO: Auto-generated Javadoc
 /**
  * A route contains several Route Steps. It links operators. To operators directly connected have a route with one route
  * step.
@@ -52,10 +51,10 @@ import org.preesm.model.slam.ComponentInstance;
 public class Route extends ArrayList<AbstractRouteStep> {
 
   /** ID used to reference the element in a property bean. */
-  public static final String propertyBeanName = "route";
+  public static final String PROPERTY_BEAN_NAME = "route";
 
   /** The Constant averageTransfer. */
-  public static final int averageTransfer = 1000;
+  public static final int AVG_TRANSFER = 1000;
 
   /** The Constant serialVersionUID. */
   private static final long serialVersionUID = 1L;
@@ -136,17 +135,12 @@ public class Route extends ArrayList<AbstractRouteStep> {
     return isIt;
   }
 
-  /*
-   * (non-Javadoc)
-   *
-   * @see java.util.AbstractCollection#toString()
-   */
   @Override
   public String toString() {
-    String trace = "";
+    final StringBuilder sb = new StringBuilder();
     for (final AbstractRouteStep step : this) {
-      trace += step + " ";
+      sb.append(step + " ");
     }
-    return trace;
+    return sb.toString();
   }
 }

@@ -43,7 +43,6 @@ import org.preesm.model.slam.Component;
 import org.preesm.model.slam.ComponentInstance;
 import org.preesm.model.slam.impl.ComNodeImpl;
 
-// TODO: Auto-generated Javadoc
 /**
  * Represents a single step in a route between two operators separated by communication nodes.
  *
@@ -53,11 +52,6 @@ public class MessageRouteStep extends AbstractRouteStep {
 
   /** Communication nodes separating the sender and the receiver. */
   protected List<ComponentInstance> nodes = null;
-
-  /**
-   * The route step type determines how the communication will be simulated.
-   */
-  public static final String type = "NodeRouteStep";
 
   /**
    * Instantiates a new message route step.
@@ -86,7 +80,7 @@ public class MessageRouteStep extends AbstractRouteStep {
    */
   @Override
   public String getType() {
-    return MessageRouteStep.type;
+    return NODE_TYPE;
   }
 
   /**
