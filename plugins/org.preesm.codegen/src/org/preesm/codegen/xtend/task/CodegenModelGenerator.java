@@ -79,7 +79,6 @@ import org.preesm.algorithm.mapper.graphtransfo.ImplementationPropertyNames;
 import org.preesm.algorithm.mapper.graphtransfo.VertexType;
 import org.preesm.algorithm.mapper.model.MapperDAG;
 import org.preesm.algorithm.mapper.model.MapperDAGVertex;
-import org.preesm.algorithm.memory.allocation.MemoryAllocator;
 import org.preesm.algorithm.memory.exclusiongraph.MemoryExclusionGraph;
 import org.preesm.algorithm.memory.exclusiongraph.MemoryExclusionVertex;
 import org.preesm.algorithm.memory.script.Range;
@@ -160,15 +159,12 @@ import org.preesm.workflow.elements.Workflow;
  * @author kdesnos
  *
  */
-public class CodegenModelGenerator {
+public class CodegenModelGenerator extends AbstractCodegenModelGenerator {
 
   private static final String PAPIFY_PE_ID_CONSTANT_NAME = "PE_id";
 
   private static final String ERROR_PATTERN_1 = "MemEx graph memory object (%s) refers to a DAG Vertex %s that does "
       + "not exist in the input DAG.\n" + "Make sure that the MemEx is derived from the input DAG of the codegen.";
-
-  /** Targeted {@link Design Architecture} of the code generation. */
-  private final Design archi;
 
   /**
    * {@link Map} of the main {@link Buffer} for the code generation. Each {@link Buffer} in this {@link List} contains
@@ -182,29 +178,6 @@ public class CodegenModelGenerator {
    * ports names, duplicates name may happen and number must be added to ensure correctness.
    */
   private final Map<String, Integer> bufferNames;
-
-  /**
-   * {@link DirectedAcyclicGraph DAG} used to generate code. This {@link DirectedAcyclicGraph DAG} must be the result of
-   * mapping/scheduling process.
-   */
-  private final MapperDAG algo;
-
-  /**
-   * {@link Map} of {@link String} and {@link MemoryExclusionGraph MEG} used to generate code. These
-   * {@link MemoryExclusionGraph MemEx MEGs} must be the result of an allocation process. Each {@link String}
-   * corresponds to a memory bank where the associated MEG is allocated.
-   *
-   * @see MemoryAllocator
-   */
-  private final Map<String, MemoryExclusionGraph> megs;
-
-  /**
-   * {@link PreesmScenario Scenario} at the origin of the call to the {@link AbstractCodegenPrinter Code Generator}.
-   */
-  private final Scenario scenario;
-
-  /** The workflow. */
-  private final Workflow workflow;
 
   /**
    * This {@link Map} associates each {@link ComponentInstance} to its corresponding {@link CoreBlock}.
@@ -290,11 +263,7 @@ public class CodegenModelGenerator {
    */
   public CodegenModelGenerator(final Design archi, final MapperDAG algo, final Map<String, MemoryExclusionGraph> megs,
       final Scenario scenario, final Workflow workflow) {
-    this.archi = archi;
-    this.algo = algo;
-    this.megs = megs;
-    this.scenario = scenario;
-    this.workflow = workflow;
+    super(archi, algo, megs, scenario, workflow);
 
     checkInputs(this.archi, this.algo, this.megs);
     this.bufferNames = new LinkedHashMap<>();
@@ -310,38 +279,6 @@ public class CodegenModelGenerator {
     this.papifiedPEs = new ArrayList<>();
     this.configsAdded = new ArrayList<>();
     this.papifyActive = false;
-  }
-
-  public final Design getArchi() {
-    return this.archi;
-  }
-
-  public final MapperDAG getAlgo() {
-    return this.algo;
-  }
-
-  public final Map<String, MemoryExclusionGraph> getMegs() {
-    return this.megs;
-  }
-
-  public final Scenario getScenario() {
-    return this.scenario;
-  }
-
-  /**
-   * Sets PAPIFY flag.
-   *
-   * @param papifyMonitoring
-   *          the flag to set papify instrumentation
-   */
-  public void registerPapify(final String papifyMonitoring) {
-
-    if (!papifyMonitoring.equalsIgnoreCase("true")) {
-      this.papifyActive = false;
-    } else {
-      this.papifyActive = true;
-    }
-
   }
 
   /**
@@ -626,7 +563,14 @@ public class CodegenModelGenerator {
           }
         }
         /*
-         * Minimizing the number of #ifdef _PREESM_MONITORING_INIT in the init
+         * Minimizing the nu public final Design getArchi() { return this.generator.getArchi(); }
+         * 
+         * public final MapperDAG getAlgo() { return this.generator.getAlgo(); }
+         * 
+         * public final Map<String, MemoryExclusionGraph> getMegs() { return this.generator.getMegs(); }
+         * 
+         * public final Scenario getScenario() { return this.generator.getScenario(); }mber of #ifdef
+         * _PREESM_MONITORING_INIT in the init
          */
         if (!initBlockElts.isEmpty()) {
           if (initBlockElts.get(0) instanceof PapifyFunctionCall) {

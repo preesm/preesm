@@ -7,6 +7,8 @@ PREESM Changelog
 ### New Feature
 
 ### Changes
+* Codegen:
+  * Added an AbstractCodegenModelGenerator supertype to ease experimentation of another model generator from CodegenEngine
 * Schedule:
   * Added a reference to a AbstractActor in HierarchicalSchedule to retrieve cluster from their schedule
 * Releng:
