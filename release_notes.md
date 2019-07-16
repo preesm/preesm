@@ -11,6 +11,8 @@ PREESM Changelog
   * Added a reference to a AbstractActor in HierarchicalSchedule to retrieve cluster from their schedule
 * Releng:
   * Update jacoco/sonar config;
+* PiSDF:
+  * Added method to ease regroupment of actors (for clustering process)
 
 ### Bug fix
 
