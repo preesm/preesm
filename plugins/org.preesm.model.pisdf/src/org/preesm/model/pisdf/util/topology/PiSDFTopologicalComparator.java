@@ -32,56 +32,46 @@
  * The fact that you are presently reading this means that you have had
  * knowledge of the CeCILL license and that you accept its terms.
  */
-package org.preesm.model.pisdf.switches;
+package org.preesm.model.pisdf.util.topology;
 
-import java.util.ArrayList;
-import java.util.Deque;
-import java.util.LinkedList;
-import java.util.List;
-import org.preesm.commons.exceptions.PreesmRuntimeException;
+import java.util.Comparator;
+import java.util.HashSet;
+import java.util.Set;
 import org.preesm.model.pisdf.AbstractActor;
 
 /**
- * This class offer a method for sorting a list of actors in the topoligical order.
+ * Compares 2 actors wrt their topological order.
+ *
+ * Use {@link PiSDFTopologyHelper#getComparator()} to instantiate.
  *
  * @author anmorvan
  *
  */
-public class PiSDFTopologicalSorter {
+class PiSDFTopologicalComparator implements Comparator<AbstractActor> {
 
-  private final List<AbstractActor>  visitedOrdered = new ArrayList<>();
-  private final Deque<AbstractActor> visiting       = new LinkedList<>();
+  private final Set<AbstractActor> visitedElements = new HashSet<>();
 
-  /**
-   * Sorts the list of actors in topological order. Fails if the graph containing the actors is not a DAG.
-   */
-  public static final List<AbstractActor> depthFirstSort(final List<AbstractActor> actors) {
-    final PiSDFTopologicalSorter piSDFPredecessorSwitch = new PiSDFTopologicalSorter();
-
-    for (AbstractActor a : actors) {
-      if (!(piSDFPredecessorSwitch.visitedOrdered.contains(a))) {
-        piSDFPredecessorSwitch.visit(a);
-      }
-    }
-    return piSDFPredecessorSwitch.visitedOrdered;
-  }
-
-  /*
-   * see https://en.wikipedia.org/wiki/Topological_sorting#Depth-first_search
-   */
-  private void visit(final AbstractActor actor) {
-    if (visitedOrdered.contains(actor)) {
-      // skip
+  @Override
+  public int compare(final AbstractActor o1, final AbstractActor o2) {
+    int res = 0;
+    visitedElements.clear();
+    if (o1.equals(o2)) {
+      res = 0;
     } else {
-      if (visiting.contains(actor)) {
-        // not a DAG
-        throw new PreesmRuntimeException("Graph is not a DAG");
+      final boolean predecessor = PiSDFTopologyHelper.isPredecessor(o1, o2);
+      visitedElements.clear();
+      if (predecessor) {
+        res = 1;
       } else {
-        visiting.push(actor);
-        actor.getDataOutputPorts().forEach(p -> visit(p.getFifo().getTargetPort().getContainingActor()));
-        visiting.pop();
-        visitedOrdered.add(0, actor);
+        final boolean predecessor2 = PiSDFTopologyHelper.isPredecessor(o2, o1);
+        visitedElements.clear();
+        if (predecessor2) {
+          res = -1;
+        } else {
+          res = 0;
+        }
       }
     }
+    return res;
   }
 }
