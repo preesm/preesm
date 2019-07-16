@@ -563,14 +563,7 @@ public class CodegenModelGenerator extends AbstractCodegenModelGenerator {
           }
         }
         /*
-         * Minimizing the nu public final Design getArchi() { return this.generator.getArchi(); }
-         * 
-         * public final MapperDAG getAlgo() { return this.generator.getAlgo(); }
-         * 
-         * public final Map<String, MemoryExclusionGraph> getMegs() { return this.generator.getMegs(); }
-         * 
-         * public final Scenario getScenario() { return this.generator.getScenario(); }mber of #ifdef
-         * _PREESM_MONITORING_INIT in the init
+         * Minimizing the number of #ifdef _PREESM_MONITORING_INIT in the init
          */
         if (!initBlockElts.isEmpty()) {
           if (initBlockElts.get(0) instanceof PapifyFunctionCall) {
