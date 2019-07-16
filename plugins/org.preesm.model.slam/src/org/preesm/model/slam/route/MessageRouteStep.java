@@ -63,7 +63,7 @@ public class MessageRouteStep extends AbstractRouteStep {
    * @param receiver
    *          the receiver
    */
-  public MessageRouteStep(final ComponentInstance sender, final List<ComponentInstance> inNodes,
+  MessageRouteStep(final ComponentInstance sender, final List<ComponentInstance> inNodes,
       final ComponentInstance receiver) {
     super(sender, receiver);
     this.nodes = new ArrayList<>();

@@ -79,7 +79,7 @@ public abstract class AbstractRouteStep implements CloneableProperty<AbstractRou
    * @param receiver
    *          the receiver
    */
-  public AbstractRouteStep(final ComponentInstance sender, final ComponentInstance receiver) {
+  protected AbstractRouteStep(final ComponentInstance sender, final ComponentInstance receiver) {
     super();
     this.sender = sender;
     this.receiver = receiver;
