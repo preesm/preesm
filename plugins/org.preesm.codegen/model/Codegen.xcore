@@ -203,6 +203,10 @@ class CoreBlock extends Block {
 
 class ClusterBlock extends Block {
 	String schedule
+	boolean parallel
+}
+
+class SectionBlock extends Block {
 }
 
 class ActorBlock extends Block {

@@ -85,6 +85,7 @@ import org.preesm.commons.files.PreesmResourcesHelper
 import org.preesm.model.pisdf.util.CHeaderUsedLocator
 import org.preesm.codegen.model.IteratedBuffer
 import org.preesm.codegen.model.ClusterBlock
+import org.preesm.codegen.model.SectionBlock
 
 /**
  * This printer is currently used to print C code only for GPP processors
@@ -241,6 +242,9 @@ class CPrinter extends DefaultPrinter {
 	override printClusterBlockHeader(ClusterBlock block) '''
 		// Cluster: «block.name»
 		// Schedule: «block.schedule»
+		«IF block.parallel.equals(true)»
+		#pragma omp parallel sections
+		«ENDIF»
 		{
 			
 			'''
@@ -249,6 +253,15 @@ class CPrinter extends DefaultPrinter {
 		}
 	'''
 
+	override printSectionBlockHeader(SectionBlock block) '''
+		#pragma omp section
+		{
+			
+			'''
+
+	override printSectionBlockFooter(SectionBlock block) '''
+		}
+	'''
 
 	override String printFifoCall(FifoCall fifoCall) {
 		var result = "fifo" + fifoCall.operation.toString.toLowerCase.toFirstUpper + "("

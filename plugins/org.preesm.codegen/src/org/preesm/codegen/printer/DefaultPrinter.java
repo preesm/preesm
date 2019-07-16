@@ -65,6 +65,7 @@ import org.preesm.codegen.model.OutputDataTransfer;
 import org.preesm.codegen.model.PapifyAction;
 import org.preesm.codegen.model.PapifyFunctionCall;
 import org.preesm.codegen.model.RegisterSetUpAction;
+import org.preesm.codegen.model.SectionBlock;
 import org.preesm.codegen.model.SharedMemoryCommunication;
 import org.preesm.codegen.model.SpecialCall;
 import org.preesm.codegen.model.SubBuffer;
@@ -239,6 +240,14 @@ public class DefaultPrinter extends CodegenAbstractPrinter {
   }
 
   public CharSequence printClusterBlockHeader(ClusterBlock block) {
+    return "";
+  }
+
+  public CharSequence printSectionBlockFooter(SectionBlock block) {
+    return "";
+  }
+
+  public CharSequence printSectionBlockHeader(SectionBlock block) {
     return "";
   }
 

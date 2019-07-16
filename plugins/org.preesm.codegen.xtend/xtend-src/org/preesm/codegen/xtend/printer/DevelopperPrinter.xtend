@@ -71,6 +71,7 @@ import org.preesm.codegen.model.DistributedMemoryCommunication
 import org.preesm.codegen.model.PapifyFunctionCall
 import org.preesm.codegen.model.IteratedBuffer
 import org.preesm.codegen.model.ClusterBlock
+import org.preesm.codegen.model.SectionBlock
 
 /**
  * This {@link DevelopperPrinter} is a dummy implementation of the
@@ -175,6 +176,10 @@ class DevelopperPrinter extends CodegenAbstractPrinter {
 	override printClusterBlockFooter(ClusterBlock block) '''<Cluster_Block_Foot>'''
 
 	override printClusterBlockHeader(ClusterBlock block) '''<Cluster_Block_Head>'''
+	
+	override printSectionBlockFooter(SectionBlock block) '''<Section_Block_Foot>'''
+
+	override printSectionBlockHeader(SectionBlock block) '''<Section_Block_Head>'''
 
 	override printNullBuffer(NullBuffer nullBuffer) '''<NullBuffer>'''
 
