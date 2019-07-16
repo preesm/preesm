@@ -42,7 +42,7 @@ import org.preesm.commons.exceptions.PreesmRuntimeException;
 import org.preesm.model.pisdf.AbstractActor;
 
 /**
- * This class offer a method for sorting a list of actors in the topoligical order.
+ * This class offer a method for sorting a list of actors in the topological order.
  *
  * @author anmorvan
  *
