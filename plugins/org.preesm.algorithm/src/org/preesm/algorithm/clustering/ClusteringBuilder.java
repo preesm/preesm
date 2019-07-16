@@ -1,6 +1,8 @@
 package org.preesm.algorithm.clustering;
 
+import java.util.ArrayList;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 import org.preesm.model.algorithm.schedule.Schedule;
 import org.preesm.model.pisdf.AbstractActor;
@@ -52,6 +54,81 @@ public class ClusteringBuilder {
 
   public Map<AbstractVertex, Long> getRepetitionVector() {
     return repetitionVector;
+  }
+
+  /**
+   * @param actorList
+   *          list of actor to clusterize
+   * @return generated PiGraph connected with the parent graph
+   */
+  private final PiGraph buildClusterGraph(List<AbstractActor> actorList) {
+    // Set cluster name to concatenated name of all actor involve in the list
+    StringBuilder clusterName = new StringBuilder();
+    for (AbstractActor a : actorList) {
+      clusterName.append(a.getName());
+      clusterName.append("_");
+    }
+    clusterName.deleteCharAt(clusterName.length() - 1);
+
+    // Create the cluster actor and set it name
+    PiGraph cluster = PiMMUserFactory.instance.createPiGraph();
+    cluster.setName(clusterName.toString());
+    cluster.setUrl(algorithm.getUrl() + "/" + cluster.getName() + ".pi");
+
+    // Add cluster to the parent graph and remove actors from parent
+    algorithm.addActor(cluster);
+    for (AbstractActor a : actorList) {
+      cluster.addActor(a);
+    }
+
+    // Compute clusterRepetition
+    long clusterRepetition = ClusteringHelper.computeGcdRepetition(actorList, repetitionVector);
+
+    int nbOut = 0;
+    int nbIn = 0;
+    // Export ports on cluster actor
+    for (AbstractActor a : actorList) {
+      // Retrieve actor repetition number
+      long actorRepetition = repetitionVector.get(a);
+
+      // Attach DataInputPort on the cluster actor
+      List<DataInputPort> dipTmp = new ArrayList<>();
+      dipTmp.addAll(a.getDataInputPorts());
+      for (DataInputPort dip : dipTmp) {
+        // We only deport the output if FIFO is not internal
+        if (!actorList.contains(dip.getIncomingFifo().getSourcePort().getContainingActor())) {
+          setPortAsHInterface(cluster, dip, "in_" + nbIn++,
+              dip.getExpression().evaluate() * actorRepetition / clusterRepetition);
+        } else {
+          cluster.addFifo(dip.getIncomingFifo());
+        }
+      }
+
+      // Attach DataOutputPort on the cluster actor
+      List<DataOutputPort> dopTmp = new ArrayList<>();
+      dopTmp.addAll(a.getDataOutputPorts());
+      for (DataOutputPort dop : dopTmp) {
+        // We only deport the output if FIFO is not internal
+        if (!actorList.contains(dop.getOutgoingFifo().getTargetPort().getContainingActor())) {
+          setPortAsHInterface(cluster, dop, "out_" + nbOut++,
+              dop.getExpression().evaluate() * actorRepetition / clusterRepetition);
+        } else {
+          cluster.addFifo(dop.getOutgoingFifo());
+        }
+      }
+    }
+
+    // Attach ConfigInputPort on the cluster actor
+    List<ConfigInputPort> cfgipTmp = new ArrayList<>();
+    for (AbstractActor a : actorList) {
+      cfgipTmp.addAll(a.getConfigInputPorts());
+    }
+    int nbCfg = 0;
+    for (ConfigInputPort cfgip : cfgipTmp) {
+      setConfigInputPortAsHInterface(cluster, cfgip, "config_" + nbCfg++);
+    }
+
+    return cluster;
   }
 
   /**
