@@ -238,7 +238,7 @@ public class CommunicationRouter {
           if (!currentSource.getEffectiveOperator().equals(currentDest.getEffectiveOperator())) {
             // Adds several transfers for one edge depending on the
             // route steps
-            final Route route = this.calculator.getRoute(currentEdge);
+            final Route route = this.getRoute(currentEdge);
             int routeStepIndex = 0;
             Transaction lastTransaction = null;
 
@@ -304,7 +304,7 @@ public class CommunicationRouter {
         if (currentSource.hasEffectiveOperator() && currentDest.hasEffectiveOperator()) {
           if (!currentSource.getEffectiveOperator().equals(currentDest.getEffectiveOperator())) {
             final MapperDAGEdge mapperEdge = (MapperDAGEdge) edge;
-            transferEdges.put(mapperEdge, this.calculator.getRoute(mapperEdge));
+            transferEdges.put(mapperEdge, this.getRoute(mapperEdge));
           }
         }
       }
@@ -370,14 +370,15 @@ public class CommunicationRouter {
     return cost;
   }
 
-  /*
-   * (non-Javadoc)
+  /**
    *
-   * @see org.ietr.preesm.mapper.abc.route.AbstractCommunicationRouter#getRoute(org.ietr.preesm.mapper.
-   * model.MapperDAGEdge)
    */
   public Route getRoute(final MapperDAGEdge edge) {
-    return this.calculator.getRoute(edge);
+    final MapperDAGVertex source = (MapperDAGVertex) edge.getSource();
+    final MapperDAGVertex target = (MapperDAGVertex) edge.getTarget();
+    final ComponentInstance sourceOp = source.getEffectiveOperator();
+    final ComponentInstance targetOp = target.getEffectiveOperator();
+    return calculator.getRoute(sourceOp, targetOp);
   }
 
 }

@@ -44,8 +44,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.logging.Level;
-import org.preesm.algorithm.mapper.model.MapperDAGEdge;
-import org.preesm.algorithm.mapper.model.MapperDAGVertex;
 import org.preesm.commons.exceptions.PreesmRuntimeException;
 import org.preesm.commons.logger.PreesmLogger;
 import org.preesm.model.slam.ComponentInstance;
@@ -272,21 +270,6 @@ public class RouteCalculator {
     }
 
     return r;
-  }
-
-  /**
-   * Choosing a route between 2 operators.
-   *
-   * @param edge
-   *          the edge
-   * @return the route
-   */
-  public Route getRoute(final MapperDAGEdge edge) {
-    final MapperDAGVertex source = (MapperDAGVertex) edge.getSource();
-    final MapperDAGVertex target = (MapperDAGVertex) edge.getTarget();
-    final ComponentInstance sourceOp = source.getEffectiveOperator();
-    final ComponentInstance targetOp = target.getEffectiveOperator();
-    return getRoute(sourceOp, targetOp);
   }
 
 }
