@@ -35,7 +35,7 @@
  * The fact that you are presently reading this means that you have had
  * knowledge of the CeCILL license and that you accept its terms.
  */
-package org.preesm.algorithm.mapper.abc.route;
+package org.preesm.model.slam.route;
 
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
@@ -51,10 +51,6 @@ import org.preesm.model.slam.Design;
 import org.preesm.model.slam.Link;
 import org.preesm.model.slam.Operator;
 import org.preesm.model.slam.impl.ComNodeImpl;
-import org.preesm.model.slam.route.AbstractRouteStep;
-import org.preesm.model.slam.route.Route;
-import org.preesm.model.slam.route.RouteStepFactory;
-import org.preesm.model.slam.route.RoutingTable;
 
 /**
  * This class can evaluate a given transfer and choose the best route between two operators.

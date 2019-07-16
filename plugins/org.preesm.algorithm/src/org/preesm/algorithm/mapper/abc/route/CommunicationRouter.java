@@ -63,6 +63,7 @@ import org.preesm.model.slam.ComponentInstance;
 import org.preesm.model.slam.Design;
 import org.preesm.model.slam.route.AbstractRouteStep;
 import org.preesm.model.slam.route.Route;
+import org.preesm.model.slam.route.RouteCalculator;
 
 /**
  * Routes the communications. Based on bridge design pattern. The processing is delegated to implementers
