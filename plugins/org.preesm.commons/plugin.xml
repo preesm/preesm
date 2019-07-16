@@ -39,7 +39,12 @@
 <plugin>
    <extension-point id="plugin" name="Preesm Plugin" schema="schema/plugin.exsd"/>
 
-   <extension
-         point="org.preesm.commons.plugin">
+   <extension point="org.eclipse.emf.ecore.generated_package">
+      <!-- @generated Graph -->
+      <package
+            uri="http://org.preesm/model/graph"
+            class="org.preesm.commons.graph.GraphPackage"
+            genModel="model/Graph.xcore"/>
    </extension>
+
 </plugin>
