@@ -6,7 +6,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.stream.Collectors;
-import org.preesm.algorithm.clustering.ClusteringHelper;
 import org.preesm.codegen.model.Block;
 import org.preesm.codegen.model.Buffer;
 import org.preesm.codegen.model.ClusterBlock;
@@ -146,7 +145,7 @@ public class CodegenClusterModelGenerator {
     // Build and fill ClusterBlock
     ClusterBlock clusterBlock = CodegenFactory.eINSTANCE.createClusterBlock();
     clusterBlock.setName(cluster.getName());
-    clusterBlock.setSchedule(ClusteringHelper.printScheduleRec(schedule));
+    clusterBlock.setSchedule(schedule.shortPrint());
     clusterBlock.setParallel(schedule.isParallel());
 
     // If the cluster has to be repeated few times, build a FiniteLoopBlock
