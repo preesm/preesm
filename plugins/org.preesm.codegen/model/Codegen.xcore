@@ -303,6 +303,7 @@ type range wraps org.preesm.algorithm.memory.script.Range
 
 class FiniteLoopBlock extends LoopBlock {
 	int nbIter
+	boolean parallel
 	refers IntVar iter
 	refers BufferIterator[] inBuffers
 	refers BufferIterator[] outBuffers
