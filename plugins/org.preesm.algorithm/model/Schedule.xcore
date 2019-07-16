@@ -98,12 +98,16 @@ interface Schedule {
 		if (children.empty)
 			return 0
 		else
-			return children.stream.mapToInt(it | it.span).sum
+			return children.stream.mapToInt(it|it.span).sum
 	}
 	/*
 	 * Returns whether the direct children of this schedule can be executed simultaneously.
 	 */
 	op boolean isParallel()
+	/*
+	 * returns a String representing the schedule informally.
+	 */
+	op String shortPrint()
 }
 
 /*
@@ -160,6 +164,25 @@ interface ActorSchedule extends Schedule {
 	op AbstractActor[] getActors() {
 		return orderedActors
 	}
+
+	op String shortPrint() {
+		val StringBuilder toPrint = new StringBuilder()
+		// Print sequential operator
+		if (getRepetition() > 1) {
+			toPrint.append(getRepetition() + "(")
+			if (isParallel) {
+				toPrint.append("/")
+			}
+			toPrint.append("(")
+		}
+
+		toPrint.append(actors.map[it.getName()].join(""))
+
+		if (getRepetition() > 1) {
+			toPrint.append(")")
+		}
+		return toPrint.toString()
+	}
 }
 
 /*
@@ -185,6 +208,18 @@ class ParallelActorSchedule extends ActorSchedule, ParallelSchedule {
  * sequential, in the order of apparition in the list.
  */
 class SequentialHiearchicalSchedule extends HierarchicalSchedule, SequentialSchedule {
+	op String shortPrint() {
+		val StringBuilder toPrint = new StringBuilder()
+		// Print sequential operator
+		if (getRepetition() > 1) {
+			toPrint.append(getRepetition() + "(")
+		}
+		toPrint.append(children.map[it.shortPrint()].join("*"))
+		if (getRepetition() > 1) {
+			toPrint.append(")")
+		}
+		return toPrint.toString()
+	}
 }
 
 /*
@@ -192,6 +227,16 @@ class SequentialHiearchicalSchedule extends HierarchicalSchedule, SequentialSche
  * simultaneous (i.e. parallel).
  */
 class ParallelHiearchicalSchedule extends HierarchicalSchedule, ParallelSchedule {
+	op String shortPrint() {
+		val StringBuilder toPrint = new StringBuilder()
+		// Print sequential operator
+		if (getRepetition() > 1) {
+			toPrint.append(getRepetition() + "/")
+		}
+		val String join = children.map[it.shortPrint()].join("|");
+		toPrint.append("(" + join + ")")
+		return toPrint.toString()
+	}
 }
 
 /*
@@ -223,7 +268,7 @@ class StagedActorSchedule extends SequentialActorSchedule {
  */
 class StagedHiearchicalSchedule extends SequentialHiearchicalSchedule {
 	op int getSpan() {
-		return children.stream.mapToInt(it | Math.max(it.span,1)).sum
+		return children.stream.mapToInt(it|Math.max(it.span, 1)).sum
 	}
 }
 
