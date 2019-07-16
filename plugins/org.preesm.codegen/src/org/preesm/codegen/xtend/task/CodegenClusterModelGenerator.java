@@ -19,11 +19,12 @@ import org.preesm.codegen.model.IntVar;
 import org.preesm.codegen.model.IteratedBuffer;
 import org.preesm.codegen.model.LoopBlock;
 import org.preesm.codegen.model.PortDirection;
+import org.preesm.codegen.model.SectionBlock;
 import org.preesm.commons.exceptions.PreesmRuntimeException;
 import org.preesm.commons.logger.PreesmLogger;
+import org.preesm.model.algorithm.schedule.ActorSchedule;
+import org.preesm.model.algorithm.schedule.HierarchicalSchedule;
 import org.preesm.model.algorithm.schedule.Schedule;
-import org.preesm.model.algorithm.schedule.SequentialActorSchedule;
-import org.preesm.model.algorithm.schedule.SequentialHiearchicalSchedule;
 import org.preesm.model.pisdf.AbstractActor;
 import org.preesm.model.pisdf.AbstractVertex;
 import org.preesm.model.pisdf.Actor;
@@ -102,7 +103,7 @@ public class CodegenClusterModelGenerator {
    */
   public void generate() {
     // Get PiGraph
-    PiGraph graph = (PiGraph) ((SequentialHiearchicalSchedule) schedule).getAttachedActor();
+    PiGraph graph = (PiGraph) ((HierarchicalSchedule) schedule).getAttachedActor();
     // Compute repetition vector for the whole process
     this.repVector = PiBRV.compute(graph, BRVMethod.LCM);
     // Print cluster into operatorBlock
@@ -117,12 +118,12 @@ public class CodegenClusterModelGenerator {
   private final Block buildClusterBlockRec(final Schedule schedule) {
     Block outputBlock = null;
 
-    if (schedule instanceof SequentialHiearchicalSchedule) {
+    if (schedule instanceof HierarchicalSchedule) {
       // If it's a sequential schedule i.e. cluster, fill information for ClusterBlock
       outputBlock = buildClusterBlock(schedule);
-    } else if (schedule instanceof SequentialActorSchedule) {
+    } else if (schedule instanceof ActorSchedule) {
       // If it's an actor firing, fill information for FunctionCall
-      outputBlock = buildActorCall(schedule);
+      outputBlock = buildActorCall((ActorSchedule) schedule);
     }
 
     return outputBlock;
@@ -140,12 +141,13 @@ public class CodegenClusterModelGenerator {
     Block outputBlock = null;
 
     // Retrieve cluster actor
-    PiGraph cluster = (PiGraph) ((SequentialHiearchicalSchedule) schedule).getAttachedActor();
+    PiGraph cluster = (PiGraph) ((HierarchicalSchedule) schedule).getAttachedActor();
 
     // Build and fill ClusterBlock
     ClusterBlock clusterBlock = CodegenFactory.eINSTANCE.createClusterBlock();
     clusterBlock.setName(cluster.getName());
     clusterBlock.setSchedule(ClusteringHelper.printScheduleRec(schedule));
+    clusterBlock.setParallel(schedule.isParallel());
 
     // If the cluster has to be repeated few times, build a FiniteLoopBlock
     if (schedule.getRepetition() > 1) {
@@ -158,6 +160,8 @@ public class CodegenClusterModelGenerator {
       flb.setNbIter((int) schedule.getRepetition());
       // Insert ClusterBlock inside FinitLoopBlock
       flb.getCodeElts().add(clusterBlock);
+      // Set the loop parallelizable if needed
+      flb.setParallel(schedule.isParallel());
       // Output the FiniteLoopBlock incorporating the ClusterBlock
       outputBlock = flb;
     } else {
@@ -172,13 +176,20 @@ public class CodegenClusterModelGenerator {
 
     // Call again buildClusterBlockRec to explore and build child
     for (Schedule e : schedule.getChildren()) {
-      clusterBlock.getCodeElts().add(buildClusterBlockRec(e));
+      // If it's a parallel schedule, print section
+      if (schedule.isParallel()) {
+        SectionBlock sectionBlock = CodegenFactory.eINSTANCE.createSectionBlock();
+        sectionBlock.getCodeElts().add(buildClusterBlockRec(e));
+        clusterBlock.getCodeElts().add(sectionBlock);
+      } else {
+        clusterBlock.getCodeElts().add(buildClusterBlockRec(e));
+      }
     }
 
     return outputBlock;
   }
 
-  private final Block buildActorCall(Schedule schedule) {
+  private final Block buildActorCall(ActorSchedule schedule) {
     Block outputBlock = null;
 
     // Retrieve actor to fire
@@ -209,12 +220,8 @@ public class CodegenClusterModelGenerator {
         flb.setIter(iterator);
         flb.setNbIter((int) schedule.getRepetition());
         flb.getCodeElts().addAll(callSet.getCodeElts());
-        // Register FiniteLoopBlock as parallelizable
-        if (ClusteringHelper.isAbstractActorSelfLooped(actor)) {
-          flb.setParallel(false);
-        } else {
-          flb.setParallel(true);
-        }
+        // Register FiniteLoopBlock as parallelizable if it's a ParallelActorSchedule
+        flb.setParallel(schedule.isParallel());
         // Output the FiniteLoopBlock incorporating the LoopBlock
         outputBlock = flb;
       } else {
