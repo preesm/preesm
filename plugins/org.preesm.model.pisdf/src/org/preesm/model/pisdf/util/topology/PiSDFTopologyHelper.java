@@ -6,6 +6,8 @@ import java.util.List;
 import org.preesm.model.pisdf.AbstractActor;
 import org.preesm.model.pisdf.util.topology.PiSDFPredecessorSwitch.IsPredecessorSwitch;
 import org.preesm.model.pisdf.util.topology.PiSDFPredecessorSwitch.PredecessorFoundException;
+import org.preesm.model.pisdf.util.topology.PiSDFSuccessorSwitch.IsSuccessorSwitch;
+import org.preesm.model.pisdf.util.topology.PiSDFSuccessorSwitch.SuccessorFoundException;
 
 /**
  *
@@ -30,6 +32,18 @@ public class PiSDFTopologyHelper {
       new IsPredecessorSwitch(target).doSwitch(potentialPred);
       return false;
     } catch (final PredecessorFoundException e) {
+      return true;
+    }
+  }
+
+  /**
+   * returns true if potentialSucc is actually a successor of target
+   */
+  public static final boolean isSuccessor(final AbstractActor potentialSucc, final AbstractActor target) {
+    try {
+      new IsSuccessorSwitch(target).doSwitch(potentialSucc);
+      return false;
+    } catch (final SuccessorFoundException e) {
       return true;
     }
   }
