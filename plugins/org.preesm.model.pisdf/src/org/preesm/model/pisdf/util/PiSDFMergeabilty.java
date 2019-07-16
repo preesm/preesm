@@ -94,4 +94,21 @@ public class PiSDFMergeabilty {
     } while (!exit);
     return result;
   }
+
+  /**
+   * @param a
+   *          first actor
+   * @param b
+   *          second actor
+   * @return true if the couple is mergeable i.e. do not introduce cycle if clustered
+   */
+  public static boolean isMergeable(final AbstractActor a, final AbstractActor b) {
+    final List<AbstractActor> predA = getPredecessors(a);
+    final List<AbstractActor> predB = getPredecessors(b);
+    final List<AbstractActor> succA = getSuccessors(a);
+    final List<AbstractActor> succB = getSuccessors(b);
+    predA.retainAll(succB);
+    predB.retainAll(succA);
+    return predA.isEmpty() && predB.isEmpty();
+  }
 }
