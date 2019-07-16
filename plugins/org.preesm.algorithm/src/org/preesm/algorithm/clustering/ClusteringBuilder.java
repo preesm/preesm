@@ -36,6 +36,8 @@ public class ClusteringBuilder {
 
   private PiGraph algorithm;
 
+  private IClusteringAlgorithm clusteringAlgorithm;
+
   private Map<AbstractVertex, Long> repetitionVector;
 
   /**
@@ -47,6 +49,7 @@ public class ClusteringBuilder {
   public ClusteringBuilder(final PiGraph algorithm, final String clusteringAlgorithm) {
     this.scheduleMapping = new LinkedHashMap<>();
     this.algorithm = algorithm;
+    this.clusteringAlgorithm = clusteringAlgorithmFactory(clusteringAlgorithm);
     this.repetitionVector = null;
   }
 
@@ -60,6 +63,25 @@ public class ClusteringBuilder {
 
   public Map<AbstractVertex, Long> getRepetitionVector() {
     return repetitionVector;
+  }
+
+  private final IClusteringAlgorithm clusteringAlgorithmFactory(String clusteringAlgorithm) {
+    if (clusteringAlgorithm != null) {
+      if (clusteringAlgorithm.equals("APGAN")) {
+        return new APGANClusteringAlgorithm();
+      }
+      if (clusteringAlgorithm.equals("Dummy")) {
+        return new DummyClusteringAlgorithm();
+      }
+      if (clusteringAlgorithm.equals("Random")) {
+        return new RandomClusteringAlgorithm(System.currentTimeMillis());
+      }
+      if (clusteringAlgorithm.equals("Parallel")) {
+        return new ParallelClusteringAlgorithm();
+      }
+    }
+    throw new PreesmRuntimeException(
+        "Parameter " + clusteringAlgorithm + " is not part of available clustering algorithm");
   }
 
   /**
