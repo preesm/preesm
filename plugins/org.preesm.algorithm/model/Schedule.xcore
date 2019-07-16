@@ -169,7 +169,7 @@ interface ActorSchedule extends Schedule {
 		val StringBuilder toPrint = new StringBuilder()
 		// Print sequential operator
 		if (getRepetition() > 1) {
-			toPrint.append(getRepetition() + "(")
+			toPrint.append(getRepetition())
 			if (isParallel) {
 				toPrint.append("/")
 			}
