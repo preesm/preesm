@@ -23,11 +23,12 @@ Export-Package: org.preesm.model.pisdf,
  org.preesm.model.pisdf.factory,
  org.preesm.model.pisdf.header.parser,
  org.preesm.model.pisdf.impl,
+ org.preesm.model.pisdf.reconnection,
  org.preesm.model.pisdf.serialize,
  org.preesm.model.pisdf.statictools,
  org.preesm.model.pisdf.statictools.optims,
- org.preesm.model.pisdf.switches,
- org.preesm.model.pisdf.util
+ org.preesm.model.pisdf.util,
+ org.preesm.model.pisdf.util.topology
 Bundle-ActivationPolicy: lazy
 Bundle-ClassPath: .
 Bundle-Vendor: %providerName
