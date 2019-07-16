@@ -44,6 +44,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Set;
 import java.util.stream.Collectors;
 import org.eclipse.emf.common.util.EList;
 import org.preesm.algorithm.mapper.model.MapperDAG;
@@ -246,6 +247,73 @@ public class EnergyAwarenessHelper {
         break;
       default:
         break;
+    }
+  }
+
+  /**
+   * 
+   * @param coresUsedOfEachType
+   *          cores used of each type
+   * @param coresOfEachType
+   *          cores available of each type
+   * @param typeOfSearch
+   *          String to select the type of search we will do
+   */
+  public static void getNextConditionalConfig(Map<String, Integer> coresUsedOfEachType,
+      Map<String, Integer> coresOfEachType, String typeOfSearch, Set<Map<String, Integer>> configsAlreadyUsed) {
+    Map<String, Integer> previousConfig = new LinkedHashMap<>();
+    previousConfig.putAll(coresUsedOfEachType);
+    boolean end = false;
+    boolean foundSomething = false;
+    switch (typeOfSearch) {
+      case "up":
+        System.out.println("Going UP");
+        for (Entry<String, Integer> peType : coresUsedOfEachType.entrySet()) {
+          int valueUsedBefore = peType.getValue();
+          int valueToMakeAverage = coresOfEachType.get(peType.getKey());
+          for (Map<String, Integer> alreadyUsed : configsAlreadyUsed) {
+            int valueThisConfig = alreadyUsed.get(peType.getKey());
+            if (valueThisConfig < valueToMakeAverage && valueThisConfig > valueUsedBefore) {
+              valueToMakeAverage = valueThisConfig;
+              foundSomething = true;
+            }
+          }
+          if (!foundSomething) {
+            valueToMakeAverage = coresOfEachType.get(peType.getKey());
+          }
+          int valueUsedNext = (int) Math.ceil((valueToMakeAverage + valueUsedBefore) / 2.0);
+          peType.setValue(valueUsedNext);
+        }
+        break;
+      case "down":
+        System.out.println("Going DOWN");
+        for (Entry<String, Integer> peType : coresUsedOfEachType.entrySet()) {
+          int valueUsedBefore = peType.getValue();
+          int valueToMakeAverage = 0;
+          for (Map<String, Integer> alreadyUsed : configsAlreadyUsed) {
+            int valueThisConfig = alreadyUsed.get(peType.getKey());
+            if (valueThisConfig > valueToMakeAverage && valueThisConfig < valueUsedBefore) {
+              valueToMakeAverage = valueThisConfig;
+              foundSomething = true;
+            }
+          }
+          if (!foundSomething) {
+            valueToMakeAverage = 0;
+          }
+          int valueUsedNext = (int) Math.floor((valueToMakeAverage + valueUsedBefore) / 2.0);
+          peType.setValue(valueUsedNext);
+        }
+        break;
+      default:
+        break;
+    }
+    if (previousConfig.equals(coresUsedOfEachType) || configsAlreadyUsed.contains(coresUsedOfEachType)) {
+      end = true;
+    }
+    if (end) {
+      for (Entry<String, Integer> peType : coresUsedOfEachType.entrySet()) {
+        peType.setValue(0);
+      }
     }
   }
 

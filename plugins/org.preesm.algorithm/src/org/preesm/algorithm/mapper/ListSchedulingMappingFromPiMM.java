@@ -41,7 +41,9 @@
 package org.preesm.algorithm.mapper;
 
 import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
 import java.util.Map;
+import java.util.Set;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.preesm.algorithm.mapper.abc.impl.latency.LatencyAbc;
 import org.preesm.algorithm.mapper.energyAwareness.EnergyAwarenessHelper;
@@ -94,6 +96,8 @@ public class ListSchedulingMappingFromPiMM extends ListSchedulingMappingFromDAG 
     }
 
     Map<String, Object> mapping = null;
+    Map<String, Object> mappingFPS = new LinkedHashMap<>();
+    Map<String, Object> mappingBest = new LinkedHashMap<>();
 
     if (usingEnergy) {
       /**
@@ -118,8 +122,12 @@ public class ListSchedulingMappingFromPiMM extends ListSchedulingMappingFromDAG 
       /**
        * Analyze the constraints and initialize the configs
        */
+      Set<Map<String, Integer>> configsAlreadyUsed = new LinkedHashSet<>();
       Map<String, Integer> coresOfEachType = EnergyAwarenessHelper.getCoresOfEachType(scenarioMapping);
-      Map<String, Integer> coresUsedOfEachType = EnergyAwarenessHelper.getFirstConfig(coresOfEachType, "max");
+      Map<String, Integer> coresUsedOfEachType = EnergyAwarenessHelper.getFirstConfig(coresOfEachType, "first");
+      Map<String, Integer> firstConfigToAdd = new LinkedHashMap<>();
+      firstConfigToAdd.putAll(coresUsedOfEachType);
+      configsAlreadyUsed.add(firstConfigToAdd);
 
       while (true) {
         /**
@@ -164,17 +172,29 @@ public class ListSchedulingMappingFromPiMM extends ListSchedulingMappingFromDAG 
             minEnergy = energyThisOne;
             closestFPS = fps;
             bestConfig.putAll(coresUsedOfEachType);
+            mappingBest.putAll(mapping);
           }
         } else if (Math.abs(objective - fps) < Math.abs(objective - closestFPS)) {
           closestFPS = fps;
           energyNoObjective = energyThisOne;
           bestConfig.putAll(coresUsedOfEachType);
+          mappingFPS.putAll(mapping);
         }
         System.out.println("Best energy = " + minEnergy + " --- best FPS = " + closestFPS);
         /**
          * Compute the next configuration
          */
-        EnergyAwarenessHelper.getNextConfig(coresUsedOfEachType, coresOfEachType, "oneLess");
+        if (fps < objective) {
+          EnergyAwarenessHelper.getNextConditionalConfig(coresUsedOfEachType, coresOfEachType, "up",
+              configsAlreadyUsed);
+        } else {
+          EnergyAwarenessHelper.getNextConditionalConfig(coresUsedOfEachType, coresOfEachType, "down",
+              configsAlreadyUsed);
+        }
+        Map<String, Integer> configToAdd = new LinkedHashMap<>();
+        configToAdd.putAll(coresUsedOfEachType);
+        configsAlreadyUsed.add(configToAdd);
+        // EnergyAwarenessHelper.getNextConfig(coresUsedOfEachType, coresOfEachType, "oneLess");
 
         /**
          * Check whether we have tested everything or not
@@ -193,17 +213,19 @@ public class ListSchedulingMappingFromPiMM extends ListSchedulingMappingFromDAG 
        */
       EnergyAwarenessHelper.updateConfigConstrains(scenario, scenarioMapping, bestConfig);
       EnergyAwarenessHelper.updateConfigSimu(scenario, scenarioMapping);
-
       if (minEnergy == Double.MAX_VALUE) {
         minEnergy = energyNoObjective;
+        mapping.putAll(mappingFPS);
+      } else {
+        mapping.putAll(mappingBest);
       }
 
       System.out.println("Repeating for the best one");
       System.out.println("Doing: " + bestConfig.toString());
       System.out.println("Best energy = " + minEnergy + " --- best FPS = " + closestFPS);
-      final MapperDAG dag = StaticPiMM2MapperDAGVisitor.convert(algorithm, architecture, scenarioMapping);
-      inputs.put(AbstractWorkflowNodeImplementation.KEY_SDF_DAG, dag);
-      mapping = super.execute(inputs, parameters, monitor, nodeName, workflow);
+      // final MapperDAG dag = StaticPiMM2MapperDAGVisitor.convert(algorithm, architecture, scenarioMapping);
+      // inputs.put(AbstractWorkflowNodeImplementation.KEY_SDF_DAG, dag);
+      // mapping = super.execute(inputs, parameters, monitor, nodeName, workflow);
 
       /**
        * Fill scenario with everything again to avoid further problems
