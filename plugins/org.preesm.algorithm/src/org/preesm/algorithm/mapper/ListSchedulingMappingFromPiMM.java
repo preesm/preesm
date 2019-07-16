@@ -194,7 +194,6 @@ public class ListSchedulingMappingFromPiMM extends ListSchedulingMappingFromDAG 
         Map<String, Integer> configToAdd = new LinkedHashMap<>();
         configToAdd.putAll(coresUsedOfEachType);
         configsAlreadyUsed.add(configToAdd);
-        // EnergyAwarenessHelper.getNextConfig(coresUsedOfEachType, coresOfEachType, "oneLess");
 
         /**
          * Check whether we have tested everything or not
@@ -209,7 +208,7 @@ public class ListSchedulingMappingFromPiMM extends ListSchedulingMappingFromDAG 
       scenario.getConstraints().getGroupConstraints().addAll(scenarioMapping.getConstraints().getGroupConstraints());
 
       /**
-       * Repeating for the best one
+       * Getting the best one
        */
       EnergyAwarenessHelper.updateConfigConstrains(scenario, scenarioMapping, bestConfig);
       EnergyAwarenessHelper.updateConfigSimu(scenario, scenarioMapping);
@@ -220,12 +219,9 @@ public class ListSchedulingMappingFromPiMM extends ListSchedulingMappingFromDAG 
         mapping.putAll(mappingBest);
       }
 
-      System.out.println("Repeating for the best one");
-      System.out.println("Doing: " + bestConfig.toString());
+      System.out.println("Getting the best one");
+      System.out.println("Best: " + bestConfig.toString());
       System.out.println("Best energy = " + minEnergy + " --- best FPS = " + closestFPS);
-      // final MapperDAG dag = StaticPiMM2MapperDAGVisitor.convert(algorithm, architecture, scenarioMapping);
-      // inputs.put(AbstractWorkflowNodeImplementation.KEY_SDF_DAG, dag);
-      // mapping = super.execute(inputs, parameters, monitor, nodeName, workflow);
 
       /**
        * Fill scenario with everything again to avoid further problems
