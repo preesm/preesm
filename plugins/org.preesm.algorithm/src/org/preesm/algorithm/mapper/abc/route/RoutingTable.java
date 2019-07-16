@@ -43,7 +43,6 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.concurrent.ConcurrentSkipListSet;
 import org.apache.commons.lang3.tuple.MutablePair;
-import org.preesm.model.scenario.Scenario;
 import org.preesm.model.slam.ComponentInstance;
 import org.preesm.model.slam.route.Route;
 
@@ -160,19 +159,13 @@ public class RoutingTable {
   /** List of available routes. */
   private final Map<OperatorCouple, RouteList> table;
 
-  /** Scenario. */
-  private final Scenario scenario;
-
   /**
    * Instantiates a new routing table.
    *
-   * @param scenario
-   *          the scenario
    */
-  public RoutingTable(final Scenario scenario) {
+  public RoutingTable() {
     super();
     this.table = new LinkedHashMap<>();
-    this.scenario = scenario;
   }
 
   /**
@@ -226,7 +219,8 @@ public class RoutingTable {
    * @param route
    *          the route
    */
-  public void addRoute(final ComponentInstance op1, final ComponentInstance op2, final Route route) {
+  public void addRoute(final ComponentInstance op1, final ComponentInstance op2, final Route route,
+      final long avgSize) {
     OperatorCouple key = null;
     final OperatorCouple opCouple = new OperatorCouple(op1, op2);
     for (final OperatorCouple c : this.table.keySet()) {
@@ -238,7 +232,7 @@ public class RoutingTable {
     if (key != null) {
       list = this.table.get(key);
     } else {
-      list = new RouteList(this.scenario.getSimulationInfo().getAverageDataSize());
+      list = new RouteList(avgSize);
       this.table.put(opCouple, list);
     }
     list.add(route);

@@ -108,7 +108,7 @@ public class CommunicationRouter {
     this.implementers = new LinkedHashMap<>();
     setManagers(implementation, edgeScheduler, orderManager);
 
-    this.calculator = RouteCalculator.getInstance(archi, scenario);
+    this.calculator = RouteCalculator.getInstance(archi, scenario.getSimulationInfo().getAverageDataSize());
 
     // Initializing the available router implementers
     addImplementer(AbstractRouteStep.DMA_TYPE, new DmaComRouterImplementer(this));

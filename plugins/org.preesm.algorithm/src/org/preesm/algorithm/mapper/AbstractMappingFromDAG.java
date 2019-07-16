@@ -112,7 +112,7 @@ public abstract class AbstractMappingFromDAG extends AbstractTaskImplementation 
     final Scenario scenario = (Scenario) inputs.get(AbstractWorkflowNodeImplementation.KEY_SCENARIO);
 
     // Asking to recalculate routes
-    RouteCalculator.recalculate(architecture, scenario);
+    RouteCalculator.recalculate(architecture, scenario.getSimulationInfo().getAverageDataSize());
 
     if (dag == null) {
       throw new PreesmRuntimeException(" graph can't be scheduled, check console messages");
