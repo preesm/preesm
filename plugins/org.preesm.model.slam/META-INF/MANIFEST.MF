@@ -18,6 +18,7 @@ Require-Bundle: org.eclipse.core.runtime,
  org.eclipse.emf.ecore;visibility:=reexport,
  org.eclipse.xtext.xbase.lib,
  org.eclipse.emf.ecore.xcore.lib,
+ org.apache.commons.lang3,
  org.preesm.model.slam;visibility:=reexport,
  org.preesm.commons;visibility:=reexport,
  org.preesm.workflow;visibility:=reexport

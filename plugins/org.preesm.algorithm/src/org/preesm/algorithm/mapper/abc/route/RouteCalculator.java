@@ -56,6 +56,7 @@ import org.preesm.model.slam.impl.ComNodeImpl;
 import org.preesm.model.slam.route.AbstractRouteStep;
 import org.preesm.model.slam.route.Route;
 import org.preesm.model.slam.route.RouteStepFactory;
+import org.preesm.model.slam.route.RoutingTable;
 
 /**
  * This class can evaluate a given transfer and choose the best route between two operators.

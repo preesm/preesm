@@ -35,7 +35,7 @@
  * The fact that you are presently reading this means that you have had
  * knowledge of the CeCILL license and that you accept its terms.
  */
-package org.preesm.algorithm.mapper.abc.route;
+package org.preesm.model.slam.route;
 
 import java.util.Comparator;
 import java.util.LinkedHashMap;
@@ -44,7 +44,6 @@ import java.util.Map.Entry;
 import java.util.concurrent.ConcurrentSkipListSet;
 import org.apache.commons.lang3.tuple.MutablePair;
 import org.preesm.model.slam.ComponentInstance;
-import org.preesm.model.slam.route.Route;
 
 /**
  * Table representing the different routes available to go from one operator to another.
