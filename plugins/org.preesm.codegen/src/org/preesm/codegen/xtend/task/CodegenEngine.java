@@ -105,13 +105,14 @@ public class CodegenEngine {
   /** The real printers. */
   private Map<IConfigurationElement, CodegenAbstractPrinter> realPrinters;
 
-  private final CodegenModelGenerator generator;
+  private final AbstractCodegenModelGenerator generator;
 
   /**
    * Instantiates a new codegen engine.
    *
    */
-  public CodegenEngine(final String codegenPath, final Collection<Block> codeBlocks, CodegenModelGenerator generator) {
+  public CodegenEngine(final String codegenPath, final Collection<Block> codeBlocks,
+      AbstractCodegenModelGenerator generator) {
     this.codegenPath = codegenPath;
     this.codeBlocks = codeBlocks;
     this.generator = generator;
