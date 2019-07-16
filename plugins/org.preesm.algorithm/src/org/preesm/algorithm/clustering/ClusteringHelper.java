@@ -118,4 +118,19 @@ public class ClusteringHelper {
     return clusterRepetition;
   }
 
+  /**
+   * @param actor
+   *          actor to check if it is self looped
+   * @return true if actor is self looped, false otherwise
+   */
+  public static final boolean isActorSelfLooped(AbstractActor actor) {
+    for (DataInputPort dip : actor.getDataInputPorts()) {
+      AbstractActor source = (AbstractActor) dip.getIncomingFifo().getSource();
+      if (source.equals(actor)) {
+        return true;
+      }
+    }
+    return false;
+  }
+
 }
