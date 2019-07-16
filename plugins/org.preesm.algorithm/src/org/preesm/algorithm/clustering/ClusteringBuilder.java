@@ -4,10 +4,13 @@ import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import org.preesm.commons.exceptions.PreesmRuntimeException;
 import org.preesm.model.algorithm.schedule.ActorSchedule;
 import org.preesm.model.algorithm.schedule.HierarchicalSchedule;
+import org.preesm.model.algorithm.schedule.ParallelActorSchedule;
 import org.preesm.model.algorithm.schedule.Schedule;
 import org.preesm.model.algorithm.schedule.ScheduleFactory;
+import org.preesm.model.algorithm.schedule.SequentialActorSchedule;
 import org.preesm.model.pisdf.AbstractActor;
 import org.preesm.model.pisdf.AbstractVertex;
 import org.preesm.model.pisdf.ConfigInputInterface;
@@ -57,6 +60,41 @@ public class ClusteringBuilder {
 
   public Map<AbstractVertex, Long> getRepetitionVector() {
     return repetitionVector;
+  }
+
+  /**
+   * @param actorSchedule
+   *          schedule of actor to add to the hierarchical schedule
+   * @param repetitionVector
+   *          repetition vector corresponding to the graph
+   * @param scheduleMapping
+   *          scheduling mapping of current clustering process
+   * @return hierarchical schedule created
+   */
+  private final HierarchicalSchedule buildHierarchicalSchedule(ActorSchedule actorSchedule) {
+
+    // Create parallel or sequential schedule
+    HierarchicalSchedule schedule = null;
+    if (actorSchedule instanceof ParallelActorSchedule) {
+      schedule = ScheduleFactory.eINSTANCE.createParallelHiearchicalSchedule();
+    } else if (actorSchedule instanceof SequentialActorSchedule) {
+      schedule = ScheduleFactory.eINSTANCE.createSequentialHiearchicalSchedule();
+    } else {
+      throw new PreesmRuntimeException("ClusteringHelper: Cannot create schedule for unknown actor schedule");
+    }
+
+    // Retrieve actor list
+    List<AbstractActor> actorList = actorSchedule.getOrderedActors();
+
+    // Compute rvCluster
+    long clusterRepetition = ClusteringHelper.computeGcdRepetition(actorList, repetitionVector);
+
+    // Construct a sequential schedule
+    for (AbstractActor a : actorList) {
+      addActorToHierarchicalSchedule(schedule, a, repetitionVector.get(a) / clusterRepetition);
+    }
+
+    return schedule;
   }
 
   /**
