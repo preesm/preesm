@@ -35,11 +35,16 @@
 package org.preesm.algorithm.clustering;
 
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
+import org.apache.commons.math3.util.ArithmeticUtils;
 import org.eclipse.emf.common.util.ECollections;
 import org.eclipse.emf.common.util.EList;
 import org.preesm.algorithm.schedule.model.Schedule;
+import org.preesm.commons.exceptions.PreesmRuntimeException;
 import org.preesm.model.pisdf.AbstractActor;
+import org.preesm.model.pisdf.AbstractVertex;
 import org.preesm.model.pisdf.DataInputPort;
 import org.preesm.model.pisdf.Fifo;
 import org.preesm.model.scenario.Scenario;
@@ -82,6 +87,35 @@ public class ClusteringHelper {
     final List<DataInputPort> ports = getExternalyConnectedPorts(cluster);
     return ports.stream().mapToLong(p -> p.getPortRateExpression().evaluate()
         * scenario.getSimulationInfo().getDataTypeSizeOrDefault(p.getFifo().getType())).sum();
+  }
+
+  /**
+   * Used to get great common divisor repetition count of a list of actors
+   * 
+   * @param actorList
+   *          actor to compute gcd repetition from
+   * @param repetitionVector
+   *          repetition vector of corresponding graph
+   * 
+   * @return gcd repetition count
+   */
+  public static final long computeGcdRepetition(List<AbstractActor> actorList,
+      Map<AbstractVertex, Long> repetitionVector) {
+    // Retrieve all repetition value
+    List<Long> actorsRepetition = new LinkedList<>();
+    for (AbstractActor a : actorList) {
+      if (repetitionVector.containsKey(a)) {
+        actorsRepetition.add(repetitionVector.get(a));
+      } else {
+        throw new PreesmRuntimeException("ClusteringHelper: Repetition vector does not contains key of " + a.getName());
+      }
+    }
+    // Compute gcd
+    long clusterRepetition = actorsRepetition.get(0);
+    for (int i = 1; i < actorsRepetition.size(); i++) {
+      clusterRepetition = ArithmeticUtils.gcd(clusterRepetition, actorsRepetition.get(i));
+    }
+    return clusterRepetition;
   }
 
 }
