@@ -1,8 +1,14 @@
 package org.preesm.model.pisdf.util;
 
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
+import org.apache.commons.lang3.tuple.ImmutablePair;
+import org.apache.commons.lang3.tuple.Pair;
 import org.preesm.model.pisdf.AbstractActor;
+import org.preesm.model.pisdf.DataOutputPort;
+import org.preesm.model.pisdf.InterfaceActor;
+import org.preesm.model.pisdf.PiGraph;
 
 /**
  * @author dgageot
@@ -111,4 +117,27 @@ public class PiSDFMergeabilty {
     predB.retainAll(succA);
     return predA.isEmpty() && predB.isEmpty();
   }
+
+  /**
+   * @param graph
+   *          input graph
+   * @return list of mergeable couple
+   */
+  public static List<Pair<AbstractActor, AbstractActor>> getConnectedCouple(final PiGraph graph) {
+    List<Pair<AbstractActor, AbstractActor>> listCouple = new LinkedList<>();
+    List<AbstractActor> graphActors = graph.getActors();
+
+    // Get every mergeable couple
+    for (AbstractActor a : graphActors) {
+      for (DataOutputPort dop : a.getDataOutputPorts()) {
+        AbstractActor b = dop.getOutgoingFifo().getTargetPort().getContainingActor();
+        if (PiSDFMergeabilty.isMergeable(a, b) && !(b instanceof InterfaceActor)) {
+          Pair<AbstractActor, AbstractActor> couple = new ImmutablePair<>(a, b);
+          listCouple.add(couple);
+        }
+      }
+    }
+    return listCouple;
+  }
+
 }
