@@ -4,7 +4,10 @@ import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import org.preesm.model.algorithm.schedule.ActorSchedule;
+import org.preesm.model.algorithm.schedule.HierarchicalSchedule;
 import org.preesm.model.algorithm.schedule.Schedule;
+import org.preesm.model.algorithm.schedule.ScheduleFactory;
 import org.preesm.model.pisdf.AbstractActor;
 import org.preesm.model.pisdf.AbstractVertex;
 import org.preesm.model.pisdf.ConfigInputInterface;
@@ -54,6 +57,36 @@ public class ClusteringBuilder {
 
   public Map<AbstractVertex, Long> getRepetitionVector() {
     return repetitionVector;
+  }
+
+  /**
+   * @param schedule
+   *          schedule to add element to
+   * @param actor
+   *          actor to add to the schedule
+   * @param repetition
+   *          repetition corresponding to the actor
+   * @return
+   */
+  private final void addActorToHierarchicalSchedule(HierarchicalSchedule schedule, AbstractActor actor,
+      long repetition) {
+    if (scheduleMapping.containsKey(actor)) {
+      Schedule subSched = scheduleMapping.get(actor);
+      scheduleMapping.remove(actor);
+      subSched.setRepetition(repetition);
+      schedule.getScheduleTree().add(subSched);
+    } else {
+      ActorSchedule actorSchedule = null;
+      // If actor is self looped, it is a sequential actor schedule
+      if (ClusteringHelper.isActorSelfLooped(actor)) {
+        actorSchedule = ScheduleFactory.eINSTANCE.createSequentialActorSchedule();
+      } else {
+        actorSchedule = ScheduleFactory.eINSTANCE.createParallelActorSchedule();
+      }
+      actorSchedule.setRepetition(repetition);
+      actorSchedule.getActors().add(actor);
+      schedule.getScheduleTree().add(actorSchedule);
+    }
   }
 
   /**
