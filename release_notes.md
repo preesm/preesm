@@ -14,7 +14,8 @@ PREESM Changelog
 * Releng:
   * Update jacoco/sonar config;
 * PiSDF:
-  * Added method to ease regroupment of actors (for clustering process)
+  * Added method to ease regroupment of actors (for clustering process);
+  * Refactor Topology helper methods and classes;
 
 ### Bug fix
 
