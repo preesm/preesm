@@ -63,6 +63,28 @@ public class ClusteringBuilder {
   }
 
   /**
+   * clusterize two actors (left -> right, it means that left produce token for right)
+   * 
+   * @param actorSchedule
+   *          schedule of actor inside of cluster
+   * @return
+   */
+  private final void clusterizeActors(ActorSchedule actorSchedule) {
+
+    // Build corresponding hierarchical actor
+    AbstractActor cluster = buildClusterGraph(actorSchedule.getOrderedActors());
+
+    // Build corresponding hierarchical schedule
+    HierarchicalSchedule schedule = buildHierarchicalSchedule(actorSchedule);
+
+    // Attach cluster to hierarchical schedule
+    schedule.setAttachedActor(cluster);
+
+    // Register the new cluster with it corresponding key
+    scheduleMapping.put(cluster, schedule);
+  }
+
+  /**
    * @param actorSchedule
    *          schedule of actor to add to the hierarchical schedule
    * @param repetitionVector
