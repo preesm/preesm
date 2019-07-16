@@ -24,7 +24,10 @@ import org.preesm.model.pisdf.Fifo;
 import org.preesm.model.pisdf.InterfaceActor;
 import org.preesm.model.pisdf.PiGraph;
 import org.preesm.model.pisdf.Port;
+import org.preesm.model.pisdf.brv.BRVMethod;
+import org.preesm.model.pisdf.brv.PiBRV;
 import org.preesm.model.pisdf.factory.PiMMUserFactory;
+import org.preesm.model.pisdf.util.PiGraphConsistenceChecker;
 
 /**
  * @author dgageot
@@ -63,6 +66,26 @@ public class ClusteringBuilder {
 
   public Map<AbstractVertex, Long> getRepetitionVector() {
     return repetitionVector;
+  }
+
+  /**
+   * @return schedule mapping including all cluster with corresponding scheduling
+   */
+  public final Map<AbstractActor, Schedule> processClustering() {
+    // Until the algorithm has to work
+    while (!clusteringAlgorithm.clusteringComplete(this)) {
+      // Compute BRV with the corresponding graph
+      repetitionVector = PiBRV.compute(algorithm, BRVMethod.LCM);
+      // Search actors to clusterize
+      ActorSchedule actorSchedule = clusteringAlgorithm.findActors(this);
+      // Clusterize given actors
+      clusterizeActors(actorSchedule);
+    }
+
+    // Verify consistency of result graph
+    PiGraphConsistenceChecker.check(algorithm);
+
+    return scheduleMapping;
   }
 
   private final IClusteringAlgorithm clusteringAlgorithmFactory(String clusteringAlgorithm) {
