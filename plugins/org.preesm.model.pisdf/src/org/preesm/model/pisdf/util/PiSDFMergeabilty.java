@@ -13,14 +13,14 @@ import org.preesm.model.pisdf.PiGraph;
 /**
  * @author dgageot
  * 
- *         Handle useful method to get actor predecessors/successors and determine if a couple of actor is mergeable
+ *         Handle useful method to get actor predecessors/successors and determine if a couple of actors is mergeable
  *         i.e. clusterizable. Many of theses methods have been converted from SDF to PiSDF, originally developed by
  *         Julien Hascoet.
  * 
  */
 public class PiSDFMergeabilty {
   /**
-   * Used to get all actors linked in input (only layer n-1) of a specified PiSDF actor
+   * Used to get actors connected in input a specified PiSDF actor
    * 
    * @param a
    *          actor
@@ -33,7 +33,7 @@ public class PiSDFMergeabilty {
   }
 
   /**
-   * Used to get all actors linked in output (only layer n-1) of a specified PiSDF actor
+   * Used to get actors connected in output of a specified PiSDF actor
    * 
    * @param a
    *          actor
@@ -46,7 +46,7 @@ public class PiSDFMergeabilty {
   }
 
   /**
-   * Used to get all actors linked in input (all the graph) of a specified PiSDF actor
+   * Used to get all predecessors of a specified PiSDF actor
    * 
    * @param a
    *          actor
@@ -74,8 +74,8 @@ public class PiSDFMergeabilty {
   }
 
   /**
-   * Used to get all actors linked in output (all the graph) of a specified PiSDF actor
-   * 
+   * Used to get all successors of a specified PiSDF actor
+   *
    * @param a
    *          actor
    * @return successors of actor a
@@ -102,11 +102,13 @@ public class PiSDFMergeabilty {
   }
 
   /**
+   * Used to check if these actors are mergeable i.e. do not introduce cycle if clustered
+   * 
    * @param a
    *          first actor
    * @param b
    *          second actor
-   * @return true if the couple is mergeable i.e. do not introduce cycle if clustered
+   * @return true if the couple is mergeable
    */
   public static boolean isMergeable(final AbstractActor a, final AbstractActor b) {
     final List<AbstractActor> predA = getPredecessors(a);
@@ -119,24 +121,29 @@ public class PiSDFMergeabilty {
   }
 
   /**
+   * Used to get the list of connected-couple that can be merged. Connected-couple means that actors are connected
+   * together through one or more Fifo.
+   * 
    * @param graph
    *          input graph
-   * @return list of mergeable couple
+   * @return list of mergeable connected-couple
    */
   public static List<Pair<AbstractActor, AbstractActor>> getConnectedCouple(final PiGraph graph) {
     List<Pair<AbstractActor, AbstractActor>> listCouple = new LinkedList<>();
     List<AbstractActor> graphActors = graph.getActors();
 
-    // Get every mergeable couple
+    // Get every mergeable connected-couple
     for (AbstractActor a : graphActors) {
       for (DataOutputPort dop : a.getDataOutputPorts()) {
         AbstractActor b = dop.getOutgoingFifo().getTargetPort().getContainingActor();
+        // Verify that actor are connected together
         if (PiSDFMergeabilty.isMergeable(a, b) && !(b instanceof InterfaceActor)) {
           Pair<AbstractActor, AbstractActor> couple = new ImmutablePair<>(a, b);
           listCouple.add(couple);
         }
       }
     }
+
     return listCouple;
   }
 
