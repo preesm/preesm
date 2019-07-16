@@ -37,12 +37,14 @@ import org.preesm.model.pisdf.DataOutputInterface;
 import org.preesm.model.pisdf.DataOutputPort;
 import org.preesm.model.pisdf.DataPort;
 import org.preesm.model.pisdf.Direction;
+import org.preesm.model.pisdf.ExecutableActor;
 import org.preesm.model.pisdf.Fifo;
 import org.preesm.model.pisdf.FunctionArgument;
 import org.preesm.model.pisdf.ISetter;
 import org.preesm.model.pisdf.Parameter;
 import org.preesm.model.pisdf.PiGraph;
 import org.preesm.model.pisdf.Port;
+import org.preesm.model.pisdf.SpecialActor;
 import org.preesm.model.pisdf.brv.BRVMethod;
 import org.preesm.model.pisdf.brv.PiBRV;
 import org.preesm.model.scenario.Scenario;
@@ -182,36 +184,48 @@ public class CodegenClusterModelGenerator {
 
     // Retrieve actor to fire
     Actor actor = (Actor) schedule.getActors().get(0);
-    // Retrieve and add init function
-    addInitFunctionCall(actor);
 
-    // Build FunctionCall
-    FunctionCall functionCall = CodegenFactory.eINSTANCE.createFunctionCall();
-    functionCall.setActorName(actor.getName());
+    if (actor instanceof SpecialActor) {
+      throw new PreesmRuntimeException(
+          "CodegenClusterModelGenerator does not handle special actor at this point of developement");
+    } else if (actor instanceof ExecutableActor) {
+      // Retrieve and add init function
+      addInitFunctionCall(actor);
 
-    // Put FunctionCall in a block
-    LoopBlock callSet = CodegenFactory.eINSTANCE.createLoopBlock();
-    callSet.getCodeElts().add(functionCall);
+      // Build FunctionCall
+      FunctionCall functionCall = CodegenFactory.eINSTANCE.createFunctionCall();
+      functionCall.setActorName(actor.getName());
 
-    // If actors has to be repeated few times, build a FiniteLoopBlock
-    if (schedule.getRepetition() > 1) {
-      FiniteLoopBlock flb = CodegenFactory.eINSTANCE.createFiniteLoopBlock();
-      IntVar iterator = CodegenFactory.eINSTANCE.createIntVar();
-      iterator.setName("index_" + actor.getName());
-      // Register the iteration var for that specific actor/cluster
-      iterMap.put(actor, iterator);
-      flb.setIter(iterator);
-      flb.setNbIter((int) schedule.getRepetition());
-      flb.getCodeElts().addAll(callSet.getCodeElts());
-      // Output the FiniteLoopBlock incorporating the LoopBlock
-      outputBlock = flb;
-    } else {
-      // Output the LoopBlock
-      outputBlock = callSet;
+      // Put FunctionCall in a block
+      LoopBlock callSet = CodegenFactory.eINSTANCE.createLoopBlock();
+      callSet.getCodeElts().add(functionCall);
+
+      // If actors has to be repeated few times, build a FiniteLoopBlock
+      if (schedule.getRepetition() > 1) {
+        FiniteLoopBlock flb = CodegenFactory.eINSTANCE.createFiniteLoopBlock();
+        IntVar iterator = CodegenFactory.eINSTANCE.createIntVar();
+        iterator.setName("index_" + actor.getName());
+        // Register the iteration var for that specific actor/cluster
+        iterMap.put(actor, iterator);
+        flb.setIter(iterator);
+        flb.setNbIter((int) schedule.getRepetition());
+        flb.getCodeElts().addAll(callSet.getCodeElts());
+        // Register FiniteLoopBlock as parallelizable
+        if (ClusteringHelper.isAbstractActorSelfLooped(actor)) {
+          flb.setParallel(false);
+        } else {
+          flb.setParallel(true);
+        }
+        // Output the FiniteLoopBlock incorporating the LoopBlock
+        outputBlock = flb;
+      } else {
+        // Output the LoopBlock
+        outputBlock = callSet;
+      }
+
+      // Retrieve Refinement from actor for loop function
+      fillFunctionCallArgument(functionCall, actor);
     }
-
-    // Retrieve Refinement from actor for loop function
-    fillFunctionCallArgument(functionCall, actor);
 
     return outputBlock;
   }
