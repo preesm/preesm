@@ -40,11 +40,14 @@ import java.util.Set;
 import org.preesm.model.pisdf.AbstractActor;
 
 /**
+ * Compares 2 actors wrt their topological order.
+ *
+ * Use {@link PiSDFTopologyHelper#getComparator()} to instantiate.
  *
  * @author anmorvan
  *
  */
-public class PiSDFTopologicalComparator implements Comparator<AbstractActor> {
+class PiSDFTopologicalComparator implements Comparator<AbstractActor> {
 
   private final Set<AbstractActor> visitedElements = new HashSet<>();
 
@@ -55,12 +58,12 @@ public class PiSDFTopologicalComparator implements Comparator<AbstractActor> {
     if (o1.equals(o2)) {
       res = 0;
     } else {
-      final boolean predecessor = PiSDFPredecessorSwitch.isPredecessor(o1, o2);
+      final boolean predecessor = PiSDFTopologyHelper.isPredecessor(o1, o2);
       visitedElements.clear();
       if (predecessor) {
         res = 1;
       } else {
-        final boolean predecessor2 = PiSDFPredecessorSwitch.isPredecessor(o2, o1);
+        final boolean predecessor2 = PiSDFTopologyHelper.isPredecessor(o2, o1);
         visitedElements.clear();
         if (predecessor2) {
           res = -1;

@@ -48,7 +48,7 @@ import org.preesm.model.pisdf.Port;
 import org.preesm.model.pisdf.util.PiMMSwitch;
 
 /**
- *
+ * Visits all predecessors of a given PiSDF element through the connected Fifos.
  */
 public abstract class PiSDFPredecessorSwitch extends PiMMSwitch<Boolean> {
 
@@ -115,23 +115,11 @@ public abstract class PiSDFPredecessorSwitch extends PiMMSwitch<Boolean> {
   }
 
   /**
-   * returns true if potentialPred is actually a predecessor of target
-   */
-  public static final boolean isPredecessor(final AbstractActor potentialPred, final AbstractActor target) {
-    try {
-      new IsPredecessorSwitch(target).doSwitch(potentialPred);
-      return false;
-    } catch (final PredecessorFoundException e) {
-      return true;
-    }
-  }
-
-  /**
    *
    * @author anmorvan
    *
    */
-  private static class PredecessorFoundException extends RuntimeException {
+  static class PredecessorFoundException extends RuntimeException {
     private static final long serialVersionUID = -566281860304717658L;
   }
 
@@ -140,7 +128,7 @@ public abstract class PiSDFPredecessorSwitch extends PiMMSwitch<Boolean> {
    * @author anmorvan
    *
    */
-  private static class IsPredecessorSwitch extends PiSDFPredecessorSwitch {
+  static class IsPredecessorSwitch extends PiSDFPredecessorSwitch {
     private final AbstractActor potentialPred;
 
     public IsPredecessorSwitch(final AbstractActor potentialPred) {

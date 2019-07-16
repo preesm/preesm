@@ -47,7 +47,7 @@ import org.preesm.model.pisdf.AbstractActor;
  * @author anmorvan
  *
  */
-public class PiSDFTopologicalSorter {
+class PiSDFTopologicalSorter {
 
   private final List<AbstractActor>  visitedOrdered = new ArrayList<>();
   private final Deque<AbstractActor> visiting       = new LinkedList<>();
@@ -55,7 +55,7 @@ public class PiSDFTopologicalSorter {
   /**
    * Sorts the list of actors in topological order. Fails if the graph containing the actors is not a DAG.
    */
-  public static final List<AbstractActor> depthFirstSort(final List<AbstractActor> actors) {
+  static final List<AbstractActor> depthFirstTopologicalSort(final List<AbstractActor> actors) {
     final PiSDFTopologicalSorter piSDFPredecessorSwitch = new PiSDFTopologicalSorter();
 
     for (AbstractActor a : actors) {
