@@ -47,7 +47,6 @@ import org.preesm.algorithm.model.dag.DAGEdge;
 import org.preesm.algorithm.model.dag.DirectedAcyclicGraph;
 import org.preesm.model.slam.route.AbstractRouteStep;
 
-// TODO: Auto-generated Javadoc
 /**
  * A transfer vertex represents a route step.
  *
@@ -102,7 +101,7 @@ public class TransferVertex extends MapperDAGVertex {
   public TransferVertex(final String id, final MapperDAG base, final MapperDAGVertex source,
       final MapperDAGVertex target, final int routeStepIndex, final int nodeIndex,
       org.preesm.model.pisdf.AbstractVertex origVertex) {
-    super(id, base, origVertex);
+    super(id, origVertex);
     this.source = source;
     this.target = target;
     this.routeStepIndex = routeStepIndex;

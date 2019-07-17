@@ -77,12 +77,6 @@ public class AddOverheadVertexTransaction implements Transaction {
   /** overhead vertex added. */
   private OverheadVertex oVertex = null;
 
-  /** edges added. */
-  private MapperDAGEdge newInEdge = null;
-
-  /** The new out edge. */
-  private MapperDAGEdge newOutEdge = null;
-
   /**
    * Instantiates a new adds the overhead vertex transaction.
    *
@@ -126,7 +120,7 @@ public class AddOverheadVertexTransaction implements Transaction {
     final String overtexID = "__overhead (" + currentSource.getName() + "," + currentTarget.getName() + ")";
 
     if (this.overheadTime > 0) {
-      this.oVertex = new OverheadVertex(overtexID, this.implementation, null);
+      this.oVertex = new OverheadVertex(overtexID, null);
       this.implementation.getTimings().dedicate(this.oVertex);
       this.implementation.getMappings().dedicate(this.oVertex);
 
@@ -138,20 +132,15 @@ public class AddOverheadVertexTransaction implements Transaction {
       this.oVertex.getTiming().setCost(this.overheadTime);
       this.oVertex.setEffectiveOperator(this.step.getSender());
 
-      this.newInEdge = (MapperDAGEdge) this.implementation.addEdge(currentSource, this.oVertex);
-      this.newOutEdge = (MapperDAGEdge) this.implementation.addEdge(this.oVertex, currentTarget);
+      final MapperDAGEdge newInEdge = (MapperDAGEdge) this.implementation.addEdge(currentSource, this.oVertex);
+      final MapperDAGEdge newOutEdge = (MapperDAGEdge) this.implementation.addEdge(this.oVertex, currentTarget);
 
-      this.newInEdge.setInit(this.edge.getInit().copy());
-      this.newOutEdge.setInit(this.edge.getInit().copy());
+      newInEdge.setInit(this.edge.getInit().copy());
+      newOutEdge.setInit(this.edge.getInit().copy());
 
-      this.newInEdge.getTiming().setCost(0);
-      this.newOutEdge.getTiming().setCost(0);
+      newInEdge.getTiming().setCost(0);
+      newOutEdge.getTiming().setCost(0);
 
-      // TODO: Look at switching possibilities
-      /*
-       * if (true) { TaskSwitcher taskSwitcher = new TaskSwitcher(); taskSwitcher.setOrderManager(orderManager);
-       * taskSwitcher.insertVertexBefore(currentTarget, oVertex); } else
-       */
       this.orderManager.insertBefore(currentTarget, this.oVertex);
 
       // Scheduling overhead vertex
@@ -163,11 +152,6 @@ public class AddOverheadVertexTransaction implements Transaction {
     }
   }
 
-  /*
-   * (non-Javadoc)
-   *
-   * @see org.ietr.preesm.mapper.abc.transaction.Transaction#toString()
-   */
   @Override
   public String toString() {
     return ("AddOverhead(" + this.oVertex.toString() + ")");

@@ -39,7 +39,6 @@ package org.preesm.algorithm.mapper.model.property;
 
 import org.preesm.commons.CloneableProperty;
 
-// TODO: Auto-generated Javadoc
 /**
  * Property added to a DAG edge to give its timing properties. Only used within ABCs.
  *
