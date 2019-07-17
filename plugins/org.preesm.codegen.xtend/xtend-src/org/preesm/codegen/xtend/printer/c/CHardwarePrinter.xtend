@@ -93,6 +93,7 @@ import org.preesm.commons.exceptions.PreesmRuntimeException
 import org.preesm.commons.files.PreesmResourcesHelper
 import org.preesm.commons.logger.PreesmLogger
 import org.preesm.model.pisdf.util.CHeaderUsedLocator
+import org.preesm.codegen.model.ActorFunctionCall
 
 /**
  * This printer is currently used to print C code only for GPP processors
@@ -861,7 +862,7 @@ class CHardwarePrinter extends DefaultPrinter {
 			while (i < coreLoop.codeElts.size) {
 				// Retrieve the function ID
 				val elt = coreLoop.codeElts.get(i)
-				if (elt instanceof FunctionCall) {
+				if (elt instanceof ActorFunctionCall) {
 					this.functionCallNumber++;
 					lastFunctionCallIndex = i;
 					if (this.functionCallNumber > 0) {
@@ -877,7 +878,7 @@ class CHardwarePrinter extends DefaultPrinter {
 				currentFunctionPosition = lastFunctionCallIndex;
 				var functionCallImplOld = (block as CoreBlock).loopBlock.codeElts.get(lastFunctionCallIndex);
 				// checking that the function to be changed is the right one
-				 if (! (functionCallImplOld instanceof FunctionCall)) {
+				 if (! (functionCallImplOld instanceof ActorFunctionCall)) {
 				 	PreesmLogger.getLogger().log(Level.SEVERE, "Hardware Codegen ERROR in the preProcessing function. The functionCall to be modified was NOT found");
 				 } else {
 				 	// create a new function identical to the Old one
@@ -906,11 +907,11 @@ class CHardwarePrinter extends DefaultPrinter {
 			while (i > 0) {
 				// Retrieve the function ID
 				val elt = coreLoop.codeElts.get(i)
-				if ((elt instanceof FunctionCall) && flagFirstFunctionFound == 0) {
+				if ((elt instanceof ActorFunctionCall) && flagFirstFunctionFound == 0) {
 					flagFirstFunctionFound++;
 
 				}
-				else if ((elt instanceof FunctionCall) && flagFirstFunctionFound > 0) {
+				else if ((elt instanceof ActorFunctionCall) && flagFirstFunctionFound > 0) {
 					coreLoop.codeElts.remove(i);
 					currentFunctionPosition--;
 				}
