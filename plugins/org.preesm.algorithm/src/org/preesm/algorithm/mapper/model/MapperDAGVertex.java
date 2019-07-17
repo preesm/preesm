@@ -39,9 +39,9 @@
  */
 package org.preesm.algorithm.mapper.model;
 
-import com.google.common.base.Objects;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 import org.preesm.algorithm.mapper.graphtransfo.ImplementationPropertyNames;
 import org.preesm.algorithm.mapper.model.property.VertexInit;
@@ -228,7 +228,7 @@ public class MapperDAGVertex extends DAGVertex {
 
   @Override
   public int hashCode() {
-    return Objects.hashCode(getName());
+    return Objects.hash(getName());
   }
 
   @Override

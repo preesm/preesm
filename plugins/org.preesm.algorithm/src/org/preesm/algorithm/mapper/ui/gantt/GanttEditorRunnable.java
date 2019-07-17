@@ -50,7 +50,6 @@ import org.preesm.commons.exceptions.PreesmRuntimeException;
  */
 public class GanttEditorRunnable implements Runnable {
 
-  /** The input. */
   private final IEditorInput input;
 
   /**
@@ -79,11 +78,6 @@ public class GanttEditorRunnable implements Runnable {
     PlatformUI.getWorkbench().getDisplay().asyncExec(new GanttEditorRunnable(input));
   }
 
-  /*
-   * (non-Javadoc)
-   *
-   * @see java.lang.Runnable#run()
-   */
   @Override
   public void run() {
 

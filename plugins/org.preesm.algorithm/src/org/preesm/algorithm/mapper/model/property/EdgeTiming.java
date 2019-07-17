@@ -46,25 +46,15 @@ import org.preesm.commons.CloneableProperty;
  */
 public class EdgeTiming implements CloneableProperty<EdgeTiming> {
 
-  /** The Constant UNAVAILABLE. */
   private static final long UNAVAILABLE = -1;
 
-  /** time to execute the edge. */
   private long cost;
 
-  /**
-   * Instantiates a new edge timing.
-   */
   public EdgeTiming() {
     super();
-    reset();
+    resetCost();
   }
 
-  /*
-   * (non-Javadoc)
-   *
-   * @see java.lang.Object#clone()
-   */
   @Override
   public EdgeTiming copy() {
     final EdgeTiming property = new EdgeTiming();
@@ -72,54 +62,23 @@ public class EdgeTiming implements CloneableProperty<EdgeTiming> {
     return property;
   }
 
-  /**
-   * Reset.
-   */
-  private void reset() {
-    this.cost = EdgeTiming.UNAVAILABLE;
-  }
-
-  /*
-   * (non-Javadoc)
-   *
-   * @see java.lang.Object#toString()
-   */
   @Override
   public String toString() {
     return "cost: " + this.cost;
   }
 
-  /**
-   * Gets the cost.
-   *
-   * @return the cost
-   */
   public long getCost() {
     return this.cost;
   }
 
-  /**
-   * Sets the cost.
-   *
-   * @param cost
-   *          the new cost
-   */
   public void setCost(final long cost) {
     this.cost = cost;
   }
 
-  /**
-   * Checks for cost.
-   *
-   * @return true, if successful
-   */
   public boolean hasCost() {
     return (this.cost != EdgeTiming.UNAVAILABLE);
   }
 
-  /**
-   * Reset cost.
-   */
   public void resetCost() {
     setCost(EdgeTiming.UNAVAILABLE);
   }

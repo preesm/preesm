@@ -182,11 +182,6 @@ public class PerformancePage extends FormPage {
     toolkit.paintBordersFor(client);
   }
 
-  /**
-   * Gets the stat gen.
-   *
-   * @return the stat gen
-   */
   public StatGenerator getStatGen() {
     return this.statGen;
   }

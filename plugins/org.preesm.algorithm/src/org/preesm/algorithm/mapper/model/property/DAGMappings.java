@@ -38,10 +38,10 @@ package org.preesm.algorithm.mapper.model.property;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.Map.Entry;
 import org.preesm.algorithm.mapper.model.MapperDAGVertex;
 import org.preesm.commons.CloneableProperty;
 
-// TODO: Auto-generated Javadoc
 /**
  * MapperDAG stores mapping properties shared by several of its vertices that have relative constraints. If the mapping
  * of a vertex in the group is modified, all mappings of the vertices in the group are modified.
@@ -55,21 +55,11 @@ public class DAGMappings implements CloneableProperty<DAGMappings> {
    */
   private Map<String, VertexMapping> mappings = null;
 
-  /**
-   * Instantiates a new DAG mappings.
-   */
   public DAGMappings() {
     super();
     this.mappings = new LinkedHashMap<>();
   }
 
-  /**
-   * Gets the mapping.
-   *
-   * @param vertexId
-   *          the vertex id
-   * @return the mapping
-   */
   public VertexMapping getMapping(final String vertexId) {
     return this.mappings.get(vertexId);
   }
@@ -119,8 +109,10 @@ public class DAGMappings implements CloneableProperty<DAGMappings> {
   public DAGMappings copy() {
     final Map<VertexMapping, VertexMapping> relateOldAndNew = new LinkedHashMap<>();
     final DAGMappings newMappings = new DAGMappings();
-    for (final String s : this.mappings.keySet()) {
-      final VertexMapping m = this.mappings.get(s);
+
+    for (final Entry<String, VertexMapping> entry : this.mappings.entrySet()) {
+      final String s = entry.getKey();
+      final VertexMapping m = entry.getValue();
       if (relateOldAndNew.containsKey(m)) {
         newMappings.put(s, relateOldAndNew.get(m));
       } else {
@@ -132,11 +124,6 @@ public class DAGMappings implements CloneableProperty<DAGMappings> {
     return newMappings;
   }
 
-  /*
-   * (non-Javadoc)
-   *
-   * @see java.lang.Object#toString()
-   */
   @Override
   public String toString() {
     return this.mappings.toString();

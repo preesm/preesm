@@ -51,11 +51,8 @@ import org.preesm.commons.logger.PreesmLogger;
  */
 public class GanttEditorInput implements IEditorInput {
 
-  /** The gantt data. */
   private GanttData ganttData = null;
-
-  /** The name. */
-  private String name = null;
+  private String    name      = null;
 
   /**
    * Instantiates a new gantt editor input.
@@ -71,80 +68,39 @@ public class GanttEditorInput implements IEditorInput {
     this.name = name;
   }
 
-  /**
-   * Gets the gantt data.
-   *
-   * @return the gantt data
-   */
   public GanttData getGanttData() {
     return this.ganttData;
   }
 
-  /**
-   * Sets the gantt data.
-   *
-   * @param ganttData
-   *          the new gantt data
-   */
   public void setGanttData(final GanttData ganttData) {
     this.ganttData = ganttData;
   }
 
-  /*
-   * (non-Javadoc)
-   *
-   * @see org.eclipse.ui.IEditorInput#exists()
-   */
   @Override
   public boolean exists() {
     return false;
   }
 
-  /*
-   * (non-Javadoc)
-   *
-   * @see org.eclipse.ui.IEditorInput#getImageDescriptor()
-   */
   @Override
   public ImageDescriptor getImageDescriptor() {
     return PreesmAlgorithmPlugin.getInstance().getImageDescriptor("icons/preesm3mini.PNG");
   }
 
-  /*
-   * (non-Javadoc)
-   *
-   * @see org.eclipse.ui.IEditorInput#getName()
-   */
   @Override
   public String getName() {
     return this.name + " " + PreesmLogger.getFormattedTime();
   }
 
-  /*
-   * (non-Javadoc)
-   *
-   * @see org.eclipse.ui.IEditorInput#getPersistable()
-   */
   @Override
   public IPersistableElement getPersistable() {
     return null;
   }
 
-  /*
-   * (non-Javadoc)
-   *
-   * @see org.eclipse.ui.IEditorInput#getToolTipText()
-   */
   @Override
   public String getToolTipText() {
     return this.name;
   }
 
-  /*
-   * (non-Javadoc)
-   *
-   * @see org.eclipse.core.runtime.IAdaptable#getAdapter(java.lang.Class)
-   */
   @SuppressWarnings({ "unchecked", "rawtypes" })
   @Override
   public Object getAdapter(final Class adapter) {

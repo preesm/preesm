@@ -45,6 +45,7 @@ import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
 import org.preesm.algorithm.mapper.abc.edgescheduling.IEdgeSched;
 import org.preesm.algorithm.mapper.abc.order.OrderManager;
@@ -235,21 +236,20 @@ public class CommunicationRouter {
         final MapperDAGVertex currentSource = ((MapperDAGVertex) currentEdge.getSource());
         final MapperDAGVertex currentDest = ((MapperDAGVertex) currentEdge.getTarget());
 
-        if (currentSource.hasEffectiveOperator() && currentDest.hasEffectiveOperator()) {
-          if (!currentSource.getEffectiveOperator().equals(currentDest.getEffectiveOperator())) {
-            // Adds several transfers for one edge depending on the
-            // route steps
-            final Route route = this.getRoute(currentEdge);
-            int routeStepIndex = 0;
-            Transaction lastTransaction = null;
+        if (currentSource.hasEffectiveOperator() && currentDest.hasEffectiveOperator()
+            && !currentSource.getEffectiveOperator().equals(currentDest.getEffectiveOperator())) {
+          // Adds several transfers for one edge depending on the
+          // route steps
+          final Route route = this.getRoute(currentEdge);
+          int routeStepIndex = 0;
+          Transaction lastTransaction = null;
 
-            // Adds send and receive vertices and links them
-            for (final AbstractRouteStep step : route) {
-              final CommunicationRouterImplementer impl = getImplementer(step.getType());
-              lastTransaction = impl.addVertices(step, currentEdge, localTransactionManager, type, routeStepIndex,
-                  lastTransaction, null);
-              routeStepIndex++;
-            }
+          // Adds send and receive vertices and links them
+          for (final AbstractRouteStep step : route) {
+            final CommunicationRouterImplementer impl = getImplementer(step.getType());
+            lastTransaction = impl.addVertices(step, currentEdge, localTransactionManager, type, routeStepIndex,
+                lastTransaction, null);
+            routeStepIndex++;
           }
         }
       }
@@ -302,11 +302,10 @@ public class CommunicationRouter {
         final MapperDAGVertex currentSource = ((MapperDAGVertex) edge.getSource());
         final MapperDAGVertex currentDest = ((MapperDAGVertex) edge.getTarget());
 
-        if (currentSource.hasEffectiveOperator() && currentDest.hasEffectiveOperator()) {
-          if (!currentSource.getEffectiveOperator().equals(currentDest.getEffectiveOperator())) {
-            final MapperDAGEdge mapperEdge = (MapperDAGEdge) edge;
-            transferEdges.put(mapperEdge, this.getRoute(mapperEdge));
-          }
+        if (currentSource.hasEffectiveOperator() && currentDest.hasEffectiveOperator()
+            && !currentSource.getEffectiveOperator().equals(currentDest.getEffectiveOperator())) {
+          final MapperDAGEdge mapperEdge = (MapperDAGEdge) edge;
+          transferEdges.put(mapperEdge, this.getRoute(mapperEdge));
         }
       }
     }
@@ -327,7 +326,8 @@ public class CommunicationRouter {
       final List<Object> createdVertices) {
     final TransactionManager localTransactionManager = new TransactionManager(createdVertices);
 
-    for (final MapperDAGEdge edge : transferEdges.keySet()) {
+    for (final Entry<MapperDAGEdge, Route> route : transferEdges.entrySet()) {
+      final MapperDAGEdge edge = route.getKey();
       int routeStepIndex = 0;
       Transaction lastTransaction = null;
       for (final AbstractRouteStep step : transferEdges.get(edge)) {

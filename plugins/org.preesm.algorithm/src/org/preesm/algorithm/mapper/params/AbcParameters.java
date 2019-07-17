@@ -51,10 +51,7 @@ import org.preesm.commons.logger.PreesmLogger;
  */
 public class AbcParameters {
 
-  /** Simulator type. */
-  private AbcType simulatorType = null;
-
-  /** Edge scheduling type. */
+  private AbcType       simulatorType = null;
   private EdgeSchedType edgeSchedType = null;
 
   /** true if loads are minimized while minimizing other parameters. */
@@ -76,29 +73,14 @@ public class AbcParameters {
             + "edgeSchedType=Simple/Switcher; balanceLoads=true/false");
   }
 
-  /**
-   * Gets the simulator type.
-   *
-   * @return the simulator type
-   */
   public AbcType getSimulatorType() {
     return this.simulatorType;
   }
 
-  /**
-   * Gets the edge sched type.
-   *
-   * @return the edge sched type
-   */
   public EdgeSchedType getEdgeSchedType() {
     return this.edgeSchedType;
   }
 
-  /**
-   * Checks if is balance loads.
-   *
-   * @return true, if is balance loads
-   */
   public boolean isBalanceLoads() {
     return this.balanceLoads;
   }

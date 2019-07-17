@@ -38,6 +38,7 @@
 package org.preesm.algorithm.mapper.gantt;
 
 import java.util.Collection;
+import java.util.Objects;
 import java.util.TreeSet;
 import java.util.logging.Level;
 import org.preesm.commons.logger.PreesmLogger;
@@ -103,11 +104,6 @@ public class GanttComponent {
     return true;
   }
 
-  /**
-   * Gets the id.
-   *
-   * @return the id
-   */
   public String getId() {
     return this.getComponentInstance().getInstanceName();
   }
@@ -116,23 +112,16 @@ public class GanttComponent {
     return this.id;
   }
 
-  /**
-   * Comparing IDs to determine if two components are equal.
-   *
-   * @param obj
-   *          the obj
-   * @return true, if successful
-   */
   @Override
   public boolean equals(final Object obj) {
-    return ((obj instanceof GanttComponent) && (((GanttComponent) obj).getId().equals(this.id)));
+    return ((obj instanceof GanttComponent) && (((GanttComponent) obj).getId().equals(this.getId())));
   }
 
-  /*
-   * (non-Javadoc)
-   *
-   * @see java.lang.Object#toString()
-   */
+  @Override
+  public int hashCode() {
+    return Objects.hash(this.getId());
+  }
+
   @Override
   public String toString() {
     return this.getId();

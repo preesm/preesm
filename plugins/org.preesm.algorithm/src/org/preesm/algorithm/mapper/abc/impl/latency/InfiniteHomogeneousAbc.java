@@ -132,22 +132,13 @@ public class InfiniteHomogeneousAbc extends LatencyAbc {
     retrieveTotalOrder();
   }
 
-  /*
-   * (non-Javadoc)
-   *
-   * @see org.ietr.preesm.mapper.abc.impl.latency.LatencyAbc#fireNewMappedVertex(org.ietr.preesm.mapper.
-   * model.MapperDAGVertex, boolean)
-   */
   @Override
   protected void fireNewMappedVertex(final MapperDAGVertex vertex, final boolean updateRank) {
 
     final ComponentInstance effectiveOp = vertex.getEffectiveOperator();
 
-    /*
-     * mapping a vertex sets the cost of the current vertex and its edges
-     *
-     * As we have an infinite homogeneous architecture, each communication is done through the unique type of medium
-     */
+    // mapping a vertex sets the cost of the current vertex and its edges
+    // As we have an infinite homogeneous architecture, each communication is done through the unique type of medium
     if (effectiveOp == null) {
       PreesmLogger.getLogger().severe("implementation of " + vertex.getName() + " failed. No operator was assigned.");
 
@@ -174,12 +165,6 @@ public class InfiniteHomogeneousAbc extends LatencyAbc {
     }
   }
 
-  /*
-   * (non-Javadoc)
-   *
-   * @see org.ietr.preesm.mapper.abc.impl.latency.LatencyAbc#fireNewUnmappedVertex(org.ietr.preesm.mapper
-   * .model.MapperDAGVertex)
-   */
   @Override
   protected void fireNewUnmappedVertex(final MapperDAGVertex vertex) {
     // unmapping a vertex resets the cost of the current vertex
@@ -201,20 +186,13 @@ public class InfiniteHomogeneousAbc extends LatencyAbc {
     this.nTimeKeeper.updateTandBLevels();
   }
 
-  /*
-   * (non-Javadoc)
-   *
-   * @see org.ietr.preesm.mapper.abc.impl.latency.LatencyAbc#setEdgeCost(org.ietr.preesm.mapper.model. MapperDAGEdge)
-   */
   @Override
   protected void setEdgeCost(final MapperDAGEdge edge) {
 
     final long edgesize = edge.getInit().getDataSize();
 
-    /**
-     * In a Infinite Homogeneous Architecture, each communication is supposed to be done on the main medium. The
-     * communication cost is simply calculated from the main medium speed.
-     */
+    // In a Infinite Homogeneous Architecture, each communication is supposed to be done on the main medium. The
+    // communication cost is simply calculated from the main medium speed.
     final ComponentInstance mainCom = this.scenario.getSimulationInfo().getMainComNode();
 
     if (mainCom != null) {
@@ -229,11 +207,6 @@ public class InfiniteHomogeneousAbc extends LatencyAbc {
     }
   }
 
-  /*
-   * (non-Javadoc)
-   *
-   * @see org.ietr.preesm.mapper.abc.impl.latency.LatencyAbc#getEdgeSchedType()
-   */
   @Override
   public EdgeSchedType getEdgeSchedType() {
     return null;

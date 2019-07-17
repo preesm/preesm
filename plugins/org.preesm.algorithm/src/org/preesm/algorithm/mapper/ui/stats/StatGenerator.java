@@ -65,17 +65,10 @@ import org.preesm.model.slam.ComponentInstance;
  */
 public class StatGenerator {
 
-  /** The abc. */
-  private LatencyAbc abc = null;
-
-  /** The scenario. */
-  private Scenario scenario = null;
-
-  /** The params. */
-  private Map<String, String> params = null;
-
-  /** The final time. */
-  private long finalTime = 0;
+  private LatencyAbc          abc       = null;
+  private Scenario            scenario  = null;
+  private Map<String, String> params    = null;
+  private long                finalTime = 0;
 
   /**
    * Instantiates a new stat generator.
@@ -254,38 +247,18 @@ public class StatGenerator {
 
   }
 
-  /**
-   * Gets the scenario.
-   *
-   * @return the scenario
-   */
   public Scenario getScenario() {
     return this.scenario;
   }
 
-  /**
-   * Gets the params.
-   *
-   * @return the params
-   */
   public Map<String, String> getParams() {
     return this.params;
   }
 
-  /**
-   * Gets the final time.
-   *
-   * @return the final time
-   */
   public long getFinalTime() {
     return this.finalTime;
   }
 
-  /**
-   * Gets the abc.
-   *
-   * @return the abc
-   */
   public LatencyAbc getAbc() {
     return this.abc;
   }

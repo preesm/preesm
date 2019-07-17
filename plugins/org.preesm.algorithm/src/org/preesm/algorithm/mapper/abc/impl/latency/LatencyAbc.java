@@ -179,29 +179,14 @@ public abstract class LatencyAbc {
     }
   }
 
-  /*
-   * (non-Javadoc)
-   *
-   * @see org.ietr.preesm.mapper.abc.IAbc#getDAG()
-   */
   public final MapperDAG getDAG() {
     return this.dag;
   }
 
-  /**
-   * Gets the architecture.
-   *
-   * @return the architecture
-   */
   public final Design getArchitecture() {
     return this.archi;
   }
 
-  /*
-   * (non-Javadoc)
-   *
-   * @see org.ietr.preesm.mapper.abc.IAbc#getScenario()
-   */
   public final Scenario getScenario() {
     return this.scenario;
   }

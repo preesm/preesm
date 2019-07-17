@@ -47,7 +47,6 @@ import org.preesm.algorithm.mapper.model.MapperDAGVertex;
 import org.preesm.algorithm.model.dag.DAGVertex;
 import org.preesm.commons.exceptions.PreesmRuntimeException;
 
-// TODO: Auto-generated Javadoc
 /**
  * Scheduling the tasks in topological order and alphabetical order.
  *
@@ -55,10 +54,7 @@ import org.preesm.commons.exceptions.PreesmRuntimeException;
  */
 public class TopologicalTaskSched extends AbstractTaskSched {
 
-  /** The init list. */
-  private VertexOrderList initList = null;
-
-  /** The topolist. */
+  private VertexOrderList       initList = null;
   private List<MapperDAGVertex> topolist = null;
 
   /**
@@ -66,7 +62,6 @@ public class TopologicalTaskSched extends AbstractTaskSched {
    */
   private static class InitListComparator implements Comparator<MapperDAGVertex> {
 
-    /** The init list. */
     private VertexOrderList initList = null;
 
     /**
@@ -80,17 +75,10 @@ public class TopologicalTaskSched extends AbstractTaskSched {
       this.initList = initlist;
     }
 
-    /*
-     * (non-Javadoc)
-     *
-     * @see java.util.Comparator#compare(java.lang.Object, java.lang.Object)
-     */
     @Override
     public int compare(final MapperDAGVertex v0, final MapperDAGVertex v1) {
       int compare;
-
       compare = this.initList.orderOf(v0.getName()) - this.initList.orderOf(v1.getName());
-
       return compare;
     }
 
@@ -131,12 +119,6 @@ public class TopologicalTaskSched extends AbstractTaskSched {
     return this.topolist;
   }
 
-  /*
-   * (non-Javadoc)
-   *
-   * @see org.ietr.preesm.mapper.abc.taskscheduling.AbstractTaskSched#insertVertex(org.ietr.preesm.mapper
-   * .model.MapperDAGVertex)
-   */
   @Override
   public void insertVertex(final MapperDAGVertex vertex) {
     if (vertex == null) {
@@ -148,8 +130,7 @@ public class TopologicalTaskSched extends AbstractTaskSched {
     int topoOrder = this.topolist.indexOf(vertex);
     boolean inserted = false;
 
-    if ((this.topolist != null) && (topoOrder >= 0)) {
-
+    if (topoOrder >= 0) {
       topoOrder--;
       while (topoOrder >= 0) {
         final MapperDAGVertex previousCandidate = this.topolist.get(topoOrder);

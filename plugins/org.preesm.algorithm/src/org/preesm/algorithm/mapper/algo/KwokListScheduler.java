@@ -112,7 +112,6 @@ public class KwokListScheduler {
    * @throws PreesmException
    *           the workflow exception
    */
-
   public MapperDAG schedule(final MapperDAG dag, final List<MapperDAGVertex> orderlist, final LatencyAbc archisimu,
       final ComponentInstance operatorfcp, final MapperDAGVertex fcpvertex) {
 

@@ -45,7 +45,6 @@ import org.preesm.algorithm.mapper.model.MapperDAGVertex;
 import org.preesm.algorithm.model.AbstractVertex;
 import org.preesm.algorithm.model.types.LongVertexPropertyType;
 
-// TODO: Auto-generated Javadoc
 /**
  * Vertex corresponding to receiving a data. This vertex is mapped on the receiver of the corresponding route step.
  *
@@ -54,9 +53,7 @@ import org.preesm.algorithm.model.types.LongVertexPropertyType;
 public class ReceiveVertex extends TransferVertex {
 
   static {
-    {
-      AbstractVertex.public_properties.add(ImplementationPropertyNames.Receive_receiverGraphName);
-    }
+    AbstractVertex.public_properties.add(ImplementationPropertyNames.Receive_receiverGraphName);
   }
 
   /**
@@ -81,11 +78,6 @@ public class ReceiveVertex extends TransferVertex {
     super(id, base, source, target, routeStepIndex, nodeIndex, origVertex);
   }
 
-  /*
-   * (non-Javadoc)
-   *
-   * @see org.ietr.dftools.algorithm.model.dag.DAGVertex#getNbRepeat()
-   */
   @Override
   public LongVertexPropertyType getNbRepeat() {
     return new LongVertexPropertyType(1);

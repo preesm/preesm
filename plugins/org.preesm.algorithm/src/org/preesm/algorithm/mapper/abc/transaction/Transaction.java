@@ -46,12 +46,6 @@ import java.util.List;
  */
 public interface Transaction {
 
-  /**
-   * Execute.
-   *
-   * @param resultList
-   *          the result list
-   */
   public void execute(final List<Object> resultList);
 
 }

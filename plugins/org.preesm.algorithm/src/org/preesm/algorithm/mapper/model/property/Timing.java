@@ -41,6 +41,7 @@
 package org.preesm.algorithm.mapper.model.property;
 
 import java.util.Collections;
+import java.util.Objects;
 import org.preesm.model.pisdf.AbstractActor;
 import org.preesm.model.pisdf.expression.ExpressionEvaluator;
 import org.preesm.model.scenario.ScenarioConstants;
@@ -62,7 +63,6 @@ public class Timing {
 
   /**
    */
-
   public Timing(final Component component, final AbstractActor actor) {
     this(component, actor, ScenarioConstants.DEFAULT_TIMING_TASK.getValue());
   }
@@ -81,17 +81,10 @@ public class Timing {
     this.stringValue = expression;
   }
 
-  /**
-   */
   public Component getComponent() {
     return this.component;
   }
 
-  /**
-   * Gets the time.
-   *
-   * @return time, only if it is available (if the expression have been evaluated)
-   */
   public long getTime() {
     return ExpressionEvaluator.evaluate(getActor(), getStringValue(), Collections.emptyMap());
   }
@@ -100,11 +93,6 @@ public class Timing {
     return ExpressionEvaluator.canEvaluate(getActor(), getStringValue());
   }
 
-  /**
-   * Gets the vertex id.
-   *
-   * @return the vertex id
-   */
   public AbstractActor getActor() {
     return this.actor;
   }
@@ -120,49 +108,31 @@ public class Timing {
     this.stringValue = String.valueOf(time);
   }
 
-  /**
-   * Gets the string value.
-   *
-   * @return the string value
-   */
   public String getStringValue() {
     return this.stringValue;
   }
 
-  /**
-   * Sets the string value.
-   *
-   * @param stringValue
-   *          the new string value
-   */
   public void setStringValue(final String stringValue) {
     this.stringValue = stringValue;
   }
 
-  /*
-   * (non-Javadoc)
-   *
-   * @see java.lang.Object#equals(java.lang.Object)
-   */
   @Override
   public boolean equals(final Object obj) {
     boolean equals = false;
-
     if (obj instanceof Timing) {
       final Timing otherT = (Timing) obj;
       equals = this.component.equals(otherT.getComponent());
       equals &= this.actor.equals((otherT.getActor()));
       equals &= this.stringValue.equals((otherT.stringValue));
     }
-
     return equals;
   }
 
-  /*
-   * (non-Javadoc)
-   *
-   * @see java.lang.Object#toString()
-   */
+  @Override
+  public int hashCode() {
+    return Objects.hash(getComponent(), getActor(), stringValue);
+  }
+
   @Override
   public String toString() {
     return "{" + this.actor.getVertexPath() + " on " + this.component.getVlnv().getName() + " -> " + this.stringValue

@@ -51,45 +51,29 @@ import org.preesm.model.slam.route.AbstractRouteStep;
  */
 public abstract class CommunicationRouterImplementer {
 
-  /** The user. */
-  private CommunicationRouter user = null;
+  private CommunicationRouter router = null;
 
   /**
    * Instantiates a new communication router implementer.
    *
-   * @param user
+   * @param router
    *          the user
    */
-  public CommunicationRouterImplementer(final CommunicationRouter user) {
+  public CommunicationRouterImplementer(final CommunicationRouter router) {
     super();
-    this.user = user;
+    this.router = router;
   }
 
-  /**
-   * Gets the implementation.
-   *
-   * @return the implementation
-   */
   public MapperDAG getImplementation() {
-    return this.user.getImplementation();
+    return this.router.getImplementation();
   }
 
-  /**
-   * Gets the edge scheduler.
-   *
-   * @return the edge scheduler
-   */
   public IEdgeSched getEdgeScheduler() {
-    return this.user.getEdgeScheduler();
+    return this.router.getEdgeScheduler();
   }
 
-  /**
-   * Gets the order manager.
-   *
-   * @return the order manager
-   */
   public OrderManager getOrderManager() {
-    return this.user.getOrderManager();
+    return this.router.getOrderManager();
   }
 
   /**

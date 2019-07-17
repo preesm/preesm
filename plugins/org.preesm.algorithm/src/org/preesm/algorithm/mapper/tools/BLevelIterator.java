@@ -42,7 +42,6 @@ import org.preesm.algorithm.mapper.model.MapperDAG;
 import org.preesm.algorithm.mapper.model.MapperDAGVertex;
 import org.preesm.commons.exceptions.PreesmRuntimeException;
 
-// TODO: Auto-generated Javadoc
 /**
  * Iterates the graph in ascending or descending BLevel order. Uses abc implementation to retrieve b levels.
  *
@@ -51,25 +50,11 @@ import org.preesm.commons.exceptions.PreesmRuntimeException;
 public class BLevelIterator extends ImplementationIterator {
 
   /**
-   * Instantiates a new b level iterator.
-   *
-   * @param abc
-   *          the abc
-   * @param dag
-   *          the dag
-   * @param directOrder
-   *          the direct order
    */
   public BLevelIterator(final LatencyAbc abc, final MapperDAG dag, final boolean directOrder) {
     super(abc, dag, directOrder);
   }
 
-  /*
-   * (non-Javadoc)
-   *
-   * @see org.ietr.preesm.mapper.tools.ImplementationIterator#compare(org.ietr.preesm.mapper.model. MapperDAGVertex,
-   * org.ietr.preesm.mapper.model.MapperDAGVertex)
-   */
   @Override
   public int compare(MapperDAGVertex arg0, MapperDAGVertex arg1) {
 

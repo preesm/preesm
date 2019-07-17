@@ -37,7 +37,6 @@ package org.preesm.algorithm.mapper.abc.taskscheduling;
 
 import org.preesm.algorithm.mapper.model.MapperDAGVertex;
 
-// TODO: Auto-generated Javadoc
 /**
  * Simple task scheduler that schedules the tasks in the order given by the mapping algorithm.
  *
@@ -52,12 +51,6 @@ public class SimpleTaskSched extends AbstractTaskSched {
     super();
   }
 
-  /*
-   * (non-Javadoc)
-   *
-   * @see org.ietr.preesm.mapper.abc.taskscheduling.AbstractTaskSched#insertVertex(org.ietr.preesm.mapper
-   * .model.MapperDAGVertex)
-   */
   @Override
   public void insertVertex(final MapperDAGVertex vertex) {
     this.orderManager.addLast(vertex);

@@ -53,14 +53,9 @@ import org.preesm.model.scenario.Scenario;
  */
 public class StatEditorInput implements IEditorInput {
 
-  /** The abc. */
-  private LatencyAbc abc = null;
-
-  /** The scenario. */
-  private Scenario scenario = null;
-
-  /** The params. */
-  private Map<String, String> params = null;
+  private LatencyAbc          abc      = null;
+  private Scenario            scenario = null;
+  private Map<String, String> params   = null;
 
   /**
    * Instantiates a new stat editor input.
@@ -79,68 +74,32 @@ public class StatEditorInput implements IEditorInput {
     this.scenario = scenario;
   }
 
-  /**
-   * Gets the scenario.
-   *
-   * @return the scenario
-   */
   public Scenario getScenario() {
     return this.scenario;
   }
 
-  /**
-   * Gets the params.
-   *
-   * @return the params
-   */
   public Map<String, String> getParams() {
     return this.params;
   }
 
-  /**
-   * Gets the abc.
-   *
-   * @return the abc
-   */
   public LatencyAbc getAbc() {
     return this.abc;
   }
 
-  /**
-   * Sets the abc.
-   *
-   * @param abc
-   *          the new abc
-   */
   public void setAbc(final LatencyAbc abc) {
     this.abc = abc;
   }
 
-  /*
-   * (non-Javadoc)
-   *
-   * @see org.eclipse.ui.IEditorInput#exists()
-   */
   @Override
   public boolean exists() {
     return false;
   }
 
-  /*
-   * (non-Javadoc)
-   *
-   * @see org.eclipse.ui.IEditorInput#getImageDescriptor()
-   */
   @Override
   public ImageDescriptor getImageDescriptor() {
     return PreesmAlgorithmPlugin.getInstance().getImageDescriptor("icons/preesm1mini.PNG");
   }
 
-  /*
-   * (non-Javadoc)
-   *
-   * @see org.eclipse.ui.IEditorInput#getName()
-   */
   @Override
   public String getName() {
     if (this.abc instanceof LatencyAbc) {
@@ -152,31 +111,16 @@ public class StatEditorInput implements IEditorInput {
     }
   }
 
-  /*
-   * (non-Javadoc)
-   *
-   * @see org.eclipse.ui.IEditorInput#getPersistable()
-   */
   @Override
   public IPersistableElement getPersistable() {
     return null;
   }
 
-  /*
-   * (non-Javadoc)
-   *
-   * @see org.eclipse.ui.IEditorInput#getToolTipText()
-   */
   @Override
   public String getToolTipText() {
     return "Implementation";
   }
 
-  /*
-   * (non-Javadoc)
-   *
-   * @see org.eclipse.core.runtime.IAdaptable#getAdapter(java.lang.Class)
-   */
   @SuppressWarnings({ "unchecked", "rawtypes" })
   @Override
   public Object getAdapter(final Class adapter) {

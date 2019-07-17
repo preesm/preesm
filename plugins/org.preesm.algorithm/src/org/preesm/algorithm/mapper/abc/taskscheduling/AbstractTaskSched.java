@@ -38,7 +38,6 @@ package org.preesm.algorithm.mapper.abc.taskscheduling;
 import org.preesm.algorithm.mapper.abc.order.OrderManager;
 import org.preesm.algorithm.mapper.model.MapperDAGVertex;
 
-// TODO: Auto-generated Javadoc
 /**
  * Scheduling the tasks when a heuristic maps a vertex.
  *
@@ -49,29 +48,14 @@ public abstract class AbstractTaskSched {
   /** Contains the rank list of all the vertices in an implementation. */
   protected OrderManager orderManager = null;
 
-  /**
-   * Instantiates a new abstract task sched.
-   */
   public AbstractTaskSched() {
     super();
   }
 
-  /**
-   * Sets the order manager.
-   *
-   * @param orderManager
-   *          the new order manager
-   */
   public void setOrderManager(final OrderManager orderManager) {
     this.orderManager = orderManager;
   }
 
-  /**
-   * Insert vertex.
-   *
-   * @param vertex
-   *          the vertex
-   */
   public abstract void insertVertex(MapperDAGVertex vertex);
 
 }

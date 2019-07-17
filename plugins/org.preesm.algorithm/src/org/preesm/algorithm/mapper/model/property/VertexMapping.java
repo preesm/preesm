@@ -47,7 +47,6 @@ import org.preesm.algorithm.mapper.model.MapperDAGVertex;
 import org.preesm.commons.logger.PreesmLogger;
 import org.preesm.model.slam.ComponentInstance;
 
-// TODO: Auto-generated Javadoc
 /**
  * Properties of a mapped vertex. Can be shared by multiple vertices that have the same relative constraints
  *
@@ -56,17 +55,11 @@ import org.preesm.model.slam.ComponentInstance;
 public class VertexMapping extends GroupProperty {
 
   /**
-   * Instantiates a new vertex mapping.
    */
   public VertexMapping() {
     super();
   }
 
-  /*
-   * (non-Javadoc)
-   *
-   * @see org.ietr.preesm.mapper.model.property.GroupProperty#clone()
-   */
   @Override
   public VertexMapping copy() {
 
@@ -126,17 +119,13 @@ public class VertexMapping extends GroupProperty {
     }
 
     if (operators.isEmpty()) {
-      PreesmLogger.getLogger().log(Level.SEVERE, "Relative constraint with no operator." + relatedVertices);
+      final String msg = "Relative constraint with no operator." + relatedVertices;
+      PreesmLogger.getLogger().log(Level.SEVERE, msg);
     }
 
     return operators;
   }
 
-  /*
-   * (non-Javadoc)
-   *
-   * @see org.ietr.preesm.mapper.model.property.GroupProperty#toString()
-   */
   @Override
   public String toString() {
     return "<" + super.toString() + ">";

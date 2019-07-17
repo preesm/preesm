@@ -75,7 +75,8 @@ public class RedundantSynchronizationCleaner {
 
     final Set<DAGVertex> toBeRemoved = RedundantSynchronizationCleaner.proMethod(dag);
     toBeRemoved.forEach(transferVertex -> transferVertex.setPropertyValue("Redundant", Boolean.valueOf(true)));
-    PreesmLogger.getLogger().log(Level.INFO, "removing " + toBeRemoved.size() + " syncs");
+    final String msg = "removing " + toBeRemoved.size() + " syncs";
+    PreesmLogger.getLogger().log(Level.INFO, msg);
   }
 
   private static Set<DAGVertex> proMethod(final DirectedAcyclicGraph dag) {

@@ -45,7 +45,6 @@ import org.preesm.algorithm.mapper.model.MapperDAG;
 import org.preesm.algorithm.mapper.model.MapperDAGVertex;
 import org.preesm.commons.CloneableProperty;
 
-// TODO: Auto-generated Javadoc
 /**
  * Property that corresponds to a group of vertices.
  *
@@ -56,9 +55,6 @@ public abstract class GroupProperty implements CloneableProperty<GroupProperty> 
   /** IDs of the vertices that share the property. */
   protected final Set<String> vertexIDs;
 
-  /**
-   * Instantiates a new group property.
-   */
   public GroupProperty() {
     this.vertexIDs = new LinkedHashSet<>();
   }
@@ -119,11 +115,6 @@ public abstract class GroupProperty implements CloneableProperty<GroupProperty> 
     return vertices;
   }
 
-  /*
-   * (non-Javadoc)
-   *
-   * @see java.lang.Object#toString()
-   */
   @Override
   public String toString() {
     return this.vertexIDs.toString();

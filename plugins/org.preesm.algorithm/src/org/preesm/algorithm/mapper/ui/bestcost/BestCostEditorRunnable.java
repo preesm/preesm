@@ -50,7 +50,6 @@ import org.preesm.commons.exceptions.PreesmRuntimeException;
  */
 public class BestCostEditorRunnable implements Runnable {
 
-  /** The input. */
   private final IEditorInput input;
 
   /**
@@ -64,11 +63,6 @@ public class BestCostEditorRunnable implements Runnable {
     this.input = input;
   }
 
-  /*
-   * (non-Javadoc)
-   *
-   * @see java.lang.Runnable#run()
-   */
   @Override
   public void run() {
 

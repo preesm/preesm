@@ -60,7 +60,6 @@ import org.preesm.model.slam.Design;
  */
 public class ApproximatelyTimedAbc extends LatencyAbc {
 
-  /** The types. */
   private List<Integer> types = null;
 
   /**
@@ -119,11 +118,6 @@ public class ApproximatelyTimedAbc extends LatencyAbc {
     edge.getTiming().setCost(0);
   }
 
-  /*
-   * (non-Javadoc)
-   *
-   * @see org.ietr.preesm.mapper.abc.impl.latency.LatencyAbc#getEdgeSchedType()
-   */
   @Override
   public EdgeSchedType getEdgeSchedType() {
     return this.edgeScheduler.getEdgeSchedType();

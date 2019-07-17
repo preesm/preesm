@@ -73,12 +73,6 @@ import org.preesm.workflow.implement.AbstractTaskImplementation;
         + "Coeurs Appliqués à la Couche Physique des Stations de Base 3GPP LTE. PhD thesis, INSA de Rennes, 2010." })
 public class StatEditorTransform extends AbstractTaskImplementation {
 
-  /*
-   * (non-Javadoc)
-   *
-   * @see org.ietr.dftools.workflow.implement.AbstractTaskImplementation#execute(java.util.Map, java.util.Map,
-   * org.eclipse.core.runtime.IProgressMonitor, java.lang.String, org.ietr.dftools.workflow.elements.Workflow)
-   */
   @Override
   public Map<String, Object> execute(final Map<String, Object> inputs, final Map<String, String> parameters,
       final IProgressMonitor monitor, final String nodeName, final Workflow workflow) {
@@ -100,21 +94,11 @@ public class StatEditorTransform extends AbstractTaskImplementation {
     return new LinkedHashMap<>();
   }
 
-  /*
-   * (non-Javadoc)
-   *
-   * @see org.ietr.dftools.workflow.implement.AbstractTaskImplementation#getDefaultParameters()
-   */
   @Override
   public Map<String, String> getDefaultParameters() {
     return Collections.emptyMap();
   }
 
-  /*
-   * (non-Javadoc)
-   *
-   * @see org.ietr.dftools.workflow.implement.AbstractWorkflowNodeImplementation#monitorMessage()
-   */
   @Override
   public String monitorMessage() {
     return "Plots the Gantt chart";

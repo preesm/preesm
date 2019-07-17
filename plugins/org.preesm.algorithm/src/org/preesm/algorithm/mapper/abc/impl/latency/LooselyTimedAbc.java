@@ -75,12 +75,6 @@ public class LooselyTimedAbc extends LatencyAbc {
     super(params, dag, archi, abcType, scenario);
   }
 
-  /*
-   * (non-Javadoc)
-   *
-   * @see org.ietr.preesm.mapper.abc.impl.latency.LatencyAbc#fireNewMappedVertex(org.ietr.preesm.mapper.
-   * model.MapperDAGVertex, boolean)
-   */
   @Override
   protected void fireNewMappedVertex(final MapperDAGVertex vertex, final boolean updateRank) {
 
@@ -89,8 +83,7 @@ public class LooselyTimedAbc extends LatencyAbc {
     final ComponentInstance effectiveOp = vertex.getEffectiveOperator();
 
     if (effectiveOp != null) {
-      // Adding precedence edges for an automatic graph timings
-      // calculation
+      // Adding precedence edges for an automatic graph timings calculation
       new PrecedenceEdgeAdder(this.orderManager, this.implementation).scheduleVertex(vertex);
     }
 
@@ -122,11 +115,6 @@ public class LooselyTimedAbc extends LatencyAbc {
     }
   }
 
-  /*
-   * (non-Javadoc)
-   *
-   * @see org.ietr.preesm.mapper.abc.impl.latency.LatencyAbc#getEdgeSchedType()
-   */
   @Override
   public EdgeSchedType getEdgeSchedType() {
     return null;

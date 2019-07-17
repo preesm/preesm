@@ -89,7 +89,7 @@ public class MapperDAG extends DirectedAcyclicGraph {
    *
    */
   public MapperDAG(final PiGraph piGraph) {
-    super(() -> new MapperDAGEdge());
+    super(MapperDAGEdge::new);
     this.piSDFGraph = piGraph;
     setScheduleCost(0L);
 
@@ -98,31 +98,14 @@ public class MapperDAG extends DirectedAcyclicGraph {
 
   }
 
-  /**
-   * Gets the schedule cost.
-   *
-   * @return the schedule cost
-   */
   public long getScheduleCost() {
-    final long cost = (Long) getPropertyBean().getValue(MapperDAG.SCHEDULE_COST);
-    return cost;
+    return getPropertyBean().getValue(MapperDAG.SCHEDULE_COST);
   }
 
-  /**
-   * Sets the schedule cost.
-   *
-   * @param scheduleLatency
-   *          the new schedule cost
-   */
   public void setScheduleCost(final long scheduleLatency) {
     getPropertyBean().setValue(MapperDAG.SCHEDULE_COST, scheduleLatency);
   }
 
-  /**
-   * Gets the reference PiMM graph.
-   *
-   * @return the reference PiMM graph
-   */
   public PiGraph getReferencePiMMGraph() {
     return this.piSDFGraph;
   }
@@ -180,40 +163,18 @@ public class MapperDAG extends DirectedAcyclicGraph {
     return newDAG;
   }
 
-  /**
-   * Gets the mappings.
-   *
-   * @return the mappings
-   */
   public DAGMappings getMappings() {
-    return (DAGMappings) getPropertyBean().getValue(MapperDAG.MAPPING_PROPERTY);
+    return getPropertyBean().getValue(MapperDAG.MAPPING_PROPERTY);
   }
 
-  /**
-   * Sets the mappings.
-   *
-   * @param implementationVertexProperty
-   *          the new mappings
-   */
   private void setMappings(final DAGMappings implementationVertexProperty) {
     getPropertyBean().setValue(MapperDAG.MAPPING_PROPERTY, implementationVertexProperty);
   }
 
-  /**
-   * Gets the timings.
-   *
-   * @return the timings
-   */
   public DAGTimings getTimings() {
-    return (DAGTimings) getPropertyBean().getValue(MapperDAG.TIMING_PROPERTY);
+    return getPropertyBean().getValue(MapperDAG.TIMING_PROPERTY);
   }
 
-  /**
-   * Sets the timings.
-   *
-   * @param timingVertexProperty
-   *          the new timings
-   */
   private void setTimings(final DAGTimings timingVertexProperty) {
     getPropertyBean().setValue(MapperDAG.TIMING_PROPERTY, timingVertexProperty);
   }
@@ -227,16 +188,12 @@ public class MapperDAG extends DirectedAcyclicGraph {
    */
   public Set<MapperDAGVertex> getVertexSet(final Set<String> nameSet) {
     final Set<MapperDAGVertex> vSet = new LinkedHashSet<>();
-
     final Iterator<String> iterator = nameSet.iterator();
-
     while (iterator.hasNext()) {
       final String name = iterator.next();
       final MapperDAGVertex v = (MapperDAGVertex) getVertex(name);
       vSet.add(v);
-
     }
-
     return vSet;
   }
 
@@ -247,26 +204,15 @@ public class MapperDAG extends DirectedAcyclicGraph {
    */
   public Set<MapperDAGVertex> getSources() {
     final Set<MapperDAGVertex> vSet = new LinkedHashSet<>();
-
     for (final DAGVertex v : vertexSet()) {
       if (incomingEdgesOf(v).isEmpty()) {
         vSet.add((MapperDAGVertex) v);
       }
-
     }
-
     return vSet;
   }
 
-  /**
-   * Gets the mapper DAG vertex.
-   *
-   * @param name
-   *          the name
-   * @return the mapper DAG vertex
-   */
   public MapperDAGVertex getMapperDAGVertex(final String name) {
-
     return (MapperDAGVertex) super.getVertex(name);
   }
 

@@ -40,7 +40,6 @@ package org.preesm.algorithm.mapper.abc.transaction;
 import java.util.ArrayList;
 import java.util.List;
 
-// TODO: Auto-generated Javadoc
 /**
  * This is a transaction container that enables the consecutive execution of several listed transactions.
  *
@@ -48,15 +47,9 @@ import java.util.List;
  */
 public class TransactionManager {
 
-  /** The transaction list. */
   private final ArrayList<Transaction> transactionList;
+  private final List<Object>           resultList;
 
-  /** The result list. */
-  private final List<Object> resultList;
-
-  /**
-   * Instantiates a new transaction manager.
-   */
   public TransactionManager() {
     this(null);
   }
@@ -82,28 +75,14 @@ public class TransactionManager {
     }
   }
 
-  /**
-   * Adds the.
-   *
-   * @param transaction
-   *          the transaction
-   */
   public void add(final Transaction transaction) {
     transactionList.add(transaction);
   }
 
-  /**
-   * Clear.
-   */
   public void clear() {
     transactionList.clear();
   }
 
-  /*
-   * (non-Javadoc)
-   *
-   * @see java.lang.Object#toString()
-   */
   @Override
   public String toString() {
     StringBuilder sb = new StringBuilder("{");

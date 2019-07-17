@@ -38,6 +38,8 @@
  */
 package org.preesm.algorithm.mapper.graphtransfo;
 
+import java.util.Objects;
+
 /**
  * Represents the type of a vertex in its propertybeans.
  *
@@ -45,26 +47,13 @@ package org.preesm.algorithm.mapper.graphtransfo;
  */
 public class VertexType {
 
-  /** String used to qualify receive actors. */
-  public static final String TYPE_RECEIVE = "receive";
-
-  /** String used to qualify send actors. */
-  public static final String TYPE_SEND = "send";
-
-  /** String used to qualify task actors. */
-  public static final String TYPE_TASK = "task";
-
-  /** VertexType representing a receive operation. */
-  public static final VertexType RECEIVE = new VertexType(VertexType.TYPE_RECEIVE);
-
-  /** VertexType representing a send operation. */
-  public static final VertexType SEND = new VertexType(VertexType.TYPE_SEND);
-
-  /** VertexType representing a task. */
-  public static final VertexType TASK = new VertexType(VertexType.TYPE_TASK);
-
-  /** VertexType representing a task. */
-  private String type = "";
+  public static final String     TYPE_RECEIVE = "receive";
+  public static final String     TYPE_SEND    = "send";
+  public static final String     TYPE_TASK    = "task";
+  public static final VertexType RECEIVE      = new VertexType(VertexType.TYPE_RECEIVE);
+  public static final VertexType SEND         = new VertexType(VertexType.TYPE_SEND);
+  public static final VertexType TASK         = new VertexType(VertexType.TYPE_TASK);
+  private final String           type;
 
   /**
    * Instantiates a new vertex type.
@@ -77,52 +66,31 @@ public class VertexType {
     this.type = type;
   }
 
-  /*
-   * (non-Javadoc)
-   *
-   * @see java.lang.Object#equals(java.lang.Object)
-   */
   @Override
   public boolean equals(final Object obj) {
-
     if (obj instanceof VertexType) {
       return (((VertexType) obj).type.equals(this.type));
     }
     return false;
   }
 
-  /**
-   * Checks if is receive.
-   *
-   * @return true, if is receive
-   */
+  @Override
+  public int hashCode() {
+    return Objects.hash(this.type);
+  }
+
   public boolean isReceive() {
     return (this == VertexType.RECEIVE);
   }
 
-  /**
-   * Checks if is send.
-   *
-   * @return true, if is send
-   */
   public boolean isSend() {
     return (this == VertexType.SEND);
   }
 
-  /**
-   * Checks if is task.
-   *
-   * @return true, if is task
-   */
   public boolean isTask() {
     return (this == VertexType.TASK);
   }
 
-  /*
-   * (non-Javadoc)
-   *
-   * @see java.lang.Object#toString()
-   */
   @Override
   public String toString() {
     return this.type;

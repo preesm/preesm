@@ -75,7 +75,7 @@ public class GanttData {
    * @return the component
    */
   private GanttComponent getComponent(final ComponentInstance id) {
-    if (this.components.get(id) == null) {
+    if (!this.components.containsKey(id)) {
       final GanttComponent cmp = new GanttComponent(id);
       this.components.put(id, cmp);
     }
