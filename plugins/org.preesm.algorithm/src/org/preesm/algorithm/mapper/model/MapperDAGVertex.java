@@ -39,6 +39,7 @@
  */
 package org.preesm.algorithm.mapper.model;
 
+import com.google.common.base.Objects;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Set;
@@ -214,11 +215,6 @@ public class MapperDAGVertex extends DAGVertex {
     getPropertyBean().setValue(MapperDAGVertex.INITIAL_PROPERTY, initialVertexProperty);
   }
 
-  /*
-   * (non-Javadoc)
-   *
-   * @see org.ietr.dftools.algorithm.model.AbstractVertex#equals(java.lang.Object)
-   */
   @Override
   public boolean equals(final Object obj) {
 
@@ -230,11 +226,11 @@ public class MapperDAGVertex extends DAGVertex {
     return false;
   }
 
-  /*
-   * (non-Javadoc)
-   *
-   * @see org.ietr.dftools.algorithm.model.dag.DAGVertex#toString()
-   */
+  @Override
+  public int hashCode() {
+    return Objects.hashCode(getName());
+  }
+
   @Override
   public String toString() {
 
