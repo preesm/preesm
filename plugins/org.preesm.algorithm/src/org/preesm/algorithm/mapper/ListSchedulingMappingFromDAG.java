@@ -70,7 +70,7 @@ import org.preesm.model.slam.Design;
 
     outputs = { @Port(name = "DAG", type = DirectedAcyclicGraph.class), @Port(name = "ABC", type = LatencyAbc.class) },
 
-    parameters = { @Parameter(name = "edgeSchedType", values = { @Value(name = "Simple") }),
+    parameters = { @Parameter(name = "edgeSchedType", values = { @Value(name = "Simple / Switcher") }),
         @Parameter(name = "simulatorType", values = { @Value(name = "LooselyTimed") }),
         @Parameter(name = "Check", values = { @Value(name = "True") }),
         @Parameter(name = "Optimize synchronization", values = { @Value(name = "False") }),

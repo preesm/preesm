@@ -97,7 +97,7 @@ public class InfiniteHomogeneousAbc extends LatencyAbc {
    */
   public InfiniteHomogeneousAbc(final AbcParameters params, final MapperDAG dag, final Design archi,
       final TaskSchedType taskSchedType, final Scenario scenario) {
-    super(params, dag, archi, AbcType.InfiniteHomogeneous, scenario);
+    super(params, dag, archi, AbcType.INFINITE_HOMOGENEOUS, scenario);
     getType().setTaskSchedType(taskSchedType);
 
     final ComponentInstance mainComNode = scenario.getSimulationInfo().getMainComNode();

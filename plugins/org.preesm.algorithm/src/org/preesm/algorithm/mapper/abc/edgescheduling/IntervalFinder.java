@@ -37,13 +37,11 @@
 package org.preesm.algorithm.mapper.abc.edgescheduling;
 
 import java.util.List;
-import java.util.Random;
 import org.preesm.algorithm.mapper.abc.order.OrderManager;
 import org.preesm.algorithm.mapper.model.MapperDAGVertex;
 import org.preesm.algorithm.mapper.model.property.VertexTiming;
 import org.preesm.model.slam.ComponentInstance;
 
-// TODO: Auto-generated Javadoc
 /**
  * During edge scheduling, one needs to find intervals to fit the transfers. This class deals with intervals in the
  * transfer scheduling
@@ -55,32 +53,21 @@ public class IntervalFinder {
   /** Contains the rank list of all the vertices in an implementation. */
   private OrderManager orderManager = null;
 
-  /** The random. */
-  private final Random random;
-
   /**
-   * The Class FindType.
    */
   private static class FindType {
 
-    /** The Constant largestFreeInterval. */
     public static final FindType largestFreeInterval = new FindType();
 
-    /** The Constant earliestBigEnoughInterval. */
     public static final FindType earliestBigEnoughInterval = new FindType();
 
-    /*
-     * (non-Javadoc)
-     *
-     * @see java.lang.Object#toString()
-     */
     @Override
     public String toString() {
       if (this == FindType.largestFreeInterval) {
         return "largestFreeInterval";
       }
       if (this == FindType.earliestBigEnoughInterval) {
-        return "largestFreeInterval";
+        return "earliestBigEnoughInterval";
       }
       return "";
     }
@@ -95,7 +82,6 @@ public class IntervalFinder {
   public IntervalFinder(final OrderManager orderManager) {
     super();
     this.orderManager = orderManager;
-    this.random = new Random(System.nanoTime());
   }
 
   /**
@@ -166,7 +152,7 @@ public class IntervalFinder {
       }
     }
 
-    int maxIndex = Integer.MAX_VALUE;
+    final int maxIndex;
     if (maxVertex != null) {
       maxIndex = this.orderManager.totalIndexOf(maxVertex);
     } else {
@@ -198,28 +184,22 @@ public class IntervalFinder {
 
           if (type == FindType.largestFreeInterval) {
             // Verifying that newInt is in the interval of search
-            if ((newInt.getTotalOrderIndex() > minIndex) && (newInt.getTotalOrderIndex() <= maxIndex)) {
-
-              if (freeIntervalSize > freeInterval.getDuration()) {
-                // The free interval takes the index of its
-                // following task v.
-                // Inserting a vertex in this interval means
-                // inserting it before v.
-                freeInterval = new Interval(freeIntervalSize, available, newInt.getTotalOrderIndex());
-              }
+            if ((newInt.getTotalOrderIndex() > minIndex) && (newInt.getTotalOrderIndex() <= maxIndex)
+                && freeIntervalSize > freeInterval.getDuration()) {
+              // The free interval takes the index of its
+              // following task v.
+              // Inserting a vertex in this interval means
+              // inserting it before v.
+              freeInterval = new Interval(freeIntervalSize, available, newInt.getTotalOrderIndex());
             }
-          } else if (type == FindType.earliestBigEnoughInterval) {
-            if ((newInt.getTotalOrderIndex() > minIndex) && (newInt.getTotalOrderIndex() <= maxIndex)) {
-
-              if (freeIntervalSize >= data) {
-                // The free interval takes the index of its
-                // following task v.
-                // Inserting a vertex in this interval means
-                // inserting it before v.
-                freeInterval = new Interval(freeIntervalSize, available, newInt.getTotalOrderIndex());
-                break;
-              }
-            }
+          } else if (type == FindType.earliestBigEnoughInterval && (newInt.getTotalOrderIndex() > minIndex)
+              && (newInt.getTotalOrderIndex() <= maxIndex) && freeIntervalSize >= data) {
+            // The free interval takes the index of its
+            // following task v.
+            // Inserting a vertex in this interval means
+            // inserting it before v.
+            freeInterval = new Interval(freeIntervalSize, available, newInt.getTotalOrderIndex());
+            break;
           }
           oldInt = newInt;
         }
@@ -273,8 +253,7 @@ public class IntervalFinder {
         }
 
         if ((targetIndex - sourceIndex) > 0) {
-          final int randomVal = this.random.nextInt(targetIndex - sourceIndex);
-          index = sourceIndex + randomVal;
+          index = sourceIndex;
         }
       }
 

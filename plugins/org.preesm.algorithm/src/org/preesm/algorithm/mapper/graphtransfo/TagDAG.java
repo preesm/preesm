@@ -124,7 +124,7 @@ public class TagDAG {
     final OrderManager orderMgr = new OrderManager(architecture);
     orderMgr.reconstructTotalOrderFromDAG(dag); // could be avoided?
 
-    final IEdgeSched instance = AbstractEdgeSched.getInstance(EdgeSchedType.Simple, orderMgr);
+    final IEdgeSched instance = AbstractEdgeSched.getInstance(EdgeSchedType.SIMPLE, orderMgr);
     final CommunicationRouter comRouter = new CommunicationRouter(architecture, scenario, dag, instance, orderMgr);
     comRouter.routeAll(CommunicationRouter.SEND_RECEIVE_TYPE); // takes a lot of time, should be optimized
     orderMgr.tagDAG(dag);

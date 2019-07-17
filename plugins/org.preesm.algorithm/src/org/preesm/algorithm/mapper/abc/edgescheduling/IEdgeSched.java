@@ -39,7 +39,6 @@ import org.preesm.algorithm.mapper.abc.order.OrderManager;
 import org.preesm.algorithm.mapper.model.MapperDAGVertex;
 import org.preesm.algorithm.mapper.model.special.TransferVertex;
 
-// TODO: Auto-generated Javadoc
 /**
  * Specification of the edgeScheduler interface.
  *
@@ -57,7 +56,7 @@ public interface IEdgeSched {
    * @param target
    *          the target
    */
-  void schedule(TransferVertex tVertex, MapperDAGVertex source, MapperDAGVertex target);
+  void schedule(final TransferVertex tVertex, final MapperDAGVertex source, final MapperDAGVertex target);
 
   /**
    * Gets the internal order manager.
