@@ -50,7 +50,7 @@ import org.preesm.model.algorithm.schedule.HierarchicalSchedule;
 import org.preesm.model.algorithm.schedule.ScheduleFactory;
 import org.preesm.model.pisdf.AbstractActor;
 import org.preesm.model.pisdf.PiGraph;
-import org.preesm.model.pisdf.switches.PiSDFTopologicalSorter;
+import org.preesm.model.pisdf.util.topology.PiSDFTopologyHelper;
 import org.preesm.model.scenario.Scenario;
 import org.preesm.model.scenario.util.ScenarioUserFactory;
 import org.preesm.model.slam.ComponentInstance;
@@ -89,7 +89,7 @@ public class EnergyAwareScheduler extends AbstractScheduler {
     final Mapping createMapping = MappingFactory.eINSTANCE.createMapping();
 
     final List<AbstractActor> allActors = piGraph.getAllActors();
-    final List<AbstractActor> depthFirstSort = PiSDFTopologicalSorter.depthFirstSort(allActors);
+    final List<AbstractActor> depthFirstSort = PiSDFTopologyHelper.sort(allActors);
     Scenario scenarioMapping = ScenarioUserFactory.createScenario();
 
     Map<String, Integer> coresOfEachType = new LinkedHashMap<>();
