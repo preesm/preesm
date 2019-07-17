@@ -124,10 +124,12 @@ public class ListSchedulingMappingFromPiMM extends ListSchedulingMappingFromDAG 
        */
       Set<Map<String, Integer>> configsAlreadyUsed = new LinkedHashSet<>();
       Map<String, Integer> coresOfEachType = EnergyAwarenessHelper.getCoresOfEachType(scenarioMapping);
+      Set<String> pesAlwaysAdded = EnergyAwarenessHelper.getImprescindiblePes(scenarioMapping);
+      // EnergyAwarenessHelper.removeImprescindibleFromAvailableCores(scenarioMapping, coresOfEachType, pesAlwaysAdded);
+
+      System.out.println("A: " + pesAlwaysAdded.toString());
+
       Map<String, Integer> coresUsedOfEachType = EnergyAwarenessHelper.getFirstConfig(coresOfEachType, "first");
-      Map<String, Integer> firstConfigToAdd = new LinkedHashMap<>();
-      firstConfigToAdd.putAll(coresUsedOfEachType);
-      configsAlreadyUsed.add(firstConfigToAdd);
 
       while (true) {
         /**
@@ -138,13 +140,24 @@ public class ListSchedulingMappingFromPiMM extends ListSchedulingMappingFromDAG 
         /**
          * Add the constraints that represents the new config
          */
-        System.out.println("Doing: " + coresUsedOfEachType.toString());
-        EnergyAwarenessHelper.updateConfigConstrains(scenario, scenarioMapping, coresUsedOfEachType);
+        EnergyAwarenessHelper.updateConfigConstrains(scenario, scenarioMapping, pesAlwaysAdded, coresUsedOfEachType);
         EnergyAwarenessHelper.updateConfigSimu(scenario, scenarioMapping);
+        Map<String, Integer> configToAdd = EnergyAwarenessHelper.getCoresOfEachType(scenarioMapping);
+
+        /**
+         * Check whether we have tested everything or not
+         */
+        if (!EnergyAwarenessHelper.configValid(configToAdd, configsAlreadyUsed)) {
+          break;
+        } else {
+          configsAlreadyUsed.add(configToAdd);
+        }
 
         /**
          * Try the mapping
          */
+        System.out.println("Doing: " + coresUsedOfEachType.toString());
+        System.out.println("Added: " + configToAdd.toString());
         final MapperDAG dag = StaticPiMM2MapperDAGVisitor.convert(algorithm, architecture, scenarioMapping);
         inputs.put(AbstractWorkflowNodeImplementation.KEY_SDF_DAG, dag);
         mapping = super.execute(inputs, parameters, monitor, nodeName, workflow);
@@ -171,13 +184,13 @@ public class ListSchedulingMappingFromPiMM extends ListSchedulingMappingFromDAG 
           if (minEnergy > energyThisOne) {
             minEnergy = energyThisOne;
             closestFPS = fps;
-            bestConfig.putAll(coresUsedOfEachType);
+            bestConfig.putAll(configToAdd);
             mappingBest.putAll(mapping);
           }
         } else if (Math.abs(objective - fps) < Math.abs(objective - closestFPS)) {
           closestFPS = fps;
           energyNoObjective = energyThisOne;
-          bestConfig.putAll(coresUsedOfEachType);
+          bestConfig.putAll(configToAdd);
           mappingFPS.putAll(mapping);
         }
         System.out.println("Best energy = " + minEnergy + " --- best FPS = " + closestFPS);
@@ -191,16 +204,6 @@ public class ListSchedulingMappingFromPiMM extends ListSchedulingMappingFromDAG 
           EnergyAwarenessHelper.getNextConditionalConfig(coresUsedOfEachType, coresOfEachType, "down",
               configsAlreadyUsed);
         }
-        Map<String, Integer> configToAdd = new LinkedHashMap<>();
-        configToAdd.putAll(coresUsedOfEachType);
-        configsAlreadyUsed.add(configToAdd);
-
-        /**
-         * Check whether we have tested everything or not
-         */
-        if (!EnergyAwarenessHelper.configValid(coresUsedOfEachType)) {
-          break;
-        }
       }
       /**
        * Reset
@@ -210,7 +213,7 @@ public class ListSchedulingMappingFromPiMM extends ListSchedulingMappingFromDAG 
       /**
        * Getting the best one
        */
-      EnergyAwarenessHelper.updateConfigConstrains(scenario, scenarioMapping, bestConfig);
+      EnergyAwarenessHelper.updateConfigConstrains(scenario, scenarioMapping, pesAlwaysAdded, bestConfig);
       EnergyAwarenessHelper.updateConfigSimu(scenario, scenarioMapping);
       if (minEnergy == Double.MAX_VALUE) {
         minEnergy = energyNoObjective;

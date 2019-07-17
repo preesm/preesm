@@ -41,6 +41,7 @@
 package org.preesm.algorithm.mapper.energyAwareness;
 
 import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -127,7 +128,7 @@ public class EnergyAwarenessHelper {
             int value = ((Double) (Math.random() * instance.getValue())).intValue();
             coresUsedOfEachType.put(instance.getKey(), value);
           }
-        } while (!configValid(coresUsedOfEachType));
+        } while (!configValid(coresUsedOfEachType, null));
         break;
       default:
         break;
@@ -137,20 +138,52 @@ public class EnergyAwarenessHelper {
 
   /**
    * 
+   */
+  public static List<Entry<ComponentInstance, EList<AbstractActor>>> getConstraintsOfType(Scenario scenario,
+      String peType) {
+    return scenario.getConstraints().getGroupConstraints().stream()
+        .filter(e -> e.getKey().getComponent().getVlnv().getName().equalsIgnoreCase(peType))
+        .collect(Collectors.toList());
+  }
+
+  /**
+   * 
+   */
+  public static Entry<ComponentInstance, EList<AbstractActor>> getConstraintByPeName(Scenario scenario, String peName) {
+    return scenario.getConstraints().getGroupConstraints().stream()
+        .filter(e -> e.getKey().getInstanceName().equalsIgnoreCase(peName)).collect(Collectors.toList()).get(0);
+  }
+
+  /**
+   * 
    * @param scenario
    *          original {@link Scenario}
    * @param scenarioMapping
    *          {@link Scenario} to be updated
+   * @param pesAlwaysAdded
+   *          cores that must be always included
    * @param coresUsedOfEachType
    *          config
    */
-  public static void updateConfigConstrains(Scenario scenario, Scenario scenarioMapping,
+  public static void updateConfigConstrains(Scenario scenario, Scenario scenarioMapping, Set<String> pesAlwaysAdded,
       Map<String, Integer> coresUsedOfEachType) {
+    for (String peName : pesAlwaysAdded) {
+      Entry<ComponentInstance, EList<AbstractActor>> constraint = getConstraintByPeName(scenario, peName);
+      scenarioMapping.getConstraints().getGroupConstraints().add(constraint);
+    }
+    Map<String, Integer> coresOfEachTypeAlreadyAdded = EnergyAwarenessHelper.getCoresOfEachType(scenarioMapping);
     for (Entry<String, Integer> instance : coresUsedOfEachType.entrySet()) {
-      List<Entry<ComponentInstance, EList<AbstractActor>>> constraints = scenario.getConstraints().getGroupConstraints()
-          .stream().filter(e -> e.getKey().getComponent().getVlnv().getName().equals(instance.getKey()))
-          .collect(Collectors.toList()).subList(0, instance.getValue());
-      scenarioMapping.getConstraints().getGroupConstraints().addAll(constraints);
+      List<Entry<ComponentInstance, EList<AbstractActor>>> constraints = getConstraintsOfType(scenario,
+          instance.getKey());
+      int coresLeft = 0;
+      if (coresOfEachTypeAlreadyAdded.containsKey(instance.getKey())) {
+        coresLeft = instance.getValue() - coresOfEachTypeAlreadyAdded.get(instance.getKey());
+      } else {
+        coresLeft = instance.getValue();
+      }
+      if (!constraints.isEmpty() && coresLeft > 0) {
+        scenarioMapping.getConstraints().getGroupConstraints().addAll(constraints.subList(0, coresLeft));
+      }
     }
 
   }
@@ -291,10 +324,12 @@ public class EnergyAwarenessHelper {
           int valueUsedBefore = peType.getValue();
           int valueToMakeAverage = 0;
           for (Map<String, Integer> alreadyUsed : configsAlreadyUsed) {
-            int valueThisConfig = alreadyUsed.get(peType.getKey());
-            if (valueThisConfig > valueToMakeAverage && valueThisConfig < valueUsedBefore) {
-              valueToMakeAverage = valueThisConfig;
-              foundSomething = true;
+            if (alreadyUsed.containsKey(peType.getKey())) {
+              int valueThisConfig = alreadyUsed.get(peType.getKey());
+              if (valueThisConfig > valueToMakeAverage && valueThisConfig < valueUsedBefore) {
+                valueToMakeAverage = valueThisConfig;
+                foundSomething = true;
+              }
             }
           }
           if (!foundSomething) {
@@ -307,24 +342,65 @@ public class EnergyAwarenessHelper {
       default:
         break;
     }
-    if (previousConfig.equals(coresUsedOfEachType) || configsAlreadyUsed.contains(coresUsedOfEachType)) {
-      end = true;
-    }
-    if (end) {
-      for (Entry<String, Integer> peType : coresUsedOfEachType.entrySet()) {
-        peType.setValue(0);
-      }
-    }
   }
 
   /**
    * 
    * @param coresUsedOfEachType
    *          cores used of each type
+   * @param configsAlreadyUsed
+   *          configs already used
    * @return
    */
-  public static boolean configValid(Map<String, Integer> coresUsedOfEachType) {
-    return !coresUsedOfEachType.entrySet().stream().filter(e -> e.getValue() != 0).collect(Collectors.toList())
-        .isEmpty();
+  public static boolean configValid(Map<String, Integer> coresUsedOfEachType,
+      Set<Map<String, Integer>> configsAlreadyUsed) {
+    boolean valid = true;
+    if (configsAlreadyUsed != null && configsAlreadyUsed.contains(coresUsedOfEachType)) {
+      valid = false;
+    }
+    if (coresUsedOfEachType.entrySet().stream().filter(e -> e.getValue() != 0).collect(Collectors.toList()).isEmpty()) {
+      valid = false;
+    }
+
+    return valid;
+  }
+
+  /**
+   * 
+   * @param scenarioMapping
+   *          {@link Scenario} used in the mapping
+   * @return
+   */
+  public static Set<String> getImprescindiblePes(Scenario scenarioMapping) {
+    Set<String> imprescindiblePes = new LinkedHashSet<>();
+    for (AbstractActor actor : scenarioMapping.getAlgorithm().getAllActors()) {
+      if (actor != null && actor.getClass().equals(ActorImpl.class)) {
+        List<Entry<ComponentInstance, EList<AbstractActor>>> constraints = scenarioMapping.getConstraints()
+            .getGroupConstraints().stream().filter(e -> e.getValue().contains(actor)).collect(Collectors.toList());
+        if (constraints.size() == 1) {
+          for (Entry<ComponentInstance, EList<AbstractActor>> constraint : constraints) {
+            imprescindiblePes.add(constraint.getKey().getInstanceName());
+          }
+        }
+      }
+    }
+    return imprescindiblePes;
+  }
+
+  /**
+   * 
+   * @param scenarioMapping
+   *          {@link Scenario} used in the mapping
+   * @param coresOfEachType
+   *          Cores available of each type
+   * @param pesAlwaysAdded
+   *          Name of cores always added
+   */
+  public static void removeImprescindibleFromAvailableCores(Scenario scenarioMapping,
+      Map<String, Integer> coresOfEachType, Set<String> pesAlwaysAdded) {
+    for (String peName : pesAlwaysAdded) {
+      String peType = getConstraintByPeName(scenarioMapping, peName).getKey().getComponent().getVlnv().getName();
+      coresOfEachType.put(peType, coresOfEachType.get(peType) - 1);
+    }
   }
 }
