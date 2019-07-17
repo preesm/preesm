@@ -357,12 +357,14 @@ public class CommunicationRouter {
     final ComponentInstance sourceOp = source.getEffectiveOperator();
     final ComponentInstance destOp = dest.getEffectiveOperator();
 
+    final long dataSize = edge.getInit().getDataSize();
+
     long cost = 0;
 
     // Retrieving the route
     if ((sourceOp != null) && (destOp != null)) {
       final Route route = this.calculator.getRoute(sourceOp, destOp);
-      cost = route.evaluateTransferCost(edge.getInit().getDataSize());
+      cost = route.evaluateTransferCost(dataSize);
     } else {
       final String msg = "trying to evaluate a transfer between non mapped operators.";
       throw new PreesmRuntimeException(msg);

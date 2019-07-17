@@ -48,7 +48,6 @@ import org.preesm.model.scenario.Scenario;
 import org.preesm.model.slam.ComponentInstance;
 import org.preesm.model.slam.Design;
 
-// TODO: Auto-generated Javadoc
 /**
  * A loosely timed architecture simulator associates a simple cost to each communication. This cost is the transfer size
  * multiplied by the medium speed. The communications are parallel with computation and all parallel with each other.
