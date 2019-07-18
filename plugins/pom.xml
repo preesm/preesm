@@ -41,7 +41,7 @@
   <modelVersion>4.0.0</modelVersion>
   <artifactId>org.preesm.plugins</artifactId>
   <packaging>pom</packaging>
-  <name>PREESM :: Plugins :: Parent</name>
+  <name>PREESM :: Plugins</name>
 
   <parent>
     <groupId>org.preesm</groupId>

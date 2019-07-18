@@ -40,7 +40,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<artifactId>org.preesm.tests</artifactId>
 	<packaging>pom</packaging>
-    <name>PREESM :: Tests :: Parent</name>
+    <name>PREESM :: Tests</name>
 
 	<parent>
 		<groupId>org.preesm</groupId>
