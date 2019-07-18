@@ -42,7 +42,6 @@ import org.preesm.model.slam.ComNode;
 import org.preesm.model.slam.ComponentInstance;
 import org.preesm.model.slam.Mem;
 
-// TODO: Auto-generated Javadoc
 /**
  * Route step where the sender uses a shared RAM to send data.
  *
@@ -55,11 +54,6 @@ public class MemRouteStep extends MessageRouteStep {
 
   /** Index of the communication node connected to the shared ram. */
   private int ramNodeIndex = -1;
-
-  /**
-   * The route step type determines how the communication will be simulated.
-   */
-  public static final String type = "RamRouteStep";
 
   /**
    * Instantiates a new mem route step.
@@ -75,8 +69,8 @@ public class MemRouteStep extends MessageRouteStep {
    * @param ramNodeIndex
    *          the ram node index
    */
-  public MemRouteStep(final ComponentInstance sender, final List<ComponentInstance> nodes,
-      final ComponentInstance receiver, final Mem mem, final int ramNodeIndex) {
+  MemRouteStep(final ComponentInstance sender, final List<ComponentInstance> nodes, final ComponentInstance receiver,
+      final Mem mem, final int ramNodeIndex) {
     super(sender, nodes, receiver);
     this.mem = mem;
     this.ramNodeIndex = ramNodeIndex;
@@ -89,7 +83,7 @@ public class MemRouteStep extends MessageRouteStep {
    */
   @Override
   public String getType() {
-    return MemRouteStep.type;
+    return MEM_TYPE;
   }
 
   /**

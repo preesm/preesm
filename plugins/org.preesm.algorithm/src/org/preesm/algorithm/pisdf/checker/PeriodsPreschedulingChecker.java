@@ -35,9 +35,8 @@
  */
 package org.preesm.algorithm.pisdf.checker;
 
-import java.util.HashMap;
-import java.util.HashSet;
 import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
@@ -122,7 +121,7 @@ public class PeriodsPreschedulingChecker extends AbstractTaskImplementation {
       throw new PreesmRuntimeException(PeriodsPreschedulingChecker.GENERIC_RATE_ERROR + rateStr + ".", e);
     }
 
-    final Map<Actor, Long> periodicActors = new HashMap<>();
+    final Map<Actor, Long> periodicActors = new LinkedHashMap<>();
     for (final AbstractActor absActor : graph.getActors()) {
       if ((absActor instanceof Actor) && (absActor instanceof PeriodicElement)) {
         final Actor actor = (Actor) absActor;
@@ -162,8 +161,8 @@ public class PeriodsPreschedulingChecker extends AbstractTaskImplementation {
     heurFifoBreaks.performAnalysis(graph);
 
     // 1. find all actor w/o incoming edges and all others w/o outgoing edge
-    final Set<AbstractActor> sourceActors = new HashSet<>(heurFifoBreaks.additionalSourceActors);
-    final Set<AbstractActor> sinkActors = new HashSet<>(heurFifoBreaks.additionalSinkActors);
+    final Set<AbstractActor> sourceActors = new LinkedHashSet<>(heurFifoBreaks.additionalSourceActors);
+    final Set<AbstractActor> sinkActors = new LinkedHashSet<>(heurFifoBreaks.additionalSinkActors);
     for (final AbstractActor absActor : graph.getActors()) {
       if (absActor instanceof ExecutableActor) {
         if (absActor.getDataOutputPorts().isEmpty()) {
@@ -209,7 +208,7 @@ public class PeriodsPreschedulingChecker extends AbstractTaskImplementation {
 
   @Override
   public Map<String, String> getDefaultParameters() {
-    final Map<String, String> parameters = new HashMap<>();
+    final Map<String, String> parameters = new LinkedHashMap<>();
     parameters.put(PeriodsPreschedulingChecker.SELECTION_RATE, PeriodsPreschedulingChecker.DEFAULT_SELECTION_RATE);
     return parameters;
   }

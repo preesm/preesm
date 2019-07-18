@@ -36,7 +36,6 @@
  */
 package org.preesm.algorithm.mapper.abc.edgescheduling;
 
-import java.util.Random;
 import org.preesm.algorithm.mapper.abc.order.OrderManager;
 import org.preesm.algorithm.mapper.model.MapperDAGVertex;
 import org.preesm.algorithm.mapper.model.special.TransferVertex;
@@ -50,28 +49,16 @@ import org.preesm.model.slam.ComponentInstance;
  */
 public class SwitcherEdgeSched extends AbstractEdgeSched {
 
-  /** The interval finder. */
-  private IntervalFinder      intervalFinder = null;
-  private static final Random r              = new Random();
+  private final IntervalFinder intervalFinder;
 
   /**
    * Instantiates a new switcher edge sched.
-   *
-   * @param orderManager
-   *          the order manager
    */
   public SwitcherEdgeSched(final OrderManager orderManager) {
     super(orderManager);
-
     this.intervalFinder = new IntervalFinder(orderManager);
   }
 
-  /*
-   * (non-Javadoc)
-   *
-   * @see org.ietr.preesm.mapper.abc.edgescheduling.IEdgeSched#schedule(org.ietr.preesm.mapper.model.
-   * special.TransferVertex, org.ietr.preesm.mapper.model.MapperDAGVertex, org.ietr.preesm.mapper.model.MapperDAGVertex)
-   */
   @Override
   public void schedule(final TransferVertex vertex, final MapperDAGVertex source, final MapperDAGVertex target) {
 
@@ -85,24 +72,15 @@ public class SwitcherEdgeSched extends AbstractEdgeSched {
       final int targetIndex = this.intervalFinder.getOrderManager().totalIndexOf(target);
 
       if ((targetIndex - sourceIndex) > 0) {
-        final int nextInt = r.nextInt(Integer.MAX_VALUE);
-        int randomVal = Math.abs(nextInt);
-        randomVal = randomVal % (targetIndex - sourceIndex);
-        final int index = sourceIndex + randomVal;
-        this.orderManager.insertAtIndex(index, vertex);
+        this.orderManager.insertAtIndex(sourceIndex, vertex);
       } else {
         this.orderManager.insertAfter(source, vertex);
       }
     }
   }
 
-  /*
-   * (non-Javadoc)
-   *
-   * @see org.ietr.preesm.mapper.abc.edgescheduling.IEdgeSched#getEdgeSchedType()
-   */
   @Override
   public EdgeSchedType getEdgeSchedType() {
-    return EdgeSchedType.Switcher;
+    return EdgeSchedType.SWITCHER;
   }
 }

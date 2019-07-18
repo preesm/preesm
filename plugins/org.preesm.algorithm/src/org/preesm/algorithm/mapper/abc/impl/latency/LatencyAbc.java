@@ -146,13 +146,13 @@ public abstract class LatencyAbc {
     LatencyAbc abc = null;
     final AbcType simulatorType = params.getSimulatorType();
 
-    if (simulatorType == AbcType.InfiniteHomogeneous) {
+    if (simulatorType == AbcType.INFINITE_HOMOGENEOUS) {
       abc = new InfiniteHomogeneousAbc(params, dag, archi, scenario);
-    } else if (simulatorType == AbcType.LooselyTimed) {
+    } else if (simulatorType == AbcType.LOSSELY_TIMED) {
       abc = new LooselyTimedAbc(params, dag, archi, simulatorType, scenario);
-    } else if (simulatorType == AbcType.ApproximatelyTimed) {
+    } else if (simulatorType == AbcType.APPROXIMATELY_TIMED) {
       abc = new ApproximatelyTimedAbc(params, dag, archi, simulatorType, scenario);
-    } else if (simulatorType == AbcType.AccuratelyTimed) {
+    } else if (simulatorType == AbcType.ACCURATELY_TIMED) {
       abc = new AccuratelyTimedAbc(params, dag, archi, simulatorType, scenario);
     }
 
@@ -179,29 +179,14 @@ public abstract class LatencyAbc {
     }
   }
 
-  /*
-   * (non-Javadoc)
-   *
-   * @see org.ietr.preesm.mapper.abc.IAbc#getDAG()
-   */
   public final MapperDAG getDAG() {
     return this.dag;
   }
 
-  /**
-   * Gets the architecture.
-   *
-   * @return the architecture
-   */
   public final Design getArchitecture() {
     return this.archi;
   }
 
-  /*
-   * (non-Javadoc)
-   *
-   * @see org.ietr.preesm.mapper.abc.IAbc#getScenario()
-   */
   public final Scenario getScenario() {
     return this.scenario;
   }
@@ -296,8 +281,8 @@ public abstract class LatencyAbc {
       // implementation
       // Modifying effective operator of the vertex and all its
       // mapping set!
-      dagvertex.setEffectiveOperator(finalOperator);
-      impvertex.setEffectiveOperator(finalOperator);
+      dagvertex.setEffectiveComponent(finalOperator);
+      impvertex.setEffectiveComponent(finalOperator);
 
       fireNewMappedVertex(impvertex, updateRank);
 
@@ -377,8 +362,8 @@ public abstract class LatencyAbc {
           PreesmLogger.getLogger().log(Level.INFO, msg);
         }
 
-        dv.setEffectiveOperator(operator);
-        dvi.setEffectiveOperator(operator);
+        dv.setEffectiveComponent(operator);
+        dvi.setEffectiveComponent(operator);
 
         fireNewMappedVertex(dvi, updateRank);
 
@@ -390,7 +375,7 @@ public abstract class LatencyAbc {
       } else if (dv.equals(dagvertex) || remapGroup) {
         final String msg = dagvertex + " can not be mapped (group) on " + operator;
         PreesmLogger.getLogger().log(Level.SEVERE, msg);
-        dv.setEffectiveOperator(null);
+        dv.setEffectiveComponent(null);
       }
     }
 
@@ -684,9 +669,9 @@ public abstract class LatencyAbc {
 
     fireNewUnmappedVertex(impvertex);
 
-    dagvertex.setEffectiveOperator(null);
+    dagvertex.setEffectiveComponent(null);
 
-    impvertex.setEffectiveOperator(null);
+    impvertex.setEffectiveComponent(null);
   }
 
   /**

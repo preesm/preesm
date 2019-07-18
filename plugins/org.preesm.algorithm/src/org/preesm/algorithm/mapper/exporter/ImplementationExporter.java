@@ -137,13 +137,12 @@ public class ImplementationExporter extends GMLExporter<DAGVertex, DAGEdge> {
 
     if (vertex instanceof TransferVertex) {
       // Adding route step to the node
-      final AbstractRouteStep routeStep = (AbstractRouteStep) vtxBeans
-          .getValue(ImplementationPropertyNames.SendReceive_routeStep);
+      final AbstractRouteStep routeStep = vtxBeans.getValue(ImplementationPropertyNames.SendReceive_routeStep);
       // Add the Operator_address key
       if (routeStep != null) {
         String memAddress = null;
         final Element operatorAdress = this.domDocument.createElement("data");
-        final EMap<String, String> parameters = ((ComponentInstanceImpl) vtxBeans.getValue("Operator")).getParameters();
+        final EMap<String, String> parameters = (vtxBeans.<ComponentInstanceImpl>getValue("Operator")).getParameters();
 
         memAddress = parameters.get("memoryAddress");
 

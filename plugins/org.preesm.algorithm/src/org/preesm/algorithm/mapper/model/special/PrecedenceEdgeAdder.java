@@ -54,7 +54,6 @@ import org.preesm.algorithm.model.dag.DAGEdge;
 import org.preesm.commons.logger.PreesmLogger;
 import org.preesm.model.slam.ComponentInstance;
 
-// TODO: Auto-generated Javadoc
 /**
  * The edge adder automatically generates edges between vertices successive on a single operator. It can also remove all
  * the edges of type PrecedenceEdgeAdder from the graph
@@ -63,13 +62,8 @@ import org.preesm.model.slam.ComponentInstance;
  */
 public class PrecedenceEdgeAdder {
 
-  /** The order manager. */
-  private final OrderManager orderManager;
-
-  /** The implementation. */
-  private final MapperDAG implementation;
-
-  /** The transaction manager. */
+  private final OrderManager       orderManager;
+  private final MapperDAG          implementation;
   private final TransactionManager transactionManager;
 
   /**
@@ -170,8 +164,8 @@ public class PrecedenceEdgeAdder {
 
       if (edges != null) {
         if (edges.size() >= 2) {
-          PreesmLogger.getLogger().log(Level.SEVERE,
-              "too many edges between " + v1.toString() + " and " + v2.toString());
+          final String msg = "too many edges between " + v1.toString() + " and " + v2.toString();
+          PreesmLogger.getLogger().log(Level.SEVERE, msg);
         }
 
         for (final DAGEdge edge : edges) {
@@ -182,29 +176,6 @@ public class PrecedenceEdgeAdder {
       }
     }
   }
-
-  /**
-   * For Debug purposes, checks that all necessary precedence edges are present.
-   *
-   * @param newVertex
-   *          the new vertex
-   */
-  /*
-   * public static void checkPrecedences(SchedOrderManager orderManager, MapperDAG implementation, MultiCoreArchitecture
-   * archi) {
-   *
-   * Set<ArchitectureComponent> cmpSet = new LinkedHashSet<ArchitectureComponent>();
-   * cmpSet.addAll(archi.getComponents(ArchitectureComponentType.medium));
-   * cmpSet.addAll(archi.getComponents(ArchitectureComponentType.operator));
-   *
-   * for (ArchitectureComponent o : cmpSet) { List<MapperDAGVertex> schedule = orderManager.getVertexList(o); if
-   * (schedule != null) { MapperDAGVertex pv = null; for (IScheduleElement v : schedule) { if (pv != null) { if
-   * (implementation.getAllEdges(pv, (MapperDAGVertex)v) == null || implementation.getAllEdges(pv,
-   * (MapperDAGVertex)v).isEmpty()) {
-   *
-   * PreesmLogger.getLogger().log( Level.SEVERE, "Lacking precedence edge between " + pv.toString() + " and " +
-   * v.toString()); } } pv = (MapperDAGVertex)v; } } } }
-   */
 
   /**
    * Schedules a given vertex
@@ -218,7 +189,7 @@ public class PrecedenceEdgeAdder {
     if (prev != null) {
       final Set<DAGEdge> prevEdges = this.implementation.getAllEdges(prev, newVertex);
       prevAndNewLinked = ((prevEdges != null) && !prevEdges.isEmpty());
-      if (((prev != null) && (newVertex != null)) && !prevAndNewLinked) {
+      if ((newVertex != null) && !prevAndNewLinked) {
         addPrecedenceEdge(prev, newVertex);
         prevAndNewLinked = true;
       }
@@ -228,7 +199,7 @@ public class PrecedenceEdgeAdder {
     if (next != null) {
       final Set<DAGEdge> nextEdges = this.implementation.getAllEdges(newVertex, next);
       newAndNextLinked = ((nextEdges != null) && !nextEdges.isEmpty());
-      if (((newVertex != null) && (next != null)) && !newAndNextLinked) {
+      if ((newVertex != null) && !newAndNextLinked) {
         addPrecedenceEdge(newVertex, next);
         newAndNextLinked = true;
       }

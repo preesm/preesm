@@ -39,7 +39,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
 
 /**
@@ -75,7 +75,7 @@ public class ScheduleEntry {
   @JsonProperty("topologicalEnd")
   private Integer                   topologicalEnd;
   @JsonIgnore
-  private final Map<String, Object> additionalProperties = new HashMap<>();
+  private final Map<String, Object> additionalProperties = new LinkedHashMap<>();
 
   @JsonProperty("taskName")
   public String getTaskName() {

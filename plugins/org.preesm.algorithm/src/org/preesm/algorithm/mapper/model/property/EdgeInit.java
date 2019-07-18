@@ -46,21 +46,12 @@ import org.preesm.commons.CloneableProperty;
  */
 public class EdgeInit implements CloneableProperty<EdgeInit> {
 
-  /** The data size. */
   private long dataSize = 0;
 
-  /**
-   * Instantiates a new edge init.
-   */
   public EdgeInit() {
     super();
   }
 
-  /*
-   * (non-Javadoc)
-   *
-   * @see java.lang.Object#clone()
-   */
   @Override
   public EdgeInit copy() {
     final EdgeInit property = new EdgeInit();
@@ -68,21 +59,10 @@ public class EdgeInit implements CloneableProperty<EdgeInit> {
     return property;
   }
 
-  /**
-   * Gets the data size.
-   *
-   * @return the data size
-   */
   public long getDataSize() {
     return this.dataSize;
   }
 
-  /**
-   * Sets the data size.
-   *
-   * @param dataSize
-   *          the new data size
-   */
   public void setDataSize(final long dataSize) {
     this.dataSize = dataSize;
   }

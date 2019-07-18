@@ -51,7 +51,6 @@ import org.preesm.model.slam.Design;
  */
 public class SpanLengthCalculator extends InfiniteHomogeneousAbc {
 
-  /** The Constant DAG_SPAN. */
   public static final String DAG_SPAN = "dag span length";
 
   /**
@@ -76,17 +75,10 @@ public class SpanLengthCalculator extends InfiniteHomogeneousAbc {
 
     updateTimings();
 
-    // The span corresponds to the final latency of an infinite homogeneous
-    // simulation
+    // The span corresponds to the final latency of an infinite homogeneous simulation
     dag.getPropertyBean().setValue(SpanLengthCalculator.DAG_SPAN, getFinalLatency());
   }
 
-  /*
-   * (non-Javadoc)
-   *
-   * @see org.ietr.preesm.mapper.abc.impl.latency.InfiniteHomogeneousAbc#setEdgeCost(org.ietr.preesm.
-   * mapper.model.MapperDAGEdge)
-   */
   @Override
   protected void setEdgeCost(final MapperDAGEdge edge) {
     edge.getTiming().setCost(1);

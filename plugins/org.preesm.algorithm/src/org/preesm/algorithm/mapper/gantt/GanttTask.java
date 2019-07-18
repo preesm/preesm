@@ -36,6 +36,8 @@
  */
 package org.preesm.algorithm.mapper.gantt;
 
+import java.util.Objects;
+
 /**
  * GanttTask carries information for a task displayed in a Gantt chart component.
  *
@@ -75,57 +77,32 @@ public class GanttTask implements Comparable<GanttTask> {
     this.component = component;
   }
 
-  /**
-   * Gets the start time.
-   *
-   * @return the start time
-   */
   public long getStartTime() {
     return this.startTime;
   }
 
-  /**
-   * Gets the duration.
-   *
-   * @return the duration
-   */
   public long getDuration() {
     return this.duration;
   }
 
-  /**
-   * Gets the id.
-   *
-   * @return the id
-   */
   public String getId() {
     return this.id;
   }
 
-  /**
-   * Gets the component.
-   *
-   * @return the component
-   */
   public GanttComponent getComponent() {
     return this.component;
   }
 
-  /*
-   * (non-Javadoc)
-   *
-   * @see java.lang.Object#equals(java.lang.Object)
-   */
   @Override
   public boolean equals(final Object obj) {
-    return ((obj instanceof GanttTask) && (((GanttTask) obj).getId().equals(this.id)));
+    return ((obj instanceof GanttTask) && (((GanttTask) obj).getId().equals(this.getId())));
   }
 
-  /*
-   * (non-Javadoc)
-   *
-   * @see java.lang.Object#toString()
-   */
+  @Override
+  public int hashCode() {
+    return Objects.hash(getId());
+  }
+
   @Override
   public String toString() {
     return "(" + this.id + "," + this.component + "," + this.startTime + "," + this.duration + ")";

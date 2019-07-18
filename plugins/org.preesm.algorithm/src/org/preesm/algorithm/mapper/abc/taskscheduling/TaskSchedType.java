@@ -51,11 +51,6 @@ public enum TaskSchedType {
   /** The Topological. */
   TOPOLOGICAL;
 
-  /*
-   * (non-Javadoc)
-   *
-   * @see java.lang.Enum#toString()
-   */
   @Override
   public String toString() {
 

@@ -45,7 +45,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map.Entry;
 import java.util.Optional;
-import java.util.Set;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.emf.common.util.EList;
 import org.preesm.algorithm.codegen.idl.ActorPrototypes;
@@ -625,8 +624,8 @@ public class StaticPiMM2MapperDAGVisitor extends PiMMSwitch<Boolean> {
     final AbstractActor actor = PreesmCopyTracker.getOriginalSource(copyActor);
     // Add the scenario constraints
     final List<ComponentInstance> currentOperatorIDs = new ArrayList<>();
-    final Set<Entry<ComponentInstance, EList<AbstractActor>>> constraintGroups = scenario.getConstraints()
-        .getGroupConstraints().entrySet();
+    final List<Entry<ComponentInstance, EList<AbstractActor>>> constraintGroups = scenario.getConstraints()
+        .getGroupConstraints();
     for (final Entry<ComponentInstance, EList<AbstractActor>> cg : constraintGroups) {
       final List<AbstractActor> vertexPaths = cg.getValue();
       final ComponentInstance operatorId = cg.getKey();

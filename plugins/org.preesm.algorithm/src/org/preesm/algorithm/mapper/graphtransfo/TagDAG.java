@@ -42,7 +42,6 @@
 package org.preesm.algorithm.mapper.graphtransfo;
 
 import java.util.Iterator;
-import org.eclipse.emf.common.util.EMap;
 import org.preesm.algorithm.mapper.abc.edgescheduling.AbstractEdgeSched;
 import org.preesm.algorithm.mapper.abc.edgescheduling.EdgeSchedType;
 import org.preesm.algorithm.mapper.abc.edgescheduling.IEdgeSched;
@@ -60,8 +59,6 @@ import org.preesm.algorithm.model.dag.DAGEdge;
 import org.preesm.algorithm.model.dag.DAGVertex;
 import org.preesm.algorithm.model.sdf.SDFEdge;
 import org.preesm.model.scenario.Scenario;
-import org.preesm.model.scenario.ScenarioConstants;
-import org.preesm.model.scenario.SimulationInfo;
 import org.preesm.model.slam.ComponentInstance;
 import org.preesm.model.slam.Design;
 import org.preesm.model.slam.route.AbstractRouteStep;
@@ -106,7 +103,7 @@ public class TagDAG {
 
     addSendReceive(dag, architecture, scenario);
     addProperties(dag, simu);
-    addAllAggregates(dag, scenario);
+    addAllAggregates(dag);
   }
 
   /**
@@ -124,7 +121,7 @@ public class TagDAG {
     final OrderManager orderMgr = new OrderManager(architecture);
     orderMgr.reconstructTotalOrderFromDAG(dag); // could be avoided?
 
-    final IEdgeSched instance = AbstractEdgeSched.getInstance(EdgeSchedType.Simple, orderMgr);
+    final IEdgeSched instance = AbstractEdgeSched.getInstance(EdgeSchedType.SIMPLE, orderMgr);
     final CommunicationRouter comRouter = new CommunicationRouter(architecture, scenario, dag, instance, orderMgr);
     comRouter.routeAll(CommunicationRouter.SEND_RECEIVE_TYPE); // takes a lot of time, should be optimized
     orderMgr.tagDAG(dag);
@@ -250,7 +247,7 @@ public class TagDAG {
    * @param scenario
    *          the scenario
    */
-  private void addAllAggregates(final MapperDAG dag, final Scenario scenario) {
+  private void addAllAggregates(final MapperDAG dag) {
 
     MapperDAGEdge edge;
 
@@ -259,7 +256,7 @@ public class TagDAG {
     // Tagging the vertices with informations for code generation
     while (iter.hasNext()) {
       edge = (MapperDAGEdge) iter.next();
-      addAggregate(edge, scenario);
+      addAggregate(edge);
     }
   }
 
@@ -272,20 +269,12 @@ public class TagDAG {
    * @param scenario
    *          the scenario
    */
-  private void addAggregate(final MapperDAGEdge edge, final Scenario scenario) {
+  private void addAggregate(final MapperDAGEdge edge) {
     final BufferAggregate agg = new BufferAggregate();
     for (final AbstractEdge<?, ?> aggMember : edge.getAggregate()) {
       final DAGEdge dagEdge = (DAGEdge) aggMember;
       final String dataTypename = dagEdge.getPropertyBean().getValue(SDFEdge.DATA_TYPE);
-      final SimulationInfo simulationInfo = scenario.getSimulationInfo();
-      final EMap<String, Long> dataTypes = simulationInfo.getDataTypes();
-      final long dataTypeSize;
-      if (dataTypes.containsKey(dataTypename)) {
-        dataTypeSize = dataTypes.get(dataTypename);
-      } else {
-        dataTypeSize = ScenarioConstants.DEFAULT_DATA_TYPE_SIZE.getValue();
-      }
-      final BufferProperties props = new BufferProperties(dataTypename, dataTypeSize, dagEdge.getSourceLabel(),
+      final BufferProperties props = new BufferProperties(dataTypename, dagEdge.getSourceLabel(),
           dagEdge.getTargetLabel(), (int) dagEdge.getWeight().longValue());
       agg.add(props);
     }

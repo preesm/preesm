@@ -41,7 +41,6 @@ import java.util.Comparator;
 import org.preesm.algorithm.mapper.model.MapperDAGVertex;
 import org.preesm.algorithm.model.dag.DAGVertex;
 
-// TODO: Auto-generated Javadoc
 /**
  * Compares two SDF vertices using their scheduling orders.
  *
@@ -61,11 +60,9 @@ public class SchedulingOrderComparator implements Comparator<DAGVertex> {
    */
   @Override
   public int compare(final DAGVertex v1, final DAGVertex v2) {
-
     int difference = 0;
 
-    difference = ((MapperDAGVertex) v1).getTotalOrder();
-    difference -= ((MapperDAGVertex) v2).getTotalOrder();
+    difference = ((MapperDAGVertex) v1).getTotalOrder() - ((MapperDAGVertex) v2).getTotalOrder();
 
     // Avoiding the discard of vertices with same order
     if (difference == 0) {

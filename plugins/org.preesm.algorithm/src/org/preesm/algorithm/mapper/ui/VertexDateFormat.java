@@ -47,15 +47,8 @@ import org.jfree.chart.util.RelativeDateFormat;
  */
 public class VertexDateFormat extends RelativeDateFormat {
 
-  /** The Constant serialVersionUID. */
   private static final long serialVersionUID = 9164797353964241418L;
 
-  /*
-   * (non-Javadoc)
-   *
-   * @see org.jfree.chart.util.RelativeDateFormat#format(java.util.Date, java.lang.StringBuffer,
-   * java.text.FieldPosition)
-   */
   @Override
   public StringBuffer format(final Date date, final StringBuffer toAppendTo, final FieldPosition fieldPosition) {
     return new StringBuffer(String.format("%d cycles", date.getTime()));

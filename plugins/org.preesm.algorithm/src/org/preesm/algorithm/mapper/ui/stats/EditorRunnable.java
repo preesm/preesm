@@ -49,7 +49,6 @@ import org.preesm.commons.exceptions.PreesmRuntimeException;
  */
 public class EditorRunnable implements Runnable {
 
-  /** The input. */
   private final IEditorInput input;
 
   /**
@@ -63,11 +62,6 @@ public class EditorRunnable implements Runnable {
     this.input = input;
   }
 
-  /*
-   * (non-Javadoc)
-   *
-   * @see java.lang.Runnable#run()
-   */
   @Override
   public void run() {
 

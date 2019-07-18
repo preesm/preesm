@@ -67,7 +67,7 @@ public class CommunicationOrderChecker {
 
   /**
    * Function responsible for checking the validity of the schedule as specified Hereafter.
-   * 
+   *
    * In particular, the checker verifies if the Send and Receive communication primitives for each pair of core is
    * always scheduled with the exact same order on both sides. For example:<br>
    * <ul>
@@ -112,7 +112,7 @@ public class CommunicationOrderChecker {
       final boolean isReceive = vertexType.equals("receive");
 
       // get component
-      final ComponentInstance comp = (ComponentInstance) currentVertex.getPropertyBean().getValue("Operator");
+      final ComponentInstance comp = currentVertex.getPropertyBean().getValue("Operator");
 
       // Get scheduling order
       if (isSend) {
@@ -137,12 +137,12 @@ public class CommunicationOrderChecker {
 
         // Collect sender and receivers DAGVertices for this pair (in scheduling order)
         final List<DAGVertex> senders = new ArrayList<>(sendVerticesMap);
-        senders.removeIf(vertex -> !((ComponentInstance) vertex.getPropertyBean()
-            .getValue(ImplementationPropertyNames.Vertex_Operator)).equals(sendComponent));
+        senders.removeIf(vertex -> !(vertex.getPropertyBean().getValue(ImplementationPropertyNames.Vertex_Operator))
+            .equals(sendComponent));
 
         final List<DAGVertex> receivers = new ArrayList<>(recvVerticesMap);
-        receivers.removeIf(vertex -> !((ComponentInstance) vertex.getPropertyBean()
-            .getValue(ImplementationPropertyNames.Vertex_Operator)).equals(recvComponent));
+        receivers.removeIf(vertex -> !(vertex.getPropertyBean().getValue(ImplementationPropertyNames.Vertex_Operator))
+            .equals(recvComponent));
 
         // Get corresponding edges (in scheduling order)
         final List<DAGEdge> senderDagEdges = new ArrayList<>(senders.size());
@@ -170,15 +170,15 @@ public class CommunicationOrderChecker {
   /**
    * The purpose of this method is to check if pairs of Send/Receive vertex generated on an intermediate processing
    * element when a multi-step route is taken are correctly ordered.
-   * 
+   *
    * In particular, this method checks that for any given multi-step communication passing through a processing element,
    * the Receive operation always preceeds the corresponding Send operation.
-   * 
+   *
    * This issue may arise if an improper re-ordering of send/receive operation is performed on such a multi-step route.
-   * 
+   *
    * @param dag
    *          The {@link DirectedAcyclicGraph} whose scheduling is verified.
-   * 
+   *
    * @throws PreesmException
    *           if the schedule is incorrect.
    */
@@ -201,7 +201,7 @@ public class CommunicationOrderChecker {
       final boolean isReceive = vertexType.equals("receive");
 
       // get component
-      final ComponentInstance comp = (ComponentInstance) currentVertex.getPropertyBean().getValue("Operator");
+      final ComponentInstance comp = currentVertex.getPropertyBean().getValue("Operator");
 
       // Get scheduling order
       if (isSend || isReceive) {
@@ -216,8 +216,9 @@ public class CommunicationOrderChecker {
 
       // Collect sender and receivers DAGVertices for this component (in scheduling order)
       final List<DAGVertex> sendersReceivers = new ArrayList<>(sendReceiveVertices);
-      sendersReceivers.removeIf(vertex -> !((ComponentInstance) vertex.getPropertyBean()
-          .getValue(ImplementationPropertyNames.Vertex_Operator)).equals(component));
+      sendersReceivers
+          .removeIf(vertex -> !(vertex.getPropertyBean().getValue(ImplementationPropertyNames.Vertex_Operator))
+              .equals(component));
 
       // Keep only senderReceivers that corresponds to intermediate steps
       sendersReceivers.removeIf(vertex -> ((vertex instanceof ReceiveVertex) ? ((TransferVertex) vertex).getTarget()
@@ -225,7 +226,7 @@ public class CommunicationOrderChecker {
 
       // For each receive, check that the corresponding send if in the rest of the list
       // Create the list of corresponding dagEdge
-      List<DAGEdge> senderReceiverEdges = new ArrayList<DAGEdge>(sendersReceivers.size());
+      List<DAGEdge> senderReceiverEdges = new ArrayList<>(sendersReceivers.size());
       sendersReceivers.forEach(vertex -> senderReceiverEdges
           .add(vertex.getPropertyBean().getValue(ImplementationPropertyNames.SendReceive_correspondingDagEdge)));
       int i;

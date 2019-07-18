@@ -45,6 +45,7 @@ import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
 import org.preesm.algorithm.mapper.abc.edgescheduling.IEdgeSched;
 import org.preesm.algorithm.mapper.abc.order.OrderManager;
@@ -62,10 +63,8 @@ import org.preesm.model.scenario.Scenario;
 import org.preesm.model.slam.ComponentInstance;
 import org.preesm.model.slam.Design;
 import org.preesm.model.slam.route.AbstractRouteStep;
-import org.preesm.model.slam.route.DmaRouteStep;
-import org.preesm.model.slam.route.MemRouteStep;
-import org.preesm.model.slam.route.MessageRouteStep;
 import org.preesm.model.slam.route.Route;
+import org.preesm.model.slam.route.RouteCalculator;
 
 /**
  * Routes the communications. Based on bridge design pattern. The processing is delegated to implementers
@@ -111,12 +110,12 @@ public class CommunicationRouter {
     this.implementers = new LinkedHashMap<>();
     setManagers(implementation, edgeScheduler, orderManager);
 
-    this.calculator = RouteCalculator.getInstance(archi, scenario);
+    this.calculator = RouteCalculator.getInstance(archi, scenario.getSimulationInfo().getAverageDataSize());
 
     // Initializing the available router implementers
-    addImplementer(DmaRouteStep.type, new DmaComRouterImplementer(this));
-    addImplementer(MessageRouteStep.type, new MessageComRouterImplementer(this));
-    addImplementer(MemRouteStep.type, new SharedRamRouterImplementer(this));
+    addImplementer(AbstractRouteStep.DMA_TYPE, new DmaComRouterImplementer(this));
+    addImplementer(AbstractRouteStep.NODE_TYPE, new MessageComRouterImplementer(this));
+    addImplementer(AbstractRouteStep.MEM_TYPE, new SharedRamRouterImplementer(this));
   }
 
   /**
@@ -237,21 +236,20 @@ public class CommunicationRouter {
         final MapperDAGVertex currentSource = ((MapperDAGVertex) currentEdge.getSource());
         final MapperDAGVertex currentDest = ((MapperDAGVertex) currentEdge.getTarget());
 
-        if (currentSource.hasEffectiveOperator() && currentDest.hasEffectiveOperator()) {
-          if (!currentSource.getEffectiveOperator().equals(currentDest.getEffectiveOperator())) {
-            // Adds several transfers for one edge depending on the
-            // route steps
-            final Route route = this.calculator.getRoute(currentEdge);
-            int routeStepIndex = 0;
-            Transaction lastTransaction = null;
+        if (currentSource.hasEffectiveOperator() && currentDest.hasEffectiveOperator()
+            && !currentSource.getEffectiveOperator().equals(currentDest.getEffectiveOperator())) {
+          // Adds several transfers for one edge depending on the
+          // route steps
+          final Route route = this.getRoute(currentEdge);
+          int routeStepIndex = 0;
+          Transaction lastTransaction = null;
 
-            // Adds send and receive vertices and links them
-            for (final AbstractRouteStep step : route) {
-              final CommunicationRouterImplementer impl = getImplementer(step.getType());
-              lastTransaction = impl.addVertices(step, currentEdge, localTransactionManager, type, routeStepIndex,
-                  lastTransaction, null);
-              routeStepIndex++;
-            }
+          // Adds send and receive vertices and links them
+          for (final AbstractRouteStep step : route) {
+            final CommunicationRouterImplementer impl = getImplementer(step.getType());
+            lastTransaction = impl.addVertices(step, currentEdge, localTransactionManager, type, routeStepIndex,
+                lastTransaction, null);
+            routeStepIndex++;
           }
         }
       }
@@ -304,11 +302,10 @@ public class CommunicationRouter {
         final MapperDAGVertex currentSource = ((MapperDAGVertex) edge.getSource());
         final MapperDAGVertex currentDest = ((MapperDAGVertex) edge.getTarget());
 
-        if (currentSource.hasEffectiveOperator() && currentDest.hasEffectiveOperator()) {
-          if (!currentSource.getEffectiveOperator().equals(currentDest.getEffectiveOperator())) {
-            final MapperDAGEdge mapperEdge = (MapperDAGEdge) edge;
-            transferEdges.put(mapperEdge, this.calculator.getRoute(mapperEdge));
-          }
+        if (currentSource.hasEffectiveOperator() && currentDest.hasEffectiveOperator()
+            && !currentSource.getEffectiveOperator().equals(currentDest.getEffectiveOperator())) {
+          final MapperDAGEdge mapperEdge = (MapperDAGEdge) edge;
+          transferEdges.put(mapperEdge, this.getRoute(mapperEdge));
         }
       }
     }
@@ -329,7 +326,8 @@ public class CommunicationRouter {
       final List<Object> createdVertices) {
     final TransactionManager localTransactionManager = new TransactionManager(createdVertices);
 
-    for (final MapperDAGEdge edge : transferEdges.keySet()) {
+    for (final Entry<MapperDAGEdge, Route> route : transferEdges.entrySet()) {
+      final MapperDAGEdge edge = route.getKey();
       int routeStepIndex = 0;
       Transaction lastTransaction = null;
       for (final AbstractRouteStep step : transferEdges.get(edge)) {
@@ -359,12 +357,14 @@ public class CommunicationRouter {
     final ComponentInstance sourceOp = source.getEffectiveOperator();
     final ComponentInstance destOp = dest.getEffectiveOperator();
 
+    final long dataSize = edge.getInit().getDataSize();
+
     long cost = 0;
 
     // Retrieving the route
     if ((sourceOp != null) && (destOp != null)) {
       final Route route = this.calculator.getRoute(sourceOp, destOp);
-      cost = route.evaluateTransferCost(edge.getInit().getDataSize());
+      cost = route.evaluateTransferCost(dataSize);
     } else {
       final String msg = "trying to evaluate a transfer between non mapped operators.";
       throw new PreesmRuntimeException(msg);
@@ -373,14 +373,15 @@ public class CommunicationRouter {
     return cost;
   }
 
-  /*
-   * (non-Javadoc)
+  /**
    *
-   * @see org.ietr.preesm.mapper.abc.route.AbstractCommunicationRouter#getRoute(org.ietr.preesm.mapper.
-   * model.MapperDAGEdge)
    */
   public Route getRoute(final MapperDAGEdge edge) {
-    return this.calculator.getRoute(edge);
+    final MapperDAGVertex source = (MapperDAGVertex) edge.getSource();
+    final MapperDAGVertex target = (MapperDAGVertex) edge.getTarget();
+    final ComponentInstance sourceOp = source.getEffectiveOperator();
+    final ComponentInstance targetOp = target.getEffectiveOperator();
+    return calculator.getRoute(sourceOp, targetOp);
   }
 
 }

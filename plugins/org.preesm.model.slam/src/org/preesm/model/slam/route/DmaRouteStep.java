@@ -40,7 +40,6 @@ import java.util.List;
 import org.preesm.model.slam.ComponentInstance;
 import org.preesm.model.slam.Dma;
 
-// TODO: Auto-generated Javadoc
 /**
  * Route step where the sender uses a dma to send data in parallel with its processing.
  *
@@ -50,11 +49,6 @@ public class DmaRouteStep extends MessageRouteStep {
 
   /** The dma. */
   private final Dma dma;
-
-  /**
-   * The route step type determines how the communication will be simulated.
-   */
-  public static final String type = "DmaRouteStep";
 
   /**
    * Instantiates a new dma route step.
@@ -68,8 +62,8 @@ public class DmaRouteStep extends MessageRouteStep {
    * @param dma
    *          the dma
    */
-  public DmaRouteStep(final ComponentInstance sender, final List<ComponentInstance> nodes,
-      final ComponentInstance receiver, final Dma dma) {
+  DmaRouteStep(final ComponentInstance sender, final List<ComponentInstance> nodes, final ComponentInstance receiver,
+      final Dma dma) {
     super(sender, nodes, receiver);
     this.dma = dma;
   }
@@ -81,7 +75,7 @@ public class DmaRouteStep extends MessageRouteStep {
    */
   @Override
   public String getType() {
-    return DmaRouteStep.type;
+    return DMA_TYPE;
   }
 
   /**

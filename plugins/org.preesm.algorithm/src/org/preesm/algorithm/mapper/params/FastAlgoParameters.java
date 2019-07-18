@@ -42,7 +42,6 @@ import java.util.Map;
 import java.util.logging.Level;
 import org.preesm.commons.logger.PreesmLogger;
 
-// TODO: Auto-generated Javadoc
 /**
  * Class which purpose is setting the parameters for the fast algorithm.
  *
@@ -99,22 +98,10 @@ public class FastAlgoParameters {
     this.fastLocalSearchTime = fastLocalSearchTime;
   }
 
-  /**
-   * Getters and setters.
-   *
-   * @return true, if is display solutions
-   */
-
   public boolean isDisplaySolutions() {
     return this.displaySolutions;
   }
 
-  /**
-   * Sets the display solutions.
-   *
-   * @param displaySolutions
-   *          the new display solutions
-   */
   public void setDisplaySolutions(final boolean displaySolutions) {
     this.displaySolutions = displaySolutions;
   }

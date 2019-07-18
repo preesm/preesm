@@ -44,7 +44,6 @@ import java.util.List;
 import java.util.Set;
 import org.preesm.algorithm.mapper.model.MapperDAGVertex;
 
-// TODO: Auto-generated Javadoc
 /**
  * A schedule represents the consecutive tasks mapped on a single component.
  *
@@ -244,7 +243,7 @@ public class Schedule {
     final Set<MapperDAGVertex> vSet = new LinkedHashSet<>();
     final int currentIndex = indexOf(vertex);
     if ((currentIndex < 0) || (currentIndex >= this.elementList.size())) {
-      return null;
+      return Collections.emptySet();
     }
 
     for (int i = currentIndex + 1; i < this.elementList.size(); i++) {

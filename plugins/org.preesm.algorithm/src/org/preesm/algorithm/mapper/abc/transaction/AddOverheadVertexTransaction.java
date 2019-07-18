@@ -50,13 +50,12 @@ import org.preesm.algorithm.mapper.model.special.TransferVertex;
 import org.preesm.commons.logger.PreesmLogger;
 import org.preesm.model.slam.route.AbstractRouteStep;
 
-// TODO: Auto-generated Javadoc
 /**
  * Transaction executing the addition of an overhead (or set-up) vertex.
  *
  * @author mpelcat
  */
-public class AddOverheadVertexTransaction extends Transaction {
+public class AddOverheadVertexTransaction implements Transaction {
 
   // Inputs
   /** Implementation DAG to which the vertex is added. */
@@ -77,12 +76,6 @@ public class AddOverheadVertexTransaction extends Transaction {
   // Generated objects
   /** overhead vertex added. */
   private OverheadVertex oVertex = null;
-
-  /** edges added. */
-  private MapperDAGEdge newInEdge = null;
-
-  /** The new out edge. */
-  private MapperDAGEdge newOutEdge = null;
 
   /**
    * Instantiates a new adds the overhead vertex transaction.
@@ -116,8 +109,6 @@ public class AddOverheadVertexTransaction extends Transaction {
   @Override
   public void execute(final List<Object> resultList) {
 
-    super.execute(resultList);
-
     final MapperDAGVertex currentSource = (MapperDAGVertex) this.edge.getSource();
     final MapperDAGVertex currentTarget = (MapperDAGVertex) this.edge.getTarget();
 
@@ -129,7 +120,7 @@ public class AddOverheadVertexTransaction extends Transaction {
     final String overtexID = "__overhead (" + currentSource.getName() + "," + currentTarget.getName() + ")";
 
     if (this.overheadTime > 0) {
-      this.oVertex = new OverheadVertex(overtexID, this.implementation, null);
+      this.oVertex = new OverheadVertex(overtexID, null);
       this.implementation.getTimings().dedicate(this.oVertex);
       this.implementation.getMappings().dedicate(this.oVertex);
 
@@ -139,22 +130,17 @@ public class AddOverheadVertexTransaction extends Transaction {
 
       this.implementation.addVertex(this.oVertex);
       this.oVertex.getTiming().setCost(this.overheadTime);
-      this.oVertex.setEffectiveOperator(this.step.getSender());
+      this.oVertex.setEffectiveComponent(this.step.getSender());
 
-      this.newInEdge = (MapperDAGEdge) this.implementation.addEdge(currentSource, this.oVertex);
-      this.newOutEdge = (MapperDAGEdge) this.implementation.addEdge(this.oVertex, currentTarget);
+      final MapperDAGEdge newInEdge = (MapperDAGEdge) this.implementation.addEdge(currentSource, this.oVertex);
+      final MapperDAGEdge newOutEdge = (MapperDAGEdge) this.implementation.addEdge(this.oVertex, currentTarget);
 
-      this.newInEdge.setInit(this.edge.getInit().copy());
-      this.newOutEdge.setInit(this.edge.getInit().copy());
+      newInEdge.setInit(this.edge.getInit().copy());
+      newOutEdge.setInit(this.edge.getInit().copy());
 
-      this.newInEdge.getTiming().setCost(0);
-      this.newOutEdge.getTiming().setCost(0);
+      newInEdge.getTiming().setCost(0);
+      newOutEdge.getTiming().setCost(0);
 
-      // TODO: Look at switching possibilities
-      /*
-       * if (true) { TaskSwitcher taskSwitcher = new TaskSwitcher(); taskSwitcher.setOrderManager(orderManager);
-       * taskSwitcher.insertVertexBefore(currentTarget, oVertex); } else
-       */
       this.orderManager.insertBefore(currentTarget, this.oVertex);
 
       // Scheduling overhead vertex
@@ -166,11 +152,6 @@ public class AddOverheadVertexTransaction extends Transaction {
     }
   }
 
-  /*
-   * (non-Javadoc)
-   *
-   * @see org.ietr.preesm.mapper.abc.transaction.Transaction#toString()
-   */
   @Override
   public String toString() {
     return ("AddOverhead(" + this.oVertex.toString() + ")");

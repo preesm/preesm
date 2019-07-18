@@ -45,17 +45,9 @@ package org.preesm.algorithm.mapper.graphtransfo;
  */
 public class BufferProperties {
 
-  /** The data type. */
   private final String dataTypeName;
-  private final long   dataTypeSize;
-
-  /** The dest input port ID. */
   private final String destInputPortID;
-
-  /** The size. */
-  private final int size;
-
-  /** The source output port ID. */
+  private final int    size;
   private final String sourceOutputPortID;
 
   /**
@@ -68,49 +60,27 @@ public class BufferProperties {
    * @param size
    *          the size
    */
-  public BufferProperties(final String dataTypeName, final long dataTypeSize, final String sourceOutputPortID,
-      final String destInputPortID, final int size) {
+  public BufferProperties(final String dataTypeName, final String sourceOutputPortID, final String destInputPortID,
+      final int size) {
     super();
     this.dataTypeName = dataTypeName;
-    this.dataTypeSize = dataTypeSize;
     this.destInputPortID = destInputPortID;
     this.size = size;
     this.sourceOutputPortID = sourceOutputPortID;
   }
 
-  /**
-   * Gets the data type.
-   *
-   * @return the data type
-   */
   public String getDataType() {
-    String typeName = this.dataTypeName;
-    return typeName;
+    return this.dataTypeName;
   }
 
-  /**
-   * Gets the dest input port ID.
-   *
-   * @return the dest input port ID
-   */
   public String getDestInputPortID() {
     return this.destInputPortID;
   }
 
-  /**
-   * Gets the size.
-   *
-   * @return the size
-   */
   public int getSize() {
     return this.size;
   }
 
-  /**
-   * Gets the source output port ID.
-   *
-   * @return the source output port ID
-   */
   public String getSourceOutputPortID() {
     return this.sourceOutputPortID;
   }

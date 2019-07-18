@@ -59,7 +59,6 @@ import org.jfree.data.xy.DefaultXYDataset;
 import org.jfree.ui.ApplicationFrame;
 import org.preesm.algorithm.mapper.ui.MouseClickedListener;
 
-// TODO: Auto-generated Javadoc
 /**
  * Plots the performance of a given implementation and compares it to the maximum possible speed ups.
  *
@@ -67,7 +66,6 @@ import org.preesm.algorithm.mapper.ui.MouseClickedListener;
  */
 public class PerformancePlotter extends ApplicationFrame {
 
-  /** The Constant serialVersionUID. */
   private static final long serialVersionUID = 1L;
 
   /** The data set containing the speedups. */
@@ -201,13 +199,9 @@ public class PerformancePlotter extends ApplicationFrame {
     this.speedups.addSeries("Greedy-Scheduling Theorem bound", reachableSpeedups);
   }
 
-  /*
-   * (non-Javadoc)
-   *
-   * @see org.jfree.ui.ApplicationFrame#windowClosing(java.awt.event.WindowEvent)
-   */
   @Override
   public void windowClosing(final WindowEvent event) {
+    // nothing
   }
 
   /**

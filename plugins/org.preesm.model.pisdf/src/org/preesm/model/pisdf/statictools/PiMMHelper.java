@@ -41,7 +41,7 @@ package org.preesm.model.pisdf.statictools;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -475,8 +475,8 @@ public class PiMMHelper {
    */
   public static void checkPeriodicity(final Map<AbstractVertex, Long> graphBRV) {
 
-    final Map<PiGraph, Long> levelBRV = new HashMap<>();
-    final Map<Long, List<Actor>> mapGraphPeriods = new HashMap<>();
+    final Map<PiGraph, Long> levelBRV = new LinkedHashMap<>();
+    final Map<Long, List<Actor>> mapGraphPeriods = new LinkedHashMap<>();
 
     for (final Entry<AbstractVertex, Long> en : graphBRV.entrySet()) {
 
@@ -549,7 +549,7 @@ public class PiMMHelper {
   /**
    * Remove dependencies of an actor, the configure input port if not used anymore, and also the actor itself from
    * graph.
-   * 
+   *
    * @param graph
    *          Container of elements to remove.
    * @param actor
@@ -570,7 +570,7 @@ public class PiMMHelper {
 
   /**
    * Remove dependencies, actor and fifo from graph.
-   * 
+   *
    * @param graph
    *          Container of elements to remove.
    * @param fifo

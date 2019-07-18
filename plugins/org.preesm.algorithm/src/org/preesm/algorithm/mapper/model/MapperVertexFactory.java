@@ -51,12 +51,8 @@ import org.w3c.dom.Element;
  */
 public class MapperVertexFactory implements IModelVertexFactory<DAGVertex> {
 
-  /** The instance. */
   private static MapperVertexFactory instance;
 
-  /**
-   * Instantiates a new mapper vertex factory.
-   */
   private MapperVertexFactory() {
     super();
   }
@@ -73,11 +69,6 @@ public class MapperVertexFactory implements IModelVertexFactory<DAGVertex> {
     return MapperVertexFactory.instance;
   }
 
-  /*
-   * (non-Javadoc)
-   *
-   * @see org.ietr.dftools.algorithm.factories.ModelVertexFactory#createVertex(java.lang.String)
-   */
   @Override
   public DAGVertex createVertex(final String kind, org.preesm.model.pisdf.AbstractVertex origVertex) {
     final DAGVertex result = new MapperDAGVertex(origVertex);
@@ -85,22 +76,12 @@ public class MapperVertexFactory implements IModelVertexFactory<DAGVertex> {
     return result;
   }
 
-  /*
-   * (non-Javadoc)
-   *
-   * @see org.ietr.dftools.algorithm.factories.ModelVertexFactory#createVertex(org.w3c.dom.Element)
-   */
   @Override
   public DAGVertex createVertex(final Element vertexElt, org.preesm.model.pisdf.AbstractVertex origVertex) {
     final String kind = getProperty(vertexElt, AbstractVertex.KIND_LITERAL);
     return this.createVertex(kind, origVertex);
   }
 
-  /*
-   * (non-Javadoc)
-   *
-   * @see org.ietr.dftools.algorithm.factories.ModelVertexFactory#createInterface(java.lang.String, int)
-   */
   @Override
   public IInterface createInterface(final String name, final int dir) {
     return null;

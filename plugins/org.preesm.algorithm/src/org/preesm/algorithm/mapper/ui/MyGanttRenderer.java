@@ -62,7 +62,6 @@ import org.jfree.ui.RectangleEdge;
  */
 public class MyGanttRenderer extends GanttRenderer {
 
-  /** The Constant serialVersionUID. */
   private static final long serialVersionUID = 1L;
 
   /** Map of the task colors. */

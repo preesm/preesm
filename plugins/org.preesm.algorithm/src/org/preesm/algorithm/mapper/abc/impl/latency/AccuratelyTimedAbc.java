@@ -58,7 +58,6 @@ import org.preesm.model.slam.Design;
  */
 public class AccuratelyTimedAbc extends LatencyAbc {
 
-  /** The types. */
   private List<Integer> types = null;
 
   /**
@@ -115,18 +114,9 @@ public class AccuratelyTimedAbc extends LatencyAbc {
    */
   @Override
   protected final void setEdgeCost(final MapperDAGEdge edge) {
-
     edge.getTiming().setCost(0);
-
-    // Setting edge costs for special types
-    // super.setEdgeCost(edge);
   }
 
-  /*
-   * (non-Javadoc)
-   *
-   * @see org.ietr.preesm.mapper.abc.impl.latency.LatencyAbc#getEdgeSchedType()
-   */
   @Override
   public EdgeSchedType getEdgeSchedType() {
     return this.edgeScheduler.getEdgeSchedType();

@@ -39,19 +39,15 @@ import java.util.List;
 import org.preesm.algorithm.mapper.model.MapperDAG;
 import org.preesm.algorithm.mapper.model.MapperDAGEdge;
 
-// TODO: Auto-generated Javadoc
 /**
  * A transaction that removes one edge in an implementation.
  *
  * @author mpelcat
  */
-public class RemoveEdgeTransaction extends Transaction {
-  // Inputs
-  /** Implementation DAG from which the edge is removed. */
-  private MapperDAG implementation = null;
+public class RemoveEdgeTransaction implements Transaction {
 
-  /** edge removed. */
-  private MapperDAGEdge edge = null;
+  private MapperDAG     implementation = null;
+  private MapperDAGEdge edge           = null;
 
   /**
    * Instantiates a new removes the edge transaction.
@@ -67,23 +63,11 @@ public class RemoveEdgeTransaction extends Transaction {
     this.implementation = implementation;
   }
 
-  /*
-   * (non-Javadoc)
-   *
-   * @see org.ietr.preesm.mapper.abc.transaction.Transaction#execute(java.util.List)
-   */
   @Override
   public void execute(final List<Object> resultList) {
-    super.execute(resultList);
-
     this.implementation.removeEdge(this.edge);
   }
 
-  /*
-   * (non-Javadoc)
-   *
-   * @see org.ietr.preesm.mapper.abc.transaction.Transaction#toString()
-   */
   @Override
   public String toString() {
     return ("RemoveEdge(" + this.edge.toString() + ")");

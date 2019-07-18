@@ -50,8 +50,8 @@ import org.preesm.algorithm.mapper.model.special.PrecedenceEdgeAdder;
 import org.preesm.algorithm.mapper.model.special.TransferVertex;
 import org.preesm.algorithm.model.dag.DAGEdge;
 import org.preesm.algorithm.model.dag.DAGVertex;
+import org.preesm.commons.exceptions.PreesmRuntimeException;
 
-// TODO: Auto-generated Javadoc
 /**
  * Class cleaning an implementation i.e. removing added transfers and edges.
  *
@@ -115,7 +115,7 @@ public class ImplementationCleaner {
     for (final DAGVertex v : ImplementationCleaner.getAllTransfers(vertex)) {
       if (v instanceof TransferVertex) {
         final MapperDAGVertex o = ((TransferVertex) v).getPrecedingOverhead();
-        if ((o != null) && (o instanceof OverheadVertex)) {
+        if (o instanceof OverheadVertex) {
           this.transactionManager.add(new RemoveVertexTransaction(o, this.implementation, this.orderManager));
         }
       }
@@ -137,7 +137,7 @@ public class ImplementationCleaner {
     for (final DAGVertex v : ImplementationCleaner.getAllTransfers(vertex)) {
       if (v instanceof TransferVertex) {
         final MapperDAGVertex o = ((TransferVertex) v).getInvolvementVertex();
-        if ((o != null) && (o instanceof InvolvementVertex)) {
+        if (o instanceof InvolvementVertex) {
           this.transactionManager.add(new RemoveVertexTransaction(o, this.implementation, this.orderManager));
         }
       }
@@ -174,9 +174,8 @@ public class ImplementationCleaner {
     }
 
     if (((prev != null) && (next != null)) && ((edges == null) || edges.isEmpty())) {
-      // TODO: Remove, only for debug
       if (!prev.getEffectiveOperator().getInstanceName().equals(next.getEffectiveOperator().getInstanceName())) {
-        System.out.println("wrong!!");
+        throw new PreesmRuntimeException();
       }
       adder.addPrecedenceEdge(prev, next);
     }

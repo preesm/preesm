@@ -53,7 +53,6 @@ import org.preesm.commons.exceptions.PreesmRuntimeException;
  */
 public class StatEditor extends SharedHeaderFormEditor implements IPropertyListener {
 
-  /** The stat gen. */
   private StatGenerator statGen = null;
 
   /**
@@ -107,51 +106,26 @@ public class StatEditor extends SharedHeaderFormEditor implements IPropertyListe
     }
   }
 
-  /*
-   * (non-Javadoc)
-   *
-   * @see org.eclipse.ui.forms.editor.SharedHeaderFormEditor#isDirty()
-   */
   @Override
   public boolean isDirty() {
     return false;
   }
 
-  /*
-   * (non-Javadoc)
-   *
-   * @see org.eclipse.ui.part.EditorPart#doSaveAs()
-   */
   @Override
   public void doSaveAs() {
     // actually not meant to be edited, so no save action
   }
 
-  /*
-   * (non-Javadoc)
-   *
-   * @see org.eclipse.ui.part.EditorPart#isSaveAsAllowed()
-   */
   @Override
   public boolean isSaveAsAllowed() {
     return false;
   }
 
-  /*
-   * (non-Javadoc)
-   *
-   * @see org.eclipse.ui.part.EditorPart#doSave(org.eclipse.core.runtime.IProgressMonitor)
-   */
   @Override
   public void doSave(final IProgressMonitor monitor) {
     // actually not meant to be edited, so no save action
   }
 
-  /*
-   * (non-Javadoc)
-   *
-   * @see org.eclipse.ui.IPropertyListener#propertyChanged(java.lang.Object, int)
-   */
   @Override
   public void propertyChanged(final Object source, final int propId) {
     // actually not meant to be edited, so no save action

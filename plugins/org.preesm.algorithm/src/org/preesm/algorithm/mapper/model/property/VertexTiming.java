@@ -39,9 +39,9 @@ package org.preesm.algorithm.mapper.model.property;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.Map.Entry;
 import org.preesm.algorithm.mapper.model.MapperDAGVertex;
 
-// TODO: Auto-generated Javadoc
 /**
  * Property added to a DAG vertex to give its timing properties. Can be shared by several synchronous vertices.
  *
@@ -72,18 +72,12 @@ public class VertexTiming extends GroupProperty {
   private Map<String, Integer> totalOrders;
 
   /**
-   * Instantiates a new vertex timing.
    */
   public VertexTiming() {
     super();
     reset();
   }
 
-  /*
-   * (non-Javadoc)
-   *
-   * @see org.ietr.preesm.mapper.model.property.GroupProperty#clone()
-   */
   @Override
   public VertexTiming copy() {
     final VertexTiming property = new VertexTiming();
@@ -91,8 +85,11 @@ public class VertexTiming extends GroupProperty {
     property.setBLevel(getBLevel());
     property.setTLevel(getTLevel());
     property.setCost(getCost());
-    for (final String id : this.totalOrders.keySet()) {
-      property.setTotalOrder(id, this.totalOrders.get(id));
+
+    for (final Entry<String, Integer> entry : this.totalOrders.entrySet()) {
+      final String id = entry.getKey();
+      final Integer value = entry.getValue();
+      property.setTotalOrder(id, value);
     }
     return property;
   }
@@ -107,133 +104,59 @@ public class VertexTiming extends GroupProperty {
     this.totalOrders = new LinkedHashMap<>();
   }
 
-  /*
-   * (non-Javadoc)
-   *
-   * @see org.ietr.preesm.mapper.model.property.GroupProperty#toString()
-   */
   @Override
   public String toString() {
     return "";
   }
 
-  /**
-   * Gets the cost.
-   *
-   * @return the cost
-   */
   public long getCost() {
     return this.cost;
   }
 
-  /**
-   * Sets the cost.
-   *
-   * @param cost
-   *          the new cost
-   */
   public void setCost(final long cost) {
     this.cost = cost;
   }
 
-  /**
-   * Checks for cost.
-   *
-   * @return true, if successful
-   */
   public boolean hasCost() {
     return (this.cost != VertexTiming.UNAVAILABLE);
   }
 
-  /**
-   * Gets the b level.
-   *
-   * @return the b level
-   */
   public long getBLevel() {
     return this.bLevel;
   }
 
-  /**
-   * Sets the b level.
-   *
-   * @param newbLevel
-   *          the new b level
-   */
   public void setBLevel(final long newbLevel) {
     this.bLevel = newbLevel;
   }
 
-  /**
-   * Reset B level.
-   */
   public void resetBLevel() {
     this.bLevel = VertexTiming.UNAVAILABLE;
   }
 
-  /**
-   * Checks for B level.
-   *
-   * @return true, if successful
-   */
   public boolean hasBLevel() {
     return this.bLevel != VertexTiming.UNAVAILABLE;
   }
 
-  /**
-   * Gets the t level.
-   *
-   * @return the t level
-   */
   public long getTLevel() {
     return this.tLevel;
   }
 
-  /**
-   * Sets the t level.
-   *
-   * @param newtLevel
-   *          the new t level
-   */
   public void setTLevel(final long newtLevel) {
     this.tLevel = newtLevel;
   }
 
-  /**
-   * Reset T level.
-   */
   public void resetTLevel() {
     this.tLevel = VertexTiming.UNAVAILABLE;
   }
 
-  /**
-   * Checks for T level.
-   *
-   * @return true, if successful
-   */
   public boolean hasTLevel() {
     return (this.tLevel != VertexTiming.UNAVAILABLE);
   }
 
-  /**
-   * Gets the total order.
-   *
-   * @param v
-   *          the v
-   * @return the total order
-   */
   public int getTotalOrder(final MapperDAGVertex v) {
     return this.totalOrders.get(v.getName());
   }
 
-  /**
-   * Sets the total order.
-   *
-   * @param vertexId
-   *          the vertex id
-   * @param totalOrder
-   *          the total order
-   */
   public void setTotalOrder(final String vertexId, final int totalOrder) {
     this.totalOrders.put(vertexId, totalOrder);
   }

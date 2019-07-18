@@ -39,7 +39,6 @@
  */
 package org.preesm.model.pisdf.brv;
 
-import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -84,7 +83,7 @@ class LCMBasedBRV extends PiBRV {
     final List<List<AbstractActor>> subgraphsWOInterfaces = PiMMHelper.getAllConnectedComponentsWOInterfaces(piGraph);
 
     for (final List<AbstractActor> subgraph : subgraphsWOInterfaces) {
-      final HashMap<String, LongFraction> reps = new HashMap<>();
+      final Map<String, LongFraction> reps = new LinkedHashMap<>();
       // Initializes all reps to 0
       for (final AbstractActor actor : subgraph) {
         reps.put(actor.getName(), new LongFraction(0L));
@@ -98,7 +97,7 @@ class LCMBasedBRV extends PiBRV {
       if (listFifos.isEmpty()) {
         graphBRV.put(subgraph.get(0), 1L);
       } else {
-        final Map<Fifo, Pair<Long, Long>> fifoProperties = new HashMap<>();
+        final Map<Fifo, Pair<Long, Long>> fifoProperties = new LinkedHashMap<>();
 
         // Evaluate prod / cons of FIFOs only once
         initFifoProperties(listFifos, fifoProperties);
@@ -144,7 +143,7 @@ class LCMBasedBRV extends PiBRV {
 
   /**
    * Get fifo properties.
-   * 
+   *
    * @param f
    *          Fifo to analyze.
    * @return Pair of the production rate as key, and the consumption rate as value.
@@ -161,7 +160,7 @@ class LCMBasedBRV extends PiBRV {
 
   /**
    * Check if both rates are different from 0 or both equal to 0. Otherwise it throws a {@link PreesmRuntimeException}.
-   * 
+   *
    * @param fifo
    *          Fifo to check.
    * @param rates
@@ -181,7 +180,7 @@ class LCMBasedBRV extends PiBRV {
 
   /**
    * Perform Depth First Search and return fifos in the same order as visited.
-   * 
+   *
    * @param subgraph
    *          On which to perform DFS.
    * @param reps
@@ -192,7 +191,7 @@ class LCMBasedBRV extends PiBRV {
    *         list.
    */
   private void setRepsDFS(List<AbstractActor> subgraph, Map<Fifo, Pair<Long, Long>> fifoProperties,
-      HashMap<String, LongFraction> reps) {
+      Map<String, LongFraction> reps) {
     LinkedList<AbstractActor> toVisit = new LinkedList<>();
     AbstractActor root = subgraph.get(0);
     reps.put(root.getName(), new LongFraction(1L));
@@ -298,7 +297,7 @@ class LCMBasedBRV extends PiBRV {
    * @param lcm
    *          lcm of the connected component
    */
-  private void computeAndSetRV(final List<AbstractActor> subgraph, final HashMap<String, LongFraction> reps, long lcm,
+  private void computeAndSetRV(final List<AbstractActor> subgraph, final Map<String, LongFraction> reps, long lcm,
       final Map<AbstractVertex, Long> graphBRV) {
     for (final AbstractActor actor : subgraph) {
       final LongFraction ratio = reps.get(actor.getName());

@@ -153,6 +153,10 @@ class ComponentInstance extends ParameterizedElement {
 	 */
 	int hardwareId
 	op boolean isHierarchical()
+
+	op String toString() {
+		return instanceName+":"+component.vlnv.name
+	}
 }
 
 class VLNVedElement {

@@ -35,7 +35,6 @@
  */
 package org.preesm.algorithm.mapper.algo;
 
-import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.logging.Level;
@@ -69,7 +68,7 @@ public class HScheduleTask extends AbstractTaskImplementation {
     PreesmLogger.getLogger().log(Level.WARNING, "ERROR : The graph is deadlock !!");
 
     // set the outputs
-    final Map<String, Object> outputs = new HashMap<>();
+    final Map<String, Object> outputs = new LinkedHashMap<>();
     // outputs.put("SDF", inputGraph);
     // outputs.put("scenario", inputScenario);
 

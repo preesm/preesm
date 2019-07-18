@@ -53,22 +53,11 @@ import org.preesm.algorithm.model.dag.DAGVertex;
  */
 public class CustomTopologicalIterator extends AbstractGraphIterator<DAGVertex, DAGEdge> {
 
-  /** The direct order. */
-  private final boolean directOrder;
-
-  /** The dag. */
-  private final MapperDAG dag;
-
-  /** The visited vertices. */
+  private final boolean        directOrder;
+  private final MapperDAG      dag;
   private Set<MapperDAGVertex> visitedVertices = null;
 
   /**
-   * Instantiates a new custom topological iterator.
-   *
-   * @param dag
-   *          the dag
-   * @param directOrder
-   *          the direct order
    */
   public CustomTopologicalIterator(final MapperDAG dag, final boolean directOrder) {
     super(dag);
@@ -77,21 +66,11 @@ public class CustomTopologicalIterator extends AbstractGraphIterator<DAGVertex, 
     this.visitedVertices = new LinkedHashSet<>();
   }
 
-  /*
-   * (non-Javadoc)
-   *
-   * @see java.util.Iterator#hasNext()
-   */
   @Override
   public boolean hasNext() {
     return (this.visitedVertices.size() < this.dag.vertexSet().size());
   }
 
-  /*
-   * (non-Javadoc)
-   *
-   * @see java.util.Iterator#next()
-   */
   @Override
   public MapperDAGVertex next() {
     if (this.directOrder) {

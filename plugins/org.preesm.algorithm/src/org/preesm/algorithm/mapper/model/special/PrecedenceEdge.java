@@ -41,7 +41,6 @@ import org.preesm.algorithm.mapper.model.MapperDAGEdge;
 import org.preesm.algorithm.mapper.model.MapperDAGVertex;
 import org.preesm.algorithm.model.dag.DirectedAcyclicGraph;
 
-// TODO: Auto-generated Javadoc
 /**
  * A precedence edge is automatically generated and expresses the sequential execution of successive vertices in a
  * single component.
@@ -50,11 +49,6 @@ import org.preesm.algorithm.model.dag.DirectedAcyclicGraph;
  */
 public class PrecedenceEdge extends MapperDAGEdge {
 
-  /*
-   * (non-Javadoc)
-   *
-   * @see org.ietr.preesm.mapper.model.MapperDAGEdge#toString()
-   */
   @Override
   public String toString() {
 
