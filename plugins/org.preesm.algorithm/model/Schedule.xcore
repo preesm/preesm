@@ -108,6 +108,17 @@ interface Schedule {
 	 * returns a String representing the schedule informally.
 	 */
 	op String shortPrint()
+	/*
+	 * Returns true if the schedule repetition can be parallelize.
+	 */
+	op boolean isParallelizable() {
+		for (Schedule child : children) {
+			if (!child.isParallelizable()) {
+				return false;
+			}
+		}
+		return true;
+	}
 }
 
 /*
@@ -151,6 +162,8 @@ interface HierarchicalSchedule extends Schedule {
 	op Schedule[] getChildren() {
 		return scheduleTree
 	}
+	
+	
 }
 
 /*
@@ -192,6 +205,9 @@ interface ActorSchedule extends Schedule {
  * This schedule as no children.
  */
 class SequentialActorSchedule extends ActorSchedule, SequentialSchedule {
+	op boolean isParallelizable() {
+		return isParallel();
+	}
 }
 
 /*
@@ -201,6 +217,9 @@ class SequentialActorSchedule extends ActorSchedule, SequentialSchedule {
  * This schedule as no children.
  */
 class ParallelActorSchedule extends ActorSchedule, ParallelSchedule {
+	op boolean isParallelizable() {
+		return isParallel();
+	}
 }
 
 /*
@@ -213,7 +232,7 @@ class SequentialHiearchicalSchedule extends HierarchicalSchedule, SequentialSche
 		// Print sequential operator
 		if (getRepetition() > 1) {
 			toPrint.append(getRepetition())
-			if (isParallel()) {
+			if (isParallelizable()) {
 				toPrint.append("/");
 			}
 			toPrint.append("(")
@@ -223,14 +242,6 @@ class SequentialHiearchicalSchedule extends HierarchicalSchedule, SequentialSche
 			toPrint.append(")")
 		}
 		return toPrint.toString()
-	}
-	op boolean isParallel() {
-		for (Schedule child : children) {
-			if (!child.isParallel()) {
-				return false;
-			}
-		}
-		return true;
 	}
 }
 
