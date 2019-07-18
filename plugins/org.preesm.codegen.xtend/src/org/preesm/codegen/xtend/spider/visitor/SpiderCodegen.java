@@ -211,8 +211,8 @@ public class SpiderCodegen {
 
     // Generate constraints
     this.constraints = new LinkedHashMap<>();
-    for (final Entry<ComponentInstance, EList<AbstractActor>> cg : this.scenario.getConstraints().getGroupConstraints()
-        .entrySet()) {
+    for (final Entry<ComponentInstance, EList<AbstractActor>> cg : this.scenario.getConstraints()
+        .getGroupConstraints()) {
       for (final AbstractActor aa : cg.getValue()) {
         if (this.constraints.get(aa) == null) {
           this.constraints.put(aa, new LinkedHashSet<ComponentInstance>());

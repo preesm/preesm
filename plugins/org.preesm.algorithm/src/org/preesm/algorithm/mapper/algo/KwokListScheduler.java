@@ -41,7 +41,6 @@ package org.preesm.algorithm.mapper.algo;
 
 import java.util.List;
 import java.util.logging.Level;
-import java.util.logging.Logger;
 import org.preesm.algorithm.mapper.abc.impl.latency.LatencyAbc;
 import org.preesm.algorithm.mapper.model.MapperDAG;
 import org.preesm.algorithm.mapper.model.MapperDAGVertex;
@@ -77,7 +76,7 @@ public class KwokListScheduler {
    *           the workflow exception
    */
   private long listImplementationCost(final MapperDAG dag, MapperDAGVertex vertex, final ComponentInstance operator,
-      final LatencyAbc simu, final boolean minimizeVStartorOpEnd) {
+      final LatencyAbc simu) {
 
     // check the vertex is into the DAG
     vertex = dag.getMapperDAGVertex(vertex.getName());
@@ -87,11 +86,7 @@ public class KwokListScheduler {
     simu.updateFinalCosts();
 
     // check if the vertex is a source vertex with no predecessors
-    if (minimizeVStartorOpEnd) {
-      return simu.getFinalCost(vertex);
-    } else {
-      return simu.getFinalCost(operator);
-    }
+    return simu.getFinalCost(operator);
   }
 
   /**
@@ -115,15 +110,9 @@ public class KwokListScheduler {
   public MapperDAG schedule(final MapperDAG dag, final List<MapperDAGVertex> orderlist, final LatencyAbc archisimu,
       final ComponentInstance operatorfcp, final MapperDAGVertex fcpvertex) {
 
-    final boolean minimizeVStartorOpEnd = false;
-
-    // Variables
-    ComponentInstance chosenoperator = null;
-    final Logger logger = PreesmLogger.getLogger();
-
     // Maps the fastest one to be ready among the operators in the vertex
     // check the vertex by priority in the CPN-Dominant list
-    logger.log(Level.FINEST, " entering schedule ");
+    PreesmLogger.getLogger().log(Level.FINEST, " entering schedule ");
     for (final MapperDAGVertex currentvertex : orderlist) {
 
       // Mapping forced by the user or the Fast algorithm
@@ -145,13 +134,13 @@ public class KwokListScheduler {
         long time = Long.MAX_VALUE;
         // Choose the operator
 
+        ComponentInstance chosenoperator = null;
         final List<ComponentInstance> opList = archisimu.getCandidateOperators(currentvertex, true);
         if (opList.size() == 1) {
           chosenoperator = opList.get(0);
         } else {
           for (final ComponentInstance currentoperator : opList) {
-            final long test = listImplementationCost(dag, currentvertex, currentoperator, archisimu,
-                minimizeVStartorOpEnd);
+            final long test = listImplementationCost(dag, currentvertex, currentoperator, archisimu);
             // test the earliest ready operator
             if (test < time) {
               chosenoperator = currentoperator;
@@ -166,10 +155,8 @@ public class KwokListScheduler {
         final int currentVertexRank = orderlist.indexOf(currentvertex);
         if (((currentVertexRank % 100) == 0) && (fcpvertex == null) && (currentVertexRank != 0)) {
           final String msg = "list scheduling: " + currentVertexRank + " vertices mapped ";
-          logger.log(Level.INFO, msg);
+          PreesmLogger.getLogger().log(Level.INFO, msg);
         }
-
-        chosenoperator = null;
       }
     }
     return dag;
