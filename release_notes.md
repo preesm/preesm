@@ -8,10 +8,11 @@ PREESM Changelog
 
 ### Changes
 * Codegen:
-  * Added an AbstractCodegenModelGenerator supertype to ease experimentation of another model generator from CodegenEngine
-  * Instrumented codegen now computes timings per PiSDF vertex path name instead of C function name.
+  * Added an AbstractCodegenModelGenerator supertype to ease experimentation of another model generator from CodegenEngine;
+  * Instrumented codegen now computes timings per PiSDF vertex path name instead of C function name;
 * Schedule:
-  * Added a reference to a AbstractActor in HierarchicalSchedule to retrieve cluster from their schedule
+  * Added a reference to a AbstractActor in HierarchicalSchedule to retrieve cluster from their schedule;
+  * Refactor legacy scheduler to make it deterministic;
 * Releng:
   * Update jacoco/sonar config;
 * PiSDF:
