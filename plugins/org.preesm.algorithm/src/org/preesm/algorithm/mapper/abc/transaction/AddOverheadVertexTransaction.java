@@ -130,7 +130,7 @@ public class AddOverheadVertexTransaction implements Transaction {
 
       this.implementation.addVertex(this.oVertex);
       this.oVertex.getTiming().setCost(this.overheadTime);
-      this.oVertex.setEffectiveOperator(this.step.getSender());
+      this.oVertex.setEffectiveComponent(this.step.getSender());
 
       final MapperDAGEdge newInEdge = (MapperDAGEdge) this.implementation.addEdge(currentSource, this.oVertex);
       final MapperDAGEdge newOutEdge = (MapperDAGEdge) this.implementation.addEdge(this.oVertex, currentTarget);

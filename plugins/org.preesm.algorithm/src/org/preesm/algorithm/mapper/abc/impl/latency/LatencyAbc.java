@@ -281,8 +281,8 @@ public abstract class LatencyAbc {
       // implementation
       // Modifying effective operator of the vertex and all its
       // mapping set!
-      dagvertex.setEffectiveOperator(finalOperator);
-      impvertex.setEffectiveOperator(finalOperator);
+      dagvertex.setEffectiveComponent(finalOperator);
+      impvertex.setEffectiveComponent(finalOperator);
 
       fireNewMappedVertex(impvertex, updateRank);
 
@@ -362,8 +362,8 @@ public abstract class LatencyAbc {
           PreesmLogger.getLogger().log(Level.INFO, msg);
         }
 
-        dv.setEffectiveOperator(operator);
-        dvi.setEffectiveOperator(operator);
+        dv.setEffectiveComponent(operator);
+        dvi.setEffectiveComponent(operator);
 
         fireNewMappedVertex(dvi, updateRank);
 
@@ -375,7 +375,7 @@ public abstract class LatencyAbc {
       } else if (dv.equals(dagvertex) || remapGroup) {
         final String msg = dagvertex + " can not be mapped (group) on " + operator;
         PreesmLogger.getLogger().log(Level.SEVERE, msg);
-        dv.setEffectiveOperator(null);
+        dv.setEffectiveComponent(null);
       }
     }
 
@@ -669,9 +669,9 @@ public abstract class LatencyAbc {
 
     fireNewUnmappedVertex(impvertex);
 
-    dagvertex.setEffectiveOperator(null);
+    dagvertex.setEffectiveComponent(null);
 
-    impvertex.setEffectiveOperator(null);
+    impvertex.setEffectiveComponent(null);
   }
 
   /**

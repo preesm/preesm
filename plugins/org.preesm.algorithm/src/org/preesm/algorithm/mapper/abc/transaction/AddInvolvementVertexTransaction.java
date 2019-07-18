@@ -133,10 +133,10 @@ public class AddInvolvementVertexTransaction implements Transaction {
       this.iVertex.getTiming().setCost(this.involvementTime);
 
       if (this.isSender) {
-        this.iVertex.setEffectiveOperator(this.step.getSender());
+        this.iVertex.setEffectiveComponent(this.step.getSender());
         ((TransferVertex) currentTarget).setInvolvementVertex(this.iVertex);
       } else {
-        this.iVertex.setEffectiveOperator(this.step.getReceiver());
+        this.iVertex.setEffectiveComponent(this.step.getReceiver());
         ((TransferVertex) currentSource).setInvolvementVertex(this.iVertex);
       }
 

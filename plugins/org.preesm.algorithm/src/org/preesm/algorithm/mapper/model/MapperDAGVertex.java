@@ -393,21 +393,10 @@ public class MapperDAGVertex extends DAGVertex {
     return getEffectiveOperator() != null;
   }
 
-  /**
-   * Sets the effective operator.
-   *
-   * @param effectiveOperator
-   *          the new effective operator
-   */
-  public void setEffectiveOperator(final ComponentInstance effectiveOperator) {
-    this.effectiveComponent = effectiveOperator;
+  public void setEffectiveComponent(final ComponentInstance component) {
+    this.effectiveComponent = component;
   }
 
-  /**
-   * Effective component is common to communication and computation vertices.
-   *
-   * @return the effective component
-   */
   public ComponentInstance getEffectiveComponent() {
     return this.effectiveComponent;
   }
@@ -419,15 +408,5 @@ public class MapperDAGVertex extends DAGVertex {
    */
   public boolean hasEffectiveComponent() {
     return getEffectiveComponent() != null;
-  }
-
-  /**
-   * Sets the effective component.
-   *
-   * @param component
-   *          the new effective component
-   */
-  public void setEffectiveComponent(final ComponentInstance component) {
-    this.effectiveComponent = component;
   }
 }

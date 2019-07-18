@@ -59,12 +59,6 @@ public class TaskSwitcher extends AbstractTaskSched {
     this.intervalFinder = new IntervalFinder(orderManager);
   }
 
-  /*
-   * (non-Javadoc)
-   *
-   * @see org.ietr.preesm.mapper.abc.taskscheduling.AbstractTaskSched#insertVertex(org.ietr.preesm.mapper
-   * .model.MapperDAGVertex)
-   */
   @Override
   public void insertVertex(final MapperDAGVertex vertex) {
 

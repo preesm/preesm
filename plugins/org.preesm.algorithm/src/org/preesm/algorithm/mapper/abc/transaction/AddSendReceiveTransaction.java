@@ -160,7 +160,7 @@ public class AddSendReceiveTransaction implements Transaction {
     this.sendVertex.setRouteStep(this.step);
     this.implementation.addVertex(this.sendVertex);
     this.sendVertex.getTiming().setCost(this.transferCost);
-    this.sendVertex.setEffectiveOperator(senderOperator);
+    this.sendVertex.setEffectiveComponent(senderOperator);
 
     // Find insertion position
     // Insert sendVertices after the current source, and after sendVertex(es) immediately following it. This is done to
@@ -180,7 +180,7 @@ public class AddSendReceiveTransaction implements Transaction {
     this.receiveVertex.setRouteStep(this.step);
     this.implementation.addVertex(this.receiveVertex);
     this.receiveVertex.getTiming().setCost(this.transferCost);
-    this.receiveVertex.setEffectiveOperator(receiverOperator);
+    this.receiveVertex.setEffectiveComponent(receiverOperator);
 
     // Place the receive just before the vertex consuming the corresponding data.
     // (position is not definitive, cf. reorderReceive method)
