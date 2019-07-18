@@ -212,13 +212,25 @@ class SequentialHiearchicalSchedule extends HierarchicalSchedule, SequentialSche
 		val StringBuilder toPrint = new StringBuilder()
 		// Print sequential operator
 		if (getRepetition() > 1) {
-			toPrint.append(getRepetition() + "(")
+			toPrint.append(getRepetition())
+			if (isParallel()) {
+				toPrint.append("/");
+			}
+			toPrint.append("(")
 		}
 		toPrint.append(children.map[it.shortPrint()].join("*"))
 		if (getRepetition() > 1) {
 			toPrint.append(")")
 		}
 		return toPrint.toString()
+	}
+	op boolean isParallel() {
+		for (Schedule child : children) {
+			if (!child.isParallel()) {
+				return false;
+			}
+		}
+		return true;
 	}
 }
 
