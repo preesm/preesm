@@ -41,7 +41,9 @@ import java.util.Map;
 import org.apache.commons.math3.util.ArithmeticUtils;
 import org.eclipse.emf.common.util.ECollections;
 import org.eclipse.emf.common.util.EList;
+import org.preesm.algorithm.schedule.model.HierarchicalSchedule;
 import org.preesm.algorithm.schedule.model.Schedule;
+import org.preesm.algorithm.schedule.model.SequentialActorSchedule;
 import org.preesm.commons.exceptions.PreesmRuntimeException;
 import org.preesm.model.pisdf.AbstractActor;
 import org.preesm.model.pisdf.AbstractVertex;
@@ -129,6 +131,24 @@ public class ClusteringHelper {
       if (source.equals(actor)) {
         return true;
       }
+    }
+    return false;
+  }
+
+  /**
+   * @param schedule
+   *          schedule to look at if there is sequential actor schedule inside
+   * @return true if there is sequential actor schedule inside
+   */
+  public static final boolean isSequentialActorScheduleInside(Schedule schedule) {
+    if (schedule instanceof HierarchicalSchedule) {
+      for (Schedule child : schedule.getChildren()) {
+        if (isSequentialActorScheduleInside(child)) {
+          return true;
+        }
+      }
+    } else if (schedule instanceof SequentialActorSchedule) {
+      return true;
     }
     return false;
   }
