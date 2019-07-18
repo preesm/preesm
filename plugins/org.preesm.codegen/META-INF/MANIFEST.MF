@@ -12,7 +12,9 @@ Require-Bundle: org.eclipse.core.runtime,
  org.eclipse.xtext.xbase.lib,
  org.eclipse.xtend.lib,
  org.eclipse.emf.ecore.xcore.lib,
- org.preesm.algorithm;visibility:=reexport
+ org.preesm.algorithm;visibility:=reexport,
+ org.preesm.commons,
+ org.preesm.model.pisdf
 Bundle-ActivationPolicy: lazy
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Bundle-ClassPath: .

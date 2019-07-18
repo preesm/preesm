@@ -47,6 +47,14 @@
 #[[#]]#ifndef _PREESM_PREESM_GEN_H
 #[[#]]#define _PREESM_PREESM_GEN_H
 
+/**
+ * This _GNU_SOURCE actually creates possible incompatibilities
+ * and a few requirements due to the dump.c/.c source files.
+ *
+ * To not face problems, preesm_gen.h must be included before everything else
+ * (as the definition of _GNU_SOURCE). When needed, preesm_gen.h should be included in the .c,
+ * indeed the inclusion in the .h creates a cyclic inclusion.
+ */
 #[[#]]#define _GNU_SOURCE
 
 #[[#]]#include <stdio.h>

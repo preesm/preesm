@@ -50,6 +50,7 @@ import org.eclipse.core.resources.IWorkspace;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.Path;
+import org.preesm.commons.exceptions.PreesmRuntimeException;
 import org.preesm.commons.files.WorkspaceUtils;
 import org.preesm.commons.logger.PreesmLogger;
 import org.preesm.model.pisdf.AbstractActor;
@@ -116,7 +117,7 @@ public class CsvTimingParser {
         /* Parse the whole file to create the timings Map */
         while ((line = br.readLine()) != null) {
           final String[] cells = line.split(";");
-          if (cells.length > 1) {
+          if (cells.length == opNames.length) {
             final Map<Component, String> timing = new LinkedHashMap<>();
 
             for (int i = 1; i < cells.length; i++) {
@@ -130,6 +131,10 @@ public class CsvTimingParser {
             if (lookupActor != null) {
               timings.put(lookupActor, timing);
             }
+          } else {
+            String errMessage = "Timing csv file has incorrect data: all rows have not the same number of columns.";
+            PreesmLogger.getLogger().log(Level.SEVERE, errMessage);
+            throw new PreesmRuntimeException(errMessage);
           }
         }
 
